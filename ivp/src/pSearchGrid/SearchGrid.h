@@ -23,10 +23,10 @@
 #ifndef SEARCH_GRID_MOOS_APP_HEADER
 #define SEARCH_GRID_MOOS_APP_HEADER
 
-#include "MOOS/libMOOS/MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "XYConvexGrid.h"
 
-class SearchGrid : public CMOOSApp
+class SearchGrid : public AppCastingMOOSApp
 {
  public:
   SearchGrid() {};
@@ -38,6 +38,7 @@ class SearchGrid : public CMOOSApp
   bool OnStartUp();
 
  protected:
+  bool buildReport();
   void registerVariables();
   void handleNodeReport(std::string);
 

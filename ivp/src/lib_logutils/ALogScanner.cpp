@@ -47,10 +47,16 @@ ScanReport ALogScanner::scan()
       // information is present and append to the source
       if(src == "pHelmIvP") {
 	string src_aux = entry.getSrcAux();
-	string iter = biteString(src_aux, ':');
-	string bhv  = src_aux;
-	if(bhv != "")
-	  src = src + ":" + bhv;
+	if(src_aux != "") {
+	  if(strContains(src_aux, ':')) {
+	    string iter = biteString(src_aux, ':');
+	    string bhv  = src_aux;
+	    if(bhv != "")
+	      src = src + ":" + bhv;
+	  }
+	  else
+	    src += ":" + src_aux;
+	}	      
       }
       
       report.addLine(entry.getTimeStamp(),

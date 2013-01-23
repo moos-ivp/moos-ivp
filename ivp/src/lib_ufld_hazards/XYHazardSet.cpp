@@ -183,15 +183,19 @@ bool XYHazardSet::isValidReport() const
 //-----------------------------------------------------------
 // Procedure: getSpec()
 
-string XYHazardSet::getSpec() const
+string XYHazardSet::getSpec(string report_style) const
 {
+  string noshow = "";
+  if(report_style == "final_report")
+    noshow = "hr,type,width,color";
+
   string str = "source=" + m_source;
+  if(m_name != "")
+    str += "#name=" + m_name;
   unsigned int i, vsize = m_hazards.size();
   for(i=0; i<vsize; i++) {
-    string hazard_str = m_hazards[i].getSpec();
+    string hazard_str = m_hazards[i].getSpec(noshow);
     str += "#" + hazard_str;
   }
   return(str);
 }
-
-

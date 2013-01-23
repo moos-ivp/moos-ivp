@@ -39,15 +39,19 @@ HazardMetric::HazardMetric()
 {
   // Initialized configuration variables
   // Default Reward Structure
-  m_penalty_false_alarm      = 10;
-  m_penalty_missed_hazard    = 100; 
-  m_penalty_max_time_over    = 0;
-  m_penalty_max_time_overage = 0;
+  m_penalty_false_alarm   = 10;
+  m_penalty_missed_hazard = 100; 
+  m_penalty_max_time_over = 0;
+  m_penalty_max_time_rate = 0;
 
   // A max_time=0 means there is no mission time limit 
   m_max_time = 0;
 
   m_search_start_time = 0;
+  m_elapsed_time      = 0;
+
+  m_total_reports_received = 0;
+  m_worst_possible_score   = 0;
 }
 
 //---------------------------------------------------------
@@ -71,10 +75,10 @@ bool HazardMetric::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
     
-    if(key == "HAZARD_REPORT")
+    if(key == "HAZARDSET_REPORT")
       addHazardReport(sval);
     else if(key == "HAZARD_SEARCH_START")
-      m_search_start_time = MOOSTime() - m_start_time;
+      m_search_start_time = MOOSTime();
     else 
       reportRunWarning("Unhandled Mail: " + key);
    }
@@ -98,6 +102,10 @@ bool HazardMetric::OnConnectToServer()
 bool HazardMetric::Iterate()
 {
   AppCastingMOOSApp::Iterate();
+
+  if(m_search_start_time > 0) 
+    m_elapsed_time = MOOSTime() - m_search_start_time;
+
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -135,8 +143,8 @@ bool HazardMetric::OnStartUp()
       m_penalty_max_time_over = atof(value.c_str());
       handled = true;
     }
-    else if((param == "PENALTY_MAX_TIME_OVERAGE") && isNumber(value)) {
-      m_penalty_max_time_overage = atof(value.c_str());
+    else if((param == "PENALTY_MAX_TIME_RATE") && isNumber(value)) {
+      m_penalty_max_time_rate = atof(value.c_str());
       handled = true;
     }
     else if((param == "MAX_TIME") && isNumber(value)) {
@@ -160,10 +168,9 @@ bool HazardMetric::OnStartUp()
 void HazardMetric::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("HAZARD_REPORT", 0);
+  m_Comms.Register("HAZARDSET_REPORT", 0);
   m_Comms.Register("HAZARD_SEARCH_START", 0);
 }
-
 
 //------------------------------------------------------------
 // Procedure: processHazardFile
@@ -208,6 +215,9 @@ bool HazardMetric::processHazardFile(string filename)
   if(m_hazards.getSource() == "")
     m_hazards.setSource(filename);
   
+  m_worst_possible_score += m_penalty_false_alarm   * m_hazards.getBenignCnt();
+  m_worst_possible_score += m_penalty_missed_hazard * m_hazards.getHazardCnt();
+
   return(true);
 }
 
@@ -232,10 +242,11 @@ bool HazardMetric::addHazardReport(string report_str)
   }
 
   if(hazard_set.size() == 0) {
-    reportRunWarning("Warning: HAZARD_REPORT of size ZERO received");
+    reportEvent("Warning: HAZARD_REPORT of size ZERO received");
     return(false);
   }
 
+  m_total_reports_received++;
   m_map_reports[src] = hazard_set;
   m_map_report_amt[src]++;
 
@@ -252,8 +263,9 @@ bool HazardMetric::addHazardReport(string report_str)
 
 void HazardMetric::evaluateReport(const XYHazardSet& src_hset)
 {
-  string source = src_hset.getSource();
-
+  string source   = src_hset.getSource();
+  string rpt_name = src_hset.getName();
+  
   double total_score = 0;
   string object_report;
 
@@ -314,14 +326,23 @@ void HazardMetric::evaluateReport(const XYHazardSet& src_hset)
   double score_time_overage = 0;
   if(overage > 0) {
     score_time_overage += m_penalty_max_time_over;
-    score_time_overage += (m_penalty_max_time_overage * overage);
+    score_time_overage += (m_penalty_max_time_rate * overage);
   }
   total_score += score_time_overage;
+  
+  double norm_score = 100 * (m_worst_possible_score - total_score) /
+    m_worst_possible_score;
+  if(norm_score < 0)
+    norm_score = 0;
+  if(norm_score > 100)
+    norm_score = 100;
 
   // Part 4: Fill in the report eval data structure
   XYHazardRepEval eval;
   eval.setVName(source);
+  eval.setReportName(rpt_name);
   eval.setTotalScore(total_score);
+  eval.setNormScore(norm_score);
   eval.setScoreMissedHazards(score_missed_hazards);
   eval.setScoreFalseAlarms(score_false_alarms);
   eval.setScoreTimeOverage(score_time_overage);
@@ -332,22 +353,22 @@ void HazardMetric::evaluateReport(const XYHazardSet& src_hset)
   eval.setFalseAlarms(false_alarms);
   eval.setTotalTime(elapsed_time);
   eval.setReceivedTime(m_curr_time - m_start_time);
-  eval.setStartTime(m_search_start_time);
+  eval.setStartTime(m_search_start_time - m_start_time);
 
   eval.setPenaltyFalseAlarm(m_penalty_false_alarm);
   eval.setPenaltyMissedHazard(m_penalty_missed_hazard);
   eval.setPenaltyMaxTimeOver(m_penalty_max_time_over);
-  eval.setPenaltyMaxTimeOverage(m_penalty_max_time_overage);
+  eval.setPenaltyMaxTimeRate(m_penalty_max_time_rate);
   eval.setMaxTime(m_max_time);
   eval.setObjectReport(object_report);
 
   m_map_evals[source] = eval;
 
-  m_Comms.Notify("REPORT_FULL_EVAL", eval.getFullSpec());
-  m_Comms.Notify("REPORT_FULL_EVAL_"+toupper(source), eval.getFullSpec());
+  Notify("HAZARDSET_EVAL_FULL", eval.getFullSpec());
+  Notify("HAZARDSET_EVAL_FULL_"+toupper(source), eval.getFullSpec());
 
-  m_Comms.Notify("REPORT_EVAL", eval.getShortSpec());
-  m_Comms.Notify("REPORT_EVAL_"+toupper(source), eval.getShortSpec());
+  Notify("HAZARDSET_EVAL", eval.getShortSpec());
+  Notify("HAZARDSET_EVAL_"+toupper(source), eval.getShortSpec());
 }
 
 
@@ -357,39 +378,55 @@ void HazardMetric::evaluateReport(const XYHazardSet& src_hset)
 
 bool HazardMetric::buildReport() 
 {
-  m_msgs << "============================================" << endl;
   m_msgs << "Hazard File: (" + m_hazard_file + ")"         << endl;
-  m_msgs << "============================================" << endl;
-  m_msgs << "     Hazard: " + m_hazards.getHazardCnt() << endl;
-  m_msgs << "     Benign: " + m_hazards.getBenignCnt() << endl;
+  m_msgs << "     Hazard: " << m_hazards.getHazardCnt() << endl;
+  m_msgs << "     Benign: " << m_hazards.getBenignCnt() << endl << endl;
+  m_msgs << "Reward Structure:"                         << endl;
+  m_msgs << "    Penalty Missed Hazard: " << m_penalty_missed_hazard << endl;
+  m_msgs << "      Penalty False Alarm: " << m_penalty_false_alarm   << endl;
+  m_msgs << "    Penalty Max Time Over: " << m_penalty_max_time_over << endl;
+  m_msgs << "    Penalty Max Time Rate: " << m_penalty_max_time_rate << endl;
+  m_msgs << "                 Max Time: " << m_max_time << endl;
   m_msgs << endl;  
-  m_msgs << "==========================================" << endl;
-  m_msgs << "Received Reports:"                          << endl;
-  m_msgs << "==========================================" << endl;;
+  m_msgs << "=========================================="      << endl;
+  m_msgs << "Received Reports: " << m_total_reports_received  << endl;
+  m_msgs << "Elapsed Time:     " << m_elapsed_time            << endl;
+  m_msgs << "=========================================="      << endl;;
 
-  ACTable actab(5);
-  actab << "Vehicle | Total   |       | Time | Time   ";
-  actab << "Name    | Reports | Score | Recd | Elapsed";
+  ACTable actab(6);
+  actab << "Report | Total   | Time     | Time    | Raw   | Norm ";
+  actab << "Name   | Reports | Received | Elapsed | Score | Score";
   actab.addHeaderLines();
   map<string, XYHazardRepEval>::iterator p;
   for(p=m_map_evals.begin(); p!=m_map_evals.end(); p++) {
     string vname = p->first;
     XYHazardRepEval eval = p->second;
-    string amt   = uintToString(m_map_report_amt[vname]);
 
-    string score      = doubleToStringX(eval.getTotalScore());
+    string rpt_name = eval.getReportName();
+    if(rpt_name == "")
+      rpt_name = vname;
+    string amt   = uintToString(m_map_report_amt[vname]);
     string time_reced = doubleToString(eval.getReceivedTime(),2);
     string time_total = doubleToString(eval.getTotalTime(),2);
-    actab << vname << amt << score << time_reced << time_total;
+    string raw_score  = doubleToStringX(eval.getTotalScore(),2);
+    string norm_score = doubleToStringX(eval.getNormScore(),2);
+    actab << rpt_name << amt << time_reced << time_total << raw_score << norm_score;
   }
   m_msgs << actab.getFormattedString();
 
+  string most_recent_report_name;
+  if(m_map_evals.count(m_most_recent_source) > 0)
+    most_recent_report_name = m_map_evals[m_most_recent_source].getReportName(); 
+
+  string full_src = m_most_recent_source;
+  if(most_recent_report_name != "")
+    full_src += "/" + most_recent_report_name;
+
   if(m_map_evals.count(m_most_recent_source)) {
     XYHazardRepEval eval = m_map_evals[m_most_recent_source];
-    m_msgs << endl;
+    m_msgs << endl << endl;
     m_msgs << "=========================================="         << endl;
-    m_msgs << "Most Recent Report: (" + m_most_recent_source + ")" << endl;
-    m_msgs << "=========================================="         << endl;
+    m_msgs << "Most Recent Report: (" + full_src + ")" << endl;
     m_msgs << eval.getFormattedString();
   }
 

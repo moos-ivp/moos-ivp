@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 
   AppCastRepo appcast_repo;
 
-  int gui_wid = 0.60 * Fl::w();
+  int gui_wid = 0.80 * Fl::w();
   int gui_hgt = 0.75 * Fl::h();
   if(size_request != "") {
     string s_wid = biteStringX(size_request, 'x');
@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 
   // For document screen shots:
   // PMV_GUI* gui = new PMV_GUI(1100,640, "pMarineViewer");
-  PMV_GUI* gui = new PMV_GUI(gui_wid, gui_hgt, "pMarineViewer (MIT Version 12.10)");
+  PMV_GUI* gui = new PMV_GUI(gui_wid, gui_hgt, "pMarineViewer (MIT Version 13.1)");
   if(!gui) {
     cout << "Unable to instantiate the GUI - exiting." << endl;
     return(-1);

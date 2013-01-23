@@ -16,6 +16,7 @@ endif (${WIN32})
 SET(SRC
    HazardSensor_MOOSApp.cpp
    HazardSensor_Info.cpp
+   HeadingHistory.cpp
    main.cpp
 )
 

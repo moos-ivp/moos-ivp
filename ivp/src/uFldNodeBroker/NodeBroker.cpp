@@ -171,7 +171,7 @@ void NodeBroker::sendNodeBrokerPing()
 
     string tstamp = doubleToString(m_curr_time, 2);
     m_node_host_record.setTimeStamp(tstamp);
-    m_Comms.Notify("NODE_BROKER_PING", m_node_host_record.getSpec());
+    Notify("NODE_BROKER_PING", m_node_host_record.getSpec());
     m_pings_posted++;
   }
 }
@@ -369,7 +369,7 @@ void NodeBroker::postPShareCommand(string src, string dest, string route)
   msg += ",src_name="  + src;
   msg += ",dest_name=" + dest;
   msg += ",route=" + route;
-  m_Comms.Notify("PSHARE_CMD", msg);
+  Notify("PSHARE_CMD", msg);
   
   m_pshare_cmd_posted++;
   m_pshare_cmd_latest = msg;

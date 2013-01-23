@@ -153,7 +153,7 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     // END logic for checking for alternative nav reporting
 
-    else if(key == "IVPHELM_SUMMARY") {
+    if(key == "IVPHELM_SUMMARY") {
       m_helm_lastmsg = m_curr_time;
       handleLocalHelmSummary(sdata);
     }
@@ -404,7 +404,7 @@ bool NodeReporter::Iterate()
     
     m_record.setIndex(m_reports_posted);
     string report = assembleNodeReport(m_record);    
-    m_Comms.Notify(m_node_report_var, report);
+    Notify(m_node_report_var, report);
     m_reports_posted++;
 
     double elapsed_time = m_curr_time - m_record_gt_updated;
@@ -415,7 +415,7 @@ bool NodeReporter::Iterate()
       
       m_record_gt.setIndex(m_reports_posted);
       string report_gt = assembleNodeReport(m_record_gt);
-      m_Comms.Notify(m_node_report_var, report_gt);
+      Notify(m_node_report_var, report_gt);
       m_reports_posted_alt_nav++;
     }
 
@@ -437,7 +437,7 @@ bool NodeReporter::Iterate()
 
   string platform_report = assemblePlatformReport();
   if(platform_report != "")
-    m_Comms.Notify(m_plat_report_var, platform_report);
+    Notify(m_plat_report_var, platform_report);
 
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -456,9 +456,9 @@ void NodeReporter::handleLocalHelmSummary(const string& sdata)
   vector<string> svector = parseString(sdata, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
-    string left  = stripBlankEnds(biteString(svector[i], '='));
-    string right = stripBlankEnds(svector[i]);
-    if(left == "modes")
+    string left  = biteStringX(svector[i], '=');
+    string right = svector[i];
+    if(left == "modes") 
       m_helm_mode = right;
   }
 }

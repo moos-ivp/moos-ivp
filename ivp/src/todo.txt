@@ -1,0 +1,122 @@
+o MOOS mission file reader: Verbatim quoting not work. 
+  See m10_jake, plug_uFldHazardMgr
+
+o uFldHazardSensor - docs reflect simplified reporting metric?
+  - Still reporting an unhandled Mail for early sensor request.
+
+o pMarineViewer, uMACView: The ( and ) keys should make appcast font bigger/smaller.
+
+o uXMS could support a history mode where duplicate items are given a separate line, to indicate frequency of posts.
+
+o Overload the Notify and OnNewMail to keep track of most recent incoming
+and outgoing postings. AppCast Viewers can go into an alternative mode (verbose?)
+where all recent mail (Most recent 20?) gets appended to the end of the report.
+
+[Iteration 349]----------------------------------
+IN  CRS_RANGE_REQUEST = foobar
+    NAV_X
+    NAV_Y
+    NAV_X
+    NAV_Y
+OUT RESULT = foobar
+    STATUS = ok
+[Iteration 353]----------------------------------
+IN  CRS_RANGE_REQUEST = foobar
+    NAV_X
+    NAV_Y
+    NAV_X
+    NAV_Y
+OUT RESULT = foobar
+    STATUS = ok
+ 
+
+o MOOS - how hard would it be to allow config params over multiple lines, 
+  that is, GetConfigParams does this behind the scenes for us.
+
+o add ability in uPokeDB to poke a timewarped MOOSDB. Preferably autodetect,
+  but at the very least, accept on the command line the timewarp arg.
+
+o Add example mission suggestions for all -e cmdline flags
+
+o uMAC - when a run warning is retracted, a new report is not sent to the 
+  terminal.
+o uMAC - When in the EVENTS mode, and a run warning is received, the terminal
+  contents are not refreshed.
+
+
+o uFldNodeComms could use a look, events, runwarnings etc properly? buildreport?
+o Talk to paaul a pShare_INPUT_SUMMARY
+o uXMS doesn't seem to be doing much error checking in OnStartUp()
+
+o uFldHazardMetric should post "of possible best" in report.
+  When only metrics are Pfa, Pmd, best score is ZERO
+o Add gaussian noise to uFldNodeComms? Range requirement +/- noise?
+o In ALL uFldSimSensors, put in a revokable runwarning when/if a sensor 
+  or config request comes before the first NODE_REPORT
+
+  - Protocol should be
+    client: repeatedly request config
+            upon ack, begin requesting sensor readings
+    client should probably support a condition. When condition is true
+    request sensor readings, otherwise remain quiet. Think acomms issues.
+
+o uFldHazardSensor: reimplement 2Pass implemention in onstartup to ensure default
+  values are applied when a hazard is added.
+
+o AppCast: Can we send ac::endl instead of "\n". Less of a hack and could 
+  internally be represented by something other than a CRLF, making for better
+  viewing in uXMS and logfiles.
+
+o AppCast run warnings should also keep time stamp of the latest warning of each type:
+
+  [23][238.3] No configuration for charlie
+  ...
+  [24][258.1] No configuration for charlie
+  ...
+
+o uFldHazardMetric - no checks for confg warnings (AC enabled? NO)
+
+o pHelmIvP: come back to HelmIvP::processNodeReport. name,x,y,time should work?
+o pMarineViewer doesn't seem to catch config errors very well
+o pHelmIvP should do a better job of reporting config errors
+o pHelmIvP should post run-time error tied to BHV_ERROR
+o AppCast should include scope on behavior condition vars, or 
+  mode vars. Special status to spawning vars?
+o AppCast should report on behavior templates and how many time
+  each one has been spawned. and/or is currently spawned.
+
+o dynamic uXMS:
+  - will register for a new variable, or new app, specified incoming mail
+  - pMarineViewer/uMacView can accept a user input and it will send the 
+    generic uXMS request to the currently selected vehicle.
+
+o pBasicContactMgr
+  - cpa range does not seem to be work in m3_casar
+  - Is the below config valid? (uex u3_clay config didntwork)
+  Alert = var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
+  Alert = var=TRAIL_INFO, val="name=trail_$[VNAME] # contact=$[VNAME]"
+  Alert = var=CONTACT_$[VTYPE], val="name=avd_$[VNAME] # contact_type=$[VTYPE]"
+  - If its not valid, it should show as config warning
+
+o What about having "events" in AppCasts be displayed as a different color in 
+  uMAC*, with a default timeout of 2 real seconds, but overridable to longer or
+  zero in the originating app?
+
+o  uXMS could display / - \ | / - in the time column when not expanded 
+   and things changing
+    - or * < 1 sec   or  .
+        @ < 2 sec        .
+        - < 5 sec         .
+o we could use a generic protobuf class
+
+o MOOSDB: would be nice if the DB could keep a limited history of all variables.
+  Logger will miss certain postings if started too late.
+
+o pMarineViewer: Restore "reference" functionality? 
+  Make Reference vehicle menu additions automatic so Vehicle names don't need to 
+  be specified in the pMarineViewer config block (Simplifies mission config/launch
+  if shoreside community does NOT have to know the names of vehicles!!!!)
+
+o pMarineViewer: set_pan_x should be deprecated as a config parameter. Should be able
+  to set the center of the screen: set_center_x=100, set_center_y=212
+

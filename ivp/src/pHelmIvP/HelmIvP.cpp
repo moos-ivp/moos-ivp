@@ -153,15 +153,15 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
-
+    
     string moosvar   = msg.GetKey();
     string sval      = msg.GetString();
     string source    = msg.GetSource();
     string community = msg.GetCommunity();
-
+    
     double skew_time;
     msg.IsSkewed(m_curr_time, &skew_time);
-
+    
     if(moosvar=="MOOS_MANUAL_OVERIDE") {
       string skew_info = "var=" + moosvar + ":";
       skew_info += "matter="+boolToString(m_skews_matter);
@@ -258,6 +258,9 @@ bool HelmIvP::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
+  double cpu_load = GetCPULoad();
+  Notify("IVPHELM_CPU", cpu_load);
+
   helmStatusUpdate();
   postHelmStatus();
   if(!helmStatusEnabled()) {
@@ -324,8 +327,8 @@ bool HelmIvP::Iterate()
   else
     report = m_helm_report.getReportAsString(m_prev_helm_report); 
   
-  m_Comms.Notify("IVPHELM_SUMMARY", report);
-  m_Comms.Notify("HELM_IPF_COUNT", m_helm_report.getOFNUM());
+  Notify("IVPHELM_SUMMARY", report);
+  Notify("IVPHELM_IPF_CNT", m_helm_report.getOFNUM());
   m_prev_helm_report = m_helm_report;
 
    string allstop_msg = "clear";
@@ -354,7 +357,7 @@ bool HelmIvP::Iterate()
     }
     if(!complete_decision) {
       allstop_msg = "MissingDecVars:" + missing_dec_vars;
-      m_Comms.Notify("BHV_ERROR", allstop_msg); 
+      Notify("BHV_ERROR", allstop_msg); 
     }
   }
 
@@ -369,12 +372,12 @@ bool HelmIvP::Iterate()
       if(post_alias == "DESIRED_COURSE")
 	post_alias = "DESIRED_HEADING";
       double domain_val = m_helm_report.getDecision(domain_var);
-      m_Comms.Notify(post_alias, domain_val);
+      Notify(post_alias, domain_val);
     }
   }
   
-  m_Comms.Notify("CREATE_CPU", m_helm_report.getCreateTime());
-  m_Comms.Notify("LOOP_CPU", m_helm_report.getLoopTime());
+  Notify("IVPHELM_CREATE_CPU", m_helm_report.getCreateTime());
+  Notify("IVPHELM_LOOP_CPU", m_helm_report.getLoopTime());
 
   if(allstop_msg != "clear")
     if(m_allow_override && m_park_on_allstop)
@@ -408,9 +411,9 @@ void HelmIvP::postBehaviorMessages()
   // Added Aug 02 2012 to support enhanced warning reporting
 
   unsigned int i, bhv_cnt = m_bhv_set->size();
-  m_Comms.Notify("BCOUNT", bhv_cnt);
-  m_Comms.Notify("TBCOUNT", m_bhv_set->getTCount());
-  m_Comms.Notify("HITER", m_helm_iteration);
+  Notify("IVPHELM_BHV_CNT", bhv_cnt);
+  Notify("IVPHELM_BHV_CNT_EVER", m_bhv_set->getTCount());
+  Notify("IVPHELM_ITER", m_helm_iteration);
   for(i=0; i < bhv_cnt; i++) {
     string bhv_descriptor = m_bhv_set->getDescriptor(i);
     vector<VarDataPair> mvector = m_bhv_set->getMessages(i);
@@ -443,7 +446,7 @@ void HelmIvP::postBehaviorMessages()
 	string id = bhv_descriptor + intToString(m_helm_iteration);
 	vector<string> svector = IvPFunctionToVector(sdata, id, 2000);
 	for(unsigned int k=0; k<svector.size(); k++)
-	  m_Comms.Notify("BHV_IPF", svector[k], bhv_descriptor);
+	  Notify("BHV_IPF", svector[k], bhv_descriptor);
       }
       // Otherwise just post to the DB directly.
       else {
@@ -452,7 +455,7 @@ void HelmIvP::postBehaviorMessages()
 	  if(key_change || key_repeat) {
 	    string aux = intToString(m_helm_iteration) + ":" + 
 	      bhv_descriptor;
-	    m_Comms.Notify(var, sdata, aux);
+	    Notify(var, sdata, aux);
 	    m_outgoing_timestamp[var] = m_curr_time;
 	    m_outgoing_iter[var] = m_helm_iteration;
 	    m_outgoing_sval[var] = sdata;
@@ -464,7 +467,7 @@ void HelmIvP::postBehaviorMessages()
 	  if(key_change || key_repeat) {
 	    string aux = intToString(m_helm_iteration) + ":" + 
 	      bhv_descriptor;
-	    m_Comms.Notify(var, ddata, aux);
+	    Notify(var, ddata, aux);
 	    m_outgoing_timestamp[var] = m_curr_time;
 	    m_outgoing_iter[var] = m_helm_iteration;
 	    m_outgoing_dval[var] = ddata;
@@ -480,7 +483,7 @@ void HelmIvP::postBehaviorMessages()
   bool changed = m_bhv_set->updateStateSpaceVars();
   if(changed) {
     string state_vars = m_bhv_set->getStateSpaceVars();
-    m_Comms.Notify("IVPHELM_STATEVARS", state_vars);
+    Notify("IVPHELM_STATEVARS", state_vars);
   }
   m_bhv_set->removeCompletedBehaviors();
 }
@@ -555,7 +558,7 @@ void HelmIvP::postLifeEvents()
     str += ", btype=" + events[i].getBehaviorType();
     str += ", event=" + events[i].getEventType();
     str += ", seed="  + events[i].getSpawnString();
-    m_Comms.Notify("IVPHELM_LIFE_EVENT", str);
+    Notify("IVPHELM_LIFE_EVENT", str);
   }
   if(vsize > 0)
     m_bhv_set->clearLifeEvents();
@@ -586,12 +589,12 @@ void HelmIvP::postModeMessages()
     if(msg.is_string()) {
       key_change = detectChangeOnKey(mkey, sdata);
       if(key_change)
-	m_Comms.Notify(var, sdata);
+	Notify(var, sdata, "HELM_MODE");
     }
     else {
       key_change = detectChangeOnKey(mkey, ddata);
       if(key_change)
-	m_Comms.Notify(var, ddata);
+	Notify(var, ddata, "HELM_MODE");
     }
   }
 }
@@ -624,11 +627,11 @@ void HelmIvP::handleInitialVarsPhase1()
       if(key == "post") {
 	if(sdata != "") {
 	  m_info_buffer->setValue(var, sdata);
-	  m_Comms.Notify(var, sdata, "HELM_VAR_INIT");
+	  Notify(var, sdata, "HELM_VAR_INIT");
 	}
 	else {
 	  m_info_buffer->setValue(var, ddata);
-	  m_Comms.Notify(var, ddata, "HELM_VAR_INIT");
+	  Notify(var, ddata, "HELM_VAR_INIT");
 	}
       }
     }
@@ -664,11 +667,11 @@ void HelmIvP::handleInitialVarsPhase2()
     if((key == "defer") && !m_info_buffer->isKnown(var)) {
       if(sdata != "") {
 	m_info_buffer->setValue(var, sdata);
-	m_Comms.Notify(var, sdata, "HELM_VAR_INIT");
+	Notify(var, sdata, "HELM_VAR_INIT");
       }
       else {
 	m_info_buffer->setValue(var, ddata);
-	m_Comms.Notify(var, ddata, "HELM_VAR_INIT");
+	Notify(var, ddata, "HELM_VAR_INIT");
       }
     }
   }
@@ -714,12 +717,12 @@ void HelmIvP::postDefaultVariables()
       if(msg.is_string()) {
 	string sdata  = msg.get_sdata();
 	m_info_buffer->setValue(var, sdata);
-	m_Comms.Notify(var, sdata);
+	Notify(var, sdata);
       }
       else {
 	double ddata  = msg.get_ddata();
 	m_info_buffer->setValue(var, ddata);
-	m_Comms.Notify(var, ddata);
+	Notify(var, ddata);
       }
     }
   }
@@ -779,11 +782,11 @@ void HelmIvP::postHelmStatus()
   // Post the helm status even if the value hasn't changed, 
   // unless the status is DISABLED and has been posted previously.
   if(helm_status != "DISABLED")
-    m_Comms.Notify("IVPHELM_STATE", helm_status);
+    Notify("IVPHELM_STATE", helm_status);
   else {
     bool changed = detectChangeOnKey("IVPHELM_STATE", helm_status);
     if(changed)
-      m_Comms.Notify("IVPHELM_STATE", helm_status);
+      Notify("IVPHELM_STATE", helm_status);
   }
 }
 
@@ -895,7 +898,6 @@ void HelmIvP::registerNewVariables()
   }
 }
 
-
 //------------------------------------------------------------
 // Procedure: registerSingleVariable
 
@@ -917,7 +919,7 @@ void HelmIvP::requestBehaviorLogging()
   for(p=m_bhv_files.begin(); p!=m_bhv_files.end(); p++) {
     string filename = *p;
     string command  = "COPY_FILE_REQUEST = " + filename;
-    m_Comms.Notify("PLOGGER_CMD", command);
+    Notify("PLOGGER_CMD", command);
   }
 }
 
@@ -1048,10 +1050,10 @@ bool HelmIvP::OnStartUp()
   registerVariables();
   requestBehaviorLogging();
 
-  m_Comms.Notify("IVPHELM_DOMAIN",  domainToString(m_ivp_domain));
-  m_Comms.Notify("IVPHELM_MODESET", mode_set_string_description);
+  Notify("IVPHELM_DOMAIN",  domainToString(m_ivp_domain));
+  Notify("IVPHELM_MODESET", mode_set_string_description);
   if(m_helm_alias != "")
-    m_Comms.Notify("IVPHELM_ALIAS", m_helm_alias);
+    Notify("IVPHELM_ALIAS", m_helm_alias);
 
   return(true);
 }
@@ -1271,7 +1273,7 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
 // Procedure: postAllStop
 //   Purpose: Post zero-values to all decision variables. 
 //  
-//   CLEAR
+//   clear
 //   ALLSTOP_MESSAGE
 //       MANUAL_OVERRIDE
 //       Some other allstop message triggered from a helm report
@@ -1291,7 +1293,7 @@ void HelmIvP::postAllStop(string msg)
     m_allstop_msg = msg;
 
   MOOSDebugWrite("pHelmIvP AllStop: " + m_allstop_msg);
-  m_Comms.Notify("IVPHELM_ALLSTOP", m_allstop_msg);
+  Notify("IVPHELM_ALLSTOP", m_allstop_msg);
 
   if(tolower(m_allstop_msg) == "clear")
     return;
@@ -1303,7 +1305,7 @@ void HelmIvP::postAllStop(string msg)
     string post_alias = "DESIRED_"+ toupper(domain_var);
     if(post_alias == "DESIRED_COURSE")
       post_alias = "DESIRED_HEADING";    
-    m_Comms.Notify(post_alias, 0.0);
+    Notify(post_alias, 0.0);
   }
 }
 

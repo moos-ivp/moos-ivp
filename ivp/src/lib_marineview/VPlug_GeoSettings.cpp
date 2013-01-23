@@ -121,9 +121,9 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
     return(setSizeMapping(param, value, 10, 10000));
 
   else if(param == "marker_edge_width")
-    return(setSizeMapping(param, value));
+    return(setSizeMapping(param, value, 1, 10));
   else if(param == "marker_scale")
-    return(setSizeMapping(param, value));
+    return(setSizeMapping(param, value, 0.1, 100));
   else if(param == "datum_size")
     return(setSizeMapping(param, value, 1, 10));
   else if(param == "drop_point_vertex_size")
@@ -459,7 +459,7 @@ string VPlug_GeoSettings::strvalue(const string& attr)
      (attr == "oparea_viewable_all")      ||
      (attr == "oparea_viewable_labels")   ||
      (attr == "datum_viewable")           ||
-     (attr == "hash_viewable")            ||
+     (attr == "hash_viweable")            ||
      (attr == "drop_point_viewable_all")  ||
      (attr == "marker_viewable_all")      ||
      (attr == "marker_viewable_labels")   ||

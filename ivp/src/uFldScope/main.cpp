@@ -23,7 +23,6 @@
 #include "MBUtils.h"
 #include "TermUtils.h"
 #include "ColorParse.h"
-#include "MOOSAppRunnerThread.h"
 #include "UFS_MOOSApp.h"
 #include "UFS_Info.h"
 
@@ -60,23 +59,8 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   UFS_MOOSApp ufs_moosapp;
-  // start the scope in its own thread
-  MOOSAppRunnerThread appRunner(&ufs_moosapp, 
-				(char*)(run_command.c_str()), 
-				mission_file.c_str());
-
-  bool quit = false;
-  while(!quit) {
-    char c = getCharNoWait();
-    if((c=='q') || (c==(char)(3)))  { // ASCII 03 is control-c
-      cout << "Quitting......." << flush;
-      quit = true;
-    }
-    else
-      ufs_moosapp.handleCommand(c);
-  }
-
-  appRunner.quit();
+  ufs_moosapp.Run(run_command.c_str(), mission_file.c_str());
+  
   return(0);
 }
 

@@ -88,6 +88,8 @@ XYMarker stringStandard2Marker(string str)
       new_marker.set_color("primary_color", value);
     else if(param == "secondary_color")
       new_marker.set_color("secondary_color", value);
+    else if(param == "type")
+      new_marker.set_type(value);
     else
       new_marker.set_param(param, value);
   }

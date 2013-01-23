@@ -214,8 +214,8 @@ bool SafetyRetreat::handleContactDetection(string contact_name)
   
   string msg = "polygon = " + poly_spec;
   msg += " # duration = " + doubleToString(m_retreat_duration);
-  m_Comms.Notify(m_retreat_message, msg);
-  m_Comms.Notify(m_retreat_notify, "true");
+  Notify(m_retreat_message, msg);
+  Notify(m_retreat_notify, "true");
   
   return(true);
 }
@@ -227,7 +227,7 @@ void SafetyRetreat::handleContactsResolved()
 {
   unsigned int i, vsize = m_unresolved_contacts.size();
   for(i=0; i<vsize; i++)
-    m_Comms.Notify("CONTACT_RESOLVED", m_unresolved_contacts[i]);
+    Notify("CONTACT_RESOLVED", m_unresolved_contacts[i]);
 
   m_unresolved_contacts.clear();
 }

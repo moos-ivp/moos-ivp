@@ -1,0 +1,14 @@
+//------------------------------------------------
+// uTimerScript Config Block -  Berta Variation #1
+
+ProcessConfig = uTimerScript
+{
+  condition = DEPLOY=true
+
+  event = var=NODE_MESSAGE_LOCAL, val="src_node=$[VNAME], dest_node=gilda,var_name=UPDATE_LOITER,string_val=speed=0.4", time=30
+  event = var=NODE_MESSAGE_LOCAL, val="src_node=$[VNAME], dest_node=gilda,var_name=UPDATE_LOITER,string_val=speed=2.4", time=60
+  event = var=NODE_MESSAGE_LOCAL, val="src_node=$[VNAME], dest_node=gilda,var_name=UPDATE_LOITER,string_val=speed=2.4", time=90
+  event = var=NODE_MESSAGE_LOCAL, val="src_node=$[VNAME], dest_node=gilda,var_name=UPDATE_LOITER,string_val=speed=2.4", time=120
+  event = var=NODE_MESSAGE_LOCAL, val="src_node=$[VNAME], dest_node=gilda,var_name=RETURN,string_val=true", time=150
+}
+

@@ -60,7 +60,7 @@ int main(int argc ,char * argv[])
     else if((argi == "-a") || (argi == "--all"))
       theXMS.setDispAll(true);
     else if(argi == "-t")
-      theXMS.setTruncData("45");    
+      theXMS.setTruncData("25");    
     else if(argi == "-p")
       theXMS.setRefreshMode("paused");    
     else if(argi == "-s")
@@ -78,7 +78,7 @@ int main(int argc ,char * argv[])
     else if(strBegins(argi, "--filter="))
       theXMS.setFilter(argi.substr(9));
     else if(strBegins(argi, "--history="))
-      theXMS.addVariable(argi.substr(10), true);
+      theXMS.addVariable(argi.substr(10), true); // true means history variable
     else if(strBegins(argi, "--mode="))
       theXMS.setRefreshMode(argi.substr(7));    
     else if(strBegins(argi, "--show="))

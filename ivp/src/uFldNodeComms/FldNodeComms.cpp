@@ -435,7 +435,7 @@ void FldNodeComms::distributeNodeReportInfo(const string& uname)
       
     if(msg_send) {
       string moos_var = "NODE_REPORT_" + vname;
-      m_Comms.Notify(moos_var, node_report);
+      Notify(moos_var, node_report);
       if(m_view_node_rpt_pulses)
 	postViewCommsPulse(uname, vname);
       m_total_reports_sent++;
@@ -546,7 +546,7 @@ void FldNodeComms::distributeNodeMessageInfo(const string& src_name)
     if(msg_send) {
       string moos_var = "NODE_MESSAGE_" + a_dest_name;
       string node_message = message.getSpec();
-      m_Comms.Notify(moos_var, node_message);
+      Notify(moos_var, node_message);
       postViewCommsPulse(src_name, a_dest_name, "white", 0.6);
       m_total_messages_sent++;
       m_map_messages_sent[a_dest_name]++;
@@ -689,7 +689,7 @@ void FldNodeComms::postViewCommsPulse(const string& uname1,
   pulse.set_color("fill", pulse_color);
 
   string pulse_spec = pulse.get_spec();
-  m_Comms.Notify("VIEW_COMMS_PULSE", pulse_spec);
+  Notify("VIEW_COMMS_PULSE", pulse_spec);
 }
 
 //------------------------------------------------------------

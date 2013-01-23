@@ -49,6 +49,11 @@ ProcessWatch::ProcessWatch()
   // sense for the uProcessWatch process itself.
   m_min_wait = -1;
 
+  // Number of seconds (realtime) since uProcessWatch start after 
+  // which a process noted to be missing from the DBCLIENT list will
+  // be noted to be gone. (Sometimes the process is still starting)
+  m_noted_gone_wait = 10;
+
   // Allow retractions = -1 means always allow retractions. 
   // Otherwise retractions allowed only if elapsed_time is LESS than 
   // the m_allow_retractions time.
@@ -73,15 +78,13 @@ bool ProcessWatch::OnNewMail(MOOSMSG_LIST &NewMail)
     string    key = msg.GetKey();
     
     if(key == "DB_CLIENTS") {
-      string new_db_clients = msg.GetString();
-      if(new_db_clients != m_db_clients) {
-	m_db_clients = new_db_clients;
-	// Invoke on EACH piece of new mail in case a proc chgs
-	// status twice in one iteration. Want to note that in
-	// a proc_watch_event outgoing message.
-	handleMailNewDBClients();
-      }
+      m_db_clients = msg.GetString();
+      handleMailNewDBClients();
     }
+    else if(strEnds(key, "_STATUS"))
+      handleMailStatusUpdate(msg.GetString());    
+    else if(key == "EXITED_NORMALLY")
+      m_excused_list.push_back(msg.GetString());
     else
       reportRunWarning("Unhandled Mail: " + key);
   }
@@ -104,6 +107,7 @@ void ProcessWatch::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   m_Comms.Register("DB_CLIENTS", 0);
+  m_Comms.Register("EXITED_NORMALLY", 0);
 }
 
 
@@ -115,9 +119,7 @@ bool ProcessWatch::Iterate()
   AppCastingMOOSApp::Iterate();
 
   bool post_based_on_time = false;
-  if(m_min_wait <= 0)
-    post_based_on_time = true;
-  else {
+  if(m_min_wait >= 0) {
     double moos_elapsed_time = m_curr_time - m_last_posting_time;
     double real_elapsed_time = moos_elapsed_time;
     if(m_time_warp > 0)
@@ -125,9 +127,9 @@ bool ProcessWatch::Iterate()
     if(real_elapsed_time > m_min_wait)
       post_based_on_time = true;
   }
-
+  
   if(m_proc_watch_summary_changed || post_based_on_time) {
-    m_Comms.Notify(postVar("PROC_WATCH_SUMMARY"), m_proc_watch_summary);
+    AppCastingMOOSApp::Notify(postVar("PROC_WATCH_SUMMARY"), m_proc_watch_summary);
     m_last_posting_time = m_curr_time;
   }
 
@@ -223,11 +225,12 @@ bool ProcessWatch::OnStartUp()
 //  Summary: All Present
 //  Antler List: pHelmIvP, pLogger, uSimMarine, uFldShoreBroker
 // 
-//  ProcName    Watch Reason    Status                               
-//  --------    ------------    ------                           
-//  pHelmIvP    DB_CLIENTS      OK                               
-//  pLogger     DB_CLIENTS      OK                              
-//  uSimMarine  DB_CLIENTS      OK                              
+//                                          Current   Max
+//  ProcName    Watch Reason    Status      CPU Load  CPU Load
+//  --------    ------------    ------      --------  --------                   
+//  pHelmIvP    DB_CLIENTS      OK              0.12      0.33           
+//  pLogger     DB_CLIENTS      OK             11.99     12.11            
+//  uSimMarine  DB_CLIENTS      OK              9.08     14.94            
 
 //  ProcName    Watch Reason    Status                                 
 //  --------    ------------    ------                           
@@ -267,11 +270,12 @@ bool ProcessWatch::buildReport()
   m_msgs << endl;
 
 
-  ACTable actab(3,3);
+  ACTable actab(5,3);
   // In case we have an obscenely long MOOS app name.
   actab.setColumnMaxWidth(0,30);
 
-  actab << "ProcName | Watch Reason | Status";
+  actab << "         |              |        | Current  | Max      ";
+  actab << "ProcName | Watch Reason | Status | CPU Load | CPU Load ";
   actab.addHeaderLines();
 
   map<string, bool>::iterator p;
@@ -298,10 +302,17 @@ bool ProcessWatch::buildReport()
       reason += "  ";
     actab.addCell(reason);
     
-    if(proc_here) 
+    if(proc_here)
       actab.addCell("OK", "reversegreen");
-    else
-      actab.addCell("MISSING", "reversered");
+    else {
+      if(vectorContains(m_excused_list, proc_name))
+	actab.addCell("EXCUSED", "reverseblue");
+      else
+	actab.addCell("MISSING", "reversered");
+    }
+
+    actab << doubleToString(m_map_now_cpuload[proc_name], 2);
+    actab << doubleToString(m_map_max_cpuload[proc_name], 2);
   }
   m_msgs << actab.getFormattedString();
 
@@ -326,21 +337,30 @@ void ProcessWatch::handleMailNewDBClients()
   // Phase 2: Check items in watchlist against current DB_CLIENTS
   string prev_summary = m_proc_watch_summary;
   m_proc_watch_summary = "All Present";  
+
+  double connect_time = (m_curr_time - m_start_time) / m_time_warp;
+
   unsigned int j, jsize = m_watch_list.size();
   for(j=0; j<jsize; j++) {
     string proc = m_watch_list[j];
     bool alive = isAlive(proc);
     
     if(!alive) {
-      if(m_map_alive[proc])
-	procNotedGone(proc);
-
-      if(m_proc_watch_summary == "All Present")
-	m_proc_watch_summary = "AWOL: " + proc;
-      else
-	m_proc_watch_summary += "," + proc;
+      if(connect_time > m_noted_gone_wait) {
+	if(!vectorContains(m_excused_list, proc)) {
+	  if(m_map_alive[proc])
+	    procNotedGone(proc);
+	  if(m_proc_watch_summary == "All Present")
+	    m_proc_watch_summary = "AWOL: " + proc;
+	  else
+	    m_proc_watch_summary += "," + proc;
+	}
+	else { // proc IS excused and newly gone
+	  if(m_map_alive[proc])
+	    procNotedExcused(proc);
+	}	  
+      }
     }
-
     else {
       if(!m_map_alive[proc]) 
 	procNotedHere(proc);
@@ -349,6 +369,31 @@ void ProcessWatch::handleMailNewDBClients()
 
   if(prev_summary != m_proc_watch_summary)
     m_proc_watch_summary_changed = true;  
+}
+
+//------------------------------------------------------------
+// Procedure: handleMailStatusUpdate
+
+void ProcessWatch::handleMailStatusUpdate(string status)
+{
+  string procname = tokStringParse(status, "MOOSName", ',', '=');
+  string cpuload  = tokStringParse(status, "cpuload",  ',', '=');
+ 
+  if(procname == "") {
+    reportRunWarning("Unhandled STATUS update: Missing MOOSName.");
+    return;
+  }
+
+  if(cpuload == "") {
+    reportRunWarning("Unhandled STATUS update: Missing cpuload for " + procname);
+    return;
+  }
+
+  double d_cpuload = atof(cpuload.c_str());
+
+  m_map_now_cpuload[procname] = d_cpuload;
+  if(d_cpuload > m_map_max_cpuload[procname])
+    m_map_max_cpuload[procname] = d_cpuload;
 }
 
 //-----------------------------------------------------------------
@@ -451,8 +496,9 @@ bool ProcessWatch::handleConfigWatchItem(string procname)
   // If prefix==false then this specifies an actual varname, not a
   // pattern, so varname should be added now to the watchlist
   if(!prefix) {
-    m_watch_list.push_back(procname);
-    procNotedHere(procname);
+    bool added = addToWatchList(procname);
+    if(added)
+      procNotedHere(procname);
   }
   return(true);
 }
@@ -549,6 +595,9 @@ bool ProcessWatch::addToWatchList(string procname)
 
   if(explicitly_included || !explicitly_excluded) {
     m_watch_list.push_back(procname);
+
+    m_Comms.Register(toupper(procname) + "_STATUS", 0);
+
     return(true);
   }
   return(false);
@@ -569,7 +618,7 @@ void ProcessWatch::checkForIndividualUpdates()
     bool   alive_prev = m_map_alive_prev[proc];
     bool   alive_curr = m_map_alive[proc];
     if(alive_prev != alive_curr)
-      m_Comms.Notify(proc_post, boolToString(alive_curr));
+      Notify(proc_post, boolToString(alive_curr));
   }
 }
 
@@ -598,7 +647,7 @@ void ProcessWatch::postFullSummary()
   if(full_summary == "")
     full_summary = "No processes to watch";
   
-  m_Comms.Notify(postVar("PROC_WATCH_FULL_SUMMARY"), full_summary);
+  Notify(postVar("PROC_WATCH_FULL_SUMMARY"), full_summary);
 }
 
 
@@ -636,7 +685,7 @@ void ProcessWatch::procNotedHere(string procname)
       retractRunWarning("Process [" + procname + "] is missing.");
   }
 
-  m_Comms.Notify(postVar("PROC_WATCH_EVENT"), msg);
+  Notify(postVar("PROC_WATCH_EVENT"), msg);
   reportEvent(msg);
 }
 
@@ -652,11 +701,27 @@ void ProcessWatch::procNotedGone(string procname)
 
   // Run Warning must match exactly when/if retracting. See XYZ above.
   string msg = "Process [" + procname + "] is missing.";
-  m_Comms.Notify(postVar("PROC_WATCH_EVENT"), msg);
-
+  Notify(postVar("PROC_WATCH_EVENT"), msg);
 
   reportEvent("PROC_WATCH_EVENT: " + msg);
   reportRunWarning(msg);
+}
+
+//-----------------------------------------------------------------
+// Procedure: procNotedExcused
+
+void ProcessWatch::procNotedExcused(string procname)
+{
+  procname = stripBlankEnds(procname);
+  
+  m_map_noted_gone[procname]++;
+  m_map_alive[procname] = false;
+
+  // Run Warning must match exactly when/if retracting. See XYZ above.
+  string msg = "Process [" + procname + "] is gone but excused.";
+  Notify(postVar("PROC_WATCH_EVENT"), msg);
+
+  reportEvent("PROC_WATCH_EVENT: " + msg);
 }
 
 

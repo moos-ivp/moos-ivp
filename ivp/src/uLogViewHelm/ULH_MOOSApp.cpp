@@ -119,9 +119,9 @@ void ULH_MOOSApp::postConnectionPairs()
     VarDataPair pair = m_connection_pairs[i];
     string var = pair.get_var();
     if(pair.is_string())
-      m_Comms.Notify(var, pair.get_sdata());
+      Notify(var, pair.get_sdata());
     else
-      m_Comms.Notify(var, pair.get_ddata());
+      Notify(var, pair.get_ddata());
   }
 }
 
@@ -193,14 +193,14 @@ void ULH_MOOSApp::handlePendingGUI()
       if(m_verbose)
 	cout << this_app_name << " handling Outoing Post: [" << 
 	  var << "] [" << sval << "]" << endl;
-      m_Comms.Notify(var, sval);
+      Notify(var, sval);
     }
     else {
       double dval = pair.get_ddata();
       if(m_verbose)
 	cout << this_app_name << " handling Outgoing Post: [" << 
 	  var << "] [" << dval << "]" << endl;
-      m_Comms.Notify(var, dval);
+      Notify(var, dval);
     }
   }
 }
@@ -263,9 +263,9 @@ void ULH_MOOSApp::handleIterate(const MOOS_event & e)
     VarDataPair pair = left_pairs[i];
     string var = pair.get_var();
     if(!pair.is_string())
-      m_Comms.Notify(var, pair.get_ddata());
+      Notify(var, pair.get_ddata());
     else
-      m_Comms.Notify(var, pair.get_sdata());
+      Notify(var, pair.get_sdata());
   }
 
   vector<VarDataPair> non_mouse_pairs = m_gui->mviewer->getNonMousePairs();
@@ -274,9 +274,9 @@ void ULH_MOOSApp::handleIterate(const MOOS_event & e)
     VarDataPair pair = non_mouse_pairs[i];
     string var = pair.get_var();
     if(!pair.is_string())
-      m_Comms.Notify(var, pair.get_ddata());
+      Notify(var, pair.get_ddata());
     else
-      m_Comms.Notify(var, pair.get_sdata());
+      Notify(var, pair.get_sdata());
   }
 
 #endif  

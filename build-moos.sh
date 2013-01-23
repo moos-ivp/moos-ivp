@@ -21,9 +21,9 @@ cd "${MOOS_ABS_DIR}/MOOSCore"
 
 echo "Invoking cmake..." `pwd`
 
-#cmake -DENABLE_EXPORT=ON -DUSE_ASYNC_COMMS=ON -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
-cmake -DENABLE_EXPORT=ON -DUSE_ASYNC_COMMS=OFF -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
-#cmake -DENABLE_EXPORT=ON  -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
+cmake -DENABLE_EXPORT=ON -DUSE_ASYNC_COMMS=ON -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
+#cmake -DENABLE_EXPORT=ON -DUSE_ASYNC_COMMS=OFF -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
+
 
 echo ""; echo "Invoking make..." `pwd`; echo ""
 make -j8 $@
@@ -61,6 +61,7 @@ cd "${MOOS_ABS_DIR}/MOOSToolsUI"
 echo "Invoking cmake..." `pwd`
 cmake   -DBUILD_CONSOLE_TOOLS=ON                         \
         -DBUILD_GRAPHICAL_TOOLS=ON                       \
+        -DBUILD_UPB=ON                       \
         -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}" ./          
     
 echo ""; echo "Invoking make..." `pwd`; echo ""
@@ -69,6 +70,7 @@ make -k -j $@
 echo "Moving MOOSToolsUI executables into main MOOS bin directory"
 
 mv bin/uMS.app/Contents/MacOS/uMS ../bin
+mv bin/uPlayBack.app/Contents/MacOS/uPlayBack ../bin
 mv bin/* ../bin
 
 #===================================================================

@@ -93,7 +93,7 @@ bool EchoVar::OnConnectToServer()
 bool EchoVar::Iterate()
 {
   m_iteration++;
-  //m_Comms.Notify("ECHO_ITER", m_iteration);
+  //Notify("ECHO_ITER", m_iteration);
 
   if(m_conditions_met)
     releaseMessages();
@@ -413,9 +413,9 @@ void EchoVar::releaseMessages()
       if(key == m_var_source[i]) {
 	string new_key = m_var_target[i];
 	if(msg.IsDouble())
-	  m_Comms.Notify(new_key, ddata);
+	  Notify(new_key, ddata);
 	else if(msg.IsString())
-	  m_Comms.Notify(new_key, sdata);
+	  Notify(new_key, sdata);
       }
     }
     
@@ -424,7 +424,7 @@ void EchoVar::releaseMessages()
       if(key == m_eflippers[j].getSourceVar()) {
 	string flip_result = m_eflippers[j].flip(sdata);
 	if(flip_result != "")
-	  m_Comms.Notify(m_eflippers[j].getDestVar(), flip_result);
+	  Notify(m_eflippers[j].getDestVar(), flip_result);
       }
     }
   }

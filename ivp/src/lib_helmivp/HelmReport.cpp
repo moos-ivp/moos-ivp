@@ -244,6 +244,8 @@ void HelmReport::clearIdleBHVs()
 void HelmReport::addCompletedBHV(const string& descriptor, double time,
 				 const string& update_summary)
 {
+  if(descriptor == "")
+    return;
   m_bhvs_completed_desc.push_back(descriptor);
   m_bhvs_completed_time.push_back(time);
   m_bhvs_completed_upds.push_back(update_summary);
@@ -384,8 +386,10 @@ string HelmReport::getReportAsString(const HelmReport& prep) const
   string completed_bhvs = getCompletedBehaviors();
   if(completed_bhvs != prep.getCompletedBehaviors()) {
     report += ",completed_bhvs=";
-    if(completed_bhvs == "")
-      report += "none";
+    if(completed_bhvs == "") {
+      if(prep.getCompletedBehaviors() == "")
+	report += "none";
+    }
     else
       report += completed_bhvs;
   }
@@ -515,20 +519,48 @@ list<string> HelmReport::formattedSummary(double curr_time, bool verbose) const
 
   rlist.push_back("Behaviors Idle: ------------ (" + idle_bhvs + ")");
   vsize = m_bhvs_idle_desc.size();
-  for(i=0; i<vsize; i++) {
-    str = "  " + m_bhvs_idle_desc[i];
-    string time_in_state = timeInState(curr_time, m_bhvs_idle_time[i]);
-    str += " [" + time_in_state + "]";
+  if(verbose) {
+    for(i=0; i<vsize; i++) {
+      str = "  " + m_bhvs_idle_desc[i];
+      string time_in_state = timeInState(curr_time, m_bhvs_idle_time[i]);
+      str += " [" + time_in_state + "]";
+      rlist.push_back(str);
+    }
+  }
+  else {
+    str = "  ";
+    for(i=0; i<vsize; i++) {
+      if(i>0)
+	str += ", ";
+      str += m_bhvs_idle_desc[i];
+      string time_in_state = timeInState(curr_time, m_bhvs_idle_time[i]);
+      str += "[" + time_in_state + "]";
+    }
     rlist.push_back(str);
   }
 
   rlist.push_back("Behaviors Completed: ------- (" + completed_bhvs + ")");
   vsize = m_bhvs_completed_desc.size();
-  for(i=0; i<vsize; i++) {
-    str = "  " + m_bhvs_completed_desc[i];
-    string time_in_state = timeInState(curr_time, m_bhvs_completed_time[i]);
-    str += " [" + time_in_state + "]";
-    rlist.push_back(str);
+  if(verbose) {
+    for(i=0; i<vsize; i++) {
+      str = "  {" + m_bhvs_completed_desc[i] + "}";
+      string time_in_state = timeInState(curr_time, m_bhvs_completed_time[i]);
+      str += " [" + time_in_state + "]";
+      rlist.push_back(str);
+    }
+  }
+  else {
+    if(vsize > 0) {
+      str = "  ";
+      for(i=0; i<vsize; i++) {
+	if(i>0) 
+	  str += ", ";
+	str += m_bhvs_completed_desc[i];
+	string time_in_state = timeInState(curr_time, m_bhvs_completed_time[i]);
+	str += "[" + time_in_state + "]";
+      }
+      rlist.push_back(str);
+    }
   }
   
   return(rlist);

@@ -10,7 +10,7 @@ ADD_EXECUTABLE(uFldScope ${SRC})
 TARGET_LINK_LIBRARIES(uFldScope
    ${MOOS_LIBRARIES}
    mbutil
-   genutil
+   apputil
    m
    pthread)
 

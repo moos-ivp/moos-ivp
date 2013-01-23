@@ -86,12 +86,12 @@ void MOOSAppWrapper::SetMOOSApp(PseudoMOOSApp *app)
   m_pseudo_moos_app->m_owner = this;
   m_pseudo_moos_app->GetConfiguration = &MOOSAppWrapper::GetConfiguration;
 
-  m_pseudo_moos_app->m_Comms.NotifyStr    = &MOOSAppWrapper::NotifyStr;
-  m_pseudo_moos_app->m_Comms.NotifyStrAux = &MOOSAppWrapper::NotifyStrAux;
-  m_pseudo_moos_app->m_Comms.NotifyDbl    = &MOOSAppWrapper::NotifyDbl;
-  m_pseudo_moos_app->m_Comms.NotifyDblAux = &MOOSAppWrapper::NotifyDblAux;
-  m_pseudo_moos_app->m_Comms.NotifyPtr    = &MOOSAppWrapper::NotifyPtr;
-  m_pseudo_moos_app->m_Comms.NotifyPtrAux = &MOOSAppWrapper::NotifyPtrAux;
+  m_pseudo_moos_app->NotifyStr    = &MOOSAppWrapper::NotifyStr;
+  m_pseudo_moos_app->NotifyStrAux = &MOOSAppWrapper::NotifyStrAux;
+  m_pseudo_moos_app->NotifyDbl    = &MOOSAppWrapper::NotifyDbl;
+  m_pseudo_moos_app->NotifyDblAux = &MOOSAppWrapper::NotifyDblAux;
+  m_pseudo_moos_app->NotifyPtr    = &MOOSAppWrapper::NotifyPtr;
+  m_pseudo_moos_app->NotifyPtrAux = &MOOSAppWrapper::NotifyPtrAux;
 }
 
 //------------------------------------------------------------------
@@ -136,35 +136,35 @@ void MOOSAppWrapper::GetConfiguration(list<string>& configs)
 void MOOSAppWrapper::NotifyStr(const string& varname, const string& strval,
 			       double time)
 {
-  m_Comms.Notify(varname, strval, time);
+  Notify(varname, strval, time);
 }
 
 //-----------------------------------------------------------------
 void MOOSAppWrapper::NotifyStrAux(const string& varname, const string& strval,
 				  const string& srcaux,  double time)
 {
-  m_Comms.Notify(varname, strval, srcaux, time);
+  Notify(varname, strval, srcaux, time);
 }
 
 //-----------------------------------------------------------------
 void MOOSAppWrapper::NotifyDbl(const string& varname, double dval,
 			       double time)
 {
-  m_Comms.Notify(varname, dval, time);
+  Notify(varname, dval, time);
 }
 
 //-----------------------------------------------------------------
 void MOOSAppWrapper::NotifyDblAux(const string& varname, double dval,
 				  const string& srcaux,  double time)
 {
-  m_Comms.Notify(varname, dval, srcaux, time);
+  Notify(varname, dval, srcaux, time);
 }
 
 //-----------------------------------------------------------------
 void MOOSAppWrapper::NotifyPtr(const string& varname,  void* ptr_data, 
 			       unsigned int size_data, double time)
 {
-  m_Comms.Notify(varname, ptr_data, size_data, time);
+  Notify(varname, ptr_data, size_data, time);
 }
 
 //-----------------------------------------------------------------
@@ -172,6 +172,6 @@ void MOOSAppWrapper::NotifyPtrAux(const string& varname,  void* ptr_data,
 				  unsigned int size_data, const string& srcaux,  
 				  double time)
 {
-  m_Comms.Notify(varname, ptr_data, size_data, srcaux, time);
+  Notify(varname, ptr_data, size_data, srcaux, time);
 }
 

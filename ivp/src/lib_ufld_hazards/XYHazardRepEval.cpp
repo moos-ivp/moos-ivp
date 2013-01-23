@@ -34,6 +34,7 @@ using namespace std;
 XYHazardRepEval::XYHazardRepEval()
 {
   m_total_score          = 0;
+  m_norm_score           = 0;
   m_score_missed_hazards = 0;
   m_score_false_alarms   = 0;
   m_score_time_overage   = 0;
@@ -47,10 +48,10 @@ XYHazardRepEval::XYHazardRepEval()
   m_start_time      = 0;
 
   m_max_time = 0;
-  m_penalty_false_alarm      = 0;
-  m_penalty_missed_hazard    = 0;
-  m_penalty_max_time_over    = 0;
-  m_penalty_max_time_overage = 0;
+  m_penalty_false_alarm   = 0;
+  m_penalty_missed_hazard = 0;
+  m_penalty_max_time_over = 0;
+  m_penalty_max_time_rate = 0;
 }
 
   
@@ -61,10 +62,14 @@ string XYHazardRepEval::getShortSpec() const
 {
   string str = "vname=" + m_vname;
 
-  str += ",total_score="    + doubleToStringX(m_total_score);
+  if(m_report_name != "")
+    str += ",report_name=" + m_report_name;
+
+  str += ",total_score="    + doubleToStringX(m_total_score,2);
+  str += ",norm_score="    + doubleToStringX(m_norm_score,2);
   str += ",score_missed_hazards=" + doubleToStringX(m_score_missed_hazards);
   str += ",score_false_alarms=" + doubleToStringX(m_score_false_alarms);
-  str += ",score_time_overage=" + doubleToStringX(m_score_time_overage);
+  str += ",score_time_overage=" + doubleToStringX(m_score_time_overage,2);
 
   str += ",total_objects="  + uintToString(m_total_objects);
   str += ",total_time="     + doubleToStringX(m_total_time);
@@ -77,7 +82,7 @@ string XYHazardRepEval::getShortSpec() const
   str += ",penalty_false_alarm="   + doubleToStringX(m_penalty_false_alarm);
   str += ",penalty_missed_hazard=" + doubleToStringX(m_penalty_missed_hazard);
   str += ",penalty_max_time_over=" + doubleToStringX(m_penalty_max_time_over);
-  str += ",penalty_max_time_overage=" + doubleToStringX(m_penalty_max_time_overage);
+  str += ",penalty_max_time_rate=" + doubleToStringX(m_penalty_max_time_rate);
   str += ",max_time=" + doubleToStringX(m_max_time);
 
   return(str);
@@ -90,7 +95,7 @@ string XYHazardRepEval::getShortSpec() const
 string XYHazardRepEval::getFullSpec() const
 {
   string str = getShortSpec();
-  str += "object_report={" + m_object_report + "}";
+  str += ",object_report={" + m_object_report + "}";
   
   return(str);
 }
@@ -113,6 +118,8 @@ bool XYHazardRepEval::buildFromSpec(const string& str)
       m_vname = value;
     else if(param == "total_score")
       m_total_score = atof(value.c_str());
+    else if(param == "norm_score")
+      m_norm_score = atof(value.c_str());
     else if(param == "score_missed_hazards")
       m_score_missed_hazards = atof(value.c_str());
     else if(param == "score_false_alarms")
@@ -141,8 +148,8 @@ bool XYHazardRepEval::buildFromSpec(const string& str)
       m_penalty_missed_hazard = atof(value.c_str());
     else if(param == "penalty_max_time_over")
       m_penalty_max_time_over = atof(value.c_str());
-    else if(param == "penalty_max_time_overage")
-      m_penalty_max_time_overage = atof(value.c_str());
+    else if(param == "penalty_max_time_rate")
+      m_penalty_max_time_rate = atof(value.c_str());
     else if(param == "max_time")
       m_max_time = atof(value.c_str());
     else
@@ -158,27 +165,32 @@ bool XYHazardRepEval::buildFromSpec(const string& str)
 
 string XYHazardRepEval::getFormattedString() const
 {
+  string score_tot = doubleToStringX(m_total_score,2);
+  string paren_nrm = "(" + doubleToStringX(m_norm_score,2) + ")";
+
+  string score_mh = doubleToStringX(m_score_missed_hazards);
+  string paren_mh = "(" + uintToString(m_missed_hazards) + ")";
+  string score_fa = doubleToStringX(m_score_false_alarms);
+  string paren_fa = "(" + uintToString(m_false_alarms) + ")";
+
+  double overage = m_total_time - m_max_time;
+  if(overage < 0)
+    overage = 0;
+  string score_to = doubleToStringX(m_score_time_overage,2);
+  string paren_to = "(" + doubleToStringX(overage,2) + ")";
+
+  unsigned int total_hazards = m_missed_hazards + m_correct_hazards;
+  string of_hazards = " (of " + uintToString(total_hazards) + ")";
+
   stringstream ss;
-  ss << "vname: " << m_vname   << endl;
-  ss << "--------------------" << endl;
-  ss << "         total_score: " << doubleToStringX(m_total_score)          << endl;
-  ss << "score_missed_hazards: " << doubleToStringX(m_score_missed_hazards) << endl;
-  ss << "  score_false_alarms: " << doubleToStringX(m_score_false_alarms)   << endl;
-  ss << "  score_time_overage: " << doubleToStringX(m_score_time_overage)   << endl;
+  ss << "          total_score: " << score_tot << " " << paren_nrm  << endl;
+  ss << " score_missed_hazards: " << score_mh << " " << paren_mh    << endl;
+  ss << "   score_false_alarms: " << score_fa << " " << paren_fa    << endl;
+  ss << "   score_time_overage: " << score_to << " " << paren_to    << endl;
   ss << "--------------------- " << endl;
-  ss << "       total_objects: " << m_total_objects   << endl;
-  ss << "     correct_hazards: " << m_correct_hazards << endl;
-  ss << "      missed_hazards: " << m_missed_hazards  << endl;
-  ss << "        false_alarms: " << m_false_alarms    << endl;
-  ss << "          total_time: " << doubleToString(m_total_time,2)    << endl;
-  ss << "       received_time: " << doubleToString(m_received_time,2) << endl;
-  ss << "          start_time: " << doubleToString(m_start_time,2)    << endl;
-  ss << "--------------------- " << endl;
-  ss << "         false_alarm: " << doubleToStringX(m_penalty_false_alarm)      << endl;
-  ss << "       missed_hazard: " << doubleToStringX(m_penalty_missed_hazard)    << endl;
-  ss << "       max_time_over: " << doubleToStringX(m_penalty_max_time_over)    << endl;
-  ss << "    max_time_overage: " << doubleToStringX(m_penalty_max_time_overage) << endl;
-  ss << "            max_time: " << doubleToString(m_max_time,2)                << endl;
+  ss << "     objects reported: " << m_total_objects   << endl;
+  ss << "      correct_hazards: " << m_correct_hazards << of_hazards << endl;
+
   
   return(ss.str());
 }

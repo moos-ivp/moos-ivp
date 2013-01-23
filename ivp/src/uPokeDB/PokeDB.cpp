@@ -100,7 +100,7 @@ bool PokeDB::Iterate()
   // on the poke variables, prior to having their new values poked.
   if(m_iteration == 1)
     return(true);
-
+  
   // After the first iteration, poke the all the scheduled values.
   if(m_iteration == 2) {
     unsigned int i, vsize = m_varname.size();
@@ -112,9 +112,9 @@ bool PokeDB::Iterate()
 	varval = findReplace(varval, "@MOOSTIME", stime);
       }
       if(m_valtype[i] == "double")
-	m_Comms.Notify(m_varname[i], atof(varval.c_str()));
+	Notify(m_varname[i], atof(varval.c_str()) );
       else 
-	m_Comms.Notify(m_varname[i], varval);
+	Notify(m_varname[i], varval);
     }  
   }
 
@@ -144,6 +144,8 @@ bool PokeDB::OnNewMail(MOOSMSG_LIST &NewMail)
       CMOOSMsg &msg = *p;
       if(msg.GetKey() == "DB_UPTIME") 
 	m_db_start_time = MOOSTime() - msg.GetDouble();
+      else if(msg.GetKey() == "DB_TIME") 
+	m_db_time = msg.GetDouble();
     }
   }
   
@@ -222,6 +224,7 @@ void PokeDB::registerVariables()
     m_Comms.Register(m_varname[i], 0);
   
   m_Comms.Register("DB_UPTIME", 0);
+  m_Comms.Register("DB_TIME", 0);
 }
 
 //------------------------------------------------------------

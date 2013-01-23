@@ -170,7 +170,7 @@ bool USC_MOOSApp::Iterate()
   string vector_str = ang_str + "," + mag_str;
 
   if(vector_str != m_prev_posting) {
-    m_Comms.Notify(m_post_var, vector_str);
+    Notify(m_post_var, vector_str);
     m_prev_posting = vector_str;
   }
 
@@ -204,7 +204,7 @@ void USC_MOOSApp::postCurrentField()
   string summary = "field_name=" + cfield_name;
   summary += ", radius=" + cfield_radius;
   summary += ", elements=" + cfield_size;
-  m_Comms.Notify("USC_CFIELD_SUMMARY", summary);
+  Notify("USC_CFIELD_SUMMARY", summary);
 
   unsigned int i;
   for(i=0; i<fld_size; i++) {
@@ -221,7 +221,7 @@ void USC_MOOSApp::postCurrentField()
     
     string msg = "xpos=" + xstr + ",ypos=" + ystr + ",mag=" + fstr;
     msg += ",ang=" + dstr + ",label=" + cfield_name + "_" + id;
-    m_Comms.Notify("VIEW_VECTOR", msg);
+    Notify("VIEW_VECTOR", msg);
   }
 }
 

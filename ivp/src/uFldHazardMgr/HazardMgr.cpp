@@ -38,6 +38,7 @@ HazardMgr::HazardMgr()
   m_pd_desired          = 0.9;
 
   // State Variables 
+  m_sensor_config_requested = false;
   m_sensor_config_set   = false;
   m_swath_width_granted = 0;
   m_pd_granted          = 0;
@@ -45,7 +46,7 @@ HazardMgr::HazardMgr()
   m_sensor_config_reqs = 0;
   m_sensor_config_acks = 0;
   m_sensor_report_reqs = 0;
-  m_sensor_report_acks = 0;
+  m_detection_reports  = 0;
 
   m_summary_reports = 0;
 }
@@ -81,7 +82,7 @@ bool HazardMgr::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "UHZ_DETECTION_REPORT") 
       handleMailDetectionReport(sval);
 
-    else if(key == "UHM_REPORT_REQUEST") 
+    else if(key == "HAZARDSET_REQUEST") 
       handleMailReportRequest();
 
     else 
@@ -108,11 +109,11 @@ bool HazardMgr::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
-  if(!m_sensor_config_set)
+  if(!m_sensor_config_requested)
     postSensorConfigRequest();
-  else
-    postSensorInfoRequest();
 
+  if(m_sensor_config_set)
+    postSensorInfoRequest();
 
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -127,7 +128,7 @@ bool HazardMgr::OnStartUp()
   AppCastingMOOSApp::OnStartUp();
 
   STRING_LIST sParams;
-  m_MissionReader.EnableVerbatimQuoting(false);
+  m_MissionReader.EnableVerbatimQuoting(true);
   if(!m_MissionReader.GetConfiguration(GetAppName(), sParams))
     reportConfigWarning("No config block found for " + GetAppName());
 
@@ -135,16 +136,21 @@ bool HazardMgr::OnStartUp()
   for(p=sParams.begin(); p!=sParams.end(); p++) {
     string orig  = *p;
     string line  = *p;
-    string param = toupper(biteStringX(line, '='));
+    string param = tolower(biteStringX(line, '='));
     string value = line;
 
     bool handled = false;
-    if((param == "SWATH_WIDTH") && isNumber(value)) {
+    if((param == "swath_width") && isNumber(value)) {
       m_swath_width_desired = atof(value.c_str());
       handled = true;
     }
-    if((param == "PD") && isNumber(value)) {
+    else if(((param == "sensor_pd") || (param == "pd")) && isNumber(value)) {
       m_pd_desired = atof(value.c_str());
+      handled = true;
+    }
+    else if(param == "report_name") {
+      value = stripQuotes(value);
+      m_report_name = value;
       handled = true;
     }
 
@@ -153,6 +159,7 @@ bool HazardMgr::OnStartUp()
   }
   
   m_hazard_set.setSource(m_host_community);
+  m_hazard_set.setName(m_report_name);
   
   registerVariables();	
   return(true);
@@ -165,12 +172,10 @@ void HazardMgr::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   m_Comms.Register("UHZ_DETECTION_REPORT", 0);
-  m_Comms.Register("UHZ_HAZARD_REPORT", 0);
   m_Comms.Register("UHZ_CONFIG_ACK", 0);
   m_Comms.Register("UHZ_OPTIONS_SUMMARY", 0);
-  m_Comms.Register("UHM_REPORT_REQUEST", 0);
+  m_Comms.Register("HAZARDSET_REQUEST", 0);
 }
-
 
 //---------------------------------------------------------
 // Procedure: postSensorConfigRequest
@@ -179,11 +184,12 @@ void HazardMgr::postSensorConfigRequest()
 {
   string request = "vname=" + m_host_community;
   
-  request += ",width=" + doubleToString(m_swath_width_desired);
-  request += ",pd="    + doubleToString(m_pd_desired);
+  request += ",width=" + doubleToStringX(m_swath_width_desired,2);
+  request += ",pd="    + doubleToStringX(m_pd_desired,2);
 
+  m_sensor_config_requested = true;
   m_sensor_config_reqs++;
-  m_Comms.Notify("UHZ_CONFIG_REQUEST", request);
+  Notify("UHZ_CONFIG_REQUEST", request);
 }
 
 //---------------------------------------------------------
@@ -194,7 +200,7 @@ void HazardMgr::postSensorInfoRequest()
   string request = "vname=" + m_host_community;
 
   m_sensor_report_reqs++;
-  m_Comms.Notify("UHZ_SENSOR_REQUEST", request);
+  Notify("UHZ_SENSOR_REQUEST", request);
 }
 
 //---------------------------------------------------------
@@ -255,7 +261,7 @@ bool HazardMgr::handleMailSensorConfigAck(string str)
 
 bool HazardMgr::handleMailDetectionReport(string str)
 {
-  m_sensor_report_acks++;
+  m_detection_reports++;
 
   XYHazard new_hazard = string2Hazard(str);
 
@@ -289,8 +295,8 @@ void HazardMgr::handleMailReportRequest()
 {
   m_summary_reports++;
 
-  string summary_report = m_hazard_set.getSpec();
-  m_Comms.Notify("HAZARD_REPORT", summary_report);
+  string summary_report = m_hazard_set.getSpec("final_report");
+  Notify("HAZARDSET_REPORT", summary_report);
 }
 
 
@@ -299,9 +305,6 @@ void HazardMgr::handleMailReportRequest()
 
 bool HazardMgr::buildReport() 
 {
-  m_msgs << "============================================" << endl;
-  m_msgs << "Sensor Configuration"                         << endl;
-  m_msgs << "============================================" << endl;
   m_msgs << "Config Requested:"                                  << endl;
   m_msgs << "    swath_width_desired: " << m_swath_width_desired << endl;
   m_msgs << "             pd_desired: " << m_pd_desired          << endl;
@@ -311,12 +314,16 @@ bool HazardMgr::buildReport()
   m_msgs << "Config Result:"                                     << endl;
   m_msgs << "       config confirmed: " << boolToString(m_sensor_config_set) << endl;
   m_msgs << "    swath_width_granted: " << m_swath_width_granted << endl;
-  m_msgs << "             pd_granted: " << m_pd_granted          << endl;
-  m_msgs << "============================================" << endl;
-  m_msgs << "Sensor Measurements:"                         << endl;
-  m_msgs << "============================================" << endl;
-  m_msgs << " sensor requests: " << m_sensor_report_reqs << endl;
-  m_msgs << " sensor  reports: " << m_sensor_report_acks << endl;
+  m_msgs << "             pd_granted: " << m_pd_granted          << endl << endl;
+  m_msgs << "--------------------------------------------" << endl << endl;
+
+  m_msgs << "               sensor requests: " << m_sensor_report_reqs << endl;
+  m_msgs << "             detection reports: " << m_detection_reports  << endl << endl; 
+
+  m_msgs << "   Hazardset Reports Requested: " << m_summary_reports << endl;
+  m_msgs << "      Hazardset Reports Posted: " << m_summary_reports << endl;
+  m_msgs << "                   Report Name: " << m_report_name << endl;
+
   return(true);
 }
 

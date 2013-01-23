@@ -40,7 +40,7 @@ VPlug_VehiSettings::VPlug_VehiSettings()
   setParam("trails_length", 100);
   setParam("trails_color", "white");
   setParam("trails_viewable", "true");
-  setParam("trails_connect_viewable", "true");
+  setParam("trails_connect_viewable", "false");
   setParam("trails_future_viewable", "false");
 
   setParam("vehicles_active_color", "red");
@@ -187,7 +187,7 @@ bool VPlug_VehiSettings::setParam(string param, double value)
   bool handled = true;
   if((param == "trails_point_size") && (value >= 0)) {
     m_trails_point_size = value;
-    m_trails_point_size = vclip(m_trails_point_size, 0, 100);
+    m_trails_point_size = vclip(m_trails_point_size, 0, 10);
   }
   else if((param == "trails_length") && (value >= 0)) {
     m_trails_length = value;

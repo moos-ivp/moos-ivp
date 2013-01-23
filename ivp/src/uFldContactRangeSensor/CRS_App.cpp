@@ -37,13 +37,13 @@ using namespace std;
 CRS_App::CRS_App()
 {
   // Configuration variables
-  m_default_node_push_dist = 100;    // meters
-  m_default_node_pull_dist = 100;    // meters
+  m_default_node_push_dist = 100;   // meters
+  m_default_node_pull_dist = 100;   // meters
   m_default_node_ping_wait = 30;    // seconds
 
   m_ping_color   = "white";
   m_echo_color   = "chartreuse";
-  m_report_vars  = "short";
+  m_report_vars  = "long";
   m_ground_truth = true;
 
   // If uniformly random noise used, (m_rn_algorithm = "uniform")
@@ -100,9 +100,9 @@ bool CRS_App::OnStartUp()
     string value = line;
     
     bool handled = true;
-    if((param == "push_dist") || (param == "push_distance"))
+    if((param == "reach_distance") || (param == "push_distance"))
       handled = setPushDistance(value);
-    else if((param == "pull_dist") || (param == "pull_distance"))
+    else if((param == "reply_distance") || (param == "pull_distance"))
       handled = setPullDistance(value);
     else if(param == "ping_wait")
       handled = setPingWait(value);
@@ -123,11 +123,12 @@ bool CRS_App::OnStartUp()
       handled = setRandomNoiseAlgorithm(value);
     else if(param == "ground_truth")
       handled = setBooleanOnString(m_ground_truth, value);
+#if 0 // Should remove completely
     else if((param == "rn_uniform_pct") && isNumber(value))
       m_rn_uniform_pct = vclip(atof(value.c_str()), 0, 1);
     else if((param == "rn_gaussian_sigma") && isNumber(value))
       m_rn_gaussian_sigma = vclip_min(atof(value.c_str()), 0);
-
+#endif
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
@@ -304,7 +305,7 @@ void CRS_App::postRangePulse(const string& node, const string& color,
     pulse.set_color("fill", color);
   }
   string spec = pulse.get_spec();
-  m_Comms.Notify("VIEW_RANGE_PULSE", spec);
+  Notify("VIEW_RANGE_PULSE", spec);
 }
 
 //------------------------------------------------------------
@@ -332,11 +333,11 @@ void CRS_App::postNodeRangeReport(const string& rec_name,
 
   if((m_report_vars == "short") || (m_report_vars == "both")) {
     string full_str = "vname=" + rec_name + "," + str;
-    m_Comms.Notify("CRS_RANGE_REPORT", full_str);
+    Notify("CRS_RANGE_REPORT", full_str);
   }
 
   if((m_report_vars == "long") || (m_report_vars == "both"))
-    m_Comms.Notify("CRS_RANGE_REPORT_" + toupper(rec_name), str);
+    Notify("CRS_RANGE_REPORT_" + toupper(rec_name), str);
 
   // Phase 2: Possibly Post the "ground-truth" reports
   if((m_rn_algorithm != "") && m_ground_truth) {
@@ -346,11 +347,11 @@ void CRS_App::postNodeRangeReport(const string& rec_name,
     
     if((m_report_vars == "short") || (m_report_vars == "both")) {
       string full_str = "vname=" + rec_name + "," + str;
-      m_Comms.Notify("CRS_RANGE_REPORT_GT", full_str);
+      Notify("CRS_RANGE_REPORT_GT", full_str);
     }
     
     if((m_report_vars == "long") || (m_report_vars == "both"))
-      m_Comms.Notify("CRS_RANGE_REPORT_GT_" + toupper(rec_name), str);
+      Notify("CRS_RANGE_REPORT_GT_" + toupper(rec_name), str);
   }
 
 }
@@ -409,7 +410,7 @@ bool CRS_App::setPushDistance(string str)
   double distance = 0;
   if((right == "nolimit") || (right == "unlimited"))
     distance = -1;
-  else if(isNumber(right))
+  else if(isNumber(right)) 
     distance = atof(right.c_str());
   else
     return(false);
@@ -493,6 +494,10 @@ bool CRS_App::setReportVars(string str)
 
 bool CRS_App::setRandomNoiseAlgorithm(string str)
 {
+  // Only allow this to be set once. Overwriting is probably an error.
+  if(m_rn_algorithm != "")
+    return(false);
+
   string algorithm = biteStringX(str, ',');
   string parameters = str;
 
@@ -504,6 +509,20 @@ bool CRS_App::setRandomNoiseAlgorithm(string str)
       string value = svector[i];
       if(param == "pct") 
 	m_rn_uniform_pct = vclip(atof(value.c_str()), 0, 1);
+      else
+	return(false);
+    }
+  }
+  else if(algorithm == "gaussian") {
+    vector<string> svector = parseString(parameters, ',');
+    unsigned int i, vsize = svector.size();
+    for(i=0; i<vsize; i++) {
+      string param = biteStringX(svector[i], '=');
+      string value = svector[i];
+      if(param == "sigma") 
+	m_rn_gaussian_sigma = vclip(atof(value.c_str()), 0, 1000);
+      else
+	return(false);
     }
   }
   else
@@ -525,11 +544,11 @@ bool CRS_App::setAllowableEchoTypes(string str)
 
     // Unknown types *are* allowed to be added, but warning is gen'ed.
     if(!isKnownVehicleType(vtype))
-      reportConfigWarning("Allowable-Echo-Type, unknown type: " + vtype);
+      reportConfigWarning("allow_echo_type unknown type: " + vtype);
 
     // Just don't add if it's already been added.
     if(vectorContains(m_allow_echo_types, vtype))
-      reportConfigWarning("Allowable-Echo-Type declare twice: " + vtype);
+      reportConfigWarning("allow_echo_type declare twice: " + vtype);
     else
       m_allow_echo_types.push_back(vtype);
   }      
@@ -593,19 +612,26 @@ bool CRS_App::buildReport()
   m_msgs << "Echo Color:               " << m_echo_color             << endl;
   m_msgs << "Ground Truth Reporting:   " << boolToString(m_ground_truth) << endl;
 
+
+  string allow_echo_types = "all types";
+  if(m_allow_echo_types.size() == 0)
+    allow_echo_types = svectorToString(m_allow_echo_types);
+  m_msgs << "Allow Echo Types:         " << allow_echo_types << endl;
+
   // Part 2: Build a report on the Vehicles
   m_msgs << endl;
   m_msgs << "Vehicles(" << m_map_node_records.size() << "):" << endl;
 
-  ACTable actab(9);
-  actab << "      | Ping | Push | Pull | Pings | Echos | Too  | Too | Echos";
-  actab << "VName | Wait | Dist | Dist | Gen'd | Rec'd | Freq | Far | Sent";
+  ACTable actab(10);
+  actab << "      | Node | Ping | Push | Pull | Pings | Echos | Too  | Too | Echos";
+  actab << "VName | Reps | Wait | Dist | Dist | Gen'd | Rec'd | Freq | Far | Sent";
   actab.addHeaderLines();
 
   map<string, NodeRecord>::iterator p;
   for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
     string vname = p->first;
-    
+
+    string nreps = uintToString(m_map_node_reps_recd[vname]);
     string pwait = doubleToStringX(m_map_node_ping_wait[vname],1);
     
     double push_dist = m_map_node_push_dist[vname];
@@ -623,8 +649,8 @@ bool CRS_App::buildReport()
     string toofr = uintToString(m_map_node_xping_freq[vname]);
     string toofa = uintToString(m_map_node_xping_dist[vname]);
     string esent = uintToString(m_map_node_echos_sent[vname]);
-    actab << vname << pwait << spush << spull  << pgend << erecd;
-    actab << toofr << toofa << esent;
+    actab << vname << nreps << pwait << spush << spull  << pgend;
+    actab << erecd << toofr << toofa << esent;
   }
   m_msgs << actab.getFormattedString();
   return(true);

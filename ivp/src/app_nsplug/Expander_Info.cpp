@@ -62,10 +62,12 @@ void showHelpAndExit()
   mag("  --path","=<directory(s)>                                      ");
   blk("      Specify a directory or colon-separated list of directories");
   blk("      to search for files named in #include directives.         ");
+  mag("  --manual,-m                                                   ");
+  blk("      Show a brief users manual.                                ");
   mag("  --strict,-s                                                   ");
   blk("      If an undefined macro is encountered, the output file will");
   blk("      not be generated.                                         ");
-  mag("  --lenient,-l                                                   ");
+  mag("  --lenient,-l                                                  ");
   blk("      If an undefined macro is encountered on a line with other ");
   blk("      properly defined macros, the undefined ones are just      ");
   blk("      ignored. Defined macros are expanded. By default, unless  ");

@@ -83,6 +83,9 @@ string XYMarker::get_spec(string param) const
     aug_spec(spec, "secondary_color=" + color);
   }
 
+  if(m_type != "")
+    aug_spec(spec, "type=" + m_type);
+
   string obj_spec = XYObject::get_spec(param);
   if(obj_spec != "")
     spec += ("," + obj_spec);

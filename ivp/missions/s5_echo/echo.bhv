@@ -6,12 +6,12 @@ initialize   AUTO_SPAWN = false
 initialize   RETURN = false
 
 
-set MODE = ACTIVE {
+set IVPHELM_MODE = ACTIVE {
   DEPLOY = true
 } INACTIVE
 
-set MODE = SURVEYING {
-  MODE = ACTIVE
+set IVPHELM_MODE = SURVEYING {
+  IVPHELM_MODE = ACTIVE
   RETURN != true
 } RETURNING
 
@@ -20,7 +20,7 @@ Behavior = BHV_Waypoint
 { 
   name      = waypt_survey
   pwt       = 100
-  condition = MODE == SURVEYING
+  condition = IVPHELM_MODE == SURVEYING
   endflag   = RETURN = true
   perpetual = true
 
@@ -40,7 +40,7 @@ Behavior = BHV_Waypoint
 {
   name       = waypt_return
   pwt        = 100
-  condition  = MODE == RETURNING
+  condition  = IVPHELM_MODE == RETURNING
   updates    = UPDATES_RETURN
   perpetual  = true
   endflag    = RETURN = false
@@ -56,7 +56,7 @@ Behavior = BHV_Waypoint
 Behavior = BHV_BearingLine
 {
   name       = bng-line-
-  condition  = MODE == SURVEYING
+  condition  = IVPHELM_MODE == SURVEYING
   updates    = BEARING_POINT
   templating = clone
   duration_idle_decay = true

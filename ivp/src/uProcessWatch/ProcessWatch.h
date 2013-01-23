@@ -44,6 +44,7 @@ public:
 
 protected:
   void handleMailNewDBClients();
+  void handleMailStatusUpdate(std::string);
 
   bool handleConfigWatchList(std::string);
   bool handleConfigWatchItem(std::string);
@@ -60,6 +61,7 @@ protected:
   bool isAlive(std::string);
   void procNotedHere(std::string);
   void procNotedGone(std::string);
+  void procNotedExcused(std::string);
 
   void handlePostMapping(std::string);
   std::string postVar(std::string);
@@ -78,13 +80,15 @@ protected:
   std::string  m_proc_watch_summary;
 
   std::vector<std::string>  m_watch_list;
+  std::vector<std::string>  m_excused_list;
 
   // Mapping from proc name to data
   std::map<std::string, bool> m_map_alive;
   std::map<std::string, bool> m_map_alive_prev;
-
   std::map<std::string, unsigned int> m_map_noted_gone;
   std::map<std::string, unsigned int> m_map_noted_here;
+  std::map<std::string, double>       m_map_now_cpuload;
+  std::map<std::string, double>       m_map_max_cpuload;
 
   std::set<std::string> m_set_db_clients;
   std::set<std::string> m_set_watch_clients;
@@ -95,6 +99,7 @@ protected:
   bool         m_watch_all_antler;
   double       m_allow_retractions;
   double       m_min_wait;             
+  double       m_noted_gone_wait;
 
   // Include List
   std::vector<std::string>  m_include_list;

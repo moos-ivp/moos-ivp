@@ -235,7 +235,7 @@ void PathCheck_MOOSApp::computeAndPostSpeeds()
       double avg_speed = (total_speed / (double)(legs));
       string report = "vname=" + vname;
       report += ",avg_spd=" + doubleToString(avg_speed,2);
-      m_Comms.Notify("UPC_SPEED_REPORT", report);
+      Notify("UPC_SPEED_REPORT", report);
     }
     p1++;
   }
@@ -256,7 +256,7 @@ void PathCheck_MOOSApp::detectAndPostOdometry()
       string msg = "vname=" + vname;
       msg += ",total_dist=" + doubleToString(m_map_total_dist[vname],1);
       msg += ",trip_dist=" + doubleToString(m_map_trip_dist[vname],1);
-      m_Comms.Notify("UPC_ODOMETRY_REPORT", msg);
+      Notify("UPC_ODOMETRY_REPORT", msg);
     }
     p++;
   }

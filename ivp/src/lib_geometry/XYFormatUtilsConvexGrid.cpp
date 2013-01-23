@@ -63,6 +63,7 @@ XYConvexGrid string2ConvexGrid(string str)
     string left = biteStringX(rest, '=');
     
     if(left == "pts") {
+      null_grid.set_msg("Invalid pts specification");
       string pstr = biteStringX(rest, '}');
       
       // Empty set of points is an error
@@ -98,23 +99,30 @@ XYConvexGrid string2ConvexGrid(string str)
       new_poly.determine_convexity();
       if(!new_poly.is_convex())
 	return(null_grid);
+      null_grid.set_msg("");
+
     }
     else if(left == "cell_size") {
+      null_grid.set_msg("Invalid cell_size specification");
       string right = biteStringX(rest, ',');
       if(!isNumber(right))
 	return(null_grid);
       cell_size = atof(right.c_str());
       if(cell_size <= 0)
 	return(null_grid);
+      null_grid.set_msg("");
     }
     else if(left == "init_val") {
+      null_grid.set_msg("Invalid init_val specification");
       string right = biteStringX(rest, ',');
       if(!isNumber(right))
 	return(null_grid);
       init_val = atof(right.c_str());
+      null_grid.set_msg("");
     }
     // cell_var=x:0:y:0:z:0
     else if(left == "cell_vars") {
+      null_grid.set_msg("Invalid cell_vars specification");
       string rrest = biteStringX(rest, ',');
       while(rrest != "") {
 	string cell_var      = biteString(rrest, ':');
@@ -123,7 +131,10 @@ XYConvexGrid string2ConvexGrid(string str)
 	  cell_vars.push_back(cell_var);
 	  cell_init_vals.push_back(atof(cell_init_val.c_str()));
 	}
+	else
+	  return(null_grid);
       }
+      null_grid.set_msg("");
     }
     else if(left == "cell") {
       string right = biteStringX(rest, ',');

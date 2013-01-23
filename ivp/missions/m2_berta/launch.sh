@@ -4,6 +4,7 @@
 #-------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
+VARIATION="0"
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [time_warp]   \n" $0
@@ -12,6 +13,12 @@ for ARGI; do
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
+    elif [ "${ARGI}" = "v1" ] ; then
+	VARIATION="1"
+    elif [ "${ARGI}" = "v2" ] ; then
+	VARIATION="2"
+    elif [ "${ARGI}" = "v3" ] ; then
+	VARIATION="3"
     elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
     else 
@@ -34,16 +41,16 @@ SHORE_LISTEN="9300"
 nsplug meta_vehicle.moos targ_henry.moos -f WARP=$TIME_WARP \
     VNAME=$VNAME1          SHARE_LISTEN="9301"              \
     VPORT="9001"           SHORE_LISTEN=$SHORE_LISTEN       \
-    START_POS=$START_POS1               
+    START_POS=$START_POS1  VARIATION=$VARIATION             
 
 nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$TIME_WARP \
     VNAME=$VNAME2          SHARE_LISTEN="9302"              \
     VPORT="9002"           SHORE_LISTEN=$SHORE_LISTEN       \
-    START_POS=$START_POS2               
+    START_POS=$START_POS2  VARIATION=$VARIATION             
 
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
     SNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                 \
-    SPORT="9000"
+    SPORT="9000"       VARIATION=$VARIATION         
 
 nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
     START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       

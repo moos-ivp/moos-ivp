@@ -49,9 +49,7 @@ class BearingLine
   };
   ~BearingLine() {};
 
-  bool isValid() const {
-    return(m_bearing_set);
-  }
+  bool isValid() const            {return(m_bearing_set);}
   
   void setBearing(double v)       {m_bearing=v; m_bearing_set=true;};
   void setBearingAbsolute(bool v) {m_bearing_absolute=v;};

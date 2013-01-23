@@ -1,0 +1,21 @@
+!!Application: %color=#ff7f00%'''pEchoVar'''%%
+[[<<]]
+!!!!Function:
+The pEchoVar application is a lightweight process that runs without any user interaction for ``echoing'' the posting of specified variable-value pairs with a follow-on posting having different variable name. For example the posting of @@FOO=5.5@@ could be echoed such that @@BAR=5.5@@ is posted on the very iteration that the incoming mail is received.
+
+!!!!Author(s): 
+* Mike Benjamin (MIT)
+
+!!!!Dependencies:
+* MOOS, mbutils
+
+!!!!Distribution: 
+* (:include MOOSIvPOrg :)
+
+!!!!Documentation: 
+* (:include Reference.ToolsTR:)
+
+!!!! Function Keywords:
+Poking and Scripted Interaction with the MOOSDB
+
+(:include IvP.ModulesShort:)

@@ -26,6 +26,7 @@
 #include <vector>
 #include <string>
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 #include "LogChecker.h"
 #include "LogChecker_Info.h"
 
@@ -53,12 +54,9 @@ int main(int argc, char** argv);
  * Print the version information for the utility. This function always exits
  * with a SUCCESS return status.
  */
-void printVersion(){
-    vector<string> svector = getReleaseInfo( g_name.c_str() );
-    for(unsigned int j=0; j<svector.size(); j++)
-      cout << svector[j] << endl;
-
-    exit(SUCCESS);
+void printVersion() {
+  showReleaseInfo(g_name, "gpl");
+  exit(SUCCESS);
 } 
 
 int main(int argc, char** argv) 

@@ -119,7 +119,7 @@ int main(int argc ,char * argv[])
   }
 
   cout << "Quitting..." << endl;
-  //appThread.quit();
+  appThread.quit();
   return(0);
 }
 

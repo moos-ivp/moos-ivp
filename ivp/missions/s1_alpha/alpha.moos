@@ -27,9 +27,105 @@ ProcessConfig = ANTLER
   Run = uSimMarine	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
   Run = pHelmIvP	@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = true
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
+  //Run = uTimerScript    @ NewConsole = false
+  Run = uFldScope       @ NewConsole = false
+  //Run = uXMS            @ NewConsole = true ~ uXMS_NAV
+  //Run = uXMS            @ NewConsole = true ~ uXMS_IVPHELM
+//  Run = iHuxley 	@ NewConsole = true
+}
+
+
+//------------------------------------------
+// uFldScope config block
+
+ProcessConfig = uFldScope
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  SCOPE = var=NODE_REPORT_LOCAL, key=NAME, fld=TIME, alias=Time
+  SCOPE = var=NODE_REPORT_LOCAL, key=NAME, fld=MODE
+  SCOPE = var=ODOMETRY_REPORT, key=vname, fld=total_dist, alias=TotDist
+  SCOPE = var=ODOMETRY_REPORT, key=vname, fld=trip_dist, alias=TripDist
+  SCOPE = var=SPEED_REPORT, key=vname, fld=avg_spd, alias=Speed
+
+  LAYOUT = MODE, Time
+  LAYOUT = MODE, Time, speed
+  LAYOUT = speed, Mode, trip_dist
+}
+
+//------------------------------------------
+// uTimerScript
+
+ProcessConfig = uTimerScript
+{
+  event = var=DEPLOY, val=true
+  event = var=MOOS_MANUAL_OVERIDE, val=false
+  eventx = quit
+  
+}
+
+
+//------------------------------------------
+// uXMS config block
+
+//ProcessConfig = uXMS
+//{
+//  AppTick   = 4
+//  CommsTick = 4
+//
+//  content_mode = "history"
+//
+//  TERM_REPORT_INTERVAL = FOOBAR
+//
+//  VAR = NAV_X, NAV_Y
+//
+//  SOURCE = pHelmIvP, pMarineViewer
+//  HISTORY_VAR = DESIRED_HEADING
+//}
+
+//------------------------------------------
+// uXMS_NAV config block
+
+ProcessConfig = uXMS_NAV
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  VAR = NAV_X
+  FOO = BAR
+}
+
+//------------------------------------------
+// uXMS_IVPHELM config block
+
+ProcessConfig = uXMS_IVPHELM
+{
+  SOURCE             = pHelmIvP
+  DISPLAY_AUX_SOURCE = trued
+
+
+}
+
+//------------------------------------------
+// iHuxley config block
+
+ProcessConfig = iHuxley
+{
+  AppTick   = 4
+  CommsTick = 4
+ 
+  VarNamePrefix = FRONTSEAT
+  HuxleyHost = localhost
+  HuxleyPort = 9002
+  HuxleySim  = true
+  HuxleyNav  = true
+  BackSeatREADY = true
+
+  Verbose    = true
 }
 
 //------------------------------------------
@@ -40,10 +136,12 @@ ProcessConfig = uProcessWatch
   AppTick   = 4
   CommsTick = 4
 
-  foo = bar  
   TERM_REPORT_INTERVAL = 0.8
 
   SUMMARY_WAIT = 5
+
+  //WATCH = uXMS_NAV
+  //WATCH = uXMS_IVPHELM
 
   NOWATCH   = uXMS*
   NOWATCH   = uPokeDB*
@@ -68,7 +166,7 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  WildCardOmitPattern = *_STATUS
+//  WildCardOmitPattern = *_STATUS
   WildCardExclusionLog = true
 }
 
@@ -103,6 +201,8 @@ ProcessConfig = pHelmIvP
   Behaviors  = alpha.bhv
   Domain     = course:0:359:360
   Domain     = speed:0:4:21
+
+
 }
 
 //------------------------------------------
@@ -150,6 +250,8 @@ ProcessConfig = pMarineViewer
   //TIFF_FILE            = AerialMIT.tif
   TIFF_FILE            = forrest19.tif
 
+  //center_view  = active
+
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
@@ -157,6 +259,8 @@ ProcessConfig = pMarineViewer
   hash_delta           = 50
   hash_shade           = 0.4
   hash_viewable        = true
+
+  trails_point_size   = 1
 
   nodes_font_size      = medium
   procs_font_size      = medium
@@ -201,8 +305,6 @@ ProcessConfig = pMarineViewer
   ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
   ACTION  = RETURN=true
-  ACTION  = HSLINE=off
-  ACTION  = HSLINE=on
   ACTION  = UPDATES_RETURN=speed=1.4
 }
 

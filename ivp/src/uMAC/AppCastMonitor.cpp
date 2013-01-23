@@ -101,10 +101,18 @@ bool AppCastMonitor::Iterate()
     m_last_report_time = m_curr_time;
     print_report = true;
     // Refresh the APPCAST_REQ request to the current app 
-    if(m_refresh_mode == "streaming")
-      postAppCastRequest(currentNode(), currentProc(), "", "any", 3);
-    else if(m_refresh_mode == "events")
-      postAppCastRequest(currentNode(), currentProc(), "", "run_warning", 3);
+    if(m_refresh_mode == "streaming") {
+      postAppCastRequest("all", "all", "", "any", 3);
+    }
+    else if(m_refresh_mode == "events") {
+      string key_app = GetAppName() + ":app";      
+      if(m_content_mode == "appcast")
+	postAppCastRequest(currentNode(), currentProc(), key_app, "any", 3);
+      else if(m_content_mode == "procs")
+	postAppCastRequest(currentNode(), "all", key_app, "run_warning", 3);
+      else if(m_content_mode == "nodes")
+	postAppCastRequest("all", "all", key_app, "run_warning", 3);
+    }
   }
 
   // Part 3: End early if we are in paused mode and no update request
@@ -174,7 +182,6 @@ bool AppCastMonitor::handleMailAppCast(const string& str)
   AppCast appcast   = string2AppCast(str);
   string  node_name = appcast.getNodeName();
 
-
   if(node_name == "")
     return(false);
   
@@ -192,8 +199,8 @@ bool AppCastMonitor::handleMailAppCast(const string& str)
     // Notify node we want appcasts from ALL app at that node. 
     string key = GetAppName() + "startup";
     postAppCastRequest(node_name, "all", key, "any", 0.1);
-    m_update_pending = true;
   }
+  m_update_pending = true;
 
   return(true);
 }
@@ -349,8 +356,8 @@ void AppCastMonitor::postAppCastRequest(const string& channel_node,
   str += ",key=" + key;
   str += ",thresh=" + threshold;
 
-  m_Comms.Notify("APPCAST_REQ", str);
-  m_Comms.Notify("APPCAST_REQ_"+toupper(channel_node), str);
+  Notify("APPCAST_REQ", str);
+  Notify("APPCAST_REQ_"+toupper(channel_node), str);
 }
 
 

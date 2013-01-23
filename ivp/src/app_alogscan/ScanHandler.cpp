@@ -174,7 +174,16 @@ void ScanHandler::handle(const string& alogfile)
     if(m_use_colors) {
       string varsources_copy = varsources;
       string first_source = biteString(varsources_copy, ',');
-      string color = termColor(procColor(first_source));
+
+      string key = first_source;
+      if(strContains(first_source, ':')) {
+	string app_name = biteString(first_source, ':');
+	if(app_name != "")
+	  key = app_name;
+	else
+	  key = first_source;
+      }
+      string color = termColor(procColor(key));
       printf("%s", color.c_str());
     }
 

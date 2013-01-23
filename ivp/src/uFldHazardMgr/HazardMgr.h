@@ -55,17 +55,19 @@ class HazardMgr : public AppCastingMOOSApp
    void postHazardSetReport();
    
  private: // Configuration variables
-   double m_swath_width_desired;
-   double m_pd_desired;
+   double      m_swath_width_desired;
+   double      m_pd_desired;
+   std::string m_report_name;
 
  private: // State variables
+   bool   m_sensor_config_requested;
    bool   m_sensor_config_set;
 
    unsigned int m_sensor_config_reqs;
    unsigned int m_sensor_config_acks;
 
    unsigned int m_sensor_report_reqs;
-   unsigned int m_sensor_report_acks;
+   unsigned int m_detection_reports;
 
    unsigned int m_summary_reports;
 

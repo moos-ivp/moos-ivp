@@ -85,7 +85,7 @@ bool PXR_MOOSApp::Iterate()
   unsigned int i, amt = (m_tally_recd - m_tally_sent);
   for(i=0; i<amt; i++) {
     m_tally_sent++;
-    m_Comms.Notify(m_outgoing_var, m_tally_sent);
+    Notify(m_outgoing_var, m_tally_sent);
   }
   
   // If this is the first iteration just note the start time, otherwise
@@ -97,7 +97,7 @@ bool PXR_MOOSApp::Iterate()
     double frequency = 0;
     if(delta_time > 0)
       frequency  = (double)(m_iterations) / delta_time;
-    m_Comms.Notify(m_outgoing_var+"_ITER_HZ", frequency);
+    Notify(m_outgoing_var+"_ITER_HZ", frequency);
   }
     
 
@@ -111,7 +111,7 @@ bool PXR_MOOSApp::Iterate()
       double frequency  = 0;
       if(delta_time > 0)
 	frequency = (double)(m_tally_sent) / delta_time;
-      m_Comms.Notify(m_outgoing_var+"_POST_HZ", frequency);
+      Notify(m_outgoing_var+"_POST_HZ", frequency);
     }
   }
   return(true);

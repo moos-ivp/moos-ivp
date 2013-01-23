@@ -92,8 +92,8 @@ void MarineVehiGUI::augmentMenu()
   m_menubar->add("Vehicles/VehicleSize/vehicles_shape_scale = smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
   m_menubar->add("Vehicles/VehicleSize/vehicles_shape_scale = actual",    '\\', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)0, FL_MENU_DIVIDER);
 
-  m_menubar->add("Vehicles/Trails/trails_point_size = larger", FL_ALT+']', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)+1, 0);
-  m_menubar->add("Vehicles/Trails/trails_point_size = smaller", FL_ALT+'[', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)-1, 0);
+  m_menubar->add("Vehicles/Trails/trails_point_size = larger", ']', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)+1, 0);
+  m_menubar->add("Vehicles/Trails/trails_point_size = smaller", '[', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)-1, 0);
   m_menubar->add("Vehicles/Trails/trails_length = longer", ')', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)+1, 0);
   m_menubar->add("Vehicles/Trails/trails_length = shorter", '(', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)-1, FL_MENU_DIVIDER);
 }

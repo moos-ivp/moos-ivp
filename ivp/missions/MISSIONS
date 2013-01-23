@@ -1,18 +1,12 @@
+Mission     Recap
+--------    --------
 
-Alpha
-  Synopsis:
-    One vehicle does a simple waypoint traversal with an option to 
-    return to the launch point at any time. 
-  Behaviors:
-    BHV_Waypoint
-  Notes:
-    Does not utilize HSD
+M2-Berta    Double-Loiter / Collision avoidance
+              V1: Multiple uXMS with appcasting
+              V2: uFldMessageHandler with timerscript. 
 
-Foxtrot
-  Synopsis: (same as alpha but with PeriodSpeed)
-    One vehicle does a simple waypoint traversal with an option to 
-    return to the launch point at any time. The speed changes 
-    periodically.
-  Behaviors:
-    BHV_Waypoint, BHV_PeriodicSpeed
-  Variations
+M6-Fisk:    
+M7-Golf:    Safety Retreat
+M8-Hugo:    ContactRangeSensor
+M9-Indigo:  BeaconRangeSensor
+M10-Jake:   HazardSensor, HazardMgr, HazardMetric

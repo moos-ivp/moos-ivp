@@ -46,13 +46,16 @@ BRS_App::BRS_App()
   m_default_beacon_buoy.setPullDist("50");
 
   m_ping_payments = "upon_response";
-  m_report_vars = "short";
-  m_ground_truth = true;
+  m_report_vars   = "short";
+  m_ground_truth  = true;
+  m_verbose       = false;
 
   // If uniformly random noise used, (m_rn_algorithm = "uniform")
   // this variable reflects the range of the uniform variable in 
   // terms of percentage of the true (pre-noise) range.
   m_rn_uniform_pct = 0;
+
+  m_ac.setMaxEvents(20);
 }
 
 
@@ -142,6 +145,8 @@ bool BRS_App::OnStartUp()
 	}
 	else if(param == "ground_truth")
 	  handled[param] = setBooleanOnString(m_ground_truth, value);
+	else if(param == "verbose")
+	  handled[param] = setBooleanOnString(m_verbose, value);
       }
       else if(pass == 2) {
 	if(param == "beacon")
@@ -434,7 +439,7 @@ void BRS_App::postVisuals()
     marker.set_active(true);
     marker.set_color("primary_color", m_beacons[i].getBuoyColor());
     string spec = marker.get_spec(); 
-    m_Comms.Notify("VIEW_MARKER", spec);
+    Notify("VIEW_MARKER", spec);
   }
 }
 
@@ -459,7 +464,7 @@ void BRS_App::postBeaconRangePulse(unsigned int ix, string color)
     pulse.set_color("fill", color);
   }
   string spec = pulse.get_spec();
-  m_Comms.Notify("VIEW_RANGE_PULSE", spec);
+  Notify("VIEW_RANGE_PULSE", spec);
 }
 
 //------------------------------------------------------------
@@ -485,12 +490,12 @@ void BRS_App::postBeaconRangeReport(unsigned int beacon_ix,
 
   if((m_report_vars == "short") || (m_report_vars == "both")) {
     string full_str = "vname=" + vname + "," + str;
-    m_Comms.Notify("BRS_RANGE_REPORT", full_str);
+    Notify("BRS_RANGE_REPORT", full_str);
   }
 
   if((m_report_vars == "long") || (m_report_vars == "both")) {
     vname = toupper(vname);
-    m_Comms.Notify("BRS_RANGE_REPORT_"+vname, str);
+    Notify("BRS_RANGE_REPORT_"+vname, str);
   }
 
   // Phase 2: Possibly Post the "ground-truth" reports
@@ -501,12 +506,12 @@ void BRS_App::postBeaconRangeReport(unsigned int beacon_ix,
     
     if((m_report_vars == "short") || (m_report_vars == "both")) {
       string full_str = "vname=" + vname + "," + str;
-      m_Comms.Notify("BRS_RANGE_REPORT_GT", full_str);
+      Notify("BRS_RANGE_REPORT_GT", full_str);
     }
     
     if((m_report_vars == "long") || (m_report_vars == "both")) {
       vname = toupper(vname);
-      m_Comms.Notify("BRS_RANGE_REPORT_GT_"+vname, str);
+      Notify("BRS_RANGE_REPORT_GT_"+vname, str);
     }
   }
 
@@ -705,7 +710,7 @@ void BRS_App::postRangePulse(double x, double y, string color,
     pulse.set_color("fill", color);
   }
   string spec = pulse.get_spec();
-  m_Comms.Notify("VIEW_RANGE_PULSE", spec);
+  Notify("VIEW_RANGE_PULSE", spec);
 }
 
 //------------------------------------------------------------
@@ -781,7 +786,7 @@ bool BRS_App::buildReport()
     actab << noise << pushd << pulld;
   }
   m_msgs << actab.getFormattedString();
-  m_msgs << endl;
+  m_msgs << endl << endl;
 
   // Part 2: Build a report on the Vehicles
   m_msgs << "Vehicles(" << m_map_node_records.size() << "):" << endl;

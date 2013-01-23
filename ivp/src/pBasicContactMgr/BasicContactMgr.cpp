@@ -235,7 +235,7 @@ void BasicContactMgr::handleMailNodeReport(const string& report)
     return;
   
   if(!new_node_record.valid()) {
-    m_Comms.Notify("CONTACT_MGR_WARNING", "Bad Node Report Received");
+    Notify("CONTACT_MGR_WARNING", "Bad Node Report Received");
     reportRunWarning("Bad Node Report Received");
     return;
   }
@@ -279,7 +279,7 @@ void BasicContactMgr::handleMailResolved(const string& str)
   // Error Check #1 - Make sure we know about the vehicle
   if(!m_par.containsVehicle(vehicle)) {
     string msg = "Resolution failed. Nothing known about vehicle: " + vehicle;
-    m_Comms.Notify("CONTACT_MGR_WARNING", msg);
+    Notify("CONTACT_MGR_WARNING", msg);
     reportRunWarning(msg);
     return;
   }
@@ -287,7 +287,7 @@ void BasicContactMgr::handleMailResolved(const string& str)
   // Error Check #2 - Make sure we know about the alert id
   if((alertid != "all_alerts") && !m_par.containsAlertID(alertid)) {
     string msg = "Resolution failed. Nothing known about alertid: " + alertid;
-    m_Comms.Notify("CONTACT_MGR_WARNING", msg);
+    Notify("CONTACT_MGR_WARNING", msg);
     reportRunWarning(msg);
     return;
   }
@@ -400,29 +400,29 @@ void BasicContactMgr::postSummaries()
   }
 
   if(m_prev_contacts_list != contacts_list) {
-    m_Comms.Notify("CONTACTS_LIST", contacts_list);
+    Notify("CONTACTS_LIST", contacts_list);
     m_prev_contacts_list = contacts_list;
   }
 
   contacts_alerted = m_par.getAlertedGroup(true);
   if(m_prev_contacts_alerted != contacts_alerted) {
-    m_Comms.Notify("CONTACTS_ALERTED", contacts_alerted);
+    Notify("CONTACTS_ALERTED", contacts_alerted);
     m_prev_contacts_alerted = contacts_alerted;
   }
 
   contacts_unalerted = m_par.getAlertedGroup(false);
   if(m_prev_contacts_unalerted != contacts_unalerted) {
-    m_Comms.Notify("CONTACTS_UNALERTED", contacts_unalerted);
+    Notify("CONTACTS_UNALERTED", contacts_unalerted);
     m_prev_contacts_unalerted = contacts_unalerted;
   }
 
   if(m_prev_contacts_retired != contacts_retired) {
-    m_Comms.Notify("CONTACTS_RETIRED", contacts_retired);
+    Notify("CONTACTS_RETIRED", contacts_retired);
     m_prev_contacts_retired = contacts_retired;
   }
 
   if(m_prev_contacts_recap != contacts_recap) {
-    m_Comms.Notify("CONTACTS_RECAP", contacts_recap);
+    Notify("CONTACTS_RECAP", contacts_recap);
     m_prev_contacts_recap = contacts_recap;
   }
   
@@ -491,7 +491,7 @@ bool BasicContactMgr::postAlerts()
 	  msg = findReplace(msg, "%[VNAME]", tolower(name_str));
 	  msg = findReplace(msg, "%[VTYPE]", tolower(type_str));
 
-	  m_Comms.Notify(var, msg);
+	  Notify(var, msg);
 	  m_par.setValue(contact_name, alert_id, true);
 	  reportEvent(var + "=" + msg);
 
@@ -563,7 +563,7 @@ void BasicContactMgr::postRadii(bool active)
     circle.set_edge_size(1);
     circle.set_active(true);
     string s1 = circle.get_spec();
-    m_Comms.Notify("VIEW_CIRCLE", s1);
+    Notify("VIEW_CIRCLE", s1);
 
     double alert_range_cpa = getAlertRangeCPA(alert_id);
     if(alert_range_cpa > alert_range) {
@@ -577,7 +577,7 @@ void BasicContactMgr::postRadii(bool active)
       circ.set_active(true);
       string s2 = circ.get_spec();
 
-      m_Comms.Notify("VIEW_CIRCLE", s2);
+      Notify("VIEW_CIRCLE", s2);
     }
   }
 }

@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
 {
   string mission_file;
   string run_command = argv[0];
-  string verbose;
 
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -60,7 +59,6 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   CRS_App contact_range_sensor;
-
   contact_range_sensor.Run(run_command.c_str(), mission_file.c_str());
  
   return(0);

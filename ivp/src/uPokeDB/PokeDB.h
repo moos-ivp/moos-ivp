@@ -59,6 +59,8 @@ class PokeDB : public CMOOSApp
   std::vector<std::string>  m_wrtime_read;
   std::vector<bool>         m_varname_recd;
 
+  double m_db_time;
+
   double m_db_start_time;
   int    m_iteration;
   bool   m_configure_comms_locally;

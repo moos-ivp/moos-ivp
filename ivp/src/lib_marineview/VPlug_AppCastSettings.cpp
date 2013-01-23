@@ -36,11 +36,11 @@ VPlug_AppCastSettings::VPlug_AppCastSettings()
   m_attribute_map["nodes_font_size"]      = "medium";
   m_attribute_map["procs_font_size"]      = "medium";
   m_attribute_map["appcast_font_size"]    = "small";
-  m_attribute_map["appcast_color_scheme"] = "default";
+  m_attribute_map["appcast_color_scheme"] = "indigo";
   m_attribute_map["refresh_mode"]         = "events";
 
   m_gsize_map["appcast_height"] = 70;
-  m_gsize_map["appcast_width"]  = 35;
+  m_gsize_map["appcast_width"]  = 30;
 
   m_viewable_map["full_screen"]      = false;
   m_viewable_map["appcast_viewable"] = false;
@@ -75,6 +75,24 @@ bool VPlug_AppCastSettings::setParam(const string& param, string value)
     return(setViewMapping(param, value));
   }
   
+  else if((param == "appcast_font_size") && (value == "bigger")) {
+    if(m_attribute_map["appcast_font_size"] == "xsmall")
+      setAttrMapping(param, "small");
+    else if(m_attribute_map["appcast_font_size"] == "small")
+      setAttrMapping(param, "medium");
+    else if(m_attribute_map["appcast_font_size"] == "medium")
+      setAttrMapping(param, "large");
+  }
+
+  else if((param == "appcast_font_size") && (value == "smaller")) {
+    if(m_attribute_map["appcast_font_size"] == "large")
+      setAttrMapping(param, "medium");
+    else if(m_attribute_map["appcast_font_size"] == "medium")
+      setAttrMapping(param, "small");
+    else if(m_attribute_map["appcast_font_size"] == "small")
+      setAttrMapping(param, "xsmall");
+  }
+
   else if((param == "procs_font_size")   ||
 	  (param == "nodes_font_size")   ||
 	  (param == "appcast_font_size") ||
@@ -82,19 +100,19 @@ bool VPlug_AppCastSettings::setParam(const string& param, string value)
     return(setAttrMapping(param, value));
   }
 
-  // Possible values: default, indigo
+  // Possible values: white, indigo, beige
   else if(param == "appcast_color_scheme") {
     value = tolower(stripBlankEnds(value));
-    if((value == "default") || (value == "indigo") || (value == "beige"))
+    if((value == "white") || (value == "indigo") || (value == "beige"))
       return(setAttrMapping(param, value));
     else if(value == "toggle") {
       if(attribute("appcast_color_scheme") == "")
-	return(setAttrMapping(param, "default"));
+	return(setAttrMapping(param, "white"));
       if(attribute("appcast_color_scheme") == "indigo")
 	return(setAttrMapping(param, "beige"));
       if(attribute("appcast_color_scheme") == "beige")
-	return(setAttrMapping(param, "default"));
-      if(attribute("appcast_color_scheme") == "default")
+	return(setAttrMapping(param, "white"));
+      if(attribute("appcast_color_scheme") == "white")
 	return(setAttrMapping(param, "indigo"));
     }
   }

@@ -7,6 +7,7 @@ ProcessConfig = pShare
   CommsTick  = 2
 
   input = route =  localhost:$(SHARE_LISTEN)
+  output = src_name=Y, dest_name=B, route=localhost:9300
 
 
   // =======================================================

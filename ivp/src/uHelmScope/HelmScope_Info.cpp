@@ -37,7 +37,7 @@ void showSynopsis()
   blk("------------------------------------                            ");
   blk("  The uHelmScope application is a terminal-based (non-GUI) scope");
   blk("  onto a running IvP Helm process, and key MOOS variables.      ");
-  blk("  Shows behavior summaries and activity states.                 ");
+  blk("  uHelmScope behavior summaries and activity states.            ");
 }
 
 //----------------------------------------------------------------
@@ -107,12 +107,9 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  paused    = false   // default                                ");
   blk("                                                                ");
-  blk("  hz_memory = 5,100   // default                                ");
-  blk("                                                                ");
   blk("  display_moos_scope = true    "," // default                   ");
   blk("  display_bhv_posts  = true    "," // default                   ");
   blk("  display_virgins    = true    "," // default                   ");
-  blk("  display_statevars  = true    "," // default                   ");
   blk("  truncated_output   = false   "," // default                   ");
   blk("  behaviors_concise  = true    "," // default                   ");
   blk("                                                                ");

@@ -50,6 +50,7 @@ HazardSensor_MOOSApp::HazardSensor_MOOSApp()
   m_min_reset_interval       = 300;  // seconds
   m_options_summary_interval = 10;   // in timewarped seconds
   m_min_queue_msg_interval   = 30;   // seconds
+  m_sensor_max_turn_rate     = 1.5;  // degrees per second
 
   m_hazard_file_hazard_cnt = 0;
   m_hazard_file_benign_cnt = 0;
@@ -72,6 +73,7 @@ HazardSensor_MOOSApp::HazardSensor_MOOSApp()
   m_shape_benign = "triangle";
   m_width_hazard = 8;
   m_width_benign = 8;
+  m_swath_len    = 5;
   m_swath_transparency = 0.2;
 }
 
@@ -107,8 +109,8 @@ bool HazardSensor_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       handled = true;
     }
   
-    if(!handled) 
-      reportRunWarning("Unhandled mail: " + key);
+    //if(!handled) 
+    //  reportRunWarning("Unhandled mail: " + key);
   }
   
   return(true);
@@ -150,7 +152,7 @@ bool HazardSensor_MOOSApp::Iterate()
   // Part 1: Consider posting a settings options summary
   double elapsed_time = m_curr_time - m_last_summary_time;
   if(elapsed_time >= m_options_summary_interval) {
-    m_Comms.Notify("UHZ_OPTIONS_SUMMARY", m_sensor_prop_summary);
+    Notify("UHZ_OPTIONS_SUMMARY", m_sensor_prop_summary);
     m_last_summary_time = m_curr_time;
   }
 
@@ -193,6 +195,10 @@ bool HazardSensor_MOOSApp::OnStartUp()
       m_min_reset_interval = atof(value.c_str());
       handled = true;
     }
+    else if((param == "max_turn_rate") && isNumber(value)) {
+      m_sensor_max_turn_rate = atof(value.c_str());
+      handled = true;
+    }
     else if((param == "classify_period") && isNumber(value)) {
       m_min_queue_msg_interval = atof(value.c_str());
       handled = true;
@@ -216,6 +222,13 @@ bool HazardSensor_MOOSApp::OnStartUp()
     else if((param == "show_reports") && isNumber(value)) {
       m_circle_duration = atof(value.c_str());
       handled = true;
+    }
+    else if(param == "show_reports") {
+      value = tolower(value);
+      if((value == "unlimited") || (value == "nolimit")) {
+	m_circle_duration = -1;
+	handled = true;
+      }
     }
     else if(param == "options_summary_interval")
       handled = setOptionsSummaryInterval(value);
@@ -255,6 +268,9 @@ bool HazardSensor_MOOSApp::OnStartUp()
   if(m_map_hazards.size() == 0)
     reportConfigWarning("No Hazard Field Laydown Provided.");
 
+  if(m_sensor_prop_width.size() == 0)
+    reportConfigWarning("Sensor was configured with NO sensor_config properties!");
+
   return(true);
 }
 
@@ -273,8 +289,16 @@ void HazardSensor_MOOSApp::perhapsSeedRandom()
 bool HazardSensor_MOOSApp::addHazard(string line)
 {
   XYHazard hazard = string2Hazard(line);
-  if(!hazard.isSetX() || !hazard.isSetY() || !hazard.isSetType())
+  if(!hazard.isSetX() || !hazard.isSetY())
     return(false);
+  if(!hazard.isSetType()) {
+    reportConfigWarning("Hazard specified with no type: " + line);
+    return(false);
+  }
+  if(hazard.getLabel() == "") {
+    reportConfigWarning("Hazard specified with no label: " + line);
+    return(false);
+  }
 
   string label = hazard.getLabel();
   if(label == "") {
@@ -385,7 +409,7 @@ bool HazardSensor_MOOSApp::handleNodeReport(const string& node_report_str)
   NodeRecord new_node_record = string2NodeRecord(node_report_str);
 
   if(!new_node_record.valid()) {
-    m_Comms.Notify("UHZ_DEBUG", "Invalid incoming node report");
+    Notify("UHZ_DEBUG", "Invalid incoming node report");
     reportRunWarning("ERROR: Unhandled node record");
     return(false);
   }
@@ -447,14 +471,29 @@ bool HazardSensor_MOOSApp::handleSensorRequest(const string& request)
   if(m_map_swath_width.count(vname) == 0)
     setVehicleSensorSetting(vname, 0, 0, true);
 
-  // Part 4: Update the sensor region/polygon based on new position 
-  //         and perhaps new sensor setting.
-  updateNodePolygon(vix);
 
-  // For each hazard, determine if the hazard is newly within the sensor 
-  // swath of the requesting vehicle.
-  
-  map<string, XYHazard>::iterator p;
+  // Part 4: Determine the vehicle turn rate and if the sensor is "on"
+  double turn_rate = m_node_hdg_hist[vix].getTurnRate(2);
+  bool sensor_on = true;
+  if(turn_rate > m_sensor_max_turn_rate)
+    sensor_on = false;
+
+  // Part 5: Update the sensor region/polygon based on new position 
+  //         and perhaps new sensor setting.
+  updateNodePolygon(vix, sensor_on);
+  // Possibly draw the swath
+  if(m_show_swath) {
+    string poly_spec = m_node_polygons[vix].get_spec();
+    Notify("VIEW_POLYGON", poly_spec);
+  }
+
+  // If the sensor is effectively off, then we're done
+  if(!sensor_on)
+    return(true);
+
+  // Part 6: For each hazard, determine if the hazard is newly within
+  // the sensor swath of the requesting vehicle.
+    map<string, XYHazard>::iterator p;
   for(p=m_map_hazards.begin(); p!=m_map_hazards.end(); p++) {
     string hlabel = p->first;
     bool new_report = updateVehicleHazardStatus(vix, hlabel);  // detection dice
@@ -462,11 +501,6 @@ bool HazardSensor_MOOSApp::handleSensorRequest(const string& request)
       postHazardDetectionReport(hlabel, vname);  // classify dice inside
   }
 
-  // Possibly draw the swath
-  if(m_show_swath) {
-    string poly_spec = m_node_polygons[vix].get_spec();
-    m_Comms.Notify("VIEW_POLYGON", poly_spec);
-  }
   return(true);
 }
 
@@ -639,7 +673,7 @@ void HazardSensor_MOOSApp::postVisuals()
     marker.set_active(true);
     marker.set_color("primary_color", color);
     string spec = marker.get_spec(); 
-    m_Comms.Notify("VIEW_MARKER", spec);
+    Notify("VIEW_MARKER", spec);
   }
 }
 
@@ -649,7 +683,7 @@ void HazardSensor_MOOSApp::postVisuals()
 //            UHZ_DETECTION_REPORT_GILDA = "x=-125,y=-143,label=517"
 
 void HazardSensor_MOOSApp::postHazardDetectionReport(string hazard_label, 
-						   string vname)
+						     string vname)
 {
   // Part 1: Sanity checking
   if(m_map_hazards.count(hazard_label) == 0) {
@@ -659,10 +693,10 @@ void HazardSensor_MOOSApp::postHazardDetectionReport(string hazard_label,
   
   // Part 2: Prepare the hazard detection report
   XYHazard hazard = m_map_hazards[hazard_label];
-  string   spec   = hazard.getSpec("hr,type");
+  string   spec   = hazard.getSpec("hr,type,color,width,shape");
   
-  m_Comms.Notify("UHZ_DETECTION_REPORT", (spec + ",vname=" + vname));
-  m_Comms.Notify("UHZ_DETECTION_REPORT_"+toupper(vname), spec);
+  Notify("UHZ_DETECTION_REPORT", (spec + ",vname=" + vname));
+  Notify("UHZ_DETECTION_REPORT_"+toupper(vname), spec);
 
   // Part 3: Note the detection as another piece of data collected on this
   //         hazard. Then possible for another classify query to be answered
@@ -686,7 +720,7 @@ void HazardSensor_MOOSApp::postHazardDetectionReport(string hazard_label,
     circ.set_transparency(0.3);
     circ.set_time(m_curr_time);
     circ.setDuration(m_circle_duration);
-    m_Comms.Notify("VIEW_CIRCLE", circ.get_spec());
+    Notify("VIEW_CIRCLE", circ.get_spec());
   }
 }
 
@@ -747,7 +781,7 @@ void HazardSensor_MOOSApp::postHazardClassifyReport(string hazard_label,
   string full_str = "vname=" + vname + "," + hazard_spec;
 
   //addQueueMessage(vname, "UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
-  m_Comms.Notify("UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
+  Notify("UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
 
   // Part 4: Build some event messages/info.
   reportEvent("Classify report queued to vehicle: " + vname);
@@ -773,7 +807,7 @@ void HazardSensor_MOOSApp::postHazardClassifyReport(string hazard_label,
     circ.set_transparency(0.3);
     circ.set_time(m_curr_time);
     circ.setDuration(m_circle_duration);
-    m_Comms.Notify("VIEW_CIRCLE", circ.get_spec());
+    Notify("VIEW_CIRCLE", circ.get_spec());
     //addQueueMessage(vname, "VIEW_CIRCLE", circ.get_spec());
   }
 }
@@ -848,6 +882,8 @@ bool HazardSensor_MOOSApp::updateNodeRecords(NodeRecord new_record)
 
   //new_record.setName(tolower(new_record.getName()));
 
+  double heading = new_record.getHeading();
+
   unsigned int i, vsize = m_node_records.size();
   for(i=0; i<vsize; i++) {
     if(new_record.getName() == m_node_records[i].getName()) {
@@ -857,11 +893,15 @@ bool HazardSensor_MOOSApp::updateNodeRecords(NodeRecord new_record)
       double tstamp = m_node_records[i].getTimeStamp();
       m_node_records[i] = new_record;
       m_node_records[i].setTimeStamp(tstamp);
+      m_node_hdg_hist[i].addHeadingTime(heading, m_curr_time);
     }
   }
   if(add_new_record) {
     XYPolygon null_poly;
+    HeadingHistory hdg_hist;
+    hdg_hist.addHeadingTime(heading, m_curr_time);
     m_node_records.push_back(new_record);
+    m_node_hdg_hist.push_back(hdg_hist);
     m_node_polygons.push_back(null_poly);
   }
 
@@ -871,7 +911,7 @@ bool HazardSensor_MOOSApp::updateNodeRecords(NodeRecord new_record)
 //------------------------------------------------------------
 // Procedure: updateNodePolygon
 
-bool HazardSensor_MOOSApp::updateNodePolygon(unsigned int ix)
+bool HazardSensor_MOOSApp::updateNodePolygon(unsigned int ix, bool sensor_on)
 {
   if((ix >= m_node_records.size()) || (ix >= m_node_polygons.size()))
     return(false);
@@ -907,9 +947,13 @@ bool HazardSensor_MOOSApp::updateNodePolygon(unsigned int ix)
   poly.add_vertex(x4, y4);
 
   poly.set_color("edge", "green");
-  poly.set_color("fill", "white");
   poly.set_vertex_size(0);
   poly.set_edge_size(0);
+
+  if(sensor_on)
+    poly.set_color("fill", "white");
+  else
+    poly.set_color("fill", "red");
 
   string label = "sensor_swath_" + vname;
   poly.set_label(label);
@@ -1127,7 +1171,7 @@ bool HazardSensor_MOOSApp::setVehicleSensorSetting(string vname,
 
   // Part 3: Get the set of properties based on the request.
   // Find the property index (pix) with closest match to request. If no
-  // exact width request, match to the next lowest. If requested width is
+  // exact width request, MATCH TO THE NEXT LOWEST. If requested width is
   // smaller than the smallest property width, take the smallest.
   unsigned int pix = 0;
   double       smallest_delta = 0;
@@ -1178,7 +1222,7 @@ bool HazardSensor_MOOSApp::setVehicleSensorSetting(string vname,
   msg += ",pd="     + doubleToStringX(selected_pd,3);
   msg += ",pfa="    + doubleToStringX(implied_pfa,3);
   msg += ",pclass=" + doubleToStringX(selected_class,3);
-  m_Comms.Notify(var, msg);
+  Notify(var, msg);
 
   // Part 5: Update our local stats reflecting the number of updates
   //         for this vehicle and the timestamp of this update
@@ -1217,9 +1261,7 @@ unsigned int HazardSensor_MOOSApp::sensorSwathCount(double swath, string vname)
 
 bool HazardSensor_MOOSApp::buildReport()
 {
-  m_msgs << "============================================" << endl;
   m_msgs << "Hazard File: (" + m_hazard_file + ") "        << endl;
-  m_msgs << "============================================" << endl;
   m_msgs << "     Hazard: " << m_hazard_file_hazard_cnt << endl;
   m_msgs << "     Benign: " << m_hazard_file_benign_cnt << endl;
   m_msgs << endl;
@@ -1241,7 +1283,7 @@ bool HazardSensor_MOOSApp::buildReport()
   }
   m_msgs << actab.getFormattedString();
 
-  m_msgs << endl;
+  m_msgs << endl << endl;
   m_msgs << "============================================" << endl;
   m_msgs << "Sensor Settings / Stats for known vehicles: " << endl;
   m_msgs << "============================================" << endl;

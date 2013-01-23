@@ -113,6 +113,8 @@ class TS_MOOSApp : public AppCastingMOOSApp
   double   m_pause_time;
   bool     m_paused;
   bool     m_conditions_ok;
+  bool     m_exit_ready;
+  bool     m_exit_confirmed;
 
   unsigned int  m_posted_count_local;
   unsigned int  m_posted_count_total;

@@ -1,7 +1,7 @@
 //---------------------------------------------------
 // Helm Behavior file 
 
-initialize   DEPLOY  = true
+initialize   DEPLOY  = false
 initialize   RETURN  = false
 initialize   STATION_KEEP = false
 initialize   LOITER  = true

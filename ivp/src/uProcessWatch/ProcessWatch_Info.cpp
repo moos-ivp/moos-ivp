@@ -35,10 +35,15 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The uProcessWatch application is a simple simulator of water    ");
-  blk("  current. Based on local current information from a given file,");
-  blk("  it repeately reads the vehicle's present position and         ");
-  blk("  publishes a force vector, presumably consumed by uSimMarine.  ");
+  blk("  The uProcessWatch application monitors the presence of MOOS   ");
+  blk("  apps on a watch-list. If one or more are noted to be absent,  ");
+  blk("  it will be so noted on the MOOS variable PROC_WATCH_SUMMARY.  ");
+  blk("  uProcessWatch is appcast enabled and will produce a nice      ");
+  blk("  table summary of watched processes and the CPU load reported  ");
+  blk("  by the processes themselves. The items on the watch list may  ");
+  blk("  be named explicitly in the config file or inferred from the   ");
+  blk("  Antler block or from list of DB_CLIENTS. An application may be");
+  blk("  excluded from the watch list if desired.                      ");
 }
 
 //----------------------------------------------------------------
@@ -87,20 +92,20 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  WATCH_ALL = true   // The default is true.                    ");
+  blk("  watch_all = true   // The default is true.                    ");
   blk("                                                                ");
-  blk("  WATCH  = pMarinePID:PID_OK                                    ");
-  blk("  WATCH  = uSimMarine:USM_OK                                    ");
+  blk("  watch  = pMarinePID:PID_OK                                    ");
+  blk("  watch  = uSimMarine:USM_OK                                    ");
   blk("                                                                ");
-  blk("  NOWATCH = uXMS*                                               ");
+  blk("  nowatch = uXMS*                                               ");
   blk("                                                                ");
-  blk("  ALLOW_RETRACTIONS = true   // Always allow run-warnings to be ");
+  blk("  allow_retractions = true   // Always allow run-warnings to be ");
   blk("                             // retracted if proc re-appears    ");
   blk("                                                                ");
   blk("  // A negative value means summary only when status changes.   ");
-  blk("  SUMMARY_WAIT = 10 // Seconds. Default is -1.                  ");
+  blk("  summary_wait = 10 // Seconds. Default is -1.                  ");
   blk("                                                                ");
-  blk("  POST_MAPPING = PROC_WATCH_FULL_SUMMARY, UPW_FULL_SUMMARY      ");
+  blk("  post_mapping = PROC_WATCH_FULL_SUMMARY, UPW_FULL_SUMMARY      ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -133,7 +138,7 @@ void showInterfaceAndExit()
   blk("  PROC_WATCH_FULL_SUMMARY = pMarineViewer(1/0),pHelmIvP(1/0),   ");
   blk("                            uSimMarine(1/0),pMarinePID(1/0)     ");
   blk("  PROC_WATCH_SUMMARY      = All Present                         ");
-  blk("  UPW_EVENT               = Process [pMarinePID] is noted to be ");
+  blk("  PROC_WATCH_EVENT        = Process [pMarinePID] is noted to be ");
   blk("                            present.                            ");
   blk("                                                                ");
   exit(0);

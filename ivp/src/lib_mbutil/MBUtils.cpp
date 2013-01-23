@@ -966,12 +966,19 @@ bool strContainsWhite(const string& str)
 }
 
 //----------------------------------------------------------------
-// Procedure: packageToString
-//      Note: Added Jan 18 07 
+// Procedure: svectorToString
+//      Note: Added Jan1807/Jan1213 
 
-string packageToString(const vector<string>&)
+string svectorToString(const vector<string>& svector, char separator)
 {
   string result;
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    if(i>0)
+      result += separator;
+    result += svector[i];
+  }
+
   return(result);
 }
     
@@ -1655,24 +1662,6 @@ string modeShorten(string mode_str, bool really_short)
   }
 	
   return(return_value);
-}
-
-//----------------------------------------------------------------
-// Procedure: getReleaseInfo
-// 
-
-vector<string> getReleaseInfo(const string& app)
-{
-  string pad = padString("", (16-app.length()));
-  vector<string> v;
-  v.push_back("************************************************************************");
-  v.push_back("* " + app + " - MOOS-IvP Release Bundle - VERSION 12.11 Beta" + pad + " *");
-  v.push_back("* M.Benjamin (MIT), P.Newman (Oxford), H.Schmidt and J.Leonard (MIT)   *");
-  v.push_back("* Copyright (C) 2008 Free Software Foundation, Inc.                    *");
-  v.push_back("* This is free software; see the source for copying conditions.        *");
-  v.push_back("************************************************************************");
-  v.push_back("");
-  return(v);
 }
 
 //----------------------------------------------------------------

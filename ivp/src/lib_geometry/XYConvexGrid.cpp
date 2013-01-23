@@ -261,10 +261,18 @@ double XYConvexGrid::getVal(unsigned int ix, unsigned int cix) const
 {
   if((ix >= m_elements.size()) || (cix >= m_cell_vars.size()))
     return(0);
-  
   return(m_cell_vals[ix][cix]);
 }
 
+//-------------------------------------------------------------
+// Procedure: getVar
+
+string XYConvexGrid::getVar(unsigned int cix) const
+{
+  if(cix >= m_cell_vars.size())
+    return("");
+  return(m_cell_vars[cix]);
+}
 
 //-------------------------------------------------------------
 // Procedure: getMin
@@ -273,7 +281,6 @@ double XYConvexGrid::getMin(unsigned int cix) const
 {
   if(cix >= m_cell_vars.size())
     return(0);
-
   return(m_cell_min_sofar[cix]);
 }
 
@@ -284,8 +291,17 @@ double XYConvexGrid::getMax(unsigned int cix) const
 {
   if(cix >= m_cell_vars.size())
     return(0);
-
   return(m_cell_max_sofar[cix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getInitVal
+
+double XYConvexGrid::getInitVal(unsigned int cix) const
+{
+  if(cix >= m_cell_vars.size())
+    return(0);
+  return(m_cell_init_vals[cix]);
 }
 
 //-------------------------------------------------------------
@@ -295,7 +311,6 @@ double XYConvexGrid::getMinLimit(unsigned int cix) const
 {
   if(cix >= m_cell_vars.size())
     return(0);
-  
   return(m_cell_min_limit[cix]);
 }
 

@@ -119,7 +119,7 @@ bool GenericSensor_MOOSApp::Iterate()
   // Consider posting a settings-options summary
   double elapsed_time = m_curr_time - m_last_summary_time;
   if(elapsed_time >= m_options_summary_interval) {
-    m_Comms.Notify("UGS_OPTIONS_SUMMARY", m_sensor_prop_summary);
+    Notify("UGS_OPTIONS_SUMMARY", m_sensor_prop_summary);
     m_last_summary_time = m_curr_time;
   }
   
@@ -349,7 +349,7 @@ bool GenericSensor_MOOSApp::handleMailSensorRequest(const string& request)
   circ.set_transparency(m_scope_transparency);
   circ.set_time(m_curr_time);
   circ.setDuration(10);
-  m_Comms.Notify("VIEW_CIRCLE", circ.get_spec());
+  Notify("VIEW_CIRCLE", circ.get_spec());
   
   return(true);
 }
@@ -423,7 +423,7 @@ void GenericSensor_MOOSApp::postVisuals()
     point.set_vertex_size(4);
     point.set_color("vertex", m_color_source_pts);
     string spec = point.get_spec(); 
-    m_Comms.Notify("VIEW_POINT", spec);
+    Notify("VIEW_POINT", spec);
   }
 }
 
@@ -451,7 +451,7 @@ void GenericSensor_MOOSApp::postSensorReport(double ptx, double pty, string vnam
   
   string report = "vname=" + vname + ",x=" + doubleToString(rx,1) + 
     ",y=" + doubleToString(ry,1);
-  m_Comms.Notify("UGS_SENSOR_REPORT_" + toupper(vname), report);
+  Notify("UGS_SENSOR_REPORT_" + toupper(vname), report);
   
   m_map_reports_total[vname]++;
 
@@ -462,7 +462,7 @@ void GenericSensor_MOOSApp::postSensorReport(double ptx, double pty, string vnam
   point.set_vertex_size(4);
   point.set_color("vertex", "white");
   string spec = point.get_spec(); 
-  m_Comms.Notify("VIEW_POINT", spec);
+  Notify("VIEW_POINT", spec);
 }
 
 //------------------------------------------------------------
@@ -602,7 +602,7 @@ bool GenericSensor_MOOSApp::setVehicleSensorSetting(string req_vname,
   string var = "UGS_CONFIG_ACK_" + toupper(req_vname);
   string msg = "vname=" + req_vname;
   msg += ",range="  + doubleToStringX(select_range, 1);
-  m_Comms.Notify(var, msg);
+  Notify(var, msg);
 
   // Part 5: Update our local stats reflecting the number of updates
   //         for this vehicle and the timestamp of this update

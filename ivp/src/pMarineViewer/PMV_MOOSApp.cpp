@@ -138,9 +138,9 @@ void PMV_MOOSApp::postConnectionPairs()
     VarDataPair pair = m_connection_pairs[i];
     string var = pair.get_var();
     if(pair.is_string())
-      m_Comms.Notify(var, pair.get_sdata());
+      Notify(var, pair.get_sdata());
     else
-      m_Comms.Notify(var, pair.get_ddata());
+      Notify(var, pair.get_ddata());
   }
 }
 
@@ -207,7 +207,6 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("TRAIL_RESET",  0);
   m_Comms.Register("VIEW_MARKER",  0);
   m_Comms.Register("VIEW_COMMS_PULSE", 0);
-  m_Comms.Register("BEARING_LINE", 0);
   m_Comms.Register("GRID_CONFIG",  0);
   m_Comms.Register("GRID_DELTA",   0);
   m_Comms.Register("VIEW_GRID", 0);
@@ -251,9 +250,9 @@ void PMV_MOOSApp::handlePendingGUI()
       }
       
       if(val_type == "string")
-	m_Comms.Notify(var, val);
+	Notify(var, val);
       else
-	m_Comms.Notify(var, dval);
+	Notify(var, dval);
     }
   }
 
@@ -383,9 +382,9 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
     VarDataPair pair = left_pairs[i];
     string var = pair.get_var();
     if(!pair.is_string())
-      m_Comms.Notify(var, pair.get_ddata());
+      Notify(var, pair.get_ddata());
     else
-      m_Comms.Notify(var, pair.get_sdata());
+      Notify(var, pair.get_sdata());
   }
 
   vector<VarDataPair> right_pairs = m_gui->mviewer->getRightMousePairs();
@@ -394,9 +393,9 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
     VarDataPair pair = right_pairs[i];
     string var = pair.get_var();
     if(!pair.is_string())
-      m_Comms.Notify(var, pair.get_ddata());
+      Notify(var, pair.get_ddata());
     else
-      m_Comms.Notify(var, pair.get_sdata());
+      Notify(var, pair.get_sdata());
   }
 
   vector<VarDataPair> non_mouse_pairs = m_gui->mviewer->getNonMousePairs();
@@ -405,9 +404,9 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
     VarDataPair pair = non_mouse_pairs[i];
     string var = pair.get_var();
     if(!pair.is_string())
-      m_Comms.Notify(var, pair.get_ddata());
+      Notify(var, pair.get_ddata());
     else
-      m_Comms.Notify(var, pair.get_sdata());
+      Notify(var, pair.get_sdata());
   }
   
   handlePendingGUI();
@@ -646,8 +645,8 @@ void PMV_MOOSApp::postAppCastRequest(string channel_node,
   str += ",key=" + key;
   str += ",thresh=" + threshold;
 
-  m_Comms.Notify("APPCAST_REQ", str);
-  m_Comms.Notify("APPCAST_REQ_"+toupper(channel_node), str);
+  Notify("APPCAST_REQ", str);
+  Notify("APPCAST_REQ_"+toupper(channel_node), str);
 }
 
 //------------------------------------------------------------

@@ -57,7 +57,7 @@ class HazardMetric : public AppCastingMOOSApp
   double  m_penalty_missed_hazard;
   double  m_max_time;
   double  m_penalty_max_time_over;
-  double  m_penalty_max_time_overage;
+  double  m_penalty_max_time_rate;
 
  private: // State variables
   
@@ -66,8 +66,12 @@ class HazardMetric : public AppCastingMOOSApp
   XYHazardSet  m_hazards;
 
   double       m_search_start_time;
+  double       m_elapsed_time;
+  unsigned int m_total_reports_received;
 
-  // Collection of Incoming reports/stats
+  double       m_worst_possible_score;
+
+  // Collection of Incoming reports/stats. Each key is vehicle name
   std::map<std::string, XYHazardSet>     m_map_reports;
   std::map<std::string, XYHazardRepEval> m_map_evals;
   std::map<std::string, unsigned int>    m_map_report_amt;

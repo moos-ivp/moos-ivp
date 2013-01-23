@@ -33,12 +33,14 @@ ProcessConfig = ANTLER
 
 ProcessConfig = uFldBeaconRangeSensor
 {
-  AppTick   = 4
-  CommsTick = 4
+  AppTick   = 2
+  CommsTick = 2
 
   // System-wide Simulator configuration
   ping_payments = upon_accept
   report_vars   = long
+
+  verbose = true
 
   // Configurations for all vehicles/nodes
   //reach_distance = default = nolimit
@@ -102,12 +104,12 @@ ProcessConfig = uTimerScript
   reset_max  = no_limit
   reset_time = all-posted
 
-  time_warp   = 1:2
+  time_warp   = 1
   //delay_reset = 25
   //delay_start = 10:20
 
-  EVENT = var=BRS_RANGE_REQUEST, val="name=hotel", time=1:2
-  //EVENT = var=BRS_RANGE_REQUEST, val="name=hotel", time=15:20
+  //EVENT = var=BRS_RANGE_REQUEST, val="name=hotel", time=1:2
+  EVENT = var=BRS_RANGE_REQUEST, val="name=hotel", time=25:30
 }
 
 
@@ -128,20 +130,6 @@ ProcessConfig = pLogger
   WildCardLogging = true
 
   LoggingDirectorySummaryFile = /Users/mikerb/.plogger2
-}
-
-//------------------------------------------
-// uXMS config block
-
-ProcessConfig = uXMS
-{
-  AppTick   = 0.5
-  CommsTick = 0.5
-
-  VAR = IMS_*
-  VAR = NAV_X
-  VAR = NAV_Y
-  VAR = NAV_SPEED
 }
 
 

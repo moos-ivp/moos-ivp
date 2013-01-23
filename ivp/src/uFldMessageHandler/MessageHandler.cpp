@@ -215,9 +215,9 @@ bool MessageHandler::handleMailNodeMessage(const string& msg)
 
   // Part 3: Handling and Posting the Message
   if(is_string) 
-    m_Comms.Notify(var_name, var_sval, src_node);
+    Notify(var_name, var_sval, src_node);
   else
-    m_Comms.Notify(var_name, var_dval, src_node);
+    Notify(var_name, var_dval, src_node);
 
   return(true);
 }
@@ -235,7 +235,7 @@ void MessageHandler::postMsgSummary()
   str += ",valid="    + uintToString(m_valid_messages_rcvd);
   str += ",rejected=" + uintToString(m_rejected_messages_rcvd);
 
-  m_Comms.Notify("UMH_SUMMARY_MSGS", str);
+  Notify("UMH_SUMMARY_MSGS", str);
 }
 
 //------------------------------------------------------------
@@ -299,12 +299,13 @@ bool MessageHandler::buildReport()
     string elapsed  = doubleToString((m_curr_time - m_map_msg_tstamp[src]),1);
     string msg_var  = m_map_msg_var[src];
     string msg_val  = m_map_msg_value[src];
-    actab << src << total + elapsed + msg_var + msg_val;
+    actab << src << total << elapsed << msg_var << msg_val;
   }
+
   m_msgs << actab.getFormattedString();
 
   list<string>::iterator p2;
-  m_msgs << endl;
+  m_msgs << endl << endl;
   m_msgs << "Last Few Messages: (oldest to newest) " << endl;
   m_msgs << "======================================" << endl;
   m_msgs << "Valid Mgs: " << endl;

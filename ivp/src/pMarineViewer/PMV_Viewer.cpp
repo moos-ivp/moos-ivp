@@ -193,10 +193,13 @@ bool PMV_Viewer::setParam(string param, string value)
       handled = true;
     }
   }
+  else if(param == "trils_clear")
+    handled = m_op_area.addVertex(value, m_geodesy);
+
   else if(param == "op_vertex")
     handled = m_op_area.addVertex(value, m_geodesy);
 
-  else if(param == "filter_out_tag") {
+  else if((param == "filter_out_tag") || (param == "trail_reset")) {
     handled = true;
     m_geoshapes_map.clear(value);
     m_vehiset.clear(value);

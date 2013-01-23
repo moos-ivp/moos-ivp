@@ -84,11 +84,13 @@ void showExampleConfigAndExit()
   blu("uFldHazardMgr Example MOOS Configuration                   ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = uFldHazardMgr                              ");
+  blk("ProcessConfig = uFldHazardMgr                                   ");
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
+  blk("  swath_width = 25                                              ");
+  blk("  sensor_pd   = 0.9                                             ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -102,20 +104,29 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("uFldHazardMgr INTERFACE                                    ");
+  blu("uFldHazardMgr INTERFACE                                         ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
-  blk("                 string_val=BAR                                 ");
+  blk("  HAZARDSET_REQUEST    = true                                   ");
+  blk("  UHZ_CONFIG_ACK       = vname=archie,width=50,pd=0.86,pfa=0.74,");
+  blk("                         pclass=0.6                             ");
+  blk("  UHZ_DETECTION_REPORT = x=-150.3,y=-117.5,label=12             ");
+  blk("  UHZ_OPTIONS_SUMMARY  = width=10,exp=6,class=0.93:width=50,exp=2,");
+  blk("                         class=0.60:width=25,exp=4,class=0.85   ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
-  blk("                                                                ");
+  blk("  UHZ_CONFIG_REQUEST   = vname=archie,width=38,pd=0.86          ");
+  blk("  UHZ_SENSOR_REQUEST   = vname=archie                           ");
+  blk("  HAZARDSET_REPORT     = source=archie#name=Sarah#              ");
+  blk("                         x=-150.3,y=-117.5,label=12#            ");
+  blk("                         x=-151,y=-217.3,label=01#              ");
+  blk("                         x=-178.8,y=-234,label=15#              ");
+  blk("                         x=-59.8,y=-294.1,label=13              ");
   exit(0);
 }
 

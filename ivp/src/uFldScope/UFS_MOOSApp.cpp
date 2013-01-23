@@ -24,6 +24,7 @@
 #include "UFS_MOOSApp.h"
 #include "ColorParse.h"
 #include "MBUtils.h"
+#include "ACTable.h"
 
 using namespace std;
 
@@ -33,9 +34,6 @@ using namespace std;
 UFS_MOOSApp::UFS_MOOSApp()
 {
   m_total_reports    = 0;
-  m_refresh_mode     = "streaming";
-  m_update_requested = true;
-
   m_layout_index     = 0;
   m_layout_applied   = false;
 }
@@ -45,8 +43,9 @@ UFS_MOOSApp::UFS_MOOSApp()
 
 bool UFS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
   MOOSMSG_LIST::iterator p;
-	
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 	
@@ -78,15 +77,8 @@ bool UFS_MOOSApp::OnConnectToServer()
 
 bool UFS_MOOSApp::Iterate()
 {
-  if((m_refresh_mode == "help") && m_update_requested)
-    printHelp();
-  else if((m_refresh_mode == "streaming") || m_update_requested) {
-    makeReportRaw();
-    printReport();
-    m_total_reports++;
-  }
-
-  m_update_requested = false;
+  AppCastingMOOSApp::Iterate();
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -95,6 +87,8 @@ bool UFS_MOOSApp::Iterate()
 
 bool UFS_MOOSApp::OnStartUp()
 {
+  AppCastingMOOSApp::OnStartUp();
+
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
@@ -131,55 +125,12 @@ bool UFS_MOOSApp::OnStartUp()
 }
 
 //------------------------------------------------------------
-// Procedure: handleCommand
-
-void UFS_MOOSApp::handleCommand(char c)
-{
-  switch(c) {
-  case 'l':
-  case 'L':
-    m_update_requested = true;
-    if(!m_layout_applied)
-      m_layout_applied = true;
-    else {
-      m_layout_index++;
-      if(m_layout_index >= m_layouts.size()) {
-	m_layout_applied = false;
-	m_layout_index = 0;
-      }
-    }
-    break;
-  case 'a':
-  case 'A':
-    m_layout_applied = !m_layout_applied;
-    m_update_requested = true;
-    break;
-  case 'r':
-  case 'R':
-    m_refresh_mode = "streaming";
-    break;
-  case 'p':
-  case 'P':
-  case ' ':
-    m_refresh_mode = "paused";
-    m_update_requested = true;
-    break;
-  case 'h':
-  case 'H':
-    if(m_refresh_mode != "help")
-      m_refresh_mode = "help";
-    else
-      m_refresh_mode = "paused";
-    m_update_requested = true;
-    break;
-  }
-}
-  
-//------------------------------------------------------------
 // Procedure: registerVariables
 
 void UFS_MOOSApp::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
+
   map<string,string>::iterator p = m_map_varkeys.begin();
   while(p != m_map_varkeys.end()) {
     string moos_var = p->first;
@@ -316,9 +267,6 @@ string UFS_MOOSApp::getPosting(string moosvar, string keyval)
 // charlie   1.21     410.5      72%     8        132
 // berta     1.19     388.2      64%     2        180
 // alpha     1.12     412.9      79%     4      11600
-//
-// m_raw_report_maxlens:
-// 6         4        5          3       1        5
 
 void UFS_MOOSApp::makeReportRaw()
 {
@@ -371,111 +319,7 @@ void UFS_MOOSApp::makeReportRaw()
     m_raw_report.push_back(row);
     p2++;
   }
-
-  // Part 4: For each column in the raw report table, determine the
-  // Maximum length for each column by examining the entries for each
-  // row.
-
-  // First create a vector of length equal to the number or columns. 
-  // We assume the number of columns is the same for each row based on
-  // the way we constructed things in Part 2.
-  unsigned int columns = headers.size();
-  vector<unsigned int> tmp(columns, 0);
-  m_raw_report_maxlens = tmp;
-
-  unsigned int i, j, rows = m_raw_report.size();
-  for(i=0; i<rows; i++) {
-    for(j=0; j<columns; j++) {
-      unsigned int len = m_raw_report[i][j].length();
-      if(len > m_raw_report_maxlens[j])
-	m_raw_report_maxlens[j] = len;
-    }
-  }
-      
 }
-
-
-//------------------------------------------------------------
-// Procedure: printReport
-
-void UFS_MOOSApp::printReport() const
-{
-  // Part 1: First ensure we have a non-empty properly formatted raw table.
-  unsigned int i, rows = m_raw_report.size();
-  if(rows == 0) {
-    cout << "Empty Results" << endl;
-    return;
-  }
-  for(i=0; i<rows; i++) {
-    if(m_raw_report[i].size() != m_raw_report_maxlens.size()) {
-      cout << "uFldReport - Table MisMatch!!!" << endl;
-      return;
-    }
-  }
-
-  // Part 2: Flush the screen a bit with newlines
-  cout << endl << endl << endl << endl << endl << endl;
-
-
-  // Part 3A: Output the Table Header Labels
-  string column_sep = "  ";
-  unsigned j, columns = m_raw_report[0].size();
-  for(j=0; j<columns; j++) {
-    unsigned int len = m_raw_report_maxlens[j];
-    string entry = padString(m_raw_report[0][j], len);
-    cout << entry << column_sep;
-  }
-  if(m_refresh_mode == "paused")
-    cout << termColor("reversered") << "PAUSED";
-  else if(m_refresh_mode == "streaming")
-    cout << termColor("reversegreen") << "STREAMING";
-
-  cout << termColor("reverseblue");
-  if(m_layout_applied)
-    cout << "(" << uintToString(m_layout_index+1) << ")";
-  else
-    cout << "(A)";
-  cout << termColor() << endl;
-
-  // Part 3B: Output the Table Header Separators
-  for(j=0; j<columns; j++) {
-    unsigned int len = m_raw_report_maxlens[j];
-    string entry(len, '=');
-    cout << entry << column_sep;
-  }
-  cout << "(" << uintToString(m_total_reports) << ")" << endl;
-
-  
-  // Part 4: Output the body of the table
-  for(i=1; i<rows; i++) {   
-    columns = m_raw_report[i].size();
-    for(j=0; j<columns; j++) {
-      unsigned int len = m_raw_report_maxlens[j];
-      string entry = padString(m_raw_report[i][j], len);
-      cout << entry << column_sep;
-    }
-    cout << endl;
-  }  
-}
-
-//------------------------------------------------------------
-// Procedure: printHelp()
-
-void UFS_MOOSApp::printHelp() const
-{
-  string refstr = termColor("reversered") + "HELP" + termColor();
-
-  printf("\n\n");
-  printf("KeyStroke    Function         %s      \n", refstr.c_str());
-  printf("---------    ---------------------------          \n");
-  printf("  SPACE      Update info once-now, then Pause     \n");
-  printf("   a/A       Show ALL columns - no layout filters \n");
-  printf("   l/L       Use/Change the layout filter(s)      \n");
-  printf("   p/P       Pause information refresh            \n");
-  printf("   r/R       Resume information refresh           \n");
-  printf("   h/H       Show this Help msg - 'R' to resume   \n");
-}
-
 
 //------------------------------------------------------------
 // Procedure: outputRawReport
@@ -493,19 +337,6 @@ void UFS_MOOSApp::outputRawReport() const
 }
 
 //------------------------------------------------------------
-// Procedure: outputRawColInfo
-//   Purpose: Purely for debugging.
-
-void UFS_MOOSApp::outputRawColInfo() const
-{
-  unsigned j, columns = m_raw_report_maxlens.size();
-  for(j=0; j<columns; j++)
-    cout << m_raw_report_maxlens[j] << "  ";
-  cout << endl;
-}
-
-
-//------------------------------------------------------------
 // Procedure: configInLayout
 //   Purpose: Determine if the given Scope Config is to be included
 //            in a report based on: 
@@ -517,28 +348,68 @@ bool UFS_MOOSApp::configInLayout(const UFS_Config& config) const
 {
   // Part 1: If layouts are not being applied, the ALL Scope Configs
   // are included in all reports. Just return true.
-  if(!m_layout_applied) {
+  if(!m_layout_applied) 
     return(true);
-  }
 
   // Part 2: Check the layout index. If out of bounds, just return
   // true indicating that the current config passes. This will be true
   // when no layouts have been provided by the user.
-  if(m_layout_index >= m_layouts.size()) {
+  if(m_layout_index >= m_layouts.size()) 
     return(true);
-  }
+
   // Part 3: Check the config's "fld" against a layout
   string fld_alias = tolower(config.getAlias());
-  if(vectorContains(m_layouts[m_layout_index], fld_alias)) {
+  if(vectorContains(m_layouts[m_layout_index], fld_alias)) 
     return(true);
-  }
 
   // Part 4: Check the config's "alias" against a layout
   string alias = tolower(config.getAlias());
-  if(vectorContains(m_layouts[m_layout_index], alias)) {
+  if(vectorContains(m_layouts[m_layout_index], alias)) 
     return(true);
-  }
 
   return(false);
 }
 
+
+//---------------------------------------------------------
+// Procedure: buildReport()
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
+//   Example:
+
+// VName           Time  MODE  TotDist  TripDist  Speed  
+// =====  =============  ====  =======  ========  =====  
+// alpha  1357989896.95  PARK  
+
+bool UFS_MOOSApp::buildReport()
+{
+  makeReportRaw();
+  m_total_reports++;
+
+  // Part 1: First ensure we have a non-empty properly formatted raw table.
+  unsigned int i, rows = m_raw_report.size();
+  if(rows == 0) {
+    cout << "Empty Results" << endl;
+    return(false);
+  }
+
+  unsigned int j, columns = m_raw_report[0].size();
+
+  ACTable actab(columns, 2);
+
+  // Part 3A: Output the Table Header Labels
+  for(j=0; j<columns; j++) 
+    actab << m_raw_report[0][j];
+  actab.addHeaderLines();
+
+  // Part 4: Output the body of the table
+  for(i=1; i<rows; i++) {   
+    columns = m_raw_report[i].size();
+    for(j=0; j<columns; j++) 
+      actab << m_raw_report[i][j];
+  }
+
+  m_msgs << actab.getFormattedString();
+  return(true);
+}

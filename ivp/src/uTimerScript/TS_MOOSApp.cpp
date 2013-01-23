@@ -65,6 +65,8 @@ TS_MOOSApp::TS_MOOSApp()
   m_atomic         = false;
   m_upon_awake     = "n/a";
   m_script_name    = "unnamed";
+  m_exit_ready     = false;
+  m_exit_confirmed = false;
 
   // Default values for configuration parameters.
   m_reset_max      = 0;
@@ -121,6 +123,10 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "DB_UPTIME") {
       if(m_connect_tstamp == 0) 
 	m_connect_tstamp = (MOOSTime() - dval);
+    }
+    else if(key == "EXITED_NORMALLY") {
+      if((sval == GetAppName()) && (msrc == GetAppName()) && m_exit_ready)
+	m_exit_confirmed = true;
     }
     else if(key == m_var_pause) {
       string pause_val = tolower(sval);
@@ -214,6 +220,10 @@ bool TS_MOOSApp::Iterate()
     postStatus();
 
   AppCastingMOOSApp::PostReport();
+
+  if(m_exit_confirmed)
+    exit(0);
+
   return(true);
 }
 
@@ -417,6 +427,7 @@ void TS_MOOSApp::registerVariables()
   m_Comms.Register(m_var_pause, 0);
   m_Comms.Register(m_var_reset, 0);
   m_Comms.Register("DB_UPTIME", 0);
+  m_Comms.Register("EXITED_NORMALLY", 0);
 
   // Get all the variable names from all present conditions.
   vector<string> all_vars;
@@ -442,12 +453,17 @@ void TS_MOOSApp::addNewEvent(const string& event_str)
 {
   string new_var;
   string new_val;
-  double new_ptime_min = -1;
-  double new_ptime_max = -1;
+  double new_ptime_min = 0;
+  double new_ptime_max = 0;
 
   vector<string> svector = parseStringQ(event_str, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
+    if(stripBlankEnds(tolower(svector[i])) == "quit") {
+      new_var = "EXITED_NORMALLY";
+      new_val = GetAppName();
+    }
+
     string param = tolower(biteStringX(svector[i], '='));
     string value = svector[i];
     if(param == "var") {
@@ -488,7 +504,7 @@ void TS_MOOSApp::addNewEvent(const string& event_str)
 	  reportConfigWarning("Invalid event time-interval: " + origv);
       }
     }
-    else
+    else if(param != "quit")
       reportConfigWarning("Unknown param in event config: " + param);
 
   }
@@ -499,10 +515,6 @@ void TS_MOOSApp::addNewEvent(const string& event_str)
   }
   if(new_val=="") {
     reportConfigWarning("Event configured with NULL posting value");
-    return;
-  }
-  if(new_ptime_min==-1) {
-    reportConfigWarning("Event configured with missing time or time-interval");
     return;
   }
 
@@ -525,7 +537,9 @@ void TS_MOOSApp::addNewEvent(const string& event_str)
 
 void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
 {
-  string msg = "Script (Re)Init. ";
+  string msg = "Script Re-Start. ";
+  if(m_reset_count == 0)
+    msg = "Script Start. ";
   msg += "Warp=" + doubleToStringX(m_uts_time_warp.getValue());
   msg += ", DelayStart=" + doubleToString(m_delay_start.getValue(),1);
   msg += ", DelayReset=" + doubleToString(m_delay_reset.getValue(),1);
@@ -636,33 +650,40 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   m_rand_vars.reset("at_post");
   string variable = pair.get_var();
 
+  if(variable == "EXITED_NORMALLY") {
+    Notify("EXITED_NORMALLY", GetAppName());
+    m_exit_ready = true;
+    reportEvent("Quitting by design....");
+    return;
+  }
+
   if(!pair.is_string()) {
-    m_Comms.Notify(variable, pair.get_ddata());
+    Notify(variable, pair.get_ddata());
     return;
   }
     
   string sval = pair.get_sdata();
   // Handle special case where MOOSDB_UPTIME *is* the post
   if((sval == "$(DBTIME)") || (sval == "$[DBTIME]")) {
-    m_Comms.Notify(variable, db_uptime);
+    Notify(variable, db_uptime);
     return;
   }
 
   // Handle special case where UTC_TIME *is* the post
   if((sval == "$(UTCTIME)") || (sval == "$[UTCTIME]")) {
-    m_Comms.Notify(variable, db_uptime);
+    Notify(variable, db_uptime);
     return;
   }
 
   // Handle special case where COUNT *is* the post
   else if((sval == "$(COUNT)") || (sval == "$[COUNT]")) {
-    m_Comms.Notify(variable, m_posted_count_local);
+    Notify(variable, m_posted_count_local);
     return;
   }
   
   // Handle special case where COUNT *is* the post
   else if((sval == "$(TCOUNT)") || (sval == "$[TCOUNT]")) {
-    m_Comms.Notify(variable, m_posted_count_total);
+    Notify(variable, m_posted_count_total);
     return;
   }
   
@@ -672,6 +693,7 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   sval = findReplace(sval, "$(COUNT)", uintToString(m_posted_count_local));
  
   sval = findReplace(sval, "$[DBTIME]", doubleToString(db_uptime, 2));
+  sval = findReplace(sval, "$[VNAME]", m_host_community);
   sval = findReplace(sval, "$[UTCTIME]", doubleToString(m_curr_time, 2));
   sval = findReplace(sval, "$[TCOUNT]", uintToString(m_posted_count_total));
   sval = findReplace(sval, "$[COUNT]", uintToString(m_posted_count_local));
@@ -718,10 +740,10 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
 
   if(isNumber(sval) && !pair.is_quoted()) {
     double dval = atof(sval.c_str());
-    m_Comms.Notify(variable, dval);
+    Notify(variable, dval);
   }
   else
-    m_Comms.Notify(variable, sval);
+    Notify(variable, sval);
 
   addLogEvent(variable, sval, db_uptime);
 }
@@ -849,7 +871,7 @@ void TS_MOOSApp::postStatus()
     maxresets = "/" + uintToString(m_reset_max);
   status += ", resets=" + uintToString(m_reset_count) + maxresets;
   
-  m_Comms.Notify(m_var_status, status);
+  Notify(m_var_status, status);
   m_status_tstamp = m_curr_time;
 }
   
@@ -1121,7 +1143,7 @@ bool TS_MOOSApp::handleMathExpr(string& str)
 
 bool TS_MOOSApp::buildReport()
 {
-  string step = uintToString(m_posted_count_local+1);
+  string step = uintToString(m_posted_count_local);
 
   // Part 1: Overall information
   string s_uts_time_warp = doubleToStringX(m_uts_time_warp.getValue(),2);

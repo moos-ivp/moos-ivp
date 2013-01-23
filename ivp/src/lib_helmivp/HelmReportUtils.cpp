@@ -146,7 +146,8 @@ HelmReport string2HelmReport(const string& str,
     }
 
     else if(left == "completed_bhvs") {
-      report.clearIdleBHVs();
+      if(strContains(report.getCompletedBehaviors(), "none"))
+	report.clearCompletedBHVs();
       string descriptor = biteStringX(right, '$');
       string time = biteStringX(right, '$');
       string upds = biteStringX(right, '$');

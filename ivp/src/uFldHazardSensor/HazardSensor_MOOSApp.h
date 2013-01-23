@@ -27,6 +27,7 @@
 #include "XYPolygon.h"
 #include "NodeRecord.h"
 #include "XYHazard.h"
+#include "HeadingHistory.h"
 
 class HazardSensor_MOOSApp : public AppCastingMOOSApp
 {
@@ -76,7 +77,7 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   bool    setVehicleSensorSetting(std::string, double, double, bool v=false);
   bool    processHazardFile(std::string filename);
   bool    updateNodeRecords(NodeRecord);
-  bool    updateNodePolygon(unsigned int);
+  bool    updateNodePolygon(unsigned int, bool sensor_on=true);
   void    updateSwathGeometry();
   void    calcSwathGeometry(double, double&, double&);
 
@@ -100,6 +101,7 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
 
   // Vector of vehicles. Index between vectors match to same vehicle.
   std::vector<NodeRecord>      m_node_records;
+  std::vector<HeadingHistory>  m_node_hdg_hist;
   std::vector<XYPolygon>       m_node_polygons;
 
   // Key for each map below is the vehicle name. Swath width and PD are
@@ -119,6 +121,7 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   bool        m_seed_random;
   double      m_swath_len;  // Same for everyone, all settings.
   double      m_min_queue_msg_interval;
+  double      m_sensor_max_turn_rate;
 
   // Absolute sensor characteristics. User may choose one of the
   // available widths. ROC curve and classification accuracy follow.

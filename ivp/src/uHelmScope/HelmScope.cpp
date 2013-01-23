@@ -257,7 +257,7 @@ bool HelmScope::OnStartUp()
     
   registerVariables();
 
-  m_Comms.Notify("IVPHELM_REJOURNAL", 1);
+  Notify("IVPHELM_REJOURNAL", 1);
   return(true);
 }
 
@@ -486,7 +486,6 @@ void HelmScope::handleHelmStatusVar(const string& sval)
   }
 }
 
-
 //------------------------------------------------------------
 // Procedure: addScopeVariables
 
@@ -687,7 +686,8 @@ void HelmScope::printReport()
   printf("%s", termColor().c_str());
   printf("(%d)\n", m_iteration); 
 
-  list<string> report_lines = m_helm_report.formattedSummary(m_curr_time);
+  list<string> report_lines = m_helm_report.formattedSummary(m_curr_time,
+							     m_concise_bhv_list);
   list<string>::const_iterator p;
   for(p=report_lines.begin(); p!=report_lines.end(); p++) {
     string line = *p;

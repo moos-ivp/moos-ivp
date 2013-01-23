@@ -173,8 +173,8 @@ void ShoreBroker::sendAcks()
       string msg_val = m_shore_host_record.getSpec() + 
 	",status=" + m_node_host_records[i].getStatus();
 
-      m_Comms.Notify(msg_var, msg_val);
-      m_Comms.Notify("NODE_BROKER_VACK", m_node_host_records[i].getCommunity());
+      Notify(msg_var, msg_val);
+      Notify("NODE_BROKER_VACK", m_node_host_records[i].getCommunity());
       m_acks_posted++;
     }
   }
@@ -333,7 +333,7 @@ void ShoreBroker::makeBridgeRequest(string src_var, HostRecord hrecord,
   pshare_post += ",src_name=" + src_var;
   pshare_post += ",dest_name=" + alias;
   pshare_post += ",route=" + pshare_iroutes;
-  m_Comms.Notify("PSHARE_CMD", pshare_post);
+  Notify("PSHARE_CMD", pshare_post);
 
   reportEvent("PSHARE_CMD:" + pshare_post);
   m_pshare_cmd_posted++;

@@ -91,9 +91,11 @@ bool XYHazard::setColor(string color_str)
 string XYHazard::getSpec(string noshow) const
 {
   bool no_type  = false;
+  bool no_shape = false;
   bool no_label = false;
   bool no_width = false;
   bool no_color = false;
+  bool no_hr    = false;
 
   vector<string> svector = parseString(noshow, ',');
   unsigned int i, vsize = svector.size();
@@ -105,13 +107,17 @@ string XYHazard::getSpec(string noshow) const
       no_label = true;
     else if(svector[i] == "width")
       no_width = true;
+    else if(svector[i] == "shape")
+      no_shape = true;
     else if(svector[i] == "color")
       no_color = true;
+    else if(svector[i] == "hr")
+      no_hr = true;
   }
 
   string str;
-  str += "x=" + doubleToStringX(m_x);
-  str += ",y=" + doubleToStringX(m_y);
+  str += "x=" + doubleToStringX(m_x,2);
+  str += ",y=" + doubleToStringX(m_y,2);
 
   if((m_type != "") && (no_type == false))
     str += ",type=" + m_type;
@@ -122,10 +128,13 @@ string XYHazard::getSpec(string noshow) const
   if((m_color != "") && (no_color == false))
     str += ",color=" + m_color;
 
+  if((m_shape != "") && (no_shape == false))
+    str += ",shape=" + m_color;
+
   if((m_width >= 0) && (no_width == false))
     str += ",width=" + doubleToStringX(m_width);
 
-  if((m_type!="hazard") && m_hr_set && !vectorContains(svector, "hr"))
+  if((m_type!="hazard") && m_hr_set && (no_hr == false))
     str += ",hr=" + doubleToStringX(m_hr);
 
   if(no_type == false) {

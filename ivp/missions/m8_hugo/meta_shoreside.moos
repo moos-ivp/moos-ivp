@@ -40,8 +40,11 @@ ProcessConfig = uFldShoreBroker
   //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
   //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
-  QBRIDGE  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
-  QBRIDGE  = MOOS_MANUAL_OVERIDE, APPCAST_REQ, CRS_RANGE_REPORT
+  qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERIDE
+
+  bridge   = src=APPCAST_REQ
+  bridge   = src=CRS_RANGE_REPORT_$V, alias=CRS_RANGE_REPORT
 }
 
 //--------------------------------------------------
@@ -132,7 +135,8 @@ ProcessConfig = uFldContactRangeSensor
 
   allow_echo_types = uuv,auv,glider
 
-  rn_algorithm = uniform,pct=0.04
+  //rn_algorithm = uniform,pct=0.04
+  rn_algorithm = gaussian,sigma=50
 }
 
 //------------------------------------------------- pMarineViewer

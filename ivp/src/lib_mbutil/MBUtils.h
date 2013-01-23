@@ -73,7 +73,7 @@ std::string stripQuotes(const std::string&);
 std::string stripBraces(const std::string&);
 std::string doubleToHex(double);
 
-std::string packageToString(const std::vector<std::string>&);
+std::string svectorToString(const std::vector<std::string>&, char=',');
 
 bool isValidIPAddress(const std::string&);
 bool strContains(const std::string&, const std::string&);
@@ -122,8 +122,6 @@ bool  okFileToWrite(std::string);
 void  millipause(int milliseconds);
 
 std::string modeShorten(std::string, bool really_short=true);
-
-std::vector<std::string>  getReleaseInfo(const std::string&);
 
 std::vector<std::string> tokenizePath(const std::string&);
 std::string parseAppName(const std::string&);

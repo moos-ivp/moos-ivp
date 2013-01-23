@@ -38,7 +38,8 @@ class XYHazardSet
   bool  setHazard(unsigned int, const XYHazard& hazard);
 
   void  setSource(std::string s)  {m_source=s;};
-  void  clear()                   {m_source=""; m_hazards.clear();};
+  void  setName(std::string s)    {m_name=s;};
+  void  clear()                   {m_source=""; m_name=""; m_hazards.clear();};
 
   // Getters
   int      findHazard(double x, double y) const;
@@ -55,11 +56,13 @@ class XYHazardSet
   unsigned int  getBenignCnt() const {return(m_benign_count);};
 
   std::string   getSource() const    {return(m_source);};
-  std::string   getSpec() const;
+  std::string   getName() const    {return(m_name);};
+  std::string   getSpec(std::string noshow="") const;
 
  protected: // Key properties
   std::vector<XYHazard>  m_hazards;
   std::string            m_source;
+  std::string            m_name;
 
   unsigned int  m_hazard_count;
   unsigned int  m_benign_count;

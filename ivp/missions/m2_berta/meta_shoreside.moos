@@ -15,12 +15,10 @@ Processconfig = ANTLER
 
   Run = MOOSDB          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = false, ~ uTimerScript_Current
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = pSearchGrid     @ NewConsole = false
   Run = uXMS            @ NewConsole = false
-  //Run = uMACView        @ NewConsole = true
   Run = uProcessWatch   @ NewConsole = false
 
   Run = pShare          @ NewConsole = false
@@ -87,6 +85,7 @@ ProcessConfig = uFldShoreBroker
 
   BRIDGE   = src=UP_LOITER_$N, alias=UP_LOITER
   BRIDGE   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
+  BRIDGE   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
 }
 
 //--------------------------------------------------
@@ -100,7 +99,7 @@ ProcessConfig = uFldNodeComms
   COMMS_RANGE      = 150
   CRITICAL_RANGE   = 25
 
-  MIN_MSG_INTERVAL = 20
+  MIN_MSG_INTERVAL = 15
   MAX_MSG_LENGTH   = 1000
 
   GROUPS           = true
@@ -128,46 +127,13 @@ ProcessConfig = uXMS
   VAR = APPCAST_REQ
 }
 
-//------------------------------------------
-// uTimerScript configuration  block
-
-ProcessConfig = uTimerScript_Current
-{
-   AppTick   = 2
-   CommsTick = 2
-
-   PAUSED      = false
-   RESET_MAX   = unlimited
-   RESET_TIME  = end
-   CONDITION   = WIND_GUSTS = true
-   DELAY_START = 30
-   DELAY_RESET = 10:60
-   TIME_WARP   = 0.25:2.0
-
-   RANDVAR = varname=ANG, min=0,   max=359, key=at_reset
-   RANDVAR = varname=MAG, min=1.5, max=3.5, key=at_reset
-
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=0
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=2
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=4
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=6
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=8
-
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=10
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=12
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=14
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=16
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", Time=18
-}
-
-
 //--------------------------------------------------
 // pSearchGrid Configuration Block
 
 ProcessConfig = pSearchGrid
 {
-  AppTick       = 0.1
-  CommsTick     = 0.1
+  AppTick       = 1
+  CommsTick     = 1
 
   GRID_CONFIG = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150}
   GRID_CONFIG = cell_size=5

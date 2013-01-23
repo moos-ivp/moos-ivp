@@ -67,8 +67,6 @@ void showHelpAndExit()
   blk("      Display MOOS publications and subscriptions.        ");
   mag("  --version,-v                                            ");
   blk("      Display release version of uFldContactRangeSensor.  ");
-  mag("  --verbose","=<setting>                                  ");
-  blk("      Set verbosity. true or false (default)              ");
   blk("                                                          ");
   blk("Note: If argv[2] does not otherwise match a known option, ");
   blk("      then it will be interpreted as a run alias. This is ");
@@ -101,7 +99,6 @@ void showExampleConfigAndExit()
   blk("  // Configuring manner of reporting                            ");
   blk("  report_vars    = short // or {long, both}                     ");
   blk("  ground_truth   = true  // or {false}                          ");
-  blk("  verbose        = true  // or {false}                          ");
   blk("                                                                ");
   blk("  // Configuring visual artifacts                               ");
   blk("  ping_color     = white                                        ");

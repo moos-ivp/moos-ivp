@@ -120,7 +120,7 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
     else if(key == "USM_RESET") {
       m_reset_count++;
-      m_Comms.Notify("USM_RESET_COUNT", m_reset_count);
+      Notify("USM_RESET_COUNT", m_reset_count);
       m_model.initPosition(sval);
     }
 
@@ -133,7 +133,7 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_model.setParam("buoyancy_rate", 0.0);
 	buoyancy_request_time = MOOSTime();
 	std::string buoyancy_status="status=1,error=0,progressing,buoyancy=0.0";
-	m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+	Notify("BUOYANCY_REPORT",buoyancy_status);
 	buoyancy_requested = true;
 	last_report = buoyancy_request_time;
       } 
@@ -142,7 +142,7 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       if(MOOSStrCmp(sval,"true")) {
 	trim_request_time = MOOSTime();
 	std::string trim_status="status=1,error=0,progressing,trim_pitch=0.0,trim_roll=0.0";
-	m_Comms.Notify("TRIM_REPORT",trim_status);
+	Notify("TRIM_REPORT",trim_status);
 	trim_requested = true;
 	last_report = trim_request_time;
       }
@@ -158,7 +158,7 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_model.setParam("buoyancy_rate", 0.0);
 	buoyancy_request_time = MOOSTime();
 	std::string buoyancy_status="status=1,error=0,progressing,buoyancy=0.0";
-	m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+	Notify("BUOYANCY_REPORT",buoyancy_status);
 	buoyancy_requested = true;
       } 
     }	    
@@ -166,7 +166,7 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       if(MOOSStrCmp(sval,"true")) {
 	trim_request_time = MOOSTime();
 	string trim_status="status=1,error=0,progressing,trim_pitch=0.0,trim_roll=0.0";
-	m_Comms.Notify("TRIM_REPORT",trim_status);
+	Notify("TRIM_REPORT",trim_status);
 	trim_requested = true;
       }
     }
@@ -409,12 +409,12 @@ bool USM_MOOSApp::Iterate()
   if(buoyancy_requested) {
     if(m_curr_time-buoyancy_request_time >= buoyancy_delay) {
       string buoyancy_status="status=2,error=0,completed,buoyancy=0.0";
-      m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+      Notify("BUOYANCY_REPORT",buoyancy_status);
       buoyancy_requested = false;
     }
     else if(m_curr_time - last_report >= report_interval) {
       string buoyancy_status="status=1,error=0,progressing,buoyancy=0.0";
-      m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+      Notify("BUOYANCY_REPORT",buoyancy_status);
       last_report = m_curr_time; 
     }
   }
@@ -424,13 +424,13 @@ bool USM_MOOSApp::Iterate()
        || (m_curr_time-trim_request_time) >= max_trim_delay) {
       string trim_status="status=2,error=0,completed,trim_pitch="
 	+ doubleToString(pitch_degrees) + ",trim_roll=0.0";
-      m_Comms.Notify("TRIM_REPORT",trim_status);
+      Notify("TRIM_REPORT",trim_status);
       trim_requested = false;
     }
     else if((m_curr_time - last_report) >= report_interval) {
       string trim_status="status=1,error=0,progressing,trim_pitch="
 	+ doubleToString(pitch_degrees) + ",trim_roll=0.0";
-      m_Comms.Notify("TRIM_REPORT",trim_status);
+      Notify("TRIM_REPORT",trim_status);
       last_report = m_curr_time; 
     }
   }
@@ -440,12 +440,12 @@ bool USM_MOOSApp::Iterate()
   if (buoyancy_requested) {
     if ((m_curr_time - buoyancy_request_time) >= buoyancy_delay) {
       std::string buoyancy_status="status=2,error=0,completed,buoyancy=0.0";
-      m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+      Notify("BUOYANCY_REPORT",buoyancy_status);
       buoyancy_requested = false;
     }
     else {
       std::string buoyancy_status="status=1,error=0,progressing,buoyancy=0.0";
-      m_Comms.Notify("BUOYANCY_REPORT",buoyancy_status);
+      Notify("BUOYANCY_REPORT",buoyancy_status);
     }
   }
   
@@ -456,13 +456,13 @@ bool USM_MOOSApp::Iterate()
       {
 	std::string trim_status="status=2,error=0,completed,trim_pitch="
 	  + doubleToString(pitch_degrees) + ",trim_roll=0.0";
-	m_Comms.Notify("TRIM_REPORT",trim_status);
+	Notify("TRIM_REPORT",trim_status);
 	trim_requested = false;
       }
     else {
       std::string trim_status="status=1,error=0,progressing,trim_pitch="
 	+ doubleToString(pitch_degrees) + ",trim_roll=0.0";
-      m_Comms.Notify("TRIM_REPORT",trim_status);
+      Notify("TRIM_REPORT",trim_status);
     }
   }
 #endif // gou
@@ -475,8 +475,8 @@ bool USM_MOOSApp::Iterate()
   }
 
   if(m_model.isDriftFresh()) {
-    m_Comms.Notify("USM_FSUMMARY", m_model.getDriftSummary());
-    m_Comms.Notify("USM_DRIFT_SUMMARY", m_model.getDriftSummary());
+    Notify("USM_FSUMMARY", m_model.getDriftSummary());
+    Notify("USM_DRIFT_SUMMARY", m_model.getDriftSummary());
     m_model.setDriftFresh(false);
   }
 
@@ -493,8 +493,8 @@ void USM_MOOSApp::postNodeRecordUpdate(string prefix,
   double nav_x = record.getX();
   double nav_y = record.getY();
 
-  m_Comms.Notify(prefix+"_X", nav_x, m_curr_time);
-  m_Comms.Notify(prefix+"_Y", nav_y, m_curr_time);
+  Notify(prefix+"_X", nav_x, m_curr_time);
+  Notify(prefix+"_Y", nav_y, m_curr_time);
 
   if(m_geo_ok) {
     double lat, lon;
@@ -503,34 +503,34 @@ void USM_MOOSApp::postNodeRecordUpdate(string prefix,
 #else
     m_geodesy.LocalGrid2LatLong(nav_x, nav_y, lat, lon);
 #endif
-    m_Comms.Notify(prefix+"_LAT", lat, m_curr_time);
-    m_Comms.Notify(prefix+"_LONG", lon, m_curr_time);
+    Notify(prefix+"_LAT", lat, m_curr_time);
+    Notify(prefix+"_LONG", lon, m_curr_time);
   }
 
   double new_speed = record.getSpeed();
   new_speed = snapToStep(new_speed, 0.01);
 
-  m_Comms.Notify(prefix+"_HEADING", record.getHeading(), m_curr_time);
-  m_Comms.Notify(prefix+"_SPEED", new_speed, m_curr_time);
-  m_Comms.Notify(prefix+"_DEPTH", record.getDepth(), m_curr_time);
+  Notify(prefix+"_HEADING", record.getHeading(), m_curr_time);
+  Notify(prefix+"_SPEED", new_speed, m_curr_time);
+  Notify(prefix+"_DEPTH", record.getDepth(), m_curr_time);
 
   // Added by HS 120124 to make it work ok with iHuxley
-  m_Comms.Notify("SIMULATION_MODE","TRUE", m_curr_time);
-  m_Comms.Notify(prefix+"_Z", -record.getDepth(), m_curr_time);
-  m_Comms.Notify(prefix+"_PITCH", record.getPitch(), m_curr_time);
-  m_Comms.Notify(prefix+"_YAW", record.getYaw(), m_curr_time);
-  m_Comms.Notify("TRUE_X", nav_x, m_curr_time);
-  m_Comms.Notify("TRUE_Y", nav_y, m_curr_time);
+  Notify("SIMULATION_MODE","TRUE", m_curr_time);
+  Notify(prefix+"_Z", -record.getDepth(), m_curr_time);
+  Notify(prefix+"_PITCH", record.getPitch(), m_curr_time);
+  Notify(prefix+"_YAW", record.getYaw(), m_curr_time);
+  Notify("TRUE_X", nav_x, m_curr_time);
+  Notify("TRUE_Y", nav_y, m_curr_time);
 
 
   double hog = angle360(record.getHeadingOG());
   double sog = record.getSpeedOG();
 
-  m_Comms.Notify(prefix+"_HEADING_OVER_GROUND", hog, m_curr_time);
-  m_Comms.Notify(prefix+"_SPEED_OVER_GROUND", sog, m_curr_time);
+  Notify(prefix+"_HEADING_OVER_GROUND", hog, m_curr_time);
+  Notify(prefix+"_SPEED_OVER_GROUND", sog, m_curr_time);
   
   if(record.isSetAltitude()) 
-    m_Comms.Notify(prefix+"_ALTITUDE", record.getAltitude(), m_curr_time);
+    Notify(prefix+"_ALTITUDE", record.getAltitude(), m_curr_time);
   
 }
 

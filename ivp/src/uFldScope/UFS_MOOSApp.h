@@ -26,11 +26,11 @@
 #include <set>
 #include <vector>
 #include <map>
-#include "MOOS/libMOOS/MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "UFS_Config.h"
 #include "VarDataPair.h"
 
-class UFS_MOOSApp : public CMOOSApp
+class UFS_MOOSApp : public AppCastingMOOSApp
 {
  public:
   UFS_MOOSApp();
@@ -42,8 +42,8 @@ class UFS_MOOSApp : public CMOOSApp
   bool OnConnectToServer();
   bool OnStartUp();
 
- public:
-  void handleCommand(char);
+ protected: // Standard AppCastingMOOSApp function to overload
+  bool buildReport();
 
  protected:
   void registerVariables();
@@ -54,19 +54,17 @@ class UFS_MOOSApp : public CMOOSApp
   std::string getPosting(std::string moosvar, std::string keyval);
 
   void makeReportRaw();
-  void printReport() const;
-  void printHelp() const;
 
   bool configInLayout(const UFS_Config&) const;
 
   void outputRawReport() const;
-  void outputRawColInfo() const;
 
  protected: // Config Variables
   // A representation of all the info the user desires to show
   std::vector<UFS_Config>            m_config;
+
   // A map from MOOS variable to the key indicating the vname
-  // For example: NODE_REPORT -> NAME
+  // For example: NODE_REPORT -> henry
   std::map<std::string, std::string> m_map_varkeys;
 
   std::vector<std::vector<std::string> > m_layouts;
@@ -79,15 +77,9 @@ class UFS_MOOSApp : public CMOOSApp
   // A 2D report structure - one vehicle per row, one fld per column
   std::vector<std::vector<std::string> > m_raw_report;
   
-  // A Vector indicating the longest string for each column in the 
-  // raw report table.
-  std::vector<unsigned int> m_raw_report_maxlens;
-
   unsigned int m_total_reports;
   
   // Mode States
-  std::string  m_refresh_mode;
-  bool         m_update_requested;
   bool         m_layout_applied;
   unsigned int m_layout_index;
 

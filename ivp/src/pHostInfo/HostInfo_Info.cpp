@@ -129,7 +129,7 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  pShare_INPUT_SUMMARY = localhost:9000:udp,                    ");
+  blk("  PSHARE_INPUT_SUMMARY = localhost:9000:udp,                    ");
   blk("                         1.2.3.4:2000:multicast_23              ");
   blk("  HOST_INFO_REQUEST    = true                                   ");
   exit(0);
@@ -143,5 +143,4 @@ void showReleaseInfoAndExit()
   showReleaseInfo("pHostInfo", "gpl");
   exit(0);
 }
-
 

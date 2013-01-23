@@ -129,11 +129,17 @@ void PMV_GUI::augmentMenu()
   m_menubar->add("AppCasting/appcast_viewable=false",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)41, FL_MENU_RADIO);    
   m_menubar->add("AppCasting/    Toggle AppCasting", 'a', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)42, FL_MENU_DIVIDER);    
 
-  m_menubar->add("AppCasting/AppCasting Pane Wider",   FL_CTRL+FL_ALT+FL_Left,  (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)100, 0); 
-  m_menubar->add("AppCasting/AppCasting Pane Thinner", FL_CTRL+FL_ALT+FL_Right, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)101, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Wider",   FL_SHIFT+FL_Left,  (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)100, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Thinner", FL_SHIFT+FL_Right, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)101, 0); 
 
-  m_menubar->add("AppCasting/AppCasting Pane Taller",  FL_CTRL+FL_ALT+FL_Up,   (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)200, 0); 
-  m_menubar->add("AppCasting/AppCasting Pane Shorter", FL_CTRL+FL_ALT+FL_Down, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)201, FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/AppCasting Pane Taller",  FL_SHIFT+FL_Up,   (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)200, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Shorter", FL_SHIFT+FL_Down, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)201, FL_MENU_DIVIDER); 
+
+  m_menubar->add("AppCasting/AppCasting Pane Wider (Alt)",   FL_CTRL+FL_ALT+FL_Left,  (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)100, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Thinner (Alt)", FL_CTRL+FL_ALT+FL_Right, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)101, 0); 
+
+  m_menubar->add("AppCasting/AppCasting Pane Taller (Alt)",  FL_CTRL+FL_ALT+FL_Up,   (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)200, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Shorter (Alt)", FL_CTRL+FL_ALT+FL_Down, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)201, FL_MENU_DIVIDER); 
 
   m_menubar->add("AppCasting/refresh_mode=paused",    FL_CTRL+' ', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)50, FL_MENU_RADIO);
   m_menubar->add("AppCasting/refresh_mode=events",    FL_CTRL+'e', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)51, FL_MENU_RADIO);
@@ -152,9 +158,11 @@ void PMV_GUI::augmentMenu()
   m_menubar->add("AppCasting/appcast_font_size=large",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)83, FL_MENU_RADIO);
   m_menubar->add("AppCasting/appcast_font_size=medium", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)82, FL_MENU_RADIO);
   m_menubar->add("AppCasting/appcast_font_size=small",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)81, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/appcast_font_size=xsmall", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)80, FL_MENU_RADIO|FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/appcast_font_size=xsmall", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)80, FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/appcast_font_size bigger",  '}', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)85, FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/appcast_font_size smaller", '{', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)84, FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
-  m_menubar->add("AppCasting/appcast_color_scheme=default",     0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)300, FL_MENU_RADIO);
+  m_menubar->add("AppCasting/appcast_color_scheme=white",     0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)300, FL_MENU_RADIO);
   m_menubar->add("AppCasting/appcast_color_scheme=indigo",      0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)301, FL_MENU_RADIO);
   m_menubar->add("AppCasting/appcast_color_scheme=beige",       0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)302, FL_MENU_RADIO);
   m_menubar->add("AppCasting/    Toggle Color Scheme", FL_ALT+'a', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)310, FL_MENU_DIVIDER);
@@ -528,6 +536,8 @@ inline void PMV_GUI::cb_AppCastSetting_i(unsigned int v) {
   else if(v==81)  setRadioCastAttrib("appcast_font_size", "small");
   else if(v==82)  setRadioCastAttrib("appcast_font_size", "medium");
   else if(v==83)  setRadioCastAttrib("appcast_font_size", "large");
+  else if(v==84)  setRadioCastAttrib("appcast_font_size", "smaller");
+  else if(v==85)  setRadioCastAttrib("appcast_font_size", "bigger");
   // Handle pane width relative adjustment
   else if(v==100) setRadioCastAttrib("appcast_width", "delta:-5");
   else if(v==101) setRadioCastAttrib("appcast_width", "delta:5");
@@ -561,7 +571,7 @@ inline void PMV_GUI::cb_AppCastSetting_i(unsigned int v) {
   else if(v==285) setRadioCastAttrib("appcast_height", "85");
   else if(v==290) setRadioCastAttrib("appcast_height", "90");
 
-  else if(v==300) setRadioCastAttrib("appcast_color_scheme", "default");
+  else if(v==300) setRadioCastAttrib("appcast_color_scheme", "white");
   else if(v==301) setRadioCastAttrib("appcast_color_scheme", "indigo");
   else if(v==302) setRadioCastAttrib("appcast_color_scheme", "beige");
   else if(v==310) setRadioCastAttrib("appcast_color_scheme", "toggle");
@@ -1195,7 +1205,7 @@ void PMV_GUI::setMenuItemColors()
   setMenuItemColor("AppCasting/appcast_font_size=small");
   setMenuItemColor("AppCasting/appcast_font_size=xsmall");
 
-  setMenuItemColor("AppCasting/appcast_color_scheme=default");
+  setMenuItemColor("AppCasting/appcast_color_scheme=white");
   setMenuItemColor("AppCasting/appcast_color_scheme=indigo");
   setMenuItemColor("AppCasting/appcast_color_scheme=beige");
 

@@ -41,15 +41,16 @@ class XMS : public AppCastingMOOSApp
   bool OnStartUp();
   
   void handleCommand(char);
-  void addVariables(std::string);
+  bool addVariables(std::string);
   bool addVariable(std::string, bool histvar=false);
+  bool addSources(std::string);
   bool addSource(std::string);
-  void setHistoryVar(std::string);
   void setFilter(std::string);
-  void setContentMode(std::string, bool=false);
-  void setRefreshMode(std::string);
+  bool setContentMode(std::string, bool=false);
+  bool setRefreshMode(std::string);
   void setDisplayColumns(std::string);
   void setTruncData(std::string);
+
   void ignoreFileVars(bool v)           {m_ignore_file_vars = v;};
   void setDispVirgins(bool v)           {m_display_virgins = v;};
   void setDispTime(bool v)              {m_display_time = v;};
@@ -63,9 +64,9 @@ class XMS : public AppCastingMOOSApp
   void setAppNameNoIndex(std::string s) {m_app_name_noindex = s;};
   void setTermReportInterval(std::string);
   
-  void setColorMapping(std::string var, std::string color="any");
-  void setColorMappingsAny(std::string);
-  void setColorMappingsPairs(std::string);
+  bool setColorMapping(std::string var, std::string color="any");
+  bool setColorMappingsAny(std::string);
+  bool setColorMappingsPairs(std::string);
 
  protected:
   void registerVariables();
@@ -79,7 +80,7 @@ class XMS : public AppCastingMOOSApp
   void updateDBClients(std::string);
   void updateVariable(CMOOSMsg& msg);
   bool updateVarEntry(std::string, const ScopeEntry&);
-  void updateHistory(std::string, std::string, double);
+  void updateHistory(std::string, std::string, std::string, double);
   void updateSourceInfo(std::string);
  
   void handleSelectMaskSubSources();
@@ -123,7 +124,6 @@ class XMS : public AppCastingMOOSApp
   std::map<std::string, std::string> m_map_src_status;
 
   bool   m_update_requested;
-  bool   m_scope_event;
 
   bool   m_history_event;
   bool   m_display_source;
@@ -131,6 +131,7 @@ class XMS : public AppCastingMOOSApp
   bool   m_display_time;
   bool   m_display_community;
   bool   m_display_own_community;
+  bool   m_display_hist_var;
   std::string m_refresh_mode;
   std::string m_content_mode;
   std::string m_content_mode_prev;
@@ -150,12 +151,15 @@ class XMS : public AppCastingMOOSApp
   std::string             m_history_var;
   std::list<std::string>  m_history_list;
   std::list<std::string>  m_history_sources;
+  std::list<std::string>  m_history_sources_aux;
   std::list<int>          m_history_counts;
   std::list<double>       m_history_times;
   unsigned int            m_history_length;
 
   bool   m_display_all;
-  double m_last_all_refresh;    
+  double m_last_all_refresh;   
+  bool   m_suppress_appcasts;
+  bool   m_help_is_showing;
 
   std::map<std::string, std::string> m_color_map;
 

@@ -82,10 +82,6 @@ bool VehicleSet::setParam(string param, string value)
     if(!strContainsWhite(value))
       m_node_report_vars.push_back(value);
   }
-  else if(param == "clear_vehicle_trails") {
-    m_hist_map.clear();
-    handled  = true;
-  }
   else if((param == "active_vehicle_name") || 
 	  (param == "vehicles_active_name")) {
     if(m_rec_map.count(value)) {
@@ -535,8 +531,8 @@ bool VehicleSet::updateVehicleBearingLine(const string& str)
   vector<string> svector = parseString(str, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
-    string left  = tolower(stripBlankEnds(biteString(svector[i], '=')));
-    string right = stripBlankEnds(svector[i]);
+    string left  = tolower(biteStringX(svector[i], '='));
+    string right = svector[i];
     if(left == "vname")
       vname = right;
     else if((left == "bearing") && isNumber(right))

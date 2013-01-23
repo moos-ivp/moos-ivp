@@ -194,10 +194,10 @@ void TermCommand::postCommand(unsigned int ix)
     return;
 
   if(m_var_type[ix] == "string") 
-    m_Comms.Notify(m_var_name[ix], m_var_val[ix]);
+    Notify(m_var_name[ix], m_var_val[ix]);
   else {
     double dval = atof(m_var_val[ix].c_str());
-    m_Comms.Notify(m_var_name[ix], dval);
+    Notify(m_var_name[ix], dval);
   }
 
   m_cmds_prev.push_back(m_var_key[ix]);

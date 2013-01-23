@@ -55,6 +55,7 @@ public:
 
   bool         hasCellVar(const std::string&) const;
   unsigned int getCellVarIX(const std::string&) const;
+  unsigned int getCellVarCnt() const {return(m_cell_vars.size());};
   std::string  getConfigStr() const;
   std::string  get_spec() const;
 
@@ -63,13 +64,15 @@ public:
   void    setMinLimit(double, unsigned int cix=0);
   void    setMaxLimit(double, unsigned int cix=0);
 
-  double  getVal(unsigned int ix, unsigned int cix=0) const;
-  double  getMin(unsigned int cix=0) const;
-  double  getMax(unsigned int cix=0) const;
-  double  getMinLimit(unsigned int cix=0) const;
-  double  getMaxLimit(unsigned int cix=0) const;
-  bool    cellVarMinLimited(unsigned int cix=0) const;
-  bool    cellVarMaxLimited(unsigned int cix=0) const;
+  double      getVal(unsigned int ix, unsigned int cix=0) const;
+  std::string getVar(unsigned int cix=0) const;
+  double      getMin(unsigned int cix=0) const;
+  double      getMax(unsigned int cix=0) const;
+  double      getInitVal(unsigned int cix=0) const;
+  double      getMinLimit(unsigned int cix=0) const;
+  double      getMaxLimit(unsigned int cix=0) const;
+  bool        cellVarMinLimited(unsigned int cix=0) const;
+  bool        cellVarMaxLimited(unsigned int cix=0) const;
 
   void    reset();
   void    reset(const std::string& cell_var);

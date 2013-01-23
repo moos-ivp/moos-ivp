@@ -48,6 +48,11 @@ XYHazardSet string2HazardSet(string str)
       string src_val = svector[i];
       new_hazard_set.setSource(src_val);
     }
+    else if(strBegins(svector[i], "name")) {
+      string name_tag = biteStringX(svector[i], '=');
+      string name_val = svector[i];
+      new_hazard_set.setName(name_val);
+    }
     else {
       XYHazard hazard = string2Hazard(svector[i]);
       new_hazard_set.addHazard(hazard);

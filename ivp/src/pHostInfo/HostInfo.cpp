@@ -77,7 +77,7 @@ bool HostInfo::OnNewMail(MOOSMSG_LIST &NewMail)
       m_ip_info_gathered = false;
       m_ip_info_posted = false;
     }
-    else if(key == "pShare_INPUT_SUMMARY") 
+    else if(key == "PSHARE_INPUT_SUMMARY") 
       handled = handleMailPShareInput(sval);
     else 
       handled = false;
@@ -190,7 +190,7 @@ void HostInfo::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   m_Comms.Register("HOST_INFO_REQUEST", 0);
-  m_Comms.Register("pShare_INPUT_SUMMARY", 0);
+  m_Comms.Register("PSHARE_INPUT_SUMMARY", 0);
 }
 
 
@@ -333,13 +333,13 @@ void HostInfo::postIPInfo()
   }    
 
   if(m_host_ip != "")
-    m_Comms.Notify("PHI_HOST_IP", m_host_ip);
+    Notify("PHI_HOST_IP", m_host_ip);
   if(m_host_ip_all != "")
-    m_Comms.Notify("PHI_HOST_IP_ALL", m_host_ip_all);
+    Notify("PHI_HOST_IP_ALL", m_host_ip_all);
   if(m_host_ip_verbose != "")
-    m_Comms.Notify("PHI_HOST_IP_VERBOSE", m_host_ip_verbose);
+    Notify("PHI_HOST_IP_VERBOSE", m_host_ip_verbose);
   if(m_host_port_db != "")
-    m_Comms.Notify("PHI_HOST_PORT_DB", m_host_port_db);
+    Notify("PHI_HOST_PORT_DB", m_host_port_db);
 
   HostRecord hrecord;
   hrecord.setCommunity(m_host_community);
@@ -348,7 +348,7 @@ void HostInfo::postIPInfo()
   hrecord.setTimeWarp(doubleToStringX(m_time_warp,1));
   hrecord.setPShareIRoutes(m_pshare_iroutes);
   m_host_record_all = hrecord.getSpec();
-  m_Comms.Notify("PHI_HOST_INFO", m_host_record_all);
+  Notify("PHI_HOST_INFO", m_host_record_all);
   
   m_ip_info_posted = true;
 

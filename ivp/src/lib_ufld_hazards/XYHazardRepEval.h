@@ -35,7 +35,9 @@ class XYHazardRepEval
 
   // Setters (Score components)
   void  setVName(std::string s)           {m_vname=s;};
+  void  setReportName(std::string s)      {m_report_name=s;};
   void  setTotalScore(double v)           {m_total_score=v;};
+  void  setNormScore(double v)            {m_norm_score=v;};
   void  setScoreMissedHazards(double v)   {m_score_missed_hazards=v;};
   void  setScoreFalseAlarms(double v)     {m_score_false_alarms=v;};
   void  setScoreTimeOverage(double v)     {m_score_time_overage=v;};
@@ -53,7 +55,7 @@ class XYHazardRepEval
   void  setPenaltyFalseAlarm(double v)    {m_penalty_false_alarm=v;};
   void  setPenaltyMissedHazard(double v)  {m_penalty_missed_hazard=v;};
   void  setPenaltyMaxTimeOver(double v)   {m_penalty_max_time_over=v;};
-  void  setPenaltyMaxTimeOverage(double v) {m_penalty_max_time_overage=v;};
+  void  setPenaltyMaxTimeRate(double v)   {m_penalty_max_time_rate=v;};
   void  setMaxTime(double v)              {m_max_time=v;};
 
   // Setters (other)
@@ -65,13 +67,19 @@ class XYHazardRepEval
   std::string getFullSpec() const;
   std::string getFormattedString() const;
 
+  std::string getVName() const      {return(m_vname);};
+  std::string getReportName() const {return(m_report_name);};
+
   double getTotalScore() const   {return(m_total_score);};
+  double getNormScore() const    {return(m_norm_score);};
   double getTotalTime() const    {return(m_total_time);};
   double getReceivedTime() const {return(m_received_time);};
 
  protected: // Key properties
   std::string  m_vname;
+  std::string  m_report_name;
   double       m_total_score;
+  double       m_norm_score;
   double       m_score_missed_hazards;
   double       m_score_false_alarms;
   double       m_score_time_overage;
@@ -88,7 +96,7 @@ class XYHazardRepEval
   double       m_penalty_missed_hazard;
   double       m_max_time;
   double       m_penalty_max_time_over;
-  double       m_penalty_max_time_overage;
+  double       m_penalty_max_time_rate;
 
   std::string  m_object_report;
 };

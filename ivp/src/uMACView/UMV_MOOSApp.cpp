@@ -287,8 +287,8 @@ void UMV_MOOSApp::postAppCastRequest(string channel_node,
   str += ",key=" + key;
   str += ",thresh=" + threshold;
 
-  m_Comms.Notify("APPCAST_REQ", str);
-  m_Comms.Notify("APPCAST_REQ_"+toupper(channel_node), str);
+  Notify("APPCAST_REQ", str);
+  Notify("APPCAST_REQ_"+toupper(channel_node), str);
 }
 
 //---------------------------------------------------------
