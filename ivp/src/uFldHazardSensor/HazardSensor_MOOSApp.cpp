@@ -844,7 +844,6 @@ bool HazardSensor_MOOSApp::updateVehicleHazardStatus(unsigned int vix,
   // Now figure out what the new status should be
   double haz_x  = hazard.getX();
   double haz_y  = hazard.getY();
-  double haz_hr = hazard.getResemblance();
 
   bool new_contained_status = m_node_polygons[vix].contains(haz_x, haz_y);
   
@@ -862,8 +861,14 @@ bool HazardSensor_MOOSApp::updateVehicleHazardStatus(unsigned int vix,
       thresh = (prob_detect * 10000) + 1;
     else {
       double coeff = 1;
-      if(prob_false_alarm < 1) 
-	coeff = (prob_false_alarm + haz_hr) / 2;
+      if(prob_false_alarm < 1) {
+	if(hazard.isSetHR()) {
+	  double haz_hr = hazard.getResemblance();
+	  coeff = (prob_false_alarm + haz_hr) / 2;
+	}
+	else
+	  coeff = prob_false_alarm;
+      }
       thresh = (coeff * 10000) + 1;
     }
     if(rand_int < thresh)

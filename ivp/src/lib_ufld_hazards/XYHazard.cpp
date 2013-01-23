@@ -34,10 +34,12 @@ XYHazard::XYHazard()
 {
   m_x     = 0;
   m_y     = 0;
+  m_hr    = 0.5;
   m_width = -1;  // Indicates unspecified by the user
 
-  m_x_set = false;
-  m_y_set = false;
+  m_hr_set = false;
+  m_x_set  = false;
+  m_y_set  = false;
   m_type_set = false;
 }
 
