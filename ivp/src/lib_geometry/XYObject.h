@@ -46,6 +46,11 @@ public:
   void   set_type()   {}; // deprecated
   void   set_source() {}; // deprecated
 
+  //-----Soon To Be Deprecated/Removed -----------------------------------      
+  void     set_vertex_color(const std::string& s) {set_color("vertex", s);};
+  void     set_edg_color(const std::string& s)    {set_color("edge", s);};
+  //-----Soon To Be Deprecated/Removed ----------------------------------- 
+
   bool      color_set(const std::string& key) const;
   void      set_color(const std::string& key, const std::string& color);
   void      set_color(const std::string& key, const ColorPack& color);
