@@ -38,7 +38,7 @@ public:
 
   virtual bool Iterate();
   virtual bool OnNewMail(MOOSMSG_LIST&);
-  virtual bool OnStartUp();
+  virtual bool OnStartUp(std::string directives="");
   virtual bool buildReport() {return(false);};
   
  protected:
@@ -51,9 +51,20 @@ public:
   void         retractRunWarning(const std::string&);
   unsigned int getWarningCount(const std::string&) const;
 
+  void         Notify(const std::string&, const std::string&, double time=-1);
+  void         Notify(const std::string&, const std::string&, const std::string&, double time=-1);
+  void         Notify(const std::string&, double, double time=-1);
+  void         Notify(const std::string&, double, const std::string&, double time=-1);
+
  private:
   void         handleMailAppCastRequest(const std::string&);
   bool         appcastRequested();
+
+  //-------------------------------------------------------------------
+  void         pushPub(const std::string& var, const std::string& val);
+  void         pushMail(const CMOOSMsg& msg);
+  void         buildScopeReport();
+  //-------------------------------------------------------------------
 
 protected:
   unsigned int m_iteration;
@@ -78,5 +89,17 @@ protected:
   std::map<std::string, double>       m_map_bcast_duration;
   std::map<std::string, double>       m_map_bcast_tstart;
   std::map<std::string, std::string>  m_map_bcast_thresh;  
+
+  // ----------------------------------------------------
+  std::list<std::string> m_pub_vars;
+  std::list<std::string> m_pub_vals;
+
+  std::list<std::string> m_mail_vars;
+  std::list<std::string> m_mail_vals;
+  std::list<std::string> m_mail_srcs;
+
+  unsigned int m_mail_ctr;
+  bool m_scoping;
+
 };
 #endif

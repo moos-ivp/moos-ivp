@@ -39,6 +39,9 @@ AppCastingMOOSApp::AppCastingMOOSApp()
   m_start_time = 0;
   m_time_warp  = 1;
 
+  m_scoping    = false;
+  m_mail_ctr   = 0;
+
   m_last_report_time         = 0;
   m_last_report_time_appcast = 0;
   m_term_report_interval = 0.6;
@@ -69,11 +72,15 @@ void AppCastingMOOSApp::PostReport(const string& directive)
     return;
 
   // By default
-  bool term_reporting = m_term_reporting;
-  if(directive == "noterm")
+  bool term_reporting  = m_term_reporting;
+  bool appcast_allowed = true;
+  if(directive.find("noterm") != string::npos)
     term_reporting = false;
-  else if(directive == "doterm")
+  else if(directive.find("doterm") != string::npos)
     term_reporting = true;
+
+  if(directive.find("noappcast") != string::npos) 
+    appcast_allowed = false;
 
   double moos_elapsed_time_term = m_curr_time - m_last_report_time;
   double real_elapsed_time_term = moos_elapsed_time_term / m_time_warp;
@@ -85,8 +92,10 @@ void AppCastingMOOSApp::PostReport(const string& directive)
      (real_elapsed_time_appcast < m_term_report_interval))
     return;
 
-  bool appcast_pending = appcastRequested() || (m_iteration < 2);
-
+  bool appcast_pending = false;
+  if(appcast_allowed)
+    appcast_pending = appcastRequested() || (m_iteration < 2);
+    
   // If no report for terminal and no report for appcast, just return!
   if(!term_reporting && !appcast_pending)
     return;
@@ -103,9 +112,13 @@ void AppCastingMOOSApp::PostReport(const string& directive)
   m_msgs.clear();
   m_msgs.str("");
 
-  bool report_built = buildReport();
-  if(!report_built)
-    return;
+  if(!m_scoping) {
+    bool report_built = buildReport();
+    if(!report_built)
+      return;
+  }
+  else
+    buildScopeReport();
 
   m_ac.msg(m_msgs.str());
 
@@ -128,8 +141,28 @@ void AppCastingMOOSApp::PostReport(const string& directive)
 //----------------------------------------------------------------
 // Procedure: OnStartUp
 
-bool AppCastingMOOSApp::OnStartUp()
+//bool AppCastingMOOSApp::OnStartUp(bool must_have_moosblock,
+//				  string alt_config_block_name)
+bool AppCastingMOOSApp::OnStartUp(string directives)
 {
+  // First handle any special directives
+  bool   must_have_moosblock = true;
+  string alt_config_block_name;
+
+  while(directives != "") {
+    string directive = MOOSChomp(directives, ",");
+    MOOSTrimWhiteSpace(directive);
+    string left  = MOOSChomp(directive, "=");
+    string right = directive;
+    MOOSTrimWhiteSpace(left);
+    MOOSTrimWhiteSpace(right);
+    if(MOOSStrCmp(left, "must_have_moosblock"))
+      must_have_moosblock = MOOSStrCmp(right, "true");
+    else if(MOOSStrCmp(left, "alt_config_block_name"))
+      alt_config_block_name = right;
+  }
+  // Done handling special directives
+    
   bool   return_value = true;
   string appstart = GetAppName() + " starting ...";
 
@@ -142,8 +175,10 @@ bool AppCastingMOOSApp::OnStartUp()
   // returned, but continue starting up. Let the individual app 
   // developer decide how to interpret a return of false.
   if(!m_MissionReader.GetValue("COMMUNITY", m_host_community)) {
-    reportConfigWarning("Community name not found in mission file");
-    return_value = false;
+    if(must_have_moosblock) {
+      reportConfigWarning("Community name not found in mission file");
+      return_value = false;
+    }
   }
 
   // #2 Global Config Variable: Determining if terminal reports are suppressed
@@ -156,10 +191,14 @@ bool AppCastingMOOSApp::OnStartUp()
     else if(term_reporting != "")
       reportConfigWarning("Invalid value for TERM_REPORTING: " + term_reporting);
   }
-
+  
   // #3 Allow certain appcasting defaults to be overridden
   STRING_LIST sParams;
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  string config_block = GetAppName();
+  if(alt_config_block_name != "")
+    config_block = alt_config_block_name;
+  
+  m_MissionReader.GetConfiguration(config_block, sParams);
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
     string line  = *p;
@@ -248,6 +287,7 @@ bool AppCastingMOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end();) {
     CMOOSMsg &msg = *p;
+    pushMail(msg);
     if(msg.GetKey() == "APPCAST_REQ") {
       handleMailAppCastRequest(msg.GetString());
       p = NewMail.erase(p);
@@ -417,4 +457,171 @@ unsigned int AppCastingMOOSApp::getWarningCount(const string& filter) const
     total += m_ac.getRunWarningCount();
 
   return(total);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: pushMail
+
+void AppCastingMOOSApp::pushMail(const CMOOSMsg& msg)
+{
+  m_mail_ctr++;
+  m_mail_vars.push_back(msg.GetKey());
+
+  if(msg.IsDouble()) {
+    stringstream ss;
+    ss << msg.GetDouble();
+    m_mail_vals.push_back(ss.str());
+  }
+  else if(msg.IsString())
+    m_mail_vals.push_back(msg.GetString());
+  else
+    m_mail_vals.push_back("<binary>");
+  
+  m_mail_srcs.push_back(msg.GetSource());
+  
+  if(m_mail_vars.size() > 15) {
+    m_mail_vars.pop_front();
+    m_mail_vals.pop_front();
+    m_mail_srcs.pop_front();
+  }
+}
+
+//----------------------------------------------------------------
+// Procedure: pushPub
+
+void AppCastingMOOSApp::pushPub(const string& var, const string& val)
+{
+  m_pub_vars.push_back(var);
+  m_pub_vals.push_back(val);
+
+  if(m_pub_vars.size() > 15) {
+    m_pub_vars.pop_front();
+    m_pub_vals.pop_front();
+  }  
+}
+
+
+
+//----------------------------------------------------------------
+// Procedure: buildScopeReport
+//
+// --------------------------------------------------------- <341>
+//   UHZ_DETECTION_REPORT = x=51,y=11.3,label=12 
+// <mail> 
+//   UHZ_SENSOR_REQUEST = alpha
+//                        src=uFldHazardMgr, node=alpha
+//   UHZ_SENSOR_REQUEST = bravo
+//                        src=uFldHazardMgr, node=bravo
+// --------------------------------------------------------- <341>
+//   UHZ_DETECTION_REPORT = x=51,y=11.3,label=12 
+// <mail> 
+//   UHZ_SENSOR_REQUEST = alpha
+//                        src=uFldHazardMgr, node=alpha
+//   UHZ_SENSOR_REQUEST = bravo
+//                        src=uFldHazardMgr, node=bravo
+
+void AppCastingMOOSApp::buildScopeReport()
+{
+  m_msgs << "hello!" << endl;
+  //  return;
+  unsigned int longest_pub_var  = 0;
+  list<string>::iterator p;
+  for(p=m_pub_vars.begin(); p!=m_pub_vars.end(); p++) {
+    string pub_var = *p;
+    if(pub_var.length() > longest_pub_var)
+      longest_pub_var = pub_var.length();
+  }
+
+  m_msgs << "Longest pub var:" << longest_pub_var << endl;
+
+  if(longest_pub_var > 0) {
+    unsigned int i, vsize = m_pub_vars.size();
+    for(i=0; i<vsize; i++) {
+      m_msgs << setw(longest_pub_var) << m_pub_vars.front();
+      m_msgs << " = " << m_pub_vals.front() << endl;
+#if 1
+      m_pub_vars.push_back(m_pub_vars.front());
+      m_pub_vars.pop_front();
+      m_pub_vals.push_back(m_pub_vals.front());
+      m_pub_vals.pop_front();
+#endif
+    }
+  }
+
+  m_msgs << "<mail>: " << m_mail_ctr << endl;
+		 
+  unsigned int longest_mail_var = 0;
+  for(p=m_mail_vars.begin(); p!=m_mail_vars.end(); p++) {
+    string mail_var = *p;
+    if(mail_var.length() > longest_mail_var)
+      longest_mail_var = mail_var.length();
+  }
+  m_msgs << "Longest mail var:" << longest_mail_var << endl;
+  m_msgs << "vars: " << m_mail_vars.size() << endl;
+  m_msgs << "vals: " << m_mail_vals.size() << endl;
+  m_msgs << "srcs: " << m_mail_srcs.size() << endl;
+
+  if(longest_mail_var > 0) {
+    unsigned int i, vsize = m_mail_vars.size();
+    for(i=0; i<vsize; i++) {
+      m_msgs << setw(longest_mail_var) << m_mail_vars.front();
+      m_msgs << " = " << m_mail_vals.front() << endl;
+#if 1
+      m_mail_vars.push_back(m_mail_vars.front());
+      m_mail_vars.pop_front();
+      string val = m_mail_vals.front();
+      m_mail_vals.push_back(val);
+      m_mail_vals.pop_front();
+      m_mail_srcs.push_back(m_mail_srcs.front());
+      m_mail_srcs.pop_front();
+#endif
+    }
+  }
+}
+
+
+//----------------------------------------------------------------
+// Procedure: Notify
+
+void AppCastingMOOSApp::Notify(const string& var, const string& val,
+			       double time)
+{
+  CMOOSApp::Notify(var, val, time);
+  pushPub(var, val);
+}
+
+//----------------------------------------------------------------
+// Procedure: Notify
+
+void AppCastingMOOSApp::Notify(const string& var, const string& val,
+			       const string& aux, double time)
+{
+  CMOOSApp::Notify(var, val, aux, time);
+  pushPub(var, val);
+}
+
+//----------------------------------------------------------------
+// Procedure: Notify
+
+void AppCastingMOOSApp::Notify(const string& var, double val, double time)
+{
+  CMOOSApp::Notify(var, val, time);
+
+  stringstream ss;
+  ss << val;
+  pushPub(var, ss.str());
+}
+
+//----------------------------------------------------------------
+// Procedure: Notify
+
+void AppCastingMOOSApp::Notify(const string& var, double val, 
+			       const string& aux, double time)
+{
+  CMOOSApp::Notify(var, val, aux, time);
+
+  stringstream ss;
+  ss << val;
+  pushPub(var, ss.str());
 }
