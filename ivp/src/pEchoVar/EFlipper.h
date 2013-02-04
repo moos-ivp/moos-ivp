@@ -40,6 +40,10 @@ public:
   std::string  getKey()       {return(m_key);};
   std::string  getSourceVar() {return(m_source_variable);};
   std::string  getDestVar()   {return(m_dest_variable);};
+  std::string  getSourceSep() {return(m_source_separator);};
+  std::string  getDestSep()   {return(m_dest_separator);};
+  std::string  getFilters();
+  std::string  getComponents();
 
   std::string  flip(std::string);
 

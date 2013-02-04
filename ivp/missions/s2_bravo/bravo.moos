@@ -19,14 +19,14 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB          @ NewConsole = true
+  Run = MOOSDB          @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = uSimMarine      @ NewConsole = true
-  Run = pNodeReporter   @ NewConsole = true
-  Run = pMarinePID      @ NewConsole = true
-  Run = pMarineViewer   @ NewConsole = true
-  Run = uSimCurrent     @ NewConsole = true
-  Run = pHelmIvP        @ NewConsole = true
+  Run = uSimMarine      @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = uSimCurrent     @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
 }
 
 //------------------------------------------
@@ -37,7 +37,7 @@ ProcessConfig = uSimCurrent
   AppTick	= 10
   CommsTick	= 10
 
-  CURRENT_FIELD = bravo.cfd
+  current_field = bravo.cfd
 }
 
 //------------------------------------------
@@ -64,12 +64,12 @@ ProcessConfig = uSimMarine
   AppTick	= 10
   CommsTick	= 10
 
-  START_X       = 0
-  START_Y       = 0
-  START_SPEED   = 0
-  START_HEADING = 180
-  PREFIX        = NAV
-  //CURRENT_FIELD = bravo.cfd
+  start_x       = 0
+  start_y       = 0
+  start_speed   = 0
+  start_heading = 180
+  prefix        = NAV
+  //current_field = bravo.cfd
 }
 
 //------------------------------------------
@@ -80,10 +80,10 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = bravo.bhv
-  Verbose    = true
-  Domain     = course:0:359:360
-  Domain     = speed:0:4:21
+  behaviors  = bravo.bhv
+  verbose    = true
+  domain     = course:0:359:360
+  domain     = speed:0:4:21
 }
 
 //------------------------------------------
@@ -94,8 +94,8 @@ ProcessConfig = pMarinePID
   AppTick    = 20
   CommsTick  = 20
 
-  VERBOSE       = true
-  DEPTH_CONTROL = false
+  verbose       = true
+  depth_control = false
 
   // Yaw PID controller
   YAW_PID_KP		 = 0.5
@@ -126,19 +126,24 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
   vehicle_shape_scale  = 1.5
-  seglist_edge_width   = 2.0
-  seglist_vertex_size  = 4
-  seglist_vertex_color = red
-  point_vertex_size    = 12
   hash_delta           = 50
   hash_shade           = 0.4
-  hash_view            = true
+  hash_viewable        = true
 
+  // appcast settings
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
+  		       
   scope  = VIEW_POINT
   scope  = VIEW_POLYGON
   scope  = VIEW_SEGLIST
@@ -150,16 +155,16 @@ ProcessConfig = pMarineViewer
 
   left_context = return_point
 
-  BUTTON_ONE = DEPLOY # DEPLOY=true
-  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  BUTTON_TWO = RETURN # RETURN=true
+  button_one = DEPLOY # DEPLOY=true
+  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_two = RETURN # RETURN=true
 
-  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
-  ACTION  = RETURN=true
-  ACTION  = HSLINE=off
-  ACTION  = HSLINE=on
-  ACTION  = UPDATES_RETURN=speed=1.4
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action  = RETURN=true
+  action  = HSLINE=off
+  action  = HSLINE=on
+  action  = UPDATES_RETURN=speed=1.4
 }
 
 //------------------------------------------
@@ -170,6 +175,6 @@ ProcessConfig = pNodeReporter
   AppTick	= 4
   CommsTick	= 4
 
-  VESSEL_TYPE   = kayak
-  VESSEL_LENGTH = 3
+  vessel_type   = kayak
+  vessel_length = 3
 }

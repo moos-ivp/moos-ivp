@@ -113,6 +113,8 @@ void showExampleConfigAndExit()
   blk("  thrust_factor        = 20    ","// range [0,inf)              ");
   blk("  turn_rate            = 70    ","// range [0,100]              ");
   blk("  thrust_map           = 0:0, 20:1, 40:2, 60:3, 80:5, 100:5     ");
+  blk("                                                                ");
+  blk("  prefix               = NAV_  ","// default is USM_            ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

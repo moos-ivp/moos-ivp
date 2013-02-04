@@ -26,11 +26,11 @@
 #include <vector>
 #include <list>
 #include <string>
-#include "MOOS/libMOOS/MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "EFlipper.h"
 #include "LogicBuffer.h"
 
-class EchoVar : public CMOOSApp
+class EchoVar : public AppCastingMOOSApp
 {
 public:
   EchoVar();
@@ -40,9 +40,12 @@ public:
   bool Iterate();
   bool OnConnectToServer();
   bool OnStartUp();
-  void registerVariables();
+
+ protected: // Standard AppCastingMOOSApp function to overload
+  bool buildReport();
 
 protected:
+  void registerVariables();
   bool addMapping(std::string, std::string);
   bool noCycles();
   bool handleFlipEntry(std::string key, std::string line);
@@ -52,20 +55,33 @@ protected:
 
   std::vector<std::string> expand(std::vector<std::string> v);
 
-protected:
+ protected: // Configuration variables
+  bool m_hold_messages_during_pause;
+  bool m_echo_latest_only;
+
+ protected: // State variables
+  bool m_no_cycles;
+
+  // Index: one for each mapping
   std::vector<std::string>  m_var_source;
   std::vector<std::string>  m_var_target;
+
+  // map from variable source to num times received mail
+  std::map<std::string, unsigned int>  m_map_hits;
+
+  // map from variable source/dest to num times posted
+  std::map<std::string, unsigned int>  m_map_posts;
+
+  // Index: one for each unique source. A source may have >1 mappings
   std::vector<std::string>  m_unique_sources;
 
   std::vector<EFlipper>     m_eflippers;
+  std::vector<unsigned int> m_eflip_count;
 
-  unsigned int m_iteration;
+  std::list<CMOOSMsg>       m_held_messages;
+
   LogicBuffer  m_logic_buffer;
-
-  std::list<CMOOSMsg> m_held_messages;
-
-  bool m_conditions_met;
-  bool m_hold_messages_during_pause;
+  bool         m_conditions_met;
 };
 
 #endif

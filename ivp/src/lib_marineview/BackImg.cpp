@@ -173,9 +173,11 @@ bool BackImg::readTiffData(string filename)
     cout << "Failed: Trying now to open: " << file << endl;
     tiff = TIFFOpen(file.c_str(), "r");
   }
-  if(tiff)
-    cout << "Success: " << file << endl;
 
+  if(tiff) {
+    cout << "Success: " << file << endl;
+    m_tiff_file = file;
+  }
 
   // turn warnings back on, just in case
   TIFFSetWarningHandler(warn);
@@ -240,6 +242,8 @@ bool BackImg::readTiffInfo(string filename)
     //cout << file << " contains zero lines" << endl;
     return(false);
   }
+
+  m_info_file = file;
 
   bool img_centx_set = false;
   bool img_centy_set = false;

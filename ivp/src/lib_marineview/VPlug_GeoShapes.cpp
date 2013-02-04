@@ -524,6 +524,31 @@ bool VPlug_GeoShapes::addConvexGrid(const string& grid_str)
   return(true);
 }
 
+//-------------------------------------------------------------
+// Procedure: getPolygon(int)     
+
+XYPolygon VPlug_GeoShapes::getPolygon(unsigned int index) const
+{
+  if(index >= m_polygons.size()) {
+    XYPolygon null_poly;
+    return(null_poly);
+  }
+  else
+    return(m_polygons[index]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getSegList(int)
+
+XYSegList VPlug_GeoShapes::getSegList(unsigned int index) const
+{
+  if(index >= m_seglists.size()) {
+    XYSegList null_segl;
+    return(null_segl);
+  }
+  else
+    return(m_seglists[index]);
+}
 //-----------------------------------------------------------
 // Procedure: updateBounds()
 

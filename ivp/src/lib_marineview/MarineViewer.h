@@ -65,6 +65,12 @@ class MarineViewer : public Fl_Gl_Window
   bool   setTexture();
   std::string geosetting(const std::string& s);
   std::string vehisetting(const std::string& s);
+
+  std::string getTiffFileA() {return(m_back_img.getTiffFile());};
+  std::string getInfoFileA() {return(m_back_img.getInfoFile());};
+  
+  std::string getTiffFileB() {return(m_back_img_b.getTiffFile());};
+  std::string getInfoFileB() {return(m_back_img_b.getInfoFile());};
   
 protected:
   bool   readTiff(std::string);

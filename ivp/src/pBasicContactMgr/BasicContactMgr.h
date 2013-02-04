@@ -25,6 +25,7 @@
 
 #include <vector>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "NodeRecord.h"
 #include "PlatformAlertRecord.h"
 
@@ -79,6 +80,8 @@ class BasicContactMgr : public AppCastingMOOSApp
   bool         m_display_radii;
   double       m_contact_max_age;
 
+  std::string  m_contact_local_coords;
+
  protected: // State variables
 
   // Main Record #2: The Vehicles (contacts) and position info
@@ -104,6 +107,11 @@ class BasicContactMgr : public AppCastingMOOSApp
   double m_nav_y;
   double m_nav_hdg;
   double m_nav_spd;
+
+private:
+  bool         m_use_geodesy;
+  CMOOSGeodesy m_geodesy;
+
 };
 
 #endif 

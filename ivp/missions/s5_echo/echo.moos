@@ -2,7 +2,6 @@
 
 ServerHost = localhost
 ServerPort = 9000
-Simulator  = true
 
 Community  = henry
 
@@ -21,11 +20,11 @@ ProcessConfig = ANTLER
   Run = uSimMarine      @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = pHelmIvP        @ NewConsole = true
+  Run = pHelmIvP        @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
-  Run = uXMS            @ NewConsole = true
+  Run = uXMS            @ NewConsole = false
 }
 
 //------------------------------------------
@@ -36,15 +35,15 @@ ProcessConfig = uXMS
   AppTick   = 4
   CommsTick = 4
   
-  VAR = BHV_STATUS
-  VAR = HVARS
-  VAR = BCOUNT
-  VAR = TBCOUNT
-  VAR = LEN
-  VAR = HITER
+  var = BHV_STATUS
+  var = HVARS
+  var = BCOUNT
+  var = TBCOUNT
+  var = LEN
+  var = HITER
 
   refresh_mode = streaming
-  HISTORY_VAR = BHV_STATUS
+  history_var = BHV_STATUS
 }
 
 
@@ -74,12 +73,12 @@ ProcessConfig = uSimMarine
   AppTick	= 10
   CommsTick	= 10
 
-  START_X       = 0
-  START_Y       = -10
-  START_SPEED   = 0
-  START_HEADING = 180
+  start_x       = 0
+  start_y       = -10
+  start_speed   = 0
+  start_heading = 180
 
-  PREFIX        = NAV
+  prefix        = NAV
 }
 
 //------------------------------------------
@@ -90,10 +89,10 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = echo.bhv
-  Verbose    = quiet
-  Domain     = course:0:359:360
-  Domain     = speed:0:4:21
+  behaviors  = echo.bhv
+  verbose    = quiet
+  domain     = course:0:359:360
+  domain     = speed:0:4:21
 }
 
 //------------------------------------------
@@ -104,7 +103,7 @@ ProcessConfig = pMarinePID
   AppTick    = 20
   CommsTick  = 20
 
-  VERBOSE       = true
+  verbose       = true
   DEPTH_CONTROL = false
 
   // Yaw PID controller
@@ -136,20 +135,23 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -240
   zoom                 = 0.65
   vehicle_shape_scale  = 1.8
-  seglist_edge_width   = 2.0
-  seglist_vertex_size  = 4
-  seglist_vertex_color = red
-  point_vertex_size    = 5
-  point_vertex_color   = yellow
-  point_label_color    = white
   hash_delta           = 50
   hash_shade           = 0.4
-  hash_view            = true
+  hash_viewable        = true
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
 
   scope  = HVARS
   scope  = BCOUNT
@@ -164,26 +166,26 @@ ProcessConfig = pMarineViewer
 
   left_context[bng_point] = BEARING_POINT = name=bng-line$(X)-$(Y) # bearing_point=$(X),$(Y)
 
-  BUTTON_ONE = DEPLOY # DEPLOY=true
-  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  BUTTON_TWO = RETURN # RETURN=true
-  BUTTON_THREE = AUTO_SPAWN # AUTO_SPAWN=true
+  button_one = DEPLOY # DEPLOY=true
+  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_two = RETURN # RETURN=true
+  button_three = AUTO_SPAWN # AUTO_SPAWN=true
 
-  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
-  ACTION+ = RETURN=true
-  ACTION  = BEARING_POINT = show_pt=true
-  ACTION+ = BEARING_POINT = show_pt=false
-  ACTION  = BEARING_POINT = line_pct=0
-  ACTION  = BEARING_POINT = line_pct=25
-  ACTION  = BEARING_POINT = line_pct=50
-  ACTION  = BEARING_POINT = line_pct=75
-  ACTION+ = BEARING_POINT = line_pct=100
-  ACTION  = BEARING_POINT = "name=bng-line # line_pct=0"
-  ACTION  = BEARING_POINT = "name=bng-line # line_pct=50"
-  ACTION+ = BEARING_POINT = "name=bng-line # line_pct=100"
-  ACTION  = AUTO_SPAWN = true
-  ACTION+ = AUTO_SPAWN = false
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action+ = RETURN=true
+  action  = BEARING_POINT = show_pt=true
+  action+ = BEARING_POINT = show_pt=false
+  action  = BEARING_POINT = line_pct=0
+  action  = BEARING_POINT = line_pct=25
+  action  = BEARING_POINT = line_pct=50
+  action  = BEARING_POINT = line_pct=75
+  action+ = BEARING_POINT = line_pct=100
+  action  = BEARING_POINT = "name=bng-line # line_pct=0"
+  action  = BEARING_POINT = "name=bng-line # line_pct=50"
+  action+ = BEARING_POINT = "name=bng-line # line_pct=100"
+  action  = AUTO_SPAWN = true
+  action+ = AUTO_SPAWN = false
 }
 
 //------------------------------------------
@@ -193,7 +195,8 @@ ProcessConfig = pNodeReporter
 {
   AppTick	= 2
   CommsTick	= 2
-  VESSEL_TYPE   = KAYAK
+
+  vessel_type   = KAYAK
 }
 
 //------------------------------------------
@@ -204,15 +207,15 @@ ProcessConfig = uTimerScript
   AppTick	= 4
   CommsTick	= 4
 
-  PAUSED     = false
-  RESET_MAX  = 5000
-  RESET_TIME = end
-  CONDITION  = AUTO_SPAWN=true
+  paused     = false
+  reset_max  = 5000
+  reset_time = end
+  condition  = AUTO_SPAWN=true
 
-  RANDVAR = varname=FOO, min=1, max=800, key=at_reset
-  RANDVAR = varname=DUR, min=25, max=50, key=at_reset
-  RANDVAR = varname=X, min=0, max=150, key=at_reset
-  RANDVAR = varname=Y, min=-150, max=0, key=at_reset
+  randvar = varname=FOO, min=1, max=800, key=at_reset
+  randvar = varname=DUR, min=25, max=50, key=at_reset
+  randvar = varname=X, min=0, max=150, key=at_reset
+  randvar = varname=Y, min=-150, max=0, key=at_reset
 
-  EVENT = var=BEARING_POINT, val="name=B$[TCOUNT] # bearing_point=$[X],$[Y] # duration=$[DUR] # line_pct=100", time=0:2
+  event = var=BEARING_POINT, val="name=B$[TCOUNT] # bearing_point=$[X],$[Y] # duration=$[DUR] # line_pct=100", time=0:2
 }

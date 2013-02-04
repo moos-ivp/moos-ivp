@@ -78,6 +78,9 @@ class PMV_Viewer : public MarineViewer
   std::string m_reference_bearing;
   double      m_curr_time;
 
+  unsigned int m_draw_count;
+  double       m_last_draw_time;
+
   // Member variables for holding scoped info
   bool                     m_scoping;
   std::vector<std::string> m_var_names;

@@ -24,6 +24,7 @@
 #include <iterator>
 #include "EchoVar.h"
 #include "MBUtils.h"
+#include "ACTable.h"
 
 using namespace std;
 
@@ -32,9 +33,18 @@ using namespace std;
 
 EchoVar::EchoVar()
 {
-  m_iteration   = 0;
+  // State variables
   m_conditions_met = true;
+  m_no_cycles      = false;
+
+  // Configuration variables
+
+  // If false, all incoming mail relevant to echoing, or flipping,
+  // is ignored when conditions not met
   m_hold_messages_during_pause = true;
+
+  // If true only echo the most recently received source posting
+  m_echo_latest_only = false;
 }
 
 //-----------------------------------------------------------------
@@ -42,6 +52,11 @@ EchoVar::EchoVar()
 
 bool EchoVar::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  AppCastingMOOSApp::OnNewMail(NewMail);
+
+  if(m_no_cycles == false)
+    return(false);
+
   // First go through the mail and determine if the current crop
   // of mail affects the LogicBuffer.
   if(m_logic_buffer.size() > 0) {
@@ -92,11 +107,12 @@ bool EchoVar::OnConnectToServer()
 
 bool EchoVar::Iterate()
 {
-  m_iteration++;
-  //Notify("ECHO_ITER", m_iteration);
+  AppCastingMOOSApp::Iterate();
 
-  if(m_conditions_met)
+  if(m_conditions_met && m_no_cycles)
     releaseMessages();
+
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -107,8 +123,9 @@ bool EchoVar::Iterate()
 
 bool EchoVar::OnStartUp()
 {
+  AppCastingMOOSApp::OnStartUp();
+
   CMOOSApp::OnStartUp();
-  cout << "pEchoVar starting...." << endl;
 
   list<string> sParams;
   m_MissionReader.EnableVerbatimQuoting(true);
@@ -116,66 +133,45 @@ bool EchoVar::OnStartUp()
     
     list<string>::reverse_iterator p;
     for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
-      cout << "line:[" << *p << "]" << endl;
-      
-      string original_line = *p;
-      string parse_line    = stripBlankEnds(*p);
-      string sKey  = tolower(stripBlankEnds(biteString(parse_line, '=')));
-      string sLine = stripBlankEnds(parse_line);
+      string orig  = *p;
+      string line  = *p;
+      string param = tolower(biteStringX(line, '='));
+      string value = line;
 
-      //cout << "sKey: [" << sKey << "]" << endl;
-      //cout << "  sLine: [" << sLine << "]" << endl;
-
-      sKey = tolower(sKey);
-      if(!strncmp(sKey.c_str(), "flip", 4)) {
-	bool ok = handleFlipEntry(sKey, sLine);
-	if(!ok) {
-	  MOOSDebugWrite("Probem with " + original_line);
-	  return(false);
-	}
-      }
-      else if(sKey == "echo") {
-	sLine = findReplace(sLine, "->", ">");
-	vector<string> svector = parseString(sLine, '>');
+      bool handled = false;
+      if(!strncmp(param.c_str(), "flip", 4)) 
+	handled = handleFlipEntry(param, value);
+      else if(param == "echo") {
+	value = findReplace(value, "->", ">");
+	vector<string> svector = parseString(value, '>');
 	if(svector.size() != 2)
 	  return(false);
-	string sLeft  = stripBlankEnds(svector[0]);
-	string sRight = stripBlankEnds(svector[1]);
-	bool ok = addMapping(sLeft, sRight);
-	if(!ok) { 
-	  MOOSDebugWrite("Probem with " + original_line);
-	  return(false);
-	}
+	string left  = stripBlankEnds(svector[0]);
+	string right = stripBlankEnds(svector[1]);
+	handled = addMapping(left, right);
       }
-      else if(sKey == "condition") {
-	bool ok = m_logic_buffer.addNewCondition(sLine);
-	if(!ok) {
-	  MOOSDebugWrite("Bad pEchoVar Condition:[" + sLine + "]");
-	  return(false);
-	}
-      }
-      else if(sKey == "hold_messages") {
-	bool ok = setBooleanOnString(m_hold_messages_during_pause, sLine);
-	if(!ok) {
-	  MOOSDebugWrite("Bad Boolean expression:[" + sLine + "]");
-	  return(false);
-	}
-      }
+      else if(param == "condition") 
+	handled = m_logic_buffer.addNewCondition(value);
+      else if(param == "echo_latest_only") 
+	handled = setBooleanOnString(m_echo_latest_only, value);
+      else if(param == "hold_messages") 
+	handled = setBooleanOnString(m_hold_messages_during_pause, value);
+      
+      if(!handled)
+	reportUnhandledConfigWarning(orig);
     }
   }
   
-  bool ok = noCycles();
-  if(ok)
-    MOOSTrace("No Cycles Detected - proceeding with startup.\n");
-  else {
-    MOOSTrace("A cycle was detected - aborting the startup.\n");
-    return(false);
+  m_no_cycles = noCycles();
+  if(!m_no_cycles) {
+    reportConfigWarning("An echo cycle was detected.");
+    reportRunWarning("An echo cycle was detected.");
+    return(true);
   }
 
   unsigned int i, vsize = m_eflippers.size();
-  for(i=0; i<vsize; i++) {
+  for(i=0; i<vsize; i++) 
     m_eflippers[i].print();
-  }
 
   registerVariables();
   return(true);
@@ -186,6 +182,8 @@ bool EchoVar::OnStartUp()
 
 void EchoVar::registerVariables()
 {  
+  AppCastingMOOSApp::RegisterVariables();
+
   for(unsigned int i=0; i<m_unique_sources.size(); i++)
     m_Comms.Register(m_unique_sources[i], 0);
   
@@ -309,6 +307,7 @@ bool EchoVar::handleFlipEntry(string sKey, string sLine)
     EFlipper new_flipper;
     new_flipper.setParam("key", key);
     m_eflippers.push_back(new_flipper);
+    m_eflip_count.push_back(0);
     index = esize;
   }
     
@@ -379,7 +378,9 @@ void EchoVar::holdMessage(CMOOSMsg msg)
 {
   string key = msg.GetKey();
 
-  if(!m_conditions_met) {
+  m_map_hits[key]++;
+  
+  if(!m_conditions_met || m_echo_latest_only) {
     list<CMOOSMsg>::iterator p;
     for(p=m_held_messages.begin(); p!=m_held_messages.end();) {
       CMOOSMsg imsg = *p;
@@ -391,7 +392,6 @@ void EchoVar::holdMessage(CMOOSMsg msg)
   }
   
   m_held_messages.push_back(msg);
-
 }
 
 
@@ -412,6 +412,8 @@ void EchoVar::releaseMessages()
     for(i=0; i<vsize; i++) {
       if(key == m_var_source[i]) {
 	string new_key = m_var_target[i];
+	string srctarg = key + ":" + new_key;
+	m_map_posts[srctarg]++;
 	if(msg.IsDouble())
 	  Notify(new_key, ddata);
 	else if(msg.IsString())
@@ -422,6 +424,7 @@ void EchoVar::releaseMessages()
     unsigned int j, fsize = m_eflippers.size();
     for(j=0; j<fsize; j++) {
       if(key == m_eflippers[j].getSourceVar()) {
+	m_eflip_count[j]++;
 	string flip_result = m_eflippers[j].flip(sdata);
 	if(flip_result != "")
 	  Notify(m_eflippers[j].getDestVar(), flip_result);
@@ -431,5 +434,99 @@ void EchoVar::releaseMessages()
   m_held_messages.clear();
 }
 
+//---------------------------------------------------------
+// Procedure: buildReport()
+//      Note: A virtual function of the AppCastingMOOSApp superclass, 
+//            conditionally invoked if either a terminal or appcast 
+//            report is needed.
+//   Example:
+//
+//   conditions_met:   true
+//   hold_messages:    true
+//   echo_latest_only: true
+//
+//   ==========================================================
+//   Echoes:
+//   ==========================================================
+//                       
+//       Source            Dest      Hits  Posts    
+//       -----------  ---  -----     ----  -----
+//             USM_X  -->  NAV_X     23    11 
+//             USM_Y  -->  NAV_Y     23    11
+//             USM_X  -->  NAV_XPOS  23    11
+//             USM_Y  -->  NAV_YPOS  23    11
+//       USM_HEADING  -->  NAV_X     22     9
+//         USM_SPEED  -->  NAV_X     24    10
+//   
+//   ==========================================================
+//   Flips:           
+//   ==========================================================
+//                              Src  Dest          Old    New
+//   Key  Hits   Source  Dest   Sep  Sep   Filter  Field  Field
+//   ---  ----   ------  ----   ---  ----  ------  -----  -----
+//   1    17     ALPHA   BRAVO  ,    ,     type=1  xpos   x
+//                                                 ypos   y
 
+
+bool EchoVar::buildReport()
+{
+  unsigned int echo_cnt = m_var_source.size();
+
+  m_msgs << "conditions_met:   " << boolToString(m_conditions_met) << endl;
+  m_msgs << "hold_messages:    " << boolToString(m_hold_messages_during_pause) << endl;
+  m_msgs << "echo_latest_only: " << boolToString(m_echo_latest_only) << endl << endl;
+
+  m_msgs << "==================================================" << endl;
+  m_msgs << "Echoes: (" << echo_cnt << ")" << endl;
+  m_msgs << "==================================================" << endl << endl;
+
+  if(echo_cnt > 0) {
+    ACTable actab(5,2);
+    actab << "Source | | Dest | Hits | Posts \n";
+    actab.addHeaderLines();
+    for(unsigned int i=0; i<echo_cnt; i++) {
+      string source  = m_var_source[i];
+      string srctarg = source + ":" + m_var_target[i];
+      string hits    = uintToString(m_map_hits[source]);
+      string posts   = uintToString(m_map_posts[srctarg]);
+      actab << m_var_source[i] << "-->" << m_var_target[i] << hits << posts;;
+    }
+    m_msgs << actab.getFormattedString();
+  }
+  m_msgs << endl << endl;
+
+  unsigned int flip_cnt = m_eflippers.size();
+
+  m_msgs << "==================================================" << endl;
+  m_msgs << "Flips: (" << flip_cnt << ")" << endl;
+  m_msgs << "==================================================" << endl << endl;
+
+  if(flip_cnt > 0) {
+    ACTable actab(9,2);
+    actab << "    |      |        |      | Src | Dest|        | Old   | New   \n";
+    actab << "Key | Hits | Source | Dest | Sep | Sep | Filter | Field | Field \n";
+    actab.addHeaderLines();
+    for(unsigned int i=0; i<flip_cnt; i++) {
+      string key  = m_eflippers[i].getKey();
+      string hits = uintToString(m_eflip_count[i]);
+      string src  = m_eflippers[i].getSourceVar();
+      string dest = m_eflippers[i].getDestVar();
+      string src_sep = m_eflippers[i].getSourceSep();
+      string dest_sep = m_eflippers[i].getDestSep();
+      string filters = m_eflippers[i].getFilters();
+
+      string components = m_eflippers[i].getComponents();
+      vector<string> svector = parseString(components, ',');
+      for(unsigned int j=0; j<svector.size(); j++) {
+	string old_fld = biteStringX(svector[j], ':');
+	string new_fld = svector[j];
+	actab << key << hits << src << dest << src_sep << dest_sep << filters;
+	actab << old_fld << new_fld;
+      }
+    }
+    m_msgs << actab.getFormattedString();
+  }
+
+  return(true);
+}
 

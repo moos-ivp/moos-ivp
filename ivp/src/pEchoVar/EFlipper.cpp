@@ -41,25 +41,25 @@ EFlipper::EFlipper()
 
 bool EFlipper::setParam(string param, string value)
 {
-  param = stripBlankEnds(param);
+  param = tolower(stripBlankEnds(param));
   value = stripBlankEnds(value);
-  if(tolower(param) == "key")
+  if(param == "key")
     m_key = value;
-  else if(tolower(param) == "source_variable") {
+  else if(param == "source_variable") {
     if(value == m_dest_variable)
       return(false);
     m_source_variable = value;
   }
-  else if(tolower(param) == "dest_variable") {
+  else if(param == "dest_variable") {
     if(value == m_source_variable)
       return(false);
     m_dest_variable = value;
   }
-  else if(tolower(param) == "source_separator")
+  else if(param == "source_separator")
     m_source_separator = value;
-  else if(tolower(param) == "dest_separator")
+  else if(param == "dest_separator")
     m_dest_separator = value;
-  else if(tolower(param) == "component") {
+  else if(param == "component") {
     vector<string> svector = parseString(value, "->");
     unsigned int vsize = svector.size();
     if(vsize == 2) {
@@ -71,12 +71,12 @@ bool EFlipper::setParam(string param, string value)
     else
       return(false);
   }
-  else if(tolower(param) == "filter") {
+  else if(param == "filter") {
     vector<string> svector = parseString(value, "==");
     unsigned int vsize = svector.size();
     if(vsize == 2) {
-      string left = stripBlankEnds(svector[0]);
-      string right = stripBlankEnds(svector[1]);
+      string left  = tolower(stripBlankEnds(svector[0]));
+      string right = tolower(stripBlankEnds(svector[1]));
       m_fmap[left] = right;
       return(true);
     }
@@ -99,14 +99,19 @@ string EFlipper::flip(string input)
   for(i=0; i<vsize; i++) {
     string left = stripBlankEnds(biteString(svector[i], '='));
     string right = stripBlankEnds(svector[i]);
-    string cmatch = m_cmap[left];
+    string cmatch;
+    if(m_cmap.count(left))
+      cmatch = m_cmap[left];
     if(cmatch != "") {
       if(response != "") 
 	response += m_dest_separator;
       response += (cmatch + "=" + right);
     }
-    string fmatch = m_fmap[left];
-    if((fmatch != "") && (fmatch != right))
+    string fmatch;
+    if(m_fmap.count(tolower(left)))
+      fmatch = m_fmap[tolower(left)];
+
+    if((fmatch != "") && (fmatch != tolower(right)))
       filtered = true;
   }
 
@@ -136,6 +141,42 @@ bool EFlipper::valid()
   if(m_cmap.size() == 0)
     return(false);
   return(true);
+}
+
+//----------------------------------------------------------------
+// Procedure: getFilters
+
+string EFlipper::getFilters()
+{
+  string result;
+  
+  map<string,string>::iterator p;
+  for(p=m_fmap.begin(); p!=m_fmap.end(); p++) {
+    string left  = p->first;
+    string right = p->second;
+    if(result != "")
+      result += ",";
+    result += (left + ":" + right);
+  }
+  return(result);
+}
+
+//----------------------------------------------------------------
+// Procedure: getComponents
+
+string EFlipper::getComponents()
+{
+  string result;
+  
+  map<string,string>::iterator p;
+  for(p=m_cmap.begin(); p!=m_cmap.end(); p++) {
+    string left  = p->first;
+    string right = p->second;
+    if(result != "")
+      result += ",";
+    result += (left + ":" + right);
+  }
+  return(result);
 }
 
 

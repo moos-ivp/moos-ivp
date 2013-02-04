@@ -80,6 +80,7 @@ class PMV_MOOSApp : public AppCastingMOOSApp
 
   unsigned int m_node_reports_received;
   int          m_node_report_index;
+  bool         m_log_the_image;
 };
 
 #endif 

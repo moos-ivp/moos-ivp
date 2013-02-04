@@ -37,7 +37,8 @@ void showSynopsis()
   blk("------------------------------------                            ");
   blk("  The uHelmScope application is a terminal-based (non-GUI) scope");
   blk("  onto a running IvP Helm process, and key MOOS variables.      ");
-  blk("  uHelmScope behavior summaries and activity states.            ");
+  blk("  uHelmScope provides behavior summaries, activity states, and  ");
+  blk("  recent behavior postings to the MOOSDB.                       ");
 }
 
 //----------------------------------------------------------------

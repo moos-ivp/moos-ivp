@@ -38,7 +38,7 @@ void showSynopsis()
   blk("  The uProcessWatch application monitors the presence of MOOS   ");
   blk("  apps on a watch-list. If one or more are noted to be absent,  ");
   blk("  it will be so noted on the MOOS variable PROC_WATCH_SUMMARY.  ");
-  blk("  uProcessWatch is appcast enabled and will produce a nice      ");
+  blk("  uProcessWatch is appcast enabled and will produce a succinct  ");
   blk("  table summary of watched processes and the CPU load reported  ");
   blk("  by the processes themselves. The items on the watch list may  ");
   blk("  be named explicitly in the config file or inferred from the   ");

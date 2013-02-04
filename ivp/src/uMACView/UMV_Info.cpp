@@ -35,7 +35,12 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  uMACView is a GUI tool for visually monitoring AppCasts       ");
+  blk("  uMACView is a GUI tool for visually monitoring appcasts. It   ");
+  blk("  will parse appcasts generated within its own MOOS community or");
+  blk("  those from other MOOS communities bridged or shared to the    "); 
+  blk("  local MOOSDB. Its capability is nearly identical to the       ");
+  blk("  appcast viewing capability built into pMarineViewer. It was   ");
+  blk("  intended to be an appcast viewer for non-pMarineViewer users. ");
 }
 
 //----------------------------------------------------------------

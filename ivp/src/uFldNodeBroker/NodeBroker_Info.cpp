@@ -39,9 +39,9 @@ void showSynopsis()
   blk("  vehicle context. Used for making a connection to a shoreside  ");
   blk("  community by sending local information about the vehicle such ");
   blk("  as the IP address, community name, and port number being used ");
-  blk("  by pMOOSBridge for incoming UDP messages. Presumably the      ");
-  blk("  shoreside community uses this to know where to send outgoing  ");
-  blk("  UDP messages to the vehicle.                                  ");
+  blk("  by pShare for incoming UDP messages. Presumably the shoreside ");
+  blk("  community uses this to know where to send outgoing  UDP       ");
+  blk("  messages to the vehicle.                                      ");
 }
 
 //----------------------------------------------------------------

@@ -300,7 +300,7 @@ bool FldNodeComms::handleMailNodeMessage(const string& msg)
     m_map_messages_rcvd[upp_src_node]++;
   m_total_messages_rcvd++;
 
-  reportEvent("New message received: " + msg);
+  reportEvent("Msg rec'd: " + msg);
 
   return(true);
 }
@@ -768,15 +768,7 @@ bool FldNodeComms::buildReport()
   m_msgs << "        Stale Receiver: " << blk_msg_toostale << endl;
   m_msgs << "            Too Recent: " << blk_msg_tooquick<< endl;
   m_msgs << "          Msg Too Long: " << blk_msg_toolong << endl;
-  m_msgs << "         Range Too Far: " << blk_msg_toofar << endl;
-
-  m_msgs << "     ------------------ " << endl;
-  m_msgs << "             Last Msgs: " << endl;
-  list<string>::iterator p3;
-  for(p3 = m_last_messages.begin(); p3 != m_last_messages.end(); p3++) {
-    string msg = *p3;
-    m_msgs << msg << endl;
-  }
+  m_msgs << "         Range Too Far: " << blk_msg_toofar << endl << endl;
 
   return(true);
 }

@@ -35,9 +35,11 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  A tool for managing comms between vehicles. Based on incoming ");
-  blk("  and outgoing node reports. Comms determined on range and/or   ");
-  blk("  vehicle team affiliation.                                     ");
+  blk("  A shoreside tool for managing communications between vehicles.");
+  blk("  It has knowledge of all vehicle positions based on incoming   ");
+  blk("  node reports. Communications may be  limited based on vehicle ");
+  blk("  range, frequency of messages, or size of message. Messages may");
+  blk("  also be blocked based on a team affiliation.                  ");
 }
 
 //----------------------------------------------------------------

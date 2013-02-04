@@ -498,7 +498,7 @@ bool HazardSensor_MOOSApp::handleSensorRequest(const string& request)
     string hlabel = p->first;
     bool new_report = updateVehicleHazardStatus(vix, hlabel);  // detection dice
     if(new_report) 
-      postHazardDetectionReport(hlabel, vname);  // classify dice inside
+      postHazardDetectionReport(hlabel, vname); 
   }
 
   return(true);
@@ -776,11 +776,11 @@ void HazardSensor_MOOSApp::postHazardClassifyReport(string hazard_label,
     post_hazard.setType("hazard");
   else
     post_hazard.setType("benign");
-  string hazard_spec = post_hazard.getSpec("hr");
+  string hazard_spec = post_hazard.getSpec("hr,color,shape,width,xpos,ypos");
 
   string full_str = "vname=" + vname + "," + hazard_spec;
 
-  //addQueueMessage(vname, "UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
+  Notify("UHZ_HAZARD_REPORT", full_str);
   Notify("UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
 
   // Part 4: Build some event messages/info.

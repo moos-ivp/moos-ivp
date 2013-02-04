@@ -38,7 +38,7 @@ void showSynopsis()
   blk("  The uSimCurrent application is a simple simulator of water    ");
   blk("  current. Based on local current information from a given file,");
   blk("  it repeately reads the vehicle's present position and         ");
-  blk("  publishes a force vector, presumably consumed by uSimMarine.  ");
+  blk("  publishes a drift vector, presumably consumed by uSimMarine.  ");
 }
 
 //----------------------------------------------------------------

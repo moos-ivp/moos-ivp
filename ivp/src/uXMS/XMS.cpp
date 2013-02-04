@@ -220,7 +220,7 @@ bool XMS::OnStartUp()
     app_name = GetAppName();
 
   string directives = "must_have_moosblock=false,alt_config_block_name=" + app_name;
-  AppCastingMOOSApp::OnStartUp(directives);
+  AppCastingMOOSApp::OnStartUpDirectives(directives);
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);

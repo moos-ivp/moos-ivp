@@ -61,6 +61,7 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   m_max_xpos       = 0;
   m_max_ypos       = 0;
 
+  m_behaviors_verbose = false;
   m_geo_settings.setParam("hash_viewable", "true");
 }
 

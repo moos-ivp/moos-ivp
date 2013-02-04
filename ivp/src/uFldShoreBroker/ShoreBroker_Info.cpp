@@ -37,7 +37,7 @@ void showSynopsis()
   blk("------------------------------------                            ");
   blk("  Typically run in a shoreside community. Takes reports from    ");
   blk("  remote vehicles describing how they may be reached. Posts     ");
-  blk("  registration requests to shoreside pMOOSBridge to bridge user-");
+  blk("  registration requests to shoreside pShare to share user-      ");
   blk("  provided list of variables out to vehicles. Upon learning of  ");
   blk("  vehicle JAKE will create bridges FOO_ALL and FOO_JAKE to JAKE,");
   blk("  for all such user-configured variables.                       ");

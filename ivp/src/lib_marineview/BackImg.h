@@ -62,6 +62,9 @@ public:
 
   void   setDatumLatLon(double lat, double lon);
 
+  std::string getTiffFile() const {return(m_tiff_file);};
+  std::string getInfoFile() const {return(m_info_file);};
+
   void   print();
 
 protected:
@@ -78,6 +81,9 @@ private:
   // Info set from the .info file boudaries
   double   m_img_mtr_width;
   double   m_img_mtr_height;
+
+  std::string m_tiff_file;
+  std::string m_info_file;
 
   double   m_img_meters_x;  // Pct of image equivalent to 100 meters
   double   m_img_meters_y;  // Pct of image equivalent to 100 meters

@@ -73,9 +73,11 @@ class NodeRecord
   double getLength() const     {return(m_length);};
   double getTimeStamp() const  {return(m_timestamp);};
   
+  bool   isSetX() const        {return(m_x_set);};
+  bool   isSetY() const        {return(m_y_set);};
+  bool   isSetLatitude() const {return(m_lat_set);};
+  bool   isSetLongitude() const {return(m_lon_set);};
   bool   isSetAltitude() const {return(m_altitude_set);};
-
-  
 
   double getElapsedTime(double) const;
   bool   hasProperty(std::string) const;

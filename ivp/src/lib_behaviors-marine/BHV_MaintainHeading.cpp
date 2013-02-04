@@ -78,6 +78,7 @@ bool BHV_MaintainHeading::setParam(string param, string val)
       postWMessage("Dubious initial heading provided:"+val);
     dval = angle360(dval);
     m_desired_heading = dval;
+    m_heading_on_active = false;
     return(true);
   }
   if(param == "peakwidth") {
@@ -121,7 +122,6 @@ void BHV_MaintainHeading::onIdleState()
 
 //-----------------------------------------------------------
 // Procedure: onRunState
-//
 
 IvPFunction *BHV_MaintainHeading::onRunState() 
 {
@@ -151,15 +151,3 @@ IvPFunction *BHV_MaintainHeading::onRunState()
 
   return(ipf);
 }
-
-
-
-
-
-
-
-
-
-
-
-

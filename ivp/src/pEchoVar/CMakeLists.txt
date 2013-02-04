@@ -26,6 +26,7 @@ TARGET_LINK_LIBRARIES(pEchoVar
   ${MOOS_LIBRARIES}
   geometry
   mbutil 
+  apputil
   logic
   ${SYSTEM_LIBS})
 

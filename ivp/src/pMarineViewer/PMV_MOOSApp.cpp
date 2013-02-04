@@ -48,9 +48,10 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_appcast_last_req_time    = 0;
   m_appcast_request_interval = 1.0;  // seconds
 
-
   m_node_reports_received = 0;
   m_node_report_index     = 0;
+
+  m_log_the_image = false;
 }
 
 //----------------------------------------------------------------
@@ -504,8 +505,11 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "appcast_height") 
       handled = m_gui->setRadioCastAttrib(param, value);
-        else if(param == "appcast_width") 
+    else if(param == "appcast_width") 
       handled = m_gui->setRadioCastAttrib(param, value);
+
+    else if(param == "log_the_image") 
+      handled = setBooleanOnString(m_log_the_image, value);
     
     else if(strBegins(param, "left_context", false)) {
       string key = getContextKey(param);
@@ -516,8 +520,9 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       handled = m_gui->addMousePoke("right", key, value);
     }
     else if(param == "tiff_file") {
-      if(!tiff_a_set)
+      if(!tiff_a_set) {
 	tiff_a_set = m_gui->mviewer->setParam(param, value);
+      }
       handled = true;
     }
     else if(param == "tiff_file_b") {
@@ -564,6 +569,28 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
+
+  if(tiff_a_set && m_log_the_image) {
+    string command = "COPY_FILE_REQUEST=";
+    string tiff_file = m_gui->mviewer->getTiffFileA();
+    string info_file = m_gui->mviewer->getInfoFileA();
+    if((tiff_file != "") && (info_file != "")) {
+      Notify("PLOGGER_CMD", command + tiff_file);
+      Notify("PLOGGER_CMD", command + info_file);
+    }
+  }
+
+  if(tiff_b_set && m_log_the_image) {
+    string command = "COPY_FILE_REQUEST=";
+    string tiff_file = m_gui->mviewer->getTiffFileB();
+    string info_file = m_gui->mviewer->getInfoFileB();
+    if((tiff_file != "") && (info_file != "")) {
+      Notify("PLOGGER_CMD", command + tiff_file);
+      Notify("PLOGGER_CMD", command + info_file);
+    }
+  }
+
+
   
   // If no images were specified, use the default images.
   if(!tiff_a_set && !tiff_b_set) {

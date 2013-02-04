@@ -92,12 +92,55 @@ bool XYHazard::setColor(string color_str)
 
 string XYHazard::getSpec(string noshow) const
 {
+  string str;
+  if(!strContains(noshow,"xpos"))
+    str += "x=" + doubleToStringX(m_x,2);
+
+  if(!strContains(noshow,"ypos"))
+    str += ",y=" + doubleToStringX(m_y,2);
+
+  if((m_label != "") && !strContains(noshow,"label"))
+    str += ",label=" + m_label;
+
+  if((m_type != "") && !strContains(noshow,"type"))
+    str += ",type=" + m_type;
+
+  if((m_color != "") && !strContains(noshow,"color"))
+    str += ",color=" + m_color;
+
+  if((m_shape != "") && !strContains(noshow,"shape"))
+    str += ",shape=" + m_color;
+
+  if((m_width >= 0) && !strContains(noshow,"width"))
+    str += ",width=" + doubleToStringX(m_width);
+
+  if((m_type!="hazard") && m_hr_set && !strContains(noshow,"hr"))
+    str += ",hr=" + doubleToStringX(m_hr);
+
+  unsigned int strlen = str.length();
+  if((strlen > 0) && (str[0] == ','))
+    str = str.substr(1, strlen-1);
+
+  return(str);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getSpec()
+//      Note: The noshow argument contains a list of comma-separated
+//            fields to NOT include in the string specification
+
+#if 0
+string XYHazard::getSpec(string noshow) const
+{
   bool no_type  = false;
   bool no_shape = false;
   bool no_label = false;
   bool no_width = false;
   bool no_color = false;
   bool no_hr    = false;
+  bool no_x    = false;
+  bool no_y    = false;
 
   vector<string> svector = parseString(noshow, ',');
   unsigned int i, vsize = svector.size();
@@ -148,5 +191,5 @@ string XYHazard::getSpec(string noshow) const
 
   return(str);
 }
-
+#endif
 

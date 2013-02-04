@@ -73,7 +73,7 @@ int GeoViewer::handle(int event)
 void GeoViewer::draw()
 {
   MarineViewer::draw();
-  if(m_hash_offon) {
+  if(m_geo_settings.viewable("hash_viewable")) {
     double xl = m_geoshapes.getXMin() - 1000;
     double xh = m_geoshapes.getXMax() + 1000;
     double yl = m_geoshapes.getYMin() - 1000;

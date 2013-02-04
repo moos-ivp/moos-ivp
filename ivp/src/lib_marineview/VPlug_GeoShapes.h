@@ -104,6 +104,12 @@ public:
   const std::map<std::string, XYCircle>& getCircles() const {return(m_circles);};
   const std::map<std::string, XYMarker>& getMarkers() const {return(m_markers);};
 
+  XYPolygon& poly(unsigned int i)   {return(m_polygons[i]);};
+  XYSegList& segl(unsigned int i)   {return(m_seglists[i]);};
+
+  XYPolygon    getPolygon(unsigned int) const;
+  XYSegList    getSegList(unsigned int) const;
+
  protected:
   void updateBounds(double xl, double xh, double yl, double yh);
 

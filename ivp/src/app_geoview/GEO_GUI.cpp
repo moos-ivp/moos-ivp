@@ -74,44 +74,44 @@ GEO_GUI::GEO_GUI(int g_w, int g_h, const char *g_l)
 
 void GEO_GUI::augmentMenu() 
 {
-  mbar->add("EditMode/Append Vertex", 0,   (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
-  mbar->add("EditMode/Edit Vertex",   'e', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)1, FL_MENU_RADIO);
-  mbar->add("EditMode/Delete Vertex", 'x', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)2, FL_MENU_RADIO);
-  mbar->add("EditMode/Insert Vertex", 'a', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)3, FL_MENU_RADIO);
-  mbar->add("EditMode/Center View",   'c', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)-1, FL_MENU_RADIO);
+  m_menubar->add("EditMode/Append Vertex", 0,   (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
+  m_menubar->add("EditMode/Edit Vertex",   'e', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)1, FL_MENU_RADIO);
+  m_menubar->add("EditMode/Delete Vertex", 'x', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)2, FL_MENU_RADIO);
+  m_menubar->add("EditMode/Insert Vertex", 'a', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)3, FL_MENU_RADIO);
+  m_menubar->add("EditMode/Center View",   'c', (Fl_Callback*)GEO_GUI::cb_DropMode, (void*)-1, FL_MENU_RADIO);
   
-  mbar->add("Polygons/Delete All", 0, (Fl_Callback*)GEO_GUI::cb_Clear, (void*)0, 0);
-  mbar->add("Polygons/Delete Current", FL_CTRL+'x', (Fl_Callback*)GEO_GUI::cb_ClearActive, (void*)0, 0);
-  mbar->add("Polygons/Create New", 0, (Fl_Callback*)GEO_GUI::cb_CreateNew, (void*)0, 0);
-  mbar->add("Polygons/Current --", '-', (Fl_Callback*)GEO_GUI::cb_AdjustActive, (void*)-1, 0);
-  mbar->add("Polygons/Current ++", '+', (Fl_Callback*)GEO_GUI::cb_AdjustActive, (void*)1, 0);
-  mbar->add("Polygons/DumpSpec",   '>', (Fl_Callback*)GEO_GUI::cb_DumpPolySpec, (void*)0, 0);
-  mbar->add("Polygons/Duplicate",  '2', (Fl_Callback*)GEO_GUI::cb_Duplicate, (void*)0, FL_MENU_DIVIDER);
-  mbar->add("Polygons/Move Right", FL_SHIFT + FL_Right, (Fl_Callback*)GEO_GUI::cb_ShiftX, (void*)10, 0);
-  mbar->add("Polygons/Move Left",  FL_SHIFT + FL_Left, (Fl_Callback*)GEO_GUI::cb_ShiftX, (void*)-10, 0);
-  mbar->add("Polygons/Move Up",    FL_SHIFT + FL_Up, (Fl_Callback*)GEO_GUI::cb_ShiftY, (void*)10, 0);
-  mbar->add("Polygons/Move Down",  FL_SHIFT + FL_Down, (Fl_Callback*)GEO_GUI::cb_ShiftY, (void*)-10, FL_MENU_DIVIDER);
-  mbar->add("Polygons/Move Right (slow)", FL_SHIFT + FL_ALT + FL_Right, (Fl_Callback*)GEO_GUI::cb_ShiftX, (void*)1, 0);
-  mbar->add("Polygons/Move Left (slow)",  FL_SHIFT + FL_ALT + FL_Left, (Fl_Callback*)GEO_GUI::cb_ShiftX, (void*)-1, 0);
-  mbar->add("Polygons/Move Up (slow)",    FL_SHIFT + FL_ALT + FL_Up, (Fl_Callback*)GEO_GUI::cb_ShiftY, (void*)1, 0);
-  mbar->add("Polygons/Move Down (slow)",  FL_SHIFT + FL_ALT + FL_Down, (Fl_Callback*)GEO_GUI::cb_ShiftY, (void*)-1, FL_MENU_DIVIDER);
-  mbar->add("Polygons/Rotate Right", '}', (Fl_Callback*)GEO_GUI::cb_Rotate, (void*)1, 0);
-  mbar->add("Polygons/Rotate Left",  '{', (Fl_Callback*)GEO_GUI::cb_Rotate, (void*)-1, 0);
-  mbar->add("Polygons/Enlarge", ']', (Fl_Callback*)GEO_GUI::cb_Grow, (void*)1, 0);
-  mbar->add("Polygons/Shrink",  '[', (Fl_Callback*)GEO_GUI::cb_Grow, (void*)-1, 0);
-  mbar->add("Polygons/Reverse", 'R', (Fl_Callback*)GEO_GUI::cb_Reverse, (void*)0, 0);
+  m_menubar->add("Polygons/Delete All", 0, (Fl_Callback*)GEO_GUI::cb_Clear, (void*)0, 0);
+  m_menubar->add("Polygons/Delete Current", FL_CTRL+'x', (Fl_Callback*)GEO_GUI::cb_ClearActive, (void*)0, 0);
+  m_menubar->add("Polygons/Create New", 0, (Fl_Callback*)GEO_GUI::cb_CreateNew, (void*)0, 0);
+  m_menubar->add("Polygons/Current --", '-', (Fl_Callback*)GEO_GUI::cb_AdjustActive, (void*)-1, 0);
+  m_menubar->add("Polygons/Current ++", '+', (Fl_Callback*)GEO_GUI::cb_AdjustActive, (void*)1, 0);
+  m_menubar->add("Polygons/DumpSpec",   '>', (Fl_Callback*)GEO_GUI::cb_DumpPolySpec, (void*)0, 0);
+  m_menubar->add("Polygons/Duplicate",  '2', (Fl_Callback*)GEO_GUI::cb_Duplicate, (void*)0, FL_MENU_DIVIDER);
+  m_menubar->add("Polygons/Move Right", FL_SHIFT + FL_Right, (Fl_Callback*)GEO_GUI::cb_ShiftX, (void*)10, 0);
+  m_menubar->add("Polygons/Move Left",  FL_SHIFT + FL_Left, (Fl_Callback*)GEO_GUI::cb_ShiftX, (void*)-10, 0);
+  m_menubar->add("Polygons/Move Up",    FL_SHIFT + FL_Up, (Fl_Callback*)GEO_GUI::cb_ShiftY, (void*)10, 0);
+  m_menubar->add("Polygons/Move Down",  FL_SHIFT + FL_Down, (Fl_Callback*)GEO_GUI::cb_ShiftY, (void*)-10, FL_MENU_DIVIDER);
+  m_menubar->add("Polygons/Move Right (slow)", FL_SHIFT + FL_ALT + FL_Right, (Fl_Callback*)GEO_GUI::cb_ShiftX, (void*)1, 0);
+  m_menubar->add("Polygons/Move Left (slow)",  FL_SHIFT + FL_ALT + FL_Left, (Fl_Callback*)GEO_GUI::cb_ShiftX, (void*)-1, 0);
+  m_menubar->add("Polygons/Move Up (slow)",    FL_SHIFT + FL_ALT + FL_Up, (Fl_Callback*)GEO_GUI::cb_ShiftY, (void*)1, 0);
+  m_menubar->add("Polygons/Move Down (slow)",  FL_SHIFT + FL_ALT + FL_Down, (Fl_Callback*)GEO_GUI::cb_ShiftY, (void*)-1, FL_MENU_DIVIDER);
+  m_menubar->add("Polygons/Rotate Right", '}', (Fl_Callback*)GEO_GUI::cb_Rotate, (void*)1, 0);
+  m_menubar->add("Polygons/Rotate Left",  '{', (Fl_Callback*)GEO_GUI::cb_Rotate, (void*)-1, 0);
+  m_menubar->add("Polygons/Enlarge", ']', (Fl_Callback*)GEO_GUI::cb_Grow, (void*)1, 0);
+  m_menubar->add("Polygons/Shrink",  '[', (Fl_Callback*)GEO_GUI::cb_Grow, (void*)-1, 0);
+  m_menubar->add("Polygons/Reverse", 'R', (Fl_Callback*)GEO_GUI::cb_Reverse, (void*)0, 0);
   
-  mbar->add("SnapValue/200.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)20000, FL_MENU_RADIO);
-  mbar->add("SnapValue/100.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)10000, FL_MENU_RADIO);
-  mbar->add("SnapValue/50.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)5000, FL_MENU_RADIO);
-  mbar->add("SnapValue/10.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)1000, FL_MENU_RADIO|FL_MENU_VALUE);
-  mbar->add("SnapValue/ 5.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)500, FL_MENU_RADIO);
-  mbar->add("SnapValue/ 2.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)200, FL_MENU_RADIO);
-  mbar->add("SnapValue/ 1.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)100, FL_MENU_RADIO);
-  mbar->add("SnapValue/ 0.1 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)10, FL_MENU_RADIO);
-  mbar->add("SnapValue/ 0.01 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)1, FL_MENU_RADIO);
-  mbar->add("SnapValue/ 0.00 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)0, FL_MENU_RADIO);
-  mbar->add("SnapValue/Re-Apply To Current", 0, (Fl_Callback*)GEO_GUI::cb_ReApplySnapVal, (void*)0, 0);
+  m_menubar->add("SnapValue/200.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)20000, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/100.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)10000, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/50.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)5000, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/10.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)1000, FL_MENU_RADIO|FL_MENU_VALUE);
+  m_menubar->add("SnapValue/ 5.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)500, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/ 2.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)200, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/ 1.0 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)100, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/ 0.1 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)10, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/ 0.01 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)1, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/ 0.00 meters", 0, (Fl_Callback*)GEO_GUI::cb_SnapVal, (void*)0, FL_MENU_RADIO);
+  m_menubar->add("SnapValue/Re-Apply To Current", 0, (Fl_Callback*)GEO_GUI::cb_ReApplySnapVal, (void*)0, 0);
 }
 
 //----------------------------------------------------------

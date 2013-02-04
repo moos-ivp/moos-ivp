@@ -40,6 +40,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_var_index      = 0;
   m_var_index_prev = 0;
   m_curr_time      = 0;
+  m_draw_count     = 0;
 
   m_centric_view   = "";
   m_centric_view_sticky = true;
@@ -68,6 +69,9 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 void PMV_Viewer::draw()
 {
   MarineViewer::draw();
+  
+  m_draw_count++;
+  m_last_draw_time = m_curr_time;
 
   if(m_geo_settings.viewable("hash_viewable"))
     calculateDrawHash();

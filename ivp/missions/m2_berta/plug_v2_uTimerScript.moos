@@ -4,6 +4,9 @@
 ProcessConfig = uTimerScript
 {
   condition = DEPLOY=true
+  
+  reset_max = nolimit
+  reset_time = all-posted
 
   event = var=NODE_MESSAGE_LOCAL, val="src_node=$[VNAME], dest_node=gilda,var_name=UPDATE_LOITER,string_val=speed=0.4", time=30
   event = var=NODE_MESSAGE_LOCAL, val="src_node=$[VNAME], dest_node=gilda,var_name=UPDATE_LOITER,string_val=speed=2.4", time=60

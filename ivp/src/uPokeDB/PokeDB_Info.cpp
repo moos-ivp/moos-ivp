@@ -37,6 +37,11 @@ void showSynopsis()
   blk("------------------------------------                            ");
   blk("  The uPokeDB application is a command-line tool for poking a   ");
   blk("  MOOSDB with variable-value pairs provided on the command line.");
+  blk("  It finds the MOOSDB via mission file provided on the command  ");
+  blk("  line, or the IP address and port number given on the command  ");
+  blk("  line. It will connect to the DB, show the value prior to      ");
+  blk("  poking, poke the DB, and wait an iteratino for mail from the  "); 
+  blk("  DB to confirm the result of the poke.                         ");
 }
 
 //----------------------------------------------------------------

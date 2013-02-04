@@ -25,8 +25,7 @@
 
 #include "NodeRecord.h"
 
-NodeRecord string2NodeRecord(const std::string&);
+NodeRecord string2NodeRecord(const std::string&, bool retPartialResult=false);
 
 #endif 
-
 

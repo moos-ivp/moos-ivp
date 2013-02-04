@@ -57,7 +57,8 @@ int main(int argc, char *argv[])
     cout << "                                                           " << endl;
     cout << "Synopsis:                                                  " << endl;
     cout << "  Create a new MOOS .alog file by retaining only the       " << endl;
-    cout << "  given MOOS variables or sources from a given .alog file. " << endl;
+    cout << "  given MOOS variables or sources, named on the command    " << endl;
+    cout << "  line, from a given .alog file.                           " << endl;
     cout << "                                                           " << endl;
     cout << "Standard Arguments:                                        " << endl;
     cout << "  in.alog  - The input logfile.                            " << endl;

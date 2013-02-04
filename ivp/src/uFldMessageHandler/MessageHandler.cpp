@@ -106,8 +106,7 @@ bool MessageHandler::OnStartUp()
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
-  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
-    reportConfigWarning("No config block found for " + GetAppName());
+  m_MissionReader.GetConfiguration(GetAppName(), sParams);
 
   STRING_LIST::reverse_iterator p;
   for(p=sParams.rbegin(); p!=sParams.rend(); p++) {

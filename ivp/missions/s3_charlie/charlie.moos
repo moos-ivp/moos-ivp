@@ -44,16 +44,14 @@ ProcessConfig = uSimMarine
   AppTick	= 10
   CommsTick	= 10
 
-  START_X       = 0
-  START_Y       = -10
-  START_SPEED   = 0
-  START_HEADING = 180
-  PREFIX        = NAV
-  MAX_DECELERATION  = 0.1
+  start_x       = 0
+  start_y       = -10
+  start_speed   = 0
+  start_heading = 180
+  prefix        = NAV
+  max_deceleration  = 0.1
 
-  //ROTATE_SPEED = 1
-
-  DUAL_STATE    = true
+  dual_state    = true
 }
 
 //------------------------------------------
@@ -64,10 +62,10 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = charlie.bhv
-  Verbose    = true
-  Domain     = course:0:359:360
-  Domain     = speed:0:4:21
+  behaviors  = charlie.bhv
+  verbose    = true
+  domain     = course:0:359:360
+  domain     = speed:0:4:21
 }
 
 //------------------------------------------
@@ -77,10 +75,11 @@ ProcessConfig = pNodeReporter
 {
   AppTick	= 2
   CommsTick	= 2
-  VESSEL_TYPE   = kayak
-  VESSEL_LENGTH = 3
 
-  ALT_NAV_PREFIX = NAV_GT
+  vessel_type   = kayak
+  vessel_length = 3
+
+  alt_nav_prefix = NAV_GT
 }
 //------------------------------------------
 // pMarinePID config block
@@ -122,28 +121,28 @@ ProcessConfig = uTimerScript
    AppTick   = 2
    CommsTick = 2
 
-   PAUSED      = false
-   RESET_MAX   = unlimited
-   RESET_TIME  = end
-   CONDITION   = WIND_GUSTS = true
-   DELAY_START = 30
-   DELAY_RESET = 10:60
-   TIME_WARP   = 0.25:2.0
+   paused      = false
+   reset_max   = unlimited
+   reset_time  = end
+   condition   = WIND_GUSTS = true
+   delay_start = 30
+   delay_reset = 10:60
+   time_warp   = 0.25:2.0
 
-   RANDVAR = varname=ANG, min=0,   max=359, key=at_reset
-   RANDVAR = varname=MAG, min=1.5, max=3.5, key=at_reset
+   randvar = varname=ANG, min=0,   max=359, key=at_reset
+   randvar = varname=MAG, min=1.5, max=3.5, key=at_reset
 
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=0
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=2
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=4
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=6
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=8
+   event = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=0
+   event = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=2
+   event = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=4
+   event = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=6
+   event = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*0.2}", time=8
 
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=10
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=12
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=14
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=16
-   EVENT = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", Time=18
+   event = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=10
+   event = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=12
+   event = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=14
+   event = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", time=16
+   event = var=DRIFT_VECTOR_ADD, val="$(ANG),{$(MAG)*-0.2}", Time=18
 }
 
 //------------------------------------------
@@ -156,7 +155,7 @@ ProcessConfig = pMarineViewer
 
   appcast_viewable = true
 
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -340
   zoom                 = 0.65
@@ -165,32 +164,32 @@ ProcessConfig = pMarineViewer
   hash_shade           = 0.4
   hash_viewable        = true
 
-  SCOPE    = LOITER_REPORT
-  SCOPE    = LOITER_DIST_TO_POLY
-  SCOPE    = USM_FSUMMARY
-  SCOPE    = USM_FORCE_VECTOR_ADD
-  SCOPE    = DB_CLIENTS
-  SCOPE    = CONVEX_GRID_CONFIG
+  scope    = LOITER_REPORT
+  scope    = LOITER_DIST_TO_POLY
+  scope    = USM_FSUMMARY
+  scope    = USM_DRIFT_VECTOR_ADD
+  scope    = DB_CLIENTS
+  scope    = CONVEX_GRID_CONFIG
 
-  ACTION   = UP_LOITER = center_assign = 40,-40
-  ACTION+  = UP_LOITER = center_assign = x=100, y=-80
+  action   = UP_LOITER = center_assign = 40,-40
+  action+  = UP_LOITER = center_assign = x=100, y=-80
 
-  ACTION   = UP_LOITER = polygon = format=radial, x=0, y=-75, radius=40, pts=6
-  ACTION+  = UP_LOITER = polygon = format=ellipse, x=110, y=-75, degs=150, pts=14, major=80, minor=20
+  action   = UP_LOITER = polygon = format=radial, x=0, y=-75, radius=40, pts=6
+  action+  = UP_LOITER = polygon = format=ellipse, x=110, y=-75, degs=150, pts=14, major=80, minor=20
 
-  ACTION   = UP_LOITER = center_activate = true
-  ACTION+  = UP_LOITER = center_activate = false
+  action   = UP_LOITER = center_activate = true
+  action+  = UP_LOITER = center_activate = false
 
-  ACTION   = WIND_GUSTS = true
-  ACTION+  = WIND_GUSTS = false
+  action   = WIND_GUSTS = true
+  action+  = WIND_GUSTS = false
 
-  ACTION = UP_LOITER=clockwise=true
-  ACTION = UP_LOITER=clockwise=false
+  action = UP_LOITER=clockwise=true
+  action = UP_LOITER=clockwise=false
 
-  BUTTON_ONE   = DEPLOY # MOOS_MANUAL_OVERIDE=false # DEPLOY=true
-  BUTTON_ONE   = STATION_KEEP=false # LOITER=true # RETURN=false
-  BUTTON_TWO   = RETURN # RETURN=true # STATION_KEEP=false
-  BUTTON_THREE = SKEEP:true  # STATION_KEEP=true
-  BUTTON_FOUR  = SKEEP:false # STATION_KEEP=false
+  button_one   = DEPLOY # MOOS_MANUAL_OVERIDE=false # DEPLOY=true
+  button_two   = STATION_KEEP=false # LOITER=true # RETURN=false
+  button_two   = RETURN # RETURN=true # STATION_KEEP=false
+  button_three = SKEEP:true  # STATION_KEEP=true
+  button_four  = SKEEP:false # STATION_KEEP=false
 }
 

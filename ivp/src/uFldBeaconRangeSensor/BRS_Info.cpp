@@ -40,7 +40,7 @@ void showSynopsis()
   blk("  from a remote vehicle and returns a range report indicating   ");
   blk("  that vehicle's range to nearby beacons.  Range requests may   ");
   blk("  or may not be answered depending on range to beacon. Reports  ");
-  blk("  may have noise added and may or may not include beaco ID.     ");
+  blk("  may have noise added and may or may not include beacon ID.    ");
 }
 
 //----------------------------------------------------------------

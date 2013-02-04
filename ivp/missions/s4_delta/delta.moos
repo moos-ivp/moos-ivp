@@ -41,8 +41,8 @@ ProcessConfig = uProcessWatch
   AppTick   = 4                                                 
   CommsTick = 4                                                 
                                                                 
-  WATCH_ALL = true                                              
-  NOWATCH = uXMS*                                               
+  watch_all = true                                              
+  nowatch   = uXMS*                                               
 }                                                             
 
 //------------------------------------------
@@ -61,7 +61,6 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  LoggingDirectorySummaryFile = ~/.pLogger
 }
 
 //------------------------------------------
@@ -72,18 +71,18 @@ ProcessConfig = uSimMarine
   AppTick	= 10
   CommsTick	= 10
 
-  START_X       = 0
-  START_Y       = 0
-  START_SPEED   = 0
-  START_HEADING = 180
+  start_x       = 0
+  start_y       = 0
+  start_speed   = 0
+  start_heading = 180
 
-  BUOYANCY_RATE    = 0.025
-  MAX_DEPTH_RATE = 5
-  MAX_DEPTH_RATE_SPEED = 2.0
+  buoyancy_rate    = 0.025
+  max_depth_rate = 5
+  max_depth_rate_speed = 2.0
 
-  DEFAULT_WATER_DEPTH = 400
+  default_water_depth = 400
 
-  PREFIX        = NAV
+  prefix        = NAV
 }
 
 //------------------------------------------
@@ -94,11 +93,11 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = delta.bhv
-  Verbose    = quiet
-  Domain     = course:0:359:360
-  Domain     = speed:0:4:41
-  Domain     = depth:0:490:491
+  behaviors  = delta.bhv
+  verbose    = quiet
+  domain     = course:0:359:360
+  domain     = speed:0:4:41
+  domain     = depth:0:490:491
 }
 
 //------------------------------------------
@@ -109,7 +108,7 @@ ProcessConfig = pMarinePID
   AppTick    = 20
   CommsTick  = 20
 
-  VERBOSE       = true
+  verbose       = true
   DEPTH_CONTROL = true
 
   // Yaw PID controller
@@ -155,7 +154,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
@@ -174,24 +173,24 @@ ProcessConfig = pMarineViewer
 
   left_context[survey-point] = SURVEY = true
 
-  SCOPE = SURVEY_UPDATES
-  SCOPE = MVIEWER_LCLICK
-  SCOPE = GPS_UPDATE_RECEIVED
-  SCOPE = TIME_AT_SURFACE
+  scope = SURVEY_UPDATES
+  scope = MVIEWER_LCLICK
+  scope = GPS_UPDATE_RECEIVED
+  scope = TIME_AT_SURFACE
 
-  ACTION = DEPTH_VALUE="depth=50"
-  ACTION = DEPTH_VALUE="depth=25"
-  ACTION = DEPTH_VALUE="depth=7"
-  ACTION = UP_LOITER="speed=0"
-  ACTION = UP_LOITER="speed=1.2"
-  ACTION = PSURFACE=true
-  ACTION = PSURFACE=false
+  action = DEPTH_VALUE="depth=50"
+  action = DEPTH_VALUE="depth=25"
+  action = DEPTH_VALUE="depth=7"
+  action = UP_LOITER="speed=0"
+  action = UP_LOITER="speed=1.2"
+  action = PSURFACE=true
+  action = PSURFACE=false
 
-  BUTTON_ONE   = DEPLOY # DEPLOY=true
-  BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  BUTTON_TWO   = RETURN # RETURN=true
-  BUTTON_THREE = SURVEY-true # SURVEY=true
-  BUTTON_FOUR  = SURVEY-false # SURVEY=false
+  button_one   = DEPLOY # DEPLOY=true
+  button_two   = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_two   = RETURN # RETURN=true
+  button_three = SURVEY-true # SURVEY=true
+  button_four  = SURVEY-false # SURVEY=false
 }
 
 //------------------------------------------
@@ -201,7 +200,7 @@ ProcessConfig = pNodeReporter
 {
   AppTick	= 2
   CommsTick	= 2
-  VESSEL_TYPE   = UUV
+  vessel_type   = UUV
 }
 
 //------------------------------------------
@@ -212,13 +211,13 @@ ProcessConfig = uTimerScript
    AppTick   = 4
    CommsTick = 4
 
-   PAUSED      = false
-   RESET_MAX   = any
-   RESET_TIME  = end
-   CONDITION   = TIME_AT_SURFACE > 3   
-   UPON_AWAKE  = restart
-   DELAY_START = 20:120
-   SCRIPT_NAME = GPS_SCRIPT
+   paused      = false
+   reset_max   = any
+   reset_time  = end
+   condition   = TIME_AT_SURFACE > 3   
+   upon_awake  = restart
+   delay_start = 20:120
+   script_name = GPS_SCRIPT
 
-   EVENT      = var=GPS_UPDATE_RECEIVED, val="RCVD_$(COUNT)", time=0.5:1.0
+   event      = var=GPS_UPDATE_RECEIVED, val="RCVD_$(COUNT)", time=0.5:1.0
 }

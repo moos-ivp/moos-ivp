@@ -37,7 +37,7 @@ void showSynopsis()
   blk("------------------------------------                            ");
   blk("  Automatically detect the vehicle's host information including ");
   blk("  the IP addresses, port being used by the MOOSDB, the port     ");
-  blk("  being used by local pMOOSBridge for UDP listening, and the    ");
+  blk("  being used by local pShare for UDP listening, and the         ");
   blk("  community name for the local MOOSDB. Post these to facilitate ");
   blk("  automatic intervehicle communications in especially in multi- ");
   blk("  vehicle scenarios where the local IP address changes w/ DHCP. ");

@@ -22,6 +22,7 @@ endif (${WIN32})
 
 TARGET_LINK_LIBRARIES(pBasicContactMgr
    ${MOOS_LIBRARIES}
+   ${MOOSGeodesy_LIBRARIES}
    mbutil
    apputil
    geometry

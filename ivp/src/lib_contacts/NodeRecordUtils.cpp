@@ -33,7 +33,7 @@ using namespace std;
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=DRIVE,GROUP=A
 
-NodeRecord string2NodeRecord(const string& node_rep_string)
+NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialResult)
 {
   NodeRecord empty_record;
   NodeRecord new_record;
@@ -89,9 +89,10 @@ NodeRecord string2NodeRecord(const string& node_rep_string)
     }
   }
   
-  if(!new_record.valid())
+  if(!new_record.valid()&&(!returnPartialResult))
     return(empty_record);
 
   return(new_record);
 }
+
 
