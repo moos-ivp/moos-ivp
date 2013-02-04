@@ -32,11 +32,8 @@ ProcessConfig = ANTLER
   Run = pNodeReporter	@ NewConsole = false
   //Run = uTimerScript    @ NewConsole = false
   Run = uFldScope       @ NewConsole = false
-  //Run = uXMS            @ NewConsole = true ~ uXMS_NAV
-  //Run = uXMS            @ NewConsole = true ~ uXMS_IVPHELM
-//  Run = iHuxley 	@ NewConsole = true
+  Run = pEchoVar        @ NewConsole = false
 }
-
 
 //------------------------------------------
 // uFldScope config block
@@ -46,15 +43,15 @@ ProcessConfig = uFldScope
   AppTick    = 2
   CommsTick  = 2
 
-  SCOPE = var=NODE_REPORT_LOCAL, key=NAME, fld=TIME, alias=Time
-  SCOPE = var=NODE_REPORT_LOCAL, key=NAME, fld=MODE
-  SCOPE = var=ODOMETRY_REPORT, key=vname, fld=total_dist, alias=TotDist
-  SCOPE = var=ODOMETRY_REPORT, key=vname, fld=trip_dist, alias=TripDist
-  SCOPE = var=SPEED_REPORT, key=vname, fld=avg_spd, alias=Speed
+  scope = var=NODE_REPORT_LOCAL, key=NAME, fld=TIME, alias=Time
+  scope = var=NODE_REPORT_LOCAL, key=NAME, fld=MODE
+  scope = var=ODOMETRY_REPORT, key=vname, fld=total_dist, alias=TotDist
+  scope = var=ODOMETRY_REPORT, key=vname, fld=trip_dist, alias=TripDist
+  scope = var=SPEED_REPORT, key=vname, fld=avg_spd, alias=Speed
 
-  LAYOUT = MODE, Time
-  LAYOUT = MODE, Time, speed
-  LAYOUT = speed, Mode, trip_dist
+  layout = MODE, Time
+  layout = MODE, Time, speed
+  layout = speed, Mode, trip_dist
 }
 
 //------------------------------------------
@@ -64,68 +61,7 @@ ProcessConfig = uTimerScript
 {
   event = var=DEPLOY, val=true
   event = var=MOOS_MANUAL_OVERIDE, val=false
-  eventx = quit
-  
-}
-
-
-//------------------------------------------
-// uXMS config block
-
-//ProcessConfig = uXMS
-//{
-//  AppTick   = 4
-//  CommsTick = 4
-//
-//  content_mode = "history"
-//
-//  TERM_REPORT_INTERVAL = FOOBAR
-//
-//  VAR = NAV_X, NAV_Y
-//
-//  SOURCE = pHelmIvP, pMarineViewer
-//  HISTORY_VAR = DESIRED_HEADING
-//}
-
-//------------------------------------------
-// uXMS_NAV config block
-
-ProcessConfig = uXMS_NAV
-{
-  AppTick   = 4
-  CommsTick = 4
-
-  VAR = NAV_X
-  FOO = BAR
-}
-
-//------------------------------------------
-// uXMS_IVPHELM config block
-
-ProcessConfig = uXMS_IVPHELM
-{
-  SOURCE             = pHelmIvP
-  DISPLAY_AUX_SOURCE = trued
-
-
-}
-
-//------------------------------------------
-// iHuxley config block
-
-ProcessConfig = iHuxley
-{
-  AppTick   = 4
-  CommsTick = 4
- 
-  VarNamePrefix = FRONTSEAT
-  HuxleyHost = localhost
-  HuxleyPort = 9002
-  HuxleySim  = true
-  HuxleyNav  = true
-  BackSeatREADY = true
-
-  Verbose    = true
+  event = quit
 }
 
 //------------------------------------------
@@ -136,16 +72,14 @@ ProcessConfig = uProcessWatch
   AppTick   = 4
   CommsTick = 4
 
-  TERM_REPORT_INTERVAL = 0.8
+  term_report_interval = 0.8
 
-  SUMMARY_WAIT = 5
+  summary_wait = 5
 
-  //WATCH = uXMS_NAV
-  //WATCH = uXMS_IVPHELM
-
-  NOWATCH   = uXMS*
-  NOWATCH   = uPokeDB*
-  WATCH_ALL = true
+  nowatch   = uXMS*
+  nowatch   = uPokeDB*
+  nowatch   = uTermCommand*
+  watch_all = true
 }
 
 
@@ -166,7 +100,7 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-//  WildCardOmitPattern = *_STATUS
+  // WildCardOmitPattern = *_STATUS
   WildCardExclusionLog = true
 }
 
@@ -178,15 +112,15 @@ ProcessConfig = uSimMarine
   AppTick	= 4
   CommsTick	= 4
 
-  START_X       = 0
-  START_Y       = -10
-  START_SPEED   = 0
-  START_HEADING = 180
+  start_x       = 0
+  start_y       = -10
+  start_speed   = 0
+  start_heading = 180
 
-  PREFIX        = NAV
+  prefix        = NAV
 
-  TURN_RATE     = 40
-  THRUST_MAP    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+  turn_rate     = 40
+  thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
 }
 
 //------------------------------------------
@@ -198,11 +132,9 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = alpha.bhv
-  Domain     = course:0:359:360
-  Domain     = speed:0:4:21
-
-
+  behaviors  = alpha.bhv
+  domain     = course:0:359:360
+  domain     = speed:0:4:21
 }
 
 //------------------------------------------
@@ -247,10 +179,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  //TIFF_FILE            = AerialMIT.tif
-  TIFF_FILE            = forrest19.tif
-
-  //center_view  = active
+  tiff_file            = forrest19.tif
 
   set_pan_x            = -90
   set_pan_y            = -280
@@ -262,16 +191,15 @@ ProcessConfig = pMarineViewer
 
   trails_point_size   = 1
 
-  nodes_font_size      = medium
-  procs_font_size      = medium
-  appcast_font_size    = small
-  
+  // Appcast configuration
   appcast_height       = 75
   appcast_width        = 30
   appcast_viewable     = true
   appcast_color_scheme = indigo
-
-  //seglist_viewable_all = false
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
+  
   //datum_viewable = true
   //datum_size     = 18
   //gui_size = small
@@ -280,14 +208,9 @@ ProcessConfig = pMarineViewer
   left_context[survey-point] = MOOS_MANUAL_OVERIDE=false
   left_context[survey-point] = RETURN=false
 
-  left_context[returnX] = DEPLOY=true
-  left_context[returnX] = MOOS_MANUAL_OVERIDE=false
-  left_context[returnX] = RETURN=true
-
   right_context[return] = DEPLOY=true
   right_context[return] = MOOS_MANUAL_OVERIDE=false
   right_context[return] = RETURN=false
-
 
   scope  = RETURN
   scope  = WPT_STAT
@@ -297,15 +220,15 @@ ProcessConfig = pMarineViewer
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
 
-  BUTTON_ONE = DEPLOY # DEPLOY=true
-  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  BUTTON_TWO = RETURN:T # RETURN=true
-  BUTTON_THREE = RETURN:F # RETURN=false
+  button_one = DEPLOY # DEPLOY=true
+  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_two = RETURN:T # RETURN=true
+  button_three = RETURN:F # RETURN=false
 
-  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
-  ACTION  = RETURN=true
-  ACTION  = UPDATES_RETURN=speed=1.4
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action  = RETURN=true
+  action  = UPDATES_RETURN=speed=1.4
 }
 
 //------------------------------------------
@@ -317,6 +240,57 @@ ProcessConfig = pNodeReporter
   AppTick	= 2
   CommsTick	= 2
 
-  PLATFORM_TYPE   = KAYAK
-  PLATFORM_LENGTH = 4
+  platform_type   = KAYAK
+  platform_length = 4
 }
+
+
+
+
+//----------------------------------------------------------
+// pEchoVar config block
+//
+// This block is here in conjunction with the pEchoVar
+// documentation to demonstrate functionality of that tool.
+
+ProcessConfig = pEchoVar
+{
+  AppTick = 1
+  CommsTick = 1
+
+  echo = NAV_X     -> NAV_XX
+  echo = NAV_X     -> NAV_XPOS
+  echo = NAV_Y     -> NAV_YY
+  echo = NAV_Y     -> NAV_YPOS
+  //echo = NAV_YY    -> FOOBAR
+  //echo = FOOBAR    -> NAV_Y
+  echo = NAV_SPEED -> NAV_SPEED_ALT
+
+  FLIP:1    = source_variable  = NODE_REPORT_LOCAL
+  FLIP:1    = dest_variable    = FOOBAR
+  FLIP:1    = source_separator = ,                              
+  FLIP:1    = dest_separator   = #                              
+  FLIP:1    = filter = type == kayak                       
+  FLIP:1    = component = X -> xpos
+  FLIP:1    = component = Y -> ypos
+}
+
+
+//----------------------------------------------------------
+// uTermCommand config block
+//
+// This block is here in conjunction with the uTermCommand 
+// documentation to demonstrate functionality of that tool.
+// This mission may be alternately 
+
+ProcessConfig = uTermCommandFoo
+{
+  cmd  = override_true  -->  MOOS_MANUAL_OVERRIDE --> true
+  cmd  = override_false -->  MOOS_MANUAL_OVERRIDE --> false
+  cmd  = deploy_true    -->  DEPLOY --> true
+  cmd  = deploy_false   -->  DEPLOY --> false
+  cmd  = return_true    -->  RETURN --> true
+  cmd  = return_false   -->  RETURN --> false
+}
+
+
