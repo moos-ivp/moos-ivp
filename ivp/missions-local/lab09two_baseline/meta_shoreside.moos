@@ -1,0 +1,148 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB            @ NewConsole = false
+  Run = pMOOSBridge       @ NewConsole = false
+  Run = pMarineViewer     @ NewConsole = false
+  Run = pLogger           @ NewConsole = false
+  Run = pHostInfo         @ NewConsole = false
+  Run = uFldShoreBroker   @ NewConsole = true
+  Run = uFldNodeComms     @ NewConsole = true
+  Run = uFldHazardSensor  @ NewConsole = true
+}
+
+#include plug_pHostInfo.moos
+
+//--------------------------------------------------
+// uFldHazardSensor Configuration Block
+
+ProcessConfig = uFldHazardSensor
+{
+  AppTick       = 4
+  CommsTick     = 4
+
+  sensor_config = width=25, exp=4, class=0.85
+  sensor_config = width=50, exp=2, class=0.60
+  sensor_config = width=10, exp=6, class=0.93
+
+  swath_length  = 5
+
+  default_hazard_shape = triangle
+  default_benign_shape = triangle
+
+  swath_transparency = 0.85
+  seed_random        = false
+
+  show_swath=true
+  show_hazards=true
+  //show_reports=44
+
+  hazard_file   = hazards.txt
+  verbose       = true
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  QBRIDGE  = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE  = MOOS_MANUAL_OVERIDE
+
+  BRIDGE   = UHZ_HAZARD_REPORT_$V, alias=UHZ_HAZARD_REPORT
+  BRIDGE   = UHZ_CONFIG_ACK_$V,    alias=UHZ_CONFIG_ACK
+
+  BRIDGE   = src=RETURN_ALL, alias=RETURN
+  BRIDGE   = src=RETURN_$V,  alias=RETURN
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick       = 2
+  CommsTick     = 2
+
+  COMMS_RANGE      = 50
+  CRITICAL_RANGE   = 25
+
+  MIN_MSG_INTERVAL = 20
+  MAX_MSG_LENGTH   = 1000
+
+  GROUPS           = true
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  WildCardOmitPattern = *_STATUS
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  UDPListen = $(SLPORT)
+  BridgeFrequency = 0  
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = AerialMIT.tif
+  set_pan_x            = -32
+  set_pan_y            = 200
+  zoom                 = 1.3
+  vehicles_shape_scale = 4
+  vehicles_name_viewable = names
+
+  SCOPE = UHZ_HAZARD_REPORT
+
+  ACTION = STATION_ALL = false
+  ACTION = STATION_ALL = true
+
+  BUTTON_ONE   = DEPL_ARCH  # DEPLOY_ARCHIE=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ARCHIE=false 
+  BUTTON_ONE   = RETURN_ARCHIE=false
+  BUTTON_TWO   = RET_ARCH  # RETURN_ARCHIE=true
+
+  BUTTON_THREE   = DEPL_BTTY  # DEPLOY_BETTY=true 
+  BUTTON_THREE   = MOOS_MANUAL_OVERIDE_BETTY=false 
+  BUTTON_THREE   = RETURN_BETTY=false
+  BUTTON_FOUR    = RET_BTTY  # RETURN_BETTY=true
+}
+

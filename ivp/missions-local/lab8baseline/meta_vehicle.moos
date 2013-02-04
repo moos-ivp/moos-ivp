@@ -1,0 +1,62 @@
+ServerHost = localhost
+ServerPort = $(VPORT)
+Simulator  = true
+
+// Community name IS the vehicle name
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+  
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB             @ NewConsole = false
+  Run = uSimMarine         @ NewConsole = false
+  Run = pMOOSBridge        @ NewConsole = false ~ pMOOSBridge_%(VNAME)
+  Run = pLogger            @ NewConsole = false
+  Run = pNodeReporter      @ NewConsole = false
+  Run = pMarinePID         @ NewConsole = false
+  Run = pHelmIvP           @ NewConsole = false
+  Run = uProcessWatch      @ NewConsole = false
+  Run = pHostInfo          @ NewConsole = false
+  Run = uFldNodeBroker     @ NewConsole = true
+  Run = pMarineViewer      @ NewConsole = true
+}
+  
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE              = forrest19.tif
+  set_pan_x              = -90
+  set_pan_y              = -280
+  zoom                   = 0.65
+  vehicles_shape_scale   = 1.5
+  vehicles_name_viewable = mode
+
+  SCOPE = PROC_WATCH_SUMMARY
+
+  ACTION = STATION_ALL = false
+  ACTION = STATION_ALL = true
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false 
+  BUTTON_ONE   = RETURN=false
+  BUTTON_TWO   = RETURN  # RETURN=true
+  BUTTON_THREE = STATION:T  # STATION=true
+  BUTTON_FOUR  = STATION:F  # STATION=false
+}
+
+#include plug_uFldNodeBroker.moos
+#include plug_pMOOSBridgeV.moos
+#include plug_pHostInfo.moos
+#include plug_uSimMarine.moos
+#include plug_pHelmIvP.moos
+#include plug_pMarinePID.moos
+#include plug_pLogger.moos
+#include plug_pNodeReporter.moos
+#include plug_uProcessWatch.moos
