@@ -140,17 +140,17 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
 
   if(!ok1 || !ok2) {
     postWMessage("No Ownship NAV_X and/or NAV_Y in info_buffer");
-    return(false);
+    return(0);
   }
 
   if(!ok3) {
     postWMessage("No Ownship NAV_HEADING in info_buffer");
-    return(false);
+    return(0);
   }
 
   if(!m_aof_avoid) {
     postWMessage("AOF Not properly set in BHV_AvoidObstacles");
-    return(false);
+    return(0);
   }
   
   if(m_aof_avoid->objectInObstacle(os_x, os_y, false))
