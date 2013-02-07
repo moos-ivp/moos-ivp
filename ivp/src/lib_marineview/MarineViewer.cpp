@@ -70,8 +70,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_texture_init = false;
   m_textures    = new GLuint[1];
 
-  m_tiff_offon  = true;
-
   m_back_img_b_ok = false;
   m_back_img_b_on = false;
   m_back_img_mod  = false;
@@ -128,8 +126,6 @@ bool MarineViewer::setParam(string param, string value)
     m_back_img_mod = true;
     handled = setBooleanOnString(m_back_img_b_on, v);
   }
-  else if(p=="tiff_view") 
-    handled = setBooleanOnString(m_tiff_offon, v);
   else if(p=="tiff_file")
     handled = m_back_img.readTiff(value);
   else if(p=="tiff_file_b") {
@@ -199,7 +195,7 @@ bool MarineViewer::setParam(string param, double v)
     m_hash_shade = vclip(v, 0, 1);
   }
   else if(param == "back_shade_delta") {
-    if(!m_tiff_offon) {
+    if(!m_geo_settings.viewable("tiff_viewable")) {
       if((m_fill_shade+v > 0) && (m_fill_shade+v <= 1.0))
 	m_fill_shade += v;
     }
@@ -416,7 +412,7 @@ void MarineViewer::draw()
   m_y_origin = -shape_height/2 + m_yy;
 
   // Draw the background image if the tiff flag is set
-  if(m_tiff_offon)
+  if(m_geo_settings.viewable("tiff_viewable"))
     drawTiff();
 }
 

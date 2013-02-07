@@ -64,9 +64,6 @@ protected:
   virtual void cb_HandleLeftRight_i(int);
   static  void cb_HandleLeftRight(Fl_Widget*, int);
 
-  inline void cb_ToggleTiff_i();
-  static void cb_ToggleTiff(Fl_Widget*);
-
   inline void cb_ToggleTiffType_i();
   static void cb_ToggleTiffType(Fl_Widget*);
 

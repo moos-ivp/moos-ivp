@@ -153,10 +153,8 @@ protected:
   bool      m_texture_init;
   GLuint*   m_textures;
   int       m_texture_set;
-  bool      m_tiff_offon;
 
   double    m_hash_shade;
-  //  double    m_hash_delta;
   double    m_fill_shade;
 
   VPlug_GeoSettings  m_geo_settings;

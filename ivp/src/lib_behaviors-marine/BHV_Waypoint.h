@@ -50,6 +50,7 @@ protected:
   void         postErasableSegList();
   void         postErasables();
   void         postCycleFlags();
+  void         postWptFlags();
   void         handleVisualHint(std::string);
 
 protected: 
@@ -70,6 +71,7 @@ protected: // configuration parameters
 
   // Var-Data flags for posting when behavior finishes cycle
   std::vector<VarDataPair> m_cycle_flags;
+  std::vector<VarDataPair> m_wpt_flags;
 
   // Visual hints affecting properties of polygons/points
   std::string m_hint_vertex_color;

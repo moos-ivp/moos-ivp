@@ -57,6 +57,7 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   m_viewable_map["circle_viewable_labels"]   = true;
   m_viewable_map["oparea_viewable_all"]      = true;
   m_viewable_map["oparea_viewable_labels"]   = true;
+  m_viewable_map["tiff_viewable"]            = true;
   m_viewable_map["hash_viewable"]            = false;
   m_viewable_map["datum_viewable"]           = false;
   
@@ -82,8 +83,11 @@ VPlug_GeoSettings::VPlug_GeoSettings()
 //         circle_line_width
 //         point_vertex_size
 
-bool VPlug_GeoSettings::setParam(const string& param, string value)
+bool VPlug_GeoSettings::setParam(string param, string value)
 {
+  // A bit of backward compatibility support
+  if(param == "tiff_view")  param = "tiff_viewable";
+
   if((param == "polygon_viewable_all")     ||
      (param == "polygon_viewable_labels")  ||
      (param == "seglist_viewable_all")     ||
@@ -103,6 +107,7 @@ bool VPlug_GeoSettings::setParam(const string& param, string value)
      (param == "oparea_viewable_labels")   ||
      (param == "datum_viewable")           ||
      (param == "hash_viewable")            ||
+     (param == "tiff_viewable")            ||
      (param == "range_pulse_viewable_all") ||
      (param == "comms_pulse_viewable_all"))
      return(setViewMapping(param, value));
@@ -442,8 +447,11 @@ ColorPack VPlug_GeoSettings::geocolor(const string& attr,
 //-------------------------------------------------------------
 // Procedure: strvalue
 
-string VPlug_GeoSettings::strvalue(const string& attr)
+string VPlug_GeoSettings::strvalue(string attr)
 {
+  // A bit of backward compatibility support
+  if(attr == "tiff_view")  attr = "tiff_viewable";
+
   if((attr == "polygon_viewable_all")     ||
      (attr == "polygon_viewable_labels")  ||
      (attr == "seglist_viewable_all")     ||
@@ -459,7 +467,8 @@ string VPlug_GeoSettings::strvalue(const string& attr)
      (attr == "oparea_viewable_all")      ||
      (attr == "oparea_viewable_labels")   ||
      (attr == "datum_viewable")           ||
-     (attr == "hash_viweable")            ||
+     (attr == "hash_viewable")            ||
+     (attr == "tiff_viewable")            ||
      (attr == "drop_point_viewable_all")  ||
      (attr == "marker_viewable_all")      ||
      (attr == "marker_viewable_labels")   ||

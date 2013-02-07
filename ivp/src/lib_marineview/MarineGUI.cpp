@@ -62,8 +62,12 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"Pan Down (v. slow) ", FL_CTRL + FL_Down, (Fl_Callback*)MarineGUI::cb_HandleUpDown, (void*)1, 0},
  {"Pan Left (v. slow) ", FL_CTRL + FL_Left, (Fl_Callback*)MarineGUI::cb_HandleLeftRight, (void*)1, 0},
  {"Pan Right (v. slow)", FL_CTRL + FL_Right, (Fl_Callback*)MarineGUI::cb_HandleLeftRight, (void*)-1, FL_MENU_DIVIDER},
- {"tiff_view toggle",  'b', (Fl_Callback*)MarineGUI::cb_ToggleTiff, (void*)-1, 0},
- {"tiff_type toggle",  '`', (Fl_Callback*)MarineGUI::cb_ToggleTiffType, (void*)-1, 0},
+
+ {"tiff_viewable=true",    0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)180, FL_MENU_RADIO | FL_MENU_VALUE},
+ {"tiff_viewable=false",   0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)181, FL_MENU_RADIO},
+ {"    Toggle Tiff View",  'b', (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)182, FL_MENU_DIVIDER},
+
+ {"tiff_type toggle",  '`', (Fl_Callback*)MarineGUI::cb_ToggleTiffType, (void*)-1, FL_MENU_DIVIDER},
  {"back_shade lighter", FL_CTRL+'b', (Fl_Callback*)MarineGUI::cb_BackShade,  (void*)+1, 0},
  {"back_shade darker",  FL_ALT +'b', (Fl_Callback*)MarineGUI::cb_BackShade,  (void*)-1, FL_MENU_DIVIDER},
 
@@ -302,6 +306,7 @@ void MarineGUI::updateRadios()
   setMenuAttrib("GeoAttr/CommsPulses", "comms_pulse_viewable_all");
   setMenuAttrib("GeoAttr/RangePulses", "range_pulse_viewable_all");
 
+  setMenuAttrib("BackView", "tiff_viewable");
   setMenuAttrib("BackView", "hash_viewable");
   setMenuAttrib("BackView", "hash_delta");
 }
@@ -391,6 +396,8 @@ void MarineGUI::setMenuItemColors()
   setMenuItemColor("GeoAttr/CommsPulses/comms_pulse_viewable_all=false");
   setMenuItemColor("GeoAttr/RangePulses/range_pulse_viewable_all=true");
   setMenuItemColor("GeoAttr/RangePulses/range_pulse_viewable_all=false");
+  setMenuItemColor("BackView/tiff_viewable=true");
+  setMenuItemColor("BackView/tiff_viewable=false");
   setMenuItemColor("BackView/hash_viewable=true");
   setMenuItemColor("BackView/hash_viewable=false");
   setMenuItemColor("BackView/hash_delta=10");
@@ -474,15 +481,6 @@ void MarineGUI::cb_HandleLeftRight(Fl_Widget* o, int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_HandleLeftRight_i(v);
 }
 
-//----------------------------------------- ToggleTiff
-inline void MarineGUI::cb_ToggleTiff_i() {
-  m_mviewer->setParam("tiff_view", "toggle");
-  m_mviewer->redraw();
-}
-void MarineGUI::cb_ToggleTiff(Fl_Widget* o) {
-  ((MarineGUI*)(o->parent()->user_data()))->cb_ToggleTiff_i();
-}
-
 //----------------------------------------- ToggleTiffType
 inline void MarineGUI::cb_ToggleTiffType_i() {
   m_mviewer->setParam("tiff_type", "toggle");
@@ -513,7 +511,11 @@ void MarineGUI::cb_HashShade(Fl_Widget* o, int v) {
 //----------------------------------------- MG_SetGeoAttr
 inline void MarineGUI::cb_SetGeoAttr_i(int v) {
 
-  if(v==150) m_mviewer->setParam("polygon_viewable_all", "on");
+  if(v==180) m_mviewer->setParam("tiff_viewable", "true");
+  else if(v==181) m_mviewer->setParam("tiff_viewable", "false");
+  else if(v==182) setMenuAttrib("BackView", "tiff_viewable", "toggle");
+
+  else if(v==150) m_mviewer->setParam("polygon_viewable_all", "on");
   else if(v==151) m_mviewer->setParam("polygon_viewable_all", "off");
   else if(v==152) setMenuAttrib("GeoAttr/Polygons", "polygon_viewable_all", "toggle");
 

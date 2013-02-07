@@ -34,7 +34,7 @@ public:
   virtual ~VPlug_GeoSettings() {};
 
  public:   // A Catch-All Setter
-  bool   setParam(const std::string& param, std::string value);
+  bool   setParam(std::string param, std::string value);
 
  protected: // Specfic Setters
   bool   setViewMapping(std::string, std::string);
@@ -53,7 +53,7 @@ public:
   ColorPack    geocolor(const std::string&, std::string color_default="") const;
 
  public:  // A Catch-All Getter (String return format)
-  std::string  strvalue(const std::string&);  
+  std::string  strvalue(std::string);  
 
 protected:
   std::map<std::string, bool>        m_viewable_map;
