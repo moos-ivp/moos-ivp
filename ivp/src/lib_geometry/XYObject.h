@@ -36,6 +36,8 @@ public:
   virtual bool   valid() const {return(true);};
   
   void   set_label(const std::string& str)  {m_label=str;};
+  void   set_source(const std::string& str) {m_source=str;};
+  void   set_type(const std::string& str)   {m_type=str;};
   void   set_msg(const std::string& str)    {m_msg=str;};
   void   set_active(bool val)               {m_active=val;};
   void   set_time(double val)               {m_time=val;m_time_set=true;};
@@ -69,6 +71,8 @@ public:
 
   std::string get_label()     const {return(m_label);};
   std::string get_msg()       const {return(m_msg);};
+  std::string get_type()      const {return(m_type);};
+  std::string get_source()    const {return(m_source);};
   std::string get_spec(std::string s="") const;
 
   bool set_param(const std::string&, const std::string&);
@@ -78,6 +82,8 @@ public:
 
 protected:
   std::string  m_label;
+  std::string  m_type;
+  std::string  m_source;  
   std::string  m_msg;
   bool         m_active;
   double       m_time;

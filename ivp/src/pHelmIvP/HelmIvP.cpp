@@ -990,8 +990,10 @@ bool HelmIvP::OnStartUp()
       handled = handleConfigNodeSkew(value);
     else if(param == "DOMAIN")
       handled = handleConfigDomain(value);
-    else if((param == "IVP_BEHAVIOR_DIR") || (param == "IVP_BEHAVIOR_DIRS"))
+    else if((param == "IVP_BEHAVIOR_DIR") || (param == "IVP_BEHAVIOR_DIRS")) {
       behavior_dirs.push_back(value);
+      handled = true;
+    }
     else if(param == "OTHER_OVERRIDE_VAR") 
       handled = setNonWhiteVarOnString(m_additional_override, value);
 
