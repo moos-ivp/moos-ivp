@@ -32,7 +32,7 @@ SET(SRC
 ADD_EXECUTABLE($2$1 \${SRC})
 
 TARGET_LINK_LIBRARIES($2$1
-   MOOS
+   ${MOOS_LIBRARIES}
    apputil
    mbutil
    m
@@ -51,7 +51,7 @@ cat >> ${1}.h <<EOF
 #ifndef ${1}_HEADER
 #define ${1}_HEADER
 
-#include "AppCastingMOOSApp.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 
 class ${1} : public AppCastingMOOSApp
 {

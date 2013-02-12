@@ -36,8 +36,7 @@ SET(SRC
 ADD_EXECUTABLE($2$1 \${SRC})
 
 TARGET_LINK_LIBRARIES($2$1
-   MOOS
-   MOOSGen
+   ${MOOS_LIBRARIES}
    mbutil
    m
    pthread)
@@ -56,7 +55,7 @@ cat >> ${1}.h <<EOF
 #ifndef ${1}_HEADER
 #define ${1}_HEADER
 
-#include "MOOSLib.h"
+#include "MOOS/libMOOS/MOOSLib.h"
 
 class ${1} : public CMOOSApp
 {
