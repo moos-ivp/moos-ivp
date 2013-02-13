@@ -48,6 +48,13 @@ bool PXR_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     string key   = msg.GetKey();
+    
+    // We don't need the below, but we keep anyway for clarity
+    // string str = msg.GetString();
+    // double dbl = msg.GetDouble();
+    // bool   is_string = msg.IsDouble();
+    // bool   is_double = msg.IsDouble();
+
     if(key == m_incoming_var) 
       m_tally_recd++;
   }
