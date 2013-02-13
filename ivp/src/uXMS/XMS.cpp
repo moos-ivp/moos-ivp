@@ -261,8 +261,10 @@ bool XMS::OnStartUp()
       reportUnhandledConfigWarning(str);
     }
   
-    else if(param == "HISTORY_VAR") 
+    else if((param == "HISTORY_VAR") && !strContainsWhite(value)) {
       handled = addVariable(value, true); // true means itsa history variable
+      handled = true;
+    }
 
     else if(param == "DISPLAY_VIRGINS")
       handled = setBooleanOnString(m_display_virgins, value);
