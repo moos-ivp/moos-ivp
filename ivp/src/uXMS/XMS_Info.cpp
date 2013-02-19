@@ -84,9 +84,9 @@ void showHelpAndExit()
   blk("    Determine display mode. Paused: scope updated only on user  ");
   blk("    request. Events: data updated only on change to a scoped    "); 
   blk("    variable. Streaming: updates continuously on each app-tick. ");
-  mag("  --server_host","=<IPAddress>                                  ");
+  mag("  --serverhost","=<IPAddress>                                   ");
   blk("    Connect to MOOSDB at IP=value, not from the .moos file.     ");
-  mag("  --server_port","=<PortNumber>                                 "); 
+  mag("  --serverport","=<PortNumber>                                  "); 
   blk("    Connect to MOOSDB at port=value, not from the .moos file.   ");
   mag("  --show","=[source,time,community,aux]                         ");
   blk("    Turn on data display in the named column, source, time, or  ");
