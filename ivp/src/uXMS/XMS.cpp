@@ -300,7 +300,7 @@ bool XMS::OnStartUp()
       if(!m_ignore_file_vars)
 	m_display_all = (tolower(value) == "true");
     }    
-    else if((param == "COLORMAP") || (param == "color_map"))
+    else if((param == "COLORMAP") || (param == "COLOR_MAP"))
       handled = setColorMappingsPairs(value);
 
     else if(param == "VAR") {

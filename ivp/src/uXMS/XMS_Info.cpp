@@ -143,8 +143,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  term_report_interval  = 0.6     // default (seconds)          ");
   blk("                                                                ");
-  blk("  color_map    = pHelmIvP, red   // All postings by pHelmIvP red");
-  blk("  color_map    = NAV_SPEED, blue // Only var NAV_SPEED is blue  ");
+  blk("  colormap    = pHelmIvP, red   // All postings by pHelmIvP red ");
+  blk("  colormap    = NAV_SPEED, blue // Only var NAV_SPEED is blue   ");
   blk("                                                                ");
   blk("  refresh_mode = events     // default (or streaming/paused)    ");
   blk("  content_mode = scoping    // default (or history,procs)       ");

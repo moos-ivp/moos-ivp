@@ -37,7 +37,7 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 # moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php
 find_package(MOOSGeodesy)
 include_directories(${MOOSGeodesy_INCLUDE_DIRS})
-link_directories(${MOOSGeodesy_LIBRARY_PATH})
+link_directories(${MOOSGeodesy_LIBRARIES})
 
 message("+++++++++++++++++++++++++++++++++++++++++")
 message("MOOSGeodesy_INCLUDE_DIRS:" ${MOOSGeodesy_INCLUDE_DIRS})
