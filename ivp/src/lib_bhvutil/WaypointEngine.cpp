@@ -198,7 +198,7 @@ bool WaypointEngine::currPtChanged()
 
 double WaypointEngine::getPointY(unsigned int i) const
 {
-  if((i >= 0) && (i < m_seglist.size()))
+  if(i < m_seglist.size())
     return(m_seglist.get_vy(i));
   else
     return(0);

@@ -211,7 +211,8 @@ void PMV_MOOSApp::registerVariables()
   m_Comms.Register("GRID_CONFIG",  0);
   m_Comms.Register("GRID_DELTA",   0);
   m_Comms.Register("VIEW_GRID", 0);
-  m_Comms.Register("VIEW_RANGE_PULSE",   0);
+  m_Comms.Register("VIEW_RANGE_PULSE", 0);
+  m_Comms.Register("PMV_MENU_CONTEXT", 0);
 
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++)
@@ -287,16 +288,41 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     string   sval  = msg.GetString();
     string   community = msg.GetCommunity();
 
+    bool handled = false;
+
     if(key == "NODE_REPORT") {
       m_node_reports_received++;
       NodeRecord record = string2NodeRecord(sval);
       m_node_report_index = record.getIndex();
     }
-    
+
+    // PMV_MENU_CONTEXT = 
+    // side=left, menukey=polyvert, post="POLY_VERT=x=$(XPOS),y=$(YPOS)"
+    else if(key == "PMV_MENU_CONTEXT") {
+      vector<string> svector = parseStringQ(sval, ',');
+      unsigned int k, ksize = svector.size(); 
+      string side, menukey, post;
+      for(k=0; k<ksize; k++) {
+	string param = biteStringX(svector[k], '=');
+	string value = svector[k];
+	if(param == "side")
+	  side = value;
+	else if(param == "menukey")
+	  menukey = value;
+	else if(param == "post")
+	  post = value;
+      }
+      if((side != "") && (menukey != "") && (post != ""))
+	m_gui->addMousePoke(side, menukey, post);
+      
+      handled = true;
+      cout << "Handling PMV_MENUS_CONTEXT" << endl;
+    }
+      
+
     // Handler part 1: check for geometry messages
     m_gui->addFilterVehicle(community);
 
-    bool handled = false;
     bool handled_scope   = false;
     unsigned int j, vsize = m_scope_vars.size();
 

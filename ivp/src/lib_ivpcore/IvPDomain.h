@@ -79,7 +79,7 @@ public:
   bool getVal(unsigned int i, unsigned int j, double &val) const
     {
       unsigned int dsize = m_dlow.size();
-      if((i>=0) && (i<dsize) && (j>=0) && (j<m_dpoints[i])) {
+      if((i<dsize) && (j<m_dpoints[i])) {
 	val = m_dlow[i] + (m_ddelta[i] * j);
 	return(true);
       }
@@ -91,7 +91,7 @@ public:
   double getVal(unsigned int d, unsigned int j) const
     {
       unsigned int dsize = m_dlow.size();
-      if((d>=0) && (d<dsize) && (j>=0) && (j<m_dpoints[d]))
+      if((d<dsize) && (j<m_dpoints[d]))
 	return(m_dlow[d] + (m_ddelta[d] * j));
       return(0);
     };

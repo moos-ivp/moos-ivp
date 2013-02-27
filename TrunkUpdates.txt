@@ -2,7 +2,8 @@
 BHV_Waypoint - added the wptflag parameter to support user-configured posting of 
    flags upon arriving at each waypoint. This allows easy configuration of a 
    mission where the the vehicle stops and station-keeps at each waypoint for 
-   a sensor measurement.
+   a sensor measurement. The wptflag parameter may also embed the location of the
+   waypoint, for example "wptflag = NEW_POINT=$[X],$[Y]"
 
 pMarineViewer - support for tiff_viewable=false to allow users to bring up 
    the viewer without the background image at startup.

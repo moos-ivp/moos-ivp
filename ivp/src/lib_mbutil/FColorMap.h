@@ -35,14 +35,14 @@ public:
   void setType(const std::string&);
 
   double getRVal(unsigned int i) const
-    {return((i>=0)&&(i<rval.size())?rval[i]:0);};
+  {return((i<rval.size())?rval[i]:0);};
 
   double getGVal(unsigned int i) const
-    {return((i>=0)&&(i<gval.size())?gval[i]:0);};
-
+  {return((i<gval.size())?gval[i]:0);};
+  
   double getBVal(unsigned int i) const
-    {return((i>=0)&&(i<bval.size())?bval[i]:0);};
-
+  {return((i<bval.size())?bval[i]:0);};
+  
   double getIRVal(double) const;
   double getIGVal(double) const;
   double getIBVal(double) const;

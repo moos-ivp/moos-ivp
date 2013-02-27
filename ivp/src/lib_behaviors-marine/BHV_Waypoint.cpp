@@ -330,7 +330,7 @@ IvPFunction *BHV_Waypoint::onRunState()
   double next_y = m_waypoint_engine.getPointY();
   if((next_x != this_x) || (next_y != this_y)) {
     m_prevpt.set_vertex(this_x, this_y);
-    postWptFlags();
+    postWptFlags(this_x, this_y);
   }
 
 
@@ -431,6 +431,10 @@ bool BHV_Waypoint::setNextWaypoint()
     postCycleFlags();
 
     if(feedback_msg == "completed") {
+      double this_x = m_waypoint_engine.getPointX();
+      double this_y = m_waypoint_engine.getPointY();
+      postWptFlags(this_x, this_y);
+
       setComplete();
       m_markpt.set_active(false);
       if(m_perpetual)
@@ -647,17 +651,26 @@ void BHV_Waypoint::postCycleFlags()
 //-----------------------------------------------------------
 // Procedure: postWptFlags()
 
-void BHV_Waypoint::postWptFlags()
+void BHV_Waypoint::postWptFlags(double x, double y)
 {
+  string xpos = doubleToStringX(x,2);
+  string ypos = doubleToStringX(y,2);
+
   int vsize = m_wpt_flags.size();
   for(int i=0; i<vsize; i++) {
     string var   = m_wpt_flags[i].get_var();
-    string sdata = m_wpt_flags[i].get_sdata();
-    double ddata = m_wpt_flags[i].get_ddata();
-    if(m_wpt_flags[i].is_string())
+    if(m_wpt_flags[i].is_string()) {
+      string sdata = m_wpt_flags[i].get_sdata();
+      sdata = findReplace(sdata, "$(X)", xpos);
+      sdata = findReplace(sdata, "$(Y)", ypos);
+      sdata = findReplace(sdata, "$[X]", xpos);
+      sdata = findReplace(sdata, "$[Y]", ypos);
       postRepeatableMessage(var, sdata);
-    else
+    }
+    else {
+      double ddata = m_wpt_flags[i].get_ddata();
       postRepeatableMessage(var, ddata);
+    }
   }
 }
 

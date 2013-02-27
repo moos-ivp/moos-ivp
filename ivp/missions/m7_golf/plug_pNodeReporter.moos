@@ -3,8 +3,8 @@
 
 ProcessConfig = pNodeReporter
 {
-  AppTick     = 5
-  CommsTick   = 5
+  AppTick     = 2
+  CommsTick   = 2
 
 #ifdef GILDA
   PLATFORM_TYPE = SHIP

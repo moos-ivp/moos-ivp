@@ -40,7 +40,7 @@ AppCastingMOOSApp::AppCastingMOOSApp()
 
   m_last_report_time         = 0;
   m_last_report_time_appcast = 0;
-  m_term_report_interval = 0.6;
+  m_term_report_interval = 0.4;
 
   m_term_reporting  = true;
   m_new_run_warning = false;
@@ -145,6 +145,7 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
 {
   // First handle any special directives
   bool   must_have_moosblock = true;
+  bool   must_have_community = true;
   string alt_config_block_name;
 
   while(directives != "") {
@@ -155,6 +156,8 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
     MOOSTrimWhiteSpace(left);
     MOOSTrimWhiteSpace(right);
     if(MOOSStrCmp(left, "must_have_moosblock"))
+      must_have_moosblock = MOOSStrCmp(right, "true");
+    if(MOOSStrCmp(left, "must_have_community"))
       must_have_moosblock = MOOSStrCmp(right, "true");
     else if(MOOSStrCmp(left, "alt_config_block_name"))
       alt_config_block_name = right;
@@ -173,8 +176,10 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
   // returned, but continue starting up. Let the individual app 
   // developer decide how to interpret a return of false.
   if(!m_MissionReader.GetValue("COMMUNITY", m_host_community)) {
-    reportConfigWarning("Community/Vehicle name not found in mission file");
-    return_value = false;
+    if(must_have_community) {
+      reportConfigWarning("Community/Vehicle name not found in mission file");
+      return_value = false;
+    }
   }
 
   // #2 Global Config Variable: Determining if terminal reports are suppressed

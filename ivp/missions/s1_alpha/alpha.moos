@@ -1,11 +1,11 @@
 // Alpha Configuration file: M. Benjamin
 
 ServerHost = localhost
-ServerPort = 9000
+ServerPort = 9005
 Community  = alpha
 
 MOOSTimeWarp = 1
-TERM_REPORTING = false
+//TERM_REPORTING = false
 
 // Forest Lake
 LatOrigin  = 43.825300 
@@ -30,9 +30,10 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
-  //Run = uTimerScript    @ NewConsole = false
+//  Run = uTimerScript    @ NewConsole = false
   Run = uFldScope       @ NewConsole = false
   Run = pEchoVar        @ NewConsole = false
+  Run = pPathTour       @ NewConsole = false
 }
 
 //------------------------------------------
@@ -56,12 +57,26 @@ ProcessConfig = uFldScope
 
 //------------------------------------------
 // uTimerScript
-
 ProcessConfig = uTimerScript
 {
   event = var=DEPLOY, val=true
   event = var=MOOS_MANUAL_OVERIDE, val=false
   event = quit
+}
+
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  paused     = false
+  event      = var=RAND_NUMBER, val=$(15), time=0.25
+  event      = var=RAND_NUMBER, val=$(9), time=0.50
+  event      = var=RAND_NUMBER, val=$(7), time=0.75
+  event      = var=RAND_NUMBER, val=$(5), time=1.00
+  reset_max  = nolimit
+  reset_time = all-posted
 }
 
 //------------------------------------------
@@ -211,6 +226,8 @@ ProcessConfig = pMarineViewer
   right_context[return] = DEPLOY=true
   right_context[return] = MOOS_MANUAL_OVERIDE=false
   right_context[return] = RETURN=false
+
+  left_context[polyvert] = POLY_VERT=x=$(XPOS),y=$(YPOS)
 
   scope  = RETURN
   scope  = WPT_STAT

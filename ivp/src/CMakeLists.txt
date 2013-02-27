@@ -13,7 +13,8 @@ ELSE (${WIN32})
   # Force -fPIC because gcc complains when we don't use it with x86_64 code.
   # Note sure why: -fPIC should only be needed for shared objects, and
   # AFAIK, CMake gets that right when building shared objects. -CJC
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g")
+  #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -Wall -Wextra")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g ")
 
 ENDIF (${WIN32})
 
@@ -37,7 +38,7 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 # moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php
 find_package(MOOSGeodesy)
 include_directories(${MOOSGeodesy_INCLUDE_DIRS})
-link_directories(${MOOSGeodesy_LIBRARIES})
+link_directories(${MOOSGeodesy_LIBRARY_PATH})
 
 message("+++++++++++++++++++++++++++++++++++++++++")
 message("MOOSGeodesy_INCLUDE_DIRS:" ${MOOSGeodesy_INCLUDE_DIRS})
@@ -152,6 +153,11 @@ ENDIF (${WIN32})
 SET(IVP_LIBS_TO_BUILD ${IVP_NON_GUI_LIBS})
 IF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
    LIST(APPEND IVP_LIBS_TO_BUILD ${IVP_GUI_LIBS})
+
+   message("+++++++++++++++++++++++++++++++++++++++++")
+   message("IVP_GUI_CODE will be built......         ")
+   message("+++++++++++++++++++++++++++++++++++++++++")
+
 ENDIF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
 
 

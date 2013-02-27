@@ -39,7 +39,7 @@ public:
 protected:
   bool         updateInfoIn();
   IvPFunction* buildOF(std::string);
-  void         updateInfoOut(bool post=true);
+  void         updateInfoOut();
 
 protected: // configuration parameters
   double      m_cruise_speed;

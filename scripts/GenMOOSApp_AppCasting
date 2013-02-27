@@ -32,7 +32,7 @@ SET(SRC
 ADD_EXECUTABLE($2$1 \${SRC})
 
 TARGET_LINK_LIBRARIES($2$1
-   ${MOOS_LIBRARIES}
+   \${MOOS_LIBRARIES}
    apputil
    mbutil
    m
@@ -45,7 +45,7 @@ cat >> ${1}.h <<EOF
 /*    NAME: $3                                              */
 /*    ORGN: MIT                                             */
 /*    FILE: ${1}.h                                          */
-/*    DATE:                                                 */
+/*    DATE: December 29th, 1963                             */
 /************************************************************/
 
 #ifndef ${1}_HEADER
@@ -57,7 +57,7 @@ class ${1} : public AppCastingMOOSApp
 {
  public:
    ${1}();
-   ~${1}();
+   ~${1}() {};
 
  protected: // Standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -84,7 +84,7 @@ cat >> main.cpp <<EOF
 /*    NAME: $3                                              */
 /*    ORGN: MIT                                             */
 /*    FILE: main.cpp                                        */
-/*    DATE:                                                 */
+/*    DATE: December 29th, 1963                             */
 /************************************************************/
 
 #include <string>
@@ -156,6 +156,7 @@ cat >> ${1}.cpp <<EOF
 
 #include <iterator>
 #include "MBUtils.h"
+#include "ACTable.h"
 #include "${1}.h"
 
 using namespace std;
@@ -168,18 +169,11 @@ ${1}::${1}()
 }
 
 //---------------------------------------------------------
-// Destructor
-
-${1}::~${1}()
-{
-}
-
-//---------------------------------------------------------
 // Procedure: OnNewMail
 
 bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  AppCastingMOOSApp::XOnNewMail(NewMail);
+  AppCastingMOOSApp::OnNewMail(NewMail);
 
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
@@ -221,9 +215,9 @@ bool ${1}::OnConnectToServer()
 
 bool ${1}::Iterate()
 {
-  AppCastingMOOSApp::XIterate();
+  AppCastingMOOSApp::Iterate();
   // Do your thing here!
-  AppCastingMOOSApp::XPostReport();
+  AppCastingMOOSApp::PostReport();
   return(true);
 }
 
@@ -233,7 +227,7 @@ bool ${1}::Iterate()
 
 bool ${1}::OnStartUp()
 {
-  AppCastingMOOSApp::XOnStartUp();
+  AppCastingMOOSApp::OnStartUp();
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
@@ -255,8 +249,8 @@ bool ${1}::OnStartUp()
       handled = true;
     }
 
-    if(!handled && !AppCastingMOOSApp::XHandleConfigLine(orig))
-      reportConfigWarning("Unhandled config line: " + orig);
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
 
   }
   
@@ -269,8 +263,8 @@ bool ${1}::OnStartUp()
 
 void ${1}::registerVariables()
 {
-  AppCastingMOOSApp::XRegisterVariables();
-  // m_Comms.Register("FOOBAR", 0);
+  AppCastingMOOSApp::RegisterVariables();
+  // Register("FOOBAR", 0);
 }
 
 
@@ -279,15 +273,15 @@ void ${1}::registerVariables()
 
 bool ${1}::buildReport() 
 {
-  m_ac << "============================================ \n";
-  m_ac << "File:                                        \n";
-  m_ac << "============================================ \n";
+  m_msgs << "============================================ \n";
+  m_msgs << "File:                                        \n";
+  m_msgs << "============================================ \n";
 
   ACTable actab(4);
   actab << "Alpha | Bravo | Charlie | Delta";
   actab.addHeaderLines();
-  actab << "one" << "two" <<"three" <<"four";
-  m_ac << actab;
+  actab << "one" << "two" << "three" << "four";
+  m_msgs << actab.getFormattedString();
 
   return(true);
 }

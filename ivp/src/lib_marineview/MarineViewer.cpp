@@ -1846,7 +1846,7 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
-  vector<double> draw_pts = circle.getPointCache(90);
+  vector<double> draw_pts = circle.getPointCache();
   double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
   double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
   unsigned int i;

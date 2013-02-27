@@ -50,7 +50,7 @@ protected:
   void         postErasableSegList();
   void         postErasables();
   void         postCycleFlags();
-  void         postWptFlags();
+  void         postWptFlags(double x, double y);
   void         handleVisualHint(std::string);
 
 protected: 

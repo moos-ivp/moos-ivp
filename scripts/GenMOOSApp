@@ -36,7 +36,7 @@ SET(SRC
 ADD_EXECUTABLE($2$1 \${SRC})
 
 TARGET_LINK_LIBRARIES($2$1
-   ${MOOS_LIBRARIES}
+   \${MOOS_LIBRARIES}
    mbutil
    m
    pthread)

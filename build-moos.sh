@@ -26,15 +26,13 @@ cmake -DENABLE_EXPORT=ON -DUSE_ASYNC_COMMS=ON -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAG
 
 
 echo ""; echo "Invoking make..." `pwd`; echo ""
-make -j8 $@
+make -j12 $@
 
 echo "Moving MOOSCore executables into main MOOS bin directory"
 mv bin/* ../bin
 
 cd ${INVOC_ABS_DIR}
 echo "Returning to:" `pwd`
-
-#cp -f MOOS/MOOSCore/MOOSConfig.cmake MOOS/MOOSCore/OXMOOSConfig.cmake
 
 #===================================================================
 # Part #2:  BUILD ESSENTIALS

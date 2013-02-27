@@ -47,6 +47,8 @@ BasicContactMgr::BasicContactMgr()
   m_nav_hdg = 0;
   m_nav_spd = 0;
 
+  m_alert_verbose = false;
+
   m_contact_max_age = 3600;   // units in seconds 3600 = 1 hour
   m_display_radii   = false;
 
@@ -181,6 +183,12 @@ bool BasicContactMgr::OnStartUp()
     
     else if(param=="alert_cpa_time") {
       reportConfigWarning("alert_cpa_time parameter has been deprecated.");
+    }
+    
+    else if(param=="alert_verbose") {
+      bool ok = setBooleanOnString(m_alert_verbose, value);
+      if(!ok)
+	reportConfigWarning("alert_verbose must be either true or false");
     }
     
     else if(param == "default_alert_range_color") {
@@ -508,12 +516,14 @@ bool BasicContactMgr::postAlerts()
     double     contact_range = m_map_node_ranges[contact_name];
     double     age = m_curr_time - node_record.getTimeStamp();
 
+    // For each alert_idid
     map<string,string>::iterator q;
     for(q=m_map_alert_varname.begin(); q!=m_map_alert_varname.end(); q++) {
       string alert_id = q->first;
       bool alerted = m_par.getValue(contact_name, alert_id);
       if(!alerted) {
-	double alert_range = getAlertRange(alert_id);
+	double alert_range     = getAlertRange(alert_id);
+	double alert_range_cpa = getAlertRangeCPA(alert_id);
 	if((age <= m_contact_max_age) && (contact_range <= alert_range)) {
 	  new_alerts = true;
 
@@ -560,6 +570,25 @@ bool BasicContactMgr::postAlerts()
 	  m_par.setValue(contact_name, alert_id, true);
 	  reportEvent(var + "=" + msg);
 
+
+	  if(m_alert_verbose) {
+	    string mvar = "ALERT_VERBOSE";
+	    string mval = "contact=" + contact_name;
+	    mval += ",config_alert_range=" + doubleToString(alert_range,1);
+
+	    mval += ",config_alert_range_cpa=" + doubleToString(alert_range_cpa,1);
+
+	    mval += ",range_used=" + doubleToString(contact_range,1);
+
+	    double actual_range = m_map_node_ranges_actual[contact_name];
+	    mval += ",actual_range=" + doubleToString(actual_range,1);
+
+	    double actual_range_cpa = m_map_node_ranges_cpa[contact_name];
+	    mval += ",acual_range_cpa=" + doubleToString(actual_range_cpa,1);
+
+	    Notify(mvar, mval);
+	  }
+
 	  m_map_node_alerts_total[contact_name]++;
 	  m_map_node_alerts_active[contact_name]++;
 	}
@@ -575,6 +604,8 @@ bool BasicContactMgr::postAlerts()
 
 void BasicContactMgr::updateRanges()
 {
+  double alert_range_cpa_time = 36000; // 10 hours
+
   map<string, NodeRecord>::iterator p;
   for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
     string     vname = p->first;
@@ -595,15 +626,20 @@ void BasicContactMgr::updateRanges()
     double range = hypot((m_nav_x - cnx), (m_nav_y - cny));
     m_map_node_ranges[vname] = range;
 
+    if(m_alert_verbose) {
+      m_map_node_ranges_actual[vname] = range;
+      CPAEngine engine(cny, cnx, cnh, cns, m_nav_y, m_nav_x);
+      double cpa = engine.evalCPA(m_nav_hdg, m_nav_spd, alert_range_cpa_time);
+      m_map_node_ranges_cpa[vname] = cpa;
+    }
+
     // If the raw range exceeds the minimum threshold, but is less
     // than the alert_cpa threshold, calculate the CPA and uses this
     // as the range instead.
     double alert_range = getAlertRange(vname);
     double alert_range_cpa = getAlertRangeCPA(vname);
-    double alert_range_cpa_time = 36000; // 10 hours
     if((range > alert_range) && (range < alert_range_cpa)) {
-      CPAEngine engine(cny, cnx, cnh, cns, m_nav_y, m_nav_x);
-      
+      CPAEngine engine(cny, cnx, cnh, cns, m_nav_y, m_nav_x);      
       double cpa = engine.evalCPA(m_nav_hdg, m_nav_spd, alert_range_cpa_time);
       m_map_node_ranges[vname] = cpa;
     }

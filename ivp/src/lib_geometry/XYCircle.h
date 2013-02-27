@@ -60,7 +60,7 @@ public:
   std::string get_spec(std::string s="") const;
   
   void                setPointCache(unsigned int);
-  std::vector<double> getPointCache(unsigned int pts) const;
+  std::vector<double> getPointCache() const {return(m_pt_cache);};
 
   // True if on or inside circle, need not intersect perimeter
   bool   containsPoint(double, double) const;

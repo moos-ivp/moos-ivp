@@ -115,13 +115,14 @@ bool XMS::ConfigureComms()
 
 bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
 {    
-  AppCastingMOOSApp::OnNewMail(NewMail);
+  //AppCastingMOOSApp::OnNewMail(NewMail);
 
   MOOSMSG_LIST::iterator p;
   // First, if m_db_start_time is not set, scan the mail for the
   // DB_UPTIME mail from the MOOSDB and set. ONCE.
   if(m_db_start_time == 0) {
     for(p = NewMail.begin(); p!=NewMail.end(); p++) {
+      //      p->Trace();
       CMOOSMsg &msg = *p;
       if(msg.GetKey() == "DB_UPTIME") {
 	m_db_start_time = MOOSTime() - msg.GetDouble();
@@ -134,7 +135,9 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
   // All variables "values" are stored as strings. We let MOOS
   // tell us the type of the variable, and we keep track of the
   // type locally, just so we can put quotes around string values.
+
   for(p = NewMail.begin(); p!=NewMail.end(); p++) {
+    //    p->Trace();
     CMOOSMsg &msg = *p;
     string key = msg.GetKey();
     if((key.length() >= 7) && (key.substr(key.length()-7,7) == "_STATUS")) {
@@ -150,7 +153,7 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
 
     else if(key == "DB_CLIENTS") 
       updateDBClients(msg.GetString());
-
+    
     // A check is made in updateVariable() to ensure the given variable
     // is indeed on the scope list.
     updateVariable(msg);
@@ -219,7 +222,9 @@ bool XMS::OnStartUp()
   if(app_name == "")
     app_name = GetAppName();
 
-  string directives = "must_have_moosblock=false,alt_config_block_name=" + app_name;
+  string directives  = "must_have_moosblock=false";
+  directives += "must_have_community=false";
+  directives += "alt_config_block_name=" + app_name;
   AppCastingMOOSApp::OnStartUpDirectives(directives);
 
   STRING_LIST sParams;
@@ -810,9 +815,9 @@ void XMS::registerVariables()
   if(m_history_var != "")
     m_Comms.Register(m_history_var, 0);
 
-  m_Comms.Register("DB_UPTIME", 0);
-  m_Comms.Register("DB_CLIENTS", 0);
-  m_Comms.Register("PROC_WATCH_SUMMARY", 0);
+  //m_Comms.Register("DB_UPTIME", 0);
+  //m_Comms.Register("DB_CLIENTS", 0);
+  //m_Comms.Register("PROC_WATCH_SUMMARY", 0);
 }
 
 //------------------------------------------------------------
@@ -1386,6 +1391,8 @@ void XMS::refreshAllVarsList()
   MOOSMSG_LIST mail;
   if(m_Comms.ServerRequest("VAR_SUMMARY",mail)) {
     string ss(mail.begin()->GetString());
+
+    cout << "VAR_SUMMARY: " << ss << endl;
     while(!ss.empty()) {
       string sVar = MOOSChomp(ss);
       
@@ -1400,8 +1407,9 @@ void XMS::refreshAllVarsList()
       }
       
       if(!discard) {
-	if(addVariable(sVar))
-	  m_Comms.Register(sVar, 0);
+	addVariable(sVar);
+	//	cout << "Registering for +++" << sVar << endl;
+	m_Comms.Register(sVar, 0);
       }   
     }
   }

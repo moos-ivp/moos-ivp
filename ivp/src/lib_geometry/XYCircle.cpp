@@ -144,15 +144,6 @@ void XYCircle::setPointCache(unsigned int pts)
 }
 
 //-------------------------------------------------------------
-// Procedure: getPointCache
-
-vector<double> XYCircle::getPointCache(unsigned int pts) const
-{
-  return(m_pt_cache);
-}
-
-
-//-------------------------------------------------------------
 // Procedure: containsPoint
 
 bool XYCircle::containsPoint(double g_x, double g_y) const

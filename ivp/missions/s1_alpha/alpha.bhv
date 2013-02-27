@@ -11,6 +11,7 @@ Behavior = BHV_Waypoint
   condition = RETURN = false
   condition = DEPLOY = true
   endflag   = RETURN = true
+  wptflag   = WPT_HIT = $(X),$(Y)
   UPDATES   = WPT_UPDATE
   perpetual = true
 

@@ -239,7 +239,7 @@ bool XYArtifactGrid::processDelta(const string& str)
     //double old_clearance = atof(dvector.at(1).c_str());
     double new_clearance = atof(dvector.at(2).c_str());
     
-    if((index < 0) || (index >= clearances.size()))
+    if(index >= clearances.size())
       return(false);
     
     setClearance(index, new_clearance);

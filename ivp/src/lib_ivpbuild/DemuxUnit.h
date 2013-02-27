@@ -41,7 +41,7 @@ public:
 
   bool addString(const std::string& str, unsigned int ix)
     {
-      if((ix<0)||(ix>=m_data.size()))
+      if(ix>=m_data.size())
 	return(false);
       if(m_flag[ix]==true) // don't allow double writes
 	return(false);

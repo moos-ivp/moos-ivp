@@ -127,7 +127,7 @@ bool BHV_AbortToPoint::setParam(string param, string val)
 
 void BHV_AbortToPoint::onIdleState() 
 {
-  updateInfoOut(false);
+  updateInfoOut();
 }
 
 
@@ -138,7 +138,7 @@ IvPFunction *BHV_AbortToPoint::onRunState()
 {
   // Set m_osx, m_osy, m_osv
   if(!updateInfoIn()) {
-    updateInfoOut(false);
+    updateInfoOut();
     return(0);
   }
   
@@ -146,7 +146,7 @@ IvPFunction *BHV_AbortToPoint::onRunState()
   if(ipf)
     ipf->setPWT(m_priority_wt);
 
-  updateInfoOut(true);
+  updateInfoOut();
 
   return(ipf);
 }
@@ -228,7 +228,7 @@ IvPFunction *BHV_AbortToPoint::buildOF(string method)
 //-----------------------------------------------------------
 // Procedure: updateInfoOut()
 
-void BHV_AbortToPoint::updateInfoOut(bool post)
+void BHV_AbortToPoint::updateInfoOut()
 {
   if((m_state == "inactive") && (!m_sent_msg_inactive)) {
     m_sent_msg_inactive = true;
