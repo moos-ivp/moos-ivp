@@ -6,15 +6,19 @@ ProcessConfig = pBasicContactMgr
   AppTick   = 2
   CommsTick = 2
 
-  CONTACT_MAX_AGE = 3600
-  DISPLAY_RADII   = true
+  decay = 30,60
 
-  DEFAULT_ALERT_RANGE = 20
-  DEFAULT_CPA_RANGE   = 28
-  DEFAULT_ALERT_RANGE_COLOR = gray70
-  DEFAULT_CPA_RANGE_COLOR   = gray30
+  alert_verbose = true
 
-  Alert = id=avd, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
-  Alert = id=avd, alert_range=40, cpa_range=45, alert_range_color=green
-  Alert = id=avd, cpa_range_color=invisible
+  contact_max_age = 3600
+  display_radii   = true
+
+  default_alert_range = 20
+  default_cpa_range   = 28
+  default_alert_range_color = gray70
+  default_cpa_range_color   = gray30
+
+  alert = id=avd, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
+  alert = id=avd, alert_range=40, cpa_range=45, alert_range_color=green
+  alert = id=avd, cpa_range_color=invisible
 }

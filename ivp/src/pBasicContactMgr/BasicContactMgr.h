@@ -82,6 +82,8 @@ class BasicContactMgr : public AppCastingMOOSApp
 
   std::string  m_contact_local_coords;
   bool         m_alert_verbose;
+  double       m_decay_start;
+  double       m_decay_end;
 
  protected: // State variables
 
@@ -93,9 +95,8 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::map<std::string, unsigned int> m_map_node_alerts_resolved;
   // Calculated for verbose purposes
   std::map<std::string, double>       m_map_node_ranges_actual;
+  std::map<std::string, double>       m_map_node_ranges_extrap;
   std::map<std::string, double>       m_map_node_ranges_cpa;
-
-
 
   // memory of previous status postings: A posting to the MOOS var
   // is only made when a change is detected between curr and prev.

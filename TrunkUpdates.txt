@@ -23,3 +23,11 @@ uXMS - Fixed a bug where proper history_var specifications where still being
 
 pHelmIvP - Fixed a bug where even proper IVP_BEHAVIOR_DIR parameter settings were 
    being flagged with a configuration warning.
+
+pBasicContactMgr:
+  - Fixed bug in linear extrapolation calculations of stale contacts
+  - changed contact default retirement time to 600 secs (from 3600)
+  - CONTACT_RECAP now does NOT include retired contacts
+  - Added extrapolation decay and config parameter for overriding default (30,60)
+  - Changed CONTACTS_RECAP to publish 1/sec by default, overridable with the 
+    the recap_min_interval config parameter

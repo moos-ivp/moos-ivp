@@ -28,7 +28,7 @@
 #include "ACTable.h"
 
 // number of seconds before checking for new moos vars (in all mode)
-#define ALL_BLACKOUT 2 
+#define ALL_BLACKOUT 1
 
 using namespace std;
 

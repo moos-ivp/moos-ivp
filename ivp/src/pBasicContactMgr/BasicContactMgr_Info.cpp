@@ -108,6 +108,10 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Configuring other output                                   ");
   blk("  display_radii    = false    "," // or {true}                  ");
+  blk("  alert_verbose    = false  // If true, ALERT_VERBOSE published.");
+  blk("                                                                ");
+  blk("  // Policy for linear extrapolation of stale contacts          ");
+  blk("  decay = 30,60  // the defaults in seconds                     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -154,6 +158,11 @@ void showInterfaceAndExit()
   blk("                        name=charlie,age=1.9,range=73.1 #       ");
   blk("                        name=henry,age=4.0,range=18.            ");
   blk("  CONTACT_MGR_WARNING = Bad Node Report Received                ");
+  blk("                                                                ");
+  blk("  ALERT_VERBOSE = contact=gilda,config_alert_range=40.0,        ");
+  blk("                  config_alert_range_cpa=45.0,range_used=39.2,  ");
+  blk("                  range_actual=40.8,range_extrap=40.8,          ");
+  blk("                  range_cpa=13                                  ");
   blk("                                                                ");
   blk("  APPCAST = name=pBasicContactMgr!@#iter=91!@#node=hotel!@#     ");
   blk("            messages=...                                        ");
