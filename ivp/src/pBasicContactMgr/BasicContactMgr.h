@@ -79,6 +79,7 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::string  m_ownship;
   bool         m_display_radii;
   double       m_contact_max_age;
+  double       m_contacts_recap_interval;
 
   std::string  m_contact_local_coords;
   bool         m_alert_verbose;
@@ -114,6 +115,8 @@ class BasicContactMgr : public AppCastingMOOSApp
   double m_nav_y;
   double m_nav_hdg;
   double m_nav_spd;
+
+  double m_contacts_recap_posted;
 
 private:
   bool         m_use_geodesy;

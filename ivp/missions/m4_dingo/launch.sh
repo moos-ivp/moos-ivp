@@ -37,7 +37,7 @@ VNAME4="henry"           # The fourth vehicle Community
 START_POS1="0,0"         
 START_POS2="20,0"        
 START_POS3="40,0"         
-START_POS4="60,0"        
+START_POS4="60,50"        
 LOITER_POS1="x=0,y=-75"
 LOITER_POS2="x=125,y=-50"
 LOITER_POS3="x=0,y=-175"

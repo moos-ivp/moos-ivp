@@ -64,6 +64,9 @@ BasicContactMgr::BasicContactMgr()
   m_decay_end   = 30;
 
   m_contact_local_coords = "verbatim"; // Or lazy_lat_lon, or force_lat_lon
+
+  m_contacts_recap_interval = 0;
+  m_contacts_recap_posted = 0;
 }
 
 //---------------------------------------------------------
@@ -203,6 +206,13 @@ bool BasicContactMgr::OnStartUp()
 	m_default_alert_rng_cpa = dval;
       else
 	reportConfigWarning("default_alert_range_cpa must be > zero: " + value);
+    }
+    
+    else if(param == "contacts_recap_interval") {
+      if(dval >= 0)
+	m_contacts_recap_interval = dval;
+      else
+	reportConfigWarning("contacts_recap_interval must be >= zero: " + value);
     }
     
     else if(param=="alert_cpa_time") {
@@ -525,7 +535,10 @@ void BasicContactMgr::postSummaries()
     m_prev_contacts_retired = contacts_retired;
   }
 
-  if(m_prev_contacts_recap != contacts_recap) {
+  double time_since_last_recap = m_curr_time - m_contacts_recap_posted;
+
+  if(time_since_last_recap > m_contacts_recap_interval) {
+    m_contacts_recap_posted = m_curr_time;
     Notify("CONTACTS_RECAP", contacts_recap);
     m_prev_contacts_recap = contacts_recap;
   }

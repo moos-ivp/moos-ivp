@@ -6,8 +6,10 @@ ProcessConfig = pBasicContactMgr
   AppTick   = 2
   CommsTick = 2
 
-  CONTACT_MAX_AGE = 3600
+  CONTACT_MAX_AGE = 300
   DISPLAY_RADII   = true
+
+  contacts_recap_interval = 5
 
   DEFAULT_ALERT_RANGE = 20
   DEFAULT_CPA_RANGE   = 28
