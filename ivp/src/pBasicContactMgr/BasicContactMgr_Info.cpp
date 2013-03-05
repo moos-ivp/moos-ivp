@@ -112,6 +112,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Policy for linear extrapolation of stale contacts          ");
   blk("  decay = 30,60  // the defaults in seconds                     ");
+  blk("                                                                ");
+  blk("  contacts_recap_interval = 5 // seconds (the default)          ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

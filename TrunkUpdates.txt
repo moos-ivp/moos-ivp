@@ -29,5 +29,5 @@ pBasicContactMgr:
   - changed contact default retirement time to 600 secs (from 3600)
   - CONTACT_RECAP now does NOT include retired contacts
   - Added extrapolation decay and config parameter for overriding default (30,60)
-  - Changed CONTACTS_RECAP to publish 1/sec by default, overridable with the 
+  - Changed CONTACTS_RECAP to publish once per 5 seconds by default, overridable with the 
     the recap_min_interval config parameter
