@@ -642,6 +642,12 @@ void HazardSensor_MOOSApp::addQueueMessage(const string& vname,
 					   const string& varname,
 					   const string& value)
 {
+  // If this is the first entry in the queue for this vehicle, set the timestamp
+  // for this vehicle to the present time. To ensure even the first element in 
+  // the queue has the proper delay.
+  if(m_map_msgs_queued[vname].size() == 0)
+    m_map_msg_last_queue_time[vname] = m_curr_time;
+
   VarDataPair pair(varname, value);
   m_map_msgs_queued[vname].push_back(pair);
 }
@@ -655,18 +661,8 @@ void HazardSensor_MOOSApp::postQueueMessages()
   map<string, list<VarDataPair> >::iterator p;
   for(p=m_map_msgs_queued.begin(); p!=m_map_msgs_queued.end(); p++) {
     string vname = p->first;
- 
-    // The first time this routine is called with a non-empty list of queued
-    // messages, a check is made on the "last time a msg was posted". If this
-    // timestamp is zero, then we set it to the current time. This ensures that
-    // the very first message put into this queue will also have to wait the
-    // min interval before being poppped.
-    if(m_map_msg_last_queue_time.count(vname) == 0) {
-      m_map_msg_last_queue_time[vname] = m_curr_time;
-      continue;
-    }
 
-    //  Now just calculate the last time since a msg was popped.
+    //  Calculate the last time since a msg was popped for this vehicle.
     double elapsed = m_curr_time - m_map_msg_last_queue_time[vname];
     if(elapsed < m_min_queue_msg_interval) 
       continue;
@@ -674,21 +670,26 @@ void HazardSensor_MOOSApp::postQueueMessages()
     // Ok, this vehicle is due for a message, so we're going to pop N=3 of them
     // We assume each classify report consists of three messages:
     // UHZ_CLASSIFY_REPORT, UHZ_CLASSIFY_REPORT_VNAME, VIEW_CIRCLE
+    bool message_popped = false;
     for(unsigned int i=0; i<3; i++) {
       if(m_map_msgs_queued[vname].size() != 0) {
+	message_popped = true;
+	
 	VarDataPair message = m_map_msgs_queued[vname].front();
 	m_map_msgs_queued[vname].pop_front();
+	
 	string varname = message.get_var();
 	if(message.is_string())
 	  m_Comms.Notify(varname, message.get_sdata());
 	else
 	  m_Comms.Notify(varname, message.get_ddata());      
 	reportEvent(varname + " posted");
-
-	// Only update timestamp if there was actually something in the queue
-	m_map_msg_last_queue_time[vname] = m_curr_time;
       }
     }    
+
+    // Only update timestamp if there was actually something in the queue
+    if(message_popped)
+      m_map_msg_last_queue_time[vname] = m_curr_time;
   }
 }
 
