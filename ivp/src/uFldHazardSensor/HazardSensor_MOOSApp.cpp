@@ -201,7 +201,7 @@ bool HazardSensor_MOOSApp::OnStartUp()
       m_sensor_max_turn_rate = atof(value.c_str());
       handled = true;
     }
-    else if((param == "classify_period") || (param == "min_classify_period")) {
+    else if((param == "classify_period") || (param == "min_classify_interval")) {
       if(isNumber(value)) {
 	m_min_queue_msg_interval = atof(value.c_str());
 	handled = true;

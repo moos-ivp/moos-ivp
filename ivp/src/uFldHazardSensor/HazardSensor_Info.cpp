@@ -116,8 +116,8 @@ void showExampleConfigAndExit()
   blk("  show_reports  = 60    // seconds (unlimited if unspecified)   ");
   blk("                                                                ");
   blk("  min_reset_interval       = 300  // default                    ");
+  blk("  min_classify_interval    = 30   // default                    ");
   blk("  options_summary_interval = 10   // default                    ");
-  blk("  classify_period          = 30   // default                    ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

@@ -284,6 +284,11 @@ bool HazardMgr::handleMailDetectionReport(string str)
 
   reportEvent(event);
 
+  string req = "vname=" + m_host_community + ",label=" + hazlabel;
+
+  Notify("UHZ_CLASSIFY_REQUEST", req);
+
+
   return(true);
 }
 
