@@ -28,6 +28,7 @@
 #include "NodeRecord.h"
 #include "XYHazard.h"
 #include "HeadingHistory.h"
+#include "VarDataPair.h"
 
 class HazardSensor_MOOSApp : public AppCastingMOOSApp
 {
@@ -66,9 +67,8 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   bool    handleSensorConfig(const std::string&, const std::string&);
 
  protected: // Outgoing mail utility
-  void    addMessage(const std::string&, const std::string&);
   void    addQueueMessage(const std::string&, const std::string&, const std::string&);
-  void    addMessage(const std::string&, double);
+  void    postQueueMessages();
   void    postHazardDetectionReport(std::string hlabel, std::string vname);
   void    postHazardClassifyReport(std::string hlabel, std::string vname);
 
@@ -114,6 +114,10 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   std::map<std::string, unsigned int> m_map_reset_total;  
   std::map<std::string, unsigned int> m_map_sensor_reqs;  
   std::map<std::string, unsigned int> m_map_detections;
+
+  // Limited-Frequency msgs to be posted to the MOOSDB
+  std::map<std::string, std::list<VarDataPair> >  m_map_msgs_queued;
+  std::map<std::string, double>                   m_map_msg_last_queue_time;
 
  protected: // Configuration variables
   double      m_min_reset_interval;

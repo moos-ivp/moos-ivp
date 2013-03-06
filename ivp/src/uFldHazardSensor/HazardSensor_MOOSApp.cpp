@@ -156,6 +156,8 @@ bool HazardSensor_MOOSApp::Iterate()
     m_last_summary_time = m_curr_time;
   }
 
+  postQueueMessages();
+
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -199,9 +201,11 @@ bool HazardSensor_MOOSApp::OnStartUp()
       m_sensor_max_turn_rate = atof(value.c_str());
       handled = true;
     }
-    else if((param == "classify_period") && isNumber(value)) {
-      m_min_queue_msg_interval = atof(value.c_str());
-      handled = true;
+    else if((param == "classify_period") || (param == "min_classify_period")) {
+      if(isNumber(value)) {
+	m_min_queue_msg_interval = atof(value.c_str());
+	handled = true;
+      }
     }
     else if(param == "default_benign_shape") {
       m_shape_benign = value;
@@ -516,8 +520,8 @@ bool HazardSensor_MOOSApp::handleSensorClear(const string& request)
   vector<string> svector = parseString(request, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
-    string param = tolower(stripBlankEnds(biteString(svector[i], '=')));
-    string value = stripBlankEnds(svector[i]);
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = svector[i];
     if(param == "vname")
       vname = value;
   }
@@ -628,6 +632,66 @@ bool HazardSensor_MOOSApp::handleSensorConfig(const string& config,
   // Part 4: Fit the request to one of the allowable sensor settings.
   return(setVehicleSensorSetting(vname, d_width, d_pd));
 }
+
+
+
+//---------------------------------------------------------
+// Procedure: addQueueMessage()
+
+void HazardSensor_MOOSApp::addQueueMessage(const string& vname,
+					   const string& varname,
+					   const string& value)
+{
+  VarDataPair pair(varname, value);
+  m_map_msgs_queued[vname].push_back(pair);
+}
+
+
+//------------------------------------------------------------
+// Procedure: postQueueMessages
+
+void HazardSensor_MOOSApp::postQueueMessages()
+{
+  map<string, list<VarDataPair> >::iterator p;
+  for(p=m_map_msgs_queued.begin(); p!=m_map_msgs_queued.end(); p++) {
+    string vname = p->first;
+ 
+    // The first time this routine is called with a non-empty list of queued
+    // messages, a check is made on the "last time a msg was posted". If this
+    // timestamp is zero, then we set it to the current time. This ensures that
+    // the very first message put into this queue will also have to wait the
+    // min interval before being poppped.
+    if(m_map_msg_last_queue_time.count(vname) == 0) {
+      m_map_msg_last_queue_time[vname] = m_curr_time;
+      continue;
+    }
+
+    //  Now just calculate the last time since a msg was popped.
+    double elapsed = m_curr_time - m_map_msg_last_queue_time[vname];
+    if(elapsed < m_min_queue_msg_interval) 
+      continue;
+    
+    // Ok, this vehicle is due for a message, so we're going to pop N=3 of them
+    // We assume each classify report consists of three messages:
+    // UHZ_CLASSIFY_REPORT, UHZ_CLASSIFY_REPORT_VNAME, VIEW_CIRCLE
+    for(unsigned int i=0; i<3; i++) {
+      if(m_map_msgs_queued[vname].size() != 0) {
+	VarDataPair message = m_map_msgs_queued[vname].front();
+	m_map_msgs_queued[vname].pop_front();
+	string varname = message.get_var();
+	if(message.is_string())
+	  m_Comms.Notify(varname, message.get_sdata());
+	else
+	  m_Comms.Notify(varname, message.get_ddata());      
+	reportEvent(varname + " posted");
+
+	// Only update timestamp if there was actually something in the queue
+	m_map_msg_last_queue_time[vname] = m_curr_time;
+      }
+    }    
+  }
+}
+
 
 //---------------------------------------------------------
 // Procedure: postVisuals()
@@ -780,8 +844,9 @@ void HazardSensor_MOOSApp::postHazardClassifyReport(string hazard_label,
 
   string full_str = "vname=" + vname + "," + hazard_spec;
 
-  Notify("UHZ_HAZARD_REPORT", full_str);
-  Notify("UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
+
+  addQueueMessage(vname, "UHZ_HAZARD_REPORT", full_str);
+  addQueueMessage(vname, "UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
 
   // Part 4: Build some event messages/info.
   reportEvent("Classify report queued to vehicle: " + vname);
@@ -806,9 +871,8 @@ void HazardSensor_MOOSApp::postHazardClassifyReport(string hazard_label,
     circ.set_edge_size(1);
     circ.set_transparency(0.3);
     circ.set_time(m_curr_time);
-    circ.setDuration(m_circle_duration);
-    Notify("VIEW_CIRCLE", circ.get_spec());
-    //addQueueMessage(vname, "VIEW_CIRCLE", circ.get_spec());
+    //    circ.setDuration(m_circle_duration);
+    addQueueMessage(vname, "VIEW_CIRCLE", circ.get_spec());
   }
 }
 
