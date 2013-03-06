@@ -83,8 +83,8 @@ ProcessConfig = uFldHazardMetric
   penalty_max_time_over = 100    
   penalty_max_time_rate = 0.05 
 
-  hazard_file   = hazards_lab14.txt
-  //hazard_file   = hazards.txt
+  //hazard_file   = hazards_lab14.txt
+  hazard_file   = hazards.txt
 }
 
 //--------------------------------------------------
@@ -117,8 +117,8 @@ ProcessConfig = uFldHazardSensor
   show_reports=44
 
 
-  //hazard_file   = hazards.txt
-  hazard_file   = hazards_lab14.txt
+  hazard_file   = hazards.txt
+  //hazard_file   = hazards_lab14.txt
 }
 
 //--------------------------------------------------------
