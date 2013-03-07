@@ -30,53 +30,6 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
-//  Run = uTimerScript    @ NewConsole = false
-  Run = uFldScope       @ NewConsole = false
-  Run = pEchoVar        @ NewConsole = false
-  Run = pPathTour       @ NewConsole = false
-}
-
-//------------------------------------------
-// uFldScope config block
-
-ProcessConfig = uFldScope
-{
-  AppTick    = 2
-  CommsTick  = 2
-
-  scope = var=NODE_REPORT_LOCAL, key=NAME, fld=TIME, alias=Time
-  scope = var=NODE_REPORT_LOCAL, key=NAME, fld=MODE
-  scope = var=ODOMETRY_REPORT, key=vname, fld=total_dist, alias=TotDist
-  scope = var=ODOMETRY_REPORT, key=vname, fld=trip_dist, alias=TripDist
-  scope = var=SPEED_REPORT, key=vname, fld=avg_spd, alias=Speed
-
-  layout = MODE, Time
-  layout = MODE, Time, speed
-  layout = speed, Mode, trip_dist
-}
-
-//------------------------------------------
-// uTimerScript
-ProcessConfig = uTimerScript
-{
-  event = var=DEPLOY, val=true
-  event = var=MOOS_MANUAL_OVERIDE, val=false
-  event = quit
-}
-
-
-ProcessConfig = uTimerScript
-{
-  AppTick   = 4
-  CommsTick = 4
-
-  paused     = false
-  event      = var=RAND_NUMBER, val=$(15), time=0.25
-  event      = var=RAND_NUMBER, val=$(9), time=0.50
-  event      = var=RAND_NUMBER, val=$(7), time=0.75
-  event      = var=RAND_NUMBER, val=$(5), time=1.00
-  reset_max  = nolimit
-  reset_time = all-posted
 }
 
 //------------------------------------------
@@ -262,40 +215,6 @@ ProcessConfig = pNodeReporter
 }
 
 
-
-
-//----------------------------------------------------------
-// pEchoVar config block
-//
-// This block is here in conjunction with the pEchoVar
-// documentation to demonstrate functionality of that tool.
-
-ProcessConfig = pEchoVar
-{
-  AppTick = 1
-  CommsTick = 1
-
-  echo = NAV_X     -> NAV_XX
-  echo = NAV_X     -> NAV_XPOS
-  echo = NAV_Y     -> NAV_YY
-  echo = NAV_Y     -> NAV_YPOS
-  //echo = NAV_YY    -> FOOBAR
-  //echo = FOOBAR    -> NAV_Y
-  echo = NAV_SPEED -> NAV_SPEED_ALT
-
-  FLIP:1    = source_variable  = NODE_REPORT_LOCAL
-  FLIP:1    = dest_variable    = FOOBAR
-  FLIP:1    = source_separator = ,                              
-  FLIP:1    = dest_separator   = #                              
-  FLIP:1    = filter = type == kayak                       
-  FLIP:1    = component = X -> xpos
-  FLIP:1    = component = Y -> ypos
-}
-
-
-//----------------------------------------------------------
-// uTermCommand config block
-//
 // This block is here in conjunction with the uTermCommand 
 // documentation to demonstrate functionality of that tool.
 // This mission may be alternately 
