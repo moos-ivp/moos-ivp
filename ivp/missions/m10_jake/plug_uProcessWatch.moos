@@ -7,11 +7,12 @@ ProcessConfig = uProcessWatch
   CommsTick = 2
   
   NOWATCH = uXMS*
+  NOWATCH = uPokeDB*
 
   WATCH_ALL = true
 
   WATCH  = uSimMarine
-  WATCH  = pShare*
+  WATCH  = pShare
   WATCH  = pLogger
   WATCH  = pNodeReporter
   WATCH  = pMarinePID

@@ -13,7 +13,7 @@ hazard = x=-65.8,y=-125.2,label=10,type=hazard
 hazard = x=171.9,y=-253.7,label=11,hr=0.5,type=benign,color=orange
 hazard = x=-150.3,y=-117.5,label=12,hr=0.95,type=benign,color=orange
 hazard = x=-59.8,y=-294.1,label=13,hr=0.5,type=benign,color=orange
-hazard = x=98.2,y=-127.7,label=14,hr=0.5,type=benign,color=red,shape=square
+hazard = x=98.2,y=-127.7,label=14,hr=0.5,type=benign,color=orange
 hazard = x=-178.8,y=-234,label=15,hr=0.5,type=benign,color=orange
 hazard = x=24,y=-61,label=16,hr=0.5,type=benign,color=orange
 hazard = x=250.3,y=-214.6,label=17,hr=0.5,type=benign,color=orange

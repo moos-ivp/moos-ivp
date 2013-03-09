@@ -104,6 +104,9 @@ ProcessConfig = uFldHazardSensor
 
   swath_length  = 5
 
+  show_pd  = true
+  show_pfa = false
+
   default_hazard_shape = triangle
   default_benign_shape = circle
 
@@ -112,9 +115,11 @@ ProcessConfig = uFldHazardSensor
 
   options_summary_interval = 5
 
+  min_classify_interval = 90
+
   show_swath=true
   show_hazards=true
-  show_reports=44
+  show_detections=60
 
 
   hazard_file   = hazards.txt

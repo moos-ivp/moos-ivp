@@ -1,7 +1,8 @@
 
-uFldHazardSensor - Re-added the capability to limit classification requests
-  based on a fixed interval of time (configured by "min_classify_interval")
-
+uFldHazardSensor 
+  - Re-added the capability to limit classification requests
+    based on a fixed interval of time (configured by "min_classify_interval")
+  - Added ability to switch Pd settings as often as desired.
 
 -------------------------------------------------------------------------------
 
