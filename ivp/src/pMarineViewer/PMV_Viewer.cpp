@@ -31,6 +31,11 @@
 
 #define USE_UTM
 
+#ifdef _WIN32
+#   include <float.h>
+#   define isnan _isnan
+#endif
+
 using namespace std;
 
 PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
@@ -413,14 +418,23 @@ void PMV_Viewer::handleMoveMouse(int vx, int vy)
   double iy = view2img('y', vy);
   double mx = img2meters('x', ix);
   double my = img2meters('y', iy);
+
+  double new_lat, new_lon;
+
+  bool ok = false;
+#ifdef USE_UTM
+  ok = m_geodesy.UTM2LatLong(mx, my, new_lat, new_lon);
+#else
+  ok = m_geodesy.LocalGrid2LatLong(mx, my, new_lat, new_lon);
+#endif
+  
+  if(!ok || isnan(new_lat) || isnan(new_lon))
+    return;
+  
   m_mouse_x = snapToStep(mx, 0.1);
   m_mouse_y = snapToStep(my, 0.1);
-
-#ifdef USE_UTM
-  m_geodesy.UTM2LatLong(mx, my, m_mouse_lat, m_mouse_lon);
-#else
-  m_geodesy.LocalGrid2LatLong(mx, my, m_mouse_lat, m_mouse_lon);
-#endif
+  m_mouse_lon = new_lon;
+  m_mouse_lat = new_lat;
 }
 
 //-------------------------------------------------------------

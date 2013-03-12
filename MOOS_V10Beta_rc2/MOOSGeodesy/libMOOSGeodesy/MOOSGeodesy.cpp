@@ -477,6 +477,7 @@ bool CMOOSGeodesy::LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLa
 }
 
 
+#if 0
 bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& dfLong)
 {
     //written by Henrik Schmidt henrik@mit.edu
@@ -525,4 +526,51 @@ bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& df
     
  	return true;
 }
+#endif
 
+#if 1
+bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& dfLong)
+{
+  //written by Henrik Schmidt henrik@mit.edu
+  
+  double err = 1e20;
+  double dfx = dfX;
+  double dfy = dfY;
+  double eps = 1.0; // accuracy in m
+
+  double dflat, dflon;
+  while (err > eps) {
+    // first guess geodesic
+    LocalGrid2LatLong(dfx, dfy, dflat, dflon);
+    // fix to segfault issue if you get diverging values
+    if(isnan(dflat) || isnan(dflon))
+      return(false);
+
+    double dfnew_x, dfnew_y ;
+    // now convert latlong to UTM
+    !LatLong2LocalUTM(dflat, dflon, dfnew_y, dfnew_x);
+    if(isnan(dfnew_y) || isnan(dfnew_x))
+      return(false);
+    
+    // how different
+    double dfdiff_x = dfnew_x -dfX;
+    double dfdiff_y = dfnew_y -dfY;
+    
+    // subtract difference and reconvert        
+    dfx -= dfdiff_x;
+    dfy -= dfdiff_y;
+    
+    err = hypot(dfnew_x-dfX,dfnew_y-dfY);
+    
+    //MOOSTrace("UTM2LatLong: error = %f\n",err); 
+  }
+  
+  LocalGrid2LatLong(dfx, dfy, dflat, dflon);
+  if(isnan(dflat) || isnan(dflon))
+    return(false);
+
+  dfLat  = dflat;
+  dfLong = dflon;
+  return(true);
+}
+#endif
