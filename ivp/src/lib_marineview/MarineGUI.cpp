@@ -433,7 +433,7 @@ bool MarineGUI::setMenuAttrib(string menu, string attr, string value)
 
   // Get latest setting of this attr (esp if this value is "toggle" etc)
   value = m_mviewer->geosetting(attr);
-  cout << "setMenuAttrib: menu:" << menu << " attr:" << attr << " value:" << value << endl;
+  //cout << "setMenuAttrib: menu:" << menu << " attr:" << attr << " value:" << value << endl;
 
   // Form for example, "GeoAttr/SegLists/seglist_viewable_all=true"
   string item_str = menu  + "/" + attr + "=" + value;

@@ -457,11 +457,15 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 
   double dlat, dlon;
 
+  bool ok = false;
 #ifdef USE_UTM
-  m_geodesy.UTM2LatLong(sx, sy, dlat, dlon);
+  ok = m_geodesy.UTM2LatLong(sx, sy, dlat, dlon);
 #else
-  m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
+  ok = m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
 #endif
+
+  if(!ok || isnan(dlat) || isnan(dlon))
+    return;
 
   string slat = doubleToString(dlat, 8);
   string slon = doubleToString(dlon, 8);
@@ -550,11 +554,15 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   
   double dlat, dlon;
 
+  bool ok = false;
 #ifdef USE_UTM
-  m_geodesy.UTM2LatLong(sx, sy, dlat, dlon);
+  ok = m_geodesy.UTM2LatLong(sx, sy, dlat, dlon);
 #else
-  m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
+  ok = m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
 #endif
+
+  if(!ok || isnan(dlat) || isnan(dlon))
+    return;
 
   // The aim is to build a vector of VarDataPairs from the "raw" set
   // residing in m_var_data_pairs_all, by replacing all $(KEY) 
