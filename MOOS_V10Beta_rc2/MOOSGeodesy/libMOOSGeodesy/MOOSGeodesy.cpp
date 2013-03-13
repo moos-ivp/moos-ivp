@@ -106,9 +106,13 @@ bool CMOOSGeodesy::Initialise(double lat, double lon)
     //Translate the Origin coordinates into Northings and Eastings 
     double tempNorth = 0.0, tempEast = 0.0;
     char utmZone[4];
-    LLtoUTM(m_iRefEllipsoid, m_dOriginLatitude, 
-            m_dOriginLongitude, tempNorth, 
-            tempEast, utmZone);
+
+    // results check added by mikerb
+    bool ok = LLtoUTM(m_iRefEllipsoid, m_dOriginLatitude, 
+		      m_dOriginLongitude, tempNorth, 
+		      tempEast, utmZone);
+    if(!ok)
+      return(false);
 
     //Then set the Origin for the Northing/Easting coordinate frame
     //Also make a note of the UTM Zone we are operating in
@@ -335,8 +339,10 @@ bool CMOOSGeodesy::LatLong2LocalUTM(double lat,
     char tmpUTM[4];
 
     
-
-    LLtoUTM(m_iRefEllipsoid,lat,lon,tmpNorth,tmpEast,tmpUTM);
+    // results check added by mikerb
+    bool ok = LLtoUTM(m_iRefEllipsoid,lat,lon,tmpNorth,tmpEast,tmpUTM);
+    if(!ok)
+      return(false);
 
     //could check for the UTMZone differing, and if so, return false
 
@@ -457,6 +463,9 @@ double CMOOSGeodesy::GetLocalGridY()
 
 bool CMOOSGeodesy::LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLat, double &dfLon) 
 {
+  if(isnan(dfEast) || isnan(dfNorth))
+    return(false);
+
     //(semimajor axis)
     double dfa  = 6378137;
     // (semiminor axis)
@@ -494,15 +503,15 @@ bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& df
   double dflat, dflon;
   while (err > eps) {
     // first guess geodesic
-    LocalGrid2LatLong(dfx, dfy, dflat, dflon);
+    bool ok1 = LocalGrid2LatLong(dfx, dfy, dflat, dflon);
     // fix to segfault issue if you get diverging values
-    if(isnan(dflat) || isnan(dflon))
+    if(!ok1 || isnan(dflat) || isnan(dflon))
       return(false);
 
     double dfnew_x, dfnew_y ;
     // now convert latlong to UTM
-    !LatLong2LocalUTM(dflat, dflon, dfnew_y, dfnew_x);
-    if(isnan(dfnew_y) || isnan(dfnew_x))
+    bool ok2 = LatLong2LocalUTM(dflat, dflon, dfnew_y, dfnew_x);
+    if(!ok2 || isnan(dfnew_y) || isnan(dfnew_x))
       return(false);
     
     // how different
