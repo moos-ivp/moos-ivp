@@ -159,6 +159,9 @@ bool CMOOSGeodesy::LLtoUTM(int ReferenceEllipsoid, const double Lat,
                             const double Long, double &UTMNorthing, 
                             double &UTMEasting, char *UTMZone)
 {
+  if(isnan(Long) || isnan(Lat))
+    return(false);
+
     //converts lat/long to UTM coords.  Equations from USGS Bulletin 1532 
     //East Longitudes are positive, West longitudes are negative. 
     //North latitudes are positive, South latitudes are negative
@@ -477,61 +480,11 @@ bool CMOOSGeodesy::LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLa
 }
 
 
-#if 0
+
 bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& dfLong)
 {
-    //written by Henrik Schmidt henrik@mit.edu
-    
-    double err = 1e20;
-    double dfx=dfX;
-    double dfy=dfY;
-    double eps = 1.0; // accuracy in m
-    
-    while (err > eps)
-    {
-        double dflat, dflon, dfnew_x, dfnew_y ;
-
-        // first guess geodesic
-        if (!LocalGrid2LatLong(dfx,dfy,dflat,dflon))
-            return(false);
-        
-        // now convert latlong to UTM
-        if (!LatLong2LocalUTM(dflat,dflon,dfnew_y,dfnew_x))
-            return(false);
-        
-		// fix to segfault issue if you get diverging values
-		if(isnan(dflat) || isnan(dflon))
-		{
-			dflat = 91;
-			dflon = 181;
-			return(false);
-		}
-		
-        // how different
-        double dfdiff_x = dfnew_x -dfX;
-        double dfdiff_y = dfnew_y -dfY;
-        
-        // subtract difference and reconvert        
-        dfx -= dfdiff_x;
-        dfy -= dfdiff_y;
-        
-        err = hypot(dfnew_x-dfX,dfnew_y-dfY);
-        
-        //MOOSTrace("UTM2LatLong: error = %f\n",err); 
-    }
-    
-    if (!LocalGrid2LatLong(dfx, dfy, dfLat, dfLong))
-        return(false);
-    
-    
- 	return true;
-}
-#endif
-
-#if 1
-bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& dfLong)
-{
-  //written by Henrik Schmidt henrik@mit.edu
+  // written by Henrik Schmidt henrik@mit.edu, 
+  // mods by mikerb checking for nans
   
   double err = 1e20;
   double dfx = dfX;
@@ -573,4 +526,3 @@ bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& df
   dfLong = dflon;
   return(true);
 }
-#endif
