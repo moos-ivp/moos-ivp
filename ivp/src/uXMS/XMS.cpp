@@ -1392,7 +1392,6 @@ void XMS::refreshAllVarsList()
   if(m_Comms.ServerRequest("VAR_SUMMARY",mail)) {
     string ss(mail.begin()->GetString());
 
-    cout << "VAR_SUMMARY: " << ss << endl;
     while(!ss.empty()) {
       string sVar = MOOSChomp(ss);
       
