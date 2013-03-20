@@ -18,14 +18,14 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 500
 
   Run = MOOSDB                @ NewConsole = false
-  Run = pMarineViewer         @ NewConsole = true
+  Run = pMarineViewer         @ NewConsole = false
   Run = pLogger               @ NewConsole = false
-  Run = uSimMarine            @ NewConsole = true
+  Run = uSimMarine            @ NewConsole = false
   Run = pNodeReporter         @ NewConsole = false
   Run = pMarinePID            @ NewConsole = false
-  Run = pHelmIvP              @ NewConsole = true
-  Run = uTimerScript          @ NewConsole = true
-  Run = uFldBeaconRangeSensor @ NewConsole = true
+  Run = pHelmIvP              @ NewConsole = false
+  Run = uTimerScript          @ NewConsole = false
+  Run = uFldBeaconRangeSensor @ NewConsole = false
 }
 
 //------------------------------------------
@@ -101,7 +101,7 @@ ProcessConfig = uTimerScript
   //event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0  
   //event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=15:20
 
-  reset_max  = no_limit
+  reset_max  = nolimit
   reset_time = all-posted
 
   time_warp   = 1
@@ -214,13 +214,17 @@ ProcessConfig = pMarineViewer
   set_pan_y            = 160
   zoom                 = 1.25
   vehicle_shape_scale  = 1.5
-  seglist_edge_width   = 2.0
-  seglist_vertex_size  = 4
-  seglist_vertex_color = red
-  point_vertex_size    = 6
   hash_delta           = 50
   hash_shade           = 0.25
-  hash_view            = true
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
 
   scope  = VIEW_SEGLIST
   scope  = VIEW_POINT
