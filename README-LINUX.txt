@@ -29,6 +29,11 @@ Additional packages:
   libxinerama-dev - X11 Xinerama extension library (development headers)
   libtiff4-dev    - Tag Image File Format library (TIFF), development files
 
+To do it all, cut and paste this:
+
+  sudo apt-get install g++ subversion cmake libfltk1.3-dev freeglut3-dev libpng12-dev libjpeg-dev libxft-dev libxinerama-dev libtiff4-dev
+
+
 NOTE: As of this date we are no longer including FLTK as part of the 
       MOOS-IvP tree. If you have trouble finding FLTK 1.3 in your 
       system's package manager, we recommend that you install from the
