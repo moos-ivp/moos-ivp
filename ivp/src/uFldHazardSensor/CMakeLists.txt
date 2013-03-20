@@ -17,6 +17,7 @@ SET(SRC
    HazardSensor_MOOSApp.cpp
    HazardSensor_Info.cpp
    HeadingHistory.cpp
+   PostingQueue.cpp
    main.cpp
 )
 

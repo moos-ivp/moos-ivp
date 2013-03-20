@@ -29,31 +29,33 @@ using namespace std;
 //------------------------------------------------------------------
 // Procedure: constructor
 
-VarDataPair::VarDataPair()
+VarDataPair::VarDataPair(double priority)
 {
   m_var       = "";
   m_sdata     = "";
   m_ddata     = 0;
   m_is_string = false;
   m_is_quoted = false;
+  m_priority  = priority;
 }
 
 //------------------------------------------------------------------
 // Procedure: constructor
 
-VarDataPair::VarDataPair(const string& var, double ddata)
+VarDataPair::VarDataPair(const string& var, double ddata, double priority)
 {
   m_var       = stripBlankEnds(var);
   m_sdata     = "";
   m_ddata     = ddata;
   m_is_string = false;
   m_is_quoted = false;
+  m_priority  = priority;
 }
 
 //------------------------------------------------------------------
 // Procedure: constructor
 
-VarDataPair::VarDataPair(const string& var, const string& sdata)
+VarDataPair::VarDataPair(const string& var, const string& sdata, double priority)
 {
   m_var       = stripBlankEnds(var);
   m_sdata     = stripBlankEnds(sdata);
@@ -62,6 +64,7 @@ VarDataPair::VarDataPair(const string& var, const string& sdata)
   m_is_quoted = false;
   if(isQuoted(sdata))
     m_is_quoted = true;
+  m_priority  = priority;
 }
 
 //------------------------------------------------------------------
@@ -70,7 +73,7 @@ VarDataPair::VarDataPair(const string& var, const string& sdata)
 //            meant to represent a numerical value and do the conversion.
 
 VarDataPair::VarDataPair(const string& var, const string& sdata,
-			 const string& hint)
+			 const string& hint, double priority)
 {
   m_var   = stripBlankEnds(var);
   m_ddata = 0;
@@ -94,6 +97,8 @@ VarDataPair::VarDataPair(const string& var, const string& sdata,
       m_sdata = data;
     m_is_string = true;
   }
+
+  m_priority = priority;
 }
 
 //------------------------------------------------------------------
@@ -128,4 +133,16 @@ string VarDataPair::getPrintable()
   return(rstring);
 }
 
+
+// Overload the < operator
+bool operator< (const VarDataPair& pair1, const VarDataPair& pair2)
+{
+  return(pair1.get_priority() > pair2.get_priority());
+}
+
+// Overload the > operator
+bool operator> (const VarDataPair& pair1, const VarDataPair& pair2)
+{
+  return(pair1.get_priority() < pair2.get_priority());
+}
 
