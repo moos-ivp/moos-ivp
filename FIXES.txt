@@ -1,7 +1,0 @@
-
-IVPBEHAVIORS_DIRS
-
-uXMS info: --serverport, --serverhost are the correct parameters
-     info *had* shown that the parameters were server_host and server_port
-
-
