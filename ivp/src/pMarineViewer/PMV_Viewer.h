@@ -50,7 +50,7 @@ class PMV_Viewer : public MarineViewer
   bool  isAppCasting() const;
   void  setActiveScope(std::string);
   bool  isScopeVariable(std::string) const;
-  void  addMousePoke(std::string key, std::string vardata_pair);
+  void  addMousePoke(std::string side, std::string key, std::string vardata_pair);
   void  setLeftMouseKey(std::string key)  {m_left_mouse_key = key;};
   void  setRightMouseKey(std::string key) {m_right_mouse_key = key;};
 

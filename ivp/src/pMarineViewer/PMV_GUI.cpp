@@ -815,7 +815,7 @@ bool PMV_GUI::addMousePoke(string side, string key, string vardata_pair)
   side = tolower(side);
 
   if(side == "left") {
-    mviewer->addMousePoke(key, vardata_pair);
+    mviewer->addMousePoke(side, key, vardata_pair);
     if(!vectorContains(m_left_mouse_keys, key)) {
       if(m_left_mouse_keys.size() == 0) {
 	m_left_mouse_keys.push_back("no-action");
@@ -844,7 +844,7 @@ bool PMV_GUI::addMousePoke(string side, string key, string vardata_pair)
     }
   }
   else if(side == "right") {
-    mviewer->addMousePoke(key, vardata_pair);
+    mviewer->addMousePoke(side, key, vardata_pair);
     if(!vectorContains(m_right_mouse_keys, key)) {
       if(m_right_mouse_keys.size() == 0) {
 	m_right_mouse_keys.push_back("no-action");

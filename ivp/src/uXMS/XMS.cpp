@@ -115,7 +115,7 @@ bool XMS::ConfigureComms()
 
 bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
 {    
-  //AppCastingMOOSApp::OnNewMail(NewMail);
+  AppCastingMOOSApp::OnNewMail(NewMail);
 
   MOOSMSG_LIST::iterator p;
   // First, if m_db_start_time is not set, scan the mail for the
