@@ -1,4 +1,6 @@
-
+------------------------------------------------------------------------------
+13.2.2
+------------------------------------------------------------------------------
 uFldHazardSensor 
   - Re-added the capability to limit classification requests
     based on a fixed interval of time (configured by "min_classify_interval")
@@ -16,7 +18,8 @@ pMarineViewer
 
 
 -------------------------------------------------------------------------------
-
+13.2.1
+------------------------------------------------------------------------------
 BHV_Waypoint - added the wptflag parameter to support user-configured posting of 
    flags upon arriving at each waypoint. This allows easy configuration of a 
    mission where the the vehicle stops and station-keeps at each waypoint for 
