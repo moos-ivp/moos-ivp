@@ -29,7 +29,6 @@
 #include "XYHazard.h"
 #include "HeadingHistory.h"
 #include "VarDataPair.h"
-#include "PostingQueue.h"
 
 class HazardSensor_MOOSApp : public AppCastingMOOSApp
 {
@@ -149,8 +148,6 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   // Info for adding random noise to the sensor report.
   std::string m_rn_algorithm;   // Empty string = no random noise
   double      m_rn_uniform_pct;
-
-  PostingQueue m_vdp_pqueue;
 
   // Visual preferences
   bool        m_show_hazards;
