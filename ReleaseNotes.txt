@@ -4,6 +4,17 @@ uFldHazardSensor
     based on a fixed interval of time (configured by "min_classify_interval")
   - Added ability to switch Pd settings as often as desired.
 
+uXMS 
+  - removed debug output in the --all mode
+  - fixed bug that affected uXMS operation in AppCasting 
+
+pMarineViewer
+  - more robustness checking/handling for edge cases in MOOSGeodesy that was
+    causing pMarineViewer crashes in some Linux distros, e.g., Ubuntu 12.10
+  - fixed bug that caused left/right mouse context collisions when there was
+    a context id shared by both the left and right mouse context config.
+
+
 -------------------------------------------------------------------------------
 
 BHV_Waypoint - added the wptflag parameter to support user-configured posting of 
