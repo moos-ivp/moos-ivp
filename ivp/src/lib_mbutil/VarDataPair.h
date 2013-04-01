@@ -28,20 +28,17 @@
 class VarDataPair
 {
 public:
-  VarDataPair(double priority=0);
+  VarDataPair();
 
   VarDataPair(const std::string& varname, 
-	      double varvalue,
-	      double priority=0);
+	      double varvalue);
 
   VarDataPair(const std::string& varname, 
-	      const std::string& varvalue,
-	      double priority=0);
+	      const std::string& varvalue);
 
   VarDataPair(const std::string& varname, 
 	      const std::string& varvalue, 
-	      const std::string& typehint,
-	      double priority=0);
+	      const std::string& typehint);
 
   virtual ~VarDataPair() {};
   
@@ -49,7 +46,6 @@ public:
   void        set_ptype(const std::string& s) {m_ptype=s;};
   void        set_sdata(const std::string& s) {m_sdata=s; m_is_string=true;};
   void        set_ddata(double v)             {m_ddata=v; m_is_string=false;};
-  void        set_priority(double v)          {m_priority=v;};
 
   std::string get_var()   const {return(m_var);};
   std::string get_sdata() const {return(m_sdata);};
@@ -58,7 +54,6 @@ public:
   bool        is_quoted() const {return(m_is_quoted);};
   std::string get_key()   const {return(m_key);};
   std::string get_ptype() const {return(m_ptype);};
-  double      get_priority() const {return(m_priority);};
 
   std::string getPrintable();
 
@@ -70,13 +65,7 @@ protected:
   bool        m_is_quoted;
   std::string m_key;
   std::string m_ptype;
-
-  double      m_priority;
 };
-
-// Overload the < operator
-bool operator< (const VarDataPair& pair1, const VarDataPair& pair2);
-bool operator> (const VarDataPair& pair1, const VarDataPair& pair2);
 
 #endif 
 
