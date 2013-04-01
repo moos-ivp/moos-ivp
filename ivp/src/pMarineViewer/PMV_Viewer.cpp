@@ -241,8 +241,10 @@ bool PMV_Viewer::setParam(string param, string value)
     m_rclick_ix = atoi(value.c_str());
     handled = true;
   }
-  else if((param == "view_marker") || (param == "marker"))
-    handled = m_geoshapes_map.addGeoShape(param, value, "shoreside");
+  else if((param == "view_marker") || (param == "marker")) {
+    handled = m_geoshapes_map.addGeoShape(toupper(param), value, "shoreside");
+    cout << "Adding marker, handled: " << handled << endl;
+  }
   else if((param == "node_report") || (param == "node_report_local")){
     handled = m_vehiset.setParam(param, value);
     if(handled && (m_centric_view != "") && m_centric_view_sticky) {

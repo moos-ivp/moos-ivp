@@ -426,7 +426,7 @@ bool NodeBroker::buildReport()
   }
   m_msgs << actab.getFormattedString();
 
-  m_msgs << endl;
+  m_msgs << endl << endl;
 
   m_msgs << "Phase Completion Summary:"             << endl;
   m_msgs << "------------------------------------" << endl;

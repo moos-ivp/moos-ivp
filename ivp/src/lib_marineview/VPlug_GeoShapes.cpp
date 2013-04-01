@@ -79,6 +79,10 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
     return(addPolygon(value));
   else if((param ==  "segl") || (param == "seglist"))
     return(addSegList(value));
+  else if((param ==  "marker") || (param == "view_marker")) {
+    cout << "adding marker%%%%%%%%%%: " << value << endl;
+    return(addMarker(value));
+  }
   else if((param ==  "grid") || (param == "xygrid"))
     return(addGrid(value));
   else if(param ==  "convex_grid")

@@ -28,7 +28,7 @@
 class XYHazard
 {
  public:
-  XYHazard();
+  XYHazard(std::string hazard_type="");
   virtual ~XYHazard() {};
 
   // Setters

@@ -426,10 +426,11 @@ void AppCastingMOOSApp::reportUnhandledConfigWarning(const string& orig)
 //----------------------------------------------------------------
 // Procedure: reportRunWarning
 
-void AppCastingMOOSApp::reportRunWarning(const string& str)
+bool AppCastingMOOSApp::reportRunWarning(const string& str)
 {
   m_new_run_warning = true;
   m_ac.runWarning(str);
+  return(false);
 }
 
 //----------------------------------------------------------------

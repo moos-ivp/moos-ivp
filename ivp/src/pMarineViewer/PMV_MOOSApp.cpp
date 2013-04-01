@@ -349,7 +349,8 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     }
 
     if(!handled && !handled_scope) 
-      reportRunWarning("Unhandled Mail: " + key);
+      reportRunWarning("Unhandled Mail: " + key + "=" + sval + " src=" + 
+		       msg.GetSource() + " aux=" + msg.GetSourceAux());
   }
 
   // Part II: Handle Appcasting updates and possible new appcast requests

@@ -1,8 +1,12 @@
-ServerHost = localhost
-ServerPort = 9000
-Simulator  = true
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: charlie.moos
+//-------------------------------------------------
 
+ServerHost   = localhost
+ServerPort   = 9000
 Community    = charlie
+
 MOOSTimeWarp = 1
 LatOrigin    = 43.825300 
 LongOrigin   = -70.330400 

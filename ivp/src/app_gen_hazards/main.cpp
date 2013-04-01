@@ -58,10 +58,10 @@ int main(int argc, char *argv[])
     else if(strBegins(argi, "--polygon=")) {
       string poly_str = argi.substr(10);
       bool ok = generator.addPolygon(poly_str);
-      if(!ok) 
-	cout << "Invalid polygon specified: " << poly_str << endl;
-      else
-	cout << "Proper polygon specified: " << poly_str << endl;
+      if(!ok) {
+	cout << "Invalid/Non-convex polygon specified: " << poly_str << endl;
+	return(0);
+      }
     }
   }
   

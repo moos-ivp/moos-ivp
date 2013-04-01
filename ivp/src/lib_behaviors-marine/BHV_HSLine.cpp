@@ -66,7 +66,8 @@ bool BHV_HSLine::setParam(string param, string val)
 
 void BHV_HSLine::postErasableSegList()
 {
-  postMessage("VIEW_SEGLIST", m_seglist.get_spec("active=false"));
+  if(m_seglist.size() > 0)
+    postMessage("VIEW_SEGLIST", m_seglist.get_spec("active=false"));
 }
 
 

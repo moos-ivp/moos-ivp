@@ -83,8 +83,8 @@ ProcessConfig = uFldHazardMetric
   penalty_max_time_over = 100    
   penalty_max_time_rate = 0.05 
 
-  //hazard_file   = hazards_lab14.txt
-  hazard_file   = hazards.txt
+  hazard_file   = hazards_lab14.txt
+  //hazard_file   = hazards.txt
 }
 
 //--------------------------------------------------
@@ -96,7 +96,7 @@ ProcessConfig = uFldHazardSensor
   CommsTick     = 4
 
   //max_appcast_events = 20
-  MAX_APPcAST_EVENTS = 20
+  MAX_APPCAST_EVENTS = 20
 
   sensor_config = width=25, exp=4, pclass=0.85
   sensor_config = width=50, exp=2, pclass=0.60
@@ -122,8 +122,8 @@ ProcessConfig = uFldHazardSensor
   show_detections=60
 
 
-  hazard_file   = hazards.txt
-  //hazard_file   = hazards_lab14.txt
+  //hazard_file   = hazards.txt
+  hazard_file   = hazards_lab14.txt
 }
 
 //--------------------------------------------------------
@@ -140,7 +140,8 @@ ProcessConfig = pMarineViewer
   vehicles_name_mode   = names+shortmode
   marker_viewable_labels = false
 
-  appcast_width = 30
+  appcast_width  = 30
+  appcast_height = 80
 
   appcast_viewable     = true
   appcast_color_scheme = indigo

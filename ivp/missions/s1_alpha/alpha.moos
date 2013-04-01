@@ -1,4 +1,7 @@
-l// Alpha Configuration file: M. Benjamin
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: bravo.moos
+//-------------------------------------------------
 
 ServerHost = localhost
 ServerPort = 9005

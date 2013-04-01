@@ -19,11 +19,13 @@ uFldHazardSensor
 uFldHazardMetric
   - Fixed a bug in initializing the normalized score range.
 
+
 TODO
 -----------------
 uXMS
   - should have an optional config where (S) (T) (C) are not shown, to maximize 
     column width for the value info
+
 
 
 ------------------------------------------------------------------------------

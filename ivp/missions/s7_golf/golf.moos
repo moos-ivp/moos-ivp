@@ -1,6 +1,5 @@
 //-------------------------------------------------
-// NAME: M. Benjamin
-// ORGN: NAVSEA Newport RI and MIT Cambridge MA
+// NAME: M. Benjamin, MIT CSAIL
 // FILE: golf.moos
 // DATE: Aug 2010
 //-------------------------------------------------
@@ -26,11 +25,11 @@ ProcessConfig = ANTLER
   Run = uSimMarine      @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = true
-  Run = pHelmIvP        @ NewConsole = true
-  Run = pLogger         @ NewConsole = true
-  Run = uTimerScript    @ NewConsole = true
-  Run = pSafetyRetreat  @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
+  Run = pSafetyRetreat  @ NewConsole = false
 }
 
 //------------------------------------------

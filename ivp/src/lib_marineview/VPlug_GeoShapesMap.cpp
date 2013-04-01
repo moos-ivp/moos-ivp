@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include "VPlug_GeoShapesMap.h"
 
 using namespace std;
@@ -56,13 +57,15 @@ void VPlug_GeoShapesMap::clear(const string& vname)
 //----------------------------------------------------------------
 // Procedure: addGeoShape()
 
-bool VPlug_GeoShapesMap::addGeoShape(const string& param, 
+bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig, 
 				     const string& value, 
 				     const string& vname,
 				     double timestamp)
 {
   bool handled = false;
   unsigned int starting_map_size = m_geoshapes_map.size();
+
+  string param = toupper(param_orig);
 
   if(param == "VIEW_POINT")
     handled = m_geoshapes_map[vname].addPoint(value);
@@ -78,8 +81,10 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param,
     handled = m_geoshapes_map[vname].addRangePulse(value, timestamp);
   else if(param == "VIEW_COMMS_PULSE")
     handled = m_geoshapes_map[vname].addCommsPulse(value, timestamp);
-  else if((param == "VIEW_MARKER") || (param == "MARKER"))
+  else if((param == "VIEW_MARKER") || (param == "MARKER")) {
+    cout << "Adding marker*****: " << value << endl;
     handled = m_geoshapes_map[vname].addMarker(value);
+  }
   else if(param == "GRID_CONFIG")
     handled = m_geoshapes_map[vname].addGrid(value);
   else if(param == "GRID_DELTA")

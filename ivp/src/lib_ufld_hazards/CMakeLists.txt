@@ -9,6 +9,8 @@ SET(SRC
   XYHazard.cpp
   XYHazardSet.cpp
   XYHazardRepEval.cpp
+  ClassifyQueue.cpp
+  ClassifyEntry.cpp
 )
 
 SET(HEADERS
@@ -17,6 +19,8 @@ SET(HEADERS
   XYHazard.h
   XYHazardSet.h
   XYHazardRepEval.h
+  ClassifyQueue.h
+  ClassifyEntry.h
 )
 
 # Build Library

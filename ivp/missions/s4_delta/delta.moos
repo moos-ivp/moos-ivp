@@ -1,8 +1,6 @@
 //-------------------------------------------------
-// NAME: M. Benjamin
-// ORGN: NAVSEA Newport RI and MIT Cambridge MA
+// NAME: M. Benjamin, MIT CSAIL
 // FILE: delta.moos
-// DATE: Dec 12th 2009
 //-------------------------------------------------
 
 ServerHost = localhost

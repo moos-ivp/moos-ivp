@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pTestClassifyQueue config block
+
+ProcessConfig = pTestClassifyQueue
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

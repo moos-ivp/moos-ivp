@@ -42,7 +42,7 @@ bool XYFieldGenerator::addPolygon(string spec)
 {
   XYPolygon poly = string2Poly(spec);
   
-  if(!poly.valid())
+  if(!poly.is_convex())
     return(false);
   
   m_polygons.push_back(poly);

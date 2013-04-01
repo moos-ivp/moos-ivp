@@ -1,4 +1,7 @@
-// Level 2 Configuration file: M. Benjamin
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: echo.moos
+//-------------------------------------------------
 
 ServerHost = localhost
 ServerPort = 9000
@@ -35,12 +38,12 @@ ProcessConfig = uXMS
   AppTick   = 4
   CommsTick = 4
   
-  var = BHV_STATUS
-  var = HVARS
-  var = BCOUNT
-  var = TBCOUNT
-  var = LEN
-  var = HITER
+  var = IVPHELM_ITER
+  var = IVPHELM_DOMAIN
+  var = IVPHELM_BHV_CNT
+  var = IVPHELM_BHV_CNT_EVER
+  var = IVPHELM_ALLSTOP
+  var = IVPHELM_STATE
 
   refresh_mode = streaming
   history_var = BHV_STATUS

@@ -29,6 +29,7 @@
 #include "XYHazard.h"
 #include "HeadingHistory.h"
 #include "VarDataPair.h"
+#include "ClassifyQueue.h"
 
 class HazardSensor_MOOSApp : public AppCastingMOOSApp
 {
@@ -67,10 +68,8 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   bool    handleSensorConfig(const std::string&, const std::string&);
 
  protected: // Outgoing mail utility
-  void    addQueueMessage(const std::string&, const std::string&, const std::string&);
-  void    postQueueMessages();
+  void    processClassifyQueue();
   void    postHazardDetectionReport(std::string hlabel, std::string vname);
-  void    postHazardClassifyReport(std::string hlabel, std::string vname);
 
  protected: // Utilities
   bool    updateVehicleHazardStatus(unsigned int vix, std::string);
@@ -82,7 +81,6 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   void    updateSwathGeometry();
   void    calcSwathGeometry(double, double&, double&);
   void    postConfigurationAck(std::string vname);
-
 
   unsigned int sensorSwathCount(double, std::string vname);
 
@@ -126,8 +124,8 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   std::map<std::string, unsigned int> m_map_classify_answ;
 
   // Limited-Frequency msgs to be posted to the MOOSDB
-  std::map<std::string, std::list<VarDataPair> >  m_map_msgs_queued;
-  std::map<std::string, double>                   m_map_msg_last_queue_time;
+  std::map<std::string, ClassifyQueue>            m_map_classify_queue;
+  std::map<std::string, double>                   m_map_classify_last_time;
 
  protected: // Configuration variables
   double      m_min_reset_interval;

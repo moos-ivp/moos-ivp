@@ -137,7 +137,6 @@ void HazardSensor_MOOSApp::registerVariables()
 
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("UHZ_SENSOR_REQUEST", 0);
-  m_Comms.Register("UHZ_SENSOR_CLEAR", 0);
   m_Comms.Register("UHZ_CLASSIFY_REQUEST", 0);
   m_Comms.Register("UHZ_CONFIG_REQUEST", 0);
   m_Comms.Register("PMV_CONNECT", 0);
@@ -158,7 +157,7 @@ bool HazardSensor_MOOSApp::Iterate()
     m_last_summary_time = m_curr_time;
   }
 
-  postQueueMessages();
+  processClassifyQueue();
 
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -562,50 +561,100 @@ bool HazardSensor_MOOSApp::handleSensorClear(const string& request)
 
 bool HazardSensor_MOOSApp::handleClassifyRequest(const string& request)
 {
-  string vname, hlabel;
-  
-  // Part 1: Parse the string request
+  string vname, haz_label, action, priority = "50";
+
+  // Part 1: Parse the string request and announce the request in an event
   vector<string> svector = parseString(request, ',');
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) {
-    string param = tolower(stripBlankEnds(biteString(svector[i], '=')));
-    string value = stripBlankEnds(svector[i]);
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = svector[i];
     if(param == "vname")
       vname = value;
     else if(param == "label")
-      hlabel = value;
+      haz_label = value;
+    else if(param == "priority")
+      priority = value;
+    else if(param == "action")
+      action = value;
   }
 
-  // Part 2: Sanity check
-  if(vname == "") {
-    reportRunWarning("Sensor classify request with null vehicle name");
-    return(false);
+  if((action == "clear") && (m_map_classify_queue.count(vname) != 0)) {
+    m_map_classify_queue[vname].clear();
+    reportEvent("Classify Queue cleared for " + vname);
+    return(true);
   }
-
-  if(hlabel == "") {
-    reportRunWarning("Sensor classify request with null label");
-    return(false);
-  }
+  
 
   // Note we dont include the label number to avoid bloating the event list
   reportEvent("Sensor classify request received from: " + vname);
+  m_map_classify_reqs[vname]++;
 
-  // Part 3: check whether there is a new classification result that may
-  //         possibly be made. A new class result may be generated each 
-  //         time a pass has been made over the hazard
-  unsigned int queries = m_map_hazard_class_queries[hlabel];
-  unsigned int hits    = m_map_hazard_hits[hlabel];
+  // Part 2: Sanity checks
+  if(vname == "") 
+    return(reportRunWarning("Classify request with null vehicle name"));
+  if(haz_label == "") 
+    return(reportRunWarning("Classify request with null label"));
+  if(!isNumber(priority))
+    return(reportRunWarning("Classify request with bad priority:" + priority));
+  if(m_map_hazards.count(haz_label) == 0) 
+    return(reportRunWarning(vname+" class req for unknown haz label:"+haz_label));
+  if(m_map_prob_classify.count(vname) == 0)
+    return(reportRunWarning("Error: No classifier config info for: " + vname));
+
+  // Part 3: check if a new classify req may be made. A new class req may be 
+  //         accepted each time a pass has been made over the hazard
+  unsigned int queries = m_map_hazard_class_queries[haz_label];
+  unsigned int hits    = m_map_hazard_hits[haz_label];
   unsigned int unclassified_hits = 0;
   if(hits > queries)
     unclassified_hits = hits - queries;
-  if(unclassified_hits == 0) {
-    reportRunWarning("Sensor classify request saturated: " + vname);
-    return(false);
-  }
+  if(unclassified_hits == 0) 
+    return(reportRunWarning("Sensor classify request saturated: " + vname));
 
-  // Part 4: go ahead and post the classify report
-  m_map_classify_reqs[vname]++;
-  postHazardClassifyReport(hlabel, vname);  // classify dice inside
+  // Part 4: Get hazard type info, classify probability, and roll the dice
+  XYHazard true_hazard = m_map_hazards[haz_label];
+  bool     is_hazard   = (true_hazard.getType() == "hazard");
+
+  double prob_classify = m_map_prob_classify[vname];
+  double pc_prime      = prob_classify;
+
+  if((!is_hazard) && true_hazard.hasResemblance()) {
+    double resemblance = true_hazard.getResemblance();
+    pc_prime += (1-prob_classify) * (1-resemblance);
+  }
+    
+  // role the classification dice. 
+  int rand_int = rand() % 10000;
+  int thresh   = (pc_prime * 10000) + 1;
+  if(rand_int > thresh)
+    is_hazard = !is_hazard;
+
+  // Part 5: Build the report to be added to the classify queue
+  XYHazard post_hazard = true_hazard;
+  if(is_hazard) 
+    post_hazard.setType("hazard");
+  else 
+    post_hazard.setType("benign");
+  string hazard_spec = post_hazard.getSpec("hr,color,shape,width,xpos,ypos");
+
+  // Part 6: Create an entry for the classify queue and push it on...
+  ClassifyEntry entry;
+  entry.setHazard(post_hazard);
+  entry.setPriority(atof(priority.c_str()));
+
+  bool clock_reset = false;
+  if(m_map_classify_queue[vname].size() == 0)
+    clock_reset = true;
+
+  if(action == "top") {
+    m_map_classify_queue[vname].pushTop(entry);
+    clock_reset = true;
+  }
+  else
+    m_map_classify_queue[vname].push(entry);  
+
+  if(clock_reset)
+    m_map_classify_last_time[vname] = m_curr_time;
 
   return(true);
 }
@@ -659,70 +708,61 @@ bool HazardSensor_MOOSApp::handleSensorConfig(const string& config,
     return(setVehicleSensorSetting(vname, d_width, d_pd));
 }
 
-
-
-//---------------------------------------------------------
-// Procedure: addQueueMessage()
-
-void HazardSensor_MOOSApp::addQueueMessage(const string& vname,
-					   const string& varname,
-					   const string& value)
-{
-  // If this is the first entry in the queue for this vehicle, set the timestamp
-  // for this vehicle to the present time. To ensure even the first element in 
-  // the queue has the proper delay.
-  if(m_map_msgs_queued[vname].size() == 0)
-    m_map_msg_last_queue_time[vname] = m_curr_time;
-
-  VarDataPair pair(varname, value);
-  m_map_msgs_queued[vname].push_back(pair);
-}
-
-
 //------------------------------------------------------------
-// Procedure: postQueueMessages
+// Procedure: processClassifyQueue
 
-void HazardSensor_MOOSApp::postQueueMessages()
+void HazardSensor_MOOSApp::processClassifyQueue()
 {
-  map<string, list<VarDataPair> >::iterator p;
-  for(p=m_map_msgs_queued.begin(); p!=m_map_msgs_queued.end(); p++) {
+  map<string, ClassifyQueue>::iterator p;
+  for(p=m_map_classify_queue.begin(); p!=m_map_classify_queue.end(); p++) {
     string vname = p->first;
 
-    //  Calculate the last time since a msg was popped for this vehicle.
-    double elapsed = m_curr_time - m_map_msg_last_queue_time[vname];
+    //  Part 1: Determine if an entry is to be popped for this vehicle.
+    if(m_map_classify_last_time[vname] == 0)
+      m_map_classify_last_time[vname] = m_curr_time;
+
+    double elapsed = m_curr_time - m_map_classify_last_time[vname];
     if(elapsed < m_min_queue_msg_interval) 
       continue;
-    
-    if(m_map_msgs_queued[vname].size() == 0) 
+    if(m_map_classify_queue[vname].size() == 0) 
       continue;
+    m_map_classify_last_time[vname] = m_curr_time;
 
-    // Ok, this vehicle is due for a message, so we're going to pop N=3 of them
-    // We assume each classify report consists of three messages:
-    // UHZ_CLASSIFY_REPORT, UHZ_CLASSIFY_REPORT_VNAME, VIEW_CIRCLE
-    bool message_popped = false;
-    for(unsigned int i=0; i<3; i++) {
-      if(m_map_msgs_queued[vname].size() != 0) {
-	message_popped = true;
-	
-	VarDataPair message = m_map_msgs_queued[vname].front();
-	m_map_msgs_queued[vname].pop_front();
-	
-	string varname = message.get_var();
-	if(message.is_string())
-	  m_Comms.Notify(varname, message.get_sdata());
-	else
-	  m_Comms.Notify(varname, message.get_ddata());      
-	if(strBegins(varname, "UHZ_HAZARD_REPORT_")) {
-	  m_map_classify_answ[vname]++;
-	  reportEvent(varname + " posted");
-	}
+    // Part 2: Get the entry
+    ClassifyEntry entry = m_map_classify_queue[vname].pop();
+
+    // Part 3: Build and post the vehicle specific hazard report
+    string spec = entry.getHazard().getSpec();
+    Notify("UHZ_HAZARD_REPORT_"+toupper(vname), spec);
+    m_map_classify_answ[vname]++;
+    reportEvent(vname + " classify answer posted");
+    
+    // Part 4: Build and post the general hazard report
+    string full_spec = "vname=" + vname + "," + spec;
+    Notify("UHZ_HAZARD_REPORT", full_spec);
+
+    // Part 5: Build/Post visual artifacts using VIEW_CIRCLE
+    if((m_circle_duration == -1) || (m_circle_duration > 0)) {
+      XYHazard post_hazard = entry.getHazard();
+      bool is_hazard = (tolower(post_hazard.getType()) == "hazard");
+      XYCircle circ(post_hazard.getX(), post_hazard.getY(), 10);
+      if(is_hazard) {
+	circ.set_color("edge", "yellow");
+	circ.set_color("fill", "yellow");
       }
-    }    
-
-    // Only update timestamp if there was actually something in the queue
-    if(message_popped)
-      m_map_msg_last_queue_time[vname] = m_curr_time;
-  }
+      else {
+	circ.set_color("edge", "green");
+	circ.set_color("fill", "green");
+      }
+      //circ.set_label(label);
+      circ.set_vertex_size(0);
+      circ.set_edge_size(1);
+      circ.set_transparency(0.3);
+      circ.set_time(m_curr_time);
+      // circ.setDuration(m_circle_duration);
+      Notify("VIEW_CIRCLE", circ.get_spec());      
+    }
+  }    
 }
 
 
@@ -821,93 +861,6 @@ void HazardSensor_MOOSApp::postHazardDetectionReport(string hazard_label,
   }
 }
 
-
-
-
-//------------------------------------------------------------
-// Procedure: postHazardClassifyReport()
-//     Notes: Example postings:
-//            UHZ_HAZARD_REPORT_GILDA = "x=-125,y=-143,type=benign,
-//                               label=517,hazard=false"
-
-void HazardSensor_MOOSApp::postHazardClassifyReport(string hazard_label, 
-						    string vname)
-{
-  // Part 1: Sanity checking
-  if(m_map_hazards.count(hazard_label) == 0) {
-    reportRunWarning("Error: Unknown hazard label");
-    return;
-  }
-  
-  if(m_map_prob_classify.count(vname) == 0) {
-    reportRunWarning("Error: No classifier info for: " + vname);
-    return;
-  }
-    
-  // Part 2: Get the hazard type info and do classification
-  XYHazard raw_hazard = m_map_hazards[hazard_label];
-  string   htype      = raw_hazard.getType();
-  bool     is_hazard  = (htype == "hazard");
-
-  double prob_classify = m_map_prob_classify[vname];
-  double pc_prime      = prob_classify;
-
-  if((!is_hazard) && raw_hazard.hasResemblance()) {
-    double resemblance = raw_hazard.getResemblance();
-    pc_prime += (1-prob_classify) * (1-resemblance);
-  }
-    
-  // Here's where we role the classification dice. 
-  int rand_int = rand() % 10000;
-  int thresh   = (pc_prime * 10000) + 1;
-  if(rand_int > thresh)
-    is_hazard = !is_hazard;
-  // Done rolling the dice and applying the consequences
-
-
-  // Part 3: Build the report to be posted locally and eventually
-  //         out to the source vehicle.
-
-  XYHazard post_hazard = raw_hazard;
-  if(is_hazard) 
-    post_hazard.setType("hazard");
-  else
-    post_hazard.setType("benign");
-  string hazard_spec = post_hazard.getSpec("hr,color,shape,width,xpos,ypos");
-
-  string full_str = "vname=" + vname + "," + hazard_spec;
-
-
-  addQueueMessage(vname, "UHZ_HAZARD_REPORT", full_str);
-  addQueueMessage(vname, "UHZ_HAZARD_REPORT_"+toupper(vname), hazard_spec);
-
-  // Part 4: Build some event messages/info.
-  reportEvent("Classify report queued to vehicle: " + vname);
-  m_map_detections[vname]++;
-
-  // Part 5: Build/Post some visual artifacts using VIEW_CIRCLE
-  if((m_circle_duration == -1) || (m_circle_duration > 0)) {
-    double haz_x = raw_hazard.getX();
-    double haz_y = raw_hazard.getY();
-    //string label = raw_hazard.getLabel();
-    XYCircle circ(haz_x, haz_y, 10);
-    if(is_hazard) {
-      circ.set_color("edge", "yellow");
-      circ.set_color("fill", "yellow");
-    }
-    else {
-      circ.set_color("edge", "green");
-      circ.set_color("fill", "green");
-    }
-    //circ.set_label(label);
-    circ.set_vertex_size(0);
-    circ.set_edge_size(1);
-    circ.set_transparency(0.3);
-    circ.set_time(m_curr_time);
-    //    circ.setDuration(m_circle_duration);
-    addQueueMessage(vname, "VIEW_CIRCLE", circ.get_spec());
-  }
-}
 
 //------------------------------------------------------------
 // Procedure: updateVehicleHazardStatus

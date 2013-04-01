@@ -30,7 +30,7 @@ using namespace std;
 //-----------------------------------------------------------
 // Constructor
 
-XYHazard::XYHazard()
+XYHazard::XYHazard(string hazard_type)
 {
   m_x     = 0;
   m_y     = 0;
@@ -40,7 +40,12 @@ XYHazard::XYHazard()
   m_hr_set = false;
   m_x_set  = false;
   m_y_set  = false;
-  m_type_set = false;
+  
+  m_type = hazard_type;
+  if(hazard_type != "")
+    m_type_set = true;
+  else
+    m_type_set = false;
 }
 
 //-----------------------------------------------------------

@@ -1,11 +1,14 @@
-// Level 2 Configuration file: M. Benjamin
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: foxtrot.moos
+//-------------------------------------------------
 
 ServerHost = localhost
 ServerPort = 9000
 
 Community  = alpha
 
-MOOSTimeWarp = 3
+MOOSTimeWarp = 1
 
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
@@ -17,10 +20,10 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  Run = uSimMarine      @ NewConsole = true
+  Run = uSimMarine      @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
-  Run = pMarinePID      @ NewConsole = true
-  Run = pMarineViewer   @ NewConsole = true
+  Run = pMarinePID      @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
 }
 
@@ -117,8 +120,8 @@ ProcessConfig = pMarineViewer
   
   //oparea_viewable_all = true
 
-  marker_viewable_all = false
-  marker_scale = 4.0
+  marker_viewable_all = true
+  marker_scale = 1.0
 
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
@@ -127,15 +130,6 @@ ProcessConfig = pMarineViewer
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
   action  = RETURN=true
-
-  // Off the map for getting a screen capture
-  //marker = type=triangle,x=100,y=100,label=lobster_pot,color=orange,width=5
-  //marker = type=square  ,x=120,y=100,label=home,color=blue,width=5
-  //marker = type=circle,  x=140,y=100,label=rock1,color=brown,width=5
-  //marker = type=diamond, x=160,y=100,label=hazard,color=red,width=5
-  //marker = type=efield,  x=180,y=100,label=hazard,color=black,width=5
-  //marker = type=gateway, x=200,y=100,label=hazard,color=dark_green,width=5
-
 
   marker = type=triangle,x=100,y=0,label=lobster_pot,color=orange,width=5
   marker = type=square,x=-20,y=35,label=home,color=blue,width=3
@@ -149,7 +143,7 @@ ProcessConfig = pMarineViewer
   marker = type=efield,x=122,y=-162,label=efield,color=green,width=5
   marker = type=gateway,x=32,y=-156,label=gateway,color=light_blue,width=5
 
-  // SWAMSI OP-AREA
+  // Example OP-AREA
   op_vertex = x=-10, y=10,lwidth=1,lcolor=yellow,looped=true,group=soa
   op_vertex = x=-10, y=-165,lwidth=1,lcolor=yellow,looped=true,group=soa
   op_vertex = x=195, y=-165,lwidth=1,lcolor=yellow,looped=true,group=soa

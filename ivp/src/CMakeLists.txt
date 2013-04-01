@@ -216,6 +216,7 @@ SET(IVP_NON_GUI_APPS
   pBasicContactMgr
   pNodeReporter
   pSafetyRetreat
+  pTestClassifyQueue
   uFldPathCheck
   uFldShoreBroker
   uFldMessageHandler

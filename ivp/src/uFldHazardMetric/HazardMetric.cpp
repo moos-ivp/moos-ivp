@@ -158,6 +158,9 @@ bool HazardMetric::OnStartUp()
       reportUnhandledConfigWarning(orig);
   }
 
+  m_worst_possible_score = m_penalty_false_alarm   * m_hazards.getBenignCnt();
+  m_worst_possible_score += m_penalty_missed_hazard * m_hazards.getHazardCnt();
+
   registerVariables();	
   return(true);
 }
@@ -215,9 +218,6 @@ bool HazardMetric::processHazardFile(string filename)
   if(m_hazards.getSource() == "")
     m_hazards.setSource(filename);
   
-  m_worst_possible_score += m_penalty_false_alarm   * m_hazards.getBenignCnt();
-  m_worst_possible_score += m_penalty_missed_hazard * m_hazards.getHazardCnt();
-
   return(true);
 }
 
