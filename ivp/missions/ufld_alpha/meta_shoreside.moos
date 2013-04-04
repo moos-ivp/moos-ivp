@@ -2,8 +2,8 @@
 // ShoreSide Configuration File
 
 ServerHost = localhost
-ServerPort = $(SPORT)
-Community  = $(SNAME)
+ServerPort = 9000
+Community  = shoreside
 
 #include plug_origin_warp.moos
   
@@ -13,10 +13,8 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = uFldPathCheck   @ NewConsole = false
 
   Run = pShare          @ NewConsole = false
   Run = pHostInfo       @ NewConsole = false
@@ -25,7 +23,18 @@ Processconfig = ANTLER
 }
 
 #include plug_pHostInfo.moos
-#include plug_pShare.moos
+
+//---------------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route = localhost:9300 & multicast_9
+}
+
 
 //--------------------------------------------------
 // uFldNodeComms Configuration Block
@@ -39,7 +48,6 @@ ProcessConfig = uFldNodeComms
         CRITICAL_RANGE = 25
       MIN_MSG_INTERVAL = 20
         MAX_MSG_LENGTH = 100
-                GROUPS = true
   VIEW_NODE_RPT_PULSES = true
 }
 
@@ -57,37 +65,7 @@ ProcessConfig = uFldShoreBroker
  
   BRIDGE  = src=RETURN_ALL, alias=RETURN
   BRIDGE  = src=RETURN_$V,  alias=RETURN
-  BRIDGE  = src=UP_LOITER_$N, alias=UP_LOITER
 }
-
-//--------------------------------------------------
-// uFldPathCheck Configuration Block
-
-ProcessConfig = uFldPathCheck                                   
-{                                                               
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-                                                                
-  HISTORY_LENGTH = 10   // The default                          
-}              
-
-//--------------------------------------------------
-// uFldScope Configuration Block
-
-ProcessConfig = uFldScope                                       
-{                                                               
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-                                                                
-  SCOPE = var=NODE_REPORT,key=NAME,fld=TIME,alias=Time                   
-  SCOPE = var=NODE_REPORT,key=NAME,fld=MODE                    
-  SCOPE = var=UPC_SPEED_REPORT,key=vname,fld=avg_spd,alias=speed  
-  SCOPE = var=UPC_ODOMETRY_REPORT,key=vname,fld=trip_dist           
-  SCOPE = var=UPC_ODOMETRY_REPORT,key=vname,fld=total_dist          
-                                                                
-  LAYOUT = trip_dist, total_dist                                
-  LAYOUT = MODE, speed, Time                                    
-}                             
 
 //--------------------------------------------------
 // pLogger Configuration Block
@@ -126,56 +104,9 @@ ProcessConfig = pMarineViewer
 
   SCOPE = PHI_HOST_INFO
 
-  ACTION  = NODE_MESSAGE=src_node=ike,dest_group=GROUP12,var_name=FOOBAR,string_val=hello
-  ACTION  = NODE_MESSAGE=src_node=ike,dest_group=GROUP12,var_name=FOOBAR,string_val=hello_verylongmessage
-
-  ACTION = PERMUTING = true
-  ACTION = PERMUTING = false
-
-  ACTION = STATION_ALL = false
-  ACTION = STATION_ALL = true
-
-  ACTION = UNC_STEALTH = gilda,0.8
-
   BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
   BUTTON_ONE   = RETURN_ALL=false
   BUTTON_TWO   = RETURN  # RETURN_ALL=true
-  BUTTON_THREE = PERMUTE-NOW   # UTS_FORWARD=0
-  BUTTON_FOUR  = MSG_TEST # NODE_MESSAGE=src_node=ike,dest_group=GROUP12,var_name=FOOBAR,string_val=hello
 }
 
-//--------------------------------------------------------
-// uTimerScript Configuration Block
-
-ProcessConfig = uTimerScript
-{
-  AppTick   = 4
-  CommsTick = 4
-  
-  PAUSED     = false
-  RESET_MAX  = unlimited
-  RESET_TIME = end
-
-  RANDVAR = varname=X1, min=-30,  max=20,   key=at_reset
-  RANDVAR = varname=Y1, min=-100, max=-50,  key=at_reset
-
-  RANDVAR = varname=X2, min=100,  max=150,  key=at_reset
-  RANDVAR = varname=Y2, min=-100, max=-50,  key=at_reset
-
-  RANDVAR = varname=X3, min=-30,  max=20,   key=at_reset
-  RANDVAR = varname=Y3, min=-210, max=-160, key=at_reset
-
-  RANDVAR = varname=X4, min=100,  max=150,  key=at_reset
-  RANDVAR = varname=Y4, min=-210, max=-160, key=at_reset
-
-  EVENT = var=UP_LOITER_4, val="center_assign=$[X4],$[Y4]", time=180 
-  EVENT = var=UP_LOITER_3, val="center_assign=$[X3],$[Y3]", time=180
-  EVENT = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=180 
-  EVENT = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=180
-
-  EVENT = var=UP_LOITER_4, val="center_assign=$[X1],$[Y1]", time=360 
-  EVENT = var=UP_LOITER_3, val="center_assign=$[X2],$[Y2]", time=360
-  EVENT = var=UP_LOITER_2, val="center_assign=$[X3],$[Y3]", time=360 
-  EVENT = var=UP_LOITER_1, val="center_assign=$[X4],$[Y3]", time=360
-}
