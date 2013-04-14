@@ -1147,6 +1147,7 @@ void HazardSensor_MOOSApp::sortSensorProperties()
   vector<double> new_sensor_prop_width;
   vector<double> new_sensor_prop_exp;
   vector<double> new_sensor_prop_class;
+  vector<unsigned int> new_sensor_prop_max;
 
   unsigned int i, j, vsize = m_sensor_prop_width.size();
   vector<bool> v_hit(vsize, false);
@@ -1166,11 +1167,13 @@ void HazardSensor_MOOSApp::sortSensorProperties()
     new_sensor_prop_width.push_back(m_sensor_prop_width[min_index]);
     new_sensor_prop_exp.push_back(m_sensor_prop_exp[min_index]);
     new_sensor_prop_class.push_back(m_sensor_prop_class[min_index]);
+    new_sensor_prop_max.push_back(m_sensor_prop_max[min_index]);
   }
 
   m_sensor_prop_width = new_sensor_prop_width;
   m_sensor_prop_exp   = new_sensor_prop_exp;
   m_sensor_prop_class = new_sensor_prop_class;
+  m_sensor_prop_max   = new_sensor_prop_max;
 }
 
 
