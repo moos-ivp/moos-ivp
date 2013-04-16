@@ -189,7 +189,7 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
       m_term_reporting = false;
       cout << "Terminal reports suppressed";
     }
-    else if(term_reporting != "")
+    else if(!MOOSStrCmp(term_reporting, "true"))
       reportConfigWarning("Invalid value for TERM_REPORTING: " + term_reporting);
   }
 
@@ -271,7 +271,7 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
 
   // Use isatty to detect if stdout is going to /dev/null/
   // If so, set m_term_reporting to false.
-  if(isatty(1) == 0)
+  if(!MOOSStrCmp(term_reporting, "true") && (isatty(1) == 0))
     m_term_reporting = false;
   
   return(return_value);
