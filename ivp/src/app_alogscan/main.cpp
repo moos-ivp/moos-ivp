@@ -76,6 +76,7 @@ int main(int argc, char *argv[])
 
   string alogfile = "";
   for(int i=1; i<argc; i++) {
+    string orig = argv[i];
     string sarg = tolower(argv[i]);
     string sort = "";
     if(!strncmp(sarg.c_str(), "--sort=", 7)) {
@@ -84,7 +85,7 @@ int main(int argc, char *argv[])
     }
 
     if(strContains(sarg, ".alog"))
-      alogfile = sarg;
+      alogfile = orig;
     else if((sarg == "-c") || (sarg == "--chars") || (sort == "chars"))
       sort_style = "bychars_ascending";
     else if((sarg == "-l") || (sarg == "--lines") || (sort == "lines"))
