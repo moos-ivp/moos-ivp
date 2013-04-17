@@ -28,7 +28,7 @@
 class XYHazard
 {
  public:
-  XYHazard(std::string hazard_type="");
+  XYHazard();
   virtual ~XYHazard() {};
 
   // Setters
@@ -39,6 +39,7 @@ class XYHazard
   void    setType(std::string v)       {m_type=v; m_type_set=true;};
   void    setSource(std::string v)     {m_source=v;};
 
+  bool    setAspect(double v);
   bool    setShape(std::string);
   bool    setWidth(std::string);
   bool    setColor(std::string);
@@ -48,8 +49,10 @@ class XYHazard
   double  getY() const               {return(m_y);};
   double  getWidth() const           {return(m_width);};
   double  getResemblance() const     {return(m_hr);};
+  double  getAspect() const     {return(m_aspect);};
 
   bool    hasResemblance() const     {return(m_hr_set);};
+  bool    hasAspect() const          {return(m_aspect_set);};
   bool    valid() const              {return(m_x_set && m_y_set);};
 
   std::string getLabel() const       {return(m_label);};
@@ -69,9 +72,11 @@ class XYHazard
   double       m_x;
   double       m_y;
   double       m_hr;
+  double       m_aspect;
   bool         m_x_set;
   bool         m_y_set;
   bool         m_hr_set;
+  bool         m_aspect_set;
   bool         m_type_set;
   std::string  m_label;
   std::string  m_source;
