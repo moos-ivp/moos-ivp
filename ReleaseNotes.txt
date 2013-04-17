@@ -19,6 +19,10 @@ uFldHazardSensor
 uFldHazardMetric
   - Fixed a bug in initializing the normalized score range.
 
+alogscan
+  - Fixed bug where alog file name was converted to lower case and thus not 
+    working in Linux.
+
 TODO
 -----------------
 uXMS

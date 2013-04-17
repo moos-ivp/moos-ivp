@@ -29,8 +29,8 @@ ProcessConfig = pLogger
 
 ProcessConfig = pXRelay_APPLES
 {
-  AppTick	= 25
-  CommsTick	= 25
+  AppTick	= 1
+  CommsTick	= 1
 
   INCOMING_VAR  = APPLES
   OUTGOING_VAR  = PEARS
@@ -41,8 +41,8 @@ ProcessConfig = pXRelay_APPLES
 
 ProcessConfig = pXRelay_PEARS
 {
-  AppTick	= 25
-  CommsTick	= 25
+  AppTick	= 1
+  CommsTick	= 1
 
   INCOMING_VAR  = PEARS
   OUTGOING_VAR  = APPLES
