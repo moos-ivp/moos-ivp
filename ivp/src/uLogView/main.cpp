@@ -23,6 +23,7 @@
 #include <iostream>
 #include "ULV_MOOSApp.h"
 #include "ULV_GUI.h"
+#include "ULV_Info.h"
 #include "LauncherULV.h"
 #include "MBUtils.h"
 #include "ReleaseInfo.h"
@@ -32,62 +33,40 @@
 
 using namespace std;
 
-// ----------------------------------------------------------
-// global variables here
-//
-
-Threadsafe_pipe<MOOS_event> g_pending_moos_events;
-ULV_GUI *gui = 0;
-
-
-//--------------------------------------------------------
-// Procedure: exit_with_usage
-
-void exit_with_usage()
-{
-  cout << "Usage: pXMarineViewer file.alog" << endl;
-  exit(-1);
-}
-
-//--------------------------------------------------------
-// Procedure: exit_with_switches
-
-void exit_with_switches()
-{
-  cout << "uLogView switches:                        " << endl;
-  exit(-1);
-}
-
 
 //--------------------------------------------------------
 // Procedure: main
 
 int main(int argc, char *argv[])
 {
-  // Look for a request for version information
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("uLogView", "gpl");
-    return(0);
-  }
+  //XMS    theXMS;
 
-  string mission_file = "";
-
-  // Look for a request for usage information
-  if(scanArgs(argc, argv, "-h", "--help", "-help"))
-    exit_with_usage();
+  string run_command = argv[0];
+  string mission_file;
+  string server_host;
+  string server_port;
   
-  bool switches = false;
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
-    if(strEnds(argi, ".moos"))
+
+    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
+      showReleaseInfoAndExit();
+    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
+      showExampleConfigAndExit();
+    else if((argi == "-h") || (argi == "--help") || (argi=="-help"))
+      showHelpAndExit();
+    else if((argi == "-i") || (argi == "--interface"))
+      showInterfaceAndExit();
+    
+
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
   }
   
-  if(switches)
-    exit_with_switches();
-
   LauncherULV launcher;
-  gui = launcher.launch(argc, argv);
+  ULV_GUI *gui = launcher.launch(argc, argv);
+
+  Threadsafe_pipe<MOOS_event> g_pending_moos_events;
 
   ULV_MOOSApp thePort;
 
@@ -122,20 +101,17 @@ int main(int argc, char *argv[])
       bool success = g_pending_moos_events.dequeue(e);
       assert(success);
       
-      if (e.type == "OnNewMail") {
+      if(e.type == "OnNewMail") 
         thePort.handleNewMail(e);
-      }
-      else if (e.type == "Iterate") {
+      else if (e.type == "Iterate") 
         thePort.handleIterate(e);
-      }
-      else if (e.type == "OnStartUp") {
+      else if (e.type == "OnStartUp")
         thePort.handleStartUp(e);
-      }
     }
   }
 
   portAppRunnerThread.quit();
-  delete gui;
+  delete(gui);
   return 0;
 }
 

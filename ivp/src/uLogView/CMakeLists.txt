@@ -16,6 +16,7 @@ SET(SRC	LogPlotViewer.cpp
 	LauncherULV.cpp
 	ULV_GUI.cpp
 	ULV_MOOSApp.cpp
+	ULV_Info.cpp
 	main.cpp
 )
 
