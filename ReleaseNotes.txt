@@ -16,6 +16,9 @@ uFldHazardSensor
     the ability to request an emergency request, and the ability to simply
     clear the queue of all prior requests.
 
+uFldNodeComms
+  - Modification to make the handling of groups names be case insensitive.
+
 uFldHazardMetric
   - Fixed a bug in initializing the normalized score range.
 
