@@ -483,7 +483,7 @@ void FldNodeComms::distributeNodeMessageInfo(const string& src_name)
   set<string> dest_names;
 
   string dest_name  = toupper(message.getDestNode());
-  string dest_group = message.getDestGroup();
+  string dest_group = toupper(message.getDestGroup());
   
   // If destination name(s) given add each one in the colon-separated list
   vector<string> svector = parseString(dest_name, ':');
@@ -500,7 +500,7 @@ void FldNodeComms::distributeNodeMessageInfo(const string& src_name)
     for(p=m_map_vgroup.begin(); p!=m_map_vgroup.end(); p++) {
       string vname = p->first;
       string group = p->second;
-      if((dest_group == group) || (dest_group == "all") || (dest_name=="ALL"))
+      if((dest_group == toupper(group)) || (dest_group == "ALL") || (dest_name=="ALL"))
 	dest_names.insert(vname);
     }
   }
