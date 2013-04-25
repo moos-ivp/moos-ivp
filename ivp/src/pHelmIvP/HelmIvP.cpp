@@ -526,7 +526,7 @@ bool HelmIvP::buildReport()
     if(m_outgoing_sval.count(varname))
       value = m_outgoing_sval[varname];
     else if(m_outgoing_dval.count(varname))
-      value = doubleToStringX(m_outgoing_dval[value]);
+      value = doubleToStringX(m_outgoing_dval[varname]);
     double db_time = q->second - m_start_time;
     string timestamp = doubleToString(db_time,2);
     string bhv  = m_outgoing_bhv[varname];

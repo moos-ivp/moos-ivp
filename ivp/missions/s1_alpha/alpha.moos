@@ -8,7 +8,7 @@ ServerPort = 9005
 Community  = alpha
 
 MOOSTimeWarp = 1
-//TERM_REPORTING = false
+TERM_REPORTING = true
 
 // Forest Lake
 LatOrigin  = 43.825300 
@@ -103,6 +103,8 @@ ProcessConfig = pHelmIvP
   MaxAppTick = 10
   AppTick    = 4
   CommsTick  = 4
+
+  term_report_interval=0
 
   behaviors  = alpha.bhv
   domain     = course:0:359:360
