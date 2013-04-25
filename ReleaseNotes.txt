@@ -10,6 +10,11 @@ pHelmIvP
   - HSLine behavior - fixed bug where empty VIEW_SEGLIST was being posted on 
     startup and triggering a warning in pMarineViewer
 
+  - Fixed bug in the helm appcasting scope output. Elements of type double 
+    incorrectly posting zero regardless of actual value. Did not affect the
+    behavior of the vehicle, but was confusing if using the appcast scoping
+    output for debugging or mission monitoring.
+
 uFldHazardSensor
   - Added further options for interaction with the classify queue. Users now
     have the option to specify a priority along with the classify request, and
