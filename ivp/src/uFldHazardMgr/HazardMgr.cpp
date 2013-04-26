@@ -288,7 +288,6 @@ bool HazardMgr::handleMailDetectionReport(string str)
 
   Notify("UHZ_CLASSIFY_REQUEST", req);
 
-
   return(true);
 }
 
