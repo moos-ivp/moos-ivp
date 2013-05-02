@@ -362,6 +362,7 @@ void PMV_GUI::updateXY() {
   string scope_var  = mviewer->getStringInfo("scope_var");
   string scope_time = mviewer->getStringInfo("scope_time");
   string scope_val  = mviewer->getStringInfo("scope_val");
+  string swarp      = dstringCompact(doubleToString(dwarp,2));
 
   m_scope_variable->value(scope_var.c_str());
   m_scope_time->value(scope_time.c_str());
@@ -369,7 +370,7 @@ void PMV_GUI::updateXY() {
 
   string vname = mviewer->getStringInfo("active_vehicle_name");
 
-  if(vname == "") {
+  if((vname == "") || (vname == "error")) {
     v_nam->value(" n/a");
     v_typ->value(" n/a");
     x_mtr->value(" n/a");
@@ -380,12 +381,12 @@ void PMV_GUI::updateXY() {
     v_lon->value(" n/a");
     v_dep->value(" n/a");
     v_ais->value(" n/a");
+    warp->value(swarp.c_str());
     //v_range->value(" n/a");
     //v_bearing->value(" n/a");
     return;
   }
 
-  string swarp = dstringCompact(doubleToString(dwarp,2));
   string vtype = mviewer->getStringInfo("body");
   string xpos = mviewer->getStringInfo("xpos", 1);
   string ypos = mviewer->getStringInfo("ypos", 1);
