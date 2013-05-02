@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 INVOC_ABS_DIR="`pwd`"
 MOOS_ABS_DIR="${INVOC_ABS_DIR}/MOOS"
@@ -29,7 +29,7 @@ echo ""; echo "Invoking make..." `pwd`; echo ""
 make -j12 $@
 
 echo "Moving MOOSCore executables into main MOOS bin directory"
-mv bin/* ../bin
+mv bin/* ../../bin
 
 cd ${INVOC_ABS_DIR}
 echo "Returning to:" `pwd`
@@ -46,7 +46,7 @@ echo""; echo "Invoking make..." `pwd`; echo""
 make -k -j8 $@
 
 echo "Moving MOOSEssential executables into main MOOS bin directory"
-mv bin/* ../bin
+mv bin/* ../../bin
 
 cd ${INVOC_ABS_DIR}
 echo "Returning to:" `pwd`
@@ -67,9 +67,9 @@ make -k -j $@
 
 echo "Moving MOOSToolsUI executables into main MOOS bin directory"
 
-mv bin/uMS.app/Contents/MacOS/uMS ../bin
-mv bin/uPlayBack.app/Contents/MacOS/uPlayBack ../bin
-mv bin/* ../bin
+mv bin/uMS.app/Contents/MacOS/uMS ../../bin
+mv bin/uPlayBack.app/Contents/MacOS/uPlayBack ../../bin
+mv bin/* ../../bin
 
 #===================================================================
 # Part #4:  BUILD MOOS GEODESY
