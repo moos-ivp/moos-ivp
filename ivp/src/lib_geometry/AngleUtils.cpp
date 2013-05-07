@@ -270,6 +270,22 @@ double angleDiff(double ang1, double ang2)
 }
 
 //---------------------------------------------------------------
+// Procedure: aspectDiff
+//   Purpose: Determine the difference in degrees between the two
+//            given aspect angles, ensuring the range [0, 90].
+
+double aspectDiff(double ang1, double ang2)
+{
+  double angle_diff_1 = angleDiff(ang1, ang2);
+  double angle_diff_2 = angleDiff(ang1, ang2+180);
+
+  if(angle_diff_1 < angle_diff_2)
+    return(angle_diff_1);
+  else
+    return(angle_diff_2);
+}
+
+//---------------------------------------------------------------
 // Procedure: containsAngle
 //   Purpose: Given a range of angle, in the domain [0, 360),
 //            determine if the query angle lies within.

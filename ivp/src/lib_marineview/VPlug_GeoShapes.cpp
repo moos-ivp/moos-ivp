@@ -350,7 +350,7 @@ void VPlug_GeoShapes::addCircle(const XYCircle& new_circle,
   if(new_label == "")
     new_label = uintToString(m_circles.size());
   m_circles[new_label] = new_circle;
-  m_circles[new_label].setPointCache(drawpts);
+  m_circles[new_label].setPointCacheAuto(drawpts);
 #endif
 
 #if 0

@@ -2,8 +2,6 @@
 #define IVP_THREAD_UTIL_H
 
 #include "MOOS/libMOOS/MOOSLib.h"
-//#include "MOOSApp.h"
-//#include "MOOSThread.h"
 #include <string>
 
 /**
@@ -15,39 +13,41 @@ Deleting this class will not stop the thread.
 */
 class MOOSAppRunnerThread {
   public:
-    /**
-    Creates and starts a thread which will execute app->Run(name, mission_file).
-    @param app The CMOOSApp whose Run method is to be executed in this thread.
-    @param name
-    @param mission_file
-    */
-    MOOSAppRunnerThread(CMOOSApp *app, const char *name, const char *mission_file);
+  /*
+     Creates and starts a thread which will execute app->Run(name, mission_file).
+     @param app The CMOOSApp whose Run method is to be executed in this thread.
+     @param name
+     @param mission_file
+  */
+  MOOSAppRunnerThread(CMOOSApp *app, const char *name, const char *mission_file,
+		      int argc=0, char**argv=0);
 
-    /**
-    At present this is no-op.
-    */
-    virtual ~MOOSAppRunnerThread();
+  virtual ~MOOSAppRunnerThread();
+  
+  /// Gracefully terminates the app's Run() method invocation.  This method
+  /// doesn't return until after Run() has returned.
+  void quit();
+  bool isRunning(){return m_thread->IsThreadRunning();};
+  
+  /*
+     Blocks until the thread function has returned.
+  */
+  //     void join();
+  
+  /// Terminates the thread owned by this object.  Doesn't return until the
+  /// thread has definitely ceased execution.
+  //     void cancel();
+  
+ private:
+  CMOOSApp * m_app;
+  const std::string m_name;
+  const std::string m_mission_file;
+  CMOOSThread * m_thread;
+  int           m_argc;
+  char**        m_argv;
 
-    /// Gracefully terminates the app's Run() method invocation.  This method
-    /// doesn't return until after Run() has returned.
-    void quit();
-    bool isRunning(){return m_thread->IsThreadRunning();};
-    
-    /**
-    Blocks until the thread function has returned.
-    */
-//     void join();
 
-    /// Terminates the thread owned by this object.  Doesn't return until the
-    /// thread has definitely ceased execution.
-//     void cancel();
-    
-  private:
-    CMOOSApp * m_app;
-    const std::string m_name;
-    const std::string m_mission_file;
-    CMOOSThread * m_thread;
-    static bool thread_func(void *pThreadData);
+  static bool thread_func(void *pThreadData);
 };
 
 #endif

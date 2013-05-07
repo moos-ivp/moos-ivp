@@ -174,8 +174,8 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     return(true);
   }
   else if(g_param == "duration_reset") {
-    string var = stripBlankEnds(biteString(g_val, '='));
-    string val = stripBlankEnds(g_val);
+    string var = biteStringX(g_val, '=');
+    string val = g_val;
     if(var == "")
       return(false);
     m_duration_reset_var = var;
@@ -187,16 +187,16 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     return(ok);
   }
   else if(g_param == "post_mapping") {
-    string left  = stripBlankEnds(biteString(g_val, ','));
-    string right = stripBlankEnds(g_val);
+    string left  = biteStringX(g_val, ',');
+    string right = g_val;
     if(!strContainsWhite(left) && !strContainsWhite(right)) {
       m_remap_vars[left] = right;
       return(true);
     }
   }
   else if(g_param == "runflag") {
-    string var = stripBlankEnds(biteString(g_val, '='));
-    string val = stripBlankEnds(g_val);
+    string var = biteStringX(g_val, '=');
+    string val = g_val;
     if(strContainsWhite(var) || (val == ""))
       return(false);
     VarDataPair pair(var, val, "auto");
@@ -204,8 +204,8 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     return(true);
   }
   else if(g_param == "activeflag") {
-    string var = stripBlankEnds(biteString(g_val, '='));
-    string val = stripBlankEnds(g_val);
+    string var = biteStringX(g_val, '=');
+    string val = g_val;
     if(strContainsWhite(var) || (val == ""))
       return(false);
     VarDataPair pair(var, val, "auto");
@@ -213,8 +213,8 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     return(true);
   }
   else if(g_param == "inactiveflag") {
-    string var = stripBlankEnds(biteString(g_val, '='));
-    string val = stripBlankEnds(g_val);
+    string var = biteStringX(g_val, '=');
+    string val = g_val;
     if(strContainsWhite(var) || (val == ""))
       return(false);
     VarDataPair pair(var, val, "auto");
@@ -222,8 +222,8 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     return(true);
   }
   else if(g_param == "idleflag") {
-    string var = stripBlankEnds(biteString(g_val, '='));
-    string val = stripBlankEnds(g_val);
+    string var = biteStringX(g_val, '=');
+    string val = g_val;
     if(strContainsWhite(var) || (val == ""))
       return(false);
     VarDataPair pair(var, val, "auto");
@@ -231,8 +231,8 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     return(true);
   }
   else if(g_param == "endflag") {
-    string var = stripBlankEnds(biteString(g_val, '='));
-    string val = stripBlankEnds(g_val);
+    string var = biteStringX(g_val, '=');
+    string val = g_val;
     if(strContainsWhite(var) || (val == ""))
       return(false);
     VarDataPair pair(var, val, "auto");

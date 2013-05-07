@@ -45,6 +45,8 @@ XYCircle::XYCircle()
   
   // Number of significant digits in x,y,rad fields in string spec
   m_sdigits = 2;
+
+  m_draw_vertices = 0;
 }
 
 //-------------------------------------------------------------
@@ -56,6 +58,7 @@ XYCircle::XYCircle(double g_x, double g_y, double g_rad)
 
   // Number of significant digits in x,y,rad fields in string spec
   m_sdigits = 2;  
+  m_draw_vertices = 0;
 }
 
 //-------------------------------------------------------------
@@ -116,6 +119,10 @@ string XYCircle::get_spec(string param) const
   spec += "radius=";
   spec += doubleToStringX(m_rad, m_sdigits); 
 
+  if(m_draw_vertices > 0) {
+    spec += ",vertices=";
+    spec += uintToString(m_draw_vertices);
+  }
   if(m_duration >= 0) {
     spec += ",duration=";
     spec += doubleToStringX(m_duration,1); 
@@ -141,6 +148,17 @@ void XYCircle::setPointCache(unsigned int pts)
     m_pt_cache.push_back(new_x);
     m_pt_cache.push_back(new_y);
   }
+}
+
+//-------------------------------------------------------------
+// Procedure: setPointCacheAuto
+
+void XYCircle::setPointCacheAuto(unsigned int pts) 
+{
+  if(m_draw_vertices > 0)
+    setPointCache(m_draw_vertices);
+  else
+    setPointCache(pts);
 }
 
 //-------------------------------------------------------------

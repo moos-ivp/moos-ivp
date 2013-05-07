@@ -36,11 +36,12 @@ class AppCastRepo
   // Return true if first time heard from this node
   bool addAppCast(const std::string&);
   bool addAppCast(const AppCast&);
+  bool removeNode(const std::string& node);
 
   bool setCurrentNode(const std::string& node);
   bool setCurrentProc(const std::string& proc);
   bool setRefreshMode(const std::string& mode);
-    
+
   std::string  getCurrentNode() const  {return(m_current_node);};
   std::string  getCurrentProc() const  {return(m_current_proc);};
   std::string  getRefreshMode() const  {return(m_refresh_mode);};

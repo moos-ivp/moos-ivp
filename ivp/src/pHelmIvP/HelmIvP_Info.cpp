@@ -117,6 +117,9 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Configure the verbosity of terminal output.                ");
   blk("  verbose              = terse  "," // or {true,false,quiet}    ");
+
+  blk("  // Allow unfound bhv directories to not be a problem.         ");
+  blk("  bhv_dir_not_found_ok = true "," // or {true,FALSE}            ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

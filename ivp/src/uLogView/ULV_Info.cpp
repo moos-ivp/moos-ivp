@@ -109,9 +109,11 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
+  blk("  ALOGVIEW_TIME = 20483186777.029907                            ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
+  blk("  ALOGVIEW_TIME = 20483186777.029907                            ");
   blk("                                                                ");
   exit(0);
 }

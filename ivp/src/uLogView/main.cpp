@@ -33,18 +33,13 @@
 
 using namespace std;
 
-
 //--------------------------------------------------------
 // Procedure: main
 
 int main(int argc, char *argv[])
 {
-  //XMS    theXMS;
-
   string run_command = argv[0];
   string mission_file;
-  string server_host;
-  string server_port;
   
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
@@ -58,13 +53,16 @@ int main(int argc, char *argv[])
     else if((argi == "-i") || (argi == "--interface"))
       showInterfaceAndExit();
     
-
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
   }
   
   LauncherULV launcher;
   ULV_GUI *gui = launcher.launch(argc, argv);
+  if(!gui) {
+    cout << "Failed to initialize uLogView GUI - exiting...";
+    exit(0);
+  }
 
   Threadsafe_pipe<MOOS_event> g_pending_moos_events;
 
@@ -83,7 +81,8 @@ int main(int argc, char *argv[])
   string name = parseAppName(argv[0]);
   char * appFilename = const_cast<char*>(name.c_str());
 
-  MOOSAppRunnerThread portAppRunnerThread(&thePort, appFilename, mission_file.c_str());
+  MOOSAppRunnerThread portAppRunnerThread(&thePort, appFilename, 
+					  mission_file.c_str(), argc, argv);
 
   Fl::lock();
   

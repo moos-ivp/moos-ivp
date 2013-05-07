@@ -23,6 +23,7 @@
 #include <iostream>
 #include "ULI_MOOSApp.h"
 #include "ULI_GUI.h"
+#include "ULI_Info.h"
 #include "LauncherULI.h"
 #include "MBUtils.h"
 #include "ReleaseInfo.h"
@@ -32,55 +33,40 @@
 
 using namespace std;
 
-// ----------------------------------------------------------
-// global variables here
-//
-
-Threadsafe_pipe<MOOS_event> g_pending_moos_events;
-ULI_GUI *gui = 0;
-
-
-//--------------------------------------------------------
-// Procedure: exit_with_usage
-
-void exit_with_usage()
-{
-  cout << "Usage: uLogViewIPF file.alog" << endl;
-  exit(-1);
-}
-
-
 //--------------------------------------------------------
 // Procedure: main
 
 int main(int argc, char *argv[])
 {
-  // Look for a request for version information
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("uLogView", "gpl");
-    return(0);
-  }
+  string run_command = argv[0];
+  string mission_file;
 
-  string mission_file = "";
-
-  // Look for a request for usage information
-  if(scanArgs(argc, argv, "-h", "--help", "-help"))
-    exit_with_usage();
-  
   for(int i=1; i<argc; i++) {
     string argi  = argv[i];
-    if(strEnds(argi, ".moos"))
+    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
+      showReleaseInfoAndExit();
+    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
+      showExampleConfigAndExit();
+    else if((argi == "-h") || (argi == "--help") || (argi=="-help"))
+      showHelpAndExit();
+    else if((argi == "-i") || (argi == "--interface"))
+      showInterfaceAndExit();
+    
+    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
   }
   
   LauncherULI launcher;
-  gui = launcher.launch(argc, argv);
-  if(!gui)
+  ULI_GUI *gui = launcher.launch(argc, argv);
+  if(!gui) {
+    cout << "Failed to initialize uLogViewIPF GUI - exiting...";
     exit(0);
-
+  }
   string vehicle_name = launcher.getVName();
-  ULI_MOOSApp thePort;
 
+  Threadsafe_pipe<MOOS_event> g_pending_moos_events;
+
+  ULI_MOOSApp thePort;
   thePort.setGUI(gui);
   thePort.setPendingEventsPipe(& g_pending_moos_events);
   
@@ -94,11 +80,10 @@ int main(int argc, char *argv[])
   string name = parseAppName(argv[0]);
   name += ("_" + vehicle_name);
 
-  char * appFilename = const_cast<char*>(name.c_str());
+  char *appFilename = const_cast<char*>(name.c_str());
   
-  
-
-  MOOSAppRunnerThread portAppRunnerThread(&thePort, appFilename, mission_file.c_str());
+  MOOSAppRunnerThread portAppRunnerThread(&thePort, appFilename, 
+					  mission_file.c_str(), argc, argv);
 
   Fl::lock();
   

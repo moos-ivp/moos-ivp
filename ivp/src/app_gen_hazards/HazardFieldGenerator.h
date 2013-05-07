@@ -33,16 +33,23 @@
 class HazardFieldGenerator
 {
  public:
-  HazardFieldGenerator() {m_pt_step=1; m_count=0; m_exp=0;};
+  HazardFieldGenerator();
   virtual ~HazardFieldGenerator() {};
 
   bool   addPolygon(std::string s) {return(m_field_generator.addPolygon(s));};
   bool   addObjectSet(std::string);
 
-  void   setExp(std::string str);
+  bool   setResemblanceExp(std::string str);
+  bool   setAspectBase(std::string str);
+  bool   setAspectRange(std::string str);
+  bool   setAspectMinBase(std::string str);
+  bool   setAspectMinRange(std::string str);
+  bool   setAspectMaxBase(std::string str);
+  bool   setAspectMaxRange(std::string str);
 
   bool   generate();
-  
+
+ protected: // local utility functions
   std::string generateRandomUniqueLabel();
 
  protected:
@@ -51,16 +58,22 @@ class HazardFieldGenerator
  protected: // Config variables
   std::vector<unsigned int> m_obj_set_amt;
   std::vector<std::string>  m_obj_set_type;
+  double                    m_resemblance_exp;
 
+  double                    m_aspect_base;
+  double                    m_aspect_range;
+  double                    m_aspect_min_base;
+  double                    m_aspect_min_range;
+  double                    m_aspect_max_base;
+  double                    m_aspect_max_range;
+
+  bool                      m_aspect_inplay;
+
+ protected: // State variables
   XYFieldGenerator          m_field_generator;
   double                    m_pt_step;
-  unsigned int              m_count;
-
-  double                    m_exp;
 
   std::set<std::string>     m_rand_labels;
-
-
 };
 
 #endif 

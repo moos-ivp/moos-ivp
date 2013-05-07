@@ -49,7 +49,7 @@ class PMV_MOOSApp : public AppCastingMOOSApp
   void handleNewMail(const MOOS_event & e);
   void handleIterate(const MOOS_event & e);
   void handleStartUp(const MOOS_event & e);
-  void handleAppCastRequesting();
+  void handleAppCastRequesting(bool force=false);
 
  protected:
   bool buildReport();

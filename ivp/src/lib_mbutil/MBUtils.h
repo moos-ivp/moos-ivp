@@ -29,11 +29,18 @@
 #include <time.h>
 
 std::vector<std::string> parseString(const std::string&, char);
-std::vector<std::string> parseStringQ(const std::string&, char);
-std::vector<std::string> parseStringQ(const std::string&, char, unsigned int);
 std::vector<std::string> parseString(const std::string&, 
 				     const std::string&);
-std::vector<std::string> parseQuotedString(const std::string&, char);
+
+std::vector<std::string> parseStringQ(const std::string&, char);
+std::vector<std::string> parseStringQ(const std::string&, char, unsigned int);
+
+
+std::vector<std::string> parseStringZ(const std::string&, char, 
+				      const std::string&);
+
+
+
 std::vector<std::string> chompString(const std::string&, char);
 std::vector<std::string> sortStrings(std::vector<std::string>);
 std::vector<std::string> mergeVectors(std::vector<std::string>,
@@ -97,6 +104,7 @@ double maxElement(const std::vector<double>&);
 double vclip(const double& var, const double& low, const double& high);
 double vclip_min(const double& var, const double& low);
 double vclip_max(const double& var, const double& high);
+double randomDouble(double min=0, double max=1);
 
 bool  isBoolean(const std::string&);
 bool  isNumber(const std::string&, bool=true);

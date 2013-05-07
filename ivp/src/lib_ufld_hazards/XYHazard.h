@@ -35,11 +35,15 @@ class XYHazard
   void    setX(double x)               {m_x=x;  m_x_set=true;};
   void    setY(double y)               {m_y=y;  m_y_set=true;};
   void    setResemblance(double v)     {m_hr=v; m_hr_set=true;};
-  void    setLabel(std::string label)  {m_label=label;};
-  void    setType(std::string v)       {m_type=v; m_type_set=true;};
-  void    setSource(std::string v)     {m_source=v;};
+  void    setLabel(std::string str)    {m_label=str;};
+  void    setType(std::string str)     {m_type=str;};
+  void    setSource(std::string str)   {m_source=str;};
 
-  bool    setAspect(double v);
+  bool    setAspect(double);
+  bool    setAspectRange(double, double);
+  bool    setAspectRangeMin(double);
+  bool    setAspectRangeMax(double);
+
   bool    setShape(std::string);
   bool    setWidth(std::string);
   bool    setColor(std::string);
@@ -49,22 +53,26 @@ class XYHazard
   double  getY() const               {return(m_y);};
   double  getWidth() const           {return(m_width);};
   double  getResemblance() const     {return(m_hr);};
-  double  getAspect() const     {return(m_aspect);};
+  double  getAspect() const          {return(m_aspect);};
+  double  getAspectRangeMin() const  {return(m_aspect_rng_min);};
+  double  getAspectRangeMax() const  {return(m_aspect_rng_max);};
 
   bool    hasResemblance() const     {return(m_hr_set);};
   bool    hasAspect() const          {return(m_aspect_set);};
+  bool    hasAspectRangeMin() const  {return(m_aspect_rng_min_set);};
+  bool    hasAspectRangeMax() const  {return(m_aspect_rng_max_set);};
   bool    valid() const              {return(m_x_set && m_y_set);};
 
   std::string getLabel() const       {return(m_label);};
   std::string getType() const        {return(m_type);};
-  std::string getSource() const      {return(m_source);};
+  std::string gxetSource() const      {return(m_source);};
   std::string getShape() const       {return(m_shape);};
   std::string getColor() const       {return(m_color);};
 
   bool    isSetX() const    {return(m_x_set);};
   bool    isSetY() const    {return(m_y_set);};
   bool    isSetHR() const   {return(m_hr_set);};
-  bool    isSetType() const {return(m_type_set);};
+  bool    isSetType() const {return(m_type != "");};
 
   std::string getSpec(std::string noshow="") const;
 
@@ -73,11 +81,16 @@ class XYHazard
   double       m_y;
   double       m_hr;
   double       m_aspect;
+  double       m_aspect_rng_min;
+  double       m_aspect_rng_max;
+  
   bool         m_x_set;
   bool         m_y_set;
   bool         m_hr_set;
   bool         m_aspect_set;
-  bool         m_type_set;
+  bool         m_aspect_rng_min_set;
+  bool         m_aspect_rng_max_set;
+
   std::string  m_label;
   std::string  m_source;
   std::string  m_type;

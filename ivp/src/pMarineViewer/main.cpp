@@ -89,11 +89,14 @@ int main(int argc, char *argv[])
 
   // For document screen shots:
   // PMV_GUI* gui = new PMV_GUI(1100,640, "pMarineViewer");
-  PMV_GUI* gui = new PMV_GUI(gui_wid, gui_hgt, "pMarineViewer (MIT Version 13.2.2)");
+  string title_base = "pMarineViewer (MIT Version 13.5)";
+  PMV_GUI* gui = new PMV_GUI(gui_wid, gui_hgt, title_base.c_str());
   if(!gui) {
     cout << "Unable to instantiate the GUI - exiting." << endl;
     return(-1);
   }
+  gui->setTitleBase(title_base);
+
 
   PMV_MOOSApp thePort;
 

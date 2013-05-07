@@ -185,6 +185,8 @@ bool BHV_StationKeep::setParam(string param, string val)
 
 void BHV_StationKeep::onIdleToRunState()
 {
+  postConfigStatus();
+
   // The below hack will ensure the vehicle actively seeks the station
   // center each time the vehicle enters the running state. Current 
   // thinking is that this is not necessary.

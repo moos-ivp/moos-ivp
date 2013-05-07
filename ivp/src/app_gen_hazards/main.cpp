@@ -22,78 +22,59 @@
 
 #include <iostream>
 #include "MBUtils.h"
-#include "ColorParse.h"
-#include "ReleaseInfo.h"
 #include "HazardFieldGenerator.h"
+#include "HazardFieldGenerator_Info.h"
 
 using namespace std;
 
 int main(int argc, char *argv[])
 {
-  string mission_file;
-  bool   help_requested = false;
-  bool   vers_requested = false;
-
   HazardFieldGenerator generator;
 
   string arg_summary = argv[0];
-
+  
   for(int i=1; i<argc; i++) {
+    bool   handled = false;
+
     string argi = argv[i];
     arg_summary += " " + argi;
+
     if((argi=="-v") || (argi=="--version") || (argi=="-version"))
-      vers_requested = true;
+      showReleaseInfoAndExit();
     else if((argi=="-h") || (argi == "--help") || (argi=="-help"))
-      help_requested = true;
-    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
-      mission_file = argv[i];
+      showHelpAndExit();
+
     else if(strBegins(argi, "--exp="))
-      generator.setExp(argi.substr(6));
-    else if(strBegins(argi, "--objects=")) {
-      string object_set = argi.substr(10);
-      bool ok = generator.addObjectSet(object_set);
-      if(!ok) 
-	cout << "Invalid object set: " << object_set << endl;
-    }
-    else if(strBegins(argi, "--polygon=")) {
-      string poly_str = argi.substr(10);
-      bool ok = generator.addPolygon(poly_str);
-      if(!ok) {
-	cout << "Invalid/Non-convex polygon specified: " << poly_str << endl;
-	return(0);
-      }
+      handled = generator.setResemblanceExp(argi.substr(6));
+    else if(strBegins(argi, "--aspect_base=")) 
+      handled = generator.setAspectBase(argi.substr(14));
+    else if(strBegins(argi, "--aspect_range=")) 
+      handled = generator.setAspectRange(argi.substr(15));
+
+    else if(strBegins(argi, "--aspect_min_base=")) 
+      handled = generator.setAspectMinBase(argi.substr(18));
+    else if(strBegins(argi, "--aspect_min_range=")) 
+      handled = generator.setAspectMinRange(argi.substr(19));
+
+    else if(strBegins(argi, "--aspect_max_base=")) 
+      handled = generator.setAspectMaxBase(argi.substr(18));
+    else if(strBegins(argi, "--aspect_max_range=")) 
+      handled = generator.setAspectMaxRange(argi.substr(19));
+
+    else if(strBegins(argi, "--objects="))
+      handled = generator.addObjectSet(argi.substr(10));
+    else if(strBegins(argi, "--polygon="))
+      handled = generator.addPolygon(argi.substr(10));
+    
+    if(!handled) {
+      cout << "Unhandled arg: " << argi << endl;
+      return(0);
     }
   }
   
-  if(vers_requested) {
-    showReleaseInfo("gen_object_field", "gpl");
-    return(0);
-  }
-
-  if(help_requested) {
-    cout << "Usage: gen_hazards [OPTIONS]                           " << endl;
-    cout << "                                                       " << endl;
-    cout << "Options:                                               " << endl;
-    cout << "  --help, -h                                           " << endl;
-    cout << "      Display this help message.                       " << endl;
-    cout << "  --version,-v                                         " << endl;
-    cout << "      Display the release version of gen_object_field. " << endl;
-    cout << "  --objects=<object_set>                               " << endl;
-    cout << "      Specify an object set of the form:               " << endl;
-    cout << "      \"amount,type\"                                  " << endl;
-    cout << "  --exp=<value>                                        " << endl;
-    cout << "      hazard resemblance exponent [1,10]               " << endl;
-    cout << "  --polygon=<poly>                                     " << endl;
-    cout << "      Specify a polygon region of the form:            " << endl;
-    cout << "      \"0,0 : 50,0 : 50,50 : 0,50\"                    " << endl;
-    cout << "  gen_hazards --polygon=-150,-75:-150,-400:400,-400:400,-75 --objects=20,hazard --objects=20,benign " << endl;
-    return(0);
-  }
-
   cout << "// " << arg_summary << endl;
 
   generator.generate();
-  
   return(0);
 }
 

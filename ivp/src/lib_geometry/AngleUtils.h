@@ -35,6 +35,7 @@ double  radToDegrees(double radians);
 double  angle180(double degrees);
 double  angle360(double degrees);
 double  angleDiff(double, double);
+double  aspectDiff(double, double);
 // true heading/E-N conversion added by henrik
 double  radToHeading(double radians);
 double  headingToRadians(double degrees);

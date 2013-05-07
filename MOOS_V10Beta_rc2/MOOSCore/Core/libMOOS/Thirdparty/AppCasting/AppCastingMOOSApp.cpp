@@ -192,7 +192,7 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
     else if(!MOOSStrCmp(term_reporting, "true"))
       reportConfigWarning("Invalid value for TERM_REPORTING: " + term_reporting);
   }
-
+  
   // #3 Allow certain appcasting defaults to be overridden
   STRING_LIST sParams;
   string config_block = GetAppName();
@@ -215,6 +215,11 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
     MOOSTrimWhiteSpace(param);
     MOOSTrimWhiteSpace(value);
 
+
+    cout << "+++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+    cout << "param =  " << param << endl;
+    cout << "+++++++++++++++++++++++++++++++++++++++++++++++++" << endl;      
+
     if(param == "TERM_REPORT_INTERVAL") {
       if(!MOOSIsNumeric(value))
 	reportConfigWarning("Invalid TERM_REPORT_INTERVAL: " + value);
@@ -226,14 +231,18 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
 	  m_term_report_interval = 10;
       }
     }
-    else if(param == "MAX_APPCAST_EVENT") {
+    else if(param == "MAX_APPCAST_EVENTS") {
       if(!MOOSIsNumeric(value))
 	reportConfigWarning("Invalid MAX_APPCAST_EVENTS: " + value);
       else {
 	int max_events = atoi(value.c_str());
 	max_events = (max_events < 0)  ?  0 : max_events;
-	max_events = (max_events > 10) ? 10 : max_events;
+	max_events = (max_events > 50) ? 50 : max_events;
 	m_ac.setMaxEvents((unsigned int)(max_events));
+	cout << "+++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
+	cout << "max events " << max_events << endl;
+	cout << "max events " << m_ac.getMaxEvents() << endl;
+	cout << "+++++++++++++++++++++++++++++++++++++++++++++++++" << endl;      
       }
     }
     else if(param == "MAX_APPCAST_RUN_WARNINGS") {
@@ -243,7 +252,7 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
 	int max_run_warnings = atoi(value.c_str());
 	max_run_warnings = (max_run_warnings < 0) ? 0 : max_run_warnings;
 	max_run_warnings = (max_run_warnings > 1000) ? 100 : max_run_warnings;
-	m_ac.setMaxEvents((unsigned int)(max_run_warnings));
+	m_ac.setMaxRunWarnings((unsigned int)(max_run_warnings));
 
       }
     }
@@ -396,6 +405,9 @@ void AppCastingMOOSApp::reportEvent(const string& str)
 {
   double timestamp = m_curr_time - m_start_time;
   m_ac.event(str, timestamp);
+
+  cout << "reportEvent: max_event: " << m_ac.getMaxEvents() << endl;
+
 }
 
 //----------------------------------------------------------------

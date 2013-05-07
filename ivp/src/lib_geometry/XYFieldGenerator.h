@@ -38,6 +38,9 @@ class XYFieldGenerator
 
   XYPoint generatePoint();
 
+  unsigned int polygonCount() {return(m_polygons.size());}
+  XYPolygon    getPolygon(unsigned int);
+
  protected: // Config variables
   std::vector<XYPolygon>    m_polygons;
 

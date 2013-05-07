@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include "XYFormatUtilsHazardSet.h"
 #include "XYFormatUtilsHazard.h"
+#include "XYFormatUtilsPoly.h"
 #include "MBUtils.h"
 
 using namespace std;
@@ -52,6 +53,18 @@ XYHazardSet string2HazardSet(string str)
       string name_tag = biteStringX(svector[i], '=');
       string name_val = svector[i];
       new_hazard_set.setName(name_val);
+    }
+    else if(strBegins(svector[i], "transit_path_width")) {
+      string xpath_tag = biteStringX(svector[i], '=');
+      double xpath_val = atof(svector[i].c_str());
+      new_hazard_set.setXPath(xpath_val);
+    }
+    else if(strBegins(svector[i], "search_region")) {
+      string region_tag = biteStringX(svector[i], '=');
+      string region_val = svector[i];
+      XYPolygon poly = string2Poly(region_val);
+      if(poly.is_convex())
+	new_hazard_set.setRegion(poly);
     }
     else {
       XYHazard hazard = string2Hazard(svector[i]);

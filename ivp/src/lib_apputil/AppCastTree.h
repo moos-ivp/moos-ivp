@@ -38,6 +38,8 @@ class AppCastTree
   bool addAppCast(const std::string&);
   bool addAppCast(const AppCast&);
 
+  bool removeNode(const std::string&);
+
   // Global getters (Queries requiring no key)
   unsigned int getTreeAppCastCount() const   {return(m_total_appcast_count);};
   unsigned int getTreeNodeCount() const      {return(m_map_appcast_sets.size());};

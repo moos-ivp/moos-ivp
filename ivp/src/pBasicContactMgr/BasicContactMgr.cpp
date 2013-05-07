@@ -341,11 +341,11 @@ void BasicContactMgr::handleMailNodeReport(const string& report)
   if(vname == m_ownship)
     return;
   
-  if(!new_node_record.valid()) {
-    Notify("CONTACT_MGR_WARNING", "Bad Node Report Received");
-    reportRunWarning("Bad Node Report Received");
-    return;
-  }
+  //  if(!new_node_record.valid()) {
+  //  Notify("CONTACT_MGR_WARNING", "Bad Node Report Received");
+  //  reportRunWarning("Bad Node Report Received");
+  //  return;
+  //}
   
   bool newly_known_vehicle = false;
   if(m_map_node_records.count(vname) == 0)

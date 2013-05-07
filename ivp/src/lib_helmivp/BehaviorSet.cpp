@@ -55,19 +55,19 @@ BehaviorSet::~BehaviorSet()
 //------------------------------------------------------------
 // Procedure: addBehaviorDir
 
-void BehaviorSet::addBehaviorDir(string dirname)
+bool BehaviorSet::addBehaviorDir(string dirname)
 {
   cout << termColor("blue");
   cout << "Loading behavior dynamic library specified in .moos file: ";
   cout << dirname << endl;
   cout << termColor();
 
-  m_bfactory_dynamic.loadDirectory(dirname);
+  bool ok = m_bfactory_dynamic.loadDirectory(dirname);
 
   cout << termColor("blue");
   cout << "Done Loading behavior dynamic library: " << dirname << endl;
   cout << termColor();
-
+  return(ok);
 }
 
 //------------------------------------------------------------

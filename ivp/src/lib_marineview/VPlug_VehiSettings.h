@@ -44,7 +44,7 @@ class VPlug_VehiSettings
   double getVehiclesShapeScale() const {return(m_vehicles_shape_scale);};
   double getTrailsPointSize()    const {return(m_trails_point_size);};
   double getStaleReportThresh()  const {return(m_stale_report_thresh);};
-  double getStaleNoDrawThresh()  const {return(m_stale_nodraw_thresh);};
+  double getStaleRemoveThresh()  const {return(m_stale_remove_thresh);};
 
   ColorPack getColorTrails()  const         {return(m_trails_color);};
   ColorPack getColorActiveVehicle() const   {return(m_vehicles_active_color);};
@@ -55,7 +55,6 @@ class VPlug_VehiSettings
   
   bool  isViewableVehicles()  const     {return(m_vehicles_viewable);};
   bool  isViewableTrails()    const     {return(m_trails_viewable);};
-  bool  isViewableStaleVehicles() const {return(m_stale_vehicles_viewable);};
   bool  isViewableBearingLines() const  {return(m_bearing_lines_viewable);};
   bool  isViewableTrailsFuture() const  {return(m_trails_future_viewable);};
   bool  isViewableTrailsConnect() const {return(m_trails_connect_viewable);};
@@ -66,9 +65,8 @@ class VPlug_VehiSettings
   double m_vehicles_shape_scale;  
   double m_trails_point_size;           
   double m_stale_report_thresh;
-  double m_stale_nodraw_thresh;
+  double m_stale_remove_thresh;
 
-  bool   m_stale_vehicles_viewable;
   bool   m_trails_viewable;      
   bool   m_trails_future_viewable;      
   bool   m_trails_connect_viewable;

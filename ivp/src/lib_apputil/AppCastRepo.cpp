@@ -69,6 +69,26 @@ bool AppCastRepo::addAppCast(const AppCast& appcast)
 
 
 //---------------------------------------------------------
+// Procedure: removeNode
+
+bool AppCastRepo::removeNode(const string& nodename)
+{
+  if(!m_appcast_tree.removeNode(nodename))
+    return(false);
+
+  m_map_node_proc.erase(nodename);
+
+  vector<string> nodes = m_appcast_tree.getNodes();
+  if(nodes.size() != 0) {
+    setCurrentNode(nodes[0]);
+    setCurrentNode(m_map_node_proc[nodes[0]]);
+  }
+
+  return(true);
+}
+
+
+//---------------------------------------------------------
 // Procedure: setCurrentNode
 //   Returns: true if node is valid 
 

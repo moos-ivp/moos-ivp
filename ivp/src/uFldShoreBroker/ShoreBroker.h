@@ -60,6 +60,8 @@ class ShoreBroker : public AppCastingMOOSApp
 
   std::string m_keyword;
 
+  bool m_warning_on_stale;
+
  protected: // State Variables
 
   // Index of below vectors is unique on a connected node.

@@ -73,9 +73,17 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 
 void PMV_Viewer::draw()
 {
+  m_elapsed = (m_curr_time - m_last_draw_time);
+
+#if 0
+  double elapsed = (m_curr_time - m_last_draw_time);
+  if((m_draw_count > 20) && (elapsed < 0.033))
+    return;
+#endif
+
   MarineViewer::draw();
-  
   m_draw_count++;
+
   m_last_draw_time = m_curr_time;
 
   if(m_geo_settings.viewable("hash_viewable"))
@@ -245,12 +253,6 @@ bool PMV_Viewer::setParam(string param, string value)
     handled = m_geoshapes_map.addGeoShape(toupper(param), value, "shoreside");
     cout << "Adding marker, handled: " << handled << endl;
   }
-  else if((param == "node_report") || (param == "node_report_local")){
-    handled = m_vehiset.setParam(param, value);
-    if(handled && (m_centric_view != "") && m_centric_view_sticky) {
-      center_needs_adjusting = true;
-    }
-  }
   else {
     handled = handled || m_vehi_settings.setParam(param, value);
     handled = handled || m_vehiset.setParam(param, value);
@@ -262,6 +264,20 @@ bool PMV_Viewer::setParam(string param, string value)
 
   return(handled);
 }
+
+
+//-------------------------------------------------------------
+// Procedure: handleNodeReport()
+
+bool PMV_Viewer::handleNodeReport(string report_str, string& whynot)
+{
+  bool handled = m_vehiset.handleNodeReport(report_str, whynot);
+  if(handled && (m_centric_view != "") && m_centric_view_sticky) 
+    setWeightedCenterView();
+
+  return(handled);
+}
+
 
 
 //-------------------------------------------------------------
@@ -288,6 +304,10 @@ bool PMV_Viewer::setParam(string param, double value)
     m_vehiset.setParam(param, value);
     return(true);
   }
+  else if(param == "time_warp") {
+    m_time_warp = value;
+    return(true);
+  }
 
   bool handled = MarineViewer::setParam(param, value);
 
@@ -298,6 +318,28 @@ bool PMV_Viewer::setParam(string param, double value)
 }
 
 //-------------------------------------------------------------
+// Procedure: getStaleVehicles
+
+vector<string> PMV_Viewer::getStaleVehicles(double thresh)
+{
+  vector<string> rvector;
+
+  vector<string> vnames = m_vehiset.getVehiNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string vname = vnames[i];
+
+    NodeRecord record = m_vehiset.getNodeRecord(vname);
+    
+    double age_report = m_vehiset.getDoubleInfo(vname, "age_ais");
+
+    if(age_report > thresh)
+      rvector.push_back(vname);
+  }
+  return(rvector);
+}
+
+
+//-------------------------------------------------------------
 // Procedure: drawVehicle
 
 void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
@@ -306,13 +348,8 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   if(!record.valid())  // FIXME more rigorous test
     return;
 
-  bool   show_stale_vehicles = m_vehi_settings.isViewableStaleVehicles();
-  double stale_nodraw_thresh = m_vehi_settings.getStaleNoDrawThresh();
-
   double age_report = m_vehiset.getDoubleInfo(vname, "age_ais");
-  if((age_report > stale_nodraw_thresh) && !show_stale_vehicles)
-    return;
-  
+
   BearingLine bng_line = m_vehiset.getBearingLine(vname);
 
   // If there has been no explicit mapping of color to the given vehicle

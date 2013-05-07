@@ -32,17 +32,25 @@ using namespace std;
 
 XYHazard::XYHazard()
 {
-  m_x     = 0;
-  m_y     = 0;
-  m_hr    = 0.5;
+  m_x  = 0;
+  m_y  = 0;
+  m_hr = 0.5;
+
   m_aspect = 0;
-  m_width  = -1;  // Indicates unspecified by the user
+  m_aspect_rng_min = 0;
+  m_aspect_rng_max = 0;
 
   m_x_set  = false;
   m_y_set  = false;
-  m_type_set   = false;
-  m_hr_set     = false;
+  m_hr_set = false;
+
   m_aspect_set = false;
+  m_aspect_rng_min_set = false;
+  m_aspect_rng_max_set = false;
+
+  // Drawing hints
+  m_width  = -1;  // Indicates unspecified by the user
+
 }
 
 //-----------------------------------------------------------
@@ -55,6 +63,85 @@ bool XYHazard::setAspect(double aspect)
 
   m_aspect = aspect;
   m_aspect_set = true;
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: setAspectRange
+//      Note: Rather than call the individual setRange* functions, we
+//            handle this way to make sure that if one of the two 
+//            ranges is faulty, no action whatsoever is taken.
+//
+// Constraints: min >= 0
+//              max >= 0
+//              min <= max
+//              (min+max) <= 90
+
+bool XYHazard::setAspectRange(double min, double max)
+{
+  if(min < 0)
+    return(false);
+  if(max < 0)
+    return(false);
+  if(min > max)
+    return(false);
+  if((min+max) > 90)
+    return(false);
+  
+  m_aspect_rng_min = min;
+  m_aspect_rng_max = max;
+  m_aspect_rng_min_set = true;
+  m_aspect_rng_max_set = true;
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: setAspectRangeMin
+// 
+// Constraints: min >= 0
+//              max >= 0
+//              min <= max
+//              (min+max) <= 90
+
+bool XYHazard::setAspectRangeMin(double min)
+{
+  if((min < 0) || (min > 90))
+    return(false);
+  
+  if(m_aspect_rng_max_set) {
+    if(min > m_aspect_rng_max)
+      return(false);
+    if((min + m_aspect_rng_max) > 90)
+      return(false);
+  }
+
+  m_aspect_rng_min = min;
+  m_aspect_rng_min_set = true;
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: setAspectRangeMax
+// 
+// Constraints: min >= 0
+//              max >= 0
+//              min <= max
+//              (min+max) <= 90
+
+bool XYHazard::setAspectRangeMax(double max)
+{
+  if((max < 0) || (max > 90))
+    return(false);
+
+  if(m_aspect_rng_min_set) {
+    if(max < m_aspect_rng_min)
+      return(false);
+    if((max + m_aspect_rng_min) > 90)
+      return(false);
+  }
+
+  m_aspect_rng_max = max;
+  m_aspect_rng_max_set = true;
   return(true);
 }
 
@@ -132,8 +219,15 @@ string XYHazard::getSpec(string noshow) const
   if((m_type!="hazard") && m_hr_set && !strContains(noshow,"hr"))
     str += ",hr=" + doubleToStringX(m_hr);
 
-  if((m_type=="hazard") && m_aspect_set && !strContains(noshow,"aspect"))
+  if(m_aspect_set && !strContains(noshow,"aspect"))
     str += ",aspect=" + doubleToStringX(m_aspect);
+  
+  if(!strContains(noshow,"aspect_range")) {
+    if(m_aspect_rng_min_set)
+      str += ",aspect_min=" + doubleToStringX(m_aspect_rng_min);
+    if(m_aspect_rng_max_set)
+      str += ",aspect_max=" + doubleToStringX(m_aspect_rng_max);
+  }
 
   unsigned int strlen = str.length();
   if((strlen > 0) && (str[0] == ','))

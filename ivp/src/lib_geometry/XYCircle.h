@@ -41,6 +41,8 @@ public:
   void   setDuration(double v)   {m_duration=v;};
   void   set_spec_digits(int v)  {if((v>=0) && (v<=6)) m_sdigits=v;};
 
+  void   setDrawVertices(unsigned int v)  {m_draw_vertices=v;};
+
   bool   valid() const {return(m_x_set && m_y_set && m_rad_set);};
 
   double getX()    const         {return(m_x);};
@@ -56,10 +58,13 @@ public:
   double get_max_x() const {return(m_x + m_rad);};
   double get_min_y() const {return(m_y - m_rad);};
   double get_max_y() const {return(m_y + m_rad);};
+  
+  unsigned int getDrawVertices() {return(m_draw_vertices);};
 
   std::string get_spec(std::string s="") const;
   
   void                setPointCache(unsigned int);
+  void                setPointCacheAuto(unsigned int);
   std::vector<double> getPointCache() const {return(m_pt_cache);};
 
   // True if on or inside circle, need not intersect perimeter
@@ -93,6 +98,8 @@ protected:
   bool     m_x_set;
   bool     m_y_set;
   bool     m_rad_set;
+
+  unsigned int m_draw_vertices; // Drawing hint. 0 means use default.
 
   std::vector<double> m_pt_cache;
 

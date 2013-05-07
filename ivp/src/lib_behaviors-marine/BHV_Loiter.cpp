@@ -220,6 +220,8 @@ void BHV_Loiter::onIdleState()
 
 void BHV_Loiter::onIdleToRunState()
 {
+  postConfigStatus();
+
   // Fix made by HS, to avoid looping back to earlier approach vertex
   updateInfoIn();
   int curr_waypt = m_loiter_engine.acquireVertex(m_osh, m_osx, m_osy); 

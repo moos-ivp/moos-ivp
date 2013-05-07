@@ -42,24 +42,19 @@ VehicleSet::VehicleSet()
   m_curr_time    = 0;
   m_history_size = 1000;
 
-  m_node_report_vars.push_back("NODE_REPORT");
-  m_node_report_vars.push_back("NODE_REPORT_LOCAL");
-
   m_xmin = 0;
   m_xmax = 0;
   m_ymin = 0;
   m_ymax = 0;
 }
 
-
 //-------------------------------------------------------------
 // Procedure: setParam
-//     Ntoes: The "handled" variable is set to true if a known
-//            and acceptable value are passed. This boolean is 
-//            returned and may be vital to the caller to either
-//            pass a warning or error to the user, or perhaps
-//            allow the parameter and value to be processed in 
-//            some other way.
+//     Ntoes: The "handled" variable is set to true if a known and 
+//            acceptable value are passed. This boolean is returned 
+//            and may be vital to the caller to either pass a warning
+//            or error to the user, or perhaps allow the parameter
+//            and value to be processed in some other way.
 
 bool VehicleSet::setParam(string param, string value)
 {
@@ -67,21 +62,8 @@ bool VehicleSet::setParam(string param, string value)
   param = tolower(param);
   value = stripBlankEnds(value);
 
-  bool vehicle_report = false;
-  unsigned int i, vsize = m_node_report_vars.size();
-  for(i=0; i<vsize; i++) {
-    if(param == tolower(m_node_report_vars[i]))
-      vehicle_report = true;
-  }
-
-  if(vehicle_report)
-    handled = updateVehiclePosition(value);
-  else if(param == "bearing_line")
+  if(param == "bearing_line")
     handled = updateVehicleBearingLine(value);
-  else if(param == "node_report_variable") {
-    if(!strContainsWhite(value))
-      m_node_report_vars.push_back(value);
-  }
   else if((param == "active_vehicle_name") || 
 	  (param == "vehicles_active_name")) {
     if(m_rec_map.count(value)) {
@@ -191,8 +173,13 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
   else
     return(false);
 
+  double node_local_time = 0;
+  map<string,double>::const_iterator q = m_map_node_local_time.find(vname);
+  if(q != m_map_node_local_time.end())
+    node_local_time = q->second;
+
   if(info_type == "age_ais")
-    result = m_curr_time - record.getTimeStamp();
+    result = m_curr_time - node_local_time;
   else if(info_type == "vlength")
     result = record.getLength();
   else if((info_type == "heading") || (info_type == "course"))
@@ -437,18 +424,30 @@ bool VehicleSet::getWeightedCenter(double& x, double& y) const
   return(true);
 }
 
-//-------------------------------------------------------------
-// Procedure: updateVehiclePosition
-//      Note: NAME, TYPE, UTC_TIME, X, Y, 
-//            LAT, LON, SPD, HDG, DEPTH
 
-bool VehicleSet::updateVehiclePosition(const string& node_report_str) 
+//-------------------------------------------------------------
+// Procedure: handleNodeReport
+
+bool VehicleSet::handleNodeReport(string node_report_str, string& whynot)
+{
+  return(handleNodeReport(m_curr_time, node_report_str, whynot));
+}
+
+
+//-------------------------------------------------------------
+// Procedure: handleNodeReport
+
+  bool VehicleSet::handleNodeReport(double local_time, 
+				    string node_report_str, 
+				    string& whynot)
 {
   NodeRecord new_record = string2NodeRecord(node_report_str);
 
-  if(!new_record.valid("x,y") && !new_record.valid("lat,lon"))
+  if(!new_record.valid("x,y") && !new_record.valid("lat,lon")) {
+    whynot = "must have either x,y or lat,lon";
     return(false);
-  if(!new_record.valid("name,type,speed,heading,time"))
+  }
+  if(!new_record.valid("name,type,speed,heading,time", whynot))
     return(false);
   
   // Do some "Type-Fixing". Known types: kayak, auv, glider, ship
@@ -460,8 +459,10 @@ bool VehicleSet::updateVehiclePosition(const string& node_report_str)
   if((vtype!="auv")&&(vtype!="ship")&&(vtype!="glider")&&(vtype!="kayak"))
     vtype = "ship";
   
-  if(((vtype == "auv") || (vtype == "glider")) && !new_record.valid("depth"))
+  if(((vtype == "auv") || (vtype == "glider")) && !new_record.valid("depth")) {
+    whynot = "underwater vehicle type with no depth reported";
     return(false);
+  }
 
   // If there is no active vehicle declared - make the active vehicle
   // the first one that the VehicleSet knows about.
@@ -482,6 +483,13 @@ bool VehicleSet::updateVehiclePosition(const string& node_report_str)
   new_record.setType(vtype);
   new_record.setLength(vlen);
   m_rec_map[vname] = new_record;
+
+  // If local time not provided, reluctantly use the timestamp from the 
+  // node report itself.
+  if(local_time == 0)
+    local_time = new_record.getTimeStamp();
+
+  m_map_node_local_time[vname] = local_time;
 
   // Handle updating the NodeRecord with the new information
   double pos_x = new_record.getX();

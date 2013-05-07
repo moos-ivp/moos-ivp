@@ -293,6 +293,14 @@ AppCast string2AppCast(const std::string& str)
 
 	AppCast ac;
 
+	// We expand the maximum number of events and warnings since we 
+	// essentially want to build what is given to us. If the given 
+	// appcast has 300 events, who are we to prune? The event limiting
+	// should occur when the original appcast is made. Or job here is
+	// just to reconstruct what is given to us.
+	ac.setMaxEvents(1000);
+	ac.setMaxRunWarnings(1000);
+
 	string ac_str = str;
 	while (ac_str != "")
 	{

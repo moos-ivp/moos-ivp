@@ -759,7 +759,7 @@ bool USM_MOOSApp::buildReport()
   actab << "Present" << drift_x << drift_y << drift_mag << drift_ang;
   actab << rotate_spd << drift_srcs;
   m_msgs << actab.getFormattedString();
-  m_msgs << endl;
+  m_msgs << endl << endl;
 
   // Part 4: Speed/Thrust Info =======================================
   m_msgs << "Velocity Information: " << endl;

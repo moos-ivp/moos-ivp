@@ -47,6 +47,8 @@ Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
   m_info_buffer   = g_buffer;
   m_parse_mode    = "top";
 
+  m_bhv_dir_not_found_ok = false;
+
   m_mode_set.setInfoBuffer(g_buffer);
 }
 
@@ -149,8 +151,13 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   // loaded behaviors specified in the moos configuration block
   
   unsigned int i;
-  for(i=0; i<m_dir_names.size(); i++)
-    bset->addBehaviorDir(m_dir_names[i]);
+  for(i=0; i<m_dir_names.size(); i++) {
+    bool result = bset->addBehaviorDir(m_dir_names[i]);
+    if(!result && !m_bhv_dir_not_found_ok) {
+      addConfigWarning("Could not find behavior directory: " + m_dir_names[i]);
+      addConfigWarning("Use bhv_dir_not_found_ok=true to surpress this warning");
+    }
+  }
   
   for(i=0; i<m_behavior_specs.size(); i++)
     bset->addBehaviorSpec(m_behavior_specs[i]);
@@ -162,7 +169,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
     delete(bset);
     return(0);
   }    
-
+  
   // Given that all the behaviors were able to be instantiated from
   // their specs, fill out the rest of the behaviorset and return it.
   bset->connectInfoBuffer(m_info_buffer);
@@ -173,7 +180,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   bset->setModeSet(m_mode_set);
   string sval = m_mode_set.getStringDescription();
   cout << "mode description: " << sval << endl;
-
+  
   return(bset);
 }
 

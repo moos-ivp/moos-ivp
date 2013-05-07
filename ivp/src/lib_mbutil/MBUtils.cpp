@@ -90,14 +90,98 @@ vector<string> parseStringQ(const string& string_str, char separator)
 {
   bool in_quotes = false;
 
+  unsigned int  brace_count = 0;
+
   const char *str = string_str.c_str();
   char *buff = new char[strlen(str)+1];
   vector<string> rvector;
   while(str[0] != '\0') {    
     int i=0;
-    while(((str[i]!=separator) || in_quotes) && (str[i]!='\0')) {
+    while(((str[i]!=separator) || in_quotes || (brace_count>0)) && (str[i]!='\0')) {
       if(str[i]=='"')
 	in_quotes = !in_quotes;
+      else if(str[i]=='{')
+	brace_count++;
+      else if(str[i]=='}') {
+	if(brace_count > 0)
+	  brace_count--;
+      }
+      i++;
+    }
+    strncpy(buff, str, i);
+    buff[i] = '\0';
+    string nstr = buff;
+
+    rvector.push_back(nstr);
+    str += i;
+    if(str[0]==separator)
+      str++;
+  }
+  delete [] buff;
+  return(rvector);
+}
+
+//----------------------------------------------------------------
+// Procedure: parseStringZ(string, char)
+//     Notes: Differs from "parseString" in that the separator is 
+//            ignored if it is found in an open-quote mode. That is
+//            after an odd # of double-quote characters have appeared.
+
+vector<string> parseStringZ(const string& string_str, char separator,
+			    const string&protectors)
+{
+  bool quote_protect = strContains(protectors, '"');
+  bool brace_protect = strContains(protectors, '{');
+  bool brack_protect = strContains(protectors, '[');
+  bool paren_protect = strContains(protectors, '(');
+
+  unsigned int  quote_count = 0;
+  unsigned int  brace_count = 0;
+  unsigned int  brack_count = 0;
+  unsigned int  paren_count = 0;
+
+  const char *str = string_str.c_str();
+  char *buff = new char[strlen(str)+1];
+  vector<string> rvector;
+  while(str[0] != '\0') {    
+    int i=0;
+    
+    while(((str[i]!=separator) || 
+	   (quote_count > 0) || (brace_count>0) ||
+	   (brack_count > 0) || (paren_count>0)) && 
+	  (str[i]!='\0')) {
+      if(quote_protect && str[i]=='"') {
+	if(quote_count == 0)
+	  quote_count = 1;
+	else
+	  quote_count = 0;
+      }
+
+      if(brace_protect) {
+	if(str[i]=='{')
+	  brace_count++;
+	else if(str[i]=='}') {
+	  if(brace_count > 0)
+	    brace_count--;
+	}
+      }
+      if(paren_protect) {
+	if(str[i]=='(')
+	  paren_count++;
+	else if(str[i]==')') {
+	  if(paren_count > 0)
+	    paren_count--;
+	}
+      }
+      if(brack_protect) {
+	if(str[i]=='[')
+	  brack_count++;
+	else if(str[i]==']') {
+	  if(brack_count > 0)
+	    brack_count--;
+	}
+      }
+
       i++;
     }
     strncpy(buff, str, i);
@@ -1117,6 +1201,27 @@ double vclip_max(const double& var, const double& high)
   if(var > high)
     return(high);
   return(var);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: randomDouble
+
+double randomDouble(double min, double max)
+{
+  if(min > max)
+    return(0);
+
+  if(min == max)
+    return(min);
+
+  // get random integer in the range [0,10000]
+  int rand_int = rand() % 10001;   
+  
+  double pct   = (double)(rand_int) / (double)(10000);
+
+  double value = min + (pct * (max-min));
+  return(value);
 }
 
 

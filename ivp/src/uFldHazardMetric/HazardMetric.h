@@ -51,24 +51,27 @@ class HazardMetric : public AppCastingMOOSApp
   bool    processHazardFile(std::string filename);
   bool    addHazardReport(std::string report);
   void    evaluateReport(const XYHazardSet&);
+  void    evaluateXPath();
+  void    evaluateXPathBlocks();
 
  private: // Configuration variables for grading reports.
   double  m_penalty_false_alarm;
   double  m_penalty_missed_hazard;
+  double  m_penalty_nonopt_hazard;
   double  m_max_time;
   double  m_penalty_max_time_over;
   double  m_penalty_max_time_rate;
 
- private: // State variables
-  
-  // Ground Truth
-  std::string  m_hazard_file;
+  std::string  m_hazard_file; 
   XYHazardSet  m_hazards;
+  XYPolygon    m_search_region;
+  double       m_transit_path_width;
+  bool         m_show_xpath;
 
+ private: // State variables
   double       m_search_start_time;
   double       m_elapsed_time;
   unsigned int m_total_reports_received;
-
   double       m_worst_possible_score;
 
   // Collection of Incoming reports/stats. Each key is vehicle name
@@ -78,6 +81,8 @@ class HazardMetric : public AppCastingMOOSApp
 
   // Most recent source of reported information
   std::string m_most_recent_source;
+
+  unsigned     m_min_xpath_count;
 };
 
 #endif 

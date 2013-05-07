@@ -51,10 +51,6 @@ void MarineVehiGUI::augmentMenu()
   m_menubar->add("Vehicles/vehicles_name_mode=off",              0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)24, FL_MENU_RADIO);
   m_menubar->add("Vehicles/    Toggle Vehicle Name Mode",      'n', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)29, FL_MENU_DIVIDER);
 
-  m_menubar->add("Vehicles/stale_vehicles_viewable=true",                 0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)30, FL_MENU_RADIO);
-  m_menubar->add("Vehicles/stale_vehicles_viewable=false",                0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)31, FL_MENU_RADIO);
-  m_menubar->add("Vehicles/    Toggle stale_vehicles_viewable", FL_CTRL+'i', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)32, FL_MENU_DIVIDER);
-
   m_menubar->add("Vehicles/vehicles_active_color=red",    0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)40, FL_MENU_RADIO);
   m_menubar->add("Vehicles/vehicles_active_color=yellow", 0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)41, FL_MENU_RADIO);
   m_menubar->add("Vehicles/vehicles_active_color=white",  0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)42, FL_MENU_RADIO);
@@ -106,7 +102,6 @@ void MarineVehiGUI::updateRadios()
   MarineGUI::updateRadios();
   setRadioVehiAttrib("vehicles_viewable");
   setRadioVehiAttrib("vehicles_name_mode");
-  setRadioVehiAttrib("stale_vehicles_viewable");
   setRadioVehiAttrib("vehicles_active_color");
   setRadioVehiAttrib("vehicles_inactive_color");
   setRadioVehiAttrib("trails_viewable");
@@ -129,9 +124,6 @@ void MarineVehiGUI::setMenuItemColors()
   setMenuItemColor("Vehicles/vehicles_name_mode=names+shortmode");
   setMenuItemColor("Vehicles/vehicles_name_mode=names+depth");
   setMenuItemColor("Vehicles/vehicles_name_mode=off");
-
-  setMenuItemColor("Vehicles/stale_vehicles_viewable=true");
-  setMenuItemColor("Vehicles/stale_vehicles_viewable=false");
 
   setMenuItemColor("Vehicles/vehicles_active_color=red");
   setMenuItemColor("Vehicles/vehicles_active_color=yellow");
@@ -210,10 +202,6 @@ inline void MarineVehiGUI::cb_SetRadioVehiAttrib_i(int v)
   else if(v==23) setRadioVehiAttrib("vehicles_name_mode", "names+depth");
   else if(v==24) setRadioVehiAttrib("vehicles_name_mode", "off");
   else if(v==29) setRadioVehiAttrib("vehicles_name_mode", "toggle");
-
-  else if(v==30) setRadioVehiAttrib("stale_vehicles_viewable", "true");
-  else if(v==31) setRadioVehiAttrib("stale_vehicles_viewable", "false");
-  else if(v==32) setRadioVehiAttrib("stale_vehicles_viewable", "toggle");
 
   else if(v==40) setRadioVehiAttrib("vehicles_active_color", "red");
   else if(v==41) setRadioVehiAttrib("vehicles_active_color", "yellow");

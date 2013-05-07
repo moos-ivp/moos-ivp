@@ -26,8 +26,41 @@
 #include "HazardFieldGenerator.h"
 #include "XYHazard.h"
 #include "MBUtils.h"
+#include "AngleUtils.h"
 
 using namespace std;
+
+//---------------------------------------------------------
+// Constructor
+
+HazardFieldGenerator::HazardFieldGenerator()
+{
+  // By default hazard locations are rounded to the nearest meter
+  m_pt_step = 1;
+
+  // Determines how similar a benign object may be to a hazard. Higher
+  // number means benign objects on average resemble hazards less.
+  m_resemblance_exp = 0;
+
+  // Determines the default base optimal aspect angle for the object
+  m_aspect_base  = 0;
+
+  // Determines how much the actual optimal aspect may vary from 
+  // the base optimal aspect.
+  m_aspect_range = 360;
+
+
+  m_aspect_min_base  = 15;
+  m_aspect_min_range = 0;
+  m_aspect_max_base  = 15;
+  m_aspect_max_range = 0;
+
+  // Indicates whether or not aspect information is to be included with 
+  // randomly generated objects. Set to true if *any* of the aspect 
+  // parameters are set.
+  m_aspect_inplay = false;
+}
+
 
 //---------------------------------------------------------
 // Procedure: addObjectSet
@@ -111,21 +144,124 @@ string HazardFieldGenerator::generateRandomUniqueLabel()
     
 
 //---------------------------------------------------------
-// Procedure: setExp
-//      Note: The m_exp factor is used to alter the randomly generated
-//            hazard_resemblance factor. This factor is generated as a
-//            random number in the range of [0,1] to start. Then it is
-//            raised to value of m_exp. A high m_exp factor means that
-//            the expected value of the hazard_resemblance factor will
-//            be closer to zero. 
+// Procedure: setResemblanceExp
+//      Note: The m_resemblance_exp factor is used to alter the randomly 
+//            generated hazard_resemblance factor. This factor is generated 
+//            as a random number in the range of [0,1] to start. Then it 
+//            is raised to value of m_exp. A high m_exp factor means that
+//            the expected value of the hazard_resemblance factor will be
+//            closer to zero. 
 
-void HazardFieldGenerator::setExp(string str)
+bool HazardFieldGenerator::setResemblanceExp(string str)
 {
   if(!isNumber(str))
-    return;
+    return(false);
 
   double dval = atof(str.c_str());
-  m_exp = vclip(dval, 1, 10);
+  m_resemblance_exp = vclip(dval, 0.01, 10);
+
+  return(true);
+}
+    
+//---------------------------------------------------------
+// Procedure: setAspectBase
+
+bool HazardFieldGenerator::setAspectBase(string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  double dval = atof(str.c_str());
+  m_aspect_base = angle360(dval);
+
+  m_aspect_inplay = true;
+  return(true);
+}
+    
+//---------------------------------------------------------
+// Procedure: setAspectRange
+
+bool HazardFieldGenerator::setAspectRange(string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  double dval    = atof(str.c_str());
+  m_aspect_range = vclip(dval, 0, 360);
+
+  m_aspect_inplay = true;
+  return(true);
+}
+    
+//---------------------------------------------------------
+// Procedure: setAspectMinBase
+
+bool HazardFieldGenerator::setAspectMinBase(string str)
+{
+  if(!isNumber(str))
+    return(false);
+  
+  double dval = atof(str.c_str());
+  if((dval < 0) || (dval > 90))
+    return(false);
+  
+  m_aspect_min_base = dval;
+  m_aspect_inplay = true;
+  return(true);
+}
+    
+
+//---------------------------------------------------------
+// Procedure: setAspectMinRange
+
+bool HazardFieldGenerator::setAspectMinRange(string str)
+{
+  if(!isNumber(str))
+    return(false);
+  
+  double dval = atof(str.c_str());
+  if((dval < 0) || (dval > 90))
+    return(false);
+  
+  m_aspect_min_range = dval;
+  m_aspect_inplay = true;
+  return(true);
+}
+    
+
+//---------------------------------------------------------
+// Procedure: setAspectMaxBase
+
+bool HazardFieldGenerator::setAspectMaxBase(string str)
+{
+  if(!isNumber(str))
+    return(false);
+  
+  double dval = atof(str.c_str());
+  if((dval < 0) || (dval > 90))
+    return(false);
+  
+  m_aspect_max_base = dval;
+  m_aspect_inplay = true;
+  return(true);
+}
+    
+
+//---------------------------------------------------------
+// Procedure: setAspectMaxRange
+
+bool HazardFieldGenerator::setAspectMaxRange(string str)
+{
+  if(!isNumber(str))
+    return(false);
+  
+  double dval = atof(str.c_str());
+  if((dval < 0) || (dval > 90))
+    return(false);
+  
+  m_aspect_max_range = dval;
+  m_aspect_inplay = true;
+  return(true);
 }
     
 
@@ -134,8 +270,14 @@ void HazardFieldGenerator::setExp(string str)
 
 bool HazardFieldGenerator::generateObjectSet(unsigned int amt, string obj_type)
 {
+  unsigned int pcount = m_field_generator.polygonCount();
+  for(unsigned int i=0; i<pcount; i++) {
+    XYPolygon poly = m_field_generator.getPolygon(i);
+    string spec = poly.get_spec();
+    cout << "region = " << spec << endl;
+  }
+
   for(unsigned int i=0; i<amt; i++) {
-    m_count++;
     XYPoint point = m_field_generator.generatePoint();
 
     double vx = snapToStep(point.get_vx(), m_pt_step);
@@ -149,11 +291,46 @@ bool HazardFieldGenerator::generateObjectSet(unsigned int amt, string obj_type)
     hazard.setType(obj_type);
     hazard.setLabel(label);
 
-    if(m_exp >= 1) {
+    if(m_resemblance_exp >= 0.01) {
       int int_hr = rand() % 1000;
       double pct = (double)(int_hr) / 1000;
-      double hr  = pow(pct, m_exp);
+      double hr  = pow(pct, m_resemblance_exp);
       hazard.setResemblance(hr);
+    }
+
+    if(m_aspect_inplay) {
+      int    randint;
+      double pct, delta, aspect, range_min, range_max;
+
+      // First: calculate the aspect angle from base and random point in range
+      randint = rand() % 10000;
+      pct     = (double)(randint) / 10000.0;
+      delta   = pct * m_aspect_range;
+
+      aspect  = m_aspect_base + delta;
+      aspect  = angle360(aspect);
+      aspect  = snapToStep(aspect, 0.1);
+      hazard.setAspect(aspect);
+      
+      // Second: calculate the range_min
+      randint   = rand() % 10000;
+      pct       = (double)(randint) / 10000.0;
+      range_min = m_aspect_min_base + (pct * m_aspect_min_range);
+      range_min = vclip(range_min, 0, 90);
+      range_min = snapToStep(range_min, 0.1);
+
+      // Third: calculate the range_max
+      // Note that the rangemax value here is the amount *beyond* range_min
+      randint   = rand() % 10000;
+      pct       = (double)(randint) / 10000.0;
+      range_max = range_min + (pct * m_aspect_max_range);
+      range_max = snapToStep(range_max, 0.1);
+      range_max = vclip(range_max, range_min, 90);
+
+
+      bool ok = hazard.setAspectRange(range_min, range_max);
+      if(!ok)
+	cout << "Illegal aspect range: " << range_min << ", " << range_max << endl;
     }
 
     string msg = hazard.getSpec();

@@ -89,8 +89,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
     }
   }
   
-  if(!new_record.valid()&&(!returnPartialResult))
-    return(empty_record);
+  //  if(!new_record.valid()&&(!returnPartialResult))
+  //  return(empty_record);
 
   return(new_record);
 }

@@ -94,6 +94,11 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
+  blk("  // Common to all appcasting MOOSApps                          ");
+  blk("  term_report_interval = 0.4                      // default    ");
+  blk("  max_appcast_events   = 8                        // default    ");
+  blk("  max_appcast_run_warnings = 10                   // default    ");
+  blk("                                                                ");
   blk("  // Configuring visual preferences                             ");
   blk("  default_hazard_shape = triangle                 // default    ");
   blk("  default_hazard_color = green                    // default    ");

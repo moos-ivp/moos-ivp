@@ -66,6 +66,9 @@ class MarineViewer : public Fl_Gl_Window
   std::string geosetting(const std::string& s);
   std::string vehisetting(const std::string& s);
 
+  double getStaleReportThresh() {return(m_vehi_settings.getStaleReportThresh());};
+  double getStaleRemoveThresh() {return(m_vehi_settings.getStaleRemoveThresh());};
+
   std::string getTiffFileA() {return(m_back_img.getTiffFile());};
   std::string getInfoFileA() {return(m_back_img.getInfoFile());};
   

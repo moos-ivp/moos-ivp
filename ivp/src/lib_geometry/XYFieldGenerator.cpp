@@ -74,6 +74,21 @@ bool XYFieldGenerator::addPolygon(string spec)
 }
 
 //---------------------------------------------------------
+// Procedure: getPolygon
+
+XYPolygon XYFieldGenerator::getPolygon(unsigned int ix)
+{
+  if(ix >= m_polygons.size()) {
+    XYPolygon null_poly;
+    return(null_poly);
+  }
+
+  return(m_polygons[ix]);
+}
+  
+
+
+//---------------------------------------------------------
 // Procedure: generatePoint
 
 XYPoint XYFieldGenerator::generatePoint()

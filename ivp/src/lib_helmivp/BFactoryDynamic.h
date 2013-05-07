@@ -37,7 +37,7 @@ class BFactoryDynamic {
   virtual ~BFactoryDynamic();
   
   // Configuring the domain and loading directories for search.
-  void   loadDirectory(std::string dirname);
+  bool   loadDirectory(std::string dirname);
   void   loadEnvVarDirectories(std::string envVar);
   void   setDomain(IvPDomain domain) {m_domain = domain;};
 

@@ -5,6 +5,9 @@ ProcessConfig = uProcessWatch
 {
   AppTick   = 2
   CommsTick = 2
+
+  NOWATCH = uMAC*  
+  NOWATCH = uXMS*
   
   WATCH  = uSimMarine
   WATCH  = pMOOSBridge*

@@ -42,6 +42,9 @@ class PMV_Viewer : public MarineViewer
 
   bool  setParam(std::string p, std::string v="");
   bool  setParam(std::string p, double v);
+
+  bool  handleNodeReport(std::string, std::string&);
+
   bool  addGeoShape(std::string p, std::string v, std::string c, double=0);
   bool  addScopeVariable(std::string);
   bool  updateScopeVariable(std::string varname, std::string value, 
@@ -60,7 +63,13 @@ class PMV_Viewer : public MarineViewer
   std::vector<VarDataPair> getRightMousePairs(bool=true);
   std::vector<VarDataPair> getNonMousePairs(bool=true);
 
+  std::vector<std::string> getStaleVehicles(double thresh=10);
+
   unsigned int shapeCount(const std::string& gtype, const std::string& vname="") const;
+  unsigned int getDrawCount() const {return(m_draw_count);};
+  double       getCurrTime() const {return(m_curr_time);};
+  double       getTimeWarp() const {return(m_time_warp);};
+  double       getElapsed() const {return(m_elapsed);};
 
  private:
   void   drawVehicle(std::string, bool, std::string);
@@ -77,6 +86,8 @@ class PMV_Viewer : public MarineViewer
   std::string m_reference_point;
   std::string m_reference_bearing;
   double      m_curr_time;
+  double      m_time_warp;
+  double      m_elapsed;
 
   unsigned int m_draw_count;
   double       m_last_draw_time;
@@ -115,7 +126,3 @@ class PMV_Viewer : public MarineViewer
 };
 
 #endif 
-
-
-
-

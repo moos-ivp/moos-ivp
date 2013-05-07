@@ -1,0 +1,121 @@
+//--------    FILE: archie.bhv   -------------
+
+initialize   DEPLOY  = false
+initialize   RETURN  = false
+initialize   STATION_KEEP = false
+initialize   SURVEY  = true
+initialize   AVOID   = true
+initialize   SURVEY_UNDERWAY = false
+initialize   OPREGION = true
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+}
+
+set MODE = SURVEYING {
+  MODE = ACTIVE
+  SURVEY = true
+  RETURN = false
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = MODE==SURVEYING
+  perpetual = true
+  updates   = SURVEY_UPDATES
+  activeflag   = SURVEY_UNDERWAY = true
+  inactiveflag   = SURVEY_UNDERWAY = false
+  endflag   = RETURN = true
+
+         speed = 2   // meters per second
+        radius = 5.0
+   slip_radius = 15.0
+          lead = 8
+	  lead_damper=1
+//	points = -200,-130:-90,-420:-57,-402:-170,-120:-129,-104:-22,-388:20,-370:-84,-85:-42,-69:59,-354:100,-339:-2,-53:39,-34:140,-322:175,-311:80,-23:121,-7:216,-290:256,-275:167,3:203,14:296,-260:330,-244:244,6
+	points = format=lawnmower, label=archie_survey, x=$(SURVEY_X), y=$(SURVEY_Y), width=$(WIDTH), height=$(HEIGHT),lane_width=$(LANE_WIDTH), rows=north-south, degs=$(DEGREES)
+       //endflag = NODE_MESSAGE = src_node=archie,dest_node=betty,var_name=SURVEY,string_val=COMPLETE
+
+        repeat = 0
+  visual_hints = nextpt_color=red, nextpt_lcolor=green
+  visual_hints = vertex_color=yellow, edge_color=gray25
+  visual_hints = vertex_size=1, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = $(START_POS)
+	repeat=10
+	lead=8
+}
+
+//----------------------------------------------
+Behavior = BHV_OpRegion
+{
+  name       = opregion
+  pwt        = 100
+  condition  = MODE==ACTIVE
+  condition  = OPREGION=true
+  polygon = pts={-50,-40 : 100,20 : 180,20 : 180,-200 : -50,-200 : -100,-75}
+  trigger_entry_time = 1
+  trigger_exit_time  = 1
+
+  visual_hints = edge_size=1, vertex_size=2
+}
+
+//----------------------------------------------
+Behavior = BHV_ConstantDepth
+{
+  name      = bhv_const_depth_b
+  pwt       = 60
+  duration  = no-time-limit
+  condition = DEPLOY = true
+
+        depth = 5
+    peakwidth = 3
+    basewidth = 2
+  summitdelta = 20
+}
+
+//------------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name       = avdcollision_
+  pwt        = 200
+  condition  = AVOID=true
+  updates    = CONTACT_INFO
+  endflag    = CONTACT_RESOLVED = $[CONTACT]
+  templating = spawn
+
+             contact = to-be-set
+    on_no_contact_ok = true
+         extrapolate = true
+               decay = 30,60
+
+        pwt_outer_dist = 50
+        pwt_inner_dist = 20
+        completed_dist = 75
+     min_util_cpa_dist = 8
+     max_util_cpa_dist = 25
+             pwt_grade = linear
+   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}

@@ -130,12 +130,11 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  PMB_REGISTER =     src_var=NODE_BROKER_PING,                  ");
-  blk("                     dest_community=shoreside,dest_port=9200,   ");
-  blk("                     dest_host=192.168.0.1,                     ");
-  blk("                     dest_alias=NODE_BROKER_PING                ");
-  blk("  NODE_BROKER_PING = community=henry,host=192.168.1.1,port=9000 ");
-  blk("                     port_udp=9200,keyword=lemon,timewarp=8     ");
+  blk("  PSHARE_CMD =       cmd=output, src_name=NODE_REPORT_LOCAL,    ");
+  blk("                     dest_name=NODE_REPORT,route=18.11.4.23:9200");
+  blk("  NODE_BROKER_PING = community=henry,host=12.16.1.22,port=9000, ");
+  blk("                     time_warp=8,pshare_iroutes=12.18.1.22:9200,");
+  blk("                     time=1325178800.81                         ");
   blk("                                                                ");
   exit(0);
 }

@@ -33,6 +33,11 @@ XYHazardSet::XYHazardSet()
 {
   m_hazard_count = 0;
   m_benign_count = 0;
+
+  m_xpath = 0;
+  m_ypath = 0;
+  m_xpath_set = false;
+  m_ypath_set = false;
 }
 
 //-----------------------------------------------------------
@@ -181,17 +186,90 @@ bool XYHazardSet::isValidReport() const
 
 
 //-----------------------------------------------------------
+// Procedure: getHazardCnt(XYPolygon)
+
+unsigned int XYHazardSet::getHazardCnt(const XYPolygon& poly) const
+{
+  if(!poly.is_convex())
+    return(0);
+
+  unsigned int count = 0;
+  unsigned int i, vsize = m_hazards.size();
+  for(i=0; i<vsize; i++) {
+    if(m_hazards[i].getType() == "hazard") {
+      double x = m_hazards[i].getX();
+      double y = m_hazards[i].getY();
+      if(poly.contains(x, y))
+	count++;
+    }
+  }
+  return(count);
+}
+
+//-----------------------------------------------------------
+// Procedure: findMinXPath()
+
+unsigned int XYHazardSet::findMinXPath(double path_width)
+{
+  if(path_width == 0)
+    return(33);
+
+  if(m_search_region.is_convex() == false)
+    return(22);
+
+  double xmin = m_search_region.get_min_x();
+  double xmax = m_search_region.get_max_x();
+  double ymin = m_search_region.get_min_y();
+  double ymax = m_search_region.get_max_y();
+
+  double beg_x = xmin + path_width;
+  double end_x = xmax - path_width;
+  if(beg_x > end_x)
+    return(11);
+
+  unsigned int min_count = 0;
+  double       min_xpath = beg_x;
+
+  for(double x=beg_x; x<end_x; x++) {
+    XYPolygon test_poly;
+    test_poly.add_vertex(x-path_width, ymin);
+    test_poly.add_vertex(x-path_width, ymax);
+    test_poly.add_vertex(x+path_width, ymax);
+    test_poly.add_vertex(x+path_width, ymin);
+    unsigned int count = getHazardCnt(test_poly);
+    if((x==beg_x) || (count < min_count)) {
+      min_count = count;
+      min_xpath = x;
+    }
+  }
+  
+  m_xpath = min_xpath;
+  m_xpath_set = true;
+
+  return(min_count);
+}
+
+
+
+//-----------------------------------------------------------
 // Procedure: getSpec()
 
 string XYHazardSet::getSpec(string report_style) const
 {
   string noshow = "";
   if(report_style == "final_report")
-    noshow = "hr,type,width,color";
+    noshow = "hr,type,width,color,search_region";
 
   string str = "source=" + m_source;
   if(m_name != "")
     str += "#name=" + m_name;
+  if(m_xpath_set)
+    str += "#xpath=" + doubleToStringX(m_xpath,1);
+  if(m_ypath_set)
+    str += "#ypath=" + doubleToStringX(m_ypath,1);
+  if(m_search_region.is_convex() && (report_style != "final_report"))
+    str += "#search_region=" + m_search_region.get_spec_pts();
+  
   unsigned int i, vsize = m_hazards.size();
   for(i=0; i<vsize; i++) {
     string hazard_str = m_hazards[i].getSpec(noshow);

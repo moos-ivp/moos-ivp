@@ -28,6 +28,7 @@
 #include "XYHazardRepEval.h"
 #include "XYFormatUtilsHazard.h"
 #include "XYFormatUtilsHazardSet.h"
+#include "XYFormatUtilsPoly.h"
 #include "ACTable.h"
 
 using namespace std;
@@ -37,16 +38,19 @@ using namespace std;
 
 HazardMetric::HazardMetric()
 {
-  // Initialized configuration variables
+  // Part 1: Initialized configuration variables
   // Default Reward Structure
   m_penalty_false_alarm   = 10;
   m_penalty_missed_hazard = 100; 
+  m_penalty_nonopt_hazard = 50; 
   m_penalty_max_time_over = 0;
   m_penalty_max_time_rate = 0;
+  m_transit_path_width    = 20; // 0 means no path calculations
 
-  // A max_time=0 means there is no mission time limit 
-  m_max_time = 0;
+  m_show_xpath = false;
 
+  // Part 2: Initialize state variables
+  m_max_time          = 0;  // 0 means there is no mission time limit 
   m_search_start_time = 0;
   m_elapsed_time      = 0;
 
@@ -135,6 +139,10 @@ bool HazardMetric::OnStartUp()
       m_penalty_missed_hazard = atof(value.c_str());
       handled = true;
     }
+    else if((param == "PENALTY_NONOPT_HAZARD") && isNumber(value)) {
+      m_penalty_nonopt_hazard = atof(value.c_str());
+      handled = true;
+    }
     else if((param == "PENALTY_FALSE_ALARM") && isNumber(value)) {
       m_penalty_false_alarm = atof(value.c_str());
       handled = true;
@@ -151,6 +159,8 @@ bool HazardMetric::OnStartUp()
       m_max_time = atof(value.c_str());
       handled = true;
     }
+    else if((param == "SHOW_XPATH") && isBoolean(value))
+      handled = setBooleanOnString(m_show_xpath, value);
     else if(param == "HAZARD_FILE")
       handled = processHazardFile(value);
     
@@ -160,6 +170,27 @@ bool HazardMetric::OnStartUp()
 
   m_worst_possible_score = m_penalty_false_alarm   * m_hazards.getBenignCnt();
   m_worst_possible_score += m_penalty_missed_hazard * m_hazards.getHazardCnt();
+
+
+  m_search_region = m_hazards.getRegion();
+  if(m_search_region.is_convex()) {
+    m_search_region.set_label("search_region");
+    m_search_region.set_color("edge", "gray45");
+    Notify("VIEW_POLYGON", m_search_region.get_spec());
+  }
+  evaluateXPath();
+
+  string str;
+  str += "penalty_missed_hazard=" + doubleToStringX(m_penalty_missed_hazard,5);
+  str += ",penalty_nonopt_hazard=" + doubleToStringX(m_penalty_nonopt_hazard,5);
+  str += ",penalty_false_alarm="   + doubleToStringX(m_penalty_false_alarm,5);
+  str += ",penalty_max_time_over=" + doubleToStringX(m_penalty_max_time_over,5);
+  str += ",penalty_max_time_rate=" + doubleToStringX(m_penalty_max_time_rate,5);
+  if(m_transit_path_width > 0)
+    str += ",transit_path_width=" + doubleToStringX(m_transit_path_width,5);
+  if(m_search_region.is_convex())
+    str += ",search_region=" + m_search_region.get_spec_pts();
+  Notify("UHZ_MISSION_PARAMS", str);
 
   registerVariables();	
   return(true);
@@ -200,6 +231,13 @@ bool HazardMetric::processHazardFile(string filename)
     string right = lines[i];
     if(left == "source")
       hazard_set.setSource(right);
+    else if(left == "region") {
+      XYPolygon region = string2Poly(right);
+      if(region.is_convex())
+	hazard_set.setRegion(region);
+      else
+	reportConfigWarning(msg + "bad region spec: " + right);
+    }
     else if(left == "hazard") {
       XYHazard new_hazard = string2Hazard(right);
       if(new_hazard.valid()) 
@@ -221,6 +259,37 @@ bool HazardMetric::processHazardFile(string filename)
   return(true);
 }
 
+
+//------------------------------------------------------------
+// Procedure: evaluateXPath()
+
+void HazardMetric::evaluateXPath()
+{
+  if(m_transit_path_width == 0)
+    return;
+
+  if(m_search_region.is_convex() == false)
+    return;
+
+  m_min_xpath_count = m_hazards.findMinXPath(m_transit_path_width);
+  
+  if(!m_show_xpath)
+    return;
+  double xpath = m_hazards.getXPath();
+  double ymin  = m_search_region.get_min_y();
+  double ymax  = m_search_region.get_max_y();
+
+  XYPolygon min_poly;
+  
+  min_poly.add_vertex(xpath-m_transit_path_width, ymin);
+  min_poly.add_vertex(xpath-m_transit_path_width, ymax);
+  min_poly.add_vertex(xpath+m_transit_path_width, ymax);
+  min_poly.add_vertex(xpath+m_transit_path_width, ymin);
+  min_poly.set_label("min_path");
+  min_poly.set_color("fill", "yellow");
+  min_poly.set_transparency(0.12);
+  Notify("VIEW_POLYGON", min_poly.get_spec());
+}
 
 //------------------------------------------------------------
 // Procedure: addHazardReport
@@ -380,7 +449,8 @@ bool HazardMetric::buildReport()
 {
   m_msgs << "Hazard File: (" + m_hazard_file + ")"         << endl;
   m_msgs << "     Hazard: " << m_hazards.getHazardCnt() << endl;
-  m_msgs << "     Benign: " << m_hazards.getBenignCnt() << endl << endl;
+  m_msgs << "     Benign: " << m_hazards.getBenignCnt() << endl;
+  m_msgs << "     Region: " << m_search_region.get_spec_pts() << endl << endl;
   m_msgs << "Reward Structure:"                         << endl;
   m_msgs << "    Penalty Missed Hazard: " << m_penalty_missed_hazard << endl;
   m_msgs << "      Penalty False Alarm: " << m_penalty_false_alarm   << endl;

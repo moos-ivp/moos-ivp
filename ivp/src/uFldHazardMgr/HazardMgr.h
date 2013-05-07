@@ -25,6 +25,7 @@
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "XYHazardSet.h"
+#include "XYPolygon.h"
 
 class HazardMgr : public AppCastingMOOSApp
 {
@@ -48,6 +49,7 @@ class HazardMgr : public AppCastingMOOSApp
    bool handleMailDetectionReport(std::string);
    bool handleMailHazardReport(std::string) {return(true);};
    void handleMailReportRequest();
+   void handleMailMissionParams(std::string);
 
  protected: 
    void postSensorConfigRequest();
@@ -75,7 +77,9 @@ class HazardMgr : public AppCastingMOOSApp
    double m_pd_granted;
 
    XYHazardSet m_hazard_set;
-
+   XYPolygon   m_search_region;
+   
+   double      m_transit_path_width;
 };
 
 #endif 

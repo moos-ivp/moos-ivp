@@ -5,6 +5,8 @@ ServerHost = localhost
 ServerPort = 9000
 Community  = shoreside
 
+TERM_REPORTING = false
+
 #include plug_origin_warp.moos
   
 //--------------------------------------------------------
@@ -13,7 +15,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = true
   Run = pLogger         @ NewConsole = false
 
   Run = pShare          @ NewConsole = false
@@ -101,6 +103,11 @@ ProcessConfig = pMarineViewer
   appcast_viewable     = true
   appcast_color_scheme = indigo
 
+  comms_pulse_viewable_all = false
+  vehicles_name_mode = names
+
+  stale_report_thresh = 2
+  stale_remove_thresh = 20
 
   SCOPE = PHI_HOST_INFO
 

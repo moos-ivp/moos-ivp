@@ -54,7 +54,7 @@ public:
 
   void addPolygon(const XYPolygon&);
   void addSegList(const XYSegList&);
-  void addCircle(const XYCircle&, unsigned int drawpts=90);
+  void addCircle(const XYCircle&, unsigned int drawpts=18);
   void addHexagon(const XYHexagon&);
   void addPoint(const XYPoint&);
   void addVector(const XYVector&);
@@ -66,7 +66,7 @@ public:
 
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
-  bool addCircle(const std::string&, unsigned int drawpts=90);
+  bool addCircle(const std::string&, unsigned int drawpts=18);
   bool addPoint(const std::string&);
   bool addVector(const std::string&);
   bool addGrid(const std::string&);

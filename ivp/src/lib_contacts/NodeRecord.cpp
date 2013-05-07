@@ -254,48 +254,69 @@ string NodeRecord::getAllStop(string default_allstop) const
 // Procedure: valid
 //      Note: Determines if all the required fields have been set
 
-bool NodeRecord::valid(string check) const
+bool NodeRecord::valid() const
 {
-  if(check == "") {
-    if((m_name != "") && m_x_set && m_y_set && m_speed_set && m_heading_set)
-      return(true);
-    return(false);
-  }
-  else {
-    vector<string> svector = parseString(check, ',');
-    unsigned int i, vsize = svector.size();
-    for(i=0; i<vsize; i++) {
-      string field = tolower(stripBlankEnds(svector[i]));
-      if((field == "name") && (m_name == "")) 
-	return(false);
-      if((field == "type") && (m_type == "")) 
-	return(false);
-      if((field == "mode") && (m_mode == "")) 
-	return(false);
-      if((field == "allstop") && (m_allstop == "")) 
-	return(false);
-      if((field == "x") && !m_x_set) 
-	return(false);
-      if((field == "y") && !m_y_set) 
-	return(false);
-      if((field == "speed") && !m_speed_set) 
-	return(false);
-      if((field == "heading") && !m_heading_set) 
-	return(false);
-      if((field == "depth") && !m_depth_set) 
-	return(false);
-      if((field == "time") && !m_timestamp_set) 
-	return(false);
-      if((field == "length") && !m_length_set) 
-	return(false);
-      if((field == "yaw") && !m_yaw_set) 
-	return(false);
-      if((field == "lat") && !m_lat_set) 
-	return(false);
-      if((field == "lon") && !m_lon_set) 
-	return(false);
-    }
-  }
-  return(true);
+  string why;
+  return(valid("name,x,y,speed,heading", why));
 }
 
+//---------------------------------------------------------------
+// Procedure: valid
+//      Note: Determines if all the required fields have been set
+
+bool NodeRecord::valid(string check) const
+{
+  string why;
+  return(valid(check, why));
+}
+
+//---------------------------------------------------------------
+// Procedure: valid
+//      Note: Determines if all the required fields have been set
+
+bool NodeRecord::valid(string check, string& why) const
+{
+  string missing;
+
+  vector<string> svector = parseString(check, ',');
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string field = tolower(stripBlankEnds(svector[i]));
+    if((field == "name") && (m_name == "")) 
+      missing += "name,";
+    if((field == "type") && (m_type == "")) 
+      missing += "type,";
+    if((field == "mode") && (m_mode == "")) 
+      missing += "mode,";
+    if((field == "allstop") && (m_allstop == "")) 
+      missing += "allstop,";
+    if((field == "x") && !m_x_set) 
+      missing += "x,";
+    if((field == "y") && !m_y_set) 
+      missing += "y,";
+    if((field == "speed") && !m_speed_set) 
+      missing += "speed,";
+    if((field == "heading") && !m_heading_set) 
+      missing += "heading,";
+    if((field == "depth") && !m_depth_set) 
+      missing += "depth,";
+    if((field == "time") && !m_timestamp_set) 
+      missing += "time,";
+    if((field == "length") && !m_length_set) 
+      missing += "length,";
+    if((field == "yaw") && !m_yaw_set) 
+      missing += "yaw,";
+    if((field == "lat") && !m_lat_set) 
+      missing += "lat,";
+    if((field == "lon") && !m_lon_set) 
+      missing += "lon,";
+  }
+
+  if(missing != "") {
+    unsigned int slen = missing.length();
+    why = "missing:" + missing.substr(0, slen-1);
+    return(false);
+  }
+
+  return(true);
+}

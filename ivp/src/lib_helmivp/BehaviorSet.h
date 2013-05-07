@@ -45,7 +45,7 @@ public:
   BehaviorSet();
   virtual ~BehaviorSet();
   
-  void       addBehaviorDir(std::string);
+  bool       addBehaviorDir(std::string);
   void       addBehaviorSpec(BehaviorSpec spec);  
   void       setDomain(IvPDomain domain);
   void       connectInfoBuffer(InfoBuffer*);

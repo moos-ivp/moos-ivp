@@ -91,6 +91,41 @@ bool AppCastTree::addAppCast(const AppCast& appcast)
 }
 
 //---------------------------------------------------------
+// Procedure: removeNode 
+//   Returns: true if node is already known to the repo.
+
+bool AppCastTree::removeNode(const string& node)
+{
+  if(!hasNode(node))
+    return(false);
+  
+  // Step 1
+  m_map_appcast_sets.erase(node);
+  
+  // Step 2
+  string id;
+  map<string, string>::iterator p;
+  for(p=m_map_id_node.begin(); p!=m_map_id_node.end(); p++) {
+    string this_id   = p->first;
+    string this_node = p->second;
+    if(this_node == node) 
+      id = this_id;
+  }
+  if(id != "")
+    m_map_id_node.erase(id);
+
+  // Step 3
+  vector<string> new_nodes;
+  for(unsigned int i=0; i<m_nodes.size(); i++) {
+    if(m_nodes[i] != node)
+      new_nodes.push_back(m_nodes[i]);
+  }
+  m_nodes = new_nodes;
+  
+  return(true);
+}
+
+//---------------------------------------------------------
 // Procedure: hasNode(node)
 //   Returns: true if node is already known to the repo.
 

@@ -36,6 +36,9 @@ using namespace std;
 
 ShoreBroker::ShoreBroker()
 {
+  // Initialize config variables
+  m_warning_on_stale = false;
+
   // Initialize state variables
   m_iteration_last_ack = 0;
 
@@ -134,6 +137,11 @@ bool ShoreBroker::OnStartUp()
       handleConfigQBridge(value);
     else if(param == "KEYWORD") 
       m_keyword = value;
+    else if(param == "WARNING_ON_STALE") {
+      bool handled = setBooleanOnString(m_warning_on_stale, value);
+      if(!handled)
+	reportUnhandledConfigWarning(orig);
+    }
     else 
       reportUnhandledConfigWarning(orig);
   }
@@ -193,14 +201,16 @@ void ShoreBroker::checkForStaleNodes()
       if(!m_node_is_stale[i]) {
 	string node_name = m_node_host_records[i].getCommunity();
 	m_node_is_stale[i] = true;
-	reportRunWarning("Node " + node_name + " is stale.");
+	if(m_warning_on_stale)
+	  reportRunWarning("Node " + node_name + " is stale.");
       }
     }
     else {
       if(m_node_is_stale[i]) {
 	string node_name = m_node_host_records[i].getCommunity();
 	m_node_is_stale[i] = false;
-	retractRunWarning("Node " + node_name + " is stale.");
+	if(m_warning_on_stale)
+	  retractRunWarning("Node " + node_name + " is stale.");
       }
     }
   }

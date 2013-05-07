@@ -883,6 +883,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
 
   if(draw_labels && ((label != "") || (message != ""))) {
     glColor3f(labelc.red(), labelc.grn(), labelc.blu());
+#if 1
     gl_font(1, 10);
     if(m_zoom > 4)
       gl_font(1, 12);
@@ -892,6 +893,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
       gl_draw(message.c_str());
     else
       gl_draw(label.c_str());
+#endif
   }
 
   glPopMatrix();
@@ -1316,7 +1318,7 @@ void MarineViewer::drawSegList(const XYSegList& segl)
   
   if(segl.color_set("edge"))           // edge_color
     edge_c = segl.get_color("edge");
-    if(segl.edge_size_set())           // edge_size
+  if(segl.edge_size_set())             // edge_size
     line_width = segl.get_edge_size();
   if(segl.vertex_size_set())           // vertex_size
     vertex_size = segl.get_vertex_size();
@@ -1813,6 +1815,7 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
   ColorPack edge_c("blue");
   ColorPack labl_c("white");
   ColorPack fill_c("invisible");
+  double line_width = 1;
 
   if(circle.color_set("edge"))           // edge_color
     edge_c = circle.get_color("edge");  
@@ -1820,6 +1823,8 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
     labl_c = circle.get_color("label");  
   if(circle.color_set("fill"))           // fill_color
     fill_c = circle.get_color("fill");
+  if(circle.edge_size_set())             // edge_size
+    line_width = circle.get_edge_size();
 
   // If neither edges or circle-fill are visible, just quit now!
   if(!edge_c.visible() && !fill_c.visible())
@@ -1858,6 +1863,7 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
   }
   
   if(edge_c.visible()) {
+    glLineWidth(line_width);
     glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
     glBegin(GL_LINE_LOOP);
     for(i=0; i<draw_pts.size(); i=i+2) {

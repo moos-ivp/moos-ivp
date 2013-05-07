@@ -50,9 +50,8 @@ VPlug_VehiSettings::VPlug_VehiSettings()
   setParam("vehicles_shape_scale", 1.0);
   setParam("vehicles_viewable", "true");
   setParam("bearing_lines_viewable",  "true");
-  setParam("stale_vehicles_viewable", "false");
   setParam("stale_report_thresh", 60);
-  setParam("stale_nodraw_thresh", 300);
+  setParam("stale_remove_thresh", 180);
 }
 
 
@@ -94,6 +93,10 @@ bool VPlug_VehiSettings::setParam(string param, string value)
     m_trails_color_orig = value;
     handled = true;
   }
+  else if((param=="stale_report_thresh") && isNumber(value)) 
+    handled = setParam(param, atof(value.c_str()));
+  else if((param=="stale_remove_thresh") && isNumber(value))
+    handled = setParam(param, atof(value.c_str()));
 
   else if(param == "vehicles_viewable")
     handled = setBooleanOnString(m_vehicles_viewable, value);
@@ -133,8 +136,6 @@ bool VPlug_VehiSettings::setParam(string param, string value)
   }
   else if(param == "trails_viewable")
     handled = setBooleanOnString(m_trails_viewable, value);
-  else if(param == "stale_vehicles_viewable")
-    handled = setBooleanOnString(m_stale_vehicles_viewable, value);
   else if(param == "trails_connect_viewable")
     handled = setBooleanOnString(m_trails_connect_viewable, value);
   else if(param == "trails_future_viewable")
@@ -180,9 +181,6 @@ bool VPlug_VehiSettings::setParam(string param, double value)
   // Handle deprecated parameters
   if(param == "vehicle_shape_scale")
     param = "vehicles_shape_scale";
-  if(param == "stale_report_thresh_nodraw")
-    param = "stale_nodraw_thresh";
-
 
   bool handled = true;
   if((param == "trails_point_size") && (value >= 0)) {
@@ -194,9 +192,9 @@ bool VPlug_VehiSettings::setParam(string param, double value)
     m_trails_length = vclip(m_trails_length, 0, 10000);
   }
   else if((param == "stale_report_thresh") && (value >= 0)) 
-    m_stale_report_thresh = value;
-  else if((param == "stale_nodraw_thresh") && (value >= 0)) 
-    m_stale_nodraw_thresh = value;
+    m_stale_report_thresh = vclip_min(value, 2);
+  else if((param == "stale_remove_thresh") && (value >= 0)) 
+    m_stale_remove_thresh = value;
   else if((param == "vehicles_shape_scale") && (value >= 0)) {
     m_vehicles_shape_scale = value;
     m_vehicles_shape_scale = vclip(m_vehicles_shape_scale, 0.1, 100);
@@ -218,8 +216,6 @@ string VPlug_VehiSettings::strvalue(const string& attribute)
     return(boolToString(m_trails_viewable));
   if(attribute == "trails_connect_viewable")
     return(boolToString(m_trails_connect_viewable));
-  if(attribute == "stale_vehicles_viewable")
-    return(boolToString(m_stale_vehicles_viewable));
 
   if(attribute == "trails_future_viewable")
     return(boolToString(m_trails_future_viewable));
@@ -248,8 +244,8 @@ string VPlug_VehiSettings::strvalue(const string& attribute)
     return(doubleToString(m_trails_point_size));
   if(attribute == "stale_report_thresh")
     return(doubleToString(m_stale_report_thresh));
-  if(attribute == "stale_nodraw_thresh")
-    return(doubleToString(m_stale_nodraw_thresh));
+  if(attribute == "stale_remove_thresh")
+    return(doubleToString(m_stale_remove_thresh));
 
   return("");
 }

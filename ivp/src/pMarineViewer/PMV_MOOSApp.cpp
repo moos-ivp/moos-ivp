@@ -111,11 +111,9 @@ bool PMV_MOOSApp::Iterate()
   if(m_pending_pairs)
     postConnectionPairs();
 
-  handleAppCastRequesting();
-
   if((!m_gui) || (!m_pending_moos_events))
     return(true);
-  
+
   MOOS_event e;
   e.type="Iterate";
   e.moos_time = MOOSTime();
@@ -201,6 +199,7 @@ void PMV_MOOSApp::registerVariables()
 
   m_Comms.Register("APPCAST", 0);
   m_Comms.Register("VIEW_POLYGON", 0);
+  m_Comms.Register("PHI_HOST_IP",  0);
   m_Comms.Register("VIEW_POINT",   0);
   m_Comms.Register("VIEW_VECTOR",  0);
   m_Comms.Register("VIEW_CIRCLE",  0);
@@ -266,7 +265,7 @@ void PMV_MOOSApp::handlePendingGUI()
 
 void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 {
-  if(!m_appcast_repo || !m_gui)
+  if(!m_appcast_repo || !m_gui || !m_gui->mviewer)
     return;
 
   m_gui->mviewer->setParam("curr_time", e.moos_time);
@@ -288,12 +287,19 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     string   sval  = msg.GetString();
     string   community = msg.GetCommunity();
 
-    bool handled = false;
+    bool     handled = false;
+    string   why_not;
 
-    if(key == "NODE_REPORT") {
+    if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL")) {
       m_node_reports_received++;
       NodeRecord record = string2NodeRecord(sval);
       m_node_report_index = record.getIndex();
+      handled = m_gui->mviewer->handleNodeReport(sval, why_not);
+    }
+
+    if(key == "PHI_HOST_IP") {
+      m_gui->augmentTitle(sval);
+      handled = true;
     }
 
     // PMV_MENU_CONTEXT = 
@@ -348,9 +354,17 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       handled_appcast = true;
     }
 
-    if(!handled && !handled_scope) 
-      reportRunWarning("Unhandled Mail: " + key + "=" + sval + " src=" + 
-		       msg.GetSource() + " aux=" + msg.GetSourceAux());
+    if(!handled && !handled_scope) {
+      string warning = "Unhandled Mail: " + key + " ";
+      if(why_not != "")
+	warning += why_not;
+      else {
+	warning += "=" + sval + " src=" + msg.GetSource();
+	if(msg.GetSourceAux() != "")
+	  warning += " aux=" + msg.GetSourceAux();
+      }
+      reportRunWarning(warning);
+    }
   }
 
   // Part II: Handle Appcasting updates and possible new appcast requests
@@ -392,9 +406,13 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 
 void PMV_MOOSApp::handleIterate(const MOOS_event & e) 
 {
+  // Only auto-remove stale vehicles if operating in simulation
+  if(m_time_warp > 1)
+    m_gui->clearStaleVehicles();
+  
   double curr_time = e.moos_time - m_start_time;
   cout << "." << flush;
-  
+
   m_gui->mviewer->PMV_Viewer::draw();
   m_gui->mviewer->redraw();
   m_gui->updateXY();
@@ -402,6 +420,16 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   m_gui->setCurrTime(curr_time);
   m_lastredraw_time = e.moos_time;
 
+  // We want to detect when a vehicle has been cleared that may still be
+  // active. Sent appcast requests to everyone/global when a vehicle has
+  // ben recently cleared. Just to give everyone a chance to report back.
+  double clear_stale_timestamp = m_gui->getClearStaleTimeStamp();
+  double elapsed = curr_time - clear_stale_timestamp;
+  double force = false;
+  if(elapsed < 2)
+    force = true;
+  handleAppCastRequesting(force);
+  
   string vname = m_gui->mviewer->getStringInfo("active_vehicle_name");
 
   vector<VarDataPair> left_pairs = m_gui->mviewer->getLeftMousePairs();
@@ -443,11 +471,17 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
 //-------------------------------------------------------------
 // Procedure: handleAppCastRequesting()
 
-void PMV_MOOSApp::handleAppCastRequesting()
+void PMV_MOOSApp::handleAppCastRequesting(bool force)
 {
   // If appcasts are not being viewed dont request refreshes 
   if(m_gui && (m_gui->showingAppCasts() == false))
     return;
+
+  if(force) {
+    string key = GetAppName() + ":" + m_host_community;      
+    postAppCastRequest("all", "all", key, "any", 3);
+    return;
+  }
 
   // Consider how long its been since our appcast request.
   // Want to request less frequently if using a higher time warp.
@@ -460,17 +494,17 @@ void PMV_MOOSApp::handleAppCastRequesting()
     string current_node = m_appcast_repo->getCurrentNode();
     string current_proc = m_appcast_repo->getCurrentProc();
     
-    if(refresh_mode == "events") {
+    if(refresh_mode == "streaming") {
+      string key = GetAppName() + ":" + m_host_community;      
+      postAppCastRequest("all", "all", key, "any", 3);
+    }
+    else if(refresh_mode == "events") {
       // Not critical that key names be unique, but good practice to 
       // head off multiple uMAC clients from interfering
       string key_app = GetAppName() + ":" + m_host_community + "app";      
       string key_gen = GetAppName() + ":" + m_host_community + "gen";      
       postAppCastRequest(current_node, current_proc, key_app, "any", 3);
       postAppCastRequest("all", "all", key_gen, "run_warning", 3);
-    }
-    else if(refresh_mode == "streaming") {
-      string key = GetAppName() + ":" + m_host_community;      
-      postAppCastRequest("all", "all", key, "any", 3);
     }
   }
 }
@@ -534,6 +568,10 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "appcast_width") 
       handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "stale_report_thresh") 
+      handled = m_gui->mviewer->setParam(param, value);
+    else if(param == "stale_remove_thresh") 
+      handled = m_gui->mviewer->setParam(param, value);
 
     else if(param == "log_the_image") 
       handled = setBooleanOnString(m_log_the_image, value);
@@ -626,6 +664,7 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   }
 
   m_start_time = MOOSTime();
+  m_gui->mviewer->setParam("time_warp", m_time_warp);
   m_gui->mviewer->redraw();
   m_gui->updateRadios();
   m_gui->setMenuItemColors();
@@ -716,6 +755,22 @@ bool PMV_MOOSApp::buildReport()
   m_msgs << "NodeReports Recd: " << m_node_reports_received << endl;
   m_msgs << "NodeReport Index: " << m_node_report_index << endl;
 
+  unsigned int drawcount = m_gui->mviewer->getDrawCount();
+  
+  double real_elapsed = (m_curr_time - m_start_time) / m_time_warp;
+  double drawrate = ((double)(drawcount) / real_elapsed);
+  
+  m_msgs << "Draw Count:       " << drawcount << endl; 
+  m_msgs << "Draw Count Rate:  " << drawrate  << endl; 
+
+  double curr_time = m_gui->mviewer->getCurrTime();
+  m_msgs << "Curr Time:        " << doubleToString(curr_time,10) << endl;
+
+  double time_warp = m_gui->mviewer->getTimeWarp();
+  m_msgs << "Time Warp:        " << doubleToString(time_warp,3) << endl;
+
+  double elapsed = m_gui->mviewer->getElapsed();
+  m_msgs << "Elapsed:        " << doubleToString(elapsed,5) << endl;
+
   return(true);
 }
-

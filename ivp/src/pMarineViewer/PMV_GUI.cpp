@@ -40,6 +40,7 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   this->size_range(600,400);
 
   m_curr_time = 0;
+  m_clear_stale_timestamp = 0;
 
   mviewer   = new PMV_Viewer(0, 0, 1, 1);
   m_mviewer = mviewer;
@@ -202,6 +203,8 @@ void PMV_GUI::augmentMenu()
   m_menubar->add("MOOS-Scope/Add Variable", 'A',      (Fl_Callback*)PMV_GUI::cb_Scope, (void*)0, FL_MENU_DIVIDER);
     
   m_menubar->add("Vehicles/ClearHistory/All Vehicles", FL_CTRL+'9', (Fl_Callback*)PMV_GUI::cb_FilterOut, (void*)-1, FL_MENU_DIVIDER);
+  m_menubar->add("Vehicles/ClearHistory/Selected", FL_CTRL+'k', (Fl_Callback*)PMV_GUI::cb_DeleteActiveNode, (void*)0, FL_MENU_DIVIDER);
+  m_menubar->add("Vehicles/ClearHistory/Reset All", FL_ALT+'k', (Fl_Callback*)PMV_GUI::cb_DeleteActiveNode, (void*)1, FL_MENU_DIVIDER);
 }
 
 //----------------------------------------------------------
@@ -353,8 +356,16 @@ bool PMV_GUI::showingAppCasts() const
   return(true);
 }
 
+//----------------------------------------- augmentTitle
+void PMV_GUI::augmentTitle(string ip_str)
+{
+  string new_title = m_title_base + " " + ip_str;
+  label(new_title.c_str());
+}
+
 //----------------------------------------- UpdateXY
-void PMV_GUI::updateXY() {
+void PMV_GUI::updateXY() 
+{
   double dwarp = GetMOOSTimeWarp();
   string time_str = doubleToString(m_curr_time, 1);
   time->value(time_str.c_str());
@@ -630,6 +641,9 @@ inline void PMV_GUI::cb_FilterOut_i(int i) {
   else {
     string str = m_filter_tags[i];
     mviewer->setParam("filter_out_tag", str);
+    if(m_repo)
+      m_repo->removeNode(str);
+    updateNodes(true);
   }
 }
 
@@ -637,6 +651,62 @@ void PMV_GUI::cb_FilterOut(Fl_Widget* o, int v) {
   ((PMV_GUI*)(o->parent()->user_data()))->cb_FilterOut_i(v);
 }
 
+
+//----------------------------------------- DeleteActiveNode
+inline void PMV_GUI::cb_DeleteActiveNode_i(int i) {  
+  if(!m_repo)
+    return;
+  if(i==0) {
+    string active_node = m_repo->getCurrentNode();
+    if(active_node == "")
+      return;
+  
+    mviewer->setParam("filter_out_tag", active_node);
+    m_repo->removeNode(active_node);
+    updateNodes(true);
+    updateProcs(true);
+    m_clear_stale_timestamp = m_curr_time;
+  }
+  if(i==1)
+    clearStaleVehicles(true);
+}
+
+void PMV_GUI::cb_DeleteActiveNode(Fl_Widget* o, int v) {
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_DeleteActiveNode_i(v);
+}
+
+
+//----------------------------------------------------------
+// Procedure: clearStaleVehicles
+
+bool PMV_GUI::clearStaleVehicles(bool force) 
+{
+  if(!m_repo)
+    return(false);
+
+  double stale_report_thresh = mviewer->getStaleReportThresh();
+  double stale_remove_thresh = mviewer->getStaleRemoveThresh();
+
+  if(!force && (stale_remove_thresh < 0))
+    return(false);
+
+  double total_thresh = stale_report_thresh + stale_remove_thresh;
+  if(force)
+    total_thresh = stale_report_thresh;
+
+  vector<string> vnames = mviewer->getStaleVehicles(total_thresh);
+
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    mviewer->setParam("filter_out_tag", vnames[i]);
+    m_repo->removeNode(vnames[i]);
+    updateNodes(true);
+    updateProcs(true);
+  }
+
+  if(vnames.size() > 0)
+    m_clear_stale_timestamp = m_curr_time;
+  return(true);
+}
 
 //----------------------------------------------------
 // Procedure: cb_SelectNode_i()
@@ -1016,13 +1086,25 @@ void PMV_GUI::updateNodes(bool clear)
   // Part 2: Build up the browser lines from the previously gen'ed table.
   if(clear)
     m_brw_nodes->clear();
+  
+  double stale_thresh = mviewer->getStaleReportThresh();
+  vector<string> stale_names = mviewer->getStaleVehicles(stale_thresh);
 
   unsigned int   curr_brw_size = m_brw_nodes->size();
   vector<string> browser_lines = actab.getTableOutput();
+
   for(unsigned int j=0; j<browser_lines.size(); j++) {
     string line = browser_lines[j];
     if(j>=2) {
-      if(node_has_run_warning[j-2])
+
+      string line_copy = line;
+      string node  = biteString(line_copy, ' ');
+      bool   stale = vectorContains(stale_names, node);
+      
+      if(stale) // Draw as yellow if the node is stale
+      	line = "@B" + uintToString(m_color_stlw) + line;
+      
+      else if(node_has_run_warning[j-2])
 	line = "@B" + uintToString(m_color_runw) + line;
       else if(node_has_cfg_warning[j-2])
 	line = "@B" + uintToString(m_color_cfgw) + line;
@@ -1518,6 +1600,7 @@ void PMV_GUI::resizeWidgets()
   Fl_Color color_text = fl_rgb_color(0, 0, 0);        // black
   m_color_runw = fl_rgb_color(205, 71, 71);           // redish
   m_color_cfgw = fl_rgb_color(50, 189, 149);          // greenish
+  m_color_stlw = fl_rgb_color(125, 125, 0);           // yellowish
 
   if(appcast_color_scheme == "indigo") {
     color_back = fl_rgb_color(95, 117, 182);   // indigo-lighter (65,87,152)

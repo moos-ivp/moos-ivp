@@ -77,6 +77,8 @@ HazardSensor_MOOSApp::HazardSensor_MOOSApp()
   m_width_benign = 8;
   m_swath_len    = 5;
   m_swath_transparency = 0.2;
+
+  m_ac.setMaxEvents(20);
 }
 
 //---------------------------------------------------------
@@ -516,12 +518,21 @@ bool HazardSensor_MOOSApp::handleSensorRequest(const string& request)
 
   // Part 6: For each hazard, determine if the hazard is newly within
   // the sensor swath of the requesting vehicle.
-    map<string, XYHazard>::iterator p;
+  map<string, XYHazard>::iterator p;
   for(p=m_map_hazards.begin(); p!=m_map_hazards.end(); p++) {
     string hlabel = p->first;
-    bool new_report = updateVehicleHazardStatus(vix, hlabel);  // detection dice
-    if(new_report) 
-      postHazardDetectionReport(hlabel, vname); 
+    bool dice_roll_needed = updateVehicleHazardStatus(vix, hlabel);
+    if(dice_roll_needed) {
+      int    rand_int  = rand() % 10000;
+      double dice_roll = (double)(rand_int) / 10000;
+
+      bool detect_result_normal = rollDetectionDiceNormal(vix, hlabel, dice_roll);
+      bool detect_result_aspect = rollDetectionDiceAspect(vix, hlabel, dice_roll);
+      if(detect_result_normal)
+	postHazardDetectionReport(hlabel, vix); 
+      else if(detect_result_aspect)
+	postHazardDetectionAspect(hlabel);
+    }
   }
 
   return(true);
@@ -584,9 +595,6 @@ bool HazardSensor_MOOSApp::handleClassifyRequest(const string& request)
     return(true);
   }
   
-
-  // Note we dont include the label number to avoid bloating the event list
-  reportEvent("Sensor classify request received from: " + vname);
   m_map_classify_reqs[vname]++;
 
   // Part 2: Sanity checks
@@ -603,18 +611,16 @@ bool HazardSensor_MOOSApp::handleClassifyRequest(const string& request)
 
   // Part 3: check if a new classify req may be made. A new class req may be 
   //         accepted each time a pass has been made over the hazard
-  unsigned int queries = m_map_hazard_class_queries[haz_label];
-  unsigned int hits    = m_map_hazard_hits[haz_label];
-  unsigned int unclassified_hits = 0;
-  if(hits > queries)
-    unclassified_hits = hits - queries;
-  if(unclassified_hits == 0) 
+  if((m_map_hazard_passes.count(vname)==0) || (m_map_hazard_passes[vname].size()==0))
     return(reportRunWarning("Sensor classify request saturated: " + vname));
+  double vehicle_heading = m_map_hazard_passes[vname].front();
+  m_map_hazard_passes[vname].pop_front();
 
-  // Part 4: Get hazard type info, classify probability, and roll the dice
+  // Part 4: Get hazard, and true type info
   XYHazard true_hazard = m_map_hazards[haz_label];
   bool     is_hazard   = (true_hazard.getType() == "hazard");
 
+  // Part 5: Perhaps modify the PC based on resemblance factor
   double prob_classify = m_map_prob_classify[vname];
   double pc_prime      = prob_classify;
 
@@ -622,14 +628,55 @@ bool HazardSensor_MOOSApp::handleClassifyRequest(const string& request)
     double resemblance = true_hazard.getResemblance();
     pc_prime += (1-prob_classify) * (1-resemblance);
   }
-    
-  // role the classification dice. 
-  int rand_int = rand() % 10000;
-  int thresh   = (pc_prime * 10000) + 1;
-  if(rand_int > thresh)
-    is_hazard = !is_hazard;
 
-  // Part 5: Build the report to be added to the classify queue
+  // Part 6: Perhaps modify the PC based on aspect angle
+  bool use_aspect_info = true_hazard.hasAspect();
+  if(!true_hazard.hasAspectRangeMin() || !true_hazard.hasAspectRangeMax())
+    use_aspect_info = false;
+  
+  double pc_dbl_prime = pc_prime;
+  if(use_aspect_info) {
+    double hazard_aspect_opt = true_hazard.getAspect();
+    double aspect_diff = aspectDiff(vehicle_heading, hazard_aspect_opt);
+    
+    double range_min = true_hazard.getAspectRangeMin();
+    double range_max = true_hazard.getAspectRangeMax();
+    
+    double degrade_pct = 0;
+    if(aspect_diff <= range_min)
+      degrade_pct = 0;
+    else if(aspect_diff >= range_max)
+      degrade_pct = 1;
+    else
+      degrade_pct = (aspect_diff - range_min) / (range_max - range_min);
+    degrade_pct = vclip(degrade_pct, 0, 1);
+  
+    pc_dbl_prime = 0.5 + ((1-degrade_pct) * (pc_prime-0.5));
+  }
+
+  // Part 7: Roll the classification dice. 
+  double dice_roll = randomDouble(0, 1);
+
+  // Example:              | dice_roll
+  //   pc = 0.9            |   0.50 --> proper classifcation
+  //   pc_prime = 0.94     |   0.98 --> incorrect classification
+  //   pc_dbl_prime = 0.75 |   0.85 --> incorrect classification, aspect_affected
+
+  bool aspect_affected = false;
+  if(dice_roll > pc_dbl_prime) {
+    is_hazard = !is_hazard;     // apply incorrect classification
+    if(dice_roll <= pc_prime)
+      aspect_affected = true;   // Declare aspect_affected
+  }
+
+  string msg = "pc=" + doubleToString(prob_classify);
+  msg += ", pcp=" + doubleToString(pc_prime);
+  msg += ", pcdb=" + doubleToString(pc_dbl_prime);
+  msg += ", dice=" + doubleToString(dice_roll);
+  msg += ", aff=" + boolToString(aspect_affected);
+  reportEvent(msg);
+
+  // Part 8: Build the report to be added to the classify queue
   XYHazard post_hazard = true_hazard;
   if(is_hazard) 
     post_hazard.setType("hazard");
@@ -637,9 +684,10 @@ bool HazardSensor_MOOSApp::handleClassifyRequest(const string& request)
     post_hazard.setType("benign");
   string hazard_spec = post_hazard.getSpec("hr,color,shape,width,xpos,ypos");
 
-  // Part 6: Create an entry for the classify queue and push it on...
+  // Part 9: Create an entry for the classify queue and push it on...
   ClassifyEntry entry;
   entry.setHazard(post_hazard);
+  entry.setAspectAffected(aspect_affected);
   entry.setPriority(atof(priority.c_str()));
 
   bool clock_reset = false;
@@ -731,11 +779,12 @@ void HazardSensor_MOOSApp::processClassifyQueue()
     // Part 2: Get the entry
     ClassifyEntry entry = m_map_classify_queue[vname].pop();
 
+    bool aspect_affected = entry.getAspectAffected();
+
     // Part 3: Build and post the vehicle specific hazard report
     string spec = entry.getHazard().getSpec();
     Notify("UHZ_HAZARD_REPORT_"+toupper(vname), spec);
     m_map_classify_answ[vname]++;
-    reportEvent(vname + " classify answer posted");
     
     // Part 4: Build and post the general hazard report
     string full_spec = "vname=" + vname + "," + spec;
@@ -754,12 +803,21 @@ void HazardSensor_MOOSApp::processClassifyQueue()
 	circ.set_color("edge", "green");
 	circ.set_color("fill", "green");
       }
+
       //circ.set_label(label);
+      circ.setDrawVertices(5);
       circ.set_vertex_size(0);
       circ.set_edge_size(1);
       circ.set_transparency(0.3);
       circ.set_time(m_curr_time);
       // circ.setDuration(m_circle_duration);
+
+      if(aspect_affected) {
+      	circ.set_color("fill", "pink");
+	circ.set_edge_size(2);
+	circ.set_transparency(0.5);
+      }
+
       Notify("VIEW_CIRCLE", circ.get_spec());      
     }
   }    
@@ -783,9 +841,24 @@ void HazardSensor_MOOSApp::postVisuals()
     string shape = m_shape_hazard;
     double width = m_width_hazard;
     double hr    = 0;
+    double hx    = hazard.getX();
+    double hy    = hazard.getY();
     if(hazard.hasResemblance())
       hr = hazard.getResemblance();
     
+    double aspect = -1;
+    if(hazard.hasAspect())
+      aspect = hazard.getAspect();
+
+    double aspect_line_len = 15;
+    if(hazard.hasAspectRangeMin() && hazard.hasAspectRangeMax()) {
+      double range_min = hazard.getAspectRangeMin();
+      double range_max = hazard.getAspectRangeMax();
+      double range_avg = (range_min + range_max) / 2.0;
+      double range_pct = range_avg / 90;
+      aspect_line_len = 5 + (range_pct * 25);
+    }
+
     if(hazard.getType() != "hazard") {
       color = m_color_benign;
       shape = m_shape_benign;
@@ -800,8 +873,8 @@ void HazardSensor_MOOSApp::postVisuals()
       width = hazard.getWidth();
 
     XYMarker marker;
-    marker.set_vx(hazard.getX());
-    marker.set_vy(hazard.getY());
+    marker.set_vx(hx);
+    marker.set_vy(hy);
     marker.set_label(hazard.getLabel());
     marker.set_width(width);
     marker.set_type(shape);
@@ -811,7 +884,171 @@ void HazardSensor_MOOSApp::postVisuals()
     marker.set_color("primary_color", color);
     string spec = marker.get_spec(); 
     Notify("VIEW_MARKER", spec);
+
+    if(aspect > 0) {
+      double x1,y1,x2,y2;
+      projectPoint(aspect, aspect_line_len, hx, hy, x1, y1);
+      projectPoint(aspect+180, aspect_line_len, hx, hy, x2, y2);
+      XYSegList segl;
+      segl.add_vertex(x1, y1);
+      segl.add_vertex(x2, y2);
+      segl.set_vertex_size(0);
+      segl.set_edge_size(1);
+      segl.set_color("edge", "gray70");
+      
+      Notify("VIEW_SEGLIST", segl.get_spec());
+    }
   }
+}
+
+//------------------------------------------------------------
+// Procedure: updateVehicleHazardStatus
+
+bool HazardSensor_MOOSApp::updateVehicleHazardStatus(unsigned int vix, 
+						     string hazard_label)
+{
+  // Part 1: Sanity checking
+  if((m_map_hazards.count(hazard_label)==0) || (vix >= m_node_records.size()))
+    return(false);
+  
+  string vname = m_node_records[vix].getName();
+
+  if(m_map_swath_width.count(vname) == 0) {
+    reportRunWarning("No sensor setting for: " + vname);
+    return(false);
+  }
+
+  // Part 2: Determine the hazard status (whether or not the hazard is in the
+  //         sensor swath of the vehicle given by vix.
+  XYHazard hazard = m_map_hazards[hazard_label];
+
+  string tag    = vname + "_" + hazard_label;
+  double haz_x  = hazard.getX();
+  double haz_y  = hazard.getY();
+  bool   new_contained_status = m_node_polygons[vix].contains(haz_x, haz_y);
+
+  // Part 3: Update the new status and determine if the hazard has just now
+  // entered the swath
+  bool previous_contained_status = m_map_hv_status[tag];
+
+  m_map_hv_status[tag] = new_contained_status;
+
+  if((new_contained_status == true) && (previous_contained_status == false))
+    return(true);
+
+  return(false);
+}
+
+//------------------------------------------------------------
+// Procedure: rollDetectionDiceNormal
+
+bool HazardSensor_MOOSApp::rollDetectionDiceNormal(unsigned int vix, 
+						   string hazard_label,
+						   double dice_roll)
+{
+  // Part 1: Sanity checking
+  if((m_map_hazards.count(hazard_label)==0) || (vix >= m_node_records.size()))
+    return(false);
+  
+  // Part 2: Get the vehicle and hazard information we need
+  XYHazard hazard    = m_map_hazards[hazard_label];
+  string vname       = m_node_records[vix].getName();
+  double prob_detect = m_map_prob_detect[vname];
+  double prob_falarm = m_map_prob_false_alarm[vname];
+
+  // Part 3: Apply the roll of the dice, given in the dice_roll range of [0,1).
+  if(hazard.getType() == "hazard")
+    return(dice_roll < prob_detect);
+  
+  string info = "DetectionNormal: pd: ";
+  info += doubleToString(prob_detect) + " pfa:" + doubleToString(prob_falarm);
+
+  reportEvent(info);
+
+  double dice_thresh = prob_falarm;
+  if(hazard.isSetHR()) 
+    dice_thresh = (prob_falarm + hazard.getResemblance()) / 2;
+  return(dice_roll < dice_thresh);
+}
+
+//------------------------------------------------------------
+// Procedure: rollDetectionDiceAspect
+
+bool HazardSensor_MOOSApp::rollDetectionDiceAspect(unsigned int vix, 
+						   string hazard_label,
+						   double dice_roll)
+{
+  // Part 1: Sanity checking
+  if((m_map_hazards.count(hazard_label)==0) || (vix >= m_node_records.size()))
+    return(false);
+  
+  // Part 2: Get the hazard information, check if there is an aspect associated
+  XYHazard hazard = m_map_hazards[hazard_label];
+  bool use_aspect_info = true;
+  if(!hazard.hasAspect() || !hazard.hasAspectRangeMin() || !hazard.hasAspectRangeMax())
+    use_aspect_info = false;
+  if(!use_aspect_info)
+    return(rollDetectionDiceNormal(vix, hazard_label, dice_roll));
+  
+  // Part 3: Hazard has aspect, so now get the veicle info we need
+  string vname       = m_node_records[vix].getName();
+  double prob_detect = m_map_prob_detect[vname];
+  double prob_falarm = m_map_prob_false_alarm[vname];
+  
+  // Part 4: Determine a new Probability of False Alarm base on degradation 
+  //         of sensor performance due to deviation from optimal aspect angle.
+  // Part A: Determine the how far off the present vehcle aspect is compared
+  //         to the optimal aspect for this particular hazard.
+  double vehicle_heading   = m_node_records[vix].getHeading();
+  double hazard_aspect_opt = hazard.getAspect();
+  double aspect_diff = aspectDiff(vehicle_heading, hazard_aspect_opt);
+
+  // Part B: Determine the sensor degradation due to the difference between
+  //         the present aspect and optimal aspect for this object
+
+  double range_min = hazard.getAspectRangeMin();
+  double range_max = hazard.getAspectRangeMax();
+  
+  double degrade_pct = 0;
+  if(aspect_diff <= range_min)
+    degrade_pct = 0;
+  else if(aspect_diff >= range_max)
+    degrade_pct = 1;
+  else
+    degrade_pct = (aspect_diff - range_min) / (range_max - range_min);
+  degrade_pct = vclip(degrade_pct, 0, 1);
+  
+
+  // Part C: Determine the new ROC curve exponent considering degradation
+  //         e.g., If cur_exp=5, and degrade_pct=0.25, then new_exp=4, since 4
+  //         is a 25% degradation between 5 and 1 (1 is worst ROC curve, linear)
+  double cur_exp = m_map_swath_roc_exp[vname];
+  double new_exp = cur_exp - (degrade_pct * (cur_exp-1));
+  
+  string goo = "cur_exp=" + doubleToStringX(cur_exp);
+  goo += "new_exp=" + doubleToStringX(new_exp);
+  reportEvent(goo);
+
+  // Part D: Calculate the new PFA given the PD and new EXP values
+  prob_falarm = pow(prob_detect, new_exp);
+
+  string foo = "aspect_diff=" + doubleToString(aspect_diff);
+  foo += " degrade_pct=" + doubleToString(degrade_pct);
+  reportEvent(foo);
+
+  string info = "DetectionAspect: pd: ";
+  info += doubleToString(prob_detect) + " pfa:" + doubleToString(prob_falarm);
+
+  reportEvent(info);
+
+  // Part 5: Apply the roll of the dice, given in the dice_roll range of [0,1).
+  if(hazard.getType() == "hazard")
+    return(dice_roll < prob_detect);
+  
+  double dice_thresh = prob_falarm;
+  if(hazard.isSetHR()) 
+    dice_thresh = (prob_falarm + hazard.getResemblance()) / 2;
+  return(dice_roll < dice_thresh);
 }
 
 //------------------------------------------------------------
@@ -820,25 +1057,26 @@ void HazardSensor_MOOSApp::postVisuals()
 //            UHZ_DETECTION_REPORT_GILDA = "x=-125,y=-143,label=517"
 
 void HazardSensor_MOOSApp::postHazardDetectionReport(string hazard_label, 
-						     string vname)
+						     unsigned int vix)
 {
+
   // Part 1: Sanity checking
-  if(m_map_hazards.count(hazard_label) == 0) {
-    reportRunWarning("Error: Unknown hazard label");
+  if((m_map_hazards.count(hazard_label)==0) || (vix >= m_node_records.size()))
     return;
-  }
   
   // Part 2: Prepare the hazard detection report
-  XYHazard hazard = m_map_hazards[hazard_label];
-  string   spec   = hazard.getSpec("hr,type,color,width,shape");
+  XYHazard hazard  = m_map_hazards[hazard_label];
+  string   vname   = m_node_records[vix].getName();
+  double   heading = m_node_records[vix].getHeading();
+  string   spec    = hazard.getSpec("hr,type,color,width,shape");
   
   Notify("UHZ_DETECTION_REPORT", (spec + ",vname=" + vname));
   Notify("UHZ_DETECTION_REPORT_"+toupper(vname), spec);
 
   // Part 3: Note the detection as another piece of data collected on this
   //         hazard. Then possible for another classify query to be answered
-  m_map_hazard_hits[hazard_label]++;
-  
+  m_map_hazard_passes[vname].push_back(heading); 
+
   // Part 4: Build some local memo/debug messages.
   reportEvent("Detection report sent to vehicle: " + vname);
   m_map_detections[vname]++;
@@ -856,77 +1094,41 @@ void HazardSensor_MOOSApp::postHazardDetectionReport(string hazard_label,
     circ.set_edge_size(1);
     circ.set_transparency(0.3);
     circ.set_time(m_curr_time);
+    circ.setDrawVertices(12);
     circ.setDuration(m_circle_duration);
     Notify("VIEW_CIRCLE", circ.get_spec());
   }
 }
 
-
 //------------------------------------------------------------
-// Procedure: updateVehicleHazardStatus
+// Procedure: postHazardDetectionAspect()
 
-bool HazardSensor_MOOSApp::updateVehicleHazardStatus(unsigned int vix, 
-						   string hazard_label)
+void HazardSensor_MOOSApp::postHazardDetectionAspect(string hazard_label)
 {
   // Part 1: Sanity checking
-  if(m_map_hazards.count(hazard_label)==0)
-    return(false);
+  if(m_map_hazards.count(hazard_label) == 0)
+    return;
   
-  if(vix >= m_node_records.size())
-    return(false);
-  
-  string vname = m_node_records[vix].getName();
-  if(m_map_swath_width.count(vname) == 0) {
-    reportRunWarning("No sensor setting for: " + vname);
-    return(false);
-  }
-
-  // Part 2:
+  // Part 2: Prepare the hazard detection report
   XYHazard hazard = m_map_hazards[hazard_label];
-
-  double prob_detect      = m_map_prob_detect[vname];
-  double prob_false_alarm = m_map_prob_false_alarm[vname];
-
-  string tag = vname + "_" + hazard_label;
-
-  bool previous_contained_status = m_map_hv_status[tag];
-
-  // Now figure out what the new status should be
-  double haz_x  = hazard.getX();
-  double haz_y  = hazard.getY();
-
-  bool new_contained_status = m_node_polygons[vix].contains(haz_x, haz_y);
   
-  m_map_hv_status[tag] = new_contained_status;
-
-  bool is_hazard = true;
-  if(hazard.getType() != "hazard")
-    is_hazard = false;
-
-  if((new_contained_status == true) && (previous_contained_status == false)) {
-    // Here's where we roll the detection dice!
-    int rand_int = rand() % 10000;
-    int thresh;
-    if(is_hazard)
-      thresh = (prob_detect * 10000) + 1;
-    else {
-      double coeff = 1;
-      if(prob_false_alarm < 1) {
-	if(hazard.isSetHR()) {
-	  double haz_hr = hazard.getResemblance();
-	  coeff = (prob_false_alarm + haz_hr) / 2;
-	}
-	else
-	  coeff = prob_false_alarm;
-      }
-      thresh = (coeff * 10000) + 1;
-    }
-    if(rand_int < thresh)
-      return(true);
+  // Part 5: Build/Post some visual artifacts using VIEW_CIRCLE
+  if((m_circle_duration == -1) || (m_circle_duration > 0)) {
+    double haz_x = hazard.getX();
+    double haz_y = hazard.getY();
+    XYCircle circ(haz_x, haz_y, 10);
+    circ.set_color("edge", "pink");
+    circ.set_color("fill", "pink");
+    circ.set_vertex_size(0);
+    circ.set_edge_size(1);
+    circ.set_transparency(0.3);
+    circ.set_time(m_curr_time);
+    circ.setDrawVertices(12);
+    circ.setDuration(m_circle_duration);
+    Notify("VIEW_CIRCLE", circ.get_spec());
   }
-
-  return(false);
 }
+
 
 //------------------------------------------------------------
 // Procedure: updateNodeRecords
@@ -1371,9 +1573,9 @@ bool HazardSensor_MOOSApp::buildReport()
   m_msgs << "Sensor Configuration Options"                 << endl;
   m_msgs << "============================================" << endl;
 
-  ACTable actab(3);
+  ACTable actab(4);
   
-  actab << "Width | Exp |  Classify";
+  actab << "Width | Exp |  Classify | Max";
   actab.addHeaderLines();
 
   unsigned int i, vsize = m_sensor_prop_width.size(); 
@@ -1381,7 +1583,8 @@ bool HazardSensor_MOOSApp::buildReport()
     string s_width = doubleToString(m_sensor_prop_width[i],1);
     string s_exp   = doubleToString(m_sensor_prop_exp[i],1);
     string s_class = doubleToString(m_sensor_prop_class[i],3);
-    actab << s_width << s_exp << s_class;
+    string s_max   = uintToString(m_sensor_prop_max[i]);
+    actab << s_width << s_exp << s_class << s_max;
   }
   m_msgs << actab.getFormattedString();
 
@@ -1441,6 +1644,7 @@ bool HazardSensor_MOOSApp::buildReport()
     actab << vname << sensor_reqs << detects << classify_reqs << classify_answ;
   }
   m_msgs << actab.getFormattedString();
+
   return(true);
 }
 

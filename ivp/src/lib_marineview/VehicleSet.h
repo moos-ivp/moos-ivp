@@ -40,6 +40,9 @@ class VehicleSet
   bool   setParam(std::string param, std::string value="");
   bool   setParam(std::string param, double value);
 
+  bool   handleNodeReport(double, std::string report_str, std::string& whynot);
+  bool   handleNodeReport(std::string report_str, std::string& whynot);
+
   void   clear(const std::string& vname="");
   double getXMin() const {return(m_xmin);};
   double getXMax() const {return(m_xmax);};
@@ -81,12 +84,13 @@ class VehicleSet
   void  print() const;
 
  private:
-  bool  updateVehiclePosition(const std::string& node_report); 
   bool  updateVehicleBearingLine(const std::string& bearing_line); 
 
  private:
   // Mapping from Vehicle Name to Vehicle Position
   std::map<std::string, NodeRecord>   m_rec_map;
+  // Mapping from Vehicle Name to Local Receive time
+  std::map<std::string, double>       m_map_node_local_time;
   // Mapping from Vehicle Name to Vehicle Position History
   std::map<std::string, CPList>       m_hist_map;
 
@@ -103,12 +107,6 @@ class VehicleSet
   double  m_xmax;
   double  m_ymin;
   double  m_ymax;
-  
-  std::vector<std::string> m_node_report_vars;
 };
 
 #endif 
-
-
-
-

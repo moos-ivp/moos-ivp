@@ -949,6 +949,8 @@ bool HelmIvP::OnStartUp()
   if(!m_info_buffer)
     m_info_buffer = new InfoBuffer;
 
+
+  bool bhv_dir_not_found_ok = false;
   // ownship xis name of MOOS community, set in AppCastingMOOSApp::OnStartUp()
   m_ownship = m_host_community;
 
@@ -990,6 +992,8 @@ bool HelmIvP::OnStartUp()
       handled = handleConfigNodeSkew(value);
     else if(param == "DOMAIN")
       handled = handleConfigDomain(value);
+    else if((param == "BHV_DIR_NOT_FOUND_OK") || (param == "BHV_DIRS_NOT_FOUND_OK"))
+      handled = setBooleanOnString(bhv_dir_not_found_ok, value);
     else if((param == "IVP_BEHAVIOR_DIR") || (param == "IVP_BEHAVIOR_DIRS")) {
       behavior_dirs.push_back(value);
       handled = true;
@@ -1012,6 +1016,7 @@ bool HelmIvP::OnStartUp()
 
   Populator_BehaviorSet *p_bset;
   p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer);
+  p_bset->setBHVDirNotFoundOK(bhv_dir_not_found_ok);
   unsigned int k, ksize = behavior_dirs.size();
   for(k=0; k<ksize; k++)
     p_bset->addBehaviorDir(behavior_dirs[k]);

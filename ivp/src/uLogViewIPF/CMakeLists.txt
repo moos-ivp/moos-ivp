@@ -13,6 +13,7 @@ endif (${WIN32})
 SET(SRC	LauncherULI.cpp
 	ULI_MOOSApp.cpp
 	ULI_GUI.cpp
+	ULI_Info.cpp
 	IvPFuncViewerX.cpp
 	main.cpp
 )

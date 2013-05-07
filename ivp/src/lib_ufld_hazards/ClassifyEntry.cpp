@@ -29,8 +29,9 @@ using namespace std;
 
 ClassifyEntry::ClassifyEntry()
 {
-  m_time_requested = 0;
-  m_priority       = 0;
+  m_time_requested  = 0;
+  m_priority        = 0;
+  m_aspect_affected = false;
 }
 
 

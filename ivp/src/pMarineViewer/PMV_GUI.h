@@ -42,8 +42,13 @@ public:
 
   bool         addButton(std::string button, std::string pairs);
   bool         addAction(std::string pair, bool separator=false);
-  void         setCurrTime(double v) {m_curr_time = v;};
+  void         setCurrTime(double v)       {m_curr_time=v;};
+  void         setTitleBase(std::string s) {m_title_base=s;};
+  void         augmentTitle(std::string ip_str);
   void         updateXY();
+
+  bool         clearStaleVehicles(bool force=false);
+  double       getClearStaleTimeStamp() {return(m_clear_stale_timestamp);};
 
   std::string  getPendingVar(unsigned int index);
   std::string  getPendingVal(unsigned int index);
@@ -93,6 +98,9 @@ public:
   static void cb_Reference(Fl_Widget*, unsigned int);
   inline void cb_FilterOut_i(int);
   static void cb_FilterOut(Fl_Widget*, int);
+
+  inline void cb_DeleteActiveNode_i(int);
+  static void cb_DeleteActiveNode(Fl_Widget*, int);
 
   inline void cb_SelectNode_i();
   static void cb_SelectNode(Fl_Widget*, long);
@@ -147,7 +155,8 @@ public:
   std::vector<std::string> m_filter_tags;
 
   double    m_curr_time;
-
+  double    m_clear_stale_timestamp;
+  
  protected: // Member variables added for AppCasting
   AppCastRepo        *m_repo;
   MY_Fl_Hold_Browser *m_brw_nodes;
@@ -158,6 +167,9 @@ public:
 
   Fl_Color    m_color_runw;
   Fl_Color    m_color_cfgw;
+  Fl_Color    m_color_stlw;
+
+  std::string m_title_base;
 };
 #endif
 

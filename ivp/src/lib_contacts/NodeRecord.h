@@ -81,7 +81,9 @@ class NodeRecord
 
   double getElapsedTime(double) const;
   bool   hasProperty(std::string) const;
-  bool   valid(std::string check="") const;
+  bool   valid() const;
+  bool   valid(std::string check) const;
+  bool   valid(std::string check, std::string& why) const;
   std::string getProperty(std::string) const;
 
   std::string getName(std::string s="") const;

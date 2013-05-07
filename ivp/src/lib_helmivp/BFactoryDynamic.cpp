@@ -61,13 +61,15 @@ BFactoryDynamic::~BFactoryDynamic()
 // Procedure: loadDirectory()
 //      Note: Loads all the libraries named BHV_*.so (Linux) or 
 //            BHV_*.dylib (OS X) from the specified directory.  
-//      Note: Calls exit() if anything goes wrong.
+//   Returns: false if the directory cannot be found
+//            true if directory and all found behaviors loaded properly
+//      Note: Calls exit() if anything goes wrong loading a behavior.
 
-void BFactoryDynamic::loadDirectory(string dirname) 
+bool BFactoryDynamic::loadDirectory(string dirname) 
 {
   if(m_loaded_dirs.count(dirname)) {
     cerr << "  Directory " << dirname << " already loaded. Skipped."<< endl;
-    return;
+    return(true);
   }
   m_loaded_dirs.insert(dirname);
 
@@ -75,10 +77,9 @@ void BFactoryDynamic::loadDirectory(string dirname)
   int status = listdir(dirname, files);
   if(status) {
     cerr << "Unable to read contents of directory: " << dirname << endl;
-    exit(status);
+    return(false);
   }
   
-
   unsigned int i, fsize = files.size();
   for(i=0; i<fsize; ++i) {
     const string & fname = files[i];
@@ -198,6 +199,7 @@ void BFactoryDynamic::loadDirectory(string dirname)
     m_creation_funcs_map[bhv_name] = createFn;
     m_open_library_handles.push_back(handle);
   }
+  return(true);
 }
 
 //--------------------------------------------------------------------

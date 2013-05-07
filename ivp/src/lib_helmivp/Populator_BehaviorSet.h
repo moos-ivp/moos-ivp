@@ -43,6 +43,7 @@ public:
   virtual ~Populator_BehaviorSet() {};
 
   void addBehaviorDir(std::string dir) {m_dir_names.push_back(dir);};
+  void setBHVDirNotFoundOK(bool v)     {m_bhv_dir_not_found_ok=v;}
 
   BehaviorSet* populate(std::set<std::string>);
   BehaviorSet* populate(std::string filename);
@@ -50,7 +51,6 @@ public:
   void printBehaviorSpecs() const;
 
   std::vector<std::string> getConfigWarnings() const {return(m_config_warnings);};
-
 
 protected:
 
@@ -75,6 +75,8 @@ protected:
   ModeSet      m_mode_set;
   ModeEntry    m_mode_entry;
   std::string  m_parse_mode;
+
+  bool         m_bhv_dir_not_found_ok;
 };
 #endif
 

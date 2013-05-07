@@ -132,7 +132,8 @@ void showExampleConfigAndExit()
   blk("  vehicles_viewable       = true   // {TRUE, false}             ");
   blk("  vehicles_name_mode      = names  // {names, names+depth, off  ");
   blk("                                       names+mode, names+shortmode}");
-  blk("  stale_vehicles_viewable = true   // {TRUE, false}             ");
+  blk("  stale_report_thresh     = 30     // [5, inf)                  ");
+  blk("  stale_remove_thresh     = 30     // [0, inf)                  ");
   blk("  vehicles_active_color   = red    // {yellow,white,blue,green} ");
   blk("  vehicles_inactive_color = yellow // {red,white,blue,green}    ");
   blk("  trails_viewable         = true   // {TRUE, false}             ");

@@ -14,6 +14,7 @@ SET(SRC	LauncherULH.cpp
         HelmScopeModel.cpp
 	ULH_MOOSApp.cpp
 	ULH_GUI.cpp
+	ULH_Info.cpp
 	PopulatorHSM.cpp
 	main.cpp
 )

@@ -60,6 +60,8 @@ XYCircle string2Circle(string str)
 
     else if((left == "time") && isNumber(right))
       new_circle.set_time(dval);
+    else if((left == "vertices") && isNumber(right) && (dval > 0))
+      new_circle.setDrawVertices(atoi(right.c_str()));
     else if(left == "label") 
       new_circle.set_label(right);
     else if(left == "label_color") 

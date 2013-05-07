@@ -37,14 +37,7 @@ ULV_MOOSApp::ULV_MOOSApp()
   m_start_time      = 0;
   m_lastredraw_time = 0;
 
-#if 0
-  VarDataPair pair("HELM_MAP_CLEAR", 0);
-  m_connection_pairs.push_back(pair);
-  m_pending_pairs   = true;
-#endif
-#if 1
   m_pending_pairs = false;
-#endif
 }
 
 //----------------------------------------------------------------

@@ -6,7 +6,11 @@ ProcessConfig = uFldHazardMgr
   AppTick   = 2
   CommsTick = 2
 
-  swath_width = 38
+#ifdef VNAME archie
+  swath_width = 50
+#elseifdef VNAME betty
+  swath_width = 10
+#endif
   sensor_pd   = 0.86
-  report_name = Sarah
+  report_name = $(VNAME)
 }

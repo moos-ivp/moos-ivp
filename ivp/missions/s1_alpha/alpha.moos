@@ -43,8 +43,6 @@ ProcessConfig = uProcessWatch
   AppTick   = 4
   CommsTick = 4
 
-  term_report_interval = 0.8
-
   summary_wait = 5
 
   nowatch   = uXMS*
@@ -105,6 +103,9 @@ ProcessConfig = pHelmIvP
   CommsTick  = 4
 
   term_report_interval=0
+
+  bhv_dir_not_found_ok = true
+  ivp_behavior_dir = /Users/ddmikerb
 
   behaviors  = alpha.bhv
   domain     = course:0:359:360

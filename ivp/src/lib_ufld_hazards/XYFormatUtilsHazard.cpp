@@ -67,6 +67,10 @@ XYHazard stringStandard2Hazard(string str)
       new_hazard.setResemblance(dval);
    else if((param == "aspect") && isNumber(value))
       new_hazard.setAspect(dval);
+   else if((param == "aspect_min") && isNumber(value))
+      new_hazard.setAspectRangeMin(dval);
+   else if((param == "aspect_max") && isNumber(value))
+      new_hazard.setAspectRangeMax(dval);
     else if(param == "type")
       new_hazard.setType(value);
     else if(param == "shape")

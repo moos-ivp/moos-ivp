@@ -24,6 +24,7 @@
 #include "MBUtils.h"
 #include "HazardMgr.h"
 #include "XYFormatUtilsHazard.h"
+#include "XYFormatUtilsPoly.h"
 #include "ACTable.h"
 
 using namespace std;
@@ -84,6 +85,9 @@ bool HazardMgr::OnNewMail(MOOSMSG_LIST &NewMail)
 
     else if(key == "HAZARDSET_REQUEST") 
       handleMailReportRequest();
+
+    else if(key == "UHZ_MISSION_PARAMS") 
+      handleMailMissionParams(sval);
 
     else 
       reportRunWarning("Unhandled Mail: " + key);
@@ -153,6 +157,12 @@ bool HazardMgr::OnStartUp()
       m_report_name = value;
       handled = true;
     }
+    else if(param == "region") {
+      XYPolygon poly = string2Poly(value);
+      if(poly.is_convex())
+	m_search_region = poly;
+      handled = true;
+    }
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -160,6 +170,7 @@ bool HazardMgr::OnStartUp()
   
   m_hazard_set.setSource(m_host_community);
   m_hazard_set.setName(m_report_name);
+  m_hazard_set.setRegion(m_search_region);
   
   registerVariables();	
   return(true);
@@ -174,6 +185,7 @@ void HazardMgr::registerVariables()
   m_Comms.Register("UHZ_DETECTION_REPORT", 0);
   m_Comms.Register("UHZ_CONFIG_ACK", 0);
   m_Comms.Register("UHZ_OPTIONS_SUMMARY", 0);
+  m_Comms.Register("UHZ_MISSION_PARAMS", 0);
   m_Comms.Register("HAZARDSET_REQUEST", 0);
 }
 
@@ -264,6 +276,7 @@ bool HazardMgr::handleMailDetectionReport(string str)
   m_detection_reports++;
 
   XYHazard new_hazard = string2Hazard(str);
+  new_hazard.setType("hazard");
 
   string hazlabel = new_hazard.getLabel();
   
@@ -299,8 +312,32 @@ void HazardMgr::handleMailReportRequest()
 {
   m_summary_reports++;
 
+  m_hazard_set.findMinXPath(20);
+  //unsigned int count    = m_hazard_set.findMinXPath(20);
   string summary_report = m_hazard_set.getSpec("final_report");
+  
   Notify("HAZARDSET_REPORT", summary_report);
+}
+
+
+//---------------------------------------------------------
+// Procedure: handleMailMissionParams
+//   Example: UHZ_MISSION_PARAMS = penalty_missed_hazard=100,               
+//                       penalty_nonopt_hazard=55,                
+//                       penalty_false_alarm=35,                  
+//                       penalty_max_time_over=200,               
+//                       penalty_max_time_rate=0.45,              
+//                       transit_path_width=25,                           
+//                       search_region = pts={-150,-75:-150,-50:40,-50:40,-75}
+
+
+void HazardMgr::handleMailMissionParams(string str)
+{
+  vector<string> svector = parseStringZ(str, ',', "{");
+  unsigned int i, vsize = svector.size();
+  for(i=0; i<vsize; i++) {
+    string param = biteStringX(svector[i], '=');
+  }
 }
 
 
