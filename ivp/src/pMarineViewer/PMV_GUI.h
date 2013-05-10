@@ -45,6 +45,8 @@ public:
   void         setCurrTime(double v)       {m_curr_time=v;};
   void         setTitleBase(std::string s) {m_title_base=s;};
   void         augmentTitle(std::string ip_str);
+  bool         syncNodesAtoB();
+  bool         syncNodesBtoA();
   void         updateXY();
 
   bool         clearStaleVehicles(bool force=false);

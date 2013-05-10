@@ -218,7 +218,7 @@ string AppCast::getFormattedString(bool with_header) const
 		string warn_str = warnss.str();
 		string title_str = m_proc_name + " " + m_node_name;
 
-		unsigned int max_len = 67;
+		unsigned int max_len = 62;
 		unsigned int now_len = warn_str.length() + title_str.length()
 				+ iter_str.length();
 
@@ -227,11 +227,11 @@ string AppCast::getFormattedString(bool with_header) const
 			pad_str = string((max_len - now_len), ' ');
 
 		ss
-				<< "==================================================================="
+				<< "=============================================================="
 				<< endl;
 		ss << title_str << pad_str << warn_str << iter_str << endl;
 		ss
-				<< "==================================================================="
+				<< "=============================================================="
 				<< endl;
 	}
 

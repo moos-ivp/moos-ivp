@@ -146,22 +146,25 @@ void PMV_GUI::augmentMenu()
   m_menubar->add("AppCasting/refresh_mode=events",    FL_CTRL+'e', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)51, FL_MENU_RADIO);
   m_menubar->add("AppCasting/refresh_mode=streaming", FL_CTRL+'s', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)52, FL_MENU_RADIO|FL_MENU_DIVIDER);
 
+  m_menubar->add("AppCasting/nodes_font_size=xlarge",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)64, FL_MENU_RADIO);
   m_menubar->add("AppCasting/nodes_font_size=large",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)63, FL_MENU_RADIO);
   m_menubar->add("AppCasting/nodes_font_size=medium", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)62, FL_MENU_RADIO);
   m_menubar->add("AppCasting/nodes_font_size=small",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)61, FL_MENU_RADIO);
   m_menubar->add("AppCasting/nodes_font_size=xsmall", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)60, FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
+  m_menubar->add("AppCasting/procs_font_size=xlarge", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)74, FL_MENU_RADIO);
   m_menubar->add("AppCasting/procs_font_size=large",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)73, FL_MENU_RADIO);
   m_menubar->add("AppCasting/procs_font_size=medium", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)72, FL_MENU_RADIO);
   m_menubar->add("AppCasting/procs_font_size=small",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)71, FL_MENU_RADIO);
   m_menubar->add("AppCasting/procs_font_size=xsmall", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)70, FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
+  m_menubar->add("AppCasting/appcast_font_size=xlarge", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)84, FL_MENU_RADIO);
   m_menubar->add("AppCasting/appcast_font_size=large",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)83, FL_MENU_RADIO);
   m_menubar->add("AppCasting/appcast_font_size=medium", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)82, FL_MENU_RADIO);
   m_menubar->add("AppCasting/appcast_font_size=small",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)81, FL_MENU_RADIO);
   m_menubar->add("AppCasting/appcast_font_size=xsmall", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)80, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/appcast_font_size bigger",  '}', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)85, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/appcast_font_size smaller", '{', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)84, FL_MENU_RADIO|FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/appcast_font_size bigger",  '}', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)89, FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/appcast_font_size smaller", '{', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)88, FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
   m_menubar->add("AppCasting/appcast_color_scheme=white",     0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)300, FL_MENU_RADIO);
   m_menubar->add("AppCasting/appcast_color_scheme=indigo",      0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)301, FL_MENU_RADIO);
@@ -363,6 +366,47 @@ void PMV_GUI::augmentTitle(string ip_str)
   label(new_title.c_str());
 }
 
+//----------------------------------------------------
+// Procedure: syncNodesAtoB
+//   Purpose: Used when the user toggles the "active vehicle" shown in the 
+//            panes at the bottom of the window. If the new active vehicle
+//            is also a known appcast node, adjust the appcast browsers
+//            accordingly.
+
+bool PMV_GUI::syncNodesAtoB()
+{
+  string vname = mviewer->getStringInfo("active_vehicle_name");
+
+  bool valid_node = m_repo->setCurrentNode(vname);
+  if(!valid_node)
+    return(false);
+
+  updateNodes(true);
+  updateProcs(true);
+  updateAppCast();
+  return(true);
+}
+
+//----------------------------------------------------
+// Procedure: syncNodesBtoA
+//   Purpose: Used when the user selects a new new in the appcast browsers.
+//            If the new node is a known vehicle, i.e., we have received
+//            node reports for it, then make it the active vehicle in the 
+//            panes at the bottom of the window. 
+
+bool PMV_GUI::syncNodesBtoA()
+{
+  string curr_node = m_repo->getCurrentNode();
+  if(curr_node == "")
+    return(false);
+
+  //  vector<string> vnames = m_vehiset.getVehiNames();
+  //if(vectorContains(vnames, curr_node))
+    mviewer->setParam("active_vehicle_name", curr_node);
+
+  return(true);
+}
+
 //----------------------------------------- UpdateXY
 void PMV_GUI::updateXY() 
 {
@@ -538,18 +582,21 @@ inline void PMV_GUI::cb_AppCastSetting_i(unsigned int v) {
   else if(v==61)  setRadioCastAttrib("nodes_font_size", "small");
   else if(v==62)  setRadioCastAttrib("nodes_font_size", "medium");
   else if(v==63)  setRadioCastAttrib("nodes_font_size", "large");
+  else if(v==64)  setRadioCastAttrib("nodes_font_size", "xlarge");
   // Handle procs browser pane font size
   else if(v==70)  setRadioCastAttrib("procs_font_size", "xsmall");
   else if(v==71)  setRadioCastAttrib("procs_font_size", "small");
   else if(v==72)  setRadioCastAttrib("procs_font_size", "medium");
   else if(v==73)  setRadioCastAttrib("procs_font_size", "large");
+  else if(v==74)  setRadioCastAttrib("procs_font_size", "xlarge");
   // Handle appcast browser pane font size
   else if(v==80)  setRadioCastAttrib("appcast_font_size", "xsmall");
   else if(v==81)  setRadioCastAttrib("appcast_font_size", "small");
   else if(v==82)  setRadioCastAttrib("appcast_font_size", "medium");
   else if(v==83)  setRadioCastAttrib("appcast_font_size", "large");
-  else if(v==84)  setRadioCastAttrib("appcast_font_size", "smaller");
-  else if(v==85)  setRadioCastAttrib("appcast_font_size", "bigger");
+  else if(v==84)  setRadioCastAttrib("appcast_font_size", "xlarge");
+  else if(v==88)  setRadioCastAttrib("appcast_font_size", "smaller");
+  else if(v==89)  setRadioCastAttrib("appcast_font_size", "bigger");
   // Handle pane width relative adjustment
   else if(v==100) setRadioCastAttrib("appcast_width", "delta:-5");
   else if(v==101) setRadioCastAttrib("appcast_width", "delta:5");
@@ -738,6 +785,8 @@ inline void PMV_GUI::cb_SelectNode_i()
   updateNodes();
   updateProcs(true);
   updateAppCast();
+  syncNodesBtoA();
+  updateXY();
 }
 
 //----------------------------------------------------
@@ -1273,16 +1322,19 @@ void PMV_GUI::setMenuItemColors()
   setMenuItemColor("AppCasting/refresh_mode=events");
   setMenuItemColor("AppCasting/refresh_mode=streaming");
 
+  setMenuItemColor("AppCasting/nodes_font_size=xlarge");
   setMenuItemColor("AppCasting/nodes_font_size=large");
   setMenuItemColor("AppCasting/nodes_font_size=medium");
   setMenuItemColor("AppCasting/nodes_font_size=small");
   setMenuItemColor("AppCasting/nodes_font_size=xsmall");
 
+  setMenuItemColor("AppCasting/procs_font_size=xlarge");
   setMenuItemColor("AppCasting/procs_font_size=large");
   setMenuItemColor("AppCasting/procs_font_size=medium");
   setMenuItemColor("AppCasting/procs_font_size=small");
   setMenuItemColor("AppCasting/procs_font_size=xsmall");
 
+  setMenuItemColor("AppCasting/appcast_font_size=xlarge");
   setMenuItemColor("AppCasting/appcast_font_size=large");
   setMenuItemColor("AppCasting/appcast_font_size=medium");
   setMenuItemColor("AppCasting/appcast_font_size=small");
@@ -1561,11 +1613,13 @@ void PMV_GUI::resizeWidgets()
     m_brw_procs->resize(node_wid, menu_hgt, proc_wid, proc_hgt);
     m_brw_casts->resize(bx, by+node_hgt, cast_wid, cast_hgt);
     
+    int font_xlarge  = 16;
     int font_large  = 14;
     int font_medium = 12;
     int font_small  = 10;
     int font_xsmall = 8;
     if(bw < 400) {
+      font_xlarge = 14;
       font_large  = 12;
       font_medium = 10;
       font_small  = 8;
@@ -1579,17 +1633,20 @@ void PMV_GUI::resizeWidgets()
     if(nodes_font_size == "xsmall")      m_brw_nodes->textsize(font_xsmall);
     else if(nodes_font_size == "small")  m_brw_nodes->textsize(font_small);
     else if(nodes_font_size == "medium") m_brw_nodes->textsize(font_medium);
-    else                                 m_brw_nodes->textsize(font_large);
+    else if(nodes_font_size == "large")  m_brw_nodes->textsize(font_large);
+    else                                 m_brw_nodes->textsize(font_xlarge);
     
     if(procs_font_size == "xsmall")      m_brw_procs->textsize(font_xsmall);
     else if(procs_font_size == "small")  m_brw_procs->textsize(font_small);
     else if(procs_font_size == "medium") m_brw_procs->textsize(font_medium);
-    else                                 m_brw_procs->textsize(font_large);
+    else if(procs_font_size == "large")  m_brw_procs->textsize(font_large);
+    else                                 m_brw_procs->textsize(font_xlarge);
     
     if(appcast_font_size == "xsmall")      m_brw_casts->textsize(font_xsmall);
     else if(appcast_font_size == "small")  m_brw_casts->textsize(font_small);
     else if(appcast_font_size == "medium") m_brw_casts->textsize(font_medium);
-    else                                   m_brw_casts->textsize(font_large);
+    else if(appcast_font_size == "large")  m_brw_casts->textsize(font_large);
+    else                                   m_brw_casts->textsize(font_xlarge);
   }
 
   // Part 4: Adjust the color scheme of the APPCAST browsers
@@ -1702,5 +1759,3 @@ void PMV_GUI::resizeWidgets()
   m_user_button_3->resize(dw*0.82, row1, dw*0.09, fld_hgt);
   m_user_button_4->resize(dw*0.82, row2, dw*0.09, fld_hgt);
 }
-
-

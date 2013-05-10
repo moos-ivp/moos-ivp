@@ -67,4 +67,6 @@ killall pParticle uFldContactRangeSensorHP pUUVPath            \
         pHunterPrey camera_example camera_example_server       \
         camera_example_viewer iHuxley
 
+killall -SEGV pAntler pLogger
+
 echo Done - Killed all MOOS-Related Processes.....

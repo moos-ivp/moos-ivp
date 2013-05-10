@@ -15,7 +15,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = true
   Run = pLogger         @ NewConsole = false
 
   Run = pShare          @ NewConsole = false
@@ -64,6 +64,7 @@ ProcessConfig = uFldShoreBroker
   QBRIDGE = DEPLOY, NODE_REPORT, NODE_MESSAGE
   QBRIDGE = STATION_KEEP, APPCAST_REQ
   QBRIDGE = MOOS_MANUAL_OVERIDE
+  QBRIDGE = AVOID
  
   BRIDGE  = src=RETURN_ALL, alias=RETURN
   BRIDGE  = src=RETURN_$V,  alias=RETURN
@@ -100,6 +101,13 @@ ProcessConfig = pMarineViewer
   vehicles_shape_scale = 1.5
   vehicles_name_mode   = names+shortmode
 
+  polygon_viewable_all    = false
+  polygon_viewable_labels = false
+  seglist_viewable_all    = false
+  seglist_viewable_labels = false
+  point_viewable_all    = false
+  point_viewable_labels = false
+
   appcast_viewable     = true
   appcast_color_scheme = indigo
 
@@ -107,7 +115,7 @@ ProcessConfig = pMarineViewer
   vehicles_name_mode = names
 
   stale_report_thresh = 2
-  stale_remove_thresh = 20
+  stale_remove_thresh = 20000
 
   SCOPE = PHI_HOST_INFO
 
@@ -115,5 +123,7 @@ ProcessConfig = pMarineViewer
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
   BUTTON_ONE   = RETURN_ALL=false
   BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  BUTTON_THREE = AVOID:ON  # AVOID_ALL=true
+  BUTTON_FOUR  = AVOID:OFF # AVOID_ALL=false
 }
 

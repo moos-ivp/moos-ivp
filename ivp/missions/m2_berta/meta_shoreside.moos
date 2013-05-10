@@ -15,7 +15,7 @@ Processconfig = ANTLER
 
   Run = MOOSDB          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = true
   Run = pLogger         @ NewConsole = false
   Run = pSearchGrid     @ NewConsole = false
   Run = uXMS            @ NewConsole = false
@@ -174,7 +174,6 @@ ProcessConfig = pMarineViewer
   vehicles_shape_scale = 1.5
   vehicles_name_viewable = names
 
-  stale_vehicles_viewable = true
   
   appcast_viewable = true
   appcast_color_scheme = indigo

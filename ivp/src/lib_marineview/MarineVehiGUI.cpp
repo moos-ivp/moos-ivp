@@ -194,7 +194,9 @@ inline void MarineVehiGUI::cb_SetRadioVehiAttrib_i(int v)
 {
   if(v==10)      setRadioVehiAttrib("vehicles_viewable", "true");
   else if(v==11) setRadioVehiAttrib("vehicles_viewable", "false");
-  else if(v==12) setRadioVehiAttrib("vehicles_viewable", "toggle");
+  else if(v==12) {
+    setRadioVehiAttrib("vehicles_viewable", "toggle");
+  }
 
   else if(v==20) setRadioVehiAttrib("vehicles_name_mode", "names");
   else if(v==21) setRadioVehiAttrib("vehicles_name_mode", "names+mode");
@@ -241,6 +243,7 @@ void MarineVehiGUI::cb_SetRadioVehiAttrib(Fl_Widget* o, int v)
 inline void MarineVehiGUI::cb_CycleFocus_i() {
   m_mviewer->setParam("cycle_active");
   m_mviewer->redraw();
+  syncNodesAtoB();
   updateXY();
 }
 

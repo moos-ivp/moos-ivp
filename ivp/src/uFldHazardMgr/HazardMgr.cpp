@@ -337,6 +337,8 @@ void HazardMgr::handleMailMissionParams(string str)
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
     string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+    // This needs to be handled by the developer. Just a placeholder.
   }
 }
 

@@ -433,12 +433,15 @@ void HazardMetric::evaluateReport(const XYHazardSet& src_hset)
 
   m_map_evals[source] = eval;
 
+  Notify("HAZARD_SEARCH_SCORE", norm_score);
+
   Notify("HAZARDSET_EVAL_FULL", eval.getFullSpec());
   Notify("HAZARDSET_EVAL_FULL_"+toupper(source), eval.getFullSpec());
 
   Notify("HAZARDSET_EVAL", eval.getShortSpec());
   Notify("HAZARDSET_EVAL_"+toupper(source), eval.getShortSpec());
 }
+
 
 
 

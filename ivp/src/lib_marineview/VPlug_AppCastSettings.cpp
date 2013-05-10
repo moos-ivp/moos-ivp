@@ -82,10 +82,14 @@ bool VPlug_AppCastSettings::setParam(const string& param, string value)
       setAttrMapping(param, "medium");
     else if(m_attribute_map["appcast_font_size"] == "medium")
       setAttrMapping(param, "large");
+    else if(m_attribute_map["appcast_font_size"] == "large")
+      setAttrMapping(param, "xlarge");
   }
 
   else if((param == "appcast_font_size") && (value == "smaller")) {
-    if(m_attribute_map["appcast_font_size"] == "large")
+    if(m_attribute_map["appcast_font_size"] == "xlarge")
+      setAttrMapping(param, "large");
+    else if(m_attribute_map["appcast_font_size"] == "large")
       setAttrMapping(param, "medium");
     else if(m_attribute_map["appcast_font_size"] == "medium")
       setAttrMapping(param, "small");

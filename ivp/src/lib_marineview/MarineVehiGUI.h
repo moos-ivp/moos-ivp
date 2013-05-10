@@ -38,6 +38,8 @@ public:
  protected: // Protected member functions
   void   augmentMenu();
 
+  virtual bool syncNodesAtoB() {return(false);};
+
  protected: // Widget callback functions
   inline void cb_SetRadioVehiAttrib_i(int);
   static void cb_SetRadioVehiAttrib(Fl_Widget*, int);

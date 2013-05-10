@@ -117,6 +117,13 @@ void showInterfaceAndExit()
   blk("  UHZ_DETECTION_REPORT = x=-150.3,y=-117.5,label=12             ");
   blk("  UHZ_OPTIONS_SUMMARY  = width=10,exp=6,class=0.93:width=50,exp=2,");
   blk("                         class=0.60:width=25,exp=4,class=0.85   ");
+  blk("  UHZ_MISSION_PARAMS = penalty_missed_hazard=100,               ");
+  blk("             penalty_nonopt_hazard=55,                          ");
+  blk("             penalty_false_alarm=35,                            ");
+  blk("             penalty_max_time_over=200,                         ");
+  blk("             penalty_max_time_rate=0.45,                        ");
+  blk("             transit_path_width=25,                             ");
+  blk("             search_region = pts={-150,-75:-150,-50:40,-50:40,-75}");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
@@ -127,13 +134,6 @@ void showInterfaceAndExit()
   blk("                         x=-151,y=-217.3,label=01#              ");
   blk("                         x=-178.8,y=-234,label=15#              ");
   blk("                         x=-59.8,y=-294.1,label=13              ");
-  blk("  UHZ_MISSION_PARAMS = penalty_missed_hazard=100,               ");
-  blk("             penalty_nonopt_hazard=55,                          ");
-  blk("             penalty_false_alarm=35,                            ");
-  blk("             penalty_max_time_over=200,                         ");
-  blk("             penalty_max_time_rate=0.45,                        ");
-  blk("             transit_path_width=25,                             ");
-  blk("             search_region = pts={-150,-75:-150,-50:40,-50:40,-75}");
   exit(0);
 }
 

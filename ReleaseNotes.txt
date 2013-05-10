@@ -1,7 +1,40 @@
+------------------------------------------------------------------------------
+TODO
+------------------------------------------------------------------------------
+pHelmIvP
+  - Better support for BEHAVIOR_DIRS 
+    relative path in behavior files? (../../)
+    support for ~ in behavior files? (~/mybhvs)
 
+uXMS
+  - should have an optional config where (S) (T) (C) are not shown, to 
+    maximize column width for the value info
+
+uFldHazardSensor
+  - should send a heartbeat/status message to the vehicle to indicate that 
+    it's sensor is off (e.g. due to turning etc)
+
+uFldPathCheck
+  - Should monitor top speed and disqualify (to uFldHazardMetric) if top 
+    vehicle speed is violated.
+
+pMarineViewer
+  - should be able to click on a vehicle in an appcast window and DELETE it. 
+    all node report histories gone, all geometry objects erased etc.
+
+pNodeReporter
+  - should detect when a key component has become stale and post a run warning
+  
+uPokeDB 
+  - should allow a time warp argument (if it's needed?)
+
+nsplug
+  - If an undefined macro is found on a particular line, along with other well-defined
+    macros, the well-defined macros should be filled in, rather than just ignoring
+    the entire line.
 
 ------------------------------------------------------------------------------
-13.2.3
+13.5
 ------------------------------------------------------------------------------
 pMarineViewer
   - fixed bug in handling marker configurations
@@ -48,41 +81,6 @@ uFldNodeBroker
 alogscan
   - Fixed bug where alog file name was converted to lower case and thus not 
     working in Linux.
-
-TODO
------------------
-pHelmIvP
-  - Better support for BEHAVIOR_DIRS 
-    relative path in behavior files? (../../)
-    support for ~ in behavior files? (~/mybhvs)
-    make sure failed behavior entries are just ignored.
-
-uXMS
-  - should have an optional config where (S) (T) (C) are not shown, to 
-    maximize column width for the value info
-
-uFldHazardSensor
-  - should send a heartbeat/status message to the vehicle to indicate that 
-    it's sensor is off (e.g. due to turning etc)
-  - should auto turn off the sensor if its speed is greater than N.
-
-uFldPathCheck
-  - Should monitor top speed and disqualify (to uFldHazardMetric) if top 
-    vehicle speed is violated.
-
-pMarineViewer
-  - should be able to click on a vehicle in an appcast window and DELETE it. 
-    all node report histories gone, all geometry objects erased etc.
-
-pNodeReporter
-  - should detect when a key component has become stale and post a run warning
-  
-uFldShoreBroker
-  - should NOT post a run warning for a stale vehicle (config option?)
-
-uPokeDB 
-  - should allow a time warp argument (if it's needed?)
-
 
 ------------------------------------------------------------------------------
 13.2.2
