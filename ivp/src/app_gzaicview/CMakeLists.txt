@@ -25,6 +25,7 @@ ENDIF (${APPLE})
 
 
 TARGET_LINK_LIBRARIES(gzaicview 
+  ${SYSTEM_LIBS}
   ivpbuild
   mbutil
   ivpcore

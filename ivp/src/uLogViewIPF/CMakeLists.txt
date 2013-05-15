@@ -30,21 +30,22 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
       
 Target_LINK_LIBRARIES(uLogViewIPF         
-   ${MOOS_LIBRARIES}
-   marineview
-   ipfview
-   contacts
-   ulogview
-   logutils
-   genutil
-   geometry
-   contacts
-   mbutil
-      # Standard libraries used by this project's FLTK apps...
-   fltk 
-   fltk_gl 
-   dl
-   tiff)
+  ${MOOS_LIBRARIES}
+  ${SYSTEM_LIBS}
+  marineview
+  ipfview
+  contacts
+  ulogview
+  logutils
+  genutil
+  geometry
+  contacts
+  mbutil
+  # Standard libraries used by this project's FLTK apps...
+  fltk 
+  fltk_gl 
+  dl
+  tiff)
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})

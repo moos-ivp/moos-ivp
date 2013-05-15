@@ -26,14 +26,15 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
 
 Target_LINK_LIBRARIES(vzaicview         
-   ivpbuild
-   ivpcore
-   mbutil
-      # Standard libraries used by this project's FLTK apps...
-   fltk 
-   fltk_gl 
-   dl
-   tiff)
+  ${SYSTEM_LIBS}
+  ivpbuild
+  ivpcore
+  mbutil
+  # Standard libraries used by this project's FLTK apps...
+  fltk 
+  fltk_gl 
+  dl
+  tiff)
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})

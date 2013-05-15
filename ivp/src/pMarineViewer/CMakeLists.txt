@@ -26,6 +26,7 @@ ENDIF (${APPLE})
 TARGET_LINK_LIBRARIES(pMarineViewer         
   ${MOOS_LIBRARIES}
   ${MOOSGeodesy_LIBRARIES}
+  ${SYSTEM_LIBS}
   marineview
   genutil
   geometry

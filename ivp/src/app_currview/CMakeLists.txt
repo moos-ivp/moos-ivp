@@ -31,6 +31,7 @@ ENDIF (${APPLE})
 
 TARGET_LINK_LIBRARIES(currview
   ${MOOSGeodesy_LIBRARIES}
+  ${SYSTEM_LIBS}
   marineview
   contacts
   mbutil
