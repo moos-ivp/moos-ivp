@@ -12,6 +12,10 @@ else (${WIN32})
     m)
 endif (${WIN32})
 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  SET(SYSTEM_LIBS ${SYSTEM_LIBS} GL)
+endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+
 SET(SRC
    LogPlotViewer.cpp
    NavPlotViewer.cpp

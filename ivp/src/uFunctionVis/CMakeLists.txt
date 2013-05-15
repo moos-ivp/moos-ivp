@@ -13,6 +13,10 @@ else (${WIN32})
     pthread)
 endif (${WIN32})
 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  SET(SYSTEM_LIBS ${SYSTEM_LIBS} GL)
+endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+
 SET(SRC
    FV_GUI.cpp
    FV_MOOSApp.cpp
