@@ -10,6 +10,10 @@ else (${WIN32})
   SET(SYSTEM_LIBS m)
 endif (${WIN32})
 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  SET(SYSTEM_LIBS ${SYSTEM_LIBS} GL)
+endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+
 FILE(GLOB SRC *.cpp)
 
 IF (${APPLE})
@@ -21,6 +25,7 @@ ENDIF (${APPLE})
 
 
 TARGET_LINK_LIBRARIES(gzaicview 
+  ${SYSTEM_LIBS}
   ivpbuild
   mbutil
   ivpcore

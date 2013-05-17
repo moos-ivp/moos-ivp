@@ -10,6 +10,10 @@ else (${WIN32})
   SET(SYSTEM_LIBS m)
 endif (${WIN32})
 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  SET(SYSTEM_LIBS ${SYSTEM_LIBS} GL)
+endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+
 SET(SRC	LogPlotViewer.cpp
 	NavPlotViewer.cpp
 	NavPlotElement.cpp
@@ -28,21 +32,22 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
       
 TARGET_LINK_LIBRARIES(uLogView         
-   ulogview
-   marineview
-   geometry
-   logutils
-   ${MOOSGeodesy_LIBRARIES}
-   ${MOOS_LIBRARIES}
-   genutil
-   contacts
-   apputil
-   mbutil
-      # Standard libraries used by this project's FLTK apps...
-   fltk 
-   fltk_gl 
-   dl
-   tiff)
+  ${SYSTEM_LIBS} 
+  ulogview
+  marineview
+  geometry
+  logutils
+  genutil
+  contacts
+  apputil
+  mbutil
+  ${MOOSGeodesy_LIBRARIES}
+  ${MOOS_LIBRARIES}
+  # Standard libraries used by this project's FLTK apps...
+  fltk 
+  fltk_gl 
+  dl
+  tiff)
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})

@@ -10,6 +10,10 @@ else (${WIN32})
   SET(SYSTEM_LIBS m)
 endif (${WIN32})
 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  SET(SYSTEM_LIBS ${SYSTEM_LIBS} GL)
+endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+
 SET(SRC	LauncherULH.cpp
         HelmScopeModel.cpp
 	ULH_MOOSApp.cpp
@@ -27,19 +31,20 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
       
 TARGET_LINK_LIBRARIES(uLogViewHelm         
-   ${MOOS_LIBRARIES}
-   contacts
-   ulogview
-   logutils
-   helmivp
-   genutil
-   geometry
-   mbutil
-      # Standard libraries used by this project's FLTK apps...
-   fltk 
-   fltk_gl 
-   dl
-   tiff)
+  ${MOOS_LIBRARIES}
+  ${SYSTEM_LIBS}
+  contacts
+  ulogview
+  logutils
+  helmivp
+  genutil
+  geometry
+  mbutil
+  # Standard libraries used by this project's FLTK apps...
+  fltk 
+  fltk_gl 
+  dl
+  tiff)
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})

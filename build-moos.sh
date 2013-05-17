@@ -67,8 +67,6 @@ make -k -j $@
 
 echo "Moving MOOSToolsUI executables into main MOOS bin directory"
 
-mv bin/uMS.app/Contents/MacOS/uMS ../../bin
-mv bin/uPlayBack.app/Contents/MacOS/uPlayBack ../../bin
 mv bin/* ../../bin
 
 #===================================================================

@@ -10,6 +10,10 @@ else (${WIN32})
   SET(SYSTEM_LIBS m)
 endif (${WIN32})
 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  SET(SYSTEM_LIBS ${SYSTEM_LIBS} GL)
+endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+
 FILE(GLOB SRC *.cpp)
 
 If (${APPLE})
@@ -22,6 +26,7 @@ ENDIF (${APPLE})
 TARGET_LINK_LIBRARIES(pMarineViewer         
   ${MOOS_LIBRARIES}
   ${MOOSGeodesy_LIBRARIES}
+  ${SYSTEM_LIBS}
   marineview
   genutil
   geometry

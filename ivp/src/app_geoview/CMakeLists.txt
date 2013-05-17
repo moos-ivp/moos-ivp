@@ -12,11 +12,15 @@ else (${WIN32})
     m)
 endif (${WIN32})
 
-   SET(SRC
-      GEO_GUI.cpp
-      GeoViewer.cpp
-      main.cpp
-   )
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  SET(SYSTEM_LIBS ${SYSTEM_LIBS} GL)
+endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+
+SET(SRC
+  GEO_GUI.cpp
+  GeoViewer.cpp
+  main.cpp
+  )
 
 IF (${APPLE})
   # If you want to create an Apple BUNDLE, do it here

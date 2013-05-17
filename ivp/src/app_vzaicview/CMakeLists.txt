@@ -11,6 +11,10 @@ else (${WIN32})
   SET(SYSTEM_LIBS m)
 endif (${WIN32})
 
+if(CMAKE_SYSTEM_NAME STREQUAL Linux)
+  SET(SYSTEM_LIBS ${SYSTEM_LIBS} GL)
+endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
+
 FILE(GLOB SRC *.cpp)
 
 
@@ -22,14 +26,15 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
 
 Target_LINK_LIBRARIES(vzaicview         
-   ivpbuild
-   ivpcore
-   mbutil
-      # Standard libraries used by this project's FLTK apps...
-   fltk 
-   fltk_gl 
-   dl
-   tiff)
+  ${SYSTEM_LIBS}
+  ivpbuild
+  ivpcore
+  mbutil
+  # Standard libraries used by this project's FLTK apps...
+  fltk 
+  fltk_gl 
+  dl
+  tiff)
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
 IF (${APPLE})
