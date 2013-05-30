@@ -472,10 +472,12 @@ bool HostInfo::handleMailPShareInput(const string& list_of_routes)
     vector<string> jvector = parseString(route, ':');
     unsigned int jsize = jvector.size();
     string new_route;
-    if(jsize == 3) {
+    if((jsize == 2) || (jsize == 3)) {
       string hostname  = jvector[0];
       string port      = jvector[1];
-      string protocol  = jvector[2];
+      string protocol  = "udp";
+      if(jsize == 3)
+	protocol  = jvector[2];
       if(isValidIPAddress(hostname) && isNumber(port) && (protocol=="udp")) 
 	new_route = hostname + ":" + port;
       else if(isValidIPAddress(hostname) && isNumber(port))
