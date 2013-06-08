@@ -30,18 +30,6 @@ Processconfig = ANTLER
 #include plug_pShare.moos
 
 //--------------------------------------------------
-// pShare Configuration Block
-
-ProcessConfig = pShare
-{
-  AppTick       = 2
-  CommsTick     = 2
-
-  input = route = localhost:9200
-  //input = route = multicast_8
-}
-
-//--------------------------------------------------
 // uMAC Configuration Block
 
 ProcessConfig = uMAC
@@ -178,6 +166,7 @@ ProcessConfig = pMarineViewer
   appcast_viewable = true
   appcast_color_scheme = indigo
 
+  SCOPE = PSHARE_INPUT_SUMMARY
   SCOPE = NODE_BROKER_PING
   SCOPE = DEPLOY_ALL
   SCOPE = CONTACT_INFO
