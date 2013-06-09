@@ -53,7 +53,7 @@ public:
   void         reportEvent(const std::string&);
   void         reportConfigWarning(const std::string&);
   void         reportUnhandledConfigWarning(const std::string&);
-  void         reportRunWarning(const std::string&);
+  bool         reportRunWarning(const std::string&);
   void         retractRunWarning(const std::string&);
   unsigned int getWarningCount(const std::string&) const;
   bool 			OnStartUpDirectives(std::string directives="");

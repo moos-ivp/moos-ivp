@@ -218,7 +218,7 @@ string AppCast::getFormattedString(bool with_header) const
 		string warn_str = warnss.str();
 		string title_str = m_proc_name + " " + m_node_name;
 
-		unsigned int max_len = 67;
+		unsigned int max_len = 62;
 		unsigned int now_len = warn_str.length() + title_str.length()
 				+ iter_str.length();
 
@@ -227,11 +227,11 @@ string AppCast::getFormattedString(bool with_header) const
 			pad_str = string((max_len - now_len), ' ');
 
 		ss
-				<< "==================================================================="
+				<< "=============================================================="
 				<< endl;
 		ss << title_str << pad_str << warn_str << iter_str << endl;
 		ss
-				<< "==================================================================="
+				<< "=============================================================="
 				<< endl;
 	}
 
@@ -292,6 +292,14 @@ AppCast string2AppCast(const std::string& str)
 	string isep = "!@"; // inner separator
 
 	AppCast ac;
+
+	// We expand the maximum number of events and warnings since we 
+	// essentially want to build what is given to us. If the given 
+	// appcast has 300 events, who are we to prune? The event limiting
+	// should occur when the original appcast is made. Or job here is
+	// just to reconstruct what is given to us.
+	ac.setMaxEvents(1000);
+	ac.setMaxRunWarnings(1000);
 
 	string ac_str = str;
 	while (ac_str != "")

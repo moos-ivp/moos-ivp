@@ -56,6 +56,7 @@ class AppCast
   unsigned int size() const                  {return(m_messages.size());};
   unsigned int getRunWarningCount() const    {return(m_cnt_run_warnings);};
   unsigned int getCfgWarningCount() const    {return(m_config_warnings.size());};
+  unsigned int getMaxEvents() const          {return(m_max_events);};
   std::string  getProcName() const           {return(m_proc_name);};
   std::string  getNodeName() const           {return(m_node_name);};
 
