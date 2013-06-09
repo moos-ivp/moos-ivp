@@ -1,0 +1,9 @@
+
+//////////////////////////////////////////////////////////////////////////
+// THIS IS A COMPATIBILITY HEADER IT REDIRECTS TO THE NEW LOCATION/NAME //
+// IN THE MOOS V10 FILE STRUCTURE										//
+//////////////////////////////////////////////////////////////////////////
+#ifndef MOOSMINPAIRCOMPATIBILITYH
+#define MOOSMINPAIRCOMPATIBILITYH
+#include "MOOS/libMOOS/Utils/TMinPair.h"
+#endif
