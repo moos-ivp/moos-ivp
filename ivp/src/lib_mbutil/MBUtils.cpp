@@ -338,6 +338,18 @@ vector<string> chompString(const string& string_str, char separator)
 }
 
 //----------------------------------------------------------------
+// Procedure: augmentSpec
+
+string augmentSpec(const string& orig, const string& new_part, char sep)
+{
+  string return_str = orig;
+  if(orig != "")
+    return_str += sep;
+
+  return(return_str + new_part);
+}
+
+//----------------------------------------------------------------
 // Procedure: removeWhite(const string&)
 //   Example: input_str = "apples, pears, bananas "
 //            str = removeWhite(input_str)
@@ -1562,24 +1574,26 @@ int validateArgs(int argc, char *argv[], string ms)
 //   Example: snapToStep(6.18, 0.5)   returns: 6.00
 //   Example: snapToStep(6.18, 5.0)   returns: 5.00
 
-float snapToStep(float gfloat, float step)
+double snapToStep(double orig_value, double step)
 { 
   if(step <= 0) 
-    return(gfloat);
-  float fval   = gfloat / step;    // Divide by step
-  long int   itemp;
-  if(fval < 0.0)
-    itemp = (long int)(fval-0.5);
+    return(orig_value);
+
+  double new_val = orig_value / step;    // Divide by step
+  long int itemp = 0;
+  if(new_val < 0.0)
+    itemp = (long int)(new_val-0.5);
   else
-    itemp  = (long int)(fval+0.5);      // round to nearest integer
-  fval = (float)itemp * step;      // multiply again by the step
-  return(fval);
+    itemp  = (long int)(new_val+0.5);      // round to nearest integer
+
+  new_val = (double)itemp * step;      // multiply again by the step
+  return(new_val);
 }
   
 
 //----------------------------------------------------------
 // Procedure: snapDownToStep
-//   Purpose: Round the given number (gfloat) to the next lowest
+//   Purpose: Round the given number (value) to the next lowest
 //            point on the number line containing intervals of
 //            size "step".
 //
@@ -1587,13 +1601,17 @@ float snapToStep(float gfloat, float step)
 //   Example: snapToStep(9.98, 0.50)  returns: 9.50
 //   Example: snapToStep(9.98, 5.00)  returns: 5.00
 
-float snapDownToStep(float gfloat, float step)
+double snapDownToStep(double value, double step)
 { 
-  if(step <= 0) return(gfloat);
-  float fval     = gfloat / step;    // Divide by step
-  long int itemp = (long int)(fval); // round to nearest integer
-  fval = (float)itemp * step;        // multiply again by the step
-  return(fval);
+  if(step <= 0) 
+    return(value);
+
+  double new_val = value / step;        // Divide by step
+  long int itemp = (long int)(new_val); // round to nearest integer
+
+  new_val = (double)itemp * step;       // multiply again by the step
+
+  return(new_val);
 }
   
 //-------------------------------------------------------------

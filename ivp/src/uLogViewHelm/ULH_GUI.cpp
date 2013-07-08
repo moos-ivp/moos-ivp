@@ -76,6 +76,8 @@ Fl_Menu_Item ULH_GUI::menu_[] = {
  {"Invisible", 0,  0, 0, 64, 0, 0, 14, 0},
  {"Replay/Step+1",  ']', (Fl_Callback*)ULH_GUI::cb_Step, (void*)1, 0},
  {"Replay/Step-",   '[', (Fl_Callback*)ULH_GUI::cb_Step, (void*)-1, 0},
+ {"Replay/Step+1",  ']', (Fl_Callback*)ULH_GUI::cb_Step, (void*)5, 0},
+ {"Replay/Step-",   '[', (Fl_Callback*)ULH_GUI::cb_Step, (void*)-5, 0},
  {"BrowserHeader",  'h', (Fl_Callback*)ULH_GUI::cb_BrowserHeader},
  {0}
 };

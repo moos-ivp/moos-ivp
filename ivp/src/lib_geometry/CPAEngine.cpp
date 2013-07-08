@@ -20,14 +20,27 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <cmath> 
 #include <cassert>
 #include "CPAEngine.h"
 #include "GeomUtils.h"
 #include "AngleUtils.h"
 
-
 using namespace std;
+
+//----------------------------------------------------------
+// Procedure: Constructor
+
+CPAEngine::CPAEngine()
+{
+  cnLAT = 0;
+  cnLON = 0;
+  cnSPD = 0;
+  cnCRS = 0;
+  osLAT = 0;
+  osLON = 0;
+}
 
 //----------------------------------------------------------
 // Procedure: Constructor
@@ -47,6 +60,8 @@ CPAEngine::CPAEngine(double gcnlat, double gcnlon, double gcncrs,
   cnCRS   = angle360(gcncrs);
   osLAT   = goslat;
   osLON   = goslon;
+  if(cnSPD < 0)
+    cnSPD = 0;
   this->setStatic();
 }
 
@@ -56,7 +71,7 @@ CPAEngine::CPAEngine(double gcnlat, double gcnlon, double gcncrs,
 //            Determines Closest-Point-of-Approach (CPA)
 
 double CPAEngine::evalCPA(double osCRS, double osSPD, 
-			  double osTOL, double *calcROC)
+			  double osTOL, double *calcROC) const
 {
   osCRS = angle360(osCRS);
 
@@ -111,7 +126,7 @@ double CPAEngine::evalCPA(double osCRS, double osSPD,
 // Procedure: evalROC
 //   Purpose: Determine rate-of-closure for a given heading,speed
 
-double CPAEngine::evalROC(double osCRS, double osSPD)
+double CPAEngine::evalROC(double osCRS, double osSPD) const
 {
   osCRS = angle360(osCRS);
   
@@ -133,12 +148,305 @@ double CPAEngine::evalROC(double osCRS, double osSPD)
 }
 
 //----------------------------------------------------------------
+// Procedure: crossesLines
+//   Purpose: checks to see if the two lines determined by the 
+//            present ownship and contact headings, cross. 
+
+bool CPAEngine::crossesLines(double osCRS) const
+{
+  // Step 1: check for parallel lines. If not parallel return true
+  double delta_angle = angle360(osCRS - cnCRS);
+  if((delta_angle != 0) && (delta_angle != 180))
+    return(true);
+    
+  // Step 2: check if the parallel lines cross by checking if the 
+  // contact is on the ownship line.
+  
+  // Step 2A: check ownship and contact on at the same present position
+  if((osLAT == cnLAT) && (osLON == cnLON))
+    return(true);
+
+  // Step 2B: check the relative angle of the contact to ownship
+  double ang_os_to_cn = relAng(osLON, osLAT, cnLON, cnLAT);
+
+  if(ang_os_to_cn == osCRS)
+    return(true);
+  if(ang_os_to_cn == angle360(osCRS-180))
+    return(true);
+
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: passesContact()
+//   Purpose: checks to see if ownship, on the given heading and speed,
+//            will pass the contact. A "pass" means it will cross the 
+//            line perpendicular to the bow-stern line.
+
+bool CPAEngine::passesContact(double osCRS, double osSPD) const
+{
+  bool os_fore_of_contact = foreOfContact();
+  bool os_aft_of_contact  = aftOfContact();
+
+  // Case 0: Ownship is ON the contact crossing line, return true
+  if(os_fore_of_contact && os_aft_of_contact)
+    return(true);
+
+  double spd_in_cn_heading = speedInHeading(osCRS, osSPD, cnCRS);
+
+  if(os_aft_of_contact) {
+    if(spd_in_cn_heading > cnSPD)
+      return(true);
+    else
+      return(false);
+  }
+  else {  // os_fore_of_contact
+    if(spd_in_cn_heading >= cnSPD)
+      return(false);
+    else
+      return(true);
+  }
+}
+
+//----------------------------------------------------------------
+// Procedure: passesContactPort()
+//   Purpose: checks to see if ownship, on the given heading and speed,
+//            will pass the contact on the contact's port side. 
+//            A "pass" means it will cross the line perpendicular to the 
+//            bow-stern line.
+
+bool CPAEngine::passesContactPort(double osCRS, double osSPD) const
+{
+  //============================================================
+  // Handle Special Cases
+  //============================================================
+  // Special Case 1: ownship and contact are on the same point
+  if((osLON == cnLON) && (osLAT == cnLAT))
+    return(false);
+
+  // Special Case 2: ownship does not pass the contact at all
+  if(!passesContact(osCRS, osSPD))
+    return(false);
+
+  bool os_aft_of_contact  = aftOfContact();
+  bool os_fore_of_contact = foreOfContact();
+  bool os_port_of_contact = portOfContact();
+  bool os_starboard_of_contact = starboardOfContact();
+
+  // Special Case 3: ownship is ON the bow-stern line
+  if(os_port_of_contact && os_starboard_of_contact) {
+    double os_to_cn_rel_bng = relBearing(osLON, osLAT, osCRS, cnLON, cnLAT);
+    if(os_fore_of_contact) {
+      if(os_to_cn_rel_bng >= 180)
+	return(true);
+      else
+	return(false);
+    }
+    else { // os is aft of contact
+      if(os_to_cn_rel_bng >= 180)
+	return(false);
+      else
+	return(true);
+    }
+  }
+
+  // Special Case 4: ownship is on the perpendicular bow-stern line
+  if(os_aft_of_contact && os_fore_of_contact)
+    return(os_port_of_contact);
+
+  //============================================================
+  // Handle General Cases
+  //============================================================
+  // Case #1: ownship is aft and port of contact              //
+  //                           |                              //       
+  //                           |                              //       
+  //                           |                              //       
+  //                          / \                             //       
+  //                          | |                             //
+  //          ----------------|C|-----------------            //
+  //          Case:           | |                             //
+  //          Port and        ---                             //
+  //          Aft of contact   |                              //
+  //                           |                              //
+  //                           |                              //
+  //            (Ownship)      |                              //
+  //
+  if((os_aft_of_contact)  && (os_port_of_contact))
+    return(!crossesStern(osCRS, osSPD));
+
+
+  // Case #2: ownship is aft and starboard of contact         //
+  //                           |                              //
+  //                           |                              //
+  //                           |                              //
+  //                          / \                             //
+  //                          | |                             //
+  //          ----------------|C|-----------------            //
+  //                          | |   Case:                     //
+  //                          ---   Starboard and             //
+  //                           |    Aft of contact            //
+  //                           |                              //
+  //                           |    (Ownship)                 //
+  //                           |                              //
+  //
+  if((os_aft_of_contact)  && (os_starboard_of_contact))
+    return(crossesStern(osCRS, osSPD));
+
+
+  // Case #3: ownship is fore and port of contact             //
+  //                           |                              //
+  //          Case:            |                              //
+  //          port and         |                              //
+  //          Fore of contact  |                              //
+  //            (Ownship)     / \                             //
+  //                          | |                             //
+  //          ----------------|C|-----------------            //
+  //                          | |                             //
+  //                          ---                             //
+  //                           |                              //
+  //                           |                              //
+  //                           |                              //
+  //                           |                              //
+  //
+  if((os_fore_of_contact)  && (os_port_of_contact))
+    return(!crossesBow(osCRS, osSPD));
+
+  // Case #4: ownship is fore and starboard of contact        //
+  //                           |                              //
+  //                           |     Case:                    //
+  //                           |     Starboard and            //
+  //                           |     Fore of contact          //
+  //                          / \      (Ownship)              //
+  //                          | |                             //
+  //          ----------------|C|-----------------            //
+  //                          | |                             //
+  //                          ---                             //
+  //                           |                              //
+  //                           |                              //
+  //                           |                              //
+  //                           |                              //
+  //
+  if((os_fore_of_contact)  && (os_starboard_of_contact))
+    return(crossesBow(osCRS, osSPD));
+
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: passesContactStarboard()
+//   Purpose: checks to see if ownship, on the given heading and speed,
+//            will pass the contact on the contact's starboard side. 
+//            A "pass" means it will cross the line perpendicular to the 
+//            bow-stern line.
+
+bool CPAEngine::passesContactStarboard(double osCRS, double osSPD) const
+{
+  //============================================================
+  // Handle Special Cases
+  //============================================================
+  // Special Case 1: ownship and contact are on the same point
+  if((osLON == cnLON) && (osLAT == cnLAT))
+    return(false);
+
+  // Special Case 2: ownship does not pass the contact at all
+  if(!passesContact(osCRS, osSPD))
+    return(false);
+
+  if(!passesContactPort(osCRS, osSPD))
+    return(true);
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: foreOfContact
+//   Purpose: Checks to see if ownship is presently fore of the contact.
+
+bool CPAEngine::foreOfContact() const
+{
+  // First, edge case where ownship and contact are exact same position
+  if((osLAT == cnLAT) && (osLON == cnLON))
+    return(false);
+  
+  // returns value in the range [0,360)
+  double rel_bng = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
+  if((rel_bng >= 0) && (rel_bng <= 90))
+    return(true);
+
+  if((rel_bng >= 270) && (rel_bng <= 360))
+    return(true);
+  
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: aftOfContact
+//   Purpose: Checks to see if ownship is presently aft of the contact.
+
+bool CPAEngine::aftOfContact() const
+{
+  // First, edge case where ownship and contact are exact same position
+  if((osLAT == cnLAT) && (osLON == cnLON))
+    return(false);
+  
+  // returns value in the range [0,360)
+  double rel_bng = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
+  if((rel_bng >= 90) && (rel_bng <= 270))
+    return(true);
+  
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: portOfContact
+//   Purpose: True if ownship is presently on the port side of the contact.
+//      Note: If ownship is ON the bow or stern line, it will return true.
+
+bool CPAEngine::portOfContact() const
+{
+  // First, edge case where ownship and contact are exact same position
+  if((osLAT == cnLAT) && (osLON == cnLON))
+    return(false);
+  
+  // returns value in the range [0,360)
+  double rel_bng = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
+  if((rel_bng >= 180) && (rel_bng < 360))
+    return(true);
+  
+  // If contact ON the bow-stern line, return true
+  if(rel_bng == 0)
+    return(true);
+
+
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: starboardOfContact
+//   Purpose: True if ownship is presently on the starboard side of the contact.
+//      Note: If ownship is ON the bow or stern line, it will return true.
+
+bool CPAEngine::starboardOfContact() const
+{
+  // First, edge case where ownship and contact are exact same position
+  if((osLAT == cnLAT) && (osLON == cnLON))
+    return(false);
+  
+  // returns value in the range [0,360)
+  double rel_bng = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
+  if((rel_bng >= 0) && (rel_bng <= 180))
+    return(true);
+  
+  return(false);
+}
+
+
+//----------------------------------------------------------------
 // Procedure: minMaxROC
 //   Purpose: Determine max Rate-Of-Closure for a given number of  
 //            headings and max_speed
 
 double CPAEngine::minMaxROC(double speed, double heading_clicks, 
-			    double &min_roc, double& max_roc)
+			    double &min_roc, double& max_roc) const
 {
   double heading_delta = 360.0 / heading_clicks;
   
@@ -159,86 +467,6 @@ double CPAEngine::minMaxROC(double speed, double heading_clicks,
   }
 
   return(max_heading);
-}
-
-
-//----------------------------------------------------------------
-// Procedure: crossesBow
-//   Purpose: Determine if for the given ownship course and speed
-//            whether it is on a path to cross the path of the 
-//            contact on its bow.
-//   Returns: true if it will cross its bow.
-//            false otherwise.
-//
-//                B        a          C                          
-//                 z-----------------y                           
-//                /                 /                            
-//               /               /                               
-//              /             /                                  
-//          c  /           /        sinA    sinB    sinC          
-//            /         /           ---- == ---- == ----          
-//           /       /    b          a       b       c            
-//          /     /                                              
-//         /   /         x: ownship's position t0                
-//        / /            y: contact's position t0                
-//       x               z: where the two paths cross            
-//      A                                                        
-//                                                               
-
-bool CPAEngine::crossesBow(double osCRS, double osSPD)
-{
-  // First handle special case where osSPD is zero
-  if(osSPD == 0)
-    return(false);
-
-  // Then handle special case where ownship, currently IS on the
-  // "bowline", or path, of the contact. If so, only answer true
-  // if the ownship course heads directly at the contact.
-
-  osCRS = angle360(osCRS);
-  double angle_cn_to_os = relAng(cnLON, cnLAT, osLON, osLAT);
-  double angle_os_to_cn = relAng(osLON, osLAT, cnLON, cnLAT);
-  if(angle_cn_to_os == cnCRS) {
-    if(osCRS == angle_os_to_cn)
-      return(true);
-    else
-      return(false);
-  }
-
-  // First determine, based solely on ownship course whether it
-  // could cross the contact bow given an infinite ownship speed.
-
-  bool contained = containsAngle(statCLOW, statCHGH, osCRS);
-  //cout << "statCLOW:" << statCLOW << "  statCHGH:" << statCHGH;
-  //cout << "  osCRS:" << osCRS << "  result:" << contained << endl;
-  if(!contained)
-    return(false);
-
-  double dist_b  = statCNDIS;
-  double angle_a = smallAngle(osCRS, statCNANG);
-
-  //double feasible_angle_range = angle360(statCHGH - statCLOW);
-  //double angle_b = feasible_angle_range - angle_a;
-  assert(statCRNG >= 0);
-  //cout << "statCRNG: " << statCRNG << endl;
-  double angle_b = statCRNG - angle_a;
-  assert(angle_b >= 0);
-  double angle_c = (180.0 - (angle_a + angle_b));
-  assert(angle_c >= 0);
-
-  double sin_angle_a = sin(degToRadians(angle_a));
-  double sin_angle_b = sin(degToRadians(angle_b));
-  double sin_angle_c = sin(degToRadians(angle_c));
-
-  double dist_a = sin_angle_a * (dist_b / sin_angle_b);
-  double dist_c = sin_angle_c * (dist_b / sin_angle_b);
-
-  double secs_c = dist_c / osSPD;
-  double secs_a = dist_a / cnSPD;
-
-  bool crosses_bow = (secs_c <= secs_a);
-
-  return(crosses_bow);
 }
 
 //----------------------------------------------------------------
@@ -312,6 +540,26 @@ void CPAEngine::setStatic()
   else
     statCRNG = ang2;
 
+  // Create the contact line segment representing its inf line
+  stat_cnx1 = cnLON;
+  stat_cny1 = cnLAT;
+  projectPoint(cnCRS, 100, stat_cnx1, stat_cny1, stat_cnx2, stat_cny2);
+
+  // check of os is on the present contact position
+  stat_os_on_contact = false;
+  if((osLON == cnLON) && (osLAT == cnLAT))
+    stat_os_on_contact = true;
+
+
+  // check if ownship currently IS on the sternline of the contact. 
+  stat_os_on_bowline = false;
+  stat_os_on_sternline = false;
+  double angle_cn_to_os = relAng(cnLON, cnLAT, osLON, osLAT);
+  if(angle_cn_to_os == angle360(cnCRS))
+    stat_os_on_bowline = true;
+  else if(angle_cn_to_os == angle360(cnCRS-180))
+    stat_os_on_sternline = true;
+
 #if 0
   double cn_angle_to_ownship = relAng(cnLON, cnLAT, osLON, osLAT);
   double opposite_cnCRS = angle360(cnCRS + 180);
@@ -327,13 +575,11 @@ void CPAEngine::setStatic()
 #endif
 }
 
-
-
 //----------------------------------------------------------------
 // Procedure: smallAngle
 //   Purpose: 
 
-double CPAEngine::smallAngle(double ang_a, double ang_b)
+double CPAEngine::smallAngle(double ang_a, double ang_b) const
 {
   double ang1 = angle360(ang_a - ang_b);
   double ang2 = angle360(ang_b - ang_a);
@@ -344,12 +590,307 @@ double CPAEngine::smallAngle(double ang_a, double ang_b)
 }
 
 
+//----------------------------------------------------------------
+// Procedure: crossesBow  (Convenience function)
+
+bool CPAEngine::crossesBow(double osCRS, double osSPD) const
+{
+  double dist;
+  return(crossesBowDist(osCRS, osSPD, dist));
+}
+
+//----------------------------------------------------------------
+// Procedure: crossesBowDist  (Convenience function)
+
+double CPAEngine::crossesBowDist(double osCRS, double osSPD) const
+{
+  double dist;
+  crossesBowDist(osCRS, osSPD, dist);
+  return(dist);
+}
+
+//----------------------------------------------------------------
+// Procedure: crossesBowDist
+
+bool CPAEngine::crossesBowDist(double osCRS, double osSPD, double& xdist) const
+{
+  // Special case 1: ownship and contact position are the same
+  if(stat_os_on_contact) {
+    xdist = 0;
+    return(true);
+  }
+  
+  // Special case 2: ownship crossing the contact sternline now
+  if(stat_os_on_bowline) {
+    xdist = distPointToPoint(osLON, osLAT, cnLON, cnLAT);
+    return(true);
+  }
+
+  // Special case 3: ownship has speed zero - cannot ever reach bow-stern line
+  if(osSPD == 0) {
+    xdist = -1;
+    return(false);
+  }
+
+  // Create ownship line segment
+  double x1 = osLON;
+  double y1 = osLAT;
+  double x2, y2;
+  projectPoint(osCRS, 100, x1, y1, x2, y2);
+
+  // Create contact line segment from cached values
+  double x3 = stat_cnx1;
+  double y3 = stat_cny1;
+  double x4 = stat_cnx2;
+  double y4 = stat_cny2;
+  
+  // Determine exactly where ownship crosses the contact bow-stern line
+  double intx, inty;
+  bool lines_cross = linesCross(x1,y1,x2,y2,x3,y3,x4,y4,intx,inty);
+
+  if(!lines_cross) {
+    xdist = -1;
+    return(false);
+  }
+
+  // Check if the crossing point is in front of ownship. If it is not, 
+  // then it doesn't cross the bow (or stern).
+  double ang_os_to_cross_pt = relAng(osLON, osLAT, intx, inty);
+  double os_delta_angle     = angle180(osCRS - ang_os_to_cross_pt);
+  if(os_delta_angle < 0)
+    os_delta_angle *= -1;
+  if(os_delta_angle > 10) {
+    xdist = -1;
+    return(false);
+  }
+  double os_dist_to_cross = distPointToPoint(osLON, osLAT, intx, inty);
+  double cn_dist_to_cross = distPointToPoint(cnLON, cnLAT, intx, inty);
+  double os_time_to_cross    = os_dist_to_cross / osSPD;
+  
+  //----------------------------------------------------------------
+  // Handle another edge case (If contact speed < 0 treat as zero)
+  //----------------------------------------------------------------
+  if(cnSPD <= 0) {
+    xdist = cn_dist_to_cross;
+    return(true);
+  }
+
+  // Now that we sure cnSPD is not zero calculate cn_time_to_cross
+  double cn_time_to_cross  = cn_dist_to_cross / cnSPD;
+
+  // Determine if inf line crossing point is fore or aft of contact's 
+  // present position
+  bool   xpoint_fore_of_contact_now = false;
+  double ang_cn_to_cross_pt = relAng(cnLON, cnLAT, intx, inty);
+  double cn_delta_angle = angle180(cnCRS - ang_cn_to_cross_pt);
+  if(cn_delta_angle < 0)
+    cn_delta_angle *= -1;
+  if(cn_delta_angle < 10) 
+    xpoint_fore_of_contact_now = true;
+
+  // If the contact is already ahead of the cross point, or if the 
+  // the contact gets to the crosspoint first, then ownwhip is on a
+  // course to cross the contact's stern, not the bow.
+
+  // If the xpoint is aft of the contact now, or  gets there first,
+  // then ownship is crossing the contact's bow, not the stern.
+  if(!xpoint_fore_of_contact_now || (cn_time_to_cross < os_time_to_cross)) {
+    xdist = -1;
+    return(false);
+  }
+
+  // ===================================================================
+  // Now we know ownship crosses the contact's bowline, but how far in
+  // front of the contact will it be when it does so?
+  // ===================================================================
+
+  double cn_dist_travelled_when_os_crosses_bowline = os_time_to_cross * cnSPD;
+  
+  xdist = cn_dist_to_cross - cn_dist_travelled_when_os_crosses_bowline;
+
+  return(true);
+}
 
 
 
+//----------------------------------------------------------------
+// Procedure: crossesStern()                  Convenience function
+//
+//   Purpose: Determine if for the given ownship course and speed
+//            whether it is on a path to cross the path of the 
+//            contact on its stern.
+
+bool CPAEngine::crossesStern(double osCRS, double osSPD) const
+{
+  double xdist;
+  return(crossesSternDist(osCRS, osSPD, xdist));
+}
+
+//----------------------------------------------------------------
+// Procedure: crossesStern()                  Convenience function
+//
+//   Purpose: Determine if for the given ownship course and speed
+//            whether it is on a path to cross the path of the 
+//            contact on its stern. And if so, at what distance when
+//            it crosses?
+
+double CPAEngine::crossesSternDist(double osCRS, double osSPD) const
+{
+  double xdist;
+  crossesSternDist(osCRS, osSPD, xdist);
+  return(xdist);
+}
 
 
+//----------------------------------------------------------------
+// Procedure: crossesSternDist
+//   Purpose: Determine if for the given ownship course and speed
+//            whether it is on a path to cross the path of the 
+//            contact on its stern. And if so, at what distance when
+//            it crosses?
+
+bool CPAEngine::crossesSternDist(double osCRS, double osSPD, double& xdist) const
+{
+  // Special case 1: ownship and contact position are the same
+  if(stat_os_on_contact) {
+    xdist = 0;
+    return(true);
+  }
+  
+  // Special case 2: ownship crossing the contact sternline now
+  if(stat_os_on_sternline) {
+    xdist = distPointToPoint(osLON, osLAT, cnLON, cnLAT);
+    return(true);
+  }
+
+  // Special case 3: ownship has speed zero - cannot ever reach bow-stern line
+  if(osSPD == 0) {
+    xdist = -1;
+    return(false);
+  }
+
+  // Create ownship line segment
+  double x1 = osLON;
+  double y1 = osLAT;
+  double x2, y2;
+  projectPoint(osCRS, 100, x1, y1, x2, y2);
+
+  // Create contact line segment from cached values
+  double x3 = stat_cnx1;
+  double y3 = stat_cny1;
+  double x4 = stat_cnx2;
+  double y4 = stat_cny2;
+  
+  // Determine exactly where ownship crosses the contact bow-stern line
+  double intx, inty;
+  bool lines_cross = linesCross(x1,y1,x2,y2,x3,y3,x4,y4,intx,inty);
+
+  if(!lines_cross) {
+    xdist = -1;
+    return(false);
+  }
+
+  // Check if the crossing point is in front of ownship. If it is not, 
+  // then it doesn't cross the stern (or bow).
+  double ang_os_to_cross_pt = relAng(osLON, osLAT, intx, inty);
+  double os_delta_angle     = angle180(osCRS - ang_os_to_cross_pt);
+  if(os_delta_angle < 0)
+    os_delta_angle *= -1;
+  if(os_delta_angle > 10) {
+    xdist = -1;
+    return(false);
+  }
+  double os_dist_to_cross = distPointToPoint(osLON, osLAT, intx, inty);
+  double cn_dist_to_cross = distPointToPoint(cnLON, cnLAT, intx, inty);
+  double os_time_to_cross    = os_dist_to_cross / osSPD;
+  
+  //----------------------------------------------------------------
+  // Handle another edge case (If contact speed < 0 treat as zero)
+  //----------------------------------------------------------------
+  if(cnSPD <= 0) {
+    xdist = cn_dist_to_cross;
+    return(true);
+  }
+
+  // Now that we sure cnSPD is not zero calculate cn_time_to_cross
+  double cn_time_to_cross  = cn_dist_to_cross / cnSPD;
+
+  // Determine if inf line crossing point is fore or aft of contact's 
+  // present position
+  bool   xpoint_fore_of_contact_now = false;
+  double ang_cn_to_cross_pt = relAng(cnLON, cnLAT, intx, inty);
+  double cn_delta_angle = angle180(cnCRS - ang_cn_to_cross_pt);
+  if(cn_delta_angle < 0)
+    cn_delta_angle *= -1;
+  if(cn_delta_angle < 10) 
+    xpoint_fore_of_contact_now = true;
+
+  // If the xpoint is front of the contact now, and ownship gets there first,
+  // then ownship is crossing the contact's bow, not the stern.
+  if(xpoint_fore_of_contact_now && (os_time_to_cross < cn_time_to_cross)) {
+    xdist = -1;
+    return(false);
+  }
+
+  // ===================================================================
+  // Now we know ownship crosses the contact's sternline, but how far in
+  // back of the contact will it be when it does so?
+  // ===================================================================
+
+  double cn_dist_travelled_when_os_crosses_sternline = os_time_to_cross * cnSPD;
+  
+  if(xpoint_fore_of_contact_now)
+    xdist = cn_dist_travelled_when_os_crosses_sternline - cn_dist_to_cross;
+  else 
+    xdist = cn_dist_to_cross + cn_dist_travelled_when_os_crosses_sternline;
+
+  return(true);
+}
 
 
+//----------------------------------------------------------------
+// Procedure: crossesBowOrStern
+//   Purpose: Determine if for the given ownship course and speed
+//            whether it is on a path to cross the path of the 
+//            contact on its stern or bow. 
 
+bool CPAEngine::crossesBowOrStern(double osCRS, double osSPD) const
+{
+  // Special cases
+  if(stat_os_on_contact || stat_os_on_sternline || stat_os_on_bowline)
+    return(true);
+
+  // Special case: ownship has speed zero - cannot ever reach bow-stern line
+  if(osSPD == 0) 
+    return(false);
+
+  // Create ownship line segment
+  double x1 = osLON;
+  double y1 = osLAT;
+  double x2, y2;
+  projectPoint(osCRS, 100, x1, y1, x2, y2);
+
+  // Create contact line segment from cached values
+  double x3 = stat_cnx1;
+  double y3 = stat_cny1;
+  double x4 = stat_cnx2;
+  double y4 = stat_cny2;
+  
+  // Determine exactly where ownship crosses the contact bow-stern line
+  double intx, inty;
+  bool lines_cross = linesCross(x1,y1,x2,y2,x3,y3,x4,y4,intx,inty);
+
+  if(!lines_cross) 
+    return(false);
+
+  // Check if the crossing point is in front of ownship. If it is not, 
+  // then it doesn't cross the stern (or bow).
+  double ang_os_to_cross_pt = relAng(osLON, osLAT, intx, inty);
+  double os_delta_angle     = angle180(osCRS - ang_os_to_cross_pt);
+  if(os_delta_angle < 0)
+    os_delta_angle *= -1;
+  if(os_delta_angle > 10) 
+    return(false);
+  return(true);
+}
 

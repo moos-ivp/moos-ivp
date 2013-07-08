@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <cmath>
 #include <cstdlib>
 #include <cstring>
@@ -86,11 +87,10 @@ XYSegList stringStandard2SegList(string str)
   XYSegList null_segl;
   XYSegList new_seglist;
 
-  string rest = stripBlankEnds(str);
+  string rest = str;
 
   while(rest != "") {
-    string left = stripBlankEnds(biteString(rest, '='));
-    rest = stripBlankEnds(rest);
+    string left = biteStringX(rest, '=');
     
     if(left == "pts") {
       string pstr = biteStringX(rest, '}');
@@ -143,8 +143,7 @@ XYSegList stringStandard2SegList(string str)
       }
     }
     else {
-      string right = stripBlankEnds(biteString(rest, ','));
-      rest = stripBlankEnds(rest);
+      string right = biteStringX(rest, ',');
       new_seglist.set_param(left, right);
     }
   }	  				  

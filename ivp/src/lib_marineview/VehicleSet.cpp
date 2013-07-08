@@ -232,6 +232,8 @@ bool VehicleSet::getStringInfo(const string& g_vname,
     result = record.getType("unknown-type");
   else if(info_type == "helm_mode") 
     result = record.getMode("unknown-mode");
+  else if(info_type == "helm_mode_aux") 
+    result = record.getModeAux();
   else if(info_type == "helm_allstop_mode")
     result = record.getAllStop("unknown-amode");
   else  

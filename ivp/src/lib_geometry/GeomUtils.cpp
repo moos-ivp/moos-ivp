@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <iostream>
 #include <cmath>
 #include <cstdlib>
 #include "GeomUtils.h"
@@ -175,7 +176,7 @@ bool linesCross(double x1, double y1, double x2, double y2,
       return(false);
   }
 
-  // Case 3 - line1 horizontal line1 vertical
+  // Case 3 - line1 horizontal line2 vertical
   if(line1_horz && line2_vert) {
     iy = y1; ix = x3;
     return(true);
@@ -244,6 +245,7 @@ bool linesCross(double x1, double y1, double x2, double y2,
 
   // Then plug ix into one of the line equations.
   iy = (slope_a * ix) + inter_a;
+
   return(true);
 }
 
@@ -587,7 +589,9 @@ void perpLineIntPt(double x1, double y1, double x2, double y2,
 
 //---------------------------------------------------------------
 // Procedure: projectPoint
-//   Purpose: 
+//      Note: We special-case the axis angles to help ensure that
+//            vertical and horizontal line segments aren't tripped
+//            up by rounding errors.
 
 void projectPoint(double degval, double dist, double cx, 
 		  double cy, double &rx, double &ry)
@@ -595,12 +599,29 @@ void projectPoint(double degval, double dist, double cx,
   if((degval < 0) || (degval >= 360))
     degval = angle360(degval);
 
-  double radang  = degToRadians(degval);
-  double delta_x = sin(radang) * dist;
-  double delta_y = cos(radang) * dist;
-
-  rx = cx + delta_x;
-  ry = cy + delta_y;
+  if(degval == 0) {
+    rx = cx;
+    ry = cy + dist;
+  }
+  else if(degval == 90) {
+    rx = cx + dist;
+    ry = cy;
+  }
+  else if(degval == 180) {
+    rx = cx;
+    ry = cy - dist;
+  }
+  else if(degval == 270) {
+    rx = cx - dist;
+    ry = cy;
+  }
+  else {
+    double radang  = degToRadians(degval);
+    double delta_x = sin(radang) * dist;
+    double delta_y = cos(radang) * dist;
+    rx = cx + delta_x;
+    ry = cy + delta_y;
+  }
 }
 
 

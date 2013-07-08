@@ -130,6 +130,8 @@ bool VPlug_VehiSettings::setParam(string param, string value)
       else if(m_vehicles_name_mode == "names+shortmode")
 	m_vehicles_name_mode = "names+depth";
       else if(m_vehicles_name_mode == "names+depth")
+	m_vehicles_name_mode = "names+auxmode";
+      else if(m_vehicles_name_mode == "names+auxmode")
 	m_vehicles_name_mode = "off";
     }
     else

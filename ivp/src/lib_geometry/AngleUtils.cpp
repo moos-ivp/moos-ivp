@@ -208,7 +208,7 @@ double radToDegrees(double radval)
 
 double headingToRadians(double degval) 
 {
-  return( radAngleWrap( (90.0-degval)*M_PI/180.0 ) );
+  return(radAngleWrap( (90.0-degval)*M_PI/180.0));
 }
 
 
@@ -219,7 +219,39 @@ double headingToRadians(double degval)
 
 double radToHeading(double radval)
 {
-  return( angle360( 90.0-(radval / M_PI) * 180) );
+  return(angle360( 90.0-(radval / M_PI) * 180));
+}
+
+
+//---------------------------------------------------------------
+// Procedure: speedInHeading
+//   Purpose: Given a heading and speed of a vehicle, and another heading,
+//            determine the speed of the vehicle in that heading.
+
+double speedInHeading(double osh, double osv, double heading)
+{
+  // Part 0: handle simple special case
+  if(osv == 0)
+    return(0);
+
+  // Part 1: determine the delta heading [0, 180]
+  double delta = angle180(osh - heading);
+  if(delta < 0)
+    delta *= -1;
+  
+  // Part 2: Handle easy special cases
+  if(delta == 0)
+    return(osv);
+  if(delta == 180)
+    return(-osv);
+  if(delta == 90)
+    return(0);
+
+  // Part 3: Handle the general case
+  double radians = degToRadians(delta);
+  double answer  = cos(radians) * osv;
+  
+  return(answer);
 }
 
 
@@ -242,9 +274,9 @@ double angle180(double degval)
 
 double angle360(double degval)
 {
-  while(degval >= 360)
+  while(degval >= 360.0)
     degval -= 360.0;
-  while(degval < 0)
+  while(degval < 0.0)
     degval += 360.0;
   return(degval);
 }
@@ -314,13 +346,53 @@ bool containsAngle(double aval, double bval, double qval)
     return((qval >= aval) && (qval <= bval));
 }
 
+//---------------------------------------------------------------
+// Procedure: relBearing
+//   Purpose: returns the relative bearing of a contact at position cnx,cny to
+//            ownship positioned as osx,osy at a heading of osh.
+//   Returns: Value in the range [0,360).
+
+double  relBearing(double osx, double osy, double osh, double cnx, double cny)
+{
+  double angle_os_to_cn = relAng(osx, osy, cnx, cny);
+  
+  double raw_rel_bearing = angle_os_to_cn - osh;  
+
+  return(angle360(raw_rel_bearing));
+}
+
+//---------------------------------------------------------------
+// Procedure: absRelBearing
+//   Purpose: returns the absolute relative bearing, for example:
+//            359 becomes 1
+//            270 becomes 90
+//            181 becomes 179
+//            180 becomes 180
+//   Returns: Value in the range [0,180].
 
 
+double absRelBearing(double osx, double osy, double osh, double cnx, double cny)
+{
+  double rel_bearing = relBearing(osx, osy, osh, cnx, cny);
+  
+  double abs_relative_bearing = angle180(rel_bearing);
+  if(abs_relative_bearing < 0)
+    abs_relative_bearing *= -1;
+  
+  return(abs_relative_bearing);
+
+}
+
+//---------------------------------------------------------------
+// Procedure: totAbsRelBearing
+//   Returns: Value in the range [0,360].
 
 
+double totAbsRelBearing(double osx, double osy, double osh, 
+			double cnx, double cny, double cnh)
+{
+  double abs_rel_bearing_os_cn = absRelBearing(osx, osy, osh, cnx, cny);
+  double abs_rel_bearing_cn_os = absRelBearing(cnx, cny, cnh, osx, osy);
 
-
-
-
-
-
+  return(abs_rel_bearing_os_cn + abs_rel_bearing_cn_os);
+}

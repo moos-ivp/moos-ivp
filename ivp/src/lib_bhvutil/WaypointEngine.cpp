@@ -230,8 +230,11 @@ unsigned int WaypointEngine::resetsRemaining() const
 
 //-----------------------------------------------------------
 // Procedure: setNextWaypoint
-//   Returns: true if waypoint index is advanced on this iteration
-//            false if not advanced (or not advanced through error)
+//   Returns: "empty_seglist"
+//            "completed"
+//            "cycled"
+//            "advanced"
+//            "in-transit"
 //      Note: Error can be checked for by checking if curr_ix == -1      
 
 
@@ -241,7 +244,7 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
   // --------------------------------------------------------------
   unsigned int vsize = m_seglist.size();
   if(vsize == 0)
-    return("empty seglist");
+    return("empty_seglist");
   if(m_complete)
     return("completed");
   

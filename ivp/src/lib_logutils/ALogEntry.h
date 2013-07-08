@@ -31,36 +31,28 @@ public:
   ALogEntry() {m_timestamp=0; m_dval=0; m_isnum=false;};
   ~ALogEntry() {};
 
+  // Setters / Modifiers
   void set(double timestamp, const std::string& varname, 
 	   const std::string& source, 
 	   const std::string& srcaux,
-	   const std::string& sval)
-  {
-    m_timestamp = timestamp;
-    m_varname   = varname;
-    m_source    = source;
-    m_srcaux    = srcaux;
-    m_sval      = sval;
-    m_dval      = 0;
-    m_isnum     = false;
-  };
-    
-  void set(double timestamp, const std::string& varname, 
-	   const std::string& source, 
-	   const std::string& srcaux,
-	   double dval)
-  {
-    m_timestamp = timestamp;
-    m_varname   = varname;
-    m_source    = source;
-    m_srcaux    = srcaux;
-    m_sval      = "";
-    m_dval      = dval;
-    m_isnum     = true;
-  };
-    
-  void setStatus(const std::string& s) {m_status=s;};
+	   const std::string& sval);
 
+  void set(double timestamp, const std::string& varname, 
+	   const std::string& source, 
+	   const std::string& srcaux,
+	   double dval);
+
+  void setTimeStamp(double v)           {m_timestamp = v;};
+  void setVarName(const std::string& s) {m_varname = s;};
+  void setSource(const std::string& s)  {m_source = s;};
+  void setSrcAux(const std::string& s)  {m_srcaux = s;};
+  void setStatus(const std::string& s)  {m_status = s;};
+  void setRawLine(const std::string& s) {m_raw_line = s;};
+  void skewBackward(double v)           {m_timestamp -= v;};
+  void skewForward(double v)            {m_timestamp += v;};
+
+
+  // Getters / Analyzers
   double      time() const         {return(m_timestamp);};
   double      getTimeStamp() const {return(m_timestamp);};
   std::string getVarName() const   {return(m_varname);};
@@ -69,12 +61,9 @@ public:
   std::string getStringVal() const {return(m_sval);};
   double      getDoubleVal() const {return(m_dval);};
   bool        isNumerical() const  {return(m_isnum);};
+  std::string getRawLine() const   {return(m_raw_line);};
   std::string getStatus() const    {return(m_status);};
-
   bool        isNull() const       {return(m_status=="null");};
-
-  void        skewBackward(double v) {m_timestamp -= v;};
-  void        skewForward(double v)  {m_timestamp += v;};
 
 protected:
   double      m_timestamp;
@@ -84,12 +73,16 @@ protected:
   std::string m_sval;
   double      m_dval;
   bool        m_isnum;
+  std::string m_raw_line;
 
   // An optional status string. The empty string indicates the entry
   // is a normal entry. "invalid" means the entry is not normal. "eof"
   // could indicate that a the entry is the tail of normal entries.
   std::string  m_status; 
 };
-#endif 
 
+bool operator< (const ALogEntry& one, const ALogEntry& two);
+bool operator== (const ALogEntry& one, const ALogEntry& two);
+
+#endif 
 

@@ -152,7 +152,10 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_record_gt_updated = m_curr_time;
     }
     // END logic for checking for alternative nav reporting
-
+    
+    if(key == "AUX_MODE") 
+      m_record.setModeAux(sdata);
+    
     if(key == "IVPHELM_SUMMARY") {
       m_helm_lastmsg = m_curr_time;
       handleLocalHelmSummary(sdata);
@@ -234,6 +237,7 @@ void NodeReporter::registerVariables()
   m_Comms.Register("IVPHELM_SUMMARY", 0);
   m_Comms.Register("IVPHELM_STATE", 0);
   m_Comms.Register("IVPHELM_ALLSTOP", 0);
+  m_Comms.Register("AUX_MODE", 0);
 }
 
 //-----------------------------------------------------------------

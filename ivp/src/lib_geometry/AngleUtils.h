@@ -36,9 +36,17 @@ double  angle180(double degrees);
 double  angle360(double degrees);
 double  angleDiff(double, double);
 double  aspectDiff(double, double);
+
 // true heading/E-N conversion added by henrik
 double  radToHeading(double radians);
 double  headingToRadians(double degrees);
+
+double  speedInHeading(double osh, double osv, double heading);
+
+double  relBearing(double osx, double osy, double osh, double cnx, double cny);
+double  absRelBearing(double osx, double osy, double osh, double cnx, double cny);
+double  totAbsRelBearing(double osx, double osy, double osh, 
+			 double cnx, double cny, double cnh);
 
 bool    containsAngle(double deg1, double deg2, double deg3);
 

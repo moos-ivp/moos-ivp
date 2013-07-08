@@ -379,97 +379,120 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 				    unsigned int iteration, 
 				    string& new_activity_state)
 {
+  // Quick index sanity check
+  if(ix >= m_bhv_entry.size())
+    return(0);
+  
+  // =========================================================================
+  // Part 1: Prepare and update the behavior, determine its new activity state
+  // =========================================================================
   IvPFunction *ipf = 0;
-  double pwt = 0;
-  int    pcs = 0;
+  IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
 
-  if(ix < m_bhv_entry.size()) {
-    IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
-    string old_activity_state = m_bhv_entry[ix].getState();
-    if(old_activity_state == "")
-      old_activity_state = "idle";
+  // possible vals: "", "idle", "running", "active"
+  string old_activity_state = m_bhv_entry[ix].getState();
 
-    // Look for possible dynamic updates to the behavior parameters
-    bool update_made = bhv->checkUpdates();
-    if(update_made)
-      bhv->onSetParamComplete();
-
-    // Check if the behavior duration is to be reset
-    bhv->checkForDurationReset();
-
-    new_activity_state = bhv->isRunnable();
-
-    // Now that the new_activity_state is set, act appropriately for
-    // each behavior.
-    if(new_activity_state == "completed")
-      bhv->onCompleteState();
-
-    if(new_activity_state == "idle") {
-      bool repeatable = (old_activity_state != "idle");
-      bhv->postFlags("idleflags", repeatable);
-      bhv->postFlags("inactiveflags", repeatable);
-      if((old_activity_state == "running") ||
-	 (old_activity_state == "active"))
-	bhv->onRunToIdleState();
-      bhv->onIdleState();
-      bhv->updateStateDurations("idle");
+  // Look for possible dynamic updates to the behavior parameters
+  bool update_made = bhv->checkUpdates();
+  if(update_made)
+    bhv->onSetParamComplete();
+  
+  // Check if the behavior duration is to be reset
+  bhv->checkForDurationReset();
+  
+  // Possible vals: "completed", "idle", "running"
+  new_activity_state = bhv->isRunnable();
+  
+  // =========================================================================
+  // Part 2: With new_activity_state set, act appropriately for each behavior.
+  // =========================================================================
+  // Part 2A: Handle completed behaviors
+  if(new_activity_state == "completed")
+    bhv->onCompleteState();
+  
+  // Part 2B: Handle idle behaviors
+  if(new_activity_state == "idle") {
+    if(old_activity_state != "idle") {
+      bhv->postFlags("idleflags", true);
+      bhv->postFlags("inactiveflags", true);
     }
-    
-    if(new_activity_state == "running") {
-      bool repeatable = (old_activity_state == "idle");
-      bhv->postDurationStatus();
-      bhv->postFlags("runflags", repeatable);
-      if(old_activity_state == "idle")
-	bhv->onIdleToRunState();
-      ipf = bhv->onRunState();
-      if(ipf && !ipf->freeOfNan()) {
-	bhv->postEMessage("NaN detected in IvP Function");
+    if((old_activity_state == "running") || (old_activity_state == "active"))
+      bhv->onRunToIdleState();
+    bhv->onIdleState();
+    bhv->updateStateDurations("idle");
+  }
+  
+  // Part 2C: Handle running behaviors
+  if(new_activity_state == "running") {
+    double pwt = 0;
+    int    pcs = 0;
+    if((old_activity_state == "idle") || (old_activity_state == ""))
+      bhv->postFlags("runflags", true); // true means repeatable
+    bhv->postDurationStatus();
+    if(old_activity_state == "idle")
+      bhv->onIdleToRunState();
+
+    // Step 1: Ask the behavior to build a IvP function
+    ipf = bhv->onRunState();
+    // Step 2: If IvP function contains NaN components, report and abort
+    if(ipf && !ipf->freeOfNan()) {
+      bhv->postEMessage("NaN detected in IvP Function");
+      delete(ipf);
+      ipf = 0;
+    }
+    // Step 3: If IvP function has non-positive priority, abort
+    if(ipf) {
+      pwt = ipf->getPWT();
+      pcs = ipf->getPDMap()->size();
+      if(pwt <= 0) {
 	delete(ipf);
 	ipf = 0;
+	pcs = 0;
       }
-      if(ipf) {
-	pwt = ipf->getPWT();
-	pcs = ipf->getPDMap()->size();
-	if(pwt <= 0) {
-	  delete(ipf);
-	  ipf = 0;
-	  pcs = 0;
-	}
-      }
-      if(ipf && m_report_ipf) {
-	string desc_str = bhv->getDescriptor();
-	string iter_str = uintToString(iteration);
-	string ctxt_str = iter_str + ":" + desc_str;
-	ipf->setContextStr(ctxt_str);
-	string ipf_str = IvPFunctionToString(ipf);
-	bhv->postMessage("BHV_IPF", ipf_str);
-      }
-      if(ipf) {
-	bool repeatable = (old_activity_state != "active");
-	new_activity_state = "active";
-	bhv->postFlags("activeflags", repeatable);
-	bhv->statusInfoAdd("pwt", doubleToString(pwt));
-	bhv->statusInfoAdd("pcs", intToString(pcs));
-      }
-      else {
-	bool repeatable = (old_activity_state == "active");
-	bhv->postFlags("inactiveflags", repeatable);
-      }
-      bhv->updateStateDurations("running");
     }
-    bhv->statusInfoAdd("state", new_activity_state);
-    bhv->statusInfoPost();
-
-    // If this represents a change in states from the previous
-    // iteration, note the time at which the state changed.
-    if(old_activity_state != new_activity_state)
-      m_bhv_entry[ix].setStateTimeEntered(m_curr_time);
-    
-    m_bhv_entry[ix].setState(new_activity_state);
-    double state_time_entered = m_bhv_entry[ix].getStateTimeEntered();
-    double elapsed = (m_curr_time - state_time_entered);
-    m_bhv_entry[ix].setStateTimeElapsed(elapsed);
+    // Step 4: If we're serializing and posting IvP functions, do here
+    if(ipf && m_report_ipf) {
+      string desc_str = bhv->getDescriptor();
+      string iter_str = uintToString(iteration);
+      string ctxt_str = iter_str + ":" + desc_str;
+      ipf->setContextStr(ctxt_str);
+      string ipf_str = IvPFunctionToString(ipf);
+      bhv->postMessage("BHV_IPF", ipf_str);
+    }
+    // Step 5: Handle normal case of healthy IvP function returned
+    if(ipf) {
+      if(old_activity_state != "active")
+	bhv->postFlags("activeflags", true); // true means repeatable
+      new_activity_state = "active";
+      bhv->statusInfoAdd("pwt", doubleToString(pwt));
+      bhv->statusInfoAdd("pcs", intToString(pcs));
+    }
+    // Step 6: Handle where behavior decided not to product an IPF
+    else {
+      if(old_activity_state == "active")
+	bhv->postFlags("inactiveflags", true); // true means repeatable
+    }
+    bhv->updateStateDurations("running");
   }
+
+  
+  // =========================================================================
+  // Part 3: Update all the bookkeeping structures 
+  // =========================================================================
+  bhv->statusInfoAdd("state", new_activity_state);
+  bhv->statusInfoPost();
+  
+  // If this represents a change in states from the previous
+  // iteration, note the time at which the state changed.
+  if(old_activity_state != new_activity_state)
+    m_bhv_entry[ix].setStateTimeEntered(m_curr_time);
+  
+  m_bhv_entry[ix].setState(new_activity_state);
+  double state_time_entered = m_bhv_entry[ix].getStateTimeEntered();
+  double elapsed = (m_curr_time - state_time_entered);
+  m_bhv_entry[ix].setStateTimeElapsed(elapsed);
+
+  // Return either the IvP function or NULL
   return(ipf);
 }
 

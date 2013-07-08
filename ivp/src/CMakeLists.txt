@@ -117,7 +117,6 @@ SET(IVP_NON_GUI_LIBS
    lib_ufield
    lib_ufld_hazards
    lib_logutils
-   lib_manifest
    lib_mbutil
    )
 
@@ -201,13 +200,14 @@ ENDFOREACH(L)
   
 SET(IVP_NON_GUI_APPS
   app_alogscan
+  app_alogeff
   app_aloggrep
+  app_alogsort
   app_alogrm
   app_alogclip
   app_aloghelm
   app_alogcheck
   app_nsplug
-  app_mandler
   app_gen_hazards
   pEchoVar
   pXRelay
@@ -216,7 +216,7 @@ SET(IVP_NON_GUI_APPS
   pBasicContactMgr
   pNodeReporter
   pSafetyRetreat
-  pTestClassifyQueue
+  uFldCollisionDetect
   uFldPathCheck
   uFldShoreBroker
   uFldMessageHandler
@@ -229,6 +229,7 @@ SET(IVP_NON_GUI_APPS
   uFldHazardMgr
   uFldHazardMetric
   uFldGenericSensor
+  uFldWrapDetect
   pSearchGrid
   uTimerScript
   uHelmScope
@@ -240,6 +241,7 @@ SET(IVP_NON_GUI_APPS
   uMAC
   uPokeDB
   pHostInfo
+  iSay
   )
 
 SET(IVP_GUI_APPS
@@ -257,7 +259,7 @@ SET(IVP_GUI_APPS
   uLogView
   uLogViewIPF
   uLogViewHelm
-  app_cpaview
+  app_bngview
   )
   
 SET(IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})

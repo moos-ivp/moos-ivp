@@ -7,7 +7,11 @@ AMT=1
 SHORE="multicast_9"
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	printf "%s [time_warp]   \n" $0
+	printf "%s [SWITCHES] [time_warp]   \n" $0
+	printf " --help, -h                 \n"
+	printf " --amt=N                    \n"
+	printf " --shore=IPADDR             \n"
+	printf " --shore=multicast_N        \n"
 	exit 0;
     elif [ "${ARGI:0:6}" = "--amt=" ] ; then
         AMT="${ARGI#--amt=*}"

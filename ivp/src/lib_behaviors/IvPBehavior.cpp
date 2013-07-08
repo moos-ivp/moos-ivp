@@ -42,6 +42,7 @@
 #pragma warning(disable : 4503)
 #endif
 
+#include <iostream>
 #include <vector>
 #include <cstdlib>
 #include "IvPBehavior.h"
@@ -455,7 +456,8 @@ void IvPBehavior::postRepeatableMessage(string var, double ddata)
 void IvPBehavior::setComplete()
 {
   postFlags("endflags");
-  postFlags("inactiveflags");
+  // Removed by mikerb jun2213 to prevent double posting
+  // postFlags("inactiveflags");  
   if(!m_perpetual)
     m_completed = true;
 }
@@ -909,6 +911,7 @@ void IvPBehavior::postFlags(const string& str, bool repeatable)
     flags = m_active_flags;
   else if(str == "inactiveflags")
     flags = m_inactive_flags;
+  
 
   // The endflags are treated as a special case in that they are 
   // posted as "repeatable" - that is they will be posted to the 
@@ -995,7 +998,7 @@ string IvPBehavior::getBufferStringVal(string varname, bool& ok)
 {
   if(!m_info_buffer) {
     ok = false;
-    return(0);
+    return("");
   }
 
   string value = m_info_buffer->sQuery(varname, ok);
@@ -1009,6 +1012,32 @@ string IvPBehavior::getBufferStringVal(string varname, bool& ok)
   }
   if((!ok) && !vectorContains(m_info_vars_no_warning, varname)) 
     postWMessage(varname+" info not found in helm info_buffer");
+  return(value);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getBufferStringVal()
+//      Note: Same as the other getBufferStringVal but we don't bother
+//            returing a status indicator.
+
+string IvPBehavior::getBufferStringVal(string varname)
+{
+  if(!m_info_buffer) 
+    return("");
+
+  bool ok = false;
+  string value = m_info_buffer->sQuery(varname, ok);
+  if(!ok) {
+    bool result;
+    double dval = m_info_buffer->dQuery(varname, result);
+    if(result) {
+      value = doubleToString(dval, 6);
+      ok = true;
+    }
+  }
+  if((!ok) && !vectorContains(m_info_vars_no_warning, varname)) 
+    postWMessage(varname + " info not found in helm info_buffer");
   return(value);
 }
 

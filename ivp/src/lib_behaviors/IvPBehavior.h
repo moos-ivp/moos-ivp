@@ -70,6 +70,8 @@ public:
   virtual void onIdleToRunState() {};
   virtual void onRunToIdleState() {};
   virtual void postConfigStatus() {};
+  virtual std::string getInfo(std::string)  {return("");};
+  virtual double getDoubleInfo(std::string) {return(0);};
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
@@ -89,6 +91,7 @@ public:
   void   clearMessages()                 {m_messages.clear();};
   void   resetStateOK()                  {m_bhv_state_ok=true;};
 
+  void    postMessage(std::string, std::string, std::string key="");
 protected:
   bool    setBehaviorName(std::string str);
   bool    augBehaviorName(std::string str);
@@ -99,7 +102,6 @@ protected:
   void    setComplete();
   void    postBadConfig(std::string);
   void    postMessage(std::string, double, std::string key="");
-  void    postMessage(std::string, std::string, std::string key="");
   void    postBoolMessage(std::string, bool, std::string key="");
   void    postIntMessage(std::string, double, std::string key="");
   void    postRepeatableMessage(std::string, double);
@@ -121,6 +123,7 @@ protected:
   double                   getBufferCurrTime();
   double                   getBufferTimeVal(std::string);
   double                   getBufferDoubleVal(std::string, bool&);
+  std::string              getBufferStringVal(std::string);
   std::string              getBufferStringVal(std::string, bool&);
   std::vector<double>      getBufferDoubleVector(std::string, bool&);
   std::vector<std::string> getBufferStringVector(std::string, bool&);

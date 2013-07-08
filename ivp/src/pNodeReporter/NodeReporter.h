@@ -66,6 +66,7 @@ public:
  protected: // State Variables (Node Reports)
   CMOOSGeodesy m_geodesy;
   std::string  m_helm_mode;
+  std::string  m_helm_mode_aux;
   std::string  m_helm_allstop_mode;
   std::string  m_alt_nav_prefix;
   std::string  m_alt_nav_name;

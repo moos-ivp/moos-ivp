@@ -32,6 +32,7 @@ using namespace std;
 MarineVehiGUI::MarineVehiGUI(int g_w, int g_h, const char *g_l)
   : MarineGUI(g_w, g_h, g_l) 
 {
+  addGeoAttrMenu();
   augmentMenu();
 }
 
@@ -48,7 +49,8 @@ void MarineVehiGUI::augmentMenu()
   m_menubar->add("Vehicles/vehicles_name_mode=names+mode",       0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)21, FL_MENU_RADIO);
   m_menubar->add("Vehicles/vehicles_name_mode=names+shortmode",  0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)22, FL_MENU_RADIO);
   m_menubar->add("Vehicles/vehicles_name_mode=names+depth",      0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)23, FL_MENU_RADIO);
-  m_menubar->add("Vehicles/vehicles_name_mode=off",              0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)24, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_name_mode=names+auxmode",    0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)24, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/vehicles_name_mode=off",              0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)25, FL_MENU_RADIO);
   m_menubar->add("Vehicles/    Toggle Vehicle Name Mode",      'n', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)29, FL_MENU_DIVIDER);
 
   m_menubar->add("Vehicles/vehicles_active_color=red",    0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)40, FL_MENU_RADIO);
@@ -88,8 +90,8 @@ void MarineVehiGUI::augmentMenu()
   m_menubar->add("Vehicles/VehicleSize/vehicles_shape_scale = smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
   m_menubar->add("Vehicles/VehicleSize/vehicles_shape_scale = actual",    '\\', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)0, FL_MENU_DIVIDER);
 
-  m_menubar->add("Vehicles/Trails/trails_point_size = larger", ']', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)+1, 0);
-  m_menubar->add("Vehicles/Trails/trails_point_size = smaller", '[', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)-1, 0);
+  m_menubar->add("Vehicles/Trails/trails_point_size = larger", '>', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)+1, 0);
+  m_menubar->add("Vehicles/Trails/trails_point_size = smaller", '<', (Fl_Callback*)MarineVehiGUI::cb_AltTrailSize, (void*)-1, 0);
   m_menubar->add("Vehicles/Trails/trails_length = longer", ')', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)+1, 0);
   m_menubar->add("Vehicles/Trails/trails_length = shorter", '(', (Fl_Callback*)MarineVehiGUI::cb_AltTrailLength, (void*)-1, FL_MENU_DIVIDER);
 }
@@ -202,7 +204,8 @@ inline void MarineVehiGUI::cb_SetRadioVehiAttrib_i(int v)
   else if(v==21) setRadioVehiAttrib("vehicles_name_mode", "names+mode");
   else if(v==22) setRadioVehiAttrib("vehicles_name_mode", "names+shortmode");
   else if(v==23) setRadioVehiAttrib("vehicles_name_mode", "names+depth");
-  else if(v==24) setRadioVehiAttrib("vehicles_name_mode", "off");
+  else if(v==24) setRadioVehiAttrib("vehicles_name_mode", "names+auxmode");
+  else if(v==25) setRadioVehiAttrib("vehicles_name_mode", "off");
   else if(v==29) setRadioVehiAttrib("vehicles_name_mode", "toggle");
 
   else if(v==40) setRadioVehiAttrib("vehicles_active_color", "red");

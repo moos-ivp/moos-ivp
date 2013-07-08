@@ -62,8 +62,6 @@ BHV_CutRange::BHV_CutRange(IvPDomain gdomain) :
 
 bool BHV_CutRange::setParam(string param, string param_val) 
 {
-  if(IvPBehavior::setParam(param, param_val))
-    return(true);
   if(IvPContactBehavior::setParam(param, param_val))
     return(true);
 

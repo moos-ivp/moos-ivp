@@ -15,17 +15,38 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
 
   Run = pShare          @ NewConsole = false
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
+  Run = uFldCollisionDetect @NewConsole = false
 }
 
 #include plug_pHostInfo.moos
 
+//---------------------------------------------------------
+// uFldCollisionDetect Config Block
+
+ProcessConfig = uFldCollisionDetect
+{
+  AppTick    = 4
+  CommsTick  = 4
+  COLLISION_RANGE = 10
+  DELAY_TIME_TO_CLEAR = 35 
+  PUBLISH_IMMEDIATELY = true
+
+  PULSE = TRUE
+  PULSE_RANGE = 50
+  PULSE_DURATION = 15
+ 
+  PUBLISH_SINGLE = FALSE
+  PUBLISH_PAIRS = TRUE
+
+  DEPLOY_DELAY_TIME = 15
+}
 //---------------------------------------------------------
 // pShare Config Block
 

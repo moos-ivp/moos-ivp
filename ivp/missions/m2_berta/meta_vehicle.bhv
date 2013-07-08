@@ -6,6 +6,7 @@ initialize   RETURN  = false
 initialize   STATION_KEEP = false
 initialize   LOITER  = true
 initialize   AVOID   = true
+initialize   TRIAL   = true
 
 set MODE = ACTIVE {
   DEPLOY = true
@@ -72,6 +73,8 @@ Behavior = BHV_StationKeep
   name      = station-keep
   pwt       = 100
   condition = MODE==STATION-KEEPING
+  inactiveflag = STATIONING=false
+  activeflag = STATIONING=true
 
      center_activate = true
         inner_radius = 5
@@ -90,8 +93,14 @@ Behavior = BHV_AvoidCollision
 {
   name       = avdcollision_
   pwt        = 200
-  condition  = AVOID=true
+  condition  = AVOID=true 
+  condition  = TRIAL=true 
   updates    = CONTACT_INFO
+  idleflag     = AVOIDING = idle
+  activeflag   = AVOIDING = active
+  inactiveflag = AVOIDING = inactive
+  runflag      = AVOIDING = running
+  endflag      = AVOIDING = end
   endflag    = CONTACT_RESOLVED = $[CONTACT]
   templating = spawn
 
@@ -100,9 +109,9 @@ Behavior = BHV_AvoidCollision
          extrapolate = true
                decay = 30,60
 
-        pwt_outer_dist = 50
+        pwt_outer_dist = 40
         pwt_inner_dist = 20
-        completed_dist = 75
+        completed_dist = 100
      min_util_cpa_dist = 8
      max_util_cpa_dist = 25
              pwt_grade = linear

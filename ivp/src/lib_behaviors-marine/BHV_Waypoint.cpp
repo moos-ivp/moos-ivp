@@ -43,6 +43,8 @@
 #include "XYFormatUtilsPoint.h"
 #include "XYFormatUtilsSegl.h"
 #include "ColorParse.h"
+//---------------
+#include "IO_Utilities.h"
 
 using namespace std;
 
@@ -60,6 +62,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_cruise_speed    = 0;  // meters/second
   m_lead_distance   = -1; // meters - default of -1 means unused
   m_lead_damper     = -1; // meters - default of -1 means unused
+  m_efficiency_measure = "off"; // or "internal" or "all"
   m_ipf_type        = "zaic";
 
   m_var_report      = "WPT_STAT";
@@ -81,6 +84,18 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_osx   = 0;
   m_osy   = 0;
   m_osv   = 0;
+  m_osh   = 0;
+
+  m_odo_set_flag = false;
+  m_odo_setx = 0;
+  m_odo_sety = 0;
+  m_odo_distance = 0;
+  m_odo_virgin   = true;
+  m_dist_total_odo    = 0;
+  m_dist_total_linear = 0;
+
+  m_osx_prev = 0;
+  m_osy_prev = 0;
 
   m_greedy_tour_pending = false;
 
@@ -113,9 +128,7 @@ void BHV_Waypoint::onSetParamComplete()
 bool BHV_Waypoint::setParam(string param, string param_val) 
 {
   double dval = atof(param_val.c_str());
-
-  cout << "param" << param << endl;
-  cout << "param_val" << param_val << endl;
+  string param_val_lower = tolower(param_val);
 
   if((param == "polygon") || (param == "points")) {
     XYSegList new_seglist = string2SegList(param_val);
@@ -227,6 +240,14 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     m_waypoint_engine.setRepeatsEndless(true);
     return(true);
   }
+  else if(param == "efficiency_measure") {
+    param_val = tolower(param_val);
+    if((param_val == "all") || (param_val == "internal") || (param_val == "off")) {
+      m_efficiency_measure = param_val;
+      return(true);
+    }
+    return(false);
+  }
   else if(param == "repeat") {
     int ival = atoi(param_val.c_str());
     if((ival < 0) || (!isNumber(param_val)))
@@ -278,6 +299,17 @@ bool BHV_Waypoint::setParam(string param, string param_val)
 
 
 //-----------------------------------------------------------
+// Procedure: onIdleToRunState
+
+void BHV_Waypoint::onIdleToRunState() 
+{
+  if(!updateInfoIn()) 
+    return;
+  if(m_efficiency_measure == "all")
+    markOdoLeg();
+}
+
+//-----------------------------------------------------------
 // Procedure: onRunToIdleState
 //      Note: Invoked automatically by the helm when the behavior
 //            first transitions from the Running to Idle state.
@@ -286,6 +318,8 @@ void BHV_Waypoint::onRunToIdleState()
 {
   postErasables();
   m_waypoint_engine.resetCPA();
+  m_odo_set_flag = false;
+  m_odo_distance = 0;
 }
 
 //-----------------------------------------------------------
@@ -309,11 +343,12 @@ IvPFunction *BHV_Waypoint::onRunState()
 {
   m_waypoint_engine.setPerpetual(m_perpetual);
 
-  // Set m_osx, m_osy, m_osv
+  // Set m_osx, m_osy, m_osv, osh
   if(!updateInfoIn()) {
     postMessage("VIEW_POINT", m_nextpt.get_spec("active=false"), "wpt");
     return(0);
   }
+  updateOdoDistance();
 
   // Note the waypoint prior to possibly incrementing the waypoint
   double this_x = m_waypoint_engine.getPointX();
@@ -324,7 +359,7 @@ IvPFunction *BHV_Waypoint::onRunState()
   // Possibly increment the waypoint
   // Set m_nextpt, m_trackpt
   bool next_point = setNextWaypoint();
-
+    
   // Update things if the waypoint was indeed incremented
   double next_x = m_waypoint_engine.getPointX();
   double next_y = m_waypoint_engine.getPointY();
@@ -372,6 +407,16 @@ IvPFunction *BHV_Waypoint::onRunState()
 }
 
 //-----------------------------------------------------------
+// Procedure: onIdleState
+
+void BHV_Waypoint::onIdleState() 
+{
+  if(!updateInfoIn()) 
+    return;
+  updateOdoDistance();
+}
+
+//-----------------------------------------------------------
 // Procedure: updateInfoIn()
 //   Purpose: Update info need by the behavior from the info_buffer.
 //            Error or warning messages can be posted.
@@ -383,14 +428,21 @@ IvPFunction *BHV_Waypoint::onRunState()
 
 bool BHV_Waypoint::updateInfoIn()
 {
-  bool ok1, ok2, ok3;
-  m_osx = getBufferDoubleVal("NAV_X",     ok1);
-  m_osy = getBufferDoubleVal("NAV_Y",     ok2);
-  m_osv = getBufferDoubleVal("NAV_SPEED", ok3);
+  bool ok1, ok2, ok3, ok4;
+  m_osx = getBufferDoubleVal("NAV_X",       ok1);
+  m_osy = getBufferDoubleVal("NAV_Y",       ok2);
+  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
+  m_osv = getBufferDoubleVal("NAV_SPEED",   ok4);
 
   // Must get ownship position from InfoBuffer
   if(!ok1 || !ok2) {
     postEMessage("No ownship X/Y info in info_buffer.");
+    return(false);
+  }
+
+  // Must get ownship heading from InfoBuffer
+  if(!ok3) {
+    postEMessage("No ownship heading info in info_buffer.");
     return(false);
   }
 
@@ -403,7 +455,7 @@ bool BHV_Waypoint::updateInfoIn()
 
   // If NAV_SPEED info is not found in the info_buffer, its
   // not a show-stopper. A warning will be posted.
-  if(!ok3)
+  if(!ok4)
     postWMessage("No ownship speed info in info_buffer");
 
   return(true);
@@ -419,8 +471,17 @@ bool BHV_Waypoint::setNextWaypoint()
     return(false);
 
   m_waypoint_engine.setPrevPoint(m_prevpt);
+
+  // Returns either: empty_seglist, completed, cycled, advanced, or in-transit
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
   
+  if(feedback_msg == "empty_seglist")
+    return(false);
+  if(feedback_msg != "in-transit")
+    markOdoLeg();
+
+  postMessage("WAYPOINT_ODO", m_odo_distance);
+
   if((feedback_msg=="completed") || (feedback_msg=="cycled")) {
     if(tolower(m_var_report) != "silent") {
       string feedback_msg_aug = "behavior-name=" + m_descriptor + ",";
@@ -429,18 +490,18 @@ bool BHV_Waypoint::setNextWaypoint()
     }
     
     postCycleFlags();
-
-    if(feedback_msg == "completed") {
-      double this_x = m_waypoint_engine.getPointX();
-      double this_y = m_waypoint_engine.getPointY();
-      postWptFlags(this_x, this_y);
-
-      setComplete();
-      m_markpt.set_active(false);
-      if(m_perpetual)
-	m_waypoint_engine.resetForNewTraversal();
-      return(false);
-    }
+  }
+   
+  if(feedback_msg == "completed") {
+    double this_x = m_waypoint_engine.getPointX();
+    double this_y = m_waypoint_engine.getPointY();
+    postWptFlags(this_x, this_y);
+    
+    setComplete();
+    m_markpt.set_active(false);
+    if(m_perpetual)
+      m_waypoint_engine.resetForNewTraversal();
+    return(false);
   }
   
   double next_ptx = m_waypoint_engine.getPointX();
@@ -536,24 +597,29 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
   }    
   else { // if (method == "zaic")
     ZAIC_PEAK spd_zaic(m_domain, "speed");
-    spd_zaic.setParams(m_cruise_speed, 0, 2.6, 0, 0, 100);
-    IvPFunction *spd_of = spd_zaic.extractIvPFunction();
-    if(!spd_of)
+    spd_zaic.setParams(m_cruise_speed, 1, 1.6, 20, 0, 100);
+    IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
+    if(!spd_ipf)
       postWMessage("Failure on the SPD ZAIC");
     
-    double rel_ang_to_wpt = relAng(m_osx, m_osy, 
-				   m_trackpt.x(), m_trackpt.y());
+    double rel_ang_to_wpt = relAng(m_osx, m_osy, m_trackpt.x(), m_trackpt.y());
+
     ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setValueWrap(true);
     crs_zaic.setParams(rel_ang_to_wpt, 0, 180, 50, 0, 100);
-    IvPFunction *crs_of = crs_zaic.extractIvPFunction();
-    if(!crs_of)
+    
+    int ix = crs_zaic.addComponent();
+    crs_zaic.setParams(m_osh, 30, 180, 5, 0, 20, ix);
+    
+    IvPFunction *crs_ipf = crs_zaic.extractIvPFunction(false);
+    
+    if(!crs_ipf) 
       postWMessage("Failure on the CRS ZAIC");
 
     OF_Coupler coupler;
-    ipf = coupler.couple(crs_of, spd_of);
+    ipf = coupler.couple(crs_ipf, spd_ipf, 50, 50);
     if(!ipf)
-      postWMessage("Failure on the COUPLER");
+      postWMessage("Failure on the CRS_SPD COUPLER");
   }    
   return(ipf);
 }
@@ -701,4 +767,85 @@ void BHV_Waypoint::handleVisualHint(string hint)
     m_hint_vertex_size = dval;
 }
 
+
+//-----------------------------------------------------------
+// Procedure: updateOdoDistance()
+
+void BHV_Waypoint::updateOdoDistance()
+{
+  if(!m_odo_virgin) {
+    double delta = distPointToPoint(m_osx, m_osy, m_osx_prev, m_osy_prev);
+    m_odo_distance += delta;
+  }
+  else
+    m_odo_virgin = false;
+
+  m_osx_prev = m_osx;
+  m_osy_prev = m_osy;
+}
+
+
+//-----------------------------------------------------------
+// Procedure: markOdoLeg()
+//  Examples: 
+//     WPT_EFFICIENCY_LEG = linear_dist=123.4, odo_dist=143.2, efficiency=86.2, 
+//     WPT_EFFICIENCY_SUM = linear_dist=1883.1, odo_dist=2310.1, efficience=81.5
+//     WPT_EFFICIENCY_VAL = 81.5
+
+void BHV_Waypoint::markOdoLeg()
+{
+  if(m_efficiency_measure == "off")
+    return;
+  // First time through just mark the set point and return
+  if(!m_odo_set_flag) {
+    m_odo_setx = m_osx;
+    m_odo_sety = m_osy;
+    m_odo_distance = 0;
+    m_odo_set_flag = true;
+    return;
+  }
+
+  // Part 1: Note the straight line linear distance between the previously
+  //         noted set point, and our present position
+  double dist_linear = distPointToPoint(m_osx, m_osy, m_odo_setx, m_odo_sety);
+  m_dist_total_linear += dist_linear;
+
+  // Part 2: Note the actual odometry distance travelled
+  double dist_odo = m_odo_distance;
+  m_dist_total_odo += dist_odo;
+
+  // Part 3: Calculate the Leg Efficiency
+  double leg_efficiency = 0;
+  if(dist_odo > 0)
+    leg_efficiency = dist_linear / dist_odo;
+
+  // Part 5: Calculate the running total Efficiency
+  double total_efficiency = 0;
+  if(m_dist_total_odo > 0)
+    total_efficiency = m_dist_total_linear / m_dist_total_odo;
+
+  // Part 6: Build the leg output message:  WPT_EFFICIENCY_LEG
+  string str = "vname=" + m_us_name;
+  str += ", bhv_name=" + m_descriptor;
+  str += ", linear_dist=" + doubleToStringX(dist_linear, 1);
+  str += ", odo_dist=" +  doubleToStringX(dist_odo,1);
+  str += ", efficiency=" +  doubleToStringX(leg_efficiency, 3);
+  postMessage("WPT_EFFICIENCY_LEG", str);
+
+  // Part 7: Build the total efficiency message: WPT_EFFICIENCY_SUM
+  str = "vname=" + m_us_name;
+  str += ", bhv_name=" + m_descriptor;
+  str += ", linear_dist=" + doubleToStringX(m_dist_total_linear,1);
+  str += ", odo_dist=" +  doubleToStringX(m_dist_total_odo,1);
+  str += ", efficiency=" +  doubleToStringX(total_efficiency,3);
+  postMessage("WPT_EFFICIENCY_SUM", str);
+
+  // Part 8: Post the simple total efficiency message: WPT_EFFICIENCY_VAL
+  postMessage("WPT_EFFICIENCY_VAL", total_efficiency);
+
+  // Part 9: Reset the set point the present position
+  m_odo_setx = m_osx;
+  m_odo_sety = m_osy;
+  m_odo_distance = 0;
+}
 

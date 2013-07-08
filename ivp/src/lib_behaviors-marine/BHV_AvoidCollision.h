@@ -42,6 +42,7 @@ protected:
   double getPriority();
   void   postInfo(double, double);
   void   postRange(bool ok=true);
+  bool   updatePlatformInfo();
   
 private: // Configuration Parameters
 
@@ -59,6 +60,7 @@ private: // Configuration Parameters
 
 private:  // State Variables
   double m_curr_closing_spd;
+  bool   m_avoiding;
 };
 #endif
 

@@ -74,7 +74,9 @@ class MarineViewer : public Fl_Gl_Window
   
   std::string getTiffFileB() {return(m_back_img_b.getTiffFile());};
   std::string getInfoFileB() {return(m_back_img_b.getInfoFile());};
-  
+
+  double getZoom() {return(m_zoom);};
+
 protected:
   bool   readTiff(std::string);
   bool   readTiffB(std::string);

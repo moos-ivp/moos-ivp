@@ -59,10 +59,6 @@ BHV_HeadingHysteresis::BHV_HeadingHysteresis(IvPDomain gdomain) :
 
 //-----------------------------------------------------------
 // Procedure: setParam
-//     Notes: We expect the "waypoint" entries will be of the form
-//            "xposition,yposition".
-//            The "radius" parameter indicates what it means to have
-//            arrived at the waypoint.
 
 bool BHV_HeadingHysteresis::setParam(string param, string val) 
 {

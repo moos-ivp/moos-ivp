@@ -68,8 +68,12 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   m_roc_max_heighten  = 2.0; 
   m_bearing_line_show = false;
   m_time_on_leg       = 120;  // Overriding the superclass default=60
+
+  // Initialize state variables
+  m_curr_closing_spd = 0;
+  m_avoiding = false;
   
-  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
+  addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING, AVOIDING");
 }
 
 //-----------------------------------------------------------
@@ -77,8 +81,6 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
 
 bool BHV_AvoidCollision::setParam(string param, string param_val) 
 {
-  if(IvPBehavior::setParam(param, param_val))
-    return(true);
   if(IvPContactBehavior::setParam(param, param_val))
     return(true);
 
@@ -216,20 +218,20 @@ IvPFunction *BHV_AvoidCollision::onRunState()
     return(0);
   }
 
+  double min_util_cpa_dist = m_min_util_cpa_dist;
+  if(m_contact_range <= m_min_util_cpa_dist)
+    min_util_cpa_dist = (m_contact_range / 2);
+    
   bool ok = true;
   IvPFunction *ipf = 0;
   if(m_collision_depth == 0) {
     AOF_AvoidCollision aof(m_domain);
-    ok = ok && aof.setParam("osy", m_osy);
-    ok = ok && aof.setParam("osx", m_osx);
-    ok = ok && aof.setParam("cny", m_cny);
-    ok = ok && aof.setParam("cnx", m_cnx);
-    ok = ok && aof.setParam("cnh", m_cnh);
-    ok = ok && aof.setParam("cnv", m_cnv);
-    ok = ok && aof.setParam("tol", m_time_on_leg);
-    ok = ok && aof.setParam("collision_distance", m_min_util_cpa_dist);
-    ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-    ok = ok && aof.initialize();
+    aof.setOwnshipParams(m_osx, m_osy);
+    aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
+    aof.setParam("tol", m_time_on_leg);
+    aof.setParam("collision_distance", min_util_cpa_dist);
+    aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+    bool ok = aof.initialize();
     
     if(!ok) {
       postEMessage("Unable to init AOF_AvoidCollision.");
@@ -424,5 +426,19 @@ void BHV_AvoidCollision::postRange(bool ok)
 }
 
 
+//-----------------------------------------------------------
+// Procedure: updatePlatformInfo
 
+bool BHV_AvoidCollision::updatePlatformInfo()
+{
+#if 0
+  bool ok = true;
+  string avoiding = getBufferStringVal("AVOIDING", ok);
+  if(ok && (tolower(avoiding) == "true"))
+    m_avoiding = true;
+  else
+    m_avoiding = false;
+#endif
+  return(IvPContactBehavior::updatePlatformInfo());
+}
 

@@ -390,6 +390,13 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     if((helm_amode != "clear") && (helm_amode != "n/a"))
       vname_aug += " (" + helm_amode + ")";
   }
+  else if(vnames_mode == "names+auxmode") {
+    string helm_mode_aux = m_vehiset.getStringInfo(vname, "helm_auxmode");
+    if(helm_mode_aux != "")
+      vname_aug += " (" + helm_mode_aux + ")";
+    else
+      vname_aug += " (no auxmode info)";
+  }
   else if(vnames_mode == "names+depth") {
     string str_depth = doubleToStringX(record.getDepth(), 1);
     vname_aug += " (depth=" + str_depth + ")";

@@ -4,6 +4,7 @@
 #--------------------------------------------------------
 
 SET(SRC
+  AOF_Contact.cpp
   AOF_AttractorCPA.cpp
   AOF_AvoidCollision.cpp
   AOF_AvoidCollisionDepth.cpp
@@ -16,6 +17,7 @@ SET(SRC
   WaypointEngine.cpp)
 
 SET(HEADERS
+  AOF_Contact.h
   AOF_AttractorCPA.h
   AOF_AvoidCollisionDepth.h
   AOF_AvoidCollision.h

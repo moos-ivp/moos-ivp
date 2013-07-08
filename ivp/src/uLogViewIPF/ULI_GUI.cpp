@@ -80,6 +80,8 @@ Fl_Menu_Item ULI_GUI::menu_[] = {
  {"Pan R (slow)",    FL_ALT + FL_Right, (Fl_Callback*)ULI_GUI::cb_HandleLeftRight, (void*)-25, 0},
  {"Replay/Step+1",  ']', (Fl_Callback*)ULI_GUI::cb_Step, (void*)1, 0},
  {"Replay/Step-",   '[', (Fl_Callback*)ULI_GUI::cb_Step, (void*)-1, 0},
+ {"Replay/Step+1",  '>', (Fl_Callback*)ULI_GUI::cb_Step, (void*)5, 0},
+ {"Replay/Step-",   '<', (Fl_Callback*)ULI_GUI::cb_Step, (void*)-5, 0},
  {0}
 };
 

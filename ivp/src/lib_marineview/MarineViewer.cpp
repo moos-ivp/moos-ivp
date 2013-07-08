@@ -1488,7 +1488,7 @@ void MarineViewer::drawVector(const XYVector& vect)
   double hx1, hx2, hy1, hy2;
   projectPoint(ovang+30, head_size, hx, hy, hx1, hy1);
   projectPoint(ovang-30, head_size, hx, hy, hx2, hy2);
-
+  
   points[0]   = vect.xpos() * pix_per_mtr_x;
   points[1]   = vect.ypos() * pix_per_mtr_y;
   points[2]   = hx * pix_per_mtr_x;

@@ -36,7 +36,7 @@ MarineGUI::MarineGUI(int g_w, int g_h, const char *g_l)
   m_menubar->menu(menu_);
     
   m_mviewer = 0;
-  augmentMenu();
+  //  addGeoAttrMenu();
 }
 
 //-------------------------------------------------------------------
@@ -86,16 +86,16 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"hash_delta=1000", FL_ALT+'6', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)1000, FL_MENU_RADIO|FL_MENU_DIVIDER},
  {0},
 
- {"GeoAttr", 0,  0, 0, 64, 0, 0, 14, 0},
- {0},
+ //{"GeoAttr", 0,  0, 0, 64, 0, 0, 14, 0},
+ //{0},
 
  {0}
 };
 
 //-------------------------------------------------------------------
-// Procedure: augmentMenu
+// Procedure: addGeoAttrMenu
 
-void MarineGUI::augmentMenu() 
+void MarineGUI::addGeoAttrMenu() 
 {
   m_menubar->add("GeoAttr/Polygons/polygon_viewable_all=true",  0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)150, FL_MENU_RADIO|FL_MENU_VALUE);
   m_menubar->add("GeoAttr/Polygons/polygon_viewable_all=false", 0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)151, FL_MENU_RADIO);
@@ -447,7 +447,6 @@ bool MarineGUI::setMenuAttrib(string menu, string attr, string value)
 
 //----------------------------------------- Zoom In
 inline void MarineGUI::cb_Zoom_i(int val) {
-  cout << "MarineGUI::cb_Zoom: " << val << endl;
   if(val < 0) 
     m_mviewer->setParam("zoom", 1.05);
   else if(val > 0) 
@@ -455,6 +454,7 @@ inline void MarineGUI::cb_Zoom_i(int val) {
   else 
     m_mviewer->setParam("zoom", "reset");
   m_mviewer->redraw();
+  cout << "MarineGUI::cb_Zoom: " << m_mviewer->getZoom() << endl;
 }
 void MarineGUI::cb_Zoom(Fl_Widget* o, int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_Zoom_i(v);
@@ -687,10 +687,17 @@ void MarineGUI::cb_BackShade(Fl_Widget* o, int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_BackShade_i(v);
 }
 
+bool MarineGUI::removeMenuItem(string item_str)
+{
+  int index = m_menubar->find_index(item_str.c_str());
+  if(index != -1) {
+    m_menubar->remove(index);
+    return(true);
+  }
+  return(false);
+}
+
 //----------------------------------------- Quit
 void MarineGUI::cb_Quit() {
   exit(0);
 }
-
-
-

@@ -51,6 +51,7 @@ class NodeRecord
   void setGroup(std::string s)   {m_group=s;};
   void setType(std::string s)    {m_type=s;};
   void setMode(std::string s)    {m_mode=s;};
+  void setModeAux(std::string s) {m_mode_aux=s;};
   void setAllStop(std::string s) {m_allstop=s;};
 
   void setProperty(std::string, std::string);
@@ -90,6 +91,7 @@ class NodeRecord
   std::string getGroup(std::string s="") const;
   std::string getType(std::string s="") const;
   std::string getMode(std::string s="") const;
+  std::string getModeAux(std::string s="") const;
   std::string getAllStop(std::string s="") const;
 
   std::string getSpec() const;
@@ -115,6 +117,7 @@ class NodeRecord
   std::string  m_group;
   std::string  m_type;
   std::string  m_mode;
+  std::string  m_mode_aux;
   std::string  m_allstop;
   
   bool m_x_set;

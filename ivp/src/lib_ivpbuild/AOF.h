@@ -40,7 +40,7 @@ public:
   
   virtual double evalPoint(const std::vector<double>&) const
     {return(0);};
-  
+
   // Virtual functions
   virtual bool  setParam(const std::string&, double) 
     {return(false);};
@@ -48,6 +48,13 @@ public:
     {return(false);};
   virtual bool  initialize() 
     {return(true);};
+
+  bool setParams(const std::string& s1, double v1, const std::string& s2, double v2)
+  {
+    return(setParam(s1,v1) && setParam(s2,v2));
+  }
+  
+
 
   double extract(const std::string& var, const IvPBox* pbox) const {
     int index = m_domain.getIndex(var);

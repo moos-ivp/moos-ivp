@@ -1,0 +1,9 @@
+//------------------------------------------------
+// uFldWrapDetect config block
+
+ProcessConfig = uFldWrapDetect
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

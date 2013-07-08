@@ -26,27 +26,49 @@
 class IvPDomain;
 class CPAEngine {
 public:
-  CPAEngine(double, double, double, double, double, double);
+  CPAEngine();
+  CPAEngine(double cnY, double cnX, double cnh, double cnv, 
+	    double osY, double osX);
   ~CPAEngine() {};
 
 public:    
-  double evalCPA(double, double, double, double* calc_roc=0);
-  double evalROC(double hdg, double spd);
-  bool   crossesBow(double, double);
+  double evalCPA(double osh, double osv, double ostol, double* calc_roc=0) const;
+  double evalROC(double osh, double osv) const;
+  bool   crossesLines(double osh) const;
 
-  double minMaxROC(double, double, double&, double&);
+  bool   crossesStern(double osh, double osv) const;
+  double crossesSternDist(double osh, double osv) const;
+  bool   crossesSternDist(double osh, double osv, double& xdist) const;
 
-  double getcnLAT() {return(cnLAT);};
-  double getcnLON() {return(cnLON);};
-  double getcnCRS() {return(cnCRS);};
-  double getcnSPD() {return(cnSPD);};
-  double getK0()    {return(statK0);};
+  bool   crossesBow(double osh, double osv) const;
+  double crossesBowDist(double osh, double osv) const;
+  bool   crossesBowDist(double osh, double osv, double& xdist) const;
+
+  bool   crossesBowOrStern(double osh, double osv) const;
+
+
+
+  bool   passesContact(double osh, double osv) const;
+  bool   passesContactPort(double osh, double osv) const;
+  bool   passesContactStarboard(double osh, double osv) const;
+  bool   foreOfContact() const;
+  bool   aftOfContact() const;
+  bool   portOfContact() const;
+  bool   starboardOfContact() const;
+
+  double minMaxROC(double, double, double&, double&) const;
+
+  double getcnLAT() const {return(cnLAT);};
+  double getcnLON() const {return(cnLON);};
+  double getcnCRS() const {return(cnCRS);};
+  double getcnSPD() const {return(cnSPD);};
+  double getK0() const    {return(statK0);};
   
-protected:
+ protected:
   void   setStatic();
-  double smallAngle(double, double);
+  double smallAngle(double, double) const;
 
-protected:
+ protected: // Config parameters
   double cnLAT;   // Contact Lat position at time Tm.
   double cnLON;   // Contact Lon position at time Tm.
   double cnSPD;   // Contact Speed in kts.
@@ -54,6 +76,7 @@ protected:
   double osLAT;   // Ownship Lat position at time Tm.
   double osLON;   // Ownship Lon position at time Tm.
 
+ protected: // Cached values
   double statK2;  // Components of k2, k1, k0 that are 
   double statK1;  // static (independent of the values of
   double statK0;  // osCRS, osSPD, osTOL).
@@ -63,6 +86,14 @@ protected:
   double statCRNG;  // Range between CLOW and CHGH;
   double statCNANG; // Angle from ownship to the contact.
   double statCNDIS; // Distance from ownship to the contact.
+
+  bool   stat_os_on_contact;   // true if ownship is on the contact position
+  bool   stat_os_on_bowline;   // true if ownship is on the contact bowline
+  bool   stat_os_on_sternline; // true if ownship is on the contact sternline
+  double stat_cnx1;
+  double stat_cny1;
+  double stat_cnx2;
+  double stat_cny2;
 
   double gamCN;   // cnCRS in radians. 
   double cgamCN;  // Cosine of  cnCRS.

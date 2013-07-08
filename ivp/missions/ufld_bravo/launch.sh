@@ -26,9 +26,15 @@ done
 VNAME1="archie"      # The first   vehicle community
 VNAME2="betty"       # The second  vehicle community
 VNAME3="charlie"     # The third   vehicle community
-START_POS1="0,0"  
+START_POS1="28,0"  
 START_POS2="30,0"  
-START_POS3="60,0"  
+START_POS3="32,0"  
+SPEED1="2.0"
+SPEED2="2.5"
+SPEED3="3.0"
+DELAY_TIME1=0
+DELAY_TIME2=30
+DELAY_TIME3=60
 SHORE="multicast_8"
 
 # What is nsplug? Type "nsplug --help" or "nsplug --manual"
@@ -36,25 +42,34 @@ SHORE="multicast_8"
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
    VNAME="shoreside" 
 
+#--------------------------------
 nsplug meta_vehicle.moos targ_$VNAME1.moos -f WARP=$TIME_WARP  VTYPE=UUV \
    VNAME=$VNAME1      START_POS=$START_POS1  SHORE=$SHORE                \
    VPORT="9001"       SHARE_LISTEN="9301"    
 
-nsplug meta_vehicle.bhv targ_$VNAME1.bhv -f VNAME=$VNAME1 START_POS=$START_POS1 
+nsplug meta_vehicle.bhv targ_$VNAME1.bhv -f VNAME=$VNAME1     \
+    START_POS=$START_POS1   SPEED=$SPEED1 ORDER="normal"      \
+    DELAYTIME=$DELAY_TIME1
 
 
+#--------------------------------
 nsplug meta_vehicle.moos targ_$VNAME2.moos -f WARP=$TIME_WARP  VTYPE=UUV \
    VNAME=$VNAME2      START_POS=$START_POS2   SHORE=$SHORE               \
    VPORT="9002"       SHARE_LISTEN="9302"    
 
-nsplug meta_vehicle.bhv targ_$VNAME2.bhv -f VNAME=$VNAME2 START_POS=$START_POS2 
+nsplug meta_vehicle.bhv targ_$VNAME2.bhv -f VNAME=$VNAME2     \
+    START_POS=$START_POS2 SPEED=$SPEED2 ORDER="normal"       \
+    DELAYTIME=$DELAY_TIME2
 
 
+#--------------------------------
 nsplug meta_vehicle.moos targ_$VNAME3.moos -f WARP=$TIME_WARP  VTYPE=UUV \
    VNAME=$VNAME3      START_POS=$START_POS3  SHORE=$SHORE                \
    VPORT="9003"       SHARE_LISTEN="9303"    
 
-nsplug meta_vehicle.bhv targ_$VNAME3.bhv -f VNAME=$VNAME3 START_POS=$START_POS3 
+nsplug meta_vehicle.bhv targ_$VNAME3.bhv -f VNAME=$VNAME3     \
+    START_POS=$START_POS3  SPEED=$SPEED3 ORDER="normal"       \
+    DELAYTIME=$DELAY_TIME3
 
 if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0

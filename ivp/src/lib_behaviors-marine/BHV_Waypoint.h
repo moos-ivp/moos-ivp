@@ -35,6 +35,8 @@ public:
   
   bool           setParam(std::string, std::string);
   IvPFunction*   onRunState();
+  void           onIdleState();
+  void           onIdleToRunState();
   BehaviorReport onRunState(std::string);
   void           onRunToIdleState();
   void           onSetParamComplete();
@@ -52,6 +54,8 @@ protected:
   void         postCycleFlags();
   void         postWptFlags(double x, double y);
   void         handleVisualHint(std::string);
+  void         updateOdoDistance();
+  void         markOdoLeg();
 
 protected: 
   WaypointEngine m_waypoint_engine;
@@ -61,6 +65,7 @@ protected: // configuration parameters
   bool        m_lead_to_start;
   double      m_lead_distance;
   double      m_lead_damper;
+  std::string m_efficiency_measure;
   std::string m_ipf_type;
 
   // Configurable names of MOOS variables for reports
@@ -80,9 +85,22 @@ protected: // configuration parameters
   double      m_hint_edge_size;
 
 protected: // intermediate or object global variables.
+  double    m_osh;  // Ownship heading
   double    m_osv;  // Ownship velocity
   double    m_osx;  // Ownship x position
   double    m_osy;  // Ownship y position
+  
+  // Odometry state information
+  bool      m_odo_set_flag;
+  double    m_odo_setx;
+  double    m_odo_sety;
+  double    m_odo_distance;
+  bool      m_odo_virgin;
+  double    m_dist_total_odo;
+  double    m_dist_total_linear;
+
+  double    m_osx_prev;
+  double    m_osy_prev;
 
   XYPoint   m_nextpt;
   XYPoint   m_trackpt;

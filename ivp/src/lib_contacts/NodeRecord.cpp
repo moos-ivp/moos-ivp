@@ -169,6 +169,8 @@ string NodeRecord::getSpec() const
     str += ",GROUP=" + m_group;
   if(m_mode != "")
     str += ",MODE=" + m_mode;
+  if(m_mode_aux != "")
+    str += ",MODE_AUX=" + m_mode_aux;
   if(m_allstop != "")
     str += ",ALLSTOP=" + m_allstop;
 
@@ -241,6 +243,16 @@ string NodeRecord::getMode(string default_mode) const
 }
 
 //---------------------------------------------------------------
+// Procedure: getModeAux
+
+string NodeRecord::getModeAux(string default_mode_aux) const
+{
+  if(m_mode_aux == "")
+    return(default_mode_aux);
+  return(m_mode_aux);
+}
+
+//---------------------------------------------------------------
 // Procedure: getAllStop
 
 string NodeRecord::getAllStop(string default_allstop) const
@@ -288,6 +300,8 @@ bool NodeRecord::valid(string check, string& why) const
       missing += "type,";
     if((field == "mode") && (m_mode == "")) 
       missing += "mode,";
+    if((field == "mode_aux") && (m_mode_aux == "")) 
+      missing += "mode_aux,";
     if((field == "allstop") && (m_allstop == "")) 
       missing += "allstop,";
     if((field == "x") && !m_x_set) 

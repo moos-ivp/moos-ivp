@@ -7,7 +7,10 @@ JUST_MAKE="no"
 VNAME="archie"
 INDEX="1"
 SHORE="multicast_9"
+ORDER="normal"
+SPEED="1.8"
 START_POS="0,0"  
+DELAY_TIME=0
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [time_warp]   \n" $0
@@ -41,9 +44,10 @@ done
 
 nsplug meta_vehicle.moos targ_$VNAME.moos -f WARP=$TIME_WARP  VTYPE=UUV \
    VNAME=$VNAME       START_POS=$START_POS        SHORE=$SHORE          \
-   VPORT="900"$INDEX  SHARE_LISTEN="930"$INDEX    
+   VPORT="900"$INDEX  SHARE_LISTEN="930"$INDEX   
 
-nsplug meta_vehicle.bhv targ_$VNAME.bhv -f VNAME=$VNAME START_POS=$START_POS
+nsplug meta_vehicle.bhv targ_$VNAME.bhv -f VNAME=$VNAME START_POS=$START_POS \
+   ORDER=$ORDER   SPEED=$SPEED DELAY_TIME=$DELAY_TIME
 
 if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0

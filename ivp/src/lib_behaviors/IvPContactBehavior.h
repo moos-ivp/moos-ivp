@@ -58,7 +58,7 @@ public:
   bool  updatePlatformInfo();
   void  postViewableBearingLine();
   void  postErasableBearingLine();
-  
+
  protected: // Configuration Parameters
   
   bool   m_on_no_contact_ok;  // true if no trouble reported on no contact

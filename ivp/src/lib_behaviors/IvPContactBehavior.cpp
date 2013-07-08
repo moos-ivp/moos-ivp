@@ -94,6 +94,9 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
 
 bool IvPContactBehavior::setParam(string param, string param_val) 
 {
+  if(IvPBehavior::setParam(param, param_val))
+    return(true);
+  
   double dval = atof(param_val.c_str());
   bool non_neg_number = (isNumber(param_val) && (dval >= 0));
   
@@ -231,8 +234,9 @@ bool IvPContactBehavior::updatePlatformInfo()
     m_cnx = new_cnx;
     m_cny = new_cny;
   }
-  else
+  else {
     postWMessage("Incomplete Linear Extrapolation");
+  }
 
   return(ok);
 }
@@ -261,9 +265,6 @@ void IvPContactBehavior::postViewableBearingLine()
   }
   if(color == "") 
     color = "blank";
-  postMessage("COLOR_CHOICE", color);
-  postMessage("COLOR_RANGE", m_contact_range);
-  postMessage("COLOR_IVALUE", index_value);
 
   m_bearing_line.clear(); 
   m_bearing_line.set_active(true);
@@ -283,6 +284,9 @@ void IvPContactBehavior::postViewableBearingLine()
 
 void IvPContactBehavior::postErasableBearingLine()
 {
+  if(m_bearing_line.size() == 0)
+    return;
+
   m_bearing_line.set_active(false);
   postMessage("VIEW_SEGLIST", m_bearing_line.get_spec());
 }

@@ -263,7 +263,7 @@ IvPFunction *ZAIC_PEAK::extractOF(bool maxval)
   if((m_domain_ix == -1) || (m_state_ok == false))
     return(0);
 
-  unsigned int i;
+  unsigned int i; 
   for(i=0; i<m_domain_pts; i++)
     m_ptvals[i] = evalPoint(i, maxval);
 

@@ -26,6 +26,7 @@
 #include "ULV_GUI.h"
 #include "MBUtils.h"
 #include "FL/fl_ask.H"
+#include <FL/Fl.H>
 
 using namespace std;
 
@@ -242,8 +243,10 @@ void ULV_GUI::augmentMenu()
 
   m_menubar->add("Replay/Step Ahead 1", ']', (Fl_Callback*)ULV_GUI::cb_Step, (void*)1, 0);
   m_menubar->add("Replay/Step Back  1", '[', (Fl_Callback*)ULV_GUI::cb_Step, (void*)-1, 0);
-  m_menubar->add("Replay/Step Ahead 5", '>',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)5, 0);
-  m_menubar->add("Replay/Step Back  5", '<',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)-5, FL_MENU_DIVIDER);
+  m_menubar->add("Replay/Step Ahead 10", '}',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)10, 0);
+  m_menubar->add("Replay/Step Back  10", '{',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)-10, 0);
+  m_menubar->add("Replay/Step Ahead 50", FL_CTRL+']',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)50, 0);
+  m_menubar->add("Replay/Step Back  50", FL_CTRL+'[',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)-50, FL_MENU_DIVIDER);
 };
 
 //----------------------------------------------------------
@@ -362,7 +365,8 @@ bool ULV_GUI::inNavPlotViewer()
 
 //----------------------------------------- Step
 inline bool ULV_GUI::cb_Step_i(int val) {
-  bool changed = np_viewer->stepTime(val);
+  double dval = (double)(val) / 10;
+  bool changed = np_viewer->stepTime(dval);
   if(changed) {
     np_viewer->redraw();
     double curr_time = np_viewer->getCurrTime();

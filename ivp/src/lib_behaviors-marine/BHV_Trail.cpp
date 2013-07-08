@@ -79,8 +79,6 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) :
 
 bool BHV_Trail::setParam(string param, string param_val) 
 {
-  if(IvPBehavior::setParam(param, param_val))
-    return(true);
   if(IvPContactBehavior::setParam(param, param_val))
     return(true);
   

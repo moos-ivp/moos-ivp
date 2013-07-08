@@ -50,6 +50,7 @@ std::vector<std::string> removeDuplicates(const std::vector<std::string>&);
 bool vectorContains(const std::vector<std::string>&, 
 		    const std::string&);
 
+std::string augmentSpec(const std::string&, const std::string&, char=',');
 std::string removeWhite(const std::string&);
 std::string biteString(std::string&, char);
 std::string biteStringX(std::string&, char);
@@ -116,8 +117,8 @@ int   getArg(int, char**, int, const char*, const char *s=0);
 bool  scanArgs(int, char**, const char*, const char *a=0, const char *b=0);
 int   validateArgs(int, char **, std::string);
 
-float snapToStep(float, float v=1.0);
-float snapDownToStep(float, float v=1.0);
+double snapToStep(double, double v=1.0);
+double snapDownToStep(double, double v=1.0);
 
 bool  setBooleanOnString(bool& boolval, std::string str, bool=true);
 bool  setPosDoubleOnString(double& dval, std::string str);

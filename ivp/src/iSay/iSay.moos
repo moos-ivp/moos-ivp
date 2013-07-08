@@ -1,0 +1,9 @@
+//------------------------------------------------
+// iSay config block
+
+ProcessConfig = iSay
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

@@ -39,13 +39,15 @@ public:
   int  handle(int);
   virtual void updateXY() {};
 
-  void augmentMenu();
+  void addGeoAttrMenu();
   void updateRadios();
   void setMenuItemColors();
 
   //void setMenuItemColor(std::string item, int r=31, int g=71, int b=195);
   void setMenuItemColor(std::string item, int r=31, int g=71, int b=155);
   bool setMenuAttrib(std::string menu, std::string attr, std::string val="");
+
+  bool removeMenuItem(std::string);
 
  protected:
   Fl_Menu_Bar  *m_menubar;

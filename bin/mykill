@@ -22,7 +22,7 @@ killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav     \
         pLogger iPWMController MOOSDump pAntler             \
         iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
         pHuxley pMessageSim pBeamform uTermCommand          \
-        pBearingTrack uMissionTester
+        pBearingTrack uMissionTester pTestBut pTestBug2
 
 killall -9 pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim        \
         iPNICompass iMetaCompass iHeadingMonitor  pAEL       \
@@ -39,7 +39,7 @@ killall -9 iMicroModem pRouter pFramer pMessageSim                \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG      \
 	iModemSim pFunctionSender uFunctionViewer uFunctionVis \
         uSimBeaconRange uSimCurrent pBasicContactMgr           \
-        uSimActiveSonar
+        uSimActiveSonar bngview
 
 killall -9 pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
         pBlast pSweepLines pNSWCPC pXRelay pXRelayTest alogview  \
@@ -65,8 +65,8 @@ killall -9 pFleetControl uFldScope uFldContactRangeSensor         \
 killall -9 pParticle uFldContactRangeSensorHP pUUVPath            \
         pWifiCheck uFldMessageSourcer pRangeSensorHandler      \
         pHunterPrey camera_example camera_example_server       \
-        camera_example_viewer iHuxley
+        camera_example_viewer iHuxley uFldCollisionDetect iSay
 
-killall -9pAntler pLogger
+killall -9 pAntler pLogger
 
 echo Done - Killed all MOOS-Related Processes.....

@@ -59,8 +59,6 @@ BHV_Shadow::BHV_Shadow(IvPDomain gdomain) :
 
 bool BHV_Shadow::setParam(string param, string param_val) 
 {
-  if(IvPBehavior::setParam(param, param_val))
-    return(true);
   if(IvPContactBehavior::setParam(param, param_val))
     return(true);
 

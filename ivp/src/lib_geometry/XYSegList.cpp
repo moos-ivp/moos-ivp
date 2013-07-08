@@ -270,7 +270,7 @@ void XYSegList::new_center(double new_cx, double new_cy)
 
 bool XYSegList::valid() const
 {
-  if(m_vx.size() == 0)
+  if((m_vx.size() == 0) && active())
     return(false);
   return(true);
 }
@@ -370,7 +370,7 @@ double XYSegList::get_min_x() const
 {
   unsigned int i, vsize = m_vx.size();
   if(vsize == 0) 
-    return(0.0);
+    return(0);
 
   double x_min = m_vx[0];
   for(i=1; i<vsize; i++)
@@ -387,7 +387,7 @@ double XYSegList::get_max_x() const
 {
   unsigned int i, vsize = m_vx.size();
   if(vsize == 0) 
-    return(0.0);
+    return(0);
 
   double x_max = m_vx[0];
   for(i=1; i<vsize; i++)
@@ -628,9 +628,12 @@ string XYSegList::get_spec(unsigned int precision, string param) const
       spec += "}";
   }
   string obj_spec = XYObject::get_spec(param);
-  if(obj_spec != "")
-    spec += ("," + obj_spec);
-  
+  if(obj_spec != "") {
+    if(spec != "")
+      spec += ",";
+    spec += obj_spec;
+  }
+
   return(spec);
 }
 

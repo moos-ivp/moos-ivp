@@ -359,7 +359,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       if(why_not != "")
 	warning += why_not;
       else {
-	warning += "=" + sval + " src=" + msg.GetSource();
+	warning += "=[" + sval + "] src=" + msg.GetSource();
 	if(msg.GetSourceAux() != "")
 	  warning += " aux=" + msg.GetSourceAux();
       }

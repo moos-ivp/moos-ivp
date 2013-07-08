@@ -131,7 +131,8 @@ void showExampleConfigAndExit()
   blk("  // Vehicles Pull-Down Menu ===================================");
   blk("  vehicles_viewable       = true   // {TRUE, false}             ");
   blk("  vehicles_name_mode      = names  // {names, names+depth, off  ");
-  blk("                                       names+mode, names+shortmode}");
+  blk("                                       names+mode, names+auxmode");
+  blk("                                       names+shortmode}         ");
   blk("  stale_report_thresh     = 30     // [5, inf)                  ");
   blk("  stale_remove_thresh     = 30     // [0, inf)                  ");
   blk("  vehicles_active_color   = red    // {yellow,white,blue,green} ");

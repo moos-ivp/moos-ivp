@@ -79,10 +79,8 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
     return(addPolygon(value));
   else if((param ==  "segl") || (param == "seglist"))
     return(addSegList(value));
-  else if((param ==  "marker") || (param == "view_marker")) {
-    cout << "adding marker%%%%%%%%%%: " << value << endl;
+  else if((param ==  "marker") || (param == "view_marker"))
     return(addMarker(value));
-  }
   else if((param ==  "grid") || (param == "xygrid"))
     return(addGrid(value));
   else if(param ==  "convex_grid")
@@ -118,8 +116,10 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
 
 void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
 {
-  updateBounds(new_poly.get_min_x(), new_poly.get_max_x(), 
-	       new_poly.get_min_y(), new_poly.get_max_y());
+  if(new_poly.size()) {
+    updateBounds(new_poly.get_min_x(), new_poly.get_max_x(), 
+		 new_poly.get_min_y(), new_poly.get_max_y());
+  }
 
   string new_label = new_poly.get_label();
   if(new_label == "") {
@@ -142,8 +142,11 @@ void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
 
 void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
 {
-  updateBounds(new_segl.get_min_x(), new_segl.get_max_x(), 
-	       new_segl.get_min_y(), new_segl.get_max_y());
+  if(new_segl.size() > 0) {
+    updateBounds(new_segl.get_min_x(), new_segl.get_max_x(), 
+		 new_segl.get_min_y(), new_segl.get_max_y());
+    
+  }
 
   string new_label = new_segl.get_label();
   if(new_label == "") {
@@ -471,9 +474,9 @@ bool VPlug_GeoShapes::addMarker(const string& marker_str)
 bool VPlug_GeoShapes::addSegList(const string& segl_str)
 {
   XYSegList new_segl = string2SegList(segl_str);
-  if(new_segl.size() == 0)
+  if((new_segl.size()==0) && new_segl.active())
     return(false);
-   addSegList(new_segl);
+  addSegList(new_segl);
   return(true);
 }
 
