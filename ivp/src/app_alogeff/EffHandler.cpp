@@ -23,6 +23,7 @@
 #include <iostream>
 #include <cmath>
 #include <cstdio>
+#include <cstdlib>
 #include "MBUtils.h"
 #include "ALogScanner.h"
 #include "LogUtils.h"

@@ -10,6 +10,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstdlib>
 #include "GeomUtils.h"
 #include "CPAEngine.h"
 #include "AngleUtils.h"

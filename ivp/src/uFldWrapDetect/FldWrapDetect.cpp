@@ -96,7 +96,7 @@ bool FldWrapDetect::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_xysegments[node_name].push_front(new_segment); 
 	
 	// trim segments down to allowed size
-	while(m_xysegments[node_name].size() > m_max_num_segments){
+	while(m_xysegments[node_name].size() > (unsigned int) m_max_num_segments){
 	  m_xysegments[node_name].pop_back();
 	} // end while
 

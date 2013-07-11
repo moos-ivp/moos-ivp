@@ -48,6 +48,7 @@
 #include "IvPBehavior.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
+#include "BehaviorReport.h"
 
 using namespace std;
 

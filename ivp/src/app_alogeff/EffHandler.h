@@ -24,7 +24,7 @@
 #define SCAN_HANDLER_HEADER
 
 #include "ScanReport.h"
-#include "Math.h"
+#include <cmath>
 #include <vector>
 
 class EffHandler

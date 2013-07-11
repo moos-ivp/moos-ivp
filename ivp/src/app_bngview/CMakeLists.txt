@@ -32,6 +32,7 @@ TARGET_LINK_LIBRARIES(bngview
   behaviors
   behaviors-marine
   bhvutil
+  helmivp
   marineview
   genutil
   logic
