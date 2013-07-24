@@ -597,7 +597,9 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
   }    
   else { // if (method == "zaic")
     ZAIC_PEAK spd_zaic(m_domain, "speed");
-    spd_zaic.setParams(m_cruise_speed, 1, 1.6, 20, 0, 100);
+    double peak_width = m_cruise_speed / 2;
+    spd_zaic.setParams(m_cruise_speed, peak_width, 1.6, 20, 0, 100);
+    //    spd_zaic.setParams(m_cruise_speed, 1, 1.6, 20, 0, 100);
     IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
     if(!spd_ipf)
       postWMessage("Failure on the SPD ZAIC");
