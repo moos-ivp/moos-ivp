@@ -1,12 +1,12 @@
-
 ProcessConfig = iGPS_KF
 {
         AppTick = 10
         CommsTick = 10
-        Port = /dev/GPS18X5HZ
+        Port = /dev/ttyACM0
         Streaming = true
         Verbose = false
-        BaudRate = 19200
-        Type = GARMIN
-        SHOW_CEP = true
+        BaudRate = 115200
+        Type = UBLOX
+        SHOW_CEP = false
+        RAW_GPS = true
 }
