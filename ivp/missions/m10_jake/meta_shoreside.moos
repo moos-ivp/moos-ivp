@@ -73,10 +73,10 @@ ProcessConfig = uFldNodeComms
   AppTick       = 2
   CommsTick     = 2
 
-  comms_range          = 100
+  comms_range          = 150
   critical_range       = 25
-  min_msg_interval     = 20
-  max_msg_length       = 1000
+  min_msg_interval     = 60
+  max_msg_length       = 100
   groups               = true
   view_node_rpt_pulses = true
 }
@@ -91,9 +91,9 @@ ProcessConfig = uFldHazardMetric
  
   penalty_missed_hazard = 150
   penalty_false_alarm   = 25     
-  max_time              = 9000 
+  max_time              = 7200 
   penalty_max_time_over = 300    
-  penalty_max_time_rate = 0.5 
+  penalty_max_time_rate = 0.25 
 
   show_xpath    = false
 
@@ -109,13 +109,12 @@ ProcessConfig = uFldHazardSensor
   AppTick       = 4
   CommsTick     = 4
 
-  //max_appcast_events = 20
-  MAX_APPcAST_EVENTS = 20
+  max_appcast_events = 20
 
-  sensor_config = width=5,  exp=8, pclass=0.98, max=1
-  sensor_config = width=10, exp=6, pclass=0.93
-  sensor_config = width=25, exp=4, pclass=0.80
-  sensor_config = width=50, exp=2, pclass=0.60
+  sensor_config = width=5,  exp=8, pclass=0.88, max=1
+  sensor_config = width=10, exp=6, pclass=0.70
+  sensor_config = width=25, exp=4, pclass=0.63
+  sensor_config = width=50, exp=2, pclass=0.55
 
   swath_length  = 5
 
