@@ -1,5 +1,5 @@
 #!/bin/bash 
 
-./launch_vehicle_fld.sh --name=charlie
+./launch_vehicle_fld.sh --vname=charlie
 
 
