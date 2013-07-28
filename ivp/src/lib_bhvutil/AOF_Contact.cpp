@@ -151,8 +151,9 @@ bool AOF_Contact::initialize()
 
   if(!m_domain.hasDomain("course") || !m_domain.hasDomain("speed"))
     return(false);
-  if(m_domain.size() != 2)
-    return(false);
+
+  //if(m_domain.size() != 2)
+  //  return(false);
 
   if(!m_osx_set || !m_osy_set || !m_cnx_set) 
     return(false);
