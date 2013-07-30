@@ -92,7 +92,7 @@ ProcessConfig = uFldHazardMetric
  
   penalty_missed_hazard = 150
   penalty_false_alarm   = 25     
-  max_time              = 7200 
+  max_time              = 7202 
   penalty_max_time_over = 300    
   penalty_max_time_rate = 0.25 
 
