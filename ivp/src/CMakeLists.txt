@@ -259,7 +259,7 @@ SET(IVP_GUI_APPS
   uLogView
   uLogViewIPF
   uLogViewHelm
-  app_bngview
+#  app_bngview
   )
   
 SET(IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})
