@@ -1,3 +1,5 @@
+o Allow dynamic configuration of pBasicContactMgr, so behaviors can auto-coordinate
+
 o MOOS mission file reader: Verbatim quoting not work. 
   See m10_jake, plug_uFldHazardMgr
 
