@@ -238,6 +238,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       bool ok = processNodeReport(sval);
       if(!ok)
 	reportRunWarning("Unhandled NODE_REPORT");
+      updateInfoBuffer(msg);
     }
     else if(moosvar == m_refresh_var) {
       m_refresh_pending = true;
