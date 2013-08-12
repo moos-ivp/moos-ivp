@@ -23,17 +23,6 @@ Processconfig = ANTLER
   Run = pBasicContactMgr @ NewConsole = false
   Run = pHostInfo        @ NewConsole = false
   Run = uFldNodeBroker   @ NewConsole = false
-  Run = uMailCOunter     @ NewConsole = false
-
-//------------------------------------------------------------
-ProcessConfig = uMailCounter
-{
-  AppTick = 4
-  CommsTick = 4
-
-  watch_var = AVOIDING
-}
-
 
 #ifdef VARIATION 1
   Run = uXMS             @ NewConsole = false ~ uXMS_GPS

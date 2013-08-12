@@ -69,7 +69,7 @@ ProcessConfig = uFldShoreBroker
   //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
   QBRIDGE  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
-  QBRIDGE  = MOOS_MANUAL_OVERIDE, APPCAST_REQ, TRIAL
+  QBRIDGE  = MOOS_MANUAL_OVERIDE, APPCAST_REQ
 
   BRIDGE   = src=UP_LOITER_$N, alias=UP_LOITER
   BRIDGE   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
@@ -162,6 +162,7 @@ ProcessConfig = pMarineViewer
   vehicles_shape_scale = 1.5
   vehicles_name_viewable = names
 
+  circle_viewable_all = false
   
   appcast_viewable = true
   appcast_color_scheme = indigo
@@ -180,20 +181,13 @@ ProcessConfig = pMarineViewer
   ACTION = STATION_KEEP_ALL = false
   ACTION = STATION_KEEP_ALL = true
 
-  ACTION = TRIAL_ALL = false
-  ACTION = TRIAL_ALL = true
-
   BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
   BUTTON_ONE   = RETURN_ALL=false
 
-  //BUTTON_TWO   = RETURN  # RETURN_ALL=true
-  //BUTTON_THREE = PERMUTE   # UTS_FORWARD=0
-  //BUTTON_FOUR = STATION   # STATION_KEEP_ALL=true
-
-  BUTTON_TWO   = PERMUTE   # UTS_FORWARD=0
-  BUTTON_THREE = TRIAL:T   # TRIAL_ALL=true
-  BUTTON_FOUR = TRIAL:F   # TRIAL_ALL=false
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  BUTTON_THREE = PERMUTE   # UTS_FORWARD=0
+  BUTTON_FOUR = STATION   # STATION_KEEP_ALL=true
 }
 
 //--------------------------------------------------------
