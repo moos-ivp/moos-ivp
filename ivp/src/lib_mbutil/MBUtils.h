@@ -52,9 +52,14 @@ bool vectorContains(const std::vector<std::string>&,
 
 std::string augmentSpec(const std::string&, const std::string&, char=',');
 std::string removeWhite(const std::string&);
+
 std::string biteString(std::string&, char);
 std::string biteStringX(std::string&, char);
 std::string biteString(std::string&, char, char);
+
+std::string rbiteString(std::string&, char);
+
+
 std::string stripBlankEnds(const std::string&);
 std::string tolower(const std::string&);
 std::string toupper(const std::string&);
@@ -140,4 +145,3 @@ bool isKnownVehicleType(const std::string&);
 unsigned int charCount(const std::string&, char);
 
 #endif
-

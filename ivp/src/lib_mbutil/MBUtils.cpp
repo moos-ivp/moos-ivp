@@ -445,6 +445,44 @@ string biteString(string& str, char sep1, char sep2)
 }
 
 //----------------------------------------------------------------
+// Procedure: rbiteString(const string&, char)
+//   Example: input_str = "apples, pears, bananas"
+//            str = rbiteString(input_str, ',')
+//            str = " bananas"
+//            input_str = "apples, pears"
+
+string rbiteString(string& str, char separator)
+{
+  string::size_type len = str.length();
+  if(len == 0)
+    return("");
+
+  bool found = false;
+  string::size_type ix=0;
+  string::size_type i=0;
+  for(i=len-1; (!found && i!=0); i--) {
+    if(str[i] == separator) {
+      found = true;
+      ix = i;
+    }
+  }
+
+  if(!found) {
+    string str_back = str;
+    str = "";
+    return(str_back);
+  }
+
+  string str_front(str.c_str(), ix);
+  string str_back;
+  if((ix+1) < len)
+    str_back = str.substr(ix+1);
+  str = str_front;
+
+  return(str_back);
+}
+
+//----------------------------------------------------------------
 // Procedure: sortStrings
 //      Note: O(n^2) simple bubble-sort algorithm
 
