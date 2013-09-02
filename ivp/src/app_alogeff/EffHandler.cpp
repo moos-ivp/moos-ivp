@@ -58,6 +58,8 @@ EffHandler::EffHandler()
   
   m_avoid_out_string = "";
   m_transit_out_string = "";
+
+  m_output_string = "NoOutputStringGiven";
 };
 
 
@@ -245,20 +247,20 @@ void EffHandler::handle(int argc, char **argv)
     cout << "avoiding data follows: \n" << avoid_data.get_report() << endl;
     cout << "transit data follows: \n" << transit_data.get_report() << endl;
     cout << "number of collisions: " << doubleToString(m_num_collisions,0) << endl;
-    string new_alogfile = "MOOS_COLLISION_OUTPUT_FOR_MATLAB_AVOIDING.csv";
+    string new_alogfile = m_output_string + ".adata";
     string file_header = "lin_dist,odo_dist,eff";
     m_file_out = fopen(new_alogfile.c_str(), "w");
     fprintf(m_file_out, "%s\n",file_header.c_str());
     fprintf(m_file_out, "%s\n",m_avoid_out_string.c_str());
     fclose(m_file_out);
 
-    new_alogfile = "MOOS_COLLISION_OUTPUT_FOR_MATLAB_TRANSITING.csv";
+    new_alogfile = m_output_string + ".tdata";
     m_file_out = fopen(new_alogfile.c_str(), "w");
     fprintf(m_file_out, "%s\n",file_header.c_str());
     fprintf(m_file_out, "%s\n",m_transit_out_string.c_str());
     fclose(m_file_out);
 
-    new_alogfile = "MOOS_COLLISION_OUTPUT_FOR_MATLAB_COLLISIONS.csv";
+    new_alogfile = m_output_string + ".cdata";
     m_file_out = fopen(new_alogfile.c_str(), "w");
     file_header = "num_collisions";
     fprintf(m_file_out, "%s\n",file_header.c_str());
@@ -460,10 +462,22 @@ double EffHandler::getParsedDoubleValue(string str, string val){
 void EffHandler::setALogFiles(int argc, char **argv)
 {
   // code from alogview (M. Benjamin)
-  for(int i=1; i<argc; i++)
+  bool output_string = false;
+  for(int i=1; i<argc; i++){
     if(strContains(argv[i], ".alog")){
       m_alog_files.push_back(argv[i]);
       cout << "added file: " << argv[i] << endl;
     }
+    else if(strContains(argv[i], "output=")){
+      m_output_string = argv[i];
+      biteString(m_output_string, '=');
+      cout << "using " << m_output_string << " as output string" << endl;
+      output_string = true;
+    }
+  }
+  if(output_string == false){
+    cout << "---->>> No output file string specified. Pass output=STRING as input." << endl;
+    exit(1);
+  }
   // why did I have to add a * to line above???
 }

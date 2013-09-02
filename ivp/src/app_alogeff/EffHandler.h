@@ -119,6 +119,7 @@ class EffHandler
   std::vector<std::string> m_alog_files;
   //  std::string m_alog_files;
   int m_num_collisions;
+  std::string  m_output_string;
 
   std::map<std::string, std::string> m_pcolor_map;
   std::vector<std::string>           m_pcolors;

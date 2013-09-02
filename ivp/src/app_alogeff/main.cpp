@@ -47,25 +47,17 @@ int main(int argc, char *argv[])
     cout << "  alogscan file.alog [OPTIONS]                       " << endl;
     cout << "                                                     " << endl;
     cout << "Synopsis:                                            " << endl;
-    cout << "  Generate a report on the contents of a given       " << endl;
-    cout << "  MOOS .alog file.                                   " << endl;
+    cout << "  Generate summary files of efficiency and collisions" << endl;
+    cout << "  from MOOS .alog files.                             " << endl;
     cout << "                                                     " << endl;
-    cout << "Options:                                             " << endl;
-    cout << "  --sort=type   Sort by one of SIX criteria:         " << endl;
-    cout << "                start: sort by first post of a var   " << endl;
-    cout << "                stop:  sort by last post of a var    " << endl;
-    cout << "     (Default)  vars:  sort by variable name         " << endl;
-    cout << "                proc:  sort by process/source name   " << endl;
-    cout << "                chars: sort by total chars for a var " << endl;
-    cout << "                lines: sort by total lines for a var " << endl;
-    cout << "                                                     " << endl;
-    cout << "  --appstat     Output application statistics        " << endl;
-    cout << "  -r,--reverse  Reverse the sorting output           " << endl;
-    cout << "  -n,--nocolors Turn off process/source color coding " << endl;
-    cout << "  -h,--help     Displays this help message           " << endl;
-    cout << "  -v,--version  Displays the current release version " << endl;
-    cout << "                                                     " << endl;
-    cout << "See also: aloggrp, alogrm, alogclip, alogview        " << endl;
+    cout << "Required:                                             " << endl;
+    cout << "  output=STRING  Where string is the prefix for     " << endl;
+    cout << "                 output files.   " << endl;
+    cout << "                    " << endl;
+    cout << "Outputs:       " << endl;
+    cout << "          STRING.adata for avoiding data.   " << endl;
+    cout << "          STRING.tdata for transiting data.   " << endl;
+    cout << "          STRING.cdata for collision data.   " << endl;
     return(0);
   }
 
