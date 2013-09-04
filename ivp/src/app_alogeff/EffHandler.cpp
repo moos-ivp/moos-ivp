@@ -211,7 +211,7 @@ void EffHandler::handle(int argc, char **argv)
 	  if((!avoid_bool) && (!true_to_false)){
 	    // previous leg was transit leg without collision avoidance
 	    transit_data.add_eff(lin_dist,odo_dist,eff);
-	    cout << "adding to transit data: "  << out_string << endl;
+	    //	    cout << "adding to transit data: "  << out_string << endl;
 	    m_transit_out_string += out_string + "\n";
 	
 
@@ -221,7 +221,7 @@ void EffHandler::handle(int argc, char **argv)
 	    // not currently avoiding, but first waypoint reached after an avoidance maneuver
 	    avoid_data.add_eff(lin_dist,odo_dist,eff);
 	    true_to_false = false;
-	    cout << "adding to avoid data: "  << out_string << endl;
+	    //	    cout << "adding to avoid data: "  << out_string << endl;
 	    string out_string = "" + doubleToString(lin_dist) + "," + doubleToString(odo_dist) + "," + doubleToString(eff);
 	    m_avoid_out_string += out_string + "\n";
 	  }
@@ -229,7 +229,7 @@ void EffHandler::handle(int argc, char **argv)
 	    // currently conducting collision avoidance while passing through waypoint
 	    // will record this leg and next leg in avoidance data
 	    avoid_data.add_eff(lin_dist,odo_dist,eff);
-	    cout << "adding to avoid data: "  << out_string << endl;
+	    //	    cout << "adding to avoid data: "  << out_string << endl;
 	    m_avoid_out_string += out_string + "\n";
 	  }
 
