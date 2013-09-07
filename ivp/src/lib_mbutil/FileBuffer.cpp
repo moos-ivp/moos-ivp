@@ -80,6 +80,59 @@ vector<string> fileBuffer(const string& filename, int amt)
   return(fvector);
 }
 
+//----------------------------------------------------------------
+// Procedure: fileBufferList
+//      Note: Same as fileBuffer, but a STL list is returned instead
+
+
+list<string> fileBufferList(const string& filename, int amt)
+{
+  list<string> flist;
+
+  FILE *f = fopen(filename.c_str(), "r");
+  if(f==NULL)
+    return(flist);
+
+  const int MAX_LINE_LENGTH = 500000;
+
+  int  myint = '\0';
+  int  buffix = 0;
+  bool EOL    = false;
+  char buff[MAX_LINE_LENGTH];
+  int  lines = 0;
+  bool reached_line_limit = false;
+
+  while((myint!=EOF) && (!reached_line_limit)) {
+    EOL = false;
+    buffix = 0;
+    while((!EOL) && (buffix < MAX_LINE_LENGTH)) {
+      myint = fgetc(f);
+      unsigned char   mychar = myint;
+      switch(myint) {
+      case '\n':
+      case EOF:
+        buff[buffix] = '\0';  // attach terminating NULL
+        EOL = true;
+        break;
+      default:
+        buff[buffix] = mychar;
+        buffix++;
+      }
+    }
+    string str = buff;
+    flist.push_back(str);
+    if(amt != 0) {
+      lines++;
+      if(lines >= amt)
+        reached_line_limit = true;
+    }
+
+  }
+  fclose(f);
+
+  return(flist);
+}
+
 
 //----------------------------------------------------------------
 // Procedure: fileBufferSlash

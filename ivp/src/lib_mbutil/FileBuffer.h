@@ -23,10 +23,13 @@
 #ifndef FILE_BUFFER_HEADER
 #define FILE_BUFFER_HEADER
 
+#include <list>
 #include <vector>
 #include <string>
 
 std::vector<std::string> fileBuffer(const std::string&, int amt=0);
+
+std::list<std::string>   fileBufferList(const std::string&, int amt=0);
 
 std::vector<std::string> fileBufferSlash(const std::string&, int amt=0);
 
