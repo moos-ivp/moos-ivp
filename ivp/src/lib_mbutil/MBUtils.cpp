@@ -303,6 +303,31 @@ vector<string> parseQuotedString(const string& string_str, char separator)
 }
 
 //----------------------------------------------------------------
+// Procedure: parseStringToWords
+//     Notes: Break up the string into a group of white space separated
+//            chunks
+
+vector<string> parseStringToWords(const string& str)
+{
+  vector<string> rvector;
+  string word;
+
+  unsigned int i, len = str.length();
+  for(i=0; i<len; i++) {
+    char c = str.at(i);
+    if((c != '\t') && (c != ' '))
+      word.push_back(c);
+    else {
+      if(word.length() > 0) {
+	rvector.push_back(word);
+	word.clear();
+      }
+    }
+  }
+  return(rvector);
+}
+
+//----------------------------------------------------------------
 // Procedure: chompString(const string&, char)
 //   Example: svector = chompString("apples, pears, bananas", ',')
 //            svector[0] = "apples"

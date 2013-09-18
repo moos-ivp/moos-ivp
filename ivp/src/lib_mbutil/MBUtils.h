@@ -39,6 +39,7 @@ std::vector<std::string> parseStringQ(const std::string&, char, unsigned int);
 std::vector<std::string> parseStringZ(const std::string&, char, 
 				      const std::string&);
 
+std::vector<std::string> parseStringToWords(const std::string&);
 
 
 std::vector<std::string> chompString(const std::string&, char);
