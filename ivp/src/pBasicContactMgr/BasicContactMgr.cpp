@@ -36,6 +36,8 @@
 #include "XYCircle.h"
 #include "ACTable.h"
 
+#define USE_UTM
+
 using namespace std;
 
 //---------------------------------------------------------

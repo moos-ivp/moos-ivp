@@ -673,9 +673,9 @@ void NodeReporter::crossFillLocalToGlobal(NodeRecord& record)
   double nav_lat, nav_lon;
 
 #ifdef USE_UTM
-  m_geodesy.LocalGrid2LatLong(nav_x, nav_y, nav_lat, nav_lon);
-#else
   m_geodesy.UTM2LatLong(nav_x, nav_y, nav_lat, nav_lon);
+#else
+  m_geodesy.LocalGrid2LatLong(nav_x, nav_y, nav_lat, nav_lon);
 #endif      
 
   record.setLat(nav_lat);
