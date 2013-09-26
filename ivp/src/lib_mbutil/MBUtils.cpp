@@ -324,6 +324,10 @@ vector<string> parseStringToWords(const string& str)
       }
     }
   }
+
+  if(word.length() != 0)
+    rvector.push_back(word);
+
   return(rvector);
 }
 
@@ -1334,11 +1338,11 @@ bool isAlphaNum(const string& str, const std::string& achars)
   for(i=0; (i<len)&&(ok); i++) {
     bool this_char_ok = false;
     char c = str.at(i);
-    if((c >= 48) && (c <= 57))
+    if((c >= 48) && (c <= 57))           // 0-9
       this_char_ok = true;
-    else if((c >= 65) && (c <= 90))
+    else if((c >= 65) && (c <= 90))      // A-Z
       this_char_ok = true;
-    else if((c >= 97) && (c <= 122))
+    else if((c >= 97) && (c <= 122))     // a-z
       this_char_ok = true;
     else {
       unsigned int j, alen = achars.length();
