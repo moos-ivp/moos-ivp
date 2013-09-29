@@ -26,6 +26,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <string>
 #include "LogPlot.h"
 #include "ALogEntry.h"
 
@@ -45,14 +46,19 @@ public:
   void        setVName(const std::string& s) {m_vname=s;};
   std::string getVName() const               {return(m_vname);};
 
+  void    addVarFieldExtra(std::string moosvar, std::string field);
+
+ protected:
+  void    augmentLogPlot(const std::string& var, double tstamp, double val);
+
 protected:
   std::string               m_vname;
   std::vector<LogPlot>      m_logplots;
   double                    m_logstart_utc;
 
+  std::map<std::string, std::vector<std::string> > m_map_var_field_extras;
+
   // Mapping from logplot variable to index in m_loplots vector
   std::map<std::string, unsigned int> m_logplot_var_map;
 };
 #endif 
-
-

@@ -34,30 +34,26 @@ using namespace std;
 bool Populator_LogPlots::populateFromEntries(const vector<ALogEntry>& entries)
 {
   unsigned int i, vsize = entries.size();
-  
+
   for(i=0; i<vsize; i++) {
     string var_name  = entries[i].getVarName();
     double itime     = entries[i].getTimeStamp();
-    double dvalue = entries[i].getDoubleVal();
+    double dvalue    = entries[i].getDoubleVal();
+    bool   isnum     = entries[i].isNumerical();
 
-    // First determine if a LogPlot already exists for the variable
-    map<string, unsigned int>::iterator p;
-    p = m_logplot_var_map.find(var_name);
-    if(p == m_logplot_var_map.end()) {
-      if(entries[i].isNumerical()) {
-	LogPlot new_logplot;
-	new_logplot.set_logstart_utc(m_logstart_utc);
-	new_logplot.set_varname(var_name);
-	new_logplot.set_vehi_name(m_vname);
-	new_logplot.set_value(itime, dvalue);
-	m_logplots.push_back(new_logplot);
-	int new_index = m_logplots.size()-1;
-	m_logplot_var_map[var_name] = new_index; 
-      }
-    }
+    if(isnum)
+      augmentLogPlot(var_name, itime, dvalue);
     else {
-      unsigned int found_index = p->second;
-      m_logplots[found_index].set_value(itime, dvalue);
+      if(m_map_var_field_extras.count(var_name) > 0) {
+	vector<string> fields = m_map_var_field_extras[var_name];
+	for(unsigned int j=0; j<fields.size(); j++) {
+	  bool found = entries[i].tokenField(fields[j], dvalue);
+	  if(found) {
+	    string full_var_name = var_name + "_" + toupper(fields[j]);
+	    augmentLogPlot(full_var_name, itime, dvalue);
+	  }
+	}
+      }
     }
   }
   
@@ -74,11 +70,35 @@ bool Populator_LogPlots::populateFromEntries(const vector<ALogEntry>& entries)
 }
 
 //---------------------------------------------------------------
+// Procedure: augmentLogPlot
+
+void Populator_LogPlots::augmentLogPlot(const string& var_name, 
+					double itime, double dvalue)
+{
+  // First determine if a LogPlot already exists for the variable
+  map<string, unsigned int>::iterator p = m_logplot_var_map.find(var_name);
+  if(p == m_logplot_var_map.end()) {
+    LogPlot new_logplot;
+    new_logplot.set_logstart_utc(m_logstart_utc);
+    new_logplot.set_varname(var_name);
+    new_logplot.set_vehi_name(m_vname);
+    new_logplot.set_value(itime, dvalue);
+    m_logplots.push_back(new_logplot);
+    int new_index = m_logplots.size()-1;
+    m_logplot_var_map[var_name] = new_index; 
+  }
+  else {
+    unsigned int found_index = p->second;
+    m_logplots[found_index].set_value(itime, dvalue);
+  }
+}
+
+//---------------------------------------------------------------
 // Procedure: getLogPlot(int index)
 
 LogPlot Populator_LogPlots::getLogPlot(unsigned int ix) const
 {
-  if((ix >= 0) && (ix < m_logplots.size()))
+  if(ix < m_logplots.size())
     return(m_logplots[ix]);
   else {
     LogPlot empty_logplot;
@@ -100,6 +120,19 @@ LogPlot Populator_LogPlots::getLogPlot(const string& varname) const
 
   LogPlot empty_logplot;
   return(empty_logplot);
+}
+
+//---------------------------------------------------------------
+// Procedure: addVarFieldExtra
+
+void Populator_LogPlots::addVarFieldExtra(string var, string field)
+{
+  if(m_map_var_field_extras.count(var) == 0) {
+    vector<string> fields;
+    m_map_var_field_extras[var] = fields;
+  }
+
+  m_map_var_field_extras[var].push_back(field);
 }
 
 

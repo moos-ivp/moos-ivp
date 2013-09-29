@@ -305,10 +305,10 @@ void GeoViewer::adjustActive(int v)
 {
   unsigned int old_ix = m_active_poly;
 
-  m_active_poly += v;
-
-  if(m_active_poly < 0)
+  if(((int)(m_active_poly) + v) < 0)
     m_active_poly = 0;
+  else
+    m_active_poly += v;
   
   if(m_active_poly > m_geoshapes.sizePolygons()-1)
     m_active_poly = m_geoshapes.sizePolygons()-1;
@@ -323,7 +323,7 @@ void GeoViewer::adjustActive(int v)
 
 void GeoViewer::shiftHorzPoly(double shift_val)
 {
-  if((m_active_poly < 0) || (m_active_poly >= m_geoshapes.sizePolygons()))
+  if(m_active_poly >= m_geoshapes.sizePolygons())
     return;
   
   m_geoshapes.poly(m_active_poly).shift_horz(shift_val);
@@ -335,7 +335,7 @@ void GeoViewer::shiftHorzPoly(double shift_val)
 
 void GeoViewer::shiftVertPoly(double shift_val)
 {
-  if((m_active_poly < 0) || (m_active_poly >= m_geoshapes.sizePolygons()))
+  if(m_active_poly >= m_geoshapes.sizePolygons())
     return;
   
   m_geoshapes.poly(m_active_poly).shift_vert(shift_val);
@@ -349,7 +349,7 @@ void GeoViewer::shiftVertPoly(double shift_val)
 
 void GeoViewer::rotatePoly(int rval)
 {
-  if((m_active_poly < 0) || (m_active_poly >= m_geoshapes.sizePolygons()))
+  if(m_active_poly >= m_geoshapes.sizePolygons())
     return;
 
   m_geoshapes.poly(m_active_poly).rotate(rval);
@@ -363,7 +363,7 @@ void GeoViewer::rotatePoly(int rval)
 
 void GeoViewer::growPoly(int gval)
 {
-  if((m_active_poly < 0) || (m_active_poly >= m_geoshapes.sizePolygons()))
+  if(m_active_poly >= m_geoshapes.sizePolygons())
     return;
 
   double dgval = (double)(gval) / 100.0;
@@ -376,7 +376,7 @@ void GeoViewer::growPoly(int gval)
 
 void GeoViewer::reversePoly()
 {
-  if((m_active_poly < 0) || (m_active_poly >= m_geoshapes.sizePolygons()))
+  if(m_active_poly >= m_geoshapes.sizePolygons())
     return;
 
   m_geoshapes.poly(m_active_poly).reverse();
@@ -388,7 +388,7 @@ void GeoViewer::reversePoly()
 
 void GeoViewer::duplicateActive()
 {
-  if((m_active_poly < 0) || (m_active_poly >= m_geoshapes.sizePolygons()))
+  if(m_active_poly >= m_geoshapes.sizePolygons())
     return;
   
   XYPolygon new_poly = m_geoshapes.getPolygon(m_active_poly);
@@ -404,7 +404,7 @@ void GeoViewer::duplicateActive()
 
 void GeoViewer::clearActivePoly()
 {
-  if((m_active_poly < 0) || (m_active_poly >= m_geoshapes.sizePolygons()))
+  if(m_active_poly >= m_geoshapes.sizePolygons())
     return;
   
   m_geoshapes.poly(m_active_poly).clear();
@@ -416,7 +416,7 @@ void GeoViewer::clearActivePoly()
 
 void GeoViewer::reApplySnapToCurrent()
 {
-  if((m_active_poly < 0) || (m_active_poly >= m_geoshapes.sizePolygons()))
+  if(m_active_poly >= m_geoshapes.sizePolygons())
     return;
   
   m_geoshapes.poly(m_active_poly).apply_snap(m_snap_val);

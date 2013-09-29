@@ -65,6 +65,9 @@ public:
   std::string getStatus() const    {return(m_status);};
   bool        isNull() const       {return(m_status=="null");};
 
+  bool        tokenField(const std::string& field, double& value) const;
+
+
 protected:
   double      m_timestamp;
   std::string m_varname;

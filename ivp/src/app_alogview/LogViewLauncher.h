@@ -40,6 +40,8 @@ class LogViewLauncher
   
   REPLAY_GUI *launch(int argc, char **argv);
 
+  bool addPlotRequest(std::string);
+
 protected:
   void checkForMinMaxTime(int argc, char **argv);
   void setBackground(int argc, char **argv);
@@ -91,6 +93,9 @@ private:
   std::vector<VPlugPlot> m_vplug_plots;
   std::vector<IPF_Plot>  m_ipf_plots;
   std::vector<double>    m_log_starts;
+
+  std::vector<std::string> m_plot_request_var;
+  std::vector<std::string> m_plot_request_fld;
 
 
   // Optional time clipping

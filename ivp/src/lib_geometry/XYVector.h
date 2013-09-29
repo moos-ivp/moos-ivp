@@ -60,7 +60,7 @@ public:
   double    ang()  const     {return(m_ang);};
   double    xdot() const     {return(m_xdot);};
   double    ydot() const     {return(m_ydot);};
-  bool      valid()          {return(m_valid);};
+  bool      valid() const    {return(m_valid);};
   double    headsize() const {return(m_head_size);};
 
   std::string get_spec(std::string s="") const;

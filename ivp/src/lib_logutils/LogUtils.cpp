@@ -504,7 +504,9 @@ double getEpochSecsFromDayOfYear(string date_str, int format)
 {
   date_str = stripBlankEnds(date_str);
   
-  double d_month, d_day, d_year;
+  double d_month = 0;
+  double d_day   = 0;
+  double d_year  = 0;
   if(format == 0) {
     string s_month = biteString(date_str, '/');
     string s_day   = biteString(date_str, '/');

@@ -21,6 +21,9 @@
 /*****************************************************************/
 
 #include "ALogEntry.h"
+#include "MBUtils.h"
+
+using namespace std;
 
 //--------------------------------------------------------
 // Procedure: set()
@@ -85,4 +88,13 @@ bool operator== (const ALogEntry& one, const ALogEntry& two)
      (one.getStatus() == two.getStatus()))
     return(true);
   return(false);
+}
+
+
+//--------------------------------------------------------
+// Procedure: tokenField
+
+bool ALogEntry::tokenField(const string& field, double& value) const
+{
+  return(tokParse(m_sval, field, ',', '=', value));
 }

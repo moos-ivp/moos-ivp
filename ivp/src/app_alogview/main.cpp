@@ -50,17 +50,29 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
-  if(scanArgs(argc, argv, "-v", "--version", "-version")) {
-    showReleaseInfo("alogview", "gpl");
-    return(0);
-  }
-  
-  if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    help_message();
-    return(0);
-  }
- 
   LogViewLauncher launcher;
+
+  for(int i=1; i<argc; i++) {
+    string argi = argv[i];
+    if((argi=="-v") || (argi=="--version") || (argi=="-version")) {
+      showReleaseInfo("alogview", "gpl");
+      return(0);
+    }
+    else if((argi == "-h") || (argi == "--help") || (argi=="-help")) {
+      help_message();
+      return(0);
+    }
+    else if(strBegins(argi, "--plot=")) {
+      string plot_request = argi.substr(7);
+      bool ok = launcher.addPlotRequest(plot_request);
+      if(!ok) {
+	cout << "Plot request --plot=" << plot_request << " not handled." << endl;
+	cout << "Exiting." << endl;
+	exit(0);
+      }
+    }
+  }
+
   gui = launcher.launch(argc, argv);
   
   if(gui) {
@@ -92,14 +104,20 @@ void help_message()
   cout << "Options:                                                  " << endl;
   cout << "  -h,--help       Displays this help message              " << endl;
   cout << "  -v,--version    Displays the current release version    " << endl;
-  cout << "  --mintime=val   Clip data with timestamps < val         " << endl;
-  cout << "  --maxtime=val   Clip data with timestamps > val         " << endl;
-  cout << "  --nowtime=val   Set the initial startup time            " << endl;
-  cout << "  --geometry=val  Viewer window pixel size in HGTxWID     " << endl;
-  cout << "                  or large, medium, small, xsmall         " << endl;
-  cout << "                  Default size is 1400x1100 (large)       " << endl;
+  cout << "                                                          " << endl;
+  cout << "  --plot=VAR,FLD,...,FLD                                  " << endl;
+  cout << "                  Make extra numerical plots based on the " << endl;
+  cout << "                  given MOOS variable and one or more flds" << endl;
+
+  //cout << "  --mintime=val   Clip data with timestamps < val         " << endl;
+  //cout << "  --maxtime=val   Clip data with timestamps > val         " << endl;
+  //cout << "  --nowtime=val   Set the initial startup time            " << endl;
+  //cout << "  --geometry=val  Viewer window pixel size in HGTxWID     " << endl;
+  //cout << "                  or large, medium, small, xsmall         " << endl;
+  //cout << "                  Default size is 1400x1100 (large)       " << endl;
   //cout << "  --image                                                 " << endl;
   //cout << "  --ipfs                                                  " << endl;
+
   cout << "                                                          " << endl;
   cout << "Further Notes:                                            " << endl;
   cout << "  (1) Multiple .alog files ok - typically one per vehicle " << endl;

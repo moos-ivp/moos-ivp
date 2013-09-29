@@ -83,13 +83,38 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
   cout << "Done logview launch time (wall): ";
   cout << total_timer.get_float_wall_time() << termColor() << endl;
 
-
-
   if(ok)
     return(m_gui);
   else
     return(0);
 }
+
+//-------------------------------------------------------------
+// Procedure: addPlotRequest()
+//      Note: Expecting the request to be in the form:
+//            VAR,FLD,FLD,FLD... with at least one FLD
+
+bool LogViewLauncher::addPlotRequest(string request)
+{
+  vector<string> svector = parseString(request, ',');
+  unsigned int i, vsize = svector.size();
+  if(vsize < 2)
+    return(false);
+  
+  for(i=0; i<vsize; i++) {
+    if(isNumber(svector[i]) || strContainsWhite(svector[i]))
+      return(false);
+  }
+
+  string moos_var = svector[0];
+  for(i=1; i<vsize; i++) {
+    m_plot_request_var.push_back(moos_var);
+    m_plot_request_fld.push_back(svector[i]);
+  }
+
+  return(true);
+}
+
 
 //-------------------------------------------------------------
 // Procedure: checkForMinMaxTime
@@ -394,7 +419,7 @@ bool LogViewLauncher::parseALogFile(unsigned int index)
       double tstamp = entry.getTimeStamp();
       if((!m_min_time_set || (tstamp >= m_min_time)) &&
 	 (!m_max_time_set || (tstamp <= m_max_time))) {
-	if(isnum)
+	if(isnum || vectorContains(m_plot_request_var, var))
 	  entries_log_plot.push_back(entry);
 	else {
 	  if((var=="AIS_REPORT_LOCAL") && (src=="pTransponderAIS"))
@@ -545,6 +570,9 @@ bool LogViewLauncher::buildLogPlots()
 
   for(i=0; i<vsize; i++) {
     Populator_LogPlots pop_lp;
+    for(unsigned int j=0; j<m_plot_request_var.size(); j++)
+      pop_lp.addVarFieldExtra(m_plot_request_var[j], m_plot_request_fld[j]);
+
     pop_lp.setVName(m_vehicle_name[i]); 
     pop_lp.populateFromEntries(m_entries_log_plot[i]);
     
