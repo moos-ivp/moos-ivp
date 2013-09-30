@@ -43,9 +43,11 @@ protected:
 
 private: // Configuration Parameters
   double       m_memory_time;
-  double       m_peakwidth;
-  double       m_basewidth;
   std::string  m_variable_name;
+
+  //double       m_peakwidth;
+  //double       m_basewidth;
+
 
 private: // State Variables
   std::list<double> m_heading_val;

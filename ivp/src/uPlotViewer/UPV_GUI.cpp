@@ -159,12 +159,12 @@ inline void UPV_GUI::cb_ToggleScopeVar_i(int index) {
   if(item) {
     if(item->value() == 0) {
       // Viewer will not allow all vars to be hidden, only toggle if done
-      bool done = m_plot_viewer->hide(varname);
+      bool done = m_plot_viewer->hideVar(varname);
       if(!done)
 	item->set();
     }
     else
-      m_plot_viewer->show(varname);
+      m_plot_viewer->showVar(varname);
     m_plot_viewer->redraw();
   }
 }
@@ -183,7 +183,7 @@ inline void UPV_GUI::cb_ChangeScopeVar_i(int index) {
   string fullpath = "Render/" + varname;
   Fl_Menu_Item *item = (Fl_Menu_Item*)m_menubar->find_item(fullpath.c_str());
   if(item) {
-    m_plot_viewer->show(varname);
+    m_plot_viewer->showVar(varname);
     item->set();
   }
 

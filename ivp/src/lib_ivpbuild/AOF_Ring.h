@@ -33,7 +33,7 @@ public:
   virtual ~AOF_Ring() {};
 
 public: // virtuals defined
-  double evalPoint(const IvPBox *b) const;
+  double evalBox(const IvPBox *b) const;
   bool   setParam(const std::string&, double);
   bool   setParam(const std::string&, const std::string&);
 
@@ -68,9 +68,10 @@ private:
   bool    ringPeak;  // 1 if pts on ring are peaks (vs. valleys)
   double  base;
   double  range;
-  double  maxDist;
   double  plateau;
   double  gradient_dist;
+
+  // double  maxDist;
 };
 
 #endif

@@ -53,7 +53,7 @@ double g_kelpBody[]=
 
 double       g_kelpCtrX     = 0.0;
 double       g_kelpCtrY     = 0.0;
-unsigned int g_kelpWidth    = 19.62;
+double       g_kelpWidth    = 19.62;
 unsigned int g_kelpBodySize = 24;
 
 #endif

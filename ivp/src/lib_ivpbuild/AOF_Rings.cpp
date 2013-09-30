@@ -38,14 +38,14 @@ AOF_Rings::AOF_Rings(IvPDomain g_domain) : AOF(g_domain)
 }
 
 //----------------------------------------------------------------
-// Procedure: evalPoint
+// Procedure: evalBox
 
-double AOF_Rings::evalPoint(const IvPBox *gbox) const
+double AOF_Rings::evalBox(const IvPBox *gbox) const
 {
   double totval=0;
   int rsize = m_rings.size();
   for(int i=0; i<rsize; i++)
-    totval += m_rings[i].evalPoint(gbox);
+    totval += m_rings[i].evalBox(gbox);
   
   double weight = (totval / rsize);    
   

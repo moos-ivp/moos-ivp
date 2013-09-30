@@ -83,9 +83,9 @@ string IPF_Plot::getIPFByIndex(unsigned int index) const
   if(m_ipf_string.size() == 0)
     return("");
 
-  if(index < 0)
-    return(m_ipf_string[0]);
-  else if(index >= m_ipf_string.size())
+  //if(index < 0)
+  //  return(m_ipf_string[0]);
+  if(index >= m_ipf_string.size())
     return(m_ipf_string[m_ipf_string.size()-1]);
   else
     return(m_ipf_string[index]);

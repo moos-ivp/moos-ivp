@@ -41,9 +41,9 @@ bool AOF_Linear::setParam(const std::string& param, double val)
 };
 
 //----------------------------------------------------------------
-// Procedure: evalPoint
+// Procedure: evalBox
 
-double AOF_Linear::evalPoint(const IvPBox *ptbox) const
+double AOF_Linear::evalBox(const IvPBox *ptbox) const
 {
   double x_val = extract("x", ptbox);
   double y_val = extract("y", ptbox);

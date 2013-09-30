@@ -39,7 +39,7 @@ BehaviorReport::BehaviorReport()
 BehaviorReport::BehaviorReport(string bhv_name, unsigned int iter)
 {
   m_bhv_name  = bhv_name;
-  m_iteration = m_iteration;
+  m_iteration = iter;
   m_priority  = 0;
 }
 

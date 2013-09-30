@@ -34,8 +34,8 @@ using namespace std;
 XYHexagon XYHexGrid::getElement(unsigned int ix) const
 {
   XYHexagon retElement;
-
-  if((ix >= 0) && (ix < elements.size()))
+  
+  if(ix < elements.size())
     return(elements[ix]);
   else
     return(retElement);

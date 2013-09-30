@@ -59,8 +59,8 @@ private: // State Variables
   double m_max_heading_window;
   double m_max_window_utility;
 
-  double m_peakwidth;
-  double m_basewidth;
+  //double m_peakwidth;
+  //double m_basewidth;
 };
 #endif
 

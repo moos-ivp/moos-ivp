@@ -32,7 +32,7 @@ class AOF_Linear: public AOF {
   ~AOF_Linear() {};
 
 public:    
-  double evalPoint(const IvPBox*) const;
+  double evalBox(const IvPBox*) const;
   bool   setParam(const std::string& param, double val); 
   
 private:

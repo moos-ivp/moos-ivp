@@ -66,8 +66,8 @@ private:  // State Variables
   std::string  m_center_assign;
   double       m_osx;
   double       m_osy;
-  double       m_angle;
-  double       m_range;
+  //double       m_angle;
+  //double       m_range;
   double       m_station_x;
   double       m_station_y;
 

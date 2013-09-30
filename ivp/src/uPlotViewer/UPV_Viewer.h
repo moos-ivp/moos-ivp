@@ -51,8 +51,8 @@ class UPV_Viewer : public Fl_Gl_Window
   void  setParam(std::string, std::string);
   
   void  setHotVar(std::string varname);
-  bool  hide(std::string varname);
-  void  show(std::string varname);
+  bool  hideVar(std::string varname);
+  void  showVar(std::string varname);
 
   std::string getHotVar()    const {return(m_hotvar);};
   double      getHotVarAvg() const;

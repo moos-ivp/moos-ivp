@@ -322,7 +322,8 @@ void USM_MOOSApp::cacheStartingInfo()
   double nav_depth = record.getDepth();
   double nav_alt = depth - nav_depth;
 
-  double nav_lat, nav_lon;
+  double nav_lat = 0;
+  double nav_lon = 0;
  if(m_geo_ok) {
 #ifdef USE_UTM
     m_geodesy.UTM2LatLong(nav_x, nav_y, nav_lat, nav_lon);

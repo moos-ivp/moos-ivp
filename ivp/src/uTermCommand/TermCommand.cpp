@@ -190,7 +190,7 @@ void TermCommand::printMapping()
 
 void TermCommand::postCommand(unsigned int ix)
 {
-  if((ix < 0) || (ix >= m_var_key.size()))
+  if(ix >= m_var_key.size())
     return;
 
   if(m_var_type[ix] == "string") 

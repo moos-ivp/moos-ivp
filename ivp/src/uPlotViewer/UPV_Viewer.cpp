@@ -423,18 +423,18 @@ void UPV_Viewer::setHotVar(string varname)
 }
 
 //-------------------------------------------------------------
-// Procedure: show()
+// Procedure: showVar()
 
-void UPV_Viewer::show(string varname)
+void UPV_Viewer::showVar(string varname)
 {
   if(m_map_render.count(varname) == 1)
     m_map_render[varname] = true;
 }
 
 //-------------------------------------------------------------
-// Procedure: hide()
+// Procedure: hideVar()
 
-bool UPV_Viewer::hide(string varname)
+bool UPV_Viewer::hideVar(string varname)
 {
   // If the variable to be hidden is the hotvar, deny the request
   if(varname == m_hotvar)

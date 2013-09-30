@@ -990,7 +990,8 @@ bool TS_MOOSApp::handleMathExpr(string& str)
   unsigned int len = str.length();
 
   // Part 1: Ensure that all the left/right braces are well matched
-  unsigned int i, depth=0;
+  unsigned int i; 
+  int depth=0;
   bool braces_detected = false;
   for(i=0; i<len; i++) {
     char c = str.at(i);

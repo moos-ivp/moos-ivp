@@ -181,11 +181,12 @@ bool AOF_Ring::randomize()
 }
 
 //----------------------------------------------------------------
-// Procedure: evalPoint
+// Procedure: evalBox
 
-double AOF_Ring::evalPoint(const IvPBox *gbox) const
+double AOF_Ring::evalBox(const IvPBox *gbox) const
 {
-  double ratio, weight;
+  double ratio  = 0;
+  double weight = 0;
 
   double distToCent = (double)(boxDist(*gbox, location));
   double distToRing = distToCent - (double)radius;

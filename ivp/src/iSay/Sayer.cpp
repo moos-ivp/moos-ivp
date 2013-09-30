@@ -392,7 +392,7 @@ bool Sayer::buildReport()
     if(text == "")
       text = utter.getFile();
     if(text == "")
-      text == "-";
+      text = "-";
     actab << source << time_recd_s << time_post_s << text;
   }	
 
