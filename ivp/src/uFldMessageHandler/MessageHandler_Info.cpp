@@ -88,7 +88,7 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  STRICT_ADDRESSING = false   // default                        ");
+  blk("  strict_addressing = false   // default                        ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
