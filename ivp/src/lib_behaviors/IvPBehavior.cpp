@@ -1106,9 +1106,3 @@ vector<string> IvPBehavior::getStateSpaceVars()
   
   return(rvector);
 }
-
-
-
-
-
-

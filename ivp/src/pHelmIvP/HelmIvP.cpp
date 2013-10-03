@@ -310,9 +310,9 @@ bool HelmIvP::Iterate()
   }
 
   registerNewVariables();
+  postModeMessages();
   postBehaviorMessages();
   postLifeEvents();
-  postModeMessages();
   postDefaultVariables();
 
   // Should be called after postBehaviorMessages() where warnings

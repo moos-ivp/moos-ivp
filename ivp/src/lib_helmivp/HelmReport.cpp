@@ -84,6 +84,26 @@ bool HelmReport::hasDecision(const string& var) const
 }
 
 //-----------------------------------------------------------
+// Procedure: changedBehaviors
+
+bool HelmReport::changedBehaviors(const HelmReport& report) const
+{
+  // Want to base changes on simple list of behaviors, not full reports
+  // of behaviors which includes timestamps etc.
+  bool full=false;  
+  
+  if(getActiveBehaviors(full)  != report.getActiveBehaviors(full))
+    return(true);
+  if(getRunningBehaviors(full) != report.getRunningBehaviors(full))
+    return(true);
+  if(getIdleBehaviors(full)    != report.getIdleBehaviors(full))
+    return(true);
+  if(getCompletedBehaviors(full) != report.getCompletedBehaviors(full))
+    return(true);
+  return(false);
+}
+
+//-----------------------------------------------------------
 // Procedure: getDecisionSummary()
 
 string HelmReport::getDecisionSummary() const
@@ -126,21 +146,31 @@ void HelmReport::addActiveBHV(const string& descriptor, double time,
 //-----------------------------------------------------------
 // Procedure: getActiveBehaviors
 
-string HelmReport::getActiveBehaviors() const
+string HelmReport::getActiveBehaviors(bool full_report) const
 {
   string return_str;
   unsigned int i, vsize = m_bhvs_active_desc.size();
   for(i=0; i<vsize; i++) {
-    if(i>0)
-      return_str += ":";
-    return_str += m_bhvs_active_desc[i];
-    return_str += "$" + doubleToString(m_bhvs_active_time[i],2);
-    return_str += "$" + doubleToString(m_bhvs_active_pwt[i]);
-    return_str += "$" + intToString(m_bhvs_active_pcs[i]);
-    return_str += "$" + doubleToString(m_bhvs_active_cpu[i]);
-    return_str += "$" + m_bhvs_active_upds[i];
-    return_str += "$" + uintToString(m_bhvs_active_ipfs[i]);
+    if(full_report) {
+      if(i>0)
+	return_str += ":";
+      return_str += m_bhvs_active_desc[i];
+      return_str += "$" + doubleToString(m_bhvs_active_time[i],2);
+      return_str += "$" + doubleToString(m_bhvs_active_pwt[i]);
+      return_str += "$" + intToString(m_bhvs_active_pcs[i]);
+      return_str += "$" + doubleToString(m_bhvs_active_cpu[i]);
+      return_str += "$" + m_bhvs_active_upds[i];
+      return_str += "$" + uintToString(m_bhvs_active_ipfs[i]);
+    }
+    else {
+      if(i>0)
+	return_str += ",";
+      return_str += m_bhvs_active_desc[i];
+    }
   }
+
+  if(return_str == "none")
+    return_str = "";
   return(return_str);
 }
 
@@ -173,17 +203,26 @@ void HelmReport::addRunningBHV(const string& descriptor, double time,
 // Procedure: getRunningBehaviors
 //   Example: "loiter$1252348077.59$4/4 : return$1252348047.12$0/0"
 
-string HelmReport::getRunningBehaviors() const
+string HelmReport::getRunningBehaviors(bool full_report) const
 {
   string return_str;
   unsigned int i, vsize = m_bhvs_running_desc.size();
   for(i=0; i<vsize; i++) {
-    if(i>0)
-      return_str += ":";
-    return_str += m_bhvs_running_desc[i];
-    return_str += "$" + doubleToString(m_bhvs_running_time[i],2);
-    return_str += "$" + m_bhvs_running_upds[i];
+    if(full_report) {
+      if(i>0)
+	return_str += ":";
+      return_str += m_bhvs_running_desc[i];
+      return_str += "$" + doubleToString(m_bhvs_running_time[i],2);
+      return_str += "$" + m_bhvs_running_upds[i];
+    }
+    else {
+      if(i>0)
+	return_str += ",";
+      return_str += m_bhvs_running_desc[i];
+    }
   }
+  if(return_str == "none")
+    return_str = "";
   return(return_str);
 }
 
@@ -214,17 +253,26 @@ void HelmReport::addIdleBHV(const string& descriptor, double time,
 // Procedure: getIdleBehaviors
 //   Example: "loiter$1252348077.59$4/4 : return$1252348047.12$0/0"
 
-string HelmReport::getIdleBehaviors() const
+string HelmReport::getIdleBehaviors(bool full_report) const
 {
   string return_str;
   unsigned int i, vsize = m_bhvs_idle_desc.size();
   for(i=0; i<vsize; i++) {
-    if(i>0)
-      return_str += ":";
-    return_str += m_bhvs_idle_desc[i];
-    return_str += "$" + doubleToString(m_bhvs_idle_time[i],2);
-    return_str += "$" + m_bhvs_idle_upds[i];
+    if(full_report) {
+      if(i>0)
+	return_str += ":";
+      return_str += m_bhvs_idle_desc[i];
+      return_str += "$" + doubleToString(m_bhvs_idle_time[i],2);
+      return_str += "$" + m_bhvs_idle_upds[i];
+    }
+    else {
+      if(i>0)
+	return_str += ",";
+      return_str += m_bhvs_idle_desc[i];
+    }
   }
+  if(return_str == "none")
+    return_str = "";
   return(return_str);
 }
 
@@ -255,17 +303,26 @@ void HelmReport::addCompletedBHV(const string& descriptor, double time,
 // Procedure: getCompletedBehaviors
 //   Example: "loiter$1252348077.59$4/4 : return$1252348047.12$0/0"
 
-string HelmReport::getCompletedBehaviors() const
+string HelmReport::getCompletedBehaviors(bool full_report) const
 {
   string return_str;
   unsigned int i, vsize = m_bhvs_completed_desc.size();
   for(i=0; i<vsize; i++) {
-    if(i>0)
-      return_str += ":";
-    return_str += m_bhvs_completed_desc[i];
-    return_str += "$" + doubleToString(m_bhvs_completed_time[i],2);
-    return_str += "$" + m_bhvs_completed_upds[i];
+    if(full_report) {
+      if(i>0)
+	return_str += ":";
+      return_str += m_bhvs_completed_desc[i];
+      return_str += "$" + doubleToString(m_bhvs_completed_time[i],2);
+      return_str += "$" + m_bhvs_completed_upds[i];
+    }
+    else {
+      if(i>0)
+	return_str += ",";
+      return_str += m_bhvs_completed_desc[i];
+    }
   }
+  if(return_str == "none")
+    return_str = "";
   return(return_str);
 }
 
@@ -309,46 +366,46 @@ string HelmReport::getDomainString() const
 string HelmReport::getReportAsString() const
 {
   HelmReport empty_report;
-  return(getReportAsString(empty_report));
+  return(getReportAsString(empty_report, true));
 }
 
 
 //-----------------------------------------------------------
 // Procedure: getReportAsString(const HelmReport&)
 
-string HelmReport::getReportAsString(const HelmReport& prep) const
+string HelmReport::getReportAsString(const HelmReport& prep, bool full) const
 {
   string report = "iter=" + uintToString(m_iteration);
   report += (",utc_time=" + doubleToString(m_time_utc, 2));
 
-  if(m_ofnum != prep.getOFNUM())
+  if(full || (m_ofnum != prep.getOFNUM()))
     report += (",ofnum=" + uintToString(m_ofnum));
-  if(m_warning_count != prep.getWarnings())
+  if(full || (m_warning_count != prep.getWarnings()))
     report += (",warnings=" + uintToString(m_warning_count));
-  if(m_solve_time != prep.getSolveTime())
+  if(full || (m_solve_time != prep.getSolveTime()))
     report += (",solve_time=" + doubleToString(m_solve_time, 2));
-  if(m_create_time != prep.getCreateTime())
+  if(full || (m_create_time != prep.getCreateTime()))
     report += (",create_time=" + doubleToString(m_create_time, 2));
 
-  if(m_max_create_time != prep.getMaxCreateTime())
+  if(full || (m_max_create_time != prep.getMaxCreateTime()))
     report += (",max_create_time=" + doubleToString(m_max_create_time, 2));
-  if(m_max_solve_time != prep.getMaxSolveTime())
+  if(full || (m_max_solve_time != prep.getMaxSolveTime()))
     report += (",max_solve_time=" + doubleToString(m_max_solve_time, 2));
-  if(m_max_loop_time != prep.getMaxLoopTime())
+  if(full || (m_max_loop_time != prep.getMaxLoopTime()))
     report += (",max_loop_time=" + doubleToString(m_max_loop_time, 2));
 
   double loop_time = m_create_time + m_solve_time;
-  if(loop_time != prep.getLoopTime())
+  if(full || (loop_time != prep.getLoopTime()))
     report += (",loop_time=" + doubleToString(loop_time, 2));
   
   string decision_summary = getDecisionSummary();
-  if(decision_summary != prep.getDecisionSummary())
+  if(full || (decision_summary != prep.getDecisionSummary()))
     report += "," + decision_summary;
 
-  if(m_halted != prep.getHalted())
+  if(full || (m_halted != prep.getHalted()))
     report += (",halted=" + boolToString(m_halted));
 
-  if(m_modes != prep.getModeSummary()) {
+  if(full || (m_modes != prep.getModeSummary())) {
     report += ",modes=";
     if(m_modes == "")
       report += "none";
@@ -357,7 +414,7 @@ string HelmReport::getReportAsString(const HelmReport& prep) const
   }
 
   string running_bhvs = getRunningBehaviors();
-  if(running_bhvs != prep.getRunningBehaviors()) {
+  if(full || (running_bhvs != prep.getRunningBehaviors())) {
     report += ",running_bhvs=";
     if(running_bhvs == "")
       report += "none";
@@ -366,7 +423,7 @@ string HelmReport::getReportAsString(const HelmReport& prep) const
   }
 
   string active_bhvs = getActiveBehaviors();
-  if(active_bhvs != prep.getActiveBehaviors()) {
+  if(full || (active_bhvs != prep.getActiveBehaviors())) {
     report += ",active_bhvs=";
     if(active_bhvs == "")
       report += "none";
@@ -375,7 +432,7 @@ string HelmReport::getReportAsString(const HelmReport& prep) const
   }
 
   string idle_bhvs = getIdleBehaviors();
-  if(idle_bhvs != prep.getIdleBehaviors()) {
+  if(full || (idle_bhvs != prep.getIdleBehaviors())) {
     report += ",idle_bhvs=";
     if(idle_bhvs == "")
       report += "none";
@@ -384,7 +441,7 @@ string HelmReport::getReportAsString(const HelmReport& prep) const
   }
 
   string completed_bhvs = getCompletedBehaviors();
-  if(completed_bhvs != prep.getCompletedBehaviors()) {
+  if(full || (completed_bhvs != prep.getCompletedBehaviors())) {
     report += ",completed_bhvs=";
     if(completed_bhvs == "") {
       if(prep.getCompletedBehaviors() == "")
@@ -395,10 +452,10 @@ string HelmReport::getReportAsString(const HelmReport& prep) const
   }
 
   string domain_str = domainToString(m_domain);
-  if(domain_str != prep.getDomainString())
+  if(full || (domain_str != prep.getDomainString()))
     report += ",ivpdomain=\"" + domain_str + "\"";
 
-  if(m_halt_message != prep.getHaltMsg()) {
+  if(full || (m_halt_message != prep.getHaltMsg())) {
     report += ",halt_msg=";
     if(m_halt_message == "")
       report += "none";

@@ -17,8 +17,11 @@ SET(SRC main.cpp HelmReporter.cpp)
 ADD_EXECUTABLE(aloghelm ${SRC})
    
 TARGET_LINK_LIBRARIES(aloghelm
-  mbutil
   logutils
+  helmivp
   behaviors
+  ivpbuild
+  ivpcore
+  mbutil
   ${SYSTEM_LIBS})
 

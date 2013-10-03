@@ -86,22 +86,24 @@ public:
   double       getDecision(const std::string&) const;
   bool         hasDecision(const std::string&) const;
 
+  bool         changedBehaviors(const HelmReport&) const;
+
   std::string  getModeSummary()      const {return(m_modes);};
   std::string  getHaltMsg()          const {return(m_halt_message);};
   std::vector<std::string> getMsgs() const {return(m_messages);};
 
   // Serialization Helper Methods
   std::string  getDecisionSummary()    const;
-  std::string  getActiveBehaviors()    const;
-  std::string  getRunningBehaviors()   const;
-  std::string  getIdleBehaviors()      const;
-  std::string  getCompletedBehaviors() const;
+  std::string  getActiveBehaviors(bool full=true)    const;
+  std::string  getRunningBehaviors(bool full=true)   const;
+  std::string  getIdleBehaviors(bool full=true)      const;
+  std::string  getCompletedBehaviors(bool full=true) const;
   std::string  getDomainString()       const;
   std::string  timeInState(double, double) const;
 
   // Serialization Methods
   std::string  getReportAsString() const;
-  std::string  getReportAsString(const HelmReport&) const;
+  std::string  getReportAsString(const HelmReport&, bool full=false) const;
 
   // Formatted Summary
   std::list<std::string> formattedSummary(double, bool=false) const;

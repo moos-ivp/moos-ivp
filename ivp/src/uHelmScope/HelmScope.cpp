@@ -363,7 +363,7 @@ void HelmScope::handleNewIvPDomain(const string& str)
 
 void HelmScope::handleNewHelmSummary(const string& str)
 {
-  // Build off the previous helm report.x
+  // Build off the previous helm report.
   HelmReport helm_report = string2HelmReport(str, m_helm_report);
   m_helm_report = helm_report;
 }

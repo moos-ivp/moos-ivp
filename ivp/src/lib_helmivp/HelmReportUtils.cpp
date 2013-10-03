@@ -111,48 +111,68 @@ HelmReport string2HelmReport(const string& str,
     }
     else if(left == "active_bhvs") {
       report.clearActiveBHVs();
-      string descriptor = biteStringX(right, '$');
-      string time = biteStringX(right, '$');
-      string pwt  = biteStringX(right, '$');
-      string pcs  = biteStringX(right, '$');
-      string cpu  = biteStringX(right, '$');
-      string upds = biteStringX(right, '$');
-      string ipfs = right;
-
-      double d_time = atof(time.c_str());
-      double d_pwt  = atof(pwt.c_str());
-      int    i_pcs  = atoi(pcs.c_str());
-      double d_cpu  = atof(cpu.c_str());
-      unsigned int u_ipfs = (unsigned int)(atoi(ipfs.c_str()));      
-      report.addActiveBHV(descriptor, d_time, d_pwt, i_pcs, d_cpu, upds, u_ipfs);
+      vector<string> bhvs = parseString(right, ':');
+      for(unsigned int j=0; j<bhvs.size(); j++) {
+	string bhv = bhvs[j];
+	string descriptor = biteStringX(bhv, '$');
+	string time = biteStringX(bhv, '$');
+	string pwt  = biteStringX(bhv, '$');
+	string pcs  = biteStringX(bhv, '$');
+	string cpu  = biteStringX(bhv, '$');
+	string upds = biteStringX(bhv, '$');
+	string ipfs = bhv;
+	
+	double d_time = atof(time.c_str());
+	double d_pwt  = atof(pwt.c_str());
+	int    i_pcs  = atoi(pcs.c_str());
+	double d_cpu  = atof(cpu.c_str());
+	unsigned int u_ipfs = (unsigned int)(atoi(ipfs.c_str()));      
+	report.addActiveBHV(descriptor, d_time, d_pwt, i_pcs, d_cpu, upds, u_ipfs);
+      }
     }
     
     else if(left == "running_bhvs") {
       report.clearRunningBHVs();
-      string descriptor = biteStringX(right, '$');
-      string time = biteStringX(right, '$');
-      string upds = biteStringX(right, '$');
-      double d_time = atof(time.c_str());
-      report.addRunningBHV(descriptor, d_time, upds);
+      vector<string> bhvs = parseString(right, ':');
+      for(unsigned int j=0; j<bhvs.size(); j++) {
+	string bhv = bhvs[j];
+
+	string descriptor = biteStringX(bhv, '$');
+	string time = biteStringX(bhv, '$');
+	string upds = biteStringX(bhv, '$');
+	double d_time = atof(time.c_str());
+	report.addRunningBHV(descriptor, d_time, upds);
+      }
     }
 
     else if(left == "idle_bhvs") {
       report.clearIdleBHVs();
-      string descriptor = biteStringX(right, '$');
-      string time = biteStringX(right, '$');
-      string upds = biteStringX(right, '$');
-      double d_time = atof(time.c_str());
-      report.addIdleBHV(descriptor, d_time, upds);
+      vector<string> bhvs = parseString(right, ':');
+      for(unsigned int j=0; j<bhvs.size(); j++) {
+	string bhv = bhvs[j];
+	
+	string descriptor = biteStringX(bhv, '$');
+	string time = biteStringX(bhv, '$');
+	string upds = biteStringX(bhv, '$');
+	double d_time = atof(time.c_str());
+	report.addIdleBHV(descriptor, d_time, upds);
+      }
     }
 
     else if(left == "completed_bhvs") {
       if(strContains(report.getCompletedBehaviors(), "none"))
 	report.clearCompletedBHVs();
-      string descriptor = biteStringX(right, '$');
-      string time = biteStringX(right, '$');
-      string upds = biteStringX(right, '$');
-      double d_time = atof(time.c_str());
-      report.addCompletedBHV(descriptor, d_time, upds);
+
+      vector<string> bhvs = parseString(right, ':');
+      for(unsigned int j=0; j<bhvs.size(); j++) {
+	string bhv = bhvs[j];
+
+	string descriptor = biteStringX(bhv, '$');
+	string time = biteStringX(bhv, '$');
+	string upds = biteStringX(bhv, '$');
+	double d_time = atof(time.c_str());
+	report.addCompletedBHV(descriptor, d_time, upds);
+      }
     }
 
     else if(left == "halt_msg")

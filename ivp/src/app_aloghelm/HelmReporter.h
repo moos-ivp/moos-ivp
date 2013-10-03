@@ -27,23 +27,51 @@
 #include <string>
 #include <set>
 #include "LifeEventHistory.h"
+#include "HelmReport.h"
 
 class HelmReporter
 {
  public:
-  HelmReporter() {m_report_life=false;};
+  HelmReporter();
   ~HelmReporter() {};
 
   bool handle(const std::string&);
   void printReport();
   
-  bool setReportType(std::string);
+  void reportLifeEvents(bool v=true)      {m_report_life_events=v;};
+  void reportBehaviorChanges(bool v=true) {m_report_bhv_changes=v;};
+  void reportModeChanges(bool v=true)     {m_report_mode_changes=v;};
+  void setWatchBehavior(std::string s)    {m_watch_behavior=s;};
+  void setUseColor(bool v=true)           {m_use_color=v;};
+  void setColorActive(bool v)             {m_life_events.setColorActive(v);};
+  void setVarTrunc(bool v)                {m_var_trunc=v;};
 
-  void setColorActive(bool v) {m_life_events.setColorActive(v);};
+  void addWatchVar(std::string);
   
- protected:
+ protected: // Utility Functions
+  void handleNewHelmSummary(std::string, std::string);
+
+ protected: // State Variables
   LifeEventHistory m_life_events;
-  bool             m_report_life;
+
+  bool             m_no_prev_report;
+  HelmReport       m_prev_report;
+
+  std::string      m_prev_mode_value;
+  std::string      m_mode_var;
+
+
+ protected: // Configuration Variables
+  bool             m_report_life_events;
+  bool             m_report_mode_changes;
+  bool             m_report_bhv_changes;
+  bool             m_use_color;
+  bool             m_var_trunc;
+
+  std::string      m_watch_behavior;
+
+  std::vector<std::string> m_watch_vars;
+
 };
 
 #endif
