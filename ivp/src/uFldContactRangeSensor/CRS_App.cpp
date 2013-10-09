@@ -99,7 +99,7 @@ bool CRS_App::OnStartUp()
     string param = tolower(biteStringX(line, '='));
     string value = line;
     
-    bool handled = true;
+    bool handled = false;
     if((param == "reach_distance") || (param == "push_distance"))
       handled = setPushDistance(value);
     else if((param == "reply_distance") || (param == "pull_distance"))
