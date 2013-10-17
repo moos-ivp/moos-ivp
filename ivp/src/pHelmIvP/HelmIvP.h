@@ -64,6 +64,7 @@ public:
   void postLifeEvents();
   void postModeMessages();
   void postDefaultVariables();
+  void handleHelmStartMessages();
   void handleInitialVarsPhase1();
   void handleInitialVarsPhase2();
   void registerVariables();

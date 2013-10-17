@@ -18,9 +18,9 @@ ProcessConfig = pBasicContactMgr
   default_alert_range_color = gray70
   default_cpa_range_color   = gray30
 
-  alert = id=avd, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
-  alert = id=avd, alert_range=80
-  alert = id=avd, cpa_range=100
-  alert = id=avd, alert_range_color=green
-  alert = id=avd, cpa_range_color=white
+  //alert = id=avd, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
+  //alert = id=avd, alert_range=80
+  //alert = id=avd, cpa_range=100
+  //alert = id=avd, alert_range_color=green
+  //alert = id=avd, cpa_range_color=white
 }

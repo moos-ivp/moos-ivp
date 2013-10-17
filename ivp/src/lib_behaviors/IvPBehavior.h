@@ -65,6 +65,7 @@ public:
   virtual BehaviorReport onRunState(std::string);
   virtual bool setParam(std::string, std::string);
   virtual void onSetParamComplete() {postConfigStatus();};
+  virtual void onHelmStart() {};
   virtual void onIdleState() {};
   virtual void onCompleteState() {};
   virtual void onIdleToRunState() {};

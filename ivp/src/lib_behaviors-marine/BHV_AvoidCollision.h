@@ -30,7 +30,8 @@ class BHV_AvoidCollision : public IvPContactBehavior {
 public:
   BHV_AvoidCollision(IvPDomain);
   ~BHV_AvoidCollision() {};
-  
+
+  void         onHelmStart();
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
@@ -55,6 +56,7 @@ private: // Configuration Parameters
   double m_max_util_cpa_dist;
   double m_roc_max_heighten; // Rate of Closure w/ max relevance heightening
   double m_roc_max_dampen;   // Rate of Closure w/ max relevance dampening
+  bool   m_no_alert_request;
 
   double m_collision_depth;
 

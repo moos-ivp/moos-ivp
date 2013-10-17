@@ -46,9 +46,12 @@ class BasicContactMgr : public AppCastingMOOSApp
  protected:
   void registerVariables();
   bool handleConfigAlert(const std::string&);
+
   void handleMailNodeReport(const std::string&);
   void handleMailDisplayRadii(const std::string&);
+  void handleMailAlertRequest(const std::string&);
   void handleMailResolved(const std::string&);
+
   void updateRanges();
   void postSummaries();
   bool postAlerts();

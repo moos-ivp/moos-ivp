@@ -48,7 +48,7 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "avoid_collision");
-  this->setParam("build_info", "uniform_piece = discrete @ course:3,speed:3");
+  this->setParam("build_info", "uniform_piece = discrete @ course:1,speed:1");
   this->setParam("build_info", "uniform_grid  = discrete @ course:9,speed:6");
   
   if(m_domain.hasDomain("depth"))
@@ -68,6 +68,8 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   m_roc_max_heighten  = 2.0; 
   m_bearing_line_show = false;
   m_time_on_leg       = 120;  // Overriding the superclass default=60
+
+  m_no_alert_request  = false;
 
   // Initialize state variables
   m_curr_closing_spd = 0;
@@ -163,9 +165,32 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
       m_roc_max_heighten = m_roc_max_dampen;
     return(true);
   }  
+  else if(param == "no_alert_request") {
+    return(setBooleanOnString(m_no_alert_request, param_val));
+  }  
   return(false);
 }
 
+
+//-----------------------------------------------------------
+// Procedure: onHelmStart()
+
+void BHV_AvoidCollision::onHelmStart()
+{
+  if(m_no_alert_request || (m_update_var == ""))
+    return;
+
+  string s_alert_range = doubleToStringX(m_pwt_outer_dist,1);
+  string s_cpa_range   = doubleToStringX(m_completed_dist,1);
+  string s_alert_templ = "name=avd_$[VNAME] # contact=$[VNAME]";
+
+  string alert_request = "id=avd, var=" + m_update_var;
+  alert_request += ", val=" + s_alert_templ;
+  alert_request += ", alert_range=" + s_alert_range;
+  alert_request += ", cpa_range=" + s_cpa_range;
+
+  postMessage("BCM_ALERT_REQUEST", alert_request);
+}
 
 //-----------------------------------------------------------
 // Procedure: onRunToIdleState()

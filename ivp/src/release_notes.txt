@@ -1,3 +1,14 @@
+
 pHelmIvP
-  allowed the config parameter start_in_drive in addition to start_indrive
+  Behaviors are augmented via an additional overloadable function, onHelmStart(), executed
+  by the behavior upon helm startup. This allows behaviors, defined as templates and thus
+  not spawned until later, to post info to the MOOSDB that may affect the conditions of 
+  their spawning. For example, the collision avoidance behavior posts a request for alerts
+  of a certain form, to pBasicContactMgr. 
+
+pBasicContactMgr
+  It now accepts alert configurations via the incoming MOOS Variable BCM_ALERT_REQUEST
+
+
+
 

@@ -32,7 +32,7 @@ class SpecBuild {
   SpecBuild() {m_behavior=0;};
   ~SpecBuild() {};
 
- public: // Setting Parameters
+ public: // Setters
   void setIvPBehavior(IvPBehavior *bhv)   {m_behavior=bhv;};
   void setKindResult(std::string str)     {m_bhv_kind_result=str;};
 
@@ -40,7 +40,7 @@ class SpecBuild {
   void addBadConfig(std::string line, unsigned int lnum);
   void deleteBehavior();
 
- public: // Getting Parameters
+ public: // Getters
   bool          valid()           {return(m_behavior != 0);};
   IvPBehavior*  getIvPBehavior()  {return(m_behavior);};
   
@@ -52,6 +52,8 @@ class SpecBuild {
   unsigned int  getKindLine()     {return(m_bhv_kind_lnum);};
   unsigned int  numBadConfigs()   {return(m_bad_config_lines.size());};
   unsigned int  getBadConfigLineNum(unsigned int ix);
+
+  std::vector<VarDataPair> getHelmStartMessages();
 
   void print();
 

@@ -601,6 +601,37 @@ void HelmIvP::postModeMessages()
 }
 
 //------------------------------------------------------------
+// Procedure: handleHelmStartMessages
+
+void HelmIvP::handleHelmStartMessages()
+{
+  if(!m_bhv_set) 
+    return;
+
+  vector<VarDataPair> helm_start_msgs = m_bhv_set->getHelmStartMessages();
+
+  unsigned int j, msize = helm_start_msgs.size();
+  for(j=0; j<msize; j++) {
+    VarDataPair msg = helm_start_msgs[j];
+
+    string var   = stripBlankEnds(msg.get_var());
+    string sdata = stripBlankEnds(msg.get_sdata());
+    double ddata = msg.get_ddata();
+
+    if(!strContainsWhite(var)) {
+      if(sdata != "") {
+	m_info_buffer->setValue(var, sdata);
+	Notify(var, sdata, "HELM_STARTUP_MSG");
+      }
+      else {
+	m_info_buffer->setValue(var, ddata);
+	Notify(var, ddata, "HELM_STARTUP_MSG");
+      }
+    }
+  }
+}
+
+//------------------------------------------------------------
 // Procedure: handleInitialVarsPhase1()
 
 void HelmIvP::handleInitialVarsPhase1()
@@ -609,6 +640,7 @@ void HelmIvP::handleInitialVarsPhase1()
     return;
 
   vector<VarDataPair> mvector = m_bhv_set->getInitialVariables();
+
   unsigned int j, msize = mvector.size();
   for(j=0; j<msize; j++) {
     VarDataPair msg = mvector[j];
@@ -1055,6 +1087,7 @@ bool HelmIvP::OnStartUp()
   string mode_set_string_description = m_bhv_set->getModeSetDefinition();
 
   handleInitialVarsPhase1();
+  handleHelmStartMessages();
   registerVariables();
   requestBehaviorLogging();
 

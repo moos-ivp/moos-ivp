@@ -84,6 +84,21 @@ unsigned int  SpecBuild::getBadConfigLineNum(unsigned int ix)
 }
 
 //--------------------------------------------------------------
+// Procedure: getHelmStartMessages()
+
+vector<VarDataPair> SpecBuild::getHelmStartMessages()
+{
+  vector<VarDataPair> messages;
+
+  if(m_behavior) {
+    messages = m_behavior->getMessages();
+    m_behavior->clearMessages();
+  }
+
+  return(messages);
+}
+
+//--------------------------------------------------------------
 // Procedure: print()
 
 void SpecBuild::print()

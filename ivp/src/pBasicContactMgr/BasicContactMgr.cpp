@@ -99,6 +99,8 @@ bool BasicContactMgr::OnNewMail(MOOSMSG_LIST &NewMail)
       handleMailNodeReport(sval);
     else if(key == "BCM_DISPLAY_RADII")
       handleMailDisplayRadii(sval);      
+    else if(key == "BCM_ALERT_REQUEST")
+      handleMailAlertRequest(sval);      
     else if(key == "CONTACT_RESOLVED")
       handleMailResolved(sval);
 
@@ -289,6 +291,7 @@ void BasicContactMgr::registerVariables()
   m_Comms.Register("NODE_REPORT", 0);
   m_Comms.Register("CONTACT_RESOLVED", 0);
   m_Comms.Register("BCM_DISPLAY_RADII", 0);
+  m_Comms.Register("BCM_ALERT_REQUEST", 0);
   m_Comms.Register("NAV_X", 0);
   m_Comms.Register("NAV_Y", 0);
   m_Comms.Register("NAV_SPEED", 0);
@@ -431,6 +434,20 @@ void BasicContactMgr::handleMailDisplayRadii(const string& value)
 
   if(m_display_radii == false)
     postRadii(false);
+}
+
+//---------------------------------------------------------
+// Procedure: handleMailAlertRequest
+//    Format: BCM_ALERT_REQUEST = 
+//            var=CONTACT_INFO, val="name=avd_$[VNAME] # contact=$[VNAME]"
+//            alert_range=80, cpa_range=95
+
+                     
+void BasicContactMgr::handleMailAlertRequest(const string& value)
+{
+  bool ok = handleConfigAlert(value);
+  if(!ok)
+    reportRunWarning("Unhandled Alert Request: " + value);   
 }
 
 //---------------------------------------------------------

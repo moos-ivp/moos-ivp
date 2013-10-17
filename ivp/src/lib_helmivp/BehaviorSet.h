@@ -85,8 +85,9 @@ public:
   bool           filterBehaviorsPresent();
 
   std::vector<VarDataPair> getMessages(unsigned int bhv_ix, bool clear=true);
-  std::vector<VarDataPair> getInitialVariables() {return(m_initial_vars);};
-  std::vector<VarDataPair> getDefaultVariables() {return(m_default_vars);};
+  std::vector<VarDataPair> getInitialVariables()  {return(m_initial_vars);};
+  std::vector<VarDataPair> getDefaultVariables()  {return(m_default_vars);};
+  std::vector<VarDataPair> getHelmStartMessages() {return(m_helm_start_msgs);};
   std::vector<std::string> getInfoVars();
   std::vector<std::string> getNewInfoVars();
   std::vector<std::string> getSpecUpdateVars();
@@ -120,6 +121,7 @@ protected:
 
   std::vector<VarDataPair>      m_initial_vars;
   std::vector<VarDataPair>      m_default_vars;
+  std::vector<VarDataPair>      m_helm_start_msgs;
 
   std::set<std::string>         m_prev_info_vars;   
   std::set<std::string>         m_state_space_vars; 

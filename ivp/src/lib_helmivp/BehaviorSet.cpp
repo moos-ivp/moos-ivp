@@ -165,6 +165,9 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
       spec_builds.push_back(sbuild);
     }
     else {
+      vector<VarDataPair> msgs = sbuild.getHelmStartMessages();
+      m_helm_start_msgs.insert(m_helm_start_msgs.end(), msgs.begin(), msgs.end());
+
       if(spec.getTemplatingType() == "spawn")
 	sbuild.deleteBehavior();
       else {
@@ -255,6 +258,7 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
       return(sbuild);
     }
   }
+  
   bhv->setBehaviorType(bhv_kind);
 
   // First apply all the behavior specs from the original specification
@@ -319,6 +323,12 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     sbuild.setIvPBehavior(bhv);
   else
     delete(bhv);
+
+  // Added Oct 1313 mikerb - allow template behaviors to make an initial
+  // posting on helm startup, even if no instance made on startup (or ever).
+  bhv->onHelmStart();
+  // The behavior may now have some messages (var-data pairs) ready for 
+  // retrieval
 
   return(sbuild);
 }
