@@ -3,13 +3,15 @@
 INVOCATION_ABS_DIR="`pwd`"
 CONFIG="None"
 CLEAN="no"
+CMD_ARGS=""
+BLANK=" "
 
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
         printf "%s [SWITCHES]  \n" $0
         printf "  --help, -h            \n"
-        printf "  --debug,   -d           \n"
-        printf "  --release, -r           \n"
+        printf "  --debug,   -d         \n"
+        printf "  --release, -r         \n"
         printf "  clean                 \n"
         exit 0;
     elif [ "${ARGI}" = "--debug" -o "${ARGI}" = "-d" ] ; then
@@ -19,8 +21,7 @@ for ARGI; do
     elif [ "${ARGI}" = "clean" ] ; then
         CLEAN="yes"
     else
-        printf "Bad Argument: %s \n" $ARGI
-        exit 0
+	CMD_ARGS=$CMD_ARGS$BLANK$ARGI
     fi
 done
 
@@ -35,7 +36,7 @@ echo ""
 if [ "${CLEAN}" = "yes" ] ; then
     make clean
 else
-    make -j12 
+    make -j12 ${CMD_ARGS}
 
 fi
 
