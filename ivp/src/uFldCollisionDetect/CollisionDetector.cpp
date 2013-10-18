@@ -12,6 +12,7 @@
 #include "NodeRecordUtils.h"
 #include <math.h>
 #include "XYRangePulse.h"
+#include "CPAEngine.h"
 
 using namespace std;
 
@@ -36,6 +37,7 @@ CollisionDetector::CollisionDetector()
   m_start_checking_time = 200*MOOSTime(); // avoids pre-deploy collision reports 
   m_deploy_delay = 0;
   m_check_collisions = false;
+  m_total_collisions = 0;
 }
 
 //---------------------------------------------------------
@@ -115,13 +117,34 @@ bool CollisionDetector::Iterate()
 	  posted =  (m_col_bools.find(make_pair(v1,v2))->second).posted;
 	}
 	string name_string = "VEHICLE_COLLISION_" + toupper(v1) + "_" + toupper(v2); // variable to be posted to MOOSDB
+	if(0){
+	  //calculate distance between these two vehicles
+	  double distance = sqrt(pow(m_moos_map[v1].getX() - m_moos_map[v2].getX(),2) + pow(m_moos_map[v1].getY() - m_moos_map[v2].getY(),2));
+	}
+       
+	//use v1 = os, v2 = cn
+	NodeRecord os = m_moos_map[v1];
+	NodeRecord cn = m_moos_map[v2];
 
-	//calculate distance between these two vehicles
-	double distance = sqrt(pow(m_moos_map[v1].getX() - m_moos_map[v2].getX(),2) + pow(m_moos_map[v1].getY() - m_moos_map[v2].getY(),2));
+	double cnx = cn.getX();
+	double cny = cn.getY();
+	double cnh = cn.getHeading();
+	double cnv = cn.getSpeed();
+	  
+	double osx = os.getX();
+	double osy = os.getY();
+	double osh = os.getHeading();
+	double osv = os.getSpeed();
+	double ostol = os.getElapsedTime(MOOSTime());
+	  
+	CPAEngine cpaengine = CPAEngine(cny,cnx,cnh,cnv,osy,osx);
+	double distance = cpaengine.evalCPA(osh,osv,ostol);
+       
 
 	// if within collision threshold distance AND collision not already known, take collision actions
 	if((distance < m_col_dist) && (!collisionKnown) && (m_check_collisions)){ 
 	  // new collision
+	  m_total_collisions++;
 	  string output_string = "new collision detected: ";
 	  string info_string = "v1=" + v1 + ",v2=" + v2 + ",detection_distance=" + doubleToString(distance,2); 
 	  output_string += info_string;
@@ -313,7 +336,8 @@ bool CollisionDetector::buildReport()
 
   m_msgs << "\n   Threshold Collision Range:    " << doubleToString(m_col_dist,0) << endl;
   m_msgs << "   Delay Time to Clear Messages: " << doubleToString( m_delay_time_to_clear,0) << endl;
-  m_msgs << "   Post to MOOSDB Immediately:   " << m_post_string << "\n\n" << endl;
+  m_msgs << "   Post to MOOSDB Immediately:   " << m_post_string << endl;
+  m_msgs << "   Total Collisions:             " << doubleToString(m_total_collisions,0) << "\n\n" << endl;
 
   // determine list of vehicles with known collisions for appcasting report:
 

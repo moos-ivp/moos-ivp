@@ -40,6 +40,7 @@ class CollisionDetector : public AppCastingMOOSApp
    void registerVariables();
    std::map <std::string,NodeRecord> m_moos_map;
    std::map <std::pair<std::string,std::string>,col_data> m_col_bools;
+
    bool MakeRangePulse(double, double);
 
    double m_col_dist;
@@ -59,6 +60,7 @@ class CollisionDetector : public AppCastingMOOSApp
  private: // Configuration variables
  
  private: // State variables
+   double m_total_collisions;
 };
 
 #endif 
