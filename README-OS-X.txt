@@ -45,6 +45,7 @@ MACPORT PACKAGES
 sudo port install cmake
 sudo port install fltk-devel
 sudo port install tiff
+sudo port install subversion
 
 
 NOTE: As of this date we are no longer including FLTK as part of the 
