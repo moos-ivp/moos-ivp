@@ -223,7 +223,7 @@ string LogPlotViewer::getVariable2()
 
 string LogPlotViewer::getMinVal1()
 {
-  if((view_index1 < 0) || (view_index1 >= m_logplots.size()))
+  if(view_index1 >= m_logplots.size())
     return("n/a");
   else
     return(doubleToString(m_logplots[view_index1].getMinVal(), 3));
@@ -249,7 +249,7 @@ string LogPlotViewer::getMinVal2()
   if(view_index1 == view_index2)
     return("n/a");
 
-  if((view_index2 < 0) || (view_index2 >= m_logplots.size()))
+  if(view_index2 >= m_logplots.size())
     return("n/a");
   else
     return(doubleToString(m_logplots[view_index2].getMinVal(), 3));
@@ -263,7 +263,7 @@ string LogPlotViewer::getMaxVal2()
   if(view_index1 == view_index2)
     return("n/a");
 
-  if((view_index2 < 0) || (view_index2 >= m_logplots.size()))
+  if(view_index2 >= m_logplots.size())
     return("n/a");
   else
     return(doubleToString(m_logplots[view_index2].getMaxVal(), 3));
@@ -363,9 +363,9 @@ void LogPlotViewer::adjustZoom(string ztype)
 bool LogPlotViewer::fillCache()
 {
   m_valid_cache = false;
-  if((view_index1 < 0) || (view_index1 >= m_logplots.size()))
+  if(view_index1 >= m_logplots.size())
     return(false);
-  if((view_index2 < 0) || (view_index2 >= m_logplots.size()))
+  if(view_index2 >= m_logplots.size())
     return(false);
   m_valid_cache = true;
   

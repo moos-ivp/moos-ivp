@@ -26,6 +26,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdlib>
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
