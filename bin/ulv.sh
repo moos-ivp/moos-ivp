@@ -31,7 +31,13 @@ echo "MOOSDB Port Number: $MOOS_PORT"
 
 MOOSDB --moos_port=$MOOS_PORT &
 uLogView --moos_port=$MOOS_PORT $ALOG_FILES &
-uLogViewIPF --moos_port=$MOOS_PORT $ALOG_FILES &
+
+
+for ARGI; do
+    uLogViewIPF --moos_port=$MOOS_PORT $ARGI &
+done
+
+
 uLogViewHelm --moos_port=$MOOS_PORT $ALOG_FILES
 
 printf "Killing all processes ... \n"
