@@ -50,6 +50,10 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 message("MOOSGeodesy_INCLUDE_DIRS:" ${MOOSGeodesy_INCLUDE_DIRS})
 message("+++++++++++++++++++++++++++++++++++++++++")
 
+message("+++++++++++++++++++++++++++++++++++++++++")
+message("MOOSGeodesy_LIB_PATH:" ${MOOSGeodesy_LIBRARY_PATH})
+message("+++++++++++++++++++++++++++++++++++++++++")
+
 
 
 
