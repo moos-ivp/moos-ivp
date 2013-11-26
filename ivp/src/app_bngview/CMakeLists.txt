@@ -27,13 +27,13 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
 
 TARGET_LINK_LIBRARIES(bngview 
+  marineview
   ${MOOSGeodesy_LIBRARIES}
   helmivp
   behaviors
   behaviors-marine
   bhvutil
   helmivp
-  marineview
   genutil
   logic
   geometry
