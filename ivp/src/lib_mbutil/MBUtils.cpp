@@ -1771,6 +1771,8 @@ bool setNonWhiteVarOnString(string& given_var, string str)
 
 bool okFileToWrite(string file)
 {
+  if(file == "")
+    return(false);
   string dir = "/";
   vector<string> svector = parseString(file, '/');
   for(vector<string>::size_type i=0; i<svector.size()-1; i++) {
@@ -1793,6 +1795,8 @@ bool okFileToWrite(string file)
 
 bool okFileToRead(string file)
 {
+  if(file == "")
+    return(false);
   FILE *f = fopen(file.c_str(), "r"); 
   if(f) {
     fclose(f);
