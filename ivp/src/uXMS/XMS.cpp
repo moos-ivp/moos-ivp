@@ -64,6 +64,7 @@ XMS::XMS()
   m_history_length    = 40;
   
   m_display_all       = false;
+  m_display_all_requested = false;
   m_last_all_refresh  = 0;
 
   m_max_proc_name_len  = 12;
@@ -114,7 +115,7 @@ bool XMS::ConfigureComms()
 // Procedure: OnNewMail()
 
 bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
-{    
+{ 
   AppCastingMOOSApp::OnNewMail(NewMail);
 
   MOOSMSG_LIST::iterator p;
@@ -137,7 +138,7 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
   // type locally, just so we can put quotes around string values.
 
   for(p = NewMail.begin(); p!=NewMail.end(); p++) {
-    //    p->Trace();
+    //p->Trace();
     CMOOSMsg &msg = *p;
     string key = msg.GetKey();
     if((key.length() >= 7) && (key.substr(key.length()-7,7) == "_STATUS")) {
@@ -156,6 +157,9 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
     
     // A check is made in updateVariable() to ensure the given variable
     // is indeed on the scope list.
+    if(m_display_all && !strEnds(key, "_STATUS"))
+      addVariable(key);
+
     updateVariable(msg);
   }
   return(true);
@@ -169,18 +173,9 @@ bool XMS::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
-  // Part 2: If in the show-all mode, perhaps update new variables
-  // Don't want to do this too often. And want to consider the timewarp.
-  if(m_display_all) {
-    double time_since_last_all_refresh = m_curr_time - m_last_all_refresh;
-    if(m_time_warp > 0)
-      time_since_last_all_refresh = time_since_last_all_refresh / m_time_warp;
-    
-    if(time_since_last_all_refresh > ALL_BLACKOUT) {
-      refreshAllVarsList();
-      cacheColorMap();
-      m_last_all_refresh = m_curr_time;
-    }
+  if(m_display_all && !m_display_all_requested) {
+    m_Comms.Register("*","*",0);
+    m_display_all_requested = true;
   }
   
   refreshProcVarsList();
@@ -222,8 +217,8 @@ bool XMS::OnStartUp()
   if(app_name == "")
     app_name = GetAppName();
 
-  string directives  = "must_have_moosblock=false";
-  directives += "must_have_community=false";
+  string directives  = "must_have_moosblock=false,";
+  directives += "must_have_community=false,";
   directives += "alt_config_block_name=" + app_name;
   AppCastingMOOSApp::OnStartUpDirectives(directives);
 
@@ -320,10 +315,13 @@ bool XMS::OnStartUp()
   }
   
   // setup for display all
-  if(m_display_all)
-    refreshAllVarsList();
+  if(m_display_all) {
+    m_Comms.Register("*","*",0);
+    m_display_all_requested = true;
+  }
+  else
+    registerVariables();
 
-  registerVariables();
   m_time_warp = GetMOOSTimeWarp();
   cacheColorMap();
   return(true);
@@ -814,10 +812,6 @@ void XMS::registerVariables()
 
   if(m_history_var != "")
     m_Comms.Register(m_history_var, 0);
-
-  //m_Comms.Register("DB_UPTIME", 0);
-  //m_Comms.Register("DB_CLIENTS", 0);
-  //m_Comms.Register("PROC_WATCH_SUMMARY", 0);
 }
 
 //------------------------------------------------------------
@@ -1375,43 +1369,6 @@ void XMS::updateVariable(CMOOSMsg &msg)
 
   if(changed && m_refresh_mode == "events")
     m_update_requested = true;
-}
-
-//------------------------------------------------------------
-// Procedure: refreshAllVarsList
-// tes 2.23.08
-//
-// finds all variables in the MOOS database and adds the ones we do
-// not yet know about the mechanism and code for fetching all moos
-// vars is closely related to that used for wildcard logging in
-// pLogger
-
-void XMS::refreshAllVarsList()
-{
-  MOOSMSG_LIST mail;
-  if(m_Comms.ServerRequest("VAR_SUMMARY",mail)) {
-    string ss(mail.begin()->GetString());
-
-    while(!ss.empty()) {
-      string sVar = MOOSChomp(ss);
-      
-      bool discard = false;
-      
-      // we assert here that we do not want _STATUS variables
-      // displayed as part of all
-      // perhaps we should make this a configuration option
-      if(sVar.length() > 7) {
-	if(MOOSStrCmp(sVar.substr(sVar.length()-7, 7), "_STATUS"))
-	  discard = true;
-      }
-      
-      if(!discard) {
-	addVariable(sVar);
-	//	cout << "Registering for +++" << sVar << endl;
-	m_Comms.Register(sVar, 0);
-      }   
-    }
-  }
 }
 
 //------------------------------------------------------------

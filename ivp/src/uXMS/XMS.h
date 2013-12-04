@@ -86,7 +86,6 @@ class XMS : public AppCastingMOOSApp
   void handleSelectMaskSubSources();
   void handleSelectMaskAddSources();
   
-  void refreshAllVarsList();
   void refreshProcVarsList();
   void cacheColorMap();
   bool colorTaken(std::string);
@@ -157,6 +156,7 @@ class XMS : public AppCastingMOOSApp
   unsigned int            m_history_length;
 
   bool   m_display_all;
+  bool   m_display_all_requested;
   double m_last_all_refresh;   
   bool   m_suppress_appcasts;
   bool   m_help_is_showing;

@@ -153,12 +153,17 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
     MOOSTrimWhiteSpace(directive);
     string left  = MOOSChomp(directive, "=");
     string right = directive;
+
+    cout << "left: " << left << endl;
+    cout << "right: " << right << endl;
+
+
     MOOSTrimWhiteSpace(left);
     MOOSTrimWhiteSpace(right);
     if(MOOSStrCmp(left, "must_have_moosblock"))
       must_have_moosblock = MOOSStrCmp(right, "true");
     if(MOOSStrCmp(left, "must_have_community"))
-      must_have_moosblock = MOOSStrCmp(right, "true");
+      must_have_community = MOOSStrCmp(right, "true");
     else if(MOOSStrCmp(left, "alt_config_block_name"))
       alt_config_block_name = right;
   }
@@ -177,7 +182,7 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
   // developer decide how to interpret a return of false.
   if(!m_MissionReader.GetValue("COMMUNITY", m_host_community)) {
     if(must_have_community) {
-      reportConfigWarning("Community/Vehicle name not found in mission file");
+      reportConfigWarning("XCommunity/Vehicle name not found in mission file");
       return_value = false;
     }
   }
