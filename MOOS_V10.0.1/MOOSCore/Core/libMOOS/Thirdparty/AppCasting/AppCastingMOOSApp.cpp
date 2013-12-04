@@ -154,10 +154,6 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
     string left  = MOOSChomp(directive, "=");
     string right = directive;
 
-    cout << "left: " << left << endl;
-    cout << "right: " << right << endl;
-
-
     MOOSTrimWhiteSpace(left);
     MOOSTrimWhiteSpace(right);
     if(MOOSStrCmp(left, "must_have_moosblock"))
