@@ -1,0 +1,24 @@
+
+This project produces a matlab "mex" file which allows you to access MOOS communications from within matlab. 
+
+Building iMatlab
+-------------------
+From release 10.0.1 onwards CMake is *not* used to build the project. It was become tricky to support multiple versions of matlab on multiple platforms and effort was being expended duplicating matlabs own ability to generate mex files.
+
+So to build the project simply 
+
+ a) from with matlab "cd" to the source directory of this project.
+ b) run the build script build_imatlab.m by typing "build_imatlab" at the command line within matlab
+ c) follow the instructions provided to you.
+
+
+Problems pointing "mex" at the correct installation
+---------------------------------------------------
+
+If you are unsure about which source tree to point the install script at (you are asked to do this during the build) you might find the CMake script  in the "build_help" directory useful. 
+
+Running "cmake ./" from the "build_help" directory will print out include directories for any compatible MOOS builds found on your system. This version of CMake requires MOOS release 10.0.1 or higher  
+
+
+
+
