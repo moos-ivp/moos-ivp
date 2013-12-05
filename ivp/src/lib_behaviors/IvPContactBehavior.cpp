@@ -230,11 +230,10 @@ bool IvPContactBehavior::updatePlatformInfo()
   double new_cnx, new_cny;
   ok = m_extrapolator.getPosition(new_cnx, new_cny, curr_time);
 
-  double elapsed_time = curr_time - m_cnutc;
-  double extrap_dist  = distPointToPoint(m_cnx, m_cny, new_cnx, new_cny);
-  postMessage("IVPHELM_EXTRAP_ELAP" + m_contact, elapsed_time);
-  postMessage("IVPHELM_EXTRAP_DIST" + m_contact, extrap_dist);
-
+  //double elapsed_time = curr_time - m_cnutc;
+  //double extrap_dist  = distPointToPoint(m_cnx, m_cny, new_cnx, new_cny);
+  //postMessage("IVPHELM_EXTRAP_ELAP" + m_contact, elapsed_time);
+  //postMessage("IVPHELM_EXTRAP_DIST" + m_contact, extrap_dist);
 
   if(ok) {
     m_cnx = new_cnx;
