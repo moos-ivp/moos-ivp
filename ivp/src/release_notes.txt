@@ -1,4 +1,13 @@
 
+uXMS
+ Modified to better handle registration for all variables using the new MOOS wildcard 
+ capability. Fixed minor bug where uXMS erroneously posted a configuration warning if 
+ if the MOOS community was not provided via a mission file.
+
+uPokeDB 
+ Minor mod to handle command line args --host= and --port= in a manner more consistent
+ with other MOOS-IvP apps.
+
 pHelmIvP
   Behaviors are augmented via an additional overloadable function, onHelmStart(), executed
   by the behavior upon helm startup. This allows behaviors, defined as templates and thus

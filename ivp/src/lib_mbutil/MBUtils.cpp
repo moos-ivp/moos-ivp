@@ -1156,7 +1156,7 @@ bool tokParse(const string& str, const string& left,
 	       char gsep, char lsep, string& rstr)
 {
   rstr = "error";
-  vector<string> svector1 = parseString(str, gsep);
+  vector<string> svector1 = parseStringQ(str, gsep);
   for(vector<string>::size_type i=0; i<svector1.size(); i++) {
     vector<string> svector2 = parseString(svector1[i], lsep);
     if(svector2.size() != 2)
@@ -1182,7 +1182,7 @@ bool tokParse(const string& str, const string& left,
 string tokStringParse(const string& str, const string& left, 
 		      char gsep, char lsep)
 {
-  vector<string> svector1 = parseString(str, gsep);
+  vector<string> svector1 = parseStringQ(str, gsep);
   for(vector<string>::size_type i=0; i<svector1.size(); i++) {
     vector<string> svector2 = parseString(svector1[i], lsep);
     if(svector2.size() != 2)
