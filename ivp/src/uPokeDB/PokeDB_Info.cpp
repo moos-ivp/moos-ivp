@@ -51,7 +51,7 @@ void showHelpAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("Usage: uPokeDB file.moos [OPTIONS]                              ");
+  blu("Usage: uPokeDB [file.moos] [OPTIONS] [VAR-DATA Pair(s)]         ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -65,10 +65,10 @@ void showHelpAndExit()
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of uPokeDB.                   ");
-  mag("  <host=val>                                                    ");
+  mag("  --host=val                                                    ");
   blk("      Provide MOOSDB IP address on the command line rather than ");
   blk("      from a .moos file.                                        ");
-  mag("  <port=val>                                                    ");
+  mag("  --port=val                                                    ");
   blk("      Provide MOOSDB port number on the command line rather than");
   blk("      from a .moos file.                                        ");
   mag("  <var=value>                                                   ");
@@ -80,7 +80,7 @@ void showHelpAndExit()
   blk("                                                                ");
   blk("Examples:                                                       ");
   blk("     $ uPokeDB alpha.moos DEPLOY=true RETURN_SPEED=2.0          ");
-  blk("     $ uPokeDB DEPLOY=true  host=localhost port=9000            ");
+  blk("     $ uPokeDB DEPLOY=true  --host=localhost --port=9000        ");
   blk("     $ uPokeDB STRING_SPEED:=2.3 alpha.moos                     ");
   exit(0);
 }
