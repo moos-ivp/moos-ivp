@@ -18,6 +18,14 @@ pHelmIvP
 pBasicContactMgr
   It now accepts alert configurations via the incoming MOOS Variable BCM_ALERT_REQUEST
 
+lib_ivpbuild
+  Minor fixes to remove extraneous semicolons in a few files, comply with stricter compiler
+  constraints.
 
+uLoadWatch
+  A new application to monitor the reported ITER_GAP and ITER_LEN information produced
+  by all AppCastingMOOSApp applications.
 
-
+pNodeReporter
+  Augmented to register for LOAD_WARNING messages (from the new uLoadWatch app), and 
+  include them in node reports if one is found.

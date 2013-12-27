@@ -214,6 +214,7 @@ SET(IVP_NON_GUI_APPS
   app_aloggrep
   app_alogsort
   app_alogrm
+  app_alogiter
   app_alogclip
   app_aloghelm
   app_alogcheck
@@ -244,6 +245,7 @@ SET(IVP_NON_GUI_APPS
   uTimerScript
   uHelmScope
   uProcessWatch
+  uLoadWatch
   uSimCurrent
   uSimMarine
   uTermCommand

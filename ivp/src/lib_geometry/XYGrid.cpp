@@ -287,14 +287,17 @@ bool XYGrid::processDelta(const string& str)
     for(int j=0; j<dsize; j++)
       dvector[j] = stripBlankEnds(dvector[j]);
     
-    int index  = atoi(dvector[0].c_str());
-
     //double old_val = atof(dvector[1].c_str());
     double new_val = atof(dvector[2].c_str());
 
-    if((index < 0) || (index >= values.size()))
+    int signed_index = atoi(dvector[0].c_str());
+    if(signed_index < 0)
       return(false);
-
+    
+    unsigned int index = (unsigned int)(signed_index);
+    if(index >= values.size())
+      return(false);
+    
     setVal(index, new_val);
 
     if(dsize == 5) {

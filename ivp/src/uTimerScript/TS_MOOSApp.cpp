@@ -1012,7 +1012,8 @@ bool TS_MOOSApp::handleMathExpr(string& str)
   // Part 2: find the deepest '{' and matching '}' occurance
   unsigned int max_lix = 0;
   unsigned int max_rix = 0;
-  unsigned int max_depth = 0;
+
+  int max_depth = 0;
   depth = 0;
   for(i=0; i<len; i++) {
     char c = str.at(i);

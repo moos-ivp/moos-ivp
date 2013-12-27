@@ -22,7 +22,8 @@ cd "${MOOS_ABS_DIR}/MOOSCore"
 echo "Invoking cmake..." `pwd`
 
 cmake -DENABLE_EXPORT=ON -DUSE_ASYNC_COMMS=ON -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
-#cmake -DENABLE_EXPORT=ON -DUSE_ASYNC_COMMS=OFF -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
+#cmake -DENABLE_EXPORT=ON  -DUSE_ASYNC_COMMS=OFF   -DCMAKE_BUILD_TYPE=Release  \
+#    -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
 
 
 echo ""; echo "Invoking make..." `pwd`; echo ""

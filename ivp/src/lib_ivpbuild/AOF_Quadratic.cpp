@@ -53,7 +53,7 @@ bool AOF_Quadratic::setParam(const std::string& param, double val)
   else
     return(false);
   return(true);
-};
+}
 
 //----------------------------------------------------------------
 // Procedure: initialize
@@ -63,7 +63,7 @@ bool AOF_Quadratic::initialize()
   if((x_index != -1) && (y_index != -1))
     return(true);
   return(false);
-};
+}
 
 //----------------------------------------------------------------
 // Procedure: evalBox

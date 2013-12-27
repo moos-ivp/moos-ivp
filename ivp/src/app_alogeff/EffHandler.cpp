@@ -60,7 +60,7 @@ EffHandler::EffHandler()
   m_transit_out_string = "";
 
   m_output_string = "NoOutputStringGiven";
-};
+}
 
 
 //--------------------------------------------------------

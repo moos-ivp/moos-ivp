@@ -54,6 +54,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
       new_record.setMode(value);
     else if(param == "ALLSTOP")
       new_record.setAllStop(value);
+    else if(param == "LOAD_WARNING")
+      new_record.setLoadWarning(value);
     else if(param == "INDEX")
       new_record.setIndex(atof(value.c_str()));
     else if(isNumber(value)) {

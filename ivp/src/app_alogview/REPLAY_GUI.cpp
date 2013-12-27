@@ -495,7 +495,7 @@ void REPLAY_GUI::augmentMenu()
   m_menubar->add("Replay/Step Back  1",  '[', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-1, 0);
   m_menubar->add("Replay/Step Ahead 5", '>', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)5, 0);
   m_menubar->add("Replay/Step Back  5", '<', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-5, FL_MENU_DIVIDER);
-};
+}
 
 //----------------------------------------------------------
 // Procedure: handle

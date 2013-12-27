@@ -173,6 +173,8 @@ string NodeRecord::getSpec() const
     str += ",MODE_AUX=" + m_mode_aux;
   if(m_allstop != "")
     str += ",ALLSTOP=" + m_allstop;
+  if(m_load_warning != "")
+    str += ",LOAD_WARNING=" + m_load_warning;
 
   if(m_altitude_set)
     str += ",ALTITUDE=" + doubleToStringX(m_altitude,2);
@@ -263,6 +265,16 @@ string NodeRecord::getAllStop(string default_allstop) const
 }
 
 //---------------------------------------------------------------
+// Procedure: getLoadWarning
+
+string NodeRecord::getLoadWarning(string default_warning) const
+{
+  if(m_load_warning == "")
+    return(default_warning);
+  return(m_load_warning);
+}
+
+//---------------------------------------------------------------
 // Procedure: valid
 //      Note: Determines if all the required fields have been set
 
@@ -304,6 +316,8 @@ bool NodeRecord::valid(string check, string& why) const
       missing += "mode_aux,";
     if((field == "allstop") && (m_allstop == "")) 
       missing += "allstop,";
+    if((field == "load_warning") && (m_load_warning == "")) 
+      missing += "load_warning,";
     if((field == "x") && !m_x_set) 
       missing += "x,";
     if((field == "y") && !m_y_set) 

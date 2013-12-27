@@ -247,7 +247,7 @@ void ULV_GUI::augmentMenu()
   m_menubar->add("Replay/Step Back  10", '{',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)-10, 0);
   m_menubar->add("Replay/Step Ahead 50", FL_CTRL+']',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)50, 0);
   m_menubar->add("Replay/Step Back  50", FL_CTRL+'[',  (Fl_Callback*)ULV_GUI::cb_Step, (void*)-50, FL_MENU_DIVIDER);
-};
+}
 
 //----------------------------------------------------------
 // Procedure: handle

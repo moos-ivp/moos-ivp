@@ -152,6 +152,8 @@ bool ProcessWatch::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
+  Notify("PROC_WATCH_TIME_WARP", GetMOOSTimeWarp());
+
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
   if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 

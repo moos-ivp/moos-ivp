@@ -38,7 +38,7 @@ bool AOF_Linear::setParam(const std::string& param, double val)
   else
     return(false);
   return(true);
-};
+}
 
 //----------------------------------------------------------------
 // Procedure: evalBox

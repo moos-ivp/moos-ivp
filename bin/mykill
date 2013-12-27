@@ -62,11 +62,12 @@ killall -9 pFleetControl uFldScope uFldContactRangeSensor         \
         uFldCTDSensor pFrontGridRender uPlotViewer uMAC        \
         pShare uFldGenericSensor uFldHazardMgr
 
-killall -9 pParticle uFldContactRangeSensorHP pUUVPath            \
+killall -9 pParticle uFldContactRangeSensorHP pUUVPath         \
         pWifiCheck uFldMessageSourcer pRangeSensorHandler      \
         pHunterPrey camera_example camera_example_server       \
-        camera_example_viewer iHuxley uFldCollisionDetect iSay
+        camera_example_viewer iHuxley uFldCollisionDetect iSay \
+        uLoadWatch
 
-killall -9 pAntler pLogger
+killall -9 pAntler pLogger 
 
 echo Done - Killed all MOOS-Related Processes.....

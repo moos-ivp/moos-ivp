@@ -53,6 +53,7 @@ class NodeRecord
   void setMode(std::string s)    {m_mode=s;};
   void setModeAux(std::string s) {m_mode_aux=s;};
   void setAllStop(std::string s) {m_allstop=s;};
+  void setLoadWarning(std::string s) {m_load_warning=s;};
 
   void setProperty(std::string, std::string);
 
@@ -93,6 +94,7 @@ class NodeRecord
   std::string getMode(std::string s="") const;
   std::string getModeAux(std::string s="") const;
   std::string getAllStop(std::string s="") const;
+  std::string getLoadWarning(std::string s="") const;
 
   std::string getSpec() const;
 
@@ -119,6 +121,7 @@ class NodeRecord
   std::string  m_mode;
   std::string  m_mode_aux;
   std::string  m_allstop;
+  std::string  m_load_warning;
   
   bool m_x_set;
   bool m_y_set;

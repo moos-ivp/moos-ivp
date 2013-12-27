@@ -155,8 +155,15 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
     
     if(key == "AUX_MODE") 
       m_record.setModeAux(sdata);
-    
-    if(key == "IVPHELM_SUMMARY") {
+
+    else if(key == "LOAD_WARNING") {
+      string app = tokStringParse(sdata, "app", ',', '=');
+      string gap = tokStringParse(sdata, "maxgap", ',', '=');
+      if((app != "") && (gap != ""))
+	m_record.setLoadWarning(app + ":" + gap);
+    }
+
+    else if(key == "IVPHELM_SUMMARY") {
       m_helm_lastmsg = m_curr_time;
       handleLocalHelmSummary(sdata);
     }
@@ -238,6 +245,7 @@ void NodeReporter::registerVariables()
   m_Comms.Register("IVPHELM_STATE", 0);
   m_Comms.Register("IVPHELM_ALLSTOP", 0);
   m_Comms.Register("AUX_MODE", 0);
+  m_Comms.Register("LOAD_WARNING", 0);
 }
 
 //-----------------------------------------------------------------
@@ -443,6 +451,7 @@ bool NodeReporter::Iterate()
   if(platform_report != "")
     Notify(m_plat_report_var, platform_report);
 
+  m_record.setLoadWarning("");
   AppCastingMOOSApp::PostReport();
   return(true);
 }

@@ -61,7 +61,7 @@ private:
 
   std::string m_vname;
   std::string m_vname_bymoosdb;
-  std::string m_vname_bynoderep;;
+  std::string m_vname_bynoderep;
 
   ULI_GUI *m_gui;
   std::string m_window_layout;
