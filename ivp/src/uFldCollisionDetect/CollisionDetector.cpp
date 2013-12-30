@@ -117,11 +117,7 @@ bool CollisionDetector::Iterate()
 	  posted =  (m_col_bools.find(make_pair(v1,v2))->second).posted;
 	}
 	string name_string = "VEHICLE_COLLISION_" + toupper(v1) + "_" + toupper(v2); // variable to be posted to MOOSDB
-	if(0){
-	  //calculate distance between these two vehicles
-	  double distance = sqrt(pow(m_moos_map[v1].getX() - m_moos_map[v2].getX(),2) + pow(m_moos_map[v1].getY() - m_moos_map[v2].getY(),2));
-	}
-       
+
 	//use v1 = os, v2 = cn
 	NodeRecord os = m_moos_map[v1];
 	NodeRecord cn = m_moos_map[v2];
@@ -155,7 +151,15 @@ bool CollisionDetector::Iterate()
 	  }
 	  // keep track of current collision in m_col_bools for appcasting
 	  // a collision is known to exist between v1 and v2.
+#if 0
 	  col_data temp_data = (col_data){true,distance,distance,(MOOSTime()+m_delay_time_to_clear),false};
+#endif
+	  col_data temp_data;
+	  temp_data.colliding = true;
+	  temp_data.min_dist = distance;
+	  temp_data.detect_dist = distance;
+	  temp_data.display_clear_time = (MOOSTime()+m_delay_time_to_clear);
+	  temp_data.posted = false;
 
 	  m_col_bools[make_pair(v1,v2)] = temp_data;
 	  collision_string +=  doubleToString(distance); 
