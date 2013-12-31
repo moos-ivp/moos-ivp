@@ -84,7 +84,7 @@ void PQueue::insert(int new_key, double new_keyval)
   if(m_levels <= 0)
     return;
 
-  int new_ix;
+  int new_ix = 0;
 
   // Untested as of 7/4/07
   if(!m_sort_by_max)

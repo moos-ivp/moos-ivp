@@ -178,7 +178,9 @@ double AOF_AvoidCollisionDepth::evalBox(const IvPBox *b) const
   if(!cpa_engine)
     return(0);
 
-  double eval_crs, eval_spd, eval_dep;
+  double eval_crs = 0;
+  double eval_spd = 0;
+  double eval_dep = 0;;
   m_domain.getVal(m_dep_ix, b->pt(m_dep_ix), eval_dep);
   m_domain.getVal(m_crs_ix, b->pt(m_crs_ix), eval_crs);
   m_domain.getVal(m_spd_ix, b->pt(m_spd_ix), eval_spd);

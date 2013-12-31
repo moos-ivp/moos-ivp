@@ -322,7 +322,10 @@ bool Sayer::sayUtterance()
   if(m_interval_policy == "from_start")
     cmd += " &";
 
-  system(cmd.c_str());
+  // We don't check the act on the result, but we get it anyway to avoid
+  // a compiler warning.
+  int result;
+  result = system(cmd.c_str());
   return(true);
 }
 

@@ -390,9 +390,9 @@ double AOF_AvoidObstacles::evalBox(const IvPBox *b) const
   }
 
 
-  double lowest_utility;
+  double lowest_utility = 0;
   for(i=0; i<osize; i++) {
-    double i_utility;
+    double i_utility = 0;
 
     int   heading_index = b->pt(crs_ix, 0);
     double dist_to_poly = m_cache_distance[heading_index];

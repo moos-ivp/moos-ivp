@@ -105,7 +105,7 @@ int XYHazardSet::findHazard(double gx, double gy) const
     return(-1);
 
   double       closest_dist = 0;
-  unsigned int closest_ix;
+  unsigned int closest_ix = 0;
 
   for(i=0; i<vsize; i++) {
     double x2 = m_hazards[i].getX();

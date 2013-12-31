@@ -75,7 +75,7 @@ void Populator_IPF_Plot::handleEntry(double g_time,
   string    context    = ipf->getContextStr();
   int       ipf_pieces = ipf->size();
   string    ipf_source;
-  int       ipf_iteration;
+  int       ipf_iteration = 0;
   double    ipf_pwt    = ipf->getPWT();
   IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
 

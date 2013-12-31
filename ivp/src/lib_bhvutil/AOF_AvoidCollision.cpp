@@ -76,14 +76,15 @@ bool AOF_AvoidCollision::initialize()
 
 double AOF_AvoidCollision::evalBox(const IvPBox *b) const
 {
-  double eval_crs, eval_spd, cpa_dist, eval_dist;
+  double eval_crs = 0;
+  double eval_spd = 0; 
 
   m_domain.getVal(m_crs_ix, b->pt(m_crs_ix), eval_crs);
   m_domain.getVal(m_spd_ix, b->pt(m_spd_ix), eval_spd);
 
-  cpa_dist  = m_cpa_engine.evalCPA(eval_crs, eval_spd, m_tol);
+  double cpa_dist  = m_cpa_engine.evalCPA(eval_crs, eval_spd, m_tol);
+  double eval_dist = metric(cpa_dist);
 
-  eval_dist = metric(cpa_dist);
   return(eval_dist);
 }
 

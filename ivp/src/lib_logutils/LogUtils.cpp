@@ -300,9 +300,9 @@ void addVectorKey(vector<string>& v_keys, vector<bool>& v_pmatch,
     key.erase(len-1, 1);
   }
   
-  unsigned int i, prior_ix, ksize = v_keys.size();
+  unsigned int prior_ix = 0;
   bool prior = false;
-  for(i=0; i<ksize; i++) {
+  for(unsigned int i=0; i<v_keys.size(); i++) {
     if(key == v_keys[i]) {
       prior = true;
       prior_ix = i;

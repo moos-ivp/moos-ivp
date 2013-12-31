@@ -71,7 +71,7 @@ IvPBox genUnifBox(const IvPDomain &domain, int maxAmount)
       done = done && pcs_maxed[d];    // we're done, and loop ends.
 
     if(!done) {                       // Find the dimension most  
-      int    augment_dim;             // worthy of one more split.
+      int    augment_dim=0;           // worthy of one more split.
       double biggestVal = 0.0;        // It is the dimension that
       for(d=0; d<dim; d++) {          // has the largest dsize
 	if(!pcs_maxed[d]) {           // value that has not been

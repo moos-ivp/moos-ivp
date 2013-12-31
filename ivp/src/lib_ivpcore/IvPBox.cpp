@@ -269,7 +269,7 @@ double IvPBox::maxVal() const
 	c_amt  = 4;
       }
 
-      double highval;
+      double highval = 0;
       for(int i=0; i<c_amt; i++) {
 	double pval = (m_wts[d]*c_pt[i]*c_pt[i]) + (m_wts[d+m_dim]*c_pt[i]);
 	if((i==0) || (pval > highval)) 
@@ -323,7 +323,7 @@ double IvPBox::minVal() const
 	c_amt  = 4;
       }
 
-      double lowval;
+      double lowval=0;
       for(int i=0; i<c_amt; i++) {
 	double pval = (m_wts[d]*c_pt[i]*c_pt[i]) + (m_wts[d + m_dim]*c_pt[i]);
 	if((i==0) || (pval < lowval)) 
@@ -432,8 +432,8 @@ void IvPBox::maxPt(IvPBox& gbox) const
 	c_amt  = 4;
       }
       
-      int    highpt;
-      double highval;
+      int    highpt=0;
+      double highval=0;
       for(int i=0; i<c_amt; i++) {
 	int    p    = c_pt[i];
 	double pval = (m_wts[d]*p*p) + (m_wts[d+m_dim]*p);

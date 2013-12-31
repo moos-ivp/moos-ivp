@@ -1089,7 +1089,10 @@ inline void REPLAY_GUI::cb_Delete_i() {
   
   string command = "rm -f " + m_log_file + " " + slog_file + " " +
     ylog_file + " " + moos_file; 
-  system(command.c_str());
+
+  // Pretend to care about the system return value to avoid compiler warning
+  int result;
+  result = system(command.c_str());
   exit(0);
 }
 void REPLAY_GUI::cb_Delete(Fl_Widget* o) {
@@ -1343,7 +1346,7 @@ void REPLAY_GUI::setVNameMenuButtonA(string vname)
   // First get the index in the list of known vehicle names. This index is 
   // needed to configure the callback for the menu item.
   // Use special unsigned int type having same size a pointer (void*)
-  uintptr_t i, vindex, vsize = m_vnames.size();
+  uintptr_t i, vindex=0, vsize = m_vnames.size();
   for(i=0; i<vsize; i++)
     if(m_vnames[i] == vname)
       vindex = i;
@@ -1386,7 +1389,7 @@ void REPLAY_GUI::updateSourceMenuButtonA()
     // First get the index in the list of known sources. This index is 
     // needed to configure the callback for the menu item.
     // Use special unsigned int type having same size a pointer (void*)
-    uintptr_t i, vindex, vsize = m_sources.size();
+    uintptr_t i=0, vindex=0, vsize = m_sources.size();
     for(i=0; i<vsize; i++)
       if(m_sources[i] == source)
 	vindex = i;
@@ -1408,7 +1411,7 @@ void REPLAY_GUI::setVNameMenuButtonB(string vname)
   // First get the index in the list of known vehicle names. This index is 
   // needed to configure the callback for the menu item.
   // Use special unsigned int type having same size a pointer (void*)
-  uintptr_t i, vindex, vsize = m_vnames.size();
+  uintptr_t i, vindex=0, vsize = m_vnames.size();
   for(i=0; i<vsize; i++)
     if(m_vnames[i] == vname)
       vindex = i;
@@ -1451,7 +1454,7 @@ void REPLAY_GUI::updateSourceMenuButtonB()
     // First get the index in the list of known sources. This index is 
     // needed to configure the callback for the menu item.
     // Use special unsigned int type having same size a pointer (void*)
-    uintptr_t i, vindex, vsize = m_sources.size();
+    uintptr_t i, vindex=0, vsize = m_sources.size();
     for(i=0; i<vsize; i++)
       if(m_sources[i] == source)
 	vindex = i;
@@ -1495,7 +1498,11 @@ void REPLAY_GUI::capture_to_file()
   if(m_save_file_ix < 100)  command += "0";
   if(m_save_file_ix < 1000) command += "0";
   command += intToString(m_save_file_ix) + ".png";
-  system(command.c_str());
+
+  // Pretend to care about the system return value to avoid compiler warning
+  int result;
+  result = system(command.c_str());
+
   cout << "command: " << command << endl;
   m_save_file_ix++;
 }

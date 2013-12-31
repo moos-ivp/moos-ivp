@@ -209,7 +209,10 @@ void PathCheck_MOOSApp::computeAndPostSpeeds()
     const list<NodeRecord>& list_records = p1->second;
     // Cannot compute speed unless there are at least two records.
     if(list_records.size() > 1) {
-      double prev_x, prev_y, prev_ts, total_speed = 0;
+      double prev_x = 0;
+      double prev_y = 0;
+      double prev_ts = 0;
+      double total_speed = 0;
       unsigned int legs = 0;
       bool first_record = true;
       list<NodeRecord>::const_iterator p2 = list_records.begin();

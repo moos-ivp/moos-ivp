@@ -4,7 +4,6 @@ INVOCATION_ABS_DIR="`pwd`"
 CONFIG="None"
 CLEAN="no"
 CMD_ARGS=""
-BLANK=" "
 
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
@@ -21,7 +20,7 @@ for ARGI; do
     elif [ "${ARGI}" = "clean" ] ; then
         CLEAN="yes"
     else
-	CMD_ARGS=$CMD_ARGS$BLANK$ARGI
+	CMD_ARGS=$CMD_ARGS" "$ARGI
     fi
 done
 

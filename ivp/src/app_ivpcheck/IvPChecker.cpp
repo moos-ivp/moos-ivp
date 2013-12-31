@@ -78,8 +78,8 @@ void IvPChecker::checkBrute(const vector<string>& ivp_strings)
   double report_pct = 0;
   double report_pct_inc = 0.10;
 
-  double max_so_far;
-  double min_so_far;
+  double max_so_far = 0;
+  double min_so_far = 0;
   IvPBox max_pt;
 
   double pts_evaluated = 0;

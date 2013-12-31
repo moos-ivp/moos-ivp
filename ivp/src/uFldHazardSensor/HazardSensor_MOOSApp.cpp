@@ -1356,7 +1356,7 @@ void HazardSensor_MOOSApp::sortSensorProperties()
 
   for(i=0; i<vsize; i++) {
     double min_width = -1;
-    unsigned int min_index;
+    unsigned int min_index = 0;
     for(j=0; j<vsize; j++) {
       double jwid = m_sensor_prop_width[j];
       if(!v_hit[j] && ((min_width == -1) || (jwid < min_width))) {

@@ -119,7 +119,8 @@ bool Demuxer::addMuxPacket(const string& str, double time_stamp,
   
   string str_body = str.c_str() + cix;
  
-  bool ok, prior_unit = false;
+  bool ok = false;
+  bool prior_unit = false;
   list<DemuxUnit*>::iterator p;
   for(p = m_units.begin(); p!=m_units.end(); p++) {
     DemuxUnit *unit = *p;

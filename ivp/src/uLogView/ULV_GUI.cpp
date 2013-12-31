@@ -506,7 +506,10 @@ inline void ULV_GUI::cb_Delete_i() {
   
   string command = "rm -f " + m_log_file + " " + slog_file + " " +
     ylog_file + " " + moos_file; 
-  system(command.c_str());
+
+  // Pretend to care about the system result to avoid compiler warning
+  int result;
+  result = system(command.c_str());
   exit(0);
 }
 void ULV_GUI::cb_Delete(Fl_Widget* o) {

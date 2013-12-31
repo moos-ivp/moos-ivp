@@ -154,7 +154,7 @@ unsigned int LoiterEngine::acquireVertexOut(double os_x, double os_y,
 
   unsigned int index = 0;
   bool   fresh = true;
-  double best_angle;
+  double best_angle = 0;
   for(i=0; i<vsize; i++) {
     if(m_polygon.vertex_is_viewable(i, os_x, os_y)) {
       unsigned int j = i+1;

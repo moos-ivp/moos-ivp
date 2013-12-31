@@ -258,8 +258,8 @@ XYPolygon stringEllipse2Poly(string str)
   bool radians_set = false;  // be specified.
   bool pts_set     = false;
 
-  double xpos, ypos, zval, major, minor, radians, degrees, snap=0;
-  int    pts;
+  double xpos=0, ypos=0, zval=0, major=0, minor=0, radians=0, degrees=0, snap=0;
+  int    pts = 0;
    
   str = stripBlankEnds(str);
   vector<string> mvector = parseStringQ(str, ',');
@@ -385,8 +385,12 @@ XYPolygon stringRadial2Poly(string str)
   bool radius_set = false;
   bool pts_set    = false;
 
-  double xpos = 0, ypos = 0, zval = 0, radius = 0, snap=0;
-  int    pts;
+  double xpos = 0;
+  double ypos = 0;
+  double zval = 0;
+  double radius = 0;
+  double snap = 0;
+  int    pts = 0;
   
   str = stripBlankEnds(str);
   vector<string> mvector = parseStringQ(str, ',');
@@ -548,7 +552,7 @@ XYPolygon stringPieWedge2Poly(string str)
   bool rang_set  = false;
   bool range_set = false;
   
-  double xpos, ypos, lang, rang, range, snap=0;
+  double xpos=0, ypos=0, lang=0, rang=0, range=0, snap=0;
   int    pts=0;
   
   str = stripBlankEnds(str);
@@ -669,7 +673,12 @@ XYPolygon stringRangeWedge2Poly(string str)
   bool range_set = false;
 
   double range_min = 0;
-  double xpos, ypos, lang, rang, range_max, snap=0;
+  double xpos = 0;
+  double ypos = 0;
+  double lang = 0;
+  double rang = 0;
+  double snap = 0;
+  double range_max = 0;
   int    pts=0;
   
   str = stripBlankEnds(str);
@@ -813,7 +822,7 @@ XYPolygon stringPylon2Poly(string str)
   bool axis_pad_set = false;
   bool perp_pad_set = false;  // Either degrees OR radians must
 
-  double x1, y1, x2, y2, zval, axis_pad, perp_pad, snap=0;
+  double x1=0, y1=0, x2=0, y2=0, zval=0, axis_pad=0, perp_pad=0, snap=0;
   
   str = stripBlankEnds(str);
   vector<string> mvector = parseStringQ(str, ',');

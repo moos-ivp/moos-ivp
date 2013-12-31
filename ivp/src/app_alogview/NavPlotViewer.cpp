@@ -683,7 +683,7 @@ void NavPlotViewer::setCenterView(string centering_style)
   double pos_y = 0;
   if(centering_style == "ctr_of_bounding") {
     // Median values of logplots are used.
-    double min_x, min_y, max_x, max_y;
+    double min_x=0, min_y=0, max_x=0, max_y=0;
     unsigned int i, x_size = m_navx_plot.size();
     for(i=0; i<x_size; i++) {
       double this_value = m_navx_plot[i].get_median();

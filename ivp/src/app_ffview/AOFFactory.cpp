@@ -120,32 +120,32 @@ void AOFFactory::load_directory(string dirname) {
 
 
 #ifdef _WIN32
-	TFuncPtrCreateAOF createFn = 
-		(TFuncPtrCreateAOF)(GetProcAddress((HMODULE)handle,"createAOF"));
-
-	const DWORD dlsym_error = GetLastError();
-
-	if (dlsym_error) {
-         cerr << "Cannot load symbol 'createAOF' from file " << fname << endl;
-         cerr << "dlerror() returns: " << dlsym_error << endl;
+     TFuncPtrCreateAOF createFn = 
+       (TFuncPtrCreateAOF)(GetProcAddress((HMODULE)handle,"createAOF"));
+     
+     const DWORD dlsym_error = GetLastError();
+     
+     if (dlsym_error) {
+       cerr << "Cannot load symbol 'createAOF' from file " << fname << endl;
+       cerr << "dlerror() returns: " << dlsym_error << endl;
 #else
-	 TFuncPtrCreateAOF createFn = 
-       (TFuncPtrCreateAOF)(dlsym(handle, "createAOF"));
-
+       TFuncPtrCreateAOF createFn = 
+	 (TFuncPtrCreateAOF)(dlsym(handle, "createAOF"));
+       
      const char *dlsym_error = dlerror();
      if (dlsym_error) {
-         cerr << endl;
-         cerr << "Cannot load symbol 'createAOF' from file " << fname << endl;
-         cerr << "dlerror() returns: " << dlsym_error << endl;
+       cerr << endl;
+       cerr << "Cannot load symbol 'createAOF' from file " << fname << endl;
+       cerr << "dlerror() returns: " << dlsym_error << endl;
 #endif
-         exit(1);
-      }
-
+       exit(1);
+     }
+     
      cerr << "SUCCESS" << endl;
-
+     
      creation_funcs[aof_name] = createFn;
      open_library_handles.push_back(handle);
-   }
+     }
 }
 
 //=========================================================================

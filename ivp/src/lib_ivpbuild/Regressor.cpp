@@ -222,7 +222,8 @@ double Regressor::setWeight1(IvPBox *gbox, bool feedback)
   }
   
   // Calculated and used only if strict_range is true
-  double max_intercept, min_intercept; 
+  double max_intercept = 0; 
+  double min_intercept = 0; 
   
   // For each of the m_corners, calculate what would be the correct
   // intercept for that point. If strict_range is true, also 

@@ -429,7 +429,10 @@ void Viewer::capture(int save_file_ix)
   if(save_file_ix < 100)  command += "0";
   if(save_file_ix < 1000) command += "0";
   command += intToString(save_file_ix) + ".png";
-  system(command.c_str());
+
+  // Pretend to care about the result to avoid compiler warning.
+  int result;
+  result = system(command.c_str());
 }
 
 //-------------------------------------------------------------
