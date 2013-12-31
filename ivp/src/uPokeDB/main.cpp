@@ -104,18 +104,20 @@ int main(int argc ,char * argv[])
     if(server_host == "") {
       server_host = "localhost";
       cout << "Enter IP address:  [localhost] ";
-      fgets(buff, 999, stdin);
-      if(buff[0] != '\n') {
-	server_host     = buff;    
+      if(fgets(buff, 999, stdin) != NULL) {
+	if(buff[0] != '\n') {
+	  server_host     = buff;    
+	}
       }
     }
     // If server_port info was not on the command line, prompt here.
     if(server_port == 0) {
       cout << "Enter Port number: [9000] ";
       server_port = 9000;
-      fgets(buff, 999, stdin);
-      if(buff[0] != '\n') {
-	server_port     = atoi(buff); 
+      if(fgets(buff, 999, stdin) != NULL) {
+	if(buff[0] != '\n') {
+	  server_port     = atoi(buff); 
+	}
       }
     }
   }

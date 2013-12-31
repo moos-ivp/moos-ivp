@@ -411,8 +411,8 @@ void ZAIC_PEAK::insistSummit(unsigned int sx)
     return;
   }
   // Handle Case (3)
-  double min_delta;
-  int    min_delta_ix;
+  double min_delta = 0;
+  int    min_delta_ix = 0;
   for(i=0; i<m_domain_pts; i++) {
     double dval = (((double)(i)) * m_domain_delta) + m_domain_low;
     double delta = dval - summit;
@@ -438,8 +438,8 @@ PDMap *ZAIC_PEAK::setPDMap(double tolerance)
   double first_val = m_ptvals[0];
 
   bool   trend = false; // No trend to start
-  double s_m;
-  double s_b;
+  double s_m = 0;
+  double s_b = 0;
 
   vector<IvPBox*> pieces;
   for(i=1; i<m_domain_pts; i++) {

@@ -21,14 +21,14 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
-  Run = uSimMarine      @ NewConsole = true
+  Run = uSimMarine      @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
-  Run = pMarinePID      @ NewConsole = true
-  Run = pMarineViewer   @ NewConsole = true
+  Run = pMarinePID      @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
-  Run = uProcessWatch   @ NewConsole = true
+  Run = uProcessWatch   @ NewConsole = false
 }
 
 //------------------------------------------
@@ -184,7 +184,7 @@ ProcessConfig = pMarineViewer
   action = PSURFACE=true
   action = PSURFACE=false
 
-  button_one   = DEPLOY # DEPLOY=true
+  button_one   = DEPLOY # DEPLOY=true # MOOS_MANUAL_OVERIDE=false
   button_two   = MOOS_MANUAL_OVERIDE=false # RETURN=false
   button_two   = RETURN # RETURN=true
   button_three = SURVEY-true # SURVEY=true
