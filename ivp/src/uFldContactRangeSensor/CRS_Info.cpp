@@ -86,7 +86,7 @@ void showExampleConfigAndExit()
   blu("uFldContactRangeSensor Example MOOS Configuration               ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = uContactRange                                   ");
+  blk("ProcessConfig = uFldContactRangeSensor                          ");
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
