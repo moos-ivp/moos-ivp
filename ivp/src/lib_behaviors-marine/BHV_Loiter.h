@@ -63,13 +63,16 @@ private:  // Configuration Parameters
 
   std::string  m_var_suffix;
 
-  std::string  m_hint_nextpt_color;
-  std::string  m_hint_nextpt_lcolor;
-  std::string  m_hint_vertex_color;
-  std::string  m_hint_edge_color;
-  std::string  m_hint_poly_label;
+  // Visual Hint Defaults
   double       m_hint_vertex_size;
   double       m_hint_edge_size;
+  std::string  m_hint_vertex_color;
+  std::string  m_hint_edge_color;
+  std::string  m_hint_nextpt_color;
+  std::string  m_hint_nextpt_lcolor;
+  double       m_hint_nextpt_vertex_size;
+  std::string  m_hint_poly_label;
+
   std::string  m_loiter_mode;
 
 private:  // State Structures

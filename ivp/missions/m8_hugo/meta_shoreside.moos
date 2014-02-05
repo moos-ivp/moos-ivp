@@ -150,7 +150,8 @@ ProcessConfig = pMarineViewer
   set_pan_y            = 150
   zoom                 = 1.3
   vehicles_shape_scale = 3.5
-  vehicles_name_viewable = names
+  vehicles_name_viewable   = names
+  comms_pulse_viewable_all = false
 
   appcast_viewable     = true
   appcast_color_scheme = indigo

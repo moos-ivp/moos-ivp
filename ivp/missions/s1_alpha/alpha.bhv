@@ -31,9 +31,11 @@ Behavior = BHV_Waypoint
              repeat = 1
  efficiency_measure = internal
 
-    visual_hints = nextpt_color=red, nextpt_lcolor=green
-    visual_hints = vertex_color=blue, edge_color=pink
-    visual_hints = vertex_size=4, edge_size=1
+    visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+//    visual_hints = nextpt_lcolor=green
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
 }
 
 //----------------------------------------------
@@ -51,6 +53,6 @@ Behavior=BHV_Waypoint
            speed = 2.0
   capture_radius = 2.0
      slip_radius = 8.0
-          points = 0,0
+          points = 0,-20
 }
 

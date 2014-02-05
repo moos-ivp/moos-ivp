@@ -11,11 +11,6 @@ TERM_REPORTING = false
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
 
-// MIT Sailing Pavilion (use this one)
-// LatOrigin  = 42.358456 
-// LongOrigin = -71.087589
-
-
 //------------------------------------------
 // Antler configuration  block
 ProcessConfig = ANTLER
@@ -30,38 +25,6 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
-  //Run = uTimerScript    @ NewConsole = false
-  Run = uFldScope       @ NewConsole = false
-  Run = pEchoVar        @ NewConsole = false
-}
-
-//------------------------------------------
-// uFldScope config block
-
-ProcessConfig = uFldScope
-{
-  AppTick    = 2
-  CommsTick  = 2
-
-  scope = var=NODE_REPORT_LOCAL, key=NAME, fld=TIME, alias=Time
-  scope = var=NODE_REPORT_LOCAL, key=NAME, fld=MODE
-  scope = var=ODOMETRY_REPORT, key=vname, fld=total_dist, alias=TotDist
-  scope = var=ODOMETRY_REPORT, key=vname, fld=trip_dist, alias=TripDist
-  scope = var=SPEED_REPORT, key=vname, fld=avg_spd, alias=Speed
-
-  layout = MODE, Time
-  layout = MODE, Time, speed
-  layout = speed, Mode, trip_dist
-}
-
-//------------------------------------------
-// uTimerScript
-
-ProcessConfig = uTimerScript
-{
-  event = var=DEPLOY, val=true
-  event = var=MOOS_MANUAL_OVERIDE, val=false
-  event = quit
 }
 
 //------------------------------------------
@@ -100,7 +63,7 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  // WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = *_STATUS
   WildCardExclusionLog = true
 }
 
@@ -113,7 +76,7 @@ ProcessConfig = uSimMarine
   CommsTick	= 4
 
   start_x       = 0
-  start_y       = -10
+  start_y       = -25
   start_speed   = 0
   start_heading = 180
 
@@ -200,35 +163,11 @@ ProcessConfig = pMarineViewer
   procs_font_size      = medium
   appcast_font_size    = small
   
-  //datum_viewable = true
-  //datum_size     = 18
-  //gui_size = small
-
-  left_context[survey-point] = DEPLOY=true
-  left_context[survey-point] = MOOS_MANUAL_OVERIDE=false
-  left_context[survey-point] = RETURN=false
-
-  right_context[return] = DEPLOY=true
-  right_context[return] = MOOS_MANUAL_OVERIDE=false
-  right_context[return] = RETURN=false
-
-  scope  = RETURN
-  scope  = WPT_STAT
-  scope  = VIEW_SEGLIST
-  scope  = VIEW_POINT
-  scope  = VIEW_POLYGON
-  scope  = MVIEWER_LCLICK
-  scope  = MVIEWER_RCLICK
+  scope  = MODE
 
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  button_two = RETURN:T # RETURN=true
-  button_three = RETURN:F # RETURN=false
-
-  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
-  action  = RETURN=true
-  action  = UPDATES_RETURN=speed=1.4
+  button_two = RETURN # RETURN=true
 }
 
 //------------------------------------------
@@ -243,54 +182,3 @@ ProcessConfig = pNodeReporter
   platform_type   = KAYAK
   platform_length = 4
 }
-
-
-
-
-//----------------------------------------------------------
-// pEchoVar config block
-//
-// This block is here in conjunction with the pEchoVar
-// documentation to demonstrate functionality of that tool.
-
-ProcessConfig = pEchoVar
-{
-  AppTick = 1
-  CommsTick = 1
-
-  echo = NAV_X     -> NAV_XX
-  echo = NAV_X     -> NAV_XPOS
-  echo = NAV_Y     -> NAV_YY
-  echo = NAV_Y     -> NAV_YPOS
-  //echo = NAV_YY    -> FOOBAR
-  //echo = FOOBAR    -> NAV_Y
-  echo = NAV_SPEED -> NAV_SPEED_ALT
-
-  FLIP:1    = source_variable  = NODE_REPORT_LOCAL
-  FLIP:1    = dest_variable    = FOOBAR
-  FLIP:1    = source_separator = ,                              
-  FLIP:1    = dest_separator   = #                              
-  FLIP:1    = filter = type == kayak                       
-  FLIP:1    = component = X -> xpos
-  FLIP:1    = component = Y -> ypos
-}
-
-
-//----------------------------------------------------------
-// uTermCommand config block
-//
-// This block is here in conjunction with the uTermCommand 
-// documentation to demonstrate functionality of that tool.
-// This mission may be alternately 
-
-ProcessConfig = uTermCommandFoo
-{
-  cmd  = override_true  -->  MOOS_MANUAL_OVERRIDE --> true
-  cmd  = override_false -->  MOOS_MANUAL_OVERRIDE --> false
-  cmd  = deploy_true    -->  DEPLOY --> true
-  cmd  = deploy_false   -->  DEPLOY --> false
-  cmd  = return_true    -->  RETURN --> true
-  cmd  = return_false   -->  RETURN --> false
-}
-
-

@@ -14,8 +14,8 @@ else (${WIN32})
 endif (${WIN32})
 
 SET(SRC
-   CRS_App.cpp
-   CRS_Info.cpp
+   CRS_App_HP.cpp
+   CRS_Info_HP.cpp
    main.cpp
 )
 

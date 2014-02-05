@@ -4,6 +4,9 @@
 pHelmIvP (BHV_AvoidCollision)
   - fixed bug in handling marker configurations
 
+pHelmIvP (BHV_Waypoint)
+  - Added ability to configure the "next waypoint" visual point size
+ 
 
 ------------------------------------------------------------------------------
 TODO

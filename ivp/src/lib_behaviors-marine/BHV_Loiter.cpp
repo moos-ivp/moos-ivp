@@ -70,8 +70,15 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_center_pending    = false;
   m_center_activate   = false;
 
-  m_hint_edge_size    = 1;
-  m_hint_vertex_size  = 1;
+
+  // Visual Hint Defaults
+  m_hint_vertex_size   = 1;
+  m_hint_edge_size     = 1;
+  m_hint_vertex_color  = "dodger_blue";
+  m_hint_edge_color    = "white";
+  m_hint_nextpt_color  = "yellow";
+  m_hint_nextpt_lcolor = "aqua";
+  m_hint_nextpt_vertex_size = 5;
 
   m_waypoint_engine.setPerpetual(true);
   m_waypoint_engine.setRepeatsEndless(true);
@@ -539,6 +546,7 @@ void BHV_Loiter::postViewablePoint()
   view_point.set_label(m_us_name + "_waypoint");
   view_point.set_color("label", m_hint_nextpt_lcolor);
   view_point.set_color("vertex", m_hint_nextpt_color);
+  view_point.set_vertex_size(m_hint_nextpt_vertex_size);
   postMessage("VIEW_POINT", view_point.get_spec());
 }
 
@@ -566,18 +574,20 @@ void BHV_Loiter::handleVisualHint(string hint)
   string param = tolower(stripBlankEnds(biteString(hint, '=')));
   string value = stripBlankEnds(hint);
   
-  if((param == "nextpt_color") && isColor(value))
-    m_hint_nextpt_color = value;
-  else if((param == "nextpt_lcolor") && isColor(value))
-    m_hint_nextpt_lcolor = value;
+  if((param == "vertex_size") && isNumber(value))
+    m_hint_vertex_size = atof(value.c_str());
+  else if((param == "edge_size") && isNumber(value))
+    m_hint_edge_size = atof(value.c_str());
   else if((param == "vertex_color") && isColor(value))
     m_hint_vertex_color = value;
   else if((param == "edge_color") && isColor(value))
     m_hint_edge_color = value;
-  else if((param == "edge_size") && isNumber(value))
-    m_hint_edge_size = atof(value.c_str());
-  else if((param == "vertex_size") && isNumber(value))
-    m_hint_vertex_size = atof(value.c_str());
+  else if((param == "nextpt_color") && isColor(value))
+    m_hint_nextpt_color = value;
+  else if((param == "nextpt_lcolor") && isColor(value))
+    m_hint_nextpt_lcolor = value;
+  else if((param == "nextpt_vertex_size") && isNumber(value))
+    m_hint_nextpt_vertex_size = atof(value.c_str());
   else if(param == "label")
     m_hint_poly_label = value;
 }

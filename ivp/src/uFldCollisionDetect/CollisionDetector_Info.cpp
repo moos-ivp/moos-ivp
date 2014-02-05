@@ -54,7 +54,7 @@ void showHelpAndExit()
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch uCollisionDetector with the given process name         ");
+  blk("      Launch uCollisionDetector with the given process name     ");
   blk("      rather than uCollisionDetector.                           ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
@@ -77,7 +77,6 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("uCollisionDetector Example MOOS Configuration                   ");
   blu("=============================================================== ");
@@ -86,22 +85,24 @@ void showExampleConfigAndExit()
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
-  blk("  COLLISIONRANGE = 10  // range considered a collision          ");
-  blk("  DELAYTIMETOCLEAR = 35  ");
-  blk("     // delay time [seconds] from collision condition clearing to");
-  blk("     removal from AppCasting");
-  blk("  PUBLISHIMMEDIATELY = true ");
-  blk("     // publish the cleared variable to MOOSDB immediately after");
-  blk("     collision condition clears.");
-  blk("   PULSE = TRUE                                                 ");
-  blk("   PULSE_RANGE = 50                                             ");  
-  blk("   PULSE_DURATION = 15                                          ");  
-  blk("                                                                ");  
-  blk("   PUBLISH_PAIRS =  FALSE  //DEFAULT FALSE                      ");
-  blk("   PUBLISH_SINGLE = TRUE   //DEFAULT TRUE                       ");
   blk("                                                                ");
+  blk("  // range considered a collision                               ");
+  blk("  collision_range     = 10                                      ");
   blk("                                                                ");
+  blk("  // Delay time, in seconds, from collision condition clearing  ");
+  blk("  // to removal from AppCasting                                 ");
+  blk("  delay_time_to_clear = 35                                      ");
+  blk("                                                                ");
+  blk("  // Publish the cleared variable to MOOSDB immediately after   ");
+  blk("  // collision condition clears.                                ");
+  blk("  publish_immediately = true                                    ");
+  blk("                                                                ");
+  blk("  pulse = true                                                  ");
+  blk("  pulse_range = 50                                              ");  
+  blk("  pulse_duration = 15                                           ");  
   blk("                                                                ");  
+  blk("  publish_pairs  = false  // default is false                   ");
+  blk("  publish_single = true   // default is true                    ");
   blk("}                                                               ");
 
 exit(0);
@@ -113,7 +114,6 @@ exit(0);
 
 void showInterfaceAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("uCollisionDetector INTERFACE                                    ");
   blu("=============================================================== ");

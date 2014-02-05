@@ -70,10 +70,15 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_var_cyindex     = "CYCLE_INDEX";
   m_var_suffix      = "";
 
-  m_hint_vertex_color = "";
-  m_hint_edge_color   = "";
-  m_hint_vertex_size  = -1;
-  m_hint_edge_size    = -1;
+  // Visual Hint Defaults
+  m_hint_vertex_size   = 3;
+  m_hint_edge_size     = 1;
+  m_hint_vertex_color  = "dodger_blue";
+  m_hint_edge_color    = "white";
+  m_hint_nextpt_color  = "yellow";
+  m_hint_nextpt_lcolor = "aqua";
+  m_hint_nextpt_vertex_size = 5;
+
   m_lead_to_start     = false;
 
   // The completed and perpetual vars are initialized in superclass
@@ -113,9 +118,13 @@ void BHV_Waypoint::onSetParamComplete()
 {
   m_trackpt.set_label(m_us_name + "'s track-point");
   m_trackpt.set_vertex_size(4);
-
+  m_trackpt.set_color("label", m_hint_nextpt_color);
+  m_trackpt.set_color("vertex", m_hint_nextpt_color);
+  
   m_nextpt.set_label(m_us_name + "'s next waypoint");
-  m_nextpt.set_vertex_size(4);
+  m_nextpt.set_vertex_size(m_hint_nextpt_vertex_size);
+  m_nextpt.set_color("vertex", m_hint_nextpt_color);
+  m_nextpt.set_color("label", m_hint_nextpt_lcolor);
 }
 
 //-----------------------------------------------------------
@@ -751,22 +760,21 @@ void BHV_Waypoint::handleVisualHint(string hint)
   string value = stripBlankEnds(hint);
   double dval  = atof(value.c_str());
 
-  if((param == "nextpt_color") && isColor(value)) {
-    m_trackpt.set_color("vertex", hint);
-    m_nextpt.set_color("vertex", hint);
-  }
-  else if((param == "nextpt_lcolor") && isColor(value)) {
-    m_trackpt.set_color("label", hint);
-    m_nextpt.set_color("label", hint);
-  }
+  if((param == "vertex_size") && isNumber(value) && (dval >= 0))
+    m_hint_vertex_size = dval;
+  else if((param == "edge_size") && isNumber(value) && (dval >= 0))
+    m_hint_edge_size = dval;
   else if((param == "vertex_color") && isColor(value))
     m_hint_vertex_color = value;
   else if((param == "edge_color") && isColor(value))
     m_hint_edge_color = value;
-  else if((param == "edge_size") && isNumber(value) && (dval >= 0))
-    m_hint_edge_size = dval;
-  else if((param == "vertex_size") && isNumber(value) && (dval >= 0))
-    m_hint_vertex_size = dval;
+  else if((param == "nextpt_color") && isColor(value)) 
+    m_hint_nextpt_color = value;
+  else if((param == "nextpt_lcolor") && isColor(value)) 
+    m_hint_nextpt_lcolor = value;
+  else if((param == "nextpt_vertex_size") && isNumber(value) && (dval >=0))
+    m_hint_nextpt_vertex_size = dval;
+
 }
 
 

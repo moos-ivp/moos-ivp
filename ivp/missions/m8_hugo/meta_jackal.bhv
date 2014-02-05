@@ -18,7 +18,7 @@ Behavior = BHV_Loiter
      nm_radius = 10
        polygon = pts={-200,-200:30,-60:350,-60:130,-330:-100,-320}, label=loiter 
 
-  visual_hints = nextpt_color=brown, nextpt_lcolor=green
+  visual_hints = nextpt_color=yellow, nextpt_lcolor=aqua
   visual_hints = vertex_color=yellow, edge_color=gray40
   visual_hints = vertex_size=2, edge_size=1
 }

@@ -233,13 +233,15 @@ bool CollisionDetector::OnStartUp()
       m_col_dist = atof(value.c_str());
     }
     else if(param == "DELAY_TIME_TO_CLEAR") {
-      // time delay from collision condition clearing and appcast message clearing
-      // prevents quick collisions from not appearing on appcast or clearing before desired data obtained.
+      // time delay from collision condition clearing and appcast
+      // message clearing prevents quick collisions from not appearing
+      // on appcast or clearing before desired data obtained.
       handled = true;
       m_delay_time_to_clear = atof(value.c_str());
     }
     else if(param == "PUBLISH_IMMEDIATELY") {
-      // option to publish a collision / clear condition to MOOSDB immediately or synchronously with appcast update.
+      // option to publish a collision / clear condition to MOOSDB
+      // immediately or synchronously with appcast update.
       string str = tolower(value);
       if(str == "true"){
 	m_post_immediately = true;
@@ -255,7 +257,8 @@ bool CollisionDetector::OnStartUp()
       m_post_string = str;
     }
     else if(param == "PULSE") {
-      // option to publish a collision / clear condition to MOOSDB immediately or synchronously with appcast update.
+      // option to publish a collision / clear condition to MOOSDB
+      // immediately or synchronously with appcast update.
       string str = tolower(value);
       if(str == "true"){
 	m_pulse_bool = true;

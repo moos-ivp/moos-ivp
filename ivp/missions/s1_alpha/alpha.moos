@@ -129,7 +129,7 @@ ProcessConfig = uSimMarine
   CommsTick	= 4
 
   start_x       = 0
-  start_y       = -10
+  start_y       = -20
   start_speed   = 0
   start_heading = 180
 
@@ -248,8 +248,7 @@ ProcessConfig = pMarineViewer
 
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  button_two = RETURN:T # RETURN=true
-  button_three = RETURN:F # RETURN=false
+  button_two = RETURN # RETURN=true
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
