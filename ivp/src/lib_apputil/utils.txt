@@ -1,9 +1,0 @@
-File                     findRepl  
------------------        --------  
-AppCast.cpp                  2     
-  
-MOOSToUpper
-MOOSTrimWhiteSpace
-MOOSStrCmp
-MOOSChomp
-MOOSIsNumeric
