@@ -66,7 +66,7 @@ killall -9 pParticle uFldContactRangeSensorHP pUUVPath         \
         pWifiCheck uFldMessageSourcer pRangeSensorHandler      \
         pHunterPrey camera_example camera_example_server       \
         camera_example_viewer iHuxley uFldCollisionDetect iSay \
-        uLoadWatch
+        uLoadWatch pPolePath
 
 killall -9 pAntler pLogger 
 
