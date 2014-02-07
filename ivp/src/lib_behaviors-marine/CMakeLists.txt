@@ -78,5 +78,6 @@ TARGET_LINK_LIBRARIES(behaviors-marine
    mbutil
    behaviors
    geometry
+   patterns
    )
 
