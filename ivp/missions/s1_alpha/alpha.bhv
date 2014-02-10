@@ -29,7 +29,6 @@ Behavior = BHV_Waypoint
         slip_radius = 15.0
              points = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
              repeat = 1
- efficiency_measure = internal
 
     visual_hints = nextpt_color=yellow
     visual_hints = nextpt_vertex_size=8
