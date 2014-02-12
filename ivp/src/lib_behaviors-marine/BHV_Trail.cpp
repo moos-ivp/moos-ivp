@@ -62,6 +62,9 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) :
   m_max_range      = 0;
   m_angle_relative = true; // as opposed to angle being absolute
   m_time_on_leg    = 60;
+  m_post_trail_distance_on_idle = false;
+  m_trail_pt_x     = 0;
+  m_trail_pt_y     = 0;
   
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
@@ -127,6 +130,11 @@ bool BHV_Trail::setParam(string param, string param_val)
       return(true);
     }  
   }
+
+  else if(param == "post_trail_distance_on_idle") {
+    return(setBoolean(m_post_trail_distance_on_idle, param_val));
+  }
+
   return(false);
 }
 
@@ -155,28 +163,30 @@ IvPFunction *BHV_Trail::onRunState()
     return(0);
 
   // Calculate the trail point based on trail_angle, trail_range.
-  double posX, posY; 
+  //  double m_trail_pt_x, m_trail_pt_y; 
 
   if(m_angle_relative) {
     double abs_angle = headingToRadians(angle360(m_cnh+m_trail_angle));
-    posX = m_cnx + m_trail_range*cos(abs_angle);
-    posY = m_cny + m_trail_range*sin(abs_angle);
+    m_trail_pt_x = m_cnx + m_trail_range*cos(abs_angle);
+    m_trail_pt_y = m_cny + m_trail_range*sin(abs_angle);
   }
   else 
-    projectPoint(m_trail_angle, m_trail_range, m_cnx, m_cny, posX, posY);
+    projectPoint(m_trail_angle, m_trail_range, m_cnx, m_cny, m_trail_pt_x, m_trail_pt_y);
   
 
-  m_trail_point.set_vertex(posX, posY);
+  m_trail_point.set_vertex(m_trail_pt_x, m_trail_pt_y);
   postViewableTrailPoint();
 
   // double adjusted_angle = angle180(m_cnh + m_trail_angle);
-  // projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, posX, posY);
+  // projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, m_trail_pt_x, m_trail_pt_y);
 
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
   double relevance = getRelevance();
   
   m_cnh =angle360(m_cnh);  
+
+  postRepeatableMessage("TRAIL_CTR", 1);
 
   if(relevance <= 0) {
     postMessage("PURSUIT", 0);
@@ -186,21 +196,19 @@ IvPFunction *BHV_Trail::onRunState()
   postMessage("PURSUIT", 1);
   
   IvPFunction *ipf = 0;
-  
   double head_x = cos(headingToRadians(m_cnh));
   double head_y = sin(headingToRadians(m_cnh));
-  double distance = distPointToPoint(m_osx, m_osy, posX, posY); 
-  bool   outside = (distance > m_radius);   
   
-  postIntMessage("TRAIL_DISTANCE", distance);
-
+  double distance = updateTrailDistance(m_trail_pt_x,m_trail_pt_y);
+  bool   outside = (distance > m_radius);   
+ 
   if(outside) {
     if(distance > m_nm_radius) {  // Outside nm_radius
       postMessage("REGION", "Outside nm_radius");
       
       AOF_CutRangeCPA aof(m_domain);
-      aof.setParam("cnlat", posY);
-      aof.setParam("cnlon", posX);
+      aof.setParam("cnlat", m_trail_pt_y);
+      aof.setParam("cnlon", m_trail_pt_x);
       aof.setParam("cncrs", m_cnh);
       aof.setParam("cnspd", m_cnv);
       aof.setParam("oslat", m_osy);
@@ -223,15 +231,15 @@ IvPFunction *BHV_Trail::onRunState()
     else { // inside nm_radius
       postMessage("REGION", "Inside nm_radius");
       
-      double ahead_by = head_x*(m_osx-posX)+head_y*(m_osy-posY) ;
+      double ahead_by = head_x*(m_osx-m_trail_pt_x)+head_y*(m_osy-m_trail_pt_y) ;
       //bool ahead = (ahead_by > 0);
       
       // head toward point nm_radius ahead of trail point
-      double ppx = head_x*m_nm_radius+posX;
-      double ppy = head_y*m_nm_radius+posY;
+      double ppx = head_x*m_nm_radius+m_trail_pt_x;
+      double ppy = head_y*m_nm_radius+m_trail_pt_y;
       double distp=hypot((ppx-m_osx), (ppy-m_osy));
-      double bear_x = (head_x*m_nm_radius+posX-m_osx)/distp;
-      double bear_y = (head_y*m_nm_radius+posY-m_osy)/distp;
+      double bear_x = (head_x*m_nm_radius+m_trail_pt_x-m_osx)/distp;
+      double bear_y = (head_y*m_nm_radius+m_trail_pt_y-m_osy)/distp;
       double modh = radToHeading(atan2(bear_y,bear_x));
       
       postIntMessage("TRAIL_HEADING", modh);
@@ -326,6 +334,15 @@ void BHV_Trail::onRunToIdleState()
 }
 
 //-----------------------------------------------------------
+// Procedure: onIdleState
+
+void BHV_Trail::onIdleState()
+{
+  if(  m_post_trail_distance_on_idle)
+    updateTrailDistance(
+}
+
+//-----------------------------------------------------------
 // Procedure: getRelevance
 
 double BHV_Trail::getRelevance()
@@ -338,6 +355,7 @@ double BHV_Trail::getRelevance()
     return(1.0);
   
   postIntMessage("TRAIL_RANGE", m_contact_range );
+  postIntMessage("MAX_RANGE", m_max_range );
   
   if(m_contact_range < m_max_range)
     return(1.0);
@@ -366,3 +384,10 @@ void BHV_Trail::postErasableTrailPoint()
   postMessage("VIEW_POINT", spec);
 }
 
+double  BHV_Trail::updateTrailDistance(double m_trail_pt_x, double m_trail_pt_y)
+{
+
+  double distance = distPointToPoint(m_osx, m_osy, m_trail_pt_x, m_trail_pt_y); 
+  postIntMessage("TRAIL_DISTANCE", distance);
+  return distance;
+}
