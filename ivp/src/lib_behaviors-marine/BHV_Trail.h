@@ -44,7 +44,7 @@ protected:
 
   void    postViewableTrailPoint();
   void    postErasableTrailPoint();
-  double  updateTrailDistance(double,double);  
+  double  updateTrailDistance();  
  protected: // State variables
 
   XYPoint m_trail_point;
@@ -56,10 +56,10 @@ private: // Configuration parameters
   double  m_nm_radius;
   double  m_max_range;
   double  m_max_util_cpa_dist;
-  double m_trail_pt_x;
-  double m_trail_pt_y;
+  double  m_trail_pt_x;
+  double  m_trail_pt_y;
   bool    m_angle_relative;
-  bool    m_post_trail_distance_on_idle = false;
+  bool    m_post_trail_distance_on_idle;
 };
 #endif
 

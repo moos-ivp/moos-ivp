@@ -132,7 +132,7 @@ bool BHV_Trail::setParam(string param, string param_val)
   }
 
   else if(param == "post_trail_distance_on_idle") {
-    return(setBoolean(m_post_trail_distance_on_idle, param_val));
+    return(setBooleanOnString(m_post_trail_distance_on_idle, param_val));
   }
 
   return(false);
@@ -199,7 +199,7 @@ IvPFunction *BHV_Trail::onRunState()
   double head_x = cos(headingToRadians(m_cnh));
   double head_y = sin(headingToRadians(m_cnh));
   
-  double distance = updateTrailDistance(m_trail_pt_x,m_trail_pt_y);
+  double distance = updateTrailDistance();
   bool   outside = (distance > m_radius);   
  
   if(outside) {
@@ -339,7 +339,7 @@ void BHV_Trail::onRunToIdleState()
 void BHV_Trail::onIdleState()
 {
   if(  m_post_trail_distance_on_idle)
-    updateTrailDistance(
+    updateTrailDistance();
 }
 
 //-----------------------------------------------------------
@@ -384,7 +384,7 @@ void BHV_Trail::postErasableTrailPoint()
   postMessage("VIEW_POINT", spec);
 }
 
-double  BHV_Trail::updateTrailDistance(double m_trail_pt_x, double m_trail_pt_y)
+double  BHV_Trail::updateTrailDistance()
 {
 
   double distance = distPointToPoint(m_osx, m_osy, m_trail_pt_x, m_trail_pt_y); 
