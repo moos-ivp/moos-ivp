@@ -62,7 +62,7 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) :
   m_max_range      = 0;
   m_angle_relative = true; // as opposed to angle being absolute
   m_time_on_leg    = 60;
-  m_post_trail_distance_on_idle = false;
+  m_post_trail_distance_on_idle = true;
   m_trail_pt_x     = 0;
   m_trail_pt_y     = 0;
   
@@ -162,20 +162,7 @@ IvPFunction *BHV_Trail::onRunState()
   if(m_extrapolate && m_extrapolator.isDecayMaxed())
     return(0);
 
-  // Calculate the trail point based on trail_angle, trail_range.
-  //  double m_trail_pt_x, m_trail_pt_y; 
-
-  if(m_angle_relative) {
-    double abs_angle = headingToRadians(angle360(m_cnh+m_trail_angle));
-    m_trail_pt_x = m_cnx + m_trail_range*cos(abs_angle);
-    m_trail_pt_y = m_cny + m_trail_range*sin(abs_angle);
-  }
-  else 
-    projectPoint(m_trail_angle, m_trail_range, m_cnx, m_cny, m_trail_pt_x, m_trail_pt_y);
-  
-
-  m_trail_point.set_vertex(m_trail_pt_x, m_trail_pt_y);
-  postViewableTrailPoint();
+  calculateTrailPoint();
 
   // double adjusted_angle = angle180(m_cnh + m_trail_angle);
   // projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, m_trail_pt_x, m_trail_pt_y);
@@ -338,7 +325,9 @@ void BHV_Trail::onRunToIdleState()
 
 void BHV_Trail::onIdleState()
 {
-  if(  m_post_trail_distance_on_idle)
+  updatePlatformInfo();
+  calculateTrailPoint();
+  if(m_post_trail_distance_on_idle)
     updateTrailDistance();
 }
 
@@ -386,8 +375,24 @@ void BHV_Trail::postErasableTrailPoint()
 
 double  BHV_Trail::updateTrailDistance()
 {
-
   double distance = distPointToPoint(m_osx, m_osy, m_trail_pt_x, m_trail_pt_y); 
   postIntMessage("TRAIL_DISTANCE", distance);
   return distance;
+}
+
+void BHV_Trail::calculateTrailPoint()
+{
+  // Calculate the trail point based on trail_angle, trail_range.
+  //  double m_trail_pt_x, m_trail_pt_y; 
+  
+  if(m_angle_relative) {
+    double abs_angle = headingToRadians(angle360(m_cnh+m_trail_angle));
+    m_trail_pt_x = m_cnx + m_trail_range*cos(abs_angle);
+    m_trail_pt_y = m_cny + m_trail_range*sin(abs_angle);
+  }
+  else 
+    projectPoint(m_trail_angle, m_trail_range, m_cnx, m_cny, m_trail_pt_x, m_trail_pt_y);
+
+  m_trail_point.set_vertex(m_trail_pt_x, m_trail_pt_y);
+  postViewableTrailPoint();
 }

@@ -45,6 +45,7 @@ protected:
   void    postViewableTrailPoint();
   void    postErasableTrailPoint();
   double  updateTrailDistance();  
+  void    calculateTrailPoint();
  protected: // State variables
 
   XYPoint m_trail_point;
