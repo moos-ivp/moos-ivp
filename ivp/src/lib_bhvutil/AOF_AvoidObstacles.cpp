@@ -47,7 +47,7 @@ AOF_AvoidObstacles::AOF_AvoidObstacles(IvPDomain gdomain) : AOF(gdomain)
 
   m_present_heading = 0;
   m_present_heading_set = false;
-  m_present_heading_influence = 0;
+  m_present_heading_influence = 1;
 }
 
 //----------------------------------------------------------------
@@ -229,15 +229,15 @@ int AOF_AvoidObstacles::objectInWhichObstacle(double dx, double dy,
 					      bool use_buffered)
 {
   if(!use_buffered) {
-    int vsize = m_obstacles_orig.size();
-    for(int i=0; i<vsize; i++) {
+    unsigned int vsize = m_obstacles_orig.size();
+    for(unsigned int i=0; i<vsize; i++) {
       if(m_obstacles_orig[i].contains(dx, dy))
 	return(i);
     }
   }
   else {
-    int vsize = m_obstacles_buff.size();
-    for(int i=0; i<vsize; i++) {
+    unsigned int vsize = m_obstacles_buff.size();
+    for(unsigned int i=0; i<vsize; i++) {
       if(m_obstacles_buff[i].contains(dx, dy))
 	return(i);
     }
@@ -265,8 +265,8 @@ unsigned int AOF_AvoidObstacles::pertObstacleCount()
 
 void AOF_AvoidObstacles::applyBuffer()
 {
-  int vsize = m_obstacles_orig.size();
-  for(int i=0; i<vsize; i++) {
+  unsigned int vsize = m_obstacles_orig.size();
+  for(unsigned int i=0; i<vsize; i++) {
     m_obstacles_buff[i] = m_obstacles_orig[i];
     m_obstacles_buff[i].grow_by_amt(m_buffer_dist);
     m_obstacles_buff[i].set_label(m_obstacles_orig[i].get_label()+"_buff");
@@ -363,6 +363,24 @@ void AOF_AvoidObstacles::bufferBackOff(double osx, double osy)
 
 double AOF_AvoidObstacles::evalBox(const IvPBox *b) const
 {
+  double avd_obstacles_utility  = evalAuxObstacles(b);
+  //double steady_heading_utility = evalAuxSteadyHdg(b);
+  double center_points_utility  = evalAuxCtrPoints(b);
+
+  double utility = ((2*avd_obstacles_utility) + 
+		    (2*center_points_utility)) / 4.0;
+
+  return(utility);
+}
+
+
+
+
+//----------------------------------------------------------------
+// Procedure: evalAuxObstacles
+
+double AOF_AvoidObstacles::evalAuxObstacles(const IvPBox* b) const
+{
   double max_utility = 100;
   double min_utility = 0;
 
@@ -372,23 +390,8 @@ double AOF_AvoidObstacles::evalBox(const IvPBox *b) const
   
   double eval_crs = 0;
   double eval_spd = 0;
-  
   m_domain.getVal(crs_ix, b->pt(crs_ix,0), eval_crs);
   m_domain.getVal(spd_ix, b->pt(spd_ix,0), eval_spd);
-
-  // Possibly calculate the "heading delta" and adjust "max_utility" 
-  // based on the heading delta.
-  double heading_delta = -1;
-  if(m_present_heading_set && (m_present_heading_influence > 0)) {
-    heading_delta = angle180(eval_crs - m_present_heading);
-    if(heading_delta < 0)
-      heading_delta *= -1;
-    double pct = (100 - (heading_delta / 180));
-    double base = (100 - m_present_heading_influence);
-    double more = (pct * m_present_heading_influence);
-    max_utility = base + more;
-  }
-
 
   double lowest_utility = 0;
   for(i=0; i<osize; i++) {
@@ -413,17 +416,99 @@ double AOF_AvoidObstacles::evalBox(const IvPBox *b) const
       lowest_utility = i_utility;
   }
       
-  double utility = lowest_utility - (eval_spd * 0.00001);
+  double utility = lowest_utility;
+
+  return(utility);
+}
+
+//----------------------------------------------------------------
+// Procedure: evalAuxCtrPoints
+
+double AOF_AvoidObstacles::evalAuxCtrPoints(const IvPBox* b) const
+{
+  double max_utility = 100;
+  double min_utility = 0;
+
+  unsigned i, osize = m_obstacles_buff.size();
+  if(osize == 0)
+    return(max_utility);
+  
+  double eval_crs = 0;
+  double eval_spd = 0;
+  m_domain.getVal(crs_ix, b->pt(crs_ix,0), eval_crs);
+  m_domain.getVal(spd_ix, b->pt(spd_ix,0), eval_spd);
+
+  double lowest_utility = 0;
+  for(i=0; i<osize; i++) {
+    double i_utility = 0;
+
+    double poly_center_x = m_obstacles_orig[i].get_center_x();
+    double poly_center_y = m_obstacles_orig[i].get_center_y();
+
+    // Determine if the polygon is *presently* on ownhip's port or 
+    // starboard side.
+    double curr_crs_bng_to_poly = relBearing(os_x, os_y, m_present_heading,
+					     poly_center_x, poly_center_y);
+    bool poly_on_port_curr = true;
+    if(curr_crs_bng_to_poly <= 180)
+      poly_on_port_curr = false;
+
+    // Determine if the polygon *would be* on ownhip's port or 
+    // starboard if the crs being evaluated would be true instead.
+    double eval_crs_bng_to_poly = relBearing(os_x, os_y, eval_crs,
+					     poly_center_x, poly_center_y);
+    bool poly_on_port_eval = true;
+    if(eval_crs_bng_to_poly <= 180)
+      poly_on_port_eval = false;
+
+    // If they do not match, set i_utility to min_utility
+    if(poly_on_port_curr != poly_on_port_eval)
+      i_utility = min_utility;
+    else
+      i_utility = max_utility;
+
+    if((i==0) || (i_utility < lowest_utility))
+      lowest_utility = i_utility;
+  }
+      
+  double utility = lowest_utility;
 
   return(utility);
 }
 
 
+//----------------------------------------------------------------
+// Procedure: evalAuxSteadyHdg
 
+double AOF_AvoidObstacles::evalAuxSteadyHdg(const IvPBox* b) const
+{
+  double max_utility = 100;
+  double min_utility = 0;
 
+  double eval_crs = 0;
+  double eval_spd = 0;
+  m_domain.getVal(crs_ix, b->pt(crs_ix,0), eval_crs);
+  m_domain.getVal(spd_ix, b->pt(spd_ix,0), eval_spd);
 
+  // Sanity checks
+  if(!m_present_heading_set)
+    return(max_utility);
+  if(m_present_heading_influence == 0)
+    return(max_utility);
 
+  double heading_delta = angle180(eval_crs - m_present_heading);
+  // heading_delta will range [0,180]
+  if(heading_delta < 0)
+    heading_delta *= -1;
 
+  // pct will range [0,1]. 
+  // 0 when eval heading is totally opposite with present- heading
+  // 1 when eval heading exactly matches present heading
+  
+  double pct = (1.0 - (heading_delta / 180));
 
+  double utility = min_utility + (pct * (max_utility-min_utility));
 
+  return(utility);
+}
 

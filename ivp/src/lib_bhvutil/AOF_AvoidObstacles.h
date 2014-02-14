@@ -52,6 +52,11 @@ public: // virtual functions
 
  protected:
   void   bufferBackOff(double osx, double osy);
+  
+  double evalAuxObstacles(const IvPBox*) const;
+  double evalAuxCtrPoints(const IvPBox*) const;
+  double evalAuxSteadyHdg(const IvPBox*) const;
+
 
 private:
   int    crs_ix;  // Index of "course" variable in IvPDomain
