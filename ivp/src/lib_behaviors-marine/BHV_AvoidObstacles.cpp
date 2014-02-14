@@ -52,7 +52,7 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
   m_buffer_dist        = 0;
   m_activation_dist    = -1;
   m_allowable_ttc      = 20;
-  m_pheading_influence = 10;
+  m_pheading_influence = 90;
 
   m_hint_buff_edge_color = "yellow";
   m_hint_obst_edge_color = "red";
@@ -163,7 +163,7 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   m_aof_avoid->setParam("os_x", os_x);
   m_aof_avoid->setParam("os_y", os_y);
   m_aof_avoid->setParam("present_heading", os_hdg);
-  m_aof_avoid->setParam("present_heading_influence", m_pheading_influence);
+  //m_aof_avoid->setParam("present_heading_influence", m_pheading_influence);
   m_aof_avoid->setParam("buffer_dist", m_buffer_dist);
   m_aof_avoid->setParam("activation_dist", m_activation_dist);
   m_aof_avoid->setParam("allowable_ttc", m_allowable_ttc);
