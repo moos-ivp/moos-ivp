@@ -319,16 +319,16 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
 
     specs_valid = specs_valid && valid;
   }
-  if(specs_valid) 
+  if(specs_valid) {
     sbuild.setIvPBehavior(bhv);
+    // Added Oct 1313 mikerb - allow template behaviors to make an initial
+    // posting on helm startup, even if no instance made on startup (or ever).
+    bhv->onHelmStart();
+    // The behavior may now have some messages (var-data pairs) ready for 
+    // retrieval
+  }
   else
     delete(bhv);
-
-  // Added Oct 1313 mikerb - allow template behaviors to make an initial
-  // posting on helm startup, even if no instance made on startup (or ever).
-  bhv->onHelmStart();
-  // The behavior may now have some messages (var-data pairs) ready for 
-  // retrieval
 
   return(sbuild);
 }
