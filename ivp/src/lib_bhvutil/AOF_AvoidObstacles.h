@@ -38,50 +38,52 @@ public: // virtual functions
   bool   setParam(const std::string&, const std::string&);
   void   addObstacle(const XYPolygon&);
   bool   initialize();
-  
+
   unsigned int obstaclesInRange();
   unsigned int pertObstacleCount();
   unsigned int size() {return(m_obstacles_orig.size());};
   
-  bool   objectInObstacle(double, double, bool=false);
-  int    objectInWhichObstacle(double, double, bool=false);
-  void   applyBuffer();
-  double rangeToObstacle(unsigned int);
-  
-  std::string getObstacleSpec(unsigned int, bool, bool);
+  bool      ownshipInObstacle(bool=false);
+  bool      isObstaclePert(unsigned int ix);
 
- protected:
+  XYPolygon getObstacleOrig(unsigned int ix);
+  XYPolygon getObstacleBuff(unsigned int ix);
+
+ protected: // Initialization Utilities
+  bool   ownshipInObstacle(unsigned int ix, bool=false);
   void   bufferBackOff(double osx, double osy);
+  void   applyBuffer();
   
+ protected: // Evaluation Utilities
   double evalAuxObstacles(const IvPBox*) const;
   double evalAuxCtrPoints(const IvPBox*) const;
-  double evalAuxSteadyHdg(const IvPBox*) const;
 
+ private: // Config variables
+  double m_osx;
+  double m_osy;
+  double m_osh;
+  double m_activation_dist;
+  double m_allowable_ttc;
 
-private:
-  int    crs_ix;  // Index of "course" variable in IvPDomain
-  int    spd_ix;  // Index of "speed"  variable in IvPDomain
-  
-  double os_x;
-  double os_y;
-  double activation_dist;
-  double allowable_ttc;
+  bool   m_osx_set;
+  bool   m_osy_set;
+  double m_osh_set;
+  bool   m_allowable_ttc_set;
+  bool   m_activation_dist_set;
 
   double m_buffer_dist;
-
-  double m_present_heading;
-  double m_present_heading_set;
   double m_present_heading_influence;
 
-  bool   os_x_set;
-  bool   os_y_set;
-  bool   activation_dist_set;
-  bool   allowable_ttc_set;
-
+ private: // State variables
+  int    m_crs_ix;  // Index of "course" variable in IvPDomain
+  int    m_spd_ix;  // Index of "speed"  variable in IvPDomain
+  
+  // A vector over the number of obstacles
   std::vector<XYPolygon> m_obstacles_orig;
   std::vector<XYPolygon> m_obstacles_buff;
   std::vector<bool>      m_obstacles_pert;
-
+  
+  // A vector over 360 (typically) heading values
   std::vector<double>    m_cache_distance;
 };
 

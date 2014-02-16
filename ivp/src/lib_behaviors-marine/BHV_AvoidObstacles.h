@@ -38,7 +38,7 @@ public:
   void         onCompleteState()  {postErasablePolygons();};
 
  protected:
-  void    handleVisualHint(std::string);
+  bool    handleVisualHints(std::string);
   void    postViewablePolygons();
   void    postErasablePolygons();
 
@@ -50,8 +50,15 @@ protected:
   double  m_buffer_dist;        // Between OS and obstacle(s)
   double  m_pheading_influence;
  
-  std:: string m_hint_buff_edge_color;
   std:: string m_hint_obst_edge_color;
+  std:: string m_hint_obst_vertex_color;
+  std:: string m_hint_obst_fill_color;
+  double m_hint_obst_fill_transparency;
+
+  std:: string m_hint_buff_edge_color;
+  std:: string m_hint_buff_vertex_color;
+  std:: string m_hint_buff_fill_color;
+  double m_hint_buff_fill_transparency;
 };
 #endif
 

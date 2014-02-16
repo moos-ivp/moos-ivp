@@ -54,8 +54,15 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
   m_allowable_ttc      = 20;
   m_pheading_influence = 90;
 
-  m_hint_buff_edge_color = "yellow";
-  m_hint_obst_edge_color = "red";
+  m_hint_obst_edge_color   = "white";
+  m_hint_obst_vertex_color = "dodger_blue";
+  m_hint_obst_fill_color   = "gray60";
+  m_hint_obst_fill_transparency = 0.7;
+
+  m_hint_buff_edge_color   = "gray60";
+  m_hint_buff_vertex_color = "dodger_blue";
+  m_hint_buff_fill_color   = "gray70";
+  m_hint_buff_fill_transparency = 0.1;
 
   m_aof_avoid = new AOF_AvoidObstacles(m_domain);
 
@@ -109,13 +116,9 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
     m_buffer_dist = dval;
     return(true);
   }
-  else if(param == "visual_hints")  {
-    vector<string> svector = parseStringQ(val, ',');
-    unsigned int i, vsize = svector.size();
-    for(i=0; i<vsize; i++) 
-      handleVisualHint(svector[i]);
-    return(true);
-  }
+  else if(param == "visual_hints")
+    return(handleVisualHints(val));
+  
   return(false);
 }
 
@@ -133,6 +136,7 @@ void BHV_AvoidObstacles::onIdleState()
 
 IvPFunction *BHV_AvoidObstacles::onRunState() 
 {
+  // Part 1: Sanity checks
   bool ok1, ok2, ok3;
   double os_x   = getBufferDoubleVal("NAV_X", ok1);
   double os_y   = getBufferDoubleVal("NAV_Y", ok2);
@@ -142,31 +146,29 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
     postWMessage("No Ownship NAV_X and/or NAV_Y in info_buffer");
     return(0);
   }
-
   if(!ok3) {
     postWMessage("No Ownship NAV_HEADING in info_buffer");
     return(0);
   }
-
   if(!m_aof_avoid) {
     postWMessage("AOF Not properly set in BHV_AvoidObstacles");
     return(0);
   }
-  
-  if(m_aof_avoid->objectInObstacle(os_x, os_y, false))
-    postWMessage("Ownship position within stated space of obstacle");
-  
-  if(m_aof_avoid->objectInObstacle(os_x, os_y, true))
-    postWMessage("Ownship position within stated BUFFER space of obstacle");
-  
 
+  // Part 2: Build the underlying objective function and initialize
   m_aof_avoid->setParam("os_x", os_x);
   m_aof_avoid->setParam("os_y", os_y);
-  m_aof_avoid->setParam("present_heading", os_hdg);
-  //m_aof_avoid->setParam("present_heading_influence", m_pheading_influence);
+  m_aof_avoid->setParam("os_h", os_hdg);
   m_aof_avoid->setParam("buffer_dist", m_buffer_dist);
   m_aof_avoid->setParam("activation_dist", m_activation_dist);
   m_aof_avoid->setParam("allowable_ttc", m_allowable_ttc);
+
+  // Check if ownship violates either an obstacle or obstacle+buffer. 
+  // Do this before init, because init includes buffer shrinking.
+  if(m_aof_avoid->ownshipInObstacle(false))
+    postWMessage("Ownship position within stated space of obstacle");
+  if(m_aof_avoid->ownshipInObstacle(true))
+    postWMessage("Ownship position within stated BUFFER space of obstacle");
 
   bool ok_init = m_aof_avoid->initialize();
   if(!ok_init) {
@@ -174,17 +176,10 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
     return(0);
   }
 
+  // Part 3: Post the Visuals
   postViewablePolygons();
   
-  int pertinent_obstacles = m_aof_avoid->pertObstacleCount();
-  if(pertinent_obstacles == 0) {
-    postWMessage("BHV_AvoidObstacles: No pertinent obstacles");
-    return(0);
-  }
-
-  if(m_aof_avoid->obstaclesInRange() == 0)
-    return(0);
-  
+  // Par 4: Build the actual objective function
   IvPFunction *ipf = 0;
   OF_Reflector reflector(m_aof_avoid, 1);
 
@@ -208,18 +203,47 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: handleVisualHint()
+// Procedure: handleVisualHints()
 
-void BHV_AvoidObstacles::handleVisualHint(string hint)
+bool BHV_AvoidObstacles::handleVisualHints(string hints)
 {
-  string param = tolower(stripBlankEnds(biteString(hint, '=')));
-  string value = stripBlankEnds(hint);
+  vector<string> svector = parseStringQ(hints, ',');
 
-  if((param == "obstacle_edge_color") && isColor(value))
-    m_hint_obst_edge_color = value;
-  else if((param == "buffer_edge_color") && isColor(value))
-    m_hint_obst_edge_color = value;
+  for(unsigned int i=0; i<svector.size(); i++) {
+
+    string hint = svector[i];
+    string param = tolower(biteStringX(hint, '='));
+    string value = hint;
+    
+    if((param == "obstacle_edge_color") && isColor(value))
+      m_hint_obst_edge_color = value;
+    else if((param == "obstacle_vertex_color") && isColor(value))
+      m_hint_obst_vertex_color = value;
+    else if((param == "obstacle_fill_color") && isColor(value))
+      m_hint_obst_fill_color = value;
+    else if((param == "obstacle_fill_transparency") && isNumber(value)) {
+      double transparency = atof(value.c_str());
+      transparency = vclip(transparency, 0, 1);
+      m_hint_obst_fill_transparency = transparency;
+    }
+    
+    else if((param == "buffer_edge_color") && isColor(value))
+      m_hint_buff_edge_color = value;
+    else if((param == "buffer_vertex_color") && isColor(value))
+      m_hint_buff_vertex_color = value;
+    else if((param == "buffer_fill_color") && isColor(value))
+      m_hint_buff_fill_color = value;
+    else if((param == "buffer_fill_transparency") && isNumber(value)) {
+      double transparency = atof(value.c_str());
+      transparency = vclip(transparency, 0, 1);
+      m_hint_buff_fill_transparency = transparency;
+    }
+    else
+      return(false);
+  }
+  return(true);
 }
+
 
 //-----------------------------------------------------------
 // Procedure: postViewablePolygons
@@ -229,24 +253,41 @@ void BHV_AvoidObstacles::postViewablePolygons()
   if(!m_aof_avoid)
     return;
   
-  unsigned int i;
-  for(i=0; i<m_aof_avoid->size(); i++) {
-    string spec_orig = m_aof_avoid->getObstacleSpec(i,false,true);
-    string spec_buff = m_aof_avoid->getObstacleSpec(i,true, true);
+  // Part 1: Handle the original obstacles (minus the buffer)
+  for(unsigned int i=0; i<m_aof_avoid->size(); i++) {
 
-    double range = m_aof_avoid->rangeToObstacle(i);
-    if(range > m_activation_dist) {
-      spec_orig += ":edge_color,white:edge_color,white";
-      postMessage("VIEW_POLYGON", spec_orig, "orig");
+    XYPolygon orig_poly = m_aof_avoid->getObstacleOrig(i);
+    orig_poly.set_color("edge", m_hint_obst_edge_color);
+    orig_poly.set_color("vertex", m_hint_obst_vertex_color);
+
+    // If the obstacle is pertinent, perhaps draw filled in
+    if(m_aof_avoid->isObstaclePert(i)) {
+      orig_poly.set_color("fill", m_hint_obst_fill_color);
+      orig_poly.set_transparency(m_hint_obst_fill_transparency);
     }
-    else {
-      spec_orig += ":edge_color," + m_hint_obst_edge_color;
-      spec_orig += ":vertex_color," + m_hint_obst_edge_color;
-      spec_buff += ":edge_color," + m_hint_buff_edge_color;
-      spec_buff += ":vertex_color," + m_hint_buff_edge_color;
-      postMessage("VIEW_POLYGON", spec_orig, "orig");
-      postMessage("VIEW_POLYGON", spec_buff, "buff");
+    string spec_orig = orig_poly.get_spec();
+    postMessage("VIEW_POLYGON", spec_orig, "orig");
+  }
+
+  // (If no buffer, don't render buffer obstacles)
+  if(m_buffer_dist <= 0)
+    return;
+
+  // Part 2: Handle the obstacle buffer obstacles
+  for(unsigned int i=0; i<m_aof_avoid->size(); i++) {
+
+    XYPolygon buff_poly = m_aof_avoid->getObstacleBuff(i);
+    buff_poly.set_color("edge", m_hint_buff_edge_color);
+    buff_poly.set_color("vertex", m_hint_buff_vertex_color);
+
+    // If the obstacle is pertinent, perhaps draw filled in
+    if(m_aof_avoid->isObstaclePert(i)) {
+      buff_poly.set_color("fill", m_hint_buff_fill_color);
+      buff_poly.set_transparency(m_hint_buff_fill_transparency);
     }
+
+    string spec_buff = buff_poly.get_spec();
+    postMessage("VIEW_POLYGON", spec_buff, "buff");
   }
 }
 
@@ -261,8 +302,14 @@ void BHV_AvoidObstacles::postErasablePolygons()
   
   unsigned int i, vsize = m_aof_avoid->size();
   for(i=0; i<vsize; i++) {
-    string spec_orig = m_aof_avoid->getObstacleSpec(i, false, false);
-    string spec_buff = m_aof_avoid->getObstacleSpec(i, true, false);
+    XYPolygon orig_poly = m_aof_avoid->getObstacleOrig(i);
+    XYPolygon buff_poly = m_aof_avoid->getObstacleBuff(i);
+
+    orig_poly.set_active(false);
+    buff_poly.set_active(false);
+
+    string spec_orig = orig_poly.get_spec();
+    string spec_buff = buff_poly.get_spec();
 
     postMessage("VIEW_POLYGON", spec_orig, "orig");
     postMessage("VIEW_POLYGON", spec_buff, "buff");
