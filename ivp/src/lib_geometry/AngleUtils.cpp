@@ -380,7 +380,6 @@ double absRelBearing(double osx, double osy, double osh, double cnx, double cny)
     abs_relative_bearing *= -1;
   
   return(abs_relative_bearing);
-
 }
 
 //---------------------------------------------------------------
@@ -395,4 +394,38 @@ double totAbsRelBearing(double osx, double osy, double osh,
   double abs_rel_bearing_cn_os = absRelBearing(cnx, cny, cnh, osx, osy);
 
   return(abs_rel_bearing_os_cn + abs_rel_bearing_cn_os);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: polyAft
+//   Returns: true if the convex polygon is entirely aft of the vehicle
+//            given its present position and heading
+
+
+bool polyAft(double osx, double osy, double osh, XYPolygon poly, double xbng)
+
+{
+  // The xbng parameter generalizes this function. Normally a point is "aft" of
+  // ownship its relative bearing is in the range (90,270). With the xbng 
+  // parameter, "aft" can be generalized, e.g., xbng=10 means the polygon must
+  // be at least 10 degrees abaft of beam.
+
+  if(xbng < -90)
+    xbng = -90;
+  else if(xbng > 90)
+    xbng = 90;
+
+  unsigned int i, psize = poly.size();
+  for(i=0; i<psize; i++) {
+    double vx = poly.get_vx(i);
+    double vy = poly.get_vy(i);
+    
+    double relbng = relBearing(osx, osy, osh, vx, vy);
+    if(relbng <= (90+xbng)) 
+      return(false);
+    if(relbng >= (270-xbng)) 
+      return(false);
+  }
+  return(true);
 }

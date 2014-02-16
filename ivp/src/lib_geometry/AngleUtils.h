@@ -24,6 +24,7 @@
 #define ANGLEUTILS_HEADER
 
 #include "XYPoint.h"
+#include "XYPolygon.h"
 
 double  angleFromThreePoints(double x1, double y1, double x2, double y2,
 			     double x3, double y3);
@@ -49,6 +50,8 @@ double  totAbsRelBearing(double osx, double osy, double osh,
 			 double cnx, double cny, double cnh);
 
 bool    containsAngle(double deg1, double deg2, double deg3);
+
+bool    polyAft(double osx, double osy, double osh, XYPolygon poly, double xbng=0);
 
 #endif
 
