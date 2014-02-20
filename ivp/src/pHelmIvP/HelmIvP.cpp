@@ -978,7 +978,7 @@ bool HelmIvP::OnStartUp()
       handled = setBooleanOnString(m_has_control, value);
     else if(param == "START_ENGAGED")
       handled = setBooleanOnString(m_has_control, value);
-    else if(param == "START_INDRIVE")
+    else if((param == "START_INDRIVE") || (param == "START_IN_DRIVE"))
       handled = setBooleanOnString(m_has_control, value);
     else if(param == "HELM_ALIAS") 
       handled = setNonWhiteVarOnString(m_helm_alias, value);
