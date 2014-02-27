@@ -178,6 +178,7 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
 	   !uniqueNameX(bhv_name, m_bhv_names)) {
 	  cerr << "Duplicate behavior name found: " << bhv_name << endl;
 	  all_builds_ok = false;
+	  addWarning("Duplicate behavior name found: " + bhv_name);
 	}
 	else
 	  bhv_names.insert(bhv_name);
@@ -327,8 +328,9 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     // The behavior may now have some messages (var-data pairs) ready for 
     // retrieval
   }
-  else
+  else {
     delete(bhv);
+  }
 
   return(sbuild);
 }
