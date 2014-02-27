@@ -311,6 +311,14 @@ bool IvPBehavior::setParam(string g_param, string g_val)
 
 string IvPBehavior::isRunnable()
 {
+#if 0
+  if(!m_duration_started) {
+    double curr_time = m_info_buffer->getCurrTime();
+    m_duration_started = true;
+    m_duration_start_time = curr_time;
+  }
+#endif
+
   if(m_completed)
     return("completed");
 
@@ -800,21 +808,34 @@ bool IvPBehavior::durationExceeded()
     return(false);
 
   double curr_time = m_info_buffer->getCurrTime();
-
+  double elapsed_time = 0;
+  // If we're starting the duration clock we don't give credit for 
+  // time spent in the idle state.
   if(!m_duration_started) {
     m_duration_started = true;
     m_duration_start_time = curr_time;
+    m_duration_idle_time = 0;
   }
-
-  double elapsed_time = (curr_time - m_duration_start_time);
+  else
+    elapsed_time = (curr_time - m_duration_start_time);
 
   // If time spent in the idle state is not counted toward the 
   // duration timer, ADD it back here.
   if(!m_duration_idle_decay)
     elapsed_time -= m_duration_idle_time;
   
-#if 1
   double remaining_time = m_duration - elapsed_time;
+
+#if 0
+  string msg1 = "ELAPSED_" + toupper(m_descriptor);
+  postMessage(msg1, elapsed_time);
+
+  string msg2 = "DUR_IDLE_TIME_" + toupper(m_descriptor);
+  postMessage(msg2, m_duration_idle_time);
+
+  string msg3 = "REMAINING_TIME_" + toupper(m_descriptor);
+  postMessage(msg3, remaining_time);
+#endif
 
   if(remaining_time < 0)
     remaining_time = 0;
@@ -824,7 +845,6 @@ bool IvPBehavior::durationExceeded()
     else
       postIntMessage(m_duration_status, remaining_time);
   }
-#endif
 
   if(elapsed_time >= m_duration)
     return(true);
