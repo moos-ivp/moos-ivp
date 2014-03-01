@@ -82,17 +82,9 @@ printf "Done \n"
 #  Part 4: Exiting and/or killing the simulation
 #-------------------------------------------------------
 
-ANSWER="0"
-while [ "${ANSWER}" != "1" -a "${ANSWER}" != "2" ]; do
-    printf "Now what? (1) Exit script (2) Exit and Kill Simulation \n"
-    printf "> "
-    read ANSWER
-done
+uMac targ_shoreside.moos
 
-# %1, %2, %3 matches the PID of the first three jobs in the active
-# jobs list, namely the three pAntler jobs launched in Part 3.
-if [ "${ANSWER}" = "2" ]; then
-    printf "Killing all processes ... \n"
-    kill %1 %2 %3 
-    printf "Done killing processes.   \n"
-fi
+printf "Killing all processes ... \n"
+kill %1 %2 %3 
+printf "Done killing processes.   \n"
+

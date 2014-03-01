@@ -13,14 +13,11 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = false
-  Run = pLogger         @ NewConsole = false
-
   Run = pShare          @ NewConsole = false
   Run = pHostInfo       @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
-  Run = uFldNodeComms   @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
 }
 
 #include plug_pShare.moos
@@ -43,22 +40,6 @@ ProcessConfig = uFldShoreBroker
   BRIDGE   = src=RETURN_$V,  alias=RETURN
 }
 
-//--------------------------------------------------
-// uFldNodeComms Configuration Block
-
-ProcessConfig = uFldNodeComms
-{
-  AppTick       = 2
-  CommsTick     = 2
-
-           COMMS_RANGE = 250
-        CRITICAL_RANGE = 25
-      MIN_MSG_INTERVAL = 20
-        MAX_MSG_LENGTH = 1000
-                GROUPS = true
-  VIEW_NODE_RPT_PULSES = true
-}
-
 //--------------------------------------------------------
 ProcessConfig = pMarineViewer
 {
@@ -72,6 +53,8 @@ ProcessConfig = pMarineViewer
   vehicles_shape_scale = 1.5
   vehicles_name_mode   = names+shortmode
 
+  point_viewable_labels = false
+  polygon_viewable_labels = false
   appcast_viewable     = true
   appcast_color_scheme = indigo
 
@@ -80,7 +63,7 @@ ProcessConfig = pMarineViewer
   ACTION = STATION_ALL = false
   ACTION = STATION_ALL = true
 
-  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true # STATION_KEEP_ALL=false
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
   BUTTON_ONE   = RETURN_ALL=false
   BUTTON_TWO   = RETURN  # RETURN_ALL=true
