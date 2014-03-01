@@ -32,7 +32,6 @@ Behavior = BHV_Loiter
   name      = loiter
   pwt       = 100
   condition = MODE==LOITERING
-  updates   = UP_LOITER
 
    post_suffix = A
          speed = 1.3
@@ -52,15 +51,14 @@ Behavior = BHV_Waypoint
 {
   name      = waypt_return
   pwt       = 100
-  updates   = RETURN_UPDATES
   condition = MODE==RETURNING
   endflag   = STATION_KEEP = true
+  perpetual = true
 
       speed = 1.3
      radius = 3.0
   nm_radius = 15.0
      points = $(START_POS)
-     repeat = 10
        lead = 8
 }
 
@@ -78,6 +76,5 @@ Behavior = BHV_StationKeep
 
        transit_speed = 1.3
           swing_time = 7
-  hibernation_radius = 25
-        visual_hints = vertex_size=0, edge_color=blue
+        visual_hints = vertex_size=0, edge_color=gray50
 }

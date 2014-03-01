@@ -57,16 +57,20 @@ ProcessConfig = pMarineViewer
   polygon_viewable_labels = false
   appcast_viewable     = true
   appcast_color_scheme = indigo
+  hash_delta           = 50
+  hash_viewable        = true
+  hash_shade           = 0.35
 
   SCOPE = PHI_HOST_INFO
 
-  ACTION = STATION_ALL = false
-  ACTION = STATION_ALL = true
-
   BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
   BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
-  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_ONE   = RETURN_ALL=false # STATION_KEEP_ALL=false
+
   BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  BUTTON_TWO   = STATION_KEEP_ALL=false
+
+  BUTTON_THREE = STATION  # STATION_KEEP_ALL=true
 }
 
 

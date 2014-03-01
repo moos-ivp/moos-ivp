@@ -25,7 +25,6 @@ done
 #-------------------------------------------------------
 VNAME1="gilda"  
 VNAME2="henry"  
-GROUP12="GROUP12"
 
 START_POS1="0,0"    
 START_POS2="80,0"   
@@ -38,19 +37,17 @@ if [ "${SHOREONLY}" != "yes" ]; then
     nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$TIME_WARP \
 	VNAME=$VNAME1      START_POS=$START_POS1                \
 	VPORT="9001"       SHARE_LISTEN="9301"                  \
-	VTYPE="kayak"      SHORE_LISTEN=$SHORE_LISTEN           \
-        GROUP=$GROUP12
+	VTYPE="kayak"      SHORE_LISTEN=$SHORE_LISTEN           
 
     nsplug meta_vehicle.moos targ_henry.moos -f WARP=$TIME_WARP \
 	VNAME=$VNAME2      START_POS=$START_POS2                \
 	VPORT="9002"       SHARE_LISTEN="9302"                  \
-	VTYPE="kayak"      SHORE_LISTEN=$SHORE_LISTEN           \
-        GROUP=$GROUP12
+	VTYPE="kayak"      SHORE_LISTEN=$SHORE_LISTEN           
 
-    nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
+    nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME1     \
 	START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
-    
-    nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME2     \
+
+    nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME2     \
 	START_POS=$START_POS2 LOITER_POS=$LOITER_POS2       
 fi    
 
@@ -65,34 +62,22 @@ fi
 #-------------------------------------------------------
 #  Part 3: Launch the processes
 #-------------------------------------------------------
-if [ "${SHOREONLY}" != "yes" ]; then
-    printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
-    pAntler targ_henry.moos >& /dev/null &
-    sleep 0.25
-    printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
-    pAntler targ_gilda.moos >& /dev/null &
-    sleep 0.25
-fi
-
 printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
+sleep 0.5
+printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
+pAntler targ_henry.moos >& /dev/null &
+sleep 0.5
+printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
+pAntler targ_gilda.moos >& /dev/null &
 printf "Done \n"
 
 #-------------------------------------------------------
 #  Part 4: Exiting and/or killing the simulation
 #-------------------------------------------------------
 
-ANSWER="0"
-while [ "${ANSWER}" != "1" -a "${ANSWER}" != "2" ]; do
-    printf "Now what? (1) Exit script (2) Exit and Kill Simulation \n"
-    printf "> "
-    read ANSWER
-done
+uMAC targ_shoreside.moos
 
-# %1, %2, %3 matches the PID of the first three jobs in the active
-# jobs list, namely the three pAntler jobs launched in Part 3.
-if [ "${ANSWER}" = "2" ]; then
-    printf "Killing all processes ... \n"
-    kill %1 %2 %3 
-    printf "Done killing processes.   \n"
-fi
+printf "Killing all processes ... \n"
+kill %1 %2 %3 
+printf "Done killing processes.   \n"
