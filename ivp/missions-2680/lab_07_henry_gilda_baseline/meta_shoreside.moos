@@ -72,7 +72,3 @@ ProcessConfig = pMarineViewer
 
   BUTTON_THREE = STATION  # STATION_KEEP_ALL=true
 }
-
-
-
- 
