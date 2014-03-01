@@ -31,7 +31,6 @@ ProcessConfig = uFldShoreBroker
 {
   AppTick       = 1
   CommsTick     = 1
-
   QBRIDGE  = DEPLOY, NODE_REPORT, NODE_MESSAGE
   QBRIDGE  = STATION_KEEP, APPCAST_REQ
   QBRIDGE  = MOOS_MANUAL_OVERIDE
