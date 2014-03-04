@@ -209,63 +209,65 @@ void HostInfo::generateIPInfoFiles()
   string sys_call;
   string name = m_host_community;
 
+  string bgd = "";
+
   sys_call = "mkdir " + m_tmp_file_dir;
   result = system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo Airport  > ";
-  sys_call += m_tmp_file_dir + "ipinfo_osx_airport_" + name + ".txt &"; 
+  sys_call += m_tmp_file_dir + "ipinfo_osx_airport_" + name + ".txt" + bgd; 
   result = system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo Wi-Fi  > ";
-  sys_call += m_tmp_file_dir + "ipinfo_osx_wifi_" + name + ".txt &"; 
+  sys_call += m_tmp_file_dir + "ipinfo_osx_wifi_" + name + ".txt" + bgd; 
   result = system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo Ethernet  > ";
-  sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet_" + name + ".txt &"; 
+  sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet_" + name + ".txt" + bgd; 
   result = system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo \"Ethernet 1\"  > ";
-  sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet1_" + name + ".txt &"; 
+  sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet1_" + name + ".txt" + bgd; 
   result = system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo \"Ethernet 2\"  > ";
-  sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet2_" + name + ".txt &"; 
+  sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet2_" + name + ".txt" + bgd; 
   result = system(sys_call.c_str());
 
   // Next the various GNU/Linux system calls
   sys_call  = "ifconfig eth0 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
-  sys_call += m_tmp_file_dir + "ipinfo_linux_ethernet0_" + name + ".txt &";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_ethernet0_" + name + ".txt" + bgd;
   result = system(sys_call.c_str());
 
   sys_call  = "ifconfig eth1 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
-  sys_call += m_tmp_file_dir + "ipinfo_linux_ethernet1_" + name + ".txt &";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_ethernet1_" + name + ".txt" + bgd;
   result = system(sys_call.c_str());
 
   sys_call  = "ifconfig wlan0 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
-  sys_call += m_tmp_file_dir + "ipinfo_linux_wifi_" + name + ".txt &";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_wifi_" + name + ".txt" + bgd;
   result = system(sys_call.c_str());
 
   sys_call  = "ifconfig usb0 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
-  sys_call += m_tmp_file_dir + "ipinfo_linux_usb0_" + name + ".txt &";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_usb0_" + name + ".txt" + bgd;
   result = system(sys_call.c_str());
 
   sys_call  = "ifconfig usb1 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
-  sys_call += m_tmp_file_dir + "ipinfo_linux_usb1_" + name + ".txt &";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_usb1_" + name + ".txt" + bgd;
   result = system(sys_call.c_str());
 
   sys_call  = "ifconfig usb2 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
-  sys_call += m_tmp_file_dir + "ipinfo_linux_usb2_" + name + ".txt &";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_usb2_" + name + ".txt" + bgd;
   result = system(sys_call.c_str());
 
   sys_call  = "ifconfig | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
-  sys_call += m_tmp_file_dir + "ipinfo_linux_any_" + name + ".txt &";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_any_" + name + ".txt" + bgd;
   result = system(sys_call.c_str());
 
   m_ip_info_files_generated = true;
