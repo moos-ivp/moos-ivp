@@ -51,7 +51,7 @@ ProcessConfig = pLogger
   AppTick	= 5
   CommsTick	= 5
 
-  File		= DELTA
+  File		= LOG
   PATH		= ./
   SyncLog 	= true @ 0.2
   AsyncLog 	= true
