@@ -7,5 +7,6 @@ ProcessConfig = pShare
   CommsTick  = 2
 
   input = route =  localhost:$(SHARE_LISTEN)
+  input = route =  multicast_8
 }
 
