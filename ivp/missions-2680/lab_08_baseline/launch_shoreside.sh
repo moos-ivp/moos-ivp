@@ -15,7 +15,7 @@ for ARGI; do
 	printf "  --just_build, -j    \n" 
 	printf "  --help, -h          \n" 
 	exit 0;
-    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$COUNT" = 0 ]; then 
+    elif [ "${ARGI//[^0-9]/}" = "$ARGI" ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
 	JUST_BUILD="yes"

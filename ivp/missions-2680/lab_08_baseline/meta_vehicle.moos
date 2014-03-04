@@ -37,7 +37,7 @@ ProcessConfig = pMarineViewer
   vehicles_shape_scale   = 1.5
   vehicles_name_viewable = mode
 
-  SCOPE = PROC_WATCH_SUMMARY
+  SCOPE = PSHARE_INPUT_SUMMARY
 
   ACTION = STATION_ALL = false
   ACTION = STATION_ALL = true
