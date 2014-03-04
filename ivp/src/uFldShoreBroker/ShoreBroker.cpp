@@ -241,6 +241,7 @@ void ShoreBroker::handleMailNodePing(const string& info)
   
   if((m_keyword != "") && (m_keyword != hrecord.getKeyword()))
     status = "keyword_mismatch";
+  hrecord.setStatus(status);
 
   string ping_time = hrecord.getTimeStamp();
   double skew = m_curr_time - (atof(ping_time.c_str()));
@@ -261,6 +262,13 @@ void ShoreBroker::handleMailNodePing(const string& info)
   unsigned int j, jsize = m_node_host_records.size();
   for(j=0; j<jsize; j++) { 
     if(m_node_host_records[j].getCommunity() == hrecord.getCommunity()) {
+      // Begin added mikerb mar0414
+      if(m_node_host_records[j].getHostIP() != hrecord.getHostIP()) {
+	m_node_bridges_made[j] = false;
+	makeBridgeRequest("NODE_BROKER_ACK_$V", hrecord, "NODE_BROKER_ACK"); 
+	m_node_host_records[j] = hrecord;
+      }
+      // End added mikerb mar0414      
       m_node_last_tstamp[j] = m_curr_time;
       m_node_total_skew[j] += skew;
       m_node_pings[j]++;
@@ -271,16 +279,16 @@ void ShoreBroker::handleMailNodePing(const string& info)
 
   // Part 5: Handle the new Node.
   // Prepare to send this host and acknowldgement by posting a 
-  // request to pMOOSBridge for a new variable bridging.
+  // request to pShare for a new variable bridging.
   makeBridgeRequest("NODE_BROKER_ACK_$V", hrecord, "NODE_BROKER_ACK"); 
 
   reportEvent("New node discovered: " + hrecord.getCommunity());
   
   // The incoming host record now becomes the host record of record, so 
   // store its status.
-  hrecord.setStatus(status);
+  //hrecord.setStatus(status);
   
-  // Store the host info.
+  // Store the new host info.
   m_node_host_records.push_back(hrecord);
   m_node_total_skew.push_back(skew);
   m_node_last_tstamp.push_back(m_curr_time);  
