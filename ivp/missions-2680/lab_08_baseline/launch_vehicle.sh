@@ -21,7 +21,7 @@ for ARGI; do
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI:0:7}" = "--shore" ] ; then
+    elif [ "${ARGI:0:8}" = "--shore=" ] ; then
 	SHOREIP="${ARGI#--shore=*}"
     elif [ "${ARGI:0:7}" = "--mport" ] ; then
 	MOOS_PORT="${ARGI#--mport=*}"
@@ -56,12 +56,14 @@ START_POS="$X_START_POS,$Y_START_POS"
 LOITER_POS="x=$X_LOITER_POS,y=$Y_LOITER_POS" 
 
 nsplug meta_vehicle.moos targ_vehicle.moos -f WARP=$TIME_WARP           \
-    VNAME=$FULL_VNAME  VPORT=$MOOS_PORT  LPORT=$UDP_LISTEN_PORT         \
+    VNAME=$FULL_VNAME  VPORT=$MOOS_PORT  SHARE_LISTEN=$UDP_LISTEN_PORT         \
     GROUP=$GROUP START_POS=$START_POS SHOREIP=$SHOREIP
 
 nsplug meta_vehicle.bhv targ_$FULL_VNAME.bhv -f VNAME=$FULL_VNAME       \
     START_POS=$START_POS LOITER_POS=$LOITER_POS       
-    
+   
+echo "Hostname:" $HOSTNAME
+ 
 if [ ${JUST_BUILD} = "yes" ] ; then
     exit 0
 fi

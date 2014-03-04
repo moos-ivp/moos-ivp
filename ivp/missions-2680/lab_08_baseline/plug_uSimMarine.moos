@@ -4,7 +4,7 @@
 ProcessConfig = uSimMarine
 {
   AppTick   = 10
-  CommsTic  = 10
+  CommsTick = 10
 
   START_POS = $(START_POS), 180, 0
   PREFIX    = NAV
