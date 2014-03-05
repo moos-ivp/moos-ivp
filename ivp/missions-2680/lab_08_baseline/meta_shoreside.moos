@@ -22,7 +22,18 @@ Processconfig = ANTLER
 }
 
 #include plug_pHostInfo.moos
-#include plug_pShare.moos
+
+//---------------------------------------------------------
+// pShare Config Block  (Created from Plugin)
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  localhost:$(SHARE_LISTEN)
+  input = route =  multicast_8
+}
 
 //--------------------------------------------------
 // uFldShoreBroker Configuration Block
@@ -71,6 +82,7 @@ ProcessConfig = pMarineViewer
   zoom                   = 0.65
   vehicles_shape_scale   = 1.5
   vehicles_name_viewable = mode
+  polygon_viewable_labels = false
 
   // Appcast configuration
   appcast_height       = 75
