@@ -6,6 +6,8 @@ HOSTNAME=$(hostname -s)
 VNAME=$(id -un)
 MOOS_PORT="9001"
 UDP_LISTEN_PORT="9201"
+SHOREIP="localhost"
+SHORE_LISTEN="9200"
 
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
@@ -14,6 +16,7 @@ for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES]                           \n" $0
 	printf "  --vname=VEHICLE_NAME                  \n" 
+	printf "  --shore=IP address of shoreside       \n" 
 	printf "  --mport=MOOSDB Port #                 \n" 
 	printf "  --lport=pShare UDPListen Port #       \n" 
 	printf "  --just_build, -j                      \n" 
@@ -42,7 +45,6 @@ done
 #  Part 2: Create the .moos and .bhv files. 
 #-------------------------------------------------------
 
-GROUP="GROUP12"
 FULL_VNAME=$VNAME"@"$HOSTNAME
 WPT_COLOR="light_blue"
 
@@ -56,13 +58,12 @@ START_POS="$X_START_POS,$Y_START_POS"
 LOITER_POS="x=$X_LOITER_POS,y=$Y_LOITER_POS" 
 
 nsplug meta_vehicle.moos targ_vehicle.moos -f WARP=$TIME_WARP           \
-    VNAME=$FULL_VNAME  VPORT=$MOOS_PORT  SHARE_LISTEN=$UDP_LISTEN_PORT         \
-    GROUP=$GROUP START_POS=$START_POS SHOREIP=$SHOREIP
+    VNAME=$FULL_VNAME  VPORT=$MOOS_PORT  SHARE_LISTEN=$UDP_LISTEN_PORT  \
+    START_POS=$START_POS SHOREIP=$SHOREIP SHORE_LISTEN=$SHORE_LISTEN
 
 nsplug meta_vehicle.bhv targ_$FULL_VNAME.bhv -f VNAME=$FULL_VNAME       \
     START_POS=$START_POS LOITER_POS=$LOITER_POS       
    
-echo "Hostname:" $HOSTNAME
  
 if [ ${JUST_BUILD} = "yes" ] ; then
     exit 0
