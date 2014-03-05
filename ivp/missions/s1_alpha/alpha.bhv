@@ -15,9 +15,8 @@ Behavior = BHV_Waypoint
   idleflag  = WPTING = idle
   runflag   = WPTING = running
   endflag   = WPTING = end
-  inactiveflag   = WPTING = inactive
+  inactiveflag = WPTING = inactive
 
-  wptflag   = WPT_HIT = $(X),$(Y)
   UPDATES   = WPT_UPDATE
   perpetual = true
 
@@ -32,7 +31,7 @@ Behavior = BHV_Waypoint
 
     visual_hints = nextpt_color=yellow
     visual_hints = nextpt_vertex_size=8
-//    visual_hints = nextpt_lcolor=green
+    visual_hints = nextpt_lcolor=gray70
     visual_hints = vertex_color=dodger_blue, edge_color=white
     visual_hints = vertex_size=5, edge_size=1
 }
@@ -55,35 +54,3 @@ Behavior=BHV_Waypoint
           points = 0,-20
 }
 
-//----------------------------------------------
-Behavior=BHV_Waypoint
-{
-  name       = waypt_return_foo
-  pwt        = 100
-
-           speed = 2.0
-  capture_radius = 2.0
-     slip_radius = 8.0
-          points = 0,-20
-}
-
-//----------------------------------------------
-Behavior=BHV_AvoidObstacles
-{
-  name       = avd_obstacles
-  pwt        = 100
-  
-  condition  = DEPLOY = true
-
-  allowable_ttc = 5
-  buffer_dist   = 10
-  activation_dist = 30
-
-  //visual_hints = obstacle_edge_color = dodger_blue
-  //visual_hints = buffer_edge_color   = green
-
-  polygon = 40,-85: 40,-110: 70,-110: 70,-85: label,obstacle_a
-
-  polygon = 140,-85: 140,-110: 170,-110: 170,-85: label,obstacle_b
-
-}

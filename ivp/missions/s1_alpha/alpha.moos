@@ -128,15 +128,10 @@ ProcessConfig = uSimMarine
   AppTick	= 4
   CommsTick	= 4
 
-  //start_x       = 0
-  //start_y       = -20
-  //start_heading = 180
+  start_x       = 0
+  start_y       = -20
+  start_heading = 180
   start_speed   = 0
-
-  start_x       = 62
-  start_y       = -125
-  start_heading = 225
-
 
   prefix        = NAV
 
