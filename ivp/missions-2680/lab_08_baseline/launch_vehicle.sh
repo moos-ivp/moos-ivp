@@ -4,8 +4,8 @@ TIME_WARP=1
 JUST_BUILD="no"
 HOSTNAME=$(hostname -s)
 VNAME=$(id -un)
-MOOS_PORT="9201"
-UDP_LISTEN_PORT="9301"
+MOOS_PORT="9001"
+UDP_LISTEN_PORT="9201"
 
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
