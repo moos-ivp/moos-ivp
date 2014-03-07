@@ -1,10 +1,14 @@
-// Alpha Configuration file: M. Benjamin
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: alpha.moos
+//-------------------------------------------------
 
-ServerHost = localhost
-ServerPort = 9000
+ServerHost = localhost		
+ServerPort = 9005		
 Community  = alpha
 
 MOOSTimeWarp = 1
+TERM_REPORTING = true
 
 // Forest Lake
 LatOrigin  = 43.825300 
@@ -21,36 +25,62 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = true
-  //Run = pLogger         @ NewConsole = true
-  //Run = uSimMarine	@ NewConsole = true
-  //Run = pNodeReporter	@ NewConsole = true
-  //Run = pMarinePID	@ NewConsole = true
-  Run = pHelmIvP	@ NewConsole = true
-  Run = pMarineViewer	@ NewConsole = true
+  Run = MOOSDB		@ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uSimMarine	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
+  Run = uProcessWatch	@ NewConsole = false
+  Run = pNodeReporter	@ NewConsole = false
+  Run = uLoadWatch      @ NewConsole = false
+  //Run = iSay	        @ NewConsole = true
+  //Run = uXMS	        @ NewConsole = false
+  //Run = uTimerScript    @ NewConsole = false
 }
 
 //------------------------------------------
-// pHostInfo config block
-
-ProcessConfig = pHostInfo
-{
-  AppTick   = 1
-  CommsTick = 1
-}
-
-//------------------------------------------
-// uXMS config block
-
 ProcessConfig = uXMS
 {
-  AppTick   = 1
-  CommsTick = 1
+  AppTick   = 4
+  CommsTick = 4
 
-  DISPLAY_ALL = false
+  var = WPT_EFFICIENCY_LEG
+  var = WPT_EFFICIENCY_SUM
+  var = WPT_EFFICIENCY_VAL
 }
 
-  
+//------------------------------------------
+ProcessConfig = iSay
+{
+  AppTick   = 10
+  CommsTick = 10
+
+  min_utter_interval = 1
+  interval_policy    = from_end
+}
+
+                                                                
+//------------------------------------------
+ProcessConfig = uTimerScript                                    
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  event          = var=SAY_MOOS, val="say={one}",   time=0.25  
+  event          = var=SAY_MOOS, val="say={two}",   time=0.5  
+  event          = var=SAY_MOOS, val="say={three}", time=0.75  
+  event          = var=SAY_MOOS, val="say={four}",  time=1  
+  event          = var=SAY_MOOS, val="say={five},priority=100",  time=1.25  
+  event          = var=SAY_MOOS, val="say={six}",   time=1.5  
+  event          = var=SAY_MOOS, val="say={seven}", time=1.75  
+  event          = var=SAY_MOOS, val="say={eight}", time=2  
+  event          = var=SAY_MOOS, val="say={nine}",  time=2.25  
+  reset_max      = nolimit  
+  reset_time     = all-posted
+  delay_reset    = 0.25
+}                                                               
+
 //------------------------------------------
 // uProcessWatch config block
 
@@ -58,11 +88,14 @@ ProcessConfig = uProcessWatch
 {
   AppTick   = 4
   CommsTick = 4
-  
-  SUMMARY_WAIT = 5
 
-  NOWATCH   = uXMS*
-  WATCH_ALL = true
+  summary_wait = 5
+
+  //nowatch   = uXMS*
+  nowatch   = uMAC*
+  nowatch   = uPokeDB*
+  nowatch   = uTermCommand*
+  watch_all = true
 }
 
 
@@ -71,16 +104,10 @@ ProcessConfig = uProcessWatch
 
 ProcessConfig = pLogger
 {
-  AppTick   = 4
-  CommsTick = 4
+  AppTick   = 8
+  CommsTick = 8
 
-  SyncLog  = true @ 0.2
   AsyncLog = true
-
-  Log = NAV_X @ 0.2
-  Log = NAV_Y @ 0.2
-  Log = NAV_SPEED   @ 0.8
-  Log = NAV_HEADING @ 0.8
 
   // For variables that are published in a bundle on their first post,
   // explicitly declare their logging request
@@ -89,7 +116,7 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  WildCardOmitPattern = *_STATUS
+  // WildCardOmitPattern = *_STATUS
   WildCardExclusionLog = true
 }
 
@@ -101,15 +128,15 @@ ProcessConfig = uSimMarine
   AppTick	= 4
   CommsTick	= 4
 
-  START_X       = 0
-  START_Y       = 0
-  START_SPEED   = 0
-  START_HEADING = 180
+  start_x       = 0
+  start_y       = -20
+  start_heading = 180
+  start_speed   = 0
 
-  PREFIX        = NAV
+  prefix        = NAV
 
-  TURN_RATE     = 40
-  THRUST_MAP    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+  turn_rate     = 40
+  thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
 }
 
 //------------------------------------------
@@ -117,13 +144,18 @@ ProcessConfig = uSimMarine
 
 ProcessConfig = pHelmIvP
 {
+  MaxAppTick = 10
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors  = alpha.bhv
-  Verbose    = verbose
-  Domain     = course:0:359:360
-  Domain     = speed:0:4:21
+  term_report_interval=0
+
+  bhv_dir_not_found_ok = true
+  ivp_behavior_dir = /Users/ddmikerb
+
+  behaviors  = alpha.bhv
+  domain     = course:0:359:360
+  domain     = speed:0:4:21
 }
 
 //------------------------------------------
@@ -168,41 +200,60 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  //TIFF_FILE            = AerialMIT.tif
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
+
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
   vehicle_shape_scale  = 1.5
-  seglist_edge_width   = 2.0
-  seglist_vertex_size  = 4
-  seglist_vertex_color = red
-  point_vertex_size    = 12
   hash_delta           = 50
   hash_shade           = 0.4
-  hash_view            = true
+  hash_viewable        = true
 
-  scope  = WPT_DURATION
-  scope  = WPT_HIT
+  trails_point_size   = 1
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
+  
+  //datum_viewable = true
+  //datum_size     = 18
+  //gui_size = small
+
+  left_context[survey-point] = DEPLOY=true
+  left_context[survey-point] = MOOS_MANUAL_OVERIDE=false
+  left_context[survey-point] = RETURN=false
+
+  right_context[return] = DEPLOY=true
+  right_context[return] = MOOS_MANUAL_OVERIDE=false
+  right_context[return] = RETURN=false
+
+  left_context[polyvert] = POLY_VERT=x=$(XPOS),y=$(YPOS)
+
+  scope  = WPT_EFFICIENCY_LEG
+  scope  = WPT_EFFICIENCY_SUM
+  scope  = WPT_EFFICIENCY_VAL
+  scope  = RETURN
+  scope  = WPT_STAT
   scope  = VIEW_SEGLIST
   scope  = VIEW_POINT
   scope  = VIEW_POLYGON
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
 
-  BUTTON_ONE = DEPLOY # DEPLOY=true
-  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  BUTTON_TWO = RETURN # RETURN=true
+  button_one = DEPLOY # DEPLOY=true
+  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_two = RETURN # RETURN=true
 
-  BUTTON_THREE = SPAWN-OK  # BEARING_POINT = "name=apples#bearing_point=50,-50"
-  BUTTON_FOUR  = SPAWN-BAD # BEARING_POINT = "name=pe%ars#bearing_point=10,-99#show_pt=true"
-
-  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
-  ACTION  = RETURN=true
-  ACTION  = HSLINE=off
-  ACTION  = HSLINE=on
-  ACTION  = UPDATES_RETURN=speed=1.4
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action  = RETURN=true
+  action  = UPDATES_RETURN=speed=1.4
 }
 
 //------------------------------------------
@@ -210,9 +261,27 @@ ProcessConfig = pMarineViewer
 
 ProcessConfig = pNodeReporter
 {
+  MaxAppTick    = 2
   AppTick	= 2
   CommsTick	= 2
 
-  PLATFORM_TYPE   = KAYAK
-  PLATFORM_LENGTH = 4
+  platform_type   = KAYAK
+  platform_length = 4
 }
+
+
+// This block is here in conjunction with the uTermCommand 
+// documentation to demonstrate functionality of that tool.
+// This mission may be alternately 
+
+ProcessConfig = uTermCommandFoo
+{
+  cmd  = override_true  -->  MOOS_MANUAL_OVERRIDE --> true
+  cmd  = override_false -->  MOOS_MANUAL_OVERRIDE --> false
+  cmd  = deploy_true    -->  DEPLOY --> true
+  cmd  = deploy_false   -->  DEPLOY --> false
+  cmd  = return_true    -->  RETURN --> true
+  cmd  = return_false   -->  RETURN --> false
+}
+
+
