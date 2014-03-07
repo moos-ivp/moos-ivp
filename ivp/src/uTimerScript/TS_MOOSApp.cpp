@@ -200,7 +200,7 @@ bool TS_MOOSApp::Iterate()
     m_status_needed = true;
   
   bool all_posted = false;
-  if(m_conditions_ok) 
+  if(!m_paused && m_conditions_ok) 
     all_posted = checkForReadyPostings();
 
   // Do the reset only if all events are posted AND the reset_time is 
@@ -455,6 +455,8 @@ void TS_MOOSApp::addNewEvent(const string& event_str)
   string new_val;
   double new_ptime_min = 0;
   double new_ptime_max = 0;
+  
+  unsigned int amt = 1;
 
   vector<string> svector = parseStringQ(event_str, ',');
   unsigned int i, vsize = svector.size();
@@ -479,6 +481,13 @@ void TS_MOOSApp::addNewEvent(const string& event_str)
       value = findReplace(value, "$(IDX)", idx_string);
       value = findReplace(value, "$[IDX]", idx_string);
       new_val = value;
+    }
+    else if(param == "amt") {
+      unsigned int this_amt = atoi(value.c_str());
+      if(this_amt == 0)
+	reportConfigWarning("Event amt must be > 0: " + value);
+      else
+	amt = this_amt;
     }
     else if(param == "time") {
       if(isNumber(value)) {
@@ -518,12 +527,14 @@ void TS_MOOSApp::addNewEvent(const string& event_str)
     return;
   }
 
-  VarDataPair new_pair(new_var, new_val, "auto");
-  m_pairs.push_back(new_pair);
-  m_ptime.push_back(-1);
-  m_ptime_min.push_back(new_ptime_min);
-  m_ptime_max.push_back(new_ptime_max);
-  m_poked.push_back(false);
+  for(unsigned int k=0; k<amt; k++) {
+    VarDataPair new_pair(new_var, new_val, "auto");
+    m_pairs.push_back(new_pair);
+    m_ptime.push_back(-1);
+    m_ptime_min.push_back(new_ptime_min);
+    m_ptime_max.push_back(new_ptime_max);
+    m_poked.push_back(false);
+  }
 }
 
 //------------------------------------------------------------
