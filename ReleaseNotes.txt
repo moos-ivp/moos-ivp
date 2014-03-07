@@ -13,7 +13,18 @@ pHelmIvP (BHV_Waypoint)
     modified to now allow successive duplicate updates messages to go
     through if the update string passes the case insensitive check for 
     containing the word "toggle".
- 
+
+uTimerScript
+  - Fixed bug where setting configuring paused=true was not being respected. 
+
+uTimerScript
+  - Added ability to add a "multi-event". For example, the line
+    event = var=VALUE, val="id=$[IDX]", time=0, amt=3
+    is the same as having three config lines with
+    event = var=VALUE, val="id=$[IDX]", time=0
+    event = var=VALUE, val="id=$[IDX]", time=0
+    event = var=VALUE, val="id=$[IDX]", time=0
+   
 
 ------------------------------------------------------------------------------
 TODO
