@@ -6,6 +6,13 @@ pHelmIvP (BHV_AvoidCollision)
 
 pHelmIvP (BHV_Waypoint)
   - Added ability to configure the "next waypoint" visual point size
+
+pHelmIvP (BHV_Waypoint)
+  - Added minor new capability to specify the order parameter with the 
+    with the value "toggle". To do this the Helm also had to be slightly
+    modified to now allow successive duplicate updates messages to go
+    through if the update string passes the case insensitive check for 
+    containing the word "toggle".
  
 
 ------------------------------------------------------------------------------
