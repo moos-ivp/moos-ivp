@@ -35,19 +35,7 @@ ProcessConfig = ANTLER
   Run = pNodeReporter	@ NewConsole = false
   Run = uLoadWatch      @ NewConsole = false
   //Run = iSay	        @ NewConsole = true
-  //Run = uXMS	        @ NewConsole = false
   //Run = uTimerScript    @ NewConsole = false
-}
-
-//------------------------------------------
-ProcessConfig = uXMS
-{
-  AppTick   = 4
-  CommsTick = 4
-
-  var = WPT_EFFICIENCY_LEG
-  var = WPT_EFFICIENCY_SUM
-  var = WPT_EFFICIENCY_VAL
 }
 
 //------------------------------------------
