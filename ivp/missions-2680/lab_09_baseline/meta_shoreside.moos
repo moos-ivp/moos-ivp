@@ -121,6 +121,7 @@ ProcessConfig = pMarineViewer
   BUTTON_ONE   = STATION_KEEP_ALL=false
 
   BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  BUTTON_TWO   = STATION_KEEP_ALL=false
   BUTTON_THREE = STATION # STATION_KEEP_ALL=true
 }
 

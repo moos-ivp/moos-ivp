@@ -23,8 +23,8 @@ done
 #-------------------------------------------------------
 #  Part 2: Create the .moos and .bhv files. 
 #-------------------------------------------------------
-VNAME1="henry"           # The first vehicle Community
-VNAME2="gilda"           # The second vehicle Community
+VNAME1="charlie"           # The first vehicle Community
+VNAME2="dana"           # The second vehicle Community
 START_POS1="0,0"         
 START_POS2="25,0"        
 LOITER_POS1="x=0,y=-75"
