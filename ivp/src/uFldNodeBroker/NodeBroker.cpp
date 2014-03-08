@@ -315,7 +315,18 @@ void NodeBroker::handleMailAck(string ack_msg)
     // Now see if the incoming iroute matches one of the try_hosts
     unsigned int j, jsize = m_shore_routes.size();
     for(j=0; j<jsize; j++) {
-      if(iroute == m_shore_routes[j]) {
+
+      // It's possible that the iroute received from the shore ack may read
+      // something like "10.0.0.7:9300" where the IP is the localhost IP.
+      // And tryhost read "localhost:9300". In this case we want the match
+      // to succeed. So we create a "modified shore route", mod_sroute below
+      // which will convert "localhost:9300" to "10.0.0.7.9300" and test 
+      // against that also
+      string mod_sroute = findReplace(m_shore_routes[j], "localhost", 
+				      m_node_host_record.getHostIP());
+
+      if((iroute == m_shore_routes[j]) ||
+	 (iroute == mod_sroute)) {
 	m_shore_community[j] = hrecord.getCommunity();
 	m_shore_pings_ack[j]++;
 	m_shore_ipaddr[j]    = hrecord.getHostIP();
