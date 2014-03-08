@@ -474,12 +474,14 @@ void TS_MOOSApp::addNewEvent(const string& event_str)
 	reportConfigWarning("Event variable has white-space: " + value);
     }
     else if(param == "val") {
+#if 0
       string idx_string = uintToString(m_pairs.size());
       idx_string = padString(idx_string, 3);
       idx_string = findReplace(idx_string, ' ', '0');
       value = findReplace(value, "$$IDX",  idx_string);
       value = findReplace(value, "$(IDX)", idx_string);
       value = findReplace(value, "$[IDX]", idx_string);
+#endif
       new_val = value;
     }
     else if(param == "amt") {
@@ -527,7 +529,19 @@ void TS_MOOSApp::addNewEvent(const string& event_str)
     return;
   }
 
+  string new_val_orig = new_val;
   for(unsigned int k=0; k<amt; k++) {
+    new_val = new_val_orig;
+
+    // Begin expand IDX macro
+    string idx_string = uintToString(m_pairs.size());
+    idx_string = padString(idx_string, 3);
+    idx_string = findReplace(idx_string, ' ', '0');
+    new_val = findReplace(new_val, "$$IDX",  idx_string);
+    new_val = findReplace(new_val, "$(IDX)", idx_string);
+    new_val = findReplace(new_val, "$[IDX]", idx_string);
+    // End expand IDX macro
+
     VarDataPair new_pair(new_var, new_val, "auto");
     m_pairs.push_back(new_pair);
     m_ptime.push_back(-1);
