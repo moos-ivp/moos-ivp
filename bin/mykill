@@ -17,9 +17,9 @@ else
 fi
 
 
-killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav     \
+killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav  \
         pHelm pHelmIvP pMarineViewer iMarineSim uSimMarine  \
-        pLogger iPWMController MOOSDump pAntler             \
+        pLogger iPWMController MOOSDump pAntler umm         \
         iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
         pHuxley pMessageSim pBeamform uTermCommand          \
         pBearingTrack uMissionTester pTestBut pTestBug2
