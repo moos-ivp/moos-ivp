@@ -351,6 +351,11 @@ void HostInfo::postIPInfo()
   hrecord.setTimeWarp(doubleToStringX(m_time_warp,1));
   hrecord.setPShareIRoutes(m_pshare_iroutes);
   m_host_record_all = hrecord.getSpec();
+
+  if(strContains(m_host_record_all, "localhost") && (m_host_ip != ""))
+    m_host_record_all = findReplace(m_host_record_all, "localhost", m_host_ip);
+
+
   Notify("PHI_HOST_INFO", m_host_record_all);
   
   m_ip_info_posted = true;
