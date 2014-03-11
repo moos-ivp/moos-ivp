@@ -68,11 +68,11 @@ Behavior = BHV_Waypoint
           lead = 15
 
 
-#ifdef VNAME janie
-	points = format=lawnmower,label=archiesearch,x=-40,y=-237.5,height=325,width=240,lane_width=40,rows=ns
+#ifdef VNAME jake
+	points = format=lawnmower,label=jakesearch,x=-40,y=-237.5,height=325,width=240,lane_width=40,rows=ns
   visual_hints = vertex_color=yellow, edge_color=green
-#elseifdef VNAME karl
-	points = format=lawnmower,label=bettysearch,x=262.5,y=-237.5,height=325,width=255,lane_width=20,rows=north-south,degs=0
+#elseifdef VNAME kasper
+	points = format=lawnmower,label=kaspersearch,x=262.5,y=-237.5,height=325,width=255,lane_width=20,rows=north-south,degs=0
   visual_hints = vertex_color=yellow, edge_color=gray25
 #endif
 

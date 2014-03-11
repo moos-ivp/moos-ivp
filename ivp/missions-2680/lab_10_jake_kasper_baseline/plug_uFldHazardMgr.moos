@@ -6,9 +6,9 @@ ProcessConfig = uFldHazardMgr
   AppTick   = 2
   CommsTick = 2
 
-#ifdef VNAME janie
+#ifdef VNAME jake
   swath_width = 50
-#elseifdef VNAME karl
+#elseifdef VNAME kasper
   swath_width = 10
 #endif
   sensor_pd   = 0.86

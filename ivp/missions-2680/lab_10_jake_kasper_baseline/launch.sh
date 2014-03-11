@@ -42,22 +42,26 @@ START_POS2="45,0"
 # What is nsplug? Type "nsplug --help" or "nsplug --manual"
 
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
-   VNAME="shoreside" HAZARD_FILE=$HAZARD_FILE   
+    VNAME="shoreside"     HAZARD_FILE=$HAZARD_FILE                \
+    SHOREIP=localhost     SHORE_LISTEN=9200
 
-nsplug meta_vehicle.moos targ_$VNAME1.moos -f WARP=$TIME_WARP  VTYPE=UUV \
-   VNAME=$VNAME1      START_POS=$START_POS1                              \
-   VPORT="9001"       SHARE_LISTEN="9301"    
+nsplug meta_vehicle.moos targ_$VNAME1.moos -f WARP=$TIME_WARP  \
+    VNAME=$VNAME1         START_POS=$START_POS1                \
+    VPORT="9001"          SHARE_LISTEN="9301"                  \
+    SHOREIP="localhost"   SHORE_LISTEN="9200"                  \
+    VTYPE=UUV 
 
-nsplug meta_vehicle.moos targ_$VNAME2.moos -f WARP=$TIME_WARP  VTYPE=UUV \
-   VNAME=$VNAME2      START_POS=$START_POS2                              \
-   VPORT="9002"       SHARE_LISTEN="9302"    
-
+nsplug meta_vehicle.moos targ_$VNAME2.moos -f WARP=$TIME_WARP  \
+    VNAME=$VNAME2         START_POS=$START_POS2                \
+    VPORT="9002"          SHARE_LISTEN="9302"                  \
+    SHOREIP="localhost"   SHORE_LISTEN="9200"                  \
+    VTYPE=UUV 
 
 nsplug meta_vehicle.bhv targ_$VNAME1.bhv -f VNAME=$VNAME1   \
-    START_POS=$START_POS1 VNAME1=$VNAME1 VNAME2=$VNAME2
+    START_POS=$START_POS1 
 
 nsplug meta_vehicle.bhv targ_$VNAME2.bhv -f VNAME=$VNAME2   \
-    START_POS=$START_POS2 VNAME1=$VNAME1 VNAME2=$VNAME2
+    START_POS=$START_POS2 
 
 if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
@@ -68,10 +72,8 @@ fi
 #-------------------------------------------------------
 printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_$VNAME1.moos >& /dev/null &
-sleep .25
 printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_$VNAME2.moos >& /dev/null &
-sleep .25
 printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
 printf "Done \n"
