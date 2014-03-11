@@ -34,8 +34,8 @@ fi
 #-------------------------------------------------------
 #  Part 2: Create the .moos and .bhv files. 
 #-------------------------------------------------------
-VNAME1="janie"      # The first   vehicle community
-VNAME2="karl"       # The second  vehicle community
+VNAME1="jake"      # The first   vehicle community
+VNAME2="kasper"    # The second  vehicle community
 START_POS1="-30,-20"  
 START_POS2="45,0"  
 
