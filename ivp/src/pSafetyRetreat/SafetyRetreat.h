@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #ifndef SAFETY_RETREAT_HEADER
-#define SAFETY_RETREA_HEADER
+#define SAFETY_RETREAT_HEADER
 
 #include "MOOS/libMOOS/MOOSLib.h"
 #include "XYPolygon.h"

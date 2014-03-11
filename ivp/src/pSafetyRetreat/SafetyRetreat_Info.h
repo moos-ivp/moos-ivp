@@ -21,7 +21,7 @@
 /*****************************************************************/
  
 #ifndef P_SAFETY_RETREAT_INFO_HEADER
-#define P_SAFETY_RETREAT_INF_HEADER
+#define P_SAFETY_RETREAT_INFO_HEADER
 
 void showSynopsis();
 void showHelpAndExit();
