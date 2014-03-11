@@ -1,0 +1,17 @@
+// gen_hazards --polygon=-150,-75:-150,-400:400,-400:400,-75 --objects=5,hazard --objects=10,benign
+region = pts={-150,-75:-150,-400:400,-400:400,-75}
+hazard = x=-52,y=-290,label=75,type=hazard
+hazard = x=41,y=-108,label=53,type=hazard
+hazard = x=-64,y=-124,label=98,type=hazard
+hazard = x=232,y=-80,label=91,type=hazard
+hazard = x=239,y=-315,label=19,type=hazard
+hazard = x=-41,y=-246,label=82,type=benign
+hazard = x=185,y=-93,label=64,type=benign
+hazard = x=-150,y=-201,label=11,type=benign
+hazard = x=-76,y=-82,label=14,type=benign
+hazard = x=-73,y=-309,label=28,type=benign
+hazard = x=346,y=-371,label=73,type=benign
+hazard = x=-83,y=-390,label=77,type=benign
+hazard = x=220,y=-201,label=15,type=benign
+hazard = x=134,y=-204,label=95,type=benign
+hazard = x=370,y=-107,label=99,type=benign
