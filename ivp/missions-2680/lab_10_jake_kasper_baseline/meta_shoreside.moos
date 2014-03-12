@@ -170,7 +170,7 @@ ProcessConfig = pMarineViewer
   button_two   = STATION_ALL=false
 
   button_three = STATION_ALL  # STATION_ALL=true
-  button_three = DEPLOY_ALL=false
+  button_three = DEPLOY_ALL=true
   button_three = RETURN_ALL=false
 
   button_four  = REQ_REPORT  # HAZARDSET_REQUEST_ALL=true
