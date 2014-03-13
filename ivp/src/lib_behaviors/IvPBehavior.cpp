@@ -733,7 +733,9 @@ bool IvPBehavior::checkUpdates()
   for(i=0; i<vsize; i++) {
     string new_update_str = new_update_strs[i];
     
-    if((new_update_str != "") && (new_update_str != m_prev_update_str)) {
+    // Added Mar 7th 2014, allow successive duplicate updates with word toggle in it.
+    if(strContains(tolower(new_update_str), "toggle") ||
+       ((new_update_str != "") && (new_update_str != m_prev_update_str))) {
     
       vector<string> uvector = parseString(new_update_str, '#');
       unsigned int j, usize = uvector.size();
@@ -746,8 +748,8 @@ bool IvPBehavior::checkUpdates()
       bool name_mismatch = false;
       for(j=0; j<usize; j++) {
 	string pair  = uvector[j];
-	string param = stripBlankEnds(biteString(pair, '='));
-	string value = stripBlankEnds(pair);
+	string param = biteStringX(pair, '=');
+	string value = pair;
 	if((param=="name") && (value!=m_descriptor))
 	  name_mismatch = true;
       }
@@ -757,8 +759,8 @@ bool IvPBehavior::checkUpdates()
 	bool ok_params = true;
 	for(j=0; j<usize; j++) {
 	  string pair  = uvector[j];
-	  string param = stripBlankEnds(biteString(pair, '='));
-	  string value = stripBlankEnds(pair);
+	  string param = biteStringX(pair, '=');
+	  string value = pair;
 	  bool  result = setParam(param, value);
 	  if(!result)
 	    result = IvPBehavior::setParam(param, value);
