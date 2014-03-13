@@ -110,7 +110,7 @@ int XYHazardSet::findHazard(double gx, double gy) const
   for(i=0; i<vsize; i++) {
     double x2 = m_hazards[i].getX();
     double y2 = m_hazards[i].getY();
-    double dist = distPointToPoint(gy, gy, x2, y2);
+    double dist = distPointToPoint(gx, gy, x2, y2);
     if((i==0) || (dist < closest_dist)) {
       closest_dist = dist;
       closest_ix   = i;
