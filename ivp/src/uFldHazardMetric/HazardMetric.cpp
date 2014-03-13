@@ -185,6 +185,7 @@ bool HazardMetric::OnStartUp()
   str += ",penalty_nonopt_hazard=" + doubleToStringX(m_penalty_nonopt_hazard,5);
   str += ",penalty_false_alarm="   + doubleToStringX(m_penalty_false_alarm,5);
   str += ",penalty_max_time_over=" + doubleToStringX(m_penalty_max_time_over,5);
+  str += ",max_time=" + doubleToStringX(m_max_time,2);
   str += ",penalty_max_time_rate=" + doubleToStringX(m_penalty_max_time_rate,5);
   if(m_transit_path_width > 0)
     str += ",transit_path_width=" + doubleToStringX(m_transit_path_width,5);

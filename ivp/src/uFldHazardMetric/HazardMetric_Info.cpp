@@ -114,6 +114,7 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
+  blk("  APPCAST_REQ = (standard appcast request format)               ");
   blk("  HAZARDSET_REPORT = source=archie#                             ");
   blk("                     x=-151,y=-217.3,label=01#                  ");
   blk("                     x=-178.8,y=-234,label=15#                  ");
@@ -122,6 +123,7 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
+  blk("  APPCAST = (standard appcast format)                           ");
   blk("  HAZARDSET_EVAL_VNAME      = (see below HAZARDSET_EVAL)        ");
   blk("  HAZARDSET_EVAL_FULL_VNAME = (see below HAZARDSET_EVAL_FULL)   ");
   blk("  HAZARDSET_EVAL  = vname=archie,                               ");
@@ -153,6 +155,7 @@ void showInterfaceAndExit()
   blk("             penalty_nonopt_hazard=55,                          ");
   blk("             penalty_false_alarm=35,                            ");
   blk("             penalty_max_time_over=200,                         ");
+  blk("             max_time=600,                                      ");
   blk("             penalty_max_time_rate=0.45,                        ");
   blk("             transit_path_width=25,                             ");
   blk("             search_region = pts={-150,-75:-150,-50:40,-50:40,-75}");
