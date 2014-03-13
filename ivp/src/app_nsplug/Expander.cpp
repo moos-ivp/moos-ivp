@@ -535,6 +535,8 @@ bool Expander::checkIfDefDisj(string entry, map<string, string> macros)
     }
     else if(macros[macro_name] == macro_value)
       ifdef = true;
+    else if(macros[macro_name] == macros[macro_value])
+      ifdef = true;
   }
   
   return(ifdef);
@@ -560,7 +562,8 @@ bool Expander::checkIfDefConj(string entry, map<string, string> macros)
       if(macros[macro_name] == "")
 	ifdef = false;
     }
-    else if(macros[macro_name] != macro_value)
+    else if((macros[macro_name] != macro_value) &&
+	    (macros[macro_name] != macros[macro_value]))
       ifdef = false;
   }
   
