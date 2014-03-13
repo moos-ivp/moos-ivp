@@ -293,8 +293,6 @@ XYSegList stringLawnmower2SegList(string str)
   bool width_set   = false;
   bool height_set  = false;
   bool swath_set   = false;
-  //bool startx_set  = false;
-  //bool starty_set  = false;
 
   string xpos, ypos, vertex_color, edge_color, label, label_color;
   string start, source, msg, edge_size, vertex_size, rows="ew";  
@@ -337,14 +335,10 @@ XYSegList stringLawnmower2SegList(string str)
       swath = dval;
       swath_set = true;
     }
-    else if((param == "startx") && isNumber(value)) {
+    else if((param == "startx") && isNumber(value))
       startx = dval;
-      //startx_set = true;
-    }
-    else if((param == "starty") && isNumber(value)) {
+    else if((param == "starty") && isNumber(value)) 
       starty = dval;
-      //starty_set = true;
-    }
     else if((param == "snap") && isNumber(value) && (dval >= 0))
       snapval = dval;
     else if(param == "active") 
