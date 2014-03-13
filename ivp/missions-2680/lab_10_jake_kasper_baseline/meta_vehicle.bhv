@@ -69,7 +69,7 @@ Behavior = BHV_Waypoint
 
 
 #ifdef VNAME VNAME1
-	points = format=lawnmower,label=jakesearch,x=-40,y=-237.5,height=325,width=240,lane_width=40,rows=ns
+	points = format=lawnmower,label=jakesearch,x=-40,y=-237.5,height=325,width=240,lane_width=40,rows=ns,startx=0,starty=0
   visual_hints = vertex_color=yellow, edge_color=green
 #elseifdef VNAME VNAME2
 	points = format=lawnmower,label=kaspersearch,x=262.5,y=-237.5,height=325,width=255,lane_width=20,rows=north-south,degs=0
