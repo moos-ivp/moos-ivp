@@ -24,6 +24,7 @@
 #define XY_HAZARD_HEADER
 
 #include <string>
+#include <map>
 
 class XYHazard
 {
@@ -48,6 +49,9 @@ class XYHazard
   bool    setWidth(std::string);
   bool    setColor(std::string);
   
+  void    incCounter(unsigned int amt=1, std::string s="generic");
+  void    setCounter(unsigned int, std::string s="generic");
+
   // Getters
   double  getX() const               {return(m_x);};
   double  getY() const               {return(m_y);};
@@ -65,7 +69,7 @@ class XYHazard
 
   std::string getLabel() const       {return(m_label);};
   std::string getType() const        {return(m_type);};
-  std::string gxetSource() const      {return(m_source);};
+  std::string gxetSource() const     {return(m_source);};
   std::string getShape() const       {return(m_shape);};
   std::string getColor() const       {return(m_color);};
 
@@ -73,6 +77,8 @@ class XYHazard
   bool    isSetY() const    {return(m_y_set);};
   bool    isSetHR() const   {return(m_hr_set);};
   bool    isSetType() const {return(m_type != "");};
+
+  unsigned int getCounter(std::string s="generic");
 
   std::string getSpec(std::string noshow="") const;
 
@@ -90,6 +96,8 @@ class XYHazard
   bool         m_aspect_set;
   bool         m_aspect_rng_min_set;
   bool         m_aspect_rng_max_set;
+
+  std::map<std::string, unsigned int> m_counters;
 
   std::string  m_label;
   std::string  m_source;

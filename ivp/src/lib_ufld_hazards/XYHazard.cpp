@@ -188,6 +188,33 @@ bool XYHazard::setColor(string color_str)
 }
 
 //-----------------------------------------------------------
+// Procedure: incCounter
+
+void XYHazard::incCounter(unsigned int amt, string label)
+{
+  m_counters[label] += amt;
+}
+
+//-----------------------------------------------------------
+// Procedure: setCounter
+
+void XYHazard::setCounter(unsigned int amt, string label)
+{
+  m_counters[label] = amt;
+}
+
+//-----------------------------------------------------------
+// Procedure: setCounter
+
+unsigned int XYHazard::getCounter(string label)
+{
+  if(m_counters.count(label))
+    return(m_counters[label]);
+  else
+    return(0);
+}
+
+//-----------------------------------------------------------
 // Procedure: getSpec()
 //      Note: The noshow argument contains a list of comma-separated
 //            fields to NOT include in the string specification
