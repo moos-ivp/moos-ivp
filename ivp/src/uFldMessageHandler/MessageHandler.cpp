@@ -45,6 +45,7 @@ MessageHandler::MessageHandler()
   
   // Initialize config variables
   m_strict_addressing   = false;
+  m_appcast_trunc_msg   = 75;
 }
 
 //---------------------------------------------------------
@@ -112,12 +113,20 @@ bool MessageHandler::OnStartUp()
   for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
     string orig  = *p;
     string line  = *p;
-    string param = toupper(biteStringX(line, '='));
+    string param = tolower(biteStringX(line, '='));
     string value = line;
     
     bool handled = false;
-    if(param == "STRICT_ADDRESSING")
+    if(param == "strict_addressing")
       handled = setBooleanOnString(m_strict_addressing, value);
+
+    else if((param == "appcast_trunc_msg") && isNumber(value)) {
+      int ival = atoi(value.c_str());
+      if(ival < 0)
+	ival = 0;
+      m_appcast_trunc_msg = (unsigned int)(ival);
+      handled = true;
+    }
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -313,7 +322,13 @@ bool MessageHandler::buildReport()
   else {
     for(p2 = m_last_valid_msgs.begin(); p2 != m_last_valid_msgs.end(); p2++) {
       string msg = *p2;
-      m_msgs << "  " << truncString(msg, 70) << endl;
+      string trunc_msg = msg;
+      if(m_appcast_trunc_msg > 0) {
+	trunc_msg = truncString(msg, m_appcast_trunc_msg);
+	if(trunc_msg.length() != msg.length())
+	  trunc_msg += "...";
+      }
+      m_msgs << "  " << trunc_msg << endl;
     }
   }
 
