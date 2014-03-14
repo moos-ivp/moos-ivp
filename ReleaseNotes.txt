@@ -14,6 +14,9 @@ pHelmIvP (BHV_Waypoint)
     through if the update string passes the case insensitive check for 
     containing the word "toggle".
 
+pHelmIvP (BHV_StationKeep)
+  - Minor mod to BHV_StationKeep to allow label colors to be set
+
 uTimerScript
   - Fixed bug where setting configuring paused=true was not being respected. 
 
@@ -24,7 +27,21 @@ uTimerScript
     event = var=VALUE, val="id=$[IDX]", time=0
     event = var=VALUE, val="id=$[IDX]", time=0
     event = var=VALUE, val="id=$[IDX]", time=0
-   
+
+uTimerScript
+  - Added further parameter checking to ensure random variables provide a 
+  legal keyname.
+
+nsplug
+  - Augmented to support 
+    #ifdef A B  where B could also be an incoming MACRO
+    For example 
+    #ifdef VNAME VNAME1 in meta_vehicle.bhv in the kasper-jake mission
+
+uFldMessageHandler
+  - minor mod to uFldMessageHandler to allow control over appcasting output. 
+    User can configure whether reported successful messages are truncated or 
+    not when shown on the appcast report. No effect on messaging functionality.
 
 ------------------------------------------------------------------------------
 TODO
