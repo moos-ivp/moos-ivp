@@ -343,6 +343,28 @@ bool XYPolygon::contains(double x, double y) const
 }
 
 //---------------------------------------------------------------
+// Procedure: contains
+//   Purpose: Returns true if the given polygon is convex and all its
+//            vertices are contained within this polygon.
+
+bool XYPolygon::contains(const XYPolygon& inner_poly) const
+{
+  if(!m_convex_state)
+    return(false);
+  if(!inner_poly.is_convex())
+    return(false);
+
+  unsigned int ip_size = inner_poly.size();
+  for(unsigned int i=0; i<ip_size; i++) {
+    double x = inner_poly.get_vx(i);
+    double y = inner_poly.get_vy(i);
+    if(!contains(x,y))
+      return(false);
+  }
+  return(true);
+}
+
+//---------------------------------------------------------------
 // Procedure: intersects
 
 bool XYPolygon::intersects(const XYPolygon &poly) const

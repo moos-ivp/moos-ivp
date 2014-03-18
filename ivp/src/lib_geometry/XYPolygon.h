@@ -50,6 +50,7 @@ public:
 
 public:
   bool   contains(double, double) const;
+  bool   contains(const XYPolygon&) const;
   bool   intersects(const XYPolygon&) const;
   double dist_to_poly(double px, double py) const;
   double dist_to_poly(double x1, double y1, double x2, double y2) const;
