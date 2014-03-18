@@ -21,7 +21,7 @@
 /*****************************************************************/
 
 #ifndef UFLD_HAZARD_MGR_INFO_HEADER
-#define UFLD_HAZARD_MGG_INFO_HEADER
+#define UFLD_HAZARD_MGR_INFO_HEADER
 
 void showSynopsis();
 void showHelpAndExit();
