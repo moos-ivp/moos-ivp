@@ -19,6 +19,8 @@ pHelmIvP (BHV_StationKeep)
 
 uTimerScript
   - Fixed bug where setting configuring paused=true was not being respected. 
+  - Fixed bug where setting delay_start=N was not being handled properly
+  - Fixed bug where setting delay_reset=N was not being handled properly
 
 uTimerScript
   - Added ability to add a "multi-event". For example, the line
