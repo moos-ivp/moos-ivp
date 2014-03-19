@@ -83,12 +83,12 @@ string RandomVariableSet::addRandomVarUniform(const string& spec)
   vector<string> svector = parseString(spec, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
-    string left  = stripBlankEnds(biteString(svector[i], '='));
-    string right = stripBlankEnds(svector[i]);
+    string left  = biteStringX(svector[i], '=');
+    string right = svector[i];
     if(left == "varname")
       varname = right;
     else if(left == "key")
-      keyname = right;
+      keyname = tolower(right);
     else if((left == "min") && isNumber(right)) {
       minval = atof(right.c_str());
       minval_set = true;
@@ -101,6 +101,12 @@ string RandomVariableSet::addRandomVarUniform(const string& spec)
       return("Bad parametery=value: " + left + "=" + right);
   }
   
+  if(keyname == "")
+    return("key is not specified");
+
+  if((keyname != "at_post") && (keyname != "at_start") && (keyname != "at_reset"))
+    return("unknown random_var key: " + keyname);
+
   if(varname == "")
     return("Unset variable name");
 
@@ -154,7 +160,7 @@ string RandomVariableSet::addRandomVarGaussian(const string& spec)
     if(left == "varname")
       varname = right;
     else if(left == "key")
-      keyname = right;
+      keyname = tolower(right);
     else if((left == "min") && isNumber(right)) {
       minval = atof(right.c_str());
       minval_set = true;
@@ -175,6 +181,12 @@ string RandomVariableSet::addRandomVarGaussian(const string& spec)
       return("Bad parameterx=value: " + left + "=" + right);
   }
   
+  if(keyname == "")
+    return("key is not specified");
+  
+  if((keyname != "at_post") && (keyname != "at_start") && (keyname != "at_reset"))
+    return("unknown random_var key: " + keyname);
+
   if(varname == "")
     return("Unset variable name");
 

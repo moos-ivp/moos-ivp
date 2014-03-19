@@ -349,10 +349,10 @@ bool TS_MOOSApp::OnStartUp()
       string right = value;
       if(!isNumber(left) || ((right != "") && !isNumber(right)))
 	reportConfigWarning("Invalid delay_start provided: " + orig);
+      if(right == "") 
+	right = left;
       double lval  = atof(left.c_str());
       double rval  = atof(right.c_str());
-      if(right == "")
-	right = left;
       if(isNumber(left) && isNumber(right) && (lval >= 0) && (lval <= rval)) {
 	m_delay_start.setParam("min", lval);
 	m_delay_start.setParam("max", rval);
@@ -364,10 +364,10 @@ bool TS_MOOSApp::OnStartUp()
       string right = value;
       if(!isNumber(left) || ((right != "") && !isNumber(right)))
 	reportConfigWarning("Invalid delay_start provided:" + orig);
-      double lval  = atof(left.c_str());
-      double rval  = atof(right.c_str());
       if(right == "")
 	right = left;
+      double lval  = atof(left.c_str());
+      double rval  = atof(right.c_str());
       if(isNumber(left) && isNumber(right) && (lval >= 0) && (lval <= rval)) {
 	m_delay_reset.setParam("min", lval);
 	m_delay_reset.setParam("max", rval);
@@ -1191,12 +1191,15 @@ bool TS_MOOSApp::buildReport()
     s_delay_start += "," + doubleToStringX(m_delay_start.getMaxVal(),1) + "]";
   }
 
+  string s_reset_max = uintToString(m_reset_max);
+
   m_msgs << "Current Script Information: \n";
   m_msgs << "    Elements: " << m_pairs.size() << "(" << step << ")" << endl;
   m_msgs << "     Reinits: " << m_reset_count                  << endl;
   m_msgs << "   Time Warp: " << s_uts_time_warp                << endl;
   m_msgs << " Delay Start: " << s_delay_start                  << endl;
   m_msgs << " Delay Reset: " << s_delay_reset                  << endl;
+  m_msgs << "   Reset Max: " << s_reset_max                  << endl;
   m_msgs << "      Paused: " << boolToString(m_paused)         << endl;
   m_msgs << "ConditionsOK: " << boolToString(m_conditions_ok)  << endl << endl;
 
