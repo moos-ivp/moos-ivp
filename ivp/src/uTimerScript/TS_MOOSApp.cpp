@@ -29,7 +29,6 @@
 
 #ifdef _WIN32
 #include <process.h>
-//    #include "MOOSAppRunnerThread.h"
 #define getpid _getpid
 #endif
 
@@ -37,7 +36,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 #endif
-
 
 using namespace std;
 
@@ -124,6 +122,8 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       if(m_connect_tstamp == 0) 
 	m_connect_tstamp = (MOOSTime() - dval);
     }
+    else if(key == "DB_CLIENTS")
+      checkBlockApps(sval);
     else if(key == "EXITED_NORMALLY") {
       if((sval == GetAppName()) && (msrc == GetAppName()) && m_exit_ready)
 	m_exit_confirmed = true;
@@ -185,7 +185,7 @@ bool TS_MOOSApp::Iterate()
     scheduleEvents(m_shuffle);
   }
 
-  if(m_paused || !m_conditions_ok) {
+  if(m_paused || !m_conditions_ok || (m_block_apps.size() > 0)) {
     double delta_time = 0;
     if(m_previous_time != -1)
       delta_time = m_curr_time - m_previous_time;
@@ -200,7 +200,7 @@ bool TS_MOOSApp::Iterate()
     m_status_needed = true;
   
   bool all_posted = false;
-  if(!m_paused && m_conditions_ok) 
+  if(!m_paused && m_conditions_ok && (m_block_apps.size()==0)) 
     all_posted = checkForReadyPostings();
 
   // Do the reset only if all events are posted AND the reset_time is 
@@ -316,6 +316,11 @@ bool TS_MOOSApp::OnStartUp()
 	else
 	  reportConfigWarning("The reset_var parameter given var with whitespace");
     }
+    else if(param == "block_on") {
+      bool ok_block_app = addBlockApps(value);
+      if(!ok_block_app) 
+	reportConfigWarning("Unhandled or duplicate block_on app: " + value);
+    }
     else if((param == "pause_var") || (param == "pause_variable")) {
       if(!strContainsWhite(value))
 	m_var_pause = value;
@@ -423,11 +428,12 @@ void TS_MOOSApp::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
 
-  m_Comms.Register(m_var_forward, 0);
-  m_Comms.Register(m_var_pause, 0);
-  m_Comms.Register(m_var_reset, 0);
-  m_Comms.Register("DB_UPTIME", 0);
-  m_Comms.Register("EXITED_NORMALLY", 0);
+  Register(m_var_forward, 0);
+  Register(m_var_pause, 0);
+  Register(m_var_reset, 0);
+  Register("DB_UPTIME",  0);
+  Register("DB_CLIENTS", 0);
+  Register("EXITED_NORMALLY", 0);
 
   // Get all the variable names from all present conditions.
   vector<string> all_vars;
@@ -441,7 +447,7 @@ void TS_MOOSApp::registerVariables()
   // Register for all variables found in all conditions.
   unsigned int all_size = all_vars.size();
   for(i=0; i<all_size; i++)
-    m_Comms.Register(all_vars[i], 0);
+    Register(all_vars[i], 0);
  
 }
 
@@ -800,6 +806,44 @@ void TS_MOOSApp::addLogEvent(string var, string sval, double db_uptime)
   if(m_event_log.size() > 8)
     m_event_log.pop_front();
 }
+
+//----------------------------------------------------------------
+// Procedure: addBlockApps
+
+bool TS_MOOSApp::addBlockApps(string block_apps)
+{
+  vector<string> svector = parseString(block_apps, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string block_app = stripBlankEnds(svector[i]);
+    if(strContainsWhite(block_app))
+      return(false);
+    if(m_block_apps.count(block_app) > 0)
+      return(false);
+    m_block_apps.insert(block_app);
+  }
+  return(true);
+}
+
+//----------------------------------------------------------------
+// Procedure: checkBlockApps
+//   Purpose: go through the current list of MOOSDB clients and if any
+//            app is on the block list, remove it from the block list.
+//            The uTimerScript will be "unblocked" when the block list
+//            is empty.
+
+void TS_MOOSApp::checkBlockApps(string db_clients)
+{
+  if(m_block_apps.size() == 0)
+    return;
+
+  vector<string> svector = parseString(db_clients, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    if(m_block_apps.count(svector[i])) {
+      m_block_apps.erase(svector[i]);
+    }
+  }
+}
+
 
 //----------------------------------------------------------------
 // Procedure: jumpToNextPosting()
@@ -1193,15 +1237,35 @@ bool TS_MOOSApp::buildReport()
 
   string s_reset_max = uintToString(m_reset_max);
 
+  string block_apps;
+  set<string>::iterator q;
+  for(q=m_block_apps.begin(); q!=m_block_apps.end(); q++) {
+    if(block_apps != "")
+      block_apps += ",";
+    block_apps += *q;
+  }
+  if(block_apps == "")
+    block_apps = "(ok) no blocking apps";
+
+  string s_paused = "(ok) Not paused";
+  if(m_paused)
+    s_paused = "true";
+
+  string s_conditions = "(ok) No un-met conditions";
+  if(!m_conditions_ok)
+    s_conditions = "false - there are un-met conditions";
+
   m_msgs << "Current Script Information: \n";
-  m_msgs << "    Elements: " << m_pairs.size() << "(" << step << ")" << endl;
-  m_msgs << "     Reinits: " << m_reset_count                  << endl;
-  m_msgs << "   Time Warp: " << s_uts_time_warp                << endl;
-  m_msgs << " Delay Start: " << s_delay_start                  << endl;
-  m_msgs << " Delay Reset: " << s_delay_reset                  << endl;
-  m_msgs << "   Reset Max: " << s_reset_max                  << endl;
-  m_msgs << "      Paused: " << boolToString(m_paused)         << endl;
-  m_msgs << "ConditionsOK: " << boolToString(m_conditions_ok)  << endl << endl;
+  m_msgs << "     Elements: " << m_pairs.size() << "(" << step << ")" << endl;
+  m_msgs << "      Reinits: " << m_reset_count                  << endl;
+  m_msgs << "    Time Warp: " << s_uts_time_warp                << endl;
+  m_msgs << "  Delay Start: " << s_delay_start                  << endl;
+  m_msgs << "  Delay Reset: " << s_delay_reset                  << endl;
+  m_msgs << "    Reset Max: " << s_reset_max                    << endl << endl;
+  m_msgs << "Run criteria:" << endl;
+  m_msgs << "   Block Apps: " << block_apps                     << endl;
+  m_msgs << "       Paused: " << s_paused                       << endl;
+  m_msgs << " ConditionsOK: " << s_conditions                   << endl << endl;
 
   // Part 2: Random Variable information
   ACTable actab(5,2); // 5 columns, 2 space separators
@@ -1234,5 +1298,3 @@ bool TS_MOOSApp::buildReport()
 
   return(true);
 }
-
-

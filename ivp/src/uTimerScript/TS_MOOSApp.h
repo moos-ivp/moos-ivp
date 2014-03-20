@@ -24,6 +24,7 @@
 #define TIMER_SCRIPT_MOOS_APP_HEADER
 
 #include <vector>
+#include <set>
 #include <string>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "VarDataPair.h"
@@ -64,6 +65,8 @@ class TS_MOOSApp : public AppCastingMOOSApp
   void   seedRandom();
   bool   handleMathExpr(std::string&);
   void   addLogEvent(std::string, std::string, double);
+  bool   addBlockApps(std::string);
+  void   checkBlockApps(std::string);
 
  protected: // Functions in support of logic conditions
   bool updateInfoBuffer(CMOOSMsg&);
@@ -122,7 +125,8 @@ class TS_MOOSApp : public AppCastingMOOSApp
 
   InfoBuffer *m_info_buffer;
 
-  std::list<std::string> m_event_log;
+  std::list<std::string>   m_event_log;
+  std::set<std::string>    m_block_apps;
 };
 
 #endif 
