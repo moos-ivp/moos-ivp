@@ -808,6 +808,93 @@ void XYPolygon::determine_convexity()
 
 
 //---------------------------------------------------------------
+// Procedure: max_radius
+//   Purpose: Determine the maximum distance between the center of the
+//            polygon and any of its vertices.
+
+double XYPolygon::max_radius() const
+{
+  double max_dist_so_far = 0;
+  double cx = get_center_x();
+  double cy = get_center_y();
+
+  for(unsigned int i=0; i<m_vx.size(); i++) {
+    double delta_x = cx = m_vx[i];
+    double delta_y = cy = m_vy[i];
+    double dist = hypot(delta_x, delta_y);
+    if(dist > max_dist_so_far)
+      max_dist_so_far = dist;
+  }
+  return(max_dist_so_far);
+}
+
+//---------------------------------------------------------------
+// Procedure: closest_point_on_poly
+//   Purpose: Determine the point on the polygon (on an edge or 
+//            vertex) closest to the given point.
+//   Returns: true if the polygon is convex, false otherwise
+
+bool XYPolygon::closest_point_on_poly(double sx, double sy,
+				      double& rx, double& ry) const
+{
+  // Sanity check - Calcualtions below assume poly is convex.
+  if(!is_convex())
+    return(false);
+
+  // Sanity check - The size of the point vectors should be non-zero. Otherwise
+  // the convexity test would have failed. But we set and check here again.
+  unsigned int vsize = m_vx.size();
+  if(vsize == 0)
+    return(false);
+
+  // Step 1: Get the center of the polygon
+  double cx = get_center_x();
+  double cy = get_center_y();
+
+  // Sanity check - if the given point is the center of the poly
+  // In this case the return point is just one of the vertices.
+  if((sx==cx) && (sy==cy)) {
+    rx = m_vx[0];
+    ry = m_vy[0];
+  }
+
+  // Step 2: Verify our test segment. By default it is sx,sy,cx,cy.
+  // But if sx,sy is inside the polygon, we have to extend it.
+  if(contains(sx, sy)) {
+    // Determine the max pseudo radius of the polygon
+    double maximum_radius = max_radius();
+    double ang = relAng(cx, cy, sx, sy);
+    projectPoint(ang, maximum_radius*2, cx, cy, sx, sy);
+  }
+
+  // Step 3: Now that we have our test segment, find which poly segment
+  // intersects and then find the intersection point.
+  
+
+  for(unsigned ix=0; ix<vsize; ix++) {
+    unsigned int ixx = ix+1;
+    if(ix == vsize-1)
+      ixx = 0;
+    double x3 = m_vx[ix];
+    double y3 = m_vy[ix];
+    double x4 = m_vx[ixx];
+    double y4 = m_vy[ixx];
+
+    bool segs_intersect = segmentsCross(cx,cy,sx,sy,x3,y3,x4,y4);
+    if(segs_intersect) {
+      linesCross(cx,cy,sx,sy,x3,y3,x4,y4,rx,ry);
+      return(true);
+    }
+  }
+  
+  // Final sanity check. One of poly edges should have passed the intersection
+  // test above and set the intersection point, and returned true. If not, 
+  // false is returned here.
+  return(false);
+}
+
+
+//---------------------------------------------------------------
 // Procedure: exportSegList
 //   Purpose: Build an XYSegList from the polygon. Make the first 
 //            point in the XYSegList the point in the polygon

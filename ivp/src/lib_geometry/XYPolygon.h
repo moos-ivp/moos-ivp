@@ -60,6 +60,10 @@ public:
   bool   is_convex() const  {return(m_convex_state);};
   void   determine_convexity();
 
+  double max_radius() const;
+  bool   closest_point_on_poly(double sx, double sy, double& rx, double& ry) const;
+
+
   XYSegList exportSegList(double x=0, double y=0);
 
 protected:
