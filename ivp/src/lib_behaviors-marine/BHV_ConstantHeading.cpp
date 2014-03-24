@@ -90,6 +90,10 @@ bool BHV_ConstantHeading::setParam(string param, string val)
     m_summitdelta = vclip(dval, 0, 100);
     return(true);
   }
+  else if((param == "complete_thresh") && isNumber(val)) {
+    m_complete_thresh = dval;
+    return(true);
+  }
   else if((param == "heading_mismatch_var") && !strContainsWhite(val)) {
     m_heading_mismatch_var = val;
     return(true);
