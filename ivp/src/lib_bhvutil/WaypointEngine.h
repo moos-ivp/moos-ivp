@@ -33,6 +33,7 @@ class WaypointEngine {
 
   void   setSegList(const XYSegList& seglist);
   void   setReverse(bool);
+  void   setReverseToggle();
   void   setCaptureRadius(double);
   void   setNonmonotonicRadius(double);
   void   setSlipRadius(double);
@@ -52,7 +53,7 @@ class WaypointEngine {
   bool   isComplete() const     {return(m_complete);};
   int    getCurrIndex() const   {return(m_curr_ix);};
   bool   currPtChanged();
-  void   resetCPA()       {m_current_cpa = -1;};
+  void   resetCPA()             {m_current_cpa = -1;};
 
   unsigned int size() const     {return(m_seglist_raw.size());};
   unsigned int getCycleCount()  {return(m_cycle_count);};

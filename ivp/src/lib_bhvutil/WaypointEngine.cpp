@@ -114,6 +114,15 @@ void WaypointEngine::setReverse(bool g_val)
   m_complete = false;
 }
 
+
+//-----------------------------------------------------------
+// Procedure: setReverseToggle
+
+void WaypointEngine::setReverseToggle()
+{
+  setReverse(!m_reverse);
+}
+
 //-----------------------------------------------------------
 // Procedure: setCaptureRadius
 
