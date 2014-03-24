@@ -66,6 +66,7 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   // All visual hints initially turned off
   m_hint_vertex_color = "";
   m_hint_edge_color   = "light_blue";
+  m_hint_label_color  = "white";
   m_hint_vertex_size  = 1;
   m_hint_edge_size    = 1;
 
@@ -178,7 +179,6 @@ bool BHV_StationKeep::setParam(string param, string val)
   }
   return(false);
 }
-
 
 //-----------------------------------------------------------
 // Procedure: onIdleToRunState
@@ -391,6 +391,8 @@ void BHV_StationKeep::postStationMessage(bool post)
     poly_str += ",vertex_size=" + doubleToString(m_hint_vertex_size);
   if(m_hint_edge_color != "")
     poly_str += ",edge_color=" + m_hint_edge_color;
+  if(m_hint_label_color != "")
+    poly_str += ",label_color=" + m_hint_label_color;
   if(m_hint_vertex_color != "")
     poly_str += ",vertex_color=" + m_hint_vertex_color;
 
@@ -556,6 +558,8 @@ void BHV_StationKeep::handleVisualHint(string hint)
     m_hint_edge_size = atof(value.c_str());
   else if((param == "vertex_size") && isNumber(value))
     m_hint_vertex_size = atof(value.c_str());
+  else if((param == "label_color") && isColor(value))
+    m_hint_label_color = value;
 }
 
 //-----------------------------------------------------------

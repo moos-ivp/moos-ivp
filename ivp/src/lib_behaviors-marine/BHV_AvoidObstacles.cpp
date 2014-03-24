@@ -300,22 +300,24 @@ void BHV_AvoidObstacles::postErasablePolygons()
   if(!m_aof_avoid)
     return;
   
+  // Part 1: Handle the original obstacles (minus the buffer)
   unsigned int i, vsize = m_aof_avoid->size();
   for(i=0; i<vsize; i++) {
     XYPolygon orig_poly = m_aof_avoid->getObstacleOrig(i);
-    XYPolygon buff_poly = m_aof_avoid->getObstacleBuff(i);
-
     orig_poly.set_active(false);
-    buff_poly.set_active(false);
-
     string spec_orig = orig_poly.get_spec();
-    string spec_buff = buff_poly.get_spec();
-
     postMessage("VIEW_POLYGON", spec_orig, "orig");
+  }
+
+  // (If no buffer, don't render buffer obstacles)
+  if(m_buffer_dist <= 0)
+    return;
+
+  // Part 2: Handle the obstacle buffer obstacles
+  for(i=0; i<vsize; i++) {
+    XYPolygon buff_poly = m_aof_avoid->getObstacleBuff(i);
+    buff_poly.set_active(false);
+    string spec_buff = buff_poly.get_spec();
     postMessage("VIEW_POLYGON", spec_buff, "buff");
   }
 }
-
-
-
-

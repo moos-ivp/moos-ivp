@@ -43,7 +43,7 @@
 #include "XYFormatUtilsPoint.h"
 #include "XYFormatUtilsSegl.h"
 #include "ColorParse.h"
-//---------------
+//---------------------------------
 #include "IO_Utilities.h"
 
 using namespace std;
@@ -237,11 +237,16 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     return(true);
   }
   else if(param == "order") {
+    cout << "Order: " << param_val << endl;
     if((param_val!="reverse") && (param_val!="reversed") && 
-       (param_val!="normal"))
+       (param_val!="normal") && (param_val!="toggle"))
       return(false);
-    bool reverse = ((param_val == "reverse") || (param_val == "reversed"));
-    m_waypoint_engine.setReverse(reverse);
+    if(param_val=="toggle")
+      m_waypoint_engine.setReverseToggle();
+    else {
+      bool reverse = ((param_val == "reverse") || (param_val == "reversed"));
+      m_waypoint_engine.setReverse(reverse);
+    }
     return(true);
   }
   else if((param == "repeat") && (tolower(param_val) == "forever")) {

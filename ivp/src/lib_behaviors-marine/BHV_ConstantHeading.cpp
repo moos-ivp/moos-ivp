@@ -51,6 +51,12 @@ BHV_ConstantHeading::BHV_ConstantHeading(IvPDomain gdomain) :
   m_summitdelta     = 25;
   m_os_heading      = 0;
 
+  // The complete threshold represents an absolute discrepancy between 
+  // the desired and actual heading, below which the behavior will 
+  // complete and post an endflag. By default, by setting to -1, it will
+  // not factor in to the performance of the behavior.
+  m_complete_thresh = -1;  
+
   // The default duration at the IvPBehavior level is "-1", which
   // indicates no duration applied to the behavior by default. By
   // setting to zero here, we force the user to provide a duration
@@ -104,6 +110,12 @@ IvPFunction *BHV_ConstantHeading::onRunState()
     return(0);
   }
 
+  if(m_heading_delta < m_complete_thresh) {
+    setComplete();
+    return(0);
+  }
+
+
   ZAIC_PEAK zaic(m_domain, "course");
   zaic.setSummit(m_desired_heading);
   zaic.setBaseWidth(m_basewidth);
@@ -142,12 +154,12 @@ bool BHV_ConstantHeading::updateInfoIn()
     return(false);
   }
   
-  double delta = angle180(m_os_heading - m_desired_heading);
-  if(delta < 0)
-    delta *= -1; 
+  m_heading_delta = angle180(m_os_heading - m_desired_heading);
+  if(m_heading_delta < 0)
+    m_heading_delta *= -1; 
 
   if(m_heading_mismatch_var != "")
-    postMessage(m_heading_mismatch_var, delta);
+    postMessage(m_heading_mismatch_var, m_heading_delta);
   
   return(true);
 }

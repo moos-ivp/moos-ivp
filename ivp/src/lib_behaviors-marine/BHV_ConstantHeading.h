@@ -44,6 +44,10 @@ public:
   double      m_summitdelta;
   std::string m_heading_mismatch_var;
 
+  double      m_complete_thresh;
+  double      m_heading_delta;
+  
+
  protected: // State variables
   double      m_os_heading;
 };
