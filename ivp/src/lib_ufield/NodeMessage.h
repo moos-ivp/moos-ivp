@@ -35,7 +35,7 @@ class NodeMessage
   void setDestNode(const std::string& s)    {m_dest_node=s;};
   void setDestGroup(const std::string& s)   {m_dest_group=s;};
   void setVarName(const std::string& s)     {m_var_name=s;};
-  void setStringVal(const std::string& s)   {m_string_val=s;};
+  void setStringVal(const std::string&);
 
   void setDoubleVal(double v) {m_double_val=v; m_double_val_set=true;};
 

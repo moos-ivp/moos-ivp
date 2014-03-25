@@ -35,6 +35,18 @@ NodeMessage::NodeMessage()
 }
 
 //------------------------------------------------------------
+// Procedure: setStringVal
+
+void NodeMessage::setStringVal(const string& s)
+{
+  if(!isQuoted(s) && strContains(s, ','))
+    m_string_val = "\"" + s + "\"";
+  else
+    m_string_val = s;
+}
+
+
+//------------------------------------------------------------
 // Procedure: getSpec()
 
 string NodeMessage::getSpec() const
