@@ -50,6 +50,7 @@ public:
   void   rotate(double degrees);
   void   reverse();
   void   new_center(double x, double y);
+  void   new_centroid(double x, double y);
   bool   valid() const;
 
 public:
@@ -61,6 +62,8 @@ public:
   std::string get_vprop(unsigned int) const;
   double get_center_x() const;
   double get_center_y() const;
+  double get_centroid_x() const;
+  double get_centroid_y() const;
   double get_min_x() const;
   double get_max_x() const;
   double get_min_y() const;

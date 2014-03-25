@@ -184,8 +184,8 @@ void XYSegList::shift_vert(double shift_val)
 
 void XYSegList::grow_by_pct(double pct)
 {
-  double cx = get_center_x();
-  double cy = get_center_y();
+  double cx = get_centroid_x();
+  double cy = get_centroid_y();
 
   unsigned int i, vsize = m_vy.size();
   for(i=0; i<vsize; i++)
@@ -197,8 +197,8 @@ void XYSegList::grow_by_pct(double pct)
 
 void XYSegList::grow_by_amt(double amt)
 {
-  double cx = get_center_x();
-  double cy = get_center_y();
+  double cx = get_centroid_x();
+  double cy = get_centroid_y();
 
   unsigned int i, vsize = m_vy.size();
   for(i=0; i<vsize; i++)
@@ -210,8 +210,8 @@ void XYSegList::grow_by_amt(double amt)
 
 void XYSegList::rotate(double degval)
 {
-  double cx = get_center_x();
-  double cy = get_center_y();
+  double cx = get_centroid_x();
+  double cy = get_centroid_y();
 
   unsigned int i, vsize = m_vy.size();
   for(i=0; i<vsize; i++)
@@ -260,6 +260,18 @@ void XYSegList::new_center(double new_cx, double new_cy)
 {
   double diff_x = new_cx - get_center_x();
   double diff_y = new_cy - get_center_y();
+  
+  shift_horz(diff_x);
+  shift_vert(diff_y);
+}
+
+//---------------------------------------------------------------
+// Procedure: new_centroid
+
+void XYSegList::new_centroid(double new_cx, double new_cy)
+{
+  double diff_x = new_cx - get_centroid_x();
+  double diff_y = new_cy - get_centroid_y();
   
   shift_horz(diff_x);
   shift_vert(diff_y);
@@ -360,6 +372,40 @@ double XYSegList::get_center_y() const
       y_low  = m_vy[i];
   }
   return((y_high + y_low) / 2.0);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_centroid_x
+//   Purpose: Return the x center of mass of all points
+
+double XYSegList::get_centroid_x() const
+{
+  unsigned int i, vsize = m_vx.size();
+  if(vsize == 0) 
+    return(0);
+
+  double total = 0;
+  for(i=0; i<vsize; i++) 
+    total += m_vx[i];
+  
+  return(total / ((double)(vsize)));
+}
+
+//---------------------------------------------------------------
+// Procedure: get_centroid_y
+//   Purpose: Return the y center of mass of all points
+
+double XYSegList::get_centroid_y() const
+{
+  unsigned int i, vsize = m_vy.size();
+  if(vsize == 0) 
+    return(0);
+
+  double total = 0;
+  for(i=0; i<vsize; i++) 
+    total += m_vy[i];
+  
+  return(total / ((double)(vsize)));
 }
 
 //---------------------------------------------------------------
