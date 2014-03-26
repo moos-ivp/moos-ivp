@@ -67,10 +67,8 @@ fi
 #-------------------------------------------------------
 printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
-sleep 0.25
 printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_henry.moos >& /dev/null &
-sleep 0.25
 printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_gilda.moos >& /dev/null &
 printf "Done \n"
