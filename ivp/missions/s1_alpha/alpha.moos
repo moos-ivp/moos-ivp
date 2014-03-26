@@ -25,7 +25,7 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = false
+  Run = MOOSDB		@ NewConsole = false, ExtraProcessParams=MDBParams
   Run = pLogger         @ NewConsole = false
   Run = uSimMarine	@ NewConsole = false
   Run = pMarinePID	@ NewConsole = false
@@ -36,6 +36,8 @@ ProcessConfig = ANTLER
   Run = uLoadWatch      @ NewConsole = false
   //Run = iSay	        @ NewConsole = true
   //Run = uTimerScript    @ NewConsole = false
+
+  MDBParams = --response=*:1000
 }
 
 //------------------------------------------
@@ -273,5 +275,3 @@ ProcessConfig = uTermCommandFoo
   cmd  = return_true    -->  RETURN --> true
   cmd  = return_false   -->  RETURN --> false
 }
-
-
