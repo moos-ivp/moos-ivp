@@ -67,6 +67,8 @@ protected:
   double       m_curr_time;
   double       m_start_time;
   double       m_time_warp;
+  double       m_last_iterate_time;
+  double       m_iterate_start_time;
   double       m_last_report_time;
   double       m_term_report_interval;
   bool         m_term_reporting;
