@@ -1,0 +1,15 @@
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/libMOOS/CMakeFiles/MOOS.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/MOOSDB/CMakeFiles/MOOSDB.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/MOOSDB/testing/CMakeFiles/app_test.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/MOOSDB/testing/CMakeFiles/async_test.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/libMOOS/testing/CMakeFiles/binding_test.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/MOOSDB/testing/CMakeFiles/capture_test.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/MOOSDB/testing/CMakeFiles/cmp2sock.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/MOOSDB/testing/CMakeFiles/io_test.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/tools/ktm/CMakeFiles/ktm.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/tools/mtm/CMakeFiles/mtm.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/libMOOS/testing/CMakeFiles/periodic_test.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/libMOOS/testing/CMakeFiles/queue_test.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/MOOSDB/testing/CMakeFiles/reg_test.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/libMOOS/testing/CMakeFiles/suicide_test.dir
+/Users/mikerb/Research/moos-ivp/trunk/MOOS/MOOSCoreMar2413/Core/tools/umm/CMakeFiles/umm.dir
