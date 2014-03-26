@@ -1,1 +1,0 @@
-/usr/bin/g++    -Wall -fPIC -O3 -DNDEBUG -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.9.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names   CMakeFiles/async_test.dir/DBAsyncTest.cpp.o  -o /Users/mikerb/Research/moos-ivp/trunk/bin/tests/async_test  ../../../lib/libMOOS.a -lpthread -lm 
