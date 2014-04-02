@@ -86,6 +86,7 @@ uMAC targ_shoreside.moos
 
 printf "Killing all processes ... \n"
 kill %1 %2 %3 
+mykill
 printf "Done killing processes.   \n"
 
 

@@ -968,6 +968,7 @@ bool HazardSensor_MOOSApp::rollDetectionDiceNormal(unsigned int vix,
   double dice_thresh = prob_falarm;
   if(hazard.isSetHR()) 
     dice_thresh = (prob_falarm + hazard.getResemblance()) / 2;
+  
   return(dice_roll < dice_thresh);
 }
 
