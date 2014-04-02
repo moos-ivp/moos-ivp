@@ -32,7 +32,7 @@ if [ "`uname`" == "Darwin" ] ; then
   echo "Building MOOS for Apple"
 else
   echo "Building MOOS for Linux"
-  MOOS_CXX_FLAGS="-fPIC"
+  MOOS_CXX_FLAGS="-fPIC -Wno-longlong"
 fi
 
 #===================================================================
@@ -43,7 +43,7 @@ cd "${INVOC_ABS_DIR}/MOOS/MOOSCore"
 
 echo "Invoking cmake..." `pwd`
 cmake -DENABLE_EXPORT=ON                                     \
-      -DUSE_ASYNC_COMMS=OFF                                  \
+      -DUSE_ASYNC_COMMS=ON                                   \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${INVOC_ABS_DIR}/bin  \
       -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
