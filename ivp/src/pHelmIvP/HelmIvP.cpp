@@ -174,7 +174,10 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       bool posted_by_this_helm = true;
       if((source != GetAppName()) || (m_host_community != community))
 	posted_by_this_helm = false;
-      if(!posted_by_this_helm) {
+      bool exception = false;
+      if(moosvar == "HELM_MAP_CLEAR")
+	exception = true;
+      if(!posted_by_this_helm && !exception) {
 	string msg = "Helm ignores MOOS msg due to skew: " + moosvar;
 	msg += " Source=" + source + " Skew=" + doubleToString(skew_time,2);
 	reportRunWarning(msg);

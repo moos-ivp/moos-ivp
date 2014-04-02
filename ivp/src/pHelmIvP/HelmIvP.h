@@ -158,10 +158,7 @@ protected:
   std::map<std::string, unsigned int> m_outgoing_iter;
   std::map<std::string, std::string>  m_outgoing_bhv;
   
-
-  std::map<std::string, double>      m_outgoing_repinterval;
-
-  
+  std::map<std::string, double>       m_outgoing_repinterval;
   
   // A flag maintained on each iteration indicating whether the 
   // info_buffer curr_time has yet to be synched to the app curr_time.
