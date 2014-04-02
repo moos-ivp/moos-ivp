@@ -80,7 +80,7 @@
 #include <stdexcept>
 
 #define ENABLE_WIN32_HPMOOSTIME 0
-#define MAX_TIME_WARP 400
+#define MAX_TIME_WARP 100
 
 using namespace std;
 

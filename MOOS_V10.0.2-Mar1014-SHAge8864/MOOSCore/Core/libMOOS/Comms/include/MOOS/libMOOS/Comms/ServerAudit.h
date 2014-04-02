@@ -45,11 +45,6 @@ public:
 	bool Run(const std::string & destination_host = "localhost", unsigned int port = DEFAULT_AUDIT_PORT);
 	bool Remove(const std::string & sClient);
 	bool SetQuiet(bool bQuiet);
-	bool AddTimingStatistic(const std::string & sClient,
-                           double dfTransmitTime,
-                           double dfReceiveTime);
-
-
 
 	class Impl;
 protected:

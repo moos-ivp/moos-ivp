@@ -58,18 +58,6 @@ struct ClientAudit
 	int recent_packets_sent_;
 	int recent_messages_sent_;
 	int recent_messages_received_;
-	uint64_t timing_messages_received_;
-
-    double max_latency_ms_;
-    double min_latency_ms_;
-	double moving_average_latency_ms_;
-	double recent_latency_ms_;
-	double latency_sum_;
-
-	ClientAudit()
-	{
-	    ClearAll();
-	}
 
 	void ClearAll()
 	{
@@ -85,14 +73,6 @@ struct ClientAudit
 		recent_packets_sent_ = 0;
 		recent_messages_received_=0;
 		recent_messages_sent_=0;
-	    timing_messages_received_=0;
-
-	    max_latency_ms_=0;
-	    min_latency_ms_=1e9;
-	    moving_average_latency_ms_=0;
-	    recent_latency_ms_=0;
-	    latency_sum_=0;
-
 
 	}
 	void ClearRecents()
@@ -248,36 +228,6 @@ public:
 		return true;
 	}
 
-    bool AddTimingStatistic(const std::string & sClient,
-                               double dfTransmitTime,
-                               double dfReceiveTime)
-    {
-        MOOS::ScopedLock L(lock_);
-
-        ClientAudit & rA = Audits_[sClient];
-        double dfLatencyMS = (dfReceiveTime-dfTransmitTime)*1000.0;
-        rA.max_latency_ms_=std::max<double>(rA.max_latency_ms_,dfLatencyMS);
-        rA.min_latency_ms_=std::min<double>(rA.min_latency_ms_,dfLatencyMS);
-
-        rA.latency_sum_+=dfLatencyMS;
-        if(++rA.timing_messages_received_>=5)
-        {
-            rA.latency_sum_-=rA.recent_latency_ms_;
-            rA.recent_latency_ms_ = dfLatencyMS;
-            rA.moving_average_latency_ms_=rA.latency_sum_/5;
-        }
-
-//        std::cerr<<rA.recent_latency_ms_<<" ";
-//        std::cerr<<rA.max_latency_ms_<<" ";
-//        std::cerr<<rA.min_latency_ms_<<" ";
-//        std::cerr<<rA.moving_average_latency_ms_<<"\n";
-
-
-
-        return true;
-    }
-
-
 	bool AddStatistic(const std::string sClient, unsigned int nBytes, unsigned int nMessages, double dfTime, bool bIncoming)
 	{
 		MOOS::DeliberatelyNotUsed(dfTime);
@@ -357,23 +307,10 @@ bool ServerAudit::SetQuiet(bool bQuiet)
     return Impl_->SetQuiet(bQuiet);
 }
 
-bool ServerAudit::AddStatistic(const std::string sClient,
-                               unsigned int nBytes,
-                               unsigned int nMessages,
-                               double dfTime,
-                               bool bIncoming)
+bool ServerAudit::AddStatistic(const std::string sClient, unsigned int nBytes,unsigned int nMessages, double dfTime, bool bIncoming)
 {
 
 	return Impl_->AddStatistic(sClient,nBytes,nMessages,dfTime,bIncoming);
-}
-
-
-bool ServerAudit::AddTimingStatistic(const std::string & sClient,
-                           double dfTransmitTime,
-                           double dfReceiveTime)
-{
-
-    return Impl_->AddTimingStatistic(sClient,dfTransmitTime,dfReceiveTime);
 }
 
 

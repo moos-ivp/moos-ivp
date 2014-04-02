@@ -49,7 +49,6 @@ namespace MOOS {
 
 #define TIMING_MESSAGE_PERIOD 1.0
 
-
 bool AsyncCommsReaderDispatch(void * pParam) {
     MOOSAsyncCommClient *pMe = (MOOSAsyncCommClient*) pParam;
     return pMe->ReadingLoop();
@@ -66,8 +65,6 @@ MOOSAsyncCommClient::MOOSAsyncCommClient() {
     m_dfLastTimingMessage = 0.0;
     m_dfOutGoingDelay = 0.0;
     m_bPostNewestToFront = false;
-
-    SetCommsControlTimeWarpScaleFactor(0.1);
 }
 ///default destructor
 MOOSAsyncCommClient::~MOOSAsyncCommClient() {
@@ -156,10 +153,6 @@ bool MOOSAsyncCommClient::IsAsynchronous() {
     return true;
 }
 
-
-
-
-
 bool MOOSAsyncCommClient::WritingLoop() {
     //we want errors not signals!
 #ifndef _WIN32
@@ -169,7 +162,6 @@ bool MOOSAsyncCommClient::WritingLoop() {
     if (m_bBoostIOThreads) {
         MOOS::BoostThisThread();
     }
-
 
     while (!WritingThread_.IsQuitRequested())
     {
@@ -201,9 +193,11 @@ bool MOOSAsyncCommClient::WritingLoop() {
 
             int nMSToWait = 333;
 
+            m_dfLastSendTime = MOOSLocalTime();
+
             while (!WritingThread_.IsQuitRequested() && IsConnected())
             {
-                if (OutGoingQueue_.Size()==0)
+                if (OutGoingQueue_.Size() == 0)
                 {
                     //this may timeout in which case we DoWriting() which may send
                     //a timing message (heart beat) in Do Writing...
@@ -214,6 +208,7 @@ bool MOOSAsyncCommClient::WritingLoop() {
                 {
                     OnCloseConnection();
                 }
+
 
             }
         } else
@@ -241,8 +236,6 @@ bool MOOSAsyncCommClient::WritingLoop() {
 
     return true;
 }
-
-
 
 bool MOOSAsyncCommClient::DoWriting() {
 
@@ -310,23 +303,12 @@ bool MOOSAsyncCommClient::DoWriting() {
 
 }
 
-bool MOOSAsyncCommClient::MonitorAndLimitWriteSpeed()
-{
-    double WarpDelayMS = 0.0;
-    //m_dfOutGoingDelay is set by DB during comms
-    //we also Optionally add a delay for time warps
-    double TimeWarp =GetMOOSTimeWarp();
-    if(TimeWarp>1.0)
-    {
-        WarpDelayMS=TimeWarp*0.1;
-    }
-    double TotalDelay = std::max(m_dfOutGoingDelay*1000,WarpDelayMS);
+bool MOOSAsyncCommClient::MonitorAndLimitWriteSpeed() {
     unsigned int sleep_ms =
-            static_cast<unsigned int> (TotalDelay);
-    if (sleep_ms > 0)
-    {
-        //std::cerr << "I'm sleeping for " << TotalDelay << " ms ("<<TotalDelay/GetMOOSTimeWarp()<<" real ms)\n";
-        MOOSPause(sleep_ms,false);
+            static_cast<unsigned int> (m_dfOutGoingDelay * 1000);
+    if (sleep_ms > 0) {
+        //std::cerr << "I'm sleeping for " << m_dfOutGoingDelay << " ms\n";
+        MOOSPause(sleep_ms);
     }
 
     return true;

@@ -122,7 +122,7 @@ namespace MOOS
 	}
 
 
-}//moos
+};//moos
 
 
 #endif /* MESSAGEFUNCTION_H_ */

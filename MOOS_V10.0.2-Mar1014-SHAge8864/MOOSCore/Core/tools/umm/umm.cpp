@@ -671,7 +671,20 @@ private:
 
         bool isActive(double TimeNow) const
         {
-            return  _dfTimeScheduled < TimeNow;
+            bool bActive =_dfTimeScheduled < TimeNow;
+
+//            if(bActive)
+//            {
+//                std::cerr<<"IsActive: "
+//                        << " _dfTimeScheduled " <<std::setprecision(17)<<_dfTimeScheduled
+//                        <<" TimeNow "<<std::setprecision(17)<<TimeNow
+//                        <<" local "<<std::setprecision(17)<<MOOSLocalTime(false)
+//                        <<" moos "<<std::setprecision(17)<<MOOSTime()
+//                        <<" active "<<bActive<<"\n";
+//            }
+
+
+            return bActive;
         }
 
         double _dfPeriod;

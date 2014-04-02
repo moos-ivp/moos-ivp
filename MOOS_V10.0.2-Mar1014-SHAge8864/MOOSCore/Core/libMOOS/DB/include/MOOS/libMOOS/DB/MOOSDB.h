@@ -131,8 +131,6 @@ protected:
     void UpdateDBTimeVars();
     void UpdateDBClientsVar();
     void UpdateSummaryVar();
-    void UpdateQoSVar();
-
     bool DoServerRequest(CMOOSMsg & Msg, MOOSMSG_LIST & MsgTxList);
     CMOOSDBVar & GetOrMakeVar(CMOOSMsg & Msg);
     bool OnRegister(CMOOSMsg & Msg);

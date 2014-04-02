@@ -81,20 +81,18 @@ if( CDASH_SUPPORT )
 endif()
 
 # Option for code coverage
-option(CODE_COVERAGE "Build code coverage results, requires GCC compiler (forces Debug build)" OFF)
+option(CODE_COVERAGE "Build code coverage results (forces Debug build)" OFF)
 if(CODE_COVERAGE)
-  if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS_DEBUG
-      "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
-    set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
+  set(CMAKE_CXX_FLAGS_DEBUG
+    "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage")
+  set(CMAKE_BUILD_TYPE Debug CACHE STRING "" FORCE)
 
-    # Ensure that CDash targets are always enabled if coverage is enabled.
-    if (NOT CDASH_SUPPORT)
-      get_property(HELP_STRING CACHE CDASH_SUPPORT PROPERTY HELPSTRING)
-      set(CDASH_SUPPORT ON CACHE BOOL "${HELP_STRING}" FORCE)
-      message(STATUS "Enabling CDash targets as coverage has been enabled.")
-    endif()
-  endif(CMAKE_COMPILER_IS_GNUCXX)
+  # Ensure that CDash targets are always enabled if coverage is enabled.
+  if (NOT CDASH_SUPPORT)
+    get_property(HELP_STRING CACHE CDASH_SUPPORT PROPERTY HELPSTRING)
+    set(CDASH_SUPPORT ON CACHE BOOL "${HELP_STRING}" FORCE)
+    message(STATUS "Enabling CDash targets as coverage has been enabled.")
+  endif()
 endif()
 
 ###########  SETTING UP PREPROCESSOR ################

@@ -199,10 +199,6 @@ void CMOOSApp::PrintDefaultCommandLineSwitches()
 	std::cout<<"  --moos_app_tick=<number>    : frequency of application (if relevant) \n";
 	std::cout<<"  --moos_max_app_tick=<number>: max frequency of application (if relevant) \n";
 	std::cout<<"  --moos_comms_tick=<number>  : frequency of comms (if relevant) \n";
-    std::cout<<"  --moos_tw_delay_factor=<num>: comms delay as \% of time warp (if relevant) \n";
-
-
-
 	std::cout<<"  --moos_iterate_Mode=<0,1,2> : set app iterate mode \n";
 	std::cout<<"  --moos_time_warp=<number>   : set time warp \n";
     std::cout<<"  --moos_suicide_channel=<str>: suicide monitoring channel (IP address) \n";
@@ -516,17 +512,6 @@ bool CMOOSApp::Configure()
 		SetMOOSTimeWarp(dfTimeWarp);
 	}
 
-    double dfTimeWarpCommsFactor = 0.0;
-    if(GetParameterFromCommandLineOrConfigurationFile("moos_tw_delay_factor",dfTimeWarpCommsFactor))
-    {
-        if(!m_Comms.SetCommsControlTimeWarpScaleFactor(dfTimeWarpCommsFactor))
-        {
-            std::cerr<<MOOS::ConsoleColours::Red();
-            std::cerr<<"ERROR: failed to set moos_tw_delay_factor\n";
-            std::cerr<<MOOS::ConsoleColours::reset();
-        }
-    }
-
 
 	//are we expected to use MOOS comms?
     if(GetFlagFromCommandLineOrConfigurationFile("moos_no_comms"))
@@ -553,7 +538,22 @@ bool CMOOSApp::Configure()
         m_bQuitOnIterateFail = true;
     }
 
+//	//are we in debug mode
+//	m_MissionReader.GetConfigurationParam("DEBUG",m_bDebug);
+//
+//	//are we in simulator mode?
+//	string sSim;
+//	if(m_MissionReader.GetValue("SIMULATOR",sSim))
+//	{
+//		m_bSimMode = MOOSStrCmp(sSim,"TRUE");
+//	}
 
+	//are we in playback mode
+//	string sPlayBack;
+//	if(m_MissionReader.GetValue("PLAYBACK",sPlayBack))
+//	{
+//		SetMOOSPlayBack(MOOSStrCmp(sPlayBack,"TRUE"));
+//	}
 
 	//OK now figure out our tick speeds  above what is set by default
 	//in derived class constructors this can be set in the process config block
@@ -670,9 +670,7 @@ void CMOOSApp::DoBanner()
 	}
 
 	if(GetMOOSTimeWarp()!=1.0)
-		MOOSTrace("\t|-Time Warp @ %.1f \n",GetMOOSTimeWarp());
-	if(m_Comms.GetCommsControlTimeWarpScaleFactor()>0.0)
-	    MOOSTrace("\t|-Time Warp delay @ %.1f ms \n",m_Comms.GetCommsControlTimeWarpScaleFactor()*GetMOOSTimeWarp());
+		MOOSTrace("\t Time Warp @ %.1f \n",GetMOOSTimeWarp());
 
 
 	std::cout<<"\n\n";

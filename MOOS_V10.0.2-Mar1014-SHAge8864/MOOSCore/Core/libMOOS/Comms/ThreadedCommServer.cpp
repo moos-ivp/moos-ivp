@@ -310,12 +310,11 @@ bool ThreadedCommServer::ProcessClient(ClientThreadSharedData &SDFromClient,MOOS
 
             //is there any sort of notification going on here?
             bool bIsNotification = false;
-            double dfLargeDelay = m_dfCommsLatencyConcern*GetMOOSTimeWarp();
             for(MOOSMSG_LIST::iterator q = MsgLstRx.begin();q!=MsgLstRx.end();q++)
             {
             	if(q->IsType(MOOS_NOTIFY))
             	{
-            		if(dfTNow-q->GetTime()>dfLargeDelay)
+            		if(dfTNow-q->GetTime()>m_dfCommsLatencyConcern)
             		{
             			std::cout<<"WARNING : Message "<<q->GetKey()<<" from "<<q->GetSource()<<" is "<<(dfTNow-q->GetTime())*1000<<" ms delayed\n";
             		}
@@ -332,15 +331,8 @@ bool ThreadedCommServer::ProcessClient(ClientThreadSharedData &SDFromClient,MOOS
             {
             	bTimingPresent = true;
             	TimingMsg =MsgLstRx.front();
-
             	MsgLstRx.pop_front();
-
-
             	TimingMsg.SetDouble( MOOSLocalTime());
-
-                Auditor.AddTimingStatistic(TimingMsg.GetSource(),
-                                           TimingMsg.GetTime(),
-                                           TimingMsg.GetDouble());
 
             	//and here we control the speed of this clienttxt
             	TimingMsg.SetDoubleAux(pClient->GetConsolidationTime());

@@ -122,8 +122,6 @@ CMOOSCommClient::CMOOSCommClient()
 
 	//assume an old DB
 	m_bDBIsAsynchronous = false;
-
-	SetCommsControlTimeWarpScaleFactor(0.0);
     
     SetVerboseDebug(false);
 
@@ -1723,17 +1721,3 @@ bool CMOOSCommClient::UpdateMOOSSkew(double dfRqTime, double dfTxTime, double df
 	return true;
 }
 
-bool CMOOSCommClient::SetCommsControlTimeWarpScaleFactor(double dfSF)
-{
-    if(dfSF<0.0|| dfSF>1.0)
-        return false;
-
-    m_dfOutGoingDelayTimeWarpScaleFactor = dfSF;
-    return true;
-}
-
-
-double CMOOSCommClient::GetCommsControlTimeWarpScaleFactor()
-{
-    return m_dfOutGoingDelayTimeWarpScaleFactor;
-}

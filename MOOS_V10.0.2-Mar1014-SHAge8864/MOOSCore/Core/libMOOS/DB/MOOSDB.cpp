@@ -468,11 +468,6 @@ void CMOOSDB::UpdateDBClientsVar()
 
 }
 
-void CMOOSDB::UpdateQoSVar()
-{
-
-}
-
 void CMOOSDB::UpdateDBTimeVars()
 {
     static double dfLastTime = MOOSTime();
