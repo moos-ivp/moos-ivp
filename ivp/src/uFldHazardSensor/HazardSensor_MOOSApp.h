@@ -141,6 +141,7 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   double      m_swath_len;  // Same for everyone, all settings.
   double      m_min_queue_msg_interval;
   double      m_sensor_max_turn_rate;
+  bool        m_ignore_resemblances;
 
   // Absolute sensor characteristics. User may choose one of the
   // available widths. ROC curve and classification accuracy follow.

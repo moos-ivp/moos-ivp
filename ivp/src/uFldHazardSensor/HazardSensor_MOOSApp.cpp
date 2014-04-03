@@ -51,6 +51,7 @@ HazardSensor_MOOSApp::HazardSensor_MOOSApp()
   m_options_summary_interval = 10;   // in timewarped seconds
   m_min_queue_msg_interval   = 30;   // seconds
   m_sensor_max_turn_rate     = 1.5;  // degrees per second
+  m_ignore_resemblances      = false;
 
   m_hazard_file_hazard_cnt = 0;
   m_hazard_file_benign_cnt = 0;
@@ -224,6 +225,8 @@ bool HazardSensor_MOOSApp::OnStartUp()
     }
     else if(param == "show_hazards")
       handled = setBooleanOnString(m_show_hazards, value);
+    else if(param == "ignore_resemblances")
+      handled = setBooleanOnString(m_ignore_resemblances, value);
     else if(param == "show_pd")
       handled = setBooleanOnString(m_show_pd, value);
     else if(param == "show_pfa")
@@ -276,6 +279,12 @@ bool HazardSensor_MOOSApp::OnStartUp()
   postVisuals();
   perhapsSeedRandom();
   sortSensorProperties();
+
+  if(m_ignore_resemblances) {
+    map<string, XYHazard>::iterator p;
+    for(p=m_map_hazards.begin(); p!=m_map_hazards.end(); p++)
+      p->second.setResemblance(1);
+  }
 
   if(m_map_hazards.size() == 0)
     reportConfigWarning("No Hazard Field Laydown Provided.");
