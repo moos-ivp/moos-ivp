@@ -110,6 +110,8 @@ ProcessConfig = uFldHazardSensor
   AppTick       = 4
   CommsTick     = 4
 
+  ignore_resemblances=true
+
   max_appcast_events = 20
 
   sensor_config = width=5,  exp=8, pclass=0.88, max=1
