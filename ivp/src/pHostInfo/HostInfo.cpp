@@ -226,6 +226,10 @@ void HostInfo::generateIPInfoFiles()
   sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet_" + name + ".txt" + bgd; 
   result = system(sys_call.c_str());
 
+  sys_call = "networksetup -getinfo \"USB Ethernet\"  > ";
+  sys_call += m_tmp_file_dir + "ipinfo_osx_usb_ethernet_" + name + ".txt" + bgd; 
+  result = system(sys_call.c_str());
+
   sys_call = "networksetup -getinfo \"Ethernet 1\"  > ";
   sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet1_" + name + ".txt" + bgd; 
   result = system(sys_call.c_str());
@@ -288,6 +292,7 @@ void HostInfo::gatherIPInfoFromFiles()
   m_ip_osx_ethernet    = readOSXInfoIP("ipinfo_osx_ethernet_" + name + ".txt");
   m_ip_osx_ethernet1   = readOSXInfoIP("ipinfo_osx_ethernet1_" + name + ".txt");
   m_ip_osx_ethernet2   = readOSXInfoIP("ipinfo_osx_ethernet2_" + name + ".txt");
+  m_ip_osx_usb_ethernet = readOSXInfoIP("ipinfo_osx_usb_ethernet_" + name + ".txt");
   m_ip_linux_wifi      = readLinuxInfoIP("ipinfo_linux_wifi_" + name + ".txt");
   m_ip_linux_ethernet0 = readLinuxInfoIP("ipinfo_linux_ethernet0_" + name + ".txt");
   m_ip_linux_ethernet1 = readLinuxInfoIP("ipinfo_linux_ethernet1_" + name + ".txt");
@@ -330,6 +335,7 @@ void HostInfo::postIPInfo()
     addIPInfo(m_ip_linux_usb1, "LINUX_USB1");
     addIPInfo(m_ip_linux_usb2, "LINUX_USB2");
     addIPInfo(m_ip_osx_ethernet, "OSX_ETHERNET");
+    addIPInfo(m_ip_osx_usb_ethernet, "OSX_USB_ETHERNET");
     addIPInfo(m_ip_osx_ethernet1, "OSX_ETHERNET1");
     addIPInfo(m_ip_osx_ethernet2, "OSX_ETHERNET2");
     addIPInfo(m_ip_osx_wifi, "OSX_WIFI");

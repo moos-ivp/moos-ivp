@@ -67,6 +67,7 @@ class HostInfo : public AppCastingMOOSApp
   std::string   m_ip_osx_wifi;
   std::string   m_ip_osx_airport;
   std::string   m_ip_osx_ethernet;
+  std::string   m_ip_osx_usb_ethernet;
   std::string   m_ip_osx_ethernet1;
   std::string   m_ip_osx_ethernet2;
   std::string   m_ip_linux_wifi;
