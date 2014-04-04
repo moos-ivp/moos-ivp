@@ -88,6 +88,9 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   void    calcSwathGeometry(double, double&, double&);
   void    postConfigurationAck(std::string vname);
 
+  bool    processSensorRequests();
+  bool    processSensorRequest(std::string vname);
+
   unsigned int sensorSwathCount(double, std::string vname);
 
  protected: // State variables
@@ -124,6 +127,8 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   std::map<std::string, unsigned int> m_map_reset_swath_total;  
   std::map<std::string, double>       m_map_reset_pd_time;
   std::map<std::string, unsigned int> m_map_reset_pd_total;  
+
+  std::map<std::string, double>       m_map_last_sensor_request;
 
   std::map<std::string, unsigned int> m_map_haz_detect_chances;  
   std::map<std::string, unsigned int> m_map_ben_detect_chances;  

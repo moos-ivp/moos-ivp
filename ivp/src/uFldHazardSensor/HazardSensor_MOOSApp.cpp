@@ -160,6 +160,7 @@ bool HazardSensor_MOOSApp::Iterate()
     m_last_summary_time = m_curr_time;
   }
 
+  processSensorRequests();
   processClassifyQueue();
 
   AppCastingMOOSApp::PostReport();
@@ -445,14 +446,13 @@ bool HazardSensor_MOOSApp::handleNodeReport(const string& node_report_str)
 
 bool HazardSensor_MOOSApp::handleSensorRequest(const string& request)
 {
-  // Part 1: Parse the string request
   string vname;  
   vector<string> svector = parseString(request, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
-    string param = toupper(biteStringX(svector[i], '='));
+    string param = tolower(biteStringX(svector[i], '='));
     string value = svector[i];
-    if(param == "VNAME")
+    if(param == "vname")
       vname = value;
   }
 
@@ -462,7 +462,33 @@ bool HazardSensor_MOOSApp::handleSensorRequest(const string& request)
   }
 
   m_map_sensor_reqs[vname]++;
-  
+  m_map_last_sensor_request[vname] = MOOSTime();
+  return(true);
+}
+
+
+//---------------------------------------------------------
+// Procedure: processSensorRequests()
+
+bool HazardSensor_MOOSApp::processSensorRequests()
+{
+  map<string,double>::iterator p;
+  for(p=m_map_last_sensor_request.begin(); p!=m_map_last_sensor_request.end(); p++) {
+    string vname = p->first;
+    double tstamp = p->second;
+    double elapsed = MOOSTime() - tstamp;
+    if(elapsed < 120)
+      processSensorRequest(vname);
+  }
+  return(true);
+}
+
+
+//---------------------------------------------------------
+// Procedure: processSensorRequest(vname)
+
+bool HazardSensor_MOOSApp::processSensorRequest(string vname)
+{
   // Part 2: Determine requesting vehicle's index in the node_record vector
   unsigned int j, jsize = m_node_records.size();
   unsigned int vix = jsize;
@@ -470,6 +496,8 @@ bool HazardSensor_MOOSApp::handleSensorRequest(const string& request)
     if(vname == m_node_records[j].getName())
       vix = j;
   }
+
+  Notify("PSR", vname);
 
   // If nothing is known about this vehicle, we don't know its 
   // position, so just return false.
