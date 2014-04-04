@@ -42,6 +42,8 @@ done
 #-------------------------------------------------------
 #  Part 2: Create the .moos and .bhv files. 
 #-------------------------------------------------------
+VNAME1="jake"      # The first   vehicle community
+VNAME2="kasper"    # The second  vehicle community
 START_POS="0,0"  
 
 nsplug meta_vehicle.moos targ_$VNAME.moos -f WARP=$TIME_WARP \
