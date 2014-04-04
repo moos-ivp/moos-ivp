@@ -283,7 +283,7 @@ bool HazardSensor_MOOSApp::OnStartUp()
   if(m_ignore_resemblances) {
     map<string, XYHazard>::iterator p;
     for(p=m_map_hazards.begin(); p!=m_map_hazards.end(); p++)
-      p->second.setResemblance(1);
+      p->second.setResemblance(0.5);
   }
 
   if(m_map_hazards.size() == 0)
@@ -530,16 +530,29 @@ bool HazardSensor_MOOSApp::handleSensorRequest(const string& request)
   map<string, XYHazard>::iterator p;
   for(p=m_map_hazards.begin(); p!=m_map_hazards.end(); p++) {
     string hlabel = p->first;
+    XYHazard hazard = p->second;
+    bool is_hazard = (hazard.getType() == "hazard");
+
     bool dice_roll_needed = updateVehicleHazardStatus(vix, hlabel);
     if(dice_roll_needed) {
+      if(is_hazard)
+	m_map_haz_detect_chances[vname]++;
+      else
+	m_map_ben_detect_chances[vname]++;
+      
       int    rand_int  = rand() % 10000;
       double dice_roll = (double)(rand_int) / 10000;
 
       bool detect_result_normal = rollDetectionDiceNormal(vix, hlabel, dice_roll);
       bool detect_result_aspect = rollDetectionDiceAspect(vix, hlabel, dice_roll);
-      if(detect_result_normal)
+      if(detect_result_normal) {
+	if(is_hazard) 
+	  m_map_haz_detect_reports[vname]++;
+	else
+	  m_map_ben_detect_reports[vname]++;
 	postHazardDetectionReport(hlabel, vix); 
-      else if(detect_result_aspect)
+      }
+      else if(detect_result_aspect) 
 	postHazardDetectionAspect(hlabel);
     }
   }
@@ -633,7 +646,7 @@ bool HazardSensor_MOOSApp::handleClassifyRequest(const string& request)
   double prob_classify = m_map_prob_classify[vname];
   double pc_prime      = prob_classify;
 
-  if((!is_hazard) && true_hazard.hasResemblance()) {
+  if((!is_hazard) && true_hazard.hasResemblance() && !m_ignore_resemblances) {
     double resemblance = true_hazard.getResemblance();
     pc_prime += (1-prob_classify) * (1-resemblance);
   }
@@ -975,7 +988,7 @@ bool HazardSensor_MOOSApp::rollDetectionDiceNormal(unsigned int vix,
   reportEvent(info);
 
   double dice_thresh = prob_falarm;
-  if(hazard.isSetHR()) 
+  if(!m_ignore_resemblances && hazard.isSetHR()) 
     dice_thresh = (prob_falarm + hazard.getResemblance()) / 2;
   
   return(dice_roll < dice_thresh);
@@ -1056,7 +1069,7 @@ bool HazardSensor_MOOSApp::rollDetectionDiceAspect(unsigned int vix,
     return(dice_roll < prob_detect);
   
   double dice_thresh = prob_falarm;
-  if(hazard.isSetHR()) 
+  if(!m_ignore_resemblances && hazard.isSetHR()) 
     dice_thresh = (prob_falarm + hazard.getResemblance()) / 2;
   return(dice_roll < dice_thresh);
 }
@@ -1638,9 +1651,9 @@ bool HazardSensor_MOOSApp::buildReport()
   }
   m_msgs << actab.getFormattedString() << endl << endl << endl;
 
-  actab = ACTable(5);
-  actab << "Vehicle | Sensor   |            | Classify | Classify ";
-  actab << "Name    | Requests | Detections | Requests | Answers  ";
+  actab = ACTable(7);
+  actab << "Vehicle | Sensor |            | FA   | Det  | Classify | Classify";
+  actab << "Name    | Reqs   | Detections | Rate | Rate | Requests | Answers ";
   actab.addHeaderLines();
 
   for(p=m_map_swath_width.begin(); p!=m_map_swath_width.end(); p++) {
@@ -1648,10 +1661,26 @@ bool HazardSensor_MOOSApp::buildReport()
 
     string sensor_reqs   = uintToString(m_map_sensor_reqs[vname]);
     string detects       = uintToString(m_map_detections[vname]);
+
+    string s_d_rate = "n/a";
+    string s_fa_rate = "n/a";
+    
+    if(m_map_haz_detect_reports[vname] > 0) {
+      double d_rate = ((double)(m_map_haz_detect_reports[vname])) /
+	((double)(m_map_haz_detect_chances[vname]));
+      s_d_rate = doubleToString(d_rate,2);
+    }
+    if(m_map_ben_detect_reports[vname] > 0) {
+      double fa_rate = ((double)(m_map_ben_detect_reports[vname])) /
+	((double)(m_map_ben_detect_chances[vname]));
+      s_fa_rate = doubleToString(fa_rate,2);
+    }
+
     string classify_reqs = uintToString(m_map_classify_reqs[vname]);
     string classify_answ = uintToString(m_map_classify_answ[vname]);
     
-    actab << vname << sensor_reqs << detects << classify_reqs << classify_answ;
+    actab << vname << sensor_reqs << detects << s_fa_rate << s_d_rate <<
+      classify_reqs << classify_answ;
   }
   m_msgs << actab.getFormattedString();
 

@@ -125,6 +125,11 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
   std::map<std::string, double>       m_map_reset_pd_time;
   std::map<std::string, unsigned int> m_map_reset_pd_total;  
 
+  std::map<std::string, unsigned int> m_map_haz_detect_chances;  
+  std::map<std::string, unsigned int> m_map_ben_detect_chances;  
+  std::map<std::string, unsigned int> m_map_haz_detect_reports;  
+  std::map<std::string, unsigned int> m_map_ben_detect_reports;  
+
   std::map<std::string, unsigned int> m_map_sensor_reqs;  
   std::map<std::string, unsigned int> m_map_detections;
   std::map<std::string, unsigned int> m_map_classify_reqs;  
