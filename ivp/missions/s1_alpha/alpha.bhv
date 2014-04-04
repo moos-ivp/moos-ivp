@@ -12,8 +12,6 @@ Behavior = BHV_Waypoint
   condition = DEPLOY = true
   endflag   = RETURN = true
 
-  condition = 600 > 100
-
   idleflag  = WPTING = idle
   runflag   = WPTING = running
   endflag   = WPTING = end
