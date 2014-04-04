@@ -280,12 +280,6 @@ bool HazardSensor_MOOSApp::OnStartUp()
   perhapsSeedRandom();
   sortSensorProperties();
 
-  if(m_ignore_resemblances) {
-    map<string, XYHazard>::iterator p;
-    for(p=m_map_hazards.begin(); p!=m_map_hazards.end(); p++)
-      p->second.setResemblance(0.5);
-  }
-
   if(m_map_hazards.size() == 0)
     reportConfigWarning("No Hazard Field Laydown Provided.");
 
@@ -326,9 +320,6 @@ bool HazardSensor_MOOSApp::addHazard(string line)
     label = uintToString(m_map_hazards.size());    
     hazard.setLabel(label);
   }
-
-  if(!hazard.hasResemblance())
-    hazard.setResemblance(1);
 
   if(m_map_hazards.count(label) != 0) {
     reportConfigWarning("Duplicated hazard label detected:" + label);
@@ -862,7 +853,7 @@ void HazardSensor_MOOSApp::postVisuals()
     string color = m_color_hazard;
     string shape = m_shape_hazard;
     double width = m_width_hazard;
-    double hr    = 0;
+    double hr    = 0.5;
     double hx    = hazard.getX();
     double hy    = hazard.getY();
     if(hazard.hasResemblance())
@@ -1665,12 +1656,12 @@ bool HazardSensor_MOOSApp::buildReport()
     string s_d_rate = "n/a";
     string s_fa_rate = "n/a";
     
-    if(m_map_haz_detect_reports[vname] > 0) {
+    if(m_map_haz_detect_chances[vname] > 0) {
       double d_rate = ((double)(m_map_haz_detect_reports[vname])) /
 	((double)(m_map_haz_detect_chances[vname]));
       s_d_rate = doubleToString(d_rate,2);
     }
-    if(m_map_ben_detect_reports[vname] > 0) {
+    if(m_map_ben_detect_chances[vname] > 0) {
       double fa_rate = ((double)(m_map_ben_detect_reports[vname])) /
 	((double)(m_map_ben_detect_chances[vname]));
       s_fa_rate = doubleToString(fa_rate,2);
