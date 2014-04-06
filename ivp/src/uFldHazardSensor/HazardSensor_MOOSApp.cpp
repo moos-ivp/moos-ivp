@@ -52,6 +52,7 @@ HazardSensor_MOOSApp::HazardSensor_MOOSApp()
   m_min_queue_msg_interval   = 30;   // seconds
   m_sensor_max_turn_rate     = 1.5;  // degrees per second
   m_ignore_resemblances      = false;
+  m_max_vehicle_speed        = 2.05;
 
   m_hazard_file_hazard_cnt = 0;
   m_hazard_file_benign_cnt = 0;
@@ -204,6 +205,10 @@ bool HazardSensor_MOOSApp::OnStartUp()
     }
     else if((param == "max_turn_rate") && isNumber(value)) {
       m_sensor_max_turn_rate = atof(value.c_str());
+      handled = true;
+    }
+    else if((param == "max_vehicle_speed") && isNumber(value)) {
+      m_max_vehicle_speed = atof(value.c_str());
       handled = true;
     }
     else if((param == "classify_period") || (param == "min_classify_interval")) {
@@ -516,6 +521,10 @@ bool HazardSensor_MOOSApp::processSensorRequest(string vname)
   double turn_rate = m_node_hdg_hist[vix].getTurnRate(2);
   bool sensor_on = true;
   if(turn_rate > m_sensor_max_turn_rate)
+    sensor_on = false;
+
+  double vehicle_speed = m_node_records[vix].getSpeed();
+  if(vehicle_speed > m_max_vehicle_speed)
     sensor_on = false;
 
   // Part 5: Update the sensor region/polygon based on new position 
