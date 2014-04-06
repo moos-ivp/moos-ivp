@@ -832,7 +832,7 @@ void HazardSensor_MOOSApp::processClassifyQueue()
     bool aspect_affected = entry.getAspectAffected();
 
     // Part 3: Build and post the vehicle specific hazard report
-    string spec = entry.getHazard().getSpec();
+    string spec = entry.getHazard().getSpec("hr");
     Notify("UHZ_HAZARD_REPORT_"+toupper(vname), spec);
     m_map_classify_answ[vname]++;
     
@@ -843,7 +843,7 @@ void HazardSensor_MOOSApp::processClassifyQueue()
     // Part 5: Build/Post visual artifacts using VIEW_CIRCLE
     if((m_circle_duration == -1) || (m_circle_duration > 0)) {
       XYHazard post_hazard = entry.getHazard();
-      bool is_hazard = (tolower(post_hazard.getType()) == "hazard");
+      bool is_hazard = (tolower(post_hazard.getType()) == "hazard,aspect");
       XYCircle circ(post_hazard.getX(), post_hazard.getY(), 10);
       if(is_hazard) {
 	circ.set_color("edge", "yellow");
