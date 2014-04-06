@@ -90,9 +90,9 @@ ProcessConfig = uFldHazardMetric
   AppTick   = 4
   CommsTick = 4
  
-  penalty_missed_hazard = 150
-  penalty_false_alarm   = 25     
-  max_time              = 7202 
+  penalty_missed_hazard = $(PEN_MISSED_HAZ)
+  penalty_false_alarm   = $(PEN_FALARM)
+  max_time              = $(MAX_TIME)
   penalty_max_time_over = 300    
   penalty_max_time_rate = 0.25 
 
