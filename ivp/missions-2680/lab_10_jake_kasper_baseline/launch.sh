@@ -5,6 +5,10 @@
 TIME_WARP=1
 JUST_MAKE="no"
 HAZARD_FILE="hazards.txt"
+PEN_MISSED_HAZ=150
+PEN_FALARM=25
+MAX_TIME=7200
+
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [time_warp]   \n" $0
@@ -14,6 +18,14 @@ for ARGI; do
 	exit 0;
     elif [ "${ARGI:0:10}" = "--hazards=" ] ; then
         HAZARD_FILE="${ARGI#--hazards=*}"
+
+    elif [ "${ARGI:0:11}" = "--max_time=" ] ; then
+        MAX_TIME="${ARGI#--max_time=*}"
+    elif [ "${ARGI:0:17}" = "--pen_missed_haz=" ] ; then
+        PEN_MISSED_HAZ="${ARGI#--pen_missed_haz=*}"
+    elif [ "${ARGI:0:13}" = "--pen_falarm=" ] ; then
+        PEN_FALARM="${ARGI#--pen_falarm=*}"
+
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
@@ -25,7 +37,10 @@ for ARGI; do
 done
 
 if [ -f $HAZARD_FILE ]; then
-  echo "Using Hazard File $HAZARD_FILE"
+  echo "          Hazard File: $HAZARD_FILE"
+  echo "             Max Time: $MAX_TIME"
+  echo "Penalty Missed Hazard: $PEN_MISSED_HAZ"
+  echo "  Penalty False Alarm: $PEN_FALARM"
 else
   echo "$HAZARD_FILE not found. Exiting"
   exit 0
@@ -44,8 +59,10 @@ START_POS2="45,0"
 # What is nsplug? Type "nsplug --help" or "nsplug --manual"
 
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
-    VNAME="shoreside"     HAZARD_FILE=$HAZARD_FILE                \
-    SHOREIP=localhost     SHORE_LISTEN=9200
+    VNAME="shoreside"         HAZARD_FILE=$HAZARD_FILE            \
+    SHOREIP=localhost         SHORE_LISTEN=9200                   \
+    MAX_TIME=$MAX_TIME        PEN_MISSED_HAZ=$PEN_MISSED_HAZ      \
+    PEN_FALARM=$PEN_FALARM
 
 nsplug meta_vehicle.moos targ_$VNAME1.moos -f WARP=$TIME_WARP  \
     VNAME=$VNAME1         START_POS=$START_POS1                \

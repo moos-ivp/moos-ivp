@@ -12,15 +12,18 @@ MAX_TIME=7200
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [time_warp]   \n" $0
-	printf "  --just_build, -j    \n" 
-	printf "  --hazards=file.txt \n" 
-	printf "  --help, -h         \n" 
+	printf "  --just_build, -j          \n" 
+	printf "  --hazards=file.txt        \n" 
+	printf "  --max_time=N              \n" 
+	printf "  --pen_missed_haz=N        \n" 
+	printf "  --pen_falarm=N            \n" 
+	printf "  --help, -h                \n" 
 	exit 0;
     elif [ "${ARGI:0:10}" = "--hazards=" ] ; then
         HAZARD_FILE="${ARGI#--hazards=*}"
     elif [ "${ARGI:0:11}" = "--max_time=" ] ; then
         MAX_TIME="${ARGI#--max_time=*}"
-    elif [ "${ARGI:0:16}" = "--pen_missed_haz=" ] ; then
+    elif [ "${ARGI:0:17}" = "--pen_missed_haz=" ] ; then
         PEN_MISSED_HAZ="${ARGI#--pen_missed_haz=*}"
     elif [ "${ARGI:0:13}" = "--pen_falarm=" ] ; then
         PEN_FALARM="${ARGI#--pen_falarm=*}"
@@ -51,7 +54,7 @@ fi
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
     VNAME="shoreside"         HAZARD_FILE=$HAZARD_FILE            \
     SHOREIP=localhost         SHORE_LISTEN=9200                   \
-    MAX_TIME=$MAX_TIME        OPEN_MISSED_HAZ=$PEN_MISSED_HAZ     \
+    MAX_TIME=$MAX_TIME        PEN_MISSED_HAZ=$PEN_MISSED_HAZ      \
     PEN_FALARM=$PEN_FALARM
 
 if [ ${JUST_BUILD} = "yes" ] ; then
@@ -69,6 +72,8 @@ uMAC targ_shoreside.moos
 
 printf "Killing all processes ... \n"
 kill %1
+sleep 1
+mykill
 printf "Done killing processes.   \n"
 
 

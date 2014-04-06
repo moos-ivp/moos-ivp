@@ -11,18 +11,18 @@ Community  = shoreside
 
 Processconfig = ANTLER
 {
-  MSBetweenLaunches = 100
+  MSBetweenLaunches = 150
 
   Run = MOOSDB           @ NewConsole = false
   Run = pMarineViewer    @ NewConsole = false
   Run = pLogger          @ NewConsole = false
-  Run = uFldHazardSensor @ NewConsole = false
-  Run = uFldHazardMetric @ NewConsole = false
 
   Run = pShare           @ NewConsole = false
   Run = pHostInfo        @ NewConsole = false
   Run = uFldShoreBroker  @ NewConsole = false
   Run = uFldNodeComms    @ NewConsole = false
+  Run = uFldHazardSensor @ NewConsole = false
+  Run = uFldHazardMetric @ NewConsole = false
 }
 
 #include plug_pHostInfo.moos
@@ -158,7 +158,7 @@ ProcessConfig = pMarineViewer
   appcast_viewable     = true
   appcast_color_scheme = indigo
 
-  SCOPE = HAZARDSET_REPORT
+  SCOPE = UHZ_HAZARD_REPORT
 
   //ACTION = STATION_ALL = true
 
