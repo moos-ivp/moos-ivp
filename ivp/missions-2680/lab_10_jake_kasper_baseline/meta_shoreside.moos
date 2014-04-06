@@ -154,6 +154,8 @@ ProcessConfig = pMarineViewer
   marker_viewable_labels = false
 
   appcast_width = 30
+  nodes_font_size=xlarge
+  procs_fonr_size=large
 
   appcast_viewable     = true
   appcast_color_scheme = indigo

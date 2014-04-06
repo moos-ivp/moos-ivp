@@ -50,12 +50,11 @@ nsplug meta_vehicle.moos targ_$VNAME.moos -f WARP=$TIME_WARP \
     VNAME=$VNAME                       VPORT=$MOOS_PORT      \
     SHARE_LISTEN=$UDP_LISTEN_PORT      START_POS=$START_POS  \
     SHOREIP=$SHOREIP                   VTYPE=UUV             \
+    VNAME1=$VNAME1                     VNAME2=$VNAME2        \
     SHORE_LISTEN=$SHORE_LISTEN  
 
-
-
 nsplug meta_vehicle.bhv targ_$VNAME.bhv -f VNAME=$VNAME  \
-    START_POS=$START_POS 
+    START_POS=$START_POS VNAME1=$VNAME1 VNAME2=$VNAME2
 
 if [ ${JUST_BUILD} = "yes" ] ; then
     exit 0
