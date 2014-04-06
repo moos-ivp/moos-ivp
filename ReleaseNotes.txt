@@ -23,6 +23,10 @@ uTimerScript
   - Fixed bug where setting delay_reset=N was not being handled properly
 
 uTimerScript
+  - Added ability to have the script block until another named app(s) have been
+    detected in the DB_CLIENTS list.
+
+uTimerScript
   - Added ability to add a "multi-event". For example, the line
     event = var=VALUE, val="id=$[IDX]", time=0, amt=3
     is the same as having three config lines with
@@ -44,6 +48,24 @@ uFldMessageHandler
   - minor mod to uFldMessageHandler to allow control over appcasting output. 
     User can configure whether reported successful messages are truncated or 
     not when shown on the appcast report. No effect on messaging functionality.
+    The parameter is "appcast_trunc_msg=75". 75 is the default. If set to 0
+    no truncation will be applied.
+
+uFldHazardSensor
+  - Added ability to disable hazard resemblance factors with parameter
+    ignore_resemblances=true
+
+  - minor mod to regard the UHZ_SENSOR_REQUEST as a request lasting 120 seconds. 
+    Sensor user no longer needs to repeatedly post this request. Just more
+    often than once per 120 seconds. This 120 value may become a parameter in
+    the future. Aids in distributed uField setups where the occasional 
+    UHZ_SENSOR_REQUEST is dropped.
+
+  - Added enforcement for max vehicle speed, above which the sensor will be off.
+    The default value is 2.0 m/s. Adjustable with "max_vehicle_speed" parameter.
+
+
+
 
 ------------------------------------------------------------------------------
 TODO
