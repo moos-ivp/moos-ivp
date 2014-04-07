@@ -843,7 +843,7 @@ void HazardSensor_MOOSApp::processClassifyQueue()
     // Part 5: Build/Post visual artifacts using VIEW_CIRCLE
     if((m_circle_duration == -1) || (m_circle_duration > 0)) {
       XYHazard post_hazard = entry.getHazard();
-      bool is_hazard = (tolower(post_hazard.getType()) == "hazard,aspect");
+      bool is_hazard = (tolower(post_hazard.getType()) == "hazard");
       XYCircle circ(post_hazard.getX(), post_hazard.getY(), 10);
       if(is_hazard) {
 	circ.set_color("edge", "yellow");
