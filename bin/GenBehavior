@@ -47,12 +47,7 @@ protected: // Configuration parameters
 protected: // State variables
 };
 
-#ifdef WIN32
-  // Windows needs to explicitly specify functions to export from a dll
-  #define IVP_EXPORT_FUNCTION __declspec(dllexport) 
-#else
-  #define IVP_EXPORT_FUNCTION
-#endif
+#define IVP_EXPORT_FUNCTION
 
 extern "C" {
   IVP_EXPORT_FUNCTION IvPBehavior * createBehavior(std::string name, IvPDomain domain) 
@@ -192,7 +187,7 @@ IvPFunction* BHV_${1}::onRunState()
   if(ipf)
     ipf->setPWT(m_priority_wt);
 
-  return(ivp);
+  return(ipf);
 }
 
 EOF
