@@ -482,7 +482,7 @@ bool HazardSensor_MOOSApp::processSensorRequests()
     string vname = p->first;
     double tstamp = p->second;
     double elapsed = MOOSTime() - tstamp;
-    if(elapsed < 120)
+    if(elapsed < 600)
       processSensorRequest(vname);
   }
   return(true);

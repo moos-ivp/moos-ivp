@@ -74,6 +74,8 @@ class HazardMetric : public AppCastingMOOSApp
   unsigned int m_total_reports_received;
   double       m_worst_possible_score;
 
+  std::string  m_mission_params;
+
   // Collection of Incoming reports/stats. Each key is vehicle name
   std::map<std::string, XYHazardSet>     m_map_reports;
   std::map<std::string, XYHazardRepEval> m_map_evals;

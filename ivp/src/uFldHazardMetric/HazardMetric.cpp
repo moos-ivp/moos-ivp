@@ -107,6 +107,9 @@ bool HazardMetric::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
+  if((m_iteration % 50) == 0)
+    Notify("UHZ_MISSION_PARAMS", m_mission_params);
+
   if(m_search_start_time > 0) 
     m_elapsed_time = MOOSTime() - m_search_start_time;
 
@@ -191,7 +194,9 @@ bool HazardMetric::OnStartUp()
     str += ",transit_path_width=" + doubleToStringX(m_transit_path_width,5);
   if(m_search_region.is_convex())
     str += ",search_region=" + m_search_region.get_spec_pts();
-  Notify("UHZ_MISSION_PARAMS", str);
+
+  m_mission_params = str;
+  Notify("UHZ_MISSION_PARAMS", m_mission_params);
 
   registerVariables();	
   return(true);
