@@ -15,7 +15,7 @@ cat >> BHV_${1}.h <<EOF
 /************************************************************/
 /*    NAME: $2                                              */
 /*    ORGN: MIT                                             */
-/*    FILE: ${1}.h                                          */
+/*    FILE: BHV_${1}.h                                      */
 /*    DATE:                                                 */
 /************************************************************/
 
@@ -66,7 +66,7 @@ cat >> BHV_${1}.cpp <<EOF
 /************************************************************/
 /*    NAME: $2                                              */
 /*    ORGN: MIT                                             */
-/*    FILE: ${1}.cpp                                        */
+/*    FILE: BHV_${1}.cpp                                    */
 /*    DATE:                                                 */
 /************************************************************/
 
@@ -181,7 +181,17 @@ void BHV_${1}::onRunToIdleState()
 
 IvPFunction* BHV_${1}::onRunState()
 {
-  IvPFunction *ivp = 0;
+  // Part 1: Build the IvP function
+  IvPFunction *ipf = 0;
+
+
+
+  // Part N: Prior to returning the IvP function, apply the priority wt
+  // Actual weight applied may be some value different than the configured
+  // m_priority_wt, depending on the behavior author's insite.
+  if(ipf)
+    ipf->setPWT(m_priority_wt);
+
   return(ivp);
 }
 
