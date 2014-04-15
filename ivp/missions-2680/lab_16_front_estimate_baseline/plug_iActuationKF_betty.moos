@@ -1,0 +1,35 @@
+//------------------------------------------------------
+// iActuationKF configuration block from plugin (BETTY)
+
+ProcessConfig = iActuationKF
+{
+  AppTick     = 10
+  CommsTick   = 10
+
+  // tty port for communicating with the vehicle controller
+  Port                          = /dev/KINGFISHER       
+
+  // No helm command in Timeout seconds = ALL STOPPED
+  Timeout                       = 6                     
+
+  ComputeHeading                = 0         // 0 = NO, 1 = YES
+  m_verbose                     = 1
+  MAX_THRUST_VALUE              = 84
+
+  // MagOffsetX                 = 0.0
+  // MagOffsetY                 = 0.0
+  // ProcessOrientationData     = true
+  // ProcessMagnetometerData    = true
+
+  OFFSET_LT10        =  8.5
+  OFFSET_GTE10_LT20  =  8.5
+  OFFSET_GTE20_LT30  =  8.5
+  OFFSET_GTE30_LT40  =  8.0
+  OFFSET_GTE40_LT50  =  7.5
+  OFFSET_GTE50_LT60  =  7.0
+  OFFSET_GTE60_LT70  =  7.0
+  OFFSET_GTE70_LT80  =  7.0
+  OFFSET_GTE80_LT90  =  7.5
+  OFFSET_GTE90       =  8.5
+}
+
