@@ -4,13 +4,6 @@ initialize   DEPLOY = false
 initialize   RETURN = false
 
 //----------------------------------------------
-Behavior = BHV_Garbage
-{ 
-}
-
-
-
-//----------------------------------------------
 Behavior = BHV_Waypoint
 { 
   name      = waypt_survey
