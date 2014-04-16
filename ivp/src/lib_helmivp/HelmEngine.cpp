@@ -71,7 +71,7 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   m_iteration++;
   m_bhv_set     = bhv_set;
   m_curr_time   = curr_time;
-  m_helm_report = HelmReport();
+  m_helm_report.clear();
   m_ivp_functions.clear();
 
   bool filter_behaviors_present = bhv_set->filterBehaviorsPresent();

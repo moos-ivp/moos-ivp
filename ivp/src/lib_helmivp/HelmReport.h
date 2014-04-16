@@ -32,7 +32,10 @@
 class HelmReport {
 public:
   HelmReport();
+  ~HelmReport() {};
 
+  void  initialize();
+  void  clear(bool clear_completed=false);
   void  addMsg(const std::string& str)     {m_messages.push_back(str);};
   void  setHaltMsg(const std::string& str) {m_halt_message = str;};
   

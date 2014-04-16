@@ -32,6 +32,14 @@ using namespace std;
 
 HelmReport::HelmReport() 
 { 
+  initialize();
+}
+
+//-----------------------------------------------------------
+// Procedure: initialize
+
+void HelmReport::initialize()
+{
   m_warning_count = 0;
   m_time_utc      = 0;
   m_iteration     = 0;
@@ -39,6 +47,45 @@ HelmReport::HelmReport()
   m_create_time   = 0;
   m_solve_time    = 0;
   m_halted        = false;
+  m_max_create_time = 0;
+  m_max_solve_time  = 0;
+  m_max_loop_time   = 0;
+}
+
+//-----------------------------------------------------------
+// Procedure: clear
+
+void HelmReport::clear(bool clear_completed)
+{
+  initialize();
+
+  m_bhvs_running_desc.clear();
+  m_bhvs_running_time.clear();
+  m_bhvs_running_upds.clear();
+  
+  m_bhvs_idle_desc.clear();
+  m_bhvs_idle_time.clear();
+  m_bhvs_idle_upds.clear();
+  
+  if(clear_completed) {
+    m_bhvs_completed_desc.clear();
+    m_bhvs_completed_time.clear();
+    m_bhvs_completed_upds.clear();
+  }
+
+  m_bhvs_active_desc.clear();
+  m_bhvs_active_time.clear();
+  m_bhvs_active_upds.clear();
+  m_bhvs_active_pwt.clear();
+  m_bhvs_active_cpu.clear();
+  m_bhvs_active_pcs.clear();
+  m_bhvs_active_ipfs.clear();
+  
+
+  m_messages.clear();
+  m_decisions.clear();
+
+  m_domain = IvPDomain();
 }
 
 //-----------------------------------------------------------
