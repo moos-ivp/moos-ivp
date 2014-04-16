@@ -17,6 +17,10 @@ pHelmIvP (BHV_Waypoint)
 pHelmIvP (BHV_StationKeep)
   - Minor mod to BHV_StationKeep to allow label colors to be set
 
+pHelmIvP
+  - Fixed minor bug where completed behaviors were not being retained in the 
+  list of completed behaviors between helm iterations. Now they are persistent.
+
 uTimerScript
   - Fixed bug where setting configuring paused=true was not being respected. 
   - Fixed bug where setting delay_start=N was not being handled properly
