@@ -307,15 +307,36 @@ vector<string> parseQuotedString(const string& string_str, char separator)
 //     Notes: Break up the string into a group of white space separated
 //            chunks
 
-vector<string> parseStringToWords(const string& str)
+vector<string> parseStringToWords(const string& str, char grouping_char)
 {
   vector<string> rvector;
   string word;
 
+  int grouping_char_count = 0;
+
+  char rgc = 0;  // right grouping char
+  if(grouping_char == '(')
+    rgc = ')';
+  else if(grouping_char == '{')
+    rgc = '}';
+  else if(grouping_char == '[')
+    rgc = ']';
+  else if(grouping_char == '\"')
+    rgc = '\"';
+    
+
   unsigned int i, len = str.length();
   for(i=0; i<len; i++) {
     char c = str.at(i);
-    if((c != '\t') && (c != ' '))
+    if((grouping_char != 0) && (c == grouping_char)) {
+      grouping_char_count++;
+      word.push_back(c);
+    }
+    else if((rgc != 0) && (c == rgc)) {
+      grouping_char_count--;
+      word.push_back(c);
+    }
+    else if(((c != '\t') && (c != ' ')) || (grouping_char_count > 0))
       word.push_back(c);
     else {
       if(word.length() > 0) {
