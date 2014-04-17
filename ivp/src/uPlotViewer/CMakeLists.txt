@@ -39,6 +39,7 @@ TARGET_LINK_LIBRARIES(uPlotViewer
   ivpbuild
   mbutil
   ivpcore
+  ivpsolve
   fltk 
   fltk_gl
   dl

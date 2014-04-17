@@ -4,20 +4,21 @@
 /*    FILE: BHV_Trail.cpp                                        */
 /*    DATE: Jul 3rd 2005 Sunday morning at Brueggers             */
 /*                                                               */
-/* This program is free software; you can redistribute it and/or */
-/* modify it under the terms of the GNU General Public License   */
-/* as published by the Free Software Foundation; either version  */
-/* 2 of the License, or (at your option) any later version.      */
+/* This file is part of MOOS-IvP                                 */
 /*                                                               */
-/* This program is distributed in the hope that it will be       */
-/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
-/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
-/* PURPOSE. See the GNU General Public License for more details. */
+/* MOOS-IvP is free software: you can redistribute it and/or     */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation, either version  */
+/* 3 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* MOOS-IvP is distributed in the hope that it will be useful,   */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty   */
+/* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See  */
+/* the GNU General Public License for more details.              */
 /*                                                               */
 /* You should have received a copy of the GNU General Public     */
-/* License along with this program; if not, write to the Free    */
-/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
-/* Boston, MA 02111-1307, USA.                                   */
+/* License along with MOOS-IvP.  If not, see                     */
+/* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 #ifdef _WIN32
 #pragma warning(disable : 4786)
@@ -65,6 +66,8 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) :
   m_post_trail_distance_on_idle = true;
   m_trail_pt_x     = 0;
   m_trail_pt_y     = 0;
+
+  m_no_alert_request  = false;
   
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
@@ -130,6 +133,9 @@ bool BHV_Trail::setParam(string param, string param_val)
       return(true);
     }  
   }
+  else if(param == "no_alert_request") {
+    return(setBooleanOnString(m_no_alert_request, param_val));
+  }  
 
   else if(param == "post_trail_distance_on_idle") {
     return(setBooleanOnString(m_post_trail_distance_on_idle, param_val));
@@ -147,6 +153,29 @@ void BHV_Trail::onSetParamComplete()
   m_trail_point.set_label(m_us_name + "_trailpoint");
   m_trail_point.set_active("false");
   string bhv_tag = tolower(getDescriptor());
+}
+
+
+//-----------------------------------------------------------
+// Procedure: onHelmStart()
+
+void BHV_Trail::onHelmStart() 
+{
+#if 0
+  if(m_no_alert_request || (m_update_var == ""))
+    return;
+  
+  string s_alert_range = doubleToStringX(m_pwt_outer_dist,1);
+  string s_cpa_range   = doubleToStringX(m_completed_dist,1);
+  string s_alert_templ = "name=avd_$[VNAME] # contact=$[VNAME]";
+
+  string alert_request = "id=avd, var=" + m_update_var;
+  alert_request += ", val=" + s_alert_templ;
+  alert_request += ", alert_range=" + s_alert_range;
+  alert_request += ", cpa_range=" + s_cpa_range;
+
+  postMessage("BCM_ALERT_REQUEST", alert_request);
+#endif
 }
 
 
@@ -396,3 +425,6 @@ void BHV_Trail::calculateTrailPoint()
   m_trail_point.set_vertex(m_trail_pt_x, m_trail_pt_y);
   postViewableTrailPoint();
 }
+
+
+

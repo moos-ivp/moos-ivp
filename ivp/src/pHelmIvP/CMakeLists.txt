@@ -16,6 +16,7 @@ endif (${WIN32})
 
 SET(SRC
   HelmIvP.cpp
+  HelmEngine.cpp
   HelmIvP_Info.cpp
   main.cpp
 )
@@ -30,7 +31,8 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   behaviors
   bhvutil	
   ivpbuild 
-  ivpcore 
+  ivpcore
+  ivpsolve 
   geometry
   apputil
   mbutil 

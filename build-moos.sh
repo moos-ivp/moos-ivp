@@ -43,7 +43,7 @@ cd "${INVOC_ABS_DIR}/MOOS/MOOSCore"
 
 echo "Invoking cmake..." `pwd`
 cmake -DENABLE_EXPORT=ON                                     \
-      -DUSE_ASYNC_COMMS=OFF                                  \
+      -DUSE_ASYNC_COMMS=OFF                                   \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${INVOC_ABS_DIR}/bin  \
       -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
@@ -83,6 +83,7 @@ make ${CMD_ARGS}
 #===================================================================
 # Part #4:  BUILD MOOS GEODESY
 #===================================================================
+exit;
 cd "${INVOC_ABS_DIR}/MOOS/MOOSGeodesy"
 
 echo "Invoking cmake..." `pwd`

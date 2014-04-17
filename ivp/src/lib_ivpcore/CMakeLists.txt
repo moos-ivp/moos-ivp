@@ -9,10 +9,8 @@ SET(SRC
   IvPDomain.cpp   
   IvPFunction.cpp 
   IvPGrid.cpp     
-  IvPProblem.cpp
-  IvPProblem_v3.cpp
   PDMap.cpp
-  Problem.cpp)
+)
 
 SET(HEADERS
   BoxSet.h
@@ -23,10 +21,7 @@ SET(HEADERS
   IvPDomain.h
   IvPFunction.h
   IvPGrid.h
-  IvPProblem.h
-  IvPProblem_v3.h
   PDMap.h
-  Problem.h
 )
 
 # Build Library

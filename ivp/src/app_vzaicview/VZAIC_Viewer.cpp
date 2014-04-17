@@ -4,9 +4,21 @@
 /*    FILE: VZAIC_Viewer.cpp                                     */
 /*    DATE: May 5th, 2010                                        */
 /*                                                               */
-/* This is unreleased BETA code. No permission is granted or     */
-/* implied to use, copy, modify, and distribute this software    */
-/* except by the author(s).                                      */
+/* This file is part of MOOS-IvP                                 */
+/*                                                               */
+/* MOOS-IvP is free software: you can redistribute it and/or     */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation, either version  */
+/* 3 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* MOOS-IvP is distributed in the hope that it will be useful,   */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty   */
+/* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See  */
+/* the GNU General Public License for more details.              */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with MOOS-IvP.  If not, see                     */
+/* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
 #include <string>
@@ -379,5 +391,8 @@ void VZAIC_Viewer::setParam(string param, string value)
   else if(param == "draw_labels")
     setBooleanOnString(m_draw_labels, value);
 }
+
+
+
 
 

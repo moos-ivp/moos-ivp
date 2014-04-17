@@ -22,6 +22,7 @@ TARGET_LINK_LIBRARIES(aloghelm
   behaviors
   ivpbuild
   ivpcore
+  ivpsolve
   mbutil
   ${SYSTEM_LIBS})
 

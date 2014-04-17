@@ -30,5 +30,6 @@ TARGET_LINK_LIBRARIES(uHelmScope
   behaviors
   ivpbuild
   ivpcore
+  ivpsolve
   mbutil 
   ${SYSTEM_LIBS})

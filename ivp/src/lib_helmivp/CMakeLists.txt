@@ -4,7 +4,6 @@
 #--------------------------------------------------------
 
 SET(SRC
-   HelmEngine.cpp
    HelmReport.cpp
    HelmReportUtils.cpp
    ModeSet.cpp
@@ -20,7 +19,6 @@ SET(SRC
 )
 
 SET(HEADERS
-  HelmEngine.h
   HelmReport.h
   ModeSet.h
   ModeEntry.h

@@ -4,20 +4,21 @@
 /*    FILE: REPLAY_GUI.cpp                                       */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
-/* This program is free software; you can redistribute it and/or */
-/* modify it under the terms of the GNU General Public License   */
-/* as published by the Free Software Foundation; either version  */
-/* 2 of the License, or (at your option) any later version.      */
+/* This file is part of MOOS-IvP                                 */
 /*                                                               */
-/* This program is distributed in the hope that it will be       */
-/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
-/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
-/* PURPOSE. See the GNU General Public License for more details. */
+/* MOOS-IvP is free software: you can redistribute it and/or     */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation, either version  */
+/* 3 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* MOOS-IvP is distributed in the hope that it will be useful,   */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty   */
+/* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See  */
+/* the GNU General Public License for more details.              */
 /*                                                               */
 /* You should have received a copy of the GNU General Public     */
-/* License along with this program; if not, write to the Free    */
-/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
-/* Boston, MA 02111-1307, USA.                                   */
+/* License along with MOOS-IvP.  If not, see                     */
+/* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
 #include <cstdio>
@@ -1091,7 +1092,8 @@ inline void REPLAY_GUI::cb_Delete_i() {
     ylog_file + " " + moos_file; 
 
   // Pretend to care about the system return value to avoid compiler warning
-  int result;
+  // Declare the result variable to be unused to avoid a compiler warning
+  int result __attribute__((unused));
   result = system(command.c_str());
   exit(0);
 }
@@ -1500,11 +1502,15 @@ void REPLAY_GUI::capture_to_file()
   command += intToString(m_save_file_ix) + ".png";
 
   // Pretend to care about the system return value to avoid compiler warning
-  int result;
+  // Declare the result variable to be unused to avoid a compiler warning
+  int result __attribute__((unused));
   result = system(command.c_str());
 
   cout << "command: " << command << endl;
   m_save_file_ix++;
 }
+
+
+
 
 

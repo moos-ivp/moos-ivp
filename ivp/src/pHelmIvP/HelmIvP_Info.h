@@ -4,20 +4,33 @@
 /*    FILE: HelmIvP_Info.h                                       */
 /*    DATE: July 5th 2011                                        */
 /*                                                               */
-/* This program is free software; you can redistribute it and/or */
-/* modify it under the terms of the GNU General Public License   */
-/* as published by the Free Software Foundation; either version  */
-/* 2 of the License, or (at your option) any later version.      */
+/* The algorithms embodied in this software are protected under  */
+/* U.S. Pat. App. Ser. Nos. 10/631,527 and 10/911,765 and are    */
+/* the property of the United States Navy.                       */
 /*                                                               */
-/* This program is distributed in the hope that it will be       */
-/* useful, but WITHOUT ANY WARRANTY; without even the implied    */
-/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
-/* PURPOSE. See the GNU General Public License for more details. */
+/* Permission to use, copy, modify and distribute this software  */
+/* and its documentation for any non-commercial purpose, without */
+/* fee, and without a written agreement is hereby granted        */
+/* provided that the above notice and this paragraph and the     */
+/* following three paragraphs appear in all copies.              */
 /*                                                               */
-/* You should have received a copy of the GNU General Public     */
-/* License along with this program; if not, write to the Free    */
-/* Software Foundation, Inc., 59 Temple Place - Suite 330,       */
-/* Boston, MA 02111-1307, USA.                                   */
+/* Commercial licences for this software may be obtained by      */
+/* contacting Patent Counsel, Naval Undersea Warfare Center      */
+/* Division Newport at 401-832-4736 or 1176 Howell Street,       */
+/* Newport, RI 02841.                                            */
+/*                                                               */
+/* In no event shall the US Navy be liable to any party for      */
+/* direct, indirect, special, incidental, or consequential       */
+/* damages, including lost profits, arising out of the use       */
+/* of this software and its documentation, even if the US Navy   */
+/* has been advised of the possibility of such damage.           */
+/*                                                               */
+/* The US Navy specifically disclaims any warranties, including, */
+/* but not limited to, the implied warranties of merchantability */
+/* and fitness for a particular purpose. The software provided   */
+/* hereunder is on an 'as-is' basis, and the US Navy has no      */
+/* obligations to provide maintenance, support, updates,         */
+/* enhancements or modifications.                                */
 /*****************************************************************/
  
 #ifndef PHELMIVP_INFO_HEADER
@@ -30,4 +43,6 @@ void showInterfaceAndExit();
 void showReleaseInfoAndExit();
 
 #endif
+
+
 

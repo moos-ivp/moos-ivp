@@ -1,0 +1,20 @@
+#--------------------------------------------------------
+# The CMakeLists.txt for:                    lib_ivpsolve
+# Author(s):                                Mike Benjamin
+#--------------------------------------------------------
+
+SET(SRC
+  IvPProblem.cpp
+  IvPProblem_v3.cpp
+  Problem.cpp
+)
+
+SET(HEADERS
+  IvPProblem.h
+  IvPProblem_v3.h
+  Problem.h
+)
+
+# Build Library
+ADD_LIBRARY(ivpsolve ${SRC})
+

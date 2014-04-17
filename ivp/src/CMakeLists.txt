@@ -55,6 +55,16 @@ message("MOOSGeodesy_LIB_PATH:" ${MOOSGeodesy_LIBRARY_PATH})
 message("+++++++++++++++++++++++++++++++++++++++++")
 
 
+message("+++++++++++++++++++++++++++++++++++++++++")
+message("PROJ4_INCLUDE_DIRS:" ${PROJ4_INCLUDE_DIRS})
+message("PROJ4_LIB_PATH:"     ${PROJ4_LIB_PATH})
+message("+++++++++++++++++++++++++++++++++++++++++")
+
+
+include_directories(${PROJ4_INCLUDE_DIRS})
+link_directories(${PROJ4_LIB_PATH})
+
+
 
 
 #===============================================================================
@@ -117,10 +127,12 @@ SET(IVP_NON_GUI_LIBS
    lib_behaviors-marine
    lib_bhvutil
    lib_genutil
+   lib_geodesy
    lib_geometry
    lib_helmivp
    lib_ivpbuild
    lib_ivpcore
+   lib_ivpsolve
    lib_logic
    lib_apputil
    lib_contacts

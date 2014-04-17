@@ -37,7 +37,8 @@ TARGET_LINK_LIBRARIES(alogview
    marineview
    geometry
    logutils
-   ${MOOSGeodesy_LIBRARIES}
+   proj
+   MOOSGeodesy
    MOOS
    contacts
    navplot

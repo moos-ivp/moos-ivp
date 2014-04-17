@@ -29,6 +29,7 @@ TARGET_LINK_LIBRARIES(ffview
      genutil
      ivpbuild
      ivpcore
+     ivpsolve
      ${SYSTEM_LIBS}
      # Standard libraries used by this project's FLTK apps...
      fltk 

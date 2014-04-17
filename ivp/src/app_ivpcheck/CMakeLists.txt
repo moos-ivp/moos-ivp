@@ -38,6 +38,7 @@ TARGET_LINK_LIBRARIES(ivpcheck
   ipfview
   ivpbuild 
   ivpcore
+  ivpsolve
   geometry
   mbutil
   logutils
