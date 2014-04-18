@@ -386,7 +386,7 @@ void USM_MOOSApp::registerVariables()
   m_Comms.Register("USM_FORCE_THETA", 0); // Deprecated
   m_Comms.Register("ROTATE_SPEED", 0);
 
-  m_Comms.Register("USM_PAUSE", 0); 
+  m_Comms.Register("USM_SIM_PAUSED", 0); 
   m_Comms.Register("USM_RESET", 0);
 
   // Added buoyancy and trim control and sonar handshake
