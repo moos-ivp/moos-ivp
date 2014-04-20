@@ -10,6 +10,7 @@ SET(SRC
   BHV_AvoidObstacles.cpp
   BHV_ConstantDepth.cpp
   BHV_ConstantHeading.cpp
+  BHV_MaxDepth.cpp
   BHV_MaintainHeading.cpp
   BHV_ConstantSpeed.cpp
   BHV_CutRange.cpp
@@ -45,6 +46,7 @@ SET(HEADERS
   BHV_ConstantDepth.h
   BHV_ConstantHeading.h
   BHV_ConstantSpeed.h
+  BHV_MaxDepth.h
   BHV_CutRange.h
   BHV_GoToDepth.h
   BHV_HeadingBias.h

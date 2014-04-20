@@ -25,7 +25,6 @@
 #define BHV_CONSTANT_DEPTH_HEADER
 
 #include "IvPBehavior.h"
-#include "ConditionalParam.h"
 
 class BHV_ConstantDepth : public IvPBehavior {
 public:
