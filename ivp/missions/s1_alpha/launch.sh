@@ -29,5 +29,6 @@ uMAC $COMMUNITY.moos
 
 printf "Killing all processes ... \n"
 kill %1 
+mykill
 printf "Done killing processes.   \n"
 
