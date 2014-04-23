@@ -25,7 +25,7 @@
 //
 
 #ifndef _XPCGetProtocol
-#define _XPCGetprotocol
+#define _XPCGetProtocol
 
 #ifdef UNIX
     #include <netdb.h>

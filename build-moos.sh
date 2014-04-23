@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BUILD_TYPE=""
+BUILD_TYPE="Release"
 CMD_ARGS=""
 
 for ARGI; do
@@ -85,8 +85,10 @@ make ${CMD_ARGS}
 #===================================================================
 cd "${INVOC_ABS_DIR}/MOOS/proj-4.8.0"
 
-./configure
-make
-make install
+echo "Building Proj4. MOOS-IvP now uses Proj4 with MOOSGeodesy wrapper"
+./configure 
+make 
+make install 
+echo "Done Building Proj4."
 
 cd ${INVOC_ABS_DIR}
