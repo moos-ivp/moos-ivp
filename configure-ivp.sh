@@ -124,8 +124,8 @@ echo ""
 echo "Invoking cmake..."
 echo ""
 
-PROJ4_INCLUDE_DIR="${SCRIPT_ABS_DIR}/proj-4.8.0/include"
-PROJ4_LIB_DIR="${SCRIPT_ABS_DIR}/proj-4.8.0/lib"
+PROJ4_INCLUDE_DIR="${SCRIPT_ABS_DIR}/MOOS/proj-4.8.0/include"
+PROJ4_LIB_DIR="${SCRIPT_ABS_DIR}/MOOS/proj-4.8.0/lib"
 
 cmake -DIVP_BUILD_GUI_CODE=${CLEANED_IVP_BUILD_GUI_CODE} \
       -DIVP_LIB_DIRECTORY="${LIBRARIES_ABS_DIR}"         \

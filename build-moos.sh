@@ -83,14 +83,10 @@ make ${CMD_ARGS}
 #===================================================================
 # Part #4:  BUILD MOOS GEODESY
 #===================================================================
-exit;
-cd "${INVOC_ABS_DIR}/MOOS/MOOSGeodesy"
+cd "${INVOC_ABS_DIR}/MOOS/proj-4.8.0"
 
-echo "Invoking cmake..." `pwd`
-cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                \
-      -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}" ./
-
-echo ""; echo "Invoking make..." `pwd`; echo ""
-make ${CMD_ARGS}
+./configure
+make
+make install
 
 cd ${INVOC_ABS_DIR}
