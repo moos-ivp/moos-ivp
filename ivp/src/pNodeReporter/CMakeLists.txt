@@ -23,8 +23,8 @@ ADD_EXECUTABLE(pNodeReporter ${SRC})
    
 TARGET_LINK_LIBRARIES(pNodeReporter
    ${MOOS_LIBRARIES}
-   proj
    MOOSGeodesy
+   proj
    contacts
    apputil
    mbutil

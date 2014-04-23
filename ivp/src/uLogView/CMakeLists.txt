@@ -41,8 +41,8 @@ TARGET_LINK_LIBRARIES(uLogView
   contacts
   apputil
   mbutil
-  proj
   MOOSGeodesy
+  proj
   ${MOOS_LIBRARIES}
   # Standard libraries used by this project's FLTK apps...
   fltk 

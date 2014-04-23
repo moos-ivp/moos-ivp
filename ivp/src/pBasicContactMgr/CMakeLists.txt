@@ -25,8 +25,8 @@ endif (${WIN32})
 
 TARGET_LINK_LIBRARIES(pBasicContactMgr
    ${MOOS_LIBRARIES}
-   proj
    MOOSGeodesy
+   proj
    mbutil
    apputil
    geometry

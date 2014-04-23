@@ -23,8 +23,8 @@ ADD_EXECUTABLE(uSimCurrent ${SRC})
 
 TARGET_LINK_LIBRARIES(uSimCurrent
    ${MOOS_LIBRARIES}
-   proj	  
    MOOSGeodesy
+   proj	  
    mbutil
    geometry 
    ${SYSTEM_LIBS})
