@@ -1,7 +1,7 @@
 #!/bin/bash
 
 INVOCATION_ABS_DIR="`pwd`"
-CONFIG="None"
+CONFIG="Release"
 CLEAN="no"
 CMD_ARGS=""
 
