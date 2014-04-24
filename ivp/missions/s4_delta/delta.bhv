@@ -33,6 +33,18 @@ set MODE = RETURNING {
 
 
 //----------------------------------------------
+Behavior = BHV_MaxDepth
+{
+  name = maxdepth
+  pwt  = 200
+  condition = MODE==ACTIVE
+
+  max_depth = 7
+  tolerance = 1
+  duration = no-time-limit
+}
+
+//----------------------------------------------
 Behavior = BHV_Loiter
 {
   name      = loiter

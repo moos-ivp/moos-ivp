@@ -66,12 +66,12 @@ ProcessConfig = uTimerScript
   AppTick	= 4
   CommsTick	= 4
 
-  PAUSED     = false
-  RESET_MAX  = nolimit
-  RESET_TIME = end
-  CONDITION  = (NAV_SPEED > 0)
+  paused     = false
+  reset_max  = nolimit
+  reset_time = end
+  condition  = (NAV_SPEED > 0)
 
-  EVENT = var=SBR_RANGE_REQUEST, val="name=indigo", time=25:35
+  event = var=SBR_RANGE_REQUEST, val="name=indigo", time=25:35
 }
 
 
@@ -103,10 +103,10 @@ ProcessConfig = uXMS
   AppTick   = 0.5
   CommsTick = 0.5
 
-  VAR = IMS_*
-  VAR = NAV_X
-  VAR = NAV_Y
-  VAR = NAV_SPEED
+  var = IMS_*
+  var = NAV_X
+  var = NAV_Y
+  var = NAV_SPEED
 }
 
 
@@ -118,15 +118,15 @@ ProcessConfig = uSimMarine
   AppTick	= 10
   CommsTick	= 10
 
-  START_X       = 0
-  START_Y       = 0
-  START_SPEED   = 0
-  START_HEADING = 180
+  start_x       = 0
+  start_y       = 0
+  start_speed   = 0
+  start_heading = 180
 
-  PREFIX        = NAV
+  prefix        = NAV
 
-  TURN_RATE     = 40
-  THRUST_MAP    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+  turn_rate     = 40
+  thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
 
 }
 
@@ -152,30 +152,30 @@ ProcessConfig = pMarinePID
   AppTick    = 20
   CommsTick  = 20
 
-  VERBOSE       = true
-  DEPTH_CONTROL = false
+  verbose       = true
+  depth_control = false
 
   // SIM_INSTABILITY = 20
 
   // Yaw PID controller
-  YAW_PID_KP		 = 1.2
-  YAW_PID_KD		 = 0.0
-  YAW_PID_KI		 = 0.3
-  YAW_PID_INTEGRAL_LIMIT = 0.07
+  yaw_pid_kp		 = 1.2
+  yaw_pid_kd		 = 0.0
+  yaw_pid_ki		 = 0.3
+  yaw_pid_integral_limit = 0.07
 
   // Speed PID controller
-  SPEED_PID_KP		 = 1.0
-  SPEED_PID_KD		 = 0.0
-  SPEED_PID_KI		 = 0.0
-  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  speed_pid_kp		 = 1.0
+  speed_pid_kd		 = 0.0
+  speed_pid_ki		 = 0.0
+  speed_pid_integral_limit = 0.07
 
   //MAXIMUMS
-  MAXRUDDER    = 100
-  MAXTHRUST    = 100
+  maxrudder    = 100
+  maxthrust    = 100
 
   // A non-zero SPEED_FACTOR overrides use of SPEED_PID
   // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
-  SPEED_FACTOR = 20
+  speed_factor = 20
 }
 
 //------------------------------------------
@@ -186,19 +186,15 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = AerialMIT.tif
+  tiff_file            = AerialMIT.tif
   set_pan_x            = -60
   set_pan_y            = 160
   zoom                 = 1.25
   vehicle_shape_scale  = 1.5
-  seglist_edge_width   = 2.0
-  seglist_vertex_size  = 4
-  seglist_vertex_color = red
   seglist_viewable_all = false
-  point_vertex_size    = 6
   hash_delta           = 50
   hash_shade           = 0.25
-  hash_view            = true
+  hash_viewable        = true
 
   scope  = VIEW_SEGLIST
   scope  = VIEW_POINT
@@ -208,16 +204,16 @@ ProcessConfig = pMarineViewer
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
 
-  BUTTON_ONE = DEPLOY # DEPLOY=true
-  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
-  BUTTON_TWO = RETURN # RETURN=true
+  button_one = DEPLOY # DEPLOY=true
+  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_two = RETURN # RETURN=true
 
-  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
-  ACTION  = RETURN=true
-  ACTION  = HSLINE=off
-  ACTION  = HSLINE=on
-  ACTION  = UPDATES_RETURN=speed=1.4
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action  = RETURN=true
+  action  = HSLINE=off
+  action  = HSLINE=on
+  action  = UPDATES_RETURN=speed=1.4
 
   // MIT OP-AREA
   op_vertex = x=-220, y=-120,lwidth=1,lcolor=yellow,looped=true,group=moa
@@ -232,8 +228,9 @@ ProcessConfig = pMarineViewer
 
 ProcessConfig = pNodeReporter
 {
-  AppTick	= 2
-  CommsTick	= 2
-  VESSEL_TYPE   = KAYAK
+  AppTick	    = 2
+  CommsTick	  = 2
+
+  vessel_type = KAYAK
 }
 

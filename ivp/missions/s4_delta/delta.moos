@@ -107,41 +107,41 @@ ProcessConfig = pMarinePID
   CommsTick  = 20
 
   verbose       = true
-  DEPTH_CONTROL = true
+  depth_control = true
 
   // Yaw PID controller
-  YAW_PID_KP		 = 0.5
-  YAW_PID_KD		 = 0.0
-  YAW_PID_KI		 = 0.0
-  YAW_PID_INTEGRAL_LIMIT = 0.07
+  yaw_pid_kp		 = 0.5
+  yaw_pid_kd		 = 0.0
+  yaw_pid_ki		 = 0.0
+  yaw_pid_integral_limit = 0.07
 
   // Speed PID controller
-  SPEED_PID_KP		 = 1.0
-  SPEED_PID_KD		 = 0.0
-  SPEED_PID_KI		 = 0.0
-  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  speed_pid_kp		 = 1.0
+  speed_pid_kd		 = 0.0
+  speed_pid_ki		 = 0.0
+  speed_pid_integral_limit = 0.07
 
   //Pitch PID controller
-  PITCH_PID_KP                   = 1.5
-  PITCH_PID_KD                   = 1.0
-  PITCH_PID_KI                   = 0
-  PITCH_PID_INTEGRAL_LIMIT       = 0
+  pitch_pid_kp                   = 1.5
+  pitch_pid_kd                   = 1.0
+  pitch_pid_ki                   = 0
+  pitch_pid_integral_limit       = 0
 
   //ZPID controller
-  Z_TO_PITCH_PID_KP              = 0.12
-  Z_TO_PITCH_PID_KD              = 0
-  Z_TO_PITCH_PID_KI              = 0.004
-  Z_TO_PITCH_PID_INTEGRAL_LIMIT  = 0.05
+  z_to_pitch_pid_kp              = 0.12
+  z_to_pitch_pid_kd              = 0
+  z_to_pitch_pid_ki              = 0.004
+  z_to_pitch_pid_integral_limit  = 0.05
 
   //MAXIMUMS
-  MAXRUDDER    = 100
-  MAXTHRUST    = 100
-  MAXPITCH     = 15
-  MAXELEVATOR  = 13
+  maxrudder    = 100
+  maxthrust    = 100
+  maxpitch     = 15
+  maxelevator  = 13
 
   // A non-zero SPEED_FACTOR overrides use of SPEED_PID
   // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
-  SPEED_FACTOR = 20
+  speed_factor = 20
 }
 
 //------------------------------------------
@@ -157,13 +157,9 @@ ProcessConfig = pMarineViewer
   set_pan_y            = -280
   zoom                 = 0.65
   vehicle_shape_scale  = 1.35
-  seglist_edge_width   = 2.0
-  seglist_vertex_size  = 8
-  seglist_vertex_color = red
-  point_vertex_size    = 5
   hash_delta           = 50
   hash_shade           = 0.4
-  hash_view            = true
+  hash_viewable        = true
 
   left_context[survey-point] = SURVEY_UPDATES = points = vname=$(VNAME), x=$(XPOS), y=$(YPOS), format=bowtie, label=delta, wid1=10, wid2=25, wid3=30, height=20
 
@@ -206,16 +202,16 @@ ProcessConfig = pNodeReporter
 
 ProcessConfig = uTimerScript
 {
-   AppTick   = 4
-   CommsTick = 4
+  AppTick   = 4
+  CommsTick = 4
 
-   paused      = false
-   reset_max   = any
-   reset_time  = end
-   condition   = TIME_AT_SURFACE > 3   
-   upon_awake  = restart
-   delay_start = 20:120
-   script_name = GPS_SCRIPT
-
-   event      = var=GPS_UPDATE_RECEIVED, val="RCVD_$(COUNT)", time=0.5:1.0
+  paused      = false
+  reset_max   = any
+  reset_time  = end
+  condition   = TIME_AT_SURFACE > 3   
+  upon_awake  = restart
+  delay_start = 20:120
+  script_name = GPS_SCRIPT
+ 
+  event       = var=GPS_UPDATE_RECEIVED, val="RCVD_$(COUNT)", time=0.5:1.0
 }

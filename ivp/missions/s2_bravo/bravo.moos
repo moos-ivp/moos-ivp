@@ -5,9 +5,8 @@
 
 ServerHost = localhost
 ServerPort = 9000
-Simulator  = true
+Community  = bravo
 
-Community    = bravo
 MOOSTimeWarp = 1
 LatOrigin    = 43.825300 
 LongOrigin   = -70.330400 
@@ -97,24 +96,24 @@ ProcessConfig = pMarinePID
   depth_control = false
 
   // Yaw PID controller
-  YAW_PID_KP		 = 0.5
-  YAW_PID_KD		 = 0.0
-  YAW_PID_KI		 = 0.0
-  YAW_PID_INTEGRAL_LIMIT = 0.07
+  yaw_pid_kp		 = 0.5
+  yaw_pid_kd		 = 0.0
+  yaw_pid_ki		 = 0.0
+  yaw_pid_integral_limit = 0.07
 
   // Speed PID controller
-  SPEED_PID_KP		 = 1.0
-  SPEED_PID_KD		 = 0.0
-  SPEED_PID_KI		 = 0.0
-  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  speed_pid_kp		 = 1.0
+  speed_pid_kd		 = 0.0
+  speed_pid_ki		 = 0.0
+  speed_pid_integral_limit = 0.07
 
   //MAXIMUMS
-  MAXRUDDER    = 100
-  MAXTHRUST    = 100
+  maxrudder    = 100
+  maxthrust    = 100
 
   // Non-zero SPEED_FACTOR overrides SPEED_PID
   // DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
-  SPEED_FACTOR = 20
+  speed_factor = 20
 }
 
 //------------------------------------------
@@ -171,9 +170,9 @@ ProcessConfig = pMarineViewer
 
 ProcessConfig = pNodeReporter
 {
-  AppTick	= 4
+  AppTick	  = 4
   CommsTick	= 4
 
-  vessel_type   = kayak
-  vessel_length = 3
+  platform_type   = kayak
+  platform_length = 3
 }
