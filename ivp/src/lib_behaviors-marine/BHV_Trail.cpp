@@ -192,6 +192,7 @@ IvPFunction *BHV_Trail::onRunState()
     return(0);
 
   calculateTrailPoint();
+  postViewableTrailPoint();
 
   // double adjusted_angle = angle180(m_cnh + m_trail_angle);
   // projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, m_trail_pt_x, m_trail_pt_y);
@@ -409,6 +410,9 @@ double  BHV_Trail::updateTrailDistance()
   return distance;
 }
 
+//-----------------------------------------------------------
+// Procedure: calculateTrailPoint
+
 void BHV_Trail::calculateTrailPoint()
 {
   // Calculate the trail point based on trail_angle, trail_range.
@@ -423,7 +427,6 @@ void BHV_Trail::calculateTrailPoint()
     projectPoint(m_trail_angle, m_trail_range, m_cnx, m_cny, m_trail_pt_x, m_trail_pt_y);
 
   m_trail_point.set_vertex(m_trail_pt_x, m_trail_pt_y);
-  postViewableTrailPoint();
 }
 
 
