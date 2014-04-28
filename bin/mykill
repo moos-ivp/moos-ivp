@@ -60,7 +60,7 @@ killall -9 pFleetControl uFldScope uFldContactRangeSensor         \
         uFldHazardSensor uFldMessageHandler pGenPath           \
         pPointAssign uFldHazardMetric pHandleSensorData        \
         uFldCTDSensor pFrontGridRender uPlotViewer uMAC        \
-        pShare uFldGenericSensor uFldHazardMgr
+        pShare uFldGenericSensor uFldHazardMgr pGradeFrontEstimate pFrontEstimate
 
 killall -9 pParticle uFldContactRangeSensorHP pUUVPath         \
         pWifiCheck uFldMessageSourcer pRangeSensorHandler      \
