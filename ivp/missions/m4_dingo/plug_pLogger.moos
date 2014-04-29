@@ -12,13 +12,13 @@ ProcessConfig = pLogger
   AsyncLog 	= true
   FileTimeStamp = true
 
-  BridgeFrequency = 0
-
   Log = IVPHELM_LIFE_EVENT @ 0 nosync
   Log = APPCAST @ 0 nosync
 
   // Log it all!!!!!
   LogAuxSrc = true
   WildCardLogging = true 
-  LoggingDirectorySummaryFile = ~/.pLogger_%(VNAME)
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
 }

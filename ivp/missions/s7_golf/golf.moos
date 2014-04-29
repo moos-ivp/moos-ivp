@@ -64,7 +64,9 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  LoggingDirectorySummaryFile = ~/.pLogger
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
 }
 
 //------------------------------------------

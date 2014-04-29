@@ -52,6 +52,8 @@ ProcessConfig = pLogger
   LogAuxSrc = true
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
 }
 
 //------------------------------------------

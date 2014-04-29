@@ -25,6 +25,7 @@ ProcessConfig = ANTLER
   Run = pMarinePID      @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
 }
 
 //------------------------------------------
@@ -57,6 +58,26 @@ ProcessConfig = pHelmIvP
   domain     = speed:0:4:21
 
   active_start = false
+}
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  SyncLog = false
+  AsyncLog = true
+  WildCardLogging = true
+
+  //CompressAlogs = true
+
+  LogAuxSrc = true
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
 }
 
 //------------------------------------------

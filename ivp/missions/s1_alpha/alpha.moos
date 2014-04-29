@@ -25,14 +25,14 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = false
+  Run = MOOSDB          @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = uSimMarine	@ NewConsole = false
-  Run = pMarinePID	@ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = false
-  Run = uProcessWatch	@ NewConsole = false
-  Run = pNodeReporter	@ NewConsole = false
+  Run = uSimMarine	    @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = pMarineViewer	  @ NewConsole = false
+  Run = uProcessWatch	  @ NewConsole = false
+  Run = pNodeReporter	  @ NewConsole = false
   Run = uLoadWatch      @ NewConsole = false
   //Run = iSay	        @ NewConsole = true
   //Run = uTimerScript    @ NewConsole = false
@@ -61,7 +61,7 @@ ProcessConfig = uTimerScript
   reset_time     = all-posted
   delay_reset    = 0.25
 
-  event          = var=SAY_MOOS, val="say={one}",   time=0.25  
+	event          = var=SAY_MOOS, val="say={one}",   time=0.25  
   event          = var=SAY_MOOS, val="say={two}",   time=0.5  
   event          = var=SAY_MOOS, val="say={three}", time=0.75  
   event          = var=SAY_MOOS, val="say={four}",  time=1  
@@ -107,7 +107,9 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  // WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
   WildCardExclusionLog = true
 }
 

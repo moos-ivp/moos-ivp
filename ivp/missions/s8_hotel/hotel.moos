@@ -127,7 +127,9 @@ ProcessConfig = pLogger
   LogAuxSrc = true
   WildCardLogging = true
 
-  LoggingDirectorySummaryFile = /Users/mikerb/.plogger2
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
 }
 
 

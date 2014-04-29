@@ -69,11 +69,11 @@ Behavior = BHV_Waypoint
 //----------------------------------------------
 Behavior = BHV_StationKeep
 {
-  name      = station-keep
-  pwt       = 100
-  condition = MODE==STATION-KEEPING
-  inactiveflag = STATIONING=false
-  activeflag = STATIONING=true
+  name         = station-keep
+  pwt          = 100
+  condition    = MODE==STATION-KEEPING
+  inactiveflag = STATIONING = false
+  activeflag   = STATIONING = true
 
      center_activate = true
         inner_radius = 5
@@ -90,17 +90,17 @@ Behavior = BHV_StationKeep
 //----------------------------------------------
 Behavior = BHV_AvoidCollision
 {
-  name       = avdcollision_
-  pwt        = 200
-  condition  = AVOID=true 
-  updates    = CONTACT_INFO
+  name         = avdcollision_
+  pwt          = 200
+  condition    = AVOID = true 
+  updates      = CONTACT_INFO
   idleflag     = AVOIDING = idle
   activeflag   = AVOIDING = active
   inactiveflag = AVOIDING = inactive
   runflag      = AVOIDING = running
   endflag      = AVOIDING = end
-  endflag    = CONTACT_RESOLVED = $[CONTACT]
-  templating = spawn
+  endflag      = CONTACT_RESOLVED = $[CONTACT]
+  templating   = spawn
 
              contact = to-be-set
     on_no_contact_ok = true

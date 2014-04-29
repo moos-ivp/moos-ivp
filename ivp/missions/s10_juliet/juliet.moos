@@ -46,17 +46,20 @@ ProcessConfig = uProcessWatch
 
 ProcessConfig = pLogger
 {
-  AppTick	= 5
+  AppTick	  = 5
   CommsTick	= 5
 
   File		= JULIET
   PATH		= ./
-  SyncLog 	= true @ 0.2
+  SyncLog 	= false
   AsyncLog 	= true
   FileTimeStamp = true
 
   LogAuxSrc = true
   WildCardLogging = true
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
 }
 
 //------------------------------------------
