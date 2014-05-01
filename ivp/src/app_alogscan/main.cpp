@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
     cout << "                lines: sort by total lines for a var " << endl;
     cout << "                                                     " << endl;
     cout << "  --appstat     Output application statistics        " << endl;
+    cout << "  -l,--loglist  Output list of all logged vars       " << endl;
     cout << "  -r,--reverse  Reverse the sorting output           " << endl;
     cout << "  -n,--nocolors Turn off process/source color coding " << endl;
     cout << "  -h,--help     Displays this help message           " << endl;
@@ -72,6 +73,7 @@ int main(int argc, char *argv[])
 
   bool   reverse_requested  = false;
   bool   app_stat_requested = false;
+  bool   loglist_requested  = false;
   string proc_colors        = "true";
   string sort_style         = "bysrc_ascending";
 
@@ -84,6 +86,8 @@ int main(int argc, char *argv[])
       biteString(sarg, '=');
       sort = sarg;
     }
+
+    cout << "sarg:[" << sarg << "]" << endl;
 
     if(strContains(sarg, ".alog"))
       alogfile = orig;
@@ -101,6 +105,8 @@ int main(int argc, char *argv[])
       sort_style = "bysrc_ascending";
     else if(sarg == "--appstat")
       app_stat_requested = true;
+    else if(sarg == "--loglist")
+      loglist_requested = true;
     else if((sarg == "--nocolors") || (sarg == "-n"))
       proc_colors = "false";
     else if((sarg == "-r") || (sarg == "--reversed"))
@@ -131,7 +137,8 @@ int main(int argc, char *argv[])
   
   if(app_stat_requested)
     handler.appStatReport();
-
+  if(loglist_requested) 
+    handler.loglistReport();
 }
 
 

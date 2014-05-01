@@ -272,6 +272,22 @@ void ScanHandler::appStatReport()
   }  
 }
 
+//--------------------------------------------------------
+// Procedure: loglistReport
+//     Notes: 
+
+void ScanHandler::loglistReport()
+{
+  unsigned int total_vars = m_report.size();
+
+  cout << endl << endl;
+  cout << "List of Logged variables (" << total_vars << ")" << endl;
+  cout << "---------------------------------" << endl;
+  for(unsigned int i=0; i<total_vars; i++) {
+    cout << "  Log = " << m_report.getVarName(i) << endl;
+  }
+}
+
 
 
 

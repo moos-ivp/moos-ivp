@@ -36,6 +36,7 @@ class ScanHandler
   void handle(const std::string& alogfile);
 
   void appStatReport();
+  void loglistReport();
 
   std::string procColor(std::string proc_name);
 
