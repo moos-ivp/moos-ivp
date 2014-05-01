@@ -452,7 +452,7 @@ bool MarinePID::handleSpeedSettings()
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KP           = %.3f",spd_pid_Kp));
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KD           = %.3f",spd_pid_Kd));
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KI           = %.3f",spd_pid_Ki));
-  MOOSDebugWrite(MOOSFormat("SPEED_PID_KI_LIMIT     = %.3f",spd_pid_ilim));
+  MOOSDebugWrite(MOOSFormat("SPEED_PID_INTEGRAL_LIMIT = %.3f",spd_pid_ilim));
   MOOSDebugWrite(MOOSFormat("MAXTHRUST              = %.3f",m_max_thrust));
 
   return(ok);
