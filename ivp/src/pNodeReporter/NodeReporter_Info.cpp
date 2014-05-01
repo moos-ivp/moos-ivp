@@ -115,6 +115,9 @@ void showExampleConfigAndExit()
   blk("  // Configure monitor/reporting of dual nav solution           ");
   blk("  alt_nav_prefix     = NAV_GT                                   ");
   blk("  alt_nav_name       = _GT                                      ");
+  blk("                                                                ");
+  blk("  // Declare the vehicle to be part of group tango.             ");
+  blk("  group = tango                                                 ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
