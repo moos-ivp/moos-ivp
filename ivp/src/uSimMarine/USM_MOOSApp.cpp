@@ -115,7 +115,7 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.magDriftVector(dval);
     }
 
-    else if((key == "USM_WATER_DEPTH") ||    // Dprecated
+    else if((key == "USM_WATER_DEPTH") ||    // Deprecated
 	    (key == "WATER_DEPTH"))
       m_model.setParam("water_depth", dval);
 
@@ -647,7 +647,10 @@ bool USM_MOOSApp::buildReport()
 
   bool dual_state = m_model.usingDualState();
 
-  double nav_lat, nav_lon, nav_lat_gt, nav_lon_gt;
+  double nav_lat = 0;
+  double nav_lon = 0;
+  double nav_lat_gt = 0;
+  double nav_lon_gt = 0;
   if(m_geo_ok) {
 #ifdef USE_UTM
     m_geodesy.UTM2LatLong(nav_x, nav_y, nav_lat, nav_lon);
