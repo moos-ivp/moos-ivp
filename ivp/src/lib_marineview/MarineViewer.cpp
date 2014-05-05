@@ -42,6 +42,7 @@
 #include "ColorParse.h"
 #include "Shape_Ship.h"
 #include "Shape_Kayak.h"
+#include "Shape_WAMV.h"
 #include "Shape_AUV.h"
 #include "Shape_Glider.h"
 #include "Shape_Gateway.h"
@@ -614,6 +615,23 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record,
       drawGLPoly(g_kayakBody, g_kayakBodySize, black, outer_line, factor_x);    
     drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, gray, 0, factor_x);
     glTranslatef(cx, cy, 0);
+  }
+  else if(vehibody == "wamv"){
+    if(vlength > 0) {
+      factor_x *= (vlength / g_wamvLength);
+      factor_y *= (vlength / g_wamvLength);
+    }
+    ColorPack blue = colorParse("blue");
+    double cx = (g_wamvCtrX + g_wamvBase/2) * factor_x;
+    double cy = g_wamvCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_wamvBody, g_wamvBodySize, body_color, 0, factor_x);
+    drawGLPoly(g_wamvpropUnit, g_wamvpropUnitSize, blue, 0, factor_x);
+    glTranslatef(2*cx, 0, 0);
+    drawGLPoly(g_wamvBody, g_wamvBodySize, body_color, 0, factor_x);
+    drawGLPoly(g_wamvpropUnit, g_wamvpropUnitSize, blue, 0, factor_x);
+    drawGLPoly(g_wamvPontoonConnector, g_pontoonConnectorSize, gray, 0, factor_x);
+    glTranslatef(-cx, cy, 0);
   }
   else if((vehibody == "auv") || (vehibody == "uuv")) {
     if(vlength > 0) {
