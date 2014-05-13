@@ -60,7 +60,7 @@ ProcessConfig = pShare
   AppTick    = 2
   CommsTick  = 2
 
-  input = route = localhost:9300 & multicast_7
+  input = route = localhost:9300 & multicast_12
 }
 
 
@@ -132,5 +132,6 @@ ProcessConfig = pMarineViewer
   button_two   = RETURN_ALL  # RETURN_ALL=true
 
   button_three = ALLSTOP  # DEPLOY_ALL=false
-  button_four  = SHOW:both   # FGR_SHOW=both
+//  button_four  = SHOW:both   # FGR_SHOW=both
+  BUTTON_four = STATION # STATION_KEEP=true
 }
