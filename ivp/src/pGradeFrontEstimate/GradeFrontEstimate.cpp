@@ -64,7 +64,7 @@ bool GradeFrontEstimate::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 
-    if (key=="UCTD_PARAMETER_ESTIMATE" && reported == false){
+    if (key=="UCTD_PARAMETER_ESTIMATE" && !reported ){
       estimate_report=sval;
       setCurrTime(MOOSTime());
       reported=true;
