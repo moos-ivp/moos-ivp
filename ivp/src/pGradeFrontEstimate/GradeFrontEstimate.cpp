@@ -64,7 +64,7 @@ bool GradeFrontEstimate::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 
-    if (key=="UCTD_PARAMETER_ESTIMATE"){
+    if (key=="UCTD_PARAMETER_ESTIMATE" && reported == false){
       estimate_report=sval;
       setCurrTime(MOOSTime());
       reported=true;
@@ -75,6 +75,7 @@ bool GradeFrontEstimate::OnNewMail(MOOSMSG_LIST &NewMail)
 	{
 	  setStartTime(MOOSTime());
 	  cout << "Deploy, Start Time " << m_start_time << endl;
+	  reported = false;
 	}
     }
     if (key == "UCTD_TRUE_PARAMETERS"){
