@@ -578,6 +578,22 @@ void OF_Reflector::addWarning(string new_warning)
   m_warnings += new_warning;
 }
 
+//-------------------------------------------------------------
+// Procedure: getMessage()
 
+string OF_Reflector::getMessage(unsigned int ix) const
+{
+  if(m_regressor)
+    return(m_regressor->getMessage(ix));
+  return("");
+}
 
+//-------------------------------------------------------------
+// Procedure: getMessageCnt()
 
+unsigned int OF_Reflector::getMessageCnt() const
+{
+  if(m_regressor)
+    return(m_regressor->getMessageCnt());
+  return(0);
+}

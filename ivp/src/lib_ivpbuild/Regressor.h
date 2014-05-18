@@ -26,6 +26,8 @@
 #ifndef REGRESSOR_HEADER
 #define REGRESSOR_HEADER
 
+#include <vector>
+#include <string>
 #include "AOF.h"
 
 class Regressor {
@@ -38,6 +40,9 @@ public:
 
   double  setWeight(IvPBox*, bool feedback=false);
   void    setStrictRange(bool val) {m_strict_range = val;};
+
+  unsigned int getMessageCnt() const {return(m_messages.size());};
+  std::string  getMessage(unsigned int);
 
   const AOF* getAOF() {return(m_aof);};
 
@@ -58,6 +63,8 @@ protected:
 
   int        m_dim;
   bool       m_strict_range;
+
+  std::vector<std::string> m_messages;
 
   // The below data structures are used repeatedly on 
   // successive calls to "setWeight". So they are allocated 

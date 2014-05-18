@@ -48,7 +48,7 @@ public:
   OF_Reflector(const AOF*, int degree=1);
   virtual ~OF_Reflector();
 
-public: 
+ public: 
   int    create(const std::string);
   int    create(int unif_amt=-1, int smart_amt=-1, double thresh=-1);
 
@@ -66,12 +66,17 @@ public:
   bool   setParam(std::string, double);
   bool   setParam(std::string, IvPBox);
     
+  // Added by mikerb May1614
+  unsigned int getMessageCnt() const;
+  std::string  getMessage(unsigned int) const;
+  
+
  protected:
   void   initializePDMap();
   void   clearPDMap();
   void   addWarning(std::string);
 
-protected:
+ protected:
   const AOF*   m_aof;
   IvPDomain    m_domain;
   PDMap*       m_pdmap;

@@ -615,7 +615,9 @@ double Regressor::evalPtBox(const IvPBox *gbox)
     pvals.push_back(m_domain.getVal(d, gbox->pt(d)));
   double val = m_aof->evalPoint(pvals);
   if(val == 0)
-    return(m_aof->evalBox(gbox));
+    val = m_aof->evalBox(gbox);
+  if(val == 0)
+    val = m_aof->evalBoxDebug(gbox, m_messages);
   return(val);
 }
 
@@ -658,13 +660,12 @@ bool Regressor::centerBox(const IvPBox *container_box, IvPBox *rbox)
 }
 
 
+//---------------------------------------------------------------
+// Procedure: getMessage()
 
-
-
-
-
-
-
-
-
-
+string Regressor::getMessage(unsigned int ix)
+{
+  if(ix < m_messages.size())
+    return(m_messages[ix]);
+  return("");
+}
