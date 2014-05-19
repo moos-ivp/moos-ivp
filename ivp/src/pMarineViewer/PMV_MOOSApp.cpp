@@ -750,7 +750,6 @@ void PMV_MOOSApp::postAppCastRequest(string channel_node,
 
 bool PMV_MOOSApp::buildReport()
 {
-  return(true);
   // Nothing for now. AppCasting mostly to catch configuration warnings.
 
   m_msgs << "Total GeoShapes:  " << m_gui->mviewer->shapeCount("total_shapes") << endl;
