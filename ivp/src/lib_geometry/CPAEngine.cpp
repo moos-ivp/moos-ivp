@@ -896,5 +896,31 @@ bool CPAEngine::crossesBowOrStern(double osCRS, double osSPD) const
 }
 
 
+//----------------------------------------------------------------
+// Procedure: turnsRight
+//   Purpose: Determine if for the present ownship heading, whether or not
+//            the proposed heading represent a righthand turn (starboard)
 
+bool CPAEngine::turnsRight(double present_heading, double heading) const
+{
+  double delta = angle360(heading - present_heading);
+  if((delta > 0) && (delta < 180))
+    return(true);
+  return(false);
+}
+  
+
+//----------------------------------------------------------------
+// Procedure: turnsLeft
+//   Purpose: Determine if for the present ownship heading, whether or not
+//            the proposed heading represent a lefthand turn (port)
+
+bool CPAEngine::turnsLeft(double present_heading, double heading) const
+{
+  double delta = angle360(heading - present_heading);
+  if(delta > 180)
+    return(true);
+  return(false);
+}
+  
 

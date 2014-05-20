@@ -47,7 +47,8 @@ public:
 
   bool   crossesBowOrStern(double osh, double osv) const;
 
-
+  bool   turnsRight(double old_osh, double new_osh) const;
+  bool   turnsLeft(double old_osh, double new_osh) const;
 
   bool   passesContact(double osh, double osv) const;
   bool   passesContactPort(double osh, double osv) const;
