@@ -238,7 +238,6 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     return(true);
   }
   else if(param == "order") {
-    cout << "Order: " << param_val << endl;
     if((param_val!="reverse") && (param_val!="reversed") && 
        (param_val!="normal") && (param_val!="toggle"))
       return(false);
