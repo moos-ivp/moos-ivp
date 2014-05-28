@@ -88,7 +88,7 @@ void Viewer::draw()
   }
 
   if(m_draw_frame) {
-    drawFrame();
+    drawFrame(false);
     //drawFocusBox();
   }
 
