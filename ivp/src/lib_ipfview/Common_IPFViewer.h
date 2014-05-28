@@ -57,7 +57,7 @@ public:
   void   setFrameColor(std::string s)  {m_frame_color.setColor(s);};
 
 protected:
-  void   drawFrame();
+  void   drawFrame(bool full=true);
   void   drawOwnPoint();
   void   drawMaxPoint(double, double);
   bool   drawIvPFunction();

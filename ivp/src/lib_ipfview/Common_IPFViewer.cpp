@@ -490,12 +490,12 @@ void Common_IPFViewer::drawQuad(Quad3D q, double rad_extra_extra)
 //-------------------------------------------------------------
 // Procedure: drawFrame
 
-void Common_IPFViewer::drawFrame()
+void Common_IPFViewer::drawFrame(bool full)
 {
   double w = 250;
 
-  double b = -250;
-  double t = -250 + (m_frame_height);
+  double b = -150;
+  double t = -350 + (m_frame_height);
 
   double frame_red = m_frame_color.red();
   double frame_grn = m_frame_color.grn();
@@ -530,34 +530,36 @@ void Common_IPFViewer::drawFrame()
     glEnd();
   }
 
-  //glColor3f(0.8f, 0.3f, 0.8f);
-  glBegin(GL_LINE_STRIP);
-  glVertex3f(-w,-w, t);  
-  glVertex3f(w, -w, t);  
-  glVertex3f(w,  w, t);
-  glVertex3f(-w, w, t);  
-  glVertex3f(-w,-w, t);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex3f(-w,-w, b);  
-  glVertex3f(-w,-w, t);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex3f(-w, w, b);  
-  glVertex3f(-w, w, t);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex3f(w, w, b);     
-  glVertex3f(w, w, t);
-  glEnd();
-
-  glBegin(GL_LINE_STRIP);
-  glVertex3f(w, -w, b);  
-  glVertex3f(w, -w, t);
-  glEnd();
+  if(full) {
+    //glColor3f(0.8f, 0.3f, 0.8f);
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-w,-w, t);  
+    glVertex3f(w, -w, t);  
+    glVertex3f(w,  w, t);
+    glVertex3f(-w, w, t);  
+    glVertex3f(-w,-w, t);
+    glEnd();
+    
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-w,-w, b);  
+    glVertex3f(-w,-w, t);
+    glEnd();
+    
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(-w, w, b);  
+    glVertex3f(-w, w, t);
+    glEnd();
+    
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(w, w, b);     
+    glVertex3f(w, w, t);
+    glEnd();
+    
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(w, -w, b);  
+    glVertex3f(w, -w, t);
+    glEnd();
+  }
 
   glFlush();
 }
