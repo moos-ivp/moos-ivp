@@ -109,10 +109,10 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = AerialMIT.tif
-  set_pan_x            = -30
-  set_pan_y            = 60
-  zoom                 = 2.3
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
   vehicles_shape_scale = 1.5
   vehicles_name_mode   = names+shortmode
   marker_viewable_labels = false

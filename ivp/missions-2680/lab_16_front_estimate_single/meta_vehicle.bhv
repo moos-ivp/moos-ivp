@@ -46,7 +46,7 @@ Behavior = BHV_Waypoint
 
         repeat = 0
   visual_hints = nextpt_color=red, nextpt_lcolor=green
-  visual_hints = vertex_color=yellow, edge_color=gray25
+  visual_hints = vertex_color=yellow, edge_color=gray85
   visual_hints = vertex_size=1, edge_size=1
 }
 
@@ -70,39 +70,10 @@ Behavior = BHV_Waypoint
 }
 
 //----------------------------------------------
-Behavior = BHV_OpRegion
+Behavior = BHV_ConstantDepth
 {
-  name       = opregion
-  pwt        = 100
-  condition  = MODE==ACTIVE
-  condition  = OPREGION=true
- 
-             polygon = pts={-50,-40 : 100,20 : 180,20 : 180,-200 : -50,-200 : -100,-75}
-  trigger_entry_time = 1
-  trigger_exit_time  = 1
-        visual_hints = edge_size=1, vertex_size=2
-}
+  name       = const_depth
 
-//------------------------------------------------
-Behavior = BHV_AvoidCollision
-{
-  name       = avdcollision_
-  pwt        = 200
-  condition  = AVOID = true
-  updates    = CONTACT_INFO
-  endflag    = CONTACT_RESOLVED = $[CONTACT]
-  templating = spawn
-
-               contact = to-be-set
-      on_no_contact_ok = true
-           extrapolate = true
-                 decay = 30,60
-
-        pwt_outer_dist = 50
-        pwt_inner_dist = 20
-        completed_dist = 75
-     min_util_cpa_dist = 8
-     max_util_cpa_dist = 25
-             pwt_grade = linear
-   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+  depth      = 8
+  duration   = no-time-limit
 }
