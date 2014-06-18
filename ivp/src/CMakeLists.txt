@@ -2,20 +2,12 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 PROJECT(IVP)
 
-ENABLE_TESTING()
-INCLUDE(CTest)
-
 IF (${WIN32})
   # Define Windows Compiler flags here
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 ELSE (${WIN32})
-
-  # Force -fPIC because gcc complains when we don't use it with x86_64 code.
-  # Note sure why: -fPIC should only be needed for shared objects, and
-  # AFAIK, CMake gets that right when building shared objects. -CJC
   #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -Wall -Wextra")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g ")
-
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -Wall")
 ENDIF (${WIN32})
 
 #===============================================================================
@@ -37,59 +29,13 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 message("MOOS_INCLUDE_DIRS:" ${MOOS_INCLUDE_DIRS})
 message("+++++++++++++++++++++++++++++++++++++++++")
 
-#===============================================================================
-# FINDING MOOSGeodesy' HEADERS AND LIBRARIES...
-#===============================================================================
-
-# moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php
-#find_package(MOOSGeodesy)
-#include_directories(${MOOSGeodesy_INCLUDE_DIRS})
-#link_directories(${MOOSGeodesy_LIBRARY_PATH})
-
-#message("+++++++++++++++++++++++++++++++++++++++++")
-#message("MOOSGeodesy_INCLUDE_DIRS:" ${MOOSGeodesy_INCLUDE_DIRS})
-#message("+++++++++++++++++++++++++++++++++++++++++")
-
-#message("+++++++++++++++++++++++++++++++++++++++++")
-#message("MOOSGeodesy_LIB_PATH:" ${MOOSGeodesy_LIBRARY_PATH})
-#message("+++++++++++++++++++++++++++++++++++++++++")
-
-message("+++++++++++++++++++++++++++++++++++++++++")
-message("PROJ4_INCLUDE_DIRS:" ${PROJ4_INCLUDE_DIRS})
-message("PROJ4_LIB_PATH:"     ${PROJ4_LIB_PATH})
-message("+++++++++++++++++++++++++++++++++++++++++")
-
-
 include_directories(${PROJ4_INCLUDE_DIRS})
 link_directories(${PROJ4_LIB_PATH})
-
-
 
 
 #===============================================================================
 # BUILDING IvP...
 #===============================================================================
-
-#-------------------------------------------------------------------------------
-# Force "-Wall" compiler option if using GCC.
-#-------------------------------------------------------------------------------
-# This was added by Andrew Shafer...
-IF(CMAKE_COMPILER_IS_GNUCXX)
-   SET( WALL_ON ON CACHE BOOL "tell me about all compiler warnings (-Wall) ")
-   IF(WALL_ON)
-            SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-   ENDIF( WALL_ON)
-ELSE(CMAKE_COMPILER_IS_GNUCXX)
-   IF(MSVC)
-      SET( WALL_ON OFF CACHE BOOL "tell me about all compiler warnings (-Wall) ")
-      IF(WALL_ON)
-         SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
-      ENDIF(WALL_ON)
-   ELSE(MSVC)
-   # Other compilers go here      
-   
-   ENDIF(MSVC)
-ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 
 #-------------------------------------------------------------------------------
 # Let users control whether or not GUI-related libraries/apps are built...
@@ -196,22 +142,10 @@ IF("${IVP_INC_DIRECTORY}" STREQUAL "")
    GET_FILENAME_COMPONENT(IVP_INC_DIRECTORY "${IVP_SOURCE_DIR}/../../include" ABSOLUTE)
 ENDIF("${IVP_INC_DIRECTORY}" STREQUAL "")
 
+
 INCLUDE_DIRECTORIES(${IVP_LIBS_TO_BUILD})
 
 FOREACH(L ${IVP_LIBS_TO_BUILD} )
-# message("D: ${L} : IVP_LIB_DIRECTORY = ${IVP_LIB_DIRECTORY}")
-  # We're actually fighting the lib_fltk CMake files for control over this
-  # detail, so we have to reset it after adding the FLTK subdirectory.
-  
-  SET( LIBRARY_OUTPUT_PATH "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE )  # For CMake 2.4
-
-  # Just setting the variables without the 'CMAKE_' prefix doesn't seem to work.
-  # This whole mess should go away if/when we stop building FLTK as a subproject.
-  SET( CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE ) # For CMake 2.6
-  SET( CMAKE_LIBRARY_OUTPUT_DIRECTORY "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE ) # For CMake 2.6
-  SET( ARCHIVE_OUTPUT_DIRECTORY "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE ) # For CMake 2.6
-  SET( LIBRARY_OUTPUT_DIRECTORY "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE ) # For CMake 2.6
-
   ADD_SUBDIRECTORY(${L})
 ENDFOREACH(L)
 
@@ -238,11 +172,6 @@ SET(IVP_NON_GUI_APPS
   pMarinePID
   pBasicContactMgr
   pNodeReporter
-  pSafetyRetreat
-  pGradeFrontEstimate
-  pFrontEstimate
-  pFrontGridRender
-  uFldCTDSensor
   uFldCollisionDetect
   uFldPathCheck
   uFldShoreBroker
@@ -262,7 +191,6 @@ SET(IVP_NON_GUI_APPS
   uHelmScope
   uProcessWatch
   uLoadWatch
-  uSimCurrent
   uSimMarine
   uTermCommand
   uXMS
@@ -272,11 +200,18 @@ SET(IVP_NON_GUI_APPS
   iSay
   )
 
+IF( EXISTS pSafetyRetreat )
+  LIST(APPEND IVP_NON_GUI_APPS 
+  pSafetyRetreat
+  uSimCurrent
+)  
+ENDIF( EXISTS pSafetyRetreat )
+
+
+
 SET(IVP_GUI_APPS
- app_ivpcheck
   app_ffview
   app_geoview
-  app_currview
   app_alogview
   app_vzaicview
   app_gzaicview
@@ -288,6 +223,14 @@ SET(IVP_GUI_APPS
   uLogViewIPF
   uLogViewHelm
   )
+
+IF( EXISTS app_ivpcheck )
+  LIST(APPEND IVP_GUI_APPS 
+  app_ivpcheck
+  app_currview
+)  
+ENDIF( EXISTS app_ivpcheck )
+
   
 SET(IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})
 IF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
@@ -307,33 +250,6 @@ FOREACH(A ${IVP_APPS_TO_BUILD})
   SET( EXECUTABLE_OUTPUT_PATH "${IVP_BIN_DIRECTORY}" CACHE PATH "" FORCE )
   ADD_SUBDIRECTORY(${A})
 ENDFOREACH(A)
-
-#=============================================================================
-# Add Nightly Tests
-#=============================================================================
-
-# By default, turn nightly testing is on.
-SET( TEST_NIGHTLY TRUE CACHE BOOL "Enable/Disable nightly testing")
-
-IF( TEST_NIGHTLY )
-
-   # Set the directory where the nightly tests are located
-   GET_FILENAME_COMPONENT( NIGHTLY_TEST_DIR 
-      "${IVP_SOURCE_DIR}/../missions-test/nightly" ABSOLUTE )
-
-   FILE(GLOB NIGHTLY_TEST_DIRS ${NIGHTLY_TEST_DIR}/n* )
-
-   FIND_PROGRAM(CMAKE_CMD "cmake")
-
-   FOREACH(TEST_DIR ${NIGHTLY_TEST_DIRS} )
-      ADD_TEST( NAME ${TEST_DIR} 
-                COMMAND ${CMAKE_CMD} -DIVP_BIN_DIR=${IVP_BIN_DIRECTORY} 
-                              -DMOOS_BIN_DIR=${MOOS_BASE_DIR_ABSOLUTE}/MOOSBin
-                              -DTEST_DIR=${TEST_DIR}
-                              -P ${TEST_DIR}/run_test.cmake )   
-   ENDFOREACH(TEST_DIR)
-
-ENDIF( TEST_NIGHTLY )
 
 #=============================================================================
 # make install (tes 2012-05-08)
