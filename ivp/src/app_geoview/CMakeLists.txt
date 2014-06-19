@@ -31,8 +31,7 @@ ENDIF (${APPLE})
 
 TARGET_LINK_LIBRARIES(geoview
   marineview
-  MOOSGeodesy
-  proj
+  ${MOOSGeodesy_LIBRARIES}
   contacts
   mbutil
   geometry

@@ -30,8 +30,7 @@ ELSE (${APPLE})
 ENDIF (${APPLE})
 
 TARGET_LINK_LIBRARIES(currview
-  MOOSGeodesy
-  proj
+  ${MOOSGeodesy_LIBRARIES}
   ${SYSTEM_LIBS}
   marineview
   contacts
