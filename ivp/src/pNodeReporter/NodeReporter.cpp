@@ -800,7 +800,3 @@ bool NodeReporter::buildReport()
   return(true);
 }
 
-
-
-
-

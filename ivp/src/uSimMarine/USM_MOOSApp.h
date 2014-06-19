@@ -26,7 +26,7 @@
 
 #include <string>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-#include "MOOSGeodesy.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "USM_Model.h"
 
 class USM_MOOSApp : public AppCastingMOOSApp

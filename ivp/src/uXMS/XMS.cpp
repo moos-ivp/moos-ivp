@@ -541,7 +541,7 @@ bool XMS::addVariable(string varname, bool histvar)
   
   // Simply return true if the variable has already been added.
   if(m_map_var_entries.count(varname) != 0)
-    return(false);
+    return(true);
   
   ScopeEntry entry;
   entry.setValue("n/a");

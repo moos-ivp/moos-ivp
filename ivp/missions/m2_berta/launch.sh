@@ -58,7 +58,6 @@ nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
 nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME2     \
     START_POS=$START_POS1 LOITER_POS=$LOITER_POS2       
 
-
 if [ ! -e targ_henry.moos ]; then echo "no targ_henry.moos"; exit; fi
 if [ ! -e targ_henry.bhv  ]; then echo "no targ_henry.bhv";  exit; fi
 if [ ! -e targ_gilda.moos ]; then echo "no targ_gilda.moos"; exit; fi
@@ -86,5 +85,3 @@ uMAC targ_shoreside.moos
 printf "Killing all processes ... \n"
 kill %1 %2 %3
 printf "Done killing processes.   \n"
-
-

@@ -10,7 +10,8 @@ if [ $# -ne 1 ]; then
    print_usage_and_exit
 fi
 
-BUILD_TYPE=${1}
+#BUILD_TYPE=${1}
+BUILD_TYPE="Release"
 
 echo BUILD_TYPE=${BUILD_TYPE}
 

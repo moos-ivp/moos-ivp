@@ -48,8 +48,7 @@
 #include "BackImg.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
-//#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
-#include "MOOSGeodesy.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 
 using namespace std;
 

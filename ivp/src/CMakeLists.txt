@@ -34,6 +34,18 @@ link_directories(${PROJ4_LIB_PATH})
 
 
 #===============================================================================
+# FINDING MOOSGeodesy' HEADERS AND LIBRARIES...  
+#===============================================================================
+# moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php            
+find_package(MOOSGeodesy)
+include_directories(${MOOSGeodesy_INCLUDE_DIRS})
+link_directories(${MOOSGeodesy_LIBRARY_PATH})
+
+message("+++++++++++++++++++++++++++++++++++++++++")
+message("MOOSGeodesy_INCLUDE_DIRS:" ${MOOSGeodesy_INCLUDE_DIRS})
+message("+++++++++++++++++++++++++++++++++++++++++")
+
+#===============================================================================
 # BUILDING IvP...
 #===============================================================================
 
@@ -72,7 +84,7 @@ SET(IVP_NON_GUI_LIBS
    lib_behaviors-marine
    lib_bhvutil
    lib_genutil
-   lib_geodesy
+#   lib_geodesy
    lib_geometry
    lib_helmivp
    lib_ivpbuild

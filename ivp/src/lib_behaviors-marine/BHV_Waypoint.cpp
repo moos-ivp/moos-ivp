@@ -220,7 +220,7 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     m_wpt_flags.push_back(pair);
     return(true);
   }
-  else if(param == "ipf-type") {
+  else if((param == "ipf-type") || (param == "ipf_type")) {
     param_val = tolower(param_val);
     if((param_val=="zaic") || (param_val=="roc") || 
        (param_val=="rate_of_closure"))

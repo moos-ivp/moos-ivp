@@ -23,8 +23,7 @@
 
 #include <iostream>
 #include <cstdlib>
-//#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
-#include "MOOSGeodesy.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "OpAreaSpec.h"
 #include "MBUtils.h"
 #include "ColorParse.h"

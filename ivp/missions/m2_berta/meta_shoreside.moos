@@ -17,7 +17,7 @@ Processconfig = ANTLER
   Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = pSearchGrid     @ NewConsole = false
+  //Run = pSearchGrid     @ NewConsole = false
   Run = uXMS            @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
 
@@ -68,31 +68,31 @@ ProcessConfig = uFldShoreBroker
   //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
   //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
-  QBRIDGE  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
-  QBRIDGE  = MOOS_MANUAL_OVERIDE, APPCAST_REQ
+  qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERIDE, APPCAST_REQ
 
-  BRIDGE   = src=UP_LOITER_$N, alias=UP_LOITER
-  BRIDGE   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
-  BRIDGE   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
+  bridge   = src=UP_LOITER_$N, alias=UP_LOITER
+  bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
+  bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
 }
 
 //--------------------------------------------------
-// uFldNodeComms Configuration Block
+// ufldnodecomms Configuration Block
 
 ProcessConfig = uFldNodeComms
 {
   AppTick       = 2
   CommsTick     = 2
 
-  COMMS_RANGE      = 50
-  CRITICAL_RANGE   = 25
+  comms_range      = 50
+  critical_range   = 25
 
-  MIN_MSG_INTERVAL = 15
-  MAX_MSG_LENGTH   = 1000
+  min_msg_interval = 15
+  max_msg_length   = 1000
 
-  GROUPS           = true
+  groups           = true
 
-  VIEW_NODE_RPT_PULSES = false
+  view_node_rpt_pulses = false
 }
 
 //--------------------------------------------------
@@ -112,7 +112,7 @@ ProcessConfig = uXMS
   AppTick       = 1
   CommsTick     = 1
 
-  VAR = APPCAST_REQ
+  var = APPCAST_REQ
 }
 
 //--------------------------------------------------
@@ -123,11 +123,11 @@ ProcessConfig = pSearchGrid
   AppTick       = 1
   CommsTick     = 1
 
-  GRID_CONFIG = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150}
-  GRID_CONFIG = cell_size=5
-  GRID_CONFIG = cell_vars=x:0:y:0:z:0
-  GRID_CONFIG = cell_min=x:0
-  GRID_CONFIG = cell_max=x:10
+  grid_config = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150}
+  grid_config = cell_size=5
+  grid_config = cell_vars=x:0:y:0:z:0
+  grid_config = cell_min=x:0
+  grid_config = cell_max=x:10
 }
 
 //--------------------------------------------------
@@ -144,8 +144,14 @@ ProcessConfig = pLogger
   AsyncLog      = true
   FileTimeStamp = true
 
+	LogAuxSrc     = true
+
   // Log it all!!!!!
   WildCardLogging = true 
+
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
 }
 
 
@@ -160,35 +166,35 @@ ProcessConfig = pMarineViewer
   set_pan_y            = -280
   zoom                 = 0.65
   vehicles_shape_scale = 1.5
-  vehicles_name_viewable = names
+  vehicles_name_mode   = names
 
   circle_viewable_all = false
   
   appcast_viewable = true
   appcast_color_scheme = indigo
 
-  SCOPE = PSHARE_INPUT_SUMMARY
-  SCOPE = NODE_BROKER_PING
-  SCOPE = DEPLOY_ALL
-  SCOPE = CONTACT_INFO
+  scope = PSHARE_INPUT_SUMMARY
+  scope = NODE_BROKER_PING
+  scope = DEPLOY_ALL
+  scope = CONTACT_INFO
 
-  ACTION = PERMUTING = true
-  ACTION = PERMUTING = false
+  action = PERMUTING = true
+  action = PERMUTING = false
 
-  ACTION = WIND_GUSTS = true
-  ACTION = WIND_GUSTS = false
+  action = WIND_GUSTS = true
+  action = WIND_GUSTS = false
 
-  ACTION = STATION_KEEP_ALL = false
-  ACTION = STATION_KEEP_ALL = true
+  action = STATION_KEEP_ALL = false
+  action = STATION_KEEP_ALL = true
 
-  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
-  BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
-  BUTTON_ONE   = RETURN_ALL=false # STATION_KEEP_ALL=false
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERIDE_ALL=false 
+  button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
 
-  BUTTON_TWO   = RETURN  # RETURN_ALL=true
-  BUTTON_TWO   = RETURN  # STATION_KEEP_ALL=false
-  BUTTON_THREE = PERMUTE   # UTS_FORWARD=0
-  BUTTON_FOUR = STATION   # STATION_KEEP_ALL=true
+  button_two   = RETURN  # RETURN_ALL=true
+  button_two   = RETURN  # STATION_KEEP_ALL=false
+  button_three = PERMUTE   # UTS_FORWARD=0
+  button_four  = STATION   # STATION_KEEP_ALL=true
 }
 
 //--------------------------------------------------------
@@ -199,21 +205,21 @@ ProcessConfig = uTimerScript
   AppTick   = 4
   CommsTick = 4
   
-  PAUSED     = false
-  RESET_MAX  = unlimited
-  RESET_TIME = end
+  paused     = false
+  reset_max  = unlimited
+  reset_time = end
 
-  RANDVAR = varname=X1, min=-25,  max=25,  key=at_reset
-  RANDVAR = varname=Y1, min=-100, max=-50, key=at_reset
+  randvar = varname=X1, min=-25,  max=25,  key=at_reset
+  randvar = varname=Y1, min=-100, max=-50, key=at_reset
 
-  RANDVAR = varname=X2, min=100,  max=150, key=at_reset
-  RANDVAR = varname=Y2, min=-75,  max=-25, key=at_reset
+  randvar = varname=X2, min=100,  max=150, key=at_reset
+  randvar = varname=Y2, min=-75,  max=-25, key=at_reset
 
-  EVENT = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
-  EVENT = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180
+  event = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
+  event = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180
 
-  EVENT = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=360
-  EVENT = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=360
+  event = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=360
+  event = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=360
 }
 
 
@@ -225,14 +231,12 @@ ProcessConfig = uProcessWatch
   AppTick   = 1
   CommsTick = 1
 
-  ALLOW_RETRACTIONS = true
+  allow_retractions = true
   
-  WATCH_ALL = true      // default is true
+  watch_all = true      // default is true
 
-  NOWATCH = uXMS*
-  NOWATCH = uPokeDB*
+  nowatch = uXMS*
+  nowatch = uPokeDB*
 
-  SUMMARY_WAIT = 12
+  summary_wait = 12
 }
-
-

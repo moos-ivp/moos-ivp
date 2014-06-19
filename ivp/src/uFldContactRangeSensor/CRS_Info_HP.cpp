@@ -95,9 +95,11 @@ void showExampleConfigAndExit()
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
   blk("  // Configuring aspects of the vehicles in the sim             ");
-  blk("  reach_distance = default = 100  // in meters or {nolimit}     ");
-  blk("  reply_distance = default = 100  // in meters or {nolimit}     ");
-  blk("  ping_wait      = default = 30   // in seconds                 ");
+  blk("  push_dist  = default = 100  // in meters or {nolimit}         ");
+  blk("  pull_dist  = default = 100  // in meters or {nolimit}         ");
+  blk("  ping_wait  = default = 30   // in seconds                     ");
+  blk("                                                                ");
+  blk("  allow_echo_types = uuv                                        ");
   blk("                                                                ");
   blk("  // Configuring manner of reporting                            ");
   blk("  report_vars    = short // or {long, both}                     ");
@@ -107,10 +109,11 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Configuring visual artifacts                               ");
   blk("  ping_color     = white                                        ");
-  blk("  reply_color    = chartreuse                                   ");
+  blk("  echo_color     = chartreuse                                   ");
   blk("                                                                ");
   blk("  // Configuring Artificial Noise                               ");
-  blk("  rn_algorithm   = uniform,pct=0                                ");
+  blk("  rn_uniform_pct    = 0.5                                        ");
+  blk("  rn_gaussian_sigma = 1.5                                       ");
   blk("                                                                ");
   blk("  // Configuring Sensor Arcs                                    ");
   blk("  sensor_arc = 45:135,225:315 // or {315:45} for front          ");

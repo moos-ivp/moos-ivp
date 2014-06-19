@@ -6,6 +6,9 @@ SET(SOURCES
 
 include(PlatformDefines)
 
+include_directories(${PROJ4_INCLUDE_DIRS})
+link_directories(${PROJ4_LIB_PATH})
+
 ##########################
 # Packages / Dependencies
 set(INCLUDE_ROOTS  
@@ -13,14 +16,14 @@ set(INCLUDE_ROOTS
 )
     
 set(${LIBNAME}_DEPEND_INCLUDE_DIRS
-    ${INCLUDE_ROOTS}
+    ${INCLUDE_ROOTS} 
     CACHE INTERNAL
     "List of include dirs for the dependencies of ${LIBNAME}"    
 )
 list(REMOVE_DUPLICATES ${LIBNAME}_DEPEND_INCLUDE_DIRS)
 
 if(UNIX)
-    set(DEPENDENCIES m)
+    set(DEPENDENCIES m proj)
 endif(UNIX)
    
 
@@ -62,8 +65,9 @@ cache_internal_append_unique(PROJECT_EXPORT_LIBS
 
 #######################################
 # Create the library
-# This is boilerplate.  Any extra libs you want to link should be in the '..._DEPEND_...'
-# variables
+# This is boilerplate.  Any extra libs you want to link should be 
+# in the '..._DEPEND_...' variables
+
 include_directories(${${LIBNAME}_INCLUDE_DIRS} ${${LIBNAME}_DEPEND_INCLUDE_DIRS})
 add_library(${LIBNAME} ${SOURCES} ${PUBLIC_HEADERS})
 target_link_libraries(${LIBNAME} ${${LIBNAME}_DEPEND_LIBRARIES})

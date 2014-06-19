@@ -109,6 +109,8 @@ void showExampleConfigAndExit()
   blk("  default_beacon_width = 4                                      ");
   blk("  default_beacon_report_range = 100                             ");
   blk("  default_beacon_freq  = never     ","// or [0,inf]             ");
+  blk("  default_beacon_push_dist = 100                                ");
+  blk("  default_beacon_pull_dist = 100                                ");
   blk("                                                                ");
   blk("  // Configuring Beacon properties                              ");
   blk("  beacon = x=200, y=435, label=01, report_range=45              ");

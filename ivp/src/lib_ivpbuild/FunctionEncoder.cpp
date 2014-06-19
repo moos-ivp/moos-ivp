@@ -385,6 +385,9 @@ IvPFunction *StringToIvPFunction(const string& str)
 
   IvPDomain domain = stringToDomain(buff);
 
+  cout << "==============" << endl;
+  domain.print();
+  cout << "==============" << endl;
   // Determine the gridbox
   cix += 2;
   IvPBox gelbox(dim,0);
@@ -474,6 +477,12 @@ IvPFunction *StringToIvPFunction(const string& str)
     pdmap->bx(i) = newbox;
   }
 
+  cout << "Got here 1" << endl;
+  if(!pdmap)
+    return(0);
+  cout << "Got here 2" << endl;
+  
+  
   pdmap->setGelBox(gelbox);
   pdmap->updateGrid(1,1);
   IvPFunction *new_of = new IvPFunction(pdmap);

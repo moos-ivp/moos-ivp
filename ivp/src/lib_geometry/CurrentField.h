@@ -27,8 +27,7 @@
 #include <string>
 #include <vector>
 #include "XYVector.h"
-//#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
-#include "MOOSGeodesy.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 
 class CurrentField
 {

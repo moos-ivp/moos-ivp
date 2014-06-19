@@ -43,13 +43,15 @@ cd "${INVOC_ABS_DIR}/MOOS/MOOSCore"
 
 echo "Invoking cmake..." `pwd`
 cmake -DENABLE_EXPORT=ON                                     \
-      -DUSE_ASYNC_COMMS=OFF                                   \
+      -DUSE_ASYNC_COMMS=ON                                   \
+      -DTIME_WARP_AGGLOMERATION_CONSTANT=0.4                 \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${INVOC_ABS_DIR}/bin  \
       -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
 
 echo ""; echo "Invoking make..." `pwd`; echo ""
 make  ${CMD_ARGS}
+
 
 #===================================================================
 # Part #2:  BUILD ESSENTIALS
@@ -63,6 +65,7 @@ cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
 
 echo""; echo "Invoking make..." `pwd`; echo""
 make ${CMD_ARGS}
+
 
 #===================================================================
 # Part #3:  BUILD MOOS GUI TOOLS
@@ -81,14 +84,35 @@ echo ""; echo "Invoking make..." `pwd`; echo ""
 make ${CMD_ARGS}
 
 #===================================================================
-# Part #4:  BUILD MOOS GEODESY
+# Part #4:  BUILD PROJ4
 #===================================================================
 cd "${INVOC_ABS_DIR}/MOOS/proj-4.8.0"
 
-echo "Building Proj4. MOOS-IvP now uses Proj4 with MOOSGeodesy wrapper"
-./configure 
-make 
-make install 
-echo "Done Building Proj4."
+
+if [ ! -e lib/libproj.dylib ]; then
+    echo "Building Proj4. MOOSGeodesy now uses Proj4 with MOOSGeodesy wrapper"
+    ./configure 
+    make 
+    make install 
+    echo "Done Building Proj4."
+fi
+
+
+#===================================================================
+# Part #5:  BUILD MOOS GEODESY
+#===================================================================
+cd "${INVOC_ABS_DIR}/MOOS/MOOSGeodesy"
+
+PROJ4_INCLUDE_DIR="${INVOC_ABS_DIR}/MOOS/proj-4.8.0/include"
+PROJ4_LIB_DIR="${INVOC_ABS_DIR}/MOOS/proj-4.8.0/lib"
+
+echo "Invoking cmake..." `pwd`
+cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"         \
+      -DPROJ4_INCLUDE_DIRS=${PROJ4_INCLUDE_DIR}     \
+      -DPROJ4_LIB_PATH=${PROJ4_LIB_DIR} 
+
+    
+echo ""; echo "Invoking make..." `pwd`; echo ""
+make -j8 $@
 
 cd ${INVOC_ABS_DIR}

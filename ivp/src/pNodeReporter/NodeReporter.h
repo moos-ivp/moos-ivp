@@ -26,8 +26,7 @@
 
 #include <string>
 #include <vector>
-//#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
-#include "MOOSGeodesy.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "NodeRecord.h"
 

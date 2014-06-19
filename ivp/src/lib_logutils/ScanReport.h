@@ -82,6 +82,7 @@ class ScanReport
   // Routines for building and retrieving app stat summary info
   void fillAppStats();
   std::vector<std::string> getAllSources()  {return(m_all_sources);};
+  std::vector<std::string> getAllVarNames() {return(m_var_names);};
   double getLinesBySource(std::string s)    {return(m_app_lines[s]);};
   double getCharsBySource(std::string s)    {return(m_app_chars[s]);};
   double getLinesPctBySource(std::string s) {return(m_app_lines_pct[s]);};

@@ -3,24 +3,23 @@
 
 ProcessConfig = pLogger
 {
-  AppTick 	= 10
-  CommsTick 	= 10
+  AppTick 	= 5
+  CommsTick = 5
   
-  File		= LOG_%(VNAME)
-  PATH		= ./
-  //SyncLog 	= true @ 0.2
-  AsyncLog 	= true
+  File          = LOG_%(VNAME)
+  PATH	        = ./
+  AsyncLog 	    = true
   FileTimeStamp = true
 
-  BridgeFrequency = 0
 
   Log = IVPHELM_LIFE_EVENT @ 0 nosync
-  Log = APPCAST @ 0 nosync
+
+  //LogAuxSrc = true
 
   // Log it all!!!!!
-  LogAuxSrc = true
   WildCardLogging = true 
   WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = APPCAST
   WildCardOmitPattern = DB_VARSUMMARY
   WildCardOmitPattern = DB_RWSUMMARY
 }

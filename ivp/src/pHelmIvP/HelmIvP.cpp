@@ -346,6 +346,24 @@ bool HelmIvP::Iterate()
   
   Notify("IVPHELM_SUMMARY", report);
   Notify("IVPHELM_IPF_CNT", m_helm_report.getOFNUM());
+
+  string bhvs_active_list = m_helm_report.getActiveBehaviors(false);
+  if(m_bhvs_active_list != bhvs_active_list) {
+    Notify("IVPHELM_BHV_ACTIVE", bhvs_active_list); 
+    m_bhvs_active_list = bhvs_active_list;
+  }
+  string bhvs_running_list = m_helm_report.getRunningBehaviors(false);
+  if(m_bhvs_running_list != bhvs_running_list) {
+    Notify("IVPHELM_BHV_RUNNING", bhvs_running_list); 
+    m_bhvs_running_list = bhvs_running_list;
+  }
+  string bhvs_idle_list = m_helm_report.getIdleBehaviors(false);
+  if(m_bhvs_idle_list != bhvs_idle_list) {
+    Notify("IVPHELM_BHV_IDLE", bhvs_idle_list); 
+    m_bhvs_idle_list = bhvs_idle_list;
+  }
+
+
   m_prev_helm_report = m_helm_report;
 
    string allstop_msg = "clear";
@@ -460,10 +478,16 @@ void HelmIvP::postBehaviorMessages()
 
       // If posting an IvP Function, mux first and post the parts.
       if(var == "BHV_IPF") { // mikerb
+
+#if 0
+	Notify("BHV_IPF", sdata);
+#endif
+#if 1
 	string id = bhv_descriptor + intToString(m_helm_iteration);
 	vector<string> svector = IvPFunctionToVector(sdata, id, 2000);
 	for(unsigned int k=0; k<svector.size(); k++)
 	  Notify("BHV_IPF", svector[k], bhv_descriptor);
+#endif
       }
       // Otherwise just post to the DB directly.
       else {

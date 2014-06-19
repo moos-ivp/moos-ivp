@@ -264,6 +264,27 @@ void PDMap::setGelBox(const IvPBox& b)
     ok = ok && (b.pt(d,1) <= (int)(m_domain.getVarPoints(d)-1));
   }
 
+  if(!ok) {
+    bool ok = true;
+    ok = ok && (udim == bdim);
+    cout << "DimOK:" << ok << endl;
+    if(!ok) {
+      m_domain.print();
+      cout << "udim:" << udim << endl;
+      cout << "bdim:" << bdim << endl;
+    }
+    for(int d=0; d<bdim; d++) {
+      cout << "D: " << d << endl;
+      ok = ok && (b.pt(d,0) <= b.pt(d,1));
+      cout << "  ok1:" << ok << endl;
+      ok = ok && (b.pt(d,0) >= 0);
+      cout << "  ok2:" << ok << endl;
+      ok = ok && (b.pt(d,1) <= (int)(m_domain.getVarPoints(d)-1));
+      cout << "  ok3:" << ok << endl;
+    }
+  }
+    
+
   assert(ok);
 
   m_gelbox = b;

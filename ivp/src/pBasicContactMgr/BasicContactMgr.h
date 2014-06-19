@@ -26,8 +26,8 @@
 
 #include <vector>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-//#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
-#include "MOOSGeodesy.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
+//#include "MOOSGeodesy.h"
 #include "NodeRecord.h"
 #include "PlatformAlertRecord.h"
 

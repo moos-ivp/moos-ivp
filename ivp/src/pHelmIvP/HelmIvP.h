@@ -143,6 +143,11 @@ protected:
   HelmReport    m_helm_report;
   HelmReport    m_prev_helm_report;
   HelmEngine*   m_hengine;
+
+  std::string   m_bhvs_active_list;
+  std::string   m_bhvs_running_list;
+  std::string   m_bhvs_idle_list;
+
   std::string   m_ownship;
   std::vector<std::string> m_node_report_vars;
 

@@ -136,7 +136,7 @@ protected:
   std::vector<double>       m_bhvs_active_cpu;
   std::vector<int>          m_bhvs_active_pcs;
   std::vector<unsigned int> m_bhvs_active_ipfs;
-  
+
 
   std::vector<std::string>      m_messages;
   std::map<std::string, double> m_decisions;  // +

@@ -91,9 +91,32 @@ bool BHV_Trail::setParam(string param, string param_val)
   double dval = atof(param_val.c_str());
   bool non_neg_number = (isNumber(param_val) && (dval >= 0));
 
-  if(param == "trail_range") {
+  if(param == "nm_radius") {
     if(non_neg_number) {
-      m_trail_range = dval;
+      m_nm_radius = dval;
+      return(true);
+    }  
+  }
+  else if(param == "no_alert_request") {
+    return(setBooleanOnString(m_no_alert_request, param_val));
+  }  
+  else if(param == "post_trail_dist_on_idle") {
+    return(setBooleanOnString(m_post_trail_distance_on_idle, param_val));
+  }
+
+  else if(param == "post_trail_distance_on_idle") {
+    return(setBooleanOnString(m_post_trail_distance_on_idle, param_val));
+  }
+  else if((param == "pwt_outer_dist") ||   // preferred
+	  (param == "max_range")) {        // deprecated
+    if(non_neg_number) {
+      m_max_range = dval;
+      return(true);
+    }  
+  }
+  else if(param == "radius") {
+    if(non_neg_number) {
+      m_radius = dval;
       return(true);
     }  
   }
@@ -111,34 +134,14 @@ bool BHV_Trail::setParam(string param, string param_val)
       m_angle_relative = true;
     else
       return(false);
-
     return(true);
   }
-  else if(param == "radius") {
-    if(non_neg_number) {
-      m_radius = dval;
-      return(true);
-    }  
-  }
-  else if(param == "nm_radius") {
-    if(non_neg_number) {
-      m_nm_radius = dval;
-      return(true);
-    }  
-  }
-  else if((param == "pwt_outer_dist") ||   // preferred
-	  (param == "max_range")) {        // deprecated
-    if(non_neg_number) {
-      m_max_range = dval;
-      return(true);
-    }  
-  }
-  else if(param == "no_alert_request") {
-    return(setBooleanOnString(m_no_alert_request, param_val));
-  }  
 
-  else if(param == "post_trail_distance_on_idle") {
-    return(setBooleanOnString(m_post_trail_distance_on_idle, param_val));
+  else if(param == "trail_range") {
+    if(non_neg_number) {
+      m_trail_range = dval;
+      return(true);
+    }  
   }
 
   return(false);
