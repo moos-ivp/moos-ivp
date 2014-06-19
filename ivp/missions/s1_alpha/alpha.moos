@@ -39,19 +39,6 @@ ProcessConfig = ANTLER
 }
 
 //------------------------------------------
-ProcessConfig = pDeadManPost
-{
-  AppTick   = 4
-  CommsTick = 4
-
-	heartbeat_var = CONTINUE
-	max_noheart   = 60
-
-	post_var = RETURN
-	post_val = true
-}
-
-//------------------------------------------
 ProcessConfig = iSay
 {
   AppTick   = 10
