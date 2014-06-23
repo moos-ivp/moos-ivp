@@ -21,7 +21,7 @@ using namespace std;
 Sayer::Sayer()
 {
   // Initialize configuration variables with default values
-  m_default_voice        = "alex";
+  m_default_voice        = ""; 
   m_default_rate         = 200;
   m_max_utter_queue_size = 1000;
   m_min_utter_interval   = 1.0;  // seconds
@@ -227,7 +227,7 @@ bool Sayer::sayUtterance()
   if(m_utter_pqueue.size() == 0)
     return(false);
 
-  // Get and top utterance and pop the list one element
+  // Get the top utterance and pop the list one element
   Utterance utter = m_utter_pqueue.pop();
   utter.setTimePosted(MOOSTime());
 
