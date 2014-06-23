@@ -5,7 +5,7 @@
 /*  DATE: May 20, 2013                                      */
 /************************************************************/
 
-#include <cstdlib>
+#include <saycstdlib>
 #include <iterator>
 #include "MBUtils.h"
 #include "VoiceUtils.h"
@@ -26,7 +26,7 @@ Sayer::Sayer()
   m_max_utter_queue_size = 1000;
   m_min_utter_interval   = 1.0;  // seconds
   m_interval_policy      = "from_end";
-  m_os_mode              = "osx";
+  m_os_mode              = "both";
 
   // Initialize state variables
   m_last_utter_time  = 0;
