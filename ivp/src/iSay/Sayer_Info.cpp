@@ -20,11 +20,11 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The iSay application is used for                              ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  The iSay application is a way to invoke the native speech     ");
+  blk("  generation utilities of OSX (the say command) and GNU/Linux   ");
+  blk("  the espeak command). It may also invoke the afplay command    ");
+  blk("  available in both OSX and GNU/Linux to play a given wav or    ");
+  blk("  mp3 file.                                                     ");
 }
 
 //----------------------------------------------------------------
