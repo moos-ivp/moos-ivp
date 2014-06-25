@@ -20,8 +20,6 @@ else (${WIN32})
   SET(SYSTEM_LIBS m pthread)
 endif (${WIN32})
 
-#   ${MOOSGeodesy_LIBRARIES}
-
 
 TARGET_LINK_LIBRARIES(pBasicContactMgr
    ${MOOS_LIBRARIES}

@@ -23,14 +23,14 @@ if(NOT DEFINED MOOS_LIBRARIES)
 endif()
 
 include_directories(${MOOS_INCLUDE_DIRS})
-link_directories(${MOOS_LIBRARY_PATH})
 
 message("+++++++++++++++++++++++++++++++++++++++++")
 message("MOOS_INCLUDE_DIRS:" ${MOOS_INCLUDE_DIRS})
+message("MOOS_LIBRARIES:   " ${MOOS_LIBRARIES})
 message("+++++++++++++++++++++++++++++++++++++++++")
 
-include_directories(${PROJ4_INCLUDE_DIRS})
-link_directories(${PROJ4_LIB_PATH})
+#include_directories(${PROJ4_INCLUDE_DIRS})
+#link_directories(${PROJ4_LIB_PATH})
 
 
 #===============================================================================
@@ -43,6 +43,7 @@ link_directories(${MOOSGeodesy_LIBRARY_PATH})
 
 message("+++++++++++++++++++++++++++++++++++++++++")
 message("MOOSGeodesy_INCLUDE_DIRS:" ${MOOSGeodesy_INCLUDE_DIRS})
+message("MOOSGeodesy_LIBRARY_PATH:" ${MOOSGeodesy_LIBRARY_PATH})
 message("+++++++++++++++++++++++++++++++++++++++++")
 
 #===============================================================================
