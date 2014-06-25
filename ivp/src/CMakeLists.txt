@@ -84,7 +84,6 @@ SET(IVP_NON_GUI_LIBS
    lib_behaviors-marine
    lib_bhvutil
    lib_genutil
-#   lib_geodesy
    lib_geometry
    lib_helmivp
    lib_ivpbuild
@@ -229,7 +228,6 @@ SET(IVP_GUI_APPS
   app_gzaicview
   pMarineViewer
   uFunctionVis
-  uPlotViewer
   uMACView
   uLogView
   uLogViewIPF
@@ -240,6 +238,7 @@ IF( EXISTS app_ivpcheck )
   LIST(APPEND IVP_GUI_APPS 
   app_ivpcheck
   app_currview
+  uPlotViewer
 )  
 ENDIF( EXISTS app_ivpcheck )
 
