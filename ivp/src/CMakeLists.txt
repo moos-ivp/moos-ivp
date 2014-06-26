@@ -155,9 +155,15 @@ IF("${IVP_INC_DIRECTORY}" STREQUAL "")
 ENDIF("${IVP_INC_DIRECTORY}" STREQUAL "")
 
 
+message("+++++++++++++++++++++++++++++++++++++++++")
+message("IVP_LIB_DIRECTORY:" ${IVP_LIB_DIRECTORY})
+message("+++++++++++++++++++++++++++++++++++++++++")
+
+
 INCLUDE_DIRECTORIES(${IVP_LIBS_TO_BUILD})
 
 FOREACH(L ${IVP_LIBS_TO_BUILD} )
+  SET( LIBRARY_OUTPUT_PATH "${IVP_LIB_DIRECTORY}" CACHE PATH "" FORCE ) 
   ADD_SUBDIRECTORY(${L})
 ENDFOREACH(L)
 
