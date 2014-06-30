@@ -38,8 +38,10 @@ AppCastingMOOSApp::AppCastingMOOSApp()
   m_start_time = 0;
   m_time_warp  = 1;
 
+  m_last_iterate_time        = 0;
   m_last_report_time         = 0;
   m_last_report_time_appcast = 0;
+  m_iterate_start_time       = 0;
   m_term_report_interval = 0.4;
 
   m_term_reporting  = true;
@@ -54,6 +56,23 @@ bool AppCastingMOOSApp::Iterate()
 {
   m_iteration++;
   m_curr_time = MOOSTime();
+
+  // Handle the construction of the ITER_GAP
+  if(m_last_iterate_time != 0) {
+    double app_freq = GetAppFreq();
+    if(app_freq > 0) {
+      double app_gap = 1.0 / app_freq;
+      double iter_gap = m_curr_time - m_last_iterate_time;
+      string app_name = MOOSToUpper((const string&)(m_sMOOSName));
+      string var = app_name + "_ITER_GAP";
+      Notify(var,  (iter_gap / app_gap));
+    }
+  }
+  m_last_iterate_time = m_curr_time;
+
+  // Prepare the front end of calculating the ITER_LEN
+  m_iterate_start_time = m_curr_time;
+
   return(true);
 }
 
@@ -63,6 +82,15 @@ bool AppCastingMOOSApp::Iterate()
 void AppCastingMOOSApp::PostReport(const string& directive)
 {
   m_ac.setIteration(m_iteration);
+
+  double app_freq = GetAppFreq();
+  if(app_freq > 0) {
+    double app_gap = 1.0 / app_freq;
+    double iter_len = MOOSTime() - m_iterate_start_time;
+    string app_name = MOOSToUpper((const string&)(m_sMOOSName));
+    string var = app_name + "_ITER_LEN";
+    Notify(var,  (iter_len / app_gap));
+  }
 
   if(m_time_warp <= 0)
     return;
@@ -153,12 +181,13 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
     MOOSTrimWhiteSpace(directive);
     string left  = MOOSChomp(directive, "=");
     string right = directive;
+
     MOOSTrimWhiteSpace(left);
     MOOSTrimWhiteSpace(right);
     if(MOOSStrCmp(left, "must_have_moosblock"))
       must_have_moosblock = MOOSStrCmp(right, "true");
     if(MOOSStrCmp(left, "must_have_community"))
-      must_have_moosblock = MOOSStrCmp(right, "true");
+      must_have_community = MOOSStrCmp(right, "true");
     else if(MOOSStrCmp(left, "alt_config_block_name"))
       alt_config_block_name = right;
   }
@@ -177,7 +206,7 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
   // developer decide how to interpret a return of false.
   if(!m_MissionReader.GetValue("COMMUNITY", m_host_community)) {
     if(must_have_community) {
-      reportConfigWarning("Community/Vehicle name not found in mission file");
+      reportConfigWarning("XCommunity/Vehicle name not found in mission file");
       return_value = false;
     }
   }
