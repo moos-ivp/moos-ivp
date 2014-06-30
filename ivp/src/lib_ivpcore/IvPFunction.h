@@ -47,6 +47,8 @@ public:
   std::string getContextStr()  {return(m_context_string);};
   std::string getVarName(int); 
   
+  IvPFunction *copy() const;
+
 protected:
   PDMap*      m_pdmap;
   double      m_pwt;

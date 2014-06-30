@@ -74,6 +74,7 @@ PDMap::PDMap(const PDMap *pdmap)
 
   m_degree   = pdmap->m_degree;
   m_gelbox   = pdmap->getGelBox();
+  m_domain   = pdmap->getDomain();  // bugfix mikerb jun3014
 
   m_grid = new IvPGrid(m_domain, true);
   m_grid->initialize(m_gelbox);

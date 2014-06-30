@@ -108,6 +108,20 @@ string IvPFunction::getVarName(int i)
 }
 
 
+//-------------------------------------------------------------
+// Procedure: copy
+//   Purpose: Make a deep copy of the IvP function
+
+IvPFunction *IvPFunction::copy() const
+{
+  PDMap *pdmap = new PDMap(m_pdmap);
+  
+  IvPFunction *ipf = new IvPFunction(pdmap);
+  ipf->setPWT(m_pwt);
+  ipf->setContextStr(m_context_string);
+
+  return(ipf);
+}
 
 
 
