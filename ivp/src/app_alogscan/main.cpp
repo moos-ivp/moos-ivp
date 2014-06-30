@@ -105,11 +105,11 @@ int main(int argc, char *argv[])
       sort_style = "bysrc_ascending";
     else if(sarg == "--appstat")
       app_stat_requested = true;
-    else if(sarg == "--loglist")
+    else if((sarg == "--loglist") || (sarg == "-l"))
       loglist_requested = true;
     else if((sarg == "--nocolors") || (sarg == "-n"))
       proc_colors = "false";
-    else if((sarg == "-r") || (sarg == "--reversed"))
+    else if((sarg == "-r") || (sarg == "--reversed") || (sarg == "--reverse"))
       reverse_requested = true;
   }
  
