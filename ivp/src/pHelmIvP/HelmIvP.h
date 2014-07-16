@@ -178,6 +178,8 @@ protected:
   
   std::map<std::string, double>       m_outgoing_repinterval;
   
+  std::map<std::string, double>       m_var_reg_time;
+
   // A flag maintained on each iteration indicating whether the 
   // info_buffer curr_time has yet to be synched to the app curr_time.
   bool m_ibuffer_curr_time_updated;

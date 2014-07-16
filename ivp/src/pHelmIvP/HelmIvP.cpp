@@ -175,6 +175,11 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     double skew_time;
     msg.IsSkewed(m_curr_time, &skew_time);
     
+    
+    double reg_skew_time = m_curr_time - m_var_reg_time[moosvar];
+    if(reg_skew_time < skew_time)
+      skew_time = reg_skew_time;
+
     if(moosvar=="MOOS_MANUAL_OVERIDE") {
       string skew_info = "var=" + moosvar + ":";
       skew_info += "matter="+boolToString(m_skews_matter);
@@ -194,6 +199,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	string msg = "Helm ignores MOOS msg due to skew: " + moosvar;
 	msg += " Source=" + source + " Skew=" + doubleToString(skew_time,2);
 	reportRunWarning(msg);
+	msg += " curr_time: " + doubleToString(m_curr_time,3);
+	Notify("IVPHELM_SKEW", msg);
 	continue;
       }
     }
@@ -978,7 +985,11 @@ void HelmIvP::registerSingleVariable(string varname, double frequency)
 {
   if(frequency < 0)
     frequency = 0;
-  m_Comms.Register(varname, frequency);
+  Register(varname, frequency);
+
+  Notify("IVPHELM_REGISTER", varname);
+  if(m_var_reg_time.count(varname) == 0)
+    m_var_reg_time[varname] = m_curr_time;
 }
 
 
