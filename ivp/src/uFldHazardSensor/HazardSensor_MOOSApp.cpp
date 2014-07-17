@@ -116,8 +116,8 @@ bool HazardSensor_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       handled = true;
     }
   
-    //if(!handled) 
-    //  reportRunWarning("Unhandled mail: " + key);
+    if(!handled) 
+      reportRunWarning("Unhandled mail: " + key);
   }
   
   return(true);
