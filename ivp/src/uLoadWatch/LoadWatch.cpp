@@ -34,6 +34,7 @@ using namespace std;
 
 LoadWatch::LoadWatch()
 {
+  m_breach_trigger = 1; // First offense forgiven, 2nd offense reported!
 }
 
 //---------------------------------------------------------
@@ -108,16 +109,20 @@ bool LoadWatch::OnStartUp()
   for(p=sParams.begin(); p!=sParams.end(); p++) {
     string orig  = *p;
     string line  = *p;
-    string param = toupper(biteStringX(line, '='));
+    string param = tolower(biteStringX(line, '='));
     string value = line;
 
     bool handled = false;
     // THRESH = app=pHelmIvP, gapthresh=1.5 
-    // LOAD_WARNING = app=pHelmIvP, maxgap=1.54
-    if(param == "THRESH") {
+    // BREACH_TRIGGER = 1
+    if(param == "thresh") {
       handled = handleConfigThresh(value);
     }
-    else if(param == "BAR") {
+    else if((param == "breach_trigger") && isNumber(value)) {
+      double dval = atof(value.c_str());
+      if(dval < 0)
+	dval = 0;
+      m_breach_trigger = (unsigned int)(dval);
       handled = true;
     }
 
@@ -149,33 +154,58 @@ void LoadWatch::handleMailIterGap(string var, double dval)
   
   m_map_app_gap_count[app]++;
   m_map_app_gap_total[app] += dval;
+
+  // If this is the first itergap received for this app, initialize
+  // the maximum gap seen so far to zero
   if(m_map_app_gap_max.count(app) == 0)
     m_map_app_gap_max[app] = 0;
+
+  // Compare this itergap to the largest seen so far for this app 
+  // and update if this one is larger.
   if(dval > m_map_app_gap_max[app])
     m_map_app_gap_max[app] = dval;  
 
-  // Check if the app has exceeded a threshold named for it explicitly
+  bool   thresh_exceeded = false;
+  double thresh = 0;
+
+  // Check if the app has threshold name for it explicitly
   if(m_map_thresh.count(app)) {
-    if(dval > m_map_thresh[app]) {
-      string sval = doubleToString(dval);
-      string msg = "Gap Thresh for " + app + " exceeded: " + sval;
-      reportRunWarning(msg);
-      string warning = "app=" + app +", maxgap=" + sval;
-      warning += ", node=" + m_host_community;
-      Notify("LOAD_WARNING", warning);
-    }
+    thresh = m_map_thresh[app];
+    // Check if the app has exceeded that threshold
+    if(dval > thresh) 
+      thresh_exceeded = true;
   }
   // Otherwise check if there is a generic threshold set for any application.
   else if(m_map_thresh.count("ANY")) {
-    if(dval > m_map_thresh["ANY"]) {
-      string sval = doubleToString(dval);
-      string msg = "Gap Thresh for " + app + " exceeded: " + doubleToString(dval);
-      reportRunWarning(msg);
-      string warning = "app=" + app + ", maxgap=" + sval;
-      warning += ", node=" + m_host_community;
-      Notify("LOAD_WARNING", warning);
-    }
+    thresh = m_map_thresh["ANY"];
+    if(dval > thresh) 
+      thresh_exceeded = true;
   }
+      
+  // We're done if the threshold wasn't exceeded in any way.
+  if(!thresh_exceeded)
+    return;
+
+  if(m_map_app_gap_xcount.count(app)==0)
+    m_map_app_gap_xcount[app] = 0;
+  m_map_app_gap_xcount[app]++;
+
+  // Check how many times the threshold has been exceeded by this app. 
+  // If it does not exceed the trigger amt, then just return
+  if(m_map_app_gap_xcount[app] <= m_breach_trigger)
+    return;
+    
+      
+  // FINALLY: We have exceeded the threshold for this app and apparently we
+  // exceeded it enough times to exceed the trigger amount. So lets act!
+
+  string sval = doubleToString(dval);
+  string msg = "Gap Thresh for " + app + " exceeded: " + sval;
+  msg += " (" + doubleToStringX(thresh,2) + ")";
+  reportRunWarning(msg);
+  string warning = "app=" + app +", maxgap=" + sval;
+  warning += ", node=" + m_host_community;
+  Notify("LOAD_WARNING", warning);
 
 }
 
@@ -245,9 +275,9 @@ bool LoadWatch::buildReport()
   m_msgs << endl;
 
 
-  ACTable actab(5);
+  ACTable actab(6);
 
-  actab << "Application | AvgGap | MaxGap | AvgLen | MaxLen"; 
+  actab << "Application | AvgGap | MaxGap | AvgLen | MaxLen | Breaches"; 
   actab.addHeaderLines();
 
   map<string,double>::iterator p;
@@ -259,8 +289,10 @@ bool LoadWatch::buildReport()
 
     double len_avg = m_map_app_len_total[app] / (double)(m_map_app_len_count[app]);
     double len_max = m_map_app_len_max[app];
-
-    actab << app << gap_avg << gap_max << len_avg << len_max;
+    
+    unsigned int breaches = m_map_app_gap_xcount[app];
+    
+    actab << app << gap_avg << gap_max << len_avg << len_max << breaches;
   }
 
   m_msgs << actab.getFormattedString();

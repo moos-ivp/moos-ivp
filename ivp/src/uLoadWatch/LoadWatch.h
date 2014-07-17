@@ -53,11 +53,14 @@ class LoadWatch : public AppCastingMOOSApp
 
  private: // Configuration variables
    std::map<std::string, double> m_map_thresh;
+   unsigned int                  m_breach_trigger;
+   
 
  private: // State variables
    std::map<std::string, double>       m_map_app_gap_total;
    std::map<std::string, double>       m_map_app_gap_max;
    std::map<std::string, unsigned int> m_map_app_gap_count;
+   std::map<std::string, unsigned int> m_map_app_gap_xcount;
 
    std::map<std::string, double>       m_map_app_len_total;
    std::map<std::string, double>       m_map_app_len_max;

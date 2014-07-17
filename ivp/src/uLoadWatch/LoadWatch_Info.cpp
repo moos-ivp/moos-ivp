@@ -94,6 +94,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  thresh = app=pHelmIvP, gapthresh=1.5                          ");
   blk("  thresh = app=any,      gapthresh=2.0                          ");
+  blk("                                                                ");
+  blk("  breach_trigger = 1    // default (first offense forgiven)     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
