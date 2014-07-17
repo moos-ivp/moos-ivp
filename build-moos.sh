@@ -32,7 +32,7 @@ if [ "`uname`" == "Darwin" ] ; then
   echo "Building MOOS for Apple"
 else
   echo "Building MOOS for Linux"
-  MOOS_CXX_FLAGS="-fPIC -Wno-longlong"
+  MOOS_CXX_FLAGS="-fPIC -Wno-long-long"
 fi
 
 #===================================================================
