@@ -7,7 +7,7 @@ IF (${WIN32})
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 ELSE (${WIN32})
   #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -Wall -Wextra")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -Wall")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -Wall -Wno-long-long")
 ENDIF (${WIN32})
 
 #===============================================================================
