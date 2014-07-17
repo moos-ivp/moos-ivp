@@ -211,14 +211,14 @@ XYPolygon stringAbbreviated2Poly(string str)
   int vsize = mvector.size();
   for(int i=0; i<vsize; i++) {
     mvector[i] = stripBlankEnds(mvector[i]);
-    string left = tolower(stripBlankEnds(biteString(mvector[i], ',')));
-    string rest = stripBlankEnds(mvector[i]);
+    string left = tolower(biteStringX(mvector[i], ','));
+    string rest = mvector[i];
 
     bool handled = new_poly.set_param(left, rest);
     if(!handled) {
       string xstr = left;
-      string ystr = stripBlankEnds(biteString(rest, ','));
-      string zstr = stripBlankEnds(rest);
+      string ystr = biteStringX(rest, ',');
+      string zstr = rest;
       if((zstr != "") && !isNumber(zstr))
 	return(null_poly);
       if(!isNumber(xstr) || !isNumber(ystr))
@@ -276,6 +276,10 @@ XYPolygon stringEllipse2Poly(string str)
     if(param == "format") {
       if(value != "ellipse")
 	return(null_poly);
+    }
+    else if((param == "active") && (tolower(value)=="false")) {
+      null_poly.set_active(false);
+      new_poly.set_active(false);
     }
     else if((param == "x") && (isNumber(value))) {
       xpos_set = true;
@@ -416,6 +420,10 @@ XYPolygon stringRadial2Poly(string str)
     else if((param == "z") && (isNumber(value))) {
       //zval_set = true;
       zval = atof(value.c_str());
+    }
+    else if((param == "active") && (tolower(value)=="false")) {
+      null_poly.set_active(false);
+      new_poly.set_active(false);
     }
     else if((param == "radius") && (isNumber(value))) {
       double dval = atof(value.c_str());

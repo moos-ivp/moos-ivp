@@ -174,8 +174,6 @@ ProcessConfig = pMarineViewer
   vehicles_shape_scale = 1.5
   vehicles_name_viewable = names
 
-  stale_vehicles_viewable = true
-  
   appcast_viewable = true
   appcast_color_scheme = indigo
 

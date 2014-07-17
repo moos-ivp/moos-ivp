@@ -100,6 +100,8 @@ void showExampleConfigAndExit()
   blu("  AppTick   = 4                                                 ");
   blu("  CommsTick = 4                                                 ");
   blk("                                                                ");
+  blk("  // List of apps to block/pause on until they appear to the DB ");
+  blk("  block_on       = pGenerateInfo, pPostValues                   ");
   blk("  // Logic condition that must be met for script to be unpaused ");
   blk("  condition      = WIND_GUSTS = true                            ");
   blk("  // Seconds added to each event time, on each script pass      ");

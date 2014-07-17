@@ -423,7 +423,7 @@ void BHV_StationKeep::postStationMessage(bool post)
 
   // No need to post both circles if the radii are collapsed, but if
   // we're trying to erase a circle, post anyway just ensure no 
-  // dangling artifacts from the radii being altered dynaically.
+  // dangling artifacts from the radii being altered dynamically.
   if((m_pskeep_radius > m_outer_radius) || (post==false))
     postMessage("VIEW_POLYGON", poly_str_hiber, "hiber");
 }

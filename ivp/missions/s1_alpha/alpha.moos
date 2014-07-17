@@ -4,7 +4,7 @@
 //-------------------------------------------------
 
 ServerHost = localhost		
-ServerPort = 9005		
+ServerPort = 9000
 Community  = alpha
 
 MOOSTimeWarp = 1
@@ -34,7 +34,7 @@ ProcessConfig = ANTLER
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
   Run = uLoadWatch      @ NewConsole = false
-  //Run = iSay	        @ NewConsole = true
+  //Run = iSay	          @ NewConsole = true
   //Run = uTimerScript    @ NewConsole = false
 }
 
@@ -44,7 +44,7 @@ ProcessConfig = iSay
   AppTick   = 10
   CommsTick = 10
 
-  min_utter_interval = 1
+  min_utter_interval = 0.1
   interval_policy    = from_end
 }
 
@@ -55,7 +55,7 @@ ProcessConfig = uTimerScript
   AppTick   = 4                                                 
   CommsTick = 4                                                 
   
-  paused = true
+  paused = false
                                                               
   reset_max      = nolimit  
   reset_time     = all-posted
@@ -66,7 +66,7 @@ ProcessConfig = uTimerScript
   event          = var=SAY_MOOS, val="say={three}", time=0.75  
   event          = var=SAY_MOOS, val="say={four}",  time=1  
   event          = var=SAY_MOOS, val="say={five},priority=100",  time=1.25  
-  event          = var=SAY_MOOS, val="say={six}",   time=1.5  
+  event          = var=SAY_MOOS, val="say={six},source=james",   time=1.5  
   event          = var=SAY_MOOS, val="say={seven}", time=1.75  
   event          = var=SAY_MOOS, val="say={eight}", time=2  
   event          = var=SAY_MOOS, val="say={nine}",  time=2.25  

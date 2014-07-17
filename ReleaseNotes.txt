@@ -1,72 +1,168 @@
 ------------------------------------------------------------------------------
 13.5.1
 ------------------------------------------------------------------------------
-pHelmIvP (BHV_AvoidCollision)
-  - fixed bug in handling marker configurations
-
-pHelmIvP (BHV_Waypoint)
-  - Added ability to configure the "next waypoint" visual point size
-
-pHelmIvP (BHV_Waypoint)
-  - Added minor new capability to specify the order parameter with the 
-    with the value "toggle". To do this the Helm also had to be slightly
-    modified to now allow successive duplicate updates messages to go
-    through if the update string passes the case insensitive check for 
-    containing the word "toggle".
-
-pHelmIvP (BHV_StationKeep)
-  - Minor mod to BHV_StationKeep to allow label colors to be set
 
 pHelmIvP
-  - Fixed minor bug where completed behaviors were not being retained in the 
-  list of completed behaviors between helm iterations. Now they are persistent.
 
-uTimerScript
-  - Fixed bug where setting configuring paused=true was not being respected. 
-  - Fixed bug where setting delay_start=N was not being handled properly
-  - Fixed bug where setting delay_reset=N was not being handled properly
+* Behaviors are augmented via an additional overloadable function,
+onHelmStart(), executed by the behavior upon helm startup. This allows
+behaviors, defined as templates and thus not spawned until later, to
+post info to the MOOSDB that may affect the conditions of their
+spawning. For example, the collision avoidance behavior posts a
+request for alerts of a certain form, to pBasicContactMgr.
 
-uTimerScript
-  - Added ability to have the script block until another named app(s) have been
-    detected in the DB_CLIENTS list.
+* BHV_AvoidCollision - fixed bug in handling marker configurations
 
+* BHV_AvoidObstacles - Several improvements to improve robustness against thrashing. 
+
+* BHV_Waypoint - Added ability to configure the "next waypoint" visual point size
+
+* BHV_Waypoint - Added minor new capability to specify the order
+parameter with the with the value "toggle". To do this the Helm also
+had to be slightly modified to now allow successive duplicate updates
+messages to go through if the update string passes the case
+insensitive check for containing the word "toggle".
+
+* BHV_StationKeep - Minor mod to BHV_StationKeep to allow label colors to be set
+
+* BHV_RubberBand - Improvements merged from the DARPA branch
+
+* BHV_Trail - Modified to NOT render the trail point in the idle state
+
+* BHV_Trail - Udpated for idle state posting of trail distance
+
+* BHV_MaxDepth - Added new behavior to limit the maximum depth allowed. 
+
+* Fixed minor bug where completed behaviors were not being retained in the 
+list of completed behaviors between helm iterations. Now they are persistent.
+
+* Fixed issue in the helm where duplicate behavior names would result 
+    in the helm not starting, rather than the helm being in the MALCONFIG state
+
+* Fixed bug in IvPBehavior duration timer that caused initial durations to 
+    be erroneously long on the first invocation if duration_idle_decay is set to false
+
+* Bug fix to the BehaviorSet startup handler, could cause malconfig behavior 
+    to segfault on startup instead of throw an error warning on startup
+
+
+pMarineViewer
+  - Added wamv shape to possible lists of vehicles allowed.
+
+
+pHostInfo
+  - mod to pHostInfo to allow all the system commands to run in the foreground 
+    to allow them time to complete before attempt to read the tmp files
+
+=============================================================================
 uTimerScript
-  - Added ability to add a "multi-event". For example, the line
-    event = var=VALUE, val="id=$[IDX]", time=0, amt=3
-    is the same as having three config lines with
+
+* Fixed bug where setting configuring paused=true was not being respected. 
+* Fixed bug where setting delay_start=N was not being handled properly
+* Fixed bug where setting delay_reset=N was not being handled properly
+
+* Added ability to have the script block until another named app(s) have been detected in the DB_CLIENTS list. See the block_on parameter.
+
+* Added ability to add a "multi-event". For example, the line
+
+  event = var=VALUE, val="id=$[IDX]", time=0, amt=3
+    
+is the same as having three config lines with
+
     event = var=VALUE, val="id=$[IDX]", time=0
     event = var=VALUE, val="id=$[IDX]", time=0
     event = var=VALUE, val="id=$[IDX]", time=0
 
-uTimerScript
-  - Added further parameter checking to ensure random variables provide a 
+* Added further parameter checking to ensure random variables provide a 
   legal keyname.
 
+
+
+
+uSimMarine
+
+* Fixed bug regarding USM_SIM_PAUSED
+
+iSay
+
+* New MOOS app for invoking the native speech generation utilities of OSX 
+    (the say command) and GNU/Linux (the espeak command).
+
+lib_geometry
+
+* Added turnsLeft turnsRight check to the CPA engine for use in COLREGS behaviors
+
 nsplug
-  - Augmented to support 
-    #ifdef A B  where B could also be an incoming MACRO
-    For example 
+
+* Augmented to support #ifdef A B  where B could also be an incoming MACRO. For example 
     #ifdef VNAME VNAME1 in meta_vehicle.bhv in the kasper-jake mission
 
 uFldMessageHandler
-  - minor mod to uFldMessageHandler to allow control over appcasting output. 
-    User can configure whether reported successful messages are truncated or 
-    not when shown on the appcast report. No effect on messaging functionality.
-    The parameter is "appcast_trunc_msg=75". 75 is the default. If set to 0
-    no truncation will be applied.
+
+* minor mod to uFldMessageHandler to allow control over appcasting
+output.  User can configure whether reported successful messages are
+truncated or not when shown on the appcast report. No effect on
+messaging functionality.  The parameter is "appcast_trunc_msg=75". 75
+is the default. If set to 0 no truncation will be applied.
+
+alogscan
+
+* Added -l,--loglist command line option to list all the logged variables in a format suitable for configuring pLogger.
+
+aloghelm
+
+* Added -b,--bhvs option for showing helm behavior state changes
+
+* Added -m,--modes option for showing helm mode changes
+
+* Added --watch=bhv option to watch a particular behavior for state changes
 
 uFldHazardSensor
-  - Added ability to disable hazard resemblance factors with parameter
-    ignore_resemblances=true
 
-  - minor mod to regard the UHZ_SENSOR_REQUEST as a request lasting 120 seconds. 
-    Sensor user no longer needs to repeatedly post this request. Just more
-    often than once per 120 seconds. This 120 value may become a parameter in
-    the future. Aids in distributed uField setups where the occasional 
-    UHZ_SENSOR_REQUEST is dropped.
+* Added ability to disable hazard resemblance factors with parameter ignore_resemblances=true
 
-  - Added enforcement for max vehicle speed, above which the sensor will be off.
-    The default value is 2.0 m/s. Adjustable with "max_vehicle_speed" parameter.
+* minor mod to regard the UHZ_SENSOR_REQUEST as a request lasting 120
+seconds.  Sensor user no longer needs to repeatedly post this
+request. Just more often than once per 120 seconds. This 120 value may
+become a parameter in the future. Aids in distributed uField setups
+where the occasional UHZ_SENSOR_REQUEST is dropped.
+
+* Added enforcement for max vehicle speed, above which the sensor will
+be off.  The default value is 2.0 m/s. Adjustable with "max_vehicle_speed" parameter.
+
+* Augmented with the ingore_resemblances option
+
+
+uXMS
+
+* Modified to better handle registration for all variables using the
+new MOOS wildcard capability. Fixed minor bug where uXMS erroneously
+posted a configuration warning if if the MOOS community was not
+provided via a mission file.
+
+uPokeDB 
+
+* Minor mod to handle command line args --host= and --port= in a manner more consistent with other MOOS-IvP apps.
+
+pBasicContactMgr
+
+* It now accepts alert configurations via the incoming MOOS Variable BCM_ALERT_REQUEST
+
+lib_ivpbuild
+
+* Minor fixes to remove extraneous semicolons in a few files, comply with stricter compiler
+  constraints.
+
+uLoadWatch
+
+* A new application to monitor the reported ITER_GAP and ITER_LEN information produced
+  by all AppCastingMOOSApp applications.
+
+pNodeReporter
+
+*   Augmented to register for LOAD_WARNING messages (from the new uLoadWatch app), and 
+  include them in node reports if one is found.
+
 
 
 
@@ -145,6 +241,7 @@ uFldShoreBroker
     explicitly configured with warning_on_stale=true
   - Corrected the --interface output to reflect usage with pShare instead of
     pMOOSBridge
+  - improved robustness when incoming node changes its declared IP address
 
 
 uFldNodeBroker
