@@ -37,7 +37,7 @@ void showSynopsis()
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
   blk("  The uLoadWatch application is used for monitoring load of apps");
-  blk("in the MOOS community. It works by checking for *_ITER_GAP and  ");
+  blk("in the MOOS community. It works by checking for *_ITER_GAP      ");
   blk("and *_ITER_LEN information posted by each app. An app, pFooBar, ");
   blk("posts PFOOBAR_ITER_GAP as the ratio of observed application     ");
   blk("interval over requested application interval. For an app running");
