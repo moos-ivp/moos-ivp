@@ -33,7 +33,6 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-  Run = uLoadWatch      @ NewConsole = false
   //Run = iSay	          @ NewConsole = true
   //Run = uTimerScript    @ NewConsole = false
 }
