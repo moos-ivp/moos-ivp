@@ -476,7 +476,7 @@ bool CMOOSApp::Configure()
     }
 
     //are we having our suicide port being set?
-    int nSuicidePort;
+    int nSuicidePort=-1;
     if(GetParameterFromCommandLineOrConfigurationFile("moos_suicide_port",nSuicidePort))
     {
         m_SuicidalSleeper.SetPort(nSuicidePort);

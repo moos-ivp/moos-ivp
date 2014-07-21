@@ -1,9 +1,8 @@
 
 ###########################################################
-#   Top level CMakeLists.txt file for the MOOS Project
+#   Top level CMakeLists.txt file for the core-moos Project
 #   pnewman@robots.ox.ac.uk
 ###########################################################
-
 
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
@@ -15,7 +14,7 @@ set(PROJECTNAME MOOS)
 
 set(PACKAGE_VERSION_MAJOR 10)
 set(PACKAGE_VERSION_MINOR 0)
-set(PACKAGE_VERSION_PATCH 1)
+set(PACKAGE_VERSION_PATCH 2)
 
 set(PACKAGE_VERSION "${PACKAGE_VERSION_MAJOR}.${PACKAGE_VERSION_MINOR}.${PACKAGE_VERSION_PATCH}")
 message(STATUS "+++  This MOOS version ${PACKAGE_VERSION} +++")
