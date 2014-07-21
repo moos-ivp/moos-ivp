@@ -342,9 +342,17 @@ void HelmReport::addCompletedBHV(const string& descriptor, double time,
 {
   if(descriptor == "")
     return;
+
   m_bhvs_completed_desc.push_back(descriptor);
   m_bhvs_completed_time.push_back(time);
   m_bhvs_completed_upds.push_back(update_summary);
+  
+
+  if(m_bhvs_completed_desc.size() > 50) {
+    m_bhvs_completed_desc.pop_front();
+    m_bhvs_completed_time.pop_front();
+    m_bhvs_completed_upds.pop_front();
+  }
 }
 
 //-----------------------------------------------------------
@@ -354,6 +362,7 @@ void HelmReport::addCompletedBHV(const string& descriptor, double time,
 string HelmReport::getCompletedBehaviors(bool full_report) const
 {
   string return_str;
+
   unsigned int i, vsize = m_bhvs_completed_desc.size();
   for(i=0; i<vsize; i++) {
     if(full_report) {
@@ -373,6 +382,7 @@ string HelmReport::getCompletedBehaviors(bool full_report) const
     return_str = "";
   return(return_str);
 }
+
 
 //-----------------------------------------------------------
 // Procedure: clearCompletedBHVs

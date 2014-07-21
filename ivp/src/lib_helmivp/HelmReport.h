@@ -27,6 +27,7 @@
 #include <map>
 #include <vector>
 #include <list>
+#include <deque>
 #include <string>
 #include "IvPDomain.h"
 
@@ -125,9 +126,9 @@ protected:
   std::vector<double>       m_bhvs_idle_time;
   std::vector<std::string>  m_bhvs_idle_upds;
   
-  std::vector<std::string>  m_bhvs_completed_desc; // Completed Behaviors
-  std::vector<double>       m_bhvs_completed_time;
-  std::vector<std::string>  m_bhvs_completed_upds;
+  std::deque<std::string>   m_bhvs_completed_desc; // Completed Behaviors
+  std::deque<double>        m_bhvs_completed_time;
+  std::deque<std::string>   m_bhvs_completed_upds;
   
   std::vector<std::string>  m_bhvs_active_desc;    // Active Behaviors
   std::vector<double>       m_bhvs_active_time;
