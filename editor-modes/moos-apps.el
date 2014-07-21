@@ -24,7 +24,7 @@
 (setq moos-app-and-keyword-list
       (list
       '("ANTLER" "MSBetweenLaunches" "Run" "NewConsole")
-      '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "randvar" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp")
+      '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "randvar" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp" "time_zero")
       '("uProcessWatch"  "watch" "watch_all" "nowatch" "allow_retractions" "summary_wait" "post_mapping")
       '("uSimMarine"  "start_x" "start_y" "start_heading" "start_speed" "start_depth" "start_pos" "drift_x" "drift_y" "rotate_speed" "drift_vector" "buoyancy_rate" "max_acceleration" "max_deceleration" "max_depth_rate" "max_depth_rate_speed" "sim_pause" "dual_state" "thrust_reflect" "thrust_factor" "turn_rate" "thrust_map" "prefix" "default_water_depth" "trim_tolerance" "max_trim_delay")
       '("pHelmIvP" "term_report_interval" "ivp_behavior_dir" "behaviors" "domain" "start_engaged" "allow_disengaged" "disengage_on_allstop" "other_override_var" "node_skew" "ok_skew" "verbose" "bhv_dir_not_found_ok")
