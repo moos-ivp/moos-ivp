@@ -364,6 +364,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 	if(msg.GetSourceAux() != "")
 	  warning += " aux=" + msg.GetSourceAux();
       }
+      Notify("MVIEWER_UNHANDLED_MAIL", key + "=" + sval);
       reportRunWarning(warning);
     }
   }
