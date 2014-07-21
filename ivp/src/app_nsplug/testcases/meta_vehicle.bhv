@@ -1,0 +1,72 @@
+//--------    FILE: meta_charlie.bhv   -------------
+
+//#include  "plug_initial_values.bhv"
+//#include  plug_hsd.bhv
+
+FOO is $(FOO)
+
+#ifdef FOO 124
+gotcha now
+#elseifdef FOO 123
+gotcha later
+#else
+gotcha sooner
+#endif
+
+#ifndef sdfFOOsdfsdf
+woops
+#endif
+
+$(FOO)
+#define $(BAR) World
+$(BAR)
+
+#ifdef BAR
+Time for dessert!!!!
+#endif
+
+
+#define ONE 1
+#define TWOO 2
+#define THREE 3
+
+#ifdef ONE
+Its a girl my Lord
+#ifdef TWO
+In a flatbed Ford
+#ifdef THREE
+slowing down to take a look at me
+#endif
+#endif
+#endif
+
+
+
+1) #include
+   - path 
+   - will work recursively - depth first traversal
+   - any #define will be applied
+
+2) #define VAR VALUE
+   
+3) MACRO expansion
+   
+   $(VAR) or %(VAR) anyware in the text
+
+4) Conditional expansion #ifdef
+
+   o #ifdef VAR VALUE
+   o #ifdef VAR
+   o #ifdef
+     #elseifdef
+     #elseifdef
+     #else
+     #endif
+
+5) Conditional expansion #ifndef
+   o #ifndef VAR
+
+   NOT supported:
+     #ifndef VAR VAL
+     #elseifndef
+

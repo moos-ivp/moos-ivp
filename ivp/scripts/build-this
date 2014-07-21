@@ -1,0 +1,36 @@
+#!/bin/sh -e
+
+# This script's job is to let you cause the IvP source code in your current
+# working directory to be built, even when out-of-source builds are being
+# used.
+#
+# All it really does is 'cd' to your the appropriate subdirectory under
+# your source tree's ...../moos-ivp/build' directory, run either cmake or make,
+# and then 'cd' back to your original source directory.
+
+ORIGINAL_DIR=${PWD}
+
+MOOS_IVP_DIR=$(echo ${PWD} | sed s/ivp\\/src\\//\\n/ | head -1)
+SRC_SUBDIR=$(  echo ${PWD} | sed s/ivp\\/src\\//\\n/ | head -2 | tail -1)
+
+cd ${MOOS_IVP_DIR}/build/
+
+if [ -f ${MOOS_IVP_DIR}/build/${SRC_SUBDIR}/Makefile ]; then
+  cd ${MOOS_IVP_DIR}/build/${SRC_SUBDIR}
+  make
+else
+  echo
+  echo "It looks like 'cmake' wasn't run.  Running it now."
+  echo
+  
+  cd ${MOOS_IVP_DIR}
+  
+  # If they didn't build IvP, there's a good chance they didn't build MOOS 
+  # either.
+  ./build-moos.sh
+  
+  ./build-ivp.sh
+  echo
+fi
+
+cd ${ORIGINAL_DIR}

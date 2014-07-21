@@ -1,0 +1,30 @@
+AOF = AOF_Rings = 0,0,500,501:1,0,500,501
+{
+  location = 307,245
+  radius   = 5
+  exp      = 1
+  base     = -100
+  range    = 500
+  peak     = false
+
+  location = 24,136
+  radius   = 5
+  exp      = 10
+  base     = -100
+  range    = 500
+  peak     = false
+
+  location = 132,419
+  radius   = 4
+  exp      = 19
+  base     = -100
+  range    = 500
+  peak     = true
+
+  location = 462,402
+  radius   = 12
+  exp      = 14
+  base     = -100
+  range    = 500
+  peak     = true
+}

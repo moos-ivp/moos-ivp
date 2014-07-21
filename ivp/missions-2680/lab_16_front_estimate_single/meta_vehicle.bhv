@@ -1,0 +1,79 @@
+//----------------------------------------------
+// Vehicle behavior file
+//----------------------------------------------
+
+initialize   DEPLOY  = false
+initialize   RETURN  = false
+initialize   STATION_KEEP = false
+initialize   SURVEY  = true
+initialize   AVOID   = true
+initialize   SURVEY_UNDERWAY = false
+initialize   OPREGION = true
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+}
+
+set MODE = SURVEYING {
+  MODE = ACTIVE
+  SURVEY = true
+  RETURN = false
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name         = waypt_survey
+  pwt          = 100
+  condition    = MODE==SURVEYING
+  perpetual    = true
+  updates      = SURVEY_UPDATES
+  activeflag   = SURVEY_UNDERWAY = true
+  inactiveflag = SURVEY_UNDERWAY = false
+  endflag      = RETURN = true
+
+         speed = 2   // meters per second
+        radius = 5.0
+   slip_radius = 15.0
+          lead = 8
+	  lead_damper=1
+	points = format=lawnmower, label=archie_survey, x=$(SURVEY_X), y=$(SURVEY_Y), width=$(WIDTH), height=$(HEIGHT),lane_width=$(LANE_WIDTH), rows=north-south, degs=$(DEGREES)
+
+        repeat = 0
+  visual_hints = nextpt_color=red, nextpt_lcolor=green
+  visual_hints = vertex_color=yellow, edge_color=gray85
+  visual_hints = vertex_size=1, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = $(START_POS)
+        repeat = 10
+          lead = 8
+}
+
+//----------------------------------------------
+Behavior = BHV_ConstantDepth
+{
+  name       = const_depth
+
+  depth      = 8
+  duration   = no-time-limit
+}

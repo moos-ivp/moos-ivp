@@ -1,0 +1,70 @@
+//--------    FILE: gilda.bhv   -------------
+
+initialize   DEPLOY   = false
+initialize   RETURN   = false
+initialize   TRANSIT  = false
+
+//========================================================
+// Hierarchical Mode Declarations
+//  o ROOT            
+//  |--o INACTIVE     
+//  |--o ACTIVE       
+//     |--o TRANSITING
+//     |--o RETURNING
+//========================================================
+
+
+Set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = TRANSITING {
+  MODE = ACTIVE
+  TRANSIT = true
+  RETURN != true
+} 
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} 
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE == RETURNING
+  perpetual  = true
+  endflag    = RETURNING = false
+  endflag    = DEPLOY = false
+
+       speed = 2.0
+      radius = 2.0
+   nm_radius = 8.0
+       point = $(START_POS)
+  visual_hints = nextpt_color=red, nextpt_lcolor=khaki
+  visual_hints = edge_color=khaki, vertex_color=white
+  visual_hints = edge_size=1, vertex_size=4
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_transit
+  pwt       = 100
+  condition = MODE==TRANSITING
+  perpetual = true
+  endflag   = TRANSITING = false
+  endflag   = RETURN = true
+
+     cycleflag = SURVEY = false
+         speed = 1.1   // meters per second
+        radius = 8.0
+        points = label,transit:190,25:155,-20:45,-85:-40,-100
+//        points = label,transit:140,40:120,-30:70,-110:40,-190:20,-220:-10,-260
+        repeat = 99
+  visual_hints = nextpt_color=red, nextpt_lcolor=khaki
+  visual_hints = vertex_color=yellow, line_color=white
+  visual_hints = vertex_size=2, edge_size=1
+}

@@ -1,0 +1,20 @@
+Overall Totals Summary                   
+======================================   
+   Total Received Valid: 0
+                Invalid: 0
+               Rejected: 0
+    Time since last Msg: N/A
+                                       
+Per Source Node Summary                
+====================================== 
+  Source  Total  Elapsed  Variable  Value
+  ------  -----  -------  --------  -----
+                                           
+Last Few Messages: (from oldest to newest) 
+======================================     
+Valid Mgs: 
+  NONE  
+Invalid Mgs: 
+  NONE  
+Rejected Mgs: 
+  NONE  

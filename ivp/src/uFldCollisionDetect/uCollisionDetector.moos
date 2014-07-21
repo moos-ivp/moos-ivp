@@ -1,0 +1,9 @@
+//------------------------------------------------
+// uCollisionDetector config block
+
+ProcessConfig = uCollisionDetector
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

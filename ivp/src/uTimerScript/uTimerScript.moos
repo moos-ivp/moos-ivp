@@ -1,0 +1,46 @@
+=============================================================== 
+uTimerScript Example MOOS Configuration                         
+=============================================================== 
+                                                                
+ProcessConfig = uTimerScript                                    
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  // Logic condition that must be met for script to be unpaused 
+  condition      = WIND_GUSTS = true                            
+  // Seconds added to each event time, on each script pass      
+  delay_reset    = 0                                            
+  // Seconds added to each event time, on first pass only       
+  delay_start    = 0                                            
+  // Event(s) are the key components of the script              
+  event          = var=SBR_RANGE_REQUEST, val="name=archie", time=25:35  
+  // A MOOS variable for taking cues to forward time            
+  forward_var    = UTS_FORWARD   // or other MOOS variable   
+  // If true script is paused upon launch                       
+  paused         = false    // or {true}                     
+  // A MOOS variable for receiving pause state cues             
+  pause_var      = UTS_PAUSE     // or other MOOS variable   
+  // Declaration of random var macro expanded in event values   
+  randvar        = varname=ANG, min=0, max=359, key=at_reset    
+  // Maximum number of resets allowed                           
+  reset_max      = nolimit  // or in range [0,inf)           
+  // A point when the script is reset                           
+  reset_time     = none     // or {all-posted} or range (0,inf) 
+  // A MOOS variable for receiving reset cues                   
+  reset_var      = UTS_RESET     // or other MOOS variable   
+  // If true script will complete if conditions suddenly fail   
+  script_atomic  = false    // or {true}                     
+  // A hopefully unique name given to the script                
+  script_name    = unnamed                                      
+  // If true timestamps are recalculated on each script reset   
+  shuffle        = true                                         
+  // If true progress is generated to the console               
+  verbose        = true     // or {false}                    
+  // Reset or restart script upon conditions being met after failure 
+  upon_awake     = n/a      // or {reset,resstart}           
+  // A MOOS variable for posting the status summary             
+  status_var     = UTS_STATUS    // or other MOOS variable   
+  // Rate at which time is accelerated in execuing the script   
+  time_warp      = 1                                            
+}                                                 

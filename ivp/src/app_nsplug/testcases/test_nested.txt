@@ -1,0 +1,83 @@
+#define A 7
+#define B
+#define C 4
+#define D 6
+
+#ifndef B
+ Test #1: ------> FAIL
+#else
+  #ifdef C 1 
+     Test #1: ------> FAIL
+  #elseifdef C 4
+     Test #1: PASS
+  #endif
+#endif
+
+
+//============================================
+#ifndef B
+ Test #2: ------> FAIL
+#else
+  Test #2: PASS-1 
+  #ifdef C 4 
+     Test #2: PASS-2
+  #elseifdef C 1
+     Test #2: ------> FAIL
+  #endif
+  Test #2: PASS-3
+#endif
+
+//============================================
+#ifndef K
+ Test #3: PASS
+#else
+  Test #3: ------> FAIL
+  #ifdef C 1 
+     Test #3: ------> FAIL
+  #elseifdef C 4
+     Test #3: ------> FAIL
+  #endif
+  Test #3: ------> FAIL
+#endif
+
+//============================================
+#ifndef B
+ Test #4: ------> FAIL
+#else
+  Test #4: PASS-1
+  #ifdef C 4 
+     Test #4: PASS-2
+     #ifdef B
+        Test #4: PASS-3
+        #ifdef B 1
+          Test #4: ------> FAIL
+        #elseifdef B
+           #ifndef G
+              Test #4: PASS-4
+           #endif
+           Test #4: PASS-5
+        #endif
+     #elseifdef C
+        Test #4: ------> FAIL
+     #else
+        Test #4: ------> FAIL
+  #elseifdef C 1
+     Test #4: ------> FAIL
+  #endif
+  Test #4: PASS-6
+#endif
+
+//============================================
+#ifdef A && B && C 4 && D 6
+  Test #5: PASS-1
+#elseifdef A || B
+  Test #5: ------> FAIL
+#elseifdef D
+  #ifdef A
+    Test #5: ------> FAIL
+  #elseifdef B
+    Test #5: ------> FAIL
+  #else
+    Test #5: ------> FAIL    
+  #endif
+#endif

@@ -1,0 +1,101 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = 9123
+Community  = shoreside
+
+
+MOOSTimeWarp = 10
+LatOrigin    = 42.3584
+LongOrigin   = -71.08745
+
+
+//--------------------------------------------------------
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = true
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  UDPListen = 9200
+
+  SHARE = [DEPLOY_ALL]  -> vehicle1 @ localhost:9201 [DEPLOY]
+  SHARE = [DEPLOY_ALL]  -> vehicle2 @ localhost:9202 [DEPLOY]
+  SHARE = [RETURN_ALL]  -> vehicle1 @ localhost:9201 [RETURN]
+  SHARE = [RETURN_ALL]  -> vehicle2 @ localhost:9202 [RETURN]
+  SHARE = [DEPLOY_VH1]  -> vehicle1 @ localhost:9201 [DEPLOY]
+  SHARE = [DEPLOY_VH2]  -> vehicle2 @ localhost:9202 [DEPLOY]
+  SHARE = [TRAIL_VH2]   -> vehicle2 @ localhost:9202 [TRAIL]
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  vehicolor  = vehicle1, blue
+  vehicolor  = vehicle2, green
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 2.0
+  vehicle_shape_scale  = 1.5
+  seglist_edge_width   = 2.0
+  seglist_vertex_size  = 4
+  seglist_vertex_color = orange
+  point_vertex_size    = 12
+  hash_delta           = 50
+  hash_shade           = 0.4
+  hash_view            = true
+
+  point_vertex_color   = dark_green
+  polygon_edge_color   = dark_blue
+  polygon_viewable_labels = false
+
+  //scope  = VIEW_POINT
+  //scope  = VIEW_SEGLIST
+  //scope  = VIEW_POLYGON
+  //scope  = NAV_X
+  //scope  = NAV_Y
+  //scope  = MVIEWER_LCLICK
+  //scope  = MVIEWER_RCLICK
+
+  //left_context   = surface_point
+  //left_context   = station_point
+  //left_context   = return_point
+
+  //right_context  = loiter_point
+  //right_context  = station_point
+  //right_context  = surface_point
+
+  //center_vehicle = vehicle1
+
+  BUTTON_ONE   = DEPLOY # DEPLOY_ALL=true # RETURN_ALL=false
+  BUTTON_TWO   = RETURN # RETURN_ALL=true
+  BUTTON_THREE = TRAIL-ON  # TRAIL_VH2=true
+  BUTTON_FOUR  = TRAIL-OFF # TRAIL_VH2=false
+
+  //ACTION  = DEPLOY_ALL=true 
+  //ACTION  = DEPLOY_ALL=false
+  //ACTION  = DEPLOY_VH1=true
+  //ACTION  = DEPLOY_VH1=false
+  //ACTION  = DEPLOY_VH2=true
+  //ACTION  = DEPLOY_VH2=false
+  //ACTION  = TRAIL_VH2=true
+  //ACTION  = TRAIL_VH2=false
+}
+
+

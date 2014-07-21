@@ -1,0 +1,63 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   CWISE  = true
+ 
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter_a
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = LTIMER < 150
+  endflag   = RETURN = true
+  updates   = UP_LOITERA
+
+  speed     = 1.0
+  clockwise = false
+  radius    = 8.0
+  nm_radius = 15.0
+  polygon   = radial:: x=10, y=-100, radius=35, pts=12, snap=1, label=a 
+}
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter_b
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = LTIMER >= 150
+  endflag   = RETURN = true
+  updates   = UP_LOITERB
+
+  speed     = 1.5
+  clockwise = false
+  radius    = 8.0
+  nm_radius = 15.0
+  polygon   = radial:: x=110, y=-100, radius=35, pts=12, snap=1, label=b
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+
+  speed      = 2.0
+  radius     = 8.0
+  points     = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_Timer
+{
+  name       = loiter_timer
+  duration   = 300
+  perpetual  = true
+  duration_status = LTIMER
+  condition  = DEPLOY = true
+}
+

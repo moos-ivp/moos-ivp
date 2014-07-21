@@ -1,0 +1,28 @@
+=============================================================== 
+uXMS Example MOOS Configuration                                 
+=============================================================== 
+                                                                
+ProcessConfig = uXMS                                            
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  VAR = NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING                    
+  VAR = PROC_WATCH_SUMMARY                                      
+  VAR = PROC_WATCH_EVENT                                        
+                                                                
+  HISTORY_VAR = DB_CLIENTS                                      
+  DIPLAY_VIRGINS = true           // default                    
+  DISPLAY_EMPTY_STRINGS = true    // default                    
+  DISPLAY_SOURCE        = false   // default                    
+  DISPLAY_TIME          = false   // default                    
+  DIPLAY_COMMUNITY      = false   // default                    
+  DIPLAY_ALL            = false   // default                    
+                                                                
+  COLOR_MAP    = pHelmIvP, red   // All postings by pHelmIvP red
+  COLOR_MAP    = NAV_SPEED, blue // Only var NAV_SPEED is blue  
+                                                                
+  REFRESH_MODE = streaming       // default (or events/paused) 
+  CONTENT_MODE = scoping         // default (or history)       
+}                                                               
+

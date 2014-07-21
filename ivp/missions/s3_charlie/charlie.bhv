@@ -1,0 +1,74 @@
+//------------------------------------------------
+// File: charlie.bhv
+// Name: M. Benjamin
+// Date: Jan 2nd, 2010
+//------------------------------------------------
+
+initialize   DEPLOY=false,  RETURN  = false
+initialize   LOITER=true,   STATION_KEEP = false
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = LOITERING {
+  MODE = ACTIVE
+  (LOITER = true) and (RETURN != true)
+  STATION_KEEP != true
+}
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+  STATION_KEEP != true
+} STATION-KEEPING
+
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter
+  priority  = 100
+  condition = MODE==LOITERING
+  updates   = UP_LOITER
+
+         speed = 1.3
+     clockwise = false
+        radius = 4.0
+     nm_radius = 25.0
+       polygon = format=radial, x=0, y=-75, radius=40, pts=6, snap=1
+  visual_hints = nextpt_color=yellow, nextpt_lcolor=khaki
+  visual_hints = edge_color=white, vertex_color=invisible
+  visual_hints = edge_size=1, vertex_size=0, label=LOITER_POLYGON
+  visual_hints = nextpt_vertex_size=5
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_return
+  priority  = 100
+  perpetual = true
+  updates   = RETURN_UPDATES
+  condition = MODE==RETURNING
+  endflag   = STATION_KEEP = true
+
+      speed = 1.3
+     radius = 3.0
+  nm_radius = 15.0
+      point = x=15, y=0
+}
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name      = station-keep
+  priority  = 100
+  condition = MODE==STATION-KEEPING
+
+  center_activate = true 
+     inner_radius = 5 
+     outer_radius = 10  
+      outer_speed = 1.0
+       swing_time = 10
+}

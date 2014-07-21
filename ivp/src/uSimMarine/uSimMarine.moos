@@ -1,0 +1,34 @@
+=============================================================== 
+uSimMarine Example MOOS Configuration                           
+=============================================================== 
+                                                                
+ProcessConfig = uSimMarine                                      
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  start_x       = 0                                             
+  start_y       = 0                                             
+  start_heading = 0                                             
+  start_speed   = 0                                             
+  start_depth   = 0                                             
+  start_pos     = x=0, y=0, speed=0, heading=0, depth=0         
+                                                                
+  force_x       = 0                                             
+  force_y       = 0                                             
+  force_theta   = 0                                             
+  force_vector  = 0,0      // heading, magnitude             
+                                                                
+  buoyancy_rate        = 0.025 // meters/sec                 
+  max_acceleration     = 0     // meters/sec^2               
+  max_deceleration     = 0.5   // meters/sec^2               
+  max_depth_rate       = 0.5   // meters/sec                 
+  max_depth_rate_speed = 2.0   // meters/sec                 
+                                                                
+  sim_pause            = false // or {true}                  
+  dual_state           = false // or {true}                  
+  thrust_reflect       = false // or {true}                  
+  thrust_factor        = 20    // range [0,inf)              
+  turn_rate            = 70    // range [0,100]              
+  thrust_map           = 0:0, 20:1, 40:2, 60:3, 80:5, 100:5     
+}                                                               

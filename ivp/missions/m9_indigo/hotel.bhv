@@ -1,0 +1,80 @@
+//--------    FILE: alpha.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   HSLINE = off
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = ((DEPLOY = true) or (alpha = one)) or (bravo = two)
+  endflag   = RETURN = true
+  perpetual = true
+  updates   = NEWPTS
+
+          lead = 8
+   lead_damper = 1
+         speed = 2   // meters per second
+        radius = 5.0
+   slip_radius = 15.0
+        //points = 60,-40:60,-160:150,-160:180,-100:150,-40
+        //points = 60,-40 : 60,-160 : 150,-160 : 120,-100 : 150,-40
+        //points = 60,-40 : 60,-160 : 150,-160 : 120,-100 : 190,0
+
+	points = -200,-130:-90,-420:-57,-402:-170,-120:-129,-104:-22,-388:20,-370:-84,-85:-42,-69:59,-354:100,-339:-2,-53:39,-34:140,-322:175,-311:80,-23:121,-7:216,-290:256,-275:167,3:203,14:296,-260:330,-244:244,6
+
+
+        repeat = 1
+  visual_hints = nextpt_color=red, nextpt_lcolor=green
+  visual_hints = vertex_color=yellow, edge_color=gray45
+  //visual_hints = vertex_color=yellow, line_color=white
+  visual_hints = vertex_size=2, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  updates    = UPDATES_RETURN
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = 0,0
+}
+
+//----------------------------------------------
+//Behavior = BHV_AvoidObstacles
+{
+  name      = avoid_obs
+
+  priority        = 200
+  polygon         = format=radial, label=obs, x=60, y=-115, radius=5, pts=12
+  //polygon         = format=ellipse, label=obs, x=60, y=-130, minor=7, major=22, pts=18, degs=45, snap=0.01
+  allowable_ttc   = 20
+  activation_dist = 20   
+  buffer_dist     = 10
+  pheading_influence = 100
+
+}
+
+
+//----------------------------------------------
+Behavior = BHV_HSLine
+{
+  name      = hsline
+  condition = HSLINE=on
+
+  time_on_leg = 10
+}
+
+

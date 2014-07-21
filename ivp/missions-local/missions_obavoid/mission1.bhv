@@ -1,0 +1,68 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+
+  speed     = 2.0
+  radius    = 8.0
+  //points    = 60,-40:60,-160:150,-160:180,-100:150,-40
+  //points    = 3570,9900:3570,9780:3660,9780:3690,9840:3660,9900
+  points    = 1340,10520:1340,10400:1430,10400:1460,10460:1430,10520
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+
+  speed      = 2.0
+  radius     = 8.0
+  points     = 1340,10100
+  //points     = 0,0
+}
+
+
+//----------------------------------------------
+Behavior = BHV_AvoidObstacles
+{
+  name       = obavoid
+  pwt        = 100
+  condition  = DEPLOY = true
+
+            poly = 1320,10470:1320,10440:1360,10440:1360,10470
+//            poly = 3550,9850:3550,9820:3590,9820:3590,9850
+//            poly = 30,-80:30,-110:70,-110:70,-80
+//            poly = 40,-80:40,-110:80,-110:80,-80 
+     allowable_ttc = 20
+   activation_dist = 50
+       buffer_dist = 25
+}
+
+//----------------------------------------------
+//Behavior = BHV_ConstantDepth
+{
+  name       = const_depth
+  pwt        = 100
+  condition  = DEPLOY = true
+
+       depth = 15
+    duration = 300
+}
+
+
+
+
+//--> info on bugs and deficiencies you've found in my code
+//--> new utility modules you've written released back to Open Source community
+//--> info on your project so I can assert that my work is having an impact
+//--> funding from your organization to mine.

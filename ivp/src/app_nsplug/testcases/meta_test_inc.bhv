@@ -1,0 +1,5 @@
+//--------    BEGIN FILE: meta_test_inc.bhv   -------------
+#define BAR 888
+//--------    END   FILE: meta_test_inc.bhv   -------------
+
+

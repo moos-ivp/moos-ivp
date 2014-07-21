@@ -1,0 +1,11 @@
+
+
+
+
+xlogview foo1.alog foo2.alog [OPTIONS]
+
+  script that:
+     - Launches a MOOSDB  localhost port=9777
+     - Launches uLogView  <host><port> [OPTIONS]
+     
+     

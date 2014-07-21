@@ -1,0 +1,244 @@
+// Level 2 Configuration file: M. Benjamin
+
+ServerHost = localhost
+ServerPort = 9000
+Simulator  = true
+
+Community  = alpha
+
+LatOrigin  = 42.3584
+LongOrigin = -71.08745
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = true
+  Run = pTransponderAIS	@ NewConsole = true
+  Run = uXMS		@ NewConsole = true
+  Run = iRemote		@ NewConsole = true
+  Run = pMarineViewer	@ NewConsole = true
+  Run = pMarinePID	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = false
+  Run = iMarineSim	@ NewConsole = false
+  Run = pEchoVar	@ NewConsole = false
+  Run = pLogger		@ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  TIFF_FILE     = AerialMIT.tif
+  TIFF_FILE_B    = AerialMIT.tif
+}
+
+//------------------------------------------
+// iMarineSim config block
+
+ProcessConfig = iMarineSim
+{
+  AppTick	= 10
+  CommsTick	= 10
+
+//  START_X       = 3550
+//  START_Y       = 9970
+  START_X       = 3620
+  START_Y       = 9740
+  START_SPEED   = 0
+  START_HEADING = 180
+  START_DEPTH   = 4
+
+  FLOAT_RATE    = 0.05 // Rises 0.1 m/s when speed=0
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  Behaviors  = mission2.bhv
+  Verbose    = true
+  Domain     = course:0:359:360
+  Domain     = speed:0:4:21
+  Domain     = depth:0:100:101:optional
+
+  ACTIVE_START = true
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  Verbose    = true
+
+  DEPTH_CONTROL = true
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 0.5
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+  //Pitch PID controller
+  PITCH_PID_KP                   = 0.5
+  PITCH_PID_KD                   = 1.0
+  PITCH_PID_KI                   = 0
+  PITCH_PID_INTEGRAL_LIMIT       = 0
+
+  //ZPID controller
+  Z_TO_PITCH_PID_KP              = 0.12
+  Z_TO_PITCH_PID_KD              = 0
+  Z_TO_PITCH_PID_KI              = 0.004
+  Z_TO_PITCH_PID_INTEGRAL_LIMIT  = 0.05
+
+  //MAXIMUMS
+  MAXRUDDER    = 100
+  MAXTHRUST    = 100
+  MAXPITCH     = 15
+  MAXELEVATOR  = 13
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//------------------------------------------
+// iRemote configuration block
+
+ProcessConfig = iRemote
+{
+   CustomKey = 1 : HELM_VERBOSE @ "verbose"
+   CustomKey = 2 : HELM_VERBOSE @ "terse"
+   CustomKey = 3 : HELM_VERBOSE @ "quiet"
+   CustomKey = 4 : DEPLOY    @ "true"
+   CustomKey = 5 : DEPLOY    @ "false"
+   CustomKey = 6 : RETURN    @ "true"
+   CustomKey = 7 : RETURN    @ "false"
+   CustomKey = 9 : SURFACING @ "true"
+}
+
+//------------------------------------------
+// Logger configuration block
+
+ProcessConfig = pLogger
+{
+  //over loading basic params...
+  AppTick 	= 20.0
+  CommsTick 	= 20.0
+
+  File		= HW
+  PATH		= ../data_from_runs/
+  SyncLog 	= true @ 0.2
+  AsyncLog 	= true
+  FileTimeStamp = true
+	
+  wildcardlogging = true
+
+  Log		= DESIRED_THRUST @ 0.1
+  Log		= DESIRED_RUDDER @ 0.1
+  Log           = NAV_X          @ 0.1
+  Log           = NAV_Y          @ 0.1
+  Log           = NAV_HEADING    @ 0.1
+  Log           = NAV_SPEED      @ 0.1
+  Log           = LOOP_WALL      @ 0.1
+  Log           = LOOP_CPU       @ 0.1
+  Log           = AIS_REPORT     @ 0.1
+}
+
+//------------------------------------------
+// pEchoVar configuration block
+
+ProcessConfig = pEchoVar
+{
+  AppTick     = 5
+  CommsTick   = 5
+
+  Echo    = MARINESIM_X       ->  NAV_X
+  Echo    = MARINESIM_X       ->  NAV_XX
+  Echo    = MARINESIM_Y       ->  NAV_Y
+  Echo    = MARINESIM_YAW     ->  NAV_YAW
+  Echo    = MARINESIM_HEADING ->  NAV_HEADING
+  Echo    = MARINESIM_SPEED   ->  NAV_SPEED
+  Echo    = MARINESIM_DEPTH   ->  NAV_DEPTH
+}
+
+//------------------------------------------
+// pTransponderAIS config block
+
+ProcessConfig = pTransponderAIS
+{
+  AppTick	= 2
+  CommsTick	= 2
+  VESSEL_TYPE   = KAYAK
+}
+
+//------------------------------------------
+// uProcessWatch config block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick	= 2
+  CommsTick	= 2
+
+  WATCH = pHelmIvP
+  WATCH = iMarineSim
+  WATCH = pTransponderAIS
+  WATCH = iRemote
+  WATCH = pMarinePID
+  WATCH = pMarineViewer
+  WATCH = pEchoVar
+  WATCH = pLogger
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  VAR        = WATCH_PROC_EVENT, WATCH_PROC_SUMMARY
+
+  VAR        = DESIRED_HEADING, DESIRED_SPEED, DESIRED_DEPTH
+
+  VAR        = DESIRED_RUDDER, DESIRED_THRUST, DESIRED_ELEVATOR
+  VAR        = NAV_X, NAV_Y, NAV_SPEED, NAV_YAW
+
+  VAR        = MARINESIM_X
+  VAR        = MARINESIM_Y
+  VAR        = MARINESIM_HEADING
+  VAR        = MARINESIM_YAW
+  VAR        = MARINESIM_SPEED
+
+  VAR        = MOOS_MANUAL_OVERIDE
+  VAR        = DEPLOY
+  VAR        = RETURN
+  VAR        = NEW_WAYPOINTS
+  VAR        = HELM_RESTART
+  VAR        = UPDATE_HISTORY
+}
+
+
+

@@ -1,0 +1,11 @@
+
+ProcessConfig = iGPS_KF
+{
+        AppTick = 10
+        CommsTick = 10
+        Port = /dev/GPS18X5HZ
+        Streaming = true
+        Verbose = false
+        BaudRate = 19200
+        Type = GARMIN
+}

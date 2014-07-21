@@ -1,0 +1,22 @@
+//--------------------------------------------------------
+// pBasicContactMgr Configuration Block (Created from Plugin)
+
+ProcessConfig = pBasicContactMgr
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  CONTACT_MAX_AGE = 300
+  DISPLAY_RADII   = true
+
+  contacts_recap_interval = 5
+
+  DEFAULT_ALERT_RANGE = 20
+  DEFAULT_CPA_RANGE   = 28
+  DEFAULT_ALERT_RANGE_COLOR = gray70
+  DEFAULT_CPA_RANGE_COLOR   = gray30
+
+  Alert = id=avd, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
+  Alert = id=avd, alert_range=40, cpa_range=45, alert_range_color=green
+  Alert = id=avd, cpa_range_color=invisible
+}

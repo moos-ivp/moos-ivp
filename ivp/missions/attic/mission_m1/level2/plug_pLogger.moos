@@ -1,0 +1,38 @@
+//---------------------------------------
+ProcessConfig = pLogger
+{
+  AppTick 	= 10
+  CommsTick 	= 10
+  
+  File		= M1_V$(VID)_
+  PATH		= ./
+  SyncLog 	= true @ 0.2
+  AsyncLog 	= true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  
+  // PID Output
+  Log		= DESIRED_THRUST     @ 0
+  Log		= DESIRED_RUDDER     @ 0
+  
+  // Helm Output
+  Log           = DESIRED_SPEED      @ 0
+  Log           = DESIRED_HEADING    @ 0
+  Log           = HELM_ACTIVE_BHV    @ 0   NOSYNC
+  Log           = HELM_NONIDLE_BHV   @ 0   NOSYNC
+  log           = DEPLOY             @ 0   NOSYNC
+  
+  // Vehicle-Level IO
+  Log           = PROC_WATCH_SUMMARY @ 0   NOSYNC
+  Log           = PROC_WATCH_EVENT   @ 0   NOSYNC
+  Log           = AIS_REPORT_LOCAL   @ 0   NOSYNC
+  Log           = AIS_REPORT         @ 0   NOSYNC
+  
+  // Navigation information
+  Log           = NAV_X              @ 0
+  Log           = NAV_Y              @ 0
+  Log           = NAV_HEADING        @ 0
+  Log           = NAV_SPEED          @ 0
+}

@@ -1,0 +1,10 @@
+Package: ivp-tools-dev
+Version: @PACKAGE_VERSION@-@PACKAGE_BUILD_NUM@
+Section: devel
+Priority: optional
+Architecture: i386
+Depends: moos-core-dev (>= @REQUIRED_MOOS_VERSION@)
+Maintainer: Paul Newman <pnewman@robots.ox.ac.uk>
+Description: Provides static libraries and headers for the MOOS and MOOSGen libraries
+ (TODO: Add longer decription.)
+ 
