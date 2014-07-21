@@ -402,7 +402,7 @@ XYPolygon stringRadial2Poly(string str)
   unsigned int i, vsize = mvector.size();
 
   for(i=0; i<vsize; i++) {
-    string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
+    string param = tolower(biteStringX(mvector[i], '='));
     string value = stripBlankEnds(mvector[i]);
     double dval  = atof(value.c_str());
     if(param == "format") {
