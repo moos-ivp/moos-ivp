@@ -84,6 +84,7 @@ class TS_MOOSApp : public AppCastingMOOSApp
   std::vector<bool>         m_poked;
 
   std::string               m_script_name;
+  bool                      m_time_zero_connect;
   bool                      m_verbose;
   bool                      m_shuffle;
   bool                      m_atomic;

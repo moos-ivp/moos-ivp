@@ -76,6 +76,8 @@ TS_MOOSApp::TS_MOOSApp()
   m_var_status     = "UTS_STATUS";
   m_var_reset      = "UTS_RESET";
 
+  m_time_zero_connect = true;   // if false: timezero is MOOSDB start time
+
   m_info_buffer    = new InfoBuffer;
 
   m_uts_time_warp.setParam("min", 1.0);
@@ -180,9 +182,12 @@ bool TS_MOOSApp::Iterate()
     m_status_needed = true;
   // Now apply the results of the new conditions state
   m_conditions_ok = new_conditions_ok;
-
+  
   if(m_script_start_time == 0) {
-    m_script_start_time = m_curr_time;
+    if(m_time_zero_connect)
+      m_script_start_time = m_curr_time;
+    else 
+      m_script_start_time = m_connect_tstamp;
     scheduleEvents(m_shuffle);
   }
 
@@ -280,6 +285,15 @@ bool TS_MOOSApp::OnStartUp()
 	m_upon_awake = lvalue;
       else
 	reportConfigWarning("Invalid upon_awake parameter value: " + value);
+    }
+    else if(param == "time_zero") {
+      string lvalue = tolower(value);
+      if(lvalue=="script_start")
+	m_time_zero_connect = true;
+      if(lvalue=="db_start")
+	m_time_zero_connect = false;
+      else
+	reportConfigWarning("Invalid time_zero parameter value: " + value);
     }
     else if(param == "reset_max") {
       string str = tolower(value);
@@ -1238,6 +1252,10 @@ bool TS_MOOSApp::buildReport()
 
   string s_reset_max = uintToString(m_reset_max);
 
+  string s_script_start = "At uTimerScript launch time (not MOOSDB start time)";
+  if(!m_time_zero_connect)
+    s_script_start = "At MOOSDB start time (not uTimerScript launch time)";
+
   string block_apps;
   set<string>::iterator q;
   for(q=m_block_apps.begin(); q!=m_block_apps.end(); q++) {
@@ -1260,6 +1278,7 @@ bool TS_MOOSApp::buildReport()
   m_msgs << "     Elements: " << m_pairs.size() << "(" << step << ")" << endl;
   m_msgs << "      Reinits: " << m_reset_count                  << endl;
   m_msgs << "    Time Warp: " << s_uts_time_warp                << endl;
+  m_msgs << " Time Zero is: " << s_script_start                 << endl;
   m_msgs << "  Delay Start: " << s_delay_start                  << endl;
   m_msgs << "  Delay Reset: " << s_delay_reset                  << endl;
   m_msgs << "    Reset Max: " << s_reset_max                    << endl << endl;

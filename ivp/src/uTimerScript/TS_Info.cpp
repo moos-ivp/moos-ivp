@@ -138,6 +138,8 @@ void showExampleConfigAndExit()
   blu("  status_var     = UTS_STATUS   "," // or other MOOS variable   ");
   blk("  // Rate at which time is accelerated in execuing the script   ");
   blu("  time_warp      = 1                                            ");
+  blk("  // Base time upon which script event times are based          ");
+  blu("  time_zero      = db_start "," // Or script_start (default)    ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
