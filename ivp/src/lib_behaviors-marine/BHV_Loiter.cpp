@@ -332,6 +332,10 @@ bool BHV_Loiter::updateInfoIn()
   // Calculating ETA to poly - should we base it on progress history?
   // Or simply distance and current speed?
 
+  m_eta_to_poly = 0;
+  if((m_dist_to_poly > 0) && (m_osh > 0.001))
+    m_eta_to_poly = (m_dist_to_poly / m_osv);
+
   return(true);
 }
 
@@ -488,8 +492,17 @@ void BHV_Loiter::postStatusReports()
   else
     postMessage(("LOITER_ACQUIRE" + m_var_suffix), 0);
   
-  string var = ("LOITER_DIST_TO_POLY" + m_var_suffix);
-  postIntMessage(var, m_dist_to_poly);
+  string dist_var = ("LOITER_DIST_TO_POLY" + m_var_suffix);
+  if(m_dist_to_poly > 10)
+    postIntMessage(dist_var, m_dist_to_poly);
+  else
+    postMessage(dist_var, m_dist_to_poly);
+
+  string eta_var = ("LOITER_ETA_TO_POLY" + m_var_suffix);
+  if((m_eta_to_poly > 10) || (m_eta_to_poly == 0))
+    postIntMessage(eta_var, m_eta_to_poly);
+  else
+    postMessage(eta_var, m_eta_to_poly);
 }
 
 //-----------------------------------------------------------
