@@ -1,3 +1,7 @@
+
+o In the waypoint behavior, detect if the capture and slip radius are both zero AND
+  the capture line arrival criteria is off.
+
 o Allow dynamic configuration of pBasicContactMgr, so behaviors can auto-coordinate
 
 o MOOS mission file reader: Verbatim quoting not work. 
