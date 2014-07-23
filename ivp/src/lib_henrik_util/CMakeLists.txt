@@ -5,6 +5,6 @@
 
 FILE(GLOB SRC *.cpp *.c)
 
-ADD_LIBRARY(henrik_util SHARED ${SRC})
+ADD_LIBRARY(henrik_util ${SRC})
 
 TARGET_LINK_LIBRARIES(henrik_util ${MOOS_LIBRARIES} mbutil)
