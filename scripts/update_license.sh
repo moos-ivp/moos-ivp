@@ -51,6 +51,7 @@ license  gpl  all   -f $SRC/pNodeReporter/*.h    $SRC/pNodeReporter/*.cpp
 license  gpl  all   -f $SRC/pSafetyRetreat/*.h   $SRC/pSafetyRetreat/*.cpp
 license  gpl  all   -f $SRC/pSearchGrid/*.h      $SRC/pSearchGrid/*.cpp
 license  gpl  all   -f $SRC/pXRelay/*.h          $SRC/pXRelay/*.cpp
+license  gpl  all   -f $SRC/iSay/*.h             $SRC/iSay/*.cpp
 
 license  gpl  all   -f $SRC/uFldBeaconRangeSensor/*.h   $SRC/uFldBeaconRangeSensor/*.cpp
 license  gpl  kyle  -f $SRC/uFldCollisionDetect/*.h     $SRC/uFldCollisionDetect/*.cpp
