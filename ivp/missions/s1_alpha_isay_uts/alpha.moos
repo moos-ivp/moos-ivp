@@ -14,11 +14,6 @@ TERM_REPORTING = true
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
 
-// MIT Sailing Pavilion (use this one)
-// LatOrigin  = 42.358456 
-// LongOrigin = -71.087589
-
-
 //------------------------------------------
 // Antler configuration  block
 ProcessConfig = ANTLER
@@ -33,7 +28,43 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
+  Run = iSay	          @ NewConsole = true
+  Run = uTimerScript    @ NewConsole = false
 }
+
+//------------------------------------------
+ProcessConfig = iSay
+{
+  AppTick   = 10
+  CommsTick = 10
+
+  min_utter_interval = 0.1
+  interval_policy    = from_end
+}
+
+                                                                
+//------------------------------------------
+ProcessConfig = uTimerScript                                    
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+  
+  paused = false
+                                                              
+  reset_max      = nolimit  
+  reset_time     = all-posted
+  delay_reset    = 0.25
+
+	event          = var=SAY_MOOS, val="say={one}",   time=0.25  
+  event          = var=SAY_MOOS, val="say={two}",   time=0.5  
+  event          = var=SAY_MOOS, val="say={three}", time=0.75  
+  event          = var=SAY_MOOS, val="say={four}",  time=1  
+  event          = var=SAY_MOOS, val="say={five},priority=100",  time=1.25  
+  event          = var=SAY_MOOS, val="say={six},source=james",   time=1.5  
+  event          = var=SAY_MOOS, val="say={seven}", time=1.75  
+  event          = var=SAY_MOOS, val="say={eight}", time=2  
+  event          = var=SAY_MOOS, val="say={nine}",  time=2.25  
+}                                                               
 
 //------------------------------------------
 // uProcessWatch config block
@@ -81,7 +112,7 @@ ProcessConfig = pLogger
 
 ProcessConfig = uSimMarine
 {
-  AppTick   = 4
+  AppTick	= 4
   CommsTick	= 4
 
   start_x       = 0
