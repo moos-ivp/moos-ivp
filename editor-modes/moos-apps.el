@@ -58,6 +58,9 @@
       '("uXMS" "var" "source" "history_var" "display_virgins" "display_source" "display_aux_source" "display_time" "display_community" "display_all" "trunc_data" "term_report_interval" "colormap" "color_map" "refresh_mode" "content_mode" "paused")
       '("uSimCurrent" "current_field")
 
+      
+      '("uFldSwarmAssign" "task")
+      '("uFldCollisionDetect" "collision_range" "delay_time_to_clear" "publish_immediately" "pulse" "pulse_range" "pulse_duration" "publish_pairs" "publish_single")
 
       '("pPolePath" "start_line" "end_line" "poles_number" "steps_number" "display_poles" "display_steps" "start_pole" "output_var" "random_end")
       '("pRangeSensorHangler" "local_range" "range_report" "target_name" "verbose" "disp_range_circle")
