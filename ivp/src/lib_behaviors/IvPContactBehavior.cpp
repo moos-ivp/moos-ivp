@@ -123,7 +123,8 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     return(true);
   }  
   // bearing_lines = white:0, green:0.65, yellow:0.8, red:1.0
-  else if(param == "bearing_line_config") {
+  else if((param == "bearing_line_config") ||
+	  (param == "bearing_lines")) {
     m_bearing_line_show = false;
     vector<string> svector = parseString(param_val, ',');
     unsigned int i, vsize = svector.size();

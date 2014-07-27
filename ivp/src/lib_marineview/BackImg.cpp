@@ -29,7 +29,7 @@
 #include <cstdlib>
 #include <tiffio.h>
 
-#define USE_UTM
+//#define USE_UTM
 
 // See http://www.cmake.org/pipermail/cmake/2003-March/003482.html
 #ifdef _WIN32

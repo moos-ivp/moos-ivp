@@ -28,7 +28,7 @@
 #include "ACTable.h"
 #include "AngleUtils.h"
 
-#define USE_UTM
+//#define USE_UTM
 
 using namespace std;
 

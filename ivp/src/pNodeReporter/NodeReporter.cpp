@@ -30,7 +30,7 @@
 #include "NodeRecord.h"
 #include "ACBlock.h"
 
-#define USE_UTM
+//#define USE_UTM
 
 using namespace std;
 
