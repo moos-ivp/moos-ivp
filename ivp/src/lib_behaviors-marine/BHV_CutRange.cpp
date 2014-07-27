@@ -42,7 +42,7 @@ using namespace std;
 BHV_CutRange::BHV_CutRange(IvPDomain gdomain) : 
   IvPContactBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_cutrange");
+  this->setParam("descriptor", "bhv_cutrange");
   this->setParam("build_info", "uniform_piece=discrete@course:2,speed:3");
   this->setParam("build_info", "uniform_grid =discrete@course:8,speed:6");
   

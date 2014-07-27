@@ -35,7 +35,7 @@ using namespace std;
 
 BHV_Timer::BHV_Timer(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "bhv_timer");
+  m_descriptor = "bhv_timer";
 
   m_var_status_idle    = "TIMER_IDLE";
   m_var_status_running = "TIMER_RUNNING";

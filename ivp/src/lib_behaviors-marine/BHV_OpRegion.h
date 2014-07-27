@@ -48,7 +48,7 @@ class BHV_OpRegion : public IvPBehavior {
   void      postViewablePolygon();
   void      postErasablePolygon();
 
- protected: // Parameters
+ protected: // Configuration Variables
   std::vector<XYPolygon> m_polygons;
   XYPolygon m_polygon;
   double    m_max_depth;
@@ -77,20 +77,8 @@ class BHV_OpRegion : public IvPBehavior {
 
   bool      m_first_time;
   bool      m_previously_in_poly;
-
-
 };
 #endif
-
-
-
-
-
-
-
-
-
-
 
 
 

@@ -38,10 +38,14 @@ using namespace std;
 
 BHV_OpRegion::BHV_OpRegion(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "bhv_opregion");
+  m_descriptor   = "bhv_opregion";
   m_max_depth    = 0;
   m_min_altitude = 0;
   m_max_time     = 0;
+  m_hint_vertex_size  = 3;
+  m_hint_vertex_color = "brown"; 
+  m_hint_edge_size    = 1;
+  m_hint_edge_color   = "aqua"; 
 
   // Keep track of whether the vehicle was in the polygon on the
   // previous invocation of the behavior. Initially assume false.
@@ -538,8 +542,3 @@ void BHV_OpRegion::handleVisualHint(string hint)
   else if((param == "vertex_size") && isNumber(value) && (dval >= 0))
     m_hint_vertex_size = dval;
 }
-
-
-
-
-

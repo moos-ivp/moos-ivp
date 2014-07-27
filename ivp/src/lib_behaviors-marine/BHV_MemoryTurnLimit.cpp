@@ -49,7 +49,7 @@ using namespace std;
 BHV_MemoryTurnLimit::BHV_MemoryTurnLimit(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "(d)bhv_memturnlimit");
+  m_descriptor = "mem_turn_limit";
 
   m_domain = subDomain(m_domain, "course");
 

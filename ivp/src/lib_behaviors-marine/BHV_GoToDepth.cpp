@@ -67,7 +67,7 @@ BHV_GoToDepth::BHV_GoToDepth(IvPDomain gdomain) :
 
 bool BHV_GoToDepth::setParam(string param, string val) 
 {
-  //  50,10;10,10;50,10;50
+  //  40,60:30,45:20,45
   if(param == "depth") {
     vector<string> out_vector = parseString(val, ':');
     int outsize = out_vector.size();
