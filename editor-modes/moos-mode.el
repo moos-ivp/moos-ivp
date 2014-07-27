@@ -168,7 +168,7 @@
 		 ;;and valid for all behaviors. If these end up getting highlighted
 		 ;;in other places, make this into an anchored matcher using
 		 ;;Behavior =
-		 '("\\<\\(?:initialize\\|set\\|name\\|pwt\\|duration\\|condition\\|updates\\|perpetual\\|endflag\\|runflag\\|idleflag\\|activeflag\\|inactiveflag\\|templating\\)\\>"
+		 '("\\<\\(?:initialize\\|set\\|name\\|pwt\\|duration\\|duration_idle_decay\\|condition\\|updates\\|perpetual\\|endflag\\|runflag\\|idleflag\\|activeflag\\|inactiveflag\\|templating\\)\\>"
 			 . font-lock-keyword-face)
 
 		 ;;nsplug commands and macros
