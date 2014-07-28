@@ -26,7 +26,24 @@ ProcessConfig = ANTLER
   Run = pMarineViewer   @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
   Run = pLogger         @ NewConsole = false
+  Run = iSay            @ NewConsole = false
 }
+
+//------------------------------------------
+// iSay config block
+
+ProcessConfig = iSay                                            
+{
+  AppTick	  = 4
+  CommsTick	= 4
+
+  default_voice      = alex       // iSay --voices for others   
+  default_rate       = 200                                      
+  interval_policy    = from_end   // or from_start              
+  min_utter_interval = 1                                        
+
+	//max_queue_size = 1
+}                                            
 
 //------------------------------------------
 // uSimMarine config block
@@ -147,6 +164,8 @@ ProcessConfig = pMarineViewer
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
+
+  button_three = OPR_RESET # OPREGION_RESET=true
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false

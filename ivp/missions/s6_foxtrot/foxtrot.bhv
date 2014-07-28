@@ -66,5 +66,9 @@ Behavior = BHV_OpRegion
 //             polygon = pts="0,-100:0,-200:150,-200:150,-100"
   trigger_entry_time = 1
   trigger_exit_time  = 1
+
+           reset_var = OPREGION_RESET
+
+	breached_poly_flag = SAY_MOOS = {Violation}
 }
 
