@@ -2,6 +2,7 @@
 
 initialize   DEPLOY = false
 initialize   RETURN = false
+initialize   SAFETY = true
 
 set MODE = ACTIVE {
   DEPLOY = true
