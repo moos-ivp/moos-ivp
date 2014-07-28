@@ -190,3 +190,71 @@ bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& df
     return true;
 }
 
+
+bool CMOOSGeodesy::LatLong2LocalGrid(double lat, 
+                                     double lon, 
+                                     double &MetersNorth, 
+                                     double &MetersEast)
+{
+    
+    //(semimajor axis)
+    double dfa  = 6378137;
+    // (semiminor axis)
+    double dfb = 6356752;
+
+    double dftanlat2 = pow(tan(lat*DEG_TO_RAD),2);
+    double dfRadius = dfb*sqrt(1+dftanlat2) / sqrt( ( pow(dfb,2)/pow(dfa,2) )+dftanlat2);
+
+
+
+    //the decimal degrees conversion should take place elsewhere
+    double dXArcDeg  = (lon - GetOriginLongitude()) * DEG_TO_RAD;
+    double dX = dfRadius * sin(dXArcDeg)*cos(lat*DEG_TO_RAD);
+    
+    double dYArcDeg  = (lat - GetOriginLatitude()) * DEG_TO_RAD;
+    double dY = dfRadius * sin(dYArcDeg);
+
+    //This is the total distance traveled thus far, either North or East
+    MetersNorth = dX;
+    MetersEast  = dY;
+    
+    return true;
+}
+
+/**
+ *Utility method for converting from a local grid fix to the 
+ *global Lat, Lon pair.  This method will work for small grid
+ *approximations - <300km sq
+ *@param dfEast  The current local grid distance in meters traveled East (X dir) wrt to Origin
+ *@param dfNorth The current local grid distance in meters traveled North (Y dir) wrt to Origin
+ *@param dfLat the calculated latitude out
+ *@param dfLon the calculated longitude out
+ */
+
+bool CMOOSGeodesy::LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLat, double &dfLon) 
+{
+  if(isnan(dfEast) || isnan(dfNorth))
+    return(false);
+
+    //(semimajor axis)
+    double dfa  = 6378137;
+    // (semiminor axis)
+    double dfb = 6356752;
+
+    double dftanlat2 = pow( tan( GetOriginLatitude()*DEG_TO_RAD ), 2 );
+    double dfRadius = dfb*sqrt( 1+dftanlat2 ) / sqrt( ( pow(dfb,2)/pow(dfa,2) )+dftanlat2 );
+
+    //first calculate lat arc
+    double dfYArcRad = asin( dfNorth/dfRadius ); //returns result in rad
+    double dfYArcDeg = dfYArcRad * RAD_TO_DEG;
+ 
+    double dfXArcRad = asin( dfEast/( dfRadius*cos( GetOriginLatitude()*DEG_TO_RAD ) ) );
+    double dfXArcDeg = dfXArcRad * RAD_TO_DEG;
+        
+    //add the origin to these arc lengths
+    dfLat = dfYArcDeg + GetOriginLatitude();
+       dfLon = dfXArcDeg + GetOriginLongitude();
+
+    return true;
+}
+

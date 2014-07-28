@@ -40,9 +40,14 @@ class CMOOSGeodesy
   double GetOriginEasting();
   int GetUTMZone();
   
+  // UTM transform pair (WGS-84 ellipsoid)
   bool LatLong2LocalUTM(double lat, double lon, double & MetersNorth, double & MetersEast);
   bool UTM2LatLong(double dfX, double dfY, double& dfLat, double& dfLong);    
-  
+
+  // Local Grid projection
+  bool LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLat, double &dfLon);
+  bool LatLong2LocalGrid(double lat, double lon, double &MetersNorth, double &MetersEast);
+
   bool Initialise(double lat, double lon);
   
  private:
