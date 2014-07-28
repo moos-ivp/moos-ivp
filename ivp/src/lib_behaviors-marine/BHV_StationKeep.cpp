@@ -65,7 +65,7 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
   m_swing_time       = 0;
   
   // All visual hints initially turned off
-  m_hint_vertex_color = "";
+  m_hint_vertex_color = "red";
   m_hint_edge_color   = "light_blue";
   m_hint_label_color  = "white";
   m_hint_vertex_size  = 1;
