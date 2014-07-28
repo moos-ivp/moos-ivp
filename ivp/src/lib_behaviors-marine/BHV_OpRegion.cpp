@@ -47,6 +47,11 @@ BHV_OpRegion::BHV_OpRegion(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_hint_edge_size    = 1;
   m_hint_edge_color   = "aqua"; 
 
+  m_breached_poly_flags_posted  = false;
+  m_breached_time_flags_posted  = false;
+  m_breached_altitude_flags_posted = false;
+  m_breached_depth_flags_posted = false;
+
   // Keep track of whether the vehicle was in the polygon on the
   // previous invocation of the behavior. Initially assume false.
   m_previously_in_poly = false;
@@ -125,6 +130,49 @@ bool BHV_OpRegion::setParam(string param, string val)
     m_max_depth = dval;
     return(true);
   }
+  else if(param == "reset_var") {
+    if(strContainsWhite(val))
+      return(false);
+    m_reset_var = val;
+    addInfoVars(m_reset_var);
+    return(true);
+  }
+  else if(param == "breached_poly_flag") {
+    string varname = biteStringX(val, '=');
+    string varval  = val;
+    if(strContainsWhite(varname) || (varval == ""))
+      return(false);
+    VarDataPair pair(varname, varval, "auto");
+    m_breached_poly_flags.push_back(pair);
+    return(true);
+  }
+  else if(param == "breached_time_flag") {
+    string varname = biteStringX(val, '=');
+    string varval  = val;
+    if(strContainsWhite(varname) || (varval == ""))
+      return(false);
+    VarDataPair pair(varname, varval, "auto");
+    m_breached_time_flags.push_back(pair);
+    return(true);
+  }
+  else if(param == "breached_altitude_flag") {
+    string varname = biteStringX(val, '=');
+    string varval  = val;
+    if(strContainsWhite(varname) || (varval == ""))
+      return(false);
+    VarDataPair pair(varname, varval, "auto");
+    m_breached_altitude_flags.push_back(pair);
+    return(true);
+  }
+  else if(param == "breached_depth_flag") {
+    string varname = biteStringX(val, '=');
+    string varval  = val;
+    if(strContainsWhite(varname) || (varval == ""))
+      return(false);
+    VarDataPair pair(varname, varval, "auto");
+    m_breached_depth_flags.push_back(pair);
+    return(true);
+  }
   else if(param == "min_altitude") {
     double dval = atof(val.c_str());
     if((dval < 0) || (!isNumber(val)))
@@ -166,6 +214,15 @@ bool BHV_OpRegion::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
+// Procedure: onIdleState
+
+void BHV_OpRegion::onIdleState() 
+{
+  checkForReset();
+  postErasablePolygon();
+}
+
+//-----------------------------------------------------------
 // Procedure: onRunState
 //     Notes: Always returns NULL, never returns an IvPFunction*
 //     Notes: Sets state_ok = false and posts an error message if
@@ -176,6 +233,7 @@ IvPFunction *BHV_OpRegion::onRunState()
   // Each of the below calls will check their critical conditions
   // and post an error message if a violation is detected. The call
   // to postEMessage() also sets state_ok = false;
+  checkForReset();
   setTimeStamps();
   polygonVerify();
   postPolyStatus();
@@ -277,6 +335,7 @@ void BHV_OpRegion::polygonVerify()
   string emsg = "BHV_OpRegion Polygon containment failure: ";
   emsg += " x=" + doubleToString(osX);
   emsg += " y=" + doubleToString(osY);
+  postBreachFlags("poly");
   postEMessage(emsg);
 }
 
@@ -522,6 +581,73 @@ void BHV_OpRegion::postErasablePolygon()
   poly_duplicate.set_active(false);
   string poly_spec = poly_duplicate.get_spec();
   postMessage("VIEW_POLYGON", poly_spec);
+}
+
+//-----------------------------------------------------------
+// Procedure: checkForReset()
+
+void BHV_OpRegion::checkForReset()
+{
+  double time_since_reset = getBufferTimeVal(m_reset_var);
+  if(time_since_reset == 0) {
+    m_first_time = true;  
+    m_secs_in_poly = 0;
+    m_previously_in_poly = false;
+    m_poly_entry_made = false;
+    
+    m_breached_poly_flags_posted = false;
+    m_breached_time_flags_posted = false;
+    m_breached_altitude_flags_posted = false;
+    m_breached_depth_flags_posted = false;
+  }
+}
+
+//-----------------------------------------------------------
+// Procedure: postBreachFlags()
+
+void BHV_OpRegion::postBreachFlags(string str)
+{
+  if((str == "poly") && m_breached_poly_flags_posted)
+    return;
+  if((str == "time") && m_breached_time_flags_posted)
+    return;
+  if((str == "altitude") && m_breached_altitude_flags_posted)
+    return;
+  if((str == "depth") && m_breached_depth_flags_posted)
+    return;
+
+  vector<VarDataPair> flags;
+  if(str == "poly") {
+    flags = m_breached_poly_flags;
+    m_breached_poly_flags_posted = true;
+  }
+  else if(str == "time") {
+    flags = m_breached_time_flags;
+    m_breached_time_flags_posted = true;
+  }
+  else if(str == "altitude") {
+    flags = m_breached_altitude_flags;
+    m_breached_altitude_flags_posted = true;
+  }
+  else if(str == "depth") {
+    flags = m_breached_depth_flags;
+    m_breached_depth_flags_posted = true;
+  }
+
+  unsigned int i, vsize = flags.size();
+  for(i=0; i<vsize; i++) {
+    string var = flags[i].get_var();
+    if(flags[i].is_string()) {
+      string sdata = flags[i].get_sdata();
+      sdata = findReplace(sdata, "$[OWNSHIP]", m_us_name);
+      sdata = findReplace(sdata, "$[BHVNAME]", m_descriptor);
+      postRepeatableMessage(var, sdata);
+    }
+    else {
+      double ddata = flags[i].get_ddata();
+      postRepeatableMessage(var, ddata);
+    }	
+  }    
 }
 
 //-----------------------------------------------------------
