@@ -30,7 +30,7 @@
 #include "ColorParse.h"
 #include "BearingLine.h"
 
-//#define USE_UTM
+#define USE_UTM
 
 #ifdef _WIN32
 #   include <float.h>

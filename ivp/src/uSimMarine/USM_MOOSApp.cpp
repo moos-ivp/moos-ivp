@@ -28,7 +28,7 @@
 #include "ACTable.h"
 #include "AngleUtils.h"
 
-//#define USE_UTM
+#define USE_UTM
 
 using namespace std;
 
@@ -45,9 +45,9 @@ USM_MOOSApp::USM_MOOSApp()
   trim_requested = false;
   buoyancy_delay = 5;
   max_trim_delay = 10;
-  last_report = 0;
+  last_report     = 0;
   report_interval = 5; 
-  last_report    = 0;
+  last_report     = 0;
   report_interval = 5;
   pitch_tolerance = 5;
 }
