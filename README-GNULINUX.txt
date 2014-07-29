@@ -49,21 +49,16 @@ BUILDING MOOS-IvP
 
 ENVIRONMENT VARIABLES
 =====================
-When you build the MOOS software, the MOOS executable programs get placed in 
-the "MOOS/bin" subdirectory of the source code tree.
+When you build the MOOS-IvP software, the executable programs are placed
+in the "moos-ivp/bin" subdirectory of the source code tree.
 
-When you build the IvP software, the IvP executable programs get placed in
-the "bin/" subdirectory of the source code tree (moos-ivp/bin/).
-
-We recommend that you put the absolute path to both of those directories into
-your PATH environment variable.  This is especially important because the 
+We recommend that you put the absolute path to this directory into
+your PATH environment variable.  This is especially important because the
 "pAntler" program, which can launch other MOOS/IvP programs, relies on the
 PATH variable to find those programs.
 
 We normally just add lines to our ~/.bashrc or ~/.cshrc files to always append
 these two directories to the PATH environment variable.
-
-
 
  
  

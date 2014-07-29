@@ -43,7 +43,7 @@ cd "${INVOC_ABS_DIR}/MOOS/MOOSCore"
 
 echo "Invoking cmake..." `pwd`
 cmake -DENABLE_EXPORT=ON                                     \
-      -DUSE_ASYNC_COMMS=ON                                   \
+      -DUSE_ASYNC_COMMS=OFF                                  \
       -DTIME_WARP_AGGLOMERATION_CONSTANT=0.4                 \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${INVOC_ABS_DIR}/bin  \

@@ -1,0 +1,266 @@
+ServerHost = localhost
+ServerPort = 9000
+Simulator  = true
+
+Community  = remus
+
+MOOSTimeWarp = 5
+
+// Origins which map on the Marine Viewer Map
+//LatOrigin  = 43.825300 
+//LongOrigin = -70.330400 
+
+// Origins which correspond to Narragnasett Bay's Gould Island
+LatOrigin  = 41.53381
+LongOrigin = -71.33693 
+
+// Origins which correspond to Buzzard's Bay (WHOI)
+//LatOrigin  = 41.552951
+//LongOrigin = -70.734588
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+  Run = MOOSDB          @ NewConsole = true
+  Run = iMarineSim      @ NewConsole = true
+  Run = pMarinePID      @ NewConsole = true
+  Run = pMarineViewer   @ NewConsole = true
+  Run = pTransponderAIS @ NewConsole = true
+  Run = pHelmIvP        @ NewConsole = false
+  Run = iDSP            @ NewConsole = true
+  Run = pMissionCtl     @ NewConsole = true
+  Run = iCommStack      @ NewConsole = true
+  //Run = pLogger         @ NewConsole = true
+}
+
+//------------------------------------------
+// iCommStack configuration  block
+
+ProcessConfig = iCommStack
+{
+  AppTick   = 25
+  CommsTick = 25
+  
+  // Port = /dev/ttyUSB0
+  Port = /dev/ttyS0
+  BaudRate = 19200
+  VarNamePrefix = MM
+  HavePPS = NO
+  Address = 8
+  //LinkTimeout = 60
+
+  // MACType: Simple | Polling | Slots
+  MACType = Simple
+  MACInterval = 30
+
+  // Slots: requires same entries for Duration, Modelist for all nodes
+  //MACSlotsNodeList = 4,9
+  //MACSlotsDataRate = 2
+  //MACSlotsDestimation = 4
+  //MACSlotsDuration = 10.0
+
+  // same number of entries
+  //MACPollTxersList = 7 0
+  //MACPollRxersList = 0 7
+  //MACPollRateList = 0 0
+
+  // StatusType: None | PLUS  
+  StatusType = REMUS
+}
+
+//------------------------------------------
+// iMarineSim config block
+
+ProcessConfig = iMarineSim
+{
+  AppTick       = 4
+  CommsTick     = 4
+
+  MAX_TRANS_VEL = 5.0
+  MAX_ROT_VEL   = 0.6
+  START_X       = 0
+  START_Y       = 0
+  START_SPEED   = 0
+  START_HEADING = 180
+
+  PREFIX        = NAV
+  FLOAT_RATE    = 0.05 // Rises 0.1 m/s when speed=0
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  Behaviors  = iDSP_test3.bhv
+  Verbose    = false
+  Domain     = depth:0:100:101
+  Domain     = course:0:359:3600
+  Domain     = speed:0:50:501
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+
+  Verbose    = false
+
+  DEPTH_CONTROL = true
+
+  // Yaw PID controller
+  YAW_PID_KP             = 0.5
+  YAW_PID_KD             = 0.0
+  YAW_PID_KI             = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+  //Pitch PID controller
+  PITCH_PID_KP                   = 0.5
+  PITCH_PID_KD                   = 1.0
+  PITCH_PID_KI                   = 0
+  PITCH_PID_INTEGRAL_LIMIT       = 0
+
+  //ZPID controller
+  Z_TO_PITCH_PID_KP              = 0.12
+  Z_TO_PITCH_PID_KD              = 0
+  Z_TO_PITCH_PID_KI              = 0.004
+  Z_TO_PITCH_PID_INTEGRAL_LIMIT  = 0.05 
+
+  //MAXIMUMS
+  MAXRUDDER    = 100
+  MAXTHRUST    = 100
+  MAXPITCH     = 15
+  MAXELEVATOR  = 13
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//------------------------------------------
+// pTransponderAIS config block
+
+ProcessConfig = pTransponderAIS
+{
+  AppTick       = 2
+  CommsTick     = 2
+  VESSEL_TYPE   = AUV
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.0
+  seglist_edge_width   = 2.0
+  seglist_vertex_size  = 8
+  seglist_vertex_color = red
+  point_vertex_size    = 12
+  hash_delta           = 50
+  hash_shade           = 0.4
+  hash_view            = true
+
+  BUTTON_ONE = MISSION # MOOS_MANUAL_OVERIDE=false # DEPLOY=true
+  BUTTON_TWO = SURFACE # DEPLOY=false
+  BUTTON_THREE = LOITER CW # AUT_LOITER_UPDATE=clockwise=true
+  BUTTON_FOUR = LOITER CCW # AUT_LOITER_UPDATE=clockwise=false
+  BUTTON_FIVE = LOITER CW # AUT_LOITER_UPDATE=clockwise=true
+  BUTTON_SIX = LOITER CCW # AUT_LOITER_UPDATE=clockwise=false
+}
+
+//------------------------------------------
+// iDSP config block
+ProcessConfig = iDSP
+{
+  serv_port     = 7001
+  vmr_enable    = true
+  log_file      = iDSP_traffic.log
+}
+
+//------------------------------------------
+// pMissionCtl config block
+ProcessConfig = pMissionCtl
+{
+  // Configure outbound ACOMMs alert rate
+  AppTick   = 1
+  
+  // Number of AppTicks to send collected DSP alerts
+  acomm_rate = 20
+  
+  // set to C2 VIP Acomms Address
+  acomm_addr = 0
+  
+  // set to 'true' for a handy shell for bench testing
+  interactive = true
+}
+
+ProcessConfig = pLogger
+{
+  AppTick = 20
+  CommsTick = 20
+            
+  Path = ./logs
+  
+  SyncLog = false
+  AsyncLog = true
+  
+  // NAV - Log Vehicle State
+  Log = VC_X_RATE
+  Log = VC_Y_RATE
+  Log = VC_Z_RATE
+  Log = VC_LAT
+  Log = VC_LONG
+  Log = VC_DEPTH
+  Log = VC_ALTITUDE
+  Log = VC_SPEED
+  Log = VC_TRUE_HEADING
+  
+  // iDSP - Inbound Data
+  Log = IDSP_DCL
+  Log = IDSP_TARR_STATUS
+  Log = IDSP_DCL2
+  Log = IDSP_BNP
+  
+  // pMissionCtl - Inbound Vars
+  Log = DSP_ALERT
+  
+  // pHelmIvP - Behavior Updates (iDSP/pMissionCtl)
+  Log = AUT_DEPTH_UPDATE
+  Log = AUT_LOITER_UPDATE
+  Log = AUT_TYPE
+  Log = AUT_VMR_HEADING_UPDATE
+  Log = AUT_VMR_REQUEST
+  Log = AUT_WAYPOINT_UPDATE
+  Log = DEPLOY
+  Log = MANUAL_VMR_HEADING_UPDATE
+  Log = MANUAL_VMR_SPEED_UPDATE
+  Log = MANUAL_VMR_DEPTH_UPDATE
+  Log = MANUAL_VMR_TIMER_UPDATE
+  Log = MANUAL_VMR_REQUEST
+    
+  // iCommStack - I/O
+  Log = MM_DATA_TX
+  Log = MM_DATA_RX
+}

@@ -1,0 +1,62 @@
+ServerHost = localhost
+ServerPort = $(VPORT)
+Simulator  = true
+
+// Community name IS the vehicle name
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+  
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB           @ NewConsole = false
+  Run = uSimMarine       @ NewConsole = false
+  Run = pHostInfo        @ NewConsole = false
+  Run = pMOOSBridge      @ NewConsole = false ~ pMOOSBridge_%(VNAME)
+  Run = pLogger          @ NewConsole = false
+  Run = pNodeReporter    @ NewConsole = false
+  Run = pMarinePID       @ NewConsole = false
+  Run = pHelmIvP         @ NewConsole = false
+  Run = uFldNodeBroker   @ NewConsole = true
+  Run = uFldMessageHandler @ NewConsole = true
+  Run = uTimerScript     @ NewConsole = false
+  Run = uTimerScript     @ NewConsole = false ~ uTimerScript_SensorConfig
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  PAUSED     = false
+  RESET_MAX  = nolimit
+  RESET_TIME = end
+  CONDITION  = (NAV_SPEED > 0)
+
+  EVENT = var=UHZ_SENSOR_REQUEST, val="vname=betty", time=0.5
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript_SensorConfig
+{
+  RESET_MAX  = 0
+  CONDITION  = (NAV_SPEED > 0)
+  EVENT      = var=UHZ_CONFIG_REQUEST, val="vname=betty,width=10,pd=0.9", time=0.1
+}
+
+  
+#include plug_uFldNodeBroker.moos
+#include plug_uFldMessageHandler.moos
+#include plug_pHostInfo.moos
+#include plug_pMOOSBridgeV.moos
+#include plug_uSimMarine.moos
+#include plug_pHelmIvP.moos
+#include plug_pMarinePID.moos
+#include plug_pLogger.moos
+#include plug_pNodeReporter.moos
+

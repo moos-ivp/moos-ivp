@@ -1,0 +1,107 @@
+//--------    FILE: $(VNAME).bhv   -------------
+
+initialize   DEPLOY  = false
+initialize   RETURN  = false
+initialize   SURVEY  = false
+initialize   STATION = false
+
+Set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = STATION-KEEPING {
+  MODE = ACTIVE
+  STATION = true
+}
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} SURVEYING
+
+
+//----------------------------------------------
+Behavior = BHV_ConstantDepth
+{
+  name      = bhv_const_depth
+  pwt       = 100
+  duration  = no-time-limit
+  condition = MODE==ACTIVE
+  updates   = DEPTH_VALUE
+
+        depth = 10
+    peakwidth = 4
+    basewidth = 2
+  summitdelta = 10
+}
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name      = station-keep
+  pwt       = 100
+  condition = MODE==STATION-KEEPING
+
+     center_activate = true
+        inner_radius = 5
+        outer_radius = 10
+         outer_speed = 1.0
+
+       transit_speed = 1.3
+          swing_time = 7
+        visual_hints = vertex_size=0, edge_color=gray50
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = MODE==SURVEYING
+  endflag   = RETURN = true
+  perpetual = true
+
+         speed = 2   // meters per second
+        radius = 5.0
+   slip_radius = 15.0
+          lead = 15
+
+
+#ifdef VNAME VNAME1
+	points = format=lawnmower,label=jakesearch,x=-40,y=-237.5,height=325,width=240,lane_width=40,rows=ns,startx=0,starty=0
+  visual_hints = vertex_color=yellow, edge_color=green
+#elseifdef VNAME VNAME2
+	points = format=lawnmower,label=kaspersearch,x=262.5,y=-237.5,height=325,width=255,lane_width=20,rows=north-south,degs=0
+  visual_hints = vertex_color=yellow, edge_color=gray25
+#endif
+
+       endflag = NODE_MESSAGE = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
+
+        repeat = 0
+  visual_hints = nextpt_color=red, nextpt_lcolor=green
+  visual_hints = vertex_size=1, edge_size=1
+
+
+//	points = -200,-130:-90,-420:-57,-402:-170,-120:-129,-104:-22,-388:20,-370:-84,-85:-42,-69:59,-354:100,-339:-2,-53:39,-34:140,-322:175,-311:80,-23:121,-7:216,-290:256,-275:167,3:203,14:296,-260:330,-244:244,6
+
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE==RETURNING
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = HAZARDSET_REQUEST = true
+  endflag    = NODE_MESSAGE_LOCAL = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = $(START_POS)
+}
+

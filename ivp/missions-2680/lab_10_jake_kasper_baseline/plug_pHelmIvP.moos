@@ -1,0 +1,20 @@
+//----------------------------------------------------
+// pHelmIvP Configuration Block  (Created from Plugin)
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 2
+  CommsTick  = 2
+  
+  Behaviors    = targ_$(VNAME).bhv  
+  Verbose      = false
+  Domain       = course:0:359:360
+  Domain       = speed:0:5:26
+
+  ok_skew = any
+
+#ifdef VTYPE UUV
+  Domain       = depth:0:10:101
+#endif
+
+}
