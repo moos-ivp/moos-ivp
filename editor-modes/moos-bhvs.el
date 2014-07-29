@@ -23,8 +23,8 @@
 
 (setq moos-bhv-and-keyword-list
       (list
-       '("BHV_Waypoint" "capture_radius" "capture_line" "cycleflag" "lead" "lead_damper" "lead_to_start" "order" "points" "point" "polygon" "post_suffix" "radius" "repeat" "nm_radius" "slip_radius" "ipf_type" "ipf-type" "speed" "visual_hints" "wptflag")
-       '("BHV_OpRegion" "max_time" "max_depth" "min_altitude" "polygon" "trigger_entry_time" "trigger_exit_time" "visual_hints")
+       '("BHV_Waypoint" "capture_radius" "capture_line" "cycleflag" "lead" "lead_damper" "lead_to_start" "order" "points" "point" "polygon" "post_suffix" "radius" "repeat" "nm_radius" "slip_radius" "ipf_type" "ipf-type" "speed" "visual_hints" "wptflag" "wpt_status_var" "wpt_index_var")
+       '("BHV_OpRegion" "max_time" "max_depth" "min_altitude" "polygon" "trigger_entry_time" "trigger_exit_time" "visual_hints" "breached_altitude_flag" "breached_depth_flag" "breached_poly_flag" "breached_time_flag" "reset_var")
        '("BHV_Loiter" "acquire_dist" "capture_dist" "center_activate" "center_assign" "clockwise" "polygon" "post_suffix" "radius" "nm_radius" "slip_radius" "speed" "spiral_factor" "visual_hints" "xcenter_assigne" "ycenter_assign")
        '("BHV_PeriodicSpeed" "basewidth" "initially_busy" "peakwidth" "period_busy" "period_lazy" "period_speed" "reset_upon_running" "summit_delta")
        '("BHV_PeriodicSurface" "acomms_mark_variable" "ascent_grade" "ascent_speed" "atsurface_status_var" "mark_variable" "max_time_at_surface" "pending_status_var" "period" "zero_speed_depth")
@@ -35,6 +35,7 @@
        '("BHV_MemoryTurnLimit" "memory_time" "turn_range")
        '("BHV_StationKeep" "center_activate" "hibernation_radius" "inner_radius" "outer_radius" "outer_speed" "station_pt" "swing_time" "transit_speed" "visual_hints")
        '("BHV_Timer")
+       '("BHV_HSLine" "time_on_leg")
        '("BHV_TestFailure" "failure_type")
        '("BHV_CutRange" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "pwt_inner_dist" "giveup_dist" "patience")
        '("BHV_Shadow" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "heading_peakwidth" "heading_basewidth" "speed_peakwidth" "speed_basewidth")
