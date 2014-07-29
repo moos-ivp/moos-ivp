@@ -74,7 +74,7 @@ ProcessConfig = pHelmIvP
   domain     = course:0:359:360
   domain     = speed:0:4:21
 
-  active_start = false
+  start_in_drive = false
 }
 
 //------------------------------------------
