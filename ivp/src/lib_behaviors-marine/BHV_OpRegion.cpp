@@ -333,9 +333,11 @@ void BHV_OpRegion::polygonVerify()
   // All verification cases failed. Post an error message and
   // return verification = false;
   string emsg = "BHV_OpRegion Polygon containment failure: ";
-  emsg += " x=" + doubleToString(osX);
-  emsg += " y=" + doubleToString(osY);
-  postBreachFlags("poly");
+  emsg += " x=" + doubleToString(osX,1);
+  emsg += " y=" + doubleToString(osY,1);
+  if(!m_breached_poly_flags_posted) {
+    postBreachFlags("poly");
+  }
   postEMessage(emsg);
 }
 
@@ -452,7 +454,6 @@ void BHV_OpRegion::depthVerify()
   if(!ok) { 
     //cout << "No NAV_DEPTH in info_buffer for vehicle: " << m_us_name << endl;
     postEMessage("No ownship depth in info_buffer.");
-    //m_info_buffer->print();
     return;
   }
 
@@ -460,6 +461,7 @@ void BHV_OpRegion::depthVerify()
     string emsg = "OpRegion Depth failure: max:";
     emsg += doubleToString(m_max_depth);
     emsg += " detected:" + doubleToString(depth);
+    postBreachFlags("depth");
     postEMessage(emsg);
   }
 }
@@ -490,6 +492,7 @@ void BHV_OpRegion::altitudeVerify()
     emsg += doubleToString(m_min_altitude);
     emsg += "  Detected Altitude: ";
     emsg += doubleToString(curr_altitude);
+    postBreachFlags("altitude");
     postEMessage(emsg);
   }
 }
@@ -511,6 +514,7 @@ void BHV_OpRegion::timeoutVerify()
     emsg += doubleToString(m_max_time);
     emsg += "  Elapsed Time: ";
     emsg += doubleToString(m_elapsed_time);
+    postBreachFlags("time");
     postEMessage(emsg);
   }
 }
@@ -589,17 +593,36 @@ void BHV_OpRegion::postErasablePolygon()
 void BHV_OpRegion::checkForReset()
 {
   double time_since_reset = getBufferTimeVal(m_reset_var);
-  if(time_since_reset == 0) {
-    m_first_time = true;  
+  if(time_since_reset != 0)
+    return;
+  
+  bool result;
+  string reset_str = getBufferStringVal(m_reset_var, result);
+  if(!result)
+    return;
+
+  // reset_str if:
+  // "true", then reset all components
+  // "time", then reset the time component only
+  // "poly", then reset the poly component only
+  // "depth", then reset the depth component only
+  // "altitude", then reset the altitude component only
+
+  reset_str = tolower(reset_str);
+  if((reset_str == "poly") || (reset_str == "true")) {
+    m_breached_poly_flags_posted = false;
     m_secs_in_poly = 0;
     m_previously_in_poly = false;
     m_poly_entry_made = false;
-    
-    m_breached_poly_flags_posted = false;
-    m_breached_time_flags_posted = false;
-    m_breached_altitude_flags_posted = false;
-    m_breached_depth_flags_posted = false;
   }
+  if((reset_str == "time") || (reset_str == "true")) {
+    m_first_time = true;  
+    m_breached_time_flags_posted = false;
+  }
+  if((reset_str == "altitude") || (reset_str == "true"))
+    m_breached_altitude_flags_posted = false;
+  if((reset_str == "altitude") || (reset_str == "true"))
+    m_breached_depth_flags_posted = false;
 }
 
 //-----------------------------------------------------------
