@@ -49,6 +49,7 @@ class BHV_OpRegion : public IvPBehavior {
   void      postViewablePolygon();
   void      postErasablePolygon();
   void      postBreachFlags(std::string);
+  void      postTimeRemaining();
 
  protected: // Configuration Variables
   std::vector<XYPolygon> m_polygons;
@@ -62,6 +63,9 @@ class BHV_OpRegion : public IvPBehavior {
 
   // Allow for possible reset once poly has been breached
   std::string m_reset_var;
+
+  // Allow for possible posting of time_remaining
+  std::string m_time_remaining_var;
 
   // Allow for flags to be posted when/if a breach is made
   std::vector<VarDataPair>  m_breached_poly_flags;

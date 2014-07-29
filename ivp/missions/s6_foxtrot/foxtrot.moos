@@ -50,7 +50,7 @@ ProcessConfig = iSay
 
 ProcessConfig = uSimMarine
 {
-  AppTick	= 10
+  AppTick	  = 10
   CommsTick	= 10
 
   start_x       = 0
@@ -161,11 +161,14 @@ ProcessConfig = pMarineViewer
   marker_viewable_all = true
   marker_scale = 1.0
 
+	scope = MISSION_TIME_REMAINING
+
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
 
-  button_three = OPR_RESET # OPREGION_RESET=true
+  button_three = OPR_RESET  # OPREGION_RESET=poly
+  button_four  = TIME_RESET # OPREGION_RESET=time
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false

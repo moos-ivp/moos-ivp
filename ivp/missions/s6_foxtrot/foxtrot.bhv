@@ -21,11 +21,11 @@ Behavior = BHV_Waypoint
   condition = MODE==SURVEYING
   perpetual = true
 
-  wpt_status = SURVEY_STATUS
-  wpt_index  = SURVEY_INDEX
-  speed      = 2.0   // meters per second
-  radius      = 8.0
-  points    = 60,-40:60,-160:150,-160:180,-100:150,-40
+  wpt_status_var = SURVEY_STAT
+   wpt_index_var = SURVEY_INDEX
+           speed = 2.0   // meters per second
+          radius = 8.0
+          points = 60,-40:60,-160:150,-160:180,-100:150,-40
 }
 
 //----------------------------------------------
@@ -67,8 +67,13 @@ Behavior = BHV_OpRegion
   trigger_entry_time = 1
   trigger_exit_time  = 1
 
+	          max_time = 600
+
            reset_var = OPREGION_RESET
 
+	time_remaining_var = MISSION_TIME_REMAINING
+
 	breached_poly_flag = SAY_MOOS = Sir, the Op Region has been violated
+	breached_time_flag = SAY_MOOS = Excuse me, the mission has timed out
 }
 

@@ -52,6 +52,8 @@ BHV_OpRegion::BHV_OpRegion(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_breached_altitude_flags_posted = false;
   m_breached_depth_flags_posted = false;
 
+  m_time_remaining_var = "";
+
   // Keep track of whether the vehicle was in the polygon on the
   // previous invocation of the behavior. Initially assume false.
   m_previously_in_poly = false;
@@ -137,6 +139,12 @@ bool BHV_OpRegion::setParam(string param, string val)
     addInfoVars(m_reset_var);
     return(true);
   }
+  else if(param == "time_remaining_var") {
+    if(strContainsWhite(val))
+      return(false);
+    m_time_remaining_var = val;
+    return(true);
+  }
   else if(param == "breached_poly_flag") {
     string varname = biteStringX(val, '=');
     string varval  = val;
@@ -219,6 +227,7 @@ bool BHV_OpRegion::setParam(string param, string val)
 void BHV_OpRegion::onIdleState() 
 {
   checkForReset();
+  postTimeRemaining();
   postErasablePolygon();
 }
 
@@ -240,6 +249,7 @@ IvPFunction *BHV_OpRegion::onRunState()
   depthVerify();
   altitudeVerify();
   timeoutVerify();
+  postTimeRemaining();
   
   postViewablePolygon();
   return(0);
@@ -508,7 +518,7 @@ void BHV_OpRegion::timeoutVerify()
   // If no max_time specified, return with no error message posted.
   if(m_max_time <= 0)
     return;
-
+   
   if(m_elapsed_time > m_max_time) {
     string emsg = "OpRegion timeout failure: MaxTime:";
     emsg += doubleToString(m_max_time);
@@ -517,6 +527,27 @@ void BHV_OpRegion::timeoutVerify()
     postBreachFlags("time");
     postEMessage(emsg);
   }
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postTimeRemaining()
+
+void BHV_OpRegion::postTimeRemaining()
+{
+  if(m_time_remaining_var == "")
+    return;
+
+  if(m_max_time <= 0) 
+    postMessage(m_time_remaining_var, -1);
+   
+  double time_remaining = m_max_time - m_elapsed_time;
+  if(time_remaining < 0)
+    time_remaining = 0;
+  if(time_remaining > 10)
+    postIntMessage(m_time_remaining_var, time_remaining);
+  else
+    postMessage(m_time_remaining_var, time_remaining);
 }
 
 
