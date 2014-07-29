@@ -39,7 +39,7 @@ Sayer::Sayer()
   // Initialize configuration variables with default values
   m_default_voice        = ""; 
   m_default_rate         = 200;
-  m_max_utter_queue_size = 1000;
+  m_max_utter_queue_size = 10;
   m_min_utter_interval   = 1.0;  // seconds
   m_interval_policy      = "from_end";
   m_os_mode              = "both";

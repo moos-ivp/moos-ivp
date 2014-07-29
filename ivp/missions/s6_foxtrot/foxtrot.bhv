@@ -69,6 +69,6 @@ Behavior = BHV_OpRegion
 
            reset_var = OPREGION_RESET
 
-	breached_poly_flag = SAY_MOOS = {Violation}
+	breached_poly_flag = SAY_MOOS = Sir, the Op Region has been violated
 }
 

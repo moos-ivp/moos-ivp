@@ -1,5 +1,5 @@
 README-OS-X.txt
-Last updated: 19 June 2012
+Last updated: 21 July 2014
 Maintainer: Mike Benjamin (issues@moos-ivp.org)
 
 ==============================================================================
@@ -11,7 +11,7 @@ MOOS-IvP software.
 ==============================================================================
 IMPORTANT INFORMATION
 ==============================================================================
-As of this date (June 19th 2012): 
+As of June 19th 2012: 
   1. We have ceased to test our build system on pre-Lion systems.
   2. We have ceased to include FLTK as part of the MOOS-IvP tree. It is now
      a package dependency (port install fltk-devel).
@@ -48,10 +48,9 @@ sudo port install tiff
 sudo port install subversion
 
 
-NOTE: As of this date we are no longer including FLTK as part of the 
-      MOOS-IvP tree. If you have trouble finding FLTK 1.3 in your 
-      system's package manager, we recommend that you install from the
-      source code from the FLTK website.
+NOTE: We are no longer including FLTK as part of the  MOOS-IvP tree. If you 
+      have trouble finding FLTK 1.3 in your system's package manager, we 
+      recommend that you install from the source code from the FLTK website.
 
 
 BUILDING MOOS-IvP
@@ -62,14 +61,11 @@ BUILDING MOOS-IvP
 
 ENVIRONMENT VARIABLES
 =====================
-When you build the MOOS software, the MOOS executable programs get placed in 
-the "MOOS/bin" subdirectory of the source code tree.
+When you build the MOOS-IvP software, the executable programs are placed
+in the "moos-ivp/bin" subdirectory of the source code tree.
 
-When you build the IvP software, the IvP executable programs get placed in
-the "bin/" subdirectory of the source code tree (moos-ivp/bin/).
-
-We recommend that you put the absolute path to both of those directories into
-your PATH environment variable.  This is especially important because the 
+We recommend that you put the absolute path to this directory into
+your PATH environment variable.  This is especially important because the
 "pAntler" program, which can launch other MOOS/IvP programs, relies on the
 PATH variable to find those programs.
 
