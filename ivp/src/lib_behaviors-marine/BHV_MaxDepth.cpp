@@ -44,12 +44,6 @@ BHV_MaxDepth::BHV_MaxDepth(IvPDomain gdomain) :
   m_max_depth = 0;
   m_basewidth = 100;
   m_osd       = 0;
-
-  // The default duration at the IvPBehavior level is "-1", which
-  // indicates no duration applied to the behavior by default. By
-  // setting to zero here, we force the user to provide a duration
-  // value otherwise it will timeout immediately.
-  m_duration      = 0;
 }
 
 //-----------------------------------------------------------
