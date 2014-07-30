@@ -7,6 +7,9 @@ o MOOS Emacs Mode
 o Documentation
   Added documentation for MaxDepth behavior
 
+o pHelmIvP
+  MaxDepth behavior modified to not require a duration parameter
+
 
 
 =================================================================
