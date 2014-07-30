@@ -39,6 +39,11 @@ fi
 if [ ! -e MOOS/MOOSCore/lib/libMOOS.a ];    then  MISSING=$MISSING"MOOS,"; fi
 if [ ! -e MOOS/MOOSGeodesy/lib/libproj.a ]; then  MISSING=$MISSING"proj,"; fi
 
+if [ "$MISSING" == "" ]; then MISSING="None"; fi
+echo "Missing MOOS Libraries: " $MISSING
+MISSING=""
+
+
 #=================================================================
 # Check health of MOOS Apps
 #=================================================================
@@ -55,6 +60,10 @@ if [ ! -e bin/uPlayback ];   then  MISSING=$MISSING"uPlayback,"; fi
 if [ ! -e bin/uPoke ];       then  MISSING=$MISSING"uPoke,"; fi
 if [ ! -e bin/umm ];         then  MISSING=$MISSING"umm,"; fi
 
+if [ "$MISSING" == "" ]; then MISSING="None"; fi
+echo "     Missing MOOS Apps: " $MISSING
+MISSING=""
+
 #=================================================================
 # Check health of IvP Libraries
 #=================================================================
@@ -67,7 +76,6 @@ if [ ! -e lib/libcontacts.a ];          then  MISSING=$MISSING"contacts,"; fi
 if [ ! -e lib/libgenutil.a ];           then  MISSING=$MISSING"genutil,"; fi
 if [ ! -e lib/libgeometry.a ];          then  MISSING=$MISSING"geometry,"; fi
 if [ ! -e lib/libhelmivp.a ];           then  MISSING=$MISSING"helmivp,"; fi
-if [ ! -e lib/libhenrik_util.a ];       then  MISSING=$MISSING"henrik_util,"; fi
 if [ ! -e lib/libipfview.a ];           then  MISSING=$MISSING"ipfview,"; fi
 if [ ! -e lib/libivpcore.a ];           then  MISSING=$MISSING"ivpcore,"; fi
 if [ ! -e lib/libivpsolve.a ];          then  MISSING=$MISSING"ivpsolve,"; fi
@@ -79,6 +87,10 @@ if [ ! -e lib/libnavplot.a ];           then  MISSING=$MISSING"navplot,"; fi
 if [ ! -e lib/libufield.a ];            then  MISSING=$MISSING"ufield,"; fi
 if [ ! -e lib/libufld_hazards.a ];      then  MISSING=$MISSING"ufld_hazards,"; fi
 if [ ! -e lib/libulogview.a ];          then  MISSING=$MISSING"ulogview,"; fi
+
+if [ "$MISSING" == "" ]; then MISSING="None"; fi
+echo " Missing IvP Libraries: " $MISSING
+MISSING=""
 
 #=================================================================
 # Check health of IvP Apps
@@ -143,4 +155,9 @@ if [ ! -e bin/uTimerScript ];  then  MISSING=$MISSING"uTimerScript,"; fi
 if [ ! -e bin/uXMS ];          then  MISSING=$MISSING"uXMS,"; fi
 if [ ! -e bin/vzaicview ];     then  MISSING=$MISSING"vzaicview,"; fi
 
-echo "MISSING: {"$MISSING"}"; 
+if [ "$MISSING" == "" ]; then MISSING="None"; fi
+echo "      Missing IvP Apps: " $MISSING
+MISSING=""
+
+
+
