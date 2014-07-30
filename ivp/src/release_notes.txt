@@ -1,4 +1,15 @@
+14.7.x
 
+o MOOS Emacs Mode
+  Modified to support MaxDepth behavior
+  Modified to fix bug in supporting ConstantHeading Behavior
+
+o Documentation
+  Added documentation for MaxDepth behavior
+
+
+
+=================================================================
 14.7.1
 
 o More documentation for each helm behavior to provide example 
@@ -9,5 +20,4 @@ o Modified uPlayback to allow for buiding on Ubuntu 14.4 systems
 o Modified (Toby Schneider) MOOSGeodesy wrapper to bring back the
   LocalGrid translations from the Paul Newman code.
 
-o pDeadManPost
 
