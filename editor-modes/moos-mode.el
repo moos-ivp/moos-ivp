@@ -284,7 +284,7 @@
     ;;for the closing brace, so that the change in fontification after
     ;;the missing brace would draw attention to the error.
     (or 
-		 (re-search-forward "^\}\\|processconfig\\|behavior =" nil t) 
+		 (re-search-forward "^[ \t]*\}\\|processconfig\\|behavior =" nil t) 
 		 (point-max))
     (point)))
 
