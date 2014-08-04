@@ -233,7 +233,7 @@ bool CMOOSGeodesy::LatLong2LocalGrid(double lat,
 
 bool CMOOSGeodesy::LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLat, double &dfLon) 
 {
-  if(isnan(dfEast) || isnan(dfNorth))
+  if(std::isnan(dfEast) || std::isnan(dfNorth))  // changed to std::isnan, mikerb AUG/04/14
     return(false);
 
     //(semimajor axis)
