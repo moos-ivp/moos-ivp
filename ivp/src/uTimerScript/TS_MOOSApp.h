@@ -127,6 +127,11 @@ class TS_MOOSApp : public AppCastingMOOSApp
 
   InfoBuffer *m_info_buffer;
 
+  double m_nav_x;
+  double m_nav_x_set;
+  double m_nav_y;
+  double m_nav_y_set;
+
   std::list<std::string>   m_event_log;
   std::set<std::string>    m_block_apps;
 };

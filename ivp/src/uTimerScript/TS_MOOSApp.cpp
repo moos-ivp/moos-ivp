@@ -66,6 +66,9 @@ TS_MOOSApp::TS_MOOSApp()
   m_script_name    = "unnamed";
   m_exit_ready     = false;
   m_exit_confirmed = false;
+  m_nav_x          = 0;
+  m_nav_x          = 0;
+
 
   // Default values for configuration parameters.
   m_reset_max      = 0;
@@ -127,6 +130,10 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(key == "DB_CLIENTS")
       checkBlockApps(sval);
+    else if(key == "NAV_X")
+      m_nav_x = dval;
+    else if(key == "NAV_Y")
+      m_nav_y = dval;
     else if(key == "EXITED_NORMALLY") {
       if((sval == GetAppName()) && (msrc == GetAppName()) && m_exit_ready)
 	m_exit_confirmed = true;
@@ -463,7 +470,6 @@ void TS_MOOSApp::registerVariables()
   unsigned int all_size = all_vars.size();
   for(i=0; i<all_size; i++)
     Register(all_vars[i], 0);
- 
 }
 
 //------------------------------------------------------------
@@ -549,6 +555,11 @@ void TS_MOOSApp::addNewEvent(const string& event_str)
     reportConfigWarning("Event configured with NULL posting value");
     return;
   }
+  
+  if(strContains(new_val, "$[NAV_X]") || strContains(new_val, "$(NAV_X)"))
+    Register("NAV_X", 0);
+  if(strContains(new_val, "$[NAV_Y]") || strContains(new_val, "$(NAV_Y)"))
+    Register("NAV_Y", 0);
 
   string new_val_orig = new_val;
   for(unsigned int k=0; k<amt; k++) {
@@ -737,12 +748,16 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   sval = findReplace(sval, "$(UTCTIME)", doubleToString(m_curr_time, 2));
   sval = findReplace(sval, "$(TCOUNT)", uintToString(m_posted_count_total));
   sval = findReplace(sval, "$(COUNT)", uintToString(m_posted_count_local));
+  sval = findReplace(sval, "$(NAV_X)", doubleToString(m_nav_x,2));
+  sval = findReplace(sval, "$(NAV_Y)", doubleToString(m_nav_y,2));
  
   sval = findReplace(sval, "$[DBTIME]", doubleToString(db_uptime, 2));
   sval = findReplace(sval, "$[VNAME]", m_host_community);
   sval = findReplace(sval, "$[UTCTIME]", doubleToString(m_curr_time, 2));
   sval = findReplace(sval, "$[TCOUNT]", uintToString(m_posted_count_total));
   sval = findReplace(sval, "$[COUNT]", uintToString(m_posted_count_local));
+  sval = findReplace(sval, "$[NAV_X]", doubleToString(m_nav_x,2));
+  sval = findReplace(sval, "$[NAV_Y]", doubleToString(m_nav_y,2));
 
   sval = findReplace(sval, "$(1)", randomNumString(1));
   sval = findReplace(sval, "$(2)", randomNumString(2));
