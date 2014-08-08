@@ -1,24 +1,29 @@
 #!/bin/bash
 
 MISSING=""
+MISSING_ALL=""
 CMD_ARGS=""
+TERSE="false"
 
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
         printf "%s [SWITCHES]  \n" $0
-        printf "  --help, -h                                   \n"
-        printf "  --debug, -d                                  \n"
-        printf "  --release, -r                                \n"
-        printf "Any other switches passed directly to \"make\" \n"
-        printf "Recommended:                                   \n"
-        printf " -j12   Speed up compile on multi-core machines. \n"
-        printf " -k     Keep building after failed component.    \n"
-        printf " clean  Clean/remove any previous build.         \n"
+        printf "  --help, -h                                       \n"
+        printf "  --debug, -d                                      \n"
+        printf "  --release, -r                                    \n"
+        printf "Any other switches passed directly to \"make\"     \n"
+        printf "Recommended:                                       \n"
+        printf " -j12        Speed up compile on multi-core machines. \n"
+        printf " -k          Keep building after failed component. \n"
+        printf " -t,--terse  Output terse report                   \n"
+        printf " clean       Clean/remove any previous build.      \n"
         exit 0;
     elif [ "${ARGI}" = "--debug" -o "${ARGI}" = "-d" ] ; then
         BUILD_TYPE="Debug"
     elif [ "${ARGI}" = "--release" -o "${ARGI}" = "-r" ] ; then
         BUILD_TYPE="Release"
+    elif [ "${ARGI}" = "--terse" -o "${ARGI}" = "-t" ] ; then
+        TERSE="true"
     else
 	CMD_ARGS=$CMD_ARGS" "$ARGI
     fi
@@ -39,8 +44,14 @@ fi
 if [ ! -e MOOS/MOOSCore/lib/libMOOS.a ];    then  MISSING=$MISSING"MOOS,"; fi
 if [ ! -e MOOS/MOOSGeodesy/lib/libproj.a ]; then  MISSING=$MISSING"proj,"; fi
 
-if [ "$MISSING" == "" ]; then MISSING="None"; fi
-echo "Missing MOOS Libraries: " $MISSING
+MISSING_ALL=$MISSING_ALL$MISSING;
+
+if [ "$MISSING" == "" ]; then 
+    MISSING="None"; 
+fi
+if [ "${TERSE}" = "false" ] ; then
+    echo "Missing MOOS Libraries: " $MISSING
+fi
 MISSING=""
 
 
@@ -62,8 +73,11 @@ if [ ! -e bin/uPlayback ];   then  MISSING=$MISSING"uPlayback,"; fi
 if [ ! -e bin/iRemoteLite ]; then  MISSING=$MISSING"iRemoteLite,"; fi
 if [ ! -e bin/uPoke ];       then  MISSING=$MISSING"uPoke,"; fi
 
+MISSING_ALL=$MISSING_ALL$MISSING;
 if [ "$MISSING" == "" ]; then MISSING="None"; fi
-echo "     Missing MOOS Apps: " $MISSING
+if [ "${TERSE}" = "false" ] ; then 
+    echo "     Missing MOOS Apps: " $MISSING
+fi
 MISSING=""
 
 #=================================================================
@@ -91,8 +105,11 @@ if [ ! -e lib/libmarineview.a ];        then  MISSING=$MISSING"marineview,"; fi
 if [ ! -e lib/libnavplot.a ];           then  MISSING=$MISSING"navplot,"; fi
 if [ ! -e lib/libulogview.a ];          then  MISSING=$MISSING"ulogview,"; fi
 
+MISSING_ALL=$MISSING_ALL$MISSING;
 if [ "$MISSING" == "" ]; then MISSING="None"; fi
-echo " Missing IvP Libraries: " $MISSING
+if [ "${TERSE}" = "false" ] ; then 
+    echo " Missing IvP Libraries: " $MISSING
+fi
 MISSING=""
 
 #=================================================================
@@ -156,9 +173,19 @@ if [ ! -e bin/uLogViewIPF ];   then  MISSING=$MISSING"uLogViewIPF,"; fi
 if [ ! -e bin/uLogViewHelm ];  then  MISSING=$MISSING"uLogViewHelm,"; fi
 
 
+MISSING_ALL=$MISSING_ALL$MISSING;
 if [ "$MISSING" == "" ]; then MISSING="None"; fi
-echo "      Missing IvP Apps: " $MISSING
-MISSING=""
+if [ "${TERSE}" = "false" ] ; then 
+    echo "      Missing IvP Apps: " $MISSING
+fi
 
 
 
+if [ "$MISSING_ALL" == "" ]; then
+    echo "PASS";
+else
+    if [[ "$MISSING_ALL" == *, ]]; then
+	MISSING_ALL="${MISSING_ALL%?}";
+    fi
+    echo "FAIL{"$MISSING_ALL"}";
+fi
