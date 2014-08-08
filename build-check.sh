@@ -48,17 +48,19 @@ MISSING=""
 # Check health of MOOS Apps
 #=================================================================
 
+if [ ! -e bin/umm ];         then  MISSING=$MISSING"umm,"; fi
 if [ ! -e bin/ktm ];         then  MISSING=$MISSING"ktm,"; fi
-if [ ! -e bin/mqos ];        then  MISSING=$MISSING"mqos,"; fi
 if [ ! -e bin/mtm ];         then  MISSING=$MISSING"mtm,"; fi
+if [ ! -e bin/mqos ];        then  MISSING=$MISSING"mqos,"; fi
+if [ ! -e bin/pMOOSBridge ]; then  MISSING=$MISSING"pMOOSBridge,"; fi
+if [ ! -e bin/pAntler ];     then  MISSING=$MISSING"pAntler,"; fi
 if [ ! -e bin/pLogger ];     then  MISSING=$MISSING"pLogger,"; fi
-if [ ! -e bin/pMOOSBridge ]; then  MISSING=$MISSING"pLogger,"; fi
 if [ ! -e bin/pScheduler ];  then  MISSING=$MISSING"pScheduler,"; fi
 if [ ! -e bin/pShare ];      then  MISSING=$MISSING"pShare,"; fi
 if [ ! -e bin/uMS ];         then  MISSING=$MISSING"uMS,"; fi
 if [ ! -e bin/uPlayback ];   then  MISSING=$MISSING"uPlayback,"; fi
+if [ ! -e bin/iRemoteLite ]; then  MISSING=$MISSING"iRemoteLite,"; fi
 if [ ! -e bin/uPoke ];       then  MISSING=$MISSING"uPoke,"; fi
-if [ ! -e bin/umm ];         then  MISSING=$MISSING"umm,"; fi
 
 if [ "$MISSING" == "" ]; then MISSING="None"; fi
 echo "     Missing MOOS Apps: " $MISSING
@@ -113,7 +115,6 @@ if [ ! -e bin/gzaicview ];   then  MISSING=$MISSING"gzaicview,"; fi
 if [ ! -e bin/iRemoteLite ]; then  MISSING=$MISSING"iRemoteLite,"; fi
 if [ ! -e bin/iSay ];        then  MISSING=$MISSING"iSay,"; fi
 if [ ! -e bin/nsplug ];      then  MISSING=$MISSING"nsplug,"; fi
-if [ ! -e bin/pAntler ];     then  MISSING=$MISSING"pAntler,"; fi
 if [ ! -e bin/pBasicContactMgr ]; then  MISSING=$MISSING"pBasicContactMgr,"; fi
 if [ ! -e bin/pEchoVar ];    then  MISSING=$MISSING"pEchoVar,"; fi
 if [ ! -e bin/pHelmIvP ];    then  MISSING=$MISSING"pHelmIvP,"; fi
