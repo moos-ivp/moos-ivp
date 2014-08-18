@@ -139,11 +139,16 @@ void  millipause(int milliseconds);
 std::string modeShorten(std::string, bool really_short=true);
 
 std::vector<std::string> tokenizePath(const std::string&);
+
 std::string parseAppName(const std::string&);
 
 bool isKnownVehicleType(const std::string&);
 
 unsigned int charCount(const std::string&, char);
+
+std::vector<std::string> justifyLen(const std::vector<std::string>&,
+				    unsigned int maxlen);
+std::vector<std::string> justifyLen(const std::string&, unsigned int maxlen);
 
 #endif
 

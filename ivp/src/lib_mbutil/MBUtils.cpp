@@ -1993,4 +1993,66 @@ unsigned int charCount(const std::string& str, char mychar)
 
 
 
+//----------------------------------------------------------------
+// Procedure: justifyLen
+//   Purpose: Take the text in the given vector of strings and justify it out
+//            to a max length of maxlen for each line. 
+//   Example:
+//       [0]: Now is the time 
+//       [1]: for all good men to come to the aid of their country. Now is the
+//       [2]: time for all good men    to come     to the aid of their
+//       [3]: country.
+//    Result: 
+//       [0]: Now is the time for all good men
+//       [1]: to come to the aid of their 
+//       [2]: country. Now is the time for all   
+//       [3]: good men to come to the aid of 
+//       [4]: their country.
 
+vector<string> justifyLen(const vector<string>& svector, unsigned int maxlen) 
+{
+  vector<string> rvector;
+  string curr_line;
+  string curr_word;
+
+  // Note: Keep track of the length locally to avoid making many calls to 
+  //       string::length()
+  unsigned int curr_line_len = 0;
+  unsigned int curr_word_len = 0;
+
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string line = svector[i] + " ";
+    for(unsigned int j=0; j<line.size(); j++) {
+      curr_word += line[j];
+      curr_word_len++;
+
+      if(line[j] == ' ') {
+	if((curr_line_len + curr_word_len + 1) > maxlen) {
+	  curr_line = stripBlankEnds(curr_line);
+	  rvector.push_back(curr_line);
+	  curr_line = "";
+	  curr_line_len = 0;
+	}
+	curr_line += curr_word;
+	curr_line_len += curr_word_len;
+	curr_word = "";
+	curr_word_len = 0;
+      }
+    }
+  }
+  curr_line += curr_word;
+  curr_line = stripBlankEnds(curr_line);
+  rvector.push_back(curr_line);
+  return(rvector);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: justifyLen
+
+vector<string> justifyLen(const string& str, unsigned int maxlen) 
+{
+  vector<string> svector;
+  svector.push_back(str);
+  return(justifyLen(svector, maxlen));
+}
