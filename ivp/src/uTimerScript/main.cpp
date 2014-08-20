@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   TS_MOOSApp timer_script;
   timer_script.setVerbose(verbose_setting);
   timer_script.setShuffle(shuffle_setting);
-  timer_script.Run(run_command.c_str(), mission_file.c_str());
+  timer_script.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
 
   return(0);
 }

@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   ProcessWatch process_watch;
-  process_watch.Run(run_command.c_str(), mission_file.c_str());
+  process_watch.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
   
   return(0);
 }

@@ -63,7 +63,7 @@ int main(int argc ,char * argv[])
   cout << termColor() << endl;
 
   USM_MOOSApp marine_sim;
-  marine_sim.Run(run_command.c_str(), mission_file.c_str());
+  marine_sim.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
  
   return(0);
 }

@@ -143,7 +143,7 @@ int main(int argc ,char * argv[])
       Poker.setPokeString(varname[j], varvalue[j]);
   }
   
-  Poker.Run("uPokeDB", mission_file.c_str());
+  Poker.Run("uPokeDB", mission_file.c_str(), argc, argv);
 
   return(0);
 }

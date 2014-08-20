@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Mike Benjamin                                        */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
-/*    DATE: Jan 4th 2011                                         */
+/*    DATE: June 14th, 2014                                      */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,18 +21,15 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include <iostream>
+#include <string>
 #include "MBUtils.h"
 #include "ColorParse.h"
-#include "USC_MOOSApp.h"
-#include "USC_Info.h"
+#include "DeadManPost.h"
+#include "DeadManPost_Info.h"
 
 using namespace std;
 
-//--------------------------------------------------------
-// Procedure: main
-
-int main(int argc ,char * argv[])
+int main(int argc, char *argv[])
 {
   string mission_file;
   string run_command = argv[0];
@@ -59,19 +56,13 @@ int main(int argc ,char * argv[])
     showHelpAndExit();
 
   cout << termColor("green");
-  cout << "uSimCurrent launching as " << run_command << endl;
+  cout << "pDeadManPost launching as " << run_command << endl;
   cout << termColor() << endl;
 
-  USC_MOOSApp sim_current;
-  sim_current.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
- 
+  DeadManPost DeadManPost;
+
+  DeadManPost.Run(run_command.c_str(), mission_file.c_str());
+  
   return(0);
 }
-
-
-
-
-
-
-
 

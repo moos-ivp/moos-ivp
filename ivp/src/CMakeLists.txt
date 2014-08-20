@@ -188,6 +188,7 @@ SET(IVP_NON_GUI_APPS
   pHelmIvP
   pMarinePID
   pBasicContactMgr
+  pDeadManPost
   pNodeReporter
   uFldCollisionDetect
   uFldPathCheck
