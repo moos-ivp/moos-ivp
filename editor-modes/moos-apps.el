@@ -45,6 +45,7 @@
       '("uFldMessageHandler" "strict_addressing")
       '("uMACView" "procs_font_size" "nodes_font_size" "appcast_font_size" "appcast_color_scheme" "appcast_height" "refresh_mode")
       '("uMAC")
+      '("pDeadManPost" "heartbeat_var" "max_noheart" "deadflag" "post_policy" "active_at_start")
       '("uPokeDB")
       '("uHelmScope" "paused" "display_moos_scope" "display_bhv_posts" "display_virgins" "truncated_output" "behaviors_consise" "var")
       '("pSafetyRetreat" "polygon" "duration" "retreat_cue" "retreat_message_var" "retreat_notify_var" "verbose" "retreat_cue_var")
