@@ -68,8 +68,9 @@ int main(int argc ,char * argv[])
   cout << termColor() << endl;
 
   TermCommand  theTermCommand;
-  MOOSAppRunnerThread appThread(& theTermCommand, run_command.c_str(), 
-				mission_file.c_str());
+  MOOSAppRunnerThread appThread(&theTermCommand, 
+				run_command.c_str(), 
+				mission_file.c_str(), argc, argv);
 
   bool quit = false;
   while(!quit) {

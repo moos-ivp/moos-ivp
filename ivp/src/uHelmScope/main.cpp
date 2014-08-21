@@ -110,7 +110,7 @@ int main(int argc ,char * argv[])
   run_command += "_" + intToString(rand_int);
 
   MOOSAppRunnerThread appThread(&theHelmScope, (char*)(run_command.c_str()), 
-				mission_file.c_str());
+				mission_file.c_str(), argc, argv);
   
   bool quit = false;
   while(!quit) {

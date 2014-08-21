@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   FldNodeComms FldNodeComms;
-  FldNodeComms.Run(run_command.c_str(), mission_file.c_str());
+  FldNodeComms.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
   
   return(0);
 }

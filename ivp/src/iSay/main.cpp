@@ -64,7 +64,7 @@ int main(int argc, char *argv[])
 
   Sayer sayer;
 
-  sayer.Run(run_command.c_str(), mission_file.c_str());
+  sayer.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
   
   return(0);
 }

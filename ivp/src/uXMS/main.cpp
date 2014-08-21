@@ -152,8 +152,9 @@ int main(int argc ,char * argv[])
   }
 
   // start the XMS in its own thread
-  MOOSAppRunnerThread appRunner(&theXMS, (char*)(run_command.c_str()), 
-				mission_file.c_str());
+  MOOSAppRunnerThread appRunner(&theXMS, 
+				(char*)(run_command.c_str()), 
+				mission_file.c_str(), argc, argv);
   
   bool quit = false;
   while(!quit) {

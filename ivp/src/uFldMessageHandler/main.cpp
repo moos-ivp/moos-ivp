@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   MessageHandler msg_handler;  
-  msg_handler.Run(run_command.c_str(), mission_file.c_str());
+  msg_handler.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
 
   return(0);
 }

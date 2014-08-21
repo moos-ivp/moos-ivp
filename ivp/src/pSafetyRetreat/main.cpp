@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   SafetyRetreat SafetyRetreat;
-  SafetyRetreat.Run("pSafetyRetreat", mission_file.c_str());
+  SafetyRetreat.Run("pSafetyRetreat", mission_file.c_str(), argc, argv);
 
   return(0);
 }

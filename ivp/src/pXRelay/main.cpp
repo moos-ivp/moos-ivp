@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
   if(outgoing_var != "")
     relayer.setOutgoingVar(outgoing_var);
 
-  relayer.Run(run_command.c_str(), mission_file.c_str());
+  relayer.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
 
   return(0);
 }

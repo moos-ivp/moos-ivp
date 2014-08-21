@@ -89,7 +89,7 @@ int main(int argc, char *argv[])
 
   // start the MOOSPort in its own thread
   MOOSAppRunnerThread appRunner(&theUMV, (char*)(run_command.c_str()),
-				mission_file.c_str());
+				mission_file.c_str(), argc, argv);
   
   Fl::lock();
   

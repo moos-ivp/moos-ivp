@@ -10,6 +10,41 @@ o Documentation
 o pHelmIvP
   MaxDepth behavior modified to not require a duration parameter
 
+Modified to pass command line arguments to MOOSApp superclass
+pDeadManPost
+pEchoVar
+pHelmIvP
+pHostInfo
+pMarinePID
+pMarineViewer
+pNodeReporter
+pSafetyRetreat
+pSearchGrid
+pXRelay
+uFldBeaconRangeSensor
+uFldCollisionDetect
+uFldContactRangeSensor
+uFldGenericSensor
+uFldHazardMetric
+uFldHazardMgr
+uFldHazardSensor
+uFldMessageHandler
+uFldNodeBroker
+uFldNodeComms
+uFldPathCheck
+uFldScope
+uFldShoreBroker
+uFldWrapDetect
+uFunctionVis
+uHelmScope
+uLoadWatch
+uMAC
+uMACView
+uPlotViewer
+uTermCommand
+uXMS
+
+
 
 
 =================================================================

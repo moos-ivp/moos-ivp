@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
   HazardMetric HazardMetric;
 
-  HazardMetric.Run(run_command.c_str(), mission_file.c_str());
+  HazardMetric.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
   
   return(0);
 }

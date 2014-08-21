@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   HostInfo HostInfo;
-  HostInfo.Run(run_command.c_str(), mission_file.c_str());
+  HostInfo.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
   
   return(0);
 }

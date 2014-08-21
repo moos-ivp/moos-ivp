@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   BRS_App sim_beacon_range;
-  sim_beacon_range.Run(run_command.c_str(), mission_file.c_str());
+  sim_beacon_range.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
  
   return(0);
 }

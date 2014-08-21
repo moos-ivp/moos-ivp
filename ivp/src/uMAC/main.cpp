@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
   AppCastMonitor UMAC;
   // start the UMAC in its own thread
   MOOSAppRunnerThread appRunner(&UMAC, (char*)(run_command.c_str()), 
-				mission_file.c_str());
+				mission_file.c_str(), argc, argv);
 
   bool quit = false;
   while(!quit) {
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
   cout << "Quitting....." << endl;
   //appRunner.quit();
-  exit(0);
+  return(0);
 }
 
 

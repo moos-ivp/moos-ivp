@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   GenericSensor_MOOSApp generic_sensor;
-  generic_sensor.Run(run_command.c_str(), mission_file.c_str());
+  generic_sensor.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
  
   return(0);
 }

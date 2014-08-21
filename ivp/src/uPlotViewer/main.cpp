@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
   char * appFilename = const_cast<char*>(name.c_str());
 
   MOOSAppRunnerThread portAppRunnerThread(&thePort, appFilename, 
-					  mission_file.c_str());
+					  mission_file.c_str(), argc, argv);
 
   Fl::lock();
   

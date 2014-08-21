@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
   FldWrapDetect FldWrapDetect;
 
-  FldWrapDetect.Run(run_command.c_str(), mission_file.c_str());
+  FldWrapDetect.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
   
   return(0);
 }

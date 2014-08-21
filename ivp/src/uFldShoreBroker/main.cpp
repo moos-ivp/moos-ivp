@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   ShoreBroker shore_broker;
-  shore_broker.Run(run_command.c_str(), mission_file.c_str());
+  shore_broker.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
   
   return(0);
 }

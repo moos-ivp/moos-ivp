@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   UFS_MOOSApp ufs_moosapp;
-  ufs_moosapp.Run(run_command.c_str(), mission_file.c_str());
+  ufs_moosapp.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
   
   return(0);
 }

@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 
   DeadManPost DeadManPost;
 
-  DeadManPost.Run(run_command.c_str(), mission_file.c_str());
+  DeadManPost.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
   
   return(0);
 }

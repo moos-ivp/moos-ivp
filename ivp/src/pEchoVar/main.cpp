@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   EchoVar echomaker;  
-  echomaker.Run(run_command.c_str(), mission_file.c_str());
+  echomaker.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
 
   return(0);
 }
