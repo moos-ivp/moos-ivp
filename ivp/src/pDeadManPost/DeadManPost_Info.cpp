@@ -41,7 +41,7 @@ void showSynopsis()
   blk("  continues to be written to. It is a generalization of a       ");
   blk("  physical \"dead man switch\" which must be continuously       ");
   blk("  pressed or held by a human operator, otherwise cutting the    ");
-  blk("  power to an engine or other physical device. ok                ");
+  blk("  power to an engine or other physical device. okk               ");
   blk("                                                                ");
 }
 
