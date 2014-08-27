@@ -29,6 +29,8 @@
 
 double  angleFromThreePoints(double x1, double y1, double x2, double y2,
 			     double x3, double y3);
+bool    threePointTurnLeft(double x0, double y0, double x1, double y1,
+			   double x2, double y2);
 double  relAng(double xa, double ya, double xb, double yb);
 double  relAng(const XYPoint& a, const XYPoint& b);
 double  radAngleWrap(double radians);

@@ -8,6 +8,7 @@ FILE(GLOB SRC *.cpp)
 SET(HEADERS
   AngleUtils.h
   ArtifactUtils.h
+  ConvexHullGenerator.h
   CircularUtils.h
   CPAEngine.h
   CPA_Utils.h

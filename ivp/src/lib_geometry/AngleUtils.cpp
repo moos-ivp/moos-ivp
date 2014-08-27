@@ -83,6 +83,30 @@ double angleFromThreePoints(double x1, double y1,
   return(angle_degrees);
 }
 
+//-------------------------------------------------------------
+// Procedure: threePointTurnLeft
+//
+//      Note: From Cormen, Leiserson, Rivest and Stein:
+
+bool threePointTurnLeft(double x0, double y0, 
+			double x1, double y1,
+			double x2, double y2)
+{ 
+  
+  double ax = x2-x0;
+  double ay = y2-y0;
+  double bx = x1-x0; 
+  double by = y1-y0; 
+  // Now compute the cross product of a x b
+  
+  double cross_product = (ax*by) - (bx*ay);
+
+  if(cross_product < 0)
+    return(true);
+
+  return(false);
+}
+
 
 
 //-------------------------------------------------------------
