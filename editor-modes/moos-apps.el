@@ -24,7 +24,7 @@
 (setq moos-app-and-keyword-list
       (list
       '("ANTLER" "MSBetweenLaunches" "Run" "NewConsole")
-      '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "randvar" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp" "time_zero")
+      '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "rand_var" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp" "time_zero")
       '("uProcessWatch"  "watch" "watch_all" "nowatch" "allow_retractions" "summary_wait" "post_mapping")
       '("uSimMarine"  "start_x" "start_y" "start_heading" "start_speed" "start_depth" "start_pos" "drift_x" "drift_y" "rotate_speed" "drift_vector" "buoyancy_rate" "max_acceleration" "max_deceleration" "max_depth_rate" "max_depth_rate_speed" "sim_pause" "dual_state" "thrust_reflect" "thrust_factor" "turn_rate" "thrust_map" "prefix" "default_water_depth" "trim_tolerance" "max_trim_delay")
       '("pHelmIvP" "term_report_interval" "ivp_behavior_dir" "behaviors" "domain" "start_engaged" "allow_disengaged" "disengage_on_allstop" "other_override_var" "node_skew" "ok_skew" "verbose" "bhv_dir_not_found_ok" "start_in_drive")
@@ -39,6 +39,8 @@
       '("pHostInfo" "temp_file_dir" "default_hostip" "default_hostip_force")
       '("pEchoVar" "flip:1" "flip:2" "condition" "hold_messages")
       '("pSearchGrid" "grid_config")
+      '("pConvexHull" "point_var")
+      '("pObstacleMgr" "point_var")
       '("uFldHazardSensor" "term_report_interval" "max_appcast_events" "max_appcast_run_warnings" "default_hazard_shape" "default_hazard_color" "default_hazard_width" "default_benign_shape" "default_benign_color" "default_benign_width" "swath_transparency" "sensor_config" "hazard_file" "swath_length" "seed_random" "show_hazards" "show_swath" "show_detections" "show_reports" "show_pd" "show_pfa" "min_reset_interval" "min_classify_interval" "options_summary_interval")
       '("uFldHazardMgr" "swath_width" "sensor_pd" "report_name" "region" "pd")
       '("uFldHazardMetric" "penalty_missed_hazard" "penalty_false_alarm" "penalty_max_time_over" "penalty_max_time_rate" "max_time" "hazard_file" "show_xpath")
