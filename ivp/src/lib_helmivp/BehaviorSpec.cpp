@@ -61,12 +61,14 @@ void BehaviorSpec::addBehaviorConfig(string config_line,
   // lines since they provide information about when and how this 
   // behavior spec is used as a template for spawning new behaviors.
   string cline = config_line;
-  string left  = tolower(stripBlankEnds(biteString(cline, '=')));
-  string right = stripBlankEnds(cline);
+  string left  = tolower(biteStringX(cline, '='));
+  string right = cline;
   if((left == "updates") && !strContainsWhite(right))
     m_updates_var = right;
   if(left == "templating")
     setTemplatingType(right);
+  if(left == "name")
+    m_name_prefix = right;
 
   // The templating information applies only to the template and is not
   // a behavior configuration. Therefore dont add the templating line

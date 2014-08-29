@@ -56,6 +56,7 @@ class BehaviorSpec {
   unsigned int  getKindLine() const       {return(m_kind_line_num);};
   std::string   getUpdatesVar() const     {return(m_updates_var);};
   std::string   getFileName() const       {return(m_filename);};
+  std::string   getNamePrefix() const     {return(m_name_prefix);};
 
   std::string   getConfigLine(unsigned int) const;
   unsigned int  getConfigLineNum(unsigned int) const;
@@ -63,6 +64,7 @@ class BehaviorSpec {
  private: // State Variables
   std::string   m_templating;
   std::string   m_updates_var;
+  std::string   m_name_prefix;
 
   std::string   m_filename;
   std::string   m_behavior_kind;
