@@ -190,6 +190,7 @@ SET(IVP_NON_GUI_APPS
   pBasicContactMgr
   pDeadManPost
   pNodeReporter
+  pObstacleMgr
   uFldCollisionDetect
   uFldPathCheck
   uFldShoreBroker
@@ -239,13 +240,13 @@ SET(IVP_GUI_APPS
   uLogView
   uLogViewIPF
   uLogViewHelm
+  uPlotViewer
   )
 
 IF( EXISTS app_ivpcheck )
   LIST(APPEND IVP_GUI_APPS 
   app_ivpcheck
   app_currview
-  uPlotViewer
 )  
 ENDIF( EXISTS app_ivpcheck )
 

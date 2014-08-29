@@ -202,6 +202,8 @@ bool XYObject::set_param(const string& param, const string& value)
     set_vertex_size(atof(value.c_str()));
   else if(param == "vertex_color")
     set_color("vertex", value);
+  else if(param == "type")
+    set_type(value);
   else if(param == "msg")
     set_msg(value);
   else if(param == "time")
