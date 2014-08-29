@@ -39,7 +39,8 @@ killall -9 iMicroModem pRouter pFramer pMessageSim                \
         pBearings_GENERIC pTargetSim pMBTracker zLoggerNG      \
 	iModemSim pFunctionSender uFunctionViewer uFunctionVis \
         uSimBeaconRange uSimCurrent pBasicContactMgr           \
-        uSimActiveSonar bngview
+        uSimActiveSonar bngview pConvexHull pObstacleMgr       \
+        pObstacleManager
 
 killall -9 pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
         pBlast pSweepLines pNSWCPC pXRelay pXRelayTest alogview  \
