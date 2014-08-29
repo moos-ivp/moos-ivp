@@ -73,7 +73,7 @@ bool ObstacleManager::OnConnectToServer()
 bool ObstacleManager::Iterate()
 {
   AppCastingMOOSApp::Iterate();
-  postConvexHulls();
+  postConvexHullAlerts();
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -145,6 +145,8 @@ bool ObstacleManager::handleMailNewPoint(string value)
   m_map_points[key].push_back(newpt);
   m_map_points_changed[key] = true;
   m_map_points_total[key]++;
+  if(m_map_alerted.count(key) == 0)
+    m_map_alerted[key] = false;
 
   m_points.push_back(newpt);
 
@@ -169,26 +171,59 @@ bool ObstacleManager::handleMailNewPoint(string value)
 }
 
 //------------------------------------------------------------
-// Procedure: postConvexHulls
+// Procedure: handleMailUpdatesRequest
+//   Example: OBSTACLE_UPDATE_REQUEST = "obstacle_key=a,bhv_name=avd_obstacle_a"
 
-void ObstacleManager::postConvexHulls()
+bool ObstacleManager::handleMailUpdatesRequest(string request)
+{
+  string key;
+  string bhv;
+
+  vector<string> svector = parseString(request, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+    if(param == "obstacle_key")
+      key = value;
+    else if(param == "bhv_name")
+      bhv = value;
+    else
+      return(false);
+  }
+
+  if((key == "") || (bhv == ""))
+    return(false);
+  
+  m_map_updates[key] = bhv;
+  return(true);
+}
+
+
+//------------------------------------------------------------
+// Procedure: postConvexHullAlerts
+
+void ObstacleManager::postConvexHullAlerts()
 {
   map<string, vector<XYPoint> >::iterator p;
   for(p=m_map_points.begin(); p!=m_map_points.end(); p++) {
-    postConvexHull(p->first, p->second);
+    postConvexHullAlert(p->first, p->second);
   }
 }
 
 
 //------------------------------------------------------------
-// Procedure: postConvexHull
+// Procedure: postConvexHullAlert
 
-void ObstacleManager::postConvexHull(const string& cluster_label, 
-				     const vector<XYPoint>& points)
+void ObstacleManager::postConvexHullAlert(const string& cluster_label, 
+					  const vector<XYPoint>& points)
 {
   unsigned int vsize = points.size();
   if(vsize < 3)
     return;
+
+  if(m_map_alerted[cluster_label])
+    return;
+  m_map_alerted[cluster_label] = true;
 
   // If no new points for the give cluster label have been received 
   // since the last time a posting was made, don't make a posting now.

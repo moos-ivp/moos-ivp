@@ -29,20 +29,25 @@ class ObstacleManager : public AppCastingMOOSApp
  protected:
    void registerVariables();
    bool handleMailNewPoint(std::string);
-   void postConvexHulls();
-   void postConvexHull(const std::string&, const std::vector<XYPoint>&);
+   bool handleMailUpdatesRequest(std::string);
+   void postConvexHullAlerts();
+   void postConvexHullAlert(const std::string&, const std::vector<XYPoint>&);
 
  private: // Configuration variables
-   std::string  m_point_var;          // incoming points
-   std::string  m_obstacle_alert_var; // outgoing alerts
+   std::string  m_point_var;           // incoming points
+   std::string  m_updates_request_var; // incoming update requests
+   std::string  m_obstacle_alert_var;  // outgoing alerts
 
  private: // State variables
    std::vector<XYPoint> m_points;
    unsigned int         m_points_total;
 
+   // Each map is keyed on the obstacle ID, e.g. buoy-a, buoy-b etc
    std::map<std::string, std::vector<XYPoint> > m_map_points;
    std::map<std::string, unsigned int>          m_map_points_total;
    std::map<std::string, bool>                  m_map_points_changed;
+   std::map<std::string, bool>                  m_map_alerted;
+   std::map<std::string, std::string>           m_map_updates;
 
    std::string  m_most_recent_turn;
 };
