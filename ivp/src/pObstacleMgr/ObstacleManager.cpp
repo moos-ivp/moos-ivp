@@ -20,7 +20,8 @@ using namespace std;
 ObstacleManager::ObstacleManager()
 {
   m_points_total = 0;
-  m_obstacle_alert_var = "OBSTACLE_ALERT";
+  m_obstacle_alert_var  = "OBSTACLE_ALERT";
+  m_updates_request_var = "OBSTACLE_UPDATE_REQUEST";
 }
 
 //---------------------------------------------------------
@@ -50,6 +51,11 @@ bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
       if(!handled)
        reportRunWarning("Unhandled Mail: " + key);
     }
+    else if(key == m_updates_request_var) { 
+      bool handled = handleMailUpdatesRequest(sval);
+      if(!handled)
+       reportRunWarning("Unhandled Mail: " + key);
+    }
     else if(key != "APPCAST_REQ") // handle by AppCastingMOOSApp
        reportRunWarning("Unhandled Mail: " + key);
    }
@@ -74,6 +80,7 @@ bool ObstacleManager::Iterate()
 {
   AppCastingMOOSApp::Iterate();
   postConvexHullAlerts();
+  postConvexHullUpdates();
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -123,6 +130,7 @@ void ObstacleManager::registerVariables()
   AppCastingMOOSApp::RegisterVariables();
   if(m_point_var != "")
     Register(m_point_var, 0);
+  Register(m_updates_request_var);
 }
 
 
@@ -138,34 +146,34 @@ bool ObstacleManager::handleMailNewPoint(string value)
   if(newpt.get_type() != "obstacle")
     return(true);
 
-  string key = newpt.get_msg();
-  if(key == "")
-    key = newpt.get_label();
+  string obstacle_key = newpt.get_msg();
+  if(obstacle_key == "")
+    obstacle_key = newpt.get_label();
 
-  m_map_points[key].push_back(newpt);
-  m_map_points_changed[key] = true;
-  m_map_points_total[key]++;
-  if(m_map_alerted.count(key) == 0)
-    m_map_alerted[key] = false;
+  m_map_points[obstacle_key].push_back(newpt);
+  m_map_points_total[obstacle_key]++;
 
-  m_points.push_back(newpt);
+  bool hull_update_needed = false;
+  if(m_map_convex_hull.count(obstacle_key) == 0)
+    hull_update_needed = true;
+  else if(!m_map_convex_hull[obstacle_key].contains(newpt.x(), newpt.y()))
+    hull_update_needed = true;
 
-  unsigned int vsize = m_points.size();
-  if(vsize >= 3) {
-    double x0 = m_points[vsize-3].x();
-    double y0 = m_points[vsize-3].y();
-    double x1 = m_points[vsize-2].x();
-    double y1 = m_points[vsize-2].y();
-    double x2 = m_points[vsize-1].x();
-    double y2 = m_points[vsize-1].y();
-    bool turn_left = threePointTurnLeft(x0,y0,x1,y1,x2,y2);
-    if(turn_left)
-      m_most_recent_turn = "left!";
-    else
-      m_most_recent_turn = "non-left!";
-  }
-  else
-    m_most_recent_turn = "too short";
+  if(!hull_update_needed)
+    return(true);
+
+  // A new convex hull calculation is needed because of this new point
+  const vector<XYPoint>& points = m_map_points[obstacle_key];
+
+  ConvexHullGenerator chgen;
+  for(unsigned int i=0; i<points.size(); i++) 
+    chgen.addPoint(points[i].x(), points[i].y(), points[i].get_label());
+  
+  XYPolygon poly = chgen.generateConvexHull();
+  poly.set_label(obstacle_key);
+
+  m_map_convex_hull[obstacle_key]  = poly;
+  m_map_hull_changed[obstacle_key] = true;
 
   return(true);
 }
@@ -177,7 +185,7 @@ bool ObstacleManager::handleMailNewPoint(string value)
 bool ObstacleManager::handleMailUpdatesRequest(string request)
 {
   string key;
-  string bhv;
+  string var;
 
   vector<string> svector = parseString(request, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
@@ -185,16 +193,16 @@ bool ObstacleManager::handleMailUpdatesRequest(string request)
     string value = svector[i];
     if(param == "obstacle_key")
       key = value;
-    else if(param == "bhv_name")
-      bhv = value;
+    else if(param == "update_var")
+      var = value;
     else
       return(false);
   }
 
-  if((key == "") || (bhv == ""))
+  if((key == "") || (var == ""))
     return(false);
   
-  m_map_updates[key] = bhv;
+  m_map_updates[key] = var;
   return(true);
 }
 
@@ -204,9 +212,9 @@ bool ObstacleManager::handleMailUpdatesRequest(string request)
 
 void ObstacleManager::postConvexHullAlerts()
 {
-  map<string, vector<XYPoint> >::iterator p;
-  for(p=m_map_points.begin(); p!=m_map_points.end(); p++) {
-    postConvexHullAlert(p->first, p->second);
+  map<string, XYPolygon>::iterator p;
+  for(p=m_map_convex_hull.begin(); p!=m_map_convex_hull.end(); p++) {
+    postConvexHullAlert(p->first);
   }
 }
 
@@ -214,40 +222,68 @@ void ObstacleManager::postConvexHullAlerts()
 //------------------------------------------------------------
 // Procedure: postConvexHullAlert
 
-void ObstacleManager::postConvexHullAlert(const string& cluster_label, 
-					  const vector<XYPoint>& points)
+void ObstacleManager::postConvexHullAlert(string obstacle_key)
 {
-  unsigned int vsize = points.size();
-  if(vsize < 3)
+  // Sanity check 1: if an alert has already been generated, dont repeat
+  if(m_map_alerted[obstacle_key])
     return;
 
-  if(m_map_alerted[cluster_label])
+  // Sanity check 2: if a convex hull has not been created for this key
+  // no alert can be made
+  if(m_map_convex_hull.count(obstacle_key) == 0)
     return;
-  m_map_alerted[cluster_label] = true;
 
-  // If no new points for the give cluster label have been received 
-  // since the last time a posting was made, don't make a posting now.
-  if(m_map_points_changed[cluster_label] == false)
+  // Sanity check 3: if a hull/poly exists, but its not convex, return
+  XYPolygon poly = m_map_convex_hull[obstacle_key];
+  if(!poly.is_convex())
     return;
-  m_map_points_changed[cluster_label] = false;
 
-  ConvexHullGenerator chgen;
-  for(unsigned int i=0; i<vsize; i++) 
-    chgen.addPoint(points[i].x(), points[i].y(), points[i].get_label());
-  
-  XYPolygon poly = chgen.generateConvexHull();
-  poly.set_label(cluster_label);
+  // Part 1: Get the string version of the polygon
   string poly_str = poly.get_spec();
   Notify("VIEW_POLYGON", poly_str);
 
-  string obstacle_alert = "name=" + cluster_label + "#poly=";
-  obstacle_alert += poly.get_spec_pts(2) + ",label=" + cluster_label;
+  // Part 2: Construct the posting to be made
+  string obstacle_alert = "name=" + obstacle_key + "#poly=";
+  obstacle_alert += poly.get_spec_pts(2) + ",label=" + obstacle_key;
+  obstacle_alert += "#obstacle_key=" + obstacle_key;
   
+  // Part 3: Make the posting
   Notify(m_obstacle_alert_var, obstacle_alert);
 
-  //Notify("VIEW_POINT", pt_str);
+  // Part 4: Note that an alert has been generated for this obstacle key
+  m_map_alerted[obstacle_key] = true;
 }
 
+
+//------------------------------------------------------------
+// Procedure: postConvexHullUpdates
+
+void ObstacleManager::postConvexHullUpdates()
+{
+  map<string, bool>::iterator p;
+  for(p=m_map_hull_changed.begin(); p!=m_map_hull_changed.end(); p++) {
+    postConvexHullUpdate(p->first);
+  }
+}
+
+
+//------------------------------------------------------------
+// Procedure: postConvexHullUpdate
+
+void ObstacleManager::postConvexHullUpdate(string obstacle_key)
+{
+  if(!m_map_hull_changed[obstacle_key])
+    return;
+  
+  XYPolygon poly = m_map_convex_hull[obstacle_key];
+  string poly_str = poly.get_spec();
+  Notify("VIEW_POLYGON", poly_str);
+
+  string update_var = m_map_updates[obstacle_key];
+  string update_str = poly.get_spec_pts(2) + ",label=" + obstacle_key;
+  
+  Notify(update_var, update_str);
+}
 
 
 //------------------------------------------------------------

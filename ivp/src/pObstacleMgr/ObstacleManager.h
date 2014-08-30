@@ -31,7 +31,9 @@ class ObstacleManager : public AppCastingMOOSApp
    bool handleMailNewPoint(std::string);
    bool handleMailUpdatesRequest(std::string);
    void postConvexHullAlerts();
-   void postConvexHullAlert(const std::string&, const std::vector<XYPoint>&);
+   void postConvexHullAlert(std::string);
+   void postConvexHullUpdates();
+   void postConvexHullUpdate(std::string);
 
  private: // Configuration variables
    std::string  m_point_var;           // incoming points
@@ -39,13 +41,13 @@ class ObstacleManager : public AppCastingMOOSApp
    std::string  m_obstacle_alert_var;  // outgoing alerts
 
  private: // State variables
-   std::vector<XYPoint> m_points;
    unsigned int         m_points_total;
 
-   // Each map is keyed on the obstacle ID, e.g. buoy-a, buoy-b etc
+   // Each map is keyed on the obstacle key, e.g. buoy-a, buoy-b etc
    std::map<std::string, std::vector<XYPoint> > m_map_points;
+   std::map<std::string, XYPolygon>             m_map_convex_hull;
    std::map<std::string, unsigned int>          m_map_points_total;
-   std::map<std::string, bool>                  m_map_points_changed;
+   std::map<std::string, bool>                  m_map_hull_changed;
    std::map<std::string, bool>                  m_map_alerted;
    std::map<std::string, std::string>           m_map_updates;
 
