@@ -143,7 +143,7 @@ void BHV_AvoidObstacles::onSetParamComplete()
     string msg = "obstacle_key=" + m_obstacle_key;
     msg += ",update_var=" + m_obstacle_update_var;
     postMessage("OBSTACLE_UPDATE_REQUEST", msg);
-    addInfoVars(m_obstacle_update_var);
+    addInfoVars(m_obstacle_update_var, "no_warning");
   }
 }
 

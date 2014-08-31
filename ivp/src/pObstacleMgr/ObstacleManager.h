@@ -47,11 +47,10 @@ class ObstacleManager : public AppCastingMOOSApp
    std::map<std::string, std::vector<XYPoint> > m_map_points;
    std::map<std::string, XYPolygon>             m_map_convex_hull;
    std::map<std::string, unsigned int>          m_map_points_total;
-   std::map<std::string, bool>                  m_map_hull_changed;
-   std::map<std::string, bool>                  m_map_alerted;
-   std::map<std::string, std::string>           m_map_updates;
-
-   std::string  m_most_recent_turn;
+   std::map<std::string, bool>                  m_map_hull_changed_flag;
+   std::map<std::string, bool>                  m_map_alerted_flag;
+   std::map<std::string, std::string>           m_map_updates_var;
+   std::map<std::string, unsigned int>          m_map_updates_total;
 };
 
 #endif 

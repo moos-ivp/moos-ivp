@@ -357,8 +357,8 @@ bool BehaviorSet::handlePossibleSpawnings()
 
 	// Check for unique behavior name
 	string bname = tokStringParse(update_str, "name", '#', '=');
-	string fullname = m_behavior_specs[i].getNamePrefix() + bname;
-	if(m_bhv_names.count(fullname)==0) {
+	//	string fullname = m_behavior_specs[i].getNamePrefix() + bname;
+	if(m_bhv_names.count(bname)==0) {
 	  SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], 
 						   update_str);
 	  //sbuild.print();
