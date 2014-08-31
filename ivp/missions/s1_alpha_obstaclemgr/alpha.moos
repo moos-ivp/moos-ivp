@@ -50,19 +50,29 @@ ProcessConfig = uTimerScript
   CommsTick = 4                                                 
   
 	delay_start = 5
-  rand_var    = varname=RND_AX, min=120, max=150, key=at_post
-  rand_var    = varname=RND_AY, min=-80, max=-50, key=at_post
+  rand_var    = varname=RND_AX, min=130, max=150, key=at_post
+  rand_var    = varname=RND_AY, min=-70, max=-50, key=at_post
 
   //rand_var    = varname=RND_BX, min=20, max=50, key=at_post
   //rand_var    = varname=RND_BY, min=-180, max=-150, key=at_post
   rand_var    = varname=RND_BX, type=gaussian, min=20, max=50, mu=35, sigma=2, key=at_post
   rand_var    = varname=RND_BY, type=gaussian, min=-80, max=-50, mu=-65, sigma=2, key=at_post
+
+  rand_var    = varname=RND_CX, type=gaussian, min=40, max=70, mu=65, sigma=2, key=at_post
+  rand_var    = varname=RND_CY, type=gaussian, min=-100, max=-70, mu=-85, sigma=2, key=at_post
                                            
-  reset_max   = 2500
+  reset_max   = 100
   reset_time  = all-posted
 
-	event       = var=VIEW_POINT, val="x=$[RND_AX],y=$[RND_AY],active=true,label=$[TCOUNT],msg=a,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=0.25
-	event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=$[TCOUNT],msg=b,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=0.25
+	//event       = var=VIEW_POINT, val="x=$[RND_AX],y=$[RND_AY],active=true,label=a,msg=a,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=0.25
+	//event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=b,msg=b,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=0.25
+
+	//event       = var=VIEW_POINT, val="x=$[RND_AX],y=$[RND_AY],active=true,label=$[TCOUNT],msg=a,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=0.25
+	//event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=$[TCOUNT],msg=b,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=0.25
+
+	event       = var=VIEW_POINT, val="x=$[RND_AX],y=$[RND_AY],active=true,label=$[TCOUNT],msg=a,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=1.44
+	event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=$[TCOUNT],msg=b,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2
+	event       = var=VIEW_POINT, val="x=$[RND_CX],y=$[RND_CY],active=true,label=$[TCOUNT],msg=c,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.3
 
 }                                                               
 
