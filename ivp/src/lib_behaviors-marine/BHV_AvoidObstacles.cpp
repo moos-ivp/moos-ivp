@@ -117,6 +117,13 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
     m_buffer_dist = dval;
     return(true);
   }
+  else if(param == "obstacle_key") {
+    if(val != "") {
+      m_obstacle_key = val;
+      return(true);
+    }
+    return(false);
+  }
   else if(param == "visual_hints")
     return(handleVisualHints(val));
   
@@ -125,10 +132,27 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 
 
 //-----------------------------------------------------------
+// Procedure: onSetParamComplete
+//   Example: OBSTACLE_UPDATE_REQUEST = "obstacle_key=abe,
+//                                       update_var=OBSTACLE_UPDATE_ABE"
+
+void BHV_AvoidObstacles::onSetParamComplete()
+{
+  if(m_obstacle_key != "") {
+    m_obstacle_update_var = "OBSTACLE_UPDATE_" + toupper(m_obstacle_key);
+    string msg = "obstacle_key=" + m_obstacle_key;
+    msg += ",update_var=" + m_obstacle_update_var;
+    postMessage("OBSTACLE_UPDATE_REQUEST", msg);
+    addInfoVars(m_obstacle_update_var);
+  }
+}
+
+//-----------------------------------------------------------
 // Procedure: onIdleState
 
 void BHV_AvoidObstacles::onIdleState()
 {
+  checkForObstacleUpdate();
   postErasablePolygons();
 }
 
@@ -155,6 +179,9 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
     postWMessage("AOF Not properly set in BHV_AvoidObstacles");
     return(0);
   }
+
+  checkForObstacleUpdate();
+  
 
   // Part 2: Build the underlying objective function and initialize
   m_aof_avoid->setParam("os_x", os_x);
@@ -202,6 +229,29 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   
   return(ipf);
 }
+
+//-----------------------------------------------------------
+// Procedure: checkForObstacleUpdate
+
+bool BHV_AvoidObstacles::checkForObstacleUpdate()
+{
+  double time_since_update = getBufferTimeVal(m_obstacle_update_var);
+  if(time_since_update > 0)
+    return(false);
+
+  bool ok;
+  string str = getBufferStringVal(m_obstacle_update_var, ok);
+  if(!ok)
+    return(false);
+
+  // Example: pts={120,-80:120,-50:150,-50:150,-80:138,-80},label=a
+  
+  bool update_ok = setParam("poly", str);
+   
+  return(update_ok);
+}
+  
+
 
 //-----------------------------------------------------------
 // Procedure: handleVisualHints()

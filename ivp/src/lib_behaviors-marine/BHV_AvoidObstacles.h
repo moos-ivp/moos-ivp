@@ -36,12 +36,14 @@ public:
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
   void         onIdleState();
-  void         onCompleteState()  {postErasablePolygons();};
+  void         onCompleteState()     {postErasablePolygons();};
+  void         onSetParamComplete();
 
  protected:
   bool    handleVisualHints(std::string);
   void    postViewablePolygons();
   void    postErasablePolygons();
+  bool    checkForObstacleUpdate();
 
 protected:
   AOF_AvoidObstacles *m_aof_avoid;
@@ -51,6 +53,9 @@ protected:
   double  m_buffer_dist;        // Between OS and obstacle(s)
   double  m_pheading_influence;
  
+  std::string  m_obstacle_key;
+  std::string  m_obstacle_update_var;
+
   std:: string m_hint_obst_edge_color;
   std:: string m_hint_obst_vertex_color;
   std:: string m_hint_obst_fill_color;
