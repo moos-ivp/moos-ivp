@@ -8,10 +8,12 @@
 #include <iterator>
 #include "MBUtils.h"
 #include "AngleUtils.h"
+#include "GeomUtils.h"
 #include "ACTable.h"
 #include "ObstacleManager.h"
 #include "ConvexHullGenerator.h"
 #include "XYFormatUtilsPoint.h"
+#include "XYFormatUtilsPoly.h"
 
 using namespace std;
 
@@ -334,6 +336,50 @@ void ObstacleManager::postConvexHullUpdate(string obstacle_key)
   
   Notify(update_var, update_str);
 }
+
+//------------------------------------------------------------
+// Procedure: placeholderConvexHull
+
+XYPolygon ObstacleManager::placeholderConvexHull(string obstacle_key)
+{
+  // Part 1: Sanity check: Can't build any kind of hull if no points at all.
+  XYPolygon null_poly;
+  if(m_map_points.count(obstacle_key) == 0)
+    return(null_poly);
+  if(m_map_points[obstacle_key].size() == 0)
+    return(null_poly);
+
+  // Part 2: Find the Center Point
+  const vector<XYPoint>& points = m_map_points[obstacle_key];
+    
+  double ctr_x = 0;
+  double ctr_y = 0;
+  unsigned int i, psize = points.size();
+  for(i=0; i<psize; i++) {
+    ctr_x += points[i].x();
+    ctr_y += points[i].y();
+  }
+  ctr_x = ctr_x / ((double)(psize));
+  ctr_y = ctr_y / ((double)(psize));
+
+  // Part 3: Find the max distance to the center of all points to set the radius
+  double max_dist = 0;
+  for(i=0; i<psize; i++) {
+    double this_dist = distPointToPoint(ctr_x, ctr_y, points[i].x(), points[i].y());
+    if(this_dist > max_dist)
+      max_dist = this_dist;
+  }
+  if(max_dist < 0.5)
+    max_dist = 0.5;
+
+  // Part 4: Build a octagonal polygon
+  stringstream ss;
+  ss << "format=radial, x=" << ctr_x << ",y=" << ctr_y << ",radius=" << max_dist << "pts=8";
+  XYPolygon poly = string2Poly(ss.str());
+
+  return(poly);
+}
+
 
 
 //------------------------------------------------------------
