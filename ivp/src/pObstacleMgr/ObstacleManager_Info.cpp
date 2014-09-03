@@ -20,9 +20,9 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pObstacleManager application is used for               ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  The pObstacleManager manages incoming sensor output about     ");
+  blk("  obstacles and posts alerts suitable for spawning obstacle     ");
+  blk("  avoidance behaviors                                           ");
   blk("                                                                ");
   blk("                                                                ");
 }
@@ -94,12 +94,20 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
-  blk("                 string_val=BAR                                 ");
+  blk("  TRACKED_FEATURE = x=5,y=8,label=a,size=4,color=1              ");
+  blk("                                                                ");
+  blk("  OBSTACLE_UPDATE_REQUEST = obstacle_key=d,                     ");
+  blk("                            update_var=OBSTACLE_UPDATE_D        ");
+  blk("                                                                ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
+  blk("  VIEW_POLYGON   = pts={32,-100:38,-98:40,-100:32,-104},        ");
+  blk("                   label=d,edge_color=white,vertex_color=blue   ");
+  blk("  OBSTACLE_ALERT = name=d#obstacle_key=d#                       ");
+  blk("                   poly=pts={32,-100:38,-98:40,-100:32,-104},label=d");
+  blk("                                                                ");
+  blk("                                                                ");
   blk("                                                                ");
   exit(0);
 }
