@@ -37,10 +37,16 @@ class ObstacleManager : public AppCastingMOOSApp
 
    XYPolygon placeholderConvexHull(std::string obstacle_key);
 
+   XYPoint customStringToPoint(std::string point_str);
+
  private: // Configuration variables
-   std::string  m_point_var;           // incoming points
-   std::string  m_updates_request_var; // incoming update requests
-   std::string  m_obstacle_alert_var;  // outgoing alerts
+   std::string  m_point_var;            // incoming points
+   std::string  m_updates_request_var;  // incoming update requests
+   std::string  m_obstacle_alert_var;   // outgoing alerts
+
+   std::string  m_key_field;
+   std::string  m_x_field;
+   std::string  m_y_field;
 
  private: // State variables
    unsigned int         m_points_total;

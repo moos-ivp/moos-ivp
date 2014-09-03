@@ -195,8 +195,10 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   // Do this before init, because init includes buffer shrinking.
   if(m_aof_avoid->ownshipInObstacle(false))
     postWMessage("Ownship position within stated space of obstacle");
-  if(m_aof_avoid->ownshipInObstacle(true))
+  if(m_aof_avoid->ownshipInObstacle(true)) {
     postWMessage("Ownship position within stated BUFFER space of obstacle");
+    postWMessage(m_aof_avoid->getDebugMsg());
+  }
 
   bool ok_init = m_aof_avoid->initialize();
   if(!ok_init) {

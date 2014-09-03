@@ -25,6 +25,8 @@ ObstacleManager::ObstacleManager()
   m_points_total = 0;
   m_obstacle_alert_var  = "OBSTACLE_ALERT";
   m_updates_request_var = "OBSTACLE_UPDATE_REQUEST";
+
+  m_key_field = "label";
 }
 
 //---------------------------------------------------------
@@ -109,17 +111,24 @@ bool ObstacleManager::OnStartUp()
     string value = line;
 
     bool handled = false;
-    if(param == m_point_var) {
+    if((param == "point_var") && !strContainsWhite(value)) {
       m_point_var = value;
+      handled = true;
+    }
+    if((param == "key_field") && !strContainsWhite(value)) {
+      m_key_field = value;
+      handled = true;
     }
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
 
   }
-  
+
+  // We left the m_point_var unset in the constructor because we don't want to 
+  // unnecessarily register for a variable that we don't actually need
   if(m_point_var == "")
-    m_point_var = "VIEW_POINT";
+    m_point_var = "TRACKED_FEATURE";
 
   registerVariables();	
   return(true);
@@ -138,14 +147,66 @@ void ObstacleManager::registerVariables()
 
 
 //------------------------------------------------------------
+// Procedure: customStringToPoint
+//   Purpose: Cannot assume that publishers of the point are using the 
+//            XYPoint data structure. So we parse it natively here.
+
+XYPoint ObstacleManager::customStringToPoint(string point_str)
+{
+  XYPoint null_pt;
+  
+  // Mandatory fields
+  string x_str;
+  string y_str;
+  string obstacle_key_str;
+  
+  // Optional fields
+  string color_str;
+  string osize_str;
+
+  // parameter names all have defaults, may be overridden by user config
+  string param_x   = "x";
+  string param_y   = "y";
+  string param_key = "label";
+  if(m_x_field != "")
+    param_x = m_x_field;
+  if(m_y_field != "")
+    param_y = m_y_field;
+  if(m_key_field != "")
+    param_key = m_key_field;
+  
+  vector<string> svector = parseString(point_str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+    if(param == param_x)
+      x_str = value;
+    else if(param == param_y)
+      y_str = value;
+    else if(param == param_key)
+      obstacle_key_str = value;
+  }
+
+  if((x_str == "") || (y_str == "") || (obstacle_key_str == ""))
+    return(null_pt);
+
+  double x = atof(x_str.c_str());
+  double y = atof(y_str.c_str());
+  
+  XYPoint new_pt(x,y);
+  new_pt.set_msg(obstacle_key_str);
+  
+  return(new_pt);
+}
+
+
+//------------------------------------------------------------
 // Procedure: handleMailNewPoint()
 
 bool ObstacleManager::handleMailNewPoint(string value)
 {
   // Part 1: Build the new point and check if it is an obstacle point
-  XYPoint newpt = string2Point(value);
-  if(newpt.get_type() != "obstacle")
-    return(true);
+  XYPoint newpt = customStringToPoint(value);
 
   // Part 2: Increment the total points received but return if the point
   //         is not valid
@@ -167,8 +228,8 @@ bool ObstacleManager::handleMailNewPoint(string value)
 
   // Part 6: If the set of points associated with the obstacle_key is too
   //         small to make a convex polygon, we can just return now.
-  if(m_map_points_total[obstacle_key] < 3)
-    return(true);
+  //if(m_map_points_total[obstacle_key] < 3)
+  //  return(true);
 
   // Part 5: Determine if the convex hull associated with the obstacle
   //         key needs to be updated. 
@@ -198,13 +259,14 @@ bool ObstacleManager::handleMailNewPoint(string value)
   // First check if the polygon is convex. Certain edge cases may result
   // in a non convex polygon even with N>2 points, e.g., 3 colinear pts.
   if(!poly.is_convex())
-    return(true);
-
+    //return(true);
+    poly = placeholderConvexHull(obstacle_key);
+  
   poly.set_label(obstacle_key);
   m_map_convex_hull[obstacle_key]       = poly;
   m_map_hull_changed_flag[obstacle_key] = true;
-
-
+  
+  
   poly.set_vertex_color("dodger_blue");
   poly.set_edge_color("dodger_blue");
   poly.set_vertex_size(4);
@@ -374,7 +436,7 @@ XYPolygon ObstacleManager::placeholderConvexHull(string obstacle_key)
 
   // Part 4: Build a octagonal polygon
   stringstream ss;
-  ss << "format=radial, x=" << ctr_x << ",y=" << ctr_y << ",radius=" << max_dist << "pts=8";
+  ss << "format=radial, x=" << ctr_x << ",y=" << ctr_y << ",radius=" << max_dist << ",pts=8";
   XYPolygon poly = string2Poly(ss.str());
 
   return(poly);

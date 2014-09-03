@@ -221,8 +221,14 @@ bool AOF_AvoidObstacles::ownshipInObstacle(bool use_buffered)
 {
   unsigned int vsize = m_obstacles_orig.size();
   for(unsigned int i=0; i<vsize; i++) {
-    if(ownshipInObstacle(i, use_buffered))
+    if(ownshipInObstacle(i, use_buffered)) {
+      m_debug_msg = "osx=" + doubleToString(m_osx);
+      m_debug_msg += ",osy=" + doubleToString(m_osy);
+      m_debug_msg += ",olabel=" + m_obstacles_orig[i].get_label();
+      m_debug_msg += ",vsize=" + uintToString(m_obstacles_orig[i].size());
+      m_debug_msg += ",spec=" + m_obstacles_buff[i].get_spec();
       return(true);
+    }
   }
   return(false);
 }

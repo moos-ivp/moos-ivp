@@ -50,6 +50,8 @@ public: // virtual functions
   XYPolygon getObstacleOrig(unsigned int ix);
   XYPolygon getObstacleBuff(unsigned int ix);
 
+  std::string getDebugMsg() {return(m_debug_msg);};
+
  protected: // Initialization Utilities
   bool   ownshipInObstacle(unsigned int ix, bool=false);
   void   bufferBackOff(double osx, double osy);
@@ -83,6 +85,8 @@ public: // virtual functions
   std::vector<XYPolygon> m_obstacles_orig;
   std::vector<XYPolygon> m_obstacles_buff;
   std::vector<bool>      m_obstacles_pert;
+
+  std::string            m_debug_msg;
   
   // A vector over 360 (typically) heading values
   std::vector<double>    m_cache_distance;
