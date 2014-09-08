@@ -223,10 +223,9 @@ IF( EXISTS pSafetyRetreat )
   LIST(APPEND IVP_NON_GUI_APPS 
   pSafetyRetreat
   uSimCurrent
+  uPlotViewer
 )  
 ENDIF( EXISTS pSafetyRetreat )
-
-
 
 SET(IVP_GUI_APPS
   app_ffview
@@ -240,7 +239,6 @@ SET(IVP_GUI_APPS
   uLogView
   uLogViewIPF
   uLogViewHelm
-  uPlotViewer
   )
 
 IF( EXISTS app_ivpcheck )
