@@ -72,6 +72,8 @@ class PMV_Viewer : public MarineViewer
   double       getTimeWarp() const {return(m_time_warp);};
   double       getElapsed() const {return(m_elapsed);};
 
+  void   clearGeoShapes(std::string vname, std::string shape, std::string stype);
+
  private:
   void   drawVehicle(std::string, bool, std::string);
   void   calculateDrawHash();

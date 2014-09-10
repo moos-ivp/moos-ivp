@@ -937,6 +937,14 @@ unsigned int PMV_Viewer::shapeCount(const string& gtype,
 }
 
 //-------------------------------------------------------------
+// Procedure: clearGeoShapes()
+
+void PMV_Viewer::clearGeoShapes(string vname, string shape, string stype) 
+{
+  m_geoshapes_map.clear(vname, shape, stype);
+}
+
+//-------------------------------------------------------------
 // Procedure: calculateDrawHash()
 
 void PMV_Viewer::calculateDrawHash()

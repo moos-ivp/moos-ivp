@@ -408,6 +408,14 @@ bool PMV_GUI::syncNodesBtoA()
   return(true);
 }
 
+//----------------------------------------------------
+// Procedure: clearGeoShapes
+
+void PMV_GUI::clearGeoShapes(string vname, string shape, string stype)
+{
+  mviewer->clearGeoShapes(vname, shape, stype);
+}
+
 //----------------------------------------- UpdateXY
 void PMV_GUI::updateXY() 
 {
@@ -478,6 +486,8 @@ void PMV_GUI::updateXY()
   v_dep->redraw();
   v_ais->redraw();
 }
+
+
 
 //----------------------------------------- MOOS_Button
 inline void PMV_GUI::cb_MOOS_Button_i(unsigned int val) {  

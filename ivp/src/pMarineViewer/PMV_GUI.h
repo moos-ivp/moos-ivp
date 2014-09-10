@@ -49,6 +49,8 @@ public:
   bool         syncNodesAtoB();
   bool         syncNodesBtoA();
   void         updateXY();
+  void         clearGeoShapes(std::string, std::string, std::string);
+
 
   bool         clearStaleVehicles(bool force=false);
   double       getClearStaleTimeStamp() {return(m_clear_stale_timestamp);};
