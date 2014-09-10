@@ -47,7 +47,8 @@ public:
 
   bool setParam(const std::string& param, std::string value);
   
-  void    clear();
+  void    clear(std::string shape="", std::string stype="");
+
   double  getXMin() const {return(m_xmin);};
   double  getXMax() const {return(m_xmax);};
   double  getYMin() const {return(m_ymin);};
@@ -113,6 +114,19 @@ public:
 
  protected:
   void updateBounds(double xl, double xh, double yl, double yh);
+  void updateBounds();
+
+  void clearPolygons(std::string stype="");
+  void clearSegLists(std::string stype="");
+  void clearHexagons(std::string stype="");
+  void clearGrids(std::string  stype="");
+  void clearCircles(std::string stype="");
+  void clearPoints(std::string  stype="");
+  void clearVectors(std::string stype="");
+  void clearPulses(std::string  stype="");
+  void clearMarkers(std::string stype="");
+
+  bool typeMatch(XYObject*, std::string stype);
 
 protected:
   std::vector<XYPolygon>    m_polygons;

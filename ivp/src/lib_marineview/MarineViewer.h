@@ -67,6 +67,8 @@ class MarineViewer : public Fl_Gl_Window
   bool   setTexture();
   std::string geosetting(const std::string& s);
   std::string vehisetting(const std::string& s);
+  void   clear(std::string vname, std::string shape, std::string stype);
+
 
   double getStaleReportThresh() {return(m_vehi_settings.getStaleReportThresh());};
   double getStaleRemoveThresh() {return(m_vehi_settings.getStaleRemoveThresh());};
@@ -78,6 +80,8 @@ class MarineViewer : public Fl_Gl_Window
   std::string getInfoFileB() {return(m_back_img_b.getInfoFile());};
 
   double getZoom() {return(m_zoom);};
+  double getPanX() {return(m_vshift_x);};
+  double getPanY() {return(m_vshift_y);};
 
 protected:
   bool   readTiff(std::string);

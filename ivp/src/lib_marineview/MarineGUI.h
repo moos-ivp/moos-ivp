@@ -50,6 +50,8 @@ public:
 
   bool removeMenuItem(std::string);
 
+  MarineViewer* getMarineViewer() {return(m_mviewer);};
+
  protected:
   Fl_Menu_Bar  *m_menubar;
   MarineViewer *m_mviewer;

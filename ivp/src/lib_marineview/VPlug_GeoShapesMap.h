@@ -35,6 +35,7 @@ public:
   virtual ~VPlug_GeoShapesMap() {};
 
   void   clear(const std::string& vname="");
+  void   clear(std::string vname, std::string shape, std::string stype);
 
   bool   addGeoShape(const std::string& param, 
 		     const std::string& value, 

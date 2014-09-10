@@ -56,6 +56,24 @@ void VPlug_GeoShapesMap::clear(const string& vname)
 }
 
 //----------------------------------------------------------------
+// Procedure: clear()
+
+void VPlug_GeoShapesMap::clear(string vname, string shape, string stype)
+{
+  if((shape == "") && (stype == ""))
+    clear(vname);
+
+  if(vname != "")
+    m_geoshapes_map[vname].clear(shape, stype);
+  else {
+    map<string, VPlug_GeoShapes>::iterator p;
+    for(p=m_geoshapes_map.begin(); p!=m_geoshapes_map.end(); p++) {
+      p->second.clear(shape, stype);
+    }
+  }
+}
+
+//----------------------------------------------------------------
 // Procedure: addGeoShape()
 
 bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig, 

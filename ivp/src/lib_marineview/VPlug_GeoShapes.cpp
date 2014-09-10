@@ -52,22 +52,31 @@ VPlug_GeoShapes::VPlug_GeoShapes()
 //-----------------------------------------------------------
 // Procedure: clear()
 
-void VPlug_GeoShapes::clear()
+void VPlug_GeoShapes::clear(string shape, string stype)
 {
-  m_polygons.clear();
-  m_seglists.clear();
-  m_hexagons.clear();
-  m_grids.clear();
-  m_circles.clear();
-  m_points.clear();
-  m_vectors.clear();
-  m_range_pulses.clear();
-  m_markers.clear();
+  if((shape == "") && (stype == "")) {
+    m_polygons.clear();
+    m_seglists.clear();
+    m_hexagons.clear();
+    m_grids.clear();
+    m_circles.clear();
+    m_points.clear();
+    m_vectors.clear();
+    m_range_pulses.clear();
+    m_markers.clear();
+    m_xmin = 0;
+    m_xmax = 0;
+    m_ymin = 0;
+    m_ymax = 0;
+    return;
+  }
 
-  m_xmin = 0;
-  m_xmax = 0;
-  m_ymin = 0;
-  m_ymax = 0;
+  if((shape == "polygons") || (shape=="polygon"))
+    clearPolygons(stype);
+  else if(shape == "points")
+    clearPoints(stype);
+
+  updateBounds();
 }
 
 //-----------------------------------------------------------
@@ -566,6 +575,7 @@ XYSegList VPlug_GeoShapes::getSegList(unsigned int index) const
   else
     return(m_seglists[index]);
 }
+
 //-----------------------------------------------------------
 // Procedure: updateBounds()
 
@@ -584,7 +594,155 @@ void VPlug_GeoShapes::updateBounds(double xl, double xh,
 }
 
 
+//-----------------------------------------------------------
+// Procedure: updateBounds()
 
+void VPlug_GeoShapes::updateBounds()
+{
+  unsigned int i;
+  for(i=0; i<m_polygons.size(); i++) {
+    if(m_polygons[i].size() > 0) {
+      XYPolygon poly = m_polygons[i];
+      updateBounds(poly.get_min_x(), poly.get_max_x(),
+		   poly.get_min_y(), poly.get_max_y());
+    }
+  }
+  for(i=0; i<m_seglists.size(); i++) {
+    if(m_seglists[i].size() > 0) {
+      XYSegList segl = m_seglists[i];
+      updateBounds(segl.get_min_x(), segl.get_max_x(),
+		   segl.get_min_y(), segl.get_max_y());
+    }
+  }
+  for(i=0; i<m_hexagons.size(); i++) {
+    if(m_hexagons[i].size() > 0) {
+      XYHexagon hexa = m_hexagons[i];
+      updateBounds(hexa.get_min_x(), hexa.get_max_x(),
+		   hexa.get_min_y(), hexa.get_max_y());
+    }
+  }
+  for(i=0; i<m_grids.size(); i++) {
+    if(m_grids[i].size() > 0) {
+      XYSquare square = m_grids[i].getSBound();
+      updateBounds(square.get_min_x(), square.get_max_x(),
+		   square.get_min_y(), square.get_max_y());
+    }
+  }
+  for(i=0; i<m_convex_grids.size(); i++) {
+    if(m_convex_grids[i].size() > 0) {
+      XYSquare square = m_convex_grids[i].getSBound();
+      updateBounds(square.get_min_x(), square.get_max_x(),
+		   square.get_min_y(), square.get_max_y());
+    }
+  }
+  for(i=0; i<m_vectors.size(); i++) {
+    XYVector vect = m_vectors[i];
+    updateBounds(vect.xpos(), vect.xpos(),
+		 vect.ypos(), vect.ypos());
+  }
+  for(i=0; i<m_range_pulses.size(); i++) {
+    XYRangePulse pulse = m_range_pulses[i];
+    updateBounds(pulse.get_x(), pulse.get_x(),
+		 pulse.get_y(), pulse.get_y());
+  }
+
+  map<string, XYPoint>::iterator p1;
+  for(p1=m_points.begin(); p1!=m_points.end(); p1++) {
+    XYPoint pt = p1->second;
+    updateBounds(pt.x(), pt.x(), pt.y(), pt.y());
+  }
+
+  map<string, XYMarker>::iterator p2;
+  for(p2=m_markers.begin(); p2!=m_markers.end(); p2++) {
+    XYMarker marker = p2->second;
+    updateBounds(marker.get_vx(), marker.get_vx(), 
+		 marker.get_vy(), marker.get_vy());
+  }
+
+  map<string, XYCircle>::iterator p3;
+  for(p3=m_circles.begin(); p3!=m_circles.end(); p3++) {
+    XYCircle circle = p3->second;
+    updateBounds(circle.get_min_x(), circle.get_max_x(), 
+		 circle.get_min_y(), circle.get_max_y());
+  }
+}
+
+
+//-----------------------------------------------------------
+// Procedure: clearPolygons
+
+void VPlug_GeoShapes::clearPolygons(string stype)
+{
+  if(stype == "") {
+    m_polygons.clear();
+    return;
+  }
+
+  vector<XYPolygon> new_polygons;
+  for(unsigned int i=0; i<m_polygons.size(); i++)  {
+    if(typeMatch(&(m_polygons[i]), stype))
+      new_polygons.push_back(m_polygons[i]);
+  } 
+  m_polygons = new_polygons;
+}
+
+
+//-----------------------------------------------------------
+// Procedure: clearPoints
+
+void VPlug_GeoShapes::clearPoints(string stype)
+{
+  if(stype == "") {
+    m_points.clear();
+    return;
+  }
+
+  map<string, XYPoint> new_points;
+  map<string, XYPoint>::iterator p;
+  for(p=m_points.begin(); p!=m_points.end(); p++) {
+    if(typeMatch(&(p->second), stype))
+      new_points[p->first] = p->second;
+  }
+  m_points = new_points;
+}
+
+
+//-----------------------------------------------------------
+// Procedure: typeMatch
+
+bool VPlug_GeoShapes::typeMatch(XYObject* obj, string stype)
+{
+  if(stype == "") 
+    return(true);
+
+  string pattern = stype;
+  bool begins    = false;
+  bool ends      = false;
+
+  if(stype.at(0) == '*') {
+    begins = true;
+    pattern = stype.substr(1);
+  }
+  if(stype.at(stype.length()-1) == '*') {
+    begins = true;
+    pattern = pattern.substr(0,pattern.length()-1);
+  }
+    
+  string otype = obj->get_type();
+  
+  if(begins && ends) 
+    return(strContains(otype, pattern));
+  
+  if(begins)
+    return(strBegins(otype, pattern));
+  
+  if(ends)
+    return(strEnds(otype, pattern));
+
+  return(otype == pattern);
+    
+
+}
 
 
 
