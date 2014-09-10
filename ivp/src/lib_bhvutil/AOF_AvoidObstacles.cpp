@@ -41,12 +41,14 @@ AOF_AvoidObstacles::AOF_AvoidObstacles(IvPDomain gdomain) : AOF(gdomain)
   m_osh             = 0;
   m_activation_dist = -1;
   m_allowable_ttc   = 20;  // time-to-collision in seconds
+  m_buffer_dist     = 0;
 
   m_osx_set             = false;
   m_osy_set             = false;
   m_osh_set             = false;
   m_activation_dist_set = false;
   m_allowable_ttc_set   = false;
+  m_buffer_dist_set     = false;
 
   m_present_heading_influence = 1;
 }
@@ -98,6 +100,7 @@ bool AOF_AvoidObstacles::setParam(const string& param, double param_val)
     if(param_val < 0)
       return(false);
     m_buffer_dist = param_val;
+    m_buffer_dist_set = true;
     return(true);
   }
   else
@@ -134,12 +137,27 @@ bool AOF_AvoidObstacles::initialize()
     return(false);
   if(!m_activation_dist_set)
     return(false);
+  if(!m_buffer_dist_set)
+    return(false);
 
   // Part 2: Apply the buffer distance to each of the original obstacles
   applyBuffer();
 
+  return(true);
+}
 
-  // Part 3: Figure out which obstacles are pertinent
+
+//----------------------------------------------------------------
+// Procedure: postInitialize
+
+bool AOF_AvoidObstacles::postInitialize()
+{
+  // Part 1: Sanity Checks
+  unsigned int object_cnt = m_obstacles_orig.size();
+  if(object_cnt == 0)
+    return(false);
+
+  // Part 2: Figure out and cache which obstacles are pertinent
   for(unsigned int i=0; i<object_cnt; i++) {
     m_obstacles_pert[i] = true;
     if(polyAft(m_osx, m_osy, m_osh, m_obstacles_buff[i]))
@@ -147,12 +165,12 @@ bool AOF_AvoidObstacles::initialize()
     if(m_obstacles_buff[i].dist_to_poly(m_osx, m_osy) > m_activation_dist)
       m_obstacles_pert[i] = false;
   }
+  
   bufferBackOff(m_osx, m_osy);
 
-  // Part 4: Fill in a cache of distances mapping a particular heading 
+  // Part 3: Cache the distances mapping a particular heading 
   // to the minimum/closest distance to any of the obstacle polygons.
   // A distance of -1 indicates infinite distance.
-  
   m_cache_distance.clear();
   unsigned int hsize = m_domain.getVarPoints(m_crs_ix);
   vector<double> virgin_cache(hsize, -1);
@@ -202,7 +220,7 @@ unsigned int AOF_AvoidObstacles::obstaclesInRange()
 void AOF_AvoidObstacles::addObstacle(const XYPolygon& new_poly)
 {
   XYPolygon new_buff_poly = new_poly;
-  new_buff_poly.grow_by_amt(m_buffer_dist);
+  //new_buff_poly.grow_by_amt(m_buffer_dist);
 
   string new_poly_label = new_poly.get_label();
   
@@ -224,8 +242,8 @@ bool AOF_AvoidObstacles::ownshipInObstacle(bool use_buffered)
     if(ownshipInObstacle(i, use_buffered)) {
       m_debug_msg = "osx=" + doubleToString(m_osx);
       m_debug_msg += ",osy=" + doubleToString(m_osy);
-      m_debug_msg += ",olabel=" + m_obstacles_orig[i].get_label();
-      m_debug_msg += ",vsize=" + uintToString(m_obstacles_orig[i].size());
+      m_debug_msg += ",olabel=" + m_obstacles_buff[i].get_label();
+      m_debug_msg += ",vsize=" + uintToString(m_obstacles_buff[i].size());
       m_debug_msg += ",spec=" + m_obstacles_buff[i].get_spec();
       return(true);
     }
@@ -483,5 +501,21 @@ double AOF_AvoidObstacles::evalAuxCtrPoints(const IvPBox* b) const
 }
 
 
+//----------------------------------------------------------------
+// Procedure: polyIsSmall
 
+bool AOF_AvoidObstacles::polyIsSmall(const XYPolygon& poly, double psize) const
+{
+  unsigned int vertices = poly.size();
+  if(vertices == 0)
+    return(true);
 
+  for(unsigned int i=0; i<vertices; i++) {
+    double x = poly.get_vx(i);
+    double y = poly.get_vy(i);
+    if((x > psize) || (y > psize))
+      return(false);
+  }
+
+  return(true);
+}

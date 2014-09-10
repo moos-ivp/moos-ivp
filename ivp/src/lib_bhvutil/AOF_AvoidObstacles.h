@@ -39,6 +39,7 @@ public: // virtual functions
   bool   setParam(const std::string&, const std::string&);
   void   addObstacle(const XYPolygon&);
   bool   initialize();
+  bool   postInitialize();
 
   unsigned int obstaclesInRange();
   unsigned int pertObstacleCount();
@@ -61,20 +62,23 @@ public: // virtual functions
   double evalAuxObstacles(const IvPBox*) const;
   double evalAuxCtrPoints(const IvPBox*) const;
 
+  bool   polyIsSmall(const XYPolygon&, double) const;
+
  private: // Config variables
   double m_osx;
   double m_osy;
   double m_osh;
   double m_activation_dist;
   double m_allowable_ttc;
+  double m_buffer_dist;
 
   bool   m_osx_set;
   bool   m_osy_set;
   double m_osh_set;
   bool   m_allowable_ttc_set;
   bool   m_activation_dist_set;
+  bool   m_buffer_dist_set;
 
-  double m_buffer_dist;
   double m_present_heading_influence;
 
  private: // State variables

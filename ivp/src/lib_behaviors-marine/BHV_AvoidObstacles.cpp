@@ -182,7 +182,6 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
 
   checkForObstacleUpdate();
   
-
   // Part 2: Build the underlying objective function and initialize
   m_aof_avoid->setParam("os_x", os_x);
   m_aof_avoid->setParam("os_y", os_y);
@@ -191,7 +190,15 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   m_aof_avoid->setParam("activation_dist", m_activation_dist);
   m_aof_avoid->setParam("allowable_ttc", m_allowable_ttc);
 
-  // Check if ownship violates either an obstacle or obstacle+buffer. 
+  // Initialization must be done immediately before any containment checks
+  // since the buffer zones around the obstacles are built during init.
+  bool ok_init = m_aof_avoid->initialize();
+  if(!ok_init) {
+    postWMessage("BHV_AvoidObstacles: AOF-Init Error");
+    return(0);
+  }
+
+  // Part 3: Check if ownship violates either an obstacle or obstacle+buffer. 
   // Do this before init, because init includes buffer shrinking.
   if(m_aof_avoid->ownshipInObstacle(false))
     postWMessage("Ownship position within stated space of obstacle");
@@ -200,11 +207,13 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
     postWMessage(m_aof_avoid->getDebugMsg());
   }
 
-  bool ok_init = m_aof_avoid->initialize();
-  if(!ok_init) {
-    postWMessage("BHV_AvoidObstacles: AOF-Init Error");
+
+  bool ok_post_init = m_aof_avoid->postInitialize();
+  if(!ok_post_init) {
+    postWMessage("BHV_AvoidObstacles: AOF-Post-Init Error");
     return(0);
   }
+  
 
   // Part 3: Post the Visuals
   postViewablePolygons();
