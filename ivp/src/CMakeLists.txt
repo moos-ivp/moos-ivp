@@ -190,7 +190,6 @@ SET(IVP_NON_GUI_APPS
   pBasicContactMgr
   pDeadManPost
   pNodeReporter
-  pObstacleMgr
   uFldCollisionDetect
   uFldPathCheck
   uFldShoreBroker
