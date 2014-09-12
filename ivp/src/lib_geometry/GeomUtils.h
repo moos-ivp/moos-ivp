@@ -25,6 +25,7 @@
 #define XY_GEOM_UTILS_HEADER
 
 #include "XYPoint.h"
+#include "XYPolygon.h"
 
 // Determines the distance between two points
 double distPointToPoint(double x1, double y1, double x2, double y2);
@@ -76,6 +77,10 @@ XYPoint projectPoint(double ANGLE, double DIST, double cx, double cy);
 
 void   addVectors(double deg1, double mag1, double deg2, double mag2,
 		  double& rdeg, double& rmag); 
+
+bool   bearingMinMaxToPoly(double x, double y, const XYPolygon& poly,
+			   double& bmin, double& bmax);
+
 
 // DEPRECATED INTERFACES
 double distToPoint(double x1, double y1, double x2, double y2);

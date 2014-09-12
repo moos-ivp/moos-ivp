@@ -669,10 +669,110 @@ void addVectors(double deg1, double mag1, double deg2,
   rmag = distPointToPoint(x0, y0, x2, y2);
 }
 
+//---------------------------------------------------------------
+// Procedure: bearingMinMaxToPoly
+//   Purpose: From a point outside a convex polygons, determine the two 
+//            bearing angles to the polygon forming a pseudo tangent.
+//   Returns: true if x,y is NOT in the polygon, false otherwise.
 
+bool bearingMinMaxToPoly(double osx, double osy, const XYPolygon& poly,
+			 double& bmin, double& bmax)
+{
+  // Step 1: Sanity checks
+  if(poly.size() == 0)
+    return(false);
+  if(poly.is_convex() && poly.contains(osx, osy))
+    return(false);
+  
+  // Step 2: Determine all the angles, noting their quadrants.
+  bool quad_1 = false;    // [0-90)
+  bool quad_2 = false;    // [90-180)
+  bool quad_3 = false;    // [180-270)
+  bool quad_4 = false;    // [270-360)
 
+  vector<double> angles;
+  unsigned int i, psize = poly.size();
+  for(i=0; i<psize; i++) {
+    double angle = relAng(osx, osy, poly.get_vx(i), poly.get_vy(i));
+    angles.push_back(angle);
+    if((angle >= 0) && (angle < 90))
+      quad_1 = true;
+    else if((angle >= 90) && (angle < 180))
+      quad_2 = true;
+    else if((angle >= 180) && (angle < 270))
+      quad_3 = true;
+    else
+      quad_4 = true;
+  }
 
+  bool wrap_around = false;
+  // Step 3: Determine if we have an angle wrap-around situation
+  if(quad_1  &&  !quad_2  && !quad_3  &&  !quad_4)          // Case 1:  1
+    wrap_around = false;
+  else if(!quad_1 &&   quad_2  && !quad_3  &&  !quad_4)     // Case 2:  2
+    wrap_around = false;
+  else if(!quad_1 &&  !quad_2  &&  quad_3  &&  !quad_4)     // Case 3:  3
+    wrap_around = false;
+  else if(!quad_1 &&  !quad_2  && !quad_3  &&   quad_4)     // Case 4:  4
+    wrap_around = false;
 
+  else if(quad_1  &&   quad_2  && !quad_3  &&  !quad_4)     // Case 5:  1,2
+    wrap_around = false;
+  else if(!quad_1 &&   quad_2  &&  quad_3  &&  !quad_4)     // Case 6:  2,3
+    wrap_around = false;
+  else if(!quad_1 &&  !quad_2  &&  quad_3  &&   quad_4)     // Case 7:  3,4
+    wrap_around = false;
+  else if(quad_1  &&  !quad_2  && !quad_3  &&   quad_4)     // Case 8:  4,1   YYYY
+    wrap_around = true;
+  else if(quad_1  &&   quad_2  &&  quad_3  &&  !quad_4)     // Case 9:  1,2,3 
+    wrap_around = false;
+  else if(!quad_1 &&   quad_2  &&  quad_3  &&   quad_4)     // Case 10: 2,3,4 
+    wrap_around = false;
+  else if(quad_1  &&  !quad_2  &&  quad_3  &&   quad_4)     // Case 11: 3,4,1 YYYY
+    wrap_around = true;
+  else if(quad_1  &&   quad_2  && !quad_3  &&   quad_4)     // Case 12: 4,1,2 YYYY
+    wrap_around = true;
 
+  else if(quad_1  &&  !quad_2  &&  quad_3  &&  !quad_4) {   // Case 13: 1,3
+    double px, py;
+    poly.closest_point_on_poly(osx, osy, px, py);
+    double os_angle = relAng(osx, osy, px, py);
+    if((os_angle > 45) && (os_angle <= 225))
+      wrap_around = false;
+    else
+      wrap_around = true;
+  }
+  else if(!quad_1 &&   quad_2  && !quad_3  &&   quad_4) {   // Case 14: 2,4
+    double px, py;
+    poly.closest_point_on_poly(osx, osy, px, py);
+    double os_angle = relAng(osx, osy, px, py);
+    if((os_angle > 135) && (os_angle <= 315))
+      wrap_around = false;
+    else
+      wrap_around = true;
+  }
 
-
+  // Step 4: Now determine the "min" and "max" bearing angles
+  if(!wrap_around) {
+    bmin = 360;
+    bmax = 0;
+    for(i=0; i<psize; i++) {
+      if(angles[i] < bmin)
+	bmin = angles[i];
+      else if(angles[i] > bmax)
+	bmax = angles[i];
+    }
+  }
+  else {
+    bmin = 360;
+    bmax = 0;
+    for(i=0; i<psize; i++) {
+      if((angles[i] > 180) && (angles[i] < bmin))
+	bmin = angles[i];
+      else if((angles[i] <= 180) && (angles[i] > bmax))
+	bmax = angles[i];
+    }
+  }
+  
+  return(true);
+}

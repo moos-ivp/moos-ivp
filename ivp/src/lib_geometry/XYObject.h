@@ -52,6 +52,7 @@ public:
   //-----Soon To Be Deprecated/Removed -----------------------------------      
   void     set_vertex_color(const std::string& s) {set_color("vertex", s);};
   void     set_edge_color(const std::string& s)   {set_color("edge", s);};
+  void     set_label_color(const std::string& s)  {set_color("label", s);};
   //-----Soon To Be Deprecated/Removed ----------------------------------- 
 
   bool      color_set(const std::string& key) const;
