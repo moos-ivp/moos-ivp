@@ -35,7 +35,15 @@ class DiffThrust : public CMOOSApp
   double m_desired_thrust_l_observed;
   double m_desired_thrust_r_observed;
 
+  double m_desired_thrust_l_observed_prev;
+  double m_desired_thrust_r_observed_prev;
+
   double m_last_input_tstamp;
+
+  bool   m_allstop_prev;
+  bool   m_new_thrust_mail;
+
+  bool   m_first_iteration; 
 
 public:
   CMOOSLock  m_tc_mutex;
