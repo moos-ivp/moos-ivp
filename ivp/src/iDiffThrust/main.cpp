@@ -17,6 +17,8 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  DiffThrust DiffThrust;
+
   string mission_file;
   string run_command  = argv[0];
   bool   help_requested = false;
@@ -32,6 +34,10 @@ int main(int argc, char *argv[])
       exam_requested = true;
     else if((argi=="-h") || (argi == "--help") || (argi=="-help"))
       help_requested = true;
+    else if((argi=="-tmd") || (argi == "--post_thrust_mode_differential_true"))
+      DiffThrust.setPostThrustModeDif(true);
+    else if((argi=="-tmr") || (argi == "--post_thrust_mode_reverse_true"))
+      DiffThrust.setPostThrustModeRev(true);
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
@@ -53,21 +59,25 @@ int main(int argc, char *argv[])
   }
 
   if((mission_file == "") || help_requested) {
-    cout << "Usage: iDiffThrust file.moos [OPTIONS]                 " << endl;
-    cout << "                                                    " << endl;
-    cout << "Options:                                            " << endl;
-    cout << "  --alias=<ProcessName>                             " << endl;
-    cout << "      Launch iDiffThrust with the given process  " << endl;
-    cout << "      name rather than iDiffThrust.               " << endl;
-    cout << "  --example, -e                                     " << endl;
-    cout << "      Display example MOOS configuration block.     " << endl;
-    cout << "  --help, -h                                        " << endl;
-    cout << "      Display this help message.                    " << endl;
-    cout << "  --version,-v                                      " << endl;
-    cout << "      Display the release version of iDiffThrust. " << endl;
-    cout << "Note: If argv[2] is not of one of the above formats " << endl;
-    cout << "      this will be interpreted as a run alias. This " << endl;
-    cout << "      is to support pAntler launching conventions.  " << endl;
+    cout << "Usage: iDiffThrust file.moos [OPTIONS]               " << endl;
+    cout << "                                                     " << endl;
+    cout << "Options:                                             " << endl;
+    cout << "  --alias=<ProcessName>                              " << endl;
+    cout << "      Launch iDiffThrust with the given process      " << endl;
+    cout << "      name rather than iDiffThrust.                  " << endl;
+    cout << "  --example, -e                                      " << endl;
+    cout << "      Display example MOOS configuration block.      " << endl;
+    cout << "  -tmd, --post_thrust_mode_differential_true         " << endl;
+    cout << "      Post THRUST_MODE_DIFFERENTIAL=true upon launch " << endl;
+    cout << "  -tmr, --post_thrust_mode_reverse_true              " << endl;
+    cout << "      Post THRUST_MODE_REVERSE=true upon launch      " << endl;
+    cout << "  --help, -h                                         " << endl;
+    cout << "      Display this help message.                     " << endl;
+    cout << "  --version,-v                                       " << endl;
+    cout << "      Display the release version of iDiffThrust.    " << endl;
+    cout << "Note: If argv[2] is not of one of the above formats  " << endl;
+    cout << "      this will be interpreted as a run alias. This  " << endl;
+    cout << "      is to support pAntler launching conventions.   " << endl;
 
     return(0);
   }
@@ -78,8 +88,6 @@ int main(int argc, char *argv[])
   else
     cout << "iDiffThrust running as: " << run_command << endl;
   cout << termColor() << endl;
-
-  DiffThrust DiffThrust;
 
   MOOSAppRunnerThread appThread(&DiffThrust, 
 				run_command.c_str(), 
