@@ -28,12 +28,14 @@ PoseKeep::PoseKeep()
 
   m_heading_diff = 0;
   m_adjustment   = 0;
-  m_tolerance    = 2;   // degrees
+  m_tolerance    = 1;   // degrees
 
   m_hold_x = 0;
   m_hold_y = 0;
 
   m_active = false;
+
+  m_duration = -1;   // seconds, -1 means no duration applied
 }
 
 //---------------------------------------------------------
@@ -84,6 +86,8 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_active = true;
     }
     else if(key == "HOLD_POINT")
+      handleMailHoldPoint(sval);
+    else if(key == "MVIEWER_LCLICK")
       handleMailHoldPoint(sval);
     
     else if(key != "APPCAST_REQ") // handle by AppCastingMOOSApp
@@ -142,10 +146,11 @@ bool PoseKeep::OnStartUp()
     bool handled = false;
     if((param == "hold_tolerance") && isNumber(value)) 
       handled = handleConfigHoldTolerance(value);
+    else if((param == "hold_duration") && isNumber(value)) 
+      handled = handleConfigHoldDuration(value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
-
   }
   
   registerVariables();	
@@ -162,10 +167,9 @@ void PoseKeep::registerVariables()
   Register("NAV_X", 0);
   Register("NAV_Y", 0);
   Register("NAV_HEADING", 0);
+  Register("MVIEWER_LCLICK", 0);
+  Register("HOLD_POINT", 0);
 
-  Register("HOLD_X", 0);
-  Register("HOLD_Y", 0);
-  Register("HOLD_XY", 0);
   Register("HOLD_DURATION", 0);
   Register("HOLD_ENDFLAG", 0);
   Register("HOLD_HEADING", 0);
@@ -239,6 +243,21 @@ bool PoseKeep::handleConfigHoldTolerance(string value)
 }
 
 //------------------------------------------------------------
+// Procedure: handleConfigHoldDuration
+
+bool PoseKeep::handleConfigHoldDuration(string value) 
+{
+  double dval = atof(value.c_str());
+  if(dval <= 0) {
+    reportConfigWarning("hold_duration should be a positive value");
+    return(false);
+  }
+
+  m_duration = dval;
+  return(true);
+}
+
+//------------------------------------------------------------
 // Procedure: handleMailHoldPoint
 //   Example: x=-19.0,y=-36.0
 
@@ -255,15 +274,24 @@ bool PoseKeep::handleMailHoldPoint(string str)
     else if(param == "y")
       ypos = value;
   }
-
+  
   if((xpos == "") || (ypos == "") || !isNumber(xpos) || !isNumber(ypos)) {
-    reportConfigWarning("HOLD_POINT x or y value is missing or improper: " + str);
+    reportRunWarning("HOLD_POINT x or y value is missing or improper: " + str);
+    return(false);
+  }
+  
+  if(!m_osx_set || !m_osy_set) {
+    reportRunWarning("HOLD_POINT cannot be set, because nav position unknown");
     return(false);
   }
 
   m_hold_x = atof(xpos.c_str());
   m_hold_y = atof(ypos.c_str());
 
+  if((m_hold_x == m_osx) && (m_hold_y == m_osy))
+    return(false);
+
+  m_hold_heading = relAng(m_osx, m_osy, m_hold_x, m_hold_y);
   
   return(true);
 }
@@ -275,6 +303,9 @@ bool PoseKeep::handleMailHoldPoint(string str)
 bool PoseKeep::buildReport() 
 {
   string s_active = boolToString(m_active);
+  string s_duration = "n/a";
+  if(m_duration > 0)
+    s_duration = doubleToStringX(m_duration,2);
 
   string s_tolerance = doubleToStringX(m_tolerance,1);
 
@@ -306,6 +337,7 @@ bool PoseKeep::buildReport()
   m_msgs << "============================================" << endl;
   m_msgs << "Settings:                                   " << endl;
   m_msgs << "           Active: " << s_active              << endl;
+  m_msgs << "         Duration: " << s_duration            << endl;
   m_msgs << "        Tolerance: " << s_tolerance << " (degrees)" << endl;
   m_msgs << " Current Position: " << s_curr_position       << endl;
   m_msgs << "  Current Heading: " << s_curr_heading << 

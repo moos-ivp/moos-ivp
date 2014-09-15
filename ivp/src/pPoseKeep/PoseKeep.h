@@ -29,6 +29,7 @@ class PoseKeep : public AppCastingMOOSApp
    
    bool handleMailHoldPoint(std::string);
    bool handleConfigHoldTolerance(std::string);
+   bool handleConfigHoldDuration(std::string);
 
  protected:
    void registerVariables();
@@ -36,6 +37,7 @@ class PoseKeep : public AppCastingMOOSApp
  private: // Configuration variables
    double  m_tolerance;
    double  m_hold_heading;
+   double  m_duration;
 
  private: // State variables
    bool    m_active;
