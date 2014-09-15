@@ -28,6 +28,9 @@ class DiffThrust : public CMOOSApp
   void setPostThrustModeRev(bool v) {m_post_thrust_mode_rev=v;};
 
  protected:
+  void postHelp();
+
+ protected:
   
   double m_desired_thrust_l;
   double m_desired_thrust_r;

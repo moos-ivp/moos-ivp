@@ -217,6 +217,14 @@ bool DiffThrust::handleCharInput(char c)
     m_desired_thrust_l = m_desired_thrust_l - 2;
     m_desired_thrust_r = m_desired_thrust_r - 2;
   }  
+  else if(c == '1') 
+    Notify("THRUST_MODE_DIFFERENTIAL", "true");
+  else if(c == '2') 
+    Notify("THRUST_MODE_DIFFERENTIAL", "false");
+  else if(c == '8') 
+    Notify("THRUST_MODE_REVERSE", "true");
+  else if(c == '9') 
+    Notify("THRUST_MODE_REVERSE", "false");
 
   // Emergency Stop
   else if(c == ' ') {
@@ -241,20 +249,7 @@ bool DiffThrust::handleCharInput(char c)
     cout << "avg: " << avg << endl;
   }
   else if((c == 'h') ||  (c == 'H')) {
-    cout << "========================================" << endl;
-    cout << "iDiffThrust                                               " << endl;
-    cout << "       a:  Add 2% Thrust LEFT      A: Add 5% Thrust LEFT  " << endl;
-    cout << "       z:  Sub 2% Thrust LEFT      A: Add 5% Thrust LEFT  " << endl;
-    cout << "       k:  Add 2% Thrust RIGHT     K: Add 5% Thrust RIGHT " << endl;
-    cout << "       m:  Sub 2% Thrust RIGHT     M: Add 5% Thrust RIGHT " << endl;    
-    cout << "                                                          " << endl;
-    cout << "     g/G:  Add 2% Thrust BOTH                             " << endl;
-    cout << "     v/V:  Sub 2% Thrust BOTH                             " << endl;
-    cout << "                                                          " << endl;
-    cout << "   SPACE:  ALL-STOP                                       " << endl;
-    cout << "       \\:  Continue                                      " << endl;
-    cout << "   r or R:  Thrusts to be Equal (Average)                 " << endl;
-    cout << "   h or H:  Help and Continue                             " << endl;
+    postHelp();
     m_continued = true;
   }
   else {
@@ -282,3 +277,30 @@ bool DiffThrust::handleCharInput(char c)
   return(true);
 }
 
+
+//---------------------------------------------------------
+// Procedure: postHelp
+
+void DiffThrust::postHelp()
+{
+  cout << "========================================" << endl;
+  cout << "iDiffThrust                                               " << endl;
+  cout << "       a:  Add 2% Thrust LEFT      A: Add 5% Thrust LEFT  " << endl;
+  cout << "       z:  Sub 2% Thrust LEFT      A: Add 5% Thrust LEFT  " << endl;
+  cout << "       k:  Add 2% Thrust RIGHT     K: Add 5% Thrust RIGHT " << endl;
+  cout << "       m:  Sub 2% Thrust RIGHT     M: Add 5% Thrust RIGHT " << endl;    
+  cout << "                                                          " << endl;
+  cout << "     g/G:  Add 2% Thrust BOTH                             " << endl;
+  cout << "     v/V:  Sub 2% Thrust BOTH                             " << endl;
+  cout << "                                                          " << endl;
+  cout << "       1:  Poke THRUST_MODE_DIFFERENTIAL=true             " << endl;
+  cout << "       2:  Poke THRUST_MODE_DIFFERENTIAL=false            " << endl;
+  cout << "                                                          " << endl;
+  cout << "       8:  Poke THRUST_MODE_REVERSE=true                  " << endl;
+  cout << "       9:  Poke THRUST_MODE_REVERSE=false                 " << endl;
+  cout << "                                                          " << endl;
+  cout << "   SPACE:  ALL-STOP                                       " << endl;
+  cout << "       \\:  Continue                                      " << endl;
+  cout << "   r or R:  Thrusts to be Equal (Average)                 " << endl;
+  cout << "   h or H:  Help and Continue                             " << endl;
+}
