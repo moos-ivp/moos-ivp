@@ -189,26 +189,35 @@ bool DiffThrust::handleCharInput(char c)
 {
   // Slower changes
   if(c == 'a')
-    m_desired_thrust_l = m_desired_thrust_l + 1;
+    m_desired_thrust_l = m_desired_thrust_l + 2;
   else if(c == 'z')
-    m_desired_thrust_l = m_desired_thrust_l - 1;
+    m_desired_thrust_l = m_desired_thrust_l - 2;
   
   else if(c == 'k')
-    m_desired_thrust_r = m_desired_thrust_r + 1;
+    m_desired_thrust_r = m_desired_thrust_r + 2;
   else if(c == 'm')
-    m_desired_thrust_r = m_desired_thrust_r - 1;
+    m_desired_thrust_r = m_desired_thrust_r - 2;
   
   // Faster changes
   else if(c == 'A')
-    m_desired_thrust_l = m_desired_thrust_l + 2;
+    m_desired_thrust_l = m_desired_thrust_l + 5;
   else if(c == 'Z')
-    m_desired_thrust_l = m_desired_thrust_l - 2;
+    m_desired_thrust_l = m_desired_thrust_l - 5;
 
   else if(c == 'K')
-    m_desired_thrust_r = m_desired_thrust_r + 2;
+    m_desired_thrust_r = m_desired_thrust_r + 5;
   else if(c == 'M')
-    m_desired_thrust_r = m_desired_thrust_r - 2;
+    m_desired_thrust_r = m_desired_thrust_r - 5;
   
+  else if((c == 'g') || (c == 'G')) {
+    m_desired_thrust_l = m_desired_thrust_l + 2;
+    m_desired_thrust_r = m_desired_thrust_r + 2;
+  }
+  else if((c == 'v') || (c == 'V')) {
+    m_desired_thrust_l = m_desired_thrust_l - 2;
+    m_desired_thrust_r = m_desired_thrust_r - 2;
+  }  
+
   // Emergency Stop
   else if(c == ' ') {
     m_desired_thrust_l = 0;
@@ -234,10 +243,14 @@ bool DiffThrust::handleCharInput(char c)
   else if((c == 'h') ||  (c == 'H')) {
     cout << "========================================" << endl;
     cout << "iDiffThrust                                               " << endl;
-    cout << "       a:  Add 1% Thrust LEFT      A: Add 2% Thrust LEFT  " << endl;
-    cout << "       z:  Sub 1% Thrust LEFT      A: Add 2% Thrust LEFT  " << endl;
-    cout << "       k:  Add 1% Thrust RIGHT     K: Add 2% Thrust LEFT  " << endl;
-    cout << "       m:  Sub 1% Thrust RIGHT     M: Add 2% Thrust LEFT  " << endl;
+    cout << "       a:  Add 2% Thrust LEFT      A: Add 5% Thrust LEFT  " << endl;
+    cout << "       z:  Sub 2% Thrust LEFT      A: Add 5% Thrust LEFT  " << endl;
+    cout << "       k:  Add 2% Thrust RIGHT     K: Add 5% Thrust RIGHT " << endl;
+    cout << "       m:  Sub 2% Thrust RIGHT     M: Add 5% Thrust RIGHT " << endl;    
+    cout << "                                                          " << endl;
+    cout << "     g/G:  Add 2% Thrust BOTH                             " << endl;
+    cout << "     v/V:  Sub 2% Thrust BOTH                             " << endl;
+    cout << "                                                          " << endl;
     cout << "   SPACE:  ALL-STOP                                       " << endl;
     cout << "       \\:  Continue                                      " << endl;
     cout << "   r or R:  Thrusts to be Equal (Average)                 " << endl;
@@ -262,6 +275,9 @@ bool DiffThrust::handleCharInput(char c)
 
   m_desired_thrust_l = (double)(dlft);
   m_desired_thrust_r = (double)(drgt);
+
+  m_desired_thrust_l = vclip(m_desired_thrust_l, -100, 100);
+  m_desired_thrust_r = vclip(m_desired_thrust_r, -100, 100);
 
   return(true);
 }
