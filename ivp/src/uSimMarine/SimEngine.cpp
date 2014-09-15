@@ -194,7 +194,65 @@ void SimEngine::propagateHeading(NodeRecord& record,
   record.setYaw(-degToRadians(angle180(new_heading)));
 }
 
+//--------------------------------------------------------------------
+// Procedure: propagateSpeedDiffMode
+
+void SimEngine::propagateSpeedDiffMode(NodeRecord& record, const ThrustMap& tmap,
+				       double delta_time, 
+				       double thrust_lft,
+				       double thrust_rgt, 
+				       double max_accel, 
+				       double max_decel)
+{
+  // Sanity check
+  if(delta_time <= 0)
+    return;
+
+  double thrust = (thrust_lft + thrust_rgt) / 2.0;
+
+  // Calculate a pseudo rudder position in the range of [-100, 100]
+  // Since the rudder_diff is in the range [-200, 200], just divide by 2.
+  double rudder = (thrust_lft - thrust_rgt) / 2;
+
+  propagateSpeed(record, tmap, delta_time, thrust, rudder, max_accel, max_decel);  
+}
 
 
+//--------------------------------------------------------------------
+// Procedure: propagateHeadingDiffMode
 
+void SimEngine::propagateHeadingDiffMode(NodeRecord& record,
+					 double delta_time, 
+					 double thrust_lft,
+					 double thrust_rgt,
+					 double turn_rate,
+					 double rotate_speed)
+{
+  // Sanity check
+  if(delta_time <= 0)
+    return;
 
+  // Calculate the raw magnitude of the turn component. Since both thrusts
+  // range in [-100, 100], the maximum difference is 200. The turn_mag 
+  // should range between [-1, 1].
+  double turn_mag = (thrust_lft - thrust_rgt) / 200;
+
+  // double rate_mag = (turn_rate / 100);
+
+  // Initially we ballpark that a full-thrust forward left and full-thrust
+  // backward left should turn the vehicle in 10 seconds, or 36 degrees/sec
+  
+  double degs_per_second = 36 * turn_mag;    // [-36, 36]
+
+  // Step 1: Calculate raw delta change in heading
+  double delta_deg = degs_per_second * delta_time;
+
+  // Step 2: Calculate change in heading factoring external drift
+  delta_deg += (delta_time * rotate_speed);
+
+  // Step 3: Calculate final new heading in the range [0,359]
+  double prev_heading = record.getHeading();
+  double new_heading  = angle360(delta_deg + prev_heading);
+  record.setHeading(new_heading);
+  record.setYaw(-degToRadians(angle180(new_heading)));
+}

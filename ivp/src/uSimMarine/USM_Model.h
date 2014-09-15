@@ -42,14 +42,17 @@ public:
   // Setters
   bool   setParam(std::string, double);
 
-  void   setRudder(double v)        {m_rudder = v;};
-  void   setThrust(double v)        {m_thrust = v;};
+  void   setRudder(double v)        {m_rudder = v; m_mode="normal";};
+  void   setThrust(double v)        {m_thrust = v; m_mode="normal";};
   void   setElevator(double v)      {m_elevator = v;};
   void   setDualState(bool v)       {m_dual_state = v;}; 
   void   setDriftFresh(bool v)      {m_drift_fresh = v;}; 
   void   setPaused(bool); 
   void   setThrustFactor(double);
   void   setThrustReflect(bool);
+
+  void   setThrustLeft(double);
+  void   setThrustRight(double);
 
   bool   setDriftVector(std::string, bool add=false);
   void   magDriftVector(double);
@@ -92,8 +95,11 @@ public:
 
   double     m_water_depth;
 
-  double     m_turn_rate;
-  double     m_rotate_speed;
+  double     m_thrust_lft;
+  double     m_thrust_rgt;
+
+  double     m_turn_rate;         // turning characteristic of the vehicle
+  double     m_rotate_speed;      // External rotational drift force
   double     m_drift_x;           // meters per sec
   double     m_drift_y;           // meters per sec
   double     m_buoyancy_rate;
@@ -112,6 +118,8 @@ public:
   SimEngine  m_sim_engine;
 
   ThrustMap  m_thrust_map;
+
+  std::string m_mode;
 };
 #endif
 

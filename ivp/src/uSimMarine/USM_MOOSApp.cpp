@@ -70,6 +70,10 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.setThrust(dval);
     else if(key == "DESIRED_RUDDER")
       m_model.setRudder(dval);
+    else if(key == "THRUST_L")
+      m_model.setThrustLeft(dval);
+    else if(key == "THRUST_R")
+      m_model.setThrustRight(dval);
     else if(key == "DESIRED_ELEVATOR")
       m_model.setElevator(dval);
     else if(key == "USM_SIM_PAUSED")
@@ -359,6 +363,9 @@ void USM_MOOSApp::registerVariables()
   m_Comms.Register("DESIRED_RUDDER", 0);
   m_Comms.Register("DESIRED_THRUST", 0);
   m_Comms.Register("DESIRED_ELEVATOR", 0);
+
+  m_Comms.Register("THRUST_L", 0);
+  m_Comms.Register("THRUST_R", 0);
 
   m_Comms.Register("USM_BUOYANCY_RATE", 0);  // Deprecated
   m_Comms.Register("BUOYANCY_RATE", 0);

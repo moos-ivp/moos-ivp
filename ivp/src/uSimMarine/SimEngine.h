@@ -49,6 +49,15 @@ public:
   void propagateHeading(NodeRecord&, double delta_time, double rudder,
 			double thrust, double turn_rate, 
 			double rotate_speed);
+
+  // Differential Thrust Modes
+  void propagateSpeedDiffMode(NodeRecord&, const ThrustMap&, double delta_time, 
+			      double thrust_left, double thrust_right,
+			      double max_accel, double max_decel);
+  
+  void propagateHeadingDiffMode(NodeRecord&, double delta_time, double rudder,
+				double thrust_left, double thrust_right, 
+				double rotate_speed);
 };
 
 #endif

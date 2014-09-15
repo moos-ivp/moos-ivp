@@ -58,6 +58,9 @@ USM_Model::USM_Model()
   m_drift_fresh  = true;
   m_water_depth  = 0;    // zero means nothing known, no altitude reported
 
+  m_mode         = "normal";  // vs. "differential"
+  m_thrust_lft   = 0;
+  m_thrust_rgt   = 0;
 }
 
 //------------------------------------------------------------------------
@@ -253,6 +256,34 @@ void USM_Model::setThrustFactor(double value)
 void USM_Model::setThrustReflect(bool value)
 {
   m_thrust_map.setReflect(value);
+}
+
+//------------------------------------------------------------------------
+// Procedure: setThrustLeft
+
+void USM_Model::setThrustLeft(double val)
+{
+  if(val < -100)
+    val = -100;
+  else if(val > 100)
+    val = 100;
+
+  m_thrust_lft = val;
+  m_mode = "differential";
+}
+
+//------------------------------------------------------------------------
+// Procedure: setThrustRight
+
+void USM_Model::setThrustRight(double val)
+{
+  if(val < -100)
+    val = -100;
+  else if(val > 100)
+    val = 100;
+
+  m_thrust_rgt = val;
+  m_mode = "differential";
 }
 
 //--------------------------------------------------------------------- 
