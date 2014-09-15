@@ -26,7 +26,8 @@ class PoseKeep : public AppCastingMOOSApp
    bool buildReport();
    void adjustHeading();
    void rotateVehicle(double);
-   
+   void checkForTimeOut();
+
    bool handleMailHoldPoint(std::string);
    bool handleConfigHoldTolerance(std::string);
    bool handleConfigHoldDuration(std::string);
@@ -51,6 +52,8 @@ class PoseKeep : public AppCastingMOOSApp
    double  m_hold_x;
    double  m_hold_y;
 
+   double  m_start_time;
+   
    double  m_osx; 
    double  m_osy;
    bool    m_osx_set;

@@ -30,6 +30,8 @@ PoseKeep::PoseKeep()
   m_adjustment   = 0;
   m_tolerance    = 1;   // degrees
 
+  m_start_time = 0;
+
   m_hold_x = 0;
   m_hold_y = 0;
 
@@ -81,9 +83,15 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
       m_osy_set = true;
     }
     else if(key == "DEPLOY") {
-      m_active = false;
-      if(tolower(sval) == "hold")
+      if(tolower(sval) == "hold") {
+	if(m_active == false)
+	  m_start_time = MOOSTime();
 	m_active = true;
+      }
+      else {
+	m_active = false;
+	m_start_time = 0;
+      }
     }
     else if(key == "HOLD_POINT")
       handleMailHoldPoint(sval);
@@ -114,8 +122,8 @@ bool PoseKeep::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
-  cout << "*" << flush;
-
+  checkForTimeOut();
+  
   if(m_active) 
     adjustHeading();
 
@@ -224,6 +232,24 @@ void PoseKeep::rotateVehicle(double val)
   
   Notify("DESIRED_THRUST_L", m_thrust_l);
   Notify("DESIRED_THRUST_R", m_thrust_r);
+}
+
+
+//------------------------------------------------------------
+// Procedure: checkForTimeOut
+
+void PoseKeep::checkForTimeOut() 
+{
+  // Sanity checks
+  if(m_start_time == 0)
+    return;
+  if(m_duration < 0)
+    return;
+  
+  double elapsed = MOOSTime() - m_start_time;
+  if(elapsed >= m_duration) {
+    m_active = false;
+  }
 }
 
 
