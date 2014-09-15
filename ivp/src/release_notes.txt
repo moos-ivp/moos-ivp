@@ -1,3 +1,24 @@
+
+o pMarineViewer
+  Fixed problem where MVIEWER_LCLICK was not being published correctly
+  Added ability to "clear" geometric objects with PMV_CLEAR subscription
+
+o lib_geometry
+  Added bearingMinMaxToPoly utility
+
+o BHV_AvoidObstacles
+ 
+o New application: pObstacleMgr
+
+o New application: iDiffThrust
+
+o uSimMarine
+  - Added support for differential thrust mode
+  - Bug fix - negative thrust was not working properly
+
+
+
+
 14.7.x
 
 o MOOS Emacs Mode
