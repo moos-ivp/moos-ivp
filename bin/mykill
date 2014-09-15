@@ -16,6 +16,11 @@ else
     echo "moos was not running, doing nothing."
 fi
 
+killall -9 iActuationRobotx iVelodyne pFeatureTracker       \
+        pFeatureVision pGenWaypoint pManageAcousticVars     \
+        pMarinePIDWAMV pObstacleMgr pTask2 pTask3 pTask4    \
+        pTask5 uSimAcousticOutput uSimMarineWAMV            \
+        uTaskManager
 
 killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav  \
         pHelm pHelmIvP pMarineViewer iMarineSim uSimMarine  \
