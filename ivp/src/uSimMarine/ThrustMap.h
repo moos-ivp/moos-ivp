@@ -48,6 +48,7 @@ public:
   bool   isAscending() const;
   bool   isConfigured();
   bool   usingThrustFactor() const;
+  bool   usingReflect() const {return(m_reflect_negative);};
 
   std::string getMapPos() const;
   std::string getMapNeg() const;

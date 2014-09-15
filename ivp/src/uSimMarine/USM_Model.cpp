@@ -58,7 +58,7 @@ USM_Model::USM_Model()
   m_drift_fresh  = true;
   m_water_depth  = 0;    // zero means nothing known, no altitude reported
 
-  m_mode         = "normal";  // vs. "differential"
+  m_thrust_mode  = "normal";  // vs. "differential"
   m_thrust_lft   = 0;
   m_thrust_rgt   = 0;
 }
@@ -268,8 +268,8 @@ void USM_Model::setThrustLeft(double val)
   else if(val > 100)
     val = 100;
 
-  m_thrust_lft = val;
-  m_mode = "differential";
+  m_thrust_lft  = val;
+  m_thrust_mode = "differential";
 }
 
 //------------------------------------------------------------------------
@@ -282,8 +282,8 @@ void USM_Model::setThrustRight(double val)
   else if(val > 100)
     val = 100;
 
-  m_thrust_rgt = val;
-  m_mode = "differential";
+  m_thrust_rgt  = val;
+  m_thrust_mode = "differential";
 }
 
 //--------------------------------------------------------------------- 
@@ -396,13 +396,23 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
   double prior_spd = record.getSpeed();
   double prior_hdg = record.getHeading();
 
-  m_sim_engine.propagateSpeed(record, m_thrust_map, delta_time,
-			      m_thrust, m_rudder, m_max_acceleration,
-			      m_max_deceleration);
+  if(m_thrust_mode == "differential") {
+    m_sim_engine.propagateSpeedDiffMode(record, m_thrust_map, delta_time,
+					m_thrust_lft, m_thrust_rgt, m_max_acceleration,
+					m_max_deceleration);
+    m_sim_engine.propagateHeadingDiffMode(record, delta_time, m_thrust_lft, 
+					  m_thrust_rgt, m_turn_rate, 
+					  m_rotate_speed);
+  }
+  else {
+    m_sim_engine.propagateSpeed(record, m_thrust_map, delta_time,
+				m_thrust, m_rudder, m_max_acceleration,
+				m_max_deceleration);
+    m_sim_engine.propagateHeading(record, delta_time, m_rudder, 
+				  m_thrust, m_turn_rate, 
+				  m_rotate_speed);
+  }
 
-  m_sim_engine.propagateHeading(record, delta_time, m_rudder, 
-				m_thrust, m_turn_rate, 
-				m_rotate_speed);
 
   m_sim_engine.propagateDepth(record, delta_time, 
 			      m_elevator, m_buoyancy_rate, 

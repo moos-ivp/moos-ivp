@@ -55,6 +55,9 @@ void SimEngine::propagate(NodeRecord &record, double delta_time,
   double ydot  = (cos_ang * speed);
 
   double new_speed = hypot(xdot, ydot);
+  if(speed < 0)               // Added mikerb sep1514 bugfix
+    new_speed = -new_speed;
+
   double new_x = prev_x + (xdot * delta_time) + (drift_x * delta_time);
   double new_y = prev_y + (ydot * delta_time) + (drift_y * delta_time);
   double new_time = record.getTimeStamp() + delta_time;
@@ -133,7 +136,7 @@ void SimEngine::propagateSpeed(NodeRecord& record, const ThrustMap& tmap,
 
   double next_speed  = tmap.getSpeedValue(thrust);
   double prev_speed  = record.getSpeed();
-  
+
   // Apply a slowing penalty proportional to the rudder/turn
   rudder = vclip(rudder, -100, 100);
   double rudder_magnitude = fabs(rudder);

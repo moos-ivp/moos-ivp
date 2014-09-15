@@ -42,8 +42,8 @@ public:
   // Setters
   bool   setParam(std::string, double);
 
-  void   setRudder(double v)        {m_rudder = v; m_mode="normal";};
-  void   setThrust(double v)        {m_thrust = v; m_mode="normal";};
+  void   setRudder(double v)        {m_rudder = v; m_thrust_mode="normal";};
+  void   setThrust(double v)        {m_thrust = v; m_thrust_mode="normal";};
   void   setElevator(double v)      {m_elevator = v;};
   void   setDualState(bool v)       {m_dual_state = v;}; 
   void   setDriftFresh(bool v)      {m_drift_fresh = v;}; 
@@ -62,6 +62,8 @@ public:
 
   // Getters
   double     getThrust() const       {return(m_thrust);};
+  double     getThrustLeft() const   {return(m_thrust_lft);};
+  double     getThrustRight() const  {return(m_thrust_rgt);};
   double     getDriftX() const       {return(m_drift_x);};
   double     getDriftY() const       {return(m_drift_y);};
   double     getDriftMag() const;
@@ -83,6 +85,7 @@ public:
   std::string getThrustMapPos() const {return(m_thrust_map.getMapPos());};
   std::string getThrustMapNeg() const {return(m_thrust_map.getMapNeg());};
   std::string getDriftSummary();
+  std::string getThrustMode() const   {return(m_thrust_mode);};
 
  protected:
   void   propagateNodeRecord(NodeRecord&, double delta_time, bool);
@@ -119,7 +122,7 @@ public:
 
   ThrustMap  m_thrust_map;
 
-  std::string m_mode;
+  std::string m_thrust_mode;
 };
 #endif
 

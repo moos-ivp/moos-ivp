@@ -70,9 +70,9 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.setThrust(dval);
     else if(key == "DESIRED_RUDDER")
       m_model.setRudder(dval);
-    else if(key == "THRUST_L")
+    else if(key == "DESIRED_THRUST_L")
       m_model.setThrustLeft(dval);
-    else if(key == "THRUST_R")
+    else if(key == "DESIRED_THRUST_R")
       m_model.setThrustRight(dval);
     else if(key == "DESIRED_ELEVATOR")
       m_model.setElevator(dval);
@@ -364,8 +364,8 @@ void USM_MOOSApp::registerVariables()
   m_Comms.Register("DESIRED_THRUST", 0);
   m_Comms.Register("DESIRED_ELEVATOR", 0);
 
-  m_Comms.Register("THRUST_L", 0);
-  m_Comms.Register("THRUST_R", 0);
+  m_Comms.Register("DESIRED_THRUST_L", 0);
+  m_Comms.Register("DESIRED_THRUST_R", 0);
 
   m_Comms.Register("USM_BUOYANCY_RATE", 0);  // Deprecated
   m_Comms.Register("BUOYANCY_RATE", 0);
@@ -788,6 +788,14 @@ bool USM_MOOSApp::buildReport()
   string max_deceleration = doubleToStringX(m_model.getMaxDeceleration(),6);
   string posmap = m_model.getThrustMapPos();
   string negmap = m_model.getThrustMapNeg();
+  string thrust_mode = m_model.getThrustMode();
+  string desired_thrust_l = "n/a";
+  string desired_thrust_r = "n/a";
+  if(thrust_mode == "differential") {
+    desired_thrust_l = doubleToStringX(m_model.getThrustLeft(),2);
+    desired_thrust_r = doubleToStringX(m_model.getThrustRight(),2);
+  }
+
   if(posmap == "")
     posmap = "n/a";
   if(negmap == "")
@@ -796,6 +804,12 @@ bool USM_MOOSApp::buildReport()
   m_msgs << "     Negative Thrust Map: " << negmap << endl;
   m_msgs << "        Max Accereration: " << max_acceleration << endl;
   m_msgs << "        Max Decereration: " << max_deceleration << endl;
+
+  m_msgs << "             Thrust Mode: " << thrust_mode << endl;
+  m_msgs << "        DESIRED_THRUST_L: " << desired_thrust_l << endl;
+  m_msgs << "        DESIRED_THRUST_R: " << desired_thrust_r << endl;
+
+
 
   // Part 5: Speed/Depth Change Info ===========================
   string max_depth_rate   = doubleToStringX(m_model.getMaxDepthRate(),6);

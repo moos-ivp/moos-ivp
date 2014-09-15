@@ -317,8 +317,12 @@ string ThrustMap::getMapNeg() const
 double ThrustMap::getSpeedValueNeg(double thrust) const
 {
   if(m_neg_mapping.size() == 0) {
-    if(m_reflect_negative)
-      return(-1 * getSpeedValuePos(-thrust));
+    if(m_reflect_negative) {
+      double pos_thrust = -1 * thrust;
+      double pos_speed  = getSpeedValuePos(pos_thrust);
+      double ret_speed  = -1 * pos_speed;
+      return(ret_speed);
+    }
     else
       return(0);
   }
@@ -469,9 +473,9 @@ double ThrustMap::getThrustValuePos(double speed) const
   else
     thrust_val = (speed - b) / slope;
 
-  cout << "left_val:" << left_val;
-  cout << "right_val:" << right_val;
-  cout << "Slope: " << slope << endl;
+  //cout << "left_val:" << left_val;
+  //cout << "right_val:" << right_val;
+  //cout << "Slope: " << slope << endl;
   return(thrust_val);
 }
 
