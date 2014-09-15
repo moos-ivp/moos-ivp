@@ -30,6 +30,9 @@ PoseKeep::PoseKeep()
   m_adjustment   = 0;
   m_tolerance    = 2;   // degrees
 
+  m_hold_x = 0;
+  m_hold_y = 0;
+
   m_active = false;
 }
 
@@ -67,12 +70,21 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
       if(dval >= 0)
 	m_tolerance = dval;
     }
+    else if(key == "NAV_X") {
+      m_osx = dval;
+      m_osx_set = true;
+    }
+    else if(key == "NAV_Y") {
+      m_osy = dval;
+      m_osy_set = true;
+    }
     else if(key == "DEPLOY") {
+      m_active = false;
       if(tolower(sval) == "hold")
 	m_active = true;
-      else
-	m_active = false;
     }
+    else if(key == "HOLD_POINT")
+      handleMailHoldPoint(sval);
     
     else if(key != "APPCAST_REQ") // handle by AppCastingMOOSApp
       reportRunWarning("Unhandled Mail: " + key);
@@ -97,6 +109,8 @@ bool PoseKeep::OnConnectToServer()
 bool PoseKeep::Iterate()
 {
   AppCastingMOOSApp::Iterate();
+
+  cout << "*" << flush;
 
   if(m_active) 
     adjustHeading();
@@ -128,9 +142,6 @@ bool PoseKeep::OnStartUp()
     bool handled = false;
     if((param == "hold_tolerance") && isNumber(value)) 
       handled = handleConfigHoldTolerance(value);
-    else if(param == "BAR") {
-      handled = true;
-    }
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -148,16 +159,16 @@ void PoseKeep::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   Register("DEPLOY", 0);
+  Register("NAV_X", 0);
+  Register("NAV_Y", 0);
+  Register("NAV_HEADING", 0);
+
   Register("HOLD_X", 0);
   Register("HOLD_Y", 0);
   Register("HOLD_XY", 0);
-  Register("HOLD_LOOKAT_X", 0);
-  Register("HOLD_LOOKAT_Y", 0);
-  Register("HOLD_DURATION", 0);
   Register("HOLD_DURATION", 0);
   Register("HOLD_ENDFLAG", 0);
   Register("HOLD_HEADING", 0);
-  Register("NAV_HEADING", 0);
 }
 
 
@@ -171,11 +182,26 @@ void PoseKeep::adjustHeading()
 
   // Heading diff should be in the range [-180, 180]
   m_heading_diff = angle180(m_curr_heading - m_hold_heading);
+  m_adjustment   = 0;
 
-  if(m_heading_diff < m_tolerance)
+  double abs_heading_diff = m_heading_diff;
+  if(abs_heading_diff < 0)
+    abs_heading_diff = abs_heading_diff * -1;
+
+  if(abs_heading_diff > m_tolerance)
+    m_adjustment = m_heading_diff * 100 / 180;
+
+  string summary = "diff=" + doubleToString(m_heading_diff,1);
+  summary += ", adjust=" + doubleToString(m_adjustment,3);
+
+  if(abs_heading_diff <= m_tolerance)
     return;
 
-  m_adjustment = m_heading_diff * 100 / 180;
+  Notify("HOLD_DEBUG", summary);
+
+  m_summaries.push_front(summary);
+  if(m_summaries.size() > 15)
+    m_summaries.pop_back();
 
   rotateVehicle(m_adjustment);
 }
@@ -189,8 +215,11 @@ void PoseKeep::adjustHeading()
 void PoseKeep::rotateVehicle(double val) 
 {
   val = vclip(val, -100, 100);
-  m_thrust_l = val;
-  m_thrust_r = -val;
+  m_thrust_l = -val;
+  m_thrust_r = val;
+  
+  Notify("DESIRED_THRUST_L", m_thrust_l);
+  Notify("DESIRED_THRUST_R", m_thrust_r);
 }
 
 
@@ -209,12 +238,52 @@ bool PoseKeep::handleConfigHoldTolerance(string value)
   return(true);
 }
 
+//------------------------------------------------------------
+// Procedure: handleMailHoldPoint
+//   Example: x=-19.0,y=-36.0
+
+bool PoseKeep::handleMailHoldPoint(string str) 
+{
+  string xpos, ypos;
+
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = svector[i];
+    if(param == "x")
+      xpos = value;
+    else if(param == "y")
+      ypos = value;
+  }
+
+  if((xpos == "") || (ypos == "") || !isNumber(xpos) || !isNumber(ypos)) {
+    reportConfigWarning("HOLD_POINT x or y value is missing or improper: " + str);
+    return(false);
+  }
+
+  m_hold_x = atof(xpos.c_str());
+  m_hold_y = atof(ypos.c_str());
+
+  
+  return(true);
+}
+
 
 //------------------------------------------------------------
 // Procedure: buildReport()
 
 bool PoseKeep::buildReport() 
 {
+  string s_active = boolToString(m_active);
+
+  string s_tolerance = doubleToStringX(m_tolerance,1);
+
+  string s_curr_position = "n/a";
+  if(m_osx_set && m_osy_set) {
+    s_curr_position = "(" + doubleToString(m_osx,1) + ",";
+    s_curr_position += doubleToString(m_osy,1) + ")";
+  }
+
   string s_curr_heading = doubleToString(m_curr_heading, 2);
   string s_tstamp = doubleToString((MOOSTime() - m_curr_heading_tstamp), 2);
   if(m_curr_heading_tstamp == 0)
@@ -224,17 +293,39 @@ bool PoseKeep::buildReport()
   if(!m_hold_heading_set)
     s_hold_heading = "n/a";
 
-  string s_active = boolToString(m_active);
+  string s_heading_diff = doubleToString(m_heading_diff, 1);
+  string s_adjustment   = doubleToString(m_adjustment, 1);
 
+  string s_thrust_l = "n/a";
+  string s_thrust_r = "n/a";
+  if(m_active) {
+    s_thrust_l = doubleToStringX(m_thrust_l, 1);
+    s_thrust_r = doubleToStringX(m_thrust_r, 1);
+  }
 
   m_msgs << "============================================" << endl;
   m_msgs << "Settings:                                   " << endl;
-  m_msgs << "           Active: " << s_active << endl;
-  m_msgs << "  Current Heading: " << s_curr_heading << " (" << s_tstamp << ")" << endl;
-  m_msgs << "     Hold Heading: " << s_hold_heading << endl;
+  m_msgs << "           Active: " << s_active              << endl;
+  m_msgs << "        Tolerance: " << s_tolerance << " (degrees)" << endl;
+  m_msgs << " Current Position: " << s_curr_position       << endl;
+  m_msgs << "  Current Heading: " << s_curr_heading << 
+    " (updated " << s_tstamp  << " secs ago)" << endl;
+  m_msgs << "     Hold Heading: " << s_hold_heading        << endl;
   m_msgs << "" << endl;
-  m_msgs << "" << endl;
-  m_msgs << "============================================ \n";
+  m_msgs << "     Heading Diff: " << s_heading_diff        << endl;
+  m_msgs << "       Adjustment: " << s_adjustment          << endl;
+  m_msgs << "                                            " << endl;
+  m_msgs << "     THRUST_LEFT:  " << s_thrust_l            << endl;
+  m_msgs << "     THRUST_RIGHT: " << s_thrust_r            << endl;
+  m_msgs << "                                            " << endl;
+  m_msgs << "============================================" << endl;
+  m_msgs << "Summaries:                                  " << endl;
+  
+  list<string>::iterator p;
+  for(p=m_summaries.begin(); p!=m_summaries.end(); p++) {
+    string summary = *p;
+    m_msgs << "  " << summary << endl;
+  }
 
   return(true);
 }
