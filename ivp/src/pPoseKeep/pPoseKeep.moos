@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pPoseKeep config block
+
+ProcessConfig = pPoseKeep
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

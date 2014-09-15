@@ -48,6 +48,8 @@ public: // virtual functions
   bool      ownshipInObstacle(bool=false);
   bool      isObstaclePert(unsigned int ix);
 
+  bool      bearingMinMaxToBufferPoly(double& bmin, double& bmax);
+
   XYPolygon getObstacleOrig(unsigned int ix);
   XYPolygon getObstacleBuff(unsigned int ix);
 

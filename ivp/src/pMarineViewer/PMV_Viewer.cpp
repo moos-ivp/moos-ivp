@@ -65,6 +65,8 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   VarDataPair rgt_pair("MVIEWER_RCLICK", str);
   lft_pair.set_key("any_left");
   rgt_pair.set_key("any_right");
+  lft_pair.set_ptype("left");
+  rgt_pair.set_ptype("right");
   m_var_data_pairs_all.push_back(lft_pair);
   m_var_data_pairs_all.push_back(rgt_pair);
 }

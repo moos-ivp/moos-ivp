@@ -308,6 +308,17 @@ bool AOF_AvoidObstacles::isObstaclePert(unsigned int ix)
 }
 
 //----------------------------------------------------------------
+// Procedure: bearingMinMaxToBufferPoly()
+
+bool AOF_AvoidObstacles::bearingMinMaxToBufferPoly(double& bmin, double& bmax)
+{
+  if(m_obstacles_buff.size() != 1)
+    return(false);
+
+  return(bearingMinMaxToPoly(m_osx, m_osy, m_obstacles_buff[0], bmin, bmax));    
+}
+
+//----------------------------------------------------------------
 // Procedure: getObstacleOrig
 
 XYPolygon AOF_AvoidObstacles::getObstacleOrig(unsigned int ix)

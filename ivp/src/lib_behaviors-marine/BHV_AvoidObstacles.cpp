@@ -222,6 +222,8 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   IvPFunction *ipf = 0;
   OF_Reflector reflector(m_aof_avoid, 1);
 
+
+#if 1
   if(m_build_info != "")
     reflector.create(m_build_info);
   else {
@@ -229,6 +231,26 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
     reflector.setParam("uniform_grid",  "discrete@course:6,speed:6");
     reflector.create();
   }
+#endif
+#if 0
+  unsigned int crs_choices = m_domain.getVarPoints("course");
+  unsigned int spd_choices = m_domain.getVarPoints("speed");
+
+  double bearing_min, bearing_max;
+  m_aof_avoid->bearingMinMaxToBufferPoly(bearing_min, bearing_max);
+
+  relector.create(1);
+  relector.setParam();
+
+  reflector.setParam("uniform_piece", "discrete @ x:5,y:5");  
+  reflector.setParam("refine_region", "native @ x:10:24,y:-25:20");  
+  reflector.setParam("refine_piece",  "discrete @ x:2,y:2");  
+
+
+#endif
+
+
+
 
   if(!reflector.stateOK())
     postWMessage(reflector.getWarnings());
