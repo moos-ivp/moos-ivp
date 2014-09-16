@@ -254,10 +254,16 @@ void PoseKeep::adjustHeading()
 
 void PoseKeep::rotateVehicle(double val) 
 {
+  if((val > 0) && (val < 10))
+    val = 10;
+  if((val < 0) && (val > -10))
+    val = -10;
+
   val = vclip(val, -100, 100);
   m_thrust_l = -val;
   m_thrust_r = val;
   
+
   Notify("DESIRED_THRUST_L", m_thrust_l);
   Notify("DESIRED_THRUST_R", m_thrust_r);
 }
