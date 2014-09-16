@@ -36,10 +36,12 @@ class PoseKeep : public AppCastingMOOSApp
    bool handleConfigHoldDuration(std::string);
    bool handleConfigEndFlag(std::string);
 
-   bool addEndFlag(std::string);
+   bool addFlag(std::string flag_type, std::string flag);
 
  protected:
    void registerVariables();
+
+   bool postFlags(std::string flagtype);
 
  private: // Configuration variables
    double  m_tolerance;
@@ -70,7 +72,9 @@ class PoseKeep : public AppCastingMOOSApp
 
    std::list<std::string> m_summaries;
 
-   std::vector<VarDataPair> m_endflags;
+   std::vector<VarDataPair> m_active_flags;
+   std::vector<VarDataPair> m_inactive_flags;
+   std::vector<VarDataPair> m_end_flags;
 };
 
 #endif 

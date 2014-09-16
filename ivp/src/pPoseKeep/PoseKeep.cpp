@@ -84,13 +84,16 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(key == "DEPLOY") {
       if(tolower(sval) == "hold") {
-	if(m_active == false)
+	if(m_active == false) {
+	  postFlags("active_flags")
 	  m_start_time = MOOSTime();
+	}
 	m_active = true;
       }
       else {
 	m_active = false;
 	m_start_time = 0;
+	postFlags("inactive_flags");
       }
     }
     else if(key == "HOLD_POINT")
@@ -255,8 +258,11 @@ void PoseKeep::checkForTimeOut()
     return;
 
   m_active = false;
-  for(unsigned int i=0; i<m_endflags.size(); i++) {
-    VarDataPair pair = m_endflags[i];
+  postFlags("inactive_flag");
+  postFlags("endflag_flag");
+
+  for(unsigned int i=0; i<m_end_flags.size(); i++) {
+    VarDataPair pair = m_end_flags[i];
     string var = pair.get_var();
     if(pair.is_string())
       Notify(var, pair.get_sdata());
@@ -301,7 +307,7 @@ bool PoseKeep::handleConfigHoldDuration(string value)
 
 bool PoseKeep::handleConfigEndFlag(string value)
 {
-  bool ok = addEndFlag(value);
+  bool ok = addFlag("end_flag", value);
   if(!ok)
     reportConfigWarning("Unhandled endflag parameter: " + value);
 
@@ -314,11 +320,11 @@ bool PoseKeep::handleConfigEndFlag(string value)
 bool PoseKeep::handleMailEndFlag(string value)
 {
   if(tolower(value) == "clear") {
-    m_endflags.clear();
+    m_end_flags.clear();
     return(true);
   }
 
-  bool ok = addEndFlag(value);
+  bool ok = addFlag("end_flag", value);
   if(!ok)
     reportRunWarning("Unhandled Mail: HOLD_ENDFLAG=" + value);
 
@@ -326,10 +332,16 @@ bool PoseKeep::handleMailEndFlag(string value)
 }
 
 //------------------------------------------------------------
-// Procedure: addEndFlag
+// Procedure: addFlag
 
-bool PoseKeep::addEndFlag(string str)
+bool PoseKeep::addFlag(string flag_type, string str)
 {
+  // Sanity check
+  if((flag_type != "end_flag") && (flag_type != "end_flags") && 
+     (flag_type != "active_flag") && (flag_type != "active_flags") && 
+     (flag_type != "inactive_flag") && (flag_type != "inactive_flags"))
+    return(false);
+
   string var, sval, dval;
 
   vector<string> svector = parseString(str, ',');
@@ -351,11 +363,21 @@ bool PoseKeep::addEndFlag(string str)
   
   if(sval != "") {
     VarDataPair pair(var, sval);
-    m_endflags.push_back(pair);
+    if((flag_type == "endflag") || (flag_type == "endflags"))
+      m_end_flags.push_back(pair);
+    else if((flag_type == "activeflag") || (flag_type == "activeflags"))
+      m_active_flags.push_back(pair);
+    else 
+      m_inactive_flags.push_back(pair);
   }
   else if((dval != "") && isNumber(dval)) {
     VarDataPair pair(var, dval.c_str());
-    m_endflags.push_back(pair);
+    if(flag_type == "endflag")
+      m_end_flags.push_back(pair);
+    else if(flag_type == "activeflag")
+      m_active_flags.push_back(pair);
+    else
+      m_inactive_flags.push_back(pair);
   }
   else 
     return(false);
@@ -401,6 +423,39 @@ bool PoseKeep::handleMailHoldPoint(string str)
   
   return(true);
 }
+
+
+//------------------------------------------------------------
+// Procedure: postFlags()
+
+bool PoseKeep::postFlags(string flag_type)  
+{
+  // Sanity check
+  if((flag_type != "end_flag") && (flag_type != "end_flags") && 
+     (flag_type != "active_flag") && (flag_type != "active_flags") && 
+     (flag_type != "inactive_flag") && (flag_type != "inactive_flags"))
+    return(false);
+
+  vector<VarDataPair> flags;
+  if((flag_type == "end_flag") || (flag_type == "end_flags"))
+    flags = m_end_flags;
+  else if((flag_type == "active_flag") || (flag_type == "active_flags"))
+    flags = m_active_flags;
+  else if((flag_type == "inactive_flag") || (flag_type == "inactive_flag"))
+    flags = m_inactive_flags;
+  
+  for(unsigned int i=0; i<flags.size(); i++) {
+    VarDataPair pair = flags[i];
+    string var = pair.get_var();
+    if(pair.is_string())
+      Notify(var, pair.get_sdata());
+    else
+      Notify(var, pair.get_ddata());
+  }
+
+  return(true);
+}
+
 
 
 //------------------------------------------------------------
