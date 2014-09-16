@@ -92,9 +92,13 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_active = true;
       }
       else {
+	if(m_active) {
+	  Notify("DESIRED_THRUST_L", 0.0);
+	  Notify("DESIRED_THRUST_R", 0.0);
+	  postFlags("inactive_flags");
+	}
 	m_active = false;
 	m_start_time = 0;
-	postFlags("inactive_flags");
       }
     }
     else if(key == "HOLD_POINT")
@@ -229,8 +233,6 @@ void PoseKeep::adjustHeading()
   if(abs_heading_diff <= m_tolerance)
     return;
 
-  Notify("HOLD_DEBUG", summary);
-
   m_summaries.push_front(summary);
   if(m_summaries.size() > 15)
     m_summaries.pop_back();
@@ -273,15 +275,6 @@ void PoseKeep::checkForTimeOut()
   m_active = false;
   postFlags("inactive_flag");
   postFlags("endflag_flag");
-
-  for(unsigned int i=0; i<m_end_flags.size(); i++) {
-    VarDataPair pair = m_end_flags[i];
-    string var = pair.get_var();
-    if(pair.is_string())
-      Notify(var, pair.get_sdata());
-    else
-      Notify(var, pair.get_ddata());
-  }
 }
 
 
@@ -454,7 +447,7 @@ bool PoseKeep::postFlags(string flag_type)
     flags = m_end_flags;
   else if((flag_type == "active_flag") || (flag_type == "active_flags"))
     flags = m_active_flags;
-  else if((flag_type == "inactive_flag") || (flag_type == "inactive_flag"))
+  else if((flag_type == "inactive_flag") || (flag_type == "inactive_flags"))
     flags = m_inactive_flags;
   
   for(unsigned int i=0; i<flags.size(); i++) {
