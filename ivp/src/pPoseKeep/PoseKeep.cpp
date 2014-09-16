@@ -75,6 +75,12 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
       if(dval >= 0)
 	m_tolerance = dval;
     }
+    else if(key == "HOLD_DURATION") {
+      if(dval >= 0) {
+	m_duration = dval;
+	m_start_time = MOOSTime();
+      }
+    }
     else if(key == "NAV_X") {
       m_osx = dval;
       m_osx_set = true;
