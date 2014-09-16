@@ -251,8 +251,17 @@ void PoseKeep::checkForTimeOut()
     return;
   
   double elapsed = MOOSTime() - m_start_time;
-  if(elapsed >= m_duration) {
-    m_active = false;
+  if(elapsed < m_duration) 
+    return;
+
+  m_active = false;
+  for(unsigned int i=0; i<m_endflags.size(); i++) {
+    VarDataPair pair = m_endflags[i];
+    string var = pair.get_var();
+    if(pair.is_string())
+      Notify(var, pair.get_sdata());
+    else
+      Notify(var, pair.get_ddata());
   }
 }
 
@@ -336,6 +345,9 @@ bool PoseKeep::addEndFlag(string str)
     else 
       return(false);
   }
+
+  if(strContainsWhite(var))
+    return(false);
   
   if(sval != "") {
     VarDataPair pair(var, sval);
