@@ -95,6 +95,8 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(key == "HOLD_POINT")
       handleMailHoldPoint(sval);
+    else if(key == "HOLD_ENDFLAG")
+      handleMailEndFlag(sval);
     else if(key == "MVIEWER_LCLICK")
       handleMailHoldPoint(sval);
     
@@ -156,6 +158,8 @@ bool PoseKeep::OnStartUp()
       handled = handleConfigHoldTolerance(value);
     else if((param == "hold_duration") && isNumber(value)) 
       handled = handleConfigHoldDuration(value);
+    else if((param == "endflag") && isNumber(value)) 
+      handled = handleConfigEndFlag(value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -280,6 +284,70 @@ bool PoseKeep::handleConfigHoldDuration(string value)
   }
 
   m_duration = dval;
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: handleConfigEndFlag
+
+bool PoseKeep::handleConfigEndFlag(string value)
+{
+  bool ok = addEndFlag(value);
+  if(!ok)
+    reportConfigWarning("Unhandled endflag parameter: " + value);
+
+  return(ok);
+}
+
+//------------------------------------------------------------
+// Procedure: handleMailEndFlag
+
+bool PoseKeep::handleMailEndFlag(string value)
+{
+  if(tolower(value) == "clear") {
+    m_endflags.clear();
+    return(true);
+  }
+
+  bool ok = addEndFlag(value);
+  if(!ok)
+    reportRunWarning("Unhandled Mail: HOLD_ENDFLAG=" + value);
+
+  return(ok);
+}
+
+//------------------------------------------------------------
+// Procedure: addEndFlag
+
+bool PoseKeep::addEndFlag(string str)
+{
+  string var, sval, dval;
+
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = svector[i];
+    if(param == "var")
+      var = value;
+    else if(param == "sval")
+      sval = value;
+    else if(param == "dval")
+      dval = value;
+    else 
+      return(false);
+  }
+  
+  if(sval != "") {
+    VarDataPair pair(var, sval);
+    m_endflags.push_back(pair);
+  }
+  else if((dval != "") && isNumber(dval)) {
+    VarDataPair pair(var, dval.c_str());
+    m_endflags.push_back(pair);
+  }
+  else 
+    return(false);
+
   return(true);
 }
 

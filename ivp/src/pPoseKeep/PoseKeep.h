@@ -9,6 +9,7 @@
 #define P_POSE_KEEP_HEADER
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
+#include "VarDataPair.h"
 
 class PoseKeep : public AppCastingMOOSApp
 {
@@ -29,8 +30,13 @@ class PoseKeep : public AppCastingMOOSApp
    void checkForTimeOut();
 
    bool handleMailHoldPoint(std::string);
+   bool handleMailEndFlag(std::string);
+
    bool handleConfigHoldTolerance(std::string);
    bool handleConfigHoldDuration(std::string);
+   bool handleConfigEndFlag(std::string);
+
+   bool addEndFlag(std::string);
 
  protected:
    void registerVariables();
@@ -63,6 +69,8 @@ class PoseKeep : public AppCastingMOOSApp
    double  m_curr_heading_tstamp;    
 
    std::list<std::string> m_summaries;
+
+   std::vector<VarDataPair> m_endflags;
 };
 
 #endif 
