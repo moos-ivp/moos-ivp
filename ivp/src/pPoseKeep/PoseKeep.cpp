@@ -273,6 +273,9 @@ void PoseKeep::checkForTimeOut()
     return;
 
   m_active = false;
+  Notify("DESIRED_THRUST_L", 0.0);
+  Notify("DESIRED_THRUST_R", 0.0);
+  
   postFlags("inactive_flag");
   postFlags("endflag_flag");
 }

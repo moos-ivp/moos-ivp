@@ -20,7 +20,7 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pPoseKeep application is used for               ");
+  blk("  The pPoseKeep application is used for                         ");
   blk("                                                                ");
   blk("                                                                ");
   blk("                                                                ");
@@ -34,15 +34,15 @@ void showHelpAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("Usage: pPoseKeep file.moos [OPTIONS]                   ");
+  blu("Usage: pPoseKeep file.moos [OPTIONS]                            ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch pPoseKeep with the given process name         ");
-  blk("      rather than pPoseKeep.                           ");
+  blk("      Launch pPoseKeep with the given process name              ");
+  blk("      rather than pPoseKeep.                                    ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -50,7 +50,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of pPoseKeep.        ");
+  blk("      Display the release version of pPoseKeep.                 ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -93,7 +93,7 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pPoseKeep INTERFACE                                    ");
+  blu("pPoseKeep INTERFACE                                             ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
