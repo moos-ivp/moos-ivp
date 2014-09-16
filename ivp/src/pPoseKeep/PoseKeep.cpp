@@ -62,6 +62,7 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
 
+    bool handled = true;
     if(key == "NAV_HEADING") {
       m_curr_heading_tstamp = MOOSTime();
       m_curr_heading = dval;
@@ -85,7 +86,7 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "DEPLOY") {
       if(tolower(sval) == "hold") {
 	if(m_active == false) {
-	  postFlags("active_flags")
+	  postFlags("active_flags");
 	  m_start_time = MOOSTime();
 	}
 	m_active = true;
@@ -98,13 +99,21 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(key == "HOLD_POINT")
       handleMailHoldPoint(sval);
-    else if(key == "HOLD_ENDFLAG")
-      handleMailEndFlag(sval);
+    else if(key == "HOLD_ENDFLAG") 
+      handled = handleMailFlag("end_flag", sval);
+    else if(key == "HOLD_ACTIVEFLAG") 
+      handled = handleMailFlag("active_flag", sval);
+    else if(key == "HOLD_INACTIVEFLAG") 
+      handled = handleMailFlag("inactive_flag", sval);
     else if(key == "MVIEWER_LCLICK")
       handleMailHoldPoint(sval);
     
     else if(key != "APPCAST_REQ") // handle by AppCastingMOOSApp
       reportRunWarning("Unhandled Mail: " + key);
+
+    // Post a warning for unhandled mail
+    if(!handled)
+      reportRunWarning("Unhandled Mail: " + key + "=" + sval);
   }
 	
    return(true);
@@ -161,8 +170,12 @@ bool PoseKeep::OnStartUp()
       handled = handleConfigHoldTolerance(value);
     else if((param == "hold_duration") && isNumber(value)) 
       handled = handleConfigHoldDuration(value);
-    else if((param == "endflag") && isNumber(value)) 
-      handled = handleConfigEndFlag(value);
+    else if(param == "endflag") 
+      handled = handleConfigFlag("end_flag", value);
+    else if(param == "activeflag") 
+      handled = handleConfigFlag("active_flag", value);
+    else if(param == "inactiveflag") 
+      handled = handleConfigFlag("inactive_flag", value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -303,28 +316,35 @@ bool PoseKeep::handleConfigHoldDuration(string value)
 }
 
 //------------------------------------------------------------
-// Procedure: handleConfigEndFlag
+// Procedure: handleConfigFlag
 
-bool PoseKeep::handleConfigEndFlag(string value)
+bool PoseKeep::handleConfigFlag(string flag_type, string value)
 {
-  bool ok = addFlag("end_flag", value);
+  bool ok = addFlag(flag_type, value);
   if(!ok)
-    reportConfigWarning("Unhandled endflag parameter: " + value);
+    reportConfigWarning("Unhandled " + flag_type + " parameter: " + value);
 
   return(ok);
 }
 
 //------------------------------------------------------------
-// Procedure: handleMailEndFlag
+// Procedure: handleMailFlag
 
-bool PoseKeep::handleMailEndFlag(string value)
+bool PoseKeep::handleMailFlag(string flag_type, string value)
 {
   if(tolower(value) == "clear") {
-    m_end_flags.clear();
+    if((flag_type == "end_flag") || (flag_type == "end_flags"))
+      m_end_flags.clear();
+    else if((flag_type == "active_flag") || (flag_type == "active_flags"))
+      m_active_flags.clear();
+    else if((flag_type == "inactive_flag") || (flag_type == "inactive_flags"))
+      m_inactive_flags.clear();
+    else 
+      return(false);
     return(true);
   }
 
-  bool ok = addFlag("end_flag", value);
+  bool ok = addFlag(flag_type, value);
   if(!ok)
     reportRunWarning("Unhandled Mail: HOLD_ENDFLAG=" + value);
 
@@ -342,45 +362,38 @@ bool PoseKeep::addFlag(string flag_type, string str)
      (flag_type != "inactive_flag") && (flag_type != "inactive_flags"))
     return(false);
 
-  string var, sval, dval;
+  bool   is_num  = false;
+  string moosvar = biteStringX(str, '=');
+  string moosval = str;
 
-  vector<string> svector = parseString(str, ',');
-  for(unsigned int i=0; i<svector.size(); i++) {
-    string param = tolower(biteStringX(svector[i], '='));
-    string value = svector[i];
-    if(param == "var")
-      var = value;
-    else if(param == "sval")
-      sval = value;
-    else if(param == "dval")
-      dval = value;
-    else 
-      return(false);
+  if(isNumber(moosval))
+    is_num = true;
+  else { 
+    bool quoted = false;
+    if(isQuoted(moosval)) {
+      quoted = true;
+      moosval = stripQuotes(moosval);
+    }
+    if(quoted && isNumber(moosval))
+      is_num = true;
   }
 
-  if(strContainsWhite(var))
+  if(strContainsWhite(moosvar))
     return(false);
-  
-  if(sval != "") {
-    VarDataPair pair(var, sval);
-    if((flag_type == "endflag") || (flag_type == "endflags"))
-      m_end_flags.push_back(pair);
-    else if((flag_type == "activeflag") || (flag_type == "activeflags"))
-      m_active_flags.push_back(pair);
-    else 
-      m_inactive_flags.push_back(pair);
-  }
-  else if((dval != "") && isNumber(dval)) {
-    VarDataPair pair(var, dval.c_str());
-    if(flag_type == "endflag")
-      m_end_flags.push_back(pair);
-    else if(flag_type == "activeflag")
-      m_active_flags.push_back(pair);
-    else
-      m_inactive_flags.push_back(pair);
-  }
+
+  VarDataPair pair;
+  if(is_num) 
+    pair = VarDataPair(moosvar, atof(moosval.c_str()));
+  else
+    pair = VarDataPair(moosvar, moosval);
+
+
+  if((flag_type == "end_flag") || (flag_type == "end_flags"))
+    m_end_flags.push_back(pair);
+  else if((flag_type == "active_flag") || (flag_type == "active_flags"))
+    m_active_flags.push_back(pair);
   else 
-    return(false);
+    m_inactive_flags.push_back(pair);
 
   return(true);
 }
@@ -495,6 +508,13 @@ bool PoseKeep::buildReport()
     s_thrust_r = doubleToStringX(m_thrust_r, 1);
   }
 
+  string s_time_remaining = "n/a";
+  if((m_duration > 0) && (m_active)) {
+    double elapsed = MOOSTime() - m_start_time;
+    double remaining = m_duration - elapsed;
+    s_time_remaining = doubleToString(remaining, 2);
+  }
+
   m_msgs << "============================================" << endl;
   m_msgs << "Settings:                                   " << endl;
   m_msgs << "           Active: " << s_active              << endl;
@@ -508,8 +528,20 @@ bool PoseKeep::buildReport()
   m_msgs << "     Heading Diff: " << s_heading_diff        << endl;
   m_msgs << "       Adjustment: " << s_adjustment          << endl;
   m_msgs << "                                            " << endl;
-  m_msgs << "     THRUST_LEFT:  " << s_thrust_l            << endl;
-  m_msgs << "     THRUST_RIGHT: " << s_thrust_r            << endl;
+  m_msgs << " DESIRED_THRUST_L: " << s_thrust_l            << endl;
+  m_msgs << " DESIRED_THRUST_R: " << s_thrust_r            << endl;
+  m_msgs << "============================================" << endl;
+  m_msgs << "Time Remaining: " << s_time_remaining         << endl;
+  m_msgs << "============================================" << endl;
+  m_msgs << "End Flags:                             " << endl;
+  for(unsigned int i=0; i<m_end_flags.size(); i++)
+    m_msgs << "  " << m_end_flags[i].getPrintable()        << endl;
+  m_msgs << "Active Flags:                             " << endl;
+  for(unsigned int i=0; i<m_active_flags.size(); i++)
+    m_msgs << "  " << m_active_flags[i].getPrintable()     << endl;
+  m_msgs << "Inactive Flags:                             " << endl;
+  for(unsigned int i=0; i<m_inactive_flags.size(); i++)
+    m_msgs << "  " << m_inactive_flags[i].getPrintable()   << endl;
   m_msgs << "                                            " << endl;
   m_msgs << "============================================" << endl;
   m_msgs << "Summaries:                                  " << endl;

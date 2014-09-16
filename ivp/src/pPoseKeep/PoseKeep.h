@@ -30,11 +30,11 @@ class PoseKeep : public AppCastingMOOSApp
    void checkForTimeOut();
 
    bool handleMailHoldPoint(std::string);
-   bool handleMailEndFlag(std::string);
+   bool handleMailFlag(std::string flag_type, std::string flag);
 
    bool handleConfigHoldTolerance(std::string);
    bool handleConfigHoldDuration(std::string);
-   bool handleConfigEndFlag(std::string);
+   bool handleConfigFlag(std::string flag_type, std::string flag);
 
    bool addFlag(std::string flag_type, std::string flag);
 
