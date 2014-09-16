@@ -41,6 +41,7 @@
       '("pSearchGrid" "grid_config")
       '("pConvexHull" "point_var")
       '("pObstacleMgr" "point_var")
+      '("pPoseKeep" "hold_tolerance" "hold_duration" "endflag")
       '("uFldHazardSensor" "term_report_interval" "max_appcast_events" "max_appcast_run_warnings" "default_hazard_shape" "default_hazard_color" "default_hazard_width" "default_benign_shape" "default_benign_color" "default_benign_width" "swath_transparency" "sensor_config" "hazard_file" "swath_length" "seed_random" "show_hazards" "show_swath" "show_detections" "show_reports" "show_pd" "show_pfa" "min_reset_interval" "min_classify_interval" "options_summary_interval")
       '("uFldHazardMgr" "swath_width" "sensor_pd" "report_name" "region" "pd")
       '("uFldHazardMetric" "penalty_missed_hazard" "penalty_false_alarm" "penalty_max_time_over" "penalty_max_time_rate" "max_time" "hazard_file" "show_xpath")
