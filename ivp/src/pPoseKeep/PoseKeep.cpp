@@ -352,15 +352,21 @@ bool PoseKeep::handleMailFlag(string flag_type, string value)
     return(true);
   }
 
-  bool ok = addFlag(flag_type, value);
+  bool ok = true;
+  vector<string> svector = parseString(value, ',');
+  for(unsigned int i=0; i<svector.size(); i++) 
+    ok = ok && addFlag(flag_type, svector[i]);
+
   if(!ok)
     reportRunWarning("Unhandled Mail: HOLD_ENDFLAG=" + value);
-
+  
   return(ok);
 }
 
 //------------------------------------------------------------
 // Procedure: addFlag
+//   Example: FOO=BAR 
+//   Example: DEPLOY=true
 
 bool PoseKeep::addFlag(string flag_type, string str)
 {
