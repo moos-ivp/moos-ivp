@@ -16,6 +16,9 @@ o uSimMarine
   - Added support for differential thrust mode
   - Bug fix - negative thrust was not working properly
 
+o pHelmIvP 
+  - Upon unfound behavior, posts MALCONFIG and remains up vs. quitting
+
 
 
 
