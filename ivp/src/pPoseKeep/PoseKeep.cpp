@@ -303,7 +303,7 @@ void PoseKeep::checkForTimeOut()
   Notify("DESIRED_THRUST_R", 0.0);
   
   postFlags("inactive_flag");
-  postFlags("endflag_flag");
+  postFlags("end_flag");
 }
 
 
