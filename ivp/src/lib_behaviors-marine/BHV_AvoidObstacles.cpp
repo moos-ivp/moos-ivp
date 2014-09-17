@@ -268,9 +268,12 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
 
 bool BHV_AvoidObstacles::checkForObstacleUpdate()
 {
+  if(m_obstacle_update_var == "") 
+    return(true);
+      
   double time_since_update = getBufferTimeVal(m_obstacle_update_var);
   if(time_since_update > 0)
-    return(false);
+    return(false);  
 
   bool ok;
   string str = getBufferStringVal(m_obstacle_update_var, ok);
