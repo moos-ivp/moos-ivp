@@ -996,7 +996,7 @@ double IvPBehavior::getBufferDoubleVal(string varname, bool& ok)
     }
   }
   if((!ok) && !vectorContains(m_info_vars_no_warning, varname)) 
-    postWMessage(varname+" info not found in helm info_buffer");
+    postWMessage(varname + " dlb info not found in helm info_buffer");
   return(value);
 }
 
@@ -1020,7 +1020,7 @@ string IvPBehavior::getBufferStringVal(string varname, bool& ok)
     }
   }
   if((!ok) && !vectorContains(m_info_vars_no_warning, varname)) 
-    postWMessage(varname+" info not found in helm info_buffer");
+    postWMessage(varname + " str info not found in helm info_buffer");
   return(value);
 }
 
