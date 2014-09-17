@@ -79,8 +79,8 @@ int main(int argc, char *argv[])
 
   AppCastRepo appcast_repo;
 
-  int gui_wid = 0.80 * Fl::w();
-  int gui_hgt = 0.75 * Fl::h();
+  int gui_wid = 0.85 * Fl::w();
+  int gui_hgt = 0.85 * Fl::h();
   if(size_request != "") {
     string s_wid = biteStringX(size_request, 'x');
     string s_hgt = size_request;

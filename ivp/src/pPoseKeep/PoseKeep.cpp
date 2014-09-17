@@ -109,12 +109,26 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(key == "HOLD_POINT")
       handleMailHoldPoint(sval);
+
     else if(key == "HOLD_ENDFLAG") 
       handled = handleMailFlag("end_flag", sval);
+    else if(key == "HOLD_ENDFLAG_RESET") {
+      m_end_flags.clear();
+      handled = handleMailFlag("end_flag", sval);
+    }
     else if(key == "HOLD_ACTIVEFLAG") 
       handled = handleMailFlag("active_flag", sval);
+    else if(key == "HOLD_ACTIVEFLAG_RESET") {
+      m_active_flags.clear();
+      handled = handleMailFlag("active_flag", sval);
+    }
     else if(key == "HOLD_INACTIVEFLAG") 
       handled = handleMailFlag("inactive_flag", sval);
+    else if(key == "HOLD_INACTIVEFLAG_RESET") {
+      m_inactive_flags.clear();
+      handled = handleMailFlag("inactive_flag", sval);
+    }
+
     else if(key == "MVIEWER_LCLICK")
       handleMailHoldPoint(sval);
     
