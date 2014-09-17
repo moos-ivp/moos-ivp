@@ -254,8 +254,16 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     if(bhv)
       sbuild.setKindResult("dynamic");
     else {
+#if 1
+      string err = "BehaviorSpec: failed to load dynamic behavior " + bhv_kind;
+      cerr << err << endl;
+      addWarning(err);
+      addWarning("Check IVP_BEHAVIOR_DIRS Env Variable or ivp_behavior_dir param");
+#endif
+#if 0
       cerr << "BehaviorSpec: failed to load dynamic behavior "
 	   << bhv_kind << endl;
+#endif
       sbuild.setKindResult("failed");
       return(sbuild);
     }
