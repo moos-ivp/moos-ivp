@@ -34,6 +34,7 @@ class PoseKeep : public AppCastingMOOSApp
 
    bool handleConfigHoldTolerance(std::string);
    bool handleConfigHoldDuration(std::string);
+   bool handleConfigHoldHeading(std::string);
    bool handleConfigFlag(std::string flag_type, std::string flag);
 
    bool addFlag(std::string flag_type, std::string flag);
@@ -59,6 +60,8 @@ class PoseKeep : public AppCastingMOOSApp
 
    double  m_hold_x;
    double  m_hold_y;
+
+   std::string m_hold_source;
 
    double  m_start_time;
    

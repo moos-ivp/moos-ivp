@@ -37,6 +37,8 @@ PoseKeep::PoseKeep()
 
   m_active = false;
 
+  m_hold_source = "n/a";
+
   m_duration = -1;   // seconds, -1 means no duration applied
 }
 
@@ -70,6 +72,7 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "HOLD_HEADING") {
       m_hold_heading = dval;
       m_hold_heading_set = true;
+      m_hold_source = "HOLD_HEADING MOOS Mail";
     }
     else if(key == "HOLD_TOLERANCE") {
       if(dval >= 0)
@@ -107,8 +110,10 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_start_time = 0;
       }
     }
-    else if(key == "HOLD_POINT")
+    else if(key == "HOLD_POINT") {
       handleMailHoldPoint(sval);
+      m_hold_source = "HOLD_POINT MOOS Mail";
+    }
 
     else if(key == "HOLD_ENDFLAG") 
       handled = handleMailFlag("end_flag", sval);
@@ -129,9 +134,11 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
       handled = handleMailFlag("inactive_flag", sval);
     }
 
-    else if(key == "MVIEWER_LCLICK")
+    else if(key == "MVIEWER_LCLICK") {
       handleMailHoldPoint(sval);
-    
+      m_hold_source = "MVIEWER_LCLICK MOOS Mail";
+    }    
+
     else if(key != "APPCAST_REQ") // handle by AppCastingMOOSApp
       reportRunWarning("Unhandled Mail: " + key);
 
@@ -192,6 +199,10 @@ bool PoseKeep::OnStartUp()
     bool handled = false;
     if((param == "hold_tolerance") && isNumber(value)) 
       handled = handleConfigHoldTolerance(value);
+    else if ((param == "hold_heading") && isNumber(value)) {
+      handled = handleConfigHoldHeading(value);
+      m_hold_source = ".moos file";
+    }
     else if((param == "hold_duration") && isNumber(value)) 
       handled = handleConfigHoldDuration(value);
     else if(param == "endflag") 
@@ -334,6 +345,17 @@ bool PoseKeep::handleConfigHoldDuration(string value)
   }
 
   m_duration = dval;
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: handleConfigHoldHeading
+
+bool PoseKeep::handleConfigHoldHeading(string value) 
+{
+  double dval = atof(value.c_str());
+
+  m_hold_heading = angle360(dval);
   return(true);
 }
 
@@ -551,7 +573,8 @@ bool PoseKeep::buildReport()
   m_msgs << " Current Position: " << s_curr_position       << endl;
   m_msgs << "  Current Heading: " << s_curr_heading << 
     " (updated " << s_tstamp  << " secs ago)" << endl;
-  m_msgs << "     Hold Heading: " << s_hold_heading        << endl;
+  m_msgs << "     Hold Heading: " << s_hold_heading  << " (" 
+	 << m_hold_source << ")" << endl;
   m_msgs << "" << endl;
   m_msgs << "     Heading Diff: " << s_heading_diff        << endl;
   m_msgs << "       Adjustment: " << s_adjustment          << endl;
