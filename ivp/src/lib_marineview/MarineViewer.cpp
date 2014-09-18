@@ -556,13 +556,15 @@ void MarineViewer::drawGLPoly(double *points, unsigned int numPoints,
 //-------------------------------------------------------------
 // Procedure: drawCommonVehicle
 
-void MarineViewer::drawCommonVehicle(const NodeRecord& record, 
+void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb, 
 				     const BearingLine& bng_line, 
 				     const ColorPack& body_color,
 				     const ColorPack& vname_color,
 				     bool  vname_draw, 
 				     unsigned int outer_line)
 {
+  NodeRecord record = record_mikerb;
+
   string vname    = record.getName();
   string vehibody = tolower(record.getType());
   double vlength  = record.getLength();
@@ -570,6 +572,12 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record,
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
+
+  double heading = record.getHeading();
+  bool thrust_mode_reverse = record.getThrustModeReverse();
+  if(thrust_mode_reverse) {
+    heading = angle360(heading+180);
+  }
 
   // Determine position in terms of image percentage
   double vehicle_ix = meters2img('x', record.getX());
@@ -579,6 +587,9 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record,
   double vehicle_vx = img2view('x', vehicle_ix);
   double vehicle_vy = img2view('y', vehicle_iy);
 
+
+  
+
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
@@ -586,7 +597,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record,
   glTranslatef(vehicle_vx, vehicle_vy, 0); // theses are in pixel units
 
   glScalef(m_zoom, m_zoom, m_zoom);
-  glRotatef(-record.getHeading(),0,0,1);  
+  glRotatef(-heading,0,0,1);  
 
   ColorPack black(0,0,0);
   ColorPack gray(0.5, 0.5, 0.5);
@@ -725,7 +736,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record,
     projectPoint(bearing, range, 0, 0, bx, by);
 
     if(absolute)
-      glRotatef(record.getHeading(),0,0,1);  
+      glRotatef(heading,0,0,1);  
 
     glLineWidth(lwidth);
     glBegin(GL_LINE_STRIP);
