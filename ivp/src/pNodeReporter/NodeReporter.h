@@ -88,6 +88,7 @@ public:
   bool         m_helm_switch_noted;
   unsigned int m_reports_posted;
   unsigned int m_reports_posted_alt_nav;
+  bool         m_thrust_mode_reverse;
   
  protected: // Config and State Vars (Blackout Interval)
   double  m_blackout_interval;

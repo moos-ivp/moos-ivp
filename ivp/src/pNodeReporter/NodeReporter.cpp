@@ -43,6 +43,7 @@ NodeReporter::NodeReporter()
 
   m_reports_posted         = 0;
   m_reports_posted_alt_nav = 0;
+  m_thrust_mode_reverse    = false;
 
   m_record.setType("unknown");
   m_record.setLength(0);
@@ -118,7 +119,10 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
       m_record.setDepth(ddata);
     else if(key == "NAV_YAW") 
       m_record.setYaw(ddata);
-
+    else if(key == "THRUST_MODE_REVERSE") {
+      bool reverse = (tolower(sdata)=="true");
+      m_record.setThrustModeReverse(reverse);
+    }
     // BEGIN logic for checking for alternative nav reporting
     if(m_alt_nav_prefix != "") {
       bool record_gt_updated = true;
@@ -247,6 +251,7 @@ void NodeReporter::registerVariables()
   m_Comms.Register("IVPHELM_ALLSTOP", 0);
   m_Comms.Register("AUX_MODE", 0);
   m_Comms.Register("LOAD_WARNING", 0);
+  m_Comms.Register("THRUST_MODE_REVERSE", 0);
 }
 
 //-----------------------------------------------------------------
