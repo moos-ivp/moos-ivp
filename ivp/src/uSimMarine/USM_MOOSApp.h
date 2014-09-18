@@ -59,6 +59,7 @@ protected:
 
   CMOOSGeodesy m_geodesy;
   bool         m_geo_ok;
+  bool         m_thrust_mode_reverse;
 
   // A cache of starting info to facilitate generation of reports.
   std::string m_start_nav_x;
@@ -88,6 +89,7 @@ protected:
   double last_report;
   double report_interval;
   double pitch_tolerance;
+
 };
 #endif
 

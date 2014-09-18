@@ -61,6 +61,8 @@ USM_Model::USM_Model()
   m_thrust_mode  = "normal";  // vs. "differential"
   m_thrust_lft   = 0;
   m_thrust_rgt   = 0;
+
+  m_thrust_mode_reverse = false;
 }
 
 //------------------------------------------------------------------------
@@ -268,8 +270,12 @@ void USM_Model::setThrustLeft(double val)
   else if(val > 100)
     val = 100;
 
-  m_thrust_lft  = val;
-  m_thrust_mode = "differential";
+    m_thrust_mode = "differential";
+
+  if(m_thrust_mode_reverse == false)  // The normal mode
+    m_thrust_lft  = val;
+  else
+    m_thrust_rgt  = -val;
 }
 
 //------------------------------------------------------------------------
@@ -282,8 +288,11 @@ void USM_Model::setThrustRight(double val)
   else if(val > 100)
     val = 100;
 
-  m_thrust_rgt  = val;
   m_thrust_mode = "differential";
+  if(m_thrust_mode_reverse == false)  // The normal mode
+    m_thrust_rgt  = val;
+  else
+    m_thrust_lft  = -val;
 }
 
 //--------------------------------------------------------------------- 
@@ -395,6 +404,8 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
 {
   double prior_spd = record.getSpeed();
   double prior_hdg = record.getHeading();
+
+  m_sim_engine.setThrustModeReverse(m_thrust_mode_reverse);
 
   if(m_thrust_mode == "differential") {
     m_sim_engine.propagateSpeedDiffMode(record, m_thrust_map, delta_time,

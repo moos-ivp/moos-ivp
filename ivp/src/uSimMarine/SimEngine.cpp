@@ -134,6 +134,11 @@ void SimEngine::propagateSpeed(NodeRecord& record, const ThrustMap& tmap,
   if(delta_time <= 0)
     return;
 
+  if(m_thrust_mode_reverse) {
+    thrust = -thrust;
+    rudder = -rudder;
+  }
+
   double next_speed  = tmap.getSpeedValue(thrust);
   double prev_speed  = record.getSpeed();
 
@@ -175,6 +180,11 @@ void SimEngine::propagateHeading(NodeRecord& record,
   double speed = record.getSpeed();
   if(speed == 0) 
     rudder = 0;
+
+  if(m_thrust_mode_reverse) {
+    thrust = -thrust;
+    rudder = -rudder;
+  }
 
   // Even if speed is zero, need to continue on in case the 
   // torque is non-zero.
@@ -234,6 +244,12 @@ void SimEngine::propagateHeadingDiffMode(NodeRecord& record,
   // Sanity check
   if(delta_time <= 0)
     return;
+
+  if(m_thrust_mode_reverse) {
+    double tmp = thrust_lft;
+    thrust_lft = -thrust_rgt;
+    thrust_rgt = tmp;
+  }
 
   // Calculate the raw magnitude of the turn component. Since both thrusts
   // range in [-100, 100], the maximum difference is 200. The turn_mag 

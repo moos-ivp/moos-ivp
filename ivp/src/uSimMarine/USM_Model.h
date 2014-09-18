@@ -42,11 +42,12 @@ public:
   // Setters
   bool   setParam(std::string, double);
 
-  void   setRudder(double v)        {m_rudder = v; m_thrust_mode="normal";};
-  void   setThrust(double v)        {m_thrust = v; m_thrust_mode="normal";};
-  void   setElevator(double v)      {m_elevator = v;};
-  void   setDualState(bool v)       {m_dual_state = v;}; 
-  void   setDriftFresh(bool v)      {m_drift_fresh = v;}; 
+  void   setRudder(double v)          {m_rudder = v; m_thrust_mode="normal";};
+  void   setThrust(double v)          {m_thrust = v; m_thrust_mode="normal";};
+  void   setElevator(double v)        {m_elevator = v;};
+  void   setDualState(bool v)         {m_dual_state = v;}; 
+  void   setDriftFresh(bool v)        {m_drift_fresh = v;}; 
+  void   setThrustModeReverse(bool v) {m_thrust_mode_reverse=v;};
   void   setPaused(bool); 
   void   setThrustFactor(double);
   void   setThrustReflect(bool);
@@ -81,6 +82,8 @@ public:
   double     getMaxDepthRateSpd() const {return(m_max_depth_rate_speed);};
   double     getMaxAcceleration() const {return(m_max_acceleration);};
   double     getMaxDeceleration() const {return(m_max_deceleration);};
+
+  bool       getThrustModeReverse() const {return(m_thrust_mode_reverse);};
 
   std::string getThrustMapPos() const {return(m_thrust_map.getMapPos());};
   std::string getThrustMapNeg() const {return(m_thrust_map.getMapNeg());};
@@ -117,6 +120,8 @@ public:
   bool       m_dual_state;   
   bool       m_drift_fresh;
 
+  bool       m_thrust_mode_reverse;
+
   MBTimer    m_pause_timer;
   SimEngine  m_sim_engine;
 
@@ -125,8 +130,3 @@ public:
   std::string m_thrust_mode;
 };
 #endif
-
-
-
-
-

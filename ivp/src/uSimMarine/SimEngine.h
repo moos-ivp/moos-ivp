@@ -33,6 +33,9 @@ public:
   SimEngine() {};
   ~SimEngine() {};
   
+ public:
+  void setThrustModeReverse(bool v) {m_thrust_mode_reverse=v;};
+
 public:
   void propagate(NodeRecord&, double delta_time, double prior_heading,
 		 double prior_speed, double drift_x, double drift_y);
@@ -58,6 +61,10 @@ public:
   void propagateHeadingDiffMode(NodeRecord&, double delta_time, double rudder,
 				double thrust_left, double thrust_right, 
 				double rotate_speed);
+
+ protected:
+  bool m_thrust_mode_reverse;
+
 };
 
 #endif
