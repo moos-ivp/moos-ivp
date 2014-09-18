@@ -44,7 +44,7 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
   for(i=0; i<vsize; i++) {
     string param = toupper(biteStringX(svector[i], '='));
     string value = svector[i];
-    
+
     if(param == "NAME")
       new_record.setName(value);
     else if(param == "TYPE")
@@ -59,6 +59,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
       new_record.setLoadWarning(value);
     else if(param == "INDEX")
       new_record.setIndex(atof(value.c_str()));
+    else if((param == "THRUST_MODE_REVERSE") && (tolower(value) == "true")) 
+      new_record.setThrustModeReverse(true);
     else if(isNumber(value)) {
       if((param == "UTC_TIME") || (param == "TIME"))
 	new_record.setTimeStamp(atof(value.c_str()));
@@ -81,6 +83,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
       else if(param == "HDG_OG")
 	new_record.setHeadingOG(atof(value.c_str()));
 
+      
+
       else if(param == "YAW")
 	new_record.setYaw(atof(value.c_str()));
       else if((param == "DEP") || (param == "DEPTH"))
@@ -97,7 +101,6 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
 
   return(new_record);
 }
-
 
 
 

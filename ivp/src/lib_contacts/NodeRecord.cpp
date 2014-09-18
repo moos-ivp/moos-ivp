@@ -60,6 +60,8 @@ NodeRecord::NodeRecord(string vname, string vtype)
   m_altitude_set   = false;
   m_length_set     = false;
   m_timestamp_set  = false;
+
+  m_thrust_mode_reverse = false;
 }
 
 //---------------------------------------------------------------
@@ -187,8 +189,11 @@ string NodeRecord::getSpec() const
     str += ",HDG_OG="  + doubleToStringX(m_heading_og,2);
 
   if(m_index != 0)
-    str += ",index="  + intToString(m_index);
+    str += ",INDEX="  + intToString(m_index);
   
+  if(m_thrust_mode_reverse)
+    str += ",THRUST_MODE_REVERSE=true";
+
   if(m_yaw_set)
     str += ",YAW="  + doubleToStringX(m_heading,2);
   if(m_timestamp_set)
