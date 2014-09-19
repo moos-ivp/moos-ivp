@@ -551,6 +551,8 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	    string str = m_var_data_pairs_all[i].get_sdata();
 	    if(strContains(str, "$(XPOS)")) 
 	      str = findReplace(str, "$(XPOS)", doubleToString(sx,1));
+	    if(strContains(str, "$[XPOS]")) 
+	      str = findReplace(str, "$[XPOS]", doubleToString(sx,1));
 	    if(strContains(str, "$(X)")) 
 	      str = findReplace(str, "$(X)", doubleToString(sx,0));
 	    
@@ -561,11 +563,19 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	    
 	    if(strContains(str, "$(YPOS)")) 
 	      str = findReplace(str, "$(YPOS)", doubleToString(sy,1));
+	    if(strContains(str, "$[YPOS]")) 
+	      str = findReplace(str, "$[YPOS]", doubleToString(sy,1));
+
 	    if(strContains(str, "$(IX)"))
 	      str = findReplace(str, "$(IX)", intToString(m_lclick_ix));
+	    if(strContains(str, "$[IX]"))
+	      str = findReplace(str, "$[IX]", intToString(m_lclick_ix));
 	    
 	    if(strContains(str, "$(Y)")) 
 	      str = findReplace(str, "$(Y)", doubleToString(sy,0));
+	    if(strContains(str, "$[Y]")) 
+	      str = findReplace(str, "$[Y]", doubleToString(sy,0));
+
 	    if(strContains(str, "$(Y:1)")) 
 	      str = findReplace(str, "$(Y:1)", doubleToString(sy,1));
 	    if(strContains(str, "$(Y:2)")) 
@@ -573,11 +583,21 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	    
 	    if(strContains(str, "$(LAT)")) 
 	      str = findReplace(str, "$(LAT)", doubleToString(dlat,8));
+	    if(strContains(str, "$[LAT]")) 
+	      str = findReplace(str, "$[LAT]", doubleToString(dlat,8));
+
 	    if(strContains(str, "$(LON)")) 
 	      str = findReplace(str, "$(LON)", doubleToString(dlon,8));
+	    if(strContains(str, "$[LON]")) 
+	      str = findReplace(str, "$[LON]", doubleToString(dlon,8));
+
 	    if(strContains(str, "$(VNAME)")) {
 	      string vname = getStringInfo("active_vehicle_name");
 	      str = findReplace(str, "$(VNAME)", vname);
+	    }
+	    if(strContains(str, "$[VNAME]")) {
+	      string vname = getStringInfo("active_vehicle_name");
+	      str = findReplace(str, "$[VNAME]", vname);
 	    }
 	    pair.set_sdata(str);
 	  }
