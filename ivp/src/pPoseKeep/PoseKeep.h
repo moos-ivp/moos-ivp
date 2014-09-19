@@ -28,6 +28,7 @@ class PoseKeep : public AppCastingMOOSApp
    void adjustHeading();
    void rotateVehicle(double);
    void checkForTimeOut();
+   void checkForHoldPointPending();
 
    bool handleMailHoldPoint(std::string);
    bool handleMailFlag(std::string flag_type, std::string flag);
@@ -62,6 +63,8 @@ class PoseKeep : public AppCastingMOOSApp
    double  m_hold_y;
 
    std::string m_hold_source;
+
+   bool    m_hold_point_pending;
 
    double  m_start_time;
    

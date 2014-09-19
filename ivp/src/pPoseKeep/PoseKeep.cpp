@@ -38,6 +38,7 @@ PoseKeep::PoseKeep()
   m_active = false;
 
   m_hold_source = "n/a";
+  m_hold_point_pending = false;
 
   m_duration = -1;   // seconds, -1 means no duration applied
 }
@@ -168,7 +169,8 @@ bool PoseKeep::Iterate()
   AppCastingMOOSApp::Iterate();
 
   checkForTimeOut();
-  
+  checkForHoldPointPending();
+
   if(m_active) 
     adjustHeading();
 
@@ -315,6 +317,24 @@ void PoseKeep::checkForTimeOut()
   
   postFlags("inactive_flag");
   postFlags("end_flag");
+}
+
+//------------------------------------------------------------
+// Procedure: checkForHoldPointPending
+
+void PoseKeep::checkForHoldPointPending() 
+{
+  if(!m_hold_point_pending)
+    return;
+
+  if(!m_osx_set || !m_osy_set)
+    return;
+
+  m_hold_heading = relAng(m_osx, m_osy, m_hold_x, m_hold_y);
+
+  retractRunWarning("HOLD_POINT cannot be set, because nav position unknown");
+
+  m_hold_point_pending = false;
 }
 
 
@@ -473,6 +493,7 @@ bool PoseKeep::handleMailHoldPoint(string str)
   
   if(!m_osx_set || !m_osy_set) {
     reportRunWarning("HOLD_POINT cannot be set, because nav position unknown");
+    m_hold_point_pending = true;
     return(false);
   }
 
