@@ -30,6 +30,7 @@
 #include <cmath>
 #include "WaypointEngine.h"
 #include "AngleUtils.h"
+#include "GeomUtils.h"
 
 using namespace std;
 
@@ -322,6 +323,12 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
       else
 	return("cycled");
     }
+    
+    if(m_curr_ix == 0)
+      m_prev_ix = vsize - 1;
+    else
+      m_prev_ix = m_curr_ix - 1;
+
     pt_x = m_seglist.get_vx(m_curr_ix);
     pt_y = m_seglist.get_vy(m_curr_ix);
     m_current_cpa = hypot((os_x - pt_x), (os_y - pt_y));    
@@ -332,8 +339,36 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
 }
 
 
+//-----------------------------------------------------------
+// Procedure: distToPrevWpt()
+
+double WaypointEngine::distToPrevWpt(double osx, double osy) const
+{
+  if((m_prev_ix < 0) || (m_prev_ix >= m_seglist.size()))
+    return(-1);
+  
+  double prev_ptx = m_seglist.get_vx(m_prev_ix);
+  double prev_pty = m_seglist.get_vy(m_prev_ix);
+
+  double dist = distPointToPoint(osx, osy, prev_ptx, prev_pty);
+
+  return(dist);
+}
 
 
+//-----------------------------------------------------------
+// Procedure: distToNextWpt()
 
+double WaypointEngine::distToNextWpt(double osx, double osy) const
+{
+  if((m_curr_ix < 0) || (m_curr_ix >= m_seglist.size()))
+    return(-1);
+  
+  double curr_ptx = m_seglist.get_vx(m_curr_ix);
+  double curr_pty = m_seglist.get_vy(m_curr_ix);
 
+  double dist = distPointToPoint(osx, osy, curr_ptx, curr_pty);
+
+  return(dist);
+}
 

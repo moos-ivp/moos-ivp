@@ -74,6 +74,8 @@ protected: // configuration parameters
   std::string m_var_index;
   std::string m_var_cyindex;
   std::string m_var_suffix;
+  std::string m_var_dist_to_prev;
+  std::string m_var_dist_to_next;
 
   // Var-Data flags for posting when behavior finishes cycle
   std::vector<VarDataPair> m_cycle_flags;

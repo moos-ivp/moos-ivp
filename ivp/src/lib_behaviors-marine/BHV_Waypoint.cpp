@@ -178,6 +178,24 @@ bool BHV_Waypoint::setParam(string param, string param_val)
       m_var_report = "silent";
     return(true);
   }
+  else if(param == "wpt_dist_to_prev") {
+    if(strContainsWhite(param_val))
+      return(false);
+    if((param_val == "") || (tolower(param_val) == "silent"))
+      m_var_dist_to_prev = "";
+    else
+      m_var_dist_to_prev = param_val;
+    return(true);
+  }
+  else if(param == "wpt_dist_to_next") {
+    if(strContainsWhite(param_val))
+      return(false);
+    if((param_val == "") || (tolower(param_val) == "silent"))
+      m_var_dist_to_next = "";
+    else
+      m_var_dist_to_next = param_val;
+    return(true);
+  }
   else if((param == "wpt_index") || (param == "wpt_index_var")) {
     if(strContainsWhite(param_val) || (param_val == ""))
       return(false);
@@ -337,6 +355,14 @@ void BHV_Waypoint::onRunToIdleState()
   m_waypoint_engine.resetCPA();
   m_odo_set_flag = false;
   m_odo_distance = 0;
+
+  // If we were publishing distances to prev or next waypoint, publish
+  // one final time, values that indicate that we're not progressing on pts
+  if(m_var_dist_to_prev != "")
+    postMessage(m_var_dist_to_prev, -1);
+  if(m_var_dist_to_next != "")
+    postMessage(m_var_dist_to_next, -1);
+
 }
 
 //-----------------------------------------------------------
@@ -415,6 +441,11 @@ IvPFunction *BHV_Waypoint::onRunState()
     return(0);
   }
   
+  if(m_var_dist_to_prev != "")
+    postMessage(m_var_dist_to_prev, m_waypoint_engine.distToPrevWpt(m_osx, m_osy));
+  if(m_var_dist_to_next != "")
+    postMessage(m_var_dist_to_next, m_waypoint_engine.distToNextWpt(m_osx, m_osy));
+
   IvPFunction *ipf = buildOF(m_ipf_type);
   if(ipf)
     ipf->setPWT(m_priority_wt);

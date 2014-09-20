@@ -66,7 +66,11 @@ class WaypointEngine {
   XYSegList getSegList()  {return(m_seglist);};
 
   void        setPrevPoint(XYPoint pt) {m_prevpt=pt;};
-  std::string setNextWaypoint(double os_x, double os_y);
+  std::string setNextWaypoint(double osx, double osy);
+  
+  double  distToPrevWpt(double osx, double osy) const;
+  double  distToNextWpt(double osx, double osy) const;
+
 
  protected:
   XYSegList m_seglist;
