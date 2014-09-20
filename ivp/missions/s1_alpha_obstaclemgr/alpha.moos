@@ -10,12 +10,12 @@ Community  = alpha
 MOOSTimeWarp = 1
 
 // Forest Lake
-LatOrigin  = 43.825300 
-LongOrigin = -70.330400 
+//LatOrigin  = 43.825300 
+//LongOrigin = -70.330400 
 
 // MIT Sailing Pavilion (use this one)
-// LatOrigin  = 42.358456 
-// LongOrigin = -71.087589
+LatOrigin  = 42.358456 
+LongOrigin = -71.087589
 
 
 //------------------------------------------
@@ -32,8 +32,9 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-  Run = pObstacleMgr	  @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = false
+  Run = pPoseKeep       @ NewConsole = false
+  //Run = pObstacleMgr	  @ NewConsole = false
+  //Run = uTimerScript    @ NewConsole = false
 }
 
 //------------------------------------------
@@ -44,14 +45,25 @@ ProcessConfig = pObstacleMgr
 }
 
 //------------------------------------------
+ProcessConfig = pPoseKeep
+{
+  AppTick   = 4
+  CommsTick = 4
+
+	activeflag   = THRUST_MODE_DIFFERENTIAL=true
+	inactiveflag = THRUST_MODE_DIFFERENTIAL=false
+	endflag      = POSE_KEEP = done
+
+	hold_duration = 2000
+}
+
+//------------------------------------------
 ProcessConfig = uTimerScript                                    
 {                                                               
   AppTick   = 4                                                 
   CommsTick = 4                                                 
   
-	delay_start = 5
-  //rand_var    = varname=RND_AX, min=140, max=160, key=at_post
-  //rand_var    = varname=RND_AY, min=-70, max=-50, key=at_post
+	delay_start = 1
 
   rand_var    = varname=RND_AX, type=gaussian, min=155, max=165, mu=160, sigma=2, key=at_reset
   rand_var    = varname=RND_AY, type=gaussian, min=-65, max=-55, mu=-60, sigma=2, key=at_reset
@@ -68,6 +80,7 @@ ProcessConfig = uTimerScript
   reset_max   = 40
   reset_time  = all-posted
 
+	event       = var=VIEW_POLYGON, val="format=radial, label=foxtrot, x=50, y=-50, radius=10, pts=6"
 
 	event       = var=VIEW_POINT, val="x=$[RND_AX],y=$[RND_AY],active=true,label=$[TCOUNT],msg=a,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=1.44
 	event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=$[TCOUNT],msg=b,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2
@@ -78,7 +91,6 @@ ProcessConfig = uTimerScript
 	event       = var=TRACKED_FEATURE, val="x=$[RND_BX],y=$[RND_BY],label=b,color=2,size=2", time=2
 	event       = var=TRACKED_FEATURE, val="x=$[RND_CX],y=$[RND_CY],label=c,color=3,size=2", time=2.3
 	event       = var=TRACKED_FEATURE, val="x=$[RND_DX],y=$[RND_DY],label=d,color=3,size=2", time=2.3
-
 }                                                               
 
 //------------------------------------------
@@ -91,7 +103,7 @@ ProcessConfig = uProcessWatch
 
   summary_wait = 5
 
-  //nowatch   = uXMS*
+  nowatch   = uXMS*
   nowatch   = uMAC*
   nowatch   = uPokeDB*
   nowatch   = uTermCommand*
@@ -113,6 +125,7 @@ ProcessConfig = pLogger
   // explicitly declare their logging request
 
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
+  Log = BHV_WARNING @ 0 NOSYNC
 
   LogAuxSrc = true
   WildCardLogging = true
@@ -139,6 +152,7 @@ ProcessConfig = uSimMarine
 
   turn_rate     = 40
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+	thrust_reflect = true
 }
 
 //------------------------------------------
@@ -146,9 +160,8 @@ ProcessConfig = uSimMarine
 
 ProcessConfig = pHelmIvP
 {
-  AppTick    = 10
-  AppTick    = 4
-  CommsTick  = 4
+  AppTick    = 2
+  CommsTick  = 2
 
   term_report_interval=0
 
@@ -202,11 +215,17 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  tiff_file            = forrest19.tif
+  //tiff_file            = forrest19.tif
+  tiff_file            = AerialMIT.tif
 
-  set_pan_x            = -90
-  set_pan_y            = -280
-  zoom                 = 0.65
+  //set_pan_x            = -90
+  //set_pan_y            = 80
+  //zoom                 = 2.4
+
+  set_pan_x            = 8
+  set_pan_y            = 2
+  zoom                 = 6.5
+
   vehicle_shape_scale  = 1.5
   hash_delta           = 50
   hash_shade           = 0.4
@@ -226,6 +245,8 @@ ProcessConfig = pMarineViewer
   //left_context[polyvert] = POLY_VERT=x=$(XPOS),y=$(YPOS)
   left_context[pt] = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=pt$(IX),vertex_color=white
 	
+  scope  = NODE_REPORT_LOCAL
+  scope  = POSE_KEEP
   scope  = VIEW_POLYGON
   scope  = VIEW_POINT
 	scope  = RETURN
@@ -235,6 +256,9 @@ ProcessConfig = pMarineViewer
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
+  //button_three = CLEARP # PMV_CLEAR=shape=points
+  button_three = HOLD:T # DEPLOY=hold
+  button_four  = HOLD:F # DEPLOY=false
 }
 
 //------------------------------------------
@@ -245,21 +269,7 @@ ProcessConfig = pNodeReporter
   AppTick    = 2
   CommsTick	 = 2
 
-  platform_type   = kayak
-  platform_length = 4
+  platform_type   = wamv
+  platform_length = 10
 }
 
-
-// This block is here in conjunction with the uTermCommand 
-// documentation to demonstrate functionality of that tool.
-// This mission may be alternately 
-
-ProcessConfig = uTermCommandFoo
-{
-  cmd  = override_true  -->  MOOS_MANUAL_OVERRIDE --> true
-  cmd  = override_false -->  MOOS_MANUAL_OVERRIDE --> false
-  cmd  = deploy_true    -->  DEPLOY --> true
-  cmd  = deploy_false   -->  DEPLOY --> false
-  cmd  = return_true    -->  RETURN --> true
-  cmd  = return_false   -->  RETURN --> false
-}

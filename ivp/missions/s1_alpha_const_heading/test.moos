@@ -1,0 +1,45 @@
+
+// FILE: alpha.moos
+ServerHost = localhost		
+ServerPort = 9000	
+Community  = alpha
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB         @ NewConsole = false
+  Run = pLogger        @ NewConsole = false
+  Run = uSimMarine     @ NewConsole = false
+  Run = pMarinePID     @ NewConsole = false
+  Run = pHelmIvP       @ NewConsole = false
+  Run = pMarineViewer  @ NewConsole = false
+  Run = uProcessWatch  @ NewConsole = false
+  Run = pNodeReporter  @ NewConsole = false
+}
+
+//------------------------------------------
+// uProcessWatch config block
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  summary_wait = 5
+  nowatch      = uMAC*
+  nowatch      = uPokeDB*
+  watch_all    = true
+}
+
+//------------------------------------------
+// pNodeReporter config block
+ProcessConfig = pNodeReporter
+{
+  platform_tpye   = KAYAK
+  platform_length = 4
+}
+
