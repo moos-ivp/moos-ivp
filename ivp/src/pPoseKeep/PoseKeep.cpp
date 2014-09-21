@@ -28,7 +28,7 @@ PoseKeep::PoseKeep()
 
   m_heading_diff = 0;
   m_adjustment   = 0;
-  m_tolerance    = 1;   // degrees
+  m_tolerance    = 2;   // degrees
 
   m_start_time = 0;
 

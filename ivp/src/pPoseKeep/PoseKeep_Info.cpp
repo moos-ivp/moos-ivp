@@ -73,13 +73,13 @@ void showExampleConfigAndExit()
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
- blk("                                                                 ");
-  blk("	 activeflag   = THRUST_MODE_DIFFERENTIAL=true                  ");
+  blk("                                                                ");
+  blk("  activeflag   = THRUST_MODE_DIFFERENTIAL=true                  ");
   blk("  inactiveflag = THRUST_MODE_DIFFERENTIAL=false                 ");
-  blk("	 endflag      = POSE_KEEP = done                               ");
+  blk("  endflag      = POSE_KEEP = done                               ");
   blk("                                                                ");
-  blk("	 hold_duration = 20                                            ");
-  blk("                                                                ");
+  blk("	 hold_duration  = 60  // seconds, default is -1, no limit      ");
+  blk("  hold_tolerance = 2   // degrees, default is 3                 ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
