@@ -44,6 +44,7 @@ public:
   void    postViewablePolygons();
   void    postErasablePolygons();
   bool    checkForObstacleUpdate();
+  void    getRelevance();
 
 protected:
   AOF_AvoidObstacles *m_aof_avoid;

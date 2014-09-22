@@ -308,6 +308,36 @@ bool AOF_AvoidObstacles::isObstaclePert(unsigned int ix)
 }
 
 //----------------------------------------------------------------
+// Procedure: distToObstaclesBuff
+
+double AOF_AvoidObstacles::distToObstaclesBuff()
+{
+  double min_dist = 0;
+  for(unsigned int i=0; i<m_obstacles_buff.size(); i++) {
+    double dist = m_obstacles_buff[i].dist_to_poly(m_osx, m_osy);
+    if((i==0) || (dist < min_dist))
+      min_dist = dist;
+  }
+
+  return(min_dist);
+}
+
+//----------------------------------------------------------------
+// Procedure: distToObstaclesOrig
+
+double AOF_AvoidObstacles::distToObstaclesOrig()
+{
+  double min_dist = 0;
+  for(unsigned int i=0; i<m_obstacles_orig.size(); i++) {
+    double dist = m_obstacles_orig[i].dist_to_poly(m_osx, m_osy);
+    if((i==0) || (dist < min_dist))
+      min_dist = dist;
+  }
+  
+  return(min_dist);
+}
+
+//----------------------------------------------------------------
 // Procedure: bearingMinMaxToBufferPoly()
 
 bool AOF_AvoidObstacles::bearingMinMaxToBufferPoly(double& bmin, double& bmax)

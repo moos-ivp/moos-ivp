@@ -337,7 +337,7 @@ IvPFunction *BHV_AvoidCollision::onRunState()
 
 double BHV_AvoidCollision::getRelevance()
 {
-  // First declare the ange of relevance values to be calc'ed
+  // First declare the range of relevance values to be calc'ed
   double min_dist_relevance = 0.0;
   double max_dist_relevance = 1.0;
   double rng_dist_relevance = max_dist_relevance - min_dist_relevance;

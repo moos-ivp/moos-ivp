@@ -252,6 +252,53 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
 }
 
 //-----------------------------------------------------------
+// Procedure: getRelevance
+//            Calculate the relevance first. If zero-relevance, 
+//            we won't bother to create the objective function.
+
+#if 0
+double BHV_AvoidObstacles::getRelevance()
+{
+  // Sanity check
+  if(m_aof_avoid == 0)
+    return(0);
+
+  // First declare the range of relevance values to be calc'ed
+  double min_dist_relevance = 0.0;
+  double max_dist_relevance = 1.0;
+  double rng_dist_relevance = max_dist_relevance - min_dist_relevance;
+  
+  m_obstacle_range = hypot((m_osx - m_cnx),(m_osy - m_cny));
+
+  if(m_contact_range >= m_pwt_outer_dist)
+    return(0);
+
+
+
+  double dpct, drange;
+  if(m_contact_range <= m_pwt_inner_dist)
+    dpct = max_dist_relevance;
+  
+  // Note: drange should never be zero since either of the above
+  // conditionals would be true and the function would have returned.
+  drange = (m_pwt_outer_dist - m_pwt_inner_dist);
+  dpct = (m_pwt_outer_dist - m_contact_range) / drange;
+  
+  // Apply the grade scale to the raw distance
+  double mod_dpct = dpct; // linear case
+  if(m_pwt_grade == "quadratic")
+    mod_dpct = dpct * dpct;
+  else if(m_pwt_grade == "quasi")
+    mod_dpct = pow(dpct, 1.5);
+
+  double d_relevance = (mod_dpct * rng_dist_relevance) + min_dist_relevance;
+
+
+  return(d_relevance);  
+}
+#endif
+
+//-----------------------------------------------------------
 // Procedure: checkForObstacleUpdate
 
 bool BHV_AvoidObstacles::checkForObstacleUpdate()

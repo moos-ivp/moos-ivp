@@ -47,7 +47,9 @@ public: // virtual functions
   
   bool      ownshipInObstacle(bool=false);
   bool      isObstaclePert(unsigned int ix);
-
+  double    distToObstaclesBuff();
+  double    distToObstaclesOrig();
+ 
   bool      bearingMinMaxToBufferPoly(double& bmin, double& bmax);
 
   XYPolygon getObstacleOrig(unsigned int ix);
@@ -59,7 +61,7 @@ public: // virtual functions
   bool   ownshipInObstacle(unsigned int ix, bool=false);
   void   bufferBackOff(double osx, double osy);
   void   applyBuffer();
-  
+
  protected: // Evaluation Utilities
   double evalAuxObstacles(const IvPBox*) const;
   double evalAuxCtrPoints(const IvPBox*) const;
