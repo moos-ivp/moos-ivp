@@ -50,10 +50,13 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
 
   m_domain = subDomain(m_domain, "course,speed");
 
-  m_buffer_dist        = 0;
-  m_activation_dist    = -1;
-  m_allowable_ttc      = 20;
-  m_pheading_influence = 90;
+  m_buffer_dist       = 0;
+  m_activation_dist   = -1;
+  m_allowable_ttc     = 20;
+
+  m_completed_dist    = 75;
+  m_pwt_outer_dist    = 50;
+  m_pwt_inner_dist    = 20;
 
   m_hint_obst_edge_color   = "white";
   m_hint_obst_vertex_color = "dodger_blue";
@@ -81,53 +84,43 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 {
   if(IvPBehavior::setParam(param, val))
     return(true);
+
+  double dval = atof(val.c_str());
+  bool   non_neg_number = (isNumber(val) && (dval >= 0));
+
   
   if((param=="polygon") || (param=="points") || (param=="poly")) {
     XYPolygon new_polygon = string2Poly(val);
     if(!new_polygon.is_convex())
       return(false);
     m_aof_avoid->addObstacle(new_polygon);
-    return(true);
   }
-  else if(param == "allowable_ttc") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (!isNumber(val)))
-      return(false);
+  else if((param == "allowable_ttc") && non_neg_number)
     m_allowable_ttc = dval;
-    return(true);
-  }
-  else if(param == "activation_dist") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (!isNumber(val)))
-      return(false);
+  else if((param == "activation_dist") && non_neg_number) 
     m_activation_dist = dval;
-    return(true);
-  }
-  else if(param == "pheading_influence") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (dval > 100) || (!isNumber(val)))
-      return(false);
-    m_pheading_influence = dval;
-    return(true);
-  }
-  else if(param == "buffer_dist") {
-    double dval = atof(val.c_str());
-    if((dval < 0) || (!isNumber(val)))
-      return(false);
+  else if((param == "buffer_dist") && non_neg_number) 
     m_buffer_dist = dval;
-    return(true);
-  }
-  else if(param == "obstacle_key") {
-    if(val != "") {
-      m_obstacle_key = val;
-      return(true);
-    }
-    return(false);
-  }
+  else if((param == "obstacle_key") && (val != ""))
+    m_obstacle_key = val;
+  else if((param == "pwt_outer_dist") && non_neg_number) {
+    m_pwt_outer_dist = dval;
+    if(m_pwt_inner_dist > m_pwt_outer_dist)
+      m_pwt_inner_dist = m_pwt_outer_dist;
+  }  
+  else if((param == "pwt_inner_dist") && non_neg_number) {
+    m_pwt_inner_dist = dval;
+    if(m_pwt_outer_dist < m_pwt_inner_dist)
+      m_pwt_outer_dist = m_pwt_inner_dist;
+  }  
+  else if((param == "completed_dist") && non_neg_number) 
+    m_completed_dist = dval;
   else if(param == "visual_hints")
     return(handleVisualHints(val));
+  else
+    return(false);
   
-  return(false);
+  return(true);
 }
 
 
@@ -214,14 +207,12 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
     return(0);
   }
   
-
   // Part 3: Post the Visuals
   postViewablePolygons();
   
   // Par 4: Build the actual objective function
   IvPFunction *ipf = 0;
   OF_Reflector reflector(m_aof_avoid, 1);
-
 
 #if 1
   if(m_build_info != "")
@@ -248,9 +239,6 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
 
 
 #endif
-
-
-
 
   if(!reflector.stateOK())
     postWMessage(reflector.getWarnings());

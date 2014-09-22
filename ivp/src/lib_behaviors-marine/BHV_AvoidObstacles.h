@@ -52,6 +52,10 @@ protected:
   double  m_activation_dist;    // Outside of which no IPF created
   double  m_buffer_dist;        // Between OS and obstacle(s)
   double  m_pheading_influence;
+
+  double  m_pwt_outer_dist;
+  double  m_pwt_inner_dist;
+  double  m_completed_dist;
  
   std::string  m_obstacle_key;
   std::string  m_obstacle_update_var;
