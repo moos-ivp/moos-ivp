@@ -31,6 +31,21 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
+  Run = pPoseKeep       @ NewConsole = false
+}
+
+//------------------------------------------
+ProcessConfig = pPoseKeep                                       
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  activeflag   = THRUST_MODE_DIFFERENTIAL=true                  
+  inactiveflag = THRUST_MODE_DIFFERENTIAL=false                 
+  endflag      = DEPLOY = true
+                                                                
+	 hold_duration  = 60  // seconds, default is -1, no limit      
+   hold_tolerance = 2   // degrees, default is 3                 
 }
 
 //------------------------------------------
@@ -61,7 +76,7 @@ ProcessConfig = pLogger
 
 ProcessConfig = uSimMarine
 {
-  AppTick	= 4
+  AppTick	  = 4
   CommsTick	= 4
 
   start_x       = 0
@@ -197,4 +212,3 @@ ProcessConfig = pNodeReporter
   platform_type   = KAYAK
   platform_length = 4
 }
-

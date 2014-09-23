@@ -3,20 +3,19 @@
 // FILE: alpha.moos
 //-------------------------------------------------
 
-ServerHost = localhost		
+ServerHost = localhost
 ServerPort = 9000
 Community  = alpha
 
 MOOSTimeWarp = 1
 
 // Forest Lake
-//LatOrigin  = 43.825300 
-//LongOrigin = -70.330400 
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
 
 // MIT Sailing Pavilion (use this one)
-LatOrigin  = 42.358456 
-LongOrigin = -71.087589
-
+// LatOrigin  = 42.358456 
+// LongOrigin = -71.087589
 
 //------------------------------------------
 // Antler configuration  block
@@ -26,21 +25,24 @@ ProcessConfig = ANTLER
 
   Run = MOOSDB          @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = uSimMarine      @ NewConsole = false
+  Run = uSimMarine	    @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-  Run = pObstacleMgrX	  @ NewConsole = false
+  Run = iSay            @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
 }
 
 //------------------------------------------
-ProcessConfig = pObstacleMgrX
+ProcessConfig = iSay
 {
-  AppTick   = 2
-  CommsTick = 2
+  AppTick   = 10
+  CommsTick = 10
+
+  min_utter_interval = 0.1
+  interval_policy    = from_end
 }
 
 //------------------------------------------
@@ -49,51 +51,22 @@ ProcessConfig = uTimerScript
   AppTick   = 4                                                 
   CommsTick = 4                                                 
   
-	delay_start = 1
+  paused = false
+                                                              
+  reset_max      = nolimit  
+  reset_time     = all-posted
+  delay_reset    = 0.25
 
-  rand_var    = varname=RND_AX, type=gaussian, min=155, max=165, mu=160, sigma=2, key=at_reset
-  rand_var    = varname=RND_AY, type=gaussian, min=-65, max=-55, mu=-60, sigma=2, key=at_reset
-
-  rand_var    = varname=RND_BX, type=gaussian, min=20, max=50, mu=35, sigma=2, key=at_reset
-  rand_var    = varname=RND_BY, type=gaussian, min=-80, max=-50, mu=-65, sigma=2, key=at_reset
-
-  rand_var    = varname=RND_CX, type=gaussian, min=40, max=70, mu=65, sigma=2, key=at_reset
-  rand_var    = varname=RND_CY, type=gaussian, min=-100, max=-70, mu=-85, sigma=2, key=at_reset
-                                           
-  rand_var    = varname=RND_DX, type=gaussian, min=20, max=50, mu=35, sigma=2, key=at_reset
-  rand_var    = varname=RND_DY, type=gaussian, min=-115, max=-85, mu=-100, sigma=2, key=at_reset
-                                           
-  reset_max   = 40
-  reset_time  = all-posted
-
-	event       = var=VIEW_POINT, val="x=$[RND_AX],y=$[RND_AY],active=true,label=$[TCOUNT],msg=a,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=1.44
-	event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=$[TCOUNT],msg=b,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2
-	event       = var=VIEW_POINT, val="x=$[RND_CX],y=$[RND_CY],active=true,label=$[TCOUNT],msg=c,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.3
-	event       = var=VIEW_POINT, val="x=$[RND_DX],y=$[RND_DY],active=true,label=$[TCOUNT],msg=d,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.3
-
-	event       = var=TRACKED_FEATURE, val="x=$[RND_AX],y=$[RND_AY],label=a,color=1,size=2", time=1.44
-	event       = var=TRACKED_FEATURE, val="x=$[RND_BX],y=$[RND_BY],label=b,color=2,size=2", time=2
-	event       = var=TRACKED_FEATURE, val="x=$[RND_CX],y=$[RND_CY],label=c,color=3,size=2", time=2.3
-	event       = var=TRACKED_FEATURE, val="x=$[RND_DX],y=$[RND_DY],label=d,color=3,size=2", time=2.3
+	event          = var=SAY_MOOS, val="say={one}",   time=0.25  
+  event          = var=SAY_MOOS, val="say={two}",   time=0.5  
+  event          = var=SAY_MOOS, val="say={three}", time=0.75  
+  event          = var=SAY_MOOS, val="say={four}",  time=1  
+  event          = var=SAY_MOOS, val="say={five},priority=100",  time=1.25  
+  event          = var=SAY_MOOS, val="say={six},source=james",   time=1.5  
+  event          = var=SAY_MOOS, val="say={seven}", time=1.75  
+  event          = var=SAY_MOOS, val="say={eight}", time=2  
+  event          = var=SAY_MOOS, val="say={nine}",  time=2.25  
 }                                                               
-
-//------------------------------------------
-// uProcessWatch config block
-
-ProcessConfig = uProcessWatch
-{
-  AppTick   = 4
-  CommsTick = 4
-
-  summary_wait = 5
-
-  nowatch   = uXMS*
-  nowatch   = uMAC*
-  nowatch   = uPokeDB*
-  nowatch   = uTermCommand*
-  watch_all = true
-}
-
 
 //------------------------------------------
 // pLogger config block
@@ -109,7 +82,6 @@ ProcessConfig = pLogger
   // explicitly declare their logging request
 
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
-  Log = BHV_WARNING @ 0 NOSYNC
 
   LogAuxSrc = true
   WildCardLogging = true
@@ -136,7 +108,7 @@ ProcessConfig = uSimMarine
 
   turn_rate     = 40
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
-	thrust_reflect = true
+  thrust_reflect = true
 }
 
 //------------------------------------------
@@ -144,13 +116,10 @@ ProcessConfig = uSimMarine
 
 ProcessConfig = pHelmIvP
 {
-  AppTick    = 2
-  CommsTick  = 2
-
-  term_report_interval=0
+  AppTick    = 4
+  CommsTick  = 4
 
   bhv_dir_not_found_ok = true
-  ivp_behavior_dir = /Users/ddmikerb
 
   behaviors  = alpha.bhv
   domain     = course:0:359:360
@@ -199,19 +168,17 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  //tiff_file            = forrest19.tif
-  tiff_file            = AerialMIT.tif
+  tiff_file            = forrest19.tif
 
   set_pan_x            = -90
-  set_pan_y            = 80
-  zoom                 = 2.4
-
-  vehicle_shape_scale  = 1
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.5
   hash_delta           = 50
   hash_shade           = 0.4
   hash_viewable        = true
 
-  trails_point_size    = 1
+  trails_point_size   = 1
 
   // Appcast configuration
   appcast_height       = 75
@@ -222,22 +189,36 @@ ProcessConfig = pMarineViewer
   procs_font_size      = medium
   appcast_font_size    = small
   
-  //left_context[polyvert] = POLY_VERT=x=$(XPOS),y=$(YPOS)
-  left_context[pt] = VIEW_POINT = x=$(XPOS),y=$(YPOS),label=pt$(IX),vertex_color=white
-	
-  scope  = DST_AVD_OBSTACLESC
-  scope  = RNG_AVD_OBSTACLESC
-  scope  = RNG_AVD_OBSTACLESA
-  scope  = POSE_KEEP
-  scope  = VIEW_POLYGON
-  scope  = VIEW_POINT
-	scope  = RETURN
+  //datum_viewable = true
+  //datum_size     = 18
+  //gui_size = small
+
+  //left_context[survey-point] = DEPLOY=true
+  //left_context[survey-point] = MOOS_MANUAL_OVERIDE=false
+  //left_context[survey-point] = RETURN=false
+
+  right_context[return] = DEPLOY=true
+  right_context[return] = MOOS_MANUAL_OVERIDE=false
+  right_context[return] = RETURN=false
+
+  scope  = SURVEY_DIST_TO_NEXT
+  scope  = SURVEY_DIST_TO_PREV
+  scope  = RETURN
   scope  = WPT_STAT
   scope  = VIEW_SEGLIST
+  scope  = VIEW_POINT
+  scope  = VIEW_POLYGON
+  scope  = MVIEWER_LCLICK
+  scope  = MVIEWER_RCLICK
 
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
+
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action  = RETURN=true
+  action  = UPDATES_RETURN=speed=1.4
 }
 
 //------------------------------------------
@@ -248,7 +229,7 @@ ProcessConfig = pNodeReporter
   AppTick    = 2
   CommsTick	 = 2
 
-  platform_type   = kayak
-  platform_length = 10
+  platform_type   = KAYAK
+  platform_length = 4
 }
 
