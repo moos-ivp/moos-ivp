@@ -32,12 +32,12 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-  Run = pObstacleMgr	  @ NewConsole = false
+  Run = pObstacleMgrX	  @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
 }
 
 //------------------------------------------
-ProcessConfig = pObstacleMgr
+ProcessConfig = pObstacleMgrX
 {
   AppTick   = 2
   CommsTick = 2
@@ -65,8 +65,6 @@ ProcessConfig = uTimerScript
                                            
   reset_max   = 40
   reset_time  = all-posted
-
-	event       = var=VIEW_POLYGON, val="format=radial, label=foxtrot, x=50, y=-50, radius=10, pts=6"
 
 	event       = var=VIEW_POINT, val="x=$[RND_AX],y=$[RND_AY],active=true,label=$[TCOUNT],msg=a,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=1.44
 	event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=$[TCOUNT],msg=b,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2
