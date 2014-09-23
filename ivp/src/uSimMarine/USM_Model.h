@@ -48,6 +48,7 @@ public:
   void   setDualState(bool v)         {m_dual_state = v;}; 
   void   setDriftFresh(bool v)        {m_drift_fresh = v;}; 
   void   setThrustModeReverse(bool v) {m_thrust_mode_reverse=v;};
+  void   setThrustModeDiff(std::string s) {m_thrust_mode=s;};
   void   setPaused(bool); 
   void   setThrustFactor(double);
   void   setThrustReflect(bool);
@@ -88,7 +89,7 @@ public:
   std::string getThrustMapPos() const {return(m_thrust_map.getMapPos());};
   std::string getThrustMapNeg() const {return(m_thrust_map.getMapNeg());};
   std::string getDriftSummary();
-  std::string getThrustMode() const   {return(m_thrust_mode);};
+  std::string getThrustModeDiff() const {return(m_thrust_mode);};
 
  protected:
   void   propagateNodeRecord(NodeRecord&, double delta_time, bool);

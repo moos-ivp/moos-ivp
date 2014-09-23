@@ -60,6 +60,7 @@ protected:
   CMOOSGeodesy m_geodesy;
   bool         m_geo_ok;
   bool         m_thrust_mode_reverse;
+  bool         m_thrust_mode_differential;
 
   // A cache of starting info to facilitate generation of reports.
   std::string m_start_nav_x;
