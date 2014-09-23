@@ -80,6 +80,7 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("	 hold_duration  = 60  // seconds, default is -1, no limit      ");
   blk("  hold_tolerance = 2   // degrees, default is 3                 ");
+  blk("  hold_heading   = 270  // degrees, no default                  ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

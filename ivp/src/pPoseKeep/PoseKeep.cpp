@@ -26,9 +26,10 @@ PoseKeep::PoseKeep()
   m_thrust_l = 0;
   m_thrust_r = 0;
 
-  m_heading_diff = 0;
-  m_adjustment   = 0;
-  m_tolerance    = 2;   // degrees
+  m_heading_diff  = 0;
+  m_heading_delta = 0;
+  m_adjustment    = 0;
+  m_tolerance     = 2;   // degrees
 
   m_start_time = 0;
 
@@ -39,6 +40,8 @@ PoseKeep::PoseKeep()
 
   m_hold_source = "n/a";
   m_hold_point_pending = false;
+
+  m_hold_pt_mail_recd = 0;
 
   m_duration = -1;   // seconds, -1 means no duration applied
 }
@@ -168,10 +171,15 @@ bool PoseKeep::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
-  checkForTimeOut();
   checkForHoldPointPending();
 
-  if(m_active) 
+  updateHeading();
+  if(m_active) {
+    checkForTimeOut();
+    checkForTolerance();
+  }
+
+  if(m_active)
     adjustHeading();
 
   AppCastingMOOSApp::PostReport();
@@ -242,29 +250,32 @@ void PoseKeep::registerVariables()
 
 
 //------------------------------------------------------------
+// Procedure: updateHeading
+
+void PoseKeep::updateHeading() 
+{
+  // Heading diff should be in the range [-180, 180]
+  m_heading_diff = angle180(m_curr_heading - m_hold_heading);
+
+  m_heading_delta = m_heading_diff;
+  if(m_heading_delta < 0)
+    m_heading_delta *= -1;
+}
+
+//------------------------------------------------------------
 // Procedure: adjustHeading
 
 void PoseKeep::adjustHeading() 
 {
   if(!m_active)
     return;
+  if(m_heading_delta <= m_tolerance)
+    return;
 
-  // Heading diff should be in the range [-180, 180]
-  m_heading_diff = angle180(m_curr_heading - m_hold_heading);
-  m_adjustment   = 0;
-
-  double abs_heading_diff = m_heading_diff;
-  if(abs_heading_diff < 0)
-    abs_heading_diff = abs_heading_diff * -1;
-
-  if(abs_heading_diff > m_tolerance)
-    m_adjustment = m_heading_diff * 100 / 180;
+  m_adjustment = m_heading_diff * 100 / 180;
 
   string summary = "diff=" + doubleToString(m_heading_diff,1);
   summary += ", adjust=" + doubleToString(m_adjustment,3);
-
-  if(abs_heading_diff <= m_tolerance)
-    return;
 
   m_summaries.push_front(summary);
   if(m_summaries.size() > 15)
@@ -311,6 +322,30 @@ void PoseKeep::checkForTimeOut()
   if(elapsed < m_duration) 
     return;
 
+  completeAndPost();
+}
+
+//------------------------------------------------------------
+// Procedure: checkForTolerance
+
+void PoseKeep::checkForTolerance()
+{
+  if(!m_hold_heading_set)
+    return;
+
+  Notify("PPK_HEADING_DELTA", m_heading_delta);
+
+  if(m_heading_delta > m_tolerance) 
+    return;
+
+  completeAndPost();
+}
+
+//------------------------------------------------------------
+// Procedure: completeAndPost
+
+void PoseKeep::completeAndPost()
+{
   m_active = false;
   Notify("DESIRED_THRUST_L", 0.0);
   Notify("DESIRED_THRUST_R", 0.0);
@@ -376,6 +411,7 @@ bool PoseKeep::handleConfigHoldHeading(string value)
   double dval = atof(value.c_str());
 
   m_hold_heading = angle360(dval);
+  m_hold_heading_set = true;
   return(true);
 }
 
@@ -474,6 +510,7 @@ bool PoseKeep::addFlag(string flag_type, string str)
 
 bool PoseKeep::handleMailHoldPoint(string str) 
 {
+  m_hold_pt_mail_recd++;
   string xpos, ypos;
 
   vector<string> svector = parseString(str, ',');
@@ -504,6 +541,8 @@ bool PoseKeep::handleMailHoldPoint(string str)
     return(false);
 
   m_hold_heading = relAng(m_osx, m_osy, m_hold_x, m_hold_y);
+
+  m_hold_heading_set = true;
   
   return(true);
 }
@@ -554,6 +593,8 @@ bool PoseKeep::buildReport()
 
   string s_tolerance = doubleToStringX(m_tolerance,1);
 
+  string s_hpmail = uintToString(m_hold_pt_mail_recd);
+
   string s_curr_position = "n/a";
   if(m_osx_set && m_osy_set) {
     s_curr_position = "(" + doubleToString(m_osx,1) + ",";
@@ -591,6 +632,8 @@ bool PoseKeep::buildReport()
   m_msgs << "           Active: " << s_active              << endl;
   m_msgs << "         Duration: " << s_duration            << endl;
   m_msgs << "        Tolerance: " << s_tolerance << " (degrees)" << endl;
+
+  m_msgs << "  HOLD_POINT Mail: " << s_hpmail              << endl;
   m_msgs << " Current Position: " << s_curr_position       << endl;
   m_msgs << "  Current Heading: " << s_curr_heading << 
     " (updated " << s_tstamp  << " secs ago)" << endl;

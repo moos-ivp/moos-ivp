@@ -25,9 +25,13 @@ class PoseKeep : public AppCastingMOOSApp
 
  protected: // Standard AppCastingMOOSApp function to overload 
    bool buildReport();
+   void updateHeading();
    void adjustHeading();
    void rotateVehicle(double);
    void checkForTimeOut();
+   void checkForTolerance();
+   void completeAndPost();
+
    void checkForHoldPointPending();
 
    bool handleMailHoldPoint(std::string);
@@ -57,10 +61,13 @@ class PoseKeep : public AppCastingMOOSApp
    double  m_thrust_l;
    double  m_thrust_r;
    double  m_heading_diff;
+   double  m_heading_delta;
    double  m_adjustment;
 
    double  m_hold_x;
    double  m_hold_y;
+
+   unsigned int m_hold_pt_mail_recd;
 
    std::string m_hold_source;
 
