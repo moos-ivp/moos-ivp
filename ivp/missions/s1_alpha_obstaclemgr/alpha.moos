@@ -32,29 +32,15 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-  Run = pPoseKeep       @ NewConsole = false
-  //Run = pObstacleMgr	  @ NewConsole = false
-  //Run = uTimerScript    @ NewConsole = false
+  Run = pObstacleMgr	  @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
 }
 
 //------------------------------------------
 ProcessConfig = pObstacleMgr
 {
-  AppTick   = 1
-  CommsTick = 1
-}
-
-//------------------------------------------
-ProcessConfig = pPoseKeep
-{
-  AppTick   = 4
-  CommsTick = 4
-
-	activeflag   = THRUST_MODE_DIFFERENTIAL=true
-	inactiveflag = THRUST_MODE_DIFFERENTIAL=false
-	endflag      = POSE_KEEP = done
-
-	hold_duration = 2000
+  AppTick   = 2
+  CommsTick = 2
 }
 
 //------------------------------------------
@@ -218,20 +204,16 @@ ProcessConfig = pMarineViewer
   //tiff_file            = forrest19.tif
   tiff_file            = AerialMIT.tif
 
-  //set_pan_x            = -90
-  //set_pan_y            = 80
-  //zoom                 = 2.4
+  set_pan_x            = -90
+  set_pan_y            = 80
+  zoom                 = 2.4
 
-  set_pan_x            = 8
-  set_pan_y            = 2
-  zoom                 = 6.5
-
-  vehicle_shape_scale  = 1.5
+  vehicle_shape_scale  = 1
   hash_delta           = 50
   hash_shade           = 0.4
   hash_viewable        = true
 
-  trails_point_size   = 1
+  trails_point_size    = 1
 
   // Appcast configuration
   appcast_height       = 75
@@ -256,9 +238,6 @@ ProcessConfig = pMarineViewer
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
-  //button_three = CLEARP # PMV_CLEAR=shape=points
-  button_three = HOLD:T # DEPLOY=hold
-  button_four  = HOLD:F # DEPLOY=false
 }
 
 //------------------------------------------
@@ -269,7 +248,7 @@ ProcessConfig = pNodeReporter
   AppTick    = 2
   CommsTick	 = 2
 
-  platform_type   = wamv
+  platform_type   = kayak
   platform_length = 10
 }
 

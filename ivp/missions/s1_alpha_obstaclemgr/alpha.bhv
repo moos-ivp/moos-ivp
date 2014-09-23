@@ -2,7 +2,6 @@
 
 initialize   DEPLOY = false
 initialize   RETURN = false
-initialize   THRUST_MODE_REVERSE = false
 
 //----------------------------------------------
 Behavior = BHV_Waypoint
@@ -21,13 +20,12 @@ Behavior = BHV_Waypoint
   UPDATES   = WPT_UPDATE
   perpetual = true
 
-//               lead = 8
-//        lead_damper = 1
+               lead = 8
+        lead_damper = 1
               speed = 2   // meters per second
-//       capture_line = true
+       capture_line = true
      capture_radius = 5.0
         slip_radius = 8.0
-//             points = 0,30
              points = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
              repeat = 0
 
@@ -57,7 +55,7 @@ Behavior=BHV_Waypoint
 }
 
 //----------------------------------------------
-Behavior=BHV_AvoidObstacles
+Behavior=BHV_AvoidObstaclesX
 {
   name       = avd_obstacles
   pwt        = 500
