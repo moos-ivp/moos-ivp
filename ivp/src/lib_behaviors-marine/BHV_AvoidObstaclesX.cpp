@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvoidObstacles.cpp                               */
+/*    FILE: BHV_AvoidObstaclesX.cpp                              */
 /*    DATE: Aug 2nd 2006                                         */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -28,7 +28,7 @@
 #include <iostream>
 #include <cmath> 
 #include <cstdlib>
-#include "BHV_AvoidObstacles.h"
+#include "BHV_AvoidObstaclesX.h"
 #include "OF_Reflector.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
@@ -41,7 +41,7 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) : 
+BHV_AvoidObstaclesX::BHV_AvoidObstaclesX(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "avoid_obstacles");
@@ -68,7 +68,7 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
   m_hint_buff_fill_color   = "gray70";
   m_hint_buff_fill_transparency = 0.1;
 
-  m_aof_avoid = new AOF_AvoidObstacles(m_domain);
+  m_aof_avoid = new AOF_AvoidObstaclesX(m_domain);
 
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
 }
@@ -80,7 +80,7 @@ BHV_AvoidObstacles::BHV_AvoidObstacles(IvPDomain gdomain) :
 //            The "radius" parameter indicates what it means to have
 //            arrived at the waypoint.
 
-bool BHV_AvoidObstacles::setParam(string param, string val) 
+bool BHV_AvoidObstaclesX::setParam(string param, string val) 
 {
   if(IvPBehavior::setParam(param, val))
     return(true);
@@ -129,7 +129,7 @@ bool BHV_AvoidObstacles::setParam(string param, string val)
 //   Example: OBSTACLE_UPDATE_REQUEST = "obstacle_key=abe,
 //                                       update_var=OBSTACLE_UPDATE_ABE"
 
-void BHV_AvoidObstacles::onSetParamComplete()
+void BHV_AvoidObstaclesX::onSetParamComplete()
 {
   if(m_obstacle_key != "") {
     m_obstacle_update_var = "OBSTACLE_UPDATE_" + toupper(m_obstacle_key);
@@ -143,7 +143,7 @@ void BHV_AvoidObstacles::onSetParamComplete()
 //-----------------------------------------------------------
 // Procedure: onIdleState
 
-void BHV_AvoidObstacles::onIdleState()
+void BHV_AvoidObstaclesX::onIdleState()
 {
   checkForObstacleUpdate();
   postErasablePolygons();
@@ -152,7 +152,7 @@ void BHV_AvoidObstacles::onIdleState()
 //-----------------------------------------------------------
 // Procedure: onRunState
 
-IvPFunction *BHV_AvoidObstacles::onRunState() 
+IvPFunction *BHV_AvoidObstaclesX::onRunState() 
 {
   // Part 1: Sanity checks
   bool ok1, ok2, ok3;
@@ -257,7 +257,7 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
 //            we won't bother to create the objective function.
 
 #if 0
-double BHV_AvoidObstacles::getRelevance()
+double BHV_AvoidObstaclesX::getRelevance()
 {
   // Part 1: Sanity checks
   if(m_aof_avoid == 0)
@@ -316,7 +316,7 @@ double BHV_AvoidObstacles::getRelevance()
 //-----------------------------------------------------------
 // Procedure: checkForObstacleUpdate
 
-bool BHV_AvoidObstacles::checkForObstacleUpdate()
+bool BHV_AvoidObstaclesX::checkForObstacleUpdate()
 {
   if(m_obstacle_update_var == "") 
     return(true);
@@ -342,7 +342,7 @@ bool BHV_AvoidObstacles::checkForObstacleUpdate()
 //-----------------------------------------------------------
 // Procedure: handleVisualHints()
 
-bool BHV_AvoidObstacles::handleVisualHints(string hints)
+bool BHV_AvoidObstaclesX::handleVisualHints(string hints)
 {
   vector<string> svector = parseStringQ(hints, ',');
 
@@ -385,7 +385,7 @@ bool BHV_AvoidObstacles::handleVisualHints(string hints)
 //-----------------------------------------------------------
 // Procedure: postViewablePolygons
 
-void BHV_AvoidObstacles::postViewablePolygons()
+void BHV_AvoidObstaclesX::postViewablePolygons()
 {
   if(!m_aof_avoid)
     return;
@@ -432,7 +432,7 @@ void BHV_AvoidObstacles::postViewablePolygons()
 //-----------------------------------------------------------
 // Procedure: postErasablePolygons
 
-void BHV_AvoidObstacles::postErasablePolygons()
+void BHV_AvoidObstaclesX::postErasablePolygons()
 {
   if(!m_aof_avoid)
     return;

@@ -191,6 +191,7 @@ SET(IVP_NON_GUI_APPS
   pDeadManPost
   iDiffThrust
   pNodeReporter
+  pObstacleMgrX
   pPoseKeep
   uFldCollisionDetect
   uFldPathCheck

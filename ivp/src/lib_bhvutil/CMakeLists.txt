@@ -9,8 +9,8 @@ SET(SRC
   AOF_AvoidCollision.cpp
   AOF_AvoidCollisionDepth.cpp
   AOF_AvoidObstacles.cpp
+  AOF_AvoidObstaclesX.cpp
   AOF_CutRangeCPA.cpp
-#   AOF_CutRangeCPA_V1.cpp
   AOF_Shadow.cpp
   AOF_Waypoint.cpp
   LoiterEngine.cpp
@@ -22,7 +22,8 @@ SET(HEADERS
   AOF_AvoidCollisionDepth.h
   AOF_AvoidCollision.h
   AOF_AvoidObstacles.h
-#  AOF_CutRangeCPA.h
+  AOF_AvoidObstaclesX.h
+  AOF_CutRangeCPA.h
   AOF_Shadow.h
   AOF_Waypoint.h
   LoiterEngine.h

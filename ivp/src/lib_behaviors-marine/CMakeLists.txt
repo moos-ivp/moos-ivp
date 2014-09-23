@@ -8,6 +8,7 @@ SET(SRC
   BHV_Attractor.cpp
   BHV_AvoidCollision.cpp
   BHV_AvoidObstacles.cpp
+  BHV_AvoidObstaclesX.cpp
   BHV_ConstantDepth.cpp
   BHV_ConstantHeading.cpp
   BHV_MaxDepth.cpp
