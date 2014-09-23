@@ -110,6 +110,8 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_markpt.set_vertex_size(4);
 
   m_prevpt.set_label("prev_pt");
+
+  m_robotx_hack = false;
 }
 
 //-----------------------------------------------------------
@@ -170,6 +172,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     setBooleanOnString(m_greedy_tour_pending, param_val);
     return(true);
   }
+  else if(param == "robotx_hack") 
+    return(setBooleanOnString(m_robotx_hack, param_val));
   else if((param == "wpt_status") || (param == "wpt_status_var")) {
     if(strContainsWhite(param_val) || (param_val == ""))
       return(false);
@@ -434,6 +438,15 @@ IvPFunction *BHV_Waypoint::onRunState()
       postMessage("VIEW_POINT", m_trackpt.get_spec("active=true"), "trk");
     else
       postMessage("VIEW_POINT", m_trackpt.get_spec("active=false"), "trk");
+
+    if(m_robotx_hack) {
+      if(distPointToPoint(m_osx, m_osy, next_x, next_y) > 2) {
+	string pt = "x=" + doubleToString(next_x,2) + ",y=" + doubleToString(next_y,2);
+	postMessage("DEPLOY", "hold");
+	postMessage("HOLD_POINT", pt);
+      }
+    }
+
   }
   // Otherwise "erase" the next waypoint marker
   else {
