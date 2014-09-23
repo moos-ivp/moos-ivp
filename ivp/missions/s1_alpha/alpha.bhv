@@ -29,6 +29,8 @@ Behavior = BHV_Waypoint
              points = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
              repeat = 0
 
+	robotx_hack = true
+
     wpt_dist_to_prev = SURVEY_DIST_TO_PREV
     wpt_dist_to_next = SURVEY_DIST_TO_NEXT
 
