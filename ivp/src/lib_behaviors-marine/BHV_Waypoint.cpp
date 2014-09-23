@@ -785,15 +785,24 @@ void BHV_Waypoint::postWptFlags(double x, double y)
   string xpos = doubleToStringX(x,2);
   string ypos = doubleToStringX(y,2);
 
+  string nextx = doubleToStringX(m_nextpt.x(),2);
+  string nexty = doubleToStringX(m_nextpt.y(),2);
+
   int vsize = m_wpt_flags.size();
   for(int i=0; i<vsize; i++) {
     string var   = m_wpt_flags[i].get_var();
     if(m_wpt_flags[i].is_string()) {
       string sdata = m_wpt_flags[i].get_sdata();
+
       sdata = findReplace(sdata, "$(X)", xpos);
       sdata = findReplace(sdata, "$(Y)", ypos);
       sdata = findReplace(sdata, "$[X]", xpos);
       sdata = findReplace(sdata, "$[Y]", ypos);
+
+      sdata = findReplace(sdata, "$(NX)", nextx);
+      sdata = findReplace(sdata, "$(NY)", nexty);
+      sdata = findReplace(sdata, "$[NX]", nextx);
+      sdata = findReplace(sdata, "$[NY]", nexty);
       postRepeatableMessage(var, sdata);
     }
     else {

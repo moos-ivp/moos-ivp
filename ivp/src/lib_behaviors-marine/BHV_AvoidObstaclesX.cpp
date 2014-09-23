@@ -55,8 +55,10 @@ BHV_AvoidObstaclesX::BHV_AvoidObstaclesX(IvPDomain gdomain) :
   m_allowable_ttc     = 20;
 
   m_completed_dist    = 75;
-  m_pwt_outer_dist    = 50;
+  m_pwt_outer_dist    = 30;
   m_pwt_inner_dist    = 20;
+
+  m_pwt_grade = "linear";
 
   m_hint_obst_edge_color   = "white";
   m_hint_obst_vertex_color = "dodger_blue";
@@ -174,8 +176,8 @@ IvPFunction *BHV_AvoidObstaclesX::onRunState()
   }
 
   checkForObstacleUpdate();
-  
-  // Part 2: Build the underlying objective function and initialize
+
+  // Part 2: Build/update the underlying objective function and initialize
   m_aof_avoid->setParam("os_x", os_x);
   m_aof_avoid->setParam("os_y", os_y);
   m_aof_avoid->setParam("os_h", os_hdg);
@@ -200,17 +202,26 @@ IvPFunction *BHV_AvoidObstaclesX::onRunState()
     postWMessage(m_aof_avoid->getDebugMsg());
   }
 
-
+  // Part 4: postInitialize will cache values
   bool ok_post_init = m_aof_avoid->postInitialize();
   if(!ok_post_init) {
     postWMessage("BHV_AvoidObstacles: AOF-Post-Init Error");
     return(0);
   }
   
-  // Part 3: Post the Visuals
+  // Part 5: Determine the relevance
+  double relevance = getRelevance();
+  double obstacle_range = m_aof_avoid->distToObstaclesBuff();
+  postMessage("REL_"+toupper(m_descriptor), relevance);
+  postMessage("DST_"+toupper(m_descriptor), obstacle_range);
+
+  if(relevance <= 0)
+    return(0);
+  
+  // Part 6: Post the Visuals
   postViewablePolygons();
   
-  // Par 4: Build the actual objective function
+  // Par 7: Build the actual objective function
   IvPFunction *ipf = 0;
   OF_Reflector reflector(m_aof_avoid, 1);
 
@@ -236,8 +247,6 @@ IvPFunction *BHV_AvoidObstaclesX::onRunState()
   reflector.setParam("uniform_piece", "discrete @ x:5,y:5");  
   reflector.setParam("refine_region", "native @ x:10:24,y:-25:20");  
   reflector.setParam("refine_piece",  "discrete @ x:2,y:2");  
-
-
 #endif
 
   if(!reflector.stateOK())
@@ -245,7 +254,7 @@ IvPFunction *BHV_AvoidObstaclesX::onRunState()
   else {
     ipf = reflector.extractIvPFunction(true); // true means normalize [0,100]
     if(ipf)
-      ipf->setPWT(m_priority_wt);
+      ipf->setPWT(relevance * m_priority_wt);
   }
   
   return(ipf);
@@ -256,13 +265,12 @@ IvPFunction *BHV_AvoidObstaclesX::onRunState()
 //            Calculate the relevance first. If zero-relevance, 
 //            we won't bother to create the objective function.
 
-#if 0
 double BHV_AvoidObstaclesX::getRelevance()
 {
   // Part 1: Sanity checks
   if(m_aof_avoid == 0)
     return(0);
-  if(m_pwt_outer_dist < m_pwt_innner_dist)
+  if(m_pwt_outer_dist < m_pwt_inner_dist)
     return(0);
 
   // Part 2: More Sanity checks based on range to nearest obstacle
@@ -278,40 +286,29 @@ double BHV_AvoidObstaclesX::getRelevance()
 
   if(obstacle_range >= m_pwt_outer_dist)
     return(min_dist_relevance);
-  if(obstacle_range <= m_pwt_min_dist)
+  if(obstacle_range <= m_pwt_inner_dist)
     return(max_dist_relevance);
 
-  // Part 
-  double rng_dist_relevance = max_dist_relevance - min_dist_relevance;
-  
-  // Sanity check
-  if(rng_dist_relevance <= 0)
-    return(0);
-
-
-  
-  double dpct, drange;
-  if(obstacle_range <= m_pwt_inner_dist)
-    dpct = max_dist_relevance;
-  
+  // Part 4: Handle the in-between case
   // Note: drange should never be zero since either of the above
   // conditionals would be true and the function would have returned.
-  drange = (m_pwt_outer_dist - m_pwt_inner_dist);
-  dpct = (m_pwt_outer_dist - m_contact_range) / drange;
+  double drange = (m_pwt_outer_dist - m_pwt_inner_dist);
+  if(drange <= 0)
+    return(0);
+  double dpct = (m_pwt_outer_dist - obstacle_range) / drange;
   
-  // Apply the grade scale to the raw distance
-  double mod_dpct = dpct; // linear case
+  // Possibly apply the grade scale to the raw distance
   if(m_pwt_grade == "quadratic")
-    mod_dpct = dpct * dpct;
+    dpct = dpct * dpct;
   else if(m_pwt_grade == "quasi")
-    mod_dpct = pow(dpct, 1.5);
+    dpct = pow(dpct, 1.5);
 
-  double d_relevance = (mod_dpct * rng_dist_relevance) + min_dist_relevance;
+  double rng_dist_relevance = max_dist_relevance - min_dist_relevance;
+  double d_relevance = (dpct * rng_dist_relevance) + min_dist_relevance;
 
 
   return(d_relevance);  
 }
-#endif
 
 //-----------------------------------------------------------
 // Procedure: checkForObstacleUpdate

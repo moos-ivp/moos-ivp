@@ -44,7 +44,7 @@ public:
   void    postViewablePolygons();
   void    postErasablePolygons();
   bool    checkForObstacleUpdate();
-  void    getRelevance();
+  double  getRelevance();
 
 protected:
   AOF_AvoidObstaclesX *m_aof_avoid;
@@ -57,6 +57,8 @@ protected:
   double  m_pwt_outer_dist;
   double  m_pwt_inner_dist;
   double  m_completed_dist;
+
+  std::string  m_pwt_grade;
  
   std::string  m_obstacle_key;
   std::string  m_obstacle_update_var;
