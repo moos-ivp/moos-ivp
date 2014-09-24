@@ -114,8 +114,6 @@ protected: // intermediate or object global variables.
 
   XYPoint   m_prevpt;
 
-  bool      m_robotx_hack;
-
   bool      m_greedy_tour_pending;
 };
 #endif

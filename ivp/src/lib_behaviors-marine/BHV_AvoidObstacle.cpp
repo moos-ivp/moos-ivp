@@ -94,8 +94,6 @@ bool BHV_AvoidObstacle::setParam(string param, string val)
   if((param=="polygon") || (param=="points") || (param=="poly")) {
     if(m_aof_avoid == 0)
       return(false);
-    if(m_aof_avoid->obstacleSet())
-      return(false);
     XYPolygon new_polygon = string2Poly(val);
     if(!new_polygon.is_convex())
       return(false);
