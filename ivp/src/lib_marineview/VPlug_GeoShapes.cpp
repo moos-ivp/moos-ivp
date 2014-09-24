@@ -417,18 +417,8 @@ void VPlug_GeoShapes::addPoint(const XYPoint& new_point)
 bool VPlug_GeoShapes::addPolygon(const string& poly_str)
 {
   XYPolygon new_poly = string2Poly(poly_str);
-
-  // Handle the case where the poly has no vertices. No matter the 
-  // reason, it won't be added. But check if this may be just because
-  // the polygon is an inactive poly, meant to erase a prior one.
-  if(new_poly.size() == 0) {
-    if(new_poly.active()) 
-      return(false);
-    return(true);
-  }
-
-  // Otherwise add a new non-empty polygon.
-  addPolygon(new_poly);
+  if(new_poly.size() > 0) 
+    addPolygon(new_poly);
   return(true);
 }
 
