@@ -1,8 +1,9 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: AOF_AvoidObstacles.h                                 */
+/*    FILE: AOF_AvoidObstacle.h                                  */
 /*    DATE: Aug 2nd, 2006                                        */
+/*    DATE: Sep 22nd, 2014  Mods to single obstacle              */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,44 +22,42 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef AOF_AVOID_OBSTACLES_X_HEADER
-#define AOF_AVOID_OBSTACLES_X_HEADER
+#ifndef AOF_AVOID_OBSTACLE_HEADER
+#define AOF_AVOID_OBSTACLE_HEADER
 
 #include "AOF.h"
 #include "XYPolygon.h"
 
 class IvPDomain;
-class AOF_AvoidObstaclesX: public AOF {
+class AOF_AvoidObstacle: public AOF {
 public:
-  AOF_AvoidObstaclesX(IvPDomain);
-  ~AOF_AvoidObstaclesX() {};
+  AOF_AvoidObstacle(IvPDomain);
+  ~AOF_AvoidObstacle() {};
 
 public: // virtual functions
   double evalBox(const IvPBox*) const; 
   bool   setParam(const std::string&, double);
   bool   setParam(const std::string&, const std::string&);
-  void   addObstacle(const XYPolygon&);
+  void   setObstacle(const XYPolygon&);
   bool   initialize();
   bool   postInitialize();
 
-  unsigned int obstaclesInRange();
-  unsigned int pertObstacleCount();
-  unsigned int size() {return(m_obstacles_orig.size());};
+  //unsigned int size() {return(m_obstacle_orig.size());};
   
-  bool      ownshipInObstacle(bool=false);
-  bool      isObstaclePert(unsigned int ix);
-  double    distToObstaclesBuff();
-  double    distToObstaclesOrig();
+  bool      obstacleSet() {return(m_obstacle_orig.size() > 0);};
+  bool      ownshipInObstacle(bool use_buffered=false);
+  bool      isObstaclePert();
+  double    distToObstacleBuff();
+  double    distToObstacleOrig();
  
   bool      bearingMinMaxToBufferPoly(double& bmin, double& bmax);
 
-  XYPolygon getObstacleOrig(unsigned int ix);
-  XYPolygon getObstacleBuff(unsigned int ix);
+  XYPolygon getObstacleOrig() const {return(m_obstacle_orig);};
+  XYPolygon getObstacleBuff() const {return(m_obstacle_orig);};
 
   std::string getDebugMsg() {return(m_debug_msg);};
 
  protected: // Initialization Utilities
-  bool   ownshipInObstacle(unsigned int ix, bool=false);
   void   bufferBackOff(double osx, double osy);
   void   applyBuffer();
 
@@ -90,11 +89,11 @@ public: // virtual functions
   int    m_spd_ix;  // Index of "speed"  variable in IvPDomain
   
   // A vector over the number of obstacles
-  std::vector<XYPolygon> m_obstacles_orig;
-  std::vector<XYPolygon> m_obstacles_buff;
-  std::vector<bool>      m_obstacles_pert;
+  XYPolygon   m_obstacle_orig;
+  XYPolygon   m_obstacle_buff;
+  bool        m_obstacle_pert;
 
-  std::string            m_debug_msg;
+  std::string m_debug_msg;
   
   // A vector over 360 (typically) heading values
   std::vector<double>    m_cache_distance;

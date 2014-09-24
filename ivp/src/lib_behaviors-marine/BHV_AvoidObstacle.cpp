@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvoidObstaclesX.cpp                              */
+/*    FILE: BHV_AvoidObstacle.cpp                                */
 /*    DATE: Aug 2nd 2006                                         */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -28,7 +28,7 @@
 #include <iostream>
 #include <cmath> 
 #include <cstdlib>
-#include "BHV_AvoidObstaclesX.h"
+#include "BHV_AvoidObstacle.h"
 #include "OF_Reflector.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
@@ -41,7 +41,7 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-BHV_AvoidObstaclesX::BHV_AvoidObstaclesX(IvPDomain gdomain) : 
+BHV_AvoidObstacle::BHV_AvoidObstacle(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "avoid_obstacles");
@@ -70,7 +70,7 @@ BHV_AvoidObstaclesX::BHV_AvoidObstaclesX(IvPDomain gdomain) :
   m_hint_buff_fill_color   = "gray70";
   m_hint_buff_fill_transparency = 0.1;
 
-  m_aof_avoid = new AOF_AvoidObstaclesX(m_domain);
+  m_aof_avoid = new AOF_AvoidObstacle(m_domain);
 
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
 }
@@ -82,7 +82,7 @@ BHV_AvoidObstaclesX::BHV_AvoidObstaclesX(IvPDomain gdomain) :
 //            The "radius" parameter indicates what it means to have
 //            arrived at the waypoint.
 
-bool BHV_AvoidObstaclesX::setParam(string param, string val) 
+bool BHV_AvoidObstacle::setParam(string param, string val) 
 {
   if(IvPBehavior::setParam(param, val))
     return(true);
@@ -92,10 +92,14 @@ bool BHV_AvoidObstaclesX::setParam(string param, string val)
 
   
   if((param=="polygon") || (param=="points") || (param=="poly")) {
+    if(m_aof_avoid == 0)
+      return(false);
+    if(m_aof_avoid->obstacleSet())
+      return(false);
     XYPolygon new_polygon = string2Poly(val);
     if(!new_polygon.is_convex())
       return(false);
-    m_aof_avoid->addObstacle(new_polygon);
+    m_aof_avoid->setObstacle(new_polygon);
   }
   else if((param == "allowable_ttc") && non_neg_number)
     m_allowable_ttc = dval;
@@ -131,7 +135,7 @@ bool BHV_AvoidObstaclesX::setParam(string param, string val)
 //   Example: OBSTACLE_UPDATE_REQUEST = "obstacle_key=abe,
 //                                       update_var=OBSTACLE_UPDATE_ABE"
 
-void BHV_AvoidObstaclesX::onSetParamComplete()
+void BHV_AvoidObstacle::onSetParamComplete()
 {
   if(m_obstacle_key != "") {
     m_obstacle_update_var = "OBSTACLE_UPDATE_" + toupper(m_obstacle_key);
@@ -145,7 +149,7 @@ void BHV_AvoidObstaclesX::onSetParamComplete()
 //-----------------------------------------------------------
 // Procedure: onIdleState
 
-void BHV_AvoidObstaclesX::onIdleState()
+void BHV_AvoidObstacle::onIdleState()
 {
   checkForObstacleUpdate();
   postErasablePolygons();
@@ -154,7 +158,7 @@ void BHV_AvoidObstaclesX::onIdleState()
 //-----------------------------------------------------------
 // Procedure: onRunState
 
-IvPFunction *BHV_AvoidObstaclesX::onRunState() 
+IvPFunction *BHV_AvoidObstacle::onRunState() 
 {
   // Part 1: Sanity checks
   bool ok1, ok2, ok3;
@@ -211,7 +215,7 @@ IvPFunction *BHV_AvoidObstaclesX::onRunState()
   
   // Part 5: Determine the relevance
   double relevance = getRelevance();
-  double obstacle_range = m_aof_avoid->distToObstaclesBuff();
+  double obstacle_range = m_aof_avoid->distToObstacleBuff();
   postMessage("REL_"+toupper(m_descriptor), relevance);
   postMessage("DST_"+toupper(m_descriptor), obstacle_range);
 
@@ -265,7 +269,7 @@ IvPFunction *BHV_AvoidObstaclesX::onRunState()
 //            Calculate the relevance first. If zero-relevance, 
 //            we won't bother to create the objective function.
 
-double BHV_AvoidObstaclesX::getRelevance()
+double BHV_AvoidObstacle::getRelevance()
 {
   // Part 1: Sanity checks
   if(m_aof_avoid == 0)
@@ -274,7 +278,7 @@ double BHV_AvoidObstaclesX::getRelevance()
     return(0);
 
   // Part 2: More Sanity checks based on range to nearest obstacle
-  double obstacle_range = m_aof_avoid->distToObstaclesBuff();
+  double obstacle_range = m_aof_avoid->distToObstacleBuff();
   if(obstacle_range == 0)
     return(0);
 
@@ -313,7 +317,7 @@ double BHV_AvoidObstaclesX::getRelevance()
 //-----------------------------------------------------------
 // Procedure: checkForObstacleUpdate
 
-bool BHV_AvoidObstaclesX::checkForObstacleUpdate()
+bool BHV_AvoidObstacle::checkForObstacleUpdate()
 {
   if(m_obstacle_update_var == "") 
     return(true);
@@ -339,7 +343,7 @@ bool BHV_AvoidObstaclesX::checkForObstacleUpdate()
 //-----------------------------------------------------------
 // Procedure: handleVisualHints()
 
-bool BHV_AvoidObstaclesX::handleVisualHints(string hints)
+bool BHV_AvoidObstacle::handleVisualHints(string hints)
 {
   vector<string> svector = parseStringQ(hints, ',');
 
@@ -382,78 +386,69 @@ bool BHV_AvoidObstaclesX::handleVisualHints(string hints)
 //-----------------------------------------------------------
 // Procedure: postViewablePolygons
 
-void BHV_AvoidObstaclesX::postViewablePolygons()
+void BHV_AvoidObstacle::postViewablePolygons()
 {
   if(!m_aof_avoid)
     return;
+  if(!m_aof_avoid->obstacleSet())
+    return;
   
-  // Part 1: Handle the original obstacles (minus the buffer)
-  for(unsigned int i=0; i<m_aof_avoid->size(); i++) {
-
-    XYPolygon orig_poly = m_aof_avoid->getObstacleOrig(i);
-    orig_poly.set_color("edge", m_hint_obst_edge_color);
-    orig_poly.set_color("vertex", m_hint_obst_vertex_color);
-
-    // If the obstacle is pertinent, perhaps draw filled in
-    if(m_aof_avoid->isObstaclePert(i)) {
-      orig_poly.set_color("fill", m_hint_obst_fill_color);
-      orig_poly.set_transparency(m_hint_obst_fill_transparency);
-    }
-    string spec_orig = orig_poly.get_spec();
-    postMessage("VIEW_POLYGON", spec_orig, "orig");
+  XYPolygon orig_poly = m_aof_avoid->getObstacleOrig();
+  orig_poly.set_color("edge", m_hint_obst_edge_color);
+  orig_poly.set_color("vertex", m_hint_obst_vertex_color);
+  
+  // If the obstacle is pertinent, perhaps draw filled in
+  if(m_aof_avoid->isObstaclePert()) {
+    orig_poly.set_color("fill", m_hint_obst_fill_color);
+    orig_poly.set_transparency(m_hint_obst_fill_transparency);
   }
+  string spec_orig = orig_poly.get_spec();
+  postMessage("VIEW_POLYGON", spec_orig, "orig");
 
   // (If no buffer, don't render buffer obstacles)
   if(m_buffer_dist <= 0)
     return;
 
-  // Part 2: Handle the obstacle buffer obstacles
-  for(unsigned int i=0; i<m_aof_avoid->size(); i++) {
+  XYPolygon buff_poly = m_aof_avoid->getObstacleBuff();
+  buff_poly.set_color("edge", m_hint_buff_edge_color);
+  buff_poly.set_color("vertex", m_hint_buff_vertex_color);
 
-    XYPolygon buff_poly = m_aof_avoid->getObstacleBuff(i);
-    buff_poly.set_color("edge", m_hint_buff_edge_color);
-    buff_poly.set_color("vertex", m_hint_buff_vertex_color);
-
-    // If the obstacle is pertinent, perhaps draw filled in
-    if(m_aof_avoid->isObstaclePert(i)) {
-      buff_poly.set_color("fill", m_hint_buff_fill_color);
-      buff_poly.set_transparency(m_hint_buff_fill_transparency);
-    }
-
-    string spec_buff = buff_poly.get_spec();
-    postMessage("VIEW_POLYGON", spec_buff, "buff");
+  // If the obstacle is pertinent, perhaps draw filled in
+  if(m_aof_avoid->isObstaclePert()) {
+    buff_poly.set_color("fill", m_hint_buff_fill_color);
+    buff_poly.set_transparency(m_hint_buff_fill_transparency);
   }
+
+  string spec_buff = buff_poly.get_spec();
+  postMessage("VIEW_POLYGON", spec_buff, "buff");
 }
 
 
 //-----------------------------------------------------------
 // Procedure: postErasablePolygons
 
-void BHV_AvoidObstaclesX::postErasablePolygons()
+void BHV_AvoidObstacle::postErasablePolygons()
 {
   if(!m_aof_avoid)
     return;
+  if(!m_aof_avoid->obstacleSet())
+    return;
   
-  // Part 1: Handle the original obstacles (minus the buffer)
-  unsigned int i, vsize = m_aof_avoid->size();
-  for(i=0; i<vsize; i++) {
-    XYPolygon orig_poly = m_aof_avoid->getObstacleOrig(i);
-    orig_poly.set_active(false);
-    string spec_orig = orig_poly.get_spec();
-    postMessage("VIEW_POLYGON", spec_orig, "orig");
-  }
-
+  // Part 1: Handle the original obstacle (minus the buffer)
+  XYPolygon orig_poly = m_aof_avoid->getObstacleOrig();
+  orig_poly.set_active(false);
+  string spec_orig = orig_poly.get_spec();
+  postMessage("VIEW_POLYGON", spec_orig, "orig");
+  
   // (If no buffer, don't render buffer obstacles)
   if(m_buffer_dist <= 0)
     return;
 
   // Part 2: Handle the obstacle buffer obstacles
-  for(i=0; i<vsize; i++) {
-    XYPolygon buff_poly = m_aof_avoid->getObstacleBuff(i);
-    buff_poly.set_active(false);
-    string spec_buff = buff_poly.get_spec();
-    postMessage("VIEW_POLYGON", spec_buff, "buff");
-  }
+  XYPolygon buff_poly = m_aof_avoid->getObstacleBuff();
+  buff_poly.set_active(false);
+  string spec_buff = buff_poly.get_spec();
+  postMessage("VIEW_POLYGON", spec_buff, "buff");
 }
 
 

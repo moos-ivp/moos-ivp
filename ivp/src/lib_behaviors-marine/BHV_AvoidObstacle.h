@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvoidObstacles.h                                 */
+/*    FILE: BHV_AvoidObstacle.h                                  */
 /*    DATE: Aug 2nd 2006                                         */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -25,13 +25,13 @@
 #define BHV_AVOID_OBSTACLES_X_HEADER
 
 #include "IvPBehavior.h"
-#include "AOF_AvoidObstaclesX.h"
+#include "AOF_AvoidObstacle.h"
 #include "XYPolygon.h"
 
-class BHV_AvoidObstaclesX : public IvPBehavior {
+class BHV_AvoidObstacle : public IvPBehavior {
 public:
-  BHV_AvoidObstaclesX(IvPDomain);
-  ~BHV_AvoidObstaclesX() {delete(m_aof_avoid);};
+  BHV_AvoidObstacle(IvPDomain);
+  ~BHV_AvoidObstacle() {delete(m_aof_avoid);};
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
@@ -47,7 +47,7 @@ public:
   double  getRelevance();
 
 protected:
-  AOF_AvoidObstaclesX *m_aof_avoid;
+  AOF_AvoidObstacle *m_aof_avoid;
 
   double  m_allowable_ttc;      // Allowable time to collision
   double  m_activation_dist;    // Outside of which no IPF created
