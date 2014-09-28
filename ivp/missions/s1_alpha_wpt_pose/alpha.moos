@@ -44,9 +44,28 @@ ProcessConfig = pPoseKeep
   inactiveflag = THRUST_MODE_DIFFERENTIAL=false                 
   endflag      = DEPLOY = true
                                                                 
-	 hold_duration  = 60  // seconds, default is -1, no limit      
-   hold_tolerance = 2   // degrees, default is 3                 
+	 hold_duration  = 600  // seconds, default is -1, no limit      
+   hold_tolerance = 3   // degrees, default is 3                 
+	 hold_heading   = 270
 }
+
+//-------------------------------------------
+ProcessConfig = uProcessWatch                                   
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  watch_all = true   // The default is true.                    
+                                                                
+  nowatch = uXMS* 
+  nowatch = uPokeDB*
+                                                                
+  allow_retractions = true   // Always allow run-warnings to be 
+                             // retracted if proc re-appears    
+                                                                
+  // A negative value means summary only when status changes.   
+  summary_wait = 10 // Seconds. Default is -1.                  
+}                                    
 
 //------------------------------------------
 // pLogger config block
@@ -67,6 +86,7 @@ ProcessConfig = pLogger
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
   WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = APPCAST
   WildCardOmitPattern = DB_RWSUMMARY
   WildCardExclusionLog = true
 }
@@ -98,8 +118,6 @@ ProcessConfig = pHelmIvP
 {
   AppTick    = 4
   CommsTick  = 4
-
-  bhv_dir_not_found_ok = true
 
   behaviors  = alpha.bhv
   domain     = course:0:359:360
@@ -169,17 +187,6 @@ ProcessConfig = pMarineViewer
   procs_font_size      = medium
   appcast_font_size    = small
   
-  //datum_viewable = true
-  //datum_size     = 18
-  //gui_size = small
-
-  //left_context[survey-point] = DEPLOY=true
-  //left_context[survey-point] = MOOS_MANUAL_OVERIDE=false
-  //left_context[survey-point] = RETURN=false
-
-  right_context[return] = DEPLOY=true
-  right_context[return] = MOOS_MANUAL_OVERIDE=false
-  right_context[return] = RETURN=false
 
   scope  = SURVEY_DIST_TO_NEXT
   scope  = SURVEY_DIST_TO_PREV
@@ -209,6 +216,6 @@ ProcessConfig = pNodeReporter
   AppTick    = 2
   CommsTick	 = 2
 
-  platform_type   = KAYAK
+  platform_type   = WAMV
   platform_length = 4
 }
