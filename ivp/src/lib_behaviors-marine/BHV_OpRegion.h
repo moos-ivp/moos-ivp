@@ -33,6 +33,8 @@ class BHV_OpRegion : public IvPBehavior {
   ~BHV_OpRegion() {};
   
   bool         setParam(std::string, std::string);
+  void         onSetParamComplete();
+
   IvPFunction* onRunState();
   void         onIdleState();
   void         onCompleteState() {postErasablePolygon();};
@@ -66,6 +68,9 @@ class BHV_OpRegion : public IvPBehavior {
 
   // Allow for possible posting of time_remaining
   std::string m_time_remaining_var;
+
+  // Allow for possible posting of the opregion polygon
+  std::string m_opregion_poly_var;
 
   // Allow for flags to be posted when/if a breach is made
   std::vector<VarDataPair>  m_breached_poly_flags;
