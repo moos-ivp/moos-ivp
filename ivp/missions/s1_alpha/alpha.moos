@@ -57,6 +57,17 @@ ProcessConfig = pLogger
 }
 
 //------------------------------------------
+// uProcessWatch
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  watch_all = true
+}
+
+//------------------------------------------
 // uSimMarine config block
 
 ProcessConfig = uSimMarine
