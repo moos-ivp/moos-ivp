@@ -152,6 +152,7 @@ bool AOF_AvoidObstacle::postInitialize()
 
   // Part 2: Figure out and cache which obstacles are pertinent
   m_obstacle_pert = true;
+
   if(polyAft(m_osx, m_osy, m_osh, m_obstacle_buff))
     m_obstacle_pert = false;
   if(m_obstacle_buff.dist_to_poly(m_osx, m_osy) > m_activation_dist)
@@ -188,14 +189,23 @@ bool AOF_AvoidObstacle::postInitialize()
 //----------------------------------------------------------------
 // Procedure: setObstacle
 
-void AOF_AvoidObstacle::setObstacle(const XYPolygon& new_poly)
+void AOF_AvoidObstacle::setObstacle(const XYPolygon& orig_poly)
 {
-  XYPolygon new_buff_poly = new_poly;
-
-  new_buff_poly.set_label(new_poly.get_label() + "_buff");
+  // Part 1: get the raw label of the incoming obstacle
+  string incoming_label = orig_poly.get_label();
+  string new_label = incoming_label + "_avd";
   
+  // Part 2: assign the new obstacle, with an augmented label
+  XYPolygon new_poly = orig_poly;
+  new_poly.set_label(new_label);
   m_obstacle_orig = new_poly;
+
+  // Part 3: build a new buffered obstacle, with an augmented label
+  XYPolygon new_buff_poly = orig_poly;
+  new_buff_poly.set_label(new_label + "_buff");
   m_obstacle_buff = new_buff_poly;
+
+  // Part 4: by default consider the new obstacle pertinent
   m_obstacle_pert = true;
 }
 

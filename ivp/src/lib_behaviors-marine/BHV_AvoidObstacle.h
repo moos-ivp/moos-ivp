@@ -49,10 +49,16 @@ public:
 protected:
   AOF_AvoidObstacle *m_aof_avoid;
 
+  double  m_osx;
+  double  m_osy;
+  double  m_osh;
+
   double  m_allowable_ttc;      // Allowable time to collision
   double  m_activation_dist;    // Outside of which no IPF created
   double  m_buffer_dist;        // Between OS and obstacle(s)
   double  m_pheading_influence;
+
+  double  m_obstacle_relevance;
 
   double  m_pwt_outer_dist;
   double  m_pwt_inner_dist;
@@ -63,6 +69,7 @@ protected:
   std::string  m_obstacle_key;
   std::string  m_obstacle_update_var;
 
+ protected: // Visual hints
   std:: string m_hint_obst_edge_color;
   std:: string m_hint_obst_vertex_color;
   std:: string m_hint_obst_fill_color;

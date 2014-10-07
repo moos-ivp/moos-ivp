@@ -131,7 +131,7 @@ ProcessConfig = uSimMarine
   start_y       = -20
   start_heading = 180
   start_speed   = 0
-
+	max_deceleration = 0.1
   prefix        = NAV
 
   turn_rate     = 40
@@ -248,7 +248,7 @@ ProcessConfig = pNodeReporter
   AppTick    = 2
   CommsTick	 = 2
 
-  platform_type   = kayak
+  platform_type   = wamv
   platform_length = 10
 }
 

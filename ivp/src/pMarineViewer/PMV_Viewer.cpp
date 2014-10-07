@@ -521,7 +521,7 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 
   // If the mouse is clicked while holding down either the SHIFT or
   // CONTROL keys, this is interpreted as a request for a drop-point.
-  if((Fl::event_state(FL_SHIFT)) || (Fl::event_state(FL_CTRL))) {
+  if((Fl::event_state(FL_SHIFT)) || (Fl::event_state(FL_ALT))) {
     XYPoint dpt(mx, my);
     string latlon, localg, native;
     localg = "(" + intToString(mx) + ", " + intToString(my) + ")";
@@ -534,6 +534,8 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
     dpt.set_vertex_size(3);
     m_drop_points.addPoint(dpt, latlon, localg, native);
   }
+  else if(Fl::event_state(FL_CTRL))
+    return(handleRightMouse(vx, vy));
   // Otherwise (no SHIFT/CONTROL key), the left click will be 
   // interpreted as a "mouse-poke". 
   else {

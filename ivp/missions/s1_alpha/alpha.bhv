@@ -26,7 +26,7 @@ Behavior = BHV_Waypoint
        capture_line = true
      capture_radius = 5.0
         slip_radius = 15.0
-             points = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
              repeat = 0
 
     visual_hints = nextpt_color=yellow
@@ -53,4 +53,3 @@ Behavior=BHV_Waypoint
      slip_radius = 8.0
           points = 0,-20
  }
-

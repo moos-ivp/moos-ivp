@@ -53,7 +53,7 @@ public: // virtual functions
   bool      bearingMinMaxToBufferPoly(double& bmin, double& bmax);
 
   XYPolygon getObstacleOrig() const {return(m_obstacle_orig);};
-  XYPolygon getObstacleBuff() const {return(m_obstacle_orig);};
+  XYPolygon getObstacleBuff() const {return(m_obstacle_buff);};
 
   std::string getDebugMsg() {return(m_debug_msg);};
 

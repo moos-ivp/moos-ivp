@@ -177,6 +177,7 @@ ProcessConfig = pMarineViewer
   right_context[return] = MOOS_MANUAL_OVERIDE=false
   right_context[return] = RETURN=false
 
+  scope  = MISSION
   scope  = SURVEY_DIST_TO_NEXT
   scope  = SURVEY_DIST_TO_PREV
   scope  = RETURN

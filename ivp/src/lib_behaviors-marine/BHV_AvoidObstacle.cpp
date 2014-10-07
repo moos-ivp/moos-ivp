@@ -50,6 +50,9 @@ BHV_AvoidObstacle::BHV_AvoidObstacle(IvPDomain gdomain) :
 
   m_domain = subDomain(m_domain, "course,speed");
 
+  m_osx               = 0;
+  m_osy               = 0;
+  m_osh               = 0;
   m_buffer_dist       = 0;
   m_activation_dist   = -1;
   m_allowable_ttc     = 20;
@@ -58,6 +61,8 @@ BHV_AvoidObstacle::BHV_AvoidObstacle(IvPDomain gdomain) :
   m_pwt_outer_dist    = 30;
   m_pwt_inner_dist    = 20;
 
+  m_obstacle_relevance = 0;
+  
   m_pwt_grade = "linear";
 
   m_hint_obst_edge_color   = "white";
@@ -89,7 +94,6 @@ bool BHV_AvoidObstacle::setParam(string param, string val)
 
   double dval = atof(val.c_str());
   bool   non_neg_number = (isNumber(val) && (dval >= 0));
-
   
   if((param=="polygon") || (param=="points") || (param=="poly")) {
     if(m_aof_avoid == 0)
@@ -98,6 +102,7 @@ bool BHV_AvoidObstacle::setParam(string param, string val)
     if(!new_polygon.is_convex())
       return(false);
     m_aof_avoid->setObstacle(new_polygon);
+    m_obstacle_relevance = 1;
   }
   else if((param == "allowable_ttc") && non_neg_number)
     m_allowable_ttc = dval;
@@ -160,9 +165,10 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
 {
   // Part 1: Sanity checks
   bool ok1, ok2, ok3;
-  double os_x   = getBufferDoubleVal("NAV_X", ok1);
-  double os_y   = getBufferDoubleVal("NAV_Y", ok2);
-  double os_hdg = getBufferDoubleVal("NAV_HEADING", ok3);
+
+  m_osx = getBufferDoubleVal("NAV_X", ok1);
+  m_osy = getBufferDoubleVal("NAV_Y", ok2);
+  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
 
   if(!ok1 || !ok2) {
     postWMessage("No Ownship NAV_X and/or NAV_Y in info_buffer");
@@ -180,9 +186,9 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
   checkForObstacleUpdate();
 
   // Part 2: Build/update the underlying objective function and initialize
-  m_aof_avoid->setParam("os_x", os_x);
-  m_aof_avoid->setParam("os_y", os_y);
-  m_aof_avoid->setParam("os_h", os_hdg);
+  m_aof_avoid->setParam("os_x", m_osx);
+  m_aof_avoid->setParam("os_y", m_osy);
+  m_aof_avoid->setParam("os_h", m_osh);
   m_aof_avoid->setParam("buffer_dist", m_buffer_dist);
   m_aof_avoid->setParam("activation_dist", m_activation_dist);
   m_aof_avoid->setParam("allowable_ttc", m_allowable_ttc);
@@ -212,16 +218,14 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
   }
   
   // Part 5: Determine the relevance
-  double relevance = getRelevance();
-  double obstacle_range = m_aof_avoid->distToObstacleBuff();
-  postMessage("REL_"+toupper(m_descriptor), relevance);
-  postMessage("DST_"+toupper(m_descriptor), obstacle_range);
+  m_obstacle_relevance = getRelevance();
 
-  if(relevance <= 0)
-    return(0);
-  
   // Part 6: Post the Visuals
   postViewablePolygons();
+
+  if(m_obstacle_relevance <= 0)
+    return(0);
+  
   
   // Par 7: Build the actual objective function
   IvPFunction *ipf = 0;
@@ -256,7 +260,7 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
   else {
     ipf = reflector.extractIvPFunction(true); // true means normalize [0,100]
     if(ipf)
-      ipf->setPWT(relevance * m_priority_wt);
+      ipf->setPWT(m_obstacle_relevance * m_priority_wt);
   }
   
   return(ipf);
@@ -275,13 +279,19 @@ double BHV_AvoidObstacle::getRelevance()
   if(m_pwt_outer_dist < m_pwt_inner_dist)
     return(0);
 
-  // Part 2: More Sanity checks based on range to nearest obstacle
-  double obstacle_range = m_aof_avoid->distToObstacleBuff();
+  // Part 2: Check for easy rejection based on relative position
+  //         of ownship to polygon
+  XYPolygon buff_poly = m_aof_avoid->getObstacleOrig();
+  if(polyAft(m_osx, m_osy, m_osh, buff_poly))
+    return(0);
+
+  // Part 3: Get the obstacle range and reject if zero
+  double obstacle_range = buff_poly.dist_to_poly(m_osx, m_osy);
   if(obstacle_range == 0)
     return(0);
 
-  // Part 3: Now the easy cases: when the obstacle is outside the
-  //         min or max priority ranges
+  // Part 4: Now the easy range cases: when the obstacle is outside 
+  //         the min or max priority ranges
   // First declare the range of relevance values to be calc'ed
   double min_dist_relevance = 0;
   double max_dist_relevance = 1;
@@ -291,7 +301,7 @@ double BHV_AvoidObstacle::getRelevance()
   if(obstacle_range <= m_pwt_inner_dist)
     return(max_dist_relevance);
 
-  // Part 4: Handle the in-between case
+  // Part 5: Handle the in-between case
   // Note: drange should never be zero since either of the above
   // conditionals would be true and the function would have returned.
   double drange = (m_pwt_outer_dist - m_pwt_inner_dist);
@@ -299,15 +309,15 @@ double BHV_AvoidObstacle::getRelevance()
     return(0);
   double dpct = (m_pwt_outer_dist - obstacle_range) / drange;
   
-  // Possibly apply the grade scale to the raw distance
+  // Part 6: Possibly apply the grade scale to the raw distance
   if(m_pwt_grade == "quadratic")
     dpct = dpct * dpct;
   else if(m_pwt_grade == "quasi")
     dpct = pow(dpct, 1.5);
 
+  // Part 7: Now calculate and return the relevance
   double rng_dist_relevance = max_dist_relevance - min_dist_relevance;
   double d_relevance = (dpct * rng_dist_relevance) + min_dist_relevance;
-
 
   return(d_relevance);  
 }
@@ -395,8 +405,8 @@ void BHV_AvoidObstacle::postViewablePolygons()
   orig_poly.set_color("edge", m_hint_obst_edge_color);
   orig_poly.set_color("vertex", m_hint_obst_vertex_color);
   
-  // If the obstacle is pertinent, perhaps draw filled in
-  if(m_aof_avoid->isObstaclePert()) {
+  // If the obstacle is relevant, perhaps draw filled in
+  if(m_obstacle_relevance > 0) {
     orig_poly.set_color("fill", m_hint_obst_fill_color);
     orig_poly.set_transparency(m_hint_obst_fill_transparency);
   }
@@ -411,8 +421,8 @@ void BHV_AvoidObstacle::postViewablePolygons()
   buff_poly.set_color("edge", m_hint_buff_edge_color);
   buff_poly.set_color("vertex", m_hint_buff_vertex_color);
 
-  // If the obstacle is pertinent, perhaps draw filled in
-  if(m_aof_avoid->isObstaclePert()) {
+  // If the obstacle is relevant, perhaps draw filled in
+  if(m_obstacle_relevance > 0) {
     buff_poly.set_color("fill", m_hint_buff_fill_color);
     buff_poly.set_transparency(m_hint_buff_fill_transparency);
   }
