@@ -46,8 +46,8 @@ GrepHandler::GrepHandler()
   m_chars_removed  = 0;
   m_chars_retained = 0;
 
+  m_comments_retained = true;
   m_var_condition_met = true;
-
   m_file_overwrite = false;
 }
 
@@ -129,7 +129,7 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
       if(!m_var_condition_met)
 	match = false;
       
-      if(match || line_is_comment) {
+      if(match || (m_comments_retained && line_is_comment)) {
 	if(m_file_out)
 	  fprintf(m_file_out, "%s\n", line_raw.c_str());
 	else

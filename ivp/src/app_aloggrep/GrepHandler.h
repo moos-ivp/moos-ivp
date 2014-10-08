@@ -37,7 +37,8 @@ class GrepHandler
   bool handle(const std::string&, const std::string& str="");
   void addKey(std::string str);
   void printReport();
-  void setFileOverWrite(bool v) {m_file_overwrite=v;};
+  void setFileOverWrite(bool v)    {m_file_overwrite=v;};
+  void setCommentsRetained(bool v) {m_comments_retained=v;};
   
  protected:
   std::vector<std::string> getMatchedKeys();
@@ -56,6 +57,8 @@ class GrepHandler
 
   std::string m_var_condition;
   bool        m_var_condition_met;
+
+  bool        m_comments_retained;
 
   std::set<std::string> m_vars_retained;
   std::set<std::string> m_vars_removed;

@@ -41,11 +41,19 @@ int main(int argc, char *argv[])
     return(0);
   }
   
-  bool verbose = true;
-  if(scanArgs(argc, argv, "--verbose", "-verbose"))
-    verbose = true;
-  if(scanArgs(argc, argv, "--quiet", "-quiet", "-q"))
-    verbose = false;
+  bool comments_retained = true;
+  if(scanArgs(argc, argv, "--no_comments", "-nc"))
+    comments_retained = false;
+  
+  bool make_end_report = true;
+  if(scanArgs(argc, argv, "--no_report", "-nr"))
+    make_end_report = false;
+  
+  if(scanArgs(argc, argv, "--quiet", "-q")) {
+    comments_retained = false;
+    make_end_report = false;
+  }
+    
   
   bool file_overwrite = false;
   if(scanArgs(argc, argv, "-f", "--force", "-force"))
@@ -69,10 +77,12 @@ int main(int argc, char *argv[])
     cout << "  SRC      - The name of a MOOS process (source)           " << endl;
     cout << "                                                           " << endl;
     cout << "Options:                                                   " << endl;
-    cout << "  -h,--help     Displays this help message                 " << endl;
-    cout << "  -v,--version  Displays the current release version       " << endl;
-    cout << "  -f,--force    Force overwrite of existing file           " << endl;
-    cout << "  -q,--quiet    Verbose report suppressed at conclusion    " << endl;
+    cout << "  -h,--help         Displays this help message             " << endl;
+    cout << "  -v,--version      Displays the current release version   " << endl;
+    cout << "  -f,--force        Force overwrite of existing file       " << endl;
+    cout << "  -q,--quiet        Supress summary report, header comments" << endl;
+    cout << "  -nc,--no_comments Supress comment (header) lines         " << endl;
+    cout << "  -nr,--no_report   Supress summary report                 " << endl;
     cout << "                                                           " << endl;
     cout << "Further Notes:                                             " << endl;
     cout << "  (1) The second alog is the output file. Otherwise the    " << endl;
@@ -103,11 +113,12 @@ int main(int argc, char *argv[])
     cout << "No alog file given - exiting" << endl;
     exit(0);
   }
-  else if(verbose)
+  else if(make_end_report)
     cout << "Processing on file : " << alogfile_in << endl;
   
   GrepHandler handler;
   handler.setFileOverWrite(file_overwrite);
+  handler.setCommentsRetained(comments_retained);
 
   int ksize = keys.size();
   for(int i=0; i<ksize; i++)
@@ -115,7 +126,7 @@ int main(int argc, char *argv[])
 
   bool handled = handler.handle(alogfile_in, alogfile_out);
   
-  if(handled && verbose)
+  if(handled && make_end_report)
     handler.printReport();
 }
 
