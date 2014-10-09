@@ -76,19 +76,15 @@ bool BHV_ConstantHeading::setParam(string param, string val)
   double dval = atof(val.c_str());
 
   if((param == "heading") && isNumber(val)) {
-#if 0
-    m_desired_heading = angle360(dval);
-#endif
-#if 1
    double   angle_360 = angle360(dval);
    unsigned int index = m_domain.getDiscreteVal(0, angle_360, 2);
 
    double new_desired_heading = 0;
    bool ok = m_domain.getVal(0, index, new_desired_heading);
-   if(ok)
+   if(ok) {
      m_desired_heading = new_desired_heading;
-#endif
-    return(true);
+     return(true);
+   }
   }
   else if((param == "peakwidth") && isNumber(val)) {
     m_peakwidth = vclip_min(dval, 0);
