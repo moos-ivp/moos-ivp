@@ -39,7 +39,7 @@
       '("pHostInfo" "temp_file_dir" "default_hostip" "default_hostip_force")
       '("pEchoVar" "flip:1" "flip:2" "condition" "hold_messages")
       '("pSearchGrid" "grid_config")
-      '("pConvexHull" "point_var")
+      '("iM200" "thrust_mode" "ip_address" "port_number" "heading_source" "heading_msg_name" "mag_offset")
       '("pObstacleMgr" "point_var")
       '("pPoseKeep" "hold_tolerance" "hold_duration" "endflag" "hold_heading")
       '("uFldHazardSensor" "term_report_interval" "max_appcast_events" "max_appcast_run_warnings" "default_hazard_shape" "default_hazard_color" "default_hazard_width" "default_benign_shape" "default_benign_color" "default_benign_width" "swath_transparency" "sensor_config" "hazard_file" "swath_length" "seed_random" "show_hazards" "show_swath" "show_detections" "show_reports" "show_pd" "show_pfa" "min_reset_interval" "min_classify_interval" "options_summary_interval")
