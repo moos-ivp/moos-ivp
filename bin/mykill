@@ -22,7 +22,7 @@ killall -9 iActuationRobotX iVelodyne pFeatureTracker       \
         pTask5 uSimAcousticOutput uSimMarineWAMV pPoseKeep  \
         uTaskManager pBearingTracker pCBF pMergeArrayData   \
         iGPS_KFAC iActuationRobot pDeadManPost pTask5       \
-        ddConsoleApp pTask1  
+        ddConsoleApp pTask1 iM200 iActuationKFAC
 
 killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav  \
         pHelm pHelmIvP pMarineViewer iMarineSim uSimMarine  \
