@@ -98,7 +98,10 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(key == "THRUST_MODE_DIFFERENTIAL") {
       setBooleanOnString(m_thrust_mode_differential, sval);
-      m_model.setThrustModeDiff("differential");
+      if(m_thrust_mode_differential)
+	m_model.setThrustModeDiff("differential");
+      else
+	m_model.setThrustModeDiff("normal");
     }
     else if((key == "USM_BUOYANCY_RATE") || // Deprecated
 	    (key == "BUOYANCY_RATE"))
