@@ -72,7 +72,7 @@ void showHelpAndExit()
   blk("      to support pAntler launching conventions.                 ");
   blk("                                                                ");
   blk("$ uPokeDB SAY_MOOS=\"say={Would you like to play a game?}, rate=200\" ");
-  blk("$ uPokeDB SAY_MOOS=\"say=hal_truth.wav\"                        ");
+  blk("$ uPokeDB SAY_MOOS=\"file=hal_truth.wav\"                        ");
   blk("                                                                ");
   blk("                                                                ");
   exit(0);
