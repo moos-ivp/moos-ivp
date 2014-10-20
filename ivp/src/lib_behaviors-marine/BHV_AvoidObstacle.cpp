@@ -147,6 +147,7 @@ void BHV_AvoidObstacle::onSetParamComplete()
     postMessage("OBSTACLE_UPDATE_REQUEST", msg);
     addInfoVars(m_obstacle_update_var, "no_warning");
   }
+  postConfigStatus();
 }
 
 //-----------------------------------------------------------
@@ -156,6 +157,14 @@ void BHV_AvoidObstacle::onIdleState()
 {
   checkForObstacleUpdate();
   postErasablePolygons();
+}
+
+//-----------------------------------------------------------
+// Procedure: onIdleToRunState
+
+void BHV_AvoidObstacle::onIdleToRunState()
+{
+  postConfigStatus();
 }
 
 //-----------------------------------------------------------
@@ -459,5 +468,27 @@ void BHV_AvoidObstacle::postErasablePolygons()
   postMessage("VIEW_POLYGON", spec_buff, "buff");
 }
 
+
+
+//-----------------------------------------------------------
+// Procedure: postConfigStatus
+
+void BHV_AvoidObstacle::postConfigStatus()
+{
+  string str = "type=BHV_AvoidObstacles,name=" + m_descriptor;
+  
+  str += ",allowable_ttc="  + doubleToString(m_allowable_ttc,2);
+  str += ",activation_dist=" + doubleToString(m_activation_dist,2);
+  str += ",buffer_dist="   + doubleToString(m_buffer_dist,2);
+
+  str += ",pwt_outer_dist=" + doubleToString(m_pwt_outer_dist,2);
+  str += ",pwt_inner_dist=" + doubleToString(m_pwt_inner_dist,2);
+  str += ",completed_dist=" + doubleToString(m_completed_dist,2);
+
+  str += ",obstacle_key=" + m_obstacle_key;
+  str += ",obtacle_update_var=" + m_obstacle_update_var;
+
+  postRepeatableMessage("BHV_SETTINGS", str);
+}
 
 

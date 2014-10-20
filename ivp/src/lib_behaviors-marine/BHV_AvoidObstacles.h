@@ -38,6 +38,8 @@ public:
   void         onIdleState();
   void         onCompleteState()     {postErasablePolygons();};
   void         onSetParamComplete();
+  void         onIdleToRunState();
+  void         postConfigStatus();
 
  protected:
   bool    handleVisualHints(std::string);

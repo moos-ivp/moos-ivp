@@ -38,6 +38,8 @@ public:
   void         onIdleState();
   void         onCompleteState()     {postErasablePolygons();};
   void         onSetParamComplete();
+  void         onIdleToRunState();
+  void         postConfigStatus();
 
  protected:
   bool    handleVisualHints(std::string);
@@ -53,12 +55,12 @@ protected:
   double  m_osy;
   double  m_osh;
 
+  double  m_obstacle_relevance;
+
+ protected: // Configuration Parameters
   double  m_allowable_ttc;      // Allowable time to collision
   double  m_activation_dist;    // Outside of which no IPF created
   double  m_buffer_dist;        // Between OS and obstacle(s)
-  double  m_pheading_influence;
-
-  double  m_obstacle_relevance;
 
   double  m_pwt_outer_dist;
   double  m_pwt_inner_dist;

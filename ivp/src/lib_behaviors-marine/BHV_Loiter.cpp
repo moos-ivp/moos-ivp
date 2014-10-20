@@ -628,5 +628,3 @@ void BHV_Loiter::postConfigStatus()
 
 
 
-
-

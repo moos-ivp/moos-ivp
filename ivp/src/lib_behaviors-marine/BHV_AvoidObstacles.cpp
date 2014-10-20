@@ -138,6 +138,7 @@ void BHV_AvoidObstacles::onSetParamComplete()
     postMessage("OBSTACLE_UPDATE_REQUEST", msg);
     addInfoVars(m_obstacle_update_var, "no_warning");
   }
+  postConfigStatus();
 }
 
 //-----------------------------------------------------------
@@ -148,6 +149,15 @@ void BHV_AvoidObstacles::onIdleState()
   checkForObstacleUpdate();
   postErasablePolygons();
 }
+
+//-----------------------------------------------------------
+// Procedure: onIdleToRunState
+
+void BHV_AvoidObstacles::onIdleToRunState()
+{
+  postConfigStatus();
+}
+
 
 //-----------------------------------------------------------
 // Procedure: onRunState
@@ -236,8 +246,6 @@ IvPFunction *BHV_AvoidObstacles::onRunState()
   reflector.setParam("uniform_piece", "discrete @ x:5,y:5");  
   reflector.setParam("refine_region", "native @ x:10:24,y:-25:20");  
   reflector.setParam("refine_piece",  "discrete @ x:2,y:2");  
-
-
 #endif
 
   if(!reflector.stateOK())
@@ -459,5 +467,25 @@ void BHV_AvoidObstacles::postErasablePolygons()
   }
 }
 
+
+//-----------------------------------------------------------
+// Procedure: postConfigStatus
+
+void BHV_AvoidObstacles::postConfigStatus()
+{
+  string str = "type=BHV_AvoidObstacles,name=" + m_descriptor;
+  
+  str += ",allowable_ttc="  + doubleToString(m_allowable_ttc,2);
+  str += ",activation_distx=" + doubleToString(m_activation_dist,2);
+  str += ",buffer_dist="   + doubleToString(m_buffer_dist,2);
+  str += ",pwt_outer_dist=" + doubleToString(m_pwt_outer_dist,2);
+  str += ",pwt_inner_dist=" + doubleToString(m_pwt_inner_dist,2);
+  str += ",completed_dist=" + doubleToString(m_completed_dist,2);
+
+  str += ",obstacle_key=" + m_obstacle_key;
+  str += ",obtacle_update_var=" + m_obstacle_update_var;
+
+  postRepeatableMessage("BHV_SETTINGS", str);
+}
 
 
