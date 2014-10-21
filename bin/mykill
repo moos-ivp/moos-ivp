@@ -24,6 +24,8 @@ killall -9 iActuationRobotX iVelodyne pFeatureTracker       \
         iGPS_KFAC iActuationRobot pDeadManPost pTask5       \
         ddConsoleApp pTask1 iM200 iActuationKFAC
 
+killall -9 pLocalizePinger   
+
 killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav  \
         pHelm pHelmIvP pMarineViewer iMarineSim uSimMarine  \
         pLogger iPWMController MOOSDump pAntler umm         \
