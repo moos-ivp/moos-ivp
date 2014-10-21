@@ -29,7 +29,7 @@ PoseKeep::PoseKeep()
   m_heading_diff  = 0;
   m_heading_delta = 0;
   m_adjustment    = 0;
-  m_tolerance     = 2;   // degrees
+  m_tolerance     = -2;   // degrees
 
   m_start_time = 0;
 
@@ -40,6 +40,8 @@ PoseKeep::PoseKeep()
 
   m_hold_source = "n/a";
   m_hold_point_pending = false;
+
+  m_hold_heading_by_setpt = false;
 
   m_hold_pt_mail_recd = 0;
 
@@ -77,6 +79,7 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
       m_hold_heading = dval;
       m_hold_heading_set = true;
       m_hold_source = "HOLD_HEADING MOOS Mail";
+      m_hold_heading_by_setpt = false;
     }
     else if(key == "HOLD_TOLERANCE") {
       if(dval >= 0)
@@ -115,8 +118,11 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
       }
     }
     else if(key == "HOLD_POINT") {
-      handleMailHoldPoint(sval);
-      m_hold_source = "HOLD_POINT MOOS Mail";
+      bool ok = handleMailHoldPoint(sval);
+      if(ok) {
+	m_hold_heading_by_setpt = true;
+	m_hold_source = "HOLD_POINT MOOS Mail";
+      }
     }
 
     else if(key == "HOLD_ENDFLAG") 
@@ -139,9 +145,12 @@ bool PoseKeep::OnNewMail(MOOSMSG_LIST &NewMail)
     }
 
     else if(key == "MVIEWER_LCLICK") {
-      handleMailHoldPoint(sval);
-      m_hold_source = "MVIEWER_LCLICK MOOS Mail";
-    }    
+      bool ok = handleMailHoldPoint(sval);
+      if(ok) {
+	m_hold_heading_by_setpt = true;
+	m_hold_source = "MVIEWER_LCLICK MOOS Mail";
+      }    
+    }
 
     else if(key != "APPCAST_REQ") // handle by AppCastingMOOSApp
       reportRunWarning("Unhandled Mail: " + key);
@@ -172,6 +181,9 @@ bool PoseKeep::Iterate()
   AppCastingMOOSApp::Iterate();
 
   checkForHoldPointPending();
+
+  if(m_hold_heading_by_setpt && m_osx_set && m_osy_set)
+    m_hold_heading = relAng(m_osx, m_osy, m_hold_x, m_hold_y);
 
   updateHeading();
   if(m_active) {
@@ -254,6 +266,10 @@ void PoseKeep::registerVariables()
 
 void PoseKeep::updateHeading() 
 {
+  if(m_hold_heading_by_setpt)
+    m_hold_heading = 
+
+
   // Heading diff should be in the range [-180, 180]
   m_heading_diff = angle180(m_curr_heading - m_hold_heading);
 
@@ -541,6 +557,14 @@ bool PoseKeep::handleMailHoldPoint(string str)
     return(false);
 
   m_hold_heading = relAng(m_osx, m_osy, m_hold_x, m_hold_y);
+
+  string segl = "osx=" + doubleToString(m_osx,0);
+  segl += "osy=" + doubleToString(m_osy,0);
+  segl += "hx=" + doubleToString(m_hold_x,0);
+  segl += "hy=" + doubleToString(m_hold_y,0);
+
+  Notify("PPK_HOLD_SEGL", segl);
+  Notify("PPK_HOLD_HEADING", m_hold_heading);
 
   m_hold_heading_set = true;
   

@@ -80,6 +80,7 @@ class PoseKeep : public AppCastingMOOSApp
    bool    m_osx_set;
    bool    m_osy_set;
    
+   bool    m_hold_heading_by_setpt;
    bool    m_hold_heading_set;
    double  m_curr_heading_tstamp;    
 
