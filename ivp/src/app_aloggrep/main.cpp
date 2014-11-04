@@ -111,7 +111,7 @@ int main(int argc, char *argv[])
  
   if(alogfile_in == "") {
     cout << "No alog file given - exiting" << endl;
-    exit(0);
+    exit(1);
   }
   else if(make_end_report)
     cout << "Processing on file : " << alogfile_in << endl;
@@ -128,6 +128,8 @@ int main(int argc, char *argv[])
   
   if(handled && make_end_report)
     handler.printReport();
+  else
+    exit(1);
 }
 
 
