@@ -39,6 +39,7 @@ public:
   void   add_vertex(double, double, double=0, std::string s="");       
   void   alter_vertex(double, double, double=0, std::string s="");
   void   delete_vertex(double, double);
+  void   delete_vertex(unsigned int);
   void   insert_vertex(double, double, double=0, std::string s="");
   void   clear();
 

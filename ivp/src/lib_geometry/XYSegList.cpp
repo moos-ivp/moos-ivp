@@ -82,18 +82,32 @@ void XYSegList::delete_vertex(double x, double y)
   if(vsize == 0)
     return;
 
-  unsigned int i, ix = closest_vertex(x, y); 
+  unsigned int ix = closest_vertex(x, y); 
+
+  delete_vertex(ix);
+}
+
+//---------------------------------------------------------------
+// Procedure: delete_vertex
+//   Purpose: Given a new vertex, find the existing vertex that is
+//            closest, and delete it.
+
+void XYSegList::delete_vertex(unsigned int ix)
+{
+  unsigned int vsize = m_vx.size();
+  if(ix >= vsize)
+    return;
 
   vector<double> new_x;
   vector<double> new_y;
   vector<double> new_z;
   
-  for(i=0; i<ix; i++) {
+  for(unsigned int i=0; i<ix; i++) {
     new_x.push_back(m_vx[i]);
     new_y.push_back(m_vy[i]);
     new_z.push_back(m_vz[i]);
   }
-  for(i=ix+1; i<vsize; i++) {
+  for(unsigned int i=ix+1; i<vsize; i++) {
     new_x.push_back(m_vx[i]);
     new_y.push_back(m_vy[i]);
     new_z.push_back(m_vz[i]);
