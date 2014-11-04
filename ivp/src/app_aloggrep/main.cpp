@@ -125,11 +125,11 @@ int main(int argc, char *argv[])
     handler.addKey(keys[i]);
 
   bool handled = handler.handle(alogfile_in, alogfile_out);
-  
+  if(!handled)
+    exit(1);
+
   if(handled && make_end_report)
     handler.printReport();
-  else
-    exit(1);
 }
 
 
