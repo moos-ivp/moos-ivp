@@ -17,11 +17,12 @@ Behavior = BHV_Waypoint
   endflag   = WPTING = end
   inactiveflag = WPTING = inactive
 
-  UPDATES   = WPT_UPDATE
+  updates   = WPT_UPDATE
   perpetual = true
 
                lead = 8
         lead_damper = 1
+        lead_to_start = true
               speed = 2   // meters per second
        capture_line = true
      capture_radius = 5.0
