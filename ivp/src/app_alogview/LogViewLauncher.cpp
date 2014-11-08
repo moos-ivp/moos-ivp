@@ -40,8 +40,8 @@ using namespace std;
 LogViewLauncher::LogViewLauncher()
 {
   m_tif_file   = "";
-  m_gui_width  = 1400;
-  m_gui_height = 1100;
+  m_gui_width  = 1000;
+  m_gui_height = 800;
   m_gui        = 0;
   m_min_time   = 0; 
   m_max_time   = 0;
@@ -208,8 +208,8 @@ void LogViewLauncher::setBackground(int argc, char **argv)
 void LogViewLauncher::setSizeOfGUI(int argc, char **argv)
 {
   // Set the default values (~large) if no geometry switch provided.
-  m_gui_width  = 1400;
-  m_gui_height = 1100;
+  m_gui_width  = 1000;
+  m_gui_height = 800;
   
   for(int i=1; i<argc; i++) {
     if(!strncmp(argv[i], "--geometry=", 10)) {
