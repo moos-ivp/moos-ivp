@@ -189,10 +189,9 @@ SET(IVP_NON_GUI_APPS
   pMarinePID
   pBasicContactMgr
   pDeadManPost
-  iDiffThrust
   pNodeReporter
 #  pObstacleMgrX
-  pPoseKeep
+#  pPoseKeep
   uFldCollisionDetect
   uFldPathCheck
   uFldShoreBroker
