@@ -35,12 +35,12 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-  Run = pObstacleMgrX	  @ NewConsole = false
+  Run = pObstacleMgr	  @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
 }
 
 //------------------------------------------
-ProcessConfig = pObstacleMgrX
+ProcessConfig = pObstacleMgr
 {
   AppTick   = 2
   CommsTick = 2
@@ -54,17 +54,26 @@ ProcessConfig = uTimerScript
   
 	delay_start = 1
 
-  rand_var    = varname=RND_AX, type=gaussian, min=383, max=387, mu=160, sigma=2, key=at_reset
-  rand_var    = varname=RND_AY, type=gaussian, min=201, max=205, mu=-60, sigma=2, key=at_reset
+  rand_var    = varname=RND_AX, type=gaussian, min=380, max=390, mu=385, sigma=2, key=at_reset
+  rand_var    = varname=RND_AY, type=gaussian, min=200, max=208, mu=204, sigma=2, key=at_reset
 
-  rand_var    = varname=RND_BX, type=gaussian, min=392, max=396, mu=35, sigma=2, key=at_reset
-  rand_var    = varname=RND_BY, type=gaussian, min=202, max=206, mu=-65, sigma=2, key=at_reset
+  rand_var    = varname=RND_BX, type=gaussian, min=390, max=400, mu=395, sigma=2, key=at_reset
+  rand_var    = varname=RND_BY, type=gaussian, min=200, max=210, mu=205, sigma=2, key=at_reset
 
-  rand_var    = varname=RND_CX, type=gaussian, min=389, max=392, mu=65, sigma=2, key=at_reset
-  rand_var    = varname=RND_CY, type=gaussian, min=189, max=193, mu=-85, sigma=2, key=at_reset
+  rand_var    = varname=RND_CX, type=gaussian, min=386, max=396, mu=391, sigma=2, key=at_reset
+  rand_var    = varname=RND_CY, type=gaussian, min=187, max=197, mu=192, sigma=2, key=at_reset
                                            
-  rand_var    = varname=RND_DX, type=gaussian, min=384, max=388, mu=35, sigma=2, key=at_reset
-  rand_var    = varname=RND_DY, type=gaussian, min=177, max=181, mu=-100, sigma=2, key=at_reset
+  rand_var    = varname=RND_DX, type=gaussian, min=381, max=391, mu=386, sigma=2, key=at_reset
+  rand_var    = varname=RND_DY, type=gaussian, min=172, max=182, mu=177, sigma=2, key=at_reset
+                                           
+  rand_var    = varname=RND_EX, type=gaussian, min=383, max=393, mu=388, sigma=2, key=at_reset
+  rand_var    = varname=RND_EY, type=gaussian, min=192, max=202, mu=197, sigma=2, key=at_reset
+                                           
+  rand_var    = varname=RND_FX, type=gaussian, min=381, max=391, mu=386, sigma=2, key=at_reset
+  rand_var    = varname=RND_FY, type=gaussian, min=182, max=192, mu=187, sigma=2, key=at_reset
+                                           
+  rand_var    = varname=RND_GX, type=gaussian, min=387, max=397, mu=392, sigma=2, key=at_reset
+  rand_var    = varname=RND_GY, type=gaussian, min=193, max=205, mu=198, sigma=2, key=at_reset
                                            
   reset_max   = 8
   reset_time  = all-posted
@@ -72,15 +81,21 @@ ProcessConfig = uTimerScript
 	event       = var=VIEW_POLYGON, val="pts={380,212 : 402,212 : 403,170 : 381,168}, edge_color=gray60, vertex_color=dodger_blue"
 
 
-	event       = var=VIEW_POINT, val="x=$[RND_AX],y=$[RND_AY],active=true,label=$[TCOUNT],msg=a,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=1.44
-	event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=$[TCOUNT],msg=b,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2
-	event       = var=VIEW_POINT, val="x=$[RND_CX],y=$[RND_CY],active=true,label=$[TCOUNT],msg=c,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.3
-	event       = var=VIEW_POINT, val="x=$[RND_DX],y=$[RND_DY],active=true,label=$[TCOUNT],msg=d,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.3
+	event       = var=VIEW_POINT, val="x=$[RND_AX],y=$[RND_AY],active=true,label=$[TCOUNT],msg=a,type=obstacle,label_color=invisible,vertex_color=grey60,vertex_size=1", time=1.44
+	event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=$[TCOUNT],msg=b,type=obstacle,label_color=invisible,vertex_color=grey60,vertex_size=1", time=2
+	event       = var=VIEW_POINT, val="x=$[RND_CX],y=$[RND_CY],active=true,label=$[TCOUNT],msg=c,type=obstacle,label_color=invisible,vertex_color=grey60,vertex_size=1", time=2.3
+	event       = var=VIEW_POINT, val="x=$[RND_DX],y=$[RND_DY],active=true,label=$[TCOUNT],msg=d,type=obstacle,label_color=invisible,vertex_color=grey60,vertex_size=1", time=2.3
+	event       = var=VIEW_POINT, val="x=$[RND_EX],y=$[RND_EY],active=true,label=$[TCOUNT],msg=e,type=obstacle,label_color=invisible,vertex_color=grey60,vertex_size=1", time=2.3
+	event       = var=VIEW_POINT, val="x=$[RND_FX],y=$[RND_FY],active=true,label=$[TCOUNT],msg=f,type=obstacle,label_color=invisible,vertex_color=grey60,vertex_size=1", time=2.3
+	event       = var=VIEW_POINT, val="x=$[RND_GX],y=$[RND_GY],active=true,label=$[TCOUNT],msg=g,type=obstacle,label_color=invisible,vertex_color=grey60,vertex_size=1", time=2.3
 
 	event       = var=TRACKED_FEATURE, val="x=$[RND_AX],y=$[RND_AY],label=a,color=1,size=2", time=1.44
 	event       = var=TRACKED_FEATURE, val="x=$[RND_BX],y=$[RND_BY],label=b,color=2,size=2", time=2
 	event       = var=TRACKED_FEATURE, val="x=$[RND_CX],y=$[RND_CY],label=c,color=3,size=2", time=2.3
 	event       = var=TRACKED_FEATURE, val="x=$[RND_DX],y=$[RND_DY],label=d,color=3,size=2", time=2.3
+	event       = var=TRACKED_FEATURE, val="x=$[RND_EX],y=$[RND_EY],label=e,color=3,size=2", time=2.3
+	event       = var=TRACKED_FEATURE, val="x=$[RND_FX],y=$[RND_FY],label=f,color=3,size=2", time=2.3
+	event       = var=TRACKED_FEATURE, val="x=$[RND_GX],y=$[RND_GY],label=g,color=3,size=2", time=2.3
 }                                                               
 
 //------------------------------------------
@@ -134,13 +149,13 @@ ProcessConfig = uSimMarine
   CommsTick	= 4
 
   start_x       = 390
-  start_y       = 228
+  start_y       = 260
   start_heading = 180
   start_speed   = 0
 	max_deceleration = 0.1
   prefix        = NAV
 
-  turn_rate     = 40
+  turn_rate     = 100
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
 	thrust_reflect = true
 }
@@ -207,11 +222,11 @@ ProcessConfig = pMarineViewer
 
   tiff_file            = AerialSingapore.tif
 
-  set_pan_x            = -300
-  set_pan_y            = -200
-  zoom                 = 3.42
+  set_pan_x            = -262
+  set_pan_y            = -181
+  zoom                 = 5.42
 
-  vehicle_shape_scale  = 1
+  vehicle_shape_scale  = 0.35
   hash_delta           = 50
   hash_shade           = 0.4
   hash_viewable        = true
