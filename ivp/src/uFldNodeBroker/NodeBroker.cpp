@@ -103,6 +103,14 @@ bool NodeBroker::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
+  bool resend_init_pshare_cmd = true;
+  for(unsigned int i=0; i<m_shore_pings_ack.size(); i++) {
+    if(m_shore_pings_ack[i] > 0)
+      resend_init_pshare_cmd = false;
+  }
+  if(resend_init_pshare_cmd)
+    registerPingBridges();
+  
   sendNodeBrokerPing();
 
   AppCastingMOOSApp::PostReport();
