@@ -24,7 +24,13 @@ NEEDED APPLICATIONS
    You need to install the XCode development package for OS-X available 
    at http://developer.apple.com/technology/xcode.html. It is a free download.
 
-2) MacPorts
+2) X11
+   Apple no longer includes X11, but explains why and offers help
+      http://support.apple.com/en-us/HT201341
+   As of Nov 2014, this is where you get/install X11:
+      http://xquartz.macosforge.org/landing/
+
+3) MacPorts
    Website: http://www.macports.org
 
    MacPorts is an open-source project that provides an easy-to-use system for
