@@ -166,6 +166,10 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     m_cruise_speed = dval;
     return(true);
   }
+  else if((param == "currix") && (dval > 0)) {
+    m_waypoint_engine.setCurrIndex((unsigned int)(dval));
+    return(true);
+  }
   else if((param == "greedy_tour") || (param == "shortest_tour")) {
     setBooleanOnString(m_greedy_tour_pending, param_val);
     return(true);
