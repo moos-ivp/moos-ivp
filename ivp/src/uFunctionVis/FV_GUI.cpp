@@ -93,6 +93,7 @@ FV_GUI::FV_GUI(int g_w, int g_h, const char *g_l)
   m_menu_bar->add(label.c_str(), 0, (Fl_Callback*)FV_GUI::cb_BehaviorSelect, 
 		  (void*)901, FL_MENU_DIVIDER);
 
+  m_menu_bar->redraw();
 }
 
 Fl_Menu_Item FV_GUI::menu_[] = {
