@@ -1,4 +1,8 @@
 
+o uFunctionVis 
+  Fixed glitch that preveneted the Behaviors pull-down menu from appearing 
+  upon startup
+
 o pMarineViewer
   Fixed problem where MVIEWER_LCLICK was not being published correctly
   Added ability to "clear" geometric objects with PMV_CLEAR subscription
