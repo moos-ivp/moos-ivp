@@ -67,6 +67,8 @@ public:    // Virtual Function
 
   IvPFunction* getOF(int);
 
+  IvPDomain getDomain() const {return(m_domain);};
+
   const  IvPBox* getMaxBox()  {return(m_maxbox);};
 
 protected:
