@@ -174,6 +174,21 @@ double Problem::getResult(const string& varname, bool *ok_query)
 }
   
 //---------------------------------------------------------------
+// Procedure: getPieceAvg
+
+double Problem::getPieceAvg() const
+{
+  if(m_ofnum == 0)
+    return(0);
+
+  double total = 0;
+  for(int i=0; i<m_ofnum; i++) 
+    total += (double)(m_ofs[i]->size());
+
+  return(total / (double)(m_ofnum));
+}
+
+//---------------------------------------------------------------
 // Procedure: getOF
 //   Purpose: Return a pointer to the objective function at the
 //            given index. Return NULL if out of range.

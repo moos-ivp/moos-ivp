@@ -64,13 +64,14 @@ public:    // Virtual Function
   void   setEpsilon(double v)    {if(v>=0) m_epsilon=v;};
   double getEpsilon()            {return(m_epsilon);};
   double getResult(const std::string&, bool *v=0);
+  double getPieceAvg() const; 
 
   IvPFunction* getOF(int);
 
   IvPDomain getDomain() const {return(m_domain);};
 
   const  IvPBox* getMaxBox()  {return(m_maxbox);};
-
+  
 protected:
   bool     universesInSync();
   void     newSolution(double, const IvPBox*);
@@ -89,9 +90,3 @@ protected:
 };
 
 #endif
-
-
-
-
-
-
