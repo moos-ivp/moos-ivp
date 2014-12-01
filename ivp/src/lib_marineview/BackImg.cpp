@@ -347,6 +347,27 @@ bool BackImg::readTiffInfo(string filename)
 }
 
 // ----------------------------------------------------------
+// Procedure: readTiffInfoEmpty
+
+bool BackImg::readTiffInfoEmpty(double lat_north, double lat_south, 
+				double lon_east, double lon_west)
+{
+  m_lat_north = lat_north;
+  m_lat_south = lat_south;
+  m_lon_east  = lon_east;
+  m_lon_west  = lon_west;
+  m_boundary_set = true;
+
+  m_img_pix_width  = 1000;
+  m_img_pix_height = 1000;
+  m_img_mtr_width  = 1000;
+  m_img_mtr_height = 1000;
+
+  bool result = processConfiguration();
+  return(result);
+}
+
+// ----------------------------------------------------------
 // Procedure: processConfiguration
 //   Purpose: 
 

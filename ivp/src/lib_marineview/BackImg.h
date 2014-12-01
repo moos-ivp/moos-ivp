@@ -66,6 +66,8 @@ public:
   std::string getTiffFile() const {return(m_tiff_file);};
   std::string getInfoFile() const {return(m_info_file);};
 
+  bool readTiffInfoEmpty(double, double, double, double);
+
   void   print();
 
 protected:

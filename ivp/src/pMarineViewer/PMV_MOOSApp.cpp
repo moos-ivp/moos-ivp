@@ -663,13 +663,15 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     }
   }
 
-
-  
   // If no images were specified, use the default images.
   if(!tiff_a_set && !tiff_b_set) {
     m_gui->mviewer->setParam("tiff_file", "Default.tif");
     m_gui->mviewer->setParam("tiff_file_b", "DefaultB.tif");
   }
+
+
+  m_gui->mviewer->handleNoTiff();
+
 
   m_start_time = MOOSTime();
   m_gui->mviewer->setParam("time_warp", m_time_warp);
@@ -787,6 +789,16 @@ bool PMV_MOOSApp::buildReport()
 {
   // Nothing for now. AppCasting mostly to catch configuration warnings.
 
+  string tiff_file_a = m_gui->mviewer->getTiffFileA();
+  string info_file_a = m_gui->mviewer->getInfoFileA();
+  string tiff_file_b = m_gui->mviewer->getTiffFileB();
+  string info_file_b = m_gui->mviewer->getInfoFileB();
+
+  m_msgs << "Tiff File A:      " << tiff_file_a << endl;
+  m_msgs << "Info File A:      " << tiff_file_a << endl;
+  m_msgs << "Tiff File B:      " << tiff_file_b << endl;
+  m_msgs << "Info File B:      " << tiff_file_b << endl;
+  m_msgs << "------------------" << endl;
   m_msgs << "Total GeoShapes:  " << m_gui->mviewer->shapeCount("total_shapes") << endl;
   m_msgs << "Clear GeoShapes:  " << m_clear_geoshapes_received << endl;
   m_msgs << "NodeReports Recd: " << m_node_reports_received << endl;

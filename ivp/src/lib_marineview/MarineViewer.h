@@ -69,6 +69,7 @@ class MarineViewer : public Fl_Gl_Window
   std::string vehisetting(const std::string& s);
   void   clear(std::string vname, std::string shape, std::string stype);
 
+  void   handleNoTiff();
 
   double getStaleReportThresh() {return(m_vehi_settings.getStaleReportThresh());};
   double getStaleRemoveThresh() {return(m_vehi_settings.getStaleRemoveThresh());};

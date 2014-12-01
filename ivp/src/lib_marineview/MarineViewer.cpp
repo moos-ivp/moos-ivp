@@ -181,6 +181,29 @@ bool MarineViewer::setParam(string param, string value)
 }
 
 //-------------------------------------------------------------
+// Procedure: handleNoTiff
+
+void MarineViewer::handleNoTiff()
+{
+  if(m_back_img.get_img_data() != 0)
+    return;
+
+  cout << "No Image Data found. Faking it...." << endl;
+
+  double lat_north = 0;
+  double lat_south = 0;
+  double lon_east  = 0;
+  double lon_west  = 0; 
+
+  bool ok1 = m_geodesy.LocalGrid2LatLong(500, 500, lat_north, lon_east);
+  bool ok2 = m_geodesy.LocalGrid2LatLong(-500, -500, lat_south, lon_west);
+
+  m_back_img.readTiffInfoEmpty(lat_north, lat_south, lon_east, lon_west);
+}
+
+
+
+//-------------------------------------------------------------
 // Procedure: setParam
 
 bool MarineViewer::setParam(string param, double v)
