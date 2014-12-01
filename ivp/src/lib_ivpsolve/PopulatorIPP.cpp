@@ -84,6 +84,8 @@ bool PopulatorIPP::handleLine(string line)
     }
   }
   if(left == "ipf") {
+    if(m_verbose)
+      cout << "." << flush;
     IvPFunction *ipf = StringToIvPFunction(right);
     if(ipf) {
       m_ivp_problem->addOF(ipf->copy());
