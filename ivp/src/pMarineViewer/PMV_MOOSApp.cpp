@@ -663,12 +663,13 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     }
   }
 
+#if 0
   // If no images were specified, use the default images.
   if(!tiff_a_set && !tiff_b_set) {
     m_gui->mviewer->setParam("tiff_file", "Default.tif");
     m_gui->mviewer->setParam("tiff_file_b", "DefaultB.tif");
   }
-
+#endif
 
   m_gui->mviewer->handleNoTiff();
 

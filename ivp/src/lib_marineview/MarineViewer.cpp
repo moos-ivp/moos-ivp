@@ -195,10 +195,11 @@ void MarineViewer::handleNoTiff()
   double lon_east  = 0;
   double lon_west  = 0; 
 
-  bool ok1 = m_geodesy.LocalGrid2LatLong(500, 500, lat_north, lon_east);
-  bool ok2 = m_geodesy.LocalGrid2LatLong(-500, -500, lat_south, lon_west);
+  bool ok1 = m_geodesy.LocalGrid2LatLong(400, 100, lat_north, lon_east);
+  bool ok2 = m_geodesy.LocalGrid2LatLong(-100, -400, lat_south, lon_west);
 
-  m_back_img.readTiffInfoEmpty(lat_north, lat_south, lon_east, lon_west);
+  if(ok1 && ok2)
+    m_back_img.readTiffInfoEmpty(lat_north, lat_south, lon_east, lon_west);
 }
 
 
