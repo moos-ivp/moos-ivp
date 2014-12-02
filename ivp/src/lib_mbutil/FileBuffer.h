@@ -28,11 +28,11 @@
 #include <vector>
 #include <string>
 
-std::vector<std::string> fileBuffer(const std::string&, int amt=0);
+std::vector<std::string> fileBuffer(const std::string&, unsigned int amt=0);
 
-std::list<std::string>   fileBufferList(const std::string&, int amt=0);
+std::list<std::string>   fileBufferList(const std::string&, unsigned int amt=0);
 
-std::vector<std::string> fileBufferSlash(const std::string&, int amt=0);
+std::vector<std::string> fileBufferSlash(const std::string&, unsigned int amt=0);
 
 
 #endif

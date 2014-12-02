@@ -33,7 +33,7 @@ using namespace std;
 //            the vector.
 
 
-vector<string> fileBuffer(const string& filename, int amt)
+vector<string> fileBuffer(const string& filename, unsigned int amt)
 {
   vector<string> fvector;
 
@@ -41,33 +41,35 @@ vector<string> fileBuffer(const string& filename, int amt)
   if(f==NULL)
     return(fvector);
 
-  const int MAX_LINE_LENGTH = 500000;
+  vector<char>  buff;
+  buff.reserve(500000);
 
   int  myint = '\0';
-  int  buffix = 0;
   bool EOL    = false;
-  char buff[MAX_LINE_LENGTH];
-  int  lines = 0;
+  unsigned int lines = 0;
   bool reached_line_limit = false;
 
-  while((myint!=EOF) && (!reached_line_limit)) {
+  while((myint!=EOF) && !reached_line_limit) {
     EOL = false;
-    buffix = 0;
-    while((!EOL) && (buffix < MAX_LINE_LENGTH)) {
+    while(!EOL) {
       myint = fgetc(f);
       unsigned char   mychar = myint;
       switch(myint) {
       case '\n':
       case EOF:
-        buff[buffix] = '\0';  // attach terminating NULL
         EOL = true;
         break;
       default:
-        buff[buffix] = mychar;
-        buffix++;
+        buff.push_back(mychar);
       }
     }
-    string str = buff;
+
+    string str(buff.size(), ' ');
+    for(unsigned int i=0; i<buff.size(); i++)
+      str[i] = buff[i];
+    buff.clear();
+    lines++;
+
     fvector.push_back(str);
     if(amt != 0) {
       lines++;
@@ -85,51 +87,12 @@ vector<string> fileBuffer(const string& filename, int amt)
 // Procedure: fileBufferList
 //      Note: Same as fileBuffer, but a STL list is returned instead
 
-
-list<string> fileBufferList(const string& filename, int amt)
+list<string> fileBufferList(const string& filename, unsigned int amt)
 {
   list<string> flist;
-
-  FILE *f = fopen(filename.c_str(), "r");
-  if(f==NULL)
-    return(flist);
-
-  const int MAX_LINE_LENGTH = 500000;
-
-  int  myint = '\0';
-  int  buffix = 0;
-  bool EOL    = false;
-  char buff[MAX_LINE_LENGTH];
-  int  lines = 0;
-  bool reached_line_limit = false;
-
-  while((myint!=EOF) && (!reached_line_limit)) {
-    EOL = false;
-    buffix = 0;
-    while((!EOL) && (buffix < MAX_LINE_LENGTH)) {
-      myint = fgetc(f);
-      unsigned char   mychar = myint;
-      switch(myint) {
-      case '\n':
-      case EOF:
-        buff[buffix] = '\0';  // attach terminating NULL
-        EOL = true;
-        break;
-      default:
-        buff[buffix] = mychar;
-        buffix++;
-      }
-    }
-    string str = buff;
-    flist.push_back(str);
-    if(amt != 0) {
-      lines++;
-      if(lines >= amt)
-        reached_line_limit = true;
-    }
-
-  }
-  fclose(f);
+  vector<string> svector = fileBuffer(filename, amt);
+  for(unsigned int i=0; i<svector.size(); i++)
+    flist.push_back(svector[i]);
 
   return(flist);
 }
@@ -143,7 +106,7 @@ list<string> fileBufferList(const string& filename, int amt)
 //            line.
 
 
-vector<string> fileBufferSlash(const string& filename, int amt)
+vector<string> fileBufferSlash(const string& filename, unsigned int amt)
 {
   vector<string> fvector;
 
@@ -211,11 +174,3 @@ vector<string> fileBufferSlash(const string& filename, int amt)
  
   return(fvector);
 }
-
-
-
-
-
-
-
-
