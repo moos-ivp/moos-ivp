@@ -120,9 +120,10 @@ vector<string> fileBufferSlash(const string& filename, unsigned int amt)
   int    buffix = 0;
   bool   EOL    = false;
   char   buff[MAX_LINE_LENGTH];
-  int    lines = 0;
   bool   reached_line_limit = false;
   string line_so_far = "";
+
+  unsigned int lines = 0;
 
 
   while((myint!=EOF) && (!reached_line_limit)) {
