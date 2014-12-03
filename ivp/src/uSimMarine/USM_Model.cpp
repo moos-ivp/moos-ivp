@@ -46,10 +46,15 @@ USM_Model::USM_Model()
   m_max_depth_rate       = 0.5;    // meters per second
   m_max_depth_rate_speed = 2.0;    // meters per second
 
+  m_max_rudder_degs_per_sec = 0;
+
   m_thrust_map.setThrustFactor(20);
 
   // Initalize the state variables
   m_rudder       = 0;
+  m_rudder_prev  = 0;
+  m_rudder_tstamp = 0;
+
   m_thrust       = 0;
   m_elevator     = 0;
   m_drift_x      = 0;
@@ -144,11 +149,42 @@ bool USM_Model::setParam(string param, double value)
   return(true);
 }
 
+//------------------------------------------------------------------------
+// Procedure: setRudder()
+
+void USM_Model::setRudder(double desired_rudder, double tstamp)
+{
+  // Part 0: Copy the current rudder value to "previous" before overwriting
+  m_rudder_prev = m_rudder;
+
+
+  // Part 1: Calculate the maximum change in rudder
+  double max_rudder_change = 100;
+  if(m_max_rudder_degs_per_sec > 0) {
+    double delta_time = tstamp - m_rudder_tstamp;
+    max_rudder_change = (delta_time * m_max_rudder_degs_per_sec);
+  }
+
+  // Part 2: Handle the change requested
+  double change = desired_rudder - m_rudder_prev;
+  if(change > 0) { 
+    if(change > max_rudder_change)
+      change = max_rudder_change;
+    m_rudder += change;
+  }
+  else {
+    if(-change > max_rudder_change)
+      change = -max_rudder_change;
+    m_rudder += change;
+  }
+
+  m_thrust_mode = "normal";
+  m_rudder_tstamp = tstamp;
+}
 
 
 //------------------------------------------------------------------------
 // Procedure: propagate
-//      Note: 
 
 bool USM_Model::propagate(double g_curr_time)
 {
@@ -227,8 +263,19 @@ void USM_Model::magDriftVector(double pct)
 }
 
 //------------------------------------------------------------------------
+// Procedure: setMaxRudderDegreesPerSec()
+
+bool USM_Model::setMaxRudderDegreesPerSec(double v)
+{
+  if(v < 0)
+    return(false);
+
+  m_max_rudder_degs_per_sec = v;
+  return(true);
+}
+
+//------------------------------------------------------------------------
 // Procedure: setPaused
-//      Note: 
 
 void USM_Model::setPaused(bool g_paused)
 {
@@ -245,7 +292,6 @@ void USM_Model::setPaused(bool g_paused)
 
 //------------------------------------------------------------------------
 // Procedure: setThrustFactor
-//      Note: 
 
 void USM_Model::setThrustFactor(double value)
 {

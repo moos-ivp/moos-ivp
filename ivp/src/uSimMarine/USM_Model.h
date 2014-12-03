@@ -43,12 +43,14 @@ public:
   bool   setParam(std::string, double);
 
   void   setRudder(double v)          {m_rudder = v; m_thrust_mode="normal";};
+  void   setRudder(double, double);
   void   setThrust(double v)          {m_thrust = v; m_thrust_mode="normal";};
   void   setElevator(double v)        {m_elevator = v;};
   void   setDualState(bool v)         {m_dual_state = v;}; 
   void   setDriftFresh(bool v)        {m_drift_fresh = v;}; 
   void   setThrustModeReverse(bool v) {m_thrust_mode_reverse=v;};
   void   setThrustModeDiff(std::string s) {m_thrust_mode=s;};
+  bool   setMaxRudderDegreesPerSec(double);
   void   setPaused(bool); 
   void   setThrustFactor(double);
   void   setThrustReflect(bool);
@@ -95,8 +97,12 @@ public:
   void   propagateNodeRecord(NodeRecord&, double delta_time, bool);
 
  protected:
-  bool       m_paused;
   double     m_rudder;
+  double     m_rudder_prev;
+  double     m_rudder_tstamp;
+  double     m_max_rudder_degs_per_sec;
+
+  bool       m_paused;
   double     m_thrust;
   double     m_elevator;
 
@@ -129,5 +135,6 @@ public:
   ThrustMap  m_thrust_map;
 
   std::string m_thrust_mode;
+
 };
 #endif
