@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cstdio>
 #include "PopulatorIPP.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
