@@ -216,6 +216,8 @@ PDMap* readPDMap(FILE *f, int dim, int boxCount, IvPDomain domain, int deg)
   int result = 0;
   char c;
   result = fscanf(f, "%c", &c);
+  if(result == 0)
+    cout << "matching failure" << endl;
   if(c == 'B') 
     ungetc(c, f);
   else
