@@ -56,7 +56,7 @@ bool PopulatorIPP::populate(string filename)
   }
 
   if(m_verbose)
-    cout << "Done Populating from: " << filename << endl;
+    cout << endl << "Done Populating from: " << filename << endl;
   return(true);
 }
 
@@ -89,7 +89,7 @@ bool PopulatorIPP::handleLine(string line)
       cout << "." << flush;
     IvPFunction *ipf = StringToIvPFunction(right);
     if(ipf) {
-      m_ivp_problem->addOF(ipf->copy());
+      m_ivp_problem->addOF(ipf);
       return(true);
     }
   }
