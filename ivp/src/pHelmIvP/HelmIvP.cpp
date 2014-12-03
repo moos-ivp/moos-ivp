@@ -1028,15 +1028,10 @@ void HelmIvP::checkForTakeOver()
 
 bool HelmIvP::OnStartUp()
 {
-  cout << "here 002A" << endl;
-
   AppCastingMOOSApp::OnStartUp();
   cleanup();
   if(!m_info_buffer)
     m_info_buffer = new InfoBuffer;
-
-  cout << "here 002" << endl;
-
 
   bool bhv_dir_not_found_ok = false;
   // ownship xis name of MOOS community, set in AppCastingMOOSApp::OnStartUp()
@@ -1121,13 +1116,11 @@ bool HelmIvP::OnStartUp()
     return(true);
   }
 
-#if 1
+#if 0
   cout << "==================================================" << endl;
   p_bset->printBehaviorSpecs();
   cout << "==================================================" << endl;
 #endif
-
-  cout << "here 003" << endl;
 
   if(m_bhv_set == 0) {
     MOOSTrace("NULL Behavior Set \n");
