@@ -15,7 +15,6 @@ SET(SRC
    BehaviorSpec.cpp
    BehaviorReport.cpp
    SpecBuild.cpp
-   AVD_Table.cpp
 )
 
 SET(HEADERS
@@ -29,7 +28,6 @@ SET(HEADERS
   BehaviorSpec.h
   BehaviorReport.h
   SpecBuild.h
-  AVD_Table.h
 )
 
 # Build Library
