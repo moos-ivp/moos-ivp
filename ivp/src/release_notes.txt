@@ -4,8 +4,17 @@ o uFunctionVis
   upon startup
 
 o pMarineViewer
-  Fixed problem where MVIEWER_LCLICK was not being published correctly
-  Added ability to "clear" geometric objects with PMV_CLEAR subscription
+  - Fixed problem where MVIEWER_LCLICK was not being published correctly
+  - Added ability to "clear" geometric objects with PMV_CLEAR subscription
+  - Fixed problem in pMarineViewer where the background image defaulted to
+    the MIT campus if left unspecified, and wouldn't draw at all if the 
+    MIT image was removed from ivp/data/. It now launches and draws fine if
+    no background image is found or if left unspecified.
+  
+o uFldNodeBroker
+  - Fixed a bug that could prevent node connections in some cases.
+
+o pDeadManPost (New App)
 
 o lib_geometry
   Added bearingMinMaxToPoly utility
@@ -20,10 +29,68 @@ o uSimMarine
   - Added support for differential thrust mode
   - Bug fix - negative thrust was not working properly
 
+o pNodeReport
+  - Added ability to detect when in reverse thrust mode and note it in the
+  NODE_REPORT
+
 o pHelmIvP 
   - Upon unfound behavior, posts MALCONFIG and remains up vs. quitting
 
+o BHV_OpRegion
+  - Added optional opregion_poly_var config parameter that names a MOOS
+  variable that will be posted containing the prevailing OpRegion polygon
+  upon startup
+  - Fixed posting of VIEW_POLYGON representing the OpRegion poly, to now
+  have a disctinct label, so successive postings will result in a redraw
+  of the polygon. A re-posting may happen if the OpRegion poly is updated
+  through the updates variable.
 
+o BHV_Waypoint
+  - supporting config parameter currix=N which allows the behavior to immediately
+  regard the current waypoint index to be set to N. Normally upon startup, or upon
+  an update to the waypoints, the index is set to zero, the first waypoint. This
+  parameter allows for an override of that policy.
+
+  - An optional MOOS variable may be named via the wpt_dist_to_next parameter
+  which, if non-empty, results in the posting to this variable of the linear
+  distance to the next waypoint from the vehicle's current position. 
+  This allows other MOOS apps or behaviors to possibly modify their function, e.g.,
+  either changing speed or toggling a sensor as a turn is approached.
+  This values changes to -1 in the idle state.
+
+  - An optional MOOS variable may be named via the wpt_dist_to_prev parameter
+  which, if non-empty, results in the posting to this variable of the linear
+  distance to the previous waypoint from the vehicle's current position. 
+  This allows other MOOS apps or behaviors to possibly modify their function, e.g.,
+  either changing speed or toggling a sensor after a waypoint has been achieved.
+  This values changes to -1 in the idle state.
+
+  - The wptflag parameter has been augmented to allow for macros $(NX), $(NY), 
+  $[NX], and $[NY] to be expanded to the x-y components of the next waypoint.
+
+o lib_geometry 
+  - Added bearingMinMaxToPoly in GeomUtils.cpp
+  - Added ability to delete a vertex by index number in XYSegList
+    void XYSegList::delete_vertex(unsigned int);
+  - Added a check for a turn left given three points in AngleUtils.cpp
+    bool threePointTurnLeft(double, ..., double);
+  - Added the ConvexHullGenerator class for determining a convex hull in 
+    the form of an XYPolyon, given a set of points in the x-y plane
+
+o aloggrep
+  - Added --no_comments (or -nc) command line arg to allow for the output 
+    to discard the comments typically found at the top of an alog file
+  - Added --no_report (or -nr) command line arg to allow for the output 
+    to not produce the summary report normally generate to stdout during
+    normal operation.
+  - Added the --quiet (or -q) command which is essentially a shortcut for 
+    --no_comments and --no_report
+
+o uSimMarine
+  - Supports reverse thrust (DESIRED_THRUST < 0)
+  - Supports differential thrust mode
+  - Essentially allows the vehicle to traverse backwards using normal waypoint
+    behaviors
 
 
 14.7.x
