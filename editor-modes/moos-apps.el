@@ -39,7 +39,7 @@
       '("pHostInfo" "temp_file_dir" "default_hostip" "default_hostip_force")
       '("pEchoVar" "flip:1" "flip:2" "condition" "hold_messages")
       '("pSearchGrid" "grid_config")
-      '("uPlotView" "plot_var")
+      '("uPlotViewer" "plot_var")
       '("iM200" "thrust_mode" "ip_address" "port_number" "heading_source" "heading_msg_name" "mag_offset")
       '("pObstacleMgr" "point_var")
       '("pPoseKeep" "hold_tolerance" "hold_duration" "endflag" "hold_heading")
