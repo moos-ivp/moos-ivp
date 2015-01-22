@@ -89,8 +89,8 @@ void XYSegList::delete_vertex(double x, double y)
 
 //---------------------------------------------------------------
 // Procedure: delete_vertex
-//   Purpose: Given a new vertex, find the existing vertex that is
-//            closest, and delete it.
+//   Purpose: Given a valid vertex index, delete that vertex from
+//            the SegList.
 
 void XYSegList::delete_vertex(unsigned int ix)
 {
