@@ -210,6 +210,12 @@ bool BHV_OpRegion::setParam(string param, string val)
     m_trigger_exit_time = dval;
     return(true);
   }
+  else if(param == "opregion_poly_var") {
+    if(strContainsWhite(val))
+      return(false);
+    m_opregion_poly_var = val;
+    return(true);
+  }
   else if(param == "visual_hints")  {
     vector<string> svector = parseStringQ(val, ',');
     unsigned int i, vsize = svector.size();
@@ -603,6 +609,15 @@ void BHV_OpRegion::postViewablePolygon()
 {
   if(m_polygon.size() == 0)
     return;
+
+  if(m_us_name == "")
+    return;
+
+  if(m_polygon.get_label() == "") {
+    string label = m_us_name + ":" + m_descriptor + ":opreg";
+    m_polygon.set_label(label);
+  }
+
   XYPolygon poly_duplicate = m_polygon;
   if(m_hint_vertex_color != "")
     poly_duplicate.set_color("vertex", m_hint_vertex_color);
