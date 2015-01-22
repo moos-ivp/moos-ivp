@@ -140,6 +140,12 @@ void showInterfaceAndExit()
   blk("  DESIRED_RUDDER     = [-100,100]                               ");
   blk("  DESIRED_ELEVATOR   = [-100,100]                               ");
   blk("                                                                ");
+  blk("  DESIRED_THRUST_L   = [-100,100]                               ");
+  blk("  DESIRED_THRUST_R   = [-100,100]                               ");
+  blk("                                                                ");
+  blk("  THRUST_MODE_REVERSE      = [true/false]                       ");
+  blk("  THRUST_MODE_DIFFERENTIAL = [true/false]                       ");
+  blk("                                                                ");
   blk("  BUOYANCY_CONTROL   = [-inf,+inf]                              ");
   blk("  BUOYANCY_RATE      = [-inf,+inf] m/s                          ");
   blk("  CURRENT_FIELD      = [true/false]                             ");
