@@ -242,14 +242,6 @@ SET(IVP_GUI_APPS
   uLogViewHelm
   )
 
-IF( EXISTS app_ivpcheck )
-  LIST(APPEND IVP_GUI_APPS 
-  app_ivpcheck
-  app_currview
-)  
-ENDIF( EXISTS app_ivpcheck )
-
-  
 SET(IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})
 IF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
    LIST(APPEND IVP_APPS_TO_BUILD ${IVP_GUI_APPS})
