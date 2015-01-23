@@ -45,20 +45,20 @@ int main(int argc, char *argv[])
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage:                                               " << endl;
-    cout << "  alogscan file.alog [OPTIONS]                       " << endl;
+    cout << "  alogeff file.alog [OPTIONS]                        " << endl;
     cout << "                                                     " << endl;
     cout << "Synopsis:                                            " << endl;
     cout << "  Generate summary files of efficiency and collisions" << endl;
     cout << "  from MOOS .alog files.                             " << endl;
     cout << "                                                     " << endl;
-    cout << "Required:                                             " << endl;
-    cout << "  output=STRING  Where string is the prefix for     " << endl;
-    cout << "                 output files.   " << endl;
-    cout << "                    " << endl;
-    cout << "Outputs:       " << endl;
-    cout << "          STRING.adata for avoiding data.   " << endl;
-    cout << "          STRING.tdata for transiting data.   " << endl;
-    cout << "          STRING.cdata for collision data.   " << endl;
+    cout << "Required:                                            " << endl;
+    cout << "  output=STRING  Where string is the prefix for      " << endl;
+    cout << "                 output files.                       " << endl;
+    cout << "                                                     " << endl;
+    cout << "Outputs:                                             " << endl;
+    cout << "          STRING.adata for avoiding data.            " << endl;
+    cout << "          STRING.tdata for transiting data.          " << endl;
+    cout << "          STRING.cdata for collision data.           " << endl;
     return(0);
   }
 
