@@ -36,7 +36,8 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  uPlotViewer is a GUI tool for                                 ");
+  blk("  uPlotViewer is a GUI tool for rendering a frequency bar graph ");
+  blk("  for a configurable set of variables                           ");
 }
 
 //----------------------------------------------------------------
@@ -85,6 +86,10 @@ void showExampleConfigAndExit()
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
+  blk("                                                                ");
+  blk("  plot_var = var=UNIFORM_TEST_VAL,min=0,max=400,bars=50,color=red ");
+  blk("  plot_var = var=GAUSS_TEST_VAL,min=0,max=400,bars=80,color=blue  ");
+  blk("  plot_var = var=LGAUSS_TEST_VAL,min=0,max=400,bars=80,color=green");
   blk("                                                                ");
   blk("}                                                               ");
   blk("                                                                ");
