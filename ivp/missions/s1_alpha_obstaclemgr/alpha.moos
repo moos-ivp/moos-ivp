@@ -32,12 +32,12 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-  Run = pObstacleMgrX	  @ NewConsole = false
+  Run = pObstacleMgr	  @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
 }
 
 //------------------------------------------
-ProcessConfig = pObstacleMgrX
+ProcessConfig = pObstacleMgr
 {
   AppTick   = 2
   CommsTick = 2

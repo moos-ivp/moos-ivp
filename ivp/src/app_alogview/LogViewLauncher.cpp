@@ -437,6 +437,11 @@ bool LogViewLauncher::parseALogFile(unsigned int index)
 	    entries_helm_plot.push_back(entry);
 	  else if(var == "BHV_IPF")
 	    entries_ipf_plot.push_back(entry);
+	  else {
+	    entry.setDVal(1);
+	    entry.setIsNum();
+	    entries_log_plot.push_back(entry);
+	  }
 	}
       }
     }

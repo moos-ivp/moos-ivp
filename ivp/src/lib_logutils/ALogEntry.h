@@ -44,6 +44,8 @@ public:
 	   double dval);
 
   void setTimeStamp(double v)           {m_timestamp = v;};
+  void setDVal(double v)                {m_dval = v;};
+  void setIsNum()                       {m_isnum = true;};
   void setVarName(const std::string& s) {m_varname = s;};
   void setSource(const std::string& s)  {m_source = s;};
   void setSrcAux(const std::string& s)  {m_srcaux = s;};
