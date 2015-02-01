@@ -25,7 +25,7 @@ if ! hash dot 2>/dev/null; then
 fi
 
 # Generate the .dot file
-bhv2graphviz $1 tmp.dot
+bhv2graphviz $1 tmp.dot 
 
 # Check that the .dot file was successfully generated
 if ! [ -e "tmp.dot" ]; then
