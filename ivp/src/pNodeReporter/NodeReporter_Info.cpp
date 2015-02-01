@@ -164,8 +164,8 @@ void showInterfaceAndExit()
   blk("                      X=51.71,Y=-35.50, LAT=43.824981,          ");
   blk("                      LON=-70.329755,SPD=2.0,HDG=118.8,         ");
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
-  blk("                      MODE=MODE@ACTIVE:LOITERING                ");
-  blk("                                                                ");
+  blk("                      MODE=MODE@ACTIVE:LOITERING,               ");
+  blk("                      THRUST_MODE_REVERSE=true                  ");
   exit(0);
 }
 
