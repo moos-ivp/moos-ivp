@@ -39,6 +39,8 @@ public:
   void print(unsigned int indent=0);
   std::vector<std::string> getPrintableSet(unsigned int index=0);
 
+ void writeGraphviz(std::ostream& os);
+
 protected:
   std::string             m_value;
   std::vector<StringNode> m_children;

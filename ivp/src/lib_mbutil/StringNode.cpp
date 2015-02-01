@@ -21,9 +21,11 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <algorithm>
 #include <iostream>
 #include "StringNode.h"
 #include "MBUtils.h"
+
 
 using namespace std;
 
@@ -39,6 +41,29 @@ void StringNode::print(unsigned int indent)
   cout << m_value << endl;
   for(i=0; i<vsize; i++)
     m_children[i].print(indent + 2);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: writeGraphviz
+
+void StringNode::writeGraphviz(ostream& os)
+{
+  unsigned int i, vsize = m_children.size();
+  
+  std::string clean_label=m_value;
+  std::replace(clean_label.begin(), clean_label.end(), '-', '_');
+  
+  
+  // branch node
+  for(i=0; i<vsize; i++) {
+    os << clean_label << "--";
+    m_children[i].writeGraphviz(os);
+  }
+  
+  // leaf node
+  if(!vsize)
+    os << clean_label << "\n  ";
 }
 
 

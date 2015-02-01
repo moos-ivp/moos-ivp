@@ -56,6 +56,18 @@ public:
   bool evalConditions();
   bool evalModeVarConditions();
 
+  // Added by tes to support graphviz
+  std::vector<LogicCondition> getNonModeLogicConditions() const
+    {
+      std::vector<LogicCondition> non_mode_logic_cond;
+      for(int i = 0, n = m_logic_conditions.size(); i < n; ++i)
+	{
+          if(!m_modevar_conditions.at(i))
+	    non_mode_logic_cond.push_back(m_logic_conditions[i]);
+	}
+      return non_mode_logic_cond;
+    }
+
 protected:
   std::string  m_mode_var;
   std::string  m_mode_val;

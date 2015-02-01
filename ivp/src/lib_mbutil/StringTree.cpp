@@ -127,6 +127,21 @@ bool StringTree::allHandled()
 
 
 
+//-------------------------------------------------------------
+// Procedure: writeGraphviz
+//      Note: Added by Toby tes to support graphviz
 
-
-
+void StringTree::writeGraphviz(ostream& os, string metadata)
+{
+  os << "graph stringtree {\n  ";
+ 
+  if(!metadata.empty())
+    os << metadata << "\n";
+  unsigned int i, vsize = m_nodes.size();
+  for(i=0; i<vsize; i++) {
+    os << "root" << "--";
+    m_nodes[i].writeGraphviz(os);
+  }
+  
+  os << "}\n";
+}

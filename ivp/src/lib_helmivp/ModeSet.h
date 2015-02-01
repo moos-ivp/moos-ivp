@@ -51,6 +51,8 @@ public:
   std::vector<std::string> getConditionVars();
 
   std::string getStringDescription();
+  
+  std::map<std::string, std::vector<LogicCondition> > getNonModeLogicConditions();
 
  protected:
   void consultFromInfoBuffer();

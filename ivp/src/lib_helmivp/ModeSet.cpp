@@ -128,6 +128,23 @@ void ModeSet::print()
 
 
 //------------------------------------------------------------------
+// Procedure: getNonModeLogicConditions()
+//      Note: added by Toby for supporting graphviz
+
+map<string, vector<LogicCondition> > ModeSet::getNonModeLogicConditions()
+{
+  map<string, vector<LogicCondition> > logic_conds;
+    
+  unsigned int i, vsize = m_entries.size();
+  for(i=0; i<vsize; i++) {
+    logic_conds.insert(std::make_pair(m_entries[i].getModeVarValue(),
+				      m_entries[i].getNonModeLogicConditions()));
+  }
+  return logic_conds;
+}
+
+
+//------------------------------------------------------------------
 // Procedure: getModeSummary
 //   Example: "MODE_ONE@ACTIVE:SURVEYING , MODE_TWO@SURFACE"
 

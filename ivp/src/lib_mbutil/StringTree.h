@@ -42,7 +42,9 @@ public:
   
   void print();
   std::vector<std::string> getPrintableSet();
-
+  
+  void writeGraphviz(std::ostream& os, std::string metadata = "");
+ 
   bool allHandled();
 
  protected:

@@ -114,6 +114,10 @@ public:
   std::string getModeSetDefinition()  
     {return(m_mode_set.getStringDescription());};
 
+  // Added by tes to support Graphviz 
+  std::map<std::string, std::vector<LogicCondition> > getModeLogicConditions()
+    {return(m_mode_set.getNonModeLogicConditions());}
+
   void print();
 
 protected:
