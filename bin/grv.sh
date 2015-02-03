@@ -7,7 +7,9 @@ if [ "$#" -ne 1 ] || ! [ -e "$1" ]; then
 fi
 
 # Check that the file given is a .bhv file
-if ! [ "$1" == *.bhv ]; then
+filename=$(basename "$1")
+extension="${filename##*.}"
+if ! [ "$extension" = "bhv" ]; then
   echo "Usage: $0 file.bhv" >&2
   exit 1
 fi
