@@ -91,18 +91,18 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
 
   // Initialize Time fields ------------------------------------------
   double time_pos = (w()/2)-250;
-  disp_time = new MY_Output(time_pos, h()-(m_lp_viewer_hgt+26), 
-			    110, 22, "Timex:"); 
+  disp_time = new MY_Output(time_pos+90, h()-(m_lp_viewer_hgt+26), 
+			    110, 22, "Time:"); 
   disp_time->color(FL_RED); 
   disp_time->textcolor(FL_WHITE); 
   disp_time->textsize(12); 
   disp_time->labelsize(12);
 
-  m_but_zoom_in_time = new MY_Repeat_Button(time_pos+120, h()-(m_lp_viewer_hgt+26), 
+  m_but_zoom_in_time = new MY_Repeat_Button(time_pos+210, h()-(m_lp_viewer_hgt+26), 
 					    30, 21, "IN");
-  m_but_zoom_out_time = new MY_Repeat_Button(time_pos+160, h()-(m_lp_viewer_hgt+26), 
+  m_but_zoom_out_time = new MY_Repeat_Button(time_pos+240, h()-(m_lp_viewer_hgt+26), 
 					     35, 21, "OUT");
-  m_but_zoom_reset_time = new MY_Button(time_pos+200, h()-(m_lp_viewer_hgt+26), 
+  m_but_zoom_reset_time = new MY_Button(time_pos+290, h()-(m_lp_viewer_hgt+26), 
 					45, 21, "RESET");
 
   m_but_zoom_in_time->callback((Fl_Callback*)REPLAY_GUI::cb_TimeZoom,(void*)1);
@@ -120,13 +120,13 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   m_but_zoom_out_time->labelsize(10);
   m_but_zoom_reset_time->labelsize(10);
 
-  play_rate = new MY_Output((w()/2)+140, h()-(m_lp_viewer_hgt+25), 70, 20, "play-rate:"); 
+  play_rate = new MY_Output((w()/2)+125, h()-(m_lp_viewer_hgt+25), 70, 20, "play:"); 
   play_rate->textsize(info_size); 
   play_rate->labelsize(info_size);
 
-  collect_state = new MY_Output((w()/2)+260, h()-(m_lp_viewer_hgt+25), 70, 20, "collect:"); 
-  collect_state->textsize(info_size); 
-  collect_state->labelsize(info_size);
+  //collect_state = new MY_Output((w()/2)+260, h()-(m_lp_viewer_hgt+25), 70, 20, "collect:"); 
+  //collect_state->textsize(info_size); 
+  //collect_state->labelsize(info_size);
 
   // Handle LogPlot 1 -------------
   label1 = new MY_Output(35, h()-(m_lp_viewer_hgt+25), 150, 20, "Var:"); 
@@ -135,7 +135,7 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   label1->textcolor(FL_WHITE); 
   label1->labelsize(info_size);
 
-  curr1 = new MY_Output(255, h()-(m_lp_viewer_hgt+25), 70, 20, "CurrVal:"); 
+  curr1 = new MY_Output(235, h()-(m_lp_viewer_hgt+25), 70, 20, "CurrVal:"); 
   curr1->textsize(info_size); 
   curr1->color(FL_DARK_GREEN); 
   curr1->textcolor(FL_WHITE); 
@@ -281,7 +281,7 @@ REPLAY_GUI::~REPLAY_GUI()
   delete(np_viewer);
   delete(disp_time);
   delete(play_rate);
-  delete(collect_state);
+  //delete(collect_state);
 
   delete(vname1);
   delete(label1);
@@ -1130,7 +1130,7 @@ void REPLAY_GUI::updateXY()
   else
     play_rate->value("Paused");
 
-  collect_state->value(m_collect.c_str());
+  //collect_state->value(m_collect.c_str());
   
   // Helm1
   string v1name = np_viewer->getHPlotVName("left");
