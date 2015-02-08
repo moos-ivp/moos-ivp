@@ -87,6 +87,9 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_completed  = false; 
   m_perpetual  = false;
 
+  m_course_pct = 50;
+  m_speed_pct  = 50;
+
   m_osx   = 0;
   m_osy   = 0;
   m_osv   = 0;
@@ -326,6 +329,16 @@ bool BHV_Waypoint::setParam(string param, string param_val)
       m_waypoint_engine.setCaptureLine(false);
     return(true);
   }
+  else if(param == "crs_spd_zaic_ratio") {
+    // require dval such that course and speed pcts are each in [1,99]
+    // and sum to 100.
+    if((dval < 1) || (dval > 99))
+      return(false);
+    m_course_pct = dval;
+    m_speed_pct = 100-dval;
+    return(true);
+  }
+
   else if(param == "visual_hints")  {
     vector<string> svector = parseStringQ(param_val, ',');
     unsigned int i, vsize = svector.size();
@@ -670,9 +683,9 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     
     if(!crs_ipf) 
       postWMessage("Failure on the CRS ZAIC");
-
+    
     OF_Coupler coupler;
-    ipf = coupler.couple(crs_ipf, spd_ipf, 50, 50);
+    ipf = coupler.couple(crs_ipf, spd_ipf, m_course_pct, m_speed_pct);
     if(!ipf)
       postWMessage("Failure on the CRS_SPD COUPLER");
   }    

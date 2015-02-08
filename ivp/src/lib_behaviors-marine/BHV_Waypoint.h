@@ -105,6 +105,9 @@ protected: // intermediate or object global variables.
   double    m_dist_total_odo;
   double    m_dist_total_linear;
 
+  double    m_course_pct;
+  double    m_speed_pct;
+
   double    m_osx_prev;
   double    m_osy_prev;
 
