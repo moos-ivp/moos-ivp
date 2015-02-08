@@ -68,6 +68,12 @@ o BHV_Waypoint
   - The wptflag parameter has been augmented to allow for macros $(NX), $(NY), 
   $[NX], and $[NY] to be expanded to the x-y components of the next waypoint.
 
+  - An optional config parameter, crs_spd_zaic_ratio=N, where N is in the 
+ range of [1,99]. This sets the weight of the heading portion of the heading-spd
+ zaic created in the ZAIC (default) mode for IvP function creation. The corresponding
+ speed weight is implied to be 100-N, so the two always add to 100 and neither is
+ below 1 or greater than 99. The default is 50-50.
+
 o lib_geometry 
   - Added bearingMinMaxToPoly in GeomUtils.cpp
   - Added ability to delete a vertex by index number in XYSegList
