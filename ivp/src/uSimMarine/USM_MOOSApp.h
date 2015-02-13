@@ -90,7 +90,8 @@ protected:
   double last_report;
   double report_interval;
   double pitch_tolerance;
-
+  
+  bool   m_obstacle_hit;
 };
 #endif
 

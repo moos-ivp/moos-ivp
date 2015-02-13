@@ -51,6 +51,8 @@ USM_MOOSApp::USM_MOOSApp()
   report_interval = 5;
   pitch_tolerance = 5;
 
+  m_obstacle_hit  = false;
+
   m_thrust_mode_reverse = false;
   m_thrust_mode_differential = false;
 }
@@ -152,8 +154,11 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       Notify("USM_RESET_COUNT", m_reset_count);
       m_model.initPosition(sval);
     }
-
-
+    
+    else if(key == "OBSTACLE_HIT") {
+      if(dval != 0)
+	m_obstacle_hit = true;
+    }
 
     // Added buoyancy and trim control and sonar handshake. HS 2012-07-22
     else if (key == "BUOYANCY_CONTROL") {
@@ -423,6 +428,8 @@ void USM_MOOSApp::registerVariables()
   m_Comms.Register("USM_SIM_PAUSED", 0); 
   m_Comms.Register("USM_RESET", 0);
 
+  m_Comms.Register("OBSTACLE_HIT", 0);
+
   // Added buoyancy and trim control and sonar handshake
   m_Comms.Register("TRIM_CONTROL",0);
   m_Comms.Register("BUOYANCY_CONTROL",0);
@@ -438,7 +445,9 @@ void USM_MOOSApp::registerVariables()
 bool USM_MOOSApp::Iterate()
 {
   AppCastingMOOSApp::Iterate();
-  m_model.propagate(m_curr_time);
+
+  if(!m_obstacle_hit)
+    m_model.propagate(m_curr_time);
   
   NodeRecord record = m_model.getNodeRecord();
 
