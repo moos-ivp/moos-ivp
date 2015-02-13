@@ -21,10 +21,6 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
 #include <iostream>
 #include <cmath> 
 #include <cstdlib>
@@ -212,8 +208,13 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
 
   // Part 3: Check if ownship violates either an obstacle or obstacle+buffer. 
   // Do this before init, because init includes buffer shrinking.
-  if(m_aof_avoid->ownshipInObstacle(false))
+  if(m_aof_avoid->ownshipInObstacle(false)) {
     postWMessage("Ownship position within stated space of obstacle");
+    postMessage("OBSTACLE_HIT", 1);
+  }
+  else
+    postMessage("OSTACLE_HIT", 0);
+
   if(m_aof_avoid->ownshipInObstacle(true)) {
     postWMessage("Ownship position within stated BUFFER space of obstacle");
     postWMessage(m_aof_avoid->getDebugMsg());
