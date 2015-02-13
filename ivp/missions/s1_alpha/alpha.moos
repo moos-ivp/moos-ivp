@@ -82,6 +82,8 @@ ProcessConfig = uSimMarine
 
   prefix        = NAV
 
+	//max_rudder_degs_per_sec = 12
+
   turn_rate     = 40
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
   thrust_reflect = true
