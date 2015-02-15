@@ -66,6 +66,7 @@ XMS::XMS()
   
   m_display_all       = false;
   m_display_all_requested = false;
+  m_display_all_requested = true;
   m_last_all_refresh  = 0;
 
   m_max_proc_name_len  = 12;
@@ -158,9 +159,13 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
     
     // A check is made in updateVariable() to ensure the given variable
     // is indeed on the scope list.
-    if(m_display_all && !strEnds(key, "_STATUS"))
-      addVariable(key);
-
+    if(m_display_all) {
+      if(m_display_all_really)
+	addVariable(key);
+      else if (!strEnds(key, "_STATUS") && (key != "APPCAST") && 
+	       (key != "DB_RWSUMMARY") && (key != "DB_VARSUMMARY"))
+	addVariable(key);
+    }
     updateVariable(msg);
   }
   return(true);
@@ -300,6 +305,12 @@ bool XMS::OnStartUp()
       handled = true;
       if(!m_ignore_file_vars)
 	m_display_all = (tolower(value) == "true");
+    }    
+    else if((param == "DISPLAY_ALLL") && isBoolean(value)) {
+      handled = true;
+      if(!m_ignore_file_vars)
+	m_display_all = (tolower(value) == "true");
+	m_display_all_really = (tolower(value) == "true");
     }    
     else if((param == "COLORMAP") || (param == "COLOR_MAP"))
       handled = setColorMappingsPairs(value);

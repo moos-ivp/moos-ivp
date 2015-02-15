@@ -60,6 +60,10 @@ int main(int argc ,char * argv[])
       theXMS.ignoreFileVars(true);
     else if((argi == "-a") || (argi == "--all"))
       theXMS.setDispAll(true);
+    else if(argi == "--alll") {
+      theXMS.setDispAll(true);
+      theXMS.setDispAllReally(true);
+    }
     else if(argi == "-t")
       theXMS.setTruncData("25");    
     else if(argi == "-p")

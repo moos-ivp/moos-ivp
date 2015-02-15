@@ -60,6 +60,7 @@ class XMS : public AppCastingMOOSApp
   void setDispCommunity(bool v)         {m_display_community = v;};
   void setDispOwnCommunity(bool v)      {m_display_own_community = v;};
   void setDispAll(bool v)               {m_display_all = v;};
+  void setDispAllReally(bool v)         {m_display_all_really = v;};
   void setTermServerHost(std::string s) {m_term_server_host = s;};
   void setTermServerPort(std::string s) {m_term_server_port = s;};
   void setAppNameNoIndex(std::string s) {m_app_name_noindex = s;};
@@ -158,6 +159,7 @@ class XMS : public AppCastingMOOSApp
 
   bool   m_display_all;
   bool   m_display_all_requested;
+  bool   m_display_all_really;
   double m_last_all_refresh;   
   bool   m_suppress_appcasts;
   bool   m_help_is_showing;
