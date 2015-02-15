@@ -63,7 +63,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_cruise_speed    = 0;  // meters/second
   m_lead_distance   = -1; // meters - default of -1 means unused
   m_lead_damper     = -1; // meters - default of -1 means unused
-  m_efficiency_measure = "off"; // or "internal" or "all"
+  m_efficiency_measure = "off"; // or "off" or "all"
   m_ipf_type        = "zaic";
 
   m_var_report      = "WPT_STAT";
@@ -98,10 +98,13 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_odo_set_flag = false;
   m_odo_setx = 0;
   m_odo_sety = 0;
-  m_odo_distance = 0;
-  m_odo_virgin   = true;
+  m_odo_virgin = true;
+
+  m_dist_leg_odo = 0;
   m_dist_total_odo    = 0;
   m_dist_total_linear = 0;
+  m_time_total_odo    = 0;
+  m_time_total_linear = 0;
 
   m_osx_prev = 0;
   m_osy_prev = 0;
@@ -284,7 +287,7 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   }
   else if(param == "efficiency_measure") {
     param_val = tolower(param_val);
-    if((param_val == "all") || (param_val == "internal") || (param_val == "off")) {
+    if((param_val == "all") || (param_val == "off")) {
       m_efficiency_measure = param_val;
       return(true);
     }
@@ -371,7 +374,8 @@ void BHV_Waypoint::onRunToIdleState()
   postErasables();
   m_waypoint_engine.resetCPA();
   m_odo_set_flag = false;
-  m_odo_distance = 0;
+  m_odo_leg_disq = true;
+  m_dist_leg_odo = 0;
 
   // If we were publishing distances to prev or next waypoint, publish
   // one final time, values that indicate that we're not progressing on pts
@@ -479,7 +483,7 @@ void BHV_Waypoint::onIdleState()
 {
   if(!updateInfoIn()) 
     return;
-  updateOdoDistance();
+  //updateOdoDistance();
 }
 
 //-----------------------------------------------------------
@@ -546,7 +550,7 @@ bool BHV_Waypoint::setNextWaypoint()
   if(feedback_msg != "in-transit")
     markOdoLeg();
 
-  postMessage("WAYPOINT_ODO", m_odo_distance);
+  postMessage("WAYPOINT_ODO", m_dist_leg_odo);
 
   if((feedback_msg=="completed") || (feedback_msg=="cycled")) {
     if(tolower(m_var_report) != "silent") {
@@ -851,7 +855,7 @@ void BHV_Waypoint::updateOdoDistance()
 {
   if(!m_odo_virgin) {
     double delta = distPointToPoint(m_osx, m_osy, m_osx_prev, m_osy_prev);
-    m_odo_distance += delta;
+    m_dist_leg_odo += delta;
   }
   else
     m_odo_virgin = false;
@@ -873,56 +877,91 @@ void BHV_Waypoint::markOdoLeg()
   if(m_efficiency_measure == "off")
     return;
   // First time through just mark the set point and return
-  if(!m_odo_set_flag) {
+  if(!m_odo_set_flag || m_odo_leg_disq) {
     m_odo_setx = m_osx;
     m_odo_sety = m_osy;
-    m_odo_distance = 0;
+    m_odo_settime = getBufferCurrTime();
     m_odo_set_flag = true;
+    m_dist_leg_odo = 0;
+    m_odo_leg_disq = false;
     return;
   }
 
-  // Part 1: Note the straight line linear distance between the previously
-  //         noted set point, and our present position
-  double dist_linear = distPointToPoint(m_osx, m_osy, m_odo_setx, m_odo_sety);
-  m_dist_total_linear += dist_linear;
+  // Part 1A: Note the straight line linear distance between the previously
+  //          noted set point, and our present position
+  double dist_leg_linear = distPointToPoint(m_osx, m_osy, m_odo_setx, m_odo_sety);
+  m_dist_total_linear += dist_leg_linear;
 
-  // Part 2: Note the actual odometry distance travelled
-  double dist_odo = m_odo_distance;
-  m_dist_total_odo += dist_odo;
+  // Part 1B: Note the time since the previous noted set point
+  double time_leg_linear = 0;
+  if(m_cruise_speed > 0) {
+    time_leg_linear = dist_leg_linear / m_cruise_speed;
+    m_time_total_linear += time_leg_linear;
+  }
 
-  // Part 3: Calculate the Leg Efficiency
-  double leg_efficiency = 0;
-  if(dist_odo > 0)
-    leg_efficiency = dist_linear / dist_odo;
+  // Part 2A: Note the actual odometry distance travelled
+  double dist_leg_odo = m_dist_leg_odo;
+  m_dist_total_odo += dist_leg_odo;
 
-  // Part 5: Calculate the running total Efficiency
-  double total_efficiency = 0;
+  // Part 2B: Note the actual time travelled
+  double time_leg_odo = getBufferCurrTime() - m_odo_settime;
+  m_time_total_odo += time_leg_odo;
+
+
+  // Part 3A: Calculate the Leg Odo Efficiency
+  double leg_odo_efficiency = 0;
+  if(dist_leg_odo > 0)
+    leg_odo_efficiency = dist_leg_linear / dist_leg_odo;
+
+  // Part 3B: Calculate the Leg Time Efficiency
+  double leg_time_efficiency = 0;
+  if(time_leg_odo > 0)
+    leg_time_efficiency = time_leg_linear / time_leg_odo;
+
+  // Part 4A: Calculate the  Total Odo Efficiency
+  double total_dist_efficiency = 0;
   if(m_dist_total_odo > 0)
-    total_efficiency = m_dist_total_linear / m_dist_total_odo;
+    total_dist_efficiency = m_dist_total_linear / m_dist_total_odo;
+
+  // Part 4B: Calculate the Total Time Efficiency
+  double total_time_efficiency = 0;
+  if(m_time_total_odo > 0)
+    total_time_efficiency = m_time_total_linear / m_time_total_odo;
 
   // Part 6: Build the leg output message:  WPT_EFFICIENCY_LEG
   string str = "vname=" + m_us_name;
   str += ", bhv_name=" + m_descriptor;
-  str += ", linear_dist=" + doubleToStringX(dist_linear, 1);
-  str += ", odo_dist=" +  doubleToStringX(dist_odo,1);
-  str += ", efficiency=" +  doubleToStringX(leg_efficiency, 3);
-  postMessage("WPT_EFFICIENCY_LEG", str);
+  str += ", linear_dist=" + doubleToStringX(dist_leg_linear, 1);
+  str += ", odo_dist=" +  doubleToStringX(dist_leg_odo,1);
+  str += ", efficiency_dist=" +  doubleToStringX(leg_odo_efficiency, 3);
+  str += ", linear_time=" + doubleToStringX(time_leg_linear, 1);
+  str += ", odo_time=" +  doubleToStringX(time_leg_odo,1);
+  str += ", efficiency_time=" +  doubleToStringX(leg_time_efficiency, 3);
+  postMessage("WPT_EFFICIENCY_LEG_SUMMARY", str);
 
   // Part 7: Build the total efficiency message: WPT_EFFICIENCY_SUM
   str = "vname=" + m_us_name;
   str += ", bhv_name=" + m_descriptor;
   str += ", linear_dist=" + doubleToStringX(m_dist_total_linear,1);
   str += ", odo_dist=" +  doubleToStringX(m_dist_total_odo,1);
-  str += ", efficiency=" +  doubleToStringX(total_efficiency,3);
-  postMessage("WPT_EFFICIENCY_SUM", str);
+  str += ", efficiency_dist=" +  doubleToStringX(total_dist_efficiency,3);
+  str += ", linear_time=" + doubleToStringX(m_time_total_linear,1);
+  str += ", odo_time=" +  doubleToStringX(m_time_total_odo,1);
+  str += ", efficiency_time=" +  doubleToStringX(total_time_efficiency,3);
+  postMessage("WPT_EFFICIENCY_ALL_SUMMARY", str);
 
-  // Part 8: Post the simple total efficiency message: WPT_EFFICIENCY_VAL
-  postMessage("WPT_EFFICIENCY_VAL", total_efficiency);
+  // Part 8: Post the simple total efficiency message: WPT_EFFICIENCY_DIST_VAL
+  postMessage("WPT_EFFICIENCY_DIST_ALL", total_dist_efficiency);
+  postMessage("WPT_EFFICIENCY_TIME_ALL", total_time_efficiency);
+  postMessage("WPT_EFFICIENCY_DIST_LEG",  leg_odo_efficiency);
+  postMessage("WPT_EFFICIENCY_TIME_LEG", leg_time_efficiency);
 
   // Part 9: Reset the set point the present position
   m_odo_setx = m_osx;
   m_odo_sety = m_osy;
-  m_odo_distance = 0;
+  m_odo_settime = getBufferCurrTime();
+
+  m_dist_leg_odo = 0;
 }
 
 
