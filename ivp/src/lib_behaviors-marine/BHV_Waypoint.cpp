@@ -169,6 +169,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     return(true);
   }
   else if((param == "speed") && (dval > 0)) {
+    if(dval != m_cruise_speed)
+      m_odo_leg_disq = true;
     m_cruise_speed = dval;
     return(true);
   }
