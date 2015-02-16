@@ -110,6 +110,11 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_user_button_3->hide();
   m_user_button_4->hide();
 
+  m_user_button_1->clear_visible_focus();
+  m_user_button_2->clear_visible_focus();
+  m_user_button_3->clear_visible_focus();
+  m_user_button_4->clear_visible_focus();
+
   augmentMenu();
 
   this->end();
