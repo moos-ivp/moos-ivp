@@ -65,6 +65,8 @@ ProcessConfig = uProcessWatch
   CommsTick = 4
 
   watch_all = true
+	nowatch   = uPokeDB*
+	nowatch   = uXMS*
 }
 
 //------------------------------------------
