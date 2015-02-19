@@ -60,6 +60,7 @@ NodeReporter::NodeReporter()
   m_blackout_baseval  = 0;
   m_blackout_variance = 0;
   m_last_post_time    = -1;
+  m_paused            = false;
 
   // Below is a good alt_nav prefix suggestion,  but left blank to keep
   // feature off unless another app is generating the alt nav solution.
@@ -161,6 +162,9 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
     if(key == "AUX_MODE") 
       m_record.setModeAux(sdata);
 
+    else if(key == "PNR_PAUSE") 
+      setBooleanOnString(m_paused, sdata);
+
     else if(key == "LOAD_WARNING") {
       string app = tokStringParse(sdata, "app", ',', '=');
       string gap = tokStringParse(sdata, "maxgap", ',', '=');
@@ -252,6 +256,9 @@ void NodeReporter::registerVariables()
   m_Comms.Register("AUX_MODE", 0);
   m_Comms.Register("LOAD_WARNING", 0);
   m_Comms.Register("THRUST_MODE_REVERSE", 0);
+  
+  Register("PNR_PAUSE", 0);
+
 }
 
 //-----------------------------------------------------------------
@@ -339,6 +346,8 @@ bool NodeReporter::OnStartUp()
       m_group_name = value;
       handled = true;
     }
+    else if(param == "PAUSED")
+      handled = setBooleanOnString(m_paused, value);
     else if(param == "NOHELM_THRESHOLD") {
       if(isNumber(value) && (dval > 0)) {
 	m_nohelm_thresh = dval;
@@ -422,8 +431,10 @@ bool NodeReporter::Iterate()
     
     m_record.setIndex(m_reports_posted);
     string report = assembleNodeReport(m_record);    
-    Notify(m_node_report_var, report);
-    m_reports_posted++;
+    if(!m_paused) {
+      Notify(m_node_report_var, report);
+      m_reports_posted++;
+    }
 
     double elapsed_time = m_curr_time - m_record_gt_updated;
     if(elapsed_time < 5) {
@@ -433,8 +444,10 @@ bool NodeReporter::Iterate()
       
       m_record_gt.setIndex(m_reports_posted);
       string report_gt = assembleNodeReport(m_record_gt);
-      Notify(m_node_report_var, report_gt);
-      m_reports_posted_alt_nav++;
+      if(!m_paused) {
+	Notify(m_node_report_var, report_gt);
+	m_reports_posted_alt_nav++;
+      }
     }
 
     // Note the post time and apply it to the blackout calculation
@@ -454,9 +467,9 @@ bool NodeReporter::Iterate()
   }
 
   string platform_report = assemblePlatformReport();
-  if(platform_report != "")
+  if((platform_report != "") && !m_paused)
     Notify(m_plat_report_var, platform_report);
-
+  
   m_record.setLoadWarning("");
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -777,6 +790,7 @@ bool NodeReporter::buildReport()
   string str_blackout = doubleToString(m_blackout_interval,2);
   string str_bovariance = doubleToString(m_blackout_variance,2);
 
+  m_msgs << "Paused: " << boolToString(m_paused) << endl; 
   m_msgs << "Vehicle Configuration:"                    << endl;
   m_msgs << "----------------------------"              << endl;
   m_msgs << "     Vehicle name: " << m_vessel_name      << endl;
@@ -801,6 +815,12 @@ bool NodeReporter::buildReport()
   string report = assembleNodeReport(m_record);    
   ACBlock block(" Latest Report: ", report, 50);
   m_msgs << block.getFormattedString();
+
+  if(m_record_gt_updated > 0) {
+    string report_gt = assembleNodeReport(m_record_gt);
+    ACBlock block_gt(" Latest GT Report: ", report_gt, 50);
+    m_msgs << block_gt.getFormattedString();
+  }
 
   return(true);
 }

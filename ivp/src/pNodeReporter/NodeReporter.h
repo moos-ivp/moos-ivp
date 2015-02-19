@@ -89,6 +89,7 @@ public:
   unsigned int m_reports_posted;
   unsigned int m_reports_posted_alt_nav;
   bool         m_thrust_mode_reverse;
+  bool         m_paused;
   
  protected: // Config and State Vars (Blackout Interval)
   double  m_blackout_interval;
