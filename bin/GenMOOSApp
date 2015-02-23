@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ -d "$2$1" ]; then
+    echo "$2$1 already exists... quitting."
+    exit 1
+fi
+
 if [ -z "$1" ] ; then
     echo "GenMOOSApp: usage: $0 [app-name] [prefix]"
     exit 0
@@ -17,7 +22,7 @@ fi
 mkdir $2$1
 cd $2$1
 
-cat >> CMakeLists.txt <<EOF
+cat > CMakeLists.txt <<EOF
 #--------------------------------------------------------
 # The CMakeLists.txt for:                       $2$1
 # Author(s):                              $3
@@ -44,7 +49,7 @@ TARGET_LINK_LIBRARIES($2$1
 EOF
 
 
-cat >> ${1}.h <<EOF
+cat > ${1}.h <<EOF
 /************************************************************/
 /*    NAME: $3                                              */
 /*    ORGN: MIT                                             */
@@ -80,7 +85,7 @@ class ${1} : public CMOOSApp
 #endif 
 EOF
 
-cat >> main.cpp <<EOF
+cat > main.cpp <<EOF
 /************************************************************/
 /*    NAME: $3                                              */
 /*    ORGN: MIT                                             */
@@ -135,7 +140,7 @@ int main(int argc, char *argv[])
 
 EOF
 
-cat >> $2${1}.moos <<EOF
+cat > $2${1}.moos <<EOF
 //------------------------------------------------
 // ${2}${1} config block
 
@@ -147,7 +152,7 @@ ProcessConfig = ${2}${1}
 
 EOF
 
-cat >> ${1}.cpp <<EOF
+cat > ${1}.cpp <<EOF
 /************************************************************/
 /*    NAME: $3                                              */
 /*    ORGN: MIT                                             */
@@ -267,7 +272,7 @@ void ${1}::RegisterVariables()
 EOF
 
 
-cat >> ${1}_Info.h <<EOF
+cat > ${1}_Info.h <<EOF
 /****************************************************************/
 /*   NAME: ${3}                                             */
 /*   ORGN: MIT Cambridge MA                                     */
@@ -289,7 +294,7 @@ void showReleaseInfoAndExit();
 EOF
 
 
-cat >> ${1}_Info.cpp <<EOF
+cat > ${1}_Info.cpp <<EOF
 /****************************************************************/
 /*   NAME: ${3}                                             */
 /*   ORGN: MIT Cambridge MA                                     */
