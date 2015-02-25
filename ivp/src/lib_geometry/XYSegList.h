@@ -28,6 +28,7 @@
 #include <string>
 #include "XYObject.h"
 #include "XYPoint.h"
+#include <iostream>
 
 class XYSegList : public XYObject {
 public:

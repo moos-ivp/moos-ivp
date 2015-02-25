@@ -312,6 +312,19 @@ void XYPolygon::rotate(double val)
 
 
 //---------------------------------------------------------------
+// Procedure: rotate
+//      Note: A call to "determine_convexity()" is made since this
+//            operation needs to have m_side_xy[i] reset for each i.
+
+
+void XYPolygon::rotate(double val, double cx, double cy)
+{
+  XYSegList::rotate(val, cx, cy);
+  determine_convexity();
+}
+
+
+//---------------------------------------------------------------
 // Procedure: contains
 
 bool XYPolygon::contains(double x, double y) const

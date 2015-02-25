@@ -47,6 +47,7 @@ public:
   void   clear();
   bool   apply_snap(double snapval);
   void   reverse();
+  void   rotate(double, double, double);
   void   rotate(double);
 
 public:
