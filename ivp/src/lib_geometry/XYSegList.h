@@ -50,6 +50,7 @@ public:
   void   grow_by_amt(double amt);
   void   apply_snap(double snapval);
   void   rotate(double degrees);
+  void   rotate(double degrees, double cx, double cy);
   void   reverse();
   void   new_center(double x, double y);
   void   new_centroid(double x, double y);

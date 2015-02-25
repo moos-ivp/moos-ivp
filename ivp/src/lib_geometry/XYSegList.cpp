@@ -223,14 +223,22 @@ void XYSegList::grow_by_amt(double amt)
 //---------------------------------------------------------------
 // Procedure: rotate
 
+void XYSegList::rotate(double degval, double cx, double cy)
+{
+  unsigned int i, vsize = m_vy.size();
+  for(i=0; i<vsize; i++)
+    rotate_pt(degval, cx, cy, m_vx[i], m_vy[i]);
+}
+
+//---------------------------------------------------------------
+// Procedure: rotate
+
 void XYSegList::rotate(double degval)
 {
   double cx = get_centroid_x();
   double cy = get_centroid_y();
 
-  unsigned int i, vsize = m_vy.size();
-  for(i=0; i<vsize; i++)
-    rotate_pt(degval, cx, cy, m_vx[i], m_vy[i]);
+  rotate(degval, cx, cy);
 }
 
 //---------------------------------------------------------------
