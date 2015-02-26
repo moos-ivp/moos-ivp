@@ -23,8 +23,13 @@
 
 #include "NodeRecord.h"
 #include "MBUtils.h"
+#include "AngleUtils.h"
 
 using namespace std;
+
+#ifndef M_PI
+#define M_PI 3.1415926
+#endif
 
 //---------------------------------------------------------
 // Constructor
@@ -194,8 +199,9 @@ string NodeRecord::getSpec() const
   if(m_thrust_mode_reverse)
     str += ",THRUST_MODE_REVERSE=true";
 
-  if(m_yaw_set)
-    str += ",YAW="  + doubleToStringX(m_heading,2);
+  if(m_yaw_set) 
+    str += ",YAW=" + doubleToStringX(headingToRadians(m_heading),7);
+    //str += ",YAW="  + doubleToStringX(m_heading,2);
   if(m_timestamp_set)
     str += ",TIME=" + doubleToStringX(m_timestamp,2);
   if(m_length_set)

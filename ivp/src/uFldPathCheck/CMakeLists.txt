@@ -11,6 +11,7 @@ TARGET_LINK_LIBRARIES(uFldPathCheck
    mbutil
    apputil
    contacts
+   geometry
    m
    pthread)
 
