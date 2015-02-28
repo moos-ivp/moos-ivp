@@ -266,7 +266,7 @@ bool ${1}::OnStartUp()
 
 void ${1}::RegisterVariables()
 {
-  // m_Comms.Register("FOOBAR", 0);
+  // Register("FOOBAR", 0);
 }
 
 EOF
