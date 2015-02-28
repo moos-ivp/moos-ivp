@@ -16,6 +16,7 @@ endif (${WIN32})
 SET(SRC
   CollisionDetector.cpp
   CollisionDetector_Info.cpp
+  CollisionRecord.cpp
   main.cpp
 )
 

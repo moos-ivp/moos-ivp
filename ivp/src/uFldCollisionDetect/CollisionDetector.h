@@ -25,9 +25,18 @@
 #define CollisionDetector_HEADER
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-#include <map>
-#include "NodeRecord.h"
 
+#include <iterator>
+#include <math.h>
+#include <map>
+#include "MBUtils.h"
+#include "ACTable.h"
+#include "NodeRecordUtils.h"
+#include "XYRangePulse.h"
+#include "CPAEngine.h"
+#include "NodeRecord.h"
+#include "CollisionDetector.h"
+#include "CollisionRecord.h"
 
 class CollisionDetector : public AppCastingMOOSApp
 {
@@ -40,14 +49,7 @@ class CollisionDetector : public AppCastingMOOSApp
    bool Iterate();
    bool OnConnectToServer();
    bool OnStartUp();
-
-   struct col_data {
-     bool colliding;
-     double min_dist;
-     double detect_dist;  // distance of collision detection
-     double display_clear_time; // time after no long colliding to display in appcasting
-     bool posted; // true only if collision clear was posted but still being displayed on appcast
-   };
+   void postAndUpdate(string, string, string);
 
  protected: // Standard AppCastingMOOSApp function to overload 
    bool buildReport();
@@ -55,28 +57,41 @@ class CollisionDetector : public AppCastingMOOSApp
  protected:
    void registerVariables();
    std::map <std::string,NodeRecord> m_moos_map;
-   std::map <std::pair<std::string,std::string>,col_data> m_col_bools;
-
+   std::map <std::pair<std::string,std::string>,CollisionRecord> m_col_bools;
+   std::map <pair<std::string,std::string>,std::pair<std::string,std::string> > m_colregs_mode_map; //<v_os,v_cn>,<mode,submode>
+   
    bool MakeRangePulse(double, double);
-
-   double m_col_dist;
+   bool MakeCollisionRangePulse(double, double);
+   bool MakeNearMissRangePulse(double, double);
+   bool MakeCPAViolationRangePulse(double, double);
+   bool storeVehicleModes(CollisionRecord&, string, string);
+   
+   double m_preferred_min_cpa_distance;
+   double m_near_miss_distance;
+   double m_collision_distance;
+   
    double m_delay_time_to_clear;
    bool m_post_immediately;
+
    std::string m_post_string;
+   std::string m_check_string;
+   
    bool m_pulse_bool;
    double m_pulse_duration;
    double m_pulse_range;
-
-   bool m_publish_single;
-   bool m_publish_pairs;
-
+   
    double m_start_checking_time;  // time to start checking for collisions
-   double m_deploy_delay;// time delay from deploy until start of checking
-   bool m_check_collisions;
+   double m_deploy_delay;   // time delay from deploy until start of checking
+   
+   bool m_check_collisions; // allows for no collision detection before certain time (TODO or manually enabling)
+   
  private: // Configuration variables
- 
+
  private: // State variables
-   double m_total_collisions;
+   int m_total_collisions;
+   int m_total_near_misses;
+   int m_total_cpa_violations;
+   bool m_start_running_by_clock;
 };
 
 #endif 
