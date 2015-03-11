@@ -50,3 +50,23 @@ Behavior = BHV_Waypoint
        point = 0,0
 }
 
+//* Constant Heading
+Behavior=BHV_ConstantHeading
+{
+  name       = const_hdg
+  pwt        = 100
+  perpetual  = true  
+
+	condition  = MODE==TURNING
+  updates    = TURN_HEADING
+  endflag    = CONDITIONS_SET = false
+  endflag    = TURN_FINISH = true
+	endflag    = TURN  = finish
+  endflag    = TURNING = false
+	
+          heading = 190
+         duration = no-time-limit
+  complete_thresh = 4
+  heading_mismatch_var = DBG_CH
+}
+

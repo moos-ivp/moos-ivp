@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
   }
 
   cout << "Quitting....." << endl;
-  //appRunner.quit();
+  appRunner.quit();
   return(0);
 }
 

@@ -35,7 +35,7 @@ ProcessConfig = pMarineViewer
   set_pan_y              = -280
   zoom                   = 0.65
   vehicles_shape_scale   = 1.5
-  vehicles_name_viewable = mode
+  vehicles_name_mode     = names+shortmode
 
   // Appcast configuration
   appcast_height       = 75
