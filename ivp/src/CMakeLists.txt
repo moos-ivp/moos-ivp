@@ -122,7 +122,7 @@ ELSE (${WIN32})
    SET(IVP_GUI_LIBS
       lib_ipfview
       lib_marineview
-      lib_ulogview
+#      lib_ulogview
       )
     
 ENDIF (${WIN32})
@@ -236,11 +236,8 @@ SET(IVP_GUI_APPS
   app_vzaicview
   app_gzaicview
   pMarineViewer
-#  uFunctionVis
+  uFunctionVis
   uMACView
-  uLogView
-  uLogViewIPF
-  uLogViewHelm
   )
 
 SET(IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})
