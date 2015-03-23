@@ -153,7 +153,6 @@ bool SplitHandler::handleMakeSplitFiles()
 	bhv_name = biteString(bhv_name, '^');
       else
 	bhv_name = findReplace(bhv_name, m_curr_helm_iter, "");
-      cout << "bhv_name: [" << bhv_name << "]" << endl;
       varname = "BHV_IPF_" + bhv_name; 
       m_bhv_names.insert(bhv_name);
     }
