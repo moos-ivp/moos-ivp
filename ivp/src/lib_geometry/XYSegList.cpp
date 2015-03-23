@@ -450,7 +450,7 @@ double XYSegList::get_min_x() const
 
 //---------------------------------------------------------------
 // Procedure: get_max_x
-//   Purpose: Return the min of the x values
+//   Purpose: Return the max of the x values
 
 double XYSegList::get_max_x() const
 {
@@ -467,7 +467,7 @@ double XYSegList::get_max_x() const
 
 //---------------------------------------------------------------
 // Procedure: get_min_y
-//   Purpose: Return the min of the x values
+//   Purpose: Return the min of the y values
 
 double XYSegList::get_min_y() const
 {
@@ -484,7 +484,7 @@ double XYSegList::get_min_y() const
 
 //---------------------------------------------------------------
 // Procedure: get_max_y
-//   Purpose: Return the min of the x values
+//   Purpose: Return the max of the x values
 
 double XYSegList::get_max_y() const
 {
