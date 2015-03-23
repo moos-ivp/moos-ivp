@@ -41,7 +41,7 @@ REPLAY_GUI* gui = 0;
 
 void idleProc(void *)
 {
-  if(gui) gui->conditional_step();
+  if(gui) gui->conditionalStep();
   Fl::flush();
   millipause(10);
 }
@@ -63,21 +63,13 @@ int main(int argc, char *argv[])
       help_message();
       return(0);
     }
-    else if(strBegins(argi, "--plot=")) {
-      string plot_request = argi.substr(7);
-      bool ok = launcher.addPlotRequest(plot_request);
-      if(!ok) {
-	cout << "Plot request --plot=" << plot_request << " not handled." << endl;
-	cout << "Exiting." << endl;
-	exit(0);
-      }
-    }
   }
 
   gui = launcher.launch(argc, argv);
-  
+
   if(gui) {
-    gui->setCurrTime();
+    gui->updateXY();
+    gui->resizeWidgetsShape();
     Fl::add_idle(idleProc);
     return(Fl::run());
   }
@@ -96,8 +88,6 @@ void help_message()
   cout << "Synopsis:                                                 " << endl;
   cout << "  Renders vehicle paths from multiple MOOS .alog files.   " << endl;
   cout << "  Renders time-series plots for any logged numerical data." << endl;
-  cout << "  Renders IvP Helm mode information vs. vehicle position. " << endl;
-  cout << "  Renders IvP Helm behavior objective functions.          " << endl;
   cout << "                                                          " << endl;
   cout << "Standard Arguments:                                       " << endl;
   cout << "  file.alog - The input logfile.                          " << endl;
@@ -106,29 +96,32 @@ void help_message()
   cout << "  -h,--help       Displays this help message              " << endl;
   cout << "  -v,--version    Displays the current release version    " << endl;
   cout << "                                                          " << endl;
-  cout << "  --plot=VAR,FLD,...,FLD                                  " << endl;
-  cout << "                  Make extra numerical plots based on the " << endl;
-  cout << "                  given MOOS variable and one or more flds" << endl;
-
-  //cout << "  --mintime=val   Clip data with timestamps < val         " << endl;
-  //cout << "  --maxtime=val   Clip data with timestamps > val         " << endl;
-  //cout << "  --nowtime=val   Set the initial startup time            " << endl;
-  //cout << "  --geometry=val  Viewer window pixel size in HGTxWID     " << endl;
-  //cout << "                  or large, medium, small, xsmall         " << endl;
-  //cout << "                  Default size is 1400x1100 (large)       " << endl;
-  //cout << "  --image                                                 " << endl;
-  //cout << "  --ipfs                                                  " << endl;
-
+  cout << "  --bg=file.tiff  Specify an alternate background image.  " << endl;
+  cout << "                                                          " << endl;
+  cout << "  --lp=VEH:VAR    Specify starting left log plot.         " << endl;
+  cout << "  --rp=VEH:VAR    Specify starting right log plot.        " << endl;
+  cout << "                  Example: --lp=henry:NAV_X               " << endl;
+  cout << "                  Example: --rp=NAV_SPEED                 " << endl;
+  cout << "                                                          " << endl;
+  cout << "  --nowtime=val   Set the initial startup time            " << endl;
+  cout << "  --mintime=val   Clip all times/vals below this time     " << endl;
+  cout << "  --maxtime=val   Clip all times/vals above this time     " << endl;
+  cout << "                                                          " << endl;
+  cout << "  --quick,-q      Quick start (no geo shapes, logplots)   " << endl;
+  cout << "  --altnav=PREF   Alt nav solution prefix, e.g., NAV_GT_  " << endl;
+  cout << "                                                          " << endl;
+  cout << "  --zoom=val      Set initial zoom value (default: 1)     " << endl;
+  cout << "  --panx=val      Set initial panx value (default: 0)     " << endl;
+  cout << "  --pany=val      Set initial pany value (default: 0)     " << endl;
+  cout << "                                                          " << endl;
+  cout << "  --geometry=xsmall  Open GUI with dimensions 770x605     " << endl;
+  cout << "  --geometry=small   Open GUI with dimensions 980x770     " << endl;
+  cout << "  --geometry=medium  Open GUI with dimensions 1190x935    " << endl;
+  cout << "  --geometry=large   Open GUI with dimensions 1400x1100   " << endl;
+  cout << "  --geometry=WxH     Open GUI with dimensions WxH         " << endl;
   cout << "                                                          " << endl;
   cout << "Further Notes:                                            " << endl;
   cout << "  (1) Multiple .alog files ok - typically one per vehicle " << endl;
-  cout << "  (2) Non alog files will be scanned for polygons         " << endl;
-  cout << "  (3) See also: alogscan, alogrm, alogclip, aloggrep      " << endl;
+  cout << "  (2) See also: alogscan, alogrm, alogclip, aloggrep      " << endl;
   cout << endl;
 }
-
-
-
-
-
-

@@ -174,7 +174,7 @@ ProcessConfig = pMarineViewer
   scope = TIME_AT_SURFACE
 
   button_one   = DEPLOY # DEPLOY=true
-  button_one   = MOOS_MANUAL_OVERIDE=false # RETURN=false # SURVEY=true
+  button_one   = MOOS_MANUAL_OVERRIDE=false # RETURN=false # SURVEY=true
   button_two   = RETURN # RETURN=true
   button_three = THREAT-DETECT  # THREAT_DETECTED=true
 }

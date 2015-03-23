@@ -5,7 +5,7 @@ initialize   DEPLOY  = true
 initialize   RETURN  = false
 initialize   STATION_KEEP = true
 initialize   LOITER = false
-initialize   MOOS_MANUAL_OVERIDE = false
+initialize   MOOS_MANUAL_OVERRIDE = false
 
 set MODE = ACTIVE {
   DEPLOY = true

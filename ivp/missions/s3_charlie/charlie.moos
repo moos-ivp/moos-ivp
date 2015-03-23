@@ -82,8 +82,8 @@ ProcessConfig = pNodeReporter
   AppTick	= 2
   CommsTick	= 2
 
-  vessel_type   = kayak
-  vessel_length = 3
+  platform_type   = kayak
+  platform_length = 3
 
   alt_nav_prefix = NAV_GT
 }
@@ -192,7 +192,7 @@ ProcessConfig = pMarineViewer
   action = UP_LOITER=clockwise=true
   action = UP_LOITER=clockwise=false
 
-  button_one   = DEPLOY # MOOS_MANUAL_OVERIDE=false # DEPLOY=true
+  button_one   = DEPLOY # MOOS_MANUAL_OVERRIDE=false # DEPLOY=true
   button_two   = STATION_KEEP=false # LOITER=true # RETURN=false
   button_two   = RETURN # RETURN=true # STATION_KEEP=false
   button_three = SKEEP:true  # STATION_KEEP=true

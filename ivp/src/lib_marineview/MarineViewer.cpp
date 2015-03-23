@@ -253,6 +253,12 @@ bool MarineViewer::setParam(string param, double v)
     m_vshift_y = v;
     cout << "set_pan_y:" << m_vshift_y << endl;
   }
+  else if(param == "set_zoom") {
+    m_zoom = v;
+    if(m_zoom < 0.00001)
+      m_zoom = 0.00001;
+    cout << "set_pan_y:" << m_vshift_y << endl;
+  }
   else
     handled = false;
 
@@ -610,9 +616,6 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   // Determine position in terms of view percentage
   double vehicle_vx = img2view('x', vehicle_ix);
   double vehicle_vy = img2view('y', vehicle_iy);
-
-
-  
 
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -2065,9 +2068,8 @@ void MarineViewer::drawCommsPulses(const vector<XYCommsPulse>& pulses,
   // true if nothing is known about the parameter.
   if(!m_geo_settings.viewable("comms_pulse_viewable_all", true))
     return;
-
+  
   unsigned int i, vsize = pulses.size();
-
   for(i=0; i<vsize; i++)
     if(pulses[i].active())
       drawCommsPulse(pulses[i], timestamp);
@@ -2356,6 +2358,31 @@ void MarineViewer::drawText(double px, double py, const string& text,
   px *= m_back_img.get_pix_per_mtr_x();
   py *= m_back_img.get_pix_per_mtr_y();
 
+  if(font_c.visible()) {
+    glColor3f(font_c.red(), font_c.grn(), font_c.blu());
+    gl_font(1, font_size);
+    glRasterPos3f(px, py, 0);
+    gl_draw(text.c_str());
+  }
+  glFlush();
+  glPopMatrix();
+}
+
+
+//-------------------------------------------------------------
+// Procedure: drawTextX
+
+void MarineViewer::drawTextX(double px, double py, const string& text,
+			    const ColorPack& font_c, double font_size) 
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
   if(font_c.visible()) {
     glColor3f(font_c.red(), font_c.grn(), font_c.blu());
     gl_font(1, font_size);

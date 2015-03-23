@@ -41,6 +41,7 @@ class Common_IPFViewer : public Fl_Gl_Window
   virtual ~Common_IPFViewer() {};
 
   void   resize(int x, int y, int w, int h);
+  void   clear();
   void   draw();
   int    handle(int);
 
@@ -61,7 +62,7 @@ protected:
   void   drawOwnPoint();
   void   drawMaxPoint(double, double);
   bool   drawIvPFunction();
-  bool   drawIvPFunction1D();
+  void   drawIvPFunction1D();
   bool   drawIvPFunction2D();
   void   drawQuad(Quad3D quad, double=1);
   void   handleLeftMouse(int, int) {};
@@ -73,6 +74,8 @@ protected:
   void   draw1DLine(double val=0, std::string label="");
   void   draw1DLineX(double, std::string, int, ColorPack);
   void   drawText(int x, int y, std::string s);
+  void   drawText2(double px, double py, const std::string& text,
+		   const ColorPack& font_c, double font_size);
 
 protected:
   ColorPack    m_clear_color;

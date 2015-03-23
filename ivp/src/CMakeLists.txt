@@ -122,7 +122,6 @@ ELSE (${WIN32})
    SET(IVP_GUI_LIBS
       lib_ipfview
       lib_marineview
-      lib_navplot
       lib_ulogview
       )
     
@@ -172,9 +171,10 @@ ENDFOREACH(L)
 #---------------------------------------------------------------------
   
 SET(IVP_NON_GUI_APPS
+  app_aloggrep
   app_alogscan
   app_alogeff
-  app_aloggrep
+  app_alogsplit
   app_alogsort
   app_alogrm
   app_alogiter
@@ -236,7 +236,7 @@ SET(IVP_GUI_APPS
   app_vzaicview
   app_gzaicview
   pMarineViewer
-  uFunctionVis
+#  uFunctionVis
   uMACView
   uLogView
   uLogViewIPF

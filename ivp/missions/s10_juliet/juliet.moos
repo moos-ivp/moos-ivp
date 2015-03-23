@@ -176,8 +176,8 @@ ProcessConfig = pMarineViewer
   action = UP_LOITER="speed=0"
   action = UP_LOITER="speed=1.2"
 
-  button_one   = DEPLOY # DEPLOY=true # MOOS_MANUAL_OVERIDE=false
-  button_two   = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_one   = DEPLOY # DEPLOY=true # MOOS_MANUAL_OVERRIDE=false
+  button_two   = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two   = RETURN # RETURN=true
   button_three = GTDEPTH-true # GOTO_DEPTH=true
   button_four  = GTDEPTH-false # GOTO_DEPTH=false

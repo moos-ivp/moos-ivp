@@ -166,7 +166,7 @@ ProcessConfig = pMarineViewer
   scope  = MODE
 
   button_one = DEPLOY # DEPLOY=true
-  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
 }
 

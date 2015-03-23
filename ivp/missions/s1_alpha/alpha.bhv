@@ -17,20 +17,21 @@ Behavior = BHV_Waypoint
   endflag   = WPTING = end
   inactiveflag = WPTING = inactive
 
-  updates   = WPT_UPDATE
-  perpetual = true
+  updates     = WPT_UPDATE
+  perpetual   = true
+  post_suffix = TRAVERSING
 
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+               speed = 2   // meters per second
+        capture_line = true
+      capture_radius = 5.0
+         slip_radius = 15.0
 	efficiency_measure = all
 
 	post_suffix = SURVEYING
 
-               lead = 8
-        lead_damper = 1
-        lead_to_start = true
-              speed = 2   // meters per second
-       capture_line = true
-     capture_radius = 5.0
-        slip_radius = 15.0
              polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
              repeat = 1
 

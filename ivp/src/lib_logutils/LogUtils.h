@@ -50,9 +50,6 @@ double getEpochSecsFromTimeOfDay(double hour, double min, double sec);
 double getEpochSecsFromDayOfYear(std::string, int format=0);
 double getEpochSecsFromDayOfYear(double day, double month, double year);
 
+unsigned int getIndexByTime(const std::vector<double>&, double);
+
 #endif 
-
-
-
-
-

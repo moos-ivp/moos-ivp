@@ -226,11 +226,11 @@ ProcessConfig = pMarineViewer
   //gui_size = small
 
   left_context[survey-point] = DEPLOY=true
-  left_context[survey-point] = MOOS_MANUAL_OVERIDE=false
+  left_context[survey-point] = MOOS_MANUAL_OVERRIDE=false
   left_context[survey-point] = RETURN=false
 
   right_context[return] = DEPLOY=true
-  right_context[return] = MOOS_MANUAL_OVERIDE=false
+  right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
 
   left_context[polyvert] = POLY_VERT=x=$(XPOS),y=$(YPOS)
@@ -247,11 +247,11 @@ ProcessConfig = pMarineViewer
   scope  = MVIEWER_RCLICK
 
   button_one = DEPLOY # DEPLOY=true
-  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
   action  = RETURN=true
   action  = UPDATES_RETURN=speed=1.4
 }

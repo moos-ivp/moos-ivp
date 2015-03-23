@@ -4,19 +4,21 @@
 #--------------------------------------------------------
 
 SET(SRC
-  ScanReport.cpp
-  ALogScanner.cpp
-  ALogSorter.cpp
-  LogUtils.cpp
-  ALogEntry.cpp
+   ScanReport.cpp
+   ALogScanner.cpp
+   ALogSorter.cpp
+   LogUtils.cpp
+   ALogEntry.cpp
+   SplitHandler.cpp
 )
 
 SET(HEADERS
-  ALogEntry.h
-  ALogScanner.h
-  ALogSorter.h
-  LogUtils.h
-  ScanReport.h
+   ALogEntry.h
+   ALogScanner.h
+   ALogSorter.h
+   LogUtils.h
+   ScanReport.h
+   SplitHandler.h
 )
 
 # Build Library

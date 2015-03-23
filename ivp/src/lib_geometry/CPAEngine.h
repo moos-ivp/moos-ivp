@@ -24,12 +24,16 @@
 #ifndef CPA_ENGINE_HEADER
 #define CPA_ENGINE_HEADER
 
+#include <vector>
+
 class IvPDomain;
 class CPAEngine {
 public:
   CPAEngine();
   CPAEngine(double cnY, double cnX, double cnh, double cnv, 
 	    double osY, double osX);
+  void setContactCacheTimeDelta(double);
+  void setContactCache(double secs);
   ~CPAEngine() {};
 
 public:    
@@ -100,6 +104,10 @@ public:
   double gamCN;   // cnCRS in radians. 
   double cgamCN;  // Cosine of  cnCRS.
   double sgamCN;  // Sine  of   cnCRS.
+
+  std::vector<double> m_cn_cache_x;
+  std::vector<double> m_cn_cache_y;
+  double m_cn_cache_tdelta;
 };
 
 #endif

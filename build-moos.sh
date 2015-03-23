@@ -52,7 +52,6 @@ cmake -DENABLE_EXPORT=ON                                     \
 echo ""; echo "Invoking make..." `pwd`; echo ""
 make  ${CMD_ARGS}
 
-
 #===================================================================
 # Part #2:  BUILD ESSENTIALS
 #===================================================================

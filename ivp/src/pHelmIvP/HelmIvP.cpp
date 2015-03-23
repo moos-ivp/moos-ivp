@@ -490,7 +490,7 @@ void HelmIvP::postBehaviorMessages()
 	Notify("BHV_IPF", sdata);
 #endif
 #if 1
-	string id = bhv_descriptor + intToString(m_helm_iteration);
+	string id = bhv_descriptor + "^" + intToString(m_helm_iteration);
 	vector<string> svector = IvPFunctionToVector(sdata, id, 2000);
 	for(unsigned int k=0; k<svector.size(); k++)
 	  Notify("BHV_IPF", svector[k], bhv_descriptor);

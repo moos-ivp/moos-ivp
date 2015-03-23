@@ -43,8 +43,8 @@ SET(HEADERS
   AOF_Rings.h
   AOF_SCALAR.h
   BuildUtils.h
-  Demuxer.h
-  DemuxUnit.h
+#  Demuxer.h
+#  DemuxUnit.h
   FunctionEncoder.h
   FunctionEncoderMK.h
   IO_Utilities.h

@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogViewLauncher.cpp                                  */
 /*    DATE: May 31st, 2005                                       */
+/*    DATE: Feb 9th, 2015 Major overhaul mikerb                  */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -22,15 +23,10 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <cstdio>
 #include <cstdlib>
-#include <cstring>
-#include "LogUtils.h"
 #include "MBUtils.h"
-#include "BuildUtils.h"
 #include "MBTimer.h"
 #include "LogViewLauncher.h"
-#include "FileBuffer.h"
 
 using namespace std;
 
@@ -39,16 +35,27 @@ using namespace std;
 
 LogViewLauncher::LogViewLauncher()
 {
-  m_tif_file   = "";
-  m_gui_width  = 1000;
+  m_tiff_file  = "";
+  m_gui_width  = 1200;
   m_gui_height = 800;
   m_gui        = 0;
-  m_min_time   = 0; 
-  m_max_time   = 0;
-  m_now_time   = 0;
-  m_min_time_set = false;
-  m_max_time_set = false;
-  m_now_time_set = false;
+
+  m_tiff_file      = "Default.tif";
+  m_start_var_lft  = "NAV_SPEED";
+  m_start_var_rgt  = "DESIRED_HEADING";
+  m_alt_nav_prefix = "NAV_GT_";
+
+  m_start_panx = 0;
+  m_start_pany = 0;
+  m_start_zoom = 1;
+  m_start_time = 0;
+
+  m_min_time = 0;
+  m_max_time = 0;
+  m_min_time_set = 0;
+  m_max_time_set = 0;
+
+  m_quick_start = false;
 }
 
 //-------------------------------------------------------------
@@ -59,726 +66,321 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
   MBTimer total_timer;
   total_timer.start();
 
-  checkForMinMaxTime(argc, argv);
-  setBackground(argc, argv);
-  setSizeOfGUI(argc, argv);
-  setWindowLayout(argc, argv);
-  setALogFiles(argc, argv);  
-
-  bool ok = setALogFileSkews();
-  if(!ok)
-    return(0);
-  parseALogFiles();
-  determineVehicleNames();
+  bool ok = true;
+  ok = ok && parseCommandArgs(argc, argv);
+  ok = ok && sanityCheck();
+  ok = ok && configDataBroker();
+  ok = ok && configGraphical();
   
-  buildLogPlots();
-  buildHelmPlots();
-  buildVPlugPlots();
-  buildIPFPlots();
-
-  ok = ok && buildGraphical();
-
   total_timer.stop();
-  cout << termColor("blue") << "Done logview launch time (cpu): ";
+  cout << termColor("blue") << "Done alogview launch time (cpu): ";
   cout << total_timer.get_float_cpu_time() << endl;
-  cout << "Done logview launch time (wall): ";
+  cout << "Done alogview launch time (wall): ";
   cout << total_timer.get_float_wall_time() << termColor() << endl;
 
-  if(ok)
-    return(m_gui);
-  else
+  if(!ok)
     return(0);
+  return(m_gui);
 }
 
 //-------------------------------------------------------------
-// Procedure: addPlotRequest()
-//      Note: Expecting the request to be in the form:
-//            VAR,FLD,FLD,FLD... with at least one FLD
+// Procedure: parseCommandArgs
 
-bool LogViewLauncher::addPlotRequest(string request)
+bool LogViewLauncher::parseCommandArgs(int argc, char **argv)
 {
-  vector<string> svector = parseString(request, ',');
-  unsigned int i, vsize = svector.size();
-  if(vsize < 2)
-    return(false);
-  
-  for(i=0; i<vsize; i++) {
-    if(isNumber(svector[i]) || strContainsWhite(svector[i]))
-      return(false);
-  }
-
-  string moos_var = svector[0];
-  for(i=1; i<vsize; i++) {
-    m_plot_request_var.push_back(moos_var);
-    m_plot_request_fld.push_back(svector[i]);
-  }
-
-  return(true);
-}
-
-
-//-------------------------------------------------------------
-// Procedure: checkForMinMaxTime
-//   Purpose: Handle the command line args --mintime and --maxtime
-//            If one has been set prior to the other, then the 2nd
-//            provided argument must respect the first or else it
-//            will simply be ignored. That is, if maxtime has been
-//            set, --mintime must provide a time < maxtime. 
-
-void LogViewLauncher::checkForMinMaxTime(int argc, char **argv)
-{
-  int i;
-  for(i=1; i<argc; i++) {
+  for(int i=1; i<argc; i++) {
+    bool handled = true;
     string argi = argv[i];
-    unsigned int len = argi.length();
-    if((len>10) && !strncmp(argi.c_str(), "--mintime=", 10)) {
-      string value = argv[i]+10;
-      double dval  = atof(value.c_str());
-      if(isNumber(value) && (!m_max_time_set || (dval < m_max_time))) {
-	m_min_time = dval; 
-	m_min_time_set = true;
-      }
-    }
-    else if((len>10) && !strncmp(argi.c_str(), "--maxtime=", 10)) {
-      string value = argv[i]+10;
-      double dval  = atof(value.c_str());
-      if(isNumber(value) && (!m_min_time_set || (dval > m_min_time))) {
-	m_max_time = dval; 
-	m_max_time_set = true;
-      }
-    }
-    else if((len>10) && !strncmp(argi.c_str(), "--nowtime=", 10)) {
-      string value = argv[i]+10;
-      double dval  = atof(value.c_str());
-      if(isNumber(value)) {
-	m_now_time = dval; 
-	m_now_time_set = true;
-      }
-    }
-  }
-}
+    if(strEnds(argi, ".alog")) 
+      m_dbroker.addALogFile(argi);
+    else if(strBegins(argi, "--mintime=")) 
+      handled = handleMinTime(argi.substr(10));
+    else if(strBegins(argi, "--maxtime=")) 
+      handled = handleMaxTime(argi.substr(10));
+    else if(strBegins(argi, "--bg="))
+      handled = handleBackground(argi.substr(5));
+    else if(strBegins(argi, "--geometry=")) 
+      handled = handleGeometry(argi.substr(11));
+    else if(strBegins(argi, "--lp="))
+      handled = handleInitialLogPlotL(argi.substr(5));
+    else if(strBegins(argi, "--rp=")) 
+      handled = handleInitialLogPlotR(argi.substr(5));
+    else if(strBegins(argi, "--panx=")) 
+      handled = handlePanX(argi.substr(7));
+    else if(strBegins(argi, "--pany=")) 
+      handled = handlePanY(argi.substr(7));
+    else if(strBegins(argi, "--zoom=")) 
+      handled = handleZoom(argi.substr(7));
+    else if(strBegins(argi, "--nowtime=")) 
+      handled = handleNowTime(argi.substr(10));
+    else if((argi == "--quick") || (argi == "-q")) 
+      m_quick_start = true;
+    else if(strBegins(argi, "--altnav=")) 
+      m_alt_nav_prefix = argi.substr(9);
+    else
+      handled = false;
 
-
-//-------------------------------------------------------------
-// Procedure: setBackground
-//            Find the tif (texture background) file if provided
-//    Switch: --background=value 
-//            --background=none
-
-void LogViewLauncher::setBackground(int argc, char **argv)
-{
-  m_tif_file = "Default.tif";
-  for(int i=1; i<argc; i++) {
-    if(!strncmp(argv[i], "--background=", 13)) {
-      string argi  = tolower(argv[i]);
-      string front = biteString(argi, '=');
-      string value = argi;
-      
-      if((value == "mit") || (value=="charles"))
-	m_tif_file = "AerialMIT.tif";
-      else if((value == "wmit") || (value=="wireframe") || (value=="wf"))
-	m_tif_file = "WireFrameMIT-1024.tif";
-      else if((value == "mb") || (value=="monterey"))
-	m_tif_file = "Monterey-2048.tif";
-      else if((value == "mbd"))
-	m_tif_file = "Monterey-2048-30-30-100.tif";
-      else if((value == "fl") || (value == "forrest"))
-	m_tif_file = "forrest19.tif";
-      else if((value == "glint") || (value == "glint"))
-	m_tif_file = "glintA.tif";
-      else if(value == "none")
-	m_tif_file = "";
-      else
-	m_tif_file = value;
-    }
-  }
-  cout << "Tiff File: " << m_tif_file << endl;
-}
-
-
-//-------------------------------------------------------------
-// Procedure: setSizeOfGUI
-//            Determine the GUI size
-//  Switches: --geometry=large
-//            --geometry=medium
-//            --geometry=small
-//            --geometry=xsmall
-//            --geometry=950x600
-
-void LogViewLauncher::setSizeOfGUI(int argc, char **argv)
-{
-  // Set the default values (~large) if no geometry switch provided.
-  m_gui_width  = 1000;
-  m_gui_height = 800;
-  
-  for(int i=1; i<argc; i++) {
-    if(!strncmp(argv[i], "--geometry=", 10)) {
-      string argi  = tolower(argv[i]);
-      string front = biteString(argi, '=');
-      string value = argi;
-      
-      if(value == "large")  {
-	m_gui_width  = 1400;
-	m_gui_height = 1100;
-      }
-      else if(value == "medium") {
-	m_gui_width  = 1190;
-	m_gui_height = 935;
-      }
-      else if(value == "small")  {
-	m_gui_width  = 980;
-	m_gui_height = 770;
-      }
-      else if(value == "xsmall") {
-	m_gui_width  = 770;
-	m_gui_height = 605;
-      }
-      else {
-	vector<string> svector = parseString(value, 'x');
-	if(svector.size() == 2) {
-	  string width  = svector[0];
-	  string height = svector[1];
-	  if(isNumber(width) && isNumber(height)) {
-	    m_gui_width  = atof(width.c_str());
-	    m_gui_height = atof(width.c_str());
-	    m_gui_width  = vclip(m_gui_width, 750, 1920);
-	    m_gui_height = vclip(m_gui_height, 600, 1200);
-	  }
-	}
-      }
-    }
-  }
-}
-
-//-------------------------------------------------------------
-// Procedure: setWindowLayout
-//            Determine the layouts of windows within the gui
-//  Switches: --layout=normal
-//            --layout=noipfs
-//            --layout=fullview
-
-
-void LogViewLauncher::setWindowLayout(int argc, char **argv)
-{
-  m_window_layout = "normal";
-  
-  return; // For now just allow normal mode until further debugging on the other modes
-
-  for(int i=1; i<argc; i++) {
-    if(!strncmp(argv[i], "--layout=", 9)) {
-      string argi  = tolower(argv[i]);
-      string front = biteString(argi, '=');
-      string value = argi;
-      
-      if(value == "noipfs") 
-	m_window_layout = "noipfs";
-      else if(value == "fullview") 
-	m_window_layout = "fullview";
-      else
-	cout << "Unrecognized layout (" << value << ") ignored." << endl;
-    }
-  }
-}
-
-//-------------------------------------------------------------
-// Procedure: setALogFiles
-//            Find all .alog files on the commmand line
-
-void LogViewLauncher::setALogFiles(int argc, char **argv)
-{
-  for(int i=1; i<argc; i++)
-    if(strContains(argv[i], ".alog"))
-      m_alog_files.push_back(argv[i]);
-}
-
-
-//-------------------------------------------------------------
-// Procedure: setALogFileSkews
-
-bool LogViewLauncher::setALogFileSkews()
-{
-  MBTimer parse_timer;
-  parse_timer.start();
-  cout << "Detecting alog file skews..." << endl;
-
-  unsigned int i, j, vsize = m_alog_files.size();
-  vector<double> logstarts(vsize, 0);
-
-  double min_logstart = 0;
-  for(i=0; i<vsize; i++) {
-    string filestr = m_alog_files[i];
-    FILE *f = fopen(filestr.c_str(), "r");
-    if(!f) {
-      cout << termColor("red");
-      cout << "Unable to open: " << filestr << termColor() << endl;
+    if(!handled) {
+      cout << "Unhandled argument: " << argi << endl;
       return(false);
     }
-    for(j=0; j<5; j++) {
-      string line = getNextRawLine(f);
-      if(strContains(line, "LOGSTART")) {
-	logstarts[i] = getLogStart(line);
-      }
-    }
-    fclose(f);
-    if(logstarts[i] == 0) {
-      cout << termColor("red");
-      cout << "Unable to detect LOGSTART in file: " << filestr << endl;
-      cout << termColor();
-      return(false);
-    }
-    if((i==0) || (logstarts[i] < min_logstart))
-      min_logstart = logstarts[i];
   }
-  m_log_starts = logstarts;
-
-  // Apply min_logstart to all so the earliest has skew of zero
-  for(i=0; i<m_alog_files.size(); i++)
-    m_alog_files_skew.push_back(logstarts[i] - min_logstart);
-
-  parse_timer.stop();
-  cout << termColor("green");
-  cout << "Done detecting .alog file SKEWS - total detect time: ";
-  cout << parse_timer.get_float_cpu_time() << endl << endl;
-  cout << termColor();
   return(true);
 }
-  
+
 //-------------------------------------------------------------
-// Procedure: parseALogFiles
-//            Parse all .alog files on the commmand line
+// Procedure: sanityCheck()
 
-void LogViewLauncher::parseALogFiles()
+bool LogViewLauncher::sanityCheck()
 {
-  MBTimer parse_timer;
-  parse_timer.start();
-  cout << "Parsing alog files..." << endl;
+  if(m_dbroker.sizeALogs() == 0)
+    return(false);
 
-  unsigned int i, vsize = m_alog_files.size();
-  for(i=0; i<vsize; i++) {
-    cout << "  Handling " << m_alog_files[i] << "...";
-    cout << flush;
-    bool non_empty = parseALogFile(i);
-    if(non_empty)
-      cout << "DONE" << endl;
-    else {
-      cout << termColor("red");
-      cout << "EMPTY!!! (THIS MAY BE WORTH CHECKING)" << endl;
-      cout << termColor();
-    } 
+  if(m_min_time_set && m_max_time_set && (m_min_time >= m_max_time)) {
+    cout << "WARNING: --mintime > --maxtime. Ignoring request" << endl;
+    return(false);
   }
 
-  parse_timer.stop();
-  cout << termColor("green");
-  cout << "Done parsing .alog files - total parse time: ";
-  cout << parse_timer.get_float_cpu_time() << endl << endl;
-  cout << termColor();
-}
-  
-//-------------------------------------------------------------
-// Procedure: parseALogFile
-//            Parse the .alog file given by the index
-
-bool LogViewLauncher::parseALogFile(unsigned int index)
-{
-  unsigned int vsize = m_alog_files.size();
-  if(index >= vsize)
-    return(false);
-
-  string filestr = m_alog_files[index];
-  FILE *f = fopen(filestr.c_str(), "r");
-  if(!f)
-    return(false);
-
-  vector<string>    node_reports;
-  vector<ALogEntry> entries_log_plot;
-  vector<ALogEntry> entries_ipf_plot;
-  vector<ALogEntry> entries_vplug_plot;
-  vector<ALogEntry> entries_helm_plot;
-  IvPDomain         ivp_domain;
-  
-  double skew = m_alog_files_skew[index];
-
-  bool empty_file = true;
-  bool done = false;
-  while(!done) {
-    ALogEntry entry = getNextRawALogEntry(f);
-    string status = entry.getStatus();
-    if(status == "eof")
-      done = true;
-    else if(status != "invalid") {
-      empty_file = false;
-      string var = entry.getVarName();
-      string src = entry.getSource();
-      bool   isnum = entry.isNumerical();
-
-      if(var=="IVPHELM_DOMAIN") {
-	string domain_str = entry.getStringVal();
-	ivp_domain = stringToDomain(domain_str);
-      }
-
-      entry.skewBackward(skew);
-      double tstamp = entry.getTimeStamp();
-      if((!m_min_time_set || (tstamp >= m_min_time)) &&
-	 (!m_max_time_set || (tstamp <= m_max_time))) {
-	if(isnum || vectorContains(m_plot_request_var, var))
-	  entries_log_plot.push_back(entry);
-	else {
-	  if((var=="AIS_REPORT_LOCAL") && (src=="pTransponderAIS"))
-	    node_reports.push_back(entry.getStringVal());
-	  else if((var=="NODE_REPORT_LOCAL") && (src=="pNodeReporter"))
-	    node_reports.push_back(entry.getStringVal());
-	  else if((var == "VIEW_POINT")   || (var == "VIEW_POLYGON") ||
-		  (var == "VIEW_SEGLIST") || (var == "VIEW_CIRCLE")  ||
-		  (var == "GRID_INIT")    || (var == "VIEW_MARKER")  ||
-		  (var == "GRID_DELTA")   || (var == "VIEW_RANGE_PULSE")) {
-	    entries_vplug_plot.push_back(entry);
-	  }
-	  else if(var == "IVPHELM_SUMMARY")
-	    entries_helm_plot.push_back(entry);
-	  else if(var == "BHV_IPF")
-	    entries_ipf_plot.push_back(entry);
-	  else {
-	    entry.setDVal(1);
-	    entry.setIsNum();
-	    entries_log_plot.push_back(entry);
-	  }
-	}
-      }
-    }
-  }
-  fclose(f);
-  if(empty_file)
-    return(false);
-  
-  m_node_reports.push_back(node_reports);
-  m_entries_log_plot.push_back(entries_log_plot);
-  m_entries_ipf_plot.push_back(entries_ipf_plot);
-  m_entries_vplug_plot.push_back(entries_vplug_plot);
-  m_entries_helm_plot.push_back(entries_helm_plot);
-  m_entry_ivp_domain.push_back(ivp_domain);
-
-  return(true);
-}
-  
-//-------------------------------------------------------------
-// Procedure: determineVehicleNames
-//   Purpose: To determine, for each alog file, i.e., vehicle, the
-//            vehicle name, type and length from contents of either
-//            the "NODE_REPORT_LOCAL" or older "AIS_REPORT_LOCAL"
-//            variable entries. 
-//            The member variables m_vehicle_name, _type, _length
-//            will be filled in. 
-
-void LogViewLauncher::determineVehicleNames()
-{
-  MBTimer parse_timer;
-  parse_timer.start();
-  cout << "Determining vehicle names from ALog Files..." << endl;
-
-  unsigned int j, jsize = m_alog_files.size();
-  for(j=0; j<jsize; j++) {
-    string vname = "V" + intToString(j);
-    string vtype = "auv";
-    string vlength = "10";
-    bool   vname_set = false;
-    bool   vtype_set = false;
-    bool   vlength_set = false;
-    bool   vname_inconsistent = false;
-    bool   vtype_inconsistent = false;
-    bool   vlength_inconsistent = false;
-
-    if(j < (m_node_reports.size())) {
-      unsigned int k, ksize = m_node_reports[j].size();
-      
-      if(ksize == 0) {
-	cout << termColor("red");
-	cout << "Warning: No NODE_REPORTS in " << m_alog_files[j] << "!!!";
-	cout << termColor() << endl;
-      }
-
-      for(k=0; k<ksize; k++) {
-	vector<string> svector = parseString(m_node_reports[j][k],',');
-	unsigned int i, vsize = svector.size();
-	for(i=0; i<vsize; i++) {
-	  string left  = stripBlankEnds(tolower(biteString(svector[i],'=')));
-	  string right = stripBlankEnds(svector[i]);
-
-	  if(left == "name") {
-	    if(!vname_set || (vname == right)) {
-	      vname = right;
-	      vname_set = true;
-	    }
-	    else
-	      vname_inconsistent = true;
-	  }
-	  else if(left == "type") {
-	    if(!vtype_set || (vtype == right)) {
-	      vtype = right;
-	      vtype_set = true;
-	    }
-	    else
-	      vtype_inconsistent = true;
-	  }
-	  else if(left == "length") {
-	    if(!vlength_set || (vlength == right)) {
-	      vlength = right;
-	      vlength_set = true;
-	    }
-	    else
-	      vlength_inconsistent = true;
-	  }
-	}
-      }
-    }
-    m_vehicle_name.push_back(vname);
-    m_vehicle_type.push_back(vtype);
-    m_vehicle_length.push_back(atof(vlength.c_str()));
+  if(m_min_time_set && (m_min_time < 0))
+    cout << "WARNING: --mintime is less than zero. " << endl;
     
-    cout << termColor("red");
-    if(vname_inconsistent) {
-      cout << "Warning: Vehicle name for file " << m_alog_files[j];
-      cout << " was inconsistent across node reports." << endl;
-    }
-    if(vtype_inconsistent) {
-      cout << "Warning: Vehicle type for file " << m_alog_files[j];
-      cout << " was inconsistent across node reports." << endl;
-    }
-    if(vlength_inconsistent) {
-      cout << "Warning: Vehicle length for file " << m_alog_files[j];
-      cout << " was inconsistent across node reports." << endl;
-    }
-    cout << termColor();
+  if(m_max_time_set && (m_max_time < 0))
+    cout << "WARNING: --maxtime is less than zero. " << endl;
 
-    cout << "  File " << m_alog_files[j] << " name=" << vname << endl;
-    cout << "  File " << m_alog_files[j] << " type=" << vtype << endl;
-    cout << "  File " << m_alog_files[j] << " len=" << vlength << endl;
-  }
-
-  parse_timer.stop();
-  cout << termColor("green");
-  cout << "Done setting vehicle names - total parse time: ";
-  cout << parse_timer.get_float_cpu_time() << endl << endl;
-  cout << termColor();
-
-}
-
-//-------------------------------------------------------------
-// Procedure: buildLogPlots
-//            
-
-bool LogViewLauncher::buildLogPlots()
-{
-  MBTimer parse_timer;
-  parse_timer.start();
-  cout << "Refining alog data to build LogPlots..." << endl;
-
-  unsigned int i, vsize = m_alog_files.size();
-
-  for(i=0; i<vsize; i++) {
-    Populator_LogPlots pop_lp;
-    for(unsigned int j=0; j<m_plot_request_var.size(); j++)
-      pop_lp.addVarFieldExtra(m_plot_request_var[j], m_plot_request_fld[j]);
-
-    pop_lp.setVName(m_vehicle_name[i]); 
-    pop_lp.populateFromEntries(m_entries_log_plot[i]);
-    
-    vector<LogPlot> lp_vector;
-    unsigned int k, lp_size = pop_lp.size();
-    for(k=0; k<lp_size; k++)
-      lp_vector.push_back(pop_lp.getLogPlot(k));
-
-    if(lp_size == 0) {
-      cout << termColor("red");
-      cout << "Warning: No Numerical Entries (LogPlots) in ";
-      cout << m_alog_files[i] << "!!!";
-      cout << termColor() << endl;
-    }
-
-    m_log_plots.push_back(lp_vector);
-  }
-
-  parse_timer.stop();
-  cout << termColor("green");
-  cout << "Done build LogPlots - total build time: ";
-  cout << parse_timer.get_float_cpu_time() << endl << endl;
-  cout << termColor();
-  return(true);
-}
-
-//-------------------------------------------------------------
-// Procedure: buildHelmPlots
-//            
-
-bool LogViewLauncher::buildHelmPlots()
-{
-  MBTimer parse_timer;
-  parse_timer.start();
-  cout << "Refining alog data to build HelmPlots..." << endl;
-
-  unsigned int i, vsize = m_alog_files.size();
-  for(i=0; i<vsize; i++) {
-    Populator_HelmPlots pop_hp;
-    bool ok = pop_hp.populateFromEntries(m_entries_helm_plot[i]);
-    if(!ok) {
-      cout << termColor("red") << "Unable to build Helm Plots!!!" << endl;
-      cout << "(Likely due to lack of IVPHELM_* entries in .alog files)";
-      cout << termColor() << endl << endl;
-      return(false);
-    }
-    m_helm_plots.push_back(pop_hp.getHelmPlot());
-  }
-
-  cout << "*****************" << endl;
-  for(i=0; i<vsize; i++) {
-    m_helm_plots[i].set_vehi_name(m_vehicle_name[i]);
-    m_helm_plots[i].set_vehi_type(m_vehicle_type[i]);
-    m_helm_plots[i].set_vehi_length(m_vehicle_length[i]);
-  }
-
-  parse_timer.stop();
-  cout << "  Total HelmPlots: " << m_helm_plots.size() << endl;
-
-  cout << termColor("green");
-  cout << "Done building HelmPlots - total build time: ";
-  cout << parse_timer.get_float_cpu_time() << endl << endl;
-  cout << termColor();
-  return(true);
-}
-
-//-------------------------------------------------------------
-// Procedure: buildVPlugPlots
-
-bool LogViewLauncher::buildVPlugPlots()
-{
-  MBTimer parse_timer;
-  parse_timer.start();
-  cout << "Refining alog data to build VPlugPlots..." << endl;
-
-  unsigned int i, vsize = m_alog_files.size();
-  for(i=0; i<vsize; i++) {
-    Populator_VPlugPlots pop_vp;
-    bool ok = pop_vp.populateFromEntries(m_entries_vplug_plot[i]);
-    if(!ok) {
-      cout << "Problem with file " << m_alog_files[i] << ". Exiting" << endl;
-      return(false);
-    }
-    m_vplug_plots.push_back(pop_vp.getVPlugPlot());
-  }
-
-  parse_timer.stop();
-  cout << termColor("green");
-  cout << "Done: VPlugPlot parse time: ";
-  cout << parse_timer.get_float_cpu_time() << endl << endl;
-  cout << termColor();
   return(true);
 }
 
 
 //-------------------------------------------------------------
-// Procedure: buildIPFPlots
+// Procedure: configDataBroker
 
-bool LogViewLauncher::buildIPFPlots()
+bool LogViewLauncher::configDataBroker()
 {
-  MBTimer parse_timer;
-  parse_timer.start();
-  cout << "Refining alog data to build IPF_Plots..." << endl;
+  bool ok = true;
+  cout << "Begin Checking alog file(s)------------------" << endl;
+  ok = ok && m_dbroker.checkALogFiles();
+  cout << "Begin Spliting alog file(s)------------------" << endl;
+  ok = ok && m_dbroker.splitALogFiles();
+  cout << "Begin TimeSetting alog file(s)---------------" << endl;
+  ok = ok && m_dbroker.setTimingInfo();
 
-  // index i - one for each alog file
-  unsigned int i, vsize = m_alog_files.size();
-  for(i=0; i<vsize; i++) {
-    Populator_IPF_Plot pop_ipf;
-    pop_ipf.setVName(m_vehicle_name[i]);
-    bool ok = pop_ipf.populateFromEntries(m_entries_ipf_plot[i]);
-    if(!ok) {
-      cout << "  Problem with file " << m_alog_files[i] << endl;
-      return(false);
-    }
-    // index k - one for each behavior producing an IPF in a 
-    // single alog file.
-    unsigned int k, ksize = pop_ipf.size();
-    for(k=0; k<ksize; k++) {
-      IPF_Plot ipf_plot_k = pop_ipf.getPlotIPF(k);
-      ipf_plot_k.setIvPDomain(m_entry_ivp_domain[i]);
-      m_ipf_plots.push_back(ipf_plot_k);
-    }
-
-    // Tag the domain somewhere herere
-
-
-  }
-  parse_timer.stop();
-
-  
-  if(m_ipf_plots.size() == 0) {
-    cout << termColor("red") << "Unable to build IPF Plots!!!" << endl;
-    cout << "(Likely due to lack of BHV_IPF entries in .alog files)";
-    cout << endl << termColor() << endl;
+  if(!ok)
     return(false);
-  }
 
-  cout << termColor("green");
-  cout << "Done: IPF_Plot parse time: ";
-  cout << parse_timer.get_float_cpu_time() << endl << endl;
-  cout << termColor();
+  if(m_min_time_set)
+    m_dbroker.setPrunedMinTime(m_min_time);
+  if(m_max_time_set) 
+    m_dbroker.setPrunedMaxTime(m_max_time);
+
+  m_dbroker.cacheMasterIndices();
+  m_dbroker.cacheBehaviorIndices();
+  
   return(true);
 }
 
 
-//-------------------------------------------------------------
-// Procedure: buildGraphical
 
-bool LogViewLauncher::buildGraphical()
+//-------------------------------------------------------------
+// Procedure: configGraphical
+
+bool LogViewLauncher::configGraphical()
 {
   m_gui = new REPLAY_GUI(m_gui_width, m_gui_height, "alogview");
   if(!m_gui)
     return(false);
 
-  m_gui->setWindowLayout(m_window_layout);
+  if(m_quick_start)
+    m_gui->np_viewer->setMinimalMem();
+  if(m_alt_nav_prefix != "")
+    m_gui->np_viewer->setAltNavPrefix(m_alt_nav_prefix);
 
-  unsigned int j, k;
-
-  // Populate the GUI with the LogPlots built above
-  for(k=0; k<m_log_plots.size(); k++) {
-    for(j=0; j<m_log_plots[k].size(); j++) {
-      m_gui->addLogPlot(m_log_plots[k][j]);
-      m_gui->np_viewer->addLogPlotStartTime(m_log_starts[k]);
-      if(m_log_plots[k][j].get_varname() == "NAV_X")
-	m_gui->np_viewer->addLogPlotNAVX(m_log_plots[k][j]);
-      else if(m_log_plots[k][j].get_varname() == "NAV_Y")
-	m_gui->np_viewer->addLogPlotNAVY(m_log_plots[k][j]);
-      else if(m_log_plots[k][j].get_varname() == "NAV_HEADING")
-	m_gui->np_viewer->addLogPlotHDG(m_log_plots[k][j]);
+  m_gui->setDataBroker(m_dbroker);
+  
+  // Try to initialize the two LogPlots to be something reasonable
+  if(!m_quick_start) {
+    unsigned int mix_size = m_dbroker.sizeMix();
+    if(mix_size > 0) {
+      m_gui->initLogPlotChoiceA(m_start_veh_lft, m_start_var_lft);
+      m_gui->initLogPlotChoiceB(m_start_veh_rgt, m_start_var_rgt);
     }
   }
-  
 
-  // Populate the GUI with the priot-built HelmPlots
-  for(k=0; k<m_helm_plots.size(); k++) 
-    m_gui->addHelmPlot(m_helm_plots[k]);
+  m_gui->np_viewer->setParam("set_pan_x", m_start_panx);
+  m_gui->np_viewer->setParam("set_pan_y", m_start_pany);
+  m_gui->np_viewer->setParam("set_zoom", m_start_zoom);
+  m_gui->np_viewer->setParam("tiff_file", m_tiff_file);
 
-  // Populate the GUI with the prior-built VPlugPlots
-  for(k=0; k<m_vplug_plots.size(); k++) 
-    m_gui->np_viewer->addVPlugPlot(m_vplug_plots[k]);
-
-  // Populate the GUI with the prior-built IPF_Plots
-  for(k=0; k<m_ipf_plots.size(); k++)
-    m_gui->addIPF_Plot(m_ipf_plots[k]);
-
-  m_gui->updateXY();
-  m_gui->np_viewer->setParam("tiff_file", m_tif_file);
-
-  if(m_now_time_set)
-    m_gui->setCurrTime(m_now_time);
+  if(m_start_time > 0)
+    m_gui->setCurrTime(m_start_time);
   else
     m_gui->setCurrTime(-1); // GUI will seek a "start_time hint"
-    
-
-  m_gui->initChoicesIPF();
-
+  m_gui->updateXY();
   return(true);
 }
 
 
 
 
+//-------------------------------------------------------------
+// Procedure: handleMinTime()  --mintime=NUM
+
+bool LogViewLauncher::handleMinTime(string val)
+{
+  if(!isNumber(val))
+    return(false);
+
+  m_min_time = atof(val.c_str());
+  m_min_time_set = true;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: handleMaxTime()  --maxtime=NUM
+
+bool LogViewLauncher::handleMaxTime(string val)
+{
+  if(!isNumber(val))
+    return(false);
+
+  m_max_time = atof(val.c_str());
+  m_max_time_set = true;
+  return(true);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: handleBackground  --bg=FILE.tif
+
+bool LogViewLauncher::handleBackground(string val)
+{
+  if(val == "none") {
+    m_tiff_file = "";
+    return(true);
+  }
+
+  if((val == "mit") || (val=="charles"))
+    m_tiff_file = "AerialMIT.tif";
+  else if((val == "fl") || (val == "forrest"))
+    m_tiff_file = "forrest19.tif";
+  else if(strEnds(val, ".tif") || strEnds(val, ".tiff"))
+    m_tiff_file = val;
+  else
+    return(false);
+
+  return(true);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: handleGeometry  --geometry=SPEC
+
+bool LogViewLauncher::handleGeometry(string val)
+{
+  if(val == "large")  {
+    m_gui_width  = 1400;
+    m_gui_height = 1100;
+  }
+  else if(val == "medium") {
+    m_gui_width  = 1190;
+    m_gui_height = 935;
+  }
+  else if(val == "small")  {
+    m_gui_width  = 980;
+    m_gui_height = 770;
+  }
+  else if(val == "xsmall") {
+    m_gui_width  = 770;
+    m_gui_height = 605;
+  }
+  else {
+    string width  = biteStringX(val, 'x');
+    string height = val;
+    if(isNumber(width) && isNumber(height)) {
+      m_gui_width  = atof(width.c_str());
+      m_gui_height = atof(height.c_str());
+      m_gui_width  = vclip(m_gui_width, 750, 1920);
+      m_gui_height = vclip(m_gui_height, 600, 1200);
+    }
+    else
+      return(false);
+  }
+  return(true);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: handleInitialLogPlotL  --lp=henry:NAV_X 
+//                                   --lp=NAV_HEADING
+
+bool LogViewLauncher::handleInitialLogPlotL(string val)
+{
+  if(strContains(val, ":")) {
+    m_start_veh_lft = biteString(val, ':');
+    m_start_var_lft = val;
+  }
+  else
+    m_start_var_lft = val;
+  return(true);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: handleInitialLogPlotR  --rp=henry:NAV_X 
+//                                   --rp=NAV_HEADING
+
+bool LogViewLauncher::handleInitialLogPlotR(string val)
+{
+  if(strContains(val, ":")) {
+    m_start_veh_rgt = biteString(val, ':');
+    m_start_var_rgt = val;
+  }
+  else
+    m_start_var_rgt = val;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: handlePanX()    --panx=30
+
+bool LogViewLauncher::handlePanX(string val)
+{
+  if(!isNumber(val))
+    return(false);
+  m_start_panx = atof(val.c_str());
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: handlePanY()    --pany=30
+
+bool LogViewLauncher::handlePanY(string val)
+{
+  if(!isNumber(val))
+    return(false);
+  m_start_pany = atof(val.c_str());
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: handleZoom()    --zoom=1.4
+
+bool LogViewLauncher::handleZoom(string val)
+{
+  if(!isNumber(val))
+    return(false);
+  m_start_zoom = atof(val.c_str());
+  return(true);
+}
+  
+//-------------------------------------------------------------
+// Procedure: handleNowTime()    --nowtime=111.124
+
+bool LogViewLauncher::handleNowTime(string val)
+{
+  if(!isNumber(val))
+    return(false);
+  m_start_time = atof(val.c_str());
+  return(true);
+}
+ 
 

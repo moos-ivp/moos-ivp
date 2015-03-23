@@ -47,6 +47,3 @@ IvPDomain IPFStringToIvPDomain(const std::string&);
 
 #endif
 
-
-
-

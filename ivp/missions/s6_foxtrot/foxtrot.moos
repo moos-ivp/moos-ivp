@@ -164,14 +164,14 @@ ProcessConfig = pMarineViewer
 	scope = MISSION_TIME_REMAINING
 
   button_one = DEPLOY # DEPLOY=true
-  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
 
   button_three = OPR_RESET  # OPREGION_RESET=poly
   button_four  = TIME_RESET # OPREGION_RESET=time
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
   action  = RETURN=true
 
 

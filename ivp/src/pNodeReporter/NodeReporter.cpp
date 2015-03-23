@@ -228,34 +228,34 @@ void NodeReporter::registerVariables()
 
   Register("NAV_*", "*", 0);
 
-  m_Comms.Register("NAV_X", 0);
-  m_Comms.Register("NAV_Y", 0);
-  m_Comms.Register("NAV_LAT", 0);
-  m_Comms.Register("NAV_LONG", 0);
-  m_Comms.Register("NAV_SPEED", 0);
-  m_Comms.Register("NAV_HEADING", 0);
-  m_Comms.Register("NAV_YAW", 0);
-  m_Comms.Register("NAV_DEPTH", 0);
+  Register("NAV_X", 0);
+  Register("NAV_Y", 0);
+  Register("NAV_LAT", 0);
+  Register("NAV_LONG", 0);
+  Register("NAV_SPEED", 0);
+  Register("NAV_HEADING", 0);
+  Register("NAV_YAW", 0);
+  Register("NAV_DEPTH", 0);
 
   if(m_alt_nav_prefix != "") {
     if(!strEnds(m_alt_nav_prefix, "_"))
       m_alt_nav_prefix += "_";
-    m_Comms.Register(m_alt_nav_prefix + "X", 0);
-    m_Comms.Register(m_alt_nav_prefix + "Y", 0);
-    m_Comms.Register(m_alt_nav_prefix + "LAT", 0);
-    m_Comms.Register(m_alt_nav_prefix + "LONG", 0);
-    m_Comms.Register(m_alt_nav_prefix + "SPEED", 0);
-    m_Comms.Register(m_alt_nav_prefix + "HEADING", 0);
-    m_Comms.Register(m_alt_nav_prefix + "YAW", 0);
-    m_Comms.Register(m_alt_nav_prefix + "DEPTH", 0);
+    Register(m_alt_nav_prefix + "X", 0);
+    Register(m_alt_nav_prefix + "Y", 0);
+    Register(m_alt_nav_prefix + "LAT", 0);
+    Register(m_alt_nav_prefix + "LONG", 0);
+    Register(m_alt_nav_prefix + "SPEED", 0);
+    Register(m_alt_nav_prefix + "HEADING", 0);
+    Register(m_alt_nav_prefix + "YAW", 0);
+    Register(m_alt_nav_prefix + "DEPTH", 0);
   }  
 
-  m_Comms.Register("IVPHELM_SUMMARY", 0);
-  m_Comms.Register("IVPHELM_STATE", 0);
-  m_Comms.Register("IVPHELM_ALLSTOP", 0);
-  m_Comms.Register("AUX_MODE", 0);
-  m_Comms.Register("LOAD_WARNING", 0);
-  m_Comms.Register("THRUST_MODE_REVERSE", 0);
+  Register("IVPHELM_SUMMARY", 0);
+  Register("IVPHELM_STATE", 0);
+  Register("IVPHELM_ALLSTOP", 0);
+  Register("AUX_MODE", 0);
+  Register("LOAD_WARNING", 0);
+  Register("THRUST_MODE_REVERSE", 0);
   
   Register("PNR_PAUSE", 0);
 
@@ -372,7 +372,7 @@ bool NodeReporter::OnStartUp()
   registerVariables();
   unsigned int k, ksize = m_plat_vars.size();
   for(k=0; k<ksize; k++)
-    m_Comms.Register(m_plat_vars[k], 0);
+    Register(m_plat_vars[k], 0);
 
   // If the length is unknown, put in some good guesses
   if(m_record.getLength() == 0) {
@@ -817,7 +817,7 @@ bool NodeReporter::buildReport()
   m_msgs << block.getFormattedString();
 
   if(m_record_gt_updated > 0) {
-    string report_gt = assembleNodeReport(m_record_gt);
+    string report_gt = assembleNodeReport(m_record_gt);    
     ACBlock block_gt(" Latest GT Report: ", report_gt, 50);
     m_msgs << block_gt.getFormattedString();
   }

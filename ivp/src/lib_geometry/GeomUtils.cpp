@@ -32,6 +32,11 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: distPointToPoint
 
+double distPointToPointXXX(double x1, double y1, double x2, double y2)
+{
+  return(hypot((x1-x2), (y1-y2)));
+}
+  
 double distPointToPoint(double x1, double y1, double x2, double y2)
 {
   return(hypot((x1-x2), (y1-y2)));
@@ -429,6 +434,188 @@ bool segmentsCross(double x1, double y1, double x2, double y2,
 
   return(false);
 }
+
+//---------------------------------------------------------------
+// Procedure: lineRayCross
+//     Cases: Ray Vert - Line Vert (1)
+//            Ray Horz - Line Horz (2)
+//            Ray Horz - Line Vert (3)
+//            Ray Vert - Line Horz (4)
+//
+//            Ray Vert - Line Norm (5)
+//            Ray Horz - Line Norm (6)
+//            Ray Norm - Line Vert (7)
+//            Ray Norm - Line Horz (8)
+//
+//            Ray Norm - Line Norm (9)
+
+#if 1
+bool lineRayCross(double x1, double y1, double ray_angle,
+		  double x3, double y3, double x4, double y4, 
+		  double& ix, double& iy) 
+{
+  ix = 0; 
+  iy = 0;
+  bool ray_vert  = ((ray_angle==0)  || (ray_angle==180));
+  bool ray_horz  = ((ray_angle==90) || (ray_angle==270));
+  bool line_vert = (x3==x4);
+  bool line_horz = (y3==y4);
+
+  // Case 1 - both ray and line vertical (intersection pt not unique)
+  if(ray_vert && line_vert) {
+    if(x1==x3) {
+      ix = x1; iy = 0;
+      return(true);
+    }
+    else
+      return(false);
+  }
+  // Case 2 - both ray and line horizontal (intersection pt not unique)
+  if(ray_horz && line_horz) {
+    if(y1==y3) {
+      iy = y1; ix = 0;
+      return(true);
+    }
+    else
+      return(false);
+  }
+
+  // Case 3 - ray horizontal line vertical
+  if(ray_horz && line_vert) {
+    if((x3 >= x1) && (ray_angle == 90)) {
+      ix = x3, iy = y1;
+      return(true);
+    }
+    if((x3 <= x1) && (ray_angle == 270)) {
+      ix = x3, iy = y1;
+      return(true);
+    }
+    return(false);
+  }
+
+  // Case 4 - ray vertical line horizontal
+  if(ray_vert && line_horz) {
+    if((y3 >= y1) && (ray_angle == 0)) {
+      ix = x1, iy = y3;
+      return(true);
+    }
+    if((y3 <= y1) && (ray_angle == 180)) {
+      ix = x1, iy = y3;
+      return(true);
+    }
+    return(false);
+  }
+
+  // Case 5 - ray vertical line normal
+  if(ray_vert && !line_horz & !line_vert) {
+    ix = x1;
+    double slope_b = (y4-y3) / (x4-x3);
+    double inter_b = y3 - (slope_b * x3);
+    iy = (slope_b * ix) + inter_b;
+    if((iy >= y1) && (ray_angle == 0))
+      return(true);
+    if((iy <= y1) && (ray_angle == 180))
+      return(true);
+    ix=0;iy=0;
+    return(false);
+  }
+
+  // Case 6 - ray horizontal line normal
+  if(ray_horz && !line_horz & !line_vert) {
+    iy = y1;
+    double slope_b = (y4-y3) / (x4-x3);
+    double inter_b = y3 - (slope_b * x3);
+    ix = (iy - inter_b) / slope_b;
+    if((ix >= x1) && (ray_angle == 90))
+      return(true);
+    if((ix <= x1) && (ray_angle == 270))
+      return(true);    
+    ix=0;iy=0;
+    return(false);
+  }
+
+  // Case 7 - ray normal line vertical
+  if(!ray_vert && !ray_horz & line_vert) {
+    // if "normal" ray create an artificial second vertex on the ray
+    double x2,y2;
+    projectPoint(ray_angle, 10, x1, y1, x2, y2);
+
+    ix = x3;
+    double slope_a = (y2-y1) / (x2-x1);
+    double inter_a = y1 - (slope_a * x1);
+    iy = (slope_a * ix) + inter_a;
+    if((ix >= x1) && (ray_angle > 0) && (ray_angle < 180))
+      return(true);
+    if((ix <= x1) && (ray_angle > 180) && (ray_angle < 360))
+      return(true);
+    return(false);
+  }
+
+  // Case 8 - ray normal line horizontal
+  if(!ray_horz && !ray_vert & line_horz) {
+    // if "normal" ray create an artificial second vertex on the ray
+    double x2,y2;
+    projectPoint(ray_angle, 10, x1, y1, x2, y2);
+
+    iy = y3;
+    double slope_a = (y2-y1) / (x2-x1);
+    double inter_a = y1 - (slope_a * x1);
+    ix = (iy - inter_a) / slope_a;
+    if((iy >= y1) && ((ray_angle < 90) || (ray_angle > 270)))
+      return(true);
+    if((iy <= y1) && (ray_angle > 90) && (ray_angle < 270))
+      return(true);
+    return(false);
+  }
+
+  // Case 9 - the general case
+  // First find slope and intercept of the two lines. (y = mx + b)
+  // if "normal" ray create an artificial second vertex on the ray
+  double x2,y2;
+  projectPoint(ray_angle, 10, x1, y1, x2, y2);
+  double slope_a = (y2-y1) / (x2-x1);
+  double slope_b = (y4-y3) / (x4-x3);
+  double inter_a = y1 - (slope_a * x1);
+  double inter_b = y3 - (slope_b * x3);
+
+  if(slope_a == slope_b) {    // Special case: parallel lines
+    if(inter_a == inter_b) {  // If identical/overlapping, just pick
+      ix = x1; iy = y1;       // any point. vertex of ray is fine.
+      return(true);
+    }
+    else
+      return(false);
+  }
+
+  // Then solve for x. m1(x) + b1 = m2(x) + b2.
+  ix = (inter_a - inter_b) / (slope_b - slope_a);
+
+  // Then plug ix into one of the line equations.
+  iy = (slope_a * ix) + inter_a;
+
+  if(ray_angle < 90) {
+    if((ix >= x1) && (iy >= y1))
+      return(true);
+  }
+  else if(ray_angle < 180) {
+    if((ix >= x1) && (iy <= y1))
+      return(true);
+  }
+  else if(ray_angle < 270) {
+    if((ix <= x1) && (iy <= y1))
+      return(true);
+  }
+  else if(ray_angle < 180) {
+    if((ix <= x1) && (iy >= y1))
+      return(true);
+  }
+
+  ix = 0;
+  iy = 0;
+  return(false);
+}
+#endif
+
 
 //---------------------------------------------------------------
 // Procedure: segmentAngle

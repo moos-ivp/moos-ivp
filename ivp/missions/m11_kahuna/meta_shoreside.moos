@@ -38,7 +38,7 @@ ProcessConfig = uFldShoreBroker
   //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
   qbridge  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
-  qbridge  = MOOS_MANUAL_OVERIDE, APPCAST_REQ
+  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
 
   bridge   = src=TRAILING_ALLOWED, alias=TRAILING_ALLOWED
   bridge   = src=PATROL, alias=PATROL
@@ -82,7 +82,7 @@ ProcessConfig = pMarineViewer
   action = STATION_ALL = true
 
   button_one   = DEPLOY  # DEPLOY_ALL=true 
-  button_one   = MOOS_MANUAL_OVERIDE_ALL=false 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
   button_one   = RETURN_ALL=false 
   button_one   = PATROL=true
 

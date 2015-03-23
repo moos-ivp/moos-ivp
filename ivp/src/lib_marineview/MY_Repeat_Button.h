@@ -38,7 +38,8 @@ public:
     if((Fl::event_key()==FL_Up)   || 
        (Fl::event_key()==FL_Down) || 
        (Fl::event_key()==FL_Left) || 
-       (Fl::event_key()==FL_Right)) {
+       (Fl::event_key()==FL_Right) ||
+       (Fl::event_key()==32)) {
       return(0);
     }
     return(Fl_Repeat_Button::handle(event));

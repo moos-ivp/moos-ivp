@@ -521,7 +521,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 //------------------------------------------------------------
 // Procedure: produceOFX
 
-#if 1
+#if 0
 BehaviorReport BehaviorSet::produceOFX(unsigned int ix, 
 				       unsigned int iteration, 
 				       string& new_activity_state)

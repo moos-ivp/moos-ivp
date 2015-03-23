@@ -235,11 +235,11 @@ ProcessConfig = pMarineViewer
   scope  = MVIEWER_RCLICK
 
   button_one = DEPLOY # DEPLOY=true
-  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
   action  = RETURN=true
   action  = HSLINE=off
   action  = HSLINE=on

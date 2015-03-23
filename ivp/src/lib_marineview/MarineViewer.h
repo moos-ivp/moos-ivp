@@ -142,6 +142,8 @@ protected:
   void  drawDropPoints();
   void  drawText(double px, double py, const std::string&, 
 		 const ColorPack&, double font_size);
+  void  drawTextX(double px, double py, const std::string&, 
+		  const ColorPack&, double font_size);
 
   void  drawHexagons();
 

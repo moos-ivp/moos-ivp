@@ -31,7 +31,21 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
+  Run = uTimerScript	  @ NewConsole = false
 }
+
+//------------------------------------------
+ProcessConfig = uTimerScript                                    
+{                                                               
+  rand_var    = varname=RND_VAL, min=0, max=50, key=at_post
+
+	delay_start = 5
+
+  event = var=REPORT, val="start", time=0
+  //event = var=REPORT, val="accidents=$[RND_VAL], unique_id=$[TCOUNT]", time=0, amt=100 
+  event = var=REPORT, val="$(15)", time=0, amt=100 
+  event = var=REPORT, val="end", time=0
+}                           
 
 //------------------------------------------
 // pLogger config block
@@ -47,12 +61,13 @@ ProcessConfig = pLogger
   // explicitly declare their logging request
 
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
+  Log = REPORT @ 0 NOSYNC
 
   LogAuxSrc = true
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
-  WildCardOmitPattern = DB_VARSUMMARY
-  WildCardOmitPattern = DB_RWSUMMARY
+  //WildCardOmitPattern = DB_VARSUMMARY
+  //WildCardOmitPattern = DB_RWSUMMARY
   WildCardExclusionLog = true
 }
 
@@ -103,7 +118,7 @@ ProcessConfig = pHelmIvP
 
   behaviors  = alpha.bhv
   domain     = course:0:359:360
-  domain     = speed:0:4:21
+  domain     = speed:0:4:41
 }
 
 //------------------------------------------
@@ -174,11 +189,11 @@ ProcessConfig = pMarineViewer
   //gui_size = small
 
   //left_context[survey-point] = DEPLOY=true
-  //left_context[survey-point] = MOOS_MANUAL_OVERIDE=false
+  //left_context[survey-point] = MOOS_MANUAL_OVERRIDE=false
   //left_context[survey-point] = RETURN=false
 
   right_context[return] = DEPLOY=true
-  right_context[return] = MOOS_MANUAL_OVERIDE=false
+  right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
 
   scope  = MISSION
@@ -193,11 +208,11 @@ ProcessConfig = pMarineViewer
   scope  = MVIEWER_RCLICK
 
   button_one = DEPLOY # DEPLOY=true
-  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
   action  = RETURN=true
   action  = UPDATES_RETURN=speed=1.4
 }

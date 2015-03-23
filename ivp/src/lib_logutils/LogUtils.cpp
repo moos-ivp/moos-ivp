@@ -28,7 +28,7 @@
 #include "LogUtils.h"
 #include <cstdio>
 
-#define MAX_LINE_LENGTH 50000
+#define MAX_LINE_LENGTH 500000
 
 using namespace std;
 
@@ -207,8 +207,47 @@ void stripInsigDigits(string& line)
 
 
 //--------------------------------------------------------
+// Procedure: getIndexByTime()
+//   Purpose: Given a time, determine the highest index that has a
+//            time less than or equal to the given time.
+
+//  2 5 9 13 14 19 23 28 31 35 43 57
+//             ^                 ^
+//            25                 56
+
+unsigned int getIndexByTime(const std::vector<double>& vtime, double gtime)
+{
+  unsigned int vsize = vtime.size();
+
+  // Handle special cases
+  if(vsize == 0)
+    return(0);
+  if(gtime <= vtime[0])
+    return(0);
+  if(gtime >= vtime[vsize-1])
+    return(vsize-1);
+
+  int jump  = vsize / 2;
+  int index = vsize / 2;
+  bool done = false;
+  while(!done) {
+    //cout << "[" << index << "," << jump << "]" << flush;
+    if(jump > 1)
+      jump = jump / 2;
+    if(vtime[index] <= gtime) {
+      if(vtime[index+1] > gtime)
+	done = true;
+      else
+	index += jump;
+    }
+    else
+      index -= jump;
+  }
+  return(index);
+}
+
+//--------------------------------------------------------
 // Procedure: shiftTimeStamp
-//     Notes: 
 
 void shiftTimeStamp(string& line, double logstart)
 {
@@ -359,8 +398,7 @@ string getNextRawLine(FILE *fileptr)
 
 
 //--------------------------------------------------------
-// Procedure: getNextRawALogLine
-//     Notes: 
+// Procedure: getNextRawALogEntry
 
 ALogEntry getNextRawALogEntry(FILE *fileptr, bool allstrings)
 {

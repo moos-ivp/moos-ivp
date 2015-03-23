@@ -52,7 +52,7 @@ ProcessConfig = pMarineViewer
   ACTION = STATION_ALL = true
 
   BUTTON_ONE   = DEPLOY  # DEPLOY=true 
-  BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false 
+  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE=false 
   BUTTON_ONE   = RETURN=false
   BUTTON_TWO   = RETURN  # RETURN=true
   BUTTON_THREE = STATION:T  # STATION=true

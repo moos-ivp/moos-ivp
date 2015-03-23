@@ -183,8 +183,8 @@ ProcessConfig = pMarineViewer
   action = PSURFACE=true
   action = PSURFACE=false
 
-  button_one   = DEPLOY # DEPLOY=true # MOOS_MANUAL_OVERIDE=false
-  button_two   = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_one   = DEPLOY # DEPLOY=true # MOOS_MANUAL_OVERRIDE=false
+  button_two   = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two   = RETURN # RETURN=true
   button_three = SURVEY-true # SURVEY=true
   button_four  = SURVEY-false # SURVEY=false

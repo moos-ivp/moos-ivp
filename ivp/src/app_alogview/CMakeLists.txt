@@ -19,9 +19,24 @@ endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
 SET(SRC
    LogPlotViewer.cpp
    NavPlotViewer.cpp
-   IvPFuncViewer.cpp
    REPLAY_GUI.cpp
+   GUI_IPF.cpp
+   GUI_HelmScope.cpp
+   GUI_VarScope.cpp
+   VPlugPlot.cpp
+   VarPlot.cpp
+   VarPlotEntry.cpp
+   LogPlot.cpp
+   Populator_VPlugPlots.cpp
+   Populator_HelmPlots.cpp
+   Populator_IPF_Plot.cpp
+   IPF_Plot.cpp
+   HelmPlot.cpp
+   ModelHelmScope.cpp
+   ModelVarScope.cpp
+   IvPFuncViewerX.cpp
    LogViewLauncher.cpp
+   ALogDataBroker.cpp
    main.cpp
 )
    
@@ -35,13 +50,15 @@ ENDIF (${APPLE})
       
 TARGET_LINK_LIBRARIES(alogview
    marineview
+   helmivp
    geometry
-   logutils
-   ${MOOSGeodesy_LIBRARIES}
    contacts
-   navplot
    ipfview
+   logutils
+   ivpbuild
+   apputil
    mbutil
+   ${MOOSGeodesy_LIBRARIES}
    ${SYSTEM_LIBS}
    
    # Standard libraries used by this project's FLTK apps...
@@ -56,6 +73,3 @@ IF (${APPLE})
     LINK_FLAGS "-framework OpenGL -framework AGL -framework Cocoa"
     )
 ENDIF (${APPLE})
-
-
-

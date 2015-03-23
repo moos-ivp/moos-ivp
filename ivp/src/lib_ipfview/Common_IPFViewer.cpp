@@ -197,9 +197,9 @@ void Common_IPFViewer::printParams()
 }
 
 //-------------------------------------------------------------
-// Procedure: draw()
+// Procedure: clear()
 
-void Common_IPFViewer::draw()
+void Common_IPFViewer::clear()
 {
   // Clear the window and the depth buffer
   
@@ -208,6 +208,17 @@ void Common_IPFViewer::draw()
   double clear_blu = m_clear_color.blu();
   glClearColor(clear_red, clear_grn, clear_blu, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+//-------------------------------------------------------------
+// Procedure: draw()
+
+void Common_IPFViewer::draw()
+{
+  clear();
+
+  if((m_quadset.size2D() == 0) && (m_quadset.size1D() == 0))
+    return;
 
   glViewport(0,0,w(),h());
 
@@ -217,18 +228,21 @@ void Common_IPFViewer::draw()
 
   glScalef(m_zoom, m_zoom, m_zoom);
 
-  //GLfloat nRange = 450.0f;
-  GLfloat nRange = 650.0f;
+  GLfloat nRange = 750.0f;
+  //GLfloat nRange = 2850.0f;
 
   // Reset projection matrix stack
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
 
   // Establish clipping volume (left, right, bottom, top, near, far)
+  glOrtho (-nRange, nRange, -nRange*h()/w(), nRange*h()/w(), -nRange, nRange);
+#if 0
   if(w() <= h()) 
     glOrtho (-nRange, nRange, -nRange*h()/w(), nRange*h()/w(), -nRange, nRange);
   else 
     glOrtho (-nRange*w()/h(), nRange*w()/h(), -nRange, nRange, -nRange, nRange);
+#endif
   //glOrtho (-nRange*w()/h()-100, nRange*w()/h()+100, -nRange-100, 
   //     nRange+100, -nRange-100, nRange+100);
 
@@ -264,22 +278,29 @@ bool Common_IPFViewer::drawIvPFunction()
 {
   unsigned int qdim = m_quadset.getQuadSetDim();
 
-  if(qdim == 1)
-    return(drawIvPFunction1D());
+  if(qdim == 1) {
+    drawIvPFunction1D();
+    draw1DAxes(m_quadset.getDomain());
+    draw1DLabels(m_quadset.getDomain());
+    draw1DLine();
+  }
   else if(qdim == 2)
     return(drawIvPFunction2D());
   else
     return(false);
+
+  return(true);
 }
 
 //-------------------------------------------------------------
 // Procedure: drawIvPFunction1D
 
-bool Common_IPFViewer::drawIvPFunction1D()
+void Common_IPFViewer::drawIvPFunction1D()
 {
   double clear_red = m_clear_color.red();
   double clear_grn = m_clear_color.grn();
   double clear_blu = m_clear_color.blu();
+
   glClearColor(clear_red, clear_grn, clear_blu, 0.0);
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -330,8 +351,6 @@ bool Common_IPFViewer::drawIvPFunction1D()
 
     double domain_val_max = m_quadset.getDomain().getVarHigh(0);
     double x_stretch = ((double)(m_grid_width)  / domain_val_max);
-    
-
     double y_stretch = ((double)(m_grid_height) / (double)(range_val_max));
     for(j=0; j<xsize; j++) {
       if((j==0) || (domain_ptsx[j])) {
@@ -364,18 +383,12 @@ bool Common_IPFViewer::drawIvPFunction1D()
     
     glEnd();
     glLineWidth(1.0);
-
   }
   
   glFlush();
   glPopMatrix();
 
-  draw1DAxes(m_quadset.getDomain());
-  draw1DLabels(m_quadset.getDomain());
   draw1DKeys(key_strings, key_colors);
-  draw1DLine();
-
-  return(false);
 }
 
 //-------------------------------------------------------------
@@ -492,7 +505,7 @@ void Common_IPFViewer::drawQuad(Quad3D q, double rad_extra_extra)
 
 void Common_IPFViewer::drawFrame(bool full)
 {
-  double w = 250;
+  double w = 550;
 
   double b = -150;
   double t = -350 + (m_frame_height);
@@ -649,7 +662,7 @@ void Common_IPFViewer::draw1DAxes(const IvPDomain& domain)
   glPushMatrix();
   glLoadIdentity();
 
-    double  domain_rng = (domain.getVarHigh(0) - domain.getVarLow(0));
+  double  domain_rng = (domain.getVarHigh(0) - domain.getVarLow(0));
   double  units = 5;
   double  lines = (domain_rng / units);
   while(lines > 20) {
@@ -739,15 +752,16 @@ void Common_IPFViewer::draw1DLabels(const IvPDomain& domain)
   glColor4f(0, 0, 0, 0.1);
 
   //---------------------------------- Draw the two zeros
-  drawText(m_xoffset+1,  m_yoffset-14, "0");
-  drawText(m_xoffset-12, m_yoffset+1,  "0");
+  ColorPack cpack("purple");
+  drawText2(m_xoffset+1,  m_yoffset-14, "0", cpack, 10);
+  drawText2(m_xoffset-12, m_yoffset+1,  "0", cpack, 10);
   
   // Draw the max value on the x-axis
   double domain_hgh = domain.getVarHigh(0);
   string dh_str     = doubleToStringX(domain_hgh);
   int xpos = m_xoffset + m_grid_width - 10;
   int ypos = m_yoffset - 14;
-  drawText(xpos, ypos, dh_str);
+  drawText2(xpos, ypos, dh_str, cpack, 10);
 
   // Draw the max value on the y-axis
   double range_hgh = m_quadset.getRangeValMax();
@@ -757,12 +771,12 @@ void Common_IPFViewer::draw1DLabels(const IvPDomain& domain)
 
   xpos = (m_xoffset/2) - indent;
   ypos = m_yoffset + m_grid_height - 5;
-  drawText(xpos, ypos, rh_str);
+  drawText2(xpos, ypos, rh_str, cpack, 10);
 
   string dom_var = domain.getVarName(0);
   xpos = m_xoffset + (m_grid_width/2.2);
   ypos = m_yoffset - 14;
-  drawText(xpos, ypos, dom_var);
+  drawText2(xpos, ypos, dom_var, cpack, 10);
 }
 
 //-------------------------------------------------------------
@@ -955,6 +969,33 @@ void Common_IPFViewer::drawText(int x, int y, string str)
   glPopMatrix();
 
 }
+
+//-------------------------------------------------------------
+// Procedure: drawText2
+
+void Common_IPFViewer::drawText2(double px, double py, const string& text,
+				 const ColorPack& font_c, double font_size) 
+{
+  if(text == "") 
+    return;
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  if(font_c.visible()) {
+    glColor3f(font_c.red(), font_c.grn(), font_c.blu());
+    gl_font(1, font_size);
+    glRasterPos3f(px, py, 0);
+    gl_draw(text.c_str());
+  }
+  glFlush();
+  glPopMatrix();
+}
+
 
 
 

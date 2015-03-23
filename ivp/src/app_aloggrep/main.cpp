@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 
   for(int i=1; i<argc; i++) {
     string sarg = argv[i];
-    if(strContains(sarg, ".alog")) {
+    if(strEnds(sarg, ".alog") || strEnds(sarg, ".klog")) {
       if(alogfile_in == "")
 	alogfile_in = sarg;
       else 

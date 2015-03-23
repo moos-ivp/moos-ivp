@@ -172,12 +172,12 @@ ProcessConfig = pMarineViewer
   left_context[bng_point] = BEARING_POINT = name=bng-line$(X)-$(Y) # bearing_point=$(X),$(Y)
 
   button_one = DEPLOY # DEPLOY=true
-  button_one = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
   button_three = AUTO_SPAWN # AUTO_SPAWN=true
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
   action+ = RETURN=true
   action  = BEARING_POINT = show_pt=true
   action+ = BEARING_POINT = show_pt=false

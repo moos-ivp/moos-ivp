@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogPlotViewer.cpp                                    */
 /*    DATE: May 31st, 2005                                       */
+/*    DATE: Feb 8th, 2015   Major overhaul. Pair LogPlots        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -23,6 +24,9 @@
 
 #include <string>
 #include <iostream>
+#include "FL/Fl.H"
+#include "FL/gl.h"
+#include "FL/fl_draw.H"
 #include "LogPlotViewer.h"
 #include "MBUtils.h"
 #include "GeomUtils.h"
@@ -33,11 +37,20 @@ LogPlotViewer::LogPlotViewer(int gx, int gy, int gw, int gh, const char *gl)
   : Fl_Gl_Window(gx,gy,gw,gh,gl)
 {
   m_valid_cache = false;
-  view_index1 = 0;
-  view_index2 = 0;
+  m_sync_scales = false;
   m_margin    = 10.0;
   m_step      = 0.0;
   m_curr_time = 0.0;
+
+  m_lft_marg = 80;
+  m_rgt_marg = 80;
+  m_bot_marg = 20;
+
+  m_left_mix  = 0;
+  m_right_mix = 0;
+
+  m_fullvar1 = "none";
+  m_fullvar2 = "none";
 
   m_extreme_min_time = 0;
   m_extreme_max_time = 0;
@@ -58,7 +71,7 @@ int LogPlotViewer::handle(int event)
     if(Fl_Window::handle(event) != 1) {
       if(Fl::event_button() == FL_LEFT_MOUSE)
 	handleLeftMouse(vx, vy);
-    }
+    }    
   case FL_RELEASE:
     return(0);
     break;
@@ -80,6 +93,8 @@ void LogPlotViewer::draw()
   glViewport(0, 0, w(), h());
 
   drawLogPlot();
+  drawTimeText();
+  drawMinMaxVarText();
 }
 
 //-------------------------------------------------------------
@@ -92,55 +107,63 @@ void LogPlotViewer::resize(int gx, int gy, int gw, int gh)
 }
 
 //-------------------------------------------------------------
-// Procedure: addLogPlot
+// Procedure: setDataBroker()
 
-unsigned int LogPlotViewer::addLogPlot(const LogPlot& given_logplot)
+void LogPlotViewer::setDataBroker(ALogDataBroker dbroker)
 {
-  // Ensure that the extreme_min_time and extreme_max_time values are
-  // the extremes over all added logplots.
-
-  double this_min_time = given_logplot.get_min_time();
-  double this_max_time = given_logplot.get_max_time();
-  if((m_logplots.size() == 0) || (this_min_time < m_extreme_min_time))
-    m_extreme_min_time = this_min_time;
-  if((m_logplots.size() == 0) || (this_max_time > m_extreme_max_time))
-    m_extreme_max_time = this_max_time;
-
-  // Every time a new plot is added, sync the display_max/min times
-  // to the extreme_max/min times.
-
-  m_display_min_time = m_extreme_min_time;
-  m_display_max_time = m_extreme_max_time;
-
-
-  LogPlot new_logplot(given_logplot);
-  m_logplots.push_back(new_logplot);
-
-  return(m_logplots.size());
+  m_dbroker = dbroker;
 }
 
 //-------------------------------------------------------------
 // Procedure: setLeftPlot()
 
-void LogPlotViewer::setLeftPlot(unsigned int index)
+void LogPlotViewer::setLeftPlot(unsigned int mix)
 {
-  if(index == view_index1)
+  // Check if mix represents a change and a viable change
+  if((mix == m_left_mix) || (mix >= m_dbroker.sizeMix()))
     return;
-  if(index < m_logplots.size())
-    view_index1 = index;
+
+  // Check if new left is same as right. If so, make left empty
+  if(mix != m_right_mix) {
+    m_logplot1 = m_dbroker.getLogPlot(mix); 
+    string vname = m_dbroker.getVNameFromMix(mix);
+    string varname = m_dbroker.getVarNameFromMix(mix);
+    m_fullvar1 = vname + "/" + varname;
+  }
+  else {
+    m_logplot1 = LogPlot();
+    m_fullvar1 = "none";
+  }
+    
+  m_left_mix = mix;
   m_valid_cache = false;
+  adjustTimeBounds();
 }
 
 //-------------------------------------------------------------
 // Procedure: setRightPlot()
 
-void LogPlotViewer::setRightPlot(unsigned int index)
+void LogPlotViewer::setRightPlot(unsigned int mix)
 {
-  if(index == view_index2)
+  // Check if mix represents a change and a viable change
+  if((mix == m_right_mix) || (mix >= m_dbroker.sizeMix()))
     return;
-  if(index < m_logplots.size())
-    view_index2 = index;
+
+ // Check if new right is same as left. If so, make left empty
+  if(mix != m_left_mix) {
+    m_logplot2 = m_dbroker.getLogPlot(mix);
+    string vname = m_dbroker.getVNameFromMix(mix);
+    string varname = m_dbroker.getVarNameFromMix(mix);
+    m_fullvar2 = vname + "/" + varname;
+  }    
+  else {
+    m_logplot2 = LogPlot();
+    m_fullvar2 = "none";
+  }
+
+  m_right_mix = mix;
   m_valid_cache = false;
+  adjustTimeBounds();
 }
 
 //-------------------------------------------------------------
@@ -148,10 +171,9 @@ void LogPlotViewer::setRightPlot(unsigned int index)
 
 double LogPlotViewer::get_curr_val1(double gtime)
 {
-  if(m_logplots.size() == 0)
+  if(m_logplot1.size() == 0)
     return(0);
-  else
-    return(m_logplots[view_index1].get_value_by_time(gtime));
+  return(m_logplot1.getValueByTime(gtime));
 }
 
 //-------------------------------------------------------------
@@ -159,110 +181,88 @@ double LogPlotViewer::get_curr_val1(double gtime)
 
 double LogPlotViewer::get_curr_val2(double gtime)
 {
-  if(m_logplots.size() == 0)
+  if(m_logplot2.size() == 0)
     return(0);
-  else
-    return(m_logplots[view_index2].get_value_by_time(gtime));
-}
-
-//-------------------------------------------------------------
-// Procedure: getVariable1
-
-string LogPlotViewer::getVariable1()
-{
-  if(view_index1 >= m_logplots.size())
-    return("none");
-  else {
-    string vehicle = m_logplots[view_index1].get_vehi_name();
-    string varname = m_logplots[view_index1].get_varname();
-    if(vehicle != "")
-      return(vehicle + "/" + varname);
-    else
-      return(varname);
-  }
-}
-
-//-------------------------------------------------------------
-// Procedure: getVariable2
-
-string LogPlotViewer::getVariable2()
-{
-  if(view_index1 == view_index2)
-    return("none");
-
-  if(view_index2 >= m_logplots.size())
-    return("none");
-  else {
-    string vehicle = m_logplots[view_index2].get_vehi_name();
-    string varname = m_logplots[view_index2].get_varname();
-    if(vehicle != "")
-      return(vehicle + "/" + varname);
-    else
-      return(varname);
-  }
+  return(m_logplot2.getValueByTime(gtime));
 }
 
 //-------------------------------------------------------------
 // Procedure: getMinVal1()
 
-string LogPlotViewer::getMinVal1()
+double LogPlotViewer::getMinVal1()
 {
-  if(view_index1 >= m_logplots.size())
-    return("n/a");
-  else
-    return(doubleToString(m_logplots[view_index1].get_min_val(), 3));
+  if(m_logplot1.size() == 0)
+    return(0);
+
+  double min_val1 = m_logplot1.getMinVal();
+  if(!m_sync_scales || (m_logplot2.size() == 0))
+    return(min_val1);
+  
+  double min_val2 = m_logplot2.getMinVal();
+  double min_val  = min_val1 < min_val2 ? min_val1 : min_val2;
+  return(min_val);  
 }
 
 //-------------------------------------------------------------
 // Procedure: getMaxVal1()
 
-string LogPlotViewer::getMaxVal1()
+double LogPlotViewer::getMaxVal1()
 {
-  if(view_index1 >= m_logplots.size())
-    return("n/a");
-  else
-    return(doubleToString(m_logplots[view_index1].get_max_val(), 3));
+  if(m_logplot1.size() == 0)
+    return(0);
+
+  double max_val1 = m_logplot1.getMaxVal();
+  if(!m_sync_scales || (m_logplot2.size() == 0))
+    return(max_val1);
+
+  double max_val2 = m_logplot2.getMaxVal();
+  double max_val  = max_val1 > max_val2 ? max_val1 : max_val2;
+  return(max_val);
 }
 
 //-------------------------------------------------------------
 // Procedure: getMinVal2()
 
-string LogPlotViewer::getMinVal2()
+double LogPlotViewer::getMinVal2()
 {
-  if(view_index1 == view_index2)
-    return("n/a");
+  if(m_logplot2.size() == 0)
+    return(0);
 
-  if(view_index2 >= m_logplots.size())
-    return("n/a");
-  else
-    return(doubleToString(m_logplots[view_index2].get_min_val(), 3));
+  double min_val2 = m_logplot2.getMinVal();
+  if(!m_sync_scales || (m_logplot1.size() == 0))
+    return(min_val2);
+
+  double min_val1 = m_logplot1.getMinVal();
+  double min_val  = min_val1 < min_val2 ? min_val1 : min_val2;
+  return(min_val);
 }
 
 //-------------------------------------------------------------
 // Procedure: getMaxVal2()
 
-string LogPlotViewer::getMaxVal2()
+double LogPlotViewer::getMaxVal2()
 {
-  if(view_index1 == view_index2)
-    return("n/a");
+  if(m_logplot2.size() == 0)
+    return(0);
 
-  if(view_index2 >= m_logplots.size())
-    return("n/a");
-  else
-    return(doubleToString(m_logplots[view_index2].get_max_val(), 3));
+  double max_val2 = m_logplot2.getMaxVal();
+  if(!m_sync_scales || (m_logplot1.size() == 0))
+    return(max_val2);
+
+  double max_val1 = m_logplot1.getMaxVal();
+  double max_val  = max_val1 > max_val2 ? max_val1 : max_val2;
+  return(max_val);
 }
 
 //-------------------------------------------------------------
 // Procedure: handleLeftMouse
 
-int LogPlotViewer::handleLeftMouse(int vx, int vy)
+void LogPlotViewer::handleLeftMouse(int vx, int vy)
 {
-  double pct = (double)(vx)/w();
+  double pct = (double)(vx-m_lft_marg)/(w()-m_lft_marg-m_rgt_marg);
   m_curr_time = pct * (m_display_max_time - m_display_min_time);
   m_curr_time += m_display_min_time;
-
   redraw();
-  return(0);
 }
 
 //-------------------------------------------------------------
@@ -343,31 +343,29 @@ void LogPlotViewer::adjustZoom(string ztype)
 
 bool LogPlotViewer::fillCache()
 {
-  m_valid_cache = false;
-  if(view_index1 >= m_logplots.size())
-    return(false);
-  if(view_index2 >= m_logplots.size())
-    return(false);
-  m_valid_cache = true;
-  
-  LogPlot vplot1 = m_logplots[view_index1];
-  LogPlot vplot2 = m_logplots[view_index2];
-
+  // Part 1: Always clear both caches 
   cache_x1.clear();
   cache_y1.clear();
   cache_x2.clear();
   cache_y2.clear();
+  m_valid_cache = true;
 
-  m_step = (w()-m_margin) / (m_display_max_time - m_display_min_time);
+  // Recaclulate the step
+  m_step = (w()-m_margin-m_lft_marg-m_rgt_marg) / 
+    (m_display_max_time - m_display_min_time);
 
-  int    vpsize1  = vplot1.size();
-  double min_val1 = vplot1.get_min_val();
-  double max_val1 = vplot1.get_max_val();
-  double h_step1 = (h()-m_margin) / (max_val1  - min_val1);
+  double min_val1 = getMinVal1();
+  double max_val1 = getMaxVal1();
+  double min_val2 = getMinVal2();
+  double max_val2 = getMaxVal2();
+
+  // Part 2: Handle the Left LogPlot (LogPlot1)
+  unsigned int vpsize1 = m_logplot1.size();
+  double h_step1  = (h()-m_margin-m_bot_marg) / (max_val1  - min_val1);
 
   bool excepted_right = false;
-  for(int i=0; i<vpsize1; i++) {
-    double rawt = vplot1.get_time_by_index(i);
+  for(unsigned int i=0; i<vpsize1; i++) {
+    double rawt = m_logplot1.getTimeByIndex(i);
     bool add_to_cache = false;
     if((rawt >= m_display_min_time) && (rawt <= m_display_max_time))
       add_to_cache = true;
@@ -382,27 +380,26 @@ bool LogPlotViewer::fillCache()
     }
 
     if(add_to_cache) {
-      double rawv = vplot1.get_value_by_index(i);
+      double rawv = m_logplot1.getValueByIndex(i);
       double scalet = ((rawt - m_display_min_time)  * m_step) + (m_margin/2.0); 
+      scalet += m_lft_marg;
       double scalev = ((rawv - min_val1 ) * h_step1) + (m_margin/2.0);
-      cache_x1.push_back(scalet);
-      cache_y1.push_back(scalev);
+      scalev += m_bot_marg;
+      if((scalet >= m_lft_marg) && (scalet <= w()-m_rgt_marg)) {
+	cache_x1.push_back(scalet);
+	cache_y1.push_back(scalev);
+      }
     }
   }
 
-  // If the two plots are the same index, we're done.
-  if(view_index1 == view_index2) 
-    return(true);
 
-  // Otherwise, fill in the cache for the second index
-  int    vpsize2  = vplot2.size();
-  double min_val2 = vplot2.get_min_val();
-  double max_val2 = vplot2.get_max_val();
-  double h_step2 = (h()-m_margin) / (max_val2  - min_val2);
+  // Part 3: Handle the Right LogPlot (LogPlot2)
+  unsigned int vpsize2 = m_logplot2.size();
+  double h_step2 = (h()-m_margin-m_bot_marg) / (max_val2  - min_val2);
   
   excepted_right = false;
-  for(int j=0; j<vpsize2; j++) {      
-    double rawt = vplot2.get_time_by_index(j);
+  for(unsigned int j=0; j<vpsize2; j++) {      
+    double rawt = m_logplot2.getTimeByIndex(j);
     bool add_to_cache = false;
     if((rawt >= m_display_min_time) && (rawt <= m_display_max_time))
       add_to_cache = true;
@@ -417,14 +414,64 @@ bool LogPlotViewer::fillCache()
     }
     
     if(add_to_cache) {
-      double rawv = vplot2.get_value_by_index(j);
+      double rawv = m_logplot2.getValueByIndex(j);
       double scalet = ((rawt - m_display_min_time)  * m_step) + (m_margin/2.0); 
+      scalet += m_lft_marg;
       double scalev = ((rawv - min_val2 ) * h_step2) + (m_margin/2.0);
-      cache_x2.push_back(scalet);
-      cache_y2.push_back(scalev);
+      scalev += m_bot_marg;
+      if((scalet >= m_lft_marg) && (scalet <= w()-m_rgt_marg)) {
+	cache_x2.push_back(scalet);
+	cache_y2.push_back(scalev);
+      }
     }
   }
+
   return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setSyncScales
+
+void LogPlotViewer::setSyncScales(string str)
+{
+  if(str == "toggle")
+    m_sync_scales = !m_sync_scales;
+  else if(str == "off")
+    m_sync_scales = false;
+  else if(str == "on")
+    m_sync_scales = true;
+  m_valid_cache = false;
+  redraw();
+}
+
+//-------------------------------------------------------------
+// Procedure: adjustTimeBounds
+
+void LogPlotViewer::adjustTimeBounds()
+{
+  m_extreme_min_time = 0;
+  m_extreme_max_time = 0;
+
+  if(m_logplot1.size() > 0) {
+    double min_time = m_logplot1.getMinTime();
+    if((m_extreme_min_time == 0) || (min_time < m_extreme_min_time))
+      m_extreme_min_time = min_time;
+    double max_time = m_logplot1.getMaxTime();
+    if((m_extreme_max_time == 0) || (max_time > m_extreme_max_time))
+      m_extreme_max_time = max_time;
+  }
+
+  if(m_logplot2.size() > 0) {
+    double min_time = m_logplot2.getMinTime();
+    if((m_extreme_min_time == 0) || (min_time < m_extreme_min_time))
+      m_extreme_min_time = min_time;
+    double max_time = m_logplot2.getMaxTime();
+    if((m_extreme_max_time == 0) || (max_time > m_extreme_max_time))
+      m_extreme_max_time = max_time;
+  }
+
+  m_display_min_time = m_extreme_min_time;
+  m_display_max_time = m_extreme_max_time;
 }
 
 
@@ -457,6 +504,60 @@ void LogPlotViewer::drawLogPlot()
   int color_scheme = 2;
 
   glLineWidth(1.0);
+
+  // Draw Left Margin
+  glColor4f(0.8,  0.8,  0.8,  0.1); 
+  glBegin(GL_POLYGON);
+  glVertex2f(0, 0);
+  glVertex2f(m_lft_marg, 0);
+  glVertex2f(m_lft_marg, h());
+  glVertex2f(0, h());
+  glEnd();
+  // Draw Bottom Margin
+  glColor4f(0.8,  0.8,  0.8,  0.1); 
+  glBegin(GL_POLYGON);
+  glVertex2f(0, 0);
+  glVertex2f(w(), 0);
+  glVertex2f(w(), m_bot_marg);
+  glVertex2f(0, m_bot_marg);
+  glEnd();
+  // Draw Right Margin
+  glColor4f(0.8,  0.8,  0.8,  0.1); 
+  glBegin(GL_POLYGON);
+  glVertex2f(w()-m_rgt_marg, 0);
+  glVertex2f(w(), 0);
+  glVertex2f(w(), h());
+  glVertex2f(w()-m_rgt_marg, h());
+  glEnd();
+
+  // Draw the left border line
+  glColor4f(0.35,  0.35,  0.4,  0.1); 
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(m_lft_marg, m_bot_marg-5);
+  glVertex2f(m_lft_marg, h());
+  glEnd();
+      
+  // Draw the right border line
+  glColor4f(0.35,  0.35,  0.4,  0.1); 
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(w()-m_rgt_marg, m_bot_marg-5);
+  glVertex2f(w()-m_rgt_marg, h());
+  glEnd();
+      
+  // Draw the top border line
+  glColor4f(0.35,  0.35,  0.4,  0.1); 
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(m_lft_marg-5, h()-1);
+  glVertex2f(w()-m_rgt_marg+5, h()-1);
+  glEnd();
+      
+  // Draw the bottom borderline
+  glColor4f(0.35,  0.35,  0.4,  0.1); 
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(m_lft_marg-5, m_bot_marg);
+  glVertex2f(w()-m_rgt_marg+5, m_bot_marg);
+  glEnd();
+      
   unsigned int i, cache_size = cache_x1.size();
 
   // ----- Handle the FIRST Plot ----------
@@ -480,9 +581,7 @@ void LogPlotViewer::drawLogPlot()
   else if(cache_size > 55) glPointSize(3.0);
   else if(cache_size > 40) glPointSize(4.0);
   else if(cache_size > 35) glPointSize(5.0);
-  else if(cache_size > 30) glPointSize(6.0);
-  else if(cache_size > 25) glPointSize(7.0);
-  else  glPointSize(8.0);
+  else  glPointSize(6.0);
   if(color_scheme == 1)
     glColor4f(0.561,  0.737,  0.561,  0.1);  // DarkSeaGreen
   else
@@ -492,7 +591,7 @@ void LogPlotViewer::drawLogPlot()
     glVertex2f(cache_x1[i], cache_y1[i]);
   glEnd();
 
-  if(view_index1 != view_index2) {
+  if(m_logplot2.size() != 0) {
     unsigned int i, cache_size = cache_x2.size();
     // ----- Handle the SECOND Plot ----------
     // Draw the LINES of the plot
@@ -516,9 +615,7 @@ void LogPlotViewer::drawLogPlot()
     else if(cache_size > 55) glPointSize(3.0);
     else if(cache_size > 40) glPointSize(4.0);
     else if(cache_size > 35) glPointSize(5.0);
-    else if(cache_size > 30) glPointSize(6.0);
-    else if(cache_size > 25) glPointSize(7.0);
-    else  glPointSize(8.0);
+    else  glPointSize(6.0);
     if(color_scheme == 1)
       glColor4f(0.99,  0.99,  0.99,  0.1);  // WHite
     else
@@ -532,9 +629,10 @@ void LogPlotViewer::drawLogPlot()
   // Draw the "current time" vertical bar
   double scalet = ((m_curr_time - m_display_min_time) * m_step) + 
     (m_margin/2.0); 
+  scalet += m_lft_marg;
   glColor4f(1.0, 0.0, 0.0, 0.1);
   glBegin(GL_LINE_STRIP);
-  glVertex2f(scalet, 0);
+  glVertex2f(scalet, m_bot_marg);
   glVertex2f(scalet, h());
   glEnd();
   
@@ -542,15 +640,84 @@ void LogPlotViewer::drawLogPlot()
   glPopMatrix();
 }
 
+//-------------------------------------------------------------
+// Procedure: drawTimeText
+
+void LogPlotViewer::drawTimeText()
+{
+  string tlow = doubleToString(m_display_min_time, 3);
+  string thgh = doubleToString(m_display_max_time, 3);
+
+  // variable shift depending on the size of the string
+  double vshift = thgh.length() * 5.75;
+
+  drawText(w()/2-10, m_bot_marg/2, "time (secs)", 0.1, 0.1, 0.1);
+  drawText(m_lft_marg+5, m_bot_marg/2, tlow, 0.1, 0.1, 0.1);
+  drawText(w()-m_rgt_marg-vshift, m_bot_marg/2, thgh, 0.1, 0.1, 0.1);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawMinMaxVarText
+
+void LogPlotViewer::drawMinMaxVarText()
+{
+  string min_val1 = "n/a";
+  string max_val1 = "n/a";
+  string min_val2 = "n/a";
+  string max_val2 = "n/a";
+
+  if(m_logplot1.size() != 0) {
+    min_val1 = doubleToStringXX(getMinVal1());
+    max_val1 = doubleToStringXX(getMaxVal1());
+  }
+  if(m_logplot2.size() != 0) {
+    min_val2 = doubleToStringXX(getMinVal2());
+    max_val2 = doubleToStringXX(getMaxVal2());
+  }
+
+  // variable shift depending on the size of the string
+  double vshift_min = 7 + min_val1.length() * 5.75;
+  double vshift_max = 7 + max_val1.length() * 5.75;
+  drawText(m_lft_marg-vshift_min, m_bot_marg+4, min_val1, 0.1, 0.1, 0.1);
+  drawText(m_lft_marg-vshift_max, h()-12, max_val1, 0.1, 0.1, 0.1);
+  drawText(w()-m_rgt_marg+7, h()-12, max_val2, 0.1, 0.1, 0.1);
+  drawText(w()-m_rgt_marg+7, m_bot_marg+4, min_val2, 0.1, 0.1, 0.1);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawText
+
+void LogPlotViewer::drawText(double px, double py, const string& text,
+			     double r, double g, double b)
+{
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  glColor3f(r, g, b);
+  gl_font(1, 10);
+  glRasterPos3f(px, py, 0);
+  gl_draw(text.c_str());
+
+  glFlush();
+  glPopMatrix();
+}
 
 
+//-------------------------------------------------------------
+// Procedure: doubleToStringXX
 
-
-
-
-
-
-
-
-
-
+string LogPlotViewer::doubleToStringXX(double val) const
+{
+  if(val > 12345678)
+    return(doubleToStringX(val, 0));
+  else if(val > 1234567)
+    return(doubleToStringX(val, 1));
+  else if(val > 123456)
+    return(doubleToStringX(val, 2));
+  return(doubleToStringX(val, 3));
+}

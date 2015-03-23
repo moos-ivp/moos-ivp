@@ -259,7 +259,16 @@ void MarineGUI::addGeoAttrMenu()
 
 int MarineGUI::handle(int event) 
 {
-  return(Fl_Window::handle(event));
+  switch(event) {
+  case FL_KEYDOWN:
+    // Handle the Zoom Keys
+    if(Fl::event_key() == 32)
+      cout << "Handling SPACEBAR!!!!!" << endl;
+    return(1);
+    break;
+  default:
+    return(Fl_Window::handle(event));
+  }
 }
 
 

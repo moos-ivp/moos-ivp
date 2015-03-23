@@ -52,7 +52,10 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_brw_procs = new MY_Fl_Hold_Browser(0, 0, 1, 1); 
   m_brw_procs->callback(cb_SelectProc, 0);
   m_brw_casts = new MY_Fl_Hold_Browser(0, 0, 1, 1);
-  m_brw_casts->set_output();
+  m_brw_casts->clear_visible_focus();
+  
+  //m_brw_procs->callback(cb_SelectProc, 0);
+  //m_brw_casts->set_output();
   
   // Configure the DataField Widgets  
   v_nam = new Fl_Output(0, 0, 1, 1, "VName:"); 
@@ -222,8 +225,7 @@ void PMV_GUI::resize(int lx, int ly, int lw, int lh)
 
 //----------------------------------------------------------
 // Procedure: addButton
-//      Note: 
-//            
+
 bool PMV_GUI::addButton(string btype, string svalue) 
 {
   if((btype != "button_one") && (btype != "button_two") &&
@@ -1551,7 +1553,7 @@ void PMV_GUI::resizeWidgets()
   double now_hgt = h();
   double now_wid = w();
 
-  // Make sure the menu bar is at least 15 and 25
+  // Make sure the menu bar is at least 15 and at most 25
   if((pct_menu_hgt * now_hgt) < 15) 
     pct_menu_hgt = 15 / now_hgt;
   if((pct_menu_hgt * now_hgt) > 25) 
@@ -1693,7 +1695,7 @@ void PMV_GUI::resizeWidgets()
 
   m_brw_casts->color(color_back);
   m_brw_casts->textcolor(color_text);
-  m_brw_casts->position(0);
+  //m_brw_casts->position(0);
 
 
   // Part 5: Adjust the extents of the VIEWER window
@@ -1732,7 +1734,7 @@ void PMV_GUI::resizeWidgets()
   double dy = h()-dh;
   double dw = w();
 
-  double fld_hgt = dh * 0.24;
+  double fld_hgt = dh * 0.24; // height of data field output
 
   if(dw < 800) {
     resizeDataText(10);

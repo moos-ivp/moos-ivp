@@ -177,13 +177,13 @@ ProcessConfig = pMarineViewer
   right_context[loiter-point] = STATION_KEEP=false
 
   BUTTON_ONE = DEPLOY # DEPLOY=true
-  BUTTON_ONE = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  BUTTON_ONE = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   BUTTON_TWO = RETURN # RETURN=true
   BUTTON_THREE = STATION # STATION_KEEP=true
   BUTTON_FOUR = NO-STATION # STATION_KEEP=false
 
   ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
-  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERIDE=false
+  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
   ACTION  = RETURN=true
   ACTION  = DEPLOY=false
 }

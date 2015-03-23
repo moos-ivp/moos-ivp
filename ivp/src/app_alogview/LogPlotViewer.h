@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogPlotViewer.h                                      */
 /*    DATE: May 31st, 2005                                       */
+/*    DATE: Feb 8th, 2015   Major overhaul. Pair LogPlots        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -25,13 +26,10 @@
 #define LOGPLOT_VIEWER_HEADER
 
 #include <vector>
-#include "FL/Fl.H"
+#include <string>
 #include "FL/Fl_Gl_Window.H"
-#include "FL/gl.h"
-#include "FL/fl_draw.H"
-#include "BackImg.h"
+#include "ALogDataBroker.h"
 #include "LogPlot.h"
-//#include "XYPolygon.h"
 
 class LogPlotViewer : public Fl_Gl_Window
 {
@@ -40,13 +38,13 @@ class LogPlotViewer : public Fl_Gl_Window
   ~LogPlotViewer() {};
   
   // Pure virtuals that need to be defined
-  void  draw();
-  int   handle(int);
-  void  resize(int, int, int, int);
+  void   draw();
+  int    handle(int);
+  void   resize(int, int, int, int);
 
  public:
-  unsigned int addLogPlot(const LogPlot&);
   void   setCurrTime(double v);
+  void   setDataBroker(ALogDataBroker dbroker);
   double getCurrTime() {return(m_curr_time);};
   void   adjustZoom(std::string);
 
@@ -59,34 +57,54 @@ class LogPlotViewer : public Fl_Gl_Window
   double get_curr_val1(double time);
   double get_curr_val2(double time);
 
-  std::string getVariable1();
-  std::string getVariable2();
+  std::string getFullVar1() const {return(m_fullvar1);};
+  std::string getFullVar2() const {return(m_fullvar2);};
   
-  std::string getMinVal1();
-  std::string getMinVal2();
+  double getMinVal1();
+  double getMinVal2();
 
-  std::string getMaxVal1();
-  std::string getMaxVal2();
+  double getMaxVal1();
+  double getMaxVal2();
+
+  void   setSyncScales(std::string);
 
  protected:
-  int   handleLeftMouse(int, int);
-  void  drawLogPlot();
+  void  handleLeftMouse(int, int);
   bool  fillCache();
+  void  adjustTimeBounds();
+  void  drawLogPlot();
+  void  drawTimeText();
+  void  drawMinMaxVarText();
+  void  drawText(double px, double py, const std::string&, 
+		 double r, double g, double b);
+  std::string doubleToStringXX(double) const;
 
  protected:
-  std::vector<LogPlot> m_logplots;
-  double m_curr_time;
+  ALogDataBroker m_dbroker;
 
+  LogPlot m_logplot1;
+  LogPlot m_logplot2;
+  
+  std::string m_fullvar1;
+  std::string m_fullvar2;
+
+  unsigned int m_left_mix;
+  unsigned int m_right_mix;
+
+  double  m_curr_time;
+  
   std::vector<double>  cache_x1;
   std::vector<double>  cache_y1;
   std::vector<double>  cache_x2;
   std::vector<double>  cache_y2;
   bool   m_valid_cache;
-  
-  unsigned int  view_index1;  // Index in logplot vector being viewed
-  unsigned int  view_index2;  // Index in logplot vector being viewed
+  bool   m_sync_scales;
 
   double m_margin;
+  double m_lft_marg;
+  double m_rgt_marg;
+  double m_bot_marg;
+  
   double m_extreme_min_time;
   double m_extreme_max_time;
   double m_display_min_time;
@@ -95,8 +113,3 @@ class LogPlotViewer : public Fl_Gl_Window
 };
 
 #endif 
-
-
-
-
-

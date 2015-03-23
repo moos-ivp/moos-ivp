@@ -7,8 +7,8 @@ SET(SRC
    LogTPlot.cpp
    TimePlot.cpp
    VPlugTPlot.cpp
-   HelmTPlot.cpp
    IterTPlot.cpp
+   HelmTPlot.cpp
    VarTPlot.cpp
    VarTPlotSet.cpp
    IPF_TPlot.cpp

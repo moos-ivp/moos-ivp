@@ -25,13 +25,8 @@
 #define LOGVIEW_LAUNCHER
 
 #include <vector>
-#include "Populator_LogPlots.h"
-#include "Populator_VPlugPlots.h"
-#include "Populator_HelmPlots.h"
-#include "Populator_IPF_Plot.h"
-#include "ALogEntry.h"
 #include "REPLAY_GUI.h"
-#include "IvPDomain.h"
+#include "ALogDataBroker.h"
 
 class LogViewLauncher
 {
@@ -41,79 +36,49 @@ class LogViewLauncher
   
   REPLAY_GUI *launch(int argc, char **argv);
 
-  bool addPlotRequest(std::string);
-
 protected:
-  void checkForMinMaxTime(int argc, char **argv);
-  void setBackground(int argc, char **argv);
-  void setSizeOfGUI(int argc, char **argv);
-  void setWindowLayout(int argc, char **argv);
-  void setALogFiles(int argc, char **argv);
-  bool setALogFileSkews();
-  void parseALogFiles();
-  bool parseALogFile(unsigned int);
-  void determineVehicleNames();
+  bool parseCommandArgs(int argc, char **argv);
+  bool sanityCheck();
 
-  bool buildLogPlots();
-  bool buildHelmPlots();
-  bool buildVPlugPlots();
-  bool buildIPFPlots();
-  
-  bool buildGraphical();
+  bool configDataBroker();
+  bool configGraphical();
+
+  bool handleMinTime(std::string);
+  bool handleMaxTime(std::string);
+  bool handleBackground(std::string);
+  bool handleGeometry(std::string);
+  bool handleInitialLogPlotL(std::string);
+  bool handleInitialLogPlotR(std::string);
+  bool handlePanX(std::string);
+  bool handlePanY(std::string);
+  bool handleZoom(std::string);
+  bool handleNowTime(std::string);
+
 
 private:
-  // The .alog files provided at launch time
   std::vector<std::string> m_alog_files;
-  std::vector<double>      m_alog_files_skew;
+  
+  std::string  m_tiff_file;
+  std::string  m_alt_nav_prefix;
+  std::string  m_start_veh_lft;
+  std::string  m_start_var_lft;
+  std::string  m_start_veh_rgt;
+  std::string  m_start_var_rgt;
+  double       m_start_panx;
+  double       m_start_pany;
+  double       m_start_zoom;
+  double       m_start_time;
+  bool         m_quick_start;
+  bool         m_min_time_set;
+  bool         m_max_time_set;
+  double       m_min_time;
+  double       m_max_time;
+  double       m_gui_height;
+  double       m_gui_width;
 
-  // geometry specifications for the viewer
-  double  m_gui_height;
-  double  m_gui_width;
-
-  // Background image specification
-  std::string  m_tif_file;
-
-  // Intermediate semi-raw data from the alog files
-  // Outer vector index - one per vehicle, i.e., alog file.
-  std::vector<std::vector<ALogEntry> > m_entries_log_plot;
-  std::vector<std::vector<ALogEntry> > m_entries_vplug_plot;
-  std::vector<std::vector<ALogEntry> > m_entries_helm_plot;
-  std::vector<std::vector<ALogEntry> > m_entries_ipf_plot;
-  std::vector<IvPDomain> m_entry_ivp_domain;
-
-  std::vector<std::vector<std::string> > m_node_reports;
-  std::vector<std::string> m_vehicle_name;
-  std::vector<std::string> m_vehicle_type;
-  std::vector<double>      m_vehicle_length;
-
-  // The various plots created from the alog data before passing
-  // to the logview gui or viewers.
-  // Outer vector index - one per vehicle, i.e., alog file.
-  std::vector<std::vector<LogPlot> > m_log_plots;
-  std::vector<HelmPlot>  m_helm_plots;
-  std::vector<VPlugPlot> m_vplug_plots;
-  std::vector<IPF_Plot>  m_ipf_plots;
-  std::vector<double>    m_log_starts;
-
-  std::vector<std::string> m_plot_request_var;
-  std::vector<std::string> m_plot_request_fld;
-
-
-  // Optional time clipping
-  double m_min_time;
-  double m_max_time;
-  double m_now_time;
-  bool   m_min_time_set;
-  bool   m_max_time_set;
-  bool   m_now_time_set;
+  ALogDataBroker m_dbroker;
 
   REPLAY_GUI *m_gui;
-  std::string m_window_layout;
 };
 
 #endif 
-
-
-
-
-

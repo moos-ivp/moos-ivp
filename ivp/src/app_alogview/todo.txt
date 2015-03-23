@@ -1,0 +1,31 @@
+
+HelmPlots
+ o Scale the top fields
+ o Implement Modes or ModeTree
+ o AllStop Events?
+
+IFPPlots
+ o implement zooming
+ o implement horizon
+ o implement pcwise linear mode
+
+General
+ o Implement step by Helm Iteration
+ o Implement step by Left LogPlot
+ o Implement GT_NAV_X shadow nav solution
+ o Figure out how to pull in shoreside comms info
+ o Command line switches:
+   --lp=gilda:NAV_X
+   --rp=henry:DESIRED_SPEED
+   --nowtime=111.129
+   --zoom=2.3
+   --panx=-130
+   --pany=80
+   --ipf_view=vname=henry,scope=wpt_return:WPT_INDEX,scope=avd_col_betty:RANGE_BETTY
+   --ipf_view=vname=zoom=2.3,tilt=34
+   --varscope=vname=henry,vars=NAV_X:NAV_Y:NAV_SPEED
+
+
+VarScopePlot
+
+AppCastPlot

@@ -31,6 +31,7 @@
 #include <cstring>
 #include "MarinePID.h"
 #include "MBUtils.h"
+#include "AngleUtils.h"
 
 using namespace std;
 
@@ -124,9 +125,9 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 	  m_verbose = "terse";
       }
       else if(key == "NAV_YAW")
-	m_current_heading = -MOOSRad2Deg(msg.m_dfVal);
+	m_current_heading = angle360(-MOOSRad2Deg(msg.m_dfVal));
       else if(key == "NAV_HEADING")
-	m_current_heading = msg.m_dfVal;
+	m_current_heading = angle360(msg.m_dfVal);
       else if(key == "NAV_SPEED")
 	m_current_speed = msg.m_dfVal;
       else if(key == "NAV_DEPTH")
@@ -137,8 +138,6 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
       if(!strncmp(key.c_str(), "NAV_", 4))
 	m_time_of_last_nav_msg = curr_time;
 
-      else if(key == "DESIRED_THRUST")
-	m_current_thrust = msg.m_dfVal;
       else if(key == "DESIRED_HEADING") {
 	m_desired_heading = msg.m_dfVal;
 	m_time_of_last_helm_msg = curr_time;
@@ -182,6 +181,7 @@ bool MarinePID::Iterate()
     cout << "Paused Due To Tardy HELM Input: THRUST=0" << endl;
     m_paused = true;
     Notify("DESIRED_THRUST", 0.0);
+    m_current_thrust = 0;
     return(true);
   }
   
@@ -191,6 +191,7 @@ bool MarinePID::Iterate()
     cout << "Paused Due To Tardy NAV Input: THRUST=0" << endl;
     m_paused = true;
     Notify("DESIRED_THRUST", 0.0);
+    m_current_thrust = 0;
     return(true);
   }
 
@@ -240,6 +241,7 @@ bool MarinePID::Iterate()
     rudder = 0;
   Notify("DESIRED_RUDDER", rudder);
   Notify("DESIRED_THRUST", thrust);
+  m_current_thrust = thrust;
   if(m_depth_control)
     Notify("DESIRED_ELEVATOR", elevator);
 
@@ -299,7 +301,6 @@ void MarinePID::registerVariables()
   m_Comms.Register("NAV_PITCH", 0);
   m_Comms.Register("DESIRED_HEADING", 0);
   m_Comms.Register("DESIRED_SPEED", 0);
-  m_Comms.Register("DESIRED_THRUST", 0);
   m_Comms.Register("DESIRED_DEPTH", 0);
   m_Comms.Register("PID_VERBOSE", 0);
   m_Comms.Register("SPEED_FACTOR", 0);

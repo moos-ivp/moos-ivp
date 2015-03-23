@@ -85,7 +85,7 @@ bool CollisionDetector::OnNewMail(MOOSMSG_LIST &NewMail)
       }
     }
     else if(key == "COLLISION_DETECTOR_CHECK_COLLISIONS") {
-      // option to publish a interaction / clear condition to MOOSDB
+      // option to publish an interaction / clear condition to MOOSDB
       // immediately or synchronously with appcast update.
       string sval  = msg.GetString(); 
       sval = tolower(sval);
