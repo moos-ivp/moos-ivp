@@ -344,7 +344,7 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
 
 double WaypointEngine::distToPrevWpt(double osx, double osy) const
 {
-  if((m_prev_ix < 0) || (m_prev_ix >= m_seglist.size()))
+  if((m_prev_ix < 0) || ((unsigned int)(m_prev_ix) >= m_seglist.size()))
     return(-1);
   
   double prev_ptx = m_seglist.get_vx(m_prev_ix);
@@ -361,7 +361,7 @@ double WaypointEngine::distToPrevWpt(double osx, double osy) const
 
 double WaypointEngine::distToNextWpt(double osx, double osy) const
 {
-  if((m_curr_ix < 0) || (m_curr_ix >= m_seglist.size()))
+  if((m_curr_ix < 0) || ((unsigned int)(m_curr_ix) >= m_seglist.size()))
     return(-1);
   
   double curr_ptx = m_seglist.get_vx(m_curr_ix);
