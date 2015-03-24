@@ -975,7 +975,7 @@ void REPLAY_GUI::resizeWidgetsShape()
   // This is the default extent configuration so long as any minimal
   // constraints are not violated.
 
-  double pct_view_hgt = 0.755;
+  //double pct_view_hgt = 0.755;
   double pct_menu_hgt = 0.035;
   double pct_data_hgt = 0.210; // Above three add up to 1.0
 
@@ -985,7 +985,7 @@ void REPLAY_GUI::resizeWidgetsShape()
   if((pct_menu_hgt * now_hgt) > 25) 
     pct_menu_hgt = 25 / now_hgt;
 
-  pct_view_hgt = (1 - (pct_menu_hgt + pct_data_hgt));
+  //pct_view_hgt = (1 - (pct_menu_hgt + pct_data_hgt));
 
   // Part 2: Adjust the extents of the MENU Bar
   // ================================================================  

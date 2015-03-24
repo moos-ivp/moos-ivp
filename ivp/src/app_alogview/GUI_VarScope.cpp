@@ -363,7 +363,7 @@ void GUI_VarScope::cb_ButtonSetVar(Fl_Widget* o, int v) {
 inline void GUI_VarScope::cb_ButtonDelVar_i(int mix) {
   vector<unsigned int> new_current_mix_vars;
   for(unsigned int i=0; i<m_current_mix_vars.size(); i++) {
-    if(m_current_mix_vars[i] == mix)
+    if(m_current_mix_vars[i] == (unsigned int)(mix))
       m_vsmodel.delVarPlot(mix);
     else
       new_current_mix_vars.push_back(m_current_mix_vars[i]);
