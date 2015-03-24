@@ -78,6 +78,7 @@ ADD_LIBRARY(behaviors-marine ${SRC})
 
 TARGET_LINK_LIBRARIES(behaviors-marine
    mbutil
+   helmivp
    behaviors
    geometry
    )
