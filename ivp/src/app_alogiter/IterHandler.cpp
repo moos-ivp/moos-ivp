@@ -115,6 +115,9 @@ bool IterHandler::handle(const string& alogfile)
     }
   }
 
+  if(m_file_in)
+    fclose(m_file_in);
+
   return(true);
 }
   

@@ -76,52 +76,53 @@ bool LogChecker::parseInputFile(string input_file)
   string line = "";
   while( (line = getNextRawLine( input_p )) != "eof" ){
     // If the line is empty, continue to the next itteration of the loop
-    if( line.empty() ){
+    if( line.empty() )
       continue;
-    } // END check line.empty()
+    // END check line.empty()
     
     // Replace tabs with spaces and strip black line ends
     line = findReplace( stripBlankEnds(line), "\t", " ");
     // Strip all possible comments
     line = stripComment(stripComment(stripComment(line, "%"), "#"), "//");
 
-        // The Argument will be the first string
-        string argument = tolower( biteString(line, ' ') );
-        // The Flag will be remainer of the string
-        string flag = stripQuotes( stripBlankEnds(line) );
-
-        // If the argument is empty, continue on to the next itteration
-        if( argument.empty() ){
-            continue;
-        } // END check !svector.empty()
-
-        
-        // Check if the argument matches one of the conditions
-        if(argument == "start"){
-            // Try to add the start flag
-            if( this->addStartFlag( flag ) ){
-                valid_flag_found = true;
-            }// END check if add start flag was successful
-        } else if(argument == "end"){
-            // Try to add the end flag
-            if( this->addEndFlag( flag ) ){
-                valid_flag_found = true;
-            } // END check if add end flag was successful
-        } else if(argument == "pass"){
-            // Try to add the pass flag
-            if( this->addPassFlag( flag ) ){
-                valid_flag_found = true;
-            } // END check if add pass flag was successful
-        } else if(argument == "fail"){
-            // Try to add the fail flag
-            if( this->addFailFlag( flag ) ){
-                valid_flag_found = true;
-            }// END check if add fail flag was successful
-        } // END check argument
-
-    } // END while-loop over input file
-
-    return valid_flag_found;
+    // The Argument will be the first string
+    string argument = tolower( biteString(line, ' ') );
+    // The Flag will be remainer of the string
+    string flag = stripQuotes( stripBlankEnds(line) );
+    
+    // If the argument is empty, continue on to the next itteration
+    if( argument.empty() ){
+      continue;
+    } // END check !svector.empty()
+    
+    
+    // Check if the argument matches one of the conditions
+    if(argument == "start"){
+      // Try to add the start flag
+      if( this->addStartFlag( flag ) ){
+	valid_flag_found = true;
+      }// END check if add start flag was successful
+    } else if(argument == "end"){
+      // Try to add the end flag
+      if( this->addEndFlag( flag ) ){
+	valid_flag_found = true;
+      } // END check if add end flag was successful
+    } else if(argument == "pass"){
+      // Try to add the pass flag
+      if( this->addPassFlag( flag ) ){
+	valid_flag_found = true;
+      } // END check if add pass flag was successful
+    } else if(argument == "fail"){
+      // Try to add the fail flag
+      if( this->addFailFlag( flag ) ){
+	valid_flag_found = true;
+      }// END check if add fail flag was successful
+    } // END check argument
+    
+  } // END while-loop over input file
+  
+  fclose(input_p);
+  return(valid_flag_found);
 } 
 
 // --------------------------------------------------------

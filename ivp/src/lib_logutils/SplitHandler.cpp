@@ -221,7 +221,8 @@ bool SplitHandler::handleMakeSplitFiles()
     fclose(ptr);
   }
 
-  fclose(file_in);
+  if(file_in)
+    fclose(file_in);
 
   return(true);
 }

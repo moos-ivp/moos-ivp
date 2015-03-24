@@ -509,6 +509,9 @@ LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
     logplot.setValue(d_tstamp, d_varval);
   }
 
+  if(f)
+    fclose(f);
+
   logplot.applySkew(m_logskew[aix]);
   
   return(logplot);
@@ -601,6 +604,8 @@ VarPlot ALogDataBroker::getVarPlot(unsigned int mix, bool include_source)
   if(!include_source || uform_source)
     varplot.setSource(all_source);
 
+  if(f)
+    fclose(f);
   return(varplot);
 }
 

@@ -380,8 +380,6 @@ string getNextRawLine(FILE *fileptr)
     unsigned char mychar = myint;
     switch(myint) {
     case EOF:
-      fclose(fileptr);
-      fileptr = 0;
       return("eof");
     case '\n':
       buff[buffix] = '\0';  // attach terminating NULL

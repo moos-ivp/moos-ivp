@@ -137,6 +137,9 @@ bool SortHandler::handleSort(const string& alogfile, const string& new_alogfile)
   if(m_file_out)
     fclose(m_file_out);
   m_file_out = 0;
+  if(m_file_in)
+    fclose(m_file_in);
+  m_file_in = 0;
 
   return(true);
 }
