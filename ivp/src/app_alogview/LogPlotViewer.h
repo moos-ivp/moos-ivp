@@ -105,6 +105,7 @@ class LogPlotViewer : public Fl_Gl_Window
   double m_rgt_marg;
   double m_bot_marg;
   
+  bool   m_zoomed_in;
   double m_extreme_min_time;
   double m_extreme_max_time;
   double m_display_min_time;

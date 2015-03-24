@@ -52,6 +52,8 @@ LogPlotViewer::LogPlotViewer(int gx, int gy, int gw, int gh, const char *gl)
   m_fullvar1 = "none";
   m_fullvar2 = "none";
 
+  m_zoomed_in = false;
+
   m_extreme_min_time = 0;
   m_extreme_max_time = 0;
   m_display_min_time = 0;
@@ -137,7 +139,9 @@ void LogPlotViewer::setLeftPlot(unsigned int mix)
     
   m_left_mix = mix;
   m_valid_cache = false;
-  adjustTimeBounds();
+
+  if(!m_zoomed_in)
+    adjustTimeBounds();
 }
 
 //-------------------------------------------------------------
@@ -163,7 +167,9 @@ void LogPlotViewer::setRightPlot(unsigned int mix)
 
   m_right_mix = mix;
   m_valid_cache = false;
-  adjustTimeBounds();
+
+  if(!m_zoomed_in)
+    adjustTimeBounds();
 }
 
 //-------------------------------------------------------------
@@ -317,6 +323,7 @@ void LogPlotViewer::adjustZoom(string ztype)
       m_display_max_time -= upper_crop_time;
       m_valid_cache = false;
     }
+    m_zoomed_in = true;
   }
   else if(ztype == "out") {
     double pad_amount = time_band * 0.25;
@@ -324,16 +331,21 @@ void LogPlotViewer::adjustZoom(string ztype)
     double upper_pad_time = pad_amount * (1-pct_band);
     m_display_min_time -= lower_pad_time;
     m_display_max_time += upper_pad_time;
-    if(m_display_min_time < m_extreme_min_time)
+    if(m_display_min_time < m_extreme_min_time) {
       m_display_min_time = m_extreme_min_time;
-    if(m_display_max_time > m_extreme_max_time)
+      m_zoomed_in = false;
+    }
+    if(m_display_max_time > m_extreme_max_time) {
       m_display_max_time = m_extreme_max_time;
+      m_zoomed_in = false;
+    }
     m_valid_cache = false;
   }
   else if(ztype == "reset") {
     m_display_min_time = m_extreme_min_time;
     m_display_max_time = m_extreme_max_time;
     m_valid_cache = false;
+    m_zoomed_in = false;
   }
   redraw();
 }
