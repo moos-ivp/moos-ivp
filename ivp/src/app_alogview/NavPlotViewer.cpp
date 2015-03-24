@@ -175,16 +175,21 @@ void NavPlotViewer::initPlots()
 
     // Get the alternate nav positions. If they dont exist, its ok
     // the logplots will just be empty.
+    LogPlot logplot_gt_navx, logplot_gt_navy, logplot_gt_hdg;
+    
     mix = m_dbroker.getMixFromVNameVarName(vname, m_alt_nav_prefix+"X");
-    LogPlot logplot_gt_navx = m_dbroker.getLogPlot(mix);
+    if(mix < m_dbroker.sizeMix())
+      logplot_gt_navx = m_dbroker.getLogPlot(mix);
     addLogPlotNAVX_GT(logplot_gt_navx);
 
     mix = m_dbroker.getMixFromVNameVarName(vname, m_alt_nav_prefix+"Y");
-    LogPlot logplot_gt_navy = m_dbroker.getLogPlot(mix);
+    if(mix < m_dbroker.sizeMix())
+      logplot_gt_navy = m_dbroker.getLogPlot(mix);
     addLogPlotNAVY_GT(logplot_gt_navy);
 
     mix = m_dbroker.getMixFromVNameVarName(vname, m_alt_nav_prefix+"HEADING");
-    LogPlot logplot_gt_hdg = m_dbroker.getLogPlot(mix);
+    if(mix < m_dbroker.sizeMix())
+      logplot_gt_hdg = m_dbroker.getLogPlot(mix);
     addLogPlotHDG_GT(logplot_gt_hdg);
   }
   

@@ -55,6 +55,7 @@ public:
   std::string getVarName() const  {return(m_varname);};
   unsigned int  size() const      {return(m_time.size());};
 
+  bool   empty() const            {return(m_time.size() == 0);};
   void   print() const;
   
 protected:
