@@ -17,7 +17,9 @@ o uFldNodeBroker
 o pDeadManPost (New App)
 
 o lib_geometry
-  Added bearingMinMaxToPoly utility
+  - Added bearingMinMaxToPoly utility
+  - Added ConvexHullGenerator, accepts a series of points, returns a
+    convex hull in the form of an XYPolygon
 
 o BHV_AvoidObstacles
  
@@ -28,6 +30,8 @@ o New application: iDiffThrust
 o uSimMarine
   - Added support for differential thrust mode
   - Bug fix - negative thrust was not working properly
+  - Added support for halting the vehicle propagation when OBSTACLE_HIT=1 is
+  posted.
 
 o pNodeReport
   - Added ability to detect when in reverse thrust mode and note it in the
