@@ -217,8 +217,8 @@ void Common_IPFViewer::draw()
 {
   clear();
 
-  if((m_quadset.size2D() == 0) && (m_quadset.size1D() == 0))
-    return;
+  //if((m_quadset.size2D() == 0) && (m_quadset.size1D() == 0))
+  //  return;
 
   glViewport(0,0,w(),h());
 
@@ -505,7 +505,7 @@ void Common_IPFViewer::drawQuad(Quad3D q, double rad_extra_extra)
 
 void Common_IPFViewer::drawFrame(bool full)
 {
-  double w = 550;
+  double w = 300;
 
   double b = -150;
   double t = -350 + (m_frame_height);
