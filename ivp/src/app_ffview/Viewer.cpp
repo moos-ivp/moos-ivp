@@ -40,7 +40,7 @@ Viewer::Viewer(int x, int y,
 	       int width, int height, const char *l)
   : Common_IPFViewer(x,y,width,height,l)
 {
-  m_base_aof   = -232;      // For shifting the AOF rendering
+  m_base_aof   = -132;      // For shifting the AOF rendering
   m_base_ipf   = -35;       // For shifting the IPF rendering
   m_patch      = 5;         // Size of patch rendering the AOF
   m_draw_aof   = true;
@@ -65,7 +65,8 @@ Viewer::Viewer(int x, int y,
   m_focus_box_len   = 100;
   m_focus_unif_len  = 5;
 
-  m_zoom = m_zoom * 1.25 * 1.25;  // Two zoom clicks in.
+  //m_zoom = m_zoom * 1.25 * 1.25;  // Two zoom clicks in.
+  m_zoom = 1;
 }
 
 //-------------------------------------------------------------
