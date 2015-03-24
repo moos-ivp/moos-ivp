@@ -27,7 +27,6 @@
 #include <string>
 #include <vector>
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
-//#include "MOOSGeodesy.h"
 #include "FL/Fl.H"
 #include "FL/Fl_Gl_Window.H"
 #include "FL/gl.h"
