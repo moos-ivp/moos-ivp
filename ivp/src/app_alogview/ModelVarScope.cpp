@@ -111,7 +111,6 @@ void ModelVarScope::addVarPlot(unsigned int mix)
   m_prev_entries = mergePlots(m_prev_entries, prev_entries);
 
   // Part 3: Merge the SOON entries
-  cout << "m_curr_time: " << m_curr_time << endl;
   list<VarPlotEntry> soon_entries = vplot.getVarPlotEntriesPastTime(m_curr_time);
   reformat(soon_entries);
   m_soon_entries = mergePlots(m_soon_entries, soon_entries);

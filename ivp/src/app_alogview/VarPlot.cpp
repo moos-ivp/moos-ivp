@@ -224,9 +224,6 @@ list<VarPlotEntry> VarPlot::getVarPlotEntriesPastTime(double gtime) const
   if(gtime < m_time[0])
     index = 0;
 
-
-  cout << "m_entry.size(): " << m_entry.size() << endl;
-  cout << "m_source.size(): " << m_source.size() << endl;
   for(unsigned int i=index; i<m_entry.size(); i++) {
     VarPlotEntry entry(m_time[i]);
     entry.setVName(m_vname);
