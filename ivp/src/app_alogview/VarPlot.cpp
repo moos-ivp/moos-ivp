@@ -200,7 +200,10 @@ list<VarPlotEntry> VarPlot::getVarPlotEntriesUpToTime(double gtime) const
     entry.setVName(m_vname);
     entry.setVarName(m_varname);
     entry.setVarVal(m_entry[i]);
-    entry.setVarSource(m_source[i]);
+    string source = m_srcname;
+    if((source == "") && (i < m_source.size()))
+      source = m_source[i];
+    entry.setVarSource(source);
     entry.setVarSrcAux(m_srcaux[i]);
     rlist.push_back(entry);
   }
@@ -221,12 +224,18 @@ list<VarPlotEntry> VarPlot::getVarPlotEntriesPastTime(double gtime) const
   if(gtime < m_time[0])
     index = 0;
 
+
+  cout << "m_entry.size(): " << m_entry.size() << endl;
+  cout << "m_source.size(): " << m_source.size() << endl;
   for(unsigned int i=index; i<m_entry.size(); i++) {
     VarPlotEntry entry(m_time[i]);
     entry.setVName(m_vname);
     entry.setVarName(m_varname);
     entry.setVarVal(m_entry[i]);
-    entry.setVarSource(m_source[i]);
+    string source = m_srcname;
+    if((source == "") && (i < m_source.size()))
+      source = m_source[i];
+    entry.setVarSource(source);
     entry.setVarSrcAux(m_srcaux[i]);
     rlist.push_back(entry);
   }
