@@ -360,6 +360,7 @@ void HostInfo::postIPInfo()
   HostRecord hrecord;
   hrecord.setCommunity(m_host_community);
   hrecord.setHostIP(m_host_ip);
+  hrecord.setHostIPAlts(m_host_ip_all);
   hrecord.setPortDB(m_host_port_db);
   hrecord.setTimeWarp(doubleToStringX(m_time_warp,1));
   hrecord.setPShareIRoutes(m_pshare_iroutes);

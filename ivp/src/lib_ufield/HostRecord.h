@@ -38,6 +38,7 @@ class HostRecord
   
   void setCommunity(const std::string& s)  {m_community=s;};
   void setHostIP(const std::string& s)     {m_hostip=s;};
+  void setHostIPAlts(const std::string& s) {m_hostip_alts=s;};
   void setPortDB(const std::string& s)     {m_port_db=s;};
   void setPortUDP(const std::string& s)    {m_port_udp=s;};
   void setKeyword(const std::string& s)    {m_keyword=s;};
@@ -48,6 +49,7 @@ class HostRecord
 
   std::string getCommunity() const  {return(m_community);};
   std::string getHostIP() const     {return(m_hostip);};
+  std::string getHostIPAlts() const {return(m_hostip_alts);};
   std::string getPortDB() const     {return(m_port_db);};
   std::string getPortUDP() const    {return(m_port_udp);};
   std::string getKeyword() const    {return(m_keyword);};
@@ -64,6 +66,7 @@ class HostRecord
  protected: 
   std::string  m_community;
   std::string  m_hostip;
+  std::string  m_hostip_alts;
   std::string  m_port_db;
   std::string  m_port_udp;
   std::string  m_pshare_iroutes;

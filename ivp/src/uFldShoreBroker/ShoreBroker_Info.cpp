@@ -125,8 +125,8 @@ void showInterfaceAndExit()
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
   blk("  PHI_HOST_INFO    = community=alpha,hostip=123.1.1.0,          ");
-  blk("                     port_db=9000,port_udp=9200,                ");
-  blk("                     timewarp=8                                 ");
+  blk("                     port_db=9000,port_udp=9200,timewarp=8      ");
+  blk("                     pshare_iroutes=localhost:9200&multicast9    ");
   blk("  NODE_BROKER_PING = community=henry,host=12.16.1.22,port=9000, ");
   blk("                     time_warp=8,pshare_iroutes=12.18.1.22:9200,");
   blk("                     time=1325178800.81                         ");

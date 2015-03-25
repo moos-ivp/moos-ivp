@@ -126,7 +126,7 @@ void showInterfaceAndExit()
   blk("  PHI_HOST_PORT_DB    = 9000                                    ");
   blk("  PHI_HOST_INFO       = community=alpha,hostip=123.1.1.0,       ");
   blk("                        port_db=9000,timewarp=8,                ");
-  blk("                        pshare_iroutes=localhost:9000,multicast_9");
+  blk("                        pshare_iroutes=localhost:9200&multicast_9");
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
