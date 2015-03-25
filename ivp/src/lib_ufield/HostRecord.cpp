@@ -77,7 +77,7 @@ string HostRecord::getSpecTerse() const
     string hostip_alts = m_hostip_alts;
     hostip_alts = findReplace(m_hostip_alts, m_hostip+",", "");
     hostip_alts = findReplace(m_hostip_alts, m_hostip, "");
-    str += "hostip_alts=" + hostip_alts;
+    str += ",hostip_alts=" + hostip_alts;
   }
 
   return(str);
