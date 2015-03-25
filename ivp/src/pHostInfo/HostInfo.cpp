@@ -239,6 +239,10 @@ void HostInfo::generateIPInfoFiles()
   sys_call += m_tmp_file_dir + "ipinfo_osx_ethernet2_" + name + ".txt" + bgd; 
   result = system(sys_call.c_str());
 
+  sys_call = "ifconfig bridge100 | grep 'broadcast 192.168.2.255' | cut -d ' ' -f2 > ";
+  sys_call += m_tmp_file_dir + "ipinfo_osx_bridge100_" + name + ".txt" + bgd; 
+  result = system(sys_call.c_str());
+
   // Next the various GNU/Linux system calls
   sys_call  = "ifconfig eth0 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
@@ -293,6 +297,7 @@ void HostInfo::gatherIPInfoFromFiles()
   m_ip_osx_ethernet    = readOSXInfoIP("ipinfo_osx_ethernet_" + name + ".txt");
   m_ip_osx_ethernet1   = readOSXInfoIP("ipinfo_osx_ethernet1_" + name + ".txt");
   m_ip_osx_ethernet2   = readOSXInfoIP("ipinfo_osx_ethernet2_" + name + ".txt");
+  m_ip_osx_bridge100   = readLinuxInfoIP("ipinfo_osx_bridge100_" + name + ".txt");
   m_ip_osx_usb_ethernet = readOSXInfoIP("ipinfo_osx_usb_ethernet_" + name + ".txt");
   m_ip_linux_wifi      = readLinuxInfoIP("ipinfo_linux_wifi_" + name + ".txt");
   m_ip_linux_ethernet0 = readLinuxInfoIP("ipinfo_linux_ethernet0_" + name + ".txt");
@@ -339,6 +344,7 @@ void HostInfo::postIPInfo()
     addIPInfo(m_ip_osx_usb_ethernet, "OSX_USB_ETHERNET");
     addIPInfo(m_ip_osx_ethernet1, "OSX_ETHERNET1");
     addIPInfo(m_ip_osx_ethernet2, "OSX_ETHERNET2");
+    addIPInfo(m_ip_osx_bridge100, "OSX_BRIDGE100");
     addIPInfo(m_ip_osx_wifi, "OSX_WIFI");
   }    
 
