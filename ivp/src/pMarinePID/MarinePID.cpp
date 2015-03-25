@@ -71,6 +71,7 @@ MarinePID::MarinePID()
   m_start_time   = 0;
 
   m_paused       = false;
+  m_ok_skew      = 360;
 
   m_tardy_helm_thresh = 2.0;
   m_tardy_nav_thresh  = 2.0;
@@ -339,6 +340,8 @@ bool MarinePID::OnStartUp()
       m_tardy_nav_thresh = vclip_min(dval, 0);
     else if(param == "ACTIVE_START") 
       setBooleanOnString(m_has_control, value);
+    //else if(param == "OK_SKEW") 
+    //  handled = handleConfigSkewAny(value);
     else if(param == "VERBOSE") {
       if((sLine == "true") || (sLine == "verbose"))
 	m_verbose = "verbose";

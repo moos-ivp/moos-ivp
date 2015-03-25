@@ -79,6 +79,8 @@ protected:
   bool    m_depth_control;
   bool    m_paused;
 
+  double  m_ok_skew;
+
   double  m_time_of_last_helm_msg;
   double  m_time_of_last_nav_msg;
 
