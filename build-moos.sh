@@ -50,7 +50,7 @@ cmake -DENABLE_EXPORT=ON                                     \
       -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
 
 echo ""; echo "Invoking make..." `pwd`; echo ""
-make  ${CMD_ARGS}
+make  -j12 ${CMD_ARGS}
 
 #===================================================================
 # Part #2:  BUILD ESSENTIALS
@@ -63,7 +63,7 @@ cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
       -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}" ./
 
 echo""; echo "Invoking make..." `pwd`; echo""
-make ${CMD_ARGS}
+make -j12 ${CMD_ARGS}
 
 
 #===================================================================
@@ -80,7 +80,7 @@ cmake -DBUILD_CONSOLE_TOOLS=ON                               \
       -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}" ./          
     
 echo ""; echo "Invoking make..." `pwd`; echo ""
-make ${CMD_ARGS}
+make -j12 ${CMD_ARGS}
 
 #===================================================================
 # Part #4:  BUILD PROJ4
@@ -114,6 +114,6 @@ cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"         \
 
     
 echo ""; echo "Invoking make..." `pwd`; echo ""
-make -j8 $@
+make -j12 $@
 
 cd ${INVOC_ABS_DIR}

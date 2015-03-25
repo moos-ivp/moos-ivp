@@ -35,19 +35,6 @@ ProcessConfig = ANTLER
 }
 
 //------------------------------------------
-ProcessConfig = uTimerScript                                    
-{                                                               
-  rand_var    = varname=RND_VAL, min=0, max=50, key=at_post
-
-	delay_start = 5
-
-  event = var=REPORT, val="start", time=0
-  //event = var=REPORT, val="accidents=$[RND_VAL], unique_id=$[TCOUNT]", time=0, amt=100 
-  event = var=REPORT, val="$(15)", time=0, amt=100 
-  event = var=REPORT, val="end", time=0
-}                           
-
-//------------------------------------------
 // pLogger config block
 
 ProcessConfig = pLogger
@@ -66,8 +53,8 @@ ProcessConfig = pLogger
   LogAuxSrc = true
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
-  //WildCardOmitPattern = DB_VARSUMMARY
-  //WildCardOmitPattern = DB_RWSUMMARY
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
   WildCardExclusionLog = true
 }
 
