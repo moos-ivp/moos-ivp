@@ -55,6 +55,8 @@ HostRecord string2HostRecord(const string& host_record_string)
       new_record.setPShareIRoutes(value);
     else if(param == "keyword")
       new_record.setKeyword(value);
+    else if(param == "hostip_alts")
+      new_record.setHostIPAlts(value);
     else if(param == "timewarp")
       new_record.setTimeWarp(value);
     else if(param == "status")
