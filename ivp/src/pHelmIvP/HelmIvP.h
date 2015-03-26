@@ -124,6 +124,8 @@ protected:
   bool          m_init_vars_ready;
   bool          m_init_vars_done;
 
+  unsigned int  m_no_decisions;
+
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
   // variable given by m_refresh_var. The user can set minimum interval
@@ -188,7 +190,3 @@ protected:
   std::map<std::string, double>  m_node_skews;
 };
 #endif 
-
-
-
-

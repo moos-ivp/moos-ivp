@@ -73,6 +73,7 @@ HelmIvP::HelmIvP()
   m_last_heartbeat = 0;
   m_curr_time      = 0;
   m_start_time     = 0;
+  m_no_decisions   = 0;
 
   // The m_has_control correlates to helm status
   m_has_control     = false;
@@ -1383,10 +1384,20 @@ void HelmIvP::postAllStop(string msg)
   if(msg != "")
     m_allstop_msg = msg;
 
+  if(msg == "NothingToDo")
+    m_no_decisions++;
+  else
+    m_no_decisions = 0;
+
   MOOSDebugWrite("pHelmIvP AllStop: " + m_allstop_msg);
   Notify("IVPHELM_ALLSTOP", m_allstop_msg);
 
   if(tolower(m_allstop_msg) == "clear")
+    return;
+
+  // Willing to hold off one iteration if simply no decision. To give helm
+  // chance to transition between modes.
+  if(m_no_decisions == 1)
     return;
 
   // Post all the Decision Variable Results
