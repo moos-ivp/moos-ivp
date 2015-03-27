@@ -46,13 +46,14 @@ void MarineVehiGUI::augmentMenu()
   m_menubar->add("Vehicles/vehicles_viewable=false", 0,                (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)11, FL_MENU_RADIO);
   m_menubar->add("Vehicles/    Toggle vehicles_viewable", FL_CTRL+'v', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)12, FL_MENU_DIVIDER);
 
+  m_menubar->add("Vehicles/    Toggle Vehicle Name Mode",      'n', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)29, FL_MENU_RADIO);
   m_menubar->add("Vehicles/vehicles_name_mode=names",            0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)20, FL_MENU_RADIO);
   m_menubar->add("Vehicles/vehicles_name_mode=names+mode",       0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)21, FL_MENU_RADIO);
   m_menubar->add("Vehicles/vehicles_name_mode=names+shortmode",  0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)22, FL_MENU_RADIO);
   m_menubar->add("Vehicles/vehicles_name_mode=names+depth",      0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)23, FL_MENU_RADIO);
   m_menubar->add("Vehicles/vehicles_name_mode=names+auxmode",    0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)24, FL_MENU_RADIO);
-  m_menubar->add("Vehicles/vehicles_name_mode=off",              0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)25, FL_MENU_RADIO);
-  m_menubar->add("Vehicles/    Toggle Vehicle Name Mode",      'n', (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)29, FL_MENU_DIVIDER);
+  m_menubar->add("Vehicles/vehicles_name_mode=off",              0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)25, FL_MENU_RADIO|FL_MENU_DIVIDER);
+
 
   m_menubar->add("Vehicles/vehicles_active_color=red",    0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)40, FL_MENU_RADIO);
   m_menubar->add("Vehicles/vehicles_active_color=yellow", 0, (Fl_Callback*)MarineVehiGUI::cb_SetRadioVehiAttrib, (void*)41, FL_MENU_RADIO);
