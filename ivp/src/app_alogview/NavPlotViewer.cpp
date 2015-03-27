@@ -452,8 +452,6 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
   record.setHeading(heading);
   record.setLength(vehi_length);
 
-  cout << "vnames_mode:" << vnames_mode << endl;
-
   bool vname_draw = true;
   if(vnames_mode == "off")
     vname_draw = false;
@@ -476,7 +474,9 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
 
   // We do not handle bearing reports - yet.
   BearingLine bng_line;
-  drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw);
+  
+  if(m_vehi_settings.isViewableVehicles())
+    drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw);
 }
 
 

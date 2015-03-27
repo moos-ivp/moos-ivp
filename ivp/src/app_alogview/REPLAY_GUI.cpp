@@ -201,6 +201,9 @@ void REPLAY_GUI::augmentMenu()
   if(ix1 != -1) m_menubar->remove(ix1);
   int ix2 = m_menubar->find_index("Vehicles/    Toggle trails_connect_viewable");
   if(ix2 != -1) m_menubar->remove(ix2);
+  int ix3 = m_menubar->find_index("Vehicles/Cycle Vehicle Focus");
+  if(ix3 != -1) m_menubar->remove(ix3);
+
 
   // Remove some Menu items inherited from the parent class not implemented in alogview
   
@@ -239,6 +242,28 @@ void REPLAY_GUI::augmentMenu()
   item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/trails_connect_viewable=false");
   if(item) item->hide();
 
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/center_view = vehicle_active");
+  if(item) item->hide();
+
+  item = (Fl_Menu_Item*)m_menubar->find_item("BackView/tiff_type toggle");
+  if(item) item->hide();
+
+  // Turn on the right radio buttons
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_viewable=true");
+  if(item) item->setonly();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_name_mode=names");
+  if(item) item->setonly();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_active_color=red");
+  if(item) item->setonly();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/trails_viewable=true");
+  if(item) item->setonly();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/trails_color=white");
+  if(item) item->setonly();
+
+  item = (Fl_Menu_Item*)m_menubar->find_item("BackView/hash_delta=100");
+  if(item) item->setonly();
+  item = (Fl_Menu_Item*)m_menubar->find_item("BackView/hash_viewable=true");
+  if(item) item->setonly();
 }
 
 //----------------------------------------------------------
