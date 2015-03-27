@@ -452,14 +452,27 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
   record.setHeading(heading);
   record.setLength(vehi_length);
 
+  cout << "vnames_mode:" << vnames_mode << endl;
+
   bool vname_draw = true;
   if(vnames_mode == "off")
     vname_draw = false;
   
+
+  // For now we don't support depth. It would mean reading in a LogPlot for NAV_DEPTH
+  // which could substantially bloat alogview memory footprint. Users can see depth
+  // by opening NAV_DEPTH in the LogPlotViewer. If we can support a "collapse" 
+  // function for logplots to collapse series of same values into one, then 
+  // perhaps it makes sense here. Surface vehicles still get NAV_DEPTH
+  // 
+#if 0
   if(vnames_mode == "names+depth") {
-    string str_depth = "0";
+    string str_depth = dstringCompact(doubleToString(record.getDepth(),2));
     vehi_name += " (depth=" + str_depth + ")";
+    record.setName(vehi_name);
   }
+  cout << "vehi_name:[" << vehi_name << "]" << endl;
+#endif
 
   // We do not handle bearing reports - yet.
   BearingLine bng_line;

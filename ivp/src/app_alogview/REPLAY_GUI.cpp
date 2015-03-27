@@ -184,8 +184,8 @@ void REPLAY_GUI::augmentMenu()
   m_menubar->add("Replay/Streaming Redraw Once Per 30 Logged Seconds", 0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)30000, FL_MENU_RADIO|FL_MENU_RADIO);
   m_menubar->add("Replay/Streaming Redraw Once Per 60 Logged Seconds", 0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)60000, FL_MENU_RADIO|FL_MENU_DIVIDER);
 
-  m_menubar->add("Replay/Step by Seconds",  0, (Fl_Callback*)REPLAY_GUI::cb_StepType, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
-  m_menubar->add("Replay/Step by Helm Iterations",  0, (Fl_Callback*)REPLAY_GUI::cb_StepType, (void*)1, FL_MENU_RADIO|FL_MENU_DIVIDER);
+  //m_menubar->add("Replay/Step by Seconds",  0, (Fl_Callback*)REPLAY_GUI::cb_StepType, (void*)0, FL_MENU_RADIO|FL_MENU_VALUE);
+  //m_menubar->add("Replay/Step by Helm Iterations",  0, (Fl_Callback*)REPLAY_GUI::cb_StepType, (void*)1, FL_MENU_RADIO|FL_MENU_DIVIDER);
 
   m_menubar->add("Replay/Jump To Start",  FL_ALT + '[', (Fl_Callback*)REPLAY_GUI::cb_JumpTime, (void*)0, 0);
   m_menubar->add("Replay/Jump To End",  FL_ALT + ']', (Fl_Callback*)REPLAY_GUI::cb_JumpTime, (void*)1, FL_MENU_DIVIDER);
@@ -196,6 +196,49 @@ void REPLAY_GUI::augmentMenu()
   m_menubar->add("Replay/Step Back  1 sec",  '[', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-1000, 0);
   m_menubar->add("Replay/Step Ahead 5 secs", '}', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)5000, 0);
   m_menubar->add("Replay/Step Back  5 secs", '{', (Fl_Callback*)REPLAY_GUI::cb_Step, (void*)-5000, FL_MENU_DIVIDER);
+
+  int ix1 = m_menubar->find_index("Vehicles/    Toggle Vehicle Name Mode");
+  if(ix1 != -1) m_menubar->remove(ix1);
+  int ix2 = m_menubar->find_index("Vehicles/    Toggle trails_connect_viewable");
+  if(ix2 != -1) m_menubar->remove(ix2);
+
+  // Remove some Menu items inherited from the parent class not implemented in alogview
+  
+  Fl_Menu_Item *item;
+  
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/bearing_lines_viewable=true");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/bearing_lines_viewable=false");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/    Toggle bearing_lines_viewable");
+  if(item) item->hide();
+
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_name_mode=names+mode");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_name_mode=names+shortmode");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_name_mode=names+auxmode");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_name_mode=names+depth");
+  if(item) item->hide();
+
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_inactive_color=yellow");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_inactive_color=white");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_inactive_color=blue");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_inactive_color=green");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_inactive_color=red");
+  if(item) item->hide();
+
+
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/trails_connect_viewable=true");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/trails_connect_viewable=false");
+  if(item) item->hide();
+
 }
 
 //----------------------------------------------------------
