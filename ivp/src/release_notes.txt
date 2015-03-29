@@ -1,4 +1,43 @@
 
+o app_alogview
+  - A major re-write of the previously existing alogview tool for analyzing
+  pos-tmission data in the typical .alog file format produced by pLogger.
+
+  - One of the biggest changes addresses the run-time memory size of alogview
+  as it loads data from several vehicles with large alog files. The previous
+  alogview tool would load *all* data from all vehicles upon startup. This 
+  could overwhelm the program and hang as the memory usage out-grew the RAM
+  on modest to low-memory machines. The current implementation splits the 
+  log file into separate temporary files and grabs the data at run time from
+  these files as-needed.
+  - The GUI layout has changed to support the helm-state and IvPFunction 
+  views as separate pop-up windows. THe user doesn't seen them when not 
+  interested, and the user may bring up as many as desired as needed.
+  - One or more Variable-History scopes may be opened on any subset of MOOS
+  variables across all vehicles. For both string and double data.
+  - Numerical log plots in the bottom of the main window may be synced to 
+  be on the same y-axis scale is desired.
+  - More control over automatic replay speed and refresh rate. Replay speed
+  limited by what is being draw/calculate between iterations, and by the 
+  refresh rate. Viewer will show requested vs. actual refresh rate.
+  - Command line switches for choosing initial startup conditions including
+  initial logged variables, pan, zoom, and initial start time.
+  - Command line switch for specifying a time range, allowing the tool to 
+  load less memory into RAM. Previously only possible by first clipping the
+  alog files. 
+  - Support for alternate navigation solutions, so playback may render the
+  vehicle's ground truth and on-board navigation solution simultaneously.
+  - Many other bug-fixes
+
+
+alog file access is changed. As a first step upon launch, the alog files
+  are split into a dedicated subdirectory
+
+
+the main GUI and supporting specialized sub-guis
+  to support multiple vehicles with potentially large files. 
+
+
 o uFunctionVis 
   Fixed glitch that preveneted the Behaviors pull-down menu from appearing 
   upon startup
@@ -12,20 +51,36 @@ o pMarineViewer
     no background image is found or if left unspecified.
   
 o uFldNodeBroker
-  - Fixed a bug that could prevent node connections in some cases.
+  - Fixed a bug that could prevent node connections in some cases. These cases
+  were when pShare started sufficiently later than uFldNodeBroker, perhaps missing
+  the cluster of initial config messages published by uFldNodeBroker
 
 o pDeadManPost (New App)
 
-o lib_geometry
-  - Added bearingMinMaxToPoly utility
+  - The pDeadManPost application that allows the user to arrange
+configured posts to the MOOSDB in the absence of another event. There
+are many conceivable uses for this, but here are a few of the ideas
+that motivated this app:
+
+  - On a shoreside community, a dead-man post can be made to trigger
+    an alert when a deployed vehicle is out of contact after some
+    period of time. The alert could be a posting to trigger an alarm
+    .wav file or a spoken alert message through iSay.
+
+  - On a vehicle, a dead-man post can be made to put a unmanned
+    surface vehicle in a station-keeping mode if comms to the
+    shoreside command and control goes silent for some period of time.
+
+o lib_geometry 
+  - Added bearingMinMaxToPoly in GeomUtils.cpp
+  - Added ability to delete a vertex by index number in XYSegList
+    void XYSegList::delete_vertex(unsigned int);
+  - Added a check for a turn left given three points in AngleUtils.cpp
+    bool threePointTurnLeft(double, ..., double);
+  - Added the ConvexHullGenerator class for determining a convex hull in 
+    the form of an XYPolyon, given a set of points in the x-y plane
   - Added ConvexHullGenerator, accepts a series of points, returns a
     convex hull in the form of an XYPolygon
-
-o BHV_AvoidObstacles
- 
-o New application: pObstacleMgr
-
-o New application: iDiffThrust
 
 o uSimMarine
   - Added support for differential thrust mode
@@ -39,6 +94,13 @@ o pNodeReport
 
 o pHelmIvP 
   - Upon unfound behavior, posts MALCONFIG and remains up vs. quitting
+  - Modified to not post a helm decision for one iteration if there are no
+    active behaviors. Relevant in situations where the helm is transitioning
+    between modes, end flags trigger new behaviors/mode but for one transiion
+    iteration no behaviors are active. Rather than post desired speed of zero, 
+    helm just posts no new decision for one iteration. If an all-stop situation
+    is encountered in the helm, the helm will post desired speed of zero 
+    imediately.
 
 o BHV_OpRegion
   - Added optional opregion_poly_var config parameter that names a MOOS
@@ -78,15 +140,6 @@ o BHV_Waypoint
  speed weight is implied to be 100-N, so the two always add to 100 and neither is
  below 1 or greater than 99. The default is 50-50.
 
-o lib_geometry 
-  - Added bearingMinMaxToPoly in GeomUtils.cpp
-  - Added ability to delete a vertex by index number in XYSegList
-    void XYSegList::delete_vertex(unsigned int);
-  - Added a check for a turn left given three points in AngleUtils.cpp
-    bool threePointTurnLeft(double, ..., double);
-  - Added the ConvexHullGenerator class for determining a convex hull in 
-    the form of an XYPolyon, given a set of points in the x-y plane
-
 o aloggrep
   - Added --no_comments (or -nc) command line arg to allow for the output 
     to discard the comments typically found at the top of an alog file
@@ -103,6 +156,9 @@ o uSimMarine
     behaviors
 
 
+---------------------------------------------------------------------------
+
+
 14.7.x
 
 o MOOS Emacs Mode
@@ -114,6 +170,17 @@ o Documentation
 
 o pHelmIvP
   MaxDepth behavior modified to not require a duration parameter
+
+---------------------------------------------------------------------------
+
+o BHV_AvoidObstacles
+ 
+o New application: pObstacleMgr
+
+o New application: iDiffThrust
+
+
+
 
 Modified to pass command line arguments to MOOSApp superclass
 pDeadManPost

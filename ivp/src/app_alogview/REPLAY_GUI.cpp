@@ -171,7 +171,7 @@ void REPLAY_GUI::resize(int lx, int ly, int lw, int lh)
 
 void REPLAY_GUI::augmentMenu()
 {
-  m_menubar->add("Replay/Streaming Toggle",  '=', (Fl_Callback*)REPLAY_GUI::cb_Streaming,(void*)2, 0);
+  m_menubar->add("Replay/Streaming Toggle",  ' ', (Fl_Callback*)REPLAY_GUI::cb_Streaming,(void*)2, 0);
   m_menubar->add("Replay/Streaming Warp Faster", 'a', (Fl_Callback*)REPLAY_GUI::cb_StreamSpeed, (void*)1, 0);
   m_menubar->add("Replay/Streaming Warp Slower", 'z', (Fl_Callback*)REPLAY_GUI::cb_StreamSpeed, (void*)0, FL_MENU_DIVIDER);
   m_menubar->add("Replay/Streaming Redraw 10x Per Logged Second", 0, (Fl_Callback*)REPLAY_GUI::cb_StreamStep, (void*)100, FL_MENU_RADIO|FL_MENU_RADIO);
@@ -284,7 +284,7 @@ int REPLAY_GUI::handle(int event)
   case FL_KEYDOWN:
     // Handle the Space Bar Key for pausing playback
     if(Fl::event_key() == 32) 
-      cb_Streaming_i(0);
+      cb_Streaming_i(2);
     // Handle the Zoom Keys
     else if((Fl::event_key() == 105) && (Fl::event_state() == FL_SHIFT))
       zoom(-1);

@@ -314,7 +314,7 @@ int GUI_HelmScope::handle(int event)
   switch(event) {
   case FL_KEYDOWN:
     if(Fl::event_key() == 32) 
-      m_parent_gui->streaming(0);
+      m_parent_gui->streaming(2);
     else if(Fl::event_key() == 'a') 
       m_parent_gui->streamspeed(true);
     else if(Fl::event_key() == 'z') 

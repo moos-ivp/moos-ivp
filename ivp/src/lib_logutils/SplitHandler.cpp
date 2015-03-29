@@ -301,6 +301,7 @@ bool SplitHandler::handlePreCheckSplitDir()
   // Part 2: Make sure we don't already have the split directory.
   string basedir = m_alog_file;
   rbiteString(basedir, '.');  
+  basedir += "_alvtmp";
 
   // Ensure that the base directory doesn't already exist.
   FILE *tmp1 = fopen(basedir.c_str(), "r");

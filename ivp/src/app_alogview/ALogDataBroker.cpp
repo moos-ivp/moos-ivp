@@ -74,7 +74,7 @@ bool ALogDataBroker::splitALogFiles()
   for(i=0; i<vsize; i++) {
     string alog_file = m_alog_files[i];
     rbiteString(alog_file, '.');  //   some/dir/foo.alog --> some/dir/foo
-    string base_dir = alog_file;
+    string base_dir = alog_file + "_alvtmp";
     m_base_dirs.push_back(base_dir);
   }
 
