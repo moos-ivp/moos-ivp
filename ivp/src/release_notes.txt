@@ -25,6 +25,9 @@ o app_alogview
   - Command line switch for specifying a time range, allowing the tool to 
   load less memory into RAM. Previously only possible by first clipping the
   alog files. 
+  - The IvPFunction viewer popup window will now show all behaviors with the 
+  current priority weight next to each. User can toggle between individual 
+  and collective IvP function view mode.
   - Support for alternate navigation solutions, so playback may render the
   vehicle's ground truth and on-board navigation solution simultaneously.
   - Many other bug-fixes
