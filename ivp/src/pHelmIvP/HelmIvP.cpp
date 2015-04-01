@@ -1385,7 +1385,7 @@ void HelmIvP::postAllStop(string msg)
   if(msg != "")
     m_allstop_msg = msg;
 
-  if(msg == "NothingToDo")
+  if((msg == "NothingToDo") || strBegins(msg, "MissingDecVars"))
     m_no_decisions++;
   else
     m_no_decisions = 0;
@@ -1399,7 +1399,7 @@ void HelmIvP::postAllStop(string msg)
   // Willing to hold off one iteration if simply no decision. To give helm
   // chance to transition between modes.
   if(m_no_decisions == 1) {
-    m_allstop_msg = "ModeTransition";
+    m_allstop_msg = "IncompleteOrEmptyDecision";
     return;
   }
 
