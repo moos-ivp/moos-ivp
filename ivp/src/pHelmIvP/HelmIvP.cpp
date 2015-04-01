@@ -371,7 +371,6 @@ bool HelmIvP::Iterate()
     m_bhvs_idle_list = bhvs_idle_list;
   }
 
-
   m_prev_helm_report = m_helm_report;
 
    string allstop_msg = "clear";
@@ -1373,11 +1372,13 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
 
 void HelmIvP::postAllStop(string msg)
 {
+  Notify("IVPHELM_ALLSTOP_DEBUG", msg);
+
   // Don't post all-stop info if the helm is on standby or disabled.
   if(!helmStatusEnabled())
     return;
 
-  if(msg == m_allstop_msg)  
+  if(msg == m_allstop_msg) 
     return;
 
   // Interpret empty message as request to re-post the current status
@@ -1397,8 +1398,10 @@ void HelmIvP::postAllStop(string msg)
 
   // Willing to hold off one iteration if simply no decision. To give helm
   // chance to transition between modes.
-  if(m_no_decisions == 1)
+  if(m_no_decisions == 1) {
+    m_allstop_msg = "ModeTransition";
     return;
+  }
 
   // Post all the Decision Variable Results
   unsigned int j, dsize = m_ivp_domain.size();
