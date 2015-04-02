@@ -85,8 +85,8 @@ public:
   inline void cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
 
-  inline void cb_SelectSource_i(int);
-  static void cb_SelectSource(Fl_Widget*, int);
+  inline void cb_SelectSource_i();
+  static void cb_SelectSource(Fl_Widget*);
 
   inline void cb_SelectCollective_i(int);
   static void cb_SelectCollective(Fl_Widget*, int);

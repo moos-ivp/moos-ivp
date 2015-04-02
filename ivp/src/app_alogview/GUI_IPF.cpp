@@ -123,7 +123,7 @@ void GUI_IPF::initWidgets()
 
   m_brw_bhvs = new Fl_Hold_Browser(0, 0, 0, 0);
   m_brw_bhvs->clear_visible_focus();
-  m_brw_bhvs->callback((Fl_Callback*)GUI_IPF::cb_SelectSource, (void*)0);
+  m_brw_bhvs->callback((Fl_Callback*)GUI_IPF::cb_SelectSource);
   m_brw_bhvs->textfont(FL_COURIER);
 
   m_but_addvar_a = new Fl_Menu_Button(0, 0, 1, 1, "Scope Var A");
@@ -498,7 +498,7 @@ void GUI_IPF::cb_Step(Fl_Widget* o, int val) {
 }
 
 //----------------------------------------- SelectSource
-inline void GUI_IPF::cb_SelectSource_i(int index) {
+inline void GUI_IPF::cb_SelectSource_i() {
 
   int ix = ((Fl_Browser *)m_brw_bhvs)->value();
   if(ix == 0)
@@ -518,9 +518,8 @@ inline void GUI_IPF::cb_SelectSource_i(int index) {
 
   updateXY();
 }
-void GUI_IPF::cb_SelectSource(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((GUI_IPF*)(o->parent()->user_data()))->cb_SelectSource_i(val);
+void GUI_IPF::cb_SelectSource(Fl_Widget* o) {
+  ((GUI_IPF*)(o->parent()->user_data()))->cb_SelectSource_i();
 }
 
 //----------------------------------------- SelectCollective
