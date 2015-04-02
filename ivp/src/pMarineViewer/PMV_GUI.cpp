@@ -1543,7 +1543,7 @@ void PMV_GUI::resizeWidgets()
 
   double pct_cast_wid = m_ac_settings.geosize("appcast_width")  / 100;
   double pct_cast_hgt = m_ac_settings.geosize("appcast_height") / 100;
-  double pct_view_wid = 1 - pct_cast_wid;
+  //double pct_view_wid = 1 - pct_cast_wid;
 
   double pct_view_hgt = 0.875;
   double pct_menu_hgt = 0.035;
