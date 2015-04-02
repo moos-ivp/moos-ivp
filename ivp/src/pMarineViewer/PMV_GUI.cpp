@@ -1543,7 +1543,7 @@ void PMV_GUI::resizeWidgets()
 
   double pct_cast_wid = m_ac_settings.geosize("appcast_width")  / 100;
   double pct_cast_hgt = m_ac_settings.geosize("appcast_height") / 100;
-  double pct_view_wid = 1 - pct_cast_wid;
+  //double pct_view_wid = 1 - pct_cast_wid;
 
   double pct_view_hgt = 0.875;
   double pct_menu_hgt = 0.035;
@@ -1570,7 +1570,7 @@ void PMV_GUI::resizeWidgets()
   // Make sure the appcasting pane is at least 300
   if((pct_cast_wid * now_wid) < 300) {
     pct_cast_wid = 300 / now_wid;
-    pct_view_wid = (1 - pct_cast_wid);
+    //pct_view_wid = (1 - pct_cast_wid);
   }
 
   
