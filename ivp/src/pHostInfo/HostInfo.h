@@ -46,14 +46,14 @@ class HostInfo : public AppCastingMOOSApp
 
  protected:
   void registerVariables();
-  void generateIPInfoFiles();
+  int  generateIPInfoFiles();
   void gatherIPInfoFromFiles();
   void postIPInfo();
 
  protected: 
   std::string readOSXInfoIP(std::string);
   std::string readLinuxInfoIP(std::string);
-  void clearTempFiles();
+  int  clearTempFiles();
   bool handleMailPShareInput(const std::string&);
   
   void addIPInfo(std::string ip, std::string ip_source);

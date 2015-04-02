@@ -203,7 +203,7 @@ void HostInfo::registerVariables()
 //            We're making the assumption that the caller is a user on 
 //            the system with a home directory with write permission
 
-void HostInfo::generateIPInfoFiles()
+int HostInfo::generateIPInfoFiles()
 {
   // First the various OS X system calls
   int result = 0;
@@ -213,6 +213,7 @@ void HostInfo::generateIPInfoFiles()
   string bgd = "";
 
   sys_call = "mkdir " + m_tmp_file_dir;
+  // Bogusly pay attention to system return vals, avoid compiler warnings
   result = system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo Airport  > ";
@@ -280,6 +281,7 @@ void HostInfo::generateIPInfoFiles()
   result = system(sys_call.c_str());
 
   m_ip_info_files_generated = true;
+  return(result);
 }
 
 //---------------------------------------------------------
@@ -459,8 +461,9 @@ string HostInfo::readLinuxInfoIP(string filename)
 //            files don't actually exist. Want to prevent using 
 //            stale information.
 
-void HostInfo::clearTempFiles()
+int HostInfo::clearTempFiles()
 {
+  // Bogusly pay attention to system return vals, avoid compiler warnings
   int res = 0;
   res = system("rm -f ~/.ipinfo_osx_airport.txt");     // OS X Snow Leopard
   res = system("rm -f ~/.ipinfo_osx_wifi.txt");        // OS X Lion
@@ -473,6 +476,7 @@ void HostInfo::clearTempFiles()
   res = system("rm -f ~/.ipinfo_linux_usb1.txt");      // Linux
   res = system("rm -f ~/.ipinfo_linux_usb2.txt");      // Linux
   res = system("rm -f ~/.ipinfo_linux_wifi.txt");      // Linux
+  return(res);
 }
 
 //---------------------------------------------------------
