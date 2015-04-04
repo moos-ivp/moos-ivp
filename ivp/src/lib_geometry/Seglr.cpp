@@ -42,7 +42,8 @@ void Seglr::clear()
 
 void Seglr::addVertex(double x, double y)
 {
-  return;
+  m_vx.push_back(x);
+  m_vy.push_back(y);
 }
 //---------------------------------------------------------------
 // Procedure: getVX()
