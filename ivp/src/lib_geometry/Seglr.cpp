@@ -38,6 +38,13 @@ void Seglr::clear()
 }
 
 //---------------------------------------------------------------
+// Procedure: addVertex()
+
+void Seglr::addVertex(double x, double y)
+{
+  return;
+}
+//---------------------------------------------------------------
 // Procedure: getVX()
 
 double Seglr::getVX(unsigned int ix) const
