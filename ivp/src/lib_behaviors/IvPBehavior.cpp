@@ -368,7 +368,7 @@ void IvPBehavior::postMessage(string var, string sdata, string key)
   }
   VarDataPair pair(var, sdata);
 
-  if(key != "repeatable") {
+  if(tolower(key) != "repeatable") {
     key = (m_descriptor + var + key);
     pair.set_key(key);
   }
@@ -397,7 +397,7 @@ void IvPBehavior::postMessage(string var, double ddata, string key)
   
   VarDataPair pair(var, ddata);
   
-  if(key != "repeatable") {
+  if(tolower(key) != "repeatable") {
     key = (m_descriptor + var + key);
     pair.set_key(key);
   }
