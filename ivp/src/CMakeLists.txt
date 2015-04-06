@@ -17,6 +17,11 @@ ENDIF (${WIN32})
 # moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php
 find_package(MOOS 10.0)
 
+message("+++++++++++++++++++++++++++++++++++++++++")
+message("FIND_PACKAGE CONSIDERED:" ${MOOS_CONSIDERED_CONFIGS})
+message("+++++++++++++++++++++++++++++++++++++++++")
+
+
 if(NOT DEFINED MOOS_LIBRARIES)
   message("Defining MOOS_LIBRARIES")
   set(MOOS_LIBRARIES MOOS)
