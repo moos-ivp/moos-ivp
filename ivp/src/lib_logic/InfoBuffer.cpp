@@ -67,6 +67,25 @@ double InfoBuffer::tQuery(string var, bool elapsed) const
 }
 
 //-----------------------------------------------------------
+// Procedure: mtQuery
+//      Note: Returns the time since the given variable was
+//            last updated.
+
+double InfoBuffer::mtQuery(string var, bool elapsed) const
+{
+  map<string, double>::const_iterator p;
+  p = mtmap.find(var);
+  if(p != mtmap.end()) {
+    if(elapsed)
+      return(m_curr_time_utc - p->second);
+    else
+      return(p->second);
+  }
+  else
+    return(-1);
+}
+
+//-----------------------------------------------------------
 // Procedure: sQuery
 
 string InfoBuffer::sQuery(string var, bool& result) const
@@ -143,12 +162,22 @@ bool InfoBuffer::isKnown(string varname)
 
 //-----------------------------------------------------------
 // Procedure: setValue
-//      Note: 
+//      Note: msg_time is the timestamp embedded in the incoming 
+//            message, vs. the time stamp of when this buffer is 
+//            beig updated.
 
-bool InfoBuffer::setValue(string var, double val)
+bool InfoBuffer::setValue(string var, double val, double msg_time)
 {
   dmap[var] = val;
   tmap[var] = m_curr_time_utc;
+
+  // msg_time is the timestamp perhaps embedded in the incoming message, 
+  // vs. the buffer update time (the time at which the info_buffer is 
+  // undergoing a round of updates. If msg_time is unspecified (0) then 
+  // set it to the buffer update time.
+  if(msg_time == 0)
+    msg_time = m_curr_time_utc;
+  mtmap[var] = msg_time;
 
   vdmap[var].push_back(val);
 
@@ -158,10 +187,18 @@ bool InfoBuffer::setValue(string var, double val)
 //-----------------------------------------------------------
 // Procedure: setValue
 
-bool InfoBuffer::setValue(string var, string val)
+bool InfoBuffer::setValue(string var, string val, double msg_time)
 {
   smap[var] = val;
   tmap[var] = m_curr_time_utc;
+
+  // msg_time is the timestamp perhaps embedded in the incoming message, 
+  // vs. the buffer update time (the time at which the info_buffer is 
+  // undergoing a round of updates. If msg_time is unspecified (0) then 
+  // set it to the buffer update time.
+  if(msg_time == 0)
+    msg_time = m_curr_time_utc;
+  mtmap[var] = msg_time;
 
   vsmap[var].push_back(val);
 
