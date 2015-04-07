@@ -903,16 +903,17 @@ void HelmIvP::postCharStatus()
 
 bool HelmIvP::updateInfoBuffer(CMOOSMsg &msg)
 {
-  string moosvar = msg.m_sKey;
-  string src_aux = msg.GetSourceAux();
+  string moosvar  = msg.m_sKey;
+  string src_aux  = msg.GetSourceAux();
+  double msg_time = msg.GetTime();
   if(src_aux == "HELM_VAR_INIT")
     return(false);
     
   if(msg.IsDouble()) {
-    return(m_info_buffer->setValue(moosvar, msg.GetDouble()));
+    return(m_info_buffer->setValue(moosvar, msg.GetDouble(), msg_time));
   }
   else if(msg.IsString()) {
-    return(m_info_buffer->setValue(moosvar, msg.GetString()));
+    return(m_info_buffer->setValue(moosvar, msg.GetString(), msg_time));
   }
   return(false);
 }
