@@ -108,6 +108,7 @@ protected:
 
   double                   getPriorityWt() {return(m_priority_wt);};
   double                   getBufferCurrTime();
+  double                   getBufferMsgTimeVal(std::string);
   double                   getBufferTimeVal(std::string);
   double                   getBufferDoubleVal(std::string, bool&);
   std::string              getBufferStringVal(std::string);
