@@ -29,4 +29,6 @@
 
 std::string seglrToString(Seglr);
 
+Seglr rotateSeglr(Seglr, double degrees);
+
 #endif

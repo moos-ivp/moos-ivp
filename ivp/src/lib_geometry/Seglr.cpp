@@ -47,6 +47,18 @@ void Seglr::addVertex(double x, double y)
 }
 
 //---------------------------------------------------------------
+// Procedure: setVertex()
+
+void Seglr::setVertex(double x, double y, unsigned int ix)
+{
+  if((ix >= m_vx.size()) || (ix >= m_vy.size()))
+    return;
+
+  m_vx[ix] = x;
+  m_vy[ix] = y;
+}
+
+//---------------------------------------------------------------
 // Procedure: setRayAngle
 //      Note: No error checking. Consumers/users will need to do this.
 
@@ -81,6 +93,37 @@ double Seglr::getVY(unsigned int ix) const
 double Seglr::getRayAngle() const
 {
   return(m_ray_angle);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: translateTo
+
+void Seglr::translateTo(double new_base_x, double new_base_y)
+{
+  if((m_vx.size() == 0) || (m_vy.size() == 0))
+    return;
+    
+  double curr_base_x = m_vx[0];
+  double curr_base_y = m_vy[0];
+  
+  double trans_x = new_base_x - curr_base_x;
+  double trans_y = new_base_y - curr_base_y;
+
+  for(unsigned int i=0; i<m_vx.size(); i++) {
+    m_vx[i] += trans_x;
+    m_vy[i] += trans_y;
+  }
+}
+
+//---------------------------------------------------------------
+// Procedure: reflect
+
+void Seglr::reflect()
+{
+  for(unsigned int i=0; i<m_vx.size(); i++) 
+    m_vx[i] = -m_vx[i];
+  m_ray_angle = (360.0 - m_ray_angle);
 }
 
 

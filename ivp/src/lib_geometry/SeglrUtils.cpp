@@ -21,7 +21,10 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
+#include <cmath>
 #include "SeglrUtils.h"
+#include "AngleUtils.h"
+#include "GeomUtils.h"
 #include "MBUtils.h"
 
 using namespace std;
@@ -40,5 +43,37 @@ string seglrToString(Seglr seglr)
   }
   result += "#" + doubleToString(seglr.getRayAngle(),1);
   return(result);
+}
+
+//----------------------------------------------------------------
+// Procedure: rotateSeglr
+
+Seglr rotateSeglr(Seglr seglr, double degrees)
+{
+  if(seglr.size() == 0)
+    return(seglr);
+
+  Seglr new_seglr = seglr;
+
+  double base_x = seglr.getVX(0);
+  double base_y = seglr.getVY(0);
+
+  for(unsigned int i=1; i<seglr.size(); i++) {
+    double curr_x = seglr.getVX(i);
+    double curr_y = seglr.getVY(i);
+    double curr_angle = relAng(base_x, base_y, curr_x, curr_y);
+    double curr_range = hypot(curr_x-base_x, curr_y-base_y);
+    double new_angle = angle360(curr_angle + degrees);
+    double new_x = 0;
+    double new_y = 0;
+    projectPoint(new_angle, curr_range, base_x, base_y, new_x, new_y);
+    new_seglr.setVertex(new_x, new_y, i);
+  }
+
+  double curr_seglr_angle = seglr.getRayAngle();
+  double new_seglr_angle = angle360(curr_seglr_angle + degrees);
+  new_seglr.setRayAngle(new_seglr_angle);
+
+  return(new_seglr);
 }
 

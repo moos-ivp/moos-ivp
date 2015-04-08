@@ -34,6 +34,7 @@ public:
 
   // Setters
   void addVertex(double x, double y);
+  void setVertex(double x, double y, unsigned int index);
   void setRayAngle(double angle);
   void clear();
 
@@ -42,6 +43,11 @@ public:
   double getVY(unsigned int) const;
   double getRayAngle() const;
 
+  // Modifiers
+  void translateTo(double x, double y);
+  void reflect();
+
+  // Analysis
   unsigned int size() const {return(m_vx.size());};
 
   bool crossesLine(double x1, double y1, double x2, double y2,
