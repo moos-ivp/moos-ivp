@@ -45,6 +45,16 @@ void Seglr::addVertex(double x, double y)
   m_vx.push_back(x);
   m_vy.push_back(y);
 }
+
+//---------------------------------------------------------------
+// Procedure: setRayAngle
+//      Note: No error checking. Consumers/users will need to do this.
+
+void Seglr::setRayAngle(double angle)
+{
+  m_ray_angle = angle;
+}
+
 //---------------------------------------------------------------
 // Procedure: getVX()
 
