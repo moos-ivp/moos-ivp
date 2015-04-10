@@ -458,7 +458,7 @@ void AppCastingMOOSApp::reportUnhandledConfigWarning(const string& orig)
   MOOSTrimWhiteSpace(param);
   if((param == "APPTICK")      || (param == "COMMSTICK")            ||
      (param == "MAXAPPTICK")   || (param == "TERM_REPORT_INTERVAL") ||
-     (param == "MAX_APPCAST_EVENTS"))
+     (param == "ITERATEMODE")  || (param == "MAX_APPCAST_EVENTS"))
     return;
 
   reportConfigWarning("Unhandled config line: " + orig);
