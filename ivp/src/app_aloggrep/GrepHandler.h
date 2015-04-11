@@ -60,8 +60,8 @@ class GrepHandler
 
   std::string m_var_condition;
   bool        m_var_condition_met;
-
   bool        m_comments_retained;
+  bool        m_badlines_retained;
 
   std::set<std::string> m_vars_retained;
   std::set<std::string> m_vars_removed;

@@ -49,6 +49,10 @@ GrepHandler::GrepHandler()
   m_comments_retained = true;
   m_var_condition_met = true;
   m_file_overwrite = false;
+  
+  // A "bad" line is a line that is not a comment, and does not begin
+  // with a timestamp. As found in entries with CRLF's like DB_VARSUMMARY
+  m_badlines_retained = false;
 }
 
 //--------------------------------------------------------
@@ -87,6 +91,13 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
     }
     m_file_out = fopen(new_alogfile.c_str(), "w");
   }
+
+  // I DB_VARSUMMARY is explicitly on the variable grep list, then
+  // retain all its bad lines (lines not starting with a timestamp)
+  for(unsigned int i=0; i<m_keys.size(); i++) {
+    if("DB_VARSUMMARY" == m_keys[i])
+      m_badlines_retained = true;
+  }
   
   bool done = false;
   while(!done) {
@@ -103,9 +114,18 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
     if(line_raw == "eof") 
       break;
 
-    // Part 3A: If there is a condition, see if it has been met
-    string varname = getVarName(line_raw);
+    // Part 3: Handle lines that do not begin with a number (comment
+    // lines are already handled above)
+    if(!isNumber(line_raw.substr(0,1))) {
+      if(m_badlines_retained)
+	outputLine(line_raw);
+      else
+	ignoreLine(line_raw);
+      continue;
+    }
 
+    // Part 4: If there is a condition, see if it has been met
+    string varname = getVarName(line_raw);
     if((m_var_condition != "") && (varname == m_var_condition)) {
       string varval = getDataEntry(line_raw);
       if(tolower(varval) == "true")
@@ -119,8 +139,7 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
       continue;
     }
       
-
-    // Part 3B: Check if this line matches a named var or src
+    // Part 5: Check if this line matches a named var or src
     string srcname = getSourceNameNoAux(line_raw);
 
     bool match = false;
@@ -132,12 +151,15 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
 	match = true;
     }
 
+    // Part 6: Depending whether a match was made, output or ignore the line
     if(match) 
       outputLine(line_raw, varname);
     else
       ignoreLine(line_raw, varname);
 
   }
+
+  cout << "Badlines retained:" << m_badlines_retained << endl;
 
   if(m_file_out)
     fclose(m_file_out);
