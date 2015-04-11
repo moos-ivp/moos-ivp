@@ -49,7 +49,11 @@ int main(int argc, char *argv[])
     return(0);
   }
 
+
   bool verbose = true;
+  if(scanArgs(argc, argv, "-q", "--quiet", "-quiet"))
+    verbose = false;
+
   FiltHandler handler;  
   if(scanArgs(argc, argv, "-nostr", "--nostr"))
     handler.setParam("nostrings", "true");
@@ -59,13 +63,9 @@ int main(int argc, char *argv[])
     handler.setParam("nostrings", "true");
   if(scanArgs(argc, argv, "-clean", "--clean"))
     handler.setParam("clean", "true");
-  if(scanArgs(argc, argv, "-times", "--times"))
-    handler.setParam("timeshift", "true");
   if(scanArgs(argc, argv, "-f", "-force", "--force"))
     handler.setParam("file_overwrite", "true");
-  if(scanArgs(argc, argv, "-q", "--quiet", "-quiet"))
-    verbose = false;
-  
+
   string alogfile_in;
   string alogfile_out;
   string bad_switch;

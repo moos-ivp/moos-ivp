@@ -36,10 +36,14 @@ class FiltHandler
 
   bool handle(const std::string&, const std::string& str="");
   bool setParam(const std::string& param, const std::string& value);
+  void setBadLinesRetained(bool v) {m_badlines_retained=v;};
   void printReport();
 
  protected:
+  void outputLine(const std::string& line, const std::string& var="");
+  void ignoreLine(const std::string& line, const std::string& var="");
 
+ protected:
   std::vector<std::string> m_keys;
   std::vector<bool>        m_pmatch;
 
@@ -47,6 +51,7 @@ class FiltHandler
   bool  m_chuck_numbers;
   bool  m_timeshift;
   bool  m_clean;
+  bool  m_badlines_retained;
 
   double m_lines_removed;
   double m_lines_retained;

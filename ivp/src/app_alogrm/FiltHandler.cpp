@@ -41,8 +41,6 @@ FiltHandler::FiltHandler()
   m_file_out      = 0;
   m_chuck_strings = false;
   m_chuck_numbers = false;
-  m_logstart      = -1;
-  m_timeshift     = false;
   m_clean         = false;
 
   m_lines_removed  = 0;
@@ -51,6 +49,10 @@ FiltHandler::FiltHandler()
   m_chars_retained = 0;
 
   m_file_overwrite = false;
+
+  // A "bad" line is a line that is not a comment, and does not begin
+  // with a timestamp. As found in entries with CRLF's like DB_VARSUMMARY
+  m_badlines_retained = true;
 }
 
 //--------------------------------------------------------
@@ -65,8 +67,6 @@ bool FiltHandler::setParam(const string& param, const string& value)
     return(setBooleanOnString(m_clean, value));
   else if(param == "nonumbers")
     return(setBooleanOnString(m_chuck_numbers, value));
-  else if(param == "timeshift")
-    return(setBooleanOnString(m_timeshift, value));
   else if(param == "file_overwrite")
     return(setBooleanOnString(m_file_overwrite, value));
   else if(param == "newkey") {
@@ -105,78 +105,71 @@ bool FiltHandler::handle(const string& alogfile, const string& new_alogfile)
     }
     m_file_out = fopen(new_alogfile.c_str(), "w");
   }
-  
-  int  count = 0;
+
+  // If DB_VARSUMMARY is explicitly on the variable rm list, then
+  // discard all its bad lines (lines not starting with a timestamp)
+  for(unsigned int i=0; i<m_keys.size(); i++) {
+    if("DB_VARSUMMARY" == m_keys[i])
+      m_badlines_retained = false;
+  }
+
+  // Begin the filtering line by line by line by line by line by line
   bool done  = false;
   while(!done) {
-    count++;
     string line_raw = getNextRawLine(m_file_in);
-    bool   line_is_comment = false;
-    if((line_raw.length() > 0) && (line_raw.at(0) == '%'))
-      line_is_comment = true;
 
-    if(count == 4)
-      m_logstart = getLogStart(line_raw);      
-
-    if((line_raw == "eof") || (line_raw == "err"))
-      done = true;
-    else {
-      string varname = getVarName(line_raw);
-      string srcname = getSourceNameNoAux(line_raw);
-
-      int ksize = m_keys.size();
-      bool match = false;
-      for(int i=0; ((i<ksize) && !match); i++) {
-	if((varname == m_keys[i]) || (srcname == m_keys[i]))
-	  match = true;
-	else if(m_pmatch[i] && (strContains(varname, m_keys[i]) ||
-				strContains(varname, m_keys[i])))
-	  match = true;
-      }
-      
-      if(m_clean && (count >= 6)) {
-	string time_stamp = getTimeStamp(line_raw);
-	if(!isNumber(time_stamp))
-	  match = true;
-	string data_field = getDataEntry(line_raw);
-	if(data_field == "") 
-	  match = true;
-      }
-      
-      
-      if((!match || (count < 6)) && (line_raw != "")) {
-	string data_field = getDataEntry(line_raw);
-
-	if(m_chuck_strings && (count > 5)  && 
-	   (varname != "") && !isNumber(data_field))
-	  addVectorKey(m_keys, m_pmatch, varname);
-	else if(m_chuck_numbers && (count > 5) &&
-		(varname != "") && isNumber(data_field))
-	  addVectorKey(m_keys, m_pmatch, varname);
-	else {
-	  stripInsigDigits(line_raw);
-	  if(m_timeshift)
-	    shiftTimeStamp(line_raw, m_logstart);
-	  if(m_file_out)
-	    fprintf(m_file_out, "%s\n", line_raw.c_str());
-	  else
-	    cout << line_raw << endl;
-	}
-      }
-
-      if(!match && !line_is_comment) {
-	m_lines_retained++;
-	m_chars_retained += line_raw.length();
-	m_vars_retained.insert(varname);
-      }
-      
-      if(match && !line_is_comment) {
-	m_lines_removed++;
-	m_chars_removed += line_raw.length();
-	m_vars_removed.insert(varname);
-      }
+    // Part 1: Check if the line is a comment and handle or ignore
+    if((line_raw.length() > 0) && (line_raw.at(0) == '%')) {
+      outputLine(line_raw);
+      continue;
     }
+
+    // Part 2: Check for end of file
+    if((line_raw == "eof") || (line_raw == "err"))
+      break;
+
+
+    // Part 3: Handle lines that do not begin with a number (comment
+    // lines are already handled above)
+    if(!isNumber(line_raw.substr(0,1))) {
+      if(m_clean || !m_badlines_retained)
+	ignoreLine(line_raw);
+      else
+	outputLine(line_raw);
+      continue;
+    }
+    
+    // Part 4: Check if this line matches a named var or src
+    string varname = getVarName(line_raw);
+    string srcname = getSourceNameNoAux(line_raw);
+
+    bool match = false;
+    for(unsigned int i=0; (i<m_keys.size()) && !match; i++) {
+      if((varname == m_keys[i]) || (srcname == m_keys[i])) 
+	match = true;
+      else if(m_pmatch[i] && (strContains(varname, m_keys[i]) ||
+			 strContains(srcname, m_keys[i]))) 
+	match = true;
+    }
+    if(match) {
+      ignoreLine(line_raw, varname);
+      continue;
+    }
+    
+    // Part 5: If not filtered out yet, possibly filter out here if 
+    // filtering out all string or all doubles
+    string data_field = getDataEntry(line_raw);
+      
+    if((m_chuck_strings && !isNumber(data_field)) ||
+       (m_chuck_numbers && isNumber(data_field))) {
+      addVectorKey(m_keys, m_pmatch, varname);
+      ignoreLine(line_raw, varname);
+      continue;
+    }
+
+    outputLine(line_raw, varname);
   }
+
   if(m_file_out)
     fclose(m_file_out);
   m_file_out = 0;
@@ -186,6 +179,34 @@ bool FiltHandler::handle(const string& alogfile, const string& new_alogfile)
 
   return(true);
 }
+
+//--------------------------------------------------------
+// Procedure: outputLine()
+
+void FiltHandler::outputLine(const string& line, const string& var)
+{
+  if(m_file_out)
+    fprintf(m_file_out, "%s\n", line.c_str());
+  else
+    cout << line << endl;
+
+  m_lines_retained++;
+  m_chars_retained += line.length();
+  if(var.length() > 0)
+    m_vars_retained.insert(var);
+}
+
+//--------------------------------------------------------
+// Procedure: ignoreLine()
+
+void FiltHandler::ignoreLine(const string& line, const string& var)
+{
+  m_lines_removed++;
+  m_chars_removed += line.length();
+  if(var.length() > 0)
+    m_vars_removed.insert(var);
+}
+
 
 //--------------------------------------------------------
 // Procedure: printReport

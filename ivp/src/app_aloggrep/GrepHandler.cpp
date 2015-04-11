@@ -92,7 +92,7 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
     m_file_out = fopen(new_alogfile.c_str(), "w");
   }
 
-  // I DB_VARSUMMARY is explicitly on the variable grep list, then
+  // If DB_VARSUMMARY is explicitly on the variable grep list, then
   // retain all its bad lines (lines not starting with a timestamp)
   for(unsigned int i=0; i<m_keys.size(); i++) {
     if("DB_VARSUMMARY" == m_keys[i])
