@@ -145,7 +145,10 @@ o aloggrep
     --no_comments and --no_report
   - Added ability to filter out lines that don't begin with a number. These
     lines are typically from an entry with carriage returns. The primary 
-    offender in this regard is DB_VARSUMMARY. 
+    offender in this regard is DB_VARSUMMARY. If DB_VARSUMMARY is on the list
+    of variables to retain, then badlines are not filtered out. Otherwise
+    they are filtered out automatically. The automatic filtering out of badlines
+    can be overridden with the --keep_badlines/-kb command line switch.
 
 o uSimMarine
   - Supports reverse thrust (DESIRED_THRUST < 0)

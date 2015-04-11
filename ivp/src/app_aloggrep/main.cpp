@@ -45,6 +45,10 @@ int main(int argc, char *argv[])
   if(scanArgs(argc, argv, "--no_comments", "-nc"))
     comments_retained = false;
   
+  bool badlines_retained = false;
+  if(scanArgs(argc, argv, "--keep_badlines", "-kb"))
+    badlines_retained = true;
+  
   bool make_end_report = true;
   if(scanArgs(argc, argv, "--no_report", "-nr"))
     make_end_report = false;
@@ -84,6 +88,9 @@ int main(int argc, char *argv[])
     cout << "  -nc,--no_comments Supress comment (header) lines         " << endl;
     cout << "  -nr,--no_report   Supress summary report                 " << endl;
     cout << "                                                           " << endl;
+    cout << "  --keep_badlines   Do not disscard lines that don't begin " << endl;
+    cout << "  -kb               with a timestamp or comment character. " << endl;
+    cout << "                                                           " << endl;
     cout << "Further Notes:                                             " << endl;
     cout << "  (1) The second alog is the output file. Otherwise the    " << endl;
     cout << "      order of arguments is irrelevent.                    " << endl;
@@ -119,6 +126,7 @@ int main(int argc, char *argv[])
   GrepHandler handler;
   handler.setFileOverWrite(file_overwrite);
   handler.setCommentsRetained(comments_retained);
+  handler.setBadLinesRetained(badlines_retained);
 
   int ksize = keys.size();
   for(int i=0; i<ksize; i++)

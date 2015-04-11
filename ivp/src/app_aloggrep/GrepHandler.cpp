@@ -159,8 +159,6 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
 
   }
 
-  cout << "Badlines retained:" << m_badlines_retained << endl;
-
   if(m_file_out)
     fclose(m_file_out);
   m_file_out = 0;
