@@ -33,14 +33,6 @@ o app_alogview
   - Many other bug-fixes
 
 
-alog file access is changed. As a first step upon launch, the alog files
-  are split into a dedicated subdirectory
-
-
-the main GUI and supporting specialized sub-guis
-  to support multiple vehicles with potentially large files. 
-
-
 o uFunctionVis 
   Fixed glitch that preveneted the Behaviors pull-down menu from appearing 
   upon startup
@@ -151,6 +143,9 @@ o aloggrep
     normal operation.
   - Added the --quiet (or -q) command which is essentially a shortcut for 
     --no_comments and --no_report
+  - Added ability to filter out lines that don't begin with a number. These
+    lines are typically from an entry with carriage returns. The primary 
+    offender in this regard is DB_VARSUMMARY. 
 
 o uSimMarine
   - Supports reverse thrust (DESIRED_THRUST < 0)
