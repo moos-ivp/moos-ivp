@@ -55,7 +55,6 @@ void ScanReport::addLine(double timestamp, const string& varname,
     m_var_chars.push_back(chars);
     m_vmap[varname] = m_var_names.size()-1;
   }
-
   m_lines++;
 }
 
@@ -65,9 +64,8 @@ void ScanReport::addLine(double timestamp, const string& varname,
 
 void ScanReport::fillAppStats()
 {
-  double total_lines = 0;
-  double total_chars = 0;
-
+  unsigned int total_lines = 0;
+  unsigned int total_chars = 0;
 
   // Pass 2A
 
@@ -89,13 +87,15 @@ void ScanReport::fillAppStats()
 
   // Pass 2B - fill in lines, chars as percentage of total
   
-  map<string, double>::iterator p;
+  map<string, unsigned int>::iterator p;
   p = m_app_lines.begin();
   while(p != m_app_lines.end()) {
     string app_name  = p->first;
-    double app_lines = p->second;
-    double percent   = app_lines / total_lines;
-    m_app_lines_pct[app_name] = percent;
+    unsigned int app_lines = p->second;
+    double pct = 0;
+    if(total_lines > 0)
+      pct = (double)(app_lines) / (double)(total_lines);
+    m_app_lines_pct[app_name] = pct;
     m_all_sources.push_back(app_name);
     p++;
   }
@@ -103,13 +103,11 @@ void ScanReport::fillAppStats()
   p = m_app_chars.begin();
   while(p != m_app_chars.end()) {
     string app_name  = p->first;
-    double app_chars = p->second;
-    double percent   = app_chars / total_chars;
-    m_app_chars_pct[app_name] = percent;
+    unsigned int app_chars = p->second;
+    double pct = (double)(app_chars) / (double)(total_chars);
+    m_app_chars_pct[app_name] = pct;
     p++;
   }
-
-
 }
 
 

@@ -116,12 +116,12 @@ void ScanHandler::handle(const string& alogfile)
 
 #ifdef _WIN32
   int line_digits  = (int)(log10( (double)m_report.getMaxLines())) + 2;
-  int char_digits  = (int)(log10( (double)m_report.getMaxChars())) + 2;
+  int char_digits  = (int)(log10( (double)m_report.getMaxChars())) + 4;
   int start_digits = (int)(log10( m_report.getMaxStartTime())) + 4;
   int stop_digits  = (int)(log10( m_report.getMaxStopTime())) + 4;
 #else 
   int line_digits  = static_cast<int>(log10(static_cast<double>(m_report.getMaxLines()))) + 2;
-  int char_digits  = static_cast<int>(log10(static_cast<double>(m_report.getMaxChars()))) + 2;
+  int char_digits  = static_cast<int>(log10(static_cast<double>(m_report.getMaxChars()))) + 4;
   int start_digits = (int)(log10(m_report.getMaxStartTime())) + 4;
   int stop_digits  = (int)(log10(m_report.getMaxStopTime())) + 4;
 #endif 
@@ -150,7 +150,7 @@ void ScanHandler::handle(const string& alogfile)
 
   string bformat_string = ("%-" + svname_digits + "s ");
   bformat_string += ("%" + sline_digits + "d ");
-  bformat_string += ("%" + schar_digits + "d  ");
+  bformat_string += ("%" + schar_digits + "s  ");
   bformat_string += ("%" + sstart_digits + "s  ");
   bformat_string += ("%" + sstop_digits  + "s  %s\n");
 
@@ -171,6 +171,7 @@ void ScanHandler::handle(const string& alogfile)
 
     string sfirst = doubleToString(first, 2);
     string slast  = doubleToString(last,  2);
+    string schars = intToCommaString(chars);
 
     if(m_use_colors) {
       string varsources_copy = varsources;
@@ -189,7 +190,7 @@ void ScanHandler::handle(const string& alogfile)
     }
 
     printf(bformat_string.c_str(),  varname.c_str(), lcnt, 
-	   chars, sfirst.c_str(), slast.c_str(), varsources.c_str());
+	   schars.c_str(), sfirst.c_str(), slast.c_str(), varsources.c_str());
 
     if(m_use_colors)
       printf("%s", termColor().c_str());
@@ -250,13 +251,13 @@ void ScanHandler::appStatReport()
 
   for(i=0; i<vsize; i++) {
     string source = all_sources[i];
-    double lines  = m_report.getLinesBySource(source);
-    double chars  = m_report.getCharsBySource(source);
+    unsigned int lines = m_report.getLinesBySource(source);
+    unsigned int chars = m_report.getCharsBySource(source);
     double lines_pct = m_report.getLinesPctBySource(source);
     double chars_pct = m_report.getCharsPctBySource(source);
 
-    string s_lines = doubleToString(lines,0);
-    string s_chars = doubleToString(chars,0);
+    string s_lines = uintToString(lines);
+    string s_chars = intToCommaString(chars);
     string s_lines_pct = doubleToString((lines_pct*100.0),2);
     string s_chars_pct = doubleToString((chars_pct*100.0),2);
 

@@ -83,10 +83,11 @@ class ScanReport
   void fillAppStats();
   std::vector<std::string> getAllSources()  {return(m_all_sources);};
   std::vector<std::string> getAllVarNames() {return(m_var_names);};
-  double getLinesBySource(std::string s)    {return(m_app_lines[s]);};
-  double getCharsBySource(std::string s)    {return(m_app_chars[s]);};
   double getLinesPctBySource(std::string s) {return(m_app_lines_pct[s]);};
   double getCharsPctBySource(std::string s) {return(m_app_chars_pct[s]);};
+
+  unsigned int getLinesBySource(std::string s)  {return(m_app_lines[s]);};
+  unsigned int getCharsBySource(std::string s)  {return(m_app_chars[s]);};
 
  protected:
   void switchItems(unsigned int, unsigned int);
@@ -103,9 +104,9 @@ class ScanReport
   std::map<std::string, int>  m_vmap;
 
   // Application statistics  - Done on optionsl Pass #2A
-  std::map<std::string, double>  m_app_lines;
-  std::map<std::string, double>  m_app_chars;
-  std::map<std::string, double>  m_app_vars;
+  std::map<std::string, unsigned int>  m_app_lines;
+  std::map<std::string, unsigned int>  m_app_chars;
+  std::map<std::string, unsigned int>  m_app_vars;
   
   // Application statistics  - Done on optionsl Pass #2B
   std::map<std::string, double>  m_app_lines_pct;
@@ -116,10 +117,3 @@ class ScanReport
 };
 
 #endif 
-
-
-
-
-
-
-

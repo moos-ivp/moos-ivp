@@ -477,6 +477,16 @@ ALogEntry getNextRawALogEntry(FILE *fileptr, bool allstrings)
   string src    = biteString(rawsrc,':');
   string srcaux = rawsrc;
 
+  // Check for lines that may be carriage return continuation of previous line's
+  // data field as in DB_VARSUMMARY
+  if((time != "") && (time.at(0) != '%')) {
+    if(!isNumber(time.substr(0,1))) {
+      entry.setStatus("invalid");
+      return(entry);
+    }
+  }
+	
+
   if((time!="")&&(var!="")&&(src!="")&&(val!="") && isNumber(time)) {
     if(allstrings || !isNumber(val))
       entry.set(atof(time.c_str()), var, src, srcaux, val);
