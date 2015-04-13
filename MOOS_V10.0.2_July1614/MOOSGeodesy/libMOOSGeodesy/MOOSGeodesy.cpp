@@ -215,8 +215,8 @@ bool CMOOSGeodesy::LatLong2LocalGrid(double lat,
     double dY = dfRadius * sin(dYArcDeg);
 
     //This is the total distance traveled thus far, either North or East
-    MetersNorth = dX;
-    MetersEast  = dY;
+    MetersNorth = dY;
+    MetersEast  = dX;
     
     return true;
 }
