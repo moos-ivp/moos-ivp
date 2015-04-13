@@ -32,7 +32,7 @@ using namespace std;
 // Procedure: addEntry()
 //   Returns: true if sorting was required
 
-bool ALogSorter::addEntry(const ALogEntry& entry)
+bool ALogSorter::addEntry(const ALogEntry& entry, bool forced_order)
 {
   // Case 1: list is empty, just add the new entry
   if(m_entries.size() == 0) {
@@ -40,7 +40,18 @@ bool ALogSorter::addEntry(const ALogEntry& entry)
     return(false);
   }
   
-  // Case 2: new entry is in correct order, just add new entry
+  // Case 2: new entry is a line with no or bogus timestamp due to being
+  // a continuation of a previous line as with DB_VARSUMMARY. Give it a
+  // forced time stamp which is just the timestamp at the end of the list
+  if(forced_order) {
+    ALogEntry entry_copy = entry;
+    double time_stamp_prev = m_entries.back().time();
+    entry_copy.setTimeStamp(time_stamp_prev);
+    m_entries.push_back(entry_copy);
+    return(false);
+  }
+    
+  // Case 3: new entry is in correct order, just add new entry
   double time_stamp_this = entry.time();
   double time_stamp_prev = m_entries.back().time();
   if(time_stamp_this >= time_stamp_prev) {
