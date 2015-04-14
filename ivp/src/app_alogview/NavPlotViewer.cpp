@@ -91,7 +91,8 @@ bool NavPlotViewer::setParam(string param, string value)
       
   else if(param == "center_view") {
     if(value == "average")
-      setCenterView("ctr_of_bounding");
+      //      setCenterView("ctr_of_bounding");
+      setCenterView("ctr_of_vehicles");
     handled = true;
   }
   
@@ -588,7 +589,6 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
 
 //-------------------------------------------------------------
 // Procedure: setCenterview
-//      Note: 
 
 void NavPlotViewer::setCenterView(string centering_style)
 {
@@ -619,9 +619,20 @@ void NavPlotViewer::setCenterView(string centering_style)
     pos_x = ((max_x - min_x) / 2) + min_x;
     pos_y = ((max_y - min_y) / 2) + min_y;
   }
+  else if(centering_style == "ctr_of_vehicles") {
+    double nav_x_total = 0;
+    for(unsigned int i=0; i<m_navx_plot.size(); i++) 
+      nav_x_total += m_navx_plot[i].getValueByTime(m_curr_time, true);
+    double nav_y_total = 0;
+    for(unsigned int i=0; i<m_navy_plot.size(); i++) 
+      nav_y_total += m_navy_plot[i].getValueByTime(m_curr_time, true);
+
+    pos_x = nav_x_total / (double)(m_navx_plot.size());
+    pos_y = nav_y_total / (double)(m_navy_plot.size());
+  }
   else
     return;
-
+  
   // First determine how much we're off in terms of meters
   double delta_x = pos_x - m_back_img.get_x_at_img_ctr();
   double delta_y = pos_y - m_back_img.get_y_at_img_ctr();
