@@ -55,6 +55,8 @@ class NavPlotViewer : public MarineViewer
   void   addLogPlotStartTime(double); 
   void   addVPlugPlot(const VPlugPlot& vp); 
 
+  void   setStreaming(bool v) {m_streaming=v;};
+
   void   setCenterView(std::string centering="ctr_of_bounding");
   void   setAltNavPrefix(std::string s)   {m_alt_nav_prefix=s;};
   void   setStepType(const std::string&);
@@ -89,6 +91,8 @@ private:
 
   std::string m_trails;
   double      m_shape_scale;
+  bool        m_center_refresh;
+  bool        m_streaming;
 
   // vectors - each index corresponds to one vehicle
   std::vector<LogPlot>   m_navx_plot;

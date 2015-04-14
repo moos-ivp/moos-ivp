@@ -493,8 +493,10 @@ void REPLAY_GUI::cb_JumpTime(Fl_Widget* o, int v) {
 inline void REPLAY_GUI::cb_Step_i(int millisecs) {
   double dbl_val = (double)(millisecs) / 1000.0;
   bool time_in_bounds = np_viewer->stepTime(dbl_val);
-  if(!time_in_bounds)
+  if(!time_in_bounds) {
     m_stream = false;
+    np_viewer->setStreaming(false);
+  }
   np_viewer->redraw();
 
   double curr_time = np_viewer->getCurrTime();
@@ -651,6 +653,8 @@ inline void REPLAY_GUI::cb_Streaming_i(int val) {
   else if(!m_stream && prev_stream)
     m_timer.stop();
   
+  np_viewer->setStreaming(m_stream);
+
   updateXY();
   updateTimeSubGUI();
 }
@@ -1135,3 +1139,4 @@ void REPLAY_GUI::resizeWidgetsShape()
   m_but_zoom_reset_time->redraw();
   m_but_sync_scales->redraw();
 }
+

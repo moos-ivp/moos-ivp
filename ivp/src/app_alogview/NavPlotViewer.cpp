@@ -54,7 +54,8 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
 
   m_shape_scale  = 2;
   m_draw_geo     = true;
-
+  m_center_refresh = false;
+  
   m_alt_nav_prefix = "NAV_GT_";
 
   m_geo_settings.setParam("hash_viewable", "true");
@@ -90,6 +91,9 @@ bool NavPlotViewer::setParam(string param, string value)
   }
       
   else if(param == "center_view") {
+    if(m_streaming)
+      m_center_refresh = true;
+
     if(value == "average")
       //      setCenterView("ctr_of_bounding");
       setCenterView("ctr_of_vehicles");
@@ -364,7 +368,14 @@ bool NavPlotViewer::setCurrTime(double gtime)
 
 bool NavPlotViewer::stepTime(double amt)
 {
-  return(setCurrTime(m_curr_time + amt));
+  bool ok_set_curr_time = setCurrTime(m_curr_time + amt);
+  if(!ok_set_curr_time)
+    return(false);
+
+  if(m_center_refresh) 
+    setCenterView("ctr_of_vehicles");
+
+  return(true);
 }
 
 
