@@ -25,35 +25,41 @@ int main(int argc, char *argv[])
     return(0);
   }
   
-  bool file_overwrite = false;
-  if(scanArgs(argc, argv, "-f", "--force", "-force"))
-    file_overwrite = true;
-  
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage: " << endl;
     cout << "  alogsplit in.alog [OPTIONS]                              " << endl;
     cout << "                                                           " << endl;
     cout << "Synopsis:                                                  " << endl;
-    cout << "  Create a new MOOS .alog file by retaining only the       " << endl;
-    cout << "  given MOOS variables or sources, named on the command    " << endl;
-    cout << "  line, from a given .alog file.                           " << endl;
+    cout << "  Split the given alog file into a directory, within which " << endl;
+    cout << "  each MOOS variable is split into it's own (klog) file    " << endl;
+    cout << "  containing only that variable. The split will also create" << endl;
+    cout << "  a summary.klog file with summary information.            " << endl;
+    cout << "                                                           " << endl;
+    cout << "  Given file.alog, file_alvtmp/ directory will be created. " << endl;
+    cout << "  Will not overwrite directory if previously created.      " << endl;
+    cout << "  This is essentially the operation done at the outset of  " << endl;
+    cout << "  launching the alogview applicaton.                       " << endl;
     cout << "                                                           " << endl;
     cout << "Standard Arguments:                                        " << endl;
     cout << "  in.alog  - The input logfile.                            " << endl;
     cout << "                                                           " << endl;
     cout << "Options:                                                   " << endl;
-    cout << "  -h,--help         Displays this help message             " << endl;
-    cout << "  -v,--version      Displays the current release version   " << endl;
+    cout << "  -h,--help      Displays this help message                " << endl;
+    cout << "  -v,--version   Displays the current release version      " << endl;
+    cout << "  --verbose      Show output for successful operation      " << endl;
+    cout << "  --dir=DIR      Override the default dir with given dir.  " << endl;
     cout << endl;
     return(0);
   }
 
   string alogfile_in;
+  string given_dir;
 
+  bool verbose = false;
   for(int i=1; i<argc; i++) {
     string sarg = argv[i];
-    if(strContains(sarg, ".alog")) {
+    if(strEnds(sarg, ".alog")) {
       if(alogfile_in == "")
 	alogfile_in = sarg;
       else {
@@ -61,15 +67,21 @@ int main(int argc, char *argv[])
 	exit(1);
       }
     }
+    else if(sarg == "--verbose")
+      verbose = true;
+    else if(strBegins(sarg, "--dir=")) 
+      given_dir = sarg.substr(6);
   }
- 
+  
   if(alogfile_in == "") {
     cout << "No alog file given - exiting" << endl;
     exit(1);
   }
   
   SplitHandler handler(alogfile_in);
-
+  handler.setVerbose(verbose);
+  handler.setDirectory(given_dir);
+  
   bool handled = handler.handle();
   if(!handled)
     return(1);

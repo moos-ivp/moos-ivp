@@ -30,7 +30,8 @@
 #include "ColorParse.h"
 #include "BearingLine.h"
 
-#define USE_UTM
+// As of Release 15.4 this is now set in CMake, defaulting to be defined
+// #define USE_UTM 
 
 #ifdef _WIN32
 #   include <float.h>

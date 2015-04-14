@@ -21,8 +21,11 @@ using namespace std;
 
 SplitHandler::SplitHandler(string alog_file)
 {
+  // Init config parameters
   m_alog_file = alog_file;
+  m_verbose = false;
 
+  // Init state variables
   m_alog_file_confirmed = false;
   m_split_dir_prior     = false;
 }
@@ -212,7 +215,8 @@ bool SplitHandler::handleMakeSplitFiles()
     fprintf(file_ptr, "%s\n", line_raw.c_str());
   }
 
-  cout << "Done writing to klog files. Total files: " << m_file_ptr.size() << endl;
+  if(m_verbose)
+    cout << "Done writing to klog files. Total files: " << m_file_ptr.size() << endl;
 
   // Close all the file pointers before finishing
   map<string, FILE*>::iterator p;
@@ -298,10 +302,13 @@ bool SplitHandler::handlePreCheckSplitDir()
     return(false);
   }
   
-  // Part 2: Make sure we don't already have the split directory.
-  string basedir = m_alog_file;
-  rbiteString(basedir, '.');  
-  basedir += "_alvtmp";
+  // Part 2: Auto-build the base directory name if not provided explicitly.
+  string basedir = m_given_dir;
+  if(basedir == "") {
+    basedir = m_alog_file;
+    rbiteString(basedir, '.');  
+    basedir += "_alvtmp";
+  }
 
   // Ensure that the base directory doesn't already exist.
   FILE *tmp1 = fopen(basedir.c_str(), "r");

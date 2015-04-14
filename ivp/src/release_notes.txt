@@ -150,6 +150,29 @@ o aloggrep
     they are filtered out automatically. The automatic filtering out of badlines
     can be overridden with the --keep_badlines/-kb command line switch.
 
+o aloggrep
+  - Added ability to handle lines that don't begin with a number. These
+    lines are typically from an entry with carriage returns. The primary 
+    offender in this regard is DB_VARSUMMARY. If DB_VARSUMMARY is on the list
+    of variables to removed, then badlines are now properly removed along
+    with the DB_VARSUMMARY line. Otherwise the badlines are retained.
+
+o alogscan
+  - Added ability to handle lines that don't begin with a number. These
+    lines are typically from an entry with carriage returns. The primary 
+    offender in this regard is DB_VARSUMMARY. 
+
+o alogsort
+  - Added ability to handle lines that don't begin with a number. These
+    lines are typically from an entry with carriage returns. The primary 
+    offender in this regard is DB_VARSUMMARY. 
+
+o alogsplit
+  - Added ability to handle lines that don't begin with a number. These
+    lines are typically from an entry with carriage returns. The primary 
+    offender in this regard is DB_VARSUMMARY. 
+
+
 o uSimMarine
   - Supports reverse thrust (DESIRED_THRUST < 0)
   - Supports differential thrust mode

@@ -133,6 +133,7 @@ ELSE (${WIN32})
 ENDIF (${WIN32})
 
 SET(IVP_LIBS_TO_BUILD ${IVP_NON_GUI_LIBS})
+
 IF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
    LIST(APPEND IVP_LIBS_TO_BUILD ${IVP_GUI_LIBS})
 
@@ -140,6 +141,11 @@ IF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
    message("IVP_GUI_CODE will be built......         ")
    message("+++++++++++++++++++++++++++++++++++++++++")
 
+ENDIF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
+
+IF("${USE_UTM}" STREQUAL "ON")
+   ADD_DEFINITIONS(-DUSE_UTM)
+   message("USING UTM")
 ENDIF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
 
 

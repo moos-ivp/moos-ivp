@@ -29,7 +29,8 @@
 #include <cstdlib>
 #include <tiffio.h>
 
-#define USE_UTM
+// As of Release 15.4 this is now set in CMake, defaulting to be defined
+// #define USE_UTM 
 
 // See http://www.cmake.org/pipermail/cmake/2003-March/003482.html
 #ifdef _WIN32

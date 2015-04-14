@@ -21,6 +21,8 @@ class SplitHandler
 
   bool handle();
   bool handlePreCheckALogFile();
+  void setVerbose(bool v)          {m_verbose=v;};
+  void setDirectory(std::string s) {m_given_dir=s;};
   
  protected:
   bool handlePreCheckSplitDir();
@@ -29,6 +31,8 @@ class SplitHandler
   
  protected: // Config variables
   std::string m_alog_file;
+  std::string m_given_dir;
+  bool        m_verbose;
 
  protected: // State variables
   std::string m_basedir;
