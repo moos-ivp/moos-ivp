@@ -258,3 +258,12 @@ bool CMOOSGeodesy::LocalGrid2LatLong(double dfEast, double dfNorth, double &dfLa
     return true;
 }
 
+
+double CMOOSGeodesy::DMS2DecDeg(double dfVal)
+{
+  int nDeg = (int)(dfVal/100.0);
+  
+  double dfTmpDeg = (100.0*(dfVal/100.0-nDeg))/60.0;
+  
+  return(dfTmpDeg+nDeg);
+}

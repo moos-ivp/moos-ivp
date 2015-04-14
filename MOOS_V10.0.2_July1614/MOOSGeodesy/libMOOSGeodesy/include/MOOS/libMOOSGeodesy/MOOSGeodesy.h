@@ -3,6 +3,7 @@
 //                     Woods Hole Oceanographic Institution (2007-)
 //                     Goby Developers Team (https://launchpad.net/~goby-dev)
 // 
+// Apr 14th, 2015 mikerb added DMS2DecDeg from original MOOSGeodesy 
 //
 // This file is part of the Goby Underwater Autonomy Project MOOS Interface Library
 // ("The Goby MOOS Library").
@@ -50,6 +51,8 @@ class CMOOSGeodesy
 
   bool Initialise(double lat, double lon);
   
+  double DMS2DecDeg(double dfVal);
+
  private:
   int m_sUTMZone;
   double m_dOriginEasting;
