@@ -68,7 +68,7 @@ void REPLAY_GUI::initWidgets()
   lp_viewer = new LogPlotViewer(1, 1, 1, 1);
 
   m_mviewer = np_viewer;
-  m_mviewer->setParam("center_view", "average");
+  m_mviewer->setParam("center_view", "objects");
 
   // Initialize Time fields ------------------------------------------
   m_disp_time = new Fl_Output(0, 0, 1, 1, "Time:"); 

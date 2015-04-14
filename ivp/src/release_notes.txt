@@ -74,8 +74,7 @@ o lib_geometry
     bool threePointTurnLeft(double, ..., double);
   - Added the ConvexHullGenerator class for determining a convex hull in 
     the form of an XYPolyon, given a set of points in the x-y plane
-  - Added ConvexHullGenerator, accepts a series of points, returns a
-    convex hull in the form of an XYPolygon
+
 
 o uSimMarine
   - Added support for differential thrust mode

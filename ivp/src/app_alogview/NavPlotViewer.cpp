@@ -54,8 +54,9 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
 
   m_shape_scale  = 2;
   m_draw_geo     = true;
+  m_streaming    = false;
   m_center_refresh = false;
-  
+
   m_alt_nav_prefix = "NAV_GT_";
 
   m_geo_settings.setParam("hash_viewable", "true");
@@ -91,12 +92,12 @@ bool NavPlotViewer::setParam(string param, string value)
   }
       
   else if(param == "center_view") {
-    if(m_streaming)
-      m_center_refresh = true;
-
-    if(value == "average")
-      //      setCenterView("ctr_of_bounding");
+    if(value == "average") {
+      m_center_refresh = !m_center_refresh;
       setCenterView("ctr_of_vehicles");
+    }
+    else if(value == "objects")
+      setCenterView("ctr_of_bounding");
     handled = true;
   }
   
