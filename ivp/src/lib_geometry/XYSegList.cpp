@@ -770,7 +770,8 @@ unsigned int XYSegList::closest_vertex(double x, double y) const
 //            given point.
 //      Note: Returns the "leading" index of the segment. 
 
-unsigned int XYSegList::closest_segment(double x, double y) const
+unsigned int XYSegList::closest_segment(double x, double y,
+					bool check_implied_seg) const
 {
   unsigned int vsize = m_vx.size();
   if(vsize <= 1)
@@ -791,10 +792,12 @@ unsigned int XYSegList::closest_segment(double x, double y) const
   }
  
   // Check the "implied" segment from vertex n-1 to vertex zero.
-  double edist = distPointToSeg(m_vx[vsize-1], m_vy[vsize-1], 
-				m_vx[0], m_vy[0], x, y);
-  if(edist < dist)
-    ix = vsize-1;
+  if(check_implied_seg) {
+    double edist = distPointToSeg(m_vx[vsize-1], m_vy[vsize-1], 
+				  m_vx[0], m_vy[0], x, y);
+    if(edist < dist)
+      ix = vsize-1;
+  }
  
   return(ix);
 }
