@@ -52,6 +52,8 @@ string HostRecord::getSpec() const
     str += ",status=" + m_timewarp;
   if(m_timestamp != "")
     str += ",time=" + m_timestamp;
+  if(m_key != "")
+    str += ",key=" + m_key;
 
   return(str);
 }
