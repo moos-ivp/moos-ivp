@@ -85,8 +85,8 @@ void MarineVehiGUI::augmentMenu()
 
   m_menubar->add("Vehicles/Cycle Vehicle Focus", 'v', (Fl_Callback*)MarineVehiGUI::cb_CycleFocus,(void*)0, FL_MENU_DIVIDER);
 
-  m_menubar->add("Vehicles/center_view = vehicle_active", FL_CTRL+'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)1, FL_MENU_RADIO);
-  m_menubar->add("Vehicles/center_view = vehicle_average", 'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)0, FL_MENU_DIVIDER);
+  m_menubar->add("Vehicles/center_view = active", FL_CTRL+'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)1, FL_MENU_RADIO);
+  m_menubar->add("Vehicles/center_view = average", 'c', (Fl_Callback*)MarineVehiGUI::cb_CenterView,  (void*)0, FL_MENU_DIVIDER);
 
   m_menubar->add("Vehicles/VehicleSize/vehicles_shape_scale = larger",    '+', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)+1, 0);
   m_menubar->add("Vehicles/VehicleSize/vehicles_shape_scale = smaller",   '-', (Fl_Callback*)MarineVehiGUI::cb_AltShapeScale, (void*)-1, 0);
