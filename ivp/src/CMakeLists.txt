@@ -61,6 +61,11 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 SET(IVP_BUILD_GUI_CODE OFF CACHE BOOL "Build IvP's GUI-related libraries and apps.")
 
 #-------------------------------------------------------------------------------
+# Let users control whether or UTM or Local Coords are used
+#-------------------------------------------------------------------------------
+SET(USE_UTM ON CACHE BOOL "Use UTM coordinates vs Local coordinates.")
+
+#-------------------------------------------------------------------------------
 # Tell CMake (and thus C++) where to find IvP's header files...
 #-------------------------------------------------------------------------------
 IF (${APPLE})
