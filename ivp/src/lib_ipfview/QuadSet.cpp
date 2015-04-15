@@ -225,6 +225,11 @@ bool QuadSet::applyIPF2D(IvPFunction *ipf)
     }
   }
 
+  // Added apr 15th 2015 delete tmp memory
+  for(i=0; i<crs_pts; i++) 
+    delete [] vals[i];
+  delete [] vals;
+
   resetMinMaxVals();
   m_quadset_dim = 2;
   return(true);

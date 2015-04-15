@@ -80,8 +80,8 @@ bool PopulatorVZAIC::readFile(string filename)
   for(i=0; i<vsize; i++) {
     string line  = stripBlankEnds(lines[i]);
     if(!strBegins(line, "//")) {
-      string left  = stripBlankEnds(tolower(biteString(lines[i], '=')));
-      string right = stripBlankEnds(lines[i]);
+      string left  = tolower(biteStringX(lines[i], '='));
+      string right = lines[i];
       
       if(left == "ivpdomain") // format: "X,0,100,101 : Y,0,1,11"
 	m_domain = stringToDomain(right);

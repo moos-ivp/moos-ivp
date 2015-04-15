@@ -480,9 +480,10 @@ IvPFunction *StringToIvPFunction(const string& str)
     pdmap->bx(i) = newbox;
   }
 
-  if(!pdmap)
+  if(!pdmap) {
+    delete [] cstr_buff;
     return(0);
-  
+  }
   
   pdmap->setGelBox(gelbox);
   pdmap->updateGrid(1,1);

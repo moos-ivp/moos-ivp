@@ -69,6 +69,9 @@ class NodeBroker : public AppCastingMOOSApp
   std::vector<std::string>  m_shore_timewarp;
   std::vector<bool>         m_shore_bridged;
 
+  // A list of IP addresses on the pulled from the try_shore_host param
+  std::vector<std::string>  m_try_host_ips;
+
  protected: // State Variables
   HostRecord   m_node_host_record;  // From PHI_HOST_INFO
 

@@ -283,6 +283,14 @@ bool NodeBroker::handleConfigTryShoreHost(string original_line)
   m_shore_ipaddr.push_back("");
   m_shore_timewarp.push_back("");
   m_shore_bridged.push_back(false);
+
+  // Keep track of actual (non localhost) IP Addresses found in routes
+  if(strContains(pshare_route, ':') && !strBegins(pshare_route, "localhost:")) {
+    string try_host_ip = biteString(pshare_route, ':');
+    if(isValidIPAddress(try_host_ip))
+      m_try_host_ips.push_back(try_host_ip);
+  }
+
   return(true);
 }
 
@@ -314,6 +322,32 @@ void NodeBroker::handleMailAck(string ack_msg)
   string hostip_local = m_node_host_record.getHostIP();
   if(hostip_shore != hostip_local) 
     pshare_iroutes = findReplace(pshare_iroutes, "localhost", hostip_shore);
+
+#if 0
+  // Part 4: Examine each of the incoming iroutes. If of the form IPADDR:PORT
+  // then check if the IPADDR is on the list of tryhosts
+  // Example pshares_iroute = "localhost:9200&multicast_9&192.168.2.2:9202"
+
+  string verfied_alt_shore_ip;
+  string alt_shore_ips = hrecord.getHostIPAlts();
+  vector<string> jvector = parseString(alt_shore_ips, ',');
+  for(unsigned int j=0; j<jvector.size(); j++) {
+    string alt_shore_ip = stripBlankEnds(jvector[j]);
+    if(vectorContains(m_try_host_ips, alt_shore_ip))
+
+
+  vector<string> kvector = parseString(pshare_iroutes, '&');
+  for(unsigned int k=0; k<kvector.size(); k++) {
+    string iroute = kvector[k];
+    if(strContains(iroute, ':') && !strBegins(iroute, "localhost:")) {
+      string shoreip = biteString(iroute, ':');
+      if(!vectorContains(m_try_host_ips, shoreip)) {
+	findReplace(pshare_iroutes, shoreip, alt_shore_ip);
+      }
+    }
+  }
+#endif
+
 
   // Note the sender may be reporting more then one input route
   vector<string> svector = parseString(pshare_iroutes, '&');
@@ -418,6 +452,16 @@ bool NodeBroker::buildReport()
   m_msgs << "        HostIP: " << m_node_host_record.getHostIP()          << endl; 
   m_msgs << "   Port MOOSDB: " << m_node_host_record.getPortDB()          << endl; 
   m_msgs << "     Time Warp: " << m_node_host_record.getTimeWarp()        << endl; 
+
+  string try_host_ips;
+  for(unsigned int i=0; i<m_try_host_ips.size(); i++) {
+    if(i!=0)
+      try_host_ips += ",";
+    try_host_ips += m_try_host_ips[i];
+  }
+  m_msgs << "   TryHost IPs: " << try_host_ips << endl;
+
+
 
   string iroutes = m_node_host_record.getPShareIRoutes();
   string ipaddr  = m_node_host_record.getHostIP();

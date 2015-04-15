@@ -146,7 +146,7 @@ ENDIF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
 IF("${USE_UTM}" STREQUAL "ON")
    ADD_DEFINITIONS(-DUSE_UTM)
    message("USING UTM")
-ENDIF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
+ENDIF("${USE_UTM}" STREQUAL "ON")
 
 
 # If the environment hasn't explicitly set 'IVP_LIB_DIRECTORY', give it a good
