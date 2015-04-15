@@ -134,6 +134,7 @@ cmake -DIVP_BUILD_GUI_CODE=${CLEANED_IVP_BUILD_GUI_CODE} \
       -DIVP_LIB_DIRECTORY="${LIBRARIES_ABS_DIR}"         \
       -DIVP_BIN_DIRECTORY="${PROGRAMS_ABS_DIR}"          \
       -DCMAKE_CXX_FLAGS_RELEASE="-O3 -pedantic -Wall"    \
+      -DUSE_UTM=ON                                       \
       -DBUILDNAME="${DASHBOARD_BUILDNAME}"               \
       ${IVP_CMAKE_FLAGS}                                 \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                   \
