@@ -170,18 +170,22 @@ void NodeBroker::registerVariables()
 
 void NodeBroker::sendNodeBrokerPing()
 {
-  // If we know enough about ourself, then ping away!!
-  if((m_node_host_record.getPShareIRoutes() != "") &&
-     (m_node_host_record.getTimeWarp() != "")) {
+  // If we don't know enough about ourself, then don't send pings.
+  if((m_node_host_record.getPShareIRoutes() == "") ||
+     (m_node_host_record.getTimeWarp() == "")) 
+    return;
     
-    string iroutes = m_node_host_record.getPShareIRoutes();
-    string ipaddr  = m_node_host_record.getHostIP();
-    iroutes = findReplace(iroutes, "localhost", ipaddr);
-
-    string tstamp = doubleToString(m_curr_time, 2);
-    m_node_host_record.setTimeStamp(tstamp);
-    Notify("NODE_BROKER_PING", m_node_host_record.getSpec());
-    m_pings_posted++;
+  string iroutes = m_node_host_record.getPShareIRoutes();
+  string ipaddr  = m_node_host_record.getHostIP();
+  iroutes = findReplace(iroutes, "localhost", ipaddr);
+  
+  string tstamp = doubleToString(m_curr_time, 2);
+  m_node_host_record.setTimeStamp(tstamp);
+  string ping_msg = m_node_host_record.getSpec();
+  
+  for(unsigned int i=0; i<m_shore_routes.size(); i++) {
+    string aug_ping_msg = ping_msg + ",key=" + uintToString(i);
+    Notify("NODE_BROKER_PING_"+uintToString(i), aug_ping_msg);
   }
 }
 
@@ -191,9 +195,8 @@ void NodeBroker::sendNodeBrokerPing()
 
 void NodeBroker::registerPingBridges()
 {
-  unsigned int i, vsize = m_shore_routes.size();
-  for(i=0; i<vsize; i++) {
-    string src  = "NODE_BROKER_PING";
+  for(unsigned int i=0; i<m_shore_routes.size(); i++) {
+    string src  = "NODE_BROKER_PING_"+uintToString(i);
     string dest = "NODE_BROKER_PING";
     string route = m_shore_routes[i];
     postPShareCommand(src, dest, route);
@@ -322,31 +325,6 @@ void NodeBroker::handleMailAck(string ack_msg)
   string hostip_local = m_node_host_record.getHostIP();
   if(hostip_shore != hostip_local) 
     pshare_iroutes = findReplace(pshare_iroutes, "localhost", hostip_shore);
-
-#if 0
-  // Part 4: Examine each of the incoming iroutes. If of the form IPADDR:PORT
-  // then check if the IPADDR is on the list of tryhosts
-  // Example pshares_iroute = "localhost:9200&multicast_9&192.168.2.2:9202"
-
-  string verfied_alt_shore_ip;
-  string alt_shore_ips = hrecord.getHostIPAlts();
-  vector<string> jvector = parseString(alt_shore_ips, ',');
-  for(unsigned int j=0; j<jvector.size(); j++) {
-    string alt_shore_ip = stripBlankEnds(jvector[j]);
-    if(vectorContains(m_try_host_ips, alt_shore_ip))
-
-
-  vector<string> kvector = parseString(pshare_iroutes, '&');
-  for(unsigned int k=0; k<kvector.size(); k++) {
-    string iroute = kvector[k];
-    if(strContains(iroute, ':') && !strBegins(iroute, "localhost:")) {
-      string shoreip = biteString(iroute, ':');
-      if(!vectorContains(m_try_host_ips, shoreip)) {
-	findReplace(pshare_iroutes, shoreip, alt_shore_ip);
-      }
-    }
-  }
-#endif
 
 
   // Note the sender may be reporting more then one input route
