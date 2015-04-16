@@ -186,6 +186,7 @@ void NodeBroker::sendNodeBrokerPing()
   for(unsigned int i=0; i<m_shore_routes.size(); i++) {
     string aug_ping_msg = ping_msg + ",key=" + uintToString(i);
     Notify("NODE_BROKER_PING_"+uintToString(i), aug_ping_msg);
+    m_pings_posted++;
   }
 }
 
