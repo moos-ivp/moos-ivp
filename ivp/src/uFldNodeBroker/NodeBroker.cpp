@@ -307,6 +307,42 @@ void NodeBroker::handleMailAck(string ack_msg)
   // Part 1: Build/validate the incoming Host Record
   HostRecord hrecord = string2HostRecord(ack_msg);
 
+  string new_key = hrecord.getKey();
+  unsigned int key_ix = atoi(new_key.c_str());
+
+  if((new_key == "") || !isNumber(new_key) || (key_ix >= m_shore_routes.size())) {
+    m_bad_acks_received++;
+    
+    string msg = "NODE_BROKER_ACK recvd from " + hrecord.getHostIP();
+    msg += " w/ null or bad key, for now.";
+
+    reportRunWarning(msg);
+    return;
+  }
+
+  m_shore_community[key_ix] = hrecord.getCommunity();
+  m_shore_ipaddr[key_ix]   = hrecord.getHostIP();
+  m_shore_timewarp[key_ix] = hrecord.getTimeWarp();
+  m_shore_pings_ack[key_ix]++;
+
+  m_ok_acks_received++;
+
+  // Set up the user-configured variable bridges.
+  registerUserBridges();
+}
+
+
+//------------------------------------------------------------
+// Procedure: handleMailAck
+//      Note: Parse NODE_BROKER_ACK and update the info about the
+//            shoreside node that sent it.
+
+#if 0
+void NodeBroker::handleMailAck(string ack_msg)
+{
+  // Part 1: Build/validate the incoming Host Record
+  HostRecord hrecord = string2HostRecord(ack_msg);
+
   string pshare_iroutes = hrecord.getPShareIRoutes();
   if(pshare_iroutes == "") {
     m_bad_acks_received++;
@@ -364,7 +400,7 @@ void NodeBroker::handleMailAck(string ack_msg)
   // Set up the user-configured variable bridges.
   registerUserBridges();
 }
-
+#endif
 
 //------------------------------------------------------------
 // Procedure: handleMailHostInfo
