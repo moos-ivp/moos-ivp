@@ -181,6 +181,8 @@ void ShoreBroker::sendAcks()
 	toupper(m_node_host_records[i].getCommunity());
       string msg_val = m_shore_host_record.getSpec() + 
 	",status=" + m_node_host_records[i].getStatus();
+      if(m_node_host_records[i].getKey() != "")
+	msg_val += ",key=" + m_node_host_records[i].getKey();
 
       Notify(msg_var, msg_val);
       Notify("NODE_BROKER_VACK", m_node_host_records[i].getCommunity());
