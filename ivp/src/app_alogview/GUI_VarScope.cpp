@@ -286,7 +286,23 @@ int GUI_VarScope::handle(int event)
       m_parent_gui->streamspeed(false);
     else if(Fl::event_key() == '=') 
       m_parent_gui->streaming(2);
-    else
+    else if(Fl::event_key() == FL_Left) 
+      return(1);
+    else if(Fl::event_key() == FL_Right) 
+      return(1);
+    else if(Fl::event_key() == FL_Up) {
+      if((m_brw_past->size() == 0) || (m_brw_soon->size() == 0))
+	return(1);
+      else
+	return(Fl_Window::handle(event));
+    }
+    else if(Fl::event_key() == FL_Down) {
+      if((m_brw_past->size() == 0) || (m_brw_soon->size() == 0))
+	return(1);
+      else
+	return(Fl_Window::handle(event));
+    }
+    else 
       return(Fl_Window::handle(event));
     return(1);
     break;
