@@ -266,6 +266,12 @@ double LogPlotViewer::getMaxVal2()
 void LogPlotViewer::handleLeftMouse(int vx, int vy)
 {
   double pct = (double)(vx-m_lft_marg)/(w()-m_lft_marg-m_rgt_marg);
+  
+  if(pct < 0)
+    pct = 0;
+  else if(pct > 1.0)
+    pct = 1.0;
+
   m_curr_time = pct * (m_display_max_time - m_display_min_time);
   m_curr_time += m_display_min_time;
   redraw();
