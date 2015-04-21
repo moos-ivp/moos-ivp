@@ -44,12 +44,15 @@ int main(int argc, char *argv[])
   
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    cout << "Usage:                                               " << endl;
-    cout << "  alogscan file.alog [OPTIONS]                       " << endl;
-    cout << "                                                     " << endl;
-    cout << "Synopsis:                                            " << endl;
-    cout << "  Generate a report on the contents of a given       " << endl;
-    cout << "  MOOS .alog file.                                   " << endl;
+    cout << "Usage:                                                 " << endl;
+    cout << "  alogscan file.alog [OPTIONS]                         " << endl;
+    cout << "                                                       " << endl;
+    cout << "Synopsis:                                              " << endl;
+    cout << "  Generate a summary report on the contents of a given " << endl;
+    cout << "  .alog file. The report lists each logged MOOS        " << endl;
+    cout << "  variable, which app(s) publish it, the min/max publish " << endl;
+    cout << "  time and total number of character and lines for   " << endl;
+    cout << "  the variable.                                      " << endl;
     cout << "                                                     " << endl;
     cout << "Options:                                             " << endl;
     cout << "  --sort=type   Sort by one of SIX criteria:         " << endl;
