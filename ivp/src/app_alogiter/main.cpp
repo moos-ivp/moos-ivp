@@ -50,12 +50,11 @@ int main(int argc, char *argv[])
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage: " << endl;
-    cout << "  alogiter in.alog [VAR] [SRC] [out.alog] [OPTIONS]        " << endl;
+    cout << "  alogiter in.alog [OPTIONS]                               " << endl;
     cout << "                                                           " << endl;
     cout << "Synopsis:                                                  " << endl;
     cout << "  Analyze the ITER_GAP and ITER_LEN information provided by" << endl;
     cout << "  all applications recorded in the given alog file.        " << endl;
-    cout << "  Create a new MOOS .alog file by retaining only the       " << endl;
     cout << "                                                           " << endl;
     cout << "Standard Arguments:                                        " << endl;
     cout << "  file.alog - The input logfile.                           " << endl;

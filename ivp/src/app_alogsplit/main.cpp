@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     cout << "                                                           " << endl;
     cout << "Synopsis:                                                  " << endl;
     cout << "  Split the given alog file into a directory, within which " << endl;
-    cout << "  each MOOS variable is split into it's own (klog) file    " << endl;
+    cout << "  each MOOS variable is split into its own (klog) file     " << endl;
     cout << "  containing only that variable. The split will also create" << endl;
     cout << "  a summary.klog file with summary information.            " << endl;
     cout << "                                                           " << endl;
