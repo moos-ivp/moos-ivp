@@ -530,14 +530,17 @@ bool Expander::checkIfDefDisj(string entry, map<string, string> macros)
     kvector[k] = stripBlankEnds(kvector[k]);
     string macro_name  = biteStringX(kvector[k], ' ');
     string macro_value = kvector[k];
-    if(macro_value == "") {
-      if(macros[macro_name] != "")
+
+    if(macros.count(macro_name) == 1) {
+      if(macro_value == "") {
+	if(macros[macro_name] != "")
+	  ifdef = true;
+      }
+      else if(macros[macro_name] == macro_value)
+	ifdef = true;
+      else if(macros[macro_name] == macros[macro_value])
 	ifdef = true;
     }
-    else if(macros[macro_name] == macro_value)
-      ifdef = true;
-    else if(macros[macro_name] == macros[macro_value])
-      ifdef = true;
   }
   
   return(ifdef);
@@ -560,7 +563,8 @@ bool Expander::checkIfDefConj(string entry, map<string, string> macros)
     string macro_name  = biteStringX(kvector[k], ' ');
     string macro_value = kvector[k];
     if(macro_value == "") {
-      if(macros[macro_name] == "")
+      //  if(macros[macro_name] == "")
+      if(macros.count(macro_name) == 0)
 	ifdef = false;
     }
     else if((macros[macro_name] != macro_value) &&
