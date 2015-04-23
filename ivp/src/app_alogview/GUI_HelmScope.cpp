@@ -136,7 +136,7 @@ void GUI_HelmScope::initWidgets()
   m_brw_completed->when(FL_WHEN_RELEASE);
   m_brw_completed->textfont(FL_COURIER_BOLD);
 
-  m_brw_general = new Fl_Browser(0, 0, 1, 1, "Behavior\n Errors:"); 
+  m_brw_general = new Fl_Browser(0, 0, 1, 1, "Behavior \n Warnings:"); 
   m_brw_general->align(FL_ALIGN_LEFT);
   m_brw_general->tooltip("Configurable List of Data");
   m_brw_general->callback((Fl_Callback*)GUI_HelmScope::cb_Browser);
@@ -151,7 +151,7 @@ void GUI_HelmScope::initWidgets()
   m_but_gen_errors->labelcolor(bcolor);
   m_but_gen_errors->callback((Fl_Callback*)GUI_HelmScope::cb_ButtonErrors);
 
-  m_but_gen_modetree = new Fl_Check_Button(0, 0, 0, 0, "ModeTree");
+  m_but_gen_modetree = new Fl_Check_Button(0, 0, 0, 0, "ModeHist");
   m_but_gen_modetree->labelcolor(bcolor);
   m_but_gen_modetree->callback((Fl_Callback*)GUI_HelmScope::cb_ButtonModeTree);
 
@@ -378,6 +378,7 @@ inline void GUI_HelmScope::cb_ButtonWarnings_i() {
   else
     m_but_gen_errors->value(1);
   
+  m_brw_general->label("Behavior \n Warnings:"); 
   updateBotBrowser();
 }
 void GUI_HelmScope::cb_ButtonWarnings(Fl_Widget* o) {
@@ -393,6 +394,8 @@ inline void GUI_HelmScope::cb_ButtonErrors_i() {
   }
   else
     m_but_gen_warnings->value(1);
+
+  m_brw_general->label("Behavior \n Errors:"); 
   updateBotBrowser();
 }
 void GUI_HelmScope::cb_ButtonErrors(Fl_Widget* o) {
@@ -406,6 +409,7 @@ inline void GUI_HelmScope::cb_ButtonModeTree_i() {
     m_but_gen_warnings->value(0);
     m_but_gen_levents->value(0);
   }
+  m_brw_general->label("Behavior \n Mode \n History:"); 
   updateBotBrowser();
 }
 void GUI_HelmScope::cb_ButtonModeTree(Fl_Widget* o) {
@@ -419,6 +423,7 @@ inline void GUI_HelmScope::cb_ButtonLifeEvents_i() {
     m_but_gen_warnings->value(0);
     m_but_gen_modetree->value(0);
   }
+  m_brw_general->label("Behavior \n Life \n Events:"); 
   updateBotBrowser();
 }
 void GUI_HelmScope::cb_ButtonLifeEvents(Fl_Widget* o) {
