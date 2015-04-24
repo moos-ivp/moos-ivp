@@ -43,7 +43,7 @@ GUI_HelmScope::GUI_HelmScope(int g_w, int g_h, const char *g_l)
   this->begin();
   this->size_range(550,450);
 
-  m_info_text_size = 10;
+  m_mutable_text_size = 10;
 
   initWidgets();
   m_replay_warp_msg = "(PAUSED)";
@@ -245,19 +245,19 @@ void GUI_HelmScope::resizeWidgetsText()
   int info_size = 10;
   int blab_size = 12; // blab=button_label size
 
-  m_brw_active->textsize(m_info_text_size); 
+  m_brw_active->textsize(m_mutable_text_size); 
   m_brw_active->labelsize(info_size);
 
-  m_brw_running->textsize(m_info_text_size); 
+  m_brw_running->textsize(m_mutable_text_size); 
   m_brw_running->labelsize(info_size);
 
-  m_brw_idle->textsize(m_info_text_size); 
+  m_brw_idle->textsize(m_mutable_text_size); 
   m_brw_idle->labelsize(info_size);
 
-  m_brw_completed->textsize(m_info_text_size); 
+  m_brw_completed->textsize(m_mutable_text_size); 
   m_brw_completed->labelsize(info_size);
 
-  m_brw_general->textsize(m_info_text_size); 
+  m_brw_general->textsize(m_mutable_text_size); 
   m_brw_general->labelsize(info_size);
 
   m_but_gen_warnings->labelsize(blab_size);
@@ -325,12 +325,10 @@ int GUI_HelmScope::handle(int event)
       m_parent_gui->streamspeed(true);
     else if(Fl::event_key() == 'z') 
       m_parent_gui->streamspeed(false);
-    else if(Fl::event_key() == '=') 
-      m_parent_gui->streaming(2);
     else if(Fl::event_key() == '+') 
-      updateInfoSize("bigger");
+      updateMutableTextSize("bigger");
     else if(Fl::event_key() == '-') 
-      updateInfoSize("smaller");
+      updateMutableTextSize("smaller");
     else
       return(Fl_Window::handle(event));
     return(1);
@@ -616,37 +614,37 @@ void GUI_HelmScope::updateBotBrowser()
 
 
 //----------------------------------------------------------
-// Procedure: updateInfoSize()
+// Procedure: updateMutableTextSize()
 
-void GUI_HelmScope::updateInfoSize(string val) 
+void GUI_HelmScope::updateMutableTextSize(string val) 
 {
   if(val == "bigger") {
-    if(m_info_text_size == 8)
-      m_info_text_size = 9;
-    else if(m_info_text_size == 9)
-      m_info_text_size = 10;
-    else if(m_info_text_size == 10)
-      m_info_text_size = 12;
-    else if(m_info_text_size == 12)
-      m_info_text_size = 14;
-    else if(m_info_text_size == 14)
-      m_info_text_size = 16;
-    else if(m_info_text_size == 16)
-      m_info_text_size = 18;
+    if(m_mutable_text_size == 8)
+      m_mutable_text_size = 9;
+    else if(m_mutable_text_size == 9)
+      m_mutable_text_size = 10;
+    else if(m_mutable_text_size == 10)
+      m_mutable_text_size = 12;
+    else if(m_mutable_text_size == 12)
+      m_mutable_text_size = 14;
+    else if(m_mutable_text_size == 14)
+      m_mutable_text_size = 16;
+    else if(m_mutable_text_size == 16)
+      m_mutable_text_size = 18;
   }
   else if(val == "smaller") {
-    if(m_info_text_size == 18)
-      m_info_text_size = 16;
-    else if(m_info_text_size == 16)
-      m_info_text_size = 14;
-    else if(m_info_text_size == 14)
-      m_info_text_size = 12;
-    else if(m_info_text_size == 12)
-      m_info_text_size = 10;
-    else if(m_info_text_size == 10)
-      m_info_text_size = 9;
-    else if(m_info_text_size == 9)
-      m_info_text_size = 8;
+    if(m_mutable_text_size == 18)
+      m_mutable_text_size = 16;
+    else if(m_mutable_text_size == 16)
+      m_mutable_text_size = 14;
+    else if(m_mutable_text_size == 14)
+      m_mutable_text_size = 12;
+    else if(m_mutable_text_size == 12)
+      m_mutable_text_size = 10;
+    else if(m_mutable_text_size == 10)
+      m_mutable_text_size = 9;
+    else if(m_mutable_text_size == 9)
+      m_mutable_text_size = 8;
   }
   else
     return;

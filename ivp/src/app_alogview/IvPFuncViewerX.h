@@ -42,8 +42,8 @@ class IvPFuncViewerX : public Common_IPFViewer
   int    handle(int event);
   void   resize(int, int, int, int);
 
+ public: // Setters
   void   setDataBroker(ALogDataBroker, std::string vname);
-
   void   setIPF_Plots(std::vector<std::string> bhv_names);
   void   setHelmIterPlot();
   void   setBix(unsigned int bix);
@@ -55,13 +55,15 @@ class IvPFuncViewerX : public Common_IPFViewer
   void   setTime(double tstamp);
   void   setVName(std::string s) {m_vname=s;};
   void   setSource(std::string src);
+  void   setMutableTextSize(int v) {m_mutable_text_size=v;};
+
+ public: // Getters
   double getCurrTime() const;
 
   std::string getCurrPieces() const;
   std::string getCurrPriority() const;
   std::string getCurrDomain() const;
   std::string getCurrIteration() const;
-
   std::string getCurrPriority(std::string);
 
  protected:
@@ -75,6 +77,7 @@ private:
   double         m_curr_time;
   unsigned int   m_curr_iter;
   ALogDataBroker m_dbroker;
+  int            m_mutable_text_size;
 
   // Vehicle name stays constant once it is set initially
   std::string m_vname; 

@@ -49,6 +49,7 @@ GUI_IPF::GUI_IPF(int g_w, int g_h, const char *g_l)
   m_replay_warp_msg = "(PAUSED)";
   m_parent_gui = 0;
   m_fullscreen = false;
+  m_mutable_text_size = 10;
 
   this->initWidgets();
   this->resizeWidgetsShape();
@@ -140,7 +141,9 @@ void GUI_IPF::initWidgets()
 
 void GUI_IPF::resizeWidgetsShape()
 {
-  int lmarg = 200;
+  // We want the bhv browser to grow with the overall window width but not
+  // quite linearly.
+  int lmarg = 160 + (w() * 0.1);
   int tmarg = 60;
 
   int ipf_x = lmarg; 
@@ -159,7 +162,6 @@ void GUI_IPF::resizeWidgetsShape()
 
   if(m_fullscreen) 
     return;
-
 
   int bhvs_x = 5; 
   int bhvs_y = tmarg;
@@ -262,7 +264,7 @@ void GUI_IPF::resizeWidgetsText()
   m_fld_ipf_dom->textsize(info_size); 
   m_fld_ipf_dom->labelsize(info_size);
 
-  m_brw_bhvs->textsize(info_size);
+  m_brw_bhvs->textsize(m_mutable_text_size);
 
   m_but_addvar_a->textsize(info_size);
   m_but_addvar_a->labelsize(info_size);
@@ -375,8 +377,10 @@ int GUI_IPF::handle(int event)
       m_parent_gui->streamspeed(true);
     else if(Fl::event_key() == 'z') 
       m_parent_gui->streamspeed(false);
-    else if(Fl::event_key() == '=') 
-      m_parent_gui->streaming(2);
+    else if(Fl::event_key() == '+') 
+      updateMutableTextSize("bigger");
+    else if(Fl::event_key() == '-') 
+      updateMutableTextSize("smaller");
     else if((Fl::event_key() == 'c')) {
       if(m_but_collective->value()) {
 	m_but_collective->value(0);
@@ -714,6 +718,48 @@ void GUI_IPF::toggleFullScreen()
     updateBrowser();
     redraw();
   }
+}
+
+//----------------------------------------------------------
+// Procedure: updateMutableTextSize()
+
+void GUI_IPF::updateMutableTextSize(string val) 
+{
+  if(val == "bigger") {
+    if(m_mutable_text_size == 8)
+      m_mutable_text_size = 9;
+    else if(m_mutable_text_size == 9)
+      m_mutable_text_size = 10;
+    else if(m_mutable_text_size == 10)
+      m_mutable_text_size = 12;
+    else if(m_mutable_text_size == 12)
+      m_mutable_text_size = 14;
+    else if(m_mutable_text_size == 14)
+      m_mutable_text_size = 16;
+    else if(m_mutable_text_size == 16)
+      m_mutable_text_size = 18;
+  }
+  else if(val == "smaller") {
+    if(m_mutable_text_size == 18)
+      m_mutable_text_size = 16;
+    else if(m_mutable_text_size == 16)
+      m_mutable_text_size = 14;
+    else if(m_mutable_text_size == 14)
+      m_mutable_text_size = 12;
+    else if(m_mutable_text_size == 12)
+      m_mutable_text_size = 10;
+    else if(m_mutable_text_size == 10)
+      m_mutable_text_size = 9;
+    else if(m_mutable_text_size == 9)
+      m_mutable_text_size = 8;
+  }
+  else
+    return;
+  resizeWidgetsText();
+  updateBrowser();
+  
+  m_ipf_viewer->setMutableTextSize(m_mutable_text_size);
+  m_ipf_viewer->redraw();
 }
 
 //-------------------------------------------------------

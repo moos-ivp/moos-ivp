@@ -41,7 +41,9 @@ IvPFuncViewerX::IvPFuncViewerX(int x, int y, int w, int h, const char *l)
   m_zoom        = 2.0;
   m_curr_time   = 0;
   m_curr_iter   = 0; 
-  
+ 
+  m_mutable_text_size = 10;
+ 
   setParam("reset_view", "2");
 
   m_clear_color.setColor("0.6,0.7,0.5");
@@ -77,8 +79,8 @@ void IvPFuncViewerX::draw()
   }
   
   ColorPack cpack("black");
-  drawText2(5, h()-15, m_scope_a, cpack, 10);
-  drawText2(5, 5, m_scope_b, cpack, 10);
+  drawText2(5, h()-15, m_scope_a, cpack, m_mutable_text_size);
+  drawText2(5, 5, m_scope_b, cpack, m_mutable_text_size);
 }
 
 //-------------------------------------------------------------

@@ -63,7 +63,7 @@ public:
   void updateXY();
   void initMenuVarButtons();
   void updateMenuDelVarButton();
-  void updateInfoSize(std::string);
+  void updateMutableTextSize(std::string);
 
 private:
   inline void cb_BrowserPast_i();
@@ -110,7 +110,7 @@ protected:
   std::string m_replay_warp_msg;
   std::string m_vname;
 
-  int m_info_text_size;
+  int m_mutable_text_size;
   
   std::vector<unsigned int> m_current_mix_vars;
 };

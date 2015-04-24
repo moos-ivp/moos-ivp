@@ -47,7 +47,7 @@ GUI_VarScope::GUI_VarScope(int g_w, int g_h, const char *g_l)
   m_replay_warp_msg = "(PAUSED)";
   m_parent_gui = 0;
 
-  m_info_text_size = 10;
+  m_mutable_text_size = 10;
 
   initWidgets();  
   resizeWidgetsShape();
@@ -213,28 +213,28 @@ void GUI_VarScope::resizeWidgetsText()
 {
   int blab_size = 12; // blab=button_label size
 
-  m_brw_past->textsize(m_info_text_size); 
-  m_brw_past->labelsize(m_info_text_size);
+  m_brw_past->textsize(m_mutable_text_size); 
+  m_brw_past->labelsize(m_mutable_text_size);
 
-  m_brw_soon->textsize(m_info_text_size); 
-  m_brw_soon->labelsize(m_info_text_size);
+  m_brw_soon->textsize(m_mutable_text_size); 
+  m_brw_soon->labelsize(m_mutable_text_size);
 
   m_but_vname->labelsize(blab_size);
   m_but_varname->labelsize(blab_size);
   m_but_source->labelsize(blab_size);
   m_but_srcaux->labelsize(blab_size);
 
-  m_but_addvar->labelsize(m_info_text_size);
+  m_but_addvar->labelsize(m_mutable_text_size);
   m_but_addvar->textsize(blab_size);
 
-  m_but_setvar->labelsize(m_info_text_size);
+  m_but_setvar->labelsize(m_mutable_text_size);
   m_but_setvar->textsize(blab_size);
 
-  m_but_delvar->labelsize(m_info_text_size);
+  m_but_delvar->labelsize(m_mutable_text_size);
   m_but_delvar->textsize(blab_size);
 
-  m_fld_time->textsize(m_info_text_size); 
-  m_fld_time->labelsize(m_info_text_size);
+  m_fld_time->textsize(m_mutable_text_size); 
+  m_fld_time->labelsize(m_mutable_text_size);
 }
 
 //-------------------------------------------------------------------
@@ -293,9 +293,9 @@ int GUI_VarScope::handle(int event)
     else if(Fl::event_key() == '=') 
       m_parent_gui->streaming(2);
     else if(Fl::event_key() == '+') 
-      updateInfoSize("bigger");
+      updateMutableTextSize("bigger");
     else if(Fl::event_key() == '-') 
-      updateInfoSize("smaller");
+      updateMutableTextSize("smaller");
     else if(Fl::event_key() == FL_Left) 
       return(1);
     else if(Fl::event_key() == FL_Right) 
@@ -505,37 +505,37 @@ void GUI_VarScope::updateMenuDelVarButton()
 }
 
 //----------------------------------------------------------
-// Procedure: updateInfoSize()
+// Procedure: updateMutableTextSize()
 
-void GUI_VarScope::updateInfoSize(string val) 
+void GUI_VarScope::updateMutableTextSize(string val) 
 {
   if(val == "bigger") {
-    if(m_info_text_size == 8)
-      m_info_text_size = 9;
-    else if(m_info_text_size == 9)
-      m_info_text_size = 10;
-    else if(m_info_text_size == 10)
-      m_info_text_size = 12;
-    else if(m_info_text_size == 12)
-      m_info_text_size = 14;
-    else if(m_info_text_size == 14)
-      m_info_text_size = 16;
-    else if(m_info_text_size == 16)
-      m_info_text_size = 18;
+    if(m_mutable_text_size == 8)
+      m_mutable_text_size = 9;
+    else if(m_mutable_text_size == 9)
+      m_mutable_text_size = 10;
+    else if(m_mutable_text_size == 10)
+      m_mutable_text_size = 12;
+    else if(m_mutable_text_size == 12)
+      m_mutable_text_size = 14;
+    else if(m_mutable_text_size == 14)
+      m_mutable_text_size = 16;
+    else if(m_mutable_text_size == 16)
+      m_mutable_text_size = 18;
   }
   else if(val == "smaller") {
-    if(m_info_text_size == 18)
-      m_info_text_size = 16;
-    else if(m_info_text_size == 16)
-      m_info_text_size = 14;
-    else if(m_info_text_size == 14)
-      m_info_text_size = 12;
-    else if(m_info_text_size == 12)
-      m_info_text_size = 10;
-    else if(m_info_text_size == 10)
-      m_info_text_size = 9;
-    else if(m_info_text_size == 9)
-      m_info_text_size = 8;
+    if(m_mutable_text_size == 18)
+      m_mutable_text_size = 16;
+    else if(m_mutable_text_size == 16)
+      m_mutable_text_size = 14;
+    else if(m_mutable_text_size == 14)
+      m_mutable_text_size = 12;
+    else if(m_mutable_text_size == 12)
+      m_mutable_text_size = 10;
+    else if(m_mutable_text_size == 10)
+      m_mutable_text_size = 9;
+    else if(m_mutable_text_size == 9)
+      m_mutable_text_size = 8;
   }
   else
     return;

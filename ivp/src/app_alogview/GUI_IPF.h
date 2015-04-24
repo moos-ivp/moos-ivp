@@ -66,6 +66,7 @@ public:
 
   void  updateXY();
   void  updateBrowser();
+  void  updateMutableTextSize(std::string);
   void  toggleFullScreen();
 
  private:
@@ -119,10 +120,12 @@ protected:
   Fl_Check_Button *m_but_collective_dep;
 
   std::vector<std::string> m_sources;
-  std::string              m_vname;
-  std::string              m_source;
 
-  std::string              m_replay_warp_msg;
-  bool                     m_fullscreen;
+  std::string    m_vname;
+  std::string    m_source;
+  std::string    m_replay_warp_msg;
+  bool           m_fullscreen;
+
+  int            m_mutable_text_size;
 };
 #endif
