@@ -61,6 +61,7 @@ public:
   void updateTopBrowsers();
   void updateBotBrowser();
   void updateXY();
+  void updateInfoSize(std::string);
 
 private:
   inline void cb_Browser_i();
@@ -119,6 +120,8 @@ protected:
   unsigned int m_cnt_errors;
   unsigned int m_cnt_mevents;
   unsigned int m_cnt_levents;
+
+  int m_info_text_size;
 
   std::string  m_gen_browser_mode; // warnings, errors, life_events, mode_tree
   std::string  m_replay_warp_msg;
