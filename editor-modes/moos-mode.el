@@ -154,6 +154,10 @@
 (defun moos-process-keywords ()
 	(defconst moos-font-lock-keywords-1
 		(list
+		 ;;nsplug commands and macros
+		 ;;\\$\(.*\) matches anything wrapped in $( )
+		 '("\\$\(.*\)\\|#include\\|#ifdef\\|#elseifdef\\|#endif\\|#else"
+			 . font-lock-preprocessor-face)
 
 		 ;;A word after #ifdef or #elseifdef is a preprocessor variable
 		 '("#ifdef\\|#elseifdef" "\\<[A-Z_\-]*\\>" 
@@ -161,7 +165,7 @@
 
 		 ;;Generic mission file keywords. These are either common to all
 		 ;;apps or outside of the processConfig blocks.
-		 '("AppTick\\|CommsTick\\|Community\\|ProcessConfig\\|ServerHost\\|ServerPort\\|LatOrigin\\|LongOrigin\\|MOOSTimeWarp\\|MaxAppTick"
+		 '("\\<AppTick\\|CommsTick\\|Community\\|ProcessConfig\\|ServerHost\\|ServerPort\\|LatOrigin\\|LongOrigin\\|MOOSTimeWarp\\|MaxAppTick\\|IterateMode\\>"
 			 . font-lock-keyword-face)
 
 		 ;;Generic behavior keywords. These are defined on the superclass
@@ -171,10 +175,6 @@
 		 '("\\<\\(?:initialize\\|set\\|name\\|pwt\\|duration\\|duration_idle_decay\\|condition\\|updates\\|perpetual\\|endflag\\|runflag\\|idleflag\\|activeflag\\|inactiveflag\\|templating\\)\\>"
 			 . font-lock-keyword-face)
 
-		 ;;nsplug commands and macros
-		 ;;\\$\(.*\) matches anything wrapped in $( )
-		 '("\\$\(.*\)\\|#include\\|#ifdef\\|#elseifdef\\|#endif\\|#else"
-			 . font-lock-preprocessor-face)
 		 '("\\<true\\|false\\>"
 			 . font-lock-constant-face))
 		"Minimal highlighting expressions for MOOS mode")
