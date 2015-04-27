@@ -107,6 +107,7 @@ SET(IVP_NON_GUI_LIBS
    lib_ufld_hazards
    lib_logutils
    lib_mbutil
+   lib_henrik_util
    )
 
 IF (${WIN32})
@@ -235,6 +236,10 @@ SET(IVP_NON_GUI_APPS
   uPokeDB
   pHostInfo
   iSay
+  pFrontGridRender
+  pFrontEstimate
+  pGradeFrontEstimate
+  uFldCTDSensor
   )
 
 IF( EXISTS pSafetyRetreat )

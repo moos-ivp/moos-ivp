@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pFrontGridRender config block
+
+ProcessConfig = pFrontGridRender
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
