@@ -300,6 +300,14 @@ int GUI_VarScope::handle(int event)
       return(1);
     else if(Fl::event_key() == FL_Right) 
       return(1);
+    else if(Fl::event_key() == 'i') 
+      return(1);
+    else if(Fl::event_key() == 'o') 
+      return(1);
+    else if(Fl::event_key() == 'h') 
+      return(1);
+    else if(Fl::event_key() == 'b') 
+      return(1);
     else if(Fl::event_key() == FL_Up) {
       if((m_brw_past->size() == 0) || (m_brw_soon->size() == 0))
 	return(1);
