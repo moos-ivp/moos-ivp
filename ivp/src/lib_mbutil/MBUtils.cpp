@@ -1329,7 +1329,7 @@ double randomDouble(double min, double max)
 //----------------------------------------------------------------
 // Procedure: tokParse
 //   Example: info  = "fruit=apple, drink=water, temp=98.6";
-//            match = str_tok(info, "temp", ',', '=', rval);
+//            match = tokParse(info, "temp", ',', '=', rval);
 //    Result: match:true rval:98.6
 
 bool tokParse(const string& str, const string& left, 
@@ -1344,6 +1344,27 @@ bool tokParse(const string& str, const string& left,
     return(false);
 
   rval = atof(rstr.c_str());
+  return(true);
+}
+
+//----------------------------------------------------------------
+// Procedure: tokParse
+//   Example: info  = "fruit=apple, result=true, temp=98.6";
+//            match = tokParse(info, "temp", ',', '=', rval);
+//    Result: match:true bval:true
+
+bool tokParse(const string& str, const string& left, 
+	       char gsep, char lsep, bool& bval)
+{
+  string rstr;
+  bool res = tokParse(str, left, gsep, lsep, rstr);
+  if(!res)
+    return(false);
+  
+  if(!isBoolean(rstr))
+    return(false);
+
+  bval = (tolower(rstr) == "true");
   return(true);
 }
 

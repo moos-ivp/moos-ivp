@@ -100,6 +100,8 @@ bool  tokParse(const std::string&, const std::string&,
 		char, char, std::string&);
 bool  tokParse(const std::string&, const std::string&, 
 		char, char, double&);
+bool  tokParse(const std::string&, const std::string&, 
+		char, char, bool&);
 
 std::string tokStringParse(const std::string&, const std::string&, 
 			   char, char);
