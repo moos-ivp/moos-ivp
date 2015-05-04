@@ -25,10 +25,10 @@ ADD_EXECUTABLE(uFldCTDSensor ${SRC})
 TARGET_LINK_LIBRARIES(uFldCTDSensor
   ${MOOS_LIBRARIES}
  # MOOSUtility
-  mbutil
-  geometry 
-  contacts
   henrik_util
+  contacts
+  geometry 
+  mbutil
   ${SYSTEM_LIBS}
 )
 
