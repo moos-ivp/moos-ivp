@@ -60,6 +60,8 @@ CFrontEstimate::CFrontEstimate()
   max_T_N = 25; 
   min_T_S = 20;
   max_T_S = 30; 
+
+  param_report_var = "UCTD_PARAMETER_ESTIMATE";
 }
 
 CFrontEstimate::~CFrontEstimate()
@@ -74,6 +76,11 @@ bool CFrontEstimate::OnStartUp()
   if(m_MissionReader.GetConfigurationParam("vname",sVal))
     {
       vname = sVal;
+    }     
+
+  if(m_MissionReader.GetConfigurationParam("param_report_var",sVal))
+    {
+      param_report_var = sVal;
     }     
   
   if(m_MissionReader.GetConfigurationParam("temperature_factor",sVal))
@@ -340,7 +347,7 @@ void CFrontEstimate::postParameterReport()
   sval += ",beta=" + doubleToString(beta);
   sval += ",tempnorth=" + doubleToString(T_N);
   sval += ",tempsouth=" + doubleToString(T_S);
-  m_Comms.Notify("UCTD_PARAMETER_ESTIMATE",sval);
+  m_Comms.Notify(param_report_var, sval);
 }
 
 
