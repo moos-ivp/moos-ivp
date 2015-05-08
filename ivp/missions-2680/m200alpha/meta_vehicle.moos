@@ -12,27 +12,32 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
    
   Run = MOOSDB             @ NewConsole = false
-  Run = uSimMarine         @ NewConsole = false
+  Run = pShare             @ NewConsole = false
   Run = pLogger            @ NewConsole = false
   Run = pNodeReporter      @ NewConsole = false
   Run = pMarinePID         @ NewConsole = false
   Run = pHelmIvP           @ NewConsole = false
-  Run = uProcessWatch      @ NewConsole = false
-  Run = pBasicContactMgr   @ NewConsole = false
-
-  Run = pShare             @ NewConsole = false
   Run = pHostInfo          @ NewConsole = false
   Run = uFldNodeBroker     @ NewConsole = false
+  Run = iM200              @ NewConsole = false
+  Run = uProcessWatch      @ NewConsole = false
 }
-  
-#include plug_uFldNodeBroker.moos
-#include plug_pShare.moos
-#include plug_pHostInfo.moos
-#include plug_pBasicContactMgr.moos
 
-#include plug_uSimMarine.moos
-#include plug_pHelmIvP.moos
-#include plug_pMarinePID.moos
+#include plug_iM200.moos
+#include plug_pShare.moos
 #include plug_pLogger.moos
 #include plug_pNodeReporter.moos
+#include plug_pMarinePID.moos
+#include plug_pHelmIvP.moos
+#include plug_pHostInfo.moos
+#include plug_uFldNodeBroker.moos
 #include plug_uProcessWatch.moos
+
+
+ProcessConfig = uXMS                                            
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  var    = NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING 
+}

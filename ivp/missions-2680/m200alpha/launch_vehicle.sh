@@ -1,7 +1,7 @@
 #!/bin/bash 
 
 JUST_BUILD="no"
-SHOREIP=""
+SHOREIP="1.2.3.4"
 
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
@@ -18,7 +18,7 @@ for ARGI; do
         VNAME="felix"
     elif [ "${ARGI}" = "--evan" -o "${ARGI}" = "-e" ] ; then
         VNAME="evan"
-    elif [ "${ARGI:0:8}" = "--vname=" ] ; then
+    elif [ "${ARGI:0:10}" = "--shoreip=" ] ; then
         SHOREIP="${ARGI#--shoreip=*}"
     elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
 	JUST_BUILD="yes"
@@ -45,7 +45,7 @@ printf "vehicle " $VNAME " selected. \n"
 #-------------------------------------------------------
 #  Part 3: Create the .moos and .bhv files. 
 #-------------------------------------------------------
-nsplug meta_vehicle_fld.moos targ_$VNAME.moos -f          \
+nsplug meta_vehicle.moos targ_$VNAME.moos -f          \
     VNAME=$VNAME          SHARE_LISTEN=9300               \
     VPORT=9200            SHORE_LISTEN=$SHORE_LISTEN      \
     SHORE_IP=$SHOREIP     M200_IP=$M200_IP                \
@@ -63,8 +63,8 @@ fi
 #  Part 4: Launch the processes
 #-------------------------------------------------------
 printf "Launching $VNAME MOOS Community \n"
-pAntler $MOOS_FILE >& /dev/null &
-uMAC $MOOS_FILE
+pAntler targ_$VNAME.moos >& /dev/null &
+uMAC targ_$VNAME.moos
 
 printf "Killing all processes ... \n "
 kill %1 

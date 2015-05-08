@@ -60,7 +60,7 @@ Behavior = BHV_Waypoint
 	   points = 50,-25 : 0,-45 : 12, -70:48,-85: 62,-50  // home plate
 
         repeat = 1800
-           order = normal
+         order = normal
 
 
     visual_hints = nextpt_color=red, nextpt_lcolor=green
