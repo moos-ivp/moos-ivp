@@ -1,0 +1,6 @@
+DHCP Configuration
+Client ID: 
+IPv6: Automatic
+IPv6 IP address: none
+IPv6 Router: none
+Ethernet Address: c8:2a:14:33:a7:cb
