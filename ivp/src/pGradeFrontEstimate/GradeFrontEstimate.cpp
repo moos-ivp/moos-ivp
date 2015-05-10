@@ -326,12 +326,15 @@ std::string GradeFrontEstimate::handleSensingReport(const string& request)
   error = sqrt(error);
   double score = 1/error;
 
-  double time_threshold = 500;
+  double time_threshold = 1200;
   double elapsed = m_curr_time - m_start_time;
   double time_fac = 1;
   if (elapsed > time_threshold)
     time_fac = elapsed/time_threshold;
   score = 1e2*score/time_fac;
+  double time_limit = 1800;
+  if (elapsed > time_limit)
+    score = 0;
 
   s << "=================== " << endl;
   s << "Report from " << vname << endl ;
