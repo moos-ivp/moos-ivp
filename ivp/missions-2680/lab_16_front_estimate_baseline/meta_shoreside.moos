@@ -76,8 +76,8 @@ ProcessConfig = uFldShoreBroker
   //       [bridge = src=FOO_$V,  alias=FOO] and                
   //       [bridge = src=FOO_ALL, alias=FOO]
 
-  qbridge  = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE
-  qbridge = STATION_KEEP
+  qbridge  = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE, STATION_KEEP
+//  qbridge = STATION_KEEP
   qbridge  = MOOS_MANUAL_OVERRIDE
 
   bridge = src=RETURN_ALL, alias=RETURN
@@ -122,8 +122,7 @@ ProcessConfig = pMarineViewer
   appcast_viewable     = true
   appcast_color_scheme = indigo
 
-  SCOPE = HAZARDSET_REPORT
-
+  SCOPE = UCTD_PARAMETER_ESTIMATE
   //ACTION = STATION_ALL = true
 
   button_one   = DEPLOY_ALL  # DEPLOY_ALL=true 
@@ -132,7 +131,7 @@ ProcessConfig = pMarineViewer
   button_one   = FRONT_SURVEY=true
   button_two   = RETURN_ALL  # RETURN_ALL=true # MOOS_MANUAL_OVERRIDE=true
 
-  button_three = ALLSTOP  # DEPLOY_ALL=false
+  button_three = ALLSTOP  # DEPLOY_ALL=false # STATION_KEEP=true
 //  button_four  = SHOW:both   # FGR_SHOW=both
-  BUTTON_four = STATION # STATION_KEEP=true
+  button_four = STATION # STATION_KEEP_ALL=true
 }
