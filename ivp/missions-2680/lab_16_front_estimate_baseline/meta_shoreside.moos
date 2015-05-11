@@ -126,12 +126,12 @@ ProcessConfig = pMarineViewer
   //ACTION = STATION_ALL = true
 
   button_one   = DEPLOY_ALL  # DEPLOY_ALL=true 
-  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false # STATION_KEEP_ALL=false 
   button_one   = RETURN_ALL=false
   button_one   = FRONT_SURVEY=true
-  button_two   = RETURN_ALL  # RETURN_ALL=true # MOOS_MANUAL_OVERRIDE=true
+  button_two   = RETURN_ALL  # RETURN_ALL=true 
 
-  button_three = ALLSTOP  # DEPLOY_ALL=false # STATION_KEEP=true
+  button_three = ALLSTOP  # DEPLOY_ALL=false # MOOS_MANUAL_OVERRIDE_ALL=true
 //  button_four  = SHOW:both   # FGR_SHOW=both
   button_four = STATION # STATION_KEEP_ALL=true
 }
