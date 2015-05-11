@@ -10,14 +10,21 @@ ProcessConfig = pFrontEstimate
   max_offset = -60
   min_angle = -5
   max_angle = 15
+
   min_amplitude = 0
   max_amplitude = 50
+
   min_period = 200
   max_period = 600
   min_wavelength = 100
   max_wavelength = 500
-  min_alpha = 200
-  max_alpha = 500
+
+  //min_alpha = 200
+  //max_alpha = 500
+
+  min_alpha = 340
+  max_alpha = 360
+
   min_beta = 10
   max_beta = 50
   min_T_N = 15
