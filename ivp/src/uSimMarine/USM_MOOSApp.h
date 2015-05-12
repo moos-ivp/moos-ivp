@@ -33,7 +33,7 @@ class USM_MOOSApp : public AppCastingMOOSApp
 {
 public:
   USM_MOOSApp();
-  virtual ~USM_MOOSApp() {};
+  virtual ~USM_MOOSApp() {}
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -93,11 +93,5 @@ protected:
   
   bool   m_obstacle_hit;
 };
+
 #endif
-
-
-
-
-
-
-

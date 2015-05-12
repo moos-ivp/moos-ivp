@@ -33,7 +33,7 @@ class TermCommand : public CMOOSApp
 {
 public:
   TermCommand();
-  virtual ~TermCommand() {};
+  virtual ~TermCommand() {}
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();

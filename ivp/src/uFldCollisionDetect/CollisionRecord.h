@@ -28,14 +28,14 @@ class CollisionRecord
   bool setMinDistance(double);
   bool setDetectionDistance(double);
   bool setDisplayClearTime(double);
-  void setPosted(bool in){m_posted = in;};  // this is for the final report, not immediate posting
-  void collisionPosted(){m_collision_posted = true;};
-  void nearMissPosted(){m_near_miss_posted = true;};
+  void setPosted(bool in){m_posted = in;}  // this is for the final report, not immediate posting
+  void collisionPosted(){m_collision_posted = true;}
+  void nearMissPosted(){m_near_miss_posted = true;}
   bool setV1Mode(pair<std::string, std::string>);
   bool setV2Mode(pair<std::string, std::string>);
 
   //  void cpa
-  void setInteracting(bool in){m_interacting = in;};
+  void setInteracting(bool in){m_interacting = in;}
   
   bool setParameters(double, double, double);
   bool set2Vehicles(std::string, std::string);
@@ -53,17 +53,17 @@ class CollisionRecord
   //getters
 
   
-  bool getNearMissRangeRingFired(){return m_range_ring_fired_near_miss;};
-  bool getCollisionRangeRingFired(){return m_range_ring_fired_collision;};
-  bool getPosted(){return m_posted;};
-  bool getCollisionPosted(){return m_collision_posted;}; //for immediate reports, not final report
-  bool getNearMissPosted(){return m_near_miss_posted;};  //for immediate reports, not final report
-  bool getColliding(){return m_interacting;};
-  double getDisplayClearTime(){return m_display_clear_time;};
-  bool getInteracting(){return m_interacting;};
-  double getMinDistance(){return m_min_dist;};
-  double getDetectDistance(){return m_detect_dist;};
-  std::string getCollisionType(){return m_collision_type;};
+  bool getNearMissRangeRingFired(){return m_range_ring_fired_near_miss;}
+  bool getCollisionRangeRingFired(){return m_range_ring_fired_collision;}
+  bool getPosted(){return m_posted;}
+  bool getCollisionPosted(){return m_collision_posted;} //for immediate reports, not final report
+  bool getNearMissPosted(){return m_near_miss_posted;}  //for immediate reports, not final report
+  bool getColliding(){return m_interacting;}
+  double getDisplayClearTime(){return m_display_clear_time;}
+  bool getInteracting(){return m_interacting;}
+  double getMinDistance(){return m_min_dist;}
+  double getDetectDistance(){return m_detect_dist;}
+  std::string getCollisionType(){return m_collision_type;}
   // derived output
   
   // serialization

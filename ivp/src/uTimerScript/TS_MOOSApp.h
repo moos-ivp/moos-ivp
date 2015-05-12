@@ -37,7 +37,7 @@ class TS_MOOSApp : public AppCastingMOOSApp
 {
  public:
   TS_MOOSApp();
-  virtual ~TS_MOOSApp() {};
+  virtual ~TS_MOOSApp() {}
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -49,8 +49,8 @@ class TS_MOOSApp : public AppCastingMOOSApp
   bool   buildReport();
 
  public: // Public configuration functions
-  void setVerbose(bool val) {m_verbose = val;};
-  void setShuffle(bool val) {m_shuffle = val;};
+  void setVerbose(bool val) {m_verbose = val;}
+  void setShuffle(bool val) {m_shuffle = val;}
 
  protected: // Locally defined and locally used functions
   void   registerVariables();

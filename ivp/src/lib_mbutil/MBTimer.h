@@ -34,14 +34,14 @@
 class MBTimer {
 public:
   MBTimer(int=0);
-  ~MBTimer() {};
+  ~MBTimer() {}
 
   void start();
   void stop();
   void reset(int=0);
   bool timeOutCheck();
-  bool isTimedOut() { return(timedOut);};
-  int  getMaxTime() { return(maxTime); };
+  bool isTimedOut() { return(timedOut);}
+  int  getMaxTime() { return(maxTime); }
 
   clock_t get_wall_time(int prec=1);
   clock_t get_user_cpu_time(int prec=1);
@@ -49,13 +49,13 @@ public:
   clock_t get_cpu_time(int prec=1);
 
   float   get_float_wall_time() 
-  { return((float) get_wall_time(1000)/1000); };
+  { return((float) get_wall_time(1000)/1000); }
   float   get_float_cpu_time() 
-  { return((float) get_cpu_time(1000)/1000); };
+  { return((float) get_cpu_time(1000)/1000); }
   float   get_float_user_cpu_time() 
-  { return((float) get_user_cpu_time(1000)/1000); };
+  { return((float) get_user_cpu_time(1000)/1000); }
   float   get_float_system_cpu_time() 
-  { return((float) get_system_cpu_time(1000)/1000); };
+  { return((float) get_system_cpu_time(1000)/1000); }
 
 private:
 

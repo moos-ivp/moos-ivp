@@ -41,20 +41,20 @@ public:
 	      const std::string& varvalue, 
 	      const std::string& typehint);
 
-  virtual ~VarDataPair() {};
+  virtual ~VarDataPair() {}
   
-  void        set_key(const std::string& s)   {m_key=s;};
-  void        set_ptype(const std::string& s) {m_ptype=s;};
-  void        set_sdata(const std::string& s) {m_sdata=s; m_is_string=true;};
-  void        set_ddata(double v)             {m_ddata=v; m_is_string=false;};
+  void        set_key(const std::string& s)   {m_key=s;}
+  void        set_ptype(const std::string& s) {m_ptype=s;}
+  void        set_sdata(const std::string& s) {m_sdata=s; m_is_string=true;}
+  void        set_ddata(double v)             {m_ddata=v; m_is_string=false;}
 
-  std::string get_var()   const {return(m_var);};
-  std::string get_sdata() const {return(m_sdata);};
-  double      get_ddata() const {return(m_ddata);};
-  bool        is_string() const {return(m_is_string);};
-  bool        is_quoted() const {return(m_is_quoted);};
-  std::string get_key()   const {return(m_key);};
-  std::string get_ptype() const {return(m_ptype);};
+  std::string get_var()   const {return(m_var);}
+  std::string get_sdata() const {return(m_sdata);}
+  double      get_ddata() const {return(m_ddata);}
+  bool        is_string() const {return(m_is_string);}
+  bool        is_quoted() const {return(m_is_quoted);}
+  std::string get_key()   const {return(m_key);}
+  std::string get_ptype() const {return(m_ptype);}
 
   std::string getPrintable();
 

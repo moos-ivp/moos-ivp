@@ -31,17 +31,17 @@ class EnumVariable
 {
  public:
   EnumVariable();
-  virtual ~EnumVariable() {};
+  virtual ~EnumVariable() {}
 
  public:
-  void        setVarName(std::string str)   {m_varname=str;}; 
-  void        setKeyName(std::string str)   {m_keyname=str;};
+  void        setVarName(std::string str)   {m_varname=str;} 
+  void        setKeyName(std::string str)   {m_keyname=str;}
   void        addElement(std::string, double weight=1);
   std::string reset(std::string key, double timestamp=-1);
   double      getAge(double timestamp);
 
-  std::string getVarName() const {return(m_varname);};
-  std::string getKeyName() const {return(m_keyname);};
+  std::string getVarName() const {return(m_varname);}
+  std::string getKeyName() const {return(m_keyname);}
   std::string getValue() const;
 
   std::string getStringSummary();

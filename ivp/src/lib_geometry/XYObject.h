@@ -36,12 +36,12 @@ public:
   virtual void   clear();
   virtual bool   valid() const {return(true);};
   
-  void   set_label(const std::string& str)  {m_label=str;};
-  void   set_source(const std::string& str) {m_source=str;};
-  void   set_type(const std::string& str)   {m_type=str;};
-  void   set_msg(const std::string& str)    {m_msg=str;};
-  void   set_active(bool val)               {m_active=val;};
-  void   set_time(double val)               {m_time=val;m_time_set=true;};
+  void   set_label(const std::string& str)  {m_label=str;}
+  void   set_source(const std::string& str) {m_source=str;}
+  void   set_type(const std::string& str)   {m_type=str;}
+  void   set_msg(const std::string& str)    {m_msg=str;}
+  void   set_active(bool val)               {m_active=val;}
+  void   set_time(double val)               {m_time=val;m_time_set=true;}
   void   set_vertex_size(double val);
   void   set_edge_size(double val);
   void   set_transparency(double);
@@ -50,9 +50,9 @@ public:
   void   set_source() {}; // deprecated
 
   //-----Soon To Be Deprecated/Removed -----------------------------------      
-  void     set_vertex_color(const std::string& s) {set_color("vertex", s);};
-  void     set_edge_color(const std::string& s)   {set_color("edge", s);};
-  void     set_label_color(const std::string& s)  {set_color("label", s);};
+  void     set_vertex_color(const std::string& s) {set_color("vertex", s);}
+  void     set_edge_color(const std::string& s)   {set_color("edge", s);}
+  void     set_label_color(const std::string& s)  {set_color("label", s);}
   //-----Soon To Be Deprecated/Removed ----------------------------------- 
 
   bool      color_set(const std::string& key) const;
@@ -64,17 +64,17 @@ public:
   double    get_time()      const {return(m_time);};
   bool      time_set()      const {return(m_time_set);};
 
-  double    get_vertex_size() const  {return(m_vertex_size);};
-  bool      vertex_size_set() const  {return(m_vertex_size>=0);};
-  double    get_edge_size() const    {return(m_edge_size);};
-  bool      edge_size_set() const    {return(m_edge_size>=0);};
-  double    get_transparency() const {return(m_transparency);};
-  bool      transparency_set() const {return(m_transparency_set);};
+  double    get_vertex_size() const  {return(m_vertex_size);}
+  bool      vertex_size_set() const  {return(m_vertex_size>=0);}
+  double    get_edge_size() const    {return(m_edge_size);}
+  bool      edge_size_set() const    {return(m_edge_size>=0);}
+  double    get_transparency() const {return(m_transparency);}
+  bool      transparency_set() const {return(m_transparency_set);}
 
-  std::string get_label()     const {return(m_label);};
-  std::string get_msg()       const {return(m_msg);};
-  std::string get_type()      const {return(m_type);};
-  std::string get_source()    const {return(m_source);};
+  std::string get_label()     const {return(m_label);}
+  std::string get_msg()       const {return(m_msg);}
+  std::string get_type()      const {return(m_type);}
+  std::string get_source()    const {return(m_source);}
   std::string get_spec(std::string s="") const;
 
   bool set_param(const std::string&, const std::string&);

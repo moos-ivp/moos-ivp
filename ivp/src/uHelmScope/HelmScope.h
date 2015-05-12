@@ -40,7 +40,7 @@ class HelmScope : public AppCastingMOOSApp
 {
  public:
   HelmScope();
-  virtual ~HelmScope() {};
+  virtual ~HelmScope() {}
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
@@ -50,14 +50,14 @@ class HelmScope : public AppCastingMOOSApp
   bool buildReport();
 
   void handleCommand(char);
-  void setPaused(bool v)                {m_paused = v;};
-  void setDisplayXMS(bool v)            {m_display_xms = v;};
-  void setDisplayPosts(bool v)          {m_display_posts = v;};
-  void setIgnoreFileVars(bool v)        {m_ignore_filevars = v;};
-  void setDisplayTrunc(bool v)          {m_display_truncate = v;};
-  void setDisplayVirgins(bool v)        {m_display_virgins = v;};
-  void setTermServerHost(std::string s) {m_term_server_host = s;};
-  void setTermServerPort(std::string s) {m_term_server_port = s;};
+  void setPaused(bool v)                {m_paused = v;}
+  void setDisplayXMS(bool v)            {m_display_xms = v;}
+  void setDisplayPosts(bool v)          {m_display_posts = v;}
+  void setIgnoreFileVars(bool v)        {m_ignore_filevars = v;}
+  void setDisplayTrunc(bool v)          {m_display_truncate = v;}
+  void setDisplayVirgins(bool v)        {m_display_virgins = v;}
+  void setTermServerHost(std::string s) {m_term_server_host = s;}
+  void setTermServerPort(std::string s) {m_term_server_port = s;}
 
  public:  // Public Functions for basic DB Scoping
   void addScopeVariables(const std::string& varname_list);

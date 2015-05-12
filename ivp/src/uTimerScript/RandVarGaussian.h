@@ -31,7 +31,7 @@ class RandVarGaussian : public RandomVariable
 {
  public:
   RandVarGaussian();
-  virtual ~RandVarGaussian() {};
+  virtual ~RandVarGaussian() {}
 
  public: // Overloaded virtual functions
   bool   setParam(std::string, double);

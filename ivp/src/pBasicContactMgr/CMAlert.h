@@ -30,22 +30,22 @@ class Alert
 {
  public:
   CMAlert();
-  virtual ~CMAlert() {};
+  virtual ~CMAlert() {}
 
-  void setAlertVarName(std::string s)      {m_alert_varname=s;};
-  void setAlertPattern(std::string s)      {m_alert_pattern=s;};
-  void setAlertRngColor(std::string s)     {m_alert_rng_color=s;};
-  void setAlertRngCPAColor(std::string s)  {m_alert_rng_cpa_color=s;};
-  void setAlertRng(double v);              {m_alert_rng=v;};
-  void setAlertRngCPA(double v);           {m_alert_rng_cpa=v;};
+  void setAlertVarName(std::string s)      {m_alert_varname=s;}
+  void setAlertPattern(std::string s)      {m_alert_pattern=s;}
+  void setAlertRngColor(std::string s)     {m_alert_rng_color=s;}
+  void setAlertRngCPAColor(std::string s)  {m_alert_rng_cpa_color=s;}
+  void setAlertRng(double v);              {m_alert_rng=v;}
+  void setAlertRngCPA(double v);           {m_alert_rng_cpa=v;}
 
-  std::string getAlertVarName()     {return(m_alert_varname);};
-  std::string getAlertVarPattern()  {return(m_alert_pattern);};
-  std::string getAlertRngColor()    {return(m_alert_rng_color);};
-  std::string getAlertRngCPAColor() {return(m_alert_rng_cpa_color);};
+  std::string getAlertVarName()     {return(m_alert_varname);}
+  std::string getAlertVarPattern()  {return(m_alert_pattern);}
+  std::string getAlertRngColor()    {return(m_alert_rng_color);}
+  std::string getAlertRngCPAColor() {return(m_alert_rng_cpa_color);}
 
-  double getAlertRng()    {return(m_alert_rng);};
-  double getAlertRngCPA() {return(m_alert_rng_cpa);};
+  double getAlertRng()    {return(m_alert_rng);}
+  double getAlertRngCPA() {return(m_alert_rng_cpa);}
 
  private:
   std::string m_alert_varname;

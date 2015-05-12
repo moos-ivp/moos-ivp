@@ -33,7 +33,7 @@
 class RandomVariableSet 
 {
  public:
-  RandomVariableSet() {};
+  RandomVariableSet() {}
   ~RandomVariableSet();
 
  public:
@@ -42,7 +42,7 @@ class RandomVariableSet
   std::string  addRandomVarGaussian(const std::string& spec);
   void         reset(const std::string& key, double timestamp=0);
 
-  unsigned int size() const  {return(m_rvar_vector.size());};
+  unsigned int size() const  {return(m_rvar_vector.size());}
   std::string  getVarName(unsigned int index) const;
   std::string  getKeyName(unsigned int index) const;
   std::string  getType(unsigned int index) const;
