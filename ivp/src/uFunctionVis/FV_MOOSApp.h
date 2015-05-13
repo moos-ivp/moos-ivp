@@ -34,11 +34,11 @@ class FV_MOOSApp : public CMOOSApp
 {
  public:
   FV_MOOSApp();
-  virtual ~FV_MOOSApp() {};
+  virtual ~FV_MOOSApp() {}
 
-  void setViewer(FV_Viewer* viewer)  {m_viewer = viewer;};
-  void setModel(FV_Model* model)     {m_model = model;};
-  void setGUI(FV_GUI* gui)           {m_gui = gui;};
+  void setViewer(FV_Viewer* viewer)  {m_viewer = viewer;}
+  void setModel(FV_Model* model)     {m_model = model;}
+  void setGUI(FV_GUI* gui)           {m_gui = gui;}
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();

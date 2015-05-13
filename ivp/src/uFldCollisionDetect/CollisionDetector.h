@@ -42,7 +42,7 @@ class CollisionDetector : public AppCastingMOOSApp
 {
  public:
    CollisionDetector();
-   ~CollisionDetector() {};
+   ~CollisionDetector() {}
 
  protected: // Standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);

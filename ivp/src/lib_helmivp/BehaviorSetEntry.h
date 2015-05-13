@@ -38,23 +38,23 @@ public:
     m_state_time_elapsed = -1;
   }
 
-  ~BehaviorSetEntry() {};
+  ~BehaviorSetEntry() {}
   
-  void   setBehavior(IvPBehavior *b)    {m_behavior=b;};
-  void   setState(const std::string& s) {m_state=s;};
-  void   setStateTimeEntered(double v)  {m_state_time_entered=v;};
-  void   setStateTimeElapsed(double v)  {m_state_time_elapsed=v;};
+  void   setBehavior(IvPBehavior *b)    {m_behavior=b;}
+  void   setState(const std::string& s) {m_state=s;}
+  void   setStateTimeEntered(double v)  {m_state_time_entered=v;}
+  void   setStateTimeElapsed(double v)  {m_state_time_elapsed=v;}
 
   void   deleteBehavior() {
     if(m_behavior) 
       delete(m_behavior);
     m_behavior = 0;
-  };
+  }
 
-  IvPBehavior* getBehavior()         {return(m_behavior);};
-  std::string  getState()            {return(m_state);};
-  double       getStateTimeEntered() {return(m_state_time_entered);};
-  double       getStateTimeElapsed() {return(m_state_time_elapsed);};
+  IvPBehavior* getBehavior()         {return(m_behavior);}
+  std::string  getState()            {return(m_state);}
+  double       getStateTimeEntered() {return(m_state_time_entered);}
+  double       getStateTimeElapsed() {return(m_state_time_elapsed);}
 
   std::string  getBehaviorName()  {
     if(m_behavior)

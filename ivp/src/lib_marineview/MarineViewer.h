@@ -70,18 +70,18 @@ class MarineViewer : public Fl_Gl_Window
 
   void   handleNoTiff();
 
-  double getStaleReportThresh() {return(m_vehi_settings.getStaleReportThresh());};
-  double getStaleRemoveThresh() {return(m_vehi_settings.getStaleRemoveThresh());};
+  double getStaleReportThresh() {return(m_vehi_settings.getStaleReportThresh());}
+  double getStaleRemoveThresh() {return(m_vehi_settings.getStaleRemoveThresh());}
 
-  std::string getTiffFileA() {return(m_back_img.getTiffFile());};
-  std::string getInfoFileA() {return(m_back_img.getInfoFile());};
+  std::string getTiffFileA() {return(m_back_img.getTiffFile());}
+  std::string getInfoFileA() {return(m_back_img.getInfoFile());}
   
-  std::string getTiffFileB() {return(m_back_img_b.getTiffFile());};
-  std::string getInfoFileB() {return(m_back_img_b.getInfoFile());};
+  std::string getTiffFileB() {return(m_back_img_b.getTiffFile());}
+  std::string getInfoFileB() {return(m_back_img_b.getInfoFile());}
 
-  double getZoom() {return(m_zoom);};
-  double getPanX() {return(m_vshift_x);};
-  double getPanY() {return(m_vshift_y);};
+  double getZoom() {return(m_zoom);}
+  double getPanX() {return(m_vshift_x);}
+  double getPanY() {return(m_vshift_y);}
 
 protected:
   bool   readTiff(std::string);

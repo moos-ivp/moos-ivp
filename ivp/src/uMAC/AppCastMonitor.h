@@ -33,7 +33,7 @@ class AppCastMonitor : public CMOOSApp
 {
  public:
   AppCastMonitor();
-  ~AppCastMonitor() {};
+  ~AppCastMonitor() {}
   
   void handleCommand(char);
 
@@ -54,8 +54,8 @@ class AppCastMonitor : public CMOOSApp
 			  const std::string& thresh,
 			  double duration);
 
-  void setCurrentNode(const std::string& s)   {m_repo.setCurrentNode(s);};
-  void setCurrentProc(const std::string& s)   {m_repo.setCurrentProc(s);};
+  void setCurrentNode(const std::string& s)   {m_repo.setCurrentNode(s);}
+  void setCurrentProc(const std::string& s)   {m_repo.setCurrentProc(s);}
   bool switchContentMode(const std::string& s="revert");
 
   void printHelp();

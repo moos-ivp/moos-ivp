@@ -31,7 +31,7 @@ class XYVector : public XYObject {
 public:
   XYVector();
   XYVector(double x, double y, double mag=0, double ang=0);
-  virtual ~XYVector() {};
+  virtual ~XYVector() {}
 
   void  setPosition(double x, double y);
 
@@ -46,8 +46,8 @@ public:
 
   void  clear();
 
-  void  setHeadSize(double v)  {m_head_size=v;};
-  bool  head_size_set() const  {return(m_head_size >= 0);};
+  void  setHeadSize(double v)  {m_head_size=v;}
+  bool  head_size_set() const  {return(m_head_size >= 0);}
 
 public:
   void   applySnap(double);
@@ -57,12 +57,12 @@ public:
 public:
   double    xpos() const     {return(m_x);}
   double    ypos() const     {return(m_y);}
-  double    mag()  const     {return(m_mag);};
-  double    ang()  const     {return(m_ang);};
-  double    xdot() const     {return(m_xdot);};
-  double    ydot() const     {return(m_ydot);};
-  bool      valid() const    {return(m_valid);};
-  double    headsize() const {return(m_head_size);};
+  double    mag()  const     {return(m_mag);}
+  double    ang()  const     {return(m_ang);}
+  double    xdot() const     {return(m_xdot);}
+  double    ydot() const     {return(m_ydot);}
+  bool      valid() const    {return(m_valid);}
+  double    headsize() const {return(m_head_size);}
 
   std::string get_spec(std::string s="") const;
 

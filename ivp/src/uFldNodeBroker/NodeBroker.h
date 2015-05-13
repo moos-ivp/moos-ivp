@@ -31,7 +31,7 @@ class NodeBroker : public AppCastingMOOSApp
 {
  public:
   NodeBroker();
-  virtual ~NodeBroker() {};
+  virtual ~NodeBroker() {}
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);

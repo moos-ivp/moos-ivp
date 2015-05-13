@@ -33,32 +33,32 @@ class VPlug_VehiSettings
 {
  public:
   VPlug_VehiSettings();
-  ~VPlug_VehiSettings() {};
+  ~VPlug_VehiSettings() {}
 
   bool   setParam(std::string param, std::string value="");
   bool   setParam(std::string param, double value);
 
   std::string strvalue(const std::string&);
 
-  unsigned int getTrailsLength() const {return(m_trails_length);};
+  unsigned int getTrailsLength() const {return(m_trails_length);}
 
-  double getVehiclesShapeScale() const {return(m_vehicles_shape_scale);};
-  double getTrailsPointSize()    const {return(m_trails_point_size);};
-  double getStaleReportThresh()  const {return(m_stale_report_thresh);};
-  double getStaleRemoveThresh()  const {return(m_stale_remove_thresh);};
+  double getVehiclesShapeScale() const {return(m_vehicles_shape_scale);}
+  double getTrailsPointSize()    const {return(m_trails_point_size);}
+  double getStaleReportThresh()  const {return(m_stale_report_thresh);}
+  double getStaleRemoveThresh()  const {return(m_stale_remove_thresh);}
 
-  ColorPack getColorTrails()  const         {return(m_trails_color);};
-  ColorPack getColorActiveVehicle() const   {return(m_vehicles_active_color);};
-  ColorPack getColorInactiveVehicle() const {return(m_vehicles_inactive_color);};
-  ColorPack getColorVehicleName() const     {return(m_vehicles_name_color);};
+  ColorPack getColorTrails()  const         {return(m_trails_color);}
+  ColorPack getColorActiveVehicle() const   {return(m_vehicles_active_color);}
+  ColorPack getColorInactiveVehicle() const {return(m_vehicles_inactive_color);}
+  ColorPack getColorVehicleName() const     {return(m_vehicles_name_color);}
 
-  std::string getVehiclesNameMode() const   {return(m_vehicles_name_mode);};
+  std::string getVehiclesNameMode() const   {return(m_vehicles_name_mode);}
   
-  bool  isViewableVehicles()  const     {return(m_vehicles_viewable);};
-  bool  isViewableTrails()    const     {return(m_trails_viewable);};
-  bool  isViewableBearingLines() const  {return(m_bearing_lines_viewable);};
-  bool  isViewableTrailsFuture() const  {return(m_trails_future_viewable);};
-  bool  isViewableTrailsConnect() const {return(m_trails_connect_viewable);};
+  bool  isViewableVehicles()  const     {return(m_vehicles_viewable);}
+  bool  isViewableTrails()    const     {return(m_trails_viewable);}
+  bool  isViewableBearingLines() const  {return(m_bearing_lines_viewable);}
+  bool  isViewableTrailsFuture() const  {return(m_trails_future_viewable);}
+  bool  isViewableTrailsConnect() const {return(m_trails_connect_viewable);}
 
  private:
   unsigned int m_trails_length;         

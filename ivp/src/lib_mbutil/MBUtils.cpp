@@ -780,7 +780,19 @@ string doubleToString(double val, int digits)
   char format[10] = "%.5f\0";
   if((digits>=0)&&(digits<=9))
     format[2] = digits+48;
-  
+  else if((digits >= 10) && (digits <= 19)) {
+    format[2] = '1';
+    format[3] = (digits+38);
+    format[4] = 'f';
+    format[5] = '\0';
+  }
+  else {
+    format[2] = '2';
+    format[3] = '0';
+    format[4] = 'f';
+    format[5] = '\0';
+  }
+
   if(val > (double)(pow((double)(2),(double)(128))))
     format[3] = 'e';
 

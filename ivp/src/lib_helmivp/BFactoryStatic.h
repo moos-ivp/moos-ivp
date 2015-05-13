@@ -30,11 +30,11 @@
 
 class BFactoryStatic {
  public:
-  BFactoryStatic() {};
-  virtual ~BFactoryStatic() {};
+  BFactoryStatic() {}
+  virtual ~BFactoryStatic() {}
 
   // Configuring
-  void setDomain(IvPDomain domain) {m_domain = domain;};
+  void setDomain(IvPDomain domain) {m_domain = domain;}
 
   // Building Behaviors
   bool         isKnownBehavior(std::string bhv_name) const;

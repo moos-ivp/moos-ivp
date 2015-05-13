@@ -31,11 +31,11 @@
 class PIDEngine {
 public:
   PIDEngine();
-  ~PIDEngine() {};
+  ~PIDEngine() {}
 
   void setPID(int, ScalarPID);
-  void setSpeedFactor(double v)     {m_speed_factor = v;};
-  void updateTime(double ctime)     {m_current_time = ctime;};
+  void setSpeedFactor(double v)     {m_speed_factor = v;}
+  void updateTime(double ctime)     {m_current_time = ctime;}
 
   double getDesiredRudder(double desired_heading, 
 			  double current_heading,
@@ -50,8 +50,8 @@ public:
 			    double max_pitch,
 			    double max_elevator);
 
-  void clearReport() {m_pid_report.clear();};
-  std::vector<std::string> getPIDReport() {return(m_pid_report);};
+  void clearReport() {m_pid_report.clear();}
+  std::vector<std::string> getPIDReport() {return(m_pid_report);}
 
 protected:
   ScalarPID m_heading_pid;

@@ -37,7 +37,7 @@ class CRS_App : public AppCastingMOOSApp
 {
  public:
   CRS_App();
-  virtual ~CRS_App() {};
+  virtual ~CRS_App() {}
 
   bool  OnNewMail(MOOSMSG_LIST &NewMail);
   bool  OnStartUp();

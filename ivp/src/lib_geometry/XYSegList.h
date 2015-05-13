@@ -32,8 +32,8 @@
 
 class XYSegList : public XYObject {
 public:
-  XYSegList() {};
-  virtual ~XYSegList() {};
+  XYSegList() {}
+  virtual ~XYSegList() {}
 
   // XYSegList create and edit functions
   void   add_vertex(const XYPoint&, std::string s="");
@@ -58,7 +58,7 @@ public:
   bool   valid() const;
 
 public:
-  unsigned int size() const     {return(m_vx.size());};
+  unsigned int size() const     {return(m_vx.size());}
 
   double get_vx(unsigned int) const;
   double get_vy(unsigned int) const;

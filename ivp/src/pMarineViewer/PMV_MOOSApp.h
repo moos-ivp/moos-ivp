@@ -34,15 +34,15 @@ class PMV_MOOSApp : public AppCastingMOOSApp
 {
  public:
   PMV_MOOSApp();
-  virtual ~PMV_MOOSApp() {};
+  virtual ~PMV_MOOSApp() {}
 
   bool Iterate();
   bool OnConnectToServer();
   bool OnStartUp();
   bool OnNewMail(MOOSMSG_LIST &NewMail);
 
-  void setGUI(PMV_GUI* g_gui)            {m_gui=g_gui;};  
-  void setAppCastRepo(AppCastRepo* repo) {m_appcast_repo=repo;};
+  void setGUI(PMV_GUI* g_gui)            {m_gui=g_gui;}  
+  void setAppCastRepo(AppCastRepo* repo) {m_appcast_repo=repo;}
   void setPendingEventsPipe(Threadsafe_pipe<MOOS_event>*); 
 
   // Only call these methods in the main FLTK l thread, for thread

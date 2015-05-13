@@ -32,7 +32,7 @@
 class XYGrid {
 public:
   XYGrid();
-  virtual ~XYGrid() {};
+  virtual ~XYGrid() {}
 
   bool      initialize(std::string);
 
@@ -40,20 +40,20 @@ public:
   void      setVal(unsigned int index, double val);
   double    getVal(unsigned int index) const;
 
-  XYSquare  getSBound() const  {return(bounding_square);};
-  XYPolygon getPBound() const  {return(bounding_poly);};
-  double    getMinVal() const  {return(min_val);};
-  double    getMaxVal() const  {return(max_val);};
-  int       size() const       {return(elements.size());};
+  XYSquare  getSBound() const  {return(bounding_square);}
+  XYPolygon getPBound() const  {return(bounding_poly);}
+  double    getMinVal() const  {return(min_val);}
+  double    getMaxVal() const  {return(max_val);}
+  int       size() const       {return(elements.size());}
 
   void      setUtil(unsigned int ix, double val);
   void      setUtilRange(double, double);
   double    getUtil(unsigned int ix)  const;
 
-  double    getMinUtil()     const {return(min_util);};
-  double    getMaxUtil()     const {return(max_util);};
-  double    getMinUtilPoss() const {return(min_util_possible);};
-  double    getMaxUtilPoss() const {return(max_util_possible);};
+  double    getMinUtil()     const {return(min_util);}
+  double    getMaxUtil()     const {return(max_util);}
+  double    getMinUtilPoss() const {return(min_util_possible);}
+  double    getMaxUtilPoss() const {return(max_util_possible);}
   
   void      handleSegment(double, double, double, double);
   void      resetFromMin();
@@ -64,8 +64,8 @@ public:
   bool      processDelta(const std::string&);
   void      processDelta(const std::string&, const std::string&);
 
-  std::string getConfigString() const {return(config_string);};
-  std::string getLabel() const {return(label);};
+  std::string getConfigString() const {return(config_string);}
+  std::string getLabel() const {return(label);}
 
 protected:
   bool     initialize(XYPolygon, const XYSquare&, double);

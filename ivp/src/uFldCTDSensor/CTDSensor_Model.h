@@ -34,7 +34,7 @@ class CTDSensor_Model
 {
  public:
   CTDSensor_Model();
-  virtual ~CTDSensor_Model() {};
+  virtual ~CTDSensor_Model() {}
 
   bool  setParam(std::string param, std::string value);
   bool  handleMsg(std::string key, double dval, std::string sval, 
@@ -43,7 +43,7 @@ class CTDSensor_Model
   void  iterate();
   void  setCurrTime(double);
   void  setStartTime(double);
-  void  setTimeWarp(double v) {m_time_warp=v;};
+  void  setTimeWarp(double v) {m_time_warp=v;}
   void  perhapsSeedRandom();
 
   std::vector<VarDataPair> getMessages(bool clear=true);

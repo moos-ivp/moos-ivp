@@ -33,7 +33,7 @@ class ProcessWatch : public AppCastingMOOSApp
 {
 public:
   ProcessWatch();
-  virtual ~ProcessWatch() {};
+  virtual ~ProcessWatch() {}
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();

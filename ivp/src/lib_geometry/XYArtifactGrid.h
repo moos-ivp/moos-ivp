@@ -35,11 +35,11 @@ typedef unsigned int uint;
 class XYArtifactGrid {
 public:
   XYArtifactGrid();
-  virtual ~XYArtifactGrid() {};
+  virtual ~XYArtifactGrid() {}
   
   bool      initialize(std::string); 
   
-  const std::vector<XYSquare> getElements() const {return elements;};
+  const std::vector<XYSquare> getElements() const {return elements;}
   XYSquare  getElement(unsigned int index) const; 
   
   void      setClearance(unsigned int index, double val); 
@@ -51,17 +51,17 @@ public:
   uint      getDetectedArts() const;
   
   
-  XYSquare  getSBound() const  {return(bounding_square);}; 
-  XYPolygon getPBound() const  {return(bounding_poly);};  // Used by bhv_SearchArtifact
-  uint      size() const       {return(elements.size());}; 
+  XYSquare  getSBound() const  {return(bounding_square);} 
+  XYPolygon getPBound() const  {return(bounding_poly);}  // Used by bhv_SearchArtifact
+  uint      size() const       {return(elements.size());} 
   
   bool      containsPoint(double, double) const; 
   bool      ptIntersectBound(double, double) const; 
   bool      segIntersectBound(double, double, double, double) const; 
   bool      processDelta(const std::string&); 
   
-  std::string getConfigString() const {return(config_string);}; 
-  std::string getLabel() const {return(label);}; 
+  std::string getConfigString() const {return(config_string);} 
+  std::string getLabel() const {return(label);} 
   
  protected:
   bool     initialize(const XYPolygon&, const XYSquare&); 

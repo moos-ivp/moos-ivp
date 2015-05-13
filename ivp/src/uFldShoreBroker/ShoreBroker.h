@@ -31,7 +31,7 @@ class ShoreBroker : public AppCastingMOOSApp
 {
  public:
   ShoreBroker();
-  virtual ~ShoreBroker() {};
+  virtual ~ShoreBroker() {}
 
  public: // Standard MOOSApp/AppCastingMOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);

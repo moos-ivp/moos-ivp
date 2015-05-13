@@ -31,7 +31,7 @@
 class PostingQueue {
  public:
   PostingQueue();
-  virtual ~PostingQueue() {};
+  virtual ~PostingQueue() {}
 
   void push(VarDataPair pair);
   

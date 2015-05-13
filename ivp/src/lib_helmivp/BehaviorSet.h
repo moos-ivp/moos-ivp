@@ -56,18 +56,18 @@ public:
 
   void   addBehavior(IvPBehavior *b);
   void   clearBehaviors();
-  void   addInitialVar(VarDataPair msg) {m_initial_vars.push_back(msg);};
-  void   addDefaultVar(VarDataPair msg) {m_default_vars.push_back(msg);};
-  void   setCompletedPending(bool v)    {m_completed_pending = v;};
-  void   setCurrTime(double v)          {m_curr_time = v;};
-  double getCurrTime()                  {return(m_curr_time);};
-  void   setModeSet(ModeSet v)          {m_mode_set = v;};
+  void   addInitialVar(VarDataPair msg) {m_initial_vars.push_back(msg);}
+  void   addDefaultVar(VarDataPair msg) {m_default_vars.push_back(msg);}
+  void   setCompletedPending(bool v)    {m_completed_pending = v;}
+  void   setCurrTime(double v)          {m_curr_time = v;}
+  double getCurrTime()                  {return(m_curr_time);}
+  void   setModeSet(ModeSet v)          {m_mode_set = v;}
 
-  unsigned int getTCount()              {return(m_total_behaviors_ever);};
+  unsigned int getTCount()              {return(m_total_behaviors_ever);}
 
-  unsigned int size()                   {return(m_bhv_entry.size());};
+  unsigned int size()                   {return(m_bhv_entry.size());}
 
-  void         setReportIPF(bool v)     {m_report_ipf=v;};
+  void         setReportIPF(bool v)     {m_report_ipf=v;}
   bool         stateOK(unsigned int);
   void         resetStateOK();
   IvPFunction* produceOF(unsigned int ix, unsigned int iter, 
@@ -86,33 +86,33 @@ public:
   bool           filterBehaviorsPresent();
 
   std::vector<VarDataPair> getMessages(unsigned int bhv_ix, bool clear=true);
-  std::vector<VarDataPair> getInitialVariables()  {return(m_initial_vars);};
-  std::vector<VarDataPair> getDefaultVariables()  {return(m_default_vars);};
-  std::vector<VarDataPair> getHelmStartMessages() {return(m_helm_start_msgs);};
+  std::vector<VarDataPair> getInitialVariables()  {return(m_initial_vars);}
+  std::vector<VarDataPair> getDefaultVariables()  {return(m_default_vars);}
+  std::vector<VarDataPair> getHelmStartMessages() {return(m_helm_start_msgs);}
   std::vector<std::string> getInfoVars();
   std::vector<std::string> getNewInfoVars();
   std::vector<std::string> getSpecUpdateVars();
 
   void                     addWarning(const std::string&);
-  std::vector<std::string> getWarnings()     {return(m_warnings);};
-  void                     clearWarnings()   {m_warnings.clear();};
+  std::vector<std::string> getWarnings()     {return(m_warnings);}
+  void                     clearWarnings()   {m_warnings.clear();}
 
-  std::vector<LifeEvent>   getLifeEvents()   {return(m_life_events);};
-  void                     clearLifeEvents() {m_life_events.clear();};
+  std::vector<LifeEvent>   getLifeEvents()   {return(m_life_events);}
+  void                     clearLifeEvents() {m_life_events.clear();}
 
   bool        uniqueNameX(const std::string&, 
 			  const std::set<std::string>&);
   bool        updateStateSpaceVars();
   std::string getStateSpaceVars();
 
-  void printModeSet()   {m_mode_set.print();};
-  void consultModeSet() {m_mode_set.evaluate();};
+  void printModeSet()   {m_mode_set.print();}
+  void consultModeSet() {m_mode_set.evaluate();}
   std::vector<VarDataPair> getModeVarDataPairs()    
-    {return(m_mode_set.getVarDataPairs());};
+    {return(m_mode_set.getVarDataPairs());}
   std::string getModeSummary()     
-    {return(m_mode_set.getModeSummary());};
+    {return(m_mode_set.getModeSummary());}
   std::string getModeSetDefinition()  
-    {return(m_mode_set.getStringDescription());};
+    {return(m_mode_set.getStringDescription());}
 
   // Added by tes to support Graphviz 
   std::map<std::string, std::vector<LogicCondition> > getModeLogicConditions()

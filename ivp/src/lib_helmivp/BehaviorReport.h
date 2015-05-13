@@ -32,11 +32,11 @@ class BehaviorReport {
 public:
   BehaviorReport();
   BehaviorReport(std::string bhv_name, unsigned int iteration=0);
-  virtual ~BehaviorReport() {};
+  virtual ~BehaviorReport() {}
 
   // Setting Context information relevant to each IvPFunction
-  void  setBehaviorName(std::string name)   {m_bhv_name  = name;};
-  void  setHelmIteration(unsigned int iter) {m_iteration = iter;};
+  void  setBehaviorName(std::string name)   {m_bhv_name  = name;}
+  void  setHelmIteration(unsigned int iter) {m_iteration = iter;}
 
   // Populating the report with IvP Functions
   void  addIPF(IvPFunction*, std::string="");
@@ -48,8 +48,8 @@ public:
   void  setIPFStrings();
   
   // Member functions for getting information
-  unsigned int size() const    {return(m_ipf.size());};
-  bool         isEmpty() const {return(m_ipf.empty());};
+  unsigned int size() const    {return(m_ipf.size());}
+  bool         isEmpty() const {return(m_ipf.empty());}
 
   IvPFunction *getIPF(std::string key) const;
   IvPFunction *getIPF(unsigned int index) const;
@@ -58,9 +58,9 @@ public:
   bool         hasIPFString(unsigned int index) const;
   bool         hasUniqueKey(unsigned int index) const;
   double       getAvgPieces() const;
-  std::string  getBHVName() const   {return(m_bhv_name);};
-  unsigned int getIteration() const {return(m_iteration);};
-  double       getPriority() const  {return(m_priority);};
+  std::string  getBHVName() const   {return(m_bhv_name);}
+  unsigned int getIteration() const {return(m_iteration);}
+  double       getPriority() const  {return(m_priority);}
 
  protected:
   std::vector<std::string>  m_key;

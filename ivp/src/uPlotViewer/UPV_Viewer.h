@@ -37,7 +37,7 @@ class UPV_Viewer : public Fl_Gl_Window
 {
  public:
   UPV_Viewer(int x,int y,int w,int h,const char *l=0);
-  ~UPV_Viewer() {};
+  ~UPV_Viewer() {}
   
   // Pure virtuals that need to be defined
   void  draw();
@@ -55,7 +55,7 @@ class UPV_Viewer : public Fl_Gl_Window
   bool  hideVar(std::string varname);
   void  showVar(std::string varname);
 
-  std::string getHotVar()    const {return(m_hotvar);};
+  std::string getHotVar()    const {return(m_hotvar);}
   double      getHotVarAvg() const;
 
   void  printPartitions() const;

@@ -28,9 +28,9 @@
 #include "XYFormatUtilsPoly.h"
 #include "XYFormatUtilsSegl.h"
 
-XYPolygon stringToPoly(std::string s) {return(string2Poly(s));};
-XYPoint   stringToPoint(std::string s) {return(string2Point(s));};
-XYSegList stringToSegList(std::string s) {return(string2SegList(s));};
+XYPolygon stringToPoly(std::string s)    {return(string2Poly(s));}
+XYPoint   stringToPoint(std::string s)   {return(string2Point(s));}
+XYSegList stringToSegList(std::string s) {return(string2SegList(s));}
 
 #endif
 

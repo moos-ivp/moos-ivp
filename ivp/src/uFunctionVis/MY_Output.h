@@ -32,9 +32,9 @@
 class MY_Output : public Fl_Output {
 public:
   MY_Output(int x, int y, int w, int h, const char *l=0) :
-    Fl_Output(x, y, w, h, l) {};
+    Fl_Output(x, y, w, h, l) {}
 
-  int  handle(int event) {return(0);};
+  int  handle(int event) {return(0);}
 };
 #endif
 

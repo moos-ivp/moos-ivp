@@ -32,7 +32,7 @@ class HazardMgr : public AppCastingMOOSApp
 {
  public:
    HazardMgr();
-   ~HazardMgr() {};
+   ~HazardMgr() {}
 
  protected: // Standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -46,9 +46,9 @@ class HazardMgr : public AppCastingMOOSApp
  protected: // Registration, Configuration, Mail handling utils
    void registerVariables();
    bool handleMailSensorConfigAck(std::string);
-   bool handleMailSensorOptionsSummary(std::string) {return(true);};
+   bool handleMailSensorOptionsSummary(std::string) {return(true);}
    bool handleMailDetectionReport(std::string);
-   bool handleMailHazardReport(std::string) {return(true);};
+   bool handleMailHazardReport(std::string) {return(true);}
    void handleMailReportRequest();
    void handleMailMissionParams(std::string);
 

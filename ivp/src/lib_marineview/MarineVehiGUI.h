@@ -30,7 +30,7 @@
 class MarineVehiGUI : public MarineGUI {
 public:
   MarineVehiGUI(int w, int h, const char *l=0);
-  virtual ~MarineVehiGUI() {};
+  virtual ~MarineVehiGUI() {}
 
   bool   setRadioVehiAttrib(std::string attr, std::string val="");
   void   updateRadios();
@@ -39,7 +39,7 @@ public:
  protected: // Protected member functions
   void   augmentMenu();
 
-  virtual bool syncNodesAtoB() {return(false);};
+  virtual bool syncNodesAtoB() {return(false);}
 
  protected: // Widget callback functions
   inline void cb_SetRadioVehiAttrib_i(int);

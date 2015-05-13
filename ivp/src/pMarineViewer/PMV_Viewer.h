@@ -55,8 +55,8 @@ class PMV_Viewer : public MarineViewer
   void  setActiveScope(std::string);
   bool  isScopeVariable(std::string) const;
   void  addMousePoke(std::string side, std::string key, std::string vardata_pair);
-  void  setLeftMouseKey(std::string key)  {m_left_mouse_key = key;};
-  void  setRightMouseKey(std::string key) {m_right_mouse_key = key;};
+  void  setLeftMouseKey(std::string key)  {m_left_mouse_key = key;}
+  void  setRightMouseKey(std::string key) {m_right_mouse_key = key;}
 
   std::string getStringInfo(const std::string& info_type, int precision=0);
 
@@ -67,10 +67,10 @@ class PMV_Viewer : public MarineViewer
   std::vector<std::string> getStaleVehicles(double thresh=10);
 
   unsigned int shapeCount(const std::string& gtype, const std::string& vname="") const;
-  unsigned int getDrawCount() const {return(m_draw_count);};
-  double       getCurrTime() const {return(m_curr_time);};
-  double       getTimeWarp() const {return(m_time_warp);};
-  double       getElapsed() const {return(m_elapsed);};
+  unsigned int getDrawCount() const {return(m_draw_count);}
+  double       getCurrTime() const {return(m_curr_time);}
+  double       getTimeWarp() const {return(m_time_warp);}
+  double       getElapsed() const {return(m_elapsed);}
 
   void   clearGeoShapes(std::string vname, std::string shape, std::string stype);
 

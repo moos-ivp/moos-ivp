@@ -33,13 +33,13 @@ class ThrustMap
 {
 public:
   ThrustMap();
-  ~ThrustMap() {};
+  ~ThrustMap() {}
 
  public: // Setters
   bool   addPair(double, double);
   void   setThrustFactor(double);
   void   setMinMaxThrust(double, double);
-  void   setReflect(bool v)  {m_reflect_negative=v;};
+  void   setReflect(bool v)  {m_reflect_negative=v;}
  
  public: // Getters
   double getSpeedValue(double thrust) const;
@@ -48,7 +48,7 @@ public:
   bool   isAscending() const;
   bool   isConfigured();
   bool   usingThrustFactor() const;
-  bool   usingReflect() const {return(m_reflect_negative);};
+  bool   usingReflect() const {return(m_reflect_negative);}
 
   std::string getMapPos() const;
   std::string getMapNeg() const;
@@ -56,7 +56,7 @@ public:
  public: // Actions
   void   print() const;
   void   clear();
-  void   clearFiglog() {m_figlog.clear();};
+  void   clearFiglog() {m_figlog.clear();}
 
  protected:
   bool   isAscendingMap(std::map<double, double>) const;

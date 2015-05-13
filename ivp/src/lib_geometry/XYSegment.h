@@ -31,7 +31,7 @@
 class XYSegment : public XYObject {
 public:
   XYSegment();
-  virtual ~XYSegment() {};
+  virtual ~XYSegment() {}
 
   // XYSegList create and edit functions
   void   set(double x1, double y1, double x2, double y2);
@@ -45,13 +45,13 @@ public:
   void   reverse();
 
 public:
-  double length() const {return(m_length);};
-  double get_x1() const {return(m_x1);};
-  double get_y1() const {return(m_y1);};
-  double get_x2() const {return(m_x2);};
-  double get_y2() const {return(m_y2);};
-  double getRAng12() const {return(m_rang12);};
-  double getRAng21() const {return(m_rang21);};
+  double length() const {return(m_length);}
+  double get_x1() const {return(m_x1);}
+  double get_y1() const {return(m_y1);}
+  double get_x2() const {return(m_x2);}
+  double get_y2() const {return(m_y2);}
+  double getRAng12() const {return(m_rang12);}
+  double getRAng21() const {return(m_rang21);}
 
   std::string get_spec(int vertex_precision=1) const;
 

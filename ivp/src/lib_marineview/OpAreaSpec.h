@@ -32,7 +32,7 @@ class CMOOSGeodesy;
 class OpAreaSpec {
 public:
   OpAreaSpec();
-  virtual ~OpAreaSpec() {};
+  virtual ~OpAreaSpec() {}
 
   bool addVertex(const std::string& description, 
 		 CMOOSGeodesy& m_geodesy);
@@ -44,8 +44,8 @@ public:
   bool   viewable(const std::string& s="all") const;
   double geosize(const std::string&) const;
 
-  double getLineShade() const               {return(m_line_shade);};
-  double getLabelShade() const              {return(m_label_shade);};
+  double getLineShade() const               {return(m_line_shade);}
+  double getLabelShade() const              {return(m_label_shade);}
 
   double getXPos(unsigned int ix) const;
   double getYPos(unsigned int ix) const;

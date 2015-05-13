@@ -34,12 +34,12 @@
 class HelmReport {
 public:
   HelmReport();
-  ~HelmReport() {};
+  ~HelmReport() {}
 
   void  initialize();
   void  clear(bool clear_completed=false);
-  void  addMsg(const std::string& str)     {m_messages.push_back(str);};
-  void  setHaltMsg(const std::string& str) {m_halt_message = str;};
+  void  addMsg(const std::string& str)     {m_messages.push_back(str);}
+  void  setHaltMsg(const std::string& str) {m_halt_message = str;}
   
   void  clearActiveBHVs();
   void  addActiveBHV(const std::string& descriptor, double time,
@@ -59,43 +59,43 @@ public:
   void  addCompletedBHV(const std::string& descriptor, double time,
 			const std::string& update_summary);
 
-  void  setModeSummary(const std::string& s) {m_modes=s;};
-  void  setIvPDomain(const IvPDomain &dom)   {m_domain = dom;};
-  void  setTimeUTC(double v)                 {m_time_utc = v;};
-  void  setWarningCount(unsigned int v)      {m_warning_count = v;};
-  void  setHalted(bool v)                    {m_halted=v;};
-  void  setIteration(unsigned int iter)      {m_iteration=iter;};
-  void  setOFNUM(unsigned int ofnum)         {m_ofnum=ofnum;};
-  void  setCreateTime(double t)              {m_create_time=t;};
-  void  setSolveTime(double t)               {m_solve_time=t;};
-  void  setMaxLoopTime(double t)             {m_max_loop_time=t;};
-  void  setMaxCreateTime(double t)           {m_max_create_time=t;};
-  void  setMaxSolveTime(double t)            {m_max_solve_time=t;};
+  void  setModeSummary(const std::string& s) {m_modes=s;}
+  void  setIvPDomain(const IvPDomain &dom)   {m_domain = dom;}
+  void  setTimeUTC(double v)                 {m_time_utc = v;}
+  void  setWarningCount(unsigned int v)      {m_warning_count = v;}
+  void  setHalted(bool v)                    {m_halted=v;}
+  void  setIteration(unsigned int iter)      {m_iteration=iter;}
+  void  setOFNUM(unsigned int ofnum)         {m_ofnum=ofnum;}
+  void  setCreateTime(double t)              {m_create_time=t;}
+  void  setSolveTime(double t)               {m_solve_time=t;}
+  void  setMaxLoopTime(double t)             {m_max_loop_time=t;}
+  void  setMaxCreateTime(double t)           {m_max_create_time=t;}
+  void  setMaxSolveTime(double t)            {m_max_solve_time=t;}
 
   void  clearDecisions();
   void  addDecision(const std::string &var, double val);
 
   // Getters
-  unsigned int getWarnings()   const  {return(m_warning_count);};
-  unsigned int getIteration()  const  {return(m_iteration);};
-  unsigned int getOFNUM()      const  {return(m_ofnum);};
-  double       getTimeUTC()    const  {return(m_time_utc);};
-  double       getCreateTime() const  {return(m_create_time);};
-  double       getSolveTime()  const  {return(m_solve_time);};
-  double       getLoopTime()   const  {return(m_solve_time+m_create_time);};
-  bool         getHalted()     const  {return(m_halted);};
-  double       getMaxLoopTime() const {return(m_max_loop_time);};
-  double       getMaxSolveTime()  const {return(m_max_solve_time);};
-  double       getMaxCreateTime() const {return(m_max_create_time);};
+  unsigned int getWarnings()   const  {return(m_warning_count);}
+  unsigned int getIteration()  const  {return(m_iteration);}
+  unsigned int getOFNUM()      const  {return(m_ofnum);}
+  double       getTimeUTC()    const  {return(m_time_utc);}
+  double       getCreateTime() const  {return(m_create_time);}
+  double       getSolveTime()  const  {return(m_solve_time);}
+  double       getLoopTime()   const  {return(m_solve_time+m_create_time);}
+  bool         getHalted()     const  {return(m_halted);}
+  double       getMaxLoopTime() const {return(m_max_loop_time);}
+  double       getMaxSolveTime()  const {return(m_max_solve_time);}
+  double       getMaxCreateTime() const {return(m_max_create_time);}
 
   double       getDecision(const std::string&) const;
   bool         hasDecision(const std::string&) const;
 
   bool         changedBehaviors(const HelmReport&) const;
 
-  std::string  getModeSummary()      const {return(m_modes);};
-  std::string  getHaltMsg()          const {return(m_halt_message);};
-  std::vector<std::string> getMsgs() const {return(m_messages);};
+  std::string  getModeSummary()      const {return(m_modes);}
+  std::string  getHaltMsg()          const {return(m_halt_message);}
+  std::vector<std::string> getMsgs() const {return(m_messages);}
 
   // Serialization Helper Methods
   std::string  getDecisionSummary()    const;

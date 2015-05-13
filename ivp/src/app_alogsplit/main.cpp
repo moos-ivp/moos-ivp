@@ -49,6 +49,10 @@ int main(int argc, char *argv[])
     cout << "  -v,--version   Displays the current release version      " << endl;
     cout << "  --verbose      Show output for successful operation      " << endl;
     cout << "  --dir=DIR      Override the default dir with given dir.  " << endl;
+    cout << "                                                           " << endl;
+    cout << "Further Notes:                                             " << endl;
+    cout << "  (1) The order of arguments is irrelevent.                " << endl;
+    cout << "  (2) See also: alogscan, alogrm, aloggrep, alogclip, alogview " << endl;
     cout << endl;
     return(0);
   }

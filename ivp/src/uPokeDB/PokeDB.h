@@ -30,14 +30,14 @@ class PokeDB : public CMOOSApp
   PokeDB(std::string g_server, long int g_port); 
   PokeDB();
 
-  virtual ~PokeDB() {};
+  virtual ~PokeDB() {}
   
   bool Iterate();
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool OnConnectToServer();
   bool OnStartUp();
 
-  void setConfigureCommsLocally(bool v) {m_configure_comms_locally=v;};
+  void setConfigureCommsLocally(bool v) {m_configure_comms_locally=v;}
 
   void setPokeDouble(const std::string& varname, const std::string& val);
   void setPokeString(const std::string& varname, const std::string& val);

@@ -32,22 +32,22 @@ class XYRangePulse : public XYObject {
 public:
   XYRangePulse();
   XYRangePulse(double x, double y);
-  virtual ~XYRangePulse() {};
+  virtual ~XYRangePulse() {}
 
-  void   set_x(double v)          {m_x=v; m_x_set=true;};
-  void   set_y(double v)          {m_y=v; m_y_set=true;};
+  void   set_x(double v)          {m_x=v; m_x_set=true;}
+  void   set_y(double v)          {m_y=v; m_y_set=true;}
   void   set_rad(double);
   void   set_duration(double);
   void   set_linger(double);
   void   set_fill(double);
-  void   set_fill_invariant(bool v) {m_fill_invariant=v;};
+  void   set_fill_invariant(bool v) {m_fill_invariant=v;}
 
-  double get_x()    const         {return(m_x);};
-  double get_y()    const         {return(m_y);};
-  double get_radius()  const      {return(m_rad);};
-  double get_duration() const     {return(m_duration);};
-  double get_linger() const       {return(m_linger);};
-  double get_fill() const         {return(m_fill);};
+  double get_x()    const         {return(m_x);}
+  double get_y()    const         {return(m_y);}
+  double get_radius()  const      {return(m_rad);}
+  double get_duration() const     {return(m_duration);}
+  double get_linger() const       {return(m_linger);}
+  double get_fill() const         {return(m_fill);}
   double get_fill(double timestamp) const;
 
   bool   valid() const;

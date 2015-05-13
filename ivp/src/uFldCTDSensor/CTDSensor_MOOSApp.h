@@ -31,7 +31,7 @@ class CTDSensor_MOOSApp : public AppCastingMOOSApp
 {
  public:
   CTDSensor_MOOSApp();
-  virtual ~CTDSensor_MOOSApp() {};
+  virtual ~CTDSensor_MOOSApp() {}
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
@@ -51,4 +51,3 @@ class CTDSensor_MOOSApp : public AppCastingMOOSApp
 };
 
 #endif 
-

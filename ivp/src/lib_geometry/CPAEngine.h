@@ -34,7 +34,7 @@ public:
 	    double osY, double osX);
   void setContactCacheTimeDelta(double);
   void setContactCache(double secs);
-  ~CPAEngine() {};
+  ~CPAEngine() {}
 
 public:    
   double evalCPA(double osh, double osv, double ostol, double* calc_roc=0) const;
@@ -64,11 +64,11 @@ public:
 
   double minMaxROC(double, double, double&, double&) const;
 
-  double getcnLAT() const {return(cnLAT);};
-  double getcnLON() const {return(cnLON);};
-  double getcnCRS() const {return(cnCRS);};
-  double getcnSPD() const {return(cnSPD);};
-  double getK0() const    {return(statK0);};
+  double getcnLAT() const {return(cnLAT);}
+  double getcnLON() const {return(cnLON);}
+  double getcnCRS() const {return(cnCRS);}
+  double getcnSPD() const {return(cnSPD);}
+  double getK0() const    {return(statK0);}
   
  protected:
   void   setStatic();

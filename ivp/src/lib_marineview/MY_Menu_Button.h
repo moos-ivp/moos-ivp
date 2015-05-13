@@ -32,18 +32,17 @@
 class MY_Menu_Button : public Fl_Menu_Button {
 public:
   MY_Menu_Button(int x, int y, int w, int h, const char *l=0) :
-  Fl_Menu_Button(x, y, w, h, l) {};
+  Fl_Menu_Button(x, y, w, h, l) {}
   
   int  handle(int event) {
-    if((Fl::event_key()==FL_Up)   || 
-       (Fl::event_key()==FL_Down) || 
-       (Fl::event_key()==FL_Left) || 
-       (Fl::event_key()==FL_Right)) {
+    if((Fl::event_key()==FL_Up)   || (Fl::event_key()==FL_Down)  || 
+       (Fl::event_key()==FL_Left) || (Fl::event_key()==FL_Right)) {
       return(0);
     }
     return(Fl_Menu_Button::handle(event));
   }
 };
+
 #endif
 
 

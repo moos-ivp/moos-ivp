@@ -32,23 +32,23 @@ class XYCommsPulse : public XYObject {
 public:
   XYCommsPulse();
   XYCommsPulse(double sx, double sy, double tx, double ty);
-  virtual ~XYCommsPulse() {};
+  virtual ~XYCommsPulse() {}
 
-  void   set_sx(double v)          {m_sx=v; m_sx_set=true;};
-  void   set_sy(double v)          {m_sy=v; m_sy_set=true;};
-  void   set_tx(double v)          {m_tx=v; m_tx_set=true;};
-  void   set_ty(double v)          {m_ty=v; m_ty_set=true;};
+  void   set_sx(double v)          {m_sx=v; m_sx_set=true;}
+  void   set_sy(double v)          {m_sy=v; m_sy_set=true;}
+  void   set_tx(double v)          {m_tx=v; m_tx_set=true;}
+  void   set_ty(double v)          {m_ty=v; m_ty_set=true;}
   void   set_beam_width(double);
   void   set_duration(double);
   void   set_fill(double);
 
-  double get_sx()    const        {return(m_sx);};
-  double get_sy()    const        {return(m_sy);};
-  double get_tx()    const        {return(m_sx);};
-  double get_ty()    const        {return(m_sy);};
-  double get_beam_width()  const  {return(m_beam_width);};
-  double get_duration() const     {return(m_duration);};
-  double get_fill() const         {return(m_fill);};
+  double get_sx()    const        {return(m_sx);}
+  double get_sy()    const        {return(m_sy);}
+  double get_tx()    const        {return(m_sx);}
+  double get_ty()    const        {return(m_sy);}
+  double get_beam_width()  const  {return(m_beam_width);}
+  double get_duration() const     {return(m_duration);}
+  double get_fill() const         {return(m_fill);}
   double get_fill(double tstamp) const;
 
   bool   valid() const;

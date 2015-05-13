@@ -33,7 +33,7 @@ class USC_MOOSApp : public CMOOSApp
 {
 public:
   USC_MOOSApp();
-  virtual ~USC_MOOSApp() {};
+  virtual ~USC_MOOSApp() {}
 
   bool Iterate();
   bool OnConnectToServer();

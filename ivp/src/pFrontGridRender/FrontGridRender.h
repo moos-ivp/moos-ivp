@@ -19,7 +19,7 @@ class FrontGridRender : public AppCastingMOOSApp
 {
  public:
   FrontGridRender();
-  ~FrontGridRender() {};
+  ~FrontGridRender() {}
 
  protected:
   bool OnNewMail(MOOSMSG_LIST &NewMail);

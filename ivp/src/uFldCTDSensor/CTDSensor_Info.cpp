@@ -87,25 +87,25 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("ProcessConfig = uFldCTDSensor");
   blk("{");
-  blk("AppTick   = 3");
-  blk("CommsTick = 3");
+  blk("  AppTick   = 3");
+  blk("  CommsTick = 3");
 
-  blk("// Configuring Artificial Noise");
-  blk("xmin  = 0");
-  blk("xmax  = 500");
-  blk("ymin  = -400");
-  blk("ymax  =  0");
+  blk("  // Configuring Artificial Noise");
+  blk("  xmin  = 0");
+  blk("  xmax  = 500");
+  blk("  ymin  = -400");
+  blk("  ymax  =  0");
 
-  blk("offset = -100");
-  blk("angle  = 12");
-  blk("amplitude = 20");
-  blk("period = 350");
-  blk("wavelength = 200");
-  blk("alpha = 500");
-  blk("beta = 20");
-  blk("temperature_north = 20");
-  blk("temperature_south = 24");
-  blk("sigma = 0.01");
+  blk("  offset = -100");
+  blk("  angle  = 12");
+  blk("  amplitude = 20");
+  blk("  period = 350");
+  blk("  wavelength = 200");
+  blk("  alpha = 500");
+  blk("  beta = 20");
+  blk("  temperature_north = 20");
+  blk("  temperature_south = 24");
+  blk("  sigma = 0.01");
   blk("}");
   exit(0);
 }

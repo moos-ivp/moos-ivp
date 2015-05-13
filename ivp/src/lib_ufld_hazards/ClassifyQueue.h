@@ -31,7 +31,7 @@
 class ClassifyQueue {
  public:
   ClassifyQueue();
-  virtual ~ClassifyQueue() {};
+  virtual ~ClassifyQueue() {}
 
   void push(ClassifyEntry entry);
   void pushTop(ClassifyEntry entry);

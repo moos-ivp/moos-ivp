@@ -32,7 +32,7 @@
 class BehaviorSpec {
  public:
   BehaviorSpec();
-  ~BehaviorSpec() {};
+  ~BehaviorSpec() {}
   
  public: // Setting Parameters 
   void setBehaviorKind(std::string, unsigned int line_num);
@@ -41,22 +41,22 @@ class BehaviorSpec {
 
   std::vector<std::string>  checkForSpawningStrings();
 
-  void setFileName(std::string filename)  {m_filename = filename;};
-  void setInfoBuffer(InfoBuffer *b)       {m_info_buffer=b;};
+  void setFileName(std::string filename)  {m_filename = filename;}
+  void setInfoBuffer(InfoBuffer *b)       {m_info_buffer=b;}
 
   bool setTemplatingType(std::string s);
   void clear();
   void print() const;
     
  public: // Getting Parameters 
-  unsigned int  size() const              {return(m_config_lines.size());};
-  std::string   getTemplatingType() const {return(m_templating);};
-  bool          templating() const        {return(m_templating_enabled);};
-  std::string   getKind() const           {return(m_behavior_kind);};
-  unsigned int  getKindLine() const       {return(m_kind_line_num);};
-  std::string   getUpdatesVar() const     {return(m_updates_var);};
-  std::string   getFileName() const       {return(m_filename);};
-  std::string   getNamePrefix() const     {return(m_name_prefix);};
+  unsigned int  size() const              {return(m_config_lines.size());}
+  std::string   getTemplatingType() const {return(m_templating);}
+  bool          templating() const        {return(m_templating_enabled);}
+  std::string   getKind() const           {return(m_behavior_kind);}
+  unsigned int  getKindLine() const       {return(m_kind_line_num);}
+  std::string   getUpdatesVar() const     {return(m_updates_var);}
+  std::string   getFileName() const       {return(m_filename);}
+  std::string   getNamePrefix() const     {return(m_name_prefix);}
 
   std::string   getConfigLine(unsigned int) const;
   unsigned int  getConfigLineNum(unsigned int) const;

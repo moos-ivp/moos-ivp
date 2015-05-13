@@ -17,12 +17,12 @@ class SplitHandler
 {
  public:
   SplitHandler(std::string);
-  ~SplitHandler() {};
+  ~SplitHandler() {}
 
   bool handle();
   bool handlePreCheckALogFile();
-  void setVerbose(bool v)          {m_verbose=v;};
-  void setDirectory(std::string s) {m_given_dir=s;};
+  void setVerbose(bool v)          {m_verbose=v;}
+  void setDirectory(std::string s) {m_given_dir=s;}
   
  protected:
   bool handlePreCheckSplitDir();

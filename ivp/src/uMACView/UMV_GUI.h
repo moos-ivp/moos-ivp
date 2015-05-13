@@ -34,7 +34,7 @@
 class UMV_GUI : Fl_Window {
 public:
   UMV_GUI(int w, int h, const char *l=0);
-  ~UMV_GUI() {};
+  ~UMV_GUI() {}
   
   void augmentMenu();
   void resize(int, int, int, int);
@@ -43,7 +43,7 @@ public:
   void updateProcs(bool clear=false);
   void updateAppCast();
 
-  void setAppCastRepo(AppCastRepo* repo) {m_repo = repo;};
+  void setAppCastRepo(AppCastRepo* repo) {m_repo = repo;}
 
   bool setRadioCastAttrib(std::string attr, std::string val="");
 

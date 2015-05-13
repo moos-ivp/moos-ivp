@@ -35,7 +35,7 @@ class BasicContactMgr : public AppCastingMOOSApp
 {
  public:
   BasicContactMgr();
-  virtual ~BasicContactMgr() {};
+  virtual ~BasicContactMgr() {}
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();

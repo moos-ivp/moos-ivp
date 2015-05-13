@@ -29,8 +29,8 @@
 class ALogEntry
 {
 public:
-  ALogEntry() {m_timestamp=0; m_dval=0; m_isnum=false;};
-  ~ALogEntry() {};
+  ALogEntry() {m_timestamp=0; m_dval=0; m_isnum=false;}
+  ~ALogEntry() {}
 
   // Setters / Modifiers
   void set(double timestamp, const std::string& varname, 
@@ -43,30 +43,30 @@ public:
 	   const std::string& srcaux,
 	   double dval);
 
-  void setTimeStamp(double v)           {m_timestamp = v;};
-  void setDVal(double v)                {m_dval = v;};
-  void setIsNum()                       {m_isnum = true;};
-  void setVarName(const std::string& s) {m_varname = s;};
-  void setSource(const std::string& s)  {m_source = s;};
-  void setSrcAux(const std::string& s)  {m_srcaux = s;};
-  void setStatus(const std::string& s)  {m_status = s;};
-  void setRawLine(const std::string& s) {m_raw_line = s;};
-  void skewBackward(double v)           {m_timestamp -= v;};
-  void skewForward(double v)            {m_timestamp += v;};
+  void setTimeStamp(double v)           {m_timestamp = v;}
+  void setDVal(double v)                {m_dval = v;}
+  void setIsNum()                       {m_isnum = true;}
+  void setVarName(const std::string& s) {m_varname = s;}
+  void setSource(const std::string& s)  {m_source = s;}
+  void setSrcAux(const std::string& s)  {m_srcaux = s;}
+  void setStatus(const std::string& s)  {m_status = s;}
+  void setRawLine(const std::string& s) {m_raw_line = s;}
+  void skewBackward(double v)           {m_timestamp -= v;}
+  void skewForward(double v)            {m_timestamp += v;}
 
 
   // Getters / Analyzers
-  double      time() const         {return(m_timestamp);};
-  double      getTimeStamp() const {return(m_timestamp);};
-  std::string getVarName() const   {return(m_varname);};
-  std::string getSource() const    {return(m_source);};
-  std::string getSrcAux() const    {return(m_srcaux);};
-  std::string getStringVal() const {return(m_sval);};
-  double      getDoubleVal() const {return(m_dval);};
-  bool        isNumerical() const  {return(m_isnum);};
-  std::string getRawLine() const   {return(m_raw_line);};
-  std::string getStatus() const    {return(m_status);};
-  bool        isNull() const       {return(m_status=="null");};
+  double      time() const         {return(m_timestamp);}
+  double      getTimeStamp() const {return(m_timestamp);}
+  std::string getVarName() const   {return(m_varname);}
+  std::string getSource() const    {return(m_source);}
+  std::string getSrcAux() const    {return(m_srcaux);}
+  std::string getStringVal() const {return(m_sval);}
+  double      getDoubleVal() const {return(m_dval);}
+  bool        isNumerical() const  {return(m_isnum);}
+  std::string getRawLine() const   {return(m_raw_line);}
+  std::string getStatus() const    {return(m_status);}
+  bool        isNull() const       {return(m_status=="null");}
 
   bool        tokenField(const std::string& field, double& value) const;
 

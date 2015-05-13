@@ -33,7 +33,7 @@ class HostInfo : public AppCastingMOOSApp
 {
  public:
   HostInfo();
-  virtual ~HostInfo() {};
+  virtual ~HostInfo() {}
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);

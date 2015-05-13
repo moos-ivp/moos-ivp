@@ -33,7 +33,7 @@ class PathCheck_MOOSApp : public AppCastingMOOSApp
 {
  public:
   PathCheck_MOOSApp();
-  virtual ~PathCheck_MOOSApp() {};
+  virtual ~PathCheck_MOOSApp() {}
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);

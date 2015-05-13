@@ -29,7 +29,7 @@
 class HeadingHistory {
  public:
   HeadingHistory();
-  virtual ~HeadingHistory() {};
+  virtual ~HeadingHistory() {}
 
   bool   addHeadingTime(double heading, double time);
   double getTurnRate(double time_interval) const;
