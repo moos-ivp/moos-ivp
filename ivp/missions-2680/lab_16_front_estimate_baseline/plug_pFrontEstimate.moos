@@ -22,8 +22,8 @@ ProcessConfig = pFrontEstimate
   //min_alpha = 200
   //max_alpha = 500
 
-  min_alpha = 340
-  max_alpha = 360
+  min_alpha = 350
+  max_alpha = 350
 
   min_beta = 10
   max_beta = 50
