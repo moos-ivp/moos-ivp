@@ -29,9 +29,9 @@
 class BHV_MaxDepth : public IvPBehavior {
 public:
   BHV_MaxDepth(IvPDomain);
-  ~BHV_MaxDepth() {};
+  ~BHV_MaxDepth() {}
   
-  void         onIdleState() {updateInfoIn();};
+  void         onIdleState() {updateInfoIn();}
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 

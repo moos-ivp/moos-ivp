@@ -31,10 +31,10 @@ class LogPlot
 {
 public:
   LogPlot();
-  ~LogPlot() {};
+  ~LogPlot() {}
   
  public: // Setting
-  void   setVarName(std::string s)  {m_varname = s;};
+  void   setVarName(std::string s)  {m_varname = s;}
   bool   setValue(double gtime, double gvalue);
 
  public: // Modification
@@ -48,14 +48,14 @@ public:
   double getMedian();
   double getMinTime() const;
   double getMaxTime() const;
-  double getMean() const          {return((m_max_val-m_min_val)/2);};
-  double getMinVal() const        {return(m_min_val);};
-  double getMaxVal() const        {return(m_max_val);};
+  double getMean() const          {return((m_max_val-m_min_val)/2);}
+  double getMinVal() const        {return(m_min_val);}
+  double getMaxVal() const        {return(m_max_val);}
 
-  std::string getVarName() const  {return(m_varname);};
-  unsigned int  size() const      {return(m_time.size());};
+  std::string getVarName() const  {return(m_varname);}
+  unsigned int  size() const      {return(m_time.size());}
 
-  bool   empty() const            {return(m_time.size() == 0);};
+  bool   empty() const            {return(m_time.size() == 0);}
   void   print() const;
   
 protected:

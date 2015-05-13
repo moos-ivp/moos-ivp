@@ -30,7 +30,7 @@
 class BHV_HeadingHysteresis : public IvPBehavior {
  public:
   BHV_HeadingHysteresis(IvPDomain);
-  ~BHV_HeadingHysteresis() {};
+  ~BHV_HeadingHysteresis() {}
   
   IvPFunction* onRunState();
   void         onIdleState();

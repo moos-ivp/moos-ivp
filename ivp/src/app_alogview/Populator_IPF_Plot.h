@@ -32,12 +32,12 @@
 class Populator_IPF_Plot 
 {
 public:
-  Populator_IPF_Plot() {};
-  ~Populator_IPF_Plot() {};
+  Populator_IPF_Plot() {}
+  ~Populator_IPF_Plot() {}
 
   bool  populateFromEntries(const std::vector<ALogEntry>&);
-  void  setVName(std::string s)   {m_vname = s;};
-  int   size()                    {return(m_ipf_plots.size());};
+  void  setVName(std::string s)   {m_vname = s;}
+  int   size()                    {return(m_ipf_plots.size());}
 
   IPF_Plot    getPlotIPF(unsigned int ix=0);
   std::string getTagIPF(unsigned int ix=0);

@@ -35,7 +35,7 @@
 class GEO_GUI : public MarineGUI {
 public:
   GEO_GUI(int w, int h, const char *l=0);
-  ~GEO_GUI() {};
+  ~GEO_GUI() {}
   
   void updateXY();
   int  handle(int);

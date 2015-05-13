@@ -65,7 +65,7 @@ protected:
   void   drawIvPFunction1D();
   bool   drawIvPFunction2D();
   void   drawQuad(Quad3D quad, double=1);
-  void   handleLeftMouse(int, int) {};
+  void   handleLeftMouse(int, int) {}
   void   handleRightMouse(int, int) {}
   
   void   draw1DAxes(const IvPDomain&);

@@ -31,7 +31,7 @@
 class XYPolygon : public XYSegList {
 public:
   XYPolygon();
-  ~XYPolygon() {};
+  ~XYPolygon() {}
 
   // Polygon create and edit functions
   bool   add_vertex(double, double, bool=true);
@@ -59,7 +59,7 @@ public:
   double dist_to_poly(double px, double py, double angle) const;
   bool   seg_intercepts(double, double, double, double) const;
   bool   vertex_is_viewable(unsigned int, double, double) const;
-  bool   is_convex() const  {return(m_convex_state);};
+  bool   is_convex() const  {return(m_convex_state);}
   void   determine_convexity();
 
   double max_radius() const;

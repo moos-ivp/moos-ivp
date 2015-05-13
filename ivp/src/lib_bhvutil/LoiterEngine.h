@@ -29,19 +29,19 @@
 class LoiterEngine {
  public:
   LoiterEngine();
-  ~LoiterEngine() {};
+  ~LoiterEngine() {}
 
   void   setClockwise(bool);
-  void   setPoly(const XYPolygon& poly) {m_polygon = poly;};
-  void   setCenter(double x, double y)  {m_polygon.new_center(x,y);};
+  void   setPoly(const XYPolygon& poly) {m_polygon = poly;}
+  void   setCenter(double x, double y)  {m_polygon.new_center(x,y);}
   void   setSpiralFactor(double v);
 
   double getCenterX() const      {return(m_polygon.get_center_x());}
   double getCenterY() const      {return(m_polygon.get_center_y());}
-  bool   getClockwise() const    {return(m_clockwise);};
-  double getSpiralFactor() const {return(m_spiral_factor);};
+  bool   getClockwise() const    {return(m_clockwise);}
+  double getSpiralFactor() const {return(m_spiral_factor);}
 
-  XYPolygon getPolygon() {return(m_polygon);};
+  XYPolygon getPolygon() {return(m_polygon);}
   
   int  acquireVertex(double os_hdg, double os_x, double os_y);
   void resetClockwiseBest(double os_hdg, double os_x, double os_y);

@@ -31,7 +31,7 @@ class IvPDomain;
 class AOF_AvoidObstaclesX: public AOF {
 public:
   AOF_AvoidObstaclesX(IvPDomain);
-  ~AOF_AvoidObstaclesX() {};
+  ~AOF_AvoidObstaclesX() {}
 
 public: // virtual functions
   double evalBox(const IvPBox*) const; 
@@ -43,7 +43,7 @@ public: // virtual functions
 
   unsigned int obstaclesInRange();
   unsigned int pertObstacleCount();
-  unsigned int size() {return(m_obstacles_orig.size());};
+  unsigned int size() {return(m_obstacles_orig.size());}
   
   bool      ownshipInObstacle(bool=false);
   bool      isObstaclePert(unsigned int ix);
@@ -55,7 +55,7 @@ public: // virtual functions
   XYPolygon getObstacleOrig(unsigned int ix);
   XYPolygon getObstacleBuff(unsigned int ix);
 
-  std::string getDebugMsg() {return(m_debug_msg);};
+  std::string getDebugMsg() {return(m_debug_msg);}
 
  protected: // Initialization Utilities
   bool   ownshipInObstacle(unsigned int ix, bool=false);

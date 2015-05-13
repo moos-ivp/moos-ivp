@@ -32,7 +32,8 @@ class ScanReport
 {
  public:
   ScanReport() {m_lines=0;}
-  ~ScanReport() {};
+
+  ~ScanReport() {}
   
   void addLine(double timestamp, const std::string& varname, 
 	       const std::string& source, const std::string &value);

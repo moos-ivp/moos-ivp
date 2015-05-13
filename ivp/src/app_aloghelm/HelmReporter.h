@@ -34,18 +34,18 @@ class HelmReporter
 {
  public:
   HelmReporter();
-  ~HelmReporter() {};
+  ~HelmReporter() {}
 
   bool handle(const std::string&);
   void printReport();
   
-  void reportLifeEvents(bool v=true)      {m_report_life_events=v;};
-  void reportBehaviorChanges(bool v=true) {m_report_bhv_changes=v;};
-  void reportModeChanges(bool v=true)     {m_report_mode_changes=v;};
-  void setWatchBehavior(std::string s)    {m_watch_behavior=s;};
-  void setUseColor(bool v=true)           {m_use_color=v;};
-  void setColorActive(bool v)             {m_life_events.setColorActive(v);};
-  void setVarTrunc(bool v)                {m_var_trunc=v;};
+  void reportLifeEvents(bool v=true)      {m_report_life_events=v;}
+  void reportBehaviorChanges(bool v=true) {m_report_bhv_changes=v;}
+  void reportModeChanges(bool v=true)     {m_report_mode_changes=v;}
+  void setWatchBehavior(std::string s)    {m_watch_behavior=s;}
+  void setUseColor(bool v=true)           {m_use_color=v;}
+  void setColorActive(bool v)             {m_life_events.setColorActive(v);}
+  void setVarTrunc(bool v)                {m_var_trunc=v;}
 
   void addWatchVar(std::string);
   

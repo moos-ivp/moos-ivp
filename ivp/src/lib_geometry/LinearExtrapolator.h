@@ -30,12 +30,12 @@
 class LinearExtrapolator {
 public:
   LinearExtrapolator();
-  virtual ~LinearExtrapolator() {};
+  virtual ~LinearExtrapolator() {}
 
   void setDecay(double s, double e) {
     m_decay_start = s; 
     m_decay_end   = e;
-  };
+  }
 
   void setPosition(double x, double y, double s, double h, double t) {
     m_xpos = x;
@@ -48,7 +48,7 @@ public:
 
   bool getPosition(double& xpos, double& ypos, double timestamp);
   
-  bool isDecayMaxed() {return(m_decay_maxed);};
+  bool isDecayMaxed() {return(m_decay_maxed);}
 
   double m_xpos;         // Position in meters
   double m_ypos;         // Position in meters

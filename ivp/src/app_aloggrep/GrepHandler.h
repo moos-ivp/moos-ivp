@@ -32,14 +32,14 @@ class GrepHandler
 {
  public:
   GrepHandler();
-  ~GrepHandler() {};
+  ~GrepHandler() {}
 
   bool handle(const std::string&, const std::string& str="");
   void addKey(std::string str);
   void printReport();
-  void setFileOverWrite(bool v)    {m_file_overwrite=v;};
-  void setCommentsRetained(bool v) {m_comments_retained=v;};
-  void setBadLinesRetained(bool v) {m_badlines_retained=v;};
+  void setFileOverWrite(bool v)    {m_file_overwrite=v;}
+  void setCommentsRetained(bool v) {m_comments_retained=v;}
+  void setBadLinesRetained(bool v) {m_badlines_retained=v;}
 
  protected:
   std::vector<std::string> getMatchedKeys();

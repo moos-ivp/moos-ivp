@@ -31,10 +31,10 @@
 class XYObject {
 public:
   XYObject();
-  virtual ~XYObject() {};
+  virtual ~XYObject() {}
 
   virtual void   clear();
-  virtual bool   valid() const {return(true);};
+  virtual bool   valid() const {return(true);}
   
   void   set_label(const std::string& str)  {m_label=str;}
   void   set_source(const std::string& str) {m_source=str;}
@@ -46,8 +46,8 @@ public:
   void   set_edge_size(double val);
   void   set_transparency(double);
 
-  void   set_type()   {}; // deprecated
-  void   set_source() {}; // deprecated
+  void   set_type()   {} // deprecated
+  void   set_source() {} // deprecated
 
   //-----Soon To Be Deprecated/Removed -----------------------------------      
   void     set_vertex_color(const std::string& s) {set_color("vertex", s);}
@@ -60,9 +60,9 @@ public:
   void      set_color(const std::string& key, const ColorPack& color);
   ColorPack get_color(const std::string& key) const;
 
-  bool      active()        const {return(m_active);};
-  double    get_time()      const {return(m_time);};
-  bool      time_set()      const {return(m_time_set);};
+  bool      active()        const {return(m_active);}
+  double    get_time()      const {return(m_time);}
+  bool      time_set()      const {return(m_time_set);}
 
   double    get_vertex_size() const  {return(m_vertex_size);}
   bool      vertex_size_set() const  {return(m_vertex_size>=0);}

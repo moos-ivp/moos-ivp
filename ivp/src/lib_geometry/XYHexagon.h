@@ -29,7 +29,7 @@
 class XYHexagon : public XYPolygon {
 public:
   XYHexagon() {m_cx=0; m_cy=0; m_cz=0; m_dist=0;}
-  ~XYHexagon() {};
+  ~XYHexagon() {}
 
   // The only two ways to build a pentagon
   bool   initialize(double, double, double);

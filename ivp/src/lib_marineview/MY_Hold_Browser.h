@@ -35,7 +35,7 @@
 class MY_Hold_Browser : public Fl_Hold_Browser {
 public:
   MY_Hold_Browser(int x, int y, int w, int h, const char *l=0) :
-    Fl_Hold_Browser(x, y, w, h, l) {hx=x;hy=y;hw=w;hh=h;};
+    Fl_Hold_Browser(x, y, w, h, l) {hx=x;hy=y;hw=w;hh=h;}
 
   int  handle(int event) {
 

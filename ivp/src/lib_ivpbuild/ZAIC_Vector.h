@@ -40,7 +40,7 @@ class PDMap;
 class ZAIC_Vector {
 public:
   ZAIC_Vector(IvPDomain g_domain, const std::string& g_varname);
-  virtual ~ZAIC_Vector() {clearBldPieces();};
+  virtual ~ZAIC_Vector() {clearBldPieces();}
 
   void   setDomainVals(std::vector<double> v);
   void   setRangeVals(std::vector<double> v);
@@ -55,11 +55,11 @@ public:
   bool         hasWarnings();
   void         clearWarnings();
 
-  unsigned int size() {return(m_domain_pts);};
+  unsigned int size() {return(m_domain_pts);}
 
   IvPFunction* extractOF();
-  IvPFunction* extractIvPFunction()  {return(extractOF());};
-  IvPDomain    getIvPDomain()        {return(m_ivp_domain);};
+  IvPFunction* extractIvPFunction()  {return(extractOF());}
+  IvPDomain    getIvPDomain()        {return(m_ivp_domain);}
   
  protected:
   bool   stateOK();

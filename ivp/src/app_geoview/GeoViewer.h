@@ -57,8 +57,8 @@ public:
   void   reversePoly();
   void   duplicateActive();
   void   clearActivePoly();
-  int    getMode()                 {return(m_drop_mode);};
-  double getSnap()                 {return(m_snap_val);};
+  int    getMode()                 {return(m_drop_mode);}
+  double getSnap()                 {return(m_snap_val);}
   void   reApplySnapToCurrent();   
 
  private:

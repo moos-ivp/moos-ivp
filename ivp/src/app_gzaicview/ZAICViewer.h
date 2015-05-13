@@ -36,7 +36,7 @@ class ZAICViewer : public Fl_Gl_Window
 {
  public:
   ZAICViewer(int x,int y,int w,int h,const char *l=0);
-  ~ZAICViewer() {};
+  ~ZAICViewer() {}
   
   // Pure virtuals that need to be defined
   void  draw();

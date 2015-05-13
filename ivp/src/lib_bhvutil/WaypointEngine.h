@@ -30,7 +30,7 @@
 class WaypointEngine {
  public:
   WaypointEngine();
-  ~WaypointEngine() {};
+  ~WaypointEngine() {}
 
   void   setSegList(const XYSegList& seglist);
   void   setReverse(bool);
@@ -42,30 +42,30 @@ class WaypointEngine {
   void   setCenter(double, double);
   void   resetSegList(double, double y);
   void   resetForNewTraversal();
-  void   setRepeat(unsigned int v)  {m_repeats_allowed = v;};
-  void   setCaptureLine(bool v)     {m_capture_line = v;};
-  void   setPerpetual(bool v)       {m_perpetual = v;};
-  void   setRepeatsEndless(bool v)  {m_repeats_endless=v;};
+  void   setRepeat(unsigned int v)  {m_repeats_allowed = v;}
+  void   setCaptureLine(bool v)     {m_capture_line = v;}
+  void   setPerpetual(bool v)       {m_perpetual = v;}
+  void   setRepeatsEndless(bool v)  {m_repeats_endless=v;}
 
   double getPointX(unsigned int) const;
   double getPointY(unsigned int) const;  
-  double getPointX() const      {return(m_seglist.get_vx(m_curr_ix));};
-  double getPointY() const      {return(m_seglist.get_vy(m_curr_ix));};
-  bool   isComplete() const     {return(m_complete);};
-  int    getCurrIndex() const   {return(m_curr_ix);};
+  double getPointX() const      {return(m_seglist.get_vx(m_curr_ix));}
+  double getPointY() const      {return(m_seglist.get_vy(m_curr_ix));}
+  bool   isComplete() const     {return(m_complete);}
+  int    getCurrIndex() const   {return(m_curr_ix);}
   bool   currPtChanged();
-  void   resetCPA()             {m_current_cpa = -1;};
+  void   resetCPA()             {m_current_cpa = -1;}
 
-  unsigned int size() const     {return(m_seglist_raw.size());};
-  unsigned int getCycleCount()  {return(m_cycle_count);};
-  unsigned int getTotalHits()   {return(m_capture_hits + m_nonmono_hits);};
-  unsigned int getCaptureHits() {return(m_capture_hits);};
-  unsigned int getNonmonoHits() {return(m_nonmono_hits);};
+  unsigned int size() const     {return(m_seglist_raw.size());}
+  unsigned int getCycleCount()  {return(m_cycle_count);}
+  unsigned int getTotalHits()   {return(m_capture_hits + m_nonmono_hits);}
+  unsigned int getCaptureHits() {return(m_capture_hits);}
+  unsigned int getNonmonoHits() {return(m_nonmono_hits);}
   unsigned int resetsRemaining() const;
 
-  XYSegList getSegList()  {return(m_seglist);};
+  XYSegList getSegList()  {return(m_seglist);}
 
-  void        setPrevPoint(XYPoint pt) {m_prevpt=pt;};
+  void        setPrevPoint(XYPoint pt) {m_prevpt=pt;}
   std::string setNextWaypoint(double osx, double osy);
   
   double  distToPrevWpt(double osx, double osy) const;

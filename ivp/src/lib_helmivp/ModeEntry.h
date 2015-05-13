@@ -31,7 +31,7 @@
 class ModeEntry {
 public:
   ModeEntry() {}
-  ~ModeEntry() {};
+  ~ModeEntry() {}
 
   bool setHead(std::string mode_var, std::string mode_val);
   bool addCondition(std::string);

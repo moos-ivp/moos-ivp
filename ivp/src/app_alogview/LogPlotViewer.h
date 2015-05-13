@@ -35,7 +35,7 @@ class LogPlotViewer : public Fl_Gl_Window
 {
  public:
   LogPlotViewer(int x,int y,int w,int h,const char *l=0);
-  ~LogPlotViewer() {};
+  ~LogPlotViewer() {}
   
   // Pure virtuals that need to be defined
   void   draw();
@@ -45,20 +45,20 @@ class LogPlotViewer : public Fl_Gl_Window
  public:
   void   setCurrTime(double v);
   void   setDataBroker(ALogDataBroker dbroker);
-  double getCurrTime() {return(m_curr_time);};
+  double getCurrTime() {return(m_curr_time);}
   void   adjustZoom(std::string);
 
   void   setLeftPlot(unsigned int);
   void   setRightPlot(unsigned int);
 
-  double getTimeLow() {return(m_display_min_time);};
-  double getTimeHigh() {return(m_display_max_time);};
+  double getTimeLow() {return(m_display_min_time);}
+  double getTimeHigh() {return(m_display_max_time);}
 
   double get_curr_val1(double time);
   double get_curr_val2(double time);
 
-  std::string getFullVar1() const {return(m_fullvar1);};
-  std::string getFullVar2() const {return(m_fullvar2);};
+  std::string getFullVar1() const {return(m_fullvar1);}
+  std::string getFullVar2() const {return(m_fullvar2);}
   
   double getMinVal1();
   double getMinVal2();

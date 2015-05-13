@@ -31,12 +31,12 @@
 class AOF_Contact: public AOF {
 public:
   AOF_Contact(IvPDomain);
-  ~AOF_Contact() {};
+  ~AOF_Contact() {}
 
 public: // virtual functions   
-  virtual double evalPoint(const std::vector<double>&) const {return(0);};
+  virtual double evalPoint(const std::vector<double>&) const {return(0);}
   virtual bool   setParam(const std::string&, double);
-  virtual bool   setParam(const std::string&, const std::string&) {return(false);};
+  virtual bool   setParam(const std::string&, const std::string&) {return(false);}
   virtual bool   initialize();
   
   void setOwnshipParams(double osx, double osy);

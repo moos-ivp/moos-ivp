@@ -30,12 +30,12 @@
 class BHV_HSLine : public IvPBehavior {
 public:
   BHV_HSLine(IvPDomain);
-  ~BHV_HSLine() {};
+  ~BHV_HSLine() {}
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
-  void         onIdleState()      {postErasableSegList();};
-  void         onCompleteState()  {postErasableSegList();};
+  void         onIdleState()      {postErasableSegList();}
+  void         onCompleteState()  {postErasableSegList();}
 
  protected: 
   void      postErasableSegList();

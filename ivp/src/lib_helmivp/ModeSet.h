@@ -33,7 +33,7 @@
 class ModeSet {
 public:
   ModeSet() {m_info_buffer=0;}
-  ~ModeSet() {};
+  ~ModeSet() {}
 
   void addEntry(ModeEntry entry) {m_entries.push_back(entry);}
 

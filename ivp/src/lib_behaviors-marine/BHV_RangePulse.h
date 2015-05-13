@@ -31,7 +31,7 @@
 class BHV_RangePulse : public IvPBehavior {
 public:
   BHV_RangePulse(IvPDomain);
-  ~BHV_RangePulse() {};
+  ~BHV_RangePulse() {}
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);

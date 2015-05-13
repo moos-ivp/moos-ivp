@@ -32,7 +32,7 @@
 class BHV_Waypoint : public IvPBehavior {
 public:
   BHV_Waypoint(IvPDomain);
-  ~BHV_Waypoint() {};
+  ~BHV_Waypoint() {}
   
   bool           setParam(std::string, std::string);
   IvPFunction*   onRunState();
@@ -41,7 +41,7 @@ public:
   BehaviorReport onRunState(std::string);
   void           onRunToIdleState();
   void           onSetParamComplete();
-  void           onCompleteState() {postErasables();};
+  void           onCompleteState() {postErasables();}
 
 protected:
   bool         updateInfoIn();

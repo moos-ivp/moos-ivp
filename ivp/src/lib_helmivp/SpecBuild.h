@@ -31,7 +31,7 @@
 class SpecBuild {
  public:
   SpecBuild() {m_behavior=0;}
-  ~SpecBuild() {};
+  ~SpecBuild() {}
 
  public: // Setters
   void setIvPBehavior(IvPBehavior *bhv)   {m_behavior=bhv;}

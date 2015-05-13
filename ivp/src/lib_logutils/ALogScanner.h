@@ -32,8 +32,8 @@
 class ALogScanner
 {
  public:
-  ALogScanner() {m_file=0;};
-  ~ALogScanner() {};
+  ALogScanner() {m_file=0;}
+  ~ALogScanner() {}
 
   bool       openALogFile(std::string);
   ScanReport scan();

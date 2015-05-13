@@ -30,8 +30,8 @@
 
 class Compactor {
 public:
-  Compactor() {};
-  virtual ~Compactor() {};
+  Compactor() {}
+  virtual ~Compactor() {}
 
   virtual bool   compact(IvPBox*)       = 0;
   virtual double maxVal(IvPBox*, bool*) = 0;

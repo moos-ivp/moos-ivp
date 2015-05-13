@@ -31,60 +31,60 @@ class NodeRecord
 {
  public:
   NodeRecord(std::string vname="", std::string vtype="");
-  ~NodeRecord() {};
+  ~NodeRecord() {}
 
-  void setX(double v)         {m_x=v;   m_x_set=true;};
-  void setY(double v)         {m_y=v;   m_y_set=true;};
-  void setLat(double v)       {m_lat=v; m_lat_set=true;};
-  void setLon(double v)       {m_lon=v; m_lon_set=true;};
-  void setSpeed(double v)     {m_speed=v;      m_speed_set=true;};
-  void setSpeedOG(double v)   {m_speed_og=v;   m_speed_og_set=true;};
-  void setHeading(double v)   {m_heading=v;    m_heading_set=true;};
-  void setHeadingOG(double v) {m_heading_og=v; m_heading_og_set=true;};
-  void setYaw(double v)       {m_yaw=v;        m_yaw_set=true;};
-  void setPitch(double v)     {m_pitch=v;      m_pitch_set=true;};
-  void setDepth(double v)     {m_depth=v;      m_depth_set=true;};
-  void setLength(double v)    {m_length=v;     m_length_set=true;};
-  void setTimeStamp(double v) {m_timestamp=v;  m_timestamp_set=true;};
-  void setAltitude(double v)  {m_altitude=v;   m_altitude_set=true;};
+  void setX(double v)         {m_x=v;   m_x_set=true;}
+  void setY(double v)         {m_y=v;   m_y_set=true;}
+  void setLat(double v)       {m_lat=v; m_lat_set=true;}
+  void setLon(double v)       {m_lon=v; m_lon_set=true;}
+  void setSpeed(double v)     {m_speed=v;      m_speed_set=true;}
+  void setSpeedOG(double v)   {m_speed_og=v;   m_speed_og_set=true;}
+  void setHeading(double v)   {m_heading=v;    m_heading_set=true;}
+  void setHeadingOG(double v) {m_heading_og=v; m_heading_og_set=true;}
+  void setYaw(double v)       {m_yaw=v;        m_yaw_set=true;}
+  void setPitch(double v)     {m_pitch=v;      m_pitch_set=true;}
+  void setDepth(double v)     {m_depth=v;      m_depth_set=true;}
+  void setLength(double v)    {m_length=v;     m_length_set=true;}
+  void setTimeStamp(double v) {m_timestamp=v;  m_timestamp_set=true;}
+  void setAltitude(double v)  {m_altitude=v;   m_altitude_set=true;}
 
-  void setThrustModeReverse(bool v) {m_thrust_mode_reverse=v;};
+  void setThrustModeReverse(bool v) {m_thrust_mode_reverse=v;}
 
-  void setName(std::string s)    {m_name=s;};
-  void setGroup(std::string s)   {m_group=s;};
-  void setType(std::string s)    {m_type=s;};
-  void setMode(std::string s)    {m_mode=s;};
-  void setModeAux(std::string s) {m_mode_aux=s;};
-  void setAllStop(std::string s) {m_allstop=s;};
-  void setLoadWarning(std::string s) {m_load_warning=s;};
+  void setName(std::string s)    {m_name=s;}
+  void setGroup(std::string s)   {m_group=s;}
+  void setType(std::string s)    {m_type=s;}
+  void setMode(std::string s)    {m_mode=s;}
+  void setModeAux(std::string s) {m_mode_aux=s;}
+  void setAllStop(std::string s) {m_allstop=s;}
+  void setLoadWarning(std::string s) {m_load_warning=s;}
 
   void setProperty(std::string, std::string);
 
-  void setIndex(int i)         {m_index=i;};
+  void setIndex(int i)         {m_index=i;}
 
-  int    getIndex() const      {return(m_index);};
-  double getX() const          {return(m_x);};
-  double getY() const          {return(m_y);};
-  double getLat() const        {return(m_lat);};
-  double getLon() const        {return(m_lon);};
-  double getSpeed() const      {return(m_speed);};
-  double getSpeedOG() const    {return(m_speed_og);};
-  double getHeading() const    {return(m_heading);};
-  double getHeadingOG() const  {return(m_heading_og);};
-  double getYaw() const        {return(m_yaw);};
-  double getPitch() const      {return(m_pitch);};
-  double getDepth() const      {return(m_depth);};
-  double getAltitude() const   {return(m_altitude);};
-  double getLength() const     {return(m_length);};
-  double getTimeStamp() const  {return(m_timestamp);};
+  int    getIndex() const      {return(m_index);}
+  double getX() const          {return(m_x);}
+  double getY() const          {return(m_y);}
+  double getLat() const        {return(m_lat);}
+  double getLon() const        {return(m_lon);}
+  double getSpeed() const      {return(m_speed);}
+  double getSpeedOG() const    {return(m_speed_og);}
+  double getHeading() const    {return(m_heading);}
+  double getHeadingOG() const  {return(m_heading_og);}
+  double getYaw() const        {return(m_yaw);}
+  double getPitch() const      {return(m_pitch);}
+  double getDepth() const      {return(m_depth);}
+  double getAltitude() const   {return(m_altitude);}
+  double getLength() const     {return(m_length);}
+  double getTimeStamp() const  {return(m_timestamp);}
 
-  bool   isSetX() const        {return(m_x_set);};
-  bool   isSetY() const        {return(m_y_set);};
-  bool   isSetLatitude() const {return(m_lat_set);};
-  bool   isSetLongitude() const {return(m_lon_set);};
-  bool   isSetAltitude() const {return(m_altitude_set);};
+  bool   isSetX() const        {return(m_x_set);}
+  bool   isSetY() const        {return(m_y_set);}
+  bool   isSetLatitude() const {return(m_lat_set);}
+  bool   isSetLongitude() const {return(m_lon_set);}
+  bool   isSetAltitude() const {return(m_altitude_set);}
 
-  bool   getThrustModeReverse() const {return(m_thrust_mode_reverse);};
+  bool   getThrustModeReverse() const {return(m_thrust_mode_reverse);}
   double getElapsedTime(double) const;
   bool   hasProperty(std::string) const;
   bool   valid() const;

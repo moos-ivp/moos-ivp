@@ -33,7 +33,7 @@
 class XYConvexGrid : public XYObject {
 public:
   XYConvexGrid() {}
-  ~XYConvexGrid() {};
+  ~XYConvexGrid() {}
 
   bool      initialize(const XYPolygon&, double cell_size, double init_val);
   bool      initialize(const XYPolygon&, double cell_size,
@@ -108,6 +108,7 @@ protected:
   std::vector<double>                m_cell_min_sofar;
   std::vector<bool>                  m_cell_minmax_noted;
 };
+
 #endif
 
 

@@ -32,7 +32,7 @@ class ACTable
 {
 public:
   ACTable(unsigned int columns=1, unsigned int column_pad=2);
-  virtual ~ACTable() {};
+  virtual ~ACTable() {}
   
  public: // Setters
   void setColumnJustify(unsigned int ix, const std::string);

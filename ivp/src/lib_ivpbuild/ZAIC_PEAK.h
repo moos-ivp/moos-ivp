@@ -39,7 +39,7 @@ class PDMap;
 class ZAIC_PEAK {
 public:
   ZAIC_PEAK(IvPDomain g_domain, const std::string& g_varname);
-  virtual ~ZAIC_PEAK() {};
+  virtual ~ZAIC_PEAK() {}
 
   bool setParams(double summit, double pwidth,  double bwidth, 
 		 double delta,  double minutil, double maxutil, 
@@ -50,21 +50,21 @@ public:
   bool   setPeakWidth(double, unsigned int index=0);
   bool   setSummitDelta(double, unsigned int index=0);
   bool   setMinMaxUtil(double, double, unsigned int index=0);
-  void   setSummitInsist(bool v)      {m_summit_insist=v;};
-  void   setValueWrap(bool v)         {m_value_wrap=v;};
+  void   setSummitInsist(bool v)      {m_summit_insist=v;}
+  void   setValueWrap(bool v)         {m_value_wrap=v;}
 
   int    addComponent();
 
   double getParam(std::string, unsigned int index=0);
-  bool   getValueWrap()     {return(m_value_wrap);};
-  bool   getSummitInsist()  {return(m_summit_insist);};
-  int    getSummitCount()   {return(v_summit.size());};
+  bool   getValueWrap()     {return(m_value_wrap);}
+  bool   getSummitInsist()  {return(m_summit_insist);}
+  int    getSummitCount()   {return(v_summit.size());}
 
-  bool         stateOK()     {return(m_state_ok);};
-  std::string  getWarnings() {return(m_warning);};
+  bool         stateOK()     {return(m_state_ok);}
+  std::string  getWarnings() {return(m_warning);}
   IvPFunction* extractOF(bool maxval=true);
   IvPFunction* extractIvPFunction(bool maxval=true) 
-  {return(extractOF(maxval));};
+  {return(extractOF(maxval));}
   
 protected:
   double evalPoint(unsigned int pt_ix, bool maxval=true);

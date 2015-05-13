@@ -21,7 +21,7 @@ class ALogDataBroker
 {
  public:
   ALogDataBroker();
-  ~ALogDataBroker() {};
+  ~ALogDataBroker() {}
 
   void addALogFile(std::string);
 
@@ -37,9 +37,9 @@ class ALogDataBroker
   VPlugPlot getVPlugPlot(unsigned int aix);
   IPF_Plot  getIPFPlot(unsigned int aix, std::string bhv);
 
-  unsigned int sizeALogs() const {return(m_alog_files.size());};
-  unsigned int sizeMix() const   {return(m_mix_vname.size());};
-  unsigned int sizeBix() const   {return(m_bix_vname.size());};
+  unsigned int sizeALogs() const {return(m_alog_files.size());}
+  unsigned int sizeMix() const   {return(m_mix_vname.size());}
+  unsigned int sizeBix() const   {return(m_bix_vname.size());}
 
   std::string getVNameFromAix(unsigned int) const;
   std::string getVTypeFromAix(unsigned int) const;
@@ -61,15 +61,15 @@ class ALogDataBroker
   std::vector<std::string> getVarsInALog(unsigned int aix, bool num=true) const;
   std::vector<std::string> getBhvsInALog(unsigned int aix) const;
 
-  double getGlobalMinTime() const {return(m_global_logtmin);};
-  double getGlobalMaxTime() const {return(m_global_logtmax);};
-  double getGlobalLogStart() const {return(m_global_logstart);};
+  double getGlobalMinTime() const {return(m_global_logtmin);}
+  double getGlobalMaxTime() const {return(m_global_logtmax);}
+  double getGlobalLogStart() const {return(m_global_logstart);}
 
   void setPrunedMinTime(double);
   void setPrunedMaxTime(double);
 
-  double getPrunedMinTime() const {return(m_pruned_logtmin);};
-  double getPrunedMaxTime() const {return(m_pruned_logtmax);};
+  double getPrunedMinTime() const {return(m_pruned_logtmin);}
+  double getPrunedMaxTime() const {return(m_pruned_logtmax);}
 
  protected:
   std::vector<std::string> getRawVarSummary(unsigned int) const;

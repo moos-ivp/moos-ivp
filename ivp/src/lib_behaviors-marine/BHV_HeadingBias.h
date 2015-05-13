@@ -29,7 +29,7 @@
 class BHV_HeadingBias : public IvPBehavior {
 public:
   BHV_HeadingBias(IvPDomain);
-  ~BHV_HeadingBias() {};
+  ~BHV_HeadingBias() {}
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);

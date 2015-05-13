@@ -42,15 +42,15 @@ public:
   void      applyScalar(double);
   void      normalize(double base, double range);
   
-  int       getDim() const        {return(m_domain.size());};
-  IvPGrid*  getGrid()             {return(m_grid);};
-  IvPBox    getGelBox() const     {return(m_gelbox);};
-  IvPDomain getDomain() const     {return(m_domain);};
+  int       getDim() const        {return(m_domain.size());}
+  IvPGrid*  getGrid()             {return(m_grid);}
+  IvPBox    getGelBox() const     {return(m_gelbox);}
+  IvPDomain getDomain() const     {return(m_domain);}
   BoxSet*   getBS(const IvPBox*); 
   IvPBox    getUniverse() const;
 
-  int       size() const          {return(m_boxCount);};
-  int       getDegree() const     {return(m_degree);};
+  int       size() const          {return(m_boxCount);}
+  int       getDegree() const     {return(m_degree);}
   double    getMinWT() const;
   double    getMaxWT() const;
 
@@ -62,12 +62,12 @@ public:
 
   void      print(bool full=true) const;
   void      growBoxArray(int);
-  void      growBoxCount(int i=1) {m_boxCount += i;};
+  void      growBoxCount(int i=1) {m_boxCount += i;}
   bool      freeOfNan() const;
 
-  const IvPBox *getBox(int i) const {return(m_boxes[i]);};
+  const IvPBox *getBox(int i) const {return(m_boxes[i]);}
 
-  IvPBox*&  bx(int i) {return(m_boxes[i]);};
+  IvPBox*&  bx(int i) {return(m_boxes[i]);}
 
 public: // Conversion Functions
   bool      transDomain(const IvPDomain&, const int*);

@@ -32,7 +32,7 @@ class LogViewLauncher
 {
  public:
   LogViewLauncher();
-  virtual ~LogViewLauncher() {};
+  virtual ~LogViewLauncher() {}
   
   REPLAY_GUI *launch(int argc, char **argv);
 

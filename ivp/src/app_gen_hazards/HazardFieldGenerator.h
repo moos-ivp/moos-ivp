@@ -35,9 +35,9 @@ class HazardFieldGenerator
 {
  public:
   HazardFieldGenerator();
-  virtual ~HazardFieldGenerator() {};
+  virtual ~HazardFieldGenerator() {}
 
-  bool   addPolygon(std::string s) {return(m_field_generator.addPolygon(s));};
+  bool   addPolygon(std::string s) {return(m_field_generator.addPolygon(s));}
   bool   addObjectSet(std::string);
 
   bool   setResemblanceExp(std::string str);

@@ -32,8 +32,8 @@
 
 class AOF_MGaussian: public AOF {
  public:
-  AOF_MGaussian(IvPDomain domain) : AOF(domain) {};
-  ~AOF_MGaussian() {};
+  AOF_MGaussian(IvPDomain domain) : AOF(domain) {}
+  ~AOF_MGaussian() {}
   
 public:
   double evalPoint(const std::vector<double>& point) const;

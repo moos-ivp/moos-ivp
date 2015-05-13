@@ -38,7 +38,7 @@ class DemuxUnit {
 public:
   DemuxUnit(const std::string&, unsigned int, 
 	    double, const std::string& src="");
-  virtual ~DemuxUnit() {};
+  virtual ~DemuxUnit() {}
 
 public:
 
@@ -51,12 +51,12 @@ public:
       m_data[ix] = str;
       m_flag[ix] = true;
       return(true);
-    };
+    }
   
   std::string getDemuxString();
-  std::string getUnitID()       {return(m_unit_id);};
-  std::string getSource()       {return(m_source);};
-  double      getTimeStamp()    {return(m_time_stamp);};
+  std::string getUnitID()       {return(m_unit_id);}
+  std::string getSource()       {return(m_source);}
+  double      getTimeStamp()    {return(m_time_stamp);}
   bool        unitReady();
   void        print();
 

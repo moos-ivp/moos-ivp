@@ -34,7 +34,7 @@ public:
 
   ParseNode* copy();
 
-  std::string getRawCondition() const {return(m_raw_string);};
+  std::string getRawCondition() const {return(m_raw_string);}
 
   std::vector<std::string> recursiveGetVarNames() const;
 

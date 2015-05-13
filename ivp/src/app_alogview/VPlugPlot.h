@@ -32,17 +32,17 @@
 class VPlugPlot
 {
 public:
-  VPlugPlot() {};
-  ~VPlugPlot() {};
+  VPlugPlot() {}
+  ~VPlugPlot() {}
 
   bool            addEvent(const std::string& var, 
 			   const std::string& val, double time);
-  void            setVehiName(std::string s) {m_vehi_name = s;};
+  void            setVehiName(std::string s) {m_vehi_name = s;}
 
   VPlug_GeoShapes getVPlugByIndex(unsigned int index) const;
   VPlug_GeoShapes getVPlugByTime(double gtime) const;
-  std::string     getVehiName() const   {return(m_vehi_name);};
-  unsigned int    size() const          {return(m_time.size());};
+  std::string     getVehiName() const   {return(m_vehi_name);}
+  unsigned int    size() const          {return(m_time.size());}
   double          getMinTime() const;
   double          getMaxTime() const;
   void            print() const;

@@ -31,12 +31,12 @@
 class Populator_VPlugPlots 
 {
 public:
-  Populator_VPlugPlots() {};
-  ~Populator_VPlugPlots() {};
+  Populator_VPlugPlots() {}
+  ~Populator_VPlugPlots() {}
 
   bool      populateFromEntries(const std::vector<ALogEntry>&);
 
-  VPlugPlot getVPlugPlot() {return(m_vplug_plot);};
+  VPlugPlot getVPlugPlot() {return(m_vplug_plot);}
 
 protected:
   VPlugPlot m_vplug_plot;

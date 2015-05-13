@@ -32,11 +32,11 @@ class FiltHandler
 {
  public:
   FiltHandler();
-  ~FiltHandler() {};
+  ~FiltHandler() {}
 
   bool handle(const std::string&, const std::string& str="");
   bool setParam(const std::string& param, const std::string& value);
-  void setBadLinesRetained(bool v) {m_badlines_retained=v;};
+  void setBadLinesRetained(bool v) {m_badlines_retained=v;}
   void printReport();
 
  protected:

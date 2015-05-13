@@ -30,7 +30,7 @@
 class BHV_Hysteresis : public IvPBehavior {
 public:
   BHV_Hysteresis(IvPDomain);
-  ~BHV_Hysteresis() {};
+  ~BHV_Hysteresis() {}
   
   IvPFunction* onRunState();
   void         onIdleState();

@@ -35,7 +35,7 @@ class NavPlotViewer : public MarineViewer
 {
  public:
   NavPlotViewer(int x,int y,int w,int h,const char *l=0);
-  virtual ~NavPlotViewer() {};
+  virtual ~NavPlotViewer() {}
   
   void   draw();
   bool   setParam(std::string p, std::string v);
@@ -55,15 +55,15 @@ class NavPlotViewer : public MarineViewer
   void   addLogPlotStartTime(double); 
   void   addVPlugPlot(const VPlugPlot& vp); 
 
-  void   setStreaming(bool v) {m_streaming=v;};
+  void   setStreaming(bool v) {m_streaming=v;}
 
   void   setCenterView(std::string centering="ctr_of_bounding");
-  void   setAltNavPrefix(std::string s)   {m_alt_nav_prefix=s;};
+  void   setAltNavPrefix(std::string s)   {m_alt_nav_prefix=s;}
   void   setStepType(const std::string&);
   bool   stepTime(double);
   bool   setCurrTime(double);
-  void   setCurrTimeStart() {m_curr_time=m_dbroker.getPrunedMinTime();};
-  void   setCurrTimeEnd() {m_curr_time=m_dbroker.getPrunedMaxTime();};
+  void   setCurrTimeStart() {m_curr_time=m_dbroker.getPrunedMinTime();}
+  void   setCurrTimeEnd() {m_curr_time=m_dbroker.getPrunedMaxTime();}
   double getCurrTime();
   double getStartTimeHint();
 

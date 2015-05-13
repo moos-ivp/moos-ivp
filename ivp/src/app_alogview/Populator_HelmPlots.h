@@ -32,11 +32,11 @@
 class Populator_HelmPlots 
 {
 public:
-  Populator_HelmPlots() {};
-  ~Populator_HelmPlots() {};
+  Populator_HelmPlots() {}
+  ~Populator_HelmPlots() {}
 
   bool     populateFromEntries(const std::vector<ALogEntry>&);
-  HelmPlot getHelmPlot() {return(m_helm_plot);};
+  HelmPlot getHelmPlot() {return(m_helm_plot);}
 
 protected:
   HelmPlot m_helm_plot;

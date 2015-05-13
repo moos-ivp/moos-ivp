@@ -35,7 +35,7 @@
 class VZAIC_GUI : Fl_Window {
 public:
   VZAIC_GUI(int w, int h, const char *l=0);
-  ~VZAIC_GUI() {};
+  ~VZAIC_GUI() {}
   
   static Fl_Menu_Item menu_[];
 

@@ -32,13 +32,13 @@ class IvPBox;
 class BoxSetNode {
 friend class BoxSet;
 public:
-  BoxSetNode()            {m_prev=0; m_next=0; m_box=0;};
-  BoxSetNode(IvPBox *b)   {m_prev=0; m_next=0; m_box=b;};
-  ~BoxSetNode() {};
+  BoxSetNode()            {m_prev=0; m_next=0; m_box=0;}
+  BoxSetNode(IvPBox *b)   {m_prev=0; m_next=0; m_box=b;}
+  ~BoxSetNode() {}
 
-  BoxSetNode *getNext()   {return(m_next);};
-  BoxSetNode *getPrev()   {return(m_prev);};
-  IvPBox     *getBox()    {return(m_box);};
+  BoxSetNode *getNext()   {return(m_next);}
+  BoxSetNode *getPrev()   {return(m_prev);}
+  IvPBox     *getBox()    {return(m_box);}
 
 private:
   BoxSetNode  *m_prev;

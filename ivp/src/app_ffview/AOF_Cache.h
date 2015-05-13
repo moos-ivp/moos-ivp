@@ -31,24 +31,24 @@
 class AOF_Cache {
 public:
   AOF_Cache();
-  ~AOF_Cache() {clearCache();};
+  ~AOF_Cache() {clearCache();}
 
   void setAOF(AOF*);
   void applyFColorMap(FColorMap);
 
-  AOF* getAOF() {return(aof);};
+  AOF* getAOF() {return(aof);}
 
-  double getFVal(int i, int j, int k=0) {return(fvals[i][j][k]);};
-  double getRVal(int i, int j, int k=0) {return(rvals[i][j][k]);};
-  double getGVal(int i, int j, int k=0) {return(gvals[i][j][k]);};
-  double getBVal(int i, int j, int k=0) {return(bvals[i][j][k]);};
+  double getFVal(int i, int j, int k=0) {return(fvals[i][j][k]);}
+  double getRVal(int i, int j, int k=0) {return(rvals[i][j][k]);}
+  double getGVal(int i, int j, int k=0) {return(gvals[i][j][k]);}
+  double getBVal(int i, int j, int k=0) {return(bvals[i][j][k]);}
 
-  int getXMin() {return(xmin);};
-  int getXMax() {return(xmax);};
-  int getYMin() {return(ymin);};
-  int getYMax() {return(ymax);};
-  int getZMin() {return(zmin);};
-  int getZMax() {return(zmax);};
+  int getXMin() {return(xmin);}
+  int getXMax() {return(xmax);}
+  int getYMin() {return(ymin);}
+  int getYMax() {return(ymax);}
+  int getZMin() {return(zmin);}
+  int getZMax() {return(zmax);}
 
 protected:
   void clearCache();

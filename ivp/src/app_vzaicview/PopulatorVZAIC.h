@@ -33,7 +33,7 @@ class PopulatorVZAIC
 {
  public:
   PopulatorVZAIC();
-  ~PopulatorVZAIC() {};
+  ~PopulatorVZAIC() {}
   
   bool readFile(std::string filename);
   

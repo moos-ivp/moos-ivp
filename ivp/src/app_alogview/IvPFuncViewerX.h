@@ -36,7 +36,7 @@ class IvPFuncViewerX : public Common_IPFViewer
 {
  public:
   IvPFuncViewerX(int x,int y,int w,int h,const char *l=0);
-  virtual ~IvPFuncViewerX() {};
+  virtual ~IvPFuncViewerX() {}
 
   void   draw();
   int    handle(int event);
@@ -53,9 +53,9 @@ class IvPFuncViewerX : public Common_IPFViewer
   void   clearVarPlotB();
 
   void   setTime(double tstamp);
-  void   setVName(std::string s) {m_vname=s;};
+  void   setVName(std::string s) {m_vname=s;}
   void   setSource(std::string src);
-  void   setMutableTextSize(int v) {m_mutable_text_size=v;};
+  void   setMutableTextSize(int v) {m_mutable_text_size=v;}
 
  public: // Getters
   double getCurrTime() const;

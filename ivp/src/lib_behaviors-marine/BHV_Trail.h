@@ -31,7 +31,7 @@ class IvPDomain;
 class BHV_Trail : public IvPContactBehavior {
 public:
   BHV_Trail(IvPDomain);
-  ~BHV_Trail() {};
+  ~BHV_Trail() {}
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);

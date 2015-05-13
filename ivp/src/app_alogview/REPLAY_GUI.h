@@ -89,9 +89,9 @@ class REPLAY_GUI : public MarineVehiGUI {
 
   // Implement these base class virtual functions so that the base
   // class version is not called. We handle all these keys in this class.
-  void   cb_HandleLeftRight_i(int) {};
-  void   cb_HandleUpDown_i(int) {};
-  void   cb_Zoom_i(int) {};
+  void   cb_HandleLeftRight_i(int) {}
+  void   cb_HandleUpDown_i(int) {}
+  void   cb_Zoom_i(int) {}
 
   inline void cb_JumpTime_i(int);
   static void cb_JumpTime(Fl_Widget*, int);

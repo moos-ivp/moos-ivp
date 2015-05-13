@@ -35,17 +35,17 @@ class ModelHelmScope
 {
  public:
   ModelHelmScope();
-  virtual ~ModelHelmScope() {};
+  virtual ~ModelHelmScope() {}
 
   // Setters
   void   setDataBroker(ALogDataBroker, std::string vname);
   void   incrementIter(int amt);
   void   setTime(double tstamp);
-  void   toggleHeadersBHV() {m_headers_bhv = !m_headers_bhv;};
+  void   toggleHeadersBHV() {m_headers_bhv = !m_headers_bhv;}
 
   // Getters
-  double        getCurrTime() const {return(m_curr_time);};
-  bool          getHeadersBHV() const {return(m_headers_bhv);};
+  double        getCurrTime() const {return(m_curr_time);}
+  bool          getHeadersBHV() const {return(m_headers_bhv);}
   unsigned int  getVPlotSize(std::string) const;
   
   std::string   getCurrMode() const;

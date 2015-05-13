@@ -55,12 +55,12 @@ public:
   // extractOF is deprecated, supported for now, use extractIvPFunction
   IvPFunction* extractOF(bool normalize=true);
   IvPFunction* extractIvPFunction(bool normalize=true)
-  {return(extractOF(normalize));};
+  {return(extractOF(normalize));}
   
-  std::string getUniformPieceStr() const {return(m_uniform_piece_str);};
-  std::string getWarnings() const        {return(m_warnings);};
+  std::string getUniformPieceStr() const {return(m_uniform_piece_str);}
+  std::string getWarnings() const        {return(m_warnings);}
 
-  bool   stateOK() const    {return(m_warnings=="");};
+  bool   stateOK() const    {return(m_warnings=="");}
   bool   setParam(std::string);
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);

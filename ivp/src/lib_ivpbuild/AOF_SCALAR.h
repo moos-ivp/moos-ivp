@@ -31,11 +31,11 @@
 class AOF_SCALAR: public AOF {
 public:
   AOF_SCALAR(IvPDomain g_domain) : AOF(g_domain) 
-    {m_scalar_val = 0;};
-  ~AOF_SCALAR() {};
+    {m_scalar_val = 0;}
+  ~AOF_SCALAR() {}
 
 public:    
-  double evalBox(const IvPBox*) const {return(m_scalar_val);};
+  double evalBox(const IvPBox*) const {return(m_scalar_val);}
   bool   setParam(const std::string& param, double val) 
     {
       if(param == "scalar") {
@@ -43,7 +43,7 @@ public:
 	return(true);
       }
       return(false);
-    };
+    }
 
 private:
   double m_scalar_val;

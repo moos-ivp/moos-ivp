@@ -14,13 +14,13 @@
 class PopulatorIPP
 {
 public:
-  PopulatorIPP() {m_ivp_problem=0;};
-  ~PopulatorIPP() {};
+  PopulatorIPP() {m_ivp_problem=0;}
+  ~PopulatorIPP() {}
   
   bool populate(std::string filename);
-  void setVerbose(bool v) {m_verbose=v;};
+  void setVerbose(bool v) {m_verbose=v;}
 
-  IvPProblem* getIvPProblem() {return(m_ivp_problem);};
+  IvPProblem* getIvPProblem() {return(m_ivp_problem);}
 
 protected:
   bool handleLine(std::string);

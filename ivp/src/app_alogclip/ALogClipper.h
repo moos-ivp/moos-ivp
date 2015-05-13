@@ -30,7 +30,7 @@ class ALogClipper
 {
  public:
   ALogClipper();
-  ~ALogClipper() {};
+  ~ALogClipper() {}
   
   bool         openALogFileRead(std::string filename);
   bool         openALogFileWrite(std::string filename);

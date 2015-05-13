@@ -31,7 +31,7 @@
 class UtterQueue {
  public:
   UtterQueue();
-  virtual ~UtterQueue() {};
+  virtual ~UtterQueue() {}
 
   void push(Utterance utter);
   void pushTop(Utterance utter);

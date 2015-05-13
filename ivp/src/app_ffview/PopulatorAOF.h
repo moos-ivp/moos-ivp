@@ -31,8 +31,8 @@
 class PopulatorAOF
 {
 public:
-  PopulatorAOF()  {define_mode=0; aof=0;};
-  ~PopulatorAOF() {};
+  PopulatorAOF()  {define_mode=0; aof=0;}
+  ~PopulatorAOF() {}
 
   AOF* populate(std::string filename);
 

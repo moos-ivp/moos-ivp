@@ -40,8 +40,8 @@
 
 class IvPProblem_v3: public IvPProblem {
 public:
-  IvPProblem_v3() {};
-  ~IvPProblem_v3() {};
+  IvPProblem_v3() {}
+  ~IvPProblem_v3() {}
 
   bool solve(const IvPBox *isolbox=0);
   void solveRecurse(int);

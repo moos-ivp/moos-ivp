@@ -37,15 +37,15 @@ class PDMap;
 class ZAIC_LEQ: public ZAIC_HLEQ {
 public:
   ZAIC_LEQ(IvPDomain domain, const std::string& varname) :
-  ZAIC_HLEQ(domain, varname) {m_break_ties=0.00001;};
+  ZAIC_HLEQ(domain, varname) {m_break_ties=0.00001;}
 
-  virtual ~ZAIC_LEQ() {};
+  virtual ~ZAIC_LEQ() {}
 
   // The older way of expressing this function, still supported.
   IvPFunction* extractOF();
   
   // The newer way of expressing this function
-  IvPFunction* extractIvPFunction() {return(extractOF());};
+  IvPFunction* extractIvPFunction() {return(extractOF());}
   
 protected:
   void   setPointLocations();

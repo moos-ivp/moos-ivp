@@ -31,7 +31,7 @@
 class AOF_Quadratic: public AOF {
 public:
   AOF_Quadratic(IvPDomain g_domain);
-  ~AOF_Quadratic() {};
+  ~AOF_Quadratic() {}
 
 public:    
   double evalBox(const IvPBox*) const;

@@ -31,29 +31,29 @@
 class PQueue { 
 public:
   PQueue(int levels=0, bool max=true);  
-  ~PQueue() {};
+  ~PQueue() {}
 
   void    insert(int key, double keyval);
 
-  int     getLevels()    {return(m_levels);};
-  bool    isSortByMax()  {return(m_sort_by_max);};
-  bool    null()         {return(m_levels == 0);};
+  int     getLevels()    {return(m_levels);}
+  bool    isSortByMax()  {return(m_sort_by_max);}
+  bool    null()         {return(m_levels == 0);}
 
   int     removeBest();
   double  returnBestVal();
 
   // size() returns number of elements in the priority queue, not
   // the size of the priority queue data structure (m_size).
-  int     size()             {return(m_end_ix+1);};
+  int     size()             {return(m_end_ix+1);}
 
 public: // Debugging
   void    print();
   void    printLiteral();
 
 protected:
-  int  left(int ix)          {return((2*ix)+1);};
-  int  right(int ix)         {return((2*ix)+2);};
-  int  parent(int ix)        {return((ix-1)/2);};
+  int  left(int ix)          {return((2*ix)+1);}
+  int  right(int ix)         {return((2*ix)+2);}
+  int  parent(int ix)        {return((ix-1)/2);}
   bool heapify(int ix);
 
 protected:

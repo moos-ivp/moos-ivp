@@ -32,10 +32,10 @@
 class BHV_BearingLine : public IvPBehavior {
 public:
   BHV_BearingLine(IvPDomain);
-  ~BHV_BearingLine() {};
+  ~BHV_BearingLine() {}
   
-  void         onIdleState()      {postErasableObjects();};
-  void         onCompleteState()  {postErasableObjects();};
+  void         onIdleState()      {postErasableObjects();}
+  void         onCompleteState()  {postErasableObjects();}
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 

@@ -35,7 +35,7 @@ class IvPFunction;
 class OF_Coupler {
 public:
   OF_Coupler();
-  virtual ~OF_Coupler() {};
+  virtual ~OF_Coupler() {}
 
   void disableNormalize();
   void enableNormalize(double minwt=0, double maxwt=100);

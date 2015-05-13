@@ -37,6 +37,7 @@ class BearingLine
     m_vector_width = 1;
     m_vector_color = "orange";
   }
+
   BearingLine(double bearing, double range=50, 
 		double tl=-1, double ts=-1) {
     m_bearing      = bearing;
@@ -48,7 +49,8 @@ class BearingLine
     m_vector_width = 1;
     m_vector_color = "orange";
   }
-  ~BearingLine() {};
+
+  ~BearingLine() {}
 
   bool isValid() const            {return(m_bearing_set);}
   

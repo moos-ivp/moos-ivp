@@ -31,12 +31,12 @@
 class BHV_AvoidObstacles : public IvPBehavior {
 public:
   BHV_AvoidObstacles(IvPDomain);
-  ~BHV_AvoidObstacles() {delete(m_aof_avoid);};
+  ~BHV_AvoidObstacles() {delete(m_aof_avoid);}
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
   void         onIdleState();
-  void         onCompleteState()     {postErasablePolygons();};
+  void         onCompleteState()     {postErasablePolygons();}
   void         onSetParamComplete();
   void         onIdleToRunState();
   void         postConfigStatus();

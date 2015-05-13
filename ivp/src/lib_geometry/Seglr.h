@@ -29,8 +29,8 @@
 
 class Seglr {
 public:
-  Seglr(double ray_angle=0) {m_ray_angle=ray_angle;};
-  virtual ~Seglr() {};
+  Seglr(double ray_angle=0) {m_ray_angle=ray_angle;}
+  virtual ~Seglr() {}
 
   // Setters
   void addVertex(double x, double y);
@@ -48,7 +48,7 @@ public:
   void reflect();
 
   // Analysis
-  unsigned int size() const {return(m_vx.size());};
+  unsigned int size() const {return(m_vx.size());}
 
   bool crossesLine(double x1, double y1, double x2, double y2,
 		   double& ix, double& iy, bool ray_first=true) const;
