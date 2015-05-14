@@ -796,9 +796,9 @@ bool PMV_MOOSApp::buildReport()
   string info_file_b = m_gui->mviewer->getInfoFileB();
 
   m_msgs << "Tiff File A:      " << tiff_file_a << endl;
-  m_msgs << "Info File A:      " << tiff_file_a << endl;
+  m_msgs << "Info File A:      " << info_file_a << endl;
   m_msgs << "Tiff File B:      " << tiff_file_b << endl;
-  m_msgs << "Info File B:      " << tiff_file_b << endl;
+  m_msgs << "Info File B:      " << info_file_b << endl;
   m_msgs << "------------------" << endl;
   m_msgs << "Total GeoShapes:  " << m_gui->mviewer->shapeCount("total_shapes") << endl;
   m_msgs << "Clear GeoShapes:  " << m_clear_geoshapes_received << endl;
@@ -814,13 +814,13 @@ bool PMV_MOOSApp::buildReport()
   m_msgs << "Draw Count Rate:  " << drawrate  << endl; 
 
   double curr_time = m_gui->mviewer->getCurrTime();
-  m_msgs << "Curr Time:        " << doubleToString(curr_time,10) << endl;
+  m_msgs << "Curr Time:        " << doubleToString(curr_time,2) << endl;
 
   double time_warp = m_gui->mviewer->getTimeWarp();
   m_msgs << "Time Warp:        " << doubleToString(time_warp,3) << endl;
 
   double elapsed = m_gui->mviewer->getElapsed();
-  m_msgs << "Elapsed:         " << doubleToString(elapsed,5) << endl;
+  m_msgs << "Elapsed:          " << doubleToString(elapsed,5) << endl;
 
   m_msgs << endl;
   m_msgs << "Visual Settings: " << endl;
