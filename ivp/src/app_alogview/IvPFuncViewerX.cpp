@@ -361,7 +361,7 @@ bool IvPFuncViewerX::buildIndividualIPF(string source)
   setPriorityIPF(dstringCompact(doubleToString(pwt)));
 
   IvPDomain ivp_domain = ipf_plot.getIvPDomain();
-   
+  
   IvPFunction *ipf = StringToIvPFunction(ipf_string);
   if(ipf) {
     ipf = expandHdgSpdIPF(ipf, ivp_domain);

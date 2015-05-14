@@ -335,7 +335,6 @@ double IPF_Plot::getMaxTime() const
     return(0);
 }
 
-
 //---------------------------------------------------------------
 // Procedure: print
 
@@ -347,16 +346,3 @@ void IPF_Plot::print() const
     cout << "time:" << m_time_stamp[i] << 
       "  ipf:" << m_ipf_string[i] << endl;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

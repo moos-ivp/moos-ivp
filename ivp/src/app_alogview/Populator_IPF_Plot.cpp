@@ -33,7 +33,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: populate
+// Procedure: populateFromEntries
 
 bool Populator_IPF_Plot::populateFromEntries(const vector<ALogEntry>& entries)
 {
@@ -57,6 +57,39 @@ bool Populator_IPF_Plot::populateFromEntries(const vector<ALogEntry>& entries)
     else
       done = true;
   }
+
+  return(true);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: setIvPDomain
+
+bool Populator_IPF_Plot::setIvPDomain(const string& domain_str)
+{
+  IvPDomain domain;
+  
+  vector<string> all_domain_vars = parseString(domain_str, ':');
+  for(unsigned int i=0; i<all_domain_vars.size(); i++) {
+    string entry = stripBlankEnds(all_domain_vars[i]);
+    vector<string> svector = parseString(entry, ',');
+    unsigned int vsize = svector.size();
+    if(vsize != 4)
+       return(false);
+    
+    string dname = svector[0];
+    double dlow  = atof(svector[1].c_str());
+    double dhgh  = atof(svector[2].c_str());
+    int    dcnt  = atoi(svector[3].c_str());
+  
+
+    bool ok = domain.addDomain(dname.c_str(), dlow, dhgh, dcnt);
+    if(!ok)
+      return(false);
+  }
+  if(domain.size() == 0)
+    return(false);
+  m_ivp_domain = domain;
   return(true);
 }
 
@@ -64,8 +97,7 @@ bool Populator_IPF_Plot::populateFromEntries(const vector<ALogEntry>& entries)
 //---------------------------------------------------------------
 // Procedure: handleEntry
 
-void Populator_IPF_Plot::handleEntry(double g_time, 
-				     const string& g_ipf_str)
+void Populator_IPF_Plot::handleEntry(double g_time, const string& g_ipf_str)
 {
   IvPFunction *ipf = StringToIvPFunction(g_ipf_str);
   if(!ipf) {
@@ -102,6 +134,7 @@ void Populator_IPF_Plot::handleEntry(double g_time,
     IPF_Plot new_plot;
     new_plot.setSource(ipf_source);
     new_plot.setVName(m_vname);
+    new_plot.setIvPDomain(m_ivp_domain);
     m_ipf_tags.push_back(tag);
     m_ipf_plots.push_back(new_plot);
     index = vsize;

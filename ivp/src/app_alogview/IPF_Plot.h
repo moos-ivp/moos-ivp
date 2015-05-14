@@ -86,9 +86,5 @@ protected:
 
   IvPDomain                 m_ivp_domain;
 };
+
 #endif 
-
-
-
-
-

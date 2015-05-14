@@ -36,6 +36,8 @@ public:
   ~Populator_IPF_Plot() {}
 
   bool  populateFromEntries(const std::vector<ALogEntry>&);
+  bool  setIvPDomain(const std::string&);
+
   void  setVName(std::string s)   {m_vname = s;}
   int   size()                    {return(m_ipf_plots.size());}
 
@@ -52,10 +54,8 @@ protected:
   std::vector<std::string> m_ipf_tags;
   std::vector<IPF_Plot>    m_ipf_plots;
   Demuxer                  m_demuxer;
+
+  IvPDomain                m_ivp_domain;
 };
+
 #endif 
-
-
-
-
-
