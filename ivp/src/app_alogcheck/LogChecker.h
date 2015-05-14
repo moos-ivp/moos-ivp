@@ -54,9 +54,9 @@ class LogChecker {
   virtual bool addPassFlag(std::string str)  {return(addFlag(str, m_pass_flags));}
   
   virtual bool checkStartFlags() {return(checkFlags(m_start_flags));}
-  virtual bool checkEndFlags()   {return(checkFlags(m_end_flags));};
-  virtual bool checkFailFlags()  {return(checkFlags(m_fail_flags));};
-  virtual bool checkPassFlags()  {return(checkFlags(m_pass_flags));};
+  virtual bool checkEndFlags()   {return(checkFlags(m_end_flags));}
+  virtual bool checkFailFlags()  {return(checkFlags(m_fail_flags));}
+  virtual bool checkPassFlags()  {return(checkFlags(m_pass_flags));}
     
  protected:
   
