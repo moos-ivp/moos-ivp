@@ -5,6 +5,7 @@ CONFIG="Release"
 CLEAN="no"
 CMD_ARGS=""
 
+
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
         printf "%s [SWITCHES]  \n" $0

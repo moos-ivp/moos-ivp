@@ -1,32 +1,51 @@
 #!/bin/bash
 
+INVOCATION_ABS_DIR="`pwd`"
+BUILD_TYPE="Release"
+CLEAN="no"
+CMD_ARGS=""
+BUILD_GUI="yes"
+
 print_usage_and_exit()
 {
-   echo "Usage: configure-ivp.sh {None | Debug | Release | RelWithDebugInfo}"
-   exit 1
+    printf "build-ivp.sh [OPTIONS] [MAKE ARGS]  \n"
+    printf "Options:                            \n"
+    printf "  --help, -h                        \n"
+    printf "  --none, -n                        \n"
+    printf "  --debug, -d                       \n"
+    printf "  --release, -r  (the default)      \n"
+    printf "  --nogui, -g                       \n"
+    printf "  --clean, -c                       \n"
+    exit 1
 }
 
-if [ $# -ne 1 ]; then
-   print_usage_and_exit
-fi
+for ARGI; do
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+        print_usage_and_exit;
+    elif [ "${ARGI}" = "--debug" -o "${ARGI}" = "-d" ] ; then
+        BUILD_TYPE="Debug"
+    elif [ "${ARGI}" = "--none" -o "${ARGI}" = "-n" ] ; then
+        BUILD_TYPE="None"
+    elif [ "${ARGI}" = "--release" -o "${ARGI}" = "-r" ] ; then
+        BUILD_TYPE="Release"
+    elif [ "${ARGI}" = "--clean" -o "${ARGI}" = "-c" ] ; then
+        CLEAN="yes"
+    elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-g" ] ; then
+        BUILD_GUI="no"
+    else
+	CMD_ARGS=$CMD_ARGS" "$ARGI
+    fi
+done
 
-#BUILD_TYPE=${1}
-BUILD_TYPE="Release"
 
-echo BUILD_TYPE=${BUILD_TYPE}
 
-case "${BUILD_TYPE}" in
-   None | Debug | Release | RelWithDebugInfo )
-      ;;
-   * ) 
-      print_usage_and_exit;;
-esac
 
-INVOCATION_ABS_DIR="`pwd`"
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # We want absolute pathnames, which require a little extra work to get...
 SCRIPT_DIR="`dirname ${0}`"
 cd "${SCRIPT_DIR}"
+
 SCRIPT_ABS_DIR=`pwd`
 
 SRC_ABS_DIR="${SCRIPT_ABS_DIR}/ivp/src"
@@ -136,3 +155,24 @@ cmake -DIVP_BUILD_GUI_CODE=${CLEANED_IVP_BUILD_GUI_CODE} \
       ${IVP_CMAKE_FLAGS}                                 \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                   \
       "${SRC_ABS_DIR}"
+
+
+#>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+
+
+cd build
+
+echo ""
+echo "Invoking make..."
+echo ""
+
+if [ "${CLEAN}" = "yes" ] ; then
+    make clean
+else
+    make -j12 ${CMD_ARGS}
+
+fi
+
+cd ${INVOCATION_ABS_DIR}
