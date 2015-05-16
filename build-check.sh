@@ -102,7 +102,6 @@ if [ ! -e lib/libufld_hazards.a ];      then  MISSING=$MISSING"ufld_hazards,"; f
 if [ ! -e lib/liblogutils.a ];          then  MISSING=$MISSING"logutils,"; fi
 if [ ! -e lib/libipfview.a ];           then  MISSING=$MISSING"ipfview,"; fi
 if [ ! -e lib/libmarineview.a ];        then  MISSING=$MISSING"marineview,"; fi
-if [ ! -e lib/libulogview.a ];          then  MISSING=$MISSING"ulogview,"; fi
 
 MISSING_ALL=$MISSING_ALL$MISSING;
 if [ "$MISSING" == "" ]; then MISSING="None"; fi
@@ -167,9 +166,6 @@ if [ ! -e bin/gzaicview ];   then  MISSING=$MISSING"gzaicview,"; fi
 if [ ! -e bin/pMarineViewer ]; then  MISSING=$MISSING"pMarineViewer,"; fi
 if [ ! -e bin/uFunctionVis ];  then  MISSING=$MISSING"uFunctionVis,"; fi
 if [ ! -e bin/uMACView ];      then  MISSING=$MISSING"uMACView,"; fi
-if [ ! -e bin/uLogView ];      then  MISSING=$MISSING"uLogView,"; fi
-if [ ! -e bin/uLogViewIPF ];   then  MISSING=$MISSING"uLogViewIPF,"; fi
-if [ ! -e bin/uLogViewHelm ];  then  MISSING=$MISSING"uLogViewHelm,"; fi
 
 
 MISSING_ALL=$MISSING_ALL$MISSING;
