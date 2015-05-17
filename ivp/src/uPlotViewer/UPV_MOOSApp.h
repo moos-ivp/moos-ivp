@@ -68,7 +68,7 @@ class UPV_MOOSApp : public CMOOSApp
   Threadsafe_pipe<MOOS_event> * m_pending_moos_events;
 
   std::vector<std::string> m_plot_vars;
-}
+};
 
 #endif 
 

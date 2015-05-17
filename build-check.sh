@@ -131,7 +131,7 @@ if [ ! -e bin/alogsort ];    then  MISSING=$MISSING"alogsort,"; fi
 if [ ! -e bin/alogsplit ];   then  MISSING=$MISSING"alogsplit,"; fi
 if [ ! -e bin/alogview ];    then  MISSING=$MISSING"alogview,"; fi
 
-if [ ! -e bin/bhv2graphvis ]; then MISSING=$MISSING"bhv2graphvis,"; fi
+if [ ! -e bin/bhv2graphviz ]; then MISSING=$MISSING"bhv2graphviz,"; fi
 if [ ! -e bin/ffview ];      then  MISSING=$MISSING"ffview,"; fi
 if [ ! -e bin/gen_hazards ]; then  MISSING=$MISSING"gen_hazards,"; fi
 if [ ! -e bin/geoview ];     then  MISSING=$MISSING"geoview,"; fi

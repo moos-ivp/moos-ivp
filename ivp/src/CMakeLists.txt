@@ -200,7 +200,7 @@ SET(IVP_NON_GUI_APPS
   app_alogcheck
   app_nsplug
   app_gen_hazards
-#  app_bhv2graphviz
+  app_bhv2graphviz
   pEchoVar
   pXRelay
   pHelmIvP
@@ -208,8 +208,6 @@ SET(IVP_NON_GUI_APPS
   pBasicContactMgr
   pDeadManPost
   pNodeReporter
-#  pObstacleMgrX
-#  pPoseKeep
   uFldCollisionDetect
   uFldPathCheck
   uFldShoreBroker
@@ -240,15 +238,10 @@ SET(IVP_NON_GUI_APPS
   pFrontEstimate
   pGradeFrontEstimate
   uFldCTDSensor
-  )
-
-IF( EXISTS pSafetyRetreat )
-  LIST(APPEND IVP_NON_GUI_APPS 
   pSafetyRetreat
   uSimCurrent
-  uPlotViewer
-)  
-ENDIF( EXISTS pSafetyRetreat )
+  )
+
 
 SET(IVP_GUI_APPS
   app_ffview
@@ -259,9 +252,11 @@ SET(IVP_GUI_APPS
   pMarineViewer
   uFunctionVis
   uMACView
+  uPlotViewer
   )
 
 SET(IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})
+
 IF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
    LIST(APPEND IVP_APPS_TO_BUILD ${IVP_GUI_APPS})
 ENDIF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
