@@ -1,10 +1,10 @@
 #!/bin/bash
 
-INVOCATION_ABS_DIR="`pwd`"
 BUILD_TYPE="Release"
 CLEAN="no"
 CMD_ARGS=""
-BUILD_GUI_CODE="yes"
+BUILD_GUI_CODE="ON"
+BUILD_BOT_CODE_ONLY="OFF"
 
 print_usage_and_exit()
 {
@@ -32,6 +32,9 @@ for ARGI; do
         CLEAN="yes"
     elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-g" ] ; then
         BUILD_GUI_CODE="no"
+    elif [ "${ARGI}" = "--minrobot" -o "${ARGI}" = "-m" ] ; then
+        BUILD_BOT_CODE_ONLY="ON"
+	BUILD_GUI_CODE="OFF"
     else
 	if [ "$CMD_ARGS" = "" ] ; then
 	    CMD_ARGS=$ARGI
@@ -42,6 +45,7 @@ for ARGI; do
 done
 
 ################################################################################
+INVOCATION_ABS_DIR="`pwd`"
 
 BLD_ABS_DIR="${INVOCATION_ABS_DIR}/build"
 LIB_ABS_DIR="${INVOCATION_ABS_DIR}/lib"
@@ -64,7 +68,7 @@ cd "${BLD_ABS_DIR}"
 # set to "OFF" then honor it here as if --nogui were set on the command line
 
 if [ ${IVP_BUILD_GUI_CODE} = "OFF" ] ; then
-    BUILD_GUI_CODE="no"
+    BUILD_GUI_CODE="OFF"
     printf "IVP GUI Apps will not be built. IVP_BUILD_GUI_CODE env var is OFF\n"
 fi
 
@@ -73,19 +77,22 @@ printf "BUILD_GUI_CODE = ${BUILD_GUI_CODE} \n"
 ################################################################################
 printf "Invoking cmake...\n"
 
-cmake -DIVP_BUILD_GUI_CODE=${IVP_BUILD_GUI_CODE}         \
-      -DIVP_LIB_DIRECTORY="${LIB_ABS_DIR}"               \
-      -DIVP_BIN_DIRECTORY="${BIN_ABS_DIR}"               \
-      -DCMAKE_CXX_FLAGS_RELEASE="-O3 -pedantic -Wall"    \
-      -DUSE_UTM=ON                                       \
-      -DBUILDNAME="${DASHBOARD_BUILDNAME}"               \
-      ${IVP_CMAKE_FLAGS}                                 \
+printf "BUILD_BOT_CODE_ONLY: ${BUILD_BOT_CODE_ONLY}   \n"
+
+cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
+      -DIVP_BUILD_BOT_CODE_ONLY=${BUILD_BOT_CODE_ONLY}     \
+      -DIVP_LIB_DIRECTORY="${LIB_ABS_DIR}"                 \
+      -DIVP_BIN_DIRECTORY="${BIN_ABS_DIR}"                 \
+      -DCMAKE_CXX_FLAGS_RELEASE="-O3 -pedantic -Wall"      \
+      -DUSE_UTM=ON                                         \
+      ${IVP_CMAKE_FLAGS}                                   \
       "${SRC_ABS_DIR}"
 
 ################################################################################
 printf "Invoking make ${CMD_ARGS}\n"
 
 if [ "${CLEAN}" = "yes" -o "${CMD_ARGS}" = "clean" ] ; then
+    printf "CLEANING....\n"
     make clean
     cd ${INVOCATION_ABS_DIR}
     rm -rf build/*
