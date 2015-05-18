@@ -122,7 +122,7 @@ void UPV_GUI::addScopeVar(string varname)
   if(vectorContains(m_scope_vars, varname))
     return;
   
-  int index = (int)(m_scope_vars.size());
+  long int index = (int)(m_scope_vars.size());
   m_scope_vars.push_back(varname);
 
   string entry = "HotVar/" + varname;
