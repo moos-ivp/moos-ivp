@@ -886,7 +886,7 @@ string dstringCompact(const string& str)
   strcpy(buff, str.c_str());
   buff[ssize] = '\0';
 
-  for(string::size_type j=ssize-1; j>=0; j--) {
+  for(string::size_type j=ssize-1; ; j--) {
     if(buff[j] == '0')
       buff[j] = '\0';
     else {
