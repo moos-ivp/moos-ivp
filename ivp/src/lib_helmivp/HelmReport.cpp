@@ -402,6 +402,8 @@ void HelmReport::clearCompletedBHVs()
 string HelmReport::getDomainString() const
 {
   return(domainToString(m_domain));
+
+#if 0
   string return_string;
 
   unsigned int i, vsize = m_domain.size();
@@ -414,8 +416,8 @@ string HelmReport::getDomainString() const
     return_string += "," + uintToString(m_domain.getVarPoints(i));
     return_string += "]";
   }
-    
   return(return_string);
+#endif
 }
 
 //-----------------------------------------------------------

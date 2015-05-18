@@ -576,7 +576,7 @@ void LogPlotViewer::drawLogPlot()
   glVertex2f(w()-m_rgt_marg+5, m_bot_marg);
   glEnd();
       
-  unsigned int i, cache_size = cache_x1.size();
+  unsigned int cache_size = cache_x1.size();
 
   // ----- Handle the FIRST Plot ----------
   // Draw the LINES of the plot
@@ -584,7 +584,7 @@ void LogPlotViewer::drawLogPlot()
     glColor4f(0.282,  0.239,  0.545,  0.1);  // DarkSlateBlue
   else
     glColor4f(0.433,  0.520,  0.284,  0.1);  // DarkOliveGreen-ish
-  for(i=0; i<cache_size; i++) {
+  for(unsigned int i=0; i<cache_size; i++) {
     if(i>0) {
       glBegin(GL_LINE_STRIP);
       glVertex2f(cache_x1[i-1], cache_y1[i-1]);
@@ -605,7 +605,7 @@ void LogPlotViewer::drawLogPlot()
   else
     glColor4f(0.433,  0.520,  0.284,  0.1);  // DarkOliveGreen-ish
   glBegin(GL_POINTS);
-  for(i=0; i<cache_size; i++)
+  for(unsigned int i=0; i<cache_size; i++)
     glVertex2f(cache_x1[i], cache_y1[i]);
   glEnd();
 

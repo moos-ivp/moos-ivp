@@ -77,6 +77,7 @@ int Common_IPFViewer::handle(int event)
 {
   return(Fl_Gl_Window::handle(event));  // temp measure??
 
+#if 0
   int vx, vy;
   switch(event) {
   case FL_PUSH:
@@ -93,6 +94,7 @@ int Common_IPFViewer::handle(int event)
   default:
     return(Fl_Gl_Window::handle(event));
   }
+#endif
 }
 
 //-------------------------------------------------------------

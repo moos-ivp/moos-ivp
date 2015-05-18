@@ -629,11 +629,11 @@ void GUI_IPF::initMenuVarButtons()
 	}
 	else {
 	  // Use special unsigned int type having same size a pointer (void*)  
-	  uintptr_t ix = mix;      
+	  uintptr_t iix = mix;      
 	  m_but_addvar_a->add(entry.c_str(), 0, 
-			      (Fl_Callback*)GUI_IPF::cb_ButtonAddVarA, (void*)ix);
+			      (Fl_Callback*)GUI_IPF::cb_ButtonAddVarA, (void*)iix);
 	  m_but_addvar_b->add(entry.c_str(), 0, 
-			      (Fl_Callback*)GUI_IPF::cb_ButtonAddVarB, (void*)ix);
+			      (Fl_Callback*)GUI_IPF::cb_ButtonAddVarB, (void*)iix);
 	}
       }
     }
@@ -644,11 +644,11 @@ void GUI_IPF::initMenuVarButtons()
     string entry = non_helm_entries[i];
     unsigned int mix = non_helm_indices[i];
     // Use special unsigned int type having same size a pointer (void*)  
-    uintptr_t ix = mix;      
+    uintptr_t iix = mix;      
 	  m_but_addvar_a->add(entry.c_str(), 0, 
-			      (Fl_Callback*)GUI_IPF::cb_ButtonAddVarA, (void*)ix);
+			      (Fl_Callback*)GUI_IPF::cb_ButtonAddVarA, (void*)iix);
 	  m_but_addvar_b->add(entry.c_str(), 0, 
-			      (Fl_Callback*)GUI_IPF::cb_ButtonAddVarB, (void*)ix);
+			      (Fl_Callback*)GUI_IPF::cb_ButtonAddVarB, (void*)iix);
   }
 
 }

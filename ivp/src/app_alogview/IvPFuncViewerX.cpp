@@ -89,7 +89,7 @@ void IvPFuncViewerX::draw()
 void IvPFuncViewerX::resize(int gx, int gy, int gw, int gh)
 {
   return;  // Invoked solely by the parent
-  Common_IPFViewer::resize(gx, gy, gw, gh);
+  //Common_IPFViewer::resize(gx, gy, gw, gh);
 }
 
 //-------------------------------------------------------------

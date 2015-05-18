@@ -796,8 +796,8 @@ IPF_Plot ALogDataBroker::getIPFPlot(unsigned int aix, string bhv_name)
   while(!done) {
     ALogEntry entry = getNextRawALogEntry(f);
 
-    string status = entry.getStatus();
-    if(status == "eof")
+    string entry_status = entry.getStatus();
+    if(entry_status == "eof")
       done = true;
     else
       entries.push_back(entry);

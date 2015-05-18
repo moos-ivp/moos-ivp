@@ -135,4 +135,4 @@ cmake -DIVP_BUILD_GUI_CODE=${CLEANED_IVP_BUILD_GUI_CODE} \
       -DBUILDNAME="${DASHBOARD_BUILDNAME}"               \
       ${IVP_CMAKE_FLAGS}                                 \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                   \
-      "${SRC_ABS_DIR}"
+      "${SRC_ABS_DIR}"                

@@ -4,11 +4,12 @@ PROJECT(IVP)
 
 IF (${WIN32})
   # Define Windows Compiler flags here
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  SET(CMAKE_CXX_FLAGS " ")
 ELSE (${WIN32})
-  #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -Wall -Wextra")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -Wall -Wno-long-long")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 ENDIF (${WIN32})
+
+message("CMAKE_CXX_FLAGS >>>>>>>>>>>>>>>>>>>>>>>>>: ${CMAKE_CXX_FLAGS}")
 
 #===============================================================================
 # FINDING MOOS' HEADERS AND LIBRARIES...
