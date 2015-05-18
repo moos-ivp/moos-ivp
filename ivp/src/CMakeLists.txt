@@ -9,8 +9,6 @@ ELSE (${WIN32})
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 ENDIF (${WIN32})
 
-message("CMAKE_CXX_FLAGS >>>>>>>>>>>>>>>>>>>>>>>>>: ${CMAKE_CXX_FLAGS}")
-
 #===============================================================================
 # FINDING MOOS' HEADERS AND LIBRARIES...
 #===============================================================================
@@ -259,9 +257,7 @@ SET(IVP_GUI_APPS
 SET(IVP_APPS_TO_BUILD ${ROBOT_APPS})
 
 message("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-message("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 message(" IVP_BUILD_BOT_CODE_ONLY: ${IVP_BUILD_BOT_CODE_ONLY}")
-message("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 message("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
 IF("${IVP_BUILD_BOT_CODE_ONLY}" STREQUAL "OFF")
