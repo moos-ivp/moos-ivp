@@ -44,11 +44,11 @@ public:
   void     scaleBounds(double);
   void     moveBounds(double);
 
-  int      getTotalGrids()     {return(total_grids);};
-  int      getDim()            {return(dim);};
-  IvPBox   getMaxPt()          {return(maxpt);};
-  double   getMaxVal()         {return(maxval);};
-  bool     isEmpty()           {return(empty);};
+  int      getTotalGrids()     {return(total_grids);}
+  int      getDim()            {return(dim);}
+  IvPBox   getMaxPt()          {return(maxpt);}
+  double   getMaxVal()         {return(maxval);}
+  bool     isEmpty()           {return(empty);}
 
 protected:
   void     setIXBOX(const IvPBox*);

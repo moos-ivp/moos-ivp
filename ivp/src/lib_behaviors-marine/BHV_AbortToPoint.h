@@ -31,7 +31,7 @@
 class BHV_AbortToPoint : public IvPBehavior {
 public:
   BHV_AbortToPoint(IvPDomain);
-  ~BHV_AbortToPoint() {};
+  ~BHV_AbortToPoint() {}
   
   bool         setParam(std::string, std::string);
   void         onIdleState();

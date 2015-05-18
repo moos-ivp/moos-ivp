@@ -34,7 +34,7 @@ class XMS : public AppCastingMOOSApp
 {
  public:
   XMS();
-  virtual ~XMS() {};
+  virtual ~XMS() {}
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
@@ -52,18 +52,18 @@ class XMS : public AppCastingMOOSApp
   void setDisplayColumns(std::string);
   void setTruncData(std::string);
 
-  void ignoreFileVars(bool v)           {m_ignore_file_vars = v;};
-  void setDispVirgins(bool v)           {m_display_virgins = v;};
-  void setDispTime(bool v)              {m_display_time = v;};
-  void setDispSource(bool v)            {m_display_source = v;};
-  void setDispAuxSource(bool v)         {m_display_aux_source = v;};
-  void setDispCommunity(bool v)         {m_display_community = v;};
-  void setDispOwnCommunity(bool v)      {m_display_own_community = v;};
-  void setDispAll(bool v)               {m_display_all = v;};
-  void setDispAllReally(bool v)         {m_display_all_really = v;};
-  void setTermServerHost(std::string s) {m_term_server_host = s;};
-  void setTermServerPort(std::string s) {m_term_server_port = s;};
-  void setAppNameNoIndex(std::string s) {m_app_name_noindex = s;};
+  void ignoreFileVars(bool v)           {m_ignore_file_vars = v;}
+  void setDispVirgins(bool v)           {m_display_virgins = v;}
+  void setDispTime(bool v)              {m_display_time = v;}
+  void setDispSource(bool v)            {m_display_source = v;}
+  void setDispAuxSource(bool v)         {m_display_aux_source = v;}
+  void setDispCommunity(bool v)         {m_display_community = v;}
+  void setDispOwnCommunity(bool v)      {m_display_own_community = v;}
+  void setDispAll(bool v)               {m_display_all = v;}
+  void setDispAllReally(bool v)         {m_display_all_really = v;}
+  void setTermServerHost(std::string s) {m_term_server_host = s;}
+  void setTermServerPort(std::string s) {m_term_server_port = s;}
+  void setAppNameNoIndex(std::string s) {m_app_name_noindex = s;}
   void setTermReportInterval(std::string);
   
   bool setColorMapping(std::string var, std::string color="any");

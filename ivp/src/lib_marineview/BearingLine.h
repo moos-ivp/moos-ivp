@@ -36,7 +36,8 @@ class BearingLine
     m_time_stamp   = -1;
     m_vector_width = 1;
     m_vector_color = "orange";
-  };
+  }
+
   BearingLine(double bearing, double range=50, 
 		double tl=-1, double ts=-1) {
     m_bearing      = bearing;
@@ -47,30 +48,31 @@ class BearingLine
     m_time_stamp   = ts;
     m_vector_width = 1;
     m_vector_color = "orange";
-  };
-  ~BearingLine() {};
+  }
+
+  ~BearingLine() {}
 
   bool isValid() const            {return(m_bearing_set);}
   
-  void setBearing(double v)       {m_bearing=v; m_bearing_set=true;};
-  void setBearingAbsolute(bool v) {m_bearing_absolute=v;};
-  void setRange(double v)         {m_range=v;};
-  void setTimeLimit(double v)     {m_time_limit=v;};
-  void setTimeStamp(double v)     {m_time_stamp=v;};
-  void setVectorWidth(double v)   {m_vector_width=v;};
+  void setBearing(double v)       {m_bearing=v; m_bearing_set=true;}
+  void setBearingAbsolute(bool v) {m_bearing_absolute=v;}
+  void setRange(double v)         {m_range=v;}
+  void setTimeLimit(double v)     {m_time_limit=v;}
+  void setTimeStamp(double v)     {m_time_stamp=v;}
+  void setVectorWidth(double v)   {m_vector_width=v;}
 
-  void setVectorColor(std::string str) {m_vector_color=str;};
-  void setLabel(std::string str)  {m_label=str;};
+  void setVectorColor(std::string str) {m_vector_color=str;}
+  void setLabel(std::string str)  {m_label=str;}
   
-  double  getBearing() const        {return(m_bearing);};
-  bool    isBearingAbsolute() const {return(m_bearing_absolute);};
-  double  getRange() const          {return(m_range);};
-  double  getTimeLimit() const      {return(m_time_limit);};
-  double  getTimeStamp() const      {return(m_time_stamp);};
-  double  getVectorWidth() const    {return(m_vector_width);};
+  double  getBearing() const        {return(m_bearing);}
+  bool    isBearingAbsolute() const {return(m_bearing_absolute);}
+  double  getRange() const          {return(m_range);}
+  double  getTimeLimit() const      {return(m_time_limit);}
+  double  getTimeStamp() const      {return(m_time_stamp);}
+  double  getVectorWidth() const    {return(m_vector_width);}
 
-  std::string  getVectorColor() const {return(m_vector_color);};
-  std::string  getLabel() const       {return(m_label);};
+  std::string  getVectorColor() const {return(m_vector_color);}
+  std::string  getLabel() const       {return(m_label);}
 
  private:
   double m_bearing; 

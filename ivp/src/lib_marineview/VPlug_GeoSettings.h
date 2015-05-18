@@ -32,7 +32,7 @@
 class VPlug_GeoSettings {
 public:
   VPlug_GeoSettings();
-  virtual ~VPlug_GeoSettings() {};
+  virtual ~VPlug_GeoSettings() {}
 
  public:   // A Catch-All Setter
   bool   setParam(std::string param, std::string value);

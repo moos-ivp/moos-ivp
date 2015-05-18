@@ -31,7 +31,7 @@ class IvPDomain;
 class BHV_MinAltitudeX : public IvPBehavior {
 public:
   BHV_MinAltitudeX(IvPDomain);
-  ~BHV_MinAltitudeX() {};
+  ~BHV_MinAltitudeX() {}
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();

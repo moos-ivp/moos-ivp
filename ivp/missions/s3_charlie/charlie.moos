@@ -47,7 +47,7 @@ ProcessConfig = pLogger
 
 ProcessConfig = uSimMarine
 {
-  AppTick	= 10
+  AppTick	  = 10
   CommsTick	= 10
 
   start_x       = 0

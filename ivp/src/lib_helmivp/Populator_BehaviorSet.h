@@ -41,9 +41,9 @@ class Populator_BehaviorSet {
 
 public:
   Populator_BehaviorSet(IvPDomain, InfoBuffer*);
-  virtual ~Populator_BehaviorSet() {};
+  virtual ~Populator_BehaviorSet() {}
 
-  void addBehaviorDir(std::string dir) {m_dir_names.push_back(dir);};
+  void addBehaviorDir(std::string dir) {m_dir_names.push_back(dir);}
   void setBHVDirNotFoundOK(bool v)     {m_bhv_dir_not_found_ok=v;}
 
   BehaviorSet* populate(std::set<std::string>);
@@ -51,7 +51,7 @@ public:
 
   void printBehaviorSpecs() const;
 
-  std::vector<std::string> getConfigWarnings() const {return(m_config_warnings);};
+  std::vector<std::string> getConfigWarnings() const {return(m_config_warnings);}
 
 protected:
 
@@ -59,7 +59,7 @@ protected:
   void   closeSetMode(); 
   void   addConfigWarning(const std::string&);
   void   addConfigWarnings(std::vector<std::string>);
-  void   clearConfigWarnings() {m_config_warnings.clear();};
+  void   clearConfigWarnings() {m_config_warnings.clear();}
 
 protected:
   std::vector<VarDataPair>   initial_vars;

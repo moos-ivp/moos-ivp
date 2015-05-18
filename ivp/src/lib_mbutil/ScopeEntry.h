@@ -29,26 +29,26 @@
 class ScopeEntry
 {
  public:
-  ScopeEntry() {};
-  ~ScopeEntry() {};
+  ScopeEntry() {}
+  ~ScopeEntry() {}
 
-  void  setValue(const std::string& s)      {m_value = s;};
-  void  setType(const std::string& s)       {m_type = s;};
-  void  setSource(const std::string& s)     {m_source = s;};
-  void  setSrcAux(const std::string& s)     {m_srcaux = s;};
-  void  setTime(const std::string& s)       {m_time = s;};
-  void  setCommunity(const std::string& s)  {m_community = s;};
-  void  setIteration(const std::string& s)  {m_iteration = s;};
-  void  setNameBHV(const std::string& s)    {m_name_bhv = s;};
+  void  setValue(const std::string& s)      {m_value = s;}
+  void  setType(const std::string& s)       {m_type = s;}
+  void  setSource(const std::string& s)     {m_source = s;}
+  void  setSrcAux(const std::string& s)     {m_srcaux = s;}
+  void  setTime(const std::string& s)       {m_time = s;}
+  void  setCommunity(const std::string& s)  {m_community = s;}
+  void  setIteration(const std::string& s)  {m_iteration = s;}
+  void  setNameBHV(const std::string& s)    {m_name_bhv = s;}
 
-  const std::string& getValue() const      {return(m_value);};
-  const std::string& getType() const       {return(m_type);};
-  const std::string& getSource() const     {return(m_source);};
-  const std::string& getSrcAux() const     {return(m_srcaux);};
-  const std::string& getTime() const       {return(m_time);};
-  const std::string& getCommunity() const  {return(m_community);};
-  const std::string& getIteration() const  {return(m_iteration);};
-  const std::string& getNameBHV() const    {return(m_name_bhv);};
+  const std::string& getValue() const      {return(m_value);}
+  const std::string& getType() const       {return(m_type);}
+  const std::string& getSource() const     {return(m_source);}
+  const std::string& getSrcAux() const     {return(m_srcaux);}
+  const std::string& getTime() const       {return(m_time);}
+  const std::string& getCommunity() const  {return(m_community);}
+  const std::string& getIteration() const  {return(m_iteration);}
+  const std::string& getNameBHV() const    {return(m_name_bhv);}
 
   bool isEqual(const ScopeEntry& entry) const
   {
@@ -75,15 +75,5 @@ class ScopeEntry
   std::string m_iteration;
   std::string m_name_bhv;
 };
+
 #endif 
-
-
-
-
-
-
-
-
-
-
-

@@ -32,7 +32,7 @@ class LoadWatch : public AppCastingMOOSApp
 {
  public:
    LoadWatch();
-   ~LoadWatch() {};
+   ~LoadWatch() {}
 
  protected: // Standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);

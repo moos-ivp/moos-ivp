@@ -31,20 +31,20 @@
 class VPlug_DropPoints {
 public:
   VPlug_DropPoints();
-  virtual ~VPlug_DropPoints() {};
+  virtual ~VPlug_DropPoints() {}
 
   bool  setParam(const std::string& param, std::string value);
   void  addPoint(const XYPoint&);
   void  addPoint(const XYPoint&, const std::string& latlon_str, 
 		 const std::string& localg, const std::string& native);
-  void  deletePoint(const XYPoint&) {};
-  bool  viewable()    {return(m_viewable_all);};
+  void  deletePoint(const XYPoint&) {}
+  bool  viewable()    {return(m_viewable_all);}
 
-  XYPoint&    point(unsigned int i) {return(m_points[i]);};
+  XYPoint&    point(unsigned int i) {return(m_points[i]);}
   XYPoint     getPoint(unsigned int) const;
   std::string getCoordinates(unsigned int i) const;
 
-  unsigned int size() {return(m_points.size());};
+  unsigned int size() {return(m_points.size());}
 
 protected:
   std::vector<XYPoint>     m_points;
@@ -59,8 +59,3 @@ protected:
 };
 
 #endif
-
-
-
-
-

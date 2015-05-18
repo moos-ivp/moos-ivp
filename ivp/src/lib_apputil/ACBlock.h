@@ -32,21 +32,21 @@ class ACBlock
  public:
   ACBlock();
   ACBlock(std::string, std::string, unsigned int, char c=',');
-  virtual ~ACBlock() {};
+  virtual ~ACBlock() {}
   
  public: // Setters
-  void setLabel(std::string s)    {m_label=s;};
-  void setMessage(std::string s)  {m_message=s;};
+  void setLabel(std::string s)    {m_label=s;}
+  void setMessage(std::string s)  {m_message=s;}
   bool setColor(std::string);
-  void setSeparator(char c)       {m_separator=c;};
-  void setMaxLen(unsigned int v)  {m_maxlen=v;};
+  void setSeparator(char c)       {m_separator=c;}
+  void setMaxLen(unsigned int v)  {m_maxlen=v;}
 
  public: // Getters
-  std::string  getLabel() const      {return(m_label);};
-  std::string  getMessage() const    {return(m_message);};
-  std::string  getColor() const      {return(m_color);};
-  char         getSeparator() const  {return(m_separator);};
-  unsigned int getMaxLen() const     {return(m_maxlen);};
+  std::string  getLabel() const      {return(m_label);}
+  std::string  getMessage() const    {return(m_message);}
+  std::string  getColor() const      {return(m_color);}
+  char         getSeparator() const  {return(m_separator);}
+  unsigned int getMaxLen() const     {return(m_maxlen);}
 
  public: // Main function:
   std::vector<std::string> getFormattedLines() const;

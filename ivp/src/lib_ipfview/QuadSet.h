@@ -35,7 +35,7 @@ class QuadSet
 {
 public:
   QuadSet();
-  ~QuadSet() {};
+  ~QuadSet() {}
 
   // Set/Apply Information
   bool   applyIPF(IvPFunction *ipf, std::string src="");
@@ -49,18 +49,18 @@ public:
   void   normalize(double, double);
 
   // Get Information
-  bool         isEmpty1D() const             {return(size1D()==0);};
-  bool         isEmpty2D() const             {return(size2D()==0);};
+  bool         isEmpty1D() const             {return(size1D()==0);}
+  bool         isEmpty2D() const             {return(size2D()==0);}
   bool         isEmptyND() const;
-  unsigned int getQuadSetDim() const         {return(m_quadset_dim);};
-  Quad3D       getQuad(unsigned int i) const {return(m_quads[i]);};
-  double       getMaxVal() const             {return(m_maxpt_val);};
-  double       getMinVal() const             {return(m_minpt_val);};
-  double       getPriorityWt() const         {return(m_ipf_priority_wt);};
-  IvPDomain    getDomain() const             {return(m_ivp_domain);};
-  unsigned int size2D() const                {return(m_quads.size());};
+  unsigned int getQuadSetDim() const         {return(m_quadset_dim);}
+  Quad3D       getQuad(unsigned int i) const {return(m_quads[i]);}
+  double       getMaxVal() const             {return(m_maxpt_val);}
+  double       getMinVal() const             {return(m_minpt_val);}
+  double       getPriorityWt() const         {return(m_ipf_priority_wt);}
+  IvPDomain    getDomain() const             {return(m_ivp_domain);}
+  unsigned int size2D() const                {return(m_quads.size());}
   unsigned int size1D() const;
-  unsigned int size1DFs() const              {return(m_domain_pts.size());};
+  unsigned int size1DFs() const              {return(m_domain_pts.size());}
 
   double       getMaxPoint(std::string) const;
   unsigned int getMaxPointQIX(std::string) const;

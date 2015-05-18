@@ -31,12 +31,12 @@
 class BehaviorRegistry {
 public:
   BehaviorRegistry();
-  virtual ~BehaviorRegistry() {};
+  virtual ~BehaviorRegistry() {}
   
   bool addIPF(IvPFunction*, unsigned int, std::string="");
   
-  unsigned int size() const    {return(m_keys.size());};
-  bool         isEmpty() const {return(m_keys.empty());};
+  unsigned int size() const    {return(m_keys.size());}
+  bool         isEmpty() const {return(m_keys.empty());}
 
   IvPFunction *getIPF(unsigned int index) const;
   IvPFunction *getIPF(std::string key) const;

@@ -35,7 +35,7 @@
 class PMV_GUI : public MarineVehiGUI {
 public:
   PMV_GUI(int w, int h, const char *l=0);
-  virtual ~PMV_GUI() {};
+  virtual ~PMV_GUI() {}
 
   void         augmentMenu();
   void         resize(int, int, int, int);
@@ -43,8 +43,8 @@ public:
 
   bool         addButton(std::string button, std::string pairs);
   bool         addAction(std::string pair, bool separator=false);
-  void         setCurrTime(double v)       {m_curr_time=v;};
-  void         setTitleBase(std::string s) {m_title_base=s;};
+  void         setCurrTime(double v)       {m_curr_time=v;}
+  void         setTitleBase(std::string s) {m_title_base=s;}
   void         augmentTitle(std::string ip_str);
   bool         syncNodesAtoB();
   bool         syncNodesBtoA();
@@ -53,14 +53,14 @@ public:
 
 
   bool         clearStaleVehicles(bool force=false);
-  double       getClearStaleTimeStamp() {return(m_clear_stale_timestamp);};
+  double       getClearStaleTimeStamp() {return(m_clear_stale_timestamp);}
 
   std::string  getPendingVar(unsigned int index);
   std::string  getPendingVal(unsigned int index);
 
   void         clearPending();
   void         pushPending(std::string, std::string);
-  unsigned int getPendingSize() {return(m_pending_vars.size());};
+  unsigned int getPendingSize() {return(m_pending_vars.size());}
   bool         addScopeVariable(std::string);
   bool         addMousePoke(std::string, std::string, std::string);
   bool         addReferenceVehicle(std::string vname);
@@ -71,7 +71,7 @@ public:
   void         updateNodes(bool clear=false);
   void         updateProcs(bool clear=false);
   void         updateAppCast();
-  void         setAppCastRepo(AppCastRepo* repo) {m_repo = repo;};
+  void         setAppCastRepo(AppCastRepo* repo) {m_repo = repo;}
   bool         showingAppCasts() const;
   void         updateRadios();
   void         setMenuItemColors();

@@ -42,12 +42,12 @@ public:
  public:
   int  handle(int);
   void setModel(FV_Model* g_model)
-    {m_model = g_model; m_viewer->setModel(g_model);};
+    {m_model = g_model; m_viewer->setModel(g_model);}
 
   void updateFields();
   void addBehaviorSource(std::string source);
 
-  FV_Viewer* getViewer() {return(m_viewer);};
+  FV_Viewer* getViewer() {return(m_viewer);}
 
  private:
   inline void cb_BehaviorSelect_i(int);

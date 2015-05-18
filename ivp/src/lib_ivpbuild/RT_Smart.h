@@ -38,7 +38,7 @@ class Regressor;
 class RT_Smart {
 public:
   RT_Smart(Regressor*);
-  virtual ~RT_Smart() {};
+  virtual ~RT_Smart() {}
 
 public: 
   PDMap* create(PDMap*, PQueue&, int more_pcs, double thresh=0);

@@ -69,6 +69,8 @@ bool HelmReporter::handle(const string& alogfile)
     return(false);
   }
   
+  cout << "Processing on file : " << alogfile << endl;
+
   unsigned int line_count  = 0;
   unsigned int life_events = 0;
   bool done = false;
@@ -124,7 +126,8 @@ bool HelmReporter::handle(const string& alogfile)
     }
   }
   cout << endl << uintToCommaString(line_count) << " lines total." << endl;
-  cout << uintToString(life_events) << " life events." << endl;
+  if(m_report_life_events)
+    cout << uintToString(life_events) << " life events." << endl;
 
   if(file_ptr)
     fclose(file_ptr);
@@ -239,7 +242,7 @@ void HelmReporter::addWatchVar(string var)
 
 void HelmReporter::printReport()
 {
-  cout << endl << endl << endl << endl << endl << endl;
+  cout << endl << endl << endl;
   if(m_report_life_events) {
     vector<string> report_lines = m_life_events.getReport();
     unsigned int i, vsize = report_lines.size();

@@ -31,24 +31,24 @@ class PartitionRecord
 {
  public:
   PartitionRecord();
-  ~PartitionRecord() {};
+  ~PartitionRecord() {}
 
   void init(double low, double high, unsigned int partitions);
   void addValue(double);
-  void setColor(std::string s)          {m_bar_color.setColor(s);};
-  void setVarName(std::string s)        {m_varname = s;};
+  void setColor(std::string s)          {m_bar_color.setColor(s);}
+  void setVarName(std::string s)        {m_varname = s;}
 
-  std::string  getVarName() const       {return(m_varname);};
-  unsigned int getPartitions() const    {return(m_partition_entry_cnt.size());};
-  unsigned int getTotalEntries() const  {return(m_entries.size());};
+  std::string  getVarName() const       {return(m_varname);}
+  unsigned int getPartitions() const    {return(m_partition_entry_cnt.size());}
+  unsigned int getTotalEntries() const  {return(m_entries.size());}
   
   unsigned int getEntryCount(unsigned int) const;
   double       getValue(unsigned int) const;
   
-  double    getLowVal() const    {return(m_low_val);};
-  double    getHighVal() const   {return(m_high_val);};
-  double    getAverage() const   {return(m_average);};
-  ColorPack getColorPack() const {return(m_bar_color);};
+  double    getLowVal() const    {return(m_low_val);}
+  double    getHighVal() const   {return(m_high_val);}
+  double    getAverage() const   {return(m_average);}
+  ColorPack getColorPack() const {return(m_bar_color);}
   void      print() const;
 
  protected: // Configuration variabls

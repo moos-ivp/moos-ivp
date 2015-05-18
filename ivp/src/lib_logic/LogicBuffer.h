@@ -45,7 +45,7 @@ public:
 
   bool checkConditions();
 
-  unsigned int size() {return(m_logic_conditions.size());};
+  unsigned int size() {return(m_logic_conditions.size());}
 
   std::vector<std::string> getAllVars();
 

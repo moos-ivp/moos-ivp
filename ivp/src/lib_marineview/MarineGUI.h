@@ -33,12 +33,12 @@
 class MarineGUI : public Fl_Window {
 public:
   MarineGUI(int w, int h, const char *l=0);
-  ~MarineGUI() {};
+  ~MarineGUI() {}
 
   static Fl_Menu_Item menu_[];
 
   int  handle(int);
-  virtual void updateXY() {};
+  virtual void updateXY() {}
 
   void addGeoAttrMenu();
   void updateRadios();
@@ -50,7 +50,7 @@ public:
 
   bool removeMenuItem(std::string);
 
-  MarineViewer* getMarineViewer() {return(m_mviewer);};
+  MarineViewer* getMarineViewer() {return(m_mviewer);}
 
  protected:
   Fl_Menu_Bar  *m_menubar;

@@ -34,7 +34,7 @@ class IvPDomain;
 class BHV_Shadow : public IvPContactBehavior {
 public:
   BHV_Shadow(IvPDomain);
-  ~BHV_Shadow() {};
+  ~BHV_Shadow() {}
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);

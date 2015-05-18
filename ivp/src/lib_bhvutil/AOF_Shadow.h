@@ -30,7 +30,7 @@ class IvPDomain;
 class AOF_Shadow: public AOF {
  public:
   AOF_Shadow(IvPDomain);
-  ~AOF_Shadow() {};
+  ~AOF_Shadow() {}
   
  public: // virtual functions   
   double evalBox(const IvPBox*) const;

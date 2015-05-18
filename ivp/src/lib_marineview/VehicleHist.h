@@ -33,7 +33,7 @@ class VehicleHist
 {
  public:
   VehicleHist();
-  ~VehicleHist() {};
+  ~VehicleHist() {}
     
   void addPosition(double x, double y, double hdg);
 

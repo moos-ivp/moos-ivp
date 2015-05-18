@@ -34,7 +34,7 @@ class IvPDomain;
 class BHV_Loiter : public IvPBehavior {
 public:
   BHV_Loiter(IvPDomain);
-  ~BHV_Loiter() {};
+  ~BHV_Loiter() {}
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();

@@ -44,30 +44,30 @@ public:
   const LogicCondition &operator=(const LogicCondition&);
 
   bool setCondition(const std::string&);
-  void setAllowDoubleEquals(bool v) {m_allow_dblequals=v;};
+  void setAllowDoubleEquals(bool v) {m_allow_dblequals=v;}
 
   std::string getRawCondition() const {
     if(m_node) 
       return(m_node->getRawCondition());
     else
       return("");
-  };
+  }
   
   std::vector<std::string> getVarNames() const;
   
   void clearVarVals()
-    {if(m_node) m_node->recursiveClearVarVal();};
+    {if(m_node) m_node->recursiveClearVarVal();}
   
   void setVarVal(std::string var, std::string val)
-    {if(m_node) m_node->recursiveSetVarVal(var,val);};
+    {if(m_node) m_node->recursiveSetVarVal(var,val);}
   
   void setVarVal(std::string var, double val) 
-    {if(m_node) m_node->recursiveSetVarVal(var,val);};
+    {if(m_node) m_node->recursiveSetVarVal(var,val);}
 
   bool eval() const;
   
   void print() const
-    {if(m_node) m_node->print();};
+    {if(m_node) m_node->print();}
 
 protected:
   ParseNode *m_node;

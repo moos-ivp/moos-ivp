@@ -32,7 +32,7 @@ class AppCastSet
 {
  public:
   AppCastSet();
-  ~AppCastSet() {};
+  ~AppCastSet() {}
 
   bool         addAppCast(const AppCast& appcast);
   AppCast      getAppCast(const std::string& proc) const;
@@ -47,11 +47,11 @@ class AppCastSet
   unsigned int getTotalCfgWarningCount() const;
   unsigned int getTotalRunWarningCount() const;
   unsigned int getTotalWarningCount() const;
-  unsigned int getTotalAppCastCount() const {return(m_total_appcasts);};
-  unsigned int getTotalProcCount()    const {return(m_map_appcasts.size());};
+  unsigned int getTotalAppCastCount() const {return(m_total_appcasts);}
+  unsigned int getTotalProcCount()    const {return(m_map_appcasts.size());}
 
   std::vector<std::string> getIDs()   const;
-  std::vector<std::string> getProcs() const {return(m_procs);};
+  std::vector<std::string> getProcs() const {return(m_procs);}
 
  private:
   // Map from ID to proc name

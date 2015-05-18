@@ -31,7 +31,7 @@
 class BHV_GoToDepth : public IvPBehavior {
 public:
   BHV_GoToDepth(IvPDomain);
-  ~BHV_GoToDepth() {};
+  ~BHV_GoToDepth() {}
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);

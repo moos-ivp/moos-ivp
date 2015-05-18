@@ -30,8 +30,8 @@
 class SearchGrid : public AppCastingMOOSApp
 {
  public:
-  SearchGrid() {};
-  virtual ~SearchGrid() {};
+  SearchGrid() {}
+  virtual ~SearchGrid() {}
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
@@ -50,7 +50,3 @@ class SearchGrid : public AppCastingMOOSApp
 };
 
 #endif 
-
-
-
-

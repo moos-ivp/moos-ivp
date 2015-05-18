@@ -29,9 +29,9 @@
 class BHV_ConstantDepth : public IvPBehavior {
 public:
   BHV_ConstantDepth(IvPDomain);
-  ~BHV_ConstantDepth() {};
+  ~BHV_ConstantDepth() {}
   
-  void         onIdleState() {updateInfoIn();};
+  void         onIdleState() {updateInfoIn();}
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 

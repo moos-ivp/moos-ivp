@@ -30,7 +30,7 @@
 class AOF_AttractorCPA: public AOF {
 public:
   AOF_AttractorCPA(IvPDomain);
-  ~AOF_AttractorCPA() {if(cpa_engine) delete(cpa_engine);};
+  ~AOF_AttractorCPA() {if(cpa_engine) delete(cpa_engine);}
 
 public:    
   double evalBox(const IvPBox*) const;   // virtual defined

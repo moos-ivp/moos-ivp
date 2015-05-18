@@ -186,6 +186,7 @@ void NodeBroker::sendNodeBrokerPing()
   for(unsigned int i=0; i<m_shore_routes.size(); i++) {
     string aug_ping_msg = ping_msg + ",key=" + uintToString(i);
     Notify("NODE_BROKER_PING_"+uintToString(i), aug_ping_msg);
+    m_shore_pings_sent[i]++;
     m_pings_posted++;
   }
 }
@@ -283,6 +284,7 @@ bool NodeBroker::handleConfigTryShoreHost(string original_line)
   
   m_shore_routes.push_back(pshare_route);
   m_shore_community.push_back("");
+  m_shore_pings_sent.push_back(0);
   m_shore_pings_ack.push_back(0);
   m_shore_ipaddr.push_back("");
   m_shore_timewarp.push_back("");
@@ -332,76 +334,6 @@ void NodeBroker::handleMailAck(string ack_msg)
   registerUserBridges();
 }
 
-
-//------------------------------------------------------------
-// Procedure: handleMailAck
-//      Note: Parse NODE_BROKER_ACK and update the info about the
-//            shoreside node that sent it.
-
-#if 0
-void NodeBroker::handleMailAck(string ack_msg)
-{
-  // Part 1: Build/validate the incoming Host Record
-  HostRecord hrecord = string2HostRecord(ack_msg);
-
-  string pshare_iroutes = hrecord.getPShareIRoutes();
-  if(pshare_iroutes == "") {
-    m_bad_acks_received++;
-
-    string msg = "NODE_BROKER_ACK recvd from " + hrecord.getHostIP();
-    msg += " w/ null pshare_iroutes, for now.";
-
-    reportRunWarning(msg);
-    return;
-  }
-
-  // Part 3: If the remote hostip != the local hostip, find/replace 
-  // "localhost" with remote hostip if localhost appears in the iroute.
-
-  string hostip_shore = hrecord.getHostIP();
-  string hostip_local = m_node_host_record.getHostIP();
-  if(hostip_shore != hostip_local) 
-    pshare_iroutes = findReplace(pshare_iroutes, "localhost", hostip_shore);
-
-
-  // Note the sender may be reporting more then one input route
-  vector<string> svector = parseString(pshare_iroutes, '&');
-  unsigned int i, vsize = svector.size();
-
-  for(i=0; i<vsize; i++) {
-    string iroute = stripBlankEnds(svector[i]);
-    // Now see if the incoming iroute matches one of the try_hosts
-    unsigned int j, jsize = m_shore_routes.size();
-    for(j=0; j<jsize; j++) {
-
-      // It's possible that the iroute received from the shore ack may read
-      // something like "10.0.0.7:9300" where the IP is the localhost IP.
-      // And tryhost read "localhost:9300". In this case we want the match
-      // to succeed. So we create a "modified shore route", mod_sroute below
-      // which will convert "localhost:9300" to "10.0.0.7.9300" and test 
-      // against that also
-      string mod_sroute = findReplace(m_shore_routes[j], "localhost", 
-				      m_node_host_record.getHostIP());
-
-      if((iroute == m_shore_routes[j]) ||
-	 (iroute == mod_sroute)) {
-	m_shore_community[j] = hrecord.getCommunity();
-	m_shore_pings_ack[j]++;
-	m_shore_ipaddr[j]    = hrecord.getHostIP();
-	m_shore_timewarp[j]  = hrecord.getTimeWarp();
-	m_ok_acks_received++;
-
-	string msg = "NODE_BROKER_ACK recvd from " + hrecord.getHostIP();
-	msg += " w/ null pshare_iroutes, for now.";
-	retractRunWarning(msg);
-      }
-    }
-  }
-
-  // Set up the user-configured variable bridges.
-  registerUserBridges();
-}
-#endif
 
 //------------------------------------------------------------
 // Procedure: handleMailHostInfo
@@ -498,7 +430,7 @@ bool NodeBroker::buildReport()
   for(k=0; k<ksize; k++) {
     actab << m_shore_community[k];
     actab << m_shore_routes[k];
-    actab << m_pings_posted;
+    actab << m_shore_pings_sent[k];
     actab << m_shore_pings_ack[k];
     actab << m_shore_ipaddr[k];
     actab << m_shore_timewarp[k];

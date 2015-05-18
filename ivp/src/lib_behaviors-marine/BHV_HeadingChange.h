@@ -29,7 +29,7 @@
 class BHV_HeadingChange : public IvPBehavior {
 public:
   BHV_HeadingChange(IvPDomain);
-  ~BHV_HeadingChange() {};
+  ~BHV_HeadingChange() {}
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);

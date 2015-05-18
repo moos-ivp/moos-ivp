@@ -41,7 +41,7 @@ public:
   void updateXY();
   int  handle(int);
   void setAOF(AOF* aof)           
-    {viewer->setAOF(aof); viewer->modColorMap("default");};
+    {viewer->setAOF(aof); viewer->modColorMap("default");}
 
 public:
   Fl_Menu_Bar *mbar;

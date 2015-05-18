@@ -29,7 +29,7 @@
 class BHV_MaintainHeading : public IvPBehavior {
 public:
   BHV_MaintainHeading(IvPDomain);
-  ~BHV_MaintainHeading() {};
+  ~BHV_MaintainHeading() {}
   
   IvPFunction* onRunState();
   void         onIdleState();

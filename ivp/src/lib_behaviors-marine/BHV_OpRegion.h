@@ -30,14 +30,14 @@
 class BHV_OpRegion : public IvPBehavior {
  public:
   BHV_OpRegion(IvPDomain);
-  ~BHV_OpRegion() {};
+  ~BHV_OpRegion() {}
   
   bool         setParam(std::string, std::string);
   void         onSetParamComplete();
 
   IvPFunction* onRunState();
   void         onIdleState();
-  void         onCompleteState() {postErasablePolygon();};
+  void         onCompleteState() {postErasablePolygon();}
 
  protected:
   void      polygonVerify();

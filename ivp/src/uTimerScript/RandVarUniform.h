@@ -31,7 +31,7 @@ class RandVarUniform : public RandomVariable
 {
  public:
   RandVarUniform();
-  virtual ~RandVarUniform() {};
+  virtual ~RandVarUniform() {}
 
  public: // Overloaded virtual functions
   bool   setParam(std::string, double);

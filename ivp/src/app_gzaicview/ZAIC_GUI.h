@@ -34,7 +34,7 @@
 class ZAIC_GUI : Fl_Window {
 public:
   ZAIC_GUI(int w, int h, const char *l=0);
-  ~ZAIC_GUI() {};
+  ~ZAIC_GUI() {}
   
   static Fl_Menu_Item menu_[];
 

@@ -752,33 +752,52 @@ void ALogDataBroker::setPrunedMaxTime(double max_time)
 
 IPF_Plot ALogDataBroker::getIPFPlot(unsigned int aix, string bhv_name)
 {
-  IPF_Plot iplot;
+  IPF_Plot ipf_plot;
 
   // Part 1: Sanity check the master index
   if(aix >= m_alog_files.size()) {
     cout << "Could not create IPF_Plot for ALog Index: " << aix << endl;
-    return(iplot);
+    return(ipf_plot);
   }
 
-  // Part 2: Confirm that theklog file can be found and opened
+  // Part 2: Instantiate and initialize the Populator.
+  Populator_IPF_Plot populator;
+  populator.setVName(m_vnames[aix]);
+
+
+  // Part 3: Apply the IVPHELM_DOMAIN to the populator
+  string domain_klog = m_base_dirs[aix] + "/IVPHELM_DOMAIN.klog";
+  FILE *f1 = fopen(domain_klog.c_str(), "r");
+  if(!f1) {
+    cout << "Could not find IVPHELM_DOMAIN from " << domain_klog << endl;
+    return(ipf_plot);
+  }
+  ALogEntry domain_entry = getNextRawALogEntry(f1);
+  string status = domain_entry.getStatus();
+  if(status != "eof") {
+    string domain_str = domain_entry.getStringVal();
+    populator.setIvPDomain(domain_str);
+  }
+  fclose(f1);
+
+
+  // Part 4: Apply the BHV_IPF entries for this behavior to the populator
+  // Part 4A: Confirm that the klog file can be found and opened
   string klog = m_base_dirs[aix] + "/BHV_IPF_" + bhv_name + ".klog";
   FILE *f = fopen(klog.c_str(), "r");
   if(!f) {
     cout << "Could not create IPFPlot from " << klog << endl;
-    return(iplot);
+    return(ipf_plot);
   }
 
-  // Part 3: Populate the IPF_Plot
-  Populator_IPF_Plot populator;
-  populator.setVName(m_vnames[aix]);
-
+  // Part 4B: Apply the BHV_IPF entries
   vector<ALogEntry> entries;
   bool done = false;
   while(!done) {
     ALogEntry entry = getNextRawALogEntry(f);
 
-    string status = entry.getStatus();
-    if(status == "eof")
+    string entry_status = entry.getStatus();
+    if(entry_status == "eof")
       done = true;
     else
       entries.push_back(entry);
@@ -789,12 +808,13 @@ IPF_Plot ALogDataBroker::getIPFPlot(unsigned int aix, string bhv_name)
     if(tstamp > m_pruned_logtmax)
       break;
   }
-
   populator.populateFromEntries(entries);
 
-  iplot = populator.getPlotIPF(0);
 
-  iplot.applySkew(m_logskew[aix]);
+  // Part 5: Get the IPFPlot and apply the skew
+  ipf_plot = populator.getPlotIPF(0);
 
-  return(iplot);
+  ipf_plot.applySkew(m_logskew[aix]);
+
+  return(ipf_plot);
 }

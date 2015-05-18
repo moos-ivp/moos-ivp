@@ -29,7 +29,7 @@
 class BHV_TestFailure : public IvPBehavior {
 public:
   BHV_TestFailure(IvPDomain);
-  ~BHV_TestFailure() {};
+  ~BHV_TestFailure() {}
   
   void  onCompleteState();
   bool  setParam(std::string, std::string);

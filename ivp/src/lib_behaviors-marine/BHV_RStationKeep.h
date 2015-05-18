@@ -32,7 +32,7 @@
 class BHV_RStationKeep : public IvPBehavior {
 public:
   BHV_RStationKeep(IvPDomain);
-  ~BHV_RStationKeep() {};
+  ~BHV_RStationKeep() {}
   
   bool         setParam(std::string, std::string);
   void         onIdleState();

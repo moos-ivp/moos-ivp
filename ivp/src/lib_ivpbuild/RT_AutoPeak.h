@@ -38,7 +38,7 @@ class Regressor;
 class RT_AutoPeak {
 public:
   RT_AutoPeak(Regressor*);
-  virtual ~RT_AutoPeak() {};
+  virtual ~RT_AutoPeak() {}
 
 public: 
   PDMap* create(PDMap*, int max_more_pcs=-1);

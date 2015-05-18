@@ -33,7 +33,7 @@ class AppCastTree
 {
  public:
   AppCastTree();
-  ~AppCastTree() {};
+  ~AppCastTree() {}
   
   // Return true if first time heard from this node
   bool addAppCast(const std::string&);
@@ -42,10 +42,10 @@ class AppCastTree
   bool removeNode(const std::string&);
 
   // Global getters (Queries requiring no key)
-  unsigned int getTreeAppCastCount() const   {return(m_total_appcast_count);};
-  unsigned int getTreeNodeCount() const      {return(m_map_appcast_sets.size());};
+  unsigned int getTreeAppCastCount() const   {return(m_total_appcast_count);}
+  unsigned int getTreeNodeCount() const      {return(m_map_appcast_sets.size());}
   unsigned int getTreeProcCount() const;
-  std::vector<std::string> getNodes() const  {return(m_nodes);};
+  std::vector<std::string> getNodes() const  {return(m_nodes);}
   std::vector<std::string> getNodeIDs() const;
 
   // Node Level getters (Queries requiring a node or node_id argument)

@@ -29,19 +29,19 @@
 class ClassifyEntry {
  public:
   ClassifyEntry();
-  virtual ~ClassifyEntry() {};
+  virtual ~ClassifyEntry() {}
 
  public: // Setters
-  void setHazard(XYHazard hazard) {m_post_hazard=hazard;};
-  void setTimeReq(double v)       {m_time_requested=v;};
-  void setPriority(double v)      {m_priority=v;};
-  void setAspectAffected(bool v)  {m_aspect_affected=v;};
+  void setHazard(XYHazard hazard) {m_post_hazard=hazard;}
+  void setTimeReq(double v)       {m_time_requested=v;}
+  void setPriority(double v)      {m_priority=v;}
+  void setAspectAffected(bool v)  {m_aspect_affected=v;}
     
  public: // Getters
-  XYHazard getHazard() const         {return(m_post_hazard);};
-  double   getTimeReq() const        {return(m_time_requested);};
-  double   getPriority() const       {return(m_priority);};
-  bool     getAspectAffected() const {return(m_aspect_affected);};
+  XYHazard getHazard() const         {return(m_post_hazard);}
+  double   getTimeReq() const        {return(m_time_requested);}
+  double   getPriority() const       {return(m_priority);}
+  bool     getAspectAffected() const {return(m_aspect_affected);}
 
  protected: // Member variables
   double      m_time_requested;

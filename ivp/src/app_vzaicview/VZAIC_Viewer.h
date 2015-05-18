@@ -36,7 +36,7 @@ class VZAIC_Viewer : public Fl_Gl_Window
 {
  public:
   VZAIC_Viewer(int x,int y,int w,int h,const char *l=0);
-  ~VZAIC_Viewer() {};
+  ~VZAIC_Viewer() {}
   
   // Pure virtuals that need to be defined
   void  draw();

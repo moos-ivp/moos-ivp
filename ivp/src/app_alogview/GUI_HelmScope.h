@@ -47,10 +47,10 @@ public:
 
   void initWidgets();
 
-  void setParentGUI(REPLAY_GUI *gui) {m_parent_gui=gui;};
+  void setParentGUI(REPLAY_GUI *gui) {m_parent_gui=gui;}
   void setDataBroker(ALogDataBroker, std::string vname);
   void setCurrTime(double=-1);
-  void setReplayWarpMsg(std::string s) {m_replay_warp_msg=s; updateXY();};
+  void setReplayWarpMsg(std::string s) {m_replay_warp_msg=s; updateXY();}
 
   void resize(int, int, int, int);
   int  handle(int);

@@ -33,15 +33,15 @@ class IPF_Entry
 {
 public:
   IPF_Entry(const std::string&);
-  ~IPF_Entry() {};
+  ~IPF_Entry() {}
   
   QuadSet       getQuadSet(IvPDomain);
   IvPFunction*  getIvPFunction();
 
-  std::string   getIPFString() const  {return(m_ipf_str);};
-  unsigned int  getPieces() const     {return(m_pieces);};
-  double        getPriority() const   {return(m_priority);};
-  IvPDomain     getDomain() const     {return(m_ivp_domain);};
+  std::string   getIPFString() const  {return(m_ipf_str);}
+  unsigned int  getPieces() const     {return(m_pieces);}
+  double        getPriority() const   {return(m_priority);}
+  IvPDomain     getDomain() const     {return(m_ivp_domain);}
 
  protected:
   std::string    m_ipf_str;

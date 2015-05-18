@@ -37,7 +37,7 @@ public:
   ColorPack(std::string);
   ColorPack(std::vector<double>);
   ColorPack(double r, double g, double b);
-  virtual ~ColorPack() {};
+  virtual ~ColorPack() {}
 
   // setColor
   void setColor(std::string s);
@@ -46,16 +46,16 @@ public:
   void clear() {
     m_color_vector = std::vector<double>(3,0);
     m_set = false;
-  };
+  }
 
   void shade(double pct);
   void moregray(double pct);
 
-  double red() const {return(m_color_vector[0]);};
-  double grn() const {return(m_color_vector[1]);};
-  double blu() const {return(m_color_vector[2]);};
-  bool   set() const {return(m_set);};
-  bool   visible() const {return(m_visible);};
+  double red() const {return(m_color_vector[0]);}
+  double grn() const {return(m_color_vector[1]);}
+  double blu() const {return(m_color_vector[2]);}
+  bool   set() const {return(m_set);}
+  bool   visible() const {return(m_visible);}
 
   std::string str(char sep=',') const;
 

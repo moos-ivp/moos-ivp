@@ -32,7 +32,7 @@
 class VPlug_AppCastSettings {
 public:
   VPlug_AppCastSettings();
-  virtual ~VPlug_AppCastSettings() {};
+  virtual ~VPlug_AppCastSettings() {}
 
  public:   // A Catch-All Setter
   bool   setParam(const std::string& param, std::string value);

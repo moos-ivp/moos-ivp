@@ -31,21 +31,21 @@
 
 class XYHexGrid {
 public:
-  XYHexGrid() {};
-  virtual ~XYHexGrid() {};
+  XYHexGrid() {}
+  virtual ~XYHexGrid() {}
 
   bool     initialize(std::string);
 
   XYHexagon getElement(unsigned int index) const;
-  int       size() const      {return(elements.size());};
+  int       size() const      {return(elements.size());}
 
-  std::string getConfigString() const {return(config_string);};
-  std::string getLabel() const {return(label);};
+  std::string getConfigString() const {return(config_string);}
+  std::string getLabel() const {return(label);}
 
 protected:
   bool     initialize(XYPolygon, const XYSquare&);
   bool     initialize(const XYSquare&, const XYSquare&);
-  void     clear() {};
+  void     clear() {}
     
 protected:
   std::vector<XYHexagon> elements;

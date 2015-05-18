@@ -33,17 +33,17 @@ class FV_Model
 {
 public:
   FV_Model();
-  ~FV_Model() {};
+  ~FV_Model() {}
 
 public:
   void     addIPF(const std::string& ipf_str, const std::string& plat);
   void     modColorMap(const std::string&);
   void     modSource(const std::string& bhv_source);
 
-  int      getCurrIteration()               {return(m_curr_iter);};
-  void     setCollective(std::string s="")  {m_collective=s;}; 
-  void     toggleLockIPF()                  {m_lock_ipf = !m_lock_ipf;};
-  bool     isLocked()                       {return(m_lock_ipf);};
+  int      getCurrIteration()               {return(m_curr_iter);}
+  void     setCollective(std::string s="")  {m_collective=s;} 
+  void     toggleLockIPF()                  {m_lock_ipf = !m_lock_ipf;}
+  bool     isLocked()                       {return(m_lock_ipf);}
 
   std::string getCurrPlatform();
   std::string getCurrSource();

@@ -197,11 +197,11 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       if(moosvar == "HELM_MAP_CLEAR")
 	exception = true;
       if(!posted_by_this_helm && !exception) {
-	string msg = "Helm ignores MOOS msg due to skew: " + moosvar;
-	msg += " Source=" + source + " Skew=" + doubleToString(skew_time,2);
-	reportRunWarning(msg);
-	msg += " curr_time: " + doubleToString(m_curr_time,3);
-	Notify("IVPHELM_SKEW", msg);
+	string skew_msg = "Helm ignores MOOS msg due to skew: " + moosvar;
+	skew_msg += " Source=" + source + " Skew=" + doubleToString(skew_time,2);
+	reportRunWarning(skew_msg);
+	skew_msg += " curr_time: " + doubleToString(m_curr_time,3);
+	Notify("IVPHELM_SKEW", skew_msg);
 	continue;
       }
     }
@@ -950,8 +950,8 @@ void HelmIvP::registerVariables()
     registerSingleVariable(m_additional_override);
 
   // Register for node report variables, e.g., AIS_REPORT, NODE_REPORT
-  unsigned int i, vsize = m_node_report_vars.size();
-  for(i=0; i<vsize; i++) 
+  unsigned int vsize = m_node_report_vars.size();
+  for(unsigned int i=0; i<vsize; i++) 
     registerSingleVariable(m_node_report_vars[i]);
   
   if(m_bhv_set) {
@@ -1101,8 +1101,8 @@ bool HelmIvP::OnStartUp()
   Populator_BehaviorSet *p_bset;
   p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer);
   p_bset->setBHVDirNotFoundOK(bhv_dir_not_found_ok);
-  unsigned int k, ksize = behavior_dirs.size();
-  for(k=0; k<ksize; k++)
+  unsigned int ksize = behavior_dirs.size();
+  for(unsigned int k=0; k<ksize; k++)
     p_bset->addBehaviorDir(behavior_dirs[k]);
   
   m_bhv_set = p_bset->populate(m_bhv_files);

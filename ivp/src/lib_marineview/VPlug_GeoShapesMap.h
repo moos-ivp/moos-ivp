@@ -32,7 +32,7 @@
 class VPlug_GeoShapesMap {
 public:
   VPlug_GeoShapesMap();
-  virtual ~VPlug_GeoShapesMap() {};
+  virtual ~VPlug_GeoShapesMap() {}
 
   void   clear(const std::string& vname="");
   void   clear(std::string vname, std::string shape, std::string stype);
@@ -42,24 +42,24 @@ public:
 		     const std::string& community, 
 		     double time=0);
   
-  double getXMin() const {return(m_xmin);};
-  double getXMax() const {return(m_xmax);};
-  double getYMin() const {return(m_ymin);};
-  double getYMax() const {return(m_ymax);};
+  double getXMin() const {return(m_xmin);}
+  double getXMax() const {return(m_xmax);}
+  double getYMin() const {return(m_ymin);}
+  double getYMax() const {return(m_ymax);}
 
-  unsigned int sizeVehicles() const    {return(m_geoshapes_map.size());};
-  unsigned int sizePolygons() const    {return(size("polygons"));};
-  unsigned int sizeSegLists() const    {return(size("seglists"));};
+  unsigned int sizeVehicles() const    {return(m_geoshapes_map.size());}
+  unsigned int sizePolygons() const    {return(size("polygons"));}
+  unsigned int sizeSegLists() const    {return(size("seglists"));}
   unsigned int sizeCircles() const     {return(size("circles"));}
-  unsigned int sizeHexagons() const    {return(size("hexagons"));};
-  unsigned int sizePoints() const      {return(size("points"));};
-  unsigned int sizeVectors() const     {return(size("vectors"));};
-  unsigned int sizeGrids() const       {return(size("grids"));};
-  unsigned int sizeConvexGrids() const {return(size("convex_grids"));};
-  unsigned int sizeRangePulses() const {return(size("range_pulses"));};
-  unsigned int sizeCommsPulses() const {return(size("comms_pulses"));};
-  unsigned int sizeMarkers() const     {return(size("markers"));};
-  unsigned int sizeTotalShapes() const {return(size("total_shapes"));};
+  unsigned int sizeHexagons() const    {return(size("hexagons"));}
+  unsigned int sizePoints() const      {return(size("points"));}
+  unsigned int sizeVectors() const     {return(size("vectors"));}
+  unsigned int sizeGrids() const       {return(size("grids"));}
+  unsigned int sizeConvexGrids() const {return(size("convex_grids"));}
+  unsigned int sizeRangePulses() const {return(size("range_pulses"));}
+  unsigned int sizeCommsPulses() const {return(size("comms_pulses"));}
+  unsigned int sizeMarkers() const     {return(size("markers"));}
+  unsigned int sizeTotalShapes() const {return(size("total_shapes"));}
 
   std::vector<XYPolygon> getPolygons(const std::string&);
   std::vector<XYSegList> getSegLists(const std::string&);
@@ -75,7 +75,7 @@ public:
   std::vector<XYRangePulse> getRangePulses(const std::string&);
   std::vector<XYCommsPulse> getCommsPulses(const std::string&);
 
-  std::vector<std::string> getVehiNames() const {return(m_vnames);};
+  std::vector<std::string> getVehiNames() const {return(m_vnames);}
 
   unsigned int size(const std::string&, const std::string& vname="") const;
   

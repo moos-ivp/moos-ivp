@@ -30,7 +30,7 @@ class IvPDomain;
 class BHV_AvoidCollision : public IvPContactBehavior {
 public:
   BHV_AvoidCollision(IvPDomain);
-  ~BHV_AvoidCollision() {};
+  ~BHV_AvoidCollision() {}
 
   void         onHelmStart();
   IvPFunction* onRunState();

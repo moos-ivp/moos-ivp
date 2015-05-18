@@ -29,7 +29,7 @@
 class BHV_TimeOut : public IvPBehavior {
  public:
   BHV_TimeOut(IvPDomain);
-  ~BHV_TimeOut() {};
+  ~BHV_TimeOut() {}
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();

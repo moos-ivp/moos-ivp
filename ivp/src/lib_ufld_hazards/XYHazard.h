@@ -31,15 +31,15 @@ class XYHazard
 {
  public:
   XYHazard();
-  virtual ~XYHazard() {};
+  virtual ~XYHazard() {}
 
   // Setters
-  void    setX(double x)               {m_x=x;  m_x_set=true;};
-  void    setY(double y)               {m_y=y;  m_y_set=true;};
-  void    setResemblance(double v)     {m_hr=v; m_hr_set=true;};
-  void    setLabel(std::string str)    {m_label=str;};
-  void    setType(std::string str)     {m_type=str;};
-  void    setSource(std::string str)   {m_source=str;};
+  void    setX(double x)               {m_x=x;  m_x_set=true;}
+  void    setY(double y)               {m_y=y;  m_y_set=true;}
+  void    setResemblance(double v)     {m_hr=v; m_hr_set=true;}
+  void    setLabel(std::string str)    {m_label=str;}
+  void    setType(std::string str)     {m_type=str;}
+  void    setSource(std::string str)   {m_source=str;}
 
   bool    setAspect(double);
   bool    setAspectRange(double, double);
@@ -54,30 +54,30 @@ class XYHazard
   void    setCounter(unsigned int, std::string s="generic");
 
   // Getters
-  double  getX() const               {return(m_x);};
-  double  getY() const               {return(m_y);};
-  double  getWidth() const           {return(m_width);};
-  double  getResemblance() const     {return(m_hr);};
-  double  getAspect() const          {return(m_aspect);};
-  double  getAspectRangeMin() const  {return(m_aspect_rng_min);};
-  double  getAspectRangeMax() const  {return(m_aspect_rng_max);};
+  double  getX() const               {return(m_x);}
+  double  getY() const               {return(m_y);}
+  double  getWidth() const           {return(m_width);}
+  double  getResemblance() const     {return(m_hr);}
+  double  getAspect() const          {return(m_aspect);}
+  double  getAspectRangeMin() const  {return(m_aspect_rng_min);}
+  double  getAspectRangeMax() const  {return(m_aspect_rng_max);}
 
-  bool    hasResemblance() const     {return(m_hr_set);};
-  bool    hasAspect() const          {return(m_aspect_set);};
-  bool    hasAspectRangeMin() const  {return(m_aspect_rng_min_set);};
-  bool    hasAspectRangeMax() const  {return(m_aspect_rng_max_set);};
-  bool    valid() const              {return(m_x_set && m_y_set);};
+  bool    hasResemblance() const     {return(m_hr_set);}
+  bool    hasAspect() const          {return(m_aspect_set);}
+  bool    hasAspectRangeMin() const  {return(m_aspect_rng_min_set);}
+  bool    hasAspectRangeMax() const  {return(m_aspect_rng_max_set);}
+  bool    valid() const              {return(m_x_set && m_y_set);}
 
-  std::string getLabel() const       {return(m_label);};
-  std::string getType() const        {return(m_type);};
-  std::string gxetSource() const     {return(m_source);};
-  std::string getShape() const       {return(m_shape);};
-  std::string getColor() const       {return(m_color);};
+  std::string getLabel() const       {return(m_label);}
+  std::string getType() const        {return(m_type);}
+  std::string gxetSource() const     {return(m_source);}
+  std::string getShape() const       {return(m_shape);}
+  std::string getColor() const       {return(m_color);}
 
-  bool    isSetX() const    {return(m_x_set);};
-  bool    isSetY() const    {return(m_y_set);};
-  bool    isSetHR() const   {return(m_hr_set);};
-  bool    isSetType() const {return(m_type != "");};
+  bool    isSetX() const    {return(m_x_set);}
+  bool    isSetY() const    {return(m_y_set);}
+  bool    isSetHR() const   {return(m_hr_set);}
+  bool    isSetType() const {return(m_type != "");}
 
   unsigned int getCounter(std::string s="generic");
 

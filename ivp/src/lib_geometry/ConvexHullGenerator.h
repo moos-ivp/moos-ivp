@@ -16,14 +16,14 @@
 class ConvexHullGenerator
 {
  public:
-  ConvexHullGenerator() {};
-  ~ConvexHullGenerator() {};
+  ConvexHullGenerator() {}
+  ~ConvexHullGenerator() {}
 
    void addPoint(double, double);
    void addPoint(double, double, std::string);
 
    XYPolygon generateConvexHull();
-   XYPoint   getRootPoint() {return(m_root);};
+   XYPoint   getRootPoint() {return(m_root);}
 
  protected:
    void   findRoot();

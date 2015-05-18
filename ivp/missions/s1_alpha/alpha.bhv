@@ -19,7 +19,7 @@ Behavior = BHV_Waypoint
 
   updates     = WPT_UPDATE
   perpetual   = true
-
+   templating = clone
                 lead = 8
          lead_damper = 1
        lead_to_start = true
@@ -31,6 +31,9 @@ Behavior = BHV_Waypoint
 
              polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
              repeat = 0
+
+// uPokeDB alpha.moos++ WPT_UPDATE="name=1#polygon=60,-50 : 60,-170 : 150,-170 : 180,-110 : 150,-50#duration=20"
+// uPokeDB alpha.moos++ WPT_UPDATE="name=1#speed=2"
 
 //	ipf_type = roc
 

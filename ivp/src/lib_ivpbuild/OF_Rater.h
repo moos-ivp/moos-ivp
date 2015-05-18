@@ -32,15 +32,15 @@
 class OF_Rater {
 public:
   OF_Rater(const PDMap *pdmap=0, const AOF *aof=0);
-  virtual ~OF_Rater() {if(m_err) delete [] m_err;};
+  virtual ~OF_Rater() {if(m_err) delete [] m_err;}
 
 public: 
   void    setPDMap(const PDMap*);
   void    setAOF(const AOF*);
   void    takeSamples(int i=1000, double wi=0.0);
-  int     getSampleCount()  {return(m_sample_count);};
-  double  getSampHigh()     {return(m_samp_high);};
-  double  getSampLow()      {return(m_samp_low);};
+  int     getSampleCount()  {return(m_sample_count);}
+  double  getSampHigh()     {return(m_samp_high);}
+  double  getSampLow()      {return(m_samp_low);}
 
   void    resetSamples();
   double  getAvgErr() const;

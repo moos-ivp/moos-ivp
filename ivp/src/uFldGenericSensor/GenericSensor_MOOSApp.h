@@ -34,7 +34,7 @@ class GenericSensor_MOOSApp : public AppCastingMOOSApp
 {
  public:
   GenericSensor_MOOSApp();
-  virtual ~GenericSensor_MOOSApp() {};
+  virtual ~GenericSensor_MOOSApp() {}
 
  public: // Standard MOOSApp functions to overload
   bool  OnNewMail(MOOSMSG_LIST &NewMail);

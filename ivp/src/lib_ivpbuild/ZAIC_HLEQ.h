@@ -39,7 +39,7 @@ class PDMap;
 class ZAIC_HLEQ {
 public:
   ZAIC_HLEQ(IvPDomain g_domain, const std::string& g_varname);
-  virtual ~ZAIC_HLEQ() {};
+  virtual ~ZAIC_HLEQ() {}
 
   bool  setSummit(double);
   bool  setSummitDelta(double=1);
@@ -47,8 +47,8 @@ public:
   bool  setMinMaxUtil(double=0, double=100);
 
   double getParam(std::string);
-  bool   stateOK()          {return(m_state_ok);};
-  std::string getWarnings() {return(m_warning);};
+  bool   stateOK()          {return(m_state_ok);}
+  std::string getWarnings() {return(m_warning);}
 
 protected:  // Parameters
   double  m_summit;

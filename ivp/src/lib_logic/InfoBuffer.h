@@ -31,8 +31,8 @@
 
 class InfoBuffer {
 public:
-  InfoBuffer()  {m_curr_time_utc=0;};
-  ~InfoBuffer() {};
+  InfoBuffer()  {m_curr_time_utc=0;}
+  ~InfoBuffer() {}
 
 public:
   std::string sQuery(std::string, bool&) const;
@@ -52,8 +52,8 @@ public:
   bool   setValue(std::string, double, double msg_time=0);
   bool   setValue(std::string, std::string, double msg_time=0);
   void   clearDeltaVectors();
-  void   setCurrTime(double t)         {m_curr_time_utc = t;};
-  double getCurrTime() const           {return(m_curr_time_utc);};
+  void   setCurrTime(double t)         {m_curr_time_utc = t;}
+  double getCurrTime() const           {return(m_curr_time_utc);}
 
 protected:
   std::map<std::string, std::string> smap;

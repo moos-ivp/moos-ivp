@@ -31,7 +31,7 @@ class IvPDomain;
 class BHV_PeriodicSurface : public IvPBehavior {
 public:
   BHV_PeriodicSurface(IvPDomain);
-  ~BHV_PeriodicSurface() {};
+  ~BHV_PeriodicSurface() {}
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();

@@ -30,7 +30,7 @@ class UFS_Config
 {
  public:
   UFS_Config(const std::string& s="");
-  virtual ~UFS_Config() {};
+  virtual ~UFS_Config() {}
 
   // Setters
   void init(const std::string&);
@@ -39,13 +39,13 @@ class UFS_Config
   bool valid() const;
 
   // Getters
-  std::string getMOOSVar() const   {return(m_var);};
-  std::string getKey() const       {return(m_key);};
-  std::string getField() const     {return(m_fld);};
-  std::string getAlias() const     {return(m_alias);};
-  std::string getColor() const     {return(m_color);};
-  std::string getXColor() const    {return(m_xcolor);};
-  double      getXThresh() const   {return(m_xthresh);};
+  std::string getMOOSVar() const   {return(m_var);}
+  std::string getKey() const       {return(m_key);}
+  std::string getField() const     {return(m_fld);}
+  std::string getAlias() const     {return(m_alias);}
+  std::string getColor() const     {return(m_color);}
+  std::string getXColor() const    {return(m_xcolor);}
+  double      getXThresh() const   {return(m_xthresh);}
 
  protected:
   std::string m_var;      // MOOS Variable   

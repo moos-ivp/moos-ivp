@@ -44,7 +44,7 @@ public:
   void    copy(const IvPBox*);
   IvPBox* copy() const;
 
-  void    moveIntercept(double v) {m_wts[getWtc()-1] += v;};
+  void    moveIntercept(double v) {m_wts[getWtc()-1] += v;}
   void    scaleWT(double);  
   void    setWT(double w);  
 
@@ -54,23 +54,23 @@ public:
   void    maxPt(IvPBox&)  const;
   IvPBox  maxPt()         const;
 
-  void    setPTS(int d, int l, int h)   {m_pts[d*2]=l; m_pts[d*2+1]=h;};
-  void    setBDS(int d, bool l, bool h) {m_bds[d*2]=l; m_bds[d*2+1]=h;};
+  void    setPTS(int d, int l, int h)   {m_pts[d*2]=l; m_pts[d*2+1]=h;}
+  void    setBDS(int d, bool l, bool h) {m_bds[d*2]=l; m_bds[d*2+1]=h;}
 
-  int&    pt(int d, int e=0) {return(m_pts[d*2+e]);};
-  bool&   bd(int d, int e=0) {return(m_bds[d*2+e]);};
-  double& wt(int d)          {return(m_wts[d]);};
-  int&    ofindex()          {return(m_of);};
-  bool&   mark()             {return(m_markval);};
+  int&    pt(int d, int e=0) {return(m_pts[d*2+e]);}
+  bool&   bd(int d, int e=0) {return(m_bds[d*2+e]);}
+  double& wt(int d)          {return(m_wts[d]);}
+  int&    ofindex()          {return(m_of);}
+  bool&   mark()             {return(m_markval);}
 
-  const int&    pt(int d, int e=0) const {return(m_pts[d*2+e]);};
-  const bool&   bd(int d, int e=0) const {return(m_bds[d*2+e]);};
-  const double& wt(int d)          const {return(m_wts[d]);};
+  const int&    pt(int d, int e=0) const {return(m_pts[d*2+e]);}
+  const bool&   bd(int d, int e=0) const {return(m_bds[d*2+e]);}
+  const double& wt(int d)          const {return(m_wts[d]);}
   
-  int     getDim() const               {return((int)m_dim);};
-  int     getDegree() const            {return((int)m_degree);};
-  int     getWtc() const               {return((m_degree*m_dim)+1);};
-  bool    null() const                 {return(m_dim==0);};
+  int     getDim() const               {return((int)m_dim);}
+  int     getDegree() const            {return((int)m_degree);}
+  int     getWtc() const               {return((m_degree*m_dim)+1);}
+  bool    null() const                 {return(m_dim==0);}
 
   bool    intersect(const IvPBox*) const;
   bool    intersect(IvPBox*, IvPBox*&) const;

@@ -30,28 +30,28 @@
 
 class SpecBuild {
  public:
-  SpecBuild() {m_behavior=0;};
-  ~SpecBuild() {};
+  SpecBuild() {m_behavior=0;}
+  ~SpecBuild() {}
 
  public: // Setters
-  void setIvPBehavior(IvPBehavior *bhv)   {m_behavior=bhv;};
-  void setKindResult(std::string str)     {m_bhv_kind_result=str;};
+  void setIvPBehavior(IvPBehavior *bhv)   {m_behavior=bhv;}
+  void setKindResult(std::string str)     {m_bhv_kind_result=str;}
 
   void setBehaviorKind(std::string bhv_kind, unsigned int lnum);
   void addBadConfig(std::string line, unsigned int lnum);
   void deleteBehavior();
 
  public: // Getters
-  bool          valid()           {return(m_behavior != 0);};
-  IvPBehavior*  getIvPBehavior()  {return(m_behavior);};
+  bool          valid()           {return(m_behavior != 0);}
+  IvPBehavior*  getIvPBehavior()  {return(m_behavior);}
   
   std::string   getBehaviorName();
-  std::string   getBehaviorKind() {return(m_bhv_kind);};
-  std::string   getKindResult()   {return(m_bhv_kind_result);};
+  std::string   getBehaviorKind() {return(m_bhv_kind);}
+  std::string   getKindResult()   {return(m_bhv_kind_result);}
   std::string   getBadConfigLine(unsigned int ix);
 
-  unsigned int  getKindLine()     {return(m_bhv_kind_lnum);};
-  unsigned int  numBadConfigs()   {return(m_bad_config_lines.size());};
+  unsigned int  getKindLine()     {return(m_bhv_kind_lnum);}
+  unsigned int  numBadConfigs()   {return(m_bad_config_lines.size());}
   unsigned int  getBadConfigLineNum(unsigned int ix);
 
   std::vector<VarDataPair> getHelmStartMessages();

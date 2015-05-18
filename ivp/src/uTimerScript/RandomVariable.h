@@ -30,26 +30,26 @@ class RandomVariable
 {
  public:
   RandomVariable();
-  virtual ~RandomVariable() {};
+  virtual ~RandomVariable() {}
 
   virtual bool setParam(std::string, double);
-  virtual void reset() {};
+  virtual void reset() {}
   
   virtual std::string getStringSummary() const;
-  virtual std::string getParams() const {return("");};
+  virtual std::string getParams() const {return("");}
   
  public:
-  void   setVarName(std::string str)  {m_varname=str;}; 
-  void   setKeyName(std::string str)  {m_keyname=str;};
-  void   setType(std::string str)     {m_type=str;};
+  void   setVarName(std::string str)  {m_varname=str;} 
+  void   setKeyName(std::string str)  {m_keyname=str;}
+  void   setType(std::string str)     {m_type=str;}
 
-  std::string getVarName() const      {return(m_varname);};
-  std::string getKeyName() const      {return(m_keyname);};
-  std::string getType() const         {return(m_type);};
+  std::string getVarName() const      {return(m_varname);}
+  std::string getKeyName() const      {return(m_keyname);}
+  std::string getType() const         {return(m_type);}
   
-  double      getMinVal() const       {return(m_min_val);};
-  double      getMaxVal() const       {return(m_max_val);};
-  double      getValue() const        {return(m_value);};
+  double      getMinVal() const       {return(m_min_val);}
+  double      getMaxVal() const       {return(m_max_val);}
+  double      getValue() const        {return(m_value);}
 
   std::string getStringValue() const;
 

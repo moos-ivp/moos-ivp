@@ -360,7 +360,6 @@ bool NavPlotViewer::setCurrTime(double gtime)
   }
 
   return(true);
-  redraw();
 }
 
 //-------------------------------------------------------------

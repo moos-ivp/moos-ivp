@@ -29,9 +29,9 @@
 class BHV_ConstantHeading : public IvPBehavior {
 public:
   BHV_ConstantHeading(IvPDomain);
-  ~BHV_ConstantHeading() {};
+  ~BHV_ConstantHeading() {}
   
-  void         onIdleState() {updateInfoIn();};
+  void         onIdleState() {updateInfoIn();}
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 

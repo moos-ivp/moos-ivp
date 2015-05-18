@@ -30,7 +30,7 @@
 class BHV_MemoryTurnLimit : public IvPBehavior {
 public:
   BHV_MemoryTurnLimit(IvPDomain);
-  ~BHV_MemoryTurnLimit() {};
+  ~BHV_MemoryTurnLimit() {}
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);

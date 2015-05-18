@@ -32,7 +32,7 @@ class MarinePID : public CMOOSApp
 {
 public:
   MarinePID();
-  virtual ~MarinePID() {};
+  virtual ~MarinePID() {}
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();

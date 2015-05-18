@@ -34,7 +34,7 @@ class FldNodeComms : public AppCastingMOOSApp
 {
  public:
   FldNodeComms();
-  virtual ~FldNodeComms() {};
+  virtual ~FldNodeComms() {}
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);

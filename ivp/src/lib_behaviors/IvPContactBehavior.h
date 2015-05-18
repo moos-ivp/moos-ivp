@@ -36,7 +36,7 @@ class IvPDomain;
 class IvPContactBehavior : public IvPBehavior {
 public:
   IvPContactBehavior(IvPDomain);
-  ~IvPContactBehavior() {};
+  ~IvPContactBehavior() {}
 
   bool  setParam(std::string, std::string);
 

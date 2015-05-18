@@ -31,7 +31,7 @@ class DeadManPost : public AppCastingMOOSApp
 {
  public:
   DeadManPost();
-  ~DeadManPost() {};
+  ~DeadManPost() {}
   
  protected: // Standard MOOSApp functions to overload  
   bool OnNewMail(MOOSMSG_LIST &NewMail);

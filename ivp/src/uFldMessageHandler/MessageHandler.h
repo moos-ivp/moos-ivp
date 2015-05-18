@@ -32,7 +32,7 @@ class MessageHandler : public AppCastingMOOSApp
 {
  public:
   MessageHandler();
-  virtual ~MessageHandler() {};
+  virtual ~MessageHandler() {}
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);

@@ -29,9 +29,9 @@
 class BHV_ConstantSpeed : public IvPBehavior {
 public:
   BHV_ConstantSpeed(IvPDomain);
-  ~BHV_ConstantSpeed() {};
+  ~BHV_ConstantSpeed() {}
   
-  void         onIdleState() {updateInfoIn();};
+  void         onIdleState() {updateInfoIn();}
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
 

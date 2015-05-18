@@ -36,7 +36,7 @@ class BRS_App : public AppCastingMOOSApp
 {
  public:
   BRS_App();
-  virtual ~BRS_App() {};
+  virtual ~BRS_App() {}
 
  public: // Standard MOOSApp functions to overload
   bool   OnNewMail(MOOSMSG_LIST &NewMail);

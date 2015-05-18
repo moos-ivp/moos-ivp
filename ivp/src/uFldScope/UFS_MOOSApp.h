@@ -35,7 +35,7 @@ class UFS_MOOSApp : public AppCastingMOOSApp
 {
  public:
   UFS_MOOSApp();
-  virtual ~UFS_MOOSApp() {};
+  virtual ~UFS_MOOSApp() {}
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);

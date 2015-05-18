@@ -273,6 +273,7 @@ bool linesCross(double x1, double y1, double x2, double y2,
 bool segmentsCross(double x1, double y1, double x2, double y2,
 		   double x3, double y3, double x4, double y4) 
 {
+  cout << "old segmentsCross" << endl;
   // Special case - if the segments share an endpoint. Checked
   // for here since, due to rounding errors, not always caught
   // by the general case.

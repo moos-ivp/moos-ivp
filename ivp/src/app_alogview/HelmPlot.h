@@ -33,9 +33,9 @@ class HelmPlot
 {
 public:
   HelmPlot();
-  ~HelmPlot() {};
+  ~HelmPlot() {}
 
-  void   setVehiLength(double len)  {m_vehi_length = len;};
+  void   setVehiLength(double len)  {m_vehi_length = len;}
   void   setVehiType(std::string);
   
   bool   addEntry(double time, std::string helm_summary);
@@ -52,17 +52,17 @@ public:
   std::string  getValueByIndex(std::string query, unsigned int index) const;
   std::string  getValueByTime(std::string query, double gtime) const;
   
-  std::string  getVName()       const {return(m_vname);};
-  std::string  getVType()       const {return(m_vehi_type);};
-  double       getVLength()     const {return(m_vehi_length);};
-  unsigned int size()           const {return(m_time.size());};
+  std::string  getVName()       const {return(m_vname);}
+  std::string  getVType()       const {return(m_vehi_type);}
+  double       getVLength()     const {return(m_vehi_length);}
+  unsigned int size()           const {return(m_time.size());}
   void         print()          const;
 
   bool         containsTime(double) const;
 
-  double getCurrTime() {return(0);};
+  double getCurrTime() {return(0);}
 
-  unsigned int getIndexByIter(unsigned int) const {return(0);};
+  unsigned int getIndexByIter(unsigned int) const {return(0);}
 
 protected:
   std::string m_vname; 

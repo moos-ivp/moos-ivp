@@ -36,7 +36,7 @@ class UMV_MOOSApp : public AppCastingMOOSApp
 {
  public:
   UMV_MOOSApp();
-  virtual ~UMV_MOOSApp() {};
+  virtual ~UMV_MOOSApp() {}
 
   bool Iterate();
   bool OnConnectToServer();
@@ -45,8 +45,8 @@ class UMV_MOOSApp : public AppCastingMOOSApp
 
   bool buildReport();
 
-  void setGUI(UMV_GUI* g_gui)            {m_gui=g_gui;};
-  void setAppCastRepo(AppCastRepo* repo) {m_appcast_repo=repo;};
+  void setGUI(UMV_GUI* g_gui)            {m_gui=g_gui;}
+  void setAppCastRepo(AppCastRepo* repo) {m_appcast_repo=repo;}
   void setPendingEventsPipe(Threadsafe_pipe<MOOS_event>*); 
   
 

@@ -37,23 +37,23 @@
 #include "IvPDomain.h"
 class AOF{
 public:
-  AOF(const IvPDomain& dom) {m_domain=dom;};
-  virtual ~AOF() {};
+  AOF(const IvPDomain& dom) {m_domain=dom;}
+  virtual ~AOF() {}
 
   // Virtual functions
-  virtual double evalBox(const IvPBox*) const {return(0);};
+  virtual double evalBox(const IvPBox*) const {return(0);}
   virtual double evalBoxDebug(const IvPBox*, std::vector<std::string>&) const
-  {return(0);};
+  {return(0);}
 
-  virtual double evalPoint(const std::vector<double>&) const {return(0);};
-  virtual bool  initialize() {return(true);};
-  virtual bool  setParam(const std::string&, double) {return(false);};
+  virtual double evalPoint(const std::vector<double>&) const {return(0);}
+  virtual bool  initialize() {return(true);}
+  virtual bool  setParam(const std::string&, double) {return(false);}
   virtual bool  setParam(const std::string&, const std::string&) 
-  {return(false);};
+  {return(false);}
 
   virtual double evalBox(const IvPBox*, 
 			 std::vector<std::string>&, 
-			 std::vector<std::string>&) {return(0);};
+			 std::vector<std::string>&) {return(0);}
 
 #if 0
   bool setParams(const std::string& s1, double v1, const std::string& s2, double v2)
@@ -66,9 +66,9 @@ public:
   double extract(const std::string& varname, 
 		 const std::vector<double>& point) const;
 
-  IvPDomain getDomain() const {return(m_domain);};
+  IvPDomain getDomain() const {return(m_domain);}
 
-  int  getDim() const   {return(m_domain.size());};
+  int  getDim() const   {return(m_domain.size());}
 
 protected:
   IvPDomain m_domain;

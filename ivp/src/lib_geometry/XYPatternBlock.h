@@ -32,7 +32,7 @@
 class XYPatternBlock {
 public:
   XYPatternBlock();
-  ~XYPatternBlock() {};
+  ~XYPatternBlock() {}
 
  public: // Interface for setting parameters
   bool  setParam(std::string, std::string);
@@ -46,10 +46,10 @@ public:
   double distanceToClosestEntry(double osx, double osy, bool=true);
   double distanceToCrossAxis(double osx, double osy) const;
 
-  std::vector<XYPoint>   getLanePoints() const {return(m_lane_points);};
-  std::vector<XYSegList> getLaneSegments() const {return(m_lane_segments);};
+  std::vector<XYPoint>   getLanePoints() const {return(m_lane_points);}
+  std::vector<XYSegList> getLaneSegments() const {return(m_lane_segments);}
 
-  XYSegList getCompositeSegList() {return(m_composite_seglist);};
+  XYSegList getCompositeSegList() {return(m_composite_seglist);}
 
  protected:
   int   setLanePoints();

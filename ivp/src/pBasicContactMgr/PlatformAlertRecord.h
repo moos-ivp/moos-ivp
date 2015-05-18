@@ -31,8 +31,8 @@
 class PlatformAlertRecord
 {
  public:
-  PlatformAlertRecord() {};
-  ~PlatformAlertRecord() {};
+  PlatformAlertRecord() {}
+  ~PlatformAlertRecord() {}
 
   void addAlertID(std::string str);
   void addVehicle(std::string str);

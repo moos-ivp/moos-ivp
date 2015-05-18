@@ -33,7 +33,7 @@
 class AOF_Ring: public AOF {
 public:
   AOF_Ring(IvPDomain);
-  virtual ~AOF_Ring() {};
+  virtual ~AOF_Ring() {}
 
 public: // virtuals defined
   double evalBox(const IvPBox *b) const;
@@ -43,13 +43,13 @@ public: // virtuals defined
 public:
   void    print() const;
 
-  IvPBox  getLOC() const    {return(location);};
-  bool    getRPK() const    {return(ringPeak);};
-  double  getRNG() const    {return(range);};
-  double  getBAS() const    {return(base);};
+  IvPBox  getLOC() const    {return(location);}
+  bool    getRPK() const    {return(ringPeak);}
+  double  getRNG() const    {return(range);}
+  double  getBAS() const    {return(base);}
 
-  unsigned int getRAD() const {return(radius);};
-  unsigned int getEXP() const {return(exponent);};
+  unsigned int getRAD() const {return(radius);}
+  unsigned int getEXP() const {return(exponent);}
 
   std::string latexSTR(int full=0) const;
 

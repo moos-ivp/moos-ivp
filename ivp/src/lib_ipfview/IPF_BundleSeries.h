@@ -35,7 +35,7 @@ class IPF_BundleSeries
 {
 public:
   IPF_BundleSeries();
-  ~IPF_BundleSeries() {};
+  ~IPF_BundleSeries() {}
   
   void      clear();
   void      addIPF(const std::string&);
@@ -55,14 +55,14 @@ public:
   
   void      print() const;
   
-  unsigned int getMinIteration() const {return(m_min_iteration);};
-  unsigned int getMaxIteration() const {return(m_max_iteration);};
+  unsigned int getMinIteration() const {return(m_min_iteration);}
+  unsigned int getMaxIteration() const {return(m_max_iteration);}
   unsigned int getPieces(unsigned int iter, std::string src);
   unsigned int getTotalFunctions(unsigned int iter);
-  unsigned int size() const {return(m_bundles.size());};
+  unsigned int size() const {return(m_bundles.size());}
   
   std::vector<std::string> getIPFStrings(unsigned int iteration);
-  std::vector<std::string> getAllSources() {return(m_all_bhv_sources);};
+  std::vector<std::string> getAllSources() {return(m_all_bhv_sources);}
   std::string  getFirstSource() const;
   
  protected:

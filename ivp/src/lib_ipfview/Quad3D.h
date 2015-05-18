@@ -34,15 +34,13 @@ public:
     lhval_r=0; lhval_g=0; lhval_b=0;
     base=0; scale=1.0; lines=true; xpts=0; ypts=0;
   }
-  ~Quad3D() {};
+  ~Quad3D() {}
 
   bool contains(double x, double y) {
     return((x>=xl)&&(x<=xh)&&(y>=yl)&&(y<=yh));
-  };
+  }
 
-  double getAvgVal() {
-    return((llval+hlval+hhval+lhval)/4);
-  };
+  double getAvgVal() {return((llval+hlval+hhval+lhval)/4);}
 
 public:  
   double xl;

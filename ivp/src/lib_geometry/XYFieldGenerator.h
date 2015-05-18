@@ -33,7 +33,7 @@ class XYFieldGenerator
 {
  public:
   XYFieldGenerator();
-  virtual ~XYFieldGenerator() {};
+  virtual ~XYFieldGenerator() {}
 
   bool addPolygon(std::string);
 

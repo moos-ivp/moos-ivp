@@ -33,13 +33,13 @@
 class VarPlot {
  public:
   VarPlot();
-  ~VarPlot() {};
+  ~VarPlot() {}
   
  public: // Settting
-  void   setVName(std::string s)     {m_vname=s;};
-  void   setVarName(std::string s)   {m_varname=s;};
-  void   setSource(std::string s )   {m_srcname=s; m_source.clear();};
-  void   setBaseUTC(double v)        {m_base_utc=v;};
+  void   setVName(std::string s)     {m_vname=s;}
+  void   setVarName(std::string s)   {m_varname=s;}
+  void   setSource(std::string s )   {m_srcname=s; m_source.clear();}
+  void   setBaseUTC(double v)        {m_base_utc=v;}
   bool   setValue(double gtime, std::string gvalue, std::string src="");
 
  public: // Modification
@@ -47,12 +47,12 @@ class VarPlot {
 
  public: // Getting
   double       getTimeByIndex(unsigned int index) const;
-  std::string  getVarName() const  {return(m_varname);};
+  std::string  getVarName() const  {return(m_varname);}
   bool         containsTime(double) const;
   void         print() const;
-  unsigned int getMaxLenSource() const {return(m_max_len_source);};
-  unsigned int getMaxLenSrcAux() const {return(m_max_len_srcaux);};
-  unsigned int size() const            {return(m_entry.size());};
+  unsigned int getMaxLenSource() const {return(m_max_len_source);}
+  unsigned int getMaxLenSrcAux() const {return(m_max_len_srcaux);}
+  unsigned int size() const            {return(m_entry.size());}
 
  public: // Getting Entries and Sources
   std::string  getEntryByIndex(unsigned int index) const;

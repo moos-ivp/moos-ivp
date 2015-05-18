@@ -40,7 +40,7 @@ class Regressor;
 class RT_Directed {
 public:
   RT_Directed(Regressor*);
-  virtual ~RT_Directed() {};
+  virtual ~RT_Directed() {}
 
 public: 
   PDMap* create(PDMap*, const IvPBox&, const IvPBox&, PQueue&);

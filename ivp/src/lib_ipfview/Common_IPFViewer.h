@@ -38,7 +38,7 @@ class Common_IPFViewer : public Fl_Gl_Window
 {
  public:
   Common_IPFViewer(int x,int y,int w,int h,const char *l=0);
-  virtual ~Common_IPFViewer() {};
+  virtual ~Common_IPFViewer() {}
 
   void   resize(int x, int y, int w, int h);
   void   clear();
@@ -49,13 +49,13 @@ public:
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
   void   printParams();
-  void   setPiecesIPF(std::string s)   {m_active_ipf_pieces = s;};
-  void   setPriorityIPF(std::string s) {m_active_ipf_priority = s;};
-  void   setSubDomainIPF(IvPDomain v)  {m_active_ipf_subdomain = v;}; 
-  void   setIterIPF(std::string s)     {m_active_ipf_iter = s;};
-  void   setLabelColor(std::string s)  {m_label_color.setColor(s);};
-  void   setClearColor(std::string s)  {m_clear_color.setColor(s);};
-  void   setFrameColor(std::string s)  {m_frame_color.setColor(s);};
+  void   setPiecesIPF(std::string s)   {m_active_ipf_pieces = s;}
+  void   setPriorityIPF(std::string s) {m_active_ipf_priority = s;}
+  void   setSubDomainIPF(IvPDomain v)  {m_active_ipf_subdomain = v;} 
+  void   setIterIPF(std::string s)     {m_active_ipf_iter = s;}
+  void   setLabelColor(std::string s)  {m_label_color.setColor(s);}
+  void   setClearColor(std::string s)  {m_clear_color.setColor(s);}
+  void   setFrameColor(std::string s)  {m_frame_color.setColor(s);}
 
 protected:
   void   drawFrame(bool full=true);
@@ -65,8 +65,8 @@ protected:
   void   drawIvPFunction1D();
   bool   drawIvPFunction2D();
   void   drawQuad(Quad3D quad, double=1);
-  void   handleLeftMouse(int, int) {};
-  void   handleRightMouse(int, int) {};
+  void   handleLeftMouse(int, int) {}
+  void   handleRightMouse(int, int) {}
   
   void   draw1DAxes(const IvPDomain&);
   void   draw1DLabels(const IvPDomain&);

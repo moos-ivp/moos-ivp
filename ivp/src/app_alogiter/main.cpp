@@ -41,12 +41,6 @@ int main(int argc, char *argv[])
     return(0);
   }
   
-  bool verbose = true;
-  if(scanArgs(argc, argv, "--verbose", "-verbose"))
-    verbose = true;
-  if(scanArgs(argc, argv, "--quiet", "-quiet", "-q"))
-    verbose = false;
-  
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage: " << endl;
@@ -62,10 +56,9 @@ int main(int argc, char *argv[])
     cout << "Options:                                                   " << endl;
     cout << "  -h,--help     Displays this help message                 " << endl;
     cout << "  -v,--version  Displays the current release version       " << endl;
-    cout << "  -q,--quiet    Verbose report suppressed at conclusion    " << endl;
     cout << "                                                           " << endl;
     cout << "Further Notes:                                             " << endl;
-    cout << "  (1) See also: alogscan, alogrm, alogclip, alogview       " << endl;
+    cout << "  See also: alogscan, alogrm, alogclip, alogview, aloggrep " << endl;
     cout << endl;
     return(0);
   }
@@ -83,15 +76,22 @@ int main(int argc, char *argv[])
     cout << "No alog file given - exiting" << endl;
     exit(0);
   }
-  else if(verbose)
-    cout << "Processing on file : " << alogfile_in << endl;
+
+  cout << "Processing on file : " << alogfile_in << endl;
   
   IterHandler handler;
   bool handled = handler.handle(alogfile_in);
   
-  if(handled && verbose)
+  if(handled)
     handler.printReport();
+  else {
+    cout << "Unhandled. Exiting now." << endl;
+    return(1);
+  }
+  
+  return(0);
 }
+
 
 
 

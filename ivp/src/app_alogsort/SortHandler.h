@@ -32,13 +32,13 @@ class SortHandler
 {
  public:
   SortHandler();
-  ~SortHandler() {};
+  ~SortHandler() {}
 
   bool handleSort(const std::string&, const std::string& str="");
   bool handleCheck(const std::string&);
   void printReport();
-  void setCacheSize(unsigned int v) {m_cache_size=v;};
-  void setFileOverWrite(bool v)     {m_file_overwrite=v;};
+  void setCacheSize(unsigned int v) {m_cache_size=v;}
+  void setFileOverWrite(bool v)     {m_file_overwrite=v;}
   
  protected:
   unsigned int m_cache_size;

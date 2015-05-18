@@ -30,11 +30,11 @@
 class SimEngine
 {
 public:
-  SimEngine() {};
-  ~SimEngine() {};
+  SimEngine() {}
+  ~SimEngine() {}
   
  public:
-  void setThrustModeReverse(bool v) {m_thrust_mode_reverse=v;};
+  void setThrustModeReverse(bool v) {m_thrust_mode_reverse=v;}
 
 public:
   void propagate(NodeRecord&, double delta_time, double prior_heading,
@@ -64,7 +64,6 @@ public:
 
  protected:
   bool m_thrust_mode_reverse;
-
 };
 
 #endif

@@ -28,9 +28,11 @@ ProcessConfig = ANTLER
   Run = uSimMarine	    @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
-  Run = pMarineViewer	  @ NewConsole = false
+  Run = pMarineViewer	  @ NewConsole = false, ExtraProcessParams=one
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
+
+  one = --size=1200x1000
 }
 
 //------------------------------------------
@@ -52,8 +54,8 @@ ProcessConfig = pLogger
   LogAuxSrc = true
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
-  WildCardOmitPattern = DB_VARSUMMARY
-  WildCardOmitPattern = DB_RWSUMMARY
+  //WildCardOmitPattern = DB_VARSUMMARY
+  //WildCardOmitPattern = DB_RWSUMMARY
   WildCardExclusionLog = true
 }
 
@@ -75,7 +77,7 @@ ProcessConfig = uProcessWatch
 
 ProcessConfig = uSimMarine
 {
-  AppTick	= 4
+  AppTick  	= 4
   CommsTick	= 4
 
   start_x       = 0

@@ -33,7 +33,7 @@
 class UPV_GUI : Fl_Window {
 public:
   UPV_GUI(int w, int h, const char *l=0);
-  ~UPV_GUI() {};
+  ~UPV_GUI() {}
   
   static Fl_Menu_Item menu_[];
 
@@ -42,7 +42,7 @@ public:
 
   void addScopeVar(std::string);
 
-  UPV_Viewer  *viewer() {return(m_plot_viewer);};
+  UPV_Viewer  *viewer() {return(m_plot_viewer);}
 
  protected:
   UPV_Viewer  *m_plot_viewer;

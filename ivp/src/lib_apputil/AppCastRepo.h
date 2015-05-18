@@ -32,7 +32,7 @@ class AppCastRepo
 {
  public:
   AppCastRepo();
-  ~AppCastRepo() {};
+  ~AppCastRepo() {}
   
   // Return true if first time heard from this node
   bool addAppCast(const std::string&);
@@ -43,14 +43,14 @@ class AppCastRepo
   bool setCurrentProc(const std::string& proc);
   bool setRefreshMode(const std::string& mode);
 
-  std::string  getCurrentNode() const  {return(m_current_node);};
-  std::string  getCurrentProc() const  {return(m_current_proc);};
-  std::string  getRefreshMode() const  {return(m_refresh_mode);};
+  std::string  getCurrentNode() const  {return(m_current_node);}
+  std::string  getCurrentProc() const  {return(m_current_proc);}
+  std::string  getRefreshMode() const  {return(m_refresh_mode);}
 
   std::vector<std::string> getCurrentNodes() const;
   std::vector<std::string> getCurrentProcs() const;
   
-  const AppCastTree& actree() const    {return(m_appcast_tree);};
+  const AppCastTree& actree() const    {return(m_appcast_tree);}
   
   // Methods for detecting potential need for refresh by users
   unsigned int getNodeCount() const;

@@ -34,13 +34,13 @@
 
 class BFactoryDynamic {
  public:
-  BFactoryDynamic() {};
+  BFactoryDynamic() {}
   virtual ~BFactoryDynamic();
   
   // Configuring the domain and loading directories for search.
   bool   loadDirectory(std::string dirname);
   void   loadEnvVarDirectories(std::string envVar);
-  void   setDomain(IvPDomain domain) {m_domain = domain;};
+  void   setDomain(IvPDomain domain) {m_domain = domain;}
 
   // Building Behaviors
   bool         isKnownBehavior(std::string bhv_name) const;

@@ -31,7 +31,7 @@ class NodeBroker : public AppCastingMOOSApp
 {
  public:
   NodeBroker();
-  virtual ~NodeBroker() {};
+  virtual ~NodeBroker() {}
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -62,8 +62,9 @@ class NodeBroker : public AppCastingMOOSApp
   std::vector<std::string> m_bridge_alias;
 
   // Index on below vectors is a host to try as shoreside
-  std::vector<std::string>  m_shore_routes;
   std::vector<std::string>  m_shore_community;
+  std::vector<std::string>  m_shore_routes;
+  std::vector<unsigned int> m_shore_pings_sent;
   std::vector<unsigned int> m_shore_pings_ack;
   std::vector<std::string>  m_shore_ipaddr;
   std::vector<std::string>  m_shore_timewarp;

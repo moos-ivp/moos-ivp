@@ -30,15 +30,15 @@ class PXR_MOOSApp : public CMOOSApp
 {
  public:
   PXR_MOOSApp();
-  virtual ~PXR_MOOSApp() {};
+  virtual ~PXR_MOOSApp() {}
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
   bool OnConnectToServer();
   bool OnStartUp();
 
-  void setIncomingVar(std::string s) {m_incoming_var=s;};
-  void setOutgoingVar(std::string s) {m_outgoing_var=s;};
+  void setIncomingVar(std::string s) {m_incoming_var=s;}
+  void setOutgoingVar(std::string s) {m_outgoing_var=s;}
 
  protected:
   void RegisterVariables();

@@ -107,6 +107,9 @@ cd "${INVOC_ABS_DIR}/MOOS/MOOSGeodesy"
 PROJ4_INCLUDE_DIR="${INVOC_ABS_DIR}/MOOS/proj-4.8.0/include"
 PROJ4_LIB_DIR="${INVOC_ABS_DIR}/MOOS/proj-4.8.0/lib"
 
+echo "PROJ4 LIB DIR: " $PROJ4_LIB_DIR
+
+
 echo "Invoking cmake..." `pwd`
 cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"         \
       -DPROJ4_INCLUDE_DIRS=${PROJ4_INCLUDE_DIR}     \

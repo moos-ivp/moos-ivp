@@ -45,20 +45,20 @@ class IvPBehavior {
 friend class BehaviorSet;
 public:
   IvPBehavior(IvPDomain);
-  virtual ~IvPBehavior() {};
+  virtual ~IvPBehavior() {}
 
-  virtual IvPFunction* onRunState() {return(0);};
+  virtual IvPFunction* onRunState() {return(0);}
   virtual BehaviorReport onRunState(std::string);
   virtual bool setParam(std::string, std::string);
-  virtual void onSetParamComplete() {postConfigStatus();};
-  virtual void onHelmStart() {};
-  virtual void onIdleState() {};
-  virtual void onCompleteState() {};
-  virtual void onIdleToRunState() {};
-  virtual void onRunToIdleState() {};
-  virtual void postConfigStatus() {};
-  virtual std::string getInfo(std::string)  {return("");};
-  virtual double getDoubleInfo(std::string) {return(0);};
+  virtual void onSetParamComplete() {postConfigStatus();}
+  virtual void onHelmStart() {}
+  virtual void onIdleState() {}
+  virtual void onCompleteState() {}
+  virtual void onIdleToRunState() {}
+  virtual void onRunToIdleState() {}
+  virtual void postConfigStatus() {}
+  virtual std::string getInfo(std::string)  {return("");}
+  virtual double getDoubleInfo(std::string) {return(0);}
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
@@ -69,20 +69,20 @@ public:
   void   statusInfoPost();
 
   std::vector<std::string> getInfoVars();
-  std::string getDescriptor()            {return(m_descriptor);};
-  std::string getBehaviorType()          {return(m_behavior_type);};
-  std::string getUpdateSummary()         {return(m_update_summary);};
-  std::vector<VarDataPair> getMessages() {return(m_messages);};
-  int    getFilterLevel() const          {return(m_filter_level);};
-  bool   stateOK() const                 {return(m_bhv_state_ok);};
-  void   clearMessages()                 {m_messages.clear();};
-  void   resetStateOK()                  {m_bhv_state_ok=true;};
+  std::string getDescriptor()            {return(m_descriptor);}
+  std::string getBehaviorType()          {return(m_behavior_type);}
+  std::string getUpdateSummary()         {return(m_update_summary);}
+  std::vector<VarDataPair> getMessages() {return(m_messages);}
+  int    getFilterLevel() const          {return(m_filter_level);}
+  bool   stateOK() const                 {return(m_bhv_state_ok);}
+  void   clearMessages()                 {m_messages.clear();}
+  void   resetStateOK()                  {m_bhv_state_ok=true;}
 
   void    postMessage(std::string, std::string, std::string key="");
 protected:
   bool    setBehaviorName(std::string str);
   bool    augBehaviorName(std::string str);
-  void    setBehaviorType(std::string str) {m_behavior_type = str;};
+  void    setBehaviorType(std::string str) {m_behavior_type = str;}
   void    setPriorityWt(double);
 
   void    addInfoVars(std::string, std::string="");
@@ -106,7 +106,7 @@ protected:
   bool    checkNoStarve();
   
 
-  double                   getPriorityWt() {return(m_priority_wt);};
+  double                   getPriorityWt() {return(m_priority_wt);}
   double                   getBufferCurrTime();
   double                   getBufferMsgTimeVal(std::string);
   double                   getBufferTimeVal(std::string);

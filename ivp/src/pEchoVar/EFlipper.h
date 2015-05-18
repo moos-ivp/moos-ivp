@@ -32,17 +32,17 @@ class EFlipper
 {
 public:
   EFlipper();
-  virtual ~EFlipper() {};
+  virtual ~EFlipper() {}
 
   bool setParam(std::string param, std::string value);
   bool valid();
   void print();
   
-  std::string  getKey()       {return(m_key);};
-  std::string  getSourceVar() {return(m_source_variable);};
-  std::string  getDestVar()   {return(m_dest_variable);};
-  std::string  getSourceSep() {return(m_source_separator);};
-  std::string  getDestSep()   {return(m_dest_separator);};
+  std::string  getKey()       {return(m_key);}
+  std::string  getSourceVar() {return(m_source_variable);}
+  std::string  getDestVar()   {return(m_dest_variable);}
+  std::string  getSourceSep() {return(m_source_separator);}
+  std::string  getDestSep()   {return(m_dest_separator);}
   std::string  getFilters();
   std::string  getComponents();
 

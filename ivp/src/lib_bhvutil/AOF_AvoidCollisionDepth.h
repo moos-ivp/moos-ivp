@@ -32,14 +32,14 @@ class AOF_AvoidCollisionDepth: public AOF {
 public:
   AOF_AvoidCollisionDepth(IvPDomain);
   ~AOF_AvoidCollisionDepth() 
-    {if(cpa_engine) delete(cpa_engine);};
+    {if(cpa_engine) delete(cpa_engine);}
 
  public: // virtuals defined
   double evalBox(const IvPBox*) const;   
   bool   setParam(const std::string&, double);
   bool   initialize();
 
-  double getROC() {return(m_rate_of_closure);};
+  double getROC() {return(m_rate_of_closure);}
 
  protected:
   double metric(double dist) const;

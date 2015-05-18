@@ -35,9 +35,9 @@ class UPV_MOOSApp : public CMOOSApp
 {
  public:
   UPV_MOOSApp();
-  virtual ~UPV_MOOSApp() {};
+  virtual ~UPV_MOOSApp() {}
 
-  void setGUI(UPV_GUI* g_gui) {m_gui=g_gui;};
+  void setGUI(UPV_GUI* g_gui) {m_gui=g_gui;}
   
   void setPendingEventsPipe(Threadsafe_pipe<MOOS_event> 
 			    *pending_moos_events) 

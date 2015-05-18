@@ -33,8 +33,8 @@
 
 class Demuxer {
 public:
-  Demuxer() {m_demuxed=true;};
-  virtual ~Demuxer() {};
+  Demuxer() {m_demuxed=true;}
+  virtual ~Demuxer() {}
 
 public:
   bool addMuxPacket(const std::string& packet, 
@@ -46,7 +46,7 @@ public:
 
   void   removeStaleUnits(double, double);
   void   print();
-  double size()     {return(m_demuxed_results.size());};
+  double size()     {return(m_demuxed_results.size());}
 
 protected:
   void   demuxUnits();

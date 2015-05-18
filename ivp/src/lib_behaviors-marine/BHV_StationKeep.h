@@ -33,13 +33,13 @@
 class BHV_StationKeep : public IvPBehavior {
 public:
   BHV_StationKeep(IvPDomain);
-  ~BHV_StationKeep() {};
+  ~BHV_StationKeep() {}
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
   void         onIdleToRunState();
   void         onRunToIdleState();
-  void         onCompleteState() {postStationMessage(false);};
+  void         onCompleteState() {postStationMessage(false);}
   void         postConfigStatus();
 
 protected:

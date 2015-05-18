@@ -21,11 +21,6 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
-
 #ifndef CONDITIONAL_PARAM_HEADER
 #define CONDITIONAL_PARAM_HEADER
 
@@ -34,22 +29,22 @@
 
 class ConditionalParam {
 public:
-  ConditionalParam() {m_ok=false; m_comment_header="//";};
-  ~ConditionalParam() {};
+  ConditionalParam() {m_ok=false; m_comment_header="//";}
+  ~ConditionalParam() {}
   
-  void setCommentHeader(const std::string& s) {m_comment_header=s;};
+  void setCommentHeader(const std::string& s) {m_comment_header=s;}
   
 
   bool setFromString(const std::string&);
 
   bool setFromString(const std::string&, const std::string&);
 
-  std::string getParam()    {return(m_parameter);};
-  std::string getParamVal() {return(m_param_val);};
+  std::string getParam()    {return(m_parameter);}
+  std::string getParamVal() {return(m_param_val);}
 
-  LogicCondition getCondition() {return(m_condition);};
+  LogicCondition getCondition() {return(m_condition);}
   
-  bool ok()                 {return(m_ok);};
+  bool ok()                 {return(m_ok);}
 
 protected:
   LogicCondition     m_condition;

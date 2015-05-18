@@ -95,7 +95,7 @@ public:
   void postAllStop(std::string msg="");
   bool processNodeReport(const std::string &);
 
-  std::string helmStatus() const {return(m_helm_status);};
+  std::string helmStatus() const {return(m_helm_status);}
   void        helmStatusUpdate(const std::string& val="");
   bool        helmStatusEnabled() const;
 

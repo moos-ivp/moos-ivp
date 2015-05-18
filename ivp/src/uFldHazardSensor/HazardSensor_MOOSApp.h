@@ -38,7 +38,7 @@ class HazardSensor_MOOSApp : public AppCastingMOOSApp
 {
  public:
   HazardSensor_MOOSApp();
-  virtual ~HazardSensor_MOOSApp() {};
+  virtual ~HazardSensor_MOOSApp() {}
 
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);

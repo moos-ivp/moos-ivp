@@ -48,8 +48,8 @@ public:
   bool   setParam(std::string, double);
   void   printParams();
 
-  void   toggleAOF()              {m_draw_aof = !m_draw_aof; redraw();};
-  void   toggleIPF()              {m_draw_ipf = !m_draw_ipf; redraw();};
+  void   toggleAOF()              {m_draw_aof = !m_draw_aof; redraw();}
+  void   toggleIPF()              {m_draw_ipf = !m_draw_ipf; redraw();}
   void   toggleSmartAug();
   void   makeUniformIPF();
   void   makeUniformIPFxN(int amt);
@@ -60,7 +60,7 @@ public:
   void   runScript();
   void   capture(int);
 
-  void   takeSamples(int amt)     {m_rater.takeSamples(amt);};
+  void   takeSamples(int amt)     {m_rater.takeSamples(amt);}
   double getParam(const std::string&, bool&);
 
   std::string getParam(const std::string&);

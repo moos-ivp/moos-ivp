@@ -31,11 +31,11 @@
 class IPF_Plot
 {
 public:
-  IPF_Plot() {m_vname="name-unknown"; m_source="src-unknown";};
-  ~IPF_Plot() {};
+  IPF_Plot() {m_vname="name-unknown"; m_source="src-unknown";}
+  ~IPF_Plot() {}
 
-  void   setVName(std::string s)   {m_vname  = s;};
-  void   setSource(std::string s)  {m_source = s;};
+  void   setVName(std::string s)   {m_vname  = s;}
+  void   setSource(std::string s)  {m_source = s;}
   bool   addEntry(double timestamp, 
 		  const std::string& ipf_str, 
 		  unsigned int iteration, 
@@ -54,18 +54,18 @@ public:
   unsigned int getHelmIterByTime(double) const;
   double       getTimeByHelmIter(unsigned int) const;
 
-  std::string getSource() const {return(m_source);};
-  std::string getVName()  const {return(m_vname);};
+  std::string getSource() const {return(m_source);}
+  std::string getVName()  const {return(m_vname);}
 
   void   applySkew(double);
 
   double getMinTime() const;
   double getMaxTime() const;
-  int    size() const          {return(m_time_stamp.size());};
+  int    size() const          {return(m_time_stamp.size());}
   void   print() const;
 
-  void      setIvPDomain(IvPDomain dom) {m_ivp_domain = dom;};
-  IvPDomain getIvPDomain() const  {return(m_ivp_domain);};
+  void      setIvPDomain(IvPDomain dom) {m_ivp_domain = dom;}
+  IvPDomain getIvPDomain() const  {return(m_ivp_domain);}
 
 protected:
   unsigned int getIndexByTime(double) const;
@@ -86,9 +86,5 @@ protected:
 
   IvPDomain                 m_ivp_domain;
 };
+
 #endif 
-
-
-
-
-

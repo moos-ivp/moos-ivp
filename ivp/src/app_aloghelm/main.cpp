@@ -107,7 +107,6 @@ int main(int argc, char *argv[])
     cout << "No alog file given - exiting" << endl;
     exit(0);
   }
-  cout << "Processing on file : " << alogfile_in << endl;
   
   HelmReporter hreporter;
   if(report_life_events)

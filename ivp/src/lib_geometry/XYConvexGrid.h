@@ -32,8 +32,8 @@
 
 class XYConvexGrid : public XYObject {
 public:
-  XYConvexGrid() {};
-  ~XYConvexGrid() {};
+  XYConvexGrid() {}
+  ~XYConvexGrid() {}
 
   bool      initialize(const XYPolygon&, double cell_size, double init_val);
   bool      initialize(const XYPolygon&, double cell_size,
@@ -46,17 +46,17 @@ public:
 			 double x1, double y1,
 			 double x2, double y2);
 
-  unsigned int size() const    {return(m_elements.size());};
+  unsigned int size() const    {return(m_elements.size());}
 
   XYSquare     getElement(unsigned int index) const;
-  XYSquare     getSBound() const  {return(m_bounding_square);};
+  XYSquare     getSBound() const  {return(m_bounding_square);}
   bool         ptIntersect(double, double) const;
   bool         ptIntersectBound(double, double) const;
   bool         segIntersectBound(double, double, double, double) const;
 
   bool         hasCellVar(const std::string&) const;
   unsigned int getCellVarIX(const std::string&) const;
-  unsigned int getCellVarCnt() const {return(m_cell_vars.size());};
+  unsigned int getCellVarCnt() const {return(m_cell_vars.size());}
   std::string  getConfigStr() const;
   std::string  get_spec() const;
 
@@ -108,6 +108,7 @@ protected:
   std::vector<double>                m_cell_min_sofar;
   std::vector<bool>                  m_cell_minmax_noted;
 };
+
 #endif
 
 

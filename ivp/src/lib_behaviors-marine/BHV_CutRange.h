@@ -31,7 +31,7 @@ class IvPDomain;
 class BHV_CutRange : public IvPContactBehavior {
 public:
   BHV_CutRange(IvPDomain);
-  ~BHV_CutRange() {};
+  ~BHV_CutRange() {}
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);

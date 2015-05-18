@@ -32,7 +32,7 @@ class IvPDomain;
 class AOF_AvoidObstacle: public AOF {
 public:
   AOF_AvoidObstacle(IvPDomain);
-  ~AOF_AvoidObstacle() {};
+  ~AOF_AvoidObstacle() {}
 
 public: // virtual functions
   double evalBox(const IvPBox*) const; 
@@ -42,9 +42,9 @@ public: // virtual functions
   bool   initialize();
   bool   postInitialize();
 
-  //unsigned int size() {return(m_obstacle_orig.size());};
+  //unsigned int size() {return(m_obstacle_orig.size());}
   
-  bool      obstacleSet() {return(m_obstacle_orig.size() > 0);};
+  bool      obstacleSet() {return(m_obstacle_orig.size() > 0);}
   bool      ownshipInObstacle(bool use_buffered=false);
   bool      isObstaclePert();
   double    distToObstacleBuff();
@@ -52,10 +52,10 @@ public: // virtual functions
  
   bool      bearingMinMaxToBufferPoly(double& bmin, double& bmax);
 
-  XYPolygon getObstacleOrig() const {return(m_obstacle_orig);};
-  XYPolygon getObstacleBuff() const {return(m_obstacle_buff);};
+  XYPolygon getObstacleOrig() const {return(m_obstacle_orig);}
+  XYPolygon getObstacleBuff() const {return(m_obstacle_buff);}
 
-  std::string getDebugMsg() {return(m_debug_msg);};
+  std::string getDebugMsg() {return(m_debug_msg);}
 
  protected: // Initialization Utilities
   void   bufferBackOff(double osx, double osy);

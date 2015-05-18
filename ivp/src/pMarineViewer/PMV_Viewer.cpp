@@ -94,8 +94,7 @@ void PMV_Viewer::draw()
     calculateDrawHash();
 
   vector<string> vnames = m_geoshapes_map.getVehiNames();
-  unsigned int i, vsize = vnames.size();
-  for(i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<vnames.size(); i++) {
     vector<XYPolygon> polys   = m_geoshapes_map.getPolygons(vnames[i]);
     vector<XYGrid>    grids   = m_geoshapes_map.getGrids(vnames[i]);
     vector<XYConvexGrid> cgrids = m_geoshapes_map.getConvexGrids(vnames[i]);

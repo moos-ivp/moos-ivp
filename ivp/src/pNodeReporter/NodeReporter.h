@@ -34,7 +34,7 @@ class NodeReporter : public AppCastingMOOSApp
 {
 public:
   NodeReporter();
-  virtual ~NodeReporter() {};
+  virtual ~NodeReporter() {}
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();

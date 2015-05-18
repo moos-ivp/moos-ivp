@@ -30,20 +30,20 @@
 class XYPoint : public XYObject {
  public:
   XYPoint()
-    {m_x=0; m_y=0; m_z=0; m_valid=false; m_sdigits=2;};
+    {m_x=0; m_y=0; m_z=0; m_valid=false; m_sdigits=2;}
   XYPoint(double x, double y)
-    {m_x=x; m_y=y; m_z=0; m_valid=true; m_sdigits=2;};
+    {m_x=x; m_y=y; m_z=0; m_valid=true; m_sdigits=2;}
 
-  virtual ~XYPoint() {};
+  virtual ~XYPoint() {}
   
   void clear();
   
   void set_vertex(double x, double y, double z=0) 
-    {m_x=x; m_y=y; m_z=z; m_valid=true;};
+    {m_x=x; m_y=y; m_z=z; m_valid=true;}
 
-  void set_vx(double v)       {m_x=v;};
-  void set_vy(double v)       {m_y=v;};
-  void set_vz(double v)       {m_z=v;};
+  void set_vx(double v)       {m_x=v;}
+  void set_vy(double v)       {m_y=v;}
+  void set_vz(double v)       {m_z=v;}
 
   void set_spec_digits(unsigned int v);
   

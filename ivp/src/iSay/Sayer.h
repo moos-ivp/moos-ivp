@@ -32,7 +32,7 @@ class Sayer : public AppCastingMOOSApp
 {
  public:
   Sayer();
-   ~Sayer() {};
+   ~Sayer() {}
    
  protected: // Standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);

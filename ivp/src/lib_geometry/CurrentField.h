@@ -33,7 +33,7 @@ class CurrentField
 {
 public:
   CurrentField();
-  ~CurrentField() {};
+  ~CurrentField() {}
 
   bool populate(std::string filename);
   void addVector(const XYVector&, bool marked=false);
@@ -66,10 +66,10 @@ public:
 
   unsigned int selectVector(double x, double y, double& dist);
 
-  unsigned int getActiveIX() {return(m_active_ix);};
-  unsigned int size()        {return(m_vectors.size());};
-  std::string getName()      {return(m_field_name);};
-  double getRadius()         {return(m_radius);};
+  unsigned int getActiveIX() {return(m_active_ix);}
+  unsigned int size()        {return(m_vectors.size());}
+  std::string getName()      {return(m_field_name);}
+  double getRadius()         {return(m_radius);}
 
   std::vector<XYVector> getVectors();
   std::vector<XYVector> getVectorsMarked();

@@ -36,7 +36,7 @@ class HazardMetric : public AppCastingMOOSApp
 {
  public:
   HazardMetric();
-  ~HazardMetric() {};
+  ~HazardMetric() {}
   
  public: // Standard MOOSApp functions to overload
   bool OnNewMail(MOOSMSG_LIST &NewMail);

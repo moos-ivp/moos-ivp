@@ -30,7 +30,7 @@
 class AOF_Waypoint: public AOF {
  public:
   AOF_Waypoint(IvPDomain);
-  ~AOF_Waypoint() {};
+  ~AOF_Waypoint() {}
 
 public: // virtuals defined
   double evalBox(const IvPBox*) const; 

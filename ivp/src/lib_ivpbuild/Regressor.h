@@ -36,15 +36,15 @@ public:
   virtual ~Regressor();
 
 public:  
-  int     getDegree() const   {return(m_degree);};
+  int     getDegree() const   {return(m_degree);}
 
   double  setWeight(IvPBox*, bool feedback=false);
-  void    setStrictRange(bool val) {m_strict_range = val;};
+  void    setStrictRange(bool val) {m_strict_range = val;}
 
-  unsigned int getMessageCnt() const {return(m_messages.size());};
+  unsigned int getMessageCnt() const {return(m_messages.size());}
   std::string  getMessage(unsigned int);
 
-  const AOF* getAOF() {return(m_aof);};
+  const AOF* getAOF() {return(m_aof);}
 
 protected:
   void    setCorners(IvPBox*);

@@ -30,8 +30,8 @@
 
 class ModeEntry {
 public:
-  ModeEntry() {};
-  ~ModeEntry() {};
+  ModeEntry() {}
+  ~ModeEntry() {}
 
   bool setHead(std::string mode_var, std::string mode_val);
   bool addCondition(std::string);
@@ -39,10 +39,10 @@ public:
 
   std::vector<std::string> getConditionVars();
 
-  std::string getModeVarName()      {return(m_mode_var);};
-  std::string getModeVarValue()     {return(m_mode_val);};
-  std::string getModeVarElseValue() {return(m_mode_val_else);};
-  std::string getModePrefix()       {return(m_mode_prefix);};
+  std::string getModeVarName()      {return(m_mode_var);}
+  std::string getModeVarValue()     {return(m_mode_val);}
+  std::string getModeVarElseValue() {return(m_mode_val_else);}
+  std::string getModePrefix()       {return(m_mode_prefix);}
   std::string getModeParent();
 
   void print();
@@ -77,6 +77,7 @@ protected:
   std::vector<LogicCondition> m_logic_conditions;
   std::vector<bool>           m_modevar_conditions;
 };
+
 #endif
 
 

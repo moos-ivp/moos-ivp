@@ -31,36 +31,37 @@
 class ScanReport
 {
  public:
-  ScanReport() {m_lines=0;};
-  ~ScanReport() {};
+  ScanReport() {m_lines=0;}
+
+  ~ScanReport() {}
   
   void addLine(double timestamp, const std::string& varname, 
 	       const std::string& source, const std::string &value);
 
   bool         containsVar(const std::string& varname);
   int          getVarIndex(const std::string& varname);
-  unsigned int size() {return(m_var_names.size());};
+  unsigned int size() {return(m_var_names.size());}
 
   std::string getVarName(unsigned int index);
   std::string getVarSources(unsigned int index);
   std::string getVarSources(const std::string& varname)
-    {return(getVarSources(getVarIndex(varname)));};
+    {return(getVarSources(getVarIndex(varname)));}
 
   double getVarFirstTime(unsigned int index);
   double getVarLastTime(unsigned int index);
   
   double getVarFirstTime(const std::string& varname)
-    {return(getVarFirstTime(getVarIndex(varname)));};
+    {return(getVarFirstTime(getVarIndex(varname)));}
   double getVarLastTime(const std::string& varname)
-    {return(getVarLastTime(getVarIndex(varname)));};
+    {return(getVarLastTime(getVarIndex(varname)));}
   
   unsigned int getVarCount(unsigned int index);
   unsigned int getVarChars(unsigned int index);
 
   unsigned int getVarCount(const std::string& varname)
-    {return(getVarCount(getVarIndex(varname)));};
+    {return(getVarCount(getVarIndex(varname)));}
   unsigned int getVarChars(const std::string& varname)
-    {return(getVarChars(getVarIndex(varname)));};
+    {return(getVarChars(getVarIndex(varname)));}
 
   // Max values are useful for making column format decisions
   unsigned int getMaxLines();
@@ -81,13 +82,13 @@ class ScanReport
 
   // Routines for building and retrieving app stat summary info
   void fillAppStats();
-  std::vector<std::string> getAllSources()  {return(m_all_sources);};
-  std::vector<std::string> getAllVarNames() {return(m_var_names);};
-  double getLinesPctBySource(std::string s) {return(m_app_lines_pct[s]);};
-  double getCharsPctBySource(std::string s) {return(m_app_chars_pct[s]);};
+  std::vector<std::string> getAllSources()  {return(m_all_sources);}
+  std::vector<std::string> getAllVarNames() {return(m_var_names);}
+  double getLinesPctBySource(std::string s) {return(m_app_lines_pct[s]);}
+  double getCharsPctBySource(std::string s) {return(m_app_chars_pct[s]);}
 
-  unsigned int getLinesBySource(std::string s)  {return(m_app_lines[s]);};
-  unsigned int getCharsBySource(std::string s)  {return(m_app_chars[s]);};
+  unsigned int getLinesBySource(std::string s)  {return(m_app_lines[s]);}
+  unsigned int getCharsBySource(std::string s)  {return(m_app_chars[s]);}
 
  protected:
   void switchItems(unsigned int, unsigned int);

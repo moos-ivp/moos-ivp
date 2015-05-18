@@ -35,7 +35,7 @@ class EchoVar : public AppCastingMOOSApp
 {
 public:
   EchoVar();
-  virtual ~EchoVar() {};
+  virtual ~EchoVar() {}
   
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();

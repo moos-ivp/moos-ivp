@@ -30,40 +30,40 @@
 class Figlog
 {
 public:
-  Figlog() {};
-  ~Figlog() {};
+  Figlog() {}
+  ~Figlog() {}
 
   // Setters
-  void addMessage(std::string s) {m_messages.push_back(s);};
-  void addWarning(std::string s) {m_warnings.push_back(s);};
-  void addError(std::string s)   {m_errors.push_back(s);};
+  void addMessage(std::string s) {m_messages.push_back(s);}
+  void addWarning(std::string s) {m_warnings.push_back(s);}
+  void addError(std::string s)   {m_errors.push_back(s);}
 
   void augMessage(std::string);
   void augWarning(std::string);
   void augError(std::string);
 
-  void setLabel(std::string s) {m_label=s;};
+  void setLabel(std::string s) {m_label=s;}
 
   // Getters
-  unsigned int messages() const  {return(m_messages.size());};
-  unsigned int warnings() const  {return(m_warnings.size());};
-  unsigned int errors() const    {return(m_errors.size());};
+  unsigned int messages() const  {return(m_messages.size());}
+  unsigned int warnings() const  {return(m_warnings.size());}
+  unsigned int errors() const    {return(m_errors.size());}
   
-  std::vector<std::string> getMessages() const {return(m_messages);};
-  std::vector<std::string> getWarnings() const {return(m_warnings);};
-  std::vector<std::string> getErrors()   const {return(m_errors);};
+  std::vector<std::string> getMessages() const {return(m_messages);}
+  std::vector<std::string> getWarnings() const {return(m_warnings);}
+  std::vector<std::string> getErrors()   const {return(m_errors);}
 
   std::string getMessage(unsigned int);
   std::string getWarning(unsigned int);
   std::string getError(unsigned int);
 
-  std::string getLabel() {return(m_label);};
+  std::string getLabel() {return(m_label);}
 
   // Actions
   void clear();
-  void clearMessages()  {m_messages.clear();};
-  void clearWarnings()  {m_warnings.clear();};
-  void clearErrors()    {m_errors.clear();};
+  void clearMessages()  {m_messages.clear();}
+  void clearWarnings()  {m_warnings.clear();}
+  void clearErrors()    {m_errors.clear();}
   void print() const;
 
 

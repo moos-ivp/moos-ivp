@@ -32,7 +32,7 @@ class IvPDomain;
 class BHV_Attractor : public IvPContactBehavior {
 public:
   BHV_Attractor(IvPDomain);
-  ~BHV_Attractor() {};
+  ~BHV_Attractor() {}
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);

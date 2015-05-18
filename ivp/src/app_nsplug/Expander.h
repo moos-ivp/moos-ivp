@@ -32,20 +32,20 @@ class Expander
 {
  public:
   Expander(std::string infile="", std::string outfile="");
-  ~Expander() {};
+  ~Expander() {}
   
-  void setInFile(std::string s)  {m_infile  = s;};
-  void setOutFile(std::string s) {m_outfile = s;};
+  void setInFile(std::string s)  {m_infile  = s;}
+  void setOutFile(std::string s) {m_outfile = s;}
 
   bool expand();
   bool verifyInfile();
   bool verifyInfile(const std::string& filename);
   bool writeOutput();
   void addMacro(std::string, std::string, bool=false);
-  void setForce(bool v)      {m_force=v;};
-  void setStrict(bool v)     {m_strict=v;};
-  void setPartialsOK(bool v) {m_partial_expand_ok=v;};
-  void setTerminal(bool v)   {m_terminal=v;};
+  void setForce(bool v)      {m_force=v;}
+  void setStrict(bool v)     {m_strict=v;}
+  void setPartialsOK(bool v) {m_partial_expand_ok=v;}
+  void setTerminal(bool v)   {m_terminal=v;}
   void addPath(std::string);
 
  protected:

@@ -28,25 +28,25 @@
 
 class XYHexagon : public XYPolygon {
 public:
-  XYHexagon() {m_cx=0; m_cy=0; m_cz=0; m_dist=0;};
-  ~XYHexagon() {};
+  XYHexagon() {m_cx=0; m_cy=0; m_cz=0; m_dist=0;}
+  ~XYHexagon() {}
 
   // The only two ways to build a pentagon
   bool   initialize(double, double, double);
   bool   initialize(std::string);       
 
-  double get_cx()   {return(m_cx);};
-  double get_cy()   {return(m_cy);};
-  double get_cz()   {return(m_cz);};
-  double get_dist() {return(m_dist);};
+  double get_cx()   {return(m_cx);}
+  double get_cy()   {return(m_cy);}
+  double get_cz()   {return(m_cz);}
+  double get_dist() {return(m_dist);}
 
   XYHexagon addNeighbor(int);
 
   // We disable these operations allowable on the superclass
-  bool   add_vertex(double, double) {return(false);};   
-  bool   alter_vertex(double, double) {return(false);};
-  bool   delete_vertex(double, double) {return(false);};
-  bool   insert_vertex(double, double) {return(false);};
+  bool   add_vertex(double, double) {return(false);}   
+  bool   alter_vertex(double, double) {return(false);}
+  bool   delete_vertex(double, double) {return(false);}
+  bool   insert_vertex(double, double) {return(false);}
 
 protected:
   double m_cx;

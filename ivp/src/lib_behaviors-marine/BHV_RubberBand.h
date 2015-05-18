@@ -32,7 +32,7 @@
 class BHV_RubberBand : public IvPBehavior {
 public:
   BHV_RubberBand(IvPDomain);
-  ~BHV_RubberBand() {};
+  ~BHV_RubberBand() {}
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);

@@ -33,7 +33,7 @@ class IterHandler
 {
  public:
   IterHandler();
-  ~IterHandler() {};
+  ~IterHandler() {}
 
   bool handle(const std::string&);
   void printReport();

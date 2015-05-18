@@ -30,7 +30,7 @@
 class AOF_CutRangeCPA: public AOF {
 public:
   AOF_CutRangeCPA(IvPDomain);
-  ~AOF_CutRangeCPA() {if(m_cpa_engine) delete(m_cpa_engine);};
+  ~AOF_CutRangeCPA() {if(m_cpa_engine) delete(m_cpa_engine);}
 
 public:    
   double evalBox(const IvPBox*) const;   // virtual defined

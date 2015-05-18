@@ -36,7 +36,7 @@ class VehicleSet
 {
  public:
   VehicleSet();
-  ~VehicleSet() {};
+  ~VehicleSet() {}
     
   bool   setParam(std::string param, std::string value="");
   bool   setParam(std::string param, double value);
@@ -45,10 +45,10 @@ class VehicleSet
   bool   handleNodeReport(std::string report_str, std::string& whynot);
 
   void   clear(const std::string& vname="");
-  double getXMin() const {return(m_xmin);};
-  double getXMax() const {return(m_xmax);};
-  double getYMin() const {return(m_ymin);};
-  double getYMax() const {return(m_ymax);};
+  double getXMin() const {return(m_xmin);}
+  double getXMax() const {return(m_xmax);}
+  double getYMin() const {return(m_ymin);}
+  double getYMax() const {return(m_ymax);}
 
   NodeRecord getNodeRecord(const std::string& vname) const;
 
@@ -73,8 +73,8 @@ class VehicleSet
 
   std::vector<std::string> getVehiNames() const;
 
-  std::string getActiveVehicle() const  {return(m_vehicles_active_name);};
-  std::string getCenterVehicle() const  {return(m_vehicles_center_name);};
+  std::string getActiveVehicle() const  {return(m_vehicles_active_name);}
+  std::string getCenterVehicle() const  {return(m_vehicles_center_name);}
 
   CPList      getVehiHist(const std::string&   s="active") const;   
   BearingLine getBearingLine(const std::string& s="active") const;

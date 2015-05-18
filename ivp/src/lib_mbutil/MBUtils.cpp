@@ -780,7 +780,19 @@ string doubleToString(double val, int digits)
   char format[10] = "%.5f\0";
   if((digits>=0)&&(digits<=9))
     format[2] = digits+48;
-  
+  else if((digits >= 10) && (digits <= 19)) {
+    format[2] = '1';
+    format[3] = (digits+38);
+    format[4] = 'f';
+    format[5] = '\0';
+  }
+  else {
+    format[2] = '2';
+    format[3] = '0';
+    format[4] = 'f';
+    format[5] = '\0';
+  }
+
   if(val > (double)(pow((double)(2),(double)(128))))
     format[3] = 'e';
 
@@ -1329,7 +1341,7 @@ double randomDouble(double min, double max)
 //----------------------------------------------------------------
 // Procedure: tokParse
 //   Example: info  = "fruit=apple, drink=water, temp=98.6";
-//            match = str_tok(info, "temp", ',', '=', rval);
+//            match = tokParse(info, "temp", ',', '=', rval);
 //    Result: match:true rval:98.6
 
 bool tokParse(const string& str, const string& left, 
@@ -1344,6 +1356,27 @@ bool tokParse(const string& str, const string& left,
     return(false);
 
   rval = atof(rstr.c_str());
+  return(true);
+}
+
+//----------------------------------------------------------------
+// Procedure: tokParse
+//   Example: info  = "fruit=apple, result=true, temp=98.6";
+//            match = tokParse(info, "temp", ',', '=', rval);
+//    Result: match:true bval:true
+
+bool tokParse(const string& str, const string& left, 
+	       char gsep, char lsep, bool& bval)
+{
+  string rstr;
+  bool res = tokParse(str, left, gsep, lsep, rstr);
+  if(!res)
+    return(false);
+  
+  if(!isBoolean(rstr))
+    return(false);
+
+  bval = (tolower(rstr) == "true");
   return(true);
 }
 

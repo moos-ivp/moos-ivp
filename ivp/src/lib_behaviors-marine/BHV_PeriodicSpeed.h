@@ -31,7 +31,7 @@ class IvPDomain;
 class BHV_PeriodicSpeed : public IvPBehavior {
 public:
   BHV_PeriodicSpeed(IvPDomain);
-  ~BHV_PeriodicSpeed() {};
+  ~BHV_PeriodicSpeed() {}
   
   IvPFunction* onRunState();
   void         onIdleState();

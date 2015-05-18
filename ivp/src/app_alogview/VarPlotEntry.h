@@ -29,28 +29,28 @@
 class VarPlotEntry
 {
  public:
-  VarPlotEntry(double tstamp=0)  {m_tstamp=tstamp;};
-  virtual ~VarPlotEntry() {};
+  VarPlotEntry(double tstamp=0)  {m_tstamp=tstamp;}
+  virtual ~VarPlotEntry() {}
 
   // Setters
-  void setVarName(std::string s)   {m_varname=s;};
-  void setVarVal(std::string s)    {m_varval=s;};
-  void setVarSrcAux(std::string s) {m_varsrcaux=s;};
-  void setVarSource(std::string v) {m_varsrc=v;};
-  void setVName(std::string v)     {m_vname=v;};
+  void setVarName(std::string s)   {m_varname=s;}
+  void setVarVal(std::string s)    {m_varval=s;}
+  void setVarSrcAux(std::string s) {m_varsrcaux=s;}
+  void setVarSource(std::string v) {m_varsrc=v;}
+  void setVName(std::string v)     {m_vname=v;}
   
   // Getters
-  double      getTStamp() const    {return(m_tstamp);};
-  std::string getVarName() const   {return(m_varname);};
-  std::string getVarVal() const    {return(m_varval);};
-  std::string getVarSrcAux() const {return(m_varsrcaux);};
-  std::string getSource() const    {return(m_varsrc);};
-  std::string getVName() const     {return(m_vname);};
-  std::string getFormatted() const {return(m_formatted);};
+  double      getTStamp() const    {return(m_tstamp);}
+  std::string getVarName() const   {return(m_varname);}
+  std::string getVarVal() const    {return(m_varval);}
+  std::string getVarSrcAux() const {return(m_varsrcaux);}
+  std::string getSource() const    {return(m_varsrc);}
+  std::string getVName() const     {return(m_vname);}
+  std::string getFormatted() const {return(m_formatted);}
 
   // Formatting
   void format(int, int, int, int, int, bool, bool, bool, bool);
-  void clearFormat() {m_formatted="";};
+  void clearFormat() {m_formatted="";}
 
 private:
   double      m_tstamp;

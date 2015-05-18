@@ -30,13 +30,13 @@ class ColoredPoint
 {
  public:
   ColoredPoint() 
-    {m_valid=false;};
+    {m_valid=false;}
   ColoredPoint(double x, double y)
-    {m_x=x; m_y=y; m_valid=true;};
+    {m_x=x; m_y=y; m_valid=true;}
   
-  bool isValid()    {return(m_valid);};  
-  void setInvalid() {m_valid = false;};
-  void setValid()   {m_valid = true;};
+  bool isValid()    {return(m_valid);}  
+  void setInvalid() {m_valid = false;}
+  void setValid()   {m_valid = true;}
 
   double  m_x;
   double  m_y;

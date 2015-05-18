@@ -35,36 +35,36 @@ public:
   bool readTiff(std::string filename);
   void setTexture();
 
-  unsigned char* get_img_data()       {return(m_img_data);};
-  unsigned int   get_img_pix_width()  {return(m_img_pix_width);};
-  unsigned int   get_img_pix_height() {return(m_img_pix_height);};
-  unsigned int   get_img_mtr_width()  {return(m_img_mtr_width);};
-  unsigned int   get_img_mtr_height() {return(m_img_mtr_height);};
+  unsigned char* get_img_data()       {return(m_img_data);}
+  unsigned int   get_img_pix_width()  {return(m_img_pix_width);}
+  unsigned int   get_img_pix_height() {return(m_img_pix_height);}
+  unsigned int   get_img_mtr_width()  {return(m_img_mtr_width);}
+  unsigned int   get_img_mtr_height() {return(m_img_mtr_height);}
 
 
-  double get_img_centx()        {return(m_img_centx);};
-  double get_img_centy()        {return(m_img_centy);};
-  double get_img_meters()       {return(m_img_meters_x);};
+  double get_img_centx()        {return(m_img_centx);}
+  double get_img_centy()        {return(m_img_centy);}
+  double get_img_meters()       {return(m_img_meters_x);}
 
-  double get_x_at_img_left()    {return(m_x_at_img_left);};
-  double get_x_at_img_right()   {return(m_x_at_img_right);};
-  double get_y_at_img_bottom()  {return(m_y_at_img_bottom);};
-  double get_y_at_img_top()     {return(m_y_at_img_top);};
-  double get_x_at_img_ctr()     {return(m_x_at_img_ctr);};
-  double get_y_at_img_ctr()     {return(m_y_at_img_ctr);};
+  double get_x_at_img_left()    {return(m_x_at_img_left);}
+  double get_x_at_img_right()   {return(m_x_at_img_right);}
+  double get_y_at_img_bottom()  {return(m_y_at_img_bottom);}
+  double get_y_at_img_top()     {return(m_y_at_img_top);}
+  double get_x_at_img_ctr()     {return(m_x_at_img_ctr);}
+  double get_y_at_img_ctr()     {return(m_y_at_img_ctr);}
 
   double get_pix_per_mtr_x()    
-  {return((double)(m_img_pix_width) / (m_img_mtr_width));};
+  {return((double)(m_img_pix_width) / (m_img_mtr_width));}
   double get_pix_per_mtr_y()    
-  {return((double)(m_img_pix_height) / (m_img_mtr_height));};
+  {return((double)(m_img_pix_height) / (m_img_mtr_height));}
 
   double pixToPctX(double pix);
   double pixToPctY(double pix);
 
   void   setDatumLatLon(double lat, double lon);
 
-  std::string getTiffFile() const {return(m_tiff_file);};
-  std::string getInfoFile() const {return(m_info_file);};
+  std::string getTiffFile() const {return(m_tiff_file);}
+  std::string getInfoFile() const {return(m_info_file);}
 
   bool readTiffInfoEmpty(double, double, double, double);
 

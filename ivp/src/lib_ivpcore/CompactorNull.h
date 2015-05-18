@@ -30,14 +30,14 @@
 
 class CompactorNull: public Compactor {
 public:
-  CompactorNull() {};
-  virtual ~CompactorNull() {};
+  CompactorNull() {}
+  virtual ~CompactorNull() {}
 
   bool compact(IvPBox*) 
-    {return(true);};
+    {return(true);}
 
   double maxVal(IvPBox *b, bool *ok)
-    {*ok=true; return(b->maxVal());};
+    {*ok=true; return(b->maxVal());}
 };
 #endif
 

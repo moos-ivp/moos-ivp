@@ -40,8 +40,8 @@ public:
 
   void makeEmpty();
   void makeEmptyAndDeleteBoxes();
-  int  getSize()     { return(m_size);  };
-  int  size()        { return(m_size);  };
+  int  getSize()     { return(m_size); }
+  int  size()        { return(m_size); }
 
   void        addBox(IvPBox*, int end=FIRST);
   void        addBSN(BoxSetNode&, int end=FIRST);

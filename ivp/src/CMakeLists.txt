@@ -4,10 +4,9 @@ PROJECT(IVP)
 
 IF (${WIN32})
   # Define Windows Compiler flags here
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+  SET(CMAKE_CXX_FLAGS " ")
 ELSE (${WIN32})
-  #SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -Wall -Wextra")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -Wall -Wno-long-long")
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 ENDIF (${WIN32})
 
 #===============================================================================
@@ -34,10 +33,6 @@ message("MOOS_INCLUDE_DIRS:" ${MOOS_INCLUDE_DIRS})
 message("MOOS_LIBRARIES:   " ${MOOS_LIBRARIES})
 message("+++++++++++++++++++++++++++++++++++++++++")
 
-#include_directories(${PROJ4_INCLUDE_DIRS})
-#link_directories(${PROJ4_LIB_PATH})
-
-
 #===============================================================================
 # FINDING MOOSGeodesy' HEADERS AND LIBRARIES...  
 #===============================================================================
@@ -58,7 +53,8 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 #-------------------------------------------------------------------------------
 # Let users control whether or not GUI-related libraries/apps are built...
 #-------------------------------------------------------------------------------
-SET(IVP_BUILD_GUI_CODE OFF CACHE BOOL "Build IvP's GUI-related libraries and apps.")
+SET(IVP_BUILD_GUI_CODE ON CACHE BOOL "Build IvP's GUI-related libraries and apps.")
+SET(IVP_BUILD_BOT_CODE_ONLY OFF CACHE BOOL "Build IvP's minimal set of bot apps.")
 
 #-------------------------------------------------------------------------------
 # Let users control whether or UTM or Local Coords are used
@@ -110,32 +106,24 @@ SET(IVP_NON_GUI_LIBS
    )
 
 IF (${WIN32})
-   SET(TIFF_SRC_DIR lib_tiff/tiff-3.8.2/libtiff)
-   # For Windows use the preconfigure headers provided by libtiff
-   # Use CONFIGURE_FILE to copy the supplied files to their approtiate
-   # locations.
-   CONFIGURE_FILE(${TIFF_SRC_DIR}/tif_config.h.vc 
-	   ${TIFF_SRC_DIR}/tif_config.h COPYONLY)
-   CONFIGURE_FILE(${TIFF_SRC_DIR}/tiffconf.h.vc 
-	   ${TIFF_SRC_DIR}/tiffconf.h COPYONLY)
-   # Add the libtiff headers directory
-   INCLUDE_DIRECTORIES( AFTER ${TIFF_SRC_DIR} )
-   # Set the IVP GUI libraries for Windows
-   SET(IVP_GUI_LIBS
-      lib_ipfview
-      lib_marineview
-      lib_tiff
-      )
-    
+  SET(TIFF_SRC_DIR lib_tiff/tiff-3.8.2/libtiff)
+  # For Windows use the preconfigure headers provided by libtiff
+  # Use CONFIGURE_FILE to copy the supplied files to their approtiate
+  # locations.
+  CONFIGURE_FILE(${TIFF_SRC_DIR}/tif_config.h.vc 
+    ${TIFF_SRC_DIR}/tif_config.h COPYONLY)
+  CONFIGURE_FILE(${TIFF_SRC_DIR}/tiffconf.h.vc 
+    ${TIFF_SRC_DIR}/tiffconf.h COPYONLY)
+  # Add the libtiff headers directory
+  INCLUDE_DIRECTORIES( AFTER ${TIFF_SRC_DIR} )
+  # Set the IVP GUI libraries for Windows
+  SET(IVP_GUI_LIBS lib_ipfview lib_marineview lib_tiff)
+  
 ELSE (${WIN32})
-   # Linux, Mac
-   SET(IVP_GUI_LIBS
-      lib_ipfview
-      lib_marineview
-#      lib_ulogview
-      )
-    
+  # Linux, Mac
+  SET(IVP_GUI_LIBS lib_ipfview lib_marineview)
 ENDIF (${WIN32})
+
 
 SET(IVP_LIBS_TO_BUILD ${IVP_NON_GUI_LIBS})
 
@@ -185,35 +173,55 @@ ENDFOREACH(L)
 #---------------------------------------------------------------------
 #  Build the Applications
 #---------------------------------------------------------------------
-  
-SET(IVP_NON_GUI_APPS
+
+#---------------------------------------------------------------------
+# Minimal set of apps that may be run on a robot (with slower CPU)
+#---------------------------------------------------------------------
+
+SET(ROBOT_APPS
   app_aloggrep
   app_alogscan
-  app_alogeff
-  app_alogsplit
-  app_alogsort
   app_alogrm
   app_alogiter
   app_alogclip
   app_aloghelm
-  app_alogcheck
   app_nsplug
-  app_gen_hazards
-#  app_bhv2graphviz
   pEchoVar
-  pXRelay
   pHelmIvP
   pMarinePID
   pBasicContactMgr
   pDeadManPost
   pNodeReporter
-#  pObstacleMgrX
-#  pPoseKeep
+  uFldMessageHandler
+  uFldNodeBroker
+  uHelmScope
+  uTimerScript
+  uProcessWatch
+  uLoadWatch
+  uTermCommand
+  uXMS
+  uMAC
+  uPokeDB
+  pHostInfo
+  iSay
+  pSafetyRetreat
+  )
+
+#---------------------------------------------------------------------
+# Larger set of apps but still are restricted to non-gui apps
+#---------------------------------------------------------------------
+
+SET(IVP_NON_GUI_APPS
+  app_alogeff
+  app_alogsplit
+  app_alogsort
+  app_alogcheck
+  app_gen_hazards
+  app_bhv2graphviz
+  pXRelay
   uFldCollisionDetect
   uFldPathCheck
   uFldShoreBroker
-  uFldMessageHandler
-  uFldNodeBroker
   uFldScope
   uFldNodeComms
   uFldBeaconRangeSensor
@@ -224,26 +232,10 @@ SET(IVP_NON_GUI_APPS
   uFldGenericSensor
   uFldWrapDetect
   pSearchGrid
-  uTimerScript
-  uHelmScope
-  uProcessWatch
-  uLoadWatch
   uSimMarine
-  uTermCommand
-  uXMS
-  uMAC
-  uPokeDB
-  pHostInfo
-  iSay
+  uSimCurrent
   )
 
-IF( EXISTS pSafetyRetreat )
-  LIST(APPEND IVP_NON_GUI_APPS 
-  pSafetyRetreat
-  uSimCurrent
-  uPlotViewer
-)  
-ENDIF( EXISTS pSafetyRetreat )
 
 SET(IVP_GUI_APPS
   app_ffview
@@ -254,9 +246,20 @@ SET(IVP_GUI_APPS
   pMarineViewer
   uFunctionVis
   uMACView
+  uPlotViewer
   )
 
-SET(IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})
+SET(IVP_APPS_TO_BUILD ${ROBOT_APPS})
+
+message("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+message(" IVP_BUILD_BOT_CODE_ONLY: ${IVP_BUILD_BOT_CODE_ONLY}")
+message("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+IF("${IVP_BUILD_BOT_CODE_ONLY}" STREQUAL "OFF")
+  LIST(APPEND IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})
+ENDIF("${IVP_BUILD_BOT_CODE_ONLY}" STREQUAL "OFF")
+
+
 IF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
    LIST(APPEND IVP_APPS_TO_BUILD ${IVP_GUI_APPS})
 ENDIF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")

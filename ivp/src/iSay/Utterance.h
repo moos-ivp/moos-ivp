@@ -31,34 +31,34 @@ class Utterance
  public:
   Utterance(std::string);
   Utterance();
-  ~Utterance() {};
+  ~Utterance() {}
    
   void init();
   bool initFromString(std::string);
 
-  void setText(std::string s)    {m_text=s;};
-  void setFile(std::string s)    {m_file=s;};
-  void setRate(double v)         {m_rate=v;};
-  void setPriority(double v)     {m_priority=v;};
-  void setTimeReceived(double v) {m_time_received=v;};
-  void setTimePosted(double v)   {m_time_posted=v;};
-  void setSource(std::string s)  {m_source=s;};
-  void setNode(std::string s)    {m_node=s;};
+  void setText(std::string s)    {m_text=s;}
+  void setFile(std::string s)    {m_file=s;}
+  void setRate(double v)         {m_rate=v;}
+  void setPriority(double v)     {m_priority=v;}
+  void setTimeReceived(double v) {m_time_received=v;}
+  void setTimePosted(double v)   {m_time_posted=v;}
+  void setSource(std::string s)  {m_source=s;}
+  void setNode(std::string s)    {m_node=s;}
   bool setVoice(std::string);
   
-  std::string getText() const      {return(m_text);};
-  std::string getFile() const      {return(m_file);};
-  std::string getVoice() const     {return(m_voice);};
-  std::string getSource() const    {return(m_source);};
-  std::string getNode() const      {return(m_node);};
+  std::string getText() const      {return(m_text);}
+  std::string getFile() const      {return(m_file);}
+  std::string getVoice() const     {return(m_voice);}
+  std::string getSource() const    {return(m_source);}
+  std::string getNode() const      {return(m_node);}
 
-  double      getRate() const         {return(m_rate);};
-  double      getPriority() const     {return(m_priority);};
-  double      getTimeReceived() const {return(m_time_received);};
-  double      getTimePosted() const   {return(m_time_posted);};
+  double      getRate() const         {return(m_rate);}
+  double      getPriority() const     {return(m_priority);}
+  double      getTimeReceived() const {return(m_time_received);}
+  double      getTimePosted() const   {return(m_time_posted);}
   
-  bool        isTopPriority() const   {return(m_top_priority);};
-  bool        isEmpty() const         {return(m_text == "");};
+  bool        isTopPriority() const   {return(m_top_priority);}
+  bool        isEmpty() const         {return(m_text == "");}
   
   std::string getSpec() const;
   std::string getType() const;

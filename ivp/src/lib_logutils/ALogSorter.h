@@ -30,15 +30,15 @@
 class ALogSorter
 {
  public:
-  ALogSorter() {m_check_for_duplicates=true; m_sort_warnings=0;};
-  ~ALogSorter() {};
+  ALogSorter() {m_check_for_duplicates=true; m_sort_warnings=0;}
+  ~ALogSorter() {}
 
   bool         addEntry(const ALogEntry&, bool force_order=false);
   ALogEntry    popEntry();
-  void         checkForDuplicates(bool v) {m_check_for_duplicates=v;};
+  void         checkForDuplicates(bool v) {m_check_for_duplicates=v;}
 
-  unsigned int size() const         {return(m_entries.size());};
-  unsigned int sortWarnings() const {return(m_sort_warnings);};
+  unsigned int size() const         {return(m_entries.size());}
+  unsigned int sortWarnings() const {return(m_sort_warnings);}
 
  private:
   std::list<ALogEntry> m_entries;

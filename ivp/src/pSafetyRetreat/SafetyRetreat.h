@@ -31,7 +31,7 @@ class SafetyRetreat : public CMOOSApp
 {
  public:
   SafetyRetreat();
-  virtual ~SafetyRetreat() {};
+  virtual ~SafetyRetreat() {}
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();

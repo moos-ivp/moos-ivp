@@ -33,7 +33,7 @@ public:
   XYArc(double x, double y, double rad, double langle, double rangle);
   XYArc(double x, double y, double rad, double langle, double rangle,
 	double ax1, double ay1, double ax2, double ay2);
-  virtual ~XYArc() {};
+  virtual ~XYArc() {}
 
   bool   initialize(const std::string&);
   void   set(double x, double y, double radius, 
@@ -44,8 +44,8 @@ public:
   void   setLangle(double v);
   void   setRangle(double v);
 
-  double getLangle() const    {return(m_langle);};
-  double getRangle() const    {return(m_rangle);};
+  double getLangle() const    {return(m_langle);}
+  double getRangle() const    {return(m_rangle);}
 
   double lengthUnits() const;
   double lengthDegrees() const;
@@ -62,10 +62,10 @@ public:
 
   std::string toString();
 
-  double getAX1() {return(m_ax1);};
-  double getAY1() {return(m_ay1);};
-  double getAX2() {return(m_ax2);};
-  double getAY2() {return(m_ay2);};
+  double getAX1() {return(m_ax1);}
+  double getAY1() {return(m_ay1);}
+  double getAX2() {return(m_ax2);}
+  double getAY2() {return(m_ay2);}
 
 protected:
   void   setBoundingBox();

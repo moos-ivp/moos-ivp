@@ -30,23 +30,23 @@ class NodeMessage
 {
  public:
   NodeMessage();
-  ~NodeMessage() {};
+  ~NodeMessage() {}
 
-  void setSourceNode(const std::string& s)  {m_src_node=s;};
-  void setDestNode(const std::string& s)    {m_dest_node=s;};
-  void setDestGroup(const std::string& s)   {m_dest_group=s;};
-  void setVarName(const std::string& s)     {m_var_name=s;};
+  void setSourceNode(const std::string& s)  {m_src_node=s;}
+  void setDestNode(const std::string& s)    {m_dest_node=s;}
+  void setDestGroup(const std::string& s)   {m_dest_group=s;}
+  void setVarName(const std::string& s)     {m_var_name=s;}
   void setStringVal(const std::string&);
 
-  void setDoubleVal(double v) {m_double_val=v; m_double_val_set=true;};
+  void setDoubleVal(double v) {m_double_val=v; m_double_val_set=true;}
 
 
-  std::string getSourceNode() const  {return(m_src_node);};
-  std::string getDestNode() const    {return(m_dest_node);};
-  std::string getDestGroup() const   {return(m_dest_group);};
-  std::string getVarName() const     {return(m_var_name);};
-  std::string getStringVal() const   {return(m_string_val);};
-  double      getDoubleVal() const   {return(m_double_val);};
+  std::string getSourceNode() const  {return(m_src_node);}
+  std::string getDestNode() const    {return(m_dest_node);}
+  std::string getDestGroup() const   {return(m_dest_group);}
+  std::string getVarName() const     {return(m_var_name);}
+  std::string getStringVal() const   {return(m_string_val);}
+  double      getDoubleVal() const   {return(m_double_val);}
 
   unsigned int length() const;
     

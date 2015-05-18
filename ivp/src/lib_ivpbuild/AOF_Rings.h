@@ -35,7 +35,7 @@
 class AOF_Rings: public AOF {
 public:
   AOF_Rings(IvPDomain);
-  virtual ~AOF_Rings() {};
+  virtual ~AOF_Rings() {}
 
 public:  
   double evalBox(const IvPBox *b) const;  // Virtual Defined
@@ -43,7 +43,7 @@ public:
   bool   setParam(const std::string&, const std::string&);
 
 public:
-  int         size() {return(m_rings.size());};
+  int         size() {return(m_rings.size());}
   void        print() const;
   std::string latexSTR(int full=1) const;   
 

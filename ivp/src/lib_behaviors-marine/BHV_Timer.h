@@ -29,7 +29,7 @@
 class BHV_Timer : public IvPBehavior {
 public:
   BHV_Timer(IvPDomain);
-  ~BHV_Timer() {};
+  ~BHV_Timer() {}
   
   IvPFunction* onRunState();
   void         onIdleState();

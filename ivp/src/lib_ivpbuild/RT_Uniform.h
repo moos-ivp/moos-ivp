@@ -39,7 +39,7 @@ class Regressor;
 class RT_Uniform {
 public:
   RT_Uniform(Regressor*);
-  virtual ~RT_Uniform() {};
+  virtual ~RT_Uniform() {}
   
 public: 
   PDMap*  create(const IvPBox*u, const IvPBox*, PQueue&);
