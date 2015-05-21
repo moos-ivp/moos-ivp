@@ -1,9 +1,0 @@
-//------------------------------------------------
-// uTV config block
-
-ProcessConfig = uTV
-{
-   AppTick   = 4
-   CommsTick = 4
-}
-
