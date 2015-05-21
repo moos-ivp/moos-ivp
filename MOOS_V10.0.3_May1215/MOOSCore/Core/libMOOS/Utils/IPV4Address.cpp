@@ -95,7 +95,7 @@ void IPV4Address::set_host(const std::string & host)
 	host_=host;
 }
 
-void IPV4Address::set_port(uint16_t port)
+void IPV4Address::set_port(uint32_t port)
 {
 	port_=port;
 }
@@ -105,7 +105,7 @@ std::string IPV4Address::host() const
 	return host_;
 }
 
-uint16_t IPV4Address::port() const
+uint32_t IPV4Address::port() const
 {
 	return port_;
 }
