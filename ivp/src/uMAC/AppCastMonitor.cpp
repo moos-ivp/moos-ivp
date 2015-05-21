@@ -488,8 +488,11 @@ void AppCastMonitor::printReportNodes()
 void AppCastMonitor::printReportProcs()
 {
   printHeader();
-  cout << "===================================================================";
-  cout << endl;
+  if(!m_terse_mode) 
+    cout << "===================================================================" << endl;
+  else
+    cout << "==================================================" << endl;
+
   cout << "AppCasts Recd: " << m_repo.actree().getTreeAppCastCount() << endl;
   cout << endl;
   
@@ -500,8 +503,12 @@ void AppCastMonitor::printReportProcs()
   }
 
   ACTable actab(5,3); // 5 columns, 3 blanks separating
-  actab << "ID | Channel/App | AppCasts | Config   | Run     ";
-  actab << "   | Name        | Received | Warnings | Warnings";
+  if(!m_terse_mode) {
+    actab << "ID | Channel/App | AppCasts | Config   | Run     ";
+    actab << "   | Name        | Received | Warnings | Warnings";
+  }
+  else 
+    actab << "ID | Channel/App | AppCasts | CWarns   | RWarns     ";    
   actab.addHeaderLines();
   
   vector<string> svector = m_repo.actree().getProcIDs(node);
