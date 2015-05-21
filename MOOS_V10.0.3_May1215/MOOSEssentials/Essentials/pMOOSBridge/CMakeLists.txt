@@ -3,13 +3,6 @@ set(EXECNAME pMOOSBridge)
 
 find_package(MOOS 10.0 )
 
-message("==============================pMOOSBridge")
-message("+++++++++++++++++++++++++++++++++++++++++")
-message("MOOS_INCLUDE_DIRS:" ${MOOS_INCLUDE_DIRS})
-message("MOOS_LIBRARIES:   " ${MOOS_LIBRARIES})
-message("+++++++++++++++++++++++++++++++++++++++++")
-
-
 #what files are needed?
 SET(SRCS MOOSBridgeMain.cpp MOOSCommunity.cpp MOOSBridge.cpp  MOOSCommunity.h MOOSBridge.h MOOSUDPLink.cpp MOOSUDPLink.h )
 
