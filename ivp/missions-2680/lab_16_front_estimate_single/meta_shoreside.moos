@@ -134,5 +134,5 @@ ProcessConfig = pMarineViewer
 
   button_three = ALLSTOP  # DEPLOY_ALL=false
 //  button_four  = SHOW:both   # FGR_SHOW=both
-  BUTTON_four = STATION # STATION_KEEP=true
+  BUTTON_four = STATION_ALL # STATION_KEEP=true
 }
