@@ -42,6 +42,8 @@ std::vector<std::string> parseStringZ(const std::string&, char,
 
 std::vector<std::string> parseStringToWords(const std::string&, char c=0);
 
+std::vector<std::string> parseQuotedString(const std::string&, char separator);
+
 std::vector<std::string> chompString(const std::string&, char);
 std::vector<std::string> sortStrings(std::vector<std::string>);
 std::vector<std::string> mergeVectors(std::vector<std::string>,

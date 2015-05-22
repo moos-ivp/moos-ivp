@@ -36,6 +36,8 @@ void help_message();
 
 REPLAY_GUI* gui = 0;
 
+void idleProc(void*);
+
 //--------------------------------------------------------
 // Procedure: idleProc
 

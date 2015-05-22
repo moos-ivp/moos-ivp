@@ -34,6 +34,9 @@
 
 using namespace std;
 
+void pause(int);
+void idleProc(void*);
+
 void pause(int nMS)
 {
 #ifdef _WIN32

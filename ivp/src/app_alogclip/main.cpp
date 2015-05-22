@@ -33,6 +33,8 @@
 
 using namespace std;
 
+void display_usage();
+
 //--------------------------------------------------------
 // Procedure: exit_with_usage
 

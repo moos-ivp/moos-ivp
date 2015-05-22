@@ -13,3 +13,13 @@ target_link_libraries(${EXECNAME} ${MOOS_LIBRARIES} ${MOOS_DEPEND_LIBRARIES})
 INSTALL(TARGETS ${EXECNAME}
   RUNTIME DESTINATION bin
 )
+
+
+
+#copy resources
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pshare_test_scripts DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+
+add_custom_command(TARGET copy_scripts POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+                       ${CMAKE_SOURCE_DIR}/pshare_test_scripts ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
