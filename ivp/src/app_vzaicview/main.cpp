@@ -31,6 +31,7 @@
 
 using namespace std;
 
+void idleProc(void*);
 void help_message();
 
 //--------------------------------------------------------
