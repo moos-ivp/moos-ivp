@@ -151,8 +151,7 @@ IF("${IVP_LIB_DIRECTORY}" STREQUAL "")
 ENDIF("${IVP_LIB_DIRECTORY}" STREQUAL "")
 
 IF("${IVP_INC_DIRECTORY}" STREQUAL "")
-   # IVP_SOURCE_DIRECTORY is defined by CMake, because this project's name is
-   # IVP.
+   # IVP_SOURCE_DIRECTORY is defined by CMake, because this project's name is IVP
    GET_FILENAME_COMPONENT(IVP_INC_DIRECTORY "${IVP_SOURCE_DIR}/../../include" ABSOLUTE)
 ENDIF("${IVP_INC_DIRECTORY}" STREQUAL "")
 
@@ -170,12 +169,13 @@ FOREACH(L ${IVP_LIBS_TO_BUILD} )
 ENDFOREACH(L)
 
 
-#---------------------------------------------------------------------
-#  Build the Applications
-#---------------------------------------------------------------------
+#=====================================================================
+#  Build the list of Apps to be built
+#=====================================================================
 
 #---------------------------------------------------------------------
-# Minimal set of apps that may be run on a robot (with slower CPU)
+# Part 1: ROBOT_APPS
+#         Minimal set of apps for running on a robot (with slower CPU)
 #---------------------------------------------------------------------
 
 SET(ROBOT_APPS
@@ -204,15 +204,23 @@ SET(ROBOT_APPS
   uPokeDB
   pHostInfo
   iSay
-  pSafetyRetreat
   )
 
 #---------------------------------------------------------------------
-# Larger set of apps but still are restricted to non-gui apps
+# pSafetyRetreat is excluded in moos-ivp-aro downloads to check if the 
+# source code is present before adding it to the build list.
+IF( EXISTS pSafetyRetreat )
+  LIST(APPEND ROBOT_APPS pSafetyRetreat
+)  
+ENDIF( EXISTS pSafetyRetreat )
+
+
+#---------------------------------------------------------------------
+# Part 2 of 3: IVP_NON_GUI_APPS
+#              Larger set of apps but still, but still short of GUI apps.
 #---------------------------------------------------------------------
 
 SET(IVP_NON_GUI_APPS
-  app_alogeff
   app_alogsplit
   app_alogsort
   app_alogcheck
@@ -233,9 +241,20 @@ SET(IVP_NON_GUI_APPS
   uFldWrapDetect
   pSearchGrid
   uSimMarine
-  uSimCurrent
   )
 
+#---------------------------------------------------------------------
+# uSimCurrent is excluded in moos-ivp-aro downloads to check if the 
+# source code is present before adding it to the build list.
+IF( EXISTS uSimCurrent )
+  LIST(APPEND IVP_NON_GUI_APPS uSimCurrent)  
+ENDIF( EXISTS uSimCurrent )
+
+
+#---------------------------------------------------------------------
+# Part 3 of 3: IVP_GUI_APPS
+#              Include on the GUI applications
+#---------------------------------------------------------------------
 
 SET(IVP_GUI_APPS
   app_ffview

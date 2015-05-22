@@ -27,8 +27,13 @@ print_usage_and_exit()
     printf "  --clean, -c                                 \n"
     printf "    Invokes make clean and removes build/*    \n"
     printf "                                              \n"
-    printf "By default, all code is built, and the debug  \n"
-    printf "and optimization compiler flags are invoked.  \n"
+    printf "By default, all code is built, and the debug and optimization  \n"
+    printf "compiler flags are invoked.                                    \n"
+    printf "                                                               \n"
+    printf "Note: By default -j12 is provided to make to utilize up to 12  \n"
+    printf "      processors in the build. This can be overridden simply   \n"
+    printf "      by using -j1 on the command line instead. This will give \n"
+    printf "      more reasonable output if there should be a build error. \n"
     exit 1
 }
 
@@ -59,7 +64,7 @@ for ARGI; do
 done
 
 ################################################################################
-CMAKE_CXX_FLAGS="-Wall -Wno-long-long -pedantic -Wunreachable-code -Wmissing-declarations "
+CMAKE_CXX_FLAGS="-Wall -Wno-long-long -pedantic -Wunreachable-code -Wmissing-declarations -fPIC"
 if [ ${BUILD_DEBUG} = "yes" ] ; then
     CMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS" -g"
 fi

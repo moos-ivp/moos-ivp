@@ -548,12 +548,12 @@ bool HelmIvP::buildReport()
     // doing so, turn off further reports to the terminal.
     if(m_iteration > 1)
       m_term_reporting = false;
-    m_msgs << "   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-    m_msgs << "   !!                                             !!" << endl;
-    m_msgs << "   !!  The helm is in the MALCONFIG state due to  !!" << endl;
-    m_msgs << "   !!  unresolved configuration warnings.         !!" << endl;
-    m_msgs << "   !!                                             !!" << endl;
-    m_msgs << "   !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    m_msgs << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    m_msgs << "!!                                             !!" << endl;
+    m_msgs << "!!  The helm is in the MALCONFIG state due to  !!" << endl;
+    m_msgs << "!!  unresolved configuration warnings.         !!" << endl;
+    m_msgs << "!!                                             !!" << endl;
+    m_msgs << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
     return(true);
   }
 

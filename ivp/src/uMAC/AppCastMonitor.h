@@ -36,7 +36,8 @@ class AppCastMonitor : public CMOOSApp
   ~AppCastMonitor() {}
   
   void handleCommand(char);
-
+  void setTerseMode(bool v) {m_terse_mode=v;}
+  
  protected:
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
@@ -73,7 +74,7 @@ class AppCastMonitor : public CMOOSApp
   std::string  m_content_mode;      // help,nodes,procs,appcast 
   std::string  m_content_mode_prev;
 
-  bool         m_update_pending;
+  bool         m_terse_mode;
   
  private: // State variables
   unsigned int m_term_reports;
@@ -82,7 +83,8 @@ class AppCastMonitor : public CMOOSApp
   double       m_curr_time;
   double       m_last_report_time;
   double       m_term_report_interval;
-
+  bool         m_update_pending;
+  
   AppCastRepo  m_repo;
 };
 

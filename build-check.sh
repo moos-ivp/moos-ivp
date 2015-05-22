@@ -120,7 +120,6 @@ MISSING=""
 
 if [ ! -e bin/alogcheck ];   then  MISSING=$MISSING"alogcheck,"; fi
 if [ ! -e bin/alogclip ];    then  MISSING=$MISSING"alogclip,"; fi
-if [ ! -e bin/alogeff ];     then  MISSING=$MISSING"alogeff,"; fi
 if [ ! -e bin/aloggrep ];    then  MISSING=$MISSING"aloggrep,"; fi
 if [ ! -e bin/aloghelm ];    then  MISSING=$MISSING"aloghelm,"; fi
 if [ ! -e bin/alogiter ];    then  MISSING=$MISSING"alogiter,"; fi
@@ -149,7 +148,6 @@ if [ ! -e bin/pHostInfo ];     then  MISSING=$MISSING"pHostInfo,"; fi
 if [ ! -e bin/pMarinePID ];    then  MISSING=$MISSING"pMarinePID,"; fi
 if [ ! -e bin/pMarineViewer ]; then  MISSING=$MISSING"pMarineViewer,"; fi
 if [ ! -e bin/pNodeReporter ]; then  MISSING=$MISSING"pNodeReporter,"; fi
-if [ ! -e bin/pSafetyRetreat ]; then  MISSING=$MISSING"pSafetyRetreat,"; fi
 
 if [ ! -e bin/pSearchGrid ];   then  MISSING=$MISSING"pSearchGrid,"; fi
 if [ ! -e bin/pXRelay ];       then  MISSING=$MISSING"pXRelay,"; fi
@@ -180,7 +178,6 @@ if [ ! -e bin/uPlotViewer ];      then  MISSING=$MISSING"uPlotViewer,"; fi
 if [ ! -e bin/uPokeDB ];       then  MISSING=$MISSING"uPokeDB,"; fi
 if [ ! -e bin/uProcessWatch ]; then  MISSING=$MISSING"uProcessWatch,"; fi
 
-if [ ! -e bin/uSimCurrent ];    then  MISSING=$MISSING"uSimCurrent,"; fi
 if [ ! -e bin/uSimMarine ];    then  MISSING=$MISSING"uSimMarine,"; fi
 if [ ! -e bin/uTermCommand ];  then  MISSING=$MISSING"uTermCommand,"; fi
 if [ ! -e bin/uTimerScript ];  then  MISSING=$MISSING"uTimerScript,"; fi

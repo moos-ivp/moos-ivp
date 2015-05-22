@@ -41,6 +41,7 @@ AppCastMonitor::AppCastMonitor()
   m_last_report_time = 0;
   m_term_report_interval = 0.6;
 
+  m_terse_mode     = false;
   m_update_pending = true;
   m_refresh_mode   = "events";
 
@@ -184,8 +185,9 @@ bool AppCastMonitor::handleMailAppCast(const string& str)
   string  node_name = appcast.getNodeName();
 
   if(node_name == "")
-    return(false);
-  
+    // return(false);
+    node_name = "unknown_node";
+    
   // Add the appcast to the repo. Note if the node name is new.
   unsigned int old_node_count = m_repo.getNodeCount();
   bool new_node_name = false;
@@ -408,19 +410,25 @@ bool AppCastMonitor::switchContentMode(const string& new_mode)
 //  2   gilda          PARK           33     0          0
 //  3   ike            PARK           5      0          0
 //  4   jake           Station-Keep   6      4          0
-// 
 
 void AppCastMonitor::printReportNodes()
 {
   printHeader();
-  cout << "===================================================================";
-  cout << endl;
+  if(!m_terse_mode) 
+    cout << "===================================================================" << endl;
+  else
+    cout << "==================================================" << endl;
   cout << "AppCasts Recd: " << m_repo.actree().getTreeAppCastCount() << endl;
   cout << endl;
   
   ACTable actab(6,2); // 6 columns, 2 blanks separating
-  actab << "ID | Node Name | Helm | Recd  | Config   | Run     ";
-  actab << "   |           | Mode |       | Warnings | Warnings";
+  if(!m_terse_mode) {
+    actab << "ID | Node Name | Helm | Recd  | Config   | Run     ";
+    actab << "   |           | Mode |       | Warnings | Warnings";
+  }
+  else
+    actab << "ID | Node | HMode | Recd  | CWarns   | RWarns     ";
+
   actab.addHeaderLines();
   
   vector<string> svector = m_repo.actree().getNodeIDs();
@@ -480,8 +488,11 @@ void AppCastMonitor::printReportNodes()
 void AppCastMonitor::printReportProcs()
 {
   printHeader();
-  cout << "===================================================================";
-  cout << endl;
+  if(!m_terse_mode) 
+    cout << "===================================================================" << endl;
+  else
+    cout << "==================================================" << endl;
+
   cout << "AppCasts Recd: " << m_repo.actree().getTreeAppCastCount() << endl;
   cout << endl;
   
@@ -492,8 +503,12 @@ void AppCastMonitor::printReportProcs()
   }
 
   ACTable actab(5,3); // 5 columns, 3 blanks separating
-  actab << "ID | Channel/App | AppCasts | Config   | Run     ";
-  actab << "   | Name        | Received | Warnings | Warnings";
+  if(!m_terse_mode) {
+    actab << "ID | Channel/App | AppCasts | Config   | Run     ";
+    actab << "   | Name        | Received | Warnings | Warnings";
+  }
+  else 
+    actab << "ID | Channel/App | AppCasts | CWarns   | RWarns     ";    
   actab.addHeaderLines();
   
   vector<string> svector = m_repo.actree().getProcIDs(node);
@@ -597,20 +612,27 @@ void AppCastMonitor::printHeader()
   m_term_reports++;
   unsigned int nodes = m_repo.actree().getTreeNodeCount();
 
-  cout << endl << endl << endl << endl << endl << endl << endl;
-  cout << "===================================================================";
-  cout << endl;
   string header = GetAppName() + ":";
-
   if(m_content_mode == "procs")
     header += "  NODE=" + currentNode();
   else
     header += "  Nodes (" + uintToString(nodes) + ")";
   
   string iter = "(" + uintToString(m_term_reports)  + ") ";
-
+  
   unsigned int padlen = 67 - (m_refresh_mode.length() + iter.length());
-
+  
+  if(!m_terse_mode) {
+    cout << endl << endl << endl << endl << endl << endl << endl;
+    cout << "===================================================================" << endl;
+  }
+  else {
+    cout << endl << endl;
+    cout << "==================================================";
+    cout << endl;
+    padlen -= 17;
+  }
+    
   header = padString(header, padlen, false);
   cout << header + iter;
   if(m_refresh_mode == "paused") 

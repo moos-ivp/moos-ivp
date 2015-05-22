@@ -35,7 +35,8 @@ int main(int argc, char *argv[])
 {
   string mission_file;
   string run_command = argv[0];
-
+  bool   terse_mode = false;
+  
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
     if((argi=="-v") || (argi=="--version") || (argi=="-version"))
@@ -46,6 +47,8 @@ int main(int argc, char *argv[])
       showHelpAndExit();
     else if((argi == "-i") || (argi == "--interface"))
       showInterfaceAndExit();
+    else if((argi == "-t") || (argi == "--terse"))
+      terse_mode = true;
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
@@ -68,6 +71,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   AppCastMonitor UMAC;
+  UMAC.setTerseMode(terse_mode);
   // start the UMAC in its own thread
   MOOSAppRunnerThread appRunner(&UMAC, (char*)(run_command.c_str()), 
 				mission_file.c_str(), argc, argv);

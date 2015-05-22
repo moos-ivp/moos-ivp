@@ -60,13 +60,13 @@ public:
 	std::string host() const;
 	void set_host(const std::string & host);
 
-    uint16_t port() const;
-    void set_port(uint16_t port);
+    uint32_t port() const;
+    void set_port(uint32_t port);
 
 
 protected:
 	std::string host_;
-    uint16_t port_;
+    uint32_t port_;
 
 };
 
