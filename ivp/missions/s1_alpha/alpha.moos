@@ -54,8 +54,8 @@ ProcessConfig = pLogger
   LogAuxSrc = true
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
-  //WildCardOmitPattern = DB_VARSUMMARY
-  //WildCardOmitPattern = DB_RWSUMMARY
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
   WildCardExclusionLog = true
 }
 
@@ -189,11 +189,7 @@ ProcessConfig = pMarineViewer
   scope  = SURVEY_DIST_TO_PREV
   scope  = RETURN
   scope  = WPT_STAT
-  scope  = VIEW_SEGLIST
-  scope  = VIEW_POINT
-  scope  = VIEW_POLYGON
   scope  = MVIEWER_LCLICK
-  scope  = MVIEWER_RCLICK
 
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
