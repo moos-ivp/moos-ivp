@@ -150,8 +150,8 @@ bool AppCastMonitor::OnStartUp()
     list<string>::iterator p;
     for(p=sParams.begin(); p!=sParams.end(); p++) {
       string original_line = *p;
-      string param = stripBlankEnds(toupper(biteString(*p, '=')));
-      string value = stripBlankEnds(*p);
+      string param = toupper(biteStringX(*p, '='));
+      string value = *p;
       
       if(param == "FOO") {
         //handled

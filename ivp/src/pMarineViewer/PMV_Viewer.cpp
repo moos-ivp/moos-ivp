@@ -213,9 +213,6 @@ bool PMV_Viewer::setParam(string param, string value)
       handled = true;
     }
   }
-  else if(param == "trils_clear")
-    handled = m_op_area.addVertex(value, m_geodesy);
-
   else if(param == "op_vertex")
     handled = m_op_area.addVertex(value, m_geodesy);
 
