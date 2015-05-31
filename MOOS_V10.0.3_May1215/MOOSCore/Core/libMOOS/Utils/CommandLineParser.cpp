@@ -100,7 +100,7 @@ bool CommandLineParser::GetOption(const std::string option,  std::string  & resu
 bool CommandLineParser::GetOption(const std::string option,  int & result)
 {
 
-    std::cerr<<"in CommandLineParser::GetOption(const std::string option,  int & result)\n";
+  //std::cerr<<"in CommandLineParser::GetOption(const std::string option,  int & result)\n";
 	if(!IsAvailable())
 		return false;
 
