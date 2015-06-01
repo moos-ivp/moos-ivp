@@ -372,6 +372,7 @@ inline void REPLAY_GUI::handleUpDown(int amt)
   //else if(inNavPlotViewer()) {
   else {
     np_viewer->setParam("pan_y", ((double)(amt)/10)); 
+    np_viewer->setParam("center_view", "none");
     np_viewer->redraw();
     updateXY();
   }
@@ -389,6 +390,7 @@ inline void REPLAY_GUI::handleLeftRight(int amt)
   //else if(inNavPlotViewer()) {
   else {
     np_viewer->setParam("pan_x", ((double)(amt)/10)); 
+    np_viewer->setParam("center_view", "none");
     np_viewer->redraw();
     updateXY();
   }
