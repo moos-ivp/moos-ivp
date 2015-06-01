@@ -1,4 +1,13 @@
 
+o alogview
+  
+  - Fixed bug that would not reset the view center gravity up on arrow-key hits
+
+o BHV_Waypoint
+
+  - Added ability to set the label color hint for the seglist
+
+
 
 
 15.X Release Notes

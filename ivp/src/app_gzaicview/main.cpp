@@ -30,6 +30,7 @@
 using namespace std;
 
 void help_message();
+void idleProc(void*);
 
 //--------------------------------------------------------
 // Procedure: idleProc
