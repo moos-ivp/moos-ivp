@@ -76,6 +76,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_hint_edge_size     = 1;
   m_hint_vertex_color  = "dodger_blue";
   m_hint_edge_color    = "white";
+  m_hint_label_color   = "white";
   m_hint_nextpt_color  = "yellow";
   m_hint_nextpt_lcolor = "aqua";
   m_hint_nextpt_vertex_size = 5;
@@ -745,6 +746,8 @@ void BHV_Waypoint::postViewableSegList()
     seglist.set_color("vertex", m_hint_vertex_color);
   if(m_hint_edge_color != "")
     seglist.set_color("edge", m_hint_edge_color);
+  if(m_hint_label_color != "")
+    seglist.set_color("label", m_hint_label_color);
   if(m_hint_edge_size >= 0)
     seglist.set_edge_size(m_hint_edge_size);
   if(m_hint_vertex_size >= 0)
@@ -841,6 +844,8 @@ void BHV_Waypoint::handleVisualHint(string hint)
     m_hint_vertex_color = value;
   else if((param == "edge_color") && isColor(value))
     m_hint_edge_color = value;
+  else if((param == "label_color") && isColor(value))
+    m_hint_label_color = value;
   else if((param == "nextpt_color") && isColor(value)) 
     m_hint_nextpt_color = value;
   else if((param == "nextpt_lcolor") && isColor(value)) 

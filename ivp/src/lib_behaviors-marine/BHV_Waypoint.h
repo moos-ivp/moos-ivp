@@ -84,6 +84,7 @@ protected: // configuration parameters
   // Visual hints affecting properties of polygons/points
   std::string m_hint_vertex_color;
   std::string m_hint_edge_color;
+  std::string m_hint_label_color;
   std::string m_hint_nextpt_color;
   std::string m_hint_nextpt_lcolor;
   double      m_hint_vertex_size;
