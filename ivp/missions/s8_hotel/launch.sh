@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash -e
 
 WARP=1
 HELP="no"
