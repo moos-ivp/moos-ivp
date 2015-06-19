@@ -419,7 +419,7 @@ string removeWhite(const string& str)
 }
 
 //----------------------------------------------------------------
-// Procedure: biteString(const string&, char)
+// Procedure: biteString(string&, char)
 //   Example: input_str = "apples, pears, bananas"
 //            str = biteString(input_str, ',')
 //            str = "apples"
@@ -457,7 +457,7 @@ string biteString(string& str, char separator)
 }
 
 //----------------------------------------------------------------
-// Procedure: biteStringX(const string&, char)
+// Procedure: biteStringX(string&, char)
 //      Note: Same as biteString except blank ends will be removed
 //            from both the returned and remaining value.
 
@@ -469,7 +469,7 @@ string biteStringX(string& str, char separator)
 }
 
 //----------------------------------------------------------------
-// Procedure: biteString(const string&, char, char)
+// Procedure: biteString(string&, char, char)
 //      Note: Same as biteString(string,char) except the bite will
 //            occur at the point where either of the two given
 //            characters occur.
@@ -496,7 +496,7 @@ string biteString(string& str, char sep1, char sep2)
 }
 
 //----------------------------------------------------------------
-// Procedure: rbiteString(const string&, char)
+// Procedure: rbiteString(string&, char)
 //   Example: input_str = "apples, pears, bananas"
 //            str = rbiteString(input_str, ',')
 //            str = " bananas"
