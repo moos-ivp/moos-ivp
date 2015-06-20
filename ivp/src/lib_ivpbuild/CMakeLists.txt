@@ -30,6 +30,7 @@ SET(SRC
   ZAIC_HLEQ.cpp
   ZAIC_LEQ.cpp
   ZAIC_PEAK.cpp
+  ZAIC_SPD.cpp
   ZAIC_Vector.cpp
   )
 
@@ -61,6 +62,7 @@ SET(HEADERS
   ZAIC_HLEQ.h
   ZAIC_LEQ.h
   ZAIC_PEAK.h
+  ZAIC_SPD.h
   ZAIC_Vector.h
 )
 
