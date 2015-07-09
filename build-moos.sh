@@ -91,7 +91,7 @@ cd "${INVOC_ABS_DIR}/MOOS/proj-4.8.0"
 if [ ! -e lib/libproj.dylib ]; then
     if [ ! -e lib/libproj.a ]; then
 	echo "Building Proj4. MOOSGeodesy now uses Proj4 with MOOSGeodesy wrapper"
-	./configure 
+	./configure --with-jni=no
 	make 
 	make install 
 	echo "Done Building Proj4."
