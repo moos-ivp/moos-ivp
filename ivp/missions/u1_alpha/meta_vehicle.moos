@@ -23,7 +23,7 @@ Processconfig = ANTLER
 
 #include plug_pShare.moos
 #include plug_pHostInfo.moos
-#include plug_uFldNodeBrokder.moos
+#include plug_uFldNodeBroker.moos
 #include plug_uSimMarine.moos
 #include plug_pHelmIvP.moos
 #include plug_pMarinePID.moos
