@@ -28,26 +28,33 @@ set MODE = LOITERING {
 
 
 //----------------------------------------------
-Behavior = BHV_Loiter
-{
-  name      = loiter
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
   pwt       = 100
-  condition = MODE==LOITERING
-  updates   = UP_LOITER
-  runflag   = VEHICLE_UNDERWAY = TRUE
-  endflag   = VEHICLE_UNDERWAY = FALSE
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+  updates   = WPT_UPDATE
+  perpetual = true
 
-   post_suffix = A
-         speed = 1.3
-     clockwise = false
-        radius = 8.0
-     nm_radius = 15.0
-       polygon = radial:: $(LOITER_POS), radius=20, pts=8, snap=1, label=$(VNAME)_LOITER
-  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
-  visual_hints = edge_color=orange, vertex_color=white
-  visual_hints = edge_size=1, vertex_size=2
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+               speed = 2   // meters per second
+        capture_line = true
+      capture_radius = 5.0
+         slip_radius = 15.0
+
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+             repeat = 0
+
+  visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+    visual_hints = nextpt_lcolor=gray70
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
 }
-
 
 //----------------------------------------------
 Behavior = BHV_Waypoint
@@ -57,13 +64,14 @@ Behavior = BHV_Waypoint
   updates   = RETURN_UPDATES
   condition = MODE==RETURNING
   endflag   = STATION_KEEP = true
-  endflag   = AVOID = false
+  endflag   = DEPLOY = false
+	perpetual = true
 
-      speed = 1.3
-     radius = 3.0
-  nm_radius = 15.0
-     points = $(START_POS)
-     repeat = 10
+              speed = 2.0
+     capture_radius = 3.0
+        slip_radius = 15.0
+             points = $(START_POS)
+             repeat = 10
        lead = 8
 }
 
@@ -83,36 +91,7 @@ Behavior = BHV_StationKeep
 
        transit_speed = 1.3
           swing_time = 7
-//  hibernation_radius = 25
         visual_hints = vertex_size=0, edge_color=gray50
 }
 
 
-//----------------------------------------------
-Behavior = BHV_AvoidCollision
-{
-  name         = ac_
-  pwt          = 200
-  condition    = AVOID = true 
-  updates      = CONTACT_INFO
-  idleflag     = AVOIDING = idle
-  activeflag   = AVOIDING = active
-  inactiveflag = AVOIDING = inactive
-  runflag      = AVOIDING = running
-  endflag      = AVOIDING = end
-  endflag      = CONTACT_RESOLVED = $[CONTACT]
-  templating   = spawn
-
-             contact = to-be-set
-    on_no_contact_ok = true
-         extrapolate = true
-               decay = 30,60
-
-        pwt_outer_dist = 40
-        pwt_inner_dist = 20
-        completed_dist = 100
-     min_util_cpa_dist = 8
-     max_util_cpa_dist = 25
-             pwt_grade = linear
-   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
-}
