@@ -34,6 +34,8 @@ XYMarker::XYMarker()
   m_x     = 0;
   m_y     = 0;
   m_width = 0;
+  m_range = 0;
+  m_range_set = false;
   m_type  = "circle";
 }
 
@@ -62,6 +64,17 @@ void XYMarker::set_width(double width)
 }
 
 //---------------------------------------------------------------
+// Procedure: set_range
+
+void XYMarker::set_range(double range)
+{
+  if(range < 0)
+    range = 0;
+  m_range = range;
+  m_range_set = true;
+}
+
+//---------------------------------------------------------------
 // Procedure: get_spec
 
 string XYMarker::get_spec(string param) const
@@ -74,6 +87,9 @@ string XYMarker::get_spec(string param) const
   spec += doubleToStringX(m_y, 2);
   spec += ",width=";
   spec += doubleToStringX(m_width, 2);
+
+  if(m_range_set)
+    spec += ",range=" + doubleToString(m_range,2);
 
   if(color_set("primary_color")) {
     string color = get_color("primary_color").str();
@@ -93,8 +109,3 @@ string XYMarker::get_spec(string param) const
   
   return(spec);
 }
-
-
-
-
-

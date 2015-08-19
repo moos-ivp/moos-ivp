@@ -37,11 +37,13 @@ public:
   void    set_vx(double v)       {m_x=v;}
   void    set_vy(double v)       {m_y=v;}
   void    set_width(double v);
+  void    set_range(double v);
  
   // Getters
   double      get_vx() const     {return(m_x);}
   double      get_vy() const     {return(m_y);}
   double      get_width() const  {return(m_width);}
+  double      get_range() const  {return(m_range);}
   std::string get_type() const   {return(m_type);}
 
   std::string get_spec(std::string s="") const;
@@ -50,6 +52,8 @@ protected:
   double       m_x;
   double       m_y;
   double       m_width;
+  double       m_range;
+  bool         m_range_set;
   std::string  m_type;
 };
 

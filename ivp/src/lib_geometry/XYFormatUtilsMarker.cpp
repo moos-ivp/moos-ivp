@@ -63,11 +63,10 @@ XYMarker stringStandard2Marker(string str)
   vector<string> mvector = parseString(str, ',');
   unsigned int i, vsize = mvector.size();
 
-  string x,y,transparency,width="5";
+  string x,y,transparency,range,width="5";
   for(i=0; i<vsize; i++) {
-    mvector[i] = stripBlankEnds(mvector[i]);
-    string param = tolower(stripBlankEnds(biteString(mvector[i], '=')));
-    string value = stripBlankEnds(mvector[i]);
+    string param = tolower(biteStringX(mvector[i], '='));
+    string value = mvector[i];
     
     if(((param == "x") || (param == "xpos")) && isNumber(value))
       x = value;
@@ -77,6 +76,8 @@ XYMarker stringStandard2Marker(string str)
       transparency = value;
     else if(((param == "width") || (param == "scale")) && isNumber(value))
       width = value;
+    else if((param == "range") && isNumber(value))
+      range = value;
     else if(param == "colors") {
       string primary_color = biteString(value, ':');
       string secondary_color = value;
@@ -101,6 +102,9 @@ XYMarker stringStandard2Marker(string str)
   new_marker.set_vx(atof(x.c_str()));
   new_marker.set_vy(atof(y.c_str()));
   new_marker.set_width(atof(width.c_str()));
+  if(width != "")
+    new_marker.set_width(atof(width.c_str()));
+
   if(transparency != "") {
     double dval = atof(transparency.c_str());
     new_marker.set_transparency(dval);
