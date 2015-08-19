@@ -31,11 +31,16 @@ using namespace std;
 
 XYMarker::XYMarker()
 {
-  m_x     = 0;
-  m_y     = 0;
-  m_width = 0;
-  m_range = 0;
+  m_x     = 0;  // meters
+  m_y     = 0;  // meters
+  m_width = 1;  // meters
+  m_range = 0;  // meters
+
+  m_x_set     = false;
+  m_y_set     = false;
+  m_width_set = false;
   m_range_set = false;
+
   m_type  = "circle";
 }
 
@@ -61,6 +66,7 @@ void XYMarker::set_width(double width)
   if(width < 0)
     width = 0;
   m_width = width;
+  m_width_set = true;
 }
 
 //---------------------------------------------------------------

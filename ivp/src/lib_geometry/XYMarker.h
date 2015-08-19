@@ -34,8 +34,8 @@ public:
 
   // Setters
   bool    set_type(const std::string&);
-  void    set_vx(double v)       {m_x=v;}
-  void    set_vy(double v)       {m_y=v;}
+  void    set_vx(double v)       {m_x=v;m_x_set=true;}
+  void    set_vy(double v)       {m_y=v;m_y_set=true;}
   void    set_width(double v);
   void    set_range(double v);
  
@@ -46,6 +46,13 @@ public:
   double      get_range() const  {return(m_range);}
   std::string get_type() const   {return(m_type);}
 
+
+  // Analyzers
+  bool        is_set_x() const     {return(m_x_set);};
+  bool        is_set_y() const     {return(m_y_set);};
+  bool        is_set_range() const {return(m_range_set);};
+  bool        is_set_width() const {return(m_width_set);};
+
   std::string get_spec(std::string s="") const;
 
 protected:
@@ -53,8 +60,12 @@ protected:
   double       m_y;
   double       m_width;
   double       m_range;
-  bool         m_range_set;
   std::string  m_type;
+
+  bool         m_x_set;
+  bool         m_y_set;
+  bool         m_width_set;
+  bool         m_range_set;
 };
 
 #endif
