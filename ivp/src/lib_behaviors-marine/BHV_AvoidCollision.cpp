@@ -116,6 +116,10 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
     m_completed_dist = dval;
     return(true);
   }  
+  else if((param == "contact_type_required") && (param_val != "")) {
+    m_contact_type_required = tolower(param_val);
+    return(true);
+  }  
   else if(param == "collision_depth") {
     if(dval <= 0)
       return(false);
@@ -190,6 +194,9 @@ void BHV_AvoidCollision::onHelmStart()
   alert_request += ", alert_range=" + s_alert_range;
   alert_request += ", cpa_range=" + s_cpa_range;
 
+  if(m_contact_type_required != "")
+    alert_request += ", contact_type=" + m_contact_type_required;
+  
   postMessage("BCM_ALERT_REQUEST", alert_request);
 }
 

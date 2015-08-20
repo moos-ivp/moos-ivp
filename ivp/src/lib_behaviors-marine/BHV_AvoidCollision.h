@@ -49,6 +49,7 @@ protected:
 private: // Configuration Parameters
 
   std::string m_pwt_grade;
+  std::string m_contact_type_required;
 
   double m_completed_dist;
   double m_pwt_outer_dist;
@@ -61,6 +62,7 @@ private: // Configuration Parameters
 
   double m_collision_depth;
 
+  
 private:  // State Variables
   double m_curr_closing_spd;
   bool   m_avoiding;
