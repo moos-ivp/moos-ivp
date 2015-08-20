@@ -47,7 +47,7 @@ XYMarker::XYMarker()
 //---------------------------------------------------------------
 // Procedure: set_type
 
-bool XYMarker::set_type(const string& str)
+bool XYMarker::set_type(string str)
 {
   if((str == "circle")  ||  (str == "square") ||
      (str == "diamond") ||  (str == "efield") ||
@@ -108,6 +108,8 @@ string XYMarker::get_spec(string param) const
 
   if(m_type != "")
     aug_spec(spec, "type=" + m_type);
+  if(m_owner != "")
+    aug_spec(spec, "owner=" + m_owner);
 
   string obj_spec = XYObject::get_spec(param);
   if(obj_spec != "")

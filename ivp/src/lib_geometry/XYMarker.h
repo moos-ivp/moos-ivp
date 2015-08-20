@@ -33,9 +33,10 @@ public:
   virtual ~XYMarker() {}
 
   // Setters
-  bool    set_type(const std::string&);
-  void    set_vx(double v)       {m_x=v;m_x_set=true;}
-  void    set_vy(double v)       {m_y=v;m_y_set=true;}
+  bool    set_type(std::string s);
+  void    set_owner(std::string s) {m_owner=s;};
+  void    set_vx(double v)         {m_x=v;m_x_set=true;}
+  void    set_vy(double v)         {m_y=v;m_y_set=true;}
   void    set_width(double v);
   void    set_range(double v);
  
@@ -45,6 +46,7 @@ public:
   double      get_width() const  {return(m_width);}
   double      get_range() const  {return(m_range);}
   std::string get_type() const   {return(m_type);}
+  std::string get_owner() const  {return(m_owner);}
 
 
   // Analyzers
@@ -61,6 +63,7 @@ protected:
   double       m_width;
   double       m_range;
   std::string  m_type;
+  std::string  m_owner;
 
   bool         m_x_set;
   bool         m_y_set;
