@@ -73,7 +73,9 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::map<std::string, double>      m_map_alert_rng_cpa;
   std::map<std::string, std::string> m_map_alert_rng_color;
   std::map<std::string, std::string> m_map_alert_rng_cpa_color;
-
+  std::map<std::string, std::string> m_map_alert_contact_type;
+  
+  
   // Default values for various alert parameters
   double       m_default_alert_rng;
   double       m_default_alert_rng_cpa;

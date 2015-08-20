@@ -482,8 +482,8 @@ bool BasicContactMgr::handleConfigAlert(const string& alert_str)
       m_map_alert_rng_cpa[alert_id] = dval;
     else if((left == "alert_range_color") && isColor(right))
       m_map_alert_rng_color[alert_id] = right;
-    else if((left == "cpa_range_color") && isColor(right))
-      m_map_alert_rng_cpa_color[alert_id] = right;
+    else if(left == "contact_type")
+      m_map_alert_contact_type[alert_id] = right;
     else {
       if(left != "id") {
 	reportConfigWarning("unhandled alert config component: " + left);
@@ -579,13 +579,18 @@ bool BasicContactMgr::postAlerts()
     NodeRecord node_record   = p->second;
     double     contact_range = m_map_node_ranges[contact_name];
     double     age = m_curr_time - node_record.getTimeStamp();
-
+    string     contact_type  = tolower(node_record.getType());
+    
     // For each alert_id
     map<string,string>::iterator q;
     for(q=m_map_alert_varname.begin(); q!=m_map_alert_varname.end(); q++) {
       string alert_id = q->first;
+      string alert_contact_type = m_map_alert_contact_type[alert_id];
+      bool contact_match = true;
+      if((alert_contact_type != "") && (alert_contact_type != contact_type))
+	contact_match = false;
       bool alerted = m_par.getValue(contact_name, alert_id);
-      if(!alerted) {
+      if(!alerted && contact_match) {
 	double alert_range     = getAlertRange(alert_id);
 	double alert_range_cpa = getAlertRangeCPA(alert_id);
 	if((age <= m_contact_max_age) && (contact_range <= alert_range)) {
