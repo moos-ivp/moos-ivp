@@ -87,9 +87,6 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"hash_delta=1000", FL_ALT+'6', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)1000, FL_MENU_RADIO|FL_MENU_DIVIDER},
  {0},
 
- //{"GeoAttr", 0,  0, 0, 64, 0, 0, 14, 0},
- //{0},
-
  {0}
 };
 
