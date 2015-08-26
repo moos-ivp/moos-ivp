@@ -83,6 +83,8 @@ class NodeRecord
   bool   isSetLatitude() const {return(m_lat_set);}
   bool   isSetLongitude() const {return(m_lon_set);}
   bool   isSetAltitude() const {return(m_altitude_set);}
+  bool   isSetLength() const   {return(m_length_set);}
+  bool   isSetHeading() const  {return(m_heading_set);}
 
   bool   getThrustModeReverse() const {return(m_thrust_mode_reverse);}
   double getElapsedTime(double) const;
