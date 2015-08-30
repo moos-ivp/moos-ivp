@@ -30,7 +30,7 @@ SET(SRC
   ZAIC_HLEQ.cpp
   ZAIC_LEQ.cpp
   ZAIC_PEAK.cpp
-  ZAIC_SPD.cpp
+#  ZAIC_SPD.cpp
   ZAIC_Vector.cpp
   )
 
