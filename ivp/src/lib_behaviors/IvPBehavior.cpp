@@ -747,9 +747,15 @@ bool IvPBehavior::checkUpdates()
 	  string pair  = uvector[j];
 	  string param = biteStringX(pair, '=');
 	  string value = pair;
-	  bool  result = setParam(param, value);
-	  if(!result)
-	    result = IvPBehavior::setParam(param, value);
+	  bool  result = true;
+	  // Aug 28, 2015, Don't try to update "name" parameter. We don't want to
+	  // since "name" should only be set at creation time. We want to totally
+	  // ignore it since we dont want it flagged as an unhandled update.
+	  if(param != "name") { 
+	    result = setParam(param, value);
+	    if(!result)
+	      result = IvPBehavior::setParam(param, value);
+	  }
 	  if(!result) {
 	    ok_params = false;
 	    if(bad_params != "")

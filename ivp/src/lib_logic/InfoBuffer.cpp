@@ -27,6 +27,7 @@
 
 #include <iostream>
 #include "InfoBuffer.h"
+#include "MBUtils.h"
 
 using namespace std;
 
@@ -217,28 +218,45 @@ void InfoBuffer::clearDeltaVectors()
 //-----------------------------------------------------------
 // Procedure: print
 
-void InfoBuffer::print() const
+void InfoBuffer::print(string vars_str) const
 {
+  vector<string> vars = parseString(vars_str, ',');
+
+  cout << "Print Variables: " << endl;
+  for(unsigned int i=0; i<vars.size(); i++) 
+    cout << "  [" << vars[i] << "]" << endl;
+  
+  
   cout << "InfoBuffer: " << endl;
   cout << " curr_time_utc:" << m_curr_time_utc << endl;
   
   cout << "-----------------------------------------------" << endl; 
   cout << " String Data: " << endl;
   map<string, string>::const_iterator ps;
-  for(ps=smap.begin(); ps!=smap.end(); ps++)
-    cout << "  " << ps->first << ": " << ps->second << endl;
+  for(ps=smap.begin(); ps!=smap.end(); ps++) {
+    string var = ps->first;
+    string val = ps->second;
+    if((vars.size() == 0) || vectorContains(vars, var))
+      cout << "  " << var << ": " << val << endl;
+  }
   
   cout << "-----------------------------------------------" << endl; 
   cout << " Numerical Data: " << endl;
   map<string, double>::const_iterator pd;
-  for(pd=dmap.begin(); pd!=dmap.end(); pd++) 
-    cout << "  " << pd->first << ": " << pd->second << endl;
-  
+  for(pd=dmap.begin(); pd!=dmap.end(); pd++) {
+    string var = pd->first;
+    double val = pd->second;
+    if((vars.size() == 0) || vectorContains(vars, var))
+      cout << "  " << var << ": " << val << endl;
+  }
+
   cout << "-----------------------------------------------" << endl; 
   cout << " Time Data: " << endl;
   map<string, double>::const_iterator pt;
   for(pt=tmap.begin(); pt!=tmap.end(); pt++) {
-    cout << "  " << pt->first << ": " << m_curr_time_utc - pt->second << endl;
+    string var = ps->first;
+    if((vars.size() == 0) || vectorContains(vars, var))
+      cout << "  " << var << ": " << m_curr_time_utc - pt->second << endl;
   }
 }
 

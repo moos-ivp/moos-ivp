@@ -23,7 +23,7 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB          @ NewConsole = false
+  Run = MOOSDB          @ NewConsole = false, ExtraProcessParams=db
   Run = pLogger         @ NewConsole = false
   Run = uSimMarine	    @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
@@ -31,8 +31,23 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false, ExtraProcessParams=one
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
+  //Run = uTimerScript    @ NewConsole = false
 
-  one = --size=1200x1000
+  one = --size=1400x800
+  db = --event_log=eventlog
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 2
+  CommsTick = 2
+
+	reset_time = all-posted
+	
+  event = var=WPT_UPDATE, val="name=$[TCOUNT]#pwt=1", time = 2.5
 }
 
 //------------------------------------------
@@ -54,8 +69,8 @@ ProcessConfig = pLogger
   LogAuxSrc = true
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
-  //WildCardOmitPattern = DB_VARSUMMARY
-  //WildCardOmitPattern = DB_RWSUMMARY
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
   WildCardExclusionLog = true
 }
 

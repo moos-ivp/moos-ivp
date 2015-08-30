@@ -40,7 +40,8 @@ public:
   void  clear(bool clear_completed=false);
   void  addMsg(const std::string& str)     {m_messages.push_back(str);}
   void  setHaltMsg(const std::string& str) {m_halt_message = str;}
-  
+
+  void  setTemplatingSummary(const std::vector<std::string>&);
   void  clearActiveBHVs();
   void  addActiveBHV(const std::string& descriptor, double time,
 		     double pwt, int pcs, double cpu,
@@ -96,6 +97,7 @@ public:
   std::string  getModeSummary()      const {return(m_modes);}
   std::string  getHaltMsg()          const {return(m_halt_message);}
   std::vector<std::string> getMsgs() const {return(m_messages);}
+  std::vector<std::string> getTemplatingSummary() const;
 
   // Serialization Helper Methods
   std::string  getDecisionSummary()    const;
@@ -139,6 +141,7 @@ protected:
   std::vector<unsigned int> m_bhvs_active_ipfs;
 
 
+  std::vector<std::string>      m_templating_summary;
   std::vector<std::string>      m_messages;
   std::map<std::string, double> m_decisions;  // +
 

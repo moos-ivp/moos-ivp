@@ -45,6 +45,10 @@ class BehaviorSpec {
   void setInfoBuffer(InfoBuffer *b)       {m_info_buffer=b;}
 
   bool setTemplatingType(std::string s);
+
+  void spawnTried() {m_spawns_tried++;}
+  void spawnMade()  {m_spawns_made++;}
+  
   void clear();
   void print() const;
     
@@ -61,6 +65,9 @@ class BehaviorSpec {
   std::string   getConfigLine(unsigned int) const;
   unsigned int  getConfigLineNum(unsigned int) const;
 
+  unsigned int  getSpawnsMade() const  {return(m_spawns_made);}
+  unsigned int  getSpawnsTried() const {return(m_spawns_tried);}
+  
  private: // State Variables
   std::string   m_templating;
   std::string   m_updates_var;
@@ -73,14 +80,11 @@ class BehaviorSpec {
   std::vector<std::string>   m_config_lines;
   std::vector<unsigned int>  m_config_line_num;
 
+  unsigned int  m_spawns_tried;
+  unsigned int  m_spawns_made;
+    
   InfoBuffer   *m_info_buffer;
   bool          m_templating_enabled;
 };
 
 #endif
-
-
-
-
-
-

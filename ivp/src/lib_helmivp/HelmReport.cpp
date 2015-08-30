@@ -97,6 +97,14 @@ void HelmReport::addDecision(const string& var, double val)
   m_decisions[var] = val;
 }
 
+//-----------------------------------------------------------
+// Procedure: setTemplatingSummary()
+
+void HelmReport::setTemplatingSummary(const vector<string>& summary)
+{
+  m_templating_summary = summary;
+}
+
 
 //-----------------------------------------------------------
 // Procedure: clearDecisions()
@@ -106,6 +114,14 @@ void HelmReport::clearDecisions()
   m_decisions.clear();
 }
 
+
+//-----------------------------------------------------------
+// Procedure: getTemplatingSummary()
+
+vector<string> HelmReport::getTemplatingSummary() const
+{
+  return(m_templating_summary);
+}
 
 //-----------------------------------------------------------
 // Procedure: getDecision()
@@ -612,6 +628,13 @@ list<string> HelmReport::formattedSummary(double curr_time, bool verbose) const
   string idle_bhvs      = uintToString(m_bhvs_idle_desc.size());
   string completed_bhvs = uintToString(m_bhvs_completed_desc.size());
 
+  string spawnable_bhvs = uintToString(m_templating_summary.size());
+  rlist.push_back("Behaviors Spawnable: --------- (" + spawnable_bhvs + ")");
+  for(unsigned i=0; i<m_templating_summary.size(); i++) {
+    str = "  " + m_templating_summary[i];
+    rlist.push_back(str);
+  }
+
   rlist.push_back("Behaviors Active: ---------- (" + active_bhvs + ")");
   vsize = m_bhvs_active_desc.size();
   for(i=0; i<vsize; i++) {
@@ -625,6 +648,7 @@ list<string> HelmReport::formattedSummary(double curr_time, bool verbose) const
     rlist.push_back(str);
   }
 
+  
   rlist.push_back("Behaviors Running: --------- (" + running_bhvs + ")");
   vsize = m_bhvs_running_desc.size();
   for(i=0; i<vsize; i++) {

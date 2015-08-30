@@ -70,7 +70,7 @@ HelmIvP::HelmIvP()
   m_helm_iteration = 0;
   m_ok_skew        = 60; 
   m_skews_matter   = true;
-  m_last_heartbeat = 0;
+  m_helm_start_time = 0;
   m_curr_time      = 0;
   m_start_time     = 0;
   m_no_decisions   = 0;
@@ -118,26 +118,49 @@ HelmIvP::HelmIvP()
 
 HelmIvP::~HelmIvP()
 {
-  cleanup();
+  if(m_info_buffer)  delete(m_info_buffer);
+  if(m_bhv_set)      delete(m_bhv_set);
+  if(m_hengine)      delete(m_hengine);
 }
 
 //--------------------------------------------------------------------
-// Procedure: cleanup
-//      Note: Called by the destructor - also upon helm re-build
+// Procedure: handlePrepareRestart
 
-void HelmIvP::cleanup()
+void HelmIvP::handlePrepareRestart()
 {
-  delete(m_info_buffer);
-  m_info_buffer = 0;
   m_ibuffer_curr_time_updated = false;
 
-  delete(m_bhv_set);
+#if 0  // To be implemented (8/30/15)
+  if(m_reset_pending == "type2") {
+    if(m_info_buffer)
+      delete(m_info_buffer);
+    m_info_buffer = 0;
+  }
+#endif
+
+  if(m_bhv_set)
+    delete(m_bhv_set);
   m_bhv_set = 0;
 
-  delete(m_hengine);
+  if(m_hengine)
+    delete(m_hengine);
   m_hengine = 0;
 
+  m_bhv_files.clear();
+  m_outgoing_key_strings.clear();
+
+  m_outgoing_key_doubles.clear();
+  m_outgoing_timestamp.clear();
+  m_outgoing_sval.clear();
+  m_outgoing_dval.clear();
+  m_outgoing_iter.clear();
+  m_outgoing_bhv.clear();
+  m_outgoing_repinterval.clear();
+
   m_ivp_domain = IvPDomain();
+
+  // Indicate that we to potentially re-post the defer init vars
+  m_init_vars_done = false;
 }
 
 //--------------------------------------------------------------------
@@ -251,10 +274,16 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       }
     }
     else if(moosvar == "RESTART_HELM") {
-      OnStartUp();
-      reportRunWarning("pHelmIvP has been re-started!!");
-      if(m_verbose == "terse") 
-	cout << endl << "pHelmIvP Has Been Re-Started" << endl;
+      // type 1: kill and re-spawn new behaviors - don't touch info_buffer
+      // tyep 2: kill and re-spawn new behaviors and re-init the info_buffer
+      if((sval == "type1") || (sval == "type2")) {
+	m_reset_pending = sval;
+	handlePrepareRestart();
+	OnStartUp();
+	reportRunWarning("pHelmIvP has been re-started!!");
+	if(m_verbose == "terse") 
+	  cout << endl << "pHelmIvP Has Been Re-Started" << endl;
+      }
     }
     else if(moosvar == "IVPHELM_REJOURNAL")
       m_rejournal_requested = true;
@@ -317,6 +346,11 @@ bool HelmIvP::Iterate()
     AppCastingMOOSApp::PostReport();
     return(false);
   }
+
+  // We don't try to get a helm decision for the first second upon startup
+  // Gives the info_buffer time to receive critical mail w/o warnings.
+  if((m_curr_time - m_helm_start_time) < 1)
+    return(true);
 
   m_helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
 
@@ -680,6 +714,8 @@ void HelmIvP::handleHelmStartMessages()
 
 //------------------------------------------------------------
 // Procedure: handleInitialVarsPhase1()
+//   Purpose: Publish all the initial variables provided in the bhv
+//            file, but not the ones marked "defer".
 
 void HelmIvP::handleInitialVarsPhase1()
 {
@@ -1030,7 +1066,7 @@ void HelmIvP::checkForTakeOver()
 bool HelmIvP::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
-  cleanup();
+  m_helm_start_time = m_curr_time;
   if(!m_info_buffer)
     m_info_buffer = new InfoBuffer;
 
@@ -1101,6 +1137,7 @@ bool HelmIvP::OnStartUp()
   Populator_BehaviorSet *p_bset;
   p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer);
   p_bset->setBHVDirNotFoundOK(bhv_dir_not_found_ok);
+  p_bset->setOwnship(m_ownship);
   unsigned int ksize = behavior_dirs.size();
   for(unsigned int k=0; k<ksize; k++)
     p_bset->addBehaviorDir(behavior_dirs[k]);
@@ -1137,7 +1174,10 @@ bool HelmIvP::OnStartUp()
   
   string mode_set_string_description = m_bhv_set->getModeSetDefinition();
 
-  handleInitialVarsPhase1();
+  if((m_reset_pending == "") || (m_reset_pending == "type2"))
+    handleInitialVarsPhase1();
+  m_reset_pending = "";
+  
   handleHelmStartMessages();
   registerVariables();
   requestBehaviorLogging();

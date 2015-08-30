@@ -56,6 +56,7 @@ public:
 
   void   addBehavior(IvPBehavior *b);
   void   clearBehaviors();
+  void   setOwnship(std::string s)      {m_ownship=s;}
   void   addInitialVar(VarDataPair msg) {m_initial_vars.push_back(msg);}
   void   addDefaultVar(VarDataPair msg) {m_default_vars.push_back(msg);}
   void   setCompletedPending(bool v)    {m_completed_pending = v;}
@@ -114,6 +115,8 @@ public:
   std::string getModeSetDefinition()  
     {return(m_mode_set.getStringDescription());}
 
+  std::vector<std::string> getTemplatingSummary() const;
+
   // Added by tes to support Graphviz 
   std::map<std::string, std::vector<LogicCondition> > getModeLogicConditions()
     {return(m_mode_set.getNonModeLogicConditions());}
@@ -134,10 +137,13 @@ protected:
   std::vector<std::string>      m_warnings;
 
   std::vector<BehaviorSpec>     m_behavior_specs;
+  
   BFactoryStatic                m_bfactory_static;
   BFactoryDynamic               m_bfactory_dynamic;
 
   std::vector<LifeEvent>        m_life_events;
+
+  std::string m_ownship;
 
   bool    m_report_ipf;
   double  m_curr_time;

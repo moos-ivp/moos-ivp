@@ -75,6 +75,9 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   m_helm_report.clear();
   m_ivp_functions.clear();
 
+  vector<string> templating_summary = m_bhv_set->getTemplatingSummary();
+  m_helm_report.setTemplatingSummary(templating_summary);
+  
   bool filter_behaviors_present = bhv_set->filterBehaviorsPresent();
 
   bool handled = true;

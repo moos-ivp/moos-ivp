@@ -1,0 +1,27 @@
+ServerPort = 9000
+Serverhost = localhost
+
+
+ProcessConfig=Antler
+{
+	Run = pShare @ NewConsole = true ~ ShareA
+	Run = pShare @ NewConsole = true ~ ShareB
+	
+	ExecutablePath = ./
+}
+
+ProcessConfig=ShareA
+{
+	Output = src_name=X,route=localhost:9021,frequency=4.0
+	Output = Y->localhost:9021@1
+	Output = Z->Z2:localhost:9021
+	Verbose=true
+	
+}
+
+ProcessConfig=ShareB
+{
+	Input = route=localhost:9021
+	Verbose=true
+}
+

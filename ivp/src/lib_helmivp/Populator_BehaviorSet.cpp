@@ -147,6 +147,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   // behaviors. If some fail instantiation, abort the behaviorset.
   BehaviorSet *bset = new BehaviorSet;
   bset->setDomain(m_domain);
+  bset->setOwnship(m_ownship);
 
   // Inform the behavior set of the directories to look for dynamically
   // loaded behaviors specified in the moos configuration block
@@ -162,7 +163,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   
   for(i=0; i<m_behavior_specs.size(); i++)
     bset->addBehaviorSpec(m_behavior_specs[i]);
-  bool ok = bset-> buildBehaviorsFromSpecs();
+  bool ok = bset->buildBehaviorsFromSpecs();
 
   addConfigWarnings(bset->getWarnings());
   

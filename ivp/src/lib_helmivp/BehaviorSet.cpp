@@ -254,22 +254,18 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     if(bhv)
       sbuild.setKindResult("dynamic");
     else {
-#if 1
       string err = "BehaviorSpec: failed to load dynamic behavior " + bhv_kind;
       cerr << err << endl;
       addWarning(err);
       addWarning("Check IVP_BEHAVIOR_DIRS Env Variable or ivp_behavior_dir param");
-#endif
-#if 0
-      cerr << "BehaviorSpec: failed to load dynamic behavior "
-	   << bhv_kind << endl;
-#endif
       sbuild.setKindResult("failed");
       return(sbuild);
     }
   }
   
   bhv->setBehaviorType(bhv_kind);
+  bhv->IvPBehavior::setParam("us", m_ownship);
+
 
   // First apply all the behavior specs from the original specification
   // given in the .bhv file. All bad specs are noted, not just the first.
@@ -358,17 +354,14 @@ bool BehaviorSet::handlePossibleSpawnings()
       vector<string> update_strs = m_behavior_specs[i].checkForSpawningStrings();     
       unsigned int j, jsize = update_strs.size();
       for(j=0; j<jsize; j++) {
-	//cout << "Possible Spawning for ";
-	//cout << "Spec: " << m_behavior_specs[i].getKind() << endl;
 	string update_str = update_strs[j];
-	//cout << "update_str:" << update_str << endl;
 
 	// Check for unique behavior name
 	string bname = tokStringParse(update_str, "name", '#', '=');
-	//	string fullname = m_behavior_specs[i].getNamePrefix() + bname;
-	if(m_bhv_names.count(bname)==0) {
-	  SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], 
-						   update_str);
+	string fullname = m_behavior_specs[i].getNamePrefix() + bname;
+	if((m_bhv_names.count(fullname)==0) && (m_bhv_names.count(bname) == 0)) {
+	  SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], update_str);
+	  m_behavior_specs[i].spawnTried();
 	  //sbuild.print();
 
 	  LifeEvent life_event;
@@ -383,10 +376,18 @@ bool BehaviorSet::handlePossibleSpawnings()
 	    bhv->onSetParamComplete(); 
 	    addBehavior(bhv);
 	    life_event.setEventType("spawn");
+	    m_behavior_specs[i].spawnMade();
 	  }
 	  else
 	    life_event.setEventType("abort");
 	  m_life_events.push_back(life_event);
+	}
+	// If base+name already exists AND base does not exist, post warning
+	else {
+	  if(m_bhv_names.count(bname)==0) {
+	    addWarning("Unhandled update: Existing bhv named [" + bname + "] not found. ");
+	    addWarning("Unhandled update: Spawned bhv named [" + fullname + "] is taken.");
+	  }
 	}
       }
     }
@@ -890,6 +891,31 @@ string BehaviorSet::getStateSpaceVars()
 }
 
 //------------------------------------------------------------
+// Procedure: getTemplatingSummary()
+
+vector<string> BehaviorSet::getTemplatingSummary() const
+{
+  vector<string> summary;
+  for(unsigned int i=0; i<m_behavior_specs.size(); i++) {
+    if(m_behavior_specs[i].templating()) {
+      string bhv_kind = m_behavior_specs[i].getKind();
+      string bhv_name_prefix = m_behavior_specs[i].getNamePrefix();
+      string entry = bhv_kind + "::" + bhv_name_prefix;
+      
+      unsigned int spawns_made  = m_behavior_specs[i].getSpawnsMade();
+      unsigned int spawns_tried = m_behavior_specs[i].getSpawnsTried();
+      
+      entry += " (Spawned:" + uintToString(spawns_made) + "/" +
+	uintToString(spawns_tried) + ")";
+      summary.push_back(entry);
+    }
+  }
+
+  return(summary);
+}
+
+
+//------------------------------------------------------------
 // Procedure: print
 
 void BehaviorSet::print()
@@ -909,9 +935,4 @@ void BehaviorSet::print()
     cout << "-------" << endl;
   }
 }
-
-
-
-
-
 

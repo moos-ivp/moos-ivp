@@ -46,7 +46,7 @@ public:
   std::vector<double> dQueryDeltas(std::string, bool&) const;
 
   bool   isKnown(std::string);
-  void   print() const;
+  void   print(std::string s="") const;
 
 public:
   bool   setValue(std::string, double, double msg_time=0);

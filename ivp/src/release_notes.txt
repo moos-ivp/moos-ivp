@@ -1,4 +1,25 @@
 
+pHelmIvP
+
+ - Fixed a bug that would allow behaviors with duplicate names to be spawned
+
+ - Augmented the Helm appcast output to include a list of all Spawnable 
+   behaviors, i.e. behavior templates, with a running tab of attempts to spawn
+   and total successful spawnings
+
+ - Fixed the ability to re-start the helm mid-mission with "RESTART_HELM=type1". 
+   Results in the destruction and re-instantiation of the set of behaviors.
+
+ - Fixed a bug in behavior spawning where a spawned behavior was not getting the 
+  "us" field set, i.e., the name of ownship, which is set to the name of the
+  MOOS community found in the .moos mission file. All spawned behaviors now
+  have this field set upon spawning.
+
+ - Modified IvPBehavior to ignore the "name" parameter during behavior updates. 
+  Previously it was indeed not acted on, but threw a update warning. The name 
+  parameter is used solely to identify which behavior the update should be applied
+  to, but the name is not actually updated.
+
 o alogview
   
   - Fixed bug that would not reset the view center gravity up on arrow-key hits

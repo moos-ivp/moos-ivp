@@ -45,6 +45,7 @@ public:
 
   void addBehaviorDir(std::string dir) {m_dir_names.push_back(dir);}
   void setBHVDirNotFoundOK(bool v)     {m_bhv_dir_not_found_ok=v;}
+  void setOwnship(std::string s)       {m_ownship=s;}
 
   BehaviorSet* populate(std::set<std::string>);
   BehaviorSet* populate(std::string filename);
@@ -76,6 +77,7 @@ protected:
   ModeSet      m_mode_set;
   ModeEntry    m_mode_entry;
   std::string  m_parse_mode;
+  std::string  m_ownship;
 
   bool         m_bhv_dir_not_found_ok;
 };

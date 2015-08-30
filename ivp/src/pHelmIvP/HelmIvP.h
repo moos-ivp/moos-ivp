@@ -51,7 +51,6 @@ public:
   HelmIvP();
   virtual ~HelmIvP();
   
-  void cleanup();
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
   bool OnConnectToServer();
@@ -70,6 +69,7 @@ public:
   
  protected:
   bool handleHeartBeat(const std::string&);
+  void handlePrepareRestart();
   bool updateInfoBuffer(CMOOSMsg &Msg);
   void postHelmStatus();
   void postCharStatus();
@@ -111,7 +111,7 @@ protected:
   BehaviorSet*  m_bhv_set;
   std::string   m_verbose;
   bool          m_verbose_reset;
-  double        m_last_heartbeat;
+  double        m_helm_start_time;
   std::string   m_helm_alias;
 
   // The helm may be configured to be in "standby" mode, waiting for an
@@ -161,6 +161,9 @@ protected:
   // optional. Optional means a decision need not be rendered on it.
   std::map<std::string, bool> m_optional_var;
 
+  // User can reset the helm in a few different ways
+  std::string m_reset_pending;
+
   // List of behavior input files. To be fed to Populator. Also sent
   // to the logger so it may record the .bhv files alongside others.
   std::set<std::string> m_bhv_files;
@@ -181,7 +184,7 @@ protected:
   std::map<std::string, double>       m_outgoing_repinterval;
   
   std::map<std::string, double>       m_var_reg_time;
-
+  
   // A flag maintained on each iteration indicating whether the 
   // info_buffer curr_time has yet to be synched to the app curr_time.
   bool m_ibuffer_curr_time_updated;
