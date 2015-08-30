@@ -647,6 +647,8 @@ double XYSegList::length()
     double x = m_vx[i];
     double y = m_vy[i];
     total_length += hypot(x-prev_x, y-prev_y);
+    prev_x = x;
+    prev_y = y;
   }
   return(total_length);
 }
