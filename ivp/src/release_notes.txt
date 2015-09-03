@@ -1,4 +1,8 @@
 
+pHostInfo
+ - augmented pHostInfo to recognized the addtional WiFi interface, 
+   in addition to Wi-Fi with the dash
+
 pHelmIvP
 
  - Fixed a bug that would allow behaviors with duplicate names to be spawned
