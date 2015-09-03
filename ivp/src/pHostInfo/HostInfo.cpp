@@ -221,6 +221,10 @@ int HostInfo::generateIPInfoFiles()
   result = system(sys_call.c_str());
 
   sys_call = "networksetup -getinfo Wi-Fi  > ";
+  sys_call += m_tmp_file_dir + "ipinfo_osx_wi_fi_" + name + ".txt" + bgd; 
+  result = system(sys_call.c_str());
+
+  sys_call = "networksetup -getinfo WiFi  > ";
   sys_call += m_tmp_file_dir + "ipinfo_osx_wifi_" + name + ".txt" + bgd; 
   result = system(sys_call.c_str());
 
@@ -294,6 +298,7 @@ int HostInfo::generateIPInfoFiles()
 void HostInfo::gatherIPInfoFromFiles()
 {
   string name = m_host_community;
+  m_ip_osx_wifi        = readOSXInfoIP("ipinfo_osx_wi_fi_" + name + ".txt");
   m_ip_osx_wifi        = readOSXInfoIP("ipinfo_osx_wifi_" + name + ".txt");
   m_ip_osx_airport     = readOSXInfoIP("ipinfo_osx_airport_" + name + ".txt");
   m_ip_osx_ethernet    = readOSXInfoIP("ipinfo_osx_ethernet_" + name + ".txt");
