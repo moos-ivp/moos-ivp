@@ -7,12 +7,23 @@ pHelmIvP
 
  - Fixed a bug that would allow behaviors with duplicate names to be spawned
 
+ - 
+
  - Augmented the Helm appcast output to include a list of all Spawnable 
    behaviors, i.e. behavior templates, with a running tab of attempts to spawn
    and total successful spawnings
 
  - Fixed the ability to re-start the helm mid-mission with "RESTART_HELM=type1". 
    Results in the destruction and re-instantiation of the set of behaviors.
+
+ - A helm restart will result in the publishing of "IVPHELM_RESTARTED=true" upon
+   completion of the restart.
+
+ - The variables IVPHELM_BHV_CNT and IVPHELM_BHV_CNT_EVER are now only published
+   when the value changes, NOT on every iteration regardless of value. If you
+   have anything use these variables as a form of "heartbeat" indication, you
+   should instead use the one variable IVPHELM_STATE recommended for this purpose
+   and guaranteed to be published on each iteration regardless of value.
 
  - Fixed a bug in behavior spawning where a spawned behavior was not getting the 
   "us" field set, i.e., the name of ownship, which is set to the name of the
