@@ -139,6 +139,8 @@ protected:
   double        m_refresh_interval;
   
   unsigned int  m_helm_iteration;
+  unsigned int  m_bhv_count;
+  unsigned int  m_bhv_count_ever;
   double        m_ok_skew;
   bool          m_skews_matter;
 
@@ -163,6 +165,7 @@ protected:
 
   // User can reset the helm in a few different ways
   std::string m_reset_pending;
+  bool        m_reset_post_pending;
 
   // List of behavior input files. To be fed to Populator. Also sent
   // to the logger so it may record the .bhv files alongside others.

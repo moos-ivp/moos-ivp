@@ -68,6 +68,8 @@ HelmIvP::HelmIvP()
   m_verbose        = "verbose";
   m_verbose_reset  = false;
   m_helm_iteration = 0;
+  m_bhv_count      = 0;
+  m_bhv_count_ever = 0;
   m_ok_skew        = 60; 
   m_skews_matter   = true;
   m_helm_start_time = 0;
@@ -91,7 +93,8 @@ HelmIvP::HelmIvP()
   m_ibuffer_curr_time_updated = false;
 
   m_rejournal_requested = true;
-
+  m_reset_post_pending  = false;
+  
   m_init_vars_ready  = false;
   m_init_vars_done   = false;
 
@@ -161,6 +164,9 @@ void HelmIvP::handlePrepareRestart()
 
   // Indicate that we to potentially re-post the defer init vars
   m_init_vars_done = false;
+
+  // Indicate we want to post confirmation of the restart after done
+  m_reset_post_pending = true;
 }
 
 //--------------------------------------------------------------------
@@ -348,10 +354,18 @@ bool HelmIvP::Iterate()
   }
 
   // We don't try to get a helm decision for the first second upon startup
-  // Gives the info_buffer time to receive critical mail w/o warnings.
+  // Gives the info_buffer time to receive critical mail, reduce warnings.
   if((m_curr_time - m_helm_start_time) < 1)
     return(true);
 
+  // If the helm has been restarted, make a single post confirming this now
+  // that the helm is back in the business of making decisions.
+  if(m_reset_post_pending) {
+    Notify("IVPHELM_RESTARTED", "true");
+    m_reset_post_pending = false;
+  }
+  
+  
   m_helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
 
   m_helm_iteration = m_helm_report.getIteration();
@@ -486,11 +500,20 @@ void HelmIvP::postBehaviorMessages()
     reportRunWarning(config_warnings[i]);
   // Added Aug 02 2012 to support enhanced warning reporting
 
-  unsigned int i, bhv_cnt = m_bhv_set->size();
-  Notify("IVPHELM_BHV_CNT", bhv_cnt);
-  Notify("IVPHELM_BHV_CNT_EVER", m_bhv_set->getTCount());
+  unsigned bhv_count      = m_bhv_set->size();
+  if(bhv_count != m_bhv_count) {
+    Notify("IVPHELM_BHV_CNT", bhv_count);
+    m_bhv_count = bhv_count;
+  }
+
+  unsigned bhv_count_ever = m_bhv_set->getTCount();
+  if(bhv_count_ever != m_bhv_count_ever) {
+    Notify("IVPHELM_BHV_CNT_EVER", bhv_count_ever);
+    m_bhv_count_ever = bhv_count_ever;
+  }
+    
   Notify("IVPHELM_ITER", m_helm_iteration);
-  for(i=0; i < bhv_cnt; i++) {
+  for(unsigned i=0; i < bhv_count; i++) {
     string bhv_descriptor = m_bhv_set->getDescriptor(i);
     vector<VarDataPair> mvector = m_bhv_set->getMessages(i);
 
@@ -971,7 +994,6 @@ void HelmIvP::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   registerSingleVariable("DB_CLIENTS");
-  registerSingleVariable("TEST_RFLAG");
   registerSingleVariable("MOOS_MANUAL_OVERIDE");
   registerSingleVariable("MOOS_MANUAL_OVERRIDE");
   registerSingleVariable("RESTART_HELM");

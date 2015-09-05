@@ -193,6 +193,7 @@ void showInterfaceAndExit()
   blk("  IVPHELM_ITER          = The Present helm iteration (integer)  ");
   blk("  IVPHELM_STATEVARS     = MOOS vars involved in mode setting    ");
   blk("  IVPHELM_SUMMARY       = A helm snapshot for use in uHelmScope ");
+  blk("  IVPHELM_RESTARTED     = true when/if helm is RE-started       ");
   blk("  PLOGGER_CMD           = Request pLogger to copy the bhv file  ");
   blk("                                                                ");
   exit(0);
