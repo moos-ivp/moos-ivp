@@ -19,6 +19,7 @@ SET(HEADERS
   XYCommsPulse.h
   IO_GeomUtils.h
   LinearExtrapolator.h
+  XYWedge.h
   XYArc.h
   XYArtifactGrid.h
   XYBuildUtils.h
