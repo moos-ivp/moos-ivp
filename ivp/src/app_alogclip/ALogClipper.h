@@ -25,6 +25,7 @@
 #define ALOG_CLIPPER_HEADER
 
 #include <string>
+#include <vector>
 
 class ALogClipper
 {
@@ -52,11 +53,8 @@ class ALogClipper
  private:
   FILE *m_infile;
   FILE *m_outfile;
+
+  std::vector<std::string> m_preserve_vars;
 };
 
 #endif 
-
-
-
-
-

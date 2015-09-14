@@ -43,6 +43,8 @@ ALogClipper::ALogClipper()
   m_kept_lines          = 0;
   m_clipped_lines_front = 0;
   m_clipped_lines_back  = 0;
+
+  m_preserve_vars.push_back("IVPHELM_DOMAIN");
 }
 
 //--------------------------------------------------------
@@ -55,11 +57,17 @@ unsigned int ALogClipper::clip(double min_time, double max_time)
     string line = getNextLine();
 
     string linecopy  = line;    
-    string timestr   = biteString(linecopy, ' ');
+    string timestr   = biteStringX(linecopy, ' ');
+    string moosvar   = biteStringX(linecopy, ' ');
     double timestamp = atof(timestr.c_str());
     
     if(timestr[0] == '%')
       writeNextLine(line);
+    else if(vectorContains(m_preserve_vars, moosvar)) {
+      m_kept_chars += line.length();
+      m_kept_lines += 1;
+      writeNextLine(line);
+    }
     else if(timestamp < min_time) {
       m_clipped_chars_front += line.length();
       m_clipped_lines_front += 1;
