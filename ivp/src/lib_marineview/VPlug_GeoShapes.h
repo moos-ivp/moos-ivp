@@ -33,6 +33,8 @@
 #include "XYGrid.h"
 #include "XYConvexGrid.h"
 #include "XYCircle.h"
+#include "XYWedge.h"
+#include "XYArc.h"
 #include "XYPoint.h"
 #include "XYVector.h"
 #include "XYRangePulse.h"
@@ -57,8 +59,10 @@ public:
   void addPolygon(const XYPolygon&);
   void addSegList(const XYSegList&);
   void addCircle(const XYCircle&, unsigned int drawpts=18);
+  void addWedge(const XYWedge&);
   void addHexagon(const XYHexagon&);
   void addPoint(const XYPoint&);
+  void addArc(const XYArc&);
   void addVector(const XYVector&);
   void addGrid(const XYGrid&);
   void addConvexGrid(const XYConvexGrid&);
@@ -69,7 +73,9 @@ public:
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
   bool addCircle(const std::string&, unsigned int drawpts=18);
+  bool addWedge(const std::string&, unsigned int drawpts=18);
   bool addPoint(const std::string&);
+  bool addArc(const std::string&);
   bool addVector(const std::string&);
   bool addGrid(const std::string&);
   bool addConvexGrid(const std::string&);
@@ -83,8 +89,10 @@ public:
   unsigned int sizePolygons() const    {return(m_polygons.size());}
   unsigned int sizeSegLists() const    {return(m_seglists.size());}
   unsigned int sizeCircles() const     {return(m_circles.size());}
+  unsigned int sizeWedges() const      {return(m_wedges.size());}
   unsigned int sizeHexagons() const    {return(m_hexagons.size());}
   unsigned int sizePoints() const      {return(m_points.size());}
+  unsigned int sizeArcs() const        {return(m_arcs.size());}
   unsigned int sizeVectors() const     {return(m_vectors.size());}
   unsigned int sizeGrids() const       {return(m_grids.size());}
   unsigned int sizeConvexGrids() const {return(m_convex_grids.size());}
@@ -94,7 +102,9 @@ public:
   unsigned int sizeTotalShapes() const;
 
   std::vector<XYPolygon> getPolygons() const {return(m_polygons);}
+  std::vector<XYWedge>   getWedges() const   {return(m_wedges);}
   std::vector<XYSegList> getSegLists() const {return(m_seglists);}
+  std::vector<XYArc> getArcs()         const {return(m_arcs);}
   std::vector<XYHexagon> getHexagons() const {return(m_hexagons);}
   std::vector<XYVector>  getVectors() const  {return(m_vectors);}
   std::vector<XYGrid>    getGrids() const    {return(m_grids);}
@@ -117,6 +127,8 @@ public:
   void updateBounds();
 
   void clearPolygons(std::string stype="");
+  void clearWedges(std::string stype="");
+  void clearArcs(std::string stype="");
   void clearSegLists(std::string stype="");
   void clearHexagons(std::string stype="");
   void clearGrids(std::string  stype="");
@@ -131,6 +143,8 @@ public:
 protected:
   std::vector<XYPolygon>    m_polygons;
   std::vector<XYSegList>    m_seglists;
+  std::vector<XYWedge>      m_wedges;
+  std::vector<XYArc>        m_arcs;
   std::vector<XYHexagon>    m_hexagons;
   std::vector<XYGrid>       m_grids;
   std::vector<XYConvexGrid> m_convex_grids;
@@ -138,6 +152,7 @@ protected:
   std::vector<XYRangePulse> m_range_pulses;
   std::vector<XYCommsPulse> m_comms_pulses;
 
+  // map from label to object (map more efficient than vector)
   std::map<std::string, XYPoint>  m_points;
   std::map<std::string, XYMarker> m_markers;
   std::map<std::string, XYCircle> m_circles;

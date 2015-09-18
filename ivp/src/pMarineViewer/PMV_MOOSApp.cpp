@@ -201,6 +201,7 @@ void PMV_MOOSApp::registerVariables()
 
   m_Comms.Register("APPCAST", 0);
   m_Comms.Register("VIEW_POLYGON", 0);
+  m_Comms.Register("VIEW_WEDGE", 0);
   m_Comms.Register("PHI_HOST_IP",  0);
   m_Comms.Register("VIEW_POINT",   0);
   m_Comms.Register("VIEW_VECTOR",  0);
@@ -390,7 +391,6 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
   // If we've just discovered a new app on the current node, send out a 
   // request to ALL apps on the current node.
   else if(new_proc_count > old_proc_count) {
-    cout << "new_proc_count" << new_proc_count << endl;
     string key = GetAppName() + "newproc";
     postAppCastRequest("all", "all", key, "any", (1.1*m_time_warp));
   }

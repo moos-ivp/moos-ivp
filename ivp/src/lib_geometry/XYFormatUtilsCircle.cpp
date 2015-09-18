@@ -33,7 +33,7 @@ using namespace std;
 // circle = x=20, y=-30, rad=40, 
 //          label=val, source=val, type=val, time=val, active=val, 
 //          edge_color=val, edge_size=val, vertex_color=val, 
-//          vertex_size=val, label_color=val
+//          vertex_size=val, label_color=val, fill_color=white
 
 XYCircle string2Circle(string str)
 {

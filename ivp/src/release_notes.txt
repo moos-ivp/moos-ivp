@@ -1,13 +1,17 @@
 
 pHostInfo
- - augmented pHostInfo to recognized the addtional WiFi interface, 
-   in addition to Wi-Fi with the dash
+ - augmented pHostInfo to recognized the addtional "WiFi" interface, 
+   in addition to "Wi-Fi" with the dash
+
+pMarineViewer
+ - Added support for VIEW_WEDGE objects
+
+lib_geometry
+ - Added the VIEW_WEDGE object
 
 pHelmIvP
 
  - Fixed a bug that would allow behaviors with duplicate names to be spawned
-
- - 
 
  - Augmented the Helm appcast output to include a list of all Spawnable 
    behaviors, i.e. behavior templates, with a running tab of attempts to spawn

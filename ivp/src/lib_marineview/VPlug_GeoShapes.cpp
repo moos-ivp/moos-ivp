@@ -34,6 +34,7 @@
 #include "XYFormatUtilsCommsPulse.h"
 #include "XYFormatUtilsMarker.h"
 #include "XYFormatUtilsConvexGrid.h"
+#include "XYFormatUtilsWedge.h"
 #include "ColorParse.h"
 
 using namespace std;
@@ -385,6 +386,25 @@ void VPlug_GeoShapes::addCircle(const XYCircle& new_circle,
 
 
 //-----------------------------------------------------------
+// Procedure: addWedge
+
+void VPlug_GeoShapes::addWedge(const XYWedge& new_wedge)
+{
+  updateBounds(new_wedge.getMinX(), new_wedge.getMaxX(), 
+	       new_wedge.getMinY(), new_wedge.getMaxY());
+
+  string new_label = new_wedge.get_label();
+  for(unsigned int i=0; i<m_wedges.size(); i++) {
+    if(m_wedges[i].get_label() == new_label) {
+      m_wedges[i] = new_wedge;
+      return;
+    }
+  }
+  m_wedges.push_back(new_wedge);  
+}
+
+
+//-----------------------------------------------------------
 // Procedure: addHexagon
 
 void VPlug_GeoShapes::addHexagon(const XYHexagon& hexagon)
@@ -419,6 +439,20 @@ bool VPlug_GeoShapes::addPolygon(const string& poly_str)
   XYPolygon new_poly = string2Poly(poly_str);
   if(new_poly.size() > 0) 
     addPolygon(new_poly);
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: addWedge
+
+bool VPlug_GeoShapes::addWedge(const string& wedge_str,
+			       unsigned int draw_pts)
+{
+  XYWedge new_wedge = string2Wedge(wedge_str);
+  if(new_wedge.isValid()) {
+    new_wedge.initialize();
+    addWedge(new_wedge);
+  }
   return(true);
 }
 
@@ -674,6 +708,25 @@ void VPlug_GeoShapes::clearPolygons(string stype)
       new_polygons.push_back(m_polygons[i]);
   } 
   m_polygons = new_polygons;
+}
+
+
+//-----------------------------------------------------------
+// Procedure: clearWedges
+
+void VPlug_GeoShapes::clearWedges(string stype)
+{
+  if(stype == "") {
+    m_wedges.clear();
+    return;
+  }
+
+  vector<XYWedge> new_wedges;
+  for(unsigned int i=0; i<m_wedges.size(); i++)  {
+    if(typeMatch(&(m_wedges[i]), stype))
+      new_wedges.push_back(m_wedges[i]);
+  } 
+  m_wedges = new_wedges;
 }
 
 

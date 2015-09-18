@@ -115,6 +115,9 @@ protected:
   void  drawSegLists(const std::vector<XYSegList>&);
   void  drawSegList(const XYSegList&);
 
+  void  drawWedges(const std::vector<XYWedge>&);
+  void  drawWedge(const XYWedge&);
+  
   void  drawVectors(const std::vector<XYVector>&);
   void  drawVector(const XYVector&);
 

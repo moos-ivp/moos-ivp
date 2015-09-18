@@ -1299,6 +1299,129 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
 }
 
 //-------------------------------------------------------------
+// Procedure: drawWedges
+
+void MarineViewer::drawWedges(const vector<XYWedge>& wedges)
+{
+  // If the viewable parameter is set to false just return. In 
+  // querying the parameter the optional "true" argument means return
+  // true if nothing is known about the parameter.
+  if(!m_geo_settings.viewable("wedges_viewable_all", true))
+    return;
+
+  for(unsigned int i=0; i<wedges.size(); i++) 
+    if(wedges[i].active()) 
+      drawWedge(wedges[i]);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawWedge
+
+void MarineViewer::drawWedge(const XYWedge& wedge)
+{
+  ColorPack edge_c("aqua");      // default if no drawing hint
+  ColorPack fill_c("invisible"); // default if no drawing hint
+  ColorPack vert_c("red");       // default if no drawing hint
+  ColorPack labl_c("white");     // default if no drawing hint
+  double transparency = 0.2;     // default if no drawing hint
+  double line_width   = 1;       // default if no drawing hint
+  double vertex_size  = 2;       // default if no drawing hint
+
+  if(wedge.color_set("label"))            // label_color
+    labl_c = wedge.get_color("label");
+  if(wedge.color_set("vertex"))           // vertex_color
+    vert_c = wedge.get_color("vertex");
+  if(wedge.color_set("edge"))             // edge_color
+    edge_c = wedge.get_color("edge");
+  if(wedge.color_set("fill"))             // fill_color
+    fill_c = wedge.get_color("fill");
+  if(wedge.transparency_set())            // transparency
+    transparency = wedge.get_transparency(); 
+  if(wedge.edge_size_set())               // edge_size
+    line_width = wedge.get_edge_size();
+  if(wedge.vertex_size_set())             // vertex_size
+    vertex_size = wedge.get_vertex_size();
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  glLineWidth(1.0);  
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  vector<double> draw_pts = wedge.getPointCache();
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+  for(unsigned int i=0; i<draw_pts.size(); i++) {
+    if((i%2)==0)
+      draw_pts[i] *= pix_per_mtr_x;
+    else
+      draw_pts[i] *= pix_per_mtr_y;
+  }
+  
+  if(edge_c.visible()) {
+    glLineWidth(line_width);
+    glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
+    glBegin(GL_LINE_LOOP);
+    for(unsigned int i=0; i<draw_pts.size(); i=i+2) {
+      glVertex2f(draw_pts[i], draw_pts[i+1]);
+    }
+    glEnd();
+  }
+  
+  // If filled option is on, draw the interior of the wedge
+  if(fill_c.visible()) {
+    glEnable(GL_BLEND);
+    glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), transparency);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_POLYGON);
+    for(unsigned int i=0; i<draw_pts.size(); i=i+2) {
+      glVertex2f(draw_pts[i], draw_pts[i+1]);
+    }
+    glEnd();
+    glDisable(GL_BLEND);
+  }
+
+  // Draw the labels unless either the viewer has it shut off OR if 
+  // the publisher of the point requested it not to be viewed, by
+  // setting the color to be "invisible".
+  bool draw_labels = m_geo_settings.viewable("wedge_viewable_labels");
+  if(!edge_c.visible() && !fill_c.visible())
+    draw_labels = false;
+
+  if(draw_labels && labl_c.visible()) {
+    glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+    gl_font(1, 10);
+    
+    double px = wedge.getX() * m_back_img.get_pix_per_mtr_x();
+    double py = wedge.getY() * m_back_img.get_pix_per_mtr_y();
+
+    string plabel = wedge.get_msg();
+    if(plabel == "")
+      plabel = wedge.get_label();
+    if(plabel != "") {    
+      double offset = 3.0 * (1/m_zoom);
+      glRasterPos3f(px+offset, py+offset, 0);
+      gl_draw(plabel.c_str());
+    }
+  }
+
+  glFlush();
+  glPopMatrix();
+
+}
+
+//-------------------------------------------------------------
 // Procedure: drawSegment
 //      Note: points are given in meter in local coordinates.
 
@@ -1873,23 +1996,23 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
   ColorPack labl_c("white");
   ColorPack fill_c("invisible");
   double line_width = 1;
+  double transparency = 0.2;
 
-  if(circle.color_set("edge"))           // edge_color
+  if(circle.color_set("edge"))             // edge_color
     edge_c = circle.get_color("edge");  
-  if(circle.color_set("label"))          // label_color
+  if(circle.color_set("label"))            // label_color
     labl_c = circle.get_color("label");  
-  if(circle.color_set("fill"))           // fill_color
+  if(circle.color_set("fill"))             // fill_color
     fill_c = circle.get_color("fill");
-  if(circle.edge_size_set())             // edge_size
+  if(circle.transparency_set())            // transparency
+    transparency = circle.get_transparency();
+  if(circle.edge_size_set())               // edge_size
     line_width = circle.get_edge_size();
 
   // If neither edges or circle-fill are visible, just quit now!
   if(!edge_c.visible() && !fill_c.visible())
     return;
 
-  double transparency = 0.2;
-  if(circle.transparency_set())
-    transparency = circle.get_transparency();
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -1911,8 +2034,7 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
   vector<double> draw_pts = circle.getPointCache();
   double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
   double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
-  unsigned int i;
-  for(i=0; i<draw_pts.size(); i++) {
+  for(unsigned int i=0; i<draw_pts.size(); i++) {
     if((i%2)==0)
       draw_pts[i] *= pix_per_mtr_x;
     else
@@ -1923,7 +2045,7 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
     glLineWidth(line_width);
     glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
     glBegin(GL_LINE_LOOP);
-    for(i=0; i<draw_pts.size(); i=i+2) {
+    for(unsigned int i=0; i<draw_pts.size(); i=i+2) {
       glVertex2f(draw_pts[i], draw_pts[i+1]);
     }
     glEnd();
@@ -1935,7 +2057,7 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
     glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), transparency);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glBegin(GL_POLYGON);
-    for(i=0; i<draw_pts.size(); i=i+2) {
+    for(unsigned int i=0; i<draw_pts.size(); i=i+2) {
       glVertex2f(draw_pts[i], draw_pts[i+1]);
     }
     glEnd();

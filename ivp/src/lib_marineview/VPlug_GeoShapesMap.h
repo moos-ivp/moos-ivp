@@ -49,6 +49,7 @@ public:
 
   unsigned int sizeVehicles() const    {return(m_geoshapes_map.size());}
   unsigned int sizePolygons() const    {return(size("polygons"));}
+  unsigned int sizeWedges() const    {return(size("wedges"));}
   unsigned int sizeSegLists() const    {return(size("seglists"));}
   unsigned int sizeCircles() const     {return(size("circles"));}
   unsigned int sizeHexagons() const    {return(size("hexagons"));}
@@ -62,6 +63,7 @@ public:
   unsigned int sizeTotalShapes() const {return(size("total_shapes"));}
 
   std::vector<XYPolygon> getPolygons(const std::string&);
+  std::vector<XYWedge>   getWedges(const std::string&);
   std::vector<XYSegList> getSegLists(const std::string&);
   std::vector<XYHexagon> getHexagons(const std::string&);
 

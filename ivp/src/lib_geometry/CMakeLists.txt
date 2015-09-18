@@ -26,6 +26,7 @@ SET(HEADERS
   XYCircle.h
   XYEncoders.h
   XYFormatUtilsCircle.h
+  XYFormatUtilsWedge.h
   XYFormatUtilsPoint.h
   XYFormatUtilsPoly.h
   XYFormatUtilsSegl.h

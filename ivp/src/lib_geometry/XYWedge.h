@@ -51,10 +51,12 @@ public:
   double getMinY() const    {return(m_ymin);}
   double getMaxY() const    {return(m_ymax);}
   
+  std::vector<double> getPointCache() const {return(m_pt_cache);}
+
   std::string get_spec();
 
   bool   isValid() const;
-  bool   initialize();
+  bool   initialize(double degrees_per_pt=1);
 
  protected: // Config variables
   double m_x;    
@@ -92,6 +94,8 @@ public:
   double m_hhy;
 
   bool   m_initialized;
+
+  std::vector<double> m_pt_cache;
 };
 #endif
 

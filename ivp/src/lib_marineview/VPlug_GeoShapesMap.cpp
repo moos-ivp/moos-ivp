@@ -92,6 +92,8 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
     handled = m_geoshapes_map[vname].addPolygon(value);
   else if(param == "VIEW_SEGLIST")
     handled = m_geoshapes_map[vname].addSegList(value);
+  else if(param == "VIEW_WEDGE")
+    handled = m_geoshapes_map[vname].addWedge(value);
   else if(param == "VIEW_VECTOR")
     handled = m_geoshapes_map[vname].addVector(value);
   else if(param == "VIEW_CIRCLE")
@@ -100,10 +102,8 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
     handled = m_geoshapes_map[vname].addRangePulse(value, timestamp);
   else if(param == "VIEW_COMMS_PULSE")
     handled = m_geoshapes_map[vname].addCommsPulse(value, timestamp);
-  else if((param == "VIEW_MARKER") || (param == "MARKER")) {
-    cout << "Adding marker*****: " << value << endl;
+  else if((param == "VIEW_MARKER") || (param == "MARKER")) 
     handled = m_geoshapes_map[vname].addMarker(value);
-  }
   else if(param == "GRID_CONFIG")
     handled = m_geoshapes_map[vname].addGrid(value);
   else if(param == "GRID_DELTA")
@@ -141,6 +141,10 @@ vector<XYPolygon> VPlug_GeoShapesMap::getPolygons(const string& vname)
 vector<XYSegList> VPlug_GeoShapesMap::getSegLists(const string& vname)
 {
   return(m_geoshapes_map[vname].getSegLists());
+}
+vector<XYWedge> VPlug_GeoShapesMap::getWedges(const string& vname)
+{
+  return(m_geoshapes_map[vname].getWedges());
 }
 vector<XYHexagon> VPlug_GeoShapesMap::getHexagons(const string& vname)
 {
@@ -200,6 +204,8 @@ unsigned int VPlug_GeoShapesMap::size(const string& gtype,
 	return_size += p->second.sizePolygons();
       else if(gtype == "polygons")
 	return_size += p->second.sizePolygons();
+      else if(gtype == "wedges")
+	return_size += p->second.sizeWedges();
       else if(gtype == "seglists")
 	return_size += p->second.sizeSegLists();
       else if(gtype == "total_shapes")

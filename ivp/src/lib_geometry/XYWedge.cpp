@@ -167,7 +167,7 @@ bool XYWedge::isValid() const
 //-------------------------------------------------------------
 // Procedure: initialize
 
-bool XYWedge::initialize()
+bool XYWedge::initialize(double degrees_per_pt)
 {
   // Part 1: Sanity checks
   if(m_initialized)
@@ -227,6 +227,39 @@ bool XYWedge::initialize()
     m_xmin = m_x - m_radhgh;
   if((m_langle > 270) && ((m_langle + arclen) > 630))
     m_xmin = m_x - m_radhgh;
+
+  // Part 5: Build the drawpt cache for rendering
+  // clear the cache
+  m_pt_cache.clear();
+  // Draw the first edge
+  m_pt_cache.push_back(m_llx);
+  m_pt_cache.push_back(m_lly);
+  m_pt_cache.push_back(m_lhx);
+  m_pt_cache.push_back(m_lhy);
+  
+  double delta = degrees_per_pt;
+  // Draw the outer arc
+  for(double deg=m_langle; deg<m_hangle; deg+=delta) {
+    double new_x, new_y;
+    projectPoint(deg, m_radhgh, m_x, m_y, new_x, new_y);
+    m_pt_cache.push_back(new_x);
+    m_pt_cache.push_back(new_y);
+  }
+  // Draw the second edge
+  m_pt_cache.push_back(m_hhx);
+  m_pt_cache.push_back(m_hhy);
+  m_pt_cache.push_back(m_hlx);
+  m_pt_cache.push_back(m_hly);
+
+  // Draw the inner arc
+  for(double deg=m_hangle; deg>m_langle; deg-=delta) {
+    double new_x, new_y;
+    projectPoint(deg, m_radlow, m_x, m_y, new_x, new_y);
+    m_pt_cache.push_back(new_x);
+    m_pt_cache.push_back(new_y);
+  }
+
+
 
   m_initialized = true;
   return(true);

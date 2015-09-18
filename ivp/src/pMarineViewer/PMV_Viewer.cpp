@@ -96,6 +96,7 @@ void PMV_Viewer::draw()
   vector<string> vnames = m_geoshapes_map.getVehiNames();
   for(unsigned int i=0; i<vnames.size(); i++) {
     vector<XYPolygon> polys   = m_geoshapes_map.getPolygons(vnames[i]);
+    vector<XYWedge>   wedges  = m_geoshapes_map.getWedges(vnames[i]);
     vector<XYGrid>    grids   = m_geoshapes_map.getGrids(vnames[i]);
     vector<XYConvexGrid> cgrids = m_geoshapes_map.getConvexGrids(vnames[i]);
     vector<XYSegList> segls   = m_geoshapes_map.getSegLists(vnames[i]);
@@ -113,6 +114,7 @@ void PMV_Viewer::draw()
     drawCircles(circles, m_curr_time);
     drawPoints(points);
     drawVectors(vectors);
+    drawWedges(wedges);
     drawRangePulses(rng_pulses, m_curr_time);
     drawCommsPulses(cms_pulses, m_curr_time);
     drawMarkers(markers);
@@ -251,7 +253,6 @@ bool PMV_Viewer::setParam(string param, string value)
   }
   else if((param == "view_marker") || (param == "marker")) {
     handled = m_geoshapes_map.addGeoShape(toupper(param), value, "shoreside");
-    cout << "Adding marker, handled: " << handled << endl;
   }
   else {
     handled = handled || m_vehi_settings.setParam(param, value);
