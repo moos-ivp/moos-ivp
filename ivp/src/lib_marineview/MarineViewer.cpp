@@ -1321,16 +1321,12 @@ void MarineViewer::drawWedge(const XYWedge& wedge)
 {
   ColorPack edge_c("aqua");      // default if no drawing hint
   ColorPack fill_c("invisible"); // default if no drawing hint
-  ColorPack vert_c("red");       // default if no drawing hint
   ColorPack labl_c("white");     // default if no drawing hint
   double transparency = 0.2;     // default if no drawing hint
   double line_width   = 1;       // default if no drawing hint
-  double vertex_size  = 2;       // default if no drawing hint
 
   if(wedge.color_set("label"))            // label_color
     labl_c = wedge.get_color("label");
-  if(wedge.color_set("vertex"))           // vertex_color
-    vert_c = wedge.get_color("vertex");
   if(wedge.color_set("edge"))             // edge_color
     edge_c = wedge.get_color("edge");
   if(wedge.color_set("fill"))             // fill_color
@@ -1339,8 +1335,6 @@ void MarineViewer::drawWedge(const XYWedge& wedge)
     transparency = wedge.get_transparency(); 
   if(wedge.edge_size_set())               // edge_size
     line_width = wedge.get_edge_size();
-  if(wedge.vertex_size_set())             // vertex_size
-    vertex_size = wedge.get_vertex_size();
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -1369,6 +1363,7 @@ void MarineViewer::drawWedge(const XYWedge& wedge)
       draw_pts[i] *= pix_per_mtr_y;
   }
   
+  // Draw the lines
   if(edge_c.visible()) {
     glLineWidth(line_width);
     glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
