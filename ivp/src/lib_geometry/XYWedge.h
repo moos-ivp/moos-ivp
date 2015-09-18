@@ -40,7 +40,7 @@ public:
   void   setHangle(double);
 
   double getX() const       {return(m_x);}
-  double getY() const       {return(m_x);}
+  double getY() const       {return(m_y);}
   double getLangle() const  {return(m_langle);}
   double getHangle() const  {return(m_hangle);}
   double getRadLow() const  {return(m_radlow);}

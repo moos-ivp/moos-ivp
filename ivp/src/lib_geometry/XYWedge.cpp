@@ -88,7 +88,7 @@ void XYWedge::setX(double x)
 
 void XYWedge::setY(double y)
 {
-  m_x = y;
+  m_y = y;
   m_y_set = true;
   m_initialized = false;
 }
