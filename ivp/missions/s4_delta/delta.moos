@@ -2,11 +2,8 @@
 // NAME: M. Benjamin, MIT CSAIL
 // FILE: delta.moos
 //-------------------------------------------------
-
 ServerHost = localhost
 ServerPort = 9000
-Simulator  = true
-
 Community  = henry
 
 MOOSTimeWarp = 1

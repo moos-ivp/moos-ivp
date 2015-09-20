@@ -31,7 +31,7 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false, ExtraProcessParams=one
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-  //Run = uTimerScript    @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
 
   one = --size=1400x800
   db = --event_log=eventlog
@@ -47,7 +47,7 @@ ProcessConfig = uTimerScript
 
 	reset_time = all-posted
 	
-  event = var=WPT_UPDATE, val="name=$[TCOUNT]#pwt=1", time = 2.5
+  event = var=VIEW_WEDGE, val="x=80,y=-80,rad_low=40,rad_hgh=80,ang_low=45,ang_hgh=135,label=test_wedge,active=true", time = 8.5
 }
 
 //------------------------------------------
@@ -199,6 +199,7 @@ ProcessConfig = pMarineViewer
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
 
+  scope  = VIEW_WEDGE
   scope  = MISSION
   scope  = SURVEY_DIST_TO_NEXT
   scope  = SURVEY_DIST_TO_PREV
