@@ -4,14 +4,7 @@
 #--------------------------------------------------------
 
 # Set System Specific Libraries
-if (${WIN32})
-  SET(SYSTEM_LIBS
-    wsock32)
-else (${WIN32})
-  SET(SYSTEM_LIBS
-    m
-    pthread)
-endif (${WIN32})
+SET(SYSTEM_LIBS m pthread)
 
 SET(SRC
    NodeReporter.cpp
