@@ -3,6 +3,10 @@ pHostInfo
  - augmented pHostInfo to recognized the addtional "WiFi" interface, 
    in addition to "Wi-Fi" with the dash
 
+uFldNodeComms
+ - Bug fix - allow messages from Vehicle A to B to be sent in clusters, all 
+   at the same time, if min_msg_interval is zero. 
+
 pMarineViewer
  - Added support for VIEW_WEDGE objects
 
