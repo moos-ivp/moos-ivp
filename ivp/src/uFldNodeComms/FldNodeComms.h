@@ -55,6 +55,7 @@ class FldNodeComms : public AppCastingMOOSApp
 
   void distributeNodeReportInfo(const std::string& uname);
   void distributeNodeMessageInfo(const std::string& uname);
+  void distributeNodeMessageInfo(std::string src, NodeMessage msg);
   
   bool meetsRangeThresh(const std::string& v1, const std::string& v2);
   bool meetsCriticalRangeThresh(const std::string&, const std::string&);
@@ -98,8 +99,9 @@ class FldNodeComms : public AppCastingMOOSApp
  protected: // State variables
   // Holds last node report received for vehicle vname
   std::map<std::string, NodeRecord>   m_map_record;     
-  // Holds last node messsage received for vehicle vname
-  std::map<std::string, NodeMessage>  m_map_message;    
+  // Holds last node messsages received for vehicle vname
+  std::map<std::string, std::vector<NodeMessage> > m_map_message;    
+
   // True if last node report for vehicle vname has not been sent out
   std::map<std::string, bool>         m_map_newrecord;  
   // True if last node message for vehicle vname has not been sent out

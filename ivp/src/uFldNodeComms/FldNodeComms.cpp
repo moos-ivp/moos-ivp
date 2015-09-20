@@ -143,21 +143,15 @@ bool FldNodeComms::Iterate()
     string src_name = p2->first;    
     bool   newinfo  = p2->second;
     // If the message has changed, consider sending it out
-    if(newinfo) {
-      // Check if message interval is sufficiently long
-      double elapsed = m_curr_time - m_map_time_nmessage[src_name];
-      if(elapsed >= m_min_msg_interval) {
-	distributeNodeMessageInfo(src_name);
-	m_map_time_nmessage[src_name] = m_curr_time;
-      }
-      else
-	m_blk_msg_tooquick++;
-    }
+    if(newinfo) 
+      distributeNodeMessageInfo(src_name);
   }
 
   m_map_newrecord.clear();
   m_map_newmessage.clear();
-
+  m_map_message.clear();
+  m_map_record.clear();
+  
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -294,7 +288,7 @@ bool FldNodeComms::handleMailNodeMessage(const string& msg)
 
   string upp_src_node = toupper(new_message.getSourceNode());
 
-  m_map_message[upp_src_node]    = new_message;
+  m_map_message[upp_src_node].push_back(new_message);
   m_map_newmessage[upp_src_node] = true;
 
   unsigned int vindex_size = m_map_vindex.size();
@@ -461,6 +455,33 @@ void FldNodeComms::distributeNodeReportInfo(const string& uname)
 
 //------------------------------------------------------------
 // Procedure: distributeNodeMessageInfo
+//      Note: Mod Sep 20th, 2015 (mikerb) to allow uFldNodeComms to
+//            keep all messages received since the previous Iteration.
+//            Previously messages sent together in time, and all
+//            received in one iteration here, would drop all but the
+//            latest message.
+
+void FldNodeComms::distributeNodeMessageInfo(const string& src_name)
+{
+  if(m_map_message.count(src_name) == 0)
+    return;
+
+  for(unsigned int i=0; i<m_map_message[src_name].size(); i++) {
+    double elapsed = m_curr_time - m_map_time_nmessage[src_name];
+    if(elapsed >= m_min_msg_interval) {
+      NodeMessage message = m_map_message[src_name][i];
+      distributeNodeMessageInfo(src_name, message);
+      m_map_time_nmessage[src_name] = m_curr_time;
+    }
+    else
+      m_blk_msg_tooquick++;
+      
+  }
+}
+
+
+//------------------------------------------------------------
+// Procedure: distributeNodeMessageInfo
 //   Purpose: Post the node message for vehicle <uname> to the  
 //            recipients specified in the message. 
 //     Notes: The recipient may be specified by the name of the recipient
@@ -471,10 +492,10 @@ void FldNodeComms::distributeNodeReportInfo(const string& uname)
 //            based on inter-vehicle range, group, and the respective
 //            stealth and earange of the senting and receiving nodes.
 
-void FldNodeComms::distributeNodeMessageInfo(const string& src_name)
+void FldNodeComms::distributeNodeMessageInfo(string src_name,
+					     NodeMessage message)
 {
   // First check if the latest message for the given vehicle is valid.
-  NodeMessage message = m_map_message[src_name];
   if(!message.valid()) {
     m_blk_msg_invalid++;
     return;
@@ -494,8 +515,7 @@ void FldNodeComms::distributeNodeMessageInfo(const string& src_name)
   
   // If destination name(s) given add each one in the colon-separated list
   vector<string> svector = parseString(dest_name, ':');
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<svector.size(); i++) {
     string a_destination_name = stripBlankEnds(svector[i]);
     dest_names.insert(a_destination_name);
   }
@@ -506,8 +526,8 @@ void FldNodeComms::distributeNodeMessageInfo(const string& src_name)
     map<string, string>::iterator p;
     for(p=m_map_vgroup.begin(); p!=m_map_vgroup.end(); p++) {
       string vname = p->first;
-      string group = p->second;
-      if((dest_group == toupper(group)) || (dest_group == "ALL") || (dest_name=="ALL"))
+      string group = toupper(p->second);
+      if((dest_group == group) || (dest_group == "ALL") || (dest_name=="ALL"))
 	dest_names.insert(vname);
     }
   }
