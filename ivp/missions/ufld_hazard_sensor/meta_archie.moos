@@ -1,8 +1,5 @@
 ServerHost = localhost
 ServerPort = $(VPORT)
-Simulator  = true
-
-// Community name IS the vehicle name
 Community  = $(VNAME)
 
 #include plug_origin_warp.moos

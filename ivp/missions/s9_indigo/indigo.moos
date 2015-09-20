@@ -2,8 +2,6 @@
 
 ServerHost = localhost
 ServerPort = 9000
-Simulator  = true
-
 Community  = indigo
 
 MOOSTimeWarp = 1
