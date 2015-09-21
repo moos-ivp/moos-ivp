@@ -208,6 +208,18 @@ bool isTermColor(const string &raw_color_in)
 
 
 //-------------------------------------------------------------
+// Procedure: setColorOnString()
+
+bool setColorOnString(string& color, string raw_color_in)
+{
+  if(!isColor(raw_color_in))
+    return(false);
+  color = raw_color_in;
+  return(true);
+}
+
+
+//-------------------------------------------------------------
 // Procedure: colorNameToHex
 
 string colorNameToHex(const string &str)

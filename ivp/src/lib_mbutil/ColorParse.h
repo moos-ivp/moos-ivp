@@ -37,6 +37,8 @@ std::string         termColor(const std::string& color="");
 
 std::string         removeTermColors(std::string);
 
+bool setColorOnString(std::string& color, std::string given_color);
+
 bool isColor(const std::string&);
 bool isTermColor(const std::string&);
 
