@@ -721,14 +721,21 @@ void FldNodeComms::postViewCommsPulse(const string& uname1,
 
 //------------------------------------------------------------
 // Procedure: buildReport
-//      Note: A virtual function of the AppCastingMOOSApp superclass, conditionally 
+//      Note: A virtual function of AppCastingMOOSApp superclass, conditionally 
 //            invoked if either a terminal or appcast report is needed.
 
 bool FldNodeComms::buildReport()
 {
+  m_msgs << "Configuration:                        " << endl;
+  m_msgs << "       Comms Range: " << doubleToStringX(m_comms_range)    << endl;
+  m_msgs << "    Critical Range: " << doubleToStringX(m_critical_range) << endl;
+  m_msgs << "   Max Message Len: " << doubleToStringX(m_max_msg_length) << endl;
+  m_msgs << "   Min Message Int: " << doubleToStringX(m_min_msg_interval) << endl;
+  m_msgs << "       Apply Group: " << boolToString(m_apply_groups) << endl;
+  m_msgs << endl;
+
   m_msgs << "Node Report Summary"                    << endl;
   m_msgs << "======================================" << endl;
-
   m_msgs << "        Total Received: " << m_total_reports_rcvd << endl;
   map<string, unsigned int>::iterator p;
   for(p=m_map_reports_rcvd.begin(); p!=m_map_reports_rcvd.end(); p++) {
@@ -799,7 +806,3 @@ bool FldNodeComms::buildReport()
 
   return(true);
 }
-
-
-
-
