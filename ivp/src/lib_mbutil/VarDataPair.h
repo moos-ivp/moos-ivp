@@ -43,6 +43,7 @@ public:
 
   virtual ~VarDataPair() {}
   
+  void        set_var(const std::string& s)   {m_var=s;}
   void        set_key(const std::string& s)   {m_key=s;}
   void        set_ptype(const std::string& s) {m_ptype=s;}
   void        set_sdata(const std::string& s) {m_sdata=s; m_is_string=true;}

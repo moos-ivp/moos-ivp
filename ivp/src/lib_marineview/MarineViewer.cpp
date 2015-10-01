@@ -1490,13 +1490,14 @@ void MarineViewer::drawSegList(const XYSegList& segl)
     labl_c = segl.get_color("label");
   if(segl.color_set("vertex"))         // vertex_color
     vert_c = segl.get_color("vertex");
-  
   if(segl.color_set("edge"))           // edge_color
     edge_c = segl.get_color("edge");
   if(segl.edge_size_set())             // edge_size
     line_width = segl.get_edge_size();
   if(segl.vertex_size_set())           // vertex_size
     vertex_size = segl.get_vertex_size();
+
+  cout << "In DrawSegList: edge_size=" << line_width << endl;
   
   unsigned int vsize = segl.size();
 
@@ -1529,7 +1530,7 @@ void MarineViewer::drawSegList(const XYSegList& segl)
   glScalef(m_zoom, m_zoom, m_zoom);
   
   // First draw the edges
-  if((vsize >= 2) && edge_c.visible()) {
+  if((vsize >= 2) && edge_c.visible() && (line_width > 0)) {
     glLineWidth(line_width);
     glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
 

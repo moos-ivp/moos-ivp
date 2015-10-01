@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <cmath>
 #include "VehicleSet.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
@@ -33,10 +34,6 @@ using namespace std;
 
 //-------------------------------------------------------------
 // Constructor
-// Note: The setParam routines are used rather than initializing 
-//       the variables directly so the automatic recording in the 
-//       m_report_map is performed for reporting on the state of 
-//       variables in later queries.
 
 VehicleSet::VehicleSet()
 {
@@ -52,7 +49,7 @@ VehicleSet::VehicleSet()
 //-------------------------------------------------------------
 // Procedure: setParam
 //     Ntoes: The "handled" variable is set to true if a known and 
-//            acceptable value are passed. This boolean is returned 
+//            acceptable value are passed. This Boolean is returned 
 //            and may be vital to the caller to either pass a warning
 //            or error to the user, or perhaps allow the parameter
 //            and value to be processed in some other way.
@@ -380,6 +377,31 @@ BearingLine VehicleSet::getBearingLine(const string& given_vname) const
     return(invalid_line);
   else
     return(bearing_line);
+}
+
+//-------------------------------------------------------------
+// Procedure: getClosestVehicle
+
+string VehicleSet::getClosestVehicle(double mx, double my) const
+{
+  if(m_rec_map.size() == 0)
+    return("");
+
+  double closest_range = -1;
+  string closest_vname;
+  
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_rec_map.begin(); p!=m_rec_map.end(); p++) {
+    double vx = p->second.getX();
+    double vy = p->second.getY();
+    double range = hypot(vx-mx, vy-my);
+    if((closest_range == -1) || (range < closest_range)) {
+      closest_range = range;
+      closest_vname = p->second.getName();
+    }      
+  }
+
+  return(closest_vname);
 }
 
 //-------------------------------------------------------------

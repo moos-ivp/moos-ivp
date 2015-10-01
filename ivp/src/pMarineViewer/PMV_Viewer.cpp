@@ -502,6 +502,9 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
 
+  string vname_closest = m_vehiset.getClosestVehicle(sx, sy);
+  string up_vname_closest = toupper(vname_closest);
+  
   double dlat, dlon;
 
   bool ok = false;
@@ -547,6 +550,23 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
       if((ikey == "any_left") || (ikey == m_left_mouse_key)) {
 	VarDataPair pair = m_var_data_pairs_all[i];
 	if(pair.get_ptype() == "left") {
+	  string var = pair.get_var();
+
+	  // In most cases pattern replacement is done on the right side of
+	  // vardata pair, but in these cases it can be done on the left side,
+	  // affecting the MOOS variable name involved in the post.
+	  if(strContains(var, "$(VNAME_CLOSEST)")) 
+	    var = findReplace(var, "$(VNAME_CLOSEST)", vname_closest);
+	  if(strContains(var, "$[VNAME_CLOSEST]")) 
+	    var = findReplace(var, "$[VNAME_CLOSEST]", vname_closest);
+	  
+	  if(strContains(var, "$(UP_VNAME_CLOSEST)")) 
+	    var = findReplace(var, "$(UP_VNAME_CLOSEST)", up_vname_closest);
+	  if(strContains(var, "$[UP_VNAME_CLOSEST]")) 
+	    var = findReplace(var, "$[UP_VNAME_CLOSEST]", up_vname_closest);
+	  pair.set_var(var);
+
+
 	  if(pair.is_string()) {
 	    string str = m_var_data_pairs_all[i].get_sdata();
 	    if(strContains(str, "$(XPOS)")) 
@@ -591,6 +611,16 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	    if(strContains(str, "$[LON]")) 
 	      str = findReplace(str, "$[LON]", doubleToString(dlon,8));
 
+	    if(strContains(str, "$(VNAME_CLOSEST)")) 
+	      str = findReplace(str, "$(VNAME_CLOSEST)", vname_closest);
+	    if(strContains(str, "$[VNAME_CLOSEST]")) 
+	      str = findReplace(str, "$[VNAME_CLOSEST]", vname_closest);
+
+	    if(strContains(str, "$(UP_VNAME_CLOSEST)")) 
+	      str = findReplace(str, "$(UP_VNAME_CLOSEST)", up_vname_closest);
+	    if(strContains(str, "$[UP_VNAME_CLOSEST]")) 
+	      str = findReplace(str, "$[UP_VNAME_CLOSEST]", up_vname_closest);
+	    
 	    if(strContains(str, "$(VNAME)")) {
 	      string vname = getStringInfo("active_vehicle_name");
 	      str = findReplace(str, "$(VNAME)", vname);

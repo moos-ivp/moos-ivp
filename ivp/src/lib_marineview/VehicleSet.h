@@ -76,6 +76,8 @@ class VehicleSet
   std::string getActiveVehicle() const  {return(m_vehicles_active_name);}
   std::string getCenterVehicle() const  {return(m_vehicles_center_name);}
 
+  std::string getClosestVehicle(double x, double y) const;
+  
   CPList      getVehiHist(const std::string&   s="active") const;   
   BearingLine getBearingLine(const std::string& s="active") const;
 
