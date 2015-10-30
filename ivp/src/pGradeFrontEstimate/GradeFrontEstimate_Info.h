@@ -1,8 +1,8 @@
 /****************************************************************/
-/*   NAME:                                              */
+/*   NAME:                                                      */
 /*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: GradeFrontEstimate_Info.h                                      */
-/*   DATE: Dec 29th 1963                                        */
+/*   FILE: GradeFrontEstimate_Info.h                            */
+/*   DATE: January 2012                                         */
 /****************************************************************/
 
 #ifndef GradeFrontEstimate_INFO_HEADER

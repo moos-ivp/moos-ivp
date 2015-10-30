@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPFunction.h                                        */
-/*    DATE:                                                      */
+/*    DATE: Too long ago to remember (1996-1999)                 */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */

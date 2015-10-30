@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME:                                               */
+/*    NAME:                                                 */
 /*    ORGN: MIT                                             */
-/*    FILE: GradeFrontEstimate.cpp                                        */
-/*    DATE:                                                 */
+/*    FILE: GradeFrontEstimate.cpp                          */
+/*    DATE: January 2012                                    */
 /************************************************************/
 
 #include <iterator>

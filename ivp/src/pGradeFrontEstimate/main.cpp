@@ -2,7 +2,7 @@
 /*    NAME:                                               */
 /*    ORGN: MIT                                             */
 /*    FILE: main.cpp                                        */
-/*    DATE:                                                 */
+/*    DATE: January 2012                                    */
 /************************************************************/
 
 #include <string>

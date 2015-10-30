@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BFactoryStatic.h                                     */
-/*    DATE:                                                      */
+/*    DATE: Feb 11th, 2010                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */

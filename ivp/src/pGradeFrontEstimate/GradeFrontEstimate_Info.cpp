@@ -1,8 +1,8 @@
 /****************************************************************/
-/*   NAME:                                              */
+/*   NAME:                                                      */
 /*   ORGN: MIT Cambridge MA                                     */
-/*   FILE: GradeFrontEstimate_Info.cpp                               */
-/*   DATE: Dec 29th 1963                                        */
+/*   FILE: GradeFrontEstimate_Info.cpp                          */
+/*   DATE: January 2012                                         */
 /****************************************************************/
 
 #include <cstdlib>

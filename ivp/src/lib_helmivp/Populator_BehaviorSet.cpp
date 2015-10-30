@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Populator_BehaviorSet.cpp                            */
-/*    DATE:                                                      */
+/*    DATE: Jan 27 2005                                          */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -387,9 +387,3 @@ void Populator_BehaviorSet::addConfigWarnings(vector<string> warnings)
   for(unsigned int i=0; i<warnings.size(); i++)
     m_config_warnings.push_back(warnings[i]);
 }
-
-
-
-
-
-

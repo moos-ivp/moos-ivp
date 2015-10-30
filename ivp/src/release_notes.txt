@@ -9,6 +9,10 @@ uFldNodeComms
 
 pMarineViewer
  - Added support for VIEW_WEDGE objects
+ - Added support left mouse clicks to include a new macro UP_VNAME_CLOSEST 
+   and VNAME_CLOSEST which represent the string values of the vehicle name 
+   closest to the mouse click. This allows one to configure to say return 
+   a vehicle by clicking on it.
 
 lib_geometry
  - Added the VIEW_WEDGE object

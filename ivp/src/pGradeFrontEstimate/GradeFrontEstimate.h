@@ -1,8 +1,8 @@
 /************************************************************/
-/*    NAME:                                               */
+/*    NAME:                                                 */
 /*    ORGN: MIT                                             */
-/*    FILE: GradeFrontEstimate.h                                          */
-/*    DATE:                                                 */
+/*    FILE: GradeFrontEstimate.h                            */
+/*    DATE: January 2012                                    */
 /************************************************************/
 
 #ifndef GradeFrontEstimate_HEADER

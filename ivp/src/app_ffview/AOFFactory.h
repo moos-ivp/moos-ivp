@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE:                                                      */
-/*    DATE:                                                      */
+/*    FILE: AOFFactor.h                                          */
+/*    DATE: Apr 15th 2005                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */

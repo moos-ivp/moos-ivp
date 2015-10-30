@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: FileBuffer.h                                         */
-/*    DATE: (1996-2005)                                          */
+/*    DATE: 1996                                                 */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */

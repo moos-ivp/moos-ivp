@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF_SCALAR.h                                         */
-/*    DATE:                                                      */
+/*    DATE: 1996                                                 */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */

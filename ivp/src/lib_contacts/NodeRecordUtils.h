@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeRecordUtils.h                                    */
-/*    DATE:                                                      */
+/*    DATE: Jun 26th 2011                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */

@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RT_Uniform.cpp                                       */
-/*    DATE:                                                      */
+/*    DATE: Aug 26th 2005 (from OFR_AOF written long ago)        */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
