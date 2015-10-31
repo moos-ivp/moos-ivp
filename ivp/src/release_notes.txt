@@ -1,3 +1,10 @@
+uXMS
+
+ - fixed bug in uXMS where timestamps were rendered in full UTM time 
+   rather than time since the start of the MOOSDB.
+
+
+======================================================================
 
 pHostInfo
  - augmented pHostInfo to recognized the addtional "WiFi" interface, 
