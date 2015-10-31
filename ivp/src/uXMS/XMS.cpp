@@ -813,17 +813,19 @@ void XMS::registerVariables()
   map<string,ScopeEntry>::iterator p;
   for(p=m_map_var_entries.begin(); p!=m_map_var_entries.end(); p++) {
     string varname = p->first;
-    m_Comms.Register(varname, 0);
+    Register(varname, 0);
   }
 
   map<string,string>::iterator p2;
   for(p2=m_map_src_status.begin(); p2!=m_map_src_status.end(); p2++) {
     string reg_str = p2->first;
-    m_Comms.Register(reg_str, 1.0);
+    Register(reg_str, 1.0);
   }
 
   if(m_history_var != "")
-    m_Comms.Register(m_history_var, 0);
+    Register(m_history_var, 0);
+
+  Register("DB_UPTIME", 0);
 }
 
 //------------------------------------------------------------
