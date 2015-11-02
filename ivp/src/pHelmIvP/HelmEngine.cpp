@@ -141,6 +141,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 {
   int bhv_ix, bhv_cnt = m_bhv_set->size();
 
+  m_bhv_set->clearUpdateResults();
+  
   // get all the objective functions and add time info to helm report
   m_create_timer.start();
   for(bhv_ix=0; bhv_ix<bhv_cnt; bhv_ix++) {
@@ -222,6 +224,7 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
   }
   m_create_timer.stop();
 
+  m_helm_report.setUpdateResults(m_bhv_set->getUpdateResults());
   return(true);
 }
 

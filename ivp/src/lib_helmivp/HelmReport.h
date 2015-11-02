@@ -99,6 +99,10 @@ public:
   std::vector<std::string> getMsgs() const {return(m_messages);}
   std::vector<std::string> getTemplatingSummary() const;
 
+  std::vector<std::string> getUpdateResults() const {return(m_update_results);}
+
+  void setUpdateResults(std::vector<std::string> v) {m_update_results=v;}
+  
   // Serialization Helper Methods
   std::string  getDecisionSummary()    const;
   std::string  getActiveBehaviors(bool full=true)    const;
@@ -140,7 +144,8 @@ protected:
   std::vector<int>          m_bhvs_active_pcs;
   std::vector<unsigned int> m_bhvs_active_ipfs;
 
-
+  std::vector<std::string>  m_update_results;
+  
   std::vector<std::string>      m_templating_summary;
   std::vector<std::string>      m_messages;
   std::map<std::string, double> m_decisions;  // +

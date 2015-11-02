@@ -711,6 +711,8 @@ bool IvPBehavior::checkUpdates()
     return(false);
   }
 
+  m_update_results.clear();
+  
   bool ok;
   vector<string> new_update_strs = getBufferStringVector(m_update_var, ok);
   
@@ -718,8 +720,12 @@ bool IvPBehavior::checkUpdates()
   unsigned int i, vsize = new_update_strs.size();
   for(i=0; i<vsize; i++) {
     string new_update_str = new_update_strs[i];
-    
-    // Added Mar 7th 2014, allow successive duplicate updates with word toggle in it.
+
+    string update_result = "bhv=" + getDescriptor();
+    update_result += ",var=" + m_update_var;
+    update_result += ",time=" + doubleToString(getBufferLocalTime(),2);
+
+    // Added Mar 7th 2014, allow successive dupl updates with word toggle in it.
     if(strContains(tolower(new_update_str), "toggle") ||
        ((new_update_str != "") && (new_update_str != m_prev_update_str))) {
     
@@ -740,8 +746,10 @@ bool IvPBehavior::checkUpdates()
 	  name_mismatch = true;
       }
 
-      if(!name_mismatch) {
-	string bad_params;
+      if(name_mismatch)
+	update_result += ",result=name_mismatch";
+      else {
+    	string bad_params;
 	bool ok_params = true;
 	for(j=0; j<usize; j++) {
 	  string pair  = uvector[j];
@@ -770,14 +778,23 @@ bool IvPBehavior::checkUpdates()
 	  wmsg += (". Bad parameter(s): " + bad_params);
 	  postMessage("BHV_WARNING", wmsg);
 	  postMessage("BHV_CONFIG_WARNING", wmsg);
+	  update_result += ",result=param_error";
 	}
 	else {
 	  update_made = true;
 	  m_good_updates++;
 	  m_prev_update_str = new_update_str;
+	  update_result += ",result=success";
 	}
-      }
+      }      
     }
+    else {
+      update_result += ",result=duplicate";
+    }
+    
+    update_result += ",val=" + new_update_str;
+    m_update_results.push_back(update_result);
+
   }
 
   if(update_made)
@@ -969,6 +986,17 @@ double IvPBehavior::getBufferCurrTime()
   if(!m_info_buffer)
     return(0);
   return(m_info_buffer->getCurrTime());
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getBufferLocalTime()
+
+double IvPBehavior::getBufferLocalTime()
+{
+  if(!m_info_buffer)
+    return(0);
+  return(m_info_buffer->getLocalTime());
 }
 
 

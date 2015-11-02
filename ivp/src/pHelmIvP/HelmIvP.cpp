@@ -368,6 +368,11 @@ bool HelmIvP::Iterate()
   
   m_helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
 
+  vector<string> update_results = m_helm_report.getUpdateResults();
+  for(unsigned int i=0; i<update_results.size(); i++)
+    Notify("IVPHELM_UPDATE_RESULT", update_results[i]);
+
+  
   m_helm_iteration = m_helm_report.getIteration();
 
   // Check if refresh conditions are met - perhaps clear outgoing maps.
@@ -469,6 +474,10 @@ bool HelmIvP::Iterate()
   Notify("IVPHELM_CREATE_CPU", m_helm_report.getCreateTime());
   Notify("IVPHELM_LOOP_CPU", m_helm_report.getLoopTime());
 
+  bool changed_update_vars = m_bhv_set->refreshMapUpdateVars();
+  if(changed_update_vars)
+    Notify("IVPHELM_UPDATEVARS", m_bhv_set->getUpdateVarSummary());
+  
   if(allstop_msg != "clear")
     if(m_allow_override && m_park_on_allstop)
       m_has_control = false;
@@ -1089,9 +1098,11 @@ bool HelmIvP::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
   m_helm_start_time = m_curr_time;
-  if(!m_info_buffer)
+  if(!m_info_buffer) {
     m_info_buffer = new InfoBuffer;
-
+    m_info_buffer->setStartTime(m_helm_start_time);
+  }
+    
   bool bhv_dir_not_found_ok = false;
   // ownship xis name of MOOS community, set in AppCastingMOOSApp::OnStartUp()
   m_ownship = m_host_community;

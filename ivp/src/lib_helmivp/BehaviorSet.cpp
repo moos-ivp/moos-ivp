@@ -396,6 +396,63 @@ bool BehaviorSet::handlePossibleSpawnings()
 }
 
 //------------------------------------------------------------
+// Procedure: refreshMapUpdateVars()
+//      Note: Returns true if changed since the previous call.
+
+bool BehaviorSet::refreshMapUpdateVars()
+{
+  // Part 1: Create the new map from bhv name to update var
+  map<string, string> new_map_update_vars;
+  for(unsigned int i=0; i<m_bhv_entry.size(); i++) {
+    if(m_bhv_entry[i].getBehavior()) {
+      string update_var = m_bhv_entry[i].getBehavior()->getUpdateVar();
+      if(update_var != "") {
+	string bhv_name = m_bhv_entry[i].getBehavior()->getDescriptor();
+	new_map_update_vars[bhv_name] = update_var;
+      }
+    }
+  }
+
+  // Part 2: Check if the new map is different from the old map
+  bool changed = false;
+  if(m_map_update_vars.size() != new_map_update_vars.size())
+    changed = true;
+  else {
+    map<string, string>::iterator p;
+    for(p=m_map_update_vars.begin(); p!=m_map_update_vars.end(); p++) {
+      string bhv_name = p->first;
+      string update_var = p->second;
+      if(new_map_update_vars.count(bhv_name) == 0)
+	changed = true;
+      else if(new_map_update_vars[bhv_name] != m_map_update_vars[bhv_name])
+	changed = true;
+    }
+  }
+
+  m_map_update_vars = new_map_update_vars;
+  return(changed);
+}
+
+//------------------------------------------------------------
+// Procedure: getUpdateVarSummary()
+//   Example: loiter=LOITER_UPDATE,survey=SURVEY_UPDATE,dive=DIVE_UPDATE
+
+string BehaviorSet::getUpdateVarSummary()
+{
+  string summary;
+  map<string, string>::iterator p;
+  for(p=m_map_update_vars.begin(); p!=m_map_update_vars.end(); p++) {
+    string bhv_name = p->first;
+    string update_var = p->second;
+    if(summary != "")
+      summary += ",";
+    summary += bhv_name + "=" + update_var;
+  }
+  
+  return(summary);
+}
+
+//------------------------------------------------------------
 // Procedure: produceOF
 
 IvPFunction* BehaviorSet::produceOF(unsigned int ix, 
@@ -417,9 +474,13 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 
   // Look for possible dynamic updates to the behavior parameters
   bool update_made = bhv->checkUpdates();
-  if(update_made)
+  if(update_made) 
     bhv->onSetParamComplete();
-  
+
+  vector<string> update_results = bhv->getUpdateResults();
+  for(unsigned int i=0; i<update_results.size(); i++)
+    m_update_results.push_back(update_results[i]);
+    
   // Check if the behavior duration is to be reset
   bhv->checkForDurationReset();
   

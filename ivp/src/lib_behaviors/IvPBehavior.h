@@ -70,6 +70,7 @@ public:
 
   std::vector<std::string> getInfoVars();
   std::string getDescriptor()            {return(m_descriptor);}
+  std::string getUpdateVar() const       {return(m_update_var);}
   std::string getBehaviorType()          {return(m_behavior_type);}
   std::string getUpdateSummary()         {return(m_update_summary);}
   std::vector<VarDataPair> getMessages() {return(m_messages);}
@@ -108,6 +109,7 @@ protected:
 
   double                   getPriorityWt() {return(m_priority_wt);}
   double                   getBufferCurrTime();
+  double                   getBufferLocalTime();
   double                   getBufferMsgTimeVal(std::string);
   double                   getBufferTimeVal(std::string);
   double                   getBufferDoubleVal(std::string, bool&);
@@ -117,6 +119,8 @@ protected:
   std::vector<std::string> getBufferStringVector(std::string, bool&);
   std::vector<std::string> getStateSpaceVars();
 
+  std::vector<std::string> getUpdateResults() const {return(m_update_results);}
+  
 protected:
   const InfoBuffer* m_info_buffer;
 
@@ -151,6 +155,7 @@ protected:
   unsigned int m_good_updates;
   unsigned int m_bad_updates;
   std::string  m_update_summary;
+  std::vector<std::string> m_update_results;
 
   // variables for providing behaviors w/ "duration" capability
   double      m_duration;

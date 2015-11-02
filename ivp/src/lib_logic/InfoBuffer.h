@@ -53,7 +53,9 @@ public:
   bool   setValue(std::string, std::string, double msg_time=0);
   void   clearDeltaVectors();
   void   setCurrTime(double t)         {m_curr_time_utc = t;}
+  void   setStartTime(double t)        {m_start_time = t;}
   double getCurrTime() const           {return(m_curr_time_utc);}
+  double getLocalTime() const          {return(m_curr_time_utc-m_start_time);}
 
 protected:
   std::map<std::string, std::string> smap;
@@ -65,6 +67,7 @@ protected:
   std::map<std::string, std::vector<double> > vdmap;
 
   double m_curr_time_utc;
+  double m_start_time;
 };
 #endif
 

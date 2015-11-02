@@ -81,7 +81,8 @@ void HelmReport::clear(bool clear_completed)
   m_bhvs_active_cpu.clear();
   m_bhvs_active_pcs.clear();
   m_bhvs_active_ipfs.clear();
-  
+
+  m_update_results.clear();
 
   m_messages.clear();
   m_decisions.clear();

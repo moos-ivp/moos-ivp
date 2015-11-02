@@ -53,7 +53,8 @@ public:
   bool       buildBehaviorsFromSpecs();
   SpecBuild  buildBehaviorFromSpec(BehaviorSpec spec, std::string s="");
   bool       handlePossibleSpawnings();
-
+  bool       refreshMapUpdateVars();
+  
   void   addBehavior(IvPBehavior *b);
   void   clearBehaviors();
   void   setOwnship(std::string s)      {m_ownship=s;}
@@ -81,6 +82,7 @@ public:
   IvPBehavior*   getBehavior(unsigned int);
   std::string    getDescriptor(unsigned int);
   std::string    getUpdateSummary(unsigned int);
+  std::string    getUpdateVarSummary();
   double         getStateElapsed(unsigned int);
   double         getStateTimeEntered(unsigned int);
   int            getFilterLevel(unsigned int);
@@ -93,7 +95,9 @@ public:
   std::vector<std::string> getInfoVars();
   std::vector<std::string> getNewInfoVars();
   std::vector<std::string> getSpecUpdateVars();
+  std::vector<std::string> getUpdateResults() const {return(m_update_results);}
 
+  void                     clearUpdateResults() {m_update_results.clear();}
   void                     addWarning(const std::string&);
   std::vector<std::string> getWarnings()     {return(m_warnings);}
   void                     clearWarnings()   {m_warnings.clear();}
@@ -108,6 +112,7 @@ public:
 
   void printModeSet()   {m_mode_set.print();}
   void consultModeSet() {m_mode_set.evaluate();}
+
   std::vector<VarDataPair> getModeVarDataPairs()    
     {return(m_mode_set.getVarDataPairs());}
   std::string getModeSummary()     
@@ -143,6 +148,10 @@ protected:
 
   std::vector<LifeEvent>        m_life_events;
 
+  std::vector<std::string>      m_update_results;
+  
+  std::map<std::string, std::string> m_map_update_vars;
+  
   std::string m_ownship;
 
   bool    m_report_ipf;
