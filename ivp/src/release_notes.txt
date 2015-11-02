@@ -3,6 +3,15 @@ uXMS
  - fixed bug in uXMS where timestamps were rendered in full UTM time 
    rather than time since the start of the MOOSDB.
 
+pHelmIvP
+
+ - Augmented behaviors and the helm to produce new information about 
+   updates. The Helm publishes IVPHELM_UPDATEVARS to indicate which MOOS 
+   variables are involved in behavior updates. This variable is published 
+   each time the list changes, so typically only once upon startup. The 
+   Helm also now publishes IVPHELM_UPDATE_RESULT for each MOOS variable 
+   posted involved with a behavior update. It will show the result of 
+   the update.
 
 ======================================================================
 
