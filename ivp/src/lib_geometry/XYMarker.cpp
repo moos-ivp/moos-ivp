@@ -33,15 +33,15 @@ XYMarker::XYMarker()
 {
   m_x     = 0;  // meters
   m_y     = 0;  // meters
-  m_width = 1;  // meters
+  m_width = 5;  // meters
   m_range = 0;  // meters
+  m_type  = "circle";
 
   m_x_set     = false;
   m_y_set     = false;
   m_width_set = false;
   m_range_set = false;
-
-  m_type  = "circle";
+  m_type_set  = false;
 }
 
 //---------------------------------------------------------------
@@ -53,6 +53,7 @@ bool XYMarker::set_type(string str)
      (str == "diamond") ||  (str == "efield") ||
      (str == "gateway") ||  (str == "triangle")) {
     m_type = str;
+    m_type_set = true;
     return(true);
   }
   return(false);

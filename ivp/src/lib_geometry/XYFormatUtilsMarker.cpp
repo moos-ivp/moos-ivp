@@ -63,7 +63,7 @@ XYMarker stringStandard2Marker(string str)
   vector<string> mvector = parseString(str, ',');
   unsigned int i, vsize = mvector.size();
 
-  string x,y,transparency,range,width="5";
+  string x,y,transparency,range,width;
   for(i=0; i<vsize; i++) {
     string param = tolower(biteStringX(mvector[i], '='));
     string value = mvector[i];
@@ -103,7 +103,9 @@ XYMarker stringStandard2Marker(string str)
   
   new_marker.set_vx(atof(x.c_str()));
   new_marker.set_vy(atof(y.c_str()));
-  new_marker.set_width(atof(width.c_str()));
+  
+  if(range != "")
+    new_marker.set_range(atof(range.c_str()));
   if(width != "")
     new_marker.set_width(atof(width.c_str()));
 

@@ -54,6 +54,7 @@ public:
   bool        is_set_y() const     {return(m_y_set);};
   bool        is_set_range() const {return(m_range_set);};
   bool        is_set_width() const {return(m_width_set);};
+  bool        is_set_type() const  {return(m_type_set);};
 
   std::string get_spec(std::string s="") const;
 
@@ -69,6 +70,7 @@ protected:
   bool         m_y_set;
   bool         m_width_set;
   bool         m_range_set;
+  bool         m_type_set;
 };
 
 #endif
