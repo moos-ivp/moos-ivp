@@ -117,6 +117,7 @@ void showInterfaceAndExit()
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
   blk("  SAY_MOOS = say={Would you like to play a game?}, rate=200     ");
+  blk("  SAY_MOOS = file=file.wav                                      ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
