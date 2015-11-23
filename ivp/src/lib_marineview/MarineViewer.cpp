@@ -1497,8 +1497,6 @@ void MarineViewer::drawSegList(const XYSegList& segl)
   if(segl.vertex_size_set())           // vertex_size
     vertex_size = segl.get_vertex_size();
 
-  cout << "In DrawSegList: edge_size=" << line_width << endl;
-  
   unsigned int vsize = segl.size();
 
   unsigned int i, j;
