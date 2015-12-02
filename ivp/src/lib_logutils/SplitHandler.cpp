@@ -116,6 +116,9 @@ bool SplitHandler::handleMakeSplitFiles()
     // Otherwise handle a normal line
     string varname = getVarName(line_raw);
 
+    // Replace slashes in variable names - filesystems get confused
+    varname = findReplace(varname, "/", "_");
+    
     // Reject any line that doesn't begin with a number
     string one_char = line_raw.substr(0,1);
     if(!isNumber(one_char) || (varname=="DB_VARSUMMARY"))
