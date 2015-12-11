@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Attractor.h                                      */
 /*    DATE: May 10th 2005                                        */
-/*    DATE: Dec 11th 2015 Modified                               */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -22,8 +21,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef BHV_ATTRACTORX_HEADER
-#define BHV_ATTRACTORX_HEADER
+#ifndef BHV_ATTRACTOR_HEADER
+#define BHV_ATTRACTOR_HEADER
 
 #include <string>
 #include "IvPContactBehavior.h"
@@ -42,14 +41,17 @@ public:
   void         onRunToIdleState();
 
 protected:
+  bool   updateInfoIn();  
   double getRelevance(double, double, double, double);
   double getPriority();
+  void   updateContactList();
 
   void    postViewableTrailPoint();
   void    postErasableTrailPoint();
   XYPoint m_trail_point;
 
 private:
+  std::string m_contact_name; // Name for them in InfoBuffer
   std::vector<std::string> m_contact_list;
 
   double  m_min_util_cpa_dist;
@@ -61,10 +63,31 @@ private:
   double  m_giveup_range;
   double  m_patience;
 
+  double  m_time_on_leg;
+
   double strength;
 
 private: // State Variables
+  double  m_osx; // ownship x-position
+  double  m_osy; // ownship y-position
+  double  m_osh; // ownship heading
+  double  m_osv; // ownship velocity
+
+  // the contact now coming in through the supeclass
+  /* 
+  double  m_cnx; // contact x-position
+  double  m_cny; // contact y-position
+  double  m_cnh; // contact heading
+  double  m_cnv; // contact velocity
+  double  m_cnutc; // UTC time of last contact report
+  */
+  bool    m_extrapolate;
+  double  m_decay_start;
+  double  m_decay_end;
   double m_cpa_speed;
+
+  LinearExtrapolator m_extrapolator;
+
 };
 
 #endif
