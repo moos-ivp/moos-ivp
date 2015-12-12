@@ -1,5 +1,13 @@
-uXMS
 
+pMarineViewer
+  - Added support for the "mokai" vehicle type, for now rendered just as 
+    a kayak
+  - Added support for the colorname "empty" as an alias for "invisible"
+
+pNodeReporter
+  - Added support for the "mokai" vehicle type
+  
+uXMS
  - fixed bug in uXMS where timestamps were rendered in full UTM time 
    rather than time since the start of the MOOSDB.
 
@@ -12,6 +20,8 @@ pHelmIvP
    Helm also now publishes IVPHELM_UPDATE_RESULT for each MOOS variable 
    posted involved with a behavior update. It will show the result of 
    the update.
+
+ - Augmented the Attractor behavior to use the IvPContactBehavior class
 
 ======================================================================
 
