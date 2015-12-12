@@ -43,7 +43,7 @@ ColorPack::ColorPack()
 ColorPack::ColorPack(string str) 
 {
   // Handle special case first
-  if(str == "invisible") {
+  if((str == "invisible") || (str == "empty")) {
     m_visible = false;
     m_set = true;
     m_color_vector = std::vector<double>(3,0);
@@ -103,7 +103,7 @@ ColorPack::ColorPack(double r, double g, double b)
 void ColorPack::setColor(string str)
 {
   str = tolower(str);
-  if(str == "invisible") {
+  if((str == "invisible") || (str == "empty")) {
     m_visible = false;
     m_set = true;
     m_color_vector = vector<double>(3,0);

@@ -640,7 +640,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   double factor_x = m_back_img.get_pix_per_mtr_x();
   double factor_y = m_back_img.get_pix_per_mtr_y();
   
-  if(vehibody == "kayak") {
+  if((vehibody == "kayak") || (vehibody == "mokai")) {
     if(vlength > 0) {
       factor_x *= (vlength / g_kayakLength);
       factor_y *= (vlength / g_kayakLength);

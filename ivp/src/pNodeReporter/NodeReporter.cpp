@@ -378,7 +378,7 @@ bool NodeReporter::OnStartUp()
   // If the length is unknown, put in some good guesses
   if(m_record.getLength() == 0) {
     string vtype = tolower(m_record.getType());
-    if(vtype == "kayak")
+    if((vtype == "kayak") || (vtype == "mokai"))
       m_record.setLength(4); // meters;
     else if(vtype == "auv")
       m_record.setLength(4); // meters;
