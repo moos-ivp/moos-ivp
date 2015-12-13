@@ -37,7 +37,7 @@
       '("uFldFlagManager" "flag" "grabbed_color" "ungrabbed_color" "default_flag_type" "default_flag_width" "default_flag_range")
       '("uDialogManager" "nickname")
       '("uSpeechRec" "juliuscof")
-      '("uFldTagManager" "tag_range" "tag_min_interval" "post_color" "hit_color" "miss_color" "zone_one" "zone_two" "team_one" "team_two" "robot_tag_post" "human_tag_post" "human_untag_post" "robot_untag_post" "tag_circle" "tag_circle_color" "tag_circle_range")
+      '("uFldTagManager" "tag_range" "tag_min_interval" "post_color" "hit_color" "miss_color" "zone_one" "zone_two" "team_one" "team_two" "robot_tag_post" "human_tag_post" "human_untag_post" "robot_untag_post" "tag_circle" "tag_circle_color" "tag_circle_range" "zone_one_color" "zone_two_color")
       '("uFldShoreBroker" "warning_on_stale" "bridge" "qbridge")
       '("uFldNodeBroker" "keyword" "try_shore_host" "bridge")
       '("pHostInfo" "temp_file_dir" "default_hostip" "default_hostip_force")

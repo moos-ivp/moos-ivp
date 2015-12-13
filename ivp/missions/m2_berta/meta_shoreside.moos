@@ -173,6 +173,7 @@ ProcessConfig = pMarineViewer
   appcast_viewable = true
   appcast_color_scheme = indigo
 
+  scope = VNAME_CLOSEST
   scope = PSHARE_INPUT_SUMMARY
   scope = NODE_BROKER_PING
   scope = DEPLOY_ALL
@@ -186,6 +187,8 @@ ProcessConfig = pMarineViewer
 
   action = STATION_KEEP_ALL = false
   action = STATION_KEEP_ALL = true
+
+  left_context[surface_point] = RETURN_$[UP_VNAME_CLOSEST] = true
 
   button_one   = DEPLOY  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 

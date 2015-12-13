@@ -31,7 +31,7 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false, ExtraProcessParams=one
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = false
+//  Run = uTimerScript    @ NewConsole = false
 
   one = --size=1400x800
   db = --event_log=eventlog
@@ -199,6 +199,7 @@ ProcessConfig = pMarineViewer
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
 
+  scope  = IVPHELM_UPDATE_RESULT
   scope  = VIEW_WEDGE
   scope  = MISSION
   scope  = SURVEY_DIST_TO_NEXT

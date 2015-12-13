@@ -14,7 +14,7 @@ Behavior = BHV_Waypoint
 
   updates    = WPT_UPDATE
   perpetual  = true
-  templating = clone
+//  templating = clone
 
                 lead = 8
          lead_damper = 1
@@ -58,3 +58,23 @@ Behavior=BHV_Waypoint
      slip_radius = 8.0
           points = 0,-20
  }
+
+//----------------------------------------------
+Behavior=BHV_ConstantSpeed
+{
+  name       = const_speed
+  pwt        = 200
+  condition  = SPD=true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = SPEED_UPDATE
+  endflag    = SPD = false
+
+     speed = 0.5
+		 duration = 10
+		 duration_reset = CONST_SPD_RESET=true
+	
+}
+
+	// uPokeDB alpha.moos SPEED_UPDATE=speed=0.7#duration=20
+	// uPokeDB alpha.moos RETURN_UPDATE=slip_radius=7

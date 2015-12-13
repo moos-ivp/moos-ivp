@@ -341,7 +341,9 @@ bool Sayer::sayUtterance()
   // We don't check the act on the result, but we get it anyway to avoid
   // a compiler warning.
   int result;
+  Notify("ISAY_DEBUGA", cmd);
   result = system(cmd.c_str());
+  Notify("ISAY_DEBUGB", cmd);
   return(true);
 }
 
