@@ -26,8 +26,8 @@
 //#include "MOOSLIB/MOOSLib.h"
 //#include "MOOSGenLib/MOOSGenLib.h"
 //#include "MOOSUtilityLib/MOOSGeodesy.h"
-#include <../lib_henrik_util/CSimAnneal.h>
-#include <../lib_henrik_util/CFrontSim.h>
+#include <../lib_henrik_anneal/CSimAnneal.h>
+#include <../lib_henrik_anneal/CFrontSim.h>
 #include <string>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 

@@ -12,5 +12,5 @@ TARGET_LINK_LIBRARIES(pFrontEstimate
    mbutil
    m
    pthread
-   henrik_util
+   henrik_anneal
 )

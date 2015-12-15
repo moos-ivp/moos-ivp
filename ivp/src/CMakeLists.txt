@@ -103,7 +103,7 @@ SET(IVP_NON_GUI_LIBS
    lib_ufld_hazards
    lib_logutils
    lib_mbutil
-   lib_henrik_util
+   lib_henrik_anneal
    )
 
 IF (${WIN32})

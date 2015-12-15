@@ -19,7 +19,7 @@ TARGET_LINK_LIBRARIES(pFrontGridRender
    ${MOOS_LIBRARIES}
    geometry
    mbutil
-   henrik_util
+   henrik_anneal
    m
    pthread)
 

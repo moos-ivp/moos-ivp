@@ -28,7 +28,7 @@
 #include <map>
 #include "NodeRecord.h"
 #include "VarDataPair.h"
-#include "../lib_henrik_util/CFrontSim.h"
+#include "../lib_henrik_anneal/CFrontSim.h"
 
 class CTDSensor_Model
 {
