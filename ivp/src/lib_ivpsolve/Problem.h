@@ -64,6 +64,7 @@ public:    // Virtual Function
   void   setEpsilon(double v)    {if(v>=0) m_epsilon=v;}
   double getEpsilon()            {return(m_epsilon);}
   double getResult(const std::string&, bool *v=0);
+  double getResultVal() const;
   double getPieceAvg() const; 
 
   IvPFunction* getOF(int);

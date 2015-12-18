@@ -154,7 +154,6 @@ bool Problem::alignOFs()
 
 //---------------------------------------------------------------
 // Procedure: getResult
-//   Purpose: 
 
 double Problem::getResult(const string& varname, bool *ok_query)
 {
@@ -171,6 +170,16 @@ double Problem::getResult(const string& varname, bool *ok_query)
   if(ok_query)
     *ok_query = result_ok;
   return(result_val);
+}
+  
+//---------------------------------------------------------------
+// Procedure: getResultVal
+
+double Problem::getResultVal() const
+{
+  if(m_maxbox)
+    return(m_maxbox->maxVal());
+  return(0);
 }
   
 //---------------------------------------------------------------
