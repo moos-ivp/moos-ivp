@@ -19,7 +19,7 @@ using namespace std;
 //-------------------------------------------------------------
 // Procedure: populate
 
-bool PopulatorIPP::populate(string filename)
+bool PopulatorIPP::populate(string filename, int alg)
 {
   FILE *f = fopen(filename.c_str(), "r");
   if(!f) {
@@ -34,7 +34,11 @@ bool PopulatorIPP::populate(string filename)
 
   if(m_ivp_problem)
     delete(m_ivp_problem);
-  m_ivp_problem = new IvPProblem;
+
+  if(alg == 0)
+    m_ivp_problem = new IvPProblem;
+  if(alg == 3)
+    m_ivp_problem = new IvPProblem_v3;
 
   vector<string> svector = fileBuffer(filename);
     

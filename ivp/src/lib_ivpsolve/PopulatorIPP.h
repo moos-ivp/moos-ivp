@@ -10,6 +10,7 @@
 
 #include <string>
 #include "IvPProblem.h"
+#include "IvPProblem_v3.h"
  
 class PopulatorIPP
 {
@@ -17,7 +18,7 @@ public:
   PopulatorIPP() {m_ivp_problem=0;}
   ~PopulatorIPP() {}
   
-  bool populate(std::string filename);
+  bool populate(std::string filename, int alg=0);
   void setVerbose(bool v) {m_verbose=v;}
 
   IvPProblem* getIvPProblem() {return(m_ivp_problem);}
