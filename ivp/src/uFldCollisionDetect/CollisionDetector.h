@@ -21,8 +21,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef COLLISIONDETECTOR_HEADER
-#define COLLISIONDETECTOR_HEADER
+#ifndef COLLISION_DETECTOR_HEADER
+#define COLLISION_DETECTOR_HEADER
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 

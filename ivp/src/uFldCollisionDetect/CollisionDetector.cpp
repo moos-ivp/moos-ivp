@@ -24,9 +24,11 @@
 #include "CollisionDetector.h"
 #include "CPAEngine.h"
 #include "XYRangePulse.h"
+#include "MBUtils.h"
+#include "NodeRecordUtils.h"
+#include "ACTable.h"
 
 using namespace std;
-
 
 //---------------------------------------------------------
 // Constructor
