@@ -96,7 +96,7 @@ string XYMarker::get_spec(string param) const
   spec += doubleToStringX(m_width, 2);
 
   if(m_range_set)
-    spec += ",range=" + doubleToString(m_range,2);
+    spec += ",range=" + doubleToStringX(m_range,2);
 
   if(color_set("primary_color")) {
     string color = get_color("primary_color").str();
