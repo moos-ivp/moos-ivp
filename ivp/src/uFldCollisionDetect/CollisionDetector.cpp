@@ -22,6 +22,8 @@
 /*****************************************************************/
 
 #include "CollisionDetector.h"
+#include "CPAEngine.h"
+#include "XYRangePulse.h"
 
 using namespace std;
 
@@ -43,7 +45,7 @@ CollisionDetector::CollisionDetector()
 
   // pulse configuration variables
   m_pulse_bool = true;
-  m_pulse_duration = 4;
+  m_pulse_duration = 10;
   m_pulse_range = 20;
 
   // interaction checking variables
@@ -267,7 +269,7 @@ bool CollisionDetector::Iterate()
 	  }
 	  (m_col_bools[make_pair(v1,v2)]).clearInteraction();
 	}
-	else{
+	else {
 	  // no interaction exists and message has already been posted; do not re-post.  Case reserved for future use.
 	}
       }
@@ -277,20 +279,23 @@ bool CollisionDetector::Iterate()
   return(true);
 }
 
-void CollisionDetector::postAndUpdate(string v1, string v2, string name_string){
+//---------------------------------------------------------
+// Procedure: postAndUpdate()
+
+void CollisionDetector::postAndUpdate(string v1, string v2, string name_string)
+{
   string info_string = (m_col_bools.find(make_pair(v1,v2))->second).getString();
   Notify(name_string,info_string);
   (m_col_bools.find(make_pair(v1,v2))->second).setPosted(true);
   string type = (m_col_bools[make_pair(v1,v2)]).getCollisionType();
-  if(type == "collision"){
+
+  if(type == "collision")
     m_total_collisions++;
-  }
-  else if(type == "near_miss"){
+  else if(type == "near_miss")
     m_total_near_misses++;
-  }
-  else if(type == "min_cpa_violation"){
+  else if(type == "min_cpa_violation")
     m_total_cpa_violations++;
-  }
+  
 }
 
 //---------------------------------------------------------
@@ -310,38 +315,31 @@ bool CollisionDetector::OnStartUp()
   for(p=sParams.begin(); p!=sParams.end(); p++) {
     string orig  = *p;
     string line  = *p;
-    string param = toupper(biteStringX(line, '='));
+    string param = tolower(biteStringX(line, '='));
     string value = line;
 
     bool handled = false;
-    if(param == "COLLISION_RANGE") {
-      // range at which a collision is said to occur.
-      handled = true;
-      m_collision_distance = atof(value.c_str());
-    }
-    else if(param == "NEAR_MISS_RANGE") {
-      // range at which a near-miss is said to occur.
-      handled = true;
-      m_near_miss_distance = atof(value.c_str());
-    }
-    else if(param == "CPA_VIOLATION_RANGE") {
-      // range at which a CPA violation is said to occur.
-      handled = true;
-      m_preferred_min_cpa_distance = atof(value.c_str());
-    }
+    // Range at which a collision is said to occur.
+    if(param == "collision_range") 
+      handled = setNonNegDoubleOnString(m_collision_distance, value);
+    // Range at which a near-miss is said to occur.
+    else if(param == "near_miss_range") 
+      handled = setNonNegDoubleOnString(m_near_miss_distance, value);
+    // Range at which a CPA violation is said to occur.
+    else if(param == "cpa_violation_range") 
+      handled = setNonNegDoubleOnString(m_preferred_min_cpa_distance, value);
     
-    else if(param == "DELAY_TIME_TO_CLEAR") {
-      // time delay from collision condition clearing and appcast
-      // message clearing prevents quick interactions from not appearing
-      // on appcast or clearing before desired data obtained.
-      handled = true;
-      m_delay_time_to_clear = atof(value.c_str());
-    }
-    else if(param == "PUBLISH_IMMEDIATELY") {
-      // option to publish a interaction / clear condition to MOOSDB
-      // immediately or synchronously with appcast update.
+    // Time delay from collision condition clearing and appcast
+    // message clearing prevents quick interactions from not appearing
+    // on appcast or clearing before desired data obtained.
+    else if(param == "delay_time_to_clear") 
+      handled = setNonNegDoubleOnString(m_delay_time_to_clear, value);
+
+    // Option to publish a interaction / clear condition to MOOSDB
+    // immediately or synchronously with appcast update.
+    else if(param == "publish_immediately") {
       string str = tolower(value);
-      if(str == "true"){
+      if(str == "true") {
 	m_post_immediately = true;
 	handled = true;	
 	m_post_string = "yes";
@@ -355,34 +353,17 @@ bool CollisionDetector::OnStartUp()
 	handled = false;
       }
     }
-    else if(param == "PULSE") {
-      // option to publish a interaction / clear condition to MOOSDB
-      // immediately or synchronously with appcast update.
-      string str = tolower(value);
-      if(str == "true"){
-	m_pulse_bool = true;
-	handled = true;	
-      }
-      else if (str == "false"){
-	m_pulse_bool = false;
-	handled = true;
-      }
-      else{
-	handled = false;
-      }
-    }
-    else if(param == "PULSE_RANGE") {
-       handled = true;
-       m_pulse_range = atof(value.c_str());
-    }
-    else if(param == "PULSE_DURATION") {
-      handled = true;
-      m_pulse_duration = atof(value.c_str());
-    }
-    else if(param == "DEPLOY_DELAY_TIME") {
-      handled = true;
-      m_deploy_delay = atof(value.c_str());
-    }
+    // Option to publish a interaction / clear condition to MOOSDB
+    // immediately or synchronously with appcast update.
+    else if(param == "pulse") 
+      handled = setBooleanOnString(m_pulse_bool, value);
+    else if(param == "pulse_range") 
+      handled = setNonNegDoubleOnString(m_pulse_range, value);
+    else if(param == "pulse_duration") 
+      handled = setNonNegDoubleOnString(m_pulse_duration, value);
+    else if(param == "deploy_delay_time")
+      handled = setNonNegDoubleOnString(m_deploy_delay, value);
+
     if(!handled)
       reportUnhandledConfigWarning(orig);
 
@@ -400,9 +381,11 @@ void CollisionDetector::registerVariables()
   AppCastingMOOSApp::RegisterVariables();
   Register("NODE_REPORT", 0);
   Register("DEPLOY_ALL",0);
-  Register("COLLISION_DETECTOR_CHECK_COLLISIONS",0); // allows turning on/off CollisionDetector mid-mission by poke
   Register("COLLISION_DETECTOR_RESPONSE",0);
   Register("COLREGS*","*",0);
+
+  // allows turning on/off CollisionDetector mid-mission by poke
+  Register("COLLISION_DETECTOR_CHECK_COLLISIONS",0); 
 }
 
 
@@ -417,9 +400,6 @@ bool CollisionDetector::buildReport()
     
     if( -(time) > m_deploy_delay){
       count_down = "not started";
-    }
-    else{
-
     }
     m_msgs << "   Time until active:   " << count_down  << "\n\n\n" << endl;
   }
@@ -447,10 +427,11 @@ bool CollisionDetector::buildReport()
   actab << "Vehicle 1  | Vehicle 2  | Detection Distance | Minimum Distance | Type";
   actab.addHeaderLines();
 
-  for ( map<pair<string,string>,CollisionRecord> ::iterator it = m_col_bools.begin(); it!=m_col_bools.end(); ++it){
-    if( (it->second).getCollisionPosted() ||
-	(it->second).getNearMissPosted() ||
-	(it->second).getInteracting()	){ 
+  map<pair<string,string>,CollisionRecord> ::iterator it;
+  for(it=m_col_bools.begin(); it!=m_col_bools.end(); ++it) {
+    if((it->second).getCollisionPosted() ||
+       (it->second).getNearMissPosted() ||
+       (it->second).getInteracting()	){ 
       // a collison exists between these two vehicles
       pair<string,string> vehicleNames =  it->first;
       string v1 = vehicleNames.first;
@@ -467,11 +448,12 @@ bool CollisionDetector::buildReport()
   return(true);
 }
 
+//--------------------------------------------------------------------
+// Procedure: MakeRangePulse()
 
-bool CollisionDetector::MakeRangePulse(double x, double y){
-  XYRangePulse pulse;
-  pulse.set_x(x);
-  pulse.set_y(y);
+void CollisionDetector::MakeRangePulse(double x, double y)
+{
+  XYRangePulse pulse(x, y);
   pulse.set_label("collision_pulse");
   pulse.set_rad(m_pulse_range);
   pulse.set_duration(m_pulse_duration);
@@ -480,12 +462,14 @@ bool CollisionDetector::MakeRangePulse(double x, double y){
   pulse.set_color("fill", "yellow");
   string spec = pulse.get_spec();
   Notify("VIEW_RANGE_PULSE", spec);
-  return true;
 }
- bool CollisionDetector::MakeCollisionRangePulse(double x, double y){
-  XYRangePulse pulse;
-  pulse.set_x(x);
-  pulse.set_y(y);
+
+//--------------------------------------------------------------------
+// Procedure: MakeCollisionRangePulse()
+
+void CollisionDetector::MakeCollisionRangePulse(double x, double y)
+{
+  XYRangePulse pulse(x, y);
   pulse.set_label("collision_pulse");
   pulse.set_rad(m_pulse_range);
   pulse.set_duration(m_pulse_duration);
@@ -494,12 +478,15 @@ bool CollisionDetector::MakeRangePulse(double x, double y){
   pulse.set_color("fill", "red");
   string spec = pulse.get_spec();
   Notify("VIEW_RANGE_PULSE", spec);
-  return true;
 }
- bool CollisionDetector::MakeNearMissRangePulse(double x, double y){
-  XYRangePulse pulse;
-  pulse.set_x(x);
-  pulse.set_y(y);
+
+
+//--------------------------------------------------------------------
+// Procedure: MakeNearMissRangePulse()
+
+void CollisionDetector::MakeNearMissRangePulse(double x, double y)
+{
+  XYRangePulse pulse(x, y);
   pulse.set_label("near_miss_pulse");
   pulse.set_rad(m_pulse_range);
   pulse.set_duration(m_pulse_duration);
@@ -508,12 +495,14 @@ bool CollisionDetector::MakeRangePulse(double x, double y){
   pulse.set_color("fill", "yellow");
   string spec = pulse.get_spec();
   Notify("VIEW_RANGE_PULSE", spec);
-  return true;
 }
- bool CollisionDetector::MakeCPAViolationRangePulse(double x, double y){
-  XYRangePulse pulse;
-  pulse.set_x(x);
-  pulse.set_y(y);
+
+//--------------------------------------------------------------------
+// Procedure: MakeCPAViolationRangePulse()
+
+void CollisionDetector::MakeCPAViolationRangePulse(double x, double y)
+{
+  XYRangePulse pulse(x, y);
   pulse.set_label("cpa_violation_pulse");
   pulse.set_rad(m_pulse_range);
   pulse.set_duration(m_pulse_duration);
@@ -522,18 +511,20 @@ bool CollisionDetector::MakeRangePulse(double x, double y){
   pulse.set_color("fill", "green");
   string spec = pulse.get_spec();
   Notify("VIEW_RANGE_PULSE", spec);
-  return true;
 }
 
-bool CollisionDetector::storeVehicleModes(CollisionRecord& cr_in, string v1, string v2){
+//--------------------------------------------------------------------
+// Procedure: storeVehicleModes
+
+bool CollisionDetector::storeVehicleModes(CollisionRecord& cr_in,
+					  string v1, string v2)
+{
   pair<string,string> v1_mode = m_colregs_mode_map[make_pair(v1,v2)];
   pair<string,string> v2_mode = m_colregs_mode_map[make_pair(v2,v1)];
-  bool ok1, ok2;
-  ok1 = cr_in.setV1Mode(v1_mode);
-  ok2 = cr_in.setV2Mode(v2_mode);
-  if(ok1 && ok2){
-    return true;
-  }
-  return false;
+
+  bool ok1 = cr_in.setV1Mode(v1_mode);
+  bool ok2 = cr_in.setV2Mode(v2_mode);
+
+  return(ok1 && ok2);
 }
 

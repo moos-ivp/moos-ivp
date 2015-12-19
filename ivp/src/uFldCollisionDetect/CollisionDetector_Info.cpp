@@ -34,26 +34,24 @@ using namespace std;
 
 void showSynopsis()
 {
-  blk("SYNOPSIS:                                                       ");
-  blk("------------------------------------                            ");
+  blk("SYNOPSIS:                                                      ");
+  blk("------------------------------------                           ");
   blk("  The uCollisionDetector application is run by the shoreside   ");
-  blk("  and detects if two vehicles have interacted.  An interaction  ");
-  blk("  is defined as being within the distance specified by the         ");
-  blk("  input parameters for CPA violation, near miss, and collsion.  ");
-  blk("                                                                ");
-  blk("  The AppCast displays the detection range and minimum range    ");
-  blk("  of each vehicle pair that is interacting.  The display of       ");
-  blk("  interactions can be delayed from clearing in the AppCast using  ");
-  blk("  DELAYTIMETOCLEAR to allow the user sufficient time  ");
-  blk("  to view the information on the GUI.                                      ");
-  blk("                                                                ");
-  blk("  A variable \"VEHICLE_INTERACTION_$V1_$V2\" is published for     ");
-  blk("  each interaction with the closest recorded distance and type     ");
-  blk("  of interaction.  A report occurs once vehicles exit interaction");
-  blk("  distance. ");
-  blk("     ");
-  blk("  Immediate reports can be made using configuration parameters. ");
-  blk("                                                                ");
+  blk("  and detects if two vehicles have interacted.  An interaction ");
+  blk("  is defined as being within the distance specified by the     ");
+  blk("  input parameters for CPA violation, near miss, and collsion. ");
+  blk("                                                               ");
+  blk("  The AppCast displays the detection range and minimum range   ");
+  blk("  of each vehicle pair that is interacting.  The display of    ");
+  blk("  interactions can be delayed from clearing in the AppCast     ");
+  blk("  using DELAYTIMETOCLEAR to allow the user sufficient time     ");
+  blk("  to view the information on the GUI.                          ");
+  blk("                                                               ");
+  blk("  A variable \"VEHICLE_INTERACTION_$V1_$V2\" is published for  ");
+  blk("  each interaction with the closest recorded distance and type ");
+  blk("  of interaction.  A report occurs once vehicles exit the      ");
+  blk("  interaction distance. Immediate reports can be made using    ");
+  blk("  config  parameters.                                          ");
 }
 
 //----------------------------------------------------------------
@@ -94,7 +92,7 @@ void showHelpAndExit()
 void showExampleConfigAndExit()
 {
   blu("=============================================================== ");
-  blu("uCollisionDetector Example MOOS Configuration                   ");
+  blu("uFldCollisionDetect Example MOOS Configuration                  ");
   blu("=============================================================== ");
   blk("                                                                ");
   blk("ProcessConfig = uFldCollisionDetect                             ");
@@ -103,23 +101,23 @@ void showExampleConfigAndExit()
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
   blk("  // range considered a collision                               ");
-  blk("   COLLISION_RANGE = 3");
-  blk("        NEAR_MISS_RANGE = 15");
-  blk("        CPA_VIOLATION_RANGE = 20                                ");
-  blk("");
+  blk("  collision_range = 3                                           ");
+  blk("  near_miss_range = 15                                          ");
+  blk("  cpa_violation_range = 20                                      ");
+  blk("                                                                ");
   blk("  // Delay time, in seconds, from collision condition clearing  ");
   blk("  // to removal from AppCasting                                 ");
   blk("  delay_time_to_clear = 35                                      ");
-  blk("   DEPLOY_DELAY_TIME = 10        // seconds                     ");
+  blk("  deploy_delay_time   = 10        // seconds                    ");
+  blk("                                                                ");
   blk("  // Publish the cleared variable to MOOSDB immediately after   ");
   blk("  // collision condition clears.                                ");
-  blk("  publish_immediately = true                                    ");
+  blk("  publish_immediately = false // (the default)                  ");
   blk("                                                                ");
-  blk("  pulse = true                                                  ");
-  blk("  pulse_range = 50    // meters                                 ");  
-  blk("  pulse_duration = 15 //seconds                                 ");  
-  blk("                                                                ");  
-  blk("");
+  blk("  pulse = true                // (the default)                  ");
+  blk("  pulse_range    = 20         // (the default) in meters        ");  
+  blk("  pulse_duration = 10         // (the default) in seconds       ");  
+  blk("}                                                               ");  
 
 exit(0);
 }
@@ -131,7 +129,7 @@ exit(0);
 void showInterfaceAndExit()
 {
   blu("=============================================================== ");
-  blu("uCollisionDetector INTERFACE                                    ");
+  blu("uFldCollisionDetect INTERFACE                                   ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -143,7 +141,6 @@ void showInterfaceAndExit()
   blk("                      LON=-70.329755,SPD=2.0,HDG=118.8,         ");
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
   blk("                      MODE=MODE@ACTIVE:LOITERING                ");
-  blk("                                                 ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
@@ -157,9 +154,6 @@ void showInterfaceAndExit()
   blk("    (e.g., cpa violation transitioning to near miss             ");
   blk("                                                                ");
   blk("  where $V1 and $V2 are vehicle names.                          ");
-  blk("                                                                ");
-  blk("  ");
-  blk("                                                                ");
   blk("                                                                ");
 
   exit(0);
