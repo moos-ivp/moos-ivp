@@ -450,7 +450,18 @@ bool strFieldMatch(const string& str1,
     
 
 
+//----------------------------------------------------------------
+// Procedure: getUniqueVars()
 
+vector<string> getUniqueVars(const vector<LogicCondition>& conditions)
+{
+  vector<string> all_vars;
+  for(unsigned int i=0; i<conditions.size(); i++) {
+    vector<string> svector = conditions[i].getVarNames();
+    all_vars = mergeVectors(all_vars, svector);
+  }
 
+  vector<string> unique_vars = removeDuplicates(all_vars);
 
-
+  return(unique_vars);
+}

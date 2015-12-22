@@ -26,6 +26,7 @@
 
 #include <vector>
 #include <string>
+#include "LogicCondition.h"
 
 std::vector<std::string> parseRelation(std::string);
 
@@ -49,6 +50,7 @@ bool isConditionalParamString(const std::string&,
 bool strFieldMatch(const std::string&, 
 		   const std::string&, char c=':');
 
+std::vector<std::string> getUniqueVars(const std::vector<LogicCondition>&);
 
 #endif
 
