@@ -69,7 +69,7 @@
 
       
       '("uFldSwarmAssign" "task")
-      '("uFldCollisionDetect" "collision_range" "delay_time_to_clear" "publish_immediately" "pulse" "pulse_range" "pulse_duration" "publish_pairs" "publish_single")
+      '("uFldCollisionDetect" "collision_range" "near_miss_range" "pulse_render" "pulse_range" "pulse_duration" "condition" "collision_flag" "near_miss_flag" "encounter_flag" "encounter_range")
 
       '("pPolePath" "start_line" "end_line" "poles_number" "steps_number" "display_poles" "display_steps" "start_pole" "output_var" "random_end")
       '("pRangeSensorHangler" "local_range" "range_report" "target_name" "verbose" "disp_range_circle")
