@@ -4,9 +4,17 @@ pMarineViewer
     a kayak
   - Added support for the colorname "empty" as an alias for "invisible"
 
+alogscan
+  - augmented the report output to show the logged data rate.
+
+alogcd (New utility)
+  - Analyze alog file for collision/encounter reports and tally.
+
 pNodeReporter
   - Added support for the "mokai" vehicle type
-  
+  - Added support for terse node reports (omitting YAW, DEP, LAT, LON) 
+    if parameterized with terse_reports=true.
+ 
 uXMS
  - fixed bug in uXMS where timestamps were rendered in full UTM time 
    rather than time since the start of the MOOSDB.
