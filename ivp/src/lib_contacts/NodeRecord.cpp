@@ -153,7 +153,7 @@ bool NodeRecord::hasProperty(string key) const
 //------------------------------------------------------------
 // Procedure: getSpec()
 
-string NodeRecord::getSpec() const
+string NodeRecord::getSpec(bool terse) const
 {
   string str = "NAME=" + m_name;
   if(m_x_set)
@@ -164,12 +164,12 @@ string NodeRecord::getSpec() const
     str += ",SPD="  + doubleToStringX(m_speed,2);
   if(m_heading_set)
     str += ",HDG="  + doubleToStringX(m_heading,2);
-  if(m_depth_set)
+  if(m_depth_set && !terse)
     str += ",DEP="  + doubleToStringX(m_depth,2);
 
-  if(m_lat_set)
+  if(m_lat_set && !terse)
     str += ",LAT=" + doubleToStringX(m_lat, 8);
-  if(m_lon_set)
+  if(m_lon_set && !terse)
     str += ",LON=" + doubleToStringX(m_lon, 8);
   if(m_type != "")
     str += ",TYPE=" + m_type;
@@ -199,7 +199,7 @@ string NodeRecord::getSpec() const
   if(m_thrust_mode_reverse)
     str += ",THRUST_MODE_REVERSE=true";
 
-  if(m_yaw_set) 
+  if(m_yaw_set && !terse) 
     str += ",YAW=" + doubleToStringX(headingToRadians(m_heading),7);
     //str += ",YAW="  + doubleToStringX(m_heading,2);
   if(m_timestamp_set)

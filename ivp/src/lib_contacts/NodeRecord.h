@@ -102,7 +102,7 @@ class NodeRecord
   std::string getAllStop(std::string s="") const;
   std::string getLoadWarning(std::string s="") const;
 
-  std::string getSpec() const;
+  std::string getSpec(bool terse=false) const;
 
   std::string getStringValue(std::string) const;
 
