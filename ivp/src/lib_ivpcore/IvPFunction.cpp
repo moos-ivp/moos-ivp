@@ -104,7 +104,19 @@ bool IvPFunction::transDomain(IvPDomain gdomain)
 
 string IvPFunction::getVarName(int i)
 {
-  return(m_pdmap->getDomain().getVarName(i));
+  if(m_pdmap)
+    return(m_pdmap->getDomain().getVarName(i));
+  return("");
+}
+
+//-------------------------------------------------------------
+// Procedure: getGridConfig()
+
+string IvPFunction::getGridConfig() const
+{
+  if(m_pdmap)
+    return(m_pdmap->getGridConfig());
+  return("");
 }
 
 

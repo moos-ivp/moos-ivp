@@ -27,9 +27,6 @@
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 
 #include <map>
-#include "MBUtils.h"
-#include "ACTable.h"
-#include "NodeRecordUtils.h"
 #include "NodeRecord.h"
 #include "CollisionRecord.h"
 

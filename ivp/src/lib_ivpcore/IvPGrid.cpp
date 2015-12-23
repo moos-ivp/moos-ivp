@@ -24,6 +24,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <sstream>
 #include <cassert>
 #include <cmath>
 #include "IvPGrid.h"
@@ -546,6 +547,30 @@ double IvPGrid::calcBoxesPerGEL()
   for(int i=0; i< total_grids; i++)
     total += (double)(grid[i]->getSize());
   return(total / (double)total_grids);
+}
+
+//---------------------------------------------------------------
+// Procedure: getGridConfig
+//   Purpose: Prints general info on grid construction
+//   Example: x and y domain [0,999]
+//            525 cells, each cell 25x25 in size,
+//                       each dimension has 40 cells (40*25=1000)
+//   Example: dim=2,x_sz=25,y_sz=25,x_amt=40,y_amt=40,cells=525
+//   Example: dim=2,sz[0]=25,sz[1]=25,amt[0]=40,amt[1]=40,cells=525
+//      Note: Added mikerb 12/19/15 for further performance analysis
+
+string IvPGrid::getGridConfig() const
+{
+  stringstream ss;
+  ss << "dim=" << dim;
+  
+  for(int i=0; i<dim; i++)
+    ss << "sz[" << i << "]: " << PTS_PER_GEL[i];
+  for(int i=0; i<dim; i++)
+    ss << "amt[" << i << "]: " << GELS_PER_DIM[i];
+  ss << ",cells=" << total_grids;
+
+  return(ss.str());
 }
 
 //---------------------------------------------------------------

@@ -26,6 +26,7 @@
 #ifndef PDMAP_HEADER
 #define PDMAP_HEADER
 
+#include <string> 
 #include "IvPBox.h"
 #include "BoxSet.h"
 #include "IvPGrid.h"
@@ -57,7 +58,8 @@ public:
   void      updateGrid(bool BX=1, bool UB=1);
   void      setGelBox(const IvPBox& box);
   void      setGelBox();
-
+  std::string getGridConfig() const;
+  
   double    evalPoint(const IvPBox*, bool* covered=0) const;
 
   void      print(bool full=true) const;

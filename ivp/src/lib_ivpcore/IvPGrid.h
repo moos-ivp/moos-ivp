@@ -26,6 +26,7 @@
 #ifndef GRID_HEADER
 #define GRID_HEADER
 
+#include <string>
 #include "BoxSet.h"
 
 class IvPDomain;
@@ -49,10 +50,14 @@ public:
   IvPBox   getMaxPt()          {return(maxpt);}
   double   getMaxVal()         {return(maxval);}
   bool     isEmpty()           {return(empty);}
+  
+  std::string getGridConfig() const;
 
-protected:
+ protected:
   void     setIXBOX(const IvPBox*);
   bool     moveToNextGrid();
+
+
 
 public:   // Testing functions
   double   calcBoxesPerGEL();

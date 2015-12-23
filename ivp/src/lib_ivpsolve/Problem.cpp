@@ -211,6 +211,17 @@ IvPFunction* Problem::getOF(int ix)
 }
 
 //---------------------------------------------------------------
+// Procedure: getGridConfig
+//   Purpose: Get a description of the grid of the first function
+
+string Problem::getGridConfig(int ix) const
+{
+  if((ix >= 0) && (ix < m_ofnum))
+    return(m_ofs[ix]->getGridConfig());
+  return("");
+}
+
+//---------------------------------------------------------------
 // Procedure: getDim
 //   Purpose: 
 

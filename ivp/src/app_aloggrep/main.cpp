@@ -53,6 +53,14 @@ int main(int argc, char *argv[])
   if(scanArgs(argc, argv, "--no_report", "-nr"))
     make_end_report = false;
   
+  bool gaplines_retained = true;
+  if(scanArgs(argc, argv, "--gap_len", "-gl"))
+    gaplines_retained = false;
+  
+  bool appcast_retained = true;
+  if(scanArgs(argc, argv, "--appcast", "-ac"))
+    appcast_retained = false;
+  
   if(scanArgs(argc, argv, "--quiet", "-q")) {
     comments_retained = false;
     make_end_report = false;
@@ -87,6 +95,8 @@ int main(int argc, char *argv[])
     cout << "  -q,--quiet        Supress summary report, header comments" << endl;
     cout << "  -nc,--no_comments Supress comment (header) lines         " << endl;
     cout << "  -nr,--no_report   Supress summary report                 " << endl;
+    cout << "  -gl,--no_gaplen   Supress vars ending in _GAP or _LEN    " << endl;
+    cout << "  -ac,--no_appcast  Supress APPCAST lines                  " << endl;
     cout << "                                                           " << endl;
     cout << "  --keep_badlines   Do not disscard lines that don't begin " << endl;
     cout << "  -kb               with a timestamp or comment character. " << endl;
@@ -127,6 +137,8 @@ int main(int argc, char *argv[])
   handler.setFileOverWrite(file_overwrite);
   handler.setCommentsRetained(comments_retained);
   handler.setBadLinesRetained(badlines_retained);
+  handler.setGapLinesRetained(gaplines_retained);
+  handler.setAppCastRetained(appcast_retained);
 
   int ksize = keys.size();
   for(int i=0; i<ksize; i++)

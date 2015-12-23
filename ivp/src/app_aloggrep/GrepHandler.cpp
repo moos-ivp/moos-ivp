@@ -49,10 +49,15 @@ GrepHandler::GrepHandler()
   m_comments_retained = true;
   m_var_condition_met = true;
   m_file_overwrite = false;
+  m_gaplines_retained = true;
+  m_appcast_retained = true;
   
   // A "bad" line is a line that is not a comment, and does not begin
   // with a timestamp. As found in entries with CRLF's like DB_VARSUMMARY
   m_badlines_retained = false;
+
+  // A "gapline" is a line that ends in _GAP or _LEN
+  m_gaplines_retained = true;
 }
 
 //--------------------------------------------------------
@@ -139,10 +144,23 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
       continue;
     }
       
+    if(!m_gaplines_retained) {
+      if(strEnds(varname, "_LEN") || strEnds(varname, "_GAP")) {
+	ignoreLine(line_raw, varname);
+	continue;
+      }
+    }
+
+    if((!m_appcast_retained) && (varname == "APPCAST")) {
+      ignoreLine(line_raw, varname);
+      continue;
+    }
+
     // Part 5: Check if this line matches a named var or src
     string srcname = getSourceNameNoAux(line_raw);
 
     bool match = false;
+
     for(unsigned int i=0; ((i<m_keys.size()) && !match); i++) {
       if((varname == m_keys[i]) || (srcname == m_keys[i]))
 	match = true;

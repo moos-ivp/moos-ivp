@@ -84,20 +84,19 @@ bool CollisionDetector::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "DEPLOY_ALL"){
       string sval  = msg.GetString(); 
       sval = tolower(sval);
-      if(sval == "true"){
+      if(sval == "true")
 	m_start_checking_time = MOOSTime() + m_deploy_delay;
-      }
     }
     else if(key == "COLLISION_DETECTOR_CHECK_COLLISIONS") {
       // option to publish an interaction / clear condition to MOOSDB
       // immediately or synchronously with appcast update.
       string sval  = msg.GetString(); 
       sval = tolower(sval);
-      if(sval == "true"){
+      if(sval == "true") {
 	m_check_collisions = true;
 	m_check_string = "ON -- forced by msg poke";
       }
-      else if (sval == "false"){
+      else if (sval == "false") {
 	m_check_collisions = false;
 	m_check_string = "OFF -- forced by msg poke";
       }
@@ -133,7 +132,6 @@ bool CollisionDetector::OnConnectToServer()
 
 //---------------------------------------------------------
 // Procedure: Iterate()
-//            happens AppTick times per second
 
 bool CollisionDetector::Iterate()
 {
@@ -145,10 +143,12 @@ bool CollisionDetector::Iterate()
   }
 
   // check positions relative to other vehicles
-  for (map<string,NodeRecord>::iterator it1=m_moos_map.begin(); it1!=m_moos_map.end(); ++it1){
+  map<string,NodeRecord>::iterator it1;
+  for(it1=m_moos_map.begin(); it1!=m_moos_map.end(); ++it1) {
     
     //check only vehicles that have not yet been checked
-    for (map<string,NodeRecord>::iterator it2=m_moos_map.find(it1->first);it2!=m_moos_map.end(); ++it2){
+    map<string,NodeRecord>::iterator it2;
+    for(it2=m_moos_map.find(it1->first); it2!=m_moos_map.end(); ++it2){
       //vehicle names
       string v1 = it1->first;
       string v2 = it2->first;

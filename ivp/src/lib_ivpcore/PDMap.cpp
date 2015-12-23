@@ -284,8 +284,6 @@ void PDMap::setGelBox(const IvPBox& b)
       cout << "  ok3:" << ok << endl;
     }
   }
-    
-
   assert(ok);
 
   m_gelbox = b;
@@ -329,6 +327,17 @@ void PDMap::setGelBox()
       gelsze = varsize;
     m_gelbox.setPTS(d, gelsze, gelsze);
   }
+}
+
+//---------------------------------------------------------------------
+// Procedure: getGridConfig
+//      Note: Added mikerb 12/19/15 for further performance analysis
+
+string PDMap::getGridConfig() const
+{
+  if(m_grid)
+    return(m_grid->getGridConfig());
+  return("");
 }
 
 //---------------------------------------------------------------------

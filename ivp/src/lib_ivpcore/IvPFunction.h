@@ -46,6 +46,7 @@ public:
   int         getDim()         {return(m_pdmap->getDim());}
   std::string getContextStr()  {return(m_context_string);}
   std::string getVarName(int); 
+  std::string getGridConfig() const;
   
   IvPFunction *copy() const;
 

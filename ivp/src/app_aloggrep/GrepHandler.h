@@ -40,7 +40,9 @@ class GrepHandler
   void setFileOverWrite(bool v)    {m_file_overwrite=v;}
   void setCommentsRetained(bool v) {m_comments_retained=v;}
   void setBadLinesRetained(bool v) {m_badlines_retained=v;}
-
+  void setGapLinesRetained(bool v) {m_gaplines_retained=v;}
+  void setAppCastRetained(bool v)  {m_appcast_retained=v;}
+  
  protected:
   std::vector<std::string> getMatchedKeys();
   std::vector<std::string> getUnMatchedKeys();
@@ -63,7 +65,9 @@ class GrepHandler
   bool        m_var_condition_met;
   bool        m_comments_retained;
   bool        m_badlines_retained;
-
+  bool        m_gaplines_retained;
+  bool        m_appcast_retained;
+  
   std::set<std::string> m_vars_retained;
   std::set<std::string> m_vars_removed;
   

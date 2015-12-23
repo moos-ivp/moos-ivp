@@ -72,6 +72,8 @@ public:    // Virtual Function
   IvPDomain getDomain() const {return(m_domain);}
 
   const  IvPBox* getMaxBox()  {return(m_maxbox);}
+
+  std::string getGridConfig(int ix=0) const;
   
 protected:
   bool     universesInSync();
