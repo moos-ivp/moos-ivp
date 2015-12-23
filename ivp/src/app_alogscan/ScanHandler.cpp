@@ -198,16 +198,14 @@ void ScanHandler::handle(const string& alogfile)
 
   string start_time = doubleToString(m_report.getMinStartTime(),2);
   string stop_time  = doubleToString(m_report.getMaxStopTime(),2);
+  string data_rate  = doubleToString(m_report.getDataRate(),2);
+  string data_ratek = doubleToString(m_report.getDataRate()/1000,2);
 
-  unsigned int digits = m_report.getVarNameMaxLength() + line_digits + 
-    char_digits + start_digits + stop_digits;
-  string separator = "------------------";
-  for(i=0; i<digits; i++)
-    separator += "-";
-  printf("%s\n", separator.c_str());
-  printf("Total variables: %d\n", m_report.size());
-  printf("Start/Stop Time: %s / %s\n", start_time.c_str(),
-	 stop_time.c_str());
+  cout << "--------------------------------------------------" << endl;
+  cout << "Total variables: " <<  m_report.size() << endl;
+  cout << "Start/Stop Time: " << start_time << " / " << stop_time << endl;
+  cout << "Data Rate (chars/sec): " << data_rate;
+  cout << "  (" << data_ratek << "K/sec)" << endl;
 }
 
 

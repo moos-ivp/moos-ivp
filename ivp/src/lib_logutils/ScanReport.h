@@ -31,7 +31,7 @@
 class ScanReport
 {
  public:
-  ScanReport() {m_lines=0;}
+  ScanReport() {m_lines=0; m_total_chars=0; m_time_min=0; m_time_max=0;}
 
   ~ScanReport() {}
   
@@ -49,6 +49,8 @@ class ScanReport
 
   double getVarFirstTime(unsigned int index);
   double getVarLastTime(unsigned int index);
+
+  double getDataRate() const;
   
   double getVarFirstTime(const std::string& varname)
     {return(getVarFirstTime(getVarIndex(varname)));}
@@ -115,6 +117,9 @@ class ScanReport
   std::vector<std::string>       m_all_sources;
 
   unsigned int m_lines;
+  double       m_total_chars;
+  double       m_time_min;
+  double       m_time_max;
 };
 
 #endif 

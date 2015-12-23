@@ -36,6 +36,13 @@ void ScanReport::addLine(double timestamp, const string& varname,
 {
   int chars = value.length();
 
+  m_total_chars += (double)(chars);
+
+  if((timestamp < m_time_min) || (m_lines == 0))
+    m_time_min = timestamp;
+  if((timestamp > m_time_max) || (m_lines == 0))
+    m_time_max = timestamp;
+  
   map<string,int>::iterator p;
   p = m_vmap.find(varname);
   if(p != m_vmap.end()) {
@@ -156,6 +163,19 @@ double ScanReport::getVarLastTime(unsigned int index)
     return(m_var_last[index]);
   else
     return(0);
+}
+
+//--------------------------------------------------------
+// Procedure: getDataRate
+
+double ScanReport::getDataRate() const
+{
+  double total_time = m_time_max - m_time_min;
+  if(total_time <= 0)
+    return(0);
+
+  double rate = m_total_chars / total_time;
+  return(rate);
 }
 
 
