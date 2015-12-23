@@ -56,6 +56,7 @@ NodeReporter::NodeReporter()
   m_helm_mode         = "none";
   m_helm_allstop_mode = "unknown";
   m_helm_switch_noted = false;
+  m_terse_reports     = false;
 
   m_blackout_interval = 0;
   m_blackout_baseval  = 0;
@@ -293,75 +294,68 @@ bool NodeReporter::OnStartUp()
   for(p=sParams.begin(); p!=sParams.end(); p++) {
     string orig  = *p;
     string line  = *p;
-    string param = toupper(biteStringX(line, '='));
+    string param = tolower(biteStringX(line, '='));
     string value = line;
     double dval  = atof(value.c_str());
 
     bool handled = false;
-    if((param == "PLATFORM_TYPE") ||           // Preferred
-       (param == "VESSEL_TYPE")) {             // Deprecated
+    if((param == "platform_type") ||           // Preferred
+       (param == "vessel_type")) {             // Deprecated
       m_record.setType(value);
       handled = true;
     }
-    else if((param =="PLATFORM_LENGTH") ||     // Preferred
-	    (param =="VESSEL_LENGTH")) {       // Deprecated
+    else if((param =="platform_length") ||     // Preferred
+	    (param =="vessel_length")) {       // Deprecated
       if(isNumber(value) && (dval >= 0)) {
 	m_record.setLength(dval);
 	handled = true;
       }
     }
-    else if(param == "BLACKOUT_INTERVAL") {
-      if(isNumber(value) && (dval >= 0)) {
-	m_blackout_baseval  = dval;
-	m_blackout_interval = dval;
-	handled = true;
-      }
-    }
-    else if(param == "BLACKOUT_VARIANCE") {
-      if(isNumber(value) && (dval >= 0)) {
-	m_blackout_variance = dval;
-	handled = true;
-      }
-    }
-    else if((param == "PLAT_REPORT_INPUT") ||     // Preferred
-	    (param == "PLAT_REPORT_VAR")   ||     // Deprecated
-	    (param == "PLATFORM_VARIABLE")) {     // Deprecated
+    else if(param == "terse_reports") 
+      handled = setBooleanOnString(m_terse_reports, value);
+    else if(param == "blackout_interval") 
+      handled = setNonNegDoubleOnString(m_blackout_interval, value);
+    else if(param == "blackout_variance") 
+      handled = setNonNegDoubleOnString(m_blackout_variance, value);
+    else if((param == "plat_report_input") ||     // Preferred
+	    (param == "plat_report_var")   ||     // Deprecated
+	    (param == "platform_variable")) {     // Deprecated
       addPlatformVar(value);
       handled = true;
     }
-    else if((param == "NODE_REPORT_OUTPUT")  ||   // Preferred
-	    (param == "NODE_REPORT_SUMMARY") ||   // Deprecated
-	    (param == "NODE_REPORT_VAR")) {       // Deprecated
+    else if((param == "node_report_output")  ||   // Preferred
+	    (param == "node_report_summary") ||   // Deprecated
+	    (param == "node_report_var")) {       // Deprecated
       if(!strContainsWhite(value)) {
 	m_node_report_var = value;
 	handled = true;
       }
     }      
-    else if(param == "PLAT_REPORT_OUTPUT") {
+    else if(param == "plat_report_output") {
       if(!strContainsWhite(value)) {
 	m_plat_report_var = value;
 	handled = true;
       }
     }      
-    else if(param == "GROUP") {
+    else if(param == "group") {
       m_group_name = value;
       handled = true;
     }
-    else if(param == "PAUSED")
+    else if(param == "paused")
       handled = setBooleanOnString(m_paused, value);
-    else if(param == "NOHELM_THRESHOLD") {
+    else if(param == "nohelm_threshold") {
       if(isNumber(value) && (dval > 0)) {
 	m_nohelm_thresh = dval;
 	handled = true;
       }
     }      
-    else if(param =="CROSSFILL_POLICY")
+    else if(param =="crossfill_policy")
       handled = setCrossFillPolicy(value);
-    else if(param =="ALT_NAV_PREFIX") {
+    else if(param =="alt_nav_prefix") {
       m_alt_nav_prefix = value;
       handled = true;
     }
-    else if(param =="ALT_NAV_NAME") {
+    else if(param =="alt_nav_name") {
       m_alt_nav_name = value;
       handled = true;
     }
@@ -633,7 +627,7 @@ string NodeReporter::assembleNodeReport(NodeRecord record)
   record.setMode(mode);
   record.setAllStop(m_helm_allstop_mode);
 
-  string summary = record.getSpec();
+  string summary = record.getSpec(m_terse_reports);
   return(summary);
 }
 

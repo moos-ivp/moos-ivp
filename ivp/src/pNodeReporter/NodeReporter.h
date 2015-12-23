@@ -63,6 +63,7 @@ public:
   std::string  m_node_report_var;
   double       m_nohelm_thresh;
   std::string  m_group_name;
+  bool         m_terse_reports;
 
  protected: // State Variables (Node Reports)
   CMOOSGeodesy m_geodesy;
