@@ -26,7 +26,7 @@ set MODE = LOITERING {
   LOITER = true
 } 
 
-
+#ifdef MISSION_ROLE SIDE
 //----------------------------------------------
 Behavior = BHV_Loiter
 {
@@ -34,8 +34,6 @@ Behavior = BHV_Loiter
   pwt       = 100
   condition = MODE==LOITERING
   updates   = UP_LOITER
-  runflag   = VEHICLE_UNDERWAY = TRUE
-  endflag   = VEHICLE_UNDERWAY = FALSE
 
    post_suffix = A
          speed = 1.3
@@ -47,7 +45,27 @@ Behavior = BHV_Loiter
   visual_hints = edge_color=orange, vertex_color=white
   visual_hints = edge_size=1, vertex_size=2
 }
+#endif
+	
+#ifdef MISSION_ROLE MIDDLE
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter
+  pwt       = 100
+  condition = MODE==LOITERING
 
+   post_suffix = B
+         speed = 1.3
+     clockwise = best
+        radius = 8.0
+     nm_radius = 15.0
+       polygon = format=ellipse, x=50, y=-50, degs=90, minor=25, major=125, pts=16
+  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
+  visual_hints = edge_color=orange, vertex_color=white
+  visual_hints = edge_size=1, vertex_size=2
+}
+#endif
 
 //----------------------------------------------
 Behavior = BHV_Waypoint
@@ -92,14 +110,9 @@ Behavior = BHV_StationKeep
 Behavior = BHV_AvoidCollision
 {
   name         = ac_
-  pwt          = 200
+  pwt          = 150
   condition    = AVOID = true 
   updates      = CONTACT_INFO
-  idleflag     = AVOIDING = idle
-  activeflag   = AVOIDING = active
-  inactiveflag = AVOIDING = inactive
-  runflag      = AVOIDING = running
-  endflag      = AVOIDING = end
   endflag      = CONTACT_RESOLVED = $[CONTACT]
   templating   = spawn
 
@@ -112,7 +125,7 @@ Behavior = BHV_AvoidCollision
         pwt_inner_dist = 20
         completed_dist = 100
      min_util_cpa_dist = 8
-     max_util_cpa_dist = 25
+     max_util_cpa_dist = 20
              pwt_grade = linear
    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 }
