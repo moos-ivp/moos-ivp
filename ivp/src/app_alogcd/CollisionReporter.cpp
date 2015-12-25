@@ -52,26 +52,39 @@ CollisionReporter::CollisionReporter()
 
 bool CollisionReporter::setTimeStampFile(string tstamp_file)
 {
+  if((tstamp_file != "") && !okFileToWrite(tstamp_file)) {
+    cout << "TimeStamp file [" << tstamp_file << "] unable to write." << endl;
+    return(false);
+  }
+
+  m_time_stamp_file = tstamp_file;
+  return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: setALogFile()
+
+bool CollisionReporter::setALogFile(string alog_file)
+{
+  if(!okFileToRead(alog_file)) {
+    cout << "Alog file [" << alog_file << "] unable to read." << endl;
+    return(false);
+  }
+  
+  m_alog_file = alog_file;
   return(true);
 }
 
 //--------------------------------------------------------
 // Procedure: handle
 
-bool CollisionReporter::handle(string alogfile)
+bool CollisionReporter::handle()
 {
-  if(alogfile == "") {
-    cout << "Alog file was not specified. Exiting now." << endl;
+  FILE *file_ptr = fopen(m_alog_file.c_str(), "r");
+  if(!file_ptr)
     return(false);
-  }
-
-  FILE *file_ptr = fopen(alogfile.c_str(), "r");
-  if(!file_ptr) {
-    cout << "Alog file not found or unable to open - exiting" << endl;
-    return(false);
-  }
   
-  cout << "Analysing collision encounters in file : " << alogfile << endl;
+  cout << "Analysing collision encounters in file : " << m_alog_file << endl;
 
   unsigned int line_count  = 0;
   bool done = false;
@@ -93,19 +106,19 @@ bool CollisionReporter::handle(string alogfile)
     
     if(!done && !line_is_comment) {
       string varname = getVarName(line_raw);
-      string data = getDataEntry(line_raw);
+      string vardata = getDataEntry(line_raw);
       if(varname == "ENCOUNTER") { 
-	double cpa = atof(data.c_str());
+	double cpa = atof(vardata.c_str());
 	m_encounters++;
 	m_total_encounter_cpa += cpa;
       }
       else if(varname == "NEAR_MISS") { 
-	double cpa = atof(data.c_str());
+	double cpa = atof(vardata.c_str());
 	m_near_misses++;
 	m_total_near_miss_cpa += cpa;
       }
       else if(varname == "COLLISION") { 
-	double cpa = atof(data.c_str());
+	double cpa = atof(vardata.c_str());
 	if((m_collisions == 0) || (cpa < m_collision_worst))
 	  m_collision_worst = cpa;
 	m_collisions++;
@@ -152,7 +165,6 @@ void CollisionReporter::printReport()
 
   if(m_collisions > 0)
     cout << "Collision Worst: " << m_collision_worst << "m" << endl;
-
 }
 
 

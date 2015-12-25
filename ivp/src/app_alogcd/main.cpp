@@ -37,8 +37,9 @@ void showHelpAndExit();
 
 int main(int argc, char *argv[])
 {
-  string alogfile, tstamp_file;
+  CollisionReporter collision_reporter;
 
+  bool handled = false;
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
     if((argi=="-h") || (argi == "--help") || (argi=="-help"))
@@ -47,30 +48,22 @@ int main(int argc, char *argv[])
       showReleaseInfo("alogcd", "gpl");
       return(0);
     }
-    if(strEnds(argi, ".alog"))
-      alogfile = argi;
+    else if(strEnds(argi, ".alog"))
+      handled = collision_reporter.setALogFile(argi);
     else if(strBegins(argi, "--tfile="))
-      tstamp_file = argi.substr(8);
+      handled = collision_reporter.setTimeStampFile(argi.substr(8));
 
-  }
-
-  if(alogfile == "") {
-    cout << "No alog file given - exiting" << endl;
-    exit(0);
-  }
-
-  if((tstamp_file != "") && !okFileToWrite(tstamp_file)) {
-    cout << "Time stamp file [" << tstamp_file << " not writeable." << endl;
-    cout << "Exiting." << endl;
-    exit(1);
+    if(!handled) {
+      cout << "Unhandled command line argument: " << argi << endl;
+      cout << "Use --help for usage. Exiting.   " << endl;
+      exit(1);
+    }
   }
     
-  CollisionReporter collision_reporter;
-  collision_reporter.setTimeStampFile(tstamp_file);
-  bool handled = collision_reporter.handle(alogfile);
-  
-  if(handled)
+  bool ok = collision_reporter.handle();
+  if(ok)
     collision_reporter.printReport();
+  return(0);
 }
 
 
