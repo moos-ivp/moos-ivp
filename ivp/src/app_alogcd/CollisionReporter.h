@@ -32,7 +32,8 @@ class CollisionReporter
   CollisionReporter();
   ~CollisionReporter() {}
 
-  bool handle(const std::string&);
+  bool setTimeStampFile(std::string);
+  bool handle(std::string);
   void printReport();
 
  protected:
@@ -46,6 +47,7 @@ class CollisionReporter
   
   double m_collision_worst;
 
+  std::string time_stamp_file;
 };
 
 #endif

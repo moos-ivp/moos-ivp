@@ -48,9 +48,17 @@ CollisionReporter::CollisionReporter()
 
 
 //--------------------------------------------------------
+// Procedure: setTimeStampFile()
+
+bool CollisionReporter::setTimeStampFile(string tstamp_file)
+{
+  return(true);
+}
+
+//--------------------------------------------------------
 // Procedure: handle
 
-bool CollisionReporter::handle(const string& alogfile)
+bool CollisionReporter::handle(string alogfile)
 {
   if(alogfile == "") {
     cout << "Alog file was not specified. Exiting now." << endl;
