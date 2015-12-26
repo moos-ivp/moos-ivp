@@ -80,9 +80,14 @@ bool CollisionReporter::setALogFile(string alog_file)
 
 bool CollisionReporter::handle()
 {
-  FILE *file_ptr = fopen(m_alog_file.c_str(), "r");
-  if(!file_ptr)
+  FILE *alog_file_ptr = fopen(m_alog_file.c_str(), "r");
+  if(!alog_file_ptr )
     return(false);
+
+  FILE *time_file_ptr = 0;
+  if(m_time_stamp_file != "")
+    time_file_ptr = fopen(m_time_stamp_file.c_str(), "w+");
+
   
   cout << "Analysing collision encounters in file : " << m_alog_file << endl;
 
@@ -90,46 +95,52 @@ bool CollisionReporter::handle()
   bool done = false;
   while(!done) {
     line_count++;
-    string line_raw = getNextRawLine(file_ptr);
+    string line_raw = getNextRawLine(alog_file_ptr);
 
     if((line_count % 10000) == 0)
       cout << "+" << flush;
     if((line_count % 100000) == 0)
       cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
 
-    bool line_is_comment = false;
     if((line_raw.length() > 0) && (line_raw.at(0) == '%'))
-      line_is_comment = true;
-
+      continue;
     if(line_raw == "eof") 
-      done = true;
+      break;
     
-    if(!done && !line_is_comment) {
-      string varname = getVarName(line_raw);
-      string vardata = getDataEntry(line_raw);
-      if(varname == "ENCOUNTER") { 
-	double cpa = atof(vardata.c_str());
-	m_encounters++;
-	m_total_encounter_cpa += cpa;
-      }
-      else if(varname == "NEAR_MISS") { 
-	double cpa = atof(vardata.c_str());
-	m_near_misses++;
-	m_total_near_miss_cpa += cpa;
-      }
-      else if(varname == "COLLISION") { 
-	double cpa = atof(vardata.c_str());
-	if((m_collisions == 0) || (cpa < m_collision_worst))
-	  m_collision_worst = cpa;
-	m_collisions++;
-	m_total_collision_cpa += cpa;
-      }
+    string var = getVarName(line_raw);
+    if((var!="ENCOUNTER") && (var!="NEAR_MISS") && (var!="COLLISION")) 
+      continue;
+	
+    string val = getDataEntry(line_raw);
+    double cpa = atof(val.c_str());
+    
+    if(time_file_ptr && ((var=="NEAR_MISS") || (var=="COLLISION"))) {
+      string time = getTimeStamp(line_raw);
+      fprintf(time_file_ptr, "%s\n", time.c_str());
+    }
+    
+    if(var == "ENCOUNTER") { 
+      m_encounters++;
+      m_total_encounter_cpa += cpa;
+    }
+    else if(var == "NEAR_MISS") { 
+      m_near_misses++;
+      m_total_near_miss_cpa += cpa;
+    }
+    else if(var == "COLLISION") { 
+      if((m_collisions == 0) || (cpa < m_collision_worst))
+	m_collision_worst = cpa;
+      m_collisions++;
+      m_total_collision_cpa += cpa;
     }
   }
   cout << endl << uintToCommaString(line_count) << " lines total." << endl;
-
-  if(file_ptr)
-    fclose(file_ptr);
+  cout << "tstamp_file: " << m_time_stamp_file << endl;
+  
+  if(alog_file_ptr)
+    fclose(alog_file_ptr);
+  if(time_file_ptr)
+    fclose(time_file_ptr);
 
   return(true);
 }
