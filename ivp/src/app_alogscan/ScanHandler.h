@@ -35,9 +35,11 @@ class ScanHandler
   void setParam(const std::string&, const std::string&);
   void handle(const std::string& alogfile);
 
+  void varStatReport();
   void appStatReport();
+  void dataRateReport();
   void loglistReport();
-
+  
   std::string procColor(std::string proc_name);
 
  protected:
@@ -46,7 +48,7 @@ class ScanHandler
 
   ScanReport  m_report;
   bool        m_use_colors;
-
+  
   std::map<std::string, std::string> m_pcolor_map;
   std::vector<std::string>           m_pcolors;
   unsigned int                       m_next_color_ix;

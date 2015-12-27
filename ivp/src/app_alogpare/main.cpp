@@ -39,7 +39,8 @@ int main(int argc, char *argv[])
 {
   string in_alog, out_alog;
   double pare_window = 30;
-
+  bool   verbose = false;
+  
   bool handled = true;
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -53,6 +54,8 @@ int main(int argc, char *argv[])
       in_alog = argi;
     else if(strEnds(argi, ".alog") && (out_alog == ""))
       out_alog = argi;
+    else if(argi == "--verbose")
+      verbose = true;
     else if(strBegins(argi, "--pare_window=")) {
       string str = argi.substr(14);
       handled = setNonNegDoubleOnString(pare_window, str);
@@ -72,6 +75,7 @@ int main(int argc, char *argv[])
   ok = ok && pare_engine.setALogFileOut(out_alog);
   ok = ok && pare_engine.addMarkListVar("ENCOUNTER");
 
+  pare_engine.setVerbose(verbose);
   pare_engine.defaultHitList();
   pare_engine.defaultPareList();
   pare_engine.setPareWindow(pare_window);

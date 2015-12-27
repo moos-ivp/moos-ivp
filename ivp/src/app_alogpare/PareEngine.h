@@ -37,7 +37,7 @@ class PareEngine
 
   bool setALogFileIn(std::string);
   bool setALogFileOut(std::string);
-
+  
   bool addMarkListVar(std::string);
   bool addHitListVar(std::string);
   bool addPareListVar(std::string);
@@ -45,7 +45,7 @@ class PareEngine
   void defaultHitList();
   void defaultPareList();
   
-  
+  void setVerbose(bool v) {m_verbose=v;}
   void setPareWindow(double v) {m_pare_window=v;}
   void pareFile();
   void printReport();
@@ -77,6 +77,7 @@ class PareEngine
   std::string m_alog_file_out;
 
   double  m_pare_window;
+  bool    m_verbose;
 };
 
 #endif

@@ -36,6 +36,7 @@ using namespace std;
 PareEngine::PareEngine()
 {
   m_pare_window = 30;  // seconds
+  m_verbose = false;
 }
 
 //--------------------------------------------------------
@@ -139,7 +140,8 @@ void PareEngine::passOneFindTimeStamps()
   if(!file_ptr)
     return;
 
-  cout << "Gathering timestamps from file : " << m_alog_file_in << endl;
+  if(m_verbose)
+    cout << "Gathering timestamps from file : " << m_alog_file_in << endl;
 
   m_timestamps.clear();
   
@@ -148,11 +150,13 @@ void PareEngine::passOneFindTimeStamps()
     line_count++;
     string line_raw = getNextRawLine(file_ptr);
 
-    if((line_count % 10000) == 0)
-      cout << "+" << flush;
-    if((line_count % 100000) == 0)
-      cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
-
+    if(m_verbose) {
+      if((line_count % 10000) == 0)
+	cout << "+" << flush;
+      if((line_count % 100000) == 0)
+	cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
+    }
+    
     if((line_raw.length() > 0) && (line_raw.at(0) == '%'))
       continue;
     if(line_raw == "eof") 
@@ -165,7 +169,11 @@ void PareEngine::passOneFindTimeStamps()
       m_timestamps.push_back(time_dbl);
     }
   }
-  cout << endl << uintToCommaString(line_count) << " lines total." << endl;
+
+  if(m_verbose) {
+    cout << endl;
+    cout << uintToCommaString(line_count) << " lines total." << endl;
+  }
   
   if(file_ptr)
     fclose(file_ptr);
@@ -188,11 +196,12 @@ void PareEngine::passTwoPareTimeStamps()
     line_count++;
     string line_raw = getNextRawLine(file_ptr_in);
 
-    if((line_count % 10000) == 0)
-      cout << "+" << flush;
-    if((line_count % 100000) == 0)
-      cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
-
+    if(m_verbose) {
+      if((line_count % 10000) == 0)
+	cout << "+" << flush;
+      if((line_count % 100000) == 0)
+	cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
+    }
     // SAVE! Line is a comment line
     if((line_raw.length() > 0) && (line_raw.at(0) == '%')) {
       writeLine(file_ptr_out, line_raw);
@@ -203,27 +212,19 @@ void PareEngine::passTwoPareTimeStamps()
 
     string var = getVarName(line_raw);
 
-    if(strEnds(var, "ITER_GAP") ||
-       strEnds(var, "ITER_LEN") ||
-       strBegins(var, "PSHARE") ||
-       strBegins(var, "NODE_REPORT") ||
-       strBegins(var, "DB_QOS")) {
+    // If var on hitlist, just skip past it now.
+    if(varOnHitList(var)) {
       lines_pared++;
       continue;
-    }
-
-    
-    bool on_hit_list = false;
-    if(var == "BHV_IPF")
-      on_hit_list = true;
+    }      
     
     // SAVED! Variable is not on the hit list
-    if(!on_hit_list) {
+    if(!varOnPareList(var)) {
       writeLine(file_ptr_out, line_raw);
       continue;
     }
 
-    // Variable IS on the hit list. Let's see if it can be saved
+    // Variable IS on the pare list. Let's see if it can be saved
     // based on its timestamp.
     string time_str = getTimeStamp(line_raw);
     double time = atof(time_str.c_str());
@@ -256,9 +257,11 @@ void PareEngine::passTwoPareTimeStamps()
     else
       lines_pared++;
   }
-  cout << endl;
-  cout << uintToCommaString(line_count)  << " lines total." << endl;
-  cout << uintToCommaString(lines_pared) << " lines pared." << endl;
+  if(m_verbose) {
+    cout << endl;
+    cout << uintToCommaString(line_count)  << " lines total." << endl;
+    cout << uintToCommaString(lines_pared) << " lines pared." << endl;
+  }
   
   if(file_ptr_in)
     fclose(file_ptr_in);
@@ -286,7 +289,7 @@ bool PareEngine::varOnMarkList(string var)
     return(m_mark_cache[var]);
   
   bool is_markvar = varOnList(m_marklist_vars, var);
-  m_hit_cache[var] = is_markvar;
+  m_mark_cache[var] = is_markvar;
   
   return(is_markvar);
 }
@@ -321,25 +324,29 @@ bool PareEngine::varOnPareList(string var)
   
 //--------------------------------------------------------
 // Procedure: varOnList()
+//   Purpose: Determine if given variable is on the given list of
+//            variable patterns. 
 
 bool PareEngine::varOnList(vector<string> varlist, string var) const
 {
   for(unsigned int i=0; i<varlist.size(); i++) {
     string entry = varlist[i];
 
-    // Support *FOO* patterns
+    // Check against *FOO* patterns
     if(strBegins(entry, "*") && strEnds(entry, "*")) {
       biteString(entry, '*');
       rbiteString(entry, '*');
       if(strContains(var, entry))
 	return(true);
     }
-    else if(strBegins(entry, "*")) {   // e.g., *ITER_GAP
+    // Check agains *FOO patterns
+    else if(strBegins(entry, "*")) {  
       biteString(entry, '*');
       if(strEnds(var, entry))
 	return(true);
     }
-    else if(strEnds(entry, "*")) {   // e.g., NODE_REPORT_*
+    // Check agains FOO* patterns
+    else if(strEnds(entry, "*")) {   
       rbiteString(entry, '*');
       if(strBegins(var, entry))
 	return(true);
@@ -352,10 +359,11 @@ bool PareEngine::varOnList(vector<string> varlist, string var) const
   
 //--------------------------------------------------------
 // Procedure: printReport
-//     Notes: 
 
 void PareEngine::printReport()
 {
+  if(!m_verbose)
+    return;
   
   cout << "Total Timestamps: " << m_timestamps.size() << endl;
 

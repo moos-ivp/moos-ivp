@@ -44,13 +44,13 @@ int main(int argc, char *argv[])
   
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
-    cout << "Usage:                                                 " << endl;
-    cout << "  alogscan file.alog [OPTIONS]                         " << endl;
-    cout << "                                                       " << endl;
-    cout << "Synopsis:                                              " << endl;
-    cout << "  Generate a summary report on the contents of a given " << endl;
-    cout << "  .alog file. The report lists each logged MOOS        " << endl;
-    cout << "  variable, which app(s) publish it, the min/max publish " << endl;
+    cout << "Usage:                                               " << endl;
+    cout << "  alogscan file.alog [OPTIONS]                       " << endl;
+    cout << "                                                     " << endl;
+    cout << "Synopsis:                                            " << endl;
+    cout << "  Generate a summary report on contents of a given   " << endl;
+    cout << "  .alog file. The report lists each logged MOOS      " << endl;
+    cout << "  variable, which app(s) publish it, min/max publish " << endl;
     cout << "  time and total number of character and lines for   " << endl;
     cout << "  the variable.                                      " << endl;
     cout << "                                                     " << endl;
@@ -69,11 +69,13 @@ int main(int argc, char *argv[])
     cout << "  -n,--nocolors Turn off process/source color coding " << endl;
     cout << "  -h,--help     Displays this help message           " << endl;
     cout << "  -v,--version  Displays the current release version " << endl;
+    cout << "  --rate_only   Only report the data rate            " << endl;
     cout << "                                                     " << endl;
     cout << "See also: aloggrp, alogrm, alogclip, alogview        " << endl;
     return(0);
   }
 
+  bool   data_rate_only     = false;
   bool   reverse_requested  = false;
   bool   app_stat_requested = false;
   bool   loglist_requested  = false;
@@ -108,11 +110,13 @@ int main(int argc, char *argv[])
       sort_style = "bysrc_ascending";
     else if(sarg == "--appstat")
       app_stat_requested = true;
+    else if(sarg == "--rate_only")
+      data_rate_only = true;
     else if((sarg == "--loglist") || (sarg == "-l"))
       loglist_requested = true;
     else if((sarg == "--nocolors") || (sarg == "-n"))
       proc_colors = "false";
-    else if((sarg == "-r") || (sarg == "--reversed") || (sarg == "--reverse"))
+    else if((sarg == "-r") || (sarg == "--reverse"))
       reverse_requested = true;
   }
  
@@ -137,9 +141,12 @@ int main(int argc, char *argv[])
   handler.setParam("sort_style",  sort_style);
   handler.setParam("proc_colors", proc_colors);
   handler.handle(alogfile);
-  
-  if(app_stat_requested)
+
+  if(!data_rate_only)
+    handler.varStatReport();  
+  if(app_stat_requested && !data_rate_only)
     handler.appStatReport();
+  handler.dataRateReport();
   if(loglist_requested) 
     handler.loglistReport();
 }

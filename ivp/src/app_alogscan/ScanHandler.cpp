@@ -54,7 +54,6 @@ ScanHandler::ScanHandler()
 
 //--------------------------------------------------------
 // Procedure: setParam
-//     Notes: 
 
 void ScanHandler::setParam(const string& param, const string& value)
 {
@@ -66,7 +65,6 @@ void ScanHandler::setParam(const string& param, const string& value)
 
 //--------------------------------------------------------
 // Procedure: procColor
-//     Notes: 
 
 string ScanHandler::procColor(string proc_name)
 {
@@ -95,7 +93,6 @@ string ScanHandler::procColor(string proc_name)
 
 //--------------------------------------------------------
 // Procedure: handle
-//     Notes: 
 
 void ScanHandler::handle(const string& alogfile)
 {
@@ -111,7 +108,14 @@ void ScanHandler::handle(const string& alogfile)
     cout << "Empty log file - exiting." << endl;
     return;
   }
+}
 
+
+//--------------------------------------------------------
+// Procedure: varStatReport
+
+void ScanHandler::varStatReport()
+{
   m_report.sort(m_sort_style);
 
 #ifdef _WIN32
@@ -198,21 +202,31 @@ void ScanHandler::handle(const string& alogfile)
 
   string start_time = doubleToString(m_report.getMinStartTime(),2);
   string stop_time  = doubleToString(m_report.getMaxStopTime(),2);
-  string data_rate  = doubleToString(m_report.getDataRate(),2);
-  string data_ratek = doubleToString(m_report.getDataRate()/1000,2);
 
   cout << "--------------------------------------------------" << endl;
   cout << "Total variables: " <<  m_report.size() << endl;
   cout << "Start/Stop Time: " << start_time << " / " << stop_time << endl;
+
+}
+
+//--------------------------------------------------------
+// Procedure: dataRateReport
+
+void ScanHandler::dataRateReport()
+{
+  if(m_report.size() == 0)
+    return;
+
+  string data_rate  = doubleToString(m_report.getDataRate(),2);
+  string data_ratek = doubleToString(m_report.getDataRate()/1000,2);
+
   cout << "Data Rate (chars/sec): " << data_rate;
   cout << "  (" << data_ratek << "K/sec)" << endl;
 }
 
 
-
 //--------------------------------------------------------
 // Procedure: appStatReport
-//     Notes: 
 
 void ScanHandler::appStatReport()
 {
