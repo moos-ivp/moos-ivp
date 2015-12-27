@@ -38,9 +38,9 @@ class PareEngine
   bool setALogFileIn(std::string);
   bool setALogFileOut(std::string);
   
-  bool addMarkListVar(std::string);
-  bool addHitListVar(std::string);
-  bool addPareListVar(std::string);
+  bool addMarkListVars(std::string);
+  bool addHitListVars(std::string);
+  bool addPareListVars(std::string);
 
   void defaultHitList();
   void defaultPareList();

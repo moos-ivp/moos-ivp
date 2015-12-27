@@ -92,7 +92,7 @@ int main(int argc, char *argv[])
       sort = sarg;
     }
 
-    cout << "sarg:[" << sarg << "]" << endl;
+    //cout << "sarg:[" << sarg << "]" << endl;
 
     if(strContains(sarg, ".alog"))
       alogfile = orig;
@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
       sort_style = "bysrc_descending";
   }
 
-  cout << "Processing on file : " << alogfile << endl;
+  //cout << "Processing on file : " << alogfile << endl;
 
   ScanHandler handler;
   handler.setParam("sort_style",  sort_style);
@@ -150,14 +150,3 @@ int main(int argc, char *argv[])
   if(loglist_requested) 
     handler.loglistReport();
 }
-
-
-
-
-
-
-
-
-
-
-

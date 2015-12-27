@@ -103,6 +103,7 @@ void ScanHandler::handle(const string& alogfile)
     return;
   }
 
+  cout << "Scanning... " << flush;
   m_report = scanner.scan();
   if(m_report.size() == 0) {
     cout << "Empty log file - exiting." << endl;

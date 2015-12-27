@@ -70,32 +70,44 @@ bool PareEngine::setALogFileOut(string alog_file)
 }
 
 //--------------------------------------------------------
-// Procedure: addMarkListVar
+// Procedure: addMarkListVars
 
-bool PareEngine::addMarkListVar(string mark_var)
+bool PareEngine::addMarkListVars(string mark_vars)
 {
-  if(!vectorContains(m_marklist_vars, mark_var))
-    m_marklist_vars.push_back(mark_var);
+  vector<string> svector = parseString(mark_vars, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string mark_var = svector[i];
+    if(!vectorContains(m_marklist_vars, mark_var))
+      m_marklist_vars.push_back(mark_var);
+  }
   return(true);
 }
 
 //--------------------------------------------------------
-// Procedure: addHitListVar
+// Procedure: addHitListVars
 
-bool PareEngine::addHitListVar(string hitlist_var)
+bool PareEngine::addHitListVars(string hit_vars)
 {
-  if(!vectorContains(m_hitlist_vars, hitlist_var))
-    m_hitlist_vars.push_back(hitlist_var);
+  vector<string> svector = parseString(hit_vars, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string hit_var = svector[i];
+    if(!vectorContains(m_hitlist_vars, hit_var))
+      m_hitlist_vars.push_back(hit_var);
+  }
   return(true);
 }
 
 //--------------------------------------------------------
-// Procedure: addPareListVar
+// Procedure: addPareListVars
 
-bool PareEngine::addPareListVar(string parelist_var)
+bool PareEngine::addPareListVars(string pare_vars)
 {
-  if(!vectorContains(m_parelist_vars, parelist_var))
-    m_parelist_vars.push_back(parelist_var);
+  vector<string> svector = parseString(pare_vars, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string pare_var = svector[i];
+    if(!vectorContains(m_parelist_vars, pare_var))
+      m_parelist_vars.push_back(pare_var);
+  }
   return(true);
 }
 
@@ -113,11 +125,11 @@ void PareEngine::pareFile()
 
 void PareEngine::defaultHitList()
 {
-  addHitListVar("*ITER_GAP");
-  addHitListVar("*ITER_LEN");
-  addHitListVar("PSHARE*");
-  addHitListVar("NODE_REPORT*");
-  addHitListVar("DB_QOS");
+  addHitListVars("*ITER_GAP");
+  addHitListVars("*ITER_LEN");
+  addHitListVars("PSHARE*");
+  addHitListVars("NODE_REPORT*");
+  addHitListVars("DB_QOS");
 }
 
 //--------------------------------------------------------
@@ -125,10 +137,10 @@ void PareEngine::defaultHitList()
 
 void PareEngine::defaultPareList()
 {
-  addPareListVar("BHV_IPF");
-  addPareListVar("VIEW_SEGLIST");
-  addPareListVar("VIEW_POINT");
-  addPareListVar("CONTACTS_RECAP");
+  addPareListVars("BHV_IPF");
+  addPareListVars("VIEW_SEGLIST");
+  addPareListVars("VIEW_POINT");
+  addPareListVars("CONTACTS_RECAP");
 }
 
 //--------------------------------------------------------
@@ -141,8 +153,10 @@ void PareEngine::passOneFindTimeStamps()
     return;
 
   if(m_verbose)
-    cout << "Gathering timestamps from file : " << m_alog_file_in << endl;
-
+    cout << "Gathering timestamps from file: " << m_alog_file_in << endl;
+  else
+    cout << "Paring Phase 1... " << flush;
+  
   m_timestamps.clear();
   
   unsigned int line_count  = 0;
@@ -185,24 +199,39 @@ void PareEngine::passOneFindTimeStamps()
 void PareEngine::passTwoPareTimeStamps()
 {
   FILE *file_ptr_in  = fopen(m_alog_file_in.c_str(), "r");
-  FILE *file_ptr_out = fopen(m_alog_file_out.c_str(), "a+");
+  FILE *file_ptr_out = fopen(m_alog_file_out.c_str(), "w");
 
+  unsigned int total_timestamps = m_timestamps.size();
+
+  bool one_node_report_saved = false;
   if(!file_ptr_in)
     return;
 
+  if(m_verbose)
+    cout << "Paring variables from file: " << m_alog_file_in << endl;
+  else
+    cout << "Phase 2... " << flush;
+  
   unsigned int lines_pared = 0;
   unsigned int line_count  = 0;
   while(1) {
     line_count++;
     string line_raw = getNextRawLine(file_ptr_in);
 
+    //===========================================================
+    // Part 1: Output task status if in verbose mode
+    //===========================================================
     if(m_verbose) {
       if((line_count % 10000) == 0)
 	cout << "+" << flush;
       if((line_count % 100000) == 0)
 	cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
     }
-    // SAVE! Line is a comment line
+
+    //===========================================================
+    // Part 2: Check for easy saves or easy omits
+    //===========================================================
+    // Easy SAVE: Line is a comment line
     if((line_raw.length() > 0) && (line_raw.at(0) == '%')) {
       writeLine(file_ptr_out, line_raw);
       continue;
@@ -211,19 +240,28 @@ void PareEngine::passTwoPareTimeStamps()
       break;
 
     string var = getVarName(line_raw);
-
-    // If var on hitlist, just skip past it now.
+    // Easy SAVE: Must save at least one local node report
+    if(!one_node_report_saved && (var == "NODE_REPORT_LOCAL")){
+      writeLine(file_ptr_out, line_raw);
+      one_node_report_saved = true;
+      continue;
+    }
+      
+    // Easy OMIT: Var on hitlist, just skip past it now.
     if(varOnHitList(var)) {
       lines_pared++;
       continue;
     }      
     
-    // SAVED! Variable is not on the hit list
+    // Easy SAVE Variable is not on the parelist
     if(!varOnPareList(var)) {
       writeLine(file_ptr_out, line_raw);
       continue;
     }
 
+    //===========================================================
+    // Part 3: Handle vars on parelist by checking timestamps
+    //===========================================================
     // Variable IS on the pare list. Let's see if it can be saved
     // based on its timestamp.
     string time_str = getTimeStamp(line_raw);
@@ -257,11 +295,18 @@ void PareEngine::passTwoPareTimeStamps()
     else
       lines_pared++;
   }
+
+  double pct_lines_pared = 0;
+  if(line_count > 0)
+    pct_lines_pared = (double)(lines_pared) / (double)(line_count);
+  
   if(m_verbose) {
     cout << endl;
     cout << uintToCommaString(line_count)  << " lines total." << endl;
-    cout << uintToCommaString(lines_pared) << " lines pared." << endl;
   }
+  cout << uintToCommaString(lines_pared) << " lines pared. ";
+  cout << "(" << doubleToString(pct_lines_pared*100, 2) << "%) ";
+  cout << "[" << uintToString(total_timestamps) << "]" << endl;
   
   if(file_ptr_in)
     fclose(file_ptr_in);
