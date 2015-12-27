@@ -1,6 +1,8 @@
 #!/bin/bash 
 
 PARE_WINDOW=15
+PARE_LIST="BHV_IPF,VIEW_SEGLIST"
+HIT_LIST="*ITER_GAP,*ITER_LEN,PSHARE*,NODE_REPORT*,DB_QOS"
 
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
