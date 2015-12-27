@@ -37,9 +37,11 @@ class PareEngine
 
   bool setALogFileIn(std::string);
   bool setALogFileOut(std::string);
-  bool addMarkVar(std::string);
+
+  bool addMarkListVar(std::string);
   bool addHitListVar(std::string);
   bool addPareListVar(std::string);
+
   void defaultHitList();
   void defaultPareList();
   
@@ -52,16 +54,22 @@ class PareEngine
   void passOneFindTimeStamps();
   void passTwoPareTimeStamps();
   void writeLine(FILE*, const std::string&) const;
+
+  bool varOnMarkList(std::string);
   bool varOnHitList(std::string);
   bool varOnPareList(std::string);
+
+ private:
   bool varOnList(std::vector<std::string>, std::string) const;
   
  protected:
   std::list<double>        m_timestamps;
-  std::vector<std::string> m_mark_vars;
+
+  std::vector<std::string> m_marklist_vars;
   std::vector<std::string> m_hitlist_vars;
   std::vector<std::string> m_parelist_vars;
 
+  std::map<std::string, bool>  m_mark_cache;
   std::map<std::string, bool>  m_hit_cache;
   std::map<std::string, bool>  m_pare_cache;
   

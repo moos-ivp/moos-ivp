@@ -69,12 +69,12 @@ bool PareEngine::setALogFileOut(string alog_file)
 }
 
 //--------------------------------------------------------
-// Procedure: addMarkVar
+// Procedure: addMarkListVar
 
-bool PareEngine::addMarkVar(string mark_var)
+bool PareEngine::addMarkListVar(string mark_var)
 {
-  if(!vectorContains(m_mark_vars, mark_var))
-    m_mark_vars.push_back(mark_var);
+  if(!vectorContains(m_marklist_vars, mark_var))
+    m_marklist_vars.push_back(mark_var);
   return(true);
 }
 
@@ -159,7 +159,7 @@ void PareEngine::passOneFindTimeStamps()
       break;
     
     string var = getVarName(line_raw);
-    if(vectorContains(m_mark_vars, var)) {
+    if(vectorContains(m_marklist_vars, var)) {
       string time_str = getTimeStamp(line_raw);
       double time_dbl = atof(time_str.c_str());
       m_timestamps.push_back(time_dbl);
@@ -278,6 +278,20 @@ void PareEngine::writeLine(FILE* f, const string& line) const
 }
   
 //--------------------------------------------------------
+// Procedure: varOnMarkList()
+
+bool PareEngine::varOnMarkList(string var)
+{
+  if(m_mark_cache.count(var))
+    return(m_mark_cache[var]);
+  
+  bool is_markvar = varOnList(m_marklist_vars, var);
+  m_hit_cache[var] = is_markvar;
+  
+  return(is_markvar);
+}
+  
+//--------------------------------------------------------
 // Procedure: varOnHitList()
 
 bool PareEngine::varOnHitList(string var)
@@ -285,10 +299,10 @@ bool PareEngine::varOnHitList(string var)
   if(m_hit_cache.count(var))
     return(m_hit_cache[var]);
   
-  bool hit = varOnList(m_hitlist_vars, var);
-  m_hit_cache[var] = hit;
+  bool is_hitvar = varOnList(m_hitlist_vars, var);
+  m_hit_cache[var] = is_hitvar;
   
-  return(hit);
+  return(is_hitvar);
 }
   
 //--------------------------------------------------------
@@ -299,10 +313,10 @@ bool PareEngine::varOnPareList(string var)
   if(m_pare_cache.count(var))
     return(m_pare_cache[var]);
 
-  bool hit = varOnList(m_parelist_vars, var);
-  m_pare_cache[var] = hit;
+  bool is_parevar = varOnList(m_parelist_vars, var);
+  m_pare_cache[var] = is_parevar;
   
-  return(hit);
+  return(is_parevar);
 }
   
 //--------------------------------------------------------

@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
   PareEngine pare_engine;
   bool ok = pare_engine.setALogFileIn(in_alog);
   ok = ok && pare_engine.setALogFileOut(out_alog);
-  ok = ok && pare_engine.addMarkVar("ENCOUNTER");
+  ok = ok && pare_engine.addMarkListVar("ENCOUNTER");
 
   pare_engine.defaultHitList();
   pare_engine.defaultPareList();
