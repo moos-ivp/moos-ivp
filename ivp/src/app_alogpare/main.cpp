@@ -38,6 +38,7 @@ void showHelpAndExit();
 int main(int argc, char *argv[])
 {
   string in_alog, out_alog;
+  double pare_window = 30;
 
   bool handled = true;
   for(int i=1; i<argc; i++) {
@@ -52,6 +53,10 @@ int main(int argc, char *argv[])
       in_alog = argi;
     else if(strEnds(argi, ".alog") && (out_alog == ""))
       out_alog = argi;
+    else if(strBegins(argi, "--pare_window=")) {
+      string str = argi.substr(14);
+      handled = setNonNegDoubleOnString(pare_window, str);
+    }
     else 
       handled = false;
     
@@ -66,7 +71,11 @@ int main(int argc, char *argv[])
   bool ok = pare_engine.setALogFileIn(in_alog);
   ok = ok && pare_engine.setALogFileOut(out_alog);
   ok = ok && pare_engine.addMarkVar("ENCOUNTER");
-  ok = ok && pare_engine.pareFile();
+
+  pare_engine.defaultHitList();
+  pare_engine.defaultPareList();
+  pare_engine.setPareWindow(pare_window);
+  pare_engine.pareFile();
   
   if(ok)
     pare_engine.printReport();

@@ -73,30 +73,71 @@ bool PareEngine::setALogFileOut(string alog_file)
 
 bool PareEngine::addMarkVar(string mark_var)
 {
-  if(!vectorContains(m_markvars, mark_var))
-    m_markvars.push_back(mark_var);
+  if(!vectorContains(m_mark_vars, mark_var))
+    m_mark_vars.push_back(mark_var);
+  return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: addHitListVar
+
+bool PareEngine::addHitListVar(string hitlist_var)
+{
+  if(!vectorContains(m_hitlist_vars, hitlist_var))
+    m_hitlist_vars.push_back(hitlist_var);
+  return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: addPareListVar
+
+bool PareEngine::addPareListVar(string parelist_var)
+{
+  if(!vectorContains(m_parelist_vars, parelist_var))
+    m_parelist_vars.push_back(parelist_var);
   return(true);
 }
 
 //--------------------------------------------------------
 // Procedure: pareFile
 
-bool PareEngine::pareFile()
+void PareEngine::pareFile()
 {
-  bool ok_timestamps = findTimeStamps();
-  if(!ok_timestamps)
-    return(false);
-  return(true);
+  passOneFindTimeStamps();
+  passTwoPareTimeStamps();
 }
 
 //--------------------------------------------------------
-// Procedure: findTimeStamps()
+// Procedure: defaultHitList()
 
-bool PareEngine::findTimeStamps()
+void PareEngine::defaultHitList()
+{
+  addHitListVar("*ITER_GAP");
+  addHitListVar("*ITER_LEN");
+  addHitListVar("PSHARE*");
+  addHitListVar("NODE_REPORT*");
+  addHitListVar("DB_QOS");
+}
+
+//--------------------------------------------------------
+// Procedure: defaultPareList()
+
+void PareEngine::defaultPareList()
+{
+  addPareListVar("BHV_IPF");
+  addPareListVar("VIEW_SEGLIST");
+  addPareListVar("VIEW_POINT");
+  addPareListVar("CONTACTS_RECAP");
+}
+
+//--------------------------------------------------------
+// Procedure: passOneFindTimeStamps()
+
+void PareEngine::passOneFindTimeStamps()
 {
   FILE *file_ptr = fopen(m_alog_file_in.c_str(), "r");
   if(!file_ptr)
-    return(false);
+    return;
 
   cout << "Gathering timestamps from file : " << m_alog_file_in << endl;
 
@@ -118,7 +159,7 @@ bool PareEngine::findTimeStamps()
       break;
     
     string var = getVarName(line_raw);
-    if(vectorContains(m_markvars, var)) {
+    if(vectorContains(m_mark_vars, var)) {
       string time_str = getTimeStamp(line_raw);
       double time_dbl = atof(time_str.c_str());
       m_timestamps.push_back(time_dbl);
@@ -128,19 +169,186 @@ bool PareEngine::findTimeStamps()
   
   if(file_ptr)
     fclose(file_ptr);
-
-  return(true);
 }
 
+//--------------------------------------------------------
+// Procedure: passTwoPareTimeStamps()
+
+void PareEngine::passTwoPareTimeStamps()
+{
+  FILE *file_ptr_in  = fopen(m_alog_file_in.c_str(), "r");
+  FILE *file_ptr_out = fopen(m_alog_file_out.c_str(), "a+");
+
+  if(!file_ptr_in)
+    return;
+
+  unsigned int lines_pared = 0;
+  unsigned int line_count  = 0;
+  while(1) {
+    line_count++;
+    string line_raw = getNextRawLine(file_ptr_in);
+
+    if((line_count % 10000) == 0)
+      cout << "+" << flush;
+    if((line_count % 100000) == 0)
+      cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
+
+    // SAVE! Line is a comment line
+    if((line_raw.length() > 0) && (line_raw.at(0) == '%')) {
+      writeLine(file_ptr_out, line_raw);
+      continue;
+    }
+    if(line_raw == "eof") 
+      break;
+
+    string var = getVarName(line_raw);
+
+    if(strEnds(var, "ITER_GAP") ||
+       strEnds(var, "ITER_LEN") ||
+       strBegins(var, "PSHARE") ||
+       strBegins(var, "NODE_REPORT") ||
+       strBegins(var, "DB_QOS")) {
+      lines_pared++;
+      continue;
+    }
+
+    
+    bool on_hit_list = false;
+    if(var == "BHV_IPF")
+      on_hit_list = true;
+    
+    // SAVED! Variable is not on the hit list
+    if(!on_hit_list) {
+      writeLine(file_ptr_out, line_raw);
+      continue;
+    }
+
+    // Variable IS on the hit list. Let's see if it can be saved
+    // based on its timestamp.
+    string time_str = getTimeStamp(line_raw);
+    double time = atof(time_str.c_str());
+
+    // Adjust the sequence of timestamps. If the front timestamp
+    // is more than pare_window seconds behind the time of the
+    // current line, then pop. Keep popping until this isnt true
+    // or the list is empty.
+    bool need_to_pop = true;
+    while(need_to_pop) {
+      if(m_timestamps.size() == 0)
+	need_to_pop = false;
+      else if((time - m_timestamps.front()) < m_pare_window)
+	need_to_pop = false;
+      else
+	m_timestamps.pop_front();
+    }
+
+    // Easy case: no more relevant timestamps, entry cannot be saved
+    if(m_timestamps.size() == 0)
+      continue;
+    
+    double delta_time = time - m_timestamps.front();
+    if(delta_time < 0)
+      delta_time *= -1;
+    
+    // SAVED! Variable is within window of valid time stamp
+    if(delta_time <= m_pare_window) 
+      writeLine(file_ptr_out, line_raw);
+    else
+      lines_pared++;
+  }
+  cout << endl;
+  cout << uintToCommaString(line_count)  << " lines total." << endl;
+  cout << uintToCommaString(lines_pared) << " lines pared." << endl;
+  
+  if(file_ptr_in)
+    fclose(file_ptr_in);
+  if(file_ptr_out)
+    fclose(file_ptr_out);
+}
+
+//--------------------------------------------------------
+// Procedure: writeLine
+
+void PareEngine::writeLine(FILE* f, const string& line) const
+{
+  if(f)
+    fprintf(f, "%s\n", line.c_str());
+  else
+    cout << line << endl;
+}
+  
+//--------------------------------------------------------
+// Procedure: varOnHitList()
+
+bool PareEngine::varOnHitList(string var)
+{
+  if(m_hit_cache.count(var))
+    return(m_hit_cache[var]);
+  
+  bool hit = varOnList(m_hitlist_vars, var);
+  m_hit_cache[var] = hit;
+  
+  return(hit);
+}
+  
+//--------------------------------------------------------
+// Procedure: varOnPareList()
+
+bool PareEngine::varOnPareList(string var)
+{
+  if(m_pare_cache.count(var))
+    return(m_pare_cache[var]);
+
+  bool hit = varOnList(m_parelist_vars, var);
+  m_pare_cache[var] = hit;
+  
+  return(hit);
+}
+  
+//--------------------------------------------------------
+// Procedure: varOnList()
+
+bool PareEngine::varOnList(vector<string> varlist, string var) const
+{
+  for(unsigned int i=0; i<varlist.size(); i++) {
+    string entry = varlist[i];
+
+    // Support *FOO* patterns
+    if(strBegins(entry, "*") && strEnds(entry, "*")) {
+      biteString(entry, '*');
+      rbiteString(entry, '*');
+      if(strContains(var, entry))
+	return(true);
+    }
+    else if(strBegins(entry, "*")) {   // e.g., *ITER_GAP
+      biteString(entry, '*');
+      if(strEnds(var, entry))
+	return(true);
+    }
+    else if(strEnds(entry, "*")) {   // e.g., NODE_REPORT_*
+      rbiteString(entry, '*');
+      if(strBegins(var, entry))
+	return(true);
+    }
+    else if(var == entry)
+      return(true);
+  }
+  return(false);
+}
+  
 //--------------------------------------------------------
 // Procedure: printReport
 //     Notes: 
 
 void PareEngine::printReport()
 {
+  
   cout << "Total Timestamps: " << m_timestamps.size() << endl;
-  for(unsigned int i=0; i<m_timestamps.size(); i++) {
-    cout << "[" << i << "]: " << m_timestamps[i] << endl;
+
+  list<double>::iterator p;
+  unsigned int i=0;
+  for(p=m_timestamps.begin(); p!=m_timestamps.end(); p++, i++) {
+    cout << "[" << i << "]: " << *p << endl;
   }
 }
 

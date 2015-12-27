@@ -24,6 +24,9 @@
 #ifndef PARE_ENGINE_HEADER
 #define PARE_ENGINE_HEADER
 
+#include <vector>
+#include <list>
+#include <map>
 #include <string>
 
 class PareEngine
@@ -35,17 +38,33 @@ class PareEngine
   bool setALogFileIn(std::string);
   bool setALogFileOut(std::string);
   bool addMarkVar(std::string);
-
-  bool pareFile();
+  bool addHitListVar(std::string);
+  bool addPareListVar(std::string);
+  void defaultHitList();
+  void defaultPareList();
+  
+  
+  void setPareWindow(double v) {m_pare_window=v;}
+  void pareFile();
   void printReport();
 
  protected:
-  bool findTimeStamps();
-
+  void passOneFindTimeStamps();
+  void passTwoPareTimeStamps();
+  void writeLine(FILE*, const std::string&) const;
+  bool varOnHitList(std::string);
+  bool varOnPareList(std::string);
+  bool varOnList(std::vector<std::string>, std::string) const;
+  
  protected:
-  std::vector<double>      m_timestamps;
-  std::vector<std::string> m_markvars;
+  std::list<double>        m_timestamps;
+  std::vector<std::string> m_mark_vars;
+  std::vector<std::string> m_hitlist_vars;
+  std::vector<std::string> m_parelist_vars;
 
+  std::map<std::string, bool>  m_hit_cache;
+  std::map<std::string, bool>  m_pare_cache;
+  
   std::string m_alog_file_in;
   std::string m_alog_file_out;
 
@@ -53,8 +72,3 @@ class PareEngine
 };
 
 #endif
-
-
-
-
-
