@@ -152,7 +152,7 @@ ProcessConfig = pLogger
   AppTick       = 10
   CommsTick     = 10
   
-  File          = LOG_SHORESIDE
+  File          = XLOG_SHORESIDE
   PATH          = ./
   SyncLog       = true @ 0.2
   AsyncLog      = true
