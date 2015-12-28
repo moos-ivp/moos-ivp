@@ -1,6 +1,7 @@
 #!/bin/bash 
 
 PARE_WINDOW=15
+MARK_LIST="ENCOUNTER"
 PARE_LIST="BHV_IPF,VIEW_SEGLIST"
 HIT_LIST="*ITER_GAP,*ITER_LEN,PSHARE*,NODE_REPORT*,DB_QOS"
 
@@ -23,28 +24,32 @@ done
 echo "=========================================================ABE"
 cd LOG_A*; 
 alogscan --rate_only LOG*.alog
-alogpare LOG*.alog abe_pared.alog --pare_window=$PARE_WINDOW; 
+alogpare LOG*.alog abe_pared.alog --pare_window=$PARE_WINDOW \
+    --markvars=$MARK_LIST --hitvars=$HIT_LIST --parevars=$PARE_LIST
 alogscan --rate_only abe_pared.alog
 cd ..
 
 echo "=========================================================BEN"
 cd LOG_B*; 
 alogscan --rate_only LOG*.alog
-alogpare LOG*.alog ben_pared.alog --pare_window=$PARE_WINDOW; 
+alogpare LOG*.alog ben_pared.alog --pare_window=$PARE_WINDOW \
+    --markvars=$MARK_LIST --hitvars=$HIT_LIST --parevars=$PARE_LIST
 alogscan --rate_only ben_pared.alog
 cd ..
 
 echo "=========================================================CAL"
 cd LOG_C*; 
 alogscan --rate_only LOG*.alog
-alogpare LOG*.alog cal_pared.alog --pare_window=$PARE_WINDOW; 
+alogpare LOG*.alog cal_pared.alog --pare_window=$PARE_WINDOW \
+    --markvars=$MARK_LIST --hitvars=$HIT_LIST --parevars=$PARE_LIST
 alogscan --rate_only cal_pared.alog
 cd ..
 
 echo "=========================================================DEB"
 cd LOG_D*; 
 alogscan --rate_only LOG*.alog
-alogpare LOG*.alog deb_pared.alog --pare_window=$PARE_WINDOW; 
+alogpare LOG*.alog deb_pared.alog --pare_window=$PARE_WINDOW \
+    --markvars=$MARK_LIST --hitvars=$HIT_LIST --parevars=$PARE_LIST
 alogscan --rate_only deb_pared.alog
 cd ..
 
