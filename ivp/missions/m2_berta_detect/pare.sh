@@ -52,7 +52,7 @@ done
 #=============================================================
 if [ "$ALL_OK" = "yes" -a "$RMORIG" = "yes" ]; then 
     echo Removing original alog files...
-    rm -f */LOG*.alog
+    rm -f LOG*/LOG*.alog
 fi
 
 #=============================================================
