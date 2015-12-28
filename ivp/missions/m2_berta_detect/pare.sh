@@ -1,5 +1,8 @@
 #!/bin/bash 
 
+#=============================================================
+# Part 1: Initialize default values
+#=============================================================
 PARE_WINDOW=15
 MARK_LIST="ENCOUNTER"
 PARE_LIST="BHV_IPF,VIEW_SEGLIST"
@@ -7,6 +10,9 @@ HIT_LIST="*ITER_GAP,*ITER_LEN,PSHARE*,NODE_REPORT*,DB_QOS"
 RMORIG="no"
 ALL_OK="yes"
 
+#=============================================================
+# Part 2: Handle command line arguments
+#=============================================================
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [PARE_WINDOW]                   \n" $0
@@ -24,7 +30,9 @@ for ARGI; do
 done
 
 
-
+#=============================================================
+# Part 3: Execute the alogpare in all log sub-directories
+#=============================================================
 for dirs in LOG*/ ; do 
     cd $dirs
     alogscan --rate_only LOG*.alog
@@ -36,13 +44,22 @@ for dirs in LOG*/ ; do
     fi
     alogscan --rate_only *_pared.alog
     cd ..
-    echo "=================================================="
+    echo "============================================================"
 done
 
+#=============================================================
+# Part 4: Remove orig alogfiles if user wants, pares succeeded
+#=============================================================
 if [ "$ALL_OK" = "yes" -a "$RMORIG" = "yes" ]; then 
     echo Removing original alog files...
-    #rm -f */LOG*.alog
+    rm -f */LOG*.alog
 fi
 
+#=============================================================
+# Part 5: Produce right exit code depending on succes of pares 
+#=============================================================
+if [ "$ALL_OK" != "yes" ]; then 
+    exit 1
+fi
 exit 0
 
