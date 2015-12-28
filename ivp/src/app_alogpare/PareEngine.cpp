@@ -76,9 +76,9 @@ bool PareEngine::addMarkListVars(string mark_vars)
 {
   vector<string> svector = parseString(mark_vars, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
-    string mark_var = svector[i];
-    if(!vectorContains(m_marklist_vars, mark_var))
-      m_marklist_vars.push_back(mark_var);
+    string var = svector[i];
+    if((var != "") && !vectorContains(m_marklist_vars, var))
+      m_marklist_vars.push_back(var);
   }
   return(true);
 }
@@ -90,9 +90,9 @@ bool PareEngine::addHitListVars(string hit_vars)
 {
   vector<string> svector = parseString(hit_vars, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
-    string hit_var = svector[i];
-    if(!vectorContains(m_hitlist_vars, hit_var))
-      m_hitlist_vars.push_back(hit_var);
+    string var = svector[i];
+    if((var != "") && !vectorContains(m_hitlist_vars, var))
+      m_hitlist_vars.push_back(var);
   }
   return(true);
 }
@@ -104,17 +104,17 @@ bool PareEngine::addPareListVars(string pare_vars)
 {
   vector<string> svector = parseString(pare_vars, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
-    string pare_var = svector[i];
-    if(!vectorContains(m_parelist_vars, pare_var))
-      m_parelist_vars.push_back(pare_var);
+    string var = svector[i];
+    if((var != "") && !vectorContains(m_parelist_vars, var))
+      m_parelist_vars.push_back(var);
   }
   return(true);
 }
 
 //--------------------------------------------------------
-// Procedure: pareFile
+// Procedure: pareTheFile
 
-void PareEngine::pareFile()
+void PareEngine::pareTheFile()
 {
   passOneFindTimeStamps();
   passTwoPareTimeStamps();
@@ -125,11 +125,9 @@ void PareEngine::pareFile()
 
 void PareEngine::defaultHitList()
 {
-  addHitListVars("*ITER_GAP");
-  addHitListVars("*ITER_LEN");
+  addHitListVars("*ITER_GAP, *ITER_LEN");
   addHitListVars("PSHARE*");
-  addHitListVars("NODE_REPORT*");
-  addHitListVars("DB_QOS");
+  addHitListVars("NODE_REPORT*, DB_QOS");
 }
 
 //--------------------------------------------------------
@@ -158,6 +156,8 @@ void PareEngine::passOneFindTimeStamps()
     cout << "Paring Phase 1... " << flush;
   
   m_timestamps.clear();
+
+  bool community_name_found = false;
   
   unsigned int line_count  = 0;
   while(1) {
@@ -182,6 +182,12 @@ void PareEngine::passOneFindTimeStamps()
       double time_dbl = atof(time_str.c_str());
       m_timestamps.push_back(time_dbl);
     }
+    if(!community_name_found && (var == "DB_TIME")) {
+      string src = getSourceName(line_raw);
+      m_community_name = rbiteString(src, '_');
+      community_name_found = true;
+    }
+      
   }
 
   if(m_verbose) {
@@ -198,6 +204,9 @@ void PareEngine::passOneFindTimeStamps()
 
 void PareEngine::passTwoPareTimeStamps()
 {
+  if((m_alog_file_out == "name.alog") && (m_community_name != ""))
+    m_alog_file_out = m_community_name + "_pared.alog";
+
   FILE *file_ptr_in  = fopen(m_alog_file_in.c_str(), "r");
   FILE *file_ptr_out = fopen(m_alog_file_out.c_str(), "w");
 
@@ -410,8 +419,7 @@ void PareEngine::printReport()
   if(!m_verbose)
     return;
   
-  cout << "Total Timestamps: " << m_timestamps.size() << endl;
-
+  cout << "Total Pare Events: " << m_timestamps.size() << endl;
   list<double>::iterator p;
   unsigned int i=0;
   for(p=m_timestamps.begin(); p!=m_timestamps.end(); p++, i++) {

@@ -47,7 +47,7 @@ class PareEngine
   
   void setVerbose(bool v) {m_verbose=v;}
   void setPareWindow(double v) {m_pare_window=v;}
-  void pareFile();
+  void pareTheFile();
   void printReport();
 
  protected:
@@ -75,7 +75,8 @@ class PareEngine
   
   std::string m_alog_file_in;
   std::string m_alog_file_out;
-
+  std::string m_community_name;
+  
   double  m_pare_window;
   bool    m_verbose;
 };
