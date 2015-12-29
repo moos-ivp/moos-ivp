@@ -51,6 +51,8 @@ ProcessConfig = uFldCollisionDetect
 
 	near_miss_flag = ENCOUNTER_$UP_V1 = $CPA
 	near_miss_flag = ENCOUNTER_$UP_V2 = $CPA
+	collision_flag = ENCOUNTER_$UP_V1 = $CPA
+	collision_flag = ENCOUNTER_$UP_V2 = $CPA
 	
 	pulse_render   = true
 	pulse_range    = 20
@@ -113,8 +115,11 @@ ProcessConfig = uFldNodeComms
   AppTick       = 2
   CommsTick     = 2
 
-  comms_range      = 500
-  critical_range   = 25
+  comms_range      = 15
+  critical_range   = 15
+
+//  comms_range      = 500
+//  critical_range   = 25
 
   min_msg_interval = 15
   max_msg_length   = 1000
@@ -259,6 +264,7 @@ ProcessConfig = uProcessWatch
 
   nowatch = uXMS*
   nowatch = uPokeDB*
+  nowatch = uQueryDB*
 
   summary_wait = 12
 }

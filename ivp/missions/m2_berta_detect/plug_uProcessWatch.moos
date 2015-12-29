@@ -18,6 +18,7 @@ ProcessConfig = uProcessWatch
 
   nowatch = uXMS*
   nowatch = uPokeDB*
+  nowatch = uQueryDB*
 
   summary_wait = 12
 }
