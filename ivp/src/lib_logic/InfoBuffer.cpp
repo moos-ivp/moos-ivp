@@ -152,9 +152,9 @@ vector<double> InfoBuffer::dQueryDeltas(string var, bool& result) const
 //            posted as a string or a double, it is registered
 //            in the mapping from varname to timestamp.
               
-bool InfoBuffer::isKnown(string varname)
+bool InfoBuffer::isKnown(string varname) const
 {
-  map<string, double>::iterator p=tmap.find(varname);
+  map<string, double>::const_iterator p=tmap.find(varname);
   if(p != tmap.end())
     return(true);
 

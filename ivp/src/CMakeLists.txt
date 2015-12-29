@@ -205,6 +205,7 @@ SET(ROBOT_APPS
   uXMS
   uMAC
   uPokeDB
+  uQueryDB
   pHostInfo
   iSay
   )
