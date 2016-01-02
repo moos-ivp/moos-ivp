@@ -250,7 +250,7 @@ double PDMap::getMaxWT() const
 //              same dimension as the domain, and that its at
 //              least smaller than the domain.
 
-void PDMap::setGelBox(const IvPBox& b)
+bool PDMap::setGelBox(const IvPBox& b)
 {
   int udim = m_domain.size();
   int bdim = b.getDim();
@@ -283,10 +283,11 @@ void PDMap::setGelBox(const IvPBox& b)
       ok = ok && (b.pt(d,1) <= (int)(m_domain.getVarPoints(d)-1));
       cout << "  ok3:" << ok << endl;
     }
+    return(false);
   }
-  assert(ok);
 
   m_gelbox = b;
+  return(true);
 }
 
 //---------------------------------------------------------------------

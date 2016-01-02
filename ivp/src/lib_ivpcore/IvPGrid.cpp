@@ -565,10 +565,10 @@ string IvPGrid::getGridConfig() const
   ss << "dim=" << dim;
   
   for(int i=0; i<dim; i++)
-    ss << "sz[" << i << "]: " << PTS_PER_GEL[i];
+    ss << ", sz[" << i << "]:" << PTS_PER_GEL[i];
   for(int i=0; i<dim; i++)
-    ss << "amt[" << i << "]: " << GELS_PER_DIM[i];
-  ss << ",cells=" << total_grids;
+    ss << ", amt[" << i << "]:" << GELS_PER_DIM[i];
+  ss << ", cells=" << total_grids;
 
   return(ss.str());
 }

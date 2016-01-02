@@ -56,7 +56,7 @@ public:
   double    getMaxWT() const;
 
   void      updateGrid(bool BX=1, bool UB=1);
-  void      setGelBox(const IvPBox& box);
+  bool      setGelBox(const IvPBox& box);
   void      setGelBox();
   std::string getGridConfig() const;
   
