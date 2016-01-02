@@ -83,9 +83,11 @@ PDMap* RT_Uniform::create(const IvPBox* unifbox, const IvPBox* gelbox,
   }
   delete(boxset);
 
+  bool gridset = false;
   if(gelbox)
-    pdmap->setGelBox(*gelbox);
-  else
+    gridset = pdmap->setGelBox(*gelbox);
+  
+  if(!gridset)
     pdmap->setGelBox(*unifbox);
   
   int unifCount = pdmap->size();

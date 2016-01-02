@@ -442,8 +442,7 @@ bool OF_Reflector::setParam(string param, IvPBox gbox)
 //-------------------------------------------------------------
 // Procedure: create
 
-int OF_Reflector::create(int unif_amt, int smart_amt, 
-			 double smart_thresh)
+int OF_Reflector::create(int unif_amt, int smart_amt, double smart_thresh)
 {
   clearPDMap();
   if(!m_aof)
@@ -473,7 +472,11 @@ int OF_Reflector::create(int unif_amt, int smart_amt,
     uniform_piece = genUnifBox(m_domain, m_uniform_amount);
 
   // Now check that our local copy, however made, is not null
-  if(!uniform_piece.null())
+
+
+  if(!uniform_piece.null() && !m_uniform_grid.null())
+    m_pdmap = m_rt_uniform->create(&uniform_piece, &m_uniform_grid, m_pqueue);
+  else if(!uniform_piece.null())
     m_pdmap = m_rt_uniform->create(&uniform_piece, 0, m_pqueue);
   
   m_uniform_piece_str = "count:";
