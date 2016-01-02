@@ -10,24 +10,30 @@
 
 #include <string>
 #include "IvPProblem.h"
-#include "IvPProblem_v3.h"
  
 class PopulatorIPP
 {
 public:
-  PopulatorIPP() {m_ivp_problem=0;}
+  PopulatorIPP() {m_ivp_problem=0; m_grid_override_size=0;}
   ~PopulatorIPP() {}
   
   bool populate(std::string filename, int alg=0);
-  void setVerbose(bool v) {m_verbose=v;}
 
-  IvPProblem* getIvPProblem() {return(m_ivp_problem);}
+  void setVerbose(bool v)          {m_verbose=v;}
+  IvPProblem* getIvPProblem()      {return(m_ivp_problem);}
 
+  void setGridOverrideSize(int v)  {m_grid_override_size=v;}
+  
 protected:
   bool handleLine(std::string);
+  void overrideGrid(IvPFunction*);
+
   
 protected:
   IvPProblem* m_ivp_problem;
   bool        m_verbose;
+
+  int         m_grid_override_size;
+
 };
 #endif

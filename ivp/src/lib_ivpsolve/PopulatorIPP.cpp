@@ -12,6 +12,7 @@
 #include "MBUtils.h"
 #include "BuildUtils.h"
 #include "FunctionEncoder.h"
+#include "IvPProblem_v3.h"
 #include "FileBuffer.h"
 
 using namespace std;
@@ -64,7 +65,6 @@ bool PopulatorIPP::populate(string filename, int alg)
   return(true);
 }
 
-
 //-------------------------------------------------------------
 // Procedure: handleLine
 
@@ -91,8 +91,11 @@ bool PopulatorIPP::handleLine(string line)
   if(left == "ipf") {
     if(m_verbose)
       cout << "." << flush;
+
     IvPFunction *ipf = StringToIvPFunction(right);
     if(ipf) {
+      if(m_grid_override_size != 0)
+	overrideGrid(ipf);
       m_ivp_problem->addOF(ipf);
       return(true);
     }
@@ -102,3 +105,29 @@ bool PopulatorIPP::handleLine(string line)
 
   return(false);
 }
+
+
+//-------------------------------------------------------------
+// Procedure: overrideGrid()
+
+void PopulatorIPP::overrideGrid(IvPFunction* ipf)
+{
+  if((m_grid_override_size <= 0) || !ipf)
+    return;
+
+  int dim = ipf->getDim();
+  IvPBox gelbox(dim);
+  
+  for(int d=0; d<dim; d++) {
+    int gelsz = m_grid_override_size;
+    int domsz = ipf->getPDMap()->getDomain().getVarPoints(d);
+    if(gelsz > domsz)
+      gelsz = domsz;
+    
+    gelbox.setPTS(d, gelsz, gelsz);
+  }
+
+  ipf->getPDMap()->setGelBox(gelbox);
+  ipf->getPDMap()->updateGrid();
+}
+  
