@@ -1,0 +1,15 @@
+
+
+- A report on IvP Piecs
+
+  PCS_AVD_HENRY 3993
+  PCS_TOTAL     4432
+
+
+  IVPHELM_ITER_DELTA = 0.243
+
+aloghelm -d FOO.alog
+  iteration delta average
+  iteration delta standard deviation
+  iteration delta max
+  iteration delta max 10%
