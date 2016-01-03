@@ -328,7 +328,6 @@ double getLogStartFromFile(const string& filestr)
 
 //--------------------------------------------------------
 // Procedure: addVectorKey
-//     Notes: 
 
 void addVectorKey(vector<string>& v_keys, vector<bool>& v_pmatch,
 		  string key)
@@ -361,7 +360,6 @@ void addVectorKey(vector<string>& v_keys, vector<bool>& v_pmatch,
 
 //--------------------------------------------------------
 // Procedure: getNextRawLine
-//     Notes: 
 
 string getNextRawLine(FILE *fileptr)
 {
