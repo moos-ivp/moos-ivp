@@ -119,7 +119,9 @@ void PopulatorIPP::overrideGrid(IvPFunction* ipf)
   IvPBox gelbox(dim);
   
   for(int d=0; d<dim; d++) {
-    int gelsz = m_grid_override_size;
+    // Subtract 1: To get a 2D grid cell size of 10, for example, 
+    // we need a point box with both dimentions set to 9.
+    int gelsz = m_grid_override_size - 1;
     int domsz = ipf->getPDMap()->getDomain().getVarPoints(d);
     if(gelsz > domsz)
       gelsz = domsz;
