@@ -91,6 +91,7 @@ public:
   IvPBox       m_uniform_piece;
   IvPBox       m_uniform_grid;
   int          m_uniform_amount;
+  int          m_qlevels;
   int          m_smart_amount;
   int          m_smart_percent;
   double       m_smart_thresh;
@@ -106,19 +107,3 @@ public:
   std::string m_warnings;
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

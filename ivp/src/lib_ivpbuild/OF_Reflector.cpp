@@ -61,6 +61,7 @@ OF_Reflector::OF_Reflector(const AOF *g_aof, int g_degree)
   m_smart_percent  = 0;
   m_smart_thresh   = 0;
   m_auto_peak      = false;
+  m_qlevels        = 8;
 }
 
 //-------------------------------------------------------------
@@ -203,6 +204,18 @@ bool OF_Reflector::setParam(string param, string value)
       return(false);
     }
     m_uniform_amount = uniform_amount;
+  }
+  else if(param=="queue_levels") {
+    int queue_levels = atoi(value.c_str());
+    if(!isNumber(value)) {
+      addWarning(param + " value must be numerical");
+      return(false);
+    }
+    if(!isNumber(value) || (queue_levels < 1)) {
+      addWarning(param + " value must be >= 1");
+      return(false);
+    }
+    m_qlevels = queue_levels;
   }
   else if((param=="uniform_piece")||(param=="uniform_box")) {
     IvPBox foo = stringToPointBox(value, m_domain, ',', ':');
@@ -460,7 +473,7 @@ int OF_Reflector::create(int unif_amt, int smart_amt, double smart_thresh)
   // If no piece specified, base it on specified amount, default=1.
   int qlevels = 0;
   if((m_smart_amount > 0) || (m_smart_percent > 0))
-    qlevels = 8;
+    qlevels = m_qlevels;
   
   PQueue pqueue(qlevels);
   m_pqueue = pqueue;
