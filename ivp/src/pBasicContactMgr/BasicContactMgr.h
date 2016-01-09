@@ -56,8 +56,9 @@ class BasicContactMgr : public AppCastingMOOSApp
 
   void updateRanges();
   void postSummaries();
-  bool postAlerts();
+  bool checkForAlerts();
   void postRadii(bool=true);
+  void postAlert(NodeRecord, std::string);
 
   double      getAlertRange(const std::string& alert_id) const;
   double      getAlertRangeCPA(const std::string& alert_id) const;
@@ -66,7 +67,7 @@ class BasicContactMgr : public AppCastingMOOSApp
 
  protected: // Configuration parameters
 
-  // Main Record #1: The Alerts
+  // Main Record #1: The Alerts, each keyed on the alert_id
   std::map<std::string, std::string> m_map_alert_varname;
   std::map<std::string, std::string> m_map_alert_pattern;
   std::map<std::string, double>      m_map_alert_rng;
@@ -97,11 +98,9 @@ class BasicContactMgr : public AppCastingMOOSApp
 
   // Main Record #2: The Vehicles (contacts) and position info
   std::map<std::string, NodeRecord>   m_map_node_records;
-  std::map<std::string, double>       m_map_node_ranges;
   std::map<std::string, unsigned int> m_map_node_alerts_total;
   std::map<std::string, unsigned int> m_map_node_alerts_active;
   std::map<std::string, unsigned int> m_map_node_alerts_resolved;
-  // Calculated for verbose purposes
   std::map<std::string, double>       m_map_node_ranges_actual;
   std::map<std::string, double>       m_map_node_ranges_extrap;
   std::map<std::string, double>       m_map_node_ranges_cpa;

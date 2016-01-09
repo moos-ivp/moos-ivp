@@ -132,7 +132,7 @@ bool BasicContactMgr::Iterate()
 
   updateRanges();
   postSummaries();
-  postAlerts();
+  checkForAlerts();
 
   if(m_display_radii)
     postRadii();
@@ -361,7 +361,6 @@ void BasicContactMgr::handleMailNodeReport(const string& report)
   m_map_node_records[vname] = new_node_record;
   
   if(newly_known_vehicle) {
-    m_map_node_ranges[vname] = 0;
     m_map_node_alerts_total[vname]    = 0;
     m_map_node_alerts_active[vname]   = 0;
     m_map_node_alerts_resolved[vname] = 0;
@@ -525,7 +524,7 @@ void BasicContactMgr::postSummaries()
       contacts_retired += contact_name;
     }    
     else { // Else if not retired
-      double range = m_map_node_ranges[contact_name];
+      double range = m_map_node_ranges_actual[contact_name];
       if(contacts_recap != "")
 	contacts_recap += " # ";
       contacts_recap += "vname=" + contact_name;
@@ -567,108 +566,135 @@ void BasicContactMgr::postSummaries()
 
 
 //---------------------------------------------------------
-// Procedure: postAlerts
+// Procedure: checkForAlerts
 
-bool BasicContactMgr::postAlerts()
+bool BasicContactMgr::checkForAlerts()
 {
   bool new_alerts = false;
 
+  //==============================================================
+  // For each contact, check all alerts
+  //==============================================================
   map<string, NodeRecord>::iterator p;
   for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
     string     contact_name  = p->first;
     NodeRecord node_record   = p->second;
-    double     contact_range = m_map_node_ranges[contact_name];
-    double     age = m_curr_time - node_record.getTimeStamp();
     string     contact_type  = tolower(node_record.getType());
+
+    // Skip this contact if age of node record exceeds max age
+    double age = m_curr_time - node_record.getTimeStamp();
+    if(age > m_contact_max_age)
+      continue;
+
+    double  contact_range_abs = m_map_node_ranges_actual[contact_name]; // new
+    double  contact_range_cpa = m_map_node_ranges_cpa[contact_name];    // new
     
-    // For each alert_id
+    //==============================================================
+    // For each alert_id, check if alert should be posted for this contact
+    //==============================================================
     map<string,string>::iterator q;
     for(q=m_map_alert_varname.begin(); q!=m_map_alert_varname.end(); q++) {
       string alert_id = q->first;
+
+      // Skip if alert already posted for this contact and alert_id
+      bool already_alerted = m_par.getValue(contact_name, alert_id);
+      if(already_alerted)
+	continue;
+
+      // Skip if this alertid has contact type and doesn't mach vehicle type
       string alert_contact_type = m_map_alert_contact_type[alert_id];
-      bool contact_match = true;
       if((alert_contact_type != "") && (alert_contact_type != contact_type))
-	contact_match = false;
-      bool alerted = m_par.getValue(contact_name, alert_id);
-      if(!alerted && contact_match) {
-	double alert_range     = getAlertRange(alert_id);
-	double alert_range_cpa = getAlertRangeCPA(alert_id);
-	if((age <= m_contact_max_age) && (contact_range <= alert_range)) {
-	  new_alerts = true;
+	continue;
 
-	  string x_str    = node_record.getStringValue("x");
-	  string y_str    = node_record.getStringValue("y");
-	  string lat_str  = node_record.getStringValue("lat");
-	  string lon_str  = node_record.getStringValue("lon");
-	  string spd_str  = node_record.getStringValue("speed");
-	  string hdg_str  = node_record.getStringValue("heading");
-	  string dep_str  = node_record.getStringValue("depth");
-	  string time_str = node_record.getStringValue("time");
-	  string name_str = node_record.getName();
-	  string type_str = node_record.getType();
-	  
-	  string var = m_map_alert_varname[alert_id];
-	  string msg = m_map_alert_pattern[alert_id];
-	  var = findReplace(var, "$[X]", x_str);
-	  var = findReplace(var, "$[Y]", y_str);
-	  var = findReplace(var, "$[LAT]", lat_str);
-	  var = findReplace(var, "$[LON]", lon_str);
-	  var = findReplace(var, "$[SPD}", spd_str);
-	  var = findReplace(var, "$[HDG]", hdg_str);
-	  var = findReplace(var, "$[DEP]", dep_str);
-	  var = findReplace(var, "$[VNAME]", name_str);
-	  var = findReplace(var, "$[VTYPE]", type_str);
-	  var = findReplace(var, "$[UTIME]", time_str);
-	  var = findReplace(var, "%[VNAME]", tolower(name_str));
-	  var = findReplace(var, "%[VTYPE]", tolower(type_str));
-
-	  msg = findReplace(msg, "$[X]", x_str);
-	  msg = findReplace(msg, "$[Y]", y_str);
-	  msg = findReplace(msg, "$[LAT]", lat_str);
-	  msg = findReplace(msg, "$[LON]", lon_str);
-	  msg = findReplace(msg, "$[SPD}", spd_str);
-	  msg = findReplace(msg, "$[HDG]", hdg_str);
-	  msg = findReplace(msg, "$[DEP]", dep_str);
-	  msg = findReplace(msg, "$[VNAME]", name_str);
-	  msg = findReplace(msg, "$[VTYPE]", type_str);
-	  msg = findReplace(msg, "$[UTIME]", time_str);
-	  msg = findReplace(msg, "%[VNAME]", tolower(name_str));
-	  msg = findReplace(msg, "%[VTYPE]", tolower(type_str));
-
-	  Notify(var, msg);
-	  m_par.setValue(contact_name, alert_id, true);
-	  reportEvent(var + "=" + msg);
-
-
-	  if(m_alert_verbose) {
-	    string mvar = "ALERT_VERBOSE";
-	    string mval = "contact=" + contact_name;
-	    mval += ",config_alert_range=" + doubleToString(alert_range,1);
-
-	    mval += ",config_alert_range_cpa=" + doubleToString(alert_range_cpa,1);
-
-	    mval += ",range_used=" + doubleToString(contact_range,1);
-
-	    double range_actual = m_map_node_ranges_actual[contact_name];
-	    mval += ",range_actual=" + doubleToString(range_actual,1);
-
-	    double range_extrap = m_map_node_ranges_actual[contact_name];
-	    mval += ",range_extrap=" + doubleToString(range_extrap,1);
-
-	    double range_cpa = m_map_node_ranges_cpa[contact_name];
-	    mval += ",range_cpa=" + doubleToString(range_cpa,1);
-
-	    Notify(mvar, mval);
-	  }
-
-	  m_map_node_alerts_total[contact_name]++;
-	  m_map_node_alerts_active[contact_name]++;
-	}
+      // Apply the range circles!!!
+      // Skip if absolute range beyond outer range circle (alert_range_cpa)
+      double alert_range_cpa = getAlertRangeCPA(alert_id);
+      if(contact_range_abs > alert_range_cpa)
+	continue;
+      // Skip if absolute range within outer range circle (alert_range_cpa)
+      // and beyond inner range circle (alert_range), but contact's projected
+      // cpa range is greater than the inner range circle (alert_range).
+      double alert_range = getAlertRange(alert_id);
+      if((contact_range_abs > alert_range) && (contact_range_cpa > alert_range))
+	continue;
+      
+      // NEW ALERT SHOULD BE POSTED (survived all the skip conditions)
+      new_alerts = true;
+      postAlert(node_record, alert_id);
+	
+      m_par.setValue(contact_name, alert_id, true);
+      
+      if(m_alert_verbose) {
+	string mvar = "ALERT_VERBOSE";
+	string mval = "contact=" + contact_name;
+	mval += ",config_alert_range=" + doubleToString(alert_range,1);
+	mval += ",config_alert_range_cpa=" + doubleToString(alert_range_cpa,1);
+	
+	double range_actual = m_map_node_ranges_actual[contact_name];
+	double range_extrap = m_map_node_ranges_actual[contact_name];
+	double range_cpa = m_map_node_ranges_cpa[contact_name];
+	mval += ",range_actual=" + doubleToString(range_actual,1);	
+	mval += ",range_extrap=" + doubleToString(range_extrap,1);
+	mval += ",range_cpa=" + doubleToString(range_cpa,1);
+	
+	Notify(mvar, mval);
       }
+      
+      m_map_node_alerts_total[contact_name]++;
+      m_map_node_alerts_active[contact_name]++;
     }
   }
 
   return(new_alerts);
+}
+
+//----------------------------------------------------------------
+// Procedure: postAlert
+
+void BasicContactMgr::postAlert(NodeRecord record, string alert_id)
+{
+  string x_str    = record.getStringValue("x");
+  string y_str    = record.getStringValue("y");
+  string lat_str  = record.getStringValue("lat");
+  string lon_str  = record.getStringValue("lon");
+  string spd_str  = record.getStringValue("speed");
+  string hdg_str  = record.getStringValue("heading");
+  string dep_str  = record.getStringValue("depth");
+  string time_str = record.getStringValue("time");
+  string name_str = record.getName();
+  string type_str = record.getType();
+  
+  string var = m_map_alert_varname[alert_id];
+  string msg = m_map_alert_pattern[alert_id];
+
+  var = findReplace(var, "$[X]", x_str);
+  var = findReplace(var, "$[Y]", y_str);
+  var = findReplace(var, "$[LAT]", lat_str);
+  var = findReplace(var, "$[LON]", lon_str);
+  var = findReplace(var, "$[SPD}", spd_str);
+  var = findReplace(var, "$[HDG]", hdg_str);
+  var = findReplace(var, "$[DEP]", dep_str);
+  var = findReplace(var, "$[VNAME]", name_str);
+  var = findReplace(var, "$[VTYPE]", type_str);
+  var = findReplace(var, "$[UTIME]", time_str);
+  var = findReplace(var, "%[VNAME]", tolower(name_str));
+  var = findReplace(var, "%[VTYPE]", tolower(type_str));
+  
+  msg = findReplace(msg, "$[X]", x_str);
+  msg = findReplace(msg, "$[Y]", y_str);
+  msg = findReplace(msg, "$[LAT]", lat_str);
+  msg = findReplace(msg, "$[LON]", lon_str);
+  msg = findReplace(msg, "$[SPD}", spd_str);
+  msg = findReplace(msg, "$[HDG]", hdg_str);
+  msg = findReplace(msg, "$[DEP]", dep_str);
+  msg = findReplace(msg, "$[VNAME]", name_str);
+  msg = findReplace(msg, "$[VTYPE]", type_str);
+  msg = findReplace(msg, "$[UTIME]", time_str);
+  msg = findReplace(msg, "%[VNAME]", tolower(name_str));
+  msg = findReplace(msg, "%[VTYPE]", tolower(type_str));
+
+  Notify(var, msg);
+  reportEvent(var + "=" + msg);
 }
 
 //---------------------------------------------------------
@@ -713,34 +739,12 @@ void BasicContactMgr::updateRanges()
     }
     m_map_node_ranges_extrap[vname] = range_extrap;
 
-    //XYPoint point_mb(cnx, cny);
-    //point_mb.set_label(node_record.getName() + "xpt_mb");
-    //m_Comms.Notify("VIEW_POINT", point_mb.get_spec());
-
     // #3 Determine and store the cpa range between ownship and the
     // contact position determined by the contact's extrapolated position
     // and it's last known heading and speed.
     CPAEngine engine(cny, cnx, cnh, cns, m_nav_y, m_nav_x);      
     double range_cpa = engine.evalCPA(m_nav_hdg, m_nav_spd, alert_range_cpa_time);
     m_map_node_ranges_cpa[vname] = range_cpa;
-    
-    // Now we have set:
-    //   1. m_map_node_ranges_actual[vname]  (range_actual)
-    //   2. m_map_node_ranges_extrap[vname]  (range_extrap)
-    //   3. m_map_node_ranges_cpa[vname]     (range_cpa)
-    // We just need to decide which one to use for the purposes of 
-    // determining whether an alert should be generated.
-
-    // If the extrapolated (non-cpa) range exceeds the minimum threshold, 
-    // but is less than the alert_cpa threshold, calculate the CPA and 
-    // uses this as the range instead. 
-
-    double alert_range = getAlertRange(vname);          // min threshold
-    double alert_range_cpa = getAlertRangeCPA(vname);   // cpa threshold
-
-    m_map_node_ranges[vname] = range_extrap;
-    if((range_extrap > alert_range) && (range_extrap < alert_range_cpa)) 
-      m_map_node_ranges[vname] = range_cpa;
   }
 }
 
@@ -862,14 +866,14 @@ bool BasicContactMgr::buildReport()
 
   ACTable actab(5,5);
   actab.setColumnJustify(1, "right");
-  actab << "Contact | Range | Alerts  | Alerts | Alerts   ";
-  actab << "        |       | Total   | Active | Resolved ";
+  actab << "Contact | Range  | Alerts  | Alerts | Alerts   ";
+  actab << "        | Actual | Total   | Active | Resolved ";
   actab.addHeaderLines();
 
   map<string, NodeRecord>::iterator q;
   for(q=m_map_node_records.begin(); q!=m_map_node_records.end(); q++) {
     string vname = q->first;
-    string range = doubleToString(m_map_node_ranges[vname], 1);
+    string range = doubleToString(m_map_node_ranges_actual[vname], 1);
     string alerts_total  = uintToString(m_map_node_alerts_total[vname]);
     string alerts_active = uintToString(m_map_node_alerts_active[vname]);
     string alerts_resolved = uintToString(m_map_node_alerts_resolved[vname]);
