@@ -23,8 +23,10 @@ Processconfig = ANTLER
   Run = pHostInfo        @ NewConsole = false
   Run = uFldNodeBroker   @ NewConsole = false
   Run = uLoadWatch       @ NewConsole = false
+  Run = pEvalLoiter      @ NewConsole = false
 }
 
+#include plug_pEvalLoiter.moos
 #include plug_uFldNodeBroker.moos
 #include plug_pShare.moos
 #include plug_pHostInfo.moos

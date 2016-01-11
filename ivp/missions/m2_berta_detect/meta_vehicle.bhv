@@ -123,7 +123,7 @@ Behavior = BHV_AvoidCollision
 
         pwt_outer_dist = 20
         pwt_inner_dist = 10
-        completed_dist = 100
+        completed_dist = 40
      min_util_cpa_dist = 8
      max_util_cpa_dist = 15
              pwt_grade = linear
