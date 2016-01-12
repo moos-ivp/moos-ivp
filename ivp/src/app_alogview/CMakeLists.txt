@@ -33,6 +33,7 @@ SET(SRC
   Populator_VPlugPlots.cpp
   Populator_HelmPlots.cpp
   Populator_IPF_Plot.cpp
+  Populator_EncounterPlot.cpp
   IPF_Plot.cpp
   HelmPlot.cpp
   ModelHelmScope.cpp
