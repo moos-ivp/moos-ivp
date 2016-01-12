@@ -14,6 +14,7 @@
 #include "LogPlot.h"
 #include "VarPlot.h"
 #include "HelmPlot.h"
+#include "EncounterPlot.h"
 #include "VPlugPlot.h"
 #include "IPF_Plot.h"
 
@@ -31,11 +32,12 @@ class ALogDataBroker
   void cacheMasterIndices();
   void cacheBehaviorIndices();
 
-  LogPlot   getLogPlot(unsigned int mix);
-  VarPlot   getVarPlot(unsigned int mix, bool src=false);
-  HelmPlot  getHelmPlot(unsigned int aix);
-  VPlugPlot getVPlugPlot(unsigned int aix);
-  IPF_Plot  getIPFPlot(unsigned int aix, std::string bhv);
+  LogPlot      getLogPlot(unsigned int mix);
+  VarPlot      getVarPlot(unsigned int mix, bool src=false);
+  EncounterPlot getEncounterPlot(unsigned int aix);
+  HelmPlot     getHelmPlot(unsigned int aix);
+  VPlugPlot    getVPlugPlot(unsigned int aix);
+  IPF_Plot     getIPFPlot(unsigned int aix, std::string bhv);
 
   unsigned int sizeALogs() const {return(m_alog_files.size());}
   unsigned int sizeMix() const   {return(m_mix_vname.size());}

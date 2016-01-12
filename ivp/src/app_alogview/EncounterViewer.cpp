@@ -116,114 +116,9 @@ void EncounterViewer::setDataBroker(ALogDataBroker dbroker, string vname)
 {
   m_dbroker = dbroker;
   m_vname   = vname;
-}
 
-//-------------------------------------------------------------
-// Procedure: setVarPlotA()
-
-void EncounterViewer::setVarPlotA(unsigned int mix)
-{
-  if(mix < m_dbroker.sizeMix()) {
-    m_map_scope_var_a[m_source] = m_dbroker.getVarPlot(mix);
-    updateScope();
-  }
-}
-
-//-------------------------------------------------------------
-// Procedure: clearVarPlotA()
-
-void EncounterViewer::clearVarPlotA()
-{
-  VarPlot null_plot;
-  m_map_scope_var_a[m_source] = null_plot;
-  updateScope();
-}
-
-//-------------------------------------------------------------
-// Procedure: setVarPlotB()
-
-void EncounterViewer::setVarPlotB(unsigned int mix)
-{
-  if(mix < m_dbroker.sizeMix()) {
-    m_map_scope_var_b[m_source] = m_dbroker.getVarPlot(mix);
-    updateScope();
-  }
-}
-
-//-------------------------------------------------------------
-// Procedure: clearVarPlotB()
-
-void EncounterViewer::clearVarPlotB()
-{
-  VarPlot null_plot;
-  m_map_scope_var_b[m_source] = null_plot;
-  updateScope();
-}
-
-//-------------------------------------------------------------
-// Procedure: setBix
-
-void EncounterViewer::setBix(unsigned int bix)
-{
-  if(bix == 4900) 
-    m_source = "collective-hdgspd";
-  else if(bix == 4901) 
-    m_source = "collective-depth";
-  else {
-    string bname = m_dbroker.getBNameFromBix(bix);
-    m_source = bname;
-  }
-  updateIPF();
-}
-
-
-//-------------------------------------------------------------
-// Procedure: setIPF_Plots
-
-void EncounterViewer::setIPF_Plots(vector<string> bhv_names)
-{
-  for(unsigned int i=0; i<bhv_names.size(); i++) {
-    string bname = bhv_names[i];
-    unsigned int aix = m_dbroker.getAixFromVName(m_vname);
-    IPF_Plot iplot = m_dbroker.getIPFPlot(aix, bname);
-    if(iplot.size() > 0)
-      addIPF_Plot(iplot);
-    else
-      cout << "Warning: Broker returned empty IPF_Plot." << endl;
-  }
-}
-
-//-------------------------------------------------------------
-// Procedure: setHelmIterPlot
-
-void EncounterViewer::setHelmIterPlot()
-{
-  if(m_vname == "")
-    return;
-  
-  unsigned int mix = m_dbroker.getMixFromVNameVarName(m_vname, "IVPHELM_ITER");
-
-  m_iter_plot = m_dbroker.getLogPlot(mix);
-}
-
-//-------------------------------------------------------------
-// Procedure: addIPF_Plot
-//      Note: A local copy of the given IPF_Plot is created here.
-
-void EncounterViewer::addIPF_Plot(const IPF_Plot& g_ipf_plot)
-{
-  string ipf_source = g_ipf_plot.getSource();
-  string ipf_vname  = g_ipf_plot.getVName();
-
-  if(m_vname != ipf_vname) {
-    cout << "name_mismatch" << endl;
-    cout << "m_vname: " << m_vname << ", ipf_vname: [" << ipf_vname << "]" << endl;
-    return;
-  }
-
-  m_map_ipf_plots[ipf_source] = g_ipf_plot;
-  if(m_source == "")
-    m_source = ipf_source;
+  unsigned int aix = dbroker.getAixFromVName(vname);
+  m_encounter_plot = dbroker.getEncounterPlot(aix);
 }
 
 //-------------------------------------------------------------
@@ -232,10 +127,10 @@ void EncounterViewer::addIPF_Plot(const IPF_Plot& g_ipf_plot)
 void EncounterViewer::setTime(double time)
 {
   m_curr_time = time;
-  m_curr_iter = (unsigned int)(m_iter_plot.getValueByTime(m_curr_time));  
-  updateIPF();
 
-  updateScope();
+  //updateIPF();
+
+  //updateScope();
 }
 
 
@@ -244,14 +139,6 @@ void EncounterViewer::setTime(double time)
 
 void EncounterViewer::updateScope()
 {
-  m_scope_a = "";
-  m_scope_b = "";
-
-  if(m_map_scope_var_a.count(m_source))
-    m_scope_a = m_map_scope_var_a[m_source].getEntryByTime(m_curr_time);
-
-  if(m_map_scope_var_b.count(m_source))
-    m_scope_b = m_map_scope_var_b[m_source].getEntryByTime(m_curr_time);
 }
 
 
@@ -260,10 +147,6 @@ void EncounterViewer::updateScope()
 
 void EncounterViewer::setSource(string source)
 {
-  if(m_map_ipf_plots.count(source) || strBegins(source, "collective"))
-    m_source = source;
-  updateIPF();
-  updateScope();
 }
 
 

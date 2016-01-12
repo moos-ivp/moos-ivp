@@ -546,6 +546,27 @@ void REPLAY_GUI::cb_RightLogPlot(Fl_Widget* o, int v) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_RightLogPlot_i(val);
 }
 
+//----------------------------------------- cb_Encounter
+inline void REPLAY_GUI::cb_Encounter_i(int mix) {
+  string vname = m_dbroker.getVNameFromMix(mix);
+  if(vname == "")
+    return;
+
+  double curr_time = np_viewer->getCurrTime();
+  GUI_Encounters *engui = new GUI_Encounters(550,300, vname.c_str());   
+  engui->setDataBroker(m_dbroker, vname);
+  engui->setParentGUI(this);
+  engui->setCurrTime(curr_time);
+
+  m_sub_guis_e.push_front(engui);
+  
+  updateXY();
+}
+void REPLAY_GUI::cb_Encounter(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_Encounter_i(val);
+}
+
 //----------------------------------------- VarHist
 inline void REPLAY_GUI::cb_VarHist_i(int mix) {
   string vname = m_dbroker.getVNameFromMix(mix);
@@ -559,7 +580,6 @@ inline void REPLAY_GUI::cb_VarHist_i(int mix) {
   vpgui->setDataBroker(m_dbroker, mix);
   vpgui->setParentGUI(this);
   vpgui->setCurrTime(curr_time);
-
 
   m_sub_guis_v.push_front(vpgui);
   updateXY();
@@ -810,6 +830,7 @@ void REPLAY_GUI::setDataBroker(ALogDataBroker broker)
   m_dbroker = broker;
   setLogPlotMenus();
   setIPFPlotMenus();
+  setEncounterPlotMenus();
   setHelmPlotMenus();
   setVarHistMenus();
 
@@ -896,6 +917,27 @@ void REPLAY_GUI::setIPFPlotMenus()
     
     m_menubar->add(label.c_str(), 0, 
 		   (Fl_Callback*)REPLAY_GUI::cb_IPF_GUI, (void*)ix);
+    m_menubar->redraw();
+  }
+}
+
+//----------------------------------------------------------
+// Procedure: setEncounterPlotMenus
+
+void REPLAY_GUI::setEncounterPlotMenus()
+{
+  unsigned int aix_count = m_dbroker.sizeALogs();
+
+  for(unsigned int aix=0; aix<aix_count; aix++) {
+    string vname = m_dbroker.getVNameFromAix(aix);
+
+    // Use special unsigned int type having same size a pointer (void*)
+    uintptr_t ix = aix;
+
+    string label = "Encounters/" + vname;
+    
+    m_menubar->add(label.c_str(), 0, 
+		   (Fl_Callback*)REPLAY_GUI::cb_Encounter, (void*)ix);
     m_menubar->redraw();
   }
 }
@@ -999,6 +1041,12 @@ void REPLAY_GUI::updateTimeSubGUI()
   list<GUI_VarScope*>::iterator p3;
   for(p3=m_sub_guis_v.begin(); p3!=m_sub_guis_v.end(); p3++) {
     GUI_VarScope *sub_gui = *p3;
+    sub_gui->setCurrTime(curr_time);
+    sub_gui->setReplayWarpMsg(m_replay_warp_msg);
+  }
+  list<GUI_Encounters*>::iterator p4;
+  for(p4=m_sub_guis_e.begin(); p4!=m_sub_guis_e.end(); p4++) {
+    GUI_Encounters *sub_gui = *p4;
     sub_gui->setCurrTime(curr_time);
     sub_gui->setReplayWarpMsg(m_replay_warp_msg);
   }

@@ -35,6 +35,7 @@
 #include "ALogDataBroker.h"
 #include "IPF_Plot.h"
 #include "LogPlot.h"
+#include "EncounterPlot.h"
 #include "ColorPack.h"
 
 class EncounterViewer : public Fl_Gl_Window
@@ -49,7 +50,7 @@ class EncounterViewer : public Fl_Gl_Window
 
  public: // Setters
   void   setDataBroker(ALogDataBroker, std::string vname);
-  void   setIPF_Plots(std::vector<std::string> bhv_names);
+  void   setEncounterPlot(std::string vname);
   void   setHelmIterPlot();
   void   setBix(unsigned int bix);
   void   setVarPlotA(unsigned int mix);
@@ -86,17 +87,9 @@ private:
   int            m_mutable_text_size;
 
   // Vehicle name stays constant once it is set initially
-  std::string m_vname; 
+  std::string   m_vname; 
 
-  // Source may change as user selects different options
-  std::string m_source;
-
-  LogPlot     m_iter_plot;
-  VarPlot     m_var_plot_a;
-  VarPlot     m_var_plot_b;
-
-  std::string m_scope_a;
-  std::string m_scope_b;
+  EncounterPlot m_encounter_plot;
 
   // Map from a behavior (source) to: IPF_TPlot, scopvars
   std::map<std::string, IPF_Plot> m_map_ipf_plots;

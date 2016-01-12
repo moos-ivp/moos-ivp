@@ -325,7 +325,7 @@ void GUI_Encounters::setDataBroker(ALogDataBroker dbroker, string vname)
     return;
 
   m_eviewer->setDataBroker(m_dbroker, vname);
-  //m_eviewer->setIPF_Plots(m_sources);
+  //m_eviewer->setEncounterPlots(m_sources);
   //m_eviewer->setHelmIterPlot();
 
   initSourceSelection();

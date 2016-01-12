@@ -39,6 +39,7 @@
 #include "GUI_IPF.h"
 #include "GUI_HelmScope.h"
 #include "GUI_VarScope.h"
+#include "GUI_Encounters.h"
 #include "ALogDataBroker.h"
 
 class REPLAY_GUI : public MarineVehiGUI {
@@ -56,6 +57,7 @@ class REPLAY_GUI : public MarineVehiGUI {
   void   initLogPlotChoiceB(std::string vname, std::string varname);
 
   void   setIPFPlotMenus();
+  void   setEncounterPlotMenus();
   void   setHelmPlotMenus();
 
   void   conditionalStep();
@@ -111,6 +113,9 @@ class REPLAY_GUI : public MarineVehiGUI {
   inline void cb_VarHist_i(int);
   static void cb_VarHist(Fl_Widget*, int);
 
+  inline void cb_Encounter_i(int);
+  static void cb_Encounter(Fl_Widget*, int);
+
   inline void cb_IPF_GUI_i(int);
   static void cb_IPF_GUI(Fl_Widget*, int);
 
@@ -136,9 +141,10 @@ class REPLAY_GUI : public MarineVehiGUI {
   NavPlotViewer *np_viewer;
   LogPlotViewer *lp_viewer;
   
-  std::list<GUI_IPF*>       m_sub_guis;
-  std::list<GUI_HelmScope*> m_sub_guis_h;
-  std::list<GUI_VarScope*>  m_sub_guis_v;
+  std::list<GUI_IPF*>        m_sub_guis;
+  std::list<GUI_HelmScope*>  m_sub_guis_h;
+  std::list<GUI_VarScope*>   m_sub_guis_v;
+  std::list<GUI_Encounters*> m_sub_guis_e;
 
  protected:
   ALogDataBroker m_dbroker;

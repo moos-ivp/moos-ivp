@@ -15,6 +15,7 @@
 #include "Populator_VPlugPlots.h"
 #include "Populator_HelmPlots.h"
 #include "Populator_IPF_Plot.h"
+#include "Populator_EncounterPlot.h"
 
 using namespace std;
 
@@ -662,6 +663,61 @@ HelmPlot ALogDataBroker::getHelmPlot(unsigned int aix)
   //hplot.applySkew(m_logskew[aix]);
 
   return(hplot);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: getEncounterPlot
+//      Note: aix is the index into the vector of alog files
+
+EncounterPlot ALogDataBroker::getEncounterPlot(unsigned int aix)
+{
+  EncounterPlot eplot;
+  
+  // Part 1: Sanity check the master index
+  if(aix >= m_alog_files.size()) {
+    cout << "Could not create EncounterPlot for ALog Index: " << aix << endl;
+    return(eplot);
+  }
+
+  // Part 2: Confirm that the EVAL_LOITER_SUMMARY.klog file can be found and opened
+  string klog = m_base_dirs[aix] + "/EVAL_LOITER_SUMMARY.klog";
+  FILE *f = fopen(klog.c_str(), "r");
+  if(!f) {
+    cout << "Could not create EncounterPlot from " << klog << endl;
+    return(eplot);
+  }
+  
+  // Part 3: Populate the HelmPlots
+  Populator_EncounterPlot populator;
+
+  vector<ALogEntry> entries;
+  bool done = false;
+  while(!done) {
+    ALogEntry entry = getNextRawALogEntry(f, true);
+
+    // Check if the line is a comment
+    if(entry.getStatus() == "invalid")
+      continue;
+    // Check for end of file
+    if(entry.getStatus() == "eof") 
+      break;
+
+    double tstamp = entry.getTimeStamp();
+    if(tstamp < m_pruned_logtmin)
+      continue;
+    if(tstamp > m_pruned_logtmax)
+      break;
+
+    entries.push_back(entry);
+  }
+
+  populator.populateFromEntries(entries);
+  eplot = populator.getEncounterPlot();
+
+  //hplot.applySkew(m_logskew[aix]);
+
+  return(eplot);
 }
 
 
