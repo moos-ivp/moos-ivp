@@ -97,6 +97,7 @@ SET(IVP_NON_GUI_LIBS
    lib_ivpcore
    lib_ivpsolve
    lib_logic
+   lib_encounters
    lib_apputil
    lib_contacts
    lib_ufield
@@ -231,7 +232,7 @@ SET(IVP_NON_GUI_APPS
   app_gen_hazards
   app_bhv2graphviz
   pXRelay
-#  uFldCollisionDetect
+  uFldCollisionDetect
   uFldPathCheck
   uFldShoreBroker
   uFldScope

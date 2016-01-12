@@ -629,10 +629,7 @@ void BHV_Loiter::postConfigStatus()
   str += ",desired_speed=" + doubleToString(m_desired_speed,1);
 
   string poly_str = m_loiter_engine.getPolygon().get_spec();
-  str += ",polygon=" + poly_str;
+  str += ",polygon=\"" + poly_str + "\"";
 
   postRepeatableMessage("BHV_SETTINGS", str);
 }
-
-
-

@@ -17,7 +17,6 @@ SET(SRC
   CollisionDetector.cpp
   CollisionDetector_Info.cpp
   CPAMonitor.cpp
-  CPAEvent.cpp
   main.cpp
 )
  
@@ -28,9 +27,8 @@ TARGET_LINK_LIBRARIES(uFldCollisionDetect
    apputil
    mbutil
    ufield
+   encounters
    geometry
-   m
-   pthread
    logic
    contacts
    ${SYSTEM_LIBS}
