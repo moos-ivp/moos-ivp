@@ -60,11 +60,8 @@ public:
   void  initWidgets();
   void  resizeWidgetsShape();
   void  resizeWidgetsText();
-  void  initSourceSelection();
-  void  initMenuVarButtons();
 
   void  updateXY();
-  void  updateBrowser();
   void  updateMutableTextSize(std::string);
   void  toggleFullScreen();
 
@@ -76,26 +73,8 @@ public:
 
   void cb_Zoom_i(int);
 
-  inline void cb_ToggleSet_i();
-  static void cb_ToggleSet(Fl_Widget*);
-
-  inline void cb_TogglePin_i();
-  static void cb_TogglePin(Fl_Widget*);
-
   inline void cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
-
-  inline void cb_SelectSource_i();
-  static void cb_SelectSource(Fl_Widget*);
-
-  inline void cb_SelectCollective_i(int);
-  static void cb_SelectCollective(Fl_Widget*, int);
-
-  inline void cb_ButtonAddVarA_i(int);
-  static void cb_ButtonAddVarA(Fl_Widget*, int);
-
-  inline void cb_ButtonAddVarB_i(int);
-  static void cb_ButtonAddVarB(Fl_Widget*, int);
 
 public:
   EncounterViewer *m_eviewer;
@@ -103,20 +82,8 @@ public:
   ALogDataBroker   m_dbroker;
   
 protected:
-  Fl_Hold_Browser *m_brw_bhvs;
-
   Fl_Output   *m_fld_loc_time;
   Fl_Output   *m_fld_ipf_iter;
-  Fl_Output   *m_fld_ipf_pcs;
-  Fl_Output   *m_fld_ipf_dom;
-  Fl_Button   *m_but_ipf_set;
-  Fl_Button   *m_but_ipf_pin;
-
-  Fl_Menu_Button  *m_but_addvar_a;
-  Fl_Menu_Button  *m_but_addvar_b;
-
-  Fl_Check_Button *m_but_collective;
-  Fl_Check_Button *m_but_collective_dep;
 
   std::vector<std::string> m_sources;
 

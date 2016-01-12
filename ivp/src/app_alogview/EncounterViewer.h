@@ -24,17 +24,13 @@
 #ifndef ENCOUNTER_VIEWER_HEADER
 #define ENCOUNTER_VIEWER_HEADER
 
-#include <map>
 #include <vector>
 #include <string>
 #include "FL/Fl.H"
 #include "FL/Fl_Gl_Window.H"
 #include "FL/gl.h"
 #include "FL/fl_draw.H"
-#include "Common_IPFViewer.h"
 #include "ALogDataBroker.h"
-#include "IPF_Plot.h"
-#include "LogPlot.h"
 #include "EncounterPlot.h"
 #include "ColorPack.h"
 
@@ -51,38 +47,19 @@ class EncounterViewer : public Fl_Gl_Window
  public: // Setters
   void   setDataBroker(ALogDataBroker, std::string vname);
   void   setEncounterPlot(std::string vname);
-  void   setHelmIterPlot();
-  void   setBix(unsigned int bix);
-  void   setVarPlotA(unsigned int mix);
-  void   setVarPlotB(unsigned int mix);
-  void   clearVarPlotA();
-  void   clearVarPlotB();
   void   setClearColor(std::string s)  {m_clear_color.setColor(s);}
 
   void   setTime(double tstamp);
   void   setVName(std::string s) {m_vname=s;}
-  void   setSource(std::string src);
   void   setMutableTextSize(int v) {m_mutable_text_size=v;}
 
  public: // Getters
   double getCurrTime() const;
 
-  std::string getCurrPieces() const;
-  std::string getCurrPriority() const;
-  std::string getCurrDomain() const;
-  std::string getCurrIteration() const;
-  std::string getCurrPriority(std::string);
-
- protected:
-  void   updateIPF();
-  void   updateScope();
-  void   addIPF_Plot(const IPF_Plot&);
-  bool   buildCollectiveIPF(std::string ctype);
-  bool   buildIndividualIPF(std::string source="");
+  std::string getTotalEncounters() const;
 
 private:
   double         m_curr_time;
-  unsigned int   m_curr_iter;
   ALogDataBroker m_dbroker;
   int            m_mutable_text_size;
 
@@ -90,16 +67,8 @@ private:
   std::string   m_vname; 
 
   EncounterPlot m_encounter_plot;
-
-  // Map from a behavior (source) to: IPF_TPlot, scopvars
-  std::map<std::string, IPF_Plot> m_map_ipf_plots;
-  std::map<std::string, VarPlot>  m_map_scope_var_a;
-  std::map<std::string, VarPlot>  m_map_scope_var_b;
-
-
-  ColorPack    m_clear_color;
-  ColorPack    m_frame_color;
-  ColorPack    m_label_color;
+  ColorPack     m_clear_color;
+  ColorPack     m_label_color;
 
 };
 

@@ -26,10 +26,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "EncounterViewer.h"
-#include "FunctionEncoder.h"
-#include "IPFViewUtils.h"
 #include "MBUtils.h"
-#include "BuildUtils.h"
 #include "MBTimer.h"
 
 using namespace std;
@@ -38,7 +35,6 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
   : Fl_Gl_Window(x, y, w, h, l)
 {
   m_curr_time   = 0;
-  m_curr_iter   = 0; 
  
   m_mutable_text_size = 10;
  
@@ -97,7 +93,6 @@ void EncounterViewer::draw()
 void EncounterViewer::resize(int gx, int gy, int gw, int gh)
 {
   return;  // Invoked solely by the parent
-  //Common_IPFViewer::resize(gx, gy, gw, gh);
 }
 
 //-------------------------------------------------------------
@@ -127,59 +122,16 @@ void EncounterViewer::setDataBroker(ALogDataBroker dbroker, string vname)
 void EncounterViewer::setTime(double time)
 {
   m_curr_time = time;
-
-  //updateIPF();
-
-  //updateScope();
 }
 
 
 //-------------------------------------------------------------
-// Procedure: updateScope
+// Procedure: getTotalEncounters()
 
-void EncounterViewer::updateScope()
+string EncounterViewer::getTotalEncounters() const
 {
-}
-
-
-//-------------------------------------------------------------
-// Procedure: setSource
-
-void EncounterViewer::setSource(string source)
-{
-}
-
-
-//-------------------------------------------------------------
-// Procedure: getCurrPieces()
-
-string EncounterViewer::getCurrPieces() const
-{
-  return("");
-}
-  
-//-------------------------------------------------------------
-// Procedure: getCurrPriority()
-
-string EncounterViewer::getCurrPriority() const
-{
-  return("");
-}
-  
-//-------------------------------------------------------------
-// Procedure: getCurrDomain()
-
-string EncounterViewer::getCurrDomain() const
-{
-  return("");
-}
-  
-//-------------------------------------------------------------
-// Procedure: getCurrIteration()
-
-string EncounterViewer::getCurrIteration() const
-{
-  return("");
+  unsigned int total_encounters = m_encounter_plot.size();
+  return(uintToString(total_encounters));
 }
   
 //-------------------------------------------------------------
@@ -188,45 +140,5 @@ string EncounterViewer::getCurrIteration() const
 double EncounterViewer::getCurrTime() const
 {
   return(m_curr_time);
-}
-
-//-------------------------------------------------------------
-// Procedure: getCurrPriority(string)
-
-string EncounterViewer::getCurrPriority(string source) 
-{
-  if(m_map_ipf_plots.count(source) == 0)
-    return("--");
-
-  const IPF_Plot& ipf_plot = m_map_ipf_plots[source];
-  double pwt = ipf_plot.getPwtByHelmIteration(m_curr_iter);
-  
-  string result = doubleToString(pwt, 3);
-
-  return(result);  
-}
-
-//-------------------------------------------------------------
-// Procedure: updateIPF()
-
-void EncounterViewer::updateIPF()
-{
-
-}
-
-//-------------------------------------------------------------
-// Procedure: buildIndividualIPF
-
-bool EncounterViewer::buildIndividualIPF(string source)
-{
-  return(true);
-}
-
-//-------------------------------------------------------------
-// Procedure: buildCollectiveIPF
-
-bool EncounterViewer::buildCollectiveIPF(string ctype)
-{
-  return(true);
 }
 

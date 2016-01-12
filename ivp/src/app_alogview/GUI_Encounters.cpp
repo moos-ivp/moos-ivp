@@ -70,13 +70,6 @@ GUI_Encounters::~GUI_Encounters()
 
   delete(m_fld_loc_time);
   delete(m_fld_ipf_iter);
-  delete(m_fld_ipf_pcs);
-  delete(m_fld_ipf_dom);
-  delete(m_but_ipf_set);
-  delete(m_but_ipf_pin);
-
-  delete(m_but_collective);
-  delete(m_but_collective_dep);
 }
 
 
@@ -85,19 +78,10 @@ GUI_Encounters::~GUI_Encounters()
 
 void GUI_Encounters::initWidgets()
 {
-  int info_size = 10;
   Fl_Color fcolor1 = fl_rgb_color(200, 90, 90);
 
   m_eviewer = new EncounterViewer(0, 0, 1, 1);
   m_eviewer->setClearColor("0.6,0.7,0.5");
-
-  m_but_ipf_set = new Fl_Button(0, 0, 1, 1, "set");
-  m_but_ipf_set->clear_visible_focus();
-  m_but_ipf_set->callback((Fl_Callback*)GUI_Encounters::cb_ToggleSet);
-
-  m_but_ipf_pin = new Fl_Button(0, 0, 1, 1, "pin");
-  m_but_ipf_pin->clear_visible_focus();
-  m_but_ipf_pin->callback((Fl_Callback*)GUI_Encounters::cb_TogglePin);
 
   m_fld_loc_time = new Fl_Output(0, 0, 1, 1, "Time:"); 
   m_fld_loc_time->clear_visible_focus();
@@ -106,33 +90,6 @@ void GUI_Encounters::initWidgets()
   m_fld_ipf_iter->clear_visible_focus();
   m_fld_ipf_iter->color(fcolor1); 
 
-  m_fld_ipf_pcs = new Fl_Output(0, 0, 1, 1, "Pcs:"); 
-  m_fld_ipf_pcs->clear_visible_focus();
-
-  m_fld_ipf_dom = new Fl_Output(0, 0, 1, 1, "Dom:"); 
-  m_fld_ipf_dom->clear_visible_focus();
-  m_fld_ipf_dom->labelsize(info_size);
-
-  m_but_collective = new Fl_Check_Button(0, 0, 1, 1, "Collective");
-  m_but_collective->clear_visible_focus();
-  m_but_collective->callback((Fl_Callback*)GUI_Encounters::cb_SelectCollective, (void*)0);
-
-  m_but_collective_dep = new Fl_Check_Button(0, 0, 1, 1, "CollectiveD");
-  m_but_collective_dep->clear_visible_focus();
-  m_but_collective_dep->callback((Fl_Callback*)GUI_Encounters::cb_SelectCollective, (void*)1);
-
-  m_brw_bhvs = new Fl_Hold_Browser(0, 0, 0, 0);
-  m_brw_bhvs->clear_visible_focus();
-  m_brw_bhvs->callback((Fl_Callback*)GUI_Encounters::cb_SelectSource);
-  m_brw_bhvs->textfont(FL_COURIER);
-
-  m_but_addvar_a = new Fl_Menu_Button(0, 0, 1, 1, "Scope Var A");
-  m_but_addvar_a->clear_visible_focus();
-  m_but_addvar_a->callback((Fl_Callback*)GUI_Encounters::cb_ButtonAddVarA,(void*)-1);
-
-  m_but_addvar_b = new Fl_Menu_Button(0, 0, 1, 1, "Scope Var B");
-  m_but_addvar_b->clear_visible_focus();
-  m_but_addvar_b->callback((Fl_Callback*)GUI_Encounters::cb_ButtonAddVarB,(void*)-1);
 }
 
 //---------------------------------------------------------------------------
@@ -162,24 +119,6 @@ void GUI_Encounters::resizeWidgetsShape()
   if(m_fullscreen) 
     return;
 
-  int bhvs_x = 5; 
-  int bhvs_y = tmarg;
-  int bhvs_wid = lmarg-10;
-  int bhvs_hgt = h()-tmarg;
-  m_brw_bhvs->resize(bhvs_x, bhvs_y, bhvs_wid, bhvs_hgt);
-
-  int coll_x = 10; 
-  int coll_y = 30;
-  int coll_wid = 20; 
-  int coll_hgt = 20;
-  m_but_collective->resize(coll_x, coll_y, coll_wid, coll_hgt);
-
-  int cold_x = 90; 
-  int cold_y = 30;
-  int cold_wid = 20; 
-  int cold_hgt = 20;
-  m_but_collective_dep->resize(cold_x, cold_y, cold_wid, cold_hgt);
-
   int time_x = 40;
   int time_y = 5;
   int time_wid = (80.0/550.0)*w();
@@ -192,42 +131,6 @@ void GUI_Encounters::resizeWidgetsShape()
   int iter_hgt = 20;
   m_fld_ipf_iter->resize(iter_x, iter_y, iter_wid, iter_hgt); 
 
-  int pcs_x = iter_x + iter_wid + 40;
-  int pcs_y = 5;
-  int pcs_wid = (45.0/550.0)*w();
-  int pcs_hgt = 20;
-  m_fld_ipf_pcs->resize(pcs_x, pcs_y, pcs_wid, pcs_hgt); 
-
-
-  int dom_x = pcs_x;
-  int dom_y = 30;
-  int dom_wid = (110.0/550.0)*w();
-  int dom_hgt = 20;
-  m_fld_ipf_dom->resize(dom_x, dom_y, dom_wid, dom_hgt); 
-
-  int set_x = pcs_x + pcs_wid + 10;
-  int set_y = 5;
-  int set_wid = (33.0/550.0)*w();
-  int set_hgt = 20;
-  m_but_ipf_set->resize(set_x, set_y, set_wid, set_hgt);
-
-  int pin_x = set_x + set_wid + 10;
-  int pin_y = 5;
-  int pin_wid = (33.0/550.0)*w();
-  int pin_hgt = 20;
-  m_but_ipf_pin->resize(pin_x, pin_y, pin_wid, pin_hgt);
-
-  int vara_x = pin_x + pin_wid + 12;
-  int vara_y = 5;
-  int vara_wid = w()-vara_x-10;
-  int vara_hgt = 20;
-  m_but_addvar_a->resize(vara_x, vara_y, vara_wid, vara_hgt);
-
-  int varb_x = pin_x + pin_wid + 12;
-  int varb_y = 30;
-  int varb_wid = w()-varb_x-10;
-  int varb_hgt = 20;
-  m_but_addvar_b->resize(varb_x, varb_y, varb_wid, varb_hgt);
 }
 
 //---------------------------------------------------------------------------
@@ -245,47 +148,11 @@ void GUI_Encounters::resizeWidgetsText()
   if(w() < small_wid)
     blab_size = 10;
 
-  m_but_ipf_set->labelsize(blab_size);
-  m_but_ipf_pin->labelsize(blab_size);
-
-  m_but_collective->labelsize(blab_size);
-  m_but_collective_dep->labelsize(blab_size);
-
   m_fld_loc_time->textsize(info_size); 
   m_fld_loc_time->labelsize(info_size);
 
   m_fld_ipf_iter->textsize(info_size); 
   m_fld_ipf_iter->labelsize(info_size);
-
-  m_fld_ipf_pcs->textsize(info_size); 
-  m_fld_ipf_pcs->labelsize(info_size);
-
-  m_fld_ipf_dom->textsize(info_size); 
-  m_fld_ipf_dom->labelsize(info_size);
-
-  m_brw_bhvs->textsize(m_mutable_text_size);
-
-  m_but_addvar_a->textsize(info_size);
-  m_but_addvar_a->labelsize(info_size);
-  string labela = m_but_addvar_a->label();
-  if(strContains(labela, "Var A")) {
-    if(w() < small_wid) 
-      labela = "Var A";
-    else
-      labela = "Scope Var A";
-    m_but_addvar_a->copy_label(labela.c_str());
-  }
-
-  m_but_addvar_b->textsize(info_size);
-  m_but_addvar_b->labelsize(info_size);
-  string labelb = m_but_addvar_b->label();
-  if(strContains(labelb, "Var B")) {
-    if(w() < small_wid) 
-      labelb = "Var B";
-    else
-      labelb = "Scope Var B";
-    m_but_addvar_b->copy_label(labelb.c_str());
-  }
 }
 
 //-------------------------------------------------------------------
@@ -325,13 +192,6 @@ void GUI_Encounters::setDataBroker(ALogDataBroker dbroker, string vname)
     return;
 
   m_eviewer->setDataBroker(m_dbroker, vname);
-  //m_eviewer->setEncounterPlots(m_sources);
-  //m_eviewer->setHelmIterPlot();
-
-  initSourceSelection();
-  initMenuVarButtons();
-
-  updateBrowser();
 }
 
 //----------------------------------------------------------
@@ -380,15 +240,6 @@ int GUI_Encounters::handle(int event)
       updateMutableTextSize("bigger");
     else if(Fl::event_key() == '-') 
       updateMutableTextSize("smaller");
-    else if((Fl::event_key() == 'c')) {
-      if(m_but_collective->value()) {
-	m_but_collective->value(0);
-	m_but_collective_dep->value(0);
-      }
-      else
-	m_but_collective->value(1);
-      cb_SelectCollective_i(0);
-    }
     else
       return(Fl_Window::handle(event));
     return(1);
@@ -416,25 +267,8 @@ void GUI_Encounters::setCurrTime(double curr_time)
   m_eviewer->setTime(curr_time);
   m_eviewer->redraw();
   updateXY();
-  updateBrowser();
 }
 
-
-//----------------------------------------------------------
-// Procedure: initSourceSelection()
-
-void GUI_Encounters::initSourceSelection()
-{
-#if 0
-  for(unsigned int i=0; i<m_sources.size(); i++) {
-    string pwt = m_ipf_viewer->getCurrPriority(m_sources[i]);
-    if(pwt != "0") {
-      m_source = m_sources[i];
-      m_ipf_viewer->setSource(m_source);
-    }
-  }
-#endif
-}
 
 //----------------------------------------- HandleUpDown
 inline void GUI_Encounters::cb_HandleUpDown_i(int amt) 
@@ -480,23 +314,6 @@ inline void GUI_Encounters::cb_Zoom_i(int val) {
 #endif
 }
 
-//----------------------------------------- ToggleSet
-inline void GUI_Encounters::cb_ToggleSet_i() {
-  //  m_ipf_viewer->setParam("reset_view", "2");
-}
-void GUI_Encounters::cb_ToggleSet(Fl_Widget* o) {
-  ((GUI_Encounters*)(o->parent()->user_data()))->cb_ToggleSet_i();
-}
-
-//----------------------------------------- TogglePin
-inline void GUI_Encounters::cb_TogglePin_i() {
-  //  m_ipf_viewer->setParam("draw_pin", "toggle");
-}
-
-void GUI_Encounters::cb_TogglePin(Fl_Widget* o) {
-  ((GUI_Encounters*)(o->parent()->user_data()))->cb_TogglePin_i();
-}
-
 //----------------------------------------- Step
 inline void GUI_Encounters::cb_Step_i(int val) {
   if(m_parent_gui)
@@ -508,194 +325,6 @@ void GUI_Encounters::cb_Step(Fl_Widget* o, int val) {
   ((GUI_Encounters*)(o->parent()->user_data()))->cb_Step_i(val);
 }
 
-//----------------------------------------- SelectSource
-inline void GUI_Encounters::cb_SelectSource_i() {
-#if 0
-  int ix = ((Fl_Browser *)m_brw_bhvs)->value();
-  if(ix == 0)
-    return;
-
-  string txt = ((Fl_Browser *)m_brw_bhvs)->text(ix);
-
-  txt = stripBlankEnds(txt);
-  biteStringX(txt, ' ');
-  m_source = txt;
-  m_ipf_viewer->setSource(m_source);
-
-  // If we're selecting a menu item, it must mean we're no longer 
-  // interested in any collective. Make sure button box is unchecked.
-  m_but_collective->value(0);
-  m_but_collective_dep->value(0);
-
-  updateXY();
-#endif
-}
-void GUI_Encounters::cb_SelectSource(Fl_Widget* o) {
-  ((GUI_Encounters*)(o->parent()->user_data()))->cb_SelectSource_i();
-}
-
-//----------------------------------------- SelectCollective
-inline void GUI_Encounters::cb_SelectCollective_i(int index) {
-#if 0
-  if(index == 0) {
-    if(m_but_collective->value()) {
-      m_ipf_viewer->setSource("collective-hdgspd");
-      m_but_collective_dep->value(0);
-    }
-    else
-      m_ipf_viewer->setSource(m_source);
-  }
-  else if(index == 1) {
-    if(m_but_collective_dep->value()) {
-      m_ipf_viewer->setSource("collective-depth"); 
-      m_but_collective->value(0);
-    }
-    else
-      m_ipf_viewer->setSource(m_source);
-  }
-  updateBrowser();
-  updateXY();
-#endif
-}
-void GUI_Encounters::cb_SelectCollective(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((GUI_Encounters*)(o->parent()->user_data()))->cb_SelectCollective_i(val);
-}
-
-//----------------------------------------- ButtonAddVarA
-inline void GUI_Encounters::cb_ButtonAddVarA_i(int mix) {
-#if 0
-  if(mix != 29999) {
-    m_ipf_viewer->setVarPlotA(mix);
-    string varname = m_dbroker.getVarNameFromMix(mix);
-    varname = truncString(varname, 20, "middle");
-    m_but_addvar_a->copy_label(varname.c_str());
-    m_but_addvar_a->labelsize(8);
-  }
-  else {
-    m_but_addvar_a->copy_label("Scope Var A");
-    resizeWidgetsText();
-    m_ipf_viewer->clearVarPlotA();    
-  }    
-  m_ipf_viewer->redraw();
-#endif
-}
-void GUI_Encounters::cb_ButtonAddVarA(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((GUI_Encounters*)(o->parent()->user_data()))->cb_ButtonAddVarA_i(val);
-}
-
-//----------------------------------------- ButtonAddVarB
-inline void GUI_Encounters::cb_ButtonAddVarB_i(int mix) {
-#if 0
-  if(mix != 29999) {
-    m_ipf_viewer->setVarPlotB(mix);
-    string varname = m_dbroker.getVarNameFromMix(mix);
-    varname = truncString(varname, 20, "middle");
-    m_but_addvar_b->copy_label(varname.c_str());
-    m_but_addvar_b->labelsize(8);
-  }
-  else {
-    m_but_addvar_b->copy_label("Scope Var B");
-    resizeWidgetsText();
-    m_ipf_viewer->clearVarPlotB();    
-  }
-  m_ipf_viewer->redraw();
-#endif
-}
-void GUI_Encounters::cb_ButtonAddVarB(Fl_Widget* o, int v) {
-  int val = (int)(v);
-  ((GUI_Encounters*)(o->parent()->user_data()))->cb_ButtonAddVarB_i(val);
-}
-
-//----------------------------------------------------------
-// Procedure: initMenuVarButtons
-
-void GUI_Encounters::initMenuVarButtons() 
-{
-#if 0  
-  m_but_addvar_a->clear();
-  m_but_addvar_b->clear();
-
-  vector<string> non_helm_entries;
-  vector<unsigned int> non_helm_indices;
-
-  // Use special unsigned int type having same size a pointer (void*)  
-  uintptr_t ix = 29999;      
-  m_but_addvar_a->add(" -- CLEAR --", 0, 
-		      (Fl_Callback*)GUI_Encounters::cb_ButtonAddVarA, (void*)ix);
-  m_but_addvar_b->add(" -- CLEAR --", 0, 
-		      (Fl_Callback*)GUI_Encounters::cb_ButtonAddVarB, (void*)ix);
-
-  // Part 1: Add menu items for all variable where pHelmIvP is a source
-  unsigned int max_mix = m_dbroker.sizeMix();
-  for(unsigned int mix=0; mix<max_mix; mix++) {
-    string vname  = m_dbroker.getVNameFromMix(mix);
-    string source = m_dbroker.getVarSourceFromMix(mix);
-    if(vname == m_vname) {
-      string varname = m_dbroker.getVarNameFromMix(mix);
-      if(!strBegins(varname, "BHV_IPF")) {
-	string entry = varname;
-	if(!strContains(source, "pHelmIvP")) {
-	  entry = "AllOtherVars/" + varname;
-	  non_helm_entries.push_back(entry);
-	  non_helm_indices.push_back(mix);
-	}
-	else {
-	  // Use special unsigned int type having same size a pointer (void*)  
-	  uintptr_t iix = mix;      
-	  m_but_addvar_a->add(entry.c_str(), 0, 
-			      (Fl_Callback*)GUI_Encounters::cb_ButtonAddVarA, (void*)iix);
-	  m_but_addvar_b->add(entry.c_str(), 0, 
-			      (Fl_Callback*)GUI_Encounters::cb_ButtonAddVarB, (void*)iix);
-	}
-      }
-    }
-  }
-
-  // Part 2: Add menu items for all variable where pHelmIvP is NOT a source
-  for(unsigned int i=0; i<non_helm_entries.size(); i++) {
-    string entry = non_helm_entries[i];
-    unsigned int mix = non_helm_indices[i];
-    // Use special unsigned int type having same size a pointer (void*)  
-    uintptr_t iix = mix;      
-	  m_but_addvar_a->add(entry.c_str(), 0, 
-			      (Fl_Callback*)GUI_Encounters::cb_ButtonAddVarA, (void*)iix);
-	  m_but_addvar_b->add(entry.c_str(), 0, 
-			      (Fl_Callback*)GUI_Encounters::cb_ButtonAddVarB, (void*)iix);
-  }
-#endif
-}
-
-//----------------------------------------- UpdateBrowser
-void GUI_Encounters::updateBrowser() 
-{
-#if 0
-  if(m_fullscreen)
-    return;
-
-  m_brw_bhvs->clear();
-
-  int curr_src_ix = -1;
-  for(unsigned int i=0; i<m_sources.size(); i++) {
-    string pwt = m_ipf_viewer->getCurrPriority(m_sources[i]);
-    pwt = dstringCompact(pwt);
-    pwt = padString(pwt, 4);
-    string entry = pwt + "  " + m_sources[i];
-
-    if(m_source == m_sources[i])
-      curr_src_ix = (int)(i+1);
-    m_brw_bhvs->add(entry.c_str());
-  }
-
-  bool coll_active_a = m_but_collective->value();
-  bool coll_active_b = m_but_collective_dep->value();
-
-  if((curr_src_ix >= 0) && !coll_active_a && !coll_active_b)
-    m_brw_bhvs->select(curr_src_ix);
-#endif
-}
-
 //----------------------------------------- FullScreen
 void GUI_Encounters::toggleFullScreen() 
 {
@@ -703,36 +332,17 @@ void GUI_Encounters::toggleFullScreen()
   m_fullscreen = !m_fullscreen;
   
   if(m_fullscreen) {
-    m_brw_bhvs->hide();
     m_fld_loc_time->hide();
     m_fld_ipf_iter->hide();
-    m_fld_ipf_pcs->hide();
-    m_fld_ipf_dom->hide();
-    m_but_ipf_set->hide();
-    m_but_ipf_pin->hide();
-    m_but_addvar_a->hide();
-    m_but_addvar_b->hide();
-    m_but_collective->hide();
-    m_but_collective_dep->hide();
     resizeWidgetsShape();
     redraw();
   }
   else {
-    m_brw_bhvs->show();
     m_fld_loc_time->show();
     m_fld_ipf_iter->show();
-    m_fld_ipf_pcs->show();
-    m_fld_ipf_dom->show();
-    m_but_ipf_set->show();
-    m_but_ipf_pin->show();
-    m_but_addvar_a->show();
-    m_but_addvar_b->show();
-    m_but_collective->show();
-    m_but_collective_dep->show();
     resizeWidgetsShape();
     resizeWidgetsText();
     updateXY();
-    updateBrowser();
     redraw();
   }
 #endif
@@ -775,7 +385,6 @@ void GUI_Encounters::updateMutableTextSize(string val)
   else
     return;
   resizeWidgetsText();
-  updateBrowser();
   
   m_ipf_viewer->setMutableTextSize(m_mutable_text_size);
   m_ipf_viewer->redraw();
@@ -801,10 +410,6 @@ void GUI_Encounters::updateXY()
 
   string ipf_iter_str = m_ipf_viewer->getCurrIteration();
   m_fld_ipf_iter->value(ipf_iter_str.c_str());
-  string ipf_pcs_str = m_ipf_viewer->getCurrPieces();
-  m_fld_ipf_pcs->value(ipf_pcs_str.c_str());
-  string ipf_dom_str = m_ipf_viewer->getCurrDomain();
-  m_fld_ipf_dom->value(ipf_dom_str.c_str());
 #endif
 }
 
