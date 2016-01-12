@@ -33,6 +33,7 @@ using namespace std;
 CPAEvent::CPAEvent()
 {
   m_cpa = 0;
+  m_eff = 0;
   m_x   = 0;
   m_y   = 0;
 }
@@ -46,6 +47,7 @@ CPAEvent::CPAEvent(string v1, string v2, double cpa)
   m_vname2 = v2;
 
   m_cpa = cpa;
+  m_eff = 0;
   m_x   = 0;
   m_y   = 0;
 }
@@ -66,6 +68,8 @@ CPAEvent::CPAEvent(string spec)
       m_vname2 = value;
     else if(param == "cpa")
       m_cpa = atof(value.c_str());
+    else if(param == "eff")
+      m_eff = atof(value.c_str());
     else if(param == "x")
       m_x = atof(value.c_str());
     else if(param == "y")
@@ -87,7 +91,9 @@ string CPAEvent::getSpec() const
     str += ",v1=" + m_vname1;
   if(m_vname2 != "")
     str += ",v2=" + m_vname2;
-
+  if(m_eff != 0)
+    str += ",eff=" + doubleToStringX(m_eff,2);
+  
   return(str);
 }
 
