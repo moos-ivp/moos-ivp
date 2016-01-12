@@ -44,9 +44,9 @@ CollisionDetector::CollisionDetector()
   m_pulse_range = 20;
 
   // state variables -- counters of collision types
-  m_total_collisions = 0;
+  m_total_collisions  = 0;
   m_total_near_misses = 0;
-  m_total_encounters = 0;
+  m_total_encounters  = 0;
 
   m_conditions_ok = true;
 
@@ -312,13 +312,14 @@ void CollisionDetector::postFlags(const vector<VarDataPair>& flags,
     VarDataPair pair = flags[i];
     string moosvar = pair.get_var();
 
-    // Handle Variable macro expansion for $V1 and $V2
+    // Handle Variable macro expansion for $V1 and $V2 
     string vname1  = event.getVName1();
     string vname2  = event.getVName2();
     moosvar = findReplace(moosvar, "$V1", vname1);
     moosvar = findReplace(moosvar, "$V2", vname2);
     moosvar = findReplace(moosvar, "$UP_V1", toupper(vname1));
     moosvar = findReplace(moosvar, "$UP_V2", toupper(vname2));
+    moosvar = findReplace(moosvar, "$IDX", uintToString(m_total_encounters));
 
     // If posting is a double, just post. No macro expansion
     if(!pair.is_string()) {
@@ -340,6 +341,7 @@ void CollisionDetector::postFlags(const vector<VarDataPair>& flags,
 	sval = findReplace(sval, "$UP_V1", toupper(vname1));
 	sval = findReplace(sval, "$UP_V2", toupper(vname2));
 	sval = findReplace(sval, "$CPA", cpa_str);
+	sval = findReplace(sval, "$IDX", uintToString(m_total_encounters));
 	Notify(moosvar, sval);
       }
     }
@@ -348,7 +350,7 @@ void CollisionDetector::postFlags(const vector<VarDataPair>& flags,
 
 
 //-----------------------------------------------------------
-// Procedure: checkConditions()
+// Procedure: checkconditions()
 //   Purpose: Determine if all the logic conditions in the vector
 //            of conditions is met, given the snapshot of variable
 //            values in the info_buffer.

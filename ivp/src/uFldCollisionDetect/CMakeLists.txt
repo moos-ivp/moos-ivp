@@ -17,7 +17,7 @@ SET(SRC
   CollisionDetector.cpp
   CollisionDetector_Info.cpp
   CPAMonitor.cpp
-#    CPAEvent.cpp
+  CPAEvent.cpp
   main.cpp
 )
  
