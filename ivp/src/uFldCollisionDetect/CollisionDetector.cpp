@@ -124,7 +124,7 @@ void CollisionDetector::handleCPAEvent(CPAEvent event)
   double cpa  = event.getCPA();
   double midx = event.getX();
   double midy = event.getY();
-  string cpas = doubleToStringX(cpa,3);
+  string cpas = doubleToStringX(cpa,2);
 
   m_total_encounters++;
   m_map_vname_encounters[v1]++;
