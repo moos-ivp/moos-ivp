@@ -81,7 +81,7 @@ void GUI_Encounters::initWidgets()
   Fl_Color fcolor1 = fl_rgb_color(200, 90, 90);
 
   m_eviewer = new EncounterViewer(0, 0, 1, 1);
-  m_eviewer->setClearColor("0.6,0.7,0.5");
+  m_eviewer->setClearColor("0.95,0.95,0.95");
 
   m_fld_loc_time = new Fl_Output(0, 0, 1, 1, "Time:"); 
   m_fld_loc_time->clear_visible_focus();

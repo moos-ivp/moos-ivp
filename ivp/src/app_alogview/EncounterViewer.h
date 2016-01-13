@@ -75,6 +75,9 @@ private:
   bool  m_draw_avgeff;
   bool  m_draw_mincpa;
   bool  m_draw_avgcpa;
+
+  double m_cpa_collision;
+  double m_cpa_near_miss;
   
   EncounterPlot  m_encounter_plot;
   ColorPack      m_clear_color;

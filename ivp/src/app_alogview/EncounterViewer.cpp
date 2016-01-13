@@ -38,7 +38,7 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
  
   m_mutable_text_size = 10;
  
-  m_clear_color.setColor("0.6,0.9,0.5");
+  m_clear_color.setColor("0.95,0.95,0.95");
   m_label_color.setColor("brown");
   m_mineff_color.setColor("red");
   m_avgeff_color.setColor("darkblue");
@@ -49,6 +49,9 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
   m_draw_avgeff = false;
   m_draw_mincpa = false;
   m_draw_avgcpa = false;
+
+  m_cpa_collision = 8;
+  m_cpa_near_miss = 10;
 }
 
 //-------------------------------------------------------------
@@ -82,11 +85,7 @@ void EncounterViewer::draw()
     v_cpa_pix.push_back(cpa_pix);
   }
   
-  double r = 0.9;
-  double g = 0.9;
-  double b = 0.9;
-  
-  glClearColor(r,g,b,0.0);
+  glClearColor(m_clear_color.red(),m_clear_color.grn(),m_clear_color.blu(),0.0);
   glClear(GL_COLOR_BUFFER_BIT);
   glViewport(0, 0, w(), h());
   glMatrixMode(GL_PROJECTION);
@@ -97,6 +96,37 @@ void EncounterViewer::draw()
   glPushMatrix();
   glLoadIdentity();
 
+
+  // Draw the collision zone
+  double cpax_pct = m_cpa_collision / max_cpa; 
+  double cpax_pix = cpax_pct * w();
+  glEnable(GL_BLEND);
+  glColor4f(0.9, 0.7, 0.7, 0.4);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBegin(GL_POLYGON);
+  glVertex2f(0, 0);
+  glVertex2f(0, h());
+  glVertex2f(cpax_pix, h());
+  glVertex2f(cpax_pix, 0);
+  glVertex2f(0, 0);
+  glEnd();
+  glDisable(GL_BLEND);
+
+  double cpan_pct = m_cpa_near_miss / max_cpa; 
+  double cpan_pix = cpan_pct * w();
+  glEnable(GL_BLEND);
+  glColor4f(0.9, 0.9, 0.7, 0.4);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBegin(GL_POLYGON);
+  glVertex2f(cpax_pix, 0);
+  glVertex2f(cpax_pix, h());
+  glVertex2f(cpan_pix, h());
+  glVertex2f(cpan_pix, 0);
+  glVertex2f(cpax_pix, 0);
+  glEnd();
+  glDisable(GL_BLEND);
+
+  // Draw the near_miss zone
 
   glEnable(GL_POINT_SMOOTH);
   // Draw the first N-1 points in one color
