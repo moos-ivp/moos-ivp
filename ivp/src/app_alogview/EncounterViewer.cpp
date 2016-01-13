@@ -38,8 +38,17 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
  
   m_mutable_text_size = 10;
  
-  m_clear_color.setColor("0.6,0.7,0.5");
+  m_clear_color.setColor("0.6,0.9,0.5");
   m_label_color.setColor("brown");
+  m_mineff_color.setColor("red");
+  m_avgeff_color.setColor("darkblue");
+  m_mincpa_color.setColor("red");
+  m_avgcpa_color.setColor("darkblue");
+
+  m_draw_mineff = false;
+  m_draw_avgeff = false;
+  m_draw_mincpa = false;
+  m_draw_avgcpa = false;
 }
 
 //-------------------------------------------------------------
@@ -47,44 +56,123 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
 
 void EncounterViewer::draw()
 {
-#if 0
-  //=================================================================
-  clear();
+  if(m_encounter_plot.size() == 0)
+    return;
 
-  glViewport(0,0,w(),h());
-  glMatrixMode(GL_MODELVIEW);
-  glLoadIdentity();
-  glColor3f(0.0, 0.25, 0.0);
-  glScalef(m_zoom, m_zoom, m_zoom);
+  cout << "In EncounterViewer::draw()" << endl;
+  cout << "w:" << w() << ", h:" << h() << endl;
+  
+  double max_cpa = m_encounter_plot.getMaxCPA();
+  
+  vector<double> v_cpa_pix;
+  vector<double> v_eff_pix;
+  for(unsigned int i=0; i<m_encounter_plot.size(); i++) {
+    double time = m_encounter_plot.getTimeByIndex(i);
+    if(time > m_curr_time)
+      break;
+    
+    double eff_pct = m_encounter_plot.getValueEffByIndex(i);
+    double eff_pix = (eff_pct/100) * h();
+    
+    double cpa = m_encounter_plot.getValueCPAByIndex(i);
+    double cpa_pct = cpa / max_cpa; 
+    double cpa_pix = cpa_pct * w();
 
-  GLfloat nRange = 750.0f;
-
-  // Reset projection matrix stack
+    v_eff_pix.push_back(eff_pix);
+    v_cpa_pix.push_back(cpa_pix);
+  }
+  
+  double r = 0.9;
+  double g = 0.9;
+  double b = 0.9;
+  
+  glClearColor(r,g,b,0.0);
+  glClear(GL_COLOR_BUFFER_BIT);
+  glViewport(0, 0, w(), h());
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
 
-  // Establish clipping volume (left, right, bottom, top, near, far)
-  glOrtho (-nRange, nRange, -nRange*h()/w(), nRange*h()/w(), -nRange, nRange);
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
 
-  // Set color shading model to flat
-  glShadeModel(GL_FLAT);
+
+  glEnable(GL_POINT_SMOOTH);
+  // Draw the first N-1 points in one color
+  glPointSize(5);
+  glColor3f(0.4, 0.4, 0.5); 
+  glBegin(GL_POINTS);
+  for(unsigned int i=0; i<v_cpa_pix.size()-1; i++) 
+    glVertex2f(v_cpa_pix[i], v_eff_pix[i]);
+  glEnd();
+
+  // Draw the Nth point in perhaps different color
+  glColor3f(0.5, 0.8, 0.5); 
+  glPointSize(10);
+  glBegin(GL_POINTS);
+  unsigned int ix = v_cpa_pix.size()-1;
+  glVertex2f(v_cpa_pix[ix], v_eff_pix[ix]);
+  glEnd();
+  glDisable(GL_POINT_SMOOTH);
+
+
+  // Draw the Min Efficiency Line
+  if(m_draw_mineff) {
+    double min_eff = m_encounter_plot.getMinEFF();
+    double min_eff_pix = (min_eff / 100) * h();
+    glColor3f(m_mineff_color.red(), m_mineff_color.grn(), m_mineff_color.blu());
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(0,  min_eff_pix);
+    glVertex2f(w(), min_eff_pix);
+    glEnd();
+  }
+
+  // Draw the Avg Efficiency Line
+  if(m_draw_avgeff) {
+    double avg_eff = m_encounter_plot.getMeanEFF();
+    double avg_eff_pix = (avg_eff / 100) * h();
+    glColor3f(m_avgeff_color.red(), m_avgeff_color.grn(), m_avgeff_color.blu());
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(0,  avg_eff_pix);
+    glVertex2f(w(), avg_eff_pix);
+    glEnd();
+  }
+
+  // Draw the Min CPA Line
+  if(m_draw_mincpa) {
+    double min_cpa = m_encounter_plot.getMinCPA();
+    double min_cpa_pct = min_cpa / max_cpa; 
+    double min_cpa_pix = min_cpa_pct * w();
+    glColor3f(m_mincpa_color.red(), m_mincpa_color.grn(), m_mincpa_color.blu());
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(min_cpa_pix, 0);
+    glVertex2f(min_cpa_pix, h());
+    glEnd();
+  }
+
+  // Draw the Avg CPA Line
+  if(m_draw_avgcpa) {
+    double avg_cpa = m_encounter_plot.getMeanCPA();
+    double avg_cpa_pct = avg_cpa / max_cpa; 
+    double avg_cpa_pix = avg_cpa_pct * w();
+    glColor3f(m_avgcpa_color.red(), m_avgcpa_color.grn(), m_avgcpa_color.blu());
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(avg_cpa_pix, 0);
+    glVertex2f(avg_cpa_pix, h());
+    glEnd();
+  }
+
+
+
+
   
-  // Clock wise wound polygons are front facing, this is reversed
-  // because we are using triangle fans
-  glFrontFace(GL_CW);
-
-  glDisable(GL_CULL_FACE);
-  glEnable(GL_DEPTH_TEST);
-  //=================================================================
-
-  glPopMatrix();
   glFlush();
+  glPopMatrix();
   
-  ColorPack cpack("black");
-  drawText2(5, h()-15, m_scope_a, cpack, m_mutable_text_size);
-  drawText2(5, 5, m_scope_b, cpack, m_mutable_text_size);
-
-#endif
+  //ColorPack cpack("black");
+  //drawText2(5, h()-15, m_scope_a, cpack, m_mutable_text_size);
+  //drawText2(5, 5, m_scope_b, cpack, m_mutable_text_size);
 }
 
 //-------------------------------------------------------------
@@ -92,7 +180,7 @@ void EncounterViewer::draw()
 
 void EncounterViewer::resize(int gx, int gy, int gw, int gh)
 {
-  return;  // Invoked solely by the parent
+  Fl_Gl_Window::resize(gx, gy, gw, gh);
 }
 
 //-------------------------------------------------------------

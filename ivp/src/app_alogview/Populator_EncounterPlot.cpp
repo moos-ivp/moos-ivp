@@ -40,7 +40,7 @@ bool Populator_EncounterPlot::populateFromEntries(const vector<ALogEntry>& entri
   
   for(unsigned int i=0; i<entries.size(); i++) {
     string var = entries[i].getVarName();
-    if(var == "EVAL_LOITER_SUMMARY") {
+    if(var == "ENCOUNTER_SUMMARY") {
       double time = entries[i].getTimeStamp();
       string sval = entries[i].getStringVal();
       CPAEvent event(sval);

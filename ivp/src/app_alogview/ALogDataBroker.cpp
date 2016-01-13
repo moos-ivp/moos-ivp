@@ -681,7 +681,7 @@ EncounterPlot ALogDataBroker::getEncounterPlot(unsigned int aix)
   }
 
   // Part 2: Confirm that the EVAL_LOITER_SUMMARY.klog file can be found and opened
-  string klog = m_base_dirs[aix] + "/EVAL_LOITER_SUMMARY.klog";
+  string klog = m_base_dirs[aix] + "/ENCOUNTER_SUMMARY.klog";
   FILE *f = fopen(klog.c_str(), "r");
   if(!f) {
     cout << "Could not create EncounterPlot from " << klog << endl;

@@ -43,12 +43,17 @@ class EncounterViewer : public Fl_Gl_Window
   void   draw();
   int    handle(int event);
   void   resize(int, int, int, int);
-
+  
  public: // Setters
   void   setDataBroker(ALogDataBroker, std::string vname);
   void   setEncounterPlot(std::string vname);
   void   setClearColor(std::string s)  {m_clear_color.setColor(s);}
 
+  void   setDrawMinEff(bool v) {m_draw_mineff=v;}
+  void   setDrawAvgEff(bool v) {m_draw_avgeff=v;}
+  void   setDrawMinCPA(bool v) {m_draw_mincpa=v;}
+  void   setDrawAvgCPA(bool v) {m_draw_avgcpa=v;}
+  
   void   setTime(double tstamp);
   void   setVName(std::string s) {m_vname=s;}
   void   setMutableTextSize(int v) {m_mutable_text_size=v;}
@@ -64,12 +69,20 @@ private:
   int            m_mutable_text_size;
 
   // Vehicle name stays constant once it is set initially
-  std::string   m_vname; 
+  std::string    m_vname; 
 
-  EncounterPlot m_encounter_plot;
-  ColorPack     m_clear_color;
-  ColorPack     m_label_color;
-
+  bool  m_draw_mineff;
+  bool  m_draw_avgeff;
+  bool  m_draw_mincpa;
+  bool  m_draw_avgcpa;
+  
+  EncounterPlot  m_encounter_plot;
+  ColorPack      m_clear_color;
+  ColorPack      m_label_color;
+  ColorPack      m_mineff_color;
+  ColorPack      m_avgeff_color;  
+  ColorPack      m_mincpa_color;
+  ColorPack      m_avgcpa_color;  
 };
 
 #endif

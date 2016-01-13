@@ -76,15 +76,32 @@ public:
   inline void cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
 
+  inline void cb_SelectMinCPA_i();
+  static void cb_SelectMinCPA(Fl_Widget*);
+
+  inline void cb_SelectAvgCPA_i();
+  static void cb_SelectAvgCPA(Fl_Widget*);
+  
+  inline void cb_SelectMinEff_i();
+  static void cb_SelectMinEff(Fl_Widget*);
+
+  inline void cb_SelectAvgEff_i();
+  static void cb_SelectAvgEff(Fl_Widget*);
+  
 public:
   EncounterViewer *m_eviewer;
   REPLAY_GUI      *m_parent_gui;
   ALogDataBroker   m_dbroker;
-  
+
 protected:
   Fl_Output   *m_fld_loc_time;
-  Fl_Output   *m_fld_ipf_iter;
+  Fl_Output   *m_fld_encounters;
 
+  Fl_Check_Button *m_but_draw_mineff;
+  Fl_Check_Button *m_but_draw_avgeff;
+  Fl_Check_Button *m_but_draw_mincpa;
+  Fl_Check_Button *m_but_draw_avgcpa;
+  
   std::vector<std::string> m_sources;
 
   std::string    m_vname;
