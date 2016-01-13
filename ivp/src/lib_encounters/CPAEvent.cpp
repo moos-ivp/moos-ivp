@@ -36,6 +36,7 @@ CPAEvent::CPAEvent()
   m_eff = 0;
   m_x   = 0;
   m_y   = 0;
+  m_id  = -1;
 }
 
 //---------------------------------------------------------
@@ -50,6 +51,7 @@ CPAEvent::CPAEvent(string v1, string v2, double cpa)
   m_eff = 0;
   m_x   = 0;
   m_y   = 0;
+  m_id  = -1;
 }
 
 //---------------------------------------------------------
@@ -74,6 +76,8 @@ CPAEvent::CPAEvent(string spec)
       m_x = atof(value.c_str());
     else if(param == "y")
       m_y = atof(value.c_str());
+    else if(param == "id")
+      m_id = atoi(value.c_str());
   }
 }
 
@@ -94,6 +98,9 @@ string CPAEvent::getSpec() const
   if(m_eff != 0)
     str += ",eff=" + doubleToStringX(m_eff,2);
   
+  if(m_id != -1)
+    str += ",id=" + uintToString(m_id);
+
   return(str);
 }
 

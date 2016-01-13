@@ -24,6 +24,7 @@ class CPAEvent
   void setEFF(double v)         {m_eff=v;}
   void setX(double v)           {m_x=v;}
   void setY(double v)           {m_y=v;}
+  void setID(int id)            {m_id=id;}
 
   std::string getVName1() const {return(m_vname1);}
   std::string getVName2() const {return(m_vname2);}
@@ -31,7 +32,8 @@ class CPAEvent
   double      getEFF() const    {return(m_eff);}
   double      getX() const      {return(m_x);}
   double      getY() const      {return(m_y);}
-
+  int         getID() const     {return(m_id);}
+  
   std::string getSpec() const;
   
  protected: 
@@ -41,6 +43,7 @@ class CPAEvent
   double       m_eff;     // Efficiency perhaps filled later
   double       m_x;       // (x,y) midpt at time of cpa
   double       m_y;
+  int          m_id;
 };
 
 #endif 
