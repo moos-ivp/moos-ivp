@@ -76,6 +76,9 @@ public:
   inline void cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
 
+  inline void cb_SelectShowPts_i();
+  static void cb_SelectShowPts(Fl_Widget*);
+  
   inline void cb_SelectMinCPA_i();
   static void cb_SelectMinCPA(Fl_Widget*);
 
@@ -97,10 +100,14 @@ protected:
   Fl_Output   *m_fld_loc_time;
   Fl_Output   *m_fld_encounters;
 
+  Fl_Output   *m_fld_min_cpa;
+  Fl_Output   *m_fld_min_eff;
+  
   Fl_Check_Button *m_but_draw_mineff;
   Fl_Check_Button *m_but_draw_avgeff;
   Fl_Check_Button *m_but_draw_mincpa;
   Fl_Check_Button *m_but_draw_avgcpa;
+  Fl_Check_Button *m_but_show_allpts;
   
   std::vector<std::string> m_sources;
 

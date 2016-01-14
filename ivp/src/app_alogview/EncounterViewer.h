@@ -53,6 +53,7 @@ class EncounterViewer : public Fl_Gl_Window
   void   setDrawAvgEff(bool v) {m_draw_avgeff=v;}
   void   setDrawMinCPA(bool v) {m_draw_mincpa=v;}
   void   setDrawAvgCPA(bool v) {m_draw_avgcpa=v;}
+  void   setShowAllPts(bool v) {m_show_allpts=v;}
   
   void   setTime(double tstamp);
   void   setVName(std::string s) {m_vname=s;}
@@ -60,7 +61,9 @@ class EncounterViewer : public Fl_Gl_Window
 
  public: // Getters
   double getCurrTime() const;
-
+  double getMinCPA() const {return(m_min_cpa);}
+  double getMinEFF() const {return(m_min_eff);}
+  
   std::string getTotalEncounters() const;
 
 private:
@@ -71,13 +74,17 @@ private:
   // Vehicle name stays constant once it is set initially
   std::string    m_vname; 
 
-  bool  m_draw_mineff;
-  bool  m_draw_avgeff;
-  bool  m_draw_mincpa;
-  bool  m_draw_avgcpa;
+  bool   m_draw_mineff;
+  bool   m_draw_avgeff;
+  bool   m_draw_mincpa;
+  bool   m_draw_avgcpa;
+  bool   m_show_allpts;
 
   double m_cpa_collision;
   double m_cpa_near_miss;
+
+  double m_min_cpa;
+  double m_min_eff;
   
   EncounterPlot  m_encounter_plot;
   ColorPack      m_clear_color;

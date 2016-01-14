@@ -52,6 +52,11 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
 
   m_cpa_collision = 8;
   m_cpa_near_miss = 10;
+
+  m_show_allpts = false;
+
+  m_min_cpa = 0;
+  m_min_eff = 0;
 }
 
 //-------------------------------------------------------------
@@ -62,16 +67,19 @@ void EncounterViewer::draw()
   if(m_encounter_plot.size() == 0)
     return;
 
-  cout << "In EncounterViewer::draw()" << endl;
-  cout << "w:" << w() << ", h:" << h() << endl;
+  cout << "In EncounterViewer::draw()  " << "w:" << w() << ", h:" << h() << endl;
+  //cout << "vname: " << m_vname << endl;
+  //cout << "plotsize: " << m_encounter_plot.size() << endl;
   
   double max_cpa = m_encounter_plot.getMaxCPA();
+
+  //cout << "max_cpa: " << max_cpa << endl;
   
   vector<double> v_cpa_pix;
   vector<double> v_eff_pix;
   for(unsigned int i=0; i<m_encounter_plot.size(); i++) {
     double time = m_encounter_plot.getTimeByIndex(i);
-    if(time > m_curr_time)
+    if((time > m_curr_time) && !m_show_allpts)
       break;
     
     double eff_pct = m_encounter_plot.getValueEffByIndex(i);
@@ -81,6 +89,7 @@ void EncounterViewer::draw()
     double cpa_pct = cpa / max_cpa; 
     double cpa_pix = cpa_pct * w();
 
+    //cout << "cpa [" << i << "]:" << cpa << endl;
     v_eff_pix.push_back(eff_pix);
     v_cpa_pix.push_back(cpa_pix);
   }
@@ -112,6 +121,7 @@ void EncounterViewer::draw()
   glEnd();
   glDisable(GL_BLEND);
 
+  // Draw the near_miss zone
   double cpan_pct = m_cpa_near_miss / max_cpa; 
   double cpan_pix = cpan_pct * w();
   glEnable(GL_BLEND);
@@ -123,6 +133,19 @@ void EncounterViewer::draw()
   glVertex2f(cpan_pix, h());
   glVertex2f(cpan_pix, 0);
   glVertex2f(cpax_pix, 0);
+  glEnd();
+  glDisable(GL_BLEND);
+
+  // Draw the low-efficiency zone
+  glEnable(GL_BLEND);
+  glColor4f(0.8, 0.8, 0.8, 0.3);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBegin(GL_POLYGON);
+  glVertex2f(0, 0);
+  glVertex2f(0, h()/2);
+  glVertex2f(w(), h()/2);
+  glVertex2f(w(), 0);
+  glVertex2f(0, 0);
   glEnd();
   glDisable(GL_BLEND);
 
@@ -232,6 +255,9 @@ void EncounterViewer::setDataBroker(ALogDataBroker dbroker, string vname)
 
   unsigned int aix = dbroker.getAixFromVName(vname);
   m_encounter_plot = dbroker.getEncounterPlot(aix);
+
+  m_min_cpa = m_encounter_plot.getMinCPA();
+  m_min_eff = m_encounter_plot.getMinEFF();
 }
 
 //-------------------------------------------------------------

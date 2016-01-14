@@ -547,8 +547,8 @@ void REPLAY_GUI::cb_RightLogPlot(Fl_Widget* o, int v) {
 }
 
 //----------------------------------------- cb_Encounter
-inline void REPLAY_GUI::cb_Encounter_i(int mix) {
-  string vname = m_dbroker.getVNameFromMix(mix);
+inline void REPLAY_GUI::cb_Encounter_i(int aix) {
+  string vname = m_dbroker.getVNameFromAix(aix);
   if(vname == "")
     return;
 

@@ -36,8 +36,8 @@ using namespace std;
 EncounterPlot::EncounterPlot()
 {
   m_min_cpa  = 0; 
-  m_min_cpa  = 0; 
-  m_max_eff  = 0; 
+  m_max_cpa  = 0; 
+  m_min_eff  = 0; 
   m_max_eff  = 0; 
   m_average_cpa = 0;
   m_average_eff = 0;
@@ -73,7 +73,7 @@ bool EncounterPlot::addEncounter(double time, CPAEvent event)
   if((tsize == 0) || (cpa < m_min_cpa))
     m_min_cpa = cpa;
   if((tsize == 0) || (eff > m_max_eff))
-    m_max_cpa = cpa;
+    m_max_eff = eff;
   if((tsize == 0) || (eff < m_min_eff))
     m_min_eff = eff;
   

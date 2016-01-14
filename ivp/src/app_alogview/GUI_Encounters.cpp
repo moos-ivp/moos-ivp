@@ -90,6 +90,12 @@ void GUI_Encounters::initWidgets()
   m_fld_encounters->clear_visible_focus();
   m_fld_encounters->color(fcolor1); 
 
+  m_fld_min_cpa = new Fl_Output(0, 0, 1, 1, "C"); 
+  m_fld_min_cpa->clear_visible_focus();
+
+  m_fld_min_eff = new Fl_Output(0, 0, 1, 1, "E"); 
+  m_fld_min_eff->clear_visible_focus();
+
   m_but_draw_mineff = new Fl_Check_Button(0, 0, 1, 1, "MinEff");
   m_but_draw_mineff->clear_visible_focus();
   m_but_draw_mineff->callback((Fl_Callback*)GUI_Encounters::cb_SelectMinEff, (void*)0);
@@ -105,6 +111,11 @@ void GUI_Encounters::initWidgets()
   m_but_draw_avgcpa = new Fl_Check_Button(0, 0, 1, 1, "AvgCPA");
   m_but_draw_avgcpa->clear_visible_focus();
   m_but_draw_avgcpa->callback((Fl_Callback*)GUI_Encounters::cb_SelectAvgCPA, (void*)0);
+
+  m_but_show_allpts = new Fl_Check_Button(0, 0, 1, 1, "AllPts");
+  m_but_show_allpts->clear_visible_focus();
+  m_but_show_allpts->shortcut('p');
+  m_but_show_allpts->callback((Fl_Callback*)GUI_Encounters::cb_SelectShowPts, (void*)0);
 }
 
 //---------------------------------------------------------------------------
@@ -129,12 +140,30 @@ void GUI_Encounters::resizeWidgetsShape()
   int enc_hgt = 20;
   m_fld_encounters->resize(enc_x, enc_y, enc_wid, enc_hgt); 
   
+  int cmin_x = w() - 60;
+  int cmin_y = 5;
+  int cmin_wid = 40;
+  int cmin_hgt = 20;
+  m_fld_min_cpa->resize(cmin_x, cmin_y, cmin_wid, cmin_hgt); 
+  
+  int fmin_x = w() - 60;
+  int fmin_y = 35;
+  int fmin_wid = 40;
+  int fmin_hgt = 20;
+  m_fld_min_eff->resize(fmin_x, fmin_y, fmin_wid, fmin_hgt); 
+  
+  int show_x = enc_x + enc_wid + 20;
+  int show_y = 5;
+  int show_wid = 50;
+  int show_hgt = 20;
+  m_but_show_allpts->resize(show_x, show_y, show_wid, show_hgt); 
+
   int meff_x = 10;
   int meff_y = 35;
   int meff_wid = 50;
   int meff_hgt = 20;
   m_but_draw_mineff->resize(meff_x, meff_y, meff_wid, meff_hgt); 
-
+  
   int aeff_x = meff_x + meff_wid + 20;
   int aeff_y = 35;
   int aeff_wid = 60;
@@ -169,6 +198,9 @@ void GUI_Encounters::resizeWidgetsText()
   if(w() < small_wid)
     blab_size = 10;
 
+  m_but_show_allpts->labelsize(blab_size); 
+  m_but_show_allpts->labelsize(blab_size); 
+  
   m_but_draw_mineff->labelsize(blab_size); 
   m_but_draw_avgeff->labelsize(blab_size); 
 
@@ -180,6 +212,12 @@ void GUI_Encounters::resizeWidgetsText()
 
   m_fld_encounters->textsize(info_size); 
   m_fld_encounters->labelsize(info_size);
+
+  m_fld_min_cpa->textsize(info_size); 
+  m_fld_min_cpa->labelsize(info_size);
+
+  m_fld_min_eff->textsize(info_size); 
+  m_fld_min_eff->labelsize(info_size);
 }
 
 //-------------------------------------------------------------------
@@ -339,6 +377,16 @@ void GUI_Encounters::cb_Step(Fl_Widget* o, int val) {
 }
 
 
+//----------------------------------------- SelectShowPts
+inline void GUI_Encounters::cb_SelectShowPts_i() {
+  bool drawing_on = m_but_show_allpts->value();
+  m_eviewer->setShowAllPts(drawing_on);
+  m_eviewer->redraw();
+}
+void GUI_Encounters::cb_SelectShowPts(Fl_Widget* o) {
+  ((GUI_Encounters*)(o->parent()->user_data()))->cb_SelectShowPts_i();
+}
+
 //----------------------------------------- SelectMinEff
 inline void GUI_Encounters::cb_SelectMinEff_i() {
   bool drawing_on = m_but_draw_mineff->value();
@@ -389,12 +437,16 @@ void GUI_Encounters::toggleFullScreen()
   if(m_fullscreen) {
     m_fld_loc_time->hide();
     m_fld_encounters->hide();
+    m_fld_min_cpa->hide();
+    m_fld_min_eff->hide();
     resizeWidgetsShape();
     redraw();
   }
   else {
     m_fld_loc_time->show();
     m_fld_encounters->show();
+    m_fld_min_cpa->show();
+    m_fld_min_eff->show();
     resizeWidgetsShape();
     resizeWidgetsText();
     updateXY();
@@ -456,12 +508,20 @@ void GUI_Encounters::updateXY()
   if(m_fullscreen)
     return;
 
-  // IPF fields
   double time     = m_eviewer->getCurrTime();
   string time_str = doubleToString(time, 3);
   m_fld_loc_time->value(time_str.c_str());
 
   string encounters_str = m_eviewer->getTotalEncounters();
   m_fld_encounters->value(encounters_str.c_str());
+
+  double min_cpa = m_eviewer->getMinCPA();
+  string min_cpa_str = doubleToString(min_cpa,2);
+  m_fld_min_cpa->value(min_cpa_str.c_str());
+
+
+  double min_eff = m_eviewer->getMinEFF();
+  string min_eff_str = doubleToString(min_eff,2);
+  m_fld_min_eff->value(min_eff_str.c_str());
 }
 
