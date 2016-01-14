@@ -132,21 +132,31 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  NODE_REPORT    =    NAME=alpha,TYPE=UUV,TIME=1252348077.59,   ");
-  blk("                      X=51.71,Y=-35.50, LAT=43.824981,          ");
-  blk("                      LON=-70.329755,SPD=2.0,HDG=118.8,         ");
-  blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
-  blk("                      MODE=MODE@ACTIVE:LOITERING                ");
+  blk("  Dynamic: Will subscribe for any MOOS variables involved in the");
+  blk("           condition parameter if used.                         ");
+  blk("                                                                ");
+  blk("                                                                ");
+  blk("  NODE_REPORT = NAME=alpha,TYPE=UUV,TIME=1252348077.59,X=51.71, ");
+  blk("                Y=-35.50, LAT=43.824981,LON=-70.329755,SPD=2.0, ");
+  blk("                HDG=118.8,YAW=118.8,DEPTH=4.6,LENGTH=3.8,       ");
+  blk("                MODE=MODE@ACTIVE:LOITERING                      ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
+  blk("  Dynamic: Will pulish any MOOS variables involved in either    ");
+  blk("           the collision_flag, near_miss_flag or encounter_flag ");
+  blk("           parameters.                                          ");
+  blk("                                                                ");
   blk("  UCD_REPORT = vname1=abe, vname2=cal, cpa=2.4, rank=collision  ");
   blk("                                                                ");
   blk("  VIEW_RANGE_PULSE = x=78.78,y=-78.405,radius=40,duration=20,   ");
   blk("                     fill=0.25,edge_color=red,fill_color=red,   ");
   blk("                     time=65286252381.7,edge_size=1             ");
   blk("                                                                ");
-
+  blk("  ENCOUNTER_TOTAL  = 193                                        ");
+  blk("                                                                ");
+  blk("  COLLISION_DETECT_PARAMS = collision_range=4,near_miss_range=8,");
+  blk("                            encounter_range=20                  ");
   exit(0);
 }
 

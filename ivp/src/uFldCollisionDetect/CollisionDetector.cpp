@@ -247,6 +247,11 @@ bool CollisionDetector::OnStartUp()
   
   m_cpa_monitor.setReportRange(m_encounter_dist);
   m_cpa_monitor.setIgnoreRange(m_encounter_dist * 1.5);
+
+  string param_summary = "collision_range=" + doubleToStringX(m_collision_dist);
+  param_summary += ", near_miss_range=" + doubleToStringX(m_near_miss_dist);
+  param_summary += ", encounter_range=" + doubleToStringX(m_encounter_dist);
+  Notify("COLLISION_DETECT_PARAMS", param_summary);
   
   registerVariables();	
   return(true);
