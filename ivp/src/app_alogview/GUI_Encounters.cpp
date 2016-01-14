@@ -90,25 +90,29 @@ void GUI_Encounters::initWidgets()
   m_fld_encounters->clear_visible_focus();
   m_fld_encounters->color(fcolor1); 
 
-  m_fld_min_cpa = new Fl_Output(0, 0, 1, 1, "C"); 
+  m_fld_min_cpa = new Fl_Output(0, 0, 1, 1, ""); 
   m_fld_min_cpa->clear_visible_focus();
-
-  m_fld_min_eff = new Fl_Output(0, 0, 1, 1, "E"); 
+  m_fld_min_eff = new Fl_Output(0, 0, 1, 1, ""); 
   m_fld_min_eff->clear_visible_focus();
 
-  m_but_draw_mineff = new Fl_Check_Button(0, 0, 1, 1, "MinEff");
+  m_fld_avg_cpa = new Fl_Output(0, 0, 1, 1, ""); 
+  m_fld_avg_cpa->clear_visible_focus();
+  m_fld_avg_eff = new Fl_Output(0, 0, 1, 1, ""); 
+  m_fld_avg_eff->clear_visible_focus();
+
+  m_but_draw_mineff = new Fl_Check_Button(0, 0, 1, 1, "MinEFF:");
   m_but_draw_mineff->clear_visible_focus();
   m_but_draw_mineff->callback((Fl_Callback*)GUI_Encounters::cb_SelectMinEff, (void*)0);
 
-  m_but_draw_avgeff = new Fl_Check_Button(0, 0, 1, 1, "AvgEff");
+  m_but_draw_avgeff = new Fl_Check_Button(0, 0, 1, 1, "AvgEFF:");
   m_but_draw_avgeff->clear_visible_focus();
   m_but_draw_avgeff->callback((Fl_Callback*)GUI_Encounters::cb_SelectAvgEff, (void*)0);
 
-  m_but_draw_mincpa = new Fl_Check_Button(0, 0, 1, 1, "MinCPA");
+  m_but_draw_mincpa = new Fl_Check_Button(0, 0, 1, 1, "MinCPA:");
   m_but_draw_mincpa->clear_visible_focus();
   m_but_draw_mincpa->callback((Fl_Callback*)GUI_Encounters::cb_SelectMinCPA, (void*)0);
 
-  m_but_draw_avgcpa = new Fl_Check_Button(0, 0, 1, 1, "AvgCPA");
+  m_but_draw_avgcpa = new Fl_Check_Button(0, 0, 1, 1, "AvgCPA:");
   m_but_draw_avgcpa->clear_visible_focus();
   m_but_draw_avgcpa->callback((Fl_Callback*)GUI_Encounters::cb_SelectAvgCPA, (void*)0);
 
@@ -139,48 +143,68 @@ void GUI_Encounters::resizeWidgetsShape()
   int enc_wid = (50.0/550.0)*w();
   int enc_hgt = 20;
   m_fld_encounters->resize(enc_x, enc_y, enc_wid, enc_hgt); 
-  
-  int cmin_x = w() - 60;
+
+  // Min CPA field and checkbox
+  int cmin_x = w() - 45;
   int cmin_y = 5;
   int cmin_wid = 40;
   int cmin_hgt = 20;
   m_fld_min_cpa->resize(cmin_x, cmin_y, cmin_wid, cmin_hgt); 
   
-  int fmin_x = w() - 60;
+  int mcpa_x = cmin_x - 60;
+  int mcpa_y = 5;
+  int mcpa_wid = 50;
+  int mcpa_hgt = 20;
+  m_but_draw_mincpa->resize(mcpa_x, mcpa_y, mcpa_wid, mcpa_hgt); 
+
+  // Min Efficiency field and checkbox
+  int fmin_x = w() - 45;
   int fmin_y = 35;
   int fmin_wid = 40;
   int fmin_hgt = 20;
   m_fld_min_eff->resize(fmin_x, fmin_y, fmin_wid, fmin_hgt); 
-  
-  int show_x = enc_x + enc_wid + 20;
-  int show_y = 5;
-  int show_wid = 50;
-  int show_hgt = 20;
-  m_but_show_allpts->resize(show_x, show_y, show_wid, show_hgt); 
-
-  int meff_x = 10;
+   
+  int meff_x = fmin_x - 60;
   int meff_y = 35;
   int meff_wid = 50;
   int meff_hgt = 20;
   m_but_draw_mineff->resize(meff_x, meff_y, meff_wid, meff_hgt); 
+
+
+  // Avg CPA field and checkbox
+  int amin_x = mcpa_x - 60;
+  int amin_y = 5;
+  int amin_wid = 40;
+  int amin_hgt = 20;
+  m_fld_avg_cpa->resize(amin_x, amin_y, amin_wid, amin_hgt); 
   
-  int aeff_x = meff_x + meff_wid + 20;
+  int acpa_x = amin_x - 60;
+  int acpa_y = 5;
+  int acpa_wid = 60;
+  int acpa_hgt = 20;
+  m_but_draw_avgcpa->resize(acpa_x, acpa_y, acpa_wid, acpa_hgt); 
+
+  // Avg Efficiency field and checkbox
+  int kmin_x = meff_x - 60;
+  int kmin_y = 35;
+  int kmin_wid = 40;
+  int kmin_hgt = 20;
+  m_fld_avg_eff->resize(kmin_x, kmin_y, kmin_wid, kmin_hgt); 
+   
+  int aeff_x = kmin_x - 60;
   int aeff_y = 35;
   int aeff_wid = 60;
   int aeff_hgt = 20;
   m_but_draw_avgeff->resize(aeff_x, aeff_y, aeff_wid, aeff_hgt); 
 
-  int mcpa_x = aeff_x + aeff_wid + 20;
-  int mcpa_y = 35;
-  int mcpa_wid = 50;
-  int mcpa_hgt = 20;
-  m_but_draw_mincpa->resize(mcpa_x, mcpa_y, mcpa_wid, mcpa_hgt); 
 
-  int acpa_x = mcpa_x + mcpa_wid + 20;
-  int acpa_y = 35;
-  int acpa_wid = 60;
-  int acpa_hgt = 20;
-  m_but_draw_avgcpa->resize(acpa_x, acpa_y, acpa_wid, acpa_hgt); 
+
+
+  int show_x = 10;
+  int show_y = 35;
+  int show_wid = 50;
+  int show_hgt = 20;
+  m_but_show_allpts->resize(show_x, show_y, show_wid, show_hgt); 
 }
 
 //---------------------------------------------------------------------------
@@ -201,11 +225,11 @@ void GUI_Encounters::resizeWidgetsText()
   m_but_show_allpts->labelsize(blab_size); 
   m_but_show_allpts->labelsize(blab_size); 
   
-  m_but_draw_mineff->labelsize(blab_size); 
-  m_but_draw_avgeff->labelsize(blab_size); 
+  m_but_draw_mineff->labelsize(info_size); 
+  m_but_draw_avgeff->labelsize(info_size); 
 
-  m_but_draw_mincpa->labelsize(blab_size); 
-  m_but_draw_avgcpa->labelsize(blab_size); 
+  m_but_draw_mincpa->labelsize(info_size); 
+  m_but_draw_avgcpa->labelsize(info_size); 
   
   m_fld_loc_time->textsize(info_size); 
   m_fld_loc_time->labelsize(info_size);
@@ -218,6 +242,12 @@ void GUI_Encounters::resizeWidgetsText()
 
   m_fld_min_eff->textsize(info_size); 
   m_fld_min_eff->labelsize(info_size);
+
+  m_fld_avg_cpa->textsize(info_size); 
+  m_fld_avg_cpa->labelsize(info_size);
+
+  m_fld_avg_eff->textsize(info_size); 
+  m_fld_avg_eff->labelsize(info_size);
 }
 
 //-------------------------------------------------------------------
@@ -297,6 +327,23 @@ int GUI_Encounters::handle(int event)
       m_parent_gui->streaming(2);
     else if(Fl::event_key() == 'f') 
       toggleFullScreen();
+    else if(Fl::event_key() == 'l') {
+      bool draw_mincpa = m_but_draw_mincpa->value();
+      m_but_draw_mincpa->value(!draw_mincpa);
+      m_eviewer->setDrawMinCPA(!draw_mincpa);
+      bool draw_avgcpa = m_but_draw_avgcpa->value();
+      m_but_draw_avgcpa->value(!draw_avgcpa);
+      m_eviewer->setDrawAvgCPA(!draw_avgcpa);
+      bool draw_mineff = m_but_draw_mineff->value();
+      m_but_draw_mineff->value(!draw_mineff);
+      m_eviewer->setDrawMinEff(!draw_mineff);
+      bool draw_avgeff = m_but_draw_avgeff->value();
+      m_but_draw_avgeff->value(!draw_avgeff);
+      m_eviewer->setDrawAvgEff(!draw_avgeff);
+
+      m_eviewer->redraw();
+    }
+
     else if(Fl::event_key() == 'a') 
       m_parent_gui->streamspeed(true);
     else if(Fl::event_key() == 'z') 
@@ -439,6 +486,8 @@ void GUI_Encounters::toggleFullScreen()
     m_fld_encounters->hide();
     m_fld_min_cpa->hide();
     m_fld_min_eff->hide();
+    m_fld_avg_cpa->hide();
+    m_fld_avg_eff->hide();
     resizeWidgetsShape();
     redraw();
   }
@@ -447,6 +496,8 @@ void GUI_Encounters::toggleFullScreen()
     m_fld_encounters->show();
     m_fld_min_cpa->show();
     m_fld_min_eff->show();
+    m_fld_avg_cpa->show();
+    m_fld_avg_eff->show();
     resizeWidgetsShape();
     resizeWidgetsText();
     updateXY();
@@ -519,9 +570,16 @@ void GUI_Encounters::updateXY()
   string min_cpa_str = doubleToString(min_cpa,2);
   m_fld_min_cpa->value(min_cpa_str.c_str());
 
-
   double min_eff = m_eviewer->getMinEFF();
   string min_eff_str = doubleToString(min_eff,2);
   m_fld_min_eff->value(min_eff_str.c_str());
+
+  double avg_cpa = m_eviewer->getAvgCPA();
+  string avg_cpa_str = doubleToString(avg_cpa,2);
+  m_fld_avg_cpa->value(avg_cpa_str.c_str());
+
+  double avg_eff = m_eviewer->getAvgEFF();
+  string avg_eff_str = doubleToString(avg_eff,2);
+  m_fld_avg_eff->value(avg_eff_str.c_str());
 }
 

@@ -42,6 +42,10 @@ EncounterPlot::EncounterPlot()
   m_average_cpa = 0;
   m_average_eff = 0;
   m_average_set = false;
+
+  m_collision_range = 5.33;
+  m_near_miss_range = 10.33;
+  m_encounter_range = 50.33;
 }
 
 //---------------------------------------------------------------
@@ -79,6 +83,63 @@ bool EncounterPlot::addEncounter(double time, CPAEvent event)
   
   m_average_set = false;
   return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: setCollisionRange()
+
+void EncounterPlot::setCollisionRange(double collision_range)
+{
+  cout << "JJJJJ  New Collision range is: " << collision_range << endl;
+  if(collision_range < 0)
+    return;
+  m_collision_range = collision_range;
+
+  // Adjust near_miss range if need be. Should be >= near_miss range.
+  if(m_near_miss_range < m_collision_range)
+    m_near_miss_range = m_collision_range;
+
+  // Adjust encounter range if need be. Should be >= encounter range.
+  if(m_encounter_range < m_collision_range)
+    m_encounter_range = m_collision_range;
+}
+
+//---------------------------------------------------------------
+// Procedure: setNearMissRange()
+
+void EncounterPlot::setNearMissRange(double near_miss_range)
+{
+  cout << "JJJJJ  New near_miss range is: " << near_miss_range << endl;
+  if(near_miss_range < 0)
+    return;
+  m_near_miss_range = near_miss_range;
+
+  // Adjust collision range if need be. Should be <= near_miss range.
+  if(m_collision_range > m_near_miss_range)
+    m_collision_range = m_near_miss_range;
+
+  // Adjust encounter range if need be. Should be >= near_miss range.
+  if(m_encounter_range < m_near_miss_range)
+    m_encounter_range = m_near_miss_range;
+}
+
+//---------------------------------------------------------------
+// Procedure: setEncounterRange()
+
+void EncounterPlot::setEncounterRange(double encounter_range)
+{
+  cout << "JJJJJ  New encounter range is: " << encounter_range << endl;
+  if(encounter_range < 0)
+    return;
+  m_encounter_range = encounter_range;
+
+  // Adjust collision range if need be. Should be <= encounter range.
+  if(m_collision_range > m_encounter_range)
+    m_collision_range = m_encounter_range;
+
+  // Adjust near_miss range if need be. Should be <= encounter range.
+  if(m_near_miss_range > m_encounter_range)
+    m_near_miss_range = m_encounter_range;
 }
 
 //---------------------------------------------------------------

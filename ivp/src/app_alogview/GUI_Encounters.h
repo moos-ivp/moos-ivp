@@ -102,6 +102,8 @@ protected:
 
   Fl_Output   *m_fld_min_cpa;
   Fl_Output   *m_fld_min_eff;
+  Fl_Output   *m_fld_avg_cpa;
+  Fl_Output   *m_fld_avg_eff;
   
   Fl_Check_Button *m_but_draw_mineff;
   Fl_Check_Button *m_but_draw_avgeff;

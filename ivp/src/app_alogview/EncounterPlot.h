@@ -36,7 +36,10 @@ public:
   
  public: // Setting
   bool   addEncounter(double time, CPAEvent event);
-
+  void   setCollisionRange(double);
+  void   setNearMissRange(double);
+  void   setEncounterRange(double);
+  
  public: // Modification
   void   applySkew(double skew);
 
@@ -55,15 +58,19 @@ public:
   double getMeanCPA();
   double getMeanEFF();
 
-  double getMinCPA() const        {return(m_min_cpa);}
-  double getMinEFF() const        {return(m_min_eff);}
-  double getMaxCPA() const        {return(m_max_cpa);}
-  double getMaxEFF() const        {return(m_max_eff);}
+  double getMinCPA() const         {return(m_min_cpa);}
+  double getMinEFF() const         {return(m_min_eff);}
+  double getMaxCPA() const         {return(m_max_cpa);}
+  double getMaxEFF() const         {return(m_max_eff);}
 
-  std::string getOwnship() const  {return(m_ownship);}
-  unsigned int  size() const      {return(m_time.size());}
+  double getCollisionRange() const {return(m_collision_range);}
+  double getNearMissRange() const  {return(m_near_miss_range);}
+  double getEncounterRange() const {return(m_encounter_range);}
+  
+  std::string getOwnship() const   {return(m_ownship);}
+  unsigned int  size() const       {return(m_time.size());}
 
-  bool   empty() const            {return(m_time.size() == 0);}
+  bool   empty() const             {return(m_time.size()==0);}
   void   print() const;
 
  protected:
@@ -80,6 +87,10 @@ protected:
   double m_max_cpa;
   double m_max_eff;
 
+  double m_collision_range;
+  double m_near_miss_range;
+  double m_encounter_range;
+  
   bool   m_average_set;
   double m_average_cpa;
   double m_average_eff;

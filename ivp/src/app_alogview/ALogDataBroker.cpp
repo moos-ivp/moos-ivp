@@ -680,21 +680,40 @@ EncounterPlot ALogDataBroker::getEncounterPlot(unsigned int aix)
     return(eplot);
   }
 
-  // Part 2: Confirm that the EVAL_LOITER_SUMMARY.klog file can be found and opened
-  string klog = m_base_dirs[aix] + "/ENCOUNTER_SUMMARY.klog";
-  FILE *f = fopen(klog.c_str(), "r");
-  if(!f) {
-    cout << "Could not create EncounterPlot from " << klog << endl;
+  vector<ALogEntry> entries;
+
+  // Part 2: Get at least one COLLISION_DETECT_PARAMS entry
+  // Confirm COLLISION_DETECT_PARAMS.klog file can be found and opened
+  string klog1 = m_base_dirs[aix] + "/COLLISION_DETECT_PARAMS.klog";
+  FILE *f1 = fopen(klog1.c_str(), "r");
+  if(!f1)
+    cout << "WARNING: No COLLISION_DETECT_PARAMS info. Using defaults." << endl;
+  else {
+    while(1) {
+      ALogEntry entry = getNextRawALogEntry(f1, true);      
+      // Check if the line is a comment
+      if(entry.getStatus() == "invalid")
+	continue;
+      if(entry.getStatus() == "eof") 
+	break;      
+      entries.push_back(entry);
+    }
+    fclose(f1);
+  }
+
+
+  // Part 3: Get the ENCOUNTER_SUMMARY entries.
+  // Confirm that the EVAL_LOITER_SUMMARY.klog file can be found and opened
+  string klog2 = m_base_dirs[aix] + "/ENCOUNTER_SUMMARY.klog";
+  FILE *f2 = fopen(klog2.c_str(), "r");
+  if(!f2) {
+    cout << "Could not create EncounterPlot from " << klog2 << endl;
     return(eplot);
   }
   
-  // Part 3: Populate the HelmPlots
-  Populator_EncounterPlot populator;
-
-  vector<ALogEntry> entries;
   bool done = false;
   while(!done) {
-    ALogEntry entry = getNextRawALogEntry(f, true);
+    ALogEntry entry = getNextRawALogEntry(f2, true);
 
     // Check if the line is a comment
     if(entry.getStatus() == "invalid")
@@ -711,7 +730,11 @@ EncounterPlot ALogDataBroker::getEncounterPlot(unsigned int aix)
 
     entries.push_back(entry);
   }
+  fclose(f2);
 
+
+  // Part 3: Populate the Encounter Plot
+  Populator_EncounterPlot populator;
   populator.populateFromEntries(entries);
   eplot = populator.getEncounterPlot();
 

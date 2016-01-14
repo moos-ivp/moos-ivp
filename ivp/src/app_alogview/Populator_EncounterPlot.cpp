@@ -23,6 +23,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <iostream>
 #include "Populator_EncounterPlot.h"
 #include "MBUtils.h"
 #include "CPAEvent.h"
@@ -46,12 +47,21 @@ bool Populator_EncounterPlot::populateFromEntries(const vector<ALogEntry>& entri
       CPAEvent event(sval);
       m_encounter_plot.addEncounter(time, event);
     }
+    else if(var == "COLLISION_DETECT_PARAMS") {
+      cout << "Processing COLLISION_DETECT_PARAMS!!!!!!!!!!!!!!!!!!!!!!" << endl;
+      vector<string> svector = parseString(entries[i].getStringVal(), ',');
+      for(unsigned int j=0; j<svector.size(); j++) {
+	string param = biteStringX(svector[j], '=');
+	string value = svector[j];
+	cout << "   param:[" << param << "] value:[" << value << "]" << endl;
+	if(param == "collision_range")
+	  m_encounter_plot.setCollisionRange(atof(value.c_str()));
+	else if(param == "near_miss_range")
+	  m_encounter_plot.setNearMissRange(atof(value.c_str()));
+	else if(param == "encounter_range")
+	  m_encounter_plot.setEncounterRange(atof(value.c_str()));
+      }
+    }
   }
   return(true);
 }
-
-
-
-
-
-

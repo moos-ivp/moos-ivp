@@ -63,6 +63,8 @@ class EncounterViewer : public Fl_Gl_Window
   double getCurrTime() const;
   double getMinCPA() const {return(m_min_cpa);}
   double getMinEFF() const {return(m_min_eff);}
+  double getAvgCPA() const {return(m_avg_cpa);}
+  double getAvgEFF() const {return(m_avg_eff);}
   
   std::string getTotalEncounters() const;
 
@@ -83,8 +85,14 @@ private:
   double m_cpa_collision;
   double m_cpa_near_miss;
 
+  double m_collision_range;
+  double m_near_miss_range;
+  double m_encounter_range;
+  
   double m_min_cpa;
   double m_min_eff;
+  double m_avg_cpa;
+  double m_avg_eff;
   
   EncounterPlot  m_encounter_plot;
   ColorPack      m_clear_color;

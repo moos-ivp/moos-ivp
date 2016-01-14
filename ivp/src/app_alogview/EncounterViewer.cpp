@@ -50,13 +50,16 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
   m_draw_mincpa = false;
   m_draw_avgcpa = false;
 
-  m_cpa_collision = 8;
-  m_cpa_near_miss = 10;
-
+  m_collision_range = 8.5;
+  m_near_miss_range = 10.5;
+  m_encounter_range = 50.5;
+  
   m_show_allpts = false;
 
   m_min_cpa = 0;
   m_min_eff = 0;
+  m_avg_cpa = 0;
+  m_avg_eff = 0;
 }
 
 //-------------------------------------------------------------
@@ -70,10 +73,10 @@ void EncounterViewer::draw()
   cout << "In EncounterViewer::draw()  " << "w:" << w() << ", h:" << h() << endl;
   //cout << "vname: " << m_vname << endl;
   //cout << "plotsize: " << m_encounter_plot.size() << endl;
-  
-  double max_cpa = m_encounter_plot.getMaxCPA();
 
-  //cout << "max_cpa: " << max_cpa << endl;
+  cout << "m_collision_range: " << m_collision_range << endl;
+  cout << "m_near_miss_range: " << m_near_miss_range << endl;
+  cout << "m_encounter_range: " << m_encounter_range << endl;
   
   vector<double> v_cpa_pix;
   vector<double> v_eff_pix;
@@ -86,10 +89,9 @@ void EncounterViewer::draw()
     double eff_pix = (eff_pct/100) * h();
     
     double cpa = m_encounter_plot.getValueCPAByIndex(i);
-    double cpa_pct = cpa / max_cpa; 
+    double cpa_pct = cpa / m_encounter_range; 
     double cpa_pix = cpa_pct * w();
 
-    //cout << "cpa [" << i << "]:" << cpa << endl;
     v_eff_pix.push_back(eff_pix);
     v_cpa_pix.push_back(cpa_pix);
   }
@@ -107,7 +109,7 @@ void EncounterViewer::draw()
 
 
   // Draw the collision zone
-  double cpax_pct = m_cpa_collision / max_cpa; 
+  double cpax_pct = m_collision_range / m_encounter_range; 
   double cpax_pix = cpax_pct * w();
   glEnable(GL_BLEND);
   glColor4f(0.9, 0.7, 0.7, 0.4);
@@ -122,7 +124,7 @@ void EncounterViewer::draw()
   glDisable(GL_BLEND);
 
   // Draw the near_miss zone
-  double cpan_pct = m_cpa_near_miss / max_cpa; 
+  double cpan_pct = m_near_miss_range / m_encounter_range; 
   double cpan_pix = cpan_pct * w();
   glEnable(GL_BLEND);
   glColor4f(0.9, 0.9, 0.7, 0.4);
@@ -195,7 +197,7 @@ void EncounterViewer::draw()
   // Draw the Min CPA Line
   if(m_draw_mincpa) {
     double min_cpa = m_encounter_plot.getMinCPA();
-    double min_cpa_pct = min_cpa / max_cpa; 
+    double min_cpa_pct = min_cpa / m_encounter_range; 
     double min_cpa_pix = min_cpa_pct * w();
     glColor3f(m_mincpa_color.red(), m_mincpa_color.grn(), m_mincpa_color.blu());
     glBegin(GL_LINE_STRIP);
@@ -207,7 +209,7 @@ void EncounterViewer::draw()
   // Draw the Avg CPA Line
   if(m_draw_avgcpa) {
     double avg_cpa = m_encounter_plot.getMeanCPA();
-    double avg_cpa_pct = avg_cpa / max_cpa; 
+    double avg_cpa_pct = avg_cpa / m_encounter_range; 
     double avg_cpa_pix = avg_cpa_pct * w();
     glColor3f(m_avgcpa_color.red(), m_avgcpa_color.grn(), m_avgcpa_color.blu());
     glBegin(GL_LINE_STRIP);
@@ -258,6 +260,18 @@ void EncounterViewer::setDataBroker(ALogDataBroker dbroker, string vname)
 
   m_min_cpa = m_encounter_plot.getMinCPA();
   m_min_eff = m_encounter_plot.getMinEFF();
+  m_avg_cpa = m_encounter_plot.getMeanCPA();
+  m_avg_eff = m_encounter_plot.getMeanEFF();
+
+  m_collision_range = m_encounter_plot.getCollisionRange();
+  m_near_miss_range = m_encounter_plot.getNearMissRange();
+  m_encounter_range = m_encounter_plot.getEncounterRange();
+
+  cout << "xm_collision_range: " << m_collision_range << endl;
+  cout << "xm_near_miss_range: " << m_near_miss_range << endl;
+  cout << "xm_encounter_range: " << m_encounter_range << endl;
+  
+
 }
 
 //-------------------------------------------------------------
