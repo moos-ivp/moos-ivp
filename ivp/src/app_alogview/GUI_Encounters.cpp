@@ -43,12 +43,11 @@ GUI_Encounters::GUI_Encounters(int g_w, int g_h, const char *g_l)
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
   this->begin();
-  this->size_range(375,250, 1200,1200, 0,0, 1);
+  this->size_range(475,240, 500,500, 0,0, 1);
 
   m_replay_warp_msg = "(PAUSED)";
   m_parent_gui = 0;
   m_fullscreen = false;
-  m_mutable_text_size = 10;
 
   this->initWidgets();
   this->resizeWidgetsShape();
@@ -70,6 +69,21 @@ GUI_Encounters::~GUI_Encounters()
 
   delete(m_fld_loc_time);
   delete(m_fld_encounters);
+
+  delete(m_fld_min_cpa);
+  delete(m_fld_min_eff);
+  delete(m_fld_avg_cpa);
+  delete(m_fld_avg_eff);
+
+  delete(m_fld_collision_range);
+  delete(m_fld_near_miss_range);
+  delete(m_fld_encounter_range);
+
+  delete(m_but_draw_mineff);
+  delete(m_but_draw_avgeff);
+  delete(m_but_draw_mincpa);
+  delete(m_but_draw_avgcpa);
+  delete(m_but_show_allpts);
 }
 
 
@@ -100,19 +114,26 @@ void GUI_Encounters::initWidgets()
   m_fld_avg_eff = new Fl_Output(0, 0, 1, 1, ""); 
   m_fld_avg_eff->clear_visible_focus();
 
-  m_but_draw_mineff = new Fl_Check_Button(0, 0, 1, 1, "MinEFF:");
+  m_fld_collision_range = new Fl_Output(0, 0, 1, 1, "Collision\n Range:"); 
+  m_fld_collision_range->clear_visible_focus();
+  m_fld_near_miss_range = new Fl_Output(0, 0, 1, 1, "NearMiss\n Range:"); 
+  m_fld_near_miss_range->clear_visible_focus();
+  m_fld_encounter_range = new Fl_Output(0, 0, 1, 1, "Encounter\n Range:"); 
+  m_fld_encounter_range->clear_visible_focus();
+
+  m_but_draw_mineff = new Fl_Check_Button(0, 0, 1, 1, "Min\nEFF:");
   m_but_draw_mineff->clear_visible_focus();
   m_but_draw_mineff->callback((Fl_Callback*)GUI_Encounters::cb_SelectMinEff, (void*)0);
 
-  m_but_draw_avgeff = new Fl_Check_Button(0, 0, 1, 1, "AvgEFF:");
+  m_but_draw_avgeff = new Fl_Check_Button(0, 0, 1, 1, "Avg\nEFF:");
   m_but_draw_avgeff->clear_visible_focus();
   m_but_draw_avgeff->callback((Fl_Callback*)GUI_Encounters::cb_SelectAvgEff, (void*)0);
 
-  m_but_draw_mincpa = new Fl_Check_Button(0, 0, 1, 1, "MinCPA:");
+  m_but_draw_mincpa = new Fl_Check_Button(0, 0, 1, 1, "Min\nCPA:");
   m_but_draw_mincpa->clear_visible_focus();
   m_but_draw_mincpa->callback((Fl_Callback*)GUI_Encounters::cb_SelectMinCPA, (void*)0);
 
-  m_but_draw_avgcpa = new Fl_Check_Button(0, 0, 1, 1, "AvgCPA:");
+  m_but_draw_avgcpa = new Fl_Check_Button(0, 0, 1, 1, "Avg\nCPA:");
   m_but_draw_avgcpa->clear_visible_focus();
   m_but_draw_avgcpa->callback((Fl_Callback*)GUI_Encounters::cb_SelectAvgCPA, (void*)0);
 
@@ -127,7 +148,10 @@ void GUI_Encounters::initWidgets()
 
 void GUI_Encounters::resizeWidgetsShape()
 {
-  m_eviewer->EncounterViewer::resize(0, 0+60, w(), h()-60);
+  if(m_fullscreen)
+    m_eviewer->EncounterViewer::resize(0, 0, w(), h());
+  else
+    m_eviewer->EncounterViewer::resize(0, 0+60, w(), h()-60);
 
   if(m_fullscreen) 
     return;
@@ -144,6 +168,31 @@ void GUI_Encounters::resizeWidgetsShape()
   int enc_hgt = 20;
   m_fld_encounters->resize(enc_x, enc_y, enc_wid, enc_hgt); 
 
+  int show_x = enc_x + enc_wid + 30;
+  int show_y = 5;
+  int show_wid = 50;
+  int show_hgt = 20;
+  m_but_show_allpts->resize(show_x, show_y, show_wid, show_hgt); 
+
+  // Collision Range Field
+  int krng_x = 50;
+  int krng_y = 35;
+  int krng_wid = 35;
+  int krng_hgt = 20;
+  m_fld_collision_range->resize(krng_x, krng_y, krng_wid, krng_hgt); 
+  // NearMiss Range Field
+  int nrng_x = krng_x + krng_wid + 55;
+  int nrng_y = 35;
+  int nrng_wid = 35;
+  int nrng_hgt = 20;
+  m_fld_near_miss_range->resize(nrng_x, nrng_y, nrng_wid, nrng_hgt); 
+  // Encounter Range Field
+  int erng_x = nrng_x + nrng_wid + 55;
+  int erng_y = 35;
+  int erng_wid = 35;
+  int erng_hgt = 20;
+  m_fld_encounter_range->resize(erng_x, erng_y, erng_wid, erng_hgt); 
+  
   // Min CPA field and checkbox
   int cmin_x = w() - 45;
   int cmin_y = 5;
@@ -151,7 +200,7 @@ void GUI_Encounters::resizeWidgetsShape()
   int cmin_hgt = 20;
   m_fld_min_cpa->resize(cmin_x, cmin_y, cmin_wid, cmin_hgt); 
   
-  int mcpa_x = cmin_x - 60;
+  int mcpa_x = cmin_x - 45;
   int mcpa_y = 5;
   int mcpa_wid = 50;
   int mcpa_hgt = 20;
@@ -164,47 +213,38 @@ void GUI_Encounters::resizeWidgetsShape()
   int fmin_hgt = 20;
   m_fld_min_eff->resize(fmin_x, fmin_y, fmin_wid, fmin_hgt); 
    
-  int meff_x = fmin_x - 60;
+  int meff_x = fmin_x - 45;
   int meff_y = 35;
   int meff_wid = 50;
   int meff_hgt = 20;
   m_but_draw_mineff->resize(meff_x, meff_y, meff_wid, meff_hgt); 
 
-
   // Avg CPA field and checkbox
-  int amin_x = mcpa_x - 60;
+  int amin_x = mcpa_x - 55;
   int amin_y = 5;
   int amin_wid = 40;
   int amin_hgt = 20;
   m_fld_avg_cpa->resize(amin_x, amin_y, amin_wid, amin_hgt); 
   
-  int acpa_x = amin_x - 60;
+  int acpa_x = amin_x - 45;
   int acpa_y = 5;
   int acpa_wid = 60;
   int acpa_hgt = 20;
   m_but_draw_avgcpa->resize(acpa_x, acpa_y, acpa_wid, acpa_hgt); 
 
   // Avg Efficiency field and checkbox
-  int kmin_x = meff_x - 60;
+  int kmin_x = meff_x - 55;
   int kmin_y = 35;
   int kmin_wid = 40;
   int kmin_hgt = 20;
   m_fld_avg_eff->resize(kmin_x, kmin_y, kmin_wid, kmin_hgt); 
    
-  int aeff_x = kmin_x - 60;
+  int aeff_x = kmin_x - 45;
   int aeff_y = 35;
   int aeff_wid = 60;
   int aeff_hgt = 20;
   m_but_draw_avgeff->resize(aeff_x, aeff_y, aeff_wid, aeff_hgt); 
 
-
-
-
-  int show_x = 10;
-  int show_y = 35;
-  int show_wid = 50;
-  int show_hgt = 20;
-  m_but_show_allpts->resize(show_x, show_y, show_wid, show_hgt); 
 }
 
 //---------------------------------------------------------------------------
@@ -222,8 +262,8 @@ void GUI_Encounters::resizeWidgetsText()
   if(w() < small_wid)
     blab_size = 10;
 
-  m_but_show_allpts->labelsize(blab_size); 
-  m_but_show_allpts->labelsize(blab_size); 
+  m_but_show_allpts->labelsize(info_size); 
+  m_but_show_allpts->labelsize(info_size); 
   
   m_but_draw_mineff->labelsize(info_size); 
   m_but_draw_avgeff->labelsize(info_size); 
@@ -231,6 +271,13 @@ void GUI_Encounters::resizeWidgetsText()
   m_but_draw_mincpa->labelsize(info_size); 
   m_but_draw_avgcpa->labelsize(info_size); 
   
+  m_fld_collision_range->textsize(info_size); 
+  m_fld_collision_range->labelsize(info_size);
+  m_fld_near_miss_range->textsize(info_size); 
+  m_fld_near_miss_range->labelsize(info_size);
+  m_fld_encounter_range->textsize(info_size); 
+  m_fld_encounter_range->labelsize(info_size);
+
   m_fld_loc_time->textsize(info_size); 
   m_fld_loc_time->labelsize(info_size);
 
@@ -340,18 +387,20 @@ int GUI_Encounters::handle(int event)
       bool draw_avgeff = m_but_draw_avgeff->value();
       m_but_draw_avgeff->value(!draw_avgeff);
       m_eviewer->setDrawAvgEff(!draw_avgeff);
-
       m_eviewer->redraw();
     }
-
+    else if(Fl::event_key() == '<') {
+      m_eviewer->setDrawPointSize("smaller");
+      m_eviewer->redraw();
+    }
+    else if(Fl::event_key() == '>') {
+      m_eviewer->setDrawPointSize("bigger");
+      m_eviewer->redraw();
+    }
     else if(Fl::event_key() == 'a') 
       m_parent_gui->streamspeed(true);
     else if(Fl::event_key() == 'z') 
       m_parent_gui->streamspeed(false);
-    else if(Fl::event_key() == '+') 
-      updateMutableTextSize("bigger");
-    else if(Fl::event_key() == '-') 
-      updateMutableTextSize("smaller");
     else
       return(Fl_Window::handle(event));
     return(1);
@@ -488,6 +537,15 @@ void GUI_Encounters::toggleFullScreen()
     m_fld_min_eff->hide();
     m_fld_avg_cpa->hide();
     m_fld_avg_eff->hide();
+    m_fld_collision_range->hide();
+    m_fld_near_miss_range->hide();
+    m_fld_encounter_range->hide();
+    m_but_draw_mineff->hide();
+    m_but_draw_avgeff->hide();
+    m_but_draw_mincpa->hide();
+    m_but_draw_avgcpa->hide();
+    m_but_show_allpts->hide();
+
     resizeWidgetsShape();
     redraw();
   }
@@ -498,54 +556,19 @@ void GUI_Encounters::toggleFullScreen()
     m_fld_min_eff->show();
     m_fld_avg_cpa->show();
     m_fld_avg_eff->show();
+    m_fld_collision_range->show();
+    m_fld_near_miss_range->show();
+    m_fld_encounter_range->show();
+    m_but_draw_mineff->show();
+    m_but_draw_avgeff->show();
+    m_but_draw_mincpa->show();
+    m_but_draw_avgcpa->show();
+    m_but_show_allpts->show();
     resizeWidgetsShape();
     resizeWidgetsText();
     updateXY();
     redraw();
   }
-}
-
-//----------------------------------------------------------
-// Procedure: updateMutableTextSize()
-
-void GUI_Encounters::updateMutableTextSize(string val) 
-{
-  if(val == "bigger") {
-    if(m_mutable_text_size == 8)
-      m_mutable_text_size = 9;
-    else if(m_mutable_text_size == 9)
-      m_mutable_text_size = 10;
-    else if(m_mutable_text_size == 10)
-      m_mutable_text_size = 12;
-    else if(m_mutable_text_size == 12)
-      m_mutable_text_size = 14;
-    else if(m_mutable_text_size == 14)
-      m_mutable_text_size = 16;
-    else if(m_mutable_text_size == 16)
-      m_mutable_text_size = 18;
-  }
-  else if(val == "smaller") {
-    if(m_mutable_text_size == 18)
-      m_mutable_text_size = 16;
-    else if(m_mutable_text_size == 16)
-      m_mutable_text_size = 14;
-    else if(m_mutable_text_size == 14)
-      m_mutable_text_size = 12;
-    else if(m_mutable_text_size == 12)
-      m_mutable_text_size = 10;
-    else if(m_mutable_text_size == 10)
-      m_mutable_text_size = 9;
-    else if(m_mutable_text_size == 9)
-      m_mutable_text_size = 8;
-  }
-  else
-    return;
-  resizeWidgetsText();
-
-#if 0
-  m_ipf_viewer->setMutableTextSize(m_mutable_text_size);
-  m_ipf_viewer->redraw();
-#endif
 }
 
 //-------------------------------------------------------
@@ -581,5 +604,17 @@ void GUI_Encounters::updateXY()
   double avg_eff = m_eviewer->getAvgEFF();
   string avg_eff_str = doubleToString(avg_eff,2);
   m_fld_avg_eff->value(avg_eff_str.c_str());
+
+  double collision_range = m_eviewer->getCollisionRange();
+  string krange_str = doubleToStringX(collision_range,2);
+  m_fld_collision_range->value(krange_str.c_str());
+
+  double near_miss_range = m_eviewer->getNearMissRange();
+  string nrange_str = doubleToStringX(near_miss_range,2);
+  m_fld_near_miss_range->value(nrange_str.c_str());
+				     
+  double encounter_range = m_eviewer->getEncounterRange();
+  string erange_str = doubleToStringX(encounter_range,2);
+  m_fld_encounter_range->value(erange_str.c_str());
 }
 

@@ -553,7 +553,7 @@ inline void REPLAY_GUI::cb_Encounter_i(int aix) {
     return;
 
   double curr_time = np_viewer->getCurrTime();
-  GUI_Encounters *engui = new GUI_Encounters(550,300, vname.c_str());   
+  GUI_Encounters *engui = new GUI_Encounters(500,300, vname.c_str());   
   engui->setDataBroker(m_dbroker, vname);
   engui->setParentGUI(this);
   engui->setCurrTime(curr_time);

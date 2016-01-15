@@ -90,7 +90,6 @@ bool EncounterPlot::addEncounter(double time, CPAEvent event)
 
 void EncounterPlot::setCollisionRange(double collision_range)
 {
-  cout << "JJJJJ  New Collision range is: " << collision_range << endl;
   if(collision_range < 0)
     return;
   m_collision_range = collision_range;
@@ -109,7 +108,6 @@ void EncounterPlot::setCollisionRange(double collision_range)
 
 void EncounterPlot::setNearMissRange(double near_miss_range)
 {
-  cout << "JJJJJ  New near_miss range is: " << near_miss_range << endl;
   if(near_miss_range < 0)
     return;
   m_near_miss_range = near_miss_range;
@@ -128,7 +126,6 @@ void EncounterPlot::setNearMissRange(double near_miss_range)
 
 void EncounterPlot::setEncounterRange(double encounter_range)
 {
-  cout << "JJJJJ  New encounter range is: " << encounter_range << endl;
   if(encounter_range < 0)
     return;
   m_encounter_range = encounter_range;

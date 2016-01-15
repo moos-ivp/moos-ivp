@@ -62,7 +62,6 @@ public:
   void  resizeWidgetsText();
 
   void  updateXY();
-  void  updateMutableTextSize(std::string);
   void  toggleFullScreen();
 
  private:
@@ -104,7 +103,11 @@ protected:
   Fl_Output   *m_fld_min_eff;
   Fl_Output   *m_fld_avg_cpa;
   Fl_Output   *m_fld_avg_eff;
-  
+
+  Fl_Output   *m_fld_collision_range;
+  Fl_Output   *m_fld_near_miss_range;
+  Fl_Output   *m_fld_encounter_range;
+
   Fl_Check_Button *m_but_draw_mineff;
   Fl_Check_Button *m_but_draw_avgeff;
   Fl_Check_Button *m_but_draw_mincpa;
@@ -117,7 +120,5 @@ protected:
   std::string    m_source;
   std::string    m_replay_warp_msg;
   bool           m_fullscreen;
-
-  int            m_mutable_text_size;
 };
 #endif

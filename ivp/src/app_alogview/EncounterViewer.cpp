@@ -36,8 +36,6 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
 {
   m_curr_time   = 0;
  
-  m_mutable_text_size = 10;
- 
   m_clear_color.setColor("0.95,0.95,0.95");
   m_label_color.setColor("brown");
   m_mineff_color.setColor("red");
@@ -55,6 +53,8 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
   m_encounter_range = 50.5;
   
   m_show_allpts = false;
+
+  m_draw_pointsize = 4;
 
   m_min_cpa = 0;
   m_min_eff = 0;
@@ -155,7 +155,7 @@ void EncounterViewer::draw()
 
   glEnable(GL_POINT_SMOOTH);
   // Draw the first N-1 points in one color
-  glPointSize(5);
+  glPointSize(m_draw_pointsize);
   glColor3f(0.4, 0.4, 0.5); 
   glBegin(GL_POINTS);
   for(unsigned int i=0; i<v_cpa_pix.size()-1; i++) 
@@ -164,7 +164,7 @@ void EncounterViewer::draw()
 
   // Draw the Nth point in perhaps different color
   glColor3f(0.5, 0.8, 0.5); 
-  glPointSize(10);
+  glPointSize(m_draw_pointsize*2);
   glBegin(GL_POINTS);
   unsigned int ix = v_cpa_pix.size()-1;
   glVertex2f(v_cpa_pix[ix], v_eff_pix[ix]);
@@ -218,16 +218,8 @@ void EncounterViewer::draw()
     glEnd();
   }
 
-
-
-
-  
   glFlush();
   glPopMatrix();
-  
-  //ColorPack cpack("black");
-  //drawText2(5, h()-15, m_scope_a, cpack, m_mutable_text_size);
-  //drawText2(5, 5, m_scope_b, cpack, m_mutable_text_size);
 }
 
 //-------------------------------------------------------------
@@ -272,6 +264,17 @@ void EncounterViewer::setDataBroker(ALogDataBroker dbroker, string vname)
   cout << "xm_encounter_range: " << m_encounter_range << endl;
   
 
+}
+
+//-------------------------------------------------------------
+// Procedure: setDrawPointSize
+
+void EncounterViewer::setDrawPointSize(string mod)
+{
+  if((mod == "smaller") && (m_draw_pointsize > 1))
+    m_draw_pointsize--;
+  else if((mod == "bigger") && (m_draw_pointsize < 20))
+    m_draw_pointsize++;
 }
 
 //-------------------------------------------------------------
