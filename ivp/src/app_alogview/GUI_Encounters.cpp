@@ -43,7 +43,7 @@ GUI_Encounters::GUI_Encounters(int g_w, int g_h, const char *g_l)
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
   this->begin();
-  this->size_range(475,240, 500,500, 0,0, 1);
+  this->size_range(475,240, 1000,1000, 0,0, 1);
 
   m_replay_warp_msg = "(PAUSED)";
   m_parent_gui = 0;
