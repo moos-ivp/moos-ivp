@@ -110,6 +110,7 @@ ProcessConfig = uFldShoreBroker
   bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
   bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
   bridge   = src=COLLISION_DETECT_PARAMS, alias=COLLISION_DETECT_PARAMS
+  bridge   = src=COLLISION_DETECT_PARAMS_$V, alias=COLLISION_DETECT_PARAMS
 }
 
 //--------------------------------------------------
