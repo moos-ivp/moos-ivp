@@ -5,7 +5,9 @@ ProcessConfig = pEvalLoiter
 {                                                               
   AppTick   = 4                                                 
   CommsTick = 4                                                 
-         
+
+  condition = MODE==LOITERING
+        
   eval_window      = 30     // (default is 30, in seconds)
   nav_stale_thresh = 10     // (default is 10, in seconds)
   mode_thresh      = 10     // (default is 10, in meters)
