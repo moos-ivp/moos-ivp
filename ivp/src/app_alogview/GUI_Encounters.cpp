@@ -161,7 +161,7 @@ void GUI_Encounters::initWidgets()
 
   m_but_curr_go = new Fl_Button(0, 0, 1, 1, "Go"); 
   m_but_curr_go->clear_visible_focus();
-
+  m_but_curr_go->callback((Fl_Callback*)GUI_Encounters::cb_SelectGo, (void*)0);
 }
 
 //---------------------------------------------------------------------------
@@ -599,6 +599,21 @@ inline void GUI_Encounters::cb_SelectAvgCPA_i() {
 }
 void GUI_Encounters::cb_SelectAvgCPA(Fl_Widget* o) {
   ((GUI_Encounters*)(o->parent()->user_data()))->cb_SelectAvgCPA_i();
+}
+
+//----------------------------------------- SelectGo
+inline void GUI_Encounters::cb_SelectGo_i() {
+  double go_time = m_eviewer->getCurrIndexTime();
+  m_eviewer->setTime(go_time);
+  if(m_parent_gui) {
+    m_parent_gui->setCurrTime(go_time);
+    m_parent_gui->redraw();
+  }
+  m_eviewer->redraw();
+  updateXY();
+}
+void GUI_Encounters::cb_SelectGo(Fl_Widget* o) {
+  ((GUI_Encounters*)(o->parent()->user_data()))->cb_SelectGo_i();
 }
 
 

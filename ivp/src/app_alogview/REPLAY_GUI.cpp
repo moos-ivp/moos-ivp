@@ -354,7 +354,9 @@ void REPLAY_GUI::setCurrTime(double curr_time)
     curr_time = np_viewer->getStartTimeHint();
 
   lp_viewer->setCurrTime(curr_time);
+  lp_viewer->redraw();
   np_viewer->setCurrTime(curr_time);
+  np_viewer->redraw();
   updateXY();
 }
 

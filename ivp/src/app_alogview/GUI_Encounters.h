@@ -90,6 +90,9 @@ public:
   inline void cb_SelectAvgEff_i();
   static void cb_SelectAvgEff(Fl_Widget*);
   
+  inline void cb_SelectGo_i();
+  static void cb_SelectGo(Fl_Widget*);
+  
 public:
   EncounterViewer *m_eviewer;
   REPLAY_GUI      *m_parent_gui;
