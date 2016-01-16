@@ -26,6 +26,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include "EncounterViewer.h"
+#include "GUI_Encounters.h"
 #include "MBUtils.h"
 #include "MBTimer.h"
 
@@ -55,14 +56,83 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
   m_show_allpts = false;
 
   m_draw_pointsize = 4;
-  m_curr_plot_ix = 0;
+  m_curr_buff_ix = 0;
   
   m_min_cpa = 0;
   m_min_eff = 0;
   m_avg_cpa = 0;
   m_avg_eff = 0;
+
+  m_owning_gui = 0;
 }
 
+//-------------------------------------------------------------
+// Procedure: setCurrBuffIndex()
+
+void EncounterViewer::setCurrBuffIndex(double cpa_pix, double eff_pix)
+{
+  if(m_curr_buff_size == 0)
+    return;
+
+  double min_delta = 0;
+  double min_index = 0;
+
+  for(unsigned int i=0; i<m_buff_cpa_pix.size(); i++) {
+    double cpa_delta = (cpa_pix - m_buff_cpa_pix[i]);
+    double eff_delta = (eff_pix - m_buff_eff_pix[i]);
+    double delta = hypot(cpa_delta, eff_delta);
+    if((i==0) || (delta < min_delta)) {
+      min_delta = delta;
+      min_index = i;
+    }
+  }
+
+  m_curr_buff_ix = min_index;
+}
+
+//-------------------------------------------------------------
+// Procedure: refreshDrawBuffers()
+
+void EncounterViewer::refreshDrawBuffers()
+{
+  if(m_encounter_plot.size() == 0)
+    return;
+
+  // Part 1: Clear the buffers
+  m_buff_cpa_pix.clear();
+  m_buff_eff_pix.clear();
+  
+  // Part 2: Fill the buffers
+  for(unsigned int i=0; i<m_encounter_plot.size(); i++) {
+    double time = m_encounter_plot.getTimeByIndex(i);
+    if((time > m_curr_time) && !m_show_allpts)
+      break;
+    
+    double eff_pct = m_encounter_plot.getValueEffByIndex(i);
+    double eff_pix = (eff_pct/100) * h();
+    
+    double cpa = m_encounter_plot.getValueCPAByIndex(i);
+    double cpa_pct = cpa / m_encounter_range; 
+    double cpa_pix = cpa_pct * w();
+
+    m_buff_eff_pix.push_back(eff_pix);
+    m_buff_cpa_pix.push_back(cpa_pix);
+  }
+
+  // Part 3: If the buffer size has changed, handle it
+  if(m_buff_cpa_pix.size() != m_curr_buff_size) {
+    // Update the stored buffer size
+    m_curr_buff_size = m_buff_cpa_pix.size();
+    // If the curr_buff_ix now exceeds the buffer size, adjust
+    if(m_curr_buff_size == 0)
+      m_curr_buff_ix = 0;
+    else if(m_curr_buff_ix >= m_curr_buff_size)
+      m_curr_buff_ix = m_curr_buff_size - 1;
+  }
+}
+
+
+    
 //-------------------------------------------------------------
 // Procedure: draw()
 
@@ -79,40 +149,16 @@ void EncounterViewer::draw()
   cout << "m_near_miss_range: " << m_near_miss_range << endl;
   cout << "m_encounter_range: " << m_encounter_range << endl;
   
-  vector<double> v_cpa_pix;
-  vector<double> v_eff_pix;
-  for(unsigned int i=0; i<m_encounter_plot.size(); i++) {
-    double time = m_encounter_plot.getTimeByIndex(i);
-    if((time > m_curr_time) && !m_show_allpts)
-      break;
-    
-    double eff_pct = m_encounter_plot.getValueEffByIndex(i);
-    double eff_pix = (eff_pct/100) * h();
-    
-    double cpa = m_encounter_plot.getValueCPAByIndex(i);
-    double cpa_pct = cpa / m_encounter_range; 
-    double cpa_pix = cpa_pct * w();
+  refreshDrawBuffers();
 
-    v_eff_pix.push_back(eff_pix);
-    v_cpa_pix.push_back(cpa_pix);
-  }
-
-  if(v_cpa_pix.size() != m_curr_plot_size) {
-    m_curr_plot_size = v_cpa_pix.size();
-    if(v_cpa_pix.size() > 0)
-      m_curr_plot_ix = v_cpa_pix.size() - 1;
-    else
-      m_curr_plot_ix = 0;
-  }
-    
-    
+  
+  // Prepare to draw
   glClearColor(m_clear_color.red(),m_clear_color.grn(),m_clear_color.blu(),0.0);
   glClear(GL_COLOR_BUFFER_BIT);
   glViewport(0, 0, w(), h());
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
-
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
@@ -168,17 +214,17 @@ void EncounterViewer::draw()
   glPointSize(m_draw_pointsize);
   glColor3f(0.4, 0.4, 0.5); 
   glBegin(GL_POINTS);
-  for(unsigned int i=0; i<v_cpa_pix.size(); i++) 
-    glVertex2f(v_cpa_pix[i], v_eff_pix[i]);
+  for(unsigned int i=0; i<m_buff_cpa_pix.size(); i++) 
+    glVertex2f(m_buff_cpa_pix[i], m_buff_eff_pix[i]);
   glEnd();
 
   // Draw the Nth point in perhaps different color
-  if(v_cpa_pix.size() > 0) {
+  if(m_buff_cpa_pix.size() > 0) {
     glColor3f(0.5, 0.8, 0.5); 
     glPointSize(m_draw_pointsize*2);
     glBegin(GL_POINTS);
-    unsigned int ix = m_curr_plot_ix;
-    glVertex2f(v_cpa_pix[ix], v_eff_pix[ix]);
+    unsigned int ix = m_curr_buff_ix;
+    glVertex2f(m_buff_cpa_pix[ix], m_buff_eff_pix[ix]);
     glEnd();
     glDisable(GL_POINT_SMOOTH);
   }
@@ -271,6 +317,26 @@ int EncounterViewer::handle(int event)
 void EncounterViewer::handleLeftMouse(int vx, int vy)
 {
   cout << "EncounterViewer::handleLeftMouse: x:" << vx << ", y:" << vx << endl; 
+
+  double xpct = (double)(vx) / (double)(w());
+  double ypct = (double)(vy) / (double)(h());
+
+  cout << "xpct = " << xpct << endl;
+  cout << "ypct = " << ypct << endl;
+
+  double mouse_cpa = xpct * m_encounter_range;
+  double mouse_eff = ypct * 100;
+
+  cout << "mouse_cpa: " << mouse_cpa << endl;
+  cout << "mouse_eff: " << mouse_eff<< endl;
+
+  double mouse_cpa_pix = xpct * w();
+  double mouse_eff_pix = ypct * h();
+
+  setCurrBuffIndex(mouse_cpa_pix, mouse_eff_pix);
+  redraw();
+  if(m_owning_gui)
+    m_owning_gui->updateXY();
 }
 
 //-------------------------------------------------------------
@@ -281,6 +347,47 @@ void EncounterViewer::handleRightMouse(int vx, int vy)
   cout << "EncounterViewer::handleRightMouse: x:" << vx << ", y:" << vx << endl; 
 }
 
+
+
+//-------------------------------------------------------------
+// Procedure: getCurrIndexTime()
+
+double EncounterViewer::getCurrIndexTime() const
+{
+  return(m_encounter_plot.getTimeByIndex(m_curr_buff_ix));
+}
+
+//-------------------------------------------------------------
+// Procedure: getCurrIndexCPA()
+
+double EncounterViewer::getCurrIndexCPA() const
+{
+  return(m_encounter_plot.getValueCPAByIndex(m_curr_buff_ix));
+}
+
+//-------------------------------------------------------------
+// Procedure: getCurrIndexEFF()
+
+double EncounterViewer::getCurrIndexEFF() const
+{
+  return(m_encounter_plot.getValueEffByIndex(m_curr_buff_ix));
+}
+
+//-------------------------------------------------------------
+// Procedure: getCurrIndexID()
+
+double EncounterViewer::getCurrIndexID() const
+{
+  return(0);
+}
+
+//-------------------------------------------------------------
+// Procedure: getCurrIndexContact()
+
+string EncounterViewer::getCurrIndexContact() const
+{
+  return("whoever");
+}
 
 
 //-------------------------------------------------------------
@@ -302,12 +409,14 @@ void EncounterViewer::setDataBroker(ALogDataBroker dbroker, string vname)
   m_collision_range = m_encounter_plot.getCollisionRange();
   m_near_miss_range = m_encounter_plot.getNearMissRange();
   m_encounter_range = m_encounter_plot.getEncounterRange();
+}
 
-  cout << "xm_collision_range: " << m_collision_range << endl;
-  cout << "xm_near_miss_range: " << m_near_miss_range << endl;
-  cout << "xm_encounter_range: " << m_encounter_range << endl;
-  
+//-------------------------------------------------------------
+// Procedure: setOwningGUI()
 
+void EncounterViewer::setOwningGUI(GUI_Encounters *gui)
+{
+  m_owning_gui = gui;
 }
 
 //-------------------------------------------------------------

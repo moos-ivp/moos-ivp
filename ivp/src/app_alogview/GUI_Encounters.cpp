@@ -96,7 +96,8 @@ void GUI_Encounters::initWidgets()
 
   m_eviewer = new EncounterViewer(0, 0, 1, 1);
   m_eviewer->setClearColor("0.95,0.95,0.95");
-
+  m_eviewer->setOwningGUI(this);
+  
   m_fld_loc_time = new Fl_Output(0, 0, 1, 1, "Time:"); 
   m_fld_loc_time->clear_visible_focus();
 
@@ -698,11 +699,15 @@ void GUI_Encounters::updateXY()
   string curr_id_str = intToString(curr_id);
   m_fld_curr_id->value(curr_id_str.c_str());
   
-  double curr_cpa = 11.11;
+  double curr_time = m_eviewer->getCurrIndexTime();
+  string curr_time_str = doubleToStringX(curr_time,2);
+  m_fld_curr_time->value(curr_time_str.c_str());
+
+  double curr_cpa = m_eviewer->getCurrIndexCPA();
   string curr_cpa_str = doubleToStringX(curr_cpa,2);
   m_fld_curr_cpa->value(curr_cpa_str.c_str());
 
-  double curr_eff = 66.33;
+  double curr_eff = m_eviewer->getCurrIndexEFF();
   string curr_eff_str = doubleToStringX(curr_eff,2);
   m_fld_curr_eff->value(curr_eff_str.c_str());
 

@@ -52,6 +52,7 @@ public:
   void  setParentGUI(REPLAY_GUI*);
   void  setCurrTime(double=-1);
   void  setReplayWarpMsg(std::string s) {m_replay_warp_msg=s; updateXY();}
+  void  updateXY();
 
  protected:
   void  resize(int, int, int, int);
@@ -61,7 +62,6 @@ public:
   void  resizeWidgetsShape();
   void  resizeWidgetsText();
 
-  void  updateXY();
   void  toggleFullScreen();
 
  private:

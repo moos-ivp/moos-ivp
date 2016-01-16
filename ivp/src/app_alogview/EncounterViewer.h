@@ -34,6 +34,8 @@
 #include "EncounterPlot.h"
 #include "ColorPack.h"
 
+class GUI_Encounters;
+
 class EncounterViewer : public Fl_Gl_Window
 {
  public:
@@ -46,6 +48,7 @@ class EncounterViewer : public Fl_Gl_Window
   
  public: // Setters
   void   setDataBroker(ALogDataBroker, std::string vname);
+  void   setOwningGUI(GUI_Encounters*);
   void   setEncounterPlot(std::string vname);
   void   setClearColor(std::string s)  {m_clear_color.setColor(s);}
 
@@ -69,16 +72,26 @@ class EncounterViewer : public Fl_Gl_Window
   double getCollisionRange() const {return(m_collision_range);}
   double getNearMissRange() const  {return(m_near_miss_range);}
   double getEncounterRange() const {return(m_encounter_range);}
+
+  double getCurrIndexTime() const;
+  double getCurrIndexCPA() const;
+  double getCurrIndexEFF() const;
+  double getCurrIndexID() const;
+  std::string getCurrIndexContact() const;
   
   std::string getTotalEncounters() const;
 
+ protected: // Utility functions
   void   handleLeftMouse(int, int);
   void   handleRightMouse(int, int);
+  void   refreshDrawBuffers();
+  void   setCurrBuffIndex(double, double);
   
-private:
-  double         m_curr_time;
-  ALogDataBroker m_dbroker;
-
+ private:
+  double          m_curr_time;
+  ALogDataBroker  m_dbroker;
+  GUI_Encounters *m_owning_gui;
+  
   // Vehicle name stays constant once it is set initially
   std::string    m_vname; 
 
@@ -97,9 +110,12 @@ private:
   double m_avg_cpa;
   double m_avg_eff;
 
+  std::vector<double> m_buff_cpa_pix;
+  std::vector<double> m_buff_eff_pix;
+  unsigned int   m_curr_buff_ix;
+  unsigned int   m_curr_buff_size;
+  
   unsigned int   m_draw_pointsize;
-  unsigned int   m_curr_plot_ix;
-  unsigned int   m_curr_plot_size;
   
   EncounterPlot  m_encounter_plot;
   ColorPack      m_clear_color;
