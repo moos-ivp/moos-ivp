@@ -376,9 +376,9 @@ double EncounterViewer::getCurrIndexEFF() const
 //-------------------------------------------------------------
 // Procedure: getCurrIndexID()
 
-double EncounterViewer::getCurrIndexID() const
+int EncounterViewer::getCurrIndexID() const
 {
-  return(0);
+  return(m_encounter_plot.getValueIDByIndex(m_curr_buff_ix));
 }
 
 //-------------------------------------------------------------
@@ -386,7 +386,7 @@ double EncounterViewer::getCurrIndexID() const
 
 string EncounterViewer::getCurrIndexContact() const
 {
-  return("whoever");
+  return(m_encounter_plot.getValueContactByIndex(m_curr_buff_ix));
 }
 
 

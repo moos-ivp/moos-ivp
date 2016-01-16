@@ -169,6 +169,31 @@ double EncounterPlot::getValueEffByIndex(unsigned int index) const
 }
      
 //---------------------------------------------------------------
+// Procedure: getValueIDByIndex
+
+int EncounterPlot::getValueIDByIndex(unsigned int index) const
+{
+  if(index < m_time.size())
+    return(m_events[index].getID());
+  return(0);
+}
+     
+//---------------------------------------------------------------
+// Procedure: getValueContactByIndex
+
+string EncounterPlot::getValueContactByIndex(unsigned int index) const
+{
+  if(index < m_time.size()) {
+    string vname2 = m_events[index].getVName2();
+    if(m_ownship != vname2)
+      return(vname2);
+    else
+      return(m_events[index].getVName1());
+  }
+  return("unknown");
+}
+     
+//---------------------------------------------------------------
 // Procedure: getTimeByIndex
 
 double EncounterPlot::getTimeByIndex(unsigned int index) const

@@ -76,7 +76,7 @@ class EncounterViewer : public Fl_Gl_Window
   double getCurrIndexTime() const;
   double getCurrIndexCPA() const;
   double getCurrIndexEFF() const;
-  double getCurrIndexID() const;
+  int    getCurrIndexID() const;
   std::string getCurrIndexContact() const;
   
   std::string getTotalEncounters() const;

@@ -695,7 +695,7 @@ void GUI_Encounters::updateXY()
   m_fld_encounter_range->value(erange_str.c_str());
 
   // Current Encounter Information
-  int curr_id = 123;
+  int curr_id = m_eviewer->getCurrIndexID();
   string curr_id_str = intToString(curr_id);
   m_fld_curr_id->value(curr_id_str.c_str());
   
@@ -711,7 +711,7 @@ void GUI_Encounters::updateXY()
   string curr_eff_str = doubleToStringX(curr_eff,2);
   m_fld_curr_eff->value(curr_eff_str.c_str());
 
-  string curr_contact = "jake";
+  string curr_contact = m_eviewer->getCurrIndexContact();
   m_fld_curr_contact->value(curr_contact.c_str());
 }
 

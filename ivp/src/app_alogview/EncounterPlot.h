@@ -48,6 +48,8 @@ public:
 
   double getValueCPAByIndex(unsigned int index) const;
   double getValueEffByIndex(unsigned int index) const;
+  int    getValueIDByIndex(unsigned int index) const;
+  std::string getValueContactByIndex(unsigned int index) const;
   
   double getValueCPAByTime(double gtime) const;
   double getValueEffByTime(double gtime) const;
