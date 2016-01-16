@@ -185,6 +185,7 @@ SET(ROBOT_APPS
   app_alogscan
   app_alogcd
   app_alogpare
+  app_alogeplot
   app_alogrm
   app_alogiter
   app_alogclip
