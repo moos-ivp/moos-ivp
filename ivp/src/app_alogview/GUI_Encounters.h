@@ -108,6 +108,13 @@ protected:
   Fl_Output   *m_fld_near_miss_range;
   Fl_Output   *m_fld_encounter_range;
 
+  Fl_Button   *m_but_curr_go;
+  Fl_Output   *m_fld_curr_id;
+  Fl_Output   *m_fld_curr_time;
+  Fl_Output   *m_fld_curr_cpa;
+  Fl_Output   *m_fld_curr_eff;
+  Fl_Output   *m_fld_curr_contact;
+
   Fl_Check_Button *m_but_draw_mineff;
   Fl_Check_Button *m_but_draw_avgeff;
   Fl_Check_Button *m_but_draw_mincpa;

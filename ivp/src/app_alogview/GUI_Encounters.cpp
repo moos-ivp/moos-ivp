@@ -141,6 +141,26 @@ void GUI_Encounters::initWidgets()
   m_but_show_allpts->clear_visible_focus();
   m_but_show_allpts->shortcut('p');
   m_but_show_allpts->callback((Fl_Callback*)GUI_Encounters::cb_SelectShowPts, (void*)0);
+
+  // The "current encounter" awidgets
+  m_fld_curr_id = new Fl_Output(0, 0, 1, 1, "id="); 
+  m_fld_curr_id->clear_visible_focus();
+
+  m_fld_curr_cpa = new Fl_Output(0, 0, 1, 1, "cpa="); 
+  m_fld_curr_cpa->clear_visible_focus();
+
+  m_fld_curr_eff = new Fl_Output(0, 0, 1, 1, "eff="); 
+  m_fld_curr_eff->clear_visible_focus();
+
+  m_fld_curr_time = new Fl_Output(0, 0, 1, 1, "time="); 
+  m_fld_curr_time->clear_visible_focus();
+
+  m_fld_curr_contact = new Fl_Output(0, 0, 1, 1, "contact="); 
+  m_fld_curr_contact->clear_visible_focus();
+
+  m_but_curr_go = new Fl_Button(0, 0, 1, 1, "Go"); 
+  m_but_curr_go->clear_visible_focus();
+
 }
 
 //---------------------------------------------------------------------------
@@ -151,7 +171,7 @@ void GUI_Encounters::resizeWidgetsShape()
   if(m_fullscreen)
     m_eviewer->EncounterViewer::resize(0, 0, w(), h());
   else
-    m_eviewer->EncounterViewer::resize(0, 0+60, w(), h()-60);
+    m_eviewer->EncounterViewer::resize(0, 0+100, w(), h()-100);
 
   if(m_fullscreen) 
     return;
@@ -245,7 +265,44 @@ void GUI_Encounters::resizeWidgetsShape()
   int aeff_hgt = 20;
   m_but_draw_avgeff->resize(aeff_x, aeff_y, aeff_wid, aeff_hgt); 
 
+  // Current Contact Fields (Third Row)
+  int jgo_x = 5;
+  int jgo_y = 70;
+  int jgo_wid = 30;
+  int jgo_hgt = 20;
+  m_but_curr_go->resize(jgo_x, jgo_y, jgo_wid, jgo_hgt); 
+
+  int jid_x = jgo_x + jgo_wid + 30;
+  int jid_y = 70;
+  int jid_wid = w()/10;
+  int jid_hgt = 20;
+  m_fld_curr_id->resize(jid_x, jid_y, jid_wid, jid_hgt); 
+
+  int jtim_x = jid_x + jid_wid + 40;
+  int jtim_y = 70;
+  int jtim_wid = w()/10;
+  int jtim_hgt = 20;
+  m_fld_curr_time->resize(jtim_x, jtim_y, jtim_wid, jtim_hgt); 
+
+  int jcpa_x = jtim_x + jtim_wid + 40;
+  int jcpa_y = 70;
+  int jcpa_wid = w()/10;
+  int jcpa_hgt = 20;
+  m_fld_curr_cpa->resize(jcpa_x, jcpa_y, jcpa_wid, jcpa_hgt); 
+
+  int jeff_x = jcpa_x + jcpa_wid + 35;
+  int jeff_y = 70;
+  int jeff_wid = w()/10;
+  int jeff_hgt = 20;
+  m_fld_curr_eff->resize(jeff_x, jeff_y, jeff_wid, jeff_hgt); 
+
+  int jcon_x = jeff_x + jeff_wid + 55;
+  int jcon_y = 70;
+  int jcon_wid = w() - (jcon_x + 5);
+  int jcon_hgt = 20;
+  m_fld_curr_contact->resize(jcon_x, jcon_y, jcon_wid, jcon_hgt); 
 }
+
 
 //---------------------------------------------------------------------------
 // Procedure: resizeWidgetsText()
@@ -295,6 +352,25 @@ void GUI_Encounters::resizeWidgetsText()
 
   m_fld_avg_eff->textsize(info_size); 
   m_fld_avg_eff->labelsize(info_size);
+
+  
+  // Current Contact Fields (Third Row)
+  m_but_curr_go->labelsize(info_size); 
+
+  m_fld_curr_id->textsize(info_size); 
+  m_fld_curr_id->labelsize(info_size);
+
+  m_fld_curr_time->textsize(info_size); 
+  m_fld_curr_time->labelsize(info_size);
+
+  m_fld_curr_cpa->textsize(info_size); 
+  m_fld_curr_cpa->labelsize(info_size);
+
+  m_fld_curr_eff->textsize(info_size); 
+  m_fld_curr_eff->labelsize(info_size);
+
+  m_fld_curr_contact->textsize(info_size); 
+  m_fld_curr_contact->labelsize(info_size);
 }
 
 //-------------------------------------------------------------------
@@ -616,5 +692,21 @@ void GUI_Encounters::updateXY()
   double encounter_range = m_eviewer->getEncounterRange();
   string erange_str = doubleToStringX(encounter_range,2);
   m_fld_encounter_range->value(erange_str.c_str());
+
+  // Current Encounter Information
+  int curr_id = 123;
+  string curr_id_str = intToString(curr_id);
+  m_fld_curr_id->value(curr_id_str.c_str());
+  
+  double curr_cpa = 11.11;
+  string curr_cpa_str = doubleToStringX(curr_cpa,2);
+  m_fld_curr_cpa->value(curr_cpa_str.c_str());
+
+  double curr_eff = 66.33;
+  string curr_eff_str = doubleToStringX(curr_eff,2);
+  m_fld_curr_eff->value(curr_eff_str.c_str());
+
+  string curr_contact = "jake";
+  m_fld_curr_contact->value(curr_contact.c_str());
 }
 

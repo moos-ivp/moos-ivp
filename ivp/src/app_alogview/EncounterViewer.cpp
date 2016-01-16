@@ -55,7 +55,8 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
   m_show_allpts = false;
 
   m_draw_pointsize = 4;
-
+  m_curr_plot_ix = 0;
+  
   m_min_cpa = 0;
   m_min_eff = 0;
   m_avg_cpa = 0;
@@ -95,7 +96,16 @@ void EncounterViewer::draw()
     v_eff_pix.push_back(eff_pix);
     v_cpa_pix.push_back(cpa_pix);
   }
-  
+
+  if(v_cpa_pix.size() != m_curr_plot_size) {
+    m_curr_plot_size = v_cpa_pix.size();
+    if(v_cpa_pix.size() > 0)
+      m_curr_plot_ix = v_cpa_pix.size() - 1;
+    else
+      m_curr_plot_ix = 0;
+  }
+    
+    
   glClearColor(m_clear_color.red(),m_clear_color.grn(),m_clear_color.blu(),0.0);
   glClear(GL_COLOR_BUFFER_BIT);
   glViewport(0, 0, w(), h());
@@ -158,19 +168,20 @@ void EncounterViewer::draw()
   glPointSize(m_draw_pointsize);
   glColor3f(0.4, 0.4, 0.5); 
   glBegin(GL_POINTS);
-  for(unsigned int i=0; i<v_cpa_pix.size()-1; i++) 
+  for(unsigned int i=0; i<v_cpa_pix.size(); i++) 
     glVertex2f(v_cpa_pix[i], v_eff_pix[i]);
   glEnd();
 
   // Draw the Nth point in perhaps different color
-  glColor3f(0.5, 0.8, 0.5); 
-  glPointSize(m_draw_pointsize*2);
-  glBegin(GL_POINTS);
-  unsigned int ix = v_cpa_pix.size()-1;
-  glVertex2f(v_cpa_pix[ix], v_eff_pix[ix]);
-  glEnd();
-  glDisable(GL_POINT_SMOOTH);
-
+  if(v_cpa_pix.size() > 0) {
+    glColor3f(0.5, 0.8, 0.5); 
+    glPointSize(m_draw_pointsize*2);
+    glBegin(GL_POINTS);
+    unsigned int ix = m_curr_plot_ix;
+    glVertex2f(v_cpa_pix[ix], v_eff_pix[ix]);
+    glEnd();
+    glDisable(GL_POINT_SMOOTH);
+  }
 
   // Draw the Min Efficiency Line
   if(m_draw_mineff) {
@@ -235,8 +246,41 @@ void EncounterViewer::resize(int gx, int gy, int gw, int gh)
 
 int EncounterViewer::handle(int event)
 {
+  int vx, vy;
+  switch(event) {
+  case FL_PUSH:
+    vx = Fl::event_x();
+    vy = h() - Fl::event_y();
+    if(Fl_Window::handle(event) != 1) {
+      if(Fl::event_button() == FL_LEFT_MOUSE)
+	handleLeftMouse(vx, vy);
+      if(Fl::event_button() == FL_RIGHT_MOUSE)
+	handleRightMouse(vx, vy);
+    }
+    return(1);
+  default:
+    return(Fl_Gl_Window::handle(event));
+  }
   return(Fl_Gl_Window::handle(event));
 }
+
+
+//-------------------------------------------------------------
+// Procedure: handleLeftMouse                       
+
+void EncounterViewer::handleLeftMouse(int vx, int vy)
+{
+  cout << "EncounterViewer::handleLeftMouse: x:" << vx << ", y:" << vx << endl; 
+}
+
+//-------------------------------------------------------------
+// Procedure: handleRightMouse                       
+
+void EncounterViewer::handleRightMouse(int vx, int vy)
+{
+  cout << "EncounterViewer::handleRightMouse: x:" << vx << ", y:" << vx << endl; 
+}
+
 
 
 //-------------------------------------------------------------

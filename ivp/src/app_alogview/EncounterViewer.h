@@ -72,6 +72,9 @@ class EncounterViewer : public Fl_Gl_Window
   
   std::string getTotalEncounters() const;
 
+  void   handleLeftMouse(int, int);
+  void   handleRightMouse(int, int);
+  
 private:
   double         m_curr_time;
   ALogDataBroker m_dbroker;
@@ -94,8 +97,9 @@ private:
   double m_avg_cpa;
   double m_avg_eff;
 
-  int    m_draw_pointsize;
-
+  unsigned int   m_draw_pointsize;
+  unsigned int   m_curr_plot_ix;
+  unsigned int   m_curr_plot_size;
   
   EncounterPlot  m_encounter_plot;
   ColorPack      m_clear_color;
