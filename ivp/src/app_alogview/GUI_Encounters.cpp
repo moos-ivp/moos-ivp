@@ -140,7 +140,7 @@ void GUI_Encounters::initWidgets()
 
   m_but_show_allpts = new Fl_Check_Button(0, 0, 1, 1, "AllPts");
   m_but_show_allpts->clear_visible_focus();
-  m_but_show_allpts->shortcut('p');
+  //  m_but_show_allpts->shortcut('p');
   m_but_show_allpts->callback((Fl_Callback*)GUI_Encounters::cb_SelectShowPts, (void*)0);
 
   // The "current encounter" awidgets
@@ -378,16 +378,7 @@ void GUI_Encounters::resizeWidgetsText()
 
 Fl_Menu_Item GUI_Encounters::menu_[] = {
  {"Invisible", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Pan Up ",   FL_Up,  (Fl_Callback*)GUI_Encounters::cb_HandleUpDown, (void*)-100, 0},
- {"Pan Down ", FL_Down, (Fl_Callback*)GUI_Encounters::cb_HandleUpDown, (void*)100, 0},
- {"Pan Left",  FL_Left, (Fl_Callback*)GUI_Encounters::cb_HandleLeftRight, (void*)100, 0},
- {"Pan Right", FL_Right, (Fl_Callback*)GUI_Encounters::cb_HandleLeftRight, (void*)-100, 0},
- {"Pan U (slow) ", FL_ALT + FL_Up, (Fl_Callback*)GUI_Encounters::cb_HandleUpDown, (void*)-25, 0},
- {"Pan D (slow) ", FL_ALT + FL_Down, (Fl_Callback*)GUI_Encounters::cb_HandleUpDown, (void*)25, 0},
- {"Pan L (slow) ", FL_ALT + FL_Left, (Fl_Callback*)GUI_Encounters::cb_HandleLeftRight, (void*)25, 0},
- {"Pan R (slow)",  FL_ALT+FL_Right, (Fl_Callback*)GUI_Encounters::cb_HandleLeftRight, (void*)-25, 0},
- {"Replay/Step +0.1 secs", FL_CTRL+']', (Fl_Callback*)GUI_Encounters::cb_Step, (void*)100, 0},
- {"Replay/Step -0.1 secs", FL_CTRL+'[', (Fl_Callback*)GUI_Encounters::cb_Step, (void*)-100, 0},
+ {"Replay/Step +0.1 secs", FL_CTRL+']', (Fl_Callback*)GUI_Encounters::cb_Step, (void*)100, 0}, {"Replay/Step -0.1 secs", FL_CTRL+'[', (Fl_Callback*)GUI_Encounters::cb_Step, (void*)-100, 0},
  {"Replay/Step +1 sec", ']', (Fl_Callback*)GUI_Encounters::cb_Step, (void*)1000, 0},
  {"Replay/Step -1 sec", '[', (Fl_Callback*)GUI_Encounters::cb_Step, (void*)-1000, 0},
  {"Replay/Step +5 secs", '}', (Fl_Callback*)GUI_Encounters::cb_Step, (void*)5000, 0},
@@ -451,6 +442,12 @@ int GUI_Encounters::handle(int event)
       m_parent_gui->streaming(2);
     else if(Fl::event_key() == 'f') 
       toggleFullScreen();
+    else if(Fl::event_key() == 'p') {
+      bool drawing_on = m_but_show_allpts->value();
+      m_but_show_allpts->value(!drawing_on);
+      m_eviewer->setShowAllPts(!drawing_on);
+      m_eviewer->redraw();
+    }
     else if(Fl::event_key() == 'l') {
       bool draw_mincpa = m_but_draw_mincpa->value();
       m_but_draw_mincpa->value(!draw_mincpa);
@@ -507,36 +504,6 @@ void GUI_Encounters::setCurrTime(double curr_time)
   updateXY();
 }
 
-
-//----------------------------------------- HandleUpDown
-inline void GUI_Encounters::cb_HandleUpDown_i(int amt) 
-{
-}
-void GUI_Encounters::cb_HandleUpDown(Fl_Widget* o, int v) {
-  ((GUI_Encounters*)(o->parent()->user_data()))->cb_HandleUpDown_i(v);
-}
-
-//----------------------------------------- HandleLeftRight
-inline void GUI_Encounters::cb_HandleLeftRight_i(int amt) 
-{
-}
-void GUI_Encounters::cb_HandleLeftRight(Fl_Widget* o, int v) {
-  ((GUI_Encounters*)(o->parent()->user_data()))->cb_HandleLeftRight_i(v);
-}
-
-
-//----------------------------------------- Zoom In
-inline void GUI_Encounters::cb_Zoom_i(int val) {
-#if 0
-  if(val < 0)
-    m_ipf_viewer->setParam("mod_zoom", 1.05); 
-  else if(val > 0)
-    m_ipf_viewer->setParam("mod_zoom", 0.95); 
-  else
-    m_ipf_viewer->setParam("set_zoom", 1.0); 
-  m_ipf_viewer->redraw();
-#endif
-}
 
 //----------------------------------------- Step
 inline void GUI_Encounters::cb_Step_i(int val) {

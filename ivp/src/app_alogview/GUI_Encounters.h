@@ -65,13 +65,6 @@ public:
   void  toggleFullScreen();
 
  private:
-  void cb_HandleUpDown_i(int);
-  void cb_HandleLeftRight_i(int);
-  static void cb_HandleUpDown(Fl_Widget*, int);
-  static void cb_HandleLeftRight(Fl_Widget*, int);
-
-  void cb_Zoom_i(int);
-
   inline void cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
 

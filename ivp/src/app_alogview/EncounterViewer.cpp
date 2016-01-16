@@ -128,6 +128,11 @@ void EncounterViewer::refreshDrawBuffers()
       m_curr_buff_ix = 0;
     else if(m_curr_buff_ix >= m_curr_buff_size)
       m_curr_buff_ix = m_curr_buff_size - 1;
+
+    // If we're not showing all pts, curr ix is always reset to
+    // latest if the size of the buffer changes
+    if(!m_show_allpts)
+      m_curr_buff_ix = m_curr_buff_size - 1;
   }
 }
 
