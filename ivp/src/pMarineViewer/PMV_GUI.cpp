@@ -969,9 +969,8 @@ bool PMV_GUI::addMousePoke(string side, string key, string vardata_pair)
 		  (void*)index, FL_MENU_RADIO|FL_MENU_VALUE);
       }
       else {
-	m_menubar->add(label.c_str(), 0, 
-		  (Fl_Callback*)PMV_GUI::cb_LeftContext, 
-		  (void*)index, FL_MENU_RADIO);
+	m_menubar->add(label.c_str(), 0, (Fl_Callback*)PMV_GUI::cb_LeftContext, 
+		       (void*)index, FL_MENU_RADIO);
       }
       m_menubar->redraw();
     }
