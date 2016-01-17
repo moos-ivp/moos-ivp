@@ -21,12 +21,14 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <sstream>
 #include <iostream>
 #include <cstdlib>
 #include <cstdio>
 #include "MBUtils.h"
 #include "EPlotEngine.h"
 #include "LogUtils.h"
+#include "ColorParse.h"
 
 using namespace std;
 
@@ -35,11 +37,16 @@ using namespace std;
 
 EPlotEngine::EPlotEngine()
 {
-  m_verbose = false;
+  m_verbose     = false;
+  m_scene_file  = "./.tmp.scn";
+  m_point_size  = "0.1";
+  m_point_color = "darkblue";
+  m_plot_wid_cm = "30";
+  m_plot_hgt_cm = "20";
 }
 
 //--------------------------------------------------------
-// Procedure: setALogFile()
+// Procedure: addALogFile()
 
 bool EPlotEngine::addALogFile(string alog_file)
 {
@@ -53,9 +60,92 @@ bool EPlotEngine::addALogFile(string alog_file)
 }
 
 //--------------------------------------------------------
+// Procedure: setSceneFile()
+
+bool EPlotEngine::setSceneFile(string scene_file)
+{
+  if(!okFileToWrite(scene_file)) {
+    cout << "Unable to use scene file: " << scene_file << endl;
+    return(false);
+  }
+  
+  m_scene_file = scene_file;
+  return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: setPointColor()
+
+bool EPlotEngine::setPointColor(string str)
+{
+  if(!isColor(str))
+    return(false);  
+  m_point_color = str;
+  return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: setPointSize()
+
+bool EPlotEngine::setPointSize(string str)
+{
+  if(!isNumber(str))
+    return(false);
+  m_point_size = str;
+  return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: setPlotWidth()
+
+bool EPlotEngine::setPlotWidth(string str)
+{
+  if(!isNumber(str))
+    return(false);
+  m_plot_wid_cm = str;
+  return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: setPlotHeight()
+
+bool EPlotEngine::setPlotHeight(string str)
+{
+  if(!isNumber(str))
+    return(false);
+  m_plot_hgt_cm = str;
+  return(true);
+}
+
+//--------------------------------------------------------
 // Procedure: generate()
 
 void EPlotEngine::generate()
+{
+  handleALogFiles();
+  
+  FILE *file_ptr = fopen(m_scene_file.c_str(), "w");
+  if(!file_ptr) {
+    cout << "Problem with file: " << m_scene_file << endl;
+    return;
+  }
+
+  // Begin creation of the scene (.scn) file
+  writeBaseScene(file_ptr);
+  writeEncounters(file_ptr);
+
+  fclose(file_ptr);
+
+  // Begin creation of the Latex file
+  string cmd = "scn2jpg.sh -s -o " + m_scene_file;
+  system(cmd.c_str());
+  
+}
+
+//--------------------------------------------------------
+// Procedure: handleALogFiles()
+
+void EPlotEngine::handleALogFiles()
 {
   m_community_name = "";
   m_cpa_events.clear();
@@ -67,7 +157,7 @@ void EPlotEngine::generate()
     bool ok = handleALogFile(m_alog_files[i]);
     if(!ok) {
       cout << "Could not process file: " << m_alog_files[i] << endl;
-      return;
+      exit(1);
     }
   }
 
@@ -76,7 +166,9 @@ void EPlotEngine::generate()
   cout << "Near Miss Range:  " << m_near_miss_range << endl;
   cout << "Encounter Range:  " << m_encounter_range << endl;
   cout << "Community Name:   " << m_community_name  << endl;
+
 }
+
 
 //--------------------------------------------------------
 // Procedure: handleALogFile()
@@ -123,11 +215,11 @@ bool EPlotEngine::handleALogFile(string alog_file)
       for(unsigned int i=0; i<svector.size(); i++) {
 	string param = biteStringX(svector[i], '=');
 	string value = svector[i];
-	if(param == "m_collision_range")
+	if(param == "collision_range")
 	  m_collision_range = atof(value.c_str());
-	else if(param == "m_near_missrange")
+	else if(param == "near_miss_range")
 	  m_near_miss_range = atof(value.c_str());
-	else if(param == "m_encounter_range")
+	else if(param == "encounter_range")
 	  m_encounter_range = atof(value.c_str());
       }
     }
@@ -144,13 +236,106 @@ bool EPlotEngine::handleALogFile(string alog_file)
 
 
 //--------------------------------------------------------
-// Procedure: writeLine
+// Procedure: writeBaseScene
 
-void EPlotEngine::writeLine(FILE* f, const string& line) const
+void EPlotEngine::writeBaseScene(FILE *f) const
 {
-  if(f)
-    fprintf(f, "%s\n", line.c_str());
-  else
-    cout << line << endl;
+  stringstream ss;
+
+  string kzone_cm_low = "0";
+  string kzone_cm_hgh = "10";
+
+  ss << "grid = key=master,group=grid,depth=1,gcell=5,      \\ " << endl;
+  ss << "       rounded=true,border_thickness=thin,         \\ " << endl;
+  ss << "       border_color=menublue,gback_color=white,    \\ " << endl; 
+  ss << "       gline_thickness=thin,gline_color=white,     \\ " << endl;
+  ss << "       widthcm="  << m_plot_wid_cm << ",           \\ " << endl;
+  ss << "       heightcm=" << m_plot_hgt_cm << "               " << endl;
+  ss << endl;
+  ss << "polygon = key=kzone,group=mission,depth=98,        \\ " << endl;
+  ss << "          pts={0,0:0,40:12,40:12,0:0,0},           \\ " << endl;
+  ss << "          point_size=0,point_color=brown,          \\ " << endl;
+  ss << "          line_color=gray80,line_style=solid,      \\ " << endl;
+  ss << "          line_thickness=thin,fill_color=lightpink    " << endl;
+  ss << endl;
+  ss << "polygon = key=nzone,group=mission,depth=98,        \\ " << endl;
+  ss << "          pts={12,0:12,40:16,40:16,0:12,0},        \\ " << endl;
+  ss << "          point_size=0,point_color=brown,          \\ " << endl;
+  ss << "          line_color=gray80,line_style=solid,      \\ " << endl;
+  ss << "          line_thickness=thin,fill_color=lightyellow " << endl;
+  ss << endl; 
+  ss << "polygon = key=ezone,group=mission,depth=98,        \\ " << endl;
+  ss << "          pts={16,0: 16,20: 60,20: 60,0: 16,0},    \\ " << endl;
+  ss << "          point_size=0,point_color=brown,          \\ " << endl;
+  ss << "          line_color=gray80,line_style=solid,      \\ " << endl;
+  ss << "          line_thickness=thin,fill_color=gray95       " << endl;
+  ss << endl; 
+  ss << "polygon = key=tpoly,group=mission,depth=99,        \\ " << endl;
+  ss << "          pts={0,0:0,40:60,40:60,0:0,0},           \\ " << endl;
+  ss << "          point_size=0,point_color=brown,          \\ " << endl;
+  ss << "          line_color=black,line_style=solid,       \\ " << endl;
+  ss << "          line_thickness=thin                         " << endl;
+  ss << endl;
+  ss << "// Axis Titles                                        " << endl;
+  ss << "label = key=x-axis,group=mission,depth=205,        \\ " << endl;
+  ss << "        label=Closest Point of Approach (meters),  \\ " << endl;
+  ss << "        label_color=black,label_size=footnotesize, \\ " << endl;
+  ss << "        x=35,y=-4                                     " << endl;
+  ss << endl; 
+  ss << "label = key=y-axis,group=mission,depth=205,        \\ " << endl;
+  ss << "        label=Efficiency,label_color=black,        \\ " << endl;
+  ss << "        label_size=footnotesize,x=-7,y=20             " << endl;
+  ss << endl;
+  ss << "label = key=y-axis_copy,group=mission,depth=205,   \\ " << endl;
+  ss << "        label=[0-100]\\%,label_color=black,        \\ " << endl;
+  ss << "        label_size=footnotesize,x=-7,y=16             " << endl;
+  ss << endl;
+  ss << "// X Axis Numerical labels                            " << endl;
+  ss << "label = key=x-axis-0,group=mission,depth=205,      \\ " << endl;
+  ss << "        label=0,label_color=black,                 \\ " << endl;
+  ss << "        label_size=scriptsize,x=0.5,y=-1              " << endl;
+  ss << endl;
+  ss << "label = key=x-axis-k,group=mission,depth=205,      \\ " << endl;
+  ss << "        label=10,label_color=black,                \\ " << endl;
+  ss << "        label_size=scriptsize,x=12,y=-1               " << endl;
+  ss << endl;
+  ss << "label = key=x-axis-n,group=mission,depth=205,      \\ " << endl;
+  ss << "        label=16,label_color=black,                \\ " << endl;
+  ss << "        label_size=scriptsize,x=16,y=-1              " << endl;
+  ss << endl;
+  ss << "label = key=x-axis-e,group=mission,depth=205,      \\ " << endl;
+  ss << "        label=30,label_color=black,                \\ " << endl;
+  ss << "        label_size=scriptsize,x=60,y=-1               " << endl;
+
+  fprintf(f, "%s\n", ss.str().c_str());
+}
+
+//--------------------------------------------------------
+// Procedure: writeEncounters()
+
+void EPlotEngine::writeEncounters(FILE* f) const
+{
+  stringstream ss;
+
+  string pcolor = m_point_color;
+  string psize  = m_point_size;
+  string depth  = "180";
+  string group  = "eplot";
+  for(unsigned int i=0; i<m_cpa_events.size(); i++) {
+    double cpa = m_cpa_events[i].getCPA();
+    double eff = m_cpa_events[i].getEFF();
+
+    double y   = (eff/100) * 40;
+    double x   = (cpa / m_encounter_range) * 60;
+    string xstr = doubleToStringX(x,2);
+    string ystr = doubleToStringX(y,2);
+
+    ss << "point = key=p" << i << ",group=" << group;
+    ss << ",depth=" << depth << ",x=" << xstr << ",y=" << ystr << ", \\ " << endl;
+    ss << "        point_size=" << psize << ",point_color=" << pcolor << endl;
+    //    ss << endl;
+  }
+  fprintf(f, "%s\n", ss.str().c_str());
+  
 }
   

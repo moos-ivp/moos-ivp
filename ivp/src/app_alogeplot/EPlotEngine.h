@@ -36,20 +36,36 @@ class EPlotEngine
   ~EPlotEngine() {}
 
   bool addALogFile(std::string);
+  bool setSceneFile(std::string);
+
+  void setVerbose(bool v)           {m_verbose=v;}
+  bool setPlotWidth(std::string);
+  bool setPlotHeight(std::string);
+  bool setPointColor(std::string);
+  bool setPointSize(std::string);
   
-  void setVerbose(bool v) {m_verbose=v;}
   void generate();
 
  protected:
+  void handleALogFiles();
   bool handleALogFile(std::string);
   void writeLine(FILE*, const std::string&) const;
 
+  void writeBaseScene(FILE*) const;
+  void writeEncounters(FILE*) const;
+  
  protected:
   std::vector<std::string> m_alog_files;
   std::vector<CPAEvent>    m_cpa_events;
 
   std::string m_community_name;
+  std::string m_scene_file;
+  std::string m_point_size;
+  std::string m_point_color;
   
+  std::string m_plot_wid_cm;
+  std::string m_plot_hgt_cm;
+
   bool   m_verbose;
   double m_collision_range;
   double m_near_miss_range;

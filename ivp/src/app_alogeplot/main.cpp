@@ -37,8 +37,6 @@ void showHelpAndExit();
 
 int main(int argc, char *argv[])
 {
-  string out_file;
-
   EPlotEngine eplot_engine;
   
   bool handled = true;
@@ -46,13 +44,23 @@ int main(int argc, char *argv[])
     string argi = argv[i];
     if((argi=="-h") || (argi == "--help") || (argi=="-help"))
       showHelpAndExit();
-    else if((argi=="-v") || (argi=="--version") || (argi=="-version")) {
+    else if((argi=="--version") || (argi=="-version")) {
       showReleaseInfo("alogeplot", "gpl");
       return(0);
     }
     else if(strEnds(argi, ".alog")) 
       handled = eplot_engine.addALogFile(argi);
-    else if(argi == "--verbose")
+    else if(strEnds(argi, ".scn")) 
+      handled = eplot_engine.setSceneFile(argi);
+    else if(strBegins(argi, "--pcolor="))
+      handled = eplot_engine.setPointColor(argi.substr(9));
+    else if(strBegins(argi, "--psize="))
+      handled = eplot_engine.setPointSize(argi.substr(8));
+    else if(strBegins(argi, "--wid=")) 
+      handled = eplot_engine.setPlotWidth(argi.substr(6));
+    else if(strBegins(argi, "--hgt=")) 
+      handled = eplot_engine.setPlotHeight(argi.substr(6));
+    else if((argi == "--verbose") || (argi == "-v"))
       eplot_engine.setVerbose(true);
     else 
       handled = false;
@@ -75,19 +83,22 @@ int main(int argc, char *argv[])
 void showHelpAndExit()
 {
   cout << "Usage: " << endl;
-  cout << "  alogeplot .alog [out.alog] [OPTIONS]                  " << endl;
-  cout << "                                                       " << endl;
-  cout << "Synopsis:                                              " << endl;
-  cout << "  The original alog file is not altered.               " << endl;
-  cout << "                                                       " << endl;
-  cout << "Options:                                               " << endl;
-  cout << "  -h,--help         Displays this help message         " << endl;
-  cout << "  -v,--version      Display current release version    " << endl;
-  cout << "  --verbose         Enable verbose output              " << endl;
-  cout << "                                                       " << endl;
-  cout << "Examples:                                              " << endl;
-  cout << "  alogeplot original.alog                              " << endl;
-  cout << "                                                       " << endl;
+  cout << "  alogeplot file.alog [file.scn] [file.png] [OPTIONS] " << endl;
+  cout << "                                                      " << endl;
+  cout << "Synopsis:                                             " << endl;
+  cout << "  The original alog file is not altered.              " << endl;
+  cout << "                                                      " << endl;
+  cout << "Options:                                              " << endl;
+  cout << "  --help,-h     Displays this help message            " << endl;
+  cout << "  --version     Display current release version       " << endl;
+  cout << "  --verbose,-v  Enable verbose output                 " << endl;
+  cout << "                                                      " << endl;
+  cout << "  --wid=N       Set the plot width to N centimeters.  " << endl;
+  cout << "  --hgt=N       Set the plot height to N centimeters. " << endl;
+  cout << "                                                      " << endl;
+  cout << "Examples:                                             " << endl;
+  cout << "  alogeplot original.alog                             " << endl;
+  cout << "                                                      " << endl;
   cout << endl;
   exit(0);
 }
