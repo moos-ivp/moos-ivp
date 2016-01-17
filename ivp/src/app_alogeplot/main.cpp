@@ -37,7 +37,7 @@ void showHelpAndExit();
 
 int main(int argc, char *argv[])
 {
-  string in_alog, out_file;
+  string out_file;
 
   EPlotEngine eplot_engine;
   
@@ -50,10 +50,8 @@ int main(int argc, char *argv[])
       showReleaseInfo("alogeplot", "gpl");
       return(0);
     }
-    else if(strEnds(argi, ".alog") && (in_alog == "")) {
-      handled = eplot_engine.setALogFileIn(argi);
-      in_alog = argi;
-    }
+    else if(strEnds(argi, ".alog")) 
+      handled = eplot_engine.addALogFile(argi);
     else if(argi == "--verbose")
       eplot_engine.setVerbose(true);
     else 

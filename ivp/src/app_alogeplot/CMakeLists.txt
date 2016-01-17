@@ -11,6 +11,7 @@ ADD_EXECUTABLE(alogeplot ${SRC})
    
 TARGET_LINK_LIBRARIES(alogeplot
   logutils
+  encounters
   mbutil
   ${SYSTEM_LIBS})
 

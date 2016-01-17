@@ -26,6 +26,8 @@
 
 #include <cstdio>
 #include <string>
+#include <vector>
+#include "CPAEvent.h"
 
 class EPlotEngine
 {
@@ -33,19 +35,25 @@ class EPlotEngine
   EPlotEngine();
   ~EPlotEngine() {}
 
-  bool setALogFileIn(std::string);
+  bool addALogFile(std::string);
   
   void setVerbose(bool v) {m_verbose=v;}
   void generate();
 
  protected:
+  bool handleALogFile(std::string);
   void writeLine(FILE*, const std::string&) const;
 
  protected:
-  std::string m_alog_file_in;
+  std::vector<std::string> m_alog_files;
+  std::vector<CPAEvent>    m_cpa_events;
+
   std::string m_community_name;
   
-  bool    m_verbose;
+  bool   m_verbose;
+  double m_collision_range;
+  double m_near_miss_range;
+  double m_encounter_range;
 };
 
 #endif
