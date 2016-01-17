@@ -447,10 +447,10 @@ void EncounterViewer::setTime(double time)
 //-------------------------------------------------------------
 // Procedure: getTotalEncounters()
 
-string EncounterViewer::getTotalEncounters() const
+unsigned int EncounterViewer::getTotalEncounters() const
 {
   unsigned int total_encounters = m_encounter_plot.size();
-  return(uintToString(total_encounters));
+  return(total_encounters);
 }
   
 //-------------------------------------------------------------

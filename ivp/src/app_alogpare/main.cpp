@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
-/*    DATE: June 3rd, 2008                                       */
+/*    DATE: Dec 25th, 2015                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */

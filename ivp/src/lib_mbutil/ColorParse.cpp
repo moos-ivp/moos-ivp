@@ -344,6 +344,7 @@ string colorNameToHex(const string &str)
   if(cstr == "lightgray")      return("hex:d3,d3,d3");
   if(cstr == "lightgreen")     return("hex:90,ee,90");
   if(cstr == "lightpink")      return("hex:ff,b6,c1");
+  if(cstr == "vlightpink")     return("hex:ff,d6,e1");
   if(cstr == "lightsalmon")    return("hex:ff,a0,7a");
   if(cstr == "lightseagreen")  return("hex:20,b2,aa");
   if(cstr == "lightskyblue")   return("hex:87,ce,fa");

@@ -645,8 +645,12 @@ void GUI_Encounters::updateXY()
   string time_str = doubleToString(time, 3);
   m_fld_loc_time->value(time_str.c_str());
 
-  string encounters_str = m_eviewer->getTotalEncounters();
-  m_fld_encounters->value(encounters_str.c_str());
+  unsigned int total_encounters = m_eviewer->getTotalEncounters();
+  unsigned int curr_encounter = m_eviewer->getCurrEncounter();
+  string total_encounters_str = uintToString(total_encounters);
+  string curr_encounter_str = uintToString(curr_encounter);
+  string progress = curr_encounter_str + "/" + total_encounters_str;
+  m_fld_encounters->value(progress.c_str());
 
   double min_cpa = m_eviewer->getMinCPA();
   string min_cpa_str = doubleToString(min_cpa,2);

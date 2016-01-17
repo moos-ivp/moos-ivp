@@ -78,9 +78,11 @@ class EncounterViewer : public Fl_Gl_Window
   double getCurrIndexEFF() const;
   int    getCurrIndexID() const;
   std::string getCurrIndexContact() const;
-  
-  std::string getTotalEncounters() const;
 
+  
+  unsigned getTotalEncounters() const;
+  unsigned getCurrEncounter() const {return(m_curr_buff_size);}
+  
  protected: // Utility functions
   void   handleLeftMouse(int, int);
   void   handleRightMouse(int, int);
