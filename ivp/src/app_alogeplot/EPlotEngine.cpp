@@ -243,7 +243,9 @@ void EPlotEngine::writeBaseScene(FILE *f) const
   stringstream ss;
 
   string kzone_cm_low = "0";
-  string kzone_cm_hgh = "10";
+  string krange_str = doubleToStringX(m_collision_range,2);
+  string nrange_str = doubleToStringX(m_near_miss_range,2);
+  string erange_str = doubleToStringX(m_encounter_range,2);
 
   ss << "grid = key=master,group=grid,depth=1,gcell=5,      \\ " << endl;
   ss << "       rounded=true,border_thickness=thin,         \\ " << endl;
@@ -292,20 +294,24 @@ void EPlotEngine::writeBaseScene(FILE *f) const
   ss << endl;
   ss << "// X Axis Numerical labels                            " << endl;
   ss << "label = key=x-axis-0,group=mission,depth=205,      \\ " << endl;
-  ss << "        label=0,label_color=black,                 \\ " << endl;
-  ss << "        label_size=scriptsize,x=0.5,y=-1              " << endl;
+  ss << "        label_size=scriptsize,x=0.5,y=-1           \\ " << endl;
+  ss << "        label_color=black,                         \\ " << endl;
+  ss << "        label=0                                       " << endl;
   ss << endl;
   ss << "label = key=x-axis-k,group=mission,depth=205,      \\ " << endl;
-  ss << "        label=10,label_color=black,                \\ " << endl;
-  ss << "        label_size=scriptsize,x=12,y=-1               " << endl;
+  ss << "        label_size=scriptsize,x=12,y=-1            \\ " << endl;
+  ss << "        label_color=black,                         \\ " << endl;
+  ss << "        label=" << krange_str << "                    " << endl;
   ss << endl;
   ss << "label = key=x-axis-n,group=mission,depth=205,      \\ " << endl;
-  ss << "        label=16,label_color=black,                \\ " << endl;
-  ss << "        label_size=scriptsize,x=16,y=-1              " << endl;
+  ss << "        label_size=scriptsize,x=16,y=-1            \\ " << endl;
+  ss << "        label_color=black,                         \\ " << endl;
+  ss << "        label=" << nrange_str << "                    " << endl;
   ss << endl;
   ss << "label = key=x-axis-e,group=mission,depth=205,      \\ " << endl;
+  ss << "        label_size=scriptsize,x=60,y=-1            \\ " << endl;
   ss << "        label=30,label_color=black,                \\ " << endl;
-  ss << "        label_size=scriptsize,x=60,y=-1               " << endl;
+  ss << "        label=" << erange_str << "                    " << endl;
 
   fprintf(f, "%s\n", ss.str().c_str());
 }
