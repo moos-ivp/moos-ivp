@@ -100,8 +100,10 @@ void showHelpAndExit()
   cout << "  --version     Display current release version       " << endl;
   cout << "  --verbose,-v  Enable verbose output                 " << endl;
   cout << "                                                      " << endl;
-  cout << "  --wid=N       Set the plot width to N centimeters.  " << endl;
-  cout << "  --hgt=N       Set the plot height to N centimeters. " << endl;
+  cout << "  --pwid=N      Set the plot width to N centimeters.  " << endl;
+  cout << "  --phgt=N      Set the plot height to N centimeters. " << endl;
+  cout << "  --gwid=N      Set the Grid width to N centimeters.  " << endl;
+  cout << "  --ghgt=N      Set the Grid height to N centimeters. " << endl;
   cout << "                                                      " << endl;
   cout << "Examples:                                             " << endl;
   cout << "  alogeplot original.alog                             " << endl;

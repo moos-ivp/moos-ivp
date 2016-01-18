@@ -42,10 +42,10 @@ EPlotEngine::EPlotEngine()
   m_point_size  = "0.1";
   m_point_color = "darkblue";
 
-  setPlotWidCM("45");
-  setPlotHgtCM("30");
-  setGridWidCM("45");
-  setGridHgtCM("30");
+  setPlotWidCM("30");
+  setPlotHgtCM("20");
+  setGridWidCM("30");
+  setGridHgtCM("20");
 }
 
 //--------------------------------------------------------
@@ -314,6 +314,8 @@ void EPlotEngine::writeBaseGridFrame(FILE *f) const
   ss << "          line_thickness=thin,                     \\ " << endl;
   ss << "          pts=" << framepts.str() << "                " << endl;
   ss << endl;
+  ss << "scene_boundary = 1.5                                    " << endl;
+  ss << endl;
 
   fprintf(f, "%s\n", ss.str().c_str());
 }
@@ -394,7 +396,7 @@ void EPlotEngine::writeBaseLabels(FILE *f) const
 {
   double encounter_range_cm = m_plot_wid_cm;
 
-  double x_cpa_label_cm = 0.58 * m_plot_wid_cm;
+  double x_cpa_label_cm = 0.67 * m_plot_wid_cm;
   string x_cpa_label_cm_str = doubleToString(x_cpa_label_cm,2);
 
   stringstream ss;
@@ -402,17 +404,17 @@ void EPlotEngine::writeBaseLabels(FILE *f) const
   ss << "label = key=x-axis,group=mission,depth=205,        \\ " << endl;
   ss << "        label=Closest Point of Approach (meters),  \\ " << endl;
   ss << "        label_color=black,label_size=footnotesize, \\ " << endl;
-  ss << "        y=-2.5,                                      \\ " << endl;
+  ss << "        y=-1.5,                                      \\ " << endl;
   ss << "        x=" << x_cpa_label_cm_str << "                " << endl;
   ss << endl; 
   ss << "label = key=y-axis,group=mission,depth=205,        \\ " << endl;
   ss << "        label=Efficiency,label_color=black,        \\ " << endl;
-  ss << "        label_size=footnotesize,x=-4,              \\ " << endl;
+  ss << "        label_size=footnotesize,x=-2,              \\ " << endl;
   ss << "        y=" << doubleToStringX(m_grid_hgt_cm/2,2)       << endl;
   ss << endl;
   ss << "label = key=y-axis_copy,group=mission,depth=205,   \\ " << endl;
   ss << "        label=[0-100]\\%,label_color=black,        \\ " << endl;
-  ss << "        label_size=footnotesize,x=-4,              \\ " << endl;
+  ss << "        label_size=footnotesize,x=-2,              \\ " << endl;
   ss << "        y=" << doubleToStringX((m_grid_hgt_cm/2)-2,2)   << endl;
   ss << endl;
 
@@ -434,24 +436,24 @@ void EPlotEngine::writeBaseLabels(FILE *f) const
   ss << "label = key=x-axis-0,group=mission,depth=205,      \\ " << endl;
   ss << "        label_color=black,                         \\ " << endl;
   ss << "        label=0,                                   \\ " << endl;
-  ss << "        label_size=scriptsize,x=0.5,y=-1              " << endl;
+  ss << "        label_size=scriptsize,x=0.25,y=-0.5              " << endl;
   ss << endl;
   ss << "label = key=x-axis-k,group=mission,depth=205,      \\ " << endl;
   ss << "        label_color=black,                         \\ " << endl;
   ss << "        label=" << krange_str << ",                \\ " << endl;
-  ss << "        label_size=scriptsize,y=-1,                \\ " << endl;
+  ss << "        label_size=scriptsize,y=-0.5,                \\ " << endl;
   ss << "        x=" << collision_range_cm_str << "            " << endl;
   ss << endl;
   ss << "label = key=x-axis-n,group=mission,depth=205,      \\ " << endl;
   ss << "        label_color=black,                         \\ " << endl;
   ss << "        label=" << nrange_str << ",                \\ " << endl;
-  ss << "        label_size=scriptsize,y=-1,                \\ " << endl;
-  ss << "        x=" << near_miss_range_cm_str << "          " << endl;
+  ss << "        label_size=scriptsize,y=-0.5,                \\ " << endl;
+  ss << "        x=" << near_miss_range_cm_str << "            " << endl;
   ss << endl;
   ss << "label = key=x-axis-e,group=mission,depth=205,      \\ " << endl;
   ss << "        label=30,label_color=black,                \\ " << endl;
   ss << "        label=" << erange_str << ",                \\ " << endl;
-  ss << "        label_size=scriptsize,y=-1,                \\ " << endl;
+  ss << "        label_size=scriptsize,y=-0.5,                \\ " << endl;
   ss << "        x=" << encounter_range_cm << "             \\ " << endl;
 
   fprintf(f, "%s\n", ss.str().c_str());
