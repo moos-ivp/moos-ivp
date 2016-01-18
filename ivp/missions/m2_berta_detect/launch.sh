@@ -4,22 +4,20 @@
 #-------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
+LAUNCH_GUI="yes"
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [time_warp]   \n" $0
 	printf "  --just_make, -j    \n" 
 	printf "  --help, -h         \n" 
+	printf "  --no_gui, -n       \n" 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "v1" ] ; then
-	VARIATION="1"
-    elif [ "${ARGI}" = "v2" ] ; then
-	VARIATION="2"
-    elif [ "${ARGI}" = "v3" ] ; then
-	VARIATION="3"
     elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
+    elif [ "${ARGI}" = "--no_gui" -o "${ARGI}" = "-n" ] ; then
+	LAUNCH_GUI="no"
     else 
 	printf "Bad Argument: %s \n" $ARGI
 	exit 0
@@ -63,7 +61,8 @@ nsplug meta_vehicle.moos targ_deb.moos -f WARP=$TIME_WARP \
 
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
     SNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                 \
-    SPORT="9000"       VNAME1=$VNAME1  VNAME2=$VNAME2
+    SPORT="9000"       VNAME1=$VNAME1                             \
+    VNAME2=$VNAME2     LAUNCH_GUI=$LAUNCH_GUI
 
 nsplug meta_vehicle.bhv targ_abe.bhv -f VNAME=$VNAME1     \
     START_POS=$START_POS1 LOITER_POS=$LOITER_POS1 MISSION_ROLE="SIDE"      

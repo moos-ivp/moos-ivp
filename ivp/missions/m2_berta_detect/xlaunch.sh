@@ -27,11 +27,11 @@ sleep 5
 COND="\"((DB_UPTIME > 500) or (ENCOUNTER_TOTAL > 4))\""
 
 while true; do 
-    if uQueryDB targ_shoreside.moos --condition="ENCOUNTER_TOTAL > 40" ; then 
+    if uQueryDB targ_shoreside.moos --condition="ENCOUNTER_TOTAL > 1000" ; then 
 	echo "Quitting...."
 	ktm >& /dev/null
 	exit 0
     fi
-    sleep 5
+    sleep 30
     echo "continuing...."
 done

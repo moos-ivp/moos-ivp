@@ -14,9 +14,11 @@ Processconfig = ANTLER
 
   Run = MOOSDB          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
+#ifdef LAUNCH_GUI yes
   Run = pMarineViewer   @ NewConsole = false
-  Run = pLogger         @ NewConsole = false
   Run = uXMS            @ NewConsole = false
+#endif
+  Run = pLogger         @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
 
   Run = pShare          @ NewConsole = false
@@ -162,8 +164,8 @@ ProcessConfig = uXMS
 
 ProcessConfig = pLogger
 {
-  AppTick       = 10
-  CommsTick     = 10
+  AppTick       = 5
+  CommsTick     = 5
   
   File          = XLOG_SHORESIDE
   PATH          = ./
@@ -179,6 +181,12 @@ ProcessConfig = pLogger
   WildCardOmitPattern = *_STATUS
   WildCardOmitPattern = DB_VARSUMMARY
   WildCardOmitPattern = DB_RWSUMMARY
+  WildCardOmitPattern = NODE* 
+  WildCardOmitPattern = APPCAST* 
+  WildCardOmitPattern = PSHARE* 
+  WildCardOmitPattern = *_ITER_GAP
+  WildCardOmitPattern = *_ITER_LEN
+  WildCardOmitPattern = DB_QOS
 }
 
 
