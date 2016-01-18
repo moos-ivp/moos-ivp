@@ -404,7 +404,7 @@ void EPlotEngine::writeBaseLabels(FILE *f) const
   ss << "label = key=x-axis,group=mission,depth=205,        \\ " << endl;
   ss << "        label=Closest Point of Approach (meters),  \\ " << endl;
   ss << "        label_color=black,label_size=footnotesize, \\ " << endl;
-  ss << "        y=-1.5,                                      \\ " << endl;
+  ss << "        y=-1.5,                                    \\ " << endl;
   ss << "        x=" << x_cpa_label_cm_str << "                " << endl;
   ss << endl; 
   ss << "label = key=y-axis,group=mission,depth=205,        \\ " << endl;
@@ -436,25 +436,25 @@ void EPlotEngine::writeBaseLabels(FILE *f) const
   ss << "label = key=x-axis-0,group=mission,depth=205,      \\ " << endl;
   ss << "        label_color=black,                         \\ " << endl;
   ss << "        label=0,                                   \\ " << endl;
-  ss << "        label_size=scriptsize,x=0.25,y=-0.5              " << endl;
+  ss << "        label_size=scriptsize,x=0.25,y=-0.5           " << endl;
   ss << endl;
   ss << "label = key=x-axis-k,group=mission,depth=205,      \\ " << endl;
   ss << "        label_color=black,                         \\ " << endl;
   ss << "        label=" << krange_str << ",                \\ " << endl;
-  ss << "        label_size=scriptsize,y=-0.5,                \\ " << endl;
+  ss << "        label_size=scriptsize,y=-0.5,              \\ " << endl;
   ss << "        x=" << collision_range_cm_str << "            " << endl;
   ss << endl;
   ss << "label = key=x-axis-n,group=mission,depth=205,      \\ " << endl;
   ss << "        label_color=black,                         \\ " << endl;
   ss << "        label=" << nrange_str << ",                \\ " << endl;
-  ss << "        label_size=scriptsize,y=-0.5,                \\ " << endl;
+  ss << "        label_size=scriptsize,y=-0.5,              \\ " << endl;
   ss << "        x=" << near_miss_range_cm_str << "            " << endl;
   ss << endl;
   ss << "label = key=x-axis-e,group=mission,depth=205,      \\ " << endl;
   ss << "        label=30,label_color=black,                \\ " << endl;
   ss << "        label=" << erange_str << ",                \\ " << endl;
-  ss << "        label_size=scriptsize,y=-0.5,                \\ " << endl;
-  ss << "        x=" << encounter_range_cm << "             \\ " << endl;
+  ss << "        label_size=scriptsize,y=-0.5,              \\ " << endl;
+  ss << "        x=" << encounter_range_cm << "                " << endl;
 
   fprintf(f, "%s\n", ss.str().c_str());
 }
