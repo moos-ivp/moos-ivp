@@ -122,9 +122,9 @@ Behavior = BHV_AvoidCollision
                decay = 30,60
 
         pwt_outer_dist = 25
-        pwt_inner_dist = 15
+        pwt_inner_dist = 10
         completed_dist = 40
-     min_util_cpa_dist = 10
+     min_util_cpa_dist = 6
      max_util_cpa_dist = 18
              pwt_grade = linear
    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
