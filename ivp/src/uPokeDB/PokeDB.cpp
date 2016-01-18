@@ -119,15 +119,16 @@ bool PokeDB::Iterate()
     }  
   }
 
-  if(m_iteration > 3)
+  if(m_iteration > 20)
     exit(0);
 
   if(m_iteration == 2)
     printf("\n\nPRIOR to Poking the MOOSDB \n");
   else if(m_iteration == 3)
     printf("\n\nAFTER Poking the MOOSDB \n");
+  else if(m_iteration == 20)
+    printReport();
 
-  printReport();
   return(true);
 }
 
