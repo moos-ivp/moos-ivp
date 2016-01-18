@@ -49,10 +49,10 @@ ProcessConfig = uFldCollisionDetect
 	near_miss_flag = NEAR_MISS = $CPA
 	encounter_flag = ENCOUNTER = $CPA
 
-	near_miss_flag = ENCOUNTER_$UP_V1 = $CPA
-	near_miss_flag = ENCOUNTER_$UP_V2 = $CPA
-	collision_flag = ENCOUNTER_$UP_V1 = $CPA
-	collision_flag = ENCOUNTER_$UP_V2 = $CPA
+	near_miss_flag = NEAR_MISS_$UP_V1 = $CPA
+	near_miss_flag = NEAR_MISS_$UP_V2 = $CPA
+	collision_flag = COLLISION_$UP_V1 = $CPA
+	collision_flag = COLLISION_$UP_V2 = $CPA
 
 	encounter_flag = EVAL_LOITER_REQ_$UP_V1 = id=$IDX, cpa=$CPA, v2=$V2
 	encounter_flag = EVAL_LOITER_REQ_$UP_V2 = id=$IDX, cpa=$CPA, v2=$V1
@@ -106,6 +106,8 @@ ProcessConfig = uFldShoreBroker
 
 	bridge   = src=EVAL_LOITER_REQ_$V, alias=EVAL_LOITER_REQ
 	bridge   = src=ENCOUNTER_$V, alias=ENCOUNTER
+	bridge   = src=NEAR_MISS_$V, alias=NEAR_MISS
+	bridge   = src=COLLISION_$V, alias=COLLISION
   bridge   = src=UP_LOITER_$V, alias=UP_LOITER
   bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
   bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
