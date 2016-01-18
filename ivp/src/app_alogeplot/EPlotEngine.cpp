@@ -41,8 +41,11 @@ EPlotEngine::EPlotEngine()
   m_scene_file  = "./.tmp.scn";
   m_point_size  = "0.1";
   m_point_color = "darkblue";
-  m_plot_wid_cm = "30";
-  m_plot_hgt_cm = "20";
+
+  setPlotWidCM("45");
+  setPlotHgtCM("30");
+  setGridWidCM("45");
+  setGridHgtCM("30");
 }
 
 //--------------------------------------------------------
@@ -96,24 +99,66 @@ bool EPlotEngine::setPointSize(string str)
 }
 
 //--------------------------------------------------------
-// Procedure: setPlotWidth()
+// Procedure: setPlotWidCM()
 
-bool EPlotEngine::setPlotWidth(string str)
+bool EPlotEngine::setPlotWidCM(string str)
 {
   if(!isNumber(str))
     return(false);
-  m_plot_wid_cm = str;
+
+  m_plot_wid_cm = atof(str.c_str());
+  if(m_plot_wid_cm < 4)
+    m_plot_wid_cm = 4;
+
+  m_plot_wid_cm_str = doubleToStringX(m_plot_wid_cm,2);
   return(true);
 }
 
 //--------------------------------------------------------
-// Procedure: setPlotHeight()
+// Procedure: setPlotHgtCM()
 
-bool EPlotEngine::setPlotHeight(string str)
+bool EPlotEngine::setPlotHgtCM(string str)
 {
   if(!isNumber(str))
     return(false);
-  m_plot_hgt_cm = str;
+
+  m_plot_hgt_cm = atof(str.c_str());
+  if(m_plot_hgt_cm < 4)
+    m_plot_hgt_cm = 4;
+
+  m_plot_hgt_cm_str = doubleToStringX(m_plot_hgt_cm,2);
+  return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: setGridWidCM()
+
+bool EPlotEngine::setGridWidCM(string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  m_grid_wid_cm = atof(str.c_str());
+  if(m_grid_wid_cm < 4)
+    m_grid_wid_cm = 4;
+
+  m_grid_wid_cm_str = doubleToStringX(m_grid_wid_cm,2);
+  return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: setGridHgtCM()
+
+bool EPlotEngine::setGridHgtCM(string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  m_grid_hgt_cm = atof(str.c_str());
+  if(m_plot_hgt_cm < 4)
+    m_plot_hgt_cm = 4;
+
+  m_grid_hgt_cm_str = doubleToStringX(m_grid_hgt_cm,2);
   return(true);
 }
 
@@ -131,13 +176,15 @@ void EPlotEngine::generate()
   }
 
   // Begin creation of the scene (.scn) file
-  writeBaseScene(file_ptr);
+  writeBaseGridFrame(file_ptr);
+  writeBaseZones(file_ptr);
+  writeBaseLabels(file_ptr);
   writeEncounters(file_ptr);
 
   fclose(file_ptr);
 
   // Begin creation of the Latex file
-  string cmd = "scn2jpg.sh -s -o " + m_scene_file;
+  string cmd = "scn2jpg.sh -v -s -o " + m_scene_file;
   system(cmd.c_str());
   
 }
@@ -236,82 +283,176 @@ bool EPlotEngine::handleALogFile(string alog_file)
 
 
 //--------------------------------------------------------
-// Procedure: writeBaseScene
+// Procedure: writeBaseGridFrame
 
-void EPlotEngine::writeBaseScene(FILE *f) const
+void EPlotEngine::writeBaseGridFrame(FILE *f) const
 {
+  // Create the pts for the plot box (overall enclosing box)
+  string pxl = "0";
+  string pxh = m_plot_wid_cm_str;
+  string pyl = "0";
+  string pyh = m_plot_hgt_cm_str;
+  stringstream framepts;
+  framepts << "{";
+  framepts << pxl << "," << pyl << ":";
+  framepts << pxl << "," << pyh << ":";
+  framepts << pxh << "," << pyh << ":";
+  framepts << pxh << "," << pyl << ":";
+  framepts << pxl << "," << pyl << "}";
+
   stringstream ss;
-
-  string kzone_cm_low = "0";
-  string krange_str = doubleToStringX(m_collision_range,2);
-  string nrange_str = doubleToStringX(m_near_miss_range,2);
-  string erange_str = doubleToStringX(m_encounter_range,2);
-
   ss << "grid = key=master,group=grid,depth=1,gcell=5,      \\ " << endl;
   ss << "       rounded=true,border_thickness=thin,         \\ " << endl;
   ss << "       border_color=menublue,gback_color=white,    \\ " << endl; 
   ss << "       gline_thickness=thin,gline_color=white,     \\ " << endl;
-  ss << "       widthcm="  << m_plot_wid_cm << ",           \\ " << endl;
-  ss << "       heightcm=" << m_plot_hgt_cm << "               " << endl;
-  ss << endl;
-  ss << "polygon = key=kzone,group=mission,depth=98,        \\ " << endl;
-  ss << "          pts={0,0:0,40:12,40:12,0:0,0},           \\ " << endl;
-  ss << "          point_size=0,point_color=brown,          \\ " << endl;
-  ss << "          line_color=gray80,line_style=solid,      \\ " << endl;
-  ss << "          line_thickness=thin,fill_color=lightpink    " << endl;
-  ss << endl;
-  ss << "polygon = key=nzone,group=mission,depth=98,        \\ " << endl;
-  ss << "          pts={12,0:12,40:16,40:16,0:12,0},        \\ " << endl;
-  ss << "          point_size=0,point_color=brown,          \\ " << endl;
-  ss << "          line_color=gray80,line_style=solid,      \\ " << endl;
-  ss << "          line_thickness=thin,fill_color=lightyellow " << endl;
-  ss << endl; 
-  ss << "polygon = key=ezone,group=mission,depth=98,        \\ " << endl;
-  ss << "          pts={16,0: 16,20: 60,20: 60,0: 16,0},    \\ " << endl;
-  ss << "          point_size=0,point_color=brown,          \\ " << endl;
-  ss << "          line_color=gray80,line_style=solid,      \\ " << endl;
-  ss << "          line_thickness=thin,fill_color=gray95       " << endl;
+  ss << "       widthcm="  << m_grid_wid_cm_str << ",       \\ " << endl;
+  ss << "       heightcm=" << m_grid_hgt_cm_str << "           " << endl;
   ss << endl; 
   ss << "polygon = key=tpoly,group=mission,depth=99,        \\ " << endl;
-  ss << "          pts={0,0:0,40:60,40:60,0:0,0},           \\ " << endl;
   ss << "          point_size=0,point_color=brown,          \\ " << endl;
   ss << "          line_color=black,line_style=solid,       \\ " << endl;
-  ss << "          line_thickness=thin                         " << endl;
+  ss << "          line_thickness=thin,                     \\ " << endl;
+  ss << "          pts=" << framepts.str() << "                " << endl;
   ss << endl;
+
+  fprintf(f, "%s\n", ss.str().c_str());
+}
+
+//--------------------------------------------------------
+// Procedure: writeBaseZones
+
+void EPlotEngine::writeBaseZones(FILE *f) const
+{
+  double collision_pct = (m_collision_range / m_encounter_range);
+  double near_miss_pct = (m_near_miss_range / m_encounter_range);
+  double collision_range_cm = collision_pct * m_plot_wid_cm;
+  double near_miss_range_cm = near_miss_pct * m_plot_wid_cm;
+  
+  string exl = doubleToStringX(near_miss_range_cm);
+  string exh = m_plot_wid_cm_str;
+  string eyl = "0";
+  string eyh = doubleToStringX((m_plot_hgt_cm/2),2);
+  stringstream ezonepts;
+  ezonepts << "{";
+  ezonepts << exl << "," << eyl << ":";
+  ezonepts << exl << "," << eyh << ":";
+  ezonepts << exh << "," << eyh << ":";
+  ezonepts << exh << "," << eyl << ":";
+  ezonepts << exl << "," << eyl << "}";
+  
+  string kxl = "0";
+  string kxh = doubleToStringX(collision_range_cm);
+  string kyl = "0";
+  string kyh = m_plot_hgt_cm_str;
+  stringstream kzonepts;
+  kzonepts << "{";
+  kzonepts << kxl << "," << kyl << ":";
+  kzonepts << kxl << "," << kyh << ":";
+  kzonepts << kxh << "," << kyh << ":";
+  kzonepts << kxh << "," << kyl << ":";
+  kzonepts << kxl << "," << kyl << "}";
+  
+  string nxl = doubleToString(collision_range_cm,2);
+  string nxh = doubleToString(near_miss_range_cm,2);
+  string nyl = "0";
+  string nyh = m_plot_hgt_cm_str;
+  stringstream nzonepts;
+  nzonepts << "{";
+  nzonepts << nxl << "," << nyl << ":";
+  nzonepts << nxl << "," << nyh << ":";
+  nzonepts << nxh << "," << nyh << ":";
+  nzonepts << nxh << "," << nyl << ":";
+  nzonepts << nxl << "," << nyl << "}";
+  
+  stringstream ss;
+  ss << "polygon = key=kzone,group=mission,depth=98,           \\ " << endl;
+  ss << "          point_size=0,point_color=brown,             \\ " << endl;
+  ss << "          line_color=gray80,line_style=solid,         \\ " << endl;
+  ss << "          line_thickness=thin,fill_color=lightpink,   \\ " << endl;
+  ss << "          pts=" << kzonepts.str() << "                   " << endl;
+  ss << endl;
+  ss << "polygon = key=nzone,group=mission,depth=98,           \\ " << endl;
+  ss << "          point_size=0,point_color=brown,             \\ " << endl;
+  ss << "          line_color=gray80,line_style=solid,         \\ " << endl;
+  ss << "          line_thickness=thin,fill_color=lightyellow, \\ " << endl;
+  ss << "          pts=" << nzonepts.str() << "                \\ " << endl;
+  ss << endl; 
+  ss << "polygon = key=ezone,group=mission,depth=98,        \\ " << endl;
+  ss << "          point_size=0,point_color=brown,          \\ " << endl;
+  ss << "          line_color=gray80,line_style=solid,      \\ " << endl;
+  ss << "          line_thickness=thin,fill_color=gray95,   \\ " << endl;
+  ss << "          pts=" << ezonepts.str() << "                " << endl;
+  ss << endl; 
+
+  fprintf(f, "%s\n", ss.str().c_str());
+}
+
+//--------------------------------------------------------
+// Procedure: writeBaseLabels
+
+void EPlotEngine::writeBaseLabels(FILE *f) const
+{
+  double encounter_range_cm = m_plot_wid_cm;
+
+  double x_cpa_label_cm = 0.58 * m_plot_wid_cm;
+  string x_cpa_label_cm_str = doubleToString(x_cpa_label_cm,2);
+
+  stringstream ss;
   ss << "// Axis Titles                                        " << endl;
   ss << "label = key=x-axis,group=mission,depth=205,        \\ " << endl;
   ss << "        label=Closest Point of Approach (meters),  \\ " << endl;
   ss << "        label_color=black,label_size=footnotesize, \\ " << endl;
-  ss << "        x=35,y=-4                                     " << endl;
+  ss << "        y=-2.5,                                      \\ " << endl;
+  ss << "        x=" << x_cpa_label_cm_str << "                " << endl;
   ss << endl; 
   ss << "label = key=y-axis,group=mission,depth=205,        \\ " << endl;
   ss << "        label=Efficiency,label_color=black,        \\ " << endl;
-  ss << "        label_size=footnotesize,x=-7,y=20             " << endl;
+  ss << "        label_size=footnotesize,x=-4,              \\ " << endl;
+  ss << "        y=" << doubleToStringX(m_grid_hgt_cm/2,2)       << endl;
   ss << endl;
   ss << "label = key=y-axis_copy,group=mission,depth=205,   \\ " << endl;
   ss << "        label=[0-100]\\%,label_color=black,        \\ " << endl;
-  ss << "        label_size=footnotesize,x=-7,y=16             " << endl;
+  ss << "        label_size=footnotesize,x=-4,              \\ " << endl;
+  ss << "        y=" << doubleToStringX((m_grid_hgt_cm/2)-2,2)   << endl;
   ss << endl;
+
+
+  string krange_str = doubleToStringX(m_collision_range,2);
+  string nrange_str = doubleToStringX(m_near_miss_range,2);
+  string erange_str = doubleToStringX(m_encounter_range,2);
+
+  double collision_pct = (m_collision_range / m_encounter_range);
+  double near_miss_pct = (m_near_miss_range / m_encounter_range);
+  double collision_range_cm = collision_pct * encounter_range_cm;
+  double near_miss_range_cm = near_miss_pct * encounter_range_cm;
+
+  string collision_range_cm_str = doubleToString(collision_range_cm,2);
+  string near_miss_range_cm_str = doubleToString(near_miss_range_cm,2);
+  string encounter_range_cm_str = doubleToString(encounter_range_cm-1,2);
+
   ss << "// X Axis Numerical labels                            " << endl;
   ss << "label = key=x-axis-0,group=mission,depth=205,      \\ " << endl;
-  ss << "        label_size=scriptsize,x=0.5,y=-1           \\ " << endl;
   ss << "        label_color=black,                         \\ " << endl;
-  ss << "        label=0                                       " << endl;
+  ss << "        label=0,                                   \\ " << endl;
+  ss << "        label_size=scriptsize,x=0.5,y=-1              " << endl;
   ss << endl;
   ss << "label = key=x-axis-k,group=mission,depth=205,      \\ " << endl;
-  ss << "        label_size=scriptsize,x=12,y=-1            \\ " << endl;
   ss << "        label_color=black,                         \\ " << endl;
-  ss << "        label=" << krange_str << "                    " << endl;
+  ss << "        label=" << krange_str << ",                \\ " << endl;
+  ss << "        label_size=scriptsize,y=-1,                \\ " << endl;
+  ss << "        x=" << collision_range_cm_str << "            " << endl;
   ss << endl;
   ss << "label = key=x-axis-n,group=mission,depth=205,      \\ " << endl;
-  ss << "        label_size=scriptsize,x=16,y=-1            \\ " << endl;
   ss << "        label_color=black,                         \\ " << endl;
-  ss << "        label=" << nrange_str << "                    " << endl;
+  ss << "        label=" << nrange_str << ",                \\ " << endl;
+  ss << "        label_size=scriptsize,y=-1,                \\ " << endl;
+  ss << "        x=" << near_miss_range_cm_str << "          " << endl;
   ss << endl;
   ss << "label = key=x-axis-e,group=mission,depth=205,      \\ " << endl;
-  ss << "        label_size=scriptsize,x=60,y=-1            \\ " << endl;
   ss << "        label=30,label_color=black,                \\ " << endl;
-  ss << "        label=" << erange_str << "                    " << endl;
+  ss << "        label=" << erange_str << ",                \\ " << endl;
+  ss << "        label_size=scriptsize,y=-1,                \\ " << endl;
+  ss << "        x=" << encounter_range_cm << "             \\ " << endl;
 
   fprintf(f, "%s\n", ss.str().c_str());
 }
@@ -331,8 +472,8 @@ void EPlotEngine::writeEncounters(FILE* f) const
     double cpa = m_cpa_events[i].getCPA();
     double eff = m_cpa_events[i].getEFF();
 
-    double y   = (eff/100) * 40;
-    double x   = (cpa / m_encounter_range) * 60;
+    double y   = (eff/100) * m_plot_hgt_cm;
+    double x   = (cpa / m_encounter_range) * m_plot_wid_cm;
     string xstr = doubleToStringX(x,2);
     string ystr = doubleToStringX(y,2);
 

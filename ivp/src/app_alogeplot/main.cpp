@@ -56,10 +56,17 @@ int main(int argc, char *argv[])
       handled = eplot_engine.setPointColor(argi.substr(9));
     else if(strBegins(argi, "--psize="))
       handled = eplot_engine.setPointSize(argi.substr(8));
-    else if(strBegins(argi, "--wid=")) 
-      handled = eplot_engine.setPlotWidth(argi.substr(6));
-    else if(strBegins(argi, "--hgt=")) 
-      handled = eplot_engine.setPlotHeight(argi.substr(6));
+
+    else if(strBegins(argi, "--pwid=")) 
+      handled = eplot_engine.setPlotWidCM(argi.substr(7));
+    else if(strBegins(argi, "--phgt=")) 
+      handled = eplot_engine.setPlotHgtCM(argi.substr(7));
+
+    else if(strBegins(argi, "--gwid=")) 
+      handled = eplot_engine.setGridWidCM(argi.substr(7));
+    else if(strBegins(argi, "--ghgt=")) 
+      handled = eplot_engine.setGridHgtCM(argi.substr(7));
+
     else if((argi == "--verbose") || (argi == "-v"))
       eplot_engine.setVerbose(true);
     else 

@@ -39,8 +39,10 @@ class EPlotEngine
   bool setSceneFile(std::string);
 
   void setVerbose(bool v)           {m_verbose=v;}
-  bool setPlotWidth(std::string);
-  bool setPlotHeight(std::string);
+  bool setPlotWidCM(std::string);
+  bool setPlotHgtCM(std::string);
+  bool setGridWidCM(std::string);
+  bool setGridHgtCM(std::string);
   bool setPointColor(std::string);
   bool setPointSize(std::string);
   
@@ -51,7 +53,9 @@ class EPlotEngine
   bool handleALogFile(std::string);
   void writeLine(FILE*, const std::string&) const;
 
-  void writeBaseScene(FILE*) const;
+  void writeBaseGridFrame(FILE*) const;
+  void writeBaseZones(FILE*) const;
+  void writeBaseLabels(FILE*) const;
   void writeEncounters(FILE*) const;
   
  protected:
@@ -63,13 +67,20 @@ class EPlotEngine
   std::string m_point_size;
   std::string m_point_color;
   
-  std::string m_plot_wid_cm;
-  std::string m_plot_hgt_cm;
+  std::string m_grid_wid_cm_str;
+  std::string m_grid_hgt_cm_str;
+  std::string m_plot_wid_cm_str;
+  std::string m_plot_hgt_cm_str;
+
+  double m_grid_wid_cm;
+  double m_grid_hgt_cm;
+  double m_plot_wid_cm;
+  double m_plot_hgt_cm;
 
   bool   m_verbose;
-  double m_collision_range;
-  double m_near_miss_range;
-  double m_encounter_range;
+  double m_collision_range;  // meters
+  double m_near_miss_range;  // meters
+  double m_encounter_range;  // meters
 };
 
 #endif
