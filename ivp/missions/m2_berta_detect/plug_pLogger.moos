@@ -35,5 +35,5 @@ ProcessConfig = pLogger
 	WildCardOmitPattern = NAV_DEPTH, NAV_SPEED_OVER_GROUND, DB_QOS
 	WildCardOmitPattern = NODE_BROKER_PING_0, PSHARE*, NODE_REPORT
 	WildCardOmitPattern = IVPHELM_ALLSTOP_DEBUG, *ITER_GAP, *ITER_EN
-	WildCardOmitPattern = PHI_HOST*
+	WildCardOmitPattern = PHI_HOST*, NODE_REPORT_LOCAL
 }

@@ -33,6 +33,7 @@ else
 fi
     
 sleep 5
+echo "Poking...." 
 uPokeDB targ_shoreside.moos DEPLOY_ALL=true MOOS_MANUAL_OVERRIDE_ALL=false
 sleep 5
 
@@ -48,6 +49,6 @@ while true; do
 	echo "Pare complete."
 	exit 0
     fi
-    sleep 30
+    sleep 15
     echo "continuing...."
 done
