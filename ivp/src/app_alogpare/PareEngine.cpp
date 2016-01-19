@@ -46,7 +46,7 @@ bool PareEngine::setALogFileIn(string alog_file)
 {
   if(!okFileToRead(alog_file)) {
     cout << "Unable to read from: " << alog_file << endl;
-    return(false);
+    exit(1);
   }
   
   m_alog_file_in = alog_file;
