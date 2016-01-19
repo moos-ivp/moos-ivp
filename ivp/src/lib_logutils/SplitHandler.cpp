@@ -172,7 +172,9 @@ bool SplitHandler::handleMakeSplitFiles()
       m_vname = var_src;
     }
 
-    if((m_vtype.length() == 0) && (varname == "NODE_REPORT_LOCAL")) {
+    if((m_vtype.length() == 0) &&
+       ((varname == "NODE_REPORT_LOCAL") ||
+	(varname == "NODE_REPORT_LOCAL_FIRST"))) {
 
       string sval    = tolower(getDataEntry(line_raw));
       string vtype   = tokStringParse(sval, "type", ',', '=');      
