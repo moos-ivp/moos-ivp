@@ -34,7 +34,7 @@ class GrepHandler
   GrepHandler();
   ~GrepHandler() {}
 
-  bool handle(const std::string&, const std::string& str="");
+  bool handle(std::string, std::string str="");
   void addKey(std::string str);
   void printReport();
   void setFileOverWrite(bool v)    {m_file_overwrite=v;}
@@ -47,6 +47,8 @@ class GrepHandler
   std::vector<std::string> getMatchedKeys();
   std::vector<std::string> getUnMatchedKeys();
 
+  std::string quickPassGetVName(const std::string);
+  
   void outputLine(const std::string& line, const std::string& varname="");
   void ignoreLine(const std::string& line, const std::string& varname="");
   

@@ -62,15 +62,21 @@ GrepHandler::GrepHandler()
 
 //--------------------------------------------------------
 // Procedure: handle
-//     Notes: 
 
-bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
+bool GrepHandler::handle(string alogfile, string new_alogfile)
 {
   if(alogfile == new_alogfile) {
     cout << "Input and output .alog files cannot be the same. " << endl;
     cout << "Exiting now." << endl;
     return(false);
   }
+
+  if(new_alogfile == "vname.alog") {
+    string vname = quickPassGetVName(alogfile);
+    if(vname != "")
+      new_alogfile = "vname_" + vname + ".alog";
+  }
+
 
   m_file_in = fopen(alogfile.c_str(), "r");
   if(!m_file_in) {
@@ -186,6 +192,44 @@ bool GrepHandler::handle(const string& alogfile, const string& new_alogfile)
   m_file_in = 0;
 
   return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: quickPassGetVName()
+
+string GrepHandler::quickPassGetVName(string alogfile)
+{
+  FILE* f = fopen(alogfile.c_str(), "r");
+  if(!f)
+    return("");
+
+  string vname;
+  while(1) {
+    string line_raw = getNextRawLine(f);
+    
+    // Part 1: Check if the line is a comment and handle or ignore
+    if((line_raw.length() > 0) && (line_raw.at(0) == '%')) 
+      continue;
+    // Part 2: Check for end of file
+    if(line_raw == "eof") 
+      break;
+
+    // Part 3: Handle lines that do not begin with a number (comment
+    // lines are already handled above)
+    if(!isNumber(line_raw.substr(0,1)))
+      continue;
+    
+    // Part 4: Look for and handle DB_TIME variable to get vname from
+    // the source field, typically of the form "MOOSDB_vname".
+    string varname = getVarName(line_raw);
+    if(varname == "DB_TIME") {
+      string source = getSourceNameNoAux(line_raw);
+      vname = rbiteString(source, '_');
+      break;
+    }
+  }
+  fclose(f);
+  return(vname);
 }
 
 //--------------------------------------------------------
