@@ -71,10 +71,10 @@ bool GrepHandler::handle(string alogfile, string new_alogfile)
     return(false);
   }
 
-  if(new_alogfile == "vname.alog") {
-    string vname = quickPassGetVName(alogfile);
-    if(vname != "")
-      new_alogfile = "vname_" + vname + ".alog";
+  if(strContains(new_alogfile, "vname")) {
+    string vname_discovered = quickPassGetVName(alogfile);
+    if(vname_discovered != "")
+      new_alogfile = findReplace(new_alogfile, "vname", vname_discovered);
   }
 
 
