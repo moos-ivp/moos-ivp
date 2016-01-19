@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
   else if(make_end_report)
-    cout << "Processing on file : " << alogfile_in << endl;
+    cout << "aloggrep - Processing on file: " << alogfile_in << endl;
   
   GrepHandler handler;
   handler.setFileOverWrite(file_overwrite);
