@@ -108,6 +108,11 @@ void showHelpAndExit()
   cout << "Examples:                                             " << endl;
   cout << "  alogeplot original.alog                             " << endl;
   cout << "                                                      " << endl;
+  cout << "Notes:                                                " << endl;
+  cout << "  Looks only for following two variables from alog:   " << endl;
+  cout << "     COLLISION_DETECT_PARAMS                          " << endl;
+  cout << "     ENCOUNTER_SUMMARY                                " << endl;
+  cout << "                                                      " << endl;
   cout << endl;
   exit(0);
 }
