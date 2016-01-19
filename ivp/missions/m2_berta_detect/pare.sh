@@ -17,7 +17,7 @@ HIT_LIST+="NODE_BROKER_ACK"
 PARE_WINDOW=15
 RMORIG="no"
 ALL_OK="yes"
-
+DIR="./"
 
 #=============================================================
 # Part 2: Handle command line arguments
@@ -32,6 +32,8 @@ for ARGI; do
         PARE_WINDOW=$ARGI
     elif [ "${ARGI}" = "--rmo" ] ; then
 	RMORIG="yes"
+    elif [ "${ARGI:0:6}" = "--dir=" ] ; then
+        DIR="${ARGI#--dir=*}"
     else 
 	printf "Bad Argument: %s \n" $ARGI
 	exit 0
@@ -42,7 +44,7 @@ done
 #=============================================================
 # Part 3: Execute the alogpare in all log sub-directories
 #=============================================================
-for dirs in LOG*/ ; do 
+for dirs in $DIR/LOG*/ ; do 
     cd $dirs
     alogscan --rate_only LOG*.alog
     alogpare LOG*.alog name.alog --pare_window=$PARE_WINDOW \
@@ -54,7 +56,7 @@ for dirs in LOG*/ ; do
     alogscan --rate_only *_pared.alog
     aloggrep -f *_pared.alog vname_encounters.alog ENCOUNTER_SUMMARY \
 	     COLLISION_DETECT_PARAMS
-    cd ..
+    cd -
     echo "============================================================"
 done
 
