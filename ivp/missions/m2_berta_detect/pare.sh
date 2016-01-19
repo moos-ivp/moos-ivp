@@ -52,6 +52,8 @@ for dirs in LOG*/ ; do
 	echo "pare failed: $rc"; ALL_OK="no"
     fi
     alogscan --rate_only *_pared.alog
+    aloggrep -f *_pared.alog vname_encounters.alog ENCOUNTER_SUMMARY \
+	     COLLISION_DETECT_PARAMS
     cd ..
     echo "============================================================"
 done
