@@ -26,7 +26,8 @@ for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [PARE_WINDOW]                   \n" $0
 	printf "  --help, -h                                  \n" 
-	printf "  --rmo            Remove Original Alog Files \n" 
+	printf "  --rmo         Remove Original Alog Files    \n" 
+	printf "  --dir=DIR     Act on files in directory DIR \n" 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         PARE_WINDOW=$ARGI
