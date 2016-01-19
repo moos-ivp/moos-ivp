@@ -60,7 +60,7 @@ Behavior = BHV_Loiter
      clockwise = best
         radius = 8.0
      nm_radius = 15.0
-       polygon = format=ellipse, x=50, y=-50, degs=90, minor=25, major=125, pts=16
+       polygon = format=ellipse, x=60, y=-50, degs=90, minor=35, major=125, pts=16
   visual_hints = nextpt_color=white, nextpt_lcolor=khaki
   visual_hints = edge_color=orange, vertex_color=white
   visual_hints = edge_size=1, vertex_size=2
