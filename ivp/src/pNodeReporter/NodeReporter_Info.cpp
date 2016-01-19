@@ -166,6 +166,10 @@ void showInterfaceAndExit()
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
   blk("                      MODE=MODE@ACTIVE:LOITERING,               ");
   blk("                      THRUST_MODE_REVERSE=true                  ");
+  blk("                                                                ");
+  blk("  NODE_REPORT_LOCAL_FIRST = posted just once at startup, a copy ");
+  blk("                            of NODE_REPORT_LOCAL in case one    ");
+  blk("                            wants to not log the regular reports");
   exit(0);
 }
 

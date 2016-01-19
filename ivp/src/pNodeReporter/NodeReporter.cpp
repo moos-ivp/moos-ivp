@@ -63,7 +63,8 @@ NodeReporter::NodeReporter()
   m_blackout_variance = 0;
   m_last_post_time    = -1;
   m_paused            = false;
-
+  m_node_info_posted  = false;
+  
   // Below is a good alt_nav prefix suggestion,  but left blank to keep
   // feature off unless another app is generating the alt nav solution.
   // m_alt_nav_prefix    = "NAV_GT";
@@ -427,6 +428,8 @@ bool NodeReporter::Iterate()
     m_record.setIndex(m_reports_posted);
     string report = assembleNodeReport(m_record);    
     if(!m_paused) {
+      if(m_reports_posted == 0) 
+	Notify(m_node_report_var+"_FIRST", report);
       Notify(m_node_report_var, report);
       m_reports_posted++;
     }
