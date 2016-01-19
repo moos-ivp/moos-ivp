@@ -105,7 +105,11 @@ int main(int argc, char *argv[])
     cout << "  (1) The second alog is the output file. Otherwise the    " << endl;
     cout << "      order of arguments is irrelevent.                    " << endl;
     cout << "  (2) VAR* matches any MOOS variable starting with VAR     " << endl;
-    cout << "  (3) See also: alogscan, alogrm, alogclip, alogsplit, alogview " << endl;
+    cout << "  (3) See also: alogscan, alogrm, alogclip, alogsplit,     " << endl;
+    cout << "      alogview                                             " << endl;
+    cout << "  (4) If the output file name is vname.alog, will attempt  " << endl;
+    cout << "      to replace with vname_STR.alog where STR is the      " << endl;
+    cout << "      detected community taken from DB_TIME source.        " << endl;
     cout << endl;
     return(0);
   }
