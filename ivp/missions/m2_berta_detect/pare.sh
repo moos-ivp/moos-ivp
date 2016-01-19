@@ -53,8 +53,9 @@ for dirs in $DIR/LOG*/ ; do
     rc=$?
     if [[ $rc != 0 ]]; then
 	echo "pare failed: $rc"; ALL_OK="no"
+    else
+	alogscan --rate_only *_pared.alog
     fi
-    alogscan --rate_only *_pared.alog
     aloggrep -f *_pared.alog vname_encounters.alog ENCOUNTER_SUMMARY \
 	     COLLISION_DETECT_PARAMS
     cd -
