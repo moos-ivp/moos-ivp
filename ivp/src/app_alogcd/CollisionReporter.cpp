@@ -108,7 +108,8 @@ bool CollisionReporter::handle()
       break;
     
     string var = getVarName(line_raw);
-    if((var!="ENCOUNTER") && (var!="NEAR_MISS") && (var!="COLLISION")) 
+    if((var!="ENCOUNTER") && (var!="NEAR_MISS") && (var!="COLLISION") &&
+       (var!="ENCOUNTER_SUMMARY")) 
       continue;
 	
     string val = getDataEntry(line_raw);
