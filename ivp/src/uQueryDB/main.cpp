@@ -43,6 +43,7 @@ int main(int argc ,char * argv[])
   
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
+    cout << "argv[" << i << "]:[" << argi << "]" << endl;
     if((argi=="-v") || (argi=="--version") || (argi=="-version"))
       showReleaseInfoAndExit();
     else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
@@ -64,7 +65,7 @@ int main(int argc ,char * argv[])
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];    
     else {
-      cout << "Unhandled arg: " << argi << endl;
+      cout << "uQueryDB Unhandled arg: " << argi << endl;
       exit(1);
     }
   }
