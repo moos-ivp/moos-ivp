@@ -159,7 +159,7 @@ bool LogViewLauncher::configDataBroker()
   bool ok = true;
   cout << "Begin Checking alog file(s)------------------" << endl;
   ok = ok && m_dbroker.checkALogFiles();
-  cout << "Begin Spliting alog file(s)------------------" << endl;
+  cout << "Begin Splitting alog file(s)------------------" << endl;
   ok = ok && m_dbroker.splitALogFiles();
   cout << "Begin TimeSetting alog file(s)---------------" << endl;
   ok = ok && m_dbroker.setTimingInfo();
