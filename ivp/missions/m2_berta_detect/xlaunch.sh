@@ -1,6 +1,5 @@
 #!/bin/bash -e
 
-
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
 #-------------------------------------------------------
@@ -40,15 +39,23 @@ sleep 5
 # Run for at most 5 hours or at most $AMT encounters
 #COND="\"((DB_UPTIME > 18000) or (ENCOUNTER_TOTAL > $AMT))\""
 
-while true; do 
+DONE="false"
+
+while [ "${DONE}" = "false" ] ; do 
     if uQueryDB targ_shoreside.moos --condition="ENCOUNTER_TOTAL > $AMT" ; then 
-	echo "Quitting...."
-	ktm >& /dev/null
-	echo "Beginning pare...."
-	./pare.sh --rmo
-	echo "Pare complete."
-	exit 0
+	DONE="true"
+    else
+	echo "continuing...."
+	sleep 15
     fi
-    sleep 15
-    echo "continuing...."
 done
+
+echo "Quitting...."
+ktm >& /dev/null
+echo "Beginning pare...."
+./pare.sh --rmo
+echo "Pare complete."
+
+RESULTS_DIR="results_"`date "+%Y_%m_%d_____%H_%M"`
+mkdir $RESULTS_DIR
+mv targ* *LOG* $RESULTS_DIR
