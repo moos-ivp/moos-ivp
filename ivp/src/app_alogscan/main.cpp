@@ -140,7 +140,7 @@ int main(int argc, char *argv[])
   ScanHandler handler;
   handler.setParam("sort_style",  sort_style);
   handler.setParam("proc_colors", proc_colors);
-  handler.handle(alogfile);
+  handler.handle(alogfile, data_rate_only);
 
   if(!data_rate_only)
     handler.varStatReport();  

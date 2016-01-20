@@ -29,12 +29,11 @@ using namespace std;
 
 //--------------------------------------------------------
 // Procedure: addLine
-//     Notes: 
 
 void ScanReport::addLine(double timestamp, const string& varname,
 			 const string& source, const string& value)
 {
-  int chars = value.length();
+  int chars = value.length() + varname.length() + source.length();
 
   m_total_chars += (double)(chars);
 
@@ -65,6 +64,22 @@ void ScanReport::addLine(double timestamp, const string& varname,
   m_lines++;
 }
 
+
+//--------------------------------------------------------
+// Procedure: addLineRateOnly
+
+void ScanReport::addLineRateOnly(const ALogEntry& entry)
+{
+  double timestamp = entry.getTimeStamp();
+  if((timestamp < m_time_min) || (m_total_chars == 0))
+    m_time_min = timestamp;
+  if((timestamp > m_time_max) || (m_total_chars == 0))
+    m_time_max = timestamp;
+
+  m_total_chars += entry.getVarName().length();
+  m_total_chars += entry.getStringVal().length();
+  m_total_chars += entry.getSource().length();
+}
 
 //--------------------------------------------------------
 // Procedure: fillAppStats()

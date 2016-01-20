@@ -37,6 +37,7 @@ class ALogScanner
 
   bool       openALogFile(std::string);
   ScanReport scan();
+  ScanReport scanRateOnly();
 
  private:
   FILE *m_file;

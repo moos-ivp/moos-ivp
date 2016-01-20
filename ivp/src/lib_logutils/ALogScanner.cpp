@@ -30,7 +30,7 @@ using namespace std;
 
 //--------------------------------------------------------
 // Procedure: scan
-//     Notes: 
+
 ScanReport ALogScanner::scan()
 {
   ScanReport report;
@@ -65,6 +65,24 @@ ScanReport ALogScanner::scan()
 		     src,
 		     entry.getStringVal());
     }
+  }
+  return(report);
+}
+
+//--------------------------------------------------------
+// Procedure: scanRateOnly
+
+ScanReport ALogScanner::scanRateOnly()
+{
+  ScanReport report;
+  bool done = false;
+  while(!done) {
+    ALogEntry entry = getNextRawALogEntry(m_file, true);
+    string status = entry.getStatus();
+    if(status == "eof")
+      done = true;
+    else if(status != "invalid")
+      report.addLineRateOnly(entry);
   }
   return(report);
 }

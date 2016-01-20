@@ -94,7 +94,7 @@ string ScanHandler::procColor(string proc_name)
 //--------------------------------------------------------
 // Procedure: handle
 
-void ScanHandler::handle(const string& alogfile)
+void ScanHandler::handle(const string& alogfile, bool rate_only)
 {
   ALogScanner scanner;
   bool ok = scanner.openALogFile(alogfile);
@@ -104,8 +104,12 @@ void ScanHandler::handle(const string& alogfile)
   }
 
   cout << "Scanning " << alogfile << "... " << flush;
-  m_report = scanner.scan();
-  if(m_report.size() == 0) {
+  if(rate_only)
+    m_report = scanner.scanRateOnly();
+  else
+    m_report = scanner.scan();
+
+  if(!rate_only && (m_report.size() == 0)) {
     cout << "Empty log file - exiting." << endl;
     return;
   }
@@ -215,9 +219,6 @@ void ScanHandler::varStatReport()
 
 void ScanHandler::dataRateReport()
 {
-  if(m_report.size() == 0)
-    return;
-
   string data_rate  = doubleToString(m_report.getDataRate(),2);
   string data_ratek = doubleToString(m_report.getDataRate()/1000,2);
 

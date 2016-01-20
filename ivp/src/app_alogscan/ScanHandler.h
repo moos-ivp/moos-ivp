@@ -33,7 +33,7 @@ class ScanHandler
   ~ScanHandler() {}
 
   void setParam(const std::string&, const std::string&);
-  void handle(const std::string& alogfile);
+  void handle(const std::string& alogfile, bool rate_only=false);
 
   void varStatReport();
   void appStatReport();

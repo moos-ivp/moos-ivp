@@ -27,6 +27,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include "ALogEntry.h"
 
 class ScanReport
 {
@@ -37,6 +38,8 @@ class ScanReport
   
   void addLine(double timestamp, const std::string& varname, 
 	       const std::string& source, const std::string &value);
+
+  void addLineRateOnly(const ALogEntry& entry);
 
   bool         containsVar(const std::string& varname);
   int          getVarIndex(const std::string& varname);
