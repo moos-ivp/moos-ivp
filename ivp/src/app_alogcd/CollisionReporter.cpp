@@ -99,7 +99,7 @@ bool CollisionReporter::handle()
 
     if((line_count % 10000) == 0)
       cout << "+" << flush;
-    if((line_count % 100000) == 0)
+    if((line_count % 250000) == 0)
       cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
 
     if((line_raw.length() > 0) && (line_raw.at(0) == '%'))
