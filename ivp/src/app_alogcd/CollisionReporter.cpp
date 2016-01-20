@@ -119,7 +119,7 @@ bool CollisionReporter::handle()
       fprintf(time_file_ptr, "%s\n", time.c_str());
     }
     
-    if(var == "ENCOUNTER") { 
+    if((var == "ENCOUNTER") || (var == "EVAL_LOITER_REQ")) {
       m_encounters++;
       m_total_encounter_cpa += cpa;
     }
