@@ -66,11 +66,8 @@ bool CollisionDetector::OnNewMail(MOOSMSG_LIST &NewMail)
     string key    = msg.GetKey();
     string sval   = msg.GetString(); 
 
-    if(key == "NODE_REPORT") {
-      bool ok = m_cpa_monitor.handleNodeReport(sval);
-      if(!ok) 
-	reportRunWarning("Unhandled Node Report:" + sval);
-    }
+    if(key == "NODE_REPORT") 
+      handleMailNodeReport(sval);
     else 
       updateInfoBuffer(msg);
   }
@@ -248,10 +245,10 @@ bool CollisionDetector::OnStartUp()
   m_cpa_monitor.setReportRange(m_encounter_dist);
   m_cpa_monitor.setIgnoreRange(m_encounter_dist * 1.5);
 
-  string param_summary = "collision_range=" + doubleToStringX(m_collision_dist);
-  param_summary += ", near_miss_range=" + doubleToStringX(m_near_miss_dist);
-  param_summary += ", encounter_range=" + doubleToStringX(m_encounter_dist);
-  Notify("COLLISION_DETECT_PARAMS", param_summary);
+  m_param_summary = "collision_range=" + doubleToStringX(m_collision_dist);
+  m_param_summary += ", near_miss_range=" + doubleToStringX(m_near_miss_dist);
+  m_param_summary += ", encounter_range=" + doubleToStringX(m_encounter_dist);
+  Notify("COLLISION_DETECT_PARAMS", m_param_summary);
   
   registerVariables();	
   return(true);
@@ -414,6 +411,31 @@ bool CollisionDetector::updateInfoBuffer(CMOOSMsg &msg)
 
   return(false);
 }
+
+//------------------------------------------------------------
+// Procedure: handleMailNodeReport()
+
+void CollisionDetector::handleMailNodeReport(string sval)
+{
+  // Part 1: inject the node report into the CPAMonitor
+  bool ok = m_cpa_monitor.handleNodeReport(sval);
+  if(!ok) 
+    reportRunWarning("Unhandled Node Report:" + sval);
+
+  // Part 2: The first time we deal with a particular vehicle, we 
+  // post the parameter summary to be sent to that vehicle. We do
+  // this now rather than at startup at this app, since we can't 
+  // be sure that the other vehicle is online when this app starts
+  // up. But now that we have received a node report from that 
+  // vehicle, we can be pretty sure it will get this one-time msg.
+  string vname = tokStringParse(sval, "NAME", ',', '=');
+  if(!vectorContains(m_notified_vehicles, vname)) {
+    m_notified_vehicles.push_back(vname);
+    vname = toupper(vname);
+    Notify("COLLISION_DETECT_PARAMS_" + vname, m_param_summary);
+  }
+}
+
 
 //------------------------------------------------------------
 // Procedure: buildReport()

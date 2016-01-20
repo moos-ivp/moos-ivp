@@ -47,6 +47,7 @@ class CollisionDetector : public AppCastingMOOSApp
   bool OnStartUp();
   
  protected: 
+  void handleMailNodeReport(std::string);
   bool buildReport();
   void registerVariables();
   void handleCPAEvent(CPAEvent);
@@ -85,7 +86,10 @@ class CollisionDetector : public AppCastingMOOSApp
   unsigned int m_total_collisions;
   unsigned int m_total_near_misses;
   unsigned int m_total_encounters;
-  
+
+  std::string m_param_summary;
+  std::vector<std::string> m_notified_vehicles;
+
   InfoBuffer *m_info_buffer;
 };
 
