@@ -34,6 +34,7 @@ class CollisionReporter
 
   bool setTimeStampFile(std::string);
   bool setALogFile(std::string);
+  void setTerse() {m_terse=true;}
   
   bool handle();
   void printReport();
@@ -51,6 +52,8 @@ class CollisionReporter
 
   std::string m_time_stamp_file;
   std::string m_alog_file;
+
+  bool   m_terse;
 };
 
 #endif

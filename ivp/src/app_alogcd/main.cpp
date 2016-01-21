@@ -48,6 +48,8 @@ int main(int argc, char *argv[])
       showReleaseInfo("alogcd", "gpl");
       return(0);
     }
+    else if((argi=="-t") || (argi=="--terse")) 
+      collision_reporter.setTerse();
     else if(strEnds(argi, ".alog"))
       handled = collision_reporter.setALogFile(argi);
     else if(strBegins(argi, "--tfile="))
@@ -90,7 +92,7 @@ void showHelpAndExit()
   cout << "Options:                                               " << endl;
   cout << "  -h,--help       Displays this help message           " << endl;
   cout << "  -v,--version    Display current release version      " << endl;
-  cout << "  --tfile=file    Write timestamp file to file.txt     " << endl;
+  cout << "  -t,--terse      Write terse output.                  " << endl;
   cout << "                                                       " << endl;
   cout << "Further Notes:                                         " << endl;
   cout << "  (1) The order of arguments is irrelevent.            " << endl;

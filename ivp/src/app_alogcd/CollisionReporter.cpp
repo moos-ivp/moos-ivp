@@ -44,6 +44,7 @@ CollisionReporter::CollisionReporter()
   m_total_collision_cpa = 0;
 
   m_collision_worst = 0;
+  m_terse = false;
 }
 
 
@@ -88,8 +89,8 @@ bool CollisionReporter::handle()
   if(m_time_stamp_file != "")
     time_file_ptr = fopen(m_time_stamp_file.c_str(), "w+");
 
-  
-  cout << "Analysing collision encounters in file : " << m_alog_file << endl;
+  if(!m_terse)
+    cout << "Analyzing collision encounters in file : " << m_alog_file << endl;
 
   unsigned int line_count  = 0;
   bool done = false;
@@ -97,11 +98,13 @@ bool CollisionReporter::handle()
     line_count++;
     string line_raw = getNextRawLine(alog_file_ptr);
 
-    if((line_count % 10000) == 0)
-      cout << "+" << flush;
-    if((line_count % 250000) == 0)
-      cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
-
+    if(!m_terse) {
+      if((line_count % 10000) == 0)
+	cout << "+" << flush;
+      if((line_count % 250000) == 0)
+	cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
+    }
+    
     if((line_raw.length() > 0) && (line_raw.at(0) == '%'))
       continue;
     if(line_raw == "eof") 
@@ -135,8 +138,10 @@ bool CollisionReporter::handle()
       m_total_collision_cpa += cpa;
     }
   }
-  cout << endl << uintToCommaString(line_count) << " lines total." << endl;
-  cout << "tstamp_file: " << m_time_stamp_file << endl;
+  if(!m_terse) {
+    cout << endl << uintToCommaString(line_count) << " lines total." << endl;
+    cout << "tstamp_file: " << m_time_stamp_file << endl;
+  }
   
   if(alog_file_ptr)
     fclose(alog_file_ptr);
@@ -167,6 +172,11 @@ void CollisionReporter::printReport()
   string navg = doubleToString(near_miss_avg, 2);
   string cavg = doubleToString(collision_avg, 2);
 
+  if(m_terse) {
+    cout << m_encounters << "/" << m_near_misses << "/" << m_collisions << endl;
+    return;
+  }
+  
   cout << endl << endl;
   cout << "=========================================" << endl;
   cout << "Collision Report:                        " << endl;
