@@ -15,15 +15,15 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 500
 
-  Run = MOOSDB		@ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = true
-  Run = pLogger         @ NewConsole = false
-  Run = uSimMarine	@ NewConsole = true
-  Run = pNodeReporter	@ NewConsole = true
-  Run = pMarinePID	@ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = true
-  Run = uTimerScript    @ NewConsole = false
-  Run = uFldBeaconRangeSensor @ NewConsole = true
+  Run = MOOSDB                @ NewConsole = false
+  Run = pMarineViewer         @ NewConsole = false
+  Run = pLogger               @ NewConsole = false
+  Run = uSimMarine            @ NewConsole = false
+  Run = pNodeReporter         @ NewConsole = false
+  Run = pMarinePID            @ NewConsole = false
+  Run = pHelmIvP	            @ NewConsole = false
+  Run = uTimerScript          @ NewConsole = false
+  Run = uFldBeaconRangeSensor @ NewConsole = false
 }
 
 //------------------------------------------
@@ -35,7 +35,6 @@ ProcessConfig = uFldBeaconRangeSensor
   CommsTick = 4
 
   // Configuring aspects of the vehicles
-  reach_distance = default = nolimit
   ping_wait      = default = 30
   ping_payments  = upon_accept
 
@@ -45,9 +44,10 @@ ProcessConfig = uFldBeaconRangeSensor
   default_beacon_shape = circle
   default_beacon_color = orange
   default_beacon_width = 5
-  default_beacon_report_range = 100
+  default_beacon_push_dist = 50
+  default_beacon_pull_dist = 50
 
-  beacon  = x=200, y=0,    label=01, report_range=1000
+  beacon  = x=200, y=0,    label=01, push_dist=500, pull_dist=500
   beacon  = x=400, y=-200, label=02
   beacon  = x=0,   y=-200, label=03
 
@@ -69,7 +69,7 @@ ProcessConfig = uTimerScript
   reset_time = end
   condition  = (NAV_SPEED > 0)
 
-  event = var=SBR_RANGE_REQUEST, val="name=indigo", time=25:35
+  event = var=BRS_RANGE_REQUEST, val="name=indigo", time=25:35
 }
 
 
