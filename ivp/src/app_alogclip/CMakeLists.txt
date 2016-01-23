@@ -12,7 +12,10 @@ else (${WIN32})
     m)
 endif (${WIN32})
 
-SET(SRC main.cpp ALogClipper.cpp)
+SET(SRC 
+  main.cpp 
+  ALogClipHandler.cpp
+  ALogClipper.cpp )
 
 ADD_EXECUTABLE(alogclip ${SRC})
    
