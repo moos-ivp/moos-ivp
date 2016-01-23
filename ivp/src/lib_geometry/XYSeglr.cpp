@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: Seglr.h                                              */
-/*    DATE: Mar 21st, 2015                                       */
+/*    FILE: XYSeglr.cpp                                          */
+/*    DATE: Apr 27th, 2015                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -20,54 +20,64 @@
 /* License along with MOOS-IvP.  If not, see                     */
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
- 
-#ifndef SEGLR_HEADER
-#define SEGLR_HEADER
 
-#include <string>
-#include <vector>
+#include <cmath>
+#include <cstdlib>
+#include <cstring>
+#include "XYSeglr.h"
 
-class Seglr {
-public:
-  Seglr(double ray_angle=0) {m_ray_angle=ray_angle;}
-  virtual ~Seglr() {}
+using namespace std;
 
-  // Setters
-  void addVertex(double x, double y);
-  void setVertex(double x, double y, unsigned int index);
-  void setRayAngle(double angle);
-  void clear();
+//---------------------------------------------------------------
+// Procedure: clear
 
-  // Getters
-  double getVX(unsigned int) const;
-  double getVY(unsigned int) const;
-  double getRayAngle() const;
+void XYSeglr::clear()
+{
+  m_seglr = Seglr();
+}
 
-  // Modifiers
-  void translateTo(double x, double y);
-  void reflect();
+//---------------------------------------------------------------
+// Procedure: getRayBaseX()
 
-  // Analysis
-  unsigned int size() const {return(m_vx.size());}
+double XYSeglr::getRayBaseX() const
+{
+  unsigned int vsize = m_seglr.size();
+  if(vsize == 0)
+    return(0);
 
-  bool crossesLine(double x1, double y1, double x2, double y2,
-		   double& ix, double& iy, bool ray_first=true) const;
+  return(m_seglr.getVX(vsize-1));
+}
 
-  bool crossesLine(double x1, double y1, double x2, double y2,
-		   bool ray_first=true) const;
+//---------------------------------------------------------------
+// Procedure: getRayBaseY()
 
-  
-  std::string getSpec(int precision=2) const;
+double XYSeglr::getRayBaseY() const
+{
+  unsigned int vsize = m_seglr.size();
+  if(vsize == 0)
+    return(0);
 
-  double getMinX() const;
-  double getMaxX() const;
-  double getMinY() const;
-  double getMaxY() const;
+  return(m_seglr.getVY(vsize-1));
+}
 
-protected:
-  std::vector<double> m_vx;
-  std::vector<double> m_vy;
-  double              m_ray_angle;
-};
 
-#endif
+//---------------------------------------------------------------
+// Procedure: get_spec
+//   Purpose: Get a string specification of the seglr. We set 
+//            the vertex precision to be at the integer by default.
+
+string XYSeglr::getSpec(int precision) const
+{
+  string spec = m_seglr.getSpec(precision);
+
+  string obj_spec = XYObject::get_spec();
+
+  if(obj_spec != "") {
+    if(spec != "")
+      spec += ",";
+    spec += obj_spec;
+  }
+
+  return(spec);
+}
+

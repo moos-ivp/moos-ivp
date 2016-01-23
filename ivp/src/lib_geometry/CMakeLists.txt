@@ -48,6 +48,7 @@ SET(HEADERS
   XYPoint.h
   XYPolygon.h
   XYSegList.h
+  XYSeglr.h
   XYSegment.h
   XYSquare.h
   XYVector.h

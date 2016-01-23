@@ -21,7 +21,6 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include <iostream>
 #include "GeomUtils.h"
 #include "Seglr.h" 
 
@@ -94,7 +93,6 @@ double Seglr::getRayAngle() const
 {
   return(m_ray_angle);
 }
-
 
 //---------------------------------------------------------------
 // Procedure: translateTo
@@ -176,3 +174,79 @@ bool Seglr::crossesLine(double x1, double y1, double x2, double y2,
   double ix, iy;
   return(crossesLine(x1, y1, x2, y2, ix, iy, ray_first));
 }
+
+
+//---------------------------------------------------------------
+// Procedure: getMinX()
+
+double Seglr::getMinX() const
+{
+  double min_x = 0;
+  for(unsigned int i=0; i<m_vx.size(); i++) {
+    if((i==0) || (m_vx[i] < min_x))
+      min_x = m_vx[i];
+  }
+  return(min_x);
+}
+
+//---------------------------------------------------------------
+// Procedure: getMaxX()
+
+double Seglr::getMaxX() const
+{
+  double max_x = 0;
+  for(unsigned int i=0; i<m_vx.size(); i++) {
+    if((i==0) || (m_vx[i] > max_x))
+      max_x = m_vx[i];
+  }
+  return(max_x);
+}
+
+//---------------------------------------------------------------
+// Procedure: getMinY()
+
+double Seglr::getMinY() const
+{
+  double min_y = 0;
+  for(unsigned int i=0; i<m_vy.size(); i++) {
+    if((i==0) || (m_vy[i] < min_y))
+      min_y = m_vy[i];
+  }
+  return(min_y);
+}
+
+//---------------------------------------------------------------
+// Procedure: getMaxY()
+
+double Seglr::getMaxY() const
+{
+  double max_y = 0;
+  for(unsigned int i=0; i<m_vy.size(); i++) {
+    if((i==0) || (m_vy[i] > max_y))
+      max_y = m_vy[i];
+  }
+  return(max_y);
+}
+
+//---------------------------------------------------------------
+// Procedure: getSpec
+
+string Seglr::getSpec(int precision) const
+{
+  string spec = "pts={";
+
+  for(unsigned int i=0; i<m_vx.size(); i++) {
+    string sx = doubleToString(m_vx[i], precision);
+    string sy = doubleToString(m_vy[i], precision);
+
+    string pair = sx + "," + sy;
+    if(i>0)
+      spec += ":";
+    spec += pair;
+  }
+  spec += "},ray=" + doubleToString(m_ray_angle, precision);
+
+  return(spec);
+}
+
+

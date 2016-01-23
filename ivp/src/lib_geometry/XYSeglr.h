@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: Seglr.h                                              */
-/*    DATE: Mar 21st, 2015                                       */
+/*    FILE: XYSeglr.h                                            */
+/*    DATE: Apr 27, 2015                                         */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,53 +21,43 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef SEGLR_HEADER
-#define SEGLR_HEADER
+#ifndef XY_SEGLR_HEADER
+#define XY_SEGLR_HEADER
 
 #include <string>
-#include <vector>
+#include "XYObject.h"
+#include "Seglr.h"
 
-class Seglr {
+class XYSeglr : public XYObject {
 public:
-  Seglr(double ray_angle=0) {m_ray_angle=ray_angle;}
-  virtual ~Seglr() {}
+  XYSeglr() {};
+  XYSeglr(Seglr seglr) {m_seglr=seglr;};
+  virtual ~XYSeglr() {};
 
-  // Setters
-  void addVertex(double x, double y);
-  void setVertex(double x, double y, unsigned int index);
-  void setRayAngle(double angle);
-  void clear();
-
-  // Getters
-  double getVX(unsigned int) const;
-  double getVY(unsigned int) const;
-  double getRayAngle() const;
-
-  // Modifiers
-  void translateTo(double x, double y);
-  void reflect();
-
-  // Analysis
-  unsigned int size() const {return(m_vx.size());}
-
-  bool crossesLine(double x1, double y1, double x2, double y2,
-		   double& ix, double& iy, bool ray_first=true) const;
-
-  bool crossesLine(double x1, double y1, double x2, double y2,
-		   bool ray_first=true) const;
-
+  void   setSeglr(Seglr seglr) {m_seglr=seglr;};
+  void   clear();
   
-  std::string getSpec(int precision=2) const;
+  unsigned int size() const {return(m_seglr.size());};
 
-  double getMinX() const;
-  double getMaxX() const;
-  double getMinY() const;
-  double getMaxY() const;
+  double getMinX() const {return(m_seglr.getMinX());};
+  double getMaxX() const {return(m_seglr.getMaxX());};
+  double getMinY() const {return(m_seglr.getMinY());};
+  double getMaxY() const {return(m_seglr.getMaxY());};
+
+  double getVX(unsigned int ix) const {return(m_seglr.getVX(ix));}
+  double getVY(unsigned int ix) const {return(m_seglr.getVY(ix));}
+  double getRayAngle() const {return(m_seglr.getRayAngle());}
+
+  double getRayBaseX() const;
+  double getRayBaseY() const;
+
+  double getAvgX() const {return((getMaxX()-getMinX())/2);};
+  double getAvgY() const {return((getMaxY()-getMinY())/2);};
+  
+  std::string getSpec(int vertex_precision=1) const;
 
 protected:
-  std::vector<double> m_vx;
-  std::vector<double> m_vy;
-  double              m_ray_angle;
+  Seglr m_seglr;
 };
 
 #endif
