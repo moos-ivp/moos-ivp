@@ -137,6 +137,19 @@ void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
 }
 
 //------------------------------------------------------------
+// Procedure: connectKCache()
+//      Note: Connects kcache to all behaviors, behavior_specs
+//      Note: The kcache is not "owned" by behaviors or specs
+
+void BehaviorSet::connectKCache(KCache *kcache)
+{
+  unsigned int i, vsize = m_bhv_entry.size();
+  for(i=0; i<vsize; i++)
+    if(m_bhv_entry[i].getBehavior())
+      m_bhv_entry[i].getBehavior()->setKCache(kcache);
+}
+
+//------------------------------------------------------------
 // Procedure: buildBehaviorsFromSpecs()
 //      Note: Enforcement of unique behaviors names is made here.
 

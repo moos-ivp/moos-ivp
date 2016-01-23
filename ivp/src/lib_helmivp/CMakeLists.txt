@@ -4,17 +4,19 @@
 #--------------------------------------------------------
 
 SET(SRC
-   HelmReport.cpp
-   HelmReportUtils.cpp
-   ModeSet.cpp
-   ModeEntry.cpp
-   Populator_BehaviorSet.cpp
-   BehaviorSet.cpp
-   BFactoryStatic.cpp
-   BFactoryDynamic.cpp
-   BehaviorSpec.cpp
-   BehaviorReport.cpp
-   SpecBuild.cpp
+  HelmReport.cpp
+  HelmReportUtils.cpp
+  ModeSet.cpp
+  ModeEntry.cpp
+  Populator_BehaviorSet.cpp
+  BehaviorSet.cpp
+  BFactoryStatic.cpp
+  BFactoryDynamic.cpp
+  BehaviorSpec.cpp
+  BehaviorReport.cpp
+  SpecBuild.cpp
+  KCache.cpp
+  Populator_KCache.cpp
 )
 
 SET(HEADERS
@@ -28,6 +30,8 @@ SET(HEADERS
   BehaviorSpec.h
   BehaviorReport.h
   SpecBuild.h
+  KCache.cpp
+  Populator_KCache.cpp
 )
 
 # Build Library
