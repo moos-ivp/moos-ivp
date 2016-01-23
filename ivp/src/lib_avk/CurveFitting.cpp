@@ -188,8 +188,8 @@ vector<double> leastSquares(XYSegList xy_in,const int degree_fit){
         if(j == max_iterations -1){
           cout << "**** exiting due to exceeding max_iterations ****  ( " << j << " iterations)" << endl;
           return v_out;
-            vector<double> v_fail(5,0);
-            return(v_fail);
+	  vector<double> v_fail(5,0);
+	  return(v_fail);
         }
     }
     v_out.push_back(a0);
@@ -510,7 +510,7 @@ XYSegList simplifyLinearRegions(XYSegList xysl_in, double ang_tol){
     
     // special case for x <= 0 (found y-intercept)
     if(xend <= 0.0){
-      for(unsigned int k = 1; k < i+1; k++){
+      for(int k = 1; k < i+1; k++){
         if(verbose){cout << "k=" << doubleToString(k,0) << ", i+1 = " << doubleToString(i+1,0) << endl;}
         if(verbose){cout << "deleted from y-axis: (x,y) = "
                          << doubleToString(xysl_in.get_vx(1),2) << ","

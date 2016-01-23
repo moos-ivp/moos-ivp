@@ -264,7 +264,7 @@ bool AVK_Table::findInterpNeigh(unsigned int spd_ix, unsigned int dh_ix,
   if(found_high_dh_ix && (dh_ix > 0)) {
     for(int j=dh_ix-1; ((j>=0) && !found_low_dh_ix); j--) {
       bool cell_already_set = m_grid_coeffs.cellSet(spd_ix, j);
-      bool cell_interpolated;
+      bool cell_interpolated = false;
       m_grid_interp.getCellVal(spd_ix, j, cell_interpolated);
 
       if(cell_already_set && !cell_interpolated) {
@@ -302,7 +302,7 @@ bool AVK_Table::findInterpNeigh(unsigned int spd_ix, unsigned int dh_ix,
   if(found_high_spd_ix && (spd_ix > 0)) {
     for(int i=spd_ix-1; ((i>=0) && !found_low_spd_ix); i--) {
       bool cell_already_set = m_grid_coeffs.cellSet(i, dh_ix);
-      bool cell_interpolated;
+      bool cell_interpolated = false;
       m_grid_interp.getCellVal(i, dh_ix, cell_interpolated);
 
       if(cell_already_set && !cell_interpolated) {
