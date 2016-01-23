@@ -23,11 +23,6 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
-
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
@@ -73,6 +68,33 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
 
   m_bearing_line_show = false;
   m_bearing_line_info = "relevance";
+
+  m_os_fore_of_cn = false;
+  m_os_aft_of_cn  = false;
+  m_os_port_of_cn = false;
+  m_os_starboard_of_cn = false;
+
+  m_cn_fore_of_os = false;
+  m_cn_aft_of_os  = false;
+  m_cn_port_of_os = false;
+  m_cn_starboard_of_os = false;
+  
+  m_os_cn_rel_bng = 0;
+  m_cn_os_rel_bng = 0;
+  
+  m_rate_of_closure = 0;
+
+  m_os_crosses_cn_stern = false;
+  m_os_crosses_cn_bow   = false;
+  m_os_crosses_cn_bow_or_stern = false;
+  m_os_crosses_cn_bow_dist = 0;
+
+  m_cn_crosses_os_bow = false;
+  m_cn_crosses_os_stern = false;
+  m_cn_crosses_os_bow_or_stern = false;
+  m_cn_crosses_os_bow_dist = 0;
+
+  m_os_curr_cpa_dist = 0;
 }
 
 //-----------------------------------------------------------
@@ -172,7 +194,9 @@ bool IvPContactBehavior::updatePlatformInfo()
 
   bool ok = true;
 
-  // First ascertain the current ownship position and trajectory.
+  //==============================================================
+  // Part 1: Update ownship and contact positions
+  // Part 1A: Ascertain the current ownship position and trajectory.
   if(ok) m_osx = getBufferDoubleVal("NAV_X", ok);
   if(ok) m_osy = getBufferDoubleVal("NAV_Y", ok);
   if(ok) m_osh = getBufferDoubleVal("NAV_HEADING", ok);
@@ -184,7 +208,7 @@ bool IvPContactBehavior::updatePlatformInfo()
   m_osh = angle360(m_osh);
   m_cnh = angle360(m_cnh);
 
-  // Next ascertaint the current contact position and trajectory.
+  // Part 1B: ascertain current contact position and trajectory.
   if(ok) m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok);
   if(ok) m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok);
   if(ok) m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok);
@@ -199,36 +223,64 @@ bool IvPContactBehavior::updatePlatformInfo()
     return(false);
   }
   
-  // Next set the current range in meters to the contact.
-  m_contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
+  //==================================================================
+  // Part 2: Extrapolate the contact position if extrapolation turn on
 
   // If extrapolation is turned off, we're done with the update.
-  if(!m_extrapolate)
-    return(true);
-
-  // Even if mark_time is zero and thus "fresh", still derive the 
-  // the contact position from the extrapolator since the UTC time
-  // of the position in this report may still be substantially 
-  // behind the current own-platform UTC time.
-
-  m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, m_cnutc);
+  if(m_extrapolate) {
+    // Even if mark_time is zero and thus "fresh", still derive the 
+    // the contact position from the extrapolator since the UTC time
+    // of the position in this report may still be substantially 
+    // behind the current own-platform UTC time.
+    
+    m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, m_cnutc);
   
-  double curr_time = getBufferCurrTime();
-  double new_cnx, new_cny;
-  ok = m_extrapolator.getPosition(new_cnx, new_cny, curr_time);
+    double curr_time = getBufferCurrTime();
+    double new_cnx, new_cny;
+    ok = m_extrapolator.getPosition(new_cnx, new_cny, curr_time);
 
-  //double elapsed_time = curr_time - m_cnutc;
-  //double extrap_dist  = distPointToPoint(m_cnx, m_cny, new_cnx, new_cny);
-  //postMessage("IVPHELM_EXTRAP_ELAP" + m_contact, elapsed_time);
-  //postMessage("IVPHELM_EXTRAP_DIST" + m_contact, extrap_dist);
+    if(ok) {
+      m_cnx = new_cnx;
+      m_cny = new_cny;
+    }
+    else 
+      postWMessage("Incomplete Linear Extrapolation");
+  }
 
-  if(ok) {
-    m_cnx = new_cnx;
-    m_cny = new_cny;
-  }
-  else {
-    postWMessage("Incomplete Linear Extrapolation");
-  }
+  //==================================================================
+  // Part 3: Update the useful relative vehicle information
+  
+  m_contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
+
+  m_os_cn_rel_bng = relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny);
+  m_cn_os_rel_bng = relBearing(m_cnx, m_cny, m_cnh, m_osx, m_osy);
+
+  CPAEngine cpa_engine(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
+  CPAEngine rcpa_engine(m_osy, m_osx, m_osh, m_osv, m_cny, m_cnx);    
+
+  m_rate_of_closure = cpa_engine.evalROC(m_osh, m_osv);
+
+  m_os_fore_of_cn  = cpa_engine.foreOfContact();
+  m_os_aft_of_cn   = cpa_engine.aftOfContact();
+  m_os_port_of_cn  = cpa_engine.portOfContact();
+  m_os_starboard_of_cn = cpa_engine.starboardOfContact();
+
+  m_cn_fore_of_os  = rcpa_engine.foreOfContact();
+  m_cn_aft_of_os   = rcpa_engine.aftOfContact();
+  m_cn_port_of_os  = rcpa_engine.portOfContact();
+  m_cn_starboard_of_os = rcpa_engine.starboardOfContact();
+
+  m_os_crosses_cn_stern        = cpa_engine.crossesStern(m_osh, m_osv);
+  m_os_crosses_cn_bow          = cpa_engine.crossesBow(m_osh, m_osv);
+  m_os_crosses_cn_bow_or_stern = cpa_engine.crossesBowOrStern(m_osh, m_osv);
+  m_os_crosses_cn_bow_dist     = cpa_engine.crossesBowDist(m_osh, m_osv);
+
+  m_cn_crosses_os_stern        = rcpa_engine.crossesStern(m_cnh, m_cnv);
+  m_cn_crosses_os_bow          = rcpa_engine.crossesBow(m_cnh, m_cnv);
+  m_cn_crosses_os_bow_or_stern = rcpa_engine.crossesBowOrStern(m_cnh, m_cnv);
+  m_cn_crosses_os_bow_dist     = rcpa_engine.crossesBowDist(m_cnh, m_cnv);
+
+  m_os_curr_cpa_dist = cpa_engine.evalCPA(m_osh, m_osv, 120);
 
   return(ok);
 }

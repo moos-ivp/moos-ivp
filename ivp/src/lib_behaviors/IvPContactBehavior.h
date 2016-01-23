@@ -76,10 +76,33 @@ public:
   double m_relevance;
 
   LinearExtrapolator m_extrapolator;
+
+  bool   m_os_fore_of_cn;
+  bool   m_os_aft_of_cn;
+  bool   m_os_port_of_cn;
+  bool   m_os_starboard_of_cn;
+
+  bool   m_cn_fore_of_os;
+  bool   m_cn_aft_of_os;
+  bool   m_cn_port_of_os;
+  bool   m_cn_starboard_of_os;
+  
+  double m_os_cn_rel_bng;
+  double m_cn_os_rel_bng;
+  
+  double m_rate_of_closure;
+
+  bool   m_os_crosses_cn_stern;
+  bool   m_os_crosses_cn_bow;
+  bool   m_os_crosses_cn_bow_or_stern;
+  double m_os_crosses_cn_bow_dist;
+
+  bool   m_cn_crosses_os_bow;
+  bool   m_cn_crosses_os_stern;
+  bool   m_cn_crosses_os_bow_or_stern;
+  double m_cn_crosses_os_bow_dist;
+
+  double m_os_curr_cpa_dist;
 };
+
 #endif
-
-
-
-
-
