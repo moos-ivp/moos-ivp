@@ -104,6 +104,7 @@ SET(IVP_NON_GUI_LIBS
    lib_ufld_hazards
    lib_logutils
    lib_mbutil
+   lib_avk
    lib_henrik_anneal
    )
 

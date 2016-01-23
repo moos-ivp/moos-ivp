@@ -1,0 +1,10 @@
+spd_gap = 0.1
+spd_max = 3.0
+hdg_gap = 5
+spd=0.3,dh=45,coeffs=0.232:1.23:8.733
+spd=0.3,dh=50,coeffs=2.832:4.24:6.533
+spd=0.3,dh=55,coeffs=1.273:1.21:8.233
+...
+spd=1.2,dh=10,coeffs=8.239:1.29:2.773
+spd=1.2,dh=10,coeffs=4.262:1.43:8.433
+
