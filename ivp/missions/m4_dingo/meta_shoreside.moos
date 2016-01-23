@@ -80,12 +80,12 @@ ProcessConfig = uFldShoreBroker
   //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
   //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
-  QBRIDGE  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
-  QBRIDGE  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
+  qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
 
-  BRIDGE   = src=UP_LOITER_$N, alias=UP_LOITER
-  BRIDGE   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
-  BRIDGE   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
+  bridge   = src=UP_LOITER_$N, alias=UP_LOITER
+  bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
+  bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
 }
 
 //--------------------------------------------------
@@ -96,15 +96,13 @@ ProcessConfig = uFldNodeComms
   AppTick       = 2
   CommsTick     = 2
 
-  COMMS_RANGE      = 50
-  CRITICAL_RANGE   = 25
+  comms_range      = 500
+  critical_range   = 25
 
-  MIN_MSG_INTERVAL = 15
-  MAX_MSG_LENGTH   = 1000
+  min_msg_interval = 15
+  max_msg_length   = 1000
 
-  GROUPS           = true
-
-  VIEW_NODE_RPT_PULSES = false
+  view_node_rpt_pulses = false
 }
 
 //--------------------------------------------------
