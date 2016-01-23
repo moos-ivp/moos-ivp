@@ -20,10 +20,6 @@
 /* License along with MOOS-IvP.  If not, see                     */
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
 
 #include "BHV_Timer.h"
 #include "MBUtils.h"

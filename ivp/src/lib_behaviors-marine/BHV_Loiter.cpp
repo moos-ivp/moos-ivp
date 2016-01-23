@@ -21,11 +21,6 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
-
 #include <cmath>
 #include <cstdlib>
 #include "AngleUtils.h"
@@ -34,6 +29,7 @@
 #include "BuildUtils.h"
 #include "XYFormatUtilsPoly.h"
 #include "ZAIC_PEAK.h"
+#include "ZAIC_SPD.h"
 #include "OF_Coupler.h"
 #include "XYPoint.h"
 
@@ -65,12 +61,13 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
 
   // Initialize Configuration Parameters
   m_desired_speed     = 0;      // meters per sec
+  m_desired_speed_alt = -1;     // m/s. Value -1 means not used
   m_clockwise         = true;
   m_dynamic_clockwise = false;
   m_acquire_dist      = 10;
   m_center_pending    = false;
   m_center_activate   = false;
-
+  m_use_alt_speed     = false;
 
   // Visual Hint Defaults
   m_hint_vertex_size   = 1;
@@ -92,6 +89,8 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
 
 bool BHV_Loiter::setParam(string param, string value) 
 {
+  double dval = atof(value.c_str());
+  
   if(param == "polygon") {
     XYPolygon new_poly = string2Poly(value);
     if(!new_poly.is_convex())  // Should be convex - false otherwise
@@ -119,6 +118,9 @@ bool BHV_Loiter::setParam(string param, string value)
     m_center_pending = true;
     return(true);
   }  
+  else if(param == "use_alt_speed") {
+    return(setBooleanOnString(m_use_alt_speed, value));
+  }
   else if(param == "center_activate") {
     value = tolower(value);
     if((value!="true")&&(value!="false"))
@@ -139,29 +141,27 @@ bool BHV_Loiter::setParam(string param, string value)
     m_waypoint_engine.setSegList(m_loiter_engine.getPolygon());
     return(true);
   }  
-  else if(param == "speed") {
-    double dval = atof(value.c_str());
-    if((dval < 0) || (!isNumber(value)))
-      return(false);
+  else if((param == "speed") && isNumber(value) && (dval >= 0)) {
     m_desired_speed = dval;
     return(true);
   }
+  else if((param == "speed_alt") && isNumber(value)) { // Neg vals ok
+    m_desired_speed_alt = dval;
+    return(true);
+  }
   else if((param == "radius") || (param == "capture_radius")) {
-    double dval = atof(value.c_str());
     if((dval < 0) || (!isNumber(value)))
       return(false);
     m_waypoint_engine.setCaptureRadius(dval);
     return(true);
   }
   else if((param == "acquire_dist") || (param == "acquire_distance")) {
-    double dval = atof(value.c_str());
     if((dval < 0) || (!isNumber(value)))
       return(false);
     m_acquire_dist = dval;
     return(true);
   }
   else if((param == "nm_radius") || (param == "slip_radius")) {
-    double dval = atof(value.c_str());
     // val=0 is ok, interpreted as inactive
     if((dval < 0) || (!isNumber(value)))
       return(false);
@@ -272,6 +272,9 @@ IvPFunction *BHV_Loiter::onRunState()
   
   m_ptx = m_waypoint_engine.getPointX();
   m_pty = m_waypoint_engine.getPointY();
+
+  double dist_to_next_vertex = hypot(m_osx-m_ptx, m_osy-m_pty);
+  postMessage("LOITER_DIST_TO_VERT", dist_to_next_vertex);
 
   IvPFunction *ipf = buildIPF("zaic");
 
@@ -457,13 +460,24 @@ IvPFunction *BHV_Loiter::buildIPF(const string& method)
 {
   IvPFunction *ipf = 0;
   
+  double desired_speed = m_desired_speed;
+  if((m_desired_speed_alt >= 0) && m_use_alt_speed)
+    desired_speed = m_desired_speed_alt;
+
   if(method == "zaic") {    
+    ZAIC_SPD spd_zaic(m_domain, "speed");
+    spd_zaic.setParams(desired_speed, 0.1, desired_speed+0.4, 85, 20);
+    IvPFunction *spd_of = spd_zaic.extractIvPFunction();
+
+#if 0
     ZAIC_PEAK spd_zaic(m_domain, "speed");
-    spd_zaic.setSummit(m_desired_speed);
+    spd_zaic.setSummit(desired_speed);
     spd_zaic.setBaseWidth(0.3);
     spd_zaic.setPeakWidth(0.0);
     spd_zaic.setSummitDelta(0.0);
     IvPFunction *spd_of = spd_zaic.extractIvPFunction();
+#endif
+
     double rel_ang_to_wpt = relAng(m_osx, m_osy, m_ptx, m_pty);
     ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setSummit(rel_ang_to_wpt);
@@ -506,6 +520,7 @@ void BHV_Loiter::postStatusReports()
   else
     postMessage(dist_var, m_dist_to_poly);
 
+  // If distance is > 10m, post as an integer, for less freq posts
   string eta_var = ("LOITER_ETA_TO_POLY" + m_var_suffix);
   if((m_eta_to_poly > 10) || (m_eta_to_poly == 0))
     postIntMessage(eta_var, m_eta_to_poly);

@@ -59,8 +59,10 @@ private:  // Configuration Parameters
   bool         m_clockwise;
   bool         m_dynamic_clockwise;
   double       m_desired_speed;
+  double       m_desired_speed_alt;
   double       m_acquire_dist;
   bool         m_center_activate;
+  bool         m_use_alt_speed;
 
   std::string  m_var_suffix;
 

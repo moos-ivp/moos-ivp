@@ -21,11 +21,6 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
-
 #include <cmath> 
 #include <cstdlib>
 #include <iostream>
@@ -39,6 +34,7 @@
 #include "PathUtils.h"
 #include "FunctionEncoder.h"
 #include "ZAIC_PEAK.h"
+#include "ZAIC_SPD.h"
 #include "OF_Coupler.h"
 #include "XYFormatUtilsPoly.h"
 #include "XYFormatUtilsPoint.h"
@@ -60,9 +56,10 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_domain     = subDomain(m_domain, "course,speed");
 
   // Set behavior configuration variables
-  m_cruise_speed    = 0;  // meters/second
-  m_lead_distance   = -1; // meters - default of -1 means unused
-  m_lead_damper     = -1; // meters - default of -1 means unused
+  m_cruise_speed     = 0;  // meters/second
+  m_cruise_speed_alt = -1; // meters/second - default of -1 means unused
+  m_lead_distance    = -1; // meters - default of -1 means unused
+  m_lead_damper      = -1; // meters - default of -1 means unused
   m_efficiency_measure = "off"; // or "off" or "all"
   m_ipf_type        = "zaic";
 
@@ -70,6 +67,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_var_index       = "WPT_INDEX";
   m_var_cyindex     = "CYCLE_INDEX";
   m_var_suffix      = "";
+  m_use_alt_speed   = false;
 
   // Visual Hint Defaults
   m_hint_vertex_size   = 3;
@@ -169,10 +167,16 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     m_markpt.set_active(false);
     return(true);
   }
-  else if((param == "speed") && (dval > 0)) {
+  else if((param == "speed") && isNumber(param_val) && (dval >= 0)) {
     if(dval != m_cruise_speed)
       m_odo_leg_disq = true;
     m_cruise_speed = dval;
+    return(true);
+  }
+  else if((param == "speed_alt") && isNumber(param_val) && (dval >= 0)) {
+    if(dval != m_cruise_speed_alt)
+      m_odo_leg_disq = true;
+    m_cruise_speed_alt = dval;
     return(true);
   }
   else if((param == "currix") && (dval > 0)) {
@@ -181,6 +185,13 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   }
   else if((param == "greedy_tour") || (param == "shortest_tour")) {
     setBooleanOnString(m_greedy_tour_pending, param_val);
+    return(true);
+  }
+  else if(param == "use_alt_speed") {
+    bool prev_use_alt_speed = m_use_alt_speed;
+    setBooleanOnString(m_use_alt_speed, param_val);
+    if(prev_use_alt_speed != m_use_alt_speed)
+      m_odo_leg_disq = true;
     return(true);
   }
   else if((param == "wpt_status") || (param == "wpt_status_var")) {
@@ -649,10 +660,14 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 {
   IvPFunction *ipf = 0;
  
+  double cruise_speed = m_cruise_speed;
+  if((m_use_alt_speed) && (m_cruise_speed_alt >= 0))
+    cruise_speed = m_cruise_speed_alt;
+  
   if((method == "roc") || (method == "rate_of_closure")) {
     bool ok = true;
     AOF_Waypoint aof_wpt(m_domain);
-    ok = ok && aof_wpt.setParam("desired_speed", m_cruise_speed);
+    ok = ok && aof_wpt.setParam("desired_speed", cruise_speed);
     ok = ok && aof_wpt.setParam("osx", m_osx);
     ok = ok && aof_wpt.setParam("osy", m_osy);
     ok = ok && aof_wpt.setParam("ptx", m_trackpt.x());
@@ -670,19 +685,18 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     }
   }    
   else { // if (method == "zaic")
-    ZAIC_PEAK spd_zaic(m_domain, "speed");
-    double peak_width = m_cruise_speed / 2;
-    spd_zaic.setParams(m_cruise_speed, peak_width, 1.6, 20, 0, 100);
-    //    spd_zaic.setParams(m_cruise_speed, 1, 1.6, 20, 0, 100);
+    ZAIC_SPD spd_zaic(m_domain, "speed");
+    spd_zaic.setParams(m_cruise_speed, 0.1, m_cruise_speed+0.4, 70, 20);
     IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
+
     if(!spd_ipf)
       postWMessage("Failure on the SPD ZAIC");
     
-    double rel_ang_to_wpt = relAng(m_osx, m_osy, m_trackpt.x(), m_trackpt.y());
+    double rel_ang_to_trk_pt = relAng(m_osx, m_osy, m_trackpt.x(), m_trackpt.y());
 
     ZAIC_PEAK crs_zaic(m_domain, "course");
     crs_zaic.setValueWrap(true);
-    crs_zaic.setParams(rel_ang_to_wpt, 0, 180, 50, 0, 100);
+    crs_zaic.setParams(rel_ang_to_trk_pt, 0, 180, 50, 0, 100);
     
     int ix = crs_zaic.addComponent();
     crs_zaic.setParams(m_osh, 30, 180, 5, 0, 20, ix);

@@ -63,7 +63,9 @@ protected:
 
 protected: // configuration parameters
   double      m_cruise_speed;
+  double      m_cruise_speed_alt;
   bool        m_lead_to_start;
+  bool        m_use_alt_speed;
   double      m_lead_distance;
   double      m_lead_damper;
   std::string m_efficiency_measure;
@@ -126,10 +128,5 @@ protected: // intermediate or object global variables.
 
   bool      m_greedy_tour_pending;
 };
+
 #endif
-
-
-
-
-
-
