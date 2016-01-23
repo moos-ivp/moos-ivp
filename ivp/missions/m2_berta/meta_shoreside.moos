@@ -84,7 +84,7 @@ ProcessConfig = uFldNodeComms
   AppTick       = 2
   CommsTick     = 2
 
-  comms_range      = 50
+  comms_range      = 500
   critical_range   = 25
 
   min_msg_interval = 15
@@ -138,7 +138,7 @@ ProcessConfig = pLogger
   AppTick       = 10
   CommsTick     = 10
   
-  File          = LOG_SHORESIDE
+  File          = XLOG_SHORESIDE
   PATH          = ./
   SyncLog       = true @ 0.2
   AsyncLog      = true
