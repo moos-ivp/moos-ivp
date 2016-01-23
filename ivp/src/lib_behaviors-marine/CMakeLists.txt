@@ -37,6 +37,7 @@ SET(SRC
   BHV_HeadingBias.cpp
   BHV_BearingLine.cpp
   BHV_TestFailure.cpp
+  BHV_KCache.cpp
 )
 
 SET(HEADERS 
@@ -72,6 +73,7 @@ SET(HEADERS
   BHV_Waypoint.h
   BHV_BearingLine.h
   BHV_TestFailure.h
+  BHV_KCache.h
 ) 
 
 ADD_LIBRARY(behaviors-marine ${SRC})
