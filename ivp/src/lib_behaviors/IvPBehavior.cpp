@@ -349,6 +349,14 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 }
 
 //-----------------------------------------------------------
+// Procedure: setKCache()
+
+void IvPBehavior::setKCache(const KCache *kc)
+{
+  m_kcache = kc;
+}
+
+//-----------------------------------------------------------
 // Procedure: postMessage
 //     Notes: If the key is set to be "repeatable" then in effect 
 //            there is no key is associated with this variable-value 

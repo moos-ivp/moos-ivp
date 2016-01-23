@@ -23,10 +23,6 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
 #ifndef IVP_BEHAVIOR_HEADER
 #define IVP_BEHAVIOR_HEADER
 
@@ -35,6 +31,7 @@
 #include <string>
 #include "IvPFunction.h"
 #include "InfoBuffer.h"
+#include "KCache.h"
 #include "VarDataPair.h"
 #include "LogicCondition.h"
 #include "BehaviorReport.h"
@@ -62,6 +59,7 @@ public:
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
+  void   setKCache(const KCache*);
   bool   checkUpdates();
   std::string isRunnable();
 
@@ -105,7 +103,8 @@ protected:
   bool    checkConditions();
   bool    checkForDurationReset();
   bool    checkNoStarve();
-  
+
+  const KCache* getKCache() const {return(m_kcache);};
 
   double                   getPriorityWt() {return(m_priority_wt);}
   double                   getBufferCurrTime();
@@ -123,6 +122,7 @@ protected:
   
 protected:
   const InfoBuffer* m_info_buffer;
+  const KCache*     m_kcache;
 
   std::string m_us_name;       
   std::string m_descriptor;    
