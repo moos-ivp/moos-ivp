@@ -246,9 +246,9 @@ bool BRS_App::OnConnectToServer()
 void BRS_App::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("NODE_REPORT", 0);
-  m_Comms.Register("NODE_REPORT_LOCAL", 0);
-  m_Comms.Register("BRS_RANGE_REQUEST", 0);
+  Register("NODE_REPORT", 0);
+  Register("NODE_REPORT_LOCAL", 0);
+  Register("BRS_RANGE_REQUEST", 0);
 }
 
 //------------------------------------------------------------
