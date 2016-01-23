@@ -240,7 +240,7 @@ void GUI_IPF::resizeWidgetsText()
     return;
 
   int small_wid = 440;  // Below which we start to shrink things
-  int info_size = 10;
+  int info_size = 12;
   int blab_size = 12;
 
   if(w() < small_wid)
@@ -552,6 +552,33 @@ void GUI_IPF::cb_SelectCollective(Fl_Widget* o, int v) {
   ((GUI_IPF*)(o->parent()->user_data()))->cb_SelectCollective_i(val);
 }
 
+//----------------------------------------- SetButtonVarA
+void GUI_IPF::setButtonVarA(string bhv_name, string varname) 
+{
+  unsigned int mix = m_dbroker.getMixFromVNameVarName(m_vname, varname);
+  if(mix >= m_dbroker.sizeMix())
+    return;
+
+  m_ipf_viewer->setVarPlotA(mix, bhv_name);
+  varname = truncString(varname, 20, "middle");
+  m_but_addvar_a->copy_label(varname.c_str());
+  m_but_addvar_a->labelsize(8);
+}
+
+//----------------------------------------- SetButtonVarB
+void GUI_IPF::setButtonVarB(string bhv_name, string varname) 
+{
+  unsigned int mix = m_dbroker.getMixFromVNameVarName(m_vname, varname);
+  if(mix >= m_dbroker.sizeMix())
+    return;
+
+  m_ipf_viewer->setVarPlotB(mix, bhv_name);
+  varname = truncString(varname, 20, "middle");
+  m_but_addvar_b->copy_label(varname.c_str());
+  m_but_addvar_b->labelsize(8);
+}
+
+
 //----------------------------------------- ButtonAddVarA
 inline void GUI_IPF::cb_ButtonAddVarA_i(int mix) {
   if(mix != 29999) {
@@ -784,5 +811,19 @@ void GUI_IPF::updateXY()
   m_fld_ipf_pcs->value(ipf_pcs_str.c_str());
   string ipf_dom_str = m_ipf_viewer->getCurrDomain();
   m_fld_ipf_dom->value(ipf_dom_str.c_str());
+
+  string labela = m_ipf_viewer->getCurrScopeVarA();
+  if(labela == "") {
+    m_but_addvar_a->labelsize(12);
+    labela = "Scope Var A";
+  }
+  m_but_addvar_a->copy_label(labela.c_str());
+
+  string labelb = m_ipf_viewer->getCurrScopeVarB();
+  if(labelb == "") {
+    m_but_addvar_b->labelsize(12);
+    labelb = "Scope Var B";
+  }
+  m_but_addvar_b->copy_label(labelb.c_str());
 }
 

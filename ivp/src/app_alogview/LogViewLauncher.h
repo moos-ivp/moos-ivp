@@ -43,6 +43,8 @@ protected:
   bool configDataBroker();
   bool configGraphical();
 
+  bool handleParamsGUI(std::string);
+
   bool handleMinTime(std::string);
   bool handleMaxTime(std::string);
   bool handleBackground(std::string);
@@ -54,6 +56,7 @@ protected:
   bool handleZoom(std::string);
   bool handleNowTime(std::string);
 
+  bool handleBehaviorVarMapping(std::string);
 
 private:
   std::vector<std::string> m_alog_files;
@@ -78,6 +81,11 @@ private:
 
   ALogDataBroker m_dbroker;
 
+  std::map<std::string, std::string> m_map_bhv_vars;
+
+  std::vector<std::string> m_gui_params;
+  std::vector<std::string> m_gui_values;
+  
   REPLAY_GUI *m_gui;
 };
 

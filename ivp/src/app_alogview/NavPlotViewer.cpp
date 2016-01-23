@@ -97,7 +97,9 @@ bool NavPlotViewer::setParam(string param, string value)
       setCenterView("ctr_of_vehicles");
     }
     else if(value == "objects")
-      setCenterView("ctr_of_bounding");
+      setCenterView("ctr_of_vehicles");
+    else if(value == "none")
+      m_center_refresh = false;
     handled = true;
   }
   
@@ -578,6 +580,7 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
   vector<XYPolygon>    polys   = geo_shapes.getPolygons();
   vector<XYGrid>       grids   = geo_shapes.getGrids();
   vector<XYSegList>    segls   = geo_shapes.getSegLists();
+  //vector<XYSeglr>      seglrs  = geo_shapes.getSeglrs();
   vector<XYRangePulse> rpulses = geo_shapes.getRangePulses();
   vector<XYCommsPulse> cpulses = geo_shapes.getCommsPulses();
   const map<string, XYPoint>&  points  = geo_shapes.getPoints();
@@ -587,6 +590,7 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
   drawPolygons(polys);
   drawGrids(grids);
   drawSegLists(segls);
+  //drawSeglrs(seglrs);
   drawCircles(circles);
   drawPoints(points);
   drawMarkers(markers);

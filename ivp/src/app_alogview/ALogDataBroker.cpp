@@ -65,8 +65,12 @@ bool ALogDataBroker::splitALogFiles()
 
   // Part 1: Split out the alog file into the base_dir
   bool all_ok = true;
-  for(i=0; i<vsize; i++) 
+  for(i=0; i<vsize; i++) {
+    string split_file = m_alog_files[i];
+    split_file = rbiteString(split_file, '/');
+    cout << "Splitting " << split_file << "..." << endl;
     all_ok = all_ok && m_splitters[i].handle();
+  }
 
   if(!all_ok)
     return(false);

@@ -53,6 +53,7 @@ class REPLAY_GUI : public MarineVehiGUI {
   void   setDataBroker(ALogDataBroker);
   void   setLogPlotMenus();
   void   setVarHistMenus();
+  void   setBehaviorVarMap(std::map<std::string, std::string>) {};
   void   initLogPlotChoiceA(std::string vname, std::string varname);
   void   initLogPlotChoiceB(std::string vname, std::string varname);
 
@@ -82,7 +83,9 @@ class REPLAY_GUI : public MarineVehiGUI {
   void   resizeWidgetsText(int);
   void   updatePlayRateMsg();
   void   updateTimeSubGUI();
-  
+  void   toggleLeftLogPlot();
+  void   toggleRightLogPlot();
+
  private:
   // Variants of the base class functions. Invoked in REPLAY_GUI::handle
   void   handleLeftRight(int);
@@ -137,6 +140,9 @@ class REPLAY_GUI : public MarineVehiGUI {
   inline void cb_ToggleSyncScales_i(int);
   static void cb_ToggleSyncScales(Fl_Widget*, int);
 
+  inline void cb_ButtonHideLogPlot_i(int);
+  static void cb_ButtonHideLogPlot(Fl_Widget*, int);
+
  public:
   NavPlotViewer *np_viewer;
   LogPlotViewer *lp_viewer;
@@ -158,6 +164,9 @@ class REPLAY_GUI : public MarineVehiGUI {
 
   Fl_Output*  m_disp_time;
 
+  Fl_Check_Button *m_but_hide_lp;
+  Fl_Check_Button *m_but_hide_rp;
+  
   Fl_Output*  m_label1;
   Fl_Output*  m_curr1;
   Fl_Output*  m_label2;

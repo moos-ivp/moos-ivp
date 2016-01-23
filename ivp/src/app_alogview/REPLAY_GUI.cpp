@@ -100,6 +100,16 @@ void REPLAY_GUI::initWidgets()
   m_but_sync_scales->color(FL_DARK_RED);
   m_but_sync_scales->labelcolor(FL_WHITE);
 
+  m_but_hide_lp = new Fl_Check_Button(0, 0, 0, 0);
+  m_but_hide_lp->callback((Fl_Callback*)REPLAY_GUI::cb_ButtonHideLogPlot, (void*)0);
+  m_but_hide_lp->clear_visible_focus();
+  m_but_hide_lp->value(0);
+
+  m_but_hide_rp = new Fl_Check_Button(0, 0, 0, 0);
+  m_but_hide_rp->callback((Fl_Callback*)REPLAY_GUI::cb_ButtonHideLogPlot, (void*)1);
+  m_but_hide_rp->clear_visible_focus();
+  m_but_hide_rp->value(0);
+    
   // Handle LogPlot 1 -------------
   m_label1 = new Fl_Output(0, 0, 1, 1, "Var:"); 
   m_label1->color(FL_DARK_GREEN); 
@@ -248,6 +258,16 @@ void REPLAY_GUI::augmentMenu()
   item = (Fl_Menu_Item*)m_menubar->find_item("BackView/tiff_type toggle");
   if(item) item->hide();
 
+  item = (Fl_Menu_Item*)m_menubar->find_item("GeoAttr/DropPoints");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("GeoAttr/Datum");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("GeoAttr/CommsPulses");
+  if(item) item->hide();
+  item = (Fl_Menu_Item*)m_menubar->find_item("GeoAttr/OpArea");
+  if(item) item->hide();
+
+
   // Turn on the right radio buttons
   item = (Fl_Menu_Item*)m_menubar->find_item("Vehicles/vehicles_viewable=true");
   if(item) item->setonly();
@@ -294,6 +314,10 @@ int REPLAY_GUI::handle(int event)
       zoom(-10);
     else if(Fl::event_key() == 111)
       zoom(10);
+    else if(Fl::event_key() == 108) // 'l' key
+      toggleLeftLogPlot();
+    else if(Fl::event_key() == 114) // 'r' key
+      toggleRightLogPlot();
     // Handle the Left-Right Key Combinations
     else if((Fl::event_key() == FL_Left) && (Fl::event_state() == FL_ALT))
       handleLeftRight(10);
@@ -427,6 +451,28 @@ inline void REPLAY_GUI::zoom(int val)
   }
 }
 
+//----------------------------------------- toggleLeftLogPlot
+void REPLAY_GUI::toggleLeftLogPlot() 
+{
+  //if(!inLogPlotViewer()) 
+  //  return;
+
+  lp_viewer->toggleLeftLogPlot();
+  lp_viewer->redraw();
+  updateXY();
+}
+
+//----------------------------------------- toggleRightLogPlot
+void REPLAY_GUI::toggleRightLogPlot() 
+{
+  //if(!inLogPlotViewer()) 
+  //  return;
+  
+  lp_viewer->toggleRightLogPlot();
+  lp_viewer->redraw();
+  updateXY();
+}
+
 //----------------------------------------- inNavPlotViewer
 bool REPLAY_GUI::inNavPlotViewer() const
 {
@@ -529,6 +575,7 @@ void REPLAY_GUI::cb_StepType(Fl_Widget* o, int v) {
 //----------------------------------------- LeftLogPlot
 inline void REPLAY_GUI::cb_LeftLogPlot_i(int index) {
   lp_viewer->setLeftPlot((unsigned int)(index));
+  lp_viewer->showLeftLogPlot(true);
   lp_viewer->redraw();
   updateXY();
 }
@@ -540,6 +587,7 @@ void REPLAY_GUI::cb_LeftLogPlot(Fl_Widget* o, int v) {
 //----------------------------------------- RightLogPlot
 inline void REPLAY_GUI::cb_RightLogPlot_i(int index) {
   lp_viewer->setRightPlot((unsigned int)(index));
+  lp_viewer->showRightLogPlot(true);
   lp_viewer->redraw();
   updateXY();
 }
@@ -660,6 +708,16 @@ inline void REPLAY_GUI::cb_ToggleSyncScales_i(int val) {
 void REPLAY_GUI::cb_ToggleSyncScales(Fl_Widget* o, int v) {
   int val = (int)(v);
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_ToggleSyncScales_i(val);
+}
+
+//----------------------------------------- ButtonHideLogPlot
+inline void REPLAY_GUI::cb_ButtonHideLogPlot_i(int val) {
+  updateXY();
+}
+
+void REPLAY_GUI::cb_ButtonHideLogPlot(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_ButtonHideLogPlot_i(val);
 }
 
 //----------------------------------------- Streaming
@@ -1158,7 +1216,7 @@ void REPLAY_GUI::resizeWidgetsShape()
 
   double fld_hgt = 18;
 
-  if((dw < 850) || (dw < 650))
+  if((dw < 850) || (dw < 680))
     resizeWidgetsText(8);
   else
     resizeWidgetsText(10);
@@ -1168,10 +1226,10 @@ void REPLAY_GUI::resizeWidgetsShape()
 
   // LogPlot1
   m_label1->resize(22, row, dw*0.18, fld_hgt);
-  m_curr1->resize(dw*0.24, row, dw*0.12, fld_hgt);
+  m_curr1->resize(dw*0.25, row, dw*0.1, fld_hgt);
   // LogPlot2
   m_label2->resize(dw*0.66, row, dw*0.18, fld_hgt);
-  m_curr2->resize(dw*0.88, row, dw*0.12, fld_hgt);
+  m_curr2->resize(dw*0.895, row, dw*0.1, fld_hgt);
   // TopCenter Fields
   m_disp_time->resize(dw*0.40, row, dw*0.05, fld_hgt);
   m_but_zoom_in_time->resize(dw*0.46, row, dw*0.03, fld_hgt);

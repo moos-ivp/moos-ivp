@@ -47,8 +47,8 @@ class IvPFuncViewerX : public Common_IPFViewer
   void   setIPF_Plots(std::vector<std::string> bhv_names);
   void   setHelmIterPlot();
   void   setBix(unsigned int bix);
-  void   setVarPlotA(unsigned int mix);
-  void   setVarPlotB(unsigned int mix);
+  void   setVarPlotA(unsigned int mix, std::string bname="");
+  void   setVarPlotB(unsigned int mix, std::string bname="");
   void   clearVarPlotA();
   void   clearVarPlotB();
 
@@ -65,6 +65,8 @@ class IvPFuncViewerX : public Common_IPFViewer
   std::string getCurrDomain() const;
   std::string getCurrIteration() const;
   std::string getCurrPriority(std::string);
+  std::string getCurrScopeVarA();
+  std::string getCurrScopeVarB();
 
  protected:
   void   updateIPF();
@@ -82,7 +84,7 @@ private:
   // Vehicle name stays constant once it is set initially
   std::string m_vname; 
 
-  // Source may change as user selects different options
+  // Source is either a behavior name or "collective"
   std::string m_source;
 
   LogPlot     m_iter_plot;

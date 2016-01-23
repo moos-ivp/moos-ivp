@@ -51,6 +51,11 @@ class LogPlotViewer : public Fl_Gl_Window
   void   setLeftPlot(unsigned int);
   void   setRightPlot(unsigned int);
 
+  void   toggleLeftLogPlot()  {m_show_left_logplot  = !m_show_left_logplot;}
+  void   toggleRightLogPlot() {m_show_right_logplot = !m_show_right_logplot;};
+  void   showLeftLogPlot(bool v)  {m_show_left_logplot=v;}
+  void   showRightLogPlot(bool v) {m_show_right_logplot=v;}
+
   double getTimeLow() {return(m_display_min_time);}
   double getTimeHigh() {return(m_display_max_time);}
 
@@ -85,6 +90,9 @@ class LogPlotViewer : public Fl_Gl_Window
   LogPlot m_logplot1;
   LogPlot m_logplot2;
   
+  bool m_show_left_logplot;
+  bool m_show_right_logplot;
+
   std::string m_fullvar1;
   std::string m_fullvar2;
 

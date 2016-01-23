@@ -33,10 +33,9 @@
 using namespace std;
 
 void help_message();
+void idleProc(void*);
 
 REPLAY_GUI* gui = 0;
-
-void idleProc(void*);
 
 //--------------------------------------------------------
 // Procedure: idleProc
@@ -109,6 +108,8 @@ void help_message()
   cout << "  --rp=VEH:VAR    Specify starting right log plot.             " << endl;
   cout << "                  Example: --lp=henry:NAV_X                    " << endl;
   cout << "                  Example: --rp=NAV_SPEED                      " << endl;
+  cout << "                                                               " << endl;
+  cout << "  --bv=BHV:VAR    Assoc scope var w/ behavior for IPF viewer.  " << endl;
   cout << "                                                               " << endl;
   cout << "  --nowtime=val   Set the initial startup time                 " << endl;
   cout << "  --mintime=val   Clip all times/vals below this time          " << endl;

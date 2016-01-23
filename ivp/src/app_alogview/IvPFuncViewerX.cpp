@@ -46,7 +46,8 @@ IvPFuncViewerX::IvPFuncViewerX(int x, int y, int w, int h, const char *l)
  
   setParam("reset_view", "2");
 
-  m_clear_color.setColor("0.6,0.7,0.5");
+  //m_clear_color.setColor("0.6,0.7,0.5");
+  m_clear_color.setColor("0.9,0.9,0.9");
   m_label_color.setColor("brown");
 }
 
@@ -113,10 +114,16 @@ void IvPFuncViewerX::setDataBroker(ALogDataBroker dbroker, string vname)
 //-------------------------------------------------------------
 // Procedure: setVarPlotA()
 
-void IvPFuncViewerX::setVarPlotA(unsigned int mix)
+void IvPFuncViewerX::setVarPlotA(unsigned int mix, string bhv_name)
 {
+  // By default we change the plotvar for the "current" source/behavior, but
+  // if one is explicitly named, we use that source instead.
+  string source = m_source;
+  if(bhv_name != "")
+    source = bhv_name;
+
   if(mix < m_dbroker.sizeMix()) {
-    m_map_scope_var_a[m_source] = m_dbroker.getVarPlot(mix);
+    m_map_scope_var_a[source] = m_dbroker.getVarPlot(mix);
     updateScope();
   }
 }
@@ -134,10 +141,16 @@ void IvPFuncViewerX::clearVarPlotA()
 //-------------------------------------------------------------
 // Procedure: setVarPlotB()
 
-void IvPFuncViewerX::setVarPlotB(unsigned int mix)
+void IvPFuncViewerX::setVarPlotB(unsigned int mix, string bhv_name)
 {
+  // By default we change the plotvar for the "current" source/behavior, but
+  // if one is explicitly named, we use that source instead.
+  string source = m_source;
+  if(bhv_name != "")
+    source = bhv_name;
+
   if(mix < m_dbroker.sizeMix()) {
-    m_map_scope_var_b[m_source] = m_dbroker.getVarPlot(mix);
+    m_map_scope_var_b[source] = m_dbroker.getVarPlot(mix);
     updateScope();
   }
 }
@@ -314,6 +327,22 @@ string IvPFuncViewerX::getCurrPriority(string source)
   string result = doubleToString(pwt, 3);
 
   return(result);  
+}
+
+//-------------------------------------------------------------
+// Procedure: getCurrScopeVarA()
+
+string IvPFuncViewerX::getCurrScopeVarA()
+{
+  return(m_map_scope_var_a[m_source].getVarName());
+}
+
+//-------------------------------------------------------------
+// Procedure: getCurrScopeVarB()
+
+string IvPFuncViewerX::getCurrScopeVarB()
+{
+  return(m_map_scope_var_b[m_source].getVarName());
 }
 
 //-------------------------------------------------------------

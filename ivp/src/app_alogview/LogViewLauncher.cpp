@@ -113,18 +113,38 @@ bool LogViewLauncher::parseCommandArgs(int argc, char **argv)
       handled = handleZoom(argi.substr(7));
     else if(strBegins(argi, "--nowtime=")) 
       handled = handleNowTime(argi.substr(10));
+    else if(strBegins(argi, "--bv=")) 
+      handled = handleBehaviorVarMapping(argi.substr(5));
     else if((argi == "--quick") || (argi == "-q")) 
       m_quick_start = true;
     else if(strBegins(argi, "--altnav=")) 
       m_alt_nav_prefix = argi.substr(9);
     else
-      handled = false;
+      handled = handleParamsGUI(argi);
 
     if(!handled) {
       cout << "Unhandled argument: " << argi << endl;
       return(false);
     }
   }
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: handleParamsGUI
+
+bool LogViewLauncher::handleParamsGUI(string argi)
+{
+  if(strBegins(argi, "--seglist_viewable_all=")) {
+    string value = rbiteString(argi, '=');
+    if(isBoolean(value)) {
+      m_gui_params.push_back("seglist_viewable_all");
+      m_gui_values.push_back(value);
+    }
+  }
+  else
+    return(false);
+
   return(true);
 }
 
@@ -215,6 +235,11 @@ bool LogViewLauncher::configGraphical()
   else
     m_gui->setCurrTime(-1); // GUI will seek a "start_time hint"
   m_gui->updateXY();
+
+  // Map associating scope variables with given behaviors. For convencience
+  // in using the GUI_IPF viewer.
+  m_gui->setBehaviorVarMap(m_map_bhv_vars);
+  
   return(true);
 }
 
@@ -380,6 +405,24 @@ bool LogViewLauncher::handleNowTime(string val)
   if(!isNumber(val))
     return(false);
   m_start_time = atof(val.c_str());
+  return(true);
+}
+ 
+//-------------------------------------------------------------
+// Procedure: handleBehaviorVarMapping
+//  Examples:
+//      --bv=avdcol_ben:COLREGS_A_MODE_BEN
+//      --bv=avdcol_ben:COLREGS_A_MODE_BEN:AVDCOL_RANGE_BEN
+
+bool LogViewLauncher::handleBehaviorVarMapping(string val)
+{
+  if(!strContains(val, ':'))
+    return(false);
+
+  string bhv = biteStringX(val, ':');
+  string var = val;
+
+  m_map_bhv_vars[bhv] = val; 
   return(true);
 }
  
