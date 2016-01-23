@@ -19,6 +19,8 @@ SET(HEADERS
   XYCommsPulse.h
   IO_GeomUtils.h
   LinearExtrapolator.h
+  Seglr.h
+  SeglrUtils.h
   XYWedge.h
   XYArc.h
   XYArtifactGrid.h
@@ -36,6 +38,7 @@ SET(HEADERS
   XYFormatUtilsCommsPulse.h
   XYFormatUtilsHazard.h
   XYFormatUtilsHazardSet.h
+  XYFormatUtilsSeglr.h
   XYGrid.h
   XYConvexGrid.h
   XYHazard.h
