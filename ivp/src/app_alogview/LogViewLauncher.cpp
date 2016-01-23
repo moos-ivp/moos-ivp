@@ -244,8 +244,6 @@ bool LogViewLauncher::configGraphical()
 }
 
 
-
-
 //-------------------------------------------------------------
 // Procedure: handleMinTime()  --mintime=NUM
 
@@ -425,5 +423,3 @@ bool LogViewLauncher::handleBehaviorVarMapping(string val)
   m_map_bhv_vars[bhv] = val; 
   return(true);
 }
- 
-

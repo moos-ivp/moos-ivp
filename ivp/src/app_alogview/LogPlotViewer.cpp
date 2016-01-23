@@ -579,10 +579,10 @@ void LogPlotViewer::drawLogPlot()
   glVertex2f(w()-m_rgt_marg+5, m_bot_marg);
   glEnd();
       
+  // ----- Handle the FIRST Plot ----------
   if(m_show_left_logplot && (m_logplot1.size()!=0)) {
     unsigned int cache_size = cache_x1.size();
-
-    // ----- Handle the FIRST Plot ----------
+    
     // Draw the LINES of the plot
     if(color_scheme == 1)
       glColor4f(0.282,  0.239,  0.545,  0.1);  // DarkSlateBlue
@@ -614,41 +614,39 @@ void LogPlotViewer::drawLogPlot()
     glEnd();
   }
     
+  // ----- Handle the SECOND Plot ----------
   if(m_show_right_logplot && (m_logplot2.size()!=0)) {
-    if(m_logplot2.size() != 0) {
-      unsigned int i, cache_size = cache_x2.size();
-      // ----- Handle the SECOND Plot ----------
-      // Draw the LINES of the plot
-      if(color_scheme == 1)
-	glColor4f(0.545,  0.000,  0.000,  0.1);  // DarkRed
-      else
-	glColor4f(0.282,  0.239,  0.545,  0.1);  // DarkSlateBlue
-      glBegin(GL_LINE_STRIP);
-      for(i=0; i<cache_size; i++) {
-	if(i>0) {
-	  glBegin(GL_LINE_STRIP);
-	  glVertex2f(cache_x2[i-1], cache_y2[i-1]);
-	  glVertex2f(cache_x2[i], cache_y2[i-1]);
-	  glVertex2f(cache_x2[i], cache_y2[i]);
-	  glEnd();
-	}
-      }
-      
-      // Draw the POINTS of the plot
-      if(cache_size > 75)  glPointSize(2.0);
-      else if(cache_size > 55) glPointSize(3.0);
-      else if(cache_size > 40) glPointSize(4.0);
-      else if(cache_size > 35) glPointSize(5.0);
-      else  glPointSize(6.0);
-      if(color_scheme == 1)
-	glColor4f(0.99,  0.99,  0.99,  0.1);  // WHite
-      else
-	glColor4f(0.282,  0.239,  0.545,  0.1);  // DarkSlateBlue
-      glBegin(GL_POINTS);
-      for(unsigned int i=0; i<cache_x2.size(); i++)
+    unsigned int i, cache_size = cache_x2.size();
+    // Draw the LINES of the plot
+    if(color_scheme == 1)
+      glColor4f(0.545,  0.000,  0.000,  0.1);  // DarkRed
+    else
+      glColor4f(0.282,  0.239,  0.545,  0.1);  // DarkSlateBlue
+    glBegin(GL_LINE_STRIP);
+    for(i=0; i<cache_size; i++) {
+      if(i>0) {
+	glBegin(GL_LINE_STRIP);
+	glVertex2f(cache_x2[i-1], cache_y2[i-1]);
+	glVertex2f(cache_x2[i], cache_y2[i-1]);
 	glVertex2f(cache_x2[i], cache_y2[i]);
-      glEnd();
+	glEnd();
+      }
     }
+    
+    // Draw the POINTS of the plot
+    if(cache_size > 75)  glPointSize(2.0);
+    else if(cache_size > 55) glPointSize(3.0);
+    else if(cache_size > 40) glPointSize(4.0);
+    else if(cache_size > 35) glPointSize(5.0);
+    else  glPointSize(6.0);
+    if(color_scheme == 1)
+      glColor4f(0.99,  0.99,  0.99,  0.1);     // White
+    else
+      glColor4f(0.282,  0.239,  0.545,  0.1);  // DarkSlateBlue
+    glBegin(GL_POINTS);
+    for(unsigned int i=0; i<cache_x2.size(); i++)
+      glVertex2f(cache_x2[i], cache_y2[i]);
+    glEnd();
   }
 
   // Draw the "current time" vertical bar

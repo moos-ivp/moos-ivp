@@ -58,7 +58,7 @@ protected:
 
   bool handleBehaviorVarMapping(std::string);
 
-private:
+ private:
   std::vector<std::string> m_alog_files;
   
   std::string  m_tiff_file;
