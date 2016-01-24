@@ -15,14 +15,14 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 500
 
-  Run = MOOSDB                @ NewConsole = false
-  Run = pMarineViewer         @ NewConsole = false
-  Run = pLogger               @ NewConsole = false
-  Run = uSimMarine            @ NewConsole = false
-  Run = pNodeReporter         @ NewConsole = false
-  Run = pMarinePID            @ NewConsole = false
-  Run = pHelmIvP	            @ NewConsole = false
-  Run = uTimerScript          @ NewConsole = false
+  Run = MOOSDB           @ NewConsole = false
+  Run = pMarineViewer    @ NewConsole = false
+  Run = pLogger          @ NewConsole = false
+  Run = uSimMarine       @ NewConsole = false
+  Run = pNodeReporter    @ NewConsole = false
+  Run = pMarinePID       @ NewConsole = false
+  Run = pHelmIvP         @ NewConsole = false
+  Run = uTimerScript     @ NewConsole = false
   Run = uFldBeaconRangeSensor @ NewConsole = false
 }
 
@@ -61,8 +61,8 @@ ProcessConfig = uFldBeaconRangeSensor
 
 ProcessConfig = uTimerScript
 {
-  AppTick	= 4
-  CommsTick	= 4
+  AppTick       = 4
+  CommsTick     = 4
 
   paused     = false
   reset_max  = nolimit
@@ -71,7 +71,6 @@ ProcessConfig = uTimerScript
 
   event = var=BRS_RANGE_REQUEST, val="name=indigo", time=25:35
 }
-
 
 //------------------------------------------
 // pLogger config block
