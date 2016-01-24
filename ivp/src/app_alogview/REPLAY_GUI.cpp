@@ -103,12 +103,12 @@ void REPLAY_GUI::initWidgets()
   m_but_hide_lp = new Fl_Check_Button(0, 0, 0, 0);
   m_but_hide_lp->callback((Fl_Callback*)REPLAY_GUI::cb_ButtonHideLogPlot, (void*)0);
   m_but_hide_lp->clear_visible_focus();
-  m_but_hide_lp->value(0);
+  m_but_hide_lp->value(1);
 
   m_but_hide_rp = new Fl_Check_Button(0, 0, 0, 0);
   m_but_hide_rp->callback((Fl_Callback*)REPLAY_GUI::cb_ButtonHideLogPlot, (void*)1);
   m_but_hide_rp->clear_visible_focus();
-  m_but_hide_rp->value(0);
+  m_but_hide_rp->value(1);
     
   // Handle LogPlot 1 -------------
   m_label1 = new Fl_Output(0, 0, 1, 1, "Var:"); 
@@ -718,6 +718,23 @@ void REPLAY_GUI::cb_ToggleSyncScales(Fl_Widget* o, int v) {
 
 //----------------------------------------- ButtonHideLogPlot
 inline void REPLAY_GUI::cb_ButtonHideLogPlot_i(int val) {
+  if(val == 0) {
+    if(m_but_hide_lp->value())
+      lp_viewer->showLeftLogPlot(true);
+    else
+      lp_viewer->showLeftLogPlot(false);
+  }
+  else if(val == 1) {
+    if(m_but_hide_rp->value())
+      lp_viewer->showRightLogPlot(true);
+    else
+      lp_viewer->showRightLogPlot(false);
+    lp_viewer->redraw();
+  }
+  else
+    return;
+
+  lp_viewer->redraw();
   updateXY();
 }
 
