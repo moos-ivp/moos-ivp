@@ -266,8 +266,6 @@ void GUI_IPF::resizeWidgetsText()
 
   m_brw_bhvs->textsize(m_mutable_text_size);
 
-  m_but_addvar_a->textsize(info_size);
-  m_but_addvar_a->labelsize(info_size);
   string labela = m_but_addvar_a->label();
   if(strContains(labela, "Var A")) {
     if(w() < small_wid) 
@@ -276,9 +274,15 @@ void GUI_IPF::resizeWidgetsText()
       labela = "Scope Var A";
     m_but_addvar_a->copy_label(labela.c_str());
   }
+  m_but_addvar_a->textsize(12);
+  if(labela.length() < 12) 
+    m_but_addvar_a->labelsize(12);
+  else if(labela.length() < 17) 
+    m_but_addvar_a->labelsize(10);
+  else 
+    m_but_addvar_a->labelsize(8);
+  
 
-  m_but_addvar_b->textsize(info_size);
-  m_but_addvar_b->labelsize(info_size);
   string labelb = m_but_addvar_b->label();
   if(strContains(labelb, "Var B")) {
     if(w() < small_wid) 
@@ -287,6 +291,18 @@ void GUI_IPF::resizeWidgetsText()
       labelb = "Scope Var B";
     m_but_addvar_b->copy_label(labelb.c_str());
   }
+  m_but_addvar_b->textsize(info_size);
+  if(labelb.length() < 12) 
+    m_but_addvar_b->labelsize(12);
+  else if(labelb.length() < 17) 
+    m_but_addvar_b->labelsize(10);
+  else 
+    m_but_addvar_b->labelsize(8);
+  
+
+
+
+
 }
 
 //-------------------------------------------------------------------
@@ -521,6 +537,7 @@ inline void GUI_IPF::cb_SelectSource_i() {
   m_but_collective_dep->value(0);
 
   updateXY();
+  resizeWidgetsText();
 }
 void GUI_IPF::cb_SelectSource(Fl_Widget* o) {
   ((GUI_IPF*)(o->parent()->user_data()))->cb_SelectSource_i();
@@ -552,47 +569,20 @@ void GUI_IPF::cb_SelectCollective(Fl_Widget* o, int v) {
   ((GUI_IPF*)(o->parent()->user_data()))->cb_SelectCollective_i(val);
 }
 
-//----------------------------------------- SetButtonVarA
-void GUI_IPF::setButtonVarA(string bhv_name, string varname) 
-{
-  unsigned int mix = m_dbroker.getMixFromVNameVarName(m_vname, varname);
-  if(mix >= m_dbroker.sizeMix())
-    return;
-
-  m_ipf_viewer->setVarPlotA(mix, bhv_name);
-  varname = truncString(varname, 20, "middle");
-  m_but_addvar_a->copy_label(varname.c_str());
-  m_but_addvar_a->labelsize(8);
-}
-
-//----------------------------------------- SetButtonVarB
-void GUI_IPF::setButtonVarB(string bhv_name, string varname) 
-{
-  unsigned int mix = m_dbroker.getMixFromVNameVarName(m_vname, varname);
-  if(mix >= m_dbroker.sizeMix())
-    return;
-
-  m_ipf_viewer->setVarPlotB(mix, bhv_name);
-  varname = truncString(varname, 20, "middle");
-  m_but_addvar_b->copy_label(varname.c_str());
-  m_but_addvar_b->labelsize(8);
-}
-
 
 //----------------------------------------- ButtonAddVarA
 inline void GUI_IPF::cb_ButtonAddVarA_i(int mix) {
   if(mix != 29999) {
     m_ipf_viewer->setVarPlotA(mix);
     string varname = m_dbroker.getVarNameFromMix(mix);
-    varname = truncString(varname, 20, "middle");
+    varname = truncString(varname, 22, "middle");
     m_but_addvar_a->copy_label(varname.c_str());
-    m_but_addvar_a->labelsize(8);
   }
   else {
     m_but_addvar_a->copy_label("Scope Var A");
-    resizeWidgetsText();
     m_ipf_viewer->clearVarPlotA();    
   }    
+  resizeWidgetsText();
   m_ipf_viewer->redraw();
 }
 void GUI_IPF::cb_ButtonAddVarA(Fl_Widget* o, int v) {
@@ -605,17 +595,15 @@ inline void GUI_IPF::cb_ButtonAddVarB_i(int mix) {
   if(mix != 29999) {
     m_ipf_viewer->setVarPlotB(mix);
     string varname = m_dbroker.getVarNameFromMix(mix);
-    varname = truncString(varname, 20, "middle");
+    varname = truncString(varname, 22, "middle");
     m_but_addvar_b->copy_label(varname.c_str());
-    m_but_addvar_b->labelsize(8);
   }
   else {
     m_but_addvar_b->copy_label("Scope Var B");
-    resizeWidgetsText();
     m_ipf_viewer->clearVarPlotB();    
   }
+  resizeWidgetsText();
   m_ipf_viewer->redraw();
-
 }
 void GUI_IPF::cb_ButtonAddVarB(Fl_Widget* o, int v) {
   int val = (int)(v);
@@ -788,6 +776,43 @@ void GUI_IPF::updateMutableTextSize(string val)
   m_ipf_viewer->setMutableTextSize(m_mutable_text_size);
   m_ipf_viewer->redraw();
 }
+
+//---------------------------------------------------------
+// Procedure: applyBehaviorVarMap()
+
+void GUI_IPF::applyBehaviorVarMap(map<string, string> map_bhv_vars) 
+{
+  map<string,string>::iterator p;
+  for(p=map_bhv_vars.begin(); p!=map_bhv_vars.end(); p++) {
+    string bhv_name = p->first;
+    if(!vectorContains(m_sources, bhv_name))
+      continue;
+
+    string vars = p->second;
+    string var1, var2;
+    if(!strContains(vars, ':')) {
+      var1 = vars;
+      var2 = "";
+    }
+    else {
+      var1 = biteStringX(vars, ':');
+      var2 = vars;
+    }
+
+    if(var1 != "") {
+      int mix = m_dbroker.getMixFromVNameVarName(m_vname,var1);
+      m_ipf_viewer->setVarPlotA(bhv_name, mix);
+      //cb_ButtonAddVarA_i(mix);
+    }
+    if(var2 != "") {
+      int mix = m_dbroker.getMixFromVNameVarName(m_vname,var2);
+      m_ipf_viewer->setVarPlotB(bhv_name, mix);
+      //cb_ButtonAddVarB_i(mix);
+    }
+  }
+  resizeWidgetsText();
+}
+
 
 //-------------------------------------------------------
 // Procedure: updateXY()

@@ -53,7 +53,7 @@ class REPLAY_GUI : public MarineVehiGUI {
   void   setDataBroker(ALogDataBroker);
   void   setLogPlotMenus();
   void   setVarHistMenus();
-  void   setBehaviorVarMap(std::map<std::string, std::string>) {};
+  void   setBehaviorVarMap(std::map<std::string, std::string>);
   void   initLogPlotChoiceA(std::string vname, std::string varname);
   void   initLogPlotChoiceB(std::string vname, std::string varname);
 
@@ -162,6 +162,9 @@ class REPLAY_GUI : public MarineVehiGUI {
   double      m_np_viewer_hgt;
   double      m_lp_viewer_hgt;
 
+  // map from behavior to scope vars for convenience in GUI_IPF
+  std::map<std::string, std::string> m_map_bhv_vars;
+  
   Fl_Output*  m_disp_time;
 
   Fl_Check_Button *m_but_hide_lp;

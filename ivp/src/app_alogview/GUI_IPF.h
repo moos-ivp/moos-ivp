@@ -52,9 +52,8 @@ public:
   void  setDataBroker(ALogDataBroker, std::string vname);
   void  setParentGUI(REPLAY_GUI*);
   void  setCurrTime(double=-1);
+  void  applyBehaviorVarMap(std::map<std::string, std::string>);
   void  setReplayWarpMsg(std::string s) {m_replay_warp_msg=s; updateXY();}
-  void  setButtonVarA(std::string bhv_name, std::string varname);
-  void  setButtonVarB(std::string bhv_name, std::string varname);
 
  protected:
   void  resize(int, int, int, int);

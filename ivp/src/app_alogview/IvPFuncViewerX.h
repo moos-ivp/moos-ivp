@@ -49,6 +49,8 @@ class IvPFuncViewerX : public Common_IPFViewer
   void   setBix(unsigned int bix);
   void   setVarPlotA(unsigned int mix, std::string bname="");
   void   setVarPlotB(unsigned int mix, std::string bname="");
+  void   setVarPlotA(std::string src, unsigned int mix);
+  void   setVarPlotB(std::string src, unsigned int mix);
   void   clearVarPlotA();
   void   clearVarPlotB();
 

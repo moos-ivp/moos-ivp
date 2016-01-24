@@ -129,6 +129,15 @@ void IvPFuncViewerX::setVarPlotA(unsigned int mix, string bhv_name)
 }
 
 //-------------------------------------------------------------
+// Procedure: setVarPlotA()
+
+void IvPFuncViewerX::setVarPlotA(string source, unsigned int mix)
+{
+  if(mix < m_dbroker.sizeMix())
+    m_map_scope_var_a[source] = m_dbroker.getVarPlot(mix);
+}
+
+//-------------------------------------------------------------
 // Procedure: clearVarPlotA()
 
 void IvPFuncViewerX::clearVarPlotA()
@@ -153,6 +162,15 @@ void IvPFuncViewerX::setVarPlotB(unsigned int mix, string bhv_name)
     m_map_scope_var_b[source] = m_dbroker.getVarPlot(mix);
     updateScope();
   }
+}
+
+//-------------------------------------------------------------
+// Procedure: setVarPlotB()
+
+void IvPFuncViewerX::setVarPlotB(string source, unsigned int mix)
+{
+  if(mix < m_dbroker.sizeMix())
+    m_map_scope_var_b[source] = m_dbroker.getVarPlot(mix);
 }
 
 //-------------------------------------------------------------

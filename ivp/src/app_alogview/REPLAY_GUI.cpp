@@ -656,6 +656,7 @@ inline void REPLAY_GUI::cb_IPF_GUI_i(int aix) {
   ipfgui->setDataBroker(m_dbroker, vname);
   ipfgui->setParentGUI(this);
   ipfgui->setCurrTime(curr_time);
+  ipfgui->applyBehaviorVarMap(m_map_bhv_vars);
 
   m_sub_guis.push_front(ipfgui);
   
@@ -956,6 +957,18 @@ void REPLAY_GUI::setLogPlotMenus()
       m_menubar->redraw();
     }
   }
+}
+
+//----------------------------------------------------------
+// Procedure: setBehaviorVarMap()
+//      Note: The map associates a given behavior instance with one or more
+//            MOOS variables. Simply for convenience so the GUI_IPF when
+//            launched can come up with the desired scope variable(s) already
+//            chosen.
+
+void REPLAY_GUI::setBehaviorVarMap(map<string,string> map_bhv_vars)
+{
+  m_map_bhv_vars = map_bhv_vars;
 }
 
 //----------------------------------------------------------
