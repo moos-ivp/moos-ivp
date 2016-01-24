@@ -159,11 +159,17 @@ REPLAY_GUI::~REPLAY_GUI()
   delete(m_but_zoom_reset_time);
   delete(m_but_sync_scales);
 
+  delete(m_but_hide_lp);
+  delete(m_but_hide_rp);
+
 #if 0
-  for(list<GUI_IPF*>::iterator p=m_sub_guis.begin(); p!=m_sub_guis.end(); p++)
+  list<GUI_IPF*>::iterator p;
+  for(p=m_sub_guis.begin(); p!=m_sub_guis.end(); p++)
     delete(*p);
-  for(list<GUI_HelmScope*>::iterator p=m_sub_guis_h.begin(); p!=m_sub_guis_h.end(); p++)
-    delete(*p);
+
+  list<GUI_HelmScope*>::iterator q;
+  for(q=m_sub_guis_h.begin(); q!=m_sub_guis_h.end(); q++)
+    delete(*q);
 #endif
 }
 
@@ -1224,12 +1230,43 @@ void REPLAY_GUI::resizeWidgetsShape()
   // height = 150 is the "baseline" design. All adjustments from there.
   double row = dy + 4;
 
+  // position of time button. Use as anchor for resizing fields to left.
+  double timex = dw * 0.40;  
+    
   // LogPlot1
-  m_label1->resize(22, row, dw*0.18, fld_hgt);
-  m_curr1->resize(dw*0.25, row, dw*0.1, fld_hgt);
+  int lab1_x = 30;
+  int lab1_y = row;
+  int lab1_w = dw * 0.18;
+  int lab1_h = fld_hgt;
+  m_label1->resize(lab1_x, lab1_y, lab1_w, lab1_h);
+  int chk1_x = lab1_x + lab1_w + 5;
+  int chk1_y = row+2;
+  int chk1_w = 16;
+  int chk1_h = 16;
+  m_but_hide_lp->resize(chk1_x, chk1_y, chk1_w, chk1_h);
+  int cur1_x = chk1_x + chk1_w + 45;
+  int cur1_y = row;
+  int cur1_w = timex - cur1_x - 35;
+  int cur1_h = fld_hgt;
+  m_curr1->resize(cur1_x, cur1_y, cur1_w, cur1_h);
+
   // LogPlot2
-  m_label2->resize(dw*0.66, row, dw*0.18, fld_hgt);
-  m_curr2->resize(dw*0.895, row, dw*0.1, fld_hgt);
+  int lab2_x = dw*0.66;
+  int lab2_y = row;
+  int lab2_w = dw * 0.18;
+  int lab2_h = fld_hgt;
+  m_label2->resize(lab2_x, lab2_y, lab2_w, lab2_h);
+  int chk2_x = lab2_x + lab2_w + 5;
+  int chk2_y = row+2;
+  int chk2_w = 16;
+  int chk2_h = 16;
+  m_but_hide_rp->resize(chk2_x, chk2_y, chk2_w, chk2_h);
+  int cur2_x = chk2_x + chk2_w + 50;
+  int cur2_y = row;
+  int cur2_w = w() - cur2_x - 2;
+  int cur2_h = fld_hgt;
+  m_curr2->resize(cur2_x, cur2_y, cur2_w, cur2_h);
+
   // TopCenter Fields
   m_disp_time->resize(dw*0.40, row, dw*0.05, fld_hgt);
   m_but_zoom_in_time->resize(dw*0.46, row, dw*0.03, fld_hgt);
