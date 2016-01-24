@@ -56,9 +56,7 @@ bool    containsAngle(double deg1, double deg2, double deg3);
 
 bool    polyAft(double osx, double osy, double osh, XYPolygon poly, double xbng=0);
 
+double  turnGap(double osx, double osy, double osh, double tradius,
+		double px1, double py1, double px2, double py2, bool tright);
+
 #endif
-
-
-
-
-

@@ -126,11 +126,6 @@ double evalCPA(double cnLON, double cnLAT, double cnSPD, double cnCRS,
     }
   }
   return(cpaDist);
-
-
-
-
-  return(0);
 }
 
 //---------------------------------------------------------------

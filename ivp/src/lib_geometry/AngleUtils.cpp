@@ -24,6 +24,7 @@
 #include <cstdlib>
 #include <cmath>
 #include "AngleUtils.h"
+#include "GeomUtils.h"
 
 #ifndef M_PI
 #define M_PI 3.1415926
@@ -455,5 +456,30 @@ bool polyAft(double osx, double osy, double osh, XYPolygon poly, double xbng)
   return(true);
 }
 
+//---------------------------------------------------------------
+// Procedure: turnGap
+//   Purpose: Determine the min distance between a given line and a circle
+//            formed by ownship immediately starting a circular turn from
+//            its present position, with the given radius, turning in the
+//            given direction.
 
+double turnGap(double osx, double osy, double osh, double tradius,
+	       double px1, double py1, double px2, double py2, bool tright)
+{
+  // Step 1: Find the angle between ownship and the circle center depending
+  //         on whether the vehicle is turning hard right or left
+  double angle_from_os = 0;
+  if(tright)
+    angle_from_os = angle360(osh + 90);
+  else
+    angle_from_os = angle360(osh - 90);
 
+  // Step 2: Find the circle center
+  double cx, cy;
+  projectPoint(angle_from_os, tradius, osx, osy, cx, cy);
+
+  // Step 3: Calculate the distance (gap)
+  double dist = distCircleToLine(cx, cy, tradius, px1, py1, px2, py2);
+
+  return(dist);
+}

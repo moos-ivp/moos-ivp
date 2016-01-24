@@ -963,3 +963,27 @@ bool bearingMinMaxToPoly(double osx, double osy, const XYPolygon& poly,
   
   return(true);
 }
+
+
+//---------------------------------------------------------------
+// Procedure: distCircleToLine()
+
+double distCircleToLine(double cx, double cy, double radius,
+			double px1, double py1, double px2, double py2)
+{
+  // Step 1: Find the point on the line that forms a perpendicular with
+  // the circle center
+  double ix=0;
+  double iy=0;
+  perpSegIntPt(px1, py1, px2, py2, cx, cy, ix, iy);
+
+  // Step 2: Determine the distance from the circle center to the line
+  double dist = hypot(cx-ix, cy-iy);
+
+  // Step 3: If circle does not intersect the line, return the difference
+  if(dist > radius)
+    return(dist-radius);
+
+  // Step 4: Otherwise circle intersects the line so return zero.
+  return(0);
+}

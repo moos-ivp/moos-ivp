@@ -87,6 +87,8 @@ void   addVectors(double deg1, double mag1, double deg2, double mag2,
 bool   bearingMinMaxToPoly(double x, double y, const XYPolygon& poly,
 			   double& bmin, double& bmax);
 
+double distCircleToLine(double cx, double cy, double radius,
+			double px1, double py1, double px2, double py2);
 
 // DEPRECATED INTERFACES
 double distToPoint(double x1, double y1, double x2, double y2);
