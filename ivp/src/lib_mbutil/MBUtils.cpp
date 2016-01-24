@@ -1828,20 +1828,19 @@ bool okFileToWrite(string file)
 {
   if(file == "")
     return(false);
-  string dir = "/";
-  vector<string> svector = parseString(file, '/');
-  for(vector<string>::size_type i=0; i<svector.size()-1; i++) {
-    string temp = svector[i];
-    dir += temp;
-    dir += "/";
+  
+  string dir = "./";
+  if(strContains(file, "/")) {
+    rbiteString(file, '/');
+    dir = file + "/";
   }
+    
   FILE *f = fopen(dir.c_str(), "r"); 
-  if(f) {
-    fclose(f);
-    return(true);
-  }
-  else
+  if(!f)
     return(false);
+
+  fclose(f);
+  return(true);
 }
 
 //----------------------------------------------------------------
