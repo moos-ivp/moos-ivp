@@ -27,7 +27,6 @@
 #include "MBUtils.h"
 #include "IvPFunction.h"
 #include "FunctionEncoder.h"
-#include "FileBuffer.h"
 #include "DemuxedResult.h"
 
 using namespace std;

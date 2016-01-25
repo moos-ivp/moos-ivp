@@ -27,6 +27,7 @@
 #include "MBUtils.h"
 #include "MBTimer.h"
 #include "LogViewLauncher.h"
+#include "FileBuffer.h"
 
 using namespace std;
 
@@ -56,6 +57,7 @@ LogViewLauncher::LogViewLauncher()
   m_max_time_set = 0;
 
   m_quick_start = false;
+  m_config_file_read = false;
 }
 
 //-------------------------------------------------------------
@@ -88,46 +90,84 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
 
 bool LogViewLauncher::parseCommandArgs(int argc, char **argv)
 {
+  // Part 1: Handle any alogview config file explicitly given
+  for(int i=1; i<argc; i++) {
+    string argi = argv[i];
+    if(strBegins(argi, "--alc=")) {
+      string filename = argi.substr(6);
+      bool handled = handleALogViewConfig(filename);
+      if(!handled) {
+	cout << "Unhandled alogview config file: " << filename << endl;
+	return(false);
+      }	
+    }
+  }
+
+  // Part 2: If no alogview config file explicitly given, check for
+  // the default but optional alogview config file, .alogview, located
+  // in the current working directory.
+  if(!m_config_file_read)
+    handleALogViewConfig(".alogview");
+  
+  // Part 3: Handle all other arguments. Command line arguments will
+  // thus override anything provided in one of the alogview config files.
   for(int i=1; i<argc; i++) {
     bool handled = true;
     string argi = argv[i];
     if(strEnds(argi, ".alog")) 
       m_dbroker.addALogFile(argi);
-    else if(strBegins(argi, "--mintime=")) 
-      handled = handleMinTime(argi.substr(10));
-    else if(strBegins(argi, "--maxtime=")) 
-      handled = handleMaxTime(argi.substr(10));
-    else if(strBegins(argi, "--bg="))
-      handled = handleBackground(argi.substr(5));
-    else if(strBegins(argi, "--geometry=")) 
-      handled = handleGeometry(argi.substr(11));
-    else if(strBegins(argi, "--lp="))
-      handled = handleInitialLogPlotL(argi.substr(5));
-    else if(strBegins(argi, "--rp=")) 
-      handled = handleInitialLogPlotR(argi.substr(5));
-    else if(strBegins(argi, "--panx=")) 
-      handled = handlePanX(argi.substr(7));
-    else if(strBegins(argi, "--pany=")) 
-      handled = handlePanY(argi.substr(7));
-    else if(strBegins(argi, "--zoom=")) 
-      handled = handleZoom(argi.substr(7));
-    else if(strBegins(argi, "--nowtime=")) 
-      handled = handleNowTime(argi.substr(10));
-    else if(strBegins(argi, "--bv=")) 
-      handled = handleBehaviorVarMapping(argi.substr(5));
-    else if((argi == "--quick") || (argi == "-q")) 
-      m_quick_start = true;
-    else if(strBegins(argi, "--altnav=")) 
-      m_alt_nav_prefix = argi.substr(9);
     else
-      handled = handleParamsGUI(argi);
+      handled = handleConfigParam(argi);
 
     if(!handled) {
       cout << "Unhandled argument: " << argi << endl;
       return(false);
     }
   }
+
   return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: handleConfigParam()
+//   Purpose: A handler that can parse config parameters given on
+//            the command line, and config params in a config file.
+
+bool LogViewLauncher::handleConfigParam(string argi)
+{
+  bool handled = true;
+  if(strEnds(argi, ".alog")) 
+    m_dbroker.addALogFile(argi);
+  else if(strBegins(argi, "--mintime=")) 
+    handled = handleMinTime(argi.substr(10));
+  else if(strBegins(argi, "--maxtime=")) 
+    handled = handleMaxTime(argi.substr(10));
+  else if(strBegins(argi, "--bg="))
+    handled = handleBackground(argi.substr(5));
+  else if(strBegins(argi, "--geometry=")) 
+    handled = handleGeometry(argi.substr(11));
+  else if(strBegins(argi, "--lp="))
+    handled = handleInitialLogPlotL(argi.substr(5));
+  else if(strBegins(argi, "--rp=")) 
+    handled = handleInitialLogPlotR(argi.substr(5));
+  else if(strBegins(argi, "--panx=")) 
+    handled = handlePanX(argi.substr(7));
+  else if(strBegins(argi, "--pany=")) 
+    handled = handlePanY(argi.substr(7));
+  else if(strBegins(argi, "--zoom=")) 
+    handled = handleZoom(argi.substr(7));
+  else if(strBegins(argi, "--nowtime=")) 
+    handled = handleNowTime(argi.substr(10));
+  else if(strBegins(argi, "--bv=")) 
+    handled = handleBehaviorVarMapping(argi.substr(5));
+  else if((argi == "--quick") || (argi == "-q")) 
+    m_quick_start = true;
+  else if(strBegins(argi, "--altnav=")) 
+    m_alt_nav_prefix = argi.substr(9);
+  else
+    handled = handleParamsGUI(argi);
+
+  return(handled);
 }
 
 //-------------------------------------------------------------
@@ -421,5 +461,34 @@ bool LogViewLauncher::handleBehaviorVarMapping(string val)
   string var = val;
 
   m_map_bhv_vars[bhv] = val; 
+  return(true);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: handleALogViewConfig
+
+bool LogViewLauncher::handleALogViewConfig(string filename)
+{
+  if(m_config_file_read)
+    return(false);
+  
+  vector<string> lines = fileBuffer(filename);
+  if(lines.size() == 0)
+    return(false);
+
+  for(unsigned int i=0; i<lines.size(); i++) {
+    string line = stripBlankEnds(lines[i]);
+
+    if((line == "") || strBegins(line, "//") || strBegins(line, "#"))
+      continue;
+
+    bool handled = handleConfigParam(line);
+    if(!handled) {
+      cout << "Unhandled argument: " << line << endl;
+      return(false);
+    }
+  }
+  m_config_file_read = true;
   return(true);
 }
