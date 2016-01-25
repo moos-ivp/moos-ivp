@@ -175,16 +175,38 @@ bool LogViewLauncher::handleConfigParam(string argi)
 
 bool LogViewLauncher::handleParamsGUI(string argi)
 {
-  if(strBegins(argi, "--seglist_viewable_all=")) {
+  if(strBegins(argi, "--seglist_viewable_all=")     ||
+     strBegins(argi, "--seglist_viewable_labels=")  ||
+     strBegins(argi, "--point_viewable_all=")       ||
+     strBegins(argi, "--point_viewable_labels=")    ||
+     strBegins(argi, "--vector_viewable_all=")      ||
+     strBegins(argi, "--vector_viewable_labels=")   ||
+     strBegins(argi, "--circle_viewable_all=")      ||
+     strBegins(argi, "--circle_viewable_labels=")   ||
+     strBegins(argi, "--grid_viewable_all=")        ||
+     strBegins(argi, "--grid_viewable_labels=")     ||
+     strBegins(argi, "--range_pulse_viewable_all=") ||
+     strBegins(argi, "--trails_color=")             ||
+     strBegins(argi, "--hash_vieweble=")            ||
+     strBegins(argi, "--tiff_viewable=")            ||
+     strBegins(argi, "--hash_delta=")               ||
+     strBegins(argi, "--vehicles_shape_scale=")     ||
+     strBegins(argi, "--vehicles_viewable=")        ||
+     strBegins(argi, "--trails_point_size=")        ||
+     strBegins(argi, "--trails_viewable=")          ||
+     strBegins(argi, "--trails_color=")             ||
+     strBegins(argi, "--marker_viewable_all=")      ||
+     strBegins(argi, "--marker_viewable_labels=")   ||
+     strBegins(argi, "--polygon_viewable_all=")     ||
+     strBegins(argi, "--polygon_viewable_labels=")) {
     string value = rbiteString(argi, '=');
-    if(isBoolean(value)) {
-      m_gui_params.push_back("seglist_viewable_all");
-      m_gui_values.push_back(value);
-    }
+    string param = rbiteString(argi, '-');
+    m_gui_params.push_back(param);
+    m_gui_values.push_back(value);
   }
   else
     return(false);
-
+  
   return(true);
 }
 
@@ -270,6 +292,12 @@ bool LogViewLauncher::configGraphical()
   m_gui->np_viewer->setParam("set_zoom", m_start_zoom);
   m_gui->np_viewer->setParam("tiff_file", m_tiff_file);
 
+  for(unsigned int i=0; i<m_gui_params.size(); i++) {
+    string param = m_gui_params[i];
+    string value = m_gui_values[i];
+    m_gui->np_viewer->setParam(param, value);
+  }
+  
   if(m_start_time > 0)
     m_gui->setCurrTime(m_start_time);
   else
