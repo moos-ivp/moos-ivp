@@ -188,8 +188,6 @@ vector<double> leastSquares(XYSegList xy_in,const int degree_fit){
         if(j == max_iterations -1){
           cout << "**** exiting due to exceeding max_iterations ****  ( " << j << " iterations)" << endl;
           return v_out;
-	  vector<double> v_fail(5,0);
-	  return(v_fail);
         }
     }
     v_out.push_back(a0);
