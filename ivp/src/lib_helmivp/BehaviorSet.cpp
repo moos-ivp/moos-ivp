@@ -363,45 +363,50 @@ bool BehaviorSet::handlePossibleSpawnings()
 {
   unsigned int i, isize = m_behavior_specs.size();
   for(i=0; i<isize; i++) {
-    if(m_behavior_specs[i].templating()) {
-      vector<string> update_strs = m_behavior_specs[i].checkForSpawningStrings();     
-      unsigned int j, jsize = update_strs.size();
-      for(j=0; j<jsize; j++) {
-	string update_str = update_strs[j];
 
-	// Check for unique behavior name
-	string bname = tokStringParse(update_str, "name", '#', '=');
-	string fullname = m_behavior_specs[i].getNamePrefix() + bname;
-	if((m_bhv_names.count(fullname)==0) && (m_bhv_names.count(bname) == 0)) {
-	  SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], update_str);
-	  m_behavior_specs[i].spawnTried();
-	  //sbuild.print();
+    if(!m_behavior_specs[i].templating())
+      continue;
 
-	  LifeEvent life_event;
-	  life_event.setBehaviorName(sbuild.getBehaviorName());
-	  life_event.setBehaviorType(sbuild.getBehaviorKind());
-	  life_event.setSpawnString(update_str);
-	  
-	  if(sbuild.valid()) {
-	    IvPBehavior *bhv = sbuild.getIvPBehavior();
-	    // Called here now since it was just spawned and could not have
-	    // been called previously. 07/18/12 mikerb
-	    bhv->onSetParamComplete(); 
-	    addBehavior(bhv);
-	    life_event.setEventType("spawn");
-	    m_behavior_specs[i].spawnMade();
-	  }
-	  else
-	    life_event.setEventType("abort");
-	  m_life_events.push_back(life_event);
+    vector<string> update_strs = m_behavior_specs[i].checkForSpawningStrings();     
+    unsigned int j, jsize = update_strs.size();
+    for(j=0; j<jsize; j++) {
+      string update_str = update_strs[j];
+      
+      // Check for unique behavior name
+      // e.g. if name is "henry", make sure "henry" and "prefix_henry" don't
+      // already exist.
+      
+      string bname = tokStringParse(update_str, "name", '#', '=');
+      string fullname = m_behavior_specs[i].getNamePrefix() + bname;
+      if((m_bhv_names.count(fullname)==0) && (m_bhv_names.count(bname) == 0)) {
+	SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], update_str);
+	m_behavior_specs[i].spawnTried();
+	//sbuild.print();
+	
+	LifeEvent life_event;
+	life_event.setBehaviorName(sbuild.getBehaviorName());
+	life_event.setBehaviorType(sbuild.getBehaviorKind());
+	life_event.setSpawnString(update_str);
+	
+	if(sbuild.valid()) {
+	  IvPBehavior *bhv = sbuild.getIvPBehavior();
+	  // Called here now since it was just spawned and could not have
+	  // been called previously. 07/18/12 mikerb
+	  bhv->onSetParamComplete(); 
+	  addBehavior(bhv);
+	  life_event.setEventType("spawn");
+	  m_behavior_specs[i].spawnMade();
 	}
-	// If base+name already exists AND base does not exist, post warning
-	else {
-	  if(m_bhv_names.count(bname)==0) {
-	    addWarning("Unhandled update: Existing bhv named [" + bname + "] not found. ");
-	    addWarning("Unhandled update: Spawned bhv named [" + fullname + "] is taken.");
-	  }
-	}
+	else
+	  life_event.setEventType("abort");
+	m_life_events.push_back(life_event);
+      }
+      // If base+name already exists AND base does not exist, post warning
+      else {
+	if(m_bhv_names.count(bname)!=0) 
+	  addWarning("Unhandled update: Existing bhv named [" + bname + "] not found. ");
+	if(m_bhv_names.count(fullname) != 0)
+	  addWarning("Unhandled update: Spawned bhv named [" + fullname + "] is taken.");
       }
     }
   }
@@ -572,6 +577,17 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     bhv->updateStateDurations("running");
   }
 
+  // Bug fix Jan 26th, 2016 mikerb
+  // Possibly during the execution of onRunState(), onIdleState() etc,
+  // the behavior may have completed. Note it here so all the complete
+  // stuff can be executed during this iteration. Behavior should be
+  // deleted with this iteration by the helm by noting its complete state.
+  string post_process_activity_state = bhv->isRunnable();
+  if(post_process_activity_state == "completed") {
+    new_activity_state = "completed";
+    bhv->onCompleteState();
+  }    
+   
   
   // =========================================================================
   // Part 3: Update all the bookkeeping structures 

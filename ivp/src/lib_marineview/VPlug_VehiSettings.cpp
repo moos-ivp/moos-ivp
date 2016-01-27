@@ -165,6 +165,8 @@ bool VPlug_VehiSettings::setParam(string param, string value)
       handled = setParam(param, m_vehicles_shape_scale*0.80);
     else if(value == "reset")
       handled = setParam(param, 1.0);
+    else if(isNumber(value))
+      handled = setParam(param, atof(value.c_str()));
   }
 
   return(handled);

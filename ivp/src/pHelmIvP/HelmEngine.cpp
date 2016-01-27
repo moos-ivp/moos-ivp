@@ -142,6 +142,10 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
   int bhv_ix, bhv_cnt = m_bhv_set->size();
 
   m_bhv_set->clearUpdateResults();
+
+
+  string msgx = "part2_GetFunctionsFromBehaviorSet: fl=" + intToString(filter_level); 
+  m_helm_report.addMsg(msgx);
   
   // get all the objective functions and add time info to helm report
   m_create_timer.start();
@@ -158,7 +162,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 							bhv_state);
 #endif
       m_ipf_timer.stop();
-  
+
+
       // Determine the amt of time the bhv has been in this state
       // double state_elapsed = m_bhv_set->getStateElapsed(bhv_ix);
       double state_time_entered = m_bhv_set->getStateTimeEntered(bhv_ix);
@@ -177,6 +182,14 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       
       string upd_summary = m_bhv_set->getUpdateSummary(bhv_ix);
       string descriptor  = m_bhv_set->getDescriptor(bhv_ix);
+
+      
+#if 0 // mikerb
+      string msgk = descriptor + ", state=" + bhv_state;
+      m_helm_report.addMsg(msgk);
+#endif
+      
+
       string report_line = descriptor;
       if(!bhv_report.isEmpty()) {
 	double of_time  = m_ipf_timer.get_float_cpu_time();
@@ -218,6 +231,7 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       if(bhv_state=="completed") {
 	m_helm_report.addCompletedBHV(descriptor, state_time_entered,
 				      upd_summary);
+	m_helm_report.addMsg("executing setCompletedPending:true");
 	m_bhv_set->setCompletedPending(true);
       }
     }

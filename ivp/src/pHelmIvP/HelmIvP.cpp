@@ -368,6 +368,15 @@ bool HelmIvP::Iterate()
   
   m_helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
 
+#if 0 // mikerb jan 2016 debug
+  vector<string> msgs = m_helm_report.getMsgs();
+  m_helm_iteration = m_helm_report.getIteration();
+  for(unsigned int i=0; i<msgs.size(); i++) {
+    Notify("IVPHELM_REPORT_MSG", msgs[i], uintToString(m_helm_iteration));
+  }
+#endif
+
+  
   vector<string> update_results = m_helm_report.getUpdateResults();
   for(unsigned int i=0; i<update_results.size(); i++)
     Notify("IVPHELM_UPDATE_RESULT", update_results[i]);
@@ -504,11 +513,12 @@ void HelmIvP::postBehaviorMessages()
   
   // Added Aug 02 2012 to support enhanced warning reporting
   vector<string> config_warnings = m_bhv_set->getWarnings();
-  m_bhv_set->clearWarnings();
-  for(unsigned int i=0; i<config_warnings.size(); i++)
+  for(unsigned int i=0; i<config_warnings.size(); i++) {
     reportRunWarning(config_warnings[i]);
-  // Added Aug 02 2012 to support enhanced warning reporting
-
+    Notify("IVPHELM_BHVSET_WARNING", uintToString(i) + ":" + config_warnings[i]);
+  }
+  m_bhv_set->clearWarnings();
+  
   unsigned bhv_count      = m_bhv_set->size();
   if(bhv_count != m_bhv_count) {
     Notify("IVPHELM_BHV_CNT", bhv_count);
@@ -599,7 +609,12 @@ void HelmIvP::postBehaviorMessages()
     string state_vars = m_bhv_set->getStateSpaceVars();
     Notify("IVPHELM_STATEVARS", state_vars);
   }
-  m_bhv_set->removeCompletedBehaviors();
+
+  string compl_pending = boolToString(m_bhv_set->getCompletedPending());
+  string helm_iter     = uintToString(m_helm_iteration);
+  Notify("IVPHELM_COMPLETED_PENDING", compl_pending, helm_iter); 
+  unsigned int total_completed = m_bhv_set->removeCompletedBehaviors();
+  Notify("IVPHELM_COMPLETED_COUNT", total_completed, helm_iter);
 }
 
 //------------------------------------------------------------

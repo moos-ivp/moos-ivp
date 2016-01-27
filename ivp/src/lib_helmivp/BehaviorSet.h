@@ -68,7 +68,7 @@ public:
   void   setModeSet(ModeSet v)          {m_mode_set = v;}
 
   unsigned int getTCount()              {return(m_total_behaviors_ever);}
-
+  
   unsigned int size()                   {return(m_bhv_entry.size());}
 
   void         setReportIPF(bool v)     {m_report_ipf=v;}
@@ -89,6 +89,7 @@ public:
   double         getStateTimeEntered(unsigned int);
   int            getFilterLevel(unsigned int);
   bool           filterBehaviorsPresent();
+  bool           getCompletedPending() const {return(m_completed_pending);}
 
   std::vector<VarDataPair> getMessages(unsigned int bhv_ix, bool clear=true);
   std::vector<VarDataPair> getInitialVariables()  {return(m_initial_vars);}
