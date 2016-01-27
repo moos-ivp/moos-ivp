@@ -365,7 +365,6 @@ bool HelmIvP::Iterate()
     m_reset_post_pending = false;
   }
   
-  
   m_helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
 
 #if 0 // mikerb jan 2016 debug
@@ -376,7 +375,6 @@ bool HelmIvP::Iterate()
   }
 #endif
 
-  
   vector<string> update_results = m_helm_report.getUpdateResults();
   for(unsigned int i=0; i<update_results.size(); i++)
     Notify("IVPHELM_UPDATE_RESULT", update_results[i]);

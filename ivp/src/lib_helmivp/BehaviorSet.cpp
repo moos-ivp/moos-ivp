@@ -508,7 +508,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   // =========================================================================
   // Part 2: With new_activity_state set, act appropriately for each behavior.
   // =========================================================================
-  // Part 2A: Handle completed behaviors
+  // Part 2A: Handle completed behaviors (marked as comleted at the start of
+  // this iteration. Behaviors that become complete in this iteration are
+  // handled below, after executing onIdleState, onRunState() etc.
   if(new_activity_state == "completed")
     bhv->onCompleteState();
   

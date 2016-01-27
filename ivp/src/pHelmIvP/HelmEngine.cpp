@@ -184,7 +184,7 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       string descriptor  = m_bhv_set->getDescriptor(bhv_ix);
 
       
-#if 0 // mikerb
+#if 0 // mikerb jan 2016
       string msgk = descriptor + ", state=" + bhv_state;
       m_helm_report.addMsg(msgk);
 #endif
