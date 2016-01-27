@@ -463,6 +463,8 @@ void ALogDataBroker::cacheBehaviorIndices()
 
 LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
 {
+  cout << "ALogDataBroker::getLogPlot() mix: " << mix << endl;
+
   LogPlot logplot;
 
   // Part 1: Sanity check the master index
@@ -484,6 +486,8 @@ LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
     cout << "Could not create LogPlot from " << klog << endl;
     return(logplot);
   }
+
+  cout << "ALogDataBroker::getLogPlot() varname: " << varname << endl;
 
   // Part 3: Populate the LogPlot
   logplot.setVarName(varname);
@@ -518,7 +522,9 @@ LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
     fclose(f);
 
   logplot.applySkew(m_logskew[aix]);
-  
+
+  cout << "ALogDataBroker::getLogPlot() size: " << logplot.size() << endl;
+
   return(logplot);
 }
 

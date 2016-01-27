@@ -1073,6 +1073,10 @@ void REPLAY_GUI::initLogPlotChoiceA(string vname, string varname)
 
   if(mix >= m_dbroker.sizeMix())
     return;
+  
+  cout << "*****************************************" << endl;
+  cout << "In REPLAY_GUI::cb_LeftLogPlot_i: mix:" << mix << endl;
+  cout << "*****************************************" << endl;
   cb_LeftLogPlot_i((int)(mix));
 }
 

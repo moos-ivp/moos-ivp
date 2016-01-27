@@ -46,8 +46,8 @@ LogPlotViewer::LogPlotViewer(int gx, int gy, int gw, int gh, const char *gl)
   m_rgt_marg = 80;
   m_bot_marg = 20;
 
-  m_left_mix  = 0;
-  m_right_mix = 0;
+  m_left_mix  = 99999;
+  m_right_mix = 99999;
 
   m_show_left_logplot=true;
   m_show_right_logplot=true;
@@ -124,10 +124,18 @@ void LogPlotViewer::setDataBroker(ALogDataBroker dbroker)
 
 void LogPlotViewer::setLeftPlot(unsigned int mix)
 {
+  cout << "================================================" << endl;
+  cout << "LogPlotViewer::setLeftPlot() mix: " << mix << endl;
+  cout << "================================================" << endl;
+  
+  cout << "LogPlotViewer::setLeftPlot() m_left_mix: " << m_left_mix << endl;
   // Check if mix represents a change and a viable change
   if((mix == m_left_mix) || (mix >= m_dbroker.sizeMix()))
     return;
 
+  // old style: used to "shut off" one side. Now can do that with
+  // the checkbuttons.
+#if 0
   // Check if new left is same as right. If so, make left empty
   if(mix != m_right_mix) {
     m_logplot1 = m_dbroker.getLogPlot(mix); 
@@ -139,10 +147,19 @@ void LogPlotViewer::setLeftPlot(unsigned int mix)
     m_logplot1 = LogPlot();
     m_fullvar1 = "none";
   }
+#endif
+    
+#if 1
+  m_logplot1 = m_dbroker.getLogPlot(mix); 
+  string vname = m_dbroker.getVNameFromMix(mix);
+  string varname = m_dbroker.getVarNameFromMix(mix);
+  m_fullvar1 = vname + "/" + varname;
+#endif
     
   m_left_mix = mix;
   m_valid_cache = false;
 
+  cout << "LogPlotViewer::setLeftPlot() new m_left_mix: " << m_left_mix << endl;
   if(!m_zoomed_in)
     adjustTimeBounds();
 }
@@ -156,6 +173,9 @@ void LogPlotViewer::setRightPlot(unsigned int mix)
   if((mix == m_right_mix) || (mix >= m_dbroker.sizeMix()))
     return;
 
+  // old style: used to "shut off" one side. Now can do that with
+  // the checkbuttons.
+#if 0
  // Check if new right is same as left. If so, make left empty
   if(mix != m_left_mix) {
     m_logplot2 = m_dbroker.getLogPlot(mix);
@@ -167,7 +187,14 @@ void LogPlotViewer::setRightPlot(unsigned int mix)
     m_logplot2 = LogPlot();
     m_fullvar2 = "none";
   }
-
+#endif
+#if 1
+  m_logplot2 = m_dbroker.getLogPlot(mix);
+  string vname = m_dbroker.getVNameFromMix(mix);
+  string varname = m_dbroker.getVarNameFromMix(mix);
+  m_fullvar2 = vname + "/" + varname;
+#endif
+  
   m_right_mix = mix;
   m_valid_cache = false;
 
