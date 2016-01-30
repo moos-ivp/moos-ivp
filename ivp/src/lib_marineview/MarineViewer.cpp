@@ -1468,9 +1468,8 @@ void MarineViewer::drawSegLists(const vector<XYSegList>& segls)
   // true if nothing is known about the parameter.
   if(!m_geo_settings.viewable("seglist_viewable_all", "true"))
     return;
-  
-  unsigned int i, vsize = segls.size();
-  for(i=0; i<vsize; i++)
+
+  for(unsigned int i=0; i<segls.size(); i++)
     if(segls[i].active()) 
       drawSegList(segls[i]); 
 }
