@@ -49,13 +49,13 @@ MACPORT PACKAGES
 ==============================================================================
 
 sudo port install cmake
-sudo port install fltk-devel
+sudo port install fltk
 sudo port install tiff
 sudo port install subversion
 
 
 NOTE: We are no longer including FLTK as part of the  MOOS-IvP tree. If you 
-      have trouble finding FLTK 1.3 in your system's package manager, we 
+      have trouble finding FLTK 1.3.3 in your system's package manager, we 
       recommend that you install from the source code from the FLTK website.
 
 
