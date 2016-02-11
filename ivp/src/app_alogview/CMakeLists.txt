@@ -18,7 +18,6 @@ endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
 
 SET(SRC
   EncounterViewer.cpp
-  EncounterPlot.cpp
   GUI_Encounters.cpp
   LogPlotViewer.cpp
   NavPlotViewer.cpp
@@ -26,21 +25,8 @@ SET(SRC
   GUI_IPF.cpp
   GUI_HelmScope.cpp
   GUI_VarScope.cpp
-  VPlugPlot.cpp
-  VarPlot.cpp
-  VarPlotEntry.cpp
-  LogPlot.cpp
-  Populator_VPlugPlots.cpp
-  Populator_HelmPlots.cpp
-  Populator_IPF_Plot.cpp
-  Populator_EncounterPlot.cpp
-  IPF_Plot.cpp
-  HelmPlot.cpp
-  ModelHelmScope.cpp
-  ModelVarScope.cpp
   IvPFuncViewerX.cpp
   LogViewLauncher.cpp
-  ALogDataBroker.cpp
   main.cpp
 )
    
