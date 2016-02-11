@@ -40,12 +40,12 @@ ENDIF (${APPLE})
       
 TARGET_LINK_LIBRARIES(alogview
    marineview
+   logutils
    helmivp
    geometry
    contacts
    ipfview
    encounters
-   logutils
    ivpbuild
    apputil
    mbutil
