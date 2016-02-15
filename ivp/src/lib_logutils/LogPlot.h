@@ -34,11 +34,13 @@ public:
   ~LogPlot() {}
   
  public: // Setting
+  void   setVName(std::string s)    {m_vname = s;}
   void   setVarName(std::string s)  {m_varname = s;}
   bool   setValue(double gtime, double gvalue);
 
  public: // Modification
   void   applySkew(double skew);
+  void   modValues(double modval);
 
  public: // Querying
   double getTimeByIndex(unsigned int index) const;
@@ -52,13 +54,18 @@ public:
   double getMinVal() const        {return(m_min_val);}
   double getMaxVal() const        {return(m_max_val);}
 
+  std::string getVName() const    {return(m_vname);}
   std::string getVarName() const  {return(m_varname);}
   unsigned int  size() const      {return(m_time.size());}
 
   bool   empty() const            {return(m_time.size() == 0);}
   void   print() const;
+
+  std::string getSpec(unsigned int tprec=3, unsigned vprec=3) const;
+  bool   setFromSpec(std::string);
   
 protected:
+  std::string m_vname;           // Vehicle or Node name
   std::string m_varname;         // Variable name to be plotted
   std::vector<double> m_time;
   std::vector<double> m_value;
@@ -70,16 +77,3 @@ protected:
   double m_median;
 };
 #endif 
-
-
-
-
-
-
-
-
-
-
-
-
-

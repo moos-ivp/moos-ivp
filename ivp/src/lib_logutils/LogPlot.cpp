@@ -25,6 +25,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
+#include <sstream>
 #include "LogPlot.h"
 #include "LogUtils.h"
 #include "MBUtils.h"
@@ -72,6 +73,15 @@ void LogPlot::applySkew(double skew)
 {
   for(unsigned int i=0; i<m_time.size(); i++)
     m_time[i] += skew;
+}
+     
+//---------------------------------------------------------------
+// Procedure: modValues
+
+void LogPlot::modValues(double modval)
+{
+  for(unsigned int i=0; i<m_value.size(); i++)
+    m_value[i] += modval;
 }
      
 //---------------------------------------------------------------
@@ -199,4 +209,84 @@ void LogPlot::print() const
   for(i=0; i<m_time.size(); i++) {
     cout << "time:" << m_time[i] << "  val:" << m_value[i] << endl;
   }
+}
+
+//---------------------------------------------------------------
+// Procedure: getSpec()
+//   Example: "vname=henry,varname=NAV_X,elememts=time:value#time:value"
+
+string LogPlot::getSpec(unsigned int tprec, unsigned int vprec) const
+{
+  stringstream ss;
+
+  // Since vname is not mandatory, check if set before serializing
+  if(m_vname != "")
+    ss << "vname=" << m_vname << ",";
+  
+  ss << "varname=" << m_varname << ",elements=";
+  for(unsigned int i=0; i<m_time.size(); i++) {
+    if(i > 0)
+      ss << "#";
+    ss << doubleToString(m_time[i],tprec) << ":";
+    ss << doubleToString(m_value[i],vprec);
+  }
+  return(ss.str());
+}
+
+
+//---------------------------------------------------------------
+// Procedure: setFromSpec
+//   Example: "vname=henry,varname=NAV_X,elememts=time:value#time:value"
+
+bool LogPlot::setFromSpec(string spec) 
+{
+  cout << "============================================================" << endl;
+  cout << "============================================================" << endl;
+  cout << "Setting from Spec: " << endl;
+  cout << "============================================================" << endl;
+  cout << "============================================================" << endl;
+  // Clear the current state
+  m_vname = "";
+  m_varname = "";
+  m_time.clear();
+  m_value.clear();
+  m_min_val = 0;
+  m_max_val = 0;
+  m_median  = 0;
+  m_median_set = false;
+  
+  // Set the new state
+  vector<string> svector = parseString(spec, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+    if(param == "vname")
+      m_vname = value;
+    else if(param == "varname")
+      m_varname = value;
+    else if(param == "elements") {
+      vector<string> kvector = parseString(value, '#');
+      for(unsigned int k=0; k<kvector.size(); k++) {
+	string time  = biteString(kvector[k], ':');
+	string sval  = kvector[k];
+	if(!isNumber(time) || !isNumber(sval)) {
+	  cout << "FAILED NUMBER ----------------------------------" << endl;
+	  return(false);
+	}
+	double dtime = atof(time.c_str());
+	double dval  = atof(sval.c_str());
+	bool ok = setValue(dtime, dval);
+	if(!ok) {
+	  cout << "FAILED SETVALUE ----------------------------------" << endl;
+	  return(false);
+	}
+      }
+    }
+  }
+  if(m_varname == "") {
+    cout << "NULL VARNAME----------------------------------" << endl;
+    return(false);
+  }
+  
+  return(true);	
 }

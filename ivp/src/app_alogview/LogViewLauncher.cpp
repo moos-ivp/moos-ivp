@@ -36,7 +36,6 @@ using namespace std;
 
 LogViewLauncher::LogViewLauncher()
 {
-  m_tiff_file  = "";
   m_gui_width  = 1200;
   m_gui_height = 800;
   m_gui        = 0;
