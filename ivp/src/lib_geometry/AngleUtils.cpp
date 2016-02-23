@@ -109,31 +109,6 @@ bool threePointTurnLeft(double x0, double y0,
 }
 
 //-------------------------------------------------------------
-// Procedure: relAngRate
-//   Purpose: Calculate the rate at which a relative angle is 
-//            changing over the given time window.
-
-double relAngRate(double xa, double ya, double xb, double yb,
-		  double xc, double yc, double xd, double yd,
-		  double time_duration)
-{
-  if(time_duration <= 0)
-    return(0);
-
-  double relang1 = relAng(xa, ya, xb, yb);
-  double relang2 = relAng(xc, yc, xd, yd);
-
-  double diff = relang2 - relang1;
-  if(diff < 180)
-    diff += 360;
-  if(diff > 180)
-    diff -= 360;
-  
-  double rate = (diff / time_duration);
-  return(rate);
-}
-
-//-------------------------------------------------------------
 // Procedure: relAng
 //   Purpose: Returns relative angle of pt B to pt A. Treats A
 //            as the center.

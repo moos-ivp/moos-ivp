@@ -64,6 +64,9 @@ public:
 
   double minMaxROC(double, double, double&, double&) const;
 
+  double bearingRateOSCN(double osh, double osv, double time=1);
+  double bearingRateCNOS(double osh, double osv, double time=1);
+  
   double getcnLAT() const {return(cnLAT);}
   double getcnLON() const {return(cnLON);}
   double getcnCRS() const {return(cnCRS);}

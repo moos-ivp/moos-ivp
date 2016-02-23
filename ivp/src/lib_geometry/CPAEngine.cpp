@@ -245,6 +245,84 @@ double CPAEngine::minMaxROC(double speed, double heading_clicks,
 }
 
 //----------------------------------------------------------------
+// Procedure: bearingRate
+
+double CPAEngine::bearingRateOSCN(double osh, double osv, double time)
+{
+  if(time <= 0)
+    return(0);
+  
+  double osx1 = osLON;
+  double osy1 = osLAT;
+  double cnx1 = cnLON;
+  double cny1 = cnLAT;
+
+  double os_dist = (osv * time);
+  double cn_dist = (cnSPD * time);
+
+  // Create an ownship leg a bit forward and backward in time
+  double osx0, osy0, osx2, osy2;
+  projectPoint(osh-180, os_dist, osx1, osy1, osx0, osy0);
+  projectPoint(osh,     os_dist, osx1, osy1, osx2, osy2);
+
+  // Create a contact leg a bit forward and backward in time
+  double cnx0, cny0, cnx2, cny2;
+  projectPoint(cnCRS-180, cn_dist, cnx1, cny1, cnx0, cny0);
+  projectPoint(cnCRS,     cn_dist, cnx1, cny1, cnx2, cny2);
+
+  double relang0 = relAng(osx0, osy0, cnx0, cny0);
+  double relang2 = relAng(osx2, osy2, cnx2, cny2);
+  
+  double diff = relang2 - relang0;
+  if(diff < 180)
+    diff += 360;
+  if(diff > 180)
+    diff -= 360;
+  
+  double rate = (diff / (time*2));
+  return(rate);
+}
+
+//----------------------------------------------------------------
+// Procedure: bearingRateCNOS
+
+double CPAEngine::bearingRateCNOS(double osh, double osv, double time)
+{
+  if(time <= 0)
+    return(0);
+  
+  double osx1 = osLON;
+  double osy1 = osLAT;
+  double cnx1 = cnLON;
+  double cny1 = cnLAT;
+
+  double os_dist = (osv * time);
+  double cn_dist = (cnSPD * time);
+
+  // Create an ownship leg a bit forward and backward in time
+  double osx0, osy0, osx2, osy2;
+  projectPoint(osh-180, os_dist, osx1, osy1, osx0, osy0);
+  projectPoint(osh,     os_dist, osx1, osy1, osx2, osy2);
+
+  // Create a contact leg a bit forward and backward in time
+  double cnx0, cny0, cnx2, cny2;
+  projectPoint(cnCRS-180, cn_dist, cnx1, cny1, cnx0, cny0);
+  projectPoint(cnCRS,     cn_dist, cnx1, cny1, cnx2, cny2);
+
+  double relang0 = relAng(cnx0, cny0, osx0, osy0);
+  double relang2 = relAng(cnx2, cny2, osx2, osy2);
+  
+  double diff = relang2 - relang0;
+  if(diff < 180)
+    diff += 360;
+  if(diff > 180)
+    diff -= 360;
+  
+  double rate = (diff / (time*2));
+  return(rate);
+}
+
+//----------------------------------------------------------------
 // Procedure: setStatic
 //   Purpose: Determine all terms not dependent on osCRS, osSPD or
 //            osTOL. These can be calculated once to save time.

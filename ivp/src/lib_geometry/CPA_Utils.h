@@ -43,4 +43,7 @@ double closingSpeed(double osx, double osy, double osspd, double oshdg,
 void   velocityVectorSum(double hdg1, double spd1, double hdg2, 
 			 double spd2, double& hdg, double& spd);
 
+double  relAngRate(double xa, double ya, double xb, double yb, 
+		   double xc, double yc, double xd, double yd, double time);
+
 #endif

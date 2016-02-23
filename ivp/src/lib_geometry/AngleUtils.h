@@ -32,8 +32,6 @@ double  angleFromThreePoints(double x1, double y1, double x2, double y2,
 bool    threePointTurnLeft(double x0, double y0, double x1, double y1,
 			   double x2, double y2);
 double  relAng(double xa, double ya, double xb, double yb);
-double  relAngRate(double xa, double ya, double xb, double yb, 
-		   double xc, double yc, double xd, double yd, double time);
 double  relAng(const XYPoint& a, const XYPoint& b);
 double  radAngleWrap(double radians);
 double  degToRadians(double degrees);
