@@ -22,11 +22,16 @@ void showHelpAndExit();
 
 int main(int argc, char *argv[])
 { 
+  for(int i=1; i<argc; i++) {
+    string argi = argv[i];
+    if((argi == "-h") || (argi == "--help"))
+      showHelpAndExit();
+  }
+
   double cnx = 100;
   double cny = 100;
   double cnh = 45;
   double cnv = 1.0;
-
   double osx = 200;
   double osy = 104;
 
@@ -37,7 +42,7 @@ int main(int argc, char *argv[])
 
   double cpa = engine.evalCPA(315, 1.0, 60);
   
-  cout << "cpa: " << cpa << endl;
+  cout << "Example sanity check cpa: " << cpa << endl;
 
   unsigned int total = 0;
   for(int k=0; k<50; k++) {
@@ -71,7 +76,7 @@ int main(int argc, char *argv[])
 void showHelpAndExit()
 { 
   cout << "Usage:                                         " << endl;
-  cout << "  trig360                                      " << endl;
+  cout << "  cpabench                                     " << endl;
 
   exit(0);
 }
