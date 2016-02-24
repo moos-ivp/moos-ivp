@@ -56,7 +56,7 @@ bool HelmReporter::handle(const string& alogfile)
 {
   if(alogfile == "") {
     cout << termColor("red");
-    cout << "Alog file was specified. Exiting now." << endl;
+    cout << "Alog file was not specified. Exiting now." << endl;
     cout << termColor();
     return(false);
   }

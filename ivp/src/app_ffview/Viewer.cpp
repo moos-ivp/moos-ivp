@@ -52,7 +52,7 @@ Viewer::Viewer(int x, int y,
   m_piece_count = 0;
 
   setParam("uniform_piece", 10);
-  setParam("set_scale", 1);
+  setParam("set_scale", 0);
   setParam("reset_view", "1");
   setParam("clear_color", "white");
   setParam("frame_color", "gray");

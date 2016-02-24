@@ -21,6 +21,9 @@ uXMS
 
 pHelmIvP
 
+ - Improved the CPAEngine to produce CPA calculations roughly 2.5x faster
+   than previously.
+
  - Augmented behaviors and the helm to produce new information about 
    updates. The Helm publishes IVPHELM_UPDATEVARS to indicate which MOOS 
    variables are involved in behavior updates. This variable is published 
