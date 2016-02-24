@@ -11,6 +11,7 @@ SET(HEADERS
   ConvexHullGenerator.h
   CircularUtils.h
   CPAEngine.h
+  CPAEngineX.h
   CPA_Utils.h
   GeomUtils.h
   PathUtils.h

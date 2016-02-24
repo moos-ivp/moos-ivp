@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: CPAEngine.cpp                                        */
+/*    FILE: CPAEngineX.cpp                                       */
 /*    DATE: May 12th 2005                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -24,7 +24,7 @@
 #include <iostream>
 #include <cmath> 
 #include <cassert>
-#include "CPAEngine.h"
+#include "CPAEngineX.h"
 #include "GeomUtils.h"
 #include "AngleUtils.h"
 
@@ -33,7 +33,7 @@ using namespace std;
 //----------------------------------------------------------
 // Procedure: Constructor
 
-CPAEngine::CPAEngine()
+CPAEngineX::CPAEngineX()
 {
   cnLAT = 0;
   cnLON = 0;
@@ -53,8 +53,8 @@ CPAEngine::CPAEngine()
 //      args: goslat  Given Ownship Latitude Position
 //      args: goslon  Given Ownship Latitude Position
 
-CPAEngine::CPAEngine(double gcnlat, double gcnlon, double gcncrs,
-		     double gcnspd, double goslat, double goslon)
+CPAEngineX::CPAEngineX(double gcnlat, double gcnlon, double gcncrs,
+		       double gcnspd, double goslat, double goslon)
 {
   cnLAT   = gcnlat; 
   cnLON   = gcnlon;
@@ -62,6 +62,14 @@ CPAEngine::CPAEngine(double gcnlat, double gcnlon, double gcncrs,
   cnCRS   = angle360(gcncrs);
   osLAT   = goslat;
   osLON   = goslon;
+
+#if 0
+  cnLAT -= osLAT;
+  cnLON -= osLON;
+  osLAT = 0;
+  osLON = 0;
+#endif
+
   if(cnSPD < 0)
     cnSPD = 0;
   this->setStatic();
@@ -71,7 +79,7 @@ CPAEngine::CPAEngine(double gcnlat, double gcnlon, double gcncrs,
 //----------------------------------------------------------------
 // Procedure: setContactCacheTimeDelta()
 
-void CPAEngine::setContactCacheTimeDelta(double val)
+void CPAEngineX::setContactCacheTimeDelta(double val)
 {
   if(val > 0.1)
     m_cn_cache_tdelta = val;
@@ -81,7 +89,7 @@ void CPAEngine::setContactCacheTimeDelta(double val)
 //----------------------------------------------------------------
 // Procedure: setContactCache()
 
-void CPAEngine::setContactCache(double secs)
+void CPAEngineX::setContactCache(double secs)
 {
   m_cn_cache_x.clear();
   m_cn_cache_y.clear();
@@ -110,10 +118,11 @@ void CPAEngine::setContactCache(double secs)
 //   Purpose: Evaluates the given <Course, Speed, Time-on-leg> tuple 
 //            Determines Closest-Point-of-Approach (CPA)
 
-double CPAEngine::evalCPA(double osCRS, double osSPD, 
+double CPAEngineX::evalCPA(double osCRS, double osSPD, 
 			  double osTOL, double *calcROC) const
 {
-  osCRS = angle360(osCRS);
+  if((osCRS >= 360) || (osCRS < 0))
+    osCRS = angle360(osCRS);
 
   double k2 = statK2;
   double k1 = statK1;
@@ -130,26 +139,30 @@ double CPAEngine::evalCPA(double osCRS, double osSPD,
   double sgamOS = m_sin_cache[(unsigned int)(osCRS)];
 #endif
 
+  double cgamOS_x_osSPD = cgamOS * osSPD;
+  double sgamOS_x_osSPD = sgamOS * osSPD;
+
+
   if((cnCRS==osCRS) && (cnSPD==osSPD)) {
     if(calcROC)
       *calcROC = 0;
     return(sqrt(k0));                    // be 0, resuling in NaN.
   }
   
-  k2 +=          cgamOS * cgamOS * osSPD * osSPD;   // (1,1)(a)
-  k2 +=          sgamOS * sgamOS * osSPD * osSPD;   // (1,1)(b)
-  k2 += (-2.0) * cgamOS * osSPD * cgamCN * cnSPD;   // (1,3)(3,1)(a)
-  k2 += (-2.0) * sgamOS * osSPD * sgamCN * cnSPD;   // (1,3)(3,1)(b)
+  k2 +=          cgamOS * cgamOS_x_osSPD * osSPD;   // (1,1)(a)
+  k2 +=          sgamOS * sgamOS_x_osSPD * osSPD;   // (1,1)(b)
+  k2 += (-2.0) * cgamOS_x_osSPD * cgamCN * cnSPD;   // (1,3)(3,1)(a)
+  k2 += (-2.0) * sgamOS_x_osSPD * sgamCN * cnSPD;   // (1,3)(3,1)(b)
 
-  k1 += ( 2.0) * cgamOS * osSPD * osLAT;  // (1,2)(2,1)(a)
-  k1 += ( 2.0) * sgamOS * osSPD * osLON;  // (1,2)(2,1)(b)
-  k1 += (-2.0) * cgamOS * osSPD * cnLAT;  // (1,4)(4,1)(a)
-  k1 += (-2.0) * sgamOS * osSPD * cnLON;  // (1,4)(4,1)(b)
+  k1 += ( 2.0) * cgamOS_x_osSPD * osLAT;  // (1,2)(2,1)(a)
+  k1 += ( 2.0) * sgamOS_x_osSPD * osLON;  // (1,2)(2,1)(b)
+  k1 += (-2.0) * cgamOS_x_osSPD * cnLAT;  // (1,4)(4,1)(a)
+  k1 += (-2.0) * sgamOS_x_osSPD * cnLON;  // (1,4)(4,1)(b)
 
   double cpaDist;
   double minT = 0;
   if(k2 != 0)
-    minT = ((-1.0) * k1) / (2.0 * k2);
+    minT = k1 / (-2.0 * k2);
 
   if(minT <= 0) 
     cpaDist = sqrt(k0); 
@@ -173,7 +186,7 @@ double CPAEngine::evalCPA(double osCRS, double osSPD,
 // Procedure: evalROC
 //   Purpose: Determine rate-of-closure for a given heading,speed
 
-double CPAEngine::evalROC(double osCRS, double osSPD) const
+double CPAEngineX::evalROC(double osCRS, double osSPD) const
 {
   osCRS = angle360(osCRS);
   
@@ -199,7 +212,7 @@ double CPAEngine::evalROC(double osCRS, double osSPD) const
 //   Purpose: checks to see if the two lines determined by the 
 //            present ownship and contact headings, cross. 
 
-bool CPAEngine::crossesLines(double osCRS) const
+bool CPAEngineX::crossesLines(double osCRS) const
 {
   // Step 1: check for parallel lines. If not parallel return true
   double delta_angle = angle360(osCRS - cnCRS);
@@ -229,7 +242,7 @@ bool CPAEngine::crossesLines(double osCRS) const
 //   Purpose: Determine max Rate-Of-Closure for a given number of  
 //            headings and max_speed
 
-double CPAEngine::minMaxROC(double speed, double heading_clicks, 
+double CPAEngineX::minMaxROC(double speed, double heading_clicks, 
 			    double &min_roc, double& max_roc) const
 {
   double heading_delta = 360.0 / heading_clicks;
@@ -256,7 +269,7 @@ double CPAEngine::minMaxROC(double speed, double heading_clicks,
 //----------------------------------------------------------------
 // Procedure: bearingRate
 
-double CPAEngine::bearingRateOSCN(double osh, double osv, double time)
+double CPAEngineX::bearingRateOSCN(double osh, double osv, double time)
 {
   if(time <= 0)
     return(0);
@@ -295,7 +308,7 @@ double CPAEngine::bearingRateOSCN(double osh, double osv, double time)
 //----------------------------------------------------------------
 // Procedure: bearingRateCNOS
 
-double CPAEngine::bearingRateCNOS(double osh, double osv, double time)
+double CPAEngineX::bearingRateCNOS(double osh, double osv, double time)
 {
   if(time <= 0)
     return(0);
@@ -358,7 +371,7 @@ double CPAEngine::bearingRateCNOS(double osh, double osv, double time)
 //            More than half of these are not dependent on osSPD
 //            or osCRS, so we calculate them once, here.
 
-void CPAEngine::setStatic()
+void CPAEngineX::setStatic()
 {
   //osLAT = osLAT*60.0;    osLON = osLON*60.0;
   //cnLAT = cnLAT*60.0;    cnLON = cnLON*60.0;
@@ -441,7 +454,7 @@ void CPAEngine::setStatic()
 // Procedure: smallAngle
 //   Purpose: 
 
-double CPAEngine::smallAngle(double ang_a, double ang_b) const
+double CPAEngineX::smallAngle(double ang_a, double ang_b) const
 {
   double ang1 = angle360(ang_a - ang_b);
   double ang2 = angle360(ang_b - ang_a);
@@ -455,7 +468,7 @@ double CPAEngine::smallAngle(double ang_a, double ang_b) const
 //----------------------------------------------------------------
 // Procedure: crossesBow  (Convenience function)
 
-bool CPAEngine::crossesBow(double osCRS, double osSPD) const
+bool CPAEngineX::crossesBow(double osCRS, double osSPD) const
 {
   double dist;
   return(crossesBowDist(osCRS, osSPD, dist));
@@ -464,7 +477,7 @@ bool CPAEngine::crossesBow(double osCRS, double osSPD) const
 //----------------------------------------------------------------
 // Procedure: crossesBowDist  (Convenience function)
 
-double CPAEngine::crossesBowDist(double osCRS, double osSPD) const
+double CPAEngineX::crossesBowDist(double osCRS, double osSPD) const
 {
   double dist;
   crossesBowDist(osCRS, osSPD, dist);
@@ -474,7 +487,7 @@ double CPAEngine::crossesBowDist(double osCRS, double osSPD) const
 //----------------------------------------------------------------
 // Procedure: crossesBowDist
 
-bool CPAEngine::crossesBowDist(double osCRS, double osSPD, double& xdist) const
+bool CPAEngineX::crossesBowDist(double osCRS, double osSPD, double& xdist) const
 {
   // Special case 1: ownship and contact position are the same
   if(stat_os_on_contact) {
@@ -582,7 +595,7 @@ bool CPAEngine::crossesBowDist(double osCRS, double osSPD, double& xdist) const
 //            whether it is on a path to cross the path of the 
 //            contact on its stern.
 
-bool CPAEngine::crossesStern(double osCRS, double osSPD) const
+bool CPAEngineX::crossesStern(double osCRS, double osSPD) const
 {
   double xdist;
   return(crossesSternDist(osCRS, osSPD, xdist));
@@ -596,7 +609,7 @@ bool CPAEngine::crossesStern(double osCRS, double osSPD) const
 //            contact on its stern. And if so, at what distance when
 //            it crosses?
 
-double CPAEngine::crossesSternDist(double osCRS, double osSPD) const
+double CPAEngineX::crossesSternDist(double osCRS, double osSPD) const
 {
   double xdist;
   crossesSternDist(osCRS, osSPD, xdist);
@@ -611,7 +624,7 @@ double CPAEngine::crossesSternDist(double osCRS, double osSPD) const
 //            contact on its stern. And if so, at what distance when
 //            it crosses?
 
-bool CPAEngine::crossesSternDist(double osCRS, double osSPD, double& xdist) const
+bool CPAEngineX::crossesSternDist(double osCRS, double osSPD, double& xdist) const
 {
   // Special case 1: ownship and contact position are the same
   if(stat_os_on_contact) {
@@ -716,7 +729,7 @@ bool CPAEngine::crossesSternDist(double osCRS, double osSPD, double& xdist) cons
 //            whether it is on a path to cross the path of the 
 //            contact on its stern or bow. 
 
-bool CPAEngine::crossesBowOrStern(double osCRS, double osSPD) const
+bool CPAEngineX::crossesBowOrStern(double osCRS, double osSPD) const
 {
   // Special cases
   if(stat_os_on_contact || stat_os_on_sternline || stat_os_on_bowline)
@@ -762,7 +775,7 @@ bool CPAEngine::crossesBowOrStern(double osCRS, double osSPD) const
 //   Purpose: Determine if for the present ownship heading, whether or not
 //            the proposed heading represent a righthand turn (starboard)
 
-bool CPAEngine::turnsRight(double present_heading, double heading) const
+bool CPAEngineX::turnsRight(double present_heading, double heading) const
 {
   double delta = angle360(heading - present_heading);
   if((delta > 0) && (delta < 180))
@@ -776,7 +789,7 @@ bool CPAEngine::turnsRight(double present_heading, double heading) const
 //   Purpose: Determine if for the present ownship heading, whether or not
 //            the proposed heading represent a lefthand turn (port)
 
-bool CPAEngine::turnsLeft(double present_heading, double heading) const
+bool CPAEngineX::turnsLeft(double present_heading, double heading) const
 {
   double delta = angle360(heading - present_heading);
   if(delta > 180)
@@ -791,7 +804,7 @@ bool CPAEngine::turnsLeft(double present_heading, double heading) const
 //            will pass the contact. A "pass" means it will cross the 
 //            line perpendicular to the bow-stern line. (crosses the beam)
 
-bool CPAEngine::passesContact(double osCRS, double osSPD) const
+bool CPAEngineX::passesContact(double osCRS, double osSPD) const
 {
   bool os_fore_of_contact = foreOfContact();
   bool os_aft_of_contact  = aftOfContact();
@@ -823,7 +836,7 @@ bool CPAEngine::passesContact(double osCRS, double osSPD) const
 //            A "pass" means it will cross the line perpendicular to the 
 //            bow-stern line.
 
-bool CPAEngine::passesContactPort(double osCRS, double osSPD) const
+bool CPAEngineX::passesContactPort(double osCRS, double osSPD) const
 {
   //============================================================
   // Handle Special Cases
@@ -947,7 +960,7 @@ bool CPAEngine::passesContactPort(double osCRS, double osSPD) const
 //            A "pass" means it will cross the line perpendicular to the 
 //            bow-stern line.
 
-bool CPAEngine::passesContactStarboard(double osCRS, double osSPD) const
+bool CPAEngineX::passesContactStarboard(double osCRS, double osSPD) const
 {
   //============================================================
   // Handle Special Cases
@@ -969,7 +982,7 @@ bool CPAEngine::passesContactStarboard(double osCRS, double osSPD) const
 // Procedure: foreOfContact
 //   Purpose: Checks to see if ownship is presently fore of the contact.
 
-bool CPAEngine::foreOfContact() const
+bool CPAEngineX::foreOfContact() const
 {
   // First, edge case where ownship and contact are exact same position
   if((osLAT == cnLAT) && (osLON == cnLON))
@@ -990,7 +1003,7 @@ bool CPAEngine::foreOfContact() const
 // Procedure: aftOfContact
 //   Purpose: Checks to see if ownship is presently aft of the contact.
 
-bool CPAEngine::aftOfContact() const
+bool CPAEngineX::aftOfContact() const
 {
   // First, edge case where ownship and contact are exact same position
   if((osLAT == cnLAT) && (osLON == cnLON))
@@ -1009,7 +1022,7 @@ bool CPAEngine::aftOfContact() const
 //   Purpose: True if ownship is presently on the port side of the contact.
 //      Note: If ownship is ON the bow or stern line, it will return true.
 
-bool CPAEngine::portOfContact() const
+bool CPAEngineX::portOfContact() const
 {
   // First, edge case where ownship and contact are exact same position
   if((osLAT == cnLAT) && (osLON == cnLON))
@@ -1033,7 +1046,7 @@ bool CPAEngine::portOfContact() const
 //   Purpose: True if ownship is presently on the starboard side of the contact.
 //      Note: If ownship is ON the bow or stern line, it will return true.
 
-bool CPAEngine::starboardOfContact() const
+bool CPAEngineX::starboardOfContact() const
 {
   // First, edge case where ownship and contact are exact same position
   if((osLAT == cnLAT) && (osLON == cnLON))
@@ -1051,7 +1064,7 @@ bool CPAEngine::starboardOfContact() const
 //----------------------------------------------------------------
 // Procedure: initTrigCache
 
-void CPAEngine::initTrigCache()
+void CPAEngineX::initTrigCache()
 {
   vector<double> new_cos_cache(360,0);
   vector<double> new_sin_cache(360,0);

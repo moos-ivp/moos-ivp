@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: CPAEngine.h                                          */
+/*    FILE: CPAEngineX.h                                         */
 /*    DATE: May 12th 2005                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,20 +21,20 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef CPA_ENGINE_HEADER
-#define CPA_ENGINE_HEADER
+#ifndef CPA_ENGINE_X_HEADER
+#define CPA_ENGINE_X_HEADER
 
 #include <vector>
 
 class IvPDomain;
-class CPAEngine {
+class CPAEngineX {
 public:
-  CPAEngine();
-  CPAEngine(double cnY, double cnX, double cnh, double cnv, 
+  CPAEngineX();
+  CPAEngineX(double cnY, double cnX, double cnh, double cnv, 
 	    double osY, double osX);
   void setContactCacheTimeDelta(double);
   void setContactCache(double secs);
-  ~CPAEngine() {}
+  ~CPAEngineX() {}
 
 public:    
   double evalCPA(double osh, double osv, double ostol, double* calc_roc=0) const;
@@ -75,8 +75,9 @@ public:
   
  protected:
   void   setStatic();
-  void   initTrigCache();
   double smallAngle(double, double) const;
+
+  void   initTrigCache();
 
  protected: // Config parameters
   double cnLAT;   // Contact Lat position at time Tm.
