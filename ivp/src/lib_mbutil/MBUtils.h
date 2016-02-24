@@ -74,6 +74,7 @@ std::string ulintToString(unsigned long int);
 std::string intToString(int);
 std::string intToCommaString(int);
 std::string uintToCommaString(unsigned int);
+std::string ulintToCommaString(unsigned long int);
 std::string floatToString(float, int=5);
 std::string setToString(const std::set<std::string>&);
 std::string doubleToString(double, int=5);

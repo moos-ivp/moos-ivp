@@ -859,6 +859,24 @@ string uintToCommaString(unsigned int ival)
 
 
 //----------------------------------------------------------------
+// Procedure: ulintToCommaString
+
+string ulintToCommaString(unsigned long int ival)
+{
+  string str = ulintToString(ival);
+  string new_str;
+
+  unsigned int i, len = str.length();
+  for(i=0; i<len; i++) {
+    new_str += str.at(i);
+    if((((len-(i+1))%3)==0) && (i!=len-1))
+      new_str += ',';
+  }
+  return(new_str);
+}
+
+
+//----------------------------------------------------------------
 // Procedure: dstringCompact
 //      Note: Convert 6.43000 to 6.43
 //                    6.00000 to 6
