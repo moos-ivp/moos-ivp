@@ -51,9 +51,10 @@ int main(int argc, char *argv[])
   unsigned int total = 0;
 
   if(new_cpa) {
+    CPAEngineX enginex;
     for(double cnv=0; cnv<2.5; cnv+=0.1) {
       for(double cnh=0; cnh<360; cnh+=1) {      
-	CPAEngineX enginex(cny, cnx, cnh, cnv, osy, osx);
+	enginex.reset(cny, cnx, cnh, cnv, osy, osx);
 	for(double osv=0; osv<2.5; osv+=0.1) {
 	  for(double osh=0; osh<360; osh=osh+1) {
 	    total++;
@@ -79,9 +80,10 @@ int main(int argc, char *argv[])
   }
   
   if(both_cpa) {
+    CPAEngineX enginex;
     for(double cnv=0; cnv<2.5; cnv+=0.1) {
       for(double cnh=0; cnh<360; cnh+=1) {      
-	CPAEngineX enginex(cny, cnx, cnh, cnv, osy, osx);
+	enginex.reset(cny, cnx, cnh, cnv, osy, osx);
 	CPAEngine  engine(cny, cnx, cnh, cnv, osy, osx);
 	for(double osv=0; osv<2.5; osv+=0.1) {
 	  for(double osh=0; osh<360; osh=osh+1) {
