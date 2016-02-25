@@ -31,7 +31,11 @@ class CPAEngineX {
 public:
   CPAEngineX();
   CPAEngineX(double cnY, double cnX, double cnh, double cnv, 
-	    double osY, double osX);
+	     double osY, double osX);
+
+  void reset(double cnY, double cnX, double cnh, double cnv, 
+	     double osY, double osX);
+  
   void setContactCacheTimeDelta(double);
   void setContactCache(double secs);
   ~CPAEngineX() {}
@@ -72,6 +76,8 @@ public:
   double getcnCRS() const {return(cnCRS);}
   double getcnSPD() const {return(cnSPD);}
   double getK0() const    {return(statK0);}
+
+  unsigned long int getCounter() {return(m_counter);}
   
  protected:
   void   setStatic();
@@ -113,6 +119,8 @@ public:
   std::vector<double> m_cos_cache;
   std::vector<double> m_sin_cache;
 
+  unsigned long int   m_counter;
+  
   std::vector<double> m_cn_cache_x;
   std::vector<double> m_cn_cache_y;
   double m_cn_cache_tdelta;

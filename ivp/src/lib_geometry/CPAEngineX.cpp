@@ -41,6 +41,8 @@ CPAEngineX::CPAEngineX()
   cnCRS = 0;
   osLAT = 0;
   osLON = 0;
+  m_counter = 0;
+
   initTrigCache();
 }
 
@@ -56,24 +58,39 @@ CPAEngineX::CPAEngineX()
 CPAEngineX::CPAEngineX(double gcnlat, double gcnlon, double gcncrs,
 		       double gcnspd, double goslat, double goslon)
 {
-  cnLAT   = gcnlat; 
-  cnLON   = gcnlon;
-  cnSPD   = gcnspd;
-  cnCRS   = angle360(gcncrs);
-  osLAT   = goslat;
-  osLON   = goslon;
-
-#if 0
-  cnLAT -= osLAT;
-  cnLON -= osLON;
-  osLAT = 0;
-  osLON = 0;
-#endif
+  cnLAT = gcnlat; 
+  cnLON = gcnlon;
+  cnSPD = gcnspd;
+  cnCRS = angle360(gcncrs);
+  osLAT = goslat;
+  osLON = goslon;
+  m_counter = 0;
 
   if(cnSPD < 0)
     cnSPD = 0;
   this->setStatic();
   initTrigCache();
+}
+
+//----------------------------------------------------------
+// Procedure: reset
+
+void CPAEngineX::reset(double gcnlat, double gcnlon, double gcncrs,
+		       double gcnspd, double goslat, double goslon)
+{
+  cnLAT = gcnlat; 
+  cnLON = gcnlon;
+  cnSPD = gcnspd;
+  cnCRS = angle360(gcncrs);
+  osLAT = goslat;
+  osLON = goslon;
+
+  if(cnSPD < 0)
+    cnSPD = 0;
+  this->setStatic();
+
+  if(m_cos_cache.size() == 0)
+    initTrigCache();
 }
 
 //----------------------------------------------------------------
@@ -139,8 +156,8 @@ double CPAEngineX::evalCPA(double osCRS, double osSPD,
   double sgamOS = m_sin_cache[(unsigned int)(osCRS)];
 #endif
 
-  double cgamOS_x_osSPD = cgamOS * osSPD;
-  double sgamOS_x_osSPD = sgamOS * osSPD;
+  //double cgamOS_x_osSPD = cgamOS * osSPD;
+  //double sgamOS_x_osSPD = sgamOS * osSPD;
 
 
   if((cnCRS==osCRS) && (cnSPD==osSPD)) {
@@ -149,15 +166,18 @@ double CPAEngineX::evalCPA(double osCRS, double osSPD,
     return(sqrt(k0));                    // be 0, resuling in NaN.
   }
   
-  k2 +=          cgamOS * cgamOS_x_osSPD * osSPD;   // (1,1)(a)
-  k2 +=          sgamOS * sgamOS_x_osSPD * osSPD;   // (1,1)(b)
-  k2 += (-2.0) * cgamOS_x_osSPD * cgamCN * cnSPD;   // (1,3)(3,1)(a)
-  k2 += (-2.0) * sgamOS_x_osSPD * sgamCN * cnSPD;   // (1,3)(3,1)(b)
+  k1 += ( 2.0) * cgamOS * osSPD * osLAT;  // (1,2)(2,1)(a)
+  k1 += ( 2.0) * sgamOS * osSPD * osLON;  // (1,2)(2,1)(b)
+  k1 += (-2.0) * cgamOS * osSPD * cnLAT;  // (1,4)(4,1)(a)
+  k1 += (-2.0) * sgamOS * osSPD * cnLON;  // (1,4)(4,1)(b)
 
-  k1 += ( 2.0) * cgamOS_x_osSPD * osLAT;  // (1,2)(2,1)(a)
-  k1 += ( 2.0) * sgamOS_x_osSPD * osLON;  // (1,2)(2,1)(b)
-  k1 += (-2.0) * cgamOS_x_osSPD * cnLAT;  // (1,4)(4,1)(a)
-  k1 += (-2.0) * sgamOS_x_osSPD * cnLON;  // (1,4)(4,1)(b)
+  if(k1 > 0)  // vehicles are opening
+    return(sqrt(k0));                    
+
+  k2 +=          cgamOS * cgamOS * osSPD * osSPD;   // (1,1)(a)
+  k2 +=          sgamOS * sgamOS * osSPD * osSPD;   // (1,1)(b)
+  k2 += (-2.0) * cgamOS * osSPD * cgamCN * cnSPD;   // (1,3)(3,1)(a)
+  k2 += (-2.0) * sgamOS * osSPD * sgamCN * cnSPD;   // (1,3)(3,1)(b)
 
   double cpaDist;
   double minT = 0;
