@@ -41,7 +41,9 @@ CPAEngineX::CPAEngineX()
   cnCRS = 0;
   osLAT = 0;
   osLON = 0;
-  m_counter = 0;
+
+  v_cn_to_os = 0;
+  m_counter  = 0;
 
   initTrigCache();
 }
@@ -136,8 +138,11 @@ void CPAEngineX::setContactCache(double secs)
 //            Determines Closest-Point-of-Approach (CPA)
 
 double CPAEngineX::evalCPA(double osCRS, double osSPD, 
-			  double osTOL, double *calcROC) const
+			   double osTOL, double *calcROC) const
 {
+  if(osSPD < -v_cn_to_os)
+    return(sqrt(statK0));
+
   if((osCRS >= 360) || (osCRS < 0))
     osCRS = angle360(osCRS);
 
@@ -154,16 +159,17 @@ double CPAEngineX::evalCPA(double osCRS, double osSPD,
 #if 1
   double cgamOS = m_cos_cache[(unsigned int)(osCRS)];            
   double sgamOS = m_sin_cache[(unsigned int)(osCRS)];
+  double cgamOSQ = m_cos_sq_cache[(unsigned int)(osCRS)];            
+  double sgamOSQ = m_sin_sq_cache[(unsigned int)(osCRS)];
 #endif
 
   //double cgamOS_x_osSPD = cgamOS * osSPD;
   //double sgamOS_x_osSPD = sgamOS * osSPD;
 
-
   if((cnCRS==osCRS) && (cnSPD==osSPD)) {
     if(calcROC)
       *calcROC = 0;
-    return(sqrt(k0));                    // be 0, resuling in NaN.
+    return(sqrt(k0));                     
   }
   
   k1 += ( 2.0) * cgamOS * osSPD * osLAT;  // (1,2)(2,1)(a)
@@ -174,8 +180,8 @@ double CPAEngineX::evalCPA(double osCRS, double osSPD,
   if(k1 > 0)  // vehicles are opening
     return(sqrt(k0));                    
 
-  k2 +=          cgamOS * cgamOS * osSPD * osSPD;   // (1,1)(a)
-  k2 +=          sgamOS * sgamOS * osSPD * osSPD;   // (1,1)(b)
+  k2 +=          cgamOSQ * osSPD * osSPD;   // (1,1)(a)
+  k2 +=          sgamOSQ * osSPD * osSPD;   // (1,1)(b)
   k2 += (-2.0) * cgamOS * osSPD * cgamCN * cnSPD;   // (1,3)(3,1)(a)
   k2 += (-2.0) * sgamOS * osSPD * sgamCN * cnSPD;   // (1,3)(3,1)(b)
 
@@ -393,6 +399,9 @@ double CPAEngineX::bearingRateCNOS(double osh, double osv, double time)
 
 void CPAEngineX::setStatic()
 {
+  double relbng_cn_to_os = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
+  v_cn_to_os = cnSPD * cos(degToRadians(relbng_cn_to_os));
+
   //osLAT = osLAT*60.0;    osLON = osLON*60.0;
   //cnLAT = cnLAT*60.0;    cnLON = cnLON*60.0;
 
@@ -1086,15 +1095,18 @@ bool CPAEngineX::starboardOfContact() const
 
 void CPAEngineX::initTrigCache()
 {
-  vector<double> new_cos_cache(360,0);
-  vector<double> new_sin_cache(360,0);
+  vector<double> virgin_cache(360,0);
 
-  m_cos_cache = new_cos_cache;
-  m_sin_cache = new_sin_cache;
+  m_cos_cache = virgin_cache;
+  m_sin_cache = virgin_cache;
+  m_cos_sq_cache = virgin_cache;
+  m_sin_sq_cache = virgin_cache;
 
   for(unsigned int i=0; i<360; i++) {
     double rad = degToRadians(i);
     m_cos_cache[i] = cos((double)(rad));
     m_sin_cache[i] = sin((double)(rad));
+    m_cos_sq_cache[i] = m_cos_cache[i] * m_cos_cache[i];
+    m_sin_sq_cache[i] = m_sin_cache[i] * m_sin_cache[i];
   }
 }

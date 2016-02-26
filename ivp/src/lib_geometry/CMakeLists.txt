@@ -12,6 +12,7 @@ SET(HEADERS
   CircularUtils.h
   CPAEngine.h
   CPAEngineX.h
+  CPAEngineOld.h
   CPA_Utils.h
   GeomUtils.h
   PathUtils.h

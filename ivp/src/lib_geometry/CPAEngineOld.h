@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: CPAEngineX.h                                         */
+/*    FILE: CPAEngineOld.h                                       */
 /*    DATE: May 12th 2005                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,24 +21,20 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef CPA_ENGINE_X_HEADER
-#define CPA_ENGINE_X_HEADER
+#ifndef CPA_ENGINE_OLD_HEADER
+#define CPA_ENGINE_OLD_HEADER
 
 #include <vector>
 
 class IvPDomain;
-class CPAEngineX {
+class CPAEngineOld {
 public:
-  CPAEngineX();
-  CPAEngineX(double cnY, double cnX, double cnh, double cnv, 
-	     double osY, double osX);
-
-  void reset(double cnY, double cnX, double cnh, double cnv, 
-	     double osY, double osX);
-  
+  CPAEngineOld();
+  CPAEngineOld(double cnY, double cnX, double cnh, double cnv, 
+	    double osY, double osX);
   void setContactCacheTimeDelta(double);
   void setContactCache(double secs);
-  ~CPAEngineX() {}
+  ~CPAEngineOld() {}
 
 public:    
   double evalCPA(double osh, double osv, double ostol, double* calc_roc=0) const;
@@ -76,16 +72,11 @@ public:
   double getcnCRS() const {return(cnCRS);}
   double getcnSPD() const {return(cnSPD);}
   double getK0() const    {return(statK0);}
-
-  double cnSpdToOS() const {return(v_cn_to_os);}
-
-  unsigned long int getCounter() {return(m_counter);}
   
  protected:
   void   setStatic();
-  double smallAngle(double, double) const;
-
   void   initTrigCache();
+  double smallAngle(double, double) const;
 
  protected: // Config parameters
   double cnLAT;   // Contact Lat position at time Tm.
@@ -114,19 +105,13 @@ public:
   double stat_cnx2;
   double stat_cny2;
 
-  double v_cn_to_os;
-
   double gamCN;   // cnCRS in radians. 
   double cgamCN;  // Cosine of  cnCRS.
   double sgamCN;  // Sine  of   cnCRS.
 
   std::vector<double> m_cos_cache;
   std::vector<double> m_sin_cache;
-  std::vector<double> m_cos_sq_cache;
-  std::vector<double> m_sin_sq_cache;
 
-  unsigned long int   m_counter;
-  
   std::vector<double> m_cn_cache_x;
   std::vector<double> m_cn_cache_y;
   double m_cn_cache_tdelta;
