@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include "CPAEngineX.h"
+#include "CPAEngineOld.h"
 #include "CPAEngine.h"
 
 using namespace std;
@@ -68,7 +69,7 @@ int main(int argc, char *argv[])
   if(old_cpa) {
     for(double cnv=0; cnv<2.5; cnv+=0.1) {
       for(double cnh=0; cnh<360; cnh+=1) {      
-	CPAEngine engine(cny, cnx, cnh, cnv, osy, osx);
+	CPAEngineOld engine(cny, cnx, cnh, cnv, osy, osx);
 	for(double osv=0; osv<2.5; osv+=0.1) {
 	  for(double osh=0; osh<360; osh=osh+1) {
 	    total++;
