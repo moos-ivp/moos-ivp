@@ -32,6 +32,7 @@ TARGET_LINK_LIBRARIES(uMACView
   ${MOOS_LIBRARIES}
   genutil
   marineview
+  geometry
   apputil
   mbutil
   fltk 
