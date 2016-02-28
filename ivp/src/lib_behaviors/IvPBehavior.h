@@ -31,7 +31,8 @@
 #include <string>
 #include "IvPFunction.h"
 #include "InfoBuffer.h"
-#include "KCache.h"
+#include "CPAEngine.h"
+//#include "KCache.h"
 #include "VarDataPair.h"
 #include "LogicCondition.h"
 #include "BehaviorReport.h"
@@ -46,6 +47,7 @@ public:
 
   virtual IvPFunction* onRunState() {return(0);}
   virtual BehaviorReport onRunState(std::string);
+  virtual void setCPAEngine(const CPAEngine&) {};
   virtual bool setParam(std::string, std::string);
   virtual void onSetParamComplete() {postConfigStatus();}
   virtual void onHelmStart() {}
@@ -59,7 +61,7 @@ public:
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
-  void   setKCache(const KCache*);
+  //  void   setKCache(const KCache*);
   bool   checkUpdates();
   std::string isRunnable();
 
@@ -104,7 +106,7 @@ protected:
   bool    checkForDurationReset();
   bool    checkNoStarve();
 
-  const KCache* getKCache() const {return(m_kcache);};
+  //const KCache* getKCache() const {return(m_kcache);};
 
   double                   getPriorityWt() {return(m_priority_wt);}
   double                   getBufferCurrTime();
@@ -122,7 +124,7 @@ protected:
   
 protected:
   const InfoBuffer* m_info_buffer;
-  const KCache*     m_kcache;
+  //const KCache*     m_kcache;
 
   std::string m_us_name;       
   std::string m_descriptor;    

@@ -29,6 +29,7 @@
 #include <string>
 #include <vector>
 #include "IvPBehavior.h"
+#include "CPAEngine.h"
 #include "LinearExtrapolator.h"
 #include "XYSegList.h"
 
@@ -39,6 +40,7 @@ public:
   ~IvPContactBehavior() {}
 
   bool  setParam(std::string, std::string);
+  void  setCPAEngine(const CPAEngine& engine) {m_cpa_engine=engine;}
 
  protected:
   bool  updatePlatformInfo();
@@ -91,6 +93,8 @@ public:
   double m_cn_os_rel_bng;
   
   double m_rate_of_closure;
+  double m_bearing_rate;
+  double m_contact_rate;
 
   bool   m_os_crosses_cn_stern;
   bool   m_os_crosses_cn_bow;
@@ -103,6 +107,8 @@ public:
   double m_cn_crosses_os_bow_dist;
 
   double m_os_curr_cpa_dist;
+
+  CPAEngine m_cpa_engine;
 };
 
 #endif

@@ -66,6 +66,9 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_contact_range = 0;
   m_relevance     = 0;
 
+  m_bearing_rate  = 0;
+  m_contact_rate  = 0;
+  
   m_bearing_line_show = false;
   m_bearing_line_info = "relevance";
 

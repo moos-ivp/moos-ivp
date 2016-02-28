@@ -351,10 +351,12 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 //-----------------------------------------------------------
 // Procedure: setKCache()
 
+#if 0
 void IvPBehavior::setKCache(const KCache *kc)
 {
   m_kcache = kc;
 }
+#endif
 
 //-----------------------------------------------------------
 // Procedure: postMessage
