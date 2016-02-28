@@ -3,7 +3,62 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
-FILE(GLOB SRC *.cpp)
+SET(SRC
+  AngleUtils.cpp
+  ArtifactUtils.cpp
+  CPAEngine.cpp
+  CPAEngineOld.cpp
+  CPAEngineX.cpp
+  CPA_Utils.cpp
+  CircularUtils.cpp
+  ConvexHullGenerator.cpp
+  CurrentField.cpp
+  GeomUtils.cpp
+  IO_GeomUtils.cpp
+  LinearExtrapolator.cpp
+  PathUtils.cpp
+  Seglr.cpp
+  SeglrUtils.cpp
+  VPlug_AppCastSettings.cpp
+  VPlug_DropPoints.cpp
+  VPlug_GeoSettings.cpp
+  VPlug_GeoShapes.cpp
+  VPlug_GeoShapesMap.cpp
+  VPlug_VehiSettings.cpp
+  XYArc.cpp
+  XYArtifactGrid.cpp
+  XYCircle.cpp
+  XYCommsPulse.cpp
+  XYConvexGrid.cpp
+  XYEncoders.cpp
+  XYFieldGenerator.cpp
+  XYFormatUtilsCircle.cpp
+  XYFormatUtilsCommsPulse.cpp
+  XYFormatUtilsConvexGrid.cpp
+  XYFormatUtilsMarker.cpp
+  XYFormatUtilsPoint.cpp
+  XYFormatUtilsPoly.cpp
+  XYFormatUtilsRangePulse.cpp
+  XYFormatUtilsSegl.cpp
+  XYFormatUtilsSeglr.cpp
+  XYFormatUtilsVector.cpp
+  XYFormatUtilsWedge.cpp
+  XYGrid.cpp
+  XYHexGrid.cpp
+  XYHexagon.cpp
+  XYMarker.cpp
+  XYObject.cpp
+  XYPatternBlock.cpp
+  XYPoint.cpp
+  XYPolygon.cpp
+  XYRangePulse.cpp
+  XYSegList.cpp
+  XYSeglr.cpp
+  XYSegment.cpp
+  XYSquare.cpp
+  XYVector.cpp
+  XYWedge.cpp
+  )
 
 SET(HEADERS
   AngleUtils.h
