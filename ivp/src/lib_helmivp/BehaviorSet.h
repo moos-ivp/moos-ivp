@@ -29,7 +29,7 @@
 #include <set>
 #include "IvPBehavior.h"
 #include "IvPDomain.h"
-#include "KCache.h"
+//#include "KCache.h"
 #include "VarDataPair.h"
 #include "ModeSet.h"
 #include "BehaviorSpec.h"
@@ -51,7 +51,7 @@ public:
   void       addBehaviorSpec(BehaviorSpec spec);  
   void       setDomain(IvPDomain domain);
   void       connectInfoBuffer(InfoBuffer*);
-  void       connectKCache(KCache*);
+  //void       connectKCache(KCache*);
   bool       buildBehaviorsFromSpecs();
   SpecBuild  buildBehaviorFromSpec(BehaviorSpec spec, std::string s="");
   bool       handlePossibleSpawnings();
