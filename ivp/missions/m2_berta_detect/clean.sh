@@ -24,7 +24,7 @@ done
 #-------------------------------------------------------
 
 rm -rf  $VERBOSE   MOOSLog_*  LOG_* LLOG_* XLOG_* *.ps
-rm -f   $VERBOSE   *~  targ_* *.moos++
+rm -f   $VERBOSE   *~  targ_* *.moos++ .tmp*
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory
 rm -rf  *alvtmp
 rm -rf  *pared.alog
