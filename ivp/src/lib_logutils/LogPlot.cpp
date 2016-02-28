@@ -240,11 +240,6 @@ string LogPlot::getSpec(unsigned int tprec, unsigned int vprec) const
 
 bool LogPlot::setFromSpec(string spec) 
 {
-  cout << "============================================================" << endl;
-  cout << "============================================================" << endl;
-  cout << "Setting from Spec: " << endl;
-  cout << "============================================================" << endl;
-  cout << "============================================================" << endl;
   // Clear the current state
   m_vname = "";
   m_varname = "";
