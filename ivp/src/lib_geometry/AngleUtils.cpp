@@ -135,12 +135,13 @@ double relAng(double xa, double ya, double xb, double yb)
     else
       w = 90.0;
   }
-  if(xa > xb) {
+  else if(xa > xb) {
     if(ya==yb)  
       return(270.0);
     else
       w = 270.0;
   }
+
   if(ya < yb) {
     if(xa == xb) 
       return(0.0);
@@ -149,7 +150,7 @@ double relAng(double xa, double ya, double xb, double yb)
     else 
       sop =  1.0;
   }
-  if(yb < ya) {
+  else if(yb < ya) {
     if(xa == xb) 
       return(180);
     if(xb >  xa) 

@@ -70,8 +70,9 @@ CPAEngineX::CPAEngineX(double gcnlat, double gcnlon, double gcncrs,
 
   if(cnSPD < 0)
     cnSPD = 0;
-  this->setStatic();
+  setStatic();
   initTrigCache();
+  initRateCache();
 }
 
 //----------------------------------------------------------
@@ -89,48 +90,24 @@ void CPAEngineX::reset(double gcnlat, double gcnlon, double gcncrs,
 
   if(cnSPD < 0)
     cnSPD = 0;
-  this->setStatic();
+
+
+  //cnLON = 100;
+  //cnLAT = 100;
+  //cnCRS = 225;
+  //cnSPD = 2.0;
+
+  //osLON = 50;
+  //osLAT = 50;
+  
+  setStatic();
+  initRateCache();
 
   if(m_cos_cache.size() == 0)
     initTrigCache();
+
+  //exit(0);
 }
-
-//----------------------------------------------------------------
-// Procedure: setContactCacheTimeDelta()
-
-void CPAEngineX::setContactCacheTimeDelta(double val)
-{
-  if(val > 0.1)
-    m_cn_cache_tdelta = val;
-}
-
-
-//----------------------------------------------------------------
-// Procedure: setContactCache()
-
-void CPAEngineX::setContactCache(double secs)
-{
-  m_cn_cache_x.clear();
-  m_cn_cache_y.clear();
-
-  if((secs < 0) || (m_cn_cache_tdelta < 0))
-    return;
-
-  unsigned int clicks = (unsigned int)(secs / m_cn_cache_tdelta);
-  double dist = cnSPD * m_cn_cache_tdelta;
-
-  double prev_x = cnLON;
-  double prev_y = cnLAT;
-  for(unsigned int i=0; i<clicks; i++) {
-    double new_x, new_y;
-    projectPoint(cnCRS, dist, prev_x, prev_y, new_x, new_y);
-    m_cn_cache_x.push_back(new_x);
-    m_cn_cache_y.push_back(new_x);
-    prev_x = new_x;
-    prev_y = new_y;
-  }
-}
-
 
 //----------------------------------------------------------------
 // Procedure: evalCPA
@@ -140,9 +117,20 @@ void CPAEngineX::setContactCache(double secs)
 double CPAEngineX::evalCPA(double osCRS, double osSPD, 
 			   double osTOL, double *calcROC) const
 {
-  if(osSPD < -v_cn_to_os)
-    return(sqrt(statK0));
-
+  if(m_stat_cn_to_os_closing) {
+    if(osSPD >= m_os_vthresh_cache_360[(unsigned int)(osCRS)]) {
+      //cout << "*" << flush;
+      return(statRange);
+    }
+  }
+  else {
+    if(osSPD <= m_os_vthresh_cache_360[(unsigned int)(osCRS)]) {
+      //cout << "-" << flush;
+      return(statRange);
+    }
+  }
+  //cout << "K" << flush;
+  
   if((osCRS >= 360) || (osCRS < 0))
     osCRS = angle360(osCRS);
 
@@ -180,10 +168,14 @@ double CPAEngineX::evalCPA(double osCRS, double osSPD,
   if(k1 > 0)  // vehicles are opening
     return(sqrt(k0));                    
 
-  k2 +=          cgamOSQ * osSPD * osSPD;   // (1,1)(a)
-  k2 +=          sgamOSQ * osSPD * osSPD;   // (1,1)(b)
-  k2 += (-2.0) * cgamOS * osSPD * cgamCN * cnSPD;   // (1,3)(3,1)(a)
-  k2 += (-2.0) * sgamOS * osSPD * sgamCN * cnSPD;   // (1,3)(3,1)(b)
+  k2 += cgamOSQ * osSPD * osSPD;   // (1,1)(a)
+  k2 += sgamOSQ * osSPD * osSPD;   // (1,1)(b)
+  k2 += cgamOS  * osSPD * stat_cgamCNxcnSPD;   // (1,3)(3,1)(a)
+  k2 += sgamOS  * osSPD * stat_sgamCNxcnSPD;   // (1,3)(3,1)(b)
+  //k2 += (-2.0) * cgamOS * osSPD * stat_cgamCNxcnSPD;   // (1,3)(3,1)(a)
+  //k2 += (-2.0) * sgamOS * osSPD * stat_sgamCNxcnSPD;   // (1,3)(3,1)(b)
+  //  k2 += (-2.0) * cgamOS * osSPD * cgamCN * cnSPD;   // (1,3)(3,1)(a)
+  //  k2 += (-2.0) * sgamOS * osSPD * sgamCN * cnSPD;   // (1,3)(3,1)(b)
 
   double cpaDist;
   double minT = 0;
@@ -399,12 +391,25 @@ double CPAEngineX::bearingRateCNOS(double osh, double osv, double time)
 
 void CPAEngineX::setStatic()
 {
+  // Part 1: Determine the speed of contact in the direction of ownship
   double relbng_cn_to_os = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
-  v_cn_to_os = cnSPD * cos(degToRadians(relbng_cn_to_os));
+  m_stat_cn_to_os_spd = cnSPD * cos(degToRadians(relbng_cn_to_os));
+  m_stat_cn_to_os_closing = (m_stat_cn_to_os_spd > 0);
 
-  //osLAT = osLAT*60.0;    osLON = osLON*60.0;
-  //cnLAT = cnLAT*60.0;    cnLON = cnLON*60.0;
+#if 0
+  cout << "==============================================================" << endl;
+  cout << "CPAEngineX::setStatic()" << endl;
+  cout << "cnLAT: " << cnLAT << endl;
+  cout << "cnLON: " << cnLON << endl;
+  cout << "cnCRS: " << cnCRS << endl;
+  cout << "cnSPD: " << cnSPD << endl;
+  cout << "relbng_cn_to_os: " << relbng_cn_to_os << endl;
+  cout << "m_stat_cn_to_os_spd: " << m_stat_cn_to_os_spd << endl;
+  cout << "m_stat_cn_to_os_spd_closing " << boolToString(m_stat_cn_to_os_closing) << endl;
+  cout << "==============================================================" << endl;
+#endif
 
+  
   gamCN   = degToRadians(cnCRS);  // Angle in radians.
   cgamCN  = cos(gamCN);           // Cosine of Angle (cnCRS).
   sgamCN  = sin(gamCN);           // Sine   of Angle (cnCRS).
@@ -464,6 +469,11 @@ void CPAEngineX::setStatic()
   else if(angle_cn_to_os == angle360(cnCRS-180))
     stat_os_on_sternline = true;
 
+  stat_cgamCNxcnSPD = -2 * cgamCN * cnSPD;
+  stat_sgamCNxcnSPD = -2 * sgamCN * cnSPD;
+
+  statRange = sqrt(statK0); 
+  
 #if 0
   double cn_angle_to_ownship = relAng(cnLON, cnLAT, osLON, osLAT);
   double opposite_cnCRS = angle360(cnCRS + 180);
@@ -481,7 +491,6 @@ void CPAEngineX::setStatic()
 
 //----------------------------------------------------------------
 // Procedure: smallAngle
-//   Purpose: 
 
 double CPAEngineX::smallAngle(double ang_a, double ang_b) const
 {
@@ -1095,8 +1104,20 @@ bool CPAEngineX::starboardOfContact() const
 
 void CPAEngineX::initTrigCache()
 {
-  vector<double> virgin_cache(360,0);
+  // Part 1: Create the fine resolution cache for use with contact
+  vector<double> virgin_cache_3600(3600,0);
 
+  m_cos_cache_3600 = virgin_cache_3600;
+  m_sin_cache_3600 = virgin_cache_3600;
+
+  for(unsigned int i=0; i<3600; i++) {
+    double rad = degToRadians(i/10);
+    m_cos_cache_3600[i] = cos((double)(rad));
+    m_sin_cache_3600[i] = sin((double)(rad));
+  }
+  
+  // Part 2: Create the course resolution cache for use with ownship
+  vector<double> virgin_cache(360,0);
   m_cos_cache = virgin_cache;
   m_sin_cache = virgin_cache;
   m_cos_sq_cache = virgin_cache;
@@ -1108,5 +1129,89 @@ void CPAEngineX::initTrigCache()
     m_sin_cache[i] = sin((double)(rad));
     m_cos_sq_cache[i] = m_cos_cache[i] * m_cos_cache[i];
     m_sin_sq_cache[i] = m_sin_cache[i] * m_sin_cache[i];
+  }
+}
+//----------------------------------------------------------------
+// Procedure: initRateCache
+
+void CPAEngineX::initRateCache()
+{
+  vector<double> virgin_cache(360,0);
+  m_os_vthresh_cache_360 = virgin_cache;
+  
+  // Case 1: contact is closing ownship position, i.e., contact speed
+  //         vector is in the direction of ownship rather than away.
+  //         The cache will be a cache of speeds ownship must be
+  //         greather than or equal to, if the current point in time
+  //         is to be considered the CPA.
+
+  if(m_stat_cn_to_os_closing) {
+    double relang_cn_to_os = relAng(cnLON, cnLAT, osLON, osLAT);
+    for(unsigned int i=0; i<360; i++) {
+      double delta = (double)(i) - relang_cn_to_os;
+      if(delta > 180) {
+	delta -= 360;
+	delta = -delta;
+      }
+      else if(delta < -180) {
+	delta += 360;
+      }
+
+      double cos_delta = -777;
+      double thresh = 999;
+
+      if(delta < 90) {
+	double cos_delta = cos(degToRadians(delta));
+	if(cos_delta > 0.0001)
+	  thresh = m_stat_cn_to_os_spd / cos_delta;
+      }
+      m_os_vthresh_cache_360[i] = thresh;
+
+#if 0      
+      if(verbose) cout << "[" << i << "]A  thresh: " << thresh << endl;
+      if(verbose) cout << "   relang_cn_to_os: " << relang_cn_to_os << endl;
+      if(verbose) cout << "   os_heading: " << i << endl;
+      if(verbose) cout << "   os_delta: " << delta << endl;
+      if(verbose) cout << "   cos_delta: " << cos_delta << endl;
+#endif
+    }
+  }
+    
+  // Case 2: contact is opening ownship position, i.e., contact speed
+  //         vector is in direction away from ownship rather than toward.
+  //         The cache will be a cache of speeds ownship must be less
+  //         than or equal to, if the current point in time is to be 
+  //         considered the CPA.
+
+  else {
+    double relang_os_to_cn = relAng(osLON, osLAT, cnLON, cnLAT);
+    for(unsigned int i=0; i<360; i++) {
+      double delta = (double)(i) - relang_os_to_cn;
+      if(delta > 180) {
+	delta -= 360;
+	delta = -delta;
+      }
+      else if(delta < -180) {
+	delta += 360;
+      }
+      
+      double cos_delta = -777;
+      double thresh = 999;
+
+      if(delta < 90) {
+	cos_delta = cos(degToRadians(delta));	
+	if(cos_delta > 0.0001)
+	  thresh = -m_stat_cn_to_os_spd / cos_delta;
+      }
+      m_os_vthresh_cache_360[i] = thresh;
+
+#if 0      
+      if(verbose) cout << "[" << i << "]B  thresh: " << thresh << endl;
+      if(verbose) cout << "   relang_os_to_cn: " << relang_os_to_cn << endl;
+      if(verbose) cout << "   os_heading: " << i << endl;
+      if(verbose) cout << "   os_delta: " << delta << endl;
+      if(verbose) cout << "   cos_delta: " << cos_delta << endl;
+#endif
+    }
   }
 }

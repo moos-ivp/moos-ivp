@@ -36,8 +36,6 @@ public:
   void reset(double cnY, double cnX, double cnh, double cnv, 
 	     double osY, double osX);
   
-  void setContactCacheTimeDelta(double);
-  void setContactCache(double secs);
   ~CPAEngineX() {}
 
 public:    
@@ -86,26 +84,32 @@ public:
   double smallAngle(double, double) const;
 
   void   initTrigCache();
+  void   initRateCache();
 
  protected: // Config parameters
-  double cnLAT;   // Contact Lat position at time Tm.
-  double cnLON;   // Contact Lon position at time Tm.
-  double cnSPD;   // Contact Speed in kts.
-  double cnCRS;   // Contact Course in degrees (0-359).
-  double osLAT;   // Ownship Lat position at time Tm.
-  double osLON;   // Ownship Lon position at time Tm.
+  double osLAT;    // Ownship Lat position at time Tm.
+  double osLON;    // Ownship Lon position at time Tm.
+  double cnLAT;    // Contact Lat position at time Tm.
+  double cnLON;    // Contact Lon position at time Tm.
+  double cnSPD;    // Contact Speed in kts.
+  double cnCRS;    // Contact Course in degrees (0-359).
+  double cnCRSx10; // Contact Course in degrees (0-359).
 
  protected: // Cached values
   double statK2;  // Components of k2, k1, k0 that are 
   double statK1;  // static (independent of the values of
   double statK0;  // osCRS, osSPD, osTOL).
-
+  double statRange;
+  
   double statCLOW;  // Course range in which OS is able 
   double statCHGH;  // to cross the path of the contact.
   double statCRNG;  // Range between CLOW and CHGH;
   double statCNANG; // Angle from ownship to the contact.
   double statCNDIS; // Distance from ownship to the contact.
 
+  double stat_cgamCNxcnSPD;
+  double stat_sgamCNxcnSPD;
+  
   bool   stat_os_on_contact;   // true if ownship is on the contact position
   bool   stat_os_on_bowline;   // true if ownship is on the contact bowline
   bool   stat_os_on_sternline; // true if ownship is on the contact sternline
@@ -120,31 +124,21 @@ public:
   double cgamCN;  // Cosine of  cnCRS.
   double sgamCN;  // Sine  of   cnCRS.
 
+  double m_stat_cn_to_os_spd;
+  bool   m_stat_cn_to_os_closing;
+  
+  
+  std::vector<double> m_cos_cache_3600;
+  std::vector<double> m_sin_cache_3600;
+
+  std::vector<double> m_os_vthresh_cache_360;
+  
   std::vector<double> m_cos_cache;
   std::vector<double> m_sin_cache;
   std::vector<double> m_cos_sq_cache;
   std::vector<double> m_sin_sq_cache;
 
   unsigned long int   m_counter;
-  
-  std::vector<double> m_cn_cache_x;
-  std::vector<double> m_cn_cache_y;
-  double m_cn_cache_tdelta;
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
