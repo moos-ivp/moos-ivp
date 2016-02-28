@@ -37,7 +37,7 @@ SET(SRC
   BHV_HeadingBias.cpp
   BHV_BearingLine.cpp
   BHV_TestFailure.cpp
-  BHV_KCache.cpp
+#  BHV_KCache.cpp
 )
 
 SET(HEADERS 
