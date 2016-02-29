@@ -101,10 +101,10 @@ void CPAEngineX::reset(double gcnlat, double gcnlon, double gcncrs,
   //osLAT = 50;
   
   setStatic();
-  initRateCache();
-
   if(m_cos_cache.size() == 0)
     initTrigCache();
+  initRateCache();
+
 
   //exit(0);
 }
@@ -117,6 +117,9 @@ void CPAEngineX::reset(double gcnlat, double gcnlon, double gcncrs,
 double CPAEngineX::evalCPA(double osCRS, double osSPD, 
 			   double osTOL, double *calcROC) const
 {
+  if((osCRS >= 360) || (osCRS < 0))
+    osCRS = angle360(osCRS);
+
   if(m_stat_cn_to_os_closing) {
     if(osSPD >= m_os_vthresh_cache_360[(unsigned int)(osCRS)]) {
       //cout << "*" << flush;
@@ -131,9 +134,6 @@ double CPAEngineX::evalCPA(double osCRS, double osSPD,
   }
   //cout << "K" << flush;
   
-  if((osCRS >= 360) || (osCRS < 0))
-    osCRS = angle360(osCRS);
-
   double k2 = statK2;
   double k1 = statK1;
   double k0 = statK0;
@@ -1149,21 +1149,22 @@ void CPAEngineX::initRateCache()
     double relang_cn_to_os = relAng(cnLON, cnLAT, osLON, osLAT);
     for(unsigned int i=0; i<360; i++) {
       double delta = (double)(i) - relang_cn_to_os;
-      if(delta > 180) {
+      if(delta > 180) 
 	delta -= 360;
-	delta = -delta;
-      }
-      else if(delta < -180) {
+      else if(delta < -180) 
 	delta += 360;
-      }
+      if(delta < 0)
+	delta = -delta;
+	
 
       double cos_delta = -777;
       double thresh = 999;
 
       if(delta < 90) {
-	double cos_delta = cos(degToRadians(delta));
+	//cos_delta = m_cos_cache[(unsigned int)(delta)];
+	cos_delta = cos(degToRadians(delta));
 	if(cos_delta > 0.0001)
-	  thresh = m_stat_cn_to_os_spd / cos_delta;
+	  thresh = (m_stat_cn_to_os_spd / cos_delta);
       }
       m_os_vthresh_cache_360[i] = thresh;
 
@@ -1187,21 +1188,21 @@ void CPAEngineX::initRateCache()
     double relang_os_to_cn = relAng(osLON, osLAT, cnLON, cnLAT);
     for(unsigned int i=0; i<360; i++) {
       double delta = (double)(i) - relang_os_to_cn;
-      if(delta > 180) {
+      if(delta > 180)
 	delta -= 360;
-	delta = -delta;
-      }
-      else if(delta < -180) {
+      else if(delta < -180) 
 	delta += 360;
-      }
+      if(delta < 0)
+	delta = -delta;
       
       double cos_delta = -777;
       double thresh = 999;
 
       if(delta < 90) {
 	cos_delta = cos(degToRadians(delta));	
+	//cos_delta = m_cos_cache[(unsigned int)(delta)];
 	if(cos_delta > 0.0001)
-	  thresh = -m_stat_cn_to_os_spd / cos_delta;
+	  thresh = (-m_stat_cn_to_os_spd / cos_delta);
       }
       m_os_vthresh_cache_360[i] = thresh;
 
