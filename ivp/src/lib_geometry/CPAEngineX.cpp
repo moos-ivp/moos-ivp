@@ -120,19 +120,16 @@ double CPAEngineX::evalCPA(double osCRS, double osSPD,
   if((osCRS >= 360) || (osCRS < 0))
     osCRS = angle360(osCRS);
 
-  if(m_stat_cn_to_os_closing) {
-    if(osSPD >= m_os_vthresh_cache_360[(unsigned int)(osCRS)]) {
-      //cout << "*" << flush;
-      return(statRange);
+  if(0) {
+    if(m_stat_cn_to_os_closing) {
+      if(osSPD >= m_os_vthresh_cache_360[(unsigned int)(osCRS)])
+	return(statRange);
+    }
+    else {
+      if(osSPD <= m_os_vthresh_cache_360[(unsigned int)(osCRS)]) 
+	return(statRange);
     }
   }
-  else {
-    if(osSPD <= m_os_vthresh_cache_360[(unsigned int)(osCRS)]) {
-      //cout << "-" << flush;
-      return(statRange);
-    }
-  }
-  //cout << "K" << flush;
   
   double k2 = statK2;
   double k1 = statK1;
@@ -165,9 +162,11 @@ double CPAEngineX::evalCPA(double osCRS, double osSPD,
   k1 += (-2.0) * cgamOS * osSPD * cnLAT;  // (1,4)(4,1)(a)
   k1 += (-2.0) * sgamOS * osSPD * cnLON;  // (1,4)(4,1)(b)
 
+#if 0
   if(k1 > 0)  // vehicles are opening
     return(sqrt(k0));                    
-
+#endif
+  
   k2 += cgamOSQ * osSPD * osSPD;   // (1,1)(a)
   k2 += sgamOSQ * osSPD * osSPD;   // (1,1)(b)
   k2 += cgamOS  * osSPD * stat_cgamCNxcnSPD;   // (1,3)(3,1)(a)
