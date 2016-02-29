@@ -9,6 +9,7 @@ SET(SRC
   CPAEngine.cpp
   CPAEngineOld.cpp
   CPAEngineX.cpp
+  BNGEngine.cpp
   CPA_Utils.cpp
   CircularUtils.cpp
   ConvexHullGenerator.cpp

@@ -26,7 +26,6 @@
 
 #include <vector>
 
-class IvPDomain;
 class CPAEngineX {
 public:
   CPAEngineX();
