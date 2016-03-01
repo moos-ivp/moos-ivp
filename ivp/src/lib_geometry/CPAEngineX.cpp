@@ -291,10 +291,10 @@ double CPAEngineX::bearingRateOSCN(double osCRS, double osSPD)
   //         contact velocity vectors.
   
   double xdot = 0;
-  xdot += cos(degToRadians(osCRS)) * osSPD;
+  xdot += cos(degToRadians(osCRS)) * -osSPD;
   xdot += cos(degToRadians(cnCRS)) * cnSPD;
   double ydot = 0;
-  ydot += sin(degToRadians(osCRS)) * osSPD;
+  ydot += sin(degToRadians(osCRS)) * -osSPD;
   ydot += sin(degToRadians(cnCRS)) * cnSPD;
 
   double kh = radToDegrees(atan(ydot/xdot));
@@ -308,7 +308,112 @@ double CPAEngineX::bearingRateOSCN(double osCRS, double osSPD)
   
   double bng_rate = spd_at_tangent_angle * (360 / (2*statRange*MPI));
 
+  cout << "bearingRateOSCN() ===================" << endl;
+  cout << "  tangent_angle: " << tangent_angle << endl;
+  cout << "  kv: " << kv << endl;
+  cout << "  kh: " << kh << endl;
+
   return(bng_rate);
+}
+
+//----------------------------------------------------------------
+// Procedure: bearingRateOSCN2() 
+
+double CPAEngineX::bearingRateOSCN2(double osCRS, double osSPD)
+{
+  // Part 1: Calculate the tangent angle
+  
+  double relang_os_to_cn = relAng(osLON, osLAT, cnLON, cnLAT);
+  double tangent_angle   = angle360(relang_os_to_cn - 90);
+
+  cout << "bearingRateOSCN2()---------------" << endl;
+  cout << "  tangent_angle: " << tangent_angle << endl;
+  
+  // Part 2: Calculate the speed of ownship in the direction of the
+  // tangent angle
+  double os_delta_heading = osCRS - tangent_angle;
+  if(os_delta_heading > 180)
+    os_delta_heading -= 360;
+  else if(os_delta_heading < -180) 
+    os_delta_heading += 360;
+  if(os_delta_heading < 0)
+    os_delta_heading = -os_delta_heading;
+
+  double os_spd_at_tangent = cos(degToRadians(os_delta_heading)) * -osSPD;
+  
+  // Part 3: Calculate the speed of contact in the direction of the
+  // tangent angle
+  double cn_delta_heading = cnCRS - tangent_angle;
+  if(cn_delta_heading > 180)
+    cn_delta_heading -= 360;
+  else if(cn_delta_heading < -180) 
+    cn_delta_heading += 360;
+  if(cn_delta_heading < 0)
+    cn_delta_heading = -cn_delta_heading;
+
+  double cn_spd_at_tangent = cos(degToRadians(cn_delta_heading)) * cnSPD;
+
+  double spd_at_tangent_angle = os_spd_at_tangent + cn_spd_at_tangent;
+
+  cout << "  os_spd_at_tangent:    " << os_spd_at_tangent << endl;
+  cout << "  cn_spd_at_tangent:    " << cn_spd_at_tangent << endl;
+  cout << "  spd at tangent angle: " << spd_at_tangent_angle << endl;
+
+  
+  // Part 4: Calculate the bearing rate from the speed at tangent
+  double bng_rate = spd_at_tangent_angle * (-360 / (2*statRange*MPI));
+
+  return(bng_rate);
+}
+
+//----------------------------------------------------------------
+// Procedure: bearingRateCNOS() 
+
+double CPAEngineX::bearingRateCNOS(double osCRS, double osSPD)
+{
+  // Part 1: Calculate the tangent angle
+  
+  double relang_cn_to_os = relAng(cnLON, cnLAT, osLON, osLAT);
+  double tangent_angle   = angle360(relang_cn_to_os - 90);
+
+  cout << "bearingRateCNOS()---------------" << endl;
+  cout << "  tangent_angle: " << tangent_angle << endl;
+  
+  // Part 2: Calculate the speed of ownship in the direction of the
+  // tangent angle
+  double os_delta_heading = osCRS - tangent_angle;
+  if(os_delta_heading > 180)
+    os_delta_heading -= 360;
+  else if(os_delta_heading < -180) 
+    os_delta_heading += 360;
+  if(os_delta_heading < 0)
+    os_delta_heading = -os_delta_heading;
+
+  double os_spd_at_tangent = cos(degToRadians(os_delta_heading)) * osSPD;
+  
+  // Part 3: Calculate the speed of contact in the direction of the
+  // tangent angle
+  double cn_delta_heading = cnCRS - tangent_angle;
+  if(cn_delta_heading > 180)
+    cn_delta_heading -= 360;
+  else if(cn_delta_heading < -180) 
+    cn_delta_heading += 360;
+  if(cn_delta_heading < 0)
+    cn_delta_heading = -cn_delta_heading;
+
+  double cn_spd_at_tangent = cos(degToRadians(cn_delta_heading)) * -cnSPD;
+
+  double spd_at_tangent_angle = os_spd_at_tangent + cn_spd_at_tangent;
+
+  cout << "  os_spd_at_tangent:    " << os_spd_at_tangent << endl;
+  cout << "  cn_spd_at_tangent:    " << cn_spd_at_tangent << endl;
+  cout << "  spd at tangent angle: " << spd_at_tangent_angle << endl;
+
+  
+  // Part 4: Calculate the bearing rate from the speed at tangent
+  double bng_rate = spd_at_tangent_angle * (360 / (2*statRange*MPI));
+
+  return(-bng_rate);
 }
 
 //----------------------------------------------------------------

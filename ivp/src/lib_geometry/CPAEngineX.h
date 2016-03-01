@@ -66,8 +66,10 @@ public:
   double minMaxROC(double, double, double&, double&) const;
 
   double bearingRateOSCN(double osh, double osv);
-  double bearingRateOSCN(double osh, double osv, double time=1);
-  double bearingRateCNOS(double osh, double osv, double time=1);
+  double bearingRateOSCN2(double osh, double osv);
+  double bearingRateCNOS(double osh, double osv);
+  double bearingRateOSCN(double osh, double osv, double time);
+  double bearingRateCNOS(double osh, double osv, double time);
   
   double getcnLAT() const {return(cnLAT);}
   double getcnLON() const {return(cnLON);}
@@ -124,8 +126,7 @@ public:
 
   double m_stat_cn_to_os_spd;
   bool   m_stat_cn_to_os_closing;
-  
-  
+    
   std::vector<double> m_cos_cache_3600;
   std::vector<double> m_sin_cache_3600;
 
