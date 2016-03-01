@@ -65,6 +65,7 @@ public:
 
   double minMaxROC(double, double, double&, double&) const;
 
+  double bearingRateOSCN(double osh, double osv);
   double bearingRateOSCN(double osh, double osv, double time=1);
   double bearingRateCNOS(double osh, double osv, double time=1);
   
@@ -74,7 +75,7 @@ public:
   double getcnSPD() const {return(cnSPD);}
   double getK0() const    {return(statK0);}
 
-  double cnSpdToOS() const {return(v_cn_to_os);}
+  double cnSpdToOS() const {return(m_stat_cn_to_os_spd);}
 
   unsigned long int getCounter() {return(m_counter);}
   
@@ -116,8 +117,6 @@ public:
   double stat_cny1;
   double stat_cnx2;
   double stat_cny2;
-
-  double v_cn_to_os;
 
   double gamCN;   // cnCRS in radians. 
   double cgamCN;  // Cosine of  cnCRS.

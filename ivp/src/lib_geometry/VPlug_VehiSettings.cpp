@@ -195,7 +195,7 @@ bool VPlug_VehiSettings::setParam(string param, double value)
   }
   else if((param == "trails_length") && (value >= 0)) {
     m_trails_length = value;
-    m_trails_length = vclip(m_trails_length, 0, 10000);
+    m_trails_length = vclip(m_trails_length, 0, 65000);
   }
   else if((param == "stale_report_thresh") && (value >= 0)) 
     m_stale_report_thresh = vclip_min(value, 2);

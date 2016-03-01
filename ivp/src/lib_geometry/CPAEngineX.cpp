@@ -30,6 +30,8 @@
 
 using namespace std;
 
+#define MPI 3.14159265359
+
 //----------------------------------------------------------
 // Procedure: Constructor
 
@@ -42,7 +44,6 @@ CPAEngineX::CPAEngineX()
   osLAT = 0;
   osLON = 0;
 
-  v_cn_to_os = 0;
   m_counter  = 0;
 
   initTrigCache();
@@ -282,7 +283,36 @@ double CPAEngineX::minMaxROC(double speed, double heading_clicks,
 }
 
 //----------------------------------------------------------------
-// Procedure: bearingRate
+// Procedure: bearingRateOSCN() 
+
+double CPAEngineX::bearingRateOSCN(double osCRS, double osSPD)
+{
+  // Part 1: Calculate thetaK and vK, the sum of the ownship and 
+  //         contact velocity vectors.
+  
+  double xdot = 0;
+  xdot += cos(degToRadians(osCRS)) * osSPD;
+  xdot += cos(degToRadians(cnCRS)) * cnSPD;
+  double ydot = 0;
+  ydot += sin(degToRadians(osCRS)) * osSPD;
+  ydot += sin(degToRadians(cnCRS)) * cnSPD;
+
+  double kh = radToDegrees(atan(ydot/xdot));
+  double kv = hypot(xdot, ydot);
+
+  double relang_os_to_cn = relAng(osLON, osLAT, cnLON, cnLAT);
+  
+  double tangent_angle = angle360(relang_os_to_cn + 90 - kh);
+
+  double spd_at_tangent_angle = cos(degToRadians(tangent_angle)) * kv;
+  
+  double bng_rate = spd_at_tangent_angle * (360 / (2*statRange*MPI));
+
+  return(bng_rate);
+}
+
+//----------------------------------------------------------------
+// Procedure: bearingRateOSCN() 
 
 double CPAEngineX::bearingRateOSCN(double osh, double osv, double time)
 {
@@ -319,6 +349,7 @@ double CPAEngineX::bearingRateOSCN(double osh, double osv, double time)
   double rate = (diff / (time*2));
   return(rate);
 }
+
 
 //----------------------------------------------------------------
 // Procedure: bearingRateCNOS
