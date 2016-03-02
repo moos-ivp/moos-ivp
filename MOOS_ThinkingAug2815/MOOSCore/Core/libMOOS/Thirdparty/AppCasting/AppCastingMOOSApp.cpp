@@ -439,7 +439,7 @@ void AppCastingMOOSApp::reportEvent(const string& str)
   double timestamp = m_curr_time - m_start_time;
   m_ac.event(str, timestamp);
 
-  cout << "reportEvent: max_event: " << m_ac.getMaxEvents() << endl;
+  //cout << "reportEvent: max_event: " << m_ac.getMaxEvents() << endl;
 
 }
 
