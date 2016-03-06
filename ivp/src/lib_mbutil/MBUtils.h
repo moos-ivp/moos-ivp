@@ -132,6 +132,7 @@ double snapToStep(double, double v=1.0);
 double snapDownToStep(double, double v=1.0);
 
 bool  setBooleanOnString(bool& boolval, std::string str, bool=true);
+bool  setDoubleOnString(double& dval, std::string str);
 bool  setPosDoubleOnString(double& dval, std::string str);
 bool  setNonNegDoubleOnString(double& dval, std::string str);
 bool  setNonWhiteVarOnString(std::string& svar, std::string str);

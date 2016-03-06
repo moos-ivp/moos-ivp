@@ -1800,7 +1800,7 @@ bool setPosDoubleOnString(double& given_dval, string str)
 
 //-------------------------------------------------------------
 // Procedure: setNonNegDoubleOnString
-//      Note: This function is designed to possibley set the given 
+//      Note: This function is designed to possibly set the given 
 //            double based on the contents of the str.
 //   Returns: false if the string is not numerical, or negative.
 //            true  otherwise.
@@ -1815,6 +1815,22 @@ bool setNonNegDoubleOnString(double& given_dval, string str)
     return(false);
   
   given_dval = dval;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setDoubleOnString
+//      Note: This function is designed to possibly set the given 
+//            double based on the contents of the str.
+//   Returns: false if the string is not numerical.
+//            true  otherwise.
+
+bool setDoubleOnString(double& given_dval, string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  given_dval = atof(str.c_str());
   return(true);
 }
 
