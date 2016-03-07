@@ -58,18 +58,15 @@ public:
   bool   passesContact(double osh, double osv) const;
   bool   passesContactPort(double osh, double osv) const;
   bool   passesContactStarboard(double osh, double osv) const;
-  bool   foreOfContact() const;
-  bool   aftOfContact() const;
+  bool   foreOfContact() const {return(m_stat_os_fore_of_cn);}
+  bool   aftOfContact() const {return(m_stat_os_aft_of_cn);}
   bool   portOfContact() const;
   bool   starboardOfContact() const;
 
   double minMaxROC(double, double, double&, double&) const;
 
   double bearingRateOSCN(double osh, double osv);
-  double bearingRateOSCN2(double osh, double osv);
   double bearingRateCNOS(double osh, double osv);
-  double bearingRateOSCN(double osh, double osv, double time);
-  double bearingRateCNOS(double osh, double osv, double time);
   
   double getcnLAT() const {return(cnLAT);}
   double getcnLON() const {return(cnLON);}
@@ -87,6 +84,9 @@ public:
 
   void   initTrigCache();
   void   initRateCache();
+
+  void   setOSForeOfContact();
+  void   setOSAftOfContact();
 
  protected: // Config parameters
   double osLAT;    // Ownship Lat position at time Tm.
@@ -127,6 +127,10 @@ public:
   double m_stat_cn_to_os_spd;
   bool   m_stat_cn_to_os_closing;
     
+  double m_stat_rel_bng_cn_os;
+  bool   m_stat_os_fore_of_cn;
+  bool   m_stat_os_aft_of_cn;
+
   std::vector<double> m_cos_cache_3600;
   std::vector<double> m_sin_cache_3600;
 

@@ -92,22 +92,11 @@ void CPAEngineX::reset(double gcnlat, double gcnlon, double gcncrs,
   if(cnSPD < 0)
     cnSPD = 0;
 
-
-  //cnLON = 100;
-  //cnLAT = 100;
-  //cnCRS = 225;
-  //cnSPD = 2.0;
-
-  //osLON = 50;
-  //osLAT = 50;
-  
   setStatic();
   if(m_cos_cache.size() == 0)
     initTrigCache();
   initRateCache();
 
-
-  //exit(0);
 }
 
 //----------------------------------------------------------------
@@ -287,47 +276,13 @@ double CPAEngineX::minMaxROC(double speed, double heading_clicks,
 
 double CPAEngineX::bearingRateOSCN(double osCRS, double osSPD)
 {
-  // Part 1: Calculate thetaK and vK, the sum of the ownship and 
-  //         contact velocity vectors.
-  
-  double xdot = 0;
-  xdot += cos(degToRadians(osCRS)) * -osSPD;
-  xdot += cos(degToRadians(cnCRS)) * cnSPD;
-  double ydot = 0;
-  ydot += sin(degToRadians(osCRS)) * -osSPD;
-  ydot += sin(degToRadians(cnCRS)) * cnSPD;
-
-  double kh = radToDegrees(atan(ydot/xdot));
-  double kv = hypot(xdot, ydot);
-
-  double relang_os_to_cn = relAng(osLON, osLAT, cnLON, cnLAT);
-  
-  double tangent_angle = angle360(relang_os_to_cn + 90 - kh);
-
-  double spd_at_tangent_angle = cos(degToRadians(tangent_angle)) * kv;
-  
-  double bng_rate = spd_at_tangent_angle * (360 / (2*statRange*MPI));
-
-  cout << "bearingRateOSCN() ===================" << endl;
-  cout << "  tangent_angle: " << tangent_angle << endl;
-  cout << "  kv: " << kv << endl;
-  cout << "  kh: " << kh << endl;
-
-  return(bng_rate);
-}
-
-//----------------------------------------------------------------
-// Procedure: bearingRateOSCN2() 
-
-double CPAEngineX::bearingRateOSCN2(double osCRS, double osSPD)
-{
   // Part 1: Calculate the tangent angle
   
   double relang_os_to_cn = relAng(osLON, osLAT, cnLON, cnLAT);
   double tangent_angle   = angle360(relang_os_to_cn - 90);
 
-  cout << "bearingRateOSCN2()---------------" << endl;
-  cout << "  tangent_angle: " << tangent_angle << endl;
+  //cout << "bearingRateOSCN2()---------------" << endl;
+  //cout << "  tangent_angle: " << tangent_angle << endl;
   
   // Part 2: Calculate the speed of ownship in the direction of the
   // tangent angle
@@ -355,9 +310,9 @@ double CPAEngineX::bearingRateOSCN2(double osCRS, double osSPD)
 
   double spd_at_tangent_angle = os_spd_at_tangent + cn_spd_at_tangent;
 
-  cout << "  os_spd_at_tangent:    " << os_spd_at_tangent << endl;
-  cout << "  cn_spd_at_tangent:    " << cn_spd_at_tangent << endl;
-  cout << "  spd at tangent angle: " << spd_at_tangent_angle << endl;
+  //cout << "  os_spd_at_tangent:    " << os_spd_at_tangent << endl;
+  //cout << "  cn_spd_at_tangent:    " << cn_spd_at_tangent << endl;
+  //cout << "  spd at tangent angle: " << spd_at_tangent_angle << endl;
 
   
   // Part 4: Calculate the bearing rate from the speed at tangent
@@ -376,8 +331,8 @@ double CPAEngineX::bearingRateCNOS(double osCRS, double osSPD)
   double relang_cn_to_os = relAng(cnLON, cnLAT, osLON, osLAT);
   double tangent_angle   = angle360(relang_cn_to_os - 90);
 
-  cout << "bearingRateCNOS()---------------" << endl;
-  cout << "  tangent_angle: " << tangent_angle << endl;
+  //cout << "bearingRateCNOS()---------------" << endl;
+  //cout << "  tangent_angle: " << tangent_angle << endl;
   
   // Part 2: Calculate the speed of ownship in the direction of the
   // tangent angle
@@ -405,94 +360,15 @@ double CPAEngineX::bearingRateCNOS(double osCRS, double osSPD)
 
   double spd_at_tangent_angle = os_spd_at_tangent + cn_spd_at_tangent;
 
-  cout << "  os_spd_at_tangent:    " << os_spd_at_tangent << endl;
-  cout << "  cn_spd_at_tangent:    " << cn_spd_at_tangent << endl;
-  cout << "  spd at tangent angle: " << spd_at_tangent_angle << endl;
+  //cout << "  os_spd_at_tangent:    " << os_spd_at_tangent << endl;
+  //cout << "  cn_spd_at_tangent:    " << cn_spd_at_tangent << endl;
+  //cout << "  spd at tangent angle: " << spd_at_tangent_angle << endl;
 
   
   // Part 4: Calculate the bearing rate from the speed at tangent
   double bng_rate = spd_at_tangent_angle * (360 / (2*statRange*MPI));
 
   return(-bng_rate);
-}
-
-//----------------------------------------------------------------
-// Procedure: bearingRateOSCN() 
-
-double CPAEngineX::bearingRateOSCN(double osh, double osv, double time)
-{
-  if(time <= 0)
-    return(0);
-  
-  double osx1 = osLON;
-  double osy1 = osLAT;
-  double cnx1 = cnLON;
-  double cny1 = cnLAT;
-
-  double os_dist = (osv * time);
-  double cn_dist = (cnSPD * time);
-
-  // Create an ownship leg a bit forward and backward in time
-  double osx0, osy0, osx2, osy2;
-  projectPoint(osh-180, os_dist, osx1, osy1, osx0, osy0);
-  projectPoint(osh,     os_dist, osx1, osy1, osx2, osy2);
-
-  // Create a contact leg a bit forward and backward in time
-  double cnx0, cny0, cnx2, cny2;
-  projectPoint(cnCRS-180, cn_dist, cnx1, cny1, cnx0, cny0);
-  projectPoint(cnCRS,     cn_dist, cnx1, cny1, cnx2, cny2);
-
-  double relang0 = relAng(osx0, osy0, cnx0, cny0);
-  double relang2 = relAng(osx2, osy2, cnx2, cny2);
-  
-  double diff = relang2 - relang0;
-  if(diff < 180)
-    diff += 360;
-  if(diff > 180)
-    diff -= 360;
-  
-  double rate = (diff / (time*2));
-  return(rate);
-}
-
-
-//----------------------------------------------------------------
-// Procedure: bearingRateCNOS
-
-double CPAEngineX::bearingRateCNOS(double osh, double osv, double time)
-{
-  if(time <= 0)
-    return(0);
-  
-  double osx1 = osLON;
-  double osy1 = osLAT;
-  double cnx1 = cnLON;
-  double cny1 = cnLAT;
-
-  double os_dist = (osv * time);
-  double cn_dist = (cnSPD * time);
-
-  // Create an ownship leg a bit forward and backward in time
-  double osx0, osy0, osx2, osy2;
-  projectPoint(osh-180, os_dist, osx1, osy1, osx0, osy0);
-  projectPoint(osh,     os_dist, osx1, osy1, osx2, osy2);
-
-  // Create a contact leg a bit forward and backward in time
-  double cnx0, cny0, cnx2, cny2;
-  projectPoint(cnCRS-180, cn_dist, cnx1, cny1, cnx0, cny0);
-  projectPoint(cnCRS,     cn_dist, cnx1, cny1, cnx2, cny2);
-
-  double relang0 = relAng(cnx0, cny0, osx0, osy0);
-  double relang2 = relAng(cnx2, cny2, osx2, osy2);
-  
-  double diff = relang2 - relang0;
-  if(diff < 180)
-    diff += 360;
-  if(diff > 180)
-    diff -= 360;
-  
-  double rate = (diff / (time*2));
-  return(rate);
 }
 
 //----------------------------------------------------------------
@@ -606,7 +482,10 @@ void CPAEngineX::setStatic()
   stat_sgamCNxcnSPD = -2 * sgamCN * cnSPD;
 
   statRange = sqrt(statK0); 
-  
+
+  setOSForeOfContact();
+  setOSAftOfContact();
+
 #if 0
   double cn_angle_to_ownship = relAng(cnLON, cnLAT, osLON, osLAT);
   double opposite_cnCRS = angle360(cnCRS + 180);
@@ -1150,42 +1029,44 @@ bool CPAEngineX::passesContactStarboard(double osCRS, double osSPD) const
 }
 
 //----------------------------------------------------------------
-// Procedure: foreOfContact
+// Procedure: setForeOfContact
 //   Purpose: Checks to see if ownship is presently fore of the contact.
 
-bool CPAEngineX::foreOfContact() const
+void CPAEngineX::setOSForeOfContact()
 {
   // First, edge case where ownship and contact are exact same position
-  if((osLAT == cnLAT) && (osLON == cnLON))
-    return(false);
+  if((osLAT == cnLAT) && (osLON == cnLON)) {
+    m_stat_os_fore_of_cn = false;
+    return;
+  }
   
   // returns value in the range [0,360)
   double rel_bng = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
-  if((rel_bng >= 0) && (rel_bng <= 90))
-    return(true);
-
-  if((rel_bng >= 270) && (rel_bng <= 360))
-    return(true);
-  
-  return(false);
+  if(((rel_bng >= 0) && (rel_bng <= 90)) ||
+     ((rel_bng >= 270) && (rel_bng <= 360)))
+    m_stat_os_fore_of_cn = true;
+  else
+    m_stat_os_fore_of_cn = false;
 }
 
 //----------------------------------------------------------------
-// Procedure: aftOfContact
+// Procedure: setAftOfContact
 //   Purpose: Checks to see if ownship is presently aft of the contact.
 
-bool CPAEngineX::aftOfContact() const
+void CPAEngineX::setOSAftOfContact()
 {
   // First, edge case where ownship and contact are exact same position
-  if((osLAT == cnLAT) && (osLON == cnLON))
-    return(false);
-  
+  if((osLAT == cnLAT) && (osLON == cnLON)) {
+    m_stat_os_aft_of_cn = false;
+    return;
+  }
+    
   // returns value in the range [0,360)
   double rel_bng = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
   if((rel_bng >= 90) && (rel_bng <= 270))
-    return(true);
-  
-  return(false);
+    m_stat_os_aft_of_cn = true;
+  else
+    m_stat_os_aft_of_cn = false;
 }
 
 //----------------------------------------------------------------
