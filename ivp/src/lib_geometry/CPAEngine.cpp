@@ -141,7 +141,7 @@ double CPAEngine::evalCPA(double osCRS, double osSPD,
   k1 += (-2.0) * cgamOS * osSPD * cnLAT;  // (1,4)(4,1)(a)
   k1 += (-2.0) * sgamOS * osSPD * cnLON;  // (1,4)(4,1)(b)
 
-#if 0
+#if 1
   if(k1 > 0) // opening
     return(sqrt(k0));
 #endif
