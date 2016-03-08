@@ -28,6 +28,7 @@
 
 #include <iostream>
 #include "AOF_Contact.h"
+#include "AngleUtils.h"
 
 using namespace std;
 
@@ -59,6 +60,8 @@ AOF_Contact::AOF_Contact(IvPDomain gdomain) : AOF(gdomain)
   m_all_clear_distance_set = false;
   m_pwt_inner_distance_set = false;
   m_pwt_outer_distance_set = false;
+
+  m_stat_bng_os_cn = 0;
 }
 
 //----------------------------------------------------------------
@@ -179,8 +182,10 @@ bool AOF_Contact::initialize()
   
   if(m_collision_distance > m_all_clear_distance)
     return(false);
+
+  m_stat_bng_os_cn = relAng(m_osx, m_osy, m_cnx, m_cny);
   
-  m_cpa_engine = CPAEngine(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
+  m_cpa_engine = CPAEngineOld(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
 
   return(true);
 }

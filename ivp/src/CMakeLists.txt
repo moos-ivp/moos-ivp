@@ -191,7 +191,6 @@ SET(ROBOT_APPS
   app_alogclip
   app_aloghelm
   app_nsplug
-  app_cpabench
   pEchoVar
   pHelmIvP
   pMarinePID

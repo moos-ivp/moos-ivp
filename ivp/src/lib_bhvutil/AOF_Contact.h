@@ -27,6 +27,7 @@
 #include <vector>
 #include "AOF.h"
 #include "CPAEngine.h"
+#include "CPAEngineOld.h"
 
 class AOF_Contact: public AOF {
 public:
@@ -68,16 +69,9 @@ protected:
   bool   m_pwt_inner_distance_set;
   bool   m_pwt_outer_distance_set;
 
-  CPAEngine m_cpa_engine;
+  double m_stat_bng_os_cn;
+  
+  CPAEngineOld m_cpa_engine;
 };
 
 #endif
-
-
-
-
-
-
-
-
-
