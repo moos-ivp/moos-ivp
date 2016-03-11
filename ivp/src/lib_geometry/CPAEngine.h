@@ -55,7 +55,7 @@ public:
   bool   turnsLeft(double old_osh, double new_osh) const;
 
   bool   passesContact(double osh, double osv) const;
-  bool   passesContactPort(double osh, double osv) const;
+  bool   passesContactPort(double osh, double osv, bool report=false) const;
   bool   passesContactStarboard(double osh, double osv) const;
   bool   foreOfContact() const;
   bool   aftOfContact() const;

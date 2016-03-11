@@ -499,6 +499,15 @@ bool CPAEngine::crossesBowDist(double osCRS, double osSPD, double& xdist) const
     return(false);
   }
 
+  // Added March 11th, 2016. Check for parallel courses
+  double delta = angle180(osCRS - cnCRS);
+  if(delta < 0)
+    delta = -delta;
+  if((delta < 0.00001) || (delta > 179.99999)) {
+    xdist = -1;
+    return(false);
+  }
+
   // Create ownship line segment
   double x1 = osLON;
   double y1 = osLAT;
@@ -535,15 +544,11 @@ bool CPAEngine::crossesBowDist(double osCRS, double osSPD, double& xdist) const
   double os_time_to_cross    = os_dist_to_cross / osSPD;
   
   //----------------------------------------------------------------
-  // Handle another edge case (If contact speed < 0 treat as zero)
+  // Added March 16th, 2016. If contact speed is zero handle properly
   //----------------------------------------------------------------
-  if(cnSPD <= 0) {
-    xdist = cn_dist_to_cross;
-    return(true);
-  }
-
-  // Now that we sure cnSPD is not zero calculate cn_time_to_cross
-  double cn_time_to_cross  = cn_dist_to_cross / cnSPD;
+  double cn_time_to_cross  = 999999;
+  if(cnSPD > 0)
+    cn_time_to_cross  = cn_dist_to_cross / cnSPD;
 
   // Determine if inf line crossing point is fore or aft of contact's 
   // present position
@@ -636,6 +641,17 @@ bool CPAEngine::crossesSternDist(double osCRS, double osSPD, double& xdist) cons
     return(false);
   }
 
+  //-------------------------------------------------------------
+  // Added March 11th, 2016. Check for parallel courses
+  //-------------------------------------------------------------
+  double delta = angle180(osCRS - cnCRS);
+  if(delta < 0)
+    delta = -delta;
+  if((delta < 0.0001) || (delta > 179.9999)) {
+    xdist = -1;
+    return(false);
+  }
+
   // Create ownship line segment
   double x1 = osLON;
   double y1 = osLAT;
@@ -672,15 +688,11 @@ bool CPAEngine::crossesSternDist(double osCRS, double osSPD, double& xdist) cons
   double os_time_to_cross = os_dist_to_cross / osSPD;
   
   //----------------------------------------------------------------
-  // Handle another edge case (If contact speed < 0 treat as zero)
+  // Added March 16th, 2016. If contact speed is zero handle properly
   //----------------------------------------------------------------
-  if(cnSPD <= 0) {
-    xdist = cn_dist_to_cross;
-    return(true);
-  }
-
-  // Now that we sure cnSPD is not zero calculate cn_time_to_cross
-  double cn_time_to_cross  = cn_dist_to_cross / cnSPD;
+  double cn_time_to_cross  = 999999;
+  if(cnSPD > 0)
+    cn_time_to_cross  = cn_dist_to_cross / cnSPD;
 
   // Determine if inf line crossing point is fore or aft of contact's 
   // present position
@@ -828,7 +840,7 @@ bool CPAEngine::passesContact(double osCRS, double osSPD) const
 //            A "pass" means it will cross the line perpendicular to the 
 //            bow-stern line.
 
-bool CPAEngine::passesContactPort(double osCRS, double osSPD) const
+bool CPAEngine::passesContactPort(double osCRS, double osSPD, bool report) const
 {
   //============================================================
   // Handle Special Cases
@@ -863,10 +875,14 @@ bool CPAEngine::passesContactPort(double osCRS, double osSPD) const
     }
   }
 
+  if(report) cout << "Old PCP: 11111" << endl;
+  
   // Special Case 4: ownship is on the perpendicular bow-stern line
-  if(os_aft_of_contact && os_fore_of_contact)
+  if(os_aft_of_contact && os_fore_of_contact) {
+    if(report) cout << "Old PCP: 2222" << endl;
     return(os_port_of_contact);
-
+  }
+  
   //============================================================
   // Handle General Cases
   //============================================================
@@ -884,9 +900,10 @@ bool CPAEngine::passesContactPort(double osCRS, double osSPD) const
   //                           |                              //
   //            (Ownship)      |                              //
   //
-  if((os_aft_of_contact)  && (os_port_of_contact))
+  if((os_aft_of_contact)  && (os_port_of_contact)) {
+    if(report) cout << "Old PCP: 33333" << endl;
     return(!crossesStern(osCRS, osSPD));
-
+  }
 
   // Case #2: ownship is aft and starboard of contact         //
   //                           |                              //
@@ -902,9 +919,10 @@ bool CPAEngine::passesContactPort(double osCRS, double osSPD) const
   //                           |    (Ownship)                 //
   //                           |                              //
   //
-  if((os_aft_of_contact)  && (os_starboard_of_contact))
+  if((os_aft_of_contact)  && (os_starboard_of_contact)) {
+    if(report) cout << "Old PCP: 44444" << endl;
     return(crossesStern(osCRS, osSPD));
-
+  }
 
   // Case #3: ownship is fore and port of contact             //
   //                           |                              //
@@ -921,9 +939,11 @@ bool CPAEngine::passesContactPort(double osCRS, double osSPD) const
   //                           |                              //
   //                           |                              //
   //
-  if((os_fore_of_contact)  && (os_port_of_contact))
+  if((os_fore_of_contact)  && (os_port_of_contact)) {
+    if(report) cout << "Old PCP: 55555" << endl;
     return(!crossesBow(osCRS, osSPD));
-
+  }
+  
   // Case #4: ownship is fore and starboard of contact        //
   //                           |                              //
   //                           |     Case:                    //
@@ -939,8 +959,10 @@ bool CPAEngine::passesContactPort(double osCRS, double osSPD) const
   //                           |                              //
   //                           |                              //
   //
-  if((os_fore_of_contact)  && (os_starboard_of_contact))
+  if((os_fore_of_contact)  && (os_starboard_of_contact)) {
+    if(report) cout << "Old PCP: 6666" << endl;
     return(crossesBow(osCRS, osSPD));
+  }
 
   return(false);
 }
