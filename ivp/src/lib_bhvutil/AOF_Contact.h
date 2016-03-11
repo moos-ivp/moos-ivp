@@ -71,7 +71,7 @@ protected:
 
   double m_stat_bng_os_cn;
   
-  CPAEngineOld m_cpa_engine;
+  CPAEngine m_cpa_engine;
 };
 
 #endif

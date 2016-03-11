@@ -167,9 +167,6 @@ bool AOF_Contact::initialize()
   if(!m_domain.hasDomain("course") || !m_domain.hasDomain("speed"))
     return(false);
 
-  //if(m_domain.size() != 2)
-  //  return(false);
-
   if(!m_osx_set || !m_osy_set || !m_cnx_set) 
     return(false);
   
@@ -185,7 +182,7 @@ bool AOF_Contact::initialize()
 
   m_stat_bng_os_cn = relAng(m_osx, m_osy, m_cnx, m_cny);
   
-  m_cpa_engine = CPAEngineOld(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
+  m_cpa_engine = CPAEngine(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
 
   return(true);
 }
