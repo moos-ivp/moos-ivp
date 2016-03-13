@@ -72,7 +72,6 @@ public:
   
 
  protected:
-  void   initializePDMap();
   void   clearPDMap();
   void   addWarning(std::string);
 

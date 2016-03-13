@@ -743,6 +743,15 @@ bool CPAEngine::crossesBowOrStern(double osCRS, double osSPD) const
   if(osSPD == 0) 
     return(false);
 
+  //-------------------------------------------------------------
+  // Added March 11th, 2016. Check for parallel courses
+  //-------------------------------------------------------------
+  double delta = angle180(osCRS - cnCRS);
+  if(delta < 0)
+    delta = -delta;
+  if((delta < 0.0001) || (delta > 179.9999))
+    return(false);
+
   // Create ownship line segment
   double x1 = osLON;
   double y1 = osLAT;
