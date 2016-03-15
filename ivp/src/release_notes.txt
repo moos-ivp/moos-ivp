@@ -19,8 +19,11 @@ uXMS
  - fixed bug in uXMS where timestamps were rendered in full UTM time 
    rather than time since the start of the MOOSDB.
 
-pHelmIvP
+pHostInfo
+ - Added ability to see "Wi-Fi" network interfaces in addition to "WiFi".
+ - Added ability to see "USB 10/100/1000 LAN" interfaces on OSX
 
+pHelmIvP
  - Improved the CPAEngine to produce CPA calculations roughly 2.5x faster
    than previously.
 

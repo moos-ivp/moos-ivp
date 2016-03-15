@@ -186,7 +186,3 @@ bool AOF_Contact::initialize()
 
   return(true);
 }
-
-
-
-
