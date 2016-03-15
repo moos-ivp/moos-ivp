@@ -66,6 +66,7 @@ class HostInfo : public AppCastingMOOSApp
  protected: // state variables
 
   std::string   m_ip_osx_wifi;
+  std::string   m_ip_osx_wi_fi;
   std::string   m_ip_osx_airport;
   std::string   m_ip_osx_ethernet;
   std::string   m_ip_osx_usb_1000;  

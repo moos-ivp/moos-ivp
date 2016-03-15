@@ -302,10 +302,10 @@ int HostInfo::generateIPInfoFiles()
 void HostInfo::gatherIPInfoFromFiles()
 {
   string name = m_host_community;
-  m_ip_osx_wifi        = readOSXInfoIP("ipinfo_osx_wi_fi_" + name + ".txt");
+  m_ip_osx_wi_fi       = readOSXInfoIP("ipinfo_osx_wi_fi_" + name + ".txt");
   m_ip_osx_wifi        = readOSXInfoIP("ipinfo_osx_wifi_" + name + ".tx");
   m_ip_osx_airport     = readOSXInfoIP("ipinfo_osx_airport_" + name + ".txt");
-  m_ip_osx_usb_1000    = readOSXInfoIP("ipinfo_osx_usb_10_100_1000_lan_" + name + ".txt");
+  m_ip_osx_usb_1000    = readOSXInfoIP("ipinfo_osx_usb_10_100_1000_lan_"+name+".txt");
   m_ip_osx_ethernet    = readOSXInfoIP("ipinfo_osx_ethernet_" + name + ".txt");
   m_ip_osx_ethernet1   = readOSXInfoIP("ipinfo_osx_ethernet1_" + name + ".txt");
   m_ip_osx_ethernet2   = readOSXInfoIP("ipinfo_osx_ethernet2_" + name + ".txt");
@@ -359,6 +359,7 @@ void HostInfo::postIPInfo()
     addIPInfo(m_ip_osx_ethernet2, "OSX_ETHERNET2");
     addIPInfo(m_ip_osx_bridge100, "OSX_BRIDGE100");
     addIPInfo(m_ip_osx_wifi, "OSX_WIFI");
+    addIPInfo(m_ip_osx_wi_fi, "OSX_WI-FI");
   }    
 
 
