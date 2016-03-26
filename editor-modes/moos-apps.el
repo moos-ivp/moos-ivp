@@ -77,7 +77,7 @@
       '("pRangeSensorHangler" "local_range" "range_report" "target_name" "verbose" "disp_range_circle")
       '("uFldDepthChargeMgr" "depth_charge_config" "depth_charge_range_default" "depth_charge_amount_default" "depth_charge_delay_default" "depth_charge_delay_max" "replenish_range" "replenish_time" "replenish_station" "visual_hints")
 
-      '("uFldProtocolEval" "collision_range" "near_miss_range" "cpa_violation_range" "detection_range" "preferred_cpa_range" "time_threshold" "report_threshold" "delay_time_to_clear" "deploy_delay_time" "pulse" "pulse_range" "pulse_duration")
+      '("uFldProtocolEval" "collision_range" "near_miss_range" "cpa_violation_range" "detection_range" "preferred_cpa_range" "time_threshold" "report_threshold" "delay_time_to_clear" "deploy_delay_time" "pulse" "pulse_range" "pulse_duration" "vtype" "drop_track_range" "colregs_report_threshold" "safety_report_threshold" "max_time_between_reports" "sound_collision" "sound_near_miss" "sound_cpa_violation" "sound_rule_violation" "r14_penalty_function" "r14_max_course_penalty" "verbose")
 
       '("uScoreKeeper" "target_name" "hit_award" "miss_penalty" "range_dist")
       '("pParticleFilter" "range_report" "target_name" "my_contact" "partical_count" "no_parts" "n_threshold" "reserve_parts" "parts_disp_tick" "max_speed" "speed_noise" "course_noise" "range_var" "ceiling" "verbose" "particle_color")
