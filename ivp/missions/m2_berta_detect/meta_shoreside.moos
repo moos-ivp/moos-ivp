@@ -25,12 +25,38 @@ Processconfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
+  Run = uFldProtocolEval @ NewConsole = false
 
 	Run = uFldCollisionDetect @ NewConsole = false
 }
 
 #include plug_pShare.moos
 
+//---------------------------------------------------------
+// uFldProtocolEval
+	
+ProcessConfig = uFldProtocolEval
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  COLLISION_RANGE = 6
+  NEAR_MISS_RANGE = 10
+  CPA_VIOLATION_RANGE = 15
+  PREFERRED_CPA_RANGE = 30
+  DETECTION_RANGE = 30
+
+  TIME_THRESHOLD = 1              // seconds
+  REPORT_THRESHOLD = 45
+  
+  DELAY_TIME_TO_CLEAR = 100       // seconds
+  DEPLOY_DELAY_TIME = 30          // seconds
+
+  PULSE = TRUE
+  PULSE_RANGE = 25
+  PULSE_DURATION = 10             // seconds
+}
+	
 //--------------------------------------------------
 // uFldCollisionDetect
 
@@ -181,7 +207,7 @@ ProcessConfig = pLogger
   WildCardOmitPattern = *_STATUS
   WildCardOmitPattern = DB_VARSUMMARY
   WildCardOmitPattern = DB_RWSUMMARY
-  WildCardOmitPattern = NODE* 
+  //WildCardOmitPattern = NODE* 
   WildCardOmitPattern = APPCAST* 
   WildCardOmitPattern = PSHARE* 
   WildCardOmitPattern = *_ITER_GAP
