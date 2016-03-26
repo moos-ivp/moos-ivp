@@ -13,6 +13,8 @@ for ARGI; do
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
+    elif [ "${ARGI:0:7}" = "--warp=" ] ; then
+        TIME_WARP="${ARGI#--warp=*}"
     elif [ "${ARGI}" = "v1" ] ; then
 	VARIATION="1"
     elif [ "${ARGI}" = "v2" ] ; then
