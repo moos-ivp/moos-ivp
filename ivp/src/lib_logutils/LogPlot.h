@@ -53,6 +53,8 @@ public:
   double getMean() const          {return((m_max_val-m_min_val)/2);}
   double getMinVal() const        {return(m_min_val);}
   double getMaxVal() const        {return(m_max_val);}
+  double getMinVal(double mintime, double maxtime) const;
+  double getMaxVal(double mintime, double maxtime) const;
 
   std::string getVName() const    {return(m_vname);}
   std::string getVarName() const  {return(m_varname);}

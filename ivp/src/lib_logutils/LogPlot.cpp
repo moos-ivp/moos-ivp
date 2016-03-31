@@ -199,6 +199,42 @@ double LogPlot::getMaxTime() const
 }
 
 //---------------------------------------------------------------
+// Procedure: getMinVal(double mintime, double maxtime)
+
+double LogPlot::getMinVal(double mintime, double maxtime) const
+{
+  bool virgin = true;
+  double minval = 0;
+  for(unsigned int i=0; i<m_time.size(); i++) {
+    if((m_time[i] >= mintime) && (m_time[i] <= maxtime)) {
+      if(virgin || (m_value[i] < minval)) {
+	minval = m_value[i];
+	virgin = false;
+      }
+    }
+  }
+  return(minval);
+}
+
+//---------------------------------------------------------------
+// Procedure: getMaxVal(double mintime, double maxtime)
+
+double LogPlot::getMaxVal(double mintime, double maxtime) const
+{
+  bool virgin = true;
+  double maxval = 0;
+  for(unsigned int i=0; i<m_time.size(); i++) {
+    if((m_time[i] >= mintime) && (m_time[i] <= maxtime)) {
+      if(virgin || (m_value[i] > maxval)) {
+	maxval = m_value[i];
+	virgin = false;
+      }
+    }
+  }
+  return(maxval);
+}
+
+//---------------------------------------------------------------
 // Procedure: print
 
 void LogPlot::print() const
