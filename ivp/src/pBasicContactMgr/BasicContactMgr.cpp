@@ -47,30 +47,36 @@ using namespace std;
 
 BasicContactMgr::BasicContactMgr()
 {
+  // State Variables
   m_nav_x   = 0;
   m_nav_y   = 0;
   m_nav_hdg = 0;
   m_nav_spd = 0;
 
-  m_alert_verbose = false;
+  m_contacts_recap_posted = 0;
 
-  m_contact_max_age = 600;   // units in seconds 600 = 10 mins
-  m_display_radii   = false;
+  m_prev_contacts_count = 0;
 
+  m_closest_time = 0;  // Time that the closest became closest
+  m_closest_dist = 0;  // Distance between closest and next closest
+  m_closest_elap = 0;  // Time since closest became closest
+
+  // Configuration Variables
   m_default_alert_rng           = 1000;
   m_default_alert_rng_cpa       = 1000;
   m_default_alert_rng_color     = "gray65";
   m_default_alert_rng_cpa_color = "gray35";
 
-  m_use_geodesy = false;
+  m_display_radii   = false;
+  m_contact_max_age = 600;   // units in seconds 600 = 10 mins
+  m_contacts_recap_interval = 0;
 
+  m_contact_local_coords = "verbatim"; // Or lazy_lat_lon, or force_lat_lon
+  m_alert_verbose = false;
   m_decay_start = 15;
   m_decay_end   = 30;
 
-  m_contact_local_coords = "verbatim"; // Or lazy_lat_lon, or force_lat_lon
-
-  m_contacts_recap_interval = 0;
-  m_contacts_recap_posted = 0;
+  m_use_geodesy = false;
 }
 
 //---------------------------------------------------------
@@ -531,6 +537,12 @@ void BasicContactMgr::postSummaries()
       contacts_recap += ",range=" + doubleToString(range, 2);
       contacts_recap += ",age=" + doubleToString(age, 2);
     }
+  }
+
+  unsigned int contacts_count = m_par.getAlertedGroupCount(true);
+  if(contacts_count != m_prev_contacts_count) {
+    Notify("CONTACTS_COUNT", (double)(contacts_count));
+    m_prev_contacts_count = contacts_count;
   }
 
   if(m_prev_contacts_list != contacts_list) {

@@ -44,6 +44,7 @@ class PlatformAlertRecord
   bool containsAlertID(const std::string& alertid) const;
 
   std::string getAlertedGroup(bool alerted) const;
+  unsigned int getAlertedGroupCount(bool alerted) const;
 
   bool alertsPending() const;
 

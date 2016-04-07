@@ -176,6 +176,29 @@ string PlatformAlertRecord::getAlertedGroup(bool alerted) const
 }
 
 //---------------------------------------------------------------
+// Procedure: getAlertedGroupCount
+
+unsigned int PlatformAlertRecord::getAlertedGroupCount(bool alerted) const
+{
+  unsigned int count = 0;
+  
+  map<string, map<string, bool> >::const_iterator p1;
+  for(p1=m_par.begin(); p1!=m_par.end(); p1++) {
+    string vehicle = p1->first;
+    map<string, bool> imap = p1->second;
+    map<string, bool>::const_iterator p2;
+    for(p2=imap.begin(); p2!=imap.end(); p2++) {
+      string alertid = p2->first;
+      bool bval = p2->second;
+      if(alerted==bval) {
+	count++;
+      }
+    }
+  }
+  return(count);
+}
+
+//---------------------------------------------------------------
 // Procedure: alertsPending
 //   Purpose: Return true if any of the (vehicle,alertid) pairs in 
 //            the matrix have false value. 

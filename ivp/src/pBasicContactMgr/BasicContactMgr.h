@@ -96,6 +96,13 @@ class BasicContactMgr : public AppCastingMOOSApp
 
  protected: // State variables
 
+  double m_nav_x;
+  double m_nav_y;
+  double m_nav_hdg;
+  double m_nav_spd;
+
+  double m_contacts_recap_posted;
+
   // Main Record #2: The Vehicles (contacts) and position info
   std::map<std::string, NodeRecord>   m_map_node_records;
   std::map<std::string, unsigned int> m_map_node_alerts_total;
@@ -105,6 +112,11 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::map<std::string, double>       m_map_node_ranges_extrap;
   std::map<std::string, double>       m_map_node_ranges_cpa;
 
+  std::string m_closest_name;
+  double      m_closest_time;
+  double      m_closest_dist;
+  double      m_closest_elap;
+
   // memory of previous status postings: A posting to the MOOS var
   // is only made when a change is detected between curr and prev.
   std::string m_prev_contacts_list;
@@ -112,17 +124,11 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::string m_prev_contacts_alerted;
   std::string m_prev_contacts_unalerted;
   std::string m_prev_contacts_recap;
+  unsigned int m_prev_contacts_count;
 
   // A matrix: vehicle_name X alert_id. Cell val is Boolean indicating
   // if the alert is active or resolved, for the given vehicle.
   PlatformAlertRecord  m_par;
-
-  double m_nav_x;
-  double m_nav_y;
-  double m_nav_hdg;
-  double m_nav_spd;
-
-  double m_contacts_recap_posted;
 
 private:
   bool         m_use_geodesy;
