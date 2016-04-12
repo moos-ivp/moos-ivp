@@ -512,6 +512,9 @@ void BasicContactMgr::postSummaries()
   string contacts_unalerted;
   string contacts_recap;
 
+  string closest_contact;
+  double closest_range = 0;
+  
   map<string, NodeRecord>::const_iterator p;
   for(p=m_map_node_records.begin(); p!= m_map_node_records.end(); p++) {
     string     contact_name = p->first;
@@ -531,6 +534,13 @@ void BasicContactMgr::postSummaries()
     }    
     else { // Else if not retired
       double range = m_map_node_ranges_actual[contact_name];
+
+      // Update who is the closest contact and it's range
+      if((closest_contact == "") || (range < closest_range)) {
+	closest_contact = contact_name;
+	closest_range   = range;
+      }
+	
       if(contacts_recap != "")
 	contacts_recap += " # ";
       contacts_recap += "vname=" + contact_name;
@@ -548,6 +558,11 @@ void BasicContactMgr::postSummaries()
   if(m_prev_contacts_list != contacts_list) {
     Notify("CONTACTS_LIST", contacts_list);
     m_prev_contacts_list = contacts_list;
+  }
+
+  if((m_prev_contact_closest != closest_contact) && (closest_contact != "")){
+    Notify("CONTACT_CLOSEST", closest_contact);
+    m_prev_contact_closest = closest_contact;
   }
 
   contacts_alerted = m_par.getAlertedGroup(true);

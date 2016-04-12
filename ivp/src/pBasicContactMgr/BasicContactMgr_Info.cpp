@@ -128,7 +128,6 @@ void showExampleConfigAndExit()
 
 void showInterfaceAndExit()
 {
-  blk("                                                                    ");
   blu("===============================================================     ");
   blu("pBasicContactMgr INTERFACE                                          ");
   blu("===============================================================     ");
@@ -159,9 +158,11 @@ void showInterfaceAndExit()
   blk("------------------------------------                                ");
   blk("  Alert publications configured by the user.                        ");
   blk("                                                                    ");
+  blk("  CONTACTS_COUNT      = 2  (number of alerted contacts)             ");
   blk("  CONTACTS_LIST       = delta,gus,charlie,henry                     ");
   blk("  CONTACTS_ALERTED    = delta,charlie                               ");
   blk("  CONTACTS_UNALERTED  = gus,henry                                   ");
+  blk("  CONTACT_CLOSEST     = charlie                                     ");
   blk("  CONTACTS_RETIRED    = bravo,foxtrot,kilroy                        ");
   blk("  CONTACTS_RECAP      = name=delta,age=11.3,range=193.1 #           ");
   blk("                        name=gus,age=0.7,range=48.2 #               ");
