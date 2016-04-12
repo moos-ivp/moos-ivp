@@ -37,8 +37,11 @@ pHelmIvP
 
  - Augmented the Attractor behavior to use the IvPContactBehavior class
 
+pBasicContactMgr
  - Augmented pBasicContactMgr to post CONTACTS_COUNT to indicate the number
    of vehicles currently alerted
+ - Augmented to also post CONTACT_CLOSEST to indicate the contact closest 
+   to ownship.
 
 ======================================================================
 
