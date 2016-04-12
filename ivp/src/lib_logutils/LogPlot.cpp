@@ -203,16 +203,22 @@ double LogPlot::getMaxTime() const
 
 double LogPlot::getMinVal(double mintime, double maxtime) const
 {
+  //cout << "LogPlot::getMinVal() Begin=====================================" << endl;
+  //cout << " mintime:" << mintime << ", maxtime:" << maxtime << endl;
   bool virgin = true;
   double minval = 0;
   for(unsigned int i=0; i<m_time.size(); i++) {
+    //cout << "m_time[" << i << "]: m_value:" << m_value[i] << endl;
     if((m_time[i] >= mintime) && (m_time[i] <= maxtime)) {
+      //cout << "  candidate (satisfies time)" << endl;
       if(virgin || (m_value[i] < minval)) {
+	//cout << "  UPDATE: new minval:" << minval << endl;
 	minval = m_value[i];
 	virgin = false;
       }
     }
   }
+  //cout << "LogPlot::getMinVal() End =====================================" << endl;
   return(minval);
 }
 
