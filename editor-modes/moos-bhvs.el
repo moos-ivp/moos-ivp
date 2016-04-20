@@ -23,7 +23,7 @@
 
 (setq moos-bhv-and-keyword-list
       (list
-       '("BHV_Waypoint" "capture_radius" "capture_line" "cycleflag" "lead" "lead_damper" "lead_to_start" "order" "points" "point" "polygon" "post_suffix" "radius" "repeat" "nm_radius" "slip_radius" "ipf_type" "ipf-type" "speed" "speed_alt" "use_alt_speed" "visual_hints" "wptflag" "wpt_status_var" "wpt_index_var" "wpt_dist_to_prev" "wpt_dist_to_next" "efficiency_measure")
+       '("BHV_Waypoint" "capture_radius" "capture_line" "cycleflag" "lead" "lead_damper" "lead_to_start" "order" "points" "point" "polygon" "post_suffix" "radius" "repeat" "nm_radius" "slip_radius" "ipf_type" "ipf-type" "speed" "speed_alt" "use_alt_speed" "visual_hints" "wptflag" "wpt_status_var" "wpt_index_var" "wpt_dist_to_prev" "wpt_dist_to_next" "efficiency_measure" "crs_spd_zaic_ratio")
        '("BHV_OpRegion" "max_time" "max_depth" "min_altitude" "polygon" "trigger_entry_time" "trigger_exit_time" "visual_hints" "breached_altitude_flag" "breached_depth_flag" "breached_poly_flag" "breached_time_flag" "reset_var" "time_remaining_var" "opregion_poly_var")
        '("BHV_Loiter" "acquire_dist" "capture_radius" "center_activate" "center_assign" "clockwise" "polygon" "post_suffix" "radius" "nm_radius" "slip_radius" "speed" "speed_alt" "use_alt_speed" "spiral_factor" "visual_hints" "xcenter_assigne" "ycenter_assign")
        '("BHV_PeriodicSpeed" "basewidth" "initially_busy" "peakwidth" "period_busy" "period_lazy" "period_speed" "reset_upon_running" "summit_delta")
