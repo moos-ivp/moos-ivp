@@ -107,6 +107,7 @@ private:
 
   std::vector<std::string> m_vnames;
   std::vector<std::string> m_vtypes;
+  std::vector<std::string> m_vcolors;
   std::vector<double>      m_vlengths;
 
   std::string m_alt_nav_prefix;

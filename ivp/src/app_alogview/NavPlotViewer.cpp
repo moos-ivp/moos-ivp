@@ -151,9 +151,11 @@ void NavPlotViewer::setDataBroker(ALogDataBroker dbroker)
   for(unsigned int aix=0; aix<m_dbroker.sizeALogs(); aix++) {
     string vehicle_name = m_dbroker.getVNameFromAix(aix);
     string vehicle_type = m_dbroker.getVTypeFromAix(aix);
+    string vehicle_color = m_dbroker.getVColorFromAix(aix);
     double vehicle_length = m_dbroker.getVLengthFromAix(aix);
     m_vnames.push_back(vehicle_name);
     m_vtypes.push_back(vehicle_type);
+    m_vcolors.push_back(vehicle_color);
     m_vlengths.push_back(vehicle_length);
   }
 }
@@ -451,6 +453,9 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
   }
   ColorPack  vehi_color = m_vehi_settings.getColorInactiveVehicle();
   vehi_color = m_vehi_settings.getColorActiveVehicle();
+
+  if(m_vcolors[index] != "")
+    vehi_color.setColor(m_vcolors[index]);
   
   ColorPack vname_color = m_vehi_settings.getColorVehicleName();  
   string    vnames_mode = m_vehi_settings.getVehiclesNameMode();
