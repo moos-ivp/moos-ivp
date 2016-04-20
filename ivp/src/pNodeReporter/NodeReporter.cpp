@@ -305,6 +305,10 @@ bool NodeReporter::OnStartUp()
       m_record.setType(value);
       handled = true;
     }
+    if((param == "platform_color") && isColor(value)) { 
+      m_record.setColor(value);
+      handled = true;
+    }
     else if((param =="platform_length") ||     // Preferred
 	    (param =="vessel_length")) {       // Deprecated
       if(isNumber(value) && (dval >= 0)) {
