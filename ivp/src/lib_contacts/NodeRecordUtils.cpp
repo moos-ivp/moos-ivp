@@ -49,6 +49,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
       new_record.setName(value);
     else if(param == "TYPE")
       new_record.setType(value);
+    else if(param == "COLOR")
+      new_record.setColor(value);
     else if(param == "GROUP")
       new_record.setGroup(value);
     else if(param == "MODE")

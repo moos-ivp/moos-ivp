@@ -173,6 +173,8 @@ string NodeRecord::getSpec(bool terse) const
     str += ",LON=" + doubleToStringX(m_lon, 8);
   if(m_type != "")
     str += ",TYPE=" + m_type;
+  if(m_color != "")
+    str += ",COLOR=" + m_color;
   if(m_group != "")
     str += ",GROUP=" + m_group;
   if(m_mode != "")
@@ -244,6 +246,16 @@ string NodeRecord::getType(string default_type) const
   if(m_type == "")
     return(default_type);
   return(m_type);
+}
+
+//---------------------------------------------------------------
+// Procedure: getColor
+
+string NodeRecord::getColor(string default_color) const
+{
+  if(m_color == "")
+    return(default_color);
+  return(m_color);
 }
 
 //---------------------------------------------------------------
