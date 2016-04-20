@@ -45,6 +45,7 @@
 #include "Shape_WAMV.h"
 #include "Shape_AUV.h"
 #include "Shape_Glider.h"
+#include "Shape_MOKAI.h"
 #include "Shape_Gateway.h"
 #include "Shape_Diamond.h"
 #include "Shape_Circle.h"
@@ -640,7 +641,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   double factor_x = m_back_img.get_pix_per_mtr_x();
   double factor_y = m_back_img.get_pix_per_mtr_y();
   
-  if((vehibody == "kayak") || (vehibody == "mokai")) {
+  if(vehibody == "kayak") {
     if(vlength > 0) {
       factor_x *= (vlength / g_kayakLength);
       factor_y *= (vlength / g_kayakLength);
@@ -652,6 +653,24 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     if(outer_line)
       drawGLPoly(g_kayakBody, g_kayakBodySize, black, outer_line, factor_x);    
     drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, gray, 0, factor_x);
+    glTranslatef(cx, cy, 0);
+  }
+  else if(vehibody == "mokai") {
+    if(vlength > 0) {
+      factor_x *= (vlength / g_mokaiLength);
+      factor_y *= (vlength / g_mokaiLength);
+    }
+    double cx = g_mokaiCtrX * factor_x;
+    double cy = g_mokaiCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_mokaiStern,  g_mokaiSternSize, body_color, 0, factor_x);    
+    drawGLPoly(g_mokaiSlice1, g_mokaiSlice1Size, body_color, 0, factor_x);    
+    drawGLPoly(g_mokaiSlice2, g_mokaiSlice2Size, body_color, 0, factor_x);    
+    drawGLPoly(g_mokaiSlice3, g_mokaiSlice3Size, body_color, 0, factor_x);    
+    drawGLPoly(g_mokaiBow,    g_mokaiBowSize, body_color, 0, factor_x);    
+    if(outer_line)
+      drawGLPoly(g_mokaiBody, g_mokaiBodySize, black, outer_line, factor_x);    
+    drawGLPoly(g_mokaiMidOpen, g_mokaiMidOpenSize, gray, 0, factor_x);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "wamv"){
