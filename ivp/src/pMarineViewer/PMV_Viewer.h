@@ -26,6 +26,7 @@
 
 #include <iostream>
 #include <string>
+#include <map>
 #include "MarineViewer.h"
 #include "VehicleSet.h"
 #include "VarDataPair.h"
@@ -112,9 +113,6 @@ class PMV_Viewer : public MarineViewer
   int      m_lclick_ix;
   int      m_rclick_ix;
 
-  std::string m_button_one;
-  std::string m_button_two;
-
   std::string m_left_mouse_key;
   std::string m_right_mouse_key;
   std::vector<VarDataPair> m_var_data_pairs_all;
@@ -126,6 +124,8 @@ class PMV_Viewer : public MarineViewer
   bool        m_centric_view_sticky;
 
   VPlug_GeoShapesMap  m_geoshapes_map;
+
+  std::map<std::string, std::string> m_map_vcolor;
 };
 
 #endif 

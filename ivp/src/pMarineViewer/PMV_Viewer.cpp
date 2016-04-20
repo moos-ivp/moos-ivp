@@ -240,6 +240,14 @@ bool PMV_Viewer::setParam(string param, string value)
     else
       handled = false;
   }
+  else if(param == "vcolor") {
+    string vname  = biteStringX(value, '=');
+    string vcolor = value;
+    if((vname != "") && isColor(vcolor)) {
+      m_map_vcolor[vname] = vcolor;
+      handled = true;
+    }
+  }
   else if(param == "new_report_variable") {
     handled = m_vehiset.setParam(param, value);
   }
@@ -361,6 +369,9 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   else
     vehi_color = m_vehi_settings.getColorInactiveVehicle();
 
+  if(m_map_vcolor.count(vname) != 0) 
+    vehi_color.setColor(m_map_vcolor[vname]);
+  
   ColorPack vname_color = m_vehi_settings.getColorVehicleName();  
   string vnames_mode = m_vehi_settings.getVehiclesNameMode();
   
