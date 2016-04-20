@@ -45,6 +45,7 @@ class ALogDataBroker
 
   std::string getVNameFromAix(unsigned int) const;
   std::string getVTypeFromAix(unsigned int) const;
+  std::string getVColorFromAix(unsigned int) const;
   double      getVLengthFromAix(unsigned int) const;
   double      getLogStartFromAix(unsigned int) const;
 
@@ -86,6 +87,7 @@ class ALogDataBroker
   std::vector<std::string>  m_base_dirs;     // splitALogFiles()
   std::vector<std::string>  m_vnames;        // setTimingInfo()
   std::vector<std::string>  m_vtypes;        // setTimingInfo()
+  std::vector<std::string>  m_vcolors;       // setTimingInfo()
   std::vector<double>       m_vlengths;      // setTimingInfo()
   std::vector<double>       m_logstart;      // setTimingInfo()
   std::vector<double>       m_logtmin;       // setTimingInfo()

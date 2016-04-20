@@ -41,6 +41,7 @@ class SplitHandler
   std::string m_time_max;
   std::string m_vname;
   std::string m_vtype;
+  std::string m_vcolor;
   std::string m_vlength;
 
   bool m_alog_file_confirmed;

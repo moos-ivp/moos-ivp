@@ -109,6 +109,7 @@ bool ALogDataBroker::setTimingInfo()
     double logtmax  = 0;
     string vname   = "ghost";
     string vtype   = "glider";
+    string vcolor  = "";
     string vlength = "3";
     
     vector<string> lines = fileBuffer(m_summ_files[aix]);
@@ -123,6 +124,8 @@ bool ALogDataBroker::setTimingInfo()
 	logtmax = atof(value.c_str());
       else if(param == "vname")
 	vname = value;
+      else if(param == "vcolor")
+	vcolor = value;
       else if(param == "vtype")
 	vtype = value;
       else if(param == "vlength")
@@ -131,6 +134,7 @@ bool ALogDataBroker::setTimingInfo()
 
     m_vnames.push_back(vname);
     m_vtypes.push_back(vtype);
+    m_vcolors.push_back(vcolor);
     m_vlengths.push_back(atof(vlength.c_str()));
     m_logstart.push_back(logstart);
     if((aix==0) || (logstart < m_global_logstart))
@@ -182,6 +186,17 @@ string ALogDataBroker::getVTypeFromAix(unsigned int aix) const
   if(aix >= m_vtypes.size()) 
     return("");
   return(m_vtypes[aix]);
+}
+
+//----------------------------------------------------------------
+// Procedure: getVColorFromAix
+//      Note: An "aix" is an index into list of known vehicle names
+
+string ALogDataBroker::getVColorFromAix(unsigned int aix) const
+{
+  if(aix >= m_vcolors.size()) 
+    return("");
+  return(m_vcolors[aix]);
 }
 
 //----------------------------------------------------------------

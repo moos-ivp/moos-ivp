@@ -178,9 +178,12 @@ bool SplitHandler::handleMakeSplitFiles()
 
       string sval    = tolower(getDataEntry(line_raw));
       string vtype   = tokStringParse(sval, "type", ',', '=');      
+      string vcolor  = tokStringParse(sval, "color", ',', '=');      
       string vlength = tokStringParse(sval, "length", ',', '=');      
       if(vtype != "")
 	m_vtype   = vtype;
+      if(vcolor != "")
+	m_vcolor   = vcolor;
       if(vlength != "")
 	m_vlength = vlength;
     }
@@ -256,6 +259,8 @@ bool SplitHandler::handleMakeSplitSummary()
   fprintf(f, "vname=%s\n", m_vname.c_str());
   if(m_vtype != "")
     fprintf(f, "vtype=%s\n", m_vtype.c_str());
+  if(m_vcolor != "")
+    fprintf(f, "vcolor=%s\n", m_vcolor.c_str());
   if(m_vlength != "")
     fprintf(f, "vlength=%s\n", m_vlength.c_str());
 
