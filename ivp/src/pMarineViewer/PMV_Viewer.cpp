@@ -369,6 +369,11 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   else
     vehi_color = m_vehi_settings.getColorInactiveVehicle();
 
+  // Possibly get the color from the node record
+  if(record.getColor() != "")
+    vehi_color.setColor(record.getColor());
+
+  // Vehicle color can be overruled in pMarineViewer with the vcolor param
   if(m_map_vcolor.count(vname) != 0) 
     vehi_color.setColor(m_map_vcolor[vname]);
   
