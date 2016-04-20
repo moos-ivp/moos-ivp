@@ -126,6 +126,7 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::string m_prev_contacts_recap;
   std::string m_prev_contact_closest;
   unsigned int m_prev_contacts_count;
+  double       m_prev_contact_closest_time;
 
   // A matrix: vehicle_name X alert_id. Cell val is Boolean indicating
   // if the alert is active or resolved, for the given vehicle.

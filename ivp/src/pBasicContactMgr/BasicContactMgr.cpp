@@ -56,7 +56,8 @@ BasicContactMgr::BasicContactMgr()
   m_contacts_recap_posted = 0;
 
   m_prev_contacts_count = 0;
-
+  m_prev_contact_closest_time = 0;
+  
   m_closest_time = 0;  // Time that the closest became closest
   m_closest_dist = 0;  // Distance between closest and next closest
   m_closest_elap = 0;  // Time since closest became closest
@@ -562,6 +563,7 @@ void BasicContactMgr::postSummaries()
 
   if((m_prev_contact_closest != closest_contact) && (closest_contact != "")){
     Notify("CONTACT_CLOSEST", closest_contact);
+    Notify("CONTACT_CLOSEST_TIME", m_curr_time);
     m_prev_contact_closest = closest_contact;
   }
 
