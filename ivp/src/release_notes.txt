@@ -6,6 +6,10 @@ pMarineViewer
 
 alogscan
   - augmented the report output to show the logged data rate.
+  - A new --noaux flag instructs the scan to ignore the auxilliary source
+    information when binning entries based on source. E.g., the sources
+    pHelmIvP:loiter, pHelmIvP:return, and pHelmIvP would all be binned
+    under pHelmIvP.
 
 alogcd (New utility)
   - Analyze alog file for collision/encounter reports and tally.
