@@ -197,7 +197,7 @@ void showManualAndExit()
   cout << "|   #define TEMP 98.6                         |               " << endl;
   cout << "|   #ifdef TEMP                               |               " << endl;
   cout << "|     echo Temperature is known: $(TEMP)      |               " << endl;
-  cout << "|   else                                      |               " << endl;
+  cout << "|   #else                                     |               " << endl;
   cout << "|     echo Temperature is unknown.            |               " << endl;
   cout << "|   #endif                                    |               " << endl;
   cout << "+---------------------------------------------+                   " << endl;
@@ -214,7 +214,7 @@ void showManualAndExit()
   cout << "|   #define TEMP 100.2                        |                   " << endl;
   cout << "|   #ifdef TEMP 98.6                          |                   " << endl;
   cout << "|     echo Temperature is normal.             |                   " << endl;
-  cout << "|   else                                      |                   " << endl;
+  cout << "|   #else                                     |                   " << endl;
   cout << "|     echo Temperature is abnormal: $(TEMP)   |                   " << endl;
   cout << "|   #endif                                    |                   " << endl;
   cout << "+---------------------------------------------+                   " << endl;
@@ -228,7 +228,7 @@ void showManualAndExit()
   cout << "|     echo Eat it!                            |                   " << endl;
   cout << "|   #elseifdef APPLE GREEN                    |                   " << endl;
   cout << "|     echo Wait a bit longer before picking!  |                   " << endl;
-  cout << "|   else                                      |                   " << endl;
+  cout << "|   #else                                     |                   " << endl;
   cout << "|     echo Throw it out!                      |                   " << endl;
   cout << "|   #endif                                    |                   " << endl;
   cout << "+---------------------------------------------+                   " << endl;
@@ -243,7 +243,7 @@ void showManualAndExit()
   cout << "|     echo Eat it!                            |                   " << endl;
   cout << "|   #elseifdef APPLE GREEN                    |                   " << endl;
   cout << "|     echo Wait a bit longer before picking!  |                   " << endl;
-  cout << "|   else                                      |                   " << endl;
+  cout << "|   #else                                     |                   " << endl;
   cout << "|     echo Throw it out!                      |                   " << endl;
   cout << "|   #endif                                    |                   " << endl;
   cout << "+---------------------------------------------+                   " << endl;
@@ -260,7 +260,7 @@ void showManualAndExit()
   cout << "|   #define BALANCE 23                        |                   " << endl;
   cout << "|   #ifndef BALANCE                           |                   " << endl;
   cout << "|     echo BALANCE not known                  |                   " << endl;
-  cout << "|   else                                      |                   " << endl;
+  cout << "|   #else                                     |                   " << endl;
   cout << "|     echo BALANCE is $(BALANCE)              |                   " << endl;
   cout << "|   #endif                                    |                   " << endl;
   cout << "+---------------------------------------------+                   " << endl;
