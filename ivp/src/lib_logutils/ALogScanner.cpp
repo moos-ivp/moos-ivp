@@ -46,7 +46,7 @@ ScanReport ALogScanner::scan()
       string src = entry.getSource();
       // If the source is the IvP Helm, then see if the behavior
       // information is present and append to the source
-      if(src == "pHelmIvP") {
+      if((src == "pHelmIvP") && m_use_full_source) {
 	string src_aux = entry.getSrcAux();
 	if(src_aux != "") {
 	  if(strContains(src_aux, ':')) {

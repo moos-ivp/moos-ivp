@@ -32,15 +32,19 @@
 class ALogScanner
 {
  public:
-  ALogScanner() {m_file=0;}
+  ALogScanner() {m_file=0; m_use_full_source=true;}
   ~ALogScanner() {}
 
   bool       openALogFile(std::string);
   ScanReport scan();
   ScanReport scanRateOnly();
 
+  void  setUseFullSource(bool v) {m_use_full_source=v;}
+  
  private:
-  FILE *m_file;
+  FILE    *m_file;
+  bool     m_use_full_source;
+
 };
 
 #endif 
