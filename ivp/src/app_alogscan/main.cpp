@@ -70,11 +70,13 @@ int main(int argc, char *argv[])
     cout << "  -h,--help     Displays this help message           " << endl;
     cout << "  -v,--version  Displays the current release version " << endl;
     cout << "  --rate_only   Only report the data rate            " << endl;
+    cout << "  --noaux       Ignore auxilliary source info        " << endl;
     cout << "                                                     " << endl;
     cout << "See also: aloggrp, alogrm, alogclip, alogview        " << endl;
     return(0);
   }
 
+  bool   use_full_source    = true;
   bool   data_rate_only     = false;
   bool   reverse_requested  = false;
   bool   app_stat_requested = false;
@@ -112,6 +114,8 @@ int main(int argc, char *argv[])
       app_stat_requested = true;
     else if(sarg == "--rate_only")
       data_rate_only = true;
+    else if(sarg == "--noaux")
+      use_full_source = false;
     else if((sarg == "--loglist") || (sarg == "-l"))
       loglist_requested = true;
     else if((sarg == "--nocolors") || (sarg == "-n"))
@@ -140,6 +144,7 @@ int main(int argc, char *argv[])
   ScanHandler handler;
   handler.setParam("sort_style",  sort_style);
   handler.setParam("proc_colors", proc_colors);
+  handler.setParam("use_full_source", boolToString(use_full_source));
   handler.handle(alogfile, data_rate_only);
 
   if(!data_rate_only)

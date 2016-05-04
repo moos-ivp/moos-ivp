@@ -48,6 +48,7 @@ class ScanHandler
 
   ScanReport  m_report;
   bool        m_use_colors;
+  bool        m_use_full_source;
   
   std::map<std::string, std::string> m_pcolor_map;
   std::vector<std::string>           m_pcolors;

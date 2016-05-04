@@ -50,6 +50,7 @@ ScanHandler::ScanHandler()
   m_next_color_ix = 2;
 
   m_use_colors = true;
+  m_use_full_source = true;
 }
 
 //--------------------------------------------------------
@@ -61,6 +62,8 @@ void ScanHandler::setParam(const string& param, const string& value)
     m_sort_style = value;
   else if(param == "proc_colors")
     setBooleanOnString(m_use_colors, value);
+  else if(param == "use_full_source")
+    setBooleanOnString(m_use_full_source, value);
 }
 
 //--------------------------------------------------------
@@ -97,6 +100,9 @@ string ScanHandler::procColor(string proc_name)
 void ScanHandler::handle(const string& alogfile, bool rate_only)
 {
   ALogScanner scanner;
+
+  scanner.setUseFullSource(m_use_full_source);
+  
   bool ok = scanner.openALogFile(alogfile);
   if(!ok) {
     cout << "Unable to find or open " << alogfile << " - Exiting." << endl;
