@@ -231,8 +231,7 @@ double ZAIC_PEAK::getParam(string param, unsigned int index)
 
 
 //-------------------------------------------------------------
-// Procedure: evalPoint(int)
-//
+// Procedure: evalPoint(int, bool)
 
 double ZAIC_PEAK::evalPoint(unsigned int ix, bool maxval)
 {
@@ -431,7 +430,6 @@ void ZAIC_PEAK::insistSummit(unsigned int sx)
 
 //-------------------------------------------------------------
 // Procedure: setPDMap()
-//
 
 PDMap *ZAIC_PEAK::setPDMap(double tolerance)
 {
@@ -518,9 +516,3 @@ PDMap *ZAIC_PEAK::setPDMap(double tolerance)
 
   return(pdmap);
 }
-
-
-
-
-
-

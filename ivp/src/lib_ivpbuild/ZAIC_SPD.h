@@ -51,8 +51,8 @@ public:
   bool         stateOK()     {return(m_state_ok);};
   std::string  getWarnings() {return(m_warning);};
   IvPFunction* extractOF();
-  IvPFunction* extractIvPFunction() 
-  {return(extractOF());};
+  IvPDomain    getIvPDomain() {return(m_ivp_domain);}
+  IvPFunction* extractIvPFunction() {return(extractOF());};
   
 protected:
   void   setPointLocations();

@@ -50,6 +50,8 @@ public:
   bool   stateOK()          {return(m_state_ok);}
   std::string getWarnings() {return(m_warning);}
 
+  IvPDomain    getIvPDomain() {return(m_ivp_domain);}
+  
 protected:  // Parameters
   double  m_summit;
   double  m_summit_delta;
@@ -75,19 +77,4 @@ protected: // State values
   IvPDomain    m_ivp_domain;
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
