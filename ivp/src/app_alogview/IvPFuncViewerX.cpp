@@ -258,6 +258,14 @@ void IvPFuncViewerX::setTime(double time)
   m_curr_iter = (unsigned int)(m_iter_plot.getValueByTime(m_curr_time));  
   updateIPF();
 
+  cout << "===================================== IvPFunctionViewer::setTime" << endl;
+  map<string, IPF_Plot>::iterator p;
+  for(p=m_map_ipf_plots.begin(); p!=m_map_ipf_plots.end(); p++) {
+    string bhv_name = p->first;
+    int psize = p->second.size();
+    cout << "bhv_name:" << bhv_name << "  psize:" << psize << endl;
+  }
+  
   updateScope();
 }
 
@@ -336,10 +344,14 @@ double IvPFuncViewerX::getCurrTime() const
 
 string IvPFuncViewerX::getCurrPriority(string source) 
 {
+  cout << "IvPFuncViewerX::getPriority(): iter:" << m_curr_iter << endl;
   if(m_map_ipf_plots.count(source) == 0)
     return("--");
 
   const IPF_Plot& ipf_plot = m_map_ipf_plots[source];
+
+  cout << "IvPFuncViewerX::getPriority(): psize:" << ipf_plot.size() << endl;
+
   double pwt = ipf_plot.getPwtByHelmIteration(m_curr_iter);
   
   string result = doubleToString(pwt, 3);

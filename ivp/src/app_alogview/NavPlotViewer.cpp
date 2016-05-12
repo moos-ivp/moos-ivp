@@ -310,7 +310,6 @@ void NavPlotViewer::addLogPlotStartTime(double start_time)
   m_start_time.push_back(start_time);
 }
 
-
 //-------------------------------------------------------------
 // Procedure: addVPlugPlot
 
@@ -415,6 +414,7 @@ void NavPlotViewer::drawNavPlots()
     if(m_navx_gt_plot[i].size() > 0) 
       drawNavPlot(i, true);
   }
+
 }
 
 //-------------------------------------------------------------
@@ -425,7 +425,6 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
 {
   if(index >= m_navx_plot.size())
     return;
-  
   if(m_navx_plot[index].size() == 0)
     return;
 
@@ -433,6 +432,7 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
   double x = 0;
   double y = 0;
   double heading = 0;
+
   if(index < m_navx_plot.size()) {
     if(alt_nav)
       x = m_navx_gt_plot[index].getValueByTime(ctime);
@@ -445,6 +445,7 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
     else
       y = m_navy_plot[index].getValueByTime(ctime);
   }
+
   if(index < m_hdg_plot.size()) {
     if(alt_nav) 
       heading = m_hdg_gt_plot[index].getValueByTime(ctime);
@@ -454,6 +455,7 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
   ColorPack  vehi_color = m_vehi_settings.getColorInactiveVehicle();
   vehi_color = m_vehi_settings.getColorActiveVehicle();
 
+  // Check if the color was specified individually (eg NODE_REPORT)
   if(m_vcolors[index] != "")
     vehi_color.setColor(m_vcolors[index]);
   
@@ -504,8 +506,10 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
 
 void NavPlotViewer::drawTrails()
 {
-  unsigned int i, vsize = m_navx_plot.size();
-  for(i=0; i<vsize; i++)
+  if(m_trails == "none")
+    return;
+
+  for(unsigned int i=0; i<m_navx_plot.size(); i++)
     drawTrail(i);
 }
 
@@ -514,43 +518,47 @@ void NavPlotViewer::drawTrails()
 
 void NavPlotViewer::drawTrail(unsigned int index)
 {
-  if(m_trails == "none")
-    return;
-
-  double ctime = getCurrTime();
-  
+  double    ctime = getCurrTime();
   double    pt_size = m_vehi_settings.getTrailsPointSize();
   bool      connect = m_vehi_settings.isViewableTrailsConnect();
   ColorPack tcolor  = m_vehi_settings.getColorTrails();
 
-  bool alltrail = false;
-  if(m_trails == "all")
-    alltrail = true;
+  // We cannot assume there are equal numbers of NAV_X and NAV_Y entries.
+  // Especially true if the alog file has been "pared" with alogpare.
+
+  // Determine the absolute min and max times between x and y plots
+  double starttime = m_navx_plot[index].getMinTime();
+  if(starttime < m_navy_plot[index].getMinTime())
+    starttime = m_navy_plot[index].getMinTime();
+  double endtime = m_navx_plot[index].getMaxTime();
+  if(endtime > m_navy_plot[index].getMaxTime())
+    endtime = m_navy_plot[index].getMaxTime();
+
+  double tgap = 0.5;
 
   XYSegList segl;
 
-  unsigned int i, npsize = m_navx_plot[index].size();
-  for(i=0; i<npsize; i++) {
-    double itime = m_navx_plot[index].getTimeByIndex(i);
-    if(alltrail || (itime < ctime)) {
-      double x = m_navx_plot[index].getValueByIndex(i);
-      double y = m_navy_plot[index].getValueByIndex(i);
-      segl.add_vertex(x, y);
-    }
-  }
-
   if(m_trails == "window") {
-    double trails_length = m_vehi_settings.getTrailsLength();
-    unsigned int points = segl.size();
-    if(trails_length < points) {
-      XYSegList new_segl;
-      unsigned int cutpoints = points - (unsigned int)(trails_length);
-      for(i=cutpoints; i<points; i++)
-	new_segl.add_vertex(segl.get_vx(i), segl.get_vy(i));
-      segl = new_segl;
-    }
+    unsigned int trails_length = m_vehi_settings.getTrailsLength();
+    double timewindow = (double)(trails_length) * tgap;
+    starttime = ctime - timewindow;
+    if(starttime < m_navx_plot[index].getMinTime())
+      starttime = m_navx_plot[index].getMinTime();
+    if(starttime < m_navy_plot[index].getMinTime())
+      starttime = m_navy_plot[index].getMinTime();
+    endtime = ctime;
   }
+  else if(m_trails == "to-present")  // (m_trails == to-present)
+    endtime = ctime;
+  //else  m_trails=all - we just keep the global min/max times as
+  // our start and end times.
 
+  for(double time=starttime; time <= endtime; time += tgap) {
+    double x = m_navx_plot[index].getValueByTime(time);
+    double y = m_navy_plot[index].getValueByTime(time);
+    segl.add_vertex(x, y);
+  }
+  
   segl.set_color("vertex", tcolor);
   segl.set_vertex_size(pt_size);
 
