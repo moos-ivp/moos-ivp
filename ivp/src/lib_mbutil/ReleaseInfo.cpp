@@ -29,7 +29,6 @@ using namespace std;
 
 //----------------------------------------------------------------
 // Procedure: showReleaseInfo
-// 
 
 void showReleaseInfo(string app, string license_info)
 {
@@ -47,7 +46,13 @@ void showReleaseInfo(string app, string license_info)
   cout << "" << endl;
 }
 
+//----------------------------------------------------------------
+// Procedure: showReleaseInfoAndExit
 
-
+void showReleaseInfoAndExit(string app, string license_info)
+{
+  showReleaseInfo(app, license_info);
+  exit(0);
+}
 
 
