@@ -66,6 +66,8 @@ public:
   IvPFunction* extractIvPFunction(bool maxval=true) 
   {return(extractOF(maxval));}
   
+  IvPDomain getIvPDomain() const {return(m_ivp_domain);}
+
 protected:
   double evalPoint(unsigned int pt_ix, bool maxval=true);
   double evalPoint(unsigned int summit_ix, unsigned int pt_ix);
