@@ -388,11 +388,16 @@ PDMap *ZAIC_SPD::setPDMap()
 
     double run   = (double)(m_ipt_two);
     double slope = break_ties;
+
     if(run > 0)
-      //      slope  = m_maxutil / run;
       slope  = (m_maxutil - m_lminutil) / run;
     double intcpt = m_maxutil - (slope * m_ipt_two);
-
+    if(m_ipt_low == m_ipt_one) {
+      if(run > 0)
+	slope  = (m_maxutil - m_lowspd_util) / run;
+      intcpt = m_maxutil - (slope * m_ipt_two);
+    }
+    
     piece[1]->wt(0) = slope;
     piece[1]->wt(1) = intcpt;
     piece_count++;
@@ -443,6 +448,23 @@ PDMap *ZAIC_SPD::setPDMap()
 	//slope  = -(m_hghspd_util - m_hminutil) / run;
     }
     double intcpt = m_hminutil - (slope * m_ipt_high);
+
+    piece[3]->wt(0) = slope;
+    piece[3]->wt(1) = intcpt;
+    piece_count++;
+  }
+  else {
+    piece[3] = new IvPBox(1,1);
+    piece[3]->setPTS(0, m_ipt_two+1, m_ipt_high);
+
+    double run    = (double)(m_ipt_high - m_ipt_two);
+    double slope  = -break_ties;
+    if(run > 0) 
+      //      slope  = -(m_maxutil - m_hminutil) / run;
+      slope  = -(m_maxutil - m_hghspd_util) / run;
+
+    double intcpt = m_hghspd_util - (slope * m_ipt_high);
+    //double intcpt = m_hminutil - (slope * m_ipt_high);
 
     piece[3]->wt(0) = slope;
     piece[3]->wt(1) = intcpt;
