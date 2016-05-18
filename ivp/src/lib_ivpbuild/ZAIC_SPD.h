@@ -37,15 +37,17 @@ public:
   ZAIC_SPD(IvPDomain g_domain, const std::string& g_varname);
   virtual ~ZAIC_SPD() {};
 
-  bool setParams(double medspd, double lowspd,  double hghspd, 
-		 double lowspd_util,  double hghspd_util);
+  bool setParams(double medspd, double lowspd, double hghspd, 
+		 double lowspd_util, double hghspd_util,
+		 double lminutil=0, double hminutil=0, double maxutil=100);
 
   bool   setMedSpeed(double);
   bool   setLowSpeed(double);
   bool   setHghSpeed(double);
   bool   setLowSpeedUtil(double);
   bool   setHghSpeedUtil(double);
-
+  bool   setMinMaxUtil(double, double, double);
+  
   double getParam(std::string);
 
   bool         stateOK()     {return(m_state_ok);};
@@ -65,7 +67,8 @@ protected:
   double m_lowspd_util;
   double m_hghspd_util;
 
-  double m_minutil;
+  double m_lminutil;
+  double m_hminutil;
   double m_maxutil;
 
  protected:

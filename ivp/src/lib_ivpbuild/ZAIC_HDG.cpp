@@ -185,29 +185,29 @@ bool ZAIC_HDG::setHighDeltaUtil(double val)
 
 bool ZAIC_HDG::setMinMaxUtil(double lminval, double hminval, double maxval)
 {
+  // Part 1: Sanity checks resulting in return of false
   if(m_ivp_domain.size() == 0)
     return(false);
-
-  if((lminval >= maxval) || (hminval > maxval))
+  if((lminval > maxval) || (hminval > maxval))
+    return(false);
+  if((lminval == maxval) && (hminval == maxval))
     return(false);
 
+
+  // Part 2: Sanity checks we can deal with and fix
+  if(lminval < 0)
+    lminval = 0;
+  if(hminval < 0)
+    hminval = 0;
+
+  
+  // Part 3: Ok now make the assignments
   m_lminutil = lminval;
   m_hminutil = hminval;
   m_maxutil  = maxval;
 
-  // If low and high side minvals are same, (re)set them to zero.
-  if(m_lminutil == m_hminutil) {
-    m_lminutil = 0;
-    m_hminutil = 0;
-  }
-
-  // One side or the other should have a zero value for its minutil
-  // to preserve a global utility range of [0, 100]
-  if(m_lminutil < m_hminutil)
-    m_lminutil = 0;
-  else
-    m_hminutil = 0;
-
+  // Part 4: Enforce that the delta utils are (a) less than the
+  // maxutil, and each greater than the minutils on either side.
   if(m_ldelta_util < m_lminutil)
     m_ldelta_util = m_lminutil;
   if(m_ldelta_util > m_maxutil)

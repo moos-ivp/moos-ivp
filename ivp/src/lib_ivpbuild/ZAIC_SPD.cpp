@@ -56,7 +56,8 @@ ZAIC_SPD::ZAIC_SPD(IvPDomain g_domain, const string& g_varname)
   m_lowspd_util  = 0;
   m_hghspd_util  = 0;
 
-  m_minutil      = 0;
+  m_lminutil     = 0;
+  m_hminutil     = 0;
   m_maxutil      = 100;
 
   m_ipt_low      = 0;
@@ -71,7 +72,8 @@ ZAIC_SPD::ZAIC_SPD(IvPDomain g_domain, const string& g_varname)
 //    Return: true if all ok
 
 bool ZAIC_SPD::setParams(double medspd, double lowspd, double hghspd, 
-			 double lowspd_util, double hghspd_util)
+			 double lowspd_util, double hghspd_util,
+			 double lminutil, double hminutil, double maxutil)
 {
   bool ok = true;
   ok = ok && setMedSpeed(medspd);
@@ -79,6 +81,7 @@ bool ZAIC_SPD::setParams(double medspd, double lowspd, double hghspd,
   ok = ok && setHghSpeed(hghspd);
   ok = ok && setLowSpeedUtil(lowspd_util);
   ok = ok && setHghSpeedUtil(hghspd_util);
+  ok = ok && setMinMaxUtil(lminutil, hminutil, maxutil);
 
   return(ok);
 }
@@ -89,7 +92,25 @@ bool ZAIC_SPD::setParams(double medspd, double lowspd, double hghspd,
 
 bool ZAIC_SPD::setMedSpeed(double val)
 {
+  // Part 1: Sanity check resulting in return of false
+  if(m_ivp_domain.size() == 0)
+    return(false);
+
+  // Part 2: Sanity check we can deal with and fix
+  if(val > m_domain_high)
+    val = m_domain_high;
+  if(val < m_domain_low)
+    val = m_domain_low;
+
+  // Part 3: Ok now make the assignment
   m_medspd = val;
+
+  // Part 4: Enforce that lowspd <= medspd <= hghspd
+  if(m_lowspd > m_medspd)
+    m_lowspd = m_medspd;
+  if(m_hghspd < m_medspd)
+    m_hghspd = m_medspd;
+  
   return(true);
 }
 
@@ -99,7 +120,25 @@ bool ZAIC_SPD::setMedSpeed(double val)
 
 bool ZAIC_SPD::setLowSpeed(double val)
 {
+  // Part 1: Sanity check resulting in return of false
+  if(m_ivp_domain.size() == 0)
+    return(false);
+
+  // Part 2: Sanity check we can deal with and fix
+  if(val > m_domain_high)
+    val = m_domain_high;
+  if(val < m_domain_low)
+    val = m_domain_low;
+
+  // Part 3: Ok now make the assignment
   m_lowspd = val;
+
+  // Part 4: Enforce that lowspd <= medspd <= hghspd
+  if(m_medspd < m_lowspd)
+    m_medspd = m_lowspd;
+  if(m_hghspd < m_lowspd)
+    m_hghspd = m_lowspd;
+  
   return(true);
 }
 
@@ -108,7 +147,25 @@ bool ZAIC_SPD::setLowSpeed(double val)
 
 bool ZAIC_SPD::setHghSpeed(double val)
 {
+  // Part 1: Sanity check resulting in return of false
+  if(m_ivp_domain.size() == 0)
+    return(false);
+  
+  // Part 2: Sanity check we can deal with and fix
+  if(val > m_domain_high)
+    val = m_domain_high;
+  if(val < m_domain_low)
+    val = m_domain_low;
+
+  // Part 3: Ok now make the assignment
   m_hghspd = val;
+
+  // Part 4: Enforce that lowspd <= medspd <= hghspd
+  if(m_medspd > m_hghspd)
+    m_medspd = m_hghspd;
+  if(m_lowspd > m_hghspd)
+    m_lowspd = m_hghspd;
+  
   return(true);
 }
 
@@ -117,7 +174,23 @@ bool ZAIC_SPD::setHghSpeed(double val)
 
 bool ZAIC_SPD::setLowSpeedUtil(double val)
 {
+  // Part 1: Sanity check resulting in return of false
+  if(m_ivp_domain.size() == 0)
+    return(false);
+
+  // Part 2: Sanity check we can deal with and fix
+  if(val < 0)
+    val = 0;
+  if(val > m_maxutil)
+    val = m_maxutil;
+  
+  // Part 3: Ok now make the assignment
   m_lowspd_util = val;
+  
+  // Part 4: Enforce that lminutil <= lowspd_util
+  if(m_lminutil > m_lowspd_util)
+    m_lminutil = m_lowspd_util;
+
   return(true);
 }
 
@@ -126,7 +199,62 @@ bool ZAIC_SPD::setLowSpeedUtil(double val)
 
 bool ZAIC_SPD::setHghSpeedUtil(double val)
 {
+  // Part 1: Sanity check resulting in return of false
+  if(m_ivp_domain.size() == 0)
+    return(false);
+
+  // Part 2: Sanity check we can deal with and fix
+  if(val < 0)
+    val = 0;
+  if(val > m_maxutil)
+    val = m_maxutil;
+
+  // Part 3: Ok now make the assignment
   m_hghspd_util = val;
+
+  // Part 4: Enforce that hminutil <= hghspd_util
+  if(m_hminutil > m_hghspd_util)
+    m_hminutil = m_hghspd_util;
+
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setMinMaxUtil
+
+bool ZAIC_SPD::setMinMaxUtil(double lminval, double hminval, double maxval)
+{
+  // Part 1: Sanity checks resulting in return of false
+  if(m_ivp_domain.size() == 0)
+    return(false);
+  if((lminval > maxval) || (hminval > maxval))
+    return(false);
+  if((lminval == maxval) && (hminval == maxval))
+    return(false);
+  
+  // Part 2: Sanity checks we can deal with and fix
+  if(lminval < 0)
+    lminval = 0;
+  if(hminval < 0)
+    hminval = 0;
+
+  // Part 3: Ok now make the assignments
+  m_lminutil = lminval;
+  m_hminutil = hminval;
+  m_maxutil  = maxval;
+
+  // Part 4: Enforce that low/hghspd utils are (a) less than the
+  // maxutil, and each greater than the minutils on either side.
+  if(m_lowspd_util < m_lminutil)
+    m_lowspd_util = m_lminutil;
+  if(m_lowspd_util > m_maxutil)
+    m_lowspd_util = m_maxutil;
+  
+  if(m_hghspd_util < m_hminutil)
+    m_hghspd_util = m_hminutil;
+  if(m_hghspd_util > m_maxutil)
+    m_hghspd_util = m_maxutil;
+  
   return(true);
 }
 
@@ -145,6 +273,12 @@ double ZAIC_SPD::getParam(string param)
     return(m_lowspd_util);
   else if(param == "hghspd_util")
     return(m_hghspd_util);
+  else if(param == "lminutil")
+    return(m_lminutil);
+  else if(param == "hminutil")
+    return(m_hminutil);
+  else if(param == "maxutil")
+    return(m_maxutil);
   else
     return(0);
 }
@@ -238,7 +372,8 @@ PDMap *ZAIC_SPD::setPDMap()
     piece[0]->setPTS(0, 0, m_ipt_one);
 
     double run   = (double)(m_ipt_one);  // run not zero in this case
-    double slope = m_lowspd_util / run;
+    //double slope = m_lowspd_util / run;
+    double slope = (m_lowspd_util - m_lminutil) / run;
     double intcpt = m_lowspd_util - (slope * m_ipt_one);   
 
     piece[0]->wt(0) = slope;
@@ -254,7 +389,8 @@ PDMap *ZAIC_SPD::setPDMap()
     double run   = (double)(m_ipt_two);
     double slope = break_ties;
     if(run > 0)
-      slope  = m_maxutil / run;
+      //      slope  = m_maxutil / run;
+      slope  = (m_maxutil - m_lminutil) / run;
     double intcpt = m_maxutil - (slope * m_ipt_two);
 
     piece[1]->wt(0) = slope;
@@ -301,11 +437,12 @@ PDMap *ZAIC_SPD::setPDMap()
     double slope  = -break_ties;
     if(run > 0) {
       if(m_ipt_three > m_ipt_two)
-	slope  = -(m_hghspd_util) / run;
+	slope  = -(m_hghspd_util - m_hminutil) / run;
       else
-	slope  = -(m_maxutil) / run;
+	slope  = -(m_maxutil - m_hminutil) / run;
+	//slope  = -(m_hghspd_util - m_hminutil) / run;
     }
-    double intcpt = m_minutil - (slope * m_ipt_high);
+    double intcpt = m_hminutil - (slope * m_ipt_high);
 
     piece[3]->wt(0) = slope;
     piece[3]->wt(1) = intcpt;
