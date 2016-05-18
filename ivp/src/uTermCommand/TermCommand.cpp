@@ -89,7 +89,6 @@ bool TermCommand::OnStartUp()
 
     if(MOOSStrCmp(sVarName, "CMD"))
       addCommand(sLine);
-
   }
   
   return(true);

@@ -41,6 +41,26 @@ LogPlot::LogPlot()
   m_max_val  = 0; 
   m_median   = 0;
   m_median_set = false;
+
+  m_avg_time_gap = -1;
+}
+
+//---------------------------------------------------------------
+// Procedure: getAvgTimeGap()
+//   Purpose: Determine average gap in time between succesive entries.
+
+double LogPlot::getAvgTimeGap()
+{
+  // If this has been calculated before, just returned the cached value
+  if(m_avg_time_gap != -1)
+    return(m_avg_time_gap);
+  
+  // If there isn't at least one gap, (need 2 elements) just return -1.
+  if(m_time.size() <= 1)
+    return(-1);
+  
+  m_avg_time_gap = ((m_time[size()-1] - m_time[0]) / ((double)(m_time.size())));
+  return(m_avg_time_gap);
 }
 
 //---------------------------------------------------------------
@@ -102,6 +122,23 @@ double LogPlot::getTimeByIndex(unsigned int index) const
   if(index < m_time.size())
     return(m_time[index]);
   return(0);
+}
+     
+//---------------------------------------------------------------
+// Procedure: getLPIndexByTime()
+
+unsigned int LogPlot::getLPIndexByTime(double gtime) const
+{
+  // Handle edge cases. User beware that a returned value of zero
+  // may be an indication of one of these edge cases.
+  if(m_time.size() == 0)
+    return(0);
+  if(gtime < m_time[0])
+    return(0);
+  if(gtime > m_time[m_time.size()-1])
+    return(m_time.size()-1);
+  
+  return(getIndexByTime(m_time, gtime));
 }
      
 //---------------------------------------------------------------

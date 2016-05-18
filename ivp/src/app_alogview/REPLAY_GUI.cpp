@@ -294,14 +294,7 @@ void REPLAY_GUI::augmentMenu()
 
 //----------------------------------------------------------
 // Procedure: handle
-//     Notes: We want the various "Output" widgets to ignore keyboard
-//            events (as they should, right?!), so we wrote a MY_Output
-//            subclass to do just that. However the keyboard arrow keys
-//            still seem to be grabbed by Fl_Window to change focus
-//            between sub-widgets. We over-ride that here to do the 
-//            panning on the image by invoking the pan callbacks. By
-//            then returning (1), we've indicated that the event has
-//            been handled.
+//     Notes: Return of 1 indicates event has been handled.
 
 int REPLAY_GUI::handle(int event) 
 {

@@ -250,10 +250,12 @@ void PareEngine::passTwoPareTimeStamps()
 
     string var = getVarName(line_raw);
     // Easy SAVE: Must save at least one local node report
-    if(!one_node_report_saved && (var == "NODE_REPORT_LOCAL")){
-      writeLine(file_ptr_out, line_raw);
-      one_node_report_saved = true;
-      continue;
+    if(!one_node_report_saved) {
+      if((var == "NODE_REPORT_LOCAL") || (var == "NODE_REPORT_LOCAL_FIRST")) {
+	writeLine(file_ptr_out, line_raw);
+	one_node_report_saved = true;
+	continue;
+      }
     }
       
     // Easy OMIT: Var on hitlist, just skip past it now.
@@ -268,6 +270,18 @@ void PareEngine::passTwoPareTimeStamps()
       continue;
     }
 
+    // If variable is a view variable, and active=false, this is
+    // most likely an attempt to erase a previous posting. We want
+    // to keep the erasures. 
+    if(varOnPareList(var) &&
+       strBegins(var, "VIEW_") &&
+       strContains(line_raw, "active=false")) {
+      writeLine(file_ptr_out, line_raw);
+      continue;
+    }
+      
+
+    
     //===========================================================
     // Part 3: Handle vars on parelist by checking timestamps
     //===========================================================

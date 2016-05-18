@@ -57,6 +57,7 @@ class BasicContactMgr : public AppCastingMOOSApp
   void updateRanges();
   void postSummaries();
   bool checkForAlerts();
+  void checkForCloseInReports();
   void postRadii(bool=true);
   void postAlert(NodeRecord, std::string);
 
@@ -94,6 +95,10 @@ class BasicContactMgr : public AppCastingMOOSApp
   double       m_decay_start;
   double       m_decay_end;
 
+  double       m_closest_contact_rng_one;
+  double       m_closest_contact_rng_two;
+  double       m_prev_closest_contact_val;
+  
  protected: // State variables
 
   double m_nav_x;

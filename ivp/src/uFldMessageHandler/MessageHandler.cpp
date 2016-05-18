@@ -179,7 +179,6 @@ bool MessageHandler::handleMailNodeMessage(const string& msg)
   if(isQuoted(var_sval))
     var_sval = stripQuotes(var_sval);
   
-  
   bool is_string = true;
   if(var_sval == "")
     is_string = false;

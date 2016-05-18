@@ -177,131 +177,114 @@ void GUI_Encounters::resizeWidgetsShape()
   if(m_fullscreen) 
     return;
 
+  int fld_hgt = 20;
   int time_x = 40;
   int time_y = 5;
   int time_wid = (80.0/550.0)*w();
-  int time_hgt = 20;
-  m_fld_loc_time->resize(time_x, time_y, time_wid, time_hgt); 
+  m_fld_loc_time->resize(time_x, time_y, time_wid, fld_hgt); 
 
   int enc_x = time_x + time_wid + 40;
   int enc_y = 5;
   int enc_wid = (50.0/550.0)*w();
-  int enc_hgt = 20;
-  m_fld_encounters->resize(enc_x, enc_y, enc_wid, enc_hgt); 
+  m_fld_encounters->resize(enc_x, enc_y, enc_wid, fld_hgt); 
 
   int show_x = enc_x + enc_wid + 30;
   int show_y = 5;
   int show_wid = 50;
-  int show_hgt = 20;
-  m_but_show_allpts->resize(show_x, show_y, show_wid, show_hgt); 
+  m_but_show_allpts->resize(show_x, show_y, show_wid, fld_hgt); 
 
   // Collision Range Field
   int krng_x = 50;
   int krng_y = 35;
   int krng_wid = 35;
-  int krng_hgt = 20;
-  m_fld_collision_range->resize(krng_x, krng_y, krng_wid, krng_hgt); 
+  m_fld_collision_range->resize(krng_x, krng_y, krng_wid, fld_hgt); 
+
   // NearMiss Range Field
   int nrng_x = krng_x + krng_wid + 55;
   int nrng_y = 35;
   int nrng_wid = 35;
-  int nrng_hgt = 20;
-  m_fld_near_miss_range->resize(nrng_x, nrng_y, nrng_wid, nrng_hgt); 
+  m_fld_near_miss_range->resize(nrng_x, nrng_y, nrng_wid, fld_hgt); 
+
   // Encounter Range Field
   int erng_x = nrng_x + nrng_wid + 55;
   int erng_y = 35;
   int erng_wid = 35;
-  int erng_hgt = 20;
-  m_fld_encounter_range->resize(erng_x, erng_y, erng_wid, erng_hgt); 
+  m_fld_encounter_range->resize(erng_x, erng_y, erng_wid, fld_hgt); 
   
   // Min CPA field and checkbox
   int cmin_x = w() - 45;
   int cmin_y = 5;
   int cmin_wid = 40;
-  int cmin_hgt = 20;
-  m_fld_min_cpa->resize(cmin_x, cmin_y, cmin_wid, cmin_hgt); 
+  m_fld_min_cpa->resize(cmin_x, cmin_y, cmin_wid, fld_hgt); 
   
   int mcpa_x = cmin_x - 45;
   int mcpa_y = 5;
   int mcpa_wid = 50;
-  int mcpa_hgt = 20;
-  m_but_draw_mincpa->resize(mcpa_x, mcpa_y, mcpa_wid, mcpa_hgt); 
+  m_but_draw_mincpa->resize(mcpa_x, mcpa_y, mcpa_wid, fld_hgt); 
 
   // Min Efficiency field and checkbox
   int fmin_x = w() - 45;
   int fmin_y = 35;
   int fmin_wid = 40;
-  int fmin_hgt = 20;
-  m_fld_min_eff->resize(fmin_x, fmin_y, fmin_wid, fmin_hgt); 
+  m_fld_min_eff->resize(fmin_x, fmin_y, fmin_wid, fld_hgt); 
    
   int meff_x = fmin_x - 45;
   int meff_y = 35;
   int meff_wid = 50;
-  int meff_hgt = 20;
-  m_but_draw_mineff->resize(meff_x, meff_y, meff_wid, meff_hgt); 
+  m_but_draw_mineff->resize(meff_x, meff_y, meff_wid, fld_hgt); 
 
   // Avg CPA field and checkbox
   int amin_x = mcpa_x - 55;
   int amin_y = 5;
   int amin_wid = 40;
-  int amin_hgt = 20;
-  m_fld_avg_cpa->resize(amin_x, amin_y, amin_wid, amin_hgt); 
+  m_fld_avg_cpa->resize(amin_x, amin_y, amin_wid, fld_hgt); 
   
   int acpa_x = amin_x - 45;
   int acpa_y = 5;
   int acpa_wid = 60;
-  int acpa_hgt = 20;
-  m_but_draw_avgcpa->resize(acpa_x, acpa_y, acpa_wid, acpa_hgt); 
+  m_but_draw_avgcpa->resize(acpa_x, acpa_y, acpa_wid, fld_hgt); 
 
   // Avg Efficiency field and checkbox
   int kmin_x = meff_x - 55;
   int kmin_y = 35;
   int kmin_wid = 40;
-  int kmin_hgt = 20;
-  m_fld_avg_eff->resize(kmin_x, kmin_y, kmin_wid, kmin_hgt); 
+  m_fld_avg_eff->resize(kmin_x, kmin_y, kmin_wid, fld_hgt); 
    
   int aeff_x = kmin_x - 45;
   int aeff_y = 35;
   int aeff_wid = 60;
-  int aeff_hgt = 20;
-  m_but_draw_avgeff->resize(aeff_x, aeff_y, aeff_wid, aeff_hgt); 
+  m_but_draw_avgeff->resize(aeff_x, aeff_y, aeff_wid, fld_hgt); 
 
   // Current Contact Fields (Third Row)
   int jgo_x = 5;
   int jgo_y = 70;
   int jgo_wid = 30;
-  int jgo_hgt = 20;
-  m_but_curr_go->resize(jgo_x, jgo_y, jgo_wid, jgo_hgt); 
+  m_but_curr_go->resize(jgo_x, jgo_y, jgo_wid, fld_hgt); 
 
   int jid_x = jgo_x + jgo_wid + 30;
   int jid_y = 70;
   int jid_wid = w()/10;
-  int jid_hgt = 20;
-  m_fld_curr_id->resize(jid_x, jid_y, jid_wid, jid_hgt); 
+  m_fld_curr_id->resize(jid_x, jid_y, jid_wid, fld_hgt); 
 
   int jtim_x = jid_x + jid_wid + 40;
   int jtim_y = 70;
   int jtim_wid = w()/10;
-  int jtim_hgt = 20;
-  m_fld_curr_time->resize(jtim_x, jtim_y, jtim_wid, jtim_hgt); 
+  m_fld_curr_time->resize(jtim_x, jtim_y, jtim_wid, fld_hgt); 
 
   int jcpa_x = jtim_x + jtim_wid + 40;
   int jcpa_y = 70;
   int jcpa_wid = w()/10;
-  int jcpa_hgt = 20;
-  m_fld_curr_cpa->resize(jcpa_x, jcpa_y, jcpa_wid, jcpa_hgt); 
+  m_fld_curr_cpa->resize(jcpa_x, jcpa_y, jcpa_wid, fld_hgt); 
 
   int jeff_x = jcpa_x + jcpa_wid + 35;
   int jeff_y = 70;
   int jeff_wid = w()/10;
-  int jeff_hgt = 20;
-  m_fld_curr_eff->resize(jeff_x, jeff_y, jeff_wid, jeff_hgt); 
+  m_fld_curr_eff->resize(jeff_x, jeff_y, jeff_wid, fld_hgt); 
 
   int jcon_x = jeff_x + jeff_wid + 55;
   int jcon_y = 70;
   int jcon_wid = w() - (jcon_x + 5);
-  int jcon_hgt = 20;
-  m_fld_curr_contact->resize(jcon_x, jcon_y, jcon_wid, jcon_hgt); 
+  m_fld_curr_contact->resize(jcon_x, jcon_y, jcon_wid, fld_hgt); 
 }
 
 
@@ -353,7 +336,6 @@ void GUI_Encounters::resizeWidgetsText()
 
   m_fld_avg_eff->textsize(info_size); 
   m_fld_avg_eff->labelsize(info_size);
-
   
   // Current Contact Fields (Third Row)
   m_but_curr_go->labelsize(info_size); 
@@ -388,7 +370,7 @@ Fl_Menu_Item GUI_Encounters::menu_[] = {
 
 
 //----------------------------------------------------------
-// Procedure: setDataBroker
+// Procedure: setDataBroker()
 
 void GUI_Encounters::setDataBroker(ALogDataBroker dbroker, string vname)
 {
@@ -405,7 +387,7 @@ void GUI_Encounters::setDataBroker(ALogDataBroker dbroker, string vname)
 }
 
 //----------------------------------------------------------
-// Procedure: setParentGUI
+// Procedure: setParentGUI()
 
 void GUI_Encounters::setParentGUI(REPLAY_GUI* parent_gui)
 {
@@ -414,7 +396,7 @@ void GUI_Encounters::setParentGUI(REPLAY_GUI* parent_gui)
 }
 
 //----------------------------------------------------------
-// Procedure: resize
+// Procedure: resize()
 
 void GUI_Encounters::resize(int lx, int ly, int lw, int lh)
 {
@@ -424,15 +406,8 @@ void GUI_Encounters::resize(int lx, int ly, int lw, int lh)
 }
 
 //----------------------------------------------------------
-// Procedure: handle
-//     Notes: We want the various "Output" widgets to ignore keyboard
-//            events (as they should, right?!), so we wrote a MY_Output
-//            subclass to do just that. However the keyboard arrow keys
-//            still seem to be grabbed by Fl_Window to change focus
-//            between sub-widgets. We over-ride that here to do the 
-//            panning on the image by invoking the pan callbacks. By
-//            then returning (1), we've indicated that the event has
-//            been handled.
+// Procedure: handle()
+//     Notes: Return of 1 indicates event has been handled.
 
 int GUI_Encounters::handle(int event) 
 {

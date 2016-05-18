@@ -77,6 +77,10 @@ BasicContactMgr::BasicContactMgr()
   m_decay_start = 15;
   m_decay_end   = 30;
 
+  m_closest_contact_rng_one = 20;
+  m_closest_contact_rng_two = 10;
+  m_prev_closest_contact_val = 0;
+
   m_use_geodesy = false;
 }
 
@@ -140,7 +144,8 @@ bool BasicContactMgr::Iterate()
   updateRanges();
   postSummaries();
   checkForAlerts();
-
+  checkForCloseInReports();
+  
   if(m_display_radii)
     postRadii();
 
@@ -257,6 +262,20 @@ bool BasicContactMgr::OnStartUp()
 	m_contact_max_age = dval;
       else
 	reportConfigWarning("contact_max_age must be > zero: " + value);
+    }
+    
+    else if(param == "closest_contact_rng_one") {
+      if(dval >= 0)
+	m_closest_contact_rng_one = dval;
+      else
+	reportConfigWarning("closest_contact_rng_one must be >= zero: " + value);
+    }
+    
+    else if(param == "closest_contact_rng_two") {
+      if(dval >= 0)
+	m_closest_contact_rng_two = dval;
+      else
+	reportConfigWarning("closest_contact_rng_two must be >= zero: " + value);
     }
     
     else 
@@ -675,6 +694,58 @@ bool BasicContactMgr::checkForAlerts()
   }
 
   return(new_alerts);
+}
+
+//---------------------------------------------------------
+// Procedure: checkForCloseInReports()
+//   Purpose: Report a single number {0, 1, 2} indicating the severity of
+//            range of the closest contact. The idea is to have a single
+//            number to plot in a timeline as in alogview to help the user
+//            jump to the interesting (miss or near-miss) points in time.
+//
+//    Report: 0 if closest contact is far away
+//            1 if closest contact is near (< m_closest_contact_rng_one)
+//            2 if closest contact is very near(< m_closest_contact_rng_two)
+//
+//   Example: m_closest_contact_rng_one = 12 (meters) near miss
+//            m_closest_contact_rng_two = 5  (meters) collision
+//      Note: Typically these two values will match what uFldCollisionDetect
+//            regards as near misses and hits.
+
+void BasicContactMgr::checkForCloseInReports()
+{
+  double report_val = 0;
+
+  //==============================================================
+  // For each contact, check all the absolute (no extrap) ranges
+  //==============================================================
+  map<string, NodeRecord>::iterator p;
+  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
+    string    contact_name = p->first;
+    NodeRecord node_record = p->second;
+
+    // Skip this contact if age of node record exceeds max age
+    double age = m_curr_time - node_record.getTimeStamp();
+    if(age > m_contact_max_age)
+      continue;
+
+    double contact_range_abs = m_map_node_ranges_actual[contact_name]; 
+
+    double this_report_val = 0;
+    if(contact_range_abs < m_closest_contact_rng_one)
+      this_report_val = 1;
+    else if(contact_range_abs < m_closest_contact_rng_two)
+      this_report_val = 2;
+
+    // Overall report_val is max of the report_vals for each contact.
+    if(this_report_val > report_val)
+      report_val = this_report_val;
+  }    
+    
+  if(report_val != m_prev_closest_contact_val) { 
+    Notify("CONTACT_MGR_CLOSEST", report_val);
+    m_prev_closest_contact_val = report_val;
+  }
 }
 
 //----------------------------------------------------------------

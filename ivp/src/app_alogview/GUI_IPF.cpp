@@ -163,72 +163,63 @@ void GUI_IPF::resizeWidgetsShape()
   if(m_fullscreen) 
     return;
 
+  int fld_hgt = 20;
+
   int bhvs_x = 5; 
   int bhvs_y = tmarg;
   int bhvs_wid = lmarg-10;
-  int bhvs_hgt = h()-tmarg;
-  m_brw_bhvs->resize(bhvs_x, bhvs_y, bhvs_wid, bhvs_hgt);
+  m_brw_bhvs->resize(bhvs_x, bhvs_y, bhvs_wid, fld_hgt);
 
   int coll_x = 10; 
   int coll_y = 30;
   int coll_wid = 20; 
-  int coll_hgt = 20;
-  m_but_collective->resize(coll_x, coll_y, coll_wid, coll_hgt);
+  m_but_collective->resize(coll_x, coll_y, coll_wid, fld_hgt);
 
   int cold_x = 90; 
   int cold_y = 30;
   int cold_wid = 20; 
-  int cold_hgt = 20;
-  m_but_collective_dep->resize(cold_x, cold_y, cold_wid, cold_hgt);
+  m_but_collective_dep->resize(cold_x, cold_y, cold_wid, fld_hgt);
 
   int time_x = 40;
   int time_y = 5;
   int time_wid = (80.0/550.0)*w();
-  int time_hgt = 20;
-  m_fld_loc_time->resize(time_x, time_y, time_wid, time_hgt); 
+  m_fld_loc_time->resize(time_x, time_y, time_wid, fld_hgt); 
 
   int iter_x = time_x + time_wid + 40;
   int iter_y = 5;
   int iter_wid = (50.0/550.0)*w();
-  int iter_hgt = 20;
-  m_fld_ipf_iter->resize(iter_x, iter_y, iter_wid, iter_hgt); 
+  m_fld_ipf_iter->resize(iter_x, iter_y, iter_wid, fld_hgt); 
 
   int pcs_x = iter_x + iter_wid + 40;
   int pcs_y = 5;
   int pcs_wid = (45.0/550.0)*w();
-  int pcs_hgt = 20;
-  m_fld_ipf_pcs->resize(pcs_x, pcs_y, pcs_wid, pcs_hgt); 
+  m_fld_ipf_pcs->resize(pcs_x, pcs_y, pcs_wid, fld_hgt); 
 
 
   int dom_x = pcs_x;
   int dom_y = 30;
   int dom_wid = (110.0/550.0)*w();
-  int dom_hgt = 20;
-  m_fld_ipf_dom->resize(dom_x, dom_y, dom_wid, dom_hgt); 
+  m_fld_ipf_dom->resize(dom_x, dom_y, dom_wid, fld_hgt); 
 
   int set_x = pcs_x + pcs_wid + 10;
   int set_y = 5;
   int set_wid = (33.0/550.0)*w();
-  int set_hgt = 20;
-  m_but_ipf_set->resize(set_x, set_y, set_wid, set_hgt);
+  m_but_ipf_set->resize(set_x, set_y, set_wid, fld_hgt);
 
   int pin_x = set_x + set_wid + 10;
   int pin_y = 5;
   int pin_wid = (33.0/550.0)*w();
-  int pin_hgt = 20;
-  m_but_ipf_pin->resize(pin_x, pin_y, pin_wid, pin_hgt);
+  m_but_ipf_pin->resize(pin_x, pin_y, pin_wid, fld_hgt);
 
   int vara_x = pin_x + pin_wid + 12;
   int vara_y = 5;
   int vara_wid = w()-vara_x-10;
-  int vara_hgt = 20;
-  m_but_addvar_a->resize(vara_x, vara_y, vara_wid, vara_hgt);
+  m_but_addvar_a->resize(vara_x, vara_y, vara_wid, fld_hgt);
 
   int varb_x = pin_x + pin_wid + 12;
   int varb_y = 30;
   int varb_wid = w()-varb_x-10;
-  int varb_hgt = 20;
-  m_but_addvar_b->resize(varb_x, varb_y, varb_wid, varb_hgt);
+  m_but_addvar_b->resize(varb_x, varb_y, varb_wid, fld_hgt);
 }
 
 //---------------------------------------------------------------------------
@@ -298,11 +289,6 @@ void GUI_IPF::resizeWidgetsText()
     m_but_addvar_b->labelsize(10);
   else 
     m_but_addvar_b->labelsize(8);
-  
-
-
-
-
 }
 
 //-------------------------------------------------------------------
@@ -328,7 +314,7 @@ Fl_Menu_Item GUI_IPF::menu_[] = {
 
 
 //----------------------------------------------------------
-// Procedure: setDataBroker
+// Procedure: setDataBroker ()
 
 void GUI_IPF::setDataBroker(ALogDataBroker dbroker, string vname)
 {
@@ -352,7 +338,7 @@ void GUI_IPF::setDataBroker(ALogDataBroker dbroker, string vname)
 }
 
 //----------------------------------------------------------
-// Procedure: setParentGUI
+// Procedure: setParentGUI()
 
 void GUI_IPF::setParentGUI(REPLAY_GUI* parent_gui)
 {
@@ -361,7 +347,7 @@ void GUI_IPF::setParentGUI(REPLAY_GUI* parent_gui)
 }
 
 //----------------------------------------------------------
-// Procedure: resize
+// Procedure: resize()
 
 void GUI_IPF::resize(int lx, int ly, int lw, int lh)
 {
@@ -371,15 +357,8 @@ void GUI_IPF::resize(int lx, int ly, int lw, int lh)
 }
 
 //----------------------------------------------------------
-// Procedure: handle
-//     Notes: We want the various "Output" widgets to ignore keyboard
-//            events (as they should, right?!), so we wrote a MY_Output
-//            subclass to do just that. However the keyboard arrow keys
-//            still seem to be grabbed by Fl_Window to change focus
-//            between sub-widgets. We over-ride that here to do the 
-//            panning on the image by invoking the pan callbacks. By
-//            then returning (1), we've indicated that the event has
-//            been handled.
+// Procedure: handle()
+//     Notes: Return of 1 indicates event has been handled.
 
 int GUI_IPF::handle(int event) 
 {

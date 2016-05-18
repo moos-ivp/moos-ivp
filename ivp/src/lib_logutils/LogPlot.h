@@ -46,7 +46,10 @@ public:
   double getTimeByIndex(unsigned int index) const;
   double getValueByIndex(unsigned int index) const;
   double getValueByTime(double gtime, bool interp=false) const;
-
+  double getAvgTimeGap();
+  
+  unsigned int getLPIndexByTime(double gtime) const;
+  
   double getMedian();
   double getMinTime() const;
   double getMaxTime() const;
@@ -77,5 +80,7 @@ protected:
 
   bool   m_median_set;
   double m_median;
+
+  double m_avg_time_gap;
 };
 #endif 

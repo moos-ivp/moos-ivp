@@ -54,7 +54,7 @@ protected:
   void         postViewablePoint();
   void         postErasablePoint();
   void         handleVisualHint(std::string);
-
+  
 private:  // Configuration Parameters
   bool         m_clockwise;
   bool         m_dynamic_clockwise;
@@ -93,6 +93,8 @@ private:  // State Variables
   double       m_osh;              // Curr ownship Heading (degs)
   double       m_osv;              // Curr ownship Speed (m/s)
 
+  double       m_patience;         // [1,99]
+  
   bool         m_center_pending; 
   std::string  m_center_assign;
 };

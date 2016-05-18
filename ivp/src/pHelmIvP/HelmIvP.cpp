@@ -94,6 +94,8 @@ HelmIvP::HelmIvP()
 
   m_rejournal_requested = true;
   m_reset_post_pending  = false;
+
+  m_prev_total_completed = 0;
   
   m_init_vars_ready  = false;
   m_init_vars_done   = false;
@@ -608,11 +610,17 @@ void HelmIvP::postBehaviorMessages()
     Notify("IVPHELM_STATEVARS", state_vars);
   }
 
-  string compl_pending = boolToString(m_bhv_set->getCompletedPending());
   string helm_iter     = uintToString(m_helm_iteration);
-  Notify("IVPHELM_COMPLETED_PENDING", compl_pending, helm_iter); 
+
+  string compl_pending = boolToString(m_bhv_set->getCompletedPending());
+  if(compl_pending != m_prev_compl_pending)
+    Notify("IVPHELM_COMPLETED_PENDING", compl_pending, helm_iter); 
+  m_prev_compl_pending = compl_pending;
+  
   unsigned int total_completed = m_bhv_set->removeCompletedBehaviors();
-  Notify("IVPHELM_COMPLETED_COUNT", total_completed, helm_iter);
+  if(total_completed != m_prev_total_completed)
+    Notify("IVPHELM_COMPLETED_COUNT", total_completed, helm_iter);
+  m_prev_total_completed = total_completed;
 }
 
 //------------------------------------------------------------

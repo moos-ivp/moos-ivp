@@ -68,7 +68,8 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_center_pending    = false;
   m_center_activate   = false;
   m_use_alt_speed     = false;
-
+  m_patience          = 50;     // [1,99]
+  
   // Visual Hint Defaults
   m_hint_vertex_size   = 1;
   m_hint_edge_size     = 1;
@@ -159,6 +160,12 @@ bool BHV_Loiter::setParam(string param, string value)
     if((dval < 0) || (!isNumber(value)))
       return(false);
     m_acquire_dist = dval;
+    return(true);
+  }
+  else if(param == "patience") {
+    if((dval < 1) || (dval > 99) || !isNumber(value))
+      return(false);
+    m_patience = dval;
     return(true);
   }
   else if((param == "nm_radius") || (param == "slip_radius")) {
@@ -485,7 +492,7 @@ IvPFunction *BHV_Loiter::buildIPF(const string& method)
     crs_zaic.setValueWrap(true);
     IvPFunction *crs_of = crs_zaic.extractIvPFunction();
     OF_Coupler coupler;
-    ipf = coupler.couple(crs_of, spd_of);
+    ipf = coupler.couple(crs_of, spd_of, m_patience, (100-m_patience));
   }
 
   return(ipf);

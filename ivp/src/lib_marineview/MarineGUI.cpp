@@ -696,8 +696,8 @@ void MarineGUI::cb_BackShade(Fl_Widget* o, int v) {
 
 bool MarineGUI::removeMenuItem(string item_str)
 {
-  //  int index = m_menubar->find_index(item_str.c_str());
-  int index = -1; // fixme
+  int index = m_menubar->find_index(item_str.c_str());
+  //int index = -1; // fixme
   if(index != -1) {
     m_menubar->remove(index);
     return(true);

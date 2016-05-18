@@ -144,6 +144,9 @@ protected:
   double        m_ok_skew;
   bool          m_skews_matter;
 
+  unsigned int  m_prev_total_completed;
+  std::string   m_prev_compl_pending;
+  
   HelmReport    m_helm_report;
   HelmReport    m_prev_helm_report;
   HelmEngine*   m_hengine;

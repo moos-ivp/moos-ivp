@@ -116,6 +116,9 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  contacts_recap_interval = 5         // the default in secs    ");
   blk("                                                                ");
+  blk("  closest_contact_rng_one = 10  // the default in meters        ");
+  blk("  closest_contact_rng_twoa= 10  // the default in meters        ");
+  blk("                                                                ");
   blk("  contact_local_coords    = verbatim  // the default            ");
   blk("}                                                               ");
   blk("                                                                ");
@@ -170,6 +173,7 @@ void showInterfaceAndExit()
   blk("                         name=charlie,age=1.9,range=73.1 #          ");
   blk("                         name=henry,age=4.0,range=18.               ");
   blk("  CONTACT_MGR_WARNING  = Bad Node Report Received                   ");
+  blk("  CONTACT_MGR_CLOSEST  = 0                                          ");
   blk("                                                                    ");
   blk("  ALERT_VERBOSE = contact=gilda,config_alert_range=40.0,            ");
   blk("                  config_alert_range_cpa=45.0,range_used=39.2,      ");
