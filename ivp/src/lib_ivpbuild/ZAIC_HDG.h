@@ -39,14 +39,14 @@ public:
 
   bool   setParams(double summit, double ldelta,  double hdelta, 
 		   double ldelta_util, double hdelta_util,  
-		   double minutil, double maxutil);
+		   double lminutil, double hminutil, double maxutil);
   
   bool   setSummit(double);
   bool   setLowDelta(double);
   bool   setHighDelta(double);
   bool   setLowDeltaUtil(double);
   bool   setHighDeltaUtil(double);
-  bool   setMinMaxUtil(double, double);
+  bool   setMinMaxUtil(double, double, double);
 
   double getParam(std::string);
 
@@ -68,7 +68,8 @@ protected:
   double m_ldelta_util;
   double m_hdelta_util;
   
-  double m_minutil;
+  double m_lminutil;
+  double m_hminutil;
   double m_maxutil;
 
 private:
@@ -82,19 +83,3 @@ private:
   IvPDomain           m_ivp_domain;
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

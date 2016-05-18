@@ -40,8 +40,10 @@ ZAIC_HDG::ZAIC_HDG(IvPDomain domain, string varname)
   m_ldelta  = 0;
   m_hdelta_util = 50;
   m_ldelta_util = 50;
-  m_minutil = 0;
-  m_maxutil = 100;
+
+  m_lminutil = 0;
+  m_hminutil = 0;
+  m_maxutil  = 100;
 
   m_domain_high  = 0;
   m_domain_low   = 0;
@@ -83,7 +85,7 @@ ZAIC_HDG::ZAIC_HDG(IvPDomain domain, string varname)
 
 bool ZAIC_HDG::setParams(double summit, double ldelta, double hdelta,
 			 double ldelta_util, double hdelta_util,  
-			 double minutil, double maxutil)
+			 double lminutil, double hminutil, double maxutil)
 {
   if(m_ivp_domain.size() == 0)
     return(false);
@@ -93,7 +95,7 @@ bool ZAIC_HDG::setParams(double summit, double ldelta, double hdelta,
   ok = ok && setHighDelta(hdelta);
   ok = ok && setLowDeltaUtil(ldelta_util);
   ok = ok && setHighDeltaUtil(hdelta_util);
-  ok = ok && setMinMaxUtil(minutil, maxutil);
+  ok = ok && setMinMaxUtil(lminutil, hminutil, maxutil);
 
   return(ok);
 }
@@ -152,8 +154,8 @@ bool ZAIC_HDG::setLowDeltaUtil(double val)
   if(m_ivp_domain.size() == 0)
     return(false);
 
-  if(val < m_minutil)
-    val = m_minutil;
+  if(val < m_lminutil)
+    val = m_lminutil;
   else if(val > m_maxutil)
     val = m_maxutil;
 
@@ -169,8 +171,8 @@ bool ZAIC_HDG::setHighDeltaUtil(double val)
   if(m_ivp_domain.size() == 0)
     return(false);
 
-  if(val < m_minutil)
-    val = m_minutil;
+  if(val < m_hminutil)
+    val = m_hminutil;
   else if(val > m_maxutil)
     val = m_maxutil;
 
@@ -181,24 +183,38 @@ bool ZAIC_HDG::setHighDeltaUtil(double val)
 //-------------------------------------------------------------
 // Procedure: setMinMaxUtil
 
-bool ZAIC_HDG::setMinMaxUtil(double minval, double maxval)
+bool ZAIC_HDG::setMinMaxUtil(double lminval, double hminval, double maxval)
 {
   if(m_ivp_domain.size() == 0)
     return(false);
 
-  if(minval >= maxval) 
+  if((lminval >= maxval) || (hminval > maxval))
     return(false);
 
-  m_minutil = minval;
-  m_maxutil = maxval;
-  
-  if(m_ldelta_util < m_minutil)
-    m_ldelta_util = m_minutil;
+  m_lminutil = lminval;
+  m_hminutil = hminval;
+  m_maxutil  = maxval;
+
+  // If low and high side minvals are same, (re)set them to zero.
+  if(m_lminutil == m_hminutil) {
+    m_lminutil = 0;
+    m_hminutil = 0;
+  }
+
+  // One side or the other should have a zero value for its minutil
+  // to preserve a global utility range of [0, 100]
+  if(m_lminutil < m_hminutil)
+    m_lminutil = 0;
+  else
+    m_hminutil = 0;
+
+  if(m_ldelta_util < m_lminutil)
+    m_ldelta_util = m_lminutil;
   if(m_ldelta_util > m_maxutil)
     m_ldelta_util = m_maxutil;
   
-  if(m_hdelta_util < m_minutil)
-    m_hdelta_util = m_minutil;
+  if(m_hdelta_util < m_hminutil)
+    m_hdelta_util = m_hminutil;
   if(m_hdelta_util > m_maxutil)
     m_hdelta_util = m_maxutil;
   
@@ -222,8 +238,14 @@ double ZAIC_HDG::getParam(string param)
     return(m_ldelta_util);
   else if(param == "highdeltautil")
     return(m_hdelta_util);
+
   else if(param == "minutil")
-    return(m_minutil);
+    return(m_lminutil);
+  else if(param == "lminutil")
+    return(m_lminutil);
+  else if(param == "hminutil")
+    return(m_hminutil);
+
   else if(param == "maxutil")
     return(m_maxutil);
   else
@@ -270,13 +292,13 @@ IvPFunction *ZAIC_HDG::extractOF()
 double ZAIC_HDG::evalPoint(unsigned int ix)
 {
   if(ix >= m_ptvals.size())
-    return(m_minutil);
+    return(0);
 
   double ixval = (((double)(ix)) * m_domain_delta) + m_domain_low;
 
   // Sanity check
   if((ixval < 0) || (ixval >= 360))
-    return(m_minutil);
+    return(0);
   
   double return_val = 0;
   //==================================================
@@ -321,7 +343,7 @@ double ZAIC_HDG::evalPoint(unsigned int ix)
       double dist_from_brk = (ixval - brk_pt);
       if(dist_from_brk < 0)
 	dist_from_brk += 360;
-      double slope = (m_hdelta_util - m_minutil) / (180 - m_hdelta);
+      double slope = (m_hdelta_util - m_hminutil) / (180 - m_hdelta);
       double rise  = slope * dist_from_brk;
       return_val = m_hdelta_util - rise;
     }
@@ -361,7 +383,7 @@ double ZAIC_HDG::evalPoint(unsigned int ix)
       // safe, handle it here.
       if(run == 0)
 	return(0);
-      double slope = (m_ldelta_util - m_minutil) / run;
+      double slope = (m_ldelta_util - m_lminutil) / run;
       double rise  = slope * dist_from_brk;
       return_val = m_ldelta_util - rise;
     }
