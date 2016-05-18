@@ -119,11 +119,11 @@ IF (${WIN32})
   # Add the libtiff headers directory
   INCLUDE_DIRECTORIES( AFTER ${TIFF_SRC_DIR} )
   # Set the IVP GUI libraries for Windows
-  SET(IVP_GUI_LIBS lib_ipfview lib_marineview lib_tiff)
+  SET(IVP_GUI_LIBS lib_ipfview lib_marineview lib_tiff lib_zaicview)
   
 ELSE (${WIN32})
   # Linux, Mac
-  SET(IVP_GUI_LIBS lib_ipfview lib_marineview)
+  SET(IVP_GUI_LIBS lib_ipfview lib_marineview lib_zaicview)
 ENDIF (${WIN32})
 
 
@@ -270,8 +270,13 @@ SET(IVP_GUI_APPS
   app_ffview
   app_geoview
   app_alogview
-  app_vzaicview
-  app_gzaicview
+#  app_vzaicview
+#  app_gzaicview
+  app_zaic_hleq
+  app_zaic_vect
+  app_zaic_hdg
+  app_zaic_spd
+  app_zaic_peak
   pMarineViewer
   uFunctionVis
   uMACView
