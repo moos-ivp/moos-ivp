@@ -77,16 +77,19 @@ bool TermCommand::OnStartUp()
   CMOOSApp::OnStartUp();
   
   STRING_LIST sParams;
-  m_MissionReader.EnableVerbatimQuoting(false);
+  m_MissionReader.EnableVerbatimQuoting(true);
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
     
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
     string sLine     = *p;
+
     string sVarName  = MOOSChomp(sLine, "=");
     sVarName = toupper(sVarName);
     sLine    = stripBlankEnds(sLine);
 
+    sLine = findReplace(sLine, "_", " ");
+    
     if(MOOSStrCmp(sVarName, "CMD"))
       addCommand(sLine);
   }
