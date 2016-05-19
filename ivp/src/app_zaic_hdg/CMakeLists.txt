@@ -31,7 +31,9 @@ TARGET_LINK_LIBRARIES(zaic_hdg
   ivpsolve
   fltk 
   fltk_gl
+  zaicview
   dl
+  GL
 )
 
 # http://developer.apple.com/qa/qa2007/qa1567.html

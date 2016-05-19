@@ -64,7 +64,8 @@ void ZAIC_HDG_Model::setDomain(unsigned int domain_pts)
 				ldelta_util, hdelta_util, 
 				lmin_util, hmin_util, max_util);
 
-  m_zaic_hdg = new_zaic;
+  if(ok)
+    m_zaic_hdg = new_zaic;
 }
 
 //-------------------------------------------------------------
@@ -84,8 +85,8 @@ void ZAIC_HDG_Model::moveX(double delta)
   if(!m_zaic_hdg)
     return;
 
-  double ldutil   = m_zaic_hdg->getParam("lowdelta");
-  double hdutil   = m_zaic_hdg->getParam("highdelta");
+  //double ldutil   = m_zaic_hdg->getParam("lowdelta");
+  //double hdutil   = m_zaic_hdg->getParam("highdelta");
   
   if(m_curr_mode==0) {   // Altering summit
     double summit   = m_zaic_hdg->getParam("summit");
