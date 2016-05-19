@@ -22,6 +22,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <cstdlib>
 #include "ReleaseInfo.h"
 #include "MBUtils.h"
 
