@@ -38,6 +38,8 @@
 
 using namespace std;
 
+void idleProc(void *);
+
 //--------------------------------------------------------
 // Procedure: idleProc
 

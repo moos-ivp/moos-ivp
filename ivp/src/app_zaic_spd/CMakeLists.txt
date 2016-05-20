@@ -32,6 +32,7 @@ TARGET_LINK_LIBRARIES(zaic_spd
   fltk 
   fltk_gl
   dl
+  GL
 )
 
 # http://developer.apple.com/qa/qa2007/qa1567.html

@@ -32,6 +32,8 @@ TARGET_LINK_LIBRARIES(zaic_hleq
   fltk 
   fltk_gl
   dl
+  zaicview
+  GL
 )
 
 # http://developer.apple.com/qa/qa2007/qa1567.html

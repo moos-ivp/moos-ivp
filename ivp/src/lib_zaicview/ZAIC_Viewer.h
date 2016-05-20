@@ -24,7 +24,7 @@ class ZAIC_Viewer : public Fl_Gl_Window
 {
  public:
   ZAIC_Viewer(int x,int y,int w,int h,const char *l=0);
-  ~ZAIC_Viewer();
+  virtual ~ZAIC_Viewer();
   
   // virtuals overloaded
   void  draw();

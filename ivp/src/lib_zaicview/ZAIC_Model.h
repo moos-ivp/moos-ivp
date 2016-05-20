@@ -19,7 +19,7 @@ class ZAIC_Model
 {
  public:
   ZAIC_Model() {}
-  ~ZAIC_Model() {};
+  virtual ~ZAIC_Model() {};
 
   // Virtual function to be overloaded
   virtual IvPFunction* getIvPFunction() {return(0);}
