@@ -23,7 +23,6 @@ SET(SRC
 ADD_EXECUTABLE(zaic_hdg ${SRC})
 
 TARGET_LINK_LIBRARIES(zaic_hdg
-  ${SYSTEM_LIBS}
   zaicview
   ivpbuild
   mbutil
@@ -33,7 +32,7 @@ TARGET_LINK_LIBRARIES(zaic_hdg
   fltk_gl
   zaicview
   dl
-  GL
+  ${SYSTEM_LIBS}
 )
 
 # http://developer.apple.com/qa/qa2007/qa1567.html
