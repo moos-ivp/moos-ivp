@@ -59,7 +59,7 @@ bool ZAIC_SPD_Model::setParam(string param, string value)
     m_zaic_spd->setHghSpeedUtil(atof(value.c_str()));
   else
     return(false);
-
+  
   return(true);
 }
 
@@ -88,7 +88,8 @@ void ZAIC_SPD_Model::setDomain(unsigned int domain_pts)
   bool ok = new_zaic->setParams(medspd, lowspd, hghspd, 
 				lowspd_util, hghspd_util);
 
-  m_zaic_spd = new_zaic;
+  if(ok)
+    m_zaic_spd = new_zaic;
 }
 
 //-------------------------------------------------------------

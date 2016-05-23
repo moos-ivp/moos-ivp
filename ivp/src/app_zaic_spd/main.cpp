@@ -37,8 +37,10 @@ int main(int argc, char *argv[])
 {
   bool verbose = false;
   int  domain  = 410;
+
+  vector<string> params;
+  vector<string> values;
   
-  bool handled = true;
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
     if((argi=="-h") || (argi == "--help") || (argi=="-help"))
@@ -51,10 +53,27 @@ int main(int argc, char *argv[])
     }
     else if(strBegins(argi, "--verbose")) 
       verbose = true;
-    else
-      handled = false;
-
-    if(!handled) {
+    else if(strBegins(argi, "--medspd=")) {
+      params.push_back("medspd");
+      values.push_back(argi.substr(9));
+    }
+    else if(strBegins(argi, "--lowspd=")) {
+      params.push_back("lowspd");
+      values.push_back(argi.substr(9));
+    }
+    else if(strBegins(argi, "--hghspd=")) {
+      params.push_back("hghspd");
+      values.push_back(argi.substr(9));
+    }
+    else if(strBegins(argi, "--lowspd_util=")) {
+      params.push_back("lowspd_util");
+      values.push_back(argi.substr(14));
+    }
+    else if(strBegins(argi, "--hghspd_util=")) {
+      params.push_back("hghspd_util");
+      values.push_back(argi.substr(14));
+    }
+    else {
       cout << "Exiting due to Unhandled arg: " << argi << endl;
       exit(1);
     }      
