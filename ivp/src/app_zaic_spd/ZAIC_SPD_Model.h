@@ -26,6 +26,7 @@ class ZAIC_SPD_Model : public ZAIC_Model
  public: // Virtual functions overloaded
   IvPFunction *getIvPFunction();
   void  setDomain(unsigned int);
+  bool  setParam(std::string, std::string)
   void  moveX(double amt);
   void  currMode(int);
 

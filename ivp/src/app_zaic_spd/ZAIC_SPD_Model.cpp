@@ -36,6 +36,34 @@ IvPFunction *ZAIC_SPD_Model::getIvPFunction()
 }
 
 //-------------------------------------------------------------
+// Procedure: setParam()
+//      Note: Virtual function overloaded
+
+bool ZAIC_SPD_Model::setParam(string param, string value)
+{
+  if(!m_zaic_spd)
+    return(false);
+
+  if(!isNumber(value))
+    return(false);
+
+  if(param == "medspd")
+    m_zaic_spd->setMedSpeed(atof(value.c_str()));
+  else if(param == "lowspd")
+    m_zaic_spd->setLowSpeed(atof(value.c_str()));
+  else if(param == "hghspd")
+    m_zaic_spd->setHghSpeed(atof(value.c_str()));
+  else if(param == "lowspd_util")
+    m_zaic_spd->setLowSpeedUtil(atof(value.c_str()));
+  else if(param == "hghspd_util")
+    m_zaic_spd->setHghSpeedUtil(atof(value.c_str()));
+  else
+    return(false);
+
+  return(true);
+}
+
+//-------------------------------------------------------------
 // Procedure: setDomain
 
 void ZAIC_SPD_Model::setDomain(unsigned int domain_pts)
