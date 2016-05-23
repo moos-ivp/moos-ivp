@@ -24,8 +24,10 @@ class ZAIC_Model
   // Virtual function to be overloaded
   virtual IvPFunction* getIvPFunction() {return(0);}
   virtual void setDomain(unsigned int)  {};
+  virtual bool setParam(std::string, std::string) {return(false);}
   virtual void moveX(double amt) {};
   virtual void currMode(int) {};
+
   
   // Getters
   IvPDomain  getIvPDomain();
