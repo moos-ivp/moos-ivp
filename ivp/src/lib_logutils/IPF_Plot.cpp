@@ -270,15 +270,12 @@ int IPF_Plot::getIndexByHelmIter(unsigned int iter) const
 
   // Special case: if the query iter is outside the IPF_Plot 
   // iter range, then return -1;
-  cout << "GGOT HEre 1111" << endl;
   cout << "m_helm_iteration[0]:" << m_helm_iteration[0] << endl;
   if(iter < m_helm_iteration[0])
     return(-1);
-  cout << "GGOT HEre 2222" << endl;
   cout << "m_helm_iteration[vsize-1]:" << m_helm_iteration[vsize-1] << endl;
   if(iter > m_helm_iteration[vsize-1])
     return(-1);
-  cout << "GGOT HEre 3333" << endl;
   
   // Handle general case
   int jump  = vsize / 2;
