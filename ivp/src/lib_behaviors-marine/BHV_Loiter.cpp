@@ -143,6 +143,9 @@ bool BHV_Loiter::setParam(string param, string value)
     return(true);
   }  
   else if((param == "speed") && isNumber(value) && (dval >= 0)) {
+    if(dval > m_domain.getVarHigh("speed"))
+      dval = m_domain.getVarHigh("speed") - 0.2;   // Temp fix mikerb May2416
+
     m_desired_speed = dval;
     return(true);
   }

@@ -168,6 +168,9 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     return(true);
   }
   else if((param == "speed") && isNumber(param_val) && (dval >= 0)) {
+    if(dval > m_domain.getVarHigh("speed"))
+      dval = m_domain.getVarHigh("speed") - 0.2;   // Temp fix mikerb May2416
+
     if(dval != m_cruise_speed)
       m_odo_leg_disq = true;
     m_cruise_speed = dval;
