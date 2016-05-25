@@ -326,13 +326,28 @@ IvPFunction *ZAIC_SPD::extractOF()
 
 void ZAIC_SPD::setPointLocations()
 {
+  cout << "========================================*" << endl;
+  cout << "medspd: " << m_medspd << endl;
+  cout << "lowspd: " << m_lowspd << endl;
+  cout << "hghspd: " << m_hghspd << endl;
+  cout << "lowspd_util: " << m_lowspd_util << endl;
+  cout << "hghspd_util: " << m_hghspd_util << endl;
+
   int    domain_pts  = m_ivp_domain.getVarPoints(0);
   double delta       = m_ivp_domain.getVarDelta(0);
 
+  // Most of the time the domain_low value for speed is zero. In case
+  // it is not, we handle it here:
+  double lowspd_diff = m_lowspd - m_domain_low;
+  double medspd_diff = m_medspd - m_domain_low;
+  double hghspd_diff = m_hghspd - m_domain_low;
+
+  cout << "m_domain_low: " << m_domain_low << endl;
+  
   m_ipt_low   = 0;
-  m_ipt_one   = (int)((m_lowspd/delta)+0.5);
-  m_ipt_two   = (int)((m_medspd/delta)+0.5);
-  m_ipt_three = (int)((m_hghspd/delta)+0.5);
+  m_ipt_one   = (int)((lowspd_diff/delta)+0.5);
+  m_ipt_two   = (int)((medspd_diff/delta)+0.5);
+  m_ipt_three = (int)((hghspd_diff/delta)+0.5);
   m_ipt_high  = domain_pts - 1;
 
   // Ensure that both middle points are within bounds and that
@@ -347,6 +362,13 @@ void ZAIC_SPD::setPointLocations()
 
   if(m_ipt_one   > m_ipt_two)   m_ipt_one   = m_ipt_two;
   if(m_ipt_three < m_ipt_two)   m_ipt_three = m_ipt_two;
+
+
+  cout << "m_ipt_low:   " << m_ipt_low << endl;
+  cout << "m_ipt_one:   " << m_ipt_one << endl;
+  cout << "m_ipt_two:   " << m_ipt_two << endl;
+  cout << "m_ipt_three: " << m_ipt_three << endl;
+  cout << "m_ipt_high:  " << m_ipt_high  << endl;
 }
      
 
@@ -357,13 +379,12 @@ void ZAIC_SPD::setPointLocations()
 
 PDMap *ZAIC_SPD::setPDMap()
 {
-  int i;
   int piece_count = 0;
 
   double break_ties = 0.00001;
 
   IvPBox *piece[4];
-  for(i=0; i<4; i++)
+  for(int i=0; i<4; i++)
     piece[i] = 0;
 
   // Handle piece0 if it exists
@@ -371,6 +392,8 @@ PDMap *ZAIC_SPD::setPDMap()
     piece[0] = new IvPBox(1,1);
     piece[0]->setPTS(0, 0, m_ipt_one);
 
+    cout << "Piece [0]: 0, " << m_ipt_one << endl;
+    
     double run   = (double)(m_ipt_one);  // run not zero in this case
     //double slope = m_lowspd_util / run;
     double slope = (m_lowspd_util - m_lminutil) / run;
@@ -385,6 +408,8 @@ PDMap *ZAIC_SPD::setPDMap()
   if(piece_count == 0)  { // lowspd was either zero or set to medspd
     piece[1] = new IvPBox(1,1);
     piece[1]->setPTS(0, 0, m_ipt_two);
+
+    cout << "Piece [1]: 0, " << m_ipt_two << endl;
 
     double run   = (double)(m_ipt_two);
     double slope = break_ties;
@@ -406,6 +431,8 @@ PDMap *ZAIC_SPD::setPDMap()
     piece[1] = new IvPBox(1,1);
     piece[1]->setPTS(0, m_ipt_one+1, m_ipt_two);
 
+    cout << "Piece [1]: " << m_ipt_one+1 << ", " << m_ipt_two << endl;
+
     double run    = (double)(m_ipt_two - m_ipt_one);
     double slope  = -break_ties;
     if(run > 0)
@@ -422,6 +449,8 @@ PDMap *ZAIC_SPD::setPDMap()
     piece[2] = new IvPBox(1,1);
     piece[2]->setPTS(0, m_ipt_two+1, m_ipt_three);
 
+    cout << "Piece [2]: " << m_ipt_two+1 << ", " << m_ipt_three << endl;
+    
     double run    = (double)(m_ipt_three - m_ipt_two);
     double slope  = -break_ties;
     if(run > 0)
@@ -438,6 +467,8 @@ PDMap *ZAIC_SPD::setPDMap()
     piece[3] = new IvPBox(1,1);
     piece[3]->setPTS(0, m_ipt_three+1, m_ipt_high);
 
+    cout << "Piece [3a]: " << m_ipt_three+1 << ", " << m_ipt_high << endl;
+
     double run    = (double)(m_ipt_high - m_ipt_three);
     double slope  = -break_ties;
     if(run > 0) {
@@ -453,29 +484,12 @@ PDMap *ZAIC_SPD::setPDMap()
     piece[3]->wt(1) = intcpt;
     piece_count++;
   }
-  else {
-    piece[3] = new IvPBox(1,1);
-    piece[3]->setPTS(0, m_ipt_two+1, m_ipt_high);
-
-    double run    = (double)(m_ipt_high - m_ipt_two);
-    double slope  = -break_ties;
-    if(run > 0) 
-      //      slope  = -(m_maxutil - m_hminutil) / run;
-      slope  = -(m_maxutil - m_hghspd_util) / run;
-
-    double intcpt = m_hghspd_util - (slope * m_ipt_high);
-    //double intcpt = m_hminutil - (slope * m_ipt_high);
-
-    piece[3]->wt(0) = slope;
-    piece[3]->wt(1) = intcpt;
-    piece_count++;
-  }
 
   PDMap *pdmap;
   pdmap = new PDMap(piece_count, m_ivp_domain, 1);
 
   int ix = 0;
-  for(i=0; i<4; i++) {
+  for(int i=0; i<4; i++) {
     if(piece[i]) {
       pdmap->bx(ix) = piece[i];
       ix++;
