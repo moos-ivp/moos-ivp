@@ -169,7 +169,7 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   }
   else if((param == "speed") && isNumber(param_val) && (dval >= 0)) {
     if(dval > m_domain.getVarHigh("speed"))
-      dval = m_domain.getVarHigh("speed") - 0.2;   // Temp fix mikerb May2416
+      dval = m_domain.getVarHigh("speed");
 
     if(dval != m_cruise_speed)
       m_odo_leg_disq = true;
@@ -688,12 +688,25 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     }
   }    
   else { // if (method == "zaic")
+
+#if 1
+    ZAIC_PEAK spd_zaic(m_domain, "speed");
+    double peak_width = m_cruise_speed / 2;
+    spd_zaic.setParams(m_cruise_speed, peak_width, 1.6, 20, 0, 100);
+    //    spd_zaic.setParams(m_cruise_speed, 1, 1.6, 20, 0, 100);               
+    IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
+    if(!spd_ipf)
+      postWMessage("Failure on the SPD ZAIC");
+#endif
+    
+#if 0
     ZAIC_SPD spd_zaic(m_domain, "speed");
     spd_zaic.setParams(m_cruise_speed, 0.1, m_cruise_speed+0.4, 70, 20);
     IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
-
+    spd_ipf->getPDMap()->print();
     if(!spd_ipf)
       postWMessage("Failure on the SPD ZAIC");
+#endif
     
     double rel_ang_to_trk_pt = relAng(m_osx, m_osy, m_trackpt.x(), m_trackpt.y());
 
@@ -705,6 +718,10 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     crs_zaic.setParams(m_osh, 30, 180, 5, 0, 20, ix);
     
     IvPFunction *crs_ipf = crs_zaic.extractIvPFunction(false);
+
+    cout << "crs pieces: " << crs_ipf->getPDMap()->size() << endl;
+    crs_ipf->getPDMap()->print();
+
     
     if(!crs_ipf) 
       postWMessage("Failure on the CRS ZAIC");
