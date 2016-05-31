@@ -17,6 +17,7 @@ SET(SRC
   FunctionEncoder.cpp
   FunctionEncoderMK.cpp
   IO_Utilities.cpp
+  PDMapBuilder.cpp
   OF_Coupler.cpp
   OF_Rater.cpp
   OF_Reflector.cpp
@@ -50,6 +51,7 @@ SET(HEADERS
   FunctionEncoder.h
   FunctionEncoderMK.h
   IO_Utilities.h
+  PDMapBuilder.h
   OF_Coupler.h
   OF_Rater.h
   OF_Reflector.h

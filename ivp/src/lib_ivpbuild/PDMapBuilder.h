@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: ZAIC_PHTP.h                                          */
-/*    DATE: May 31st 2015                                        */
+/*    FILE: PDMapBuilder.h                                       */
+/*    DATE: May 24th, 2016                                       */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -23,64 +23,47 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef OF_ZAIC_SPD_HEADER
-#define OF_ZAIC_SPD_HEADER
+#ifndef PDMAP_BUILDER_HEADER
+#define PDMAP_BUILDER_HEADER
 
+#include <vector>
 #include <string>
-#include "IvPDomain.h"
-#include "IvPFunction.h"
+#include "IvPBox.h"
+#include "PDMap.h"
 
-class PDMap;
-
-class ZAIC_SPD {
+class PDMapBuilder {
 public:
-  ZAIC_SPD(IvPDomain g_domain, const std::string& g_varname);
-  virtual ~ZAIC_SPD() {};
+  PDMapBuilder() {};
+  virtual ~PDMapBuilder() {clearBldPieces();}
 
-  bool setParams(double medspd, double lowspd, double hghspd, 
-		 double lowspd_util, double hghspd_util,
-		 double lminutil=0, double hminutil=0, double maxutil=100);
-
-  bool   setMedSpeed(double);
-  bool   setLowSpeed(double);
-  bool   setHghSpeed(double);
-  bool   setLowSpeedUtil(double);
-  bool   setHghSpeedUtil(double);
-  bool   setMinMaxUtil(double, double, double);
+  void   setIvPDomain(IvPDomain);
+  void   setDomainVals(std::vector<unsigned int>);
+  void   setRangeVals(std::vector<double>);
+  PDMap* getPDMap();
   
-  double getParam(std::string);
-
-  bool         stateOK()     {return(m_ivp_domain.size() == 0);};
-  std::string  getWarnings() {return(m_warning);};
-  IvPFunction* extractOF();
-  IvPDomain    getIvPDomain() {return(m_ivp_domain);}
-  IvPFunction* extractIvPFunction() {return(extractOF());};
-  
-protected:
-  void   setPointLocations();
-  PDMap* setPDMap();
-  
-protected:
-  double m_medspd;
-  double m_lowspd;
-  double m_hghspd;
-  double m_lowspd_util;
-  double m_hghspd_util;
-
-  double m_lminutil;
-  double m_hminutil;
-  double m_maxutil;
+  bool   hasWarnings();
+  void   clearWarnings();
+  std::string  getWarnings();
 
  protected:
-  std::vector<unsigned int> m_dom;
-  std::vector<double>       m_rng;
 
-private:
-  double m_domain_high;
-  double m_domain_low;
+  bool   preprocess();
+  void   clearBldPieces();
+  void   addWarning(std::string);
 
-  std::string  m_warning;
-  IvPDomain    m_ivp_domain;
+  IvPBox* buildBox(unsigned int ix_low, double val_low,
+		   unsigned int ix_hgh, double val_hgh);
+
+protected:  
+  std::vector<unsigned int> m_dom_vals;
+  std::vector<double>       m_rng_vals;
+  std::vector<std::string>  m_warnings;
+  std::vector<IvPBox*>      m_bld_pieces;
+
+  IvPDomain m_ivp_domain;
 };
-
 #endif
+
+
+
+

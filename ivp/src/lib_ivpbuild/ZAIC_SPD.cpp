@@ -27,6 +27,7 @@
 #include <cmath>
 #include "ZAIC_SPD.h"
 #include "BuildUtils.h"
+#include "PDMapBuilder.h"
 
 using namespace std;
 
@@ -35,21 +36,6 @@ using namespace std;
 
 ZAIC_SPD::ZAIC_SPD(IvPDomain g_domain, const string& g_varname) 
 {
-  m_state_ok = true;
-
-  m_ivp_domain = subDomain(g_domain, g_varname);
-
-  // If the domain variable is not found in the given domain, flip
-  // the m_state_ok bit to false. 
-  if(m_ivp_domain.size() == 0)
-    m_state_ok = false;
-
-  m_domain_ix    = m_ivp_domain.getIndex(g_varname);
-  m_domain_high  = m_ivp_domain.getVarHigh(m_domain_ix);
-  m_domain_low   = m_ivp_domain.getVarLow(m_domain_ix);
-  m_domain_pts   = m_ivp_domain.getVarPoints(m_domain_ix);
-  m_domain_delta = m_ivp_domain.getVarDelta(m_domain_ix);
-  
   m_medspd       = 0;
   m_lowspd       = 0;
   m_hghspd       = 0;
@@ -59,12 +45,17 @@ ZAIC_SPD::ZAIC_SPD(IvPDomain g_domain, const string& g_varname)
   m_lminutil     = 0;
   m_hminutil     = 0;
   m_maxutil      = 100;
+  
+  m_ivp_domain = subDomain(g_domain, g_varname);
 
-  m_ipt_low      = 0;
-  m_ipt_one      = 0;
-  m_ipt_two      = 0;
-  m_ipt_three    = 0;
-  m_ipt_high     = 0;
+  m_domain_high = 0;
+  m_domain_low  = 0;
+
+  if(m_ivp_domain.size() == 1) {
+    m_domain_high  = m_ivp_domain.getVarHigh(0);
+    m_domain_low   = m_ivp_domain.getVarLow(0);
+  }
+
 }
 
 //-------------------------------------------------------------
@@ -294,9 +285,9 @@ double ZAIC_SPD::getParam(string param)
 
 IvPFunction *ZAIC_SPD::extractOF()
 {
-  if((m_domain_ix == -1) || (m_state_ok == false))
+  if(m_ivp_domain.size() == 0)
     return(0);
-
+  
   setPointLocations();
 
   PDMap *pdmap = setPDMap();
@@ -326,6 +317,12 @@ IvPFunction *ZAIC_SPD::extractOF()
 
 void ZAIC_SPD::setPointLocations()
 {
+  m_dom.clear();
+  m_rng.clear();
+
+  if(m_ivp_domain.size() != 1)
+    return;
+  
   cout << "========================================*" << endl;
   cout << "medspd: " << m_medspd << endl;
   cout << "lowspd: " << m_lowspd << endl;
@@ -342,159 +339,65 @@ void ZAIC_SPD::setPointLocations()
   double medspd_diff = m_medspd - m_domain_low;
   double hghspd_diff = m_hghspd - m_domain_low;
 
-  cout << "m_domain_low: " << m_domain_low << endl;
-  
-  m_ipt_low   = 0;
-  m_ipt_one   = (int)((lowspd_diff/delta)+0.5);
-  m_ipt_two   = (int)((medspd_diff/delta)+0.5);
-  m_ipt_three = (int)((hghspd_diff/delta)+0.5);
-  m_ipt_high  = domain_pts - 1;
+  int ipt_low   = 0;
+  int ipt_one   = (int)((lowspd_diff/delta)+0.5);
+  int ipt_two   = (int)((medspd_diff/delta)+0.5);
+  int ipt_three = (int)((hghspd_diff/delta)+0.5);
+  int ipt_high  = domain_pts - 1;
 
   // Ensure that both middle points are within bounds and that
   // point one is never greater than point two
-  if(m_ipt_one < 0)    m_ipt_one   = 0;
-  if(m_ipt_two < 0)    m_ipt_two   = 0;
-  if(m_ipt_three < 0)  m_ipt_three = 0;
+  if(ipt_one < 0)    ipt_one   = 0;
+  if(ipt_two < 0)    ipt_two   = 0;
+  if(ipt_three < 0)  ipt_three = 0;
 
-  if(m_ipt_one > m_ipt_high)    m_ipt_one   = m_ipt_high;
-  if(m_ipt_two > m_ipt_high)    m_ipt_two   = m_ipt_high;
-  if(m_ipt_three > m_ipt_high)  m_ipt_three = m_ipt_high;
+  if(ipt_one > ipt_high)    ipt_one   = ipt_high;
+  if(ipt_two > ipt_high)    ipt_two   = ipt_high;
+  if(ipt_three > ipt_high)  ipt_three = ipt_high;
 
-  if(m_ipt_one   > m_ipt_two)   m_ipt_one   = m_ipt_two;
-  if(m_ipt_three < m_ipt_two)   m_ipt_three = m_ipt_two;
+  if(ipt_one   > ipt_two)   ipt_one   = ipt_two;
+  if(ipt_three < ipt_two)   ipt_three = ipt_two;
 
+  if(ipt_low != ipt_two) {
+    m_dom.push_back(ipt_low);
+    m_rng.push_back(m_lminutil);
+  }
+  
+  if((ipt_one != ipt_low) && (ipt_one != ipt_two)){
+    m_dom.push_back(ipt_one);
+    m_rng.push_back(m_lowspd_util);
+  }
 
-  cout << "m_ipt_low:   " << m_ipt_low << endl;
-  cout << "m_ipt_one:   " << m_ipt_one << endl;
-  cout << "m_ipt_two:   " << m_ipt_two << endl;
-  cout << "m_ipt_three: " << m_ipt_three << endl;
-  cout << "m_ipt_high:  " << m_ipt_high  << endl;
+  m_dom.push_back(ipt_two);
+  m_rng.push_back(m_maxutil);
+
+  if(ipt_three != ipt_two) {
+    m_dom.push_back(ipt_three);
+    m_rng.push_back(m_hghspd_util);
+  }
+
+  if(ipt_high != ipt_three) {
+    m_dom.push_back(ipt_high);
+    m_rng.push_back(m_hminutil);
+  }
+
+  for(unsigned int i=0; i<m_dom.size(); i++) {
+    cout << "[" << i << "]: dom:" << m_dom[i] << ", val:" << m_rng[i] << endl;
+  }
 }
      
-
-
 
 //-------------------------------------------------------------
 // Procedure: setPDMap()
 
 PDMap *ZAIC_SPD::setPDMap()
 {
-  int piece_count = 0;
-
-  double break_ties = 0.00001;
-
-  IvPBox *piece[4];
-  for(int i=0; i<4; i++)
-    piece[i] = 0;
-
-  // Handle piece0 if it exists
-  if((m_ipt_one > m_ipt_low) && (m_ipt_one < m_ipt_two)) {
-    piece[0] = new IvPBox(1,1);
-    piece[0]->setPTS(0, 0, m_ipt_one);
-
-    cout << "Piece [0]: 0, " << m_ipt_one << endl;
-    
-    double run   = (double)(m_ipt_one);  // run not zero in this case
-    //double slope = m_lowspd_util / run;
-    double slope = (m_lowspd_util - m_lminutil) / run;
-    double intcpt = m_lowspd_util - (slope * m_ipt_one);   
-
-    piece[0]->wt(0) = slope;
-    piece[0]->wt(1) = intcpt;
-    piece_count++;
-  }
-
-  // Handle piece1
-  if(piece_count == 0)  { // lowspd was either zero or set to medspd
-    piece[1] = new IvPBox(1,1);
-    piece[1]->setPTS(0, 0, m_ipt_two);
-
-    cout << "Piece [1]: 0, " << m_ipt_two << endl;
-
-    double run   = (double)(m_ipt_two);
-    double slope = break_ties;
-
-    if(run > 0)
-      slope  = (m_maxutil - m_lminutil) / run;
-    double intcpt = m_maxutil - (slope * m_ipt_two);
-    if(m_ipt_low == m_ipt_one) {
-      if(run > 0)
-	slope  = (m_maxutil - m_lowspd_util) / run;
-      intcpt = m_maxutil - (slope * m_ipt_two);
-    }
-    
-    piece[1]->wt(0) = slope;
-    piece[1]->wt(1) = intcpt;
-    piece_count++;
-  }
-  else {   // The "normal" case
-    piece[1] = new IvPBox(1,1);
-    piece[1]->setPTS(0, m_ipt_one+1, m_ipt_two);
-
-    cout << "Piece [1]: " << m_ipt_one+1 << ", " << m_ipt_two << endl;
-
-    double run    = (double)(m_ipt_two - m_ipt_one);
-    double slope  = -break_ties;
-    if(run > 0)
-      slope  = (m_maxutil - m_lowspd_util) / run;
-    double intcpt = m_maxutil - (slope * m_ipt_two);
-
-    piece[1]->wt(0) = slope;
-    piece[1]->wt(1) = intcpt;
-    piece_count++;
-  }
-
-  // Handle piece2 if it exists
-  if((m_ipt_three > m_ipt_two) && (m_ipt_three < m_ipt_high)) {
-    piece[2] = new IvPBox(1,1);
-    piece[2]->setPTS(0, m_ipt_two+1, m_ipt_three);
-
-    cout << "Piece [2]: " << m_ipt_two+1 << ", " << m_ipt_three << endl;
-    
-    double run    = (double)(m_ipt_three - m_ipt_two);
-    double slope  = -break_ties;
-    if(run > 0)
-      slope  = -(m_maxutil - m_hghspd_util) / run;
-    double intcpt = m_hghspd_util - (slope * m_ipt_three);
-
-    piece[2]->wt(0) = slope;
-    piece[2]->wt(1) = intcpt;
-    piece_count++;
-  }
-
-  // Handle piece3 if it exists
-  if(m_ipt_three < m_ipt_high) {
-    piece[3] = new IvPBox(1,1);
-    piece[3]->setPTS(0, m_ipt_three+1, m_ipt_high);
-
-    cout << "Piece [3a]: " << m_ipt_three+1 << ", " << m_ipt_high << endl;
-
-    double run    = (double)(m_ipt_high - m_ipt_three);
-    double slope  = -break_ties;
-    if(run > 0) {
-      if(m_ipt_three > m_ipt_two)
-	slope  = -(m_hghspd_util - m_hminutil) / run;
-      else
-	slope  = -(m_maxutil - m_hminutil) / run;
-	//slope  = -(m_hghspd_util - m_hminutil) / run;
-    }
-    double intcpt = m_hminutil - (slope * m_ipt_high);
-
-    piece[3]->wt(0) = slope;
-    piece[3]->wt(1) = intcpt;
-    piece_count++;
-  }
-
-  PDMap *pdmap;
-  pdmap = new PDMap(piece_count, m_ivp_domain, 1);
-
-  int ix = 0;
-  for(int i=0; i<4; i++) {
-    if(piece[i]) {
-      pdmap->bx(ix) = piece[i];
-      ix++;
-    }
-  }
+  PDMapBuilder builder;
+  builder.setIvPDomain(m_ivp_domain);
+  builder.setDomainVals(m_dom);
+  builder.setRangeVals(m_rng);
+  
+  PDMap *pdmap = builder.getPDMap();
   return(pdmap);
 }
 
