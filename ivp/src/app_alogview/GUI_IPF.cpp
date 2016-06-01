@@ -168,7 +168,7 @@ void GUI_IPF::resizeWidgetsShape()
   int bhvs_x = 5; 
   int bhvs_y = tmarg;
   int bhvs_wid = lmarg-10;
-  m_brw_bhvs->resize(bhvs_x, bhvs_y, bhvs_wid, fld_hgt);
+  m_brw_bhvs->resize(bhvs_x, bhvs_y, bhvs_wid, ipf_hgt);
 
   int coll_x = 10; 
   int coll_y = 30;
