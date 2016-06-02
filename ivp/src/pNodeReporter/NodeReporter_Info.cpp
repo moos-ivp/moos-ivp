@@ -93,6 +93,7 @@ void showExampleConfigAndExit()
   blk("  // Configure key aspects of the node                          ");
   blk("  platform_type      = glider  "," // or {uuv,auv,ship,kayak}   ");
   blk("  platform_length    = 8       "," // meters.  Range [0,inf)    ");
+  blk("  platform_color     = green   "," // or any legal color        ");
   blk("                                                                ");
   blk("  // Configure optional blackout functionality                  ");
   blu("  blackout_interval  = 0       "," // seconds. Range [0,inf)    ");
@@ -161,7 +162,7 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  NODE_REPORT                                                   ");
   blk("  NODE_REPORT_LOCAL = NAME=alpha,TYPE=UUV,TIME=1252348077.59,   ");
-  blk("                      X=51.71,Y=-35.50, LAT=43.824981,          ");
+  blk("                      COLOR=red,X=51.71,Y=-35.50, LAT=43.824981,");
   blk("                      LON=-70.329755,SPD=2.0,HDG=118.8,         ");
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
   blk("                      MODE=MODE@ACTIVE:LOITERING,               ");
