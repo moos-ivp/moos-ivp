@@ -383,7 +383,7 @@ double  relBearing(double osx, double osy, double osh, double cnx, double cny)
   
   double raw_rel_bearing = angle_os_to_cn - osh;  
 
-  return(angle360(raw_rel_bearing));
+  return(angle360(raw_rel_bearing)); // Super important to put in [0,360)
 }
 
 //---------------------------------------------------------------
