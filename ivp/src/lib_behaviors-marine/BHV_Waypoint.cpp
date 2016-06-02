@@ -267,8 +267,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   }
   else if((param == "ipf-type") || (param == "ipf_type")) {
     param_val = tolower(param_val);
-    if((param_val=="zaic") || (param_val=="roc") || 
-       (param_val=="rate_of_closure"))
+    if((param_val=="zaic") || (param_val=="zaic_spd") || 
+       (param_val=="roc")  || (param_val=="rate_of_closure"))
       m_ipf_type = param_val;
     return(true);
   }
@@ -687,26 +687,27 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
       ipf = reflector.extractIvPFunction();
     }
   }    
-  else { // if (method == "zaic")
+  else { // if (method == "zaic","zaic_spd")
 
-#if 1
-    ZAIC_PEAK spd_zaic(m_domain, "speed");
-    double peak_width = m_cruise_speed / 2;
-    spd_zaic.setParams(m_cruise_speed, peak_width, 1.6, 20, 0, 100);
-    //    spd_zaic.setParams(m_cruise_speed, 1, 1.6, 20, 0, 100);               
-    IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
-    if(!spd_ipf)
-      postWMessage("Failure on the SPD ZAIC");
-#endif
-    
-#if 0
-    ZAIC_SPD spd_zaic(m_domain, "speed");
-    spd_zaic.setParams(m_cruise_speed, 0.1, m_cruise_speed+0.4, 70, 20);
-    IvPFunction *spd_ipf = spd_zaic.extractIvPFunction();
-    spd_ipf->getPDMap()->print();
-    if(!spd_ipf)
-      postWMessage("Failure on the SPD ZAIC");
-#endif
+    IvPFunction *spd_ipf = 0;
+
+    if(method == "zaic_spd") {
+      ZAIC_SPD spd_zaic(m_domain, "speed");
+      spd_zaic.setParams(m_cruise_speed, 0.1, m_cruise_speed+0.4, 70, 20);
+      spd_ipf = spd_zaic.extractIvPFunction();
+      spd_ipf->getPDMap()->print();
+      if(!spd_ipf)
+	postWMessage("Failure on the SPD ZAIC via ZAIC_SPD utility");
+    }
+    else {
+      ZAIC_PEAK spd_zaic(m_domain, "speed");
+      double peak_width = m_cruise_speed / 2;
+      spd_zaic.setParams(m_cruise_speed, peak_width, 1.6, 20, 0, 100);
+      //    spd_zaic.setParams(m_cruise_speed, 1, 1.6, 20, 0, 100);               
+      spd_ipf = spd_zaic.extractIvPFunction();
+      if(!spd_ipf)
+	postWMessage("Failure on the SPD ZAIC via ZAIC_PEAK utility");
+    }    
     
     double rel_ang_to_trk_pt = relAng(m_osx, m_osy, m_trackpt.x(), m_trackpt.y());
 

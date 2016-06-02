@@ -69,6 +69,7 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_center_activate   = false;
   m_use_alt_speed     = false;
   m_patience          = 50;     // [1,99]
+  m_ipf_type          = "zaic";
   
   // Visual Hint Defaults
   m_hint_vertex_size   = 1;
@@ -147,6 +148,12 @@ bool BHV_Loiter::setParam(string param, string value)
       dval = m_domain.getVarHigh("speed");
 
     m_desired_speed = dval;
+    return(true);
+  }
+  else if((param == "ipf-type") || (param == "ipf_type")) {
+    value = tolower(value);
+    if((value=="zaic") || (value=="zaic_spd"))
+      m_ipf_type = value;
     return(true);
   }
   else if((param == "speed_alt") && isNumber(value)) { // Neg vals ok
@@ -286,7 +293,7 @@ IvPFunction *BHV_Loiter::onRunState()
   double dist_to_next_vertex = hypot(m_osx-m_ptx, m_osy-m_pty);
   postMessage("LOITER_DIST_TO_VERT", dist_to_next_vertex);
 
-  IvPFunction *ipf = buildIPF("zaic");
+  IvPFunction *ipf = buildIPF(m_ipf_type);
 
   if(ipf) {
     ipf->getPDMap()->normalize(0,100);
@@ -466,7 +473,7 @@ void BHV_Loiter::updateLoiterMode()
 //-----------------------------------------------------------
 // Procedure: buildIPF
 
-IvPFunction *BHV_Loiter::buildIPF(const string& method) 
+IvPFunction *BHV_Loiter::buildIPF(string method) 
 {
   IvPFunction *ipf = 0;
   
@@ -474,21 +481,22 @@ IvPFunction *BHV_Loiter::buildIPF(const string& method)
   if((m_desired_speed_alt >= 0) && m_use_alt_speed)
     desired_speed = m_desired_speed_alt;
 
-  if(method == "zaic") {    
-#if 0
-    ZAIC_SPD spd_zaic(m_domain, "speed");
-    spd_zaic.setParams(desired_speed, 0.1, desired_speed+0.4, 85, 20);
-    IvPFunction *spd_of = spd_zaic.extractIvPFunction();
-#endif
+  if((method == "zaic") || (method == "zaic_spd")) {
     
-#if 1
-    ZAIC_PEAK spd_zaic(m_domain, "speed");
-    spd_zaic.setSummit(desired_speed);
-    spd_zaic.setBaseWidth(0.3);
-    spd_zaic.setPeakWidth(0.0);
-    spd_zaic.setSummitDelta(0.0);
-    IvPFunction *spd_of = spd_zaic.extractIvPFunction();
-#endif
+    IvPFunction *spd_of = 0;
+    if(method == "zaic_spd") {
+      ZAIC_SPD spd_zaic(m_domain, "speed");
+      spd_zaic.setParams(desired_speed, 0.1, desired_speed+0.4, 85, 20);
+      spd_of = spd_zaic.extractIvPFunction();
+    }
+    else {
+      ZAIC_PEAK spd_zaic(m_domain, "speed");
+      spd_zaic.setSummit(desired_speed);
+      spd_zaic.setBaseWidth(0.3);
+      spd_zaic.setPeakWidth(0.0);
+      spd_zaic.setSummitDelta(0.0);
+      spd_of = spd_zaic.extractIvPFunction();
+    }
 
     double rel_ang_to_wpt = relAng(m_osx, m_osy, m_ptx, m_pty);
     ZAIC_PEAK crs_zaic(m_domain, "course");

@@ -47,7 +47,7 @@ protected:
   bool         updateInfoIn();
   void         updateCenter();
   void         updateLoiterMode();
-  IvPFunction* buildIPF(const std::string&);
+  IvPFunction* buildIPF(std::string);
   void         postStatusReports();
   void         postViewablePolygon();
   void         postErasablePolygon();
@@ -64,6 +64,7 @@ private:  // Configuration Parameters
   bool         m_center_activate;
   bool         m_use_alt_speed;
 
+  std::string  m_ipf_type;
   std::string  m_var_suffix;
 
   // Visual Hint Defaults
