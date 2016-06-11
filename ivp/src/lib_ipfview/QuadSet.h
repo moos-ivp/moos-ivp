@@ -41,6 +41,7 @@ public:
   bool   applyIPF(IvPFunction *ipf, std::string src="");
 
   bool   applyIPF1D(IvPFunction *ipf, std::string src);
+  bool   applyIPF2DHS(IvPFunction *ipf);
   bool   applyIPF2D(IvPFunction *ipf);
 
   void   applyColorMap(const FColorMap&);

@@ -48,13 +48,31 @@ QuadSet::QuadSet()
 
 bool QuadSet::applyIPF(IvPFunction *ipf, string source)
 {
+  cout << "applyIPF 1111" << endl;
   if(!ipf)
     return(false);
 
+  IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
+
+  bool crs_spd_ipf = false;
+  if(ivp_domain.size() == 2) {
+    if((ivp_domain.getVarName(0) == "speed") &&
+       (ivp_domain.getVarName(1) == "course"))
+       crs_spd_ipf = true;
+    if((ivp_domain.getVarName(0) == "course") &&
+       (ivp_domain.getVarName(1) == "speed"))
+       crs_spd_ipf = true;
+  }
+  
+  cout << "applyIPF 2222" << endl;
   if(ipf->getDim() == 1)
     return(applyIPF1D(ipf, source));
+  else if((ipf->getDim() == 2) && crs_spd_ipf)
+    return(applyIPF2DHS(ipf));
   else if(ipf->getDim() == 2)
     return(applyIPF2D(ipf));
+  
+  cout << "applyIPF 3333" << endl;
   return(false);
 }
 
@@ -132,12 +150,13 @@ bool QuadSet::applyIPF1D(IvPFunction *ipf, string source)
 
 
 //-------------------------------------------------------------
-// Procedure: apply2DIPF
+// Procedure: applyIPF2DHS
 //      Note: For functions defined only over course or speed, we rely
 //            on the caller to "expand" the function before calling.
 
-bool QuadSet::applyIPF2D(IvPFunction *ipf)
+bool QuadSet::applyIPF2DHS(IvPFunction *ipf)
 {
+  cout << "applyIPF2DHS   aaaaa" << endl;
   if(!ipf)
     return(false);
 
@@ -150,6 +169,7 @@ bool QuadSet::applyIPF2D(IvPFunction *ipf)
   if((crs_pts < 2) || (spd_pts < 2))
     return(false);
 
+  cout << "applyIPF2DHS   bbbbb" << endl;
   m_ivp_domain = ivp_domain;
   m_ipf_priority_wt = ipf->getPWT();
 
@@ -232,6 +252,103 @@ bool QuadSet::applyIPF2D(IvPFunction *ipf)
 
   resetMinMaxVals();
   m_quadset_dim = 2;
+  return(true);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: apply2DIPF
+//      Note: For functions defined only over course or speed, we rely
+//            on the caller to "expand" the function before calling.
+
+bool QuadSet::applyIPF2D(IvPFunction *ipf)
+{
+  cout << "applyIPF2D   aaaaa" << endl;
+  if(!ipf)
+    return(false);
+
+  cout << "applyIPF2D   bbbbb" << endl;
+  PDMap *pdmap = ipf->getPDMap();
+  if(!pdmap)
+    return(false);
+
+  cout << "applyIPF2D   ccccc" << endl;
+  double hval = pdmap->getMaxWT();
+  double lval = pdmap->getMinWT();
+  
+  IvPDomain ivp_domain = pdmap->getDomain();
+  unsigned int xpts = ivp_domain.getVarPoints(0);
+  unsigned int ypts = ivp_domain.getVarPoints(1);
+  if((xpts < 2) || (ypts < 2))
+    return(false);
+
+  cout << "applyIPF2D   ddddd" << endl;
+  m_ivp_domain = ivp_domain;
+  m_ipf_priority_wt = ipf->getPWT();
+
+  m_quads.clear();
+
+  for(unsigned int i=0; i<pdmap->size(); i++) {
+    const IvPBox* box = pdmap->bx(i);
+
+    Quad3D q;
+
+    q.scale = 1;
+    q.base  = 0;
+    //q.scale = m_scale;
+    //q.base  = m_base_ipf;
+    q.xl    = box->pt(0,0);
+    q.xh    = box->pt(0,1);
+    q.yl    = box->pt(1,0);
+    q.yh    = box->pt(1,1);
+    q.xpts  = xpts;
+    q.ypts  = ypts;
+
+    int degree = box->getDegree();
+    
+    if(degree != 1)
+      return(false);
+
+    double pct;
+    IvPBox ebox(2,1);
+    
+    ebox.setPTS(0, (int)q.xl, (int)q.xl);
+    ebox.setPTS(1, (int)q.yl, (int)q.yl);
+    q.llval = box->ptVal(&ebox);
+    pct = (q.llval-lval)/(hval-lval);
+    //q.llval_r = m_cmap.getIRVal(pct);
+    //q.llval_g = m_cmap.getIGVal(pct);
+    //q.llval_b = m_cmap.getIBVal(pct);
+
+    ebox.setPTS(0, (int)q.xh, (int)q.xh);
+    q.hlval = box->ptVal(&ebox);
+    pct = (q.hlval-lval)/(hval-lval);
+    //q.hlval_r = m_cmap.getIRVal(pct);
+    //q.hlval_g = m_cmap.getIGVal(pct);
+    //q.hlval_b = m_cmap.getIBVal(pct);
+
+    ebox.setPTS(1, (int)q.yh, (int)q.yh);
+    q.hhval = box->ptVal(&ebox);
+    pct = (q.hhval-lval)/(hval-lval);
+    //q.hhval_r = m_cmap.getIRVal(pct);
+    //q.hhval_g = m_cmap.getIGVal(pct);
+    //q.hhval_b = m_cmap.getIBVal(pct);
+
+    ebox.setPTS(0, (int)q.xl, (int)q.xl);
+    q.lhval = box->ptVal(&ebox);
+    pct = (q.lhval-lval)/(hval-lval);
+    //q.lhval_r = m_cmap.getIRVal(pct);
+    //q.lhval_g = m_cmap.getIGVal(pct);
+    //q.lhval_b = m_cmap.getIBVal(pct);
+
+    m_quads.push_back(q);
+  }
+
+  resetMinMaxVals();
+  m_quadset_dim = 2;
+
+  //applyColorMap();
+  
   return(true);
 }
 

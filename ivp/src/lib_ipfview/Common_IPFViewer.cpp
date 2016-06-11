@@ -33,7 +33,7 @@ using namespace std;
 // Constructor
 
 Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width, 
-		     int g_height, const char *g_l)
+				   int g_height, const char *g_l)
  : Fl_Gl_Window(g_x, g_y, g_width, g_height, g_l)
 {
   m_xRot         = -72;
@@ -115,15 +115,17 @@ bool Common_IPFViewer::setParam(string param, string value)
       m_draw_frame = false;
   }
   else if((param == "draw_frame") && (value == "true"))
-    m_draw_frame = true;
-  else if((param == "draw_frame") && (value == "false"))
-    m_draw_frame = false;
+    return(setBooleanOnString(m_draw_frame, value));
   else if((param == "draw_base") && (value == "true"))
-    m_draw_base = true;
-  else if((param == "draw_base") && (value == "false"))
-    m_draw_base = false;
+    return(setBooleanOnString(m_draw_base, value));
   else if(param == "draw_pin")
     setBooleanOnString(m_draw_pin, value);
+  else if((param == "polar") && (value == "0"))
+    m_polar = 0;
+  else if((param == "polar") && (value == "1"))
+    m_polar = 1;
+  else if((param == "polar") && (value == "2"))
+    m_polar = 2;
   else if(param == "reset_view") {
     if(value=="1")
       {m_xRot=-78; m_zRot=40;}

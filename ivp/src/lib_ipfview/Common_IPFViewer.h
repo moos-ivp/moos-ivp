@@ -56,7 +56,8 @@ public:
   void   setLabelColor(std::string s)  {m_label_color.setColor(s);}
   void   setClearColor(std::string s)  {m_clear_color.setColor(s);}
   void   setFrameColor(std::string s)  {m_frame_color.setColor(s);}
-
+  void   setColorMap(std::string s)    {m_color_map.setType(s);}
+  
 protected:
   void   drawFrame(bool full=true);
   void   drawOwnPoint();
