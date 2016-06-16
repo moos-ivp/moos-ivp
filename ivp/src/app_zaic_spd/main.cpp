@@ -35,55 +35,36 @@ void idleProc(void *)
 
 int main(int argc, char *argv[])
 {
-  bool verbose = false;
-  int  domain  = 410;
+  Fl::add_idle(idleProc);
+  ZAIC_SPD_GUI* gui = new ZAIC_SPD_GUI(700, 460, "ZAIC_SPD-Viewer");
 
-  vector<string> params;
-  vector<string> values;
-  
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
     if((argi=="-h") || (argi == "--help") || (argi=="-help"))
       showHelpAndExit();
     else if((argi=="-v") || (argi == "--version") || (argi=="-version"))
       showReleaseInfoAndExit("zaic_spd", "gpl");
-    else if(strBegins(argi, "--domain=")) {
-      string domain_str = argi.substr(9);
-      domain = vclip(atoi(domain_str.c_str()), 100, 1000);
-    }
+
     else if(strBegins(argi, "--verbose")) 
-      verbose = true;
-    else if(strBegins(argi, "--medspd=")) {
-      params.push_back("medspd");
-      values.push_back(argi.substr(9));
-    }
-    else if(strBegins(argi, "--lowspd=")) {
-      params.push_back("lowspd");
-      values.push_back(argi.substr(9));
-    }
-    else if(strBegins(argi, "--hghspd=")) {
-      params.push_back("hghspd");
-      values.push_back(argi.substr(9));
-    }
-    else if(strBegins(argi, "--lowspd_util=")) {
-      params.push_back("lowspd_util");
-      values.push_back(argi.substr(14));
-    }
-    else if(strBegins(argi, "--hghspd_util=")) {
-      params.push_back("hghspd_util");
-      values.push_back(argi.substr(14));
-    }
+      gui->setVerbose(true);
+    else if(strBegins(argi, "--domain=")) 
+      gui->setParam("domain", argi.substr(9));
+    else if(strBegins(argi, "--medspd=")) 
+      gui->setParam("medspd", argi.substr(9));
+    else if(strBegins(argi, "--lowspd=")) 
+      gui->setParam("lowspd", argi.substr(9));
+    else if(strBegins(argi, "--hghspd=")) 
+      gui->setParam("hghspd", argi.substr(9));
+    else if(strBegins(argi, "--lowspd_util=")) 
+      gui->setParam("lowspd_util", argi.substr(14));
+    else if(strBegins(argi, "--hghspd_util=")) 
+      gui->setParam("hghspd_util", argi.substr(14));
     else {
       cout << "Exiting due to Unhandled arg: " << argi << endl;
       exit(1);
     }      
   }
       
-  Fl::add_idle(idleProc);
-  ZAIC_SPD_GUI* gui = new ZAIC_SPD_GUI(700, 460, "ZAIC_SPD-Viewer");
-
-  gui->setDomain((unsigned int)(domain));
-  gui->setVerbose(verbose);
   gui->updateOutput();
 
   // Enter the GUI event loop.
@@ -104,7 +85,14 @@ void showHelpAndExit()
   cout << "  --verbose,           Enable verbose output        " << endl;
   cout << "  --version, -v,       Display the release version  " << endl;
   cout << "                                                    " << endl;
+  cout << "  --medspd=200                                      " << endl;
+  cout << "  --hghspd=220                                      " << endl;
+  cout << "  --lowspd=180                                      " << endl;
+  cout << "  --lowspd_util=120                                 " << endl;
+  cout << "  --hghspd_util=230                                 " << endl;
+  cout << "                                                    " << endl;
   cout << "Example:                                            " << endl;
   cout << " $ zaic_spd --domain=500 --verbose                  " << endl;
+  cout << " $ zaic_spd --domain=100 --medspd=120 --lowspd=110 --hghspd=150 " << endl;
   exit(0);
 }

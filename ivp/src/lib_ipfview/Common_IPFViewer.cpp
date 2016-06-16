@@ -39,12 +39,16 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
   m_xRot         = -72;
   m_zRot         = 40;
   m_zoom         = 1;
+  m_scale        = 1;
+  m_base         = 0;
   m_rad_extra    = 1;
   m_draw_pin     = true;
   m_draw_frame   = true;
   m_draw_base    = true;
-  m_polar        = 1; 
-
+  m_polar        = 0; 
+  m_draw_pclines = true;
+  m_intensity    = 1.0;
+  
   setParam("clear_color", "white");
   setParam("frame_color", "dark_red");
 
@@ -114,10 +118,12 @@ bool Common_IPFViewer::setParam(string param, string value)
     else if (m_draw_frame && !m_draw_base)
       m_draw_frame = false;
   }
-  else if((param == "draw_frame") && (value == "true"))
+  else if(param == "draw_frame")
     return(setBooleanOnString(m_draw_frame, value));
-  else if((param == "draw_base") && (value == "true"))
+  else if(param == "draw_base")
     return(setBooleanOnString(m_draw_base, value));
+  else if(param == "draw_pclines")
+    return(setBooleanOnString(m_draw_pclines, value));
   else if(param == "draw_pin")
     setBooleanOnString(m_draw_pin, value);
   else if((param == "polar") && (value == "0"))
@@ -283,13 +289,13 @@ bool Common_IPFViewer::drawIvPFunction()
   unsigned int qdim = m_quadset.getQuadSetDim();
 
   if(qdim == 1) {
-    drawIvPFunction1D();
+    drawQuadSet1D();
     draw1DAxes(m_quadset.getDomain());
     draw1DLabels(m_quadset.getDomain());
     draw1DLine();
   }
   else if(qdim == 2)
-    return(drawIvPFunction2D());
+    return(drawQuadSet2D());
   else
     return(false);
 
@@ -297,9 +303,9 @@ bool Common_IPFViewer::drawIvPFunction()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawIvPFunction1D
+// Procedure: drawQuadSet1D
 
-void Common_IPFViewer::drawIvPFunction1D()
+void Common_IPFViewer::drawQuadSet1D()
 {
   double clear_red = m_clear_color.red();
   double clear_grn = m_clear_color.grn();
@@ -396,9 +402,9 @@ void Common_IPFViewer::drawIvPFunction1D()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawIvPFunction2D
+// Procedure: drawQuadSet2D
 
-bool Common_IPFViewer::drawIvPFunction2D()
+bool Common_IPFViewer::drawQuadSet2D()
 {
   IvPDomain domain = m_quadset.getDomain();
   double calc_rad_extra = 1;
@@ -415,8 +421,11 @@ bool Common_IPFViewer::drawIvPFunction2D()
   if(quad_cnt == 0)
     return(false);
 
+  m_rad_extra = calc_rad_extra;
+  //for(i=100; i<101; i++)
   for(i=0; i<quad_cnt; i++)
-    drawQuad(m_quadset.getQuad(i), calc_rad_extra);
+  //for(i=0; i<1; i++)
+    drawQuad(m_quadset.getQuad(i));
 
   return(true);
 }
@@ -424,85 +433,153 @@ bool Common_IPFViewer::drawIvPFunction2D()
 //-------------------------------------------------------------
 // Procedure: drawQuad
 
-void Common_IPFViewer::drawQuad(Quad3D q, double rad_extra_extra)
+ void Common_IPFViewer::drawQuad(Quad3D q)
 {
+  q.applyColorIntensity(m_intensity);
+  q.applyScale(m_scale);
+  q.applyBase(m_base);
+
+  if(m_polar == 0) {
+    q.applyPolar(m_rad_extra, 0);
+    q.applyTranslation(-250, -250);
+  }
+  if(m_polar == 1) 
+    q.applyPolar(m_rad_extra, 1, q.xpts);
+  else if(m_polar == 2) 
+    q.applyPolar(m_rad_extra, 2, q.ypts);
+    
+  double x0=q.getLLX();
+  double x1=q.getHLX();
+  double x2=q.getHHX();
+  double x3=q.getLHX();
+
+  double y0=q.getLLY();
+  double y1=q.getHLY();
+  double y2=q.getHHY();
+  double y3=q.getLHY();
+
+  cout << "New:" << endl;
+  cout << "  x0:" << x0 << ", y0:" << y0 << endl;
+  cout << "  x1:" << x1 << ", y1:" << y1 << endl;
+  cout << "  x2:" << x2 << ", y2:" << y2 << endl;
+  cout << "  x3:" << x3 << ", y3:" << y3 << endl;
+
+
+  glShadeModel(GL_SMOOTH);
+  glBegin(GL_TRIANGLE_FAN);
+  glColor3f(q.getLLR(), q.getLLG(), q.getLLB());
+  glVertex3f(x0, y0, q.getLLZ());
   
+  glColor3f(q.getHLR(), q.getHLG(), q.getHLB());
+  glVertex3f(x1, y1, q.getHLZ());
+  
+  glColor3f(q.getHHR(), q.getHHG(), q.getHHB());
+  glVertex3f(x2, y2, q.getHHZ());
+  
+  glColor3f(q.getLHR(), q.getLHG(), q.getLHB());
+  glVertex3f(x3, y3, q.getLHZ());
+  glEnd();
+
+  if(m_draw_pclines) {
+    glLineWidth(0.5);
+    glColor3f(1.0, 1.0, 1.0);
+
+    glBegin(GL_LINE_STRIP);
+    glVertex3f(x0, y0, q.getLLZ());
+    glVertex3f(x1, y1, q.getHLZ());
+    glVertex3f(x2, y2, q.getHHZ());
+    glVertex3f(x3, y3, q.getLHZ());
+
+    glEnd();
+    glLineWidth(1.0);
+  }
+}
+
+
+//-------------------------------------------------------------
+// Procedure: drawQuad
+#if 0
+void Common_IPFViewer::drawQuad(Quad3D q)
+{
   double m_intensity = 1.0;
 
-  double rad_extra = m_rad_extra * rad_extra_extra;
+  double rad_extra = m_rad_extra;
 
   if(m_polar == 2) {
-    q.xl *= rad_extra;
-    q.xh *= rad_extra;
+    q.setXL(q.getXL() * rad_extra);
+    q.setXH(q.getXH() * rad_extra);
   }
   else if(m_polar == 1) {
-    q.yl *= rad_extra;
-    q.yh *= rad_extra;
+    q.setYL(q.getYL() * rad_extra);
+    q.setYH(q.getYH() * rad_extra);
   }
 
-  q.llval_r *= m_intensity;   q.hlval_r *= m_intensity;
-  q.llval_g *= m_intensity;   q.hlval_g *= m_intensity;
-  q.llval_b *= m_intensity;   q.hlval_b *= m_intensity;
-
-  q.hhval_r *= m_intensity;   q.lhval_r *= m_intensity;
-  q.hhval_g *= m_intensity;   q.lhval_g *= m_intensity;
-  q.hhval_b *= m_intensity;   q.lhval_b *= m_intensity;
-
-  q.llval = (q.llval * q.scale) + q.base; 
-  q.hlval = (q.hlval * q.scale) + q.base; 
-  q.hhval = (q.hhval * q.scale) + q.base; 
-  q.lhval = (q.lhval * q.scale) + q.base; 
-
+  q.applyColorIntensity(m_intensity);
+  q.applyScale(m_scale);
+  q.applyBase(m_base);
+  
   double x0,x1,x2,x3,y0,y1,y2,y3;
   if(m_polar == 1) {
     double delta = 360.0 / q.xpts;
-    projectPoint(q.xl*delta, q.yl, 0, 0, x0, y0);
-    projectPoint(q.xh*delta, q.yl, 0, 0, x1, y1);
-    projectPoint(q.xh*delta, q.yh, 0, 0, x2, y2);
-    projectPoint(q.xl*delta, q.yh, 0, 0, x3, y3);
+    projectPoint(q.getXL()*delta, q.getYL(), 0, 0, x0, y0);
+    projectPoint(q.getXH()*delta, q.getYL(), 0, 0, x1, y1);
+    projectPoint(q.getXH()*delta, q.getYH(), 0, 0, x2, y2);
+    projectPoint(q.getXL()*delta, q.getYH(), 0, 0, x3, y3);
   }
   else if(m_polar == 2) {
     double delta = 360.0 / q.ypts;
-    projectPoint(q.yl*delta, q.xl, 0, 0, y0, x0);
-    projectPoint(q.yh*delta, q.xl, 0, 0, y1, x1);
-    projectPoint(q.yh*delta, q.xh, 0, 0, y2, x2);
-    projectPoint(q.yl*delta, q.xh, 0, 0, y3, x3);
+    projectPoint(q.getYL()*delta, q.getXL(), 0, 0, y0, x0);
+    projectPoint(q.getYH()*delta, q.getXL(), 0, 0, y1, x1);
+    projectPoint(q.getYH()*delta, q.getXH(), 0, 0, y2, x2);
+    projectPoint(q.getYL()*delta, q.getXH(), 0, 0, y3, x3);
   }      
   else {
-    q.xl -= 250;  q.xh -= 250; q.yl -= 250;  q.yh -= 250;
-    x0=q.xl; x1=q.xh; x2=q.xh; x3=q.xl;
-    y0=q.yl; y1=q.yl; y2=q.yh; y3=q.yh;
+    q.applyTranslation(-250, -250);
+    x0=q.getXL();
+    x1=q.getXH();
+    x2=q.getXH();
+    x3=q.getXL();
+    y0=q.getYL();
+    y1=q.getYL();
+    y2=q.getYH();
+    y3=q.getYH();
   }
 
   glShadeModel(GL_SMOOTH);
   glBegin(GL_TRIANGLE_FAN);
-  glColor3f(q.llval_r, q.llval_g, q.llval_b);
-  glVertex3f(x0, y0, q.llval);
+  glColor3f(q.getLLR(), q.getLLG(), q.getLLB());
+  glVertex3f(x0, y0, q.getLLZ());
   
-  glColor3f(q.hlval_r, q.hlval_g, q.hlval_b);
-  glVertex3f(x1, y1, q.hlval);
+  glColor3f(q.getHLR(), q.getHLG(), q.getHLB());
+  glVertex3f(x1, y1, q.getHLZ());
   
-  glColor3f(q.hhval_r, q.hhval_g, q.hhval_b);
-  glVertex3f(x2, y2, q.hhval);
+  glColor3f(q.getHHR(), q.getHHG(), q.getHHB());
+  glVertex3f(x2, y2, q.getHHZ());
   
-  glColor3f(q.lhval_r, q.lhval_g, q.lhval_b);
-  glVertex3f(x3, y3, q.lhval);
+  glColor3f(q.getLHR(), q.getLHG(), q.getLHB());
+  glVertex3f(x3, y3, q.getLHZ());
   glEnd();
 
-  if(q.lines) {
+  if(m_draw_pclines) {
     glLineWidth(0.5);
     glColor3f(1.0, 1.0, 1.0);
     //glColor3f(0.4, 0.4, 0.4);
     //glColor3f(0.4, 0.4, 0.4);
     glBegin(GL_LINE_STRIP);
-    glVertex3f(x0, y0, q.llval+1);
-    glVertex3f(x1, y1, q.hlval+1);
-    glVertex3f(x2, y2, q.hhval+1);
-    glVertex3f(x3, y3, q.lhval+1);
+    glVertex3f(x0, y0, q.getLLZ());
+    glVertex3f(x1, y1, q.getHLZ());
+    glVertex3f(x2, y2, q.getHHZ());
+    glVertex3f(x3, y3, q.getLHZ());
+
+    //glVertex3f(x0, y0, q.llval+1);
+    //glVertex3f(x1, y1, q.hlval+1);
+    //glVertex3f(x2, y2, q.hhval+1);
+    //glVertex3f(x3, y3, q.lhval+1);
     glEnd();
     glLineWidth(1.0);
   }
 }
+#endif
 
 //-------------------------------------------------------------
 // Procedure: drawFrame

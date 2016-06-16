@@ -63,9 +63,9 @@ protected:
   void   drawOwnPoint();
   void   drawMaxPoint(double, double);
   bool   drawIvPFunction();
-  void   drawIvPFunction1D();
-  bool   drawIvPFunction2D();
-  void   drawQuad(Quad3D quad, double=1);
+  void   drawQuadSet1D();
+  bool   drawQuadSet2D();
+  void   drawQuad(Quad3D quad);
   void   handleLeftMouse(int, int) {}
   void   handleRightMouse(int, int) {}
   
@@ -88,15 +88,20 @@ protected:
   double       m_zRot;
   double       m_zoom;
 
+
+  double       m_base;
+  double       m_scale;
   double       m_rad_extra;
+  double       m_intensity;
   int          m_polar;
   
   bool         m_draw_pin;
   bool         m_draw_frame;
   bool         m_draw_base;
+  bool         m_draw_pclines;
   double       m_frame_height;
   QuadSet      m_quadset;
-
+  
   // Information available for the GUI output fields
   std::string  m_active_ipf_vname;
   std::string  m_active_ipf_source;

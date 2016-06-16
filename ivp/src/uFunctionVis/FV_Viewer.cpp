@@ -34,6 +34,8 @@ FV_Viewer::FV_Viewer(int x, int y, int wid, int hgt, const char *l)
 {
   m_model = 0;
 
+  m_polar = 1;
+  
   m_clear_color.setColor("macbeige");
 }
 
@@ -72,13 +74,6 @@ void FV_Viewer::draw()
       drawMaxPoint(max_crs_qix, max_spd_qix);
     }
   }
-
-#if 0
-  if(m_quadset.getQuadSetDim() == 1) {
-    if(m_draw_depth)
-#endif
-
-
 
   glPopMatrix();
   

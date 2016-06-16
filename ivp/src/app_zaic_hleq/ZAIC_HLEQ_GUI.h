@@ -24,6 +24,9 @@ public:
   void augmentMenu();
 
  protected:
+  void initWidgets();
+  
+ protected:
   Fl_Output   *m_fld_summit;
   Fl_Output   *m_fld_bwidth;
   Fl_Output   *m_fld_minutil;

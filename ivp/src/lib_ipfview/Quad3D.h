@@ -26,48 +26,131 @@
 
 class Quad3D {
 public:
-  Quad3D() {
-    xl=0; xh=0; yl=0; yh=0; llval=0; hlval=0; hhval=0; lhval=0;
-    llval_r=0; llval_g=0; llval_b=0;
-    hlval_r=0; hlval_g=0; hlval_b=0;
-    hhval_r=0; hhval_g=0; hhval_b=0;
-    lhval_r=0; lhval_g=0; lhval_b=0;
-    base=0; scale=1.0; lines=true; xpts=0; ypts=0;
-  }
+  Quad3D();
   ~Quad3D() {}
 
   bool contains(double x, double y) {
     return((x>=xl)&&(x<=xh)&&(y>=yl)&&(y<=yh));
   }
 
-  double getAvgVal() {return((llval+hlval+hhval+lhval)/4);}
+  double getAvgVal() {return((ll_hgt + hl_hgt + hh_hgt + lh_hgt)/4);}
 
-public:  
+  // Setters ------------------------------------------------
+  void setXL(double v)    {xl = v;}
+  void setXH(double v)    {xh = v;}
+  void setYL(double v)    {yl = v;}
+  void setYH(double v)    {yh = v;}
+
+  void setLLZ(double v)   {ll_hgt = v;} // LLH = Low,Low's Height
+  void setHLZ(double v)   {hl_hgt = v;}
+  void setHHZ(double v)   {hh_hgt = v;}
+  void setLHZ(double v)   {lh_hgt = v;}
+  
+  void setLLR(double v)   {ll_red = v;}
+  void setHLR(double v)   {hl_red = v;}
+  void setHHR(double v)   {hh_red = v;}
+  void setLHR(double v)   {lh_red = v;}
+  
+  void setLLG(double v)   {ll_grn = v;}
+  void setHLG(double v)   {hl_grn = v;}
+  void setHHG(double v)   {hh_grn = v;}
+  void setLHG(double v)   {lh_grn = v;}
+  
+  void setLLB(double v)   {ll_blu = v;}
+  void setHLB(double v)   {hl_blu = v;}
+  void setHHB(double v)   {hh_blu = v;}
+  void setLHB(double v)   {lh_blu = v;}
+
+  // Getters ------------------------------------------------
+  double getXL() const    {return(xl);}
+  double getXH() const    {return(xh);}
+  double getYL() const    {return(yl);}
+  double getYH() const    {return(yh);}
+  
+  double getLLX() const   {return(ll_xval);} // LLX = Low,Low's X val
+  double getHLX() const   {return(hl_xval);}
+  double getHHX() const   {return(hh_xval);}
+  double getLHX() const   {return(lh_xval);}
+
+  double getLLY() const   {return(ll_yval);} // LLX = Low,Low's Y val
+  double getHLY() const   {return(hl_yval);}
+  double getHHY() const   {return(hh_yval);}
+  double getLHY() const   {return(lh_yval);}
+
+  double getLLZ() const   {return(ll_hgt);} // LLZ = Low,Low's Height
+  double getHLZ() const   {return(hl_hgt);}
+  double getHHZ() const   {return(hh_hgt);}
+  double getLHZ() const   {return(lh_hgt);}
+
+  double getLLR() const   {return(ll_red);}
+  double getHLR() const   {return(hl_red);}
+  double getHHR() const   {return(hh_red);}
+  double getLHR() const   {return(lh_red);}
+  
+  double getLLG() const   {return(ll_grn);}
+  double getHLG() const   {return(hl_grn);}
+  double getHHG() const   {return(hh_grn);}
+  double getLHG() const   {return(lh_grn);}
+  
+  double getLLB() const   {return(ll_blu);}
+  double getHLB() const   {return(hl_blu);}
+  double getHHB() const   {return(hh_blu);}
+  double getLHB() const   {return(lh_blu);}
+
+  // Modifiers -------------------------------------------
+    
+  void addLLZ(double v) {ll_hgt += v;}  // LLZ = Low,Low's Height
+  void addHLZ(double v) {hl_hgt += v;}
+  void addHHZ(double v) {hh_hgt += v;}
+  void addLHZ(double v) {lh_hgt += v;}
+
+  void applyPolar(double radextra, int dim, int pts=0);
+  void applyColorIntensity(double intensity);
+  void applyScale(double scale);
+  void applyBase(double scale);
+  void applyTranslation(double x, double y);
+
+ public:  
+  int    xpts;
+  int    ypts;
+  
+ protected:
+
   double xl;
   double xh;
   double yl;
   double yh;
-  double llval;
-  double hlval;
-  double hhval;
-  double lhval;
-  double llval_r;
-  double llval_g;
-  double llval_b;
-  double hlval_r;
-  double hlval_g;
-  double hlval_b;
-  double hhval_r;
-  double hhval_g;
-  double hhval_b;
-  double lhval_r;
-  double lhval_g;
-  double lhval_b;
-  double base;
-  double scale;
-  bool   lines;
-  int    xpts;
-  int    ypts;
+
+  double ll_xval;
+  double hl_xval;
+  double hh_xval;
+  double lh_xval;
+
+  double ll_yval;
+  double hl_yval;
+  double hh_yval;
+  double lh_yval;  
+  
+  double ll_hgt;
+  double hl_hgt;
+  double hh_hgt;
+  double lh_hgt;
+
+  double ll_red;
+  double hl_red;
+  double hh_red;
+  double lh_red;
+
+  double ll_grn;
+  double hl_grn;
+  double hh_grn;
+  double lh_grn;
+
+  double ll_blu;
+  double hl_blu;
+  double hh_blu;
+  double lh_blu;
+
 };
 #endif
 

@@ -67,6 +67,8 @@ public:
   unsigned int getMaxPointQIX(std::string) const;
   void         print() const;
 
+  void         buildQuadCaches();
+  
   void         resetMinMaxVals();
   
   std::vector<double>  getDomainPts(unsigned int=0)  const;
@@ -99,7 +101,6 @@ protected:
   // Values of the objecive function can be made to snap to 
   // intervals. Can be used to alter the rendering.
   double      m_snap_val;
-
 
   // Values for representing 1D IPFs
   // Each outer index below is for one source, typically:

@@ -38,7 +38,7 @@ QuadSet::QuadSet()
   m_maxpt_val = 0;
   m_max_crs   = 0;
   m_max_spd   = 0;
-
+  
   m_quadset_dim     = 0;
   m_ipf_priority_wt = 0;
 }
@@ -48,7 +48,6 @@ QuadSet::QuadSet()
 
 bool QuadSet::applyIPF(IvPFunction *ipf, string source)
 {
-  cout << "applyIPF 1111" << endl;
   if(!ipf)
     return(false);
 
@@ -64,7 +63,6 @@ bool QuadSet::applyIPF(IvPFunction *ipf, string source)
        crs_spd_ipf = true;
   }
   
-  cout << "applyIPF 2222" << endl;
   if(ipf->getDim() == 1)
     return(applyIPF1D(ipf, source));
   else if((ipf->getDim() == 2) && crs_spd_ipf)
@@ -72,7 +70,6 @@ bool QuadSet::applyIPF(IvPFunction *ipf, string source)
   else if(ipf->getDim() == 2)
     return(applyIPF2D(ipf));
   
-  cout << "applyIPF 3333" << endl;
   return(false);
 }
 
@@ -156,7 +153,6 @@ bool QuadSet::applyIPF1D(IvPFunction *ipf, string source)
 
 bool QuadSet::applyIPF2DHS(IvPFunction *ipf)
 {
-  cout << "applyIPF2DHS   aaaaa" << endl;
   if(!ipf)
     return(false);
 
@@ -169,7 +165,6 @@ bool QuadSet::applyIPF2DHS(IvPFunction *ipf)
   if((crs_pts < 2) || (spd_pts < 2))
     return(false);
 
-  cout << "applyIPF2DHS   bbbbb" << endl;
   m_ivp_domain = ivp_domain;
   m_ipf_priority_wt = ipf->getPWT();
 
@@ -205,16 +200,16 @@ bool QuadSet::applyIPF2DHS(IvPFunction *ipf)
   for(i=0; i<(crs_pts-1); i++) {
     for(j=0; j<(spd_pts-1); j++) {
       Quad3D new_quad;
-      new_quad.xl = i;
-      new_quad.xh = i+1;
-      new_quad.yl = j;
-      new_quad.yh = j+1;
-      new_quad.llval = vals[i][j];
-      new_quad.lhval = vals[i][j+1];
-      new_quad.hlval = vals[i+1][j];
-      new_quad.hhval = vals[i+1][j+1];
+      new_quad.setXL(i);
+      new_quad.setXH(i+1);
+      new_quad.setYL(j);
+      new_quad.setYH(j+1);
+      new_quad.setLLZ(vals[i][j]);
+      new_quad.setLHZ(vals[i][j+1]);
+      new_quad.setHLZ(vals[i+1][j]);
+      new_quad.setHHZ(vals[i+1][j+1]);
 
-      new_quad.lines = false;
+      //new_quad.lines = false;
       new_quad.xpts = crs_pts;
       new_quad.ypts = spd_pts;
 
@@ -228,16 +223,16 @@ bool QuadSet::applyIPF2DHS(IvPFunction *ipf)
     int top_crs_ix = crs_pts-1;
     for(j=0; j<(spd_pts-1); j++) {
       Quad3D new_quad;
-      new_quad.xl = top_crs_ix-1;  // usually 359
-      new_quad.xh = 0;
-      new_quad.yl = j;
-      new_quad.yh = j+1;
-      new_quad.llval = vals[top_crs_ix][j];
-      new_quad.lhval = vals[top_crs_ix][j+1];
-      new_quad.hlval = vals[0][j];
-      new_quad.hhval = vals[0][j+1];
+      new_quad.setXL(top_crs_ix-1);  // usually 359
+      new_quad.setXH(0);
+      new_quad.setYL(j);
+      new_quad.setYH(j+1);
+      new_quad.setLLZ(vals[top_crs_ix][j]);
+      new_quad.setLHZ(vals[top_crs_ix][j+1]);
+      new_quad.setHLZ(vals[0][j]);
+      new_quad.setHHZ(vals[0][j+1]);
       
-      new_quad.lines = false;
+      //new_quad.lines = false;
       new_quad.xpts = crs_pts;
       new_quad.ypts = spd_pts;
       
@@ -263,16 +258,13 @@ bool QuadSet::applyIPF2DHS(IvPFunction *ipf)
 
 bool QuadSet::applyIPF2D(IvPFunction *ipf)
 {
-  cout << "applyIPF2D   aaaaa" << endl;
   if(!ipf)
     return(false);
 
-  cout << "applyIPF2D   bbbbb" << endl;
   PDMap *pdmap = ipf->getPDMap();
   if(!pdmap)
     return(false);
 
-  cout << "applyIPF2D   ccccc" << endl;
   double hval = pdmap->getMaxWT();
   double lval = pdmap->getMinWT();
   
@@ -282,7 +274,6 @@ bool QuadSet::applyIPF2D(IvPFunction *ipf)
   if((xpts < 2) || (ypts < 2))
     return(false);
 
-  cout << "applyIPF2D   ddddd" << endl;
   m_ivp_domain = ivp_domain;
   m_ipf_priority_wt = ipf->getPWT();
 
@@ -293,14 +284,10 @@ bool QuadSet::applyIPF2D(IvPFunction *ipf)
 
     Quad3D q;
 
-    q.scale = 1;
-    q.base  = 0;
-    //q.scale = m_scale;
-    //q.base  = m_base_ipf;
-    q.xl    = box->pt(0,0);
-    q.xh    = box->pt(0,1);
-    q.yl    = box->pt(1,0);
-    q.yh    = box->pt(1,1);
+    q.setXL(box->pt(0,0));
+    q.setXH(box->pt(0,1));
+    q.setYL(box->pt(1,0));
+    q.setYH(box->pt(1,1));
     q.xpts  = xpts;
     q.ypts  = ypts;
 
@@ -312,34 +299,22 @@ bool QuadSet::applyIPF2D(IvPFunction *ipf)
     double pct;
     IvPBox ebox(2,1);
     
-    ebox.setPTS(0, (int)q.xl, (int)q.xl);
-    ebox.setPTS(1, (int)q.yl, (int)q.yl);
-    q.llval = box->ptVal(&ebox);
-    pct = (q.llval-lval)/(hval-lval);
-    //q.llval_r = m_cmap.getIRVal(pct);
-    //q.llval_g = m_cmap.getIGVal(pct);
-    //q.llval_b = m_cmap.getIBVal(pct);
+    ebox.setPTS(0, (int)(q.getXL()), (int)(q.getXL()));
+    ebox.setPTS(1, (int)(q.getYL()), (int)(q.getYL()));
+    q.setLLZ(box->ptVal(&ebox));
+    pct = (q.getLLZ()-lval)/(hval-lval);
 
-    ebox.setPTS(0, (int)q.xh, (int)q.xh);
-    q.hlval = box->ptVal(&ebox);
-    pct = (q.hlval-lval)/(hval-lval);
-    //q.hlval_r = m_cmap.getIRVal(pct);
-    //q.hlval_g = m_cmap.getIGVal(pct);
-    //q.hlval_b = m_cmap.getIBVal(pct);
-
-    ebox.setPTS(1, (int)q.yh, (int)q.yh);
-    q.hhval = box->ptVal(&ebox);
-    pct = (q.hhval-lval)/(hval-lval);
-    //q.hhval_r = m_cmap.getIRVal(pct);
-    //q.hhval_g = m_cmap.getIGVal(pct);
-    //q.hhval_b = m_cmap.getIBVal(pct);
-
-    ebox.setPTS(0, (int)q.xl, (int)q.xl);
-    q.lhval = box->ptVal(&ebox);
-    pct = (q.lhval-lval)/(hval-lval);
-    //q.lhval_r = m_cmap.getIRVal(pct);
-    //q.lhval_g = m_cmap.getIGVal(pct);
-    //q.lhval_b = m_cmap.getIBVal(pct);
+    ebox.setPTS(0, (int)(q.getXH()), (int)(q.getXH()));
+    q.setHLZ(box->ptVal(&ebox));
+    pct = (q.getHLZ()-lval)/(hval-lval);
+    
+    ebox.setPTS(1, (int)(q.getYH()), (int)(q.getYH()));
+    q.setHHZ(box->ptVal(&ebox));
+    pct = (q.getHHZ()-lval)/(hval-lval);
+    
+    ebox.setPTS(0, (int)(q.getXL()), (int)(q.getXL()));
+    q.setLHZ(box->ptVal(&ebox));
+    pct = (q.getLHZ()-lval)/(hval-lval);
 
     m_quads.push_back(q);
   }
@@ -347,8 +322,6 @@ bool QuadSet::applyIPF2D(IvPFunction *ipf)
   resetMinMaxVals();
   m_quadset_dim = 2;
 
-  //applyColorMap();
-  
   return(true);
 }
 
@@ -385,26 +358,26 @@ void QuadSet::applyColorMap(const FColorMap& cmap,
   if(range <= 0) 
     range = 1.0;
   for(int i=0; i<vsize; i++) {
-    double llpct = (m_quads[i].llval - a_low_val) / range;
-    double lhpct = (m_quads[i].lhval - a_low_val) / range;
-    double hlpct = (m_quads[i].hlval - a_low_val) / range;
-    double hhpct = (m_quads[i].hhval - a_low_val) / range;
+    double llpct = (m_quads[i].getLLZ() - a_low_val) / range;
+    double lhpct = (m_quads[i].getLHZ() - a_low_val) / range;
+    double hlpct = (m_quads[i].getHLZ() - a_low_val) / range;
+    double hhpct = (m_quads[i].getHHZ() - a_low_val) / range;
 
-    m_quads[i].llval_r = cmap.getIRVal(llpct);
-    m_quads[i].llval_g = cmap.getIGVal(llpct);
-    m_quads[i].llval_b = cmap.getIBVal(llpct);
+    m_quads[i].setLLR(cmap.getIRVal(llpct));
+    m_quads[i].setLLG(cmap.getIGVal(llpct));
+    m_quads[i].setLLB(cmap.getIBVal(llpct));
     
-    m_quads[i].lhval_r = cmap.getIRVal(lhpct);
-    m_quads[i].lhval_g = cmap.getIGVal(lhpct);
-    m_quads[i].lhval_b = cmap.getIBVal(lhpct);
+    m_quads[i].setLHR(cmap.getIRVal(lhpct));
+    m_quads[i].setLHG(cmap.getIGVal(lhpct));
+    m_quads[i].setLHB(cmap.getIBVal(lhpct));
     
-    m_quads[i].hlval_r = cmap.getIRVal(hlpct);
-    m_quads[i].hlval_g = cmap.getIGVal(hlpct);
-    m_quads[i].hlval_b = cmap.getIBVal(hlpct);
+    m_quads[i].setHLR(cmap.getIRVal(hlpct));
+    m_quads[i].setHLG(cmap.getIGVal(hlpct));
+    m_quads[i].setHLB(cmap.getIBVal(hlpct));
     
-    m_quads[i].hhval_r = cmap.getIRVal(hhpct);
-    m_quads[i].hhval_g = cmap.getIGVal(hhpct);
-    m_quads[i].hhval_b = cmap.getIBVal(hhpct);
+    m_quads[i].setHHR(cmap.getIRVal(hhpct));
+    m_quads[i].setHHG(cmap.getIGVal(hhpct));
+    m_quads[i].setHHB(cmap.getIBVal(hhpct));
 
 
     // For testing purposes - we can grab a range of values and
@@ -413,26 +386,26 @@ void QuadSet::applyColorMap(const FColorMap& cmap,
     double tl = 50;
     double th = 60;
     double dv = 0.5;
-    if((m_quads[i].llval >= tl) && (m_quads[i].llval <= th) && 
-       (m_quads[i].lhval >= tl) && (m_quads[i].lhval <= th) &&
-       (m_quads[i].hlval >= tl) && (m_quads[i].hlval <= th) && 
-       (m_quads[i].hhval >= tl) && (m_quads[i].hhval <= th)) {
+    if((m_quads[i].getLLZ() >= tl) && (m_quads[i].getLLZ() <= th) && 
+       (m_quads[i].getLHZ() >= tl) && (m_quads[i].getLHZ() <= th) &&
+       (m_quads[i].getHLZ() >= tl) && (m_quads[i].getHLZ() <= th) && 
+       (m_quads[i].getHHZ() >= tl) && (m_quads[i].getHHZ() <= th)) {
       
-      m_quads[i].llval_r = dv;
-      m_quads[i].llval_g = dv;
-      m_quads[i].llval_b = dv;
+      m_quads[i].setLLR(dv);
+      m_quads[i].setLLG(dv);
+      m_quads[i].setLLB(dv);
       
-      m_quads[i].lhval_r = dv;
-      m_quads[i].lhval_g = dv;
-      m_quads[i].lhval_b = dv;
+      m_quads[i].setLHR(dv);
+      m_quads[i].setLHG(dv);
+      m_quads[i].setLHB(dv);
       
-      m_quads[i].hlval_r = dv;
-      m_quads[i].hlval_g = dv;
-      m_quads[i].hlval_b = dv;
+      m_quads[i].setHLR(dv);
+      m_quads[i].setHLG(dv);
+      m_quads[i].setHLB(dv);
 
-      m_quads[i].hhval_r = dv;
-      m_quads[i].hhval_g = dv;
-      m_quads[i].hhval_b = dv;
+      m_quads[i].setHHR(dv);
+      m_quads[i].setHHG(dv);
+      m_quads[i].setHHB(dv);
     }
 #endif
   }
@@ -478,10 +451,10 @@ void QuadSet::addQuadSet(const QuadSet& g_quads)
       return;
 
     for(i=0; i<msize; i++) {
-      m_quads[i].llval += (g_quads.getQuad(i).llval);
-      m_quads[i].lhval += (g_quads.getQuad(i).lhval);
-      m_quads[i].hlval += (g_quads.getQuad(i).hlval);
-      m_quads[i].hhval += (g_quads.getQuad(i).hhval);
+      m_quads[i].addLLZ(g_quads.getQuad(i).getLLZ());
+      m_quads[i].addLHZ(g_quads.getQuad(i).getLHZ());
+      m_quads[i].addHLZ(g_quads.getQuad(i).getHLZ());
+      m_quads[i].addHHZ(g_quads.getQuad(i).getHHZ());
     }
     resetMinMaxVals();
     return;
@@ -557,14 +530,17 @@ void QuadSet::normalize(double target_base, double target_range)
 
   double pct;
   for(i=0; i<msize; i++) {
-    pct = ((m_quads[i].llval - m_minpt_val) / existing_range);
-    m_quads[i].llval = target_base + (pct * target_range);
-    pct = ((m_quads[i].hlval - m_minpt_val) / existing_range);
-    m_quads[i].hlval = target_base + (pct * target_range);
-    pct = ((m_quads[i].lhval - m_minpt_val) / existing_range);
-    m_quads[i].lhval = target_base + (pct * target_range);
-    pct = ((m_quads[i].hhval - m_minpt_val) / existing_range);
-    m_quads[i].hhval = target_base + (pct * target_range);
+    pct = ((m_quads[i].getLLZ() - m_minpt_val) / existing_range);
+    m_quads[i].setLLZ(target_base + (pct * target_range));
+
+    pct = ((m_quads[i].getHLZ() - m_minpt_val) / existing_range);
+    m_quads[i].setHLZ(target_base + (pct * target_range));
+
+    pct = ((m_quads[i].getLHZ() - m_minpt_val) / existing_range);
+    m_quads[i].setLHZ(target_base + (pct * target_range));
+
+    pct = ((m_quads[i].getHHZ() - m_minpt_val) / existing_range);
+    m_quads[i].setHHZ(target_base + (pct * target_range));
   }
 
   m_minpt_val = target_base;
@@ -726,39 +702,40 @@ void QuadSet::resetMinMaxVals()
   m_max_spd_qix = 0;
 
   // Recalculate the new global low and high values.
-  m_minpt_val = m_quads[0].llval;
-  m_maxpt_val = m_quads[0].llval;
+  m_minpt_val = m_quads[0].getLLZ();
+  m_maxpt_val = m_quads[0].getLLZ();
+
   for(i=0; i<msize; i++) {    
-    if(m_quads[i].llval < m_minpt_val)  //------- (L,L)
-      m_minpt_val  = m_quads[i].llval;
-    if(m_quads[i].llval > m_maxpt_val) {
-      m_maxpt_val = m_quads[i].llval;
-      m_max_crs_qix = m_quads[i].xl;
-      m_max_spd_qix = m_quads[i].yl;
+    if(m_quads[i].getLLZ() < m_minpt_val)  //------- (L,L)
+      m_minpt_val  = m_quads[i].getLLZ();
+    if(m_quads[i].getLLZ() > m_maxpt_val) {
+      m_maxpt_val = m_quads[i].getLLZ();
+      m_max_crs_qix = m_quads[i].getXL();
+      m_max_spd_qix = m_quads[i].getYL();
     }
 
-    if(m_quads[i].lhval < m_minpt_val)  //------- (L,H)  
-      m_minpt_val  = m_quads[i].lhval;
-    if(m_quads[i].lhval > m_maxpt_val) {  
-      m_maxpt_val = m_quads[i].lhval;
-      m_max_crs_qix = m_quads[i].xl;
-      m_max_spd_qix = m_quads[i].yh;
+    if(m_quads[i].getLHZ() < m_minpt_val)  //------- (L,H)  
+      m_minpt_val  = m_quads[i].getLHZ();
+    if(m_quads[i].getLHZ() > m_maxpt_val) {  
+      m_maxpt_val = m_quads[i].getLHZ();
+      m_max_crs_qix = m_quads[i].getXL();
+      m_max_spd_qix = m_quads[i].getYH();
     }
 
-    if(m_quads[i].hlval < m_minpt_val)  //------- (H,L)  
-      m_minpt_val  = m_quads[i].hlval;
-    if(m_quads[i].hlval > m_maxpt_val) {
-      m_maxpt_val = m_quads[i].hlval;
-      m_max_crs_qix = m_quads[i].xh;
-      m_max_spd_qix = m_quads[i].yl;
+    if(m_quads[i].getHLZ() < m_minpt_val)  //------- (H,L)  
+      m_minpt_val  = m_quads[i].getHLZ();
+    if(m_quads[i].getHLZ() > m_maxpt_val) {
+      m_maxpt_val = m_quads[i].getHLZ();
+      m_max_crs_qix = m_quads[i].getXH();
+      m_max_spd_qix = m_quads[i].getYL();
     }
 
-    if(m_quads[i].hhval < m_minpt_val) //------- (H,H)    
-      m_minpt_val  = m_quads[i].hhval;
-    if(m_quads[i].hhval > m_maxpt_val) {
-      m_maxpt_val = m_quads[i].hhval;
-      m_max_crs_qix = m_quads[i].xh;
-      m_max_spd_qix = m_quads[i].yh;
+    if(m_quads[i].getHHZ() < m_minpt_val) //------- (H,H)    
+      m_minpt_val  = m_quads[i].getHHZ();
+    if(m_quads[i].getHHZ() > m_maxpt_val) {
+      m_maxpt_val = m_quads[i].getHHZ();
+      m_max_crs_qix = m_quads[i].getXH();
+      m_max_spd_qix = m_quads[i].getYH();
     }
   }
 

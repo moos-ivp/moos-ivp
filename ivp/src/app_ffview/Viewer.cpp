@@ -36,9 +36,8 @@ using namespace std;
 //--------------------------------------------------------------
 // Constructor
 
-Viewer::Viewer(int x, int y, 
-	       int width, int height, const char *l)
-  : Common_IPFViewer(x,y,width,height,l)
+Viewer::Viewer(int x, int y, int wid, int hgt, const char *label)
+  : Common_IPFViewer(x, y, wid, hgt, label)
 {
   m_base_aof   = -132;      // For shifting the AOF rendering
   m_base_ipf   = -35;       // For shifting the IPF rendering
@@ -52,7 +51,7 @@ Viewer::Viewer(int x, int y,
   m_piece_count = 0;
 
   setParam("uniform_piece", 10);
-  setParam("set_scale", 0);
+  setParam("set_scale", 1);
   setParam("reset_view", "1");
   setParam("clear_color", "white");
   setParam("frame_color", "gray");
@@ -80,9 +79,17 @@ void Viewer::draw()
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
 
-  if(m_draw_ipf && m_unif_ipf)
-    drawIvPFunction(m_unif_ipf);
-
+  if(m_draw_ipf && m_unif_ipf) {
+    bool ok = m_quadset.applyIPF(m_unif_ipf, "course");
+    if(!ok) {
+      cout << "Bad QuadSet!!!!" << endl;
+      m_quadset = QuadSet();
+    }
+    m_quadset.normalize(0, 100);
+    m_quadset.applyColorMap(m_color_map);
+    Common_IPFViewer::drawIvPFunction();
+  }
+    
   if(m_draw_aof) {
     if(m_aof_cache.getAOF())
       drawAOF();
@@ -531,100 +538,6 @@ string Viewer::getPeakDelta()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawIvPFunction
-
-void Viewer::drawIvPFunction(IvPFunction *ipf)
-{
-  PDMap *pdmap = ipf->getPDMap();
-  int amt = pdmap->size();
-
-  double hval = pdmap->getMaxWT();
-  double lval = pdmap->getMinWT();
-  
-  IvPBox univ = pdmap->getUniverse();
-  int xpts = (univ.pt(0,1) - univ.pt(0,0)) + 1;
-  int ypts = (univ.pt(1,1) - univ.pt(1,0)) + 1;
-  
-  for(int i=0; i<amt; i++) {
-    const IvPBox* ibox = pdmap->bx(i);
-    drawIvPBox(*ibox, lval, hval, xpts, ypts);
-  }
-}
-
-//-------------------------------------------------------------
-// Procedure: drawIvPBox
-
-void Viewer::drawIvPBox(const IvPBox &box, double lval, double hval, 
-			int xpts, int ypts)
-{
-  if(box.getDim() != 2) {
-    cout << "Wrong Box Dim" << endl;
-    return;
-  }
-  
-  if(lval==hval) {
-    cout << "Dubious lval, hval in Viewer::drawIvPBox()" << endl;
-    return;
-  }
-
-  Quad3D q;
-  q.base = m_base_ipf;
-  q.xl   = box.pt(0,0);
-  q.xh   = box.pt(0,1);
-  q.yl   = box.pt(1,0);
-  q.yh   = box.pt(1,1);
-  q.xpts = xpts;
-  q.ypts = ypts;
-
-  int degree = box.getDegree();
-  double pct;
-
-  IvPBox ebox(2,1);
-
-  if(degree == 0)
-    q.llval = q.hlval = q.hhval = q.lhval = box.maxVal();
-  else if(degree != 1) {
-    cout << "Wrong Degree" << endl;
-    return;
-  }
-  else {
-    ebox.setPTS(0, (int)q.xl, (int)q.xl);
-    ebox.setPTS(1, (int)q.yl, (int)q.yl);
-    q.llval = box.ptVal(&ebox);
-    pct = (q.llval-lval)/(hval-lval);
-    q.llval_r = m_cmap.getIRVal(pct);
-    q.llval_g = m_cmap.getIGVal(pct);
-    q.llval_b = m_cmap.getIBVal(pct);
-
-    ebox.setPTS(0, (int)q.xh, (int)q.xh);
-    q.hlval = box.ptVal(&ebox);
-    pct = (q.hlval-lval)/(hval-lval);
-    q.hlval_r = m_cmap.getIRVal(pct);
-    q.hlval_g = m_cmap.getIGVal(pct);
-    q.hlval_b = m_cmap.getIBVal(pct);
-
-    ebox.setPTS(1, (int)q.yh, (int)q.yh);
-    q.hhval = box.ptVal(&ebox);
-    pct = (q.hhval-lval)/(hval-lval);
-    q.hhval_r = m_cmap.getIRVal(pct);
-    q.hhval_g = m_cmap.getIGVal(pct);
-    q.hhval_b = m_cmap.getIBVal(pct);
-
-    ebox.setPTS(0, (int)q.xl, (int)q.xl);
-    q.lhval = box.ptVal(&ebox);
-    pct = (q.lhval-lval)/(hval-lval);
-    q.lhval_r = m_cmap.getIRVal(pct);
-    q.lhval_g = m_cmap.getIGVal(pct);
-    q.lhval_b = m_cmap.getIBVal(pct);
-  }
-
-  q.xl -=1;
-  q.yl -=1;
-  
-  drawQuad(q);
-}
-
-//-------------------------------------------------------------
 // Procedure: drawAOF
 
 void Viewer::drawAOF()
@@ -646,41 +559,51 @@ void Viewer::drawAOF()
   int yc = ymin;
   int xc = xmin;
   Quad3D q;
-  q.base = m_base_aof; 
-  q.scale= m_scale; 
-  q.lines= false;
+
+  m_draw_pclines = false;
+  
+  //q.base = m_base_aof; 
+  //q.scale= m_scale; 
   q.xpts = (xmax - xmin) + 1;
   q.ypts = (ymax - ymin) + 1;
   while(yc < ymax) {
     xc = xmin; 
     while(xc < xmax) {
-      q.xl = xc;
-      q.xh = xc + m_patch;
-      q.yl = yc;
-      q.yh = yc + m_patch;
-      if(q.xh > xmax) q.xh = xmax;
-      if(q.yh > ymax) q.yh = ymax;
+      q.setXL(xc);
+      q.setXH(xc + m_patch);
+      q.setYL(yc);
+      q.setYH(yc + m_patch);
+      if(q.getXH() > xmax)
+	q.setXH(xmax);
+      if(q.getYH() > ymax)
+	q.setYH(ymax);
 
-      q.llval   = m_aof_cache.getFVal((int)q.xl, (int)q.yl);
-      q.llval_r = m_aof_cache.getRVal((int)q.xl, (int)q.yl);
-      q.llval_g = m_aof_cache.getGVal((int)q.xl, (int)q.yl);
-      q.llval_b = m_aof_cache.getBVal((int)q.xl, (int)q.yl);
+      int xl = (int)(q.getXL());
+      int xh = (int)(q.getXH());
+      int yl = (int)(q.getYL());
+      int yh = (int)(q.getYH());
 
-      q.hlval   = m_aof_cache.getFVal((int)q.xh, (int)q.yl);
-      q.hlval_r = m_aof_cache.getRVal((int)q.xh, (int)q.yl);
-      q.hlval_g = m_aof_cache.getGVal((int)q.xh, (int)q.yl);
-      q.hlval_b = m_aof_cache.getBVal((int)q.xh, (int)q.yl);
+      q.setLLZ(m_aof_cache.getFVal(xl, yl));  // Low-Low's Height
+      q.setLLR(m_aof_cache.getRVal(xl, yl));  // Low-Low's Red
+      q.setLLG(m_aof_cache.getGVal(xl, yl));  // Low-Low's Green
+      q.setLLB(m_aof_cache.getBVal(xl, yl));  // Low-Low's Blue
 
-      q.hhval   = m_aof_cache.getFVal((int)q.xh, (int)q.yh);
-      q.hhval_r = m_aof_cache.getRVal((int)q.xh, (int)q.yh);
-      q.hhval_g = m_aof_cache.getGVal((int)q.xh, (int)q.yh);
-      q.hhval_b = m_aof_cache.getBVal((int)q.xh, (int)q.yh);
+      q.setHLZ(m_aof_cache.getFVal(xh, yl));
+      q.setHLR(m_aof_cache.getRVal(xh, yl));
+      q.setHLG(m_aof_cache.getGVal(xh, yl));
+      q.setHLB(m_aof_cache.getBVal(xh, yl));
 
-      q.lhval   = m_aof_cache.getFVal((int)q.xl, (int)q.yh);
-      q.lhval_r = m_aof_cache.getRVal((int)q.xl, (int)q.yh);
-      q.lhval_g = m_aof_cache.getGVal((int)q.xl, (int)q.yh);
-      q.lhval_b = m_aof_cache.getBVal((int)q.xl, (int)q.yh);
+      q.setHHZ(m_aof_cache.getFVal(xh, yh));
+      q.setHHR(m_aof_cache.getRVal(xh, yh));
+      q.setHHG(m_aof_cache.getGVal(xh, yh));
+      q.setHHB(m_aof_cache.getBVal(xh, yh));
 
+      q.setLHZ(m_aof_cache.getFVal(xl, yh));
+      q.setLHR(m_aof_cache.getRVal(xl, yh));
+      q.setLHG(m_aof_cache.getGVal(xl, yh));
+      q.setLHB(m_aof_cache.getBVal(xl, yh));
+
+      q.applyBase(m_base_aof);
       drawQuad(q);
       xc += m_patch;
     }

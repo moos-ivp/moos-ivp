@@ -41,6 +41,8 @@ IvPFunction *ZAIC_SPD_Model::getIvPFunction()
 
 bool ZAIC_SPD_Model::setParam(string param, string value)
 {
+  cout << "KK setParam() param: " << param << ", value: " << value << endl;
+  
   if(!m_zaic_spd)
     return(false);
 
@@ -57,6 +59,8 @@ bool ZAIC_SPD_Model::setParam(string param, string value)
     m_zaic_spd->setLowSpeedUtil(atof(value.c_str()));
   else if(param == "hghspd_util")
     m_zaic_spd->setHghSpeedUtil(atof(value.c_str()));
+  else if(param == "domain")
+    setDomain(atoi(value.c_str()));
   else
     return(false);
   
@@ -73,6 +77,8 @@ void ZAIC_SPD_Model::setDomain(unsigned int domain_pts)
   if(domain_pts > 1001)
     domain_pts = 1001;
 
+  cout << "setDomain: " << domain_pts << endl;
+  
   // Initialize the IvP Domain with the new number of points
   IvPDomain ivp_domain;
   ivp_domain.addDomain("x", 0, domain_pts-1, domain_pts);
@@ -83,6 +89,15 @@ void ZAIC_SPD_Model::setDomain(unsigned int domain_pts)
   double hghspd = 0.75 * domain_pts;
   double lowspd_util = 80; 
   double hghspd_util = 10; 
+
+  // If a the zaic existed previously, keeping using thoss values
+  if(m_zaic_spd) {
+    medspd = getMedVal();
+    lowspd = getLowVal();
+    hghspd = getHghVal();
+    lowspd_util = getLowValUtil();
+    hghspd_util = getHghValUtil();
+  }
   
   ZAIC_SPD *new_zaic = new ZAIC_SPD(ivp_domain, "x");
   bool ok = new_zaic->setParams(medspd, lowspd, hghspd, 

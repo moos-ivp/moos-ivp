@@ -32,6 +32,8 @@ public:
  public:
   void setVerbose(bool v)        {m_zaic_viewer->setVerbose(v);}
   void setDomain(unsigned int v) {m_zaic_model->setDomain(v);}
+
+  void setParam(std::string p, std::string v) {m_zaic_model->setParam(p,v);}
   int  handle(int);
   
  public:

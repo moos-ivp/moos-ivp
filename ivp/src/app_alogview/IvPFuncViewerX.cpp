@@ -37,11 +37,13 @@ using namespace std;
 IvPFuncViewerX::IvPFuncViewerX(int x, int y, int w, int h, const char *l)
   : Common_IPFViewer(x,y,w,h,l)
 {
-  m_rad_extra   = 1;
-  m_zoom        = 2.0;
-  m_curr_time   = 0;
-  m_curr_iter   = 0; 
- 
+  m_rad_extra    = 1;
+  m_zoom         = 2.0;
+  m_curr_time    = 0;
+  m_curr_iter    = 0; 
+  m_polar        = 1;
+  m_draw_pclines = false;
+  
   m_mutable_text_size = 10;
  
   setParam("reset_view", "2");
