@@ -282,9 +282,9 @@ void Common_IPFViewer::draw()
 
 
 //-------------------------------------------------------------
-// Procedure: drawIvPFunction
+// Procedure: drawQuadSet
 
-bool Common_IPFViewer::drawIvPFunction()
+bool Common_IPFViewer::drawQuadSet()
 {
   unsigned int qdim = m_quadset.getQuadSetDim();
 
@@ -294,8 +294,9 @@ bool Common_IPFViewer::drawIvPFunction()
     draw1DLabels(m_quadset.getDomain());
     draw1DLine();
   }
-  else if(qdim == 2)
+  else if(qdim == 2) {
     return(drawQuadSet2D());
+  }
   else
     return(false);
 
@@ -421,10 +422,10 @@ bool Common_IPFViewer::drawQuadSet2D()
   if(quad_cnt == 0)
     return(false);
 
+  
   m_rad_extra = calc_rad_extra;
   //for(i=100; i<101; i++)
   for(i=0; i<quad_cnt; i++)
-  //for(i=0; i<1; i++)
     drawQuad(m_quadset.getQuad(i));
 
   return(true);
@@ -433,7 +434,7 @@ bool Common_IPFViewer::drawQuadSet2D()
 //-------------------------------------------------------------
 // Procedure: drawQuad
 
- void Common_IPFViewer::drawQuad(Quad3D q)
+void Common_IPFViewer::drawQuad(Quad3D q)
 {
   q.applyColorIntensity(m_intensity);
   q.applyScale(m_scale);
@@ -458,11 +459,11 @@ bool Common_IPFViewer::drawQuadSet2D()
   double y2=q.getHHY();
   double y3=q.getLHY();
 
-  cout << "New:" << endl;
-  cout << "  x0:" << x0 << ", y0:" << y0 << endl;
-  cout << "  x1:" << x1 << ", y1:" << y1 << endl;
-  cout << "  x2:" << x2 << ", y2:" << y2 << endl;
-  cout << "  x3:" << x3 << ", y3:" << y3 << endl;
+  //cout << "New:" << endl;
+  //cout << "  x0:" << x0 << ", y0:" << y0 << endl;
+  //cout << "  x1:" << x1 << ", y1:" << y1 << endl;
+  //cout << "  x2:" << x2 << ", y2:" << y2 << endl;
+  //cout << "  x3:" << x3 << ", y3:" << y3 << endl;
 
 
   glShadeModel(GL_SMOOTH);

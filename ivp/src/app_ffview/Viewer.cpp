@@ -87,7 +87,7 @@ void Viewer::draw()
     }
     m_quadset.normalize(0, 100);
     m_quadset.applyColorMap(m_color_map);
-    Common_IPFViewer::drawIvPFunction();
+    Common_IPFViewer::drawQuadSet();
   }
     
   if(m_draw_aof) {

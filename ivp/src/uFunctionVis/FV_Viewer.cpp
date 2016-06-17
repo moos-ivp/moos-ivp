@@ -35,6 +35,7 @@ FV_Viewer::FV_Viewer(int x, int y, int wid, int hgt, const char *l)
   m_model = 0;
 
   m_polar = 1;
+  m_draw_pclines = false;
   
   m_clear_color.setColor("macbeige");
 }
@@ -61,7 +62,7 @@ void FV_Viewer::draw()
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
   
-  Common_IPFViewer::drawIvPFunction();
+  Common_IPFViewer::drawQuadSet();
  
   if(m_quadset.getQuadSetDim() == 2) {
     if(m_draw_frame)

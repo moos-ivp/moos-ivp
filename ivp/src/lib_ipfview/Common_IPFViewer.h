@@ -49,26 +49,21 @@ public:
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
   void   printParams();
-  void   setPiecesIPF(std::string s)   {m_active_ipf_pieces = s;}
-  void   setPriorityIPF(std::string s) {m_active_ipf_priority = s;}
-  void   setSubDomainIPF(IvPDomain v)  {m_active_ipf_subdomain = v;} 
-  void   setIterIPF(std::string s)     {m_active_ipf_iter = s;}
-  void   setLabelColor(std::string s)  {m_label_color.setColor(s);}
+
   void   setClearColor(std::string s)  {m_clear_color.setColor(s);}
   void   setFrameColor(std::string s)  {m_frame_color.setColor(s);}
   void   setColorMap(std::string s)    {m_color_map.setType(s);}
   
 protected:
-  void   drawFrame(bool full=true);
-  void   drawOwnPoint();
-  void   drawMaxPoint(double, double);
-  bool   drawIvPFunction();
+  bool   drawQuadSet();
   void   drawQuadSet1D();
   bool   drawQuadSet2D();
   void   drawQuad(Quad3D quad);
-  void   handleLeftMouse(int, int) {}
-  void   handleRightMouse(int, int) {}
-  
+
+  void   drawFrame(bool full=true);
+  void   drawOwnPoint();
+  void   drawMaxPoint(double, double);
+
   void   draw1DAxes(const IvPDomain&);
   void   draw1DLabels(const IvPDomain&);
   void   draw1DKeys(std::vector<std::string>, std::vector<ColorPack>);
@@ -79,42 +74,32 @@ protected:
 		   const ColorPack& font_c, double font_size);
 
 protected:
-  ColorPack    m_clear_color;
-  ColorPack    m_frame_color;
-  ColorPack    m_label_color;
-  FColorMap    m_color_map;
-
-  double       m_xRot;
-  double       m_zRot;
-  double       m_zoom;
-
-
-  double       m_base;
-  double       m_scale;
-  double       m_rad_extra;
-  double       m_intensity;
-  int          m_polar;
+  ColorPack  m_clear_color;
+  ColorPack  m_frame_color;
+  FColorMap  m_color_map;
   
-  bool         m_draw_pin;
-  bool         m_draw_frame;
-  bool         m_draw_base;
-  bool         m_draw_pclines;
-  double       m_frame_height;
-  QuadSet      m_quadset;
-  
-  // Information available for the GUI output fields
-  std::string  m_active_ipf_vname;
-  std::string  m_active_ipf_source;
-  std::string  m_active_ipf_pieces;
-  std::string  m_active_ipf_priority;
-  std::string  m_active_ipf_iter;
-  IvPDomain    m_active_ipf_subdomain;
+  double     m_xRot;
+  double     m_zRot;
+  double     m_zoom;
 
+  double     m_base;
+  double     m_scale;
+  double     m_rad_extra;
+  double     m_intensity;
+  int        m_polar;
+  
+  bool       m_draw_pin;
+  bool       m_draw_frame;
+  bool       m_draw_base;
+  bool       m_draw_pclines;
+  double     m_frame_height;
+  QuadSet    m_quadset;
+  
   // Information for drawing 1D functions
-  int       m_xoffset;
-  int       m_yoffset;
-  int       m_grid_width;
-  int       m_grid_height;
+  int        m_xoffset;
+  int        m_yoffset;
+  int        m_grid_width;
+  int        m_grid_height;
 };
 
 #endif 

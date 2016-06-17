@@ -54,6 +54,12 @@ class IvPFuncViewerX : public Common_IPFViewer
   void   clearVarPlotA();
   void   clearVarPlotB();
 
+  void   setPiecesIPF(std::string s)   {m_active_ipf_pieces = s;}
+  void   setPriorityIPF(std::string s) {m_active_ipf_priority = s;}
+  void   setSubDomainIPF(IvPDomain v)  {m_active_ipf_subdomain = v;} 
+  void   setIterIPF(std::string s)     {m_active_ipf_iter = s;}
+  void   setLabelColor(std::string s)  {m_label_color.setColor(s);}
+  
   void   setTime(double tstamp);
   void   setVName(std::string s) {m_vname=s;}
   void   setSource(std::string src);
@@ -100,6 +106,15 @@ private:
   std::map<std::string, IPF_Plot> m_map_ipf_plots;
   std::map<std::string, VarPlot>  m_map_scope_var_a;
   std::map<std::string, VarPlot>  m_map_scope_var_b;
+
+  // Information available for the GUI output fields
+  std::string  m_active_ipf_pieces;
+  std::string  m_active_ipf_priority;
+  std::string  m_active_ipf_iter;
+  IvPDomain    m_active_ipf_subdomain;
+
+  ColorPack    m_label_color;
+  
 };
 
 #endif

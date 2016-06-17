@@ -66,7 +66,7 @@ void IvPFuncViewerX::draw()
     glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
     
     //Common_IPFViewer::drawFrame();
-    bool result = Common_IPFViewer::drawIvPFunction();
+    bool result = Common_IPFViewer::drawQuadSet();
     
     if(result && (m_quadset.getQuadSetDim() == 2)) {
       drawOwnPoint();

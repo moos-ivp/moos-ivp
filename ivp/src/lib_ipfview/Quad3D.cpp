@@ -105,20 +105,20 @@ void Quad3D::applyPolar(double rad_extra, int polar_dim, int pts)
     hh_yval = yh;
     lh_yval = yh;
   }
-  if(polar_dim == 1) {
+  else if((polar_dim == 1) && (pts > 0)) {
     double delta = 360.0 / pts;
     projectPoint(xl*delta, yl*rad_extra, 0, 0, ll_xval, ll_yval);
     projectPoint(xh*delta, yl*rad_extra, 0, 0, hl_xval, hl_yval);
     projectPoint(xh*delta, yh*rad_extra, 0, 0, hh_xval, hh_yval);
     projectPoint(xl*delta, yh*rad_extra, 0, 0, lh_xval, lh_yval);
   }
-  else {
+  else if((polar_dim == 2) && (pts > 0)) {
     double delta = 360.0 / pts;
     projectPoint(yl*delta, xl*rad_extra, 0, 0, ll_yval, ll_xval);
     projectPoint(yh*delta, xl*rad_extra, 0, 0, hl_yval, hl_xval);
     projectPoint(yh*delta, xh*rad_extra, 0, 0, hh_yval, hh_xval);
     projectPoint(yl*delta, xh*rad_extra, 0, 0, lh_yval, lh_xval);
-  }      
+  }
 }
 
 //-------------------------------------------------------------
