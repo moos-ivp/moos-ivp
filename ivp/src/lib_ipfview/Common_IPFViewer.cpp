@@ -102,37 +102,6 @@ int Common_IPFViewer::handle(int event)
 }
 
 //-------------------------------------------------------------
-// Procedure: setQuadSetFromIPF
-
-#if 0
-bool Common_IPFViewer::setQuadSetFromIPF(IvPFunction *ipf)
-{
-  if(!ipf)
-    return(false);
-
-  IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
-
-  bool crs_spd_ipf = false;
-  if(ivp_domain.size() == 2) {
-    if((ivp_domain.getVarName(0) == "speed") &&
-       (ivp_domain.getVarName(1) == "course"))
-       crs_spd_ipf = true;
-    if((ivp_domain.getVarName(0) == "course") &&
-       (ivp_domain.getVarName(1) == "speed"))
-       crs_spd_ipf = true;
-  }
-  
-  if(ipf->getDim() == 1)
-    return(applyIPF1D(ipf, source));
-  else if((ipf->getDim() == 2) && crs_spd_ipf)
-    return(applyIPF2DHS(ipf));
-  else if(ipf->getDim() == 2)
-    return(applyIPF2D(ipf));
-  
-}
-#endif
-
-//-------------------------------------------------------------
 // Procedure: setParam
 
 bool Common_IPFViewer::setParam(string param, string value)
@@ -315,10 +284,10 @@ void Common_IPFViewer::draw()
 //-------------------------------------------------------------
 // Procedure: drawQuadSet
 
-bool Common_IPFViewer::drawQuadSet()
+bool Common_IPFViewer::drawQuadSet(const QuadSet& quadset)
 {
-  if(m_quadset.size() != 0) 
-    return(drawQuadSet2D());
+  if(quadset.size() != 0) 
+    return(drawQuadSet2D(quadset));
 
 #if 0
   if(qdim == 1) {
@@ -436,9 +405,9 @@ void Common_IPFViewer::drawQuadSet1D()
 //-------------------------------------------------------------
 // Procedure: drawQuadSet2D
 
-bool Common_IPFViewer::drawQuadSet2D()
+bool Common_IPFViewer::drawQuadSet2D(const QuadSet& quadset)
 {
-  IvPDomain domain = m_quadset.getDomain();
+  IvPDomain domain = quadset.getDomain();
   double calc_rad_extra = 1;
   if(domain.hasDomain("speed")) {
     unsigned int spd_pts = domain.getVarPoints("speed");
@@ -449,13 +418,13 @@ bool Common_IPFViewer::drawQuadSet2D()
       calc_rad_extra = min_extent / (double)(spd_pts);
   } 
   
-  unsigned int quad_cnt = m_quadset.size();
+  unsigned int quad_cnt = quadset.size();
   if(quad_cnt == 0)
     return(false);
 
   m_rad_extra = calc_rad_extra;
   for(unsigned int i=0; i<quad_cnt; i++)
-    drawQuad(m_quadset.getQuad(i));
+    drawQuad(quadset.getQuad(i));
 
   return(true);
 }
@@ -468,7 +437,7 @@ void Common_IPFViewer::drawQuad(Quad3D q)
   q.applyColorIntensity(m_intensity);
   q.applyScale(m_scale);
   q.applyBase(m_base);
-
+ 
   if(m_polar == 0) {
     q.applyPolar(m_rad_extra, 0);
     q.applyTranslation(-250, -250);
@@ -477,7 +446,7 @@ void Common_IPFViewer::drawQuad(Quad3D q)
     q.applyPolar(m_rad_extra, 1, q.xpts);
   else if(m_polar == 2) 
     q.applyPolar(m_rad_extra, 2, q.ypts);
-    
+
   double x0=q.getLLX();
   double x1=q.getHLX();
   double x2=q.getHHX();

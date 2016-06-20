@@ -89,7 +89,7 @@ void Viewer::draw()
     }
     m_quadset.normalize(0, 100);
     m_quadset.applyColorMap(m_color_map);
-    Common_IPFViewer::drawQuadSet();
+    Common_IPFViewer::drawQuadSet(m_quadset);
   }
     
   if(m_draw_aof) {
@@ -570,6 +570,7 @@ void Viewer::drawAOF()
   
   q.xpts = (xmax - xmin) + 1;
   q.ypts = (ymax - ymin) + 1;
+  unsigned int count = 0;
   while(yc < ymax) {
     xc = xmin; 
     while(xc < xmax) {
@@ -608,11 +609,13 @@ void Viewer::drawAOF()
       q.setLHB(m_aof_cache.getBVal(xl, yh));
 
       q.applyBase(m_base_aof);
+      count++;
       drawQuad(q);
       xc += m_patch;
     }
     yc += m_patch;
   }  
+  cout << "Count: " << count << endl;
 }
 
 //-------------------------------------------------------------

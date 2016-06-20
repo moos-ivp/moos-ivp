@@ -86,7 +86,6 @@ GUI_IPF::~GUI_IPF()
 
 void GUI_IPF::initWidgets()
 {
-  int info_size = 10;
   Fl_Color fcolor1 = fl_rgb_color(200, 90, 90);
 
   m_ipf_viewer = new IvPFuncViewerX(0, 0, 1, 1);
@@ -112,7 +111,6 @@ void GUI_IPF::initWidgets()
 
   m_fld_ipf_dom = new Fl_Output(0, 0, 1, 1, "Dom:"); 
   m_fld_ipf_dom->clear_visible_focus();
-  m_fld_ipf_dom->labelsize(info_size);
 
   m_but_collective = new Fl_Check_Button(0, 0, 1, 1, "Collective");
   m_but_collective->clear_visible_focus();

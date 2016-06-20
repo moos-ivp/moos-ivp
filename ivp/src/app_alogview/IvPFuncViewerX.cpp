@@ -68,7 +68,7 @@ void IvPFuncViewerX::draw()
     
     //Common_IPFViewer::drawFrame();
     m_rad_extra = 3;
-    bool result = Common_IPFViewer::drawQuadSet();
+    bool result = Common_IPFViewer::drawQuadSet(m_quadset);
     if(result) {
       drawOwnPoint();
       

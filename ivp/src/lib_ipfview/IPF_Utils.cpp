@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <iostream>
 #include "MBUtils.h"
 #include "IPF_Utils.h"
 
@@ -71,53 +72,73 @@ QuadSet buildQuadSet2DHSFromIPF(IvPFunction *ipf)
 {
   QuadSet null_quadset;
 
-  // Sanity checks
-  if(!ipf)
-    return(null_quadset);
-  PDMap *pdmap = ipf->getPDMap();
-  if(!pdmap)
+  //===========================================================
+  // Part 1: Sanity checks
+  if(!ipf || (ipf->getPDMap() == 0))
     return(null_quadset);
   
   IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
   
-  bool wrap = true;
-
+  if(!ivp_domain.hasDomain("course") || !ivp_domain.hasDomain("speed"))
+    return(null_quadset);
+    
+  //===========================================================
+  // Part 2: Build the cache of values
+  int crs_ix = ivp_domain.getIndex("course");
+  int spd_ix = ivp_domain.getIndex("speed");
   unsigned int crs_pts = ivp_domain.getVarPoints("course");
   unsigned int spd_pts = ivp_domain.getVarPoints("speed");
-  if((crs_pts < 2) || (spd_pts < 2))
-    return(null_quadset);
+
+  // Create cache to hold the sample results
+  vector<vector<double> > vals;
+
+  IvPBox sbox(ivp_domain.size());
+  for(unsigned int i=0; i<crs_pts; i++) {
+    vector<double> ivector;
+    sbox.setPTS(crs_ix, i, i);
+    for(unsigned int j=0; j<spd_pts; j++) {
+      sbox.setPTS(spd_ix, j, j);
+      double pval = ipf->getPDMap()->evalPoint(&sbox);
+      ivector.push_back(pval);
+    }
+    vals.push_back(ivector);
+  }
+
+  //===========================================================
+  // Part 3: Build the Quads from the Cache
+
+  vector<Quad3D> quads = buildQuadsFromCache(vals);
+
+  //===========================================================
+  // Part 4: Assemble the QuadSet
 
   QuadSet quadset;
   quadset.setIvPDomain(ivp_domain);
+
+  for(unsigned int i=0; i<quads.size(); i++) 
+    quadset.addQuad3D(quads[i]);
   
-  // Create memory to hold the sample results
-  unsigned int i,j;
-  double **vals = new double*[crs_pts];
-  for(i=0; i<crs_pts; i++) {
-    vals[i] = new double[spd_pts];
-    for(j=0; j<spd_pts; j++)
-      vals[i][j] = 0;
-  }
+  quadset.resetMinMaxVals();
+  return(quadset);
+}
 
-  // Create the "sample" box 
-  IvPBox sbox(ivp_domain.size());
+
+//-------------------------------------------------------------
+// Procedure: buildQuadsFromCache()
+
+vector<Quad3D> buildQuadsFromCache(const vector<vector<double> >& vals)
+{
+  vector<Quad3D> rvector;
+  // Sanity checks
+  if(vals.size() == 0)
+    return(rvector);
   
-  int crs_ix = ivp_domain.getIndex("course");
-  int spd_ix = ivp_domain.getIndex("speed");
+  unsigned int crs_pts = vals.size();
+  unsigned int spd_pts = vals[0].size();
 
-  for(i=0; i<crs_pts; i++) {
-    sbox.setPTS(crs_ix, i, i);
-    for(j=0; j<spd_pts; j++) {
-      sbox.setPTS(spd_ix, j, j);
-      double pval = ipf->getPDMap()->evalPoint(&sbox);
-      //pval = snapToStep(pval, m_snap_val);
-      vals[i][j] = pval;
-    }
-  }
-
-  // Build the primary quads
-  for(i=0; i<(crs_pts-1); i++) {
-    for(j=0; j<(spd_pts-1); j++) {
+  // Build the primary quads 
+  for(unsigned int i=0; i<(crs_pts-1); i++) {
+    for(unsigned int j=0; j<(spd_pts-1); j++) {
       Quad3D new_quad;
       new_quad.setXL(i);
       new_quad.setXH(i+1);
@@ -131,14 +152,15 @@ QuadSet buildQuadSet2DHSFromIPF(IvPFunction *ipf)
       new_quad.xpts = crs_pts;
       new_quad.ypts = spd_pts;
 
-      quadset.addQuad3D(new_quad);
+      rvector.push_back(new_quad);
     }
   }
 
-  if(ivp_domain.hasDomain("course") && wrap) {
-      // Add  "bridge" quads to wrap around 359-0
+  bool wrap = true;
+  if(wrap) {
+    // Add  "bridge" quads to wrap around 359-0
     int top_crs_ix = crs_pts-1;
-    for(j=0; j<(spd_pts-1); j++) {
+    for(unsigned int j=0; j<(spd_pts-1); j++) {
       Quad3D new_quad;
       new_quad.setXL(top_crs_ix-1);  // usually 359
       new_quad.setXH(0);
@@ -152,17 +174,11 @@ QuadSet buildQuadSet2DHSFromIPF(IvPFunction *ipf)
       new_quad.xpts = crs_pts;
       new_quad.ypts = spd_pts;
       
-      quadset.addQuad3D(new_quad);
+      rvector.push_back(new_quad);
     }
   }
 
-  // Added apr 15th 2015 delete tmp memory
-  for(i=0; i<crs_pts; i++) 
-    delete [] vals[i];
-  delete [] vals;
-
-  quadset.resetMinMaxVals();
-  return(quadset);
+  return(rvector);
 }
 
 

@@ -57,10 +57,9 @@ public:
   void   setColorMap(std::string s)    {m_color_map.setType(s);}
   
 protected:
-  bool   drawQuadSet();
+  bool   drawQuadSet(const QuadSet&);
   void   drawQuadSet1D();
-  bool   drawQuadSet2D();
-  void   drawQuad(Quad3D quad);
+  bool   drawQuadSet2D(const QuadSet&);
 
   void   drawFrame(bool full=true);
   void   drawOwnPoint();
@@ -74,6 +73,10 @@ protected:
   void   drawText(int x, int y, std::string s);
   void   drawText2(double px, double py, const std::string& text,
 		   const ColorPack& font_c, double font_size);
+
+ protected:
+  void   drawQuad(Quad3D quad);
+
 
 protected:
   ColorPack  m_clear_color;

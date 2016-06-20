@@ -62,7 +62,7 @@ void FV_Viewer::draw()
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
   
-  Common_IPFViewer::drawQuadSet();
+  Common_IPFViewer::drawQuadSet(m_quadset);
  
   if(m_draw_frame)
     drawFrame();
