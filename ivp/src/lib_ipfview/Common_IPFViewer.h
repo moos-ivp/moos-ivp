@@ -46,6 +46,8 @@ class Common_IPFViewer : public Fl_Gl_Window
   int    handle(int);
 
 public:
+  bool   setQuadSetFromIPF(IvPFunction*);
+
   bool   setParam(std::string, std::string);
   bool   setParam(std::string, double);
   void   printParams();

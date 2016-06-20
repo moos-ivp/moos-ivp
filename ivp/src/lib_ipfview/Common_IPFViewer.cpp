@@ -102,6 +102,37 @@ int Common_IPFViewer::handle(int event)
 }
 
 //-------------------------------------------------------------
+// Procedure: setQuadSetFromIPF
+
+#if 0
+bool Common_IPFViewer::setQuadSetFromIPF(IvPFunction *ipf)
+{
+  if(!ipf)
+    return(false);
+
+  IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
+
+  bool crs_spd_ipf = false;
+  if(ivp_domain.size() == 2) {
+    if((ivp_domain.getVarName(0) == "speed") &&
+       (ivp_domain.getVarName(1) == "course"))
+       crs_spd_ipf = true;
+    if((ivp_domain.getVarName(0) == "course") &&
+       (ivp_domain.getVarName(1) == "speed"))
+       crs_spd_ipf = true;
+  }
+  
+  if(ipf->getDim() == 1)
+    return(applyIPF1D(ipf, source));
+  else if((ipf->getDim() == 2) && crs_spd_ipf)
+    return(applyIPF2DHS(ipf));
+  else if(ipf->getDim() == 2)
+    return(applyIPF2D(ipf));
+  
+}
+#endif
+
+//-------------------------------------------------------------
 // Procedure: setParam
 
 bool Common_IPFViewer::setParam(string param, string value)
@@ -286,20 +317,18 @@ void Common_IPFViewer::draw()
 
 bool Common_IPFViewer::drawQuadSet()
 {
-  unsigned int qdim = m_quadset.getQuadSetDim();
+  if(m_quadset.size() != 0) 
+    return(drawQuadSet2D());
 
+#if 0
   if(qdim == 1) {
     drawQuadSet1D();
     draw1DAxes(m_quadset.getDomain());
     draw1DLabels(m_quadset.getDomain());
     draw1DLine();
   }
-  else if(qdim == 2) {
-    return(drawQuadSet2D());
-  }
-  else
-    return(false);
-
+#endif
+  
   return(true);
 }
 
@@ -308,6 +337,7 @@ bool Common_IPFViewer::drawQuadSet()
 
 void Common_IPFViewer::drawQuadSet1D()
 {
+#if 0
   double clear_red = m_clear_color.red();
   double clear_grn = m_clear_color.grn();
   double clear_blu = m_clear_color.blu();
@@ -400,6 +430,7 @@ void Common_IPFViewer::drawQuadSet1D()
   glPopMatrix();
 
   draw1DKeys(key_strings, key_colors);
+#endif
 }
 
 //-------------------------------------------------------------
@@ -418,14 +449,12 @@ bool Common_IPFViewer::drawQuadSet2D()
       calc_rad_extra = min_extent / (double)(spd_pts);
   } 
   
-  unsigned int i, quad_cnt = m_quadset.size2D();
+  unsigned int quad_cnt = m_quadset.size();
   if(quad_cnt == 0)
     return(false);
 
-  
   m_rad_extra = calc_rad_extra;
-  //for(i=100; i<101; i++)
-  for(i=0; i<quad_cnt; i++)
+  for(unsigned int i=0; i<quad_cnt; i++)
     drawQuad(m_quadset.getQuad(i));
 
   return(true);
@@ -666,7 +695,7 @@ void Common_IPFViewer::drawOwnPoint()
 {
   if((m_xRot != 0) || (m_zRot != 0))
     return;
-  if(m_quadset.size2D() == 0)
+  if(m_quadset.size() == 0)
     return;
 
   double w = 250;
@@ -690,7 +719,7 @@ void Common_IPFViewer::drawOwnPoint()
 
 void Common_IPFViewer::drawMaxPoint(double crs, double spd)
 {
-  if(m_quadset.size2D() == 0)
+  if(m_quadset.size() == 0)
     return;
 
   // Calculated the radial extent
@@ -736,6 +765,7 @@ void Common_IPFViewer::drawMaxPoint(double crs, double spd)
 
 void Common_IPFViewer::draw1DAxes(const IvPDomain& domain)
 {
+#if 0
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
@@ -817,6 +847,8 @@ void Common_IPFViewer::draw1DAxes(const IvPDomain& domain)
 
   glFlush();
   glPopMatrix();
+
+#endif
 }
 
 
@@ -826,6 +858,7 @@ void Common_IPFViewer::draw1DAxes(const IvPDomain& domain)
 
 void Common_IPFViewer::draw1DLabels(const IvPDomain& domain)
 {
+#if 0
   if(m_grid_height < 200)
     gl_font(1, 10);
   else
@@ -859,6 +892,8 @@ void Common_IPFViewer::draw1DLabels(const IvPDomain& domain)
   xpos = m_xoffset + (m_grid_width/2.2);
   ypos = m_yoffset - 14;
   drawText2(xpos, ypos, dom_var, cpack, 10);
+
+#endif
 }
 
 //-------------------------------------------------------------
@@ -867,6 +902,7 @@ void Common_IPFViewer::draw1DLabels(const IvPDomain& domain)
 void Common_IPFViewer::draw1DKeys(vector<string> key_strings, 
 				  vector<ColorPack> key_colors)
 {
+#if 0
   if(key_strings.size() != key_colors.size())
     return;
   
@@ -900,6 +936,7 @@ void Common_IPFViewer::draw1DKeys(vector<string> key_strings,
 
   glFlush();
   glPopMatrix();
+#endif
 }
 
 
@@ -908,6 +945,7 @@ void Common_IPFViewer::draw1DKeys(vector<string> key_strings,
 
 void Common_IPFViewer::draw1DLine(double val, string label)
 {
+#if 0
   ColorPack cpack("purple");
   double kred = cpack.red();
   double kgrn = cpack.grn();
@@ -955,7 +993,7 @@ void Common_IPFViewer::draw1DLine(double val, string label)
 
   glFlush();
   glPopMatrix();
-
+#endif
 }
 
 
@@ -968,6 +1006,7 @@ void Common_IPFViewer::draw1DLineX(double value,
 				   int offset,
 				   ColorPack cpack)
 {
+#if 0
   IvPDomain domain = m_quadset.getDomain();
   if(domain.size() != 1)
     return;
@@ -1022,6 +1061,7 @@ void Common_IPFViewer::draw1DLineX(double value,
 
   glFlush();
   glPopMatrix();
+#endif
 }
 
 

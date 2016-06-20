@@ -25,6 +25,7 @@
 #include <cmath>
 #include <cstdlib>
 #include "Viewer.h"
+#include "IPF_Utils.h"
 #include "MBUtils.h"
 #include "OF_Reflector.h"
 #include "MBTimer.h"
@@ -64,6 +65,8 @@ Viewer::Viewer(int x, int y, int wid, int hgt, const char *label)
   m_focus_box_len   = 100;
   m_focus_unif_len  = 5;
 
+  m_quadset_refresh_pending = false;
+
   //m_zoom = m_zoom * 1.25 * 1.25;  // Two zoom clicks in.
   m_zoom = 1;
 }
@@ -80,10 +83,9 @@ void Viewer::draw()
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
 
   if(m_draw_ipf && m_unif_ipf) {
-    bool ok = m_quadset.applyIPF(m_unif_ipf, "course");
-    if(!ok) {
-      cout << "Bad QuadSet!!!!" << endl;
-      m_quadset = QuadSet();
+    if(m_quadset_refresh_pending) {
+      m_quadset = buildQuadSetFromIPF(m_unif_ipf);
+      m_quadset_refresh_pending = false;
     }
     m_quadset.normalize(0, 100);
     m_quadset.applyColorMap(m_color_map);
@@ -372,7 +374,8 @@ void Viewer::makeUniformIPF()
     delete(m_unif_ipf);
   // false means do not normalize as part of extractOF()
   m_unif_ipf = reflector.extractOF(false);
-
+  m_quadset_refresh_pending = true;
+  
   if(m_unif_ipf && m_unif_ipf->getPDMap())
     m_rater.setPDMap(m_unif_ipf->getPDMap());
   redraw();
@@ -473,10 +476,13 @@ double Viewer::getParam(const string& param, bool&ok)
   if(param == "sample_count")
     return(cnt);
   
-  if(param == "piece_count")
+  if(param == "piece_count") {
     if(m_unif_ipf)
       return(m_unif_ipf->getPDMap()->size());
- 
+    else
+      return(0);
+  }
+    
   double samp_high = m_rater.getSampHigh();
   double samp_low  = m_rater.getSampLow();
   double range     = samp_high - samp_low;
@@ -562,8 +568,6 @@ void Viewer::drawAOF()
 
   m_draw_pclines = false;
   
-  //q.base = m_base_aof; 
-  //q.scale= m_scale; 
   q.xpts = (xmax - xmin) + 1;
   q.ypts = (ymax - ymin) + 1;
   while(yc < ymax) {

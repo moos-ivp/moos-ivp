@@ -26,6 +26,7 @@
 #include "FunctionEncoder.h"
 #include "IPFViewUtils.h"
 #include "MBUtils.h"
+#include "IPF_Utils.h"
 
 using namespace std;
 
@@ -61,7 +62,7 @@ IvPFunction* IPF_Entry::getIvPFunction()
 
 QuadSet IPF_Entry::getQuadSet(IvPDomain ivp_domain)
 {
-  if(m_quadset.isEmptyND()) {
+  if(m_quadset.size() == 0) {
     IvPFunction *new_ipf = StringToIvPFunction(m_ipf_str);
     if(new_ipf) {
       m_ivp_domain = new_ipf->getPDMap()->getDomain();
@@ -69,18 +70,10 @@ QuadSet IPF_Entry::getQuadSet(IvPDomain ivp_domain)
       m_priority   = new_ipf->getPWT();
       new_ipf = expandHdgSpdIPF(new_ipf, ivp_domain);
 
-      string context_str = new_ipf->getContextStr();
-      string iter = biteString(context_str, ':');
-      string bhv_source  = context_str;
-
-      m_quadset.applyIPF(new_ipf, bhv_source);
+      m_quadset = buildQuadSetFromIPF(new_ipf);
       delete(new_ipf);
     }
   }
   return(m_quadset);
 }
-
-
-
-
 

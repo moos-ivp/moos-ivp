@@ -10,6 +10,7 @@ SET(SRC
   IPFViewUtils.cpp  
   IPF_Entry.cpp
   IPF_Bundle.cpp
+  IPF_Utils.cpp
   IPF_BundleSeries.cpp
 )
 

@@ -67,8 +67,6 @@ public:
   std::string getPeakDelta();
 
 protected:
-  void   drawIvPFunction(IvPFunction*);
-  void   drawIvPBox(const IvPBox&, double, double, int, int);
   void   drawAOF();
   void   drawFocusBox();
 
@@ -85,7 +83,8 @@ private:
   bool       m_strict_range;
   double     m_create_time;
   int        m_piece_count;
- 
+  bool       m_quadset_refresh_pending;
+  
   IvPFunction *m_unif_ipf;
   OF_Rater     m_rater;
 

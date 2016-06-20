@@ -28,6 +28,7 @@
 #include "IvPFuncViewerX.h"
 #include "FunctionEncoder.h"
 #include "IPFViewUtils.h"
+#include "IPF_Utils.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
 #include "MBTimer.h"
@@ -60,15 +61,15 @@ void IvPFuncViewerX::draw()
 {
   Common_IPFViewer::draw();
 
-  if((m_quadset.size2D() != 0) || (m_quadset.size1D() != 0)) {
+  if(m_quadset.size() != 0) {
     glPushMatrix();
     glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
     glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
     
     //Common_IPFViewer::drawFrame();
+    m_rad_extra = 3;
     bool result = Common_IPFViewer::drawQuadSet();
-    
-    if(result && (m_quadset.getQuadSetDim() == 2)) {
+    if(result) {
       drawOwnPoint();
       
       unsigned int max_crs_qix = m_quadset.getMaxPointQIX("course");
@@ -426,9 +427,9 @@ bool IvPFuncViewerX::buildIndividualIPF(string source)
   IvPFunction *ipf = StringToIvPFunction(ipf_string);
   if(ipf) {
     ipf = expandHdgSpdIPF(ipf, ivp_domain);
-    bool ok = m_quadset.applyIPF(ipf, m_source);
-    if(!ok)
-      m_quadset = QuadSet();
+
+    m_quadset = buildQuadSetFromIPF(ipf);
+
     delete(ipf);
     m_quadset.normalize(0, 100);
     m_quadset.applyColorMap(m_color_map);	
@@ -493,7 +494,6 @@ bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
     // necessarily the domain of given IPF, which may be a subdomain.
     IvPDomain ivp_domain = ivp_domains[i];
 
-    QuadSet      quadset;
     IvPFunction *ipf = StringToIvPFunction(ipfs[i]);
     string       src = ipf_sources[i];
 
@@ -501,10 +501,11 @@ bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
       ipf = expandHdgSpdIPF(ipf, ivp_domain);
 
     if(ipf) {
-      quadset.applyIPF(ipf, src);
+      QuadSet quadset = buildQuadSetFromIPF(ipf);
+      //quadset.applyIPF(ipf, src);
+      m_quadset.addQuadSet(quadset);
       delete(ipf);
     }
-    m_quadset.addQuadSet(quadset);
   }
 
   if(ctype == "collective-hdgspd") {

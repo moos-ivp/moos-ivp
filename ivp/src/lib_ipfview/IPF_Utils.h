@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: FV_Viewer.cpp                                        */
-/*    DATE: May 12th 2006                                        */
+/*    FILE: IPF_Utils.h                                          */
+/*    DATE: June 17th 2016                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,60 +21,21 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include "FV_Viewer.h"
-#include "ColorParse.h"
+#ifndef IPF_UTILS_HEADER
+#define IPF_UTILS_HEADER
 
-using namespace std;
+#include <string>
+#include "QuadSet.h"
+#include "IvPFunction.h"
 
-//--------------------------------------------------------------
-// Constructor
+QuadSet  buildQuadSetFromIPF(IvPFunction*);
 
-FV_Viewer::FV_Viewer(int x, int y, int wid, int hgt, const char *l)
-  : Common_IPFViewer(x, y, wid, hgt, l)
-{
-  m_model = 0;
+QuadSet  buildQuadSet2DHSFromIPF(IvPFunction*);
+QuadSet  buildQuadSet2DFromIPF(IvPFunction*);
+QuadSet  buildQuadSet1DFromIPF(IvPFunction*, std::string);
 
-  m_polar = 1;
-  m_draw_pclines = false;
-  
-  m_clear_color.setColor("macbeige");
-}
-
-//-------------------------------------------------------------
-// Procedure: resetQuadSet
-
-void FV_Viewer::resetQuadSet()
-{
-  if(!m_model)
-    return;
-  
-  m_quadset = m_model->getQuadSet();
-}
+#endif
 
 
-//-------------------------------------------------------------
-// Procedure: draw
 
-void FV_Viewer::draw()
-{
-  Common_IPFViewer::draw();
-  glPushMatrix();
-  glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
-  glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
-  
-  Common_IPFViewer::drawQuadSet();
- 
-  if(m_draw_frame)
-    drawFrame();
-  drawOwnPoint();
-    
-  if(m_draw_pin) {
-    unsigned int max_crs_qix = m_quadset.getMaxPointQIX("course");
-    unsigned int max_spd_qix = m_quadset.getMaxPointQIX("speed");
-    drawMaxPoint(max_crs_qix, max_spd_qix);
-  }
 
-  glPopMatrix();
-  
-  glFlush();  
-}
