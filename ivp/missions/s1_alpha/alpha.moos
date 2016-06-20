@@ -31,14 +31,55 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false, ExtraProcessParams=one
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-  Run = uXMS            @ NewConsole = true
+
+	Run = uFunctionVis    @ NewConsole = false
+
+	//  Run = uXMS            @ NewConsole = true
 //  Run = uTimerScript    @ NewConsole = false
 
   one = --size=1400x800
   db = --event_log=eventlog
 }
 
+//------------------------------------------
+// uFunctionVis
 
+ProcessConfig = uFunctionVis
+{ 
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+}
+
+	
+//------------------------------------------
+// uTermCommand config block
+
+ProcessConfig = uTermCommand                                    
+	{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  CMD  =  1 -->  DEPLOY -->               true
+  CMD  =  2 -->  DEPLOY -->               false                 
+  CMD  =  3 -->  MOOS_MANUAL_OVERIDE -->  true                  
+  CMD  =  4 -->  MOOS_MANUAL_OVERIDE -->  false                 
+  CMD  =  5 -->  STATION_KEEP -->         true                  
+  CMD  =  6 -->  STATION_KEEP -->         false                 
+  CMD  =  7 -->  RETURN -->               true                  
+  CMD  =  8 -->  RETURN -->               false                 
+
+	CMD  =  9 -->  FOO  -->                 hello_world
+	
+  CMD  =  px --> PERMUTATIONS -->         false                 
+  CMD  =  pg --> PERMUTATIONS -->         true                  
+  CMD  =  pr --> LOITER_REMAP -->         true                  
+                                                                
+  CMD  =  hv --> HELM_VERBOSE -->         verbose               
+  CMD  =  ht --> HELM_VERBOSE -->         terse                 
+  CMD  =  hq --> HELM_VERBOSE -->         quiet                 
+}
+
+	
 //------------------------------------------
 // uXMS config block
 
@@ -192,6 +233,8 @@ ProcessConfig = pMarineViewer
 
   trails_point_size   = 1
 
+	//vcolor = alpha=dodgerblue
+
   // Appcast configuration
   appcast_height       = 75
   appcast_width        = 30
@@ -244,7 +287,8 @@ ProcessConfig = pNodeReporter
   AppTick    = 2
   CommsTick	 = 2
 
-  platform_type   = KAYAK
+  platform_type   = MOKAI
+  platform_color  = green
   platform_length = 4
 }
 
