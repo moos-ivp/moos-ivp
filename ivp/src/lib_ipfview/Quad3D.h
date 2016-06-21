@@ -29,18 +29,19 @@ public:
   Quad3D();
   ~Quad3D() {}
 
-  bool contains(double x, double y) {
-    return((x>=xl)&&(x<=xh)&&(y>=yl)&&(y<=yh));
-  }
-
   double getAvgVal() {return((ll_hgt + hl_hgt + hh_hgt + lh_hgt)/4);}
 
   // Setters ------------------------------------------------
-  void setXL(double v)    {xl = v;}
-  void setXH(double v)    {xh = v;}
-  void setYL(double v)    {yl = v;}
-  void setYH(double v)    {yh = v;}
+  void setLLX(double v)   {ll_xval = v;}
+  void setHLX(double v)   {hl_xval = v;}
+  void setHHX(double v)   {hh_xval = v;}
+  void setLHX(double v)   {lh_xval = v;}
 
+  void setLLY(double v)   {ll_yval = v;}
+  void setHLY(double v)   {hl_yval = v;}
+  void setHHY(double v)   {hh_yval = v;}
+  void setLHY(double v)   {lh_yval = v;}
+  
   void setLLZ(double v)   {ll_hgt = v;} // LLH = Low,Low's Height
   void setHLZ(double v)   {hl_hgt = v;}
   void setHHZ(double v)   {hh_hgt = v;}
@@ -62,11 +63,6 @@ public:
   void setLHB(double v)   {lh_blu = v;}
 
   // Getters ------------------------------------------------
-  double getXL() const    {return(xl);}
-  double getXH() const    {return(xh);}
-  double getYL() const    {return(yl);}
-  double getYH() const    {return(yh);}
-  
   double getLLX() const   {return(ll_xval);} // LLX = Low,Low's X val
   double getHLX() const   {return(hl_xval);}
   double getHHX() const   {return(hh_xval);}
@@ -97,6 +93,12 @@ public:
   double getHHB() const   {return(hh_blu);}
   double getLHB() const   {return(lh_blu);}
 
+  double getXinLOW(unsigned int) const;
+  double getYinLOW(unsigned int) const;
+  double getXinHGH(unsigned int) const;
+  double getYinHGH(unsigned int) const;
+  unsigned int getInPtsSize() const {return(m_xin_low.size());}
+  
   // Modifiers -------------------------------------------
     
   void addLLZ(double v) {ll_hgt += v;}  // LLZ = Low,Low's Height
@@ -110,17 +112,29 @@ public:
   void applyBase(double scale);
   void applyTranslation(double x, double y);
 
+  void interpolate(double xdelta);
+  
  public:  
   int    xpts;
   int    ypts;
-  
+
  protected:
 
-  double xl;
-  double xh;
-  double yl;
-  double yh;
+  std::vector<double> m_xin_low;
+  std::vector<double> m_yin_low;
+  std::vector<double> m_zin_low;
+  std::vector<double> m_rin_low;
+  std::vector<double> m_gin_low;
+  std::vector<double> m_bin_low;
 
+  std::vector<double> m_xin_hgh;
+  std::vector<double> m_yin_hgh;
+  std::vector<double> m_zin_hgh;
+  std::vector<double> m_rin_hgh;
+  std::vector<double> m_gin_hgh;
+  std::vector<double> m_bin_hgh;
+
+ protected:
   double ll_xval;
   double hl_xval;
   double hh_xval;

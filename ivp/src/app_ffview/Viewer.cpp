@@ -574,19 +574,45 @@ void Viewer::drawAOF()
   while(yc < ymax) {
     xc = xmin; 
     while(xc < xmax) {
+
+      int xl = xc;
+      int xh = xc+m_patch;
+      int yl = yc;
+      int yh = yc+m_patch;
+
+      if(xh > xmax)
+	xh = xmax;
+      if(yh > ymax)
+	yh = ymax;
+      
+#if 1
+      q.setLLX(xl);
+      q.setHLX(xh);
+      q.setHHX(xh);
+      q.setLHX(xl);
+
+      q.setLLY(yl);
+      q.setHLY(yl);
+      q.setHHY(yh);
+      q.setLHY(yh);
+#endif      
+      
+#if 0
       q.setXL(xc);
       q.setXH(xc + m_patch);
       q.setYL(yc);
       q.setYH(yc + m_patch);
+
       if(q.getXH() > xmax)
 	q.setXH(xmax);
       if(q.getYH() > ymax)
 	q.setYH(ymax);
-
-      int xl = (int)(q.getXL());
-      int xh = (int)(q.getXH());
-      int yl = (int)(q.getYL());
-      int yh = (int)(q.getYH());
+#endif
+      
+      //int xl = (int)(q.getXL());
+      //int xh = (int)(q.getXH());
+      //int yl = (int)(q.getYL());
+      //int yh = (int)(q.getYH());
 
       q.setLLZ(m_aof_cache.getFVal(xl, yl));  // Low-Low's Height
       q.setLLR(m_aof_cache.getRVal(xl, yl));  // Low-Low's Red

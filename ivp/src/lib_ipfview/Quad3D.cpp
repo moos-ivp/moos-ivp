@@ -34,11 +34,6 @@ using namespace std;
 
 Quad3D::Quad3D()
 {
-  xl=0;
-  xh=0;
-  yl=0;
-  yh=0;
-
   // x position for each of four vertices
   ll_xval=0;
   hl_xval=0;
@@ -91,33 +86,30 @@ Quad3D::Quad3D()
 void Quad3D::applyPolar(double rad_extra, int polar_dim, int pts)
 {
   // Sanity checks
-  if((rad_extra <= 0) || (polar_dim < 0) || (polar_dim > 2))
+  if((rad_extra <= 0) || (polar_dim < 1) || (polar_dim > 2) || (pts <= 0))
     return;
-    
-  if(polar_dim == 0) {
-    ll_xval = xl;
-    hl_xval = xh;
-    hh_xval = xh;
-    lh_xval = xl;
+  
+  if(polar_dim == 1) {
+    double delta = 360.0 / pts;
+    projectPoint(ll_xval*delta, ll_yval*rad_extra, 0, 0, ll_xval, ll_yval);
+    projectPoint(hl_xval*delta, hl_yval*rad_extra, 0, 0, hl_xval, hl_yval);
+    projectPoint(hh_xval*delta, hh_yval*rad_extra, 0, 0, hh_xval, hh_yval);
+    projectPoint(lh_xval*delta, lh_yval*rad_extra, 0, 0, lh_xval, lh_yval);
 
-    ll_yval = yl;
-    hl_yval = yl;
-    hh_yval = yh;
-    lh_yval = yh;
+    for(unsigned int i=0; i<m_xin_low.size(); i++) {
+      projectPoint(m_xin_low[i]*delta, m_yin_low[i]*rad_extra, 0, 0,
+		   m_xin_low[i], m_yin_low[i]);
+      projectPoint(m_xin_hgh[i]*delta, m_yin_hgh[i]*rad_extra, 0, 0,
+		   m_xin_hgh[i], m_yin_hgh[i]);
+    }
+
   }
-  else if((polar_dim == 1) && (pts > 0)) {
+  else if(polar_dim == 2) {
     double delta = 360.0 / pts;
-    projectPoint(xl*delta, yl*rad_extra, 0, 0, ll_xval, ll_yval);
-    projectPoint(xh*delta, yl*rad_extra, 0, 0, hl_xval, hl_yval);
-    projectPoint(xh*delta, yh*rad_extra, 0, 0, hh_xval, hh_yval);
-    projectPoint(xl*delta, yh*rad_extra, 0, 0, lh_xval, lh_yval);
-  }
-  else if((polar_dim == 2) && (pts > 0)) {
-    double delta = 360.0 / pts;
-    projectPoint(yl*delta, xl*rad_extra, 0, 0, ll_yval, ll_xval);
-    projectPoint(yh*delta, xl*rad_extra, 0, 0, hl_yval, hl_xval);
-    projectPoint(yh*delta, xh*rad_extra, 0, 0, hh_yval, hh_xval);
-    projectPoint(yl*delta, xh*rad_extra, 0, 0, lh_yval, lh_xval);
+    projectPoint(ll_yval*delta, ll_xval*rad_extra, 0, 0, ll_yval, ll_xval);
+    projectPoint(hl_yval*delta, hl_xval*rad_extra, 0, 0, hl_yval, hl_xval);
+    projectPoint(hh_yval*delta, hh_xval*rad_extra, 0, 0, hh_yval, hh_xval);
+    projectPoint(lh_yval*delta, lh_xval*rad_extra, 0, 0, lh_yval, lh_xval);
   }
 }
 
@@ -169,11 +161,6 @@ void Quad3D::applyBase(double given_base)
 
 void Quad3D::applyTranslation(double xval, double yval)
 {
-  xl += xval;
-  xh += xval;
-  yl += yval;
-  yh += yval;
-
   ll_xval += xval;
   hl_xval += xval;
   hh_xval += xval;
@@ -183,6 +170,115 @@ void Quad3D::applyTranslation(double xval, double yval)
   hl_yval += xval;
   hh_yval += xval;
   lh_yval += xval;
+}
+
+
+//-------------------------------------------------------------
+// Procedure: getXinLOW()
+
+double Quad3D::getXinLOW(unsigned int ix) const
+{
+  if(ix >= m_xin_low.size())
+    return(0);
+  return(m_xin_low[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getYinLOW()
+
+double Quad3D::getYinLOW(unsigned int ix) const
+{
+  if(ix >= m_yin_low.size())
+    return(0);
+  return(m_yin_low[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getXinHGH()
+
+double Quad3D::getXinHGH(unsigned int ix) const
+{
+  if(ix >= m_xin_hgh.size())
+    return(0);
+  return(m_xin_hgh[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getYinHGH()
+
+double Quad3D::getYinHGH(unsigned int ix) const
+{
+  if(ix >= m_yin_hgh.size())
+    return(0);
+  return(m_yin_hgh[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: interpolate
+//      Note: Assumed to be invoked before applying polar and colormap
+
+void Quad3D::interpolate(double xdelta)
+{
+  m_xin_low.clear();
+  m_yin_low.clear();
+  m_zin_low.clear();
+  m_rin_low.clear();
+  m_gin_low.clear();
+  m_bin_low.clear();
+
+  m_xin_hgh.clear();
+  m_yin_hgh.clear();
+  m_zin_hgh.clear();
+  m_rin_hgh.clear();
+  m_gin_hgh.clear();
+  m_bin_hgh.clear();
+
+  cout << "In Quad3D::interpolate. xdelta:" << xdelta << endl;
+  cout << "ll_xval:" << ll_xval << endl;
+  cout << "hl_xval:" << hl_xval << endl;
+  
+  
+  for(double v=ll_xval+xdelta; v<hl_xval; v+=xdelta) {
+    cout << "   v:" << v << endl;
+    double pct = (v-ll_xval) / (hl_xval-ll_xval);
+    cout << " pct: " << pct << endl;
+
+    // Part 1 of 12 - calculating m_xin_low
+    double xin_low = ll_xval + (pct * (hl_xval-ll_xval));
+    m_xin_low.push_back(xin_low);
+    // Part 2 of 12 - calculating m_yin_low
+    m_yin_low.push_back(ll_yval);
+    // Part 3 of 12 - calculating m_zin_low
+    double zin_low = ll_hgt + (pct * (hl_hgt-ll_hgt));
+    m_zin_low.push_back(zin_low);
+    // Part 4 of 12 - calculating m_rin_low
+    double rin_low = ll_red + (pct * (hl_red-ll_red));
+    m_rin_low.push_back(rin_low);
+    // Part 5 of 12 - calculating m_gin_low
+    double gin_low = ll_grn + (pct * (hl_grn-ll_grn));
+    m_gin_low.push_back(gin_low);
+    // Part 6 of 12 - calculating m_bin_low
+    double bin_low = ll_blu + (pct * (hl_blu-ll_blu));
+    m_bin_low.push_back(bin_low);
+
+    // Part 7 of 12 - calculating m_xin_hgh
+    double xin_hgh = lh_xval + (pct * (hh_xval-lh_xval));
+    m_xin_hgh.push_back(xin_hgh);
+    // Part 8 of 12 - calculating m_yin_hgh
+    m_yin_hgh.push_back(hh_yval);
+    // Part 9 of 12 - calculating m_zin_hgh
+    double zin_hgh = lh_hgt + (pct * (hh_hgt-lh_hgt));
+    m_zin_hgh.push_back(zin_hgh);
+    // Part 10 of 12 - calculating m_rin_hgh
+    double rin_hgh = lh_red + (pct * (hh_red-lh_red));
+    m_rin_hgh.push_back(rin_hgh);
+    // Part 11 of 12 - calculating m_gin_hgh
+    double gin_hgh = lh_grn + (pct * (hh_grn-lh_grn));
+    m_gin_hgh.push_back(gin_hgh);
+    // Part 12 of 12 - calculating m_bin_hgh
+    double bin_hgh = lh_blu + (pct * (hh_blu-lh_blu));
+    m_bin_hgh.push_back(bin_hgh);
+  }
 }
 
 

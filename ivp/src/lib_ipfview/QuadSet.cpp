@@ -204,6 +204,17 @@ void QuadSet::normalize(double target_base, double target_range)
   m_maxpt_val = target_base + target_range;
 }
 
+//-------------------------------------------------------------
+// Procedure: interpolate
+
+void QuadSet::interpolate(double xdelta)
+{
+  for(unsigned int i=0; i<m_quads.size(); i++) {
+    cout << "  Begin interpolate quad[" << i << "]" << endl;
+    m_quads[i].interpolate(xdelta);
+  }
+}
+
 
 //-------------------------------------------------------------
 // Procedure: getMaxPoint
@@ -285,32 +296,32 @@ void QuadSet::resetMinMaxVals()
       m_minpt_val  = m_quads[i].getLLZ();
     if(m_quads[i].getLLZ() > m_maxpt_val) {
       m_maxpt_val = m_quads[i].getLLZ();
-      m_max_x_qix = m_quads[i].getXL();
-      m_max_y_qix = m_quads[i].getYL();
+      m_max_x_qix = m_quads[i].getLLX();
+      m_max_y_qix = m_quads[i].getLLY();
     }
 
     if(m_quads[i].getLHZ() < m_minpt_val)  //------- (L,H)  
       m_minpt_val  = m_quads[i].getLHZ();
     if(m_quads[i].getLHZ() > m_maxpt_val) {  
       m_maxpt_val = m_quads[i].getLHZ();
-      m_max_x_qix = m_quads[i].getXL();
-      m_max_y_qix = m_quads[i].getYH();
+      m_max_x_qix = m_quads[i].getLHX();
+      m_max_y_qix = m_quads[i].getLHY();
     }
 
     if(m_quads[i].getHLZ() < m_minpt_val)  //------- (H,L)  
       m_minpt_val  = m_quads[i].getHLZ();
     if(m_quads[i].getHLZ() > m_maxpt_val) {
       m_maxpt_val = m_quads[i].getHLZ();
-      m_max_x_qix = m_quads[i].getXH();
-      m_max_y_qix = m_quads[i].getYL();
+      m_max_x_qix = m_quads[i].getHLX();
+      m_max_y_qix = m_quads[i].getHLY();
     }
 
     if(m_quads[i].getHHZ() < m_minpt_val) //------- (H,H)    
       m_minpt_val  = m_quads[i].getHHZ();
     if(m_quads[i].getHHZ() > m_maxpt_val) {
       m_maxpt_val = m_quads[i].getHHZ();
-      m_max_x_qix = m_quads[i].getXH();
-      m_max_y_qix = m_quads[i].getYH();
+      m_max_x_qix = m_quads[i].getHHX();
+      m_max_y_qix = m_quads[i].getHHY();
     }
   }
 }

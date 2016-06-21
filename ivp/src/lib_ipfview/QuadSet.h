@@ -48,6 +48,7 @@ public:
   void   applyColorMap(const FColorMap&, double low, double hgh);
   void   addQuadSet(const QuadSet&);
   void   normalize(double, double);
+  void   interpolate(double xdelta);
   
   // Geting QuadSet Information
   unsigned int size() const                  {return(m_quads.size());}

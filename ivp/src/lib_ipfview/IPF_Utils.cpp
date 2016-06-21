@@ -140,10 +140,21 @@ vector<Quad3D> buildQuadsFromCache(const vector<vector<double> >& vals)
   for(unsigned int i=0; i<(crs_pts-1); i++) {
     for(unsigned int j=0; j<(spd_pts-1); j++) {
       Quad3D new_quad;
-      new_quad.setXL(i);
-      new_quad.setXH(i+1);
-      new_quad.setYL(j);
-      new_quad.setYH(j+1);
+      //new_quad.setXL(i);
+      //new_quad.setXH(i+1);
+      //new_quad.setYL(j);
+      //new_quad.setYH(j+1);
+
+      new_quad.setLLX(i);
+      new_quad.setHLX(i+1);
+      new_quad.setHHX(i+1);
+      new_quad.setLHX(i);
+      
+      new_quad.setLLY(j);
+      new_quad.setHLY(j);
+      new_quad.setHHY(j+1);
+      new_quad.setLHY(j+1);
+      
       new_quad.setLLZ(vals[i][j]);
       new_quad.setLHZ(vals[i][j+1]);
       new_quad.setHLZ(vals[i+1][j]);
@@ -162,10 +173,21 @@ vector<Quad3D> buildQuadsFromCache(const vector<vector<double> >& vals)
     int top_crs_ix = crs_pts-1;
     for(unsigned int j=0; j<(spd_pts-1); j++) {
       Quad3D new_quad;
-      new_quad.setXL(top_crs_ix-1);  // usually 359
-      new_quad.setXH(0);
-      new_quad.setYL(j);
-      new_quad.setYH(j+1);
+      //new_quad.setXL(top_crs_ix-1);  // usually 359
+      //new_quad.setXH(0);
+      //new_quad.setYL(j);
+      //new_quad.setYH(j+1);
+
+      new_quad.setLLX(top_crs_ix-1);
+      new_quad.setHLX(0);
+      new_quad.setHHX(0);
+      new_quad.setLHX(top_crs_ix-1);
+      
+      new_quad.setLLY(j);
+      new_quad.setHLY(j);
+      new_quad.setHHY(j+1);
+      new_quad.setLHY(j+1);
+      
       new_quad.setLLZ(vals[top_crs_ix][j]);
       new_quad.setLHZ(vals[top_crs_ix][j+1]);
       new_quad.setHLZ(vals[0][j]);
@@ -218,10 +240,21 @@ QuadSet buildQuadSet2DFromIPF(IvPFunction *ipf)
     int yl = box->pt(1,0);
     int yh = box->pt(1,1);
     
-    quad.setXL(xl);
-    quad.setXH(xh);
-    quad.setYL(yl);
-    quad.setYH(yh);
+    //quad.setXL(xl);
+    //quad.setXH(xh);
+    //quad.setYL(yl);
+    //quad.setYH(yh);
+
+    quad.setLLX(xl);
+    quad.setHLX(xh);
+    quad.setHHX(xh);
+    quad.setLHX(xl);
+
+    quad.setLLY(yl);
+    quad.setHLY(yl);
+    quad.setHHY(yh);
+    quad.setLHY(yh);
+
     quad.xpts  = xpts;  // rid?
     quad.ypts  = ypts;  // rid?
 
