@@ -209,10 +209,8 @@ void QuadSet::normalize(double target_base, double target_range)
 
 void QuadSet::interpolate(double xdelta)
 {
-  for(unsigned int i=0; i<m_quads.size(); i++) {
-    cout << "  Begin interpolate quad[" << i << "]" << endl;
+  for(unsigned int i=0; i<m_quads.size(); i++) 
     m_quads[i].interpolate(xdelta);
-  }
 }
 
 

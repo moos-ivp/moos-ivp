@@ -132,6 +132,21 @@ void Quad3D::applyColorIntensity(double intensity)
   hl_blu *= intensity;
   hh_blu *= intensity;
   lh_blu *= intensity;
+
+  for(unsigned int i=0; i<m_rin_low.size(); i++)
+    m_rin_low[i] *= intensity;
+  for(unsigned int i=0; i<m_rin_hgh.size(); i++)
+    m_rin_hgh[i] *= intensity;
+
+  for(unsigned int i=0; i<m_gin_low.size(); i++)
+    m_gin_low[i] *= intensity;
+  for(unsigned int i=0; i<m_gin_hgh.size(); i++)
+    m_gin_hgh[i] *= intensity;
+
+  for(unsigned int i=0; i<m_bin_low.size(); i++)
+    m_bin_low[i] *= intensity;
+  for(unsigned int i=0; i<m_bin_hgh.size(); i++)
+    m_bin_hgh[i] *= intensity;
 }
 
 //-------------------------------------------------------------
@@ -143,6 +158,11 @@ void Quad3D::applyScale(double given_scale)
   hl_hgt *= given_scale;
   hh_hgt *= given_scale;
   lh_hgt *= given_scale;
+
+  for(unsigned int i=0; i<m_zin_low.size(); i++)
+    m_zin_low[i] *= given_scale;
+  for(unsigned int i=0; i<m_zin_hgh.size(); i++)
+    m_zin_hgh[i] *= given_scale;  
 }
 
 //-------------------------------------------------------------
@@ -154,6 +174,10 @@ void Quad3D::applyBase(double given_base)
   hl_hgt += given_base;
   hh_hgt += given_base;
   lh_hgt += given_base;
+  for(unsigned int i=0; i<m_zin_low.size(); i++)
+    m_zin_low[i] += given_base;
+  for(unsigned int i=0; i<m_zin_hgh.size(); i++)
+    m_zin_hgh[i] += given_base;
 }
 
 //-------------------------------------------------------------
@@ -170,6 +194,16 @@ void Quad3D::applyTranslation(double xval, double yval)
   hl_yval += xval;
   hh_yval += xval;
   lh_yval += xval;
+
+  for(unsigned int i=0; i<m_xin_low.size(); i++)
+    m_xin_low[i] += xval;
+  for(unsigned int i=0; i<m_xin_hgh.size(); i++)
+    m_xin_hgh[i] += xval;
+
+  for(unsigned int i=0; i<m_yin_low.size(); i++)
+    m_yin_low[i] += yval;
+  for(unsigned int i=0; i<m_yin_hgh.size(); i++)
+    m_yin_hgh[i] += yval;
 }
 
 
@@ -194,6 +228,48 @@ double Quad3D::getYinLOW(unsigned int ix) const
 }
 
 //-------------------------------------------------------------
+// Procedure: getZinLOW()
+
+double Quad3D::getZinLOW(unsigned int ix) const
+{
+  if(ix >= m_zin_low.size())
+    return(0);
+  return(m_zin_low[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getRinLOW()
+
+double Quad3D::getRinLOW(unsigned int ix) const
+{
+  if(ix >= m_rin_low.size())
+    return(0);
+  return(m_rin_low[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getGinLOW()
+
+double Quad3D::getGinLOW(unsigned int ix) const
+{
+  if(ix >= m_gin_low.size())
+    return(0);
+  return(m_gin_low[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getBinLOW()
+
+double Quad3D::getBinLOW(unsigned int ix) const
+{
+  if(ix >= m_bin_low.size())
+    return(0);
+  return(m_bin_low[ix]);
+}
+
+
+
+//-------------------------------------------------------------
 // Procedure: getXinHGH()
 
 double Quad3D::getXinHGH(unsigned int ix) const
@@ -211,6 +287,46 @@ double Quad3D::getYinHGH(unsigned int ix) const
   if(ix >= m_yin_hgh.size())
     return(0);
   return(m_yin_hgh[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getZinHGH()
+
+double Quad3D::getZinHGH(unsigned int ix) const
+{
+  if(ix >= m_zin_hgh.size())
+    return(0);
+  return(m_zin_hgh[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getRinHGH()
+
+double Quad3D::getRinHGH(unsigned int ix) const
+{
+  if(ix >= m_rin_hgh.size())
+    return(0);
+  return(m_rin_hgh[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getGinHGH()
+
+double Quad3D::getGinHGH(unsigned int ix) const
+{
+  if(ix >= m_gin_hgh.size())
+    return(0);
+  return(m_gin_hgh[ix]);
+}
+
+//-------------------------------------------------------------
+// Procedure: getBinHGH()
+
+double Quad3D::getBinHGH(unsigned int ix) const
+{
+  if(ix >= m_bin_hgh.size())
+    return(0);
+  return(m_bin_hgh[ix]);
 }
 
 //-------------------------------------------------------------
@@ -233,15 +349,8 @@ void Quad3D::interpolate(double xdelta)
   m_gin_hgh.clear();
   m_bin_hgh.clear();
 
-  cout << "In Quad3D::interpolate. xdelta:" << xdelta << endl;
-  cout << "ll_xval:" << ll_xval << endl;
-  cout << "hl_xval:" << hl_xval << endl;
-  
-  
   for(double v=ll_xval+xdelta; v<hl_xval; v+=xdelta) {
-    cout << "   v:" << v << endl;
     double pct = (v-ll_xval) / (hl_xval-ll_xval);
-    cout << " pct: " << pct << endl;
 
     // Part 1 of 12 - calculating m_xin_low
     double xin_low = ll_xval + (pct * (hl_xval-ll_xval));
@@ -251,6 +360,7 @@ void Quad3D::interpolate(double xdelta)
     // Part 3 of 12 - calculating m_zin_low
     double zin_low = ll_hgt + (pct * (hl_hgt-ll_hgt));
     m_zin_low.push_back(zin_low);
+
     // Part 4 of 12 - calculating m_rin_low
     double rin_low = ll_red + (pct * (hl_red-ll_red));
     m_rin_low.push_back(rin_low);
@@ -261,6 +371,7 @@ void Quad3D::interpolate(double xdelta)
     double bin_low = ll_blu + (pct * (hl_blu-ll_blu));
     m_bin_low.push_back(bin_low);
 
+#if 1
     // Part 7 of 12 - calculating m_xin_hgh
     double xin_hgh = lh_xval + (pct * (hh_xval-lh_xval));
     m_xin_hgh.push_back(xin_hgh);
@@ -278,6 +389,26 @@ void Quad3D::interpolate(double xdelta)
     // Part 12 of 12 - calculating m_bin_hgh
     double bin_hgh = lh_blu + (pct * (hh_blu-lh_blu));
     m_bin_hgh.push_back(bin_hgh);
+#endif
+#if 0
+    // Part 7 of 12 - calculating m_xin_hgh
+    double xin_hgh = hh_xval + (pct * (lh_xval-hh_xval));
+    m_xin_hgh.push_back(xin_hgh);
+    // Part 8 of 12 - calculating m_yin_hgh
+    m_yin_hgh.push_back(hh_yval);
+    // Part 9 of 12 - calculating m_zin_hgh
+    double zin_hgh = hh_hgt + (pct * (lh_hgt-hh_hgt));
+    m_zin_hgh.push_back(zin_hgh);
+    // Part 10 of 12 - calculating m_rin_hgh
+    double rin_hgh = hh_red + (pct * (lh_red-hh_red));
+    m_rin_hgh.push_back(rin_hgh);
+    // Part 11 of 12 - calculating m_gin_hgh
+    double gin_hgh = hh_grn + (pct * (lh_grn-hh_grn));
+    m_gin_hgh.push_back(gin_hgh);
+    // Part 12 of 12 - calculating m_bin_hgh
+    double bin_hgh = hh_blu + (pct * (lh_blu-hh_blu));
+    m_bin_hgh.push_back(bin_hgh);
+#endif
   }
 }
 

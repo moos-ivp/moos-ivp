@@ -95,8 +95,17 @@ public:
 
   double getXinLOW(unsigned int) const;
   double getYinLOW(unsigned int) const;
+  double getZinLOW(unsigned int) const;
+  double getRinLOW(unsigned int) const;
+  double getGinLOW(unsigned int) const;
+  double getBinLOW(unsigned int) const;
+
   double getXinHGH(unsigned int) const;
   double getYinHGH(unsigned int) const;
+  double getZinHGH(unsigned int) const;
+  double getRinHGH(unsigned int) const;
+  double getGinHGH(unsigned int) const;
+  double getBinHGH(unsigned int) const;
   unsigned int getInPtsSize() const {return(m_xin_low.size());}
   
   // Modifiers -------------------------------------------

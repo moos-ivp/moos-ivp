@@ -424,6 +424,7 @@ bool Common_IPFViewer::drawQuadSet2D(const QuadSet& quadset)
 
   m_rad_extra = calc_rad_extra;
   for(unsigned int i=0; i<quad_cnt; i++)
+    //for(unsigned int i=10; i<11; i++)
     drawQuad(quadset.getQuad(i));
 
   return(true);
@@ -455,40 +456,75 @@ void Common_IPFViewer::drawQuad(Quad3D q)
   double y2=q.getHHY();
   double y3=q.getLHY();
 
-  //cout << "New:" << endl;
-  //cout << "  x0:" << x0 << ", y0:" << y0 << endl;
-  //cout << "  x1:" << x1 << ", y1:" << y1 << endl;
-  //cout << "  x2:" << x2 << ", y2:" << y2 << endl;
-  //cout << "  x3:" << x3 << ", y3:" << y3 << endl;
-
+  // Draw the insides
   glShadeModel(GL_SMOOTH);
   glBegin(GL_TRIANGLE_FAN);
+
+
+  // Draw the first two vertices
   glColor3f(q.getLLR(), q.getLLG(), q.getLLB());
   glVertex3f(x0, y0, q.getLLZ());
-  
-  glColor3f(q.getHLR(), q.getHLG(), q.getHLB());
-  glVertex3f(x1, y1, q.getHLZ());
-  
-  glColor3f(q.getHHR(), q.getHHG(), q.getHHB());
-  glVertex3f(x2, y2, q.getHHZ());
-  
   glColor3f(q.getLHR(), q.getLHG(), q.getLHB());
   glVertex3f(x3, y3, q.getLHZ());
+
+
+  // Draw potentially many or zero interpolated vertices common
+  // in polar rendering
+  unsigned int psize = q.getInPtsSize();
+  for(unsigned int i=0; i<psize; i++) {
+    int ix = psize-i-1;
+    glColor3f(q.getRinHGH(i),  q.getGinHGH(i), q.getBinHGH(i));
+    glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i));
+    glColor3f(q.getRinLOW(i),  q.getGinLOW(i), q.getBinLOW(i));
+    glVertex3f(q.getXinLOW(i), q.getYinLOW(i), q.getZinLOW(i));
+    glEnd();
+    glShadeModel(GL_SMOOTH);
+    glBegin(GL_TRIANGLE_FAN);
+    glColor3f(q.getRinLOW(i),  q.getGinLOW(i), q.getBinLOW(i));
+    glVertex3f(q.getXinLOW(i), q.getYinLOW(i), q.getZinLOW(i));
+    glColor3f(q.getRinHGH(i),  q.getGinHGH(i), q.getBinHGH(i));
+    glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i));
+  }
+
+  // Draw the last two vertices
+  glColor3f(q.getHHR(), q.getHHG(), q.getHHB());
+  glVertex3f(x2, y2, q.getHHZ());
+  glColor3f(q.getHLR(), q.getHLG(), q.getHLB());
+  glVertex3f(x1, y1, q.getHLZ());
+
   glEnd();
 
+
+  // Draw the line edges of the piece
   if(m_draw_pclines) {
     glLineWidth(0.5);
     glColor3f(1.0, 1.0, 1.0);
 
     glBegin(GL_LINE_STRIP);
     glVertex3f(x0, y0, q.getLLZ());
-    glVertex3f(x1, y1, q.getHLZ());
 
-    cout << "InPtsSize: " << q.getInPtsSize() << endl;
-
+    unsigned int psize = q.getInPtsSize();
+    for(unsigned int i=0; i<psize; i++) {
+      double x = q.getXinLOW(i);
+      double y = q.getYinLOW(i);
+      double z = q.getZinLOW(i);
+      glVertex3f(x, y, z);
+    }
     
+    glVertex3f(x1, y1, q.getHLZ());
     glVertex3f(x2, y2, q.getHHZ());
+
+    for(unsigned int i=0; i<psize; i++) {
+      unsigned int ix = psize-i-1;
+      double x = q.getXinHGH(ix);
+      double y = q.getYinHGH(ix);
+      double z = q.getZinHGH(ix);
+
+      glVertex3f(x, y, z);
+    }
+
     glVertex3f(x3, y3, q.getLHZ());
+    glVertex3f(x0, y0, q.getLLZ());
 
     glEnd();
     glLineWidth(1.0);
