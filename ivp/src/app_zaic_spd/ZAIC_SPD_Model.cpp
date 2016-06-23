@@ -9,6 +9,7 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
+#include <cstdlib>
 #include <iostream>
 #include "ZAIC_SPD_Model.h"
 #include "MBUtils.h"
