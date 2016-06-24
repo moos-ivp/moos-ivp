@@ -49,6 +49,11 @@ public:
   void   addQuadSet(const QuadSet&);
   void   normalize(double, double);
   void   interpolate(double xdelta);
+  void   applyColorIntensity(double);
+  void   applyScale(double);
+  void   applyBase(double);
+  void   applyTranslation(double x, double y);
+  void   applyPolar(double, int);
   
   // Geting QuadSet Information
   unsigned int size() const                  {return(m_quads.size());}

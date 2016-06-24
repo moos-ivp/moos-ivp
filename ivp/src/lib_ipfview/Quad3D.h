@@ -123,9 +123,9 @@ public:
 
   void interpolate(double xdelta);
   
- public:  
-  int    xpts;
-  int    ypts;
+  // public:  
+  // int    xpts;
+  //int    ypts;
 
  protected:
 

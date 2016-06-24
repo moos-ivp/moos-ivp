@@ -49,8 +49,8 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "avoid_collision");
-  this->setParam("build_info", "uniform_piece = discrete @ course:3,speed:3");
-  this->setParam("build_info", "uniform_grid  = discrete @ course:9,speed:6");
+  this->setParam("build_info", "uniform_piece = discrete @ course:20,speed:6");
+  this->setParam("build_info", "uniform_grid  = discrete @ course:20,speed:6");
   
   if(m_domain.hasDomain("depth"))
     m_domain = subDomain(m_domain, "course,speed,depth");

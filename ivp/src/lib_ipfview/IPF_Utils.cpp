@@ -42,6 +42,7 @@ QuadSet buildQuadSetFromIPF(IvPFunction *ipf)
   bool crs_spd_ipf = false;
   if(ivp_domain.hasDomain("course") && ivp_domain.hasDomain("speed"))
     crs_spd_ipf = true;
+  crs_spd_ipf = false;
   
   if(dim == 1)
     return(buildQuadSet1DFromIPF(ipf, "hello_source"));
@@ -160,8 +161,8 @@ vector<Quad3D> buildQuadsFromCache(const vector<vector<double> >& vals)
       new_quad.setHLZ(vals[i+1][j]);
       new_quad.setHHZ(vals[i+1][j+1]);
 
-      new_quad.xpts = crs_pts;
-      new_quad.ypts = spd_pts;
+      //new_quad.xpts = crs_pts;
+      //new_quad.ypts = spd_pts;
 
       rvector.push_back(new_quad);
     }
@@ -193,8 +194,8 @@ vector<Quad3D> buildQuadsFromCache(const vector<vector<double> >& vals)
       new_quad.setHLZ(vals[0][j]);
       new_quad.setHHZ(vals[0][j+1]);
       
-      new_quad.xpts = crs_pts;
-      new_quad.ypts = spd_pts;
+      //new_quad.xpts = crs_pts;
+      //new_quad.ypts = spd_pts;
       
       rvector.push_back(new_quad);
     }
@@ -222,10 +223,10 @@ QuadSet buildQuadSet2DFromIPF(IvPFunction *ipf)
 
   IvPDomain ivp_domain = pdmap->getDomain();
 
-  unsigned int xpts = ivp_domain.getVarPoints(0);  // rid?
-  unsigned int ypts = ivp_domain.getVarPoints(1);  // rid?
-  if((xpts < 2) || (ypts < 2))                     // rid?
-    return(null_quadset);                          // rid?
+  //unsigned int xpts = ivp_domain.getVarPoints(0);  // rid?
+  //unsigned int ypts = ivp_domain.getVarPoints(1);  // rid?
+  //if((xpts < 2) || (ypts < 2))                     // rid?
+  //  return(null_quadset);                          // rid?
 
   QuadSet quadset;
   quadset.setIvPDomain(ivp_domain);
@@ -255,8 +256,8 @@ QuadSet buildQuadSet2DFromIPF(IvPFunction *ipf)
     quad.setHHY(yh);
     quad.setLHY(yh);
 
-    quad.xpts  = xpts;  // rid?
-    quad.ypts  = ypts;  // rid?
+    //quad.xpts  = xpts;  // rid?
+    //quad.ypts  = ypts;  // rid?
 
     int degree = box->getDegree();
     

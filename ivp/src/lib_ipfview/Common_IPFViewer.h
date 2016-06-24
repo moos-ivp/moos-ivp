@@ -57,6 +57,7 @@ public:
   void   setColorMap(std::string s)    {m_color_map.setType(s);}
   
 protected:
+  double calcRadExtra();
   bool   drawQuadSet(const QuadSet&);
   void   drawQuadSet1D();
   bool   drawQuadSet2D(const QuadSet&);

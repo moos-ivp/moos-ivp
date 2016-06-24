@@ -282,6 +282,28 @@ void Common_IPFViewer::draw()
 
 
 //-------------------------------------------------------------
+// Procedure: calcRadExtra()
+
+double Common_IPFViewer::calcRadExtra()
+{
+  IvPDomain ivp_domain = m_quadset.getDomain();
+
+  if(!ivp_domain.hasDomain("speed"))
+    return(1);
+  
+  unsigned int spd_pts = ivp_domain.getVarPoints("speed");
+  double min_extent = w();
+  if(h() < min_extent)
+    min_extent = h();
+
+  if(spd_pts >= 1)
+    return(min_extent / (double)(spd_pts));
+
+  return(1);
+}
+
+
+//-------------------------------------------------------------
 // Procedure: drawQuadSet
 
 bool Common_IPFViewer::drawQuadSet(const QuadSet& quadset)
@@ -435,17 +457,15 @@ bool Common_IPFViewer::drawQuadSet2D(const QuadSet& quadset)
 
 void Common_IPFViewer::drawQuad(Quad3D q)
 {
-  q.applyColorIntensity(m_intensity);
-  q.applyScale(m_scale);
-  q.applyBase(m_base);
- 
+#if 0
   if(m_polar == 0)
     q.applyTranslation(-250, -250);
   if(m_polar == 1) 
     q.applyPolar(m_rad_extra, 1, q.xpts);
   else if(m_polar == 2) 
     q.applyPolar(m_rad_extra, 2, q.ypts);
-
+#endif
+  
   double x0=q.getLLX();
   double x1=q.getHLX();
   double x2=q.getHHX();
@@ -472,7 +492,6 @@ void Common_IPFViewer::drawQuad(Quad3D q)
   // in polar rendering
   unsigned int psize = q.getInPtsSize();
   for(unsigned int i=0; i<psize; i++) {
-    int ix = psize-i-1;
     glColor3f(q.getRinHGH(i),  q.getGinHGH(i), q.getBinHGH(i));
     glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i));
     glColor3f(q.getRinLOW(i),  q.getGinLOW(i), q.getBinLOW(i));

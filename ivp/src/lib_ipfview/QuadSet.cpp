@@ -205,12 +205,66 @@ void QuadSet::normalize(double target_base, double target_range)
 }
 
 //-------------------------------------------------------------
-// Procedure: interpolate
+// Procedure: interpolate()
 
 void QuadSet::interpolate(double xdelta)
 {
   for(unsigned int i=0; i<m_quads.size(); i++) 
     m_quads[i].interpolate(xdelta);
+}
+
+//-------------------------------------------------------------
+// Procedure: applyColorIntensity()
+
+void QuadSet::applyColorIntensity(double intensity)
+{
+  for(unsigned int i=0; i<m_quads.size(); i++) 
+    m_quads[i].applyColorIntensity(intensity);
+}
+
+//-------------------------------------------------------------
+// Procedure: applyScale()
+
+void QuadSet::applyScale(double scale)
+{
+  for(unsigned int i=0; i<m_quads.size(); i++) 
+    m_quads[i].applyScale(scale);
+}
+
+//-------------------------------------------------------------
+// Procedure: applyBase()
+
+void QuadSet::applyBase(double base)
+{
+  for(unsigned int i=0; i<m_quads.size(); i++) 
+    m_quads[i].applyBase(base);
+}
+
+//-------------------------------------------------------------
+// Procedure: applyTranslation()
+
+void QuadSet::applyTranslation(double xdist, double ydist)
+{
+  for(unsigned int i=0; i<m_quads.size(); i++) 
+    m_quads[i].applyTranslation(xdist, ydist);
+}
+
+//-------------------------------------------------------------
+// Procedure: applyPolar()
+
+void QuadSet::applyPolar(double rad_extra, int polar_dim)
+{
+  if((polar_dim != 1) && (polar_dim != 2))
+    return;
+  if(m_ivp_domain.size() != 2)
+    return;
+     
+  unsigned int pts = m_ivp_domain.getVarPoints(0);
+  if(polar_dim == 2)
+    pts = m_ivp_domain.getVarPoints(1);
+  
+  for(unsigned int i=0; i<m_quads.size(); i++) 
+    m_quads[i].applyPolar(rad_extra, polar_dim, pts);
 }
 
 

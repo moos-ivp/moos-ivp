@@ -425,15 +425,34 @@ bool IvPFuncViewerX::buildIndividualIPF(string source)
   IvPDomain ivp_domain = ipf_plot.getIvPDomain();
   
   IvPFunction *ipf = StringToIvPFunction(ipf_string);
-  if(ipf) {
-    ipf = expandHdgSpdIPF(ipf, ivp_domain);
+  if(!ipf)
+    return(false);
 
-    m_quadset = buildQuadSetFromIPF(ipf);
+  ipf = expandHdgSpdIPF(ipf, ivp_domain);
+  
+  m_quadset = buildQuadSetFromIPF(ipf);
+  
+  delete(ipf);
 
-    delete(ipf);
-    m_quadset.normalize(0, 100);
-    m_quadset.applyColorMap(m_color_map);	
-  }
+
+
+  m_rad_extra = calcRadExtra();
+
+  m_draw_pclines = true;
+  m_quadset.normalize(0, 100);
+  m_quadset.applyColorMap(m_color_map);	
+  m_quadset.applyColorIntensity(m_intensity);
+  m_quadset.applyScale(m_scale);
+  m_quadset.applyBase(m_base);
+  m_quadset.interpolate(1);
+  
+  if(m_polar == 0)
+    m_quadset.applyTranslation(-250, -250);
+  else if(m_polar == 1)
+    m_quadset.applyPolar(m_rad_extra, 1);
+  else if(m_polar == 2)
+    m_quadset.applyPolar(m_rad_extra, 2);
+  
   return(true);
 }
 

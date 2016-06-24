@@ -86,9 +86,12 @@ void Viewer::draw()
     if(m_quadset_refresh_pending) {
       m_quadset = buildQuadSetFromIPF(m_unif_ipf);
       m_quadset_refresh_pending = false;
+      m_quadset.normalize(0, 100);
+      m_quadset.applyColorMap(m_color_map);
+      m_quadset.applyColorIntensity(m_intensity);
+      m_quadset.applyScale(m_scale);
+      m_quadset.applyBase(m_base);
     }
-    m_quadset.normalize(0, 100);
-    m_quadset.applyColorMap(m_color_map);
     Common_IPFViewer::drawQuadSet(m_quadset);
   }
     
@@ -568,8 +571,8 @@ void Viewer::drawAOF()
 
   m_draw_pclines = false;
   
-  q.xpts = (xmax - xmin) + 1;
-  q.ypts = (ymax - ymin) + 1;
+  //q.xpts = (xmax - xmin) + 1;
+  //q.ypts = (ymax - ymin) + 1;
   unsigned int count = 0;
   while(yc < ymax) {
     xc = xmin; 
@@ -641,7 +644,6 @@ void Viewer::drawAOF()
     }
     yc += m_patch;
   }  
-  cout << "Count: " << count << endl;
 }
 
 //-------------------------------------------------------------

@@ -1,11 +1,11 @@
 
-Application   Tree                 Dense
------------   ----------           ----------
-app_ffview    moos-ivp             AOF
-app_alogview  moos-ivp             CPA
+Application   Tree                 Dense   radx
+-----------   ----------           ------  ----
+app_ffview    moos-ivp             AOF     n/a
+app_alogview  moos-ivp             CPA     done
 uFunctionVis  moos-ivp             No
 
-app_bngview   moos-ivp-colregs     CPA
+app_bngview   moos-ivp-colregs     CPA     done
 
 app_ippview   project-ivp-joc      No
 

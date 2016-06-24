@@ -47,8 +47,25 @@ void FV_Viewer::resetQuadSet()
 {
   if(!m_model)
     return;
-  
+
   m_quadset = m_model->getQuadSet();
+
+  m_rad_extra = calcRadExtra();
+
+  m_draw_pclines = true;
+  m_quadset.normalize(0, 100);
+  m_quadset.applyColorMap(m_color_map);	
+  m_quadset.applyColorIntensity(m_intensity);
+  m_quadset.applyScale(m_scale);
+  m_quadset.applyBase(m_base);
+  m_quadset.interpolate(1);
+  
+  if(m_polar == 0)
+    m_quadset.applyTranslation(-250, -250);
+  else if(m_polar == 1)
+    m_quadset.applyPolar(m_rad_extra, 1);
+  else if(m_polar == 2)
+    m_quadset.applyPolar(m_rad_extra, 2);
 }
 
 
