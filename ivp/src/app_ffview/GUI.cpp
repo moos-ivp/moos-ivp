@@ -31,8 +31,8 @@ using namespace std;
 //--------------------------------------------------------------
 // Constructor
 
-GUI::GUI(int g_w, int g_h, const char *g_l)
-  : Fl_Window(g_w, g_h, g_l) 
+GUI::GUI(int wid, int hgt, const char *label)
+  : Fl_Window(wid, hgt, label) 
 {
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
@@ -45,62 +45,76 @@ GUI::GUI(int g_w, int g_h, const char *g_l)
 
   viewer = new Viewer(0, 30, w(), h()-125);
 
-  p_samp_count = new MY_Output(60, h()-90, 50, 20, "Samples:"); 
+  p_samp_count = new Fl_Output(60, h()-90, 50, 20, "Samples:"); 
   p_samp_count->textsize(info_size); 
   p_samp_count->labelsize(info_size);
-
-  p_worst_err = new MY_Output(60, h()-60, 50, 20, "WST-ERR:"); 
+  p_samp_count->clear_visible_focus();
+  
+  p_worst_err = new Fl_Output(60, h()-60, 50, 20, "WST-ERR:"); 
   p_worst_err->textsize(info_size); 
   p_worst_err->labelsize(info_size);
+  p_worst_err->clear_visible_focus();
 
-  p_avg_err = new MY_Output(200, h()-90, 50, 20, "AVG-ERR:"); 
+  p_avg_err = new Fl_Output(200, h()-90, 50, 20, "AVG-ERR:"); 
   p_avg_err->textsize(info_size); 
   p_avg_err->labelsize(info_size);
+  p_avg_err->clear_visible_focus();
 
-  p_square_err = new MY_Output(200, h()-60, 50, 20, "SQR-ERR:"); 
+  p_square_err = new Fl_Output(200, h()-60, 50, 20, "SQR-ERR:"); 
   p_square_err->textsize(info_size); 
   p_square_err->labelsize(info_size);
+  p_square_err->clear_visible_focus();
 
-  p_samp_high = new MY_Output(360, h()-90, 50, 20, "Sample High:"); 
+  p_samp_high = new Fl_Output(360, h()-90, 50, 20, "Sample High:"); 
   p_samp_high->textsize(info_size); 
   p_samp_high->labelsize(info_size);
+  p_samp_high->clear_visible_focus();
 
-  p_samp_low = new MY_Output(360, h()-60, 50, 20, "Sample Low:"); 
+  p_samp_low = new Fl_Output(360, h()-60, 50, 20, "Sample Low:"); 
   p_samp_low->textsize(info_size); 
   p_samp_low->labelsize(info_size);
+  p_samp_low->clear_visible_focus();
 
-  p_piece_count = new MY_Output(60, h()-30, 50, 20, "Pieces:"); 
+  p_piece_count = new Fl_Output(60, h()-30, 50, 20, "Pieces:"); 
   p_piece_count->textsize(info_size); 
   p_piece_count->labelsize(info_size);
+  p_piece_count->clear_visible_focus();
 
-  p_unif_aug_size = new MY_Output(200, h()-30, 50, 20, "Unif-Aug:"); 
+  p_unif_aug_size = new Fl_Output(200, h()-30, 50, 20, "Unif-Aug:"); 
   p_unif_aug_size->textsize(info_size); 
   p_unif_aug_size->labelsize(info_size);
+  p_unif_aug_size->clear_visible_focus();
 
-  p_create_time = new MY_Output(360, h()-30, 50, 20, "Create-Time:"); 
+  p_create_time = new Fl_Output(360, h()-30, 50, 20, "Create-Time:"); 
   p_create_time->textsize(info_size); 
   p_create_time->labelsize(info_size);
+  p_create_time->clear_visible_focus();
 
-  p_uniform_str = new MY_Output(530, h()-90, 180, 20, "Uniform Piece:"); 
+  p_uniform_str = new Fl_Output(530, h()-90, 180, 20, "Uniform Piece:"); 
   p_uniform_str->textsize(info_size); 
   p_uniform_str->labelsize(info_size);
+  p_uniform_str->clear_visible_focus();
   
-  p_auto_peak = new MY_Output(780, h()-90, 180, 20, "AutoPeak:"); 
+  p_auto_peak = new Fl_Output(780, h()-90, 180, 20, "AutoPeak:"); 
   p_auto_peak->textsize(info_size); 
   p_auto_peak->labelsize(info_size);
+  p_auto_peak->clear_visible_focus();
   
-  p_refine_reg_str = new MY_Output(530, h()-60, 180, 20, "Refine Region:"); 
+  p_refine_reg_str = new Fl_Output(530, h()-60, 180, 20, "Refine Region:"); 
   p_refine_reg_str->textsize(info_size); 
   p_refine_reg_str->labelsize(info_size);
+  p_refine_reg_str->clear_visible_focus();
   
-  p_refine_pce_str = new MY_Output(780, h()-60, 180, 20, "Refine Piece:"); 
+  p_refine_pce_str = new Fl_Output(780, h()-60, 180, 20, "Refine Piece:"); 
   p_refine_pce_str->textsize(info_size); 
   p_refine_pce_str->labelsize(info_size);
+  p_refine_pce_str->clear_visible_focus();
   //i_refine_pce_str->callback((Fl_Callback*)GUI::cb_set_refine_pce);
 
-  p_reflector_errors  = new MY_Output(530, h()-30, 430, 20, "Reflector Errors:"); 
+  p_reflector_errors  = new Fl_Output(530, h()-30, 430, 20, "Reflector Errors:"); 
   p_reflector_errors->textsize(info_size); 
   p_reflector_errors->labelsize(info_size);
+  p_reflector_errors->clear_visible_focus();
 
   this->end();
   this->resizable(this);

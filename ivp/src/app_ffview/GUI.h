@@ -27,8 +27,7 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
-#include <FL/Fl_Input.H>
-#include "MY_Output.h"
+#include <FL/Fl_Output.H>
 
 #include "Viewer.h"
 
@@ -47,22 +46,24 @@ public:
   Fl_Menu_Bar *mbar;
   Viewer      *viewer;
 
-  MY_Output   *p_worst_err;
-  MY_Output   *p_avg_err;
-  MY_Output   *p_square_err;
-  MY_Output   *p_samp_count;
-  MY_Output   *p_samp_high;
-  MY_Output   *p_samp_low;
-  MY_Output   *p_piece_count;
-  MY_Output   *p_unif_aug_size;
-  MY_Output   *p_create_time;
+  Fl_Output   *p_samp_count;
+  Fl_Output   *p_worst_err;
+  Fl_Output   *p_piece_count;
 
-  MY_Output   *p_uniform_str;
-  MY_Output   *p_refine_reg_str;
-  MY_Output   *p_refine_pce_str;
-  MY_Output   *p_reflector_errors;
-  MY_Output   *p_auto_peak;
+  Fl_Output   *p_avg_err;
+  Fl_Output   *p_square_err;
+  Fl_Output   *p_unif_aug_size;
 
+  Fl_Output   *p_samp_high;
+  Fl_Output   *p_samp_low;
+  Fl_Output   *p_create_time;
+
+  Fl_Output   *p_uniform_str;
+  Fl_Output   *p_refine_reg_str;
+  Fl_Output   *p_reflector_errors;
+
+  Fl_Output   *p_auto_peak;
+  Fl_Output   *p_refine_pce_str;
 
 private:
   inline void cb_Zoom_i(int);
