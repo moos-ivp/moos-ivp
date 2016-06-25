@@ -35,15 +35,16 @@ class GUI : Fl_Window {
 public:
   GUI(int w, int h, const char *l=0);
 
-  static Fl_Menu_Item menu_[];
+  //static Fl_Menu_Item menu_[];
 
+  void augmentMenu();
   void updateXY();
   int  handle(int);
   void setAOF(AOF* aof)           
     {viewer->setAOF(aof); viewer->modColorMap("default");}
 
 public:
-  Fl_Menu_Bar *mbar;
+  Fl_Menu_Bar *m_menubar;
   Viewer      *viewer;
 
   Fl_Output   *p_samp_count;

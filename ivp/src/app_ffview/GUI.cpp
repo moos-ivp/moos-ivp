@@ -38,8 +38,8 @@ GUI::GUI(int wid, int hgt, const char *label)
   this->when(FL_WHEN_CHANGED);
   this->begin();
 
-  mbar = new Fl_Menu_Bar(0, 0, w(), 25);
-  mbar->menu(menu_);
+  m_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
+  augmentMenu();
     
   int info_size=10;
 
@@ -121,121 +121,223 @@ GUI::GUI(int wid, int hgt, const char *label)
   this->show();
 }
 
-Fl_Menu_Item GUI::menu_[] = {
- {"File", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Script", 0, (Fl_Callback*)GUI::cb_Script, 0, 0},
- {"Print Params", 'p', (Fl_Callback*)GUI::cb_PrintParams, 0, 0},
- {"Quit ", FL_CTRL+'q', (Fl_Callback*)GUI::cb_Quit, 0, 0},
- {0},
+//-------------------------------------------------------------------------
+// Procedure: augmentMenu()
 
- {"Rotate/Zoom", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Rotate X- ", FL_Down,  (Fl_Callback*)GUI::cb_RotateX, (void*)-1, 0},
- {"Rotate X+ ", FL_Up,  (Fl_Callback*)GUI::cb_RotateX, (void*)1, 0},
- {"Rotate Z- ", FL_Left,  (Fl_Callback*)GUI::cb_RotateZ, (void*)-1, 0},
- {"Rotate Z+ ", FL_Right,  (Fl_Callback*)GUI::cb_RotateZ, (void*)1, 0},
- {"Reset1 ",       '1',  (Fl_Callback*)GUI::cb_Reset, (void*)1, 0},
- {"Reset2 ",       '2',  (Fl_Callback*)GUI::cb_Reset, (void*)2, 0},
- {"Reset3 ",       '3',  (Fl_Callback*)GUI::cb_Reset, (void*)3, 0},
- {"Reset4 ",       '4',  (Fl_Callback*)GUI::cb_Reset, (void*)4, 0},
- {"Toggle Frame ", 'f',  (Fl_Callback*)GUI::cb_ToggleFrame, (void*)-1, FL_MENU_DIVIDER},
- {"Frame-Height-- ", FL_ALT+'f',  (Fl_Callback*)GUI::cb_FrameHeight, (void*)-1, 0},
- {"Frame-Height++ ", FL_CTRL+'f',  (Fl_Callback*)GUI::cb_FrameHeight, (void*)1, FL_MENU_DIVIDER},
- {"Zoom In",          'i', (Fl_Callback*)GUI::cb_Zoom, (void*)-1, 0},
- {"Zoom Out",         'o', (Fl_Callback*)GUI::cb_Zoom, (void*)1, 0},
- {"Zoom Reset",       'Z', (Fl_Callback*)GUI::cb_Zoom, (void*)0, 0},
- {0},
+void GUI::augmentMenu()
+{
+  //===================================================================
+  // File    Pull-Down Menu
+  //===================================================================
+  m_menubar->add("File/Script", 0,
+		 (Fl_Callback*)GUI::cb_Script, 0, 0);
+  m_menubar->add("File/Print Params", 'p',
+		 (Fl_Callback*)GUI::cb_PrintParams, 0, 0);
+  m_menubar->add("File/Quit ", FL_CTRL+'q',
+		 (Fl_Callback*)GUI::cb_Quit, 0, 0);
 
- {"AOF", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Scale +",     'S', (Fl_Callback*)GUI::cb_ModScale, (void*)+2, 0},
- {"Scale -",     's', (Fl_Callback*)GUI::cb_ModScale, (void*)-2, 0},
- {"Base +",      'B', (Fl_Callback*)GUI::cb_ModBaseAOF, (void*)+1, 0},
- {"Base -",      'b', (Fl_Callback*)GUI::cb_ModBaseAOF, (void*)-1, 0},
- {"AOF Patch +", 'P', (Fl_Callback*)GUI::cb_ModPatchAOF, (void*)+1, 0},
- {"AOF Patch -", 'p', (Fl_Callback*)GUI::cb_ModPatchAOF, (void*)-1, 0},
- {"Toggle AOF",  'a', (Fl_Callback*)GUI::cb_ToggleAOF, (void*)0, 0},
- {0},
+  //===================================================================
+  // RotateZoom    Pull-Down Menu
+  //===================================================================
+  m_menubar->add("RotateZoom/Rotate X- ", FL_Down,
+		 (Fl_Callback*)GUI::cb_RotateX, (void*)-1, 0);
+  m_menubar->add("RotateZoom/Rotate X+ ", FL_Up,
+		 (Fl_Callback*)GUI::cb_RotateX, (void*)1, 0);
+  m_menubar->add("RotateZoom/Rotate Z- ", FL_Left,
+		 (Fl_Callback*)GUI::cb_RotateZ, (void*)-1, 0);
+  m_menubar->add("RotateZoom/Rotate Z+ ", FL_Right,
+		 (Fl_Callback*)GUI::cb_RotateZ, (void*)1, 0);
+  m_menubar->add("RotateZoom/Reset1 ",       '1',
+		 (Fl_Callback*)GUI::cb_Reset, (void*)1, 0);
+  m_menubar->add("RotateZoom/Reset2 ",       '2',
+		 (Fl_Callback*)GUI::cb_Reset, (void*)2, 0);
+  m_menubar->add("RotateZoom/Reset3 ",       '3',
+		 (Fl_Callback*)GUI::cb_Reset, (void*)3, 0);
+  m_menubar->add("RotateZoom/Reset4 ",       '4',
+		 (Fl_Callback*)GUI::cb_Reset, (void*)4, 0);
+  m_menubar->add("RotateZoom/Toggle Frame ", 'f',
+		 (Fl_Callback*)GUI::cb_ToggleFrame, (void*)-1, FL_MENU_DIVIDER);
+  m_menubar->add("RotateZoom/Frame-Height-- ", FL_ALT+'f',
+		 (Fl_Callback*)GUI::cb_FrameHeight, (void*)-1, 0);
+  m_menubar->add("RotateZoom/Frame-Height++ ", FL_CTRL+'f',
+		 (Fl_Callback*)GUI::cb_FrameHeight, (void*)1, FL_MENU_DIVIDER);
+  m_menubar->add("RotateZoom/Zoom In",          'i',
+		 (Fl_Callback*)GUI::cb_Zoom, (void*)-1, 0);
+  m_menubar->add("RotateZoom/Zoom Out",         'o',
+		 (Fl_Callback*)GUI::cb_Zoom, (void*)1, 0);
+  m_menubar->add("RotateZoom/Zoom Reset",       'Z',
+		 (Fl_Callback*)GUI::cb_Zoom, (void*)0, 0);
+  
+  //===================================================================
+  // AOF    Pull-Down Menu
+  //===================================================================
+  m_menubar->add("AOF/Scale +",     'S',
+		 (Fl_Callback*)GUI::cb_ModScale, (void*)+2, 0);
+  m_menubar->add("AOF/Scale -",     's',
+		 (Fl_Callback*)GUI::cb_ModScale, (void*)-2, 0);
+  m_menubar->add("AOF/Base +",      'B',
+		 (Fl_Callback*)GUI::cb_ModBaseAOF, (void*)+1, 0);
+  m_menubar->add("AOF/Base -",      'b',
+		 (Fl_Callback*)GUI::cb_ModBaseAOF, (void*)-1, 0);
+  m_menubar->add("AOF/AOF Patch +", 'P',
+		 (Fl_Callback*)GUI::cb_ModPatchAOF, (void*)+1, 0);
+  m_menubar->add("AOF/AOF Patch -", 'p',
+		 (Fl_Callback*)GUI::cb_ModPatchAOF, (void*)-1, 0);
+  m_menubar->add("AOF/Toggle AOF",  'a',
+		 (Fl_Callback*)GUI::cb_ToggleAOF, (void*)0, 0);
 
- {"IPF", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Toggle IPF ", 'z', (Fl_Callback*)GUI::cb_ToggleIPF,  (void*)0, FL_MENU_RADIO|FL_MENU_DIVIDER},
- {"Base +", 'e', (Fl_Callback*)GUI::cb_ModBaseIPF, (void*)+10, 0},
- {"Base -", 'r', (Fl_Callback*)GUI::cb_ModBaseIPF, (void*)-10, FL_MENU_DIVIDER},
- {"Toggle Strict", '`', (Fl_Callback*)GUI::cb_ToggleStrict, (void*)0, FL_MENU_RADIO|FL_MENU_DIVIDER},
- {"Create   ", 'c', (Fl_Callback*)GUI::cb_MakeUniform, (void*)0, FL_MENU_RADIO},
- {"Uniform 1",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)1, FL_MENU_RADIO},
- {"Uniform 2",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)2, FL_MENU_RADIO},
- {"Uniform 3",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)3, FL_MENU_RADIO},
- {"Uniform 4",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)4, FL_MENU_RADIO},
- {"Uniform 5",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)5, FL_MENU_RADIO},
- {"Uniform 7",   0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)7, FL_MENU_RADIO},
- {"Uniform 10",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)10, FL_MENU_RADIO},
- {"Uniform 15",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)15, FL_MENU_RADIO},
- {"Uniform 20",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)20, FL_MENU_RADIO},
- {"Uniform 25",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)25, FL_MENU_RADIO},
- {"Uniform 30",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)30, FL_MENU_RADIO},
- {"Uniform 40",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)40, FL_MENU_RADIO},
- {"Uniform 50",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)50, FL_MENU_RADIO},
- {"Uniform 75",  0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)75, FL_MENU_RADIO},
- {"Uniform 100", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)100, FL_MENU_RADIO},
- {"Uniform 250", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)250, FL_MENU_RADIO},
- {"Uniform 500", 0, (Fl_Callback*)GUI::cb_MakeUniform, (void*)500, FL_MENU_RADIO|FL_MENU_DIVIDER},
- {"Pieces 35", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)35, FL_MENU_RADIO},
- {"Pieces 63", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)63, FL_MENU_RADIO},
- {"Pieces 64", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)64, FL_MENU_RADIO},
- {"Pieces 500", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)500, FL_MENU_RADIO},
- {"Pieces 512", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)512, FL_MENU_RADIO},
- {"Pieces 1000", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)1000, FL_MENU_RADIO},
- {"Pieces 1024", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)1024, FL_MENU_RADIO},
- {"Pieces 1025", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)1025, FL_MENU_RADIO},
- {"Pieces 4000", 0, (Fl_Callback*)GUI::cb_MakePieces, (void*)4000, FL_MENU_RADIO},
- {0},
+  //===================================================================
+  // IPF    Pull-Down Menu
+  //===================================================================
+  m_menubar->add("IPF/Toggle IPF ", 'z',
+		 (Fl_Callback*)GUI::cb_ToggleIPF,  (void*)0,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER);
+  m_menubar->add("IPF/Base +", 'e',
+		 (Fl_Callback*)GUI::cb_ModBaseIPF, (void*)+10, 0);
+  m_menubar->add("IPF/Base -", 'r',
+		 (Fl_Callback*)GUI::cb_ModBaseIPF, (void*)-10, FL_MENU_DIVIDER);
+  m_menubar->add("IPF/Toggle Strict", '`',
+		 (Fl_Callback*)GUI::cb_ToggleStrict, (void*)0,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER);
+  m_menubar->add("IPF/Create   ", 'c',
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)0, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 1",   0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)1, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 2",   0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)2, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 3",   0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)3, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 4",   0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)4, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 5",   0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)5, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 7",   0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)7, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 10",  0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)10, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 15",  0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)15, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 20",  0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)20, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 25",  0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)25, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 30",  0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)30, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 40",  0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)40, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 50",  0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)50, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 75",  0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)75, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 100", 0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)100, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 250", 0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)250, FL_MENU_RADIO);
+  m_menubar->add("IPF/Uniform 500", 0,
+		 (Fl_Callback*)GUI::cb_MakeUniform, (void*)500,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER);
+  m_menubar->add("IPF/Pieces 35", 0,
+		 (Fl_Callback*)GUI::cb_MakePieces, (void*)35, FL_MENU_RADIO);
+  m_menubar->add("IPF/Pieces 63", 0,
+		 (Fl_Callback*)GUI::cb_MakePieces, (void*)63, FL_MENU_RADIO);
+  m_menubar->add("IPF/Pieces 64", 0,
+		 (Fl_Callback*)GUI::cb_MakePieces, (void*)64, FL_MENU_RADIO);
+  m_menubar->add("IPF/Pieces 500", 0,
+		 (Fl_Callback*)GUI::cb_MakePieces, (void*)500, FL_MENU_RADIO);
+  m_menubar->add("IPF/Pieces 512", 0,
+		 (Fl_Callback*)GUI::cb_MakePieces, (void*)512, FL_MENU_RADIO);
+  m_menubar->add("IPF/Pieces 1000", 0,
+		 (Fl_Callback*)GUI::cb_MakePieces, (void*)1000, FL_MENU_RADIO);
+  m_menubar->add("IPF/Pieces 1024", 0,
+		 (Fl_Callback*)GUI::cb_MakePieces, (void*)1024, FL_MENU_RADIO);
+  m_menubar->add("IPF/Pieces 1025", 0,
+		 (Fl_Callback*)GUI::cb_MakePieces, (void*)1025, FL_MENU_RADIO);
+  m_menubar->add("IPF/Pieces 4000", 0,
+		 (Fl_Callback*)GUI::cb_MakePieces, (void*)4000, FL_MENU_RADIO);
 
- {"Color-Map", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Default",   0, (Fl_Callback*)GUI::cb_ColorMap,  (void*)1, FL_MENU_RADIO|FL_MENU_VALUE},
- {"Copper",    0, (Fl_Callback*)GUI::cb_ColorMap,  (void*)2, FL_MENU_RADIO},
- {"Bone",      0, (Fl_Callback*)GUI::cb_ColorMap,  (void*)3, FL_MENU_RADIO|FL_MENU_DIVIDER},
- {"Back-White", 0, (Fl_Callback*)GUI::cb_ColorBack, (void*)0, 0},
- {"Back-Blue",  0, (Fl_Callback*)GUI::cb_ColorBack, (void*)1, 0},
- {"Mac-Beige", 0, (Fl_Callback*)GUI::cb_ColorBack, (void*)2, 0},
-  {0},
+  //===================================================================
+  // Color-Map    Pull-Down Menu
+  //===================================================================  
+  m_menubar->add("Color-Map/Default",   0,
+		 (Fl_Callback*)GUI::cb_ColorMap,  (void*)1,
+		 FL_MENU_RADIO|FL_MENU_VALUE);
+  m_menubar->add("Color-Map/Copper",    0,
+		 (Fl_Callback*)GUI::cb_ColorMap,  (void*)2, FL_MENU_RADIO);
+  m_menubar->add("Color-Map/Bone",      0,
+		 (Fl_Callback*)GUI::cb_ColorMap,  (void*)3,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER);
+  m_menubar->add("Color-Map/Back-White", 0,
+		 (Fl_Callback*)GUI::cb_ColorBack, (void*)0, 0);
+  m_menubar->add("Color-Map/Back-Blue",  0,
+		 (Fl_Callback*)GUI::cb_ColorBack, (void*)1, 0);
+  m_menubar->add("Color-Map/Mac-Beige", 0,
+		 (Fl_Callback*)GUI::cb_ColorBack, (void*)2, 0);
+  
+  //===================================================================
+  // Directed-Refine    Pull-Down Menu
+  //===================================================================
+  m_menubar->add("Directed-Refine/Toggle Directed Refine",  'd',
+		 (Fl_Callback*)GUI::cb_ToggleDirectedRefine, (void*)0,
+		 FL_MENU_DIVIDER);
+  m_menubar->add("Directed-Refine/Smaller-Uniform-Refine", '[',
+		 (Fl_Callback*)GUI::cb_ModUniformAug, (void*)-1, 0);
+  m_menubar->add("Directed-Refine/Larger-Uniform-Refine",  ']',
+		 (Fl_Callback*)GUI::cb_ModUniformAug, (void*)1, 0);
 
- {"Directed-Refine", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Toggle Directed Refine",  'd', (Fl_Callback*)GUI::cb_ToggleDirectedRefine, (void*)0, FL_MENU_DIVIDER},
- {"Smaller-Uniform-Refine", '[', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)-1, 0},
- {"Larger-Uniform-Refine",  ']', (Fl_Callback*)GUI::cb_ModUniformAug, (void*)1, 0},
- {0},
+  //===================================================================
+  // Smart-Refine    Pull-Down Menu
+  //===================================================================
+  m_menubar->add("Smart-Refine/Toggle-Smart-Refine", 'm',
+		 (Fl_Callback*)GUI::cb_ToggleSmartAug, (void*)0, 0);
+  m_menubar->add("Smart-Refine/smart_amount=100",  0,
+		 (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)100, 0);
+  m_menubar->add("Smart-Refine/smart_amount=200",  0,
+		 (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)200, 0);
+  m_menubar->add("Smart-Refine/smart_amount=500",  0,
+		 (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)500, 0);
+  m_menubar->add("Smart-Refine/smart_amount=750",  0,
+		 (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)750, 0);
+  m_menubar->add("Smart-Refine/smart_amount=1000", 0,
+		 (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)1000, 0);
+  m_menubar->add("Smart-Refine/smart_amount=2000", 0,
+		 (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)2000, 0);
+  m_menubar->add("Smart-Refine/smart_amount=4000", 0,
+		 (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)4000, FL_MENU_DIVIDER);
+  m_menubar->add("Smart-Refine/smart_percent= 10",  0,
+		 (Fl_Callback*)GUI::cb_SmartAugPct, (void*)10, 0);
+  m_menubar->add("Smart-Refine/smart_percent= 15",  0,
+		 (Fl_Callback*)GUI::cb_SmartAugPct, (void*)15, 0);
+  m_menubar->add("Smart-Refine/smart_percent= 25",  0,
+		 (Fl_Callback*)GUI::cb_SmartAugPct, (void*)25, 0);
+  m_menubar->add("Smart-Refine/smart_percent= 35",  0,
+		 (Fl_Callback*)GUI::cb_SmartAugPct, (void*)35, 0);
+  m_menubar->add("Smart-Refine/smart_percent= 50",  0,
+		 (Fl_Callback*)GUI::cb_SmartAugPct, (void*)50, 0);
+  m_menubar->add("Smart-Refine/smart_percent= 75",  0,
+		 (Fl_Callback*)GUI::cb_SmartAugPct, (void*)75, 0);
+  m_menubar->add("Smart-Refine/smart_percent= 100", 0,
+		 (Fl_Callback*)GUI::cb_SmartAugPct, (void*)100, 0);
 
- {"Smart-Refine", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Toggle-Smart-Refine", 'm', (Fl_Callback*)GUI::cb_ToggleSmartAug, (void*)0, 0},
- {"smart_amount=100",  0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)100, 0},
- {"smart_amount=200",  0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)200, 0},
- {"smart_amount=500",  0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)500, 0},
- {"smart_amount=750",  0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)750, 0},
- {"smart_amount=1000", 0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)1000, 0},
- {"smart_amount=2000", 0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)2000, 0},
- {"smart_amount=4000", 0, (Fl_Callback*)GUI::cb_SmartAugAmt, (void*)4000, FL_MENU_DIVIDER},
- {"smart_percent= 10",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)10, 0},
- {"smart_percent= 15",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)15, 0},
- {"smart_percent= 25",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)25, 0},
- {"smart_percent= 35",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)35, 0},
- {"smart_percent= 50",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)50, 0},
- {"smart_percent= 75",  0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)75, 0},
- {"smart_percent= 100", 0, (Fl_Callback*)GUI::cb_SmartAugPct, (void*)100, 0},
- {0},
-
- {"AutoPeak", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Toggle-AutoPeak", 't', (Fl_Callback*)GUI::cb_ToggleAutoPeak, (void*)0, 0},
- {0},
-
- {"Analysis",     0,  0, 0, 64, 0, 0, 14, 0},
- {"Sample-All",   0, (Fl_Callback*)GUI::cb_Sample, (void*)0,     0},
- {"Sample+50K", ' ', (Fl_Callback*)GUI::cb_Sample, (void*)50000, 0},
- {"Rebuildx10", 0, (Fl_Callback*)GUI::cb_Rebuild, (void*)10, 0},
- {"Rebuildx50", 0, (Fl_Callback*)GUI::cb_Rebuild, (void*)50, 0},
- {"Rebuildx100", 0, (Fl_Callback*)GUI::cb_Rebuild, (void*)100, 0},
- {0},
-
- {0}
-};
+  //===================================================================
+  // AutoPeak Pull-Down Menu
+  //===================================================================
+  m_menubar->add("AutoPeak/Toggle-AutoPeak", 't',
+		 (Fl_Callback*)GUI::cb_ToggleAutoPeak, (void*)0, 0);
+  
+  //===================================================================
+  // Analysis Pull-Down Menu
+  //===================================================================
+  m_menubar->add("Analysis/Sample-All",   0,
+		 (Fl_Callback*)GUI::cb_Sample, (void*)0,     0);
+  m_menubar->add("Analysis/Sample+50K", ' ',
+		 (Fl_Callback*)GUI::cb_Sample, (void*)50000, 0);
+  m_menubar->add("Analysis/Rebuildx10", 0,
+		 (Fl_Callback*)GUI::cb_Rebuild, (void*)10, 0);
+  m_menubar->add("Analysis/Rebuildx50", 0,
+		 (Fl_Callback*)GUI::cb_Rebuild, (void*)50, 0);
+  m_menubar->add("Analysis/Rebuildx100", 0,
+		 (Fl_Callback*)GUI::cb_Rebuild, (void*)100, 0);
+}
 
 //----------------------------------------------------------
 // Procedure: handle
