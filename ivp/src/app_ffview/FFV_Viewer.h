@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: Viewer.h                                             */
+/*    FILE: FFV_Viewer.h                                         */
 /*    DATE: Apr 15th 2005                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,8 +21,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef VIEWER_HEADER
-#define VIEWER_HEADER
+#ifndef FFV_VIEWER_HEADER
+#define FFV_VIEWER_HEADER
 
 #include "IvPDomain.h"
 #include "AOF_Cache.h"
@@ -31,10 +31,10 @@
 #include "Common_IPFViewer.h"
 #include "OF_Rater.h"
 
-class Viewer : public Common_IPFViewer
+class FFV_Viewer : public Common_IPFViewer
 {
  public:
-  Viewer(int x,int y,int w,int h,const char *l=0);
+  FFV_Viewer(int x,int y,int w,int h,const char *l=0);
   
   // Pure virtuals that need to be defined
   void   draw();

@@ -13,14 +13,17 @@ endif (${WIN32})
 if(CMAKE_SYSTEM_NAME STREQUAL Linux)
   SET(SYSTEM_LIBS ${SYSTEM_LIBS} GL)
 endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
-FILE(GLOB SRC *.cpp)
 
-IF (${APPLE})
-     # If you want to create an Apple BUNDLE, do it here
-     ADD_EXECUTABLE(ffview ${SRC})
-ELSE (${APPLE})
-     ADD_EXECUTABLE(ffview ${SRC})
-ENDIF (${APPLE})
+SET(SRC
+  AOFFactory.cpp
+  AOF_Cache.cpp
+  FFV_GUI.cpp
+  FFV_Viewer.cpp
+  PopulatorAOF.cpp
+  main.cpp
+  )
+
+ADD_EXECUTABLE(ffview ${SRC})
 	     
 TARGET_LINK_LIBRARIES(ffview
      ipfview

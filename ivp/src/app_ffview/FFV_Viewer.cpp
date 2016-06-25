@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: Viewer.cpp                                           */
+/*    FILE: FFV_Viewer.cpp                                       */
 /*    DATE: Apr 15th 2005                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -24,7 +24,7 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
-#include "Viewer.h"
+#include "FFV_Viewer.h"
 #include "IPF_Utils.h"
 #include "MBUtils.h"
 #include "OF_Reflector.h"
@@ -37,7 +37,7 @@ using namespace std;
 //--------------------------------------------------------------
 // Constructor
 
-Viewer::Viewer(int x, int y, int wid, int hgt, const char *label)
+FFV_Viewer::FFV_Viewer(int x, int y, int wid, int hgt, const char *label)
   : Common_IPFViewer(x, y, wid, hgt, label)
 {
   m_base_aof   = -132;      // For shifting the AOF rendering
@@ -74,7 +74,7 @@ Viewer::Viewer(int x, int y, int wid, int hgt, const char *label)
 //-------------------------------------------------------------
 // Procedure: draw()
 
-void Viewer::draw()
+void FFV_Viewer::draw()
 {
   Common_IPFViewer::draw();
 
@@ -119,7 +119,7 @@ void Viewer::draw()
 //-------------------------------------------------------------
 // Procedure: handle
 
-int Viewer::handle(int event)
+int FFV_Viewer::handle(int event)
 {
   return Common_IPFViewer::handle(event);
 }
@@ -127,7 +127,7 @@ int Viewer::handle(int event)
 //-------------------------------------------------------------
 // Procedure: setAOF
 
-void Viewer::setAOF(AOF *aof)
+void FFV_Viewer::setAOF(AOF *aof)
 {
   if(!aof)
     return;
@@ -161,7 +161,7 @@ void Viewer::setAOF(AOF *aof)
 //-------------------------------------------------------------
 // Procedure: setParam
 
-bool Viewer::setParam(string param, string value)
+bool FFV_Viewer::setParam(string param, string value)
 {
   if(Common_IPFViewer::setParam(param, value))
     return(true);
@@ -218,7 +218,7 @@ bool Viewer::setParam(string param, string value)
 //-------------------------------------------------------------
 // Procedure: setParam
 
-bool Viewer::setParam(string param, double value)
+bool FFV_Viewer::setParam(string param, double value)
 {
   if(Common_IPFViewer::setParam(param, value))
     return(true);
@@ -265,7 +265,7 @@ bool Viewer::setParam(string param, double value)
 //-------------------------------------------------------------
 // Procedure: printParams
 
-void Viewer::printParams()
+void FFV_Viewer::printParams()
 {
   cout << endl << endl;
   Common_IPFViewer::printParams();
@@ -278,7 +278,7 @@ void Viewer::printParams()
 //-------------------------------------------------------------
 // Procedure: toggleSmartAug
 
-void Viewer::toggleSmartAug()
+void FFV_Viewer::toggleSmartAug()
 {
   m_smart_refine = !m_smart_refine;
 
@@ -289,7 +289,7 @@ void Viewer::toggleSmartAug()
 //-------------------------------------------------------------
 // Procedure: makeUniformIPFxN
 
-void Viewer::makeUniformIPFxN(int iterations)
+void FFV_Viewer::makeUniformIPFxN(int iterations)
 {
   MBTimer create_timer;
   create_timer.start();
@@ -304,7 +304,7 @@ void Viewer::makeUniformIPFxN(int iterations)
 //-------------------------------------------------------------
 // Procedure: makeUniformIPF
 
-void Viewer::makeUniformIPF()
+void FFV_Viewer::makeUniformIPF()
 {
   AOF *aof = m_aof_cache.getAOF();
   if(!aof)
@@ -387,7 +387,7 @@ void Viewer::makeUniformIPF()
 //-------------------------------------------------------------
 // Procedure: modColorMap
 
-void Viewer::modColorMap(const string &str)
+void FFV_Viewer::modColorMap(const string &str)
 {
   m_cmap.setType(str);
   //m_cmap.applyMidWhite(0.3, 0);
@@ -398,7 +398,7 @@ void Viewer::modColorMap(const string &str)
 //-------------------------------------------------------------
 // Procedure: modPatchAOF
 
-void Viewer::modPatchAOF(int amt)
+void FFV_Viewer::modPatchAOF(int amt)
 {
   m_patch += amt; 
   if(m_patch < 1)  
@@ -409,7 +409,7 @@ void Viewer::modPatchAOF(int amt)
 //-------------------------------------------------------------
 // Procedure: modUniformAug
 
-void Viewer::modUniformAug(int amt)
+void FFV_Viewer::modUniformAug(int amt)
 {
   m_focus_unif_len += amt; 
   if(m_focus_unif_len < 1)  
@@ -424,7 +424,7 @@ void Viewer::modUniformAug(int amt)
 //-------------------------------------------------------------
 // Procedure: runScript
 
-void Viewer::runScript()
+void FFV_Viewer::runScript()
 {
   int save_file_ix = 0;
   int delta = 4;
@@ -440,7 +440,7 @@ void Viewer::runScript()
 //-------------------------------------------------------------
 // Procedure: capture
 
-void Viewer::capture(int save_file_ix)
+void FFV_Viewer::capture(int save_file_ix)
 {
   //string collect = "1024x768";
   //string collect = "720x480";
@@ -465,7 +465,7 @@ void Viewer::capture(int save_file_ix)
 //-------------------------------------------------------------
 // Procedure: getParam()
 
-double Viewer::getParam(const string& param, bool&ok)
+double FFV_Viewer::getParam(const string& param, bool&ok)
 {
   if(!m_aof_cache.getAOF() || !m_unif_ipf) {
     ok = false;
@@ -516,7 +516,7 @@ double Viewer::getParam(const string& param, bool&ok)
 //-------------------------------------------------------------
 // Procedure: getParam()
 
-string Viewer::getParam(const string& param)
+string FFV_Viewer::getParam(const string& param)
 {
   if(param == "uniform_piece")
     return(m_uniform_piece_str);
@@ -541,7 +541,7 @@ string Viewer::getParam(const string& param)
 //-------------------------------------------------------------
 // Procedure: getPeakDelta
 
-string Viewer::getPeakDelta()
+string FFV_Viewer::getPeakDelta()
 {
   return("");
 }
@@ -549,7 +549,7 @@ string Viewer::getPeakDelta()
 //-------------------------------------------------------------
 // Procedure: drawAOF
 
-void Viewer::drawAOF()
+void FFV_Viewer::drawAOF()
 {
   AOF *aof = m_aof_cache.getAOF();
   if(!aof)
@@ -649,7 +649,7 @@ void Viewer::drawAOF()
 //-------------------------------------------------------------
 // Procedure: drawFocusBox
 
-void Viewer::drawFocusBox()
+void FFV_Viewer::drawFocusBox()
 {
   double w = 250;
 

@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: GUI.h                                                */
+/*    FILE: FFV_GUI.h                                            */
 /*    DATE: Apr 15th 2005                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,31 +21,29 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef SIMPLE_A_GUI_HEADER
-#define SIMPLE_A_GUI_HEADER
+#ifndef FFV_GUI_HEADER
+#define FFV_GUI_HEADER
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Output.H>
 
-#include "Viewer.h"
+#include "FFV_Viewer.h"
 
-class GUI : Fl_Window {
+class FFV_GUI : Fl_Window {
 public:
-  GUI(int w, int h, const char *l=0);
-
-  //static Fl_Menu_Item menu_[];
+  FFV_GUI(int w, int h, const char *l=0);
 
   void augmentMenu();
   void updateXY();
   int  handle(int);
   void setAOF(AOF* aof)           
     {viewer->setAOF(aof); viewer->modColorMap("default");}
-
-public:
+  
+ public:
   Fl_Menu_Bar *m_menubar;
-  Viewer      *viewer;
+  FFV_Viewer  *viewer;
 
   Fl_Output   *p_samp_count;
   Fl_Output   *p_worst_err;

@@ -23,7 +23,7 @@
 
 #include <iostream>
 #include <time.h>
-#include "GUI.h"
+#include "FFV_GUI.h"
 #include "AOF_Rings.h"
 #include "MBUtils.h"
 #include "ReleaseInfo.h"
@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   }
 
   int i;
-  GUI *gui  = new GUI(1000, 700, "aof-ipf-function-viewer");
+  FFV_GUI *gui  = new FFV_GUI(1000, 700, "aof-ipf-function-viewer");
 
   //-------------------------------------------- Handle AOF Files
   string aof_file;
