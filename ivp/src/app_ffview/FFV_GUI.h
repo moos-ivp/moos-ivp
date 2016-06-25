@@ -28,41 +28,43 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Output.H>
-
 #include "FFV_Viewer.h"
 
 class FFV_GUI : Fl_Window {
 public:
-  FFV_GUI(int w, int h, const char *l=0);
+  FFV_GUI(int w, int h, const char *label=0);
 
   void augmentMenu();
   void updateXY();
   int  handle(int);
   void setAOF(AOF* aof)           
-    {viewer->setAOF(aof); viewer->modColorMap("default");}
+    {m_ffv_viewer->setAOF(aof); m_ffv_viewer->modColorMap("default");}
+
+ protected:
+  void initWidgets();
   
  public:
   Fl_Menu_Bar *m_menubar;
-  FFV_Viewer  *viewer;
+  FFV_Viewer  *m_ffv_viewer;
 
-  Fl_Output   *p_samp_count;
-  Fl_Output   *p_worst_err;
-  Fl_Output   *p_piece_count;
+  Fl_Output   *m_fld_samp_count;
+  Fl_Output   *m_fld_worst_err;
+  Fl_Output   *m_fld_piece_count;
 
-  Fl_Output   *p_avg_err;
-  Fl_Output   *p_square_err;
-  Fl_Output   *p_unif_aug_size;
+  Fl_Output   *m_fld_avg_err;
+  Fl_Output   *m_fld_square_err;
+  Fl_Output   *m_fld_unif_aug_size;
 
-  Fl_Output   *p_samp_high;
-  Fl_Output   *p_samp_low;
-  Fl_Output   *p_create_time;
+  Fl_Output   *m_fld_samp_high;
+  Fl_Output   *m_fld_samp_low;
+  Fl_Output   *m_fld_create_time;
 
-  Fl_Output   *p_uniform_str;
-  Fl_Output   *p_refine_reg_str;
-  Fl_Output   *p_reflector_errors;
+  Fl_Output   *m_fld_uniform_str;
+  Fl_Output   *m_fld_refine_reg_str;
+  Fl_Output   *m_fld_reflector_errors;
 
-  Fl_Output   *p_auto_peak;
-  Fl_Output   *p_refine_pce_str;
+  Fl_Output   *m_fld_auto_peak;
+  Fl_Output   *m_fld_refine_pce_str;
 
 private:
   inline void cb_Zoom_i(int);

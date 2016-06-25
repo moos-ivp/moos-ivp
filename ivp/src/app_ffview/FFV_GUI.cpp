@@ -28,7 +28,7 @@
 
 using namespace std;
 
-//--------------------------------------------------------------
+//---------------------------------------------------------------
 // Constructor
 
 FFV_GUI::FFV_GUI(int wid, int hgt, const char *label)
@@ -43,77 +43,81 @@ FFV_GUI::FFV_GUI(int wid, int hgt, const char *label)
     
   int info_size=10;
 
-  viewer = new FFV_Viewer(0, 30, w(), h()-125);
+  m_ffv_viewer = new FFV_Viewer(0, 30, w(), h()-125);
 
-  p_samp_count = new Fl_Output(60, h()-90, 50, 20, "Samples:"); 
-  p_samp_count->textsize(info_size); 
-  p_samp_count->labelsize(info_size);
-  p_samp_count->clear_visible_focus();
+  // Column One ----------------------------------------------- ONE
+  m_fld_samp_count = new Fl_Output(60, h()-90, 50, 20, "Samples:"); 
+  m_fld_samp_count->textsize(info_size); 
+  m_fld_samp_count->labelsize(info_size);
+  m_fld_samp_count->clear_visible_focus();
   
-  p_worst_err = new Fl_Output(60, h()-60, 50, 20, "WST-ERR:"); 
-  p_worst_err->textsize(info_size); 
-  p_worst_err->labelsize(info_size);
-  p_worst_err->clear_visible_focus();
+  m_fld_worst_err = new Fl_Output(60, h()-60, 50, 20, "WST-ERR:"); 
+  m_fld_worst_err->textsize(info_size); 
+  m_fld_worst_err->labelsize(info_size);
+  m_fld_worst_err->clear_visible_focus();
 
-  p_avg_err = new Fl_Output(200, h()-90, 50, 20, "AVG-ERR:"); 
-  p_avg_err->textsize(info_size); 
-  p_avg_err->labelsize(info_size);
-  p_avg_err->clear_visible_focus();
+  m_fld_piece_count = new Fl_Output(60, h()-30, 50, 20, "Pieces:"); 
+  m_fld_piece_count->textsize(info_size); 
+  m_fld_piece_count->labelsize(info_size);
+  m_fld_piece_count->clear_visible_focus();
 
-  p_square_err = new Fl_Output(200, h()-60, 50, 20, "SQR-ERR:"); 
-  p_square_err->textsize(info_size); 
-  p_square_err->labelsize(info_size);
-  p_square_err->clear_visible_focus();
+  // Column Two ----------------------------------------------- TWO
+  m_fld_avg_err = new Fl_Output(200, h()-90, 50, 20, "AVG-ERR:"); 
+  m_fld_avg_err->textsize(info_size); 
+  m_fld_avg_err->labelsize(info_size);
+  m_fld_avg_err->clear_visible_focus();
 
-  p_samp_high = new Fl_Output(360, h()-90, 50, 20, "Sample High:"); 
-  p_samp_high->textsize(info_size); 
-  p_samp_high->labelsize(info_size);
-  p_samp_high->clear_visible_focus();
+  m_fld_square_err = new Fl_Output(200, h()-60, 50, 20, "SQR-ERR:"); 
+  m_fld_square_err->textsize(info_size); 
+  m_fld_square_err->labelsize(info_size);
+  m_fld_square_err->clear_visible_focus();
 
-  p_samp_low = new Fl_Output(360, h()-60, 50, 20, "Sample Low:"); 
-  p_samp_low->textsize(info_size); 
-  p_samp_low->labelsize(info_size);
-  p_samp_low->clear_visible_focus();
+  m_fld_unif_aug_size = new Fl_Output(200, h()-30, 50, 20, "Unif-Aug:"); 
+  m_fld_unif_aug_size->textsize(info_size); 
+  m_fld_unif_aug_size->labelsize(info_size);
+  m_fld_unif_aug_size->clear_visible_focus();
 
-  p_piece_count = new Fl_Output(60, h()-30, 50, 20, "Pieces:"); 
-  p_piece_count->textsize(info_size); 
-  p_piece_count->labelsize(info_size);
-  p_piece_count->clear_visible_focus();
+  // Column Three -------------------------------------------- THREE
+  m_fld_samp_high = new Fl_Output(360, h()-90, 50, 20, "Sample High:"); 
+  m_fld_samp_high->textsize(info_size); 
+  m_fld_samp_high->labelsize(info_size);
+  m_fld_samp_high->clear_visible_focus();
 
-  p_unif_aug_size = new Fl_Output(200, h()-30, 50, 20, "Unif-Aug:"); 
-  p_unif_aug_size->textsize(info_size); 
-  p_unif_aug_size->labelsize(info_size);
-  p_unif_aug_size->clear_visible_focus();
+  m_fld_samp_low = new Fl_Output(360, h()-60, 50, 20, "Sample Low:"); 
+  m_fld_samp_low->textsize(info_size); 
+  m_fld_samp_low->labelsize(info_size);
+  m_fld_samp_low->clear_visible_focus();
 
-  p_create_time = new Fl_Output(360, h()-30, 50, 20, "Create-Time:"); 
-  p_create_time->textsize(info_size); 
-  p_create_time->labelsize(info_size);
-  p_create_time->clear_visible_focus();
+  m_fld_create_time = new Fl_Output(360, h()-30, 50, 20, "Create-Time:"); 
+  m_fld_create_time->textsize(info_size); 
+  m_fld_create_time->labelsize(info_size);
+  m_fld_create_time->clear_visible_focus();
 
-  p_uniform_str = new Fl_Output(530, h()-90, 180, 20, "Uniform Piece:"); 
-  p_uniform_str->textsize(info_size); 
-  p_uniform_str->labelsize(info_size);
-  p_uniform_str->clear_visible_focus();
+  // Column Three -------------------------------------------- THREE
+  m_fld_uniform_str = new Fl_Output(530, h()-90, 180, 20, "Uniform Piece:"); 
+  m_fld_uniform_str->textsize(info_size); 
+  m_fld_uniform_str->labelsize(info_size);
+  m_fld_uniform_str->clear_visible_focus();
   
-  p_auto_peak = new Fl_Output(780, h()-90, 180, 20, "AutoPeak:"); 
-  p_auto_peak->textsize(info_size); 
-  p_auto_peak->labelsize(info_size);
-  p_auto_peak->clear_visible_focus();
+  m_fld_auto_peak = new Fl_Output(780, h()-90, 180, 20, "AutoPeak:"); 
+  m_fld_auto_peak->textsize(info_size); 
+  m_fld_auto_peak->labelsize(info_size);
+  m_fld_auto_peak->clear_visible_focus();
   
-  p_refine_reg_str = new Fl_Output(530, h()-60, 180, 20, "Refine Region:"); 
-  p_refine_reg_str->textsize(info_size); 
-  p_refine_reg_str->labelsize(info_size);
-  p_refine_reg_str->clear_visible_focus();
+  m_fld_refine_reg_str = new Fl_Output(530, h()-60, 180, 20, "Refine Region:"); 
+  m_fld_refine_reg_str->textsize(info_size); 
+  m_fld_refine_reg_str->labelsize(info_size);
+  m_fld_refine_reg_str->clear_visible_focus();
   
-  p_refine_pce_str = new Fl_Output(780, h()-60, 180, 20, "Refine Piece:"); 
-  p_refine_pce_str->textsize(info_size); 
-  p_refine_pce_str->labelsize(info_size);
-  p_refine_pce_str->clear_visible_focus();
+  m_fld_refine_pce_str = new Fl_Output(780, h()-60, 180, 20, "Refine Piece:"); 
+  m_fld_refine_pce_str->textsize(info_size); 
+  m_fld_refine_pce_str->labelsize(info_size);
+  m_fld_refine_pce_str->clear_visible_focus();
 
-  p_reflector_errors  = new Fl_Output(530, h()-30, 430, 20, "Reflector Errors:"); 
-  p_reflector_errors->textsize(info_size); 
-  p_reflector_errors->labelsize(info_size);
-  p_reflector_errors->clear_visible_focus();
+  m_fld_reflector_errors  = new Fl_Output(530, h()-30, 430, 20, "Reflector Errors:"); 
+  m_fld_reflector_errors->textsize(info_size); 
+  m_fld_reflector_errors->labelsize(info_size);
+  m_fld_reflector_errors->clear_visible_focus();
 
   this->end();
   this->resizable(this);
@@ -339,6 +343,61 @@ void FFV_GUI::augmentMenu()
 }
 
 //----------------------------------------------------------
+// Procedure: initWidgets()
+
+void FFV_GUI::initWidgets()
+{
+  // Column One ----------------------------------------------- ONE
+  m_fld_samp_count = new Fl_Output(0, 0, 1, 1, "Samples:"); 
+  m_fld_samp_count->clear_visible_focus();
+  
+  m_fld_worst_err = new Fl_Output(0, 0, 1, 1, "WST-ERR:"); 
+  m_fld_worst_err->clear_visible_focus();
+
+  m_fld_piece_count = new Fl_Output(0, 0, 1, 1, "Pieces:"); 
+  m_fld_piece_count->clear_visible_focus();
+
+  // Column Two ----------------------------------------------- TWO
+  m_fld_avg_err = new Fl_Output(0, 0, 1, 1, "AVG-ERR:"); 
+  m_fld_avg_err->clear_visible_focus();
+
+  m_fld_square_err = new Fl_Output(0, 0, 1, 1, "SQR-ERR:"); 
+  m_fld_square_err->clear_visible_focus();
+
+  m_fld_unif_aug_size = new Fl_Output(0, 0, 1, 1, "Unif-Aug:"); 
+  m_fld_unif_aug_size->clear_visible_focus();
+
+  // Column Three -------------------------------------------- THREE
+  m_fld_samp_high = new Fl_Output(0, 0, 1, 1, "Sample High:"); 
+  m_fld_samp_high->clear_visible_focus();
+
+  m_fld_samp_low = new Fl_Output(0, 0, 1, 1, "Sample Low:"); 
+  m_fld_samp_low->clear_visible_focus();
+
+  m_fld_create_time = new Fl_Output(0, 0, 1, 1, "Create-Time:"); 
+  m_fld_create_time->clear_visible_focus();
+
+  // Column Four -------------------------------------------- FOUR
+  m_fld_uniform_str = new Fl_Output(0, 0, 1, 1, "Uniform Piece:"); 
+  m_fld_uniform_str->clear_visible_focus();
+  
+  m_fld_auto_peak = new Fl_Output(0, 0, 1, 1, "AutoPeak:"); 
+  m_fld_auto_peak->clear_visible_focus();
+  
+  m_fld_refine_reg_str = new Fl_Output(0, 0, 1, 1, "Refine Region:"); 
+  m_fld_refine_reg_str->clear_visible_focus();
+  
+  // Column Five -------------------------------------------- FIVE
+  m_fld_refine_pce_str = new Fl_Output(0, 0, 1, 1, "Refine Piece:"); 
+  m_fld_refine_pce_str->clear_visible_focus();
+
+  m_fld_reflector_errors  = new Fl_Output(0, 0, 1, 1, "Reflector Errors:"); 
+  m_fld_reflector_errors->clear_visible_focus();
+}
+
+
+
+//----------------------------------------------------------
 // Procedure: handle
 //     Notes: We want the various "Output" widgets to ignore keyboard
 //            events (as they should, right?!), so we wrote a MY_Output
@@ -376,9 +435,9 @@ int FFV_GUI::handle(int event)
 
 //----------------------------------------- Zoom In
 inline void FFV_GUI::cb_Zoom_i(int val) {
-  if(val < 0) viewer->setParam("mod_zoom", 1.25);
-  if(val > 0) viewer->setParam("mod_zoom", 0.80);
-  //if(val ==0) viewer->zoomReset();
+  if(val < 0) m_ffv_viewer->setParam("mod_zoom", 1.25);
+  if(val > 0) m_ffv_viewer->setParam("mod_zoom", 0.80);
+  //if(val ==0) m_ffv_viewer->zoomReset();
 }
 void FFV_GUI::cb_Zoom(Fl_Widget* o, int v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_Zoom_i(v);
@@ -386,10 +445,10 @@ void FFV_GUI::cb_Zoom(Fl_Widget* o, int v) {
 
 //----------------------------------------- Reset
 inline void FFV_GUI::cb_Reset_i(int i) {
-  if(i==1) viewer->setParam("reset_view", "1");
-  if(i==2) viewer->setParam("reset_view", "2");
-  if(i==3) viewer->setParam("reset_view", "3");
-  if(i==4) viewer->setParam("reset_view", "4");
+  if(i==1) m_ffv_viewer->setParam("reset_view", "1");
+  if(i==2) m_ffv_viewer->setParam("reset_view", "2");
+  if(i==3) m_ffv_viewer->setParam("reset_view", "3");
+  if(i==4) m_ffv_viewer->setParam("reset_view", "4");
 }
 void FFV_GUI::cb_Reset(Fl_Widget* o, int i) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_Reset_i(i);
@@ -397,7 +456,7 @@ void FFV_GUI::cb_Reset(Fl_Widget* o, int i) {
 
 //----------------------------------------- Script
 inline void FFV_GUI::cb_Script_i() {
-  viewer->runScript();
+  m_ffv_viewer->runScript();
 }
 void FFV_GUI::cb_Script(Fl_Widget* o) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_Script_i();
@@ -405,7 +464,7 @@ void FFV_GUI::cb_Script(Fl_Widget* o) {
 
 //----------------------------------------- Rotate  X
 inline void FFV_GUI::cb_RotateX_i(int amt) {
-  viewer->setParam("mod_x_rotation", (double)(amt));
+  m_ffv_viewer->setParam("mod_x_rotation", (double)(amt));
 }
 void FFV_GUI::cb_RotateX(Fl_Widget* o, int v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_RotateX_i(v);
@@ -413,7 +472,7 @@ void FFV_GUI::cb_RotateX(Fl_Widget* o, int v) {
 
 //----------------------------------------- Rotate  Z
 inline void FFV_GUI::cb_RotateZ_i(int amt) {
-  viewer->setParam("mod_z_rotation", (double)(amt));
+  m_ffv_viewer->setParam("mod_z_rotation", (double)(amt));
 }
 void FFV_GUI::cb_RotateZ(Fl_Widget* o, int v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_RotateZ_i(v);
@@ -421,7 +480,7 @@ void FFV_GUI::cb_RotateZ(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod Scale
 inline void FFV_GUI::cb_ModScale_i(int amt) {
-  viewer->setParam("mod_scale", (((double)amt)/100.0));
+  m_ffv_viewer->setParam("mod_scale", (((double)amt)/100.0));
 }
 void FFV_GUI::cb_ModScale(Fl_Widget* o, int v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_ModScale_i(v);
@@ -429,7 +488,7 @@ void FFV_GUI::cb_ModScale(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod BaseAOF
 inline void FFV_GUI::cb_ModBaseAOF_i(int amt) {
-  viewer->setParam("mod_base_aof", amt);
+  m_ffv_viewer->setParam("mod_base_aof", amt);
 }
 
 void FFV_GUI::cb_ModBaseAOF(Fl_Widget* o, int v) {
@@ -438,7 +497,7 @@ void FFV_GUI::cb_ModBaseAOF(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod BaseIPF
 inline void FFV_GUI::cb_ModBaseIPF_i(int amt) {
-  viewer->setParam("mod_base_ipf", amt);
+  m_ffv_viewer->setParam("mod_base_ipf", amt);
 }
 
 void FFV_GUI::cb_ModBaseIPF(Fl_Widget* o, int v) {
@@ -447,7 +506,7 @@ void FFV_GUI::cb_ModBaseIPF(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod PatchAOF
 inline void FFV_GUI::cb_ModPatchAOF_i(int amt) {
-  viewer->modPatchAOF(amt);
+  m_ffv_viewer->modPatchAOF(amt);
 }
 void FFV_GUI::cb_ModPatchAOF(Fl_Widget* o, int v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_ModPatchAOF_i(v);
@@ -455,8 +514,8 @@ void FFV_GUI::cb_ModPatchAOF(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod UniformAug
 inline void FFV_GUI::cb_ModUniformAug_i(int amt) {
-  viewer->setParam("mod_focus_len", amt);
-  viewer->makeUniformIPF();
+  m_ffv_viewer->setParam("mod_focus_len", amt);
+  m_ffv_viewer->makeUniformIPF();
   updateXY();
 }
 void FFV_GUI::cb_ModUniformAug(Fl_Widget* o, int v) {
@@ -465,7 +524,7 @@ void FFV_GUI::cb_ModUniformAug(Fl_Widget* o, int v) {
 
 //----------------------------------------- Sample
 inline void FFV_GUI::cb_Sample_i(int amt) {
-  viewer->takeSamples(amt);
+  m_ffv_viewer->takeSamples(amt);
   updateXY();
 }
 void FFV_GUI::cb_Sample(Fl_Widget* o, int v) {
@@ -474,7 +533,7 @@ void FFV_GUI::cb_Sample(Fl_Widget* o, int v) {
 
 //----------------------------------------- Rebuild
 inline void FFV_GUI::cb_Rebuild_i(int amt) {
-  viewer->makeUniformIPFxN(amt);
+  m_ffv_viewer->makeUniformIPFxN(amt);
   updateXY();
 }
 void FFV_GUI::cb_Rebuild(Fl_Widget* o, int v) {
@@ -483,7 +542,7 @@ void FFV_GUI::cb_Rebuild(Fl_Widget* o, int v) {
 
 //----------------------------------------- Toggle AOF
 inline void FFV_GUI::cb_ToggleAOF_i() {
-  viewer->toggleAOF();
+  m_ffv_viewer->toggleAOF();
 }
 void FFV_GUI::cb_ToggleAOF(Fl_Widget* o) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_ToggleAOF_i();
@@ -491,7 +550,7 @@ void FFV_GUI::cb_ToggleAOF(Fl_Widget* o) {
 
 //----------------------------------------- Toggle IPF
 inline void FFV_GUI::cb_ToggleIPF_i() {
-  viewer->toggleIPF();
+  m_ffv_viewer->toggleIPF();
 }
 void FFV_GUI::cb_ToggleIPF(Fl_Widget* o) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_ToggleIPF_i();
@@ -499,8 +558,8 @@ void FFV_GUI::cb_ToggleIPF(Fl_Widget* o) {
 
 //----------------------------------------- ToggleDirectedRefine
 inline void FFV_GUI::cb_ToggleDirectedRefine_i() {
-  viewer->setParam("directed_refine", "toggle");
-  viewer->makeUniformIPF();
+  m_ffv_viewer->setParam("directed_refine", "toggle");
+  m_ffv_viewer->makeUniformIPF();
   updateXY();
 }
 void FFV_GUI::cb_ToggleDirectedRefine(Fl_Widget* o) {
@@ -509,7 +568,7 @@ void FFV_GUI::cb_ToggleDirectedRefine(Fl_Widget* o) {
 
 //----------------------------------------- Toggle SmartAug
 inline void FFV_GUI::cb_ToggleSmartAug_i() {
-  viewer->toggleSmartAug();
+  m_ffv_viewer->toggleSmartAug();
   updateXY();
 }
 void FFV_GUI::cb_ToggleSmartAug(Fl_Widget* o) {
@@ -518,8 +577,8 @@ void FFV_GUI::cb_ToggleSmartAug(Fl_Widget* o) {
 
 //----------------------------------------- Toggle AutoPeak
 inline void FFV_GUI::cb_ToggleAutoPeak_i() {
-  viewer->setParam("auto_peak", "toggle");
-  viewer->makeUniformIPF();
+  m_ffv_viewer->setParam("auto_peak", "toggle");
+  m_ffv_viewer->makeUniformIPF();
   updateXY();
 }
 void FFV_GUI::cb_ToggleAutoPeak(Fl_Widget* o) {
@@ -528,9 +587,9 @@ void FFV_GUI::cb_ToggleAutoPeak(Fl_Widget* o) {
 
 //----------------------------------------- SmartAugAmt
 inline void FFV_GUI::cb_SmartAugAmt_i(int amt) {
-  viewer->setParam("smart_amount",  intToString(amt));
-  viewer->setParam("smart_percent", "0");
-  viewer->makeUniformIPF();
+  m_ffv_viewer->setParam("smart_amount",  intToString(amt));
+  m_ffv_viewer->setParam("smart_percent", "0");
+  m_ffv_viewer->makeUniformIPF();
   updateXY();
 }
 void FFV_GUI::cb_SmartAugAmt(Fl_Widget* o, int i) {
@@ -539,9 +598,9 @@ void FFV_GUI::cb_SmartAugAmt(Fl_Widget* o, int i) {
 
 //----------------------------------------- SmartAugPct
 inline void FFV_GUI::cb_SmartAugPct_i(int amt) {
-  viewer->setParam("smart_amount",  "0");
-  viewer->setParam("smart_percent", intToString(amt));
-  viewer->makeUniformIPF();
+  m_ffv_viewer->setParam("smart_amount",  "0");
+  m_ffv_viewer->setParam("smart_percent", intToString(amt));
+  m_ffv_viewer->makeUniformIPF();
   updateXY();
 }
 void FFV_GUI::cb_SmartAugPct(Fl_Widget* o, int i) {
@@ -550,7 +609,7 @@ void FFV_GUI::cb_SmartAugPct(Fl_Widget* o, int i) {
 
 //----------------------------------------- Toggle Frame
 inline void FFV_GUI::cb_ToggleFrame_i() {
-  viewer->setParam("draw_frame", "toggle");
+  m_ffv_viewer->setParam("draw_frame", "toggle");
 }
 void FFV_GUI::cb_ToggleFrame(Fl_Widget* o) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();
@@ -558,7 +617,7 @@ void FFV_GUI::cb_ToggleFrame(Fl_Widget* o) {
 
 //----------------------------------------- Frame Height
 inline void FFV_GUI::cb_FrameHeight_i(int amt) {
-  viewer->setParam("mod_frame_height", (double)amt);
+  m_ffv_viewer->setParam("mod_frame_height", (double)amt);
 }
 void FFV_GUI::cb_FrameHeight(Fl_Widget* o, int v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_FrameHeight_i(v);
@@ -566,8 +625,8 @@ void FFV_GUI::cb_FrameHeight(Fl_Widget* o, int v) {
 
 //----------------------------------------- Toggle Strict
 inline void FFV_GUI::cb_ToggleStrict_i() {
-  viewer->setParam("strict_range", "toggle");
-  viewer->makeUniformIPF();
+  m_ffv_viewer->setParam("strict_range", "toggle");
+  m_ffv_viewer->makeUniformIPF();
   updateXY();
 }
 void FFV_GUI::cb_ToggleStrict(Fl_Widget* o) {
@@ -577,8 +636,8 @@ void FFV_GUI::cb_ToggleStrict(Fl_Widget* o) {
 //----------------------------------------- MakeUniform
 inline void FFV_GUI::cb_MakeUniform_i(int amt) {
   if(amt > 0)
-    viewer->setParam("uniform_piece", amt);
-  viewer->makeUniformIPF();
+    m_ffv_viewer->setParam("uniform_piece", amt);
+  m_ffv_viewer->makeUniformIPF();
   updateXY();
 }
 void FFV_GUI::cb_MakeUniform(Fl_Widget* o, int v) {
@@ -588,8 +647,8 @@ void FFV_GUI::cb_MakeUniform(Fl_Widget* o, int v) {
 //----------------------------------------- MakePieces
 inline void FFV_GUI::cb_MakePieces_i(int amt) {
   if(amt > 0)
-    viewer->setParam("uniform_amount", amt);
-  viewer->makeUniformIPF();
+    m_ffv_viewer->setParam("uniform_amount", amt);
+  m_ffv_viewer->makeUniformIPF();
   updateXY();
 }
 void FFV_GUI::cb_MakePieces(Fl_Widget* o, int v) {
@@ -603,7 +662,7 @@ inline void FFV_GUI::cb_ColorMap_i(int index) {
     str = "copper";
   else if(index == 3)
     str = "bone";
-  viewer->modColorMap(str);
+  m_ffv_viewer->modColorMap(str);
 }
 void FFV_GUI::cb_ColorMap(Fl_Widget* o, int v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_ColorMap_i(v);
@@ -611,7 +670,7 @@ void FFV_GUI::cb_ColorMap(Fl_Widget* o, int v) {
 
 //----------------------------------------- PrintParams
 inline void FFV_GUI::cb_PrintParams_i() {
-  viewer->printParams();
+  m_ffv_viewer->printParams();
 }
 void FFV_GUI::cb_PrintParams(Fl_Widget* o) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_PrintParams_i();
@@ -620,14 +679,14 @@ void FFV_GUI::cb_PrintParams(Fl_Widget* o) {
 //----------------------------------------- ColorBack
 inline void FFV_GUI::cb_ColorBack_i(int index) {
   if(index == 0)
-    viewer->setParam("clear_color", "white");
+    m_ffv_viewer->setParam("clear_color", "white");
   else if(index == 1)  // PurplishBlue
-    viewer->setParam("clear_color", "0.285,0.242,0.469");
+    m_ffv_viewer->setParam("clear_color", "0.285,0.242,0.469");
   else if(index == 2)  // PurplishBlue
-    viewer->setParam("clear_color", "macbeige");
+    m_ffv_viewer->setParam("clear_color", "macbeige");
   else
     return;
-  viewer->redraw();
+  m_ffv_viewer->redraw();
 }
 void FFV_GUI::cb_ColorBack(Fl_Widget* o, int v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_ColorBack_i(v);
@@ -644,65 +703,71 @@ void FFV_GUI::updateXY()
   string str;
   bool ok;
 
-  str = intToString((int)(viewer->getParam("sample_count", ok)));
+  // Column 1--------------------------------------------
+  str = intToString((int)(m_ffv_viewer->getParam("sample_count", ok)));
   if(!ok)
     str = "n/a";
-  p_samp_count->value(str.c_str());
+  m_fld_samp_count->value(str.c_str());
 
-  str = doubleToString(viewer->getParam("worst_err", ok),4);
+  str = doubleToString(m_ffv_viewer->getParam("worst_err", ok),4);
   if(!ok)
     str = "n/a";
-  p_worst_err->value(str.c_str());
+  m_fld_worst_err->value(str.c_str());
 
-  str = doubleToString(viewer->getParam("avg_err", ok),4);
+  str = intToString((int)(m_ffv_viewer->getParam("piece_count", ok)));
   if(!ok)
     str = "n/a";
-  p_avg_err->value(str.c_str());
+  m_fld_piece_count->value(str.c_str());
 
-  str = doubleToString(viewer->getParam("squared_err", ok),4);
+  // Column 2 --------------------------------------------
+  str = doubleToString(m_ffv_viewer->getParam("avg_err", ok),4);
   if(!ok)
     str = "n/a";
-  p_square_err->value(str.c_str());
+  m_fld_avg_err->value(str.c_str());
 
-  str = doubleToString(viewer->getParam("sample_high", ok),4);
+  str = doubleToString(m_ffv_viewer->getParam("squared_err", ok),4);
   if(!ok)
     str = "n/a";
-  p_samp_high->value(str.c_str());
+  m_fld_square_err->value(str.c_str());
 
-  str = doubleToString(viewer->getParam("sample_low", ok),4);
+  str = intToString((int)(m_ffv_viewer->getParam("unif_aug_size", ok)));
   if(!ok)
     str = "n/a";
-  p_samp_low->value(str.c_str());
+  m_fld_unif_aug_size->value(str.c_str());
 
-  str = intToString((int)(viewer->getParam("piece_count", ok)));
+  // Column 3 --------------------------------------------
+  str = doubleToString(m_ffv_viewer->getParam("sample_high", ok),4);
   if(!ok)
     str = "n/a";
-  p_piece_count->value(str.c_str());
+  m_fld_samp_high->value(str.c_str());
 
-  str = intToString((int)(viewer->getParam("unif_aug_size", ok)));
+  str = doubleToString(m_ffv_viewer->getParam("sample_low", ok),4);
   if(!ok)
     str = "n/a";
-  p_unif_aug_size->value(str.c_str());
+  m_fld_samp_low->value(str.c_str());
 
-  str = doubleToString(viewer->getParam("create_time", ok), 3);
+  str = doubleToString(m_ffv_viewer->getParam("create_time", ok), 3);
   if(!ok)
     str = "n/a";
-  p_create_time->value(str.c_str());
+  m_fld_create_time->value(str.c_str());
+
   
-  str = viewer->getParam("uniform_piece");
-  p_uniform_str->value(str.c_str());
+  // Column 4 --------------------------------------------
+  str = m_ffv_viewer->getParam("uniform_piece");
+  m_fld_uniform_str->value(str.c_str());
 
-  str = viewer->getParam("auto_peak");
-  p_auto_peak->value(str.c_str());
+  str = m_ffv_viewer->getParam("refine_region");
+  m_fld_refine_reg_str->value(str.c_str());
+  
+  str = m_ffv_viewer->getParam("reflector_errors");
+  m_fld_reflector_errors->value(str.c_str());
+  
+  // Column 5 --------------------------------------------
+  str = m_ffv_viewer->getParam("auto_peak");
+  m_fld_auto_peak->value(str.c_str());
 
-  str = viewer->getParam("refine_region");
-  p_refine_reg_str->value(str.c_str());
-  
-  str = viewer->getParam("refine_piece");
-  p_refine_pce_str->value(str.c_str());
-  
-  str = viewer->getParam("reflector_errors");
-  p_reflector_errors->value(str.c_str());
+  str = m_ffv_viewer->getParam("refine_piece");
+  m_fld_refine_pce_str->value(str.c_str());
   
 }
 
@@ -711,7 +776,7 @@ void FFV_GUI::updateXY()
 //----------------------------------------- set_refine_piece
 void FFV_GUI::cb_set_refine_pce_i() {
   if(viewer)
-    viewer->setParam("refine_piece", i_refine_pce_str->value());
+    m_ffv_viewer->setParam("refine_piece", i_refine_pce_str->value());
 }
 
 void FFV_GUI::cb_set_refine_pce(Fl_Input* o, void* v) {

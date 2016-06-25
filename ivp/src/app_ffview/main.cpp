@@ -117,9 +117,9 @@ int main(int argc, char *argv[])
 	  cout << "left:  " << left  << endl;
 	  cout << "right: " << right << endl;
 	  if(isNumber(right)) 
-	    gui->viewer->setParam(left, atof(right.c_str()));
+	    gui->m_ffv_viewer->setParam(left, atof(right.c_str()));
 	  else
-	    gui->viewer->setParam(left, right);
+	    gui->m_ffv_viewer->setParam(left, right);
 	}
       }
     }
@@ -132,35 +132,35 @@ int main(int argc, char *argv[])
     string argi = argv[i];
     if(strContains(argv[i], "frame_color=")) {
       string frame_color = tokStringParse(argi, "frame_color", '#', '=');
-      gui->viewer->setParam("frame_color", frame_color);
+      gui->m_ffv_viewer->setParam("frame_color", frame_color);
     }
     else if(strContains(argv[i], "clear_color=")) {
       string clear_color = tokStringParse(argi, "clear_color", '#', '=');
-      gui->viewer->setParam("clear_color", clear_color);
+      gui->m_ffv_viewer->setParam("clear_color", clear_color);
     }
     else if(strContains(argv[i], "back_color=")) {
       string clear_color = tokStringParse(argi, "back_color", '#', '=');
-      gui->viewer->setParam("clear_color", clear_color);
+      gui->m_ffv_viewer->setParam("clear_color", clear_color);
     }
     else if(strContains(argv[i], "draw_frame=")) {
       string draw_frame = tokStringParse(argi, "draw_frame", '#', '=');
-      gui->viewer->setParam("draw_frame", draw_frame);
+      gui->m_ffv_viewer->setParam("draw_frame", draw_frame);
     }
     else if(strContains(argv[i], "draw_base=")) {
       string draw_base = tokStringParse(argi, "draw_base", '#', '=');
-      gui->viewer->setParam("draw_base", draw_base);
+      gui->m_ffv_viewer->setParam("draw_base", draw_base);
     }
     else if(strContains(argv[i], "frame_height=")) {
       double frame_height = tokDoubleParse(argi, "frame_height", '#', '=');
-      gui->viewer->setParam("set_frame_height", frame_height);
+      gui->m_ffv_viewer->setParam("set_frame_height", frame_height);
     }
     else if(strContains(argv[i], "set_x_rotation=")) {
       double xrot = tokDoubleParse(argi, "set_x_rotation", '#', '=');
-      gui->viewer->setParam("set_x_rotation", xrot);
+      gui->m_ffv_viewer->setParam("set_x_rotation", xrot);
     }
     else if(strContains(argv[i], "set_z_rotation=")) {
       double zrot = tokDoubleParse(argi, "set_z_rotation", '#', '=');
-      gui->viewer->setParam("set_z_rotation", zrot);
+      gui->m_ffv_viewer->setParam("set_z_rotation", zrot);
     }
   }
 
