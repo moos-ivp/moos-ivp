@@ -96,13 +96,13 @@ public:
 
 protected:
   Fl_Menu_Bar *m_menubar;
-  Fl_Output   *m_curr_plat;
+  Fl_Output   *m_fld_curr_plat;
 
-  Fl_Output   *m_curr_pcs;
-  Fl_Output   *m_curr_pwt;
-  Fl_Output   *m_curr_src;
-  Fl_Output   *m_curr_domain;
-  Fl_Output   *curr_iteration;
+  Fl_Output   *m_fld_curr_pcs;
+  Fl_Output   *m_fld_curr_pwt;
+  Fl_Output   *m_fld_curr_src;
+  Fl_Output   *m_fld_curr_domain;
+  Fl_Output   *m_fld_curr_iter;
   FV_Model    *m_model;
   FV_Viewer   *m_viewer;
 

@@ -66,23 +66,23 @@ void FV_GUI::initWidgets()
 {
   m_viewer = new FV_Viewer(0, 0, 1, 1);
 
-  m_curr_plat = new Fl_Output(0, 0, 1, 1, "Platform:"); 
-  m_curr_plat->clear_visible_focus();
+  m_fld_curr_plat = new Fl_Output(0, 0, 1, 1, "Platform:"); 
+  m_fld_curr_plat->clear_visible_focus();
 
-  m_curr_src = new Fl_Output(0, 0, 1, 1, "Behavior:"); 
-  m_curr_src->clear_visible_focus();
+  m_fld_curr_src = new Fl_Output(0, 0, 1, 1, "Behavior:"); 
+  m_fld_curr_src->clear_visible_focus();
 
-  curr_iteration = new Fl_Output(0, 0, 1, 1, "Iter:"); 
-  curr_iteration->clear_visible_focus();
+  m_fld_curr_iter = new Fl_Output(0, 0, 1, 1, "Iter:"); 
+  m_fld_curr_iter->clear_visible_focus();
 
-  m_curr_pcs = new Fl_Output(0, 0, 1, 1, "Pieces:"); 
-  m_curr_pcs->clear_visible_focus();
+  m_fld_curr_pcs = new Fl_Output(0, 0, 1, 1, "Pieces:"); 
+  m_fld_curr_pcs->clear_visible_focus();
 
-  m_curr_pwt = new Fl_Output(0, 0, 1, 1, "Pwt:"); 
-  m_curr_pwt->clear_visible_focus();
+  m_fld_curr_pwt = new Fl_Output(0, 0, 1, 1, "Pwt:"); 
+  m_fld_curr_pwt->clear_visible_focus();
 
-  m_curr_domain = new Fl_Output(0, 0, 1, 1, "Domain:"); 
-  m_curr_domain->clear_visible_focus();
+  m_fld_curr_domain = new Fl_Output(0, 0, 1, 1, "Domain:"); 
+  m_fld_curr_domain->clear_visible_focus();
 
   m_but_ipf_set = new Fl_Button(0, 0, 1, 1, "set");
   m_but_ipf_set->shortcut('s');
@@ -108,41 +108,41 @@ void FV_GUI::resizeWidgetsShape()
   int plat_x = 60;
   int plat_y = row1;
   int plat_wid = 65;
-  m_curr_plat->resize(plat_x, plat_y, plat_wid, field_hgt);
+  m_fld_curr_plat->resize(plat_x, plat_y, plat_wid, field_hgt);
   
   int src_x = plat_x + plat_wid + 55;
   int src_y = row1;
-  int src_wid = 130;
-  m_curr_src->resize(src_x, src_y, src_wid, field_hgt);
+  int src_wid = 130 + (extra_wid/2);
+  m_fld_curr_src->resize(src_x, src_y, src_wid, field_hgt);
   
   int iter_x = src_x + src_wid + 30;
   int iter_y = row1;
-  int iter_wid = 50;
-  curr_iteration->resize(iter_x, iter_y, iter_wid, field_hgt);
+  int iter_wid = 40;
+  m_fld_curr_iter->resize(iter_x, iter_y, iter_wid, field_hgt);
   
   int pcs_x = iter_x + iter_wid + 45;
   int pcs_y = row1;
-  int pcs_wid = 50;
-  m_curr_pcs->resize(pcs_x, pcs_y, pcs_wid, field_hgt);
+  int pcs_wid = 40;
+  m_fld_curr_pcs->resize(pcs_x, pcs_y, pcs_wid, field_hgt);
   
   int pwt_x = pcs_x + pcs_wid + 40;
   int pwt_y = row1;
   int pwt_wid = 50;
-  m_curr_pwt->resize(pwt_x, pwt_y, pwt_wid, field_hgt);
+  m_fld_curr_pwt->resize(pwt_x, pwt_y, pwt_wid, field_hgt);
   
   int dom_x = pwt_x + pwt_wid + 55;
   int dom_y = row1;
-  int dom_wid = 50;
-  m_curr_domain->resize(dom_x, dom_y, dom_wid, field_hgt);
+  int dom_wid = 90 + (extra_wid/2);
+  m_fld_curr_domain->resize(dom_x, dom_y, dom_wid, field_hgt);
   
-  int set_x = dom_x + dom_wid + 20;
+  int set_x = dom_x + dom_wid + 15;
   int set_y = row1;
-  int set_wid = 40;
+  int set_wid = 35;
   m_but_ipf_set->resize(set_x, set_y, set_wid, field_hgt);
   
   int pin_x = set_x + set_wid + 10;
   int pin_y = row1;
-  int pin_wid = 40;
+  int pin_wid = 35;
   m_but_ipf_pin->resize(pin_x, pin_y, pin_wid, field_hgt);
   
 }
@@ -154,23 +154,23 @@ void FV_GUI::resizeWidgetsText()
 {
   int info_size=10;
 
-  m_curr_plat->textsize(info_size); 
-  m_curr_plat->labelsize(info_size);
+  m_fld_curr_plat->textsize(info_size); 
+  m_fld_curr_plat->labelsize(info_size);
 
-  m_curr_src->textsize(info_size); 
-  m_curr_src->labelsize(info_size);
+  m_fld_curr_src->textsize(info_size); 
+  m_fld_curr_src->labelsize(info_size);
 
-  curr_iteration->textsize(info_size); 
-  curr_iteration->labelsize(info_size);
+  m_fld_curr_iter->textsize(info_size); 
+  m_fld_curr_iter->labelsize(info_size);
 
-  m_curr_pcs->textsize(info_size); 
-  m_curr_pcs->labelsize(info_size);
+  m_fld_curr_pcs->textsize(info_size); 
+  m_fld_curr_pcs->labelsize(info_size);
 
-  m_curr_pwt->textsize(info_size); 
-  m_curr_pwt->labelsize(info_size);
+  m_fld_curr_pwt->textsize(info_size); 
+  m_fld_curr_pwt->labelsize(info_size);
 
-  m_curr_domain->textsize(info_size); 
-  m_curr_domain->labelsize(info_size);
+  m_fld_curr_domain->textsize(info_size); 
+  m_fld_curr_domain->labelsize(info_size);
 
   m_but_ipf_set->labelsize(12);
 
@@ -186,8 +186,6 @@ void FV_GUI::resize(int x, int y, int wid, int hgt)
   Fl_Window::resize(x, y, wid, hgt);
   resizeWidgetsShape();
   resizeWidgetsText();
-
-  cout << "h(): " << h() << "w(): " << w() << endl;
 }
 
 
@@ -381,11 +379,11 @@ inline void FV_GUI::cb_ToggleLockIPF_i() {
   m_model->toggleLockIPF();
   if(m_model->isLocked()) {
     Fl_Color fcolor = fl_rgb_color(200, 90, 90);
-    curr_iteration->color(fcolor);
+    m_fld_curr_iter->color(fcolor);
   }
   else {
     Fl_Color fcolor = fl_rgb_color(255, 255, 255);
-    curr_iteration->color(fcolor);
+    m_fld_curr_iter->color(fcolor);
   }    
 }
 void FV_GUI::cb_ToggleLockIPF(Fl_Widget* o) {
@@ -436,32 +434,32 @@ void FV_GUI::updateFields()
     source = m_model->getCurrSource();
   if(source == "")
     source = " - no function - ";
-  m_curr_src->value(source.c_str());
+  m_fld_curr_src->value(source.c_str());
   
   string pcs = "n/a";
   if(m_model)
     pcs = m_model->getCurrPieces();
-  m_curr_pcs->value(pcs.c_str());
+  m_fld_curr_pcs->value(pcs.c_str());
 
   string pwt = "n/a";
   if(m_model)
     pwt = m_model->getCurrPriority();
-  m_curr_pwt->value(pwt.c_str());
+  m_fld_curr_pwt->value(pwt.c_str());
 
   string domain = "n/a";
   if(m_model)
     domain = m_model->getCurrDomain();
-  m_curr_domain->value(domain.c_str());
+  m_fld_curr_domain->value(domain.c_str());
 
   string platform = "";
   if(m_model)
     platform = m_model->getCurrPlatform();
-  m_curr_plat->value(platform.c_str());
+  m_fld_curr_plat->value(platform.c_str());
 
   string iteration = intToString(m_model->getCurrIteration());
   if(m_model->isLocked())
     iteration = "<" + iteration + ">";
-  curr_iteration->value(iteration.c_str());
+  m_fld_curr_iter->value(iteration.c_str());
 
   m_viewer->redraw();
 }
