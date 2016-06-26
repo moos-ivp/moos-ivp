@@ -29,11 +29,13 @@
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Output.H>
 #include "FFV_Viewer.h"
+#include "Common_IPF_GUI.h"
 
-class FFV_GUI : Fl_Window {
+class FFV_GUI : public Common_IPF_GUI {
 public:
   FFV_GUI(int w, int h, const char *label=0);
-
+  virtual ~FFV_GUI() {};
+  
   void augmentMenu();
   void resize(int, int, int, int);
   void updateXY();
@@ -47,7 +49,6 @@ public:
   void resizeWidgetsText();
   
  public:
-  Fl_Menu_Bar *m_menubar;
   FFV_Viewer  *m_ffv_viewer;
 
   Fl_Output   *m_fld_samp_count;
@@ -74,29 +75,11 @@ public:
   int m_start_wid;
 
 private:
-  inline void cb_Zoom_i(int);
-  static void cb_Zoom(Fl_Widget*, int);
-
   inline void cb_Script_i();
   static void cb_Script(Fl_Widget*);
 
-  inline void cb_Reset_i(int);
-  static void cb_Reset(Fl_Widget*, int);
-
-  inline void cb_RotateX_i(int);
-  static void cb_RotateX(Fl_Widget*, int);
-
-  inline void cb_RotateZ_i(int);
-  static void cb_RotateZ(Fl_Widget*, int);
-
-  inline void cb_ModScale_i(int);
-  static void cb_ModScale(Fl_Widget*, int);
-
   inline void cb_ModBaseAOF_i(int);
   static void cb_ModBaseAOF(Fl_Widget*, int);
-
-  inline void cb_ModBaseIPF_i(int);
-  static void cb_ModBaseIPF(Fl_Widget*, int);
 
   inline void cb_ToggleAOF_i();
   static void cb_ToggleAOF(Fl_Widget*);
@@ -145,12 +128,6 @@ private:
 
   inline void cb_MakePieces_i(int);
   static void cb_MakePieces(Fl_Widget*, int);
-
-  inline void cb_ColorMap_i(int);
-  static void cb_ColorMap(Fl_Widget*, int);
-
-  inline void cb_ColorBack_i(int);
-  static void cb_ColorBack(Fl_Widget*, int);
 
   inline void cb_PrintParams_i();
   static void cb_PrintParams(Fl_Widget*);

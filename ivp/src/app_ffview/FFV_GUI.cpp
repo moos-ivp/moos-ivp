@@ -32,7 +32,7 @@ using namespace std;
 // Constructor
 
 FFV_GUI::FFV_GUI(int wid, int hgt, const char *label)
-  : Fl_Window(wid, hgt, label) 
+  : Common_IPF_GUI(wid, hgt, label) 
 {
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
@@ -40,8 +40,8 @@ FFV_GUI::FFV_GUI(int wid, int hgt, const char *label)
   this->size_range(800,600, 1400,1000, 0,0, 1);
 
   m_ffv_viewer = new FFV_Viewer(0, 30, w(), h()-125);
-
-  m_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
+  m_viewer = (Common_IPFViewer*)(m_ffv_viewer);
+ 
   augmentMenu();
 
   m_start_hgt = hgt;
@@ -237,41 +237,7 @@ void FFV_GUI::augmentMenu()
 		 (Fl_Callback*)FFV_GUI::cb_Script, 0, 0);
   m_menubar->add("File/Print Params", 'p',
 		 (Fl_Callback*)FFV_GUI::cb_PrintParams, 0, 0);
-  m_menubar->add("File/Quit ", FL_CTRL+'q',
-		 (Fl_Callback*)FFV_GUI::cb_Quit, 0, 0);
 
-  //===================================================================
-  // RotateZoom    Pull-Down Menu
-  //===================================================================
-  m_menubar->add("RotateZoom/Rotate X- ", FL_Down,
-		 (Fl_Callback*)FFV_GUI::cb_RotateX, (void*)-1, 0);
-  m_menubar->add("RotateZoom/Rotate X+ ", FL_Up,
-		 (Fl_Callback*)FFV_GUI::cb_RotateX, (void*)1, 0);
-  m_menubar->add("RotateZoom/Rotate Z- ", FL_Left,
-		 (Fl_Callback*)FFV_GUI::cb_RotateZ, (void*)-1, 0);
-  m_menubar->add("RotateZoom/Rotate Z+ ", FL_Right,
-		 (Fl_Callback*)FFV_GUI::cb_RotateZ, (void*)1, 0);
-  m_menubar->add("RotateZoom/Reset1 ",       '1',
-		 (Fl_Callback*)FFV_GUI::cb_Reset, (void*)1, 0);
-  m_menubar->add("RotateZoom/Reset2 ",       '2',
-		 (Fl_Callback*)FFV_GUI::cb_Reset, (void*)2, 0);
-  m_menubar->add("RotateZoom/Reset3 ",       '3',
-		 (Fl_Callback*)FFV_GUI::cb_Reset, (void*)3, 0);
-  m_menubar->add("RotateZoom/Reset4 ",       '4',
-		 (Fl_Callback*)FFV_GUI::cb_Reset, (void*)4, 0);
-  m_menubar->add("RotateZoom/Toggle Frame ", 'f',
-		 (Fl_Callback*)FFV_GUI::cb_ToggleFrame, (void*)-1, FL_MENU_DIVIDER);
-  m_menubar->add("RotateZoom/Frame-Height-- ", FL_ALT+'f',
-		 (Fl_Callback*)FFV_GUI::cb_FrameHeight, (void*)-1, 0);
-  m_menubar->add("RotateZoom/Frame-Height++ ", FL_CTRL+'f',
-		 (Fl_Callback*)FFV_GUI::cb_FrameHeight, (void*)1, FL_MENU_DIVIDER);
-  m_menubar->add("RotateZoom/Zoom In",          'i',
-		 (Fl_Callback*)FFV_GUI::cb_Zoom, (void*)-1, 0);
-  m_menubar->add("RotateZoom/Zoom Out",         'o',
-		 (Fl_Callback*)FFV_GUI::cb_Zoom, (void*)1, 0);
-  m_menubar->add("RotateZoom/Zoom Reset",       'Z',
-		 (Fl_Callback*)FFV_GUI::cb_Zoom, (void*)0, 0);
-  
   //===================================================================
   // AOF    Pull-Down Menu
   //===================================================================
@@ -359,24 +325,6 @@ void FFV_GUI::augmentMenu()
   m_menubar->add("IPF/Pieces 4000", 0,
 		 (Fl_Callback*)FFV_GUI::cb_MakePieces, (void*)4000, FL_MENU_RADIO);
 
-  //===================================================================
-  // Color-Map    Pull-Down Menu
-  //===================================================================  
-  m_menubar->add("Color-Map/Default",   0,
-		 (Fl_Callback*)FFV_GUI::cb_ColorMap,  (void*)1,
-		 FL_MENU_RADIO|FL_MENU_VALUE);
-  m_menubar->add("Color-Map/Copper",    0,
-		 (Fl_Callback*)FFV_GUI::cb_ColorMap,  (void*)2, FL_MENU_RADIO);
-  m_menubar->add("Color-Map/Bone",      0,
-		 (Fl_Callback*)FFV_GUI::cb_ColorMap,  (void*)3,
-		 FL_MENU_RADIO|FL_MENU_DIVIDER);
-  m_menubar->add("Color-Map/Back-White", 0,
-		 (Fl_Callback*)FFV_GUI::cb_ColorBack, (void*)0, 0);
-  m_menubar->add("Color-Map/Back-Blue",  0,
-		 (Fl_Callback*)FFV_GUI::cb_ColorBack, (void*)1, 0);
-  m_menubar->add("Color-Map/Mac-Beige", 0,
-		 (Fl_Callback*)FFV_GUI::cb_ColorBack, (void*)2, 0);
-  
   //===================================================================
   // Directed-Refine    Pull-Down Menu
   //===================================================================
@@ -511,6 +459,7 @@ void FFV_GUI::initWidgets()
 
 int FFV_GUI::handle(int event) 
 {
+#if 0
   switch(event) {
   case FL_KEYBOARD:
     if(Fl::event_key()==FL_Down) {
@@ -532,27 +481,8 @@ int FFV_GUI::handle(int event)
   default:
     return(Fl_Window::handle(event));
   }
-}
-
-//----------------------------------------- Zoom In
-inline void FFV_GUI::cb_Zoom_i(int val) {
-  if(val < 0) m_ffv_viewer->setParam("mod_zoom", 1.25);
-  if(val > 0) m_ffv_viewer->setParam("mod_zoom", 0.80);
-  //if(val ==0) m_ffv_viewer->zoomReset();
-}
-void FFV_GUI::cb_Zoom(Fl_Widget* o, int v) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_Zoom_i(v);
-}
-
-//----------------------------------------- Reset
-inline void FFV_GUI::cb_Reset_i(int i) {
-  if(i==1) m_ffv_viewer->setParam("reset_view", "1");
-  if(i==2) m_ffv_viewer->setParam("reset_view", "2");
-  if(i==3) m_ffv_viewer->setParam("reset_view", "3");
-  if(i==4) m_ffv_viewer->setParam("reset_view", "4");
-}
-void FFV_GUI::cb_Reset(Fl_Widget* o, int i) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_Reset_i(i);
+#endif
+  return(Fl_Window::handle(event));
 }
 
 //----------------------------------------- Script
@@ -563,30 +493,6 @@ void FFV_GUI::cb_Script(Fl_Widget* o) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_Script_i();
 }
 
-//----------------------------------------- Rotate  X
-inline void FFV_GUI::cb_RotateX_i(int amt) {
-  m_ffv_viewer->setParam("mod_x_rotation", (double)(amt));
-}
-void FFV_GUI::cb_RotateX(Fl_Widget* o, int v) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_RotateX_i(v);
-}
-
-//----------------------------------------- Rotate  Z
-inline void FFV_GUI::cb_RotateZ_i(int amt) {
-  m_ffv_viewer->setParam("mod_z_rotation", (double)(amt));
-}
-void FFV_GUI::cb_RotateZ(Fl_Widget* o, int v) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_RotateZ_i(v);
-}
-
-//----------------------------------------- Mod Scale
-inline void FFV_GUI::cb_ModScale_i(int amt) {
-  m_ffv_viewer->setParam("mod_scale", (((double)amt)/100.0));
-}
-void FFV_GUI::cb_ModScale(Fl_Widget* o, int v) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_ModScale_i(v);
-}
-
 //----------------------------------------- Mod BaseAOF
 inline void FFV_GUI::cb_ModBaseAOF_i(int amt) {
   m_ffv_viewer->setParam("mod_base_aof", amt);
@@ -594,15 +500,6 @@ inline void FFV_GUI::cb_ModBaseAOF_i(int amt) {
 
 void FFV_GUI::cb_ModBaseAOF(Fl_Widget* o, int v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_ModBaseAOF_i(v);
-}
-
-//----------------------------------------- Mod BaseIPF
-inline void FFV_GUI::cb_ModBaseIPF_i(int amt) {
-  m_ffv_viewer->setParam("mod_base_ipf", amt);
-}
-
-void FFV_GUI::cb_ModBaseIPF(Fl_Widget* o, int v) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_ModBaseIPF_i(v);
 }
 
 //----------------------------------------- Mod PatchAOF
@@ -708,22 +605,6 @@ void FFV_GUI::cb_SmartAugPct(Fl_Widget* o, int i) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_SmartAugPct_i(i);
 }
 
-//----------------------------------------- Toggle Frame
-inline void FFV_GUI::cb_ToggleFrame_i() {
-  m_ffv_viewer->setParam("draw_frame", "toggle");
-}
-void FFV_GUI::cb_ToggleFrame(Fl_Widget* o) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();
-}
-
-//----------------------------------------- Frame Height
-inline void FFV_GUI::cb_FrameHeight_i(int amt) {
-  m_ffv_viewer->setParam("mod_frame_height", (double)amt);
-}
-void FFV_GUI::cb_FrameHeight(Fl_Widget* o, int v) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_FrameHeight_i(v);
-}
-
 //----------------------------------------- Toggle Strict
 inline void FFV_GUI::cb_ToggleStrict_i() {
   m_ffv_viewer->setParam("strict_range", "toggle");
@@ -756,19 +637,6 @@ void FFV_GUI::cb_MakePieces(Fl_Widget* o, int v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_MakePieces_i(v);
 }
 
-//----------------------------------------- ColorMap
-inline void FFV_GUI::cb_ColorMap_i(int index) {
-  string str = "default";
-  if(index ==2)
-    str = "copper";
-  else if(index == 3)
-    str = "bone";
-  m_ffv_viewer->modColorMap(str);
-}
-void FFV_GUI::cb_ColorMap(Fl_Widget* o, int v) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_ColorMap_i(v);
-}
-
 //----------------------------------------- PrintParams
 inline void FFV_GUI::cb_PrintParams_i() {
   m_ffv_viewer->printParams();
@@ -777,26 +645,6 @@ void FFV_GUI::cb_PrintParams(Fl_Widget* o) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_PrintParams_i();
 }
 
-//----------------------------------------- ColorBack
-inline void FFV_GUI::cb_ColorBack_i(int index) {
-  if(index == 0)
-    m_ffv_viewer->setParam("clear_color", "white");
-  else if(index == 1)  // PurplishBlue
-    m_ffv_viewer->setParam("clear_color", "0.285,0.242,0.469");
-  else if(index == 2)  // PurplishBlue
-    m_ffv_viewer->setParam("clear_color", "macbeige");
-  else
-    return;
-  m_ffv_viewer->redraw();
-}
-void FFV_GUI::cb_ColorBack(Fl_Widget* o, int v) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_ColorBack_i(v);
-}
-
-//----------------------------------------- Quit
-void FFV_GUI::cb_Quit() {
-  exit(0);
-}
 
 //----------------------------------------- UpdateXY
 void FFV_GUI::updateXY() 
@@ -884,8 +732,3 @@ void FFV_GUI::cb_set_refine_pce(Fl_Input* o, void* v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_set_refine_pce_i();
 }
 #endif
-
-
-
-
-
