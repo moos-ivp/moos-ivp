@@ -35,6 +35,7 @@ public:
   FFV_GUI(int w, int h, const char *label=0);
 
   void augmentMenu();
+  void resize(int, int, int, int);
   void updateXY();
   int  handle(int);
   void setAOF(AOF* aof)           
@@ -42,6 +43,8 @@ public:
 
  protected:
   void initWidgets();
+  void resizeWidgetsShape();
+  void resizeWidgetsText();
   
  public:
   Fl_Menu_Bar *m_menubar;
@@ -65,6 +68,10 @@ public:
 
   Fl_Output   *m_fld_auto_peak;
   Fl_Output   *m_fld_refine_pce_str;
+
+ protected:
+  int m_start_hgt;
+  int m_start_wid;
 
 private:
   inline void cb_Zoom_i(int);

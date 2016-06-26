@@ -91,6 +91,7 @@ void FFV_Viewer::draw()
       m_quadset.applyColorIntensity(m_intensity);
       m_quadset.applyScale(m_scale);
       m_quadset.applyBase(m_base);
+      m_quadset.applyTranslation(-250, -250);
     }
     Common_IPFViewer::drawQuadSet(m_quadset);
   }
@@ -638,6 +639,7 @@ void FFV_Viewer::drawAOF()
       q.setLHB(m_aof_cache.getBVal(xl, yh));
 
       q.applyBase(m_base_aof);
+      q.applyTranslation(-(xmax/2), -(ymax/2));
       count++;
       drawQuad(q);
       xc += m_patch;

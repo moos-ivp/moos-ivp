@@ -37,13 +37,23 @@ FFV_GUI::FFV_GUI(int wid, int hgt, const char *label)
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
   this->begin();
+  this->size_range(800,600, 1400,1000, 0,0, 1);
+
+  m_ffv_viewer = new FFV_Viewer(0, 30, w(), h()-125);
 
   m_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
   augmentMenu();
-    
+
+  m_start_hgt = hgt;
+  m_start_wid = wid;
+  
+  initWidgets();
+  resizeWidgetsShape();
+  resizeWidgetsText();
+
+#if 0
   int info_size=10;
 
-  m_ffv_viewer = new FFV_Viewer(0, 30, w(), h()-125);
 
   // Column One ----------------------------------------------- ONE
   m_fld_samp_count = new Fl_Output(60, h()-90, 50, 20, "Samples:"); 
@@ -93,36 +103,209 @@ FFV_GUI::FFV_GUI(int wid, int hgt, const char *label)
   m_fld_create_time->labelsize(info_size);
   m_fld_create_time->clear_visible_focus();
 
-  // Column Three -------------------------------------------- THREE
+  // Column Four -------------------------------------------- FOUR
   m_fld_uniform_str = new Fl_Output(530, h()-90, 180, 20, "Uniform Piece:"); 
   m_fld_uniform_str->textsize(info_size); 
   m_fld_uniform_str->labelsize(info_size);
   m_fld_uniform_str->clear_visible_focus();
-  
-  m_fld_auto_peak = new Fl_Output(780, h()-90, 180, 20, "AutoPeak:"); 
-  m_fld_auto_peak->textsize(info_size); 
-  m_fld_auto_peak->labelsize(info_size);
-  m_fld_auto_peak->clear_visible_focus();
   
   m_fld_refine_reg_str = new Fl_Output(530, h()-60, 180, 20, "Refine Region:"); 
   m_fld_refine_reg_str->textsize(info_size); 
   m_fld_refine_reg_str->labelsize(info_size);
   m_fld_refine_reg_str->clear_visible_focus();
   
-  m_fld_refine_pce_str = new Fl_Output(780, h()-60, 180, 20, "Refine Piece:"); 
-  m_fld_refine_pce_str->textsize(info_size); 
-  m_fld_refine_pce_str->labelsize(info_size);
-  m_fld_refine_pce_str->clear_visible_focus();
-
   m_fld_reflector_errors  = new Fl_Output(530, h()-30, 430, 20, "Reflector Errors:"); 
   m_fld_reflector_errors->textsize(info_size); 
   m_fld_reflector_errors->labelsize(info_size);
   m_fld_reflector_errors->clear_visible_focus();
 
+  // Column Five -------------------------------------------- FIVE
+  m_fld_auto_peak = new Fl_Output(780, h()-90, 180, 20, "AutoPeak:"); 
+  m_fld_auto_peak->textsize(info_size); 
+  m_fld_auto_peak->labelsize(info_size);
+  m_fld_auto_peak->clear_visible_focus();
+  
+  m_fld_refine_pce_str = new Fl_Output(780, h()-60, 180, 20, "Refine Piece:"); 
+  m_fld_refine_pce_str->textsize(info_size); 
+  m_fld_refine_pce_str->labelsize(info_size);
+  m_fld_refine_pce_str->clear_visible_focus();
+
+#endif
+
+  
   this->end();
   this->resizable(this);
   this->show();
 }
+
+//--------------------------------------------------------------------------- 
+// Procedure: resizeWidgetsShape()     
+
+void FFV_GUI::resizeWidgetsShape()
+{
+  m_ffv_viewer->resize(0, 30, w(), h()-125);
+
+  int extra_wid = w() - m_start_wid;
+  //if(extra_wid < 0)
+  //  extra_wid = 0;
+  int field_hgt = 20;
+  
+  int row1 = h() - 90;
+  int row2 = row1 + 30;
+  int row3 = row2 + 30;  
+  int col1 = 80;
+
+  //===================================================
+  // Column ONE 
+  //===================================================
+  int sac_x = col1;
+  int sac_y = row1;
+  int sac_wid = 60;
+  m_fld_samp_count->resize(sac_x, sac_y, sac_wid, field_hgt);
+
+  int werr_x = col1;
+  int werr_y = row2;
+  int werr_wid = 60;
+  m_fld_worst_err->resize(werr_x, werr_y, werr_wid, field_hgt);
+
+  int pcnt_x = col1;
+  int pcnt_y = row3;
+  int pcnt_wid = 60;
+  m_fld_piece_count->resize(pcnt_x, pcnt_y, pcnt_wid, field_hgt);
+
+  //===================================================
+  // Column TWO
+  //===================================================
+  int avge_x = sac_x + sac_wid + 70;
+  int avge_y = row1;
+  int avge_wid = 60;
+  m_fld_avg_err->resize(avge_x, avge_y, avge_wid, field_hgt);
+
+  int sqre_x = werr_x + werr_wid + 70;
+  int sqre_y = row2;
+  int sqre_wid = 60;
+  m_fld_square_err->resize(sqre_x, sqre_y, sqre_wid, field_hgt);
+
+  int uas_x = pcnt_x + pcnt_wid + 70;
+  int uas_y = row3;
+  int uas_wid = 60;
+  m_fld_unif_aug_size->resize(uas_x, uas_y, uas_wid, field_hgt);
+
+  //===================================================
+  // Column THREE
+  //===================================================
+  int shgh_x = avge_x + avge_wid + 80;
+  int shgh_y = row1;
+  int shgh_wid = 60;
+  m_fld_samp_high->resize(shgh_x, shgh_y, shgh_wid, field_hgt);
+
+  int slow_x = sqre_x + sqre_wid + 80;
+  int slow_y = row2;
+  int slow_wid = 60;
+  m_fld_samp_low->resize(slow_x, slow_y, slow_wid, field_hgt);
+
+  int crt_x = uas_x + uas_wid + 80;
+  int crt_y = row3;
+  int crt_wid = 60;
+  m_fld_create_time->resize(crt_x, crt_y, crt_wid, field_hgt);
+
+  //===================================================
+  // Column FOUR
+  //===================================================
+  int upc_x = shgh_x + shgh_wid + 100;
+  int upc_y = row1;
+  int upc_wid = 170 + (extra_wid/2);
+  m_fld_uniform_str->resize(upc_x, upc_y, upc_wid, field_hgt);
+
+  int rreg_x = slow_x + slow_wid + 100;
+  int rreg_y = row2;
+  int rreg_wid = 170 + (extra_wid/2);
+  m_fld_refine_reg_str->resize(rreg_x, rreg_y, rreg_wid, field_hgt);
+
+  int refe_x = crt_x + crt_wid + 100;
+  int refe_y = row3;
+  int refe_wid = 430 + extra_wid;
+  m_fld_reflector_errors->resize(refe_x, refe_y, refe_wid, field_hgt);
+
+  //===================================================
+  // Column FIVE
+  //===================================================
+  int autp_x = upc_x + upc_wid + 80;
+  int autp_y = row1;
+  int autp_wid = 180 + (extra_wid/2);
+  m_fld_auto_peak->resize(autp_x, autp_y, autp_wid, field_hgt);
+
+  int rpc_x = rreg_x + rreg_wid + 80;
+  int rpc_y = row2;
+  int rpc_wid = 180 + (extra_wid/2);
+  m_fld_refine_pce_str->resize(rpc_x, rpc_y, rpc_wid, field_hgt);
+}
+
+//--------------------------------------------------------------------------- 
+// Procedure: resizeWidgetsText()
+
+void FFV_GUI::resizeWidgetsText()
+{
+  int info_size  = 10;
+
+  // Column One ----------------------------------------------- ONE
+  m_fld_samp_count->textsize(info_size); 
+  m_fld_samp_count->labelsize(info_size);
+  
+  m_fld_worst_err->textsize(info_size); 
+  m_fld_worst_err->labelsize(info_size);
+
+  m_fld_piece_count->textsize(info_size); 
+  m_fld_piece_count->labelsize(info_size);
+
+  // Column Two ----------------------------------------------- TWO
+  m_fld_avg_err->textsize(info_size); 
+  m_fld_avg_err->labelsize(info_size);
+
+  m_fld_square_err->textsize(info_size); 
+  m_fld_square_err->labelsize(info_size);
+
+  m_fld_unif_aug_size->textsize(info_size); 
+  m_fld_unif_aug_size->labelsize(info_size);
+
+  // Column Three -------------------------------------------- THREE
+  m_fld_samp_high->textsize(info_size); 
+  m_fld_samp_high->labelsize(info_size);
+
+  m_fld_samp_low->textsize(info_size); 
+  m_fld_samp_low->labelsize(info_size);
+
+  m_fld_create_time->textsize(info_size); 
+  m_fld_create_time->labelsize(info_size);
+
+  // Column Four -------------------------------------------- FOUR
+  m_fld_uniform_str->textsize(info_size); 
+  m_fld_uniform_str->labelsize(info_size);
+  
+  m_fld_refine_reg_str->textsize(info_size); 
+  m_fld_refine_reg_str->labelsize(info_size);
+  
+  m_fld_reflector_errors->textsize(info_size); 
+  m_fld_reflector_errors->labelsize(info_size);
+
+  // Column Five -------------------------------------------- FIVE
+  m_fld_auto_peak->textsize(info_size); 
+  m_fld_auto_peak->labelsize(info_size);
+
+  m_fld_refine_pce_str->textsize(info_size); 
+  m_fld_refine_pce_str->labelsize(info_size);
+}
+
+//---------------------------------------------------------- 
+// Procedure: resize   
+
+void FFV_GUI::resize(int lx, int ly, int lw, int lh)
+{
+  Fl_Window::resize(lx, ly, lw, lh);
+  resizeWidgetsShape();
+  resizeWidgetsText();
+} 
+
 
 //-------------------------------------------------------------------------
 // Procedure: augmentMenu()

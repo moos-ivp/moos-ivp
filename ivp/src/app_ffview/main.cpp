@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
   }
 
   int i;
-  FFV_GUI *gui  = new FFV_GUI(1000, 700, "aof-ipf-function-viewer");
+  FFV_GUI *gui  = new FFV_GUI(950, 700, "aof-ipf-function-viewer");
 
   //-------------------------------------------- Handle AOF Files
   string aof_file;
