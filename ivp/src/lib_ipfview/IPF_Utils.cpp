@@ -161,9 +161,6 @@ vector<Quad3D> buildQuadsFromCache(const vector<vector<double> >& vals)
       new_quad.setHLZ(vals[i+1][j]);
       new_quad.setHHZ(vals[i+1][j+1]);
 
-      //new_quad.xpts = crs_pts;
-      //new_quad.ypts = spd_pts;
-
       rvector.push_back(new_quad);
     }
   }
@@ -194,9 +191,6 @@ vector<Quad3D> buildQuadsFromCache(const vector<vector<double> >& vals)
       new_quad.setHLZ(vals[0][j]);
       new_quad.setHHZ(vals[0][j+1]);
       
-      //new_quad.xpts = crs_pts;
-      //new_quad.ypts = spd_pts;
-      
       rvector.push_back(new_quad);
     }
   }
@@ -223,11 +217,6 @@ QuadSet buildQuadSet2DFromIPF(IvPFunction *ipf)
 
   IvPDomain ivp_domain = pdmap->getDomain();
 
-  //unsigned int xpts = ivp_domain.getVarPoints(0);  // rid?
-  //unsigned int ypts = ivp_domain.getVarPoints(1);  // rid?
-  //if((xpts < 2) || (ypts < 2))                     // rid?
-  //  return(null_quadset);                          // rid?
-
   QuadSet quadset;
   quadset.setIvPDomain(ivp_domain);
 
@@ -241,11 +230,6 @@ QuadSet buildQuadSet2DFromIPF(IvPFunction *ipf)
     int yl = box->pt(1,0);
     int yh = box->pt(1,1);
     
-    //quad.setXL(xl);
-    //quad.setXH(xh);
-    //quad.setYL(yl);
-    //quad.setYH(yh);
-
     quad.setLLX(xl);
     quad.setHLX(xh);
     quad.setHHX(xh);
@@ -255,9 +239,6 @@ QuadSet buildQuadSet2DFromIPF(IvPFunction *ipf)
     quad.setHLY(yl);
     quad.setHHY(yh);
     quad.setLHY(yh);
-
-    //quad.xpts  = xpts;  // rid?
-    //quad.ypts  = ypts;  // rid?
 
     int degree = box->getDegree();
     

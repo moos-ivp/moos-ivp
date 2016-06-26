@@ -123,10 +123,6 @@ public:
 
   void interpolate(double xdelta);
   
-  // public:  
-  // int    xpts;
-  //int    ypts;
-
  protected:
 
   std::vector<double> m_xin_low;
