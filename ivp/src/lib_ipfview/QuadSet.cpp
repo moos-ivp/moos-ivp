@@ -250,6 +250,26 @@ void QuadSet::applyTranslation(double xdist, double ydist)
 }
 
 //-------------------------------------------------------------
+// Procedure: applyTranslation()
+//   Purpose: Automatically determine the translation distances
+//            based on the size of the IvPDomain
+
+void QuadSet::applyTranslation()
+{
+  if(m_ivp_domain.size() != 2)
+    return;
+
+  double xpts = (double)(m_ivp_domain.getVarPoints(0));
+  double ypts = (double)(m_ivp_domain.getVarPoints(1));
+
+  double xdist = -(xpts/2);
+  double ydist = -(ypts/2);
+  
+  for(unsigned int i=0; i<m_quads.size(); i++) 
+    m_quads[i].applyTranslation(xdist, ydist);
+}
+
+//-------------------------------------------------------------
 // Procedure: applyPolar()
 
 void QuadSet::applyPolar(double rad_extra, int polar_dim)

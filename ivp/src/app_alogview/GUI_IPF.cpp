@@ -38,8 +38,8 @@ using namespace std;
 GUI_IPF::GUI_IPF(int g_w, int g_h, const char *g_l)
   : Fl_Window(g_w, g_h, g_l) 
 {
-  mbar = new Fl_Menu_Bar(0, 0, 0, 0);
-  mbar->menu(menu_);
+  m_menubar = new Fl_Menu_Bar(0, 0, 0, 0);
+  augmentMenu();
 
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
@@ -290,25 +290,40 @@ void GUI_IPF::resizeWidgetsText()
 }
 
 //-------------------------------------------------------------------
+// Procedure: augmentMenu()
 
-Fl_Menu_Item GUI_IPF::menu_[] = {
- {"Invisible", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Pan Up ",    FL_Up,  (Fl_Callback*)GUI_IPF::cb_HandleUpDown, (void*)-100, 0},
- {"Pan Down ",  FL_Down,  (Fl_Callback*)GUI_IPF::cb_HandleUpDown, (void*)100, 0},
- {"Pan Left ",  FL_Left,  (Fl_Callback*)GUI_IPF::cb_HandleLeftRight, (void*)100, 0},
- {"Pan Right ", FL_Right,  (Fl_Callback*)GUI_IPF::cb_HandleLeftRight, (void*)-100, 0},
- {"Pan U (slow) ", FL_ALT + FL_Up, (Fl_Callback*)GUI_IPF::cb_HandleUpDown, (void*)-25, 0},
- {"Pan D (slow) ", FL_ALT + FL_Down, (Fl_Callback*)GUI_IPF::cb_HandleUpDown, (void*)25, 0},
- {"Pan L (slow) ", FL_ALT + FL_Left, (Fl_Callback*)GUI_IPF::cb_HandleLeftRight, (void*)25, 0},
- {"Pan R (slow)",  FL_ALT + FL_Right, (Fl_Callback*)GUI_IPF::cb_HandleLeftRight, (void*)-25, 0},
- {"Replay/Step Ahead 0.1 secs", FL_CTRL+']', (Fl_Callback*)GUI_IPF::cb_Step, (void*)100, 0},
- {"Replay/Step Back 0.1 secs", FL_CTRL+'[', (Fl_Callback*)GUI_IPF::cb_Step, (void*)-100, 0},
- {"Replay/Step Ahead 1 sec",  ']', (Fl_Callback*)GUI_IPF::cb_Step, (void*)1000, 0},
- {"Replay/Step Back  1 sec",  '[', (Fl_Callback*)GUI_IPF::cb_Step, (void*)-1000, 0},
- {"Replay/Step Ahead 5 secs", '}', (Fl_Callback*)GUI_IPF::cb_Step, (void*)5000, 0},
- {"Replay/Step Back  5 secs", '{', (Fl_Callback*)GUI_IPF::cb_Step, (void*)-5000, 0},
- {0}
-};
+void GUI_IPF::augmentMenu()
+{
+  m_menubar->add("RotateZoom/Pan Up ",    FL_Up,
+	      (Fl_Callback*)GUI_IPF::cb_HandleUpDown, (void*)-100, 0);
+  m_menubar->add("RotateZoom/Pan Down ",  FL_Down,
+	      (Fl_Callback*)GUI_IPF::cb_HandleUpDown, (void*)100, 0);
+  m_menubar->add("RotateZoom/Pan Left ",  FL_Left,
+	      (Fl_Callback*)GUI_IPF::cb_HandleLeftRight, (void*)100, 0);
+  m_menubar->add("RotateZoom/Pan Right ", FL_Right,
+	      (Fl_Callback*)GUI_IPF::cb_HandleLeftRight, (void*)-100, 0);
+  m_menubar->add("RotateZoom/Pan U (slow) ", FL_ALT + FL_Up,
+	      (Fl_Callback*)GUI_IPF::cb_HandleUpDown, (void*)-25, 0);
+  m_menubar->add("RotateZoom/Pan D (slow) ", FL_ALT + FL_Down,
+	      (Fl_Callback*)GUI_IPF::cb_HandleUpDown, (void*)25, 0);
+  m_menubar->add("RotateZoom/Pan L (slow) ", FL_ALT + FL_Left,
+	      (Fl_Callback*)GUI_IPF::cb_HandleLeftRight, (void*)25, 0);
+  m_menubar->add("RotateZoom/Pan R (slow)",  FL_ALT + FL_Right,
+	      (Fl_Callback*)GUI_IPF::cb_HandleLeftRight, (void*)-25, 0);
+
+  m_menubar->add("Replay/Step Ahead 0.1 secs", FL_CTRL+']',
+	      (Fl_Callback*)GUI_IPF::cb_Step, (void*)100, 0);
+  m_menubar->add("Replay/Step Back 0.1 secs", FL_CTRL+'[',
+	      (Fl_Callback*)GUI_IPF::cb_Step, (void*)-100, 0);
+  m_menubar->add("Replay/Step Ahead 1 sec",  ']',
+	      (Fl_Callback*)GUI_IPF::cb_Step, (void*)1000, 0);
+  m_menubar->add("Replay/Step Back  1 sec",  '[',
+	      (Fl_Callback*)GUI_IPF::cb_Step, (void*)-1000, 0);
+  m_menubar->add("Replay/Step Ahead 5 secs", '}',
+	      (Fl_Callback*)GUI_IPF::cb_Step, (void*)5000, 0);
+  m_menubar->add("Replay/Step Back  5 secs", '{',
+	      (Fl_Callback*)GUI_IPF::cb_Step, (void*)-5000, 0);
+}
 
 
 //----------------------------------------------------------

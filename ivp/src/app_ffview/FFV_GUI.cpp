@@ -64,8 +64,6 @@ void FFV_GUI::resizeWidgetsShape()
   m_ffv_viewer->resize(0, 30, w(), h()-125);
 
   int extra_wid = w() - m_start_wid;
-  //if(extra_wid < 0)
-  //  extra_wid = 0;
   int field_hgt = 20;
   
   int row1 = h() - 90;

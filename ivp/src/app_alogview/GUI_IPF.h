@@ -47,8 +47,10 @@ public:
   ~GUI_IPF();
   
   static Fl_Menu_Item menu_[];
-  Fl_Menu_Bar *mbar;
+  Fl_Menu_Bar *m_menubar;
 
+  void  augmentMenu();
+  
   void  setDataBroker(ALogDataBroker, std::string vname);
   void  setParentGUI(REPLAY_GUI*);
   void  setCurrTime(double=-1);

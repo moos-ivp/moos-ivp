@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: FV_GUI.h                                             */
-/*    DATE: May 13th 2006                                        */
+/*    FILE: IPP_GUI.h                                            */
+/*    DATE: Nov 30th 2014                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,46 +21,35 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef FUNCTION_VIEWER_GUI_HEADER
-#define FUNCTION_VIEWER_GUI_HEADER
+#ifndef COMMON_IPF_GUI_HEADER
+#define COMMON_IPF_GUI_HEADER
 
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
-#include "FL/Fl_Output.h"
-#include "FL/Fl_Menu_Button.h"
-#include "FL/Fl_Button.h"
-#include "FV_Viewer.h"
-#include "FV_Model.h"
+#include <FL/Fl_Output.H>
 
-class FV_GUI : Fl_Window {
+#include "IvPProblem.h"
+#include "Common_IPFViewer.h"
+
+class Common_IPF_GUI : public Fl_Window {
 public:
-  FV_GUI(int w, int h, const char *l=0);
-  virtual ~FV_GUI() {};
+  Common_IPF_GUI(int w, int h, const char *l=0);
+  virtual ~Common_IPF_GUI() {};
 
- public:
   void augmentMenu();
   int  handle(int);
-  void setModel(FV_Model* g_model)
-    {m_model = g_model; m_viewer->setModel(g_model);}
-
-  void updateFields();
-  void addBehaviorSource(std::string source);
-
-  FV_Viewer* getViewer() {return(m_viewer);}
+  
+ public:
+  Fl_Menu_Bar       *m_menubar;
+  Common_IPFViewer  *m_viewer;
 
  protected:
-  void  resize(int, int, int, int);
-  void  initWidgets();
-  void  resizeWidgetsShape();
-  void  resizeWidgetsText(); 
-  
- private:
-  inline void cb_BehaviorSelect_i(int);
-  static void cb_BehaviorSelect(Fl_Widget*, int);
-
   inline void cb_Zoom_i(int);
   static void cb_Zoom(Fl_Widget*, int);
+
+  inline void cb_Reset_i(int);
+  static void cb_Reset(Fl_Widget*, int);
 
   inline void cb_RotateX_i(int);
   static void cb_RotateX(Fl_Widget*, int);
@@ -68,55 +57,28 @@ public:
   inline void cb_RotateZ_i(int);
   static void cb_RotateZ(Fl_Widget*, int);
 
-  inline void cb_StretchRad_i(int);
-  static void cb_StretchRad(Fl_Widget*, int);
+  inline void cb_ModScale_i(int);
+  static void cb_ModScale(Fl_Widget*, int);
+
+  inline void cb_ModBaseIPF_i(int);
+  static void cb_ModBaseIPF(Fl_Widget*, int);
 
   inline void cb_ToggleFrame_i();
   static void cb_ToggleFrame(Fl_Widget*);
 
-  inline void cb_ToggleLockIPF_i();
-  static void cb_ToggleLockIPF(Fl_Widget*);
+  inline void cb_FrameHgt_i(int);
+  static void cb_FrameHgt(Fl_Widget*, int);
 
   inline void cb_ColorMap_i(int);
   static void cb_ColorMap(Fl_Widget*, int);
 
-  inline void cb_IncCurrFunction_i(int);
-  static void cb_IncCurrFunction(Fl_Widget*, int);
+  inline void cb_ColorBack_i(int);
+  static void cb_ColorBack(Fl_Widget*, int);
 
-  inline void cb_ToggleCollectiveView_i();
-  static void cb_ToggleCollectiveView(Fl_Widget*);
-
-  inline void cb_ToggleSet_i();
-  static void cb_ToggleSet(Fl_Widget*);
-
-  inline void cb_TogglePin_i();
-  static void cb_TogglePin(Fl_Widget*);
+  inline void cb_Polar_i(int);
+  static void cb_Polar(Fl_Widget*, int);
 
   static void cb_Quit();
-
-protected:
-  Fl_Menu_Bar *m_menubar;
-  Fl_Output   *m_curr_plat;
-
-  Fl_Output   *m_curr_pcs;
-  Fl_Output   *m_curr_pwt;
-  Fl_Output   *m_curr_src;
-  Fl_Output   *m_curr_domain;
-  Fl_Output   *curr_iteration;
-  FV_Model    *m_model;
-  FV_Viewer   *m_viewer;
-
-  Fl_Button   *m_but_ipf_set;
-  Fl_Button   *m_but_ipf_pin;
-
-  int m_start_hgt;
-  int m_start_wid;
-
-  std::vector<std::string> m_bhv_sources;
 };
 #endif
-
-
-
-
 

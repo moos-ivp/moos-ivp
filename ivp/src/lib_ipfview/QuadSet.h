@@ -53,6 +53,7 @@ public:
   void   applyScale(double);
   void   applyBase(double);
   void   applyTranslation(double x, double y);
+  void   applyTranslation();
   void   applyPolar(double, int);
   
   // Geting QuadSet Information

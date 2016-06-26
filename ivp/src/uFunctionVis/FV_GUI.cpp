@@ -31,98 +31,214 @@ using namespace std;
 //--------------------------------------------------------------
 // Constructor
 
-FV_GUI::FV_GUI(int g_w, int g_h, const char *g_l)
-  : Fl_Window(g_w, g_h, g_l) 
+FV_GUI::FV_GUI(int wid, int hgt, const char *label)
+  : Fl_Window(wid, hgt, label) 
 {
   m_model = 0;
 
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
   this->begin();
-
-  m_menu_bar = new Fl_Menu_Bar(0, 0, w(), 25);
-  m_menu_bar->menu(menu_);
-    
-  int info_size=10;
-
-  m_viewer = new FV_Viewer(0, 30, w(), h()-60);
-
-  m_curr_plat = new MY_Output(60, h()-25, 65, 20, "Platform:"); 
-  m_curr_plat->textsize(info_size); 
-  m_curr_plat->labelsize(info_size);
-
-  m_curr_src = new MY_Output(180, h()-25, 130, 20, "Behavior:"); 
-  m_curr_src->textsize(info_size); 
-  m_curr_src->labelsize(info_size);
-
-  curr_iteration = new MY_Output(345, h()-25, 50, 20, "Iter:"); 
-  curr_iteration->textsize(info_size); 
-  curr_iteration->labelsize(info_size);
-
-  m_curr_pcs = new MY_Output(440, h()-25, 50, 20, "Pieces:"); 
-  m_curr_pcs->textsize(info_size); 
-  m_curr_pcs->labelsize(info_size);
-
-  m_curr_pwt = new MY_Output(520, h()-25, 50, 20, "Pwt:"); 
-  m_curr_pwt->textsize(info_size); 
-  m_curr_pwt->labelsize(info_size);
-
-  m_curr_domain = new MY_Output(620, h()-25, 155, 20, "Domain:"); 
-  m_curr_domain->textsize(info_size); 
-  m_curr_domain->labelsize(info_size);
-
-  m_but_ipf_set = new MY_Button(w()-105, h()-25, 34, 20, "set");
-  m_but_ipf_set->labelsize(12);
-  m_but_ipf_set->shortcut('s');
-  m_but_ipf_set->callback((Fl_Callback*)FV_GUI::cb_ToggleSet,(void*)1);
-
-  m_but_ipf_pin = new MY_Button(w()-65, h()-25, 34, 20, "pin");
-  m_but_ipf_pin->labelsize(12);
-  m_but_ipf_pin->callback((Fl_Callback*)FV_GUI::cb_TogglePin,(void*)1);
+  this->size_range(800,550, 1400,1000, 0,0, 1);
+  
+  m_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
+  augmentMenu();
+  
+  initWidgets();
+  resizeWidgetsShape();
+  resizeWidgetsText();
+  
+  m_start_hgt = hgt;
+  m_start_wid = wid;
 
   this->end();
   this->resizable(this);
   this->show();
   this->updateFields();
 
-  string label = "Behaviors/Collective";
-  m_menu_bar->add(label.c_str(), 0, (Fl_Callback*)FV_GUI::cb_BehaviorSelect, 
-		  (void*)900);
-
-  label = "Behaviors/Collective (dep)";
-  m_menu_bar->add(label.c_str(), 0, (Fl_Callback*)FV_GUI::cb_BehaviorSelect, 
-		  (void*)901, FL_MENU_DIVIDER);
-
-  m_menu_bar->redraw();
+  m_menubar->redraw();
 }
 
-Fl_Menu_Item FV_GUI::menu_[] = {
- {"File", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Quit ", FL_CTRL+'q', (Fl_Callback*)FV_GUI::cb_Quit, 0, 0},
- {0},
+//----------------------------------------------------------
+// Procedure: initWidgets()
 
- {"Rotate/Zoom", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Rotate X- ", FL_Down,  (Fl_Callback*)FV_GUI::cb_RotateX, (void*)-1, 0},
- {"Rotate X+ ", FL_Up,  (Fl_Callback*)FV_GUI::cb_RotateX, (void*)1, 0},
- {"Rotate Z- ", FL_Left,  (Fl_Callback*)FV_GUI::cb_RotateZ, (void*)-1, 0},
- {"Rotate Z+ ", FL_Right,  (Fl_Callback*)FV_GUI::cb_RotateZ, (void*)1, 0},
- {"Toggle Frame ",   'f',  (Fl_Callback*)FV_GUI::cb_ToggleFrame, (void*)-1, FL_MENU_DIVIDER},
- {"Expand Radius ",  '}',  (Fl_Callback*)FV_GUI::cb_StretchRad, (void*)1, 0},
- {"Shrink Radius ",  '{',  (Fl_Callback*)FV_GUI::cb_StretchRad, (void*)-1, 0},
- {"Zoom In",         'i', (Fl_Callback*)FV_GUI::cb_Zoom, (void*)-1, 0},
- {"Zoom Out",        'o', (Fl_Callback*)FV_GUI::cb_Zoom, (void*)1, 0},
- {"Zoom Reset", FL_ALT+'Z', (Fl_Callback*)FV_GUI::cb_Zoom, (void*)0, 0},
- {"Lock/UnLock", 'l', (Fl_Callback*)FV_GUI::cb_ToggleLockIPF, (void*)2, 0},
- {0},
+void FV_GUI::initWidgets()
+{
+  m_viewer = new FV_Viewer(0, 0, 1, 1);
 
- {"Color-Map", 0,  0, 0, 64, 0, 0, 14, 0},
- {"Default",   0, (Fl_Callback*)FV_GUI::cb_ColorMap, (void*)1, FL_MENU_RADIO|FL_MENU_VALUE},
- {"Copper",    0, (Fl_Callback*)FV_GUI::cb_ColorMap, (void*)2, FL_MENU_RADIO},
- {"Bone",      0, (Fl_Callback*)FV_GUI::cb_ColorMap, (void*)3, FL_MENU_RADIO|FL_MENU_DIVIDER},
- {0},
+  m_curr_plat = new Fl_Output(0, 0, 1, 1, "Platform:"); 
+  m_curr_plat->clear_visible_focus();
 
- {0}
-};
+  m_curr_src = new Fl_Output(0, 0, 1, 1, "Behavior:"); 
+  m_curr_src->clear_visible_focus();
+
+  curr_iteration = new Fl_Output(0, 0, 1, 1, "Iter:"); 
+  curr_iteration->clear_visible_focus();
+
+  m_curr_pcs = new Fl_Output(0, 0, 1, 1, "Pieces:"); 
+  m_curr_pcs->clear_visible_focus();
+
+  m_curr_pwt = new Fl_Output(0, 0, 1, 1, "Pwt:"); 
+  m_curr_pwt->clear_visible_focus();
+
+  m_curr_domain = new Fl_Output(0, 0, 1, 1, "Domain:"); 
+  m_curr_domain->clear_visible_focus();
+
+  m_but_ipf_set = new Fl_Button(0, 0, 1, 1, "set");
+  m_but_ipf_set->shortcut('s');
+  m_but_ipf_set->clear_visible_focus();
+  m_but_ipf_set->callback((Fl_Callback*)FV_GUI::cb_ToggleSet,(void*)1);
+
+  m_but_ipf_pin = new Fl_Button(0, 0, 1, 1, "pin");
+  m_but_ipf_pin->clear_visible_focus();
+  m_but_ipf_pin->callback((Fl_Callback*)FV_GUI::cb_TogglePin,(void*)1);
+}
+
+//---------------------------------------------------------------------------
+// Procedure: resizeWidgetsShape()
+
+void FV_GUI::resizeWidgetsShape()
+{
+  m_viewer->resize(0, 30, w(), h()-60);
+
+  int extra_wid = w() - m_start_wid;
+  int field_hgt = 20;
+  int row1      = h()-25;
+  
+  int plat_x = 60;
+  int plat_y = row1;
+  int plat_wid = 65;
+  m_curr_plat->resize(plat_x, plat_y, plat_wid, field_hgt);
+  
+  int src_x = plat_x + plat_wid + 55;
+  int src_y = row1;
+  int src_wid = 130;
+  m_curr_src->resize(src_x, src_y, src_wid, field_hgt);
+  
+  int iter_x = src_x + src_wid + 30;
+  int iter_y = row1;
+  int iter_wid = 50;
+  curr_iteration->resize(iter_x, iter_y, iter_wid, field_hgt);
+  
+  int pcs_x = iter_x + iter_wid + 45;
+  int pcs_y = row1;
+  int pcs_wid = 50;
+  m_curr_pcs->resize(pcs_x, pcs_y, pcs_wid, field_hgt);
+  
+  int pwt_x = pcs_x + pcs_wid + 40;
+  int pwt_y = row1;
+  int pwt_wid = 50;
+  m_curr_pwt->resize(pwt_x, pwt_y, pwt_wid, field_hgt);
+  
+  int dom_x = pwt_x + pwt_wid + 55;
+  int dom_y = row1;
+  int dom_wid = 50;
+  m_curr_domain->resize(dom_x, dom_y, dom_wid, field_hgt);
+  
+  int set_x = dom_x + dom_wid + 20;
+  int set_y = row1;
+  int set_wid = 40;
+  m_but_ipf_set->resize(set_x, set_y, set_wid, field_hgt);
+  
+  int pin_x = set_x + set_wid + 10;
+  int pin_y = row1;
+  int pin_wid = 40;
+  m_but_ipf_pin->resize(pin_x, pin_y, pin_wid, field_hgt);
+  
+}
+
+//---------------------------------------------------------------------------
+// Procedure: resizeWidgetsText()
+
+void FV_GUI::resizeWidgetsText()
+{
+  int info_size=10;
+
+  m_curr_plat->textsize(info_size); 
+  m_curr_plat->labelsize(info_size);
+
+  m_curr_src->textsize(info_size); 
+  m_curr_src->labelsize(info_size);
+
+  curr_iteration->textsize(info_size); 
+  curr_iteration->labelsize(info_size);
+
+  m_curr_pcs->textsize(info_size); 
+  m_curr_pcs->labelsize(info_size);
+
+  m_curr_pwt->textsize(info_size); 
+  m_curr_pwt->labelsize(info_size);
+
+  m_curr_domain->textsize(info_size); 
+  m_curr_domain->labelsize(info_size);
+
+  m_but_ipf_set->labelsize(12);
+
+  m_but_ipf_pin->labelsize(12);
+}
+
+
+//---------------------------------------------------------- 
+// Procedure: resize   
+
+void FV_GUI::resize(int x, int y, int wid, int hgt)
+{
+  Fl_Window::resize(x, y, wid, hgt);
+  resizeWidgetsShape();
+  resizeWidgetsText();
+
+  cout << "h(): " << h() << "w(): " << w() << endl;
+}
+
+
+//----------------------------------------------------------
+// Procedure: augmentMenu()
+
+void FV_GUI::augmentMenu()
+{
+  m_menubar->add("File/Quit ", FL_CTRL+'q',
+		 (Fl_Callback*)FV_GUI::cb_Quit, 0, 0);
+  
+  m_menubar->add("RotateZoom/Rotate X- ", FL_Down,
+		 (Fl_Callback*)FV_GUI::cb_RotateX, (void*)-1, 0);
+  m_menubar->add("RotateZoom/Rotate X+ ", FL_Up,
+		 (Fl_Callback*)FV_GUI::cb_RotateX, (void*)1, 0);
+  m_menubar->add("RotateZoom/Rotate Z- ", FL_Left,
+		 (Fl_Callback*)FV_GUI::cb_RotateZ, (void*)-1, 0);
+  m_menubar->add("RotateZoom/Rotate Z+ ", FL_Right,
+		 (Fl_Callback*)FV_GUI::cb_RotateZ, (void*)1, 0);
+  m_menubar->add("RotateZoom/Toggle Frame ",   'f',
+		 (Fl_Callback*)FV_GUI::cb_ToggleFrame, (void*)-1,
+		 FL_MENU_DIVIDER);
+  m_menubar->add("RotateZoom/Expand Radius ",  '}',
+		 (Fl_Callback*)FV_GUI::cb_StretchRad, (void*)1, 0);
+  m_menubar->add("RotateZoom/Shrink Radius ",  '{',
+		 (Fl_Callback*)FV_GUI::cb_StretchRad, (void*)-1, 0);
+  m_menubar->add("RotateZoom/Zoom In",         'i',
+		 (Fl_Callback*)FV_GUI::cb_Zoom, (void*)-1, 0);
+  m_menubar->add("RotateZoom/Zoom Out",        'o',
+		 (Fl_Callback*)FV_GUI::cb_Zoom, (void*)1, 0);
+  m_menubar->add("RotateZoom/Zoom Reset", FL_ALT+'Z',
+		 (Fl_Callback*)FV_GUI::cb_Zoom, (void*)0, 0);
+  m_menubar->add("RotateZoom/Lock/UnLock", 'l',
+		 (Fl_Callback*)FV_GUI::cb_ToggleLockIPF, (void*)2, 0);
+  
+  m_menubar->add("Color-Map/Default", 0,
+		 (Fl_Callback*)FV_GUI::cb_ColorMap, (void*)1,
+		 FL_MENU_RADIO|FL_MENU_VALUE);
+  m_menubar->add("Color-Map/Copper", 0,
+		 (Fl_Callback*)FV_GUI::cb_ColorMap, (void*)2,
+		 FL_MENU_RADIO);
+  m_menubar->add("Color-Map/Bone", 0,
+		 (Fl_Callback*)FV_GUI::cb_ColorMap, (void*)3,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER);
+
+  m_menubar->add("Behaviors/Collective", 0,
+		 (Fl_Callback*)FV_GUI::cb_BehaviorSelect, (void*)900);
+  m_menubar->add("Behaviors/Collective (dep)", 0,
+		 (Fl_Callback*)FV_GUI::cb_BehaviorSelect, (void*)901,
+		 FL_MENU_DIVIDER);
+}
 
 //----------------------------------------------------------
 // Procedure: addBehaviorSource
@@ -146,14 +262,15 @@ void FV_GUI::addBehaviorSource(string bhv_source)
   }
   
   string label = "Behaviors/" + bhv_source;
-  m_menu_bar->add(label.c_str(), 0, (Fl_Callback*)FV_GUI::cb_BehaviorSelect, (void*)index);
+  m_menubar->add(label.c_str(), 0,
+		 (Fl_Callback*)FV_GUI::cb_BehaviorSelect, (void*)index);
 }
 
 
 //----------------------------------------------------------
 // Procedure: handle
 //     Notes: We want the various "Output" widgets to ignore keyboard
-//            events (as they should, right?!), so we wrote a MY_Output
+//            events (as they should, right?!), so we wrote a Fl_Output
 //            subclass to do just that. However the keyboard arrow keys
 //            still seem to be grabbed by Fl_Window to change focuse
 //            between sub-widgets. We over-ride that here to do the 
@@ -353,9 +470,3 @@ void FV_GUI::updateFields()
 void FV_GUI::cb_Quit() {
   exit(0);
 }
-
-
-
-
-
-
