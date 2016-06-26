@@ -91,7 +91,7 @@ void FFV_Viewer::draw()
       m_quadset.applyColorIntensity(m_intensity);
       m_quadset.applyScale(m_scale);
       m_quadset.applyBase(m_base);
-      m_quadset.applyTranslation(-250, -250);
+      m_quadset.applyTranslation();
     }
     Common_IPFViewer::drawQuadSet(m_quadset);
   }
