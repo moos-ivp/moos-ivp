@@ -44,9 +44,6 @@ FFV_GUI::FFV_GUI(int wid, int hgt, const char *label)
  
   augmentMenu();
 
-  m_start_hgt = hgt;
-  m_start_wid = wid;
-  
   initWidgets();
   resizeWidgetsShape();
   resizeWidgetsText();
@@ -54,6 +51,26 @@ FFV_GUI::FFV_GUI(int wid, int hgt, const char *label)
   this->end();
   this->resizable(this);
   this->show();
+}
+
+//--------------------------------------------------------------
+// Procedure: setViewerParam()
+
+bool FFV_GUI::setViewerParam(string param, string value)
+{
+  if(m_ffv_viewer)
+    return(m_ffv_viewer->setParam(param, value));
+  return(false);
+}
+
+//--------------------------------------------------------------
+// Procedure: setViewerParam()
+
+bool FFV_GUI::setViewerParam(string param, double value)
+{
+  if(m_ffv_viewer)
+    return(m_ffv_viewer->setParam(param, value));
+  return(true);
 }
 
 //--------------------------------------------------------------------------- 

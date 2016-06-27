@@ -32,9 +32,9 @@ using namespace std;
 //-------------------------------------------------------------
 // Constructor
 
-Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width, 
-				   int g_height, const char *g_l)
- : Fl_Gl_Window(g_x, g_y, g_width, g_height, g_l)
+Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt, 
+				   const char *label)
+ : Fl_Gl_Window(x, y, wid, hgt, label)
 {
   m_xRot         = -72;
   m_zRot         = 40;
@@ -45,6 +45,7 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
   m_draw_pin     = true;
   m_draw_frame   = true;
   m_draw_base    = true;
+  m_draw_ipf     = true;
   m_polar        = 0; 
   m_draw_pclines = true;
   m_intensity    = 1.0;
@@ -56,9 +57,9 @@ Common_IPFViewer::Common_IPFViewer(int g_x, int g_y, int g_width,
 
   // 1D configuration parameters
   m_xoffset     = 50;
-  m_yoffset     = g_height / 3.5;
-  m_grid_width  = g_width  - (m_xoffset*2);
-  m_grid_height = 0.5 * g_height;
+  m_yoffset     = hgt / 3.5;
+  m_grid_width  = wid  - (m_xoffset*2);
+  m_grid_height = 0.5 * hgt;
 }
 
 //-------------------------------------------------------------
@@ -122,7 +123,7 @@ bool Common_IPFViewer::setParam(string param, string value)
     return(setBooleanOnString(m_draw_frame, value));
   else if(param == "draw_base")
     return(setBooleanOnString(m_draw_base, value));
-  else if(param == "draw_pclines")
+  else if(param == "draw_pclines") 
     return(setBooleanOnString(m_draw_pclines, value));
   else if(param == "draw_pin")
     setBooleanOnString(m_draw_pin, value);
@@ -457,15 +458,6 @@ bool Common_IPFViewer::drawQuadSet2D(const QuadSet& quadset)
 
 void Common_IPFViewer::drawQuad(Quad3D q)
 {
-#if 0
-  if(m_polar == 0)
-    q.applyTranslation(-250, -250);
-  if(m_polar == 1) 
-    q.applyPolar(m_rad_extra, 1, q.xpts);
-  else if(m_polar == 2) 
-    q.applyPolar(m_rad_extra, 2, q.ypts);
-#endif
-  
   double x0=q.getLLX();
   double x1=q.getHLX();
   double x2=q.getHHX();

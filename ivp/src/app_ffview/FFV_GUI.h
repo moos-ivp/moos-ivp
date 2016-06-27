@@ -36,19 +36,22 @@ public:
   FFV_GUI(int w, int h, const char *label=0);
   virtual ~FFV_GUI() {};
   
-  void augmentMenu();
-  void resize(int, int, int, int);
-  void updateXY();
   int  handle(int);
   void setAOF(AOF* aof)           
     {m_ffv_viewer->setAOF(aof); m_ffv_viewer->modColorMap("default");}
 
+  bool setViewerParam(std::string, std::string);
+  bool setViewerParam(std::string, double);
+    
  protected:
+  void augmentMenu();
   void initWidgets();
   void resizeWidgetsShape();
   void resizeWidgetsText();
+  void updateXY();
+  void resize(int, int, int, int);
   
- public:
+ protected:
   FFV_Viewer  *m_ffv_viewer;
 
   Fl_Output   *m_fld_samp_count;
@@ -69,10 +72,6 @@ public:
 
   Fl_Output   *m_fld_auto_peak;
   Fl_Output   *m_fld_refine_pce_str;
-
- protected:
-  int m_start_hgt;
-  int m_start_wid;
 
 private:
   inline void cb_Script_i();

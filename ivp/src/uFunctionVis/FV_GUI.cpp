@@ -32,7 +32,7 @@ using namespace std;
 // Constructor
 
 FV_GUI::FV_GUI(int wid, int hgt, const char *label)
-  : Fl_Window(wid, hgt, label) 
+  : Common_IPF_GUI(wid, hgt, label) 
 {
   m_model = 0;
 
@@ -41,16 +41,14 @@ FV_GUI::FV_GUI(int wid, int hgt, const char *label)
   this->begin();
   this->size_range(800,550, 1400,1000, 0,0, 1);
   
-  m_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
   augmentMenu();
   
   initWidgets();
   resizeWidgetsShape();
   resizeWidgetsText();
-  
-  m_start_hgt = hgt;
-  m_start_wid = wid;
 
+  m_viewer = (Common_IPFViewer*)(m_fv_viewer);
+  
   this->end();
   this->resizable(this);
   this->show();
@@ -64,7 +62,7 @@ FV_GUI::FV_GUI(int wid, int hgt, const char *label)
 
 void FV_GUI::initWidgets()
 {
-  m_viewer = new FV_Viewer(0, 0, 1, 1);
+  m_fv_viewer = new FV_Viewer(0, 0, 1, 1);
 
   m_fld_curr_plat = new Fl_Output(0, 0, 1, 1, "Platform:"); 
   m_fld_curr_plat->clear_visible_focus();
@@ -99,7 +97,7 @@ void FV_GUI::initWidgets()
 
 void FV_GUI::resizeWidgetsShape()
 {
-  m_viewer->resize(0, 30, w(), h()-60);
+  m_fv_viewer->resize(0, 30, w(), h()-60);
 
   int extra_wid = w() - m_start_wid;
   int field_hgt = 20;
@@ -194,30 +192,10 @@ void FV_GUI::resize(int x, int y, int wid, int hgt)
 
 void FV_GUI::augmentMenu()
 {
-  m_menubar->add("File/Quit ", FL_CTRL+'q',
-		 (Fl_Callback*)FV_GUI::cb_Quit, 0, 0);
-  
-  m_menubar->add("RotateZoom/Rotate X- ", FL_Down,
-		 (Fl_Callback*)FV_GUI::cb_RotateX, (void*)-1, 0);
-  m_menubar->add("RotateZoom/Rotate X+ ", FL_Up,
-		 (Fl_Callback*)FV_GUI::cb_RotateX, (void*)1, 0);
-  m_menubar->add("RotateZoom/Rotate Z- ", FL_Left,
-		 (Fl_Callback*)FV_GUI::cb_RotateZ, (void*)-1, 0);
-  m_menubar->add("RotateZoom/Rotate Z+ ", FL_Right,
-		 (Fl_Callback*)FV_GUI::cb_RotateZ, (void*)1, 0);
-  m_menubar->add("RotateZoom/Toggle Frame ",   'f',
-		 (Fl_Callback*)FV_GUI::cb_ToggleFrame, (void*)-1,
-		 FL_MENU_DIVIDER);
   m_menubar->add("RotateZoom/Expand Radius ",  '}',
 		 (Fl_Callback*)FV_GUI::cb_StretchRad, (void*)1, 0);
   m_menubar->add("RotateZoom/Shrink Radius ",  '{',
 		 (Fl_Callback*)FV_GUI::cb_StretchRad, (void*)-1, 0);
-  m_menubar->add("RotateZoom/Zoom In",         'i',
-		 (Fl_Callback*)FV_GUI::cb_Zoom, (void*)-1, 0);
-  m_menubar->add("RotateZoom/Zoom Out",        'o',
-		 (Fl_Callback*)FV_GUI::cb_Zoom, (void*)1, 0);
-  m_menubar->add("RotateZoom/Zoom Reset", FL_ALT+'Z',
-		 (Fl_Callback*)FV_GUI::cb_Zoom, (void*)0, 0);
   m_menubar->add("RotateZoom/Lock/UnLock", 'l',
 		 (Fl_Callback*)FV_GUI::cb_ToggleLockIPF, (void*)2, 0);
   
@@ -278,6 +256,7 @@ void FV_GUI::addBehaviorSource(string bhv_source)
 
 int FV_GUI::handle(int event) 
 {
+#if 0
   switch(event) {
   case FL_KEYBOARD:
     if(Fl::event_key()==FL_Down) {
@@ -306,6 +285,8 @@ int FV_GUI::handle(int event)
   default:
     return(Fl_Window::handle(event));
   }
+#endif
+  return(Fl_Window::handle(event));
 }
 
 //----------------------------------------- BehaviorSelect
@@ -332,46 +313,15 @@ void FV_GUI::cb_BehaviorSelect(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_BehaviorSelect_i(v);
 }
 
-//----------------------------------------- Zoom In
-inline void FV_GUI::cb_Zoom_i(int val) {
-  if(val < 0) m_viewer->setParam("mod_zoom", 1.25);
-  if(val > 0) m_viewer->setParam("mod_zoom", 0.80);
-}
-void FV_GUI::cb_Zoom(Fl_Widget* o, int v) {
-  ((FV_GUI*)(o->parent()->user_data()))->cb_Zoom_i(v);
-}
-
-//----------------------------------------- Rotate  X
-inline void FV_GUI::cb_RotateX_i(int amt) {
-  m_viewer->setParam("mod_x_rotation", (double)(amt));
-}
-void FV_GUI::cb_RotateX(Fl_Widget* o, int v) {
-  ((FV_GUI*)(o->parent()->user_data()))->cb_RotateX_i(v);
-}
-
-//----------------------------------------- Rotate  Z
-inline void FV_GUI::cb_RotateZ_i(int amt) {
-  m_viewer->setParam("mod_z_rotation", (double)(amt));
-}
-void FV_GUI::cb_RotateZ(Fl_Widget* o, int v) {
-  ((FV_GUI*)(o->parent()->user_data()))->cb_RotateZ_i(v);
-}
-
 //----------------------------------------- Stretch Radius
 inline void FV_GUI::cb_StretchRad_i(int amt) {
-  if(amt > 0) m_viewer->setParam("mod_radius", 1.05);
-  if(amt < 0) m_viewer->setParam("mod_radius", 0.95);
+  if(amt > 0)
+    m_fv_viewer->setParam("mod_radius", 1.05);
+  if(amt < 0)
+    m_fv_viewer->setParam("mod_radius", 0.95);
 }
 void FV_GUI::cb_StretchRad(Fl_Widget* o, int v) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_StretchRad_i(v);
-}
-
-//----------------------------------------- Toggle Frame
-inline void FV_GUI::cb_ToggleFrame_i() {
-  m_viewer->setParam("draw_frame", "toggle");
-}
-void FV_GUI::cb_ToggleFrame(Fl_Widget* o) {
-  ((FV_GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();
 }
 
 //----------------------------------------- ToggleLockIPF
@@ -390,24 +340,10 @@ void FV_GUI::cb_ToggleLockIPF(Fl_Widget* o) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_ToggleLockIPF_i();
 }
 
-//----------------------------------------- ColorMap
-inline void FV_GUI::cb_ColorMap_i(int index) {
-  string str = "default";
-  if(index ==2)
-    str = "copper";
-  else if(index == 3)
-    str = "bone";
-  m_model->modColorMap(str);
-  m_viewer->redraw();
-}
-void FV_GUI::cb_ColorMap(Fl_Widget* o, int v) {
-  ((FV_GUI*)(o->parent()->user_data()))->cb_ColorMap_i(v);
-}
-
 //----------------------------------------- ToggleSet
 inline void FV_GUI::cb_ToggleSet_i() {
   m_but_ipf_set->deactivate();
-  m_viewer->setParam("reset_view", "2");
+  m_fv_viewer->setParam("reset_view", "2");
 }
 void FV_GUI::cb_ToggleSet(Fl_Widget* o) {
   ((FV_GUI*)(o->parent()->user_data()))->cb_ToggleSet_i();
@@ -415,7 +351,7 @@ void FV_GUI::cb_ToggleSet(Fl_Widget* o) {
 
 //----------------------------------------- TogglePin
 inline void FV_GUI::cb_TogglePin_i() {
-  m_viewer->setParam("draw_pin", "toggle");
+  m_fv_viewer->setParam("draw_pin", "toggle");
 }
 
 void FV_GUI::cb_TogglePin(Fl_Widget* o) {
@@ -461,10 +397,6 @@ void FV_GUI::updateFields()
     iteration = "<" + iteration + ">";
   m_fld_curr_iter->value(iteration.c_str());
 
-  m_viewer->redraw();
+  m_fv_viewer->redraw();
 }
 
-//----------------------------------------- Quit
-void FV_GUI::cb_Quit() {
-  exit(0);
-}

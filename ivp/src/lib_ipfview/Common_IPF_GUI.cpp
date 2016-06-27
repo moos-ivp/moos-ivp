@@ -37,7 +37,30 @@ Common_IPF_GUI::Common_IPF_GUI(int wid, int hgt, const char *label)
   m_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
   augmentMenu();
 
+  m_start_hgt = hgt;
+  m_start_wid = wid;
+
   m_viewer = 0;
+}
+
+//--------------------------------------------------------------
+// Procedure: setViewerParam()
+
+bool Common_IPF_GUI::setViewerParam(string param, string value)
+{
+  if(m_viewer)
+    return(m_viewer->setParam(param, value));
+  return(false);
+}
+
+//--------------------------------------------------------------
+// Procedure: setViewerParam()
+
+bool Common_IPF_GUI::setViewerParam(string param, double value)
+{
+  if(m_viewer)
+    return(m_viewer->setParam(param, value));
+  return(true);
 }
 
 //--------------------------------------------------------------
@@ -88,6 +111,9 @@ void Common_IPF_GUI::augmentMenu()
   //===========================================================
   // IPF Menu
   //===========================================================
+  m_menubar->add("IPF/Toggle Function ",   'F',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ToggleIPF, (void*)-1,
+		 FL_MENU_DIVIDER);
   m_menubar->add("IPF/Base +", 'e',
 		 (Fl_Callback*)Common_IPF_GUI::cb_ModBaseIPF, (void*)+10, 0);
   m_menubar->add("IPF/Base -", 'r',
@@ -98,7 +124,11 @@ void Common_IPF_GUI::augmentMenu()
   m_menubar->add("IPF/Polar1", 0,
 		 (Fl_Callback*)Common_IPF_GUI::cb_Polar, (void*)1, 0);
   m_menubar->add("IPF/Polar2", 0,
-		 (Fl_Callback*)Common_IPF_GUI::cb_Polar, (void*)2, FL_MENU_DIVIDER);
+		 (Fl_Callback*)Common_IPF_GUI::cb_Polar, (void*)2,
+		 FL_MENU_DIVIDER);
+  m_menubar->add("IPF/Render Lines", 'l',
+		 (Fl_Callback*)Common_IPF_GUI::cb_TogglePieceLines, (void*)0,
+		 FL_MENU_DIVIDER);
 
   //===========================================================
   // ColorMap Menu
@@ -204,6 +234,23 @@ inline void Common_IPF_GUI::cb_ToggleFrame_i() {
 }
 void Common_IPF_GUI::cb_ToggleFrame(Fl_Widget* o) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();
+}
+
+//----------------------------------------- Toggle IPF
+inline void Common_IPF_GUI::cb_ToggleIPF_i() {
+  m_viewer->setParam("draw_ipf", "toggle");
+}
+void Common_IPF_GUI::cb_ToggleIPF(Fl_Widget* o) {
+  ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleIPF_i();
+}
+
+//----------------------------------------- Toggle Piece Lines
+inline void Common_IPF_GUI::cb_TogglePieceLines_i() {
+  m_viewer->setParam("draw_pclines", "toggle");
+  m_viewer->redraw();
+}
+void Common_IPF_GUI::cb_TogglePieceLines(Fl_Widget* o) {
+  ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_TogglePieceLines_i();
 }
 
 //----------------------------------------- Frame Height

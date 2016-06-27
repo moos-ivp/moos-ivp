@@ -51,10 +51,10 @@ GUI_IPF::GUI_IPF(int g_w, int g_h, const char *g_l)
   m_fullscreen = false;
   m_mutable_text_size = 10;
 
-  this->initWidgets();
-  this->resizeWidgetsShape();
-  this->resizeWidgetsText();
-  this->redraw();
+  initWidgets();
+  resizeWidgetsShape();
+  resizeWidgetsText();
+  redraw();
 
   this->end();
   this->resizable(this);

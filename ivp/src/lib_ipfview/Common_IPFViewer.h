@@ -94,6 +94,7 @@ protected:
   double     m_intensity;
   int        m_polar;
   
+  bool       m_draw_ipf;
   bool       m_draw_pin;
   bool       m_draw_frame;
   bool       m_draw_base;

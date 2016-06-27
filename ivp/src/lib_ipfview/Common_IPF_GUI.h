@@ -37,13 +37,20 @@ public:
   Common_IPF_GUI(int w, int h, const char *l=0);
   virtual ~Common_IPF_GUI() {};
 
+  bool setViewerParam(std::string, std::string);
+  bool setViewerParam(std::string, double);
+  
+ protected:
   void augmentMenu();
   int  handle(int);
   
- public:
-  Fl_Menu_Bar       *m_menubar;
+ protected:
   Common_IPFViewer  *m_viewer;
+  Fl_Menu_Bar       *m_menubar;
 
+  int m_start_hgt;
+  int m_start_wid;
+  
  protected:
   inline void cb_Zoom_i(int);
   static void cb_Zoom(Fl_Widget*, int);
@@ -63,8 +70,14 @@ public:
   inline void cb_ModBaseIPF_i(int);
   static void cb_ModBaseIPF(Fl_Widget*, int);
 
+  inline void cb_ToggleIPF_i();
+  static void cb_ToggleIPF(Fl_Widget*);
+
   inline void cb_ToggleFrame_i();
   static void cb_ToggleFrame(Fl_Widget*);
+
+  inline void cb_TogglePieceLines_i();
+  static void cb_TogglePieceLines(Fl_Widget*);
 
   inline void cb_FrameHgt_i(int);
   static void cb_FrameHgt(Fl_Widget*, int);

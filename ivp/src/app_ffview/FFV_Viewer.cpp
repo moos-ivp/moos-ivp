@@ -570,10 +570,9 @@ void FFV_Viewer::drawAOF()
   int xc = xmin;
   Quad3D q;
 
+  bool draw_pclines_save = m_draw_pclines;
   m_draw_pclines = false;
   
-  //q.xpts = (xmax - xmin) + 1;
-  //q.ypts = (ymax - ymin) + 1;
   unsigned int count = 0;
   while(yc < ymax) {
     xc = xmin; 
@@ -646,6 +645,7 @@ void FFV_Viewer::drawAOF()
     }
     yc += m_patch;
   }  
+  m_draw_pclines = draw_pclines_save;
 }
 
 //-------------------------------------------------------------
