@@ -24,8 +24,8 @@
 #ifndef FUNCTION_VIEWER_GUI_HEADER
 #define FUNCTION_VIEWER_GUI_HEADER
 
-#include "FL/Fl_Button.h"
-#include "FL/Fl_Output.h"
+#include "FL/Fl_Button.H"
+#include "FL/Fl_Output.H"
 #include "FV_Viewer.h"
 #include "FV_Model.h"
 #include "Common_IPF_GUI.h"
