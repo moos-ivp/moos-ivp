@@ -295,18 +295,18 @@ bool MarinePID::OnConnectToServer()
 
 void MarinePID::registerVariables()
 {
-  m_Comms.Register("NAV_HEADING", 0);
-  m_Comms.Register("NAV_YAW", 0);
-  m_Comms.Register("NAV_SPEED", 0);
-  m_Comms.Register("NAV_DEPTH", 0);
-  m_Comms.Register("NAV_PITCH", 0);
-  m_Comms.Register("DESIRED_HEADING", 0);
-  m_Comms.Register("DESIRED_SPEED", 0);
-  m_Comms.Register("DESIRED_DEPTH", 0);
-  m_Comms.Register("PID_VERBOSE", 0);
-  m_Comms.Register("SPEED_FACTOR", 0);
-  m_Comms.Register("MOOS_MANUAL_OVERIDE", 0);
-  m_Comms.Register("MOOS_MANUAL_OVERRIDE", 0);
+  Register("NAV_HEADING", 0);
+  Register("NAV_YAW", 0);
+  Register("NAV_SPEED", 0);
+  Register("NAV_DEPTH", 0);
+  Register("NAV_PITCH", 0);
+  Register("DESIRED_HEADING", 0);
+  Register("DESIRED_SPEED", 0);
+  Register("DESIRED_DEPTH", 0);
+  Register("PID_VERBOSE", 0);
+  Register("SPEED_FACTOR", 0);
+  Register("MOOS_MANUAL_OVERIDE", 0);
+  Register("MOOS_MANUAL_OVERRIDE", 0);
 }
 
 //--------------------------------------------------------
