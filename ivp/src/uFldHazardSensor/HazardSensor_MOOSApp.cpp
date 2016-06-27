@@ -140,11 +140,11 @@ void HazardSensor_MOOSApp::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
 
-  m_Comms.Register("NODE_REPORT", 0);
-  m_Comms.Register("UHZ_SENSOR_REQUEST", 0);
-  m_Comms.Register("UHZ_CLASSIFY_REQUEST", 0);
-  m_Comms.Register("UHZ_CONFIG_REQUEST", 0);
-  m_Comms.Register("PMV_CONNECT", 0);
+  Register("NODE_REPORT", 0);
+  Register("UHZ_SENSOR_REQUEST", 0);
+  Register("UHZ_CLASSIFY_REQUEST", 0);
+  Register("UHZ_CONFIG_REQUEST", 0);
+  Register("PMV_CONNECT", 0);
 }
 
 

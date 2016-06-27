@@ -180,7 +180,7 @@ bool XMS::Iterate()
   AppCastingMOOSApp::Iterate();
 
   if(m_display_all && !m_display_all_requested) {
-    m_Comms.Register("*","*",0);
+    Register("*","*",0);
     m_display_all_requested = true;
   }
   
@@ -328,7 +328,7 @@ bool XMS::OnStartUp()
   
   // setup for display all
   if(m_display_all) {
-    m_Comms.Register("*","*",0);
+    Register("*","*",0);
     m_display_all_requested = true;
   }
   else
@@ -1411,7 +1411,7 @@ void XMS::refreshProcVarsList()
 	for(j=0; j<jsize; j++) {
 	  string varname = jvector[j];
 	  if((varname != status_var) && addVariable(varname)) {
-	    m_Comms.Register(varname, 0);
+	    Register(varname, 0);
 	  }
 	}
       }
@@ -1518,7 +1518,7 @@ void XMS::handleSelectMaskAddSources()
       string src = m_map_id_src[id];
       string src_status = toupper(src) + "_STATUS";
       addSource(src);
-      m_Comms.Register(src_status, 1.0);
+      Register(src_status, 1.0);
       m_mask_add_sources.insert(src);
       m_mask_sub_sources.erase(src);
     }

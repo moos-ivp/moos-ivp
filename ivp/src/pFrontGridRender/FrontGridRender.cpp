@@ -180,9 +180,9 @@ bool FrontGridRender::OnStartUp()
 
 void FrontGridRender::RegisterVariables()
 {
-  m_Comms.Register("UCTD_TRUE_PARAMETERS", 0);
-  m_Comms.Register("UCTD_PARAMETER_ESTIMATE", 0);
-  m_Comms.Register("FGR_SHOW", 0);
+  Register("UCTD_TRUE_PARAMETERS", 0);
+  Register("UCTD_PARAMETER_ESTIMATE", 0);
+  Register("FGR_SHOW", 0);
   AppCastingMOOSApp::RegisterVariables();
 }
 

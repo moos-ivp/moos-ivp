@@ -91,9 +91,9 @@ bool SafetyRetreat::OnConnectToServer()
 void SafetyRetreat::RegisterVariables()
 {
   if(m_retreat_cue != "")
-    m_Comms.Register(m_retreat_cue, 0);
-  m_Comms.Register("NAV_X", 0);
-  m_Comms.Register("NAV_Y", 0);
+    Register(m_retreat_cue, 0);
+  Register("NAV_X", 0);
+  Register("NAV_Y", 0);
 }
 
 

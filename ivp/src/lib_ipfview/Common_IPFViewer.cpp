@@ -617,11 +617,15 @@ void Common_IPFViewer::drawPolarFrame(bool full)
   double z = -150;
   double t = z + m_frame_height;
 
-  double frame_red = m_frame_color.red();
-  double frame_grn = m_frame_color.grn();
-  double frame_blu = m_frame_color.blu();
+  //double frame_red = m_frame_color.red();
+  //double frame_grn = m_frame_color.grn();
+  //double frame_blu = m_frame_color.blu();
 
-  glColor3f(frame_red/2, frame_grn/2, frame_blu/2);
+  double frame_red = 0.95;
+  double frame_grn = 0.95;
+  double frame_blu = 0.99;
+
+  glColor3f(frame_red, frame_grn, frame_blu);
   glShadeModel(GL_FLAT);
   
   // Either draw a full base or just the frame

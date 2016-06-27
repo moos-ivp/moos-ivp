@@ -223,10 +223,10 @@ void PokeDB::registerVariables()
 {
   unsigned int i, vsize = m_varname.size();
   for(i=0; i<vsize; i++) 
-    m_Comms.Register(m_varname[i], 0);
+    Register(m_varname[i], 0);
 
-  m_Comms.Register("DB_UPTIME", 0);
-  m_Comms.Register("DB_TIME", 0);
+  Register("DB_UPTIME", 0);
+  Register("DB_TIME", 0);
 }
 
 //------------------------------------------------------------

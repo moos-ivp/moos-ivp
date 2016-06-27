@@ -107,8 +107,8 @@ bool ProcessWatch::OnConnectToServer()
 void ProcessWatch::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("DB_CLIENTS", 0);
-  m_Comms.Register("EXITED_NORMALLY", 0);
+  Register("DB_CLIENTS", 0);
+  Register("EXITED_NORMALLY", 0);
 }
 
 
@@ -599,7 +599,7 @@ bool ProcessWatch::addToWatchList(string procname)
   if(explicitly_included || !explicitly_excluded) {
     m_watch_list.push_back(procname);
 
-    m_Comms.Register(toupper(procname) + "_STATUS", 0);
+    Register(toupper(procname) + "_STATUS", 0);
 
     return(true);
   }

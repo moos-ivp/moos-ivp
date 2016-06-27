@@ -186,16 +186,16 @@ void EchoVar::registerVariables()
   AppCastingMOOSApp::RegisterVariables();
 
   for(unsigned int i=0; i<m_unique_sources.size(); i++)
-    m_Comms.Register(m_unique_sources[i], 0);
+    Register(m_unique_sources[i], 0);
   
   for(unsigned int j=0; j<m_eflippers.size(); j++)
-    m_Comms.Register(m_eflippers[j].getSourceVar(), 0);
+    Register(m_eflippers[j].getSourceVar(), 0);
 
 
   // Register for all variables found in all conditions.
   vector<string> all_vars = m_logic_buffer.getAllVars();
   for(unsigned int i=0; i<all_vars.size(); i++)
-    m_Comms.Register(all_vars[i], 0);
+    Register(all_vars[i], 0);
 
 }
 

@@ -136,8 +136,8 @@ bool UMV_MOOSApp::OnStartUp()
 void UMV_MOOSApp::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("DB_UPTIME", 0);
-  m_Comms.Register("APPCAST", 0);
+  Register("DB_UPTIME", 0);
+  Register("APPCAST", 0);
 }
 
 //----------------------------------------------------------------------

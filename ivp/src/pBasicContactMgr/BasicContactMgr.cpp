@@ -316,14 +316,14 @@ void BasicContactMgr::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
 
-  m_Comms.Register("NODE_REPORT", 0);
-  m_Comms.Register("CONTACT_RESOLVED", 0);
-  m_Comms.Register("BCM_DISPLAY_RADII", 0);
-  m_Comms.Register("BCM_ALERT_REQUEST", 0);
-  m_Comms.Register("NAV_X", 0);
-  m_Comms.Register("NAV_Y", 0);
-  m_Comms.Register("NAV_SPEED", 0);
-  m_Comms.Register("NAV_HEADING", 0);
+  Register("NODE_REPORT", 0);
+  Register("CONTACT_RESOLVED", 0);
+  Register("BCM_DISPLAY_RADII", 0);
+  Register("BCM_ALERT_REQUEST", 0);
+  Register("NAV_X", 0);
+  Register("NAV_Y", 0);
+  Register("NAV_SPEED", 0);
+  Register("NAV_HEADING", 0);
 }
 
 //---------------------------------------------------------

@@ -144,10 +144,10 @@ void QueryDB::registerVariables()
 {
   vector<string> vars = m_logic_condition.getVarNames();
   for(unsigned int i=0; i<vars.size(); i++) 
-    m_Comms.Register(vars[i], 0);
+    Register(vars[i], 0);
 
-  m_Comms.Register("DB_UPTIME", 0);
-  m_Comms.Register("DB_TIME", 0);
+  Register("DB_UPTIME", 0);
+  Register("DB_TIME", 0);
 }
 
 //------------------------------------------------------------

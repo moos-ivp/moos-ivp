@@ -239,9 +239,9 @@ bool GradeFrontEstimate::OnStartUp()
 void GradeFrontEstimate::RegisterVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-    m_Comms.Register("UCTD_PARAMETER_ESTIMATE", 0);
-    m_Comms.Register("UCTD_TRUE_PARAMETERS",0);
-    m_Comms.Register("DEPLOY_ALL",0);
+    Register("UCTD_PARAMETER_ESTIMATE", 0);
+    Register("UCTD_TRUE_PARAMETERS",0);
+    Register("DEPLOY_ALL",0);
 }
 
 void GradeFrontEstimate::postSensingScore(string vname, double error, double score)
@@ -252,7 +252,7 @@ void GradeFrontEstimate::postSensingScore(string vname, double error, double sco
     + ",error=" + doubleToString(error)
     + ",score=" + doubleToString(score);
    
-  m_Comms.Notify("UCTD_SCORE_REPORT", gt);
+  Notify("UCTD_SCORE_REPORT", gt);
 
 }
 //---------------------------------------------------------

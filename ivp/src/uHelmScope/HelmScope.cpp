@@ -449,14 +449,14 @@ void HelmScope::updateScopeEntries(const CMOOSMsg& msg)
 void HelmScope::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("DB_UPTIME", 0);
-  m_Comms.Register("IVPHELM_SUMMARY", 0);
-  m_Comms.Register("IVPHELM_STATEVARS", 0);
-  m_Comms.Register("IVPHELM_DOMAIN", 0);
-  m_Comms.Register("IVPHELM_MODESET", 0);
-  m_Comms.Register("IVPHELM_STATE", 0);
-  m_Comms.Register("IVPHELM_LIFE_EVENT", 0);
-  m_Comms.Register("PHELMIVP_STATUS", 0);
+  Register("DB_UPTIME", 0);
+  Register("IVPHELM_SUMMARY", 0);
+  Register("IVPHELM_STATEVARS", 0);
+  Register("IVPHELM_DOMAIN", 0);
+  Register("IVPHELM_MODESET", 0);
+  Register("IVPHELM_STATE", 0);
+  Register("IVPHELM_LIFE_EVENT", 0);
+  Register("PHELMIVP_STATUS", 0);
 }
 
 //------------------------------------------------------------

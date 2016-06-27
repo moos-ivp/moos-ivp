@@ -183,11 +183,11 @@ bool HazardMgr::OnStartUp()
 void HazardMgr::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("UHZ_DETECTION_REPORT", 0);
-  m_Comms.Register("UHZ_CONFIG_ACK", 0);
-  m_Comms.Register("UHZ_OPTIONS_SUMMARY", 0);
-  m_Comms.Register("UHZ_MISSION_PARAMS", 0);
-  m_Comms.Register("HAZARDSET_REQUEST", 0);
+  Register("UHZ_DETECTION_REPORT", 0);
+  Register("UHZ_CONFIG_ACK", 0);
+  Register("UHZ_OPTIONS_SUMMARY", 0);
+  Register("UHZ_MISSION_PARAMS", 0);
+  Register("HAZARDSET_REQUEST", 0);
 }
 
 //---------------------------------------------------------

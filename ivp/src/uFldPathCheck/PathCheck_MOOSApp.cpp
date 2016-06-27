@@ -193,9 +193,9 @@ bool PathCheck_MOOSApp::handleTripReset(string reset_vname)
 void PathCheck_MOOSApp::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("NODE_REPORT", 0);
-  m_Comms.Register("NODE_REPORT_LOCAL", 0);
-  m_Comms.Register("UPC_TRIP_RESET", 0);
+  Register("NODE_REPORT", 0);
+  Register("NODE_REPORT_LOCAL", 0);
+  Register("UPC_TRIP_RESET", 0);
 }
 
 

@@ -393,50 +393,50 @@ void USM_MOOSApp::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
 
-  m_Comms.Register("DESIRED_RUDDER", 0);
-  m_Comms.Register("DESIRED_THRUST", 0);
-  m_Comms.Register("DESIRED_ELEVATOR", 0);
+  Register("DESIRED_RUDDER", 0);
+  Register("DESIRED_THRUST", 0);
+  Register("DESIRED_ELEVATOR", 0);
 
-  m_Comms.Register("DESIRED_THRUST_L", 0);
-  m_Comms.Register("DESIRED_THRUST_R", 0);
+  Register("DESIRED_THRUST_L", 0);
+  Register("DESIRED_THRUST_R", 0);
 
-  m_Comms.Register("USM_BUOYANCY_RATE", 0);  // Deprecated
-  m_Comms.Register("BUOYANCY_RATE", 0);
+  Register("USM_BUOYANCY_RATE", 0);  // Deprecated
+  Register("BUOYANCY_RATE", 0);
 
-  m_Comms.Register("USM_WATER_DEPTH", 0);    // Deprecated
-  m_Comms.Register("WATER_DEPTH", 0);
+  Register("USM_WATER_DEPTH", 0);    // Deprecated
+  Register("WATER_DEPTH", 0);
 
-  m_Comms.Register("USM_FORCE_X", 0);  // Deprecated
-  m_Comms.Register("CURRENT_X",0);
-  m_Comms.Register("DRIFT_X",0);
+  Register("USM_FORCE_X", 0);  // Deprecated
+  Register("CURRENT_X",0);
+  Register("DRIFT_X",0);
 
-  m_Comms.Register("USM_FORCE_Y", 0);  // Dperecated
-  m_Comms.Register("CURRENT_Y",0);
-  m_Comms.Register("DRIFT_Y",0);
+  Register("USM_FORCE_Y", 0);  // Dperecated
+  Register("CURRENT_Y",0);
+  Register("DRIFT_Y",0);
 
-  m_Comms.Register("USM_FORCE_VECTOR", 0); // Deprecated
-  m_Comms.Register("DRIFT_VECTOR", 0);
+  Register("USM_FORCE_VECTOR", 0); // Deprecated
+  Register("DRIFT_VECTOR", 0);
 
-  m_Comms.Register("USM_FORCE_VECTOR_ADD", 0); // Deprecated
-  m_Comms.Register("DRIFT_VECTOR_ADD", 0);
+  Register("USM_FORCE_VECTOR_ADD", 0); // Deprecated
+  Register("DRIFT_VECTOR_ADD", 0);
 
-  m_Comms.Register("USM_FORCE_VECTOR_MULT", 0); // Deprecated
-  m_Comms.Register("DRIFT_VECTOR_MULT", 0);
+  Register("USM_FORCE_VECTOR_MULT", 0); // Deprecated
+  Register("DRIFT_VECTOR_MULT", 0);
 
-  m_Comms.Register("USM_FORCE_THETA", 0); // Deprecated
-  m_Comms.Register("ROTATE_SPEED", 0);
+  Register("USM_FORCE_THETA", 0); // Deprecated
+  Register("ROTATE_SPEED", 0);
 
-  m_Comms.Register("USM_SIM_PAUSED", 0); 
-  m_Comms.Register("USM_RESET", 0);
+  Register("USM_SIM_PAUSED", 0); 
+  Register("USM_RESET", 0);
 
-  m_Comms.Register("OBSTACLE_HIT", 0);
+  Register("OBSTACLE_HIT", 0);
 
   // Added buoyancy and trim control and sonar handshake
-  m_Comms.Register("TRIM_CONTROL",0);
-  m_Comms.Register("BUOYANCY_CONTROL",0);
+  Register("TRIM_CONTROL",0);
+  Register("BUOYANCY_CONTROL",0);
 
-  m_Comms.Register("THRUST_MODE_REVERSE",0);
-  m_Comms.Register("THRUST_MODE_DIFFERENTIAL",0);
+  Register("THRUST_MODE_REVERSE",0);
+  Register("THRUST_MODE_DIFFERENTIAL",0);
 }
 
 //------------------------------------------------------------------------

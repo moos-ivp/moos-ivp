@@ -228,12 +228,12 @@ void FldNodeComms::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
 
-  m_Comms.Register("NODE_REPORT", 0);
-  m_Comms.Register("NODE_REPORT_LOCAL", 0);
-  m_Comms.Register("NODE_MESSAGE", 0);
-  m_Comms.Register("UNC_STEALTH", 0);
-  m_Comms.Register("UNC_EARANGE", 0);
-  m_Comms.Register("UNC_VIEW_NODE_RPT_PULSES", 0);
+  Register("NODE_REPORT", 0);
+  Register("NODE_REPORT_LOCAL", 0);
+  Register("NODE_MESSAGE", 0);
+  Register("UNC_STEALTH", 0);
+  Register("UNC_EARANGE", 0);
+  Register("UNC_VIEW_NODE_RPT_PULSES", 0);
 }
 
 

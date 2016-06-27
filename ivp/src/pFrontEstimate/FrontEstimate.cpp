@@ -231,9 +231,9 @@ bool CFrontEstimate::OnStartUp()
 
 bool CFrontEstimate::OnConnectToServer()
 {
-  m_Comms.Register("SURVEY_UNDERWAY",0);
-  m_Comms.Register("UCTD_MSMNT_REPORT",0);
-  m_Comms.Register("APPCAST_REQ",0);
+  Register("SURVEY_UNDERWAY",0);
+  Register("UCTD_MSMNT_REPORT",0);
+  Register("APPCAST_REQ",0);
   AppCastingMOOSApp::RegisterVariables();
   return(true);
 }

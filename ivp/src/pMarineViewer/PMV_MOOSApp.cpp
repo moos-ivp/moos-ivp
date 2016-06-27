@@ -199,31 +199,31 @@ void PMV_MOOSApp::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
 
-  m_Comms.Register("APPCAST", 0);
-  m_Comms.Register("VIEW_POLYGON", 0);
-  m_Comms.Register("VIEW_WEDGE", 0);
-  m_Comms.Register("PHI_HOST_IP",  0);
-  m_Comms.Register("VIEW_POINT",   0);
-  m_Comms.Register("VIEW_VECTOR",  0);
-  m_Comms.Register("VIEW_CIRCLE",  0);
-  m_Comms.Register("VIEW_SEGLIST", 0);
-  m_Comms.Register("TRAIL_RESET",  0);
-  m_Comms.Register("VIEW_MARKER",  0);
-  m_Comms.Register("VIEW_COMMS_PULSE", 0);
-  m_Comms.Register("GRID_CONFIG",  0);
-  m_Comms.Register("GRID_DELTA",   0);
-  m_Comms.Register("VIEW_GRID", 0);
-  m_Comms.Register("VIEW_RANGE_PULSE", 0);
-  m_Comms.Register("PMV_MENU_CONTEXT", 0);
-  m_Comms.Register("PMV_CLEAR", 0);
+  Register("APPCAST", 0);
+  Register("VIEW_POLYGON", 0);
+  Register("VIEW_WEDGE", 0);
+  Register("PHI_HOST_IP",  0);
+  Register("VIEW_POINT",   0);
+  Register("VIEW_VECTOR",  0);
+  Register("VIEW_CIRCLE",  0);
+  Register("VIEW_SEGLIST", 0);
+  Register("TRAIL_RESET",  0);
+  Register("VIEW_MARKER",  0);
+  Register("VIEW_COMMS_PULSE", 0);
+  Register("GRID_CONFIG",  0);
+  Register("GRID_DELTA",   0);
+  Register("VIEW_GRID", 0);
+  Register("VIEW_RANGE_PULSE", 0);
+  Register("PMV_MENU_CONTEXT", 0);
+  Register("PMV_CLEAR", 0);
 
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++)
-    m_Comms.Register(m_scope_vars[i], 0);
+    Register(m_scope_vars[i], 0);
 
   vsize = m_node_report_vars.size();
   for(i=0; i<vsize; i++)
-    m_Comms.Register(m_node_report_vars[i], 0);
+    Register(m_node_report_vars[i], 0);
 }
 
 //----------------------------------------------------------------------
@@ -242,7 +242,7 @@ void PMV_MOOSApp::handlePendingGUI()
     double dval = 0;
 
     if(var == "scope_register") {
-      m_Comms.Register(val, 0);
+      Register(val, 0);
       m_scope_vars.push_back(val);
     }
     else {
