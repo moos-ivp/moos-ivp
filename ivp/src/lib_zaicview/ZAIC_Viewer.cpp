@@ -305,20 +305,18 @@ void ZAIC_Viewer::drawPiece(const IvPBox *piece, int mode)
   //glTranslatef(0, 0, 0);
   glTranslatef(m_xoffset, m_yoffset, 0);
 
-  double x1, x2, y1, y2, dx1, dx2, m, b;
+  double m = piece->wt(0);
+  double b = piece->wt(1);
 
-  m = piece->wt(0);
-  b = piece->wt(1);
+  //double x_base  = m_model->getIvPDomain().getVarLow(0);
+  //double x_delta = m_model->getIvPDomain().getVarDelta(0);
 
-  double x_base  = m_model->getIvPDomain().getVarLow(0);
-  double x_delta = m_model->getIvPDomain().getVarDelta(0);
-
-  x1 = piece->pt(0,0);
-  x2 = piece->pt(0,1);
-  dx1 = x_base = (x1 * x_delta);
-  dx2 = x_base = (x2 * x_delta);
-  y1 = 2*((m * (double)(x1)) + b);
-  y2 = 2*((m * (double)(x2)) + b);
+  double x1 = piece->pt(0,0);
+  double x2 = piece->pt(0,1);
+  //double dx1 = x_base = (x1 * x_delta);
+  //double dx2 = x_base = (x2 * x_delta);
+  double y1 = 2*((m * (double)(x1)) + b);
+  double y2 = 2*((m * (double)(x2)) + b);
 
   glColor4f(red_val, grn_val, blu_val,  0.1);
   glBegin(GL_LINE_STRIP);

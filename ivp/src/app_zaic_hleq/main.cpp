@@ -18,6 +18,7 @@
 using namespace std;
 
 void showHelpAndExit();
+void idleProc(void*);
 
 //--------------------------------------------------------
 // Procedure: idleProc

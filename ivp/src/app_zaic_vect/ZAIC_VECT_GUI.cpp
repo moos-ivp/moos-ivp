@@ -26,7 +26,7 @@ ZAIC_VECT_GUI::ZAIC_VECT_GUI(int g_w, int g_h, const char *g_l)
   int bot_marg = 45;
   int sid_marg = 5;
   int q_height = h()-(top_marg+bot_marg);
-  int q_width  = w()-(sid_marg*2);
+  //int q_width  = w()-(sid_marg*2);
 
   m_zaic_model = new ZAIC_VECT_Model();
   m_zaic_model->setDomain(501);

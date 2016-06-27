@@ -220,7 +220,7 @@ QuadSet buildQuadSet2DFromIPF(IvPFunction *ipf)
   QuadSet quadset;
   quadset.setIvPDomain(ivp_domain);
 
-  for(unsigned int i=0; i<pdmap->size(); i++) {
+  for(int i=0; i<pdmap->size(); i++) {
     const IvPBox* box = pdmap->bx(i);
 
     Quad3D quad;

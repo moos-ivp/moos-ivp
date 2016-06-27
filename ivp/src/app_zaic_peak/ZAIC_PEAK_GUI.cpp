@@ -70,7 +70,7 @@ ZAIC_PEAK_GUI::ZAIC_PEAK_GUI(int wid, int hgt, const char *label)
   m_fld_sdelta1->clear_visible_focus();
 
   //==========================================================================
-  Fl_Color fcolor_blue  = fl_rgb_color(140, 140, 220);
+  //Fl_Color fcolor_blue  = fl_rgb_color(140, 140, 220);
   m_fld_summit2 = new Fl_Output(345, q_height+top_marg+10, 60, 20, "summit2:"); 
   m_fld_summit2->textsize(txt_size); 
   m_fld_summit2->labelsize(txt_size);

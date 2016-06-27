@@ -296,12 +296,12 @@ void GUI_Encounters::resizeWidgetsText()
   if(m_fullscreen) 
     return;
 
-  int small_wid = 440;  // Below which we start to shrink things
   int info_size = 10;
-  int blab_size = 12;
 
-  if(w() < small_wid)
-    blab_size = 10;
+  // int small_wid = 440;  // Below which we start to shrink things
+  // int blab_size = 12;
+  // if(w() < small_wid)
+  //   blab_size = 10;
 
   m_but_show_allpts->labelsize(info_size); 
   m_but_show_allpts->labelsize(info_size); 

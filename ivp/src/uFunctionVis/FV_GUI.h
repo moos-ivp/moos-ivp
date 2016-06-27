@@ -24,12 +24,8 @@
 #ifndef FUNCTION_VIEWER_GUI_HEADER
 #define FUNCTION_VIEWER_GUI_HEADER
 
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Menu_Bar.H>
-#include "FL/Fl_Output.h"
-#include "FL/Fl_Menu_Button.h"
 #include "FL/Fl_Button.h"
+#include "FL/Fl_Output.h"
 #include "FV_Viewer.h"
 #include "FV_Model.h"
 #include "Common_IPF_GUI.h"
@@ -40,17 +36,18 @@ public:
   virtual ~FV_GUI() {};
 
  public:
-  void augmentMenu();
-  int  handle(int);
   void setModel(FV_Model* g_model)
     {m_model = g_model; m_fv_viewer->setModel(g_model);}
 
-  void updateFields();
-  void addBehaviorSource(std::string source);
+  void  updateFields();
+  void  addBehaviorSource(std::string source);
 
   FV_Viewer* getViewer() {return(m_fv_viewer);}
 
  protected:
+  void  augmentMenu();
+  int   handle(int);
+
   void  resize(int, int, int, int);
   void  initWidgets();
   void  resizeWidgetsShape();
@@ -78,7 +75,7 @@ public:
   inline void cb_TogglePin_i();
   static void cb_TogglePin(Fl_Widget*);
 
-protected:
+ protected:
   Fl_Output   *m_fld_curr_plat;
 
   Fl_Output   *m_fld_curr_pcs;
@@ -91,9 +88,6 @@ protected:
 
   Fl_Button   *m_but_ipf_set;
   Fl_Button   *m_but_ipf_pin;
-
-  int m_start_hgt;
-  int m_start_wid;
 
   std::vector<std::string> m_bhv_sources;
 };
