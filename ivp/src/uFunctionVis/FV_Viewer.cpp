@@ -50,7 +50,7 @@ void FV_Viewer::resetQuadSet()
 
   m_quadset = m_model->getQuadSet();
 
-  m_rad_extra = calcRadExtra();
+  resetRadVisuals();
 
   m_draw_pclines = true;
   m_quadset.normalize(0, 100);
@@ -63,9 +63,9 @@ void FV_Viewer::resetQuadSet()
   if(m_polar == 0)
     m_quadset.applyTranslation(-250, -250);
   else if(m_polar == 1)
-    m_quadset.applyPolar(m_rad_extra, 1);
+    m_quadset.applyPolar(m_rad_ratio, 1);
   else if(m_polar == 2)
-    m_quadset.applyPolar(m_rad_extra, 2);
+    m_quadset.applyPolar(m_rad_ratio, 2);
 }
 
 

@@ -29,6 +29,7 @@
 
 using namespace std;
 
+
 //-------------------------------------------------------------
 // Constructor
 
@@ -41,7 +42,8 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_zoom         = 1;
   m_scale        = 1;
   m_base         = 0;
-  m_rad_extra    = 1;
+  m_rad_ratio    = 1;
+  m_rad_extent   = 0;
   m_draw_pin     = true;
   m_draw_frame   = true;
   m_draw_base    = true;
@@ -167,10 +169,6 @@ bool Common_IPFViewer::setParam(string param, double value)
     m_zoom *= value;
   else if(param == "set_zoom")
     m_zoom = value;
-  else if(param == "mod_radius")
-    m_rad_extra *= value;
-  else if(param == "set_radius")
-    m_rad_extra = value;
   else if(param == "mod_x_rotation")
     m_xRot += value;
   else if(param == "set_x_rotation")
@@ -194,7 +192,6 @@ void Common_IPFViewer::printParams()
   cout << "# lib_ipfview Common_IPFViewer -----------------" << endl;
   cout << "set_frame_height=" << m_frame_height << endl;
   cout << "set_zoom="         << m_zoom         << endl;
-  cout << "set_radius="       << m_rad_extra    << endl;
   cout << "set_x_rotation="   << m_xRot         << endl;
   cout << "set_z_rotation="   << m_zRot         << endl;
   if(m_draw_frame)
@@ -226,6 +223,8 @@ void Common_IPFViewer::clear()
 
 void Common_IPFViewer::draw()
 {
+  if(m_rad_extent == 0) 
+    resetRadVisuals();
   clear();
 
   //if((m_quadset.size2D() == 0) && (m_quadset.size1D() == 0))
@@ -283,24 +282,26 @@ void Common_IPFViewer::draw()
 
 
 //-------------------------------------------------------------
-// Procedure: calcRadExtra()
+// Procedure: resetRadVisuals()
+//   Purpose: Calculate the radial distance in pixels of the outer
+//            edge of the polar rendering. Also calculate the ratio
+//            for use by other functions like rendering max pt.
 
-double Common_IPFViewer::calcRadExtra()
+void Common_IPFViewer::resetRadVisuals()
 {
   IvPDomain ivp_domain = m_quadset.getDomain();
 
-  if(!ivp_domain.hasDomain("speed"))
-    return(1);
-  
-  unsigned int spd_pts = ivp_domain.getVarPoints("speed");
   double min_extent = w();
   if(h() < min_extent)
     min_extent = h();
 
-  if(spd_pts >= 1)
-    return(min_extent / (double)(spd_pts));
+  m_rad_extent = min_extent;
 
-  return(1);
+  unsigned int spd_pts = ivp_domain.getVarPoints("speed");
+  if(spd_pts == 0)
+    m_rad_ratio = 1;
+  else 
+    m_rad_ratio = (min_extent / (double)(spd_pts));
 }
 
 
@@ -430,24 +431,11 @@ void Common_IPFViewer::drawQuadSet1D()
 
 bool Common_IPFViewer::drawQuadSet2D(const QuadSet& quadset)
 {
-  IvPDomain domain = quadset.getDomain();
-  double calc_rad_extra = 1;
-  if(domain.hasDomain("speed")) {
-    unsigned int spd_pts = domain.getVarPoints("speed");
-    double min_extent = w();
-    if(h() < min_extent)
-      min_extent = h();
-    if(spd_pts >= 1)
-      calc_rad_extra = min_extent / (double)(spd_pts);
-  } 
-  
   unsigned int quad_cnt = quadset.size();
   if(quad_cnt == 0)
     return(false);
 
-  m_rad_extra = calc_rad_extra;
   for(unsigned int i=0; i<quad_cnt; i++)
-    //for(unsigned int i=10; i<11; i++)
     drawQuad(quadset.getQuad(i));
 
   return(true);
@@ -620,6 +608,65 @@ void Common_IPFViewer::drawFrame(bool full)
 }
 
 //-------------------------------------------------------------
+// Procedure: drawPolarFrame
+
+void Common_IPFViewer::drawPolarFrame(bool full)
+{
+  double ctr_x = 0;
+  double ctr_y = 0;
+  double z = -150;
+  double t = z + m_frame_height;
+
+  double frame_red = m_frame_color.red();
+  double frame_grn = m_frame_color.grn();
+  double frame_blu = m_frame_color.blu();
+
+  glColor3f(frame_red/2, frame_grn/2, frame_blu/2);
+  glShadeModel(GL_FLAT);
+  
+  // Either draw a full base or just the frame
+
+  vector<double> vx;
+  vector<double> vy;
+  for(unsigned int i=0; i<360; i++) {
+    double x, y;
+    projectPoint((double)(i), m_rad_extent, ctr_x, ctr_y, x, y);
+    vx.push_back(x);
+    vy.push_back(y);
+  }
+  
+  if(m_draw_base) {
+    glBegin(GL_TRIANGLE_FAN);
+    for(unsigned int i=0; i<vx.size(); i++) 
+      glVertex3f(vx[i], vy[i], z); 
+    glEnd();
+  }
+  
+  glColor3f(frame_red, frame_grn, frame_blu);
+
+  if(!m_draw_base) {
+    glBegin(GL_LINE_STRIP);
+    for(unsigned int i=0; i<vx.size(); i++) 
+      glVertex3f(vx[i], vy[i], z); 
+    glEnd();
+  }
+
+  if(full) {
+    glBegin(GL_TRIANGLES);
+    for(unsigned int i=0; i<vx.size(); i++) 
+      glVertex3f(vx[i], vy[i], t); 
+    glEnd();
+
+    glBegin(GL_LINE_STRIP);
+    for(unsigned int i=0; i<vx.size(); i++) 
+      glVertex3f(vx[i], vy[i], t); 
+    glEnd();
+  }
+
+  glFlush();
+}
+
+//-------------------------------------------------------------
 // Procedure: drawOwnPoint
 
 void Common_IPFViewer::drawOwnPoint()
@@ -653,19 +700,8 @@ void Common_IPFViewer::drawMaxPoint(double crs, double spd)
   if(m_quadset.size() == 0)
     return;
 
-  // Calculated the radial extent
-  IvPDomain domain = m_quadset.getDomain();
-  double calc_rad_extra = 1;
-  if(domain.hasDomain("speed")) {
-    unsigned int spd_pts = domain.getVarPoints("speed");
-    double min_extent = w();
-    if(h() < min_extent)
-      min_extent = h();
-    if(spd_pts >= 1)
-      calc_rad_extra = min_extent / (double)(spd_pts);
-  } 
   // Apply the radial extent
-  spd *= calc_rad_extra;
+  spd *= m_rad_ratio;
 
   double x,y,z=250;
   projectPoint(crs, spd, 0, 0, x, y);
@@ -688,8 +724,6 @@ void Common_IPFViewer::drawMaxPoint(double crs, double spd)
 
   glFlush();
 }
-
-
 
 //-------------------------------------------------------------
 // Procedure: draw1DAxes

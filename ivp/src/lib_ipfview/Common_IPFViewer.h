@@ -57,12 +57,13 @@ public:
   void   setColorMap(std::string s)    {m_color_map.setType(s);}
   
 protected:
-  double calcRadExtra();
+  void   resetRadVisuals();
   bool   drawQuadSet(const QuadSet&);
   void   drawQuadSet1D();
   bool   drawQuadSet2D(const QuadSet&);
 
   void   drawFrame(bool full=true);
+  void   drawPolarFrame(bool full=true);
   void   drawOwnPoint();
   void   drawMaxPoint(double, double);
 
@@ -90,7 +91,8 @@ protected:
 
   double     m_base;
   double     m_scale;
-  double     m_rad_extra;
+  double     m_rad_ratio;
+  double     m_rad_extent;
   double     m_intensity;
   int        m_polar;
   

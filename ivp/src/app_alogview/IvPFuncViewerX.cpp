@@ -38,7 +38,7 @@ using namespace std;
 IvPFuncViewerX::IvPFuncViewerX(int x, int y, int w, int h, const char *l)
   : Common_IPFViewer(x,y,w,h,l)
 {
-  m_rad_extra    = 1;
+  m_rad_ratio    = 1;
   m_zoom         = 2.0;
   m_curr_time    = 0;
   m_curr_iter    = 0; 
@@ -67,7 +67,6 @@ void IvPFuncViewerX::draw()
     glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
     
     //Common_IPFViewer::drawFrame();
-    m_rad_extra = 3;
     bool result = Common_IPFViewer::drawQuadSet(m_quadset);
     if(result) {
       drawOwnPoint();
@@ -431,13 +430,8 @@ bool IvPFuncViewerX::buildIndividualIPF(string source)
   ipf = expandHdgSpdIPF(ipf, ivp_domain);
   
   m_quadset = buildQuadSetFromIPF(ipf);
+  resetRadVisuals();
   
-  delete(ipf);
-
-
-
-  m_rad_extra = calcRadExtra();
-
   m_draw_pclines = true;
   m_quadset.normalize(0, 100);
   m_quadset.applyColorMap(m_color_map);	
@@ -449,10 +443,12 @@ bool IvPFuncViewerX::buildIndividualIPF(string source)
   if(m_polar == 0)
     m_quadset.applyTranslation(-250, -250);
   else if(m_polar == 1)
-    m_quadset.applyPolar(m_rad_extra, 1);
+    m_quadset.applyPolar(m_rad_ratio, 1);
   else if(m_polar == 2)
-    m_quadset.applyPolar(m_rad_extra, 2);
+    m_quadset.applyPolar(m_rad_ratio, 2);
   
+  delete(ipf);
+
   return(true);
 }
 
