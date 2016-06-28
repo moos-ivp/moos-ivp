@@ -36,7 +36,8 @@ Common_IPF_GUI::Common_IPF_GUI(int wid, int hgt, const char *label)
 {
   m_menubar = new Fl_Menu_Bar(0, 0, w(), 25);
   augmentMenu();
-
+  setMenuColors();
+  
   m_start_hgt = hgt;
   m_start_wid = wid;
 
@@ -131,6 +132,16 @@ void Common_IPF_GUI::augmentMenu()
 		 FL_MENU_DIVIDER);
 
   //===========================================================
+  // IPF Menu
+  //===========================================================
+  m_menubar->add("Ship/DrawShip Toggle", 'h',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ToggleDrawShip, (void*)0, 0);
+  m_menubar->add("Ship/ShipScale--", 'k',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ModShipScale, (void*)90, 0);
+  m_menubar->add("Ship/ShipScale++", 'j',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ModShipScale, (void*)125, 0);
+
+  //===========================================================
   // ColorMap Menu
   //===========================================================
   m_menubar->add("Color-Map/Default", 0,
@@ -148,6 +159,56 @@ void Common_IPF_GUI::augmentMenu()
 		 (Fl_Callback*)Common_IPF_GUI::cb_ColorBack, (void*)1, 0);
   m_menubar->add("Color-Map/Mac-Beige", 'b',
 		 (Fl_Callback*)Common_IPF_GUI::cb_ColorBack,(void*)2, 0);
+}
+
+//----------------------------------------------------------------
+// Procedure: setMenuColors()
+
+void Common_IPF_GUI::setMenuColors()
+{
+  setMenuItemColor("File/Quit ");
+  setMenuItemColor("RotateZoom/Rotate X- ");
+  setMenuItemColor("RotateZoom/Rotate X+ ");
+  setMenuItemColor("RotateZoom/Rotate Z- ");
+  setMenuItemColor("RotateZoom/Rotate Z+ ");
+  setMenuItemColor("RotateZoom/Reset1 ");
+  setMenuItemColor("RotateZoom/Reset2 ");
+  setMenuItemColor("RotateZoom/Reset3 ");
+  setMenuItemColor("RotateZoom/Reset4 ");
+  setMenuItemColor("RotateZoom/Toggle Frame ");
+  setMenuItemColor("RotateZoom/FrameHgt--");
+  setMenuItemColor("RotateZoom/FrameHgt++");
+  setMenuItemColor("RotateZoom/Zoom In");
+  setMenuItemColor("RotateZoom/Zoom Out");
+  setMenuItemColor("RotateZoom/Zoom Reset");
+  setMenuItemColor("IPF/Toggle Function ");
+  setMenuItemColor("IPF/Base +");
+  setMenuItemColor("IPF/Base -");
+  setMenuItemColor("IPF/Polar0");
+  setMenuItemColor("IPF/Polar1");
+  setMenuItemColor("IPF/Polar2");
+  setMenuItemColor("IPF/Render Lines");
+  setMenuItemColor("Color-Map/Default");
+  setMenuItemColor("Color-Map/Copper");
+  setMenuItemColor("Color-Map/Bone");
+  setMenuItemColor("Color-Map/Back-White");
+  setMenuItemColor("Color-Map/Back-Blue");
+  setMenuItemColor("Color-Map/Mac-Beige");
+  setMenuItemColor("Ship/DrawShip Toggle");
+  setMenuItemColor("Ship/ShipScale--");
+  setMenuItemColor("Ship/ShipScale++");
+}
+
+
+//--------------------------------------------------------------
+// Procedure: setMenuItemColor()
+
+void Common_IPF_GUI::setMenuItemColor(string item_str)
+{
+  Fl_Color new_color = fl_rgb_color(31, 71, 155);
+  const Fl_Menu_Item *item = m_menubar->find_item(item_str.c_str());
+  if(item)
+    ((Fl_Menu_Item *)item)->labelcolor(new_color);
 }
 
 //----------------------------------------------------------
@@ -219,6 +280,14 @@ void Common_IPF_GUI::cb_ModScale(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ModScale_i(v);
 }
 
+//----------------------------------------- Mod Ship Scale
+inline void Common_IPF_GUI::cb_ModShipScale_i(int amt) {
+  m_viewer->setParam("mod_ship_scale", (((double)amt)/100.0));
+}
+void Common_IPF_GUI::cb_ModShipScale(Fl_Widget* o, int v) {
+  ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ModShipScale_i(v);
+}
+
 //----------------------------------------- Mod BaseIPF
 inline void Common_IPF_GUI::cb_ModBaseIPF_i(int amt) {
   m_viewer->setParam("mod_base_ipf", amt);
@@ -236,12 +305,22 @@ void Common_IPF_GUI::cb_ToggleFrame(Fl_Widget* o) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleFrame_i();
 }
 
-//----------------------------------------- Toggle IPF
+//----------------------------------------- Toggle Draw IPF
 inline void Common_IPF_GUI::cb_ToggleIPF_i() {
   m_viewer->setParam("draw_ipf", "toggle");
+  m_viewer->redraw();
 }
 void Common_IPF_GUI::cb_ToggleIPF(Fl_Widget* o) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleIPF_i();
+}
+
+//----------------------------------------- Toggle Draw Ship
+inline void Common_IPF_GUI::cb_ToggleDrawShip_i() {
+  m_viewer->setParam("draw_ship", "toggle");
+  m_viewer->redraw();
+}
+void Common_IPF_GUI::cb_ToggleDrawShip(Fl_Widget* o) {
+  ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleDrawShip_i();
 }
 
 //----------------------------------------- Toggle Piece Lines

@@ -126,92 +126,226 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
 
 void PMV_GUI::augmentMenu()
 {
-  m_menubar->add("BackView/full_screen=true",    0,  (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)30, FL_MENU_RADIO);
-  m_menubar->add("BackView/full_screen=false",   0,  (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)31, FL_MENU_RADIO);
-  m_menubar->add("BackView/    Toggle Full-Screen", 'f', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)32, FL_MENU_DIVIDER);
+  m_menubar->add("BackView/full_screen=true",    0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)30,
+		 FL_MENU_RADIO);
+  m_menubar->add("BackView/full_screen=false",   0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)31,
+		 FL_MENU_RADIO);
+  m_menubar->add("BackView/    Toggle Full-Screen", 'f',
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)32,
+		 FL_MENU_DIVIDER);
 
-  m_menubar->add("AppCasting/appcast_viewable=true",   0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)40, FL_MENU_RADIO);    
-  m_menubar->add("AppCasting/appcast_viewable=false",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)41, FL_MENU_RADIO);    
-  m_menubar->add("AppCasting/    Toggle AppCasting", 'a', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)42, FL_MENU_DIVIDER);    
+  m_menubar->add("AppCasting/appcast_viewable=true",   0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)40,
+		 FL_MENU_RADIO);    
+  m_menubar->add("AppCasting/appcast_viewable=false",  0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)41,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/    Toggle AppCasting", 'a',
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)42,
+		 FL_MENU_DIVIDER);
 
-  m_menubar->add("AppCasting/AppCasting Pane Wider",   FL_SHIFT+FL_Left,  (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)100, 0); 
-  m_menubar->add("AppCasting/AppCasting Pane Thinner", FL_SHIFT+FL_Right, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)101, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Wider",   FL_SHIFT+FL_Left,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)100, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Thinner", FL_SHIFT+FL_Right,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)101, 0); 
 
-  m_menubar->add("AppCasting/AppCasting Pane Taller",  FL_SHIFT+FL_Up,   (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)200, 0); 
-  m_menubar->add("AppCasting/AppCasting Pane Shorter", FL_SHIFT+FL_Down, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)201, FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/AppCasting Pane Taller",  FL_SHIFT+FL_Up,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)200, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Shorter", FL_SHIFT+FL_Down,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)201,
+		 FL_MENU_DIVIDER); 
 
-  m_menubar->add("AppCasting/AppCasting Pane Wider (Alt)",   FL_CTRL+FL_ALT+FL_Left,  (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)100, 0); 
-  m_menubar->add("AppCasting/AppCasting Pane Thinner (Alt)", FL_CTRL+FL_ALT+FL_Right, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)101, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Wider (Alt)", FL_CTRL+FL_ALT+FL_Left,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)100, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Thinner (Alt)", FL_CTRL+FL_ALT+FL_Right,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)101, 0); 
 
-  m_menubar->add("AppCasting/AppCasting Pane Taller (Alt)",  FL_CTRL+FL_ALT+FL_Up,   (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)200, 0); 
-  m_menubar->add("AppCasting/AppCasting Pane Shorter (Alt)", FL_CTRL+FL_ALT+FL_Down, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)201, FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/AppCasting Pane Taller (Alt)", FL_CTRL+FL_ALT+FL_Up,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)200, 0); 
+  m_menubar->add("AppCasting/AppCasting Pane Shorter (Alt)", FL_CTRL+FL_ALT+FL_Down,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)201,
+		 FL_MENU_DIVIDER); 
 
-  m_menubar->add("AppCasting/refresh_mode=paused",    FL_CTRL+' ', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)50, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/refresh_mode=events",    FL_CTRL+'e', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)51, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/refresh_mode=streaming", FL_CTRL+'s', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)52, FL_MENU_RADIO|FL_MENU_DIVIDER);
+  m_menubar->add("AppCasting/refresh_mode=paused",    FL_CTRL+' ',
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)50,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/refresh_mode=events",    FL_CTRL+'e',
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)51,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/refresh_mode=streaming", FL_CTRL+'s',
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)52,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER);
 
-  m_menubar->add("AppCasting/nodes_font_size=xlarge",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)64, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/nodes_font_size=large",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)63, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/nodes_font_size=medium", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)62, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/nodes_font_size=small",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)61, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/nodes_font_size=xsmall", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)60, FL_MENU_RADIO|FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/nodes_font_size=xlarge",  0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)64,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/nodes_font_size=large",  0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)63,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/nodes_font_size=medium", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)62,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/nodes_font_size=small",  0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)61,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/nodes_font_size=xsmall", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)60,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
-  m_menubar->add("AppCasting/procs_font_size=xlarge", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)74, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/procs_font_size=large",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)73, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/procs_font_size=medium", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)72, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/procs_font_size=small",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)71, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/procs_font_size=xsmall", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)70, FL_MENU_RADIO|FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/procs_font_size=xlarge", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)74,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/procs_font_size=large",  0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)73,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/procs_font_size=medium", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)72,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/procs_font_size=small",  0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)71,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/procs_font_size=xsmall", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)70,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
-  m_menubar->add("AppCasting/appcast_font_size=xlarge", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)84, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/appcast_font_size=large",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)83, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/appcast_font_size=medium", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)82, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/appcast_font_size=small",  0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)81, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/appcast_font_size=xsmall", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)80, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/appcast_font_size bigger",  '}', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)89, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/appcast_font_size smaller", '{', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)88, FL_MENU_RADIO|FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/appcast_font_size=xlarge", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)84,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/appcast_font_size=large",  0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)83,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/appcast_font_size=medium", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)82,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/appcast_font_size=small",  0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)81,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/appcast_font_size=xsmall", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)80,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/appcast_font_size bigger",  '}',
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)89,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/appcast_font_size smaller", '{',
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)88,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
-  m_menubar->add("AppCasting/appcast_color_scheme=white",     0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)300, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/appcast_color_scheme=indigo",      0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)301, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/appcast_color_scheme=beige",       0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)302, FL_MENU_RADIO);
-  m_menubar->add("AppCasting/    Toggle Color Scheme", FL_ALT+'a', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)310, FL_MENU_DIVIDER);
+  m_menubar->add("AppCasting/appcast_color_scheme=white",     0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)300,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/appcast_color_scheme=indigo",      0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)301,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/appcast_color_scheme=beige",       0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)302,
+		 FL_MENU_RADIO);
+  m_menubar->add("AppCasting/    Toggle Color Scheme", FL_ALT+'a',
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)310,
+		 FL_MENU_DIVIDER);
 
-  m_menubar->add("AppCasting/AppCast Window Width/wider", FL_CTRL+FL_ALT+FL_Left, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)100, 0); 
-  m_menubar->add("AppCasting/AppCast Window Width/thinner", FL_CTRL+FL_ALT+FL_Right, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)101, 0); 
-  m_menubar->add("AppCasting/AppCast Window Width/reset", FL_CTRL+FL_ALT+'a', (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)102, FL_MENU_DIVIDER); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=20", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)120, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=25", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)125, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=30", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)130, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=35", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)135, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=40", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)140, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=45", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)145, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=50", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)150, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=55", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)155, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=60", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)160, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=65", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)165, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=70", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)170, FL_MENU_RADIO|FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/AppCast Window Width/wider", FL_CTRL+FL_ALT+FL_Left,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)100, 0); 
+  m_menubar->add("AppCasting/AppCast Window Width/thinner", FL_CTRL+FL_ALT+FL_Right,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)101, 0); 
+  m_menubar->add("AppCasting/AppCast Window Width/reset", FL_CTRL+FL_ALT+'a',
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)102,
+		 FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=20", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)120,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=25", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)125,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=30", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)130,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=35", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)135,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=40", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)140,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=45", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)145,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=50", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)150,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=55", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)155,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=60", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)160,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=65", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)165,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Width/appcast_width=70", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)170,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
-  m_menubar->add("AppCasting/AppCast Window Height/taller",  FL_CTRL+FL_ALT+FL_Up,   (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)200, 0); 
-  m_menubar->add("AppCasting/AppCast Window Height/shorter", FL_CTRL+FL_ALT+FL_Down, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)201, 0); 
-  m_menubar->add("AppCasting/AppCast Window Height/reset",   FL_CTRL+FL_ALT+'a',     (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)102, FL_MENU_DIVIDER); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=90", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)290, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=85", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)285, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=80", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)280, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=75", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)275, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=70", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)270, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=65", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)265, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=60", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)260, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=55", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)255, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=50", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)250, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=45", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)245, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=40", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)240, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=35", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)235, FL_MENU_RADIO); 
-  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=30", 0, (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)230, FL_MENU_RADIO|FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/AppCast Window Height/taller",  FL_CTRL+FL_ALT+FL_Up,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)200, 0); 
+  m_menubar->add("AppCasting/AppCast Window Height/shorter", FL_CTRL+FL_ALT+FL_Down,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)201, 0); 
+  m_menubar->add("AppCasting/AppCast Window Height/reset",   FL_CTRL+FL_ALT+'a',
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)102,
+		 FL_MENU_DIVIDER); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=90", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)290,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=85", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)285,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=80", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)280,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=75", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)275,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=70", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)270,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=65", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)265,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=60", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)260,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=55", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)255,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=50", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)250,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=45", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)245,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=40", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)240,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=35", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)235,
+		 FL_MENU_RADIO); 
+  m_menubar->add("AppCasting/AppCast Window Height/appcast_height=30", 0,
+		 (Fl_Callback*)PMV_GUI::cb_AppCastSetting, (void*)230,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
-  m_menubar->add("MOOS-Scope/Add Variable", 'A',      (Fl_Callback*)PMV_GUI::cb_Scope, (void*)0, FL_MENU_DIVIDER);
+  m_menubar->add("MOOS-Scope/Add Variable", 'A',
+		 (Fl_Callback*)PMV_GUI::cb_Scope, (void*)0,
+		 FL_MENU_DIVIDER);
     
-  m_menubar->add("Vehicles/ClearHistory/All Vehicles", FL_CTRL+'9', (Fl_Callback*)PMV_GUI::cb_FilterOut, (void*)-1, FL_MENU_DIVIDER);
-  m_menubar->add("Vehicles/ClearHistory/Selected", FL_CTRL+'k', (Fl_Callback*)PMV_GUI::cb_DeleteActiveNode, (void*)0, FL_MENU_DIVIDER);
-  m_menubar->add("Vehicles/ClearHistory/Reset All", FL_ALT+'k', (Fl_Callback*)PMV_GUI::cb_DeleteActiveNode, (void*)1, FL_MENU_DIVIDER);
+  m_menubar->add("Vehicles/ClearHistory/All Vehicles", FL_CTRL+'9',
+		 (Fl_Callback*)PMV_GUI::cb_FilterOut, (void*)-1,
+		 FL_MENU_DIVIDER);
+  m_menubar->add("Vehicles/ClearHistory/Selected", FL_CTRL+'k',
+		 (Fl_Callback*)PMV_GUI::cb_DeleteActiveNode, (void*)0,
+		 FL_MENU_DIVIDER);
+  m_menubar->add("Vehicles/ClearHistory/Reset All", FL_ALT+'k',
+		 (Fl_Callback*)PMV_GUI::cb_DeleteActiveNode, (void*)1,
+		 FL_MENU_DIVIDER);
 }
 
 //----------------------------------------------------------

@@ -42,6 +42,8 @@ public:
   
  protected:
   void augmentMenu();
+  void setMenuColors();
+  void setMenuItemColor(std::string);
   int  handle(int);
   
  protected:
@@ -67,11 +69,17 @@ public:
   inline void cb_ModScale_i(int);
   static void cb_ModScale(Fl_Widget*, int);
 
+  inline void cb_ModShipScale_i(int);
+  static void cb_ModShipScale(Fl_Widget*, int);
+
   inline void cb_ModBaseIPF_i(int);
   static void cb_ModBaseIPF(Fl_Widget*, int);
 
   inline void cb_ToggleIPF_i();
   static void cb_ToggleIPF(Fl_Widget*);
+
+  inline void cb_ToggleDrawShip_i();
+  static void cb_ToggleDrawShip(Fl_Widget*);
 
   inline void cb_ToggleFrame_i();
   static void cb_ToggleFrame(Fl_Widget*);

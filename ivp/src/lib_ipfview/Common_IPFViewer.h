@@ -43,7 +43,7 @@ class Common_IPFViewer : public Fl_Gl_Window
   void   resize(int x, int y, int w, int h);
   void   clear();
   void   draw();
-  int    handle(int);
+  //int    handle(int);
 
 public:
   bool   setQuadSetFromIPF(IvPFunction*);
@@ -64,6 +64,7 @@ protected:
 
   void   drawFrame(bool full=true);
   void   drawPolarFrame(bool full=true);
+  void   drawCenteredShip();
   void   drawOwnPoint();
   void   drawMaxPoint(double, double);
 
@@ -83,6 +84,7 @@ protected:
 protected:
   ColorPack  m_clear_color;
   ColorPack  m_frame_color;
+  ColorPack  m_ship_color;
   FColorMap  m_color_map;
   
   double     m_xRot;
@@ -98,10 +100,15 @@ protected:
   
   bool       m_draw_ipf;
   bool       m_draw_pin;
-  bool       m_draw_frame;
   bool       m_draw_base;
   bool       m_draw_pclines;
+
+  bool       m_draw_frame;
   double     m_frame_height;
+
+  bool       m_draw_ship;
+  double     m_ship_scale;
+  
   QuadSet    m_quadset;
   
   // Information for drawing 1D functions

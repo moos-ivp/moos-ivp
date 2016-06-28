@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Common_IPFViewer.cpp                                 */
 /*    DATE: Feb 13, 2007                                         */
+/*    DATE: Jun 18, 2016 // Split into this class                */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -26,9 +27,9 @@
 #include "Common_IPFViewer.h"
 #include "GeomUtils.h"
 #include "MBUtils.h"
+#include "Shape_ShipX.h"
 
 using namespace std;
-
 
 //-------------------------------------------------------------
 // Constructor
@@ -46,6 +47,7 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_rad_extent   = 0;
   m_draw_pin     = true;
   m_draw_frame   = true;
+  m_draw_ship    = true;
   m_draw_base    = true;
   m_draw_ipf     = true;
   m_polar        = 0; 
@@ -54,8 +56,10 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   
   setParam("clear_color", "white");
   setParam("frame_color", "dark_red");
+  setParam("ship_color", "dodger_blue");
 
   m_frame_height = 250;
+  m_ship_scale   = 8;
 
   // 1D configuration parameters
   m_xoffset     = 50;
@@ -80,11 +84,11 @@ void Common_IPFViewer::resize(int x, int y, int wid, int hgt)
 //-------------------------------------------------------------
 // Procedure: handle()
 
+#if 0
 int Common_IPFViewer::handle(int event)
 {
   return(Fl_Gl_Window::handle(event));  // temp measure??
 
-#if 0
   int vx, vy;
   switch(event) {
   case FL_PUSH:
@@ -101,8 +105,9 @@ int Common_IPFViewer::handle(int event)
   default:
     return(Fl_Gl_Window::handle(event));
   }
-#endif
 }
+#endif
+
 
 //-------------------------------------------------------------
 // Procedure: setParam
@@ -123,6 +128,10 @@ bool Common_IPFViewer::setParam(string param, string value)
   }
   else if(param == "draw_frame")
     return(setBooleanOnString(m_draw_frame, value));
+  else if(param == "draw_ship")
+    return(setBooleanOnString(m_draw_ship, value));
+  else if(param == "draw_ipf")
+    return(setBooleanOnString(m_draw_ipf, value));
   else if(param == "draw_base")
     return(setBooleanOnString(m_draw_base, value));
   else if(param == "draw_pclines") 
@@ -147,8 +156,13 @@ bool Common_IPFViewer::setParam(string param, string value)
   }
   else if(param == "frame_color")
     m_frame_color.setColor(value);
-  else if((param == "clear_color") || (param == "back_color"))
+  else if(param == "ship_color")
+    m_ship_color.setColor(value);
+  else if((param == "clear_color") || (param == "back_color")) {
     m_clear_color.setColor(value);
+    m_frame_color = m_clear_color;
+    m_frame_color.shade(-0.1);
+  }
   else
     return(false);
 
@@ -169,6 +183,8 @@ bool Common_IPFViewer::setParam(string param, double value)
     m_zoom *= value;
   else if(param == "set_zoom")
     m_zoom = value;
+  else if(param == "mod_base_ipf")
+    m_base += value;
   else if(param == "mod_x_rotation")
     m_xRot += value;
   else if(param == "set_x_rotation")
@@ -177,6 +193,11 @@ bool Common_IPFViewer::setParam(string param, double value)
     m_zRot += value;
   else if(param == "set_z_rotation")
     m_zRot = value;
+  else if(param == "mod_ship_scale") {
+    m_ship_scale *= value;
+    if(m_ship_scale < 1)
+      m_ship_scale = 1;
+  }
   else
     return(false);
 
@@ -463,9 +484,9 @@ void Common_IPFViewer::drawQuad(Quad3D q)
 
   // Draw the first two vertices
   glColor3f(q.getLLR(), q.getLLG(), q.getLLB());
-  glVertex3f(x0, y0, q.getLLZ());
+  glVertex3f(x0, y0, q.getLLZ()+m_base);
   glColor3f(q.getLHR(), q.getLHG(), q.getLHB());
-  glVertex3f(x3, y3, q.getLHZ());
+  glVertex3f(x3, y3, q.getLHZ()+m_base);
 
 
   // Draw potentially many or zero interpolated vertices common
@@ -473,23 +494,23 @@ void Common_IPFViewer::drawQuad(Quad3D q)
   unsigned int psize = q.getInPtsSize();
   for(unsigned int i=0; i<psize; i++) {
     glColor3f(q.getRinHGH(i),  q.getGinHGH(i), q.getBinHGH(i));
-    glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i));
+    glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i)+m_base);
     glColor3f(q.getRinLOW(i),  q.getGinLOW(i), q.getBinLOW(i));
-    glVertex3f(q.getXinLOW(i), q.getYinLOW(i), q.getZinLOW(i));
+    glVertex3f(q.getXinLOW(i), q.getYinLOW(i), q.getZinLOW(i)+m_base);
     glEnd();
     glShadeModel(GL_SMOOTH);
     glBegin(GL_TRIANGLE_FAN);
     glColor3f(q.getRinLOW(i),  q.getGinLOW(i), q.getBinLOW(i));
-    glVertex3f(q.getXinLOW(i), q.getYinLOW(i), q.getZinLOW(i));
+    glVertex3f(q.getXinLOW(i), q.getYinLOW(i), q.getZinLOW(i)+m_base);
     glColor3f(q.getRinHGH(i),  q.getGinHGH(i), q.getBinHGH(i));
-    glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i));
+    glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i)+m_base);
   }
 
   // Draw the last two vertices
   glColor3f(q.getHHR(), q.getHHG(), q.getHHB());
-  glVertex3f(x2, y2, q.getHHZ());
+  glVertex3f(x2, y2, q.getHHZ()+m_base);
   glColor3f(q.getHLR(), q.getHLG(), q.getHLB());
-  glVertex3f(x1, y1, q.getHLZ());
+  glVertex3f(x1, y1, q.getHLZ()+m_base);
 
   glEnd();
 
@@ -500,30 +521,30 @@ void Common_IPFViewer::drawQuad(Quad3D q)
     glColor3f(1.0, 1.0, 1.0);
 
     glBegin(GL_LINE_STRIP);
-    glVertex3f(x0, y0, q.getLLZ());
+    glVertex3f(x0, y0, q.getLLZ()+m_base);
 
     unsigned int psize = q.getInPtsSize();
     for(unsigned int i=0; i<psize; i++) {
       double x = q.getXinLOW(i);
       double y = q.getYinLOW(i);
-      double z = q.getZinLOW(i);
+      double z = q.getZinLOW(i)+m_base;
       glVertex3f(x, y, z);
     }
     
-    glVertex3f(x1, y1, q.getHLZ());
-    glVertex3f(x2, y2, q.getHHZ());
+    glVertex3f(x1, y1, q.getHLZ()+m_base);
+    glVertex3f(x2, y2, q.getHHZ()+m_base);
 
     for(unsigned int i=0; i<psize; i++) {
       unsigned int ix = psize-i-1;
       double x = q.getXinHGH(ix);
       double y = q.getYinHGH(ix);
-      double z = q.getZinHGH(ix);
+      double z = q.getZinHGH(ix)+m_base;
 
       glVertex3f(x, y, z);
     }
 
-    glVertex3f(x3, y3, q.getLHZ());
-    glVertex3f(x0, y0, q.getLLZ());
+    glVertex3f(x3, y3, q.getLHZ()+m_base);
+    glVertex3f(x0, y0, q.getLLZ()+m_base);
 
     glEnd();
     glLineWidth(1.0);
@@ -617,19 +638,13 @@ void Common_IPFViewer::drawPolarFrame(bool full)
   double z = -150;
   double t = z + m_frame_height;
 
-  //double frame_red = m_frame_color.red();
-  //double frame_grn = m_frame_color.grn();
-  //double frame_blu = m_frame_color.blu();
-
-  double frame_red = 0.95;
-  double frame_grn = 0.95;
-  double frame_blu = 0.99;
+  double frame_red = m_frame_color.red();
+  double frame_grn = m_frame_color.grn();
+  double frame_blu = m_frame_color.blu();
 
   glColor3f(frame_red, frame_grn, frame_blu);
   glShadeModel(GL_FLAT);
   
-  // Either draw a full base or just the frame
-
   vector<double> vx;
   vector<double> vy;
   for(unsigned int i=0; i<360; i++) {
@@ -641,20 +656,26 @@ void Common_IPFViewer::drawPolarFrame(bool full)
   
   if(m_draw_base) {
     glBegin(GL_TRIANGLE_FAN);
-    for(unsigned int i=0; i<vx.size(); i++) 
-      glVertex3f(vx[i], vy[i], z); 
+    for(unsigned int i=0; i<vx.size(); i++)
+      glVertex3f(vx[i], vy[i], z);
+    glVertex3f(vx[0], vy[0], z);
     glEnd();
   }
   
   glColor3f(frame_red, frame_grn, frame_blu);
 
-  if(!m_draw_base) {
-    glBegin(GL_LINE_STRIP);
-    for(unsigned int i=0; i<vx.size(); i++) 
-      glVertex3f(vx[i], vy[i], z); 
-    glEnd();
-  }
+  // Draw the border
+  glLineWidth(2);
+  glColor3f(0.2, 0.2, 0.4);
+  glBegin(GL_LINE_STRIP);
+  for(unsigned int i=0; i<vx.size(); i++) 
+    glVertex3f(vx[i], vy[i], z+1); 
+  glVertex3f(vx[0], vy[0], z+1); 
+  glEnd();
+  glLineWidth(1);
 
+  
+#if 0
   if(full) {
     glBegin(GL_TRIANGLES);
     for(unsigned int i=0; i<vx.size(); i++) 
@@ -666,7 +687,63 @@ void Common_IPFViewer::drawPolarFrame(bool full)
       glVertex3f(vx[i], vy[i], t); 
     glEnd();
   }
+#endif
+  
+  glFlush();
+}
 
+//-------------------------------------------------------------
+// Procedure: drawCenteredShip
+
+void Common_IPFViewer::drawCenteredShip()
+{
+  double z = -150;
+  //double t = z + m_frame_height;
+  double t = z+1;
+
+  ColorPack ship_color_lgt = m_ship_color;
+  ColorPack ship_color_drk = m_ship_color;
+  ship_color_lgt.shade(0.1);
+  ship_color_drk.shade(-0.2);
+  
+  glShadeModel(GL_FLAT);
+  
+  // Draw the ship Body
+  glColor3f(ship_color_lgt.red(), ship_color_lgt.grn(), ship_color_lgt.blu());
+  glBegin(GL_TRIANGLE_FAN);
+  for(unsigned int i=0; i<g_shipXBodySize; i+=2) {
+    double vx = g_shipXBody[i]   * m_ship_scale;
+    double vy = (g_shipXBody[i+1] - g_shipXCtrY) * m_ship_scale;
+    glVertex3f(vx, vy, t);
+  }
+  glEnd();
+  
+  // Draw the ship Border
+  glColor3f(ship_color_drk.red(), ship_color_drk.grn(), ship_color_drk.blu());
+  glBegin(GL_LINE_STRIP);
+  for(unsigned int i=0; i<g_shipXBodySize; i+=2) {
+    double vx = g_shipXBody[i]   * m_ship_scale;
+    double vy = (g_shipXBody[i+1] - g_shipXCtrY) * m_ship_scale;
+    glVertex3f(vx, vy, t);
+  }
+  glEnd();
+
+
+#if 0
+  glEnable(GL_POINT_SMOOTH);
+  glPointSize(5);
+
+  glColor3f(0.3, 0.8, 0.3);
+  glBegin(GL_POINTS);
+  for(unsigned int i=0; i<g_shipXBodySize; i+=2) {
+    double vx = g_shipXBody[i]   * 20;
+    double vy = (g_shipXBody[i+1] - g_shipXCtrY) * 20;
+    glVertex3f(vx, vy, t);
+  }
+  glEnd();
+  glDisable(GL_POINT_SMOOTH);
+#endif
+  
   glFlush();
 }
 
