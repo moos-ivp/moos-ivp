@@ -56,8 +56,8 @@ void FV_Viewer::resetQuadSet()
   m_quadset.normalize(0, 100);
   m_quadset.applyColorMap(m_color_map);	
   m_quadset.applyColorIntensity(m_intensity);
-  m_quadset.applyScale(m_scale);
-  m_quadset.applyBase(m_base);
+  //m_quadset.applyScale(m_scale);
+  //m_quadset.applyBase(m_base);
   m_quadset.interpolate(1);
   
   if(m_polar == 0)
@@ -79,10 +79,17 @@ void FV_Viewer::draw()
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
   
-  Common_IPFViewer::drawQuadSet(m_quadset);
+  if(m_draw_ipf)
+    Common_IPFViewer::drawQuadSet(m_quadset);
  
-  if(m_draw_frame)
+  if(m_draw_frame && (m_polar==0))
     drawFrame();
+  if(m_draw_frame && (m_polar==1)) 
+    drawPolarFrame();
+
+  if(m_draw_ship && (m_polar==1)) 
+    drawCenteredShip();
+
   drawOwnPoint();
     
   if(m_draw_pin) {

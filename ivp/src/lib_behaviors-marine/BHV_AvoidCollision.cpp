@@ -49,6 +49,8 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "avoid_collision");
+  this->setParam("build_info", "uniform_piece = discrete @ course:3,speed:3");
+  this->setParam("build_info", "uniform_grid  = discrete @ course:9,speed:6");
   this->setParam("build_info", "uniform_piece = discrete @ course:20,speed:6");
   this->setParam("build_info", "uniform_grid  = discrete @ course:20,speed:6");
   
@@ -316,7 +318,7 @@ IvPFunction *BHV_AvoidCollision::onRunState()
 
     reflector.setParam("uniform_amount", "1");
     reflector.setParam("refine_region", region_top);
-    reflector.setParam("refine_piece", "discrete @ course:3,speed:3,depth:100");
+    reflector.setParam("refine_piece", "discrete @ course:10,speed:5,depth:100");
 
     reflector.setParam("refine_region", region_bot);
     reflector.setParam("refine_piece", region_bot);
