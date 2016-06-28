@@ -37,7 +37,6 @@ MarineGUI::MarineGUI(int g_w, int g_h, const char *g_l)
   m_menubar->menu(menu_);
     
   m_mviewer = 0;
-  //  addGeoAttrMenu();
 }
 
 //-------------------------------------------------------------------
