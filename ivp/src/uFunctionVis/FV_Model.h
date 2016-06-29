@@ -37,14 +37,17 @@ public:
 
 public:
   void     addIPF(const std::string& ipf_str, const std::string& plat);
-  void     modColorMap(const std::string&);
-  void     modSource(const std::string& bhv_source);
 
-  int      getCurrIteration()               {return(m_curr_iter);}
+  void     modColorMap(std::string);
+  void     modSource(std::string);
+  void     setNavHeading(double v)          {m_nav_heading=v;}
   void     setCollective(std::string s="")  {m_collective=s;} 
   void     toggleLockIPF()                  {m_lock_ipf = !m_lock_ipf;}
-  bool     isLocked()                       {return(m_lock_ipf);}
 
+  int      getCurrIteration()               {return(m_curr_iter);}
+  bool     isLocked()                       {return(m_lock_ipf);}
+  double   getNavHeading() const            {return(m_nav_heading);}
+  
   std::string getCurrPlatform();
   std::string getCurrSource();
   std::string getCurrPieces();
@@ -69,6 +72,8 @@ public:
   std::string      m_collective;
   std::string      m_curr_source;
 
+  double           m_nav_heading;
+  
 };
 #endif 
 

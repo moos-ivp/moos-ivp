@@ -64,7 +64,7 @@ protected:
 
   void   drawFrame(bool full=true);
   void   drawPolarFrame(bool full=true);
-  void   drawCenteredShip();
+  void   drawCenteredShip(double heading=0);
   void   drawOwnPoint();
   void   drawMaxPoint(double, double);
 

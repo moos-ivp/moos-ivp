@@ -260,7 +260,6 @@ void IvPFuncViewerX::setTime(double time)
   m_curr_iter = (unsigned int)(m_iter_plot.getValueByTime(m_curr_time));  
   updateIPF();
 
-  cout << "===================================== IvPFunctionViewer::setTime" << endl;
   map<string, IPF_Plot>::iterator p;
   for(p=m_map_ipf_plots.begin(); p!=m_map_ipf_plots.end(); p++) {
     string bhv_name = p->first;

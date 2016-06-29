@@ -65,6 +65,10 @@ bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	  string community = msg.GetCommunity();
 	  m_demuxer.addMuxPacket(ipf_str, timestamp, community);
         }
+
+	else if(key == "NAV_HEADING") {
+	  m_model->setNavHeading(msg.GetDouble());
+        }
     }
   }
   catch (...) {
@@ -160,6 +164,7 @@ bool FV_MOOSApp::OnStartUp()
 void FV_MOOSApp::registerVariables()
 {
   m_Comms.Register("BHV_IPF", 0);
+  m_Comms.Register("NAV_HEADING", 0);
 }
 
 

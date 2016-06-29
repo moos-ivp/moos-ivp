@@ -665,14 +665,45 @@ void Common_IPFViewer::drawPolarFrame(bool full)
   glColor3f(frame_red, frame_grn, frame_blu);
 
   // Draw the border
-  glLineWidth(2);
+  glEnable(GL_LINE_SMOOTH);
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  glLineWidth(1);
   glColor3f(0.2, 0.2, 0.4);
   glBegin(GL_LINE_STRIP);
   for(unsigned int i=0; i<vx.size(); i++) 
     glVertex3f(vx[i], vy[i], z+1); 
   glVertex3f(vx[0], vy[0], z+1); 
   glEnd();
+  glDisable(GL_LINE_SMOOTH);
+
+  // Draw the north-south-east-west lines
+  glColor3f(0.5, 0.5, 0.8);
+  glEnable(GL_LINE_SMOOTH);
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  glBegin(GL_LINE_STRIP);  // North
+  glVertex3f(0, 0, z+1); 
+  glVertex3f(0, m_rad_extent, z+1); 
+  glDisable(GL_LINE_SMOOTH);
+  glEnd();
+
+  glBegin(GL_LINE_STRIP);  // South
+  glVertex3f(0, 0, z+1); 
+  glVertex3f(0, -m_rad_extent, z+1); 
+  glEnd();
+
+  glBegin(GL_LINE_STRIP);  // East
+  glVertex3f(0, 0, z+1); 
+  glVertex3f(m_rad_extent, 0, z+1); 
+  glEnd();
+
+  glEnable(GL_LINE_SMOOTH);
+  glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
+  glBegin(GL_LINE_STRIP);  // West
+  glVertex3f(0, 0, z+1); 
+  glVertex3f(-m_rad_extent, 0, z+1); 
+  glEnd();
   glLineWidth(1);
+  glDisable(GL_LINE_SMOOTH);
 
   
 #if 0
@@ -695,7 +726,7 @@ void Common_IPFViewer::drawPolarFrame(bool full)
 //-------------------------------------------------------------
 // Procedure: drawCenteredShip
 
-void Common_IPFViewer::drawCenteredShip()
+void Common_IPFViewer::drawCenteredShip(double heading)
 {
   double z = -150;
   //double t = z + m_frame_height;
@@ -707,6 +738,7 @@ void Common_IPFViewer::drawCenteredShip()
   ship_color_drk.shade(-0.2);
   
   glShadeModel(GL_FLAT);
+  glRotatef(-heading, 0, 0, 1);
   
   // Draw the ship Body
   glColor3f(ship_color_lgt.red(), ship_color_lgt.grn(), ship_color_lgt.blu());
@@ -730,6 +762,7 @@ void Common_IPFViewer::drawCenteredShip()
 
 
 #if 0
+  // Draw the ship outline vertices, just for debugging
   glEnable(GL_POINT_SMOOTH);
   glPointSize(5);
 

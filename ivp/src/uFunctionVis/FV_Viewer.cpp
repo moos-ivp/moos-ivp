@@ -56,8 +56,6 @@ void FV_Viewer::resetQuadSet()
   m_quadset.normalize(0, 100);
   m_quadset.applyColorMap(m_color_map);	
   m_quadset.applyColorIntensity(m_intensity);
-  //m_quadset.applyScale(m_scale);
-  //m_quadset.applyBase(m_base);
   m_quadset.interpolate(1);
   
   if(m_polar == 0)
@@ -87,8 +85,12 @@ void FV_Viewer::draw()
   if(m_draw_frame && (m_polar==1)) 
     drawPolarFrame();
 
+  double heading = 0;
+  if(m_model)
+    heading = m_model->getNavHeading();
+  
   if(m_draw_ship && (m_polar==1)) 
-    drawCenteredShip();
+    drawCenteredShip(heading);
 
   drawOwnPoint();
     

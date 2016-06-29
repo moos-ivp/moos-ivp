@@ -41,6 +41,8 @@ FV_Model::FV_Model()
 
   m_bundle_series_maxlen = 50;
   m_verbose    = true;
+
+  m_nav_heading = 0;
 }
 
 //-------------------------------------------------------------
@@ -76,7 +78,7 @@ void FV_Model::addIPF(const string& ipf_str, const string& platform)
 //-------------------------------------------------------------
 // Procedure: modColorMap
 
-void FV_Model::modColorMap(const string &str)
+void FV_Model::modColorMap(string str)
 {
   m_ipf_mutex.Lock();
   m_color_map.setType(str);
@@ -86,7 +88,7 @@ void FV_Model::modColorMap(const string &str)
 //-------------------------------------------------------------
 // Procedure: modSource()
 
-void FV_Model::modSource(const std::string& bhv_source)
+void FV_Model::modSource(std::string bhv_source)
 {
   vector<string> sources = m_bundle_series.getAllSources();
   if(vectorContains(sources, bhv_source))
