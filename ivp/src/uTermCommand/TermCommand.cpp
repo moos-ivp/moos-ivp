@@ -78,7 +78,7 @@ bool TermCommand::OnStartUp()
   
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(true);
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  m_MissionReader.GetConfigurationAndPreserveSpace(GetAppName(), sParams);
     
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
@@ -88,8 +88,6 @@ bool TermCommand::OnStartUp()
     sVarName = toupper(sVarName);
     sLine    = stripBlankEnds(sLine);
 
-    sLine = findReplace(sLine, "_", " ");
-    
     if(MOOSStrCmp(sVarName, "CMD"))
       addCommand(sLine);
   }
@@ -132,7 +130,7 @@ void TermCommand::addCommand(string cmd_str)
 
 //------------------------------------------------------------
 // Procedure: getPartialKeyMatches
-//      Note: Rreturn the entries where the cmd buffer matches 
+//      Note: Return the entries where the cmd buffer matches 
 //            the first N characters of the key. 
 
 vector<int> TermCommand::getPartialKeyMatches()
