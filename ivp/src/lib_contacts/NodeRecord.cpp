@@ -65,6 +65,7 @@ NodeRecord::NodeRecord(string vname, string vtype)
   m_altitude_set   = false;
   m_length_set     = false;
   m_timestamp_set  = false;
+  m_trajectory_set = false;
 
   m_thrust_mode_reverse = false;
 }
@@ -101,6 +102,8 @@ string NodeRecord::getStringValue(string key) const
     return(doubleToStringX(m_length, 2));
   else if((key == "timestamp") || (key == "time") || (key == "utime"))
     return(doubleToStringX(m_timestamp, 2));
+  else if((key == "trajectory") || (key == "traj"))
+    return(m_trajectory);
   else if(hasProperty(key))
     return(getProperty(key));
   else
@@ -208,7 +211,10 @@ string NodeRecord::getSpec(bool terse) const
     str += ",TIME=" + doubleToStringX(m_timestamp,2);
   if(m_length_set)
     str += ",LENGTH=" + doubleToStringX(m_length,2);
-  
+
+  if(m_trajectory_set)
+    str += ",TRAJECTORY={" + m_trajectory + "}";
+
   map<string, string>::const_iterator p;
   for(p=m_properties.begin(); p!=m_properties.end(); p++) {
     str += "," + p->first;
@@ -326,7 +332,7 @@ bool NodeRecord::valid(string check, string& why) const
 {
   string missing;
 
-  vector<string> svector = parseString(check, ',');
+  vector<string> svector = parseStringZ(check, ',', "{");
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
     string field = tolower(stripBlankEnds(svector[i]));
@@ -362,6 +368,8 @@ bool NodeRecord::valid(string check, string& why) const
       missing += "lat,";
     if((field == "lon") && !m_lon_set) 
       missing += "lon,";
+    if((field == "trajectory") && !m_trajectory_set)
+      missing += "trajectory,";
   }
 
   if(missing != "") {

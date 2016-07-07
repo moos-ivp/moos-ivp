@@ -48,6 +48,8 @@ class NodeRecord
   void setTimeStamp(double v) {m_timestamp=v;  m_timestamp_set=true;}
   void setAltitude(double v)  {m_altitude=v;   m_altitude_set=true;}
 
+  void setTrajectory(std::string s) {m_trajectory=s; m_trajectory_set=true;}
+  
   void setThrustModeReverse(bool v) {m_thrust_mode_reverse=v;}
 
   void setName(std::string s)    {m_name=s;}
@@ -78,6 +80,7 @@ class NodeRecord
   double getAltitude() const   {return(m_altitude);}
   double getLength() const     {return(m_length);}
   double getTimeStamp() const  {return(m_timestamp);}
+  std::string getTrajectory() const {return(m_trajectory);}
 
   bool   isSetX() const        {return(m_x_set);}
   bool   isSetY() const        {return(m_y_set);}
@@ -86,6 +89,7 @@ class NodeRecord
   bool   isSetAltitude() const {return(m_altitude_set);}
   bool   isSetLength() const   {return(m_length_set);}
   bool   isSetHeading() const  {return(m_heading_set);}
+  bool   isSetTrajectory() const {return(m_trajectory_set);}
 
   bool   getThrustModeReverse() const {return(m_thrust_mode_reverse);}
   double getElapsedTime(double) const;
@@ -123,6 +127,7 @@ class NodeRecord
   double m_lon;
   double m_length;
   double m_timestamp;
+  std::string  m_trajectory;
   std::string  m_name;
   std::string  m_group;
   std::string  m_type;
@@ -147,6 +152,7 @@ class NodeRecord
   bool m_length_set;
   bool m_timestamp_set;
   bool m_thrust_mode_reverse;
+  bool m_trajectory_set;
 
   int  m_index;
 

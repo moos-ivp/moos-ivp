@@ -39,7 +39,7 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
   NodeRecord empty_record;
   NodeRecord new_record;
 
-  vector<string> svector = parseString(node_rep_string, ',');
+  vector<string> svector = parseStringZ(node_rep_string, ',', "{");
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
     string param = toupper(biteStringX(svector[i], '='));
@@ -63,6 +63,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
       new_record.setIndex(atof(value.c_str()));
     else if((param == "THRUST_MODE_REVERSE") && (tolower(value) == "true")) 
       new_record.setThrustModeReverse(true);
+    else if(param == "TRAJECTORY")
+      new_record.setTrajectory(stripBraces(value));
     else if(isNumber(value)) {
       if((param == "UTC_TIME") || (param == "TIME"))
 	new_record.setTimeStamp(atof(value.c_str()));

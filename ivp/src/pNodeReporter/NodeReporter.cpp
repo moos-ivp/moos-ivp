@@ -123,6 +123,8 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
       m_record.setDepth(ddata);
     else if(key == "NAV_YAW") 
       m_record.setYaw(ddata);
+    else if(key == "NAV_TRAJECTORY")
+      m_record.setTrajectory(sdata);
     else if(key == "THRUST_MODE_REVERSE") {
       bool reverse = (tolower(sdata)=="true");
       m_record.setThrustModeReverse(reverse);
@@ -239,6 +241,7 @@ void NodeReporter::registerVariables()
   Register("NAV_HEADING", 0);
   Register("NAV_YAW", 0);
   Register("NAV_DEPTH", 0);
+  Register("NAV_TRAJECTORY", 0);
 
   if(m_alt_nav_prefix != "") {
     if(!strEnds(m_alt_nav_prefix, "_"))
