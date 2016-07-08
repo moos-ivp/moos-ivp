@@ -100,6 +100,7 @@ SET(IVP_NON_GUI_LIBS
    lib_encounters
    lib_apputil
    lib_contacts
+   lib_ucommand
    lib_ufield
    lib_ufld_hazards
    lib_logutils
@@ -202,6 +203,7 @@ SET(ROBOT_APPS
   uHelmScope
   uTimerScript
   uProcessWatch
+  uCommand
   uLoadWatch
   uTermCommand
   uXMS
