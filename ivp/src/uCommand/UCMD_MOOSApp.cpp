@@ -35,8 +35,6 @@ UCMD_MOOSApp::UCMD_MOOSApp()
 {
   m_pending_moos_events = 0;
   m_gui                 = 0; 
-  m_posting_count       = 0;
-  m_gui_history_pending = false;
 }
 
 //----------------------------------------------------------------
@@ -173,8 +171,7 @@ void UCMD_MOOSApp::handleIterate(const MOOS_event& e)
   //m_cmd_folio.print();
 
   handlePendingGUI();
-  if(m_gui_history_pending)
-    handlePendingHistory();
+  handlePendingHistory();
 }
 
 
@@ -321,29 +318,11 @@ void UCMD_MOOSApp::handlePendingGUI()
       Notify(moosvar, cmd_item.getCmdPostDbl());
 
     // Part 2: Build the history entry
-    string post_var = moosvar;
-    string post_pid = uintToString(m_posting_count);
     string post_val = cmd_item.getCmdPostStr();
     if(valtype != "string")
       post_val = doubleToStringX(cmd_item.getCmdPostDbl());
-    
-    // Part 3: Increment the counter and store the history entry
-    m_posting_count++;
-    m_post_vars.push_front(post_var);
-    m_post_vals.push_front(post_val);
-    m_post_pids.push_front(post_pid);
-    m_post_acks[post_pid] = false;
 
-    // Part 4: Truncate the history to maintain maximum length
-    if(m_post_vars.size() > 20) {
-      m_post_vars.pop_back();
-      m_post_vals.pop_back();
-      string post_pid = m_post_pids.back();
-      m_post_pids.pop_back();
-      m_post_acks.erase(post_pid);
-    }
-
-    m_gui_history_pending = true;
+    m_cmd_summary.addPosting(moosvar, post_val);
   }
 
   m_gui->clearPendingCmdItems();
@@ -356,32 +335,10 @@ void UCMD_MOOSApp::handlePendingGUI()
 
 void UCMD_MOOSApp::handlePendingHistory()
 {
-  if(!m_gui)
+  if(!m_gui || !m_cmd_summary.reportPending())
     return;
 
-  // New ACTable with 3 columns and 3 blanks separating columns
-  ACTable actab(3, 3);
-
-  actab.setColumnJustify(1, "right");
-  actab << "MOOSVar | PID  | Value ";
-  actab.addHeaderLines();
-  
-  list<string>::iterator p;
-  list<string>::iterator q = m_post_vals.begin();
-  list<string>::iterator r = m_post_pids.begin();
-  
-  for(p=m_post_vars.begin(); p!=m_post_vars.end(); p++) {
-    string post_var = *p;
-    string post_val = *q;
-    string post_pid = *r;
-    actab << post_var << post_pid << post_val;
-    q++;
-    r++;
-  }
-
-  vector<string> summary = actab.getTableOutput();
-  m_gui->setPostSummary(summary);
-  m_gui_history_pending = false;
-  
+  vector<string> command_report = m_cmd_summary.getCommandReport();
+  m_gui->setPostSummary(command_report);
 }
 

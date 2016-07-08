@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: UCMD_MOOSApp.h                                       */
-/*    DATE: July 1st, 2016                                       */
+/*    FILE: CommandSummary.h                                     */
+/*    DATE: July 8th, 2016                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,60 +21,40 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef UCMD_MOOS_APP_HEADER
-#define UCMD_MOOS_APP_HEADER
+#ifndef COMMAND_SUMMARY_HEADER
+#define COMMAND_SUMMARY_HEADER
 
 #include <string>
+#include <vector>
 #include <list>
-#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-#include "UCMD_GUI.h"
-#include "Threadsafe_pipe.h"
-#include "VarDataPair.h"
-#include "CommandFolio.h"
-#include "CommandSummary.h"
-#include "MOOS_event.h"
+#include <map>
 
-class UCMD_MOOSApp : public AppCastingMOOSApp  
+class CommandSummary 
 {
  public:
-  UCMD_MOOSApp();
-  virtual ~UCMD_MOOSApp() {}
+  CommandSummary();
+  virtual ~CommandSummary() {}
 
-  bool Iterate();
-  bool OnConnectToServer();
-  bool OnStartUp();
-  bool OnNewMail(MOOSMSG_LIST &NewMail);
-
-  bool buildReport();
-
-  void setGUI(UCMD_GUI* g_gui)           {m_gui=g_gui;}
-
-  void setPendingEventsPipe(Threadsafe_pipe<MOOS_event>*); 
+  void addPosting(std::string, std::string);
+  void addAck(std::string);
   
+  bool reportPending() const {return(m_report_pending);}
 
-  // Only call these methods in the main FLTK l thread, for thread
-  // safety w.r.t. that library...
-  void handleNewMail(const MOOS_event & e);
-  void handleIterate(const MOOS_event & e);
-  void handleStartUp(const MOOS_event & e);
-
- protected:
-  void handlePendingGUI();
-  void handlePendingHistory();
-  void registerVariables();
-  bool handleConfigCmd(std::string);
-
-  void postAppCastRequest(std::string node, std::string app,
-			  std::string key,  std::string thresh,
-			  double duration);
+  std::vector<std::string> getCommandReport();
   
  protected:
-  Threadsafe_pipe<MOOS_event>* m_pending_moos_events;
+  std::list<std::string>      m_post_vars;
+  std::list<std::string>      m_post_vals;
+  std::list<std::string>      m_post_pids;
+  std::map<std::string, bool> m_post_acks;
 
-  CommandFolio   m_cmd_folio;
-  CommandSummary m_cmd_summary;
-  
-  UCMD_GUI*      m_gui;
+  unsigned int m_posting_count;
+
+  bool         m_report_pending;
 };
 
 #endif 
+
+
+
+

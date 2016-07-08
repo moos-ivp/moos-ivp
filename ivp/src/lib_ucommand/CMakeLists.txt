@@ -6,6 +6,7 @@
 SET(SRC
   CommandFolio.cpp
   CommandItem.cpp
+  CommandSummary.cpp
   UCMD_GUI.cpp
 )
 
