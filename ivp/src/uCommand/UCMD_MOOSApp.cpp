@@ -311,12 +311,17 @@ void UCMD_MOOSApp::handlePendingGUI()
     string moosvar = cmd_item.getCmdPostVar() + "_" + toupper(cmd_targ);
     string valtype = cmd_item.getCmdPostType();
 
-    // Part 1: Make the posting
-    if(valtype == "string") 
-      Notify(moosvar, cmd_item.getCmdPostStr());
-    else 
-      Notify(moosvar, cmd_item.getCmdPostDbl());
-
+    // Part 1: Make the posting if the posting is real. A posting with a
+    // target name beginning with "test:" indicates that a posting should
+    // not be made, but the posting should still go into the cmd_summary
+    // to show the user what would have been posted.
+    if(!strBegins(cmd_targ, "test:")) {
+      if(valtype == "string") 
+	Notify(moosvar, cmd_item.getCmdPostStr());
+      else 
+	Notify(moosvar, cmd_item.getCmdPostDbl());
+    }
+    
     // Part 2: Build the history entry
     string post_val = cmd_item.getCmdPostStr();
     if(valtype != "string")

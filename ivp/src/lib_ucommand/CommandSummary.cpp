@@ -44,12 +44,15 @@ void CommandSummary::addPosting(string post_var, string post_val)
 {
   // Part 3: Increment the counter and store the history entry
   string post_pid = uintToString(m_posting_count);
+  if(strContains(post_var, "TEST:"))
+    post_pid = "-";
+  else
+    m_posting_count++;
   
   m_post_vars.push_front(post_var);
   m_post_vals.push_front(post_val);
   m_post_pids.push_front(post_pid);
   m_post_acks[post_pid] = false;
-  m_posting_count++;
   
   // Part 4: Truncate the history to maintain maximum length
   if(m_post_vars.size() > 20) {
@@ -79,16 +82,44 @@ vector<string> CommandSummary::getCommandReport()
   list<string>::iterator p;
   list<string>::iterator q = m_post_vals.begin();
   list<string>::iterator r = m_post_pids.begin();
-  
+
+  bool testlines = false;
   for(p=m_post_vars.begin(); p!=m_post_vars.end(); p++) {
     string post_var = *p;
     string post_val = *q;
     string post_pid = *r;
+
+    if(strContains(post_var, "TEST:")) 
+      testlines = true;
+
+    if(testlines && !strContains(post_var, "TEST:")) {
+      testlines = false;
+      actab.addHeaderLines();
+    }
+
+    post_var = findReplace(post_var, "TEST:", "");
+    
     actab << post_var << post_pid << post_val;
     q++;
     r++;
   }
 
+  bool done = false;
+  while(!done) {
+    if(m_post_vars.size() == 0)
+      done = true;
+    else {
+      if(strContains(m_post_vars.front(), "TEST:")) {
+	m_post_vars.pop_front();
+	m_post_vals.pop_front();
+	m_post_pids.pop_front();
+      }
+      else
+	done = true;
+    }
+  }
+
+  
   vector<string> command_report = actab.getTableOutput();
   m_report_pending = false;
 

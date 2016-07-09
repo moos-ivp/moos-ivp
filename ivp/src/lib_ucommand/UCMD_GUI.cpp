@@ -367,6 +367,10 @@ inline void UCMD_GUI::cb_ButtonCmdAction_i(int v)
   cout << "Cmd Label  ---> " << m_cmd_labels[v] << endl;
   cout << "Cmd VName  ---> " << m_cmd_vnames[v] << endl;
 
+  bool test = false;
+  if(Fl::event_key(FL_Shift_L)) 
+    test = true;
+  
   vector<CommandItem> cmd_items = m_cmd_folio.getAllCmdItems();
   for(unsigned int i=0; i<cmd_items.size(); i++) {
     bool match = true;
@@ -376,7 +380,10 @@ inline void UCMD_GUI::cb_ButtonCmdAction_i(int v)
       match = false;
     if(match) {
       m_pending_cmd_items.push_back(cmd_items[i]);
-      m_pending_cmd_targs.push_back(vname);
+      if(test)
+	m_pending_cmd_targs.push_back("test:" + vname);
+      else
+	m_pending_cmd_targs.push_back(vname);
     }
   }
   
@@ -406,8 +413,7 @@ inline void UCMD_GUI::cb_TogglePostView_i()
     int brw_h = m_brw_hgt;
     m_brw_posts->resize(brw_x, brw_y, brw_w, brw_h);
   }
-  
-  //resizeWidgetsShape();
+
   roomToView();
   redraw();
 }
@@ -433,7 +439,6 @@ vector<string> UCMD_GUI::getPendingCmdTargs() const
 {
   return(m_pending_cmd_targs);
 }
-
 
 //----------------------------------------------------
 // Procedure: clearPendingCmdItems()
