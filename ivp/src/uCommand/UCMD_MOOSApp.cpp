@@ -307,7 +307,11 @@ void UCMD_MOOSApp::handlePendingGUI()
   for(unsigned i=0; i<cmd_items.size(); i++) {
     CommandItem cmd_item = cmd_items[i];
     string      cmd_targ = cmd_targs[i];
-    
+
+    bool test_post = strBegins(cmd_targ, "test:");
+    if(test_post)
+      biteString(cmd_targ, ':');
+
     string moosvar = cmd_item.getCmdPostVar() + "_" + toupper(cmd_targ);
     string valtype = cmd_item.getCmdPostType();
 
@@ -315,7 +319,7 @@ void UCMD_MOOSApp::handlePendingGUI()
     // target name beginning with "test:" indicates that a posting should
     // not be made, but the posting should still go into the cmd_summary
     // to show the user what would have been posted.
-    if(!strBegins(cmd_targ, "test:")) {
+    if(!test_post) {
       if(valtype == "string") 
 	Notify(moosvar, cmd_item.getCmdPostStr());
       else 
@@ -327,7 +331,7 @@ void UCMD_MOOSApp::handlePendingGUI()
     if(valtype != "string")
       post_val = doubleToStringX(cmd_item.getCmdPostDbl());
 
-    m_cmd_summary.addPosting(moosvar, post_val);
+    m_cmd_summary.addPosting(moosvar, post_val, test_post);
   }
 
   m_gui->clearPendingCmdItems();

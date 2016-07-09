@@ -35,17 +35,19 @@ class CommandSummary
   CommandSummary();
   virtual ~CommandSummary() {}
 
-  void addPosting(std::string, std::string);
+  void addPosting(std::string, std::string, bool post_test=false);
   void addAck(std::string);
   
   bool reportPending() const {return(m_report_pending);}
 
   std::vector<std::string> getCommandReport();
   
- protected:
+ protected: // sychronized lists always same size
   std::list<std::string>      m_post_vars;
   std::list<std::string>      m_post_vals;
   std::list<std::string>      m_post_pids;
+  std::list<bool>             m_post_test;
+
   std::map<std::string, bool> m_post_acks;
 
   unsigned int m_posting_count;
@@ -54,7 +56,3 @@ class CommandSummary
 };
 
 #endif 
-
-
-
-

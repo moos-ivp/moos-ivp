@@ -40,11 +40,11 @@ CommandSummary::CommandSummary()
 //----------------------------------------------------------------------
 // Procedure: addPosting()
 
-void CommandSummary::addPosting(string post_var, string post_val)
+void CommandSummary::addPosting(string post_var, string post_val, bool post_test)
 {
   // Part 3: Increment the counter and store the history entry
   string post_pid = uintToString(m_posting_count);
-  if(strContains(post_var, "TEST:"))
+  if(post_test)
     post_pid = "-";
   else
     m_posting_count++;
@@ -52,7 +52,10 @@ void CommandSummary::addPosting(string post_var, string post_val)
   m_post_vars.push_front(post_var);
   m_post_vals.push_front(post_val);
   m_post_pids.push_front(post_pid);
-  m_post_acks[post_pid] = false;
+  m_post_test.push_front(post_test);
+
+  if(!post_test)
+    m_post_acks[post_pid] = false;
   
   // Part 4: Truncate the history to maintain maximum length
   if(m_post_vars.size() > 20) {
@@ -60,6 +63,7 @@ void CommandSummary::addPosting(string post_var, string post_val)
     m_post_vals.pop_back();
     string post_pid = m_post_pids.back();
     m_post_pids.pop_back();
+    m_post_test.pop_back();
     m_post_acks.erase(post_pid);
   }
   
@@ -82,43 +86,48 @@ vector<string> CommandSummary::getCommandReport()
   list<string>::iterator p;
   list<string>::iterator q = m_post_vals.begin();
   list<string>::iterator r = m_post_pids.begin();
+  list<bool>::iterator   s = m_post_test.begin();
 
-  bool testlines = false;
+  // Part 1: Generate the report lines, ensuring there are header lines
+  // between any test postings and the historical actual postings.
+  bool testlines=false;
   for(p=m_post_vars.begin(); p!=m_post_vars.end(); p++) {
-    string post_var = *p;
-    string post_val = *q;
-    string post_pid = *r;
+    string post_var  = *p;
+    string post_val  = *q;
+    string post_pid  = *r;
+    bool   post_test = *s;
 
-    if(strContains(post_var, "TEST:")) 
+    if(post_test)
       testlines = true;
 
-    if(testlines && !strContains(post_var, "TEST:")) {
+    if(testlines && !post_test) {
       testlines = false;
       actab.addHeaderLines();
     }
 
-    post_var = findReplace(post_var, "TEST:", "");
-    
     actab << post_var << post_pid << post_val;
     q++;
     r++;
+    s++;
   }
 
+  // Part 2: Remove any test elements in the history. These will always
+  // be just at the beginning of the list.
   bool done = false;
   while(!done) {
     if(m_post_vars.size() == 0)
       done = true;
     else {
-      if(strContains(m_post_vars.front(), "TEST:")) {
+      if(m_post_test.front() == true) {
 	m_post_vars.pop_front();
 	m_post_vals.pop_front();
 	m_post_pids.pop_front();
+	m_post_test.pop_front();
       }
       else
 	done = true;
     }
   }
-
   
   vector<string> command_report = actab.getTableOutput();
   m_report_pending = false;
