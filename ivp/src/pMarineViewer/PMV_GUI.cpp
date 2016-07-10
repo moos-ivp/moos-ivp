@@ -879,6 +879,9 @@ inline void PMV_GUI::cb_CommandGUI_i()
       delete(m_cmd_gui);
   }
 
+  if(m_cmd_folio.size() == 0)
+    return;
+  
   int wid = m_cmd_gui_start_wid;
   int hgt = m_cmd_gui_start_hgt;
   

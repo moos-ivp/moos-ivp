@@ -137,7 +137,8 @@ void UCMD_GUI::draw()
     if(i != 0) 
       cy = m_row_bottoms[i-1] + 10;
     int ch = (m_row_bottoms[i] - cy) + 5;
-    if(i == 0)
+    //if(i == 0)
+    if((m_row_vnames[i] == "all") || (m_row_vnames[i] == "shore"))
       fl_draw_box(FL_BORDER_FRAME, cx, cy, cw, ch, FL_BLUE);
     else
       fl_draw_box(FL_BORDER_FRAME, cx, cy, cw, ch, fl_grey);
@@ -221,29 +222,19 @@ void UCMD_GUI::initWidgetsFolio()
   set<string> vehicles = m_cmd_folio.getAllReceivers();
   vehicles.erase("each");
 
-  // Part 3: If the set contains "all", then build these command buttons
-  // first. They will be in the top group of buttions in the GUI
   long int cbutton_ctr = 0;
-  if(vehicles.count("all")) {
-    set<string> labels = m_cmd_folio.getAllLabels("all");
-    for(set<string>::iterator q=labels.begin(); q!=labels.end(); q++) {
-      string label = *q;
-      Fl_Button *button = new Fl_Button(0, 0, 1, 1, 0); 
-      button->copy_label(label.c_str());
-      button->clear_visible_focus();
-      button->callback((Fl_Callback*)UCMD_GUI::cb_ButtonCmdAction,(void*)cbutton_ctr);
-      
-      this->add(button);
-      m_cmd_buttons.push_back(button);
-      m_cmd_labels.push_back(label);
-      m_cmd_vnames.push_back("all");
-      cbutton_ctr++;
-    }
-    vehicles.erase("all");
+  
+  list<string> vlist;
+  for(set<string>::iterator q=vehicles.begin(); q!=vehicles.end(); q++) {
+    string vname = *q;
+    if((vname == "all") || (vname == "shore"))
+      vlist.push_front(vname);
+    else
+      vlist.push_back(vname);
   }
 
   // Part 4: Now handle all the other receivers (excluding "all")
-  for(set<string>::iterator p=vehicles.begin(); p!=vehicles.end(); p++) {
+  for(list<string>::iterator p=vlist.begin(); p!=vlist.end(); p++) {
     string vname = *p;
 
     set<string> labels = m_cmd_folio.getAllLabels(vname);

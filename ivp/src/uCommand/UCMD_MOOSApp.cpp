@@ -321,7 +321,10 @@ void UCMD_MOOSApp::handlePendingPostsFromGUI()
     if(test_post)
       biteString(cmd_targ, ':');
 
-    string moosvar = cmd_item.getCmdPostVar() + "_" + toupper(cmd_targ);
+    string moosvar = cmd_item.getCmdPostVar();
+    if((cmd_targ != "local") && (cmd_targ != "shore"))
+      moosvar += "_" + cmd_targ;
+      
     string valtype = cmd_item.getCmdPostType();
 
     // Part 1: Make the posting if the posting is real. A posting with a

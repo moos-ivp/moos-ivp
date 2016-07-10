@@ -849,12 +849,14 @@ void PMV_MOOSApp::handlePendingPostsFromGUI()
     CommandItem cmd_item = cmd_items[i];
     string      cmd_targ = cmd_targs[i];
 
-    cout << "cmd_targ: " << cmd_targ << endl;
     bool test_post = strBegins(cmd_targ, "test:");
     if(test_post)
       biteString(cmd_targ, ':');
 
-    string moosvar = cmd_item.getCmdPostVar() + "_" + toupper(cmd_targ);
+    string moosvar = cmd_item.getCmdPostVar();
+    if((cmd_targ != "local") && (cmd_targ != "shore"))
+      moosvar += "_" + cmd_targ;
+
     string valtype = cmd_item.getCmdPostType();
 
     // Part 1: Make the posting if the posting is real. A posting with a
