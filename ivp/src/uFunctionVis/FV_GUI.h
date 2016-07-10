@@ -88,6 +88,7 @@ public:
 
   Fl_Button   *m_but_ipf_set;
   Fl_Button   *m_but_ipf_pin;
+  Fl_Button   *m_but_ipf_lock;
 
   std::vector<std::string> m_bhv_sources;
 };

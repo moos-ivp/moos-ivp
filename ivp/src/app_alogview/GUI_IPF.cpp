@@ -35,16 +35,15 @@ using namespace std;
 //-------------------------------------------------------------------
 // Constructor
 
-GUI_IPF::GUI_IPF(int g_w, int g_h, const char *g_l)
-  : Fl_Window(g_w, g_h, g_l) 
+GUI_IPF::GUI_IPF(int wid, int hgt, const char *label)
+  : Common_IPF_GUI(wid, hgt, label) 
 {
-  m_menubar = new Fl_Menu_Bar(0, 0, 0, 0);
-  augmentMenu();
-
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
   this->begin();
   this->size_range(375,250, 1200,1200, 0,0, 1);
+
+  augmentMenu();
 
   m_replay_warp_msg = "(PAUSED)";
   m_parent_gui = 0;
@@ -52,6 +51,8 @@ GUI_IPF::GUI_IPF(int g_w, int g_h, const char *g_l)
   m_mutable_text_size = 10;
 
   initWidgets();
+  m_viewer = (Common_IPFViewer*)(m_ipf_viewer);
+  
   resizeWidgetsShape();
   resizeWidgetsText();
   redraw();
@@ -156,6 +157,7 @@ void GUI_IPF::resizeWidgetsShape()
     ipf_hgt = h();
   }
 
+  m_menubar->resize(0,0,0,0);
   m_ipf_viewer->Common_IPFViewer::resize(ipf_x, ipf_y, ipf_wid, ipf_hgt);
 
   if(m_fullscreen) 

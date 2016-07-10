@@ -82,34 +82,6 @@ void Common_IPFViewer::resize(int x, int y, int wid, int hgt)
 }
 
 //-------------------------------------------------------------
-// Procedure: handle()
-
-#if 0
-int Common_IPFViewer::handle(int event)
-{
-  return(Fl_Gl_Window::handle(event));  // temp measure??
-
-  int vx, vy;
-  switch(event) {
-  case FL_PUSH:
-    vx = Fl::event_x();
-    vy = h() - Fl::event_y();
-    if(Fl_Window::handle(event) != 1) {
-      if(Fl::event_button() == FL_LEFT_MOUSE)
-	handleLeftMouse(vx, vy);
-      if(Fl::event_button() == FL_RIGHT_MOUSE)
-	handleRightMouse(vx, vy);
-    }
-    return(1);
-    break;  
-  default:
-    return(Fl_Gl_Window::handle(event));
-  }
-}
-#endif
-
-
-//-------------------------------------------------------------
 // Procedure: setParam
 
 bool Common_IPFViewer::setParam(string param, string value)
@@ -267,12 +239,12 @@ void Common_IPFViewer::draw()
   glLoadIdentity();
 
   // Establish clipping volume (left, right, bottom, top, near, far)
-  glOrtho (-nRange, nRange, -nRange*h()/w(), nRange*h()/w(), -nRange, nRange);
-#if 0
+  //glOrtho (-nRange, nRange, -nRange*h()/w(), nRange*h()/w(), -nRange, nRange);
+#if 1
   if(w() <= h()) 
-    glOrtho (-nRange, nRange, -nRange*h()/w(), nRange*h()/w(), -nRange, nRange);
+    glOrtho (-nRange, nRange, -nRange*h()/w(), nRange*h()/w(), -nRange*3, nRange*30);
   else 
-    glOrtho (-nRange*w()/h(), nRange*w()/h(), -nRange, nRange, -nRange, nRange);
+    glOrtho (-nRange*w()/h(), nRange*w()/h(), -nRange, nRange, -nRange*3, nRange*30);
 #endif
   //glOrtho (-nRange*w()/h()-100, nRange*w()/h()+100, -nRange-100, 
   //     nRange+100, -nRange-100, nRange+100);
@@ -316,6 +288,11 @@ void Common_IPFViewer::resetRadVisuals()
   if(h() < min_extent)
     min_extent = h();
 
+  cout << "--------------------------------------------" << endl;
+  cout << "       w(): " << w() << endl;
+  cout << "       h(): " << h() << endl;
+  cout << "min_extent: " << min_extent << endl;
+  
   m_rad_extent = min_extent;
 
   unsigned int spd_pts = ivp_domain.getVarPoints("speed");
@@ -456,8 +433,23 @@ bool Common_IPFViewer::drawQuadSet2D(const QuadSet& quadset)
   if(quad_cnt == 0)
     return(false);
 
-  for(unsigned int i=0; i<quad_cnt; i++)
+  for(unsigned int i=0; i<quad_cnt; i++) {
     drawQuad(quadset.getQuad(i));
+
+    if(i==10) {
+      Quad3D q = quadset.getQuad(i);
+      cout << "x0: " << q.getLLX() << endl;
+      cout << "x1: " << q.getHLX() << endl;
+      cout << "x2: " << q.getHHX() << endl;
+      cout << "x3: " << q.getLHX() << endl;
+      
+      cout << "y0: " << q.getLLY() << endl;
+      cout << "y1: " << q.getHLY() << endl;
+      cout << "y2: " << q.getHHY() << endl;
+      cout << "y3: " << q.getLHY() << endl;
+      cout << "m_zoom: " << m_zoom << endl;
+    }
+  }
 
   return(true);
 }
@@ -513,7 +505,6 @@ void Common_IPFViewer::drawQuad(Quad3D q)
   glVertex3f(x1, y1, q.getHLZ()+m_base);
 
   glEnd();
-
 
   // Draw the line edges of the piece
   if(m_draw_pclines) {

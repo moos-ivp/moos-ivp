@@ -31,6 +31,9 @@
 #include "MY_Fl_Hold_Browser.h"
 #include "AppCastRepo.h"
 #include "VPlug_AppCastSettings.h"
+#include "CommandFolio.h"
+#include "CommandSummary.h"
+#include "UCMD_GUI.h"
 
 class PMV_GUI : public MarineVehiGUI {
 public:
@@ -51,7 +54,9 @@ public:
   void         updateXY();
   void         clearGeoShapes(std::string, std::string, std::string);
 
-
+  void         setCommandFolio(CommandFolio v)     {m_cmd_folio=v;}
+  void         setCommandSummary(CommandSummary v) {m_cmd_summary=v;}
+  
   bool         clearStaleVehicles(bool force=false);
   double       getClearStaleTimeStamp() {return(m_clear_stale_timestamp);}
 
@@ -66,6 +71,9 @@ public:
   bool         addReferenceVehicle(std::string vname);
   bool         addFilterVehicle(std::string vname);
 
+  UCMD_GUI*    getCmdGUI() {return(m_cmd_gui);}
+  void         closeCmdGUI();
+  
  public: // AppCasting Related Functions
 
   void         updateNodes(bool clear=false);
@@ -106,6 +114,9 @@ public:
 
   inline void cb_DeleteActiveNode_i(int);
   static void cb_DeleteActiveNode(Fl_Widget*, int);
+
+  inline void cb_CommandGUI_i();
+  static void cb_CommandGUI(Fl_Widget*);
 
   inline void cb_SelectNode_i();
   static void cb_SelectNode(Fl_Widget*, long);
@@ -174,6 +185,13 @@ public:
   Fl_Color    m_color_cfgw;
   Fl_Color    m_color_stlw;
 
+  CommandFolio   m_cmd_folio;
+  CommandSummary m_cmd_summary;
+  UCMD_GUI*      m_cmd_gui;
+  int            m_cmd_gui_start_wid;
+  int            m_cmd_gui_start_hgt;
+
+  
   std::string m_title_base;
 };
 #endif

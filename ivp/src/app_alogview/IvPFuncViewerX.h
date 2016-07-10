@@ -61,16 +61,16 @@ class IvPFuncViewerX : public Common_IPFViewer
   void   setLabelColor(std::string s)  {m_label_color.setColor(s);}
   
   void   setTime(double tstamp);
-  void   setVName(std::string s) {m_vname=s;}
+  void   setVName(std::string s)       {m_vname=s;}
   void   setSource(std::string src);
-  void   setMutableTextSize(int v) {m_mutable_text_size=v;}
+  void   setMutableTextSize(int v)     {m_mutable_text_size=v;}
 
  public: // Getters
   double getCurrTime() const;
 
-  std::string getCurrPieces() const;
-  std::string getCurrPriority() const;
-  std::string getCurrDomain() const;
+  std::string getCurrPieces()    const;
+  std::string getCurrPriority()  const;
+  std::string getCurrDomain()    const;
   std::string getCurrIteration() const;
   std::string getCurrPriority(std::string);
   std::string getCurrScopeVarA();
@@ -86,6 +86,7 @@ class IvPFuncViewerX : public Common_IPFViewer
 private:
   double         m_curr_time;
   unsigned int   m_curr_iter;
+  double         m_curr_heading;
   ALogDataBroker m_dbroker;
   int            m_mutable_text_size;
 
@@ -96,9 +97,8 @@ private:
   std::string m_source;
 
   LogPlot     m_iter_plot;
-  VarPlot     m_var_plot_a;
-  VarPlot     m_var_plot_b;
-
+  LogPlot     m_hdg_plot;
+  
   std::string m_scope_a;
   std::string m_scope_b;
 

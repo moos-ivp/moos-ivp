@@ -67,7 +67,8 @@ bool FV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
         }
 
 	else if(key == "NAV_HEADING") {
-	  m_model->setNavHeading(msg.GetDouble());
+	  if(m_model)
+	    m_model->setNavHeading(msg.GetDouble());
         }
     }
   }

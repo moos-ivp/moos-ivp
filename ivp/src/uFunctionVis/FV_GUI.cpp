@@ -39,7 +39,7 @@ FV_GUI::FV_GUI(int wid, int hgt, const char *label)
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
   this->begin();
-  this->size_range(800,550, 1400,1000, 0,0, 1);
+  this->size_range(850,550, 1400,1000, 0,0, 1);
   
   augmentMenu();
   
@@ -82,6 +82,11 @@ void FV_GUI::initWidgets()
   m_fld_curr_domain = new Fl_Output(0, 0, 1, 1, "Domain:"); 
   m_fld_curr_domain->clear_visible_focus();
 
+  m_but_ipf_lock = new Fl_Button(0, 0, 1, 1, "lock");
+  m_but_ipf_lock->shortcut(FL_ALT + 's');
+  m_but_ipf_lock->clear_visible_focus();
+  m_but_ipf_lock->callback((Fl_Callback*)FV_GUI::cb_ToggleLockIPF,(void*)1);
+
   m_but_ipf_set = new Fl_Button(0, 0, 1, 1, "set");
   m_but_ipf_set->shortcut('s');
   m_but_ipf_set->clear_visible_focus();
@@ -90,6 +95,7 @@ void FV_GUI::initWidgets()
   m_but_ipf_pin = new Fl_Button(0, 0, 1, 1, "pin");
   m_but_ipf_pin->clear_visible_focus();
   m_but_ipf_pin->callback((Fl_Callback*)FV_GUI::cb_TogglePin,(void*)1);
+
 }
 
 //---------------------------------------------------------------------------
@@ -103,14 +109,14 @@ void FV_GUI::resizeWidgetsShape()
   int field_hgt = 20;
   int row1      = h()-25;
   
-  int plat_x = 60;
+  int plat_x = 50;
   int plat_y = row1;
   int plat_wid = 65;
   m_fld_curr_plat->resize(plat_x, plat_y, plat_wid, field_hgt);
   
   int src_x = plat_x + plat_wid + 55;
   int src_y = row1;
-  int src_wid = 130 + (extra_wid/2);
+  int src_wid = 120 + (extra_wid/2);
   m_fld_curr_src->resize(src_x, src_y, src_wid, field_hgt);
   
   int iter_x = src_x + src_wid + 30;
@@ -123,24 +129,29 @@ void FV_GUI::resizeWidgetsShape()
   int pcs_wid = 40;
   m_fld_curr_pcs->resize(pcs_x, pcs_y, pcs_wid, field_hgt);
   
-  int pwt_x = pcs_x + pcs_wid + 40;
+  int pwt_x = pcs_x + pcs_wid + 35;
   int pwt_y = row1;
-  int pwt_wid = 50;
+  int pwt_wid = 40;
   m_fld_curr_pwt->resize(pwt_x, pwt_y, pwt_wid, field_hgt);
   
   int dom_x = pwt_x + pwt_wid + 55;
   int dom_y = row1;
-  int dom_wid = 90 + (extra_wid/2);
+  int dom_wid = 100 + (extra_wid/2);
   m_fld_curr_domain->resize(dom_x, dom_y, dom_wid, field_hgt);
   
-  int set_x = dom_x + dom_wid + 15;
+  int lock_x = dom_x + dom_wid + 10;
+  int lock_y = row1;
+  int lock_wid = 40;
+  m_but_ipf_lock->resize(lock_x, lock_y, lock_wid, field_hgt);
+
+  int set_x = lock_x + lock_wid + 10;
   int set_y = row1;
-  int set_wid = 35;
+  int set_wid = 40;
   m_but_ipf_set->resize(set_x, set_y, set_wid, field_hgt);
   
   int pin_x = set_x + set_wid + 10;
   int pin_y = row1;
-  int pin_wid = 35;
+  int pin_wid = 40;
   m_but_ipf_pin->resize(pin_x, pin_y, pin_wid, field_hgt);
   
 }
@@ -170,8 +181,8 @@ void FV_GUI::resizeWidgetsText()
   m_fld_curr_domain->textsize(info_size); 
   m_fld_curr_domain->labelsize(info_size);
 
+  m_but_ipf_lock->labelsize(12);
   m_but_ipf_set->labelsize(12);
-
   m_but_ipf_pin->labelsize(12);
 }
 

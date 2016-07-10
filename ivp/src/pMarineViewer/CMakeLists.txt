@@ -30,6 +30,7 @@ TARGET_LINK_LIBRARIES(pMarineViewer
   genutil
   geometry
   marineview
+  ucommand
   contacts
   apputil
   mbutil

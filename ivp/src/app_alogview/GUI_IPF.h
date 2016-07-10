@@ -25,30 +25,23 @@
 #ifndef GUI_IPFX_HEADER
 #define GUI_IPFX_HEADER
 
-#include <set>
 #include <map>
 #include <string>
-#include <FL/Fl.H>
-#include <FL/Fl_Window.H>
-#include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Menu_Button.H>
 #include <FL/Fl_Check_Button.H>
 #include "FL/Fl_Hold_Browser.H"
-#include "FL/Fl_Output.H"
 #include "FL/Fl_Button.H"
 #include "IvPFuncViewerX.h"
 #include "ALogDataBroker.h"
+#include "Common_IPF_GUI.h"
 
 class REPLAY_GUI;
 
-class GUI_IPF : public Fl_Window {
+class GUI_IPF : public Common_IPF_GUI {
 public:
   GUI_IPF(int w, int h, const char *l=0);
   ~GUI_IPF();
   
-  static Fl_Menu_Item menu_[];
-  Fl_Menu_Bar *m_menubar;
-
   void  augmentMenu();
   
   void  setDataBroker(ALogDataBroker, std::string vname);

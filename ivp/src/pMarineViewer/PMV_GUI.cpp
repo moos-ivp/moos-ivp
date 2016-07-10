@@ -40,9 +40,13 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   this->begin();
   this->size_range(600,400);
 
+  m_cmd_gui = 0;
   m_curr_time = 0;
   m_clear_stale_timestamp = 0;
 
+  m_cmd_gui_start_wid = 500;
+  m_cmd_gui_start_hgt = 300;
+  
   mviewer   = new PMV_Viewer(0, 0, 1, 1);
   m_mviewer = mviewer;
 
@@ -53,9 +57,6 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_brw_procs->callback(cb_SelectProc, 0);
   m_brw_casts = new MY_Fl_Hold_Browser(0, 0, 1, 1);
   m_brw_casts->clear_visible_focus();
-  
-  //m_brw_procs->callback(cb_SelectProc, 0);
-  //m_brw_casts->set_output();
   
   // Configure the DataField Widgets  
   v_nam = new Fl_Output(0, 0, 1, 1, "VName:"); 
@@ -91,13 +92,6 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_scope_time->set_output();
   m_scope_value->set_output();
   
-#if 0
-  v_range = new Fl_Output(785, h()-100, 60, 20, "Range:"); 
-  v_range->set_output();
-  v_bearing = new Fl_Output(785, h()-70, 60, 20, "Bearing:"); 
-  v_bearing->set_output();
-#endif  
-
   m_user_button_1 = new MY_Button(0, 0, 1, 1, "Disabled");
   m_user_button_2 = new MY_Button(0, 0, 1, 1, "Disabled");
   m_user_button_3 = new MY_Button(0, 0, 1, 1, "Disabled");
@@ -345,6 +339,10 @@ void PMV_GUI::augmentMenu()
 		 FL_MENU_DIVIDER);
   m_menubar->add("Vehicles/ClearHistory/Reset All", FL_ALT+'k',
 		 (Fl_Callback*)PMV_GUI::cb_DeleteActiveNode, (void*)1,
+		 FL_MENU_DIVIDER);
+
+  m_menubar->add("Action/Open Command GUI", ' ',
+		 (Fl_Callback*)PMV_GUI::cb_CommandGUI, (void*)0,
 		 FL_MENU_DIVIDER);
 }
 
@@ -846,7 +844,7 @@ void PMV_GUI::cb_FilterOut(Fl_Widget* o, int v) {
 }
 
 
-//----------------------------------------- DeleteActiveNode
+//----------------------------------------- cb_DeleteActiveNode
 inline void PMV_GUI::cb_DeleteActiveNode_i(int i) {  
   if(!m_repo)
     return;
@@ -867,6 +865,37 @@ inline void PMV_GUI::cb_DeleteActiveNode_i(int i) {
 
 void PMV_GUI::cb_DeleteActiveNode(Fl_Widget* o, int v) {
   ((PMV_GUI*)(o->parent()->user_data()))->cb_DeleteActiveNode_i(v);
+}
+
+//----------------------------------------- cb_CommandGUI
+inline void PMV_GUI::cb_CommandGUI_i()
+{
+  if(m_cmd_gui) {
+    if(m_cmd_gui->isVisible()) {
+      m_cmd_gui->makeTop();
+      return;
+    }
+    else
+      delete(m_cmd_gui);
+  }
+
+  int wid = m_cmd_gui_start_wid;
+  int hgt = m_cmd_gui_start_hgt;
+  
+  UCMD_GUI *cmd_gui = new UCMD_GUI(wid, hgt, "Commander");   
+  cmd_gui->setCommandFolio(m_cmd_folio);
+
+  m_cmd_gui = cmd_gui;
+
+  vector<string> command_report = m_cmd_summary.getCommandReport();
+  m_cmd_gui->setPostSummary(command_report);
+  
+  cout << "Launching Command GUI" << endl;
+  m_cmd_folio.print();
+}
+
+void PMV_GUI::cb_CommandGUI(Fl_Widget* o) {
+  ((PMV_GUI*)(o->parent()->user_data()))->cb_CommandGUI_i();
 }
 
 
@@ -1227,6 +1256,24 @@ void PMV_GUI::removeFilterVehicle(string vehicle_name)
   }
 
   m_menubar->redraw();
+}
+
+//---------------------------------------------------------- 
+// Procedure: closeCmdGUI()
+
+void PMV_GUI::closeCmdGUI()
+{
+  if(m_cmd_gui) {
+    int wid = m_cmd_gui->getWid();
+    int hgt = m_cmd_gui->getHgt();
+
+    m_cmd_gui_start_wid = wid;
+    m_cmd_gui_start_hgt = hgt;
+    cout << "closing wid=" << wid << ", hgt=" << hgt << endl;
+    
+    delete(m_cmd_gui);
+    m_cmd_gui = 0;
+  }
 }
 
 //---------------------------------------------------------- 

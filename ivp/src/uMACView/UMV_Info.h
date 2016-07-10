@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: UPV_Info.h                                           */
+/*    FILE: UMV_Info.h                                           */
 /*    DATE: May 18th 2012                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,8 +21,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef U_PLOT_VIEWER_INFO_HEADER
-#define U_PLOT_VIEWER_INFO_HEADER
+#ifndef UMAC_VIEWER_INFO_HEADER
+#define UMAC_VIEWER_INFO_HEADER
 
 void showSynopsis();
 void showHelpAndExit();

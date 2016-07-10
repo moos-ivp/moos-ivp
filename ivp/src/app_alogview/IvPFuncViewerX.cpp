@@ -77,9 +77,16 @@ void IvPFuncViewerX::draw()
       if(m_draw_pin)
 	Common_IPFViewer::drawMaxPoint(max_crs_qix, max_spd_qix);
     }
+    
+    if(m_draw_frame && (m_polar==1)) 
+      drawPolarFrame();
+    if(m_draw_ship && (m_polar==1)) 
+      drawCenteredShip(m_curr_heading);
+
     glPopMatrix();
     glFlush();
   }
+
   
   ColorPack cpack("black");
   drawText2(5, h()-15, m_scope_a, cpack, m_mutable_text_size);
@@ -111,6 +118,9 @@ void IvPFuncViewerX::setDataBroker(ALogDataBroker dbroker, string vname)
 {
   m_dbroker = dbroker;
   m_vname   = vname;
+
+  unsigned int mix = m_dbroker.getMixFromVNameVarName(vname, "NAV_HEADING");
+  m_hdg_plot = m_dbroker.getLogPlot(mix);
 }
 
 //-------------------------------------------------------------
@@ -258,6 +268,7 @@ void IvPFuncViewerX::setTime(double time)
 {
   m_curr_time = time;
   m_curr_iter = (unsigned int)(m_iter_plot.getValueByTime(m_curr_time));  
+  m_curr_heading = m_hdg_plot.getValueByTime(m_curr_time);  
   updateIPF();
 
   map<string, IPF_Plot>::iterator p;

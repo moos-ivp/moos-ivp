@@ -67,7 +67,7 @@ int main(int argc, char *argv[])
   MOOSAppRunnerThread runner(&thePort, run_command.c_str(), 
 			     mission_file.c_str(), argc, argv);
   
-  FV_GUI* gui = new FV_GUI(800,550, "IvPFunction-Viewer");
+  FV_GUI* gui = new FV_GUI(850,550, "IvPFunction-Viewer");
   if(gui)
     thePort.setViewer(gui->getViewer());
 

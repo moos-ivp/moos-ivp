@@ -474,6 +474,20 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   }
   
   handlePendingGUI();
+  handlePendingPostsFromGUI();
+  handlePendingCommandSummary();
+
+  unsigned int window_val = 1;
+  if(!m_gui || !m_gui->getCmdGUI())
+    window_val = 0;
+  else
+    window_val = m_gui->getCmdGUI()->isVisible();
+
+  cout << "window_val: " << uintToString(window_val) << endl;
+
+  if(window_val == 0)
+    m_gui->closeCmdGUI();
+  
 }
 
 //-------------------------------------------------------------
@@ -580,6 +594,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       handled = m_gui->mviewer->setParam(param, value);
     else if(param == "stale_remove_thresh") 
       handled = m_gui->mviewer->setParam(param, value);
+    else if(param == "cmd") 
+      handled = handleConfigCmd(value);
 
     else if(param == "log_the_image") 
       handled = setBooleanOnString(m_log_the_image, value);
@@ -672,7 +688,7 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 #endif
 
   m_gui->mviewer->handleNoTiff();
-
+  m_gui->setCommandFolio(m_cmd_folio);
 
   m_start_time = MOOSTime();
   m_gui->mviewer->setParam("time_warp", m_time_warp);
@@ -745,6 +761,143 @@ bool PMV_MOOSApp::handleMailClear(string str)
   m_gui->clearGeoShapes(vname, shape, stype);
   return(true);
 }
+
+//---------------------------------------------------------
+// Procedure: handleConfigCmd
+//  Examples:
+//   cmd = label=loiter,   var=LOITER,      sval=true
+//   cmd = label=go_deep,  var=DEPTH,       dval=400
+//   cnd = label=PolyWest, var=LOITER_POLY, sval={60,-40:60,-160:150,-160}
+
+bool PMV_MOOSApp::handleConfigCmd(string cmd)
+{
+  string label, moosvar, sval, dval, receivers;
+  
+  vector<string> svector = parseStringQ(cmd, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string field = tolower(biteStringX(svector[i], '='));
+    string value = svector[i];
+
+    if((field == "label") && (label == ""))
+      label = value;
+    else if((field == "var") && (moosvar == ""))
+      moosvar = value;
+    else if((field == "sval") && (sval == ""))
+      sval = value;
+    else if((field == "dval") && (dval == "") && isNumber(value))
+      dval = value;
+    else if((field == "receivers") && (receivers == ""))
+      receivers = value;
+    else
+      return(false);
+  }
+
+  if((label == "") || (moosvar == ""))
+    return(false);
+  if((sval == "") && (dval == ""))
+    return(false);
+  if((sval != "") && (dval != ""))
+    return(false);
+
+  if(isBraced(sval))
+    sval = stripBraces(sval);
+  
+  // Part 2: Build the Command Item
+  CommandItem item;
+  bool ok = true;
+  item.setCmdLabel(label);
+
+  if(sval != "")
+    ok = ok && item.setCmdPostStr(moosvar, sval);
+  else 
+    ok = ok && item.setCmdPostDbl(moosvar, atof(dval.c_str()));
+  
+  vector<string> rvector = parseString(receivers, ':');
+  for(unsigned int i=0; i<rvector.size(); i++) {
+    string receiver = stripBlankEnds(rvector[i]);
+    ok = ok && item.addCmdPostReceiver(receiver);
+  }
+
+  if(!ok)
+    return(false);
+
+  // Part 3: Add the new command item
+  cout << "Adding Command item:" << endl;
+  bool result = m_cmd_folio.addCmdItem(item);
+  cout << "result: " << boolToString(result) << endl;
+  
+  return(true);
+}
+
+
+
+//----------------------------------------------------------------------
+// Procedure: handlePendingPostsFromGUI
+
+void PMV_MOOSApp::handlePendingPostsFromGUI()
+{
+  cout << "Handling Pending Posts from GUI!!!!!" << endl;
+  if(!m_gui || !m_gui->getCmdGUI())
+    return;
+
+  vector<CommandItem> cmd_items = m_gui->getCmdGUI()->getPendingCmdItems();
+  vector<string>      cmd_targs = m_gui->getCmdGUI()->getPendingCmdTargs();
+
+  cout << "Total CMD Targets:" << cmd_targs.size() << endl;
+  
+  for(unsigned i=0; i<cmd_items.size(); i++) {
+    CommandItem cmd_item = cmd_items[i];
+    string      cmd_targ = cmd_targs[i];
+
+    cout << "cmd_targ: " << cmd_targ << endl;
+    bool test_post = strBegins(cmd_targ, "test:");
+    if(test_post)
+      biteString(cmd_targ, ':');
+
+    string moosvar = cmd_item.getCmdPostVar() + "_" + toupper(cmd_targ);
+    string valtype = cmd_item.getCmdPostType();
+
+    // Part 1: Make the posting if the posting is real. A posting with a
+    // target name beginning with "test:" indicates that a posting should
+    // not be made, but the posting should still go into the cmd_summary
+    // to show the user what would have been posted.
+    if(!test_post) {
+      if(valtype == "string") 
+	Notify(moosvar, cmd_item.getCmdPostStr());
+      else 
+	Notify(moosvar, cmd_item.getCmdPostDbl());
+    }
+    
+    // Part 2: Build the history entry
+    string post_val = cmd_item.getCmdPostStr();
+    if(valtype != "string")
+      post_val = doubleToStringX(cmd_item.getCmdPostDbl());
+
+    m_cmd_summary.addPosting(moosvar, post_val, test_post);
+  }
+
+  m_gui->getCmdGUI()->clearPendingCmdItems();
+  m_gui->getCmdGUI()->clearPendingCmdTargs();
+}
+
+
+//----------------------------------------------------------------------
+// Procedure: handlePendingCommandSummary()
+
+void PMV_MOOSApp::handlePendingCommandSummary()
+{
+  if(!m_gui || !m_gui->getCmdGUI() || !m_cmd_summary.reportPending())
+    return;
+
+  // Give the main GUI an updated copy of the command summary so it
+  // can populate the commain GUI upon creation, from its own stored
+  // copy of the command summary.
+  m_gui->setCommandSummary(m_cmd_summary);
+  
+  vector<string> command_report = m_cmd_summary.getCommandReport();
+  m_gui->getCmdGUI()->setPostSummary(command_report);
+}
+
 
 //------------------------------------------------------------
 // Procedure: postAppCastRequest
@@ -821,6 +974,9 @@ bool PMV_MOOSApp::buildReport()
 
   double elapsed = m_gui->mviewer->getElapsed();
   m_msgs << "Elapsed:          " << doubleToString(elapsed,5) << endl;
+
+  unsigned int cmd_folio_size = m_cmd_folio.size();
+  m_msgs << "CmdFolio size:    " << uintToString(cmd_folio_size) << endl;
 
   m_msgs << endl;
   m_msgs << "Visual Settings: " << endl;

@@ -43,7 +43,6 @@ class Common_IPFViewer : public Fl_Gl_Window
   void   resize(int x, int y, int w, int h);
   void   clear();
   void   draw();
-  //int    handle(int);
 
 public:
   bool   setQuadSetFromIPF(IvPFunction*);

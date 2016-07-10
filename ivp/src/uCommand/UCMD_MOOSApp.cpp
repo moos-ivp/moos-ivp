@@ -157,7 +157,6 @@ void UCMD_MOOSApp::handleNewMail(const MOOS_event & e)
     }
   }
 #endif
-
 }
 
 
@@ -170,8 +169,17 @@ void UCMD_MOOSApp::handleIterate(const MOOS_event& e)
   //cout << "Iteration: " << m_iteration << endl;
   //m_cmd_folio.print();
 
-  handlePendingGUI();
-  handlePendingHistory();
+  handlePendingPostsFromGUI();
+  handlePendingCommandSummary();
+
+  unsigned int window_val = 1;
+  if(!m_gui)
+    window_val = 0;
+  else
+    window_val = m_gui->isVisible();
+
+  cout << "window_val: " << uintToString(window_val) << endl;
+  
 }
 
 
@@ -219,7 +227,7 @@ void UCMD_MOOSApp::handleStartUp(const MOOS_event & e)
 //  Examples:
 //   cmd = label=loiter,   var=LOITER,      sval=true
 //   cmd = label=go_deep,  var=DEPTH,       dval=400
-//   cnd = label=PolyWest, var=LOITER_POLY, sval="60,-40:60,-160:150,-160"
+//   cnd = label=PolyWest, var=LOITER_POLY, sval={60,-40:60,-160:150,-160}
 
 bool UCMD_MOOSApp::handleConfigCmd(string cmd)
 {
@@ -294,9 +302,9 @@ bool UCMD_MOOSApp::buildReport()
 
 
 //----------------------------------------------------------------------
-// Procedure: handlePendingGUI
+// Procedure: handlePendingPostsFromGUI
 
-void UCMD_MOOSApp::handlePendingGUI()
+void UCMD_MOOSApp::handlePendingPostsFromGUI()
 {
   if(!m_gui)
     return;
@@ -308,6 +316,7 @@ void UCMD_MOOSApp::handlePendingGUI()
     CommandItem cmd_item = cmd_items[i];
     string      cmd_targ = cmd_targs[i];
 
+    cout << "cmd_targ: " << cmd_targ << endl;
     bool test_post = strBegins(cmd_targ, "test:");
     if(test_post)
       biteString(cmd_targ, ':');
@@ -340,9 +349,9 @@ void UCMD_MOOSApp::handlePendingGUI()
 
 
 //----------------------------------------------------------------------
-// Procedure: handlePendingHistory
+// Procedure: handlePendingCommandSummary()
 
-void UCMD_MOOSApp::handlePendingHistory()
+void UCMD_MOOSApp::handlePendingCommandSummary()
 {
   if(!m_gui || !m_cmd_summary.reportPending())
     return;

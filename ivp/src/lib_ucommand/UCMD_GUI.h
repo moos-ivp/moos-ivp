@@ -37,18 +37,24 @@
 class UCMD_GUI : Fl_Window {
 public:
   UCMD_GUI(int w, int h, const char *l=0);
-  ~UCMD_GUI() {}
+  ~UCMD_GUI();
   
   void augmentMenu();
   void draw();
   void resize(int, int, int, int);
   void setCommandFolio(CommandFolio);
   void setPostSummary(const std::vector<std::string>&);
-  
+
   std::vector<CommandItem> getPendingCmdItems() const;
   std::vector<std::string> getPendingCmdTargs() const;
   void                     clearPendingCmdItems();
   void                     clearPendingCmdTargs();
+
+  unsigned int isVisible()   {return(visible());}
+  //void         makeCurrent() {make_current();}
+  void         makeTop()     {show();}
+  int          getWid()      {return(w());}
+  int          getHgt()      {return(h());}
   
  protected:
   void initWidgets();
@@ -65,10 +71,12 @@ public:
   inline void cb_TogglePostView_i();
   static void cb_TogglePostView(Fl_Widget*);
   
+  inline void cb_Close_i();
+  static void cb_Close(Fl_Widget*);
+
   static void cb_Quit();
 
  protected:
-
   Fl_Menu_Bar     *m_menubar;
   Fl_Hold_Browser *m_brw_posts;
 

@@ -36,8 +36,8 @@ using namespace std;
 // Constructor
 
 UCMD_GUI::UCMD_GUI(int wid, int hgt, const char *label)
-  : Fl_Window(wid, hgt, label) {
-
+  : Fl_Window(wid, hgt, label)
+{
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
   this->begin();
@@ -63,13 +63,23 @@ UCMD_GUI::UCMD_GUI(int wid, int hgt, const char *label)
   this->show();
 }
 
+//-------------------------------------------------------------------
+// Destructor
+
+UCMD_GUI::~UCMD_GUI()
+{
+  cout << "UCMD_Destructor!!!!!!!!!!!!!!!!!!!!!!!!!!!!!**" << endl;
+}
+
 //----------------------------------------------------------
 // Procedure: augmentMenu
 
 void UCMD_GUI::augmentMenu() 
 {
-  m_menubar->add("File/Quit ", FL_CTRL+'q',
+  m_menubar->add("File/Quit ", FL_ALT+'q',
 		 (Fl_Callback*)UCMD_GUI::cb_Quit, 0, 0);
+  m_menubar->add("File/Close ", FL_META+'w',
+		 (Fl_Callback*)UCMD_GUI::cb_Close, 0, 0);
   m_menubar->add("View/Toggle PostView", 'p',
 		 (Fl_Callback*)UCMD_GUI::cb_TogglePostView, 0, 0);
 }
@@ -368,8 +378,19 @@ inline void UCMD_GUI::cb_ButtonCmdAction_i(int v)
   cout << "Cmd VName  ---> " << m_cmd_vnames[v] << endl;
 
   bool test = false;
-  if(Fl::event_key(FL_Shift_L)) 
+  if(Fl::event_key(FL_Shift_L) || Fl::event_key(FL_Shift_R))
     test = true;
+  cout << "UCMD_GUI::cmdaction test: " << boolToString(test) << endl;
+  
+  bool test2 = false;
+  if(Fl::get_key(FL_Shift_L) || Fl::get_key(FL_Shift_R))
+    test2 = true;
+  cout << "UCMD_GUI::cmdaction test2: " << boolToString(test2) << endl;
+  
+  bool test3 = false;
+  if(Fl::event_key(FL_Control_L) || Fl::event_key(FL_Control_R))
+    test3 = true;
+  cout << "UCMD_GUI::cmdaction test3: " << boolToString(test3) << endl;
   
   vector<CommandItem> cmd_items = m_cmd_folio.getAllCmdItems();
   for(unsigned int i=0; i<cmd_items.size(); i++) {
@@ -454,6 +475,19 @@ void UCMD_GUI::clearPendingCmdItems()
 void UCMD_GUI::clearPendingCmdTargs()
 {
   m_pending_cmd_targs.clear();
+}
+
+//---------------------------------------------------
+// Procedure: Close
+
+void UCMD_GUI::cb_Close_i() {
+  cout << "In UCMD_GUI::Close!!!!!!!!!!!!!!!" << endl;
+  Fl_Widget::hide();
+  //Fl_Widget::~Fl_Widget();
+}
+
+void UCMD_GUI::cb_Close(Fl_Widget* o) {
+  ((UCMD_GUI*)(o->parent()->user_data()))->cb_Close_i();
 }
 
 //---------------------------------------------------

@@ -63,7 +63,11 @@ class PMV_MOOSApp : public AppCastingMOOSApp
 
   std::string getContextKey(std::string);
   bool handleMailClear(std::string);
+  bool handleConfigCmd(std::string);
 
+  void handlePendingPostsFromGUI();
+  void handlePendingCommandSummary();
+  
  protected:
   Threadsafe_pipe<MOOS_event> *m_pending_moos_events;
 
@@ -84,10 +88,12 @@ class PMV_MOOSApp : public AppCastingMOOSApp
   unsigned int m_clear_geoshapes_received;
   int          m_node_report_index;
   bool         m_log_the_image;
+
+  CommandFolio   m_cmd_folio;
+  CommandSummary m_cmd_summary;
 };
 
 #endif 
-
 
 
 

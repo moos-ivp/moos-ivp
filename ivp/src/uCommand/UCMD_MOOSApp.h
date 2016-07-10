@@ -27,12 +27,12 @@
 #include <string>
 #include <list>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-#include "UCMD_GUI.h"
 #include "Threadsafe_pipe.h"
 #include "VarDataPair.h"
+#include "MOOS_event.h"
+#include "UCMD_GUI.h"
 #include "CommandFolio.h"
 #include "CommandSummary.h"
-#include "MOOS_event.h"
 
 class UCMD_MOOSApp : public AppCastingMOOSApp  
 {
@@ -50,7 +50,6 @@ class UCMD_MOOSApp : public AppCastingMOOSApp
   void setGUI(UCMD_GUI* g_gui)           {m_gui=g_gui;}
 
   void setPendingEventsPipe(Threadsafe_pipe<MOOS_event>*); 
-  
 
   // Only call these methods in the main FLTK l thread, for thread
   // safety w.r.t. that library...
@@ -59,8 +58,8 @@ class UCMD_MOOSApp : public AppCastingMOOSApp
   void handleStartUp(const MOOS_event & e);
 
  protected:
-  void handlePendingGUI();
-  void handlePendingHistory();
+  void handlePendingPostsFromGUI();
+  void handlePendingCommandSummary();
   void registerVariables();
   bool handleConfigCmd(std::string);
 
@@ -73,7 +72,6 @@ class UCMD_MOOSApp : public AppCastingMOOSApp
 
   CommandFolio   m_cmd_folio;
   CommandSummary m_cmd_summary;
-  
   UCMD_GUI*      m_gui;
 };
 
