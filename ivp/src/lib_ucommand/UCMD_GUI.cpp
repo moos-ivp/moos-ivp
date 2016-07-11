@@ -363,21 +363,21 @@ inline void UCMD_GUI::cb_ButtonCmdAction_i(int v)
   cout << "Cmd Label  ---> " << m_cmd_labels[v] << endl;
   cout << "Cmd VName  ---> " << m_cmd_vnames[v] << endl;
 
-  bool test = false;
+  bool test_post = false;
   if(Fl::event_key(FL_Shift_L) || Fl::event_key(FL_Shift_R))
-    test = true;
-  cout << "UCMD_GUI::cmdaction test: " << boolToString(test) << endl;
-  
-  bool test2 = false;
+    test_post = true;
+  cout << "UCMD_GUI::cmdaction test_post: " << boolToString(test_post) << endl;
+
+#if 0
+  bool test_post2 = false;
+  bool test_post3 = false;
   if(Fl::get_key(FL_Shift_L) || Fl::get_key(FL_Shift_R))
-    test2 = true;
-  cout << "UCMD_GUI::cmdaction test2: " << boolToString(test2) << endl;
-  
-  bool test3 = false;
+    test_post2 = true;
   if(Fl::event_key(FL_Control_L) || Fl::event_key(FL_Control_R))
-    test3 = true;
-  cout << "UCMD_GUI::cmdaction test3: " << boolToString(test3) << endl;
-  
+    test_post3 = true;
+#endif
+
+  unsigned int saved_cmd_post_count = m_cmd_post_count;
   vector<CommandItem> cmd_items = m_cmd_folio.getAllCmdItems();
   for(unsigned int i=0; i<cmd_items.size(); i++) {
     bool match = true;
@@ -391,13 +391,17 @@ inline void UCMD_GUI::cb_ButtonCmdAction_i(int v)
       CommandPost cmd_post;
       cmd_post.setCommandItem(cmd_items[i]);
       cmd_post.setCommandTarg(vname);
-      cmd_post.setCommandTest(test);
+      cmd_post.setCommandTest(test_post);
       cmd_post.setCommandPID(pid);
       m_pending_cmd_posts.push_back(cmd_post);
       m_cmd_post_count++;
     }
   }
-  m_but_post_count++;
+  if(test_post)
+    m_cmd_post_count = saved_cmd_post_count;
+  
+  if(!test_post)
+    m_but_post_count++;
 }
 
 void UCMD_GUI::cb_ButtonCmdAction(Fl_Widget* o, int v) 

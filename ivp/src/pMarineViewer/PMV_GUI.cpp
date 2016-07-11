@@ -92,10 +92,15 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_scope_time->set_output();
   m_scope_value->set_output();
   
-  m_user_button_1 = new MY_Button(0, 0, 1, 1, "Disabled");
-  m_user_button_2 = new MY_Button(0, 0, 1, 1, "Disabled");
-  m_user_button_3 = new MY_Button(0, 0, 1, 1, "Disabled");
-  m_user_button_4 = new MY_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_1 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_2 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_3 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_4 = new Fl_Button(0, 0, 1, 1, "Disabled");
+
+  m_user_button_1->clear_visible_focus();
+  m_user_button_2->clear_visible_focus();
+  m_user_button_3->clear_visible_focus();
+  m_user_button_4->clear_visible_focus();
 
   m_user_button_1->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)1);
   m_user_button_2->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)2);

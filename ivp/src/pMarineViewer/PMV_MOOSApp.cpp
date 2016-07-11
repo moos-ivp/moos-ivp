@@ -860,10 +860,11 @@ void PMV_MOOSApp::handlePendingPostsFromGUI()
     // not be made, but the posting should still go into the cmd_summary
     // to show the user what would have been posted.
     if(!cmd_test) {
+      string src_aux = "pid=" + cmd_pid;
       if(valtype == "string") 
-	Notify(moosvar, cmd_item.getCmdPostStr());
+	Notify(moosvar, cmd_item.getCmdPostStr(), src_aux);
       else 
-	Notify(moosvar, cmd_item.getCmdPostDbl());
+	Notify(moosvar, cmd_item.getCmdPostDbl(), src_aux);
     }
     
     // Part 2: Build the history entry

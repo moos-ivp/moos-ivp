@@ -147,10 +147,10 @@ public:
   Fl_Output  *m_scope_time;
   Fl_Output  *m_scope_value;
 
-  MY_Button  *m_user_button_1;
-  MY_Button  *m_user_button_2;
-  MY_Button  *m_user_button_3;
-  MY_Button  *m_user_button_4;
+  Fl_Button  *m_user_button_1;
+  Fl_Button  *m_user_button_2;
+  Fl_Button  *m_user_button_3;
+  Fl_Button  *m_user_button_4;
 
   std::vector<std::string> m_scope_vars;
   
