@@ -46,6 +46,8 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
 
   m_cmd_gui_start_wid = 500;
   m_cmd_gui_start_hgt = 300;
+  m_cmd_gui_start_bpost_cnt = 0;
+  m_cmd_gui_start_cpost_cnt = 0;
   
   mviewer   = new PMV_Viewer(0, 0, 1, 1);
   m_mviewer = mviewer;
@@ -53,9 +55,20 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   // Configure the AppCasting Browsing Widgets
   m_brw_nodes = new MY_Fl_Hold_Browser(0, 0, 1, 1);
   m_brw_nodes->callback(cb_SelectNode, 0);
+  m_brw_nodes->textfont(FL_COURIER);
+  m_brw_nodes->box(FL_DOWN_BOX);
+  m_brw_nodes->clear_visible_focus();
+
   m_brw_procs = new MY_Fl_Hold_Browser(0, 0, 1, 1); 
   m_brw_procs->callback(cb_SelectProc, 0);
+  m_brw_procs->textfont(FL_COURIER);
+  m_brw_procs->box(FL_DOWN_BOX);
+  m_brw_procs->clear_visible_focus();
+
   m_brw_casts = new MY_Fl_Hold_Browser(0, 0, 1, 1);
+  m_brw_casts->clear_visible_focus();
+  m_brw_casts->textfont(FL_COURIER);
+  m_brw_casts->box(FL_DOWN_BOX);
   m_brw_casts->clear_visible_focus();
   
   // Configure the DataField Widgets  
@@ -892,6 +905,8 @@ inline void PMV_GUI::cb_CommandGUI_i()
   
   UCMD_GUI *cmd_gui = new UCMD_GUI(wid, hgt, "Commander");   
   cmd_gui->setCommandFolio(m_cmd_folio);
+  cmd_gui->setButPostCount(m_cmd_gui_start_bpost_cnt);
+  cmd_gui->setCmdPostCount(m_cmd_gui_start_cpost_cnt);
 
   m_cmd_gui = cmd_gui;
 
@@ -1277,6 +1292,9 @@ void PMV_GUI::closeCmdGUI()
 
     m_cmd_gui_start_wid = wid;
     m_cmd_gui_start_hgt = hgt;
+    m_cmd_gui_start_bpost_cnt = m_cmd_gui->getButPostCount();
+    m_cmd_gui_start_cpost_cnt = m_cmd_gui->getCmdPostCount();
+
     cout << "closing wid=" << wid << ", hgt=" << hgt << endl;
     
     delete(m_cmd_gui);

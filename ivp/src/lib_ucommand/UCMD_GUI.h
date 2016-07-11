@@ -45,7 +45,9 @@ public:
   void resize(int, int, int, int);
   void setCommandFolio(CommandFolio);
   void setPostSummary(const std::vector<std::string>&);
-
+  void setButPostCount(unsigned int v) {m_but_post_count=v;}
+  void setCmdPostCount(unsigned int v) {m_cmd_post_count=v;}
+  
   std::vector<CommandPost> getPendingCmdPosts() const;
   void                     clearPendingCmdPosts();
 
@@ -53,6 +55,11 @@ public:
   void         makeTop()     {show();}
   int          getWid()      {return(w());}
   int          getHgt()      {return(h());}
+
+  bool         getConcedeTop();
+
+  unsigned int getButPostCount() const {return(m_but_post_count);}
+  unsigned int getCmdPostCount() const {return(m_cmd_post_count);}
   
  protected:
   void initWidgets();
@@ -71,6 +78,9 @@ public:
   
   inline void cb_Close_i();
   static void cb_Close(Fl_Widget*);
+
+  inline void cb_ConcedeTopWindow_i();
+  static void cb_ConcedeTopWindow(Fl_Widget*);
 
   static void cb_Quit();
 
@@ -102,5 +112,7 @@ public:
 
   double m_brw_hgt;
   bool   m_show_posts;
+
+  bool   m_concede_top;
 };
 #endif

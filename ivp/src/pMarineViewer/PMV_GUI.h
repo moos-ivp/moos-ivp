@@ -28,7 +28,7 @@
 #include "MarineVehiGUI.h"
 #include <FL/Fl_Output.H>
 #include <FL/Fl_Button.H>
-#include "MY_Button.h"
+#include <FL/Fl_Hold_Browser.H>
 #include "MY_Fl_Hold_Browser.h"
 #include "AppCastRepo.h"
 #include "VPlug_AppCastSettings.h"
@@ -175,7 +175,7 @@ public:
   double    m_clear_stale_timestamp;
   
  protected: // Member variables added for AppCasting
-  AppCastRepo        *m_repo;
+  AppCastRepo     *m_repo;
   MY_Fl_Hold_Browser *m_brw_nodes;
   MY_Fl_Hold_Browser *m_brw_procs;
   MY_Fl_Hold_Browser *m_brw_casts;
@@ -191,7 +191,8 @@ public:
   UCMD_GUI*      m_cmd_gui;
   int            m_cmd_gui_start_wid;
   int            m_cmd_gui_start_hgt;
-
+  unsigned int   m_cmd_gui_start_bpost_cnt;
+  unsigned int   m_cmd_gui_start_cpost_cnt;
   
   std::string m_title_base;
 };

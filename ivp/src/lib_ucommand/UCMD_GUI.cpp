@@ -56,6 +56,8 @@ UCMD_GUI::UCMD_GUI(int wid, int hgt, const char *label)
 
   m_but_post_count = 0;
   m_cmd_post_count = 0;
+
+  m_concede_top = false;
   
   initWidgets();
   resizeWidgetsShape();
@@ -77,6 +79,8 @@ void UCMD_GUI::augmentMenu()
 		 (Fl_Callback*)UCMD_GUI::cb_Close, 0, 0);
   m_menubar->add("View/Toggle PostView", 'p',
 		 (Fl_Callback*)UCMD_GUI::cb_TogglePostView, 0, 0);
+  m_menubar->add("File/ConcedeTopWindow ", ' ',
+		 (Fl_Callback*)UCMD_GUI::cb_ConcedeTopWindow, 0, 0);
 }
 
 //----------------------------------------------------------
@@ -171,6 +175,18 @@ void UCMD_GUI::setPostSummary(const vector<string>& summary)
 
   //m_brw_posts->bottomline(m_brw_posts->size());
   
+}
+
+
+//----------------------------------------------------------
+// Procedure: getConcedeTop()
+
+bool UCMD_GUI::getConcedeTop()
+{
+  bool return_val = m_concede_top;
+
+  m_concede_top = false;
+  return(return_val);
 }
 
 
@@ -348,6 +364,21 @@ int UCMD_GUI::getCmdButtonsBottom()
   return(bottom);
 }
 
+//----------------------------------------------------
+// Procedure: getPendingCmdPosts()
+
+vector<CommandPost> UCMD_GUI::getPendingCmdPosts() const
+{
+  return(m_pending_cmd_posts);
+}
+
+//----------------------------------------------------
+// Procedure: clearPendingCmdPosts()
+
+void UCMD_GUI::clearPendingCmdPosts()
+{
+  m_pending_cmd_posts.clear();
+}
   
 
 //----------------------------------------------------
@@ -438,26 +469,11 @@ void UCMD_GUI::cb_TogglePostView(Fl_Widget* o)
   ((UCMD_GUI*)(o->parent()->user_data()))->cb_TogglePostView_i();
 }
 
-//----------------------------------------------------
-// Procedure: getPendingCmdPosts()
-
-vector<CommandPost> UCMD_GUI::getPendingCmdPosts() const
-{
-  return(m_pending_cmd_posts);
-}
-
-//----------------------------------------------------
-// Procedure: clearPendingCmdPosts()
-
-void UCMD_GUI::clearPendingCmdPosts()
-{
-  m_pending_cmd_posts.clear();
-}
-
 //---------------------------------------------------
 // Procedure: Close
 
-void UCMD_GUI::cb_Close_i() {
+void UCMD_GUI::cb_Close_i()
+{
   Fl_Widget::hide();
 }
 
@@ -466,9 +482,20 @@ void UCMD_GUI::cb_Close(Fl_Widget* o) {
 }
 
 //---------------------------------------------------
-// Procedure: Quit
+// Procedure: cb_Quit
 
 void UCMD_GUI::cb_Quit() {
   exit(0);
 }
 
+//---------------------------------------------------
+// Procedure: cb_ConcedeTopWindow
+
+void UCMD_GUI::cb_ConcedeTopWindow_i()
+{
+  m_concede_top = true;
+}
+
+void UCMD_GUI::cb_ConcedeTopWindow(Fl_Widget* o) {
+  ((UCMD_GUI*)(o->parent()->user_data()))->cb_ConcedeTopWindow_i();
+}

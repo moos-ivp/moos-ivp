@@ -487,6 +487,12 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
 
   if(window_val == 0)
     m_gui->closeCmdGUI();
+  else {
+    if(m_gui->getCmdGUI()->getConcedeTop())
+      m_gui->show();
+  }
+
+
   
 }
 
