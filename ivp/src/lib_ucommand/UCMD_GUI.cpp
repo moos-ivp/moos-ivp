@@ -53,6 +53,9 @@ UCMD_GUI::UCMD_GUI(int wid, int hgt, const char *label)
   m_display_mode = "all";
   m_show_posts   = true;
   m_brw_hgt      = 120;
+
+  m_but_post_count = 0;
+  m_cmd_post_count = 0;
   
   initWidgets();
   resizeWidgetsShape();
@@ -61,14 +64,6 @@ UCMD_GUI::UCMD_GUI(int wid, int hgt, const char *label)
   this->resizable(this);
   this->end();
   this->show();
-}
-
-//-------------------------------------------------------------------
-// Destructor
-
-UCMD_GUI::~UCMD_GUI()
-{
-  cout << "UCMD_Destructor!!!!!!!!!!!!!!!!!!!!!!!!!!!!!**" << endl;
 }
 
 //----------------------------------------------------------
@@ -137,7 +132,6 @@ void UCMD_GUI::draw()
     if(i != 0) 
       cy = m_row_bottoms[i-1] + 10;
     int ch = (m_row_bottoms[i] - cy) + 5;
-    //if(i == 0)
     if((m_row_vnames[i] == "all") || (m_row_vnames[i] == "shore"))
       fl_draw_box(FL_BORDER_FRAME, cx, cy, cw, ch, FL_BLUE);
     else
@@ -265,7 +259,7 @@ void UCMD_GUI::resizeWidgetsShape()
   if(m_cmd_vnames.size() == 0)
     return;
 
-  int extra_wid = w() - m_start_wid;
+  //int extra_wid = w() - m_start_wid;
 
   int button_start_x = 100;
   int ibut_x = button_start_x;
@@ -363,7 +357,8 @@ inline void UCMD_GUI::cb_ButtonCmdAction_i(int v)
 {
   string label = m_cmd_labels[v];
   string vname = m_cmd_vnames[v];
-
+  char   pchar = 65 + (m_but_post_count % 26);
+  
   cout << "Cmd Action ---> " << v << endl;
   cout << "Cmd Label  ---> " << m_cmd_labels[v] << endl;
   cout << "Cmd VName  ---> " << m_cmd_vnames[v] << endl;
@@ -391,14 +386,18 @@ inline void UCMD_GUI::cb_ButtonCmdAction_i(int v)
     if(!cmd_items[i].hasReceiver(vname))
       match = false;
     if(match) {
-      m_pending_cmd_items.push_back(cmd_items[i]);
-      if(test)
-	m_pending_cmd_targs.push_back("test:" + vname);
-      else
-	m_pending_cmd_targs.push_back(vname);
+      string pid = pchar + uintToString(m_cmd_post_count);
+      
+      CommandPost cmd_post;
+      cmd_post.setCommandItem(cmd_items[i]);
+      cmd_post.setCommandTarg(vname);
+      cmd_post.setCommandTest(test);
+      cmd_post.setCommandPID(pid);
+      m_pending_cmd_posts.push_back(cmd_post);
+      m_cmd_post_count++;
     }
   }
-  
+  m_but_post_count++;
 }
 
 void UCMD_GUI::cb_ButtonCmdAction(Fl_Widget* o, int v) 
@@ -436,45 +435,26 @@ void UCMD_GUI::cb_TogglePostView(Fl_Widget* o)
 }
 
 //----------------------------------------------------
-// Procedure: getPendingCmdItems()
+// Procedure: getPendingCmdPosts()
 
-vector<CommandItem> UCMD_GUI::getPendingCmdItems() const
+vector<CommandPost> UCMD_GUI::getPendingCmdPosts() const
 {
-  return(m_pending_cmd_items);
-}
-
-
-//----------------------------------------------------
-// Procedure: getPendingCmdItems()
-
-vector<string> UCMD_GUI::getPendingCmdTargs() const
-{
-  return(m_pending_cmd_targs);
+  return(m_pending_cmd_posts);
 }
 
 //----------------------------------------------------
-// Procedure: clearPendingCmdItems()
+// Procedure: clearPendingCmdPosts()
 
-void UCMD_GUI::clearPendingCmdItems()
+void UCMD_GUI::clearPendingCmdPosts()
 {
-  m_pending_cmd_items.clear();
-}
-
-//----------------------------------------------------
-// Procedure: clearPendingCmdTargs()
-
-void UCMD_GUI::clearPendingCmdTargs()
-{
-  m_pending_cmd_targs.clear();
+  m_pending_cmd_posts.clear();
 }
 
 //---------------------------------------------------
 // Procedure: Close
 
 void UCMD_GUI::cb_Close_i() {
-  cout << "In UCMD_GUI::Close!!!!!!!!!!!!!!!" << endl;
   Fl_Widget::hide();
-  //Fl_Widget::~Fl_Widget();
 }
 
 void UCMD_GUI::cb_Close(Fl_Widget* o) {

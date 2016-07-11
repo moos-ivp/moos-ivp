@@ -27,6 +27,7 @@
 #include "PMV_Viewer.h"
 #include "MarineVehiGUI.h"
 #include <FL/Fl_Output.H>
+#include <FL/Fl_Button.H>
 #include "MY_Button.h"
 #include "MY_Fl_Hold_Browser.h"
 #include "AppCastRepo.h"

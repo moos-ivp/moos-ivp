@@ -33,22 +33,15 @@ using namespace std;
 
 CommandSummary::CommandSummary() 
 {
-  m_posting_count       = 0;
   m_report_pending = false;
 }
 
 //----------------------------------------------------------------------
 // Procedure: addPosting()
 
-void CommandSummary::addPosting(string post_var, string post_val, bool post_test)
+void CommandSummary::addPosting(string post_var, string post_val,
+				string post_pid, bool post_test)
 {
-  // Part 3: Increment the counter and store the history entry
-  string post_pid = uintToString(m_posting_count);
-  if(post_test)
-    post_pid = "-";
-  else
-    m_posting_count++;
-  
   m_post_vars.push_front(post_var);
   m_post_vals.push_front(post_val);
   m_post_pids.push_front(post_pid);

@@ -309,21 +309,19 @@ void UCMD_MOOSApp::handlePendingPostsFromGUI()
   if(!m_gui)
     return;
 
-  vector<CommandItem> cmd_items = m_gui->getPendingCmdItems();
-  vector<string>      cmd_targs = m_gui->getPendingCmdTargs();
+  vector<CommandPost> cmd_posts = m_gui->getPendingCmdPosts();
 
-  for(unsigned i=0; i<cmd_items.size(); i++) {
-    CommandItem cmd_item = cmd_items[i];
-    string      cmd_targ = cmd_targs[i];
+  for(unsigned i=0; i<cmd_posts.size(); i++) {
+    CommandItem cmd_item = cmd_posts[i].getCommandItem();
+    string      cmd_targ = cmd_posts[i].getCommandTarg();
+    bool        cmd_test = cmd_posts[i].getCommandTest();
+    string      cmd_pid  = cmd_posts[i].getCommandPID();
 
     cout << "cmd_targ: " << cmd_targ << endl;
-    bool test_post = strBegins(cmd_targ, "test:");
-    if(test_post)
-      biteString(cmd_targ, ':');
 
     string moosvar = cmd_item.getCmdPostVar();
     if((cmd_targ != "local") && (cmd_targ != "shore"))
-      moosvar += "_" + cmd_targ;
+      moosvar += "_" + toupper(cmd_targ);
       
     string valtype = cmd_item.getCmdPostType();
 
@@ -331,7 +329,7 @@ void UCMD_MOOSApp::handlePendingPostsFromGUI()
     // target name beginning with "test:" indicates that a posting should
     // not be made, but the posting should still go into the cmd_summary
     // to show the user what would have been posted.
-    if(!test_post) {
+    if(!cmd_test) {
       if(valtype == "string") 
 	Notify(moosvar, cmd_item.getCmdPostStr());
       else 
@@ -343,11 +341,10 @@ void UCMD_MOOSApp::handlePendingPostsFromGUI()
     if(valtype != "string")
       post_val = doubleToStringX(cmd_item.getCmdPostDbl());
 
-    m_cmd_summary.addPosting(moosvar, post_val, test_post);
+    m_cmd_summary.addPosting(moosvar, post_val, cmd_pid, cmd_test);
   }
 
-  m_gui->clearPendingCmdItems();
-  m_gui->clearPendingCmdTargs();
+  m_gui->clearPendingCmdPosts();
 }
 
 

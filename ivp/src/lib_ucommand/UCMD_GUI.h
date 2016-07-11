@@ -33,11 +33,12 @@
 #include <FL/Fl_Button.H>
 #include <FL/Fl_Hold_Browser.H>
 #include "CommandFolio.h"
+#include "CommandPost.h"
 
 class UCMD_GUI : Fl_Window {
 public:
   UCMD_GUI(int w, int h, const char *l=0);
-  ~UCMD_GUI();
+  ~UCMD_GUI() {};
   
   void augmentMenu();
   void draw();
@@ -45,13 +46,10 @@ public:
   void setCommandFolio(CommandFolio);
   void setPostSummary(const std::vector<std::string>&);
 
-  std::vector<CommandItem> getPendingCmdItems() const;
-  std::vector<std::string> getPendingCmdTargs() const;
-  void                     clearPendingCmdItems();
-  void                     clearPendingCmdTargs();
+  std::vector<CommandPost> getPendingCmdPosts() const;
+  void                     clearPendingCmdPosts();
 
   unsigned int isVisible()   {return(visible());}
-  //void         makeCurrent() {make_current();}
   void         makeTop()     {show();}
   int          getWid()      {return(w());}
   int          getHgt()      {return(h());}
@@ -88,8 +86,7 @@ public:
   std::vector<std::string> m_cmd_labels;
   std::vector<std::string> m_cmd_vnames;
 
-  std::vector<CommandItem> m_pending_cmd_items;
-  std::vector<std::string> m_pending_cmd_targs;
+  std::vector<CommandPost> m_pending_cmd_posts;
 
   std::vector<int>         m_row_bottoms;
   std::vector<std::string> m_row_vnames;
@@ -97,6 +94,9 @@ public:
   std::list<std::string>   m_posts;
   
   CommandFolio m_cmd_folio;
+
+  unsigned int m_but_post_count;
+  unsigned int m_cmd_post_count;
   
   double m_start_wid;
 

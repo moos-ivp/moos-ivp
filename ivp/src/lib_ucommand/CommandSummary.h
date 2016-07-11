@@ -35,7 +35,9 @@ class CommandSummary
   CommandSummary();
   virtual ~CommandSummary() {}
 
-  void addPosting(std::string, std::string, bool post_test=false);
+  void addPosting(std::string var, std::string val,
+		  std::string pid, bool post_test=false);
+
   void addAck(std::string);
   
   bool reportPending() const {return(m_report_pending);}
@@ -49,8 +51,6 @@ class CommandSummary
   std::list<bool>             m_post_test;
 
   std::map<std::string, bool> m_post_acks;
-
-  unsigned int m_posting_count;
 
   bool         m_report_pending;
 };
