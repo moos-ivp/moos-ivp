@@ -35,7 +35,7 @@ using namespace std;
 //-------------------------------------------------------------------
 // Constructor
 
-UCMD_GUI::UCMD_GUI(int wid, int hgt, const char *label)
+UCMD_GUI::UCMD_GUI(int wid, int hgt, const char *label, bool show_posts)
   : Fl_Window(wid, hgt, label)
 {
   this->user_data((void*)(this));
@@ -53,7 +53,8 @@ UCMD_GUI::UCMD_GUI(int wid, int hgt, const char *label)
   m_display_mode = "all";
   m_show_posts   = true;
   m_brw_hgt      = 120;
-
+  m_show_posts   = show_posts;
+  
   m_but_post_count = 0;
   m_cmd_post_count = 0;
 
@@ -176,7 +177,6 @@ void UCMD_GUI::setPostSummary(const vector<string>& summary)
   //m_brw_posts->bottomline(m_brw_posts->size());
   
 }
-
 
 //----------------------------------------------------------
 // Procedure: getConcedeTop()

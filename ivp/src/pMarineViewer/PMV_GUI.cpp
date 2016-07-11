@@ -48,6 +48,7 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_cmd_gui_start_hgt = 300;
   m_cmd_gui_start_bpost_cnt = 0;
   m_cmd_gui_start_cpost_cnt = 0;
+  m_cmd_gui_start_show_posts = true;
   
   mviewer   = new PMV_Viewer(0, 0, 1, 1);
   m_mviewer = mviewer;
@@ -900,10 +901,11 @@ inline void PMV_GUI::cb_CommandGUI_i()
   if(m_cmd_folio.size() == 0)
     return;
   
-  int wid = m_cmd_gui_start_wid;
-  int hgt = m_cmd_gui_start_hgt;
+  int  wid = m_cmd_gui_start_wid;
+  int  hgt = m_cmd_gui_start_hgt;
+  bool posts = m_cmd_gui_start_show_posts;
   
-  UCMD_GUI *cmd_gui = new UCMD_GUI(wid, hgt, "Commander");   
+  UCMD_GUI *cmd_gui = new UCMD_GUI(wid, hgt, "Commander", posts);
   cmd_gui->setCommandFolio(m_cmd_folio);
   cmd_gui->setButPostCount(m_cmd_gui_start_bpost_cnt);
   cmd_gui->setCmdPostCount(m_cmd_gui_start_cpost_cnt);
@@ -1292,8 +1294,9 @@ void PMV_GUI::closeCmdGUI()
 
     m_cmd_gui_start_wid = wid;
     m_cmd_gui_start_hgt = hgt;
-    m_cmd_gui_start_bpost_cnt = m_cmd_gui->getButPostCount();
-    m_cmd_gui_start_cpost_cnt = m_cmd_gui->getCmdPostCount();
+    m_cmd_gui_start_bpost_cnt  = m_cmd_gui->getButPostCount();
+    m_cmd_gui_start_cpost_cnt  = m_cmd_gui->getCmdPostCount();
+    m_cmd_gui_start_show_posts = m_cmd_gui->getShowPosts();
 
     cout << "closing wid=" << wid << ", hgt=" << hgt << endl;
     

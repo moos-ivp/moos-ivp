@@ -189,10 +189,14 @@ public:
   CommandFolio   m_cmd_folio;
   CommandSummary m_cmd_summary;
   UCMD_GUI*      m_cmd_gui;
+
+  // Info about the current state of the command sub-gui so it
+  // may be restored when/if it is re-launched.
   int            m_cmd_gui_start_wid;
   int            m_cmd_gui_start_hgt;
   unsigned int   m_cmd_gui_start_bpost_cnt;
   unsigned int   m_cmd_gui_start_cpost_cnt;
+  bool           m_cmd_gui_start_show_posts;
   
   std::string m_title_base;
 };

@@ -37,7 +37,7 @@
 
 class UCMD_GUI : Fl_Window {
 public:
-  UCMD_GUI(int w, int h, const char *l=0);
+  UCMD_GUI(int w, int h, const char *label, bool show_posts=true);
   ~UCMD_GUI() {};
   
   void augmentMenu();
@@ -60,6 +60,7 @@ public:
 
   unsigned int getButPostCount() const {return(m_but_post_count);}
   unsigned int getCmdPostCount() const {return(m_cmd_post_count);}
+  unsigned int getShowPosts() const {return(m_show_posts);}
   
  protected:
   void initWidgets();
