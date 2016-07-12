@@ -25,7 +25,7 @@ for ARGI; do
 	JUST_MAKE="yes"
     else 
 	printf "Bad Argument: %s \n" $ARGI
-	exit 0
+	exit 1
     fi
 done
 

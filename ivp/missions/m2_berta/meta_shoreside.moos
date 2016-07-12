@@ -190,6 +190,20 @@ ProcessConfig = pMarineViewer
 
   left_context[surface_point] = RETURN_$[UP_VNAME_CLOSEST] = true
 
+	cmd = label=DEPLOY, var=DEPLOY,  sval=true,  receivers=all
+	cmd = label=DEPLOY, var=MOOS_MANUAL_OVERRIDE,  sval=false,  receivers=all
+	cmd = label=DEPLOY, var=AVOID,  sval=true,  receivers=all
+	cmd = label=DEPLOY, var=RETURN,  sval=false,  receivers=all
+	cmd = label=DEPLOY, var=STATION_KEEP,  sval=false,  receivers=all
+
+	cmd = label=RETURN, var=RETURN, sval=true, receivers=all
+	cmd = label=RETURN, var=STATION_KEEP, sval=false, receivers=all
+
+	cmd = label=PERMUTE, var=UTS_FORWARD,  dval=0,  receivers=shore
+
+	cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all
+	
+	
   button_one   = DEPLOY  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
   button_one   = AVOID_ALL=true
