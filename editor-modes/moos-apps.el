@@ -55,7 +55,7 @@
       '("uMACView" "procs_font_size" "nodes_font_size" "appcast_font_size" "appcast_color_scheme" "appcast_height" "refresh_mode")
       '("uMAC")
       '("pDeadManPost" "heartbeat_var" "max_noheart" "deadflag" "post_policy" "active_at_start")
-      '("pRangeEvent" "min_range" "max_range" "event_var")
+      '("pRangeEvent" "min_range" "max_range" "event_var" "ignore_group")
       '("uPokeDB")
       '("uQueryDB")
       '("uHelmScope" "paused" "display_moos_scope" "display_bhv_posts" "display_virgins" "truncated_output" "behaviors_consise" "var")
