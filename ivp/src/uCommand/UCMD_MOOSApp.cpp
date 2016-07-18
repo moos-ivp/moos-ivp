@@ -177,9 +177,6 @@ void UCMD_MOOSApp::handleIterate(const MOOS_event& e)
     window_val = 0;
   else
     window_val = m_gui->isVisible();
-
-  cout << "window_val: " << uintToString(window_val) << endl;
-  
 }
 
 
@@ -206,6 +203,9 @@ void UCMD_MOOSApp::handleStartUp(const MOOS_event & e)
       cout << "Handling cmd line: " << value << endl;
       handled = handleConfigCmd(value);
       cout << "handled: " << boolToString(handled) << endl;
+    }
+    else if(param == "only_vnames") {
+      handled = handleConfigOnlyVNames(value);
     }
       
     if(!handled)
@@ -286,6 +286,23 @@ bool UCMD_MOOSApp::handleConfigCmd(string cmd)
   bool result = m_cmd_folio.addCmdItem(item);
   cout << "result: " << boolToString(result) << endl;
   
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: handleConfigOnlyVNames
+//   Purpose: If a non-empty set, then the GUI will only render
+//            buttons for the listed vehicles and not the others.
+//  Examples:
+//   only_vnames = henry,gus
+
+bool UCMD_MOOSApp::handleConfigOnlyVNames(string vnames)
+{
+  vector<string> svector = parseString(vnames, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string vname = stripBlankEnds(svector[i]);
+    m_only_vnames.insert(vname);
+  }
   return(true);
 }
 
