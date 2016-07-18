@@ -37,12 +37,16 @@ class CommandFolio
 
   // Setters
   bool addCmdItem(CommandItem);
-  void onlyVNames(std::set<std::string>);
+  void limitedVNames(std::set<std::string>);
   
   // Getters
   CommandItem getCmdItem(unsigned int) const;
 
   std::vector<CommandItem> getAllCmdItems() const;
+  
+  std::set<std::string> getLimitedVNames() const {return(m_set_limited_vnames);}
+
+  bool hasLimitedVNames() const {return(m_limited_vnames);}
 
   // Analyzers
   unsigned int size() const {return(m_cmd_items.size());}
@@ -54,6 +58,10 @@ class CommandFolio
   
  private:
   std::vector<CommandItem>  m_cmd_items;
+
+  std::set<std::string> m_set_limited_vnames;
+
+  bool m_limited_vnames;
 };
 
 #endif 

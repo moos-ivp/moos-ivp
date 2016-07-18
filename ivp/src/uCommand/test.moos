@@ -31,6 +31,8 @@ ProcessConfig = uCommand
   AppTick   = 4                                                 
   CommsTick = 4                                                 
 
+	limited_vnames = gus,felix,evan
+
 	cmd = label=station:True,  var=STATION,   sval=true, receivers=all
 	cmd = label=station:False,  var=STATION,  sval=false, receivers=all
 

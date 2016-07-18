@@ -63,12 +63,12 @@ class UCMD_MOOSApp : public AppCastingMOOSApp
   void handlePendingCommandSummary();
   void registerVariables();
   bool handleConfigCmd(std::string);
-  bool handleConfigOnlyVNames(std::string);
+  bool handleConfigLimitedVNames(std::string);
 
  protected:
   Threadsafe_pipe<MOOS_event>* m_pending_moos_events;
 
-  std::set<std::string> m_only_vnames;
+  std::set<std::string> m_limited_vnames;
   
   CommandFolio   m_cmd_folio;
   CommandSummary m_cmd_summary;

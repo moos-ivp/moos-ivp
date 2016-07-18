@@ -32,6 +32,7 @@ using namespace std;
 
 CommandFolio::CommandFolio() 
 {
+  m_limited_vnames = false;
 }
 
 //----------------------------------------------------------------
@@ -48,15 +49,21 @@ bool CommandFolio::addCmdItem(CommandItem item)
 }
 
 //----------------------------------------------------------------
-// Procedure: onlyVNames()
+// Procedure: limitedVNames()
 //   purpose: For each CommandItem, prune the current vector of
 //            receiver names keeping only those in the given set,
 //            and "all" and "each".
 
-void CommandFolio::onlyVNames(set<string> only_vnames)
+void CommandFolio::limitedVNames(set<string> vnames)
 {
+  if(vnames.size() == 0)
+    return;
+
   for(unsigned int i=0; i<m_cmd_items.size(); i++) 
-    m_cmd_items[i].onlyVNames(only_vnames);
+    m_cmd_items[i].limitedVNames(vnames);
+
+  m_limited_vnames = true;
+  m_set_limited_vnames = vnames;
 }
 
 
@@ -119,6 +126,7 @@ set<string> CommandFolio::getAllLabels(string vname) const
 
 void CommandFolio::print() const
 {
+  cout << "=====================================================" << endl;
   cout << "CommandFolio: " << m_cmd_items.size() << " items" << endl;
   for(unsigned int i=0; i<m_cmd_items.size(); i++)
     m_cmd_items[i].print();

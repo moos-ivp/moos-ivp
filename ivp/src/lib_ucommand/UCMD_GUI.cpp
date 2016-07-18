@@ -397,16 +397,6 @@ inline void UCMD_GUI::cb_ButtonCmdAction_i(int v)
   bool test_post = false;
   if(Fl::event_key(FL_Shift_L) || Fl::event_key(FL_Shift_R))
     test_post = true;
-  cout << "UCMD_GUI::cmdaction test_post: " << boolToString(test_post) << endl;
-
-#if 0
-  bool test_post2 = false;
-  bool test_post3 = false;
-  if(Fl::get_key(FL_Shift_L) || Fl::get_key(FL_Shift_R))
-    test_post2 = true;
-  if(Fl::event_key(FL_Control_L) || Fl::event_key(FL_Control_R))
-    test_post3 = true;
-#endif
 
   unsigned int saved_cmd_post_count = m_cmd_post_count;
   vector<CommandItem> cmd_items = m_cmd_folio.getAllCmdItems();
@@ -418,14 +408,37 @@ inline void UCMD_GUI::cb_ButtonCmdAction_i(int v)
       match = false;
     if(match) {
       string pid = pchar + uintToString(m_cmd_post_count);
-      
-      CommandPost cmd_post;
-      cmd_post.setCommandItem(cmd_items[i]);
-      cmd_post.setCommandTarg(vname);
-      cmd_post.setCommandTest(test_post);
-      cmd_post.setCommandPID(pid);
-      m_pending_cmd_posts.push_back(cmd_post);
-      m_cmd_post_count++;
+
+      // If a single vehicle, or vname is "all" and all is not limited
+      if((vname != "all") || (!m_cmd_folio.hasLimitedVNames())) {
+	string pid = pchar + uintToString(m_cmd_post_count);
+	CommandPost cmd_post;
+	cmd_post.setCommandItem(cmd_items[i]);
+	cmd_post.setCommandTarg(vname);
+	cmd_post.setCommandTest(test_post);
+	cmd_post.setCommandPID(pid);
+	m_pending_cmd_posts.push_back(cmd_post);
+	m_cmd_post_count++;
+      }
+      // VName is "all" and limited_vnames. We don't want to publish
+      // ACTION_ALL, since this may send commands to other unintended
+      // vehicles. Instead publish ACTION_VNAME_1, ..., ACTION_VNAME_N.
+      // Where VNAME_1, ..., VNAME_N are the identified limited VNames.
+      else {
+	set<string> vnames = m_cmd_folio.getLimitedVNames();
+	set<string>::iterator p;
+	for(p=vnames.begin(); p!=vnames.end(); p++) {
+	  string pid = pchar + uintToString(m_cmd_post_count);
+	  string lim_vname = *p;
+	  CommandPost cmd_post;
+	  cmd_post.setCommandItem(cmd_items[i]);
+	  cmd_post.setCommandTarg(lim_vname);
+	  cmd_post.setCommandTest(test_post);
+	  cmd_post.setCommandPID(pid);
+	  m_pending_cmd_posts.push_back(cmd_post);
+	  m_cmd_post_count++;
+	}
+      }
     }
   }
   if(test_post)

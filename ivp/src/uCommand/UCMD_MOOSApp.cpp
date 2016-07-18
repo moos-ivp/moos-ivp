@@ -204,15 +204,20 @@ void UCMD_MOOSApp::handleStartUp(const MOOS_event & e)
       handled = handleConfigCmd(value);
       cout << "handled: " << boolToString(handled) << endl;
     }
-    else if(param == "only_vnames") {
-      handled = handleConfigOnlyVNames(value);
+    else if(param == "limited_vnames") {
+      handled = handleConfigLimitedVNames(value);
     }
       
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
  
+  cout << "====================================A " << endl;
   m_cmd_folio.print();
+  cout << "====================================B " << endl;
+  m_cmd_folio.limitedVNames(m_limited_vnames);
+  m_cmd_folio.print();
+  cout << "====================================C " << endl;
 
   if(m_gui)
     m_gui->setCommandFolio(m_cmd_folio);
@@ -290,18 +295,18 @@ bool UCMD_MOOSApp::handleConfigCmd(string cmd)
 }
 
 //---------------------------------------------------------
-// Procedure: handleConfigOnlyVNames
+// Procedure: handleConfigLimitedVNames
 //   Purpose: If a non-empty set, then the GUI will only render
 //            buttons for the listed vehicles and not the others.
 //  Examples:
-//   only_vnames = henry,gus
+//   limited_vnames = henry,gus
 
-bool UCMD_MOOSApp::handleConfigOnlyVNames(string vnames)
+bool UCMD_MOOSApp::handleConfigLimitedVNames(string vnames)
 {
   vector<string> svector = parseString(vnames, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
     string vname = stripBlankEnds(svector[i]);
-    m_only_vnames.insert(vname);
+    m_limited_vnames.insert(vname);
   }
   return(true);
 }
@@ -333,8 +338,6 @@ void UCMD_MOOSApp::handlePendingPostsFromGUI()
     string      cmd_targ = cmd_posts[i].getCommandTarg();
     bool        cmd_test = cmd_posts[i].getCommandTest();
     string      cmd_pid  = cmd_posts[i].getCommandPID();
-
-    cout << "cmd_targ: " << cmd_targ << endl;
 
     string moosvar = cmd_item.getCmdPostVar();
     if((cmd_targ != "local") && (cmd_targ != "shore"))

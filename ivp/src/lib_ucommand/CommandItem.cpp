@@ -80,16 +80,16 @@ bool CommandItem::addCmdPostReceiver(string receiver)
 }
 
 //----------------------------------------------------------------
-// Procedure: onlyVNames()
+// Procedure: limitedVNames()
 //   purpose: Prune the current vector of receiver names keeping only
 //            those in the given set, and "all" and "each".
 
-void CommandItem::onlyVNames(set<string> only_vnames)
+void CommandItem::limitedVNames(set<string> vnames)
 {
   vector<string> subset_receivers;
   
   for(unsigned int i=0; i<m_receivers.size(); i++) {
-    if(only_vnames.count(m_receivers[i]) ||
+    if(vnames.count(m_receivers[i]) ||
        (m_receivers[i] == "all") ||
        (m_receivers[i] == "each")) {
       subset_receivers.push_back(m_receivers[i]);

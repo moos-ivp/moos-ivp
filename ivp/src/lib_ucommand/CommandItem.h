@@ -41,7 +41,7 @@ class CommandItem
   bool setCmdPostDbl(std::string var, double dval);
 
   bool addCmdPostReceiver(std::string);
-  void onlyVNames(std::set<std::string>);
+  void limitedVNames(std::set<std::string>);
   
   // Getters
   std::string getCmdLabel() const {return(m_label);}
