@@ -24,6 +24,7 @@
 #ifndef COMMAND_ITEM_HEADER
 #define COMMAND_ITEM_HEADER
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -40,7 +41,8 @@ class CommandItem
   bool setCmdPostDbl(std::string var, double dval);
 
   bool addCmdPostReceiver(std::string);
-
+  void onlyVNames(std::set<std::string>);
+  
   // Getters
   std::string getCmdLabel() const {return(m_label);}
 

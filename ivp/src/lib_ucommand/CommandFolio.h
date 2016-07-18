@@ -37,7 +37,8 @@ class CommandFolio
 
   // Setters
   bool addCmdItem(CommandItem);
-
+  void onlyVNames(std::set<std::string>);
+  
   // Getters
   CommandItem getCmdItem(unsigned int) const;
 

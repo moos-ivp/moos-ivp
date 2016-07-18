@@ -48,6 +48,20 @@ bool CommandFolio::addCmdItem(CommandItem item)
 }
 
 //----------------------------------------------------------------
+// Procedure: onlyVNames()
+//   purpose: For each CommandItem, prune the current vector of
+//            receiver names keeping only those in the given set,
+//            and "all" and "each".
+
+void CommandFolio::onlyVNames(set<string> only_vnames)
+{
+  for(unsigned int i=0; i<m_cmd_items.size(); i++) 
+    m_cmd_items[i].onlyVNames(only_vnames);
+}
+
+
+
+//----------------------------------------------------------------
 // Procedure: getCmdItem
 
 CommandItem CommandFolio::getCmdItem(unsigned int ix) const
