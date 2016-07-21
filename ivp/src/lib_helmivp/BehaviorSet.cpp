@@ -369,8 +369,8 @@ bool BehaviorSet::handlePossibleSpawnings()
       continue;
 
     vector<string> update_strs = m_behavior_specs[i].checkForSpawningStrings();     
-    unsigned int j, jsize = update_strs.size();
-    for(j=0; j<jsize; j++) {
+    unsigned int jsize = update_strs.size();
+    for(unsigned int j=0; j<jsize; j++) {
       string update_str = update_strs[j];
       
       // Check for unique behavior name
@@ -406,8 +406,13 @@ bool BehaviorSet::handlePossibleSpawnings()
       else {
 	if(m_bhv_names.count(bname)!=0) 
 	  addWarning("Unhandled update: Existing bhv named [" + bname + "] not found. ");
-	if(m_bhv_names.count(fullname) != 0)
-	  addWarning("Unhandled update: Spawned bhv named [" + fullname + "] is taken.");
+
+	// The below check is disabled for now because the contact manager is
+	// erroneously posting two idential alerts. Once the contact manager is
+	// fixed, the below check should be re-enabled.
+
+	//if(m_bhv_names.count(fullname) != 0)
+	//  addWarning("Unhandled update: Spawned bhv named [" + fullname + "] is taken.");
       }
     }
   }
