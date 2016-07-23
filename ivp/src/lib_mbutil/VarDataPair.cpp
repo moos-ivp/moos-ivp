@@ -37,24 +37,36 @@ VarDataPair::VarDataPair()
   m_ddata     = 0;
   m_is_string = false;
   m_is_quoted = false;
+
+  m_var_set   = false;
+  m_key_set   = false;
+  m_ptype_set = false;
+  m_ddata_set = false;
+  m_sdata_set = false;
 }
 
 //------------------------------------------------------------------
 // Procedure: constructor
 
-VarDataPair::VarDataPair(const string& var, double ddata)
+VarDataPair::VarDataPair(string var, double ddata)
 {
   m_var       = stripBlankEnds(var);
   m_sdata     = "";
   m_ddata     = ddata;
   m_is_string = false;
   m_is_quoted = false;
+
+  m_var_set   = false;
+  m_key_set   = false;
+  m_ptype_set = false;
+  m_ddata_set = false;
+  m_sdata_set = false;
 }
 
 //------------------------------------------------------------------
 // Procedure: constructor
 
-VarDataPair::VarDataPair(const string& var, const string& sdata)
+VarDataPair::VarDataPair(string var, string sdata)
 {
   m_var       = stripBlankEnds(var);
   m_sdata     = stripBlankEnds(sdata);
@@ -63,6 +75,12 @@ VarDataPair::VarDataPair(const string& var, const string& sdata)
   m_is_quoted = false;
   if(isQuoted(sdata))
     m_is_quoted = true;
+
+  m_var_set   = false;
+  m_key_set   = false;
+  m_ptype_set = false;
+  m_ddata_set = false;
+  m_sdata_set = false;
 }
 
 //------------------------------------------------------------------
@@ -70,8 +88,7 @@ VarDataPair::VarDataPair(const string& var, const string& sdata)
 //      Note: For convenience, check whether the given data string is
 //            meant to represent a numerical value and do the conversion.
 
-VarDataPair::VarDataPair(const string& var, const string& sdata,
-			 const string& hint)
+VarDataPair::VarDataPair(string var, string sdata, string hint)
 {
   m_var   = stripBlankEnds(var);
   m_ddata = 0;
@@ -95,7 +112,126 @@ VarDataPair::VarDataPair(const string& var, const string& sdata,
       m_sdata = data;
     m_is_string = true;
   }
+
+  m_var_set   = false;
+  m_key_set   = false;
+  m_ptype_set = false;
+  m_ddata_set = false;
+  m_sdata_set = false;
 }
+
+//------------------------------------------------------------------
+// Procedure: valid()
+
+bool VarDataPair::valid() const
+{
+  if((m_var == "") || !m_var_set)
+    return(false);
+
+  if(!m_sdata_set && !m_ddata_set)
+    return(false);
+
+  return(true);
+}
+
+//------------------------------------------------------------------
+// Procedure: set_var()
+
+bool VarDataPair::set_var(string var)
+{
+  if(m_var_set || strContainsWhite(var))
+    return(false);
+  
+  m_var = var;
+  m_var_set = true;
+
+  return(true);
+}
+
+//------------------------------------------------------------------
+// Procedure: set_key()
+
+bool VarDataPair::set_key(string key)
+{
+  if(m_key_set)
+    return(false);
+  
+  m_key = key;
+  m_key_set = true;
+
+  return(true);
+}
+
+//------------------------------------------------------------------
+// Procedure: set_sdata()
+
+bool VarDataPair::set_sdata(string sval)
+{
+  if(m_sdata_set || m_ddata_set)
+    return(false);
+  
+  m_sdata = sval;
+  m_is_string = true;
+  m_sdata_set = true;
+
+  return(true);
+}
+
+//------------------------------------------------------------------
+// Procedure: set_ddata
+
+bool VarDataPair::set_ddata(double dval)
+{
+  if(m_sdata_set || m_ddata_set)
+    return(false);
+  
+  m_ddata = dval;
+  m_is_string = false;
+  m_ddata_set = dval;
+
+  if(m_sdata_set || m_ddata_set)
+    return(false);
+
+  return(true);
+}
+
+//------------------------------------------------------------------
+// Procedure: set_smart_data()
+
+bool VarDataPair::set_smart_data(string sval)
+{
+  if(m_sdata_set || m_ddata_set)
+    return(false);
+
+  if(isNumber(sval)) {
+    double dval = atof(sval.c_str());
+    m_ddata = dval;
+    m_is_string = false;
+    m_ddata_set = dval;
+  }
+  else {  
+    m_sdata = sval;
+    m_is_string = true;
+    m_sdata_set = true;
+  }
+  
+  return(true);
+}
+
+//------------------------------------------------------------------
+// Procedure: set_ptype()
+
+bool VarDataPair::set_ptype(string sval)
+{
+  if(m_ptype_set)
+    return(false);
+  
+  m_ptype = sval;
+  m_ptype_set = true;
+
+  return(true);
+}
+
 
 //------------------------------------------------------------------
 // Procedure: getPrintable
@@ -129,6 +265,38 @@ string VarDataPair::getPrintable()
   return(rstring);
 }
 
+//------------------------------------------------------------------
+// Procedure: stringToVarDataPair()
 
+VarDataPair stringToVarDataPair(string str)
+{
+  VarDataPair pair;
+  bool ok = true;
+ 
+  vector<string> svector = parseStringZ(str, ',', "{");
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteString(svector[i], '=');
+    string value = svector[i];
+    
+    if(param == "var") 
+      ok = ok && pair.set_var(value);
+    else if(param == "sval") {
+      if(isBraced(value))
+	stripBraces(value);
+      ok = ok && pair.set_sdata(value);
+    }
+    else if(param == "dval") 
+      ok = ok && isNumber(value) && pair.set_ddata(atof(value.c_str()));
+    else if(param == "key") 
+      ok = ok && pair.set_key(value);
+    else if(param == "ptype") 
+      ok = ok && pair.set_ptype(value);
+  }
 
+  if(!ok) {
+    VarDataPair empty_pair;
+    return(empty_pair);
+  }
 
+  return(pair);
+}

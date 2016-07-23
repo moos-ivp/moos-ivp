@@ -31,23 +31,20 @@ class VarDataPair
 public:
   VarDataPair();
 
-  VarDataPair(const std::string& varname, 
-	      double varvalue);
+  VarDataPair(std::string varname, double varvalue);
 
-  VarDataPair(const std::string& varname, 
-	      const std::string& varvalue);
+  VarDataPair(std::string varname, std::string varvalue);
 
-  VarDataPair(const std::string& varname, 
-	      const std::string& varvalue, 
-	      const std::string& typehint);
+  VarDataPair(std::string varname, std::string varvalue, std::string typehint);
 
   virtual ~VarDataPair() {}
   
-  void        set_var(const std::string& s)   {m_var=s;}
-  void        set_key(const std::string& s)   {m_key=s;}
-  void        set_ptype(const std::string& s) {m_ptype=s;}
-  void        set_sdata(const std::string& s) {m_sdata=s; m_is_string=true;}
-  void        set_ddata(double v)             {m_ddata=v; m_is_string=false;}
+  bool        set_var(std::string);
+  bool        set_key(std::string);
+  bool        set_ptype(std::string);
+  bool        set_sdata(std::string);
+  bool        set_ddata(double);
+  bool        set_smart_data(std::string);
 
   std::string get_var()   const {return(m_var);}
   std::string get_sdata() const {return(m_sdata);}
@@ -56,6 +53,8 @@ public:
   bool        is_quoted() const {return(m_is_quoted);}
   std::string get_key()   const {return(m_key);}
   std::string get_ptype() const {return(m_ptype);}
+
+  bool        valid() const;
 
   std::string getPrintable();
 
@@ -67,7 +66,15 @@ protected:
   bool        m_is_quoted;
   std::string m_key;
   std::string m_ptype;
+
+  bool        m_var_set;
+  bool        m_key_set;
+  bool        m_ptype_set;
+  bool        m_ddata_set;
+  bool        m_sdata_set;
 };
+
+VarDataPair stringToVarDataPair(std::string);
 
 #endif 
 
