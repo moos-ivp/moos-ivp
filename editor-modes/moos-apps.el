@@ -66,7 +66,7 @@
       '("pBasicContactMgr" "alert" "default_alert_range" "default_cpa_range" "default_alert_range_color" "default_cpa_range_color" "contact_max_age" "display_radii" "alert_verbose" "decay" "contacts_recap_interval" "contact_local_coords")
       '("uLoadWatch" "thresh" "breach_trigger")
       '("uSimLidar" "poly" "polygon" "max_range" "mount_angle" "point_cloud_color" "range" "beams" "field_of_view" "scan_resolution")
-      '("iSay" "default_voice" "default_rate" "interval_policy" "min_utter_interval")
+      '("iSay" "default_voice" "default_rate" "interval_policy" "min_utter_interval" "audio_dir" "os_mode")
       '("uXMS" "var" "source" "history_var" "display_virgins" "display_source" "display_aux_source" "display_time" "display_community" "display_all" "trunc_data" "term_report_interval" "colormap" "color_map" "refresh_mode" "content_mode" "paused")
       '("uSimCurrent" "current_field")
 
