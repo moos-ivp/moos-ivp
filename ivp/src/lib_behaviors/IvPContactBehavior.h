@@ -47,6 +47,8 @@ public:
   void  postViewableBearingLine();
   void  postErasableBearingLine();
 
+  bool  checkContactGroupRestrictions();
+  
  protected: // Configuration Parameters
   
   bool   m_on_no_contact_ok;  // true if no trouble reported on no contact
@@ -56,10 +58,13 @@ public:
   double m_time_on_leg;
   
   XYSegList                m_bearing_line;
+  bool                     m_bearing_line_show;
   std::vector<std::string> m_bearing_line_colors;
   std::vector<double>      m_bearing_line_thresh;
   std::string              m_bearing_line_info;
-  bool                     m_bearing_line_show;
+
+  std::string              m_match_contact_group;
+  std::string              m_ignore_contact_group;
 
  protected:  // State Variables
   
@@ -74,6 +79,8 @@ public:
   double m_cnv;   // Current contact speed (meters) 
   double m_cnutc; // UTC time of last contact report
 
+  std::string m_cn_group;
+  
   double m_contact_range; // Current range to contact (meters) 
   double m_relevance;
 

@@ -116,8 +116,20 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     m_contact = toupper(param_val);
     return(true);
   }  
-  else if (param == "extrapolate")
+  else if(param == "extrapolate")
     return(setBooleanOnString(m_extrapolate, param_val));
+  else if(param == "match_contact_group") {
+    if((m_match_contact_group != "") || (param_val == ""))
+      return(false);
+    m_match_contact_group = param_val;
+    return(true);
+  }
+  else if(param == "ignore_contact_group") {
+    if((m_ignore_contact_group != "") || (param_val == ""))
+      return(false);
+    m_ignore_contact_group = param_val;
+    return(true);
+  }
   else if(param == "decay") {
     string left  = biteStringX(param_val, ',');
     string right = param_val;
@@ -225,6 +237,8 @@ bool IvPContactBehavior::updatePlatformInfo()
       postEMessage(msg);
     return(false);
   }
+
+  m_cn_group = getBufferStringVal(m_contact+"_NAV_GROUP");
   
   //==================================================================
   // Part 2: Extrapolate the contact position if extrapolation turn on
@@ -246,8 +260,10 @@ bool IvPContactBehavior::updatePlatformInfo()
       m_cnx = new_cnx;
       m_cny = new_cny;
     }
-    else 
-      postWMessage("Incomplete Linear Extrapolation");
+    else {
+      string failure_reason = m_extrapolator.getFailureReason();
+      postWMessage("Incomplete Linear Extrapolation: " + failure_reason);
+    }
   }
 
   //==================================================================
@@ -339,6 +355,18 @@ void IvPContactBehavior::postErasableBearingLine()
 }
 
 
+//-----------------------------------------------------------
+// Procedure: checkContactGroupRestrictions()
 
-
-
+bool IvPContactBehavior::checkContactGroupRestrictions()
+{
+  if((m_match_contact_group != "") &&
+     (tolower(m_match_contact_group) != tolower(m_cn_group)))
+    return(false);
+  
+  if((m_ignore_contact_group != "") &&
+     (tolower(m_ignore_contact_group) == tolower(m_cn_group)))
+    return(false);
+  
+  return(true);
+}
