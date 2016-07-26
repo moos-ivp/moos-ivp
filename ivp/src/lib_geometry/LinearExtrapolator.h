@@ -47,9 +47,12 @@ public:
   }
 
   bool getPosition(double& xpos, double& ypos, double timestamp);
-  
+
   bool isDecayMaxed() {return(m_decay_maxed);}
 
+  std::string getFailureReason() const {return(m_failure_reason);}
+  
+ protected:
   double m_xpos;         // Position in meters
   double m_ypos;         // Position in meters
   double m_spd;          // Speed in meters per second
@@ -61,6 +64,8 @@ public:
 
   bool   m_decay_maxed;
 
+  std::string m_failure_reason;
+  
 };
 
 #endif

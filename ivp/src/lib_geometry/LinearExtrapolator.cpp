@@ -53,6 +53,7 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
   if(!m_position_set) {
     r_xpos = 0;
     r_ypos = 0;
+    m_failure_reason = "unknown contact position";
     return(false);
   }
 
@@ -61,9 +62,11 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
   if((m_decay_end < m_decay_start) || (delta_time < 0)) {
     r_xpos = m_xpos;
     r_ypos = m_ypos;
+    m_failure_reason = "negative delta time, possible clock skew";
     return(false);
   }
-
+  m_failure_reason = "";
+  
   // Handle a special (easy) case.
   if(delta_time == 0) {
     r_xpos = m_xpos;
