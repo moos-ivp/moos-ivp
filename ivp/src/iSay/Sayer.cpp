@@ -48,6 +48,8 @@ Sayer::Sayer()
   m_last_utter_time  = 0;
   m_isay_filter      = "none";  // or ignore, or hold
   m_unhandled_audios = 0;
+
+  m_total_received = 0;
 }
 
 //---------------------------------------------------------
@@ -74,8 +76,10 @@ bool Sayer::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
 
-    if(key == "SAY_MOOS") 
+    if(key == "SAY_MOOS") {
+      m_total_received++;
       addUtterance(sval, utter_source);
+    }
     else if(key == "SAY_FILTER") {
       string val = tolower(sval);
       if((val=="none") || (val=="ignore") || (val=="hold"))
@@ -107,8 +111,10 @@ bool Sayer::Iterate()
 
   // Check if enough time has elapsed for allowing a new utterance
   double curr_time = MOOSTime();
+  double time_warp = GetMOOSTimeWarp();
   double elapsed   = curr_time - m_last_utter_time;
-  if((m_isay_filter != "hold") && (elapsed > m_min_utter_interval)) {
+  double interval  = (time_warp * m_min_utter_interval);
+  if((m_isay_filter != "hold") && (elapsed > interval)) {
     bool uttered = sayUtterance();
     if(uttered)
       m_last_utter_time = MOOSTime();
@@ -292,6 +298,7 @@ bool Sayer::sayUtterance()
     }
 
   }
+
   //-------------------------------------------------
   // Case 2: Utterance is in the form of a audio file
   //-------------------------------------------------
@@ -379,6 +386,10 @@ bool Sayer::buildReport()
   m_msgs << " Max Utter Queue: " << m_max_utter_queue_size << endl;
   m_msgs << " Min Utter Inter: " << m_min_utter_interval << endl;
   m_msgs << " Interval Policy: " << m_interval_policy    << endl;
+
+  m_msgs << " Total received: " << uintToString(m_total_received) << endl;
+
+  
   
   unsigned int i, vsize = m_audio_dirs.size();
   for(i=0; (i<vsize) && (i<3); i++) 

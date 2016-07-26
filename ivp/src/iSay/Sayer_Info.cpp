@@ -121,7 +121,13 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
+  blk("  APPCAST    iSay is an appcasting MOOS app.                    ");
   blk("                                                                ");
+  blk("  Publishes to the system command.                              ");
+  blk("  OSX: say Hello                                                ");
+  blk("  OSX: afplay file.wav                                          ");
+  blk("  LINUX: espeak Hello                                           ");
+  blk("  LINUX: aplay file.wav                                         ");
   exit(0);
 }
 

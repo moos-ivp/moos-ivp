@@ -68,6 +68,8 @@ class Sayer : public AppCastingMOOSApp
    std::string  m_isay_filter;
 
    unsigned int m_unhandled_audios;
+
+   unsigned int m_total_received;
 };
 
 #endif 

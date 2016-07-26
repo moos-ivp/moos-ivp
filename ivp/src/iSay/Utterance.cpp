@@ -79,7 +79,7 @@ bool Utterance::initFromString(std::string str)
     if(param == "say") {
       if(isQuoted(value))
 	value = stripQuotes(value);
-      else if(isBraced(value))
+      if(isBraced(value))
 	value = stripBraces(value);
       m_text = value;
     }
