@@ -239,7 +239,9 @@ IvPFunction *BHV_AvoidCollision::onRunState()
     postRange(false);
     return(0);
   }
-
+  if(!checkContactGroupRestrictions())
+    return(0);
+  
   m_relevance = getRelevance();
   postRange(true);
 
