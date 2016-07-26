@@ -1529,6 +1529,7 @@ bool HelmIvP::processNodeReport(const string& report)
   m_info_buffer->setValue(vname+"_NAV_DEPTH", new_record.getDepth());
   m_info_buffer->setValue(vname+"_NAV_LAT", new_record.getLat());
   m_info_buffer->setValue(vname+"_NAV_LONG", new_record.getLon());
+  m_info_buffer->setValue(vname+"_NAV_GROUP", new_record.getGroup());
 
   double timestamp = new_record.getTimeStamp();
   
