@@ -275,14 +275,14 @@ VarDataPair stringToVarDataPair(string str)
  
   vector<string> svector = parseStringZ(str, ',', "{");
   for(unsigned int i=0; i<svector.size(); i++) {
-    string param = biteString(svector[i], '=');
+    string param = biteStringX(svector[i], '=');
     string value = svector[i];
     
     if(param == "var") 
       ok = ok && pair.set_var(value);
     else if(param == "sval") {
       if(isBraced(value))
-	stripBraces(value);
+	value = stripBraces(value);
       ok = ok && pair.set_sdata(value);
     }
     else if(param == "dval") 
