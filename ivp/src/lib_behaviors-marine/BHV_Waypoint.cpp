@@ -182,7 +182,7 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     m_cruise_speed_alt = dval;
     return(true);
   }
-  else if((param == "currix") && (dval > 0)) {
+  else if((param == "currix") && (dval >= 0)) {
     m_waypoint_engine.setCurrIndex((unsigned int)(dval));
     return(true);
   }
