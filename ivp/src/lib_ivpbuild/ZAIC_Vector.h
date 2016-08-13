@@ -44,6 +44,7 @@ public:
 
   void   setDomainVals(std::vector<double> v);
   void   setRangeVals(std::vector<double> v);
+  void   setTolerance(double);
   double getParam(std::string);
   void   print();
 
@@ -55,8 +56,9 @@ public:
   bool         hasWarnings();
   void         clearWarnings();
 
-  unsigned int size() {return(m_domain_pts);}
-
+  unsigned int size() const {return(m_domain_pts);}
+  unsigned int getTotalPieces() const {return(0);}
+  
   IvPFunction* extractOF();
   IvPFunction* extractIvPFunction()  {return(extractOF());}
   IvPDomain    getIvPDomain()        {return(m_ivp_domain);}
@@ -75,12 +77,15 @@ public:
   IvPBox* buildBox(unsigned int ix_low, double val_low,
 		   unsigned int ix_hgh, double val_hgh);
 
-protected:  // Parameters
+  PDMap* setPDMap2();
+
+ protected:  // Parameters
   std::vector<double> m_domain_vals;
   std::vector<double> m_range_vals;
 
   double m_minutil;
   double m_maxutil;
+  double m_tolerance;
 
 protected: // State values
 

@@ -54,7 +54,8 @@ ZAIC_Vector::ZAIC_Vector(IvPDomain g_domain, const string& varname)
 
   m_minutil = 0.0;
   m_maxutil = 0.0;
-
+  m_tolerance = 0.1;
+  
   m_sort_needed = false;
 }
 
@@ -69,6 +70,8 @@ double ZAIC_Vector::getParam(string param)
     return(m_minutil);
   else if(param == "maxutil")
     return(m_maxutil);
+  else if(param == "tolerance")
+    return(m_tolerance);
   else
     return(0);
 }
@@ -140,6 +143,18 @@ void ZAIC_Vector::setRangeVals(vector<double> vals)
       m_maxutil = m_range_vals[i];
   }
 }
+
+//-------------------------------------------------------------
+// Procedure: setTolerance
+//   Purpose: Set the error tolerance for building a piecewise mapping
+
+void ZAIC_Vector::setTolerance(double val)
+{
+  if(val < 0)
+    val = 0;
+  m_tolerance = val;
+}
+
 
 //-------------------------------------------------------------
 // Procedure: stateOK()
@@ -289,7 +304,7 @@ IvPFunction *ZAIC_Vector::extractOF()
   
   convertValues();
 
-  PDMap *pdmap = setPDMap();
+  PDMap *pdmap = setPDMap2();
   if(!pdmap)
     return(0);
 
@@ -563,10 +578,16 @@ string ZAIC_Vector::getWarnings()
 }
 
 
+//-------------------------------------------------------------
+// Procedure: hasWarnings()
+
 bool ZAIC_Vector::hasWarnings()
 {
   return((m_config_warnings.size() + m_build_warnings.size()) > 0);
 }
+
+//-------------------------------------------------------------
+// Procedure: clearWarnings()
 
 void ZAIC_Vector::clearWarnings()
 {
@@ -574,5 +595,91 @@ void ZAIC_Vector::clearWarnings()
 }
 
 
+//-------------------------------------------------------------
+// Procedure: setPDMap2()
 
+PDMap *ZAIC_Vector::setPDMap2()
+{
+  int    first_pt  = 0;
+  double first_val = m_irange_vals[0];
 
+  bool   trend = false; // No trend to start
+  double s_m = 0;
+  double s_b = 0;
+
+  unsigned int domain_pts = m_irange_vals.size();
+  
+  vector<IvPBox*> pieces;
+  for(unsigned int i=1; i<m_domain_pts; i++) {
+
+    if(!trend) {
+      trend  = true;
+      s_m = (m_irange_vals[i] - first_val) / (i - first_pt);
+      s_b = (m_irange_vals[i] - (s_m * i));
+    }
+
+    // Project from the running linear line what the value 
+    // should be at this point [i]. Then compare to the actual
+    // point and see if it lies within the tolerance.
+    double ext_val = (s_m * i) + s_b;
+    bool lbreak = false;
+    if((fabs(ext_val - m_irange_vals[i])) > m_tolerance)
+      lbreak = true;
+
+    // In addition to applying the tolerance criteria, also
+    // declare a break if there is a change in sign or slope
+    // to nail exactly a peak in the function.
+    double loc_m = (m_irange_vals[i] - m_irange_vals[i-1]) / (i - (i-1));
+    if((loc_m < 0) && (s_m > 0))
+      lbreak = true;
+    if((loc_m > 0) && (s_m < 0))
+      lbreak = true;
+    
+    bool last_point = (i == m_domain_pts-1);
+    
+    if(last_point) {
+      IvPBox *piece = new IvPBox(1,1);
+      if(lbreak) {
+	piece->setPTS(0, i, i);
+	piece->wt(0) = 0;
+	piece->wt(1) = m_irange_vals[i];
+	pieces.push_back(piece);
+      }
+      else {
+	piece->setPTS(0, first_pt, i);
+	double rise   = m_irange_vals[i] - first_val;
+	double run    = i - first_pt;
+	double slope  = rise / run;
+	double intcpt = first_val - (slope * first_pt);
+	piece->wt(0) = slope;
+	piece->wt(1) = intcpt;
+	pieces.push_back(piece);
+      }
+    }
+	
+    if(lbreak) {
+      IvPBox *piece = new IvPBox(1,1);
+      piece->setPTS(0, first_pt, i-1);
+      double rise   = m_irange_vals[i-1] - first_val;
+      double run    = (i-1) - first_pt;
+      double slope  = rise / run;
+      double intcpt = first_val - (slope * first_pt);
+      piece->wt(0) = slope;
+      piece->wt(1) = intcpt;
+      pieces.push_back(piece);
+      trend = false;
+      first_pt  = i;
+      first_val = m_irange_vals[i]; 
+    }
+    
+  }
+  
+  unsigned int piece_count = pieces.size();
+
+  PDMap *pdmap = new PDMap(piece_count, m_ivp_domain, 1);
+
+  for(unsigned int i=0; i<piece_count; i++)
+    pdmap->bx(i) = pieces[i];
+
+  return(pdmap);
+}

@@ -286,7 +286,6 @@ IvPFunction *ZAIC_PEAK::extractOF(bool maxval)
 }
 
 
-
 //-------------------------------------------------------------
 // Procedure: evalPoint(int, int)
 //
