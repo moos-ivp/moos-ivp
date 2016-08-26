@@ -21,6 +21,9 @@ using namespace std;
 
 IvPFunction *ZAIC_VECT_Model::getIvPFunction()
 {
+  if(!m_zaic_vect)
+    return(0);
+  m_zaic_vect->setTolerance(m_tolerance);
   return(m_zaic_vect->extractOF());
 }
 
@@ -52,4 +55,50 @@ double ZAIC_VECT_Model::getMaxUtil()
   if(!m_zaic_vect)
     return(0);
   return(m_zaic_vect->getParam("maxutil"));
+}
+
+//----------------------------------------------------------------
+// Procedure: getTolerance()
+
+double ZAIC_VECT_Model::getTolerance()
+{
+  if(!m_zaic_vect)
+    return(0);
+  return(m_tolerance);
+}
+
+//----------------------------------------------------------------
+// Procedure: setTolerance()
+
+void ZAIC_VECT_Model::setTolerance(double dval)
+{
+  if(!m_zaic_vect)
+    return;
+
+  m_tolerance = dval;
+  if(m_tolerance < 0)
+    m_tolerance = 0;
+}
+
+//----------------------------------------------------------------
+// Procedure: modTolerance()
+
+void ZAIC_VECT_Model::modTolerance(double delta)
+{
+  if(!m_zaic_vect)
+    return;
+  
+  m_tolerance += delta;  
+  if(m_tolerance < 0)
+    m_tolerance = 0;
+}
+
+//----------------------------------------------------------------
+// Procedure: getTotalPieces()
+
+unsigned int ZAIC_VECT_Model::getTotalPieces()
+{
+  if(!m_zaic_vect)
+    return(0);
+  return(m_zaic_vect->getTotalPieces());
 }

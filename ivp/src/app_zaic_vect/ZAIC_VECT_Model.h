@@ -20,7 +20,7 @@
 class ZAIC_VECT_Model : public ZAIC_Model
 {
  public:
-  ZAIC_VECT_Model()  {m_zaic_vect=0;}
+  ZAIC_VECT_Model()  {m_zaic_vect=0; m_tolerance=0;}
   ~ZAIC_VECT_Model() {};
 
  public: // Virtual function overloaded
@@ -28,12 +28,19 @@ class ZAIC_VECT_Model : public ZAIC_Model
 
   // Seters
   void setZAIC(ZAIC_Vector*);
+  void setTolerance(double);
+  void modTolerance(double);
   
   // Getters
   double getMinUtil();
   double getMaxUtil();
+  double getTolerance();
 
+  unsigned int getTotalPieces();
+  
  protected:
   ZAIC_Vector* m_zaic_vect;
+
+  double m_tolerance;
 };
 #endif 

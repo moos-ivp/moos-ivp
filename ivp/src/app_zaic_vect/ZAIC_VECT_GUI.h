@@ -14,6 +14,7 @@
 
 #include "ZAIC_Vector.h"
 #include "ZAIC_GUI.h"
+#include <FL/Fl_Button.H>
 
 class ZAIC_VECT_GUI : public ZAIC_GUI {
  public:
@@ -30,5 +31,17 @@ class ZAIC_VECT_GUI : public ZAIC_GUI {
  private:
   Fl_Output  *m_min_util;
   Fl_Output  *m_max_util;
+
+  Fl_Output  *m_fld_pieces;
+  Fl_Output  *m_fld_tolerance;
+
+  Fl_Button  *m_but_rebuild;
+
+ private:
+  inline void cb_ReBuild_i();
+  static void cb_ReBuild(Fl_Widget*);
+
+  inline void cb_Tolerance_i(int);
+  static void cb_Tolerance(Fl_Widget*, int);
 };
 #endif

@@ -9,6 +9,7 @@
 /* except by the author(s).                                      */
 /*****************************************************************/
 
+#include <iostream>
 #include "ZAIC_VECT_GUI.h"
 #include "ZAIC_VECT_Model.h"
 #include "MBUtils.h"
@@ -34,15 +35,30 @@ ZAIC_VECT_GUI::ZAIC_VECT_GUI(int g_w, int g_h, const char *g_l)
   m_zaic_viewer = new ZAIC_Viewer(sid_marg, top_marg, w()-(sid_marg*2), q_height);
   m_zaic_viewer->setModel(m_zaic_model);
 
-  m_min_util = new Fl_Output(100, q_height+top_marg+10, 60, 20, "min_util:"); 
+  m_min_util = new Fl_Output(100, q_height+top_marg+10, 50, 20, "min_util:"); 
   m_min_util->textsize(txt_size); 
   m_min_util->labelsize(txt_size);
   m_min_util->clear_visible_focus();
 
-  m_max_util = new Fl_Output(200, q_height+top_marg+10, 60, 20, "min_util:"); 
+  m_max_util = new Fl_Output(200, q_height+top_marg+10, 50, 20, "min_util:"); 
   m_max_util->textsize(txt_size); 
   m_max_util->labelsize(txt_size);
   m_max_util->clear_visible_focus();
+
+  m_fld_pieces = new Fl_Output(300, q_height+top_marg+10, 50, 20, "Pieces:"); 
+  m_fld_pieces->textsize(txt_size); 
+  m_fld_pieces->labelsize(txt_size);
+  m_fld_pieces->clear_visible_focus();
+
+  m_fld_tolerance = new Fl_Output(420, q_height+top_marg+10, 50, 20, "Tolerance:"); 
+  m_fld_tolerance->textsize(txt_size); 
+  m_fld_tolerance->labelsize(txt_size);
+  m_fld_tolerance->clear_visible_focus();
+
+  m_but_rebuild = new Fl_Button(520, q_height+top_marg+10, 50, 20, "rebuild"); 
+  m_but_rebuild->labelsize(txt_size);
+  m_but_rebuild->clear_visible_focus();
+  m_but_rebuild->callback((Fl_Callback*)ZAIC_VECT_GUI::cb_ReBuild,(void*)0);
 
   // Really no editing in this GUI - even the move left/right disabled here.
   int index = mbar->find_index("Modify ZAIC/Move Left  ");
@@ -55,10 +71,28 @@ ZAIC_VECT_GUI::ZAIC_VECT_GUI(int g_w, int g_h, const char *g_l)
   if(index != -1)
     mbar->remove(index);
 
+  augmentMenu();
+  
   this->end();
   this->resizable(this);
   this->show();
 }
+
+//-------------------------------------------------------------------
+// Procedure: augmentMenu()
+
+void ZAIC_VECT_GUI::augmentMenu()
+{
+  mbar->add("Tolerance/Greater + 1.0", '}',
+	    (Fl_Callback*)ZAIC_VECT_GUI::cb_Tolerance, (void*)10, 0);
+  mbar->add("Tolerance/Greater + 0.1", ']',
+	    (Fl_Callback*)ZAIC_VECT_GUI::cb_Tolerance, (void*)1, 0);
+  mbar->add("Tolerance/Lower - 1.0", '{',
+	    (Fl_Callback*)ZAIC_VECT_GUI::cb_Tolerance, (void*)-10, 0);
+  mbar->add("Tolerance/Lower - 0.1", '[',
+	    (Fl_Callback*)ZAIC_VECT_GUI::cb_Tolerance, (void*)-1, 0);
+}
+
 
 //--------------------------------------------------------------
 // Procedure: setZAIC()
@@ -81,6 +115,41 @@ void ZAIC_VECT_GUI::setVerbose(bool verbose)
     m_zaic_viewer->setVerbose(verbose);
 }
 
+//--------------------------------------------------------- cb_ReBuild
+inline void ZAIC_VECT_GUI::cb_ReBuild_i() {
+  m_zaic_viewer->redraw();
+  updateOutput();
+}
+
+void ZAIC_VECT_GUI::cb_ReBuild(Fl_Widget* o) {
+  ((ZAIC_VECT_GUI*)(o->parent()->user_data()))->cb_ReBuild_i();
+}
+
+//--------------------------------------------------------- cb_Tolerance
+inline void ZAIC_VECT_GUI::cb_Tolerance_i(int val) {
+
+  cout << "OLD tolerance: " <<
+    ((ZAIC_VECT_Model*)(m_zaic_model))->getTolerance() << endl;
+
+  if(val == 10)
+    ((ZAIC_VECT_Model*)(m_zaic_model))->modTolerance(1.0);
+  else if(val == 1)
+    ((ZAIC_VECT_Model*)(m_zaic_model))->modTolerance(0.1);
+  else if(val ==-10)
+    ((ZAIC_VECT_Model*)(m_zaic_model))->modTolerance(-1.0);
+  else if(val == -1)
+    ((ZAIC_VECT_Model*)(m_zaic_model))->modTolerance(-0.1);
+  updateOutput();
+
+  cout << "---New tolerance: " <<
+    ((ZAIC_VECT_Model*)(m_zaic_model))->getTolerance() << endl;
+}
+
+void ZAIC_VECT_GUI::cb_Tolerance(Fl_Widget* o, int v) {
+  ((ZAIC_VECT_GUI*)(o->parent()->user_data()))->cb_Tolerance_i(v);
+}
+
+
 //--------------------------------------------------------------
 // Procedure: updateOutput
 
@@ -93,4 +162,10 @@ void ZAIC_VECT_GUI::updateOutput()
 
   str = doubleToString(((ZAIC_VECT_Model*)(m_zaic_model))->getMaxUtil(),2);
   m_max_util->value(str.c_str());
+
+  str = uintToString(m_zaic_viewer->getTotalPieces());
+  m_fld_pieces->value(str.c_str());
+
+  str = doubleToString(((ZAIC_VECT_Model*)(m_zaic_model))->getTolerance(),1);
+  m_fld_tolerance->value(str.c_str());
 }
