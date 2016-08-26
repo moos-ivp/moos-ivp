@@ -224,12 +224,12 @@ void showInterfaceAndExit()
   blk("  Any variable specified in the moos configuration block using  ");
   blk("  the mouse left_context or right_context parameters.           ");
   blk("  +                                                             ");
-  blk("  HELM_MAP_CLEAR                                                ");
+  blk("  HELM_MAP_CLEAR  = 0   (published on startup)                  ");
+  blk("  PMV_CONNECT     = 0   (published on startup)                  ");
   blk("  MVIEWER_LCLICK                                                ");
   blk("  MVIEWER_RCLICK                                                ");
   blk("  MVIEWER_UNHANDLED_MAIL                                        ");
   blk("  PLOGGER_CMD                                                   ");
-  blk("                                                                ");
   exit(0);
 }
 
