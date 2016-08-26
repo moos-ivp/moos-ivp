@@ -41,25 +41,29 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_xRot         = -72;
   m_zRot         = 40;
   m_zoom         = 1;
-  m_scale        = 1;
+
   m_base         = 0;
+  m_scale        = 1;
   m_rad_ratio    = 1;
   m_rad_extent   = 0;
-  m_draw_pin     = true;
-  m_draw_frame   = true;
-  m_draw_ship    = true;
-  m_draw_base    = true;
-  m_draw_ipf     = true;
-  m_polar        = 0; 
-  m_draw_pclines = true;
   m_intensity    = 1.0;
+  m_polar        = 0; 
+
+  m_draw_ipf     = true;
+  m_draw_pin     = true;
+  m_draw_base    = true;
+  m_draw_pclines = true;
+
+  m_draw_frame   = true;
+  m_frame_height = 250;
+  m_frame_base   = -125;
+
+  m_draw_ship    = true;
+  m_ship_scale   = 8;
   
   setParam("clear_color", "white");
   setParam("frame_color", "dark_red");
   setParam("ship_color", "dodger_blue");
-
-  m_frame_height = 250;
-  m_ship_scale   = 8;
 
   // 1D configuration parameters
   m_xoffset     = 50;
@@ -126,6 +130,10 @@ bool Common_IPFViewer::setParam(string param, string value)
     else if(value=="4")
       {m_xRot=-72; m_zRot=122;}
   }
+  else if((param == "frame_color") && (value=="lighter"))
+    m_frame_color.shade(0.05);
+  else if((param == "frame_color") && (value=="darker"))
+    m_frame_color.shade(-0.05);
   else if(param == "frame_color")
     m_frame_color.setColor(value);
   else if(param == "ship_color")
@@ -157,6 +165,8 @@ bool Common_IPFViewer::setParam(string param, double value)
     m_zoom = value;
   else if(param == "mod_base_ipf")
     m_base += value;
+  else if(param == "mod_base_frame")
+    m_frame_base += value;
   else if(param == "mod_x_rotation")
     m_xRot += value;
   else if(param == "set_x_rotation")
@@ -438,6 +448,7 @@ bool Common_IPFViewer::drawQuadSet2D(const QuadSet& quadset)
 
     if(i==10) {
       Quad3D q = quadset.getQuad(i);
+#if 0
       cout << "x0: " << q.getLLX() << endl;
       cout << "x1: " << q.getHLX() << endl;
       cout << "x2: " << q.getHHX() << endl;
@@ -448,6 +459,7 @@ bool Common_IPFViewer::drawQuadSet2D(const QuadSet& quadset)
       cout << "y2: " << q.getHHY() << endl;
       cout << "y3: " << q.getLHY() << endl;
       cout << "m_zoom: " << m_zoom << endl;
+#endif
     }
   }
 
@@ -547,10 +559,15 @@ void Common_IPFViewer::drawQuad(Quad3D q)
 
 void Common_IPFViewer::drawFrame(bool full)
 {
-  double w = 300;
 
-  double b = -150;
-  double t = -350 + (m_frame_height);
+  cout << "m_frame_base: " << m_frame_base << endl;
+  double w = 250;
+  double b = m_frame_base;
+  //double b = -125;
+  //double w = 300;
+  //double b = -150;
+  //double t = -350 + (m_frame_height);
+  double t = -150 + (m_frame_height);
 
   double frame_red = m_frame_color.red();
   double frame_grn = m_frame_color.grn();

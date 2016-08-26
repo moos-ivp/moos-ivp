@@ -102,6 +102,11 @@ void Common_IPF_GUI::augmentMenu()
   m_menubar->add("RotateZoom/FrameHgt++",FL_CTRL+'f',
 		 (Fl_Callback*)Common_IPF_GUI::cb_FrameHgt, (void*)1,
 		 FL_MENU_DIVIDER);
+  m_menubar->add("RotateZoom/Frame Shade Lighter", '<',
+		 (Fl_Callback*)Common_IPF_GUI::cb_FrameShade, (void*)-1, 0);
+  m_menubar->add("RotateZoom/Frame Shade Darker",  '>',
+		 (Fl_Callback*)Common_IPF_GUI::cb_FrameShade, (void*)1,
+		 FL_MENU_DIVIDER);
   m_menubar->add("RotateZoom/Zoom In",  'i',
 		 (Fl_Callback*)Common_IPF_GUI::cb_Zoom, (void*)-1, 0);
   m_menubar->add("RotateZoom/Zoom Out",  'o',
@@ -115,10 +120,15 @@ void Common_IPF_GUI::augmentMenu()
   m_menubar->add("IPF/Toggle Function ",   'F',
 		 (Fl_Callback*)Common_IPF_GUI::cb_ToggleIPF, (void*)-1,
 		 FL_MENU_DIVIDER);
-  m_menubar->add("IPF/Base +", 'e',
-		 (Fl_Callback*)Common_IPF_GUI::cb_ModBaseIPF, (void*)+10, 0);
-  m_menubar->add("IPF/Base -", 'r',
-		 (Fl_Callback*)Common_IPF_GUI::cb_ModBaseIPF, (void*)-10,
+  m_menubar->add("IPF/FunctionBase -", '(',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ModBaseIPF, (void*)-10);
+  m_menubar->add("IPF/FunctionBase +", ')',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ModBaseIPF, (void*)+10,
+		 FL_MENU_DIVIDER);
+  m_menubar->add("IPF/Frame and FunctionBase -", '{',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ModFrameBaseIPF, (void*)-10);
+  m_menubar->add("IPF/Fram and FunctionBase +", '}',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ModFrameBaseIPF, (void*)+10,
 		 FL_MENU_DIVIDER);
   m_menubar->add("IPF/Polar0", 0,
 		 (Fl_Callback*)Common_IPF_GUI::cb_Polar, (void*)0, 0);
@@ -297,6 +307,17 @@ void Common_IPF_GUI::cb_ModBaseIPF(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ModBaseIPF_i(v);
 }
 
+//----------------------------------------- Mod FrameBaseIPF
+inline void Common_IPF_GUI::cb_ModFrameBaseIPF_i(int amt) {
+  cout << "In ModFrameBaseIPF..." << amt << endl;
+  m_viewer->setParam("mod_base_ipf", amt);
+  m_viewer->setParam("mod_base_frame", amt);
+}
+
+void Common_IPF_GUI::cb_ModFrameBaseIPF(Fl_Widget* o, int v) {
+  ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ModFrameBaseIPF_i(v);
+}
+
 //----------------------------------------- Toggle Frame
 inline void Common_IPF_GUI::cb_ToggleFrame_i() {
   m_viewer->setParam("draw_frame", "toggle");
@@ -338,6 +359,17 @@ inline void Common_IPF_GUI::cb_FrameHgt_i(int amt) {
 }
 void Common_IPF_GUI::cb_FrameHgt(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_FrameHgt_i(v);
+}
+
+//----------------------------------------- FrameShade
+inline void Common_IPF_GUI::cb_FrameShade_i(int amt) {
+  if(amt < 0)
+    m_viewer->setParam("frame_color", "lighter");
+  else
+    m_viewer->setParam("frame_color", "darker");
+}
+void Common_IPF_GUI::cb_FrameShade(Fl_Widget* o, int v) {
+  ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_FrameShade_i(v);
 }
 
 //----------------------------------------- ColorMap

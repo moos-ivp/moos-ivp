@@ -104,6 +104,7 @@ protected:
 
   bool       m_draw_frame;
   double     m_frame_height;
+  double     m_frame_base;
 
   bool       m_draw_ship;
   double     m_ship_scale;

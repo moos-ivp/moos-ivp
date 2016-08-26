@@ -75,6 +75,9 @@ public:
   inline void cb_ModBaseIPF_i(int);
   static void cb_ModBaseIPF(Fl_Widget*, int);
 
+  inline void cb_ModFrameBaseIPF_i(int);
+  static void cb_ModFrameBaseIPF(Fl_Widget*, int);
+
   inline void cb_ToggleIPF_i();
   static void cb_ToggleIPF(Fl_Widget*);
 
@@ -89,6 +92,9 @@ public:
 
   inline void cb_FrameHgt_i(int);
   static void cb_FrameHgt(Fl_Widget*, int);
+
+  inline void cb_FrameShade_i(int);
+  static void cb_FrameShade(Fl_Widget*, int);
 
   inline void cb_ColorMap_i(int);
   static void cb_ColorMap(Fl_Widget*, int);
