@@ -38,6 +38,7 @@ ZAIC_Viewer::ZAIC_Viewer(int gx, int gy, int gw, int gh, const char *gl)
   m_cell_dom_wid = 50;
   
   m_draw_labels = true;
+  m_pieces = 0;
   
   m_dompts = 0;
   m_pixels_per_dompt = 0;
@@ -261,12 +262,17 @@ void ZAIC_Viewer::drawText(int x, int y, string str)
 void ZAIC_Viewer::drawPieces()
 {
   IvPFunction *ipf = m_model->getIvPFunction();
-  if(!ipf)
+  if(!ipf) {
+    m_pieces = 0;
     return;
+  }
   
   PDMap *pdmap = ipf->getPDMap();
-  if(!pdmap || (pdmap->size() == 0))
+  if(!pdmap || (pdmap->size() == 0)) {
+    m_pieces = 0;
     return;
+  }
+  m_pieces = pdmap->size();
   
   if(m_verbose)
     pdmap->print(true);
@@ -274,6 +280,7 @@ void ZAIC_Viewer::drawPieces()
   int pc_count = pdmap->size();
   for(int i=0; i<pc_count; i++)
     drawPiece(pdmap->bx(i));
+  delete(pdmap);
 }
 
 //-------------------------------------------------------------

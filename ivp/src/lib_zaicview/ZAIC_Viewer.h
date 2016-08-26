@@ -37,6 +37,7 @@ class ZAIC_Viewer : public Fl_Gl_Window
   void  setVerbose(bool v) {m_verbose=v;}
   void  toggleVerbose()    {m_verbose=!m_verbose;}
 
+  unsigned int getTotalPieces() const {return(m_pieces);}
 
  protected:
   void  setColorScheme(int index);
@@ -59,6 +60,8 @@ class ZAIC_Viewer : public Fl_Gl_Window
   double m_pixels_per_dompt;
 
   bool   m_verbose;
+
+  unsigned int m_pieces;
   
   int          m_color_scheme;
   std::string  m_label_color;
