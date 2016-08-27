@@ -13,6 +13,7 @@
 #include "BuildUtils.h"
 #include "FunctionEncoder.h"
 #include "IvPProblem_v3.h"
+#include "IvPProblem_v2.h"
 #include "FileBuffer.h"
 
 using namespace std;
@@ -38,7 +39,12 @@ bool PopulatorIPP::populate(string filename, int alg)
 
   if(alg == 0)
     m_ivp_problem = new IvPProblem;
-  if(alg == 3)
+  else if((alg == 1) || (alg == 2)) {
+    m_ivp_problem = new IvPProblem_v2;
+    if(alg == 1)
+      ((IvPProblem_v2*)(m_ivp_problem))->setFullTreeTraversal();
+  }
+  else if(alg == 3)
     m_ivp_problem = new IvPProblem_v3;
 
   vector<string> svector = fileBuffer(filename);

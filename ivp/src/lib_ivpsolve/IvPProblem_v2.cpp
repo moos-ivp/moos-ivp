@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: IvPProblem_v3.cpp                                    */
+/*    FILE: IvPProblem_v2.cpp                                    */
 /*    DATE: Too long ago to remember (1999-2001)                 */
 /*                                                               */
 /* The algorithms embodied in this software are protected under  */
@@ -34,19 +34,15 @@
 /*****************************************************************/
  
 #include <iostream>
-#include <cassert>
-#include "IvPProblem_v3.h"
+#include "IvPProblem_v2.h"
 
 using namespace std;
 
 //---------------------------------------------------------------
 // Procedure: solve
 
-bool IvPProblem_v3::solve(const IvPBox *b)
+bool IvPProblem_v2::solve(const IvPBox *b)
 {
-  if(!m_silent)
-    cout << "******* Entering IvPProblem::solveV3()" << endl;
-  
   solvePrior(0);
 
   PDMap *pdmap = m_ofs[0]->getPDMap();
@@ -58,17 +54,20 @@ bool IvPProblem_v3::solve(const IvPBox *b)
   }    
 
   solvePost();
-
-  if(!m_silent)
-    cout << "******* DONE IvPProblem::solveV3()" << endl;
-    
+  if(!m_silent) {
+    if(m_full_tree) 
+      cout << "******* DONE IvPProblem::solveV1()" << endl;
+    else
+      cout << "******* DONE IvPProblem::solveV2()" << endl;
+  }
+  
   return(true);
 }
 
 //---------------------------------------------------------------
 // Procedure: solveRecurse
 
-void IvPProblem_v3::solveRecurse(int level)
+void IvPProblem_v2::solveRecurse(int level)
 {
   int result;
 
@@ -81,7 +80,6 @@ void IvPProblem_v3::solveRecurse(int level)
   }
 
   IvPGrid *grid = m_ofs[level]->getPDMap()->getGrid();
-  assert(grid != 0);
   BoxSet *levelBoxes = grid->getBS(nodeBox[level]);
   BoxSetNode *levBSN = levelBoxes->retBSN(FIRST);
 
@@ -90,7 +88,8 @@ void IvPProblem_v3::solveRecurse(int level)
 
     IvPBox *cbox = levBSN->getBox();
     result = nodeBox[level]->intersect(cbox, nodeBox[level+1]);
-    
+
+    //if(m_full_tree || result)
     if(result)
       solveRecurse(level+1);
 

@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: IvPProblem_v3.cpp                                    */
+/*    FILE: IvPProblem_v2.h                                      */
 /*    DATE: Too long ago to remember (1999-2001)                 */
 /*                                                               */
 /* The algorithms embodied in this software are protected under  */
@@ -33,71 +33,28 @@
 /* enhancements or modifications.                                */
 /*****************************************************************/
  
-#include <iostream>
-#include <cassert>
-#include "IvPProblem_v3.h"
+#ifndef IVPPROBLEM_V2_HEADER
+#define IVPPROBLEM_V2_HEADER
 
-using namespace std;
+#include "IvPProblem.h"
 
-//---------------------------------------------------------------
-// Procedure: solve
+class IvPProblem_v2: public IvPProblem {
+public:
+  IvPProblem_v2() {m_full_tree=false;}
+  ~IvPProblem_v2() {}
 
-bool IvPProblem_v3::solve(const IvPBox *b)
-{
-  if(!m_silent)
-    cout << "******* Entering IvPProblem::solveV3()" << endl;
+  bool solve(const IvPBox *isolbox=0);
+  void solveRecurse(int);
+
+  void setFullTreeTraversal() {m_full_tree=true;}
+
+ private:
+  bool m_full_tree;
   
-  solvePrior(0);
+};  
 
-  PDMap *pdmap = m_ofs[0]->getPDMap();
-  int boxCount = pdmap->size();
+#endif
 
-  for(int i=0; i<boxCount; i++) {
-    nodeBox[1]->copy(pdmap->bx(i));
-    solveRecurse(1);
-  }    
-
-  solvePost();
-
-  if(!m_silent)
-    cout << "******* DONE IvPProblem::solveV3()" << endl;
-    
-  return(true);
-}
-
-//---------------------------------------------------------------
-// Procedure: solveRecurse
-
-void IvPProblem_v3::solveRecurse(int level)
-{
-  int result;
-
-  if(level == m_ofnum) {                       // boundary condition
-    bool ok = false;
-    float currWT = compactor->maxVal(nodeBox[level], &ok);
-    if((m_maxbox==NULL) || (currWT > (m_maxwt + m_epsilon)))
-      newSolution(currWT, nodeBox[level]);
-    return;
-  }
-
-  IvPGrid *grid = m_ofs[level]->getPDMap()->getGrid();
-  assert(grid != 0);
-  BoxSet *levelBoxes = grid->getBS(nodeBox[level]);
-  BoxSetNode *levBSN = levelBoxes->retBSN(FIRST);
-
-  while(levBSN != NULL) {
-    BoxSetNode *nextLevBSN = levBSN->getNext();
-
-    IvPBox *cbox = levBSN->getBox();
-    result = nodeBox[level]->intersect(cbox, nodeBox[level+1]);
-    
-    if(result)
-      solveRecurse(level+1);
-
-    levBSN = nextLevBSN;
-  }
-  delete(levelBoxes);
-}
 
 
 

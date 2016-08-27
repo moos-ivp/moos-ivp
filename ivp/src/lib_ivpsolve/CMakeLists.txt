@@ -6,6 +6,7 @@
 SET(SRC
   IvPProblem.cpp
   IvPProblem_v3.cpp
+  IvPProblem_v2.cpp
   PopulatorIPP.cpp
   Problem.cpp
 )
@@ -13,6 +14,7 @@ SET(SRC
 SET(HEADERS
   IvPProblem.h
   IvPProblem_v3.h
+  IvPProblem_v2.h
   PopulatorIPP.h
   Problem.h
 )

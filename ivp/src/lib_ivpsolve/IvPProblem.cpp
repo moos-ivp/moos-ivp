@@ -155,7 +155,7 @@ bool IvPProblem::solve(const IvPBox *isolBox)
   solvePrior(isolBox); 
 
   if(!m_silent) {
-    cout << "*******Entering IvPProblem::solve()" << endl;
+    cout << "******* Entering IvPProblem::solveV4()" << endl;
     cout << "Ofs:" << m_ofnum << endl;
   }
   
@@ -169,6 +169,11 @@ bool IvPProblem::solve(const IvPBox *isolBox)
  
   solvePost();
 
+  if(!m_silent) {
+    cout << "******* DONE IvPProblem::solveV4()" << endl;
+    cout << "Ofs:" << m_ofnum << endl;
+  }
+  
   return(true);
 }
 
@@ -259,19 +264,4 @@ double IvPProblem::upperCheapBound(int level, IvPBox *box)
 
   return(bound);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
