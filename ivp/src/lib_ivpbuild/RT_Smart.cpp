@@ -78,6 +78,17 @@ PDMap* RT_Smart::create(PDMap *pdmap, PQueue& pqueue,
       double err1 = m_regressor->setWeight(cut_box, true);
       double err2 = m_regressor->setWeight(new_box, true);
 
+#if 0 // mikerb aug16
+      double maxval1 = cut_box->maxval();
+      double minval1 = cut_box->minval();
+      double delta1  = maxval1 - minval1;
+
+      double maxval2 = new_box->maxval();
+      double minval2 = new_box->minval();
+      double delta2  = maxval2 - minval2;
+      
+#endif
+      
       int newix = pdmap->size();
       pdmap->bx(newix) = new_box;
       pdmap->growBoxCount();

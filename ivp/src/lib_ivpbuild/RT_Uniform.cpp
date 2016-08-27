@@ -94,6 +94,10 @@ PDMap* RT_Uniform::create(const IvPBox* unifbox, const IvPBox* gelbox,
   for(int i=0; i<unifCount; i++) {
     if(use_pqueue) {
       double delta = m_regressor->setWeight(pdmap->bx(i), true);
+
+      
+
+
       pqueue.insert(i, delta);
     }
     else

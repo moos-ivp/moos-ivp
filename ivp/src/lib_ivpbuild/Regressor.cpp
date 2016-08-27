@@ -315,11 +315,19 @@ double Regressor::setWeight1(IvPBox *gbox, bool feedback)
     
     error = sqrt(error);
 
+    double maxval = gbox->maxVal();
+    double minval = gbox->minVal();
+    double delta  = maxval - minval;
+
     if(center_flag)
       error = error / (double)(m_corners+1);
     else
       error = error / (double)(m_corners);
 
+    //cout << "Err: " << error << endl;
+    //cout << "   (" << delta << ")" << endl;
+    
+    //error = ((4 *error) + delta) / 5;
     return(error);
   }	
 }

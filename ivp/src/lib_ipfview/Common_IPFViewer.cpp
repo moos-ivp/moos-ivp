@@ -559,9 +559,14 @@ void Common_IPFViewer::drawQuad(Quad3D q)
 
 void Common_IPFViewer::drawFrame(bool full)
 {
-
-  cout << "m_frame_base: " << m_frame_base << endl;
   double w = 250;
+
+  IvPDomain domain = m_quadset.getDomain();
+  if(domain.size() != 0)
+    w = domain.getVarPoints(0) / 2;
+  
+  cout << "m_frame_base: " << m_frame_base << endl;
+  //double w = 250;
   double b = m_frame_base;
   //double b = -125;
   //double w = 300;

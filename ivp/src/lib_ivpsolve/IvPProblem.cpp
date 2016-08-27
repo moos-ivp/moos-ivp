@@ -60,6 +60,8 @@ IvPProblem::IvPProblem(Compactor *g_compactor)
     compactor = new CompactorNull;
     ownCompactor = true;
   }
+
+  m_leafs_visited = 0;
 }
 
 //---------------------------------------------------------------

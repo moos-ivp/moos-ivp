@@ -78,6 +78,11 @@ protected:
   double*   m_vals;
 
   int       m_degree;
+
+  double    m_pteval_min;
+  double    m_pteval_max;
+  bool      m_pteval_set;
+  
 };
 
 #endif

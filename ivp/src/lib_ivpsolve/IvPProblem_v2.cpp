@@ -60,6 +60,8 @@ bool IvPProblem_v2::solve(const IvPBox *b)
     else
       cout << "******* DONE IvPProblem::solveV2()" << endl;
   }
+
+  cout << "total leafs visited: " << m_leafs_visited << endl;
   
   return(true);
 }
@@ -71,7 +73,16 @@ void IvPProblem_v2::solveRecurse(int level)
 {
   int result;
 
+  //for(int j=0; j<level; j++)
+  //  cout << " " << flush;
+  //cout << level << endl;
+
   if(level == m_ofnum) {                       // boundary condition
+    //cout << "=================================" << endl;
+    //cout << "LEAF level: " << level << endl;
+    //cout << "=================================" << endl;
+    
+    m_leafs_visited++;
     bool ok = false;
     float currWT = compactor->maxVal(nodeBox[level], &ok);
     if((m_maxbox==NULL) || (currWT > (m_maxwt + m_epsilon)))
@@ -79,23 +90,19 @@ void IvPProblem_v2::solveRecurse(int level)
     return;
   }
 
-  IvPGrid *grid = m_ofs[level]->getPDMap()->getGrid();
-  BoxSet *levelBoxes = grid->getBS(nodeBox[level]);
-  BoxSetNode *levBSN = levelBoxes->retBSN(FIRST);
+  PDMap *pdmap = m_ofs[level]->getPDMap();
 
-  while(levBSN != NULL) {
-    BoxSetNode *nextLevBSN = levBSN->getNext();
-
-    IvPBox *cbox = levBSN->getBox();
-    result = nodeBox[level]->intersect(cbox, nodeBox[level+1]);
-
-    //if(m_full_tree || result)
-    if(result)
+  //cout << "=================================" << endl;
+  //cout << "level: " << level << endl;
+  //cout << "=================================" << endl;
+  
+  int amt_level_plus1 = pdmap->size();
+  for(int i=0; i<amt_level_plus1; i++) {
+    //cout << i << "," << flush;
+    result = nodeBox[level]->intersect(pdmap->bx(i), nodeBox[level+1]);
+    if(m_full_tree || result)
       solveRecurse(level+1);
-
-    levBSN = nextLevBSN;
   }
-  delete(levelBoxes);
 }
 
 

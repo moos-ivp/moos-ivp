@@ -131,16 +131,3 @@ string AOF_Rings::latexSTR(int full) const
   if(full) retstr += " \\end{tabular}} \\normalsize";
   return(retstr);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-

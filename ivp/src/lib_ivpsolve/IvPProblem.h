@@ -58,21 +58,8 @@ protected:
   IvPBox**   nodeBox;
   Compactor* compactor;
   bool       ownCompactor;
+
+  double     m_leafs_visited;
 };  
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
