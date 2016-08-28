@@ -188,6 +188,7 @@ void IvPProblem::solveRecurse(int level)
   
   // check for and handle the boundary condition
   if(level == m_ofnum) {
+    m_leafs_visited++;
     bool   ok = false;
     double currWT = compactor->maxVal(nodeBox[level], &ok);
     if(ok)
