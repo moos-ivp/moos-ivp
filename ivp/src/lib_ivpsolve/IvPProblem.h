@@ -53,7 +53,8 @@ protected:
   void   solvePost();
   double upperTightBound(int, IvPBox*);
   double upperCheapBound(int, IvPBox*);
-
+  double getLeafsVisited() const {return(m_leafs_visited);}
+  
 protected:  
   IvPBox**   nodeBox;
   Compactor* compactor;

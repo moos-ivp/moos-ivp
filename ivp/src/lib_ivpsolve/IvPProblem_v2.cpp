@@ -60,9 +60,6 @@ bool IvPProblem_v2::solve(const IvPBox *b)
     else
       cout << "******* DONE IvPProblem::solveV2()" << endl;
   }
-
-  cout << "total leafs visited: " << m_leafs_visited << endl;
-  
   return(true);
 }
 
@@ -104,17 +101,4 @@ void IvPProblem_v2::solveRecurse(int level)
       solveRecurse(level+1);
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
