@@ -46,6 +46,7 @@ public:
 
   void   preCompact();
   bool   solve(const IvPBox *isolbox=0);
+  double getLeafsVisited() const {return(m_leafs_visited);}
 
 protected:
   void   solvePrior(const IvPBox *b=0);
@@ -53,7 +54,6 @@ protected:
   void   solvePost();
   double upperTightBound(int, IvPBox*);
   double upperCheapBound(int, IvPBox*);
-  double getLeafsVisited() const {return(m_leafs_visited);}
   
 protected:  
   IvPBox**   nodeBox;
