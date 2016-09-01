@@ -110,7 +110,8 @@ protected:
   double     m_ship_scale;
   
   QuadSet    m_quadset;
-  
+  bool       m_quadset_refresh_pending;
+
   // Information for drawing 1D functions
   int        m_xoffset;
   int        m_yoffset;

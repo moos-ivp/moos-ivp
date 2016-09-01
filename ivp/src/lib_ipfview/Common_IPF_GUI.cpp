@@ -112,7 +112,12 @@ void Common_IPF_GUI::augmentMenu()
   m_menubar->add("RotateZoom/Zoom Out",  'o',
 		 (Fl_Callback*)Common_IPF_GUI::cb_Zoom, (void*)1, 0);
   m_menubar->add("RotateZoom/Zoom Reset", 'Z',
-		 (Fl_Callback*)Common_IPF_GUI::cb_Zoom, (void*)0, 0);
+		 (Fl_Callback*)Common_IPF_GUI::cb_Zoom, (void*)0, 
+		 FL_MENU_DIVIDER);
+  m_menubar->add("RotateZoom/Scale +", 'S',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ModScale, (void*)+2, 0);
+  m_menubar->add("RotateZoom/Scale -", 's',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ModScale, (void*)-2, 0);
   
   //===========================================================
   // IPF Menu
@@ -191,6 +196,8 @@ void Common_IPF_GUI::setMenuColors()
   setMenuItemColor("RotateZoom/Zoom In");
   setMenuItemColor("RotateZoom/Zoom Out");
   setMenuItemColor("RotateZoom/Zoom Reset");
+  setMenuItemColor("RotateZoom/Scale +");
+  setMenuItemColor("RotateZoom/Scale -");
   setMenuItemColor("IPF/Toggle Function ");
   setMenuItemColor("IPF/Base +");
   setMenuItemColor("IPF/Base -");

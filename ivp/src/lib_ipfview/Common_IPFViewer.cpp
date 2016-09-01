@@ -43,7 +43,7 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_zoom         = 1;
 
   m_base         = 0;
-  m_scale        = 1;
+  m_scale        = 2;
   m_rad_ratio    = 1;
   m_rad_extent   = 0;
   m_intensity    = 1.0;
@@ -70,6 +70,8 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_yoffset     = hgt / 3.5;
   m_grid_width  = wid  - (m_xoffset*2);
   m_grid_height = 0.5 * hgt;
+
+  m_quadset_refresh_pending = false;
 }
 
 //-------------------------------------------------------------
@@ -179,6 +181,12 @@ bool Common_IPFViewer::setParam(string param, double value)
     m_ship_scale *= value;
     if(m_ship_scale < 1)
       m_ship_scale = 1;
+  }
+  else if(param == "mod_scale") {
+    m_scale += value;
+    if(m_scale < 0.1)
+      m_scale = 0.1;
+    m_quadset_refresh_pending = true;
   }
   else
     return(false);
