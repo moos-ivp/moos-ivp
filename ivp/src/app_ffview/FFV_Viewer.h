@@ -73,7 +73,7 @@ protected:
 private:
   float      m_base_aof;
   float      m_base_ipf;
-  float      m_scale;
+
   int        m_patch;
   bool       m_draw_aof;
   bool       m_draw_ipf;
@@ -83,7 +83,6 @@ private:
   bool       m_strict_range;
   double     m_create_time;
   int        m_piece_count;
-  bool       m_quadset_refresh_pending;
   
   IvPFunction *m_unif_ipf;
   OF_Rater     m_rater;

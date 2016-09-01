@@ -78,6 +78,12 @@ void FFV_Viewer::draw()
 {
   Common_IPFViewer::draw();
 
+  cout << "============================================" << endl;
+  cout << "m_draw_base  = " << boolToString(m_draw_base) << endl;
+  cout << "m_draw_frame = " << boolToString(m_draw_frame) << endl;
+  cout << "m_scale = " << m_scale << endl;
+  cout << "============================================" << endl;
+
   glPushMatrix();
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
@@ -102,7 +108,7 @@ void FFV_Viewer::draw()
   }
 
   if(m_draw_frame) {
-    drawFrame(false);
+    drawFrame(true);
     //drawFocusBox();
   }
 
@@ -637,6 +643,7 @@ void FFV_Viewer::drawAOF()
       q.setLHG(m_aof_cache.getGVal(xl, yh));
       q.setLHB(m_aof_cache.getBVal(xl, yh));
 
+      q.applyScale(m_scale);
       q.applyBase(m_base_aof);
       q.applyTranslation(-(xmax/2), -(ymax/2));
       count++;

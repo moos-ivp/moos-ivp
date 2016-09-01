@@ -256,10 +256,6 @@ void FFV_GUI::augmentMenu()
   //===================================================================
   // AOF    Pull-Down Menu
   //===================================================================
-  m_menubar->add("AOF/Scale +",     'S',
-		 (Fl_Callback*)FFV_GUI::cb_ModScale, (void*)+2, 0);
-  m_menubar->add("AOF/Scale -",     's',
-		 (Fl_Callback*)FFV_GUI::cb_ModScale, (void*)-2, 0);
   m_menubar->add("AOF/Base +", FL_CTRL+'b',
 		 (Fl_Callback*)FFV_GUI::cb_ModBaseAOF, (void*)+1, 0);
   m_menubar->add("AOF/Base -", FL_ALT+'b',
