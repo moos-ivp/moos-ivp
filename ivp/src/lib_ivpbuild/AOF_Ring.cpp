@@ -48,9 +48,9 @@ AOF_Ring::AOF_Ring(IvPDomain g_domain) : AOF(g_domain)
   exponent = 10;      
   expLow   = 10;
   expHigh  = 10;
-  range    = 200;     
-  base     = -100;    
-  ringPeak = true;    
+  m_range  = 200;     
+  m_base   = -100;    
+  m_ring_peak = true;    
   plateau  = 0.0;
 
   gradient_type = 0;
@@ -62,9 +62,9 @@ AOF_Ring::AOF_Ring(IvPDomain g_domain) : AOF(g_domain)
   for(unsigned int d=0; d<dim; d++)
     gradient_dist += m_domain.getVarPoints(d);
 
-  ringPeak = (rand()%2);  
+  m_ring_peak = (rand()%2);  
 
-  location = makeRand(m_domain);
+  m_location = makeRand(m_domain);
 }
 
 //----------------------------------------------------------------
@@ -73,9 +73,9 @@ AOF_Ring::AOF_Ring(IvPDomain g_domain) : AOF(g_domain)
 bool AOF_Ring::setParam(const string& param, double val)
 {
   if(param == "base")
-    base = val;
+    m_base = val;
   else if(param == "range")
-    range = (int)(val+0.5);
+    m_range = (int)(val+0.5);
   else if(param == "radius")
     radius = (int)(val+0.5);
   else if(param == "radlow")
@@ -106,15 +106,15 @@ bool AOF_Ring::setParam(const string& param, const string& val)
 {
   if(param == "location") {
     if(val == "random") { 
-      location = makeRand(m_domain);
+      m_location = makeRand(m_domain);
       
       int shift_x = (int)(m_domain.getVarLow(0));
       int shift_y = (int)(m_domain.getVarLow(1));
 
-      int loc_x = location.pt(0,0);
-      int loc_y = location.pt(1,0);
-      location.setPTS(0,loc_x+shift_x, loc_x+shift_x);
-      location.setPTS(1,loc_y+shift_y, loc_y+shift_y);
+      int loc_x = m_location.pt(0,0);
+      int loc_y = m_location.pt(1,0);
+      m_location.setPTS(0,loc_x+shift_x, loc_x+shift_x);
+      m_location.setPTS(1,loc_y+shift_y, loc_y+shift_y);
       return(true);
     }
     else {
@@ -122,18 +122,18 @@ bool AOF_Ring::setParam(const string& param, const string& val)
       vector<string> svector = parseString(val, ',');
       if(svector.size() != dim)
 	return(false);
-      location = IvPBox(dim);
+      m_location = IvPBox(dim);
       for(unsigned int i=0; i<dim; i++) {
 	int pval = atoi(svector[i].c_str());
-	location.setPTS(i, pval, pval);
+	m_location.setPTS(i, pval, pval);
       }
     }
   }
   else if(param == "peak") {
     if(val == "true")
-      ringPeak = true;
+      m_ring_peak = true;
     else if(val == "false")
-      ringPeak = false;
+      m_ring_peak = false;
     else
       return(false);
   }
@@ -160,10 +160,10 @@ bool AOF_Ring::setParam(const string& param, const string& val)
 bool AOF_Ring::randomize()
 {
   // Handle RingPeak
-  ringPeak = (rand()%2);  
+  m_ring_peak = (rand()%2);  
 
   // Handle Location
-  location = makeRand(m_domain);
+  m_location = makeRand(m_domain);
 
   // Handle Radius
   if(radLow <= 0) 
@@ -191,7 +191,7 @@ double AOF_Ring::evalBox(const IvPBox *gbox) const
   double ratio  = 0;
   double weight = 0;
 
-  double distToCent = (double)(boxDist(*gbox, location));
+  double distToCent = (double)(boxDist(*gbox, m_location));
   double distToRing = distToCent - (double)radius;
 
   if(distToRing < 1.0) distToRing = -1.0 * distToRing;
@@ -239,12 +239,12 @@ double AOF_Ring::evalBox(const IvPBox *gbox) const
       ratio = 0;
   }
 
-  double pctOfRange = ratio * range;
+  double pctOfRange = ratio * m_range;
 
-  if(ringPeak) 
-    weight =  base + pctOfRange;
+  if(m_ring_peak) 
+    weight =  m_base + pctOfRange;
   else 
-    weight = (base+range) - pctOfRange;
+    weight = (m_base + m_range) - pctOfRange;
   return(weight);
 }
 
@@ -257,14 +257,14 @@ string AOF_Ring::latexSTR(int full) const
 
   if(full) retstr += "\\fbox{ \\LARGE \\begin{tabular}{ll} $f(x, y)=$";
 
-  int d = location.getDim();
+  int d = m_location.getDim();
   if(d>2) {
     retstr += "Unavailable for 3+ dimensions";
     return(retstr);
   }
 
-  int       h = location.pt(0, 0);
-  int       k = location.pt(1, 0);
+  int       h = m_location.pt(0, 0);
+  int       k = m_location.pt(1, 0);
   
   retstr     += " & $ (((1-{\\frac {(\\sqrt{(x-";
   retstr     += intToString(h);
@@ -277,9 +277,9 @@ string AOF_Ring::latexSTR(int full) const
   retstr     += "}})^{";
   retstr     += intToString(exponent);
   retstr     += "} *";
-  retstr     += doubleToString(range);
+  retstr     += doubleToString(m_range);
   retstr     += ") +";
-  retstr     += doubleToString(base);
+  retstr     += doubleToString(m_base);
   retstr     += ") +$ \\\\ \\\\";
   if(full) retstr += " \\end{tabular}} \\normalsize";
   return(retstr);
@@ -290,10 +290,11 @@ string AOF_Ring::latexSTR(int full) const
 
 void AOF_Ring::print() const
 {
-  cout << "Location:  ";  location.print();
+  cout << "Location:  ";  m_location.print();
   cout << "  Radius:   " << radius;
   cout << "  exponent: " << exponent;
   cout << "  radius:   " << radius  << endl;
+  cout << "  gradient: " << gradient_type  << endl;
 }
 
 //---------------------------------------------------------------

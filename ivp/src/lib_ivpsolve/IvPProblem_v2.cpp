@@ -70,32 +70,19 @@ void IvPProblem_v2::solveRecurse(int level)
 {
   int result;
 
-  //for(int j=0; j<level; j++)
-  //  cout << " " << flush;
-  //cout << level << endl;
-
   if(level == m_ofnum) {                       // boundary condition
-    //cout << "=================================" << endl;
-    //cout << "LEAF level: " << level << endl;
-    //cout << "=================================" << endl;
-    
     m_leafs_visited++;
     bool ok = false;
     float currWT = compactor->maxVal(nodeBox[level], &ok);
-    if((m_maxbox==NULL) || (currWT > (m_maxwt + m_epsilon)))
+    if((m_maxbox==NULL) || (currWT > m_maxwt))
       newSolution(currWT, nodeBox[level]);
     return;
   }
 
   PDMap *pdmap = m_ofs[level]->getPDMap();
 
-  //cout << "=================================" << endl;
-  //cout << "level: " << level << endl;
-  //cout << "=================================" << endl;
-  
   int amt_level_plus1 = pdmap->size();
   for(int i=0; i<amt_level_plus1; i++) {
-    //cout << i << "," << flush;
     result = nodeBox[level]->intersect(pdmap->bx(i), nodeBox[level+1]);
     if(m_full_tree || result)
       solveRecurse(level+1);

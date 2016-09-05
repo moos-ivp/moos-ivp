@@ -51,9 +51,11 @@ Problem::Problem()
   m_maxbox    = 0;
   m_ofnum     = 0;
   m_ofs       = 0;
-  m_epsilon   = 0.0;
   m_silent    = true;
   m_owner_ofs = true;
+
+  m_epsilon   = 0.0;
+  m_thresh    = 100.0;  // By default find global max
 }
 
 //---------------------------------------------------------------
@@ -72,11 +74,32 @@ Problem::~Problem()
 
 //---------------------------------------------------------------
 // Procedure: setDomain
-//   Purpose: 
 
 void Problem::setDomain(IvPDomain g_domain)
 {
   m_domain = g_domain;
+}
+
+//---------------------------------------------------------------
+// Procedure: setThresh
+//   Purpose: o Set the threshold for branching in terms of guaratees
+//              with respect of the globally optimal solution.
+//            o By default the threshold is 100, meaning the returned
+//              solution is guaranteed to be globally optimal.
+//            o A setting of 90 indicates the returned solution is at
+//              least 90% of the globally optimal.
+//            o The settings for this parameter are in the range [0,100]
+//              Out of range values are clipped with no warning.
+//            o This value determines the "epsilon" value. The epsilon
+//              values is based on the current max solution and thresh.
+
+void Problem::setThresh(double thresh)
+{
+  m_thresh = thresh;
+  if(m_thresh < 0)
+    m_thresh = 0;
+  if(m_thresh > 100)
+    m_thresh = 100;
 }
 
 //---------------------------------------------------------------
@@ -134,7 +157,6 @@ void Problem::addOF(IvPFunction *gof)
 
 //---------------------------------------------------------------
 // Procedure: alignOFs
-//   Purpose: 
 
 bool Problem::alignOFs()
 {
@@ -223,7 +245,6 @@ string Problem::getGridConfig(int ix) const
 
 //---------------------------------------------------------------
 // Procedure: getDim
-//   Purpose: 
 
 int Problem::getDim() 
 {
@@ -234,7 +255,6 @@ int Problem::getDim()
 
 //---------------------------------------------------------------
 // Procedure: initialSolution1
-//   Purpose: 
 
 void Problem::initialSolution1()
 {
@@ -261,7 +281,6 @@ void Problem::initialSolution1()
 
 //---------------------------------------------------------------
 // Procedure: initialSolution2
-//   Purpose: 
 
 void Problem::initialSolution2()
 {
@@ -335,7 +354,7 @@ void  Problem::processInitSol(const IvPBox *isolBox)
   if(!m_silent) 
     cout << "initial solution weight: " << weight << endl;
   if(covered)
-    if(m_maxbox==0 || (weight > (m_maxwt + m_epsilon)))
+    if(m_maxbox==0 || (weight > m_maxwt))
       newSolution(weight, isolBox);
 }
 
@@ -357,6 +376,11 @@ void Problem::newSolution(double newMaxWT, const IvPBox *newMaxBox)
     cout << "New Max Weight: " << m_maxwt << endl;
     m_maxbox->print();
   }
+
+  // If the threshold is not 100, then we will adjust the epsilon
+  // dynamically as the solution changes.
+  if(m_thresh != 100) 
+    m_epsilon = ((100.0 / m_thresh) * m_maxwt) - m_maxwt;
 }
 
 //---------------------------------------------------------------

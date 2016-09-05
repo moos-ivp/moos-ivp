@@ -62,6 +62,9 @@ public:    // Virtual Function
   void   sortOFs(bool high_to_low=true);
   void   processInitSol(const IvPBox*);
   void   setEpsilon(double v)    {if(v>=0) m_epsilon=v;}
+  void   setThresh(double);
+
+  double getThresh() const       {return(m_thresh);}
   double getEpsilon()            {return(m_epsilon);}
   double getResult(const std::string&, bool *v=0);
   double getResultVal() const;
@@ -87,7 +90,9 @@ protected:
   IvPFunction** m_ofs;      // array of objective functions
   int           m_ofnum;    // # of objective functions
   bool          m_silent;   // true if no output during solve
-  double        m_epsilon;  // delta threshold for new max weight
+
+  double        m_epsilon;  // thresh for branching, delta above curr max
+  double        m_thresh;   // thresh for branching, pct of global max
 
   IvPDomain     m_domain;
 };

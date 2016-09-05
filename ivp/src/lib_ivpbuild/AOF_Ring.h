@@ -43,10 +43,10 @@ public: // virtuals defined
 public:
   void    print() const;
 
-  IvPBox  getLOC() const    {return(location);}
-  bool    getRPK() const    {return(ringPeak);}
-  double  getRNG() const    {return(range);}
-  double  getBAS() const    {return(base);}
+  IvPBox  getLOC() const    {return(m_location);}
+  bool    getRPK() const    {return(m_ring_peak);}
+  double  getRNG() const    {return(m_range);}
+  double  getBAS() const    {return(m_base);}
 
   unsigned int getRAD() const {return(radius);}
   unsigned int getEXP() const {return(exponent);}
@@ -67,10 +67,10 @@ private:
   unsigned int  dim;
   unsigned int  gradient_type;
 
-  IvPBox  location;
-  bool    ringPeak;  // 1 if pts on ring are peaks (vs. valleys)
-  double  base;
-  double  range;
+  IvPBox  m_location;
+  bool    m_ring_peak;  // 1 if pts on ring are peaks (vs. valleys)
+  double  m_base;
+  double  m_range;
   double  plateau;
   double  gradient_dist;
 

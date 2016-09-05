@@ -192,7 +192,7 @@ void IvPProblem::solveRecurse(int level)
     bool   ok = false;
     double currWT = compactor->maxVal(nodeBox[level], &ok);
     if(ok)
-      if((m_maxbox==NULL) || (currWT > (m_maxwt + m_epsilon)))
+      if((m_maxbox==NULL) || (currWT > m_maxwt))
 	newSolution(currWT, nodeBox[level]);
     return;
   }
@@ -241,7 +241,6 @@ void IvPProblem::solvePost()
 
 //---------------------------------------------------------------
 // Procedure: upperTightBound
-//   Purpose: 
 
 
 #if 0
@@ -256,7 +255,6 @@ double IvPProblem::upperTightBound(int level, IvPBox *box)
 
 //---------------------------------------------------------------
 // Procedure: upperCheapBound
-//   Purpose: 
 
 double IvPProblem::upperCheapBound(int level, IvPBox *box) 
 {
