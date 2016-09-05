@@ -29,11 +29,22 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: clear
+// Procedure: clear()
 
 void XYSeglr::clear()
 {
   m_seglr = Seglr();
+}
+
+//---------------------------------------------------------------
+// Procedure: valid()
+
+bool XYSeglr::valid() const
+{
+  if(m_seglr.size() == 0)
+    return(false);
+  
+  return(true);
 }
 
 //---------------------------------------------------------------

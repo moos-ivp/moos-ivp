@@ -36,6 +36,7 @@ public:
 
   void   setSeglr(Seglr seglr) {m_seglr=seglr;};
   void   clear();
+  bool   valid() const;
   
   unsigned int size() const {return(m_seglr.size());};
 

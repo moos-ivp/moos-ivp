@@ -132,7 +132,8 @@ bool SplitHandler::handleMakeSplitFiles()
     if((varname=="VIEW_POINT")   || (varname=="VIEW_POLYGON") ||
        (varname=="VIEW_SEGLIST") || (varname=="VIEW_CIRCLE")  ||
        (varname=="GRID_INIT")    || (varname=="VIEW_MARKER")  ||
-       (varname=="GRID_DELTA")   || (varname=="VIEW_RANGE_PULSE"))
+       (varname=="GRID_DELTA")   || (varname=="VIEW_SEGLR")   ||
+       (varname=="VIEW_RANGE_PULSE"))
       varname = "VISUALS";
 
     // A measure implemented here to accommodate older alogfile formats where

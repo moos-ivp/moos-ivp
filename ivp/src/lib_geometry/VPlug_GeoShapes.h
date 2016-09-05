@@ -39,6 +39,7 @@
 #include "XYVector.h"
 #include "XYRangePulse.h"
 #include "XYCommsPulse.h"
+#include "XYSeglr.h"
 #include "XYMarker.h"
 #include "ColorPack.h"
 
@@ -58,6 +59,7 @@ public:
 
   void addPolygon(const XYPolygon&);
   void addSegList(const XYSegList&);
+  void addSeglr(const XYSeglr&);
   void addCircle(const XYCircle&, unsigned int drawpts=18);
   void addWedge(const XYWedge&);
   void addHexagon(const XYHexagon&);
@@ -72,6 +74,7 @@ public:
 
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
+  bool addSeglr(const std::string&);
   bool addCircle(const std::string&, unsigned int drawpts=18);
   bool addWedge(const std::string&, unsigned int drawpts=18);
   bool addPoint(const std::string&);
@@ -88,6 +91,7 @@ public:
 
   unsigned int sizePolygons() const    {return(m_polygons.size());}
   unsigned int sizeSegLists() const    {return(m_seglists.size());}
+  unsigned int sizeSeglrs() const      {return(m_seglrs.size());}
   unsigned int sizeCircles() const     {return(m_circles.size());}
   unsigned int sizeWedges() const      {return(m_wedges.size());}
   unsigned int sizeHexagons() const    {return(m_hexagons.size());}
@@ -104,6 +108,7 @@ public:
   std::vector<XYPolygon> getPolygons() const {return(m_polygons);}
   std::vector<XYWedge>   getWedges() const   {return(m_wedges);}
   std::vector<XYSegList> getSegLists() const {return(m_seglists);}
+  std::vector<XYSeglr  > getSeglrs() const   {return(m_seglrs);}
   std::vector<XYArc> getArcs()         const {return(m_arcs);}
   std::vector<XYHexagon> getHexagons() const {return(m_hexagons);}
   std::vector<XYVector>  getVectors() const  {return(m_vectors);}
@@ -118,9 +123,11 @@ public:
 
   XYPolygon& poly(unsigned int i)   {return(m_polygons[i]);}
   XYSegList& segl(unsigned int i)   {return(m_seglists[i]);}
+  XYSeglr&   seglr(unsigned int i)  {return(m_seglrs[i]);}
 
   XYPolygon    getPolygon(unsigned int) const;
   XYSegList    getSegList(unsigned int) const;
+  XYSeglr      getSeglr(unsigned int) const;
 
  protected:
   void updateBounds(double xl, double xh, double yl, double yh);
@@ -130,6 +137,7 @@ public:
   void clearWedges(std::string stype="");
   void clearArcs(std::string stype="");
   void clearSegLists(std::string stype="");
+  void clearSeglrs(std::string stype="");
   void clearHexagons(std::string stype="");
   void clearGrids(std::string  stype="");
   void clearCircles(std::string stype="");
@@ -143,6 +151,7 @@ public:
 protected:
   std::vector<XYPolygon>    m_polygons;
   std::vector<XYSegList>    m_seglists;
+  std::vector<XYSeglr>      m_seglrs;
   std::vector<XYWedge>      m_wedges;
   std::vector<XYArc>        m_arcs;
   std::vector<XYHexagon>    m_hexagons;

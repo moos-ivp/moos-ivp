@@ -100,6 +100,7 @@ void PMV_Viewer::draw()
     vector<XYGrid>    grids   = m_geoshapes_map.getGrids(vnames[i]);
     vector<XYConvexGrid> cgrids = m_geoshapes_map.getConvexGrids(vnames[i]);
     vector<XYSegList> segls   = m_geoshapes_map.getSegLists(vnames[i]);
+    vector<XYSeglr>   seglrs  = m_geoshapes_map.getSeglrs(vnames[i]);
     vector<XYVector>  vectors = m_geoshapes_map.getVectors(vnames[i]);
     vector<XYRangePulse> rng_pulses = m_geoshapes_map.getRangePulses(vnames[i]);
     vector<XYCommsPulse> cms_pulses = m_geoshapes_map.getCommsPulses(vnames[i]);
@@ -111,6 +112,7 @@ void PMV_Viewer::draw()
     drawGrids(grids);
     drawConvexGrids(cgrids);
     drawSegLists(segls);
+    drawSeglrs(seglrs);
     drawCircles(circles, m_curr_time);
     drawPoints(points);
     drawVectors(vectors);

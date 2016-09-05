@@ -56,8 +56,8 @@ bool VPlugPlot::addEvent(const string& var, const string& val, double time)
     m_vplugs[vsize-1].addPolygon(val);
   else if(var == "VIEW_SEGLIST")
     m_vplugs[vsize-1].addSegList(val);
-  //else if(var == "VIEW_SEGLR")
-  //  m_vplugs[vsize-1].addSeglr(val);
+  else if(var == "VIEW_SEGLR")
+    m_vplugs[vsize-1].addSeglr(val);
   else if(var == "VIEW_CIRCLE")
     m_vplugs[vsize-1].addCircle(val);
   else if(var == "GRID_CONFIG")

@@ -36,6 +36,7 @@
 #include "XYConvexGrid.h"
 #include "XYPolygon.h"
 #include "XYSegList.h"
+#include "XYSeglr.h"
 #include "XYCircle.h"
 #include "XYHexagon.h"
 #include "XYRangePulse.h"
@@ -48,6 +49,7 @@
 #include "ColorPack.h"
 #include "BearingLine.h"
 #include "NodeRecord.h"
+#include "Seglr.h"
 
 class MarineViewer : public Fl_Gl_Window
 {
@@ -114,6 +116,9 @@ protected:
   
   void  drawSegLists(const std::vector<XYSegList>&);
   void  drawSegList(const XYSegList&);
+
+  void  drawSeglrs(const std::vector<XYSeglr>&);
+  void  drawSeglr(const XYSeglr&);
 
   void  drawWedges(const std::vector<XYWedge>&);
   void  drawWedge(const XYWedge&);

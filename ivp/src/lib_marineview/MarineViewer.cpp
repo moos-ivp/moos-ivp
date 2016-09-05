@@ -1614,6 +1614,209 @@ void MarineViewer::drawSegList(const XYSegList& segl)
   glPopMatrix();
 }
 
+
+//-------------------------------------------------------------
+// Procedure: drawSeglrs()
+
+void MarineViewer::drawSeglrs(const vector<XYSeglr>& seglrs)
+{
+  // If the viewable parameter is set to false just return. In 
+  // querying the parameter the optional "true" argument means return
+  // true if nothing is known about the parameter.
+  if(!m_geo_settings.viewable("seglrs_viewable_all", "true"))
+    return;
+  
+  for(unsigned int i=0; i<seglrs.size(); i++)
+    if(seglrs[i].active()) 
+      drawSeglr(seglrs[i]); 
+}
+
+//-------------------------------------------------------------
+// Procedure: drawSeglr
+
+void MarineViewer::drawSeglr(const XYSeglr& seglr)
+{
+  ColorPack edge_c("white");  // default if no drawing hint
+  ColorPack vert_c("blue");   // default if no drawing hint
+  ColorPack labl_c("white");  // default if no drawing hint
+  double line_width  = 1;     // default if no drawing hint
+  double vertex_size = 2;     // default if no drawing hint
+  double transparency = 0.5;  // default if no drawing hint
+
+  if(seglr.color_set("label"))          // label_color
+    labl_c = seglr.get_color("label");
+  if(seglr.color_set("vertex"))         // vertex_color
+    vert_c = seglr.get_color("vertex");
+  
+  if(seglr.color_set("edge"))           // edge_color
+    edge_c = seglr.get_color("edge");
+  if(seglr.edge_size_set())             // edge_size
+    line_width = seglr.get_edge_size();
+  if(seglr.vertex_size_set())           // vertex_size
+    vertex_size = seglr.get_vertex_size();
+  if(seglr.transparency_set())          // transparency
+    transparency = seglr.get_transparency();
+  
+  unsigned int vsize = seglr.size();
+
+  unsigned int i, j;
+  double *points = new double[2*vsize];
+
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+  unsigned int pindex = 0;
+  for(i=0; i<vsize; i++) {
+    points[pindex]   = seglr.getVX(i) * pix_per_mtr_x;
+    points[pindex+1] = seglr.getVY(i) * pix_per_mtr_y;
+    pindex += 2;
+  }
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+  
+  // First draw the edges
+  if((vsize >= 2) && edge_c.visible()) {
+    glLineWidth(line_width);
+    glColor4f(edge_c.red(), edge_c.grn(), edge_c.blu(), transparency);
+
+    glBegin(GL_LINE_STRIP);
+    for(i=0; i<vsize*2; i=i+2) {
+      glVertex2f(points[i], points[i+1]);
+    }
+    glEnd();
+    glLineWidth(1.0);
+  }
+
+  // If the seglr has just a single point, draw it bigger (x 1.5)
+  if(vert_c.visible()) {
+    if(vsize==1) {
+      glEnable(GL_POINT_SMOOTH);
+      glPointSize(vertex_size * 1.5);
+      // Draw the vertices with color coding for the first and last
+      
+      glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu());
+      glBegin(GL_POINTS);
+      glVertex2f(points[0], points[1]);
+      glEnd();
+      glDisable(GL_POINT_SMOOTH);
+    }
+    else {
+      if(vertex_size > 0) {
+	glPointSize(vertex_size);
+	// Draw the vertices in between the first and last ones
+	glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu());
+	glEnable(GL_POINT_SMOOTH);
+	glBegin(GL_POINTS);
+	for(j=0; j<vsize; j++) {
+	  glVertex2f(points[(j*2)], points[(j*2)+1]);
+	}
+	glEnd();
+	glDisable(GL_POINT_SMOOTH);
+      }
+    }
+  }
+
+  //----------------------------------------------------------------
+  // Draw the vector
+  double *vpoints = new double[8];
+
+  //double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  //double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+
+  double vang  = seglr.getRayAngle();
+  double ovang = angle360(vang-180);
+
+  double vmag  = 3;
+  double vbase_x = seglr.getRayBaseX();
+  double vbase_y = seglr.getRayBaseY();
+
+  // First determine the point on the end of the vector
+  double hx, hy;
+  projectPoint(vang, vmag, vbase_x, vbase_y, hx, hy);
+
+  double head_size = 0.5;
+  if(head_size < 0)
+    head_size = 4.0;
+
+  // Then determine the head points
+  double hx1, hx2, hy1, hy2;
+  projectPoint(ovang+30, head_size, hx, hy, hx1, hy1);
+  projectPoint(ovang-30, head_size, hx, hy, hx2, hy2);
+  
+  vpoints[0]   = vbase_x * pix_per_mtr_x;
+  vpoints[1]   = vbase_y * pix_per_mtr_y;
+  vpoints[2]   = hx * pix_per_mtr_x;
+  vpoints[3]   = hy * pix_per_mtr_y;
+
+  vpoints[4]   = hx1 * pix_per_mtr_x;
+  vpoints[5]   = hy1 * pix_per_mtr_y;
+  vpoints[6]   = hx2 * pix_per_mtr_x;
+  vpoints[7]   = hy2 * pix_per_mtr_y;
+
+  glColor4f(edge_c.red(), edge_c.grn(), edge_c.blu(), transparency);
+  glLineWidth(line_width);
+  glBegin(GL_LINE_STRIP);
+  glVertex2f(vpoints[0], vpoints[1]);
+  glVertex2f(vpoints[2], vpoints[3]);
+  glLineWidth(1.0);
+  glEnd();
+
+  // Then draw the vector head
+  glBegin(GL_POLYGON);
+  glVertex2f(vpoints[4], vpoints[5]);
+  glVertex2f(vpoints[6], vpoints[7]);
+  glVertex2f(vpoints[2], vpoints[3]);
+  glEnd();
+
+  glLineWidth(1.0);
+  
+  //----------------------------------------------------------------
+  // Draw the labels unless either the viewer has it shut off OR if 
+  // the publisher of the seglist requested it not to be viewed, by
+  // setting the color to be "invisible".
+  
+  bool draw_labels = m_geo_settings.viewable("seglr_viewable_labels");
+  draw_labels=false;
+  if(draw_labels && labl_c.visible()) {
+    double cx = seglr.getAvgX() * m_back_img.get_pix_per_mtr_x();
+    //double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
+    double my = seglr.getMaxY() * m_back_img.get_pix_per_mtr_y();
+    glTranslatef(cx, my, 0);
+    
+    glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+    gl_font(1, 10);
+    string plabel = seglr.get_msg();
+
+    plabel = doubleToString(transparency,2);
+
+    if(plabel == "")
+      plabel = seglr.get_label();
+    if(plabel != "") {
+      glRasterPos3f(0, 0, 0);
+      gl_draw(plabel.c_str());
+    }
+  }
+
+  delete [] points;
+  glFlush();
+  glPopMatrix();
+}
+
+
+
 //-------------------------------------------------------------
 // Procedure: drawVectors()
 

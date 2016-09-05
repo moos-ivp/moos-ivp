@@ -29,6 +29,10 @@
 
 using namespace std;
 
+//-----------------------------------------------------------------
+// Procedure: string2Seglr
+//   Example: "pts={0,0:5,5:20,5}, ray=45"
+
 XYSeglr string2Seglr(const string& str)
 {
   XYSeglr null_seglr;

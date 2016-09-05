@@ -26,6 +26,7 @@
 #include "VPlug_GeoShapes.h"
 #include "MBUtils.h"
 #include "XYFormatUtilsSegl.h"
+#include "XYFormatUtilsSeglr.h"
 #include "XYFormatUtilsPoly.h"
 #include "XYFormatUtilsPoint.h"
 #include "XYFormatUtilsCircle.h"
@@ -58,6 +59,7 @@ void VPlug_GeoShapes::clear(string shape, string stype)
   if((shape == "") && (stype == "")) {
     m_polygons.clear();
     m_seglists.clear();
+    m_seglrs.clear();
     m_hexagons.clear();
     m_grids.clear();
     m_circles.clear();
@@ -76,7 +78,12 @@ void VPlug_GeoShapes::clear(string shape, string stype)
     clearPolygons(stype);
   else if(shape == "points")
     clearPoints(stype);
+  else if(shape == "seglists")
+    clearSegLists(stype);
+  else if(shape == "seglrs")
+    clearSeglrs(stype);
 
+  
   updateBounds();
 }
 
@@ -90,6 +97,8 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
     return(addPolygon(value));
   else if((param ==  "segl") || (param == "seglist"))
     return(addSegList(value));
+  else if(param ==  "seglr")
+    return(addSeglr(value));
   else if((param ==  "marker") || (param == "view_marker"))
     return(addMarker(value));
   else if((param ==  "grid") || (param == "xygrid"))
@@ -173,6 +182,32 @@ void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
     }
   }
   m_seglists.push_back(new_segl);  
+}
+
+//-----------------------------------------------------------
+// Procedure: addSeglr
+
+void VPlug_GeoShapes::addSeglr(const XYSeglr& new_seglr)
+{
+  if(new_seglr.size() > 0) {
+    updateBounds(new_seglr.getMinX(), new_seglr.getMaxX(), 
+		 new_seglr.getMinY(), new_seglr.getMaxY());
+    
+  }
+
+  string new_label = new_seglr.get_label();
+  if(new_label == "") {
+    m_seglrs.push_back(new_seglr);
+    return;
+  }
+  
+  for(unsigned int i=0; i<m_seglrs.size(); i++) {
+    if(m_seglrs[i].get_label() == new_label) {
+      m_seglrs[i] = new_seglr;
+      return;
+    }
+  }
+  m_seglrs.push_back(new_seglr);
 }
 
 //-----------------------------------------------------------
@@ -294,7 +329,7 @@ unsigned int VPlug_GeoShapes::sizeTotalShapes() const
 	 sizePoints()      + sizeVectors()  + 
 	 sizeGrids()       + sizeConvexGrids() + 
 	 sizeMarkers()     + sizeRangePulses() + 
-	 sizeCommsPulses());
+	 sizeSeglrs()      + sizeCommsPulses());
 }
 
 //-----------------------------------------------------------
@@ -523,6 +558,17 @@ bool VPlug_GeoShapes::addSegList(const string& segl_str)
   return(true);
 }
 
+//-----------------------------------------------------------
+// Procedure: addSeglr
+
+bool VPlug_GeoShapes::addSeglr(const string& seglr_str)
+{
+  XYSeglr new_seglr = string2Seglr(seglr_str);
+  if((new_seglr.size()==0) && new_seglr.active())
+    return(false);
+  addSeglr(new_seglr);
+  return(true);
+}
 
 //-----------------------------------------------------------
 // Procedure: addPoint
@@ -600,6 +646,19 @@ XYSegList VPlug_GeoShapes::getSegList(unsigned int index) const
     return(m_seglists[index]);
 }
 
+//-------------------------------------------------------------
+// Procedure: getSeglr(int)
+
+XYSeglr VPlug_GeoShapes::getSeglr(unsigned int index) const
+{
+  if(index >= m_seglrs.size()) {
+    XYSeglr null_seglr;
+    return(null_seglr);
+  }
+  else
+    return(m_seglrs[index]);
+}
+
 //-----------------------------------------------------------
 // Procedure: updateBounds()
 
@@ -636,6 +695,13 @@ void VPlug_GeoShapes::updateBounds()
       XYSegList segl = m_seglists[i];
       updateBounds(segl.get_min_x(), segl.get_max_x(),
 		   segl.get_min_y(), segl.get_max_y());
+    }
+  }
+  for(i=0; i<m_seglrs.size(); i++) {
+    if(m_seglrs[i].size() > 0) {
+      XYSeglr seglr = m_seglrs[i];
+      updateBounds(seglr.getMinX(), seglr.getMaxX(),
+		   seglr.getMinY(), seglr.getMaxY());
     }
   }
   for(i=0; i<m_hexagons.size(); i++) {
@@ -710,6 +776,41 @@ void VPlug_GeoShapes::clearPolygons(string stype)
   m_polygons = new_polygons;
 }
 
+//-----------------------------------------------------------
+// Procedure: clearSegLists
+
+void VPlug_GeoShapes::clearSegLists(string stype)
+{
+  if(stype == "") {
+    m_seglists.clear();
+    return;
+  }
+
+  vector<XYSegList> new_segls;
+  for(unsigned int i=0; i<m_seglists.size(); i++)  {
+    if(typeMatch(&(m_seglists[i]), stype))
+      new_segls.push_back(m_seglists[i]);
+  } 
+  m_seglists = new_segls;
+}
+
+//-----------------------------------------------------------
+// Procedure: clearSeglrs
+
+void VPlug_GeoShapes::clearSeglrs(string stype)
+{
+  if(stype == "") {
+    m_seglrs.clear();
+    return;
+  }
+
+  vector<XYSeglr> new_seglrs;
+  for(unsigned int i=0; i<m_seglrs.size(); i++)  {
+    if(typeMatch(&(m_seglrs[i]), stype))
+      new_seglrs.push_back(m_seglrs[i]);
+  } 
+  m_seglrs = new_seglrs;
+}
 
 //-----------------------------------------------------------
 // Procedure: clearWedges

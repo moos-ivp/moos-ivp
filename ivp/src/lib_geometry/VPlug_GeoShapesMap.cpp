@@ -92,6 +92,8 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
     handled = m_geoshapes_map[vname].addPolygon(value);
   else if(param == "VIEW_SEGLIST")
     handled = m_geoshapes_map[vname].addSegList(value);
+  else if(param == "VIEW_SEGLR")
+    handled = m_geoshapes_map[vname].addSeglr(value);
   else if(param == "VIEW_WEDGE")
     handled = m_geoshapes_map[vname].addWedge(value);
   else if(param == "VIEW_VECTOR")
@@ -141,6 +143,10 @@ vector<XYPolygon> VPlug_GeoShapesMap::getPolygons(const string& vname)
 vector<XYSegList> VPlug_GeoShapesMap::getSegLists(const string& vname)
 {
   return(m_geoshapes_map[vname].getSegLists());
+}
+vector<XYSeglr> VPlug_GeoShapesMap::getSeglrs(const string& vname)
+{
+  return(m_geoshapes_map[vname].getSeglrs());
 }
 vector<XYWedge> VPlug_GeoShapesMap::getWedges(const string& vname)
 {
@@ -208,6 +214,8 @@ unsigned int VPlug_GeoShapesMap::size(const string& gtype,
 	return_size += p->second.sizeWedges();
       else if(gtype == "seglists")
 	return_size += p->second.sizeSegLists();
+      else if(gtype == "seglrs")
+	return_size += p->second.sizeSeglrs();
       else if(gtype == "total_shapes")
 	return_size += p->second.sizeTotalShapes();
       else if(gtype == "vectors")
