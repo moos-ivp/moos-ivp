@@ -29,11 +29,50 @@
 using namespace std;
 
 //---------------------------------------------------------------
+// Constructor
+
+XYSeglr::XYSeglr()
+{
+  m_raylen = 5;   // length of the rendered ray in meters
+  m_headsz = 3;   // Size of the rendered head in meters
+}
+
+//---------------------------------------------------------------
+// Constructor
+
+XYSeglr::XYSeglr(Seglr seglr)
+{
+  m_seglr = seglr;
+  m_raylen = 5;   // length of the rendered ray in meters
+  m_headsz = 3;   // Size of the rendered head in meters  
+}
+
+//---------------------------------------------------------------
 // Procedure: clear()
 
 void XYSeglr::clear()
 {
   m_seglr = Seglr();
+}
+
+//---------------------------------------------------------------
+// Procedure: setRayLen()
+
+void XYSeglr::setRayLen(double len)
+{
+  m_raylen = len;
+  if(m_raylen < 0)
+    m_raylen = 0;
+}
+
+//---------------------------------------------------------------
+// Procedure: setHeadSize()
+
+void XYSeglr::setHeadSize(double val)
+{
+  m_headsz = val;
+  if(m_headsz < 0)
+    m_headsz = 0;
 }
 
 //---------------------------------------------------------------
@@ -77,7 +116,7 @@ double XYSeglr::getRayBaseY() const
 //   Purpose: Get a string specification of the seglr. We set 
 //            the vertex precision to be at the integer by default.
 
-string XYSeglr::getSpec(int precision) const
+string XYSeglr::get_spec(int precision) const
 {
   string spec = m_seglr.getSpec(precision);
 
@@ -89,6 +128,11 @@ string XYSeglr::getSpec(int precision) const
     spec += obj_spec;
   }
 
+  if(spec != "")
+    spec += ",";
+  spec += "raylen=" + doubleToStringX(m_raylen,2);
+  spec += ",headsz=" + doubleToStringX(m_headsz,1);
+  
   return(spec);
 }
 

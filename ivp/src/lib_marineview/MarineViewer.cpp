@@ -1739,15 +1739,18 @@ void MarineViewer::drawSeglr(const XYSeglr& seglr)
   double vang  = seglr.getRayAngle();
   double ovang = angle360(vang-180);
 
-  double vmag  = 3;
+  double vmag  = seglr.getRayLen();
   double vbase_x = seglr.getRayBaseX();
   double vbase_y = seglr.getRayBaseY();
 
+  cout << "vbase_x: " << vbase_x << endl;
+  cout << "vbase_y: " << vbase_y << endl;
+  
   // First determine the point on the end of the vector
   double hx, hy;
   projectPoint(vang, vmag, vbase_x, vbase_y, hx, hy);
 
-  double head_size = 0.5;
+  double head_size = seglr.getHeadSize();
   if(head_size < 0)
     head_size = 4.0;
 

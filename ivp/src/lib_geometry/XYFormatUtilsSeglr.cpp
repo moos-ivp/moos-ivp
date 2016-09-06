@@ -40,10 +40,12 @@ XYSeglr string2Seglr(const string& str)
 
   vector<double> xpts;
   vector<double> ypts;
-  double ray_angle = 0;
-  
-  string rest = str;
 
+  double ray_angle = 0;
+  string rest = str;
+  double ray_len = -1;   
+  double head_size = -1;
+  
   while(rest != "") {
     string left = biteStringX(rest, '=');
 
@@ -87,6 +89,14 @@ XYSeglr string2Seglr(const string& str)
       double angle = atof(right.c_str());
       ray_angle = angle;
     }      
+    else if(left == "raylen") {
+      string right = biteStringX(rest, ',');
+      ray_len = atof(right.c_str());
+    }      
+    else if(left == "headsz") {
+      string right = biteStringX(rest, ',');
+      head_size = atof(right.c_str());
+    }      
     else {
       string right = biteStringX(rest, ',');
       new_xy_seglr.set_param(left, right);
@@ -99,7 +109,11 @@ XYSeglr string2Seglr(const string& str)
   seglr.setRayAngle(ray_angle);
   
   new_xy_seglr.setSeglr(seglr); 
-
+  if(ray_len >= 0)
+    new_xy_seglr.setRayLen(ray_len);
+  if(head_size >= 0)
+    new_xy_seglr.setHeadSize(head_size);
+  
   return(new_xy_seglr);
 }
 

@@ -30,11 +30,14 @@
 
 class XYSeglr : public XYObject {
 public:
-  XYSeglr() {};
-  XYSeglr(Seglr seglr) {m_seglr=seglr;};
+  XYSeglr();
+  XYSeglr(Seglr seglr);
   virtual ~XYSeglr() {};
 
   void   setSeglr(Seglr seglr) {m_seglr=seglr;};
+  void   setRayLen(double);
+  void   setHeadSize(double);
+
   void   clear();
   bool   valid() const;
   
@@ -54,11 +57,17 @@ public:
 
   double getAvgX() const {return((getMaxX()-getMinX())/2);};
   double getAvgY() const {return((getMaxY()-getMinY())/2);};
+
+  double getRayLen() const   {return(m_raylen);}
+  double getHeadSize() const {return(m_headsz);}
   
-  std::string getSpec(int vertex_precision=1) const;
+  std::string get_spec(int vertex_precision=1) const;
 
 protected:
   Seglr m_seglr;
+
+  double m_raylen;  // length of the rendered ray in meters
+  double m_headsz;  // Size of the rendered head in meters
 };
 
 #endif
