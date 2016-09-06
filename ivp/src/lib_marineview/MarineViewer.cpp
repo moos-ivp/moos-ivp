@@ -1792,21 +1792,21 @@ void MarineViewer::drawSeglr(const XYSeglr& seglr)
   // setting the color to be "invisible".
   
   bool draw_labels = m_geo_settings.viewable("seglr_viewable_labels");
-  draw_labels=false;
   if(draw_labels && labl_c.visible()) {
-    double cx = seglr.getAvgX() * m_back_img.get_pix_per_mtr_x();
+
+    double cx, cy;
+    projectPoint(vang, head_size+4, hx, hy, cx, cy);
+    cx *= m_back_img.get_pix_per_mtr_x();
+    cy *= m_back_img.get_pix_per_mtr_x();
+
+    //double cx = seglr.getAvgX() * m_back_img.get_pix_per_mtr_x();
     //double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
-    double my = seglr.getMaxY() * m_back_img.get_pix_per_mtr_y();
-    glTranslatef(cx, my, 0);
+    //double my = seglr.getMaxY() * m_back_img.get_pix_per_mtr_y();
+    glTranslatef(cx, cy, 0);
     
     glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
     gl_font(1, 10);
     string plabel = seglr.get_msg();
-
-    plabel = doubleToString(transparency,2);
-
-    if(plabel == "")
-      plabel = seglr.get_label();
     if(plabel != "") {
       glRasterPos3f(0, 0, 0);
       gl_draw(plabel.c_str());
