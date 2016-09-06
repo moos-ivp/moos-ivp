@@ -31,7 +31,7 @@ using namespace std;
 
 //-----------------------------------------------------------------
 // Procedure: string2Seglr
-//   Example: "pts={0,0:5,5:20,5}, ray=45"
+//   Example: "pts={0,0:5,5:20,5},ray=45,ray_len=10,head_size=3"
 
 XYSeglr string2Seglr(const string& str)
 {
@@ -89,11 +89,11 @@ XYSeglr string2Seglr(const string& str)
       double angle = atof(right.c_str());
       ray_angle = angle;
     }      
-    else if(left == "raylen") {
+    else if(left == "ray_len") {
       string right = biteStringX(rest, ',');
       ray_len = atof(right.c_str());
     }      
-    else if(left == "headsz") {
+    else if(left == "head_size") {
       string right = biteStringX(rest, ',');
       head_size = atof(right.c_str());
     }      

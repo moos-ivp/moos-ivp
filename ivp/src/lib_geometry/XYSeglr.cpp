@@ -130,8 +130,8 @@ string XYSeglr::get_spec(int precision) const
 
   if(spec != "")
     spec += ",";
-  spec += "raylen=" + doubleToStringX(m_raylen,2);
-  spec += ",headsz=" + doubleToStringX(m_headsz,1);
+  spec += "ray_len=" + doubleToStringX(m_raylen,2);
+  spec += ",head_size=" + doubleToStringX(m_headsz,1);
   
   return(spec);
 }

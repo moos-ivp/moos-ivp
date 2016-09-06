@@ -133,6 +133,8 @@ void help_message()
   cout << "                                                               " << endl;
   cout << "  --seglist_viewable_all=true/false                            " << endl;
   cout << "  --seglist_viewable_labels=true/false                         " << endl;
+  cout << "  --seglr_viewable_all=true/false                              " << endl;
+  cout << "  --seglr_viewable_labels=true/false                           " << endl;
   cout << "  --point_viewable_all=true/false                              " << endl;
   cout << "  --point_viewable_labels=true/false                           " << endl;
   cout << "  --vector_viewable_all=true/false                             " << endl;

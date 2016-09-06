@@ -1623,7 +1623,7 @@ void MarineViewer::drawSeglrs(const vector<XYSeglr>& seglrs)
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the optional "true" argument means return
   // true if nothing is known about the parameter.
-  if(!m_geo_settings.viewable("seglrs_viewable_all", "true"))
+  if(!m_geo_settings.viewable("seglr_viewable_all", "true"))
     return;
   
   for(unsigned int i=0; i<seglrs.size(); i++)
@@ -2732,9 +2732,4 @@ void MarineViewer::drawTextX(double px, double py, const string& text,
   glFlush();
   glPopMatrix();
 }
-
-
-
-
-
 

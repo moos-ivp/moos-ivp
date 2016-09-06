@@ -43,6 +43,8 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   m_viewable_map["polygon_viewable_labels"]  = true;
   m_viewable_map["seglist_viewable_all"]     = true;
   m_viewable_map["seglist_viewable_labels"]  = true;
+  m_viewable_map["seglr_viewable_all"]       = true;
+  m_viewable_map["seglr_viewable_labels"]    = true;
   m_viewable_map["drop_point_viewable_all"]  = true;
   m_viewable_map["marker_viewable_all"]      = true;
   m_viewable_map["marker_viewable_labels"]   = true;
@@ -93,6 +95,8 @@ bool VPlug_GeoSettings::setParam(string param, string value)
      (param == "polygon_viewable_labels")  ||
      (param == "seglist_viewable_all")     ||
      (param == "seglist_viewable_labels")  ||
+     (param == "seglr_viewable_all")       ||
+     (param == "seglr_viewable_labels")    ||
      (param == "drop_point_viewable_all")  ||
      (param == "marker_viewable_all")      ||
      (param == "marker_viewable_labels")   ||
@@ -457,6 +461,8 @@ string VPlug_GeoSettings::strvalue(string attr)
      (attr == "polygon_viewable_labels")  ||
      (attr == "seglist_viewable_all")     ||
      (attr == "seglist_viewable_labels")  ||
+     (attr == "seglr_viewable_all")       ||
+     (attr == "seglr_viewable_labels")    ||
      (attr == "point_viewable_all")       ||
      (attr == "point_viewable_labels")    ||
      (attr == "vector_viewable_all")      ||

@@ -176,6 +176,8 @@ bool LogViewLauncher::handleParamsGUI(string argi)
 {
   if(strBegins(argi, "--seglist_viewable_all=")     ||
      strBegins(argi, "--seglist_viewable_labels=")  ||
+     strBegins(argi, "--seglr_viewable_all=")       ||
+     strBegins(argi, "--seglr_viewable_labels=")    ||
      strBegins(argi, "--point_viewable_all=")       ||
      strBegins(argi, "--point_viewable_labels=")    ||
      strBegins(argi, "--vector_viewable_all=")      ||

@@ -103,7 +103,6 @@ void MarineGUI::addGeoAttrMenu()
   m_menubar->add("GeoAttr/Polygons/    Toggle Polygon Labels",   'P', (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)162, FL_MENU_DIVIDER);
 
   // --------------------------------- SegLists
-
   m_menubar->add("GeoAttr/SegLists/seglist_viewable_all=true",   0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)250, FL_MENU_RADIO|FL_MENU_VALUE);
   m_menubar->add("GeoAttr/SegLists/seglist_viewable_all=false",  0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)251, FL_MENU_RADIO);
   m_menubar->add("GeoAttr/SegLists/    Toggle SegLists",       's', (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)252, FL_MENU_DIVIDER);
@@ -111,6 +110,15 @@ void MarineGUI::addGeoAttrMenu()
   m_menubar->add("GeoAttr/SegLists/seglist_viewable_labels=true",   0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)260, FL_MENU_RADIO|FL_MENU_VALUE);
   m_menubar->add("GeoAttr/SegLists/seglist_viewable_labels=false",  0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)261, FL_MENU_RADIO);
   m_menubar->add("GeoAttr/SegLists/    Toggle SegList Labels",    'S', (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)262, FL_MENU_DIVIDER);
+
+  // --------------------------------- Seglrs
+  m_menubar->add("GeoAttr/Seglrs/seglr_viewable_all=true",   0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)270, FL_MENU_RADIO|FL_MENU_VALUE);
+  m_menubar->add("GeoAttr/Seglrs/seglr_viewable_all=false",  0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)271, FL_MENU_RADIO);
+  m_menubar->add("GeoAttr/Seglrs/    Toggle Seglrs",       '%', (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)272, FL_MENU_DIVIDER);
+
+  m_menubar->add("GeoAttr/Seglrs/seglr_viewable_labels=true",   0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)280, FL_MENU_RADIO|FL_MENU_VALUE);
+  m_menubar->add("GeoAttr/Seglrs/seglr_viewable_labels=false",  0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)281, FL_MENU_RADIO);
+  m_menubar->add("GeoAttr/Seglrs/    Toggle Seglr Labels", 0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)282, FL_MENU_DIVIDER);
 
   // --------------------------------- Points
   m_menubar->add("GeoAttr/Points/point_viewable_all=true",  0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)550, FL_MENU_RADIO|FL_MENU_VALUE);
@@ -530,7 +538,6 @@ inline void MarineGUI::cb_SetGeoAttr_i(int v) {
   else if(v==162) setMenuAttrib("GeoAttr/Polygons", "polygon_viewable_labels", "toggle");
 
   //---------------------------------- SegLists
-
   else if(v==250) m_mviewer->setParam("seglist_viewable_all", "on");
   else if(v==251) m_mviewer->setParam("seglist_viewable_all", "off");
   else if(v==252) setMenuAttrib("GeoAttr/SegLists", "seglist_viewable_all", "toggle");
@@ -538,6 +545,15 @@ inline void MarineGUI::cb_SetGeoAttr_i(int v) {
   else if(v==260) m_mviewer->setParam("seglist_viewable_labels", "on");
   else if(v==261) m_mviewer->setParam("seglist_viewable_labels", "off");
   else if(v==262) setMenuAttrib("GeoAttr/SegLists", "seglist_viewable_labels", "toggle");
+
+  //---------------------------------- Seglrs
+  else if(v==270) m_mviewer->setParam("seglr_viewable_all", "on");
+  else if(v==271) m_mviewer->setParam("seglr_viewable_all", "off");
+  else if(v==272) setMenuAttrib("GeoAttr/Seglrs", "seglr_viewable_all", "toggle");
+
+  else if(v==280) m_mviewer->setParam("seglr_viewable_labels", "on");
+  else if(v==281) m_mviewer->setParam("seglr_viewable_labels", "off");
+  else if(v==282) setMenuAttrib("GeoAttr/SegLists", "seglr_viewable_labels", "toggle");
 
   //---------------------------------- Grids
 
