@@ -306,10 +306,10 @@ void Common_IPFViewer::resetRadVisuals()
   if(h() < min_extent)
     min_extent = h();
 
-  cout << "--------------------------------------------" << endl;
-  cout << "       w(): " << w() << endl;
-  cout << "       h(): " << h() << endl;
-  cout << "min_extent: " << min_extent << endl;
+  //cout << "--------------------------------------------" << endl;
+  //cout << "       w(): " << w() << endl;
+  //cout << "       h(): " << h() << endl;
+  //cout << "min_extent: " << min_extent << endl;
   
   m_rad_extent = min_extent;
 

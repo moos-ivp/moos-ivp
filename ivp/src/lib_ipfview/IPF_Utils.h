@@ -30,9 +30,9 @@
 #include "IvPFunction.h"
 #include "AOF.h"
 
-QuadSet  buildQuadSetFromIPF(IvPFunction*);
+QuadSet  buildQuadSetFromIPF(IvPFunction*, bool dense=false);
 
-QuadSet  buildQuadSet2DHSFromIPF(IvPFunction*);
+QuadSet  buildQuadSetDense2DFromIPF(IvPFunction*);
 
 QuadSet  buildQuadSet2DFromIPF(IvPFunction*);
 QuadSet  buildQuadSet1DFromIPF(IvPFunction*, std::string);

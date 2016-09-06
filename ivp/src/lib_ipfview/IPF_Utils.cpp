@@ -30,8 +30,9 @@ using namespace std;
 //-------------------------------------------------------------
 // Procedure: buildQuadSetFromIPF
 
-QuadSet buildQuadSetFromIPF(IvPFunction *ipf)
+QuadSet buildQuadSetFromIPF(IvPFunction *ipf, bool dense)
 {
+  cout << "In buildQuadSetFromIPF() " << endl;
   QuadSet null_quadset;
   if(!ipf)
     return(null_quadset);
@@ -42,12 +43,12 @@ QuadSet buildQuadSetFromIPF(IvPFunction *ipf)
   bool crs_spd_ipf = false;
   if(ivp_domain.hasDomain("course") && ivp_domain.hasDomain("speed"))
     crs_spd_ipf = true;
-  crs_spd_ipf = false;
+  //crs_spd_ipf = false;
   
   if(dim == 1)
     return(buildQuadSet1DFromIPF(ipf, "hello_source"));
   else if((ipf->getDim() == 2) && crs_spd_ipf)
-    return(buildQuadSet2DHSFromIPF(ipf));
+    return(buildQuadSetDense2DFromIPF(ipf));
   else if(ipf->getDim() == 2)
     return(buildQuadSet2DFromIPF(ipf));
 
@@ -65,11 +66,11 @@ QuadSet buildQuadSet1DFromIPF(IvPFunction *ipf, string source)
 
 
 //-------------------------------------------------------------
-// Procedure: buildQuadSet2DHSFromIPF
-//      Note: For functions defined only over course or speed, we rely
-//            on the caller to "expand" the function before calling.
+// Procedure: buildQuadSetDense2DFromIPF
+//      Note: If the function is defined over course and speed, we
+//            ensure that the first dimension (0) is course.
 
-QuadSet buildQuadSet2DHSFromIPF(IvPFunction *ipf)
+QuadSet buildQuadSetDense2DFromIPF(IvPFunction *ipf)
 {
   QuadSet null_quadset;
 
@@ -79,26 +80,34 @@ QuadSet buildQuadSet2DHSFromIPF(IvPFunction *ipf)
     return(null_quadset);
   
   IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
-  
-  if(!ivp_domain.hasDomain("course") || !ivp_domain.hasDomain("speed"))
+  if(ivp_domain.size() != 2)
     return(null_quadset);
-    
+
   //===========================================================
   // Part 2: Build the cache of values
-  int crs_ix = ivp_domain.getIndex("course");
-  int spd_ix = ivp_domain.getIndex("speed");
-  unsigned int crs_pts = ivp_domain.getVarPoints("course");
-  unsigned int spd_pts = ivp_domain.getVarPoints("speed");
+  int x_ix = 0;
+  int y_ix = 1;
+  unsigned int x_pts = ivp_domain.getVarPoints(0);
+  unsigned int y_pts = ivp_domain.getVarPoints(1);
+
+  // If this function is over course and speed, then make sure dimension 
+  // zero, aka the x axis, is course and the other dimension is speed.
+  if(ivp_domain.hasDomain("course") && ivp_domain.hasDomain("speed")) {
+    x_ix = ivp_domain.getIndex("course");
+    y_ix = ivp_domain.getIndex("speed");
+    x_pts = ivp_domain.getVarPoints("course");
+    y_pts = ivp_domain.getVarPoints("speed");
+  }
 
   // Create cache to hold the sample results
   vector<vector<double> > vals;
 
-  IvPBox sbox(ivp_domain.size());
-  for(unsigned int i=0; i<crs_pts; i++) {
+  IvPBox sbox(2);
+  for(unsigned int i=0; i<x_pts; i++) {
     vector<double> ivector;
-    sbox.setPTS(crs_ix, i, i);
-    for(unsigned int j=0; j<spd_pts; j++) {
-      sbox.setPTS(spd_ix, j, j);
+    sbox.setPTS(x_ix, i, i);
+    for(unsigned int j=0; j<y_pts; j++) {
+      sbox.setPTS(y_ix, j, j);
       double pval = ipf->getPDMap()->evalPoint(&sbox);
       ivector.push_back(pval);
     }
@@ -109,6 +118,7 @@ QuadSet buildQuadSet2DHSFromIPF(IvPFunction *ipf)
   // Part 3: Build the Quads from the Cache
 
   vector<Quad3D> quads = buildQuadsFromCache(vals);
+  cout << "total Quads: " << quads.size() << endl;
 
   //===========================================================
   // Part 4: Assemble the QuadSet
@@ -122,7 +132,6 @@ QuadSet buildQuadSet2DHSFromIPF(IvPFunction *ipf)
   quadset.resetMinMaxVals();
   return(quadset);
 }
-
 
 //-------------------------------------------------------------
 // Procedure: buildQuadsFromCache()
