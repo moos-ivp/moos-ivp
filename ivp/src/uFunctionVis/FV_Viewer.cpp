@@ -52,7 +52,7 @@ void FV_Viewer::resetQuadSet()
 
   resetRadVisuals();
 
-  m_draw_pclines = true;
+  //m_draw_pclines = true;
   m_quadset.normalize(0, 100);
   m_quadset.applyColorMap(m_color_map);	
   m_quadset.applyColorIntensity(m_intensity);
