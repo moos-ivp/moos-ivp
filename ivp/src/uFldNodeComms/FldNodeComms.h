@@ -57,6 +57,7 @@ class FldNodeComms : public AppCastingMOOSApp
   void distributeNodeMessageInfo(const std::string& uname);
   void distributeNodeMessageInfo(std::string src, NodeMessage msg);
   
+  bool meetsDropPercentage();
   bool meetsRangeThresh(const std::string& v1, const std::string& v2);
   bool meetsCriticalRangeThresh(const std::string&, const std::string&);
   void postViewCommsPulse(const std::string& v1, 
@@ -78,6 +79,7 @@ class FldNodeComms : public AppCastingMOOSApp
   double  m_default_earange;
   double  m_min_stealth;
   double  m_max_earange;
+  double  m_drop_pct;
 
   // The duration in seconds associated the comms pulses posted. A 
   // duration of zero means no pulses are to be posted.

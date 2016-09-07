@@ -4,6 +4,10 @@
 /*    FILE: FldNodeComms.cpp                                     */
 /*    DATE: Dec 4th 2011                                         */
 /*                                                               */
+/*    Edited by: Stephanie Kemna                                 */
+/*    DATE: Jul 15, 2016                                         */
+/*    Purpose: adding in probabilistic dropping of messages      */
+/*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
 /* MOOS-IvP is free software: you can redistribute it and/or     */
@@ -53,6 +57,9 @@ FldNodeComms::FldNodeComms()
   m_stale_time       = 5.0;
   m_min_msg_interval = 30.0;
   m_max_msg_length   = 1000;    // zero means unlimited length
+
+  m_drop_pct = 0; // percentage of messages that should be dropped
+  srand((int)time(0));// seed the random number generator
 
   m_verbose          = false;
   m_debug            = false;
@@ -212,6 +219,8 @@ bool FldNodeComms::OnStartUp()
       handled = setBooleanOnString(m_view_node_rpt_pulses, value);
     else if(param == "DEBUG") 
       handled = setBooleanOnString(m_debug, value);
+    else if(param == "DROP_PERCENTAGE") 
+      handled = setPosDoubleOnString(m_drop_pct, value);
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -427,6 +436,11 @@ void FldNodeComms::distributeNodeReportInfo(const string& uname)
 	msg_send = false;
     }
     
+    // Criteria #5: randomly drop messages, to probabilistically let 
+    //              all but drop percentage through
+    if(msg_send && meetsDropPercentage())
+      msg_send = false;
+
     // Extra Criteria: If otherwise not sending, check to see if nodes
     // are within "critical" range. If so send report regardless of 
     // anything else - in the spirit of safety!
@@ -570,6 +584,11 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
       msg_send = false;
     }
 
+    // Criteria #4: randomly drop messages, to probabilistically let 
+    //              all but drop percentage through
+    if(msg_send && meetsDropPercentage())
+      msg_send = false;
+
     if(msg_send) {
       string moos_var = "NODE_MESSAGE_" + a_dest_name;
       string node_message = message.getSpec();
@@ -633,7 +652,7 @@ bool FldNodeComms::meetsRangeThresh(const string& uname1,
 }
 
 //------------------------------------------------------------
-// Procedure: meetsCriticalRangeThresh
+// Procedure: meetsCriticalRangeThresh()
 //   Purpose: Determine if Vehicle2 should hear the node report
 //            of Vehicle1, given the raw range and critical range.
 
@@ -657,9 +676,33 @@ bool FldNodeComms::meetsCriticalRangeThresh(const string& uname1,
   return(false);
 }
 
+
 //------------------------------------------------------------
-// Procedure: postViewCommsPulse
-//   Purpose: 
+// Procedure: meetsDropPercentage()
+//   Purpose: Determine if message should be dropped based on
+//            drop percentage (returning true means drop)
+
+bool FldNodeComms::meetsDropPercentage()
+{
+  // if drop percentage > 0, randomly drop messages,
+  // to probabilistically let the all but drop percentage through
+  if(m_drop_pct > 0) {
+
+    // generate random number between 0 and 100:
+    size_t rand_nr = rand() % 100;
+
+    // drop message if random number is within drop percentage range
+    // probabilistically we should thus drop the percentage amount
+    if(rand_nr < m_drop_pct)
+      return(true); // drop msg
+  }
+  return(false);
+}
+
+
+
+//------------------------------------------------------------
+// Procedure: postViewCommsPulse()
 
 void FldNodeComms::postViewCommsPulse(const string& uname1,
 				      const string& uname2,
