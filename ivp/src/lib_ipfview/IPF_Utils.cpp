@@ -32,27 +32,24 @@ using namespace std;
 
 QuadSet buildQuadSetFromIPF(IvPFunction *ipf, bool dense)
 {
-  cout << "In buildQuadSetFromIPF() " << endl;
+  // Part 1: Sanity checks
   QuadSet null_quadset;
   if(!ipf)
     return(null_quadset);
 
   IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
   int dim = ivp_domain.size();
-  
-  bool crs_spd_ipf = false;
-  if(ivp_domain.hasDomain("course") && ivp_domain.hasDomain("speed"))
-    crs_spd_ipf = true;
-  //crs_spd_ipf = false;
+  if((dim != 1) && (dim != 2))
+    return(null_quadset);
+
   
   if(dim == 1)
     return(buildQuadSet1DFromIPF(ipf, "hello_source"));
-  else if((ipf->getDim() == 2) && crs_spd_ipf)
-    return(buildQuadSetDense2DFromIPF(ipf));
-  else if(ipf->getDim() == 2)
-    return(buildQuadSet2DFromIPF(ipf));
 
-  return(null_quadset);
+  if(dense)
+    return(buildQuadSetDense2DFromIPF(ipf));
+
+  return(buildQuadSet2DFromIPF(ipf));
 }
 
 //-------------------------------------------------------------
@@ -118,7 +115,6 @@ QuadSet buildQuadSetDense2DFromIPF(IvPFunction *ipf)
   // Part 3: Build the Quads from the Cache
 
   vector<Quad3D> quads = buildQuadsFromCache(vals);
-  cout << "total Quads: " << quads.size() << endl;
 
   //===========================================================
   // Part 4: Assemble the QuadSet

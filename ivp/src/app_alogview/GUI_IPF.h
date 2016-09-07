@@ -114,6 +114,7 @@ protected:
 
   Fl_Check_Button *m_but_collective;
   Fl_Check_Button *m_but_collective_dep;
+  Fl_Check_Button *m_but_show_pcs;
 
   std::vector<std::string> m_sources;
 

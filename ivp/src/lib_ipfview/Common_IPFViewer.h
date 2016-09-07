@@ -51,6 +51,7 @@ public:
   bool   setParam(std::string, double);
   void   printParams();
 
+  void   setShowPieces(bool v)         {m_show_pieces=v;}
   void   setClearColor(std::string s)  {m_clear_color.setColor(s);}
   void   setFrameColor(std::string s)  {m_frame_color.setColor(s);}
   void   setColorMap(std::string s)    {m_color_map.setType(s);}
@@ -117,10 +118,9 @@ protected:
   int        m_yoffset;
   int        m_grid_width;
   int        m_grid_height;
+
+  bool       m_show_pieces;
 };
 
 #endif 
-
-
-
 

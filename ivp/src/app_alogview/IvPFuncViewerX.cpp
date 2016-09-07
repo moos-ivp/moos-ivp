@@ -59,6 +59,11 @@ IvPFuncViewerX::IvPFuncViewerX(int x, int y, int w, int h, const char *l)
 
 void IvPFuncViewerX::draw()
 {
+  if(m_quadset_refresh_pending) {
+    updateIPF();
+    m_quadset_refresh_pending = false;
+  }
+
   Common_IPFViewer::draw();
 
   if(m_quadset.size() != 0) {
@@ -271,12 +276,14 @@ void IvPFuncViewerX::setTime(double time)
   m_curr_heading = m_hdg_plot.getValueByTime(m_curr_time);  
   updateIPF();
 
+#if 0
   map<string, IPF_Plot>::iterator p;
   for(p=m_map_ipf_plots.begin(); p!=m_map_ipf_plots.end(); p++) {
     string bhv_name = p->first;
     int psize = p->second.size();
     cout << "bhv_name:" << bhv_name << "  psize:" << psize << endl;
   }
+#endif
   
   updateScope();
 }
@@ -356,13 +363,11 @@ double IvPFuncViewerX::getCurrTime() const
 
 string IvPFuncViewerX::getCurrPriority(string source) 
 {
-  cout << "IvPFuncViewerX::getPriority(): iter:" << m_curr_iter << endl;
+  //cout << "IvPFuncViewerX::getPriority(): iter:" << m_curr_iter << endl;
   if(m_map_ipf_plots.count(source) == 0)
     return("--");
 
   const IPF_Plot& ipf_plot = m_map_ipf_plots[source];
-
-  cout << "IvPFuncViewerX::getPriority(): psize:" << ipf_plot.size() << endl;
 
   double pwt = ipf_plot.getPwtByHelmIteration(m_curr_iter);
   
@@ -438,11 +443,14 @@ bool IvPFuncViewerX::buildIndividualIPF(string source)
     return(false);
 
   ipf = expandHdgSpdIPF(ipf, ivp_domain);
+
+  bool dense = false;
+  if(!m_show_pieces)
+    dense = true;
   
-  m_quadset = buildQuadSetFromIPF(ipf);
+  m_quadset = buildQuadSetFromIPF(ipf, dense);
   resetRadVisuals();
   
-  m_draw_pclines = true;
   m_quadset.normalize(0, 100);
   m_quadset.applyColorMap(m_color_map);	
   m_quadset.applyColorIntensity(m_intensity);

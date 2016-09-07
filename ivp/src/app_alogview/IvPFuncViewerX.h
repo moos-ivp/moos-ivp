@@ -76,8 +76,9 @@ class IvPFuncViewerX : public Common_IPFViewer
   std::string getCurrScopeVarA();
   std::string getCurrScopeVarB();
 
- protected:
   void   updateIPF();
+
+ protected:
   void   updateScope();
   void   addIPF_Plot(const IPF_Plot&);
   bool   buildCollectiveIPF(std::string ctype);

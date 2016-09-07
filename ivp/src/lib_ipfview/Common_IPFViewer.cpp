@@ -71,6 +71,7 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_grid_width  = wid  - (m_xoffset*2);
   m_grid_height = 0.5 * hgt;
 
+  m_show_pieces = false;
   m_quadset_refresh_pending = false;
 }
 
@@ -114,6 +115,10 @@ bool Common_IPFViewer::setParam(string param, string value)
     return(setBooleanOnString(m_draw_base, value));
   else if(param == "draw_pclines") 
     return(setBooleanOnString(m_draw_pclines, value));
+  else if(param == "draw_pieces") {
+    m_quadset_refresh_pending = true;
+    return(setBooleanOnString(m_show_pieces, value));
+  }
   else if(param == "draw_pin")
     setBooleanOnString(m_draw_pin, value);
   else if((param == "polar") && (value == "0"))
@@ -527,7 +532,7 @@ void Common_IPFViewer::drawQuad(Quad3D q)
   glEnd();
 
   // Draw the line edges of the piece
-  if(m_draw_pclines) {
+  if(m_draw_pclines && m_show_pieces) {
     glLineWidth(0.5);
     glColor3f(1.0, 1.0, 1.0);
 
@@ -573,7 +578,6 @@ void Common_IPFViewer::drawFrame(bool full)
   if(domain.size() != 0)
     w = domain.getVarPoints(0) / 2;
   
-  cout << "m_frame_base: " << m_frame_base << endl;
   //double w = 250;
   double b = m_frame_base;
   //double b = -125;
@@ -657,7 +661,7 @@ void Common_IPFViewer::drawPolarFrame(bool full)
   double ctr_x = 0;
   double ctr_y = 0;
   double z = -150;
-  double t = z + m_frame_height;
+  //double t = z + m_frame_height;
 
   double frame_red = m_frame_color.red();
   double frame_grn = m_frame_color.grn();

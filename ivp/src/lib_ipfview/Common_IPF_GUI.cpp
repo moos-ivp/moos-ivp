@@ -360,6 +360,15 @@ void Common_IPF_GUI::cb_TogglePieceLines(Fl_Widget* o) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_TogglePieceLines_i();
 }
 
+//----------------------------------------- Toggle Draw Pieces
+inline void Common_IPF_GUI::cb_ToggleDrawPieces_i() {
+  m_viewer->setParam("draw_pieces", "toggle");
+  m_viewer->redraw();
+}
+void Common_IPF_GUI::cb_ToggleDrawPieces(Fl_Widget* o) {
+  ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleDrawPieces_i();
+}
+
 //----------------------------------------- Frame Height
 inline void Common_IPF_GUI::cb_FrameHgt_i(int amt) {
   m_viewer->setParam("mod_frame_height", (double)amt);

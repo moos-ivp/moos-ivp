@@ -79,6 +79,7 @@ GUI_IPF::~GUI_IPF()
 
   delete(m_but_collective);
   delete(m_but_collective_dep);
+  delete(m_but_show_pcs);
 }
 
 
@@ -120,6 +121,10 @@ void GUI_IPF::initWidgets()
   m_but_collective_dep = new Fl_Check_Button(0, 0, 1, 1, "CollectiveD");
   m_but_collective_dep->clear_visible_focus();
   m_but_collective_dep->callback((Fl_Callback*)GUI_IPF::cb_SelectCollective, (void*)1);
+
+  m_but_show_pcs = new Fl_Check_Button(0, 0, 1, 1, "pcs");
+  m_but_show_pcs->clear_visible_focus();
+  m_but_show_pcs->callback((Fl_Callback*)Common_IPF_GUI::cb_ToggleDrawPieces, (void*)1);
 
   m_brw_bhvs = new Fl_Hold_Browser(0, 0, 0, 0);
   m_brw_bhvs->clear_visible_focus();
@@ -179,6 +184,11 @@ void GUI_IPF::resizeWidgetsShape()
   int cold_y = 30;
   int cold_wid = 20; 
   m_but_collective_dep->resize(cold_x, cold_y, cold_wid, fld_hgt);
+
+  int cpcs_x = 180; 
+  int cpcs_y = 30;
+  int cpcs_wid = 20; 
+  m_but_show_pcs->resize(cpcs_x, cpcs_y, cpcs_wid, fld_hgt);
 
   int time_x = 40;
   int time_y = 5;
@@ -242,6 +252,9 @@ void GUI_IPF::resizeWidgetsText()
 
   m_but_collective->labelsize(blab_size);
   m_but_collective_dep->labelsize(blab_size);
+
+  m_but_show_pcs->labelsize(blab_size);
+  m_but_show_pcs->labelsize(blab_size);
 
   m_fld_loc_time->textsize(info_size); 
   m_fld_loc_time->labelsize(info_size);
