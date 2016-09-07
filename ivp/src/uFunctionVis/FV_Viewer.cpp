@@ -77,9 +77,19 @@ void FV_Viewer::draw()
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
   
-  if(m_draw_ipf)
-    Common_IPFViewer::drawQuadSet(m_quadset);
- 
+  if(m_draw_ipf) {
+    bool result = Common_IPFViewer::drawQuadSet(m_quadset);
+    if(result) {
+      drawOwnPoint();
+      
+      if(m_draw_pin) {
+	unsigned int max_crs_qix = m_quadset.getMaxPointQIX("course");
+	unsigned int max_spd_qix = m_quadset.getMaxPointQIX("speed");
+	drawMaxPoint(max_crs_qix, max_spd_qix);
+      }
+    }
+  }
+
   if(m_draw_frame && (m_polar==0))
     drawFrame();
   if(m_draw_frame && (m_polar==1)) 
@@ -92,15 +102,6 @@ void FV_Viewer::draw()
   if(m_draw_ship && (m_polar==1)) 
     drawCenteredShip(heading);
 
-  drawOwnPoint();
-    
-  if(m_draw_pin) {
-    unsigned int max_crs_qix = m_quadset.getMaxPointQIX("course");
-    unsigned int max_spd_qix = m_quadset.getMaxPointQIX("speed");
-    drawMaxPoint(max_crs_qix, max_spd_qix);
-  }
-
-  glPopMatrix();
-  
+  glPopMatrix();  
   glFlush();  
 }

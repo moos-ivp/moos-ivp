@@ -83,9 +83,9 @@ void IvPFuncViewerX::draw()
 	Common_IPFViewer::drawMaxPoint(max_crs_qix, max_spd_qix);
     }
     
-    if(m_draw_frame && (m_polar==1)) 
+    if(m_draw_frame && (m_polar == 1)) 
       drawPolarFrame();
-    if(m_draw_ship && (m_polar==1)) 
+    if(m_draw_ship && (m_polar == 1)) 
       drawCenteredShip(m_curr_heading);
 
     glPopMatrix();
@@ -477,6 +477,9 @@ bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
 {
   // Phase 3: Get all the IvPFunction strings for the current iteration
   // for the current vehicle, along with the IvPDomain for each ipf.
+
+  cout << "buildCollectiveIPF() --- m_polar=" << m_polar << endl;
+  
   vector<string>    ipfs;
   vector<IvPDomain> ivp_domains;
   vector<string>    ipf_sources;
@@ -534,7 +537,8 @@ bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
       ipf = expandHdgSpdIPF(ipf, ivp_domain);
 
     if(ipf) {
-      QuadSet quadset = buildQuadSetFromIPF(ipf);
+      bool dense = true;
+      QuadSet quadset = buildQuadSetFromIPF(ipf, dense);
       //quadset.applyIPF(ipf, src);
       m_quadset.addQuadSet(quadset);
       delete(ipf);
@@ -544,8 +548,19 @@ bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
   if(ctype == "collective-hdgspd") {
     m_quadset.normalize(0, 100);
     m_quadset.applyColorMap(m_color_map);
+    m_quadset.applyColorIntensity(m_intensity);
+    m_quadset.applyScale(m_scale);
+    m_quadset.applyBase(m_base);
+    m_quadset.interpolate(1);
   }
 
+   if(m_polar == 0)
+    m_quadset.applyTranslation(-250, -250);
+  else if(m_polar == 1)
+    m_quadset.applyPolar(m_rad_ratio, 1);
+  else if(m_polar == 2)
+    m_quadset.applyPolar(m_rad_ratio, 2);
+  
   // Phase 5: Set the text information for display
   setIterIPF(intToString(m_curr_iter));
   setPiecesIPF("n/a");
