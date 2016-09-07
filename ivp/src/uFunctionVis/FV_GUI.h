@@ -39,6 +39,7 @@ public:
   void setModel(FV_Model* g_model)
     {m_model = g_model; m_fv_viewer->setModel(g_model);}
 
+  void  updateXY() {};
   void  updateFields();
   void  addBehaviorSource(std::string source);
 

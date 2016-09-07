@@ -37,6 +37,8 @@ public:
   Common_IPF_GUI(int w, int h, const char *l=0);
   virtual ~Common_IPF_GUI() {};
 
+  virtual void updateXY()=0;
+  
   bool setViewerParam(std::string, std::string);
   bool setViewerParam(std::string, double);
   
@@ -90,8 +92,8 @@ public:
   inline void cb_TogglePieceLines_i();
   static void cb_TogglePieceLines(Fl_Widget*);
 
-  inline void cb_ToggleDrawPieces_i();
-  static void cb_ToggleDrawPieces(Fl_Widget*);
+  inline void cb_ToggleDrawPcs_i();
+  static void cb_ToggleDrawPcs(Fl_Widget*);
 
   inline void cb_FrameHgt_i(int);
   static void cb_FrameHgt(Fl_Widget*, int);

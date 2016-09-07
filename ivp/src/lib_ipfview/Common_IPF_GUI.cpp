@@ -132,8 +132,11 @@ void Common_IPF_GUI::augmentMenu()
 		 FL_MENU_DIVIDER);
   m_menubar->add("IPF/Frame and FunctionBase -", '{',
 		 (Fl_Callback*)Common_IPF_GUI::cb_ModFrameBaseIPF, (void*)-10);
-  m_menubar->add("IPF/Fram and FunctionBase +", '}',
+  m_menubar->add("IPF/Frame and FunctionBase +", '}',
 		 (Fl_Callback*)Common_IPF_GUI::cb_ModFrameBaseIPF, (void*)+10,
+		 FL_MENU_DIVIDER);
+  m_menubar->add("IPF/Toggle Pieces", 'p',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ToggleDrawPcs, (void*)5,
 		 FL_MENU_DIVIDER);
   m_menubar->add("IPF/Polar0", 0,
 		 (Fl_Callback*)Common_IPF_GUI::cb_Polar, (void*)0, 0);
@@ -361,12 +364,13 @@ void Common_IPF_GUI::cb_TogglePieceLines(Fl_Widget* o) {
 }
 
 //----------------------------------------- Toggle Draw Pieces
-inline void Common_IPF_GUI::cb_ToggleDrawPieces_i() {
+inline void Common_IPF_GUI::cb_ToggleDrawPcs_i() {
   m_viewer->setParam("draw_pieces", "toggle");
   m_viewer->redraw();
+  updateXY();
 }
-void Common_IPF_GUI::cb_ToggleDrawPieces(Fl_Widget* o) {
-  ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleDrawPieces_i();
+void Common_IPF_GUI::cb_ToggleDrawPcs(Fl_Widget* o) {
+  ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_ToggleDrawPcs_i();
 }
 
 //----------------------------------------- Frame Height

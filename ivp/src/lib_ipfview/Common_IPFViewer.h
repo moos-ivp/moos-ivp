@@ -51,10 +51,10 @@ public:
   bool   setParam(std::string, double);
   void   printParams();
 
-  void   setShowPieces(bool v)         {m_show_pieces=v;}
   void   setClearColor(std::string s)  {m_clear_color.setColor(s);}
   void   setFrameColor(std::string s)  {m_frame_color.setColor(s);}
   void   setColorMap(std::string s)    {m_color_map.setType(s);}
+  bool   getShowPieces()               {return(m_show_pieces);}
   
 protected:
   void   resetRadVisuals();

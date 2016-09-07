@@ -124,7 +124,7 @@ void GUI_IPF::initWidgets()
 
   m_but_show_pcs = new Fl_Check_Button(0, 0, 1, 1, "pcs");
   m_but_show_pcs->clear_visible_focus();
-  m_but_show_pcs->callback((Fl_Callback*)Common_IPF_GUI::cb_ToggleDrawPieces, (void*)1);
+  m_but_show_pcs->callback((Fl_Callback*)Common_IPF_GUI::cb_ToggleDrawPcs, (void*)1);
 
   m_brw_bhvs = new Fl_Hold_Browser(0, 0, 0, 0);
   m_brw_bhvs->clear_visible_focus();
@@ -832,6 +832,12 @@ void GUI_IPF::updateXY()
   if(m_fullscreen)
     return;
 
+  if(m_viewer->getShowPieces())
+    m_but_show_pcs->value(1);
+  else
+    m_but_show_pcs->value(0);
+
+  
   // IPF fields
   double time     = m_ipf_viewer->getCurrTime();
   string time_str = doubleToString(time, 3);
