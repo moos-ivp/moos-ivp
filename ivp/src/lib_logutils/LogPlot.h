@@ -37,6 +37,7 @@ public:
   void   setVName(std::string s)    {m_vname = s;}
   void   setVarName(std::string s)  {m_varname = s;}
   bool   setValue(double gtime, double gvalue);
+  bool   setValueByIndex(unsigned int ix, double gvalue);
 
  public: // Modification
   void   applySkew(double skew);

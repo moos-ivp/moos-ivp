@@ -87,6 +87,18 @@ bool LogPlot::setValue(double gtime, double gval)
 }
 
 //---------------------------------------------------------------
+// Procedure: setValueByIndex
+
+bool LogPlot::setValueByIndex(unsigned int ix, double gval)
+{
+  if((ix >= m_time.size()) || (ix >= m_value.size()))
+    return(false);
+
+  m_value[ix] = gval;
+  return(true);
+}
+
+//---------------------------------------------------------------
 // Procedure: applySkew
 
 void LogPlot::applySkew(double skew)
