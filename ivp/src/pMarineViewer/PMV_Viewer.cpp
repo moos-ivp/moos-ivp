@@ -128,8 +128,8 @@ void PMV_Viewer::draw()
 
   // Draw Mouse position
   if(Fl::event_state(FL_SHIFT)) {
-    string str = "(" + intToString(m_mouse_x) + ", " +
-      intToString(m_mouse_y) + ")";
+    string str = "(" + doubleToString(m_mouse_x,2) + ", " +
+      doubleToString(m_mouse_y,2) + ")";
     ColorPack cpack("yellow");
     drawText(m_mouse_x, m_mouse_y, str, cpack, 12);
   }
@@ -496,8 +496,8 @@ void PMV_Viewer::handleMoveMouse(int vx, int vy)
   if(!ok || isnan(new_lat) || isnan(new_lon))
     return;
   
-  m_mouse_x = snapToStep(mx, 0.1);
-  m_mouse_y = snapToStep(my, 0.1);
+  m_mouse_x = snapToStep(mx, 0.01);
+  m_mouse_y = snapToStep(my, 0.01);
   m_mouse_lon = new_lon;
   m_mouse_lat = new_lat;
 }
