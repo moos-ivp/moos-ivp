@@ -75,6 +75,27 @@ Quad3D::Quad3D()
 }
 
 //-------------------------------------------------------------
+// Procedure: expand()
+
+void Quad3D::expand(double val)
+{
+  if(val > 1)
+    val = 1;
+  if(val < -1)
+    val = -1;
+
+  ll_xval += val;
+  hl_xval += val;
+  hh_xval += val;
+  lh_xval += val;
+
+  ll_yval += val;
+  hl_yval += val;
+  hh_yval += val;
+  lh_yval += val;
+}
+
+//-------------------------------------------------------------
 // Procedure: applyPolar
 //   Purpose: Apply the polar translation from raw xl,..yh to cached x,y
 //            It's assumed that this cannot be changed back once it's

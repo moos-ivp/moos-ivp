@@ -126,6 +126,7 @@ QuadSet buildQuadSetDense2DFromIPF(IvPFunction *ipf)
     quadset.addQuad3D(quads[i]);
   
   quadset.resetMinMaxVals();
+  quadset.markDense(true);
   return(quadset);
 }
 
@@ -269,6 +270,7 @@ QuadSet buildQuadSet2DFromIPF(IvPFunction *ipf)
   }
 
   quadset.resetMinMaxVals();
+  quadset.markDense(false);
 
   return(quadset);
 }

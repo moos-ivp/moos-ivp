@@ -39,8 +39,8 @@ public:
   void addIPF(const std::string&);
   
   QuadSet getCollectiveQuadSet(std::string s="collective-hdgspd");
-  QuadSet getQuadSet(unsigned int);
-  QuadSet getQuadSet(std::string source);
+  QuadSet getQuadSet(unsigned int, bool dense=false);
+  QuadSet getQuadSet(std::string source, bool dense=false);
 
   double       getPriority(std::string source) const;
   unsigned int getPieces(std::string source) const;

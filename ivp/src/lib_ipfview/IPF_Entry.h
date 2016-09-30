@@ -35,7 +35,7 @@ public:
   IPF_Entry(const std::string&);
   ~IPF_Entry() {}
   
-  QuadSet       getQuadSet(IvPDomain);
+  QuadSet       getQuadSet(IvPDomain, bool dense=false);
   IvPFunction*  getIvPFunction();
 
   std::string   getIPFString() const  {return(m_ipf_str);}

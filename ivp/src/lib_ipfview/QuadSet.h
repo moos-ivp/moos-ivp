@@ -42,7 +42,8 @@ public:
   void   addQuad3D(Quad3D quad)         {m_quads.push_back(quad);}
   void   setIvPDomain(IvPDomain domain) {m_ivp_domain = domain;}
   void   resetMinMaxVals();
-
+  void   markDense(bool v)              {m_dense=v;}
+  
   // Modifying the QuadSet
   void   applyColorMap(const FColorMap&);
   void   applyColorMap(const FColorMap&, double low, double hgh);
@@ -62,7 +63,8 @@ public:
   IvPDomain    getDomain() const             {return(m_ivp_domain);}
   double       getMaxVal() const             {return(m_maxpt_val);}
   double       getMinVal() const             {return(m_minpt_val);}
-
+  bool         isDense() const               {return(m_dense);}
+  
   double       getMaxPoint(std::string) const;
   unsigned int getMaxPointQIX(std::string) const;
   void         print() const;
@@ -71,7 +73,8 @@ protected:
   std::vector<Quad3D> m_quads;
 
   IvPDomain    m_ivp_domain;
-
+  bool         m_dense;
+  
   // Cache Min/Max values. These are evaluated once all the Quads
   // have been calculated and added.
   double       m_maxpt_val;   // Max utilty all quad vertices

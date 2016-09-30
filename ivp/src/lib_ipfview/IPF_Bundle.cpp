@@ -97,10 +97,10 @@ QuadSet IPF_Bundle::getCollectiveQuadSet(string ctype)
 //--------------------------------------------------------------
 // Procedure: getQuadSet(index)
 
-QuadSet IPF_Bundle::getQuadSet(unsigned int index)
+QuadSet IPF_Bundle::getQuadSet(unsigned int index, bool dense)
 {
   if(index < m_entries.size())
-    return(m_entries[index].getQuadSet(m_ivp_domain));
+    return(m_entries[index].getQuadSet(m_ivp_domain, dense));
 
   QuadSet empty_qset;
   return(empty_qset);
@@ -109,12 +109,12 @@ QuadSet IPF_Bundle::getQuadSet(unsigned int index)
 //--------------------------------------------------------------
 // Procedure: getQuadSet(source)
 
-QuadSet IPF_Bundle::getQuadSet(string source)
+QuadSet IPF_Bundle::getQuadSet(string source, bool dense)
 {
   unsigned int i, vsize = m_sources.size();
   for(i=0; i<vsize; i++) 
     if(m_sources[i] == source)
-      return(m_entries[i].getQuadSet(m_ivp_domain));
+      return(m_entries[i].getQuadSet(m_ivp_domain, dense));
   
   QuadSet empty_qset;
   return(empty_qset);

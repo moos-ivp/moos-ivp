@@ -115,6 +115,8 @@ public:
   void addHHZ(double v) {hh_hgt += v;}
   void addLHZ(double v) {lh_hgt += v;}
 
+  void expand(double v);
+  
   void applyPolar(double radextra, int dim, int pts=0);
   void applyColorIntensity(double intensity);
   void applyScale(double scale);
@@ -169,7 +171,6 @@ public:
   double hl_blu;
   double hh_blu;
   double lh_blu;
-
 };
 #endif
 

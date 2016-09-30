@@ -37,6 +37,7 @@ QuadSet::QuadSet()
   m_maxpt_val = 0;
   m_max_x_qix = 0;
   m_max_y_qix = 0;
+  m_dense = false;
 }
 
 //-------------------------------------------------------------

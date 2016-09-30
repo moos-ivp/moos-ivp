@@ -60,7 +60,7 @@ IvPFunction* IPF_Entry::getIvPFunction()
 //      Note: The quadset member variable will remain unpopulated
 //            until the first time it is queried for.
 
-QuadSet IPF_Entry::getQuadSet(IvPDomain ivp_domain)
+QuadSet IPF_Entry::getQuadSet(IvPDomain ivp_domain, bool dense)
 {
   if(m_quadset.size() == 0) {
     IvPFunction *new_ipf = StringToIvPFunction(m_ipf_str);
@@ -70,7 +70,7 @@ QuadSet IPF_Entry::getQuadSet(IvPDomain ivp_domain)
       m_priority   = new_ipf->getPWT();
       new_ipf = expandHdgSpdIPF(new_ipf, ivp_domain);
 
-      m_quadset = buildQuadSetFromIPF(new_ipf);
+      m_quadset = buildQuadSetFromIPF(new_ipf, dense);
       delete(new_ipf);
     }
   }

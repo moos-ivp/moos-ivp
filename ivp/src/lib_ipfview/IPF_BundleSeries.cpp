@@ -93,9 +93,10 @@ QuadSet IPF_BundleSeries::getCollectiveQuadSet(unsigned int iter,
 //--------------------------------------------------------------
 // Procedure: getQuadSet
 
-QuadSet IPF_BundleSeries::getQuadSet(unsigned int iter, string src)
+QuadSet IPF_BundleSeries::getQuadSet(unsigned int iter, string src,
+				     bool dense)
 {
-  return(m_bundles[iter].getQuadSet(src));
+  return(m_bundles[iter].getQuadSet(src, dense));
 }
 
 //--------------------------------------------------------------

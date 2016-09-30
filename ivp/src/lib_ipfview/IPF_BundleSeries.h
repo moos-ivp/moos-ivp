@@ -42,7 +42,8 @@ public:
   
   QuadSet   getCollectiveQuadSet(unsigned int iter, 
 				 std::string ctype="");
-  QuadSet   getQuadSet(unsigned int iter, std::string source);
+  QuadSet   getQuadSet(unsigned int iter, std::string source,
+		       bool dense=false);
 
   IvPDomain getDomain(unsigned int iter);
   IvPDomain getDomain(unsigned int iter, std::string source);
