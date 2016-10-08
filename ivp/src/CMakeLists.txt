@@ -217,10 +217,14 @@ SET(ROBOT_APPS
 #---------------------------------------------------------------------
 # pSafetyRetreat is excluded in moos-ivp-aro downloads to check if the 
 # source code is present before adding it to the build list.
-IF( EXISTS pSafetyRetreat )
+
+IF( EXISTS ./pSafetyRetreat )
   LIST(APPEND ROBOT_APPS pSafetyRetreat
 )  
-ENDIF( EXISTS pSafetyRetreat )
+ENDIF( EXISTS ./pSafetyRetreat )
+
+message(" ROBOT_APPS: ${ROBOT_APPS}")
+
 
 
 #---------------------------------------------------------------------
@@ -258,9 +262,9 @@ SET(IVP_NON_GUI_APPS
 #---------------------------------------------------------------------
 # uSimCurrent is excluded in moos-ivp-aro downloads to check if the 
 # source code is present before adding it to the build list.
-IF( EXISTS uSimCurrent )
+IF( EXISTS ./uSimCurrent )
   LIST(APPEND IVP_NON_GUI_APPS uSimCurrent)  
-ENDIF( EXISTS uSimCurrent )
+ENDIF( EXISTS ./uSimCurrent )
 
 
 #---------------------------------------------------------------------
