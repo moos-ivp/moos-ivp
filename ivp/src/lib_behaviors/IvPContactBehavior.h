@@ -103,6 +103,14 @@ public:
   double m_bearing_rate;
   double m_contact_rate;
 
+  bool   m_os_passes_cn;
+  bool   m_os_passes_cn_port;
+  bool   m_os_passes_cn_star;
+  
+  bool   m_cn_passes_os;
+  bool   m_cn_passes_os_port;
+  bool   m_cn_passes_os_star;
+  
   bool   m_os_crosses_cn_stern;
   bool   m_os_crosses_cn_bow;
   bool   m_os_crosses_cn_bow_or_stern;
