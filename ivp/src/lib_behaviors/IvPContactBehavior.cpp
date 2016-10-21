@@ -301,9 +301,9 @@ bool IvPContactBehavior::updatePlatformInfo()
   m_os_passes_cn_port    = cpa_engine.passesContactPort(m_osh, m_osv);
   m_os_passes_cn_star    = cpa_engine.passesContactStarboard(m_osh, m_osv);
   
-  m_cn_passes_os         = rcpa_engine.passesContact(m_osh, m_osv);
-  m_cn_passes_os_port    = rcpa_engine.passesContactPort(m_osh, m_osv);
-  m_cn_passes_os_star    = rcpa_engine.passesContactStarboard(m_osh, m_osv);
+  m_cn_passes_os         = rcpa_engine.passesContact(m_cnh, m_cnv);
+  m_cn_passes_os_port    = rcpa_engine.passesContactPort(m_cnh, m_cnv);
+  m_cn_passes_os_star    = rcpa_engine.passesContactStarboard(m_cnh, m_cnv);
   
   m_os_crosses_cn_stern        = cpa_engine.crossesStern(m_osh, m_osv);
   m_os_crosses_cn_bow          = cpa_engine.crossesBow(m_osh, m_osv);
