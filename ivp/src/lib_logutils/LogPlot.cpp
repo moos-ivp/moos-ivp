@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 #include "LogPlot.h"
 #include "LogUtils.h"
 #include "MBUtils.h"
@@ -114,6 +115,40 @@ void LogPlot::modValues(double modval)
 {
   for(unsigned int i=0; i<m_value.size(); i++)
     m_value[i] += modval;
+}
+     
+//---------------------------------------------------------------
+// Procedure: filterOutHighest()
+
+void LogPlot::filterOutHighest(double pct)
+{
+  if((pct < 0) || (pct > 1.0))
+    return;
+
+  // Part 1: sort the values from lowest to highest.
+  vector<double> m_value_copy = m_value;
+  std::sort(m_value_copy.begin(), m_value_copy.end());
+  
+  // Part 2: find out the threshold, above which we will discard.
+  unsigned int thresh_ix = (unsigned int)((1-pct) * m_value.size());
+  double thresh = m_value_copy[thresh_ix];
+
+  // Part 3: Create the new vectors
+  vector<double> old_time = m_time;
+  vector<double> old_value = m_value;
+  m_time.clear();
+  m_value.clear();
+
+  m_min_val  = 0; 
+  m_max_val  = 0; 
+  m_median   = 0;
+  m_median_set = false;
+  m_avg_time_gap = -1;
+
+  for(unsigned int i=0; i<old_time.size(); i++) {
+    if(m_value[i] < thresh)
+      setValue(m_time[i], m_value[i]);
+  }
 }
      
 //---------------------------------------------------------------

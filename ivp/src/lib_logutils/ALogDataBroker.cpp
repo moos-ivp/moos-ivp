@@ -414,6 +414,9 @@ vector<string> ALogDataBroker::getRawVarSummary(unsigned int ix) const
     if(strBegins(svector[i], "var="))
       var_summary.push_back(svector[i]);
   }
+  // mikerb hack
+  var_summary.push_back("HEADING_DELTA");
+
   return(var_summary);
 }
 

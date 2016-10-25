@@ -183,6 +183,7 @@ ENDFOREACH(L)
 
 SET(ROBOT_APPS
   app_aloggrep
+  app_aloghdg
   app_alogscan
   app_alogcd
   app_alogpare

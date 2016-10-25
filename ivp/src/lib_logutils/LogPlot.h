@@ -42,6 +42,8 @@ public:
  public: // Modification
   void   applySkew(double skew);
   void   modValues(double modval);
+  void   filterOutHighest(double pct);
+
 
  public: // Querying
   double getTimeByIndex(unsigned int index) const;
