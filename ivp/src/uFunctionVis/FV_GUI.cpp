@@ -83,7 +83,7 @@ void FV_GUI::initWidgets()
   m_fld_curr_domain->clear_visible_focus();
 
   m_but_ipf_lock = new Fl_Button(0, 0, 1, 1, "lock");
-  m_but_ipf_lock->shortcut(FL_ALT + 's');
+  m_but_ipf_lock->shortcut(FL_ALT+'l');
   m_but_ipf_lock->clear_visible_focus();
   m_but_ipf_lock->callback((Fl_Callback*)FV_GUI::cb_ToggleLockIPF,(void*)1);
 
@@ -207,7 +207,7 @@ void FV_GUI::augmentMenu()
 		 (Fl_Callback*)FV_GUI::cb_StretchRad, (void*)1, 0);
   m_menubar->add("RotateZoom/Shrink Radius ",  '{',
 		 (Fl_Callback*)FV_GUI::cb_StretchRad, (void*)-1, 0);
-  m_menubar->add("RotateZoom/Lock/UnLock", 'l',
+  m_menubar->add("RotateZoom/Lock/UnLock", FL_ALT+'l',
 		 (Fl_Callback*)FV_GUI::cb_ToggleLockIPF, (void*)2, 0);
   
   m_menubar->add("Color-Map/Default", 0,

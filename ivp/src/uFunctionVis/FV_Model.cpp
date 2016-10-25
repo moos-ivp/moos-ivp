@@ -163,7 +163,7 @@ string FV_Model::getCurrPlatform()
 //-------------------------------------------------------------
 // Procedure: getQuadSet()
 
-QuadSet FV_Model::getQuadSet()
+QuadSet FV_Model::getQuadSet(bool dense)
 {
   m_ipf_mutex.Lock();
 
@@ -171,7 +171,7 @@ QuadSet FV_Model::getQuadSet()
   if(m_collective != "")
     quadset = m_bundle_series.getCollectiveQuadSet(m_curr_iter, m_collective);
   else
-    quadset = m_bundle_series.getQuadSet(m_curr_iter, m_curr_source);
+    quadset = m_bundle_series.getQuadSet(m_curr_iter, m_curr_source, dense);
   
   m_ipf_mutex.UnLock();
 

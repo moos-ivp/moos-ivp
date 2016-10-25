@@ -48,7 +48,10 @@ void FV_Viewer::resetQuadSet()
   if(!m_model)
     return;
 
-  m_quadset = m_model->getQuadSet();
+  bool dense = false;
+  if(!m_show_pieces)
+    dense = true;
+  m_quadset = m_model->getQuadSet(dense);
 
   resetRadVisuals();
 

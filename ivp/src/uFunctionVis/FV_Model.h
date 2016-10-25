@@ -54,7 +54,7 @@ public:
   std::string getCurrPriority();
   std::string getCurrDomain();
 
-  QuadSet  getQuadSet();
+  QuadSet  getQuadSet(bool dense=false);
 
  protected: // State variables
   CMOOSLock        m_ipf_mutex;
