@@ -92,8 +92,8 @@ void Common_IPF_GUI::augmentMenu()
 		 (Fl_Callback*)Common_IPF_GUI::cb_Reset, (void*)2, 0);
   m_menubar->add("RotateZoom/Reset3 ", '3',
 		 (Fl_Callback*)Common_IPF_GUI::cb_Reset, (void*)3, 0);
-  m_menubar->add("RotateZoom/Reset4 ", '4',
-		 (Fl_Callback*)Common_IPF_GUI::cb_Reset, (void*)4, 0);
+  m_menubar->add("RotateZoom/Reset4 ", '=',
+		 (Fl_Callback*)Common_IPF_GUI::cb_ModFrameBaseIPF, (void*)99, 0);
   m_menubar->add("RotateZoom/Toggle Frame ", 'f',
 		 (Fl_Callback*)Common_IPF_GUI::cb_ToggleFrame, (void*)-1,
 		 FL_MENU_DIVIDER);
@@ -244,8 +244,25 @@ void Common_IPF_GUI::setMenuItemColor(string item_str)
 
 int Common_IPF_GUI::handle(int event) 
 {
-  return(Fl_Window::handle(event));
+  switch(event) {
+  case FL_KEYDOWN:
+    if(Fl::event_key() == FL_Down)
+      cb_RotateX_i(-1);
+    else if(Fl::event_key() == FL_Up)
+      cb_RotateX_i(1);
+    else if(Fl::event_key() == FL_Left)
+      cb_RotateZ_i(-1);
+    else if(Fl::event_key() == FL_Right)
+      cb_RotateZ_i(1);
+    else
+      return(0);
+    return(1);
+    break;
+  default:
+    return(0);
+  }
 }
+
 
 //----------------------------------------- Zoom In
 inline void Common_IPF_GUI::cb_Zoom_i(int val) {
@@ -286,6 +303,7 @@ void Common_IPF_GUI::cb_RotateX(Fl_Widget* o, int v) {
 
 //----------------------------------------- Rotate  Z
 inline void Common_IPF_GUI::cb_RotateZ_i(int amt) {
+  cout << "In Common_IPF_GUI::cb_RotateZ_i" << endl;
   m_viewer->setParam("mod_z_rotation", (double)(amt));
 }
 void Common_IPF_GUI::cb_RotateZ(Fl_Widget* o, int v) {
@@ -319,9 +337,12 @@ void Common_IPF_GUI::cb_ModBaseIPF(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod FrameBaseIPF
 inline void Common_IPF_GUI::cb_ModFrameBaseIPF_i(int amt) {
-  cout << "In ModFrameBaseIPF..." << amt << endl;
-  m_viewer->setParam("mod_base_ipf", amt);
-  m_viewer->setParam("mod_base_frame", amt);
+  if(amt == 99)
+    m_viewer->setParam("toggle_frame_on_top", amt);    
+  else {
+    m_viewer->setParam("mod_base_ipf", amt);
+    m_viewer->setParam("mod_base_frame", amt);
+  }
 }
 
 void Common_IPF_GUI::cb_ModFrameBaseIPF(Fl_Widget* o, int v) {

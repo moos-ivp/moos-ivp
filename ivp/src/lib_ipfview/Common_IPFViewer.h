@@ -67,7 +67,8 @@ protected:
   void   drawCenteredShip(double heading=0);
   void   drawOwnPoint();
   void   drawMaxPoint(double, double);
-
+  void   toggleFrameOnTop();
+  
   void   draw1DAxes(const IvPDomain&);
   void   draw1DLabels(const IvPDomain&);
   void   draw1DKeys(std::vector<std::string>, std::vector<ColorPack>);
@@ -101,6 +102,7 @@ protected:
   bool       m_draw_ipf;
   bool       m_draw_pin;
   bool       m_draw_base;
+  bool       m_frame_on_top;
   bool       m_draw_pclines;
 
   bool       m_draw_frame;

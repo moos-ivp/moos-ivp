@@ -57,9 +57,10 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_draw_frame   = true;
   m_frame_height = 250;
   m_frame_base   = -125;
-
+  m_frame_on_top = false;
+  
   m_draw_ship    = true;
-  m_ship_scale   = 8;
+  m_ship_scale   = 4;
   
   setParam("clear_color", "white");
   setParam("frame_color", "dark_red");
@@ -174,6 +175,8 @@ bool Common_IPFViewer::setParam(string param, double value)
     m_base += value;
   else if(param == "mod_base_frame")
     m_frame_base += value;
+  else if(param == "toggle_frame_on_top")
+    toggleFrameOnTop();
   else if(param == "mod_x_rotation")
     m_xRot += value;
   else if(param == "set_x_rotation")
@@ -311,11 +314,6 @@ void Common_IPFViewer::resetRadVisuals()
   if(h() < min_extent)
     min_extent = h();
 
-  //cout << "--------------------------------------------" << endl;
-  //cout << "       w(): " << w() << endl;
-  //cout << "       h(): " << h() << endl;
-  //cout << "min_extent: " << min_extent << endl;
-  
   m_rad_extent = min_extent;
 
   unsigned int spd_pts = ivp_domain.getVarPoints("speed");
@@ -594,7 +592,7 @@ void Common_IPFViewer::drawFrame(bool full)
   //Color3f(0.6f, 0.4f, 0.6f);
   //glColor3f(cvect[0]/2, cvect[1]/2, cvect[2]/2);
   glShadeModel(GL_FLAT);
-  
+
   // Either draw a full base or just the frame
   if(m_draw_base) {
     glBegin(GL_TRIANGLES);
@@ -660,8 +658,7 @@ void Common_IPFViewer::drawPolarFrame(bool full)
 {
   double ctr_x = 0;
   double ctr_y = 0;
-  double z = -150;
-  //double t = z + m_frame_height;
+  double z = m_frame_base;
 
   double frame_red = m_frame_color.red();
   double frame_grn = m_frame_color.grn();
@@ -753,7 +750,7 @@ void Common_IPFViewer::drawPolarFrame(bool full)
 
 void Common_IPFViewer::drawCenteredShip(double heading)
 {
-  double z = -150;
+  double z = m_frame_base;
   //double t = z + m_frame_height;
   double t = z+1;
 
@@ -832,6 +829,27 @@ void Common_IPFViewer::drawOwnPoint()
 }
 
 //-------------------------------------------------------------
+// Procedure: toggleFrameOnToop()
+//   Purpose: Toggle the mode where the ship and frame are drawn
+//            over the IvP function. Heuristically places it a bit
+//            higher than the base of the IvP function + 210. The
+//            correct ammount will depend on the scale of the IPF.
+
+void Common_IPFViewer::toggleFrameOnTop()
+{
+  m_frame_on_top = !m_frame_on_top;
+
+  if(m_frame_on_top){
+    m_draw_base = false;
+    m_frame_base = m_base + 210;
+  }
+  else {
+    m_draw_base = true;
+    m_frame_base = m_base + -100;
+  }
+}
+
+//-------------------------------------------------------------
 // Procedure: drawMaxPoint
 
 void Common_IPFViewer::drawMaxPoint(double crs, double spd)
@@ -842,10 +860,10 @@ void Common_IPFViewer::drawMaxPoint(double crs, double spd)
   // Apply the radial extent
   spd *= m_rad_ratio;
 
-  double x,y,z=250;
+  double x,y,z=m_base+230;
   projectPoint(crs, spd, 0, 0, x, y);
   
-  glPointSize(3.0 * m_zoom);
+  glPointSize(2.0 * m_zoom);
 
   glColor3f(1.0f, 0.5, 1.0f);
   glShadeModel(GL_FLAT);
