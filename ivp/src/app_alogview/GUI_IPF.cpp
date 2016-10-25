@@ -48,6 +48,7 @@ GUI_IPF::GUI_IPF(int wid, int hgt, const char *label)
   m_replay_warp_msg = "(PAUSED)";
   m_parent_gui = 0;
   m_fullscreen = false;
+  m_fullscreen_tmp = false;
   m_mutable_text_size = 10;
 
   initWidgets();
@@ -145,6 +146,17 @@ void GUI_IPF::initWidgets()
 
 void GUI_IPF::resizeWidgetsShape()
 {
+  if(w() < 400) {
+    m_fullscreen=true;
+    m_fullscreen_tmp=true;
+  }
+  else {
+    if(m_fullscreen_tmp) {
+      m_fullscreen = false;
+      m_fullscreen_tmp = false;
+    }
+  }
+  
   // We want the bhv browser to grow with the overall window width but not
   // quite linearly.
   int lmarg = 160 + (w() * 0.1);
@@ -170,26 +182,17 @@ void GUI_IPF::resizeWidgetsShape()
 
   int fld_hgt = 20;
 
+  //----------------------------------------------------------
+  // Browser (LEFT)
+  //----------------------------------------------------------
   int bhvs_x = 5; 
   int bhvs_y = tmarg;
   int bhvs_wid = lmarg-10;
   m_brw_bhvs->resize(bhvs_x, bhvs_y, bhvs_wid, ipf_hgt);
 
-  int coll_x = 10; 
-  int coll_y = 30;
-  int coll_wid = 20; 
-  m_but_collective->resize(coll_x, coll_y, coll_wid, fld_hgt);
-
-  int cold_x = 90; 
-  int cold_y = 30;
-  int cold_wid = 20; 
-  m_but_collective_dep->resize(cold_x, cold_y, cold_wid, fld_hgt);
-
-  int cpcs_x = 180; 
-  int cpcs_y = 30;
-  int cpcs_wid = 20; 
-  m_but_show_pcs->resize(cpcs_x, cpcs_y, cpcs_wid, fld_hgt);
-
+  //----------------------------------------------------------
+  // Row 1
+  //----------------------------------------------------------
   int time_x = 40;
   int time_y = 5;
   int time_wid = (80.0/550.0)*w();
@@ -205,12 +208,6 @@ void GUI_IPF::resizeWidgetsShape()
   int pcs_wid = (45.0/550.0)*w();
   m_fld_ipf_pcs->resize(pcs_x, pcs_y, pcs_wid, fld_hgt); 
 
-
-  int dom_x = pcs_x;
-  int dom_y = 30;
-  int dom_wid = (110.0/550.0)*w();
-  m_fld_ipf_dom->resize(dom_x, dom_y, dom_wid, fld_hgt); 
-
   int set_x = pcs_x + pcs_wid + 10;
   int set_y = 5;
   int set_wid = (33.0/550.0)*w();
@@ -225,6 +222,29 @@ void GUI_IPF::resizeWidgetsShape()
   int vara_y = 5;
   int vara_wid = w()-vara_x-10;
   m_but_addvar_a->resize(vara_x, vara_y, vara_wid, fld_hgt);
+
+  //----------------------------------------------------------
+  // Row 2
+  //----------------------------------------------------------
+  int coll_x = 10; 
+  int coll_y = 30;
+  int coll_wid = 20; 
+  m_but_collective->resize(coll_x, coll_y, coll_wid, fld_hgt);
+
+  int cold_x = 90; 
+  int cold_y = 30;
+  int cold_wid = 20; 
+  m_but_collective_dep->resize(cold_x, cold_y, cold_wid, fld_hgt);
+
+  int cpcs_x = 180; 
+  int cpcs_y = 30;
+  int cpcs_wid = 20; 
+  m_but_show_pcs->resize(cpcs_x, cpcs_y, cpcs_wid, fld_hgt);
+
+  int dom_x = pcs_x;
+  int dom_y = 30;
+  int dom_wid = (110.0/550.0)*w();
+  m_fld_ipf_dom->resize(dom_x, dom_y, dom_wid, fld_hgt); 
 
   int varb_x = pin_x + pin_wid + 12;
   int varb_y = 30;
@@ -394,7 +414,7 @@ int GUI_IPF::handle(int event)
   case FL_KEYDOWN:
     if(Fl::event_key() == 32) 
       m_parent_gui->streaming(2);
-    else if(Fl::event_key() == 'f') 
+    else if(Fl::event_key() == '\\') 
       toggleFullScreen();
     else if(Fl::event_key() == 'a') 
       m_parent_gui->streamspeed(true);

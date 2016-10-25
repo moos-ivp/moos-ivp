@@ -19,7 +19,6 @@ endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
 SET(SRC
   EncounterViewer.cpp
   GUI_Encounters.cpp
-  LogPlotViewer.cpp
   NavPlotViewer.cpp
   REPLAY_GUI.cpp
   GUI_IPF.cpp

@@ -363,7 +363,6 @@ double IvPFuncViewerX::getCurrTime() const
 
 string IvPFuncViewerX::getCurrPriority(string source) 
 {
-  //cout << "IvPFuncViewerX::getPriority(): iter:" << m_curr_iter << endl;
   if(m_map_ipf_plots.count(source) == 0)
     return("--");
 
@@ -478,8 +477,6 @@ bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
   // Phase 3: Get all the IvPFunction strings for the current iteration
   // for the current vehicle, along with the IvPDomain for each ipf.
 
-  cout << "buildCollectiveIPF() --- m_polar=" << m_polar << endl;
-  
   vector<string>    ipfs;
   vector<IvPDomain> ivp_domains;
   vector<string>    ipf_sources;

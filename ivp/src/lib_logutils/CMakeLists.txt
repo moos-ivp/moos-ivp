@@ -12,6 +12,7 @@ SET(SRC
   SplitHandler.cpp  
   ALogDataBroker.cpp
   LogPlot.cpp
+  LogPlotViewer.cpp
   VarPlot.cpp
   HelmPlot.cpp
   EncounterPlot.cpp

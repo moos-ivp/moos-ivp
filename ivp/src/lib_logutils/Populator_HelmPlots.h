@@ -42,16 +42,3 @@ protected:
   HelmPlot m_helm_plot;
 };
 #endif 
-
-
-
-
-
-
-
-
-
-
-
-
-

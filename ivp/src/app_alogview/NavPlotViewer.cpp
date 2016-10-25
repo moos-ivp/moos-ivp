@@ -207,11 +207,16 @@ void NavPlotViewer::initPlots()
 
   // If opening in "quick" mode, will not read/draw geometry objs
   if(m_draw_geo) {
+    cout << "in draw_geo" << endl;
     for(unsigned int aix=0; aix<alogs; aix++) {
+      cout << "in_draw_geo 11111" << endl;
       VPlugPlot vplot = m_dbroker.getVPlugPlot(aix);
+      cout << "in_draw_geo 22222" << endl;
       addVPlugPlot(vplot);
+      cout << "in_draw_geo 33333" << endl;
     }
   }
+  cout << "done initPlots" << endl;
 }
 
 //-------------------------------------------------------------

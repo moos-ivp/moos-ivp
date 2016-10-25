@@ -122,6 +122,7 @@ protected:
   std::string    m_source;
   std::string    m_replay_warp_msg;
   bool           m_fullscreen;
+  bool           m_fullscreen_tmp;
 
   int            m_mutable_text_size;
 };
