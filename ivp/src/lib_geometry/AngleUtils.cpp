@@ -30,7 +30,6 @@
 #define M_PI 3.1415926
 #endif
 
-
 //-------------------------------------------------------------
 // Procedure: angleFromThreePoints
 //   Purpose: Returns the angle in a triangle given by three points
@@ -481,4 +480,44 @@ double turnGap(double osx, double osy, double osh, double tradius,
   double dist = distCircleToLine(cx, cy, tradius, px1, py1, px2, py2);
 
   return(dist);
+}
+
+//---------------------------------------------------------------
+// Procedure: headingAvg()
+//   Purpose: Determine the average heading given a list of headings
+
+double headingAvg(std::list<double> heading_vals)
+{
+  double ssum = 0.0;
+  double csum = 0.0;
+
+  std::list<double>::iterator p;
+  for(p = heading_vals.begin(); p!=heading_vals.end(); p++) {
+    double hdg = *p;
+  
+    double s = sin(hdg * M_PI / 180.0);
+    double c = cos(hdg * M_PI / 180.0);
+
+    ssum += s;
+    csum += c;    
+  }
+
+  double avg = atan2(ssum, csum) * 180.0 / M_PI;
+  if(avg < 0.0)
+    avg += 360.0;
+
+  return(avg);
+}
+
+//---------------------------------------------------------------
+// Procedure: headingAvg()
+//   Purpose: Determine the average heading given a two headings
+//      Note: Convenience function
+
+double headingAvg(double h1, double h2)
+{
+  std::list<double> pair;
+  pair.push_front(h1);
+  pair.push_front(h2);
+  return(headingAvg(pair));
 }

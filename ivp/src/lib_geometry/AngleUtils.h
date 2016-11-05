@@ -24,6 +24,7 @@
 #ifndef ANGLEUTILS_HEADER
 #define ANGLEUTILS_HEADER
 
+#include <list>
 #include "XYPoint.h"
 #include "XYPolygon.h"
 
@@ -58,5 +59,9 @@ bool    polyAft(double osx, double osy, double osh, XYPolygon poly, double xbng=
 
 double  turnGap(double osx, double osy, double osh, double tradius,
 		double px1, double py1, double px2, double py2, bool tright);
+
+double  headingAvg(std::list<double>);
+double  headingAvg(double, double);
+
 
 #endif

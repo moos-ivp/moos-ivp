@@ -148,11 +148,20 @@ bool HdgHandler::processHeadingDeltas()
     double x1 = m_lplot_x.getValueByIndex(i);
     double y1 = m_lplot_y.getValueByTime(t1, true);
 
+    double t2 = m_lplot_x.getTimeByIndex(i+1);
+    double x2 = m_lplot_x.getValueByIndex(i+1);
+    double y2 = m_lplot_y.getValueByTime(t2, true);
+    
     double delta = 0;
     double dist  = hypot(x0-x1, y0-y1);    
     if(dist > 0.1) {
-      double apparent_hdg = relAng(x0, y0, x1, y1);
-      delta = apparent_hdg - h0;
+      
+      double apparent_hdg_1 = relAng(x0, y0, x1, y1);
+      double apparent_hdg_2 = relAng(x1, y1, x2, y2);
+      double hdg_avg = headingAvg(apparent_hdg_1, apparent_hdg_2);
+      //double hdg_avg = apparent_hdg_1;
+
+      delta = hdg_avg - h0;
       if(delta < 0)
 	delta = -delta;
       if(delta > 180)
