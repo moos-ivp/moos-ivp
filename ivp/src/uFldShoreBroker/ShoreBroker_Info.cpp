@@ -136,7 +136,7 @@ void showInterfaceAndExit()
   blk("  NODE_BROKER_ACK_VNAME = community=shoreside,                  ");
   blk("                          hostip=192.168.1.199,port_db=9000,    ");
   blk("                          pshare_iroutes=localhost:9300,        ");
-  blk("                          time_warp=8,status=ok                 ");
+  blk("                          time_warp=8,status=ok,id=123          ");
   blk("                                                                ");
   blk("  NODE_BROKER_VACK = alpha                                      ");
   blk("                                                                ");
