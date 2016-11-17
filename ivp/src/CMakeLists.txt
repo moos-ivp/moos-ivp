@@ -204,7 +204,6 @@ SET(ROBOT_APPS
   uHelmScope
   uTimerScript
   uProcessWatch
-  uCommand
   uLoadWatch
   uTermCommand
   uXMS

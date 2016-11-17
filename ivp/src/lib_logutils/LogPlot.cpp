@@ -83,8 +83,9 @@ bool LogPlot::setValue(double gtime, double gval)
     m_median_set = false;
     return(true);
   }
-  else
+  else {
     return(false);
+  }
 }
 
 //---------------------------------------------------------------

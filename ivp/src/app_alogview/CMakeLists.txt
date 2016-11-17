@@ -20,6 +20,7 @@ SET(SRC
   EncounterViewer.cpp
   GUI_Encounters.cpp
   NavPlotViewer.cpp
+  LogPlotViewer.cpp
   REPLAY_GUI.cpp
   GUI_IPF.cpp
   GUI_HelmScope.cpp
