@@ -174,7 +174,6 @@ void ShoreBroker::sendAcks()
 
   unsigned int i, vsize = m_node_host_records.size();
   for(i=0; i<vsize; i++) {
-
     double elapsed_time = m_curr_time - m_node_last_tstamp[i];
     if(elapsed_time < 10) {
       string msg_var = "NODE_BROKER_ACK_" + 
@@ -188,9 +187,9 @@ void ShoreBroker::sendAcks()
       
       Notify(msg_var, msg_val);
       Notify("NODE_BROKER_VACK", m_node_host_records[i].getCommunity());
-      m_acks_posted++;
     }
   }
+  m_acks_posted++;
 }
 
 //------------------------------------------------------------
