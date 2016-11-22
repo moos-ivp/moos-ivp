@@ -21,12 +21,15 @@ SET(SRC
    RandomVariableSet.cpp 
    RandVarUniform.cpp
    RandVarGaussian.cpp
+   RandomPair.cpp
+   RandPairPoly.cpp
    main.cpp)
 
 ADD_EXECUTABLE(uTimerScript ${SRC})
 
 TARGET_LINK_LIBRARIES(uTimerScript
    ${MOOS_LIBRARIES}
+   geometry
    mbutil
    apputil
    logic
