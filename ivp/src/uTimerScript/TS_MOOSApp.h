@@ -32,6 +32,7 @@
 #include "LogicCondition.h"
 #include "InfoBuffer.h"
 #include "RandomVariableSet.h"
+#include "RandomPairSet.h"
 
 class TS_MOOSApp : public AppCastingMOOSApp
 {
@@ -93,6 +94,7 @@ class TS_MOOSApp : public AppCastingMOOSApp
   RandVarUniform            m_delay_start;   
   RandVarUniform            m_delay_reset;  
   RandomVariableSet         m_rand_vars;
+  RandomPairSet             m_rand_pairs;
 
   // Set of logic conditions pertaining to entire script
   std::vector<LogicCondition> m_logic_conditions;

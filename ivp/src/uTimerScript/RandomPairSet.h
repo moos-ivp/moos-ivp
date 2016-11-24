@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: RandomPair.h                                         */
+/*    FILE: RandomPairSet.h                                      */
 /*    DATE: Nov 22nd 2016                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,58 +21,49 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef RANDOM_PAIR_HEADER
-#define RANDOM_PAIR_HEADER
+#ifndef RANDOM_PAIR_SET_HEADER
+#define RANDOM_PAIR_SET_HEADER
 
 #include <string>
+#include <vector>
+#include "RandomPair.h"
+#include "RandPairPoly.h"
 
-class RandomPair 
+class RandomPairSet 
 {
  public:
-  RandomPair();
-  virtual ~RandomPair() {}
+  RandomPairSet() {}
+  ~RandomPairSet();
 
-  virtual bool setParam(std::string, double);
-  virtual bool setParam(std::string, std::string);
-  virtual void reset() {}
-  
-  virtual std::string getStringSummary() const;
-  virtual std::string getParams() const {return("");}
-  
  public:
-  void   setVarName1(std::string str)  {m_varname1=str;} 
-  void   setVarName2(std::string str)  {m_varname2=str;} 
-  void   setKeyName(std::string str)   {m_keyname=str;}
-  void   setType(std::string str)      {m_type=str;}
+  std::string  addRandomPair(std::string spec);
+  std::string  addRandomPairPoly(std::string spec);
+  void         reset(std::string key, double timestamp=0);
 
-  std::string getVarName1() const      {return(m_varname1);}
-  std::string getVarName2() const      {return(m_varname2);}
-  std::string getKeyName() const       {return(m_keyname);}
-  std::string getType() const          {return(m_type);}
-  
-  double      getValue1() const        {return(m_value1);}
-  double      getValue2() const        {return(m_value2);}
+  unsigned int size() const  {return(m_rpair_vector.size());}
 
-  std::string getStringValue1() const;
-  std::string getStringValue2() const;
+  std::string  getVarName1(unsigned int index) const;
+  std::string  getVarName2(unsigned int index) const;
+  std::string  getKeyName(unsigned int index) const;
+  std::string  getType(unsigned int index) const;
+  double       getValue1(unsigned int index) const;
+  double       getValue2(unsigned int index) const;
+
+  bool         contains(std::string varname) const;
+
+  std::string  getStringValue1(unsigned int index) const;
+  std::string  getStringValue2(unsigned int index) const;
+  std::string  getStringSummary(unsigned int index) const;
+  std::string  getParams(unsigned int index) const;
+
+  void         print() const;
 
  protected: // Configuration Parameters
-  std::string m_varname1;
-  std::string m_varname2;
-  std::string m_keyname;
-  std::string m_type;
 
- protected: // State Variables
-  double      m_value1;
-  double      m_value2;
-
-  std::string m_value_str1;
-  std::string m_value_str2;
-
+  std::vector<RandomPair*> m_rpair_vector;
 };
 
 #endif 
-
 
 
 

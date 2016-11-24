@@ -44,12 +44,6 @@ class RandPairPoly : public RandomPair
  private:
 
   XYPolygon m_poly;
-
 };
 
 #endif 
-
-
-
-
-

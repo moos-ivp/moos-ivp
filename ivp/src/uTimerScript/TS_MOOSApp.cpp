@@ -407,6 +407,15 @@ bool TS_MOOSApp::OnStartUp()
 	reportConfigWarning(msg);
       }
     }
+#if 1
+    else if((param == "rand_pair") || (param == "randpair")) {
+      string result = m_rand_pairs.addRandomPair(value);
+      if(result != "") {
+	string msg = "Rand pair problem: " + value + ":" + result;
+	reportConfigWarning(msg);
+      }
+    }
+#endif
     else if(param == "condition") {
       LogicCondition new_condition;
       bool ok = new_condition.setCondition(value);
@@ -422,9 +431,12 @@ bool TS_MOOSApp::OnStartUp()
   
   if(m_verbose) {
     cout << termColor("blue") << "Random Variable configurations: " << endl;
-    unsigned int i, vsize = m_rand_vars.size();
-    for(i=0; i<vsize; i++)
+    for(unsigned int i=0; i<m_rand_vars.size(); i++)
       cout << "  [" << i << "]: " << m_rand_vars.getStringSummary(i) << endl;
+
+    cout << termColor("blue") << "Random Pair configurations: " << endl;
+    for(unsigned int i=0; i<m_rand_pairs.size(); i++)
+      cout << "  [" << i << "]: " << m_rand_pairs.getStringSummary(i) << endl;
     cout << termColor() << endl;
   }
 
@@ -435,6 +447,10 @@ bool TS_MOOSApp::OnStartUp()
   m_rand_vars.reset("at_start");
   m_rand_vars.reset("at_reset");
   m_rand_vars.reset("at_post");
+
+  m_rand_pairs.reset("at_start");
+  m_rand_pairs.reset("at_reset");
+  m_rand_pairs.reset("at_post");
 
   registerVariables();
   if(m_verbose)
@@ -623,8 +639,13 @@ void TS_MOOSApp::scheduleEvents(bool shuffle_requested)
   m_uts_time_warp.reset();
   m_delay_start.reset();
   m_delay_reset.reset();
+
   m_rand_vars.reset("at_reset");
   m_rand_vars.reset("at_post");
+
+  m_rand_pairs.reset("at_reset");
+  m_rand_pairs.reset("at_post");
+
   m_elapsed_time  = 0;
   m_previous_time = -1;
   m_skip_time     = 0;
@@ -705,6 +726,8 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   double db_uptime = MOOSTime() - m_connect_tstamp;
 
   m_rand_vars.reset("at_post");
+  m_rand_pairs.reset("at_post");
+
   string variable = pair.get_var();
 
   if(variable == "EXITED_NORMALLY") {
@@ -781,14 +804,24 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   sval = findReplace(sval, "$(20)", randomNumString(20));
 
   
-  unsigned int i, vsize = m_rand_vars.size();
-  for(i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<m_rand_vars.size(); i++) {
     string macro1 = "$(" + m_rand_vars.getVarName(i) + ")";
     string macro2 = "$[" + m_rand_vars.getVarName(i) + "]";
     sval = findReplace(sval, macro1, m_rand_vars.getStringValue(i));
     sval = findReplace(sval, macro2, m_rand_vars.getStringValue(i));
   }
 
+  for(unsigned int i=0; i<m_rand_pairs.size(); i++) {
+    string macro1A = "$(" + m_rand_pairs.getVarName1(i) + ")";
+    string macro1B = "$[" + m_rand_pairs.getVarName1(i) + "]";
+    string macro2A = "$(" + m_rand_pairs.getVarName2(i) + ")";
+    string macro2B = "$[" + m_rand_pairs.getVarName2(i) + "]";
+    sval = findReplace(sval, macro1A, m_rand_pairs.getStringValue1(i));
+    sval = findReplace(sval, macro1B, m_rand_pairs.getStringValue1(i));
+    sval = findReplace(sval, macro2A, m_rand_pairs.getStringValue2(i));
+    sval = findReplace(sval, macro2B, m_rand_pairs.getStringValue2(i));
+  }
+  
   // Handle all the math expansions. For safety, the while loop may
   // execute only 20 times.
   unsigned int replace_max = 10;
@@ -1321,8 +1354,30 @@ bool TS_MOOSApp::buildReport()
     }
   }
   m_msgs << actab.getFormattedString() << endl;
+  m_msgs << endl;
+
+  m_msgs << "Total Random Pairs: " << m_rand_pairs.size() << endl << endl;
   
-  // Part 3: Event Posting Information
+  // Part 3: Random Pair information
+  ACTable actab_p(4,2); // 4 columns, 2 space separators
+  actab_p << "Var1 | Var2 | Type | Parameters \n";
+  actab_p.addHeaderLines();
+
+  unsigned psize = m_rand_pairs.size();
+  if(psize == 0)
+    actab_p << "None";
+  else{
+    for(unsigned int i=0; i<psize; i++) {
+      string rpair_var1 = m_rand_pairs.getVarName1(i);
+      string rpair_var2 = m_rand_pairs.getVarName2(i);
+      string rpair_type = m_rand_pairs.getType(i);
+      string rpair_pars = m_rand_pairs.getParams(i);
+      actab_p << rpair_var1 << rpair_var2 << rpair_type << rpair_pars;
+    }
+  }
+  m_msgs << actab_p.getFormattedString() << endl;
+  
+  // Part 4: Event Posting Information
   m_msgs << endl;
   m_msgs << "P/Tot  P/Loc  T/Total   T/Local  Variable/Var" << endl;
   m_msgs << "-----  -----  --------  -------  ------------" << endl;

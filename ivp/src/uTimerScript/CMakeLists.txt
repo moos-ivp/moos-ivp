@@ -22,6 +22,7 @@ SET(SRC
    RandVarUniform.cpp
    RandVarGaussian.cpp
    RandomPair.cpp
+   RandomPairSet.cpp
    RandPairPoly.cpp
    main.cpp)
 

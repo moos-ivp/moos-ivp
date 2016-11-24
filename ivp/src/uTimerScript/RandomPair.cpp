@@ -59,11 +59,19 @@ bool RandomPair::setParam(string param, string value)
 }
 
 //---------------------------------------------------------
-// Procedure: getStringValue
+// Procedure: getStringValue1
 
-string RandomPair::getStringValue() const
+string RandomPair::getStringValue1() const
 {
-  return(m_value_str);
+  return(m_value_str1);
+}
+  
+//---------------------------------------------------------
+// Procedure: getStringValue2
+
+string RandomPair::getStringValue2() const
+{
+  return(m_value_str2);
 }
   
   
