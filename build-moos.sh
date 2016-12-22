@@ -2,6 +2,7 @@
 
 BUILD_TYPE="Release"
 CMD_ARGS=""
+BUILD_BOT_CODE_ONLY="OFF"
 
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
@@ -13,12 +14,15 @@ for ARGI; do
         printf "Recommended:                                   \n"
         printf " -j12   Speed up compile on multi-core machines. \n"
         printf " -k     Keep building after failed component.    \n"
+	printf " -m,    Only build minimal robot apps            \n"
         printf " clean  Clean/remove any previous build.         \n"
         exit 0;
     elif [ "${ARGI}" = "--debug" -o "${ARGI}" = "-d" ] ; then
         BUILD_TYPE="Debug"
     elif [ "${ARGI}" = "--release" -o "${ARGI}" = "-r" ] ; then
         BUILD_TYPE="Release"
+    elif [ "${ARGI}" = "--minrobot" -o "${ARGI}" = "-m" ] ; then
+        BUILD_BOT_CODE_ONLY="ON"
     else
 	CMD_ARGS=$CMD_ARGS" "$ARGI
     fi
@@ -69,18 +73,28 @@ make -j12 ${CMD_ARGS}
 #===================================================================
 # Part #3:  BUILD MOOS GUI TOOLS
 #===================================================================
-cd "${INVOC_ABS_DIR}/MOOS/MOOSToolsUI"
 
-echo "Invoking cmake..." `pwd`
-cmake -DBUILD_CONSOLE_TOOLS=ON                               \
-      -DBUILD_GRAPHICAL_TOOLS=ON                             \
-      -DBUILD_UPB=ON                                         \
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
-      -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${INVOC_ABS_DIR}/bin  \
-      -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}" ./          
+printf "+++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+printf "MOOS_BUILD_BOT_CODE_ONLY: ${BUILD_BOT_CODE_ONLY}   \n"
+printf "+++++++++++++++++++++++++++++++++++++++++++++++++++\n"
+if [ ${BUILD_BOT_CODE_ONLY} = "OFF" ] ; then
+
+    cd "${INVOC_ABS_DIR}/MOOS/MOOSToolsUI"
     
-echo ""; echo "Invoking make..." `pwd`; echo ""
-make -j12 ${CMD_ARGS}
+    echo "Invoking cmake..." `pwd`
+    cmake -DBUILD_CONSOLE_TOOLS=ON                               \
+	-DBUILD_GRAPHICAL_TOOLS=ON                             \
+	-DBUILD_UPB=ON                                         \
+	-DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
+	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${INVOC_ABS_DIR}/bin  \
+	-DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}" ./          
+    
+    echo ""; echo "Invoking make..." `pwd`; echo ""
+    make -j12 ${CMD_ARGS}    
+fi
+
+
+
 
 #===================================================================
 # Part #4:  BUILD PROJ4
