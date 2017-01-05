@@ -24,7 +24,7 @@
 (setq moos-app-and-keyword-list
       (list
       '("ANTLER" "MSBetweenLaunches" "Run" "NewConsole")
-      '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "rand_var" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp" "time_zero")
+      '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "rand_var" "randvar" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp" "time_zero" "pause_variable" "forward_variable")
       '("uProcessWatch"  "watch" "watch_all" "nowatch" "allow_retractions" "summary_wait" "post_mapping")
       '("uSimMarine"  "start_x" "start_y" "start_heading" "start_speed" "start_depth" "start_pos" "drift_x" "drift_y" "rotate_speed" "drift_vector" "buoyancy_rate" "max_acceleration" "max_deceleration" "max_depth_rate" "max_depth_rate_speed" "sim_pause" "dual_state" "thrust_reflect" "thrust_factor" "turn_rate" "thrust_map" "prefix" "default_water_depth" "trim_tolerance" "max_trim_delay" "max_rudder_degs_per_sec")
       '("pHelmIvP" "term_report_interval" "ivp_behavior_dir" "behaviors" "domain" "start_engaged" "allow_disengaged" "disengage_on_allstop" "other_override_var" "node_skew" "ok_skew" "verbose" "bhv_dir_not_found_ok" "start_in_drive" "kcache")
@@ -34,10 +34,11 @@
       '("pMarineViewer" "tiff_file" "set_pan_x" "set_pan_y" "zoom" "center_view" "vehicle_shape_scale" "hash_delta" "hash_shade" "hash_viewable" "full_screen" "polygon_viewable_all" "polygon_viewable_labels" "seglist_viewable_all" "seglist_viewable_labels" "point_viewable_all" "point_viewable_labels" "vector_viewable_all" "vector_viewable_labels" "circle_viewable_all" "circle_viewable_labels" "grid_viewable_all" "grid_viewable_labels" "grid_opaqueness" "datum_viewable_all" "datum_viewable_labels" "marker_viewable_all" "marker_viewable_labels" "oparea_viewable_all" "oparea_viewable_labels" "drop_point_viewable_all" "drop_point_coords" "drop_point_vertex_size" "comms_pulse_viewable_all" "vehicles_viewable" "vehicles_name_mode" "stale_report_thresh" "stale_remove_thresh" "vehicles_active_color" "vehicles_inactive_color" "trails_viewable" "trails_color" "trails_point_size" "bearing_lines" "appcast_viewable" "refresh_mode" "nodes_font_size" "procs_font_size" "appcast_font_size" "appcast_color_scheme" "appcast_width" "appcast_height" "scope" "action" "action+" "button_one" "button_two" "button_three" "button_four" "op_vertex" "marker" "marker_scale" "vehicles_shape_scale" "vcolor" "cmd")
       '("uFldContactRangeSensor" "push_distance" "pull_distance" "push_dist" "pull_dist" "ping_wait" "report_vars" "ground_truth" "verbose" "display_pulses" "ping_color" "echo_color" "reply_color" "allow_echo_types" "rn_uniform_pct" "rn_gaussian_sigma" "sensor_arc")
       '("uFldNodeComms" "comms_range" "critical_range" "stale_time" "min_msg_interval" "max_msg_length" "view_node_rpt_pulses" "verbose" "stealth" "earange" "groups")
-      '("uFldFlagManager" "flag" "grabbed_color" "ungrabbed_color" "default_flag_type" "default_flag_width" "default_flag_range")
+      '("uFldFlagManager" "flag" "grabbed_color" "ungrabbed_color" "default_flag_type" "default_flag_width" "default_flag_range" "grab_post" "near_post" "away_post" "deny_post" "goal_post" "home_post")
       '("uDialogManager" "nickname")
+      '("uFunctionVis")
       '("uSpeechRec" "juliuscof")
-      '("uFldTagManager" "tag_range" "tag_min_interval" "post_color" "hit_color" "miss_color" "zone_one" "zone_two" "team_one" "team_two" "robot_tag_post" "human_tag_post" "human_untag_post" "robot_untag_post" "tag_circle" "tag_circle_color" "tag_circle_range" "zone_one_color" "zone_two_color" "tag_duration")
+      '("uFldTagManager" "tag_range" "tag_min_interval" "post_color" "hit_color" "miss_color" "zone_one" "zone_two" "team_one" "team_two" "robot_tag_post" "human_tag_post" "human_untag_post" "robot_untag_post" "tag_circle" "tag_circle_color" "tag_circle_range" "zone_one_color" "zone_two_color" "tag_duration" "notag_post")
       '("uFldShoreBroker" "warning_on_stale" "bridge" "qbridge")
       '("uCommand" "cmd")
       '("uFldNodeBroker" "keyword" "try_shore_host" "bridge")
