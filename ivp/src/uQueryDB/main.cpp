@@ -31,7 +31,7 @@
 
 using namespace std;
 
-int main(int argc ,char * argv[])
+int main(int argc, char *argv[])
 {
   string mission_file;
   string condition;
@@ -43,7 +43,7 @@ int main(int argc ,char * argv[])
   
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
-    cout << "argv[" << i << "]:[" << argi << "]" << endl;
+    //cout << "argv[" << i << "]:[" << argi << "]" << endl;
     if((argi=="-v") || (argi=="--version") || (argi=="-version"))
       showReleaseInfoAndExit();
     else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
@@ -54,15 +54,15 @@ int main(int argc ,char * argv[])
       showInterfaceAndExit();
     else if((argi == "-q") || (argi == "--quiet"))
       quiet = true;
-    else if(strBegins(argi, "--host="))      
+    else if(strBegins(argi, "--host=") && (server_host==""))
       server_host = argi.substr(7);
     else if(strBegins(argi, "--port="))      
       server_port = atoi(argi.substr(7).c_str());
     else if(strBegins(argi, "--wait="))      
       wait_time = atof(argi.substr(7).c_str());
-    else if(strBegins(argi, "--condition="))      
+    else if(strBegins(argi, "--condition=") && (condition==""))      
       condition = argi.substr(12);
-    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
+    else if((strEnds(argi, ".moos")||strEnds(argi, ".moos++")) && (mission_file==""))
       mission_file = argv[i];    
     else {
       cout << "uQueryDB Unhandled arg: " << argi << endl;
@@ -109,9 +109,14 @@ int main(int argc ,char * argv[])
       cout << "Mission File was provided: " << mission_file << endl;
   }
 
+  if(condition == "") {
+    cout << "A condition must be specified. Exiting now with value 1." << endl;
+    return(1);
+  }
+  
   if(!quiet)
     cout << "Condition: [" << condition << "]" << endl;
-  
+
   query.setLogicCondition(condition);
   query.setVerbose(!quiet);
   query.setWaitTime(wait_time);
