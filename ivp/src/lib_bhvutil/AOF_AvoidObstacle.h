@@ -38,77 +38,38 @@ public: // virtual functions
   double evalBox(const IvPBox*) const; 
   bool   setParam(const std::string&, double);
   bool   setParam(const std::string&, const std::string&);
-  void   setObstacle(const XYPolygon&);
+
+  void   setObstacleOrig(XYPolygon poly) {m_obstacle_orig=poly;}
+  void   setObstacleBuff(XYPolygon poly) {m_obstacle_buff=poly;}
   bool   initialize();
-  bool   postInitialize();
-
-  //unsigned int size() {return(m_obstacle_orig.size());}
-  
-  bool      obstacleSet() {return(m_obstacle_orig.size() > 0);}
-  bool      ownshipInObstacle(bool use_buffered=false);
-  bool      isObstaclePert();
-  double    distToObstacleBuff();
-  double    distToObstacleOrig();
- 
-  bool      bearingMinMaxToBufferPoly(double& bmin, double& bmax);
-
-  XYPolygon getObstacleOrig() const {return(m_obstacle_orig);}
-  XYPolygon getObstacleBuff() const {return(m_obstacle_buff);}
 
   std::string getDebugMsg() {return(m_debug_msg);}
-
- protected: // Initialization Utilities
-  void   bufferBackOff(double osx, double osy);
-  void   applyBuffer();
-
- protected: // Evaluation Utilities
-  double evalAuxObstacles(const IvPBox*) const;
-  double evalAuxCtrPoints(const IvPBox*) const;
-
-  bool   polyIsSmall(const XYPolygon&, double) const;
 
  private: // Config variables
   double m_osx;
   double m_osy;
   double m_osh;
-  double m_activation_dist;
   double m_allowable_ttc;
-  double m_buffer_dist;
 
   bool   m_osx_set;
   bool   m_osy_set;
   double m_osh_set;
   bool   m_allowable_ttc_set;
-  bool   m_activation_dist_set;
-  bool   m_buffer_dist_set;
-
-  double m_present_heading_influence;
 
  private: // State variables
   int    m_crs_ix;  // Index of "course" variable in IvPDomain
   int    m_spd_ix;  // Index of "speed"  variable in IvPDomain
+
+  bool   m_obstacle_on_port_curr;
   
   // A vector over the number of obstacles
   XYPolygon   m_obstacle_orig;
   XYPolygon   m_obstacle_buff;
-  bool        m_obstacle_pert;
 
   std::string m_debug_msg;
   
   // A vector over 360 (typically) heading values
-  std::vector<double>    m_cache_distance;
+  std::vector<double>  m_cache_distance;
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
