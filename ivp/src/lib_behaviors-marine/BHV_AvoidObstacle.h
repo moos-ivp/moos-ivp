@@ -3,6 +3,8 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_AvoidObstacle.h                                  */
 /*    DATE: Aug 2nd 2006                                         */
+/*    DATE: Sep 22nd 2014  Mods to single obstacle               */
+/*    DATE: Jan 10th 2016 Substantial re-code after 2014 RobotX  */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -25,13 +27,12 @@
 #define BHV_AVOID_OBSTACLES_X_HEADER
 
 #include "IvPBehavior.h"
-#include "AOF_AvoidObstacle.h"
 #include "XYPolygon.h"
 
 class BHV_AvoidObstacle : public IvPBehavior {
 public:
   BHV_AvoidObstacle(IvPDomain);
-  ~BHV_AvoidObstacle() {delete(m_aof_avoid);}
+  ~BHV_AvoidObstacle() {}
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
@@ -39,17 +40,21 @@ public:
   void         onCompleteState()     {postErasablePolygons();}
   void         onSetParamComplete();
   void         onIdleToRunState();
+  void         onInactiveState();
   void         postConfigStatus();
 
  protected:
-  bool    handleVisualHints(std::string);
-  void    postViewablePolygons();
-  void    postErasablePolygons();
-  bool    checkForObstacleUpdate();
-  double  getRelevance();
-
-protected:
-  AOF_AvoidObstacle *m_aof_avoid;
+  bool   handleVisualHints(std::string);
+  void   postViewablePolygons();
+  void   postErasablePolygons();
+  bool   checkForObstacleUpdate();
+  double getRelevance();
+  bool   applyBuffer();
+  bool   updatePlatformInfo();
+  
+ protected:
+  XYPolygon  m_obstacle_orig;
+  XYPolygon  m_obstacle_buff;
 
   double  m_osx;
   double  m_osy;
@@ -59,7 +64,6 @@ protected:
 
  protected: // Configuration Parameters
   double  m_allowable_ttc;      // Allowable time to collision
-  double  m_activation_dist;    // Outside of which no IPF created
   double  m_buffer_dist;        // Between OS and obstacle(s)
 
   double  m_pwt_outer_dist;

@@ -92,9 +92,7 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
   double dval = atof(param_val.c_str());
   bool non_neg_number = (isNumber(param_val) && (dval >= 0));
 
-  if((param == "pwt_outer_dist") ||          // preferred
-     (param == "active_distance") ||         // deprecated 4/10
-     (param == "active_outer_distance")) {   // deprecated 4/10
+  if(param == "pwt_outer_dist") {
     if(!non_neg_number)
       return(false);
     m_pwt_outer_dist = dval;
@@ -102,8 +100,7 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
       m_pwt_inner_dist = m_pwt_outer_dist;
     return(true);
   }  
-  else if((param == "pwt_inner_dist") ||          // preferred
-	  (param == "active_inner_distance")) {   // deprecated 4/10
+  else if(param == "pwt_inner_dist") {
     if(!non_neg_number)
       return(false);
     m_pwt_inner_dist = dval;
@@ -111,13 +108,8 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
       m_pwt_outer_dist = m_pwt_inner_dist;
     return(true);
   }  
-  else if((param == "completed_dist") ||         // preferred
-	  (param == "completed_distance")) {     // deprecated 4/10
-    if(dval <= 0)
-      return(false);
-    m_completed_dist = dval;
-    return(true);
-  }  
+  else if(param == "completed_dist")
+    return(setNonNegDoubleOnString(m_completed_dist, param_val));
   else if((param == "contact_type_required") && (param_val != "")) {
     m_contact_type_required = tolower(param_val);
     return(true);
@@ -139,14 +131,9 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
     m_max_util_cpa_dist = dval;
     return(true);
   }  
-  else if((param == "min_util_cpa_dist")  ||     // preferred
-	  (param == "collision_distance")) {     // deprecated 4/10
-    if(!non_neg_number)
-      return(false);
-    m_min_util_cpa_dist = dval;
-    return(true);
-  }  
-
+  else if(param == "min_util_cpa_dist")
+    return(setNonNegDoubleOnString(m_min_util_cpa_dist, param_val));
+  
   else if((param == "pwt_grade") ||              // preferred
 	  (param == "active_grade")) {           // deprecated 4/10
     param_val = tolower(param_val);
