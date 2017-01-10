@@ -53,6 +53,7 @@ public:
   virtual void onHelmStart() {}
   virtual void onIdleState() {}
   virtual void onCompleteState() {}
+  virtual void onInactiveState() {}
   virtual void onIdleToRunState() {}
   virtual void onRunToIdleState() {}
   virtual void postConfigStatus() {}
