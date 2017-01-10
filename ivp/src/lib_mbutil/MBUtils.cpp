@@ -1836,7 +1836,7 @@ bool setDoubleOnString(double& given_dval, string str)
 
 //-------------------------------------------------------------
 // Procedure: setNonWhiteVarOnString
-//      Note: This function is designed to possibley set the given 
+//      Note: This function is designed to possibly set the given 
 //            variable based the contents of the str.
 //   Returns: false if the string contains white space.
 //            true  otherwise.
