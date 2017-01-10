@@ -581,6 +581,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     else {
       if(old_activity_state == "active")
 	bhv->postFlags("inactiveflags", true); // true means repeatable
+      bhv->onInactiveState();
     }
     bhv->updateStateDurations("running");
   }
