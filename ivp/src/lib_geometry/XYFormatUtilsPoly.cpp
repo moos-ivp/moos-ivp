@@ -240,7 +240,7 @@ XYPolygon stringAbbreviated2Poly(string str)
 //  Procedure: stringEllipse2Poly  (Method #3)
 //
 /// Initializes a polygon that approximates an ellipse
-/// The format of the string is "type=elipse, x=val, y=val, 
+/// The format of the string is "type=ellipse, x=val, y=val, 
 /// major=val, minor=val, degs=val, rads=val, pts=val,
 //  snap=val, label=val"
 
