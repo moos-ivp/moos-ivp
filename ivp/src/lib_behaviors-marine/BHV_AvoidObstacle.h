@@ -35,9 +35,10 @@ public:
   ~BHV_AvoidObstacle() {}
   
   bool         setParam(std::string, std::string);
+  void         onHelmStart();
   IvPFunction* onRunState();
   void         onIdleState();
-  void         onCompleteState()     {postErasablePolygons();}
+  void         onCompleteState();
   void         onSetParamComplete();
   void         onIdleToRunState();
   void         onInactiveState();
@@ -70,6 +71,8 @@ public:
   double  m_pwt_inner_dist;
   double  m_completed_dist;
 
+  bool    m_no_alert_request;
+  
   std::string  m_pwt_grade;
  
   std::string  m_obstacle_key;

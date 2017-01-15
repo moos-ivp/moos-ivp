@@ -71,6 +71,8 @@ BHV_AvoidObstacle::BHV_AvoidObstacle(IvPDomain gdomain) :
   m_hint_buff_fill_color   = "gray70";
   m_hint_buff_fill_transparency = 0.1;
 
+  m_no_alert_request  = false;
+
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
 }
 
@@ -96,12 +98,13 @@ bool BHV_AvoidObstacle::setParam(string param, string val)
     m_obstacle_orig = new_polygon;
     m_obstacle_relevance = 1;
   }
-  else if((param == "allowable_ttc") && non_neg_number)
-    m_allowable_ttc = dval;
-  else if((param == "buffer_dist") && non_neg_number) 
-    m_buffer_dist = dval;
-  else if((param == "obstacle_key") && (val != ""))
-    m_obstacle_key = val;
+  else if(param == "allowable_ttc")
+    return(setNonNegDoubleOnString(m_allowable_ttc, val));
+  else if(param == "buffer_dist")
+    return(setNonNegDoubleOnString(m_buffer_dist, val));
+  else if(param == "obstacle_key")
+    return(setNonWhiteVarOnString(m_obstacle_key, val));
+  
   else if((param == "pwt_outer_dist") && non_neg_number) {
     m_pwt_outer_dist = dval;
     if(m_pwt_inner_dist > m_pwt_outer_dist)
@@ -114,6 +117,8 @@ bool BHV_AvoidObstacle::setParam(string param, string val)
   }  
   else if((param == "completed_dist") && non_neg_number) 
     m_completed_dist = dval;
+  else if(param == "no_alert_request")
+    return(setBooleanOnString(m_no_alert_request, val));
   else if(param == "visual_hints")
     return(handleVisualHints(val));
   else
@@ -141,12 +146,41 @@ void BHV_AvoidObstacle::onSetParamComplete()
 }
 
 //-----------------------------------------------------------
+// Procedure: onHelmStart()
+
+void BHV_AvoidObstacle::onHelmStart()
+{
+  if(m_no_alert_request || (m_update_var == ""))
+    return;
+
+  string s_alert_range = doubleToStringX(m_pwt_outer_dist,1);
+  string s_cpa_range   = doubleToStringX(m_completed_dist,1);
+  string s_alert_templ = "name=obj_$[OBJNAME] # obstacle_key=$[OBJNAME]";
+
+  string alert_request = "id=obavoid, var=" + m_update_var;
+  alert_request += ", val=" + s_alert_templ;
+  alert_request += ", alert_range=" + s_alert_range;
+  alert_request += ", cpa_range=" + s_cpa_range;
+
+  postMessage("OBJ_ALERT_REQUEST", alert_request);
+}
+
+//-----------------------------------------------------------
 // Procedure: onIdleState
 
 void BHV_AvoidObstacle::onIdleState()
 {
   checkForObstacleUpdate();
   postErasablePolygons();
+}
+
+//-----------------------------------------------------------
+// Procedure: onCompleteState()
+
+void BHV_AvoidObstacle::onCompleteState() 
+{
+  postErasablePolygons();
+  postMessage("OBSTACLE_RESOLVED", m_obstacle_key);
 }
 
 //-----------------------------------------------------------
@@ -182,20 +216,21 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
   if(applyBuffer() == false)
     return(0);
 
-  // Part 2: Determine the relevance
-  m_obstacle_relevance = getRelevance();
-  if(m_obstacle_relevance <= 0)
-    return(0);
-    
 #if 0
-  // Part 3: Handle case where behavior is completed 
-  double os_dist_to_poly = orig_poly.dist_to_poly(m_osx, m_osy);
+  // Part 2: Handle case where behavior is completed 
+  double os_dist_to_poly = m_obstacle_orig.dist_to_poly(m_osx, m_osy);
   if(os_dist_to_poly > m_completed_dist) {
+    postMessage("OBAVOID_COMPLETED", m_obstacle_key);
     setComplete();
     return(0);
   }
 #endif
 
+  // Part 3: Determine the relevance
+  m_obstacle_relevance = getRelevance();
+  if(m_obstacle_relevance <= 0)
+    return(0);
+    
   // Part 4: Build/update the underlying objective function and initialize
   AOF_AvoidObstacle  aof_avoid(m_domain);
   aof_avoid.setObstacleOrig(m_obstacle_orig);
