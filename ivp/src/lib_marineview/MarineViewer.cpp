@@ -282,7 +282,8 @@ bool MarineViewer::setTexture()
   }	  
   
   glBindTexture(GL_TEXTURE_2D, m_textures[0]);
-  if((m_texture_set <2) || m_back_img_mod) {
+
+  if((m_texture_set <1) || m_back_img_mod) {
     unsigned char *img_data;
     unsigned int img_width;
     unsigned int img_height;
