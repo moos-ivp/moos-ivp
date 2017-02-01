@@ -38,7 +38,7 @@
        '("BHV_StationKeep" "center_activate" "hibernation_radius" "inner_radius" "outer_radius" "outer_speed" "station_pt" "swing_time" "transit_speed" "visual_hints")
        '("BHV_Timer")
        '("BHV_AvoidObstacles" "poly" "allowable_ttc" "activation_dist" "buffer_dist" "pwt_outer_dist" "pwt_inner_dist" "obstacle_key" "completed_dist" "visual_hints")
-       '("BHV_AvoidObstacle" "poly" "allowable_ttc" "activation_dist" "buffer_dist")
+       '("BHV_AvoidObstacle" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "buffer_dist" "obstacle_key" "completed_dist" "no_alert_request")
        '("BHV_HSLine" "time_on_leg")
        '("BHV_TestFailure" "failure_type")
        '("BHV_CutRange" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "pwt_inner_dist" "giveup_dist" "patience" "on_no_contact_ok")
