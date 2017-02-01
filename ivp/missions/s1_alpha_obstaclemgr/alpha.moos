@@ -248,7 +248,7 @@ ProcessConfig = pNodeReporter
   AppTick    = 2
   CommsTick	 = 2
 
-  platform_type   = wamv
+  platform_type   = kayak
   platform_length = 10
 }
 

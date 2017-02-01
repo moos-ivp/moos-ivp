@@ -64,7 +64,10 @@ Behavior=BHV_AvoidObstacle
   updates    = OBSTACLE_ALERT
 
 //              poly = pts={0,-60:0,-80:100,-80:100,-60}, label=one
-     allowable_ttc = 60 
-   activation_dist = 20
-       buffer_dist = 11
+
+	pwt_outer_dist = 25
+	pwt_inner_dist = 15
+
+	allowable_ttc = 60 
+  	buffer_dist = 11
  }
