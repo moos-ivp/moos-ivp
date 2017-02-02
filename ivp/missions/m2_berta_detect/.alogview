@@ -1,0 +1,10 @@
+--lp=abe:NAV_X
+--rp=empty
+--panx=-50
+--pany=30
+--zoom=3.2
+--seglist_viewable_all=false
+--bv=avdcol_avdcol_abe:COLREGS_AVOID_MODE_ABE:COLREGS_SUMMARY_ABE
+--bv=avdcol_avdcol_ben:COLREGS_AVOID_MODE_BEN:COLREGS_SUMMARY_BEN
+--bv=avdcol_avdcol_cal:COLREGS_AVOID_MODE_CAL:COLREGS_SUMMARY_CAL
+--bv=avdcol_avdcol_deb:COLREGS_AVOID_MODE_DEB:COLREGS_SUMMARY_DEB
