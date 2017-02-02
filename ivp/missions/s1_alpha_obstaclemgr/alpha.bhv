@@ -63,11 +63,10 @@ Behavior=BHV_AvoidObstacle
 	templating = spawn
   updates    = OBSTACLE_ALERT
 
-//              poly = pts={0,-60:0,-80:100,-80:100,-60}, label=one
 
-	pwt_outer_dist = 25
-	pwt_inner_dist = 15
-
-	allowable_ttc = 60 
-  	buffer_dist = 11
- }
+     allowable_ttc = 5 
+       buffer_dist = 8
+    pwt_outer_dist = 20
+    pwt_inner_dist = 10
+    completed_dist = 25
+}

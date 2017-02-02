@@ -28,6 +28,21 @@ set MODE = LOITERING {
 
 
 //----------------------------------------------
+//Behavior = BHV_OpRegionRecover
+{
+  name      = op_recover
+  pwt       = 100
+  condition = MODE==ACTIVE
+
+      speed = 1.3
+     radius = 3.0
+  nm_radius = 15.0
+     points = $(START_POS)
+     repeat = 10
+       lead = 8
+}
+
+//----------------------------------------------
 Behavior = BHV_Loiter
 {
   name      = loiter

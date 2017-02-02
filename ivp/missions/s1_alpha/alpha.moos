@@ -10,10 +10,13 @@ Community  = alpha
 MOOSTimeWarp = 1
 
 // Forest Lake
-LatOrigin  = 43.825300 
-LongOrigin = -70.330400 
+//LatOrigin  = 43.825300 
+//LongOrigin = -70.330400 
 
-// MIT Sailing Pavilion (use this one)
+LatOrigin  = 42.358436
+LongOrigin = -71.087448
+
+	// MIT Sailing Pavilion (use this one)
 // LatOrigin  = 42.358456 
 // LongOrigin = -71.087589
 
@@ -32,13 +35,32 @@ ProcessConfig = ANTLER
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
 
-	Run = uFunctionVis    @ NewConsole = false
+	//Run = uFunctionVis    @ NewConsole = false
 
 	//  Run = uXMS            @ NewConsole = true
-//  Run = uTimerScript    @ NewConsole = false
+	//Run = uTimerScript    @ NewConsole = false
 
   one = --size=1400x800
   db = --event_log=eventlog
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 2
+  CommsTick = 2
+
+	paused = false
+	reset_time = all-posted
+	reset_max  = unlimited
+	
+	rand_pair = var1=PX, var2=PY, type=poly, key=at_reset, poly="format=ellipse, x=10, y=-75, degs=65, pts=8, major=80, minor=20"
+
+	event = var=VIEW_POINT, val="x=$[PX],y=$[PY],active=true,color=yellow,label=$[TCOUNT]", time=0.5
+
+	
 }
 
 //------------------------------------------
@@ -50,36 +72,6 @@ ProcessConfig = uFunctionVis
   CommsTick = 4                                                 
 }
 
-	
-//------------------------------------------
-// uTermCommand config block
-
-ProcessConfig = uTermCommand                                    
-	{                                                               
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-                                                                
-  CMD  =  1 -->  DEPLOY -->               true
-  CMD  =  2 -->  DEPLOY -->               false                 
-  CMD  =  3 -->  MOOS_MANUAL_OVERIDE -->  true                  
-  CMD  =  4 -->  MOOS_MANUAL_OVERIDE -->  false                 
-  CMD  =  5 -->  STATION_KEEP -->         true                  
-  CMD  =  6 -->  STATION_KEEP -->         false                 
-  CMD  =  7 -->  RETURN -->               true                  
-  CMD  =  8 -->  RETURN -->               false                 
-
-	CMD  =  9 -->  FOO  -->                 hello_world
-	
-  CMD  =  px --> PERMUTATIONS -->         false                 
-  CMD  =  pg --> PERMUTATIONS -->         true                  
-  CMD  =  pr --> LOITER_REMAP -->         true                  
-                                                                
-  CMD  =  hv --> HELM_VERBOSE -->         verbose               
-  CMD  =  ht --> HELM_VERBOSE -->         terse                 
-  CMD  =  hq --> HELM_VERBOSE -->         quiet                 
-}
-
-	
 //------------------------------------------
 // uXMS config block
 
@@ -91,19 +83,6 @@ ProcessConfig = uXMS
   var    = DEPLOY
   var    = RETURN
 }                                                               
-
-//------------------------------------------
-// uTimerScript config block
-
-ProcessConfig = uTimerScript
-{
-  AppTick   = 2
-  CommsTick = 2
-
-	reset_time = all-posted
-	
-  event = var=VIEW_WEDGE, val="x=80,y=-80,rad_low=40,rad_hgh=80,ang_low=45,ang_hgh=135,label=test_wedge,active=true", time = 8.5
-}
 
 //------------------------------------------
 // pLogger config block
@@ -221,18 +200,30 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  tiff_file            = forrest19.tif
+  //tiff_file            = forrest19.tif
+	tiff_file            = MIT_SP.tif
 
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
   vehicle_shape_scale  = 1.5
   hash_delta           = 50
-  hash_shade           = 0.4
+  hash_shade           = 0.22
   hash_viewable        = true
 
   trails_point_size   = 1
 
+  //op_vertex = x=-83, y=-47,    lwidth=1,lcolor=yellow,looped=true,group=moa
+  //op_vertex = x=-45, y=-128.6, lwidth=1,lcolor=yellow,looped=true,group=moa
+  //op_vertex = x=96, y=-61.6,   lwidth=1,lcolor=yellow,looped=true,group=moa
+  //op_vertex = x=58,   y=20,    lwidth=1,lcolor=yellow,looped=true,group=moa
+
+	op_vertex = x=-83, y=-47,    lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=-46.4, y=-129.2, lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=94.6, y=-62.2,   lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=58,   y=20,    lwidth=1,lcolor=yellow,looped=true,group=moa
+
+	
 	//vcolor = alpha=dodgerblue
 
   // Appcast configuration
@@ -268,6 +259,28 @@ ProcessConfig = pMarineViewer
   scope  = VIEW_POLYGON
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
+
+
+	cmd = label=DEPLOY, var=DEPLOY,  sval=true,  receivers=shore
+	cmd = label=DEPLOY, var=MOOS_MANUAL_OVERRIDE, sval=false, receivers=shore
+	cmd = label=DEPLOY, var=RETURN,  sval=false, receivers=shore
+	cmd = label=DEPLOY, var=LOITER,  sval=false, receivers=shore
+
+	cmd = label=RETURN, var=RETURN,  sval=true, receivers=shore
+
+	cmd = label=STATION, var=STATION_KEEP, sval=true, receivers=abe
+	cmd = label=STATION, var=STATION_KEEP, sval=true, receivers=ben
+	cmd = label=STATION, var=STATION_KEEP, sval=true, receivers=cal
+
+	cmd = label=GO-DEEP, var=GO_DEEP, sval=true, receivers=all
+	cmd = label=SURFACE, var=SURFACE, sval=true, receivers=all
+
+  //cmd = label=loiter,   var=LOITER,      sval=true, receivers=gus
+  //cmd = label=loiter,   var=STATION,     sval=false, receivers=gus
+
+	//cmd = label=defend-A, var=DEFEND,      sval={region=a}, receivers=gus:felix
+	//cmd = label=defend-B, var=DEFEND,      sval={region=b}, receivers=gus:felix
+	//cmd = label=defend-C, var=DEFEND,      sval={region=c}, receivers=gus:felix
 
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false

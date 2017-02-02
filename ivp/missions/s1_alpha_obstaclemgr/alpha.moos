@@ -63,6 +63,9 @@ ProcessConfig = uTimerScript
   rand_var    = varname=RND_DX, type=gaussian, min=20, max=50, mu=35, sigma=2, key=at_reset
   rand_var    = varname=RND_DY, type=gaussian, min=-115, max=-85, mu=-100, sigma=2, key=at_reset
                                            
+  rand_var    = varname=RND_EX, type=gaussian, min=40, max=70, mu=55, sigma=2, key=at_reset
+  rand_var    = varname=RND_EY, type=gaussian, min=-130, max=-100, mu=-115, sigma=2, key=at_reset
+                                           
   reset_max   = 40
   reset_time  = all-posted
 
@@ -70,11 +73,13 @@ ProcessConfig = uTimerScript
 	event       = var=VIEW_POINT, val="x=$[RND_BX],y=$[RND_BY],active=true,label=$[TCOUNT],msg=b,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2
 	event       = var=VIEW_POINT, val="x=$[RND_CX],y=$[RND_CY],active=true,label=$[TCOUNT],msg=c,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.3
 	event       = var=VIEW_POINT, val="x=$[RND_DX],y=$[RND_DY],active=true,label=$[TCOUNT],msg=d,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.3
+	event       = var=VIEW_POINT, val="x=$[RND_EX],y=$[RND_EY],active=true,label=$[TCOUNT],msg=e,type=obstacle,label_color=invisible,vertex_color=yellow,vertex_size=2", time=2.6
 
 	event       = var=TRACKED_FEATURE, val="x=$[RND_AX],y=$[RND_AY],label=a,color=1,size=2", time=1.44
 	event       = var=TRACKED_FEATURE, val="x=$[RND_BX],y=$[RND_BY],label=b,color=2,size=2", time=2
 	event       = var=TRACKED_FEATURE, val="x=$[RND_CX],y=$[RND_CY],label=c,color=3,size=2", time=2.3
 	event       = var=TRACKED_FEATURE, val="x=$[RND_DX],y=$[RND_DY],label=d,color=3,size=2", time=2.3
+	event       = var=TRACKED_FEATURE, val="x=$[RND_EX],y=$[RND_EY],label=e,color=3,size=2", time=2.6
 }                                                               
 
 //------------------------------------------
@@ -108,6 +113,7 @@ ProcessConfig = pLogger
   // For variables that are published in a bundle on their first post,
   // explicitly declare their logging request
 
+  Log = OBAVOID_COMPLETED @ 0 NOSYNC
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
   Log = BHV_WARNING @ 0 NOSYNC
 
@@ -249,6 +255,6 @@ ProcessConfig = pNodeReporter
   CommsTick	 = 2
 
   platform_type   = kayak
-  platform_length = 10
+  platform_length = 8
 }
 

@@ -25,7 +25,20 @@ Processconfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
+
+  //Run = uFunctionVis    @ NewConsole = false
 }
+
+//------------------------------------------
+// uFunctionVis
+
+ProcessConfig = uFunctionVis
+{ 
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+}
+
+
 
 #include plug_pShare.moos
 
