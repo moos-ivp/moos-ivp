@@ -159,6 +159,8 @@ protected:
 		   double thickness=0, double scale=1, 
 		   double alpha=100);
 
+  void gl_draw_aux(const std::string);
+  
 protected:
   BackImg   m_back_img;
   BackImg   m_back_img_b;
@@ -185,6 +187,8 @@ protected:
   bool               m_geodesy_initialized;
   OpAreaSpec         m_op_area;
 
+  Fl_Group*          m_main_window;
+  
   std::string m_param_warning;
 };
 

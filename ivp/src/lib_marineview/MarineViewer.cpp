@@ -79,6 +79,8 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 
   m_geodesy_initialized = false;
 
+  m_main_window  = 0;
+
   //  glGenTextures(1, m_textures);
 }
 
@@ -448,6 +450,10 @@ void MarineViewer::draw()
   // Draw the background image if the tiff flag is set
   if(m_geo_settings.viewable("tiff_viewable"))
     drawTiff();
+
+  if(m_main_window == 0)
+    m_main_window  = Fl_Window::current();
+
 }
 
 // ----------------------------------------------------------
@@ -765,7 +771,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
       gl_font(1, 12);
     double offset = 3.0 * (1/m_zoom);
     glRasterPos3f(offset, offset,0);
-    gl_draw(vname.c_str());
+    gl_draw_aux(vname);
   }
 
   if(bng_line.isValid() && m_vehi_settings.isViewableBearingLines()) {
@@ -960,17 +966,15 @@ void MarineViewer::drawMarker(const XYMarker& marker)
 
   if(draw_labels && ((label != "") || (message != ""))) {
     glColor3f(labelc.red(), labelc.grn(), labelc.blu());
-#if 1
     gl_font(1, 10);
     if(m_zoom > 4)
       gl_font(1, 12);
     double offset = 4.0 * (1/m_zoom);
     glRasterPos3f(offset, offset, 0);
     if(message != "")
-      gl_draw(message.c_str());
+      gl_draw_aux(message);
     else
-      gl_draw(label.c_str());
-#endif
+      gl_draw_aux(label);
   }
 
   glPopMatrix();
@@ -1074,7 +1078,7 @@ void MarineViewer::drawOpArea(const OpAreaSpec& op_area)
       for(i=0; i<vsize; i++) {
 	double offset = 3.0 * (1/m_zoom);
 	glRasterPos3f(xpos[i]+offset, ypos[i]+offset, 0);
-	gl_draw(labels[i].c_str());
+	gl_draw_aux(labels[i]);
       }
     }
     glLineWidth(1);
@@ -1285,9 +1289,10 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
     string plabel = poly.get_msg();
     if(plabel == "")
       plabel = poly.get_label();
+
     if((plabel != "") && (plabel != "_null_")) {
       glRasterPos3f(0, 0, 0);
-      gl_draw(plabel.c_str());
+      gl_draw_aux(plabel.c_str());
     }
   }
   //-------------------------------- perhaps draw poly label
@@ -1307,7 +1312,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
       string vlabel = intToString(j);
       int slen = vlabel.length();
       glRasterPos3f(cx, cy, 0);
-      gl_draw(vlabel.c_str());
+      gl_draw_aux(vlabel.c_str());
     }
   }
   //-------------------------------- perhaps draw poly vertex_labels
@@ -1424,10 +1429,11 @@ void MarineViewer::drawWedge(const XYWedge& wedge)
     string plabel = wedge.get_msg();
     if(plabel == "")
       plabel = wedge.get_label();
+
     if(plabel != "") {    
       double offset = 3.0 * (1/m_zoom);
       glRasterPos3f(px+offset, py+offset, 0);
-      gl_draw(plabel.c_str());
+      gl_draw_aux(plabel);
     }
   }
 
@@ -1605,7 +1611,7 @@ void MarineViewer::drawSegList(const XYSegList& segl)
       plabel = segl.get_label();
     if(plabel != "") {
       glRasterPos3f(0, 0, 0);
-      gl_draw(plabel.c_str());
+      gl_draw_aux(plabel);
     }
   }
   //-------------------------------- perhaps draw seglist label
@@ -1808,9 +1814,10 @@ void MarineViewer::drawSeglr(const XYSeglr& seglr)
     glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
     gl_font(1, 10);
     string plabel = seglr.get_msg();
+
     if(plabel != "") {
       glRasterPos3f(0, 0, 0);
-      gl_draw(plabel.c_str());
+      gl_draw_aux(plabel);
     }
   }
 
@@ -1955,10 +1962,12 @@ void MarineViewer::drawVector(const XYVector& vect)
     string plabel = vect.get_msg();
     if(plabel == "")
       plabel = vect.get_label();
+
     if(plabel != "") {
       glRasterPos3f(0, 0, 0);
-      gl_draw(plabel.c_str());
+      gl_draw_aux(plabel);
     }
+
   }
   //-----------------------------end perhaps draw vect label
 
@@ -2300,10 +2309,11 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
     string plabel = circle.get_msg();
     if(plabel == "")
       plabel = circle.get_label();
+
     if(plabel != "") {    
       double offset = 3.0 * (1/m_zoom);
       glRasterPos3f(px+offset, py+offset, 0);
-      gl_draw(plabel.c_str());
+      gl_draw_aux(plabel);
     }
   }
 
@@ -2559,10 +2569,11 @@ void MarineViewer::drawPoint(const XYPoint& point)
     string plabel = point.get_msg();
     if(plabel == "")
       plabel = point.get_label();
+
     if(plabel != "") {    
       double offset = 3.0 * (1/m_zoom);
       glRasterPos3f(px+offset, py+offset, 0);
-      gl_draw(plabel.c_str());
+      gl_draw_aux(plabel);
     }
   }
 
@@ -2645,7 +2656,7 @@ void MarineViewer::drawPoints(const map<string, XYPoint>& points)
 	if(plabel != "") {    
 	  double offset = 3.0 * (1/m_zoom);
 	  glRasterPos3f(px+offset, py+offset, 0);
-	  gl_draw(plabel.c_str());
+	  gl_draw_aux(plabel);
 	}
       }
     }
@@ -2703,7 +2714,7 @@ void MarineViewer::drawText(double px, double py, const string& text,
     glColor3f(font_c.red(), font_c.grn(), font_c.blu());
     gl_font(1, font_size);
     glRasterPos3f(px, py, 0);
-    gl_draw(text.c_str());
+    gl_draw_aux(text);
   }
   glFlush();
   glPopMatrix();
@@ -2728,9 +2739,24 @@ void MarineViewer::drawTextX(double px, double py, const string& text,
     glColor3f(font_c.red(), font_c.grn(), font_c.blu());
     gl_font(1, font_size);
     glRasterPos3f(px, py, 0);
-    gl_draw(text.c_str());
+    gl_draw_aux(text);
   }
   glFlush();
   glPopMatrix();
 }
 
+//-------------------------------------------------------------
+// Procedure: gl_draw_aux()
+
+void MarineViewer::gl_draw_aux(const string text)
+{
+  // To manage an FLTK 1.3.4 bug (?) check that the "current" drawing
+  // window the same as the current window upon startup. Otherwis we
+  // may see a crash in FLTK/src/gl_draw() as Fl_Window::curent()
+  // returns a bad pointer.
+  if(Fl_Window::current() == m_main_window) 
+    gl_draw(text.c_str());
+}
+
+
+  
