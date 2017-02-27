@@ -9,6 +9,8 @@ Community  = alpha
 
 MOOSTimeWarp = 1
 
+TERM_REPORTING = false
+
 // Forest Lake
 //LatOrigin  = 43.825300 
 //LongOrigin = -70.330400 
@@ -37,9 +39,6 @@ ProcessConfig = ANTLER
 
 	//Run = uFunctionVis    @ NewConsole = false
 
-	//  Run = uXMS            @ NewConsole = true
-	//Run = uTimerScript    @ NewConsole = false
-
   one = --size=1400x800
   db = --event_log=eventlog
 }
@@ -60,7 +59,6 @@ ProcessConfig = uTimerScript
 
 	event = var=VIEW_POINT, val="x=$[PX],y=$[PY],active=true,color=yellow,label=$[TCOUNT]", time=0.5
 
-	
 }
 
 //------------------------------------------
