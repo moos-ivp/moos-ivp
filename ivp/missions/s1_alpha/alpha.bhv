@@ -14,7 +14,6 @@ Behavior = BHV_Waypoint
 
   updates    = WPT_UPDATE
   perpetual  = true
-//  templating = clone
 
                 lead = 8
          lead_damper = 1
@@ -25,16 +24,10 @@ Behavior = BHV_Waypoint
          slip_radius = 15.0
 	efficiency_measure = all
 
-   //          polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
 
-             polygon = pts={-2,-21:44,-2:56,-29:37,-48:10,-49}
-               order = reverse
-             repeat = 10000
-
-// uPokeDB alpha.moos++ WPT_UPDATE="name=1#polygon=60,-50 : 60,-170 : 150,-170 : 180,-110 : 150,-50#duration=20"
-// uPokeDB alpha.moos++ WPT_UPDATE="name=1#speed=2"
-
-//	ipf_type = roc
+               order = normal
+             repeat  = 1
 
     visual_hints = nextpt_color=yellow
     visual_hints = nextpt_vertex_size=8
@@ -79,5 +72,3 @@ Behavior=BHV_ConstantSpeed
 	
 }
 
-	// uPokeDB alpha.moos SPEED_UPDATE=speed=0.7#duration=20
-	// uPokeDB alpha.moos RETURN_UPDATE=slip_radius=7

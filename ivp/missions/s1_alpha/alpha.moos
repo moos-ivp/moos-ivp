@@ -12,13 +12,13 @@ MOOSTimeWarp = 1
 TERM_REPORTING = false
 
 // Forest Lake
-//LatOrigin  = 43.825300 
-//LongOrigin = -70.330400 
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
 
-LatOrigin  = 42.358436
-LongOrigin = -71.087448
+//LatOrigin  = 42.358436
+//LongOrigin = -71.087448
 
-	// MIT Sailing Pavilion (use this one)
+// MIT Sailing Pavilion (use this one)
 // LatOrigin  = 42.358456 
 // LongOrigin = -71.087589
 
@@ -28,58 +28,15 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB          @ NewConsole = false, ExtraProcessParams=db
+  Run = MOOSDB          @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = uSimMarine	    @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
-  Run = pMarineViewer	  @ NewConsole = false, ExtraProcessParams=one
+  Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-	//Run = uFunctionVis    @ NewConsole = false
-
-  one = --size=1400x800
-  db = --event_log=eventlog
 }
-
-//------------------------------------------
-// uTimerScript config block
-
-ProcessConfig = uTimerScript
-{
-  AppTick   = 2
-  CommsTick = 2
-
-	paused = false
-	reset_time = all-posted
-	reset_max  = unlimited
-	
-	rand_pair = var1=PX, var2=PY, type=poly, key=at_reset, poly="format=ellipse, x=10, y=-75, degs=65, pts=8, major=80, minor=20"
-
-	event = var=VIEW_POINT, val="x=$[PX],y=$[PY],active=true,color=yellow,label=$[TCOUNT]", time=0.5
-
-}
-
-//------------------------------------------
-// uFunctionVis
-
-ProcessConfig = uFunctionVis
-{ 
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-}
-
-//------------------------------------------
-// uXMS config block
-
-ProcessConfig = uXMS                                            
-{                                                               
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-                                                                
-  var    = DEPLOY
-  var    = RETURN
-}                                                               
 
 //------------------------------------------
 // pLogger config block
@@ -93,7 +50,6 @@ ProcessConfig = pLogger
 
   // For variables that are published in a bundle on their first post,
   // explicitly declare their logging request
-
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
   Log = REPORT @ 0 NOSYNC
 
@@ -132,8 +88,6 @@ ProcessConfig = uSimMarine
   start_speed   = 0
 
   prefix        = NAV
-
-	//max_rudder_degs_per_sec = 12
 
   turn_rate     = 40
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
@@ -197,8 +151,8 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  //tiff_file            = forrest19.tif
-	tiff_file            = MIT_SP.tif
+  tiff_file            = forrest19.tif
+	//tiff_file            = MIT_SP.tif
 
   set_pan_x            = -90
   set_pan_y            = -280
@@ -210,18 +164,12 @@ ProcessConfig = pMarineViewer
 
   trails_point_size   = 1
 
-  //op_vertex = x=-83, y=-47,    lwidth=1,lcolor=yellow,looped=true,group=moa
-  //op_vertex = x=-45, y=-128.6, lwidth=1,lcolor=yellow,looped=true,group=moa
-  //op_vertex = x=96, y=-61.6,   lwidth=1,lcolor=yellow,looped=true,group=moa
+	//op_vertex = x=-83, y=-47,    lwidth=1,lcolor=yellow,looped=true,group=moa
+  //op_vertex = x=-46.4, y=-129.2, lwidth=1,lcolor=yellow,looped=true,group=moa
+  //op_vertex = x=94.6, y=-62.2,   lwidth=1,lcolor=yellow,looped=true,group=moa
   //op_vertex = x=58,   y=20,    lwidth=1,lcolor=yellow,looped=true,group=moa
 
-	op_vertex = x=-83, y=-47,    lwidth=1,lcolor=yellow,looped=true,group=moa
-  op_vertex = x=-46.4, y=-129.2, lwidth=1,lcolor=yellow,looped=true,group=moa
-  op_vertex = x=94.6, y=-62.2,   lwidth=1,lcolor=yellow,looped=true,group=moa
-  op_vertex = x=58,   y=20,    lwidth=1,lcolor=yellow,looped=true,group=moa
-
-	
-	//vcolor = alpha=dodgerblue
+	// vcolor = alpha=dodgerblue
 
   // Appcast configuration
   appcast_height       = 75
@@ -232,23 +180,18 @@ ProcessConfig = pMarineViewer
   procs_font_size      = medium
   appcast_font_size    = small
   
-  //datum_viewable = true
-  //datum_size     = 18
-  //gui_size = small
+  // datum_viewable = true
+  // datum_size     = 18
+  // gui_size = small
 
-  //left_context[survey-point] = DEPLOY=true
-  //left_context[survey-point] = MOOS_MANUAL_OVERRIDE=false
-  //left_context[survey-point] = RETURN=false
+  // left_context[survey-point] = DEPLOY=true
+  // left_context[survey-point] = MOOS_MANUAL_OVERRIDE=false
+  // left_context[survey-point] = RETURN=false
 
   right_context[return] = DEPLOY=true
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
 
-  scope  = IVPHELM_UPDATE_RESULT
-  scope  = VIEW_WEDGE
-  scope  = MISSION
-  scope  = SURVEY_DIST_TO_NEXT
-  scope  = SURVEY_DIST_TO_PREV
   scope  = RETURN
   scope  = WPT_STAT
   scope  = VIEW_SEGLIST
@@ -256,28 +199,6 @@ ProcessConfig = pMarineViewer
   scope  = VIEW_POLYGON
   scope  = MVIEWER_LCLICK
   scope  = MVIEWER_RCLICK
-
-
-	cmd = label=DEPLOY, var=DEPLOY,  sval=true,  receivers=shore
-	cmd = label=DEPLOY, var=MOOS_MANUAL_OVERRIDE, sval=false, receivers=shore
-	cmd = label=DEPLOY, var=RETURN,  sval=false, receivers=shore
-	cmd = label=DEPLOY, var=LOITER,  sval=false, receivers=shore
-
-	cmd = label=RETURN, var=RETURN,  sval=true, receivers=shore
-
-	cmd = label=STATION, var=STATION_KEEP, sval=true, receivers=abe
-	cmd = label=STATION, var=STATION_KEEP, sval=true, receivers=ben
-	cmd = label=STATION, var=STATION_KEEP, sval=true, receivers=cal
-
-	cmd = label=GO-DEEP, var=GO_DEEP, sval=true, receivers=all
-	cmd = label=SURFACE, var=SURFACE, sval=true, receivers=all
-
-  //cmd = label=loiter,   var=LOITER,      sval=true, receivers=gus
-  //cmd = label=loiter,   var=STATION,     sval=false, receivers=gus
-
-	//cmd = label=defend-A, var=DEFEND,      sval={region=a}, receivers=gus:felix
-	//cmd = label=defend-B, var=DEFEND,      sval={region=b}, receivers=gus:felix
-	//cmd = label=defend-C, var=DEFEND,      sval={region=c}, receivers=gus:felix
 
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
@@ -297,8 +218,8 @@ ProcessConfig = pNodeReporter
   AppTick    = 2
   CommsTick	 = 2
 
-  platform_type   = MOKAI
-  platform_color  = green
+  platform_type   = kayak
+  platform_color  = yellow
   platform_length = 4
 }
 
