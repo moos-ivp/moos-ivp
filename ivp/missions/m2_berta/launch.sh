@@ -5,6 +5,7 @@
 TIME_WARP=1
 JUST_MAKE="no"
 VARIATION="0"
+
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	printf "%s [SWITCHES] [time_warp]   \n" $0

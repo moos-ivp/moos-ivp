@@ -36,7 +36,6 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false, ExtraProcessParams=one
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
-
 	//Run = uFunctionVis    @ NewConsole = false
 
   one = --size=1400x800
