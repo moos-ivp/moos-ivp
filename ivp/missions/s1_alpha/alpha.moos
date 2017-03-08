@@ -3,20 +3,14 @@
 // FILE: alpha.moos
 //-------------------------------------------------
 
-ServerHost = localhost
-ServerPort = 9000
-Community  = alpha
-
+ServerHost   = localhost
+ServerPort   = 9000
+Community    = alpha
 MOOSTimeWarp = 1
-
-TERM_REPORTING = false
 
 // Forest Lake
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
-
-//LatOrigin  = 42.358436
-//LongOrigin = -71.087448
 
 // MIT Sailing Pavilion (use this one)
 // LatOrigin  = 42.358456 
