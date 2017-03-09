@@ -28,15 +28,11 @@ cat > CMakeLists.txt <<EOF
 # Author(s):                              $3
 #--------------------------------------------------------
 
-# FILE(GLOB SRC *.cpp)
-
 SET(SRC
   ${1}.cpp
   ${1}_Info.cpp
   main.cpp
 )
-
-
 
 ADD_EXECUTABLE($2$1 \${SRC})
 
@@ -47,7 +43,6 @@ TARGET_LINK_LIBRARIES($2$1
    pthread)
 
 EOF
-
 
 cat > ${1}.h <<EOF
 /************************************************************/
@@ -68,18 +63,18 @@ class ${1} : public CMOOSApp
    ${1}();
    ~${1}();
 
- protected:
+ protected: // Standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);
    bool Iterate();
    bool OnConnectToServer();
    bool OnStartUp();
+
+ protected:
    void RegisterVariables();
 
  private: // Configuration variables
 
  private: // State variables
-   unsigned int m_iterations;
-   double       m_timewarp;
 };
 
 #endif 
@@ -171,8 +166,6 @@ using namespace std;
 
 ${1}::${1}()
 {
-  m_iterations = 0;
-  m_timewarp   = 1;
 }
 
 //---------------------------------------------------------
@@ -227,7 +220,6 @@ bool ${1}::OnConnectToServer()
 
 bool ${1}::Iterate()
 {
-  m_iterations++;
   return(true);
 }
 
@@ -255,8 +247,6 @@ bool ${1}::OnStartUp()
     }
   }
   
-  m_timewarp = GetMOOSTimeWarp();
-
   RegisterVariables();	
   return(true);
 }
