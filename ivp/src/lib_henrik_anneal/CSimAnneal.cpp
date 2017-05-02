@@ -29,6 +29,7 @@ CSimAnneal::CSimAnneal()
 {
   got_min = false;
   got_max = false;
+  Energy = 0;
 }
 
 CSimAnneal::~CSimAnneal()
