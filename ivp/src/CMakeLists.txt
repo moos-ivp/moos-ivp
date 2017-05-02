@@ -256,7 +256,7 @@ SET(IVP_NON_GUI_APPS
   uSimMarine
   pFrontGridRender
   pFrontEstimate
-  pGradeFrontEstimate
+#  pGradeFrontEstimate
   uFldCTDSensor
   )
 

@@ -20,5 +20,5 @@ ProcessConfig = pBasicContactMgr
 
   alert = id=avd, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
   alert = id=avd, alert_range=40, cpa_range=45, alert_range_color=green
-  alert = id=avd, cpa_range_color=invisible
+ // alert = id=avd, cpa_range_color=invisible
 }
