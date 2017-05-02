@@ -95,7 +95,8 @@ void CSimAnneal::addMeas(CMeasurement new_meas)
   // update energy
   double model = measModel(new_meas.t, new_meas.x, new_meas.y);
   Energy = sqrt((num_meas*pow(Energy,2) + pow(new_meas.temp - model,2))/(num_meas+1)); 
-  cout << ">>> Num_Meas=" << num_meas+1 << " new_meas.temp=" << new_meas.temp 
+  cout << ">>> Num_Meas=" << num_meas+1 << " new_meas.temp=" << new_meas.temp << endl; 
+  cout << "t,x,y=" << new_meas.t << "," << new_meas.x << "," << new_meas.y 
        << " model=" << model << " Energy =" << Energy << endl;
 }
 
