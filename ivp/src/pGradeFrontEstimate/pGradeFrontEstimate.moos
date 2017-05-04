@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pGradeFrontEstimate config block
+
+ProcessConfig = pGradeFrontEstimate
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
