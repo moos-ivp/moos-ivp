@@ -200,6 +200,7 @@ SET(ROBOT_APPS
   pDeadManPost
   pNodeReporter
   pObstacleMgr
+  pFrontEstimate
   uFldMessageHandler
   uFldNodeBroker
   uHelmScope
@@ -255,7 +256,6 @@ SET(IVP_NON_GUI_APPS
   pSearchGrid
   uSimMarine
   pFrontGridRender
-  pFrontEstimate
 #  pGradeFrontEstimate
   uFldCTDSensor
   )
