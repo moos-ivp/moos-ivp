@@ -695,7 +695,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
       ZAIC_SPD spd_zaic(m_domain, "speed");
       spd_zaic.setParams(m_cruise_speed, 0.1, m_cruise_speed+0.4, 70, 20);
       spd_ipf = spd_zaic.extractIvPFunction();
-      spd_ipf->getPDMap()->print();
+      //spd_ipf->getPDMap()->print();
       if(!spd_ipf)
 	postWMessage("Failure on the SPD ZAIC via ZAIC_SPD utility");
     }
