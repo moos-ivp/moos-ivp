@@ -720,8 +720,8 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     
     IvPFunction *crs_ipf = crs_zaic.extractIvPFunction(false);
 
-    cout << "crs pieces: " << crs_ipf->getPDMap()->size() << endl;
-    crs_ipf->getPDMap()->print();
+    //cout << "crs pieces: " << crs_ipf->getPDMap()->size() << endl;
+    //crs_ipf->getPDMap()->print();
 
     
     if(!crs_ipf) 
