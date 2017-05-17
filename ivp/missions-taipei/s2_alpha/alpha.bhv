@@ -2,10 +2,7 @@
 
 initialize   DEPLOY = false
 initialize   RETURN = false
-//initialize   DRIFT_X = 0.5
-//initialize   DRIFT_Y = 0.7
-
-
+initialize   REGION = east
 
 //----------------------------------------------
 Behavior = BHV_Waypoint
@@ -14,6 +11,41 @@ Behavior = BHV_Waypoint
   pwt       = 100
   condition = RETURN = false
   condition = DEPLOY = true
+  condition = REGION = east
+  endflag   = REGION = west
+
+  updates    = WPT_UPDATE
+  perpetual  = true
+
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+               speed = 3   // meters per second
+        capture_line = true
+      capture_radius = 5.0
+         slip_radius = 15.0
+	efficiency_measure = all
+
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+
+               order = normal
+             repeat  = 0
+
+    visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+    visual_hints = nextpt_lcolor=gray70
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = west_waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = REGION = west
   endflag   = RETURN = true
 
   updates    = WPT_UPDATE
@@ -22,22 +54,16 @@ Behavior = BHV_Waypoint
                 lead = 8
          lead_damper = 1
        lead_to_start = true
-               speed = 4.0   // meters per second
+               speed = 3  // meters per second
         capture_line = true
       capture_radius = 5.0
          slip_radius = 15.0
 	efficiency_measure = all
 
-   cycleflag = WPT_UPDATE=order=reverse
-
-             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
-
-      //points = format=lawnmower, label=foxtrot, x=115, y=-100, height=120, width=100, lane_width=12, rows=north-south, startx=00, starty=0, degs=0
+             points = -35,-65 : -35,-125 : 20,-125 : 20, -65
 
                order = normal
-	       repeat  = 1
-
-	       // --panx=-90 --pany=70  --zoom=4.4 
+             repeat  = 2
 
     visual_hints = nextpt_color=yellow
     visual_hints = nextpt_vertex_size=8
@@ -58,31 +84,10 @@ Behavior=BHV_Waypoint
   endflag    = RETURN = false
   endflag    = DEPLOY = false
   endflag    = MISSION = complete
-
-                lead = 8
-         lead_damper = 1
-       lead_to_start = true
-
+	
            speed = 2.0
   capture_radius = 2.0
      slip_radius = 8.0
-          point = 0,-20
+          points = 0,-20
  }
-
-//----------------------------------------------
-Behavior=BHV_ConstantSpeed
-{
-  name       = const_speed
-  pwt        = 200
-  condition  = SPD=true
-  condition  = DEPLOY = true
-  perpetual  = true
-  updates    = SPEED_UPDATE
-  endflag    = SPD = false
-
-     speed = 0.5
-		 duration = 10
-		 duration_reset = CONST_SPD_RESET=true
-	
-}
 

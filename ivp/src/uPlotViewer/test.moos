@@ -30,7 +30,7 @@ ProcessConfig = uTimerScript
   delay_reset    = 0                                            
   delay_start    = 0                                            
 
-  randvar        = varname=UVAR, min=0, max=359, key=at_post
+  randvar        = varname=UVAR, min=0, max=500, key=at_post
   randvar        = varname=GVAR, type=gaussian, min=0, max=400, mu=200, sigma=20, key=at_post
   randvar        = varname=LGVAR, type=gaussian, min=0, max=400, mu=80, sigma=10, key=at_post
 

@@ -237,6 +237,7 @@ bool MarineViewer::setParam(string param, double v)
     m_zoom *= v;
     if(m_zoom < 0.00001)      
       m_zoom = 0.00001;
+    cout << "zoom:" << m_zoom << endl;
   }
   else if(param == "pan_x") {
     double pix_shift = v * m_back_img.get_pix_per_mtr_x();

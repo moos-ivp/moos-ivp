@@ -1,0 +1,35 @@
+
+This mission differs from the s1_alpha mission:
+
+Students:
+
+1. Add extra survey behavior executed after the first surey behavior
+ 
+   a. call it west_waypt_survey
+
+   b. give it points:
+      points = -35,-65 : -35,-125 : 20,-125 : 20, -65
+
+2. Condition the new behavior such that it only runs when
+   
+   condition = REGION = west
+
+3. Make sure the first behavior only runs when 
+
+   condition = REGION = east
+
+4. Initialize REGION to be east at the startup
+
+5. Make sure the end flag for the first behavior now triggers the 
+   second waypoint behavior, and not a return home
+
+6. Make sure the endflag for the second waypoint behavior triggers
+   the return home
+
+7. Change the first survey behavior to do its thing once, not twice
+
+8. Change the second survey behavior to do its thing 3X, not twice
+
+EXTRA
+ 
+  Add a scope in pMarineViewer on the variable REGION

@@ -32,7 +32,6 @@
 #include "IvPFunction.h"
 #include "InfoBuffer.h"
 #include "CPAEngine.h"
-//#include "KCache.h"
 #include "VarDataPair.h"
 #include "LogicCondition.h"
 #include "BehaviorReport.h"

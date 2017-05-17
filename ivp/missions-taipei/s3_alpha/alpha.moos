@@ -73,11 +73,11 @@ ProcessConfig = uProcessWatch
 
 ProcessConfig = uSimMarine
 {
-  AppTick  	= 4
-  CommsTick	= 4
+  AppTick  	= 5
+  CommsTick	= 5
 
   start_x       = 0
-  start_y       = -20
+  start_y       = -40
   start_heading = 180
   start_speed   = 0
 
@@ -197,6 +197,9 @@ ProcessConfig = pMarineViewer
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
+
+  button_three = WEST # REGION=west
+  button_four  = EAST # REGION=east
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
