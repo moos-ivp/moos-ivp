@@ -30,28 +30,7 @@ ProcessConfig = ANTLER
   Run = pMarineViewer   @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = false
 }
-
-//------------------------------------------
-// uTimerScript config block
-
-ProcessConfig = uTimerScript                                    
-{                                                               
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-                                                                
-  condition   = DEPLOY = true
-
-  randvar     = varname=RND_DEPTH, min=20, max=80, key=at_reset
-
-  event       = var=DEPTH_UPDATE, val=depth=$[RND_DEPTH], time=120  
-
-  reset_max   = nolimit
-  reset_time  = all-posted
-
-}                                                      
-
 
 //------------------------------------------
 // pLogger config block
@@ -109,11 +88,10 @@ ProcessConfig = uSimMarine
   thrust_reflect = true
 
 
-  buoyancy_rate        = 0.025
+  buoyancy_rate        = 0.125
   max_depth_rate       = 5
   max_depth_rate_speed = 2.0
   default_water_depth  = 400
-
 }
 
 //------------------------------------------
