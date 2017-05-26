@@ -139,8 +139,11 @@ int main(int argc, char *argv[])
       sort_style = "bysrc_descending";
   }
 
-  //cout << "Processing on file : " << alogfile << endl;
-
+  if(alogfile == "") {
+    cout << "No alog file given - exiting" << endl;
+    exit(1);
+  }
+  
   ScanHandler handler;
   handler.setParam("sort_style",  sort_style);
   handler.setParam("proc_colors", proc_colors);
