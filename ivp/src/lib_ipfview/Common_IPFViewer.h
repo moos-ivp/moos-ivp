@@ -33,6 +33,7 @@
 #include "IvPFunction.h"
 #include "ColorPack.h"
 #include "FColorMap.h"
+#include "QuadSet1D.h"
 
 class Common_IPFViewer : public Fl_Gl_Window
 {
@@ -112,6 +113,7 @@ protected:
   bool       m_draw_ship;
   double     m_ship_scale;
   
+  QuadSet1D  m_quadset_1d;
   QuadSet    m_quadset;
   bool       m_quadset_refresh_pending;
 

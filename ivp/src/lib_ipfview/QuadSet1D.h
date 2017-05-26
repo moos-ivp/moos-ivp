@@ -31,47 +31,28 @@
 #include "IvPDomain.h"
 #include "FColorMap.h"
 
-class QuadSet 
+class QuadSet1D 
 {
 public:
-  QuadSet();
-  ~QuadSet() {}
+  QuadSet1D();
+  ~QuadSet1D() {}
 
   // Set/Apply Information
   bool   applyIPF(IvPFunction *ipf, std::string src="");
 
-  bool   applyIPF1D(IvPFunction *ipf, std::string src);
-  bool   applyIPF2DHS(IvPFunction *ipf);
-  bool   applyIPF2D(IvPFunction *ipf);
-
-  void   applyColorMap(const FColorMap&);
-  void   applyColorMap(const FColorMap&, double low, double hgh);
-  void   addQuadSet(const QuadSet&);
-  void   normalize(double, double);
-  void   addQuad3D(Quad3D quad)              {m_quads.push_back(quad);}
-  void   setQuadSetDim(unsigned int v)       {m_quadset_dim = v;}
+  void   addQuadSet1D(const QuadSet1D&);
   void   setIvPDomain(IvPDomain);
   
   // Get Information
   bool         isEmpty1D() const             {return(size1D()==0);}
-  bool         isEmpty2D() const             {return(size2D()==0);}
   bool         isEmptyND() const;
-  unsigned int getQuadSetDim() const         {return(m_quadset_dim);}
-  Quad3D       getQuad(unsigned int i) const {return(m_quads[i]);}
-  double       getMaxVal() const             {return(m_maxpt_val);}
-  double       getMinVal() const             {return(m_minpt_val);}
   double       getPriorityWt() const         {return(m_ipf_priority_wt);}
   IvPDomain    getDomain() const             {return(m_ivp_domain);}
-  unsigned int size2D() const                {return(m_quads.size());}
   unsigned int size1D() const;
   unsigned int size1DFs() const              {return(m_domain_pts.size());}
 
-  double       getMaxPoint(std::string) const;
-  unsigned int getMaxPointQIX(std::string) const;
   void         print() const;
 
-  void         resetMinMaxVals();
-  
   std::vector<double>  getDomainPts(unsigned int=0)  const;
   std::vector<double>  getRangeVals(unsigned int=0)  const;
   std::vector<bool>    getDomainPtsX(unsigned int=0) const;
@@ -80,24 +61,8 @@ public:
   std::string          getSource(unsigned int=0) const;
   
 protected:
-  std::vector<Quad3D> m_quads;
-
   IvPDomain    m_ivp_domain;
   double       m_ipf_priority_wt;
-  unsigned int m_quadset_dim;
-
-  // Cache Min/Max values. These are evaluated once all the Quads
-  // have been calculated and added.
-  double      m_maxpt_val;   // Max utilty all quad vertices
-  double      m_minpt_val;
-  double      m_max_crs_qix; // Index in ivp_domain of max course
-  double      m_max_spd_qix;
-  double      m_max_crs;     // The course value of the max point.
-  double      m_max_spd;
-
-  // Values of the objecive function can be made to snap to 
-  // intervals. Can be used to alter the rendering.
-  double      m_snap_val;
 
   // Values for representing 1D IPFs
   // Each outer index below is for one source, typically:

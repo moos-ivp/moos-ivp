@@ -46,7 +46,9 @@ IvPFuncViewerX::IvPFuncViewerX(int x, int y, int w, int h, const char *l)
   m_draw_pclines = false;
   
   m_mutable_text_size = 10;
- 
+
+  m_showing_1d = false;
+  
   setParam("reset_view", "2");
 
   //m_clear_color.setColor("0.6,0.7,0.5");
@@ -64,6 +66,12 @@ void IvPFuncViewerX::draw()
     m_quadset_refresh_pending = false;
   }
 
+  if(m_showing_1d) {
+    cout << "SHOWING 1D!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+    Common_IPFViewer::drawQuadSet1D();
+    return;
+  }
+  
   Common_IPFViewer::draw();
 
   if(m_quadset.size() != 0) {
@@ -96,15 +104,6 @@ void IvPFuncViewerX::draw()
   ColorPack cpack("black");
   drawText2(5, h()-15, m_scope_a, cpack, m_mutable_text_size);
   drawText2(5, 5, m_scope_b, cpack, m_mutable_text_size);
-}
-
-//-------------------------------------------------------------
-// Procedure: resize()
-
-void IvPFuncViewerX::resize(int gx, int gy, int gw, int gh)
-{
-  return;  // Invoked solely by the parent
-  //Common_IPFViewer::resize(gx, gy, gw, gh);
 }
 
 //-------------------------------------------------------------
@@ -363,6 +362,12 @@ double IvPFuncViewerX::getCurrTime() const
 
 string IvPFuncViewerX::getCurrPriority(string source) 
 {
+  cout << "SOURCE: " << source << endl;
+  map<string, IPF_Plot>::iterator p;
+  for(p=m_map_ipf_plots.begin(); p!=m_map_ipf_plots.end(); p++)
+    cout << " a source: " << p->first << endl;
+  
+  
   if(m_map_ipf_plots.count(source) == 0)
     return("--");
 
@@ -441,6 +446,14 @@ bool IvPFuncViewerX::buildIndividualIPF(string source)
   if(!ipf)
     return(false);
 
+  if(ipf->getPDMap()->getDomain().hasOnlyDomain("depth")) {
+    m_quadset_1d = buildQuadSet1DFromIPF(ipf, source);
+    m_showing_1d = true;
+    return(true);
+  }
+  m_showing_1d = false;
+
+  
   ipf = expandHdgSpdIPF(ipf, ivp_domain);
 
   bool dense = false;

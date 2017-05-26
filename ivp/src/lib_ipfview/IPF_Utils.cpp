@@ -39,12 +39,8 @@ QuadSet buildQuadSetFromIPF(IvPFunction *ipf, bool dense)
 
   IvPDomain ivp_domain = ipf->getPDMap()->getDomain();
   int dim = ivp_domain.size();
-  if((dim != 1) && (dim != 2))
+  if((dim != 2))
     return(null_quadset);
-
-  
-  if(dim == 1)
-    return(buildQuadSet1DFromIPF(ipf, "hello_source"));
 
   if(dense)
     return(buildQuadSetDense2DFromIPF(ipf));
@@ -55,10 +51,16 @@ QuadSet buildQuadSetFromIPF(IvPFunction *ipf, bool dense)
 //-------------------------------------------------------------
 // Procedure: buildQuadSet1DFromIPF
 
-QuadSet buildQuadSet1DFromIPF(IvPFunction *ipf, string source)
+QuadSet1D buildQuadSet1DFromIPF(IvPFunction *ipf, string source)
 {
-  QuadSet null_quadset;
-  return(null_quadset);
+  QuadSet1D null_quadset;
+  if(!ipf)
+    return(null_quadset);
+
+  QuadSet1D quadset;
+  quadset.applyIPF(ipf, source);
+  
+  return(quadset);
 }
 
 

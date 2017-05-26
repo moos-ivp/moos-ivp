@@ -31,6 +31,7 @@
 #include "ALogDataBroker.h"
 #include "IPF_Plot.h"
 #include "LogPlot.h"
+#include "QuadSet1D.h"
 
 class IvPFuncViewerX : public Common_IPFViewer
 {
@@ -40,7 +41,6 @@ class IvPFuncViewerX : public Common_IPFViewer
 
   void   draw();
   int    handle(int event);
-  void   resize(int, int, int, int);
 
  public: // Setters
   void   setDataBroker(ALogDataBroker, std::string vname);
@@ -85,6 +85,9 @@ class IvPFuncViewerX : public Common_IPFViewer
   bool   buildIndividualIPF(std::string source="");
 
 private:
+  //QuadSet1D      m_quadset_1d;
+  bool           m_showing_1d;
+  
   double         m_curr_time;
   unsigned int   m_curr_iter;
   double         m_curr_heading;

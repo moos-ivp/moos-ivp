@@ -27,6 +27,7 @@
 #include <vector>
 #include <string>
 #include "QuadSet.h"
+#include "QuadSet1D.h"
 #include "IvPFunction.h"
 #include "AOF.h"
 
@@ -35,14 +36,14 @@ QuadSet  buildQuadSetFromIPF(IvPFunction*, bool dense=false);
 QuadSet  buildQuadSetDense2DFromIPF(IvPFunction*);
 
 QuadSet  buildQuadSet2DFromIPF(IvPFunction*);
-QuadSet  buildQuadSet1DFromIPF(IvPFunction*, std::string);
+
+//QuadSet  buildQuadSet1DFromIPF(IvPFunction*, std::string);
+
+QuadSet1D  buildQuadSet1DFromIPF(IvPFunction*, std::string);
 
 
 std::vector<Quad3D> buildQuadsFromCache(const std::vector<std::vector<double> >&);
 
 
 #endif
-
-
-
 

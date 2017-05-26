@@ -8,6 +8,7 @@ SET(SRC
   Common_IPF_GUI.cpp
   Quad3D.cpp
   QuadSet.cpp
+  QuadSet1D.cpp
   IPFViewUtils.cpp  
   IPF_Entry.cpp
   IPF_Bundle.cpp
@@ -21,6 +22,7 @@ SET(HEADERS
   Common_IPF_GUI.h
   Quad3D.h
   QuadSet.h
+  QuadSet1D.h
   IPF_Entry.h
   IPF_Bundle.h
   IPF_BundleSeries.h

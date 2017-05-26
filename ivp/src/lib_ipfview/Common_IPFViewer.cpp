@@ -349,7 +349,7 @@ bool Common_IPFViewer::drawQuadSet(const QuadSet& quadset)
 
 void Common_IPFViewer::drawQuadSet1D()
 {
-#if 0
+#if 1
   double clear_red = m_clear_color.red();
   double clear_grn = m_clear_color.grn();
   double clear_blu = m_clear_color.blu();
@@ -372,15 +372,15 @@ void Common_IPFViewer::drawQuadSet1D()
   vector<ColorPack> key_colors;
   vector<string>    key_strings;
 
-  unsigned int fix, fsize = m_quadset.size1DFs();
+  unsigned int fix, fsize = m_quadset_1d.size1DFs();
   
   for(fix=0; fix<fsize; fix++) {
 
-    vector<double>  domain_pts     = m_quadset.getDomainPts(fix);
-    vector<bool>    domain_ptsx    = m_quadset.getDomainPtsX(fix);
-    vector<double>  range_vals     = m_quadset.getRangeVals(fix);
-    double          range_val_max  = m_quadset.getRangeValMax(0);
-    string          source         = m_quadset.getSource(fix);
+    vector<double>  domain_pts     = m_quadset_1d.getDomainPts(fix);
+    vector<bool>    domain_ptsx    = m_quadset_1d.getDomainPtsX(fix);
+    vector<double>  range_vals     = m_quadset_1d.getRangeVals(fix);
+    double          range_val_max  = m_quadset_1d.getRangeValMax(0);
+    string          source         = m_quadset_1d.getSource(fix);
 
     ColorPack linec("firebrick");
     if((fix==1) || (fsize == 1))
@@ -402,7 +402,7 @@ void Common_IPFViewer::drawQuadSet1D()
     glBegin(GL_POINTS);
     unsigned int j, xsize = domain_ptsx.size();
 
-    double domain_val_max = m_quadset.getDomain().getVarHigh(0);
+    double domain_val_max = m_quadset_1d.getDomain().getVarHigh(0);
     double x_stretch = ((double)(m_grid_width)  / domain_val_max);
     double y_stretch = ((double)(m_grid_height) / (double)(range_val_max));
     for(j=0; j<xsize; j++) {
@@ -441,8 +441,12 @@ void Common_IPFViewer::drawQuadSet1D()
   glFlush();
   glPopMatrix();
 
-  draw1DKeys(key_strings, key_colors);
 #endif
+  draw1DKeys(key_strings, key_colors);
+  draw1DAxes(m_quadset_1d.getDomain());
+  draw1DLabels(m_quadset_1d.getDomain());
+  draw1DLine();
+
 }
 
 //-------------------------------------------------------------
@@ -887,7 +891,7 @@ void Common_IPFViewer::drawMaxPoint(double crs, double spd)
 
 void Common_IPFViewer::draw1DAxes(const IvPDomain& domain)
 {
-#if 0
+#if 1
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
@@ -903,7 +907,7 @@ void Common_IPFViewer::draw1DAxes(const IvPDomain& domain)
     units += 5;
     lines = (domain_rng / units);
   }
-  
+
   int mark_line = 100;
   if(units <= 10)
     mark_line = 50;
@@ -980,7 +984,7 @@ void Common_IPFViewer::draw1DAxes(const IvPDomain& domain)
 
 void Common_IPFViewer::draw1DLabels(const IvPDomain& domain)
 {
-#if 0
+#if 1
   if(m_grid_height < 200)
     gl_font(1, 10);
   else
@@ -1001,7 +1005,7 @@ void Common_IPFViewer::draw1DLabels(const IvPDomain& domain)
   drawText2(xpos, ypos, dh_str, cpack, 10);
 
   // Draw the max value on the y-axis
-  double range_hgh = m_quadset.getRangeValMax();
+  double range_hgh = m_quadset_1d.getRangeValMax();
 
   string rh_str    = uintToCommaString((unsigned int)(range_hgh));
   unsigned int indent  = 2 * rh_str.length() + 2;
@@ -1024,7 +1028,7 @@ void Common_IPFViewer::draw1DLabels(const IvPDomain& domain)
 void Common_IPFViewer::draw1DKeys(vector<string> key_strings, 
 				  vector<ColorPack> key_colors)
 {
-#if 0
+#if 1
   if(key_strings.size() != key_colors.size())
     return;
   
@@ -1067,17 +1071,17 @@ void Common_IPFViewer::draw1DKeys(vector<string> key_strings,
 
 void Common_IPFViewer::draw1DLine(double val, string label)
 {
-#if 0
+#if 1
   ColorPack cpack("purple");
   double kred = cpack.red();
   double kgrn = cpack.grn();
   double kblu = cpack.blu();
   
-  unsigned int dom_pts = m_quadset.getDomainPts().size();
+  unsigned int dom_pts = m_quadset_1d.getDomainPts().size();
   double x_stretch     = ((double)(m_grid_width)  / (double)(dom_pts));
 
-  unsigned int domain_ix = m_quadset.getDomainIXMax();
-  double domain_val      = m_quadset.getDomain().getVal(0, domain_ix);
+  unsigned int domain_ix = m_quadset_1d.getDomainIXMax();
+  double domain_val      = m_quadset_1d.getDomain().getVal(0, domain_ix);
 
   // Draw the label for the line
   string mstr = "preferred_depth = " + doubleToStringX(domain_val);
@@ -1128,8 +1132,8 @@ void Common_IPFViewer::draw1DLineX(double value,
 				   int offset,
 				   ColorPack cpack)
 {
-#if 0
-  IvPDomain domain = m_quadset.getDomain();
+#if 1
+  IvPDomain domain = m_quadset_1d.getDomain();
   if(domain.size() != 1)
     return;
 
