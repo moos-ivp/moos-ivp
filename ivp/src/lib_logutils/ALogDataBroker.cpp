@@ -778,17 +778,14 @@ EncounterPlot ALogDataBroker::getEncounterPlot(unsigned int aix)
 
 VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
 {
-  cout << "in getVPlugPlot 11111" << endl;
   VPlugPlot vplot;
 
-  cout << "in getVPlugPlot 22222" << endl;
   // Part 1: Sanity check the master index
   if(aix >= m_alog_files.size()) {
     cout << "Could not create VPlugPlot for ALog Index: " << aix << endl;
     return(vplot);
   }
 
-  cout << "in getVPlugPlot 33333" << endl;
   // Part 2: Confirm that the VISUALS.klog file can be found and opened
   string klog = m_base_dirs[aix] + "/VISUALS.klog";
   cout << "klog: " << klog << endl;
@@ -798,14 +795,11 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
     return(vplot);
   }
 
-  cout << "in getVPlugPlot 44444" << endl;
   // Part 3: Populate the VPlugPlot
   Populator_VPlugPlots populator;
 
-  cout << "in getVPlugPlot 55555" << endl;
   vector<ALogEntry> entries;
   bool done = false;
-  cout << "in getVPlugPlot 66666" << endl;
   while(!done) {
     ALogEntry entry = getNextRawALogEntry(f, true);
 
@@ -824,16 +818,10 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
       break;
   }
 
-  cout << "in getVPlugPlot 77777" << endl;
-  cout << "total entries: " << entries.size() << endl;
-  cout << "entry 0: [" <<  entries[0].getRawLine() << "]" << endl;
   populator.populateFromEntries(entries);
-  cout << "in getVPlugPlot 88888" << endl;
   vplot = populator.getVPlugPlot();
 
-  cout << "in getVPlugPlot 99999" << endl;
   vplot.applySkew(m_logskew[aix]);
-  cout << "in getVPlugPlot aaaaa" << endl;
 
   return(vplot);
 }
