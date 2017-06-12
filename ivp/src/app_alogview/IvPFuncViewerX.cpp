@@ -67,7 +67,6 @@ void IvPFuncViewerX::draw()
   }
 
   if(m_showing_1d) {
-    cout << "SHOWING 1D!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
     Common_IPFViewer::drawQuadSet1D();
     return;
   }
@@ -362,7 +361,6 @@ double IvPFuncViewerX::getCurrTime() const
 
 string IvPFuncViewerX::getCurrPriority(string source) 
 {
-  cout << "SOURCE: " << source << endl;
   map<string, IPF_Plot>::iterator p;
   for(p=m_map_ipf_plots.begin(); p!=m_map_ipf_plots.end(); p++)
     cout << " a source: " << p->first << endl;
