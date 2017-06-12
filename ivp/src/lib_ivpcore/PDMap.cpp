@@ -571,9 +571,44 @@ bool PDMap::freeOfNan() const
   return(true);
 }
 
+//---------------------------------------------------------------------
+// Procedure: valid
+//   Purpose: Confirm that each point in the IvPDomain is contained in
+//            exactly one box
 
+bool PDMap::valid() const
+{
+  unsigned int dim = m_domain.size();
+  
+  IvPBox box(dim);
+  for(int d=0; d<dim; d++) 
+    box.setPTS(d, 0, 0);
 
+  bool done = false;
+  while(!done) {
 
+    unsigned int count = 0;
+    for(unsigned int i=0; i<m_boxCount; i++)
+      if(m_boxes[i]->intersect(&box))
+	count++;
 
+    if(count != 1)
+      return(false);
 
+    // Increment
+    bool incremented=false;
+    for(int d=0; (d<dim)&&(!incremented); d++) {
+      int v = box.pt(d);
+      if(v < m_domain.getVarPoints(d)-1) {
+	box.setPTS(d, v+1, v+1);
+	incremented = true;
+      }
+      else
+	box.setPTS(d, 0, 0);
+    }
+    if(!incremented)
+      done = true; 
+  }    
+  return(true);
+}
 

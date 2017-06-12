@@ -67,6 +67,8 @@ public:
   void      growBoxCount(int i=1) {m_boxCount += i;}
   bool      freeOfNan() const;
 
+  bool      valid() const;
+  
   const IvPBox *getBox(int i) const {return(m_boxes[i]);}
 
   IvPBox*&  bx(int i) {return(m_boxes[i]);}
@@ -82,7 +84,7 @@ protected:
   int       m_degree;   // Zero:Scalar, Nonzero: Linear
   IvPBox    m_gelbox;
   IvPGrid*  m_grid;
-};
+}; 
 #endif
 
 

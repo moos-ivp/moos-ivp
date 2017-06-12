@@ -42,6 +42,7 @@ public:
   double      getPWT()         {return(m_pwt);}
   PDMap*      getPDMap()       {return(m_pdmap);}
   bool        freeOfNan()      {return(m_pdmap->freeOfNan());}
+  bool        valid() const    {return(m_pdmap->valid());}
   int         size()           {return(m_pdmap->size());}
   int         getDim()         {return(m_pdmap->getDim());}
   std::string getContextStr()  {return(m_context_string);}
