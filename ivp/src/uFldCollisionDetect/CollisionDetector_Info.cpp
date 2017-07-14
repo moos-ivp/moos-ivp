@@ -36,7 +36,7 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                      ");
   blk("------------------------------------                           ");
-  blk("  The uCollisionDetector application is run by the shoreside   ");
+  blk("  The uCollisionDetect application is run by the shoreside     ");
   blk("  and detects if two vehicles have interacted.  An interaction ");
   blk("  is defined as being within the distance specified by the     ");
   blk("  input parameters for CPA violation, near miss, and collsion. ");

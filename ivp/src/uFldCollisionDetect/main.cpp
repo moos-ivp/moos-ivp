@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
     showHelpAndExit();
 
   cout << termColor("green");
-  cout << "uCollisionDetector launching as " << run_command << endl;
+  cout << "uCollisionDetect launching as " << run_command << endl;
   cout << termColor() << endl;
 
   CollisionDetector CollisionDetector;
