@@ -3,6 +3,8 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CPAEngine.cpp                                        */
 /*    DATE: May 12th 2005                                        */
+/*    DATE: January 2016 Major revision                          */
+/*    DATE: July 2017 Major revision - to "FAST-CPA"             */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -584,13 +586,11 @@ bool CPAEngine::crossesBowDist(double osh, double osv, double& xdist) const
     xdist = m_stat_range;
     return(true);
   }
-  //cout << "   Here 1" << endl;
   // Sanity check 2: If on the sternline or contact, return false
   if(m_stat_os_on_sternline || m_stat_os_on_contact) {
     xdist = -1;
     return(false);
   }
-  //cout << "   Here 2" << endl;
   // Sanity check 3: Make sure osh is in [0,360) since we're using the
   // whole number to index an array of size 360.
   if((osh < 0) || (osh >= 360))
@@ -605,26 +605,21 @@ bool CPAEngine::crossesBowDist(double osh, double osv, double& xdist) const
     xdist = -1;
     return(false);
   }
-  //cout << "   Here 3   spd_os_gam: " << speed_os_gam << endl;
 
   // Step 2: Get time it takes to the contact's bow-stern line.
   double time_os_gam = m_stat_range_gam / speed_os_gam;
-  //cout << "   Here 4   time_os_gam: " << time_os_gam << endl;
   
   // Step 3: Get the distance that contact will travel in this time.
   double range_xcn_eps = time_os_gam * m_cnv;
-  //cout << "   Here 5   range_xcn_eps: " << range_xcn_eps << endl;
 
   // Step 4: Get ownship speed in contact direction, heading equal to
   // the contact's current heading.
   double os_cnh_cos = m_os_cnh_cos_cache[(unsigned int)(osh)];
   double speed_os_cnh = os_cnh_cos * osv;
-  //cout << "   Here 6   speed_os_cnh: " << speed_os_cnh << endl;
 
   // Step 5: Get the distance, in the contact heading direction, that
   // ownship will travel during this time.
   double range_xos_eps = time_os_gam * speed_os_cnh;
-  //cout << "   Here 7   range_xos_eps: " << range_xos_eps << endl;
 
   // Step 6: Get the crossing bow distance
   xdist = range_xos_eps - range_xcn_eps;
@@ -697,13 +692,11 @@ bool CPAEngine::crossesSternDist(double osh, double osv, double& xdist) const
     xdist = m_stat_range;
     return(true);
   }
-  //cout << "   Here 1" << endl;
   // Sanity check 2: If on the bowline or contact, return false
   if(m_stat_os_on_bowline || m_stat_os_on_contact) {
     xdist = -1;
     return(false);
   }
-  //cout << "   Here 2" << endl;
   // Sanity check 3: Make sure osh is in [0,360) since we're using the
   // whole number to index an array of size 360.
   if((osh < 0) || (osh >= 360))
@@ -718,26 +711,21 @@ bool CPAEngine::crossesSternDist(double osh, double osv, double& xdist) const
     xdist = -1;
     return(false);
   }
-  //cout << "   Here 3   spd_os_gam: " << speed_os_gam << endl;
 
   // Step 2: Get time it takes to the contact's bow-stern line.
   double time_os_gam = m_stat_range_gam / speed_os_gam;
-  //cout << "   Here 4   time_os_gam: " << time_os_gam << endl;
   
   // Step 3: Get the distance that contact will travel in this time.
   double range_xcn_eps = time_os_gam * m_cnv;
-  //cout << "   Here 5   range_xcn_eps: " << range_xcn_eps << endl;
 
   // Step 4: Get ownship speed in contact direction, heading equal to
   // the contact's current heading.
   double os_cnh_cos = m_os_cnh_cos_cache[(unsigned int)(osh)];
   double speed_os_cnh = os_cnh_cos * osv;
-  //cout << "   Here 6   speed_os_cnh: " << speed_os_cnh << endl;
 
   // Step 5: Get the distance, in the contact heading direction, that
   // ownship will travel during this time.
   double range_xos_eps = time_os_gam * speed_os_cnh;
-  //cout << "   Here 7   range_xos_eps: " << range_xos_eps << endl;
 
   // Step 6: Get the crossing stern distance
   xdist = range_xcn_eps;
@@ -748,8 +736,6 @@ bool CPAEngine::crossesSternDist(double osh, double osv, double& xdist) const
 
   xdist -= range_xos_eps;
 
-  
-  //cout << "   Here 8 raw_xdist: " << xdist << endl;
   if(xdist < 0)
     xdist = -1;
 
@@ -1552,7 +1538,3 @@ void CPAEngine::initRateCache()
     }
   }
 }
-
-
-
-

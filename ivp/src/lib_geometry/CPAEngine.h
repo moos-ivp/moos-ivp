@@ -3,6 +3,8 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CPAEngine.h                                          */
 /*    DATE: May 12th 2005                                        */
+/*    DATE: January 2016 Major revision                          */
+/*    DATE: July 2017 Major revision - to "FAST-CPA"             */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
