@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Shape_AUV.h                                          */
 /*    DATE: September 21st 2007                                  */
@@ -60,6 +60,10 @@ double  g_auvCtrX = 0.0;
 double  g_auvCtrY = 45.5;
 
 #endif
+
+
+
+
 
 
 

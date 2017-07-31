@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PostingQueue.cpp                                     */
 /*    DATE: Mar 15th 2013                                        */
@@ -62,6 +62,10 @@ VarDataPair PostingQueue::pop()
   m_pqueue.pop();
   return(pair);
 }
+
+
+
+
 
 
 

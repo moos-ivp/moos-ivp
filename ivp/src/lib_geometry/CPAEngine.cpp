@@ -1,232 +1,293 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CPAEngine.cpp                                        */
 /*    DATE: May 12th 2005                                        */
 /*                                                               */
-/* This file is part of MOOS-IvP                                 */
+/* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
-/* MOOS-IvP is free software: you can redistribute it and/or     */
-/* modify it under the terms of the GNU General Public License   */
-/* as published by the Free Software Foundation, either version  */
-/* 3 of the License, or (at your option) any later version.      */
+/* IvP Helm Core Libs is free software: you can redistribute it  */
+/* and/or modify it under the terms of the Lesser GNU General    */
+/* Public License as published by the Free Software Foundation,  */
+/* either version 3 of the License, or (at your option) any      */
+/* later version.                                                */
 /*                                                               */
-/* MOOS-IvP is distributed in the hope that it will be useful,   */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty   */
-/* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See  */
-/* the GNU General Public License for more details.              */
+/* IvP Helm Core Libs is distributed in the hope that it will    */
+/* be useful but WITHOUT ANY WARRANTY; without even the implied  */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the Lesser GNU General Public License for more   */
+/* details.                                                      */
 /*                                                               */
-/* You should have received a copy of the GNU General Public     */
-/* License along with MOOS-IvP.  If not, see                     */
+/* You should have received a copy of the Lesser GNU General     */
+/* Public License along with MOOS-IvP.  If not, see              */
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
 #include <iostream>
 #include <cmath> 
-#include <cassert>
 #include "CPAEngine.h"
 #include "GeomUtils.h"
 #include "AngleUtils.h"
 
 using namespace std;
 
-//----------------------------------------------------------
-// Procedure: Constructor
-
-CPAEngine::CPAEngine()
-{
-  cnLAT = 0;
-  cnLON = 0;
-  cnSPD = 0;
-  cnCRS = 0;
-  osLAT = 0;
-  osLON = 0;
-  initTrigCache();
-}
+#define MPI 3.14159265359
 
 //----------------------------------------------------------
 // Procedure: Constructor
-//      args: gcnlat  Given Contact Latitude Position
-//      args: gcnlon  Given Contact Longitude Position
-//      args: gcncrs  Given Contact Course
-//      args: gcnspd  Given Contact Speed
-//      args: goslat  Given Ownship Latitude Position
-//      args: goslon  Given Ownship Latitude Position
+//      args: cny  Given Contact Latitude Position
+//      args: cnx  Given Contact Longitude Position
+//      args: cnh  Given Contact Course
+//      args: cnv  Given Contact Speed
+//      args: osy  Given Ownship Latitude Position
+//      args: osx  Given Ownship Latitude Position
 
-CPAEngine::CPAEngine(double gcnlat, double gcnlon, double gcncrs,
-		     double gcnspd, double goslat, double goslon)
+CPAEngine::CPAEngine(double cny, double cnx, double cnh,
+		       double cnv, double osy, double osx)
+  : CPAEngineRoot(cny, cnx, cnh, cnv, osy, osx)
 {
-  cnLAT   = gcnlat; 
-  cnLON   = gcnlon;
-  cnSPD   = gcnspd;
-  cnCRS   = angle360(gcncrs);
-  osLAT   = goslat;
-  osLON   = goslon;
-  if(cnSPD < 0)
-    cnSPD = 0;
-  this->setStatic();
-  initTrigCache();
+  CPAEngine::reset(cny, cnx, cnh, cnv, osy, osx);
+}
+
+//----------------------------------------------------------
+// Procedure: reset
+
+void CPAEngine::reset(double cny, double cnx, double cnh,
+		       double cnv, double osy, double osx)
+{
+  CPAEngineRoot::reset(cny, cnx, cnh, cnv, osy, osx);
+
+  // Initialize cache variables. All will be set upon a call to 
+  // the setStatic() function.
+  m_cos_cnh = 0;
+  m_sin_cnh = 0;
+
+  m_stat_k2 = 0;
+  m_stat_k1 = 0;
+  m_stat_k0 = 0;
+  m_stat_range = 0;
+  
+  m_stat_cosCNH_x_cnSPD = 0;
+  m_stat_sinCNH_x_cnSPD = 0;
+  
+  m_stat_os_on_contact = false;
+  m_stat_os_on_bowline = false;
+  m_stat_os_on_sternline = false;
+  m_stat_os_on_bowsternline = false;
+
+  m_stat_theta_os_eps = 0;
+  m_stat_theta_os_gam = 0;
+  m_stat_theta_tn     = 0;
+  m_stat_tn_constant  = 0;
+  
+  m_stat_spd_cn_at_tangent = 0;
+  
+  m_stat_cn_to_os_spd     = 0;
+  m_stat_cn_to_os_closing = false;
+
+  m_stat_abs_bng_os_cn = 0;
+  m_stat_rel_bng_cn_os = 0;
+
+  m_stat_os_fore_of_cn = false;
+  m_stat_os_aft_of_cn  = false;
+  m_stat_os_port_of_cn = false;
+  m_stat_os_star_of_cn = false;
+  m_stat_os_on_beam = false;
+
+  m_stat_range_gam = 0;
+  m_stat_range_eps = 0;
+  
+  setStatic();
+
+  if(m_cos_cache.size() == 0)
+    initTrigCache();
+  initK1Cache();
+  initK2Cache();
+  initRateCache();
+
+  initOSCNRelBngCache();
+  initOSCNTangentCache();
+  initOSGammaCache();
+  initOSCNHCosCache();
 }
 
 //----------------------------------------------------------------
-// Procedure: setContactCacheTimeDelta()
+// Procedure: getARange()
+//   Purpose: Calculate the range at a particular time in the future,
+//            not necessarily the time at min CPA.
 
-void CPAEngine::setContactCacheTimeDelta(double val)
+
+double CPAEngine::getARange(double osh, double osv, double time) const
 {
-  if(val > 0.1)
-    m_cn_cache_tdelta = val;
-}
+  if((osh >= 360) || (osh < 0))
+    osh = angle360(osh);
 
+  double k2 = m_stat_k2;
+  double k1 = m_stat_k1;
+  double k0 = m_stat_k0;
+
+  double k2_val = m_k2_cache[(unsigned int)(osh)];
+  k2_val += osv;
+  k2 += k2_val * osv;
+
+  double k1_val = m_k1_cache[(unsigned int)(osh)] * osv;
+  k1 += k1_val;
+
+  double range_squared = (k2 * time * time) + (k1 * time) + k0;
+  double range = sqrt(range_squared);
+  return(range);
+}
 
 //----------------------------------------------------------------
-// Procedure: setContactCache()
+// Procedure: getARangeRate()
 
-void CPAEngine::setContactCache(double secs)
+double CPAEngine::getARangeRate(double osh, double osv, double time) const
 {
-  m_cn_cache_x.clear();
-  m_cn_cache_y.clear();
+  if((osh >= 360) || (osh < 0))
+    osh = angle360(osh);
 
-  if((secs < 0) || (m_cn_cache_tdelta < 0))
-    return;
+  double k2 = m_stat_k2;
+  double k1 = m_stat_k1;
 
-  unsigned int clicks = (unsigned int)(secs / m_cn_cache_tdelta);
-  double dist = cnSPD * m_cn_cache_tdelta;
+  double k2_val = m_k2_cache[(unsigned int)(osh)];
+  k2_val += osv;
+  k2 += k2_val * osv;
 
-  double prev_x = cnLON;
-  double prev_y = cnLAT;
-  for(unsigned int i=0; i<clicks; i++) {
-    double new_x, new_y;
-    projectPoint(cnCRS, dist, prev_x, prev_y, new_x, new_y);
-    m_cn_cache_x.push_back(new_x);
-    m_cn_cache_y.push_back(new_x);
-    prev_x = new_x;
-    prev_y = new_y;
-  }
+  double k1_val = m_k1_cache[(unsigned int)(osh)] * osv;
+  k1 += k1_val;
+
+  double range_squared_rate = (2 * k2 * time) + k1;
+  return(range_squared_rate);
 }
-
 
 //----------------------------------------------------------------
 // Procedure: evalCPA
 //   Purpose: Evaluates the given <Course, Speed, Time-on-leg> tuple 
 //            Determines Closest-Point-of-Approach (CPA)
 
-double CPAEngine::evalCPA(double osCRS, double osSPD, 
-			  double osTOL, double *calcROC) const
+double CPAEngine::evalCPA(double osh, double osv, double ostol) const
 {
-  osCRS = angle360(osCRS);
+  if((osh >= 360) || (osh < 0))
+    osh = angle360(osh);
 
-  double k2 = statK2;
-  double k1 = statK1;
-  double k0 = statK0;
-  
-#if 0
-  double gamOS  = degToRadians(osCRS);    // Angle in radians.
-  double cgamOS = cos(gamOS);             // Cosine of Angle (osCRS).
-  double sgamOS = sin(gamOS);             // Sine   of Angle (osCRS).
-#endif
-
-#if 1
-  double cgamOS = m_cos_cache[(unsigned int)(osCRS)];            
-  double sgamOS = m_sin_cache[(unsigned int)(osCRS)];
-#endif
-
-  if((cnCRS==osCRS) && (cnSPD==osSPD)) {
-    if(calcROC)
-      *calcROC = 0;
-    return(sqrt(k0));                    // be 0, resuling in NaN.
+  if(m_stat_cn_to_os_closing) {
+    if(osv > m_stat_cn_to_os_spd) {
+      if(osv >= m_os_vthresh_cache_360[(unsigned int)(osh)])
+	return(m_stat_range);
+    }
   }
+  else {
+    if(osv <= m_os_vthresh_cache_360[(unsigned int)(osh)]) 
+      return(m_stat_range);
+  }
+
+  //=========================================================
+  // Handle K2
+  //=========================================================
+  double k2 = m_stat_k2;
+
+  double cos_osh_sin_osh_sq = 1;
+
+  double k2_val = m_k2_cache[(unsigned int)(osh)];
+  k2_val += (cos_osh_sin_osh_sq) * osv;
+  k2 += k2_val * osv;
+  if(k2 < 0)
+    return(m_stat_range);
+
+  //=========================================================
+  // Handle K1
+  //=========================================================
+  double k1 = m_stat_k1;
+  double k1_val = m_k1_cache[(unsigned int)(osh)] * osv;
+  k1 += k1_val;
   
-  k1 += ( 2.0) * cgamOS * osSPD * osLAT;  // (1,2)(2,1)(a)
-  k1 += ( 2.0) * sgamOS * osSPD * osLON;  // (1,2)(2,1)(b)
-  k1 += (-2.0) * cgamOS * osSPD * cnLAT;  // (1,4)(4,1)(a)
-  k1 += (-2.0) * sgamOS * osSPD * cnLON;  // (1,4)(4,1)(b)
-
-#if 1
-  if(k1 > 0) // opening
-    return(sqrt(k0));
-#endif
-
-  k2 +=          cgamOS * cgamOS * osSPD * osSPD;   // (1,1)(a)
-  k2 +=          sgamOS * sgamOS * osSPD * osSPD;   // (1,1)(b)
-  k2 += (-2.0) * cgamOS * osSPD * cgamCN * cnSPD;   // (1,3)(3,1)(a)
-  k2 += (-2.0) * sgamOS * osSPD * sgamCN * cnSPD;   // (1,3)(3,1)(b)
-
-  double cpaDist;
   double minT = 0;
   if(k2 != 0)
-    minT = ((-1.0) * k1) / (2.0 * k2);
+    minT = k1 / (-2.0 * k2);
 
   if(minT <= 0) 
-    cpaDist = sqrt(k0); 
-  else { 
-    if(minT >= osTOL)
-      minT = osTOL;
-    double dist_squared = (k2*minT*minT) + (k1*minT) + k0;
-    if(dist_squared < 0)
-      cpaDist = 0;
-    else
-      cpaDist = sqrt(dist_squared);
+    return(m_stat_range); 
+
+  if(minT >= ostol)
+    minT = ostol;
+
+  //=========================================================
+  // Handle K0 and final calculatoin
+  //=========================================================
+  double k0 = m_stat_k0;
+  //double dist_squared = (k2 * minT * minT) + (k1 * minT) + k0;
+  double dist_squared = minT * ((k2 * minT) + k1) + k0;
+  if(dist_squared > 0)
+    return(sqrt(dist_squared));
+  return(0);
+}
+
+//----------------------------------------------------------------
+// Procedure: evalTimeCPA
+//   Purpose: Evaluates the given <Course, Speed, Time-on-leg> tuple 
+//            Determines Time of Closest-Point-of-Approach (CPA)
+
+double CPAEngine::evalTimeCPA(double osh, double osv, double ostol) const
+{
+  if((osh >= 360) || (osh < 0))
+    osh = angle360(osh);
+
+  if(m_stat_cn_to_os_closing) {
+    if(osv >= m_os_vthresh_cache_360[(unsigned int)(osh)])
+      return(0);
+  }
+  else {
+    if(osv <= m_os_vthresh_cache_360[(unsigned int)(osh)]) 
+      return(0);
   }
 
-  if(calcROC)
-    *calcROC = -k1;
+  //=========================================================
+  // Handle K2
+  //=========================================================
+  double k2 = m_stat_k2;
 
-  return(cpaDist);
+  double k2_val = m_k2_cache[(unsigned int)(osh)];
+  k2_val += osv;
+  k2 += k2_val * osv;
+  if(k2 < 0)
+    return(0);
+
+  //=========================================================
+  // Handle K1
+  //=========================================================
+  double k1 = m_stat_k1;
+  double k1_val = m_k1_cache[(unsigned int)(osh)] * osv;
+  k1 += k1_val;
+  
+  double minT = 0;
+  if(k2 != 0)
+    minT = k1 / (-2.0 * k2);
+
+  if(minT <= 0) 
+    minT = 0;
+  
+  return(minT);
 }
 
 //----------------------------------------------------------------
 // Procedure: evalROC
 //   Purpose: Determine rate-of-closure for a given heading,speed
 
-double CPAEngine::evalROC(double osCRS, double osSPD) const
+double CPAEngine::evalROC(double osh, double osv) const
 {
-  osCRS = angle360(osCRS);
-  
-  double gamOS  = degToRadians(osCRS);    // Angle in radians.
-  double cgamOS = cos(gamOS);             // Cosine of Angle (osCRS).
-  double sgamOS = sin(gamOS);             // Sine   of Angle (osCRS).
+  double os_to_cn_spd = m_os_cn_relbng_cos_cache[(unsigned int)(osh)] * osv; 
 
-  double k1 = statK1;
-  
-  if((cnCRS==osCRS) && (cnSPD==osSPD))
-    return(0);
-  
-  k1 += ( 2.0) * cgamOS * osSPD * osLAT;  // (1,2)(2,1)(a)
-  k1 += ( 2.0) * sgamOS * osSPD * osLON;  // (1,2)(2,1)(b)
-  k1 += (-2.0) * cgamOS * osSPD * cnLAT;  // (1,4)(4,1)(a)
-  k1 += (-2.0) * sgamOS * osSPD * cnLON;  // (1,4)(4,1)(b)
+  double roc = os_to_cn_spd + m_stat_cn_to_os_spd;
 
-  return(-k1);
+  return(roc);
 }
 
 //----------------------------------------------------------------
-// Procedure: crossesLines
-//   Purpose: checks to see if the two lines determined by the 
-//            present ownship and contact headings, cross. 
+// Procedure: evalRangeRateOverRange
 
-bool CPAEngine::crossesLines(double osCRS) const
+double CPAEngine::evalRangeRateOverRange(double osh, double osv, double time) const
 {
-  // Step 1: check for parallel lines. If not parallel return true
-  double delta_angle = angle360(osCRS - cnCRS);
-  if((delta_angle != 0) && (delta_angle != 180))
-    return(true);
-    
-  // Step 2: check if the parallel lines cross by checking if the 
-  // contact is on the ownship line.
-  
-  // Step 2A: check ownship and contact on at the same present position
-  if((osLAT == cnLAT) && (osLON == cnLON))
-    return(true);
-
-  // Step 2B: check the relative angle of the contact to ownship
-  double ang_os_to_cn = relAng(osLON, osLAT, cnLON, cnLAT);
-
-  if(ang_os_to_cn == osCRS)
-    return(true);
-  if(ang_os_to_cn == angle360(osCRS-180))
-    return(true);
-
-  return(false);
+  return(0);
 }
 
 //----------------------------------------------------------------
@@ -244,7 +305,7 @@ double CPAEngine::minMaxROC(double speed, double heading_clicks,
   double try_roc = 0;
   double try_heading = 0;
   while(try_heading < 360) {
-    evalCPA(try_heading, speed, 60, &try_roc);
+    evalROC(try_heading, speed);
     if((try_heading == 0) || (try_roc > max_roc)) {
       max_heading = try_heading;
       max_roc = try_roc;
@@ -259,192 +320,211 @@ double CPAEngine::minMaxROC(double speed, double heading_clicks,
 }
 
 //----------------------------------------------------------------
-// Procedure: bearingRate
+// Procedure: bearingRate() 
 
-double CPAEngine::bearingRateOSCN(double osh, double osv, double time)
+double CPAEngine::bearingRate(double osh, double osv) const
 {
-  if(time <= 0)
-    return(0);
+  // Part 1: Calculate speed of ownship in direction of tangent angle
+
+  double os_spd_at_tangent = m_os_tn_cos_cache[(unsigned int)(osh)] * -osv;
+
+  // Part 2: Speed of contact in direction of tangent angle has been
+  // pre-calculated and cached. Sum to two speeds to get the combined
+  // speed in the direction of the tangent angle
   
-  double osx1 = osLON;
-  double osy1 = osLAT;
-  double cnx1 = cnLON;
-  double cny1 = cnLAT;
+  double spd_at_tangent_angle = os_spd_at_tangent + m_stat_spd_cn_at_tangent;
 
-  double os_dist = (osv * time);
-  double cn_dist = (cnSPD * time);
+  // Part 3: Calculate the bearing rate from the speed at tangent
+  // This just the cummulative speed * (360 / (2 * range * PI)), where
+  // range is the current range between vehicles. This number has also
+  // been cached to removed three multiplications: m_stat_tn_constant.
 
-  // Create an ownship leg a bit forward and backward in time
-  double osx0, osy0, osx2, osy2;
-  projectPoint(osh-180, os_dist, osx1, osy1, osx0, osy0);
-  projectPoint(osh,     os_dist, osx1, osy1, osx2, osy2);
+  double bng_rate = spd_at_tangent_angle * m_stat_tn_constant;
 
-  // Create a contact leg a bit forward and backward in time
-  double cnx0, cny0, cnx2, cny2;
-  projectPoint(cnCRS-180, cn_dist, cnx1, cny1, cnx0, cny0);
-  projectPoint(cnCRS,     cn_dist, cnx1, cny1, cnx2, cny2);
-
-  double relang0 = relAng(osx0, osy0, cnx0, cny0);
-  double relang2 = relAng(osx2, osy2, cnx2, cny2);
-  
-  double diff = relang2 - relang0;
-  if(diff < 180)
-    diff += 360;
-  if(diff > 180)
-    diff -= 360;
-  
-  double rate = (diff / (time*2));
-  return(rate);
+  return(bng_rate);
 }
 
 //----------------------------------------------------------------
-// Procedure: bearingRateCNOS
+// Procedure: bearingRateOld() 
 
-double CPAEngine::bearingRateCNOS(double osh, double osv, double time)
+double CPAEngine::bearingRateOld(double osCRS, double osSPD)
 {
-  if(time <= 0)
-    return(0);
+  // Part 1: Calculate the tangent angle
   
-  double osx1 = osLON;
-  double osy1 = osLAT;
-  double cnx1 = cnLON;
-  double cny1 = cnLAT;
+  double relang_os_to_cn = relAng(m_osx, m_osy, m_cnx, m_cny);
+  double tangent_angle   = angle360(relang_os_to_cn - 90);
 
-  double os_dist = (osv * time);
-  double cn_dist = (cnSPD * time);
-
-  // Create an ownship leg a bit forward and backward in time
-  double osx0, osy0, osx2, osy2;
-  projectPoint(osh-180, os_dist, osx1, osy1, osx0, osy0);
-  projectPoint(osh,     os_dist, osx1, osy1, osx2, osy2);
-
-  // Create a contact leg a bit forward and backward in time
-  double cnx0, cny0, cnx2, cny2;
-  projectPoint(cnCRS-180, cn_dist, cnx1, cny1, cnx0, cny0);
-  projectPoint(cnCRS,     cn_dist, cnx1, cny1, cnx2, cny2);
-
-  double relang0 = relAng(cnx0, cny0, osx0, osy0);
-  double relang2 = relAng(cnx2, cny2, osx2, osy2);
+  //cout << "bearingRateOSCN2()---------------" << endl;
+  //cout << "  tangent_angle: " << tangent_angle << endl;
   
-  double diff = relang2 - relang0;
-  if(diff < 180)
-    diff += 360;
-  if(diff > 180)
-    diff -= 360;
+  // Part 2: Calculate the speed of ownship in the direction of the
+  // tangent angle
+  double os_delta_heading = osCRS - tangent_angle;
+  if(os_delta_heading > 180)
+    os_delta_heading -= 360;
+  else if(os_delta_heading < -180) 
+    os_delta_heading += 360;
+  if(os_delta_heading < 0)
+    os_delta_heading = -os_delta_heading;
+
+  // Special case, cos(90) should be exactly zero. Converting 90 to PI/2
+  // introduces rounding error with cos(90). Special case handle here.
+  double os_spd_at_tangent = 0;
+  if(os_delta_heading != 90)
+    os_spd_at_tangent = cos(degToRadiansX(os_delta_heading)) * -osSPD;
   
-  double rate = (diff / (time*2));
-  return(rate);
+  // Part 3: Calculate the speed of contact in the direction of the
+  // tangent angle
+  double cn_delta_heading = m_cnh - tangent_angle;
+  if(cn_delta_heading > 180)
+    cn_delta_heading -= 360;
+  else if(cn_delta_heading < -180) 
+    cn_delta_heading += 360;
+  if(cn_delta_heading < 0)
+    cn_delta_heading = -cn_delta_heading;
+
+  // Special case, cos(90) should be exactly zero. Converting 90 to PI/2
+  // introduces rounding error with cos(90). Special case handle here.
+  double cn_spd_at_tangent = 0;
+  if(cn_delta_heading != 90)
+    cn_spd_at_tangent = cos(degToRadiansX(cn_delta_heading)) * m_cnv;
+
+  double spd_at_tangent_angle = os_spd_at_tangent + cn_spd_at_tangent;
+
+  // Part 4: Calculate the bearing rate from the speed at tangent
+  double bng_rate = spd_at_tangent_angle * (-360 / (2*m_stat_range*MPI));
+
+  return(bng_rate);
+}
+
+//----------------------------------------------------------------
+// Procedure: ownshipContactRelBearing()
+
+double CPAEngine::ownshipContactRelBearing(double osh) const
+{
+  if((osh < 0) || (osh >= 360))
+    osh = angle360(osh);
+  return(m_os_cn_relbng_cache[(unsigned int)(osh)]);
 }
 
 //----------------------------------------------------------------
 // Procedure: setStatic
-//   Purpose: Determine all terms not dependent on osCRS, osSPD or
-//            osTOL. These can be calculated once to save time.
+//   Purpose: Determine all terms not dependent on osh, osv or
+//            tol. These can be calculated once to save time.
 //    Recall: The distance between OS and CN is calculated using
 //            pythagorean theorem and Lat/Lon distances. C^2 is the
 //            distance between ships and a^2 is LAT distance and 
 //            b^2 is LON distance:
-//                    a^2 = (new_osLAT - new_cnLAT)^2
-//                    b^2 = (new_osLON - new_cnLON)^2
+//                    a^2 = (new_osy - new_cny)^2
+//                    b^2 = (new_osx - new_cnx)^2
 //
-//            new_osLAT ... newcnLON indicates the new positions
+//            new_m_osy ... newm_cnx indicates the new positions
 //            after osTOL units of time, and the given starting
 //            positions and trajectories:
-//                    new_osLAT = cos(osCRS)*osSPD*osTOL + osLAT
-//                    new_cnLAT = cos(cnCRS)*cnSPD*osTOL + cnLAT
-//                    new_osLON = sin(osCRS)*osSPD*osTOL + osLON
-//                    new_cnLON = sin(cnCRS)*cnSPD*osTOL + cnLON
+//                    new_osy = cos(osh) * osv * tol + osy
+//                    new_cny = cos(cnh) * cnv * tol + cny
+//                    new_osx = sin(osh) * osv * tol + osx
+//                    new_cnx = sin(cnh) * cnv * tol + cnx
 //            Multiplying the terms out, we get some terms with
-//            osTOL^2, osTOL, and constants. We lump the 
+//            tol^2, tol, and constants. We lump the 
 //            coeffecients as follows:
-//                    K2: coefficients of osTOL^2.
-//                    K1: coefficients of osTOL.
+//                    K2: coefficients of tol^2.
+//                    K1: coefficients of tol.
 //                    K0: constants.
-//            More than half of these are not dependent on osSPD
-//            or osCRS, so we calculate them once, here.
+//            More than half of these are not dependent on osv
+//            or osh, so we calculate them once, here.
 
 void CPAEngine::setStatic()
 {
-  //osLAT = osLAT*60.0;    osLON = osLON*60.0;
-  //cnLAT = cnLAT*60.0;    cnLON = cnLON*60.0;
+  // Part 1: Determine the speed of contact in the direction of ownship
+  m_stat_rel_bng_cn_os = relBearing(m_cnx, m_cny, m_cnh, m_osx, m_osy);
 
-  gamCN   = degToRadians(cnCRS);  // Angle in radians.
-  cgamCN  = cos(gamCN);           // Cosine of Angle (cnCRS).
-  sgamCN  = sin(gamCN);           // Sine   of Angle (cnCRS).
+  m_stat_abs_bng_os_cn = relAng(m_osx, m_osy, m_cnx, m_cny);
+  m_stat_theta_tn = angle360(m_stat_abs_bng_os_cn + 90);
 
-  statK2  = (+1.0) * cgamCN * cgamCN * cnSPD * cnSPD;    //(3,3)(a)
-  statK2 += (+1.0) * sgamCN * sgamCN * cnSPD * cnSPD;    //(3,3)(b)
+  // Calculate the speed of the contact at the tangent angle, for future
+  // calculations of bearing rate.
+  double cn_delta_heading = angle180(m_cnh - m_stat_theta_tn);
+  if(cn_delta_heading < 0)
+    cn_delta_heading = -cn_delta_heading;
 
-  statK1  = (-2.0) * osLAT * cgamCN * cnSPD;    // (2,3)(3,2)(a)
-  statK1 += (-2.0) * osLON * sgamCN * cnSPD;    // (2,3)(3,2)(b)
-  statK1 += ( 2.0) * cnLAT * cgamCN * cnSPD;    // (3,4)(4,3)(a)
-  statK1 += ( 2.0) * cnLON * sgamCN * cnSPD;    // (3,4)(4,3)(b)
+  // Special case, cos(90) should be exactly zero. Converting 90 to PI/2
+  // introduces rounding error with cos(90). Special case handle here.
+  m_stat_spd_cn_at_tangent = 0;
+  if(cn_delta_heading != 90) {
+    double radians = degToRadiansX(cn_delta_heading);
+    m_stat_spd_cn_at_tangent = cos(radians) * m_cnv;
+  }
+
+  double cnh_radians = degToRadiansX(m_cnh); // Angle in radians.
+  m_cos_cnh = cos(cnh_radians);              // Cosine of Angle (m_cnh).
+  m_sin_cnh = sin(cnh_radians);              // Sine   of Angle (m_cnh).
+
+  //========================================
+  m_stat_cosCNH_x_cnSPD = -2 * m_cos_cnh * m_cnv;
+  m_stat_sinCNH_x_cnSPD = -2 * m_sin_cnh * m_cnv;
+  //========================================
+
+  m_stat_k2 = m_cnv * m_cnv;    
   
-  statK0  =          osLAT * osLAT;  // (2,2)(a)
-  statK0 +=          osLON * osLON;  // (2,2)(b)
-  statK0 += (-2.0) * osLAT * cnLAT;  // (2,4)(4,2)(a)
-  statK0 += (-2.0) * osLON * cnLON;  // (2,4)(4,2)(a)
-  statK0 +=          cnLAT * cnLAT;  // (4,4)(a)
-  statK0 +=          cnLON * cnLON;  // (4,4)(b)
+  m_stat_k1  = (-2.0) * m_osy * m_cos_cnh * m_cnv;    
+  m_stat_k1 += (-2.0) * m_osx * m_sin_cnh * m_cnv;    
+  m_stat_k1 += ( 2.0) * m_cny * m_cos_cnh * m_cnv;    
+  m_stat_k1 += ( 2.0) * m_cnx * m_sin_cnh * m_cnv;    
+  
+  m_stat_k0  =          m_osy * m_osy;  
+  m_stat_k0 +=          m_osx * m_osx;  
+  m_stat_k0 += (-2.0) * m_osy * m_cny;  
+  m_stat_k0 += (-2.0) * m_osx * m_cnx;  
+  m_stat_k0 +=          m_cny * m_cny;  
+  m_stat_k0 +=          m_cnx * m_cnx;  
 
-  // Set static variables for quickening the "crossingType" queries
-  statCNDIS = distPointToPoint(osLON, osLAT, cnLON, cnLAT);
-  statCNANG = relAng(osLON, osLAT, cnLON, cnLAT);
-  if((cnCRS - statCNANG) <= 180) {
-    statCLOW = statCNANG;
-    statCHGH = cnCRS;
-  }
-  else {
-    statCLOW = cnCRS;
-    statCHGH = statCNANG;
-  }
+  m_stat_range = sqrt(m_stat_k0); 
 
-  double ang1 = angle360(statCHGH - statCLOW);
-  double ang2 = angle360(statCLOW - statCHGH);
-
-  if(ang1 < ang2)
-    statCRNG = ang1;
-  else
-    statCRNG = ang2;
-
-  // Create the contact line segment representing its inf line
-  stat_cnx1 = cnLON;
-  stat_cny1 = cnLAT;
-  projectPoint(cnCRS, 100, stat_cnx1, stat_cny1, stat_cnx2, stat_cny2);
 
   // check of os is on the present contact position
-  stat_os_on_contact = false;
-  if((osLON == cnLON) && (osLAT == cnLAT))
-    stat_os_on_contact = true;
-
+  m_stat_os_on_contact = false;
+  if((m_osx == m_cnx) && (m_osy == m_cny))
+    m_stat_os_on_contact = true;
 
   // check if ownship currently IS on the sternline of the contact. 
-  stat_os_on_bowline = false;
-  stat_os_on_sternline = false;
-  double angle_cn_to_os = relAng(cnLON, cnLAT, osLON, osLAT);
-  if(angle_cn_to_os == angle360(cnCRS))
-    stat_os_on_bowline = true;
-  else if(angle_cn_to_os == angle360(cnCRS-180))
-    stat_os_on_sternline = true;
+  m_stat_os_on_bowline = false;
+  m_stat_os_on_sternline = false;
+  double angle_cn_to_os = relAng(m_cnx, m_cny, m_osx, m_osy);
+  if(angle_cn_to_os == angle360(m_cnh))
+    m_stat_os_on_bowline = true;
+  else if(angle_cn_to_os == angle360(m_cnh-180))
+    m_stat_os_on_sternline = true;
+  
+  m_stat_os_on_bowsternline = false;
+  if(m_stat_os_on_contact || m_stat_os_on_sternline || m_stat_os_on_bowline)
+    m_stat_os_on_bowsternline = true;
+  
+  m_stat_tn_constant = (360 / (2 * m_stat_range * MPI));
+  
+  setOSForeOfContact();
+  setOSAftOfContact();
+  setOSPortOfContact();
+  setOSStarboardOfContact();
 
-#if 0
-  double cn_angle_to_ownship = relAng(cnLON, cnLAT, osLON, osLAT);
-  double opposite_cnCRS = angle360(cnCRS + 180);
+  if(m_stat_os_on_contact || (m_stat_os_fore_of_cn && m_stat_os_aft_of_cn))
+    m_stat_os_on_beam = true;
+  else
+    m_stat_os_on_beam = false;
 
-  if(containsAngle(cnCRS, opposite_cnCRS)) {
-    statCLOW = opposite_cnCRS;
-    statCHGH = cnCRS;
-  }
-  else {
-    statCLOW = cnCRS;
-    statCHGH = opposite_cnCRS;
-  }
-#endif
+  if(m_stat_os_port_of_cn)
+    m_stat_theta_os_gam = angle360(m_cnh+90);
+  else
+    m_stat_theta_os_gam = angle360(m_cnh-90);
+
+  if(m_stat_os_fore_of_cn)
+    m_stat_theta_os_eps = angle360(m_cnh + 180);
+  else
+    m_stat_theta_os_eps = m_cnh;
 }
 
 //----------------------------------------------------------------
 // Procedure: smallAngle
-//   Purpose: 
 
 double CPAEngine::smallAngle(double ang_a, double ang_b) const
 {
@@ -458,161 +538,149 @@ double CPAEngine::smallAngle(double ang_a, double ang_b) const
 
 
 //----------------------------------------------------------------
-// Procedure: crossesBow  (Convenience function)
+// Procedure: crossesBow 
 
 bool CPAEngine::crossesBow(double osCRS, double osSPD) const
 {
-  double dist;
-  return(crossesBowDist(osCRS, osSPD, dist));
+  if(m_stat_os_on_sternline)
+    return(true);
+
+  if(osSPD <= 0)
+    return(false);
+
+  // If the speed in the direction of the contact's bow-stern line is
+  // not positive, it won't cross. We don't need to know the actual
+  // speed just the sign of cos(os_gam).
+  double gam = m_os_gam_cos_cache[(unsigned int)(osCRS)];
+  if(gam <= 0)
+    return(false);
+
+  double bng_rate = bearingRate(osCRS, osSPD);
+
+  if(m_stat_os_port_of_cn) 
+    return(bng_rate >= 0);
+  else
+    return(bng_rate <= 0);
 }
 
 //----------------------------------------------------------------
 // Procedure: crossesBowDist  (Convenience function)
-
-double CPAEngine::crossesBowDist(double osCRS, double osSPD) const
+ 
+double CPAEngine::crossesBowDist(double osh, double osv) const
 {
   double dist;
-  crossesBowDist(osCRS, osSPD, dist);
+  crossesBowDist(osh, osv, dist);
   return(dist);
 }
 
 //----------------------------------------------------------------
 // Procedure: crossesBowDist
 
-bool CPAEngine::crossesBowDist(double osCRS, double osSPD, double& xdist) const
+bool CPAEngine::crossesBowDist(double osh, double osv, double& xdist) const
 {
-  // Special case 1: ownship and contact position are the same
-  if(stat_os_on_contact) {
-    xdist = 0;
+  //cout << "In crossesBowDist ===================================" << endl;
+  // Sanity check 1: If on the bowline, return the current range
+  if(m_stat_os_on_bowline) {
+    xdist = m_stat_range;
     return(true);
   }
+  //cout << "   Here 1" << endl;
+  // Sanity check 2: If on the sternline or contact, return false
+  if(m_stat_os_on_sternline || m_stat_os_on_contact) {
+    xdist = -1;
+    return(false);
+  }
+  //cout << "   Here 2" << endl;
+  // Sanity check 3: Make sure osh is in [0,360) since we're using the
+  // whole number to index an array of size 360.
+  if((osh < 0) || (osh >= 360))
+    osh = angle360(osh);
+
+  // Step 1: Get ownship speed in gamma direction, heading perpendicular 
+  // to contact's bow-stern line. If not positive, ownship will not be
+  // crossing the contact's bow-stern line, so return now.
+  double os_gam_cos = m_os_gam_cos_cache[(unsigned int)(osh)];
+  double speed_os_gam = os_gam_cos * osv;
+  if(speed_os_gam <= 0) {
+    xdist = -1;
+    return(false);
+  }
+  //cout << "   Here 3   spd_os_gam: " << speed_os_gam << endl;
+
+  // Step 2: Get time it takes to the contact's bow-stern line.
+  double time_os_gam = m_stat_range_gam / speed_os_gam;
+  //cout << "   Here 4   time_os_gam: " << time_os_gam << endl;
   
-  // Special case 2: ownship crossing the contact sternline now
-  if(stat_os_on_bowline) {
-    xdist = distPointToPoint(osLON, osLAT, cnLON, cnLAT);
-    return(true);
-  }
+  // Step 3: Get the distance that contact will travel in this time.
+  double range_xcn_eps = time_os_gam * m_cnv;
+  //cout << "   Here 5   range_xcn_eps: " << range_xcn_eps << endl;
 
-  // Special case 3: ownship has speed zero - cannot ever reach bow-stern line
-  if(osSPD == 0) {
+  // Step 4: Get ownship speed in contact direction, heading equal to
+  // the contact's current heading.
+  double os_cnh_cos = m_os_cnh_cos_cache[(unsigned int)(osh)];
+  double speed_os_cnh = os_cnh_cos * osv;
+  //cout << "   Here 6   speed_os_cnh: " << speed_os_cnh << endl;
+
+  // Step 5: Get the distance, in the contact heading direction, that
+  // ownship will travel during this time.
+  double range_xos_eps = time_os_gam * speed_os_cnh;
+  //cout << "   Here 7   range_xos_eps: " << range_xos_eps << endl;
+
+  // Step 6: Get the crossing bow distance
+  xdist = range_xos_eps - range_xcn_eps;
+  if(m_stat_os_fore_of_cn)
+    xdist += m_stat_range_eps;
+  else
+    xdist -= m_stat_range_eps;
+
+  if(xdist < 0)
     xdist = -1;
-    return(false);
-  }
 
-  // Added March 11th, 2016. Check for parallel courses
-  double delta = angle180(osCRS - cnCRS);
-  if(delta < 0)
-    delta = -delta;
-  if((delta < 0.00001) || (delta > 179.99999)) {
-    xdist = -1;
-    return(false);
-  }
-
-  // Create ownship line segment
-  double x1 = osLON;
-  double y1 = osLAT;
-  double x2, y2;
-  projectPoint(osCRS, 100, x1, y1, x2, y2);
-
-  // Create contact line segment from cached values
-  double x3 = stat_cnx1;
-  double y3 = stat_cny1;
-  double x4 = stat_cnx2;
-  double y4 = stat_cny2;
-  
-  // Determine exactly where ownship crosses the contact bow-stern line
-  double intx, inty;
-  bool lines_cross = linesCross(x1,y1,x2,y2,x3,y3,x4,y4,intx,inty);
-
-  if(!lines_cross) {
-    xdist = -1;
-    return(false);
-  }
-
-  // Check if the crossing point is in front of ownship. If it is not, 
-  // then it doesn't cross the bow (or stern).
-  double ang_os_to_cross_pt = relAng(osLON, osLAT, intx, inty);
-  double os_delta_angle     = angle180(osCRS - ang_os_to_cross_pt);
-  if(os_delta_angle < 0)
-    os_delta_angle *= -1;
-  if(os_delta_angle > 10) {
-    xdist = -1;
-    return(false);
-  }
-  double os_dist_to_cross = distPointToPoint(osLON, osLAT, intx, inty);
-  double cn_dist_to_cross = distPointToPoint(cnLON, cnLAT, intx, inty);
-  double os_time_to_cross    = os_dist_to_cross / osSPD;
-  
-  //----------------------------------------------------------------
-  // Added March 16th, 2016. If contact speed is zero handle properly
-  //----------------------------------------------------------------
-  double cn_time_to_cross  = 999999;
-  if(cnSPD > 0)
-    cn_time_to_cross  = cn_dist_to_cross / cnSPD;
-
-  // Determine if inf line crossing point is fore or aft of contact's 
-  // present position
-  bool   xpoint_fore_of_contact_now = false;
-  double ang_cn_to_cross_pt = relAng(cnLON, cnLAT, intx, inty);
-  double cn_delta_angle = angle180(cnCRS - ang_cn_to_cross_pt);
-  if(cn_delta_angle < 0)
-    cn_delta_angle *= -1;
-  if(cn_delta_angle < 10) 
-    xpoint_fore_of_contact_now = true;
-
-  // If the contact is already ahead of the cross point, or if the 
-  // the contact gets to the crosspoint first, then ownwhip is on a
-  // course to cross the contact's stern, not the bow.
-
-  // If the xpoint is aft of the contact now, or  gets there first,
-  // then ownship is crossing the contact's bow, not the stern.
-  if(!xpoint_fore_of_contact_now || (cn_time_to_cross < os_time_to_cross)) {
-    xdist = -1;
-    return(false);
-  }
-
-  // ===================================================================
-  // Now we know ownship crosses the contact's bowline, but how far in
-  // front of the contact will it be when it does so?
-  // ===================================================================
-
-  double cn_dist_travelled_when_os_crosses_bowline = os_time_to_cross * cnSPD;
-  
-  xdist = cn_dist_to_cross - cn_dist_travelled_when_os_crosses_bowline;
-
-  return(true);
+  return(xdist > 0);
 }
 
 
-
 //----------------------------------------------------------------
-// Procedure: crossesStern()                  Convenience function
-//
+// Procedure: crossesStern()
 //   Purpose: Determine if for the given ownship course and speed
 //            whether it is on a path to cross the path of the 
 //            contact on its stern.
 
-bool CPAEngine::crossesStern(double osCRS, double osSPD) const
+bool CPAEngine::crossesStern(double osh, double osv) const
 {
-  double xdist;
-  return(crossesSternDist(osCRS, osSPD, xdist));
+  if(m_stat_os_on_sternline)
+    return(true);
+
+  if(osv <= 0)
+    return(false);
+
+  // If the speed in the direction of the contact's bow-stern line is
+  // not positive, it won't cross. We don't need to know the actual
+  // speed just the sign of cos(os_gam).
+  double gam = m_os_gam_cos_cache[(unsigned int)(osh)];
+  if(gam <= 0)
+    return(false);
+
+  if(m_stat_os_port_of_cn) 
+    return(bearingRate(osh, osv) <= 0);
+  else
+    return(bearingRate(osh, osv) >= 0);
 }
 
 //----------------------------------------------------------------
-// Procedure: crossesStern()                  Convenience function
+// Procedure: crossesSternDist()              Convenience function
 //
 //   Purpose: Determine if for the given ownship course and speed
 //            whether it is on a path to cross the path of the 
 //            contact on its stern. And if so, at what distance when
 //            it crosses?
 
-double CPAEngine::crossesSternDist(double osCRS, double osSPD) const
+double CPAEngine::crossesSternDist(double osh, double osv) const
 {
   double xdist;
-  crossesSternDist(osCRS, osSPD, xdist);
+  crossesSternDist(osh, osv, xdist);
   return(xdist);
 }
-
 
 //----------------------------------------------------------------
 // Procedure: crossesSternDist
@@ -621,111 +689,73 @@ double CPAEngine::crossesSternDist(double osCRS, double osSPD) const
 //            contact on its stern. And if so, at what distance when
 //            it crosses?
 
-bool CPAEngine::crossesSternDist(double osCRS, double osSPD, double& xdist) const
+bool CPAEngine::crossesSternDist(double osh, double osv, double& xdist) const
 {
-  // Special case 1: ownship and contact position are the same
-  if(stat_os_on_contact) {
-    xdist = 0;
+  //cout << "In crossesSternDist ===================================" << endl;
+  // Sanity check 1: If on the sternline, return the current range
+  if(m_stat_os_on_sternline) {
+    xdist = m_stat_range;
     return(true);
   }
+  //cout << "   Here 1" << endl;
+  // Sanity check 2: If on the bowline or contact, return false
+  if(m_stat_os_on_bowline || m_stat_os_on_contact) {
+    xdist = -1;
+    return(false);
+  }
+  //cout << "   Here 2" << endl;
+  // Sanity check 3: Make sure osh is in [0,360) since we're using the
+  // whole number to index an array of size 360.
+  if((osh < 0) || (osh >= 360))
+    osh = angle360(osh);
+
+  // Step 1: Get ownship speed in gamma direction, heading perpendicular 
+  // to contact's bow-stern line. If not positive, ownship will not be
+  // crossing the contact's bow-stern line, so return now.
+  double os_gam_cos = m_os_gam_cos_cache[(unsigned int)(osh)];
+  double speed_os_gam = os_gam_cos * osv;
+  if(speed_os_gam <= 0) {
+    xdist = -1;
+    return(false);
+  }
+  //cout << "   Here 3   spd_os_gam: " << speed_os_gam << endl;
+
+  // Step 2: Get time it takes to the contact's bow-stern line.
+  double time_os_gam = m_stat_range_gam / speed_os_gam;
+  //cout << "   Here 4   time_os_gam: " << time_os_gam << endl;
   
-  // Special case 2: ownship crossing the contact sternline now
-  if(stat_os_on_sternline) {
-    xdist = distPointToPoint(osLON, osLAT, cnLON, cnLAT);
-    return(true);
-  }
+  // Step 3: Get the distance that contact will travel in this time.
+  double range_xcn_eps = time_os_gam * m_cnv;
+  //cout << "   Here 5   range_xcn_eps: " << range_xcn_eps << endl;
 
-  // Special case 3: ownship has speed zero - cannot ever reach bow-stern line
-  if(osSPD == 0) {
-    xdist = -1;
-    return(false);
-  }
+  // Step 4: Get ownship speed in contact direction, heading equal to
+  // the contact's current heading.
+  double os_cnh_cos = m_os_cnh_cos_cache[(unsigned int)(osh)];
+  double speed_os_cnh = os_cnh_cos * osv;
+  //cout << "   Here 6   speed_os_cnh: " << speed_os_cnh << endl;
 
-  //-------------------------------------------------------------
-  // Added March 11th, 2016. Check for parallel courses
-  //-------------------------------------------------------------
-  double delta = angle180(osCRS - cnCRS);
-  if(delta < 0)
-    delta = -delta;
-  if((delta < 0.0001) || (delta > 179.9999)) {
-    xdist = -1;
-    return(false);
-  }
+  // Step 5: Get the distance, in the contact heading direction, that
+  // ownship will travel during this time.
+  double range_xos_eps = time_os_gam * speed_os_cnh;
+  //cout << "   Here 7   range_xos_eps: " << range_xos_eps << endl;
 
-  // Create ownship line segment
-  double x1 = osLON;
-  double y1 = osLAT;
-  double x2, y2;
-  projectPoint(osCRS, 100, x1, y1, x2, y2);
+  // Step 6: Get the crossing stern distance
+  xdist = range_xcn_eps;
+  if(m_stat_os_fore_of_cn)
+    xdist -= m_stat_range_eps;
+  else
+    xdist += m_stat_range_eps;
 
-  // Create contact line segment from cached values
-  double x3 = stat_cnx1;
-  double y3 = stat_cny1;
-  double x4 = stat_cnx2;
-  double y4 = stat_cny2;
+  xdist -= range_xos_eps;
+
   
-  // Determine exactly where ownship crosses the contact bow-stern line
-  double intx, inty;
-  bool lines_cross = linesCross(x1,y1,x2,y2,x3,y3,x4,y4,intx,inty);
-
-  if(!lines_cross) {
+  //cout << "   Here 8 raw_xdist: " << xdist << endl;
+  if(xdist < 0)
     xdist = -1;
-    return(false);
-  }
 
-  // Check if the crossing point is in front of ownship. If it is not, 
-  // then it doesn't cross the stern (or bow).
-  double ang_os_to_cross_pt = relAng(osLON, osLAT, intx, inty);
-  double os_delta_angle     = angle180(osCRS - ang_os_to_cross_pt);
-  if(os_delta_angle < 0)
-    os_delta_angle *= -1;
-  if(os_delta_angle > 10) {
-    xdist = -1;
-    return(false);
-  }
-  double os_dist_to_cross = distPointToPoint(osLON, osLAT, intx, inty);
-  double cn_dist_to_cross = distPointToPoint(cnLON, cnLAT, intx, inty);
-  double os_time_to_cross = os_dist_to_cross / osSPD;
-  
-  //----------------------------------------------------------------
-  // Added March 16th, 2016. If contact speed is zero handle properly
-  //----------------------------------------------------------------
-  double cn_time_to_cross  = 999999;
-  if(cnSPD > 0)
-    cn_time_to_cross  = cn_dist_to_cross / cnSPD;
+  return(xdist > 0);
 
-  // Determine if inf line crossing point is fore or aft of contact's 
-  // present position
-  bool   xpoint_fore_of_contact_now = false;
-  double ang_cn_to_cross_pt = relAng(cnLON, cnLAT, intx, inty);
-  double cn_delta_angle = angle180(cnCRS - ang_cn_to_cross_pt);
-  if(cn_delta_angle < 0)
-    cn_delta_angle *= -1;
-  if(cn_delta_angle < 10) 
-    xpoint_fore_of_contact_now = true;
-
-  // If the xpoint is front of the contact now, and ownship gets there first,
-  // then ownship is crossing the contact's bow, not the stern.
-  if(xpoint_fore_of_contact_now && (os_time_to_cross < cn_time_to_cross)) {
-    xdist = -1;
-    return(false);
-  }
-
-  // ===================================================================
-  // Now we know ownship crosses the contact's sternline, but how far in
-  // back of the contact will it be when it does so?
-  // ===================================================================
-
-  double cn_dist_travelled_when_os_crosses_sternline = os_time_to_cross * cnSPD;
-  
-  if(xpoint_fore_of_contact_now)
-    xdist = cn_dist_travelled_when_os_crosses_sternline - cn_dist_to_cross;
-  else 
-    xdist = cn_dist_to_cross + cn_dist_travelled_when_os_crosses_sternline;
-
-  return(true);
 }
-
 
 //----------------------------------------------------------------
 // Procedure: crossesBowOrStern
@@ -735,51 +765,14 @@ bool CPAEngine::crossesSternDist(double osCRS, double osSPD, double& xdist) cons
 
 bool CPAEngine::crossesBowOrStern(double osCRS, double osSPD) const
 {
-  // Special cases
-  if(stat_os_on_contact || stat_os_on_sternline || stat_os_on_bowline)
+  if(m_stat_os_on_bowsternline)
     return(true);
 
-  // Special case: ownship has speed zero - cannot ever reach bow-stern line
-  if(osSPD == 0) 
+  if(osSPD <= 0)
     return(false);
 
-  //-------------------------------------------------------------
-  // Added March 11th, 2016. Check for parallel courses
-  //-------------------------------------------------------------
-  double delta = angle180(osCRS - cnCRS);
-  if(delta < 0)
-    delta = -delta;
-  if((delta < 0.0001) || (delta > 179.9999))
-    return(false);
-
-  // Create ownship line segment
-  double x1 = osLON;
-  double y1 = osLAT;
-  double x2, y2;
-  projectPoint(osCRS, 100, x1, y1, x2, y2);
-
-  // Create contact line segment from cached values
-  double x3 = stat_cnx1;
-  double y3 = stat_cny1;
-  double x4 = stat_cnx2;
-  double y4 = stat_cny2;
-  
-  // Determine exactly where ownship crosses the contact bow-stern line
-  double intx, inty;
-  bool lines_cross = linesCross(x1,y1,x2,y2,x3,y3,x4,y4,intx,inty);
-
-  if(!lines_cross) 
-    return(false);
-
-  // Check if the crossing point is in front of ownship. If it is not, 
-  // then it doesn't cross the stern (or bow).
-  double ang_os_to_cross_pt = relAng(osLON, osLAT, intx, inty);
-  double os_delta_angle     = angle180(osCRS - ang_os_to_cross_pt);
-  if(os_delta_angle < 0)
-    os_delta_angle *= -1;
-  if(os_delta_angle > 10) 
-    return(false);
-  return(true);
+  double gam = m_os_gam_cos_cache[(unsigned int)(osCRS)];
+  return(gam > 0.00001);
 }
 
 
@@ -790,7 +783,9 @@ bool CPAEngine::crossesBowOrStern(double osCRS, double osSPD) const
 
 bool CPAEngine::turnsRight(double present_heading, double heading) const
 {
-  double delta = angle360(heading - present_heading);
+  double delta = (heading - present_heading);
+  if((delta < 0) || (delta >= 360))
+    delta = angle360(heading - present_heading);
   if((delta > 0) && (delta < 180))
     return(true);
   return(false);
@@ -804,7 +799,9 @@ bool CPAEngine::turnsRight(double present_heading, double heading) const
 
 bool CPAEngine::turnsLeft(double present_heading, double heading) const
 {
-  double delta = angle360(heading - present_heading);
+  double delta = (heading - present_heading);
+  if((delta < 0) || (delta >= 360))
+    delta = angle360(heading - present_heading);
   if(delta > 180)
     return(true);
   return(false);
@@ -812,90 +809,33 @@ bool CPAEngine::turnsLeft(double present_heading, double heading) const
   
 
 //----------------------------------------------------------------
-// Procedure: passesContact()
-//   Purpose: checks to see if ownship, on the given heading and speed,
-//            will pass the contact. A "pass" means it will cross the 
-//            line perpendicular to the bow-stern line. (crosses the beam)
-
-bool CPAEngine::passesContact(double osCRS, double osSPD) const
-{
-  bool os_fore_of_contact = foreOfContact();
-  bool os_aft_of_contact  = aftOfContact();
-
-  // Case 0: Ownship is ON the contact crossing line, return true
-  if(os_fore_of_contact && os_aft_of_contact)
-    return(true);
-
-  double spd_in_cn_heading = speedInHeading(osCRS, osSPD, cnCRS);
-
-  if(os_aft_of_contact) {
-    if(spd_in_cn_heading > cnSPD)
-      return(true);
-    else
-      return(false);
-  }
-  else {  // os_fore_of_contact
-    if(spd_in_cn_heading >= cnSPD)
-      return(false);
-    else
-      return(true);
-  }
-}
-
-//----------------------------------------------------------------
-// Procedure: passesContactPort()
+// Procedure: passesPort
 //   Purpose: checks to see if ownship, on the given heading and speed,
 //            will pass the contact on the contact's port side. 
-//            A "pass" means it will cross the line perpendicular to the 
-//            bow-stern line.
+//            A "pass" means it will cross the contact's beam, the line
+//            perpendicular to the contact's bow-stern line.
 
-bool CPAEngine::passesContactPort(double osCRS, double osSPD, bool report) const
+bool CPAEngine::passesPort(double osh, double osv) const
 {
   //============================================================
   // Handle Special Cases
   //============================================================
   // Special Case 1: ownship and contact are on the same point
-  if((osLON == cnLON) && (osLAT == cnLAT))
+  if(m_stat_os_on_contact)
     return(false);
 
   // Special Case 2: ownship does not pass the contact at all
-  if(!passesContact(osCRS, osSPD))
+  if(!passesPortOrStar(osh, osv))
     return(false);
 
-  bool os_aft_of_contact  = aftOfContact();
-  bool os_fore_of_contact = foreOfContact();
-  bool os_port_of_contact = portOfContact();
-  bool os_starboard_of_contact = starboardOfContact();
+  // Special Case 3: ownship is on contact's beam
+  if(m_stat_os_aft_of_cn && m_stat_os_fore_of_cn)
+    return(m_stat_os_port_of_cn);
 
-  // Special Case 3: ownship is ON the bow-stern line
-  if(os_port_of_contact && os_starboard_of_contact) {
-    double os_to_cn_rel_bng = relBearing(osLON, osLAT, osCRS, cnLON, cnLAT);
-    if(os_fore_of_contact) {
-      if(os_to_cn_rel_bng >= 180)
-	return(true);
-      else
-	return(false);
-    }
-    else { // os is aft of contact
-      if(os_to_cn_rel_bng >= 180)
-	return(false);
-      else
-	return(true);
-    }
-  }
-
-  if(report) cout << "Old PCP: 11111" << endl;
-  
-  // Special Case 4: ownship is on the perpendicular bow-stern line
-  if(os_aft_of_contact && os_fore_of_contact) {
-    if(report) cout << "Old PCP: 2222" << endl;
-    return(os_port_of_contact);
-  }
-  
   //============================================================
   // Handle General Cases
   //============================================================
-  // Case #1: ownship is aft and port of contact              //
+  // Case #1: ownship is aft of contact                       //
   //                           |                              //       
   //                           |                              //       
   //                           |                              //       
@@ -903,44 +843,23 @@ bool CPAEngine::passesContactPort(double osCRS, double osSPD, bool report) const
   //                          | |                             //
   //          ----------------|C|-----------------            //
   //          Case:           | |                             //
-  //          Port and        ---                             //
+  //                          ---                             //
   //          Aft of contact   |                              //
   //                           |                              //
   //                           |                              //
   //            (Ownship)      |                              //
   //
-  if((os_aft_of_contact)  && (os_port_of_contact)) {
-    if(report) cout << "Old PCP: 33333" << endl;
-    return(!crossesStern(osCRS, osSPD));
-  }
+  if(m_stat_os_aft_of_cn)
+    return(bearingRate(osh, osv) > 0);
 
-  // Case #2: ownship is aft and starboard of contact         //
+  // Case #4: ownship is fore and starboard of contact        //
   //                           |                              //
-  //                           |                              //
+  //                 (ownship) |     Case:                    //
+  //                           |     Fore of contact          //
   //                           |                              //
   //                          / \                             //
   //                          | |                             //
   //          ----------------|C|-----------------            //
-  //                          | |   Case:                     //
-  //                          ---   Starboard and             //
-  //                           |    Aft of contact            //
-  //                           |                              //
-  //                           |    (Ownship)                 //
-  //                           |                              //
-  //
-  if((os_aft_of_contact)  && (os_starboard_of_contact)) {
-    if(report) cout << "Old PCP: 44444" << endl;
-    return(crossesStern(osCRS, osSPD));
-  }
-
-  // Case #3: ownship is fore and port of contact             //
-  //                           |                              //
-  //          Case:            |                              //
-  //          port and         |                              //
-  //          Fore of contact  |                              //
-  //            (Ownship)     / \                             //
-  //                          | |                             //
-  //          ----------------|C|-----------------            //
   //                          | |                             //
   //                          ---                             //
   //                           |                              //
@@ -948,139 +867,377 @@ bool CPAEngine::passesContactPort(double osCRS, double osSPD, bool report) const
   //                           |                              //
   //                           |                              //
   //
-  if((os_fore_of_contact)  && (os_port_of_contact)) {
-    if(report) cout << "Old PCP: 55555" << endl;
-    return(!crossesBow(osCRS, osSPD));
-  }
   
-  // Case #4: ownship is fore and starboard of contact        //
-  //                           |                              //
-  //                           |     Case:                    //
-  //                           |     Starboard and            //
-  //                           |     Fore of contact          //
-  //                          / \      (Ownship)              //
-  //                          | |                             //
-  //          ----------------|C|-----------------            //
-  //                          | |                             //
-  //                          ---                             //
-  //                           |                              //
-  //                           |                              //
-  //                           |                              //
-  //                           |                              //
-  //
-  if((os_fore_of_contact)  && (os_starboard_of_contact)) {
-    if(report) cout << "Old PCP: 6666" << endl;
-    return(crossesBow(osCRS, osSPD));
-  }
-
-  return(false);
+  return(bearingRate(osh, osv) < 0);
 }
 
 //----------------------------------------------------------------
-// Procedure: passesContactStarboard()
+// Procedure: passesPortDist  (Convenience function)
+ 
+double CPAEngine::passesPortDist(double osh, double osv) const
+{
+  double dist;
+  passesPortDist(osh, osv, dist);
+  return(dist);
+}
+
+//----------------------------------------------------------------
+// Procedure: passesPortDist
+
+bool CPAEngine::passesPortDist(double osh, double osv, double& xdist) const
+{
+  // Until shown otherwise, xdist is -1, meaning os does not pass cn
+  xdist = -1;
+  
+  //------------------------------------------------------
+  // Sanity checks
+  //------------------------------------------------------
+  // Sanity check 1: If on the contact, return false
+  if(m_stat_os_on_contact) 
+    return(false);
+  // Sanity check 2: If on the starboard beam, return false
+  if(m_stat_os_on_beam && m_stat_os_star_of_cn) 
+    return(false);
+
+  // Sanity check 3: If on the port beam, return the current range
+  if(m_stat_os_on_beam && m_stat_os_port_of_cn) {
+    xdist = m_stat_range;
+    return(true);
+  }
+
+  // Sanity check 4: Make sure osh is in [0,360) since we're using the
+  // whole number to index an array of size 360.
+  if((osh < 0) || (osh >= 360))
+    osh = angle360(osh);
+
+  //------------------------------------------------------
+  // Find out first IF ownship will pass contact (regardless port/star)
+  //------------------------------------------------------
+  // Step 1: Get ownship speed in contact beam direction, epsilon speed
+  double v_os_cnh = m_os_cnh_cos_cache[(unsigned int)(osh)] * osv;
+  double v_os_eps = m_cnv - v_os_cnh;
+  if(m_stat_os_aft_of_cn)
+    v_os_eps = v_os_cnh - m_cnv;
+
+  // Step 2: Determine IF ownship it will pass contact
+  if(v_os_eps <= 0)
+    return(false);
+  
+  //------------------------------------------------------
+  // Determine how far os will travel in gamma direction (perp to the 
+  // cn bow-stern line) in window of time up to moment of passing.
+  //------------------------------------------------------
+  // Step 3A: Get time it takes for ownship to reach the contact's beam.
+  double time_os_eps = m_stat_range_eps / v_os_eps;
+  // Step 3B: Get os spd in gamma direction, perp to cn bow-stern line. 
+  double os_gam_cos = m_os_gam_cos_cache[(unsigned int)(osh)];
+  double spd_os_gam = os_gam_cos * osv;
+  // Step 3C: Get dist os will travel toward cn. (may be negative)
+  double gam_dist = time_os_eps * spd_os_gam;
+
+  // Step 3D: Determine if os passes on port, and if so, the dist.
+  // Case 1 of 2 (os presently port of cn) does not cross port to star
+  if(m_stat_os_port_of_cn && (gam_dist <= m_stat_range_gam))
+    xdist = (m_stat_range_gam - gam_dist);
+
+  // Case 2 of 2 (os presently starboard of cn) crosses star to port
+  if(m_stat_os_star_of_cn && (gam_dist > m_stat_range_gam))
+    xdist = (gam_dist - m_stat_range_gam);
+  
+  return(xdist > 0);
+}
+
+//----------------------------------------------------------------
+// Procedure: passesStar()
 //   Purpose: checks to see if ownship, on the given heading and speed,
 //            will pass the contact on the contact's starboard side. 
 //            A "pass" means it will cross the line perpendicular to the 
 //            bow-stern line.
 
-bool CPAEngine::passesContactStarboard(double osCRS, double osSPD) const
+bool CPAEngine::passesStar(double osh, double osv) const
 {
   //============================================================
   // Handle Special Cases
   //============================================================
   // Special Case 1: ownship and contact are on the same point
-  if((osLON == cnLON) && (osLAT == cnLAT))
+  if(m_stat_os_on_contact)
     return(false);
-
+  
   // Special Case 2: ownship does not pass the contact at all
-  if(!passesContact(osCRS, osSPD))
+  if(!passesPortOrStar(osh, osv))
     return(false);
-
-  if(!passesContactPort(osCRS, osSPD))
+  
+  if(!passesPort(osh, osv))
     return(true);
+  
   return(false);
 }
 
+
 //----------------------------------------------------------------
-// Procedure: foreOfContact
+// Procedure: passesStarDist  (Convenience function)
+ 
+double CPAEngine::passesStarDist(double osh, double osv) const
+{
+  double dist;
+  passesStarDist(osh, osv, dist);
+  return(dist);
+}
+
+//----------------------------------------------------------------
+// Procedure: passesStarDist
+
+bool CPAEngine::passesStarDist(double osh, double osv, double& xdist) const
+{
+  // Until shown otherwise, xdist is -1, meaning os does not pass cn
+  xdist = -1;
+  
+  //------------------------------------------------------
+  // Sanity checks
+  //------------------------------------------------------
+  // Sanity check 1: If on the contact, return false
+  if(m_stat_os_on_contact) 
+    return(false);
+  // Sanity check 2: If on the port beam, return false
+  if(m_stat_os_on_beam && m_stat_os_port_of_cn) 
+    return(false);
+
+  // Sanity check 3: If on the starboard beam, return the current range
+  if(m_stat_os_on_beam && m_stat_os_star_of_cn) {
+    xdist = m_stat_range;
+    return(true);
+  }
+  
+  // Sanity check 4: Make sure osh is in [0,360) since we're using the
+  // whole number to index an array of size 360.
+  if((osh < 0) || (osh >= 360))
+    osh = angle360(osh);
+
+  //------------------------------------------------------
+  // Find out first IF ownship will pass contact (regardless port/star)
+  //------------------------------------------------------
+  // Step 1: Get ownship speed in contact beam direction, epsilon speed
+  double v_os_cnh = m_os_cnh_cos_cache[(unsigned int)(osh)] * osv;
+  double v_os_eps = m_cnv - v_os_cnh;
+  if(m_stat_os_aft_of_cn)
+    v_os_eps = v_os_cnh - m_cnv;
+
+  // Step 2: Determine IF ownship it will pass contact
+  if(v_os_eps <= 0)
+    return(false);
+  
+  //------------------------------------------------------
+  // Determine how far os will travel in gamma direction (perp to the 
+  // cn bow-stern line) in window of time up to moment of passing.
+  //------------------------------------------------------
+  // Step 3A: Get time it takes for ownship to reach the contact's beam.
+  double time_os_eps = m_stat_range_eps / v_os_eps;
+  // Step 3B: Get os spd in gamma direction, perp to cn bow-stern line. 
+  double os_gam_cos = m_os_gam_cos_cache[(unsigned int)(osh)];
+  double spd_os_gam = os_gam_cos * osv;
+  // Step 3C: Get dist os will travel toward cn. (may be negative)
+  double gam_dist = time_os_eps * spd_os_gam;
+
+  // Step 3D: Determine if os passes on port, and if so, the dist.
+  // Case 1 of 2 (os presently star of cn) does not cross star to port
+  if(m_stat_os_star_of_cn && (gam_dist <= m_stat_range_gam))
+    xdist = (m_stat_range_gam - gam_dist);
+
+  // Case 2 of 2 (os presently port of cn) crosses port to star
+  if(m_stat_os_port_of_cn && (gam_dist > m_stat_range_gam))
+    xdist = (gam_dist - m_stat_range_gam);
+
+  return(xdist > 0);
+}
+
+//----------------------------------------------------------------
+// Procedure: passesPortOrStar()
+//   Purpose: checks to see if ownship, on the given heading and speed,
+//            will pass the contact. A "pass" means it will cross the 
+//            line perpendicular to the bow-stern line. (crosses the beam)
+
+bool CPAEngine::passesPortOrStar(double osh, double osv) const
+{
+  if(m_stat_os_on_beam)
+    return(true);
+  
+  double v_os_cnh = m_os_cnh_cos_cache[(unsigned int)(osh)] * osv;
+  double v_os_eps = m_cnv - v_os_cnh;
+  if(m_stat_os_aft_of_cn)
+    v_os_eps = v_os_cnh - m_cnv;
+  
+  return(v_os_eps > 0);
+}
+
+//----------------------------------------------------------------
+// Procedure: getOSSpeedInCNHeading()
+
+double CPAEngine::getOSSpeedInCNHeading(double osh, double osv) const
+{
+  if((osh < 0) || (osh >= 360))
+    osh = angle360(osh);
+  double v_os_cnh = m_os_cnh_cos_cache[(unsigned int)(osh)] * osv;
+  return(v_os_cnh);
+}
+
+//----------------------------------------------------------------
+// Procedure: getOSSpeedGamma()
+//      Note: The ownship speed in direction perpendicular to contact
+
+double CPAEngine::getOSSpeedGamma(double osh, double osv) const
+{
+  if((osh < 0) || (osh >= 360))
+    osh = angle360(osh);
+  double v_os_gam = m_os_gam_cos_cache[(unsigned int)(osh)] * osv;
+  return(v_os_gam);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: getOSSpeedEpsilon
+//      Note: The ownship speed in direction of the contact beam
+
+double CPAEngine::getOSSpeedEpsilon(double osh, double osv) const
+{
+  if((osh < 0) || (osh >= 360))
+    osh = angle360(osh);
+  double v_os_cnh = m_os_cnh_cos_cache[(unsigned int)(osh)] * osv;
+  
+  if(m_stat_os_fore_of_cn) 
+    return(m_cnv - v_os_cnh);
+  else
+    return(v_os_cnh - m_cnv);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: getOSTimeGamma()
+
+double CPAEngine::getOSTimeGamma(double osh, double osv) const
+{
+  // Sanity check 1: If on the contact, return 0
+  if(m_stat_os_on_contact || m_stat_os_on_bowsternline)
+    return(0);
+
+  // Sanity check 2: Make sure osh is in [0,360) since we're using the
+  // whole number to index an array of size 360.
+  if((osh < 0) || (osh >= 360))
+    osh = angle360(osh);
+
+  // Get ownship speed in the direction of contact heading
+  double v_os_gam = m_os_gam_cos_cache[(unsigned int)(osh)] * osv;
+  
+  // Avoid division by zero
+  if(v_os_gam == 0)
+    return(0);
+  
+  double time_os_gam = m_stat_range_gam / v_os_gam;
+  return(time_os_gam);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: getOSTimeEpsilon()
+
+double CPAEngine::getOSTimeEpsilon(double osh, double osv) const
+{
+  // Sanity check 1: If on the contact, return 0
+  if(m_stat_os_on_contact || m_stat_os_on_beam)
+    return(0);
+
+  double v_os_eps = getOSSpeedEpsilon(osh, osv);
+  if(v_os_eps == 0)
+    return(0);
+  return(m_stat_range_eps / v_os_eps);
+}
+
+//----------------------------------------------------------------
+// Procedure: setForeOfContact
 //   Purpose: Checks to see if ownship is presently fore of the contact.
+//      Note: Assumes m_stat_rel_bng_cn_os has already been set. 
+//            For this reason, this function is protected.
 
-bool CPAEngine::foreOfContact() const
+void CPAEngine::setOSForeOfContact()
 {
   // First, edge case where ownship and contact are exact same position
-  if((osLAT == cnLAT) && (osLON == cnLON))
-    return(false);
+  if(m_stat_os_on_contact) {
+    m_stat_os_fore_of_cn = false;
+    return;
+  }
   
-  // returns value in the range [0,360)
-  double rel_bng = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
-  if((rel_bng >= 0) && (rel_bng <= 90))
-    return(true);
+  double rel_bng = m_stat_rel_bng_cn_os;  // static value set previously
+  if((rel_bng > 90) && (rel_bng < 270))
+    m_stat_os_fore_of_cn = false;
+  else
+    m_stat_os_fore_of_cn = true;
 
-  if((rel_bng >= 270) && (rel_bng <= 360))
-    return(true);
-  
-  return(false);
 }
 
 //----------------------------------------------------------------
-// Procedure: aftOfContact
+// Procedure: setAftOfContact
 //   Purpose: Checks to see if ownship is presently aft of the contact.
+//      Note: Assumes m_stat_rel_bng_cn_os has already been set. 
+//            For this reason, this function is protected.
 
-bool CPAEngine::aftOfContact() const
+void CPAEngine::setOSAftOfContact()
 {
   // First, edge case where ownship and contact are exact same position
-  if((osLAT == cnLAT) && (osLON == cnLON))
-    return(false);
-  
-  // returns value in the range [0,360)
-  double rel_bng = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
+  if(m_stat_os_on_contact) {
+    m_stat_os_aft_of_cn = false;
+    return;
+  }
+    
+  double rel_bng = m_stat_rel_bng_cn_os;  // static value set previously
   if((rel_bng >= 90) && (rel_bng <= 270))
-    return(true);
-  
-  return(false);
+    m_stat_os_aft_of_cn = true;
+  else
+    m_stat_os_aft_of_cn = false;
 }
 
 //----------------------------------------------------------------
-// Procedure: portOfContact
+// Procedure: setOSPortOfContact
 //   Purpose: True if ownship is presently on the port side of the contact.
 //      Note: If ownship is ON the bow or stern line, it will return true.
+//      Note: Assumes m_stat_rel_bng_cn_os has already been set. 
+//            For this reason, this function is protected.
 
-bool CPAEngine::portOfContact() const
+void CPAEngine::setOSPortOfContact() 
 {
   // First, edge case where ownship and contact are exact same position
-  if((osLAT == cnLAT) && (osLON == cnLON))
-    return(false);
+  if(m_stat_os_on_contact) {
+    m_stat_os_port_of_cn = false;
+    return;
+  }
   
-  // returns value in the range [0,360)
-  double rel_bng = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
-  if((rel_bng >= 180) && (rel_bng < 360))
-    return(true);
-  
-  // If contact ON the bow-stern line, return true
-  if(rel_bng == 0)
-    return(true);
-
-
-  return(false);
+  double rel_bng = m_stat_rel_bng_cn_os;  // static value set previously
+  if(rel_bng == 0)    // If contact ON bow-stern line, return true
+    m_stat_os_port_of_cn = true;
+  else if((rel_bng >= 180) && (rel_bng < 360))
+    m_stat_os_port_of_cn = true;
+  else 
+    m_stat_os_port_of_cn = false;
 }
 
 //----------------------------------------------------------------
-// Procedure: starboardOfContact
+// Procedure: setOSStarboardOfContact
 //   Purpose: True if ownship is presently on the starboard side of the contact.
 //      Note: If ownship is ON the bow or stern line, it will return true.
+//      Note: Assumes m_stat_rel_bng_cn_os has already been set. 
+//            For this reason, this function is protected.
 
-bool CPAEngine::starboardOfContact() const
+void CPAEngine::setOSStarboardOfContact() 
 {
   // First, edge case where ownship and contact are exact same position
-  if((osLAT == cnLAT) && (osLON == cnLON))
-    return(false);
+  if(m_stat_os_on_contact) {
+    m_stat_os_star_of_cn = false;
+    return;
+  }
   
-  // returns value in the range [0,360)
-  double rel_bng = relBearing(cnLON, cnLAT, cnCRS, osLON, osLAT);
+  double rel_bng = m_stat_rel_bng_cn_os;  // static value set previously
   if((rel_bng >= 0) && (rel_bng <= 180))
-    return(true);
-  
-  return(false);
+    m_stat_os_star_of_cn = true;
+  else
+    m_stat_os_star_of_cn = false;
 }
 
 
@@ -1089,15 +1246,313 @@ bool CPAEngine::starboardOfContact() const
 
 void CPAEngine::initTrigCache()
 {
-  vector<double> new_cos_cache(360,0);
-  vector<double> new_sin_cache(360,0);
+#if 1
+  // Part 1: Create the fine resolution cache for use with contact
+  vector<double> virgin_cache_3600(3600,0);
 
-  m_cos_cache = new_cos_cache;
-  m_sin_cache = new_sin_cache;
+  m_cos_cache_3600 = virgin_cache_3600;
+  m_sin_cache_3600 = virgin_cache_3600;
+
+  for(unsigned int i=0; i<3600; i++) {
+    double rad = degToRadiansX(i/10);
+    m_cos_cache_3600[i] = cos((double)(rad));
+    m_sin_cache_3600[i] = sin((double)(rad));
+  }
+#endif
+  
+  // Part 2: Create the course resolution cache for use with ownship
+  vector<double> virgin_cache(360,0);
+  m_cos_cache = virgin_cache;
+  m_sin_cache = virgin_cache;
 
   for(unsigned int i=0; i<360; i++) {
-    double rad = degToRadians(i);
+    double rad = degToRadiansX(i);
     m_cos_cache[i] = cos((double)(rad));
     m_sin_cache[i] = sin((double)(rad));
   }
 }
+
+//----------------------------------------------------------------
+// Procedure: initOSCNRelBngCache()
+
+void CPAEngine::initOSCNRelBngCache()
+{
+  vector<double> virgin_cache(360,0);
+  m_os_cn_relbng_cache = virgin_cache;
+  m_os_cn_relbng_cos_cache = virgin_cache;
+
+  double angle_os_to_cn = relAng(m_osx, m_osy, m_cnx, m_cny);
+
+  for(unsigned int i=0; i<360; i++) {
+    double rel_bng = angle_os_to_cn - ((double)(i));
+    if(rel_bng < 0)
+      rel_bng += 360;
+    else if(rel_bng >= 360)
+      rel_bng -= 360;
+    m_os_cn_relbng_cache[i] = rel_bng;
+
+    // Special case, cos(90/270) should be exactly zero. Converting 90 to 
+    // PI/2 introduces rounding error with cos(90). Special case handle here.
+    m_os_cn_relbng_cos_cache[i] = 0;
+    if((rel_bng != 90) && (rel_bng != 270)) {
+      double radians = degToRadiansX(rel_bng); 
+      m_os_cn_relbng_cos_cache[i] = cos(radians);
+    }
+  }
+
+  //m_os_cn_relbng_cos_cache[0]   = 1;
+  //m_os_cn_relbng_cos_cache[90]  = 0;
+  //m_os_cn_relbng_cos_cache[180] = 0;
+
+}
+
+//----------------------------------------------------------------
+// Procedure: initOSCNTangentCache()
+
+void CPAEngine::initOSCNTangentCache()
+{
+  // Part 2: Create the ownship cosine cache in direction of the
+  //         tangent angle.
+  vector<double> virgin_cache(360,0);
+  m_os_tn_cos_cache = virgin_cache;
+
+  for(unsigned int i=0; i<360; i++) {
+    double delta = ((double)(i)) - m_stat_theta_tn;
+    if(delta > 180)
+      delta -= 360;
+    else if(delta < -180)
+      delta += 360;
+    if(delta < 0)
+      delta = -delta;
+
+    // Special case, cos(90) should be exactly zero. Converting 90 to PI/2
+    // introduces rounding error with cos(90). Special case handle here.
+    m_os_tn_cos_cache[i] = 0;
+    if(delta != 90) { 
+      double radians = degToRadiansX(delta); 
+      m_os_tn_cos_cache[i] = cos(radians); 
+    }
+  }
+
+}
+
+//----------------------------------------------------------------
+// Procedure: initOSGammaCache()
+
+void CPAEngine::initOSGammaCache()
+{
+  //---------------------------------------------------------------------
+  // Part 1: Create the theta_os_gam cosine cache.
+  //---------------------------------------------------------------------
+  // Create ownship gamma cosine cache in direction of line perpendicular
+  // to contact bow-stern line, ie, perpendicular to the contact heading.  
+  // This value is useful, for example, when calculating the speed at which
+  // ownship is nearing the contact bow-stern line.
+  vector<double> virgin_cache(360,0);
+  m_os_gam_cos_cache = virgin_cache;
+
+  for(unsigned int i=0; i<360; i++) {
+    double delta = ((double)(i)) - m_stat_theta_os_gam;
+    if(delta > 180)
+      delta -= 360;
+    else if(delta < -180)
+      delta += 360;
+    if(delta < 0)
+      delta = -delta;
+
+    // Set the cosine value. Handle, as a special case, when delta is
+    // 90 degrees. We know that cos(90) is zero, but when converting
+    // 90 degrees to PI/2, there is imprecision. This imprecision results
+    // in cos(90) having a non-zero value out to the 10th decimal or so.
+    m_os_gam_cos_cache[i] = 0; 
+    if(delta != 90) {
+      double gam = degToRadiansX(delta); 
+      m_os_gam_cos_cache[i] = cos(gam); 
+    }
+  }
+
+  //---------------------------------------------------------------------
+  // Part 2: Initialize the gamma range
+  //---------------------------------------------------------------------
+  // The gamma ranges (r_gamma and r_gamma_prime) are used for quickly 
+  // calculating the range that ownship crosses the contact bow or stern.
+  // Note: 
+  //    r_gamma   is m_stat_range_gam, and
+  //    r_epsilon is m_stat_range_eps
+  
+  double rel_bng_cn_to_os_180 = m_stat_rel_bng_cn_os;
+  if(rel_bng_cn_to_os_180 > 180)
+    rel_bng_cn_to_os_180 -= 360;
+  else if(rel_bng_cn_to_os_180 < -180)
+    rel_bng_cn_to_os_180 += 360;
+  if(rel_bng_cn_to_os_180 < 0)
+    rel_bng_cn_to_os_180 = -rel_bng_cn_to_os_180;
+  // Now rel_bng_cn_to_os_180 is in the range [0 180]
+  
+  // Special case: os is directly on contact's beam
+  if((rel_bng_cn_to_os_180 == 0) || (rel_bng_cn_to_os_180 == 180)) {
+    m_stat_range_gam = m_stat_range;
+    m_stat_range_eps = 0;
+    return;
+  }
+    
+  double theta_b = 90 - rel_bng_cn_to_os_180;
+  double theta_b_rad = degToRadiansX(theta_b);
+  double cos_theta_b = cos(theta_b_rad); // Note theta_b cannot be 90,-90.
+
+  m_stat_range_gam = m_stat_range * cos_theta_b;
+
+  //---------------------------------------------------------------------
+  // Part 3: Initialize the epsilon range
+  //---------------------------------------------------------------------
+  // The epsilon range, r_epsilon, is used for quickly calculating the
+  // range that ownship crosses the contact beam
+
+  //theta_e = 
+  
+#if 1
+  double range_2d     = m_stat_range * m_stat_range;
+  double range_gam_2d = m_stat_range_gam * m_stat_range_gam;
+  m_stat_range_eps = sqrt(range_2d - range_gam_2d);
+  //if(theta_b > 0)
+  //  m_stat_range_eps = -m_stat_range_eps;
+#endif
+  
+}
+
+//----------------------------------------------------------------
+// Procedure: initOSCNHCosCache()
+
+void CPAEngine::initOSCNHCosCache()
+{
+  // Part 2: Create a cosine cache for all possible ownship headings
+  //         in the direction of the contact heading. 
+  
+  vector<double> virgin_cache(360,0);
+  m_os_cnh_cos_cache = virgin_cache;
+
+  for(unsigned int i=0; i<360; i++) {
+    double delta = ((double)(i)) - m_cnh;
+    if(delta > 180)
+      delta -= 360;
+    else if(delta < -180)
+      delta += 360;
+    if(delta < 0)
+      delta = -delta;
+
+    // Set the cosine value. Handle, as a special case, when delta is
+    // 90 degrees. We know that cos(90) is zero, but when converting
+    // 90 degrees to PI/2, there is imprecision. This imprecision results
+    // in cos(90) having a non-zero value out to the 10th decimal or so.
+    m_os_cnh_cos_cache[i] = 0; 
+    if(delta != 90) {
+      double gam = degToRadiansX(delta); 
+      m_os_cnh_cos_cache[i] = cos(gam); 
+    }
+  }
+}
+
+//----------------------------------------------------------------
+// Procedure: initK1Cache
+
+void CPAEngine::initK1Cache()
+{
+  // Part 2: Create the course resolution cache for use with ownship
+  vector<double> virgin_cache(360,0);
+  m_k1_cache = virgin_cache;
+
+  for(unsigned int i=0; i<360; i++) {
+    double cos_osh = m_cos_cache[(unsigned int)(i)];
+    double sin_osh = m_sin_cache[(unsigned int)(i)];
+
+    double k1_val = ( 2.0) * cos_osh * m_osy;  // (1,2)(2,1)(a)
+    k1_val += ( 2.0) * sin_osh * m_osx;  // (1,2)(2,1)(b)
+    k1_val += (-2.0) * cos_osh * m_cny;  // (1,4)(4,1)(a)
+    k1_val += (-2.0) * sin_osh * m_cnx;  // (1,4)(4,1)(b)
+    
+    m_k1_cache[i] = k1_val;
+  }
+}
+
+//----------------------------------------------------------------
+// Procedure: initK2Cache
+
+void CPAEngine::initK2Cache()
+{
+  // Part 2: Create the course resolution cache for use with ownship
+  vector<double> virgin_cache(360,0);
+  m_k2_cache = virgin_cache;
+
+  for(unsigned int i=0; i<360; i++) {
+    double cos_osh = m_cos_cache[(unsigned int)(i)];
+    double sin_osh = m_sin_cache[(unsigned int)(i)];
+    
+    double k2_val = cos_osh * m_stat_cosCNH_x_cnSPD;  
+    k2_val += sin_osh * m_stat_sinCNH_x_cnSPD;  
+
+    m_k2_cache[i] = k2_val;
+  }
+}
+
+
+//----------------------------------------------------------------
+// Procedure: initRateCache
+
+void CPAEngine::initRateCache()
+{
+  // Part 1: Determine the speed of contact in the direction of ownship
+  double rel_bng_cn_os = relBearing(m_cnx, m_cny, m_cnh, m_osx, m_osy);
+
+  // Special case, cos(90) should be exactly zero. Converting 90 to PI/2
+  // introduces rounding error with cos(90). Special case handle here.
+  if(rel_bng_cn_os != 90) 
+    m_stat_cn_to_os_spd = m_cnv * cos(degToRadiansX(rel_bng_cn_os));
+
+  m_stat_cn_to_os_closing = (m_stat_cn_to_os_spd > 0);
+
+  
+  vector<double> virgin_cache(360,999);
+  m_os_vthresh_cache_360 = virgin_cache;
+  
+  // Case 1: contact is closing ownship position, i.e., contact speed
+  //         vector is in the direction of ownship rather than away.
+  //         The cache will be a cache of speeds ownship must be
+  //         greather than or equal to, if the current point in time
+  //         is to be considered the CPA.
+
+  if(m_stat_cn_to_os_closing) {
+    
+    double relang_os_to_cn = relAng(m_cnx, m_cny, m_osx, m_osy);
+    for(unsigned int i=0; i<360; i++) {
+      double delta = (double)(i) - relang_os_to_cn;
+      
+      double cos_delta = cos(degToRadiansX(delta));
+      if(cos_delta > 0.0001) {
+	double thresh = (m_stat_cn_to_os_spd / cos_delta);
+	m_os_vthresh_cache_360[i] = thresh;
+      }
+    }
+    
+    return;
+  }   
+  // Case 2: contact is opening ownship position, i.e., contact speed
+  //         vector is in direction away from ownship rather than toward.
+  //         The cache will be a cache of speeds ownship must be less
+  //         than or equal to, if the current point in time is to be 
+  //         considered the CPA.
+  
+  double relang_os_to_cn = relAng(m_osx, m_osy, m_cnx, m_cny);
+  for(unsigned int i=0; i<360; i++) {
+    double delta = (double)(i) - relang_os_to_cn;    
+    double cos_delta = cos(degToRadiansX(delta));
+    //double cos_delta = m_cos_cache_1800[(unsigned int)(delta)];
+    if(cos_delta > 0.0001) {
+      double thresh = (-m_stat_cn_to_os_spd / cos_delta);
+      m_os_vthresh_cache_360[i] = thresh;
+    }
+  }
+}
+
+
+
+

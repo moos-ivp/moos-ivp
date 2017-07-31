@@ -23,7 +23,7 @@ set(${LIBNAME}_DEPEND_INCLUDE_DIRS
 list(REMOVE_DUPLICATES ${LIBNAME}_DEPEND_INCLUDE_DIRS)
 
 if(UNIX)
-    set(DEPENDENCIES m proj)
+    set(DEPENDENCIES m)
 endif(UNIX)
    
 
@@ -70,7 +70,8 @@ cache_internal_append_unique(PROJECT_EXPORT_LIBS
 
 include_directories(${${LIBNAME}_INCLUDE_DIRS} ${${LIBNAME}_DEPEND_INCLUDE_DIRS})
 add_library(${LIBNAME} ${SOURCES} ${PUBLIC_HEADERS})
-target_link_libraries(${LIBNAME} ${${LIBNAME}_DEPEND_LIBRARIES})
+target_link_libraries(${LIBNAME} LINK_PRIVATE proj)
+target_link_libraries(${LIBNAME} LINK_PUBLIC ${${LIBNAME}_DEPEND_LIBRARIES})
 
 #######################################
 # install headers

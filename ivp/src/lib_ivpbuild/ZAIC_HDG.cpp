@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ZAIC_HDG.cpp                                         */
 /*    DATE: May 11th 2016                                        */
@@ -483,3 +483,7 @@ PDMap *ZAIC_HDG::setPDMap(double tolerance)
 
   return(pdmap);
 }
+
+
+
+

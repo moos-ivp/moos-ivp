@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: QueryDB_Info.h                                       */
 /*    DATE: Dec 29th 2015                                        */
@@ -31,6 +31,10 @@ void showInterfaceAndExit();
 void showReleaseInfoAndExit();
 
 #endif
+
+
+
+
 
 
 

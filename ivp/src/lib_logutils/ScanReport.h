@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ScanReport.h                                         */
 /*    DATE: June 4th, 2008                                       */
@@ -126,3 +126,7 @@ class ScanReport
 };
 
 #endif 
+
+
+
+

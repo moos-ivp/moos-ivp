@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeRecord.h                                         */
 /*    DATE: Feb 27th 2010                                        */
@@ -162,6 +162,10 @@ class NodeRecord
 };
 
 #endif 
+
+
+
+
 
 
 

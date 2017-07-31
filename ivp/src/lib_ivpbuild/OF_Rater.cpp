@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: OF_Rater.cpp                                         */
 /*    DATE: Dec 5th, 2004 (separated from OFR_AOF.cpp            */
@@ -213,6 +213,10 @@ double OF_Rater::evalPtBox(const IvPBox *gbox)
     return(m_aof->evalBox(gbox));
   return(val);
 }
+
+
+
+
 
 
 

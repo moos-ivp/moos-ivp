@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPFuncViewerX.cpp                                   */
 /*    DATE: Feb 25th, 2007                                       */
@@ -575,4 +575,8 @@ bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
   setPriorityIPF("n/a");
   return(true);
 }
+
+
+
+
 

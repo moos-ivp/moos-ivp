@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmReport.cpp                                       */
 /*    DATE: Oct0511                                              */
@@ -182,6 +182,10 @@ HelmReport string2HelmReport(const string& str,
 
   return(report);
 }
+
+
+
+
 
 
 

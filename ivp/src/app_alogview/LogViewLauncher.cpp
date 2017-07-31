@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogViewLauncher.cpp                                  */
 /*    DATE: May 31st, 2005                                       */
-/*    DATE: Feb 9th, 2015 Major overhaul mikerb                  */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -521,3 +520,7 @@ bool LogViewLauncher::handleALogViewConfig(string filename)
   m_config_file_read = true;
   return(true);
 }
+
+
+
+

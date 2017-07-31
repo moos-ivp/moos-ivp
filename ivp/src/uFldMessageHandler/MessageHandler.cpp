@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MessageHandler.cpp                                   */
 /*    DATE: Jan 30th 2012                                        */
@@ -354,6 +354,10 @@ bool MessageHandler::buildReport()
   
   return(true);
 }
+
+
+
+
 
 
 

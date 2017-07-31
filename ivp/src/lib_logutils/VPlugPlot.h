@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: VPlugPlot.h                                          */
 /*    DATE: Aug 9th, 2009                                        */
@@ -55,6 +55,10 @@ protected:
   std::vector<VPlug_GeoShapes> m_vplugs;
 };
 #endif 
+
+
+
+
 
 
 

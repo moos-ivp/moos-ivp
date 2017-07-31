@@ -670,3 +670,7 @@ void BHV_Loiter::postConfigStatus()
 
   postRepeatableMessage("BHV_SETTINGS", str);
 }
+
+
+
+

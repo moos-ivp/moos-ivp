@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: July 1st, 2016                                       */
@@ -116,6 +116,10 @@ int main(int argc, char *argv[])
   delete gui;
   return(0);
 }
+
+
+
+
 
 
 

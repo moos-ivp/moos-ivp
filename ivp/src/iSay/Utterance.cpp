@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Utterance.cpp                                        */
 /*    DATE: May 20, 2013                                         */
@@ -173,4 +173,8 @@ bool operator> (const Utterance& utter1, const Utterance& utter2)
 {
   return(utter1.getPriority() < utter2.getPriority());
 }
+
+
+
+
 

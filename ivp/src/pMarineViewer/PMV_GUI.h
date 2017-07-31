@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PMV_GUI.h                                            */
 /*    DATE: Nov 11th 2004                                        */
@@ -201,6 +201,10 @@ public:
   std::string m_title_base;
 };
 #endif
+
+
+
+
 
 
 

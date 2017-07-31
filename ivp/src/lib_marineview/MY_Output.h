@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MY_Output.h                                          */
 /*    DATE: December 2004                                        */
@@ -35,6 +35,10 @@ public:
   int  handle(int event) {return(0);}
 };
 #endif
+
+
+
+
 
 
 

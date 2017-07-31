@@ -1,8 +1,16 @@
 #!/bin/bash
 
+INVOC_ABS_DIR="$(pwd)"
+SCRIPT_ABS_DIR="$(cd $(dirname "$0") && pwd -P)"
+MOOS_SRC_DIR="${SCRIPT_ABS_DIR}/MOOS"
+BUILD_ABS_DIR="${SCRIPT_ABS_DIR}/build/MOOS"
+mkdir -p "${BUILD_ABS_DIR}"
+
+
 BUILD_TYPE="Release"
-CMD_ARGS=""
-BUILD_BOT_CODE_ONLY="OFF"
+BUILD_OPTIM="yes"
+CMD_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
+BUILD_BOT_CODE_ONLY="ON"
 
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
@@ -12,7 +20,7 @@ for ARGI; do
         printf "  --release, -r                                \n"
         printf "Any other switches passed directly to \"make\" \n"
         printf "Recommended:                                   \n"
-        printf " -j12   Speed up compile on multi-core machines. \n"
+        printf " -jN    Speed up compile on multi-core machines. \n"
         printf " -k     Keep building after failed component.    \n"
 	printf " -m,    Only build minimal robot apps            \n"
         printf " clean  Clean/remove any previous build.         \n"
@@ -28,47 +36,99 @@ for ARGI; do
     fi
 done
 
-INVOC_ABS_DIR="`pwd`"
-echo "  INVOC_ABS_DIR: " ${INVOC_ABS_DIR}
+echo "  SCRIPT_ABS_DIR: " ${SCRIPT_ABS_DIR}
 
 # Setup C and C++ Compiler flags for Mac and Linux. 
-if [ "`uname`" == "Darwin" ] ; then
-  echo "Building MOOS for Apple"
-else
-  echo "Building MOOS for Linux"
-  MOOS_CXX_FLAGS="-fPIC -Wno-long-long"
+MOOS_CXX_FLAGS="-Wall -Wextra -Wno-unused-parameter -pedantic -fPIC"
+if [ "${BUILD_OPTIM}" = "yes" ] ; then
+    MOOS_CXX_FLAGS=$MOOS_CXX_FLAGS" -Os"
 fi
+
+#-------------------------------------------------------------------
+# Clean up old files left behind from in-source builds. 
+#-------------------------------------------------------------------
+
+if [ -e "${MOOS_SRC_DIR}/proj-4.8.0/Makefile" ] ; then
+    $(cd "${MOOS_SRC_DIR}/proj-4.8.0/" && make distclean) >& /dev/null
+fi
+if [ -d "${MOOS_SRC_DIR}/proj-4.8.0/bin" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/proj-4.8.0/bin" >& /dev/null
+fi
+if [ -d "${MOOS_SRC_DIR}/proj-4.8.0/include" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/proj-4.8.0/include" >& /dev/null
+fi
+if [ -d "${MOOS_SRC_DIR}/proj-4.8.0/lib" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/proj-4.8.0/lib" >& /dev/null
+fi
+if [ -d "${MOOS_SRC_DIR}/proj-4.8.0/share" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/proj-4.8.0/share" >& /dev/null
+fi
+
+if [ -d "${MOOS_SRC_DIR}/MOOSCore/lib" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/MOOSCore/lib" >& /dev/null
+fi
+if [ -d "${MOOS_SRC_DIR}/MOOSGeodesy/lib" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/MOOSGeodesy/lib" >& /dev/null
+fi
+if [ -d "${MOOS_SRC_DIR}/MOOSToolsUI/lib" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/MOOSToolsUI/lib" >& /dev/null
+fi
+
+find "${MOOS_SRC_DIR}/" -type d -name "CMakeFiles" -exec rm -rf {} +
+find "${MOOS_SRC_DIR}/" -type f -name "CMakeCache.txt" -delete
+find "${MOOS_SRC_DIR}/" -type f -name "cmake_install.cmake" -delete
+find "${MOOS_SRC_DIR}/" -type f -name "Makefile" -delete
+find "${MOOS_SRC_DIR}/" -type f -name "UseMOOS*.cmake" -delete
+find "${MOOS_SRC_DIR}/" -type f -name "MOOS*Config*.cmake" -delete
+find "${MOOS_SRC_DIR}/" -type f -name "*.o" -delete
+find "${MOOS_SRC_DIR}/" -type f -name "*.lo" -delete
 
 #===================================================================
 # Part #1:  BUILD CORE
 #      -DUPDATE_GIT_VERSION_INFO=OFF                          \
 #===================================================================
-cd "${INVOC_ABS_DIR}/MOOS/MOOSCore"
+mkdir -p "${BUILD_ABS_DIR}/MOOSCore"
+cd "${BUILD_ABS_DIR}/MOOSCore"
 
 echo "Invoking cmake..." `pwd`
-cmake -DENABLE_EXPORT=ON                                     \
-      -DUSE_ASYNC_COMMS=ON                                   \
-      -DTIME_WARP_AGGLOMERATION_CONSTANT=0.4                 \
-      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
-      -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${INVOC_ABS_DIR}/bin  \
-      -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
+cmake -DENABLE_EXPORT=ON                                       \
+      -DUSE_ASYNC_COMMS=ON                                     \
+      -DTIME_WARP_AGGLOMERATION_CONSTANT=0.4                   \
+      -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                         \
+      -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="${SCRIPT_ABS_DIR}/bin" \
+      -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                    \
+      "${MOOS_SRC_DIR}/MOOSCore"                               \
+  && echo "" && echo "Invoking make..." `pwd` && echo ""       \
+  && make  ${CMD_ARGS}
 
-echo ""; echo "Invoking make..." `pwd`; echo ""
-make  -j12 ${CMD_ARGS}
+if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSCore"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit -1
+fi
+
 
 #===================================================================
 # Part #2:  BUILD ESSENTIALS
 #===================================================================
-cd "${INVOC_ABS_DIR}/MOOS/MOOSEssentials"
+mkdir -p "${BUILD_ABS_DIR}/MOOSEssentials"
+cd "${BUILD_ABS_DIR}/MOOSEssentials"
 
 echo "Invoking cmake..." `pwd`
-cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
-      -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${INVOC_ABS_DIR}/bin  \
-      -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}" ./
+cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                          \
+      -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="${SCRIPT_ABS_DIR}/bin"  \
+      -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                     \
+      "${MOOS_SRC_DIR}/MOOSEssentials"                          \
+  && echo"" && echo "Invoking make..." `pwd` && echo""          \
+  && make ${CMD_ARGS}
 
-echo""; echo "Invoking make..." `pwd`; echo""
-make -j12 ${CMD_ARGS}
-
+if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSEssentials"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit -1
+fi
 
 #===================================================================
 # Part #3:  BUILD MOOS GUI TOOLS
@@ -77,20 +137,27 @@ make -j12 ${CMD_ARGS}
 printf "+++++++++++++++++++++++++++++++++++++++++++++++++++\n"
 printf "MOOS_BUILD_BOT_CODE_ONLY: ${BUILD_BOT_CODE_ONLY}   \n"
 printf "+++++++++++++++++++++++++++++++++++++++++++++++++++\n"
-if [ ${BUILD_BOT_CODE_ONLY} = "OFF" ] ; then
+if [ "${BUILD_BOT_CODE_ONLY}" = "OFF" ] ; then
 
-    cd "${INVOC_ABS_DIR}/MOOS/MOOSToolsUI"
+    mkdir -p "${BUILD_ABS_DIR}/MOOSToolsUI"
+    cd "${BUILD_ABS_DIR}/MOOSToolsUI"
     
     echo "Invoking cmake..." `pwd`
     cmake -DBUILD_CONSOLE_TOOLS=ON                               \
-	-DBUILD_GRAPHICAL_TOOLS=ON                             \
-	-DBUILD_UPB=ON                                         \
-	-DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
-	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${INVOC_ABS_DIR}/bin  \
-	-DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}" ./          
-    
-    echo ""; echo "Invoking make..." `pwd`; echo ""
-    make -j12 ${CMD_ARGS}    
+	-DBUILD_GRAPHICAL_TOOLS=ON                               \
+	-DBUILD_UPB=ON                                           \
+	-DCMAKE_BUILD_TYPE=${BUILD_TYPE}                         \
+	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY="${SCRIPT_ABS_DIR}/bin" \
+	-DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                    \
+        "${MOOS_SRC_DIR}/MOOSToolsUI"                            \
+      && echo "" && echo "Invoking make..." `pwd` && echo ""     \
+      && make ${CMD_ARGS}    
+    if [ $? -ne 0 ] ; then
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        echo "ERROR! Failed to build MOOSToolsUI"
+        echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+        exit -1
+    fi
 fi
 
 
@@ -99,38 +166,52 @@ fi
 #===================================================================
 # Part #4:  BUILD PROJ4
 #===================================================================
-cd "${INVOC_ABS_DIR}/MOOS/proj-4.8.0"
+mkdir -p "${BUILD_ABS_DIR}/proj-4.8.0"
+cd "${BUILD_ABS_DIR}/proj-4.8.0"
 
-
-if [ ! -e lib/libproj.dylib ]; then
-    if [ ! -e lib/libproj.a ]; then
-	echo "Building Proj4. MOOSGeodesy now uses Proj4 with MOOSGeodesy wrapper"
-	./configure --with-jni=no
-	make 
-	make install 
-	echo "Done Building Proj4."
-    fi
+# TODO: This will always build PROJ4, even if local OS install performed.
+if [ ! -e lib/libproj.a ]; then
+  echo "Building Proj4. MOOSGeodesy now uses Proj4 with MOOSGeodesy wrapper"
+  "${MOOS_SRC_DIR}/proj-4.8.0/configure" --with-jni=no --enable-shared=no --enable-static=yes --with-pic  \
+    && make -j$(getconf _NPROCESSORS_ONLN)           \
+    && make install                                  \
+    && echo "Done Building Proj4."
+  if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build PROJ4"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit -1
+  fi
 fi
 
 
 #===================================================================
 # Part #5:  BUILD MOOS GEODESY
 #===================================================================
-cd "${INVOC_ABS_DIR}/MOOS/MOOSGeodesy"
+mkdir -p "${BUILD_ABS_DIR}/MOOSGeodesy"
+cd "${BUILD_ABS_DIR}/MOOSGeodesy"
 
-PROJ4_INCLUDE_DIR="${INVOC_ABS_DIR}/MOOS/proj-4.8.0/include"
-PROJ4_LIB_DIR="${INVOC_ABS_DIR}/MOOS/proj-4.8.0/lib"
+PROJ4_INCLUDE_DIR="${BUILD_ABS_DIR}/proj-4.8.0/include"
+PROJ4_LIB_DIR="${BUILD_ABS_DIR}/proj-4.8.0/lib"
 
 echo "PROJ4 LIB DIR: " $PROJ4_LIB_DIR
 
 
 echo "Invoking cmake..." `pwd`
-cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"         \
-      -DPROJ4_INCLUDE_DIRS=${PROJ4_INCLUDE_DIR}     \
-      -DPROJ4_LIB_PATH=${PROJ4_LIB_DIR} 
+cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                    \
+      -DPROJ4_INCLUDE_DIRS=${PROJ4_INCLUDE_DIR}                \
+      -DPROJ4_LIB_PATH=${PROJ4_LIB_DIR}                        \
+      "${MOOS_SRC_DIR}/MOOSGeodesy"                            \
+  && echo "" && echo "Invoking make..." `pwd` && echo ""       \
+  && make ${CMD_ARGS}
 
-    
-echo ""; echo "Invoking make..." `pwd`; echo ""
-make -j12 $@
+if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSGeodesy"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit -1
+fi
+
 
 cd ${INVOC_ABS_DIR}
+

@@ -318,3 +318,7 @@ void EncounterPlot::print() const
   }
 
 }
+
+
+
+

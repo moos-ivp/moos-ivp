@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Utterance.h                                          */
 /*    DATE: May 20th, 2013                                       */
@@ -81,4 +81,8 @@ bool operator< (const Utterance& utter1, const Utterance& utter2);
 bool operator> (const Utterance& utter1, const Utterance& utter2);
 
 #endif 
+
+
+
+
 

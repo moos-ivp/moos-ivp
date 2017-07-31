@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: SafetyRetreatMain.cpp                                */
 /*    DATE: August 2010                                          */
@@ -64,6 +64,10 @@ int main(int argc, char *argv[])
 
   return(0);
 }
+
+
+
+
 
 
 

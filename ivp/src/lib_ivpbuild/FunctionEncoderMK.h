@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: FunctionEncoder.h                                    */
 /*    DATE: April 17th 2006 (Patriots Day)                       */
@@ -40,6 +40,10 @@ std::vector<std::string> IvPFunctionToVectorMK(const std::string&,
 IvPFunction *StringToIvPFunctionMK(const std::string&);
 
 #endif
+
+
+
+
 
 
 

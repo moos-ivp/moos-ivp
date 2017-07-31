@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LoadWatch.h                                          */
 /*    DATE: Dec 24th, 2013                                       */
@@ -68,6 +68,10 @@ class LoadWatch : public AppCastingMOOSApp
 };
 
 #endif 
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HazardMgr.h                                          */
 /*    DATE: Oct 26th 2012                                        */
@@ -84,6 +84,10 @@ class HazardMgr : public AppCastingMOOSApp
 };
 
 #endif 
+
+
+
+
 
 
 

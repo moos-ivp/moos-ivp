@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ALogScanner.cpp                                      */
 /*    DATE: June 3rd, 2008                                       */
@@ -98,6 +98,10 @@ bool ALogScanner::openALogFile(string alogfile)
   else
     return(true);
 }
+
+
+
+
 
 
 

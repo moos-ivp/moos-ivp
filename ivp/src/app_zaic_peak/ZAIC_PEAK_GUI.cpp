@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ZAIC_PEAK_GUI.cpp                                    */
 /*    DATE: June 17th, 2006                                      */
@@ -284,3 +284,7 @@ void ZAIC_PEAK_GUI::updateFieldColors()
   else
     m_fld_minutil->color(fcolor_wht);
 }
+
+
+
+

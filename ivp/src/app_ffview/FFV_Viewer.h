@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: FFV_Viewer.h                                         */
 /*    DATE: Apr 15th 2005                                        */
@@ -109,6 +109,10 @@ private:
 };
 
 #endif 
+
+
+
+
 
 
 

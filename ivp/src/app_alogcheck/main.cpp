@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: alogcheck_main.cpp                                   */
 /*    DATE: July 29, 2010                                        */
@@ -207,6 +207,10 @@ int main(int argc, char** argv)
 /*****************************************************************************
  * END of alogcheck_main.cpp
  ****************************************************************************/
+
+
+
+
 
 
 

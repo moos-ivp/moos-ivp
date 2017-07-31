@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: UCMD_GUI.h                                           */
 /*    DATE: July 1st, 2016                                       */
@@ -117,3 +117,7 @@ public:
   bool   m_concede_top;
 };
 #endif
+
+
+
+

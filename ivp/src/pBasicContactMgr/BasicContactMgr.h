@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BasicContactMgr.h                                    */
 /*    DATE: Feb 24th 2010                                        */
@@ -144,6 +144,10 @@ private:
 };
 
 #endif 
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: May 21, 2009                                         */
@@ -75,6 +75,10 @@ int main(int argc, char *argv[])
 
   return(0);
 }
+
+
+
+
 
 
 

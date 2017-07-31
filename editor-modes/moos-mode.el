@@ -182,7 +182,7 @@
 	;;These lists get populated in the call to parse-xx-and-keyword-list
 	;;below. They need to exist so add-to-list can do its thing...
 	(setq moos-app-names '("MOOSDB"))
-	(setq moos-bhv-names)
+	;;(setq moos-bhv-names '("FOO"))  ;; mikerb
 
 	;;Iterate through the app and behavior lists to add the font-lock
 	;;entries. These lists were created in the separate files

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: VehicleSet.cpp                                       */
 /*    DATE: Aug 12th 2008                                        */
@@ -600,6 +600,10 @@ bool VehicleSet::updateVehicleBearingLine(const string& str)
   m_bearing_map[vname] = bearing_line; 
   return(true);
 }
+
+
+
+
 
 
 

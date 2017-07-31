@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CRS_ExampleConfig.cpp                                */
 /*    DATE: July 7th 2011                                        */
@@ -169,6 +169,10 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFldContactRangeSensor", "gpl");
   exit(0);
 }
+
+
+
+
 
 
 

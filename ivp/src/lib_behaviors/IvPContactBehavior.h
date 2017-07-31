@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_AvoidCollision.h                                 */
 /*    DATE: Nov 18th 2006                                        */
@@ -127,3 +127,7 @@ public:
 };
 
 #endif
+
+
+
+

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: EnumVariable.h                                       */
 /*    DATE: Dec 26th 2009                                        */
@@ -59,6 +59,10 @@ class EnumVariable
 };
 
 #endif 
+
+
+
+
 
 
 

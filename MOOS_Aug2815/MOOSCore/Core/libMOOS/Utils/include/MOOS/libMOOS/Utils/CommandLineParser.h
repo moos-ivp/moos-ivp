@@ -94,8 +94,11 @@ public:
 	 */
 	bool VariableExists(const std::string & var);
 private:
+#ifdef _USE_UNIQUE_PTR
+	std::unique_ptr<GetPot> pcl_;
+#else
 	std::auto_ptr<GetPot> pcl_;
-
+#endif
 };
 
 

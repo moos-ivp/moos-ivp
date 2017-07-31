@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: SimEngine.cpp                                        */
 /*    DATE: Mar 8th, 2005 just another day at CSAIL              */
@@ -275,3 +275,7 @@ void SimEngine::propagateHeadingDiffMode(NodeRecord& record,
   record.setHeading(new_heading);
   record.setYaw(-degToRadians(angle180(new_heading)));
 }
+
+
+
+

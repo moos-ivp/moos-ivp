@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GUI_HelmScope.cpp                                    */
 /*    DATE: Oct 4th 2011                                         */
-/*    DATE: Feb 19th, 2015  Merge with alogview                  */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -652,3 +651,7 @@ void GUI_HelmScope::updateMutableTextSize(string val)
   updateTopBrowsers();
   updateBotBrowser();
 }
+
+
+
+

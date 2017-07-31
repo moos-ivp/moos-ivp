@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: FiltHandler.cpp                                      */
 /*    DATE: August 6th, 2008                                     */
@@ -244,6 +244,10 @@ void FiltHandler::printReport()
   }
   cout << endl;
 }
+
+
+
+
 
 
 

@@ -676,3 +676,7 @@ void GUI_Encounters::updateXY()
   m_fld_curr_contact->value(curr_contact.c_str());
 }
 
+
+
+
+

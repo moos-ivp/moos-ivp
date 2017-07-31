@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IterBlockHelm.cpp                                    */
 /*    DATE: Apr 12th 2008                                        */
@@ -382,6 +382,10 @@ void IterBlockHelm::print(int iter) const
   cout << "m_idle_bhv.size(): " << m_idle_bhv.size() << endl;
   cout << "m_completed_bhv.size(): " << m_completed_bhv.size() << endl;
 }
+
+
+
+
 
 
 

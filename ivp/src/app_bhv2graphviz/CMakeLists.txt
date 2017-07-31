@@ -25,6 +25,7 @@ TARGET_LINK_LIBRARIES(bhv2graphviz
   helmivp
   contacts
   behaviors-marine
+  behaviors-colregs
   behaviors
   bhvutil	
   ivpbuild 

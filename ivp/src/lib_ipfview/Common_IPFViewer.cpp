@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Common_IPFViewer.cpp                                 */
 /*    DATE: Feb 13, 2007                                         */
-/*    DATE: Jun 18, 2016 // Split into this class                */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -1243,6 +1242,10 @@ void Common_IPFViewer::drawText2(double px, double py, const string& text,
   glFlush();
   glPopMatrix();
 }
+
+
+
+
 
 
 

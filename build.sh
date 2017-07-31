@@ -25,6 +25,11 @@ for ARGI; do
     fi
 done
 
+INVOC_ABS_DIR="$(pwd)"
+SCRIPT_ABS_DIR="$(cd $(dirname "$0") && pwd -P)"
+
+cd "${SCRIPT_ABS_DIR}"
+
 if [ ${CLEAN} = "yes" ] ; then
     printf "=========================================\n" 
     printf "CLEANING both MOOS and IVP               \n" 
@@ -45,3 +50,6 @@ else
     ./build-moos.sh
     ./build-ivp.sh 
 fi
+
+cd "${INVOC_ABS_DIR}"
+

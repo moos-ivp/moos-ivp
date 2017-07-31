@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CommandFolio.h                                       */
 /*    DATE: July 2nd, 2016                                       */
@@ -65,3 +65,7 @@ class CommandFolio
 };
 
 #endif 
+
+
+
+

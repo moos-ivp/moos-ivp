@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF_Rings.h                                          */
 /*    DATE: Very old - modernized Jan 21 2006                    */
@@ -54,6 +54,10 @@ private:
 };
 
 #endif
+
+
+
+
 
 
 

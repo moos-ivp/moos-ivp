@@ -15,8 +15,6 @@ SET(SRC
   BehaviorSpec.cpp
   BehaviorReport.cpp
   SpecBuild.cpp
-#  KCache.cpp
-#  Populator_KCache.cpp
 )
 
 SET(HEADERS
@@ -30,8 +28,6 @@ SET(HEADERS
   BehaviorSpec.h
   BehaviorReport.h
   SpecBuild.h
-#  KCache.h
-#  Populator_KCache.h
 )
 
 # Build Library

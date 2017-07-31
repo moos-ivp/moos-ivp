@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeMessage.cpp                                      */
 /*    DATE: Jan 7th 2011                                         */
@@ -130,6 +130,10 @@ unsigned int NodeMessage::length() const
 
   return(overall_msg_length);
 }
+
+
+
+
 
 
 

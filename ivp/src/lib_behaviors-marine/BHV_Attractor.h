@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Attractor.h                                      */
 /*    DATE: May 10th 2005                                        */
-/*    DATE: Dec 11th 2015 Modified                               */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -68,6 +67,10 @@ private: // State Variables
 };
 
 #endif
+
+
+
+
 
 
 

@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE:                                                      */
 /*    DATE: Oct 10th 2011                                        */
-/*    DATE: Feb 19th 2015 major mods by mikerb                   */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -351,3 +351,7 @@ vector<double> VarPlot::getTStampsPastTime(double gtime) const
   return(rvector);
 }
      
+
+
+
+

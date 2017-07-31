@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ScalarPID.h                                          */
 /*    DATE: Oct 1 2005                                           */
@@ -99,6 +99,10 @@ protected:
 };
 
 #endif
+
+
+
+
 
 
 

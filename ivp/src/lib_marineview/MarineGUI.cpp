@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MarineGUI.cpp                                        */
 /*    DATE: November, 2004                                       */
@@ -724,6 +724,10 @@ bool MarineGUI::removeMenuItem(string item_str)
 void MarineGUI::cb_Quit() {
   exit(0);
 }
+
+
+
+
 
 
 

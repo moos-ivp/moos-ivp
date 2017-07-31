@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeRecord.cpp                                       */
 /*    DATE: Feb 27th 2010                                        */
@@ -380,6 +380,10 @@ bool NodeRecord::valid(string check, string& why) const
 
   return(true);
 }
+
+
+
+
 
 
 

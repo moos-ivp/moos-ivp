@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*   NAME: Mike Benjamin                                         */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA      */
-/*   FILE: DeadManPost_Info.h                                    */
-/*   DATE: June 14th, 2014                                       */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: DeadManPost_Info.h                                   */
+/*    DATE: June 14th, 2014                                      */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -31,4 +31,8 @@ void showInterfaceAndExit();
 void showReleaseInfoAndExit();
 
 #endif
+
+
+
+
 

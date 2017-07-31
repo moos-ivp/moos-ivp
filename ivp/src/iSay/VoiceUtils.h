@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: VoiceUtils.h                                         */
 /*    DATE: May 27th, 2013                                       */
@@ -29,4 +29,8 @@
 bool    isVoice(std::string);
 
 #endif 
+
+
+
+
 

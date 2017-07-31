@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MarineVehiGUI.cpp                                    */
 /*    DATE: November, 2004                                       */
@@ -317,6 +317,10 @@ inline void MarineVehiGUI::cb_CenterView_i(int v) {
 void MarineVehiGUI::cb_CenterView(Fl_Widget* o, int v) {
   ((MarineVehiGUI*)(o->parent()->user_data()))->cb_CenterView_i(v);
 }
+
+
+
+
 
 
 

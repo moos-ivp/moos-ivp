@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CRS_App.h                                            */
 /*    DATE: June 25th, 2011                                      */
@@ -110,6 +110,10 @@ class CRS_App : public AppCastingMOOSApp
 };
 
 #endif 
+
+
+
+
 
 
 

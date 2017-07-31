@@ -38,7 +38,7 @@ namespace MOOS
 	size_t GetPeakMemoryUsage( );
 	size_t GetCurrentMemoryUsage( );
 
-};
+}
 
 
 #endif /* MEMINFO_H_ */

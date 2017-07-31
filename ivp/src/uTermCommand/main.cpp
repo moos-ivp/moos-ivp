@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: June 26th 2007                                       */
@@ -89,6 +89,10 @@ int main(int argc ,char * argv[])
   appThread.quit();
   return(0);
 }
+
+
+
+
 
 
 

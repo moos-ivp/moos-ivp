@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ACTable.cpp                                          */
 /*    DATE: Jun 17th 2012                                        */
@@ -422,6 +422,10 @@ void ACTable::convertRawToFormattedTable()
     }
   }
 }
+
+
+
+
 
 
 

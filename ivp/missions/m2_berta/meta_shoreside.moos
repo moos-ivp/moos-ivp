@@ -1,3 +1,4 @@
+ls
 //*******************************************************
 // ShoreSide Configuration File
 //
@@ -26,7 +27,40 @@ Processconfig = ANTLER
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
 
+  //Run = pEvalLoiter     @ NewConsole = false
+
+  Run = uFldCollisionDetect  @ NewConsole = false
   //Run = uFunctionVis    @ NewConsole = false
+}
+
+
+//------------------------------------------
+ProcessConfig = uFldCollisionDetect                             
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  condition = DEPLOY_ALL = true                                 
+                                                                
+  encounter_flag = ENCOUNTER = $CPA                             
+  collision_flag = COLLISION = $CPA                             
+  near_miss_flag = NEAR_MISS = vname1=$V1,vname2=$V2,cpa=$CPA   
+                                                                
+  near_miss_flag = NEAR_MISS_$UP_V1 = $CPA
+  near_miss_flag = NEAR_MISS_$UP_V2 = $CPA
+  collision_flag = COLLISION_$UP_V1 = $CPA
+  collision_flag = COLLISION_$UP_V2 = $CPA
+
+  encounter_range = 30        
+  near_miss_range = 10        
+  collision_range = 5         
+                                                                
+  pulse_render   = true       
+  pulse_range    = 20         
+  pulse_duration = 10         
+
+  encounter_flag = EVAL_LOITER_REQ_$UP_V1 = id=$IDX, cpa=$CPA, v2=$V2
+  encounter_flag = EVAL_LOITER_REQ_$UP_V2 = id=$IDX, cpa=$CPA, v2=$V1
 }
 
 //------------------------------------------
@@ -83,6 +117,7 @@ ProcessConfig = uFldShoreBroker
 
   qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
   qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID
+  qbridge  = EVAL_LOITER_REQ
 
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD

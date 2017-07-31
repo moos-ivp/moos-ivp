@@ -65,3 +65,7 @@ bool Populator_EncounterPlot::populateFromEntries(const vector<ALogEntry>& entri
   }
   return(true);
 }
+
+
+
+

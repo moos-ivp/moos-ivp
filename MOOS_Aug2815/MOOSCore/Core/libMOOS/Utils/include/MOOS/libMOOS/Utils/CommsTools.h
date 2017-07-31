@@ -10,6 +10,6 @@
 namespace MOOS
 {
     bool WaitForSocket(int fd, int nTimeoutSeconds);
-};
+}
 
 #endif /* COMMSTOOLS_H_ */

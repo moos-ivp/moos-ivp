@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: USM_MOOSApp.cpp                                      */
 /*    DATE: Oct 25th 2004                                        */
@@ -847,6 +847,10 @@ bool USM_MOOSApp::buildReport()
 
   return(true);
 }
+
+
+
+
 
 
 

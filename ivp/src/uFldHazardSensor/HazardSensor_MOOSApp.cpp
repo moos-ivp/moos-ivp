@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HazardSensor_MOOSApp.cpp                             */
 /*    DATE: Jan 28th 2012                                        */
@@ -1715,6 +1715,10 @@ bool HazardSensor_MOOSApp::buildReport()
 
   return(true);
 }
+
+
+
+
 
 
 

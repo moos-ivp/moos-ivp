@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Sayer.h                                              */
 /*    DATE: May 20th, 2013                                       */
@@ -73,4 +73,8 @@ class Sayer : public AppCastingMOOSApp
 };
 
 #endif 
+
+
+
+
 

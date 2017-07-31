@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Sayer.cpp                                            */
 /*    DATE: May 20, 2013                                         */
@@ -432,4 +432,8 @@ bool Sayer::buildReport()
 
   return(true);
 }
+
+
+
+
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin - Based on version by Kyle Woerner  */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CPAEvent.cpp                                         */
 /*    DATE: Jan 11th 2016                                        */
@@ -103,4 +103,8 @@ string CPAEvent::getSpec() const
 
   return(str);
 }
+
+
+
+
 

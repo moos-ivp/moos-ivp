@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogChecker.h                                         */
 /*    DATE: July 29, 2010                                        */
@@ -75,6 +75,10 @@ class LogChecker {
 };
 
 #endif	
+
+
+
+
 
 
 

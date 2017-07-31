@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NavPlotViewer.h                                      */
 /*    DATE: May 31st, 2005                                       */
-/*    DATE: Feb 9th, 2015 Major ovrhaul by mikerb                */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -114,3 +113,7 @@ private:
 };
 
 #endif 
+
+
+
+

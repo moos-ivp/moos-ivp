@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ZAIC_Vector.cpp                                      */
 /*    DATE: Apr 30th, 2010                                       */
@@ -683,3 +683,7 @@ PDMap *ZAIC_Vector::setPDMap2()
 
   return(pdmap);
 }
+
+
+
+

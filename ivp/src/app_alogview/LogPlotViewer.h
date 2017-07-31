@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogPlotViewer.h                                      */
 /*    DATE: May 31st, 2005                                       */
-/*    DATE: Feb 8th, 2015   Major overhaul. Pair LogPlots        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -122,3 +121,7 @@ class LogPlotViewer : public Fl_Gl_Window
 };
 
 #endif 
+
+
+
+

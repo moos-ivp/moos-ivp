@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Mike Benjamin                                        */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: DeadManPost.h                                        */
 /*    DATE: June 14th, 2014                                      */
@@ -66,3 +66,7 @@ class DeadManPost : public AppCastingMOOSApp
 };
 
 #endif 
+
+
+
+

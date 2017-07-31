@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF_Quadratic.h                                      */
 /*    DATE: Feb 2nd 2008                                         */
@@ -48,6 +48,10 @@ private:
 };
 
 #endif
+
+
+
+
 
 
 

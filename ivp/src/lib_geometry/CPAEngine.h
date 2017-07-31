@@ -1,133 +1,184 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CPAEngine.h                                          */
 /*    DATE: May 12th 2005                                        */
 /*                                                               */
-/* This file is part of MOOS-IvP                                 */
+/* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
-/* MOOS-IvP is free software: you can redistribute it and/or     */
-/* modify it under the terms of the GNU General Public License   */
-/* as published by the Free Software Foundation, either version  */
-/* 3 of the License, or (at your option) any later version.      */
+/* IvP Helm Core Libs is free software: you can redistribute it  */
+/* and/or modify it under the terms of the Lesser GNU General    */
+/* Public License as published by the Free Software Foundation,  */
+/* either version 3 of the License, or (at your option) any      */
+/* later version.                                                */
 /*                                                               */
-/* MOOS-IvP is distributed in the hope that it will be useful,   */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty   */
-/* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See  */
-/* the GNU General Public License for more details.              */
+/* IvP Helm Core Libs is distributed in the hope that it will    */
+/* be useful but WITHOUT ANY WARRANTY; without even the implied  */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the Lesser GNU General Public License for more   */
+/* details.                                                      */
 /*                                                               */
-/* You should have received a copy of the GNU General Public     */
-/* License along with MOOS-IvP.  If not, see                     */
+/* You should have received a copy of the Lesser GNU General     */
+/* Public License along with MOOS-IvP.  If not, see              */
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef CPA_ENGINE_HEADER
-#define CPA_ENGINE_HEADER
+#ifndef CPA_ENGINE_17_HEADER
+#define CPA_ENGINE_17_HEADER
 
 #include <vector>
+#include "CPAEngineRoot.h"
 
-class IvPDomain;
-class CPAEngine {
+class CPAEngine : public CPAEngineRoot {
 public:
-  CPAEngine();
-  CPAEngine(double cnY, double cnX, double cnh, double cnv, 
-	    double osY, double osX);
-  void setContactCacheTimeDelta(double);
-  void setContactCache(double secs);
+  CPAEngine(double cny=0, double cnx=0, double cnh=0,
+  	     double cnv=0, double osy=0, double osx=0);
+
+  void reset(double cny, double cnx, double cnh,
+	     double cnv, double osy, double osx);
+  
   ~CPAEngine() {}
 
 public:    
-  double evalCPA(double osh, double osv, double ostol, double* calc_roc=0) const;
+  double evalCPA(double osh, double osv, double ostol) const;
+  double evalTimeCPA(double osh, double osv, double ostol) const;
   double evalROC(double osh, double osv) const;
-  bool   crossesLines(double osh) const;
 
+  double evalRangeRateOverRange(double osh, double osv, double time) const;
+
+  // ----------------------------------------------------------
+  // Checks for Crossing Stern and/or Bow
+  // ----------------------------------------------------------
   bool   crossesStern(double osh, double osv) const;
   double crossesSternDist(double osh, double osv) const;
   bool   crossesSternDist(double osh, double osv, double& xdist) const;
-
   bool   crossesBow(double osh, double osv) const;
   double crossesBowDist(double osh, double osv) const;
   bool   crossesBowDist(double osh, double osv, double& xdist) const;
-
   bool   crossesBowOrStern(double osh, double osv) const;
 
+  // ----------------------------------------------------------
+  // Checks for Passing Port and/or Starboard
+  // ----------------------------------------------------------
+  bool   passesPort(double osh, double osv) const;
+  double passesPortDist(double osh, double osv) const;
+  bool   passesPortDist(double osh, double osv, double& xdist) const;
+  bool   passesStar(double osh, double osv) const;
+  double passesStarDist(double osh, double osv) const;
+  bool   passesStarDist(double osh, double osv, double& xdist) const;
+  bool   passesPortOrStar(double osh, double osv) const;
+  
   bool   turnsRight(double old_osh, double new_osh) const;
   bool   turnsLeft(double old_osh, double new_osh) const;
 
-  bool   passesContact(double osh, double osv) const;
-  bool   passesContactPort(double osh, double osv, bool report=false) const;
-  bool   passesContactStarboard(double osh, double osv) const;
-  bool   foreOfContact() const;
-  bool   aftOfContact() const;
-  bool   portOfContact() const;
-  bool   starboardOfContact() const;
+  bool   foreOfContact() const {return(m_stat_os_fore_of_cn);}
+  bool   aftOfContact() const {return(m_stat_os_aft_of_cn);}
+  bool   portOfContact() const {return(m_stat_os_port_of_cn);}
+  bool   starboardOfContact() const {return(m_stat_os_star_of_cn);}
 
   double minMaxROC(double, double, double&, double&) const;
 
-  double bearingRateOSCN(double osh, double osv, double time=1);
-  double bearingRateCNOS(double osh, double osv, double time=1);
+  double bearingRate(double osh, double osv) const;
+  double bearingRateOld(double osh, double osv);
+
+  double ownshipContactRelBearing(double osh) const;
+  double contactOwnshipRelBearing() const {return(m_stat_rel_bng_cn_os);}
   
-  double getcnLAT() const {return(cnLAT);}
-  double getcnLON() const {return(cnLON);}
-  double getcnCRS() const {return(cnCRS);}
-  double getcnSPD() const {return(cnSPD);}
-  double getK0() const    {return(statK0);}
+
+ public: // Getters for intermediate values used in other calculations
+  double cnSpdToOS() const {return(m_stat_cn_to_os_spd);}
+
+  double getOSSpeedInCNHeading(double osh, double osv) const;
+  double getOSSpeedGamma(double osh, double osv) const;
+  double getOSSpeedEpsilon(double osh, double osv) const;
+  double getOSTimeGamma(double osh, double osv) const;
+  double getOSTimeEpsilon(double osh, double osv) const;
+  double getRangeGamma() const   {return(m_stat_range_gam);}
+  double getRangeEpsilon() const {return(m_stat_range_eps);}
+  double getThetaGamma() const   {return(m_stat_theta_os_gam);}
+  double getThetaEpsilon() const {return(m_stat_theta_os_eps);}
+
+  double getARange(double osh, double osv, double time) const;
+  double getARangeRate(double osh, double osv, double time) const;
   
  protected:
   void   setStatic();
-  void   initTrigCache();
   double smallAngle(double, double) const;
 
- protected: // Config parameters
-  double cnLAT;   // Contact Lat position at time Tm.
-  double cnLON;   // Contact Lon position at time Tm.
-  double cnSPD;   // Contact Speed in kts.
-  double cnCRS;   // Contact Course in degrees (0-359).
-  double osLAT;   // Ownship Lat position at time Tm.
-  double osLON;   // Ownship Lon position at time Tm.
+  void   initTrigCache();
+  void   initRateCache();
+  void   initK1Cache();
+  void   initK2Cache();
+  
+  void   initOSCNRelBngCache();
+  void   initOSCNTangentCache();
+  void   initOSGammaCache();
+  void   initOSCNHCosCache();
+
+  void   setOSForeOfContact();
+  void   setOSAftOfContact();
+  void   setOSPortOfContact();
+  void   setOSStarboardOfContact();
 
  protected: // Cached values
-  double statK2;  // Components of k2, k1, k0 that are 
-  double statK1;  // static (independent of the values of
-  double statK0;  // osCRS, osSPD, osTOL).
+  double m_cos_cnh;  // Cosine of  cnCRS.
+  double m_sin_cnh;  // Sine  of   cnCRS.
 
-  double statCLOW;  // Course range in which OS is able 
-  double statCHGH;  // to cross the path of the contact.
-  double statCRNG;  // Range between CLOW and CHGH;
-  double statCNANG; // Angle from ownship to the contact.
-  double statCNDIS; // Distance from ownship to the contact.
+  double m_stat_k2;  // Components of k2, k1, k0 that are 
+  double m_stat_k1;  // static (independent of the values of
+  double m_stat_k0;  // osCRS, osSPD, osTOL).
+  double m_stat_range;
+   
+  double m_stat_cosCNH_x_cnSPD;
+  double m_stat_sinCNH_x_cnSPD;
+  
+  bool   m_stat_os_on_contact;      // true if ownship on contact position
+  bool   m_stat_os_on_bowline;      // true if ownship on contact bowline
+  bool   m_stat_os_on_sternline;    // true if ownship on contact sternline
+  bool   m_stat_os_on_bowsternline; // true if any of above three are true
+  bool   m_stat_os_on_beam; 
 
-  bool   stat_os_on_contact;   // true if ownship is on the contact position
-  bool   stat_os_on_bowline;   // true if ownship is on the contact bowline
-  bool   stat_os_on_sternline; // true if ownship is on the contact sternline
-  double stat_cnx1;
-  double stat_cny1;
-  double stat_cnx2;
-  double stat_cny2;
+  double m_stat_theta_os_eps;
+  double m_stat_theta_os_gam;
+  double m_stat_theta_tn;
+  double m_stat_tn_constant;
 
-  double gamCN;   // cnCRS in radians. 
-  double cgamCN;  // Cosine of  cnCRS.
-  double sgamCN;  // Sine  of   cnCRS.
+  double m_stat_spd_cn_at_tangent;
+  
+  double m_stat_cn_to_os_spd;
+  bool   m_stat_cn_to_os_closing;
+    
+  double m_stat_abs_bng_os_cn;
+  double m_stat_rel_bng_cn_os;
+
+  bool   m_stat_os_fore_of_cn;
+  bool   m_stat_os_aft_of_cn;
+  bool   m_stat_os_port_of_cn;
+  bool   m_stat_os_star_of_cn;
+
+  double m_stat_range_gam;
+  double m_stat_range_eps;
+  
+  std::vector<double> m_cos_cache_3600;
+  std::vector<double> m_sin_cache_3600;
+
+  std::vector<double> m_os_vthresh_cache_360;
+  
+  std::vector<double> m_k1_cache;
+  std::vector<double> m_k2_cache;
 
   std::vector<double> m_cos_cache;
   std::vector<double> m_sin_cache;
 
-  std::vector<double> m_cn_cache_x;
-  std::vector<double> m_cn_cache_y;
-  double m_cn_cache_tdelta;
+  std::vector<double> m_os_cn_relbng_cache;
+  std::vector<double> m_os_cn_relbng_cos_cache;
+
+  std::vector<double> m_os_tn_cos_cache;
+  std::vector<double> m_os_gam_cos_cache;
+  std::vector<double> m_os_cnh_cos_cache;
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
 
 
 

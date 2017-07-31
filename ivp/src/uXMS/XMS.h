@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XMS.h                                                */
 /*    DATE: Mar 23rd 2006                                        */
@@ -169,6 +169,10 @@ class XMS : public AppCastingMOOSApp
   std::string m_app_name_noindex;
 };
 #endif 
+
+
+
+
 
 
 

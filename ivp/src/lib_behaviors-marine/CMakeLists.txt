@@ -7,7 +7,6 @@ SET(SRC
   BHV_AbortToPoint.cpp
   BHV_Attractor.cpp
   BHV_AvoidCollision.cpp
-#  BHV_AvoidObstacles.cpp
   BHV_AvoidObstacle.cpp
   BHV_ConstantDepth.cpp
   BHV_ConstantHeading.cpp
@@ -37,7 +36,6 @@ SET(SRC
   BHV_HeadingBias.cpp
   BHV_BearingLine.cpp
   BHV_TestFailure.cpp
-#  BHV_KCache.cpp
 )
 
 SET(HEADERS 

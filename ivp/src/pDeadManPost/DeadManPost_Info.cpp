@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*   NAME: Mike Benjamin                                         */
-/*   ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA      */
-/*   FILE: DeadManPost_Info.cpp                                  */
-/*   DATE: June 14th, 2014                                       */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: DeadManPost_Info.cpp                                 */
+/*    DATE: June 14th, 2014                                      */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -136,4 +136,8 @@ void showReleaseInfoAndExit()
   showReleaseInfo("pDeadManPost", "gpl");
   exit(0);
 }
+
+
+
+
 

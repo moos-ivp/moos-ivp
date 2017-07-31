@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF_Cache.cpp                                        */
 /*    DATE: Jan 12th 2006                                        */
@@ -342,6 +342,10 @@ double AOF_Cache::evalPtBox(const IvPBox *gbox)
     return(aof->evalBox(gbox));
   return(val);
 }
+
+
+
+
 
 
 

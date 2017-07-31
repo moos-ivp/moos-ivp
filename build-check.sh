@@ -29,20 +29,25 @@ for ARGI; do
     fi
 done
 
+INVOC_ABS_DIR="$(pwd)"
+SCRIPT_ABS_DIR="$(cd $(dirname "$0") && pwd -P)"
+
+cd "${SCRIPT_ABS_DIR}"
+
 #================================================================
 # Check health of MOOS Libraries
 #================================================================
 
 if [ "`uname`" == "Darwin" ] ; then
-  if [ ! -e MOOS/MOOSGeodesy/lib/libMOOSGeodesy.dylib ]; then  MISSING=$MISSING"MOOSGeodesy,"; fi
-  if [ ! -e MOOS/MOOSToolsUI/lib/libfltkvw.dylib ];      then  MISSING=$MISSING"fltkvw,"; fi
+  if [ ! -e build/MOOS/MOOSGeodesy/lib/libMOOSGeodesy.dylib ]; then  MISSING=$MISSING"MOOSGeodesy,"; fi
+  if [ ! -e build/MOOS/MOOSToolsUI/lib/libfltkvw.dylib ];      then  MISSING=$MISSING"fltkvw,"; fi
 else
-  if [ ! -e MOOS/MOOSGeodesy/lib/libMOOSGeodesy.so ]; then  MISSING=$MISSING"MOOSGeodesy,"; fi
-  if [ ! -e MOOS/MOOSToolsUI/lib/libfltkvw.so ];      then  MISSING=$MISSING"fltkvw,"; fi
+  if [ ! -e build/MOOS/MOOSGeodesy/lib/libMOOSGeodesy.so ]; then  MISSING=$MISSING"MOOSGeodesy,"; fi
+  if [ ! -e build/MOOS/MOOSToolsUI/lib/libfltkvw.so ];      then  MISSING=$MISSING"fltkvw,"; fi
 fi
 
-if [ ! -e MOOS/MOOSCore/lib/libMOOS.a ];    then  MISSING=$MISSING"MOOS,"; fi
-if [ ! -e MOOS/MOOSGeodesy/lib/libproj.a ]; then  MISSING=$MISSING"proj,"; fi
+if [ ! -e build/MOOS/MOOSCore/lib/libMOOS.a ];    then  MISSING=$MISSING"MOOS,"; fi
+if [ ! -e build/MOOS/MOOSGeodesy/lib/libproj.a ]; then  MISSING=$MISSING"proj,"; fi
 
 MISSING_ALL=$MISSING_ALL$MISSING;
 
@@ -199,3 +204,6 @@ else
     fi
     echo "FAIL{"$MISSING_ALL"}";
 fi
+
+cd "${INVOC_ABS_DIR}"
+

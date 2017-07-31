@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GUI_VarScope.cpp                                     */
 /*    DATE: Feb 28th, 2015                                       */
@@ -569,3 +569,7 @@ void GUI_VarScope::updateBrowsers()
     //m_brw_general->bottomline(m_brw_general->size()-1);
   }
 }
+
+
+
+

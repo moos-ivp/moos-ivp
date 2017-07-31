@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LifeEventHistory.cpp                                 */
 /*    DATE: Mar 9th 2010                                         */
@@ -204,6 +204,10 @@ vector<string> LifeEventHistory::getReport(string mode)
   m_stale_report = false;
   return(m_history_report);
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Expander_Info.cpp                                    */
 /*    DATE: Jan 19th 2011                                        */
@@ -280,6 +280,10 @@ void showReleaseInfoAndExit()
   showReleaseInfo("nsplug", "gpl");
   exit(0);
 }
+
+
+
+
 
 
 

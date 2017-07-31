@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RandomVariableSet.cpp                                */
 /*    DATE: Dec 18th 2009                                        */
@@ -339,6 +339,10 @@ void RandomVariableSet::print() const
   }
   cout << "done." << endl;
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: TermCommand_Info.h                                   */
 /*    DATE: Aug 25th 2011                                        */
@@ -31,6 +31,10 @@ void showInterfaceAndExit();
 void showReleaseInfoAndExit();
 
 #endif
+
+
+
+
 
 
 

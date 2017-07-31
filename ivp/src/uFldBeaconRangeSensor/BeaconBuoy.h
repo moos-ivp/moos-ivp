@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BeaconBuoy.h                                         */
 /*    DATE: Feb 1st, 2011                                        */
@@ -103,6 +103,10 @@ class BeaconBuoy
 };
 
 #endif 
+
+
+
+
 
 
 

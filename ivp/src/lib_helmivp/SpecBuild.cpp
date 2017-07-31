@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: SpecBuild.h                                          */
 /*    DATE: Feb 11, 2010                                         */
@@ -115,6 +115,10 @@ void SpecBuild::print()
     cout << "[" << i << "]:" << m_bad_config_lines[i] << endl;
   }
 }
+
+
+
+
 
 
 

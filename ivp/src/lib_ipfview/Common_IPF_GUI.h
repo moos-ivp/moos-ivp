@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IPP_GUI.h                                            */
 /*    DATE: Nov 30th 2014                                        */
@@ -113,4 +113,8 @@ public:
   static void cb_Quit();
 };
 #endif
+
+
+
+
 

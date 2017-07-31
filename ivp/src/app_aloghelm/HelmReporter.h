@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmReporter.h                                       */
 /*    DATE: March 10th, 2010                                     */
@@ -76,6 +76,10 @@ class HelmReporter
 };
 
 #endif
+
+
+
+
 
 
 

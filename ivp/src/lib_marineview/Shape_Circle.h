@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Shape_Circle.h                                       */
 /*    DATE: Feb 16th 2009                                        */
@@ -71,6 +71,10 @@ unsigned int g_circleBodySize = 37;
 double       g_circleWidth    = 10;
 
 #endif
+
+
+
+
 
 
 

@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ModelHelmScope.cpp                                   */
 /*    DATE: Oct 4th, 2011                                        */
-/*    DATE: Feb 22nd, 2015 Major re-write mikerb                 */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -436,6 +435,10 @@ void ModelHelmScope::setTimeFromIter(unsigned int new_iter)
   m_curr_time = m_helm_plot.getTimeByIndex(index);
   m_curr_iter = new_iter;
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ALogClipper.cpp                                      */
 /*    DATE: June 5th, 2008                                       */
@@ -191,6 +191,10 @@ unsigned int ALogClipper::getDetails(const string& statevar)
 }
 
   
+
+
+
+
 
 
 

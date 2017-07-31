@@ -207,7 +207,7 @@ CScopeGrid::CScopeGrid( int X, int Y, int W, int H, const char *l ) :        Flv
     // as these should not be adjustable
     for(int i = 0; i < 7; ++i)
     {col_resizable(false , i);}
-};
+}
 
 
 

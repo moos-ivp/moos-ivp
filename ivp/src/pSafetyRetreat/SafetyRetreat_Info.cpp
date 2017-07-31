@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PSR_ExampleConfig.cpp                                */
 /*    DATE: Dec 14th 2011                                        */
@@ -141,6 +141,10 @@ void showReleaseInfoAndExit()
   showReleaseInfo("pSafetyRetreat", "gpl");
   exit(0);
 }
+
+
+
+
 
 
 

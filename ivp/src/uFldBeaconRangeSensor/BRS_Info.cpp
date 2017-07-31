@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BRS_Info.cpp                                         */
 /*    DATE: July 5th 2011                                        */
@@ -170,6 +170,10 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFldBeaconRangeSensor", "gpl");
   exit(0);
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RandVarGaussian.cpp                                  */
 /*    DATE: May 20th 2012                                        */
@@ -99,6 +99,10 @@ string RandVarGaussian::getParams() const
   return(str);
 }
   
+
+
+
+
 
 
 

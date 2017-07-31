@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HeadingHistory.cpp                                   */
 /*    DATE: Jan 19th 2013                                        */
@@ -105,6 +105,10 @@ double HeadingHistory::getTurnRate(double time_interval) const
 
   return(turn_rate);
 }
+
+
+
+
 
 
 

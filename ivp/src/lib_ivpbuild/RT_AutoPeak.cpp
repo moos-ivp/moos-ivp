@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RT_AutoPeak.cpp                                      */
 /*    DATE: Jun 21st, 2008                                       */
@@ -136,6 +136,10 @@ PDMap* RT_AutoPeak::create(PDMap *pdmap, int max_more_pcs)
   pdmap->updateGrid();
   return(pdmap);
 }
+
+
+
+
 
 
 

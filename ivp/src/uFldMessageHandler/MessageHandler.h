@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MessageHandler.h                                     */
 /*    DATE: Jan 30th 2012                                        */
@@ -78,6 +78,10 @@ class MessageHandler : public AppCastingMOOSApp
 };
 
 #endif 
+
+
+
+
 
 
 

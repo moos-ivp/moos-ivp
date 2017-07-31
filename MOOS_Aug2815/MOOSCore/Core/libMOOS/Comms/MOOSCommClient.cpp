@@ -38,7 +38,6 @@
     #include "windows.h"
     #include "winbase.h"
     #include "winnt.h"
-    #define isnan _isnan
 #else
     #include <pthread.h>
 #endif
@@ -63,7 +62,18 @@
 #include "MOOS/libMOOS/Comms/MOOSCommPkt.h"
 #include "MOOS/libMOOS/Comms/MOOSSkewFilter.h"
 
-
+template <typename T>
+bool my_isnan(const T x)
+{
+#if __cplusplus >= 201103L
+  using std::isnan;
+#endif
+#ifdef _WIN32
+  return _isnan(x);
+#else
+  return isnan(x);
+#endif
+}
 
 
 
@@ -720,7 +730,7 @@ bool CMOOSCommClient::DoClientWork()
 			m_nMsgsReceived+=m_InBox.size()-num_pending;
 
 			//did you manage to grab the DB time while you were there?
-			if(m_bDoLocalTimeCorrection && !isnan(dfServerPktTxTime))
+			if(m_bDoLocalTimeCorrection && !my_isnan(dfServerPktTxTime))
             {
 				UpdateMOOSSkew(dfLocalPktTxTime, dfServerPktTxTime, dfLocalPktRxTime);
             }
@@ -1692,7 +1702,11 @@ bool CMOOSCommClient::UpdateMOOSSkew(double dfRqTime, double dfTxTime, double df
 	{
 		// Make a fresh skew filter
 		//m_pSkewFilter = std::auto_ptr<MOOS::CMOOSSkewFilter>(new MOOS::CMOOSConditionedSkewFilter);
+#ifdef _USE_UNIQUE_PTR
+		m_pSkewFilter = std::unique_ptr<MOOS::CMOOSSkewFilter>(new MOOS::CMOOSSkewFilter);
+#else
 		m_pSkewFilter = std::auto_ptr<MOOS::CMOOSSkewFilter>(new MOOS::CMOOSSkewFilter);
+#endif
 		if (!m_pSkewFilter.get())
 			return false;
 	}

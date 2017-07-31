@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IPF_Plot.cpp                                         */
 /*    DATE: Feb 24th, 2007                                       */
@@ -349,3 +349,7 @@ void IPF_Plot::print() const
     cout << "time:" << m_time_stamp[i] << 
       "  ipf:" << m_ipf_string[i] << endl;
 }
+
+
+
+

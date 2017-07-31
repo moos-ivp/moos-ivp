@@ -27,7 +27,8 @@
 #ifndef MOOSGeodesy20130916H
 #define MOOSGeodesy20130916H
 
-#include <proj_api.h>
+/** Forward declare PROJ4 projection */
+typedef void* projPJ;
 
 class CMOOSGeodesy
 {

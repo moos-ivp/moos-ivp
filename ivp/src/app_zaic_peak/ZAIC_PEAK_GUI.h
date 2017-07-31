@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ZAIC_GUI.h                                           */
 /*    DATE: June 17th, 2006                                      */
-/*    DATE: May 17th, 2016  Re-factored to use parent class      */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -58,3 +57,7 @@ private:
   static void cb_DrawMode(Fl_Widget*, int);
 };
 #endif
+
+
+
+

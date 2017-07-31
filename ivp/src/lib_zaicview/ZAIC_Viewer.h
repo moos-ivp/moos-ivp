@@ -3,11 +3,22 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ZAIC_SPD_Viewer.h                                    */
 /*    DATE: June 2nd, 2015                                       */
-/*    DATE: May 10th, 2016 refactored into general viewer        */
 /*                                                               */
-/* This is unreleased BETA code. No permission is granted or     */
-/* implied to use, copy, modify, and distribute this software    */
-/* except by the author(s).                                      */
+/* This file is part of MOOS-IvP                                 */
+/*                                                               */
+/* MOOS-IvP is free software: you can redistribute it and/or     */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation, either version  */
+/* 3 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* MOOS-IvP is distributed in the hope that it will be useful,   */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty   */
+/* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See  */
+/* the GNU General Public License for more details.              */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with MOOS-IvP.  If not, see                     */
+/* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
 #ifndef ZAIC_GENERAL_VIEWER_HEADER
@@ -78,3 +89,7 @@ class ZAIC_Viewer : public Fl_Gl_Window
   int    m_cell_dom_wid;
 };
 #endif 
+
+
+
+

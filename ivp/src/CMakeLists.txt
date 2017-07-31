@@ -9,6 +9,20 @@ ELSE (${WIN32})
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
 ENDIF (${WIN32})
 
+INCLUDE(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+CHECK_CXX_COMPILER_FLAG("-std=c++0x" COMPILER_SUPPORTS_CXX0X)
+IF(COMPILER_SUPPORTS_CXX11)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+  ADD_DEFINITIONS(-D_USE_UNIQUE_PTR)
+ELSEIF(COMPILER_SUPPORTS_CXX0X)
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+  ADD_DEFINITIONS(-D_USE_UNIQUE_PTR)
+ELSE()
+  MESSAGE(STATUS "${CMAKE_CXX_COMPILER} has no C++11 support.")
+  REMOVE_DEFINITIONS(-D_USE_UNIQUE_PTR)
+ENDIF()
+
 #===============================================================================
 # FINDING MOOS' HEADERS AND LIBRARIES...
 #===============================================================================
@@ -39,7 +53,7 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 # moos - http://www.robots.ox.ac.uk/~mobile/MOOS/wiki/pmwiki.php            
 find_package(MOOSGeodesy)
 include_directories(${MOOSGeodesy_INCLUDE_DIRS})
-link_directories(${MOOSGeodesy_LIBRARY_PATH})
+#link_directories(${MOOSGeodesy_LIBRARY_PATH})
 
 message("+++++++++++++++++++++++++++++++++++++++++")
 message("MOOSGeodesy_INCLUDE_DIRS:" ${MOOSGeodesy_INCLUDE_DIRS})
@@ -66,19 +80,30 @@ SET(USE_UTM ON CACHE BOOL "Use UTM coordinates vs Local coordinates.")
 #-------------------------------------------------------------------------------
 IF (${APPLE})
 
-   # If Mac users installed libtiff using 'MacPorts', it will likely appear
-   # under the '/opt/local' directory, which is not in the CMake search path.
-   IF( EXISTS /opt/local/include AND EXISTS /opt/local/lib )
-      INCLUDE_DIRECTORIES(/opt/local/include)
-      LINK_DIRECTORIES(/opt/local/lib)
-   ENDIF( EXISTS /opt/local/include AND EXISTS /opt/local/lib )
+	# If Mac users installed libtiff using 'MacPorts', it will likely appear
+	# under the '/opt/local' directory, which is not in the CMake search path.
+	IF( EXISTS /opt/local/include AND EXISTS /opt/local/lib )
+		message(STATUS "Detected use of 'MacPorts' for dependencies")
+		INCLUDE_DIRECTORIES(/opt/local/include)
+		LINK_DIRECTORIES(/opt/local/lib)
+	ENDIF( EXISTS /opt/local/include AND EXISTS /opt/local/lib )
 
-   # If Mac users installed libtiff using 'fink', it will likely appear
-   # under the '/sw' directory, which is not in the CMake search path.
-   IF( EXISTS /sw/include AND EXISTS /sw/lib )
-      INCLUDE_DIRECTORIES(/sw/include)
-      LINK_DIRECTORIES(/sw/lib)
-   ENDIF( EXISTS /sw/include AND EXISTS /sw/lib )
+	# If Mac users installed libtiff using 'fink', it will likely appear
+	# under the '/sw' directory, which is not in the CMake search path.
+	IF( EXISTS /sw/include AND EXISTS /sw/lib )
+		message(STATUS "Detected use of 'fink' for dependencies")
+		INCLUDE_DIRECTORIES(/sw/include)
+		LINK_DIRECTORIES(/sw/lib)
+	ENDIF( EXISTS /sw/include AND EXISTS /sw/lib )
+
+	# If Mac users installed libtiff using 'Homebrew', it will likely appear
+	# under the '/opt/local/Cellar' directory, which is not in the CMake search
+	# path.
+	IF( EXISTS /usr/local/Cellar )
+		message(STATUS "Detected use of 'Homebrew' for dependencies")
+		INCLUDE_DIRECTORIES(/usr/local/include)
+		LINK_DIRECTORIES(/usr/local/lib)
+	ENDIF()
 
 ENDIF(${APPLE})
 
@@ -89,6 +114,7 @@ ENDIF(${APPLE})
 SET(IVP_NON_GUI_LIBS
    lib_behaviors
    lib_behaviors-marine
+   lib_behaviors-colregs
    lib_bhvutil
    lib_genutil
    lib_geometry
@@ -183,7 +209,6 @@ ENDFOREACH(L)
 
 SET(ROBOT_APPS
   app_aloggrep
-  app_aloghdg
   app_alogscan
   app_alogcd
   app_alogpare
@@ -194,12 +219,12 @@ SET(ROBOT_APPS
   app_aloghelm
   app_nsplug
   pEchoVar
+  pEvalLoiter
   pHelmIvP
   pMarinePID
   pBasicContactMgr
   pDeadManPost
   pNodeReporter
-  pObstacleMgr
   pFrontEstimate
   uFldMessageHandler
   uFldNodeBroker

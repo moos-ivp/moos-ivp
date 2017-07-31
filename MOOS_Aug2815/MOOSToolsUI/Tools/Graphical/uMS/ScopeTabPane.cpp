@@ -171,7 +171,7 @@ CScopeTabPane::CScopeTabPane( int X, int Y, int W, int H,  char *l ) :BASE(X,Y,W
     m_pProcessList->deactivate();
     StartTimer(0.5);
 
-};
+}
 
 void  CScopeTabPane::SetMask()
 {

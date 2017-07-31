@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Shape_Square.h                                       */
 /*    DATE: July 6th 2008                                        */
@@ -34,6 +34,10 @@ double       g_squareCtrX     = 0.0;
 double       g_squareCtrY     = 0.0;
 unsigned int g_squareBodySize = 5;
 double       g_squareWidth    = 20;
+
+
+
+
 
 
 

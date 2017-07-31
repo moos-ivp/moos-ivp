@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MY_Button.h                                          */
 /*    DATE: September 23rd 2007                                  */
@@ -46,6 +46,10 @@ public:
 };
 
 #endif
+
+
+
+
 
 
 

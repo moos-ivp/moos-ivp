@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: VPlugPlot.cpp                                        */
 /*    DATE: Aug 9th, 2009                                        */
@@ -152,3 +152,7 @@ void VPlugPlot::applySkew(double skew)
     m_time[i] += skew;
 }
      
+
+
+
+

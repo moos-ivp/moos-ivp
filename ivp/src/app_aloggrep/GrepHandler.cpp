@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GrepHandler.cpp                                      */
 /*    DATE: August 6th, 2008                                     */
@@ -362,6 +362,10 @@ void GrepHandler::printReport()
   }
   cout << endl;
 }
+
+
+
+
 
 
 

@@ -65,7 +65,7 @@ IPV4Address::~IPV4Address() {
 IPV4Address::IPV4Address(const std::string & host, uint16_t p):host_(host),port_(p)
 {
 
-};
+}
 IPV4Address::IPV4Address(const std::string & host_and_port)
 {
 	std::string tmp(host_and_port);

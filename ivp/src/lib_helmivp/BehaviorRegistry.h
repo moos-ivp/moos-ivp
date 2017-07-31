@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BehaviorRegistry.h                                   */
 /*    DATE: May 11th 2011                                        */
@@ -52,6 +52,10 @@ public:
 };
 
 #endif 
+
+
+
+
 
 
 

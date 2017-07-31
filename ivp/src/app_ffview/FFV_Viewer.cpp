@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: FFV_Viewer.cpp                                       */
 /*    DATE: Apr 15th 2005                                        */
@@ -689,6 +689,10 @@ void FFV_Viewer::drawFocusBox()
   glFlush();
 
 }
+
+
+
+
 
 
 

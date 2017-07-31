@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: QueryDB.h                                            */
 /*    DATE: Dec 29th 2015                                        */
@@ -63,6 +63,10 @@ class QueryDB : public CMOOSApp
   bool   m_verbose;
   bool   m_configure_comms_locally;
 };
+
+
+
+
 
 
 

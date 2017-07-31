@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: FV_MOOSApp.cpp                                       */
 /*    DATE: May 12th 2006                                        */
@@ -167,6 +167,10 @@ void FV_MOOSApp::registerVariables()
   m_Comms.Register("BHV_IPF", 0);
   m_Comms.Register("NAV_HEADING", 0);
 }
+
+
+
+
 
 
 

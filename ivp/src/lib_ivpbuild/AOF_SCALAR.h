@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF_SCALAR.h                                         */
 /*    DATE: 1996                                                 */
@@ -50,6 +50,10 @@ private:
 };
 
 #endif
+
+
+
+
 
 
 

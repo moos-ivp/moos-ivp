@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ScanHandle.cpp                                       */
 /*    DATE: June 5rd, 2008                                       */
@@ -308,6 +308,10 @@ void ScanHandler::loglistReport()
     cout << "  Log = " << m_report.getVarName(i) << endl;
   }
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE:                                                      */
 /*    DATE:                                                      */
@@ -36,6 +36,10 @@ std::vector<std::string> tokenize(const std::string & s, const std::string & sep
 std::string vect_to_string(std::string prefix, std::string suffix, const std::vector<std::string> & v);
 
 #endif
+
+
+
+
 
 
 

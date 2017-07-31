@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PQueue.h                                             */
 /*    DATE: December 8th, 2000                                   */
@@ -68,6 +68,10 @@ protected:
   int      m_num_inodes;   // number non-leaves in full tree;
 };
 #endif
+
+
+
+
 
 
 

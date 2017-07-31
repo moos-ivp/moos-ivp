@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PMV_Viewer.cpp                                       */
 /*    DATE: Nov 11th 2004                                        */
@@ -35,8 +35,21 @@
 
 #ifdef _WIN32
 #   include <float.h>
-#   define isnan _isnan
 #endif
+
+template <typename T>
+bool
+my_isnan(const T x)
+{
+#if __cplusplus >= 201103L
+  using std::isnan;
+#endif
+#ifdef _WIN32
+  return _isnan(x);
+#else
+  return isnan(x);
+#endif
+}
 
 using namespace std;
 
@@ -493,7 +506,7 @@ void PMV_Viewer::handleMoveMouse(int vx, int vy)
   ok = m_geodesy.LocalGrid2LatLong(mx, my, new_lat, new_lon);
 #endif
   
-  if(!ok || isnan(new_lat) || isnan(new_lon))
+  if(!ok || my_isnan(new_lat) || my_isnan(new_lon))
     return;
   
   m_mouse_x = snapToStep(mx, 0.01);
@@ -532,7 +545,7 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
   ok = m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
 #endif
 
-  if(!ok || isnan(dlat) || isnan(dlon))
+  if(!ok || my_isnan(dlat) || my_isnan(dlon))
     return;
 
   string slat = doubleToString(dlat, 8);
@@ -684,7 +697,7 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   ok = m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
 #endif
 
-  if(!ok || isnan(dlat) || isnan(dlon))
+  if(!ok || my_isnan(dlat) || my_isnan(dlon))
     return;
 
   // The aim is to build a vector of VarDataPairs from the "raw" set
@@ -1039,6 +1052,10 @@ void PMV_Viewer::calculateDrawHash()
 
   drawHash(xl-buffer, xh+buffer, yl-buffer, yh+buffer);
 }
+
+
+
+
 
 
 

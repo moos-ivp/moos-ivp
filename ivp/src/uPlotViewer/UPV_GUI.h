@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: UPV_GUI.h                                            */
 /*    DATE: May 18th, 2012                                       */
@@ -75,6 +75,10 @@ public:
 
 };
 #endif
+
+
+
+
 
 
 

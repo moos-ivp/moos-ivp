@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PopulatorAOF.h                                       */
 /*    DATE: Jan 14th 2006                                        */
@@ -48,6 +48,10 @@ protected:
   IvPDomain  domain;
 };
 #endif
+
+
+
+
 
 
 

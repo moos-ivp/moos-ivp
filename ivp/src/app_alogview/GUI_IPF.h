@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GUI_IPF.h                                            */
 /*    DATE: Sep 25th, 2011                                       */
-/*    DATE: Feb 13th, 2015  Merge with alogview                  */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -127,3 +126,7 @@ protected:
   int            m_mutable_text_size;
 };
 #endif
+
+
+
+

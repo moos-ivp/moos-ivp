@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ALogEntry.cpp                                        */
 /*    DATE: Aug 12th, 2009                                       */
@@ -99,6 +99,10 @@ bool ALogEntry::tokenField(const string& field, double& value) const
 {
   return(tokParse(m_sval, field, ',', '=', value));
 }
+
+
+
+
 
 
 

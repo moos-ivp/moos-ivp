@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPBehavior.h                                        */
 /*    DATE: Oct 20, 2003 4 days after Grady's Gaffe              */
@@ -61,7 +61,6 @@ public:
 
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
-  //  void   setKCache(const KCache*);
   bool   checkUpdates();
   std::string isRunnable();
 
@@ -106,8 +105,6 @@ protected:
   bool    checkForDurationReset();
   bool    checkNoStarve();
 
-  //const KCache* getKCache() const {return(m_kcache);};
-
   double                   getPriorityWt() {return(m_priority_wt);}
   double                   getBufferCurrTime();
   double                   getBufferLocalTime();
@@ -124,7 +121,6 @@ protected:
   
 protected:
   const InfoBuffer* m_info_buffer;
-  //const KCache*     m_kcache;
 
   std::string m_us_name;       
   std::string m_descriptor;    
@@ -187,3 +183,7 @@ private:
 };
 
 #endif
+
+
+
+

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: TermCommand.cpp                                      */
 /*    DATE: June 26th 2007                                       */
@@ -384,6 +384,10 @@ void TermCommand::handleCharInput(char c)
 
   printf("> %s\n", m_cmd_buffer.c_str());
 }
+
+
+
+
 
 
 

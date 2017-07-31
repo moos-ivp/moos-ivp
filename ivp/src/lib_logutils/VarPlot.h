@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: VarPlot.h                                            */
 /*    DATE: Oct 10th 2011                                        */
-/*    DATE: Feb 19th 2015 major mods by mikerb                   */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -90,6 +89,10 @@ protected:
   unsigned int m_max_len_srcaux;
 };
 #endif 
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: USC_Info.cpp                                         */
 /*    DATE: Dec 24th 2011                                        */
@@ -130,6 +130,10 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uSimCurrent", "gpl");
   exit(0);
 }
+
+
+
+
 
 
 

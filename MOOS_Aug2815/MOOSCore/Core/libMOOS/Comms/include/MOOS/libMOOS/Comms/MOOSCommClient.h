@@ -571,7 +571,11 @@ protected:
     bool m_bDoLocalTimeCorrection;
     
     /** Skew filter keeps track of clock skew with server */
+#ifdef _USE_UNIQUE_PTR
+    std::unique_ptr< MOOS::CMOOSSkewFilter > m_pSkewFilter;
+#else
     std::auto_ptr< MOOS::CMOOSSkewFilter > m_pSkewFilter;
+#endif
     
     /**
      * list of names of active mail queues for each message name

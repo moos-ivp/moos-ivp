@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GUI.cpp                                              */
 /*    DATE: Apr 15th 2005                                        */
@@ -743,3 +743,7 @@ void FFV_GUI::cb_set_refine_pce(Fl_Input* o, void* v) {
   ((FFV_GUI*)(o->parent()->user_data()))->cb_set_refine_pce_i();
 }
 #endif
+
+
+
+

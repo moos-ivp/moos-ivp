@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main_uXMS.cpp                                        */
 /*    DATE: May 27th 2007                                        */
@@ -173,6 +173,10 @@ int main(int argc ,char * argv[])
   //appRunner.quit();
   exit(0);
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: SimEngine.h                                          */
 /*    DATE: Mar 8th, 2005 just another day at CSAIL              */
@@ -67,3 +67,7 @@ public:
 };
 
 #endif
+
+
+
+

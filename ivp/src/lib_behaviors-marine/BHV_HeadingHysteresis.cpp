@@ -235,3 +235,7 @@ double BHV_HeadingHysteresis::getHeadingVariance(double current_average)
 
 
 
+
+
+
+

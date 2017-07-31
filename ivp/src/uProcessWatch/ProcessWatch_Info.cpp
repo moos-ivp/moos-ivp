@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ProcessWatch_Info.cpp                                */
 /*    DATE: Aug 8th 2011                                         */
@@ -153,6 +153,10 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uProcessWatch", "gpl");
   exit(0);
 }
+
+
+
+
 
 
 

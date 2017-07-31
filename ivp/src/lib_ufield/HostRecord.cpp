@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HostRecord.cpp                                       */
 /*    DATE: Dec 21st 2011                                        */
@@ -107,6 +107,10 @@ bool HostRecord::valid(const string& check) const
     return(false);
   return(true);
 }
+
+
+
+
 
 
 

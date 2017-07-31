@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ALogSorter.cpp                                       */
 /*    DATE: June 22nd, 2013                                      */
@@ -118,6 +118,10 @@ ALogEntry ALogSorter::popEntry()
 
   return(return_entry);
 }
+
+
+
+
 
 
 

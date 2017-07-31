@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPBehavior.cpp                                      */
 /*    DATE: Oct 21, 2003 5 days after Grady's Gaffe              */
@@ -347,16 +347,6 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 {
   m_info_buffer = ib;
 }
-
-//-----------------------------------------------------------
-// Procedure: setKCache()
-
-#if 0
-void IvPBehavior::setKCache(const KCache *kc)
-{
-  m_kcache = kc;
-}
-#endif
 
 //-----------------------------------------------------------
 // Procedure: postMessage
@@ -1168,6 +1158,10 @@ vector<string> IvPBehavior::getStateSpaceVars()
   
   return(rvector);
 }
+
+
+
+
 
 
 

@@ -319,9 +319,13 @@ bool CMOOSDB::Run(int argc,  char * argv[] )
 
 
 	//if either the mission file or command line have set a webserver port then launch one
-	if(nWebServerPort>0)
+	if(nWebServerPort>0) {
+#ifdef _USE_UNIQUE_PTR
+		m_pWebServer = std::unique_ptr<CMOOSDBHTTPServer> (new CMOOSDBHTTPServer(GetDBPort(), nWebServerPort));
+#else
 		m_pWebServer = std::auto_ptr<CMOOSDBHTTPServer> (new CMOOSDBHTTPServer(GetDBPort(), nWebServerPort));
-
+#endif
+        }
 	double dfClientTimeout = 5.0;
 	m_MissionReader.GetValue("ClientTimeout",dfClientTimeout);
     P.GetVariable("--moos_timeout",dfClientTimeout);
@@ -419,12 +423,21 @@ bool CMOOSDB::Run(int argc,  char * argv[] )
     if(bSingleThreaded)
     {
         std::cout<<MOOS::ConsoleColours::yellow()<<"warning : running in single threaded mode performance will be affected by poor networks\n"<<MOOS::ConsoleColours::reset();
+
+#ifdef _USE_UNIQUE_PTR
+		m_pCommServer = std::unique_ptr<CMOOSCommServer> (new CMOOSCommServer);
+#else
 		m_pCommServer = std::auto_ptr<CMOOSCommServer> (new CMOOSCommServer);
+#endif
     }
     else
     {
         //std::cerr<<MOOS::ConsoleColours::green()<<"running in multi-threaded mode\n"<<MOOS::ConsoleColours::reset();
+#ifdef _USE_UNIQUE_PTR
+		m_pCommServer = std::unique_ptr<CMOOSCommServer> (new MOOS::ThreadedCommServer);
+#else
 		m_pCommServer = std::auto_ptr<CMOOSCommServer> (new MOOS::ThreadedCommServer);
+#endif
     }
 
     m_pCommServer->SetQuiet(m_bQuiet);

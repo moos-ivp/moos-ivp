@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MOOS_event.h                                         */
 /*    DATE: December 2004                                        */
@@ -47,6 +47,10 @@ struct MOOS_event {
 };
 
 #endif
+
+
+
+
 
 
 

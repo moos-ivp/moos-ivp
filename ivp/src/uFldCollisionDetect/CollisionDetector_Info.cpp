@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Kyle Woerner, Michael Benjamin                       */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CollisionDetector_Info.cpp                           */
 /*    DATE: Dec 29th 1963                                        */
@@ -168,6 +168,10 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uCollisionDetector", "gpl");
   exit(0);
 }
+
+
+
+
 
 
 

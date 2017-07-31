@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BFactoryDynamic.h                                    */
 /*    DATE: Feb 11th, 2010                                       */
@@ -66,6 +66,10 @@ class BFactoryDynamic {
 };
 
 #endif
+
+
+
+
 
 
 

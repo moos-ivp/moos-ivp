@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Shape_Glider.h                                       */
 /*    DATE: October 5th 2007                                     */
@@ -69,6 +69,10 @@ double g_gliderWing[]=
 unsigned int g_gliderWingSize = 9;
 
 #endif
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Populator_HelmPlots.cpp                              */
 /*    DATE: July 15th, 2009                                      */
@@ -48,6 +48,10 @@ bool Populator_HelmPlots::populateFromEntries(const vector<ALogEntry>& entries)
   }
   return(true);
 }
+
+
+
+
 
 
 

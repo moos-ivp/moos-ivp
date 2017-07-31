@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ThrustMap.cpp                                        */
 /*    DATE: Dec 16th 2010                                        */
@@ -536,6 +536,10 @@ double ThrustMap::getThrustValueNeg(double speed) const
 
   return(thrust_val);
 }
+
+
+
+
 
 
 

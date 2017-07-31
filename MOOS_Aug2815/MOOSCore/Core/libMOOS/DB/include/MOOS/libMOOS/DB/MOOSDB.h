@@ -163,11 +163,19 @@ private:
 
     HASH_MAP_TYPE<std::string,std::set< MOOS::MsgFilter > > m_ClientFilters;
 
+#ifdef _USE_UNIQUE_PTR
+    //pointer to a webserver if one is needed
+    std::unique_ptr<CMOOSDBHTTPServer> m_pWebServer;
+
+    //pointer to the comms server (could be a threaded one but base class is CMOOSCommServer
+    std::unique_ptr<CMOOSCommServer> m_pCommServer;
+#else
     //pointer to a webserver if one is needed
     std::auto_ptr<CMOOSDBHTTPServer> m_pWebServer;
 
     //pointer to the comms server (could be a threaded one but base class is CMOOSCommServer
     std::auto_ptr<CMOOSCommServer> m_pCommServer;
+#endif
 
     MOOS::MOOSDBLogger m_EventLogger;
 

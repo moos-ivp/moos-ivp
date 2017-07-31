@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogPlot.cpp                                          */
 /*    DATE: May 31st, 2005                                       */
@@ -412,3 +412,7 @@ bool LogPlot::setFromSpec(string spec)
   
   return(true);	
 }
+
+
+
+

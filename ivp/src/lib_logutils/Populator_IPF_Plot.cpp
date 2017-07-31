@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Populator_IPF_Plot.cpp                               */
 /*    DATE: Feb 24th, 2007                                       */
@@ -195,6 +195,10 @@ void Populator_IPF_Plot::print()
     cout << "    IPF_VName: "  << m_ipf_plots[i].getVName() << endl;
   }
 }
+
+
+
+
 
 
 

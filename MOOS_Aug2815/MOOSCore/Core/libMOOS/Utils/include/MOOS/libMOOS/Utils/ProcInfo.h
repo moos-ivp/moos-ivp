@@ -62,7 +62,11 @@ public:
 
 private:
 	class Impl;
+#ifdef _USE_UNIQUE_PTR
+	std::unique_ptr<Impl> Impl_;
+#else
 	std::auto_ptr<Impl> Impl_;
+#endif
 };
 
 }

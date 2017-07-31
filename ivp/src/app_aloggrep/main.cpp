@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: June 3rd, 2008                                       */
@@ -155,6 +155,10 @@ int main(int argc, char *argv[])
   if(handled && make_end_report)
     handler.printReport();
 }
+
+
+
+
 
 
 

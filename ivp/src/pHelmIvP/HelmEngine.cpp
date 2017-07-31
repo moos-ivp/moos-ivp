@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmEngine.cpp (Formerly HelmEngineBeta              */
 /*    DATE: July 29th 2009                                       */
@@ -405,6 +405,10 @@ bool HelmEngine::part6_FinishHelmReport()
 
   return(true);
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: UPV_MOOSApp.h                                        */
 /*    DATE: May 18th, 2012                                       */
@@ -71,6 +71,10 @@ class UPV_MOOSApp : public CMOOSApp
 };
 
 #endif 
+
+
+
+
 
 
 

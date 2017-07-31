@@ -461,3 +461,7 @@ double EncounterViewer::getCurrTime() const
   return(m_curr_time);
 }
 
+
+
+
+

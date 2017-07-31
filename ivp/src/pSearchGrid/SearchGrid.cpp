@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: SearchGrid.cpp                                       */
 /*    DATE: Dec 7th, 2011                                        */
@@ -224,6 +224,10 @@ bool SearchGrid::buildReport()
 
   return(true);
 }
+
+
+
+
 
 
 

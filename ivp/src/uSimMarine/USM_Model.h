@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: USM_Model.h                                          */
 /*    DATE: Nov 19th 2006 (as separate class under MVC paradigm) */
@@ -138,3 +138,7 @@ public:
 
 };
 #endif
+
+
+
+

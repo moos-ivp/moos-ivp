@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CommandPost.h                                        */
 /*    DATE: July 10th, 2016                                      */
@@ -51,3 +51,7 @@ class CommandPost
 };
 
 #endif 
+
+
+
+

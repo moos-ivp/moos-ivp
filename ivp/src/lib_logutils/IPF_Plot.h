@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IPF_Plot.h                                           */
 /*    DATE: Feb 24th, 2007                                       */
@@ -88,3 +88,7 @@ protected:
 };
 
 #endif 
+
+
+
+

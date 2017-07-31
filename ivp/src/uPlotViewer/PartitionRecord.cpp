@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PartitionRecord.cpp                                  */
 /*    DATE: May 19th, 2012                                       */
@@ -138,6 +138,10 @@ void PartitionRecord::print() const
   }
   cout << endl;
 }
+
+
+
+
 
 
 

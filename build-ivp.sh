@@ -3,7 +3,7 @@
 BUILD_DEBUG="yes"  
 BUILD_OPTIM="yes"
 CLEAN="no"
-CMD_ARGS=""
+CMD_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
 BUILD_GUI_CODE="ON"
 BUILD_BOT_CODE_ONLY="OFF"
 
@@ -16,9 +16,9 @@ print_usage_and_exit()
     printf "  --nodebug                                   \n"
     printf "    Do not include the -g compiler flag       \n"
     printf "  --noopt                                     \n"
-    printf "    Do not include the -O3 compiler flag      \n"
+    printf "    Do not include the -Os compiler flag      \n"
     printf "  --fast, -f                                  \n"
-    printf "    Do not include the -O3, -g compiler flags \n"
+    printf "    Do not include the -Os, -g compiler flags \n"
     printf "  --nogui, -n                                 \n"
     printf "    Do not build GUI related apps             \n"
     printf "  --minrobot, -m                              \n"
@@ -30,7 +30,7 @@ print_usage_and_exit()
     printf "By default, all code is built, and the debug and optimization  \n"
     printf "compiler flags are invoked.                                    \n"
     printf "                                                               \n"
-    printf "Note: By default -j12 is provided to make to utilize up to 12  \n"
+    printf "Note: By default -jN is provided to make to utilize up to N  \n"
     printf "      processors in the build. This can be overridden simply   \n"
     printf "      by using -j1 on the command line instead. This will give \n"
     printf "      more reasonable output if there should be a build error. \n"
@@ -64,24 +64,25 @@ for ARGI; do
 done
 
 ################################################################################
-CMAKE_CXX_FLAGS="-Wall -Wno-long-long -pedantic -Wunreachable-code -Wmissing-declarations -fPIC"
-if [ ${BUILD_DEBUG} = "yes" ] ; then
+CMAKE_CXX_FLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -pedantic -fPIC"
+if [ "${BUILD_DEBUG}" = "yes" ] ; then
     CMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS" -g"
 fi
-if [ ${BUILD_OPTIM} = "yes" ] ; then
-    CMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS" -O3"
+if [ "${BUILD_OPTIM}" = "yes" ] ; then
+    CMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS" -Os"
 fi
 
 printf "Compiler flags: ${CMAKE_CXX_FLAGS}  \n\n" 
 
 
 ################################################################################
-INVOCATION_ABS_DIR="`pwd`"
+INVOC_ABS_DIR="$(pwd)"
+SCRIPT_ABS_DIR="$(cd $(dirname "$0") && pwd -P)"
 
-BLD_ABS_DIR="${INVOCATION_ABS_DIR}/build"
-LIB_ABS_DIR="${INVOCATION_ABS_DIR}/lib"
-BIN_ABS_DIR="${INVOCATION_ABS_DIR}/bin"
-SRC_ABS_DIR="${INVOCATION_ABS_DIR}/ivp/src"
+BLD_ABS_DIR="${SCRIPT_ABS_DIR}/build"
+LIB_ABS_DIR="${SCRIPT_ABS_DIR}/lib"
+BIN_ABS_DIR="${SCRIPT_ABS_DIR}/bin"
+SRC_ABS_DIR="${SCRIPT_ABS_DIR}/ivp/src"
 
 printf "Built files will be placed into these directories: \n"
 printf "  Intermediate build files: ${BLD_ABS_DIR}         \n"
@@ -98,7 +99,7 @@ cd "${BLD_ABS_DIR}"
 # For back compatability, if user has environment variable IVP_BUILD_GUI_CODE 
 # set to "OFF" then honor it here as if --nogui were set on the command line
 
-if [ ${IVP_BUILD_GUI_CODE} = "OFF" ] ; then
+if [ "${IVP_BUILD_GUI_CODE}" = "OFF" ] ; then
     BUILD_GUI_CODE="OFF"
     printf "IVP GUI Apps will not be built. IVP_BUILD_GUI_CODE env var is OFF\n"
 fi
@@ -128,7 +129,8 @@ if [ "${CLEAN}" = "yes" -o "${CMD_ARGS}" = "clean" ] ; then
     cd ${INVOCATION_ABS_DIR}
     rm -rf build/*
 else
-    make -j12 ${CMD_ARGS}
+  make ${CMD_ARGS}
 fi
 
-cd ${INVOCATION_ABS_DIR}
+cd ${INVOC_ABS_DIR}
+

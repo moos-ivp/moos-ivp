@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HazardFieldGenerator_Info.h                          */
 /*    DATE: Apr 20th 2013                                        */
@@ -29,6 +29,10 @@ void showHelpAndExit();
 void showReleaseInfoAndExit();
 
 #endif
+
+
+
+
 
 
 

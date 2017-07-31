@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeReporter.cpp                                     */
 /*    DATE: Feb 13th 2006 (TransponderAIS)                       */
@@ -829,4 +829,8 @@ bool NodeReporter::buildReport()
 
   return(true);
 }
+
+
+
+
 

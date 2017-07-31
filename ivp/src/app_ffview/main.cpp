@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: Apr 15th 2005                                        */
@@ -166,6 +166,10 @@ int main(int argc, char *argv[])
 
   return Fl::run();
 }
+
+
+
+
 
 
 

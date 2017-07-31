@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IPFViewUtils.cpp                                     */
 /*    DATE: Apr 25th, 2011                                       */
@@ -82,6 +82,10 @@ IvPFunction *expandHdgSpdIPF(IvPFunction *ivp_function,
   return(ivp_function);
 }
   
+
+
+
+
 
 
 

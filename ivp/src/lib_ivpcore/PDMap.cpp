@@ -33,8 +33,21 @@
 
 #ifdef _WIN32
 #   include <float.h>
-#   define isnan _isnan
 #endif
+
+template <typename T>
+bool
+my_isnan(const T x)
+{
+#if __cplusplus >= 201103L
+  using std::isnan;
+#endif
+#ifdef _WIN32
+  return _isnan(x);
+#else
+  return isnan(x);
+#endif
+}
 
 using namespace std;
 
@@ -565,7 +578,7 @@ bool PDMap::freeOfNan() const
       return(false);
     int wtc = m_boxes[i]->getWtc();
     for(int j=0; j<wtc; j++)
-      if(isnan(m_boxes[i]->wt(j)))
+      if(my_isnan(m_boxes[i]->wt(j)))
 	return(false);
   }
   return(true);
@@ -611,4 +624,8 @@ bool PDMap::valid() const
   }    
   return(true);
 }
+
+
+
+
 

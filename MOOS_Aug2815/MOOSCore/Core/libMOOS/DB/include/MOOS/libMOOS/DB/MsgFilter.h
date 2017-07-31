@@ -46,5 +46,5 @@ protected:
 	std::pair<std::string,std::string> filters_;
 	double period_;
 };
-};
+}
 #endif

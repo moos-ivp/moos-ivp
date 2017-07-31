@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ZAIC_PHTP.h                                          */
 /*    DATE: May 31st 2015                                        */
@@ -84,3 +84,7 @@ private:
 };
 
 #endif
+
+
+
+

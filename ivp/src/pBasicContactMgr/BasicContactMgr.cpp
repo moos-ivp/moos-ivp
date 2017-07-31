@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BasicContactMgr.cpp                                  */
 /*    DATE: Feb 24th 2010                                        */
@@ -1044,6 +1044,10 @@ string BasicContactMgr::getAlertRangeCPAColor(const string& alert_id) const
   else
     return(p->second);
 }
+
+
+
+
 
 
 

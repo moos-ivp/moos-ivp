@@ -3,8 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_AvoidObstacle.h                                  */
 /*    DATE: Aug 2nd 2006                                         */
-/*    DATE: Sep 22nd 2014  Mods to single obstacle               */
-/*    DATE: Jan 10th 2016 Substantial re-code after 2014 RobotX  */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -90,6 +88,10 @@ public:
   double m_hint_buff_fill_transparency;
 };
 #endif
+
+
+
+
 
 
 

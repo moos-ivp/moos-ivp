@@ -195,7 +195,7 @@ bool SuicidalSleeper::Work()
 }
 
 
-};//namespace MOOS
+}//namespace MOOS
 
 
 

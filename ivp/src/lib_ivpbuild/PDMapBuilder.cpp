@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PDMapBuilder.cpp                                     */
 /*    DATE: May 25th, 2016                                       */
@@ -308,6 +308,10 @@ void PDMapBuilder::clearWarnings()
 {
   m_warnings.clear();
 }
+
+
+
+
 
 
 

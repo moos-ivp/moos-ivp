@@ -10,4 +10,4 @@
 namespace MOOS
 {
 	bool ConsoleColours::disable_color_=false;
-};
+}

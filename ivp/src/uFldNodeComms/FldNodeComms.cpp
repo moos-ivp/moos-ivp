@@ -1,12 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: FldNodeComms.cpp                                     */
 /*    DATE: Dec 4th 2011                                         */
-/*                                                               */
-/*    Edited by: Stephanie Kemna                                 */
-/*    DATE: Jul 15, 2016                                         */
-/*    Purpose: adding in probabilistic dropping of messages      */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -849,3 +845,7 @@ bool FldNodeComms::buildReport()
 
   return(true);
 }
+
+
+
+

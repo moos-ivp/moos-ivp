@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BackImg.h                                            */
 /*    DATE: Nov 16th 2004                                        */
@@ -115,6 +115,10 @@ private:
 };
 
 #endif 
+
+
+
+
 
 
 

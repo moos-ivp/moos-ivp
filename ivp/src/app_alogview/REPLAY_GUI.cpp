@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: REPLAY_GUI.cpp                                       */
 /*    DATE: May 31st, 2005                                       */
-/*    DATE: Feb 2nd, 2015 Major overhaul/simplification          */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -1313,4 +1312,8 @@ void REPLAY_GUI::resizeWidgetsShape()
   m_but_zoom_reset_time->redraw();
   m_but_sync_scales->redraw();
 }
+
+
+
+
 

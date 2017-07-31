@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RT_Uniform.cpp                                       */
 /*    DATE: Aug 26th 2005 (from OFR_AOF written long ago)        */
@@ -108,6 +108,10 @@ PDMap* RT_Uniform::create(const IvPBox* unifbox, const IvPBox* gelbox,
   
   return(pdmap);
 }
+
+
+
+
 
 
 

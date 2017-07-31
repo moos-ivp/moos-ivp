@@ -1,8 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: QuadSet1D.h                                          */
-/*    DATE: June 19th 2016                                        */
+/*    DATE: June 19th 2016                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -76,6 +76,10 @@ protected:
 
 };
 #endif
+
+
+
+
 
 
 

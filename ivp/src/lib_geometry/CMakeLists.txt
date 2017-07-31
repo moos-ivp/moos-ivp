@@ -6,8 +6,8 @@
 SET(SRC
   AngleUtils.cpp
   ArtifactUtils.cpp
+  CPAEngineRoot.cpp
   CPAEngine.cpp
-  CPAEngineOld.cpp
   BNGEngine.cpp
   CPA_Utils.cpp
   CircularUtils.cpp

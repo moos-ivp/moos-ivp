@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF.cpp                                              */
 /*    DATE: 1996                                                 */
@@ -48,5 +48,9 @@ double AOF::extract(const string& varname, const vector<double>& point) const
     return(0);
   return(point[index]);
 }
+
+
+
+
 
 

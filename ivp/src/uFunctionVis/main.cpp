@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: uFunctionVisMain.cpp                                 */
 /*    DATE: May 12th 2006                                        */
@@ -89,6 +89,10 @@ int main(int argc, char *argv[])
 
   return(0);
 }
+
+
+
+
 
 
 

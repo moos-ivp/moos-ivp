@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RandomPair.cpp                                       */
 /*    DATE: Nov 22nd 2016                                        */
@@ -89,6 +89,10 @@ string RandomPair::getStringSummary() const
   str += ",val2=" + doubleToStringX(m_value2);
   return(str);
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CMAlert.h                                            */
 /*    DATE: March 26th 2014                                      */
@@ -58,6 +58,10 @@ class Alert
 };
 
 #endif 
+
+
+
+
 
 
 

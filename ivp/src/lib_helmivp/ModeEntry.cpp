@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ModeEntry.cpp                                        */
 /*    DATE: Dec 26th, 2008                                       */
@@ -235,6 +235,10 @@ void ModeEntry::clearConditionVarVals()
   for(i=0; i<vsize; i++)
     m_logic_conditions[i].clearVarVals();
 }
+
+
+
+
 
 
 

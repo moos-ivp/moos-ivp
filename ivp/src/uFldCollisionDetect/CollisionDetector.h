@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin - Based on version by Kyle Woerner  */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CollisionDetector.h                                  */
 /*    DATE: 21 May 2013                                          */
@@ -94,4 +94,8 @@ class CollisionDetector : public AppCastingMOOSApp
 };
 
 #endif
+
+
+
+
 

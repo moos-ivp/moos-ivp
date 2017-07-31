@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmScope.h                                          */
 /*    DATE: Apr 12th 2008                                        */
@@ -133,6 +133,10 @@ class HelmScope : public AppCastingMOOSApp
   std::string  m_ivpdomain;
 };
 #endif 
+
+
+
+
 
 
 

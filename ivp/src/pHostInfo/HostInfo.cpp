@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HostInfo.cpp                                         */
 /*    DATE: Dec 14th 2011                                        */
@@ -582,6 +582,10 @@ bool HostInfo::buildReport()
 
   return(true);
 }
+
+
+
+
 
 
 

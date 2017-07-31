@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: FV_GUI.h                                             */
 /*    DATE: May 13th 2006                                        */
@@ -94,6 +94,10 @@ public:
   std::vector<std::string> m_bhv_sources;
 };
 #endif
+
+
+
+
 
 
 

@@ -751,3 +751,7 @@ void BHV_OpRegion::handleVisualHint(string hint)
   else if((param == "vertex_size") && isNumber(value) && (dval >= 0))
     m_hint_vertex_size = dval;
 }
+
+
+
+

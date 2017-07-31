@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: USC_MOOSApp.cpp                                      */
 /*    DATE: Jan 4th, 2011                                        */
@@ -237,6 +237,10 @@ bool USC_MOOSApp::setCurrentField(string filename)
   m_current_field.print();
   return(true);
 }
+
+
+
+
 
 
 

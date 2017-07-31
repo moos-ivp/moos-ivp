@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: SortHandler.cpp                                      */
 /*    DATE: June 22nd, 2013                                      */
@@ -201,6 +201,10 @@ void SortHandler::printReport()
   cout << "  Re-Sorts :   " << uintToString(m_re_sorts)    << endl;
   cout << endl;
 }
+
+
+
+
 
 
 

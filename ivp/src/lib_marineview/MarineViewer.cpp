@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: MarineViewer.cpp                                     */
 /*    DATE: May 31st, 2005                                       */
@@ -2761,3 +2761,7 @@ void MarineViewer::gl_draw_aux(const string text)
 
 
   
+
+
+
+

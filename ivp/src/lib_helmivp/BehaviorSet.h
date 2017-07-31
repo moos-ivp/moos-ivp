@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BehaviorSet.h                                        */
 /*    DATE: Oct 27th 2004                                        */
@@ -29,7 +29,6 @@
 #include <set>
 #include "IvPBehavior.h"
 #include "IvPDomain.h"
-//#include "KCache.h"
 #include "VarDataPair.h"
 #include "ModeSet.h"
 #include "BehaviorSpec.h"
@@ -51,7 +50,6 @@ public:
   void       addBehaviorSpec(BehaviorSpec spec);  
   void       setDomain(IvPDomain domain);
   void       connectInfoBuffer(InfoBuffer*);
-  //void       connectKCache(KCache*);
   bool       buildBehaviorsFromSpecs();
   SpecBuild  buildBehaviorFromSpec(BehaviorSpec spec, std::string s="");
   bool       handlePossibleSpawnings();
@@ -167,3 +165,7 @@ protected:
 };
 
 #endif 
+
+
+
+

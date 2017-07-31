@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE:                                                      */
 /*    DATE:                                                      */
@@ -35,6 +35,10 @@ bool isDirectory(std::string filename);
 bool isRegularFile(std::string filename);
 
 #endif
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: UMV_Info.cpp                                         */
 /*    DATE: Aug 11th 2012                                        */
@@ -139,6 +139,10 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uMACView", "gpl");
   exit(0);
 }
+
+
+
+
 
 
 

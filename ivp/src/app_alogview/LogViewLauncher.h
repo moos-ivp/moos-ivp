@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogViewLauncher.h                                    */
 /*    DATE: May 31st, 2005                                       */
@@ -94,3 +94,7 @@ protected:
 };
 
 #endif 
+
+
+
+

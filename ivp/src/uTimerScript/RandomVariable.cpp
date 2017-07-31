@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RandomVariable.cpp                                   */
 /*    DATE: Dec 18th 2009                                        */
@@ -85,6 +85,10 @@ string RandomVariable::getStringSummary() const
   str += ",val=" + doubleToStringX(m_value);
   return(str);
 }
+
+
+
+
 
 
 

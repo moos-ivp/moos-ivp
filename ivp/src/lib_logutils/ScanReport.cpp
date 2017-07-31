@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ScanReport.cpp                                       */
 /*    DATE: June 4th, 2008                                       */
@@ -579,6 +579,10 @@ void ScanReport::switchItems(unsigned int i, unsigned int j)
   m_var_chars[i] = m_var_chars[j];
   m_var_chars[j] = tmp_int;
 }
+
+
+
+
 
 
 

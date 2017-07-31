@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmScopeInfo.cpp                                    */
 /*    DATE: July 6th 2011                                        */
@@ -168,6 +168,10 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uHelmScope", "gpl");
   exit(0);
 }
+
+
+
+
 
 
 

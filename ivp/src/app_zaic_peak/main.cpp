@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: June 20th, 2005                                      */
@@ -100,3 +100,7 @@ void showHelpAndExit()
   cout << " $ zaic_peak --domain=500 --verbose                 " << endl;
   exit(0);
 }
+
+
+
+

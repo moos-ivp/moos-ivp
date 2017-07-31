@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Shape_Ship.h                                         */
 /*    DATE: September 21st 2007                                  */
@@ -73,6 +73,10 @@ unsigned int g_shipFatBodySize = 15;
 double       g_shipFatLength   = 212.0;
 
 #endif
+
+
+
+
 
 
 

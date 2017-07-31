@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GeoViewer.cpp                                        */
 /*    DATE: May 1st, 2005 (Major Modifications November 2007)    */
@@ -422,6 +422,10 @@ void GeoViewer::reApplySnapToCurrent()
   
   m_geoshapes.poly(m_active_poly).apply_snap(m_snap_val);
 }
+
+
+
+
 
 
 

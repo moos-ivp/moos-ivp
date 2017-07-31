@@ -24,6 +24,7 @@ Processconfig = ANTLER
   Run = pHostInfo        @ NewConsole = false
   Run = uFldNodeBroker   @ NewConsole = false
   Run = uLoadWatch       @ NewConsole = false
+  Run = pEvalLoiter      @ NewConsole = false
 
 #ifdef VARIATION 1
   Run = uXMS             @ NewConsole = false ~ uXMS_GPS
@@ -39,6 +40,7 @@ Processconfig = ANTLER
 #endif
 }
 
+#include plug_pEvalLoiter.moos
 #include plug_uFldNodeBroker.moos
 #include plug_pShare.moos
 #include plug_pHostInfo.moos

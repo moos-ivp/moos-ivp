@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PathCheck_MOOSApp.h                                  */
 /*    DATE: Nov 22nd 2011                                        */
@@ -73,6 +73,10 @@ class PathCheck_MOOSApp : public AppCastingMOOSApp
 };
 
 #endif 
+
+
+
+
 
 
 

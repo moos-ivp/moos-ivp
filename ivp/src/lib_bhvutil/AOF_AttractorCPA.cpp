@@ -1,23 +1,25 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF_CutRangeCPA.cpp                                  */
 /*    DATE: Nov 4th, 2006                                        */
 /*                                                               */
-/* This file is part of MOOS-IvP                                 */
+/* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
-/* MOOS-IvP is free software: you can redistribute it and/or     */
-/* modify it under the terms of the GNU General Public License   */
-/* as published by the Free Software Foundation, either version  */
-/* 3 of the License, or (at your option) any later version.      */
+/* IvP Helm Core Libs is free software: you can redistribute it  */
+/* and/or modify it under the terms of the Lesser GNU General    */
+/* Public License as published by the Free Software Foundation,  */
+/* either version 3 of the License, or (at your option) any      */
+/* later version.                                                */
 /*                                                               */
-/* MOOS-IvP is distributed in the hope that it will be useful,   */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty   */
-/* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See  */
-/* the GNU General Public License for more details.              */
+/* IvP Helm Core Libs is distributed in the hope that it will    */
+/* be useful but WITHOUT ANY WARRANTY; without even the implied  */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the Lesser GNU General Public License for more   */
+/* details.                                                      */
 /*                                                               */
-/* You should have received a copy of the GNU General Public     */
-/* License along with MOOS-IvP.  If not, see                     */
+/* You should have received a copy of the Lesser GNU General     */
+/* Public License along with MOOS-IvP.  If not, see              */
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 #ifdef _WIN32
@@ -168,9 +170,9 @@ double AOF_AttractorCPA::evalBox(const IvPBox *b) const
   m_domain.getVal(crs_ix, b->pt(crs_ix,0), eval_crs);
   m_domain.getVal(spd_ix, b->pt(spd_ix,0), eval_spd);
 
-  double roc;
+  double eval_dist = cpa_engine->evalCPA(eval_crs, eval_spd, tol);
+  double roc = cpa_engine->evalROC(eval_crs, eval_spd);
 
-  double eval_dist = cpa_engine->evalCPA(eval_crs, eval_spd, tol, &roc);
 
   double nroc = 0;
 
@@ -202,13 +204,15 @@ double AOF_AttractorCPA::metric(double gval) const
   if(gval > max_val)
     return(0);
   
-  
   else {
     double pct = (gval-min_val) / (max_val - min_val);
     return(100 - (pct * 100));
   }
-  
 }
+
+
+
+
 
 
 

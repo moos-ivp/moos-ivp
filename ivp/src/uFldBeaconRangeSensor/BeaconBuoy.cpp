@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BeaconBuoy.cpp                                       */
 /*    DATE: Feb 1st, 2011                                        */
@@ -275,6 +275,10 @@ string BeaconBuoy::getFreqSetting() const
 
   return(str_range);
 }
+
+
+
+
 
 
 

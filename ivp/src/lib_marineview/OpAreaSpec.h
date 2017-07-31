@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: OpAreaSpec.h                                         */
 /*    DATE: July 6th, 2008                                       */
@@ -84,6 +84,10 @@ protected:
 };
 
 #endif
+
+
+
+
 
 
 

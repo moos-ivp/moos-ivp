@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ModelHelmScope.h                                     */
 /*    DATE: Oct0411                                              */
-/*    DATE: Feb 22nd, 2015 Major re-write mikerb                 */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -93,3 +92,7 @@ private:
 };
 
 #endif
+
+
+
+

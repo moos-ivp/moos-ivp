@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: OF_Reflector.h                                       */
 /*    DATE: Aug 29th 2005 (derived from OFR_AOF built long ago)  */
@@ -106,3 +106,7 @@ public:
   std::string m_warnings;
 };
 #endif
+
+
+
+

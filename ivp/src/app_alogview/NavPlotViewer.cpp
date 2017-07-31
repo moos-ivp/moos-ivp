@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NavPlotViewer.cpp                                    */
 /*    DATE: May 31st, 2005                                       */
-/*    DATE: Feb 9th, 2015 Major overhaul by mikerb               */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -203,20 +202,13 @@ void NavPlotViewer::initPlots()
     addLogPlotHDG_GT(logplot_gt_hdg);
   }
   
-  cout << "m_alt_nav_prefix: " << m_alt_nav_prefix << endl;
-
   // If opening in "quick" mode, will not read/draw geometry objs
   if(m_draw_geo) {
-    cout << "in draw_geo" << endl;
     for(unsigned int aix=0; aix<alogs; aix++) {
-      cout << "in_draw_geo 11111" << endl;
       VPlugPlot vplot = m_dbroker.getVPlugPlot(aix);
-      cout << "in_draw_geo 22222" << endl;
       addVPlugPlot(vplot);
-      cout << "in_draw_geo 33333" << endl;
     }
   }
-  cout << "done initPlots" << endl;
 }
 
 //-------------------------------------------------------------
@@ -693,6 +685,10 @@ void NavPlotViewer::setStepType(const string& step_type)
   else if(step_type == "helm_iterations")
     m_step_by_secs = false;
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BearingLine.h                                        */
 /*    DATE: Jan 21st 2010                                        */
@@ -89,6 +89,10 @@ class BearingLine
 };
 
 #endif
+
+
+
+
 
 
 

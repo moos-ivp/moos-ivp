@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ClassifyEntry.h                                      */
 /*    DATE: March 23rd, 2013                                     */
@@ -55,6 +55,10 @@ bool operator< (const ClassifyEntry& entry1, const ClassifyEntry& entry2);
 bool operator> (const ClassifyEntry& entry1, const ClassifyEntry& entry2);
 
 #endif 
+
+
+
+
 
 
 

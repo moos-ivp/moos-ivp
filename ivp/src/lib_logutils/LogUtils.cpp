@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LogUtils.cpp                                         */
 /*    DATE: August 7th, 2008                                     */
@@ -652,6 +652,10 @@ double getEpochSecsFromDayOfYear(double d_day, double d_month,
 
   return(total_seconds);
 }
+
+
+
+
 
 
 

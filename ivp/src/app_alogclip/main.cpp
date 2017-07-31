@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: June 5th, 2008                                       */
-/*    DATE: June 11th, 2015 Added batch clipping option          */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -144,4 +143,8 @@ void display_usage()
   cout << "  (4) See also: alogscan, alogrm, aloggrep, alogview     " << endl;
   cout << endl;
 }
+
+
+
+
 

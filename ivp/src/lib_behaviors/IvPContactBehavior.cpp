@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IvPContactBehavior.cpp                               */
 /*    DATE: Apr 3rd 2010 Separated/generalized from indiv. bhvs  */
@@ -297,13 +297,13 @@ bool IvPContactBehavior::updatePlatformInfo()
   m_cn_port_of_os  = rcpa_engine.portOfContact();
   m_cn_starboard_of_os = rcpa_engine.starboardOfContact();
 
-  m_os_passes_cn         = cpa_engine.passesContact(m_osh, m_osv);
-  m_os_passes_cn_port    = cpa_engine.passesContactPort(m_osh, m_osv);
-  m_os_passes_cn_star    = cpa_engine.passesContactStarboard(m_osh, m_osv);
+  m_os_passes_cn         = cpa_engine.passesPortOrStar(m_osh, m_osv);
+  m_os_passes_cn_port    = cpa_engine.passesPort(m_osh, m_osv);
+  m_os_passes_cn_star    = cpa_engine.passesStar(m_osh, m_osv);
   
-  m_cn_passes_os         = rcpa_engine.passesContact(m_cnh, m_cnv);
-  m_cn_passes_os_port    = rcpa_engine.passesContactPort(m_cnh, m_cnv);
-  m_cn_passes_os_star    = rcpa_engine.passesContactStarboard(m_cnh, m_cnv);
+  m_cn_passes_os         = rcpa_engine.passesPortOrStar(m_cnh, m_cnv);
+  m_cn_passes_os_port    = rcpa_engine.passesPort(m_cnh, m_cnv);
+  m_cn_passes_os_star    = rcpa_engine.passesStar(m_cnh, m_cnv);
   
   m_os_crosses_cn_stern        = cpa_engine.crossesStern(m_osh, m_osv);
   m_os_crosses_cn_bow          = cpa_engine.crossesBow(m_osh, m_osv);
@@ -386,3 +386,7 @@ bool IvPContactBehavior::checkContactGroupRestrictions()
   
   return(true);
 }
+
+
+
+

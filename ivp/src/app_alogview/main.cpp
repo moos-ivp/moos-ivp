@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: May 1st, 2005                                        */
@@ -174,3 +174,7 @@ void help_message()
   cout << "      file if present in the directory where launched.        " << endl;
   cout << endl;
 }
+
+
+
+

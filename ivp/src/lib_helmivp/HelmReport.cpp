@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmReport.cpp                                       */
 /*    DATE: Sep 26th, 2006                                       */
@@ -720,6 +720,10 @@ string HelmReport::timeInState(double curr_time, double mark_time) const
   }
   return(s_time_in_state);
 }
+
+
+
+
 
 
 

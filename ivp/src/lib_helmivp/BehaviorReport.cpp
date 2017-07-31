@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BehaviorReport.cpp                                   */
 /*    DATE: May 10th 2011                                        */
@@ -257,6 +257,10 @@ double BehaviorReport::getAvgPieces() const
 // explicitly vouched for on any given iteration. This way we don't
 // have to worry that a key augmented here will result in a runaway
 // growing registry.
+
+
+
+
 
 
 

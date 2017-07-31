@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: OF_Reflector.cpp                                     */
 /*    DATE: Aug 29th 2005 (derived from OFR_AOF built long ago)  */
@@ -613,3 +613,7 @@ unsigned int OF_Reflector::getMessageCnt() const
     return(m_regressor->getMessageCnt());
   return(0);
 }
+
+
+
+

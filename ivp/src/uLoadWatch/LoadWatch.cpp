@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LoadWatch.cpp                                        */
 /*    DATE: Dec 24th, 2013                                       */
@@ -299,6 +299,10 @@ bool LoadWatch::buildReport()
 
   return(true);
 }
+
+
+
+
 
 
 

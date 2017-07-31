@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CommandItem.h                                        */
 /*    DATE: July 2nd, 2016                                       */
@@ -73,3 +73,7 @@ class CommandItem
 };
 
 #endif 
+
+
+
+

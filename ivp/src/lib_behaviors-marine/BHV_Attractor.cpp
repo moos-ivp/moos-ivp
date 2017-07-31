@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Attractor.cpp                                    */
 /*    DATE: June 2008                                            */
-/*    DATE: Dec 11th 2015 Modified                               */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -382,6 +381,10 @@ void BHV_Attractor::postErasableTrailPoint()
   string spec = m_trail_point.get_spec();
   postMessage("VIEW_POINT", spec);
 }
+
+
+
+
 
 
 

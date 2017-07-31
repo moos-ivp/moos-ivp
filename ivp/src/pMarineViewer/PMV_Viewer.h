@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PMV_Viewer.h                                         */
 /*    DATE: Nov 11th 2004                                        */
@@ -129,6 +129,10 @@ class PMV_Viewer : public MarineViewer
 };
 
 #endif 
+
+
+
+
 
 
 

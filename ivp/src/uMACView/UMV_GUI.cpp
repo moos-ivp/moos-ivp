@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: UMV_GUI.cpp                                          */
 /*    DATE: Aug 11th, 2012                                       */
@@ -636,6 +636,10 @@ void UMV_GUI::resizeWidgets()
   m_brw_casts->textcolor(color_text);
   m_brw_casts->position(0);
 }
+
+
+
+
 
 
 

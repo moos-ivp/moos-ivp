@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Quad3D.cpp                                           */
 /*    DATE: June 13th 2016                                       */
@@ -432,5 +432,9 @@ void Quad3D::interpolate(double xdelta)
 #endif
   }
 }
+
+
+
+
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Shape_EField.h                                       */
 /*    DATE: Oct 4th 2007                                         */
@@ -86,6 +86,10 @@ double       g_efieldMidCtrY     = 0.0;
 unsigned int g_efieldMidBodySize = 22;
 
 #endif
+
+
+
+
 
 
 

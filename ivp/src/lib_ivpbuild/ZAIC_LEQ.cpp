@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ZAIC_LEQ.cpp                                         */
 /*    DATE: June 15th 2006                                       */
@@ -176,6 +176,10 @@ PDMap *ZAIC_LEQ::setPDMap()
   }
   return(pdmap);
 }
+
+
+
+
 
 
 

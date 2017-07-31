@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: REPLAY_GUI.h                                         */
 /*    DATE: May 31st, 2005                                       */
-/*    DATE: Feb 2nd, 2015 Major overhaul/simplification          */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -194,3 +193,7 @@ class REPLAY_GUI : public MarineVehiGUI {
 
 };
 #endif
+
+
+
+

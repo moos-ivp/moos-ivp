@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BehaviorSet.cpp                                      */
 /*    DATE: Oct 27th 2004 Sox up 3-0 in the Series               */
@@ -135,20 +135,6 @@ void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
   for(i=0; i<vsize; i++)
     m_behavior_specs[i].setInfoBuffer(info_buffer);    
 }
-
-//------------------------------------------------------------
-// Procedure: connectKCache()
-//      Note: Connects kcache to all behaviors, behavior_specs
-//      Note: The kcache is not "owned" by behaviors or specs
-#if 0
-void BehaviorSet::connectKCache(KCache *kcache)
-{
-  unsigned int i, vsize = m_bhv_entry.size();
-  for(i=0; i<vsize; i++)
-    if(m_bhv_entry[i].getBehavior())
-      m_bhv_entry[i].getBehavior()->setKCache(kcache);
-}
-#endif
 
 //------------------------------------------------------------
 // Procedure: buildBehaviorsFromSpecs()
@@ -1034,4 +1020,8 @@ void BehaviorSet::print()
     cout << "-------" << endl;
   }
 }
+
+
+
+
 

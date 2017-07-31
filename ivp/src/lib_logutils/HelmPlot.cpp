@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmPlot.cpp                                         */
 /*    DATE: Jul1509, Sep2811                                     */
-/*    DATE: Feb 20th, 2015 Major mods by mikerb                  */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -237,4 +236,8 @@ void HelmPlot::print() const
     cout << "  completed: " << report.getCompletedBehaviors() << endl;
   }
 }
+
+
+
+
 

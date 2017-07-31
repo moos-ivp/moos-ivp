@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: USM_Model.cpp                                        */
 /*    DATE: Nov 19th 2006 (as separate class under MVC paradigm  */
@@ -514,6 +514,10 @@ double USM_Model::getDriftAng() const
 {
   return(relAng(0, 0, m_drift_x, m_drift_y));
 }
+
+
+
+
 
 
 

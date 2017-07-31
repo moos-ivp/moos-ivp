@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYHazardSet.cpp                                      */
 /*    DATE: Mar 12, 2012                                         */
@@ -278,6 +278,10 @@ string XYHazardSet::getSpec(string report_style) const
   }
   return(str);
 }
+
+
+
+
 
 
 

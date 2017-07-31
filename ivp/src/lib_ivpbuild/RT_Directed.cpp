@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RT_Directed.cpp                                      */
 /*    DATE: Mar 20th, 2007                                       */
@@ -224,6 +224,10 @@ void RT_Directed::updatePQueue(PQueue& pqueue, const vector<int>& idx_map)
   pqueue = new_pqueue;
 }
   
+
+
+
+
 
 
 

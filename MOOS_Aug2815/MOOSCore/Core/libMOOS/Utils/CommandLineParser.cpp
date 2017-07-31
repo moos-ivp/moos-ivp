@@ -61,7 +61,11 @@ CommandLineParser::CommandLineParser(int argc,  char * argv[])
 bool CommandLineParser::Open(int argc,  char * argv[])
 {
 
+#ifdef _USE_UNIQUE_PTR
+	pcl_ = std::unique_ptr<GetPot>(new GetPot(argc,argv) );
+#else
 	pcl_ = std::auto_ptr<GetPot>(new GetPot(argc,argv) );
+#endif
 	return true;
 }
 

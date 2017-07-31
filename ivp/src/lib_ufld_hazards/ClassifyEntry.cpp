@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ClassifyEntry.cpp                                    */
 /*    DATE: March 23rd, 2013                                     */
@@ -47,6 +47,10 @@ bool operator> (const ClassifyEntry& entry1, const ClassifyEntry& entry2)
 {
   return(entry1.getPriority() < entry2.getPriority());
 }
+
+
+
+
 
 
 

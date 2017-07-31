@@ -1,36 +1,26 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Problem.h                                            */
 /*    DATE: Too long ago to remember (1996-1999)                 */
 /*                                                               */
-/* The algorithms embodied in this software are protected under  */
-/* U.S. Pat. App. Ser. Nos. 10/631,527 and 10/911,765 and are    */
-/* the property of the United States Navy.                       */
+/* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
-/* Permission to use, copy, modify and distribute this software  */
-/* and its documentation for any non-commercial purpose, without */
-/* fee, and without a written agreement is hereby granted        */
-/* provided that the above notice and this paragraph and the     */
-/* following three paragraphs appear in all copies.              */
+/* IvP Helm Core Libs is free software: you can redistribute it  */
+/* and/or modify it under the terms of the Lesser GNU General    */
+/* Public License as published by the Free Software Foundation,  */
+/* either version 3 of the License, or (at your option) any      */
+/* later version.                                                */
 /*                                                               */
-/* Commercial licences for this software may be obtained by      */
-/* contacting Patent Counsel, Naval Undersea Warfare Center      */
-/* Division Newport at 401-832-4736 or 1176 Howell Street,       */
-/* Newport, RI 02841.                                            */
+/* IvP Helm Core Libs is distributed in the hope that it will    */
+/* be useful but WITHOUT ANY WARRANTY; without even the implied  */
+/* warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR       */
+/* PURPOSE. See the Lesser GNU General Public License for more   */
+/* details.                                                      */
 /*                                                               */
-/* In no event shall the US Navy be liable to any party for      */
-/* direct, indirect, special, incidental, or consequential       */
-/* damages, including lost profits, arising out of the use       */
-/* of this software and its documentation, even if the US Navy   */
-/* has been advised of the possibility of such damage.           */
-/*                                                               */
-/* The US Navy specifically disclaims any warranties, including, */
-/* but not limited to, the implied warranties of merchantability */
-/* and fitness for a particular purpose. The software provided   */
-/* hereunder is on an 'as-is' basis, and the US Navy has no      */
-/* obligations to provide maintenance, support, updates,         */
-/* enhancements or modifications.                                */
+/* You should have received a copy of the Lesser GNU General     */
+/* Public License along with MOOS-IvP.  If not, see              */
+/* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
 #ifndef PROBLEM_HEADER
@@ -98,3 +88,7 @@ protected:
 };
 
 #endif
+
+
+
+

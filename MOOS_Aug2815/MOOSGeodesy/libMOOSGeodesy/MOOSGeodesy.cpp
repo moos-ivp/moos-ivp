@@ -24,6 +24,7 @@
 #include <sstream>
 #include <iostream>
 #include <limits>
+#include <proj_api.h>
 
 #include "include/MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 

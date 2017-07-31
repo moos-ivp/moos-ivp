@@ -51,6 +51,6 @@ namespace MOOS
 	 * @return
 	 */
 	bool GetThisThreadsPriority(int & Priority, int & MaxAllowed);
-};
+}
 
 #endif /* THREADPRIORITY_H_ */

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: GEO_GUI.cpp                                          */
 /*    DATE: May 1st, 2005 (Major Modifications November 2007)    */
@@ -312,6 +312,10 @@ void GEO_GUI::updateXY() {
   sprintf(buff, "%f", pviewer->getSnap());
   p_snap->value(buff);
 }
+
+
+
+
 
 
 

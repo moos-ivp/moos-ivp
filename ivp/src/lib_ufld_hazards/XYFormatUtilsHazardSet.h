@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYFormatUtilsHazardSet.h                             */
 /*    DATE: Mar 12th, 2012                                       */
@@ -32,6 +32,10 @@
 XYHazardSet string2HazardSet(std::string);
 
 #endif
+
+
+
+
 
 
 

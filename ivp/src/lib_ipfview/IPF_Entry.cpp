@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: IPF_Entry.cpp                                        */
 /*    DATE: Apr 20th, 2011                                       */
@@ -76,4 +76,8 @@ QuadSet IPF_Entry::getQuadSet(IvPDomain ivp_domain, bool dense)
   }
   return(m_quadset);
 }
+
+
+
+
 

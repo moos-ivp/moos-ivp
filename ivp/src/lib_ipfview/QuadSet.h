@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: QuadSet.h                                            */
 /*    DATE: July 4th 2006                                        */
-/*    DATE: June 16th 2016 Major restructuring mikerb            */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -83,3 +82,7 @@ protected:
   unsigned int m_max_y_qix;
 };
 #endif
+
+
+
+

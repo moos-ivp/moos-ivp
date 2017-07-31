@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF_Quadratic.cpp                                    */
 /*    DATE: Feb 2rd, 2008                                        */
@@ -79,6 +79,10 @@ double AOF_Quadratic::evalBox(const IvPBox *ptbox) const
   return((m_coeff * (x_val - x_center) * (x_val - x_center)) + 
 	 (n_coeff * (y_val - y_center) * (y_val - y_center)));
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ClassifyQueue.cpp                                    */
 /*    DATE: Mar 23rd 2013                                        */
@@ -177,6 +177,10 @@ unsigned int ClassifyQueue::size() const
   
   return(m_pqueue.size() + 1);
 }
+
+
+
+
 
 
 

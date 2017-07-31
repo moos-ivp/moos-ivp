@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: RT_Smart.cpp                                         */
 /*    DATE: Jan 20th, 2006                                       */
@@ -107,6 +107,10 @@ PDMap* RT_Smart::create(PDMap *pdmap, PQueue& pqueue,
   pdmap->updateGrid();
   return(pdmap);
 }
+
+
+
+
 
 
 

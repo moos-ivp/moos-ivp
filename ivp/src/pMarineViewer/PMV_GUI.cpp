@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PMV_GUI.cpp                                          */
 /*    DATE: November, 2004                                       */
@@ -1981,6 +1981,10 @@ void PMV_GUI::resizeWidgets()
   m_user_button_3->resize(dw*0.82, row1, dw*0.09, fld_hgt);
   m_user_button_4->resize(dw*0.82, row2, dw*0.09, fld_hgt);
 }
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: UFS_Config.cpp                                       */
 /*    DATE: Nov 23rd 2011                                        */
@@ -83,6 +83,10 @@ bool UFS_Config::valid() const
     return(false);
   return(true);
 }
+
+
+
+
 
 
 

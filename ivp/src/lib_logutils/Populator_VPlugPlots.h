@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Populator_VPlugPlots.h                               */
 /*    DATE: August 9th, 2009                                     */
@@ -42,6 +42,10 @@ protected:
   VPlugPlot m_vplug_plot;
 };
 #endif 
+
+
+
+
 
 
 

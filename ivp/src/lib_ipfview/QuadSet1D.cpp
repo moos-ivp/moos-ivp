@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: QuadSet1D.cpp                                        */
 /*    DATE: July 4th 2006                                        */
-/*    DATE: May 25th 2017 Derived from QuadSet.cpp for 1D        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -287,5 +286,9 @@ void QuadSet1D::print() const
   cout << "    DomainPtsX: " << m_domain_ptsx[0].size() << endl;
   cout << "    RangeValMax: " << m_range_val_max[0]  << endl;
 }
+
+
+
+
 
 
