@@ -607,7 +607,7 @@ PDMap *ZAIC_Vector::setPDMap2()
   double s_m = 0;
   double s_b = 0;
 
-  unsigned int domain_pts = m_irange_vals.size();
+  //unsigned int domain_pts = m_irange_vals.size();
   
   vector<IvPBox*> pieces;
   for(unsigned int i=1; i<m_domain_pts; i++) {

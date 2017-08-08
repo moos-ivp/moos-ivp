@@ -591,7 +591,7 @@ bool PDMap::freeOfNan() const
 
 bool PDMap::valid() const
 {
-  unsigned int dim = m_domain.size();
+  int dim = (int)(m_domain.size());
   
   IvPBox box(dim);
   for(int d=0; d<dim; d++) 
@@ -601,7 +601,7 @@ bool PDMap::valid() const
   while(!done) {
 
     unsigned int count = 0;
-    for(unsigned int i=0; i<m_boxCount; i++)
+    for(unsigned int i=0; i<(unsigned int)(m_boxCount); i++)
       if(m_boxes[i]->intersect(&box))
 	count++;
 
@@ -612,7 +612,7 @@ bool PDMap::valid() const
     bool incremented=false;
     for(int d=0; (d<dim)&&(!incremented); d++) {
       int v = box.pt(d);
-      if(v < m_domain.getVarPoints(d)-1) {
+      if((unsigned int)(v) < m_domain.getVarPoints(d)-1) {
 	box.setPTS(d, v+1, v+1);
 	incremented = true;
       }

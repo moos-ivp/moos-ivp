@@ -322,7 +322,6 @@ bool MarineViewer::setTexture()
 // Procedure: img2view
 
 double MarineViewer::img2view(char xy, double img_val)
-
 {
   double view_val = 0.0;
 
