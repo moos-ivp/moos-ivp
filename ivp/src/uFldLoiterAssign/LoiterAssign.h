@@ -35,23 +35,36 @@ class LoiterAssign : public AppCastingMOOSApp
    bool handleConfigVNames(std::string);   
    bool handleConfigLoiterPoly(std::string);   
 
-   void checkFinalConfiguration();
+   void handleFinalConfiguration();
 
  protected:
    bool polyWithinOpRegion(XYPolygon);
+
+   void postViewablePolys();
    
  private: // Configuration variables
    XYPolygon m_opregion;
 
    double    m_poly_rad;
    double    m_poly_sep;
-   
+   double    m_interval;
+
+   std::string  m_opreg_poly_edge_color;
+   std::string  m_opreg_poly_vert_color;
+
+   std::string  m_loiter_poly_edge_color;
+   std::string  m_loiter_poly_vert_color;
+
  private: // State variables
 
    std::vector<std::string> m_vnames;
    std::vector<XYPolygon>   m_polys;
    std::vector<bool>        m_poly_fixed;
 
+   unsigned int  m_total_reassigns;
+
+   double        m_time_prev_assign;
+   
 };
 
 #endif 
