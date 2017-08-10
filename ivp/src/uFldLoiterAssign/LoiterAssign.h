@@ -36,7 +36,10 @@ class LoiterAssign : public AppCastingMOOSApp
    bool handleConfigLoiterPoly(std::string);   
 
    void handleFinalConfiguration();
-
+   void conditionallyReassign();
+   void derangeReassign();
+   void rebuildReassign();
+   
  protected:
    bool polyWithinOpRegion(XYPolygon);
 

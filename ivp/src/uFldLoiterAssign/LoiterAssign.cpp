@@ -6,6 +6,7 @@
 /************************************************************/
 
 #include <iterator>
+#include <algorithm>
 #include "MBUtils.h"
 #include "ACTable.h"
 #include "LoiterAssign.h"
@@ -85,6 +86,9 @@ bool LoiterAssign::OnConnectToServer()
 bool LoiterAssign::Iterate()
 {
   AppCastingMOOSApp::Iterate();
+
+  conditionallyReassign();
+
   // Do your thing here!
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -232,6 +236,57 @@ void LoiterAssign::handleFinalConfiguration()
 
 
 //---------------------------------------------------------
+// Procedure: conditionallyReassign()
+
+void LoiterAssign::conditionallyReassign()
+{
+  double curr_time = MOOSTime();
+
+  double elapsed_time = curr_time - m_time_prev_assign;
+
+  if(elapsed_time < m_interval)
+    return;
+
+  derangeReassign();
+  m_time_prev_assign = curr_time;
+}
+
+
+//---------------------------------------------------------
+// Procedure: derangeReassign()
+
+void LoiterAssign::derangeReassign()
+{
+  bool done = false;
+
+  unsigned int fixpoint_checks = 0;
+  unsigned int max_fixpoint_checks = 100;
+
+  vector<string> vnames = m_vnames;
+  
+  while(!done && (fixpoint_checks < max_fixpoint_checks)) {
+    random_shuffle(vnames.begin(), vnames.end());
+    // Now check for fixpoints. if one is found, done is false
+    done = true;
+    for(unsigned int i=0; i<vnames.size(); i++) 
+      if(vnames[i] == m_vnames[i])
+	done = false;
+    fixpoint_checks++;
+  }
+
+  string str;
+  for(unsigned int i=0; i<m_vnames.size(); i++) {
+    if(i!=0)
+      str += ",";
+    str += m_vnames[i];
+  }
+  Notify("LA_PERMUTATION", str);
+  
+  m_vnames = vnames;
+}
+
+
+//---------------------------------------------------------
 // Procedure: polyWithinOpRegion
 
 bool LoiterAssign::polyWithinOpRegion(XYPolygon poly)
@@ -273,12 +328,25 @@ bool LoiterAssign::buildReport()
   for(unsigned int i=0; i<m_vnames.size(); i++)
     m_msgs << "  " << m_vnames[i] << endl;
 
-  m_msgs << "Polygon Status:                              \n";
+  m_msgs << "Polygons:                                    \n";
   m_msgs << "============================================ \n";
   m_msgs << "Number of loiter polys: " << m_polys.size() << endl;
 
   for(unsigned int i=0; i<m_polys.size(); i++)
     m_msgs << "  " << m_polys[i].get_label() << endl;
+
+
+  m_msgs << "Polygon Assignment:                          \n";
+  m_msgs << "============================================ \n";
+
+  for(unsigned int i=0; i<m_vnames.size(); i++) {
+    string polyname = "unassigned";
+    if(i < m_polys.size())
+      polyname = m_polys[i].get_label();
+    m_msgs << "[" << m_vnames[i] << "]: " << polyname << endl; 
+
+  }
+
 
   
 #if 0
