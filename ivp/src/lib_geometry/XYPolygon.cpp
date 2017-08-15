@@ -431,6 +431,39 @@ bool XYPolygon::intersects(const XYPolygon &poly) const
 
 
 //---------------------------------------------------------------
+// Procedure: dist_to_poly()
+
+double XYPolygon::dist_to_poly(const XYPolygon &poly) const
+{
+  // Part 1: simple check for intersection test
+  if(intersects(poly))
+    return(0);
+
+  double min_dist = -1;
+
+  // Part 2: check distance of all vertices in THIS polygon to
+  // the given polygon
+  for(unsigned int i=0; i<size(); i++) {
+    double dist = poly.dist_to_poly(get_vx(i), get_vy(i));
+    if((dist < min_dist) || (min_dist == -1)) {
+      min_dist = dist;
+    }
+  }
+
+  // Part 3: check distance of all vertices in the given polygon to
+  // the vertices in THIS polygon
+  for(unsigned int i=0; i<poly.size(); i++) {
+    double dist = dist_to_poly(poly.get_vx(i), poly.get_vy(i));
+    if((dist < min_dist) || (min_dist == -1)) {
+      min_dist = dist;
+    }
+  }
+
+  return(min_dist);
+}
+
+
+//---------------------------------------------------------------
 // Procedure: dist_to_poly
 
 double XYPolygon::dist_to_poly(double px, double py) const

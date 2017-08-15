@@ -986,5 +986,49 @@ double distCircleToLine(double cx, double cy, double radius,
 }
 
 
+//---------------------------------------------------------------
+// Procedure: randPointInPoly()
+//   Purpose: Find a random point inside a given polygon.
+//            Try a random points inside the polygon's bounding box.
+//   Returns: true if random point found. 
 
 
+bool randPointInPoly(const XYPolygon& poly, double& rx, double& ry,
+		     unsigned int tries)
+{
+  if(!poly.is_convex())
+    return(false);
+  
+  double xmin = poly.get_min_x();
+  double xmax = poly.get_max_x();
+  double ymin = poly.get_min_y();
+  double ymax = poly.get_max_y();
+
+  if((xmax <= xmin) || (ymax <= ymin))
+    return(false);
+  
+  double xrng = xmax - xmin;
+  double yrng = ymax - ymin;
+  
+  int xrng_int = (int)(xrng);
+  int yrng_int = (int)(yrng);
+
+  for(unsigned int i=0; i<tries; i++) {
+    int rand_x = rand() % xrng_int;
+    int rand_y = rand() % yrng_int;
+
+    double px = xmin + (double)(rand_x);
+    double py = ymin + (double)(rand_y);
+    
+    if(poly.contains(px, py)) {
+      rx = px;
+      ry = py;
+      return(true);
+    }
+  }
+
+  rx = poly.get_center_x();
+  ry = poly.get_center_y();
+
+  return(false);
+}

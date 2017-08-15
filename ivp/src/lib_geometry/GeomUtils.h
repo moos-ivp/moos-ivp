@@ -92,6 +92,9 @@ bool   bearingMinMaxToPoly(double x, double y, const XYPolygon& poly,
 double distCircleToLine(double cx, double cy, double radius,
 			double px1, double py1, double px2, double py2);
 
+bool randPointInPoly(const XYPolygon&, double& rx, double& ry,
+		     unsigned int tries=1000);
+
 // DEPRECATED INTERFACES
 double distToPoint(double x1, double y1, double x2, double y2);
 
