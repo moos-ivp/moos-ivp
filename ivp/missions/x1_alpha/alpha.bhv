@@ -2,7 +2,11 @@
 
 initialize   DEPLOY = false
 initialize   RETURN = false
-	
+//initialize   DRIFT_X = 0.5
+//initialize   DRIFT_Y = 0.7
+
+
+
 //----------------------------------------------
 Behavior = BHV_Waypoint
 { 
@@ -14,33 +18,39 @@ Behavior = BHV_Waypoint
 
   updates    = WPT_UPDATE
   perpetual  = true
-//  templating = clone
 
                 lead = 8
          lead_damper = 1
        lead_to_start = true
-               speed = 12   // meters per second
+               speed = 4.0   // meters per second
         capture_line = true
       capture_radius = 5.0
          slip_radius = 15.0
 	efficiency_measure = all
 
-   //          polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+   cycleflag = WPT_UPDATE=order=reverse
 
-             polygon = pts={-2,-21:44,-2:56,-29:37,-48:10,-49}
-               order = reverse
-             repeat = 10000
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
 
-// uPokeDB alpha.moos++ WPT_UPDATE="name=1#polygon=60,-50 : 60,-170 : 150,-170 : 180,-110 : 150,-50#duration=20"
-// uPokeDB alpha.moos++ WPT_UPDATE="name=1#speed=2"
+      //points = format=lawnmower, label=foxtrot, x=115, y=-100, height=120, width=100, lane_width=12, rows=north-south, startx=00, starty=0, degs=0
 
-//	ipf_type = roc
+               order = normal
+	       repeat  = 1
 
-    visual_hints = nextpt_color=yellow
+	       // --panx=-90 --pany=70  --zoom=4.4 
+
+    visual_hint = nextpt_color=invisible
     visual_hints = nextpt_vertex_size=8
-    visual_hints = nextpt_lcolor=gray70
-    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = nextpt_lcolor=invisible
+    visual_hints = vertex_color=invisible, edge_color=invisible
     visual_hints = vertex_size=5, edge_size=1
+    visual_hints = label_color=invisible
+
+   // visual_hints = nextpt_color=yellow
+   // visual_hints = nextpt_vertex_size=8
+   // visual_hints = nextpt_lcolor=gray70
+   // visual_hints = vertex_color=dodger_blue, edge_color=white
+   // visual_hints = vertex_size=5, edge_size=1
 }
 
 //----------------------------------------------
@@ -55,11 +65,15 @@ Behavior=BHV_Waypoint
   endflag    = RETURN = false
   endflag    = DEPLOY = false
   endflag    = MISSION = complete
-	
+
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+
            speed = 2.0
   capture_radius = 2.0
      slip_radius = 8.0
-          points = 0,-20
+          point = 0,-20
  }
 
 //----------------------------------------------
@@ -67,17 +81,18 @@ Behavior=BHV_ConstantSpeed
 {
   name       = const_speed
   pwt        = 200
-  condition  = SPD=true
+  //condition  = SPD=true
   condition  = DEPLOY = true
   perpetual  = true
   updates    = SPEED_UPDATE
   endflag    = SPD = false
 
-     speed = 0.5
-		 duration = 10
-		 duration_reset = CONST_SPD_RESET=true
+     speed = 2.5
+
+   duration = 10
+   peakwidth = 0.5
+   basewidth = 0.5
+   duration_reset = CONST_SPD_RESET=true
 	
 }
 
-	// uPokeDB alpha.moos SPEED_UPDATE=speed=0.7#duration=20
-	// uPokeDB alpha.moos RETURN_UPDATE=slip_radius=7

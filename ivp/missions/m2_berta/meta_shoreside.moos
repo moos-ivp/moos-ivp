@@ -27,14 +27,39 @@ Processconfig = ANTLER
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
 
+  Run = uFldCollisionDetect  @ NewConsole = false
   //Run = pEvalLoiter     @ NewConsole = false
 
-  Run = uFldCollisionDetect  @ NewConsole = false
   //Run = uFunctionVis    @ NewConsole = false
 }
 
 
 //------------------------------------------
+<<<<<<< .mine
+ProcessConfig = uFldCollisionDetect                             
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  condition = DEPLOY_ALL = true                                 
+                                                                
+  encounter_flag = ENCOUNTER = $CPA                             
+  collision_flag = COLLISION = $CPA                             
+  near_miss_flag = NEAR_MISS = vname1=$V1,vname2=$V2,cpa=$CPA   
+                                                                
+  encounter_range = 10        // (the default) in meters        
+  near_miss_range = 6         // (the default) in meters        
+  collision_range = 3         // (the default) in meters        
+                                                                
+  pulse_render   = true       // (the default)                  
+  pulse_range    = 20         // (the default) in meters        
+  pulse_duration = 10         // (the default) in seconds       
+}
+
+
+//------------------------------------------
+||||||| .r7806
+=======
 ProcessConfig = uFldCollisionDetect                             
 {                                                               
   AppTick   = 4                                                 
@@ -64,6 +89,7 @@ ProcessConfig = uFldCollisionDetect
 }
 
 //------------------------------------------
+>>>>>>> .r7869
 // uFunctionVis
 
 ProcessConfig = uFunctionVis
@@ -238,18 +264,18 @@ ProcessConfig = pMarineViewer
 
   left_context[surface_point] = RETURN_$[UP_VNAME_CLOSEST] = true
 
-	cmd = label=DEPLOY, var=DEPLOY,  sval=true,  receivers=all
-	cmd = label=DEPLOY, var=MOOS_MANUAL_OVERRIDE,  sval=false,  receivers=all
-	cmd = label=DEPLOY, var=AVOID,  sval=true,  receivers=all
-	cmd = label=DEPLOY, var=RETURN,  sval=false,  receivers=all
-	cmd = label=DEPLOY, var=STATION_KEEP,  sval=false,  receivers=all
+  cmd = label=DEPLOY, var=DEPLOY,  sval=true,  receivers=all:$(VNAMES)
+  cmd = label=DEPLOY, var=MOOS_MANUAL_OVERRIDE,  sval=false,  receivers=all
+  cmd = label=DEPLOY, var=AVOID,  sval=true,  receivers=all
+  cmd = label=DEPLOY, var=RETURN,  sval=false,  receivers=all
+  cmd = label=DEPLOY, var=STATION_KEEP,  sval=false,  receivers=all
 
-	cmd = label=RETURN, var=RETURN, sval=true, receivers=all
-	cmd = label=RETURN, var=STATION_KEEP, sval=false, receivers=all
+  cmd = label=RETURN, var=RETURN, sval=true, receivers=all
+  cmd = label=RETURN, var=STATION_KEEP, sval=false, receivers=all
 
-	cmd = label=PERMUTE, var=UTS_FORWARD,  dval=0,  receivers=shore
+  cmd = label=PERMUTE, var=UTS_FORWARD,  dval=0,  receivers=shore
 
-	cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all
+  cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all
 	
 	
   button_one   = DEPLOY  # DEPLOY_ALL=true 
@@ -261,6 +287,7 @@ ProcessConfig = pMarineViewer
   button_two   = RETURN  # STATION_KEEP_ALL=false
   button_three = PERMUTE   # UTS_FORWARD=0
   button_four  = STATION   # STATION_KEEP_ALL=true
+
 }
 
 //--------------------------------------------------------

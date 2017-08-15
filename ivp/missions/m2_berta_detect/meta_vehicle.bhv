@@ -131,7 +131,7 @@ Behavior = BHV_StationKeep
 }
 
 //----------------------------------------------
-Behavior = BHV_AvdColregs
+Behavior = BHV_AvdColregsV17
 {
   name       = avdcol_
   pwt        = 150
@@ -149,10 +149,10 @@ Behavior = BHV_AvdColregs
         pwt_outer_dist = 35
         pwt_inner_dist = 10
         completed_dist = 45
-     min_util_cpa_dist = 1
-     max_util_cpa_dist = 4
-//     min_util_cpa_dist = 10
-//     max_util_cpa_dist = 18
+//     min_util_cpa_dist = 1
+//     max_util_cpa_dist = 4
+     min_util_cpa_dist = 10
+     max_util_cpa_dist = 18
              pwt_grade = linear
 //   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 }

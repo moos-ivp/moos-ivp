@@ -18,12 +18,12 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
   Run = uSimMarine      @ NewConsole = false
   Run = pNodeReporter   @ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
-  Run = pLogger         @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
 }
@@ -95,7 +95,7 @@ ProcessConfig = pHelmIvP
   verbose    = quiet
   domain     = course:0:359:360
   domain     = speed:0:4:41
-  domain     = depth:0:490:491
+  domain     = depth:0:199:200
 }
 
 //------------------------------------------

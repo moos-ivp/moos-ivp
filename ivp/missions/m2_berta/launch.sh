@@ -44,7 +44,7 @@ SHORE_LISTEN="9300"
 nsplug meta_vehicle.moos targ_henry.moos -f WARP=$TIME_WARP \
     VNAME=$VNAME1          SHARE_LISTEN="9301"              \
     VPORT="9001"           SHORE_LISTEN=$SHORE_LISTEN       \
-    START_POS=$START_POS1  VARIATION=$VARIATION             
+    START_POS=$START_POS1  VARIATION=$VARIATION 
 
 nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$TIME_WARP \
     VNAME=$VNAME2          SHARE_LISTEN="9302"              \
@@ -53,7 +53,10 @@ nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$TIME_WARP \
 
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
     SNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                 \
-    SPORT="9000"       VARIATION=$VARIATION         
+    SPORT="9000"       VARIATION=$VARIATION                       \
+    VNAMES=$VNAME1:$VNAME2
+
+
 
 nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
     START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       

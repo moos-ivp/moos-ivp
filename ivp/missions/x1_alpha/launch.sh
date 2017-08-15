@@ -25,10 +25,9 @@ done
 printf "Launching the %s MOOS Community (WARP=%s) \n"  $COMMUNITY $TIME_WARP
 pAntler $COMMUNITY.moos --MOOSTimeWarp=$TIME_WARP >& /dev/null &
 
-uMAC -t $COMMUNITY.moos
+uMAC $COMMUNITY.moos
 
 printf "Killing all processes ... \n"
 kill %1 
-mykill
 printf "Done killing processes.   \n"
 
