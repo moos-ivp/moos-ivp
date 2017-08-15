@@ -158,7 +158,7 @@ void showInterfaceAndExit()
   blk("  +                                                             ");
   blk("  The helm also publishes a decision for each of its configured ");
   blk("  decision variables, e.g., DESIRED_SPEED etc. In general, if   ");
-  blk("  foobar is a decision variables, DESIRED_FOOBAR may be posted  ");
+  blk("  foobar is a decision variable, DESIRED_FOOBAR may be posted   ");
   blk("  if there is a behavior reasoning about that decision variable.");
   blk("  +                                                             ");
   blk("  BHV_ERROR             = Error description gen'ed by behavior  ");
