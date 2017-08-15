@@ -39,6 +39,8 @@ int main(int argc, char *argv[])
   if(mission_file == "")
     showHelpAndExit();
 
+  srand((int)time(NULL)); // seed the random number generator
+
   cout << termColor("green");
   cout << "uFldLoiterAssign launching as " << run_command << endl;
   cout << termColor() << endl;

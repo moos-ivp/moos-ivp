@@ -18,7 +18,7 @@ class LoiterAssign : public AppCastingMOOSApp
 {
  public:
    LoiterAssign();
-   ~LoiterAssign();
+   ~LoiterAssign() {};
 
  protected: // Standard MOOSApp functions to overload  
    bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -42,7 +42,6 @@ class LoiterAssign : public AppCastingMOOSApp
    
  protected:
    bool polyWithinOpRegion(XYPolygon);
-
    void postViewablePolys();
    
  private: // Configuration variables
@@ -52,9 +51,12 @@ class LoiterAssign : public AppCastingMOOSApp
    double    m_poly_sep;
    double    m_interval;
 
+   bool      m_derange;
+   
+   std::string  m_moosvar_assign;
+   
    std::string  m_opreg_poly_edge_color;
    std::string  m_opreg_poly_vert_color;
-
    std::string  m_loiter_poly_edge_color;
    std::string  m_loiter_poly_vert_color;
 
@@ -65,7 +67,6 @@ class LoiterAssign : public AppCastingMOOSApp
    std::vector<bool>        m_poly_fixed;
 
    unsigned int  m_total_reassigns;
-
    double        m_time_prev_assign;
    
 };

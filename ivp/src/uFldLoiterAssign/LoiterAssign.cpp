@@ -11,6 +11,7 @@
 #include "ACTable.h"
 #include "LoiterAssign.h"
 #include "XYFormatUtilsPoly.h"
+#include "GeomUtils.h"
 
 using namespace std;
 
@@ -19,24 +20,23 @@ using namespace std;
 
 LoiterAssign::LoiterAssign()
 {
-  m_total_reassigns = 0;
+  // Initialize config variables
+  m_derange  = true;
+  m_poly_rad = 20;
   m_interval = 90;
-
-  m_time_prev_assign = 0;
+  m_moosvar_assign = "UP_LOITER";
 
   m_opreg_poly_edge_color = "yellow";
   m_opreg_poly_vert_color = "green";
 
   m_loiter_poly_edge_color = "white";
   m_loiter_poly_vert_color = "dodger_blue";
+
+  // Initialize state variables
+  m_total_reassigns = 0;
+  m_time_prev_assign = 0;
 }
 
-//---------------------------------------------------------
-// Destructor
-
-LoiterAssign::~LoiterAssign()
-{
-}
 
 //---------------------------------------------------------
 // Procedure: OnNewMail
@@ -121,6 +121,8 @@ bool LoiterAssign::OnStartUp()
       handled = setNonNegDoubleOnString(m_poly_sep, value);
     else if(param == "interval") 
       handled = setNonNegDoubleOnString(m_interval, value);
+    else if(param == "derange") 
+      handled = setBooleanOnString(m_derange, value);
     else if((param == "vname") || (param == "vnames")) 
       handled = handleConfigVNames(value);
     else if(param == "loiterpoly") 
@@ -134,10 +136,7 @@ bool LoiterAssign::OnStartUp()
   }
 
   handleFinalConfiguration();
-  postViewablePolys();
   
-  m_time_prev_assign = MOOSTime();
-    
   registerVariables();	
   return(true);
 }
@@ -194,7 +193,7 @@ bool LoiterAssign::handleConfigVNames(string vnames)
   bool no_dupl_found = true;
   
   vnames = stripBlankEnds(vnames);
-  vector<string> svector = parseString(vnames, ',');
+  vector<string> svector = parseString(vnames, ':');
   for(unsigned int i=0; i<svector.size(); i++) {
     string vname = stripBlankEnds(svector[i]);
     if(vectorContains(m_vnames, vname))
@@ -244,11 +243,22 @@ void LoiterAssign::conditionallyReassign()
 
   double elapsed_time = curr_time - m_time_prev_assign;
 
-  if(elapsed_time < m_interval)
+  if((elapsed_time < m_interval) && (m_time_prev_assign != 0))
     return;
 
-  derangeReassign();
+  
+  if(m_derange)
+    derangeReassign();
+  else
+    rebuildReassign();
+
+  postViewablePolys();
+
+  m_total_reassigns++;
   m_time_prev_assign = curr_time;
+
+  for(unsigned int i=0; i<m_vnames.size(); i++)
+    Notify("LA_NEW_ASSIGN_" + toupper(m_vnames[i]), "true");
 }
 
 
@@ -287,6 +297,47 @@ void LoiterAssign::derangeReassign()
 
 
 //---------------------------------------------------------
+// Procedure: rebuildReassign()
+
+void LoiterAssign::rebuildReassign()
+{
+  vector<XYPolygon> new_polys;
+
+  for(unsigned int i=0; i<m_vnames.size(); i++) {
+    cout << "Index: " << i << endl;
+    double px = 0;
+    double py = 0;
+    bool done = false;
+    while(!done) {
+      bool ok = randPointInPoly(m_opregion, px, py, 1000);
+      if(ok) {
+	string str = "format=radial";
+	str += ",x=" + doubleToString(px,2);
+	str += ",y=" + doubleToString(py,2);
+	str += ",radius=" + doubleToString(m_poly_rad,2);
+	str += ",pts=8, snap=1";
+	XYPolygon try_poly = string2Poly(str);
+	if(polyWithinOpRegion(try_poly)) {
+	  bool overlap=false;
+	  for(unsigned int j=0; j<i; j++)
+	    //if(try_poly.intersects(new_polys[j]))
+	    if(try_poly.dist_to_poly(new_polys[j]) < 10)
+	      overlap = true;
+	  if(!overlap) {
+	    new_polys.push_back(try_poly);
+	    done = true;
+	  }
+	}
+      }
+    }
+  }
+  
+  m_polys = new_polys;
+  
+}
+
+
+//---------------------------------------------------------
 // Procedure: polyWithinOpRegion
 
 bool LoiterAssign::polyWithinOpRegion(XYPolygon poly)
@@ -309,9 +360,14 @@ void LoiterAssign::postViewablePolys()
   string opregion_poly_str = m_opregion.get_spec();
   Notify("VIEW_POLYGON", opregion_poly_str);
 
-  for(unsigned int i=0; i<m_polys.size(); i++) {
-    string poly_str = m_polys[i].get_spec();
-    Notify("VIEW_POLYGON", poly_str);
+  for(unsigned int i=0; i<m_vnames.size(); i++) {
+    string mvar = m_moosvar_assign;
+    if(!strEnds(mvar, "_"))
+      mvar += "_";
+    mvar += toupper(m_vnames[i]);
+
+    m_polys[i].set_label("loiter_" + tolower(m_vnames[i]));
+    Notify(mvar, "polygon = " + m_polys[i].get_spec());
   }
 }
 
@@ -324,6 +380,7 @@ bool LoiterAssign::buildReport()
   m_msgs << "Configuration:                               \n";
   m_msgs << "============================================ \n";
   m_msgs << "Number of vehicles: " << m_vnames.size() << endl;
+  m_msgs << "derange mode:       " << boolToString(m_derange) << endl;
 
   for(unsigned int i=0; i<m_vnames.size(); i++)
     m_msgs << "  " << m_vnames[i] << endl;
@@ -338,6 +395,7 @@ bool LoiterAssign::buildReport()
 
   m_msgs << "Polygon Assignment:                          \n";
   m_msgs << "============================================ \n";
+  m_msgs << "Total Reassigns: " << m_total_reassigns << endl;
 
   for(unsigned int i=0; i<m_vnames.size(); i++) {
     string polyname = "unassigned";
@@ -346,19 +404,6 @@ bool LoiterAssign::buildReport()
     m_msgs << "[" << m_vnames[i] << "]: " << polyname << endl; 
 
   }
-
-
-  
-#if 0
-  m_msgs << "File:                                        \n";
-  m_msgs << "============================================ \n";
-
-  ACTable actab(4);
-  actab << "Alpha | Bravo | Charlie | Delta";
-  actab.addHeaderLines();
-  actab << "one" << "two" << "three" << "four";
-  m_msgs << actab.getFormattedString();
-#endif
   
   return(true);
 }
