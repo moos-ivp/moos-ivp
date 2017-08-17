@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: EchoVar_Info.cpp                                     */
 /*    DATE: Dec 14th 2011                                        */
+/*    DATE: Aug 17th 2017 Added Boolean Switching, mikerb        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -97,6 +98,10 @@ void showExampleConfigAndExit()
   blk("  Echo    = MARINESIM_SPEED   ->  NAV_SPEED                     ");
   blk("                                                                ");
   blk("  Echo    = FOO -> BAR                                          ");
+  blk("                                                                ");
+  blk("  // If Boolean string published to HOT, opposite Boolean       ");
+  blk("  // string will be published to COLD                           ");
+  blk("  Echo    = HOT !-> COLD                                        ");
   blk("                                                                ");
   blk("  FLIP:1    = source_variable  = MVIEWER_LCLICK                 ");
   blk("  FLIP:1    = dest_variable    = UP_LOITERA                     ");

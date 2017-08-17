@@ -47,7 +47,7 @@ public:
 
 protected:
   void registerVariables();
-  bool addMapping(std::string, std::string);
+  bool addMapping(std::string, std::string, bool boolswitch=false);
   bool noCycles();
   bool handleFlipEntry(std::string key, std::string line);
   
@@ -66,6 +66,7 @@ protected:
   // Index: one for each mapping
   std::vector<std::string>  m_var_source;
   std::vector<std::string>  m_var_target;
+  std::vector<bool>         m_boolswitch;
 
   // map from variable source to num times received mail
   std::map<std::string, unsigned int>  m_map_hits;

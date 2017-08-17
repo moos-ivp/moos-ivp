@@ -143,13 +143,18 @@ bool EchoVar::OnStartUp()
       if(!strncmp(param.c_str(), "flip", 4)) 
 	handled = handleFlipEntry(param, value);
       else if(param == "echo") {
+	bool boolswitch = false;
+	if(strContains(value, "!->")) {
+	  value = findReplace(value, "!->", ">");
+	  boolswitch = true;
+	}
 	value = findReplace(value, "->", ">");
 	vector<string> svector = parseString(value, '>');
 	if(svector.size() != 2)
 	  return(false);
 	string left  = stripBlankEnds(svector[0]);
 	string right = stripBlankEnds(svector[1]);
-	handled = addMapping(left, right);
+	handled = addMapping(left, right, boolswitch);
       }
       else if(param == "condition") 
 	handled = m_logic_buffer.addNewCondition(value);
@@ -202,7 +207,7 @@ void EchoVar::registerVariables()
 //-----------------------------------------------------------------
 // Procedure: addMapping
 
-bool EchoVar::addMapping(string src, string targ)
+bool EchoVar::addMapping(string src, string targ, bool boolswitch)
 {
   if((src == "") || (targ == ""))
     return(false);
@@ -222,6 +227,7 @@ bool EchoVar::addMapping(string src, string targ)
   if(new_pair) {
     m_var_source.push_back(src);
     m_var_target.push_back(targ);
+    m_boolswitch.push_back(boolswitch);
   }
   
   if(new_src)
@@ -412,13 +418,32 @@ void EchoVar::releaseMessages()
     unsigned int i, vsize = m_var_source.size();
     for(i=0; i<vsize; i++) {
       if(key == m_var_source[i]) {
-	string new_key = m_var_target[i];
+	string new_key = m_var_target[i];	
 	string srctarg = key + ":" + new_key;
 	m_map_posts[srctarg]++;
 	if(msg.IsDouble())
 	  Notify(new_key, ddata);
-	else if(msg.IsString())
+	else if(msg.IsString()) {
+	  if(m_boolswitch[i]) {
+	    if(sdata == "true")
+	      sdata = "false";
+	    else if(sdata == "false")
+	      sdata = "true";
+	    else if(sdata == "TRUE")
+	      sdata = "FALSE";
+	    else if(sdata == "FALSE")
+	      sdata = "TRUE";
+	    else if(sdata == "False")
+	      sdata = "True";
+	    else if(sdata == "True")
+	      sdata = "False";
+	    else if(tolower(sdata) == "true")
+	      sdata = "false";
+	    else if(tolower(sdata) == "false")
+	      sdata = "true";
+	  }
 	  Notify(new_key, sdata);
+	}
       }
     }
     
