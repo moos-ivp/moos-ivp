@@ -1,0 +1,8 @@
+
+pEchoVar
+===============================================
+o Added Boolean Switching. For a configuration "Echo = FOO !-> BAR", if a string 
+  representing a Boolean value is published to FOO, a string representing the 
+  opposite Boolean value is published to BAR. The case of the strings is matched.
+
+ 
