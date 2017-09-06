@@ -10,4 +10,9 @@ BHV_AvoidColregsV17
 ===============================================
 o Turned off debugging output inadvertantly left enabled.
 
+
+uFldCollisionDetect Documentation
+===============================================
+o substantial additions and corrections
+
  
