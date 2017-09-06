@@ -26,7 +26,7 @@ Processconfig = ANTLER
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
 
-	Run = uFldCollisionDetect @ NewConsole = false
+  Run = uFldCollisionDetect @ NewConsole = false
 }
 
 #include plug_pShare.moos
@@ -39,29 +39,29 @@ ProcessConfig = uFldCollisionDetect
   AppTick       = 4
   CommsTick     = 4
 
-	encounter_range = 30
-	collision_range = 8
-	near_miss_range = 12
+  encounter_range = 30
+  collision_range = 8
+  near_miss_range = 12
 
-	// condition = COLLISION_DETECT=true
-	condition = DEPLOY_ALL=true
+  // condition = COLLISION_DETECT=true
+  condition = DEPLOY_ALL=true
 
-	// collision_flag = COLLISION_$UP_V1_$UP_V2 = $CPA
-	collision_flag = COLLISION = $CPA
-	near_miss_flag = NEAR_MISS = $CPA
-	encounter_flag = ENCOUNTER = $CPA
+  // collision_flag = COLLISION_$UP_V1_$UP_V2 = $CPA
+  collision_flag = COLLISION = $CPA
+  near_miss_flag = NEAR_MISS = $CPA
+  encounter_flag = ENCOUNTER = $CPA
 
-	near_miss_flag = NEAR_MISS_$UP_V1 = $CPA
-	near_miss_flag = NEAR_MISS_$UP_V2 = $CPA
-	collision_flag = COLLISION_$UP_V1 = $CPA
-	collision_flag = COLLISION_$UP_V2 = $CPA
+  near_miss_flag = NEAR_MISS_$UP_V1 = $CPA
+  near_miss_flag = NEAR_MISS_$UP_V2 = $CPA
+  collision_flag = COLLISION_$UP_V1 = $CPA
+  collision_flag = COLLISION_$UP_V2 = $CPA
 
-	encounter_flag = EVAL_LOITER_REQ_$UP_V1 = id=$IDX, cpa=$CPA, v2=$V2
-	encounter_flag = EVAL_LOITER_REQ_$UP_V2 = id=$IDX, cpa=$CPA, v2=$V1
+  encounter_flag = EVAL_LOITER_REQ_$UP_V1 = id=$IDX, cpa=$CPA, v2=$V2
+  encounter_flag = EVAL_LOITER_REQ_$UP_V2 = id=$IDX, cpa=$CPA, v2=$V1
 	
-	pulse_render   = true
-	pulse_range    = 20
-	pulse_duration = 30
+  pulse_render   = true
+  pulse_range    = 20
+  pulse_duration = 30
 }
 
 //--------------------------------------------------
