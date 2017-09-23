@@ -10,7 +10,7 @@ mkdir -p "${BUILD_ABS_DIR}"
 BUILD_TYPE="Release"
 BUILD_OPTIM="yes"
 CMD_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
-BUILD_BOT_CODE_ONLY="ON"
+BUILD_BOT_CODE_ONLY="OFF"
 
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
