@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BasicContactMgr.h                                    */
 /*    DATE: Feb 24th 2010                                        */
+/*    DATE: Sep 26th 2017 Added Alert Region Support / mikerb    */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -27,8 +28,8 @@
 #include <vector>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
-//#include "MOOSGeodesy.h"
 #include "NodeRecord.h"
+#include "XYPolygon.h"
 #include "PlatformAlertRecord.h"
 
 class BasicContactMgr : public AppCastingMOOSApp
@@ -57,14 +58,21 @@ class BasicContactMgr : public AppCastingMOOSApp
   void updateRanges();
   void postSummaries();
   bool checkForAlerts();
+  bool checkForZoneEvents();
   void checkForCloseInReports();
   void postRadii(bool=true);
-  void postAlert(NodeRecord, std::string);
+  void postAlert(NodeRecord, std::string id);
+  void postEvent(NodeRecord, std::string id, std::string event_type);
 
   double      getAlertRange(const std::string& alert_id) const;
   double      getAlertRangeCPA(const std::string& alert_id) const;
   std::string getAlertRangeColor(const std::string& alert_id) const;
   std::string getAlertRangeCPAColor(const std::string& alert_id) const;
+  XYPolygon   getAlertRegion(const std::string& alert_id) const;
+  std::string getAlertInZonePost(const std::string& alert_id) const;
+  std::string getAlertOutZonePost(const std::string& alert_id) const;
+  std::string getAlertInRangePost(const std::string& alert_id) const {return("");}
+  std::string getAlertOutRangePost(const std::string& alert_id) const {return("");}
 
  protected: // Configuration parameters
 
@@ -76,14 +84,17 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::map<std::string, std::string> m_map_alert_rng_color;
   std::map<std::string, std::string> m_map_alert_rng_cpa_color;
   std::map<std::string, std::string> m_map_alert_contact_type;
-  
+  std::map<std::string, XYPolygon>   m_map_alert_region;
+  std::map<std::string, std::string> m_map_alert_inzone_post;
+  std::map<std::string, std::string> m_map_alert_outzone_post;
   
   // Default values for various alert parameters
   double       m_default_alert_rng;
   double       m_default_alert_rng_cpa;
   std::string  m_default_alert_rng_color;
   std::string  m_default_alert_rng_cpa_color;
-
+  XYPolygon    m_default_alert_region;
+  
   // Other configuration parameters
   std::string  m_ownship;
   bool         m_display_radii;
@@ -98,7 +109,7 @@ class BasicContactMgr : public AppCastingMOOSApp
   double       m_closest_contact_rng_one;
   double       m_closest_contact_rng_two;
   double       m_prev_closest_contact_val;
-  
+
  protected: // State variables
 
   double m_nav_x;
@@ -144,11 +155,3 @@ private:
 };
 
 #endif 
-
-
-
-
-
-
-
-

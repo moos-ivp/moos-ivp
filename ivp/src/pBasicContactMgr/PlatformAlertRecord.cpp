@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PlatformAlertRecord.cpp                              */
 /*    DATE: Feb 27th 2010                                        */
+/*    DATE: Sep 27th 2017 Added inrange inzone components/mikerb */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -30,7 +31,7 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: addAlertID
 //    Step 1: add it to a list of alert_ids
-//    Step 2: set m_par[vname][alert_id] = false for all known vnames
+//    Step 2: set m_par_alerted[vname][alert_id] = false for all known vnames
 
 void PlatformAlertRecord::addAlertID(std::string alertid)
 {
@@ -44,7 +45,14 @@ void PlatformAlertRecord::addAlertID(std::string alertid)
 
   // Step 2: add the column (w/ false values) for all known vehicles
   map<string, map<string, bool> >::iterator p;
-  for(p=m_par.begin(); p!=m_par.end(); p++)
+  // For the alerted matrix
+  for(p=m_par_alerted.begin(); p!=m_par_alerted.end(); p++)
+    p->second[alertid] = false;
+  // For the inrange matrix
+  for(p=m_par_inrange.begin(); p!=m_par_inrange.end(); p++)
+    p->second[alertid] = false;
+  // For the inzone matrix
+  for(p=m_par_inzone.begin(); p!=m_par_inzone.end(); p++)
     p->second[alertid] = false;
 }
 
@@ -58,7 +66,7 @@ void PlatformAlertRecord::addVehicle(string vehicle)
   vehicle = tolower(vehicle);
 
   // First check to see if the row/vehicle already exists.
-  if(m_par.count(vehicle) != 0)
+  if(m_par_alerted.count(vehicle) != 0)
     return;
 
   // Create an "empty row". A map of alertid->false for all known
@@ -71,7 +79,12 @@ void PlatformAlertRecord::addVehicle(string vehicle)
   }
   
   // Then assign this "empty row" to the new given vehicle.
-  m_par[vehicle] = idmap;
+  // For the alerted matrix
+  m_par_alerted[vehicle] = idmap;
+  // For the inrange matrix
+  m_par_inrange[vehicle] = idmap;
+  // For the inzone matrix
+  m_par_inzone[vehicle]  = idmap;
 }
 
 
@@ -82,7 +95,7 @@ void PlatformAlertRecord::addVehicle(string vehicle)
 
 bool PlatformAlertRecord::containsVehicle(const string& vehicle) const
 {
-  return(m_par.count(tolower(vehicle)) == 1);
+  return(m_par_alerted.count(tolower(vehicle)) == 1);
 }
 
 
@@ -91,51 +104,49 @@ bool PlatformAlertRecord::containsVehicle(const string& vehicle) const
 
 bool PlatformAlertRecord::containsAlertID(const string& alertid) const
 {
+  if(alertid == "all_alerts")
+    return(true);
   return(m_alertids.count(tolower(alertid)) == 1);
 }
 
 //---------------------------------------------------------------
-// Procedure: setValue
+// Procedure: setAlertedValue
 //      Note: The vehicles names are case insensitive. They are
 //            converted and regarded thereafter all in lowercase.
 //      Note: If the alertid is unknown, nothing is done.
 //      Note: If the vehicle is unknown, nothing is done.
 
-void PlatformAlertRecord::setValue(string vehicle, string alertid, 
-				   bool bval)
+void PlatformAlertRecord::setAlertedValue(string vehicle, string alertid, 
+					  bool bval)
 {
-  if((alertid != "all_alerts") && !containsAlertID(alertid))
+  if(!containsAlertID(alertid) || !containsVehicle(vehicle))
     return;
-  if(!containsVehicle(vehicle))
-    return;
-
   vehicle = tolower(vehicle);
 
   // If the caller specifies all_allerts, 
-
   if(alertid != "all_alerts")
-    m_par[vehicle][alertid] = bval;
+    m_par_alerted[vehicle][alertid] = bval;
   else {
     map<string, bool>::iterator p;
-    for(p=m_par[vehicle].begin(); p!=m_par[vehicle].end(); p++) 
+    for(p=m_par_alerted[vehicle].begin(); p!=m_par_alerted[vehicle].end(); p++) 
       p->second = bval;
   }
 }
 
 //---------------------------------------------------------------
-// Procedure: getValue
+// Procedure: getAlertedValue
 //            Get the value of a particular element in the matrix
 //            indicating whether the alert has been made (true), or
 //            if the alert is pending (false).
 //      Note: The vehicles names are case insensitive. They are
 //            converted and regarded thereafter all in lowercase.
 
-bool PlatformAlertRecord::getValue(string vehicle, string alertid) const
+bool PlatformAlertRecord::getAlertedValue(string vehicle, string alertid) const
 {
   vehicle = tolower(vehicle);
 
-  map<string, map<string,bool> >::const_iterator p=m_par.find(vehicle);
-  if(p==m_par.end())
+  map<string, map<string,bool> >::const_iterator p=m_par_alerted.find(vehicle);
+  if(p==m_par_alerted.end())
     return(false);
   else {
     map<string, bool> imap = p->second;
@@ -147,19 +158,120 @@ bool PlatformAlertRecord::getValue(string vehicle, string alertid) const
   }
 }
 
+
+//---------------------------------------------------------------
+// Procedure: setInRangeValue
+//      Note: The vehicles names are case insensitive. They are
+//            converted and regarded thereafter all in lowercase.
+//      Note: If the alertid is unknown, nothing is done.
+//      Note: If the vehicle is unknown, nothing is done.
+
+void PlatformAlertRecord::setInRangeValue(string vehicle, string alertid, 
+					  bool bval)
+{
+  if(!containsAlertID(alertid) || !containsVehicle(vehicle))
+    return;
+  vehicle = tolower(vehicle);
+
+  // If the caller specifies all_allerts, 
+  if(alertid != "all_alerts")
+    m_par_inrange[vehicle][alertid] = bval;
+  else { // else set value for all alertids
+    map<string, bool>::iterator p;
+    for(p=m_par_inrange[vehicle].begin(); p!=m_par_inrange[vehicle].end(); p++) 
+      p->second = bval;
+  }
+}
+
+
+//---------------------------------------------------------------
+// Procedure: getInRangeValue
+//            Get the value of a particular element in the matrix
+//            indicating whether the contact is in range.
+//      Note: The vehicles names are case insensitive.
+
+bool PlatformAlertRecord::getInRangeValue(string vehicle, string alertid) const
+{
+  vehicle = tolower(vehicle);
+
+  map<string, map<string,bool> >::const_iterator p=m_par_inrange.find(vehicle);
+  if(p==m_par_inrange.end())
+    return(false);
+  else {
+    map<string, bool> imap = p->second;
+    map<string,bool>::const_iterator q=imap.find(alertid);
+    if(q==imap.end())
+      return(false);
+    else
+      return(q->second);
+  }
+}
+
+
+//---------------------------------------------------------------
+// Procedure: setInZoneValue
+//      Note: The vehicles names are case insensitive. They are
+//            converted and regarded thereafter all in lowercase.
+//      Note: If the alertid is unknown, nothing is done.
+//      Note: If the vehicle is unknown, nothing is done.
+
+void PlatformAlertRecord::setInZoneValue(string vehicle, string alertid, 
+					 bool bval)
+{
+  if(!containsAlertID(alertid) || !containsVehicle(vehicle))
+    return;
+  vehicle = tolower(vehicle);
+
+  // If the caller specifies all_allerts, 
+  if(alertid != "all_alerts")
+    m_par_inzone[vehicle][alertid] = bval;
+  else { // else set value for all alertids
+    map<string, bool>::iterator p;
+    for(p=m_par_inzone[vehicle].begin(); p!=m_par_inzone[vehicle].end(); p++) 
+      p->second = bval;
+  }
+}
+
+
+//---------------------------------------------------------------
+// Procedure: getInZoneValue
+//            Get the value of a particular element in the matrix
+//            indicating whether the contact is in range.
+//      Note: The vehicles names are case insensitive.
+
+bool PlatformAlertRecord::getInZoneValue(string vehicle, string alertid) const
+{
+  vehicle = tolower(vehicle);
+
+  map<string, map<string,bool> >::const_iterator p=m_par_inzone.find(vehicle);
+  if(p==m_par_inzone.end())
+    return(false);
+  else {
+    map<string, bool> imap = p->second;
+    map<string,bool>::const_iterator q=imap.find(alertid);
+    if(q==imap.end())
+      return(false);
+    else
+      return(q->second);
+  }
+}
+
+
 //---------------------------------------------------------------
 // Procedure: getAlertedGroup
 //   Purpose: Get a string report on the alert status for the 
 //            matrix, depending on whether one wants the list of 
 //            pairs for which alerts have been made (alerted=true), 
 //            or the opposite case where alerts are pending.
+//   Returns: (henry,abc)(gilda,xyz)
+
 
 string PlatformAlertRecord::getAlertedGroup(bool alerted) const
 {
   string result;
   
   map<string, map<string, bool> >::const_iterator p1;
-  for(p1=m_par.begin(); p1!=m_par.end(); p1++) {
+  for(p1=m_par_alerted.begin(); p1!=m_par_alerted.end(); p1++) {
     string vehicle = p1->first;
     map<string, bool> imap = p1->second;
     map<string, bool>::const_iterator p2;
@@ -183,7 +295,7 @@ unsigned int PlatformAlertRecord::getAlertedGroupCount(bool alerted) const
   unsigned int count = 0;
   
   map<string, map<string, bool> >::const_iterator p1;
-  for(p1=m_par.begin(); p1!=m_par.end(); p1++) {
+  for(p1=m_par_alerted.begin(); p1!=m_par_alerted.end(); p1++) {
     string vehicle = p1->first;
     map<string, bool> imap = p1->second;
     map<string, bool>::const_iterator p2;
@@ -206,7 +318,7 @@ unsigned int PlatformAlertRecord::getAlertedGroupCount(bool alerted) const
 bool PlatformAlertRecord::alertsPending() const
 {
   map<string, map<string, bool> >::const_iterator p1;
-  for(p1=m_par.begin(); p1!=m_par.end(); p1++) {
+  for(p1=m_par_alerted.begin(); p1!=m_par_alerted.end(); p1++) {
     string vehicle = p1->first;
     map<string, bool> imap = p1->second;
     map<string, bool>::const_iterator p2;
@@ -224,28 +336,74 @@ bool PlatformAlertRecord::alertsPending() const
 
 void PlatformAlertRecord::print() const
 {
-  cout << "rows:" << m_par.size() << ", cols:" << m_alertids.size() << endl;
+  unsigned int idcount = m_alertids.size();
+
+  //=====================================================
+  // Part 1: Print the alerted matrix
+  //=====================================================
+
+  cout << "Alerted Matrix" << endl;
+  cout << "   rows:" << m_par_alerted.size() << ", cols:" << idcount << endl;
   map<string, map<string, bool> >::const_iterator p1;
-  for(p1=m_par.begin(); p1!=m_par.end(); p1++) {
-    string vehicle = p1->first;
+  for(p1=m_par_alerted.begin(); p1!=m_par_alerted.end(); p1++) {
+    string vname = p1->first;
+    cout << "   " << vname << ": ";
+
     map<string, bool> imap = p1->second;
     map<string, bool>::const_iterator p2;
     for(p2=imap.begin(); p2!=imap.end(); p2++) {
       string alertid = p2->first;
       bool bval = p2->second;
 
-      string str = "(" + vehicle + "," + alertid + ")=" + boolToString(bval);
+      string str = "(" + alertid + "=" + boolToString(bval) + ")";
       cout << str << "   ";
     }
     cout << endl;
   }
+
+  //=====================================================
+  // Part 2: Print the inrange matrix
+  //=====================================================
+
+  cout << "InRange Matrix" << endl;
+  cout << "   rows:" << m_par_inrange.size() << ", cols:" << idcount << endl;
+
+  map<string, map<string, bool> >::const_iterator pb;
+  for(pb=m_par_inrange.begin(); pb!=m_par_inrange.end(); pb++) {
+    string vname = pb->first;
+    cout << "   " << vname << ": ";
+    map<string, bool> imap = pb->second;
+    map<string, bool>::const_iterator p2;
+    for(p2=imap.begin(); p2!=imap.end(); p2++) {
+      string alertid = p2->first;
+      bool bval = p2->second;
+
+      string str = "(" + alertid + "=" + boolToString(bval) + ")";
+      cout << str << "  ";
+    }
+    cout << endl;
+  }
+
+  //=====================================================
+  // Part 3: Print the inzone matrix
+  //=====================================================
+
+  cout << "InZone Matrix" << endl;
+  cout << "   rows:" << m_par_inzone.size() << ", cols:" << idcount << endl;
+
+  map<string, map<string, bool> >::const_iterator pc;
+  for(pc=m_par_inzone.begin(); pc!=m_par_inzone.end(); pc++) {
+    string vname = pc->first;
+    cout << "   " << vname << ": ";
+    map<string, bool> imap = pc->second;
+    map<string, bool>::const_iterator p2;
+    for(p2=imap.begin(); p2!=imap.end(); p2++) {
+      string alertid = p2->first;
+      bool bval = p2->second;
+
+      string str = "(" + alertid + "=" + boolToString(bval) + ")";
+      cout << str << "  ";
+    }
+    cout << endl;
+  }
 }
-
-
-
-
-
-
-
-
-
