@@ -18,7 +18,7 @@ ProcessConfig = pLogger
 
   // Log it all!!!!!
   WildCardLogging = true 
-  WildCardOmitPattern = *_STATUS
+  //WildCardOmitPattern = *_STATUS
   WildCardOmitPattern = APPCAST
   WildCardOmitPattern = DB_VARSUMMARY
   WildCardOmitPattern = DB_RWSUMMARY
