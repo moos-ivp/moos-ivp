@@ -147,7 +147,7 @@ ProcessConfig = pMarineViewer
   action = STATION_KEEP_ALL = true
 
   left_context[return_point] = RETURN_$[UP_VNAME_CLOSEST] = true
-  left_context[return_point] = RETURN_UPDATES_$[UP_VNAME_CLOSEST] = points=$(XPOS),$(YPOS)
+  left_context[return_point] = RETURN_UPDATES_$[UP_VNAME_CLOSEST] = points=$[XPOS],$[YPOS]
   left_context[station]      = STATION_KEEP_$[UP_VNAME_CLOSEST] = true
 
   cmd = label=DEPLOY, var=DEPLOY,  sval=true,  receivers=all:$(VNAMES)

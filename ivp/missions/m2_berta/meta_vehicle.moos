@@ -1,3 +1,8 @@
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: $(VNAME).moos
+//-------------------------------------------------
+
 ServerHost = localhost
 ServerPort = $(VPORT)
 Simulator  = true
@@ -24,23 +29,8 @@ Processconfig = ANTLER
   Run = pHostInfo        @ NewConsole = false
   Run = uFldNodeBroker   @ NewConsole = false
   Run = uLoadWatch       @ NewConsole = false
-  Run = pEvalLoiter      @ NewConsole = false
-
-#ifdef VARIATION 1
-  Run = uXMS             @ NewConsole = false ~ uXMS_GPS
-  Run = uXMS             @ NewConsole = false ~ uXMS_BATTERY_MONITOR
-  Run = uXMS             @ NewConsole = false ~ uXMS_COMPASS
-#endif
-
-#ifdef VARIATION 2
-  //Run = uFldMessageHandler @ NewConsole = false
-#ifdef VNAME henry
-  Run = uTimerScript       @ NewConsole = false
-#endif
-#endif
 }
 
-#include plug_pEvalLoiter.moos
 #include plug_uFldNodeBroker.moos
 #include plug_pShare.moos
 #include plug_pHostInfo.moos
@@ -53,16 +43,3 @@ Processconfig = ANTLER
 #include plug_uLoadWatch.moos
 #include plug_pBasicContactMgr.moos
 
-#ifdef VARIATION 1 
-  #include plug_V1_uXMS_GPS.moos
-  #include plug_V1_uXMS_Battery.moos 
-  #include plug_V1_uXMS_Compass.moos
-#endif
-
-#ifdef VARIATION 2
-
-  #include plug_v2_uFldMessageHandler.moos
-#ifdef VNAME henry
-  #include plug_v2_uTimerScript.moos
-#endif
-#endif
