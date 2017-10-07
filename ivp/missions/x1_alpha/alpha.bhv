@@ -30,7 +30,8 @@ Behavior = BHV_Waypoint
 
    cycleflag = WPT_UPDATE=order=reverse
 
-             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 200,-160
+//             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
 
       //points = format=lawnmower, label=foxtrot, x=115, y=-100, height=120, width=100, lane_width=12, rows=north-south, startx=00, starty=0, degs=0
 
@@ -39,18 +40,17 @@ Behavior = BHV_Waypoint
 
 	       // --panx=-90 --pany=70  --zoom=4.4 
 
-    visual_hint = nextpt_color=invisible
-    visual_hints = nextpt_vertex_size=8
-    visual_hints = nextpt_lcolor=invisible
-    visual_hints = vertex_color=invisible, edge_color=invisible
-    visual_hints = vertex_size=5, edge_size=1
-    visual_hints = label_color=invisible
+    //visual_hints = nextpt_vertex_size=8
+    //visual_hints = nextpt_lcolor=invisible
+    //visual_hints = vertex_color=invisible, edge_color=invisible
+    //visual_hints = vertex_size=5, edge_size=1
+    //visual_hints = label_color=invisible
 
-   // visual_hints = nextpt_color=yellow
-   // visual_hints = nextpt_vertex_size=8
-   // visual_hints = nextpt_lcolor=gray70
-   // visual_hints = vertex_color=dodger_blue, edge_color=white
-   // visual_hints = vertex_size=5, edge_size=1
+   visual_hints = nextpt_color=yellow
+   visual_hints = nextpt_vertex_size=8
+   visual_hints = nextpt_lcolor=gray70
+   visual_hints = vertex_color=dodger_blue, edge_color=white
+   visual_hints = vertex_size=5, edge_size=1
 }
 
 //----------------------------------------------

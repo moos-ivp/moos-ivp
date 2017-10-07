@@ -33,21 +33,21 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
-  Run = uMailCounter    @ NewConsole = false
+  Run = pEchoVar        @ NewConsole = false
   //Run = iSay	        @ NewConsole = true
   //Run = uXMS	        @ NewConsole = false
   //Run = uTimerScript    @ NewConsole = false
 }
 
 //------------------------------------------
-// uMailCounter config block
+// pEchoVar config block
 
-ProcessConfig = uMailCounter
+ProcessConfig = pEchoVar
 {
   AppTick   = 4
   CommsTick = 4
 
-  watch_var = STATIONING
+  echo = STATION  !-> BROTHER
 }
 
 //------------------------------------------
@@ -190,12 +190,12 @@ ProcessConfig = pMarineViewer
   procs_font_size      = medium
   appcast_font_size    = small
   
-  scope = STATION
+  scope = BROTHER
 
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
-  button_two = STATION:T # STATION=true
-  button_three = STATION:F # STATION=false
+  button_two = STATION:T # STATION=True
+  button_three = STATION:F # STATION=falSE
 }
 
 //------------------------------------------

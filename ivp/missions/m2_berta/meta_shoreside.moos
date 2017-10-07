@@ -58,19 +58,17 @@ ProcessConfig = uFldShoreBroker
 }
 
 //--------------------------------------------------
-// ufldnodecomms Configuration Block
+// uFldNodeComms Configuration Block
 
 ProcessConfig = uFldNodeComms
 {
-  AppTick       = 2
-  CommsTick     = 2
+  AppTick   = 2
+  CommsTick = 2
 
   comms_range      = 500
   critical_range   = 25
-
   min_msg_interval = 15
   max_msg_length   = 1000
-
   groups           = true
 
   view_node_rpt_pulses = false
