@@ -1,7 +1,5 @@
-ls
 //*******************************************************
 // ShoreSide Configuration File
-//
 
 ServerHost = localhost
 ServerPort = $(SPORT)
@@ -18,7 +16,6 @@ Processconfig = ANTLER
   Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  //Run = pSearchGrid     @ NewConsole = false
   Run = uXMS            @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
 
@@ -26,79 +23,7 @@ Processconfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
-
-  Run = uFldCollisionDetect  @ NewConsole = false
-  //Run = pEvalLoiter     @ NewConsole = false
-
-  //Run = uFunctionVis    @ NewConsole = false
 }
-
-
-//------------------------------------------
-<<<<<<< .mine
-ProcessConfig = uFldCollisionDetect                             
-{                                                               
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-                                                                
-  condition = DEPLOY_ALL = true                                 
-                                                                
-  encounter_flag = ENCOUNTER = $CPA                             
-  collision_flag = COLLISION = $CPA                             
-  near_miss_flag = NEAR_MISS = vname1=$V1,vname2=$V2,cpa=$CPA   
-                                                                
-  encounter_range = 10        // (the default) in meters        
-  near_miss_range = 6         // (the default) in meters        
-  collision_range = 3         // (the default) in meters        
-                                                                
-  pulse_render   = true       // (the default)                  
-  pulse_range    = 20         // (the default) in meters        
-  pulse_duration = 10         // (the default) in seconds       
-}
-
-
-//------------------------------------------
-||||||| .r7806
-=======
-ProcessConfig = uFldCollisionDetect                             
-{                                                               
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-                                                                
-  condition = DEPLOY_ALL = true                                 
-                                                                
-  encounter_flag = ENCOUNTER = $CPA                             
-  collision_flag = COLLISION = $CPA                             
-  near_miss_flag = NEAR_MISS = vname1=$V1,vname2=$V2,cpa=$CPA   
-                                                                
-  near_miss_flag = NEAR_MISS_$UP_V1 = $CPA
-  near_miss_flag = NEAR_MISS_$UP_V2 = $CPA
-  collision_flag = COLLISION_$UP_V1 = $CPA
-  collision_flag = COLLISION_$UP_V2 = $CPA
-
-  encounter_range = 30        
-  near_miss_range = 10        
-  collision_range = 5         
-                                                                
-  pulse_render   = true       
-  pulse_range    = 20         
-  pulse_duration = 10         
-
-  encounter_flag = EVAL_LOITER_REQ_$UP_V1 = id=$IDX, cpa=$CPA, v2=$V2
-  encounter_flag = EVAL_LOITER_REQ_$UP_V2 = id=$IDX, cpa=$CPA, v2=$V1
-}
-
-//------------------------------------------
->>>>>>> .r7869
-// uFunctionVis
-
-ProcessConfig = uFunctionVis
-{ 
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-}
-
-
 
 #include plug_pShare.moos
 
@@ -109,24 +34,6 @@ ProcessConfig = uMAC
 {
   AppTick       = 1
   CommsTick     = 1
-}
-
-//--------------------------------------------------
-// uMACView Configuration Block
-
-ProcessConfig = uMACView
-{
-  AppTick       = 3
-  CommsTick     = 3
-
-  nodes_font_size      = medium
-  procs_font_size      = medium
-  appcast_font_size    = small
-  refresh_mode         = events
-  appcast_color_scheme = beige
-
-  appcast_height     = 30
-  appcast_color_scheme = beige
 }
 
 //--------------------------------------------------
@@ -142,8 +49,8 @@ ProcessConfig = uFldShoreBroker
   //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
   qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
-  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID
-  qbridge  = EVAL_LOITER_REQ
+  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID, UP_LOITER
+  qbridge  = RETURN_UPDATES
 
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
@@ -174,8 +81,8 @@ ProcessConfig = uFldNodeComms
 
 ProcessConfig = pHostInfo
 {
-  AppTick 	= 1
-  CommsTick = 1
+  AppTick    = 1
+  CommsTick  = 1
 }
 
 //--------------------------------------------------
@@ -186,22 +93,9 @@ ProcessConfig = uXMS
   AppTick       = 1
   CommsTick     = 1
 
-  var = APPCAST_REQ
-}
-
-//--------------------------------------------------
-// pSearchGrid Configuration Block
-
-ProcessConfig = pSearchGrid
-{
-  AppTick       = 1
-  CommsTick     = 1
-
-  grid_config = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150}
-  grid_config = cell_size=5
-  grid_config = cell_vars=x:0:y:0:z:0
-  grid_config = cell_min=x:0
-  grid_config = cell_max=x:10
+  var = APPCAST_REQ_ALL, DEPLOY_ALL, RETURN_ALL, STATION_KEEP_ALL
+  var = STATION_KEEP_HENRY, STATION_KEEP_GILDA
+  var = RETURN_UPDATES_HENRY, RETURN_UPDATES_GILDA
 }
 
 //--------------------------------------------------
@@ -218,7 +112,7 @@ ProcessConfig = pLogger
   AsyncLog      = true
   FileTimeStamp = true
 
-	LogAuxSrc     = true
+  LogAuxSrc     = true
 
   // Log it all!!!!!
   WildCardLogging = true 
@@ -247,36 +141,38 @@ ProcessConfig = pMarineViewer
   appcast_viewable = true
   appcast_color_scheme = indigo
 
-  scope = VNAME_CLOSEST
   scope = PSHARE_INPUT_SUMMARY
   scope = NODE_BROKER_PING
   scope = DEPLOY_ALL
-  scope = CONTACT_INFO
-
-  action = PERMUTING = true
-  action = PERMUTING = false
-
-  action = WIND_GUSTS = true
-  action = WIND_GUSTS = false
 
   action = STATION_KEEP_ALL = false
   action = STATION_KEEP_ALL = true
 
-  left_context[surface_point] = RETURN_$[UP_VNAME_CLOSEST] = true
+  left_context[return_point] = RETURN_$[UP_VNAME_CLOSEST] = true
+  left_context[return_point] = RETURN_UPDATES_$[UP_VNAME_CLOSEST] = points=$(XPOS),$(YPOS)
+  left_context[station]      = STATION_KEEP_$[UP_VNAME_CLOSEST] = true
 
   cmd = label=DEPLOY, var=DEPLOY,  sval=true,  receivers=all:$(VNAMES)
-  cmd = label=DEPLOY, var=MOOS_MANUAL_OVERRIDE,  sval=false,  receivers=all
-  cmd = label=DEPLOY, var=AVOID,  sval=true,  receivers=all
-  cmd = label=DEPLOY, var=RETURN,  sval=false,  receivers=all
-  cmd = label=DEPLOY, var=STATION_KEEP,  sval=false,  receivers=all
+  cmd = label=DEPLOY, var=MOOS_MANUAL_OVERRIDE,  sval=false,  receivers=all:$(VNAMES)
+  cmd = label=DEPLOY, var=AVOID,  sval=true,  receivers=all:$(VNAMES)
+  cmd = label=DEPLOY, var=RETURN,  sval=false,  receivers=all:$(VNAMES)
+  cmd = label=DEPLOY, var=STATION_KEEP,  sval=false,  receivers=all:$(VNAMES)
 
-  cmd = label=RETURN, var=RETURN, sval=true, receivers=all
-  cmd = label=RETURN, var=STATION_KEEP, sval=false, receivers=all
+  cmd = label=RETURN, var=RETURN, sval=true, receivers=all:$(VNAMES)
+  cmd = label=RETURN, var=STATION_KEEP, sval=false, receivers=all:$(VNAMES)
 
   cmd = label=PERMUTE, var=UTS_FORWARD,  dval=0,  receivers=shore
 
-  cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all
-	
+  cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all:$(VNAMES)
+
+  cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all:$(VNAMES)
+
+  cmd = label=LOITER-FAST, var=UP_LOITER,  sval=speed=2.8,  receivers=all:$(VNAMES)
+  cmd = label=LOITER-SLOW, var=UP_LOITER,  sval=speed=1.4,  receivers=all:$(VNAMES)
+
+  cmd = label=LOITER-CLOCKWISE-TRUE,  var=UP_LOITER, sval=clockwise=true,  receivers=all:$(VNAMES)
+  cmd = label=LOITER-CLOCKWISE-FALSE, var=UP_LOITER, sval=clockwise=false, receivers=all:$(VNAMES)
+  cmd = label=LOITER-CLOCKWISE-BEST, var=UP_LOITER,  sval=clockwise=false, receivers=all:$(VNAMES)
 	
   button_one   = DEPLOY  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
