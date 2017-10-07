@@ -114,6 +114,8 @@ public:
   double m_brw_hgt;
   bool   m_show_posts;
 
+  unsigned int m_max_label_len;
+  
   bool   m_concede_top;
 };
 #endif

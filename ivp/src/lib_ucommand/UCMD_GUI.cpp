@@ -59,6 +59,8 @@ UCMD_GUI::UCMD_GUI(int wid, int hgt, const char *label, bool show_posts)
   m_cmd_post_count = 0;
 
   m_concede_top = false;
+
+  m_max_label_len = 0;
   
   initWidgets();
   resizeWidgetsShape();
@@ -227,7 +229,8 @@ void UCMD_GUI::initWidgetsFolio()
   m_cmd_buttons.clear();
   m_cmd_labels.clear();
   m_cmd_vnames.clear();
-
+  m_max_label_len = 0;
+  
   // Part 2: Get the set of Vehicle names (they will be in alph order)
   set<string> vehicles = m_cmd_folio.getAllReceivers();
   vehicles.erase("each");
@@ -260,6 +263,9 @@ void UCMD_GUI::initWidgetsFolio()
       m_cmd_labels.push_back(label);
       m_cmd_vnames.push_back(vname);
       cbutton_ctr++;
+
+      if(label.length() > m_max_label_len)
+	m_max_label_len = label.length();
     }
   }
 
@@ -283,6 +289,13 @@ void UCMD_GUI::resizeWidgetsShape()
   int ibut_w = 80;
   int ibut_h = 20;
 
+  int extra = 0;
+  if(m_max_label_len > 7) 
+    extra = 8 * (m_max_label_len - 7);
+  else if(m_max_label_len < 5) 
+    extra = - 8 * (5 - m_max_label_len);
+  ibut_w += extra;
+  
   // ----------------------------------------------------
   // The Label Buttons                       
   // ----------------------------------------------------
