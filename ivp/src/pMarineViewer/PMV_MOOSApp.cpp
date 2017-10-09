@@ -778,7 +778,7 @@ bool PMV_MOOSApp::handleMailClear(string str)
 
 bool PMV_MOOSApp::handleConfigCmd(string cmd)
 {
-  string label, moosvar, sval, dval, receivers;
+  string label, moosvar, sval, dval, receivers, bcolor;
   
   vector<string> svector = parseStringQ(cmd, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
@@ -795,6 +795,8 @@ bool PMV_MOOSApp::handleConfigCmd(string cmd)
       dval = value;
     else if((field == "receivers") && (receivers == ""))
       receivers = value;
+    else if((field == "color") && isColor(value))
+      bcolor = value;
     else
       return(false);
   }
@@ -813,6 +815,9 @@ bool PMV_MOOSApp::handleConfigCmd(string cmd)
   CommandItem item;
   bool ok = true;
   item.setCmdLabel(label);
+
+  if(bcolor != "")
+    item.setCmdColor(bcolor);
 
   if(sval != "")
     ok = ok && item.setCmdPostStr(moosvar, sval);
