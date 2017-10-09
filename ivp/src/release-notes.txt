@@ -16,3 +16,30 @@ uFldCollisionDetect Documentation
 o substantial additions and corrections
 
  
+pMarineViewer
+===============================================
+
+o Added functionality to the Commander pop-up window including
+  auto-adjusting button widths, and the ability to add color to a
+  button to make it easier for an operator to find and hit an
+  emergency button.
+
+o Updated the pMarineViewer documentation to describe commander
+  pop-up window functionality. The commander pop-up window feature
+  was part of the 17.7 release but was not documented at all.
+
+o The m2_berta mission has been updated to include a non-trivial
+  example of the commander pop-up window, to control deploying,
+  returning, station-keeping, vehicle speed, and loiter direction
+  for both vehicles.
+
+pHelmIvP
+===============================================
+o Lazy behavior evaluation (TBD)
+
+
+pBasicContactManager
+===============================================
+o Added zones
+
+
