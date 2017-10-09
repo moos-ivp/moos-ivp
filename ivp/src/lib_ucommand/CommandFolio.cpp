@@ -89,6 +89,20 @@ vector<CommandItem> CommandFolio::getAllCmdItems() const
 }
 
 //----------------------------------------------------------------
+// Procedure: getCmdColor()
+
+string CommandFolio::getCmdColor(string label) const
+{
+  string bcolor;
+  for(unsigned int i=0; i<m_cmd_items.size(); i++) {
+    string icolor = m_cmd_items[i].getCmdColor();
+    if((m_cmd_items[i].getCmdLabel() == label) && (icolor != ""))
+      bcolor = m_cmd_items[i].getCmdColor();
+  }
+  return(bcolor);
+}
+
+//----------------------------------------------------------------
 // Procedure: getAllReceivers()
 
 set<string> CommandFolio::getAllReceivers() const

@@ -96,6 +96,7 @@ public:
   std::vector<Fl_Button*>  m_cmd_buttons;
   std::vector<std::string> m_cmd_labels;
   std::vector<std::string> m_cmd_vnames;
+  std::vector<std::string> m_cmd_bcolor;
 
   std::vector<CommandPost> m_pending_cmd_posts;
 

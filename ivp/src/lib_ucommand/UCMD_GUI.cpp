@@ -26,6 +26,7 @@
 #include <iostream>
 #include "UCMD_GUI.h"
 #include "MBUtils.h"
+#include "ColorPack.h"
 #include "ColorParse.h"
 #include "ACTable.h"
 #include "FL/fl_draw.H"
@@ -257,7 +258,21 @@ void UCMD_GUI::initWidgetsFolio()
       button->copy_label(label.c_str());
       button->clear_visible_focus();
       button->callback((Fl_Callback*)UCMD_GUI::cb_ButtonCmdAction,(void*)cbutton_ctr);
-    
+
+      string bcolor = m_cmd_folio.getCmdColor(label);
+      if(bcolor != "") {
+	ColorPack cpack(bcolor);
+	double red_dbl = cpack.red();
+	double grn_dbl = cpack.grn();
+	double blu_dbl = cpack.blu();
+	int red_int = red_dbl * 255;
+	int grn_int = grn_dbl * 255;
+	int blu_int = blu_dbl * 255;
+	Fl_Color fcolor = fl_rgb_color(red_int, grn_int, blu_int);
+	button->color(fcolor);
+      } 
+	  
+      
       this->add(button);
       m_cmd_buttons.push_back(button);
       m_cmd_labels.push_back(label);

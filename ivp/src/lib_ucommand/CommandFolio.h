@@ -48,6 +48,8 @@ class CommandFolio
 
   bool hasLimitedVNames() const {return(m_limited_vnames);}
 
+  std::string getCmdColor(std::string label) const;
+  
   // Analyzers
   unsigned int size() const {return(m_cmd_items.size());}
 
