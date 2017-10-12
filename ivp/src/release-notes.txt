@@ -40,6 +40,13 @@ o Lazy behavior evaluation (TBD)
 
 pBasicContactManager
 ===============================================
-o Added zones
+o Added the ability to have alerts based on a polygon regions, so
+  missions can be configured to trigger action if a contact of 
+  interest enters a given region. Region criteria can be used 
+  in conjunction with range criteria, or simply on its own.
+o ToDo: ignore contacts from different teams
+        buffer value to avoid thrashing
+
+
 
 
