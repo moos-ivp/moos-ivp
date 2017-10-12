@@ -39,9 +39,6 @@
 #include "XYFormatUtilsPoly.h"
 #include "ACTable.h"
 
-// As of Release 15.4 this is now set in CMake, defaulting to be defined
-// #define USE_UTM 
-
 using namespace std;
 
 //---------------------------------------------------------
@@ -146,7 +143,6 @@ bool BasicContactMgr::Iterate()
   updateRanges();
   postSummaries();
   checkForAlerts();
-  checkForZoneEvents();
   checkForCloseInReports();
   
   if(m_display_radii)
@@ -208,13 +204,6 @@ bool BasicContactMgr::OnStartUp()
 
     else if(param == "display_radii")
       setBooleanOnString(m_display_radii, value);
-    else if(param == "default_alert_region") {
-      XYPolygon region = string2Poly(value);
-      if(region.is_convex())
-	m_default_alert_region = region;
-      else 
-	reportConfigWarning("Non-convex default alert region. ");
-    }
     else if(param == "contact_local_coords") {
       string lval = tolower(value);
       if((lval== "verbatim") || (lval=="lazy_lat_lon") || (lval=="force_lat_lon"))
@@ -343,7 +332,7 @@ void BasicContactMgr::registerVariables()
 //            SPD=2.00,HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=DRIVE
 
-void BasicContactMgr::handleMailNodeReport(const string& report)
+void BasicContactMgr::handleMailNodeReport(string report)
 {
   NodeRecord new_node_record = string2NodeRecord(report, true);
 
@@ -406,6 +395,10 @@ void BasicContactMgr::handleMailNodeReport(const string& report)
     m_map_node_ranges_cpa[vname]    = 0;
 
     m_par.addVehicle(vname);
+
+    if(m_alert_verbose) 
+      Notify("ALERT_VERBOSE", "new_contact="+vname);
+
   }
 }
 
@@ -419,7 +412,7 @@ void BasicContactMgr::handleMailNodeReport(const string& report)
 //            needs to post another alert when or if the alert
 //            criteria is met again.
 
-void BasicContactMgr::handleMailResolved(const string& str)
+void BasicContactMgr::handleMailResolved(string str)
 {
   string resolution = tolower(str);
   string vehicle = biteStringX(resolution, ',');
@@ -456,7 +449,7 @@ void BasicContactMgr::handleMailResolved(const string& str)
 //---------------------------------------------------------
 // Procedure: handleMailDisplayRadii
 
-void BasicContactMgr::handleMailDisplayRadii(const string& value)
+void BasicContactMgr::handleMailDisplayRadii(string value)
 {
   bool ok = setBooleanOnString(m_display_radii, value);
   if(ok) {
@@ -480,7 +473,7 @@ void BasicContactMgr::handleMailDisplayRadii(const string& value)
 //            alert_range=80, cpa_range=95
 
                      
-void BasicContactMgr::handleMailAlertRequest(const string& value)
+void BasicContactMgr::handleMailAlertRequest(string value)
 {
   bool ok = handleConfigAlert(value);
   if(!ok)
@@ -490,7 +483,7 @@ void BasicContactMgr::handleMailAlertRequest(const string& value)
 //---------------------------------------------------------
 // Procedure: handleConfigAlert
 
-bool BasicContactMgr::handleConfigAlert(const string& alert_str)
+bool BasicContactMgr::handleConfigAlert(string alert_str)
 {
   // Part 1: Get the alert id. Allow for an "empty" alert, but call it "no_id".
   string alert_id = tokStringParse(alert_str, "id", ',', '=');
@@ -498,6 +491,8 @@ bool BasicContactMgr::handleConfigAlert(const string& alert_str)
     alert_id = "no_id";
   m_par.addAlertID(alert_id);
 
+  string var, pattern;
+  
   vector<string> svector = parseStringQ(alert_str, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
@@ -508,45 +503,42 @@ bool BasicContactMgr::handleConfigAlert(const string& alert_str)
     if(isQuoted(right))
       right = stripQuotes(right);
 
-    if(left == "var")
-      m_map_alert_varname[alert_id] = right;
-    else if((left == "val") || (left == "pattern"))
-      m_map_alert_pattern[alert_id] = right;
-    else if((left == "inzone_post"))
-      m_map_alert_inzone_post[alert_id] = right;
-    else if((left == "outzone_post"))
-      m_map_alert_outzone_post[alert_id] = right;
-    else if(left == "region") {
-      if((tolower(right) == "default") && m_default_alert_region.is_convex()) 
-	m_map_alert_region[alert_id] = m_default_alert_region;
-      else {
-	XYPolygon poly = string2Poly(right);
-	if(poly.is_convex())
-	  m_map_alert_region[alert_id] = poly;
-	else {
-	  reportConfigWarning("Improper/non-convext alert region " + right);
-	  return(false);
-	}
-      }
+    bool ok = false;
+    
+    if(left == "var") {
+      var = right;
+      ok = true;
     }
-    else if((left == "alert_range") && isNumber(right) && (dval >= 0))
-      m_map_alert_rng[alert_id] = dval;
-    else if((left == "cpa_range") && isNumber(right) && (dval >= 0))
-      m_map_alert_rng_cpa[alert_id] = dval;
+    else if((left == "val") || (left == "pattern")) {
+      pattern = right;
+      ok = true;
+    }
+    else if((left == "on_flag")) 
+      ok = m_map_alerts[alert_id].addAlertOnFlag(right);
+    else if((left == "off_flag"))
+      ok = m_map_alerts[alert_id].addAlertOffFlag(right);
+    else if(left == "region")
+      ok = m_map_alerts[alert_id].setAlertRegion(right);
+    else if((left == "alert_range") && isNumber(right))
+      ok = m_map_alerts[alert_id].setAlertRange(dval);
     else if((left == "alert_range_color") && isColor(right))
-      m_map_alert_rng_color[alert_id] = right;
+      ok = m_map_alerts[alert_id].setAlertRangeColor(right);
+    else if((left == "cpa_range") && isNumber(right))
+      ok = m_map_alerts[alert_id].setAlertRangeFar(dval);
     else if((left == "cpa_range_color") && isColor(right))
-      m_map_alert_rng_cpa_color[alert_id] = right;
-    else if(left == "contact_type")
-      m_map_alert_contact_type[alert_id] = right;
-    else {
-      if(left != "id") {
-	reportConfigWarning("unhandled alert config component: " + left);
-	return(false);
-      }
+      ok = m_map_alerts[alert_id].setAlertRangeFarColor(right);
+    
+    if(!ok && (left != "id")) {
+      reportConfigWarning("unhandled alert config component: " + left);
+      return(false);
     }
   }
 
+  // For backward compatibility sake we allow the user to specify an on-flag
+  // with separate var,pattern fields.  
+  if((var != "") && (pattern != ""))
+    m_map_alerts[alert_id].addAlertOnFlag(var + "=" + pattern);
+  
   return(true);
 }
 
@@ -645,193 +637,61 @@ void BasicContactMgr::postSummaries()
 
 //---------------------------------------------------------
 // Procedure: checkForAlerts
+//   Purpose: Check each contact/alert pair and handle if the
+//            alert condition changes.
 
-bool BasicContactMgr::checkForAlerts()
+void BasicContactMgr::checkForAlerts()
 {
-  bool new_alerts = false;
-
   //==============================================================
   // For each contact, check all alerts
   //==============================================================
   map<string, NodeRecord>::iterator p;
   for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string     contact_name  = p->first;
-    NodeRecord node_record   = p->second;
-    string     contact_type  = tolower(node_record.getType());
+    string     contact  = p->first;
+    NodeRecord record   = p->second;
 
-    // Skip this contact if age of node record exceeds max age
-    double age = m_curr_time - node_record.getTimeStamp();
-    if(age > m_contact_max_age)
-      continue;
-
-    double  contact_range_abs = m_map_node_ranges_actual[contact_name]; // new
-    double  contact_range_cpa = m_map_node_ranges_cpa[contact_name];    // new
-    
     //==============================================================
     // For each alert_id, check if alert should be posted for this contact
     //==============================================================
-    map<string,string>::iterator q;
-    for(q=m_map_alert_varname.begin(); q!=m_map_alert_varname.end(); q++) {
-      string alert_id = q->first;
+    map<string, CMAlert>::iterator q;
+    for(q=m_map_alerts.begin(); q!=m_map_alerts.end(); q++) {
+      string id = q->first;
 
-      // Skip if alert already posted for this contact and alert_id
-      bool already_alerted = m_par.getAlertedValue(contact_name, alert_id);
-      if(already_alerted)
-	continue;
+      bool alert_applies = checkAlertApplies(contact, id);
 
-      // Skip if this alertid has contact type and doesn't mach vehicle type
-      string alert_contact_type = m_map_alert_contact_type[alert_id];
-      if((alert_contact_type != "") && (alert_contact_type != contact_type))
-	continue;
-
-      // Skip if this alertid has valid convex region and contact not in region
-      if(m_map_alert_region.count(alert_id)) {
-	double cnx = node_record.getX();
-	double cny = node_record.getY();
-	XYPolygon region = m_map_alert_region[alert_id];
-	if(region.is_convex() && !region.contains(cnx, cny))
-	  continue;
+      // If alert applies and currently not alerted, handle
+      string transition;
+      if(alert_applies && !m_par.getAlertedValue(contact, id)) {
+        postOnAlerts(record, id);
+	m_par.setAlertedValue(contact, id, true);
+	transition = "off-->alerted";
+	m_map_node_alerts_total[contact]++;
+	m_map_node_alerts_active[contact]++;
       }
-
-      // Apply the range circles!!!
-      // Skip if absolute range beyond outer range circle (alert_range_cpa)
-      double alert_range_cpa = getAlertRangeCPA(alert_id);
-      if(contact_range_abs > alert_range_cpa)
-	continue;
-      // Skip if absolute range within outer range circle (alert_range_cpa)
-      // and beyond inner range circle (alert_range), but contact's projected
-      // cpa range is greater than the inner range circle (alert_range).
-      double alert_range = getAlertRange(alert_id);
-      if((contact_range_abs > alert_range) && (contact_range_cpa > alert_range))
-	continue;
-      
-      // NEW ALERT SHOULD BE POSTED (survived all the skip conditions)
-      new_alerts = true;
-      postAlert(node_record, alert_id);
-	
-      m_par.setAlertedValue(contact_name, alert_id, true);
-      
-      if(m_alert_verbose) {
+      else if(!alert_applies && m_par.getAlertedValue(contact, id)) {
+        postOffAlerts(record, id);
+	m_par.setAlertedValue(contact, id, false);
+	transition = "alerted-->off";
+      }
+            
+      if((m_alert_verbose) && (transition != "")) {
 	string mvar = "ALERT_VERBOSE";
-	string mval = "contact=" + contact_name;
-	mval += ",config_alert_range=" + doubleToString(alert_range,1);
-	mval += ",config_alert_range_cpa=" + doubleToString(alert_range_cpa,1);
+	string mval = "contact=" + contact;
+	mval += ",alert_id=" + id;
+	mval += "," + transition; 
+	mval += ", alerted=" + boolToString(m_par.getAlertedValue(contact,id));
+	//mval += ",alert_range=" + doubleToString(alert_range,1);
+	//mval += ",alert_range_cpa=" + doubleToString(alert_range_cpa,1);
 	
-	double range_actual = m_map_node_ranges_actual[contact_name];
-	double range_extrap = m_map_node_ranges_actual[contact_name];
-	double range_cpa = m_map_node_ranges_cpa[contact_name];
-	mval += ",range_actual=" + doubleToString(range_actual,1);	
-	mval += ",range_extrap=" + doubleToString(range_extrap,1);
-	mval += ",range_cpa=" + doubleToString(range_cpa,1);
+	//double range_actual = m_map_node_ranges_actual[contact];
+	//double range_cpa = m_map_node_ranges_cpa[contact];
+	//mval += ",range_actual=" + doubleToString(range_actual,1);	
+	//mval += ",range_cpa=" + doubleToString(range_cpa,1);
 	
-	Notify(mvar, mval);
-      }
-      
-      m_map_node_alerts_total[contact_name]++;
-      m_map_node_alerts_active[contact_name]++;
-    }
-  }
-
-  return(new_alerts);
-}
-
-//---------------------------------------------------------
-// Procedure: checkForZoneEvents
-
-bool BasicContactMgr::checkForZoneEvents()
-{
-  bool new_events = false;
-
-  //==============================================================
-  // For each contact, check all events
-  //==============================================================
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string     contact_name  = p->first;
-    NodeRecord node_record   = p->second;
-    string     contact_type  = tolower(node_record.getType());
-
-    // Skip this contact if age of node record exceeds max age
-    double age = m_curr_time - node_record.getTimeStamp();
-    if(age > m_contact_max_age)
-      continue;
-
-    //==============================================================
-    // For each alert_id, check if zone event should be posted for this contact
-    //==============================================================
-    map<string,string>::iterator q;
-    for(q=m_map_alert_varname.begin(); q!=m_map_alert_varname.end(); q++) {
-      string alert_id = q->first;
-
-      // Skip if no convex region is associated with this alertid
-      bool has_region = true;
-      if(m_map_alert_region.count(alert_id) == 0)
-	has_region = false;
-      if(m_map_alert_region[alert_id].is_convex() == false)
-	has_region = false;
-      if(!has_region)
-	continue;
-
-      // Skip if there are no inzone or outzone postings for this alertid
-      bool posting_exists = false;
-      if(m_map_alert_inzone_post.count(alert_id) &&
-	 (m_map_alert_inzone_post[alert_id] != ""))
-	posting_exists = true;
-      if(m_map_alert_outzone_post.count(alert_id) &&
-	 (m_map_alert_outzone_post[alert_id] != ""))
-	posting_exists = true;
-      if(!posting_exists)
-	continue;
-
-      // Skip if this alertid has contact type and doesn't mach vehicle type
-      string alert_contact_type = m_map_alert_contact_type[alert_id];
-      if((alert_contact_type != "") && (alert_contact_type != contact_type))
-	continue;
-
-      // check if this contact is in the alert region polygon
-      bool contact_in_region = false;
-      double cnx = node_record.getX();
-      double cny = node_record.getY();
-      XYPolygon region = m_map_alert_region[alert_id];
-      if(region.is_convex() && region.contains(cnx, cny))
-	contact_in_region = true;
-
-      bool post_in_zone = false;
-      bool post_out_zone = false;
-      string event;
-      
-      // Determine if this contact is already regarded as being in-zone
-      bool prev_in_zone = m_par.getInZoneValue(contact_name, alert_id);
-      if(!prev_in_zone) {
-	if(contact_in_region) {
-	  post_in_zone = true;
-	  m_par.setInZoneValue(contact_name, alert_id, true);
-	  event = "inzone";
-	  new_events = true;
-	  postEvent(node_record, alert_id, "inzone");
-	}
-      }
-      else {
-	if(!contact_in_region) {
-	  post_out_zone = true;
-	  m_par.setInZoneValue(contact_name, alert_id, false);
-	  event = "outzone";
-	  new_events = true;
-	  postEvent(node_record, alert_id, "outzone");
-	}
-      }
-
-      if(m_alert_verbose && (event != "")) {
-	string mvar = "ALERT_VERBOSE";
-	string mval = "contact=" + contact_name;
-	mval += ",alertid=" + alert_id;
-	mval += ",event=" + event;
 	Notify(mvar, mval);
       }
     }
   }
-
-  return(new_events);
 }
 
 //---------------------------------------------------------
@@ -887,10 +747,39 @@ void BasicContactMgr::checkForCloseInReports()
 }
 
 //----------------------------------------------------------------
+// Procedure: postOnAlerts
+
+void BasicContactMgr::postOnAlerts(NodeRecord record, string id)
+{
+  if(!knownAlert(id))
+    return;
+
+  vector<VarDataPair> pairs = getAlertOnFlags(id);
+  for(unsigned int i=0; i<pairs.size(); i++)
+    postAlert(record, pairs[i]);
+  
+}
+
+//----------------------------------------------------------------
+// Procedure: postOffAlerts
+
+void BasicContactMgr::postOffAlerts(NodeRecord record, string id)
+{
+  if(!knownAlert(id))
+    return;
+
+  vector<VarDataPair> pairs = getAlertOffFlags(id);
+  for(unsigned int i=0; i<pairs.size(); i++)
+    postAlert(record, pairs[i]);
+  
+}
+
+//----------------------------------------------------------------
 // Procedure: postAlert
 
-void BasicContactMgr::postAlert(NodeRecord record, string alert_id)
+void BasicContactMgr::postAlert(NodeRecord record, VarDataPair pair)
 {
+  // Step 1: Get all potential macro info
   string x_str    = record.getStringValue("x");
   string y_str    = record.getStringValue("y");
   string lat_str  = record.getStringValue("lat");
@@ -901,9 +790,9 @@ void BasicContactMgr::postAlert(NodeRecord record, string alert_id)
   string time_str = record.getStringValue("time");
   string name_str = record.getName();
   string type_str = record.getType();
-  
-  string var = m_map_alert_varname[alert_id];
-  string msg = m_map_alert_pattern[alert_id];
+
+  // Step 2: Get var to post, and expand macros if any
+  string var = pair.get_var();
 
   var = findReplace(var, "$[X]", x_str);
   var = findReplace(var, "$[Y]", y_str);
@@ -917,6 +806,18 @@ void BasicContactMgr::postAlert(NodeRecord record, string alert_id)
   var = findReplace(var, "$[UTIME]", time_str);
   var = findReplace(var, "%[VNAME]", tolower(name_str));
   var = findReplace(var, "%[VTYPE]", tolower(type_str));
+
+  // Step 3: If posting is numerical just do it and be done!
+  if(!pair.is_string()) {
+    double dval = pair.get_ddata();
+    Notify(var, dval);
+    reportEvent(var + "=" + doubleToStringX(dval, 3));
+    return;
+  }
+
+  // Step 4: Otherwise handle a string posting with macros
+  
+  string msg = pair.get_sdata();
   
   msg = findReplace(msg, "$[X]", x_str);
   msg = findReplace(msg, "$[Y]", y_str);
@@ -933,66 +834,6 @@ void BasicContactMgr::postAlert(NodeRecord record, string alert_id)
 
   Notify(var, msg);
   reportEvent(var + "=" + msg);
-}
-
-//----------------------------------------------------------------
-// Procedure: postEvent
-
-void BasicContactMgr::postEvent(NodeRecord record, string alert_id, string etype)
-{
-  string posting;
-  if(etype == "inzone")
-    posting = getAlertInZonePost(alert_id);
-  if(etype == "outzone")
-    posting = getAlertOutZonePost(alert_id);
-  if(etype == "inrange")
-    posting = getAlertInRangePost(alert_id);
-  if(etype == "outrange")
-    posting = getAlertOutRangePost(alert_id);
-  if(posting == "")
-    return;
-  
-  string x_str    = record.getStringValue("x");
-  string y_str    = record.getStringValue("y");
-  string lat_str  = record.getStringValue("lat");
-  string lon_str  = record.getStringValue("lon");
-  string spd_str  = record.getStringValue("speed");
-  string hdg_str  = record.getStringValue("heading");
-  string dep_str  = record.getStringValue("depth");
-  string time_str = record.getStringValue("time");
-  string name_str = record.getName();
-  string type_str = record.getType();
-  
-  string var = m_map_alert_varname[alert_id];
-
-  var = findReplace(var, "$[X]", x_str);
-  var = findReplace(var, "$[Y]", y_str);
-  var = findReplace(var, "$[LAT]", lat_str);
-  var = findReplace(var, "$[LON]", lon_str);
-  var = findReplace(var, "$[SPD}", spd_str);
-  var = findReplace(var, "$[HDG]", hdg_str);
-  var = findReplace(var, "$[DEP]", dep_str);
-  var = findReplace(var, "$[VNAME]", name_str);
-  var = findReplace(var, "$[VTYPE]", type_str);
-  var = findReplace(var, "$[UTIME]", time_str);
-  var = findReplace(var, "%[VNAME]", tolower(name_str));
-  var = findReplace(var, "%[VTYPE]", tolower(type_str));
-  
-  posting = findReplace(posting, "$[X]", x_str);
-  posting = findReplace(posting, "$[Y]", y_str);
-  posting = findReplace(posting, "$[LAT]", lat_str);
-  posting = findReplace(posting, "$[LON]", lon_str);
-  posting = findReplace(posting, "$[SPD}", spd_str);
-  posting = findReplace(posting, "$[HDG]", hdg_str);
-  posting = findReplace(posting, "$[DEP]", dep_str);
-  posting = findReplace(posting, "$[VNAME]", name_str);
-  posting = findReplace(posting, "$[VTYPE]", type_str);
-  posting = findReplace(posting, "$[UTIME]", time_str);
-  posting = findReplace(posting, "%[VNAME]", tolower(name_str));
-  posting = findReplace(posting, "%[VTYPE]", tolower(type_str));
-
-  Notify(var, posting);
-  reportEvent(var + "=" + posting);
 }
 
 //---------------------------------------------------------
@@ -1051,8 +892,8 @@ void BasicContactMgr::updateRanges()
 
 void BasicContactMgr::postRadii(bool active)
 {
-  map<string, double>::const_iterator p;
-  for(p=m_map_alert_rng.begin(); p!=m_map_alert_rng.end(); p++) {
+  map<string, CMAlert>::const_iterator p;
+  for(p=m_map_alerts.begin(); p!=m_map_alerts.end(); p++) {
     string alert_id = p->first;
     double alert_range = getAlertRange(alert_id);
     string alert_range_color = getAlertRangeColor(alert_id);
@@ -1131,40 +972,44 @@ void BasicContactMgr::postRadii(bool active)
 
 bool BasicContactMgr::buildReport()
 {
-  string alert_region_str = "n/a";
-  if(m_default_alert_region.is_convex())
-    alert_region_str = m_default_alert_region.get_spec();
-
-  string alert_count = uintToString(m_map_alert_varname.size());
+  string alert_count = uintToString(m_map_alerts.size());
   m_msgs << "DisplayRadii:              " << boolToString(m_display_radii) << endl;
   m_msgs << "Deriving X/Y from Lat/Lon: " << boolToString(m_use_geodesy)   << endl;
-  m_msgs << "Alert Region Set:          " << alert_region_str   << endl << endl;
   m_msgs << "Alert Configurations (" << alert_count << "):"  << endl;
   m_msgs << "---------------------" << endl;
-  map<string,string>::iterator p;
-  for(p=m_map_alert_varname.begin(); p!=m_map_alert_varname.end(); p++) {
+  map<string, CMAlert>::iterator p;
+  for(p=m_map_alerts.begin(); p!=m_map_alerts.end(); p++) {
     string alert_id = p->first;
-    string alert_var = p->second;
-    string alert_pattern = m_map_alert_pattern[alert_id];
     string alert_rng     = doubleToStringX(getAlertRange(alert_id));
     string alert_rng_cpa = doubleToStringX(getAlertRangeCPA(alert_id));
     string alert_rng_color  = getAlertRangeColor(alert_id);
     string alert_rng_cpa_color = getAlertRangeCPAColor(alert_id);
     string alert_region  = "n/a";
-    string alert_inzone_post = getAlertInZonePost(alert_id);
-    string alert_outzone_post = getAlertOutZonePost(alert_id);
     XYPolygon region = getAlertRegion(alert_id);
     if(region.is_convex())
       alert_region = region.get_spec();
-
     m_msgs << "Alert ID = " << alert_id         << endl;
-    m_msgs << "  VARNAME   = " << alert_var     << endl;
-    m_msgs << "  PATTERN   = " << alert_pattern << endl;
     m_msgs << "  RANGE     = " << alert_rng     << ", " << alert_rng_color     << endl;
     m_msgs << "  CPA_RANGE = " << alert_rng_cpa << ", " << alert_rng_cpa_color << endl;
     m_msgs << "  ALERT_REG = " << alert_region << endl;
-    m_msgs << "  INZ_POST  = " << alert_inzone_post << endl;
-    m_msgs << "  OUTZ_POST = " << alert_outzone_post << endl;
+    vector<VarDataPair> pairs = getAlertOnFlags(alert_id);
+    for(unsigned int i=0; i<pairs.size(); i++) {
+      VarDataPair pair = pairs[i];
+      string var = pair.get_var();
+      string val = pair.get_sdata();
+      if(!pair.is_string())
+	val = doubleToStringX(pair.get_ddata(), 3);
+      m_msgs << "  ON_FLAG = " << var << "=" << val << endl;
+    }
+    vector<VarDataPair> xpairs = getAlertOffFlags(alert_id);
+    for(unsigned int i=0; i<xpairs.size(); i++) {
+      VarDataPair pair = xpairs[i];
+      string var = pair.get_var();
+      string val = pair.get_sdata();
+      if(!pair.is_string())
+	val = doubleToStringX(pair.get_ddata(), 3);
+      m_msgs << "  OFF_FLAG = " << var << "=" << val << endl;
+    }
   }
   m_msgs << endl;
   m_msgs << "Alert Status Summary: " << endl;
@@ -1198,18 +1043,87 @@ bool BasicContactMgr::buildReport()
 }
 
 //---------------------------------------------------------
+// Procedure: checkAlertApplies()
+
+bool BasicContactMgr::checkAlertApplies(string contact, string id) 
+{
+  //=========================================================
+  // Part 1: Sanity checks
+  //=========================================================
+
+  // Return false immediately if alert or contact are unknown
+  if(!knownAlert(id))
+    return(false);
+
+  if(m_map_node_records.count(contact) == 0)
+    return(false);
+
+  // Return false immediately if age of node record exceeds max age
+  NodeRecord record = m_map_node_records.at(contact);
+  double age = m_curr_time - record.getTimeStamp();
+  if(age > m_contact_max_age)
+    return(false);
+
+  //=========================================================
+  // Part 2: Checks based on range of ownship to contact
+  //=========================================================
+
+  double alert_range = getAlertRange(id);
+  double alert_range_cpa = getAlertRangeCPA(id);
+
+  // If alert range is zero, this is regarded as having the range
+  // criteria OFF. Likely this alert depends only on the region.
+
+  if(alert_range > 0) {
+    double contact_range_abs = m_map_node_ranges_actual[contact]; 
+    double contact_range_cpa = m_map_node_ranges_cpa[contact];    
+    
+    if(contact_range_abs > alert_range_cpa)
+      return(false);
+    
+    if((contact_range_abs > alert_range) && (contact_range_cpa > alert_range))
+      return(false);
+  }
+  
+  //=========================================================
+  // Part 3: Checks based on Alert Region
+  //=========================================================
+  
+  // Skip if this alertid has valid convex region and contact not in region
+  if(hasAlertRegion(id)) {
+    double cnx = record.getX();
+    double cny = record.getY();
+    XYPolygon region = getAlertRegion(id);
+    if(region.is_convex() && !region.contains(cnx, cny))
+      return(false);
+  }
+
+  // If none of the above no-apply conditions hold, return true!
+  return(true);  
+}
+
+//---------------------------------------------------------
+// Procedure: knownAlert()
+
+bool BasicContactMgr::knownAlert(string alert_id) const
+{
+  map<string, CMAlert>::const_iterator p;
+  p = m_map_alerts.find(alert_id);
+  if(p == m_map_alerts.end())
+    return(false);
+  return(true);
+}
+
+//---------------------------------------------------------
 // Procedure: getAlertRange
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
-double BasicContactMgr::getAlertRange(const string& alert_id) const
+double BasicContactMgr::getAlertRange(string alert_id) const
 {
-  map<string, double>::const_iterator p;
-  p = m_map_alert_rng.find(alert_id);
-  if(p == m_map_alert_rng.end())
+  if(!knownAlert(alert_id))
     return(m_default_alert_rng);
-  else
-    return(p->second);
+  return(m_map_alerts.at(alert_id).getAlertRange());
 }
 
 //---------------------------------------------------------
@@ -1217,14 +1131,11 @@ double BasicContactMgr::getAlertRange(const string& alert_id) const
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
-double BasicContactMgr::getAlertRangeCPA(const string& alert_id) const
+double BasicContactMgr::getAlertRangeCPA(string alert_id) const
 {
-  map<string, double>::const_iterator p;
-  p = m_map_alert_rng_cpa.find(alert_id);
-  if(p == m_map_alert_rng_cpa.end())
+  if(!knownAlert(alert_id))
     return(m_default_alert_rng_cpa);
-  else
-    return(p->second);
+  return(m_map_alerts.at(alert_id).getAlertRangeFar());
 }
 
 //---------------------------------------------------------
@@ -1232,14 +1143,11 @@ double BasicContactMgr::getAlertRangeCPA(const string& alert_id) const
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
-string BasicContactMgr::getAlertRangeColor(const string& alert_id) const
+string BasicContactMgr::getAlertRangeColor(string alert_id) const
 {
-  map<string, string>::const_iterator p;
-  p = m_map_alert_rng_color.find(alert_id);
-  if(p == m_map_alert_rng_color.end())
+  if(!knownAlert(alert_id))
     return(m_default_alert_rng_color);
-  else
-    return(p->second);
+  return(m_map_alerts.at(alert_id).getAlertRangeColor());
 }
 
 //---------------------------------------------------------
@@ -1247,63 +1155,80 @@ string BasicContactMgr::getAlertRangeColor(const string& alert_id) const
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
-string BasicContactMgr::getAlertRangeCPAColor(const string& alert_id) const
+string BasicContactMgr::getAlertRangeCPAColor(string alert_id) const
 {
-  map<string, string>::const_iterator p;
-  p = m_map_alert_rng_cpa_color.find(alert_id);
-  if(p == m_map_alert_rng_cpa_color.end())
+  if(!knownAlert(alert_id))
     return(m_default_alert_rng_cpa_color);
-  else
-    return(p->second);
+  return(m_map_alerts.at(alert_id).getAlertRangeFarColor());
 }
 
+
+//---------------------------------------------------------
+// Procedure: hasAlertRegion
+//      Note: Use this method to access map, not map directly. This 
+//            allows intelligent defaults to be applied if missing key.
+
+bool BasicContactMgr::hasAlertRegion(string alert_id) const
+{
+  if(!knownAlert(alert_id)) {
+    return(false);
+  }
+  return(m_map_alerts.at(alert_id).hasAlertRegion());
+}
 
 //---------------------------------------------------------
 // Procedure: getAlertRegion
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
-XYPolygon BasicContactMgr::getAlertRegion(const string& alert_id) const
+XYPolygon BasicContactMgr::getAlertRegion(string alert_id) const
 {
-  map<string, XYPolygon>::const_iterator p;
-  p = m_map_alert_region.find(alert_id);
-  if(p == m_map_alert_region.end()) {
+  if(!knownAlert(alert_id)) {
     XYPolygon null_poly;
     return(null_poly);
   }
-  else
-    return(p->second);
+  return(m_map_alerts.at(alert_id).getAlertRegion());
 }
 
 //---------------------------------------------------------
-// Procedure: getAlertInZonePost
-//      Note: Use this method to access map, not map directly. This 
-//            allows intelligent defaults to be applied if missing key.
+// Procedure: hasAlertOnFlag
 
-string BasicContactMgr::getAlertInZonePost(const string& alert_id) const
+bool BasicContactMgr::hasAlertOnFlag(string alert_id) const
 {
-  map<string, string>::const_iterator p;
-  p = m_map_alert_inzone_post.find(alert_id);
-  if(p == m_map_alert_inzone_post.end()) {
-    return("");
-  }
-  else
-    return(p->second);
+  if(!knownAlert(alert_id))
+    return(false);
+  return(m_map_alerts.at(alert_id).hasAlertOnFlag());
 }
 
 //---------------------------------------------------------
-// Procedure: getAlertOutZonePost
-//      Note: Use this method to access map, not map directly. This 
-//            allows intelligent defaults to be applied if missing key.
+// Procedure: hasAlertOffFlag
 
-string BasicContactMgr::getAlertOutZonePost(const string& alert_id) const
+bool BasicContactMgr::hasAlertOffFlag(string alert_id) const
 {
-  map<string, string>::const_iterator p;
-  p = m_map_alert_outzone_post.find(alert_id);
-  if(p == m_map_alert_outzone_post.end()) {
-    return("");
-  }
-  else
-    return(p->second);
+  if(!knownAlert(alert_id))
+    return(false);
+  return(m_map_alerts.at(alert_id).hasAlertOffFlag());
+}
+
+//---------------------------------------------------------
+// Procedure: getAlertOnFlags
+
+vector<VarDataPair> BasicContactMgr::getAlertOnFlags(string alert_id) const
+{
+  vector<VarDataPair> empty;
+  if(!knownAlert(alert_id))
+    return(empty);
+  return(m_map_alerts.at(alert_id).getAlertOnFlags());
+}
+
+//---------------------------------------------------------
+// Procedure: getAlertOffFlags
+
+vector<VarDataPair> BasicContactMgr::getAlertOffFlags(string alert_id) const
+{
+  vector<VarDataPair> empty;
+  if(!knownAlert(alert_id))
+    return(empty);
+  return(m_map_alerts.at(alert_id).getAlertOffFlags());
 }
 

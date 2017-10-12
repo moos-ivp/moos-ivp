@@ -37,17 +37,11 @@ class PlatformAlertRecord
   void addAlertID(std::string str);
   void addVehicle(std::string str);
 
-  bool containsVehicle(const std::string& vehicle) const;
-  bool containsAlertID(const std::string& alertid) const;
+  bool containsVehicle(std::string contact) const;
+  bool containsAlertID(std::string alertid) const;
 
-  void setAlertedValue(std::string vehicle, std::string alertid, bool);
-  bool getAlertedValue(std::string vehicle, std::string alertid) const;
-
-  void setInRangeValue(std::string vehicle, std::string alertid, bool);
-  bool getInRangeValue(std::string vehicle, std::string alertid) const;
-
-  void setInZoneValue(std::string vehicle, std::string alertid, bool);
-  bool getInZoneValue(std::string vehicle, std::string alertid) const;
+  void setAlertedValue(std::string contact, std::string id, bool);
+  bool getAlertedValue(std::string contact, std::string id) const;
 
  public:
   std::string getAlertedGroup(bool alerted) const;
@@ -58,8 +52,6 @@ class PlatformAlertRecord
   void print() const;
 
  protected: 
-  // Three Maps of Maps, i.e., three Matices. All of the form:
-  //
   //     map<vehicle, map<alertid, bool>>
   //  
   //     vname   id=aa   id=bb
@@ -74,24 +66,7 @@ class PlatformAlertRecord
   // for all defined alert-ids.
   std::map<std::string, std::map<std::string, bool> > m_par_alerted;
 
-  // The second Matix indicates whether a vehicle is "in range"
-  // for all defined alert-ids.
-  std::map<std::string, std::map<std::string, bool> > m_par_inrange;
-
-  // The third Matix indicates whether a vehicle is "in zone"
-  // for all defined alert-ids.
-  std::map<std::string, std::map<std::string, bool> > m_par_inzone;
-
   std::set<std::string> m_alertids;
 };
 
 #endif 
-
-
-
-
-
-
-
-
-

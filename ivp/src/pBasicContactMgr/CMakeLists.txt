@@ -7,6 +7,7 @@ FILE(GLOB SRC
      BasicContactMgr.cpp
      BasicContactMgr_Info.cpp
      ContactRecord.cpp
+     CMAlert.cpp
      PlatformAlertRecord.cpp
      main.cpp
 )

@@ -2,7 +2,8 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CMAlert.h                                            */
-/*    DATE: March 26th 2014                                      */
+/*    DATE: Mar 26th 2014                                        */
+/*    DATE: Oct 7th 2017   major mods mikerb                     */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -25,36 +26,51 @@
 #define CONTACT_MANAGER_ALERT_HEADER
 
 #include <string>
+#include "XYPolygon.h"
+#include "VarDataPair.h"
 
-class Alert
+class CMAlert
 {
  public:
   CMAlert();
   virtual ~CMAlert() {}
 
-  void setAlertVarName(std::string s)      {m_alert_varname=s;}
-  void setAlertPattern(std::string s)      {m_alert_pattern=s;}
-  void setAlertRngColor(std::string s)     {m_alert_rng_color=s;}
-  void setAlertRngCPAColor(std::string s)  {m_alert_rng_cpa_color=s;}
-  void setAlertRng(double v);              {m_alert_rng=v;}
-  void setAlertRngCPA(double v);           {m_alert_rng_cpa=v;}
+ public: // Setters
+  bool setAlertRange(double);
+  bool setAlertRangeFar(double);
 
-  std::string getAlertVarName()     {return(m_alert_varname);}
-  std::string getAlertVarPattern()  {return(m_alert_pattern);}
-  std::string getAlertRngColor()    {return(m_alert_rng_color);}
-  std::string getAlertRngCPAColor() {return(m_alert_rng_cpa_color);}
+  bool setAlertRegion(std::string);
+  bool addAlertOnFlag(std::string);
+  bool addAlertOffFlag(std::string);
+  
+  bool setAlertRangeColor(std::string);
+  bool setAlertRangeFarColor(std::string);
 
-  double getAlertRng()    {return(m_alert_rng);}
-  double getAlertRngCPA() {return(m_alert_rng_cpa);}
+ public: // Getters
+  double    getAlertRange() const    {return(m_range);}
+  double    getAlertRangeFar() const {return(m_range_far);}
+  bool      hasAlertRegion() const   {return(m_region.is_convex());}
+  XYPolygon getAlertRegion() const   {return(m_region);}
+  
+  bool hasAlertOnFlag() const {return(m_on_flags.size() > 0);}
+  bool hasAlertOffFlag() const {return(m_off_flags.size() > 0);}
+
+  std::vector<VarDataPair> getAlertOnFlags() const;
+  std::vector<VarDataPair> getAlertOffFlags() const;
+
+  std::string getAlertRangeColor() const   {return(m_rng_color);}
+  std::string getAlertRangeFarColor() const {return(m_rng_far_color);}
 
  private:
-  std::string m_alert_varname;
-  std::string m_alert_pattern;
-  std::string m_alert_rng_color;
-  std::string m_alert_rng_cpa_color;
+  double      m_range;
+  double      m_range_far;
+  XYPolygon   m_region;
 
-  double      m_alert_rng;
-  double      m_alert_rng_cpa;
+  std::vector<VarDataPair> m_on_flags;
+  std::vector<VarDataPair> m_off_flags;
+  
+  std::string m_rng_color;
+  std::string m_rng_far_color;
 };
 
 #endif 

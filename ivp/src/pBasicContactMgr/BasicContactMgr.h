@@ -31,6 +31,7 @@
 #include "NodeRecord.h"
 #include "XYPolygon.h"
 #include "PlatformAlertRecord.h"
+#include "CMAlert.h"
 
 class BasicContactMgr : public AppCastingMOOSApp
 {
@@ -48,52 +49,51 @@ class BasicContactMgr : public AppCastingMOOSApp
 
  protected:
   void registerVariables();
-  bool handleConfigAlert(const std::string&);
+  bool handleConfigAlert(std::string);
 
-  void handleMailNodeReport(const std::string&);
-  void handleMailDisplayRadii(const std::string&);
-  void handleMailAlertRequest(const std::string&);
-  void handleMailResolved(const std::string&);
+  void handleMailNodeReport(std::string);
+  void handleMailDisplayRadii(std::string);
+  void handleMailAlertRequest(std::string);
+  void handleMailResolved(std::string);
 
   void updateRanges();
   void postSummaries();
-  bool checkForAlerts();
-  bool checkForZoneEvents();
+  void checkForAlerts();
   void checkForCloseInReports();
   void postRadii(bool=true);
-  void postAlert(NodeRecord, std::string id);
-  void postEvent(NodeRecord, std::string id, std::string event_type);
+  void postOnAlerts(NodeRecord, std::string id);
+  void postOffAlerts(NodeRecord, std::string id);
+  void postAlert(NodeRecord, VarDataPair);
 
-  double      getAlertRange(const std::string& alert_id) const;
-  double      getAlertRangeCPA(const std::string& alert_id) const;
-  std::string getAlertRangeColor(const std::string& alert_id) const;
-  std::string getAlertRangeCPAColor(const std::string& alert_id) const;
-  XYPolygon   getAlertRegion(const std::string& alert_id) const;
-  std::string getAlertInZonePost(const std::string& alert_id) const;
-  std::string getAlertOutZonePost(const std::string& alert_id) const;
-  std::string getAlertInRangePost(const std::string& alert_id) const {return("");}
-  std::string getAlertOutRangePost(const std::string& alert_id) const {return("");}
+  bool checkAlertApplies(std::string contact, std::string id);
+  bool knownAlert(std::string id) const;
 
+ protected: // Alert Getters
+  double      getAlertRange(std::string id) const;
+  double      getAlertRangeCPA(std::string id) const;
+
+  bool        hasAlertRegion(std::string id) const;
+  XYPolygon   getAlertRegion(std::string id) const;
+
+  std::string getAlertRangeColor(std::string id) const;
+  std::string getAlertRangeCPAColor(std::string id) const;
+
+  bool        hasAlertOnFlag(std::string id) const;
+  bool        hasAlertOffFlag(std::string id) const;
+
+  std::vector<VarDataPair> getAlertOnFlags(std::string id) const;
+  std::vector<VarDataPair> getAlertOffFlags(std::string id) const;
+
+ private: // main record of alerts, each keyed on the alert_id
+    std::map<std::string, CMAlert> m_map_alerts;
+  
  protected: // Configuration parameters
 
-  // Main Record #1: The Alerts, each keyed on the alert_id
-  std::map<std::string, std::string> m_map_alert_varname;
-  std::map<std::string, std::string> m_map_alert_pattern;
-  std::map<std::string, double>      m_map_alert_rng;
-  std::map<std::string, double>      m_map_alert_rng_cpa;
-  std::map<std::string, std::string> m_map_alert_rng_color;
-  std::map<std::string, std::string> m_map_alert_rng_cpa_color;
-  std::map<std::string, std::string> m_map_alert_contact_type;
-  std::map<std::string, XYPolygon>   m_map_alert_region;
-  std::map<std::string, std::string> m_map_alert_inzone_post;
-  std::map<std::string, std::string> m_map_alert_outzone_post;
-  
   // Default values for various alert parameters
   double       m_default_alert_rng;
   double       m_default_alert_rng_cpa;
   std::string  m_default_alert_rng_color;
   std::string  m_default_alert_rng_cpa_color;
-  XYPolygon    m_default_alert_region;
   
   // Other configuration parameters
   std::string  m_ownship;
@@ -151,7 +151,6 @@ class BasicContactMgr : public AppCastingMOOSApp
 private:
   bool         m_use_geodesy;
   CMOOSGeodesy m_geodesy;
-
 };
 
 #endif 
