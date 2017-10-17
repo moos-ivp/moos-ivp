@@ -180,7 +180,7 @@ void BHV_AvoidObstacle::onIdleState()
 void BHV_AvoidObstacle::onCompleteState() 
 {
   postErasablePolygons();
-  postMessage("OBSTACLE_RESOLVED", m_obstacle_key);
+  postRepeatableMessage("OBSTACLE_RESOLVED", m_obstacle_key);
 }
 
 //-----------------------------------------------------------
@@ -188,7 +188,7 @@ void BHV_AvoidObstacle::onCompleteState()
 
 void BHV_AvoidObstacle::onInactiveState()
 {
-  postErasablePolygons();
+  //postErasablePolygons();
 }
 
 //-----------------------------------------------------------
@@ -211,21 +211,20 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
     return(0);  
   if(!m_obstacle_orig.is_convex())
     return(0);
-  if(polyAft(m_osx, m_osy, m_osh, m_obstacle_orig))
-    return(0);
   if(applyBuffer() == false)
     return(0);
 
-#if 0
   // Part 2: Handle case where behavior is completed 
   double os_dist_to_poly = m_obstacle_orig.dist_to_poly(m_osx, m_osy);
+  postMessage("OS_DIST_TO_POLY", os_dist_to_poly);
   if(os_dist_to_poly > m_completed_dist) {
-    postMessage("OBAVOID_COMPLETED", m_obstacle_key);
     setComplete();
     return(0);
   }
-#endif
 
+  if(polyAft(m_osx, m_osy, m_osh, m_obstacle_orig))
+    return(0);
+  
   // Part 3: Determine the relevance
   m_obstacle_relevance = getRelevance();
   if(m_obstacle_relevance <= 0)
@@ -528,9 +527,3 @@ void BHV_AvoidObstacle::postConfigStatus()
 
   postRepeatableMessage("BHV_SETTINGS", str);
 }
-
-
-
-
-
-
