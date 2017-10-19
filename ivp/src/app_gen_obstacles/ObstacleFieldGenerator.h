@@ -45,7 +45,7 @@ class ObstacleFieldGenerator
   bool   generate();
 
  protected:
-  bool   generateObstacle();
+  bool   generateObstacle(unsigned int tries);
 
 
  protected: // Config variables

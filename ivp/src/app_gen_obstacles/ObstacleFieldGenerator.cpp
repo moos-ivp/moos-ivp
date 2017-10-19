@@ -129,7 +129,7 @@ bool ObstacleFieldGenerator::generate()
 
   bool ok = true;
   for(unsigned int i=0; (ok && (i<m_amount)); i++) {
-    ok = ok && generateObstacle();
+    ok = ok && generateObstacle(100);
   }
 
   return(ok);
@@ -138,9 +138,67 @@ bool ObstacleFieldGenerator::generate()
 //---------------------------------------------------------
 // Procedure: generateObstacle()
 
-bool ObstacleFieldGenerator::generateObstacle()
+bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
 {
-  return(true);
+  if(!m_poly_region.is_convex())
+    return(false);
+    
+  double minx = m_poly_region.get_min_x();
+  double miny = m_poly_region.get_min_y();
+  double maxx = m_poly_region.get_max_x();
+  double maxy = m_poly_region.get_max_y();
+
+  double xlen = maxx - minx;
+  double ylen = maxy - miny;
+
+  for(unsigned int i=0; i<tries; i++) {
+  
+    int rand_int_x = rand() % 10000;
+    int rand_int_y = rand() % 10000;
+    
+    double rand_pct_x = (double)(rand_int_x) / 10000;
+    double rand_pct_y = (double)(rand_int_y) / 10000;
+
+    double rand_x = minx + (rand_pct_x * xlen);
+    double rand_y = miny + (rand_pct_y * ylen);
+
+    // Reject if poly center point is not in the overall region
+    if(!m_poly_region.contains(rand_x, rand_y))
+      continue;
+
+    // Reject if poly center point is in an existing obstacle
+    for(unsigned int i=0; i<m_obstacles.size(); i++) {
+      if(m_obstacles[i].contains(rand_x, rand_y))
+	continue;
+    }
+
+    //"radial:: x=val, y=val, radius=val, pts=val, snap=val, label=val"
+    string str = "radial:: x=" + doubleToString(rand_x,1); 
+    str += ", y=" + doubleToString(rand_y,1);
+    str += "radius=10,pts=8,label=ob_" + uintToString(m_obstacles.size());
+ 
+    XYPolygon try_poly = string2Poly(str);
+    if(!try_poly.is_convex())
+      return(false);
+    
+    // Reject if poly intersects any existing obstacle
+    for(unsigned int i=0; i<m_obstacles.size(); i++) {
+      if(m_obstacles[i].intersects(try_poly))
+	continue;
+    }
+    
+    // Reject if poly is too close to any existing obstacle
+    for(unsigned int i=0; i<m_obstacles.size(); i++) {
+      if(m_obstacles[i].dist_to_poly(try_poly) < m_min_range)
+	continue;
+    }
+
+    // Success!!!
+    m_obstacles.push_back(try_poly);
+    return(true);
+  }
+    
+  return(false);
 }
 
 
