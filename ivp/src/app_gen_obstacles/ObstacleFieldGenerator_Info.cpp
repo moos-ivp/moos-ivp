@@ -61,10 +61,14 @@ void showHelpAndExit()
   cout << "  --polygon=<poly>                                     " << endl;
   cout << "      Specify a polygon region of the form:            " << endl;
   cout << "      \"0,0 : 50,0 : 50,50 : 0,50\"                    " << endl;
+  cout << "  --min_range=<meters>                                     " << endl;
+  cout << "  --min_size=<meters>                                     " << endl;
+  cout << "  --max_size=<meters>                                     " << endl;
+  cout << "  --amt=<# of obstacles>                                     " << endl;
   cout << "                                                       " << endl;
   cout << "                                                       " << endl;
   cout << "Example:                                               " << endl;
-  cout << "  gen_obstacles --polygon=-150,-75:-150,-400:400,-400:400,-75 --objects=6" << endl;
+  cout << "  gen_obstacles --poly=-150,-30:-50,-160:190,-160:190,-30 --amt=5" << endl;
   exit(0);
 }
 

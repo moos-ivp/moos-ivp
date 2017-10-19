@@ -127,9 +127,21 @@ bool ObstacleFieldGenerator::generate()
 {
   srand(time(NULL));
 
+  cout << "Making " << m_amount << " obstacles." << endl;
+  
   bool ok = true;
   for(unsigned int i=0; (ok && (i<m_amount)); i++) {
-    ok = ok && generateObstacle(100);
+    cout << "Trying to make an obstacle " << endl;
+    cout << "===========================================" << endl;
+    ok = ok && generateObstacle(1000);
+    cout << "result: " << ok << endl;
+  }
+
+  cout << "Total Obstacles made: " << m_obstacles.size() << endl;
+  
+  if(ok) {
+    for(unsigned int i=0; i<m_obstacles.size(); i++) 
+      cout << m_obstacles[i].get_spec() << endl;
   }
 
   return(ok);
@@ -151,7 +163,7 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
   double xlen = maxx - minx;
   double ylen = maxy - miny;
 
-  for(unsigned int i=0; i<tries; i++) {
+  for(unsigned int k=0; k<tries; k++) {
   
     int rand_int_x = rand() % 10000;
     int rand_int_y = rand() % 10000;
@@ -167,31 +179,48 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
       continue;
 
     // Reject if poly center point is in an existing obstacle
+    bool pt_in_obstacle = false;
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
-      if(m_obstacles[i].contains(rand_x, rand_y))
-	continue;
+      if(m_obstacles[i].contains(rand_x, rand_y)) {
+	cout << "  " << k << " pt inside existing obstacle." << endl;
+	pt_in_obstacle = true;
+      }
     }
-
+    if(pt_in_obstacle)
+      continue;
+    
     //"radial:: x=val, y=val, radius=val, pts=val, snap=val, label=val"
-    string str = "radial:: x=" + doubleToString(rand_x,1); 
+    string str = "format=radial, x=" + doubleToString(rand_x,1); 
     str += ", y=" + doubleToString(rand_y,1);
-    str += "radius=10,pts=8,label=ob_" + uintToString(m_obstacles.size());
+    str += ",radius=10,pts=8,label=ob_" + uintToString(m_obstacles.size());
  
     XYPolygon try_poly = string2Poly(str);
-    if(!try_poly.is_convex())
+    if(!try_poly.is_convex()) {
+      cout << "     try_poly is not convex." << endl;
       return(false);
+    }
     
     // Reject if poly intersects any existing obstacle
+    bool poly_ints_obstacle = false;
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
-      if(m_obstacles[i].intersects(try_poly))
-	continue;
+      if(m_obstacles[i].intersects(try_poly)) {
+	cout << "  " << k << "    try_poly intersects an obstacle." << endl;
+	poly_ints_obstacle = true;
+      }
     }
+    if(poly_ints_obstacle)
+      continue;
     
     // Reject if poly is too close to any existing obstacle
+    bool poly_closeto_obstacle = false;
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
-      if(m_obstacles[i].dist_to_poly(try_poly) < m_min_range)
-	continue;
+      if(m_obstacles[i].dist_to_poly(try_poly) < m_min_range) {
+	cout << "  " << k << "       try_poly too close to an obstacle." << endl;
+	poly_closeto_obstacle = true;
+      }
     }
+    if(poly_closeto_obstacle)
+      continue;
 
     // Success!!!
     m_obstacles.push_back(try_poly);
