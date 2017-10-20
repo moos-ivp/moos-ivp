@@ -69,6 +69,7 @@ void showHelpAndExit()
   cout << "                                                       " << endl;
   cout << "Example:                                               " << endl;
   cout << "  gen_obstacles --poly=-50,-30:-50,-160:190,-160:190,-30 --amt=5 --min_size=2 --max_size=5 " << endl;
+  cout << "  gen_obstacles --poly=30,-20:30,-140:120,-140:120,-20 --amt=5 --min_size=2 --max_size=5 " << endl;
   exit(0);
 }
 

@@ -337,6 +337,8 @@ void CollisionDetector::postFlags(const vector<VarDataPair>& flags,
       // If the string is just $CPA interpret as a double posting
       if(sval == "$CPA")
 	Notify(moosvar, cpa_dbl);
+      else if(sval == "$IDX") 
+	Notify(moosvar, m_total_encounters);
       else {
 	sval = findReplace(sval, "$V1", vname1);
 	sval = findReplace(sval, "$V2", vname2);
