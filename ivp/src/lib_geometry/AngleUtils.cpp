@@ -436,7 +436,9 @@ bool polyAft(double osx, double osy, double osh, XYPolygon poly, double xbng)
   // ownship its relative bearing is in the range (90,270). With the xbng 
   // parameter, "aft" can be generalized, e.g., xbng=10 means the polygon must
   // be at least 10 degrees abaft of beam.
-
+  if(poly.size() == 0)
+    return(false);
+  
   if(xbng < -90)
     xbng = -90;
   else if(xbng > 90)

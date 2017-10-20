@@ -130,12 +130,3 @@ XYPoint XYFieldGenerator::generatePoint()
   }
   return(new_point);
 }
-
-
-
-
-
-
-
-
-
