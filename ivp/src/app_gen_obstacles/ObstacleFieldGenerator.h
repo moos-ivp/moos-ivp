@@ -47,7 +47,6 @@ class ObstacleFieldGenerator
  protected:
   bool   generateObstacle(unsigned int tries);
 
-
  protected: // Config variables
   XYPolygon m_poly_region;
 

@@ -36,7 +36,7 @@ using namespace std;
 
 ObstacleFieldGenerator::ObstacleFieldGenerator()
 {
-  m_min_poly_size = 10;
+  m_min_poly_size = 6;
   m_max_poly_size = 10;
 
   m_min_range = 2;
@@ -127,21 +127,19 @@ bool ObstacleFieldGenerator::generate()
 {
   srand(time(NULL));
 
-  cout << "Making " << m_amount << " obstacles." << endl;
-  
   bool ok = true;
   for(unsigned int i=0; (ok && (i<m_amount)); i++) {
-    cout << "Trying to make an obstacle " << endl;
-    cout << "===========================================" << endl;
     ok = ok && generateObstacle(1000);
-    cout << "result: " << ok << endl;
   }
 
-  cout << "Total Obstacles made: " << m_obstacles.size() << endl;
-  
+  cout << "region    = " << m_poly_region.get_spec() << endl;
+  cout << "min_range = " << doubleToStringX(m_min_range,2) << endl;
+  cout << "min_size  = " << doubleToStringX(m_min_poly_size,2) << endl;
+  cout << "max_size  = " << doubleToStringX(m_max_poly_size,2) << endl;
+
   if(ok) {
     for(unsigned int i=0; i<m_obstacles.size(); i++) 
-      cout << m_obstacles[i].get_spec() << endl;
+      cout << "poly = " << m_obstacles[i].get_spec() << endl;
   }
 
   return(ok);
@@ -163,6 +161,15 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
   double xlen = maxx - minx;
   double ylen = maxy - miny;
 
+  double radius = m_min_poly_size;
+  if(m_max_poly_size > m_min_poly_size) {
+    int rand_int_r = rand() % 1000;
+    double rand_pct_r = (double)(rand_int_r) / 1000;
+    radius = m_min_poly_size;
+    radius += ((m_max_poly_size - m_min_poly_size) * rand_pct_r);
+  }
+    
+  
   for(unsigned int k=0; k<tries; k++) {
   
     int rand_int_x = rand() % 10000;
@@ -182,7 +189,7 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
     bool pt_in_obstacle = false;
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
       if(m_obstacles[i].contains(rand_x, rand_y)) {
-	cout << "  " << k << " pt inside existing obstacle." << endl;
+	//cout << "  " << k << " pt inside existing obstacle." << endl;
 	pt_in_obstacle = true;
       }
     }
@@ -192,19 +199,24 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
     //"radial:: x=val, y=val, radius=val, pts=val, snap=val, label=val"
     string str = "format=radial, x=" + doubleToString(rand_x,1); 
     str += ", y=" + doubleToString(rand_y,1);
-    str += ",radius=10,pts=8,label=ob_" + uintToString(m_obstacles.size());
+    str += ",radius=" + doubleToString(radius);
+    str += ",pts=8,label=ob_" + uintToString(m_obstacles.size());
  
     XYPolygon try_poly = string2Poly(str);
     if(!try_poly.is_convex()) {
-      cout << "     try_poly is not convex." << endl;
+      //cout << "     try_poly is not convex." << endl;
       return(false);
     }
     
+    // Reject if poly is not in the overall region
+    if(!m_poly_region.contains(try_poly))
+      continue;
+
     // Reject if poly intersects any existing obstacle
     bool poly_ints_obstacle = false;
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
       if(m_obstacles[i].intersects(try_poly)) {
-	cout << "  " << k << "    try_poly intersects an obstacle." << endl;
+	//cout << "  " << k << "    try_poly intersects an obstacle." << endl;
 	poly_ints_obstacle = true;
       }
     }
@@ -215,7 +227,7 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
     bool poly_closeto_obstacle = false;
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
       if(m_obstacles[i].dist_to_poly(try_poly) < m_min_range) {
-	cout << "  " << k << "       try_poly too close to an obstacle." << endl;
+	//cout << "  " << k << "       try_poly too close to an obstacle." << endl;
 	poly_closeto_obstacle = true;
       }
     }
@@ -226,15 +238,5 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
     m_obstacles.push_back(try_poly);
     return(true);
   }
-    
   return(false);
 }
-
-
-
-
-
-
-
-
-
