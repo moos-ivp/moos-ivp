@@ -264,6 +264,7 @@ SET(IVP_NON_GUI_APPS
   app_alogsort
   app_alogcheck
   app_gen_hazards
+  app_gen_obstacles
   app_bhv2graphviz
   pXRelay
   uFldCollisionDetect
@@ -274,6 +275,7 @@ SET(IVP_NON_GUI_APPS
   uFldNodeComms
   uFldBeaconRangeSensor
   uFldContactRangeSensor
+  uFldObstacleSim
   uFldHazardSensor
   uFldHazardMgr
   uFldHazardMetric
@@ -314,6 +316,7 @@ SET(IVP_GUI_APPS
   uFunctionVis
   uMACView
   uPlotViewer
+  uCommand
   )
 
 SET(IVP_APPS_TO_BUILD ${ROBOT_APPS})
