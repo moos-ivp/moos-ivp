@@ -116,3 +116,20 @@ Behavior = BHV_AvoidCollision
              pwt_grade = linear
    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 }
+
+//----------------------------------------------
+Behavior=BHV_AvoidObstacle
+{
+  name       = avd_obstacles
+  pwt        = 500
+  condition  = DEPLOY = true
+	templating = spawn
+  updates    = OBSTACLE_ALERT
+
+
+     allowable_ttc = 5 
+       buffer_dist = 8
+    pwt_outer_dist = 20
+    pwt_inner_dist = 10
+    completed_dist = 25
+}
