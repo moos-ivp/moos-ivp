@@ -32,6 +32,7 @@ class ObstacleSim : public AppCastingMOOSApp
   void registerVariables();
   bool processObstacleFile(std::string filename);
   void postViewableObstacles();
+  void postKnownObstacles();
   
  private: // Configuration variables
 
@@ -53,7 +54,11 @@ class ObstacleSim : public AppCastingMOOSApp
   
  private: // State variables
 
-  bool m_viewables_posted;
+  bool m_viewables_queried;
+  bool m_obstacles_queried;
+
+  unsigned int m_viewables_posted;
+  unsigned int m_obstacles_posted;
 };
 
 #endif 

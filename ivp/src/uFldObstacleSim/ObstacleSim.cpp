@@ -20,8 +20,6 @@ using namespace std;
 
 ObstacleSim::ObstacleSim()
 {
-  m_viewables_posted = false;
-
   m_min_range = 0;
   m_min_poly_size = 0;
   m_max_poly_size = 0;
@@ -34,6 +32,12 @@ ObstacleSim::ObstacleSim()
   m_poly_transparency = 0.15;
   m_poly_edge_size   = 1;
   m_poly_vert_size   = 1;
+
+  m_viewables_queried = true;
+  m_obstacles_queried = true;
+
+  m_viewables_posted = 0;
+  m_obstacles_posted = 0;
 }
 
 //---------------------------------------------------------
@@ -47,19 +51,22 @@ bool ObstacleSim::OnNewMail(MOOSMSG_LIST &NewMail)
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     string key    = msg.GetKey();
+    string sval  = msg.GetString(); 
 
 #if 0 // Keep these around just for template
     string comm  = msg.GetCommunity();
     double dval  = msg.GetDouble();
-    string sval  = msg.GetString(); 
     string msrc  = msg.GetSource();
     double mtime = msg.GetTime();
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
 #endif
     
-    if(key == "FOO") 
-      cout << "great!";
+    if(key=="PMV_CONNECT")
+      m_viewables_queried = true;
+    else if(key=="VEHICLE_CONNECT")
+      m_obstacles_queried = true;
+    
     
     else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
       reportRunWarning("Unhandled Mail: " + key);
@@ -85,9 +92,14 @@ bool ObstacleSim::Iterate()
   AppCastingMOOSApp::Iterate();
 
   // Do your thing here!
-  if(!m_viewables_posted) {
+  if(m_viewables_queried) {
     postViewableObstacles();
-    m_viewables_posted = true;
+    m_viewables_queried = false;
+  }
+
+  if(m_obstacles_queried) {
+    postKnownObstacles();
+    m_obstacles_queried = false;
   }
 
   AppCastingMOOSApp::PostReport();
@@ -139,7 +151,8 @@ bool ObstacleSim::OnStartUp()
 void ObstacleSim::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  // Register("FOOBAR", 0);
+  Register("PMV_CONNECT", 0);
+  Register("VEHICLE_CONNECT", 0);
 }
 
 
@@ -201,6 +214,20 @@ void ObstacleSim::postViewableObstacles()
 
   if(m_poly_region.is_convex())
     Notify("VIEW_POLYGON", m_poly_region.get_spec());
+  m_viewables_posted++;
+
+}
+
+//------------------------------------------------------------
+// Procedure: postKnownObstacles()
+
+void ObstacleSim::postKnownObstacles()
+{
+  for(unsigned int i=0; i<m_obstacles.size(); i++) {
+    string spec = m_obstacles[i].get_spec();
+    Notify("KNOWN_OBSTACLE", spec);
+  }
+  m_obstacles_posted++;
 }
 
 //------------------------------------------------------------
@@ -211,6 +238,9 @@ bool ObstacleSim::buildReport()
   m_msgs << "============================================" << endl;
   m_msgs << "Obstacles: " << uintToString(m_obstacles.size()) << endl;
   m_msgs << "MinRange: " << doubleToString(m_min_range) << endl;
+
+  m_msgs << "Viewables Posted: " << uintToString(m_viewables_posted) << endl;
+  m_msgs << "Obstacles Posted: " << uintToString(m_obstacles_posted) << endl;
 
   ACTable actab(4);
   actab << "Alpha | Bravo | Charlie | Delta";

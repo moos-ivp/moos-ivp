@@ -64,12 +64,11 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
-  blu("uFldObstacleSim Example MOOS Configuration                   ");
+  blu("uFldObstacleSim Example MOOS Configuration                      ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = uFldObstacleSim                              ");
+  blk("ProcessConfig = uFldObstacleSim                                 ");
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
