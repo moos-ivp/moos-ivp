@@ -8,7 +8,6 @@ SET(SRC
   AOF_AttractorCPA.cpp
   AOF_AvoidCollision.cpp
   AOF_AvoidCollisionDepth.cpp
-  AOF_AvoidObstacles.cpp
   AOF_AvoidObstacle.cpp
   AOF_CutRangeCPA.cpp
   AOF_Shadow.cpp
@@ -21,7 +20,6 @@ SET(HEADERS
   AOF_AttractorCPA.h
   AOF_AvoidCollisionDepth.h
   AOF_AvoidCollision.h
-  AOF_AvoidObstacles.h
   AOF_AvoidObstacle.h
   AOF_CutRangeCPA.h
   AOF_Shadow.h
