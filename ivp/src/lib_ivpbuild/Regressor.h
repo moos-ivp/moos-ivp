@@ -46,6 +46,9 @@ public:
 
   const AOF* getAOF() {return(m_aof);}
 
+  unsigned int getTotalSetWts() const {return(m_total_setwts);}
+  unsigned int getTotalEvals() const {return(m_total_evals);}
+  
 protected:
   void    setCorners(IvPBox*);
   double  setWeight0(IvPBox*, bool);
@@ -55,7 +58,7 @@ protected:
 			double, double&, double&, double&);
   double  evalPtBox(const IvPBox*);
   bool    centerBox(const IvPBox*, IvPBox*);
-  
+
 protected:
   // AOF represents the underlying function.
   const AOF* m_aof;         
@@ -82,6 +85,10 @@ protected:
   double    m_pteval_min;
   double    m_pteval_max;
   bool      m_pteval_set;
+
+  unsigned int m_total_setwts;
+  unsigned int m_total_evals;
+  
   
 };
 

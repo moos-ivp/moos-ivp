@@ -89,6 +89,10 @@ Regressor::Regressor(const AOF *g_aof, int g_degree)
   // desirable property, but there is typically a small measure
   // of overall fit that is sacrificed.
   m_strict_range = true;
+
+  m_total_setwts = 0;
+  m_total_evals  = 0;
+
 }
 
 //-------------------------------------------------------------
@@ -114,6 +118,7 @@ Regressor::~Regressor()
 
 double Regressor::setWeight(IvPBox *gbox, bool feedback)
 {
+  m_total_setwts++;
   if(m_degree==0)  // Piecewise Scalar
     return(setWeight0(gbox, feedback));
   else if(m_degree==1)  // Piecewise Linear
@@ -161,8 +166,6 @@ double Regressor::setWeight0(IvPBox *gbox, bool feedback)
     }
     return(sqrt(error));
   }
-    
-
 }
 
 //-------------------------------------------------------------
@@ -603,6 +606,7 @@ void Regressor::setCorners(IvPBox *gbox)
 
 double Regressor::evalPtBox(const IvPBox *gbox)
 {
+  m_total_evals++;
   if(!m_aof) 
     return(0);
   
