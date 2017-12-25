@@ -1,0 +1,20 @@
+//====================================================================
+module   = pHostInfo
+type     = MOOS App
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Auto-detect the machine's IP address and MOOSDB port number
+depends  = lib_mbutil, lib_ufield, lib_apputil
+borndate = 111214
+doc_url  = http://oceanai.mit.edu/ivpman/apps/pHostInfo
+license  = GPL
+group    = General Utility, uField Toolbox
+distro   = moos-ivp.org
+
+synopsis = Automatically detect the vehicle's host information
+  including the IP addresses, port being used by the MOOSDB, the port
+  being used by local pShare for UDP listening, and the community name
+  for the local MOOSDB. Post these to facilitate automatic
+  intervehicle communications in especially in multi-vehicle
+  scenarios where the local IP address changes w/ DHCP.

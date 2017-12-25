@@ -1,0 +1,19 @@
+//====================================================================
+module   = uFldCTDSensor
+type     = MOOS App
+author   = Michael Benjamin, Henrik Schmidt
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Simulates a CTD Sensor and simulated thermal front
+depends  = lib_mbutil, lib_apputil, lib_geometry, lib_henrik_anneal
+borndate = 120128
+doc_url  = http://oceanai.mit.edu/ivpman/apps/uFldCTDSensor
+license  = GPL
+group    = Simulation, uField ToolBox
+distro   = moos-ivp.org
+
+synopsis = The uFldCTDSensor was originally written to the support the
+  MIT 2.680 Front Estimation lab. It is typically run in a shoreside
+  community. Simulates a CTD sensor on a vehicle. Currently only
+  provides temperature.  Configured for a specific temepraturte field,
+  currently a propagating ocean front.

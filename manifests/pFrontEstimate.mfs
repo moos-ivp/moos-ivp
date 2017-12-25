@@ -1,0 +1,17 @@
+//====================================================================
+module   = pFrontEstimate
+type     = MOOS App
+author   = Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+thumb    = Evualation of a simulated thermal front
+depends  = lib_mbutil, lib_henrik_anneal
+borndate = 120315
+doc_url  = http://oceanai.mit.edu/ivpman/apps/pFrontEstimate
+license  = GPL
+group    = Simulation, 2.680 Labs
+distro   = moos-ivp.org
+
+synopsis = The pFrontEstimate app is a baseline implementation of an
+  app to be written as part of the 2.680 Front Estimation lab. Those
+  doing this lab will typically start with this app and improve it.
