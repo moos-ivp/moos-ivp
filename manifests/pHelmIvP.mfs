@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_ivpcore, lib_ivpbuild, lib_geometry,
            lib_behaviors, lib_ivphelm, lib_behaviors-marine
 group    = Core Autonomy
 borndate = 020101
-doc_url  = http://oceanai.mit.edu/ivpman/helm
+doc_url  = http://oceanai.mit.edu/ivpman/pHelmIvP
 license  = GPL
 distro   = moos-ivp.org
 

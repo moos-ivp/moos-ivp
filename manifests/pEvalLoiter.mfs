@@ -8,7 +8,7 @@ thumb    = Run-time evaluation of efficiency during execution of loiter mode
 depends  = lib_mbutil, lib_apputil, lib_logic, lib_geometry
            lib_contacts
 borndate = 160106
-doc_url  = http://oceanai.mit.edu/ivpman/apps/pEvalLoiter
+doc_url  = Pending
 license  = GPL
 group    = General Utility
 distro   = moos-ivp.org
