@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_geometry, lib_henrik_anneal
 borndate = 130413
 doc_url  = http://oceanai.mit.edu/ivpman/apps/iSay
 license  = GPL
-group    = Simulation, 2.680 Labs
+group    = Simulation, 2.680
 distro   = moos-ivp.org
 
 synopsis = The pFrontGridRender is typically used in the Front Estimation

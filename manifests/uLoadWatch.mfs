@@ -10,7 +10,7 @@ depends  = lib_mbutil, lib_apputil
 borndate = 131224
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uLoadWatch
 license  = GPL
-group    = Utilities, Scoping
+group    = General Utilities, Mission Control
 distro   = moos-ivp.org
 
 synopsis = The uLoadWatch application is used for monitoring load of

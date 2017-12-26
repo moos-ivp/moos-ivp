@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_geometry, lib_henrik_anneal
 borndate = 120301
 doc_url  = http://oceanai.mit.edu/ivpman/apps/pGradeFrontEstimate
 license  = GPL
-group    = Simulation, 2.680 Labs
+group    = Simulation, 2.680
 distro   = moos-ivp.org
 
 synopsis = The pGradeFrontEstimate application is part of 2.680 Front

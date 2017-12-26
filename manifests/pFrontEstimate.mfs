@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_henrik_anneal
 borndate = 120315
 doc_url  = http://oceanai.mit.edu/ivpman/apps/pFrontEstimate
 license  = GPL
-group    = Simulation, 2.680 Labs
+group    = Simulation, Labs
 distro   = moos-ivp.org
 
 synopsis = The pFrontEstimate app is a baseline implementation of an

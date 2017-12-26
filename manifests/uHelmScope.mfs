@@ -12,7 +12,7 @@ depends  = lib_mbutil, lib_genutil, lib_apputil, lib_helmivp, lib_behaviors
 borndate = 080412
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uHelmScope
 license  = GPL
-group    = Mission Monitoring
+group    = Mission Control
 distro   = moos-ivp.org
 
 synopsis = The uHelmScope application is a terminal-based (non-GUI)

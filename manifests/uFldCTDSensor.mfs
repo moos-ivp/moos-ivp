@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_apputil, lib_geometry, lib_henrik_anneal
 borndate = 120128
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uFldCTDSensor
 license  = GPL
-group    = Simulation, uField ToolBox
+group    = Simulation, uField ToolBox, 2.680
 distro   = moos-ivp.org
 
 synopsis = The uFldCTDSensor was originally written to the support the

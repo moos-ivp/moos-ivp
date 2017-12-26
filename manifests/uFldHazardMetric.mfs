@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_apputil, lib_geometry, lib_ufld_hazards
 borndate = 120312
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uFldHazardMetric
 license  = GPL
-group    = Simulation, uField ToolBox, 2.680 Labs
+group    = Simulation, uField ToolBox, 2.680
 distro   = moos-ivp.org
 
 synopsis = A utility for quickly evaluating a hazardset report; a list
