@@ -10,7 +10,7 @@ depends  = lib_mbutil, lib_genutil, lib_apputil, lib_ivpbuild
            lib_ivpcore, lib_fltk, lib_fltk_gl
 	   
 borndate = 060512
-doc_url  = http://oceanai.mit.edu/ivpman/apps/uFunctionVis
+doc_url  = Pending
 license  = GPL
 group    = Mission Control
 distro   = moos-ivp.org

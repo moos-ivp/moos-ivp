@@ -9,7 +9,7 @@ thumb    = A GUI based MOOS app for plotting a frequency bar graph
 depends  = lib_mbutil, lib_genutil, lib_fltk, lib_fltk_gl
 
 borndate = 120518
-doc_url  = http://oceanai.mit.edu/ivpman/apps/uPlotViewer
+doc_url  = Pending
 license  = GPL
 group    = Mission Monitoring
 distro   = moos-ivp.org
