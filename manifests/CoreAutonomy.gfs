@@ -1,0 +1,12 @@
+//====================================================================
+module   = Core Autonomy
+type     = group
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@moos-ivp.org
+org      = MIT
+
+synopsis =
+  
+group    = Core Autonomy
+doc_url  = http://oceanai.mit.edu/ivpman
+
