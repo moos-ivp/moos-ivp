@@ -4,14 +4,17 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library for supporting AppCasting MOOS apps
 
-depends  = 
-
-borndate = 
-doc_url  = 
+borndate = 120612 
+doc_url  = https://oceanai.mit.edu/ivpman/appcasting
 license  = GPL
 group    = Libraries
 distro   = MOOS-IvP
 
-synopsis = The 
+synopsis = AppCasting MOOS apps produce an output on each iteration, separate
+  from what they publish to the MOOSDB. This output goes both to the terminal,
+  if there is one open, and also is serialized into a APPCAST message to the 
+  MOOSDB. This message then may be viewed by any AppCast viewing application
+  such as pMarineViewer, uMAC, and uMACView. This library contains classes 
+  used by all AppCasting MOOS apps, and any of the AppCast viewing utilities.

@@ -4,14 +4,14 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library 
 
 depends  = 
 
 borndate = 
 doc_url  = 
 license  = GPL
-group    = Libraries
+group    = Libraries, 2.680
 distro   = MOOS-IvP
 
-synopsis = The 
+synopsis = 
