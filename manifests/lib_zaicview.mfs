@@ -1,5 +1,5 @@
 //====================================================================
-module   = lib_zaicview.mfs
+module   = lib_zaicview
 type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
