@@ -1,0 +1,17 @@
+//====================================================================
+module   = lib_ivpsolve
+type     = Library
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A library for 
+
+depends  = 
+
+borndate = 
+doc_url  = 
+license  = GPL
+group    = Libraries
+distro   = MOOS-IvP
+
+synopsis = The 
