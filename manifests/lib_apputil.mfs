@@ -1,5 +1,5 @@
 //====================================================================
-module   = lib_apputils
+module   = lib_apputil
 type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
