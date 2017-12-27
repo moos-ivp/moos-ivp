@@ -6,7 +6,7 @@ org      = MIT
 thumb    = A behavior-based helm with multi-objective optimization based
 	   (IvP) action selection.
 depends  = lib_mbutil, lib_ivpcore, lib_ivpbuild, lib_geometry,
-           lib_behaviors, lib_ivphelm, lib_behaviors-marine
+           lib_behaviors, lib_ivphelm, lib_behaviors-marine,
            lib_behaviors-colregs
 group    = Core Autonomy
 borndate = 020101
