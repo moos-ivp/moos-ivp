@@ -6,7 +6,7 @@ contact  = mikerb@mit.edu, issues@moos-ivp.org
 org      = MIT
 thumb    = A command line app, connect to MOOSDB, check condition, then exit
 
-depends  = lib_mbutil, lib_genutil, lib_apputil
+depends  = lib_mbutil, lib_logic
 
 borndate = 151229
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uQueryDB
