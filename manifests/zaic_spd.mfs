@@ -1,10 +1,10 @@
 //====================================================================
-module   = zaic_hdg
+module   = zaic_spd
 type     = GUI utility
 author   = Michael Benjamin
 contact  = mikerb@mit.edu
 org      = MIT
-thumb    = A GUI utility for exploring the ZAIC_HDG IvPBuild tool
+thumb    = A GUI utility for exploring and rendering the ZAIC_SPD build tool
 depends  = lib_mbutil, lib_ivpbuild, lib_zaicview
 borndate = 150602
 doc_url  = http://oceanai.mit.edu/ivpman/zaic
@@ -12,11 +12,11 @@ license  = GPL
 group    = General Utility, IvPBuild Toolbox
 distro   = moos-ivp.org
 
-synopsis = The zaic_hdg utility launches a simple GUI rendering a
+synopsis = The zaic_spd utility launches a simple GUI rendering a
   utility function, piecewise defined, over one discrete variable. The
   pieces are formed by a few parameters provided to an instance of the
-  ZAIC_HDG utility in the IvPBuild Toolbox. The GUI user has the
-  ability to change the ZAIC_HDG parameters via the keyboard and watch
+  ZAIC_SPD utility in the IvPBuild Toolbox. The GUI user has the
+  ability to change the ZAIC_SPD parameters via the keyboard and watch
   the effects of these changes as the rendering of the utility
   function is updated.
 
