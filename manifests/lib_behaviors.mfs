@@ -4,14 +4,18 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library containing superclass code for all IvP behaviors.
 
 depends  = 
 
-borndate = 
-doc_url  = 
+borndate = 031021
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs
 license  = GPL
 group    = Libraries, Core Autonomy
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The lib_behaviors library contains the superclasses IvPBehavior
+  and IvPContactBehavior used by all IvP behaviors and all IvP contact
+  related behaviors (e.g., collision avoidance, COLREGS). This library
+  also contains the definitions for helm LifeEvents, to capture the events
+  of behavior spawnings and destruction.
