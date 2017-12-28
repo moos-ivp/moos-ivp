@@ -4,14 +4,17 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library for implementing simple Boolean logic in applications
 
 depends  = 
 
-borndate = 
-doc_url  = 
-license  = GPL
+borndate = 100919
+doc_url  = http://oceanai.mit.edu/ivpman/logic
+license  = LGPL
 group    = Libraries, Core Autonomy, ALog Toolbox
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The lib_logic library implements simple Boolean logic, typically applied
+  to MOOS variables. For example, an application like the helm, uTimerScript, or 
+  uQueryDB, may condition its actions on a MOOS variable having a certain value, such
+  as "DEPLOY=true", or more complex conditions such as "(RETURN=true) or (MISSION_TIME > 600". 
