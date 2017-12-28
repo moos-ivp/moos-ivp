@@ -4,14 +4,15 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library used by applications having both a MOOS and user interface
 
 depends  = 
 
-borndate = 
+borndate = 041104
 doc_url  = 
 license  = GPL
 group    = Libraries, General Utility
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = A library used by applications having both a MOOS and user interface,
+  by supporting a separate thread for user keyboard interaction. 
