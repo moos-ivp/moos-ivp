@@ -12,7 +12,7 @@ borndate = 000101
 doc_url  = https://sites.google.com/site/moossoftware/
 license  = GPL
 group    = Oxford MOOS
-distro   = Oxford
+distro   = moos-ivp.org, themoos.org
 
 synopsis = MOOS has a star-like communications topology. Each application 
   within a MOOS community, a MOOSApp, has a connection to a single 

@@ -11,7 +11,7 @@ depends  =
 borndate = 
 doc_url  = 
 license  = GPL
-group    = Libraries
-distro   = MOOS-IvP
+group    = Libraries, ALog Toolbox
+distro   = moos-ivp.org
 
 synopsis = The 

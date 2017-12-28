@@ -12,7 +12,7 @@ borndate = 000101
 doc_url  = http://oceanai.mit.edu/ivpman/apps/pAntler
 license  = GPL
 group    = Oxford MOOS
-distro   = Oxford
+distro   = moos-ivp.org, themoos.org
 
 synopsis = The pAntler tool is used to launch multiple MOOS
   processes. This is a useful tool for starting up a set of MOOS

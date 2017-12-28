@@ -12,6 +12,6 @@ borndate =
 doc_url  = 
 license  = GPL
 group    = Libraries
-distro   = MOOS-IvP
+distro   = moos-ivp.org
 
 synopsis = The 

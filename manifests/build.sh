@@ -1,3 +1,3 @@
 #!/bin/bash -e
 
-manifest *.mfs *.gfs
+manifest -p *.mfs *.gfs *.loc

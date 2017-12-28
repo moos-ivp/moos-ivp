@@ -1,3 +1,3 @@
 #!/bin/bash -e
 
-rm -f Manifest* 
+rm -f Manifest* *~

@@ -12,7 +12,7 @@ borndate = 000101
 doc_url  = http://oceanai.mit.edu/ivpman/apps/pShare
 license  = GPL
 group    = MOOS Essentials
-distro   = Oxford MOOS
+distro   = moos-ivp.org, themoos.org
 
 synopsis = pShare is a newer version of pMOOSBridge that supports
   dynamic registrations and a few other important features used by
