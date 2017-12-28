@@ -18,7 +18,7 @@ synopsis = The lib_logic library implements simple Boolean logic,
   typically applied to MOOS variables. For example, an application
   like the helm, uTimerScript, or uQueryDB, may condition its actions
   on a MOOS variable having a certain value, such as "DEPLOY=true", or
-  more complex conditions such as "(RETURN != true) or (MISSION_TIME >
+  more complex conditions such as "((RETURN != true) or (MISSION_TIME >
   600")). This library also contains the implementation of the InfoBuffer
   class which is used by the helm to hold a snapshot of a subset of the 
   MOOSDB, directly accessed by helm behaviors. The InfoBuffer is also used
