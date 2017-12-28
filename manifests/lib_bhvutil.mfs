@@ -15,10 +15,10 @@ group    = Libraries, Core Autonomy, Helm Behaviors
 distro   = moos-ivp.org
 
 synopsis = The lib_bhvutil library contains utilities essential to
-  many IvP behavior implementations. This include the WaypointEngine
+  many IvP behavior implementations. This includes the WaypointEngine
   and LoiterEngine which do the heavy lifting for the Waypoint and
   Loiter behaviors. It also includes many "AOF" classes, which
   implement the underlying utility function used by many behaviors to
   build their IvP objective functions. (Honestly this library could be
-  merged with the lib_behaviors-marine library, but remains split what
-  would otherwise be a very large library.)
+  merged with the lib_behaviors-marine library, but remains split to
+  avoid what would otherwise be a very large library.)
