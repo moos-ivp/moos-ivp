@@ -90,6 +90,26 @@ synopsis = aloggrep is a command line utility that create a new alog
 
 
 //====================================================================
+module   = alogeplot
+type     = Command line utility
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Produce an encounter plot image from encounters from and alog file.
+depends  = lib_mbutil, lib_logutils, lib_encounters
+borndate = 160116
+doc_url  = Pending
+license  = GPL
+group    = ALog Toolbox
+distro   = moos-ivp.org
+
+synopsis = alogeplot is a command line utility that creates an image, 
+  an "encounter plot", rendering all encounters found in the given alog
+  file on a 2D plot with the axes of safety (based on CPA distance) 
+  and efficiency (application dependent).
+
+
+//====================================================================
 module   = aloghelm
 type     = Command line utility
 author   = Michael Benjamin
@@ -270,7 +290,9 @@ author   = Michael Benjamin
 contact  = mikerb@mit.edu
 org      = MIT
 thumb    = A GUI tool for replaying and analyzing one or more vehicle alog files
-depends  = lib_mbutil, lib_logutils, lib_marineview
+depends  = lib_mbutil, lib_logutils, lib_marineview, lib_helmivp, 
+           lib_geometry, lib_contacts, lib_ipfview, lib_encounters, 
+           lib_ivpbuild, lib_apputil
 borndate = 150215
 doc_url  = http://oceanai.mit.edu/ivpman/apps/alogview
 license  = GPL

@@ -12,7 +12,7 @@ depends  = lib_helmivp, lib_contacts, lib_behaviors-marine,
            
 group    = Core Autonomy
 borndate = 020101
-doc_url  = http://oceanai.mit.edu/ivpman/pHelmIvP
+doc_url  = http://oceanai.mit.edu/ivpman/apps/pHelmIvP
 license  = GPL
 distro   = moos-ivp.org
 

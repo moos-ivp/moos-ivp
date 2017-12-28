@@ -4,14 +4,18 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library implementing the node report message structure
 
 depends  = 
 
-borndate = 
-doc_url  = 
+borndate = 100227
+doc_url  = http://oceanai.mit.edu/ivpman/apps/pNodeReporter
 license  = GPL
 group    = Libraries, Core Autonomy
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The NODE_REPORT variable is used by many MOOS applications
+  to represent the time-stamped status of a vesssel position, heading
+  and speed, along with other fields of information on vessel type and
+  state. This library implementes the NodeReport class and methods for
+  serialization and deserialization.

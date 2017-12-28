@@ -5,7 +5,7 @@ author   = Michael Benjamin
 contact  = mikerb@mit.edu
 org      = MIT
 thumb    = Monitors ship traffic collisions and reports near collisions
-depends  = lib_mbutil, lib_apputil, lib_geometry, lib_ufield, lib_logic
+depends  = lib_mbutil, lib_apputil, lib_geometry, lib_ufield, lib_logic,
            lib_encounters, lib_contacts
 borndate = 151221
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uFldCollisionDetect
