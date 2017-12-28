@@ -12,5 +12,4 @@ synopsis = Library modules contain code used in typically at least two
   multi-use code in a library to be used by multiple applications. 
 
 group    = Libraries
-doc_url  = http://oceanai.mit.edu/ivpman/apps/simulation
 distro   = moos-ivp.org

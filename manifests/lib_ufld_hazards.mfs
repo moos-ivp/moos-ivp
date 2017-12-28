@@ -1,5 +1,5 @@
 //====================================================================
-module   = lib_hazards
+module   = lib_ufld_hazards
 type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
