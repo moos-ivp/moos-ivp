@@ -4,14 +4,18 @@ type     = Library
 author   = Michael Benjamin, Henrik Schmidt
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library holding most of the IvP behaviors of MOOS-IvP
 
 depends  = 
 
-borndate = 
-doc_url  = 
+borndate = 041101
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs
 license  = GPL
-group    = Libraries, Core Autonomy
+group    = Libraries, Core Autonomy, Helm Behaviors
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The lib_behaviors-marine library holds the two dozen+ IvP behaviors
+  distributed with the IvP Helm in the MOOS-IvP code base. Each of these 
+  behaviors is compiled into the pHelmIvP executable. Third party behaviors
+  may exist in other libraries and are typically compiled as shared libraries, 
+  loaded by the helm at run time.

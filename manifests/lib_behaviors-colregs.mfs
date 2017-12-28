@@ -4,7 +4,7 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library holding the COLREGS collision avoidance behavior implementation.
 
 depends  = 
 
@@ -14,4 +14,6 @@ license  = GPL
 group    = Libraries, Core Autonomy
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The lib_behaviors-colregs library holds a single behavior, the COLREGS
+  collision avoidance behavior. This behavior is also implemented by several other
+  classes in this library, and other libraries such as the lib_geometry library.
