@@ -4,14 +4,16 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library for holding classes shared across apps in the uField Toolbox
 
 depends  = 
 
-borndate = 
+borndate = 110107
 doc_url  = 
 license  = GPL
 group    = Libraries, uField Toolbox
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The lib_ufield library contains classes shared across apps
+  in the uField Toolbox, such as the NODE_MESSAGE class used in
+  uFldNodeBroker and uFldMessageHandler. 

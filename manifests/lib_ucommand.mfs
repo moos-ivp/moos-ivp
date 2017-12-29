@@ -4,14 +4,18 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library for supporting CommandFolios - mission control pre-defined sets of commands.
 
 depends  = 
 
-borndate = 
+borndate = 160701
 doc_url  = 
 license  = GPL
 group    = Libraries, Mission Control
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The lib_ucommand library contains class definitions for
+  CommandFolios which are pre-defined sets of mission-control
+  commands, and corresponding postings to the MOOSDB. It also contains
+  the superclass GUI for rendering CommandFolio button panels, used
+  by the pMarineViewer application and the uCommand GUI utility.
