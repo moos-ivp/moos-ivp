@@ -1,0 +1,28 @@
+//====================================================================
+module   = BHV_Loiter
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior for repeatedly traversing a given convex polygon of waypoints.
+
+depends  = 
+
+borndate = 050726
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/Loiter
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = A behavior for transiting to and repeatedly traversing a
+  set of waypoints forming a convex polygon. A similar effect can be
+  achieved with the Waypoint behavior but this behavior assumes a set
+  of waypoints forming a convex polygon to exploit certain useful
+  algorithms discussed below. It also utilizes the non-monotonic
+  arrival criteria used in the Waypoint behavior to avoid loop-backs
+  upon waypoint near-misses. It also robustly handles dynamic exit and
+  re-entry modes when or if the vehicle diverges from the loiter
+  region due to external events. t is dynamically reconfigurable to
+  allow a mission control module to repeatedly reassign the vehicle to
+  different loiter regions by using a single persistent instance of
+  the behavior.

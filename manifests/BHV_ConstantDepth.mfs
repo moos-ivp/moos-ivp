@@ -1,0 +1,21 @@
+//====================================================================
+module   = BHV_ConstantDepth
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior for specifying the desired depth of the vehicle.
+
+depends  = 
+
+borndate = 050603
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/ConstantDepth
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = This behavior will drive the vehicle at a specified
+  depth. This behavior merely expresses a preference for a particular
+  depth. If other behaviors also have a depth preference,
+  coordination/compromise will take place through the multi-objective
+  optimization process.

@@ -1,0 +1,26 @@
+//====================================================================
+module   = BHV_OpRegion
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior monitoring vehicle position to remain within a convex polygon region.
+
+depends  = 
+
+borndate = 050501
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/OpRegion
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = This behavior provides four different types of safety
+  functionality, (a) a boundary box given by a convex polygon in the
+  x-y or lat-lon plane, (b) an overall timeout, (c) a depth limit,
+  (d) an altitude limit. The behavior does not produce an objective
+  function to influence the vehicle to avoid violating these safety
+  constraints. This behavior merely monitors the constraints and posts
+  an error which results in the posting of all-stop commands, which
+  could put the vehicle into the PARK state if the helm is configured
+  with park_on_allstop is set to true.
+

@@ -1,0 +1,23 @@
+//====================================================================
+module   = BHV_PeriodicSurface
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior for periodically influencing the vehicle to surface.
+
+depends  = 
+
+borndate = 070221
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/PeriodicSurface
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = This behavior will periodically influence the depth and
+  speed of the vehicle while remaining neutral at other times. The
+  purpose is to bring the vehicle to the surface periodically to
+  achieve some event specified by the user, typically the receipt of a
+  GPS fix. Once this event is achieved, the behavior resets its
+  internal clock to a given period length and will remain idle until a
+  clock time-out occurs.

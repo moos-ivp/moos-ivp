@@ -1,0 +1,21 @@
+//====================================================================
+module   = BHV_ConstantHeading
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior for specifying the desired heading of the vehicle.
+
+depends  = 
+
+borndate = 050721
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/ConstantHeading
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = This behavior will drive the vehicle at a specified
+  heading. This behavior merely expresses a preference for a
+  particular heading. If other behaviors also have a heading
+  preference, coordination/compromise will take place through the
+  multi-objective optimization process.

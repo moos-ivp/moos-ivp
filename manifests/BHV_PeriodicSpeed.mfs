@@ -1,0 +1,26 @@
+//====================================================================
+module   = BHV_PeriodicSpeed
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior for periodically influencing the vehicle speed.
+
+depends  = 
+
+borndate = 060609
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/PeriodicSpeed
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = This behavior will periodically influence the speed of the
+  vehicle while remaining neutral at other times. The timing is
+  specified by a given period in which the influence is on (busy), and
+  a period specifying when the influence if off (lazy). It was
+  conceived for use on an AUV equipped with an acoustic modem to
+  periodically slow the vehicle to reduce self-noise and reduce
+  communication difficulty. One can also specify a flag (a MOOS
+  variable and value) to be posted at the start of the period to
+  prompt an outside action such as the start of communication
+  attempts.

@@ -1,0 +1,32 @@
+//====================================================================
+module   = BHV_Waypoint
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior for traversing a given set of waypoints.
+
+depends  = 
+
+borndate = 041101
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/Waypoint
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = The Waypoint behavior is used for transiting to a set of
+  specified waypoint in the x-y plane. The primary parameter is the
+  set of waypoints. Other key parameters are the inner and outer
+  radius around each waypoint that determine what it means to have met
+  the conditions for moving on to the next waypoint.  The behavior may
+  also be configured to perform a degree of track-line following, that
+  is, steering the vehicle not necessarily toward the next waypoint,
+  but to a point on the line between the previous and next
+  waypoint. This is to ensure the vehicle stays closer to this line in
+  the face of external forces such as wind or current. The behavior
+  may also be set to "repeat" the set of waypoints indefinitely, or a
+  fixed number of times. The waypoints may be specified either
+  directly at start-up, or supplied dynamically during operation of
+  the vehicle. There are also a number of accepted geometry patterns
+  that may be given in lieu of specific waypoints, such as polygons,
+  lawnmower pattern and so on.

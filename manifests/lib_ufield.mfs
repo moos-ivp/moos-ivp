@@ -4,7 +4,7 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for holding classes shared across apps in the uField Toolbox
+thumb    = A library for holding a few classes shared across apps in the uField Toolbox
 
 depends  = 
 
