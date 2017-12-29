@@ -1,0 +1,19 @@
+//====================================================================
+module   = BHV_Trail
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior for maneuvering ownship at a relative bearing and range to a contact.
+
+depends  = 
+
+borndate = 050603
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/Trail
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = This behavior will drive the vehicle to trail or follow
+  another specified vehicle at a given relative position. A tool for
+  "formation flying".

@@ -1,0 +1,35 @@
+//====================================================================
+module   = BHV_StationKeep
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior for holding a vehicle at a given position. 
+
+depends  = 
+
+borndate = 060825
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/StationKeep
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = This behavior is designed to keep the vehicle at a given
+  lat/lon or x,y station-keep position by varying the speed to the
+  station point as a linear function of its distance to the point. The
+  parameters allow one to choose the two distances between which the
+  speed varies linearly, the range of linear speeds, and a default
+  transit speed if the vehicle is outside the outer radius.  An
+  alternative to this station keeping behavior is an active loiter
+  around a very tight polygon with the Loiter behavior. This station
+  keeping behavior conserves energy and aims to minimize propulsor
+  use. The behavior can be configured to station-keep at a pre-set
+  point, or wherever the vehicle happens to be when the behavior
+  transitions into an active state.  The station-keep behavior was
+  initially developed for use on a small autonomous surface
+  craft. It's worth pointing out that a control system provided by a
+  vehicle manufacturer, i.e., the front-seat system, may have a native
+  station-keeping mode. In this case the activation of this behavior
+  would be replaced by a message from the backseat autonomy system to
+  invoke the station-keeping mode.
+    

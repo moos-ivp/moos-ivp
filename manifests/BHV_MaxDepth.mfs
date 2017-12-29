@@ -1,0 +1,28 @@
+//====================================================================
+module   = BHV_MaxDepth
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior to influence the vehicle to go no deeper than a given depth.
+
+depends  = 
+
+borndate = 140417
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/MaxDepth
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = This behavior will drive the vehicle within a configured
+  depth tolerance. This behavior merely expresses a preference for a
+  particular depth. If other behaviors also have a depth preference,
+  coordination/compromise will take place through the multi-objective
+  optimization process.  This behavior differs from the maximum depth
+  in the OpRegion behavior. In the MaxDepth behavior, an objective
+  function is produced to prevent the vehicle from exceeding the
+  maximum depth, perhaps tempering other behaviors that may prefer
+  deeper depths. In the OpRegion behavior there is no attempt to
+  influence the vehicle depth, but rather only to monitor the observed
+  depth and produce an error if the depth is exceeded.
+    

@@ -1,0 +1,25 @@
+//====================================================================
+module   = BHV_Timer
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior for posting to the MOOSDB based on other events or timing.
+
+depends  = 
+
+borndate = 050731
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/Timer
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = The Timer behavior is a somewhat unique behavior in that it
+  never produces an objective function. It has virtually no
+  functionality beyond what is derived from the parent IvPBehavior
+  class. It can be used to set a timer between the observation of one
+  or more events (with condition flags) and the posting of one or more
+  events (with end flags). The duration, duration_status,
+  duration_idle_decay, condition, runflag and endflag parameters are
+  all defined generally for behaviors. There are no additional
+  parameters defined for this behavior.

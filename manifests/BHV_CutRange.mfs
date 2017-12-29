@@ -1,0 +1,22 @@
+//====================================================================
+module   = BHV_CutRange
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior intercepting, closing range, to another moving vessel.
+
+depends  = 
+
+borndate = 050510
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/CutRange
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = This behavior will drive the vehicle to reduce the range
+  between itself and another specified vehicle (nearly the opposite of
+  the BHV_AvoidCollision behavior). A "patience" parameter may be set
+  to determine if the vehicle should drive straight toward the contact's
+  present position (no patience), or drive instead to an intercept point
+  at speed (high patience).

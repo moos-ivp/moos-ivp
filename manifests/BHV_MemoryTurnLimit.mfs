@@ -1,0 +1,28 @@
+//====================================================================
+module   = BHV_MemoryTurnLimit
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+
+thumb = A behavior preventing quick wrap-around turns, especiall with
+  towed sensor.
+
+depends  = 
+borndate = 060807
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/MemoryTurnLimit
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = The objective of the MemoryTurnLimit behavior is to avoid
+  vehicle turns that may cross back on its own path and risk damage to
+  the towed equipment. Its configuration is determined by the two
+  parameters which combine to set a vehicle turn radius
+  limit. However, it is not strictly described by a limited turn
+  radius; it stores a time-stamped history of recent recorded headings
+  and maintains a heading average, and forms its objective function on
+  a range deviation from that average. This behavior merely expresses
+  a preference for a particular heading. If other behaviors also have
+  a heading preference, coordination/compromise will take place
+  through the multi-objective optimization process.

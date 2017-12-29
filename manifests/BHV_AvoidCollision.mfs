@@ -1,0 +1,26 @@
+//====================================================================
+module   = BHV_AvoidCollision
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior for avoiding collision based primarily on CPA considerations.
+
+depends  = 
+
+borndate = 061118
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/AvoidCollision
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = The AvoidCollision behavior will produce IvP objective
+  functions designed to avoid collisions (and near collisions) with
+  another specified vehicle. The IvP functions produced by this
+  behavior are defined over the domain of posssible heading and speed
+  choices. The utility assigned to a point in this domain (a
+  heading-speed pair) depends in part on the calculated closest point
+  of approach (CPA) between the candidate maneuver leg, and the
+  contact leg formed from the contact's position and trajectory. A
+  further user-defined utility function is applied to the CPA
+  calculation for a candidate maneuver.

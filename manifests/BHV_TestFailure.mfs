@@ -1,0 +1,41 @@
+//====================================================================
+module   = BHV_TestFailure
+type     = Behavior
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A behavior designed to fail, to test the helm's handling of a behavior failure.
+
+depends  = 
+
+borndate = 111031
+doc_url  = http://oceanai.mit.edu/ivpman/bhvs/TestFailure
+license  = GPL
+group    = Helm Behaviors, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = The TestFailure behavior is used to test the helm in two
+  conceivable behavior failure modes. First, it may be used to
+  simulate a behavior that crashes and thereby results in the crash of
+  the helm. Second, it may be used to simulate a behavior that
+  consumes a sufficiently large enough amount of time so as cause the
+  helm to be considered "hung" by consumers of the helm output.
+  Recall that the helm is compiled, with behaviors, into a single MOOS
+  application. Although some behaviors may be compiled into shared
+  libraries loaded at run time, thereby not requiring a recompile, all
+  behaviors do run as part of a single helm process. A crashed
+  behavior results in a crashed helm. Furthermore the helm, on each
+  iteration, queries each participating behavior for its input. It
+  does not do this in separate threads, and there is no timeout with a
+  default reply should a behavior never answer. A hung behavior
+  results in a hung helm. These are architecture decisions that on one
+  hand allow a substantial amount of simplicity in the helm
+  implementation and debugging. Furthermore, it's not clear that a
+  graceful and safe policy exists to safely handle a rogue behavior
+  other than to either (a) abort the mission or (b) put the vehicle in
+  the hands of a much more conservatively configured "standby"
+  instance of the helm, perhaps just to get the vehicle home. This
+  behavior is used to simulate both kinds of rogue behaviors, a
+  behavior that crashes and a behavior the hangs. The crash is
+  implemented simply with an assert(0) statement, and the hang is
+  implemented with a long for-loop.
