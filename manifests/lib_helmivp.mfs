@@ -4,14 +4,21 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library holding most non-MOOS specific code of the IvP Helm
 
 depends  = 
 
-borndate = 
-doc_url  = 
+borndate = 041027
+doc_url  = http://oceanai.mit.edu/ivpman/helm
 license  = GPL
 group    = Libraries, Core Autonomy
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The lib_helmivp library contains a substantial portion of
+  the implementation of the IvP Helm. It does not contain the behavior
+  implementations (see lib_behaviors, lib_behaviors-marine), and it
+  contains no code dependent on MOOS libraries. This library contains
+  the definition of a BehaviorSet, the primary data structure managed
+  by the helm, holding all behaviors, behavior templates and the helm
+  information buffer. It contains all the code for reading a behavior
+  (.bhv) file for initialize the helm for a given mission.

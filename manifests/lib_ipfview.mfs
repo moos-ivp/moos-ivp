@@ -4,14 +4,19 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library with classes to support the rendering of IvP Functions
 
 depends  = 
 
-borndate = 
+borndate = 060112
 doc_url  = 
 license  = GPL
-group    = Libraries
+group    = Libraries, Mission Control
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The lib_ipfview library contains classes used by applications
+  rendering IvP functions. IvP functions are piecewise linearly defined,
+  and this library contains data structures for representing such pieces
+  in a form suitable for rapid rendering. It also contains a IPFViewer
+  superclass that applications derive from, doing most of the OpenGL
+  heavy lifting.
