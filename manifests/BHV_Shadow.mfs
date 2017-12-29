@@ -8,14 +8,13 @@ thumb    = A behavior matching the heading and speed of a contact vehicle.
 
 depends  = 
 
-borndate = 050721
+borndate = 050510
 doc_url  = http://oceanai.mit.edu/ivpman/bhvs/Shadow
 license  = GPL
 group    = Helm Behaviors, Core Autonomy
 distro   = moos-ivp.org
 
-synopsis = This behavior will drive the vehicle at a specified
-  heading. This behavior merely expresses a preference for a
-  particular heading. If other behaviors also have a heading
-  preference, coordination/compromise will take place through the
-  multi-objective optimization process.
+synopsis = This behavior will drive the vehicle to match the
+  trajectory of another specified vehicle. This behavior in
+  conjunction with the BHV_CutRange behavior can produce a "track and
+  trail" capability.
