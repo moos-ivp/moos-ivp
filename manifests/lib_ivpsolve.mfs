@@ -4,14 +4,18 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
+thumb    = A library for representing and solving IvP Problems. 
 
 depends  = 
 
-borndate = 
+borndate = 970101
 doc_url  = 
 license  = GPL
 group    = Libraries, Core Autonomy
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The lib_ivpsolve library contains the class for
+  representing IvP problems, including the methods for solving problem
+  instances. This library also includes more naive versions of the
+  solution algorithm. They remain to support benchmarking and
+  validation testing.

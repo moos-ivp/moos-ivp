@@ -4,14 +4,19 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library for 
 
+thumb    = A library common classes for supporting GUIs with marine
+           operation views.
+	   
 depends  = 
 
-borndate = 
+borndate = 041104
 doc_url  = 
 license  = GPL
 group    = Libraries
 distro   = moos-ivp.org
 
-synopsis = The 
+synopsis = The lib_marineview library implements GUI and OpenGL superclassses
+  used in applications involved in rendering marine operation views, e.g.,
+  pMarineViewer and alogview. This library also contains classes defining
+  the various vehicle shapes used in these viewers.
