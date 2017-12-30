@@ -1,5 +1,5 @@
 //====================================================================
-module   = iRemote
+module   = iRemoteLite
 type     = MOOS App
 author   = Paul Newman
 contact  = pnewman@robots.ox.ac.uk

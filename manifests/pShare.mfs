@@ -11,7 +11,7 @@ depends  = libMOOS
 borndate = 000101
 doc_url  = http://oceanai.mit.edu/ivpman/apps/pShare
 license  = GPL
-group    = MOOS Essentials
+group    = Oxford MOOS
 distro   = moos-ivp.org, themoos.org
 
 synopsis = pShare is a newer version of pMOOSBridge that supports
