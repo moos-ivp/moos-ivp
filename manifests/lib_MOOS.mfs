@@ -1,5 +1,5 @@
 //====================================================================
-module   = libMOOS
+module   = lib_MOOS
 type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu

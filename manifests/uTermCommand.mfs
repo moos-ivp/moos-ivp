@@ -6,7 +6,7 @@ contact  = mikerb@mit.edu, issues@moos-ivp.org
 org      = MIT
 thumb    = A terminal MOOS app for poking the MOOSDB with pre-configured pokes 
 
-depends  = lib_mbutil, lib_genutil
+depends  = lib_mbutil, lib_genutil, lib_MOOS
 
 borndate = 070626
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uTermCommand

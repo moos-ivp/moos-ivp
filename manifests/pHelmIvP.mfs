@@ -8,7 +8,7 @@ thumb    = A behavior-based helm with multi-objective optimization based
 depends  = lib_helmivp, lib_contacts, lib_behaviors-marine, 
            lib_behaviors-colregs, lib_behaviors, lib_bhvutil, lib_ivpbuild,
            lib_ivpcore, lib_ivpsolve, lib_geometry, lib_apputil, lib_mbutil,
-           lib_logic, lib_genutil
+           lib_logic, lib_genutil, lib_MOOS
            
 group    = Core Autonomy
 borndate = 020101

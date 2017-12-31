@@ -6,7 +6,7 @@ contact  = mikerb@mit.edu, issues@moos-ivp.org
 org      = MIT
 thumb    = A command line app for poking the MOOSDB
 
-depends  = lib_mbutil
+depends  = lib_mbutil, lib_MOOS
 
 borndate = 080509
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uPokeDB

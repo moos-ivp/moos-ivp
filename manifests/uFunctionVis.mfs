@@ -7,7 +7,7 @@ org      = MIT
 thumb    = A GUI based MOOS App for monitoring IvP Helm objective functions
 
 depends  = lib_mbutil, lib_genutil, lib_apputil, lib_ivpbuild, lib_geometry,
-           lib_ivpcore, lib_ipfview, lib_fltk, lib_fltk_gl
+           lib_ivpcore, lib_ipfview, lib_MOOS, lib_fltk, lib_fltk_gl
 	   
 borndate = 060512
 doc_url  = Pending

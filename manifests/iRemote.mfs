@@ -6,7 +6,7 @@ contact  = pnewman@robots.ox.ac.uk
 org      = Oxford
 thumb    = A remote control interface for manual vehicle control.
 
-depends  = libMOOS
+depends  = lib_MOOS
 
 borndate = 000101
 doc_url  = http://oceanai.mit.edu/ivpman/apps/iRemote

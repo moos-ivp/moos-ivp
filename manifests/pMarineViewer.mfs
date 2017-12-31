@@ -6,7 +6,7 @@ contact  = mikerb@mit.edu
 org      = MIT
 thumb    = Mission control GUI for monitoring, deploying and commanding vehicles
 depends  = lib_mbutil, lib_apputil, lib_geometry, lib_contacts, lib_ucommand,
-           lib_marineview, lib_genutil
+           lib_marineview, lib_genutil, lib_MOOS
 borndate = 041101
 doc_url  = http://oceanai.mit.edu/ivpman/apps/pMarineViewer
 license  = GPL

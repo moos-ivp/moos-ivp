@@ -6,7 +6,7 @@ contact  = pnewman@robots.ox.ac.uk
 org      = Oxford
 thumb    = A tool for connecting Matlab to a running MOOS community.
 
-depends  = libMOOS
+depends  = lib_MOOS
 
 borndate = 000101
 doc_url  = http://oceanai.mit.edu/ivpman/apps/iMatlab

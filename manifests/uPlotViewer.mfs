@@ -6,7 +6,7 @@ contact  = mikerb@mit.edu, issues@moos-ivp.org
 org      = MIT
 thumb    = A GUI based MOOS app for plotting a frequency bar graph
 
-depends  = lib_mbutil, lib_genutil, lib_fltk, lib_fltk_gl
+depends  = lib_mbutil, lib_genutil, lib_MOOS, lib_fltk, lib_fltk_gl
 
 borndate = 120518
 doc_url  = Pending

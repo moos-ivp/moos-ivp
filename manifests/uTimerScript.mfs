@@ -6,7 +6,7 @@ contact  = mikerb@mit.edu, issues@moos-ivp.org
 org      = MIT
 thumb    = An app for generating scripted pokes to the MOOSDB
 
-depends  = lib_mbutil, lib_apputil, lib_geometry, lib_logic
+depends  = lib_mbutil, lib_apputil, lib_geometry, lib_logic, lib_MOOS
 
 borndate = 090521
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uTimerScript
