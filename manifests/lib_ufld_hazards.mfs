@@ -11,7 +11,7 @@ depends  =
 borndate = 120112
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uFldHazardSensor
 license  = GPL
-group    = Libraries, uField Toolbox, 2.680
+group    = Libraries, 2.680
 distro   = moos-ivp.org
 
 synopsis = The lib_ufld_hazards library contains key classes used by the
