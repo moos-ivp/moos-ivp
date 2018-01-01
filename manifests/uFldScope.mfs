@@ -1,0 +1,33 @@
+//====================================================================
+module   = uFldScope
+type     = MOOS App
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Shoreside MOOS App for monitoring user-chosen fields across vehicles.
+depends  = lib_mbutil, lib_apputil, lib_MOOS
+borndate = 111204
+doc_url  = http://oceanai.mit.edu/ivpman/apps/uFldNodeScope
+license  = GPL
+group    = Simulation, uField ToolBox
+distro   = moos-ivp.org
+
+synopsis = The uFldScope application is a tool for collecting diverse
+  sets of information regarding a field of vehicles remotely
+  deployed. Suppose, for example, one is interested in monitoring, for
+  each deployed vehicle, the (a) helm mode, (b) total distance
+  travelled, (c) battery level, and (d) the number of times it has
+  visited a certain beacon. Each piece of information may be embedded
+  in one of a number of MOOS variables, perhaps along with a lot of
+  other information of no concern.
+
+  While there are several methods to scope on the above variable and
+  pick out the helm mode, the goal of the uFldScope tool is to have
+  this information readily visible for each vehicle perhaps alongside
+  other key fields for all vehicles, in a continuously updated simple
+  table.
+
+  The assumption is that uFldScope is running on a topside computer,
+  interacting with a user, and receiving information on deployed
+  vehicles primarily through node reports or other summary report
+  variables.
