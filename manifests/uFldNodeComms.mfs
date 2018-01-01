@@ -1,0 +1,33 @@
+//====================================================================
+module   = uFldNodeComms
+type     = MOOS App
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Shoreside MOOS App for conditionally sending messages between vehicles.
+depends  = lib_mbutil, lib_apputil, lib_ufield, lib_contacts, lib_geometry, lib_MOOS
+borndate = 111204
+doc_url  = http://oceanai.mit.edu/ivpman/apps/uFldNodeComms
+license  = GPL
+group    = Simulation, uField ToolBox
+distro   = moos-ivp.org
+
+synopsis = The uFldNodeComms application is a tool for handling node
+  reports and messages between vehicles. Rather than directly sending
+  node reports and messages between vehicles, uFldNodeComms acts as an
+  intermediary to conditionally pass a report or message on to another
+  vehicle, where conditions may be the inter-vehicle range or other
+  criteria. The assumption is that uFldNodeComms is running on a
+  topside or shoreside computer, and receiving information about the
+  present physical location of deployed vehicles through node reports.
+  In short, uFldNodeComms subscribes for incoming node reports for any
+  number of vehicles, and keeps the latest node report for each
+  vehicle. On each iteration, for a each vehicle, if the node report
+  has been updated, the report is published to a specially created
+  MOOS variable for the other n-1 vehicles. A user-configured criteria
+  is applied before publishing the new information. Typically this
+  criteria involves the range between vehicles, but the criteria may
+  be further involved. Often uFldNodeComms is run purely in
+  simulation, but is is often used in 2.680 with surface vehicles on
+  the water, to simulate the bandwidth and range communication challenges
+  found underwater and in mission with greater disances between vehicles.
