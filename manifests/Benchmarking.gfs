@@ -1,0 +1,13 @@
+//====================================================================
+module   = IvP Benchmark
+type     = group
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@moos-ivp.org
+org      = MIT
+
+synopsis =
+  
+group    = IvP Benchmark
+doc_url  = https://dspace.mit.edu/handle/1721.1/111117
+
+
