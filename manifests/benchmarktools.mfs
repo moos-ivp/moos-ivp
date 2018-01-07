@@ -51,7 +51,7 @@ author   = Michael Benjamin
 contact  = mikerb@mit.edu
 org      = MIT
 thumb    = A utility for reading a results (.isr) file and generating
-           file suitable for generating plots in GNUPlot, a (.dat) file.
+           file suitable for generating plots in GNUPlot.
 depends  = lib_mbutil, lib_ivpcore, lib_ivpbuild, lib_ivpsolve
 borndate = 160103
 doc_url  = https://dspace.mit.edu/handle/1721.1/111117
@@ -99,8 +99,7 @@ contact  = mikerb@mit.edu
 org      = MIT
 
 thumb = A utility for reading a results (.isr) file and generating a
-  LaTex (.tex) file with a table of the results read from the results
-  file.
+  LaTex (.tex) file with a table of the results.
 
 depends  = lib_mbutil, lib_apputil
 
