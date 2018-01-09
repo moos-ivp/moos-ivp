@@ -5,8 +5,8 @@ author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@moos-ivp.org
 org      = MIT
 
-synopsis = The IvP Benchmark utilities were design to test and analyze
-  the core IvP solution algorithm on randomly generated problem instance.
+synopsis = The IvP Benchmark utilities were designed to test and analyze
+  the core IvP solution algorithm on randomly generated problem instances.
   The tools include the ability to generate random problem instances with
   varying number of pieces, objective functions and dimensions, and tools
   for solving these instances in batch jobs. Other tools are included for
