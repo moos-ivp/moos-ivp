@@ -4,11 +4,10 @@ type     = Library
 author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
-thumb    = A library holding the COLREGS collision avoidance behavior implementation.
+thumb    = A library holding the COLREGS collision avoidance behavior 
+           implementation.
 
-depends  = 
-
-borndate = 
+borndate = 061118
 doc_url  = 
 license  = GPL
 group    = Libraries, Core Autonomy, Helm Behaviors

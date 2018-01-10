@@ -2,8 +2,8 @@
 module   = pEchoVar
 type     = MOOS App
 author   = Michael Benjamin
-contact  = mikerb@mit.edu
 org      = MIT
+contact  = mikerb@mit.edu
 thumb    = Re-post configured MOOS variables under a different name(s)
 depends  = lib_mbutil, lib_apputil, lib_logic, lib_geometry, lib_MOOS
 borndate = 060722
