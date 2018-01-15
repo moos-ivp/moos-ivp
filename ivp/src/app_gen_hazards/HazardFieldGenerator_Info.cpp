@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: HazardFieldGenerator_Invo.cpp                        */
+/*    FILE: HazardFieldGenerator_Info.cpp                        */
 /*    DATE: Apr 20th 2013                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
