@@ -303,7 +303,7 @@ void Common_IPF_GUI::cb_RotateX(Fl_Widget* o, int v) {
 
 //----------------------------------------- Rotate  Z
 inline void Common_IPF_GUI::cb_RotateZ_i(int amt) {
-  cout << "In Common_IPF_GUI::cb_RotateZ_i" << endl;
+  //cout << "In Common_IPF_GUI::cb_RotateZ_i" << endl;
   m_viewer->setParam("mod_z_rotation", (double)(amt));
 }
 void Common_IPF_GUI::cb_RotateZ(Fl_Widget* o, int v) {
