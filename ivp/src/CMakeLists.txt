@@ -131,6 +131,7 @@ SET(IVP_NON_GUI_LIBS
    lib_ufld_hazards
    lib_logutils
    lib_mbutil
+   lib_manifest
    lib_henrik_anneal
    )
 
@@ -218,6 +219,8 @@ SET(ROBOT_APPS
   app_alogclip
   app_aloghelm
   app_nsplug
+  app_manifest_test
+  app_manifest_wiki
   pEchoVar
   pEvalLoiter
   pHelmIvP
