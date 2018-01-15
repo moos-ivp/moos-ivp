@@ -545,10 +545,3 @@ void mag(const string& str, const string& xstr)
   cout << "\33[35m" << str << "\33[0m" << xstr << endl;
 }
 
-
-
-
-
-
-
-
