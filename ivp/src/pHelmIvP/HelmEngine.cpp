@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: HelmEngine.cpp (Formerly HelmEngineBeta              */
 /*    DATE: July 29th 2009                                       */
+/*    DATE: Aug 17th, 2017 Lazy evaluation added                 */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -49,6 +50,9 @@ HelmEngine::HelmEngine(IvPDomain g_ivp_domain,
   m_curr_time   = 0;
   m_ivp_problem = 0;
 
+  m_total_pcs_formed = 0;
+  m_total_pcs_cached = 0;
+  
   m_max_loop_time   = 0;
   m_max_solve_time  = 0;
   m_max_create_time = 0;
@@ -73,8 +77,9 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   m_bhv_set     = bhv_set;
   m_curr_time   = curr_time;
   m_helm_report.clear();
-  m_ivp_functions.clear();
-
+  //m_ivp_functions.clear();
+  m_map_ipfs.clear();
+  
   vector<string> templating_summary = m_bhv_set->getTemplatingSummary();
   m_helm_report.setTemplatingSummary(templating_summary);
   
@@ -92,7 +97,10 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   }
 
   handled = handled && part4_BuildAndSolveIvPProblem();
+  handled = handled && part5_FreeMemoryIPFs();
   handled = handled && part6_FinishHelmReport();
+
+
   return(m_helm_report);
 }
 
@@ -152,17 +160,33 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
   for(bhv_ix=0; bhv_ix<bhv_cnt; bhv_ix++) {
     if(m_bhv_set->getFilterLevel(bhv_ix) == filter_level) {
       string bhv_state;
+      bool   ipf_reuse = false;
       m_ipf_timer.start();
-      IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration, bhv_state);
-#if 1
-      BehaviorReport bhv_report;
-#endif     
-#if 0
-      BehaviorReport bhv_report = m_bhv_set->produceOFX(bhv_ix, m_iteration, 
-							bhv_state);
-#endif
-      m_ipf_timer.stop();
+      IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration,
+						bhv_state, ipf_reuse);
 
+
+      cout << "*******************************************************" << endl;
+      string bname = m_bhv_set->getDescriptor(bhv_ix);
+      cout << " Reuse (" << bname << "):" << boolToString(ipf_reuse) << endl;
+      cout << "*******************************************************" << endl;
+      
+      if(newof)
+	m_total_pcs_formed += (unsigned int)(newof->size());
+      
+      // check if reuse indicated. If so then get previous ipf
+      if(!newof && ipf_reuse) {
+	string bhv_name = m_bhv_set->getDescriptor(bhv_ix);
+	if(m_map_ipfs_prev.count(bhv_name)) {
+	  newof = m_map_ipfs_prev[bhv_name];
+	  m_map_ipfs_prev[bhv_name] = 0; // so it's not deleted 2x
+	  m_total_pcs_cached += (unsigned int)(newof->size());
+	}
+      }
+
+      BehaviorReport bhv_report;
+
+      m_ipf_timer.stop();
 
       // Determine the amt of time the bhv has been in this state
       // double state_elapsed = m_bhv_set->getStateElapsed(bhv_ix);
@@ -182,14 +206,12 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       
       string upd_summary = m_bhv_set->getUpdateSummary(bhv_ix);
       string descriptor  = m_bhv_set->getDescriptor(bhv_ix);
-
       
 #if 0 // mikerb jan 2016
       string msgk = descriptor + ", state=" + bhv_state;
       m_helm_report.addMsg(msgk);
 #endif
       
-
       string report_line = descriptor;
       if(!bhv_report.isEmpty()) {
 	double of_time  = m_ipf_timer.get_float_cpu_time();
@@ -219,7 +241,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 	int    pcs = newof->size();
 	m_helm_report.addActiveBHV(descriptor, state_time_entered, pwt,
 				   pcs, of_time, upd_summary, 1);
-	m_ivp_functions.push_back(newof);
+	//m_ivp_functions.push_back(newof);
+	m_map_ipfs[descriptor] = newof;
       }
 
       if(bhv_state=="running")
@@ -239,6 +262,7 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
   m_create_timer.stop();
 
   m_helm_report.setUpdateResults(m_bhv_set->getUpdateResults());
+
   return(true);
 }
 
@@ -259,6 +283,7 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 
 bool HelmEngine::part3_VerifyFunctionDomains()
 {
+#if 0
   // First build a vector of unique domain names strings from
   // all the objective functions.
   vector<string> of_domains;
@@ -277,7 +302,29 @@ bool HelmEngine::part3_VerifyFunctionDomains()
       }
     }
   }
+#endif
 
+#if 1
+  // First build vector of unique domain name strings from all ipfs
+  vector<string> of_domains;
+  map<string, IvPFunction*>::iterator p;
+  for(p=m_map_ipfs.begin(); p!=m_map_ipfs.end(); p++) {
+    IvPFunction *ipf = p->second;
+    if(ipf) {
+      int dim = ipf->getDim();
+      for(int j=0; j<dim; j++) {
+	string dname = ipf->getVarName(j);
+	bool already_present = false;
+	for(unsigned int k=0; k<of_domains.size(); k++)
+	  if(of_domains[k] == dname)
+	    already_present = true;
+	if(!already_present)
+	  of_domains.push_back(dname);
+      }
+    }
+  }
+#endif
+  
   // Now make sure there are no unknown domain names. All domain
   // names produced by objective functions should be present in
   // the ivp_domain structure.
@@ -332,6 +379,7 @@ bool HelmEngine::part3_VerifyFunctionDomains()
 
 bool HelmEngine::part4_BuildAndSolveIvPProblem(string phase)
 {
+#if 0
   unsigned int i, ipfs = m_ivp_functions.size(); 
   m_helm_report.addMsg("Number of IvP Functions: " + intToString(ipfs)); 
   m_helm_report.setOFNUM(ipfs);
@@ -349,9 +397,34 @@ bool HelmEngine::part4_BuildAndSolveIvPProblem(string phase)
   m_ivp_problem->alignOFs();
   m_ivp_problem->solve();
   m_solve_timer.stop();
+#endif
 
+#if 1
+  unsigned int ipfs = m_map_ipfs.size(); 
+  m_helm_report.addMsg("Number of IvP Functions: " + intToString(ipfs)); 
+  m_helm_report.setOFNUM(ipfs);
+  if(ipfs == 0) {
+    m_helm_report.addMsg("No Decision due to zero IvP functions");
+    return(false);
+  }
+
+  // Create, Prepare, and Solve the IvP problem
+  m_ivp_problem = new IvPProblem;
+  m_ivp_problem->setOwnerIPFs(false);
+  m_solve_timer.start();
+  map<string, IvPFunction*>::iterator p;
+  for(p=m_map_ipfs.begin(); p!=m_map_ipfs.end(); p++) {
+    if(p->second != 0)
+      m_ivp_problem->addOF(p->second);
+  }
+  m_ivp_problem->setDomain(m_sub_domain);
+  m_ivp_problem->alignOFs();
+  m_ivp_problem->solve();
+  m_solve_timer.stop();
+#endif
+  
   unsigned int dsize = m_sub_domain.size();
-  for(i=0; i<dsize; i++) {
+  for(unsigned int i=0; i<dsize; i++) {
     string dom_name = m_sub_domain.getVarName(i);
     double decision = m_ivp_problem->getResult(dom_name);
     string post_str = "DESIRED_" + toupper(dom_name);
@@ -371,6 +444,23 @@ bool HelmEngine::part4_BuildAndSolveIvPProblem(string phase)
   delete(m_ivp_problem);
   m_ivp_problem = 0;
   
+  return(true);
+}
+
+//------------------------------------------------------------------
+// Procedure: part5_FreeMemoryIPFs()
+
+bool HelmEngine::part5_FreeMemoryIPFs()
+{
+  map<string, IvPFunction*>::iterator p;
+  for(p=m_map_ipfs_prev.begin(); p!=m_map_ipfs_prev.end(); p++) {
+    IvPFunction* ipf = p->second;
+    if(ipf)
+      delete(ipf);
+  }
+
+  m_map_ipfs_prev = m_map_ipfs;
+
   return(true);
 }
 
@@ -402,7 +492,12 @@ bool HelmEngine::part6_FinishHelmReport()
   m_helm_report.setMaxCreateTime(m_max_create_time);
   m_helm_report.setMaxSolveTime(m_max_solve_time);
   m_helm_report.setMaxLoopTime(m_max_loop_time);
+  m_helm_report.setTotalPcsFormed(m_total_pcs_formed);
+  m_helm_report.setTotalPcsCached(m_total_pcs_cached);
 
+  m_total_pcs_formed = 0;
+  m_total_pcs_cached = 0;
+  
   return(true);
 }
 

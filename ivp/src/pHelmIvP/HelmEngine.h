@@ -24,6 +24,8 @@
 #ifndef HELM_ENGINE_HEADER
 #define HELM_ENGINE_HEADER
 
+#include <map>
+#include <string>
 #include <vector>
 #include "IvPDomain.h"
 #include "HelmReport.h"
@@ -47,6 +49,7 @@ protected:
   bool   part2_GetFunctionsFromBehaviorSet(int filter_level);
   bool   part3_VerifyFunctionDomains();
   bool   part4_BuildAndSolveIvPProblem(std::string phase="direct");
+  bool   part5_FreeMemoryIPFs();
   bool   part6_FinishHelmReport();
 
 protected:
@@ -58,6 +61,8 @@ protected:
   HelmReport   m_helm_report;
   BehaviorSet *m_bhv_set;
   double       m_curr_time;
+  unsigned int m_total_pcs_formed;
+  unsigned int m_total_pcs_cached;
   IvPProblem  *m_ivp_problem;
   InfoBuffer  *m_info_buffer;
 
@@ -65,7 +70,8 @@ protected:
   double       m_max_solve_time;
   double       m_max_loop_time;
 
-  std::vector<IvPFunction*> m_ivp_functions;
+  std::map<std::string, IvPFunction*> m_map_ipfs;
+  std::map<std::string, IvPFunction*> m_map_ipfs_prev;
 
   MBTimer  m_create_timer;
   MBTimer  m_ipf_timer;
@@ -73,10 +79,3 @@ protected:
 };
 
 #endif
-
-
-
-
-
-
-

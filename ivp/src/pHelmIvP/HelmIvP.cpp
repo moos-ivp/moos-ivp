@@ -404,6 +404,8 @@ bool HelmIvP::Iterate()
   
   Notify("IVPHELM_SUMMARY", report);
   Notify("IVPHELM_IPF_CNT", m_helm_report.getOFNUM());
+  Notify("IVPHELM_TOTAL_PCS_FORMED", m_helm_report.getTotalPcsFormed());
+  Notify("IVPHELM_TOTAL_PCS_CACHED", m_helm_report.getTotalPcsCached());
 
   string bhvs_active_list = m_helm_report.getActiveBehaviors(false);
   if(m_bhvs_active_list != bhvs_active_list) {
