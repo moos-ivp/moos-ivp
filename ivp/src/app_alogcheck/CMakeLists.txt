@@ -25,7 +25,6 @@ SET(HDR
 ADD_EXECUTABLE(alogcheck ${SRC} ${HDR} )
 
 TARGET_LINK_LIBRARIES(alogcheck
-  genutil
   mbutil
   logic
   logutils
