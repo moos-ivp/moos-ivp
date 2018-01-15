@@ -44,7 +44,9 @@ public:
   IvPBehavior(IvPDomain);
   virtual ~IvPBehavior() {}
 
+  virtual bool onRunStatePrior() {return(true);}
   virtual IvPFunction* onRunState() {return(0);}
+
   virtual BehaviorReport onRunState(std::string);
   virtual void setCPAEngine(const CPAEngine&) {};
   virtual bool setParam(std::string, std::string);
@@ -79,7 +81,9 @@ public:
   void   resetStateOK()                  {m_bhv_state_ok=true;}
 
   void    postMessage(std::string, std::string, std::string key="");
-protected:
+  void    noteLastRunCheck(bool, double);
+
+ protected:
   bool    setBehaviorName(std::string str);
   bool    augBehaviorName(std::string str);
   void    setBehaviorType(std::string str) {m_behavior_type = str;}
@@ -174,6 +178,9 @@ protected:
   bool        m_perpetual; 
   int         m_filter_level;
 
+  bool        m_last_runcheck_post;
+  double      m_last_runcheck_time;
+  
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.
   // This variable should only be accessible via (1) postEMessage()

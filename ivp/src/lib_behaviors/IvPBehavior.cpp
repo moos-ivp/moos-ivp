@@ -53,6 +53,9 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_bad_updates  = 0;
   m_perpetual    = false;
   m_filter_level = 0;
+
+  m_last_runcheck_post = false;
+  m_last_runcheck_time = 0;
   
   m_duration     = -1;
   m_duration_started         =  false;
@@ -377,6 +380,15 @@ void IvPBehavior::postMessage(string var, string sdata, string key)
 }
 
 //-----------------------------------------------------------
+// Procedure: noteLastRunCheck()
+
+void IvPBehavior::noteLastRunCheck(bool post, double timestamp)
+{
+  m_last_runcheck_post = post;
+  m_last_runcheck_time = timestamp;
+}
+
+//-----------------------------------------------------------
 // Procedure: postMessage
 //     Notes: If the key is set to be "repeatable" then in effect 
 //            there is no key is associated with this variable-value 
@@ -567,6 +579,7 @@ bool IvPBehavior::checkConditions()
 
 }
 
+
 //-----------------------------------------------------------
 // Procedure: checkForDurationReset()
 
@@ -582,6 +595,8 @@ bool IvPBehavior::checkForDurationReset()
   double d_result = m_info_buffer->dQuery(varname, ok_d);
 
   bool reset_triggered = false;
+  if(m_duration_reset_val == "")
+    reset_triggered = true;
   if(ok_s && (m_duration_reset_val == s_result))
     reset_triggered = true;
   if(ok_d && (atof(m_duration_reset_val.c_str()) == d_result))
@@ -602,8 +617,9 @@ bool IvPBehavior::checkForDurationReset()
   }
   else
     return(false);
-
 }
+
+
 
 //-----------------------------------------------------------
 // Procedure: durationReset()
