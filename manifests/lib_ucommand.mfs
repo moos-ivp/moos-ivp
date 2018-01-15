@@ -9,7 +9,7 @@ thumb    = A library for supporting CommandFolios - mission control pre-defined 
 depends  = 
 
 borndate = 160701
-doc_url  = 
+doc_url  = Pending
 license  = GPL
 group    = Libraries, Mission Control
 distro   = moos-ivp.org

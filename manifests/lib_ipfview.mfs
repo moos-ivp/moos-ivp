@@ -9,7 +9,7 @@ thumb    = A library with classes to support the rendering of IvP Functions
 depends  = 
 
 borndate = 060112
-doc_url  = 
+doc_url  = Pending
 license  = GPL
 group    = Libraries, Mission Control
 distro   = moos-ivp.org

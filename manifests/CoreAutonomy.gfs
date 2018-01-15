@@ -8,5 +8,6 @@ org      = MIT
 synopsis =
   
 group    = Core Autonomy
+distro   = moos-ivp.org
 doc_url  = http://oceanai.mit.edu/ivpman
 

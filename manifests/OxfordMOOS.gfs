@@ -20,5 +20,7 @@ synopsis = MOOS is often described as autonomy middleware which
   exercises with substantial robotic resources at stake.
   
 group    = Oxford MOOS
+distro   = http://www.themoos.org
 doc_url  = http://www.themoos.org
+
 

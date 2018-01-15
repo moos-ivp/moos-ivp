@@ -6,10 +6,8 @@ contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
 thumb    = A library used by applications having both a MOOS and user interface
 
-depends  = 
-
 borndate = 041104
-doc_url  = 
+doc_url  = Pending
 license  = GPL
 group    = Libraries, General Utility
 distro   = moos-ivp.org

@@ -11,7 +11,7 @@ thumb    = A library common classes for supporting GUIs with marine
 depends  = 
 
 borndate = 041104
-doc_url  = 
+doc_url  = Pending
 license  = GPL
 group    = Libraries
 distro   = moos-ivp.org

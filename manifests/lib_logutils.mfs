@@ -9,7 +9,7 @@ thumb    = A library of utilities to support many of the apps in the ALog Toolbo
 depends  = 
 
 borndate = 050531
-doc_url  = 
+doc_url  = Pending
 license  = GPL
 group    = Libraries, ALog Toolbox
 distro   = moos-ivp.org

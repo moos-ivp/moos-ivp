@@ -9,7 +9,8 @@ synopsis = The IvP Helm is a behavior based architecture where missions are
   comprised of one or more behaviors influencing the sequence of heading and
   speed decisions (and depth if an underwater vehicle). This group of modules
   comprises the behaviors presently distributed with the IvP Helm. 
-  
+
+distro   = moos-ivp.org  
 group    = Helm Behaviors
 doc_url  = http://oceanai.mit.edu/ivpman
 

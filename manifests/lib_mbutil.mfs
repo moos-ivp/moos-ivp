@@ -9,7 +9,7 @@ thumb    = A library of kitchen-sink utilities used by many applications.
 depends  = 
 
 borndate = 970101
-doc_url  = 
+doc_url  = Pending
 license  = GPL
 group    = Libraries, General Utility
 distro   = moos-ivp.org
@@ -19,3 +19,5 @@ synopsis = The lib_mbutil library contains many basic utility classes
   many string manipulation utilities, classes supporting definitions
   of supported colors in many apps, utilities for reading from files
   into a vector of strings and many more.
+
+

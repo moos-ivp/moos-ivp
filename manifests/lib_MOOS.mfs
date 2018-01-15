@@ -6,12 +6,10 @@ contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
 thumb    = Core MOOS comms, MOOS App superclass, and utitlities implementation.
 
-depends  = 
-
 borndate = 000101
-doc_url  = 
+doc_url  = themoos.org
 license  = GPL
 group    = Libraries, Oxford MOOS
-distro   = moos-ivp.org
+distro   = themoos.org, moos-ivp.org
 
 synopsis = 

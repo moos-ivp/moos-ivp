@@ -9,7 +9,7 @@ thumb    = A library for holding a few classes shared across apps in the uField 
 depends  = 
 
 borndate = 110107
-doc_url  = 
+doc_url  = Pending
 license  = GPL
 group    = Libraries, uField Toolbox
 distro   = moos-ivp.org
