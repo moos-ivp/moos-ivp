@@ -222,7 +222,7 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
     return(0);
   }
 
-  if(polyAft(m_osx, m_osy, m_osh, m_obstacle_orig))
+  if(polyAft(m_osx, m_osy, m_osh, m_obstacle_orig, 20))
     return(0);
   
   // Part 3: Determine the relevance
@@ -253,7 +253,7 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
     reflector.create(m_build_info);
   else {
     reflector.setParam("uniform_piece", "discrete@course:3,speed:3");
-    reflector.setParam("uniform_grid",  "discrete@course:6,speed:6");
+    reflector.setParam("uniform_grid",  "discrete@course:3,speed:3");
     reflector.create();
   }
   if(!reflector.stateOK()) {
@@ -397,6 +397,7 @@ void BHV_AvoidObstacle::postViewablePolygons()
     m_obstacle_orig.set_active(true);
     m_obstacle_orig.set_color("edge", m_hint_obst_edge_color);
     m_obstacle_orig.set_color("vertex", m_hint_obst_vertex_color);
+    m_obstacle_orig.set_color("vertex", "pink");
     
     // If the obstacle is relevant, perhaps draw filled in
     if(m_obstacle_relevance > 0) {
@@ -490,6 +491,9 @@ bool BHV_AvoidObstacle::applyBuffer()
       XYPolygon new_poly = m_obstacle_orig;
       double grow_amt = ((double)(j) / 100.0) * m_buffer_dist;
       new_poly.grow_by_amt(grow_amt);
+      os_in_newb = new_poly.contains(m_osx, m_osy);
+      if(!os_in_newb && (new_poly.dist_to_poly(m_osx, m_osy) < 1))
+	os_in_newb = true;
       os_in_newb = new_poly.contains(m_osx, m_osy);
       if(!os_in_newb) 
 	m_obstacle_buff = new_poly;
