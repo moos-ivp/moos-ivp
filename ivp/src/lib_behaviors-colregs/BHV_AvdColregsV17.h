@@ -36,6 +36,7 @@ class BHV_AvdColregsV17 : public IvPContactBehavior {
   ~BHV_AvdColregsV17() {};
   
   void         onHelmStart();
+  bool         onRunStatePrior();
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();

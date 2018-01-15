@@ -212,6 +212,21 @@ void BHV_AvdColregsV17::onCompleteState()
 }
 
 //-----------------------------------------------------------
+// Procedure: onRunStatePrior()
+
+bool BHV_AvdColregsV17::onRunStatePrior() 
+{
+  if(m_last_runcheck_post) {
+    m_last_runcheck_post = false;
+    return(false);
+  }
+
+  m_last_runcheck_post = true;
+  return(true);
+}
+
+
+//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_AvdColregsV17::onRunState() 
@@ -458,8 +473,6 @@ void BHV_AvdColregsV17::checkModeOvertaking()
   //=====================================================================  
   // Part 4: SUBMODE determination is made
   //=====================================================================  
-
-  cout << "Setting mode to overtaking!!!!!" << endl;
 
   // Determine which side we should aspire to pass on based on present
   // trajectory.
@@ -970,7 +983,6 @@ void BHV_AvdColregsV17::checkModeStandOnOT()
     resetAvoidModes();
     return;
   }
-  cout << "(1) In checkModeStandOnOT() - b" << endl;
 
   //=====================================================================  
   // Part 2: RELEASE conditions: if already in standon_ot mode, check mode-exit 
@@ -987,7 +999,6 @@ void BHV_AvdColregsV17::checkModeStandOnOT()
       return;
     }
   }
-  cout << "(1) In checkModeStandOnOT() - c" << endl;
     
   //=====================================================================  
   // Part 3: ENTRY conditions checked it not already in StandOnOT mode
@@ -1008,19 +1019,16 @@ void BHV_AvdColregsV17::checkModeStandOnOT()
       resetAvoidModes();
       return;
     }
-    cout << "(1) In checkModeStandOnOT() - j" << endl;
     // Check if contact is on trajectory to pass ownship
     if(!m_cn_passes_os) {
       resetAvoidModes();
       return;
     }
-    cout << "(1) In checkModeStandOnOT() - k" << endl;
     // Check if cpa is of concern
     if(m_os_curr_cpa_dist > m_max_util_cpa_dist) {
       resetAvoidModes();
       return;
     }
-    cout << "(1) In checkModeStandOnOT() -L " << endl;
   }
 
   // Entry criteria passed - set the mode to "standon_ot"
@@ -1152,7 +1160,6 @@ IvPFunction* BHV_AvdColregsV17::buildCPA_IPF()
   m_debug4 = "Basic CPA AvoidCollision AOF initialized OK";
 
   OF_Reflector reflector(&aof, 1);
-  cout << "build_info:" << m_build_info << endl;
   reflector.create(m_build_info);
   IvPFunction *ipf = reflector.extractOF();
 
