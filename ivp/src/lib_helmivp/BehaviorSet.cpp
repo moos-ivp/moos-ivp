@@ -153,7 +153,7 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
   cout << "BehaviorSet: Total # of specs: " << vsize << endl;
   for(i=0; i<vsize; i++) {
     BehaviorSpec spec = m_behavior_specs[i];
-    SpecBuild sbuild  = buildBehaviorFromSpec(spec);
+    SpecBuild sbuild  = buildBehaviorFromSpec(spec, "", true);
     // All spec_builds should be put in the vector of spec_builds, even
     // if they were not valid. The only ones not added were validly 
     // created builds from a behavior with templating type = spawn. We
@@ -217,7 +217,7 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
   // If all the builds were successful, populate the behavior_set
   // with all the new IvPBehaviors, and add LifeEvents.
   unsigned int k, ksize = spec_builds.size();
-  cout << "total specs::::::::::::::::::::::::" << ksize << endl;
+  cout << "total specs::" << ksize << endl;
   for(k=0; k<ksize; k++) {
     IvPBehavior *bhv = spec_builds[k].getIvPBehavior();
     addBehavior(bhv);
@@ -238,7 +238,8 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
 // Procedure: buildBehaviorFromSpec()
 
 SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec, 
-					     string update_str)
+					     string update_str,
+					     bool on_startup)
 {
   SpecBuild    sbuild;
   string       bhv_kind = spec.getKind();
@@ -329,7 +330,8 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     sbuild.setIvPBehavior(bhv);
     // Added Oct 1313 mikerb - allow template behaviors to make an initial
     // posting on helm startup, even if no instance made on startup (or ever).
-    bhv->onHelmStart();
+    if(on_startup)
+      bhv->onHelmStart();
     // The behavior may now have some messages (var-data pairs) ready for 
     // retrieval
   }
@@ -467,7 +469,8 @@ string BehaviorSet::getUpdateVarSummary()
 
 IvPFunction* BehaviorSet::produceOF(unsigned int ix, 
 				    unsigned int iteration, 
-				    string& new_activity_state)
+				    string& new_activity_state,
+				    bool& ipf_reuse)
 {
   // Quick index sanity check
   if(ix >= m_bhv_entry.size())
@@ -529,7 +532,13 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
       bhv->onIdleToRunState();
 
     // Step 1: Ask the behavior to build a IvP function
-    ipf = bhv->onRunState();
+    bool need_to_run = bhv->onRunStatePrior();
+    ipf_reuse = !need_to_run;
+    bhv->noteLastRunCheck(need_to_run, getCurrTime());
+
+    if(need_to_run)
+      ipf = bhv->onRunState();
+
     // Step 2: If IvP function contains NaN components, report and abort
     if(ipf && !ipf->freeOfNan()) {
       bhv->postEMessage("NaN detected in IvP Function");
@@ -564,7 +573,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
       bhv->statusInfoAdd("pcs", intToString(pcs));
     }
     // Step 6: Handle where behavior decided not to product an IPF
-    else {
+    else if(!ipf && !ipf_reuse) {
       if(old_activity_state == "active")
 	bhv->postFlags("inactiveflags", true); // true means repeatable
       bhv->onInactiveState();

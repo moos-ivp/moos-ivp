@@ -51,7 +51,8 @@ public:
   void       setDomain(IvPDomain domain);
   void       connectInfoBuffer(InfoBuffer*);
   bool       buildBehaviorsFromSpecs();
-  SpecBuild  buildBehaviorFromSpec(BehaviorSpec spec, std::string s="");
+  SpecBuild  buildBehaviorFromSpec(BehaviorSpec spec, std::string s="",
+				   bool on_startup=false);
   bool       handlePossibleSpawnings();
   bool       refreshMapUpdateVars();
   
@@ -73,7 +74,7 @@ public:
   bool         stateOK(unsigned int);
   void         resetStateOK();
   IvPFunction* produceOF(unsigned int ix, unsigned int iter, 
-			 std::string& activity_state);
+			 std::string& activity_state, bool& ipf_reuse);
 
   BehaviorReport produceOFX(unsigned int ix, unsigned int iter, 
 			    std::string& activity_state);

@@ -51,6 +51,9 @@ void HelmReport::initialize()
   m_max_create_time = 0;
   m_max_solve_time  = 0;
   m_max_loop_time   = 0;
+
+  m_total_pcs_formed = 0;
+  m_total_pcs_cached = 0;
 }
 
 //-----------------------------------------------------------
@@ -457,6 +460,10 @@ string HelmReport::getReportAsString(const HelmReport& prep, bool full) const
 
   if(full || (m_ofnum != prep.getOFNUM()))
     report += (",ofnum=" + uintToString(m_ofnum));
+  if(full || (m_total_pcs_formed != prep.getTotalPcsFormed()))
+    report += (",total_pcs_formed=" + uintToString(m_total_pcs_formed));
+  if(full || (m_total_pcs_cached != prep.getTotalPcsCached()))
+    report += (",total_pcs_cached=" + uintToString(m_total_pcs_cached));
   if(full || (m_warning_count != prep.getWarnings()))
     report += (",warnings=" + uintToString(m_warning_count));
   if(full || (m_solve_time != prep.getSolveTime()))
@@ -558,6 +565,8 @@ void HelmReport::print() const
   cout << "warning_count:" << m_warning_count << endl;
   cout << "iteration:" << m_iteration << endl;
   cout << "ofnum:" << m_ofnum << endl;
+  cout << "total_pcs_formed:" << m_total_pcs_formed << endl;
+  cout << "total_pcs_cached:" << m_total_pcs_cached << endl;
   cout << "halted:" << boolToString(m_halted) << endl;
 }
 
@@ -589,9 +598,11 @@ list<string> HelmReport::formattedSummary(double curr_time, bool verbose) const
 
   string str;
 
-  rlist.push_back("  Helm Iteration: " + uintToString(m_iteration));
-  rlist.push_back("  IvP Functions:  " + uintToString(m_ofnum));
-  rlist.push_back("  Mode(s):        " + m_modes);
+  rlist.push_back("  Helm Iteration:  " + uintToString(m_iteration));
+  rlist.push_back("  IvP Functions:   " + uintToString(m_ofnum));
+  rlist.push_back("  Pieces (Formed): " + uintToString(m_total_pcs_formed));
+  rlist.push_back("  Pieces (Cached): " + uintToString(m_total_pcs_cached));
+  rlist.push_back("  Mode(s):         " + m_modes);
 
   str =  "  SolveTime:   " + doubleToString(m_solve_time,2);
   str += "   (max=" + doubleToString(m_max_solve_time,2) + ")";

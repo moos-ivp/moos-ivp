@@ -43,6 +43,8 @@ HelmReport string2HelmReport(const string& str)
 //
 //   Example: iter=231,
 //            ofnum=3,
+//            total_pcs_formed=1123,
+//            total_pcs_cached=341,
 //            warnings=0,
 //            solve_time=0.01,
 //            create_time=0.0,    
@@ -77,6 +79,10 @@ HelmReport string2HelmReport(const string& str,
       report.setIteration(atoi(right.c_str()));
     else if(left == "ofnum")
       report.setOFNUM(atoi(right.c_str()));
+    else if(left == "total_pcs_formed")
+      report.setTotalPcsFormed(atoi(right.c_str()));
+    else if(left == "total_pcs_cached")
+      report.setTotalPcsCached(atoi(right.c_str()));
     else if(left == "warnings")
       report.setWarningCount(atoi(right.c_str()));
     else if(left == "solve_time")

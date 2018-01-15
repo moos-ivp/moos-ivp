@@ -67,6 +67,8 @@ public:
   void  setHalted(bool v)                    {m_halted=v;}
   void  setIteration(unsigned int iter)      {m_iteration=iter;}
   void  setOFNUM(unsigned int ofnum)         {m_ofnum=ofnum;}
+  void  setTotalPcsFormed(unsigned int v)    {m_total_pcs_formed=v;}
+  void  setTotalPcsCached(unsigned int v)    {m_total_pcs_cached=v;}
   void  setCreateTime(double t)              {m_create_time=t;}
   void  setSolveTime(double t)               {m_solve_time=t;}
   void  setMaxLoopTime(double t)             {m_max_loop_time=t;}
@@ -80,6 +82,8 @@ public:
   unsigned int getWarnings()   const  {return(m_warning_count);}
   unsigned int getIteration()  const  {return(m_iteration);}
   unsigned int getOFNUM()      const  {return(m_ofnum);}
+  unsigned int getTotalPcsFormed() const {return(m_total_pcs_formed);}
+  unsigned int getTotalPcsCached() const {return(m_total_pcs_cached);}
   double       getTimeUTC()    const  {return(m_time_utc);}
   double       getCreateTime() const  {return(m_create_time);}
   double       getSolveTime()  const  {return(m_solve_time);}
@@ -161,6 +165,9 @@ protected:
   double        m_solve_time;      // + 
   bool          m_halted;          // +
 
+  unsigned int  m_total_pcs_formed;
+  unsigned int  m_total_pcs_cached;
+  
   double        m_max_create_time;
   double        m_max_solve_time;
   double        m_max_loop_time;
@@ -169,13 +176,3 @@ protected:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
