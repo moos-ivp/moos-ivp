@@ -78,11 +78,11 @@ void FFV_Viewer::draw()
 {
   Common_IPFViewer::draw();
 
-  cout << "============================================" << endl;
-  cout << "m_draw_base  = " << boolToString(m_draw_base) << endl;
-  cout << "m_draw_frame = " << boolToString(m_draw_frame) << endl;
-  cout << "m_scale = " << m_scale << endl;
-  cout << "============================================" << endl;
+  //cout << "============================================" << endl;
+  //cout << "m_draw_base  = " << boolToString(m_draw_base) << endl;
+  //cout << "m_draw_frame = " << boolToString(m_draw_frame) << endl;
+  //cout << "m_scale = " << m_scale << endl;
+  //cout << "============================================" << endl;
 
   glPushMatrix();
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);

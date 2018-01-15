@@ -34,32 +34,6 @@
 
 using namespace std;
 
-void pause(int);
-void idleProc(void*);
-
-void pause(int nMS)
-{
-#ifdef _WIN32
-	Sleep(nMS);
-#else
-  timespec TimeSpec;
-  TimeSpec.tv_sec 	= nMS / 1000;
-  TimeSpec.tv_nsec 	= (nMS%1000) *1000000;
-  
-  nanosleep(&TimeSpec,NULL);
-#endif
-}
-
-
-//--------------------------------------------------------
-// Procedure: idleProc
-
-void idleProc(void *)
-{
-  Fl::flush();
-  pause(10);
-}
-
 //--------------------------------------------------------
 // Procedure: main
 
@@ -166,12 +140,3 @@ int main(int argc, char *argv[])
 
   return Fl::run();
 }
-
-
-
-
-
-
-
-
-

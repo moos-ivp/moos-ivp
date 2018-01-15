@@ -20,7 +20,7 @@ set_base_ipf=-35
 set_base_aof=-232
 
 
-#uniform_piece = discrete @ x:50,y:50
+uniform_piece = discrete @ x:50,y:50
 #refine_region = native   @ x:-100:150, y:-250:-50
 #refine_region = discrete   @ x:-50:150, y:-0:250
 #refine_piece  = discrete @ x:10, y:10

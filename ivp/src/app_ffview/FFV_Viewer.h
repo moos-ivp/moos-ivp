@@ -51,6 +51,7 @@ public:
   void   toggleAOF()              {m_draw_aof = !m_draw_aof; redraw();}
   void   toggleIPF()              {m_draw_ipf = !m_draw_ipf; redraw();}
   void   toggleSmartAug();
+
   void   makeUniformIPF();
   void   makeUniformIPFxN(int amt);
   void   modColorMap(const std::string&);
