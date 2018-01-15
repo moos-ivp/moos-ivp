@@ -24,7 +24,6 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <cassert>
 #include "BoxSet.h"
 
 using namespace std;
