@@ -11,5 +11,5 @@ synopsis = The Simulation Toolbox contains a number of tools for supporting
    the vehicle on the shoreside.
 
 group    = Simulation
-doc_url  = http://oceanai.mit.edu/ivpman/apps/simulation
+doc_url  = http://oceanai.mit.edu/ivpman/tools
 distro   = moos-ivp.org
