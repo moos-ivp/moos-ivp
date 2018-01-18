@@ -1,0 +1,20 @@
+//====================================================================
+module   = manifest_test
+type     = Command line utility
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = A command line utility for correctness testing of manifest files.
+depends  = lib_mbutil, lib_apputil, lib_manifest
+borndate = 180109
+doc_url  = http://oceanai.mit.edu/moos-ivp/manifest-howto
+license  = GPL
+group    = General Utility
+distro   = moos-ivp.org
+
+synopsis = The manifest test utility is a convenience utility for
+  manifest authors. It will check for syntax and semantic correctness
+  of manifest files. Ideally this utility is used by all manifest
+  authors prior to sharing their content. This utility is included in
+  the MOOS-IvP codebase in releases after 17.7, and in the development
+  trunk as of this writing.

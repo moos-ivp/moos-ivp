@@ -1,0 +1,23 @@
+//====================================================================
+module   = manifest_wiki
+type     = Command line utility
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = A command line utility for generating web content from manifest files.
+depends  = lib_mbutil, lib_apputil, lib_manifest
+borndate = 180109
+doc_url  = http://oceanai.mit.edu/moos-ivp/manifest-howto
+license  = GPL
+group    = General Utility
+distro   = moos-ivp.org
+
+synopsis = The manifest wiki utility is used for auto-generation of
+  web pages. While this is also part of the MOOS-IvP distribution, it
+  primarily does its thing on the web server hosting MOOS-IvP to
+  generate web content as manifest files change. The typical user or
+  author of manifest content will never need to run this. But the end
+  goal is to generate valid manifest file content as input to
+  manifest_wiki to produce rich manifest web content. All of the
+  manifest web pages on the moos-ivp.org website were produced by
+  manifest wiki.
