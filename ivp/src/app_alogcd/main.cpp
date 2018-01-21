@@ -95,7 +95,7 @@ void showHelpAndExit()
   cout << "  -t,--terse      Write terse output.                  " << endl;
   cout << "                                                       " << endl;
   cout << "Further Notes:                                         " << endl;
-  cout << "  (1) The order of arguments is irrelevent.            " << endl;
+  cout << "  (1) The order of arguments is irrelevant.            " << endl;
   cout << "  (2) Only first specified .alog file is reported on.  " << endl;
   cout << endl;
   exit(0);

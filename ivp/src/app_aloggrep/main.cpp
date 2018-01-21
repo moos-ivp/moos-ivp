@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
     cout << "                                                           " << endl;
     cout << "Further Notes:                                             " << endl;
     cout << "  (1) The second alog is the output file. Otherwise the    " << endl;
-    cout << "      order of arguments is irrelevent.                    " << endl;
+    cout << "      order of arguments is irrelevant.                    " << endl;
     cout << "  (2) VAR* matches any MOOS variable starting with VAR     " << endl;
     cout << "  (3) See also: alogscan, alogrm, alogclip, alogsplit,     " << endl;
     cout << "      alogview                                             " << endl;

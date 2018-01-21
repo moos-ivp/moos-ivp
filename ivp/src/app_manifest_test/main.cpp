@@ -11,6 +11,7 @@
 #include "Populator_ManifestSet.h"
 #include "ManifestTester.h"
 #include "MBUtils.h"
+#include "ReleaseInfo.h"
 
 using namespace std;
 
@@ -35,10 +36,14 @@ int main(int argc, char *argv[])
   for(int i=1; i<argc; i++) {
     string arg = argv[i];
     
-    if((arg == "-v") || (arg == "--verbose"))
-      verbose = true;
-    else if((arg == "-h") || (arg == "--help") || (arg == "-help"))
+    if((arg == "-h") || (arg == "--help") || (arg == "-help"))
       showHelpAndExit();
+    else if((arg == "-v") || (arg == "--version") || (arg == "-version")) {
+      showReleaseInfo("manifest_test", "gpl");
+      return(0);
+    }
+    if(arg == "--verbose")
+      verbose = true;
     else if(strBegins(arg, "--ignore_libs="))
       ignore_libs = arg.substr(14);
     else if((arg == "-p") || (arg == "--print"))

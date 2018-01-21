@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     cout << "  --notrunc     Don't truncate MOOSVAR output (on by default)" << endl;
     cout << "                                                           " << endl;
     cout << "Further Notes:                                             " << endl;
-    cout << "  (1) The order of arguments is irrelevent.                " << endl;
+    cout << "  (1) The order of arguments is irrelevant.                " << endl;
     cout << "  (2) Only the first specified .alog file is reported on.  " << endl;
     cout << "  (3) Arguments that are not one of the above options or an" << endl;
     cout << "      alog file, are interpreted as MOOS variables on which" << endl;
