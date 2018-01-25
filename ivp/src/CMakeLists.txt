@@ -228,6 +228,7 @@ SET(ROBOT_APPS
   pBasicContactMgr
   pDeadManPost
   pNodeReporter
+  pObstacleMgr
   pFrontEstimate
   uFldMessageHandler
   uFldNodeBroker
