@@ -126,7 +126,6 @@ SET(IVP_NON_GUI_LIBS
    lib_encounters
    lib_apputil
    lib_contacts
-   lib_ucommand
    lib_ufield
    lib_ufld_hazards
    lib_logutils
@@ -147,11 +146,11 @@ IF (${WIN32})
   # Add the libtiff headers directory
   INCLUDE_DIRECTORIES( AFTER ${TIFF_SRC_DIR} )
   # Set the IVP GUI libraries for Windows
-  SET(IVP_GUI_LIBS lib_ipfview lib_marineview lib_tiff lib_zaicview)
+  SET(IVP_GUI_LIBS lib_ipfview lib_marineview lib_tiff lib_zaicview lib_ucommand)
   
 ELSE (${WIN32})
   # Linux, Mac
-  SET(IVP_GUI_LIBS lib_ipfview lib_marineview lib_zaicview)
+  SET(IVP_GUI_LIBS lib_ipfview lib_marineview lib_zaicview lib_ucommand)
 ENDIF (${WIN32})
 
 
