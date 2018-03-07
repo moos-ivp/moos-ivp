@@ -484,7 +484,7 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   else
     window_val = m_gui->getCmdGUI()->isVisible();
 
-  cout << "window_val: " << uintToString(window_val) << endl;
+  //cout << "window_val: " << uintToString(window_val) << endl;
 
   if(window_val == 0)
     m_gui->closeCmdGUI();
