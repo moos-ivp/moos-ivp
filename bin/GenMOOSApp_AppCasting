@@ -250,14 +250,14 @@ bool ${1}::OnStartUp()
   for(p=sParams.begin(); p!=sParams.end(); p++) {
     string orig  = *p;
     string line  = *p;
-    string param = toupper(biteStringX(line, '='));
+    string param = tolower(biteStringX(line, '='));
     string value = line;
 
     bool handled = false;
-    if(param == "FOO") {
+    if(param == "foo") {
       handled = true;
     }
-    else if(param == "BAR") {
+    else if(param == "bar") {
       handled = true;
     }
 

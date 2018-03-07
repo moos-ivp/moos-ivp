@@ -234,14 +234,14 @@ bool ${1}::OnStartUp()
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
     list<string>::iterator p;
     for(p=sParams.begin(); p!=sParams.end(); p++) {
-      string original_line = *p;
-      string param = stripBlankEnds(toupper(biteString(*p, '=')));
-      string value = stripBlankEnds(*p);
+      string line  = *p;
+      string param = tolower(biteStringX(line, '='));
+      string value = line;
       
-      if(param == "FOO") {
+      if(param == "foo") {
         //handled
       }
-      else if(param == "BAR") {
+      else if(param == "bar") {
         //handled
       }
     }
