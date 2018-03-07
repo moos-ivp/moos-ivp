@@ -60,12 +60,12 @@ Behavior=BHV_AvoidObstacle
   name       = avd_obstacles
   pwt        = 500
   condition  = DEPLOY = true
-	templating = spawn
+  templating = spawn
   updates    = OBSTACLE_ALERT
 
 
      allowable_ttc = 5 
-       buffer_dist = 8
+       buffer_dist = 5
     pwt_outer_dist = 20
     pwt_inner_dist = 10
     completed_dist = 25
