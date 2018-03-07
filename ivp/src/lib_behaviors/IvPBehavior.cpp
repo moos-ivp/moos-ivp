@@ -595,8 +595,6 @@ bool IvPBehavior::checkForDurationReset()
   double d_result = m_info_buffer->dQuery(varname, ok_d);
 
   bool reset_triggered = false;
-  if(m_duration_reset_val == "")
-    reset_triggered = true;
   if(ok_s && (m_duration_reset_val == s_result))
     reset_triggered = true;
   if(ok_d && (atof(m_duration_reset_val.c_str()) == d_result))
