@@ -72,6 +72,7 @@ Behavior = BHV_StationKeep
      duration = 60
      endflag  = STATION = false
      perpetual = true
+     duration_idle_decay = false
 
      center_activate = true   // default
          inner_radius = 8       // default
