@@ -59,6 +59,8 @@ bool PXR_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     if(key == m_incoming_var) 
       m_tally_recd++;
   }
+  cout << "In On New Mail!!!!!!!!!!!!" << endl; 
+  return(false);
   return(true);
 }
 
@@ -134,24 +136,25 @@ bool PXR_MOOSApp::Iterate()
 bool PXR_MOOSApp::OnStartUp()
 {
   STRING_LIST sParams;
-  m_MissionReader.EnableVerbatimQuoting(false);
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
-    
+  m_MissionReader.EnableVerbatimQuoting(true);
+  //m_MissionReader.EnableVerbatimQuoting(false);
+  m_MissionReader.GetConfigurationAndPreserveSpace(GetAppName(), sParams);
+
+  //m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
-    string sLine     = *p;
-    string sVarName  = MOOSChomp(sLine, "=");
-    sLine = stripBlankEnds(sLine);
+    string line  = *p;
+    cout << "[" << line << "]" << endl;
+
+    string param = tolower(biteStringX(line, '='));
+    string value = line;
     
-    if(MOOSStrCmp(sVarName, "INCOMING_VAR")) {
-      if(!strContains(sLine, " "))
-	m_incoming_var = stripBlankEnds(sLine);
-    }
-    
-    else if(MOOSStrCmp(sVarName, "OUTGOING_VAR")) {
-      if(!strContains(sLine, " "))
-	m_outgoing_var = stripBlankEnds(sLine);
-    }
+    if(param == "incoming_var")
+      m_incoming_var = value;
+
+    else if(param == "outgoing_var")
+      m_outgoing_var = value;
   }
 
   RegisterVariables();
