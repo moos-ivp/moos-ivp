@@ -101,8 +101,8 @@ void ZAIC_HLEQ_Model::moveX(double delta)
 
   IvPDomain domain = m_zaic_leq->getIvPDomain();
 
-  double dom_low  = domain.getVarLow(0);
-  double dom_high = domain.getVarHigh(0);
+  //double dom_low  = domain.getVarLow(0);
+  //double dom_high = domain.getVarHigh(0);
   
   if(m_curr_mode==0) {   // Altering Summit
     double summit = m_zaic_leq->getParam("summit");
