@@ -1,0 +1,107 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = pShare          @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+}
+
+#include plug_pHostInfo.moos
+
+//---------------------------------------------------------
+// pShare Config Block  (Created from Plugin)
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  localhost:$(SHARE_LISTEN)
+  input = route =  multicast_8
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  QBRIDGE  = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE  = STATION
+  QBRIDGE  = MOOS_MANUAL_OVERRIDE
+
+  BRIDGE   = src=RETURN_ALL, alias=RETURN
+  BRIDGE   = src=RETURN_$V,  alias=RETURN
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 4
+  CommsTick     = 4
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  //SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file              = forrest19.tif
+  set_pan_x              = -90
+  set_pan_y              = -280
+  zoom                   = 0.65
+  vehicles_shape_scale   = 1.5
+  vehicles_name_mode     = names+shortmode
+  polygon_viewable_labels = false
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
+
+  scope = PHI_HOST_INFO
+
+  action = STATION_ALL = false
+  action = STATION_ALL = true
+
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false
+  button_two   = RETURN  # RETURN_ALL=true
+  button_three = STATION:T  # STATION_ALL=true
+  button_four  = STATION:F  # STATION_ALL=false
+}
