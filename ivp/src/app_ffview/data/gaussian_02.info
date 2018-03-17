@@ -1,6 +1,6 @@
 uniform_piece  = discrete @ x:75,y:75
 refine_region  = native   @ x:-50:150, y:-250:-50
-refine_piece   = discrete @ x:5, y:5
+refine_piece   = discrete @ x:150, y:50
 smart_percent  = 25
 
 
