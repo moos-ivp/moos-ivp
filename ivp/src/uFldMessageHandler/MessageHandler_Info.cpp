@@ -89,7 +89,9 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  strict_addressing = false   // default                        ");
+  blk("  strict_addressing = false  // default                         ");
+  blk("  appcast_trunc_msg = 75     // default: the number of chars per");
+  blk("                             // line in the appcasting output   ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
