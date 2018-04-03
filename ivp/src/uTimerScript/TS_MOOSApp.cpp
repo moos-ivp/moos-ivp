@@ -147,6 +147,7 @@ bool TS_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_paused = false;
       else if(pause_val == "toggle")
 	m_paused = !m_paused;
+      updateInfoBuffer(msg);
     }
     else 
       updateInfoBuffer(msg);
