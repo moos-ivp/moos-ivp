@@ -117,6 +117,9 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
+  blk("  UMH_SUMMARY_MSGS = total=23,valid=18,rejected=5               ");
+  blk("                                                                ");
+  blk("                                                                ");
   blk("  Publications are determined by the node message content.      ");
   blk("                                                                ");
   exit(0);
