@@ -1016,6 +1016,12 @@ double IvPBehavior::getBufferLocalTime()
 
 //-----------------------------------------------------------
 // Procedure: getBufferTimeVal()
+//   Purpose: Return the amount of time since this variable was last
+//            updated in the info buffer
+//   Returns: 0 if for some reason the info buffer is null
+//            -1 if the info buffer knows nothing about this variable.
+//            N otherwise the time since last updated.
+//      Note: If updated on the current helm iteration, will be zero.
 
 double IvPBehavior::getBufferTimeVal(string varname)
 {
