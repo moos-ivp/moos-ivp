@@ -1,4 +1,10 @@
 
+alogview
+===============================================
+Fixed a bug in alogview affecting the construction of the collective
+objective function to be rendered. Previously it was not properly 
+applying the weights of each function.
+
 pEchoVar
 ===============================================
 o Added Boolean Switching. For a configuration "Echo = FOO !-> BAR", if a string 
