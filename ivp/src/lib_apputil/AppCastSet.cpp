@@ -82,6 +82,10 @@ bool AppCastSet::addAppCast(const AppCast& appcast)
       m_proc_id_count++;
     }
 
+    // If exceeded the {a-z}, then start using {A-Z}
+    if((c > 122) && (c <= 146))
+      c = c - 58;
+    
     string id(1,c);
     m_map_id_src[id] = proc;
   }
