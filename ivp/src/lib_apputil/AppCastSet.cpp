@@ -75,7 +75,9 @@ bool AppCastSet::addAppCast(const AppCast& appcast)
     char c = 97 + (int)(m_proc_id_count);  // 'a' + cnt
     m_proc_id_count++;
 
-    if((c=='e') || (c=='h') || (c=='p') || (c=='r') || (c=='n')) {
+    if((c=='e') || (c=='h') || (c=='p') ||
+       (c=='r') || (c=='n') || (c=='s') ||
+       (c=='q')) {
       c++;
       m_proc_id_count++;
     }
