@@ -75,11 +75,13 @@ bool AppCastSet::addAppCast(const AppCast& appcast)
     char c = 97 + (int)(m_proc_id_count);  // 'a' + cnt
     m_proc_id_count++;
 
-    if((c=='e') || (c=='h') || (c=='p') ||
-       (c=='r') || (c=='n') || (c=='s') ||
-       (c=='q')) {
+    if((c=='e') || (c=='h') || (c=='n')) {
       c++;
       m_proc_id_count++;
+    }
+    else if((c=='p') || (c=='q') || (c=='r') || (c=='s')) {
+      c += 4;
+      m_proc_id_count += 4;
     }
 
     // If exceeded the {a-z}, then start using {A-Z}
