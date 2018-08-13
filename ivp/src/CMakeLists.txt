@@ -215,6 +215,7 @@ SET(ROBOT_APPS
   app_alogeplot
   app_alogrm
   app_alogiter
+  app_alogcat
   app_alogclip
   app_aloghelm
   app_nsplug
