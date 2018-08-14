@@ -42,6 +42,8 @@ void   stripInsigDigits(std::string& line);
 void   shiftTimeStamp(std::string& line, double logstart);
 double getLogStart(const std::string& line);
 double getLogStartFromFile(const std::string& filename);
+double getDataStartTimeFromFile(const std::string& filename);
+double getDataEndTimeFromFile(const std::string& filename);
 void   addVectorKey(std::vector<std::string>&, 
 		    std::vector<bool>&, std::string);
 

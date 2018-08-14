@@ -325,6 +325,73 @@ double getLogStartFromFile(const string& filestr)
   return(0);
 }
   
+//-------------------------------------------------------------
+// Procedure: getDataStartTimeFromFile
+//      Note: Get the smallest timestamp found in the file. This will
+//            be in local time (secs since beginning of log_start) 
+
+double getDataStartTimeFromFile(const string& filestr)
+{
+  FILE *f = fopen(filestr.c_str(), "r");
+  if(!f)
+    return(0);
+
+  double smallest_timestamp = -999;
+  bool done = false;
+  while(!done) {
+    string line = getNextRawLine(f);
+    if(line == "eof")
+      done = true;
+    else {
+      string time_str = getTimeStamp(line);
+      double timestamp = atof(time_str.c_str());
+
+      // Early done check. We don't make the absolute assumption that
+      // alog entries are in order. But once we find that the current
+      // timestamp is >10 secs older than the youngest, we can safely
+      // assume we have the youngest.
+      if((smallest_timestamp > 0) &&
+	 (timestamp > (smallest_timestamp+10)))
+	 done = true;
+	 
+      if((smallest_timestamp == -999) || (timestamp < smallest_timestamp))
+	smallest_timestamp = timestamp;
+    }
+  }
+
+  fclose(f);
+  return(smallest_timestamp);
+}
+  
+//-------------------------------------------------------------
+// Procedure: getDataEndTimeFromFile
+//      Note: Get the oldest timestamp found in the file. This will
+//            be in local time (secs since beginning of log_start) 
+
+double getDataEndTimeFromFile(const string& filestr)
+{
+  FILE *f = fopen(filestr.c_str(), "r");
+  if(!f)
+    return(0);
+
+  double oldest_timestamp = -1;
+  bool done = false;
+  while(!done) {
+    string line = getNextRawLine(f);
+    if(line == "eof")
+      done = true;
+    else {
+      string time_str = getTimeStamp(line);
+      double timestamp = atof(time_str.c_str());
+      if(timestamp > oldest_timestamp)
+	oldest_timestamp = timestamp;
+    }
+  }
+
+  fclose(f);
+  return(oldest_timestamp);
+}
+  
 
 //--------------------------------------------------------
 // Procedure: addVectorKey
