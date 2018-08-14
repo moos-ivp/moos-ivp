@@ -53,7 +53,9 @@ int main(int argc, char *argv[])
     else if((argi == "-h") || (argi == "--help") || (argi =="-help"))
       showHelpAndExit();
 
-    if(strEnds(argi, ".alog")) 
+    else if(strBegins(argi, "--new="))
+      handled = handler.setNewALogFile(argi.substr(6));
+    else if(strEnds(argi, ".alog")) 
       handled = handler.addALogFile(argi);
     else if((argi == "--verbose") || (argi == "-v") || (argi == "-verbose"))
       handler.setVerbose();

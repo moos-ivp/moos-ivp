@@ -19,6 +19,7 @@ SET(SRC
 ADD_EXECUTABLE(alogcat ${SRC}	)
    
 TARGET_LINK_LIBRARIES(alogcat
+  logutils
   mbutil
   ${SYSTEM_LIBS})
 
