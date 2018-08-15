@@ -342,10 +342,10 @@ double getDataStartTimeFromFile(const string& filestr)
     string line = getNextRawLine(f);
     if(line == "eof")
       done = true;
-    else {
+    else if((line.length() != 0) && (line[0] != '%')) {
       string time_str = getTimeStamp(line);
       double timestamp = atof(time_str.c_str());
-
+      
       // Early done check. We don't make the absolute assumption that
       // alog entries are in order. But once we find that the current
       // timestamp is >10 secs older than the youngest, we can safely
