@@ -113,12 +113,16 @@ bool ALogCatHandler::preCheck()
     m_utc_log_start_times.push_back(utc_log_start_time);
 
     double local_data_start_time = getDataStartTimeFromFile(m_alog_files[i]);
-    cout << " " << doubleToString(local_data_start_time, 2) << endl;
+    cout << " " << doubleToString(local_data_start_time, 2);
     double utc_data_start_time = utc_log_start_time + local_data_start_time;
-    m_utc_data_start_times.push_back(utc_data_start_time);
+    cout << "  (" << doubleToString(utc_data_start_time, 2) << ")" << endl;
     
-    double utc_data_end_time = getDataEndTimeFromFile(m_alog_files[i]);
-    cout << " " << doubleToString(utc_data_end_time, 2) << endl;
+    double local_data_end_time = getDataEndTimeFromFile(m_alog_files[i]);
+    cout << " " << doubleToString(local_data_end_time, 2);
+    double utc_data_end_time = utc_log_start_time + local_data_end_time;
+    cout << "  (" << doubleToString(utc_data_end_time, 2) << ")" << endl;
+    
+    m_utc_data_start_times.push_back(utc_data_start_time);
     m_utc_data_end_times.push_back(utc_data_end_time);
   }
 
@@ -147,6 +151,49 @@ bool ALogCatHandler::preCheck()
       }
     }
   }
+  
+
+  // Part 5: Sort by End Time
+  vector<string> new_alog_files;
+  vector<double> new_utc_log_start_times;
+  vector<double> new_utc_data_start_times;
+  vector<double> new_utc_data_end_times;
+
+  unsigned int amt = m_alog_files.size();
+  for(unsigned int i=0; i<amt; i++) {
+    unsigned int earliest_end_ix = amt;
+    double earliest_utc = 0;
+
+    for(unsigned int j=0; j<amt; j++) {
+      if(m_alog_files[j] != "") {
+	if((earliest_end_ix == amt) ||
+	   (m_utc_data_end_times[j] < earliest_utc)) {
+	  earliest_end_ix = j;
+	  earliest_utc = m_utc_data_end_times[j];
+	}
+      }
+    }
+    new_alog_files.push_back(m_alog_files[earliest_end_ix]);
+    new_utc_log_start_times.push_back(m_utc_log_start_times[earliest_end_ix]);
+    new_utc_data_start_times.push_back(m_utc_data_start_times[earliest_end_ix]);
+    new_utc_data_end_times.push_back(m_utc_data_end_times[earliest_end_ix]);
+    m_alog_files[earliest_end_ix] = "";
+  }
+
+  m_alog_files = new_alog_files;
+  m_utc_log_start_times = new_utc_log_start_times;
+  m_utc_data_start_times = new_utc_data_start_times;
+  m_utc_data_end_times = new_utc_data_end_times;
+
+
+  // Part 6
+  for(unsigned int i=0; i<m_alog_files.size(); i++) {
+    cout << "new alog file: [" << m_alog_files[i] << "]" << endl;
+    cout << "   " << doubleToString(m_utc_log_start_times[i],2) << endl;
+    cout << "   " << doubleToString(m_utc_data_start_times[i],2) << endl;
+    cout << "   " << doubleToString(m_utc_data_end_times[i],2) << endl;
+  }
+
 
   return(true);
 }
