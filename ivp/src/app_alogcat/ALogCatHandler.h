@@ -43,7 +43,8 @@ class ALogCatHandler
 
  protected:
   bool      preCheck();
-  bool      processFile(std::string);
+  bool      processFirstFile();
+  bool      processOtherFiles();
 
  protected:
   bool        m_force_overwrite;
@@ -56,6 +57,8 @@ class ALogCatHandler
   std::vector<double>      m_utc_data_start_times;   
   std::vector<double>      m_utc_data_end_times;     
   std::string  m_outfile;
+
+  FILE *m_file_out;
 };
 
 #endif 

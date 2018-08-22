@@ -37,6 +37,8 @@ ALogCatHandler::ALogCatHandler()
 {
   m_force_overwrite = false;
   m_verbose = false;
+
+  m_file_out = 0;
 }
 
 //--------------------------------------------------------
@@ -62,15 +64,131 @@ bool ALogCatHandler::addALogFile(string alog_file)
 
 bool ALogCatHandler::process()
 {
-  preCheck();
+  if(!preCheck())
+    return(false);
+
+  if(!processFirstFile())
+    return(false);
+
+  if(!processOtherFiles())
+    return(false);
+
   return(true);
 }
 
 //------------------------------------------------------------------------
-// Procedure: processFile()
+// Procedure: processFirstFile()
 
-bool ALogCatHandler::processFile(string infile)
+bool ALogCatHandler::processFirstFile()
 {
+  cout << "Processing first file" << endl;
+  // Part 1: Sanity checks
+  if(m_file_out != 0) {
+    cout << "Expected null output file pointer at the start" << endl;
+    return(false);
+  }
+  if(m_outfile == "") {
+    cout << "No output file provided." << endl; 
+    return(false);
+  }
+
+  if(m_alog_files.size() <= 1)
+    return(false);
+
+  // Part 2: Open the first alog file
+  string first_file = m_alog_files[0];
+  FILE *file_in = fopen(first_file.c_str(), "r");
+  if(!file_in) {
+    cout << "Failed to open file [" << first_file << "] for reading." << endl;
+    return(false);
+  }
+
+  // Part 3: Ensure we can write to the output file, and create file ptr
+  m_file_out = fopen(m_outfile.c_str(), "w");
+  if(m_file_out == 0) {
+    cout << "Failed to open file [" << m_outfile << "] for writing." << endl;
+    fclose(file_in);
+    return(false);
+  }
+
+  bool done = false;
+  while(!done) {
+    string line = getNextRawLine(file_in);
+    if(line == "eof") 
+      done = true;
+    else
+      fprintf(m_file_out, "%s\n", line.c_str());
+  }
+  
+  fclose(file_in);
+  return(true);
+}
+
+//------------------------------------------------------------------------
+// Procedure: processOtherFiles()
+
+bool ALogCatHandler::processOtherFiles()
+{
+  // Part 1: Sanity checks
+  if(!m_file_out) {
+    cout << "Expected valid output file pointer." << endl;
+    return(false);
+  }
+  if(m_alog_files.size() <= 1)
+    return(false);
+
+
+  double first_utc_log_start_time = m_utc_log_start_times[0];
+  
+  for(unsigned int i=1; i<m_alog_files.size(); i++) {
+    
+    string file = m_alog_files[i];
+    FILE *file_in = fopen(file.c_str(), "r");
+    if(!file_in) {
+      cout << "Failed to open file [" << file << "] for reading." << endl;
+      return(false);
+    }
+      
+    double utc_log_start_time = m_utc_log_start_times[i];
+
+    double delta = utc_log_start_time - first_utc_log_start_time;
+
+    bool done = false;
+    unsigned long int linenum = 0;
+    while(!done) {
+      linenum++;
+      string line_raw = getNextRawLine(file_in);
+      // Part 1: Check for end of file
+      if(line_raw == "eof") 
+	break;
+
+      // Part 2: Check if the line is a comment and handle or ignore
+      if((line_raw.length() > 0) && (line_raw.at(0) == '%'))
+	continue;
+
+      // Part 3: Get the timestamp of the line, ensure its valid num
+      string timestamp = getTimeStamp(line_raw);
+      if(!isNumber(timestamp))
+	continue;
+      
+      // Part 4: Apply the delta. Show warning if negative tstamp
+      double dtime = atof(timestamp.c_str());
+      dtime += delta;
+      if(dtime < 0) {
+	cout << "[" << doubleToString(delta,2) << "]";
+	cout << "[" << doubleToString(dtime,2) << "]";
+	cout << "Negative tstamp in file: " << file;
+	cout << ", on line " << linenum << endl;
+      }
+          
+      // Part 5: Write the new line back to the output file
+      string stime = doubleToString(dtime, 3);
+      string line = findReplace(line_raw, timestamp, stime);
+      fprintf(m_file_out, "%s\n", line.c_str());
+    }
+    fclose(file_in);
+  }
+
   return(true);
 }
 
