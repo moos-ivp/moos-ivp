@@ -42,6 +42,19 @@ ALogCatHandler::ALogCatHandler()
 }
 
 //--------------------------------------------------------
+// Procedure: setVerbose()
+
+void ALogCatHandler::setVerbose()
+{
+  if(!m_verbose) {
+    m_verbose = true;
+    return;
+  }
+
+  m_debug = true;
+}
+
+//--------------------------------------------------------
 // Procedure: addALogFile()
 
 bool ALogCatHandler::addALogFile(string alog_file)
@@ -73,6 +86,9 @@ bool ALogCatHandler::process()
   if(!processOtherFiles())
     return(false);
 
+  if(m_verbose)
+    cout << "Created new alog file: " << m_outfile << endl;
+  
   return(true);
 }
 
@@ -81,8 +97,13 @@ bool ALogCatHandler::process()
 
 bool ALogCatHandler::processFirstFile()
 {
-  cout << "Processing first file" << endl;
   // Part 1: Sanity checks
+  if(m_alog_files.size() <= 1)
+    return(false);
+  string first_file = m_alog_files[0];
+  if(m_verbose) 
+    cout << "Processing file: " << first_file << endl;
+
   if(m_file_out != 0) {
     cout << "Expected null output file pointer at the start" << endl;
     return(false);
@@ -92,11 +113,8 @@ bool ALogCatHandler::processFirstFile()
     return(false);
   }
 
-  if(m_alog_files.size() <= 1)
-    return(false);
 
   // Part 2: Open the first alog file
-  string first_file = m_alog_files[0];
   FILE *file_in = fopen(first_file.c_str(), "r");
   if(!file_in) {
     cout << "Failed to open file [" << first_file << "] for reading." << endl;
@@ -143,6 +161,9 @@ bool ALogCatHandler::processOtherFiles()
   for(unsigned int i=1; i<m_alog_files.size(); i++) {
     
     string file = m_alog_files[i];
+    if(m_verbose) 
+      cout << "Processing file: " << file << endl;
+
     FILE *file_in = fopen(file.c_str(), "r");
     if(!file_in) {
       cout << "Failed to open file [" << file << "] for reading." << endl;
@@ -198,6 +219,9 @@ bool ALogCatHandler::processOtherFiles()
 
 bool ALogCatHandler::preCheck()
 {
+  if(m_verbose)
+    cout << "Performing a pre-check on the list of alog files..." << endl;
+  
   // Part 1: Check the validity of alog files
   if(m_alog_files.size() <= 1) {
     cout << "Two or more input alog files must be provided. Exiting." << endl;
@@ -211,6 +235,13 @@ bool ALogCatHandler::preCheck()
     }
   }
   
+  // Part 2: Check if output file exists
+  if(okFileToRead(m_outfile) && !m_force_overwrite) {
+    cout << "Output file [" << m_outfile << "] already exists. " << endl;
+    cout << "Use the --force option to force an overwite." << endl;
+    return(false);
+  }
+
   // Part 2: Check the validity of output alog file
   if(m_outfile == "") {
     cout << "Must provide an output file, e.g., --new=file.alog " << endl;
@@ -224,21 +255,24 @@ bool ALogCatHandler::preCheck()
 
   // Part 3: Get the UTC start and end times for each alog file
   for(unsigned int i=0; i<m_alog_files.size(); i++) {
-    cout << "alog file: " << m_alog_files[i] << endl;
 
     double utc_log_start_time = getLogStartFromFile(m_alog_files[i]);
-    cout << " " << doubleToString(utc_log_start_time,2) << endl;
     m_utc_log_start_times.push_back(utc_log_start_time);
 
     double local_data_start_time = getDataStartTimeFromFile(m_alog_files[i]);
-    cout << " " << doubleToString(local_data_start_time, 2);
     double utc_data_start_time = utc_log_start_time + local_data_start_time;
-    cout << "  (" << doubleToString(utc_data_start_time, 2) << ")" << endl;
     
     double local_data_end_time = getDataEndTimeFromFile(m_alog_files[i]);
-    cout << " " << doubleToString(local_data_end_time, 2);
     double utc_data_end_time = utc_log_start_time + local_data_end_time;
-    cout << "  (" << doubleToString(utc_data_end_time, 2) << ")" << endl;
+
+    if(m_debug) {
+      cout << "alog file: " << m_alog_files[i] << endl;
+      cout << " " << doubleToString(utc_log_start_time,2) << endl;
+      cout << " " << doubleToString(local_data_start_time, 2);
+      cout << "  (" << doubleToString(utc_data_start_time, 2) << ")" << endl;
+      cout << " " << doubleToString(local_data_end_time, 2);
+      cout << "  (" << doubleToString(utc_data_end_time, 2) << ")" << endl;
+    }
     
     m_utc_data_start_times.push_back(utc_data_start_time);
     m_utc_data_end_times.push_back(utc_data_end_time);
@@ -305,11 +339,13 @@ bool ALogCatHandler::preCheck()
 
 
   // Part 6
-  for(unsigned int i=0; i<m_alog_files.size(); i++) {
-    cout << "new alog file: [" << m_alog_files[i] << "]" << endl;
-    cout << "   " << doubleToString(m_utc_log_start_times[i],2) << endl;
-    cout << "   " << doubleToString(m_utc_data_start_times[i],2) << endl;
-    cout << "   " << doubleToString(m_utc_data_end_times[i],2) << endl;
+  if(m_debug) {
+    for(unsigned int i=0; i<m_alog_files.size(); i++) {
+      cout << "new alog file: [" << m_alog_files[i] << "]" << endl;
+      cout << "   " << doubleToString(m_utc_log_start_times[i],2) << endl;
+      cout << "   " << doubleToString(m_utc_data_start_times[i],2) << endl;
+      cout << "   " << doubleToString(m_utc_data_end_times[i],2) << endl;
+    }
   }
 
 

@@ -34,7 +34,7 @@ class ALogCatHandler
   ~ALogCatHandler() {}
 
   void      setForceOverwrite()      {m_force_overwrite=true;}
-  void      setVerbose()             {m_verbose=true;}
+  void      setVerbose();
 
   bool      addALogFile(std::string s);
   bool      setNewALogFile(std::string s) {m_outfile=s; return(true);}
@@ -49,6 +49,7 @@ class ALogCatHandler
  protected:
   bool        m_force_overwrite;
   bool        m_verbose;
+  bool        m_debug;
 
  private:
   std::vector<std::string> m_alog_files;

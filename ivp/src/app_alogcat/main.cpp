@@ -100,11 +100,12 @@ void showHelpAndExit()
   cout << "  -h,--help        Display this usage/help message.         " << endl;
   cout << "  -v,--version     Display version information.             " << endl;
   cout << "  -f,--force       Overwrite an existing output file.       " << endl;
-  cout << "  -q,--quiet       Verbose report suppressed at conclusion. " << endl;
+  cout << "  --verbose        Produce verbose output.                  " << endl;
+  cout << "  --verbose(again) Produce verbose and debugging output.    " << endl;
   cout << "  --new=file.alog  Name of new concatenated alog file.      " << endl;
   cout << "                                                            " << endl;
   cout << "Further Notes:                                              " << endl;
-  cout << "  (1) The order of arguments can vary.                      " << endl;
+  cout << "  (1) Order of all command line arguments do not matter.    " << endl;
   cout << "  (2) All alog files are scanned to ensure they are not     " << endl;
   cout << "      overlapping. Their proper order is worked out         " << endl;
   cout << "      automatically.                                        " << endl;
