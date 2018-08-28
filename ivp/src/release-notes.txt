@@ -5,6 +5,12 @@ Fixed a bug in alogview affecting the construction of the collective
 objective function to be rendered. Previously it was not properly 
 applying the weights of each function.
 
+alogscan
+===============================================
+Fixed a bug in alogscan that would result in a segfault just prior
+to early exit on detected invalid input file. For example an empty
+alog file.
+
 pEchoVar
 ===============================================
 o Added Boolean Switching. For a configuration "Echo = FOO !-> BAR", if a string 
