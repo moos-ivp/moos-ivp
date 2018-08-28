@@ -143,13 +143,19 @@ int main(int argc, char *argv[])
     cout << "No alog file given - exiting" << endl;
     exit(1);
   }
-  
-  ScanHandler handler;
-  handler.setParam("sort_style",  sort_style);
-  handler.setParam("proc_colors", proc_colors);
-  handler.setParam("use_full_source", boolToString(use_full_source));
-  handler.handle(alogfile, data_rate_only);
 
+  bool ok = true;
+  ScanHandler handler;
+  ok = ok && handler.setParam("sort_style",  sort_style);
+  ok = ok && handler.setParam("proc_colors", proc_colors);
+  ok = ok && handler.setParam("use_full_source",
+			      boolToString(use_full_source));
+
+  ok = ok && handler.handle(alogfile, data_rate_only);
+
+  if(!ok)
+    return(1);
+  
   if(!data_rate_only)
     handler.varStatReport();  
   if(app_stat_requested && !data_rate_only)
@@ -157,6 +163,8 @@ int main(int argc, char *argv[])
   handler.dataRateReport();
   if(loglist_requested) 
     handler.loglistReport();
+
+  return(0);
 }
 
 

@@ -56,14 +56,19 @@ ScanHandler::ScanHandler()
 //--------------------------------------------------------
 // Procedure: setParam
 
-void ScanHandler::setParam(const string& param, const string& value)
+bool ScanHandler::setParam(const string& param, const string& value)
 {
+  bool handled = true;
   if(param == "sort_style")
     m_sort_style = value;
   else if(param == "proc_colors")
-    setBooleanOnString(m_use_colors, value);
+    handled = setBooleanOnString(m_use_colors, value);
   else if(param == "use_full_source")
-    setBooleanOnString(m_use_full_source, value);
+    handled = setBooleanOnString(m_use_full_source, value);
+  else
+    handled = false;
+
+  return(handled);
 }
 
 //--------------------------------------------------------
@@ -97,7 +102,7 @@ string ScanHandler::procColor(string proc_name)
 //--------------------------------------------------------
 // Procedure: handle
 
-void ScanHandler::handle(const string& alogfile, bool rate_only)
+bool ScanHandler::handle(const string& alogfile, bool rate_only)
 {
   ALogScanner scanner;
 
@@ -106,7 +111,7 @@ void ScanHandler::handle(const string& alogfile, bool rate_only)
   bool ok = scanner.openALogFile(alogfile);
   if(!ok) {
     cout << "Unable to find or open " << alogfile << " - Exiting." << endl;
-    return;
+    return(false);
   }
 
   cout << "Scanning " << alogfile << "... " << flush;
@@ -117,8 +122,9 @@ void ScanHandler::handle(const string& alogfile, bool rate_only)
 
   if(!rate_only && (m_report.size() == 0)) {
     cout << "Empty log file - exiting." << endl;
-    return;
+    return(false);
   }
+  return(true);
 }
 
 
