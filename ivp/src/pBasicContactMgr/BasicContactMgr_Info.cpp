@@ -109,7 +109,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Configuring other output                                   ");
   blk("  display_radii    = false  // or {true}                        ");
-  blk("  alert_verbose    = false  // If true, ALERT_VERBOSE published.");
+  blk("  alert_verbose    = false  // If true will pub ALERT_VERBOSE   ");
+  blk("  post_closest_range = false // If true will pub CLOSEST_RANGE  ");
   blk("                                                                ");
   blk("  // Policy for linear extrapolation of stale contacts          ");
   blk("  decay = 30,60                       // the default in secs    ");

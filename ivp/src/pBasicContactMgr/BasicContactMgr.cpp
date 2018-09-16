@@ -55,19 +55,17 @@ BasicContactMgr::BasicContactMgr()
   m_contacts_recap_posted = 0;
 
   m_prev_contacts_count = 0;
-  m_prev_contact_closest_time = 0;
+  m_prev_closest_range = 0;
+  m_prev_closest_contact_val = 0;
   
-  m_closest_time = 0;  // Time that the closest became closest
-  m_closest_dist = 0;  // Distance between closest and next closest
-  m_closest_elap = 0;  // Time since closest became closest
-
   // Configuration Variables
   m_default_alert_rng           = 1000;
   m_default_alert_rng_cpa       = 1000;
   m_default_alert_rng_color     = "gray65";
   m_default_alert_rng_cpa_color = "gray35";
 
-  m_display_radii   = false;
+  m_display_radii      = false;
+  m_post_closest_range = false;
   m_contact_max_age = 600;   // units in seconds 600 = 10 mins
   m_contacts_recap_interval = 0;
 
@@ -78,7 +76,6 @@ BasicContactMgr::BasicContactMgr()
 
   m_closest_contact_rng_one = 20;
   m_closest_contact_rng_two = 10;
-  m_prev_closest_contact_val = 0;
 
   m_use_geodesy = false;
 }
@@ -202,8 +199,16 @@ bool BasicContactMgr::OnStartUp()
     }  
 
 
-    else if(param == "display_radii")
-      setBooleanOnString(m_display_radii, value);
+    else if(param == "display_radii") {
+      bool ok = setBooleanOnString(m_display_radii, value);
+      if(!ok)
+	reportConfigWarning("display_radii must be a Boolean");
+    }
+    else if(param == "post_closest_range") {
+      bool ok = setBooleanOnString(m_post_closest_range, value);
+      if(!ok)
+	reportConfigWarning("post_closest_range must be a Boolean");
+    }
     else if(param == "contact_local_coords") {
       string lval = tolower(value);
       if((lval== "verbatim") || (lval=="lazy_lat_lon") || (lval=="force_lat_lon"))
@@ -591,6 +596,17 @@ void BasicContactMgr::postSummaries()
     }
   }
 
+  if((closest_contact != "") && m_post_closest_range) {
+    // Round to integer and only post when changed, to reduce postings
+    long int closest_range_int = closest_range;
+    closest_range = (double)(closest_range_int);
+    if(closest_range != m_prev_closest_range) {
+      Notify("CLOSEST_RANGE", closest_range);
+      m_prev_closest_range = closest_range;
+    }
+  }
+    
+  
   unsigned int contacts_count = m_par.getAlertedGroupCount(true);
   if(contacts_count != m_prev_contacts_count) {
     Notify("CONTACTS_COUNT", (double)(contacts_count));

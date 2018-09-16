@@ -98,6 +98,7 @@ class BasicContactMgr : public AppCastingMOOSApp
   // Other configuration parameters
   std::string  m_ownship;
   bool         m_display_radii;
+  bool         m_post_closest_range;
   double       m_contact_max_age;
   double       m_contacts_recap_interval;
 
@@ -108,7 +109,6 @@ class BasicContactMgr : public AppCastingMOOSApp
 
   double       m_closest_contact_rng_one;
   double       m_closest_contact_rng_two;
-  double       m_prev_closest_contact_val;
 
  protected: // State variables
 
@@ -128,11 +128,6 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::map<std::string, double>       m_map_node_ranges_extrap;
   std::map<std::string, double>       m_map_node_ranges_cpa;
 
-  std::string m_closest_name;
-  double      m_closest_time;
-  double      m_closest_dist;
-  double      m_closest_elap;
-
   // memory of previous status postings: A posting to the MOOS var
   // is only made when a change is detected between curr and prev.
   std::string m_prev_contacts_list;
@@ -142,8 +137,10 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::string m_prev_contacts_recap;
   std::string m_prev_contact_closest;
   unsigned int m_prev_contacts_count;
-  double       m_prev_contact_closest_time;
 
+  double  m_prev_closest_range;
+  double  m_prev_closest_contact_val;
+  
   // A matrix: vehicle_name X alert_id. Cell val is Boolean indicating
   // if the alert is active or resolved, for the given vehicle.
   PlatformAlertRecord  m_par;
