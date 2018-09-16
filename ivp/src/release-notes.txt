@@ -13,9 +13,11 @@ alog file.
 
 pEchoVar
 ===============================================
-o Added Boolean Switching. For a configuration "Echo = FOO !-> BAR", if a string 
-  representing a Boolean value is published to FOO, a string representing the 
-  opposite Boolean value is published to BAR. The case of the strings is matched.
+
+o Added Boolean Switching. For a configuration "Echo = FOO !-> BAR",
+  if a string representing a Boolean value is published to FOO, a
+  string representing the opposite Boolean value is published to
+  BAR. The case of the strings is matched.
 
 
 BHV_AvoidColregsV17
@@ -45,6 +47,10 @@ o The m2_berta mission has been updated to include a non-trivial
   returning, station-keeping, vehicle speed, and loiter direction
   for both vehicles.
 
+o Improved the drawing efficiency of hash marks (grid lines). New
+  version reduces overall CPU load by more than half. 
+
+
 pHelmIvP
 ===============================================
 o Lazy behavior evaluation (TBD)
@@ -56,6 +62,12 @@ o Added the ability to have alerts based on a polygon regions, so
   missions can be configured to trigger action if a contact of 
   interest enters a given region. Region criteria can be used 
   in conjunction with range criteria, or simply on its own.
+o Added an optional publication of the range to the closest contact.
+  Posting turned on with the post_closest_range=true paramater, and
+  will publish to CONTACT_RANGE an integer value of the range.
+  Value will be published only when the range changes.
+
+
 o ToDo: ignore contacts from different teams
         buffer value to avoid thrashing
 
