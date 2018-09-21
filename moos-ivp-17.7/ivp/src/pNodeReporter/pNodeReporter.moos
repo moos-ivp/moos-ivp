@@ -1,0 +1,37 @@
+=============================================================== 
+pNodeReporter Example MOOS Configuration                        
+=============================================================== 
+                                                                
+ProcessConfig = pNodeReporter                                   
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  // Configure key aspects of the node                          
+  PLATFORM_TYPE      = glider   // or {uuv,auv,ship,kayak}   
+  PLATFORM_LENGTH    = 8        // meters.  Range [0,inf)    
+                                                                
+  // Configure optional blackout functionality                  
+  BLACKOUT_INTERVAL  = 0        // seconds. Range [0,inf)    
+                                                                
+   // Configure the optional platform report summary            
+  PLAT_REPORT_INPUT  = COMPASS_HEADING, gap=1                   
+  PLAT_REPORT_INPUT  = GPS_SAT, gap=5                           
+  PLAT_REPORT_INPUT  = WIFI_QUALITY, gap=1                      
+  PLAT_REPORT_OUTPUT = PLATFORM_REPORT_LOCAL                    
+                                                                
+  // Configure the MOOS variable containg the node report       
+  NODE_REPORT_OUTPUT = NODE_REPORT_LOCAL                        
+                                                                
+  // Threshold for conveying an absense of the helm             
+  NOHELM_THRESHOLD   = 5        // seconds                   
+                                                                
+  // Policy for filling in missing lat/lon from x/y or v.versa  
+  CROSSFILL_POLICY   = literal  // or {fill-empty,use-latest}
+                                                                
+  // Configure monitor/reporting of dual nav solution           
+  ALT_NAV_PREFIX     = NAV_GT                                   
+  ALT_NAV_NAME       = _GT                                      
+}                                                               
+                                                         
+

@@ -1,0 +1,25 @@
+=============================================================== 
+uFldHazardSensor Example MOOS Configuration                      
+=============================================================== 
+ProcessConfig = uFldGenericSensor                               
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  // Configuring visual preferences                             
+  show_source_pts     = true                    // default      
+  scope_transparency  = 0.25                    // default      
+  color_source_pts    = green                   // default      
+  show_source_pts     = true                    // default      
+                                                                
+  // Configure the Sensed Object Laydown                        
+  source_point        = x=-20,y=30,label=07                     
+  source_point        = x=45,y=-93,label=12                     
+                                                                
+  // Configure the Sensor Properties                            
+  min_reset_interval  = 300                     // default      
+  min_sensor_interval = 30                      // default      
+  sensor_config       = range = 30                              
+  sensor_config       = range = 100                             
+  sensor_config       = range = 60                              
+}                                                  

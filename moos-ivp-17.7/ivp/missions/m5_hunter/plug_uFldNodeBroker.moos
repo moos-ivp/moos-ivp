@@ -1,0 +1,21 @@
+//--------------------------------------------------
+// uFldNodeBroker configuration block from plugin
+
+ProcessConfig = uFldNodeBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  // KEYWORD        = $(KEY)
+  TRY_SHORE_HOST = pshare_route=localhost:9300
+  // TRY_SHORE_HOST = pshare_route=multicast_8
+  // TRY_SHORE_HOST = hostip=localhost, port_udp=9300
+  // TRY_SHORE_HOST = hostip=128.30.24.232, port_udp=9200
+
+  BRIDGE = src=VIEW_POLYGON
+  BRIDGE = src=VIEW_POINT
+  BRIDGE = src=VIEW_SEGLIST
+  BRIDGE = src=APPCAST
+  BRIDGE = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+  BRIDGE = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
+}

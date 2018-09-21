@@ -1,0 +1,16 @@
+//------------------------------------------------------
+// pEvalLoiter Configuration Block (Created from Plugin)
+
+ProcessConfig = pEvalLoiter                                     
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+
+  condition = MODE==LOITERING
+        
+  eval_window      = 15     // (default is 30, in seconds)
+  nav_stale_thresh = 10     // (default is 10, in seconds)
+  mode_thresh      = 10     // (default is 10, in meters)
+  max_nav_age      = 15     // (default is 15, in seconds)
+  range_max_ineff  = 20     // (default is 50, in meters)
+}                            

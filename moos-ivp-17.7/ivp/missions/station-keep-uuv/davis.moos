@@ -1,0 +1,190 @@
+ServerHost = localhost
+ServerPort = 9201
+
+// Community name IS the vehicle name
+Community  = davis
+
+MOOSTimeWarp = 1
+
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+  
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB          @ NewConsole = false
+  Run = uSimMarine      @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = true
+}
+  
+//------------------------------------------------------
+// uSimMarine Configuration Block
+
+ProcessConfig = uSimMarine
+{
+  AppTick   = 10
+  CommsTic  = 10
+
+  START_X       = 0
+  START_Y       = 0
+  START_HEADING = 180
+  START_SPEED   = 0
+  START_DEPTH   = 0
+
+  FORCE_X       = 0.3
+  FORCE_Y       = 0.5
+  BUOYANCY_RATE = 0.1
+
+  PREFIX    = NAV
+}
+
+
+//----------------------------------------------------
+// pHelmIvP Configuration Block 
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 2
+  CommsTick  = 2
+  
+  Behaviors    = davis.bhv  
+  Verbose      = false
+  Domain       = course:0:359:360
+  Domain       = speed:0:5:26
+  Domain       = depth:0:100:101:optional
+}
+
+//-----------------------------------------------------
+// pMarinePID Configuration Block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+  
+  VERBOSE       = true
+  DEPTH_CONTROL = true
+  ACTIVE_START  = true
+  
+  // Yaw PID controller
+  YAW_PID_KP             = 0.4
+  YAW_PID_KD             = 0.1
+  YAW_PID_KI             = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Speed PID controller
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  
+  //Pitch PID controller
+  PITCH_PID_KP                   = 0.5
+  PITCH_PID_KD                   = 1.0
+  PITCH_PID_KI                   = 0
+  PITCH_PID_INTEGRAL_LIMIT       = 0
+
+  //ZPID controller
+  Z_TO_PITCH_PID_KP              = 0.12
+  Z_TO_PITCH_PID_KD              = 0
+  Z_TO_PITCH_PID_KI              = 0.004
+  Z_TO_PITCH_PID_INTEGRAL_LIMIT  = 0.05
+
+  //MAXIMUMS
+  MAXRUDDER    = 100
+  MAXTHRUST    = 100
+  MAXPITCH     = 15
+  MAXELEVATOR  = 13
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block 
+
+ProcessConfig = pLogger
+{
+  AppTick 	= 20
+  CommsTick 	= 20
+  
+  File		= LOG_ARCHIE
+  PATH		= ./
+  AsyncLog 	= true
+  FileTimeStamp = true
+
+  DoublePrecision = 6
+
+  // Log it all!!!!!
+  LogAuxSrc = true
+  WildCardLogging = true
+  WildCardOmitPattern = *_STATUS
+  WildCardExclusionLog = true
+}
+
+//--------------------------------------------------------
+// pNodeReporter Configuration Block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 2
+  CommsTick   = 2
+  
+  VESSEL_TYPE = UUV
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = 155
+  set_pan_y            = -530
+  zoom                 = 1.65
+  vehicle_shape_scale  = 0.8
+  seglist_edge_width   = 2.0
+  seglist_vertex_size  = 4
+  seglist_vertex_color = red
+  vehicles_name_viewable = names+depth
+  point_vertex_size    = 12
+  hash_delta           = 50
+  hash_shade           = 0.4
+  hash_view            = true
+
+  scope  = PSKEEP_MODE
+  scope  = STATION_TRANSIT
+  scope  = VIEW_POINT
+  scope  = VIEW_SEGLIST
+  scope  = VIEW_POLYGON
+
+  left_context[survey-point] = STATION_UPDATES = station_pt = $(XPOS), $(YPOS)
+  left_context[survey-point] = STATION_KEEP=true
+  left_context[survey-point] = LOITER=true
+  
+  right_context[loiter-point] = UP_LOITER = center_assign=$(XPOS),$(YPOS)
+  right_context[loiter-point] = LOITER=true
+  right_context[loiter-point] = STATION_KEEP=false
+
+  BUTTON_ONE = DEPLOY # DEPLOY=true
+  BUTTON_ONE = MOOS_MANUAL_OVERRIDE=false # RETURN=false
+  BUTTON_TWO = RETURN # RETURN=true
+  BUTTON_THREE = STATION # STATION_KEEP=true
+  BUTTON_FOUR = NO-STATION # STATION_KEEP=false
+
+  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
+  ACTION  = RETURN=true
+  ACTION  = DEPLOY=false
+}
+

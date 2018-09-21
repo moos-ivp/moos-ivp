@@ -1,0 +1,123 @@
+#--------------------------------------------------------
+# The CMakeLists.txt for:                    lib_geometry
+# Author(s):                                Mike Benjamin
+#--------------------------------------------------------
+
+SET(SRC
+  AngleUtils.cpp
+  ArtifactUtils.cpp
+  CPAEngineRoot.cpp
+  CPAEngine.cpp
+  BNGEngine.cpp
+  CPA_Utils.cpp
+  CircularUtils.cpp
+  ConvexHullGenerator.cpp
+  CurrentField.cpp
+  GeomUtils.cpp
+  IO_GeomUtils.cpp
+  LinearExtrapolator.cpp
+  PathUtils.cpp
+  Seglr.cpp
+  SeglrUtils.cpp
+  VPlug_AppCastSettings.cpp
+  VPlug_DropPoints.cpp
+  VPlug_GeoSettings.cpp
+  VPlug_GeoShapes.cpp
+  VPlug_GeoShapesMap.cpp
+  VPlug_VehiSettings.cpp
+  XYArc.cpp
+  XYArtifactGrid.cpp
+  XYCircle.cpp
+  XYCommsPulse.cpp
+  XYConvexGrid.cpp
+  XYEncoders.cpp
+  XYFieldGenerator.cpp
+  XYFormatUtilsCircle.cpp
+  XYFormatUtilsCommsPulse.cpp
+  XYFormatUtilsConvexGrid.cpp
+  XYFormatUtilsMarker.cpp
+  XYFormatUtilsPoint.cpp
+  XYFormatUtilsPoly.cpp
+  XYFormatUtilsRangePulse.cpp
+  XYFormatUtilsSegl.cpp
+  XYFormatUtilsSeglr.cpp
+  XYFormatUtilsVector.cpp
+  XYFormatUtilsWedge.cpp
+  XYGrid.cpp
+  XYHexGrid.cpp
+  XYHexagon.cpp
+  XYMarker.cpp
+  XYObject.cpp
+  XYPatternBlock.cpp
+  XYPoint.cpp
+  XYPolygon.cpp
+  XYRangePulse.cpp
+  XYSegList.cpp
+  XYSeglr.cpp
+  XYSegment.cpp
+  XYSquare.cpp
+  XYVector.cpp
+  XYWedge.cpp
+  )
+
+SET(HEADERS
+  AngleUtils.h
+  ArtifactUtils.h
+  ConvexHullGenerator.h
+  CircularUtils.h
+  CPAEngine.h
+  CPAEngineX.h
+  CPAEngineOld.h
+  CPA_Utils.h
+  GeomUtils.h
+  PathUtils.h
+  CurrentField.h
+  XYRangePulse.h
+  XYCommsPulse.h
+  IO_GeomUtils.h
+  LinearExtrapolator.h
+  Seglr.h
+  SeglrUtils.h
+  XYWedge.h
+  XYArc.h
+  XYArtifactGrid.h
+  XYBuildUtils.h
+  XYCircle.h
+  XYEncoders.h
+  XYFormatUtilsCircle.h
+  XYFormatUtilsWedge.h
+  XYFormatUtilsPoint.h
+  XYFormatUtilsPoly.h
+  XYFormatUtilsSegl.h
+  XYFormatUtilsVector.h
+  XYFormatUtilsMarker.h
+  XYFormatUtilsRangePulse.h
+  XYFormatUtilsCommsPulse.h
+  XYFormatUtilsHazard.h
+  XYFormatUtilsHazardSet.h
+  XYFormatUtilsSeglr.h
+  XYGrid.h
+  XYConvexGrid.h
+  XYHazard.h
+  XYHazardSet.h
+  XYHexagon.h
+  XYHexGrid.h
+  XYObject.h
+  XYPatternBlock.h
+  XYFieldGenerator.h
+  XYPoint.h
+  XYPolygon.h
+  XYSegList.h
+  XYSeglr.h
+  XYSegment.h
+  XYSquare.h
+  XYVector.h
+)
+
+# Build Library
+ADD_LIBRARY(geometry ${SRC})
+
+TARGET_LINK_LIBRARIES( geometry
+   mbutil
+   )
+

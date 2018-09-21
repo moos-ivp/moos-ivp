@@ -1,0 +1,88 @@
+ServerHost = localhost
+ServerPort = 9000
+Community  = alpha
+MOOSTimeWarp = 1
+
+// Forest Lake
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+//------------------------------------------
+// Antler configuration  block
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = true
+  Run = uTimerScript    @ NewConsole = true
+  Run = uPlotViewer     @ NewConsole = true
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  AppTick	= 10
+  CommsTick	= 10
+
+  delay_reset    = 0                                            
+  delay_start    = 0                                            
+
+  randvar        = varname=UVAR, min=0, max=359, key=at_post
+  randvar        = varname=GVAR, type=gaussian, min=0, max=400, mu=200, sigma=20, key=at_post
+  randvar        = varname=LGVAR, type=gaussian, min=0, max=400, mu=80, sigma=10, key=at_post
+
+  event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0  
+  event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0.1
+  event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0.2  
+  event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0.3 
+  event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0.4 
+  event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0.5 
+  event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0.6 
+  event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0.7 
+  event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0.8 
+  event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0.9
+
+  event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0  
+  event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0.1
+  event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0.2  
+  event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0.3 
+  event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0.4 
+  event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0.5 
+  event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0.6 
+  event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0.7 
+  event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0.8 
+  event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0.9
+
+  event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0  
+  event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0.1
+  event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0.2  
+  event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0.3 
+  event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0.4 
+  event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0.5 
+  event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0.6 
+  event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0.7 
+  event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0.8 
+  event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0.9
+
+  reset_max  = no_limit
+  reset_time = all-posted
+
+  time_warp = 20
+}
+
+
+//------------------------------------------
+// uPlotViewer config block
+
+ProcessConfig = uPlotViewer
+{
+  AppTick	= 8
+  CommsTick	= 8
+
+  plot_var      = var=UNIFORM_TEST_VAL, min=0, max=400, bars=50, color=red
+  plot_var      = var=GAUSS_TEST_VAL, min=0, max=400, bars=80, color=blue
+  plot_var      = var=LGAUSS_TEST_VAL, min=0, max=400, bars=80, color=green
+}

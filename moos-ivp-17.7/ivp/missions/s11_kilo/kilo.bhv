@@ -1,0 +1,65 @@
+//--------    FILE: kilo.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = SURVEYING {
+  MODE = ACTIVE
+  RETURN != true
+} RETURNING
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = MODE == SURVEYING
+  endflag   = RETURN = true
+  perpetual = true
+
+          lead = 8
+   lead_damper = 1
+         speed = 2   // meters per second
+        radius = 5.0
+   slip_radius = 15.0
+        points = 60,-40 : 60,-120 : 150,-120 : 180,-80 : 150,-40
+        repeat = 1
+  visual_hints = nextpt_color=red, nextpt_lcolor=green
+  visual_hints = vertex_color=yellow, line_color=white
+  visual_hints = vertex_size=2, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE == RETURNING
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_TestFailure
+{
+  name      = test_failure
+  condition = DEPLOY=true
+
+  duration  = 120
+  duration_idle_decay = false
+
+  failure_type = burn,3
+}
+
+

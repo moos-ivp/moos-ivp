@@ -1,0 +1,183 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = true
+  Run = uTimerScript    @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = true
+  Run = uFldShoreBroker @ NewConsole = true
+}
+
+#include plug_pHostInfo.moos
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  BRIDGE_VAR  = FOO
+  BRIDGE_VAR  = DEPLOY
+  BRIDGE_VAR  = RETURN
+  BRIDGE_VAR  = STATION_KEEP
+  BRIDGE_VAR  = NODE_REPORT
+  BRIDGE_VAR  = MOOS_MANUAL_OVERRIDE
+
+  PIGEON_VAR  = UP_LOITER_1, UP_LOITER
+  PIGEON_VAR  = UP_LOITER_2, UP_LOITER
+  PIGEON_VAR  = UP_LOITER_3, UP_LOITER
+  PIGEON_VAR  = UP_LOITER_4, UP_LOITER
+
+  //ALL_LOCALHOST = TRUE
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  UDPListen = $(SLPORT)
+}
+
+//--------------------------------------------------
+// uXMS Configuration Block
+
+ProcessConfig = uXMS
+{
+  AppTick       = 2
+  CommsTick     = 2
+
+  VAR  = DEPLOY_ALL
+  VAR  = DEPLOY_HENRY
+  VAR  = DEPLOY_IKE
+  VAR  = DEPLOY_JAMES
+  VAR  = DEPLOY_GILDA
+  VAR  = RETURN_ALL
+  VAR  = STATION_ALL
+  VAR  = NODE_REPORT
+  VAR  = NODE_REPORT_ALL
+  VAR  = NODE_REPORT_JAMES
+  VAR  = NODE_REPORT_GILDA
+  VAR  = NODE_REPORT_HENRY
+  VAR  = NODE_REPORT_IKE
+  VAR  = PHI_HOST_INFO_FULL
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick       = 2
+  CommsTick     = 2
+
+  COMMS_RANGE   = 150
+  GROUPS        = true
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_viewable = names
+
+  SCOPE = PHI_HOST_INFO
+
+  ACTION = FOO_ALL = true
+  ACTION = FOO_ALL = false
+  ACTION = PERMUTING = true
+  ACTION = PERMUTING = false
+
+  ACTION = STATION_ALL = false
+  ACTION = STATION_ALL = true
+
+  ACTION = UNC_STEALTH = gilda,0.8
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  BUTTON_THREE = PERMUTE-NOW   # UTS_FORWARD=0
+}
+
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  PAUSED     = false
+  RESET_MAX  = unlimited
+  RESET_TIME = end
+
+  RANDVAR = varname=X1, min=-30,  max=20,   key=at_reset
+  RANDVAR = varname=Y1, min=-100, max=-50,  key=at_reset
+
+  RANDVAR = varname=X2, min=100,  max=150,  key=at_reset
+  RANDVAR = varname=Y2, min=-100, max=-50,  key=at_reset
+
+  RANDVAR = varname=X3, min=-30,  max=20,   key=at_reset
+  RANDVAR = varname=Y3, min=-210, max=-160, key=at_reset
+
+  RANDVAR = varname=X4, min=100,  max=150,  key=at_reset
+  RANDVAR = varname=Y4, min=-210, max=-160, key=at_reset
+
+  EVENT = var=UP_LOITER_4, val="center_assign=$[X4],$[Y4]", time=180 
+  EVENT = var=UP_LOITER_3, val="center_assign=$[X3],$[Y3]", time=180
+  EVENT = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=180 
+  EVENT = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=180
+
+  EVENT = var=UP_LOITER_4, val="center_assign=$[X1],$[Y1]", time=360 
+  EVENT = var=UP_LOITER_3, val="center_assign=$[X2],$[Y2]", time=360
+  EVENT = var=UP_LOITER_2, val="center_assign=$[X3],$[Y3]", time=360 
+  EVENT = var=UP_LOITER_1, val="center_assign=$[X4],$[Y3]", time=360
+}
+
+
+ 

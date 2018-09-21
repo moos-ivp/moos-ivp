@@ -1,0 +1,59 @@
+//--------    FILE: $(VNAME).bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = (DEPLOY = true)
+  endflag   = RETURN = true
+  perpetual = true
+
+         speed = 2   // meters per second
+        radius = 5.0
+   slip_radius = 15.0
+          lead = 15
+
+
+#ifdef VNAME charlie
+	points = format=lawnmower,label=archiesearch,x=-40,y=-237.5,height=325,width=240,lane_width=40,rows=ns
+  visual_hints = vertex_color=yellow, edge_color=green
+#elseifdef VNAME davis
+	points = format=lawnmower,label=bettysearch,x=262.5,y=-237.5,height=325,width=255,lane_width=20,rows=north-south,degs=0
+  visual_hints = vertex_color=yellow, edge_color=gray25
+#endif
+
+       endflag = NODE_MESSAGE = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
+
+        repeat = 0
+  visual_hints = nextpt_color=red, nextpt_lcolor=green
+  visual_hints = vertex_size=1, edge_size=1
+
+
+//	points = -200,-130:-90,-420:-57,-402:-170,-120:-129,-104:-22,-388:20,-370:-84,-85:-42,-69:59,-354:100,-339:-2,-53:39,-34:140,-322:175,-311:80,-23:121,-7:216,-290:256,-275:167,3:203,14:296,-260:330,-244:244,6
+
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = HAZARDSET_REQUEST = true
+  endflag    = NODE_MESSAGE_LOCAL = src_node=$(VNAME),dest_node=all,var_name=SURVEY,string_val=COMPLETE
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = $(START_POS)
+}
+

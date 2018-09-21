@@ -1,0 +1,10 @@
+MIT (Pavilion)
+  LatOrigin  = 42.358456
+  LongOrigin = -71.087589
+//  LatOrigin  = 42.3584
+//  LongOrigin = -71.08745
+
+Maine (Forrest Lake)
+  LatOrigin  = 43.825300 
+  LongOrigin = -70.330400 
+

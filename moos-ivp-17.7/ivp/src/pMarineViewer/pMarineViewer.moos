@@ -1,0 +1,48 @@
+=============================================================== 
+pMarineViewer Example MOOS Configuration                        
+=============================================================== 
+                                                                
+ProcessConfig = pMarineViewer                                   
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  TIFF_FILE            = forrest19.tif                          
+  set_pan_x            = -90                                    
+  set_pan_y            = -280                                   
+  zoom                 = 0.65                                   
+  vehicle_shape_scale  = 1.35                                   
+  seglist_edge_width   = 2.0                                    
+  seglist_vertex_size  = 8                                      
+  seglist_vertex_color = red                                    
+  point_vertex_size    = 5                                      
+  hash_delta           = 50                                     
+  hash_shade           = 0.4                                    
+  hash_view            = true                                   
+                                                                
+  left_context[survey-point] = SURVEY_UPDATES = points =        
+         vname=$(VNAME), x=$(XPOS), y=$(YPOS), format=lawnmower,
+         label=delta, width=70, height=30, lane_width=8,        
+         rows=north-south, degs=80                              
+  left_context[survey-point] = SURVEY = true                    
+                                                                
+  SCOPE = SURVEY_UPDATES                                        
+  SCOPE = MVIEWER_LCLICK                                        
+  SCOPE = GPS_UPDATE_RECEIVED                                   
+  SCOPE = TIME_AT_SURFACE                                       
+                                                                
+  ACTION = DEPTH_VALUE="depth=50"                             
+  ACTION = DEPTH_VALUE="depth=25"                             
+  ACTION = DEPTH_VALUE="depth=7"                              
+  ACTION = UP_LOITER="speed=0"                                
+  ACTION = UP_LOITER="speed=1.2"                              
+  ACTION = PSURFACE=true                                        
+  ACTION = PSURFACE=false                                       
+                                                                
+  BUTTON_ONE   = DEPLOY # DEPLOY=true                           
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false # RETURN=false       
+  BUTTON_TWO   = RETURN # RETURN=true                           
+  BUTTON_THREE = SURVEY-true # SURVEY=true                      
+  BUTTON_FOUR  = SURVEY-false # SURVEY=false                    
+}                                                               
+                                                           

@@ -1,0 +1,12 @@
+//---------------------------------------
+ProcessConfig = pEchoVar
+{
+  AppTick   = 20
+  CommsTick = 20
+  
+  Echo = MARINESIM_X       ->  NAV_X
+  Echo = MARINESIM_Y       ->  NAV_Y
+  Echo = MARINESIM_HEADING ->  NAV_HEADING
+  Echo = MARINESIM_SPEED   ->  NAV_SPEED
+}
+

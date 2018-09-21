@@ -1,0 +1,120 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = shoreside
+
+TERM_REPORTING = false
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = false
+}
+
+#include plug_pHostInfo.moos
+
+//---------------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  localhost:9200
+  //input = route = multicast_8
+}
+
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 2
+  CommsTick = 2
+
+           COMMS_RANGE = 75
+        CRITICAL_RANGE = 25
+      MIN_MSG_INTERVAL = 20
+        MAX_MSG_LENGTH = 100
+  VIEW_NODE_RPT_PULSES = true
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  QBRIDGE = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE = STATION_KEEP, APPCAST_REQ
+  QBRIDGE = MOOS_MANUAL_OVERRIDE
+ 
+  BRIDGE  = src=RETURN_ALL, alias=RETURN
+  BRIDGE  = src=RETURN_$V,  alias=RETURN
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names+shortmode
+
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  comms_pulse_viewable_all = false
+  vehicles_name_mode = names
+
+  stale_report_thresh = 2
+  stale_remove_thresh = 20
+
+  SCOPE = PHI_HOST_INFO
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+}
+

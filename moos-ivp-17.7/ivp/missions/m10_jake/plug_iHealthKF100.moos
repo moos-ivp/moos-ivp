@@ -1,0 +1,30 @@
+// MOOS file
+
+//ServerHost = localhost
+//ServerPort = 9000
+
+ProcessConfig = iHealth_KF100
+{
+   AppTick   = 4
+   CommsTick = 4 
+   
+   //Timeout before declaring GPS off
+   GPSTimeout = 2.0
+
+   //Minimum Number of GPS Satellites
+   GPSMinSatNum = 6
+
+   //Timout before declaring iActuationKF off
+   iActuationKFTimeout = 5.0
+
+   //Warning if below Voltage Threshold
+   CriticalVoltageThreshold = 11.0
+
+   //Warning if Current is above Threshold for more than Timout
+   CriticalCurrentThreshold = 5.0
+   CriticalCurrentTimeout = 10.0
+
+   //Timeout before declaring Compass off
+   CompassTimeout = 5.0
+}
+

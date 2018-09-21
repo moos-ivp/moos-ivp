@@ -1,0 +1,21 @@
+source = file:hazards.txt
+hazard = x=-151,y=-217.3,label=01,type=hazard
+hazard = x=263.2,y=-8.5,label=02,type=hazard
+hazard = x=48.5,y=-195.7,label=03,type=hazard
+hazard = x=165.9,y=-116.4,label=04,type=hazard
+hazard = x=101.3,y=-159.3,label=05,type=hazard
+hazard = x=257.6,y=-131.3,label=06,type=hazard
+hazard = x=217.3,y=-16.7,label=07,type=hazard
+hazard = x=-14.2,y=-293.60001,label=08,type=hazard
+hazard = x=260.2,y=-66.2,label=09,type=hazard
+hazard = x=-65.8,y=-125.2,label=10,type=hazard
+//hazard = x=-89,y=-438,label=10B,type=hazard
+hazard = x=171.9,y=-253.7,label=11,hr=0.5,type=benign,color=orange
+hazard = x=-150.3,y=-117.5,label=12,hr=0.95,type=benign,color=orange
+hazard = x=-59.8,y=-294.1,label=13,hr=0.5,type=benign,color=orange
+hazard = x=98.2,y=-127.7,label=14,hr=0.5,type=benign,color=orange
+hazard = x=-178.8,y=-234,label=15,hr=0.5,type=benign,color=orange
+hazard = x=24,y=-61,label=16,hr=0.5,type=benign,color=orange
+hazard = x=250.3,y=-214.6,label=17,hr=0.5,type=benign,color=orange
+hazard = x=97.7,y=-245.5,label=18,hr=0.5,type=benign,color=orange
+

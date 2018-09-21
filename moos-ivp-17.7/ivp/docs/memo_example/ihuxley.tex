@@ -1,0 +1,66 @@
+\documentclass[onecolumn,letterpaper,11pt]{article}
+
+%=====================================================
+% Include common packages, environments, counters etc
+\input{common_memo_format}
+%=====================================================
+
+\begin{document}
+
+\begin{center}
+\begin{huge}
+pFooBar: A Application for Turning FOO into BAR
+
+\end{huge}
+
+\vspace{0.5in}
+
+\begin{Large}
+Michael R. Benjamin                                     \\
+\end{Large}
+\begin{large}
+Department Mechanical Engineering                       \\ 
+Computer Science and Artificial Intelligence Laboratory \\
+Massachusetts Institute of Technology, Cambridge MA     \\
+\end{large}
+\vspace{0.25cm} 
+
+{\bf {\today} - Release X.Y} \\
+ 
+\end{center}
+
+\begin{abstract}
+AppCasting is a means for an application to regularly generate a
+single common data structure containing a rich status report,
+configuration and run-time alerts, and significant events. These
+reports are in addition to whatever else the application may otherwise
+publish to the MOOSDB. They are designed primary with debugging and
+alert generation in mind. They are also designed to work in an
+on-demand fashion so as to minimize CPU load, comms traffic, and log
+file size. This document describes (a) the motivation and design
+considerations behind appcasting, (b) tools for viewing appcasts, (c)
+how to develop new, or convert existing MOOS applications to be
+appcast-enabled, and (d) how the appcasting protocol is implemented
+under the hood to ensure on-demand behavior.
+\end{abstract}
+
+\vspace{0.4in}
+
+\noindent
+This work is supported under a multi-year Battelle
+subcontract \#251192 entitled {\em Multi-Vehicle Cooperative and Adaptive
+Autonomy Algorithms for Unmanned Marine Vehicles}. 
+
+\vspace{0.18in}
+
+\newpage
+\tableofcontents
+
+\newpage
+\input{01-sec-intro}
+\newpage
+\input{02-sec-interface}
+
+\end{document}
+
+

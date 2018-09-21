@@ -1,0 +1,12 @@
+ProcessConfig = iGPS_KF
+{
+        AppTick = 10
+        CommsTick = 10
+        Port = /dev/ttyACM0
+        Streaming = true
+        Verbose = false
+        BaudRate = 115200
+        Type = UBLOX
+        SHOW_CEP = false
+        RAW_GPS = true
+}

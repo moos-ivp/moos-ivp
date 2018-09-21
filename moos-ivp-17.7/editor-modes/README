@@ -1,0 +1,7 @@
+To use, add the following to ~/.emacs
+
+;;Enable moos-mode
+(add-to-list 'load-path "~/moos-ivp/editor-modes/")
+(require 'moos-mode)
+
+See: http://oceanai.mit.edu/ivpman/pmwiki/pmwiki.php?n=Tools.AppendixEmacs for more info

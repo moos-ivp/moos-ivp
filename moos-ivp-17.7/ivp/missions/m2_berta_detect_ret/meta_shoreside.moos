@@ -1,0 +1,312 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
+#ifdef LAUNCH_GUI yes
+  Run = pMarineViewer   @ NewConsole = false
+  Run = uXMS            @ NewConsole = false
+#endif
+  Run = pLogger         @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = false
+  Run = uFldProtocolEval @ NewConsole = false
+
+	Run = uFldCollisionDetect @ NewConsole = false
+}
+
+#include plug_pShare.moos
+
+//---------------------------------------------------------
+// uFldProtocolEval
+	
+ProcessConfig = uFldProtocolEval
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  COLLISION_RANGE = 6
+  NEAR_MISS_RANGE = 10
+  CPA_VIOLATION_RANGE = 15
+  PREFERRED_CPA_RANGE = 30
+  DETECTION_RANGE = 30
+
+  TIME_THRESHOLD = 1              // seconds
+  REPORT_THRESHOLD = 45
+  
+  DELAY_TIME_TO_CLEAR = 100       // seconds
+  DEPLOY_DELAY_TIME = 30          // seconds
+
+  PULSE = TRUE
+  PULSE_RANGE = 25
+  PULSE_DURATION = 10             // seconds
+}
+	
+//--------------------------------------------------
+// uFldCollisionDetect
+
+ProcessConfig = uFldCollisionDetect
+{
+  AppTick       = 4
+  CommsTick     = 4
+
+	encounter_range = 30
+	collision_range = 8
+	near_miss_range = 12
+
+	// condition = COLLISION_DETECT=true
+	condition = DEPLOY_ALL=true
+
+	// collision_flag = COLLISION_$UP_V1_$UP_V2 = $CPA
+	collision_flag = COLLISION = $CPA
+	near_miss_flag = NEAR_MISS = $CPA
+	encounter_flag = ENCOUNTER = $CPA
+
+	near_miss_flag = NEAR_MISS_$UP_V1 = $CPA
+	near_miss_flag = NEAR_MISS_$UP_V2 = $CPA
+	collision_flag = COLLISION_$UP_V1 = $CPA
+	collision_flag = COLLISION_$UP_V2 = $CPA
+
+	encounter_flag = EVAL_LOITER_REQ_$UP_V1 = id=$IDX, cpa=$CPA, v2=$V2
+	encounter_flag = EVAL_LOITER_REQ_$UP_V2 = id=$IDX, cpa=$CPA, v2=$V1
+	
+	pulse_render   = true
+	pulse_range    = 20
+	pulse_duration = 30
+}
+
+//--------------------------------------------------
+// uMAC Configuration Block
+
+ProcessConfig = uMAC
+{
+  AppTick       = 1
+  CommsTick     = 1
+}
+
+//--------------------------------------------------
+// uMACView Configuration Block
+
+ProcessConfig = uMACView
+{
+  AppTick       = 3
+  CommsTick     = 3
+
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
+  refresh_mode         = events
+  appcast_color_scheme = beige
+
+  appcast_height     = 30
+  appcast_color_scheme = beige
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
+
+  qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID
+
+	bridge   = src=EVAL_LOITER_REQ_$V, alias=EVAL_LOITER_REQ
+	bridge   = src=ENCOUNTER_$V, alias=ENCOUNTER
+	bridge   = src=NEAR_MISS_$V, alias=NEAR_MISS
+	bridge   = src=COLLISION_$V, alias=COLLISION
+  bridge   = src=UP_LOITER_$V, alias=UP_LOITER
+  bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
+  bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
+  bridge   = src=COLLISION_DETECT_PARAMS, alias=COLLISION_DETECT_PARAMS
+  bridge   = src=COLLISION_DETECT_PARAMS_$V, alias=COLLISION_DETECT_PARAMS
+}
+
+//--------------------------------------------------
+// ufldnodecomms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick       = 2
+  CommsTick     = 2
+
+  //comms_range      = 15
+  //critical_range   = 15
+
+  comms_range      = 500
+  critical_range   = 25
+
+  min_msg_interval = 15
+  max_msg_length   = 1000
+
+  groups           = true
+
+  view_node_rpt_pulses = false
+}
+
+//--------------------------------------------------
+// pHostInfo configuration block from plugin
+
+ProcessConfig = pHostInfo
+{
+  AppTick 	= 1
+  CommsTick = 1
+}
+
+//--------------------------------------------------
+// uXMS Configuration Block
+
+ProcessConfig = uXMS
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  var = APPCAST_REQ
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 5
+  CommsTick     = 5
+  
+  File          = XLOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+	LogAuxSrc     = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+  //WildCardOmitPattern = NODE* 
+  WildCardOmitPattern = APPCAST* 
+  WildCardOmitPattern = PSHARE* 
+  WildCardOmitPattern = *_ITER_GAP
+  WildCardOmitPattern = *_ITER_LEN
+  WildCardOmitPattern = DB_QOS
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names
+
+  circle_viewable_all = false
+  
+  appcast_viewable = true
+  appcast_color_scheme = indigo
+
+  scope = ENCOUNTER
+  scope = VNAME_CLOSEST
+  scope = PSHARE_INPUT_SUMMARY
+  scope = NODE_BROKER_PING
+  scope = DEPLOY_ALL
+  scope = CONTACT_INFO
+
+	action = COLLISION_DETECT = true
+	action = COLLISION_DETECT = false
+	
+  action = PERMUTING = true
+  action = PERMUTING = false
+
+  action = WIND_GUSTS = true
+  action = WIND_GUSTS = false
+
+  action = STATION_KEEP_ALL = false
+  action = STATION_KEEP_ALL = true
+
+  left_context[surface_point] = RETURN_$[UP_VNAME_CLOSEST] = true
+
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = AVOID_ALL=true
+  button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
+
+  button_two   = RETURN  # RETURN_ALL=true
+  button_two   = RETURN  # STATION_KEEP_ALL=false
+  button_three = PERMUTE   # UTS_FORWARD=0
+  button_four  = STATION   # STATION_KEEP_ALL=true
+}
+
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  paused     = false
+  reset_max  = unlimited
+  reset_time = end
+
+  randvar = varname=X1, min=-25,  max=25,  key=at_reset
+  randvar = varname=Y1, min=-100, max=-50, key=at_reset
+
+  randvar = varname=X2, min=100,  max=150, key=at_reset
+  randvar = varname=Y2, min=-75,  max=-25, key=at_reset
+
+  event = var=UP_LOITER_%(VNAME2), val="center_assign=$[X1],$[Y1]", time=180 
+  event = var=UP_LOITER_%(VNAME1), val="center_assign=$[X2],$[Y2]", time=180
+
+  event = var=UP_LOITER_%(VNAME1), val="center_assign=$[X1],$[Y1]", time=360
+  event = var=UP_LOITER_%(VNAME2), val="center_assign=$[X2],$[Y2]", time=360
+}
+
+
+//--------------------------------------------------------
+// uProcessWatch Configuration Block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  allow_retractions = true
+  
+  watch_all = true      // default is true
+
+  nowatch = uXMS*
+  nowatch = uPokeDB*
+  nowatch = uQueryDB*
+
+  summary_wait = 12
+}

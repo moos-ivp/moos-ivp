@@ -1,0 +1,28 @@
+
+
+
+loiter
+
+
+
+config = label=loiter, var=LOITER, val=pts={}, who=each#all
+
+
+CommandFolio
+
+  vector<CommandItem>
+
+CommandItem
+
+	// The unique key across all command items and widget label
+  string          label
+
+  // Index one for each MOOS var/value pair
+  vector<string>  moosvar;
+  vector<string>  valstr;
+  vector<double>  valdbl;
+  vector<string>  valtype;
+
+  // Index one for each receiver
+	// e.g. "evan,gus" or "all", or "each"/
+  vector<string>  receivers;    

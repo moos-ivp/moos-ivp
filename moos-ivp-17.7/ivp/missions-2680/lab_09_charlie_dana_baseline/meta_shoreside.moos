@@ -1,0 +1,144 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uXMS            @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+}
+
+#include plug_pShare.moos
+
+//--------------------------------------------------
+// uMAC Configuration Block
+
+ProcessConfig = uMAC
+{
+  AppTick       = 1
+  CommsTick     = 1
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
+
+  QBRIDGE  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
+
+  BRIDGE   = src=UP_LOITER_$N, alias=UP_LOITER
+  BRIDGE   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
+}
+
+//--------------------------------------------------
+// pHostInfo configuration block from plugin
+
+ProcessConfig = pHostInfo
+{
+  AppTick 	= 1
+  CommsTick 	= 1
+}
+
+//--------------------------------------------------
+// uXMS Configuration Block
+
+ProcessConfig = uXMS
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  var = NODE_MESSAGE
+  var = NODE_MESSAGE_LOCAL
+}
+
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_viewable = names
+
+  circle_viewable_all = false
+  
+  appcast_viewable = true
+  appcast_color_scheme = indigo
+
+  SCOPE = NODE_MESSAGE
+  SCOPE = DEPLOY_ALL
+
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_ONE   = STATION_KEEP_ALL=false
+
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  BUTTON_TWO   = STATION_KEEP_ALL=false
+  BUTTON_THREE = STATION # STATION_KEEP_ALL=true
+}
+
+//--------------------------------------------------------
+// uProcessWatch Configuration Block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  ALLOW_RETRACTIONS = true
+  
+  WATCH_ALL = true      // default is true
+
+  NOWATCH = uXMS*
+  NOWATCH = uPokeDB*
+
+  SUMMARY_WAIT = 12
+}

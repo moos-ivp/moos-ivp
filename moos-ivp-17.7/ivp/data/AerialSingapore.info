@@ -1,0 +1,15 @@
+// ********* Singapore Picture Information ****************
+//
+// North Picture Border    1 degree, 17 minutes, 28.22 seconds N
+// South Picture Border    1 degree, 16 minutes, 53.22 seconds N
+// East Picture Border     103 degrees, 51 minutes, 44.30 seconds E
+// West Picture Border     103 degrees, 51 minutes, 06.05 seconds E
+//
+// Center Latitude         1 degree, 17 minutes, 10.72 seconds N    
+// Center Longitude        103 degrees, 51 minutes, 19.18 seconds E
+
+// How does above info translate to below ???
+
+img_centx   = 0.5
+img_centy   = 0.5
+img_meters  = 0.048828  // ???? What is this ????

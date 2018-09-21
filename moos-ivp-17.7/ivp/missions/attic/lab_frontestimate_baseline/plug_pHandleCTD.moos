@@ -1,0 +1,15 @@
+//--------------------------------------------------------
+// pHandleCTD Configuration Block
+
+ProcessConfig = pHandleCTD
+{
+ vname = $(VNAME)
+ collab = sheida
+  AppTick   = 4
+  CommsTick = 4
+  
+}
+
+
+ 
+

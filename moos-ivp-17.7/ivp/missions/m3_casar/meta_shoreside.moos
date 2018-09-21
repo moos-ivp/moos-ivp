@@ -1,0 +1,106 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+
+//--------------------------------------------------------
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = false
+}
+
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
+
+  QBRIDGE  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
+
+  BRIDGE   = src=TRAILING_ALLOWED, alias=TRAILING_ALLOWED
+  BRIDGE   = src=PATROL, alias=PATROL
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick       = 2
+  CommsTick     = 2
+
+           COMMS_RANGE = 250
+        CRITICAL_RANGE = 25
+      MIN_MSG_INTERVAL = 20
+        MAX_MSG_LENGTH = 1000
+                GROUPS = true
+  VIEW_NODE_RPT_PULSES = true
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.55
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names+shortmode
+
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  SCOPE = CONTACT_INFO
+
+  ACTION = STATION_ALL = false
+  ACTION = STATION_ALL = true
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false 
+  BUTTON_ONE   = PATROL=true
+
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true # PATROL=false
+  BUTTON_TWO   = PATROL=false # TRAIL=false
+
+  BUTTON_THREE = TRAIL-YES # PATROL=true # TRAILING_ALLOWED=true
+  BUTTON_FOUR = TRAIL-NO # TRAILING_ALLOWED=false
+}
+
+//--------------------------------------------------------
+ProcessConfig = uXMS
+{
+  AppTick    = 5
+  CommsTick  = 5
+
+  VAR  = NODE_REPORT
+  VAR  = VIEW_POLYGON
+  VAR  = VIEW_POINT
+  VAR  = DEPLOY_ALL
+}   

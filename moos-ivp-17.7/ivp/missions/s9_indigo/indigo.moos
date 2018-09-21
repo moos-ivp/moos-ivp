@@ -1,0 +1,233 @@
+// Level 2 Configuration file: M. Benjamin
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = indigo
+
+MOOSTimeWarp = 1
+
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 500
+
+  Run = MOOSDB           @ NewConsole = false
+  Run = pMarineViewer    @ NewConsole = false
+  Run = pLogger          @ NewConsole = false
+  Run = uSimMarine       @ NewConsole = false
+  Run = pNodeReporter    @ NewConsole = false
+  Run = pMarinePID       @ NewConsole = false
+  Run = pHelmIvP         @ NewConsole = false
+  Run = uTimerScript     @ NewConsole = false
+  Run = uFldBeaconRangeSensor @ NewConsole = false
+}
+
+//------------------------------------------
+// uFldBeaconRangeSensor config block
+
+ProcessConfig = uFldBeaconRangeSensor
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  // Configuring aspects of the vehicles
+  ping_wait      = default = 30
+  ping_payments  = upon_accept
+
+  //report_vars    = short
+
+  default_beacon_freq  = never       // Only on request (ping)
+  default_beacon_shape = circle
+  default_beacon_color = orange
+  default_beacon_width = 5
+  default_beacon_push_dist = 50
+  default_beacon_pull_dist = 50
+
+  beacon  = x=200, y=0,    label=01, push_dist=500, pull_dist=500
+  beacon  = x=400, y=-200, label=02
+  beacon  = x=0,   y=-200, label=03
+
+  verbose = true
+  ground_truth = true
+  rn_algorithm = uniform,pct=0.15
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  AppTick       = 4
+  CommsTick     = 4
+
+  paused     = false
+  reset_max  = nolimit
+  reset_time = end
+  condition  = (NAV_SPEED > 0)
+
+  event = var=BRS_RANGE_REQUEST, val="name=indigo", time=25:35
+}
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  SyncLog = false
+  AsyncLog = true
+
+  Log = SBR_RANGE_REPORT @ 0
+
+  LogAuxSrc = true
+  WildCardLogging = true
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+}
+
+//------------------------------------------
+// Uxms config block
+
+ProcessConfig = uXMS
+{
+  AppTick   = 0.5
+  CommsTick = 0.5
+
+  var = IMS_*
+  var = NAV_X
+  var = NAV_Y
+  var = NAV_SPEED
+}
+
+
+//------------------------------------------
+// uSimMarine config block
+
+ProcessConfig = uSimMarine
+{
+  AppTick	= 10
+  CommsTick	= 10
+
+  start_x       = 0
+  start_y       = 0
+  start_speed   = 0
+  start_heading = 180
+
+  prefix        = NAV
+
+  turn_rate     = 40
+  thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  Behaviors  = indigo.bhv
+  Verbose    = quiet
+  Domain     = course:0:359:360
+  Domain     = speed:0:4:21
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  verbose       = true
+  depth_control = false
+
+  // SIM_INSTABILITY = 20
+
+  // Yaw PID controller
+  yaw_pid_kp		 = 1.2
+  yaw_pid_kd		 = 0.0
+  yaw_pid_ki		 = 0.3
+  yaw_pid_integral_limit = 0.07
+
+  // Speed PID controller
+  speed_pid_kp		 = 1.0
+  speed_pid_kd		 = 0.0
+  speed_pid_ki		 = 0.0
+  speed_pid_integral_limit = 0.07
+
+  //MAXIMUMS
+  maxrudder    = 100
+  maxthrust    = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  speed_factor = 20
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = AerialMIT.tif
+  set_pan_x            = -60
+  set_pan_y            = 160
+  zoom                 = 1.25
+  vehicle_shape_scale  = 1.5
+  seglist_viewable_all = false
+  hash_delta           = 50
+  hash_shade           = 0.25
+  hash_viewable        = true
+
+  scope  = VIEW_SEGLIST
+  scope  = VIEW_POINT
+  scope  = VIEW_POLYGON
+  scope  = NAV_X
+  scope  = NAV_Y
+  scope  = MVIEWER_LCLICK
+  scope  = MVIEWER_RCLICK
+
+  button_one = DEPLOY # DEPLOY=true
+  button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
+  button_two = RETURN # RETURN=true
+
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
+  action  = RETURN=true
+  action  = HSLINE=off
+  action  = HSLINE=on
+  action  = UPDATES_RETURN=speed=1.4
+
+  // MIT OP-AREA
+  op_vertex = x=-220, y=-120,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=-100, y=-430,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=380, y=-240,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=254, y=46,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=112, y=21,lwidth=1,lcolor=yellow,looped=true,group=moa
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick	    = 2
+  CommsTick	  = 2
+
+  vessel_type = KAYAK
+}
+

@@ -1,0 +1,106 @@
+// Alpha Configuration file: M. Benjamin
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = alpha
+
+MOOSTimeWarp = 1
+
+// Forest Lake
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+// MIT Sailing Pavilion (use this one)
+// LatOrigin  = 42.358456 
+// LongOrigin = -71.087589
+
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		   @ NewConsole = false
+  Run = uTimerScript       @ NewConsole = false
+  Run = pTestClassifyQueue @ NewConsole = false
+  Run = uProcessWatch      @ NewConsole = false
+  Run = uMACView           @ NewConsole = false
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  var = CLASSIFY_ENTRY
+}
+
+//------------------------------------------
+// uMACView
+
+ProcessConfig = uMACView
+{
+  AppTick   = 4
+  CommsTick = 4
+}
+
+  
+//------------------------------------------
+// uProcessWatch config block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  SUMMARY_WAIT = 5
+
+  NOWATCH   = uXMS*
+  NOWATCH   = uMAC*
+  WATCH_ALL = true
+}
+
+//------------------------------------------
+// TestClassifyQueue
+
+ProcessConfig = pTestClassifyQueue
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  queue_time = 15
+}
+
+//------------------------------------------
+// uTimerScript
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  randvar = varname=LABEL,    min=0, max=400, key=at_post
+  randvar = varname=PRIORITY, min=0, max=100, key=at_post
+  
+  event = var=CLASSIFY_ENTRY, val="label=$(LABEL),priority=$(PRIORITY)", time=0:100
+  event = var=CLASSIFY_ENTRY, val="label=$(LABEL),priority=$(PRIORITY)", time=0:100
+  event = var=CLASSIFY_ENTRY, val="label=$(LABEL),priority=$(PRIORITY)", time=0:100
+  event = var=CLASSIFY_ENTRY, val="label=$(LABEL),priority=$(PRIORITY)", time=0:100
+  event = var=CLASSIFY_ENTRY, val="label=$(LABEL),priority=$(PRIORITY)", time=0:100
+
+  event = var=CLASSIFY_ENTRY, val="label=$(LABEL),priority=$(PRIORITY)", time=0:100
+  event = var=CLASSIFY_ENTRY, val="label=$(LABEL),priority=$(PRIORITY)", time=0:100
+  event = var=CLASSIFY_ENTRY, val="label=$(LABEL),priority=$(PRIORITY)", time=0:100
+  event = var=CLASSIFY_ENTRY, val="label=$(LABEL),priority=$(PRIORITY)", time=0:100
+  event = var=CLASSIFY_ENTRY, val="label=$(LABEL),priority=$(PRIORITY)", time=0:100
+  
+  paused     = false
+  reset_time = all-posted
+  reset_max  = nolimit
+
+}
+

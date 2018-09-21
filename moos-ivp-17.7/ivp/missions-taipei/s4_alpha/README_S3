@@ -1,0 +1,12 @@
+
+This mission differs from the s2_alpha mission:
+
+Students:
+
+1. Add a buttons to pMarineViewer to immediately switch to 
+   loitering in the West or East
+ 
+   button_three = WEST # REGION=west
+   button_three = EAST # REGION=east
+
+2. Configure the behaviors to have repeat=forever

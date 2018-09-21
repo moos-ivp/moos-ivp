@@ -1,0 +1,11 @@
+//--------------------------------------------------
+// uFldNodeBroker configuration block from plugin
+
+ProcessConfig = uFldNodeBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  KEYWORD        = lemon
+  TRY_SHORE_HOST = localhost, 9200
+}

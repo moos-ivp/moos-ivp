@@ -1,0 +1,19 @@
+=============================================================== 
+uFldShoreBroker Example MOOS Configuration                      
+=============================================================== 
+                                                                
+ProcessConfig = uFldShoreBroker                                 
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  BRIDGE_VAR = DEPLOY                                           
+  BRIDGE_VAR = RETURN                                           
+  BRIDGE_VAR = STATION_KEEP                                     
+                                                                
+  PIGEON_VAR = LOITER_ONE, LOITER                               
+  PIGEON_VAR = LOITER_TWO, LOITER                               
+  PIGEON_VAR = LOITER_THREE, LOITER                             
+                                                                
+  ALL_LOCALHOST = TRUE                                          
+}                                      

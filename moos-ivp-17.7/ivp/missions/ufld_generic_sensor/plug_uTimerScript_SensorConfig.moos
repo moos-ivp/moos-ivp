@@ -1,0 +1,19 @@
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript_SensorConfig
+{
+  AppTick   = 2
+  CommsTick = 2
+  
+  PAUSED    = false
+  RESET_MAX = 0
+
+  condition = !(UGS_CONFIG_ACK != "")
+
+  EVENT = var=UGS_CONFIG_REQUEST, val="vname=$(VNAME),range=33", time=0 
+}
+
+
+ 
+

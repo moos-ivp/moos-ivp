@@ -1,0 +1,20 @@
+=============================================================== 
+uProcessWatch Example MOOS Configuration                        
+=============================================================== 
+
+ProcessConfig = uProcessWatch                                                                
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  WATCH_ALL = true                                              
+                                                                
+  WATCH  = pMarinePID:PID_OK                                    
+  WATCH  = uSimMarine:USM_OK                                    
+                                                                
+  NOWATCH = uXMS*                                               
+                                                                
+  SUMMARY_WAIT = 10  // Seconds                              
+                                                                
+  POST_MAPPING = PROC_WATCH_FULL_SUMMARY, UPW_FULL_SUMMARY      
+}                                                             

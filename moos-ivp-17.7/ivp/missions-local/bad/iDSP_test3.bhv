@@ -1,0 +1,92 @@
+initialize   DEPLOY = false
+initialize   AUT_VMR_REQUEST = false
+initialize   MANUAL_VMR_REQUEST = false
+initialize   AUT_TYPE = waypoint
+
+//----------------------------------------------
+// Operating Modes
+//----------------------------------------------
+
+// Set Mission or INACTIVE
+set MODE = MISSION {
+  DEPLOY = true
+  } INACTIVE
+
+// Set Autonomous or Command/Control Override
+set MODE = AUT {
+  MODE = MISSION
+  MANUAL_VMR_REQUEST != true
+  } MANUAL:VMR
+
+// Set Waypoint or Loiter Autonomy
+set MODE = WAYPOINT {
+  MODE = MISSION:AUT
+  AUT_TYPE = waypoint
+  } LOITER
+
+// Set Autonomous Vehicle Maneuver Request (VMR)
+set MODE = VMR {
+  MODE = MISSION:AUT:WAYPOINT
+  AUT_VMR_REQUEST = true
+  }
+set MODE = VMR {
+  MODE = MISSION:AUT:LOITER
+  AUT_VMR_REQUEST = true
+  }
+
+// Set Surfacing if below 1/2 meter depth
+set MODE = SURFACING {
+  MODE = INACTIVE
+  NAV_DEPTH > 0.5
+}
+
+//----------------------------------------------
+// Turn Limiting
+//----------------------------------------------
+
+//Behavior = BHV_MemoryTurnLimit
+//{
+//  name        = bhv_turn_limit
+//  pwt         = 300
+//  duration    = -1
+//  memory_time = 1
+//  turn_range  = 30
+//}
+
+//----------------------------------------------
+// Autonomous Control - Speed, Depth
+//----------------------------------------------
+
+Behavior = BHV_ConstantDepth
+{
+  name      = bhv_depth_control
+  pwt       = 100
+  duration  = -1
+  depth     = 5
+  updates   = AUT_DEPTH_UPDATE
+  condition = MODE == AUT
+}
+
+//----------------------------------------------
+// Autonomous Control - Waypoint
+//----------------------------------------------
+
+Behavior = BHV_Waypoint
+{
+  name      = bhv_aut_waypoint
+  pwt       = 100
+  speed     = 1.0
+  radius    = 10.0
+  lead      = 4.0
+  //points    = 50,60:300,60
+  polygon   = format=lawnmower,x=177,y=-12,height=150,width=250,lane_width=50,rows=north-south,degs=0.000000
+  //points    = format=lawnmower,x=177,y=-12,height=150,width=250,lane_width=50,rows=north-south,degs=0.000000
+  //points    = label,remus_bhv_aut_waypoint:52,63:302,63:302,13:52,13:52,-37:302,-37:302,-87:52,-87
+  repeat    = 2
+  condition = MODE == WAYPOINT
+  updates   = AUT_WAYPOINT_UPDATE
+  perpetual = true
+}
+
+
+

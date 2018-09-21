@@ -1,0 +1,287 @@
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: alpha.moos
+//-------------------------------------------------
+
+ServerHost = localhost		
+ServerPort = 9005		
+Community  = alpha
+
+MOOSTimeWarp = 1
+TERM_REPORTING = true
+
+// Forest Lake
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+// MIT Sailing Pavilion (use this one)
+// LatOrigin  = 42.358456 
+// LongOrigin = -71.087589
+
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uSimMarine	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = false
+  Run = pHelmIvP	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
+  Run = uProcessWatch	@ NewConsole = false
+  Run = pNodeReporter	@ NewConsole = false
+  Run = uLoadWatch      @ NewConsole = false
+  //Run = iSay	        @ NewConsole = true
+  //Run = uXMS	        @ NewConsole = false
+  //Run = uTimerScript    @ NewConsole = false
+}
+
+//------------------------------------------
+ProcessConfig = uXMS
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  var = WPT_EFFICIENCY_LEG
+  var = WPT_EFFICIENCY_SUM
+  var = WPT_EFFICIENCY_VAL
+}
+
+//------------------------------------------
+ProcessConfig = iSay
+{
+  AppTick   = 10
+  CommsTick = 10
+
+  min_utter_interval = 1
+  interval_policy    = from_end
+}
+
+                                                                
+//------------------------------------------
+ProcessConfig = uTimerScript                                    
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  event          = var=SAY_MOOS, val="say={one}",   time=0.25  
+  event          = var=SAY_MOOS, val="say={two}",   time=0.5  
+  event          = var=SAY_MOOS, val="say={three}", time=0.75  
+  event          = var=SAY_MOOS, val="say={four}",  time=1  
+  event          = var=SAY_MOOS, val="say={five},priority=100",  time=1.25  
+  event          = var=SAY_MOOS, val="say={six}",   time=1.5  
+  event          = var=SAY_MOOS, val="say={seven}", time=1.75  
+  event          = var=SAY_MOOS, val="say={eight}", time=2  
+  event          = var=SAY_MOOS, val="say={nine}",  time=2.25  
+  reset_max      = nolimit  
+  reset_time     = all-posted
+  delay_reset    = 0.25
+}                                                               
+
+//------------------------------------------
+// uProcessWatch config block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  summary_wait = 5
+
+  //nowatch   = uXMS*
+  nowatch   = uMAC*
+  nowatch   = uPokeDB*
+  nowatch   = uTermCommand*
+  watch_all = true
+}
+
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 8
+  CommsTick = 8
+
+  AsyncLog = true
+
+  // For variables that are published in a bundle on their first post,
+  // explicitly declare their logging request
+
+  Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
+
+  LogAuxSrc = true
+  WildCardLogging = true
+  // WildCardOmitPattern = *_STATUS
+  WildCardExclusionLog = true
+}
+
+//------------------------------------------
+// uSimMarine config block
+
+ProcessConfig = uSimMarine
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  start_x       = 0
+  start_y       = -20
+  start_heading = 180
+  start_speed   = 0
+
+  prefix        = NAV
+
+  turn_rate     = 40
+  thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  MaxAppTick = 10
+  AppTick    = 4
+  CommsTick  = 4
+
+  term_report_interval=0
+
+  bhv_dir_not_found_ok = true
+  ivp_behavior_dir = /Users/ddmikerb
+
+  behaviors  = alpha.bhv
+  domain     = course:0:359:360
+  domain     = speed:0:4:21
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+
+  // SIM_INSTABILITY = 20
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 1.2
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.3
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+  //MAXIMUMS
+  MAXRUDDER    = 100
+  MAXTHRUST    = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = forrest19.tif
+
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.5
+  hash_delta           = 50
+  hash_shade           = 0.4
+  hash_viewable        = true
+
+  trails_point_size   = 1
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
+  
+  //datum_viewable = true
+  //datum_size     = 18
+  //gui_size = small
+
+  left_context[survey-point] = DEPLOY=true
+  left_context[survey-point] = MOOS_MANUAL_OVERRIDE=false
+  left_context[survey-point] = RETURN=false
+
+  right_context[return] = DEPLOY=true
+  right_context[return] = MOOS_MANUAL_OVERRIDE=false
+  right_context[return] = RETURN=false
+
+  left_context[polyvert] = POLY_VERT=x=$(XPOS),y=$(YPOS)
+
+  scope  = WPT_EFFICIENCY_LEG
+  scope  = WPT_EFFICIENCY_SUM
+  scope  = WPT_EFFICIENCY_VAL
+  scope  = RETURN
+  scope  = WPT_STAT
+  scope  = VIEW_SEGLIST
+  scope  = VIEW_POINT
+  scope  = VIEW_POLYGON
+  scope  = MVIEWER_LCLICK
+  scope  = MVIEWER_RCLICK
+
+  button_one = DEPLOY # DEPLOY=true
+  button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
+  button_two = RETURN # RETURN=true
+
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
+  action  = RETURN=true
+  action  = UPDATES_RETURN=speed=1.4
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  MaxAppTick    = 2
+  AppTick	= 2
+  CommsTick	= 2
+
+  platform_type   = KAYAK
+  platform_length = 4
+}
+
+
+// This block is here in conjunction with the uTermCommand 
+// documentation to demonstrate functionality of that tool.
+// This mission may be alternately 
+
+ProcessConfig = uTermCommandFoo
+{
+  cmd  = override_true  -->  MOOS_MANUAL_OVERRIDE --> true
+  cmd  = override_false -->  MOOS_MANUAL_OVERRIDE --> false
+  cmd  = deploy_true    -->  DEPLOY --> true
+  cmd  = deploy_false   -->  DEPLOY --> false
+  cmd  = return_true    -->  RETURN --> true
+  cmd  = return_false   -->  RETURN --> false
+}
+
+

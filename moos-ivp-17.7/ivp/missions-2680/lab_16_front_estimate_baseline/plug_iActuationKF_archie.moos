@@ -1,0 +1,34 @@
+//------------------------------------------------------
+// iActuationKF configuration block from plugin (ARCHIE)
+
+ProcessConfig = iActuationKF
+{
+  AppTick                    = 10
+  CommsTick                  = 10
+
+  // tty port for communicating with the vehicle controller  
+  Port                       = /dev/KINGFISHER       
+
+  // No helm command in Timeout seconds = ALL STOPPED
+  Timeout                    = 6                     
+
+  ComputeHeading             = 0     // 0 = NO, 1 = YES
+  m_verbose                  = 1
+  MAX_THRUST_VALUE           = 84
+
+  // MagOffsetX              = 0.0
+  // MagOffsetY              = 0.0
+  // ProcessOrientationData  = true
+  // ProcessMagnetometerData = true
+
+  OFFSET_LT10        = 11.5
+  OFFSET_GTE10_LT20  = 11.0
+  OFFSET_GTE20_LT30  = 12.3
+  OFFSET_GTE30_LT40  = 12.3
+  OFFSET_GTE40_LT50  = 12.0
+  OFFSET_GTE50_LT60  = 11.5
+  OFFSET_GTE60_LT70  = 11.5
+  OFFSET_GTE70_LT80  = 10.0
+  OFFSET_GTE80_LT90  = 10.5
+  OFFSET_GTE90       = 11.5
+}

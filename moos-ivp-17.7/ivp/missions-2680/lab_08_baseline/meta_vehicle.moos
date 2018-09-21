@@ -1,0 +1,70 @@
+ServerHost = localhost
+ServerPort = $(VPORT)
+
+// Community name IS the vehicle name
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+  
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+   
+  Run = MOOSDB             @ NewConsole = false
+  Run = uSimMarine         @ NewConsole = false
+  Run = pShare             @ NewConsole = false
+  Run = pLogger            @ NewConsole = false
+  Run = pNodeReporter      @ NewConsole = false
+  Run = pMarinePID         @ NewConsole = false
+  Run = pHelmIvP           @ NewConsole = false
+  Run = uProcessWatch      @ NewConsole = false
+  Run = pHostInfo          @ NewConsole = false
+  Run = uFldNodeBroker     @ NewConsole = false
+  Run = pMarineViewer      @ NewConsole = false
+}
+  
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE              = forrest19.tif
+  set_pan_x              = -90
+  set_pan_y              = -280
+  zoom                   = 0.65
+  vehicles_shape_scale   = 1.5
+  vehicles_name_mode     = names+shortmode
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = small
+
+  SCOPE = PSHARE_INPUT_SUMMARY
+
+  ACTION = STATION_ALL = false
+  ACTION = STATION_ALL = true
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE=false 
+  BUTTON_ONE   = RETURN=false
+  BUTTON_TWO   = RETURN  # RETURN=true
+  BUTTON_THREE = STATION:T  # STATION=true
+  BUTTON_FOUR  = STATION:F  # STATION=false
+}
+
+#include plug_pShare.moos
+#include plug_uFldNodeBroker.moos
+#include plug_pHostInfo.moos
+#include plug_uSimMarine.moos
+#include plug_pHelmIvP.moos
+#include plug_pMarinePID.moos
+#include plug_pLogger.moos
+#include plug_pNodeReporter.moos
+#include plug_uProcessWatch.moos
