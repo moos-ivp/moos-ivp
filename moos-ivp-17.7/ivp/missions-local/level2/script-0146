@@ -1,4 +1,0 @@
-pAntler K200.moos &; sleep 1; pHelmIvP K200.moos ../missions_permute/200-loiter.bhv &; sleep 1;
-pAntler K201.moos &; sleep 1; pHelmIvP K201.moos ../missions_permute/201-loiter.bhv &; sleep 1;
-pAntler K204.moos &; sleep 1; pHelmIvP K204.moos ../missions_permute/204-loiter.bhv &; sleep 1;
-pAntler K206.moos &; sleep 1; pHelmIvP K206.moos ../missions_permute/206-loiter.bhv &; sleep 1;

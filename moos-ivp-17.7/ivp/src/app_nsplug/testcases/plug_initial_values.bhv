@@ -1,6 +1,0 @@
-initialize   DEPLOY = false
-initialize   RETURN = false
-initialize   AWAITING_RIPOINTS = true
-initialize   HSLINE = off
-initialize   STATION = false
-
