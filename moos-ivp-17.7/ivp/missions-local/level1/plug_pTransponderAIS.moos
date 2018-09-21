@@ -1,9 +1,0 @@
-//------------------------------------------------------------------
-// pTransponderAIS config block
-
-ProcessConfig = pTransponderAIS
-{
-  AppTick	= 2
-  CommsTick	= 2
-  VESSEL_TYPE   = KAYAK
-}
