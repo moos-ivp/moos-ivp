@@ -185,7 +185,9 @@ double BHV_CutRange::getRelevance()
   
   // if total_range==0 one of the two cases will result in a return
   if(m_contact_range >= m_pwt_outer_dist)
-    return(100.0);
+    return(1.0); 
+  // return(100.0); // bug fix focus of release 17.7.1
+    
   if(m_contact_range < m_pwt_inner_dist)
     return(0.0);
 
