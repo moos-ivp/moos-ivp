@@ -25,7 +25,7 @@ done
 #-------------------------------------------------------
 VNAME1="henry"         # The first vehicle Community
 VNAME2="gilda"         # The second vehicle Community
-START_POS1="0,0"       # Vehicle 1 Behavior configurations
+START_POS1="50,-50"    # Vehicle 1 Behavior configurations
 START_POS2="80,-125"   # Vehicle 2 Behavior configurations
 SHORE_LISTEN="9300"
 
@@ -70,7 +70,7 @@ printf "Done \n"
 uMAC targ_shoreside.moos
 
 printf "Killing all processes ... \n"
-kill %1 %2 %3 
+ktm
 printf "Done killing processes.   \n"
 
 
