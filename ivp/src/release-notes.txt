@@ -24,6 +24,13 @@ BHV_AvoidColregsV17
 ===============================================
 o Turned off debugging output inadvertantly left enabled.
 
+BHV_Waypoint
+===============================================
+o Added lead_condition to allow the user to specify a logic condition
+  that must be met in order for the trackline following to be enabled.
+  This allows for coordination with any collision avoidance behavior 
+  temporarily turn off trackline following during an avoidance encounter.
+
 
 uFldCollisionDetect Documentation
 ===============================================
