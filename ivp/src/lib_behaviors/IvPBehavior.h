@@ -109,6 +109,8 @@ public:
   bool    checkForDurationReset();
   bool    checkNoStarve();
 
+  void    setHelmIteration(unsigned int iter) {m_helm_iter=iter;}
+  
   double                   getPriorityWt() {return(m_priority_wt);}
   double                   getBufferCurrTime();
   double                   getBufferLocalTime();
@@ -135,6 +137,8 @@ protected:
   std::string m_build_info;
   std::string m_status_info;
 
+  unsigned int m_helm_iter;
+  
   std::vector<std::string>       m_info_vars;
   std::vector<std::string>       m_info_vars_no_warning;
 

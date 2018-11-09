@@ -68,6 +68,8 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_duration_prev_state      = "";
   m_duration_idle_decay      = true;
   m_duration_reset_on_transition = false;
+
+  m_helm_iter = 0;
 }
 
 //-----------------------------------------------------------
@@ -528,9 +530,6 @@ void IvPBehavior::statusInfoPost()
   m_status_info = "name=" + m_descriptor;
 }
 
-
-
-
 //-----------------------------------------------------------
 // Procedure: checkConditions()
 
@@ -595,6 +594,8 @@ bool IvPBehavior::checkForDurationReset()
   double d_result = m_info_buffer->dQuery(varname, ok_d);
 
   bool reset_triggered = false;
+  //if(m_duration_reset_val == "")
+  //  reset_triggered = true;
   if(ok_s && (m_duration_reset_val == s_result))
     reset_triggered = true;
   if(ok_d && (atof(m_duration_reset_val.c_str()) == d_result))
@@ -636,7 +637,6 @@ void IvPBehavior::durationReset()
 //-----------------------------------------------------------
 // Procedure: addInfoVars
 //      Note: If post_warning is false, then the 
-
 
 void IvPBehavior::addInfoVars(string var_string, string warning)
 {

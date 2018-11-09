@@ -64,6 +64,7 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_cnutc = 0;
 
   m_contact_range = 0;
+  m_range_gamma   = 0;
   m_relevance     = 0;
 
   m_bearing_rate  = 0;
@@ -282,9 +283,11 @@ bool IvPContactBehavior::updatePlatformInfo()
   m_os_cn_rel_bng = relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny);
   m_cn_os_rel_bng = relBearing(m_cnx, m_cny, m_cnh, m_osx, m_osy);
 
-  CPAEngine cpa_engine(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
+   CPAEngine cpa_engine(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
   CPAEngine rcpa_engine(m_osy, m_osx, m_osh, m_osv, m_cny, m_cnx);    
 
+  m_range_gamma = cpa_engine.getRangeGamma();
+  
   m_rate_of_closure = cpa_engine.evalROC(m_osh, m_osv);
 
   m_os_fore_of_cn  = cpa_engine.foreOfContact();

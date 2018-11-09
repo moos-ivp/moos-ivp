@@ -82,6 +82,7 @@ public:
   std::string m_cn_group;
   
   double m_contact_range; // Current range to contact (meters) 
+  double m_range_gamma; 
   double m_relevance;
 
   LinearExtrapolator m_extrapolator;
