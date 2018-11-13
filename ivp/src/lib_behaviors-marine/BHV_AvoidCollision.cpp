@@ -237,6 +237,11 @@ IvPFunction *BHV_AvoidCollision::onRunState()
     return(0);
   }
   
+  if(m_cn_retired) {
+    setComplete();
+    return(0);
+  }
+  
   if(m_relevance <= 0) {
     postViewableBearingLine();
     return(0);
