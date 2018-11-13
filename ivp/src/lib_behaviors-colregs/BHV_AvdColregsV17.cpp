@@ -216,6 +216,7 @@ void BHV_AvdColregsV17::onCompleteState()
 
 bool BHV_AvdColregsV17::onRunStatePrior() 
 {
+  return(true);
   if(m_last_runcheck_post) {
     m_last_runcheck_post = false;
     return(false);
@@ -254,6 +255,11 @@ IvPFunction *BHV_AvdColregsV17::onRunState()
     return(0);
   }
 
+  if(m_cn_retired) {
+    setComplete();
+    return(0);
+  }
+  
   double curr_time = getBufferCurrTime();
   addHeading(m_cnh, curr_time);
   double os_cn_rel_bng = relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny);
