@@ -52,6 +52,8 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_extrapolator.setDecay(m_decay_start, m_decay_end);
   m_time_on_leg  = 60;
 
+  m_complete_after_retired = -1;  // seconds. -1 means don't use.
+  
   // Initialize state variables
   m_osx = 0;
   m_osy = 0;
@@ -63,6 +65,9 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_cnv = 0;
   m_cnutc = 0;
 
+  m_cn_not_retired_tstamp = -1;
+  m_cn_retired = false;
+  
   m_contact_range = 0;
   m_range_gamma   = 0;
   m_relevance     = 0;
@@ -125,6 +130,11 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     m_contact = toupper(param_val);
     return(true);
   }  
+  else if((param == "complete_after_retired") && non_neg_number) {
+    addInfoVars("CONTACTS_RETIRED", "nowarning");
+    m_complete_after_retired = dval;
+    return(true);
+  }
   else if(param == "extrapolate")
     return(setBooleanOnString(m_extrapolate, param_val));
   else if(param == "match_contact_group") {
@@ -276,7 +286,34 @@ bool IvPContactBehavior::updatePlatformInfo()
   }
 
   //==================================================================
-  // Part 3: Update the useful relative vehicle information
+  // Part 3: Monitor the retired contact list 
+
+  if(m_complete_after_retired > 0) {
+    string cns_retired = getBufferStringVal("CONTACTS_RETIRED");
+    postMessage("J0", cns_retired);
+    vector<string> svector = parseString(cns_retired, ',');
+    double curr_time = getBufferCurrTime();
+    postMessage("J1", curr_time);
+    postMessage("J4", m_contact);
+    if(!vectorContains(svector, tolower(m_contact))) {  // NOT on retlist
+      m_cn_not_retired_tstamp = curr_time;
+      m_cn_retired = false;
+      postMessage("J2", boolToString(m_cn_retired));
+    }
+    else {  // IS on the retired list, possibly flag for completion
+      // Special case: if on ret list in first iter, just set tstamp
+      if(m_cn_not_retired_tstamp < 0)
+	m_cn_not_retired_tstamp = curr_time;     
+      double elapsed = curr_time - m_cn_not_retired_tstamp;
+      postMessage("J3", elapsed);
+      if(elapsed > m_complete_after_retired)
+	m_cn_retired = true;
+      postMessage("J2", boolToString(m_cn_retired));
+    }
+  }
+  
+  //==================================================================
+  // Part 4: Update the useful relative vehicle information
   
   m_contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
 

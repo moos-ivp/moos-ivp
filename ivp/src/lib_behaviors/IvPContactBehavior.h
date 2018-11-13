@@ -56,6 +56,8 @@ public:
   double m_decay_start;
   double m_decay_end;
   double m_time_on_leg;
+
+  double m_complete_after_retired;
   
   XYSegList                m_bearing_line;
   bool                     m_bearing_line_show;
@@ -80,6 +82,9 @@ public:
   double m_cnutc; // UTC time of last contact report
 
   std::string m_cn_group;
+
+  double m_cn_not_retired_tstamp;
+  bool   m_cn_retired;
   
   double m_contact_range; // Current range to contact (meters) 
   double m_range_gamma; 
