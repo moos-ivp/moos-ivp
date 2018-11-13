@@ -290,25 +290,19 @@ bool IvPContactBehavior::updatePlatformInfo()
 
   if(m_complete_after_retired > 0) {
     string cns_retired = getBufferStringVal("CONTACTS_RETIRED");
-    postMessage("J0", cns_retired);
     vector<string> svector = parseString(cns_retired, ',');
     double curr_time = getBufferCurrTime();
-    postMessage("J1", curr_time);
-    postMessage("J4", m_contact);
     if(!vectorContains(svector, tolower(m_contact))) {  // NOT on retlist
       m_cn_not_retired_tstamp = curr_time;
       m_cn_retired = false;
-      postMessage("J2", boolToString(m_cn_retired));
     }
     else {  // IS on the retired list, possibly flag for completion
       // Special case: if on ret list in first iter, just set tstamp
       if(m_cn_not_retired_tstamp < 0)
 	m_cn_not_retired_tstamp = curr_time;     
       double elapsed = curr_time - m_cn_not_retired_tstamp;
-      postMessage("J3", elapsed);
       if(elapsed > m_complete_after_retired)
 	m_cn_retired = true;
-      postMessage("J2", boolToString(m_cn_retired));
     }
   }
   
