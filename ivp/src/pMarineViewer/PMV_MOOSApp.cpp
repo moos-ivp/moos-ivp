@@ -415,9 +415,9 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 
 void PMV_MOOSApp::handleIterate(const MOOS_event & e) 
 {
-  // Only auto-remove stale vehicles if operating in simulation
-  if(m_time_warp > 1)
-    m_gui->clearStaleVehicles();
+  // Prior to Dec1515 - Only auto-remove stale vehicles if operating in simulation
+  // if(m_time_warp > 1)
+  m_gui->clearStaleVehicles();
   
   double curr_time = e.moos_time - m_start_time;
   cout << "." << flush;
