@@ -77,6 +77,19 @@ bool XYFieldGenerator::addPolygon(string spec)
 }
 
 //---------------------------------------------------------
+// Procedure: setSnap()
+
+bool XYFieldGenerator::setSnap(double snap_val)
+{
+  if(snap_val <= 0)
+    return(false);
+
+  m_snap = snap_val;
+  return(true);
+}
+  
+
+//---------------------------------------------------------
 // Procedure: getPolygon
 
 XYPolygon XYFieldGenerator::getPolygon(unsigned int ix)
@@ -89,7 +102,6 @@ XYPolygon XYFieldGenerator::getPolygon(unsigned int ix)
   return(m_polygons[ix]);
 }
   
-
 
 //---------------------------------------------------------
 // Procedure: generatePoint

@@ -38,10 +38,12 @@ class XYFieldGenerator
   virtual ~XYFieldGenerator() {}
 
   bool addPolygon(std::string);
-
+  bool setSnap(double);
+  
   XYPoint generatePoint();
 
   unsigned int polygonCount() {return(m_polygons.size());}
+  unsigned int size()         {return(m_polygons.size());}
   XYPolygon    getPolygon(unsigned int);
 
  protected: // Config variables
