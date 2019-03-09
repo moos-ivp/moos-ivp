@@ -221,6 +221,7 @@ SET(ROBOT_APPS
   app_nsplug
   app_manifest_test
   app_manifest_wiki
+  app_manifest_loc
   pEchoVar
   pEvalLoiter
   pHelmIvP

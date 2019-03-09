@@ -1,0 +1,14 @@
+
+
+Modules identical 
+===========================================================
+  pHelmIvP
+  aloggrep
+  pEchoVar
+
+
+Modules different
+===========================================================
+iSay:
+  file1.loc:  loc=232, foc=32, wkyears=3.2  
+  file1.loc:  loc=232, foc=31, wkyears=3.2
