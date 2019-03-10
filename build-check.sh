@@ -110,33 +110,33 @@ fi
 #=================================================================
 MISSING=""
 
-if [ ! -e lib/libapputil.a ];           then  MISSING=$MISSING"apputil,"; fi
-if [ ! -e lib/libbehaviors.a ];         then  MISSING=$MISSING"behaviors,"; fi
+if [ ! -e lib/libapputil.a ];       then  MISSING=$MISSING"apputil,"; fi
+if [ ! -e lib/libbehaviors.a ];     then  MISSING=$MISSING"behaviors,"; fi
 if [ ! -e lib/libbehaviors-marine.a ];  then  MISSING=$MISSING"behaviors-marine,"; fi
 if [ ! -e lib/libbehaviors-colregs.a ]; then  MISSING=$MISSING"behaviors-colregs,"; fi
-if [ ! -e lib/libbhvutil.a ];           then  MISSING=$MISSING"bhvutil,"; fi
-if [ ! -e lib/libcontacts.a ];          then  MISSING=$MISSING"contacts,"; fi
-if [ ! -e lib/libencounters.a ];        then  MISSING=$MISSING"encounters,"; fi
-if [ ! -e lib/libgenutil.a ];           then  MISSING=$MISSING"genutil,"; fi
-if [ ! -e lib/libgeometry.a ];          then  MISSING=$MISSING"geometry,"; fi
+if [ ! -e lib/libbhvutil.a ];       then  MISSING=$MISSING"bhvutil,"; fi
+if [ ! -e lib/libcontacts.a ];      then  MISSING=$MISSING"contacts,"; fi
+if [ ! -e lib/libencounters.a ];    then  MISSING=$MISSING"encounters,"; fi
+if [ ! -e lib/libgenutil.a ];       then  MISSING=$MISSING"genutil,"; fi
+if [ ! -e lib/libgeometry.a ];      then  MISSING=$MISSING"geometry,"; fi
 
-if [ ! -e lib/libhelmivp.a ];           then  MISSING=$MISSING"helmivp,"; fi
+if [ ! -e lib/libhelmivp.a ];       then  MISSING=$MISSING"helmivp,"; fi
 #if [ ! -e lib/libhenrik_anneal.a ];     then  MISSING=$MISSING"henrik_anneal,"; fi
-if [ ! -e lib/libipfview.a ];           then  MISSING=$MISSING"ipfview,"; fi
-if [ ! -e lib/libivpbuild.a ];          then  MISSING=$MISSING"ivpbuild,"; fi
-if [ ! -e lib/libivpcore.a ];           then  MISSING=$MISSING"ivpcore,"; fi
+if [ ! -e lib/libipfview.a ];       then  MISSING=$MISSING"ipfview,"; fi
+if [ ! -e lib/libivpbuild.a ];      then  MISSING=$MISSING"ivpbuild,"; fi
+if [ ! -e lib/libivpcore.a ];       then  MISSING=$MISSING"ivpcore,"; fi
 
-if [ ! -e lib/libivpsolve.a ];          then  MISSING=$MISSING"ivpsolve,"; fi
-if [ ! -e lib/liblogic.a ];             then  MISSING=$MISSING"logic,"; fi
-if [ ! -e lib/liblogutils.a ];          then  MISSING=$MISSING"logutils,"; fi
-if [ ! -e lib/libmanifest.a ];          then  MISSING=$MISSING"manifest,"; fi
-if [ ! -e lib/libmarineview.a ];        then  MISSING=$MISSING"marineview,"; fi
-if [ ! -e lib/libmbutil.a ];            then  MISSING=$MISSING"mbutil,"; fi
+if [ ! -e lib/libivpsolve.a ];      then  MISSING=$MISSING"ivpsolve,"; fi
+if [ ! -e lib/liblogic.a ];         then  MISSING=$MISSING"logic,"; fi
+if [ ! -e lib/liblogutils.a ];      then  MISSING=$MISSING"logutils,"; fi
+if [ ! -e lib/libmanifest.a ];      then  MISSING=$MISSING"manifest,"; fi
+if [ ! -e lib/libmarineview.a ];    then  MISSING=$MISSING"marineview,"; fi
+if [ ! -e lib/libmbutil.a ];        then  MISSING=$MISSING"mbutil,"; fi
 
-if [ ! -e lib/libucommand.a ];          then  MISSING=$MISSING"ucommand,"; fi
-if [ ! -e lib/libufield.a ];            then  MISSING=$MISSING"ufield,"; fi
-if [ ! -e lib/libufld_hazards.a ];      then  MISSING=$MISSING"ufld_hazards,"; fi
-if [ ! -e lib/libzaicview.a ];      then  MISSING=$MISSING"zaic_view,"; fi
+if [ ! -e lib/libucommand.a ];     then  MISSING=$MISSING"ucommand,"; fi
+if [ ! -e lib/libufield.a ];       then  MISSING=$MISSING"ufield,"; fi
+if [ ! -e lib/libufld_hazards.a ]; then  MISSING=$MISSING"ufld_hazards,"; fi
+if [ ! -e lib/libzaicview.a ];     then  MISSING=$MISSING"zaic_view,"; fi
 
 if [[ "$MISSING" == *, ]]; then
     MISSING_ALL=$MISSING_ALL$MISSING
