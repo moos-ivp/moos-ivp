@@ -46,8 +46,14 @@ else
   if [ ! -e build/MOOS/MOOSToolsUI/lib/libfltkvw.so ];      then  MISSING=$MISSING"fltkvw,"; fi
 fi
 
-if [ ! -e build/MOOS/MOOSCore/lib/libMOOS.a ];    then  MISSING=$MISSING"MOOS,"; fi
-if [ ! -e build/MOOS/MOOSGeodesy/lib/libproj.a ]; then  MISSING=$MISSING"proj,"; fi
+if [ ! -e build/MOOS/MOOSCore/lib/libMOOS.a ]; then
+    MISSING=$MISSING"MOOS,";
+fi
+if [ ! -e build/MOOS/proj-4.8.0/lib/libproj.a ]; then
+    MISSING=$MISSING"proj,";
+fi
+
+
 
 MISSING_ALL=$MISSING_ALL$MISSING;
 
@@ -122,13 +128,14 @@ MISSING=""
 # Check health of IvP Apps
 #=================================================================
 
-
+if [ ! -e bin/alogcd ];      then  MISSING=$MISSING"alogcd,"; fi
 if [ ! -e bin/alogcheck ];   then  MISSING=$MISSING"alogcheck,"; fi
 if [ ! -e bin/alogclip ];    then  MISSING=$MISSING"alogclip,"; fi
 if [ ! -e bin/aloggrep ];    then  MISSING=$MISSING"aloggrep,"; fi
 if [ ! -e bin/aloghelm ];    then  MISSING=$MISSING"aloghelm,"; fi
 if [ ! -e bin/alogiter ];    then  MISSING=$MISSING"alogiter,"; fi
 
+if [ ! -e bin/alogpare ];    then  MISSING=$MISSING"alogpare,"; fi
 if [ ! -e bin/alogrm ];      then  MISSING=$MISSING"alogrm,"; fi
 if [ ! -e bin/alogscan ];    then  MISSING=$MISSING"alogscan,"; fi
 if [ ! -e bin/alogsort ];    then  MISSING=$MISSING"alogsort,"; fi
@@ -139,16 +146,24 @@ if [ ! -e bin/bhv2graphviz ]; then MISSING=$MISSING"bhv2graphviz,"; fi
 if [ ! -e bin/ffview ];      then  MISSING=$MISSING"ffview,"; fi
 if [ ! -e bin/gen_hazards ]; then  MISSING=$MISSING"gen_hazards,"; fi
 if [ ! -e bin/geoview ];     then  MISSING=$MISSING"geoview,"; fi
-if [ ! -e bin/gzaicview ];   then  MISSING=$MISSING"gzaicview,"; fi
 if [ ! -e bin/nsplug ];      then  MISSING=$MISSING"nsplug,"; fi
-if [ ! -e bin/vzaicview ];   then  MISSING=$MISSING"vzaicview,"; fi
 
-if [ ! -e bin/iSay ];          then  MISSING=$MISSING"iSay,"; fi
+if [ ! -e bin/zaic_hdg ];    then  MISSING=$MISSING"zaic_hdg,"; fi
+if [ ! -e bin/zaic_hleq ];   then  MISSING=$MISSING"zaic_hleq,"; fi
+if [ ! -e bin/zaic_peak ];   then  MISSING=$MISSING"zaic_peak,"; fi
+if [ ! -e bin/zaic_spd ];    then  MISSING=$MISSING"zaic_spd,"; fi
+if [ ! -e bin/zaic_vect ];   then  MISSING=$MISSING"zaic_vect,"; fi
+
+if [ ! -e bin/iSay ];        then  MISSING=$MISSING"iSay,"; fi
 if [ ! -e bin/pBasicContactMgr ]; then  MISSING=$MISSING"pBasicContactMgr,"; fi
 if [ ! -e bin/pDeadManPost ]; then  MISSING=$MISSING"pDeadManPost,"; fi
 if [ ! -e bin/pEchoVar ];    then  MISSING=$MISSING"pEchoVar,"; fi
-if [ ! -e bin/pHelmIvP ];    then  MISSING=$MISSING"pHelmIvP,"; fi
+if [ ! -e bin/pEvalLoiter ]; then  MISSING=$MISSING"pEvalLoiter,"; fi
+if [ ! -e bin/pFrontEstimate ]; then  MISSING=$MISSING"pFrontEstimate,"; fi
+if [ ! -e bin/pFrontGridRender ]; then  MISSING=$MISSING"pFrontGridRender,"; fi
+#if [ ! -e bin/pGradeFrontEstimate ]; then  MISSING=$MISSING"pGradeFrontEstimate,"; fi
 
+if [ ! -e bin/pHelmIvP ];    then  MISSING=$MISSING"pHelmIvP,"; fi
 if [ ! -e bin/pHostInfo ];     then  MISSING=$MISSING"pHostInfo,"; fi
 if [ ! -e bin/pMarinePID ];    then  MISSING=$MISSING"pMarinePID,"; fi
 if [ ! -e bin/pMarineViewer ]; then  MISSING=$MISSING"pMarineViewer,"; fi
@@ -156,7 +171,9 @@ if [ ! -e bin/pNodeReporter ]; then  MISSING=$MISSING"pNodeReporter,"; fi
 
 if [ ! -e bin/pSearchGrid ];   then  MISSING=$MISSING"pSearchGrid,"; fi
 if [ ! -e bin/pXRelay ];       then  MISSING=$MISSING"pXRelay,"; fi
+if [ ! -e bin/uCommand ];      then  MISSING=$MISSING"uCommand,"; fi
 if [ ! -e bin/uFldBeaconRangeSensor ]; then  MISSING=$MISSING"uFldBeaconRangeSensor,"; fi
+if [ ! -e bin/uFldCTDSensor ]; then  MISSING=$MISSING"uFldCTDSensor,"; fi
 if [ ! -e bin/uFldCollisionDetect ]; then  MISSING=$MISSING"uFldCollisionDetect,"; fi
 
 if [ ! -e bin/uFldContactRangeSensor ]; then  MISSING=$MISSING"uFldContactRangeSensor,"; fi
@@ -183,6 +200,7 @@ if [ ! -e bin/uPlotViewer ];      then  MISSING=$MISSING"uPlotViewer,"; fi
 if [ ! -e bin/uPokeDB ];       then  MISSING=$MISSING"uPokeDB,"; fi
 if [ ! -e bin/uProcessWatch ]; then  MISSING=$MISSING"uProcessWatch,"; fi
 
+if [ ! -e bin/uSimMarine ];    then  MISSING=$MISSING"uQueryDB,"; fi
 if [ ! -e bin/uSimMarine ];    then  MISSING=$MISSING"uSimMarine,"; fi
 if [ ! -e bin/uTermCommand ];  then  MISSING=$MISSING"uTermCommand,"; fi
 if [ ! -e bin/uTimerScript ];  then  MISSING=$MISSING"uTimerScript,"; fi
