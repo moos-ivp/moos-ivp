@@ -52,6 +52,14 @@ cmake -DENABLE_EXPORT=ON                                     \
 echo ""; echo "Invoking make..." `pwd`; echo ""
 make  ${CMD_ARGS}
 
+if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSCore"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit 1
+fi
+
+
 
 #===================================================================
 # Part #2:  BUILD ESSENTIALS
@@ -66,6 +74,12 @@ cmake -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
 echo""; echo "Invoking make..." `pwd`; echo""
 make ${CMD_ARGS}
 
+if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSEssentials"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit 2
+fi
 
 #===================================================================
 # Part #3:  BUILD MOOS GUI TOOLS
@@ -83,6 +97,14 @@ cmake -DBUILD_CONSOLE_TOOLS=ON                               \
 echo ""; echo "Invoking make..." `pwd`; echo ""
 make ${CMD_ARGS}
 
+if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSToolsUI"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit 3
+fi
+
+
 #===================================================================
 # Part #4:  BUILD PROJ4
 #===================================================================
@@ -95,6 +117,12 @@ if [ ! -e lib/libproj.dylib ]; then
 	./configure 
 	make 
 	make install 
+	if [ $? -ne 0 ] ; then
+	    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	    echo "ERROR! Failed to build PROJ4"
+	    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	    exit 4
+	fi
 	echo "Done Building Proj4."
     fi
 fi
@@ -118,6 +146,13 @@ echo ""; echo "Invoking make..." `pwd`; echo ""
 make -j8 $@
 
 RESULT=$?
+
+if [ $RESULT -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSGeodesy"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit 5
+fi
 
 cd ${INVOC_ABS_DIR}
 
