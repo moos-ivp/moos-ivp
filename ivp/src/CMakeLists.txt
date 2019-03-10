@@ -313,6 +313,7 @@ SET(IVP_GUI_APPS
   uFunctionVis
   uMACView
   uPlotViewer
+  uCommand
   )
 
 SET(IVP_APPS_TO_BUILD ${ROBOT_APPS})
