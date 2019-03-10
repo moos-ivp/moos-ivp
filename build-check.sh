@@ -293,7 +293,7 @@ fi
 if [ "$TERSE" == "false" ]; then
     echo "     Missing MOOS Libs: " $MISSING_MOOS_LIBS
     echo "     Missing MOOS Apps: " $MISSING_MOOS_APPS
-    echo "      Missing IvP Apps: " $MISSING_IVP_LIBS
+    echo "      Missing IvP Libs: " $MISSING_IVP_LIBS
     echo "      Missing IvP Apps: " $MISSING_IVP_APPS
 fi
     
