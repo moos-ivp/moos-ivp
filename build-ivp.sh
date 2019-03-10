@@ -122,13 +122,18 @@ cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
 ################################################################################
 printf "Invoking make ${CMD_ARGS}\n"
 
+RESULT=0
 if [ "${CLEAN}" = "yes" -o "${CMD_ARGS}" = "clean" ] ; then
     printf "CLEANING....\n"
     make clean
+    RESULT=$?
     cd ${INVOCATION_ABS_DIR}
     rm -rf build/*
 else
     make -j12 ${CMD_ARGS}
+    RESULT=$?
 fi
 
 cd ${INVOCATION_ABS_DIR}
+
+exit $RESULT
