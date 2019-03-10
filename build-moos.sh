@@ -37,13 +37,13 @@ fi
 
 #===================================================================
 # Part #1:  BUILD CORE
+#      -DUPDATE_GIT_VERSION_INFO=OFF                          \
 #===================================================================
 cd "${INVOC_ABS_DIR}/MOOS/MOOSCore"
 
 echo "Invoking cmake..." `pwd`
 cmake -DENABLE_EXPORT=ON                                     \
-      -DUSE_ASYNC_COMMS=ON                                   \
-      -DUPDATE_GIT_VERSION_INFO=OFF                          \
+      -DUSE_ASYNC_COMMS=OFF                                  \
       -DTIME_WARP_AGGLOMERATION_CONSTANT=0.4                 \
       -DCMAKE_BUILD_TYPE=${BUILD_TYPE}                       \
       -DCMAKE_RUNTIME_OUTPUT_DIRECTORY=${INVOC_ABS_DIR}/bin  \
@@ -117,4 +117,8 @@ cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"         \
 echo ""; echo "Invoking make..." `pwd`; echo ""
 make -j8 $@
 
+RESULT=$?
+
 cd ${INVOC_ABS_DIR}
+
+exit $RESULT
