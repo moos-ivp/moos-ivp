@@ -7,7 +7,6 @@ CMD_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
 BUILD_GUI_CODE="ON"
 BUILD_BOT_CODE_ONLY="OFF"
 
-
 print_usage_and_exit()
 {
     printf "build-ivp.sh [OPTIONS] [MAKE ARGS]            \n"
@@ -27,13 +26,14 @@ print_usage_and_exit()
     printf "  --clean, -c                                 \n"
     printf "    Invokes make clean and removes build/*    \n"
     printf "                                              \n"
-    printf "By default, all code is built, and the debug and optimization  \n"
-    printf "compiler flags are invoked.                                    \n"
-    printf "                                                               \n"
-    printf "Note: By default -jN is provided to make to utilize up to N  \n"
-    printf "      processors in the build. This can be overridden simply   \n"
-    printf "      by using -j1 on the command line instead. This will give \n"
-    printf "      more reasonable output if there should be a build error. \n"
+    printf "By default, all code is built, and the debug and   \n"
+    printf "optimization compiler flags are invoked.           \n"
+    printf "                                                   \n"
+    printf "Note:                                              \n"
+    printf "  By default -jN is provided to make to utilize up to N    \n"
+    printf "  processors in the build. This can be overridden simply   \n"
+    printf "  by using -j1 on the command line instead. This will give \n"
+    printf "  more reasonable output if there should be a build error. \n"
     exit 1
 }
 
@@ -63,7 +63,7 @@ for ARGI; do
     fi
 done
 
-################################################################################
+#########################################################################
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wno-unused-parameter -Wno-missing-field-initializers -pedantic -fPIC"
 if [ "${BUILD_DEBUG}" = "yes" ] ; then
     CMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS" -g"
@@ -75,7 +75,7 @@ fi
 printf "Compiler flags: ${CMAKE_CXX_FLAGS}  \n\n" 
 
 
-################################################################################
+#########################################################################
 INVOC_ABS_DIR="$(pwd)"
 SCRIPT_ABS_DIR="$(cd $(dirname "$0") && pwd -P)"
 
@@ -95,9 +95,10 @@ mkdir -p "${BIN_ABS_DIR}"
 
 cd "${BLD_ABS_DIR}"
 
-################################################################################
-# For back compatability, if user has environment variable IVP_BUILD_GUI_CODE 
-# set to "OFF" then honor it here as if --nogui were set on the command line
+########################################################################
+# For back compatability, if user has environment variable
+# IVP_BUILD_GUI_CODE set to "OFF" then honor it here as if --nogui
+# were set on the command line
 
 if [ "${IVP_BUILD_GUI_CODE}" = "OFF" ] ; then
     BUILD_GUI_CODE="OFF"
@@ -106,7 +107,7 @@ fi
 
 printf "BUILD_GUI_CODE = ${BUILD_GUI_CODE} \n"
 
-################################################################################
+########################################################################
 printf "Invoking cmake...\n"
 
 printf "BUILD_BOT_CODE_ONLY: ${BUILD_BOT_CODE_ONLY}   \n"
@@ -120,17 +121,21 @@ cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
       ${IVP_CMAKE_FLAGS}                                   \
       "${SRC_ABS_DIR}"
 
-################################################################################
+########################################################################
 printf "Invoking make ${CMD_ARGS}\n"
 
+RESULT=0
 if [ "${CLEAN}" = "yes" -o "${CMD_ARGS}" = "clean" ] ; then
     printf "CLEANING....\n"
     make clean
+    RESULT=$?
     cd ${INVOCATION_ABS_DIR}
     rm -rf build/*
 else
-  make ${CMD_ARGS}
+    make ${CMD_ARGS}
+    RESULT=$?
 fi
 
 cd ${INVOC_ABS_DIR}
 
+exit $RESULT
