@@ -117,4 +117,8 @@ cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"         \
 echo ""; echo "Invoking make..." `pwd`; echo ""
 make -j8 $@
 
+RESULT=$?
+
 cd ${INVOC_ABS_DIR}
+
+exit $RESULT

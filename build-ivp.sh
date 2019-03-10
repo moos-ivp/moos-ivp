@@ -32,11 +32,15 @@ echo ""
 echo "Invoking make..."
 echo ""
 
+RESULT=0
 if [ "${CLEAN}" = "yes" ] ; then
     make clean
+    RESULT=$?
 else
     make -j12 ${CMD_ARGS}
-
+    RESULT=$?
 fi
 
 cd ${INVOCATION_ABS_DIR}
+
+exit $RESULT
