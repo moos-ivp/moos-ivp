@@ -12,4 +12,8 @@ echo ""
 
 make -j8 $@
 
+RESULT=$?
+
 cd ${INVOCATION_ABS_DIR}
+
+exit $RESULT

@@ -28,6 +28,13 @@ cmake -DENABLE_EXPORT=ON -DUSE_ASYNC_COMMS=ON -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAG
 echo ""; echo "Invoking make..." `pwd`; echo ""
 make -j12 $@
 
+if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSCore"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit 1
+fi
+
 echo "Moving MOOSCore executables into main MOOS bin directory"
 mv bin/* ../../bin
 
@@ -44,6 +51,13 @@ cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"  ./
 
 echo""; echo "Invoking make..." `pwd`; echo""
 make -k -j8 $@
+
+if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSEssentials"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit 2
+fi
 
 echo "Moving MOOSEssential executables into main MOOS bin directory"
 mv bin/* ../../bin
@@ -65,6 +79,13 @@ cmake   -DBUILD_CONSOLE_TOOLS=ON                         \
 echo ""; echo "Invoking make..." `pwd`; echo ""
 make -k -j $@
 
+if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSToolsUI"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit 3
+fi
+
 echo "Moving MOOSToolsUI executables into main MOOS bin directory"
 
 mv bin/* ../../bin
@@ -80,4 +101,13 @@ cmake  -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"
 echo ""; echo "Invoking make..." `pwd`; echo ""
 make -j8 $@
 
+if [ $? -ne 0 ] ; then
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "ERROR! Failed to build MOOSGeodesy"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    exit 5
+fi
+
 cd ${INVOC_ABS_DIR}
+
+exit 0
