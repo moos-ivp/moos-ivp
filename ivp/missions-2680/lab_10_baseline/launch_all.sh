@@ -1,4 +1,4 @@
-#!/bin/bash 
+l#!/bin/bash 
 
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
@@ -22,10 +22,10 @@ for ARGI; do
 done
 
 echo "Launching Henry...."
-./launch_vehicle.sh --vname=henry --mport=9001 --lport=9201 $TIME_WARP
+./launch_vehicle.sh --vname=henry --mport=9001 --lport=9201 $TIME_WARP &
 
 echo "Launching Gilda...."
-./launch_vehicle.sh --vname=gilda --mport=9002 --lport=9202 $TIME_WARP
+./launch_vehicle.sh --vname=gilda --mport=9002 --lport=9202 $TIME_WARP &
 
 echo "Launching Shoreside...."
 ./launch_shoreside.sh $TIME_WARP
