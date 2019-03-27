@@ -95,7 +95,6 @@ protected: // State variables
   double m_total_length;
   
 private: // Configuration parameters
-  double m_trail_range;
   double m_radius;
   double m_nm_radius;
 
@@ -110,7 +109,6 @@ private: // Configuration parameters
   unsigned int m_marks_up_bound;
 
   double m_rng_estop;
-  double m_rng_follow;
   double m_rng_tgating;
   double m_rng_lagging;
   

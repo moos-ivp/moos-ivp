@@ -30,6 +30,7 @@ SET(SRC
   BHV_TimeOut.cpp
   BHV_Timer.cpp
   BHV_Trail.cpp
+  BHV_Convoy.cpp
   BHV_Waypoint.cpp
   BHV_HSLine.cpp
   BHV_HeadingChange.cpp

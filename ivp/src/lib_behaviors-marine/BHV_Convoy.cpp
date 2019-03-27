@@ -41,35 +41,36 @@ BHV_Convoy::BHV_Convoy(IvPDomain gdomain) :
 {
   this->setParam("descriptor", "convoy");
   
-  // These parameters really should be set in the behavior file, but are
-  // left here for now to smoothen the transition (Aug 10, 2008, mikerb)
-  
   m_domain = subDomain(m_domain, "course,speed");
+
+  // Initialize State variables
+  m_next_id = 0;
+  m_wptx    = 0;
+  m_wpty    = 0;
+  m_set_speed = 0;
+
+  m_cnv_avg_2sec = 0;
+  m_cnv_avg_5sec = 0;
+
+  m_total_length = 0;
+  
+  // Initialize Config variables
+  m_radius    = 5;   // meters
+  m_nm_radius = 20;  // meters
+
+  m_cruise_speed = -1;
+  m_spd_max    = 2.0;
+  m_spd_faster = 1.5;
+  m_spd_slower = 0.5;
   
   m_inter_mark_range = 10;   // meters
   m_max_mark_range   = 150;  // meters
 
-  m_rng_estop   = 15;
-  m_rng_tgating = 30;
-  m_rng_follow  = 50;
-  m_rng_lagging = 70;
-  
-  m_radius    = 5;   // meters
-  m_nm_radius = 20;  // meters
-  m_next_id   = 0;
-
   m_marks_up_bound = 200; 
 
-  m_wptx = 0;
-  m_wpty = 0;
-
-  m_cruise_speed = 1.0;
-  m_spd_max    = 2.0;
-  m_spd_slower = 0.5;
-  m_spd_faster = 1.5;
-  
-  m_cnv_avg_2sec = 0;
-  m_cnv_avg_5sec = 0;
+  m_rng_estop   = 15;
+  m_rng_tgating = 30;
+  m_rng_lagging = 70;
   
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
@@ -168,7 +169,6 @@ void BHV_Convoy::onSetParamComplete()
     m_cruise_speed = m_spd_max;
     postWMessage("Cruise speed auto-capped at max speed.");
   }
-
 }
 
 //-----------------------------------------------------------
@@ -317,17 +317,27 @@ void BHV_Convoy::updateCurrTrailRange()
 
 void BHV_Convoy::updateSetSpeed() 
 {
+  // If ownship is within estop range to contact this overrides all else
+  if(m_contact_range < m_rng_estop) {
+    m_set_speed = 0;
+    return;
+  }
+  
+  // If cruise_speed is set, then this overrides all else
+  if(m_cruise_speed > 0) {
+    m_set_speed = m_cruise_speed;
+    return;
+  }
+
   if(m_contact_range > m_rng_lagging) {
     m_set_speed = m_cnv_avg_2sec * m_spd_faster;
   }
   else if (m_contact_range > m_rng_tgating) {
     m_set_speed = m_cnv_avg_2sec;
   }
-  else if (m_contact_range > m_rng_estop) {
+  else 
     m_set_speed = m_cnv_avg_2sec * m_spd_slower;
-  }
-  else
-    m_set_speed = 0;
+
 }
 
 //-----------------------------------------------------------
@@ -337,10 +347,6 @@ IvPFunction *BHV_Convoy::buildOF()
 {
   IvPFunction *ipf = 0;
 
-  double speed = m_cnv_avg_5sec;
-  //if(m_contact_range
-  
-  
   IvPFunction *spd_ipf = 0;  
   ZAIC_PEAK spd_zaic(m_domain, "speed");
   double peak_width = m_set_speed / 2;
