@@ -1,0 +1,17 @@
+//----------------------------------------------------
+// pHelmIvP Configuration Block  (Created from Plugin)
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 1
+  CommsTick  = 1
+
+  ok_skew      = any
+  
+  Behaviors    = targ_$(VNAME).bhv  
+  Verbose      = false
+  Domain       = course:0:359:360
+  Domain       = speed:0:5:26
+
+  ivp_behavior_dir = /Users/mikerb/Research/moos-ivp-swarm/trunk/lib
+}

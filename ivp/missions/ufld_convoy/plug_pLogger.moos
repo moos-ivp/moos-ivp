@@ -1,0 +1,29 @@
+//--------------------------------------------------
+// pLogger Configuration Block (Created from Plugin)
+
+ProcessConfig = pLogger
+{
+  AppTick 	= 10
+  CommsTick = 10
+  
+  File      = LOG_%(VNAME)
+  PATH      = ./
+  AsyncLog  = true
+  FileTimeStamp = true
+
+  Log = IVPHELM_LIFE_EVENT @ 0 nosync
+  Log = TEAM_ROSTER_DEBUG @ 0 nosync
+  Log = TSK_DEBUG @ 0 nosync
+  Log = TASK_DEBUG @ 0 nosync
+  Log = H_DEBUG @ 0 nosync
+
+  // Log it all!!!!!
+  LogAuxSrc = true
+  WildCardLogging = true 
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = APPCAST
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+
+  CompressAlogs = false
+}

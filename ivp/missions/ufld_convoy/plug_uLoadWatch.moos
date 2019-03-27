@@ -1,0 +1,10 @@
+//-------------------------------------------------------------
+ProcessConfig = uLoadWatch                                      
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  thresh = app=pHelmIvP,  gapthresh=1.5
+  thresh = app=pHostInfo, gapthresh=100
+  thresh = app=any,       gapthresh=2.0  
+}                                            
