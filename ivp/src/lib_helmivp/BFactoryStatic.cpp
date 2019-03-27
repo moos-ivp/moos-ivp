@@ -38,6 +38,7 @@
 #include "BHV_PeriodicSpeed.h"
 #include "BHV_PeriodicSurface.h"
 #include "BHV_Trail.h"
+#include "BHV_Convoy.h"
 #include "BHV_Shadow.h"
 #include "BHV_Timer.h"
 #include "BHV_TestFailure.h"
@@ -69,6 +70,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_Waypoint")        || 
      (bhv_name == "BHV_ConstantSpeed")   || 
      (bhv_name == "BHV_Trail")           || 
+     (bhv_name == "BHV_Convoy")          || 
      (bhv_name == "BHV_MaxDepth")        || 
      (bhv_name == "BHV_ConstantDepth")   || 
      (bhv_name == "BHV_ConstantHeading") || 
@@ -118,6 +120,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_ConstantSpeed(m_domain);
   else if(bhv_name == "BHV_Trail")      
     bhv = new BHV_Trail(m_domain);
+  else if(bhv_name == "BHV_Convoy")      
+    bhv = new BHV_Convoy(m_domain);
   else if(bhv_name == "BHV_MaxDepth")      
     bhv = new BHV_MaxDepth(m_domain);
   else if(bhv_name == "BHV_ConstantDepth")      
