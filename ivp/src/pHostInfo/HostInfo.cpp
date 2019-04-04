@@ -252,7 +252,15 @@ int HostInfo::generateIPInfoFiles()
   sys_call += m_tmp_file_dir + "ipinfo_osx_bridge100_" + name + ".txt" + bgd; 
   result = system(sys_call.c_str());
 
+  //wlp60s0
+  //sys_call  = "ifconfig eth0 | grep 'inet addr:'| grep -v '127.0.0.1' ";
+  //sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
+  //sys_call += m_tmp_file_dir + "ipinfo_linux_ethernet0_" + name + ".txt" + bgd;
+  //result = system(sys_call.c_str());
+  
   // Next the various GNU/Linux system calls
+
+
   sys_call  = "ifconfig eth0 | grep 'inet addr:'| grep -v '127.0.0.1' ";
   sys_call += "| cut -d: -f2 | awk '{ print $1}' > ";
   sys_call += m_tmp_file_dir + "ipinfo_linux_ethernet0_" + name + ".txt" + bgd;
@@ -288,6 +296,10 @@ int HostInfo::generateIPInfoFiles()
   sys_call += m_tmp_file_dir + "ipinfo_linux_any_" + name + ".txt" + bgd;
   result = system(sys_call.c_str());
 
+  sys_call  = "hostname -I > ";
+  sys_call += m_tmp_file_dir + "ipinfo_linux_hostname_" + name + ".txt" + bgd;
+  result = system(sys_call.c_str());
+
   m_ip_info_files_generated = true;
   return(result);
 }
@@ -317,6 +329,7 @@ void HostInfo::gatherIPInfoFromFiles()
   m_ip_linux_usb0      = readLinuxInfoIP("ipinfo_linux_usb0_" + name + ".txt");
   m_ip_linux_usb1      = readLinuxInfoIP("ipinfo_linux_usb1_" + name + ".txt");
   m_ip_linux_usb2      = readLinuxInfoIP("ipinfo_linux_usb2_" + name + ".txt");
+  m_ip_linux_usb2      = readLinuxInfoIP("ipinfo_linux_hostname_" + name + ".txt");
   m_ip_linux_any       = readLinuxInfoIP("ipinfo_linux_any_" + name + ".txt");
 
   m_ip_info_gathered = true;
@@ -352,6 +365,7 @@ void HostInfo::postIPInfo()
     addIPInfo(m_ip_linux_usb0, "LINUX_USB0");
     addIPInfo(m_ip_linux_usb1, "LINUX_USB1");
     addIPInfo(m_ip_linux_usb2, "LINUX_USB2");
+    addIPInfo(m_ip_linux_hostname, "LINUX_HOSTNAME");
     addIPInfo(m_ip_osx_ethernet, "OSX_ETHERNET");
     addIPInfo(m_ip_osx_usb_ethernet, "OSX_USB_ETHERNET");
     addIPInfo(m_ip_osx_usb_1000, "OSX_USB_10_100_1000_LAN");
@@ -488,6 +502,7 @@ int HostInfo::clearTempFiles()
   res = system("rm -f ~/.ipinfo_linux_usb0.txt");      // Linux
   res = system("rm -f ~/.ipinfo_linux_usb1.txt");      // Linux
   res = system("rm -f ~/.ipinfo_linux_usb2.txt");      // Linux
+  res = system("rm -f ~/.ipinfo_linux_hostname.txt");  // Linux
   res = system("rm -f ~/.ipinfo_linux_wifi.txt");      // Linux
   return(res);
 }

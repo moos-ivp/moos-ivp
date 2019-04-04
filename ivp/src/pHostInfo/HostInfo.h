@@ -74,12 +74,14 @@ class HostInfo : public AppCastingMOOSApp
   std::string   m_ip_osx_ethernet1;
   std::string   m_ip_osx_ethernet2;
   std::string   m_ip_osx_bridge100;
+
   std::string   m_ip_linux_wifi;
   std::string   m_ip_linux_ethernet0;
   std::string   m_ip_linux_ethernet1;
   std::string   m_ip_linux_usb0;
   std::string   m_ip_linux_usb1;
   std::string   m_ip_linux_usb2;
+  std::string   m_ip_linux_hostname;
   std::string   m_ip_linux_any;
 
   unsigned int  m_pmb_udp_listen_cnt;
