@@ -329,7 +329,7 @@ void HostInfo::gatherIPInfoFromFiles()
   m_ip_linux_usb0      = readLinuxInfoIP("ipinfo_linux_usb0_" + name + ".txt");
   m_ip_linux_usb1      = readLinuxInfoIP("ipinfo_linux_usb1_" + name + ".txt");
   m_ip_linux_usb2      = readLinuxInfoIP("ipinfo_linux_usb2_" + name + ".txt");
-  m_ip_linux_usb2      = readLinuxInfoIP("ipinfo_linux_hostname_" + name + ".txt");
+  m_ip_linux_hostname  = readLinuxInfoIP("ipinfo_linux_hostname_" + name + ".txt");
   m_ip_linux_any       = readLinuxInfoIP("ipinfo_linux_any_" + name + ".txt");
 
   m_ip_info_gathered = true;
@@ -572,7 +572,7 @@ bool HostInfo::buildReport()
   vector<string> svector;
 
   m_msgs << endl;
-  m_msgs << "  PHI_HOST_IP:         " << m_host_ip;
+  m_msgs << "  PHI_HOST_IP:          " << m_host_ip;
 
   if((m_host_ip == "") && m_default_hostip_force)
     m_msgs << termColor("reversered") << "DEFAULT HOSTIP FORCED";
@@ -583,16 +583,18 @@ bool HostInfo::buildReport()
 
   ACBlock block;
 
-  block = ACBlock("  PHI_HOST_IP_ALL:     ", m_host_ip_all, 42);
+  block = ACBlock("  PHI_HOST_IP_ALL:      ", m_host_ip_all, 42);
   m_msgs << block.getFormattedString() << endl;
 
-  block = ACBlock("  PHI_HOST_IP_VERBOSE: ", m_host_ip_verbose, 42);
+  block = ACBlock("  PHI_HOST_IP_VERBOSE:  ", m_host_ip_verbose, 42);
   m_msgs << block.getFormattedString() << endl;
 
-  m_msgs << "  PHI_HOST_PORT:       " << m_host_port_db    << endl;
-  m_msgs << "  PHI_PSHARES_IROUTES: " << m_pshare_iroutes  << endl;
+  m_msgs << "  PHI_HOST_PORT:        " << m_host_port_db    << endl;
+  m_msgs << "  PHI_PSHARES_IROUTES:  " << m_pshare_iroutes  << endl;
 
-  block = ACBlock("  PHI_HOST_INFO:       ", m_host_record_all, 42);
+  m_msgs << "  HOSTNAME util(Linux): " << m_ip_linux_hostname << endl;
+  
+  block = ACBlock("  PHI_HOST_INFO:        ", m_host_record_all, 42);
   m_msgs << block.getFormattedString();
 
   return(true);
