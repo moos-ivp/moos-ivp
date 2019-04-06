@@ -50,6 +50,8 @@ Expander::Expander(string given_infile, string given_outfile)
   m_pmode.push_back("top");
 
   m_partial_expand_ok = false;
+
+  m_interactive = false;
 }
 
 //--------------------------------------------------------
@@ -429,6 +431,19 @@ bool Expander::applyMacrosToLine(string& line,
       cout << "  (creating " << m_outfile << ")" << endl;
       cout << "  may contain an undefined macro on Line: " << line_num << endl;
       cout << "> " << res << termColor() << endl;
+      if(m_interactive) {
+	bool answered = false;
+	while(!answered) {
+	  cout << "Continue? [Y/n]" << endl;
+	  char c = getCharNoWait();
+	  cout << "char:[" << (int)c << "]" << endl;
+	  cout << "char:[" << c << "]" << endl;
+	  if((c=='n') || (c=='N') || (c==((int)(3))))   // ASCII 03 is control-c
+	    exit(1);
+	  if((c=='Y') || (c=='y') || (c==((int)(10))))  // ASCII 10 is ENTER
+	    answered = true;
+	}
+      }
     }
 
     if(!isCommented && m_strict)

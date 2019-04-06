@@ -73,6 +73,11 @@ void showHelpAndExit()
   blk("      properly defined macros, the undefined ones are just      ");
   blk("      ignored. Defined macros are expanded. By default, unless  ");
   blk("      this option is used, the whole line would be ignored.     ");
+  mag("  --interactive,-i                                              ");
+  blk("      If an undefined macro is encountered in one of the meta   ");
+  blk("      files (or pluts), the user will be prompted to confirm if ");
+  blk("      he or she wishes to continue or abort. If the user chooses");
+  blk("      the latter, the return value will be 1.                   ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of nsplug.                    ");
   blk("  MACRO=VAL                                                     ");

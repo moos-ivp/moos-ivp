@@ -65,6 +65,8 @@ int main(int argc, char *argv[])
       expander.setStrict(true);
     else if(((arg=="-l") || (arg=="--lenient")))
       expander.setPartialsOK(true);
+    else if(((arg=="-i") || (arg=="--interactive")))
+      expander.setInteractive(true);
     else if(((arg=="-t") || (arg=="--terminal")))
       expander.setTerminal(true);
 
