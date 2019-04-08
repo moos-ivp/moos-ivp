@@ -59,15 +59,24 @@ Behavior = BHV_Convoy
   pwt        = 100
   condition  = MODE==CONVOYING
   updates    = UP_CONVOY
-  //templating = spawn
 
-   contact  = abe
-  spd_max  = 4
+  contact    = abe
+
+  rng_estop = 15
+  spd_max   = 4
+
+  // Speed Regime A: Just specify the cruise speed and this
+  // will be used unless it gets within estop range
+  // cruise_speed = 3.5
+
+  // Speed Regime B: Specify a speed range between tailgating
+  // and lagging, where the chosen speed will match the leader
+  // vehicle's speed. If tailgating chosen speed will be
+  // leader_speed * speed_slower
+  // If lagging, chosen speed will be leader_speed * spd_faster
    spd_slower = 0.8
    spd_faster = 1.2
-
-   rng_estop = 10
-   rng_tgating = 20
+   rng_tgating = 25
    rng_lagging = 40
 
         radius = 8.0

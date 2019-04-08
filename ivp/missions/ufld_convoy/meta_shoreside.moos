@@ -26,7 +26,6 @@ Processconfig = ANTLER
 }
 
 #include plug_pHostInfo.moos
-//#include plug_uFldCollisionDetect.moos
 
 //--------------------------------------------------
 // uFldCollisionDetect

@@ -5,7 +5,7 @@
 TIME_WARP=1
 JUST_MAKE="no"
 CLOCKWISE="false"
-RANDSTART="true"
+RANDSTART="false"
 AMT=1
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
