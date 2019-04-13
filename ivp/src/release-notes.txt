@@ -13,11 +13,15 @@ alog file.
 
 pEchoVar
 ===============================================
-
 o Added Boolean Switching. For a configuration "Echo = FOO !-> BAR",
   if a string representing a Boolean value is published to FOO, a
   string representing the opposite Boolean value is published to
   BAR. The case of the strings is matched.
+
+uFldNodeComms
+===============================================
+o Fixed a bug where some messages were occasionally being dropped 
+  despite meeting all the communications criteria.
 
 
 BHV_AvoidColregsV17
@@ -75,6 +79,9 @@ o Added an optional publication of the range to the closest contact.
   will publish to CONTACT_RANGE an integer value of the range.
   Value will be published only when the range changes.
 
+o Added the contact_max_age_history parameter to guard against 
+  unbounded memory growth if the system is producing many unique
+  contact IDs over a long period of time.
 
 o ToDo: ignore contacts from different teams
         buffer value to avoid thrashing
