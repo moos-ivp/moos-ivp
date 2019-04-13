@@ -144,6 +144,14 @@ void XYCommsPulse::set_fill(double val)
 }
 
 //-------------------------------------------------------------
+// Procedure: set_pulse_type()
+
+void XYCommsPulse::set_pulse_type(string str)
+{
+  m_pulse_type = str;
+}
+
+//-------------------------------------------------------------
 // Procedure: get_fill()
 
 double XYCommsPulse::get_fill(double timestamp) const
@@ -191,6 +199,9 @@ string XYCommsPulse::get_spec(string param) const
   spec += ",fill=";
   spec += doubleToStringX(m_fill); 
 
+  if(m_pulse_type != "")
+    spec += ",ptype=" + m_pulse_type;
+  
   string obj_spec = XYObject::get_spec(param);
   if(obj_spec != "")
     spec += ("," + obj_spec);

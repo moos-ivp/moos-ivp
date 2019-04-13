@@ -43,7 +43,8 @@ public:
   void   set_beam_width(double);
   void   set_duration(double);
   void   set_fill(double);
-
+  void   set_pulse_type(std::string);
+  
   double get_sx()    const        {return(m_sx);}
   double get_sy()    const        {return(m_sy);}
   double get_tx()    const        {return(m_sx);}
@@ -54,6 +55,8 @@ public:
   double get_fill(double tstamp) const;
 
   bool   valid() const;
+
+  std::string get_pulse_type() const {return(m_pulse_type);}
 
   std::string get_spec(std::string s="") const;
 
@@ -76,6 +79,8 @@ protected:
   bool      m_ty_set;
 
   double    m_fill;
+
+  std::string m_pulse_type;
 };
 #endif
 
