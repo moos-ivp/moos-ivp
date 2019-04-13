@@ -23,6 +23,7 @@
 
 #include "NodeMessage.h"
 #include "MBUtils.h"
+#include "ColorParse.h"
 
 using namespace std;
 
@@ -36,7 +37,7 @@ NodeMessage::NodeMessage()
 }
 
 //------------------------------------------------------------
-// Procedure: setStringVal
+// Procedure: setStringVal()
 
 void NodeMessage::setStringVal(const string& s)
 {
@@ -44,6 +45,15 @@ void NodeMessage::setStringVal(const string& s)
     m_string_val = "\"" + s + "\"";
   else
     m_string_val = s;
+}
+
+//------------------------------------------------------------
+// Procedure: setColor()
+
+void NodeMessage::setColor(const string& color_str)
+{
+  if(isColor(color_str))
+    m_color = color_str;
 }
 
 
@@ -72,6 +82,11 @@ string NodeMessage::getSpec() const
     if(str != "")
       str += ",";
     str += "var_name=" + m_var_name;
+  }
+  if(m_color != "") {
+    if(str != "")
+      str += ",";
+    str += "color=" + m_color;
   }
   if(m_double_val_set) {
     if(str != "")
@@ -129,6 +144,16 @@ unsigned int NodeMessage::length() const
     overall_msg_length = str_length;
 
   return(overall_msg_length);
+}
+
+//---------------------------------------------------------------
+// Procedure: getStringValX()
+//      Note: A convenience function to also strip off quotes if 
+//            they are part of the returned string value
+
+string NodeMessage::getStringValX() const
+{
+  return(stripQuotes(m_string_val));
 }
 
 
