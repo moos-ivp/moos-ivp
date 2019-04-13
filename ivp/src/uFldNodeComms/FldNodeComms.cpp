@@ -54,6 +54,8 @@ FldNodeComms::FldNodeComms()
   m_min_msg_interval = 30.0;
   m_max_msg_length   = 1000;    // zero means unlimited length
 
+  m_stale_dropped    = 0;
+  
   m_drop_pct = 0; // percentage of messages that should be dropped
   srand((int)time(0));// seed the random number generator
 
@@ -77,6 +79,7 @@ FldNodeComms::FldNodeComms()
   m_blk_msg_tooquick  = 0;
   m_blk_msg_toolong   = 0;
   m_blk_msg_toofar    = 0;
+  m_blk_msg_noinfo    = 0;
 }
 
 //---------------------------------------------------------
@@ -153,8 +156,9 @@ bool FldNodeComms::Iterate()
   m_map_newrecord.clear();
   m_map_newmessage.clear();
   m_map_message.clear();
-  m_map_record.clear();
-  
+
+  clearStaleNodes();
+
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -225,6 +229,41 @@ bool FldNodeComms::OnStartUp()
   registerVariables();
   return(true);
 }
+
+
+
+//------------------------------------------------------------
+// Procedure: clearStaleNodes()
+//            For info associated with a vehicle that is not cleared on
+//            each iteration, clear after a period of time when no new
+//            node report info has been received.
+
+void FldNodeComms::clearStaleNodes()
+{
+  map<string,double>::iterator p;
+
+  vector<string> stale_vnames;
+  
+  for(p=m_map_time_nreport.begin(); p!=m_map_time_nreport.end(); p++) {
+    string vname = p->first;
+    double tstamp = p->second;
+    if((m_curr_time - tstamp) > (m_stale_time*2)) {
+      stale_vnames.push_back(vname);
+      m_stale_dropped++;
+    }    
+  }
+
+  for(unsigned int i=0; i<stale_vnames.size(); i++) {
+    string vname = stale_vnames[i];
+    m_map_record.erase(vname);
+    m_map_time_nreport.erase(vname);
+    m_map_time_nmessage.erase(vname);
+    m_map_vindex.erase(vname);
+    m_map_vgroup.erase(vname);
+  }
+}
+  
+
 
 //------------------------------------------------------------
 // Procedure: registerVariables
@@ -492,7 +531,7 @@ void FldNodeComms::distributeNodeMessageInfo(const string& src_name)
 
 //------------------------------------------------------------
 // Procedure: distributeNodeMessageInfo
-//   Purpose: Post the node message for vehicle <uname> to the  
+//   Purpose: Post the node message for vehicle <src_name> to the  
 //            recipients specified in the message. 
 //     Notes: The recipient may be specified by the name of the recipient
 //            node, or the vehicle/node group. Group membership is 
@@ -517,6 +556,10 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
     return;
   }
 
+  string msg_color = "white";
+  if(message.getColor() != "")
+    msg_color = message.getColor();
+  
   // Begin determining the list of destinations
   set<string> dest_names;
 
@@ -527,17 +570,27 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
   vector<string> svector = parseString(dest_name, ':');
   for(unsigned int i=0; i<svector.size(); i++) {
     string a_destination_name = stripBlankEnds(svector[i]);
-    dest_names.insert(a_destination_name);
+    if(toupper(a_destination_name) != "ALL")
+      dest_names.insert(a_destination_name);
   }
 
   // If a group name is specified, add all vehicles in that group to 
-  // the list of destinations for this message. 
+  // the list of destinations for this message.
   if((dest_group != "") || (dest_name == "ALL")) {
     map<string, string>::iterator p;
     for(p=m_map_vgroup.begin(); p!=m_map_vgroup.end(); p++) {
       string vname = p->first;
       string group = toupper(p->second);
-      if((dest_group == group) || (dest_group == "ALL") || (dest_name=="ALL"))
+
+      bool match = true;
+      if(toupper(vname) == toupper(src_name))
+	match = false;
+      if((dest_group != "") && (group != dest_group))
+	match = false;
+      if(vname == "ALL")
+	match = false;
+
+      if(match)
 	dest_names.insert(vname);
     }
   }
@@ -548,14 +601,21 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
   for(p=dest_names.begin(); p!=dest_names.end(); p++) {
     string a_dest_name = *p;
 
+    bool msg_send = true;
+
     if(m_debug) 
       cout << src_name << "--->" << a_dest_name << ": " << endl;
   
-    bool msg_send = true;
-
     // Criteria #1: vehicles different
     if(a_dest_name == src_name)
       msg_send = false;
+
+    // Criteria #1B: Must have node records (position info) for both vehicles
+    if(!m_map_record.count(toupper(src_name)) ||
+       !m_map_record.count(toupper(a_dest_name))) {
+      m_blk_msg_noinfo++;
+      msg_send = false;
+    }
     
     // Criteria #2: receiving vehicle has been heard from recently.
     // Freshness is enforced to disallow messages to a vehicle that may in
@@ -589,7 +649,7 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
       string moos_var = "NODE_MESSAGE_" + a_dest_name;
       string node_message = message.getSpec();
       Notify(moos_var, node_message);
-      postViewCommsPulse(src_name, a_dest_name, "white", 0.6);
+      postViewCommsPulse(src_name, a_dest_name, "msg", msg_color, 0.6);
       m_total_messages_sent++;
       m_map_messages_sent[a_dest_name]++;
     }
@@ -619,7 +679,7 @@ bool FldNodeComms::meetsRangeThresh(const string& uname1,
   double range = hypot((x1-x2), (y1-y2));
 
   // See if source vehicle has a modified stealth value 
- double stealth = 1.0;
+  double stealth = 1.0;
   if(m_map_stealth.count(uname1))
     stealth = m_map_stealth[uname1];
 
@@ -630,6 +690,7 @@ bool FldNodeComms::meetsRangeThresh(const string& uname1,
 
   // Compute the comms range threshold from baseline plus
   // stealth and earange factors.
+
   double comms_range = m_comms_range * stealth * earange;
 
   if(m_verbose) {
@@ -702,6 +763,7 @@ bool FldNodeComms::meetsDropPercentage()
 
 void FldNodeComms::postViewCommsPulse(const string& uname1,
 				      const string& uname2,
+				      const string& pulse_type,
 				      const string& pcolor,
 				      double fill_opaqueness)
 {
@@ -731,12 +793,8 @@ void FldNodeComms::postViewCommsPulse(const string& uname1,
   pulse.set_time(m_curr_time);
   pulse.set_beam_width(7);
   pulse.set_fill(fill_opaqueness);
-
-#if 0
-  if(m_verbose)
-    cout << "Pulse: From: " << uname1 << "   TO: " << uname2 << endl;
-#endif
-
+  pulse.set_pulse_type(pulse_type);
+  
   string pulse_color = pcolor;
   if(pcolor == "auto") {
     unsigned int color_index = m_map_vindex[uname1];
@@ -828,16 +886,18 @@ bool FldNodeComms::buildReport()
   }
   
   unsigned int total_blk_msgs = m_blk_msg_invalid + m_blk_msg_toostale + 
-    m_blk_msg_tooquick + m_blk_msg_toolong + m_blk_msg_toofar;
+    m_blk_msg_tooquick + m_blk_msg_toolong + m_blk_msg_toofar + m_blk_msg_noinfo;
   string blk_msg_invalid  = uintToString(m_blk_msg_invalid);
   string blk_msg_toostale = uintToString(m_blk_msg_toostale);
   string blk_msg_tooquick = uintToString(m_blk_msg_tooquick);
   string blk_msg_toolong  = uintToString(m_blk_msg_toolong);
   string blk_msg_toofar   = uintToString(m_blk_msg_toofar);
+  string blk_msg_noinfo   = uintToString(m_blk_msg_noinfo);
   
   m_msgs << "     ------------------ " << endl;
   m_msgs << "    Total Blocked Msgs: " << total_blk_msgs << endl;
   m_msgs << "               Invalid: " << blk_msg_invalid << endl;
+  m_msgs << "          Missing Info: " << blk_msg_noinfo << endl;
   m_msgs << "        Stale Receiver: " << blk_msg_toostale << endl;
   m_msgs << "            Too Recent: " << blk_msg_tooquick<< endl;
   m_msgs << "          Msg Too Long: " << blk_msg_toolong << endl;

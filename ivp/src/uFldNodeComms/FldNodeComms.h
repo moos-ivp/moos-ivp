@@ -56,12 +56,14 @@ class FldNodeComms : public AppCastingMOOSApp
   void distributeNodeReportInfo(const std::string& uname);
   void distributeNodeMessageInfo(const std::string& uname);
   void distributeNodeMessageInfo(std::string src, NodeMessage msg);
-  
+
+  void clearStaleNodes();
   bool meetsDropPercentage();
   bool meetsRangeThresh(const std::string& v1, const std::string& v2);
   bool meetsCriticalRangeThresh(const std::string&, const std::string&);
   void postViewCommsPulse(const std::string& v1, 
-			  const std::string& v2, 
+			  const std::string& v2,
+			  const std::string& pulse_type="nrep",
 			  const std::string& color="auto",
 			  double fill_opaqueness=0.35);
 
@@ -94,6 +96,9 @@ class FldNodeComms : public AppCastingMOOSApp
 
   // Maximum length of strings allowed in node messages
   unsigned int m_max_msg_length;
+
+  // Total number of stale vehicles detected and dropped
+  unsigned int m_stale_dropped;
 
   std::map<std::string, double>     m_map_stealth;  // key:vname
   std::map<std::string, double>     m_map_earange;  // key:vname
@@ -137,16 +142,10 @@ class FldNodeComms : public AppCastingMOOSApp
   unsigned int   m_blk_msg_tooquick;
   unsigned int   m_blk_msg_toolong;
   unsigned int   m_blk_msg_toofar;
+  unsigned int   m_blk_msg_noinfo;
   
   std::list<std::string> m_last_messages;
 };
 
 #endif 
-
-
-
-
-
-
-
 
