@@ -384,6 +384,16 @@ IvPFunction *BHV_Convoy::buildOF()
 
 void BHV_Convoy::onRunToIdleState()
 {
+  list<unsigned int>::iterator p;
+  for(p=m_cn_mark_id.begin(); p!=m_cn_mark_id.end(); p++) {
+    unsigned int id = *p;
+    erasePoint(id);
+  }
+
+  m_cn_mark_x.clear();
+  m_cn_mark_y.clear();
+  m_cn_mark_time.clear();
+  m_cn_mark_id.clear();
 }
 
 //-----------------------------------------------------------
@@ -467,7 +477,8 @@ void BHV_Convoy::postPoint(double cnx, double cny, unsigned int id)
 void BHV_Convoy::erasePoint(unsigned int id)
 {
   XYPoint point;
-  point.set_label(intToString(id));
+  string label = m_us_name + "_" + m_contact + "_" + intToString(id);
+  point.set_label(label);
   point.set_active(false);
 
   string spec = point.get_spec();
