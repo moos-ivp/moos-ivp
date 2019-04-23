@@ -41,7 +41,7 @@ printf "Done \n"
 uMAC targ_shoreside.moos
 
 printf "Killing all processes ... \n"
-kill %1
+kill -- -$$
 printf "Done killing processes.   \n"
 
 
