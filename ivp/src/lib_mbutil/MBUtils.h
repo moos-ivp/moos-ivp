@@ -158,6 +158,10 @@ std::vector<std::string> justifyLen(const std::vector<std::string>&,
 				    unsigned int maxlen);
 std::vector<std::string> justifyLen(const std::string&, unsigned int maxlen);
 
+std::vector<std::string> breakLen(const std::vector<std::string>&,
+				  unsigned int maxlen);
+
+
 #endif
 
 

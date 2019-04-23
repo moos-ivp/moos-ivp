@@ -2060,11 +2060,10 @@ unsigned int charCount(const std::string& str, char mychar)
 }
 
 
-
 //----------------------------------------------------------------
 // Procedure: justifyLen
-//   Purpose: Take the text in the given vector of strings and justify it out
-//            to a max length of maxlen for each line. 
+//   Purpose: Take the text in the given vector of strings and justify 
+//            it out to a max length of maxlen for each line. 
 //   Example:
 //       [0]: Now is the time 
 //       [1]: for all good men to come to the aid of their country. Now is the
@@ -2125,6 +2124,43 @@ vector<string> justifyLen(const string& str, unsigned int maxlen)
   return(justifyLen(svector, maxlen));
 }
 
+//----------------------------------------------------------------
+// Procedure: breakLen
+//   Purpose: Take the text in the given vector of strings and for
+//            each line that is longer than maxlen, break into
+//            multiple lines.
+//   Example:                                           /   
+//       [0]: Now is the time                           /
+//       [1]: for all good men to come to the aid of the/ir country. Now is the
+//       [2]: time for all good men to come to the aid o/f their
+//       [3]: country.                                  /
+//    Result: 
+//       [0]: Now is the time                           /
+//       [1]: for all good men to come to the aid of the/
+//       [2]: ir country. Now is the                    /
+//       [3]: time for all good men to come to the aid o/ 
+//       [4]: f their 
+//       [4]: country.
 
+vector<string> breakLen(const vector<string>& svector, unsigned int maxlen) 
+{
+  vector<string> rvector;
 
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string line = svector[i];
+    bool done = false;
+    while(!done) {
+      if(line.length() <= maxlen) {
+	rvector.push_back(line);
+	done = true;
+      }
+      else {
+	string front = line.substr(0, maxlen);
+	line.erase(0, maxlen);
+	rvector.push_back(front);
+      }
+    }
+  }
 
+  return(rvector);
+}
