@@ -96,6 +96,7 @@ protected:
   double img2meters(char, double);
 
   void   drawHash(double xl=0, double xr=0, double yb=0, double yt=0);
+  void   drawFastHash(double xl=0, double xr=0, double yb=0, double yt=0);
   void   drawSegment(double, double, double, double, double, double, double);
 
   void   drawOpArea(const OpAreaSpec&);

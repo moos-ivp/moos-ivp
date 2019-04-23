@@ -549,6 +549,105 @@ void MarineViewer::drawHash(double xl, double xr, double yb, double yt)
     drawSegment(xlow, j, xhgh, j, r, g, b);
 }
 
+// ----------------------------------------------------------
+// Procedure: drawFastHash
+//   Purpose: Draw the hash marks based local coordinate positions
+//            on the image. Due to the snapToStep, there should 
+//            always be a hash line exactly on the datum (0,0).
+
+void MarineViewer::drawFastHash(double xl, double xr,
+				double yb, double yt)
+{
+  if((xl>xr) || (yb>yt))
+    return;
+
+  double red = m_hash_shade;
+  double grn = m_hash_shade;
+  double blu = m_hash_shade;
+
+  double hash_delta = m_geo_settings.geosize("hash_delta");
+
+  // If specs not given use a default region defined by the image
+  if((xl==0) && (xr==0) && (yb==0) && (yt==0)) {
+    xl = m_back_img.get_x_at_img_left();
+    xr = m_back_img.get_x_at_img_right();
+    yb = m_back_img.get_y_at_img_bottom();
+    yt = m_back_img.get_y_at_img_top();
+  }
+
+  if((xl>=xr) || (yb>=yt))
+    return;
+
+  // Make sure the has region aspect ratio of 1.0
+  double xwid = xr - xl;
+  double ywid = yt - yb;
+  if(xwid > ywid) {
+    yb -= ((xwid - ywid) / 2);
+    yt += ((xwid - ywid) / 2);
+  }
+  else if(ywid > xwid) {
+    xl -= ((ywid - xwid) / 2);
+    xr += ((ywid - xwid) / 2);
+  }
+
+  double xw = xr-xl;
+  double yw = yt-yb;
+
+  double xlow = snapToStep((xl-(xw/2)), hash_delta);
+  double xhgh = snapToStep((xr+(xw/2)), hash_delta);
+  double ylow = snapToStep((yb-(yw/2)), hash_delta);
+  double yhgh = snapToStep((yt+(yw/2)), hash_delta);
+  
+
+  // Begin GL Work Part A
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+
+  double xlow_ppm = xlow * pix_per_mtr_x;
+  double xhgh_ppm = xhgh * pix_per_mtr_x;
+  double ylow_ppm = ylow * pix_per_mtr_y;
+  double yhgh_ppm = yhgh * pix_per_mtr_y;
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+  // End GL Work Part A
+
+  glColor3f(red, grn, blu);
+  for(double i=xlow; i<=xhgh; i+=hash_delta) {
+    double i_ppm = i * pix_per_mtr_x;
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(i_ppm, ylow_ppm);
+    glVertex2f(i_ppm, yhgh_ppm);
+    glEnd();
+  }
+  for(double j=ylow; j<=yhgh; j+=hash_delta) {
+    double j_ppm = j * pix_per_mtr_y;
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(xlow_ppm, j_ppm);
+    glVertex2f(xhgh_ppm, j_ppm);
+    glEnd();
+  }
+
+  // Begin GL Work Part B
+  glFlush();
+  glPopMatrix();
+  // End GL Work Part B
+
+}
+
 //-------------------------------------------------------------
 // Procedure: geosetting
 
