@@ -48,6 +48,8 @@ class CPAMonitor
   unsigned int getEventCount() const {return(m_events.size());}
   CPAEvent     getEvent(unsigned int) const;
 
+  double getClosestRange() const {return(m_closest_range);}
+  
  protected: // Local utility functions
   std::string pairTag(std::string, std::string);
   bool        examineAndReport(std::string);
@@ -77,6 +79,9 @@ class CPAMonitor
  protected: // Indexed on event (cpa occurrence)
   std::vector<CPAEvent>    m_events;
 
+ protected: // Overall state
+
+  double m_closest_range;
   unsigned int m_iteration;
 };
 

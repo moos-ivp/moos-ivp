@@ -50,6 +50,8 @@ CollisionDetector::CollisionDetector()
 
   m_conditions_ok = true;
 
+  m_post_closest_range = false;
+  
   m_info_buffer   = new InfoBuffer;
 }
 
@@ -93,6 +95,12 @@ bool CollisionDetector::Iterate()
   m_cpa_monitor.examineAndReport();
   m_cpa_monitor.setIteration(m_iteration);
 
+  if(m_post_closest_range) {
+    double closest_range = m_cpa_monitor.getClosestRange();
+    if(closest_range > 0)
+      Notify("UCD_CLOSEST_RANGE", closest_range);
+  }
+  
   m_conditions_ok = checkConditions();
   if(m_conditions_ok) {
     unsigned int events = m_cpa_monitor.getEventCount();
@@ -222,6 +230,8 @@ bool CollisionDetector::OnStartUp()
       handled = handleConfigFlag("near_miss", value);
     else if(param == "encounter_flag") 
       handled = handleConfigFlag("encounter", value);
+    else if(param == "post_closest_range") 
+      handled = setBooleanOnString(m_post_closest_range, value);
     else if(param == "condition") {
       LogicCondition new_condition;
       handled = new_condition.setCondition(value);

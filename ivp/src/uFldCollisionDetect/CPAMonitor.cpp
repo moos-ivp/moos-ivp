@@ -39,6 +39,8 @@ CPAMonitor::CPAMonitor()
   m_report_range = 50;      // meters
   m_swing_range  = 1;       // meters
   m_verbose      = false;
+
+  m_closest_range = -1;
 }
 
 //---------------------------------------------------------
@@ -116,6 +118,8 @@ bool CPAMonitor::handleNodeReport(string node_report)
 
 bool CPAMonitor::examineAndReport()
 {
+  m_closest_range = -1;
+
   map<string, bool>::iterator p;
   for(p=m_map_updated.begin(); p!=m_map_updated.end(); p++) {
     string vname = p->first;
@@ -220,6 +224,9 @@ bool CPAMonitor::updatePairRangeAndRate(string vname, string contact)
   double dist = hypot(osx-cnx, osy-cny);
   string tag  = pairTag(vname, contact);
 
+  if((m_closest_range < 0) || (dist < m_closest_range))
+    m_closest_range = dist;
+  
   // Note that this pair has been examined on this round. This is cleared
   // for all pairs at the end of a round.
   m_map_pair_examined[tag] = true; 
