@@ -190,6 +190,10 @@ IvPFunction *BHV_Convoy::onRunState()
   postMessage("TLEN", m_total_length);
   postMessage("QLEN", getQueueLen());
 
+  postMessage("MXRNG", m_max_mark_range);
+
+
+  
   handleNewContactSpd(m_cnv);
   postMessage("AVG2", m_cnv_avg_2sec);
   postMessage("AVG5", m_cnv_avg_5sec);
@@ -394,6 +398,7 @@ void BHV_Convoy::onRunToIdleState()
   m_cn_mark_y.clear();
   m_cn_mark_time.clear();
   m_cn_mark_id.clear();
+  m_total_length = 0;
 }
 
 //-----------------------------------------------------------
