@@ -230,7 +230,7 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
   if(m_obstacle_relevance <= 0)
     return(0);
     
-  // Part 4: Build/update the underlying objective function and initialize
+  // Part 4: Build/update underlying objective function and initialize
   AOF_AvoidObstacle  aof_avoid(m_domain);
   aof_avoid.setObstacleOrig(m_obstacle_orig);
   aof_avoid.setObstacleBuff(m_obstacle_buff);
@@ -261,7 +261,7 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
     return(0);
   }
 
-  // Part 7: Extract the objective function, apply priority, post visuals
+  // Part 7: Extract objective function, apply priority, post visuals
   IvPFunction *ipf = reflector.extractIvPFunction(true); // true means normalize
   if(ipf) {
     ipf->setPWT(m_obstacle_relevance * m_priority_wt);

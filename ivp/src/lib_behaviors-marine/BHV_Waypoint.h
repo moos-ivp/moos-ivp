@@ -48,6 +48,7 @@ protected:
   bool         setNextWaypoint();
   IvPFunction* buildOF(std::string);
 
+  void         checkLeadConditions();
   void         postStatusReport();
   void         postViewableSegList();
   void         postErasableSegList();
@@ -68,6 +69,7 @@ protected: // configuration parameters
   bool        m_use_alt_speed;
   double      m_lead_distance;
   double      m_lead_damper;
+  bool        m_lead_allowed;
   std::string m_efficiency_measure;
   std::string m_ipf_type;
 
@@ -83,6 +85,9 @@ protected: // configuration parameters
   std::vector<VarDataPair> m_cycle_flags;
   std::vector<VarDataPair> m_wpt_flags;
 
+  // Logic condition tied to use of the lead parameter
+  vector<LogicCondition> m_lead_conditions;
+  
   // Visual hints affecting properties of polygons/points
   std::string m_hint_vertex_color;
   std::string m_hint_edge_color;
@@ -127,6 +132,11 @@ protected: // intermediate or object global variables.
   XYPoint   m_prevpt;
 
   bool      m_greedy_tour_pending;
+
+  int       m_prev_cycle_index;
+  int       m_prev_waypt_index;
+  
+
 };
 
 #endif

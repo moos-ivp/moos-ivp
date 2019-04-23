@@ -60,6 +60,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_cruise_speed_alt = -1; // meters/second - default of -1 means unused
   m_lead_distance    = -1; // meters - default of -1 means unused
   m_lead_damper      = -1; // meters - default of -1 means unused
+  m_lead_allowed     = true;
   m_efficiency_measure = "off"; // or "off" or "all"
   m_ipf_type        = "zaic";
 
@@ -110,6 +111,9 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 
   m_greedy_tour_pending = false;
 
+  m_prev_cycle_index = 0;
+  m_prev_waypt_index = -1;
+  
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
   m_markpt.set_active(false);
   m_markpt.set_vertex_size(4);
@@ -131,6 +135,15 @@ void BHV_Waypoint::onSetParamComplete()
   m_nextpt.set_vertex_size(m_hint_nextpt_vertex_size);
   m_nextpt.set_color("vertex", m_hint_nextpt_color);
   m_nextpt.set_color("label", m_hint_nextpt_lcolor);
+
+  // Get the lead_condition variables and register for them
+  vector<string> svector;
+  for(unsigned i=0; i<m_lead_conditions.size(); i++)
+    svector = mergeVectors(svector, m_lead_conditions[i].getVarNames());
+
+  svector = removeDuplicates(svector);
+  for(unsigned int i=0; i<svector.size(); i++)
+    addInfoVars(svector[i], "nowarning");
 }
 
 //-----------------------------------------------------------
@@ -285,6 +298,15 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     m_lead_damper = dval;
     return(true);
   }
+  else if(param == "lead_condition") {
+    param_val = findReplace(param_val, ',', '=');
+    bool ok = true;
+    LogicCondition new_condition;
+    ok = new_condition.setCondition(param_val);
+    if(ok)
+      m_lead_conditions.push_back(new_condition);
+    return(ok);
+  }
   else if(param == "order") {
     if((param_val!="reverse") && (param_val!="reversed") && 
        (param_val!="normal") && (param_val!="toggle"))
@@ -432,6 +454,7 @@ IvPFunction *BHV_Waypoint::onRunState()
     return(0);
   }
   updateOdoDistance();
+  checkLeadConditions();
 
   // Note the waypoint prior to possibly incrementing the waypoint
   double this_x = m_waypoint_engine.getPointX();
@@ -457,7 +480,10 @@ IvPFunction *BHV_Waypoint::onRunState()
   // no more points, this means the cyindex is probably incremented.
   if(m_var_cyindex != "silent") {
     int waypt_cycles  = m_waypoint_engine.getCycleCount();
-    postMessage((m_var_cyindex + m_var_suffix), waypt_cycles);
+    if(waypt_cycles != m_prev_cycle_index) {
+      postMessage((m_var_cyindex + m_var_suffix), waypt_cycles);
+      m_prev_cycle_index = waypt_cycles;
+    }
   }
 
   // Only publish these reports if we have another point to go.
@@ -604,7 +630,7 @@ bool BHV_Waypoint::setNextWaypoint()
   // is m_lead_distance away from the perpendicular intersection
   // point between the current position and the trackline.
   
-  if(m_lead_distance >= 0) {
+  if(m_lead_allowed && (m_lead_distance >= 0)) {
     int current_waypt = m_waypoint_engine.getCurrIndex();
     bool track_anchor = false;
     double tx, ty;
@@ -762,8 +788,12 @@ void BHV_Waypoint::postStatusReport()
 
   if(m_var_report != "silent")
     postMessage((m_var_report + m_var_suffix), stat);
-  if(m_var_index != "silent")
-    postMessage((m_var_index + m_var_suffix), current_waypt);
+  if(m_var_index != "silent") {
+    if(current_waypt != m_prev_waypt_index) {
+      postMessage((m_var_index + m_var_suffix), current_waypt);
+      m_prev_waypt_index = current_waypt;
+    }
+  }
 }
 
 
@@ -888,6 +918,49 @@ void BHV_Waypoint::handleVisualHint(string hint)
   else if((param == "nextpt_vertex_size") && isNumber(value) && (dval >=0))
     m_hint_nextpt_vertex_size = dval;
 
+}
+
+//-----------------------------------------------------------
+// Procedure: checkLeadConditions()
+
+void BHV_Waypoint::checkLeadConditions()
+{
+  if(!m_info_buffer) 
+    return;
+  
+  // Phase 1: get all the variable names from all present conditions.
+  vector<string> all_vars;
+  unsigned int csize = m_lead_conditions.size();
+  for(unsigned int i=0; i<csize; i++) {
+    vector<string> svector = m_lead_conditions[i].getVarNames();
+    all_vars = mergeVectors(all_vars, svector);
+  }
+  all_vars = removeDuplicates(all_vars);
+
+  // Phase 2: get values of all variables from the info_buffer and 
+  // propogate these values down to all the lead logic conditions.
+  unsigned int vsize = all_vars.size();
+  for(unsigned int i=0; i<vsize; i++) {
+    string varname = all_vars[i];
+    bool   ok_s, ok_d;
+    string s_result = m_info_buffer->sQuery(varname, ok_s);
+    double d_result = m_info_buffer->dQuery(varname, ok_d);
+
+    for(unsigned int j=0; (j<csize)&&(ok_s); j++)
+      m_lead_conditions[j].setVarVal(varname, s_result);
+    for(unsigned int j=0; (j<csize)&&(ok_d); j++)
+      m_lead_conditions[j].setVarVal(varname, d_result);
+  }
+
+  // Phase 3: evaluate all lead conditions. Return true only if all
+  // conditions evaluate to be true.
+  m_lead_allowed = true;
+  for(unsigned int i=0; i<csize; i++) {
+    bool satisfied = m_lead_conditions[i].eval();
+    if(!satisfied) {
+      m_lead_allowed = false;
+    }
+  }
 }
 
 
