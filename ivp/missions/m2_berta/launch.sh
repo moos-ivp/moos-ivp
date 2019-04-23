@@ -4,7 +4,6 @@
 #-------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
-VARIATION="0"
 
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
@@ -16,12 +15,6 @@ for ARGI; do
         TIME_WARP=$ARGI
     elif [ "${ARGI:0:7}" = "--warp=" ] ; then
         TIME_WARP="${ARGI#--warp=*}"
-    elif [ "${ARGI}" = "v1" ] ; then
-	VARIATION="1"
-    elif [ "${ARGI}" = "v2" ] ; then
-	VARIATION="2"
-    elif [ "${ARGI}" = "v3" ] ; then
-	VARIATION="3"
     elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
     else 
@@ -41,20 +34,19 @@ LOITER_POS1="x=0,y=-75"
 LOITER_POS2="x=125,y=-50"
 SHORE_LISTEN="9300"
 
-nsplug meta_vehicle.moos targ_henry.moos -f WARP=$TIME_WARP \
-    VNAME=$VNAME1          SHARE_LISTEN="9301"              \
-    VPORT="9001"           SHORE_LISTEN=$SHORE_LISTEN       \
-    START_POS=$START_POS1  VARIATION=$VARIATION 
+nsplug meta_vehicle.moos targ_henry.moos -i -f WARP=$TIME_WARP \
+    VNAME=$VNAME1          SHARE_LISTEN="9301"                 \
+    VPORT="9001"           SHORE_LISTEN=$SHORE_LISTEN          \
+    START_POS=$START_POS1  
 
-nsplug meta_vehicle.moos targ_gilda.moos -f WARP=$TIME_WARP \
-    VNAME=$VNAME2          SHARE_LISTEN="9302"              \
-    VPORT="9002"           SHORE_LISTEN=$SHORE_LISTEN       \
-    START_POS=$START_POS2  VARIATION=$VARIATION             
+nsplug meta_vehicle.moos targ_gilda.moos -i -f WARP=$TIME_WARP \
+    VNAME=$VNAME2          SHARE_LISTEN="9302"                 \
+    VPORT="9002"           SHORE_LISTEN=$SHORE_LISTEN          \
+    START_POS=$START_POS2  
 
-nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
-    SNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                 \
-    SPORT="9000"       VARIATION=$VARIATION                       \
-    VNAMES=$VNAME1:$VNAME2
+nsplug meta_shoreside.moos targ_shoreside.moos -i -f WARP=$TIME_WARP \
+    SNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                    \
+    SPORT="9000"       VNAMES=$VNAME1:$VNAME2
 
 
 
@@ -73,7 +65,6 @@ if [ ! -e targ_shoreside.moos ]; then echo "no targ_shoreside.moos";  exit; fi
 if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi
-
 
 #-------------------------------------------------------
 #  Part 3: Launch the processes
