@@ -172,7 +172,7 @@ ProcessConfig = pMarineViewer
 
   button_two   = RETURN    # RETURN_ALL=true
   button_two   = RETURN    # STATION_KEEP_ALL=false
-  button_three = G-REVERSE # WPT_UPDATE_GILDA=order=reverse
+  button_three = G-REVERSE # WPT_UPDATE_GILDA=order=toggle
   button_four  = H-STATION # STATION_KEEP_HENRY=true
 
 }

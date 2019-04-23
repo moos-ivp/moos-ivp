@@ -28,6 +28,6 @@ pAntler $COMMUNITY.moos --MOOSTimeWarp=$TIME_WARP >& /dev/null &
 uMAC $COMMUNITY.moos
 
 printf "Killing all processes ... \n"
-kill %1 
+kill -- -$$
 printf "Done killing processes.   \n"
 

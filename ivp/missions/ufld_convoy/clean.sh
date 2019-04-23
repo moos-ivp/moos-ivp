@@ -44,4 +44,4 @@ rm -rf  $VERBOSE   XLOG_*
 rm -f   $VERBOSE   *~
 rm -f   $VERBOSE   targ_*
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory
-rm -f   vnames.txt vgroups.txt vpositions.txt vspeeds.txt
+#rm -f   vnames.txt vgroups.txt vpositions.txt vspeeds.txt

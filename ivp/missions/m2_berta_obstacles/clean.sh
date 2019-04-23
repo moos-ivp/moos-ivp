@@ -23,6 +23,6 @@ done
 #  Part 2: Do the cleaning!
 #-------------------------------------------------------
 
-rm -rf  $VERBOSE   MOOSLog_*  LOG_* XLOG_*
+rm -rf  $VERBOSE   MOOSLog_*  LOG_* XLOG_* \#*
 rm -f   $VERBOSE   *~  targ_* *.moos++
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory

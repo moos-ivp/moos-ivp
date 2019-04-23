@@ -83,6 +83,8 @@ ProcessConfig = pLogger
 
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
 
+  file = alpha
+
   LogAuxSrc = true
   WildCardLogging = true
   // WildCardOmitPattern = *_STATUS

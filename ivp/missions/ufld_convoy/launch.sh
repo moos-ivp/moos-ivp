@@ -87,7 +87,7 @@ do
 	   VPORT=$VPORT   SHARE_LISTEN=$LPORT                    \
 	   VTYPE="kayak"  GROUP=$GROUP
     
-    if [ ${VNAME} = "ben" ] ; then
+    if [ "${VNAME}" = "ben" ] ; then
 	nsplug meta_vehicle_convoy.bhv targ_$VNAME.bhv -f VNAME=$VNAME  \
 	       START_POS=$START_POS   ORDER=$ORDER  PATTERN=1        \
                CLOCKWISE=$CLOCKWISE   SPEED=$SPEED

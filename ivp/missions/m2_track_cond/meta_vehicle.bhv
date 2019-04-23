@@ -39,7 +39,7 @@ Behavior = BHV_Waypoint
                 lead = 8
          lead_damper = 1
        lead_to_start = true
-               speed = 2   // meters per second
+               speed = 2.5   // meters per second
         capture_line = true
       capture_radius = 5.0
          slip_radius = 15.0
@@ -82,7 +82,7 @@ Behavior = BHV_AvdColregsV17
 
         pwt_outer_dist = 50
         pwt_inner_dist = 20
-        completed_dist = 50
+        completed_dist = 75
      min_util_cpa_dist = 8
      max_util_cpa_dist = 15
              pwt_grade = linear
