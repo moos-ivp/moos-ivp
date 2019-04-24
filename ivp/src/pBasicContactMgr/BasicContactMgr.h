@@ -65,9 +65,13 @@ class BasicContactMgr : public AppCastingMOOSApp
   void postOffAlerts(NodeRecord, std::string id);
   void postAlert(NodeRecord, VarDataPair);
 
+  void clearOldRetiredContacts();
   bool checkAlertApplies(std::string contact, std::string id);
   bool knownAlert(std::string id) const;
+  void removeOldContact(std::string);
+  
 
+  
  protected: // Alert Getters
   double      getAlertRange(std::string id) const;
   double      getAlertRangeCPA(std::string id) const;
@@ -85,7 +89,7 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::vector<VarDataPair> getAlertOffFlags(std::string id) const;
 
  private: // main record of alerts, each keyed on the alert_id
-    std::map<std::string, CMAlert> m_map_alerts;
+  std::map<std::string, CMAlert> m_map_alerts;
   
  protected: // Configuration parameters
 
@@ -100,6 +104,7 @@ class BasicContactMgr : public AppCastingMOOSApp
   bool         m_display_radii;
   bool         m_post_closest_range;
   double       m_contact_max_age;
+  double       m_contact_max_age_hist;
   double       m_contacts_recap_interval;
 
   std::string  m_contact_local_coords;

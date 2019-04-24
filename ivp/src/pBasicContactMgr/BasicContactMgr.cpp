@@ -52,12 +52,8 @@ BasicContactMgr::BasicContactMgr()
   m_nav_hdg = 0;
   m_nav_spd = 0;
 
-  m_contacts_recap_posted = 0;
-
   m_prev_contacts_count = 0;
-  m_prev_closest_range = 0;
-  m_prev_closest_contact_val = 0;
-  
+
   // Configuration Variables
   m_default_alert_rng           = 1000;
   m_default_alert_rng_cpa       = 1000;
@@ -65,9 +61,7 @@ BasicContactMgr::BasicContactMgr()
   m_default_alert_rng_cpa_color = "gray35";
 
   m_display_radii      = false;
-  m_post_closest_range = false;
-  m_contact_max_age = 600;   // units in seconds 600 = 10 mins
-  m_contacts_recap_interval = 0;
+  m_contact_max_age    = 600;         // units in seconds 600 = 10 mins
 
   m_contact_local_coords = "verbatim"; // Or lazy_lat_lon, or force_lat_lon
   m_alert_verbose = false;
@@ -78,6 +72,18 @@ BasicContactMgr::BasicContactMgr()
   m_closest_contact_rng_two = 10;
 
   m_use_geodesy = false;
+
+  m_contacts_recap_interval = 0;
+  m_contacts_recap_posted = 0;
+
+  m_prev_closest_range = 0;
+  m_post_closest_range = false;
+
+  m_prev_closest_contact_val = 0;
+
+  //---------------------------------------------
+  m_contact_max_age_hist = 60;  // units in seconds 60 = 1 min
+
 }
 
 //---------------------------------------------------------
@@ -141,6 +147,7 @@ bool BasicContactMgr::Iterate()
   postSummaries();
   checkForAlerts();
   checkForCloseInReports();
+  clearOldRetiredContacts();
   
   if(m_display_radii)
     postRadii();
@@ -206,8 +213,10 @@ bool BasicContactMgr::OnStartUp()
     }
     else if(param == "post_closest_range") {
       bool ok = setBooleanOnString(m_post_closest_range, value);
-      if(!ok)
-	reportConfigWarning("post_closest_range must be a Boolean");
+      if(!ok) {
+	string msg = "post_closest_range must be a Boolean";
+	reportConfigWarning(msg);
+      }
     }
     else if(param == "contact_local_coords") {
       string lval = tolower(value);
@@ -266,6 +275,16 @@ bool BasicContactMgr::OnStartUp()
 	m_contact_max_age = dval;
       else
 	reportConfigWarning("contact_max_age must be > zero: " + value);
+    }
+    
+    else if(param == "contact_max_age_history") {
+      if((dval >= 0) && (dval <= 600))
+	m_contact_max_age_hist = dval;
+      else {
+	string msg = "contact_max_age_history must be [0,600] secs: ";
+	msg += value;
+	reportConfigWarning(msg);
+      }
     }
     
     else if(param == "closest_contact_rng_one") {
@@ -539,8 +558,8 @@ bool BasicContactMgr::handleConfigAlert(string alert_str)
     }
   }
 
-  // For backward compatibility sake we allow the user to specify an on-flag
-  // with separate var,pattern fields.  
+  // For backward compatibility sake we allow the user to specify an
+  // on-flag with separate var,pattern fields.
   if((var != "") && (pattern != ""))
     m_map_alerts[alert_id].addAlertOnFlag(var + "=" + pattern);
   
@@ -760,6 +779,44 @@ void BasicContactMgr::checkForCloseInReports()
     Notify("CONTACT_MGR_CLOSEST", report_val);
     m_prev_closest_contact_val = report_val;
   }
+}
+
+//---------------------------------------------------------
+// Procedure: clearOldRetiredContacts()
+
+void BasicContactMgr::clearOldRetiredContacts()
+{
+  // Part 1: Build a vector of retired contacts that have timed-out
+  vector<string> to_remove;
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_map_node_records.begin(); p!= m_map_node_records.end(); p++) {
+    string     contact_name = p->first;
+    NodeRecord node_record  = p->second;
+    
+    double age = m_curr_time - node_record.getTimeStamp();
+    if(age > (m_contact_max_age + m_contact_max_age_hist))
+      to_remove.push_back(contact_name);
+  }
+  for(unsigned int i=0; i<to_remove.size(); i++)
+    removeOldContact(to_remove[i]);
+}
+
+//---------------------------------------------------------
+// Procedure: removeOldContact()
+//   Purpose: Remove any trace of a contact from memory.
+//            The below actions should be exhaustive in their
+//            accounting for memory used by a contact
+
+void BasicContactMgr::removeOldContact(string contact)
+{
+  m_map_node_records.erase(contact);
+  m_map_node_alerts_total.erase(contact);
+  m_map_node_alerts_active.erase(contact);
+  m_map_node_alerts_resolved.erase(contact);
+  m_map_node_ranges_actual.erase(contact);
+  m_map_node_ranges_extrap.erase(contact);
+  m_map_node_ranges_cpa.erase(contact);
+  //m_par.removeVehicle(contact);
 }
 
 //----------------------------------------------------------------
