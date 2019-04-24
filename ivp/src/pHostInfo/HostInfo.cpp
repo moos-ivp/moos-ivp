@@ -475,6 +475,11 @@ string HostInfo::readLinuxInfoIP(string filename)
 
   for(i=0; i<vsize; i++) {
     string line = stripBlankEnds(svector[i]);
+    // Added Apr 2419 to handle cases where the line may be several
+    // IP addresses separated by white space. In this case, just
+    // bite off and use the first one (better than nothing).
+    if(strContainsWhite(line))
+      line = biteString(line, ' ');
     if(isValidIPAddress(line))
       return_info = line;
   }
