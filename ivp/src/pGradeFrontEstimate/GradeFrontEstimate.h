@@ -57,13 +57,17 @@ class GradeFrontEstimate : public AppCastingMOOSApp
   double r_T_N;
   double r_T_S;
   //time variables
-  double       m_curr_time;
-  double       m_start_time;
-  double       m_time_warp;
-  double       m_last_report_time;
-  double       m_last_summary_time;
+  double m_curr_time;
+  double m_start_time;
+  double m_time_warp;
+  double m_last_report_time;
+  double m_last_summary_time;
   double m_reports;
   double m_term_report_interval;
+
+  // added by mikerb may1518
+  double m_start_time_local;
+  double m_db_uptime;
 };
 
 #endif 

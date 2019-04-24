@@ -26,6 +26,10 @@ GradeFrontEstimate::GradeFrontEstimate()
   m_last_report_time  = 0;
   m_last_summary_time = 0;    // last time settings options summary posted
 
+  m_start_time_local = 0;
+  m_db_uptime  = 0;
+
+  
   // Configuration variables
   m_term_report_interval = 0.8;      // realtime (non-timewarp) seconds
   // Front model parameters
@@ -64,19 +68,21 @@ bool GradeFrontEstimate::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 
+    double dval  = msg.GetDouble(); 
     if (key=="UCTD_PARAMETER_ESTIMATE" && !reported ){
       estimate_report=sval;
       setCurrTime(MOOSTime());
       reported=true;
     }
-   if(key == "DEPLOY_ALL")
-    {
-      if (sval == "true")
-	{
-	  setStartTime(MOOSTime());
-	  cout << "Deploy, Start Time " << m_start_time << endl;
-	  reported = false;
-	}
+    if(key == "DB_UPTIME") {
+      m_db_uptime = dval;
+    }
+    if(key == "DEPLOY_ALL") {
+      if (sval == "true") {
+	setStartTime(MOOSTime());
+	cout << "Deploy, Start Time " << m_start_time << endl;
+	reported = false;
+      }
     }
     if (key == "UCTD_TRUE_PARAMETERS"){
       if (front_model_vars==""){
@@ -110,6 +116,7 @@ void GradeFrontEstimate::setStartTime(double new_time)
 {
   if(new_time > m_start_time)
     m_start_time = new_time;
+  m_start_time_local = m_db_uptime;
 }
 
 
@@ -239,9 +246,10 @@ bool GradeFrontEstimate::OnStartUp()
 void GradeFrontEstimate::RegisterVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-    Register("UCTD_PARAMETER_ESTIMATE", 0);
-    Register("UCTD_TRUE_PARAMETERS",0);
-    Register("DEPLOY_ALL",0);
+  Register("UCTD_PARAMETER_ESTIMATE", 0);
+  Register("UCTD_TRUE_PARAMETERS",0);
+  Register("DEPLOY_ALL",0);
+  Register("DB_UPTIME",0);
 }
 
 void GradeFrontEstimate::postSensingScore(string vname, double error, double score)
@@ -360,8 +368,9 @@ std::string GradeFrontEstimate::handleSensingReport(const string& request)
 }
 bool GradeFrontEstimate::buildReport()
 {
-  m_msgs << "GradeFrontEstimate"<<endl;
-  m_msgs << "------------------------"<<endl;
+  m_msgs << "GradeFrontEstimate      " << endl;
+  m_msgs << "------------------------" << endl;
+  m_msgs << "Start time   " << m_start_time_local << endl ;
   std::string outstring;
   if (reported){
     
@@ -370,8 +379,12 @@ bool GradeFrontEstimate::buildReport()
     reported=false;
   }
   
-  else if (estimate_report==""){ outstring= "waiting for an estimate report ...\n";}
-  else{ outstring=msg_appcast;}
+  else if (estimate_report=="") {
+    outstring= "waiting for an estimate report ...\n";
+  }
+  else {
+    outstring=msg_appcast;
+  }
   m_msgs << outstring;
   
   return(true);
