@@ -1050,7 +1050,7 @@ void PMV_Viewer::calculateDrawHash()
 
   double buffer = 1000;
 
-  drawHash(xl-buffer, xh+buffer, yl-buffer, yh+buffer);
+  drawFastHash(xl-buffer, xh+buffer, yl-buffer, yh+buffer);
 }
 
 
