@@ -105,6 +105,7 @@ void UCMD_GUI::resize(int lx, int ly, int lw, int lh)
 
 void UCMD_GUI::roomToView()
 {
+  //return; // Note Bug fix on Conlan's machine - reinvestigate
   int winx = Fl_Window::x();
   int winy = Fl_Window::y();
   int winw = Fl_Window::w();
