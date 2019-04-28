@@ -86,6 +86,10 @@ protected:
 
   double  m_tardy_helm_thresh;
   double  m_tardy_nav_thresh;
+
+  bool    m_max_sat_hdg_debug;
+  bool    m_max_sat_spd_debug;
+  bool    m_max_sat_dep_debug;
 };
 #endif 
 

@@ -38,8 +38,8 @@ void showSynopsis()
   blk("------------------------------------                            ");
   blk("  Provides a basic PID controller interface to control heading  ");
   blk("  speed and depth based on incoming desired heading, speed and  ");
-  blk("  depth objectives and output on rudder, thrust and elevator fed");
-  blk("  through three PID controllers.                                ");
+  blk("  depth objectives and output on rudder, thrust and elevator    ");
+  blk("  fed through three PID controllers.                            ");
 }
 
 
@@ -95,6 +95,10 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  speed_factor    = 20   "," // Range [0,inf)                   ");
   blu("  sim_instability = 0    "," // Range [0,inf)                   ");
+  blk("                                                                ");
+  blu("  max_sat_hdg_debug = false                                     ");
+  blu("  max_sat_spd_debug = false                                     ");
+  blu("  max_sat_dep_debug = false                                     ");
   blk("                                                                ");
   blu("  tardy_helm_threshold = 2.0                                    ");
   blu("  tardy_nav_threshold  = 2.0                                    ");
@@ -153,8 +157,8 @@ void showInterfaceAndExit()
   blk("  DESIRED_HEADING = 189                                         ");
   blk("  DESIRED_SPEED   = 3.2                                         ");
   blk("  DESIRED_DEPTH   = 15                                          ");
-  blk("  DESIRED_THRUST  = 49                                          ");
   blk("  NAV_HEADING     = 182                                         ");
+  blk("  NAV_YAW         = 0.12                                        ");
   blk("  NAV_SPEED       = 3.4                                         ");
   blk("  NAV_DEPTH       = 22                                          ");
   blk("  NAV_PITCH       = -1.9                                        ");
@@ -169,6 +173,17 @@ void showInterfaceAndExit()
   blk("  DESIRED_RUDDER   = -22                                        ");
   blk("  DESIRED_THRUST   = 60                                         ");
   blk("  DESIRED_ELEVATOR = -1.2                                       ");
+  blk("                                                                ");
+  blk("  PID_MAX_SAT_HDG = true                                        ");
+  blk("  PID_MAX_SAT_SPD = true                                        ");
+  blk("  PID_MAX_SAT_DEP = true                                        ");
+  blk("                                                                ");
+  blk("  PID_MAX_SAT_HDG_DEBUG = dfeIn=0.00000,                        ");
+  blk("        dfErrorTime=18677697.28731, m_dfDT=0.05311,             ");
+  blk("        dfDiffNow=0.00000, DiffHistSize=9, mdfeDiff(1)=0.00000, ");
+  blk("        mdfeDiff(2)=0.00000, m_dfOut(1)0                        ");
+  blk("  PID_MAX_SAT_SPD_DEBUG = dfeIn=0.00000, ...                    ");
+  blk("  PID_MAX_SAT_DEP_DEBUG = dfeIn=0.00000, ...                    ");
   blk("                                                                ");
   exit(0);
 }

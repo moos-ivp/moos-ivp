@@ -78,6 +78,10 @@ MarinePID::MarinePID()
 
   m_time_of_last_helm_msg = 0;
   m_time_of_last_nav_msg  = 0;
+
+  m_max_sat_hdg_debug = false;
+  m_max_sat_spd_debug = false;
+  m_max_sat_dep_debug = false;
 }
 
 //--------------------------------------------------------------------
@@ -220,6 +224,8 @@ bool MarinePID::Iterate()
 
   thrust = m_pengine.getDesiredThrust(m_desired_speed, m_current_speed, 
 				    m_current_thrust, m_max_thrust);
+
+
   if(m_depth_control)
     elevator = m_pengine.getDesiredElevator(m_desired_depth, m_current_depth,
 					  m_current_pitch, m_max_pitch, 
@@ -247,6 +253,28 @@ bool MarinePID::Iterate()
     Notify("DESIRED_ELEVATOR", elevator);
 
   m_allstop_posted = false;
+
+  // Added April 2019 by mikerb
+  // Simple quick check if max saturation event occurred
+  // If so, and debug was turned on, report debug info for the event
+  if(m_pengine.getMaxSatHdg()) {
+    Notify("PID_MAX_SAT_HDG", "true");
+    string debug_info = m_pengine.getMaxSatHdgStr();
+    if(debug_info != "")
+      Notify("PID_MAX_SAT_HDG_DEBUG", debug_info);
+  }
+  if(m_pengine.getMaxSatSpd()) {
+    Notify("PID_MAX_SAT_SPD", "true");
+    string debug_info = m_pengine.getMaxSatSpdStr();
+    if(debug_info != "")
+      Notify("PID_MAX_SAT_SPD_DEBUG", debug_info);
+  }
+  if(m_pengine.getMaxSatDep()) {
+    Notify("PID_MAX_SAT_DEp", "true");
+    string debug_info = m_pengine.getMaxSatDepStr();
+    if(debug_info != "")
+      Notify("PID_MAX_SAT_DEP_DEBUG", debug_info);
+  }
   
   return(true);
 }
@@ -340,6 +368,12 @@ bool MarinePID::OnStartUp()
       m_tardy_nav_thresh = vclip_min(dval, 0);
     else if(param == "ACTIVE_START") 
       setBooleanOnString(m_has_control, value);
+    else if(param == "MAX_SAT_HDG_DEBUG") 
+      setBooleanOnString(m_max_sat_hdg_debug, value);
+    else if(param == "MAX_SAT_SPD_DEBUG") 
+      setBooleanOnString(m_max_sat_spd_debug, value);
+    else if(param == "MAX_SAT_DEP_DEBUG") 
+      setBooleanOnString(m_max_sat_dep_debug, value);
     //else if(param == "OK_SKEW") 
     //  handled = handleConfigSkewAny(value);
     else if(param == "VERBOSE") {
@@ -405,7 +439,9 @@ bool MarinePID::handleYawSettings()
   crsPID.SetGains(yaw_pid_Kp, yaw_pid_Kd, yaw_pid_Ki);
   crsPID.SetLimits(yaw_pid_ilim, 100);
   m_pengine.setPID(0, crsPID);
-
+  if(m_max_sat_hdg_debug)
+    m_pengine.setDebugHdg();
+  
   MOOSDebugWrite(MOOSFormat("** NEW CONTROLLER GAINS ARE **"));
   MOOSDebugWrite(MOOSFormat("YAW_PID_KP             = %.3f",yaw_pid_Kp));
   MOOSDebugWrite(MOOSFormat("YAW_PID_KD             = %.3f",yaw_pid_Kd));
@@ -452,7 +488,9 @@ bool MarinePID::handleSpeedSettings()
   spdPID.SetGains(spd_pid_Kp, spd_pid_Kd, spd_pid_Ki);
   spdPID.SetLimits(spd_pid_ilim, 100);
   m_pengine.setPID(1, spdPID);
-
+  if(m_max_sat_spd_debug)
+    m_pengine.setDebugSpd();
+  
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KP           = %.3f",spd_pid_Kp));
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KD           = %.3f",spd_pid_Kd));
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KI           = %.3f",spd_pid_Ki));
@@ -521,7 +559,7 @@ bool MarinePID::handleDepthSettings()
   ztopPID.SetGains(z_top_pid_Kp, z_top_pid_Kd, z_top_pid_Ki);
   ztopPID.SetLimits(z_top_pid_ilim, 100);
   m_pengine.setPID(2, ztopPID);
-
+  
   MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KP      = %.3f",z_top_pid_Kp));
   MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KD      = %.3f",z_top_pid_Kd));
   MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KI      = %.3f",z_top_pid_Ki));
@@ -555,6 +593,8 @@ bool MarinePID::handleDepthSettings()
   pitchPID.SetGains(pitch_pid_Kp, pitch_pid_Kd, pitch_pid_Ki);
   pitchPID.SetLimits(pitch_pid_ilim, 100);
   m_pengine.setPID(3, pitchPID);
+  if(m_max_sat_dep_debug)
+    m_pengine.setDebugDep();
 
   MOOSDebugWrite(MOOSFormat("PITCH_PID_KP           = %.3f",pitch_pid_Kp));
   MOOSDebugWrite(MOOSFormat("PITCH_PID_KD           = %.3f",pitch_pid_Kd));

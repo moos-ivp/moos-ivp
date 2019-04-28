@@ -42,6 +42,42 @@ PIDEngine::PIDEngine()
   // If not, thrust is set to multiple of desired speed.
   m_speed_factor = 20.0;
   m_current_time = 0;
+
+  m_max_sat_hdg = false;
+  m_max_sat_spd = false;
+  m_max_sat_dep = false;
+
+  m_debug_hdg = false;
+  m_debug_spd = false;
+  m_debug_dep = false;
+}
+
+//------------------------------------------------------------
+// Procedure: setDebugHdg()
+
+void PIDEngine::setDebugHdg()
+{
+  m_debug_hdg = true;
+  m_heading_pid.setDebug(true);
+}
+
+//------------------------------------------------------------
+// Procedure: setDebugSpd
+
+void PIDEngine::setDebugSpd()
+{
+  m_debug_spd = true;
+  m_speed_pid.setDebug(true);
+}
+
+//------------------------------------------------------------
+// Procedure: setDebugDep
+
+void PIDEngine::setDebugDep()
+{
+  m_debug_dep = true;
+  m_z_to_pitch_pid.setDebug(true);
+  m_pitch_pid.setDebug(true);
 }
 
 //------------------------------------------------------------
@@ -58,7 +94,13 @@ double PIDEngine::getDesiredRudder(double desired_heading,
   double desired_rudder = 0;
   m_heading_pid.Run(heading_error, m_current_time, desired_rudder);
   desired_rudder *= -1.0;
-    
+
+  // Added 4/19 mikerb: monitor and report max saturation events
+  m_max_sat_hdg_str.clear();
+  m_max_sat_hdg = m_heading_pid.getMaxSat();
+  if(m_max_sat_hdg)
+    m_max_sat_hdg_str = m_heading_pid.getDebugStr();
+  
   // Enforce limit on desired rudder
   MOOSAbsLimit(desired_rudder,max_rudder);
 
@@ -91,6 +133,12 @@ double PIDEngine::getDesiredThrust(double desired_speed,
   else {
     m_speed_pid.Run(speed_error,  m_current_time, delta_thrust);
     desired_thrust += delta_thrust;
+
+    // Added 4/19 mikerb: monitor and report max saturation events
+    m_max_sat_spd_str.clear();
+    m_max_sat_spd = m_speed_pid.getMaxSat();
+    if(m_max_sat_spd)
+      m_max_sat_spd_str = m_speed_pid.getDebugStr();
   }
   
   if(desired_thrust < 0)
@@ -135,13 +183,27 @@ double PIDEngine::getDesiredElevator(double desired_depth,
   double desired_pitch = 0;
   double depth_error = current_depth - desired_depth;
   m_z_to_pitch_pid.Run(depth_error, m_current_time, desired_pitch);
+  m_max_sat_dep = m_z_to_pitch_pid.getMaxSat();
 
   // Enforce limits on desired pitch
   MOOSAbsLimit(desired_pitch,max_pitch);
 
   double pitch_error = current_pitch - desired_pitch;
   m_pitch_pid.Run(pitch_error, m_current_time, desired_elevator);
+  m_max_sat_dep = m_max_sat_dep || m_pitch_pid.getMaxSat();
 
+
+  // Added 4/19 mikerb: monitor and report max saturation events
+  m_max_sat_dep_str.clear();
+  if(m_z_to_pitch_pid.getMaxSat()) {
+    m_max_sat_dep = true;
+    m_max_sat_dep_str = "Z:" + m_z_to_pitch_pid.getDebugStr();
+  }
+  if(m_pitch_pid.getMaxSat()) {
+    m_max_sat_dep = true;
+    m_max_sat_dep_str += "P:" + m_z_to_pitch_pid.getDebugStr();
+  }
+  
   // Convert desired elevator to degrees
   desired_elevator=MOOSRad2Deg(desired_elevator);
 

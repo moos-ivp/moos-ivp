@@ -37,6 +37,10 @@ public:
   void setSpeedFactor(double v)     {m_speed_factor = v;}
   void updateTime(double ctime)     {m_current_time = ctime;}
 
+  void setDebugHdg();
+  void setDebugSpd();
+  void setDebugDep();
+  
   double getDesiredRudder(double desired_heading, 
 			  double current_heading,
 			  double max_rudder);
@@ -53,6 +57,14 @@ public:
   void clearReport() {m_pid_report.clear();}
   std::vector<std::string> getPIDReport() {return(m_pid_report);}
 
+  bool getMaxSatHdg() {return(m_max_sat_hdg);}
+  bool getMaxSatSpd() {return(m_max_sat_spd);}
+  bool getMaxSatDep() {return(m_max_sat_dep);}
+  
+  std::string getMaxSatHdgStr() {return(m_max_sat_hdg_str);}
+  std::string getMaxSatSpdStr() {return(m_max_sat_spd_str);}
+  std::string getMaxSatDepStr() {return(m_max_sat_dep_str);}
+  
 protected:
   ScalarPID m_heading_pid;
   ScalarPID m_speed_pid;
@@ -63,6 +75,27 @@ protected:
   double  m_speed_factor;
 
   std::vector<std::string> m_pid_report;
+
+  // Added April 2019 by mikerb
+  // Regardless of debug settings, take note if a max saturation
+  // condition was encountered for any pid controllers on any iter.
+  bool m_max_sat_hdg;
+  bool m_max_sat_spd;
+  bool m_max_sat_dep;
+
+  // Added April 2019 by mikerb
+  // If debug settings on, ScalarPIDs will build debug output on
+  // every iteration. Likely only want to do this if seeing max_sat.
+  bool m_debug_hdg;
+  bool m_debug_spd;
+  bool m_debug_dep;
+
+  // Added April 2019 by mikerb
+  // If a max saturation was encountered, debugging output may be
+  // in these message strings if debugging had been turned on.
+  std::string m_max_sat_hdg_str;
+  std::string m_max_sat_spd_str;
+  std::string m_max_sat_dep_str;  
 };
 #endif
 

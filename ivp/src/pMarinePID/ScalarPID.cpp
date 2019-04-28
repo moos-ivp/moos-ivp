@@ -37,6 +37,8 @@
 #include <math.h>
 #include <iostream>
 #include <iomanip>
+#include "MBUtils.h"
+
 using namespace std;
 
 //////////////////////////////////////////////////////////////////////
@@ -65,7 +67,10 @@ ScalarPID::ScalarPID()
 
   m_sLogPath = "";
   m_bLog     = false;
+  m_debug    = false;
+  m_max_sat  = false;
   m_sName    = "PID_LOGFILE";
+
 }
 
 
@@ -88,6 +93,8 @@ ScalarPID::ScalarPID(double dfKp, double dfKd, double dfKi,
   m_nIterations     = 0;
   m_nHistorySize    = 10;
   m_bLog            = false;
+  m_debug           = false;
+  m_max_sat         = false;
 }
 
 //-------------------------------------------------------------------
@@ -112,6 +119,9 @@ ScalarPID::ScalarPID(const ScalarPID& right)
   m_dfDT        = 0;
   m_nHistorySize = 10;
   m_dfGoal       = 0;
+
+  m_debug   = false;
+  m_max_sat = false;
 }
 
 //-------------------------------------------------------------------
@@ -135,6 +145,8 @@ const ScalarPID &ScalarPID::operator=(const ScalarPID& right)
     m_dfeDiff     = 0;
     m_dfDT        = 0;
     m_dfe         = 0;
+    m_debug       = false;
+    m_max_sat     = false;
   }
   return(*this);
 }
@@ -148,22 +160,34 @@ ScalarPID::~ScalarPID()
 //-------------------------------------------------------------------
 bool ScalarPID::Run(double dfeIn, double dfErrorTime, double &dfOut)
 {
+  // Reset max_sat flag on every interation
+  m_max_sat = false;
+  
+  if(m_debug) {
+    m_debug_str =  "dfeIn=" + doubleToString(dfeIn);
+    m_debug_str += ", dfErrorTime=" + doubleToString(dfErrorTime);
+  }
+    
   m_dfe  = dfeIn;
   
   //figure out time increment...
   if(m_nIterations++!=0) {
         
     m_dfDT = dfErrorTime-m_dfOldTime;
+
+    if(m_debug)
+      m_debug_str += ", m_dfDT=" + doubleToString(m_dfDT);
+      
     
     if(m_dfDT<0) {
       MOOSTrace("ScalarPID::Run() : negative or zero sample time\n");
-      return false;
+      return(false);
     }
     else if(m_dfDT ==0) {
       //nothing to do...
       dfOut = m_dfOut;
       Log();
-      return true;
+      return(true);
     }
     
     //figure out differntial
@@ -172,13 +196,22 @@ bool ScalarPID::Run(double dfeIn, double dfErrorTime, double &dfOut)
     while(m_DiffHistory.size() >= m_nHistorySize) {
       m_DiffHistory.pop_back();
     }
-    
+    if(m_debug) {
+      m_debug_str += ", dfDiffNow=" + doubleToString(dfDiffNow);
+      m_debug_str += ", DiffHistSize=" + uintToString(m_DiffHistory.size());
+    }
+      
     m_dfeDiff = 0;
     list<double>::iterator p;
     for(p = m_DiffHistory.begin();p!=m_DiffHistory.end();p++) {
       m_dfeDiff   += *p;   
     }
+    if(m_debug) 
+      m_debug_str += ", mdfeDiff(1)=" + doubleToString(m_dfeDiff);
+
     m_dfeDiff/=m_DiffHistory.size();
+    if(m_debug) 
+      m_debug_str += ", mdfeDiff(2)=" + doubleToString(m_dfeDiff);
   }
   else {
     //this is our first time through
@@ -189,11 +222,19 @@ bool ScalarPID::Run(double dfeIn, double dfErrorTime, double &dfOut)
   if(m_dfKi>0) {
     //calculate integral term  
     m_dfeSum    +=  m_dfKi*m_dfe*m_dfDT;
+
+    if(m_debug) {
+      m_debug_str += ", m_dfKi" + doubleToString(m_dfKi);
+      m_debug_str += ", m_dfeSum(1)" + doubleToString(m_dfeSum);
+      m_debug_str += ", m_dfIntegralLimit" + doubleToString(m_dfIntegralLimit);
+    }
     
     //prevent integral wind up...
     if(fabs(m_dfeSum)>=fabs(m_dfIntegralLimit)) {
       int nSign = (int)(fabs(m_dfeSum)/m_dfeSum);
       m_dfeSum = nSign*fabs(m_dfIntegralLimit);
+      if(m_debug) 
+	m_debug_str += ", m_dfeSum(2)" + doubleToString(m_dfeSum);
     }
   }
   else {
@@ -203,13 +244,19 @@ bool ScalarPID::Run(double dfeIn, double dfErrorTime, double &dfOut)
 
   //do pid control
   m_dfOut = (m_dfKp*m_dfe) + (m_dfKd*m_dfeDiff) + m_dfeSum; 
+  if(m_debug) 
+    m_debug_str += ", m_dfOut(1)" + doubleToStringX(m_dfOut);
   //note Ki is already in dfeSum
   
   //prevent saturation..
   if(fabs(m_dfOut)>=fabs(m_dfOutputLimit) ) {        
     int nSign =(int)( fabs(m_dfOut)/m_dfOut);
     m_dfOut = nSign*fabs(m_dfOutputLimit);
+    if(m_debug) 
+      m_debug_str += ", m_dfOut(1)" + doubleToStringX(m_dfOut);
+    m_max_sat = true;
   }
+  m_max_sat = true;
   
   //save old value..
   m_dfeOld    = m_dfe;
@@ -220,7 +267,7 @@ bool ScalarPID::Run(double dfeIn, double dfErrorTime, double &dfOut)
   //do logging..
   Log();
   
-  return true;
+  return(true);
 }
 
 //-------------------------------------------------------------------

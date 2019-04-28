@@ -65,6 +65,12 @@ public:
   void SetName(std::string sName);
   bool Run(double dfeIn, double dfErrorTime, double& dfOut);
 
+  void setDebug(bool v=true) {m_debug=v;}
+  bool getDebug() const      {return(m_debug);}
+  bool getMaxSat() const     {return(m_max_sat);}
+  
+  std::string getDebugStr() const {return(m_debug_str);}
+  
 protected:  // Core parameters
   double m_dfKi;
   double m_dfKd;
@@ -96,6 +102,13 @@ protected:
   std::string   m_sName;
   std::string   m_sLogPath;
   std::ofstream m_LogFile;
+
+  // Added April 2019, mikerb, for optional additional debugging
+  std::string   m_debug_str;
+  bool          m_debug;
+
+  // Added April 2019, mikerb, for optional additional debugging
+  bool          m_max_sat;  
 };
 
 #endif
