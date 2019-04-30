@@ -285,9 +285,9 @@ void ${1}::registerVariables()
 
 bool ${1}::buildReport() 
 {
-  m_msgs << "============================================" endl;
-  m_msgs << "File:                                       " endl;
-  m_msgs << "============================================" endl;
+  m_msgs << "============================================" << endl;
+  m_msgs << "File:                                       " << endl;
+  m_msgs << "============================================" << endl;
 
   ACTable actab(4);
   actab << "Alpha | Bravo | Charlie | Delta";
