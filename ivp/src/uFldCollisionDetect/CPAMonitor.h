@@ -55,6 +55,8 @@ class CPAMonitor
   bool        examineAndReport(std::string);
   bool        examineAndReport(std::string, std::string);
   bool        updatePairRangeAndRate(std::string, std::string); 
+
+  double      relBng(std::string vname1, std::string vname2);
   
  protected: // Configuration parameters
   double  m_ignore_range;

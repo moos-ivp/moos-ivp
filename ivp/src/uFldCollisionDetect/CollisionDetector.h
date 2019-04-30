@@ -80,6 +80,8 @@ class CollisionDetector : public AppCastingMOOSApp
   CPAMonitor m_cpa_monitor;
   
   bool m_conditions_ok;
+
+  bool m_report_all_encounters;
   
   std::map<std::string, unsigned int> m_map_vname_collisions;
   std::map<std::string, unsigned int> m_map_vname_near_misses;

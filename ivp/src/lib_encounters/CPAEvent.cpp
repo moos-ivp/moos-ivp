@@ -37,6 +37,9 @@ CPAEvent::CPAEvent()
   m_x   = 0;
   m_y   = 0;
   m_id  = -1;
+
+  m_alpha = -1;
+  m_beta  = -1;
 }
 
 //---------------------------------------------------------
@@ -52,6 +55,9 @@ CPAEvent::CPAEvent(string v1, string v2, double cpa)
   m_x   = 0;
   m_y   = 0;
   m_id  = -1;
+
+  m_alpha = -1;
+  m_beta  = -1;
 }
 
 //---------------------------------------------------------
@@ -78,6 +84,10 @@ CPAEvent::CPAEvent(string spec)
       m_y = atof(value.c_str());
     else if(param == "id")
       m_id = atoi(value.c_str());
+    else if(param == "alpha")
+      m_alpha = atof(value.c_str());
+    else if(param == "beta")
+      m_beta = atof(value.c_str());
   }
 }
 
@@ -100,6 +110,10 @@ string CPAEvent::getSpec() const
   
   if(m_id != -1)
     str += ",id=" + uintToString(m_id);
+  if(m_alpha > 0)
+    str += ",alpha=" + doubleToStringX(m_alpha,3);
+  if(m_alpha > 0)
+    str += ",beta=" + doubleToStringX(m_beta,3);
 
   return(str);
 }

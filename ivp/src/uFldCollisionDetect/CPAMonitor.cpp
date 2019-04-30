@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <cmath>
 #include "MBUtils.h"
+#include "AngleUtils.h"
 #include "CPAMonitor.h"
 #include "NodeRecordUtils.h"
 
@@ -152,18 +153,22 @@ bool CPAMonitor::examineAndReport(string vname)
 
 bool CPAMonitor::examineAndReport(string vname, string contact)
 {
+  // Part 1: Sanity check
   if(!m_map_vrecords.count(vname) || !m_map_vrecords.count(contact))
     return(false);
 
+  // Part 2: Create a unique "pairtag" so an event betweeen two
+  //         vehicles is singular and not treated twice
   string tag = pairTag(vname, contact);
-
-  cout << "Examining: " << vname << " and " << contact <<
-    "(" << tag << ")" << "  [" << m_iteration << "]" << endl;
-
+  if(m_verbose) {
+    cout << "Examining: " << vname << " and " << contact <<
+      "(" << tag << ")" << "  [" << m_iteration << "]" << endl;
+  }
   if(m_map_pair_examined[tag])
     return(true);
 
-  
+
+  // Part 3: Update range and rate
   double prev_dist    = m_map_pair_dist[tag];
   bool   prev_closing = m_map_pair_closing[tag];
   bool   prev_valid   = m_map_pair_valid[tag];
@@ -174,7 +179,6 @@ bool CPAMonitor::examineAndReport(string vname, string contact)
   bool now_valid   = m_map_pair_valid[tag];
 
   if(m_verbose) {
-
     cout << "  prev_dist:    " << prev_dist << endl;
     cout << "  prev_closing: " << boolToString(prev_closing) << endl;
     cout << "  prev_valid:   " << boolToString(prev_valid) << endl;  
@@ -194,8 +198,13 @@ bool CPAMonitor::examineAndReport(string vname, string contact)
       CPAEvent event(vname, contact, cpa_dist);
       double midx = m_map_pair_midx[tag];
       double midy = m_map_pair_midy[tag];
+      double beta = relBng(vname, contact);
+      double alpha = relBng(contact, vname);
+
       event.setX(midx);
       event.setY(midy);
+      event.setAlpha(alpha);
+      event.setBeta(beta);
       m_events.push_back(event);
     }
   }
@@ -315,6 +324,27 @@ string CPAMonitor::pairTag(string a, string b)
 }
 
 
+//---------------------------------------------------------
+// Procedure: relBng()
 
+double CPAMonitor::relBng(string vname1, string vname2)
+{
+  // Sanity Check - Need position information for both vehicles
+  if((m_map_vrecords.count(vname1) == 0) ||
+     (m_map_vrecords.count(vname2) == 0))
+    return(0);
+  
+  NodeRecord record1 = m_map_vrecords[vname1].front();
+  NodeRecord record2 = m_map_vrecords[vname2].front();
+
+  double osx = record1.getX();
+  double osy = record1.getY();
+  double osh = record1.getHeading();
+
+  double cnx = record2.getX();
+  double cny = record2.getY();
+
+  return(relBearing(osx, osy, osh, cnx, cny));
+}
 
 

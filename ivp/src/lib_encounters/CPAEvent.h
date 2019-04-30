@@ -41,7 +41,11 @@ class CPAEvent
   void setX(double v)           {m_x=v;}
   void setY(double v)           {m_y=v;}
   void setID(int id)            {m_id=id;}
-
+  void setAlpha(double v)       {m_alpha=v;}
+  void setBeta(double v)        {m_beta=v;}
+  void setPType(std::string s)  {m_ptype=s;}
+  void setXType(std::string s)  {m_xtype=s;}
+  
   std::string getVName1() const {return(m_vname1);}
   std::string getVName2() const {return(m_vname2);}
   double      getCPA() const    {return(m_cpa);}
@@ -49,6 +53,10 @@ class CPAEvent
   double      getX() const      {return(m_x);}
   double      getY() const      {return(m_y);}
   int         getID() const     {return(m_id);}
+  double      getAlpha() const  {return(m_alpha);}
+  double      getBeta() const   {return(m_beta);}
+  std::string getPType() const  {return(m_ptype);}
+  std::string getXType() const  {return(m_xtype);}
   
   std::string getSpec() const;
   
@@ -60,6 +68,11 @@ class CPAEvent
   double       m_x;       // (x,y) midpt at time of cpa
   double       m_y;
   int          m_id;
+
+  double       m_alpha;   // relbng of v1 to v2
+  double       m_beta;    // relbng of v2 to v1
+  std::string  m_ptype;   // passing type, e.g. port:port
+  std::string  m_xtype;   // crossing type, e.g. aft:fore
 };
 
 #endif 

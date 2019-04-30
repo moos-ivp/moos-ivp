@@ -51,6 +51,8 @@ CollisionDetector::CollisionDetector()
   m_conditions_ok = true;
 
   m_post_closest_range = false;
+
+  m_report_all_encounters = false;
   
   m_info_buffer   = new InfoBuffer;
 }
@@ -130,7 +132,9 @@ void CollisionDetector::handleCPAEvent(CPAEvent event)
   double midx = event.getX();
   double midy = event.getY();
   string cpas = doubleToStringX(cpa,2);
-
+  double alpha = event.getAlpha();
+  double beta  = event.getBeta();
+  
   m_total_encounters++;
   m_map_vname_encounters[v1]++;
   m_map_vname_encounters[v2]++;
@@ -139,29 +143,36 @@ void CollisionDetector::handleCPAEvent(CPAEvent event)
 
   Notify("ENCOUNTER_TOTAL", m_total_encounters);
 
-  string ac_event = v1 + "::" + v2 + ", " + "cpa=" + cpas;
-  if(cpa > m_near_miss_dist) {
-    reportEvent(ac_event);
+  string rank = "clear";
+  if(cpa <= m_collision_dist)
+    rank = "collision";
+  else if(cpa <= m_near_miss_dist)
+    rank = "near_miss";
+  
+  // Perhaps done if clear encounter and minimal reporting
+  if((rank == "clear") && !m_report_all_encounters)
     return;
-  }
-
-
+  
   //===========================================================
   // Part2: Build the Collision Detection Report UCD_REPORT
   //===========================================================
   string report = "cpa=" + cpas + ",vname1=" + v1 + ",vname2=" + v2;
+
+  if(alpha > 0)
+    report += ", alpha=" + doubleToStringX(alpha,3);
+  if(beta > 0)
+    report += ", beta=" + doubleToStringX(beta,3);
+    
   
   string pulse_color = "red";
-  string rank = "collision";
-  if(cpa <= m_collision_dist) {
+  if(rank == "collision") {
     m_total_collisions++;
     m_map_vname_collisions[v1]++;
     m_map_vname_collisions[v2]++;
     postFlags(m_collision_flags, event);
   }
-  else {
+  else if (rank == "near_miss") {
     pulse_color = "yellow";
-    rank = "near_miss";
     m_total_near_misses++;
     m_map_vname_near_misses[v1]++;
     m_map_vname_near_misses[v2]++;
@@ -173,13 +184,15 @@ void CollisionDetector::handleCPAEvent(CPAEvent event)
   //===========================================================
   // Part 3: Build and post the Appcasting Event
   //===========================================================
-  ac_event += ", " + rank;
-  reportEvent(ac_event);
+  string ac_event = v1 + "::" + v2 + ", " + "cpa=" + cpas;
+  ac_event += ", rank=" + rank;
 
+  reportEvent(ac_event);
+  
   //===========================================================
   // Part 4: Build the RANGE_PULSE if rendering turned on
   //===========================================================
-  if(m_pulse_render) {
+  if((rank != "clear") && m_pulse_render) {
     XYRangePulse pulse(midx, midy);
     pulse.set_rad(m_pulse_range);
     pulse.set_duration(m_pulse_duration);
@@ -232,6 +245,8 @@ bool CollisionDetector::OnStartUp()
       handled = handleConfigFlag("encounter", value);
     else if(param == "post_closest_range") 
       handled = setBooleanOnString(m_post_closest_range, value);
+    else if(param == "report_all_encounters") 
+      handled = setBooleanOnString(m_report_all_encounters, value);
     else if(param == "condition") {
       LogicCondition new_condition;
       handled = new_condition.setCondition(value);
