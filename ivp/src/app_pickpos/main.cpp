@@ -60,6 +60,8 @@ int main(int argc, char *argv[])
       handled = pickpos.addPosFile(argi.substr(10));
     else if(strBegins(argi, "--polygon="))
       handled = pickpos.addPolygon(argi.substr(10));
+    else if(strBegins(argi, "--circle="))
+      handled = pickpos.setCircle(argi.substr(9));
     else if(strBegins(argi, "--poly="))
       handled = pickpos.addPolygon(argi.substr(7));
     else if(strBegins(argi, "--buffer="))

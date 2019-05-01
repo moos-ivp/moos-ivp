@@ -63,6 +63,13 @@ PickPos::PickPos()
   m_spd_val1 = 0;
   m_spd_val2 = 0;
 
+  // For Picking points on a circle
+  m_circ_x = 0;
+  m_circ_y = 0;
+  m_circ_rad = 0;
+  m_circ_set = false;
+
+  
   m_pick_amt = 10;
 
   m_vnames  = false;
@@ -280,6 +287,50 @@ bool PickPos::setGroups(string str)
 
 
 //---------------------------------------------------------
+// Procedure: setCircle()
+//   Example: "x=23,y=43,rad=100"
+
+bool PickPos::setCircle(string str)
+{
+  if(isQuoted(str))
+    str = stripQuotes(str);
+  
+  double x,y,rad;
+  bool x_set = false;
+  bool y_set = false;
+  bool rad_set = false;
+  
+  vector<string> svector = parseString(str, ',');
+  for(unsigned i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+    if((param == "x") && isNumber(value)) {
+      x = atof(value.c_str());
+      x_set = true;
+    }
+    else if((param == "y") && isNumber(value)) {
+      y = atof(value.c_str());
+      y_set = true;
+    }
+    else if((param == "rad") && isNumber(value)) {
+      rad = atof(value.c_str());
+      rad_set = true;
+    }
+    else
+      return(false);
+  }
+  
+  if(!x_set || !y_set || !rad_set)
+    return(false);
+
+  m_circ_x = x;
+  m_circ_y = y;
+  m_circ_rad = rad;
+  m_circ_set = true;
+  return(true);
+}
+
+//---------------------------------------------------------
 // Procedure: addPosFile()
 //   Example: x=23, y=34, hdg=90
 //            x=-23, y=94
@@ -337,8 +388,10 @@ bool PickPos::pick()
 
   if(m_file_positions.size() != 0)    
     pickPosByFile();
-  else if(m_field_generator.polygonCount() > 0)
+  else if(m_fld_generator.polygonCount() > 0)
     pickPosByPoly();
+  else if(m_circ_set)
+    pickPosByCircle();
 
   if(m_verbose) {
     cout << "heading type: " << m_hdg_type << endl;
@@ -399,14 +452,14 @@ void PickPos::pickPosByFile()
 
 void PickPos::pickPosByPoly()
 {
-  if(m_field_generator.size() == 0) {
+  if(m_fld_generator.size() == 0) {
     cout << "Cannot pick " << m_pick_amt << " positions." << endl;
     cout << "No polygons have been specified." << endl;
     return;
   }
   srand(time(NULL));
 
-  m_field_generator.setSnap(m_pt_snap);
+  m_fld_generator.setSnap(m_pt_snap);
 
   vector<XYPoint> points;
   for(unsigned int i=0; i<m_pick_amt; i++) {
@@ -418,7 +471,7 @@ void PickPos::pickPosByPoly()
     
     bool done = false;
     while(!done && (tries < m_max_tries)) {
-      pick_pt = m_field_generator.generatePoint();
+      pick_pt = m_fld_generator.generatePoint();
 
       if(i==0) {
 	done = true;
@@ -473,6 +526,47 @@ void PickPos::pickPosByPoly()
     m_near_positions[i] = closest;
   }
 
+}
+
+//---------------------------------------------------------
+// Procedure: pickPosByCircle()
+//      Note: The min_sep value, if < 0 indicates that all the points
+//            should be evenly distributed. Otherwise, a positive
+//            value indicates that the arc length between points
+//            should be at least as large as minsep.
+//   Returns: false if the min_sep criteria cannot be upheld
+//            true otherwise
+
+bool PickPos::pickPosByCircle(double min_sep)
+{
+  if(m_pick_amt == 0)
+    return(false);
+
+  double m_circ_x = 10;
+  double m_circ_y = 20;
+  double m_circ_r = 50;
+  
+  // First handle case where all points are evenly separated
+  if(min_sep < 0) {
+    double angle_delta = 360.0 / (double)(m_pick_amt);
+
+    // First pick an arbitrary initial angle    
+    double ang1 = ((double)(rand() % 3600)) / 100.0;
+    
+    vector<XYPoint> points;
+    for(unsigned int i=0; i<m_pick_amt; i++) {
+      double ang = angle360(ang1 + (i*angle_delta));
+
+      double newx,newy;
+      projectPoint(ang, m_circ_r, m_circ_x, m_circ_y, newx, newy);
+
+      string s="x="+doubleToStringX(newx,2)+",y="+doubleToStringX(newy,2);
+
+      m_pick_positions.push_back(s);
+      m_near_positions.push_back(0);
+    }
+  }
+  return(true);
 }
 
 //---------------------------------------------------------

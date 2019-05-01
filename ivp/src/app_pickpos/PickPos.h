@@ -36,11 +36,11 @@ class PickPos
   PickPos();
   virtual ~PickPos() {}
 
-  bool   addPolygon(std::string s)
-  {return(m_field_generator.addPolygon(s));}
-
+  bool   addPolygon(std::string s) {return(m_fld_generator.addPolygon(s));}
+  
   bool   addPosFile(std::string);
-
+  bool   setCircle(std::string);
+  
   bool   setMultiLine()          {m_multiline=true; return(true);}
   bool   setPickAmt(std::string);
   bool   setBufferDist(std::string);
@@ -61,6 +61,7 @@ class PickPos
  protected:
   void pickPosByFile();
   void pickPosByPoly();
+  bool pickPosByCircle(double minsep=-1);
   void pickHeadingVals();
   void pickSpeedVals();
   void pickGroupNames();
@@ -88,11 +89,16 @@ class PickPos
 
   bool         m_vnames;
 
+  double       m_circ_x;
+  double       m_circ_y;
+  double       m_circ_rad;
+  bool         m_circ_set;  
+  
   std::string  m_grp_type;
   std::vector<std::string>  m_groups;
   
 protected: // State variables
-  XYFieldGenerator          m_field_generator;
+  XYFieldGenerator          m_fld_generator;
   double                    m_pt_snap;
   double                    m_hdg_snap;
   double                    m_spd_snap;
