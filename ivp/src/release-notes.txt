@@ -34,7 +34,7 @@ o Added lead_condition to allow the user to specify a logic condition
   that must be met in order for the trackline following to be enabled.
   This allows for coordination with any collision avoidance behavior 
   temporarily turn off trackline following during an avoidance encounter.
-
+  See m2_track_condition mission.
 
 uFldCollisionDetect Documentation
 ===============================================
