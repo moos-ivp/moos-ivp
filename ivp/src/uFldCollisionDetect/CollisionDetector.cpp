@@ -144,10 +144,20 @@ void CollisionDetector::handleCPAEvent(CPAEvent event)
   Notify("ENCOUNTER_TOTAL", m_total_encounters);
 
   string rank = "clear";
-  if(cpa <= m_collision_dist)
+  if(cpa <= m_collision_dist) {
     rank = "collision";
-  else if(cpa <= m_near_miss_dist)
+    m_total_collisions++;
+    m_map_vname_collisions[v1]++;
+    m_map_vname_collisions[v2]++;
+    postFlags(m_collision_flags, event);
+  }
+  else if(cpa <= m_near_miss_dist) {
     rank = "near_miss";
+    m_total_near_misses++;
+    m_map_vname_near_misses[v1]++;
+    m_map_vname_near_misses[v2]++;
+    postFlags(m_near_miss_flags, event);
+  }
   
   // Perhaps done if clear encounter and minimal reporting
   if((rank == "clear") && !m_report_all_encounters)
@@ -156,43 +166,63 @@ void CollisionDetector::handleCPAEvent(CPAEvent event)
   //===========================================================
   // Part2: Build the Collision Detection Report UCD_REPORT
   //===========================================================
-  string report = "cpa=" + cpas + ",vname1=" + v1 + ",vname2=" + v2;
 
+  // Part 2A: Build the basic report, names, cpa, rank.
+  string report = "cpa=" + cpas + ",vname1=" + v1 + ",vname2=" + v2;
+  report += ",rank=" + rank;
+
+  // Part 2B: If we have relative bearing info, then characterized
+  //          the type of encounter.
   if(alpha > 0)
     report += ", alpha=" + doubleToStringX(alpha,3);
   if(beta > 0)
     report += ", beta=" + doubleToStringX(beta,3);
-    
+
+  if((alpha > 0) && (beta > 0)) {
+    bool cn_port_of_os = (beta > 180);
+    bool os_port_of_cn = (alpha > 180);
+    bool cn_fore_of_os = ((beta <= 90) || (beta >= 270));
+    bool os_fore_of_cn = ((alpha <= 90) || (alpha >= 270));
+
+    string ptype_os = "star";
+    if(cn_port_of_os)
+      ptype_os = "port";
+    string ptype_cn = "star";
+    if(os_port_of_cn)
+      ptype_cn = "port";
+    string ptype = ptype_os + ":" + ptype_cn;
+
+    string xtype_os = "aft";
+    if(cn_fore_of_os)
+      xtype_os = "fore";
+    string xtype_cn = "aft";
+    if(os_fore_of_cn)
+      xtype_cn = "fore";
+    string xtype = xtype_os + ":" + xtype_cn;
+
+    report += ", ptype=" + ptype;
+    report += ", xtype=" + xtype;
+  }
   
-  string pulse_color = "red";
-  if(rank == "collision") {
-    m_total_collisions++;
-    m_map_vname_collisions[v1]++;
-    m_map_vname_collisions[v2]++;
-    postFlags(m_collision_flags, event);
-  }
-  else if (rank == "near_miss") {
-    pulse_color = "yellow";
-    m_total_near_misses++;
-    m_map_vname_near_misses[v1]++;
-    m_map_vname_near_misses[v2]++;
-    postFlags(m_near_miss_flags, event);
-  }
-  report += ",rank=" + rank;
+  // Part 2C: Post the final report
   Notify("UCD_REPORT", report);
 
   //===========================================================
   // Part 3: Build and post the Appcasting Event
   //===========================================================
-  string ac_event = v1 + "::" + v2 + ", " + "cpa=" + cpas;
-  ac_event += ", rank=" + rank;
-
-  reportEvent(ac_event);
+  if(rank != "clear") {
+    string ac_event = v1 + "::" + v2 + ", " + "cpa=" + cpas;
+    ac_event += ", rank=" + rank;
+    reportEvent(ac_event);
+  }
   
   //===========================================================
   // Part 4: Build the RANGE_PULSE if rendering turned on
   //===========================================================
   if((rank != "clear") && m_pulse_render) {
+    string pulse_color = "red";
+    if(rank == "near_miss") 
+      pulse_color = "yellow";    
     XYRangePulse pulse(midx, midy);
     pulse.set_rad(m_pulse_range);
     pulse.set_duration(m_pulse_duration);
