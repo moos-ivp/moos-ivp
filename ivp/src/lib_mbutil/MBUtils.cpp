@@ -421,6 +421,25 @@ string removeWhite(const string& str)
 }
 
 //----------------------------------------------------------------
+// Procedure: removeWhiteLN(const string&)
+//      Note: Same as removeWhite(), but also looks for CR and LF
+//   Example: input_str = "apples, pears, bananas "
+//            str = removeWhite(input_str)
+//            str = "apples,pears,bananas"
+
+string removeWhiteNL(const string& str)
+{
+  string return_string;
+  unsigned int i, vsize = str.length();
+  for(i=0; i<vsize; i++) {
+    int c = (int)(str.at(i));
+    if((c != 9) && (c != 32) && (c != 10) && (c != 13))
+      return_string += str.at(i);
+  }
+  return(return_string);
+}
+
+//----------------------------------------------------------------
 // Procedure: biteString(string&, char)
 //   Example: input_str = "apples, pears, bananas"
 //            str = biteString(input_str, ',')
@@ -587,14 +606,24 @@ vector<string> removeDuplicates(const vector<string>& svector)
 
 //----------------------------------------------------------------
 // Procedure: vectorContains
-//      Note: 
 
-bool vectorContains(const vector<string>& svector, const string& str)
+bool vectorContains(const vector<string>& svector,
+		    const string& str,
+		    bool case_sensitive)
 {
   vector<string>::size_type vsize = svector.size();
-  for(vector<string>::size_type i=0; i<vsize; i++)
-    if(svector[i] == str)
-      return(true);
+  if(case_sensitive) {
+    for(vector<string>::size_type i=0; i<vsize; i++)
+      if(svector[i] == str)
+	return(true);
+  }
+  else {
+    string lower_str = tolower(str);
+    for(vector<string>::size_type i=0; i<vsize; i++)
+      if(tolower(svector[i]) == lower_str)
+	return(true);
+  }
+
   return(false);
 }
 
@@ -993,6 +1022,29 @@ string padString(const string& str,
     
 
 //----------------------------------------------------------------
+// Procedure: padVector
+//      Note: Added Apr 2219
+//   Purpose: Pad all strings in the given vector such that they 
+//            are all of equal length, determined by the one with 
+//            the maximum length. If front is true, pad on to the
+//            front of the string. To the end otherwise. 
+
+vector<string> padVector(const vector<string>& svector, bool front)
+{
+  unsigned int maxlen = 0;
+  for(unsigned int i=0 ; i<svector.size(); i++)
+    if((i==0) || (svector[i].length() > maxlen))
+      maxlen = svector[i].length();
+
+  vector<string> return_vector;
+  for(unsigned int i=0 ; i<svector.size(); i++)
+    return_vector.push_back(padString(svector[i], maxlen, front));
+
+  return(return_vector);
+}
+    
+
+//----------------------------------------------------------------
 // Procedure: findReplace
 //      Note: Added Jun1405
 //            Replace all occurances of fstr with rstr in str
@@ -1177,6 +1229,25 @@ bool strContainsWhite(const string& str)
   
   posn = str.find_first_of('\t', 0);
   if(posn != string::npos)
+    return(true);
+
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: strBeginsWhite
+//      Note: Returns true if the given string begins with either a
+//            blank or tab character.
+
+bool strBeginsWhite(const string& str)
+{
+  if(str.length() == 0)
+    return(false);
+
+  if(str.at(0) == ' ')
+    return(true);
+  
+  if(str.at(0) == '\t')
     return(true);
 
   return(false);
@@ -1837,6 +1908,44 @@ bool setDoubleOnString(double& given_dval, string str)
 }
 
 //-------------------------------------------------------------
+// Procedure: setUintOnString
+//      Note: This function is designed to possibly set the given 
+//            unsigned int based on the contents of the str.
+//   Returns: false if the string is not a positive number.
+//            true  otherwise.
+
+bool setUIntOnString(unsigned int& given_val, string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  double dval = atof(str.c_str());
+  if(dval < 0)
+    return(false);
+
+  given_val = (unsigned int)(dval);
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setIntOnString
+//      Note: This function is designed to possibly set the given 
+//            int based on the contents of the str.
+//   Returns: false if the string is not a number.
+//            true  otherwise.
+
+bool setIntOnString(int& given_val, string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  int ival = atoi(str.c_str());
+
+  given_val = ival;
+  return(true);
+}
+
+//-------------------------------------------------------------
 // Procedure: setNonWhiteVarOnString
 //      Note: This function is designed to possibly set the given 
 //            variable based the contents of the str.
@@ -1895,6 +2004,57 @@ bool okFileToRead(string file)
   else
     return(false);
 }
+
+
+//----------------------------------------------------------------
+// Procedure: incIntString
+//   Purpose: increment the numerical portion of the string by the
+//            given amount, and append it to the first N non-num
+//            characters.
+//  Examples: incIntString("foo23")      --> 24
+//            incIntString("foo23bar")   --> 24
+//            incIntString("foo23bar45") --> 2346
+//            incIntString("27foo")      --> 28
+//
+//  Examples: incIntString("foo23", 1, true)      --> foo24
+//            incIntString("foo23bar", 1, true)   --> foo24
+//            incIntString("foo23bar45", 1, true) --> foo2346
+//            incIntString("27foo", 4, true)      --> 31
+
+string incIntString(string str, int amt, bool keep_pref)
+{
+  string pref;
+  string suff;
+
+  bool foundnum = false;
+
+  string::size_type len = str.length();
+  for(string::size_type i=0; i<len; i++) {
+    char c = str.at(i);
+    bool isnum = false;
+    if((str.at(i) >= 48) && (str.at(i) <= 57))
+      isnum = true;
+    if(!foundnum && isnum)
+      foundnum = true;
+
+    if(!foundnum && !isnum)
+      pref += c;
+    if(foundnum && isnum)
+      suff += c;
+  }
+  
+  int curr_val = atoi(suff.c_str());
+  int new_val = curr_val + amt;
+
+  string new_str;
+  if(keep_pref) 
+    new_str += pref;
+  new_str = intToString(new_val);
+
+  return(new_str);
+}
+
+
 
 //----------------------------------------------------------------
 // Procedure: millipause
@@ -2124,6 +2284,67 @@ vector<string> justifyLen(const string& str, unsigned int maxlen)
   return(justifyLen(svector, maxlen));
 }
 
+//----------------------------------------------------------------                                               
+// Procedure: joinLines()                                                                                        
+//   Purpose: Take an given set of lines, and check for lines that                                               
+//            end in a backslash (\), not counting any white space                                               
+//            characters that may occur after the backslash. Any                                                 
+//            such line will be joined with the following line,                                                  
+//            perhaps over multiple successive lines ending in a                                                 
+//            backslash.                                                                                         
+//            Since these lines may have originated as lines in a                                                
+//            file, we may want to preserve the total line count,                                                
+//            and make sure that a line that started on line N, is                                               
+//            still N elements into the vector. So if preserve_line_                                             
+//            count is true, an empty line will be inserted to                                                   
+//            replace any line that was a continuation line.                                                     
+//                                                                                                               
+//  Examples: (with preserve_white == false)                                                                     
+//            [0] now is the      \     [0] now is the time for all                                              
+//            [1] time for all          [1] good men to come to the                                              
+//            [2] good men to     \     [2] aid                                                                  
+//            [3] come to the           [3] of their country                                                     
+//            [4] aid                                                                                            
+//            [5] of their country                                                                               
+//                                                                                                               
+//            (with preserve_white == true)                                                                      
+//            [0] now is the      \     [0] now is the time for all                                              
+//            [1] time for all          [1]                                                                      
+//            [2] good men to     \     [2] good men to come to the                                              
+//            [3] come to the           [3]                                                                      
+//            [4] aid                   [4] aid                                                                  
+//            [5] of their country      [5] of their country                                                     
+
+vector<string> joinLines(const vector<string>& lines,
+                         bool preserve_line_count)
+{
+  vector<string> collapsed_lines;
+  for(unsigned int i=0; i<lines.size(); i++) {
+    string line = stripBlankEnds(lines[i]);
+    
+    bool done = false;
+    unsigned int extra_blank_lines = 0;
+    while(!done) {
+      if((strEnds(line, "\\")) &&
+         (!strEnds(line, "\\\\")) && ((i+1) < lines.size())) {
+        line.pop_back();
+        line = line + lines[i+1];
+        if(preserve_line_count)
+          extra_blank_lines++;
+        i++;
+      }
+      else
+        done = true;
+    }
+    collapsed_lines.push_back(line);
+    for(unsigned int j=0; j<extra_blank_lines; j++)
+      collapsed_lines.push_back("");
+
+  }
+  return(collapsed_lines);
+}
+
+
 //----------------------------------------------------------------
 // Procedure: breakLen
 //   Purpose: Take the text in the given vector of strings and for
@@ -2145,7 +2366,7 @@ vector<string> justifyLen(const string& str, unsigned int maxlen)
 vector<string> breakLen(const vector<string>& svector, unsigned int maxlen) 
 {
   vector<string> rvector;
-
+  
   for(unsigned int i=0; i<svector.size(); i++) {
     string line = svector[i];
     bool done = false;
@@ -2161,6 +2382,6 @@ vector<string> breakLen(const vector<string>& svector, unsigned int maxlen)
       }
     }
   }
-
+  
   return(rvector);
 }

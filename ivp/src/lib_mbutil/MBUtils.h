@@ -53,10 +53,12 @@ std::vector<std::string> mergeVectors(std::vector<std::string>,
 std::vector<std::string> removeDuplicates(const std::vector<std::string>&);
 
 bool vectorContains(const std::vector<std::string>&, 
-		    const std::string&);
+		    const std::string&,
+		    bool case_sensitive=true);
 
 std::string augmentSpec(const std::string&, const std::string&, char=',');
 std::string removeWhite(const std::string&);
+std::string removeWhiteNL(const std::string&);
 
 std::string biteString(std::string&, char);
 std::string biteStringX(std::string&, char);
@@ -87,6 +89,8 @@ std::string findReplace(const std::string&, char, char);
 std::string findReplace(const std::string&, const std::string&, 
 			 const std::string&);
 std::string padString(const std::string&, std::string::size_type, bool=true);
+std::vector<std::string> padVector(const std::vector<std::string>&,
+				   bool=true);
 std::string stripComment(const std::string&, const std::string&);
 std::string stripQuotes(const std::string&);
 std::string stripBraces(const std::string&);
@@ -98,6 +102,7 @@ bool isValidIPAddress(const std::string&);
 bool strContains(const std::string&, const std::string&);
 bool strContains(const std::string&, const char);
 bool strContainsWhite(const std::string&);
+bool strBeginsWhite(const std::string&);
 bool strBegins(const std::string&, const std::string&, bool=true);
 bool strEnds(const std::string&, const std::string&, bool=true);
 
@@ -135,12 +140,16 @@ double snapDownToStep(double, double v=1.0);
 
 bool  setBooleanOnString(bool& boolval, std::string str, bool=true);
 bool  setDoubleOnString(double& dval, std::string str);
+bool  setUIntOnString(unsigned int& uint_val, std::string str);
+bool  setIntOnString(int& int_val, std::string str);
 bool  setPosDoubleOnString(double& dval, std::string str);
 bool  setNonNegDoubleOnString(double& dval, std::string str);
 bool  setNonWhiteVarOnString(std::string& svar, std::string str);
 
 bool  okFileToRead(std::string);
 bool  okFileToWrite(std::string);
+
+std::string incIntString(std::string, int=1, bool=false);
 
 void  millipause(int milliseconds);
 
@@ -158,15 +167,9 @@ std::vector<std::string> justifyLen(const std::vector<std::string>&,
 				    unsigned int maxlen);
 std::vector<std::string> justifyLen(const std::string&, unsigned int maxlen);
 
+std::vector<std::string> joinLines(const std::vector<std::string>&,
+				   bool preserve_line_count=false);
+
 std::vector<std::string> breakLen(const std::vector<std::string>&,
 				  unsigned int maxlen);
-
-
 #endif
-
-
-
-
-
-
-
