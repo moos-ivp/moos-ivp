@@ -75,33 +75,35 @@ int main(int argc, char *argv[])
 void showHelpAndExit()
 {
   cout << "Usage: " << endl;
-  cout << "  alogcd file.alog [OPTIONS]                           " << endl;
-  cout << "                                                       " << endl;
-  cout << "Synopsis:                                              " << endl;
-  cout << "  Scan an alog file for collision detection reports.   " << endl;
-  cout << "  Tally the totals and averages, and optionally create " << endl;
-  cout << "  a file holding all the timestamps of events.         " << endl;
-  cout << "                                                       " << endl;
-  cout << "  By default, it scans for events defined by postings  " << endl;
-  cout << "  to the following three MOOS variables:               " << endl;
-  cout << "                                                       " << endl;
-  cout << "  (1) COLLISION                                        " << endl;
-  cout << "  (2) NEAR_MISS                                        " << endl;
-  cout << "  (3) ENCOUNTER                                        " << endl;
-  cout << "                                                       " << endl;
-  cout << "Options:                                               " << endl;
-  cout << "  -h,--help       Displays this help message           " << endl;
-  cout << "  -v,--version    Display current release version      " << endl;
-  cout << "  -t,--terse      Write terse output.                  " << endl;
-  cout << "                                                       " << endl;
-  cout << "Further Notes:                                         " << endl;
-  cout << "  (1) The order of arguments is irrelevant.            " << endl;
-  cout << "  (2) Only first specified .alog file is reported on.  " << endl;
+  cout << "  alogcd file.alog [OPTIONS]                          " << endl;
+  cout << "                                                      " << endl;
+  cout << "Synopsis:                                             " << endl;
+  cout << "  Scan an alog file for collision detection reports.  " << endl;
+  cout << "  Tally totals and averages, and optionally create    " << endl;
+  cout << "  a file holding all the timestamps of events.        " << endl;
+  cout << "                                                      " << endl;
+  cout << "  By default, it scans for events defined by postings " << endl;
+  cout << "  to the following three MOOS variables:              " << endl;
+  cout << "                                                      " << endl;
+  cout << "  (1) COLLISION                                       " << endl;
+  cout << "  (2) NEAR_MISS                                       " << endl;
+  cout << "  (3) ENCOUNTER                                       " << endl;
+  cout << "                                                      " << endl;
+  cout << "Options:                                              " << endl;
+  cout << "  -h,--help       Displays this help message          " << endl;
+  cout << "  -v,--version    Display current release version     " << endl;
+  cout << "  -t,--terse      Write terse output.                 " << endl;
+  cout << "  --tfile=<file>  Write time-stamped events to file.  " << endl;
+  cout << "                                                      " << endl;
+  cout << "Returns:                                              " << endl;
+  cout << "  0 if alog file ok, has encounters, no collisions.   " << endl;
+  cout << "  1 if alog file not ok, unable to open.              " << endl;
+  cout << "  2 if alog ok, but collisions were detected          " << endl;
+  cout << "  3 if alog ok, no collisions or encounters detected  " << endl;
+  cout << "                                                      " << endl;
+  cout << "Further Notes:                                        " << endl;
+  cout << "  (1) The order of arguments is irrelevent.           " << endl;
+  cout << "  (2) Only last specified .alog file is reported on.  " << endl;
   cout << endl;
   exit(0);
 }
-
-
-
-
-
