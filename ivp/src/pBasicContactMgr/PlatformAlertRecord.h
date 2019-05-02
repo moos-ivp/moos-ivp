@@ -37,6 +37,8 @@ class PlatformAlertRecord
   void addAlertID(std::string str);
   void addVehicle(std::string str);
 
+  bool removeVehicle(std::string str);
+  
   bool containsVehicle(std::string contact) const;
   bool containsAlertID(std::string alertid) const;
 

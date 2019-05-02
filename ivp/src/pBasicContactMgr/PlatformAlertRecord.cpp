@@ -78,6 +78,23 @@ void PlatformAlertRecord::addVehicle(string vehicle)
 
 
 //---------------------------------------------------------------
+// Procedure: removeVehicle()
+//   Returns: true if the vehicle name existed prior to removal
+
+bool PlatformAlertRecord::removeVehicle(string vehicle)
+{
+  vehicle = tolower(vehicle);
+
+  // First check to see if the row/vehicle already exists.
+  if(m_par_alerted.count(vehicle) == 0)
+    return(false);
+
+  m_par_alerted.erase(vehicle);
+  return(true);
+}
+
+
+//---------------------------------------------------------------
 // Procedure: containsVehicle
 //      Note: The vehicles names are case insensitive. They are
 //            converted and regarded thereafter all in lowercase.

@@ -52,6 +52,7 @@ class BasicContactMgr : public AppCastingMOOSApp
   bool handleConfigAlert(std::string);
 
   void handleMailNodeReport(std::string);
+  void handleMailReportRequest(std::string);
   void handleMailDisplayRadii(std::string);
   void handleMailAlertRequest(std::string);
   void handleMailResolved(std::string);
@@ -60,16 +61,19 @@ class BasicContactMgr : public AppCastingMOOSApp
   void postSummaries();
   void checkForAlerts();
   void checkForCloseInReports();
+
   void postRadii(bool=true);
   void postOnAlerts(NodeRecord, std::string id);
   void postOffAlerts(NodeRecord, std::string id);
   void postAlert(NodeRecord, VarDataPair);
 
-  void clearOldRetiredContacts();
   bool checkAlertApplies(std::string contact, std::string id);
   bool knownAlert(std::string id) const;
-  void removeOldContact(std::string);
+
   
+  void checkForNewRetiredContacts();
+  void postRangeReports();
+
 
   
  protected: // Alert Getters
@@ -88,6 +92,15 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::vector<VarDataPair> getAlertOnFlags(std::string id) const;
   std::vector<VarDataPair> getAlertOffFlags(std::string id) const;
 
+
+
+
+  std::vector<std::string> getAlertMatchTypes(std::string id) const;
+  std::vector<std::string> getAlertIgnoreTypes(std::string id) const;
+
+  std::vector<std::string> getAlertMatchGroups(std::string id) const;
+  std::vector<std::string> getAlertIgnoreGroups(std::string id) const;
+
  private: // main record of alerts, each keyed on the alert_id
   std::map<std::string, CMAlert> m_map_alerts;
   
@@ -98,15 +111,17 @@ class BasicContactMgr : public AppCastingMOOSApp
   double       m_default_alert_rng_cpa;
   std::string  m_default_alert_rng_color;
   std::string  m_default_alert_rng_cpa_color;
+
+  double       m_reject_range;
   
   // Other configuration parameters
   std::string  m_ownship;
   bool         m_display_radii;
   bool         m_post_closest_range;
   double       m_contact_max_age;
-  double       m_contact_max_age_hist;
   double       m_contacts_recap_interval;
-
+  double       m_range_report_timeout;
+  
   std::string  m_contact_local_coords;
   bool         m_alert_verbose;
   double       m_decay_start;
@@ -115,6 +130,11 @@ class BasicContactMgr : public AppCastingMOOSApp
   double       m_closest_contact_rng_one;
   double       m_closest_contact_rng_two;
 
+  double       m_eval_range_far;
+  double       m_eval_range_near;
+
+  unsigned int m_max_retired_hist;
+  
  protected: // State variables
 
   double m_nav_x;
@@ -124,6 +144,13 @@ class BasicContactMgr : public AppCastingMOOSApp
 
   double m_contacts_recap_posted;
 
+  // Optional requested range reports
+  std::map<std::string, double>      m_map_rep_range;
+  std::map<std::string, double>      m_map_rep_reqtime;
+  std::map<std::string, std::string> m_map_rep_group;
+  std::map<std::string, std::string> m_map_rep_vtype;
+  std::map<std::string, std::string> m_map_rep_contacts;
+  
   // Main Record #2: The Vehicles (contacts) and position info
   std::map<std::string, NodeRecord>   m_map_node_records;
   std::map<std::string, unsigned int> m_map_node_alerts_total;
@@ -133,8 +160,11 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::map<std::string, double>       m_map_node_ranges_extrap;
   std::map<std::string, double>       m_map_node_ranges_cpa;
 
-  // memory of previous status postings: A posting to the MOOS var
-  // is only made when a change is detected between curr and prev.
+  std::string m_closest_name;
+
+  // memory of previous status postings: A posting to the MOOS
+  // var is only made when a change is detected between
+  // curr and prev.
   std::string m_prev_contacts_list;
   std::string m_prev_contacts_retired;
   std::string m_prev_contacts_alerted;
@@ -145,11 +175,14 @@ class BasicContactMgr : public AppCastingMOOSApp
 
   double  m_prev_closest_range;
   double  m_prev_closest_contact_val;
-  
-  // A matrix: vehicle_name X alert_id. Cell val is Boolean indicating
-  // if the alert is active or resolved, for the given vehicle.
+
+  // A matrix: vehicle_name X alert_id. Cell val is Boolean
+  // indicating if the alert is active or resolved, for
+  // the given vehicle.
   PlatformAlertRecord  m_par;
 
+  std::list<std::string> m_contacts_retired;
+ 
 private:
   bool         m_use_geodesy;
   CMOOSGeodesy m_geodesy;

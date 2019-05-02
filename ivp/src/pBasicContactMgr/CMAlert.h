@@ -42,6 +42,12 @@ class CMAlert
   bool setAlertRegion(std::string);
   bool addAlertOnFlag(std::string);
   bool addAlertOffFlag(std::string);
+
+  bool addMatchType(std::string);
+  bool addIgnoreType(std::string);
+  
+  bool addMatchGroup(std::string);
+  bool addIgnoreGroup(std::string);
   
   bool setAlertRangeColor(std::string);
   bool setAlertRangeFarColor(std::string);
@@ -58,6 +64,12 @@ class CMAlert
   std::vector<VarDataPair> getAlertOnFlags() const;
   std::vector<VarDataPair> getAlertOffFlags() const;
 
+  std::vector<std::string> getMatchTypes() const {return(m_match_type);}
+  std::vector<std::string> getIgnoreTypes() const {return(m_ignore_type);}
+  
+  std::vector<std::string> getMatchGroups() const {return(m_match_group);}
+  std::vector<std::string> getIgnoreGroups() const {return(m_ignore_group);}
+  
   std::string getAlertRangeColor() const   {return(m_rng_color);}
   std::string getAlertRangeFarColor() const {return(m_rng_far_color);}
 
@@ -66,11 +78,18 @@ class CMAlert
   double      m_range_far;
   XYPolygon   m_region;
 
+  std::vector<std::string> m_match_type;
+  std::vector<std::string> m_ignore_type;
+  
+  std::vector<std::string> m_match_group;
+  std::vector<std::string> m_ignore_group;
+  
   std::vector<VarDataPair> m_on_flags;
   std::vector<VarDataPair> m_off_flags;
   
   std::string m_rng_color;
-  std::string m_rng_far_color;
+  std::string m_rng_far_color;  
+
 };
 
 #endif 

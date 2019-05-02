@@ -38,23 +38,33 @@ CMAlert::CMAlert()
 
 //---------------------------------------------------------------
 // Procedure: setAlertRange
+//      Note: We ensure that m_range_far is always greater than or
+//            equal to m_range. 
 
 bool CMAlert::setAlertRange(double dval)
 {
   if(dval < 0)
     return(false);
   m_range = dval;
+  if(m_range_far < m_range)
+    m_range_far = m_range;
+
   return(true);
 }
 
 //---------------------------------------------------------------
 // Procedure: setAlertRangeFar
+//      Note: We ensure that m_range_far is always greater than or
+//            equal to m_range. 
 
 bool CMAlert::setAlertRangeFar(double dval)
 {
   if(dval < 0)
     return(false);
   m_range_far = dval;
+  if(m_range > m_range_far)
+    m_range = m_range_far;
+
   return(true);
 }
 
@@ -123,6 +133,92 @@ bool CMAlert::addAlertOffFlag(string str)
   VarDataPair pair(lft, rgt, "auto");
   m_off_flags.push_back(pair);
   return(true);    
+}
+
+//---------------------------------------------------------------
+// Procedure: addMatchType()
+//            If match types are configured with this alert, then
+//            a contact, if it has a type, its type must be one of
+//            these match types.
+//  Examples: "kayak", "mokai,kayak,uuv"
+
+bool CMAlert::addMatchType(string str)
+{
+  bool all_ok = true;
+  
+  vector<string> svector = parseString(str, ':');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string match_type = stripBlankEnds(svector[i]);
+    if(!vectorContains(m_match_type, match_type))
+      m_match_type.push_back(match_type);
+    else
+      all_ok = false;
+  }
+  return(all_ok);    
+}
+
+//---------------------------------------------------------------
+// Procedure: addIgnoreType()
+//            If ignore types are configured with this alert, then
+//            a contact, if it has a type, its type must NOT be 
+//            one of these ignore types.
+//  Examples: "kayak", "mokai,kayak,uuv"
+
+bool CMAlert::addIgnoreType(string str)
+{
+  bool all_ok = true;
+  
+  vector<string> svector = parseString(str, ':');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string ignore_type = stripBlankEnds(svector[i]);
+    if(!vectorContains(m_ignore_type, ignore_type))
+      m_ignore_type.push_back(ignore_type);
+    else
+      all_ok = false;
+  }
+  return(all_ok);    
+}
+
+//---------------------------------------------------------------
+// Procedure: addMatchGroup()
+//            If match groups are configured with this alert, then
+//            a contact, if it has a group, its group must be one of
+//            these match groups.
+
+bool CMAlert::addMatchGroup(string str)
+{
+  bool all_ok = true;
+  
+  vector<string> svector = parseString(str, ':');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string match_group = stripBlankEnds(svector[i]);
+    if(!vectorContains(m_match_group, match_group))
+      m_match_group.push_back(match_group);
+    else
+      all_ok = false;
+  }
+  return(all_ok);    
+}
+
+//---------------------------------------------------------------
+// Procedure: addIgnoreGroup()
+//            If ignore groups are configured with this alert, then
+//            a contact, if it has a group, its group must NOT be 
+//            one of these ignore groups.
+
+bool CMAlert::addIgnoreGroup(string str)
+{
+  bool all_ok = true;
+  
+  vector<string> svector = parseString(str, ':');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string ignore_group = stripBlankEnds(svector[i]);
+    if(!vectorContains(m_ignore_group, ignore_group))
+      m_ignore_group.push_back(ignore_group);
+    else
+      all_ok = false;
+  }
+  return(all_ok);    
 }
 
 //---------------------------------------------------------------
