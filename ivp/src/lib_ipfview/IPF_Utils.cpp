@@ -107,7 +107,7 @@ QuadSet buildQuadSetDense2DFromIPF(IvPFunction *ipf)
     sbox.setPTS(x_ix, i, i);
     for(unsigned int j=0; j<y_pts; j++) {
       sbox.setPTS(y_ix, j, j);
-      //double pval = ipf->getPDMap()->evalPoint(&sbox);
+      // double pval = ipf->getPDMap()->evalPoint(&sbox); mikerb
       double pval = ipf->getPDMap()->evalPoint(&sbox) * ipf->getPWT();
       ivector.push_back(pval);
     }
