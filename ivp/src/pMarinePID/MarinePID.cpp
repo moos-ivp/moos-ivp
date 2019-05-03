@@ -82,6 +82,8 @@ MarinePID::MarinePID()
   m_max_sat_hdg_debug = false;
   m_max_sat_spd_debug = false;
   m_max_sat_dep_debug = false;
+
+  m_ignore_nav_yaw = false;
 }
 
 //--------------------------------------------------------------------
