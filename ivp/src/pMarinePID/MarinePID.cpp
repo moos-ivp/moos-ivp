@@ -129,7 +129,7 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 	else
 	  m_verbose = "terse";
       }
-      else if(key == "NAV_YAW")
+      else if(!m_ignore_nav_yaw && (key == "NAV_YAW"))
 	m_current_heading = angle360(-MOOSRad2Deg(msg.m_dfVal));
       else if(key == "NAV_HEADING")
 	m_current_heading = angle360(msg.m_dfVal);
@@ -324,7 +324,6 @@ bool MarinePID::OnConnectToServer()
 void MarinePID::registerVariables()
 {
   Register("NAV_HEADING", 0);
-  Register("NAV_YAW", 0);
   Register("NAV_SPEED", 0);
   Register("NAV_DEPTH", 0);
   Register("NAV_PITCH", 0);
@@ -335,6 +334,11 @@ void MarinePID::registerVariables()
   Register("SPEED_FACTOR", 0);
   Register("MOOS_MANUAL_OVERIDE", 0);
   Register("MOOS_MANUAL_OVERRIDE", 0);
+
+  if(m_ignore_nav_yaw)
+    UnRegister("NAV_YAW");
+  else
+    Register("NAV_YAW", 0);
 }
 
 //--------------------------------------------------------
@@ -374,6 +378,8 @@ bool MarinePID::OnStartUp()
       setBooleanOnString(m_max_sat_spd_debug, value);
     else if(param == "MAX_SAT_DEP_DEBUG") 
       setBooleanOnString(m_max_sat_dep_debug, value);
+    else if(param == "IGNORE_NAV_YAW") 
+      setBooleanOnString(m_ignore_nav_yaw, value);
     //else if(param == "OK_SKEW") 
     //  handled = handleConfigSkewAny(value);
     else if(param == "VERBOSE") {

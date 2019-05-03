@@ -256,7 +256,6 @@ bool ScalarPID::Run(double dfeIn, double dfErrorTime, double &dfOut)
       m_debug_str += ", m_dfOut(1)" + doubleToStringX(m_dfOut);
     m_max_sat = true;
   }
-  m_max_sat = true;
   
   //save old value..
   m_dfeOld    = m_dfe;
