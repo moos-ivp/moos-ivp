@@ -286,7 +286,6 @@ if [ "${OUT_IVP_APPS_ONLY}" == "yes" ]; then
 fi
 
 
-
 #===============================================================
 # Part 6: Handle when collective output is requested.
 #===============================================================
@@ -296,7 +295,8 @@ if [ "$TERSE" == "false" ]; then
     echo "      Missing IvP Libs: " $MISSING_IVP_LIBS
     echo "      Missing IvP Apps: " $MISSING_IVP_APPS
 fi
-    
+
+RESULT=0
 if [ "$MISSING_ALL" == "" ]; then
     echo "PASS";
 else
@@ -304,9 +304,10 @@ else
 	MISSING_ALL="${MISSING_ALL%?}";
     fi
     echo "FAIL{"$MISSING_ALL"}";
+    RESULT=1
 fi
 
-
-
 cd "${INVOC_ABS_DIR}"
+
+exit $RESULT
 

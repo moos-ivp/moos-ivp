@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 CLEAN="no"
 BUILD_BOT_CODE_ONLY="OFF"
