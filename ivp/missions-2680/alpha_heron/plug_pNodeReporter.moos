@@ -1,0 +1,9 @@
+//---------------------------------------
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 2
+  CommsTick   = 2
+
+  vessel_type = kayak
+  platform_color = blue
+}

@@ -1,0 +1,43 @@
+Author: Michael "Misha" Novitzky
+Date: April 25th 2017
+File: README
+
+This mission is the union of the Heron M300 alpha mission and that of using a PABLO box on an autonomous kayak.  The Heron M300s use just the launch_vehicle.sh script with a vehicle name flag.  However, the Kayak requires that the operator start the front seat as well as the back seat.  It is assumed that this folder is on both the front and backseat at the locations described below.
+
+
+Steps to run the kayak Nostromo are:
+
+Step 1: log onto the kayak front seat:
+$ ssh mit@192.168.1.103
+
+pword is hovergroup
+
+Step 2: move to the directory with the front seat mission
+
+/hovergroup/moos-ivp-2680/missions/lab
+
+Step 3: modify the launch script to include the proper PABLO IP address
+$ emacs launch_kayak_front_seat.sh
+
+update the variable called BACKSEAT_IP
+
+Step 4: launch the script
+$ ./launch_kayak_front_seat.sh --nostromo
+
+Step 5: in a new window, log onto the PABLO box
+$ ssh student2680@192.168.1.242
+
+pword is waterbots
+
+Step 6: move to the directory with the backseat mission
+
+/home/student2680/moos-ivp-aquaticus/missions/alpha_kayak
+
+Step 7: update the Shore IP in the launch script
+$ emacs launch_vehicle.sh
+
+update the variable SHORE_IP
+
+Step 8: run the launch script
+$ ./launch_vehicle.sh -n
+
