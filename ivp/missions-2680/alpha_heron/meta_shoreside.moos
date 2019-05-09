@@ -62,19 +62,13 @@ ProcessConfig = uFldShoreBroker
   AppTick       = 1
   CommsTick     = 1
 
-  qbridge  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
-  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID, CHASE
-  qbridge  = TAGGED
-  qbridge  = HAS_FLAG
-  qbridge  = ACTION, AGGRESSIVE
+  qbridge  = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
+  qbridge  = STATION_KEEP
   qbridge  = SAY_MOOS
-
-  bridge   = src=IN_OWN_TERRITORY
-  bridge   = src=IN_ENEMY_TERRITORY
 
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
-  bridge   = src=FLAG_SUMMARY
 }
 
 
@@ -141,6 +135,12 @@ ProcessConfig = pMarineViewer
 
   button_two   = RETURN  # RETURN_ALL=true
   button_two   = RETURN  # STATION_KEEP_ALL=false
+
+  button_three = RETURN   # RETURN_ALL=true
+  button_three = RETURN   # STATION_KEEP_ALL=false
+
+  button_four  = STATION  # STATION_KEEP_ALL=true
+
 }
 
 //--------------------------------------------------------
@@ -161,10 +161,3 @@ ProcessConfig = uProcessWatch
   summary_wait = 10
 }
 
-ProcessConfig = uXMS
-{
-  AppTick   = 4
-  CommsTick = 4
-
-  var    = NAV_HEADING, NAV_HEADING_CPNVG
-}

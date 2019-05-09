@@ -31,7 +31,7 @@ for ARGI; do
 	echo "  --just_make, -j    \n" 
 	echo "  --help, -h         \n"
 	exit 0
-    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
+    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = "" ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
         JUST_MAKE="yes"
