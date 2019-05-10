@@ -63,7 +63,7 @@ Behavior=BHV_Waypoint
   perpetual  = true
   updates    = RETURN_UPDATE
   endflag    = RETURN = false
-  endflag    = DEPLOY = false
+  endflag    = STATION_KEEP = true
   endflag    = MISSION = complete
 
            speed = 2.0
@@ -93,6 +93,8 @@ Behavior = BHV_StationKeep
   name         = station-keep
   pwt          = 100
   condition    = MODE==STATION-KEEPING
+  activeflag   = OPREGION=false
+  inactiveflag = OPREGION=true
 
      center_activate = true
         inner_radius = 5

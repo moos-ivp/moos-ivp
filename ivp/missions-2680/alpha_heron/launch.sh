@@ -21,16 +21,14 @@ V11="no"
 V12="no"
 TIME_WARP=""
 JUST_MAKE=""
+HELP="no"
 
 #-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
+#  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "%s [SWITCHES] [time_warp]   \n" $0
-	echo "  --just_make, -j    \n" 
-	echo "  --help, -h         \n"
-	exit 0
+	HELP="yes"
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = "" ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
@@ -54,6 +52,31 @@ for ARGI; do
     fi
 done
 
+#---------------------------------------------------------
+#  Part 3: Produce the help message if it was requested
+#---------------------------------------------------------
+if [ ${HELP} = "yes" ] ; then
+    echo "$0 [SWITCHES]"
+    echo "  --help, -h         Show this help message            "        
+    echo "  --just_make, -j    Just make targ files, dont launch "
+    echo "   -v1, or -a        Abe vehicle           "
+    echo "   -v2, or -b        Ben vehicle           "
+    echo "   -v3, or -c        Cal vehicle           "
+    echo "   -v4, or -d        Deb vehicle           "
+    echo "   -v5, or -e        Evan vehicle          "
+    echo "   -v6, or -f        Felix vehicle         "
+    echo "   -v7, or -g        Gus vehicle           "
+    echo "   -v8, or -H        Hal vehicle           "
+    echo "   -v9, or -i        Ida vehicle           "
+    echo "  -v10, or -J        Jing vehicle          "
+    echo "  -v11, or -k        Kirk vehicle          "
+    echo "  -v12, or -l        Luke vehicle          "
+    exit 0;
+fi
+
+#-------------------------------------------------------
+#  Part 4: Launch any and all vehicle communities
+#-------------------------------------------------------
 COMMON_ARGS="--sim --noui $TIME_WARP $JUST_MAKE --shoreip=localhost"
 
 if [ "${V01}" = "yes" ]; then ./launch_vehicle.sh -v1  $COMMON_ARGS; fi
@@ -69,6 +92,9 @@ if [ "${V10}" = "yes" ]; then ./launch_vehicle.sh -v10 $COMMON_ARGS; fi
 if [ "${V10}" = "yes" ]; then ./launch_vehicle.sh -v12 $COMMON_ARGS; fi
 if [ "${V10}" = "yes" ]; then ./launch_vehicle.sh -v13 $COMMON_ARGS; fi
 
+#-------------------------------------------------------
+#  Part 5: Launch the shoreside MOOS community
+#-------------------------------------------------------
 echo "Launching Shoreside...."
 ./launch_shoreside.sh $TIME_WARP $JUST_MAKE
 

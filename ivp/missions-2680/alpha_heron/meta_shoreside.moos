@@ -110,7 +110,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  //TIFF_FILE            = forrest19.tif
+  //TIFF_FILE          = forrest19.tif
   TIFF_FILE            = MIT_SP.tif
   set_pan_x            = 129
   set_pan_y            = -364
@@ -133,13 +133,13 @@ ProcessConfig = pMarineViewer
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false
   button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
 
-  button_two   = RETURN  # RETURN_ALL=true
-  button_two   = RETURN  # STATION_KEEP_ALL=false
+  button_two   = RETURN  # MOOS_MANUAL_OVERRIDE=false
+  button_two   = RETURN_ALL=true # STATION_KEEP_ALL=false
 
-  button_three = RETURN   # RETURN_ALL=true
-  button_three = RETURN   # STATION_KEEP_ALL=false
+  button_three = All-Stop # MOOS_MANUAL_OVERRIDE_ALL=true
 
   button_four  = STATION  # STATION_KEEP_ALL=true
+  button_four  = MOOS_MANUAL_OVERRIDE=false
 
 }
 
