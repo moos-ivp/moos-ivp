@@ -68,6 +68,13 @@ BFactoryDynamic::~BFactoryDynamic()
 
 bool BFactoryDynamic::loadDirectory(string dirname) 
 {
+  // If the dirname does not end in a '/' character, add one. If we dont
+  // do this, the same directory may be regarded as different if it is
+  // loaded once with the trailing '/', and once without. This robustness
+  // bug was discovered in May 2019, during 2.680, helping K.Jung.
+  if(!strEnds(dirname, "/"))
+    dirname = dirname + "/";
+  
   if(m_loaded_dirs.count(dirname)) {
     cerr << "  Directory " << dirname << " already loaded. Skipped."<< endl;
     return(true);
