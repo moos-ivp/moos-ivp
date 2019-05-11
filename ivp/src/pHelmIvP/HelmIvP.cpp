@@ -25,6 +25,7 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
+#include <unistd.h>
 #include <iterator>
 #include <iostream>
 #include <cstdlib>
@@ -1108,6 +1109,9 @@ void HelmIvP::checkForTakeOver()
 bool HelmIvP::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
+
+  Notify("PHELMIVP_PID", getpid());
+    
   m_helm_start_time = m_curr_time;
   if(!m_info_buffer) {
     m_info_buffer = new InfoBuffer;
