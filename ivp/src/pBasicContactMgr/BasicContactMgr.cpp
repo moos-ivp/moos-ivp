@@ -704,12 +704,15 @@ bool BasicContactMgr::handleConfigAlert(string alert_str)
 
 //---------------------------------------------------------
 // Procedure: postRangeReports()
+//   Purpose: 
 
 void BasicContactMgr::postRangeReports()
 {
-  // Part 1: Check timestamps for all reports and see if they should
-  // be retired and deleted from memory. Build a list of reports to
-  // retire.
+  // Part 1: Check timestamps for all report requests and see if they
+  // should be retired and deleted from memory. Build a list of
+  // reports to retire. Recall that requested customized range reports
+  // must be periodically refreshed with a new request as a guard
+  // against unbounded memory and cpu growth.
   vector<string> to_retire;
   map<string, double>::iterator p;
   for(p=m_map_rep_reqtime.begin(); p!=m_map_rep_reqtime.end(); p++) {
@@ -740,6 +743,7 @@ void BasicContactMgr::postRangeReports()
 
     // Part 3A: Get the list of contacts for this report
     string contacts;   
+    vector<string> vcontacts;
     map<string, double>::iterator q;
     for(q=m_map_node_ranges_extrap.begin();
 	q!=m_map_node_ranges_extrap.end(); q++) {
@@ -768,10 +772,10 @@ void BasicContactMgr::postRangeReports()
 	range_sat = true;
 
       if(group_match && vtype_match && range_sat) {
-      //if(group_match && range_sat) {
 	if(contacts != "")
 	  contacts += ",";
 	contacts += vname;
+	vcontacts.push_back(vname);
       }
     }
     // Part 3B: If the report is different post it!
