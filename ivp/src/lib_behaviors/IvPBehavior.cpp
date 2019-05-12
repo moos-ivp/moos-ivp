@@ -511,6 +511,20 @@ void IvPBehavior::postWMessage(string g_msg)
 }
 
 //-----------------------------------------------------------
+// Procedure: postRetractWMessage
+
+void IvPBehavior::postRetractWMessage(string g_msg)
+{
+  if(g_msg == "")
+    return;
+
+  if(m_descriptor != "")
+    g_msg = (m_descriptor + ": " + g_msg);
+  
+  postMessage("BHV_WARNING", g_msg, "retract");
+}
+
+//-----------------------------------------------------------
 // Procedure: statusInfoAdd
 
 void IvPBehavior::statusInfoAdd(string param, string value)

@@ -99,6 +99,7 @@ public:
   void    postRepeatableMessage(std::string, std::string);
   void    postEMessage(std::string);
   void    postWMessage(std::string);
+  void    postRetractWMessage(std::string);
   void    postFlags(const std::string&, bool repeat=false);
 
   void    postDurationStatus();

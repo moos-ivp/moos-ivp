@@ -52,6 +52,8 @@ BHV_OpRegion::BHV_OpRegion(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_breached_altitude_flags_posted = false;
   m_breached_depth_flags_posted = false;
 
+  m_soft_poly_breach = false;
+  m_soft_poly_breach_posted = false;
   // Be explicit about this variable is empty string by default
   m_time_remaining_var = "";
 
@@ -105,6 +107,7 @@ BHV_OpRegion::BHV_OpRegion(IvPDomain gdomain) : IvPBehavior(gdomain)
   // Declare the variables we will need from the info_buffer
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
   addInfoVars("NAV_SPEED, NAV_DEPTH, NAV_ALTITUDE");
+  addInfoVars("MOOS_MANUAL_OVERRIDE");
 }
 
 //-----------------------------------------------------------
@@ -179,6 +182,9 @@ bool BHV_OpRegion::setParam(string param, string val)
     VarDataPair pair(varname, varval, "auto");
     m_breached_depth_flags.push_back(pair);
     return(true);
+  }
+  else if(param == "soft_poly_breach") {
+    return(setBooleanOnString(m_soft_poly_breach, val));
   }
   else if(param == "min_altitude") {
     double dval = atof(val.c_str());
@@ -259,17 +265,22 @@ void BHV_OpRegion::onIdleState()
 
 IvPFunction *BHV_OpRegion::onRunState() 
 {
+  checkForReset();
+  setTimeStamps();
+  checkForSoftPolyReset();
+  
   // Each of the below calls will check their critical conditions
   // and post an error message if a violation is detected. The call
   // to postEMessage() also sets state_ok = false;
-  checkForReset();
-  setTimeStamps();
   polygonVerify();
   postPolyStatus();
   depthVerify();
   altitudeVerify();
   timeoutVerify();
   postTimeRemaining();
+
+  postMessage("SECS_IN_POLY", m_secs_in_poly);
+
   
   postViewablePolygon();
   return(0);
@@ -360,15 +371,26 @@ void BHV_OpRegion::polygonVerify()
       return;
 
 
-  // All verification cases failed. Post an error message and
-  // return verification = false;
-  string emsg = "BHV_OpRegion Polygon containment failure: ";
-  emsg += " x=" + doubleToString(osX,1);
-  emsg += " y=" + doubleToString(osY,1);
-  if(!m_breached_poly_flags_posted) {
+  // All verification cases failed. Handle the polygon breach.
+  // Regardless of soft breach mode or not, post the breach flags
+  if(!m_breached_poly_flags_posted)
     postBreachFlags("poly");
+
+  if(m_soft_poly_breach) {
+    postRepeatableMessage("MOOS_MANUAL_OVERRIDE", "true");
+    postWMessage("Soft polygon containment breach");
+    m_soft_poly_breach_posted = true;
+    m_breached_poly_flags_posted = false;
+    m_secs_in_poly = 0;
+    m_previously_in_poly = false;
+    m_poly_entry_made = false;
   }
-  postEMessage(emsg);
+  else {
+    string emsg = "BHV_OpRegion Polygon containment failure: ";
+    emsg += " x=" + doubleToString(osX,1);
+    emsg += " y=" + doubleToString(osY,1);
+    postEMessage(emsg);
+  }
 }
 
 //-----------------------------------------------------------
@@ -646,6 +668,33 @@ void BHV_OpRegion::postErasablePolygon()
   string poly_spec = poly_duplicate.get_spec();
   postMessage("VIEW_POLYGON", poly_spec);
 }
+
+//-----------------------------------------------------------
+// Procedure: checkForSoftPolyReset()
+
+void BHV_OpRegion::checkForSoftPolyReset()
+{
+  // If soft_poly_breach is not even being used, just return
+  if(!m_soft_poly_breach || !m_soft_poly_breach_posted)
+    return;
+
+  // If a soft_poly_breach is not currently in play
+  if(!m_soft_poly_breach || !m_soft_poly_breach_posted)
+    return;
+
+  // Check value of MOOS_MANUAL_OVERRIDE. If it has been set to
+  // false, then retract the posted Run Warning
+  bool result;
+  string sval = getBufferStringVal("MOOS_MANUAL_OVERRIDE", result);
+  if(!result)
+    return;
+
+  if(tolower(sval) == "false") {
+    postRetractWMessage("Soft polygon containment breach");
+    m_soft_poly_breach_posted = false;
+  }
+}
+
 
 //-----------------------------------------------------------
 // Procedure: checkForReset()

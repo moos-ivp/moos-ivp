@@ -47,6 +47,7 @@ class BHV_OpRegion : public IvPBehavior {
   void      timeoutVerify();
   void      setTimeStamps();
   void      checkForReset();
+  void      checkForSoftPolyReset();
   void      handleVisualHint(std::string);
   void      postViewablePolygon();
   void      postErasablePolygon();
@@ -66,6 +67,9 @@ class BHV_OpRegion : public IvPBehavior {
   // Allow for possible reset once poly has been breached
   std::string m_reset_var;
 
+  // Optional soft polygon breach
+  bool m_soft_poly_breach;
+  
   // Allow for possible posting of time_remaining
   std::string m_time_remaining_var;
 
@@ -104,6 +108,10 @@ class BHV_OpRegion : public IvPBehavior {
 
   bool      m_first_time;
   bool      m_previously_in_poly;
+
+  // Keep track of when soft poly breach posted so later the 
+  // behavior warning may be retracted.
+  bool      m_soft_poly_breach_posted;
 };
 #endif
 

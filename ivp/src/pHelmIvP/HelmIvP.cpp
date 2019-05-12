@@ -239,6 +239,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	  helmStatusUpdate();
 	}
       }
+      updateInfoBuffer(msg);
     }
     else if(moosvar == "IVPHELM_STATE") {
       m_init_vars_ready = true;
@@ -545,8 +546,13 @@ void HelmIvP::postBehaviorMessages()
 	key_change = detectChangeOnKey(mkey, sdata);
  
       // Include warnings in this application's appcast
-      if(var == "BHV_WARNING")
-	reportRunWarning("BHV_WARNING: " + sdata);
+      if(var == "BHV_WARNING") {
+	//if(mkey != "retract")
+	if(!strEnds(mkey, "retract"))
+	  reportRunWarning("BHV_WARNING: " + sdata);
+	else 
+	  retractRunWarning("BHV_WARNING: " + sdata);
+      }
       else if(var == "BHV_ERROR")
 	reportRunWarning("BHV_ERROR: " + sdata);
 
