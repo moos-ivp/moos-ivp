@@ -8,6 +8,7 @@ ProcessConfig = uFldNodeBroker
 
   try_shore_host = pshare_route=$(SHORE_IPADDR):$(SHORE_PSHARE)
 
+  bridge = src=SECS_IN_POLY
   bridge = src=VIEW_POLYGON
   bridge = src=VIEW_POINT
   bridge = src=VIEW_SEGLIST

@@ -80,7 +80,13 @@ Behavior = BHV_OpRegion
   condition  = MODE==ACTIVE
   condition  = OPREGION=true
  
-             polygon = pts={-35,-23:-8,-86:102,-38:74,26}
+
+	   // use this poly for testing polygon breach	   
+           //  polygon = pts={-35,-23 : -22,-53 : 86,-3   : 74,26}
+
+
+             polygon = pts={-35,-23 : -8,-86 : 102,-38 : 74,26}
+    soft_poly_breach = true
   trigger_entry_time = 1
   trigger_exit_time  = 1
         visual_hints = edge_size=1, vertex_size=2

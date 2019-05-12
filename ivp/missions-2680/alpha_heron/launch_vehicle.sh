@@ -122,7 +122,7 @@ nsplug meta_vehicle.moos targ_${VNAME}.moos -f -i              \
        WARP=$TIME_WARP             VNAME=$VNAME                \
        BOT_PSHARE=$BOT_PSHARE      SHORE_PSHARE=$SHORE_PSHARE  \
        BOT_MOOSDB=$BOT_MOOSDB      SHORE_IPADDR=$SHORE_IPADDR  \
-       START_POS=$START_POS        HOSTIP_FORCE="localhost"    \
+       START_POS=$STARTPOS        HOSTIP_FORCE="localhost"    \
        M200_IP=$M200_IP            SIM=$SIM          
 
 nsplug meta_vehicle.bhv targ_${VNAME}.bhv -f -i \

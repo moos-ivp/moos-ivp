@@ -7,18 +7,10 @@
 #---------------------------------------------------------
 #  Part 1: Initialize configurable variables with defaults
 #---------------------------------------------------------
-V01="no"
-V02="no"
-V03="no"
-V04="no"
-V05="no"
-V06="no"
-V07="no"
-V08="no"
-V09="no"
-V10="no"
-V11="no"
-V12="no"
+V01="no"  V02="no"  V03="no"   V04="no"
+V05="no"  V06="no"  V07="no"   V08="no"
+V09="no"  V10="no"  V11="no"   V12="no"
+
 TIME_WARP=""
 JUST_MAKE=""
 HELP="no"
@@ -51,6 +43,14 @@ for ARGI; do
         exit 1
     fi
 done
+
+
+if [ "${V01}"="no" ] &&  [ "${V02}"="no" ] &&  [ "${V03}"="no" ] &&
+   [ "${V04}"="no" ] &&  [ "${V05}"="no" ] &&  [ "${V06}"="no" ] &&
+   [ "${V07}"="no" ] &&  [ "${V08}"="no" ] &&  [ "${V09}"="no" ] &&
+   [ "${V10}"="no" ] &&  [ "${V11}"="no" ] &&  [ "${V12}"="no" ] ; then
+    V01="yes"
+fi
 
 #---------------------------------------------------------
 #  Part 3: Produce the help message if it was requested
