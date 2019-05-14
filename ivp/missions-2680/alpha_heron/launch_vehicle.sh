@@ -54,7 +54,8 @@ for ARGI; do
     elif [ "${ARGI}" = "-v11" -o "${ARGI}" = "-k" ]; then INDEX=11
     elif [ "${ARGI}" = "-v12" -o "${ARGI}" = "-l" ]; then INDEX=12
     else
-        echo "Bad arg:" $ARGI "Run with -h for help. Exiting (1)."
+        echo "Bad arg:" $ARGI "Run with -h for help."
+        echo "The launch_vehicle.sh script is exiting with (1)."
         exit 1
     fi
 done

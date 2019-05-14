@@ -22,7 +22,18 @@ Processconfig = ANTLER
   Run = pShare          @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
 
+}
+
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript  
+{
+        event = var = HEARTBEAT, val=true, time=1
+   reset_time = all-posted
+    reset_max = nolimit
 }
 
 //---------------------------------------------------------
@@ -36,7 +47,7 @@ ProcessConfig = pShare
   input = route =  localhost:$(SHORE_PSHARE)
 }
 
-//--------------------------------------------------
+//--------------------------------------------------------
 // ufldnodecomms Configuration Block
 
 ProcessConfig = uFldNodeComms
@@ -55,8 +66,9 @@ ProcessConfig = uFldNodeComms
 }
 
 
-//--------------------------------------------------
+//--------------------------------------------------------
 // uFldShoreBroker Configuration Block
+
 ProcessConfig = uFldShoreBroker
 {
   AppTick       = 1
@@ -67,12 +79,15 @@ ProcessConfig = uFldShoreBroker
   qbridge  = STATION_KEEP
   qbridge  = SAY_MOOS
 
+  bridge   = src=HEARTBEAT
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
 }
 
 
-//--------------------------------------------------
+//--------------------------------------------------------
+// pHostInfo Configuration Block
+
 ProcessConfig = pHostInfo
 {
   AppTick     = 2
@@ -81,7 +96,7 @@ ProcessConfig = pHostInfo
 //  DEFAULT_HOSTIP = localhost
 }
 
-//--------------------------------------------------
+//--------------------------------------------------------
 // pLogger Configuration Block
 
 ProcessConfig = pLogger
@@ -105,6 +120,8 @@ ProcessConfig = pLogger
 }
 
 //--------------------------------------------------------
+// pMarineViewer Configuration Block
+
 ProcessConfig = pMarineViewer
 {
   AppTick    = 4
@@ -116,7 +133,7 @@ ProcessConfig = pMarineViewer
   set_pan_y            = -364
   zoom                 = 1.6
   vehicles_shape_scale = 1.1
-  vehicles_name_mode   = names
+  vehicles_name_mode   = names+shortmode
 
   circle_viewable_all = true
 

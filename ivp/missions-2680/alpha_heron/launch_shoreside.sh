@@ -34,7 +34,8 @@ for ARGI; do
     elif [ "${ARGI:0:13}" = "--shoreps=" ] ; then
         SHORE_PSHARE="${ARGI#--shoreps=*}"
     else
-        echo "Bad arg:" $ARGI "Run with -h for help. Exiting (1)."
+        echo "Bad arg:" $ARGI "Run with -h for help."
+        echo "The launch_shoreside.sh script is exiting with (1)."
         exit 1
     fi
 done
@@ -45,7 +46,7 @@ done
 #    Note: Undef macros will be aletered to user with nsplug -i flag
 #---------------------------------------------------------
 nsplug meta_shoreside.moos targ_shoreside.moos -i -f WARP=$TIME_WARP \
-       SHORE_PSHARE=$SHORE_PSHARE  SHORE_MOOSDB=$SHORE_MOOSDB         \
+       SHORE_PSHARE=$SHORE_PSHARE  SHORE_MOOSDB=$SHORE_MOOSDB        \
        SHORE_IPADDR=$SHORE_IPADDR  
 
 #---------------------------------------------------------
