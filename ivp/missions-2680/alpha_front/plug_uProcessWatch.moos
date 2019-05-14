@@ -1,0 +1,28 @@
+//--------------------------------------------------------
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  summary_wait  = 12
+
+  allow_retractions = true
+
+  watch_all = true // default is true
+
+  nowatch = uMAC*
+  nowatch = uXMS*
+  nowatch = uPokeDB*
+
+  watch   = pNodeReporter
+  watch   = pHelmIvP
+  watch   = pMarinePID
+  watch   = pShare
+
+#ifdef SIM true
+  watch   = uSimMarine
+#else
+  watch   = iM200
+#endif
+
+}
