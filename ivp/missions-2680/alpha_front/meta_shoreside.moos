@@ -33,6 +33,8 @@ Processconfig = ANTLER
    #include plug_uFldCTDSensor2.moos
 #elseifdef CTD three
    #include plug_uFldCTDSensor3.moos
+#elseifdef CTD four
+   #include plug_uFldCTDSensor4.moos
 #else
    #include plug_uFldCTDSensor.moos
 #endif

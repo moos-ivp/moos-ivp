@@ -34,6 +34,8 @@ for ARGI; do
         CTD="two"
     elif [ "${ARGI}" = "-c3" ] ; then
         CTD="three"
+    elif [ "${ARGI}" = "-c4" ] ; then
+        CTD="four"
     elif [ "${ARGI:0:11}" = "--shoreip=" ] ; then
         SHORE_IPADDR="${ARGI#--shoreip=*}"
     elif [ "${ARGI:0:13}" = "--shoreps=" ] ; then
