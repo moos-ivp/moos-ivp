@@ -114,7 +114,7 @@ ProcessConfig = uFldShoreBroker
   qbridge  = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE
   qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
   qbridge  = STATION_KEEP
-  qbridge  = SAY_MOOS
+  qbridge  = SAY_MOOS, UCTD_MSMNT_REPORT
 
   bridge   = src=HEARTBEAT
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
