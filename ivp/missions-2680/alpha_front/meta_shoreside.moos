@@ -29,7 +29,13 @@ Processconfig = ANTLER
   Run = pGradeFrontEstimate @ NewConsole=false
 }
 
-#include plug_uFldCTDSensor.moos
+#ifdef CTD two
+   #include plug_uFldCTDSensor2.moos
+#elseifdef CTD three
+   #include plug_uFldCTDSensor3.moos
+#else
+   #include plug_uFldCTDSensor.moos
+#endif
 
 //--------------------------------------------------------
 // pGradeFrontEstiamte Configuration Block

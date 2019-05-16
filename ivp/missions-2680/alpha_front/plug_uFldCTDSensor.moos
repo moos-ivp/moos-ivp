@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// uFldGenericSensor configuration block from plugin
+// uFldCTDSensor (1) configuration block from plugin
 
 ProcessConfig = uFldCTDSensor
 {
