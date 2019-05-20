@@ -1,4 +1,7 @@
 #!/bin/bash -e
+#trap "trap - SIGTERM && kill -9 -- -$$" SIGINT SIGTERM EXIT SIGHUP
+#trap "bell.sh 3; kill -9 -- -$$" SIGINT SIGTERM EXIT SIGHUP
+#trap "echo here123" EXIT 
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
 #-------------------------------------------------------
@@ -69,16 +72,35 @@ fi
 #-------------------------------------------------------
 #  Part 3: Launch the processes
 #-------------------------------------------------------
+function cleanup {
+  echo "A launch.sh component has failed. Killing the moos:"
+  echo "Done Killing the moos!"
+  /Users/mikerb/bin/bell.sh 3
+}
+trap cleanup EXIT SIGHUP SIGTERM SIGINT
+
 printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
+PPIDS=$!
+echo "PPIDS:" $PPIDS
+
 printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_henry.moos >& /dev/null &
+PPIDS=$PPIDS","$!
+echo "PPID:" $PPIDS
+
 printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_gilda.moos >& /dev/null &
+PPIDS=$PPIDS","$!
+echo "PPIDS:" $PPIDS
+
+
 printf "Done \n"
 
-uMAC targ_shoreside.moos
+uMAC targ_shoreside.moos || true
 
 printf "Killing all processes ... \n"
-mykill
+kill -- -$$
+#pkill -9 -P $PPIDS; reset
+#mykill
 printf "Done killing processes.   \n"
