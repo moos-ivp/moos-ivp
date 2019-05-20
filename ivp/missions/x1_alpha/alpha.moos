@@ -137,6 +137,9 @@ ProcessConfig = pMarinePID
   AppTick    = 20
   CommsTick  = 20
 
+  max_sat_hdg_debug = false
+  max_sat_spd_debug = true
+
   VERBOSE       = true
   DEPTH_CONTROL = false
 

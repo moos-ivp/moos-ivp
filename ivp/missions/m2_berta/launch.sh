@@ -1,106 +1,82 @@
 #!/bin/bash -e
-#trap "trap - SIGTERM && kill -9 -- -$$" SIGINT SIGTERM EXIT SIGHUP
-#trap "bell.sh 3; kill -9 -- -$$" SIGINT SIGTERM EXIT SIGHUP
-#trap "echo here123" EXIT 
-#-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
-#-------------------------------------------------------
+#----------------------------------------------------------
+#  Script: launch.sh
+#  Author: Michael Benjamin
+#  LastEd: May 17th 2019
+#----------------------------------------------------------
+#----------------------------------------------------------
+#  Part 1: Set Exit actions and declare global var defaults
+#----------------------------------------------------------
+trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
 JUST_MAKE="no"
 
+#----------------------------------------------------------
+#  Part 2: Check for and handle command-line arguments
+#----------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	printf "%s [SWITCHES] [time_warp]   \n" $0
-	printf "  --just_make, -j    \n" 
-	printf "  --help, -h         \n" 
+	echo "launch.sh [SWITCHES] [time_warp]    " 
+	echo "  --just_make, -j                   " 
+	echo "  --help, -h                        " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI:0:7}" = "--warp=" ] ; then
-        TIME_WARP="${ARGI#--warp=*}"
-    elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
     else 
-	printf "Bad Argument: %s \n" $ARGI
-	exit 1
+        echo "Bad arg:" $ARGI "Run with -h for help."
+        echo "The launch.sh script is exiting with (1)."
+        exit 1
     fi
 done
 
-#-------------------------------------------------------
-#  Part 2: Create the .moos and .bhv files. 
-#-------------------------------------------------------
+#----------------------------------------------------------
+#  Part 3: Create the .moos and .bhv files. 
+#----------------------------------------------------------
 VNAME1="henry"           # The first vehicle Community
 VNAME2="gilda"           # The second vehicle Community
 START_POS1="0,0"         
 START_POS2="80,0"        
 LOITER_POS1="x=0,y=-75"
 LOITER_POS2="x=125,y=-50"
-SHORE_LISTEN="9300"
+SHORE_PSHARE="9200"
 
 nsplug meta_vehicle.moos targ_henry.moos -i -f WARP=$TIME_WARP \
-    VNAME=$VNAME1          SHARE_LISTEN="9301"                 \
-    VPORT="9001"           SHORE_LISTEN=$SHORE_LISTEN          \
-    START_POS=$START_POS1  
+       VNAME=$VNAME1            BOT_PSHARE="9201"              \
+       BOT_MOOSDB="9001"        SHORE_PSHARE=$SHORE_PSHARE     \
+       START_POS=$START_POS1  
 
 nsplug meta_vehicle.moos targ_gilda.moos -i -f WARP=$TIME_WARP \
-    VNAME=$VNAME2          SHARE_LISTEN="9302"                 \
-    VPORT="9002"           SHORE_LISTEN=$SHORE_LISTEN          \
-    START_POS=$START_POS2  
+       VNAME=$VNAME2            BOT_PSHARE="9202"              \
+       BOT_MOOSDB="9002"        SHORE_PSHARE=$SHORE_PSHARE     \
+       START_POS=$START_POS2  
 
 nsplug meta_shoreside.moos targ_shoreside.moos -i -f WARP=$TIME_WARP \
-    SNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                    \
-    SPORT="9000"       VNAMES=$VNAME1:$VNAME2
+       SHORE_PSHARE=$SHORE_PSHARE  SHORE_MOOSDB="9000"        \
+       VNAMES=$VNAME1:$VNAME2
 
-
-
-nsplug meta_vehicle.bhv targ_henry.bhv -f VNAME=$VNAME1     \
+nsplug meta_vehicle.bhv targ_henry.bhv -i -f VNAME=$VNAME1    \
     START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
 
-nsplug meta_vehicle.bhv targ_gilda.bhv -f VNAME=$VNAME2     \
+nsplug meta_vehicle.bhv targ_gilda.bhv -i -f VNAME=$VNAME2    \
     START_POS=$START_POS2 LOITER_POS=$LOITER_POS2       
 
-if [ ! -e targ_henry.moos ]; then echo "no targ_henry.moos"; exit; fi
-if [ ! -e targ_henry.bhv  ]; then echo "no targ_henry.bhv "; exit; fi
-if [ ! -e targ_gilda.moos ]; then echo "no targ_gilda.moos"; exit; fi
-if [ ! -e targ_gilda.bhv  ]; then echo "no targ_gilda.bhv "; exit; fi
-if [ ! -e targ_shoreside.moos ]; then echo "no targ_shoreside.moos";  exit; fi
-
 if [ ${JUST_MAKE} = "yes" ] ; then
+    echo "Files assembled; nothing launched; exiting per request."
     exit 0
 fi
 
-#-------------------------------------------------------
-#  Part 3: Launch the processes
-#-------------------------------------------------------
-function cleanup {
-  echo "A launch.sh component has failed. Killing the moos:"
-  echo "Done Killing the moos!"
-  /Users/mikerb/bin/bell.sh 3
-}
-trap cleanup EXIT SIGHUP SIGTERM SIGINT
-
-printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
+#----------------------------------------------------------
+#  Part 4: Launch the processes
+#----------------------------------------------------------
+echo "Launching Shoreside MOOS Community. WARP is" $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
-PPIDS=$!
-echo "PPIDS:" $PPIDS
 
-printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
+echo "Launching $VNAME1 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_henry.moos >& /dev/null &
-PPIDS=$PPIDS","$!
-echo "PPID:" $PPIDS
 
-printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
+echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_gilda.moos >& /dev/null &
-PPIDS=$PPIDS","$!
-echo "PPIDS:" $PPIDS
 
-
-printf "Done \n"
-
-uMAC targ_shoreside.moos || true
-
-printf "Killing all processes ... \n"
-kill -- -$$
-#pkill -9 -P $PPIDS; reset
-#mykill
-printf "Done killing processes.   \n"
+uMAC targ_shoreside.moos
