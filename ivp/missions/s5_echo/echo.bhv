@@ -28,7 +28,7 @@ Behavior = BHV_Waypoint
    lead_damper = 1
          speed = 2.0   // meters per second
         radius = 8.0
-        repeat = 100
+        repeat = 100000
         points = 60,-40:60,-140:150,-140:170,-90:150,-40
   visual_hints = nextpt_color=yellow, nextpt_lcolor=aqua
   visual_hints = vertex_color=yellow, line_color=white

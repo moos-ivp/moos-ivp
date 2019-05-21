@@ -4,7 +4,7 @@ initialize   DEPLOY = false
 initialize   RETURN = false
 	
 //----------------------------------------------
-Behavior = BHV_Waypoint
+//Behavior = BHV_Waypoint
 { 
   name      = waypt_survey
   pwt       = 100
@@ -27,7 +27,7 @@ Behavior = BHV_Waypoint
              polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
 
                order = normal
-             repeat  = 1
+             repeat  = 100000
 
     visual_hints = nextpt_color=yellow
     visual_hints = nextpt_vertex_size=8
@@ -37,7 +37,7 @@ Behavior = BHV_Waypoint
 }
 
 //----------------------------------------------
-Behavior=BHV_Waypoint
+//Behavior=BHV_Waypoint
 {
   name       = waypt_return
   pwt        = 100

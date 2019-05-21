@@ -24,13 +24,27 @@ ProcessConfig = ANTLER
 
   Run = MOOSDB          @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = uSimMarine	    @ NewConsole = false
+  Run = uSimMarine	@ NewConsole = false
   Run = pMarinePID      @ NewConsole = false
   Run = pHelmIvP        @ NewConsole = false
-  Run = pMarineViewer	  @ NewConsole = false
-  Run = uProcessWatch	  @ NewConsole = false
-  Run = pNodeReporter	  @ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
+  Run = uProcessWatch	@ NewConsole = false
+  Run = pNodeReporter	@ NewConsole = false
+  Run = uMemWatch       @ NewConsole = false
 }
+
+//------------------------------------------
+// uMemWatch config block
+
+ProcessConfig = uMemWatch                                       
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  absolute_time_gap = 1   // In Seconds, Default is 1.          
+                                                                
+  watch_only = pHelmIvP,pMarineViewer
+}                                  
 
 //------------------------------------------
 // pLogger config block

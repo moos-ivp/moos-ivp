@@ -231,7 +231,7 @@ ProcessConfig = pMarineViewer
 
   button_one   = DEPLOY  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  button_one   = AVOID_ALL=true
+  button_one   = AVOID_ALL=false
   button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
 
   button_two   = RETURN  # RETURN_ALL=true
