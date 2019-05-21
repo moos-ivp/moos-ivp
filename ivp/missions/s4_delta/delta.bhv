@@ -86,7 +86,6 @@ Behavior = BHV_PeriodicSurface
   name             = bhv_periodic_surface
   pwt              = 1000
   condition        = (MODE == LOITERING)
-  //condition        = (MODE == LOITERING) or (MODE == RETURNING)
   condition        = PSURFACE = true
 
                period = 120
@@ -133,6 +132,4 @@ Behavior = BHV_Waypoint
   visual_hints = vertex_color=yellow, line_color=white
   visual_hints = vertex_size=2, edge_size=1
 }
-
-
 
