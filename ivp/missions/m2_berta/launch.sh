@@ -4,7 +4,6 @@
 #  Author: Michael Benjamin
 #  LastEd: May 17th 2019
 #----------------------------------------------------------
-#----------------------------------------------------------
 #  Part 1: Set Exit actions and declare global var defaults
 #----------------------------------------------------------
 trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
