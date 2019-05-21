@@ -105,12 +105,16 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
-  blk("                 string_val=BAR                                 ");
+  blk("  DB_CLIENTS = pHelmIvP,pBasicContacMgr,pNodeReporter...        ");
+  blk("  PHELMIVP_PID = 34821                                          ");
+  blk("  PBASICCONTACTMGR_PID = 34824                                  ");
+  blk("  PNODEREPORTER_PID = 34824                                     ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
+  blk("  PHELMIVP_MEM = 4.3                                            ");
+  blk("  PBASICCONTACTMGR_MEM = 0.8                                    ");
+  blk("  PNODEREPORTER_MEM = 2.1                                       ");
   blk("                                                                ");
   exit(0);
 }

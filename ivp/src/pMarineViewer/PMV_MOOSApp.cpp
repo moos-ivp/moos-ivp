@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <unistd.h>
 #include <iostream>
 #include "PMV_MOOSApp.h"
 #include "MBUtils.h"
@@ -152,6 +153,8 @@ bool PMV_MOOSApp::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
   
+  Notify("PMARINEVIEWER_PID", getpid());
+
   // look for datum latitude, longitude global variables
   double lat, lon;
   bool ok1 = m_MissionReader.GetValue("LatOrigin", lat);
