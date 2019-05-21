@@ -1,0 +1,9 @@
+//------------------------------------------------
+// uMemWatch config block
+
+ProcessConfig = uMemWatch
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
