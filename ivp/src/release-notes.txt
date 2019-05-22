@@ -1,4 +1,9 @@
 
+uMAC
+===============================================
+Can now be launched with --proc and/or --node to specify the 
+initial node and process to scope on.
+
 alogview
 ===============================================
 Fixed a bug in alogview affecting the construction of the collective

@@ -36,6 +36,8 @@ int main(int argc, char *argv[])
   string mission_file;
   string run_command = argv[0];
   bool   terse_mode = false;
+  string initial_proc;
+  string initial_node;
   
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -53,6 +55,10 @@ int main(int argc, char *argv[])
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
+    else if(strBegins(argi, "--node="))
+      initial_node = argi.substr(7);
+    else if(strBegins(argi, "--proc="))
+      initial_proc = argi.substr(7);
     else if(i==2)
       run_command = argi;
   }
@@ -72,9 +78,17 @@ int main(int argc, char *argv[])
 
   AppCastMonitor UMAC;
   UMAC.setTerseMode(terse_mode);
+  UMAC.setInitialNode(initial_node);
+  UMAC.setInitialProc(initial_proc);
   // start the UMAC in its own thread
   MOOSAppRunnerThread appRunner(&UMAC, (char*)(run_command.c_str()), 
 				mission_file.c_str(), argc, argv);
+
+  //UMAC.setInitialNode(initial_node);
+  //UMAC.setInitialProc(initial_proc);
+
+  cout << "Initial Proc:" << initial_proc << endl;
+  cout << "Initial Node:" << initial_node << endl;
 
   bool quit = false;
   while(!quit) {

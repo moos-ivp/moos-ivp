@@ -49,6 +49,30 @@ AppCastMonitor::AppCastMonitor()
 }
 
 //---------------------------------------------------------
+// Procedure: trySetInitialNodeProc()
+
+void AppCastMonitor::trySetInitialNodeProc()
+{
+  if((m_initial_node == "") && (m_initial_proc == ""))
+    return;
+  if(m_iteration > 100)
+    return;
+  
+  bool set_node = setCurrentNode(m_initial_node);
+  if(set_node) {
+    m_initial_node = "";
+    switchContentMode("procs");
+  }
+
+  bool set_proc = setCurrentProc(m_initial_proc);
+  if(set_proc) {
+    m_initial_proc = "";
+    switchContentMode("appcast");
+  }
+}
+
+
+//---------------------------------------------------------
 // Procedure: OnNewMail
 
 bool AppCastMonitor::OnNewMail(MOOSMSG_LIST &NewMail)
@@ -92,7 +116,8 @@ bool AppCastMonitor::Iterate()
   // Part 1: Update the key state variables
   m_iteration++;
   m_curr_time = MOOSTime();
-
+  trySetInitialNodeProc();
+  
   // Consider how long its been since our last report (regular or history)
   // Want to report less frequently if using a higher time warp.
   bool   print_report = false;
@@ -289,7 +314,7 @@ void AppCastMonitor::handleCommand(char c)
 // Procedure: handleSelectNode
 //   Example: str = "node=henry,app=pHostInfo,duration=10,key=uMAC_438"
 
-void AppCastMonitor::handleSelectNode(const string& id)
+void AppCastMonitor::handleSelectNode(string id)
 {
   // Part 1: Try to change the present node name
   bool valid = m_repo.setCurrentNode(id);
@@ -308,7 +333,7 @@ void AppCastMonitor::handleSelectNode(const string& id)
 // Procedure: handleSelectChannel
 //   Example: str = "node=henry,app=pHostInfo,duration=10,key=uMAC_438"
 
-void AppCastMonitor::handleSelectChannel(const string& id)
+void AppCastMonitor::handleSelectChannel(string id)
 {
   m_repo.setCurrentProc(id);
 
@@ -332,10 +357,10 @@ void AppCastMonitor::handleSelectChannel(const string& id)
 // Procedure: postAppCastRequest
 //   Example: str = "node=henry,app=pHostInfo,duration=10,key=uMAC_438"
 
-void AppCastMonitor::postAppCastRequest(const string& channel_node, 
-					const string& channel_proc, 
-					const string& given_key, 
-					const string& threshold, 
+void AppCastMonitor::postAppCastRequest(string channel_node, 
+					string channel_proc, 
+					string given_key, 
+					string threshold, 
 					double duration)
 {
   string key = given_key;

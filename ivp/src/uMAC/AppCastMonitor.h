@@ -37,6 +37,9 @@ class AppCastMonitor : public CMOOSApp
   
   void handleCommand(char);
   void setTerseMode(bool v) {m_terse_mode=v;}
+
+  void setInitialProc(std::string s) {m_initial_proc=s;}
+  void setInitialNode(std::string s) {m_initial_node=s;}
   
  protected:
   bool OnNewMail(MOOSMSG_LIST &NewMail);
@@ -47,16 +50,14 @@ class AppCastMonitor : public CMOOSApp
 
  protected:
   bool handleMailAppCast(const std::string&);
-  void handleSelectNode(const std::string&);
-  void handleSelectChannel(const std::string&);
-  void postAppCastRequest(const std::string& node, 
-			  const std::string& app,
-			  const std::string& key,  
-			  const std::string& thresh,
+  void handleSelectNode(std::string);
+  void handleSelectChannel(std::string);
+  void postAppCastRequest(std::string node, std::string app,
+			  std::string key,  std::string thresh,
 			  double duration);
 
-  void setCurrentNode(const std::string& s)   {m_repo.setCurrentNode(s);}
-  void setCurrentProc(const std::string& s)   {m_repo.setCurrentProc(s);}
+  bool setCurrentNode(std::string s)   {return(m_repo.setCurrentNode(s));}
+  bool setCurrentProc(std::string s)   {return(m_repo.setCurrentProc(s));}
   bool switchContentMode(const std::string& s="revert");
 
   void printHelp();
@@ -68,6 +69,8 @@ class AppCastMonitor : public CMOOSApp
   std::string currentNode() const;
   std::string currentProc() const;
 
+  void trySetInitialNodeProc();
+  
  private: // Configuration variables
 
   std::string  m_refresh_mode;      // paused,events,streaming
@@ -75,6 +78,9 @@ class AppCastMonitor : public CMOOSApp
   std::string  m_content_mode_prev;
 
   bool         m_terse_mode;
+
+  std::string  m_initial_node;
+  std::string  m_initial_proc;
   
  private: // State variables
   unsigned int m_term_reports;
@@ -89,12 +95,3 @@ class AppCastMonitor : public CMOOSApp
 };
 
 #endif 
-
-
-
-
-
-
-
-
-
