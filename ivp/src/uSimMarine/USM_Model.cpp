@@ -316,7 +316,7 @@ void USM_Model::setThrustLeft(double val)
   else if(val > 100)
     val = 100;
 
-    m_thrust_mode = "differential";
+  m_thrust_mode = "differential";
 
   if(m_thrust_mode_reverse == false)  // The normal mode
     m_thrust_lft  = val;
