@@ -423,13 +423,14 @@ void BHV_Loiter::updateCenter()
   else {
     vector<string> svector = parseString(m_center_assign, ',');
     if(svector.size() == 2) {
-      if(isNumber(svector[0]) && isNumber(svector[1]))
+      if(isNumber(svector[0]) && isNumber(svector[1])) {
 	svector[0] = stripBlankEnds(svector[0]);
 	svector[1] = stripBlankEnds(svector[1]);
 	double xval = atof(svector[0].c_str());
 	double yval = atof(svector[1].c_str());
 	m_loiter_engine.setCenter(xval, yval);
 	m_waypoint_engine.setCenter(xval, yval);
+      }
     }
   }
 
