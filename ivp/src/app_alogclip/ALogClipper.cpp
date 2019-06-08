@@ -111,6 +111,9 @@ string ALogClipper::getNextLine()
     case EOF:
       fclose(m_infile);
       m_infile = 0;
+      buff[buffix] = '\0';  // attach terminating NULL
+      EOL = true;
+      break;
     case '\n':
       buff[buffix] = '\0';  // attach terminating NULL
       EOL = true;

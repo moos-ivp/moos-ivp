@@ -243,7 +243,7 @@ bool CFrontEstimate::OnConnectToServer()
 bool CFrontEstimate::Iterate()
 {
   AppCastingMOOSApp::Iterate();
-  double curr_time = MOOSTime();
+  //double curr_time = MOOSTime();
   //double temperature;
   new_anneal_report=false;
   if (concurrent)

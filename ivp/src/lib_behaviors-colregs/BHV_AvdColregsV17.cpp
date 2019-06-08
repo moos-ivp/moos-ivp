@@ -1090,12 +1090,9 @@ void BHV_AvdColregsV17::checkModeCPA()
 IvPFunction* BHV_AvdColregsV17::buildStandOnIPF()
 {
   // If ownship is already within the min_util_cpa_dist then we shrink
-  // this distance, otherwise the resulting ivp function will be universally
-  // negative, resulting a function with no preference in any direction.
-
-  double min_util_cpa_dist = m_min_util_cpa_dist;
-  if(m_contact_range <= m_min_util_cpa_dist)
-    min_util_cpa_dist = (m_contact_range / 2);
+  // this distance, otherwise the resulting ivp function will be
+  // universally negative, resulting a function with no preference in
+  // any direction.
 
   m_debug3 = "Bldg StandOn V17 IPF";
 

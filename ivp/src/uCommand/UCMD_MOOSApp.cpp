@@ -172,11 +172,11 @@ void UCMD_MOOSApp::handleIterate(const MOOS_event& e)
   handlePendingPostsFromGUI();
   handlePendingCommandSummary();
 
-  unsigned int window_val = 1;
-  if(!m_gui)
-    window_val = 0;
-  else
-    window_val = m_gui->isVisible();
+  //unsigned int window_val = 1;
+  //if(!m_gui)
+  //  window_val = 0;
+  //else
+  //  window_val = m_gui->isVisible();
 }
 
 

@@ -35,7 +35,6 @@ protected:
 
   bool handleConfigWatchOnly(std::string);
   bool handleConfigIgnore(std::string);
-  
   void registerVariables();
   
 private: // Configuration variables
@@ -47,7 +46,7 @@ private: // State variables
   std::vector<std::string> m_apps_known_to_db;
   std::vector<std::string> m_apps_watch_only;
   std::vector<std::string> m_apps_ignore;
-  
+
   // All in this group indexed together
   std::vector<std::string> m_app;
   std::vector<std::string> m_pid;

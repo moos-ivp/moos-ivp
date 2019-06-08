@@ -308,9 +308,10 @@ bool XMS::OnStartUp()
     }    
     else if((param == "DISPLAY_ALLL") && isBoolean(value)) {
       handled = true;
-      if(!m_ignore_file_vars)
+      if(!m_ignore_file_vars) {
 	m_display_all = (tolower(value) == "true");
 	m_display_all_really = (tolower(value) == "true");
+      }
     }    
     else if((param == "COLORMAP") || (param == "COLOR_MAP"))
       handled = setColorMappingsPairs(value);

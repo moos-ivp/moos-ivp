@@ -118,24 +118,28 @@ const XYSegList generateLawnmower(const XYPolygon& poly, double px0,
       // Determine case:
       bool p0inside = poly.contains(px0, py0);
       bool p1inside = poly.contains(px1, py1);
-      int situation;
+      int situation = 0;
       
-      if (p0inside && p1inside) {situation = 1;}
-      if (p0inside && !p1inside) {situation = 2;}
-      if (!p0inside && p1inside) {situation = 3;}
-      if (!p0inside && !p1inside) {situation = 4;}
+      if(p0inside && p1inside)
+	situation = 1;
+      if(p0inside && !p1inside)
+	situation = 2;
+      if(!p0inside && p1inside)
+	situation = 3;
+      if(!p0inside && !p1inside)
+	situation = 4;
       
-      switch( situation ){
+      switch(situation) {
       case 1: // both inside, project 0 one way, 1 the other (segment is oriented later)
 	projectPoint(ang, distnormal0, px0, py0, px0, py0);
 	projectPoint(angle360(ang + 180), distanti1, px1, py1, px1, py1);
 	break;
       case 2: // p1 outside, project it in, project p0 same way
-	if (distnormal1 == -1) { // p1 is outside, project antinormal
+	if(distnormal1 == -1) { // p1 is outside, project antinormal
 	  projectPoint(angle360(ang + 180), distanti1, px1, py1, px1, py1);
 	  projectPoint(angle360(ang + 180), distanti0, px0, py0, px0, py0);
 	}
-	else if (distanti1 == -1) { // p1 is outside, project normal
+	else if(distanti1 == -1) { // p1 is outside, project normal
 	  projectPoint(ang, distnormal1, px1, py1, px1, py1);
 	  projectPoint(ang, distnormal0, px0, py0, px0, py0);
 	}
@@ -144,11 +148,11 @@ const XYSegList generateLawnmower(const XYPolygon& poly, double px0,
 	}						
 	break;			
       case 3: // p0 outside, project it in, project p1 same way
-	if (distnormal0 == -1) { // p0 is outside, project antinormal
+	if(distnormal0 == -1) { // p0 is outside, project antinormal
 	  projectPoint(angle360(ang + 180), distanti1, px1, py1, px1, py1);
 	  projectPoint(angle360(ang + 180), distanti0, px0, py0, px0, py0);
 	}
-	else if (distanti0 == -1) { // p0 is outside, project normal
+	else if(distanti0 == -1) { // p0 is outside, project normal
 	  projectPoint(ang, distnormal1, px1, py1, px1, py1);
 	  projectPoint(ang, distnormal0, px0, py0, px0, py0);
 	}
@@ -157,23 +161,20 @@ const XYSegList generateLawnmower(const XYPolygon& poly, double px0,
 	}	
 	break;			
       case 4: // both points outside, project to closest segment
-	if (distnormal0 > distanti0){ // Greater value is actual distance
+	if(distnormal0 > distanti0)  // Greater value is actual distance
 	  projectPoint(ang, distnormal0, px0, py0, px0, py0);
-	}
-	else {
+	else
 	  projectPoint(angle360(ang + 180), distanti0, px0, py0, px0, py0);
-	}
-	if (distnormal1 > distanti1){ // Greater value is actual distance
+
+	if(distnormal1 > distanti1) // Greater value is actual distance
 	  projectPoint(ang, distnormal1, px1, py1, px1, py1);
-	}
-	else {
+	else
 	  projectPoint(angle360(ang + 180), distanti1, px1, py1, px1, py1);
-	}
 	break;
       }
       
       // Figure out which point to add next (closest to tail of segList), then add other
-      if (distPointToPoint(px0, py0, segList.get_vx(segList.size()-1), segList.get_vy(segList.size()-1)) < 
+      if(distPointToPoint(px0, py0, segList.get_vx(segList.size()-1), segList.get_vy(segList.size()-1)) < 
 	  distPointToPoint(px1, py1, segList.get_vx(segList.size()-1), segList.get_vy(segList.size()-1))) {
 	segList.add_vertex(px0, py0);
 	segList.add_vertex(px1, py1);

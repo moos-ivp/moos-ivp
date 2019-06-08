@@ -50,7 +50,7 @@ for ARGI; do
     elif [ "${ARGI}" = "--clean" -o "${ARGI}" = "-c" ] ; then
         CLEAN="yes"
     elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ] ; then
-        BUILD_GUI_CODE="no"
+        BUILD_GUI_CODE="OFF"
     elif [ "${ARGI}" = "--minrobot" -o "${ARGI}" = "-m" ] ; then
         BUILD_BOT_CODE_ONLY="ON"
 	BUILD_GUI_CODE="OFF"
@@ -102,7 +102,7 @@ cd "${BLD_ABS_DIR}"
 
 if [ "${IVP_BUILD_GUI_CODE}" = "OFF" ] ; then
     BUILD_GUI_CODE="OFF"
-    printf "IVP GUI Apps will not be built. IVP_BUILD_GUI_CODE env var is OFF\n"
+    echo "IVP GUI Apps will not be built. IVP_BUILD_GUI_CODE env var is OFF"
 fi
 
 printf "BUILD_GUI_CODE = ${BUILD_GUI_CODE} \n"

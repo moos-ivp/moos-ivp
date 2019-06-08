@@ -75,7 +75,8 @@ int LogPlotViewer::handle(int event)
     if(Fl_Window::handle(event) != 1) {
       if(Fl::event_button() == FL_LEFT_MOUSE)
 	handleLeftMouse(vx, vy);
-    }    
+    }
+    break;
   case FL_RELEASE:
     return(0);
     break;

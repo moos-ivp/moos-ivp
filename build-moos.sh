@@ -9,7 +9,7 @@ mkdir -p "${BUILD_ABS_DIR}"
 
 BUILD_TYPE="Release"
 BUILD_OPTIM="yes"
-CMD_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
+J_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
 BUILD_BOT_CODE_ONLY="OFF"
 
 for ARGI; do
@@ -31,10 +31,13 @@ for ARGI; do
         BUILD_TYPE="Release"
     elif [ "${ARGI}" = "--minrobot" -o "${ARGI}" = "-m" ] ; then
         BUILD_BOT_CODE_ONLY="ON"
+   elif [ "${ARGI}" = "--j1" -o "${ARGI}" = "-j1" ] ; then
+        J_ARGS="-j1"
     else
 	CMD_ARGS=$CMD_ARGS" "$ARGI
     fi
 done
+CMD_ARGS+=" "$J_ARGS
 
 echo "  SCRIPT_ABS_DIR: " ${SCRIPT_ABS_DIR}
 

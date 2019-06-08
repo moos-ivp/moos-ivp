@@ -43,7 +43,7 @@ bool Manifest::setDate(string sdate)
   string mstr = sdate.substr(2,2);
   string dstr = sdate.substr(4,2);
 
-  int yval = atoi(ystr.c_str());
+  //int yval = atoi(ystr.c_str());
   int mval = atoi(mstr.c_str());
   int dval = atoi(dstr.c_str());
   if((mval > 12) || (mval < 0))
@@ -286,7 +286,7 @@ vector<string> Manifest::missingOptional() const
     rvector.push_back("doc_url");
   if(m_date == "")   
     rvector.push_back("borndate");
-    if(m_authors.size() == 0)   
+  if(m_authors.size() == 0)   
     rvector.push_back("authors");
   
   string typex = tolower(m_type);
