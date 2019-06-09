@@ -36,7 +36,7 @@ class FrontGridRender : public AppCastingMOOSApp
   void printReport();
   bool buildReport();
  private: // Configuration variables
-  double m_term_report_interval;
+  //double m_term_report_interval;
 
  private: // State variables
   double       m_curr_time;
