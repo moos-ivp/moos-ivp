@@ -184,7 +184,6 @@ void MemWatch::measureMemory()
   //         handle the case where the output has a unit suffix,
   //         or ends in a '+' like the output sometimes of top.
   bool result_in_kb = false;
-  bool result_in_mb = false;
   bool result_in_gb = false;
   string result = lines[0];
 
@@ -195,10 +194,6 @@ void MemWatch::measureMemory()
   if(strEnds(result, "K")) {
     result_in_kb = true;
     result = biteString(result, 'K');
-  }
-  else if(strEnds(result, "M")) {
-    result_in_mb = true;
-    result = biteString(result, 'M');
   }
   else if(strEnds(result, "G")) {
     result_in_gb = true;
