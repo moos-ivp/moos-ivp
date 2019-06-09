@@ -72,7 +72,7 @@ bool AppCastSet::addAppCast(const AppCast& appcast)
   else if(proc == "pHelmIvP")
     m_map_id_src["0"] = proc;
   else {
-    char c = 97 + (int)(m_proc_id_count);  // 'a' + cnt
+    unsigned char c = 97 + (int)(m_proc_id_count);  // 'a' + cnt
     m_proc_id_count++;
 
     if((c=='e') || (c=='h') || (c=='n')) {
@@ -85,7 +85,7 @@ bool AppCastSet::addAppCast(const AppCast& appcast)
     }
 
     // If exceeded the {a-z}, then start using {A-Z}
-    if((c > 122) && (c <= 146))
+    if((c > 122) && (c <= 126))
       c = c - 58;
     
     string id(1,c);
