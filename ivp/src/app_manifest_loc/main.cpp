@@ -20,8 +20,6 @@ void showHelpAndExit();
 
 int main(int argc, char *argv[])
 {
-  bool verbose = false;
-
   string loc_file1, loc_file2;
   
   for(int i=1; i<argc; i++) {
@@ -36,7 +34,7 @@ int main(int argc, char *argv[])
       else if(loc_file2 == "")
 	loc_file2 = arg;
       else {
-	cout << "Only two .loc files should be provided. Exiting now." << endl;
+	cout << "Only two .loc files should be provided. Exiting." << endl;
 	return(1);
       }
     }
