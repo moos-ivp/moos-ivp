@@ -21,6 +21,9 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+// Defined to silence GL deprecation warnings in OSX 10.14+
+#define GL_SILENCE_DEPRECATION
+
 #include <string>
 #include <iostream>
 #include "FL/Fl.H"
