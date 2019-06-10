@@ -24,6 +24,9 @@
 #ifndef COMMON_MARINE_VIEWER_HEADER
 #define COMMON_MARINE_VIEWER_HEADER
 
+// Defined to silence GL deprecation warnings in OSX
+#define GL_SILENCE_DEPRECATION
+
 #include <string>
 #include <vector>
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"

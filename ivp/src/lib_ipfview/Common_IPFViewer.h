@@ -24,6 +24,9 @@
 #ifndef COMMON_IPF_VIEWER_HEADER
 #define COMMON_IPF_VIEWER_HEADER
 
+// Defined to silence GL deprecation warnings in OSX
+#define GL_SILENCE_DEPRECATION
+
 #include <string>
 #include "FL/Fl.H"
 #include "FL/Fl_Gl_Window.H"
