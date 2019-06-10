@@ -41,6 +41,8 @@
 #elif OPSYS_IS_LINUX
    #include <GL/gl.h>
 #elif OPSYS_IS_OS_X
+  //Defined before OpenGL/GLUT includes to avoid deprecation messages
+   #define GL_SILENCE_DEPRECATION
    #include <OpenGL/gl.h>
 #else
    #error "Unknown OS"
