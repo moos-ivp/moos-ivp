@@ -24,6 +24,9 @@
 #ifndef PLOT_VIEWER_HEADER
 #define PLOT_VIEWER_HEADER
 
+// Defined to silence GL deprecation warnings in OSX 10.14+
+#define GL_SILENCE_DEPRECATION
+
 #include <string>
 #include <map>
 #include "FL/Fl.H"

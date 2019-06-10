@@ -24,6 +24,9 @@
 #ifndef POLY_VIEWER_HEADER
 #define POLY_VIEWER_HEADER
 
+// Defined to silence GL deprecation warnings in OSX 10.14+
+#define GL_SILENCE_DEPRECATION
+
 #include <string>
 #include "FL/Fl.H"
 #include "FL/Fl_Gl_Window.H"
