@@ -62,14 +62,18 @@ if [ "`uname`" == "Darwin" ] ; then
 	MISSING=$MISSING"MOOSGeodesy,";
     fi
     if [ ! -e build/MOOS/MOOSToolsUI/lib/libfltkvw.dylib ]; then
-	MISSING=$MISSING"fltkvw,";
+	if [ "${MIN_ROBOT}" = "no" ] ; then
+	    MISSING=$MISSING"fltkvw,";
+	fi
     fi
 else
     if [ ! -e build/MOOS/MOOSGeodesy/lib/libMOOSGeodesy.so ]; then
 	MISSING=$MISSING"MOOSGeodesy,";
     fi
     if [ ! -e build/MOOS/MOOSToolsUI/lib/libfltkvw.so ]; then
-	MISSING=$MISSING"fltkvw,";
+	if [ "${MIN_ROBOT}" = "no" ] ; then
+	    MISSING=$MISSING"fltkvw,";
+	fi
     fi
 fi
 
@@ -99,10 +103,13 @@ if [ ! -e bin/pAntler ];     then  MISSING=$MISSING"pAntler,"; fi
 if [ ! -e bin/pLogger ];     then  MISSING=$MISSING"pLogger,"; fi
 if [ ! -e bin/pScheduler ];  then  MISSING=$MISSING"pScheduler,"; fi
 if [ ! -e bin/pShare ];      then  MISSING=$MISSING"pShare,"; fi
-if [ ! -e bin/uMS ];         then  MISSING=$MISSING"uMS,"; fi
-if [ ! -e bin/uPlayback ];   then  MISSING=$MISSING"uPlayback,"; fi
 if [ ! -e bin/iRemoteLite ]; then  MISSING=$MISSING"iRemoteLite,"; fi
 if [ ! -e bin/uPoke ];       then  MISSING=$MISSING"uPoke,"; fi
+
+if [ "${MIN_ROBOT}" = "no" ] ; then
+    if [ ! -e bin/uMS ];         then  MISSING=$MISSING"uMS,"; fi
+    if [ ! -e bin/uPlayback ];   then  MISSING=$MISSING"uPlayback,"; fi
+fi
 
 if [[ "$MISSING" == *, ]]; then
     MISSING_ALL=$MISSING_ALL$MISSING
@@ -144,6 +151,8 @@ if [ "${MIN_ROBOT}" = "no" ] ; then
     if [ ! -e lib/libmarineview.a ]; then  MISSING=$MISSING"marineview,"; fi
 fi
 
+# if missing is non-empty, augment missing_all, remove trailing common from
+# missing_ivp_libs as this is the final value for that variable
 if [[ "$MISSING" == *, ]]; then
     MISSING_ALL=$MISSING_ALL$MISSING
     MISSING_IVP_LIBS="${MISSING%?}";
