@@ -23,6 +23,7 @@ for ARGI; do
         echo "  --moosapp    Only show missing MOOS apps     "
         echo "  --ivplib     Only show missing IvP libs      "
         echo "  --ivpapp     Only show missing IvP apps      "
+        echo "  --minrobot   Only check for robot libs/apps  "
         echo "                                               "
         echo "Examples:                                      "
         echo "  build-check.sh                               "
@@ -31,6 +32,7 @@ for ARGI; do
         echo "  build-check.sh --moosapp                     "
         echo "  build-check.sh --ivplib                      "
         echo "  build-check.sh --ivpapp                      "
+        echo "  build-check.sh --ivpapp --minrobot           "
         exit 0;
     elif [ "${ARGI}" = "--minrobot" ] ; then
         MIN_ROBOT="yes"
