@@ -1,7 +1,7 @@
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # added by mikerb jun 08 2019
-cmake_policy(SET CMP0042 NEW)
+#cmake_policy(SET CMP0042 NEW)
 
 PROJECT(IVP)
 
