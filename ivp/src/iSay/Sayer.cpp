@@ -351,6 +351,10 @@ bool Sayer::sayUtterance()
   Notify("ISAY_DEBUGA", cmd);
   result = system(cmd.c_str());
   Notify("ISAY_DEBUGB", cmd);
+
+  if(result != 0) 
+    cout << "Possible error in the iSay syscmd:" << cmd << endl;
+
   return(true);
 }
 
