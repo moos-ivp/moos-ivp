@@ -349,8 +349,11 @@ bool SplitHandler::handlePreCheckSplitDir()
   // Part 3: Create and Verify the split directory.
   // Make the base directory
   string cmd = "mkdir " + basedir;
-  system(cmd.c_str());
+  int result = system(cmd.c_str());
+  if(result != 0) 
+    cout << "Possible err in SplitHandler syscmd mkdri" << endl;
 
+  
   // Ensure that the base directory has indeed been created.
   FILE *tmp2 = fopen(basedir.c_str(), "r");
   if(!tmp2) {
