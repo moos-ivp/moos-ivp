@@ -14,6 +14,7 @@ MISSING_IVP_APPS=""
 
 MIN_ROBOT="no"
 
+
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
         echo "build-check.sh [SWITCHES]                      "
