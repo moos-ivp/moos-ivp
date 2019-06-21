@@ -185,7 +185,10 @@ void EPlotEngine::generate()
 
   // Begin creation of the Latex file
   string cmd = "scn2jpg.sh -v -s -o " + m_scene_file;
-  system(cmd.c_str());
+  int result = system(cmd.c_str());
+  if(result != 0)
+    cout << "Possible err in EPlotEngine Syscmd: " << cmd << endl;
+
 }
 
 //--------------------------------------------------------
