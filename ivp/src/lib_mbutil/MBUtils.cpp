@@ -2284,36 +2284,36 @@ vector<string> justifyLen(const string& str, unsigned int maxlen)
   return(justifyLen(svector, maxlen));
 }
 
-//----------------------------------------------------------------                                               
-// Procedure: joinLines()                                                                                        
-//   Purpose: Take an given set of lines, and check for lines that                                               
-//            end in a backslash (\), not counting any white space                                               
-//            characters that may occur after the backslash. Any                                                 
-//            such line will be joined with the following line,                                                  
-//            perhaps over multiple successive lines ending in a                                                 
-//            backslash.                                                                                         
-//            Since these lines may have originated as lines in a                                                
-//            file, we may want to preserve the total line count,                                                
-//            and make sure that a line that started on line N, is                                               
-//            still N elements into the vector. So if preserve_line_                                             
-//            count is true, an empty line will be inserted to                                                   
-//            replace any line that was a continuation line.                                                     
-//                                                                                                               
-//  Examples: (with preserve_white == false)                                                                     
-//            [0] now is the      \     [0] now is the time for all                                              
-//            [1] time for all          [1] good men to come to the                                              
-//            [2] good men to     \     [2] aid                                                                  
-//            [3] come to the           [3] of their country                                                     
-//            [4] aid                                                                                            
-//            [5] of their country                                                                               
-//                                                                                                               
-//            (with preserve_white == true)                                                                      
-//            [0] now is the      \     [0] now is the time for all                                              
-//            [1] time for all          [1]                                                                      
-//            [2] good men to     \     [2] good men to come to the                                              
-//            [3] come to the           [3]                                                                      
-//            [4] aid                   [4] aid                                                                  
-//            [5] of their country      [5] of their country                                                     
+//---------------------------------------------------------------- 
+// Procedure: joinLines()
+//   Purpose: Take an given set of lines, and check for lines that 
+//            end in a backslash (\), not counting any white space
+//            characters that may occur after the backslash. Any
+//            such line will be joined with the following line, 
+//            perhaps over multiple successive lines ending in a 
+//            backslash.                                      
+//            Since these lines may have originated as lines in a 
+//            file, we may want to preserve the total line count, 
+//            and make sure that a line that started on line N, is 
+//            still N elements into the vector. So if preserve_line_ 
+//            count is true, an empty line will be inserted to 
+//            replace any line that was a continuation line.    
+//                                                            
+//  Examples: (with preserve_white == false)                       
+//            [0] now is the      \     [0] now is the time for all 
+//            [1] time for all          [1] good men to come to the
+//            [2] good men to     \     [2] aid                
+//            [3] come to the           [3] of their country  
+//            [4] aid                                         
+//            [5] of their country       
+//                                                          
+//            (with preserve_white == true)                       
+//            [0] now is the      \     [0] now is the time for all 
+//            [1] time for all          [1]                      
+//            [2] good men to     \     [2] good men to come to the
+//            [3] come to the           [3]                       
+//            [4] aid                   [4] aid                
+//            [5] of their country      [5] of their country 
 
 vector<string> joinLines(const vector<string>& lines,
                          bool preserve_line_count)
@@ -2327,7 +2327,8 @@ vector<string> joinLines(const vector<string>& lines,
     while(!done) {
       if((strEnds(line, "\\")) &&
          (!strEnds(line, "\\\\")) && ((i+1) < lines.size())) {
-        line.pop_back();
+	if(line.size() > 0)
+	  line = line.erase(line.size()-1);
         line = line + lines[i+1];
         if(preserve_line_count)
           extra_blank_lines++;
