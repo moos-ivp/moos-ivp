@@ -17,7 +17,7 @@
 
 #include "MOOS/libMOOS/Utils/MOOSUtilityFunctions.h"
 #include "MOOS/libMOOS/Utils/IPV4Address.h"
-#include "MOOS/libMOOS/Thirdparty/getpot/GetPot"
+//#include "MOOS/libMOOS/Thirdparty/getpot/GetPot"
 #include "MOOS/libMOOS/Utils/SafeList.h"
 #include "MOOS/libMOOS/Utils/ConsoleColours.h"
 #include "MOOS/libMOOS/Utils/KeyboardCapture.h"

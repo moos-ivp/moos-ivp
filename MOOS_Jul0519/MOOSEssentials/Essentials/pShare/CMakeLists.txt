@@ -14,10 +14,18 @@ INSTALL(TARGETS ${EXECNAME}
   RUNTIME DESTINATION bin
 )
 
+message("+++++++++++++++++++++++++++++++++++++++++")
+message("In pshare CMakeLists.txt 1               ")
+message("+++++++++++++++++++++++++++++++++++++++++")
+
 #copy resources
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pshare_test_scripts DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/pshare_test_scripts DESTINATION ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 
-add_custom_command(TARGET pShare POST_BUILD
-                   COMMAND ${CMAKE_COMMAND} -E copy_directory
-                       ${CMAKE_SOURCE_DIR}/pshare_test_scripts ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+#add_custom_command(TARGET pShare POST_BUILD
+#                   COMMAND ${CMAKE_COMMAND} -E copy_directory
+#                       ${CMAKE_SOURCE_DIR}/pshare_test_scripts ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+
+message("+++++++++++++++++++++++++++++++++++++++++")
+message("In pshare CMakeLists.txt 22               ")
+message("+++++++++++++++++++++++++++++++++++++++++")
