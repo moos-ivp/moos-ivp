@@ -51,20 +51,20 @@ fi
 # Clean up old files left behind from in-source builds. 
 #-------------------------------------------------------------------
 
-if [ -e "${MOOS_SRC_DIR}/proj-4.9.3/Makefile" ] ; then
-    $(cd "${MOOS_SRC_DIR}/proj-4.9.3/" && make distclean) >& /dev/null
+if [ -e "${MOOS_SRC_DIR}/proj-5.2.0/Makefile" ] ; then
+    $(cd "${MOOS_SRC_DIR}/proj-5.2.0/" && make distclean) >& /dev/null
 fi
-if [ -d "${MOOS_SRC_DIR}/proj-4.9.3/bin" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/proj-4.9.3/bin" >& /dev/null
+if [ -d "${MOOS_SRC_DIR}/proj-5.2.0/bin" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/proj-5.2.0/bin" >& /dev/null
 fi
-if [ -d "${MOOS_SRC_DIR}/proj-4.9.3/include" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/proj-4.9.3/include" >& /dev/null
+if [ -d "${MOOS_SRC_DIR}/proj-5.2.0/include" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/proj-5.2.0/include" >& /dev/null
 fi
-if [ -d "${MOOS_SRC_DIR}/proj-4.9.3/lib" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/proj-4.9.3/lib" >& /dev/null
+if [ -d "${MOOS_SRC_DIR}/proj-5.2.0/lib" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/proj-5.2.0/lib" >& /dev/null
 fi
-if [ -d "${MOOS_SRC_DIR}/proj-4.9.3/share" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/proj-4.9.3/share" >& /dev/null
+if [ -d "${MOOS_SRC_DIR}/proj-5.2.0/share" ] ; then
+    rm -rf "${MOOS_SRC_DIR}/proj-5.2.0/share" >& /dev/null
 fi
 
 if [ -d "${MOOS_SRC_DIR}/MOOSCore/lib" ] ; then
@@ -166,22 +166,24 @@ fi
 #===================================================================
 # Part #4:  BUILD PROJ4
 #===================================================================
-mkdir -p "${BUILD_ABS_DIR}/proj-4.9.3"
-cd "${BUILD_ABS_DIR}/proj-4.9.3"
+mkdir -p "${BUILD_ABS_DIR}/proj-5.2.0"
+cd "${BUILD_ABS_DIR}/proj-5.2.0"
 
 # TODO: This will always build PROJ4, even if local OS install performed.
 if [ ! -e lib/libproj.a ]; then
-  echo "Building Proj4. MOOSGeodesy now uses Proj4 with MOOSGeodesy wrapper"
-  "${MOOS_SRC_DIR}/proj-4.9.3/configure" --with-jni=no --enable-shared=no --enable-static=yes --with-pic  \
-    && make -j$(getconf _NPROCESSORS_ONLN)           \
-    && make install                                  \
-    && echo "Done Building Proj4."
-  if [ $? -ne 0 ] ; then
-    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    echo "ERROR! Failed to build PROJ4"
-    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
-    exit 4
-  fi
+    echo "Building Proj4. MOOSGeodesy now uses Proj4 with MOOSGeodesy wrapper"
+
+
+    "${MOOS_SRC_DIR}/proj-5.2.0/configure" --prefix=$PWD --with-jni=no --enable-shared=no --enable-static=yes --with-pic  \
+	&& make -j$(getconf _NPROCESSORS_ONLN)           \
+	&& make install                                  \
+	&& echo "Done Building Proj4."
+    if [ $? -ne 0 ] ; then
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo "ERROR! Failed to build PROJ4"
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	exit 4
+    fi
 fi
 
 
@@ -191,8 +193,8 @@ fi
 mkdir -p "${BUILD_ABS_DIR}/MOOSGeodesy"
 cd "${BUILD_ABS_DIR}/MOOSGeodesy"
 
-PROJ4_INCLUDE_DIR="${BUILD_ABS_DIR}/proj-4.9.3/include"
-PROJ4_LIB_DIR="${BUILD_ABS_DIR}/proj-4.9.3/lib"
+PROJ4_INCLUDE_DIR="${BUILD_ABS_DIR}/proj-5.2.0/include"
+PROJ4_LIB_DIR="${BUILD_ABS_DIR}/proj-5.2.0/lib"
 
 echo "PROJ4 LIB DIR: " $PROJ4_LIB_DIR
 
