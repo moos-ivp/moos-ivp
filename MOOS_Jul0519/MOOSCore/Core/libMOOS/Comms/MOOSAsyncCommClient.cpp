@@ -342,7 +342,7 @@ bool MOOSAsyncCommClient::MonitorAndLimitWriteSpeed()
             static_cast<unsigned int> (TotalDelay);
     if (sleep_ms > 0)
     {
-        std::cerr << "I'm sleeping for " << TotalDelay << " ms ("<<TotalDelay/GetMOOSTimeWarp()<<" real ms)\n";
+      //std::cerr << "I'm sleeping for " << TotalDelay << " ms ("<<TotalDelay/GetMOOSTimeWarp()<<" real ms)\n";
         MOOSPause(sleep_ms,false);
     }
 
