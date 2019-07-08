@@ -19,6 +19,8 @@ Packages you probably already have installed:
   subversion - Advanced version control system
   cmake      - cross-platform, open-source make system
   xterm      - X terminal application 
+  autoconf   - GNU tool for producing configure scripts (needed by PROJ4)
+  automake   - GNU tool for automate compiling (needed by PROJ4)
 
 Additional packages:
 

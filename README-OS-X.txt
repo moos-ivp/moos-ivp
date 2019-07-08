@@ -1,5 +1,5 @@
 README-OS-X.txt
-Last updated: 21 July 2014
+Last updated: 31 July 2017
 Maintainer: Mike Benjamin (issues@moos-ivp.org)
 
 ==============================================================================
@@ -52,10 +52,11 @@ sudo port install cmake
 sudo port install fltk
 sudo port install tiff
 sudo port install subversion
-
+sudo port install autoconf - GNU tool for producing config scripts (needed by PROJ4)
+sudo port install automake - GNU tool for automate compiling (needed by PROJ4)
 
 NOTE: We are no longer including FLTK as part of the  MOOS-IvP tree. If you 
-      have trouble finding FLTK 1.3.3 in your system's package manager, we 
+      have trouble finding FLTK 1.3.X in your system's package manager, we 
       recommend that you install from the source code from the FLTK website.
 
 
