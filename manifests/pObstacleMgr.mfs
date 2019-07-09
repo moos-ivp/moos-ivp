@@ -1,0 +1,19 @@
+//====================================================================
+module   = pObstacleMgr
+type     = MOOS App
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Manages known contacts and generates alerts consumed by the helm
+
+depends  = lib_mbutil, lib_apputil, lib_geometry, lib_MOOS
+
+borndate = 170917
+doc_url  = http://oceanai.mit.edu/ivpman/apps/pObstacleMgr
+license  = GPL
+group    = Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = The pObstacleMgr manages incoming sensor dataabout
+  obstacles and posts alerts suitable for spawning obstacle avoidance
+  behaviors.

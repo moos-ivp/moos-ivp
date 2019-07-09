@@ -1,0 +1,24 @@
+//====================================================================
+module   = uMemWatch
+type     = MOOS App
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@moos-ivp.org
+org      = MIT
+thumb    = A MOOS app for monitoring the memory usage of other apps
+
+depends  = lib_mbutil, lib_apputil, lib_MOOS
+
+borndate = 190504
+doc_url  = http://oceanai.mit.edu/ivpman/apps/uMemWatch
+license  = GPL
+group    = Mission Control
+distro   = moos-ivp.org
+
+synopsis = The uMemWatch application is used for measuring the current
+  memory used by a set of MOOS apps. To measure an app, the app must
+  publish the MYAPP_PID variable with its own PID. This app will use
+  that PID and the command line utility "ps" to measure the current
+  memory usage. This app can be configured to selectively watch items
+  on a watch list, or watch all apps but selectively ignore apps on an
+  ignore list.  The primary output is through both AppCasting, and the
+  publication to MYAPP_MEM each time a new measurement is made.
