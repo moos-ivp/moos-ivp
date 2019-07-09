@@ -83,7 +83,7 @@ fi
 if [ ! -e build/MOOS/MOOSCore/lib/libMOOS.a ]; then
     MISSING=$MISSING"MOOS,";
 fi
-if [ ! -e build/MOOS/proj-4.8.0/lib/libproj.a ]; then
+if [ ! -e build/MOOS/proj-5.2.0/lib/libproj.a ]; then
     MISSING=$MISSING"proj,";
 fi
 
