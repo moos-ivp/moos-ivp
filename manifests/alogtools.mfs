@@ -1,4 +1,22 @@
 //====================================================================
+module   = alogcat
+type     = Command line utility
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = ConCATinate two alog files into one alog file
+depends  = lib_mbutil, lib_logutils
+borndate = 180813
+doc_url  = http://oceanai.mit.edu/ivpman/apps/alogcat
+license  = GPL
+group    = ALog Toolbox
+distro   = moos-ivp.org
+
+synopsis = Create a new MOOS .alog file from two or more given .alog
+  files. Given files are meant to be non-overlapping in time,
+  presumably made by starting and stopping a single MOOS community.
+
+//====================================================================
 module   = alogcd
 type     = Command line utility
 author   = Michael Benjamin
