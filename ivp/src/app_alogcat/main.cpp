@@ -38,6 +38,13 @@ void showHelpAndExit();
 
 int main(int argc, char *argv[])
 {
+  string test = "";
+  cout << "1[" << test << "]" << endl;
+
+  test = test.erase(test.size()-1);
+  cout << "2[" << test << "]" << endl;
+  return(0);
+  
   ALogCatHandler handler;
 
   //===================================================================
@@ -84,31 +91,31 @@ int main(int argc, char *argv[])
 void showHelpAndExit()
 {
   cout << "Usage: " << endl;
-  cout << "  alogcat one.alog two.alog --new=three.alog [OPTIONS]      " << endl;
-  cout << "                                                            " << endl;
-  cout << "Synopsis:                                                   " << endl;
-  cout << "  Create a new MOOS .alog file from two or more given .alog " << endl;
-  cout << "  files. Given files are meant to be non-overlapping in     " << endl;
-  cout << "  time, presumably made by starting and stopping a single   " << endl;
-  cout << "  MOOS community.                                           " << endl;
-  cout << "                                                            " << endl;
-  cout << "Standard Arguments:                                         " << endl;
-  cout << "  one.alog  - An input alog file                            " << endl;
-  cout << "  two.alog  - Another alog file. Others may be added.       " << endl;
-  cout << "                                                            " << endl;
-  cout << "Options:                                                    " << endl;
-  cout << "  -h,--help        Display this usage/help message.         " << endl;
-  cout << "  -v,--version     Display version information.             " << endl;
-  cout << "  -f,--force       Overwrite an existing output file.       " << endl;
-  cout << "  --verbose        Produce verbose output.                  " << endl;
-  cout << "  --verbose(again) Produce verbose and debugging output.    " << endl;
-  cout << "  --new=file.alog  Name of new concatenated alog file.      " << endl;
-  cout << "                                                            " << endl;
-  cout << "Further Notes:                                              " << endl;
-  cout << "  (1) Order of all command line arguments do not matter.    " << endl;
-  cout << "  (2) All alog files are scanned to ensure they are not     " << endl;
-  cout << "      overlapping. Their proper order is worked out         " << endl;
-  cout << "      automatically.                                        " << endl;
+  cout << "  alogcat one.alog two.alog --new=three.alog [OPTIONS]    " << endl;
+  cout << "                                                          " << endl;
+  cout << "Synopsis:                                                 " << endl;
+  cout << "  Create a new MOOS .alog file from two or more given     " << endl;
+  cout << "  .alog files. Given files are meant to be non-overlapping" << endl;
+  cout << "  in time, presumably made by starting and stopping a     " << endl;
+  cout << "  single MOOS community.                                  " << endl;
+  cout << "                                                          " << endl;
+  cout << "Standard Arguments:                                       " << endl;
+  cout << "  one.alog  - An input alog file                          " << endl;
+  cout << "  two.alog  - Another alog file. Others may be added.     " << endl;
+  cout << "                                                          " << endl;
+  cout << "Options:                                                  " << endl;
+  cout << "  -h,--help        Display this usage/help message.       " << endl;
+  cout << "  -v,--version     Display version information.           " << endl;
+  cout << "  -f,--force       Overwrite an existing output file.     " << endl;
+  cout << "  --verbose        Produce verbose output.                " << endl;
+  cout << "  --verbose(again) Produce verbose and debugging output.  " << endl;
+  cout << "  --new=file.alog  Name of new concatenated alog file.    " << endl;
+  cout << "                                                          " << endl;
+  cout << "Further Notes:                                            " << endl;
+  cout << "  (1) Order of all command line arguments do not matter.  " << endl;
+  cout << "  (2) All alog files are scanned to ensure they are not   " << endl;
+  cout << "      overlapping. Their proper order is worked out       " << endl;
+  cout << "      automatically.                                      " << endl;
   cout << endl;
 }
 
