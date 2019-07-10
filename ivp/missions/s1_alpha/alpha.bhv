@@ -4,7 +4,7 @@ initialize   DEPLOY = false
 initialize   RETURN = false
 	
 //----------------------------------------------
-//Behavior = BHV_Waypoint
+Behavior = BHV_Waypoint
 { 
   name      = waypt_survey
   pwt       = 100
@@ -37,7 +37,7 @@ initialize   RETURN = false
 }
 
 //----------------------------------------------
-//Behavior=BHV_Waypoint
+Behavior=BHV_Waypoint
 {
   name       = waypt_return
   pwt        = 100

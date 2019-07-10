@@ -41,8 +41,8 @@ ProcessConfig = uMemWatch
   AppTick   = 4                                                 
   CommsTick = 4                                                 
                                                                 
-  absolute_time_gap = 1   // In Seconds, Default is 1.          
-                                                                
+  absolute_time_gap = 1   // In Seconds, Default is 4
+
   watch_only = pHelmIvP,pMarineViewer
 }                                  
 
