@@ -295,7 +295,9 @@ bool PickPos::setCircle(string str)
   if(isQuoted(str))
     str = stripQuotes(str);
   
-  double x,y,rad;
+  double x = 0;
+  double y = 0;;
+  double rad = 0;
   bool x_set = false;
   bool y_set = false;
   bool rad_set = false;
