@@ -54,7 +54,8 @@ class HostInfo : public AppCastingMOOSApp
   std::string readOSXInfoIP(std::string);
   std::string readLinuxInfoIP(std::string);
   int  clearTempFiles();
-  bool handleMailPShareInput(const std::string&);
+  bool handleMailPShareInput(std::string);
+  bool handleConfigPreferInterface(std::string);
   
   void addIPInfo(std::string ip, std::string ip_source);
 
@@ -62,7 +63,8 @@ class HostInfo : public AppCastingMOOSApp
   std::string   m_tmp_file_dir;
   std::string   m_default_hostip;
   bool          m_default_hostip_force;
-
+  std::string   m_prefer_interface;
+  
  protected: // state variables
 
   std::string   m_ip_osx_wifi;

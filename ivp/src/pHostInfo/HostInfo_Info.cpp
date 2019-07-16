@@ -95,10 +95,11 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  TEMP_FILE_DIR  = ./                                           ");
-  blk("  DEFAULT_HOSTIP = 192.168.0.55    // default is \"localhost\"  ");
+  blk("  temp_file_dir  = ./                                           ");
+  blk("  default_hostip = 192.168.0.55    // default is \"localhost\"  ");
   blk("                                                                ");
-  blk("  DEFAULT_HOSTIP_FORCE = 192.168.0.55                           ");
+  blk("  default_hostip_force = 192.168.0.55                           ");
+  blk("  prefer_interface     = wlan0                                  ");
   blk("}                                                               ");
   exit(0);
 }

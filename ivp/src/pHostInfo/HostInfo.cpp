@@ -151,6 +151,8 @@ bool HostInfo::OnStartUp()
       }
     }
     
+    else if(param == "PREFER_INTERFACE")
+      handled = handleConfigPreferInterface(value);
     else if((param == "DEFAULT_HOSTIP") ||
 	    (param == "DEFAULT_HOST_IP")) {
       if(isValidIPAddress(value)) {
@@ -376,6 +378,21 @@ void HostInfo::postIPInfo()
     addIPInfo(m_ip_osx_wi_fi, "OSX_WI-FI");
   }    
 
+  if((m_prefer_interface == "wlan0") && (m_ip_linux_wifi != ""))
+    m_host_ip = m_ip_linux_wifi;
+  else if((m_prefer_interface == "wifi") && (m_ip_linux_wifi != ""))
+    m_host_ip = m_ip_linux_wifi;
+  else if((m_prefer_interface == "eth0") && (m_ip_linux_ethernet0 != ""))
+    m_host_ip = m_ip_linux_ethernet0;
+  else if((m_prefer_interface == "eth1") && (m_ip_linux_ethernet1 != ""))
+    m_host_ip = m_ip_linux_ethernet1;
+  else if((m_prefer_interface == "usb0") && (m_ip_linux_usb0 != ""))
+    m_host_ip = m_ip_linux_usb0;
+  else if((m_prefer_interface == "usb1") && (m_ip_linux_usb1 != ""))
+    m_host_ip = m_ip_linux_usb0;
+  else if((m_prefer_interface == "usb2") && (m_ip_linux_usb2 != ""))
+    m_host_ip = m_ip_linux_usb0;
+  
 
   if(m_host_ip != "")
     Notify("PHI_HOST_IP", m_host_ip);
@@ -521,7 +538,7 @@ int HostInfo::clearTempFiles()
 //            short form (localhost:9000)
 //            (2) We error check where possible.
 
-bool HostInfo::handleMailPShareInput(const string& list_of_routes)
+bool HostInfo::handleMailPShareInput(string list_of_routes)
 {
   string new_pshare_iroutes;
 
@@ -555,6 +572,25 @@ bool HostInfo::handleMailPShareInput(const string& list_of_routes)
   m_pshare_iroutes = new_pshare_iroutes;
   return(true);
 }
+
+//---------------------------------------------------------
+// Procedure: handleConfigPreferInterface
+
+bool HostInfo::handleConfigPreferInterface(string interface)
+{
+  interface = tolower(interface);
+  if((interface != "wlan0") &&  (interface != "wifi") &&
+     (interface != "eth0")  &&  (interface != "eth1") &&
+     (interface != "usb0")  &&  (interface != "usb1") &&
+     (interface != "usb2")) {
+    return(false);
+  }
+  
+  m_prefer_interface = interface;
+  return(true);
+}
+
+
 
 //---------------------------------------------------------
 // Procedure: buildReport()
