@@ -20,9 +20,9 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The pObstacleMgr manages incoming sensor dataabout        ");
-  blk("  obstacles and posts alerts suitable for spawning obstacle     ");
-  blk("  avoidance behaviors.                                          ");
+  blk("  The pObstacleMgr manages incoming sensor data about obstacles ");
+  blk("  and posts alerts suitable for spawning obstacle avoidance     ");
+  blk("  behaviors.                                                    ");
   blk("                                                                ");
   blk("                                                                ");
 }
