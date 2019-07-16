@@ -20,9 +20,9 @@ using namespace std;
 MemWatch::MemWatch()
 {
   m_last_measure_ix = 0;
-  m_total_measures = 0;
+  m_total_measures  = 0;
 
-  m_absolute_time_gap = 4;   // One second between sys calls
+  m_absolute_time_gap = 5;   // Five seconds between sys calls
   m_last_check_tstamp = 0;
 }
 
@@ -92,7 +92,6 @@ bool MemWatch::Iterate()
 
 //---------------------------------------------------------
 // Procedure: OnStartUp()
-//            happens before connection is open
 
 bool MemWatch::OnStartUp()
 {
@@ -111,15 +110,12 @@ bool MemWatch::OnStartUp()
     string value = line;
 
     bool handled = false;
-    if(param == "absolute_time_gap") {
-      handled = setNonNegDoubleOnString(m_absolute_time_gap, value);
-    }
-    else if(param == "watch_only") {
+    if(param == "absolute_time_gap")
+      handled = handleConfigTimeGap(value);
+    else if(param == "watch_only") 
       handled = handleConfigWatchOnly(value);
-    }
-    else if(param == "ignore") {
+    else if(param == "ignore")
       handled = handleConfigIgnore(value);
-    }
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -278,6 +274,24 @@ void MemWatch::handleMailInfoPID(string app, double pid)
   m_delta.push_back(0);
 }
 
+
+//---------------------------------------------------------
+// Procedure: handleConfigTimeGap()
+
+bool MemWatch::handleConfigTimeGap(string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  double dval = atof(str.c_str());
+  if(dval >= 1) {
+    m_absolute_time_gap = dval;
+    return(true);
+  }
+
+  m_absolute_time_gap = 1;
+  return(false);
+}
 
 //---------------------------------------------------------
 // Procedure: handleConfigWatchOnly()

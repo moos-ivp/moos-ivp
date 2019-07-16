@@ -33,6 +33,7 @@ protected:
   void handleMailDBClients(std::string);
   void handleMailInfoPID(std::string, double);
 
+  bool handleConfigTimeGap(std::string);
   bool handleConfigWatchOnly(std::string);
   bool handleConfigIgnore(std::string);
   void registerVariables();

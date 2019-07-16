@@ -18,18 +18,18 @@ using namespace std;
 
 void showSynopsis()
 {
-  blk("SYNOPSIS:                                                     ");
-  blk("------------------------------------                          ");
+  blk("SYNOPSIS:                                                      ");
+  blk("------------------------------------                           ");
   blk("  The uMemWatch application is used for measuring the current  ");
-  blk("  memory used by a set of MOOS apps. To measure, the app needs");
-  blk("  to be publish the MYAPP_PID variable with its own PID. This ");
-  blk("  app will use that PID and the command line utility \"ps\" to");
-  blk("  measure the current memory usage. This app can be configured");
-  blk("  to selectively watch items on a watch list, or watch all    ");
-  blk("  apps but selectively ignore apps on an ignore list.         ");
-  blk("  The primary output is through both AppCasting, and the      ");
-  blk("  publication to MYAPP_MEM each time a new measurement is     ");
-  blk("  made.                                                       ");
+  blk("  memory used by a set of MOOS apps. To measure an app, the app");
+  blk("  must publish the MYAPP_PID variable with its own PID. This   ");
+  blk("  app will use that PID and the command line utility \"ps\" to ");
+  blk("  measure the current memory usage. This app can be configured ");
+  blk("  to selectively watch items on a watch list, or watch all     ");
+  blk("  apps but selectively ignore apps on an ignore list.          ");
+  blk("  The primary output is through both AppCasting, and the       ");
+  blk("  publication to MYAPP_MEM each time a new measurement is      ");
+  blk("  made.                                                        ");
 }
 
 //----------------------------------------------------------------
