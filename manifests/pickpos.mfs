@@ -1,0 +1,20 @@
+//====================================================================
+module   = pickpos
+type     = Command line utility
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = A cmdline utility choosing simulation starting values
+depends  = lib_mbutil, lib_geometry
+borndate = 180922
+doc_url  = No documentation. Use pickpos --help
+license  = GPL
+group    = General Utility, Simulation
+distro   = moos-ivp.org
+
+synopsis = pick_pos is a utility for generating starting points for      
+  simulated vehicles. It can generate points from a set of pts  
+  given in a file, or by picking random points from within one  
+  or more convex polygons. The starting heading position can    
+  also be chosen, in a random range, or relative to a given     
+  position. Vehicle names and group names may also be chosen randomly.
