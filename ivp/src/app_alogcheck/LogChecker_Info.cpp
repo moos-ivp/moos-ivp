@@ -37,10 +37,10 @@ void showHelpAndExit()
   printf("\nOptions:\n");
   
   printf("   -s, --start [COND]      - Delays checking other conditions until these\n"
-	 "                             conditions has been satisfied. If this flag is used\n"
+	 "                             conditions have been satisfied. If this flag is used\n"
 	 "                             multiple times, the conditions will be conjoined.\n");
   printf("   -e, --end [COND]        - Stops checking other conditions once these\n"
-	 "                             conditions has been satisfied. If this flag is used\n"
+	 "                             conditions have been satisfied. If this flag is used\n"
 	 "                             multiple times, the conditions will be conjoined.\n");
   printf("   -p, --pass [COND]       - Conditions that if found will result in the check\n"
 	 "                             passing. If this flag is used multiple times, the\n"

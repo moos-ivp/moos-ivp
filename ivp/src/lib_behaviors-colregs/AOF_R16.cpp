@@ -93,13 +93,24 @@ bool AOF_R16::setParam(const string& param, const string& param_val)
     }
     else {
       m_passing_side_set = false;      
+      string msg = "bad param[" + param + "], value[" + param_val + "]";
+      postMsgAOF(msg);    
       return(false);
     }
   }
-  else if(param == "ok_cn_bow_cross_dist")
-    return(setNonNegDoubleOnString(m_ok_cn_bow_cross_dist, param_val));
-  else
+  else if(param == "ok_cn_bow_cross_dist") {
+    bool ok = setNonNegDoubleOnString(m_ok_cn_bow_cross_dist, param_val);
+    if(!ok) {
+      string msg = "bad param[" + param + "], value[" + param_val + "]";
+      postMsgAOF(msg);
+    }
+    return(ok);
+  }
+  else {
+    string msg = "bad param[" + param + "], value[" + param_val + "]";
+    postMsgAOF(msg);    
     return(false);
+  }
 
   return(true);
 }
@@ -109,20 +120,30 @@ bool AOF_R16::setParam(const string& param, const string& param_val)
 
 bool AOF_R16::initialize()
 {
-  if(AOF_Contact::initialize() == false)
+  if(AOF_Contact::initialize() == false) {
+    postMsgAOF("crs_ix or spd_ix not set");
     return(false);
+  }
   
-  if((m_crs_ix==-1) || (m_spd_ix==-1))
+  if((m_crs_ix==-1) || (m_spd_ix==-1)) {
+    postMsgAOF("crs_ix or spd_ix not set");
     return(false);
+  }
 
-  if(!m_passing_side_set)
+  if(!m_passing_side_set) {
+    postMsgAOF("passing side is not set");
     return(false);
-
-  if(!m_osh_set)
+  }
+    
+  if(!m_osh_set) {
+    postMsgAOF("osh is not set");
     return(false);
+  }
   
-  if(m_pass_to_stern && m_pass_to_bow)
+  if(m_pass_to_stern && m_pass_to_bow) {
+    postMsgAOF("pass_to_stern or pass_to_bow is not set");
     return(false);
+  }
 
   return(true);
 }

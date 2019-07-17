@@ -35,11 +35,19 @@ extern bool MOOSAPP_OnDisconnect(void*);
 PokeDB::PokeDB()
 {
   m_db_start_time = 0; 
+  m_db_time       = 0;
   m_iteration     = 0; 
   m_sServerHost   = "localhost"; 
   m_lServerPort   = 9000;
 
   m_configure_comms_locally = false;
+
+  m_time_warp_set = false;
+  m_priors_reported = false;
+  m_values_poked  = false;
+  m_poked_reported = false;
+
+  m_poke_iteration = 0;
 }
 
 //------------------------------------------------------------
@@ -91,6 +99,39 @@ bool PokeDB::ConfigureComms()
 }
 
 //------------------------------------------------------------
+// Procedure: setTimeWarp()
+
+void PokeDB::setTimeWarp()
+{
+  if(m_time_warp_set)
+    return;
+
+  // We DONT try to auto-set the warp if it has already been set to
+  // a value greater than 1.
+  if(GetMOOSTimeWarp() > 1) {
+    m_time_warp_set = true;
+    return;
+  }
+
+  if(m_db_time == 0)
+    return;
+
+  double curr_time = MOOSTime();
+  if(curr_time <= 0)
+    return;
+  
+  double calculated_warp = m_db_time / curr_time;
+  if(calculated_warp <= 0)
+    return;
+  
+  SetMOOSTimeWarp(calculated_warp);
+  m_db_start_time *= calculated_warp;
+
+  cout << "Calculated Time Warp: " << doubleToString(calculated_warp,2);
+  m_time_warp_set = true;
+}
+
+//------------------------------------------------------------
 // Procedure: Iterate()
 
 bool PokeDB::Iterate()
@@ -99,11 +140,22 @@ bool PokeDB::Iterate()
 
   // Make sure we have a chance to receive and read incoming mail
   // on the poke variables, prior to having their new values poked.
-  if(m_iteration == 1)
+  if((m_iteration == 1) || (m_db_time == 0))
     return(true);
+
+  if(!m_time_warp_set) {
+    setTimeWarp();
+    return(true);
+  }
   
+  if(!m_priors_reported) {
+    printReport();
+    m_priors_reported = true;
+    return(true);
+  }
+
   // After the first iteration, poke the all the scheduled values.
-  if(m_iteration == 2) {
+  if(!m_values_poked) {
     unsigned int i, vsize = m_varname.size();
     for(i=0; i<vsize; i++) {
       string varval = m_varvalue[i];
@@ -116,23 +168,31 @@ bool PokeDB::Iterate()
 	Notify(m_varname[i], atof(varval.c_str()) );
       else 
 	Notify(m_varname[i], varval);
-    }  
-  }
-
-  if(m_iteration > 10)
-    exit(0);
-
-  if(m_iteration == 2) {
-    printf("\n\nPRIOR to Poking the MOOSDB \n");
-    printReport();
-  }
-  else if(m_iteration == 3)
+    }
+    m_values_poked = true;
+    m_poke_iteration = m_iteration;
     printf("\n\nAFTER Poking the MOOSDB \n");
-  else if(m_iteration == 10)
+    return(true);
+  }
+  
+  if((m_poke_iteration - m_iteration) >= 2) {
     printReport();
+    exit(0);
+  }
 
   return(true);
 }
+
+
+//  UTC Time                       UPTIME
+//  000 - 1970
+//
+//  100 - UTC start of MOOS        0 - UPTIME start of MOOS
+//  >500 - UTC start of MOOS*      0 - UPTIME start of MOOS
+//  
+//  150 - UTC sometime later       50 - UPTIME sometime later
+//  >750 - UTC sometime later      250 - UPTIME sometime later
+
 
 //------------------------------------------------------------
 // Procedure: OnNewMail()
@@ -185,6 +245,37 @@ bool PokeDB::OnConnectToServer()
 }
 
 //------------------------------------------------------------
+// Procedure: anyVarsReceived()
+
+bool PokeDB::anyVarsReceived() const
+{
+  for(unsigned int i=0; i<m_varname_recd.size(); i++)
+    if(m_varname_recd[i])
+      return(true);
+  return(false);
+}
+
+//------------------------------------------------------------
+// Procedure: allVarsReceived()
+
+bool PokeDB::allVarsReceived() const
+{
+  for(unsigned int i=0; i<m_varname_recd.size(); i++)
+    if(!m_varname_recd[i])
+      return(false);
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: clearVarsReceived()
+
+void PokeDB::clearVarsReceived()
+{
+  for(unsigned int i=0; i<m_varname_recd.size(); i++)
+    m_varname_recd[i] = false;
+}
+
+//------------------------------------------------------------
 // Procedure: setPokeDouble
 
 void PokeDB::setPokeDouble(const string& varname, const string& value)
@@ -197,7 +288,7 @@ void PokeDB::setPokeDouble(const string& varname, const string& value)
   m_svalue_read.push_back("");
   m_source_read.push_back("");
   m_valtype_read.push_back("");
-  m_wrtime_read.push_back("");
+  m_wrtime_read.push_back(0);
   m_varname_recd.push_back(false);
 }
 
@@ -214,7 +305,7 @@ void PokeDB::setPokeString(const string& varname, const string& value)
   m_svalue_read.push_back("");
   m_source_read.push_back("");
   m_valtype_read.push_back("");
-  m_wrtime_read.push_back("");
+  m_wrtime_read.push_back(0);
   m_varname_recd.push_back(false);
 }
 
@@ -249,12 +340,10 @@ void PokeDB::updateVariable(CMOOSMsg &msg)
   if(ix == -1)
     return;
 
-  double vtime     = msg.GetTime() - m_db_start_time;
-  string vtime_str = doubleToString(vtime, 2);
-  vtime_str = dstringCompact(vtime_str);
+  double vtime = msg.GetTime();
   
   m_source_read[ix] = msg.GetSource();
-  m_wrtime_read[ix] = vtime_str;
+  m_wrtime_read[ix] = vtime;
 
   if(msg.IsString()) {
     m_svalue_read[ix]  = msg.GetString();
@@ -284,10 +373,17 @@ void PokeDB::printReport()
   
   unsigned int i, vsize = m_varname.size();
   for(i=0; i<vsize; i++) {
-    
+    double wrtime_dval = 0;
+    string wrtime_sval;
+    if(m_wrtime_read[i] > 0) {
+      wrtime_dval = m_wrtime_read[i] - m_db_start_time;
+      wrtime_dval = wrtime_dval / GetMOOSTimeWarp();
+      wrtime_sval = doubleToString(wrtime_dval,2);
+    }
+
     printf("  %-22s ", m_varname[i].c_str());
     printf("%-12s",    m_source_read[i].c_str());
-    printf("%-12s",    m_wrtime_read[i].c_str());
+    printf("%-12s",    wrtime_sval.c_str());
     if(m_valtype_read[i] == "string") {
       if(m_svalue_read[i] != "") {
 	printf("\"%s\"", m_svalue_read[i].c_str());

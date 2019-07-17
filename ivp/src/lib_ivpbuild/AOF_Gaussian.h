@@ -37,6 +37,7 @@ class AOF_Gaussian: public AOF {
   ~AOF_Gaussian() {}
   
  public:
+  double evalBox(const IvPBox *b) const;  // Virtual Defined
   double evalPoint(const std::vector<double>& point) const;
   bool   setParam(const std::string&, double);
 

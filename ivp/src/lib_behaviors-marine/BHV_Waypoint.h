@@ -47,7 +47,7 @@ protected:
   bool         updateInfoIn();
   bool         setNextWaypoint();
   IvPFunction* buildOF(std::string);
-
+  
   void         checkLeadConditions();
   void         postStatusReport();
   void         postViewableSegList();

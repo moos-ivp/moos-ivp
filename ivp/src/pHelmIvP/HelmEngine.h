@@ -42,6 +42,8 @@ public:
 
   HelmReport determineNextDecision(BehaviorSet *bset, double curr_time);
 
+  unsigned long int size() const;
+  
 protected:
   bool   checkOFDomains(std::vector<IvPFunction*>);
 

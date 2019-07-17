@@ -85,9 +85,9 @@ void showHelpAndExit()
   blk("      Specifiy the wait period (default is 10 seconds).         ");
   blk("                                                                ");
   blk("Examples:                                                       ");
-  blk("   $ uQueryDB alpha.moos (DB_UPTIME > 20) --wait=5              ");
-  blk("   $ uQueryDB (DEPLOY=false)  --host=localhost --port=9000      ");
-  blk("   $ uQueryDB alpha.moos ((MISSION=complete) or (MISSION=halt)) ");
+  blk("   $ uQueryDB alpha.moos --condition=\"DB_UPTIME > 20\" --wait=5");
+  blk("   $ uQueryDB --condition=\"DEPLOY=false\" --host=localhost --port=9000");
+  blk("   $ uQueryDB alpha.moos --condition=\"((MISSION=complete) or (MISSION=halt))\"");
   exit(0);
 }
 

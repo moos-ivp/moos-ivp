@@ -193,6 +193,11 @@ void MarineGUI::addGeoAttrMenu()
   m_menubar->add("GeoAttr/CommsPulses/comms_pulse_viewable_all=false", 0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)4161, FL_MENU_RADIO);
   m_menubar->add("GeoAttr/CommsPulses/    Toggle Comms Pulses",  '@', (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)4162, FL_MENU_DIVIDER);
 
+  // --------------------------------- NodePulses
+  m_menubar->add("GeoAttr/NodePulses/node_pulse_viewable_all=true",  0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)4170, FL_MENU_RADIO);
+  m_menubar->add("GeoAttr/NodePulses/node_pulse_viewable_all=false", 0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)4171, FL_MENU_RADIO);
+  m_menubar->add("GeoAttr/NodePulses/    Toggle Node Pulses",  '$', (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)4172, FL_MENU_DIVIDER);
+
   // --------------------------------- Datum
   m_menubar->add("GeoAttr/Datum/datum_viewable=true",  0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)400, FL_MENU_RADIO|FL_MENU_VALUE);
   m_menubar->add("GeoAttr/Datum/datum_viewable=false", 0, (Fl_Callback*)MarineGUI::cb_SetGeoAttr, (void*)401, FL_MENU_RADIO);
@@ -318,6 +323,7 @@ void MarineGUI::updateRadios()
   setMenuAttrib("GeoAttr/DropPoints",  "drop_point_viewable_all");
   setMenuAttrib("GeoAttr/DropPoints",  "drop_point_coords");
   setMenuAttrib("GeoAttr/CommsPulses", "comms_pulse_viewable_all");
+  setMenuAttrib("GeoAttr/NodePulses",  "node_pulse_viewable_all");
   setMenuAttrib("GeoAttr/RangePulses", "range_pulse_viewable_all");
 
   setMenuAttrib("BackView", "tiff_viewable");
@@ -408,6 +414,8 @@ void MarineGUI::setMenuItemColors()
   setMenuItemColor("GeoAttr/DropPoints/drop_point_coords=local-grid");
   setMenuItemColor("GeoAttr/CommsPulses/comms_pulse_viewable_all=true");
   setMenuItemColor("GeoAttr/CommsPulses/comms_pulse_viewable_all=false");
+  setMenuItemColor("GeoAttr/NodePulses/node_pulse_viewable_all=true");
+  setMenuItemColor("GeoAttr/NodePulses/node_pulse_viewable_all=false");
   setMenuItemColor("GeoAttr/RangePulses/range_pulse_viewable_all=true");
   setMenuItemColor("GeoAttr/RangePulses/range_pulse_viewable_all=false");
   setMenuItemColor("BackView/tiff_viewable=true");
@@ -681,6 +689,10 @@ inline void MarineGUI::cb_SetGeoAttr_i(int v) {
   else if(v==4160) m_mviewer->setParam("comms_pulse_viewable_all", "true");
   else if(v==4161) m_mviewer->setParam("comms_pulse_viewable_all", "false");
   else if(v==4162) setMenuAttrib("GeoAttr/CommsPulses","comms_pulse_viewable_all","toggle");
+
+  else if(v==4170) m_mviewer->setParam("node_pulse_viewable_all", "true");
+  else if(v==4171) m_mviewer->setParam("node_pulse_viewable_all", "false");
+  else if(v==4172) setMenuAttrib("GeoAttr/NodePulses","node_pulse_viewable_all","toggle");
 
   else 
     return;

@@ -37,21 +37,20 @@ void showSynopsis()
   blk("SYNOPSIS:                                                      ");
   blk("------------------------------------                           ");
   blk("  The uCollisionDetect application is run by the shoreside     ");
-  blk("  and detects if two vehicles have interacted.  An interaction ");
-  blk("  is defined as being within the distance specified by the     ");
-  blk("  input parameters for CPA violation, near miss, and collsion. ");
+  blk("  and detects if two vehicles have had an ecounter.  An        ");
+  blk("  encounter is defined as being within the distance specified  ");
+  blk("  by the encounter_range parameter.                            ");
   blk("                                                               ");
-  blk("  The AppCast displays the detection range and minimum range   ");
-  blk("  of each vehicle pair that is interacting.  The display of    ");
-  blk("  interactions can be delayed from clearing in the AppCast     ");
-  blk("  using DELAYTIMETOCLEAR to allow the user sufficient time     ");
-  blk("  to view the information on the GUI.                          ");
+  blk("  An encounter constituting a near miss or collision will also ");
+  blk("  produce a posting to UCD_REPORT indicating the two vehicle   ");
+  blk("  names, the CPA distance, and rank (near miss or collision).  ");
   blk("                                                               ");
-  blk("  A variable \"VEHICLE_INTERACTION_$V1_$V2\" is published for  ");
-  blk("  each interaction with the closest recorded distance and type ");
-  blk("  of interaction.  A report occurs once vehicles exit the      ");
-  blk("  interaction distance. Immediate reports can be made using    ");
-  blk("  config  parameters.                                          ");
+  blk("  Flags may be configured to be posted upon each event type -  ");
+  blk("  collision, near-miss or encounter. These flags are simply    ");
+  blk("  MOOS variable and value pairs like the flags in many other   ");
+  blk("  MOOS applications and helm behaviors. For example, such a    ");
+  blk("  flag may be used to trigger an evaluation of the mission     ");
+  blk("  efficiency for a window of time around the encounter.        ");
 }
 
 //----------------------------------------------------------------

@@ -164,6 +164,57 @@ bool InfoBuffer::isKnown(string varname) const
 }
 
 //-----------------------------------------------------------
+// Procedure: size()
+//   Purpose: Get the total size of the info_buffer
+//      Note: This just counts elements, and not size of elements.
+//            For example, a string counts as "1" regardless of len. 
+
+unsigned long int InfoBuffer::size() const
+{
+  unsigned long int total = 0;
+
+  total += smap.size();
+  total += dmap.size();
+  total += tmap.size();
+  total += mtmap.size();
+
+  map<string, vector<string> >::const_iterator p;
+  for(p=vsmap.begin(); p!= vsmap.end(); p++)
+    total += p->second.size();
+  map<string, vector<double> >::const_iterator q;
+  for(q=vdmap.begin(); q!= vdmap.end(); q++)
+    total += q->second.size();
+
+  return(total);
+}
+
+//-----------------------------------------------------------
+// Procedure: sizeFull()
+//   Purpose: Get the total size of the info_buffer
+//      Note: This just counts elements, and not size of elements.
+//            For example, a string counts as "1" regardless of len. 
+
+unsigned long int InfoBuffer::sizeFull() const
+{
+  unsigned long int total = 0;
+
+  total += smap.size();
+  total += dmap.size();
+  total += tmap.size();
+  total += mtmap.size();
+
+  map<string, vector<string> >::const_iterator p;
+  for(p=vsmap.begin(); p!= vsmap.end(); p++)
+    total += p->second.size();
+  map<string, vector<double> >::const_iterator q;
+  for(q=vdmap.begin(); q!= vdmap.end(); q++)
+    total += q->second.size();
+
+  return(total);
+}
+
+
+//-----------------------------------------------------------
 // Procedure: setValue
 //      Note: msg_time is the timestamp embedded in the incoming 
 //            message, vs. the time stamp of when this buffer is 

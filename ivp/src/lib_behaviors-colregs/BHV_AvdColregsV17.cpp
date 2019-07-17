@@ -84,6 +84,8 @@ BHV_AvdColregsV17::BHV_AvdColregsV17(IvPDomain gdomain) :
   m_iterations = 0;
   m_cn_crossed_os_port_star = false;
 
+  m_time_on_leg = 120;
+  
   m_debug1     = "n/a";
   m_debug2     = "n/a";
   m_debug3     = "n/a";
@@ -236,10 +238,13 @@ IvPFunction *BHV_AvdColregsV17::onRunState()
 
   bool prev_cn_port_of_os = m_cn_port_of_os;
 
+  postMessage("COL17_DEBUG", 1);
   if(!updatePlatformInfo())
     return(0);
+  postMessage("COL17_DEBUG", 2);
   if(!checkContactGroupRestrictions())
     return(0);
+  postMessage("COL17_DEBUG", 3);
 
   m_cn_crossed_os_port_star = false;
   if((m_iterations > 1) && (m_cn_port_of_os != prev_cn_port_of_os))
@@ -254,6 +259,7 @@ IvPFunction *BHV_AvdColregsV17::onRunState()
     setComplete();
     return(0);
   }
+  postMessage("COL17_DEBUG", 4);
 
   if(m_cn_retired) {
     setComplete();
@@ -268,6 +274,8 @@ IvPFunction *BHV_AvdColregsV17::onRunState()
 
   updateAvoidMode();
   double relevance = getRelevance();
+
+  postMessage("COL17_RELEVANCE", relevance);
   
   IvPFunction *ipf = 0;
   if(relevance > 0) {
@@ -505,7 +513,7 @@ IvPFunction* BHV_AvdColregsV17::buildOvertakingIPF()
   AOF_R13 aof(m_domain);
   aof.setOwnshipParams(m_osx, m_osy);
   aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
-  aof.setParam("tol", 120);
+  aof.setParam("tol", m_time_on_leg);
   aof.setParam("passing_side", m_avoid_submode);
   aof.setParam("collision_distance", min_util_cpa_dist);
   aof.setParam("all_clear_distance", m_max_util_cpa_dist);
@@ -532,7 +540,7 @@ void BHV_AvdColregsV17::checkModeHeadOn()
   //=====================================================================  
   // Part 1: Sanity checks, and absolute release check based on range
   //=====================================================================  
-  // Check if existing mode is either "cpa", "none", or "overtaking"
+  // Check if existing mode is either "cpa", "none", or "headon"
   if((m_avoid_mode!="headon") && (m_avoid_mode!="none") && (m_avoid_mode!="cpa"))
     return;
 
@@ -647,14 +655,15 @@ void BHV_AvdColregsV17::checkModeGiveWay()
     return;
   }
 
-  // NOTE: we dont really let the vehicle switch from bow to stern mode. Kind
-  // of stuck in the original mode. Add some extra logic to allow for switch
-  // espcially if ownship is aft of the contact.
+  // NOTE: we dont really let the vehicle switch from bow to stern
+  // mode. Kind of stuck in the original mode. Add some extra logic to
+  // allow for switch espcially if ownship is aft of the contact.
 
-  //=====================================================================  
-  // Part 2: RELEASE conditions: if already in giveway mode, check mode-exit 
-  // criteria. Release/entry conditions are not same, to prevent mode thrashing.
-  //=====================================================================  
+  //=====================================================================
+  // Part 2: RELEASE conditions: if already in giveway mode, check
+  // mode-exit criteria. Release/entry conditions are not same, to
+  // prevent mode thrashing.
+  // =====================================================================
   if(m_avoid_mode == "giveway") {
     
     // transition to cpa mode if past cpa and opening
@@ -739,7 +748,6 @@ IvPFunction* BHV_AvdColregsV17::buildGiveWayIPF()
 
   m_debug2 = "Building Giveway IPF";
 
-  //AOF_AvoidCollision aof(m_domain);
   AOF_R16  aof(m_domain);
 
   aof.setOwnshipParams(m_osx, m_osy);
@@ -748,10 +756,7 @@ IvPFunction* BHV_AvdColregsV17::buildGiveWayIPF()
   ok = ok && aof.setParam("tol", 120);
   ok = ok && aof.setParam("osh", m_osh);
   //ok = ok && aof.setParam("osv", m_osv);
-  ok = ok && aof.setParam("passing_side", m_avoid_submode);
-  ok = ok && aof.setParam("pwt_inner_distance", m_pwt_inner_dist);
-  ok = ok && aof.setParam("pwt_outer_distance", m_pwt_outer_dist);
-  
+  ok = ok && aof.setParam("passing_side", m_avoid_submode);  
   ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
   ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
   bool init_ok = ok && aof.initialize();
@@ -760,7 +765,8 @@ IvPFunction* BHV_AvdColregsV17::buildGiveWayIPF()
   
   if(!init_ok) {
     m_debug1 = "PROBLEM Init AOF_R16!!!!";
-    postEMessage("Unable to init AOF_R16.");
+    string aof_msg = aof.getCatMsgsAOF();
+    postEMessage("Unable to init AOF_R16:"+aof_msg);
     return(0);
   }
   m_debug4 = "GiveWay AOF initialized OK";

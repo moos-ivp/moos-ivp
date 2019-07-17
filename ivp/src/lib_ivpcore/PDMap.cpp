@@ -589,7 +589,7 @@ bool PDMap::freeOfNan() const
 //   Purpose: Confirm that each point in the IvPDomain is contained in
 //            exactly one box
 
-bool PDMap::valid() const
+bool PDMap::valid(bool verbose) const
 {
   int dim = (int)(m_domain.size());
   
@@ -605,8 +605,15 @@ bool PDMap::valid() const
       if(m_boxes[i]->intersect(&box))
 	count++;
 
-    if(count != 1)
+    if(count != 1) {
+      if(verbose) {
+	print();
+	cout << "bad box:" << endl;
+	box.print();
+	cout << "intCount:" << count << endl;
+      }
       return(false);
+    }
 
     // Increment
     bool incremented=false;

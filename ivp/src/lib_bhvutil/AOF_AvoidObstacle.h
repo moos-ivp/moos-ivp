@@ -35,10 +35,14 @@ public:
   AOF_AvoidObstacle(IvPDomain);
   ~AOF_AvoidObstacle() {}
 
-public: // virtual functions
+ public: // virtual functions
   double evalBox(const IvPBox*) const; 
   bool   setParam(const std::string&, double);
   bool   setParam(const std::string&, const std::string&);
+ public: // More virtuals defined Declare a known min/max eval range
+  bool   minMaxKnown() const {return(true);}
+  double getKnownMin() const {return(0);}
+  double getKnownMax() const {return(100);}
 
   void   setObstacleOrig(XYPolygon poly) {m_obstacle_orig=poly;}
   void   setObstacleBuff(XYPolygon poly) {m_obstacle_buff=poly;}

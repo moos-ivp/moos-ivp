@@ -35,19 +35,15 @@ QuadSet  buildQuadSetFromIPF(IvPFunction*, bool dense=false);
 
 QuadSet  buildQuadSetDense2DFromIPF(IvPFunction*);
 
-QuadSet  buildQuadSet2DFromIPF(IvPFunction*);
+QuadSet  buildQuadSetDense2DFromAOF(AOF*, unsigned int patch=1);
 
-//QuadSet  buildQuadSet1DFromIPF(IvPFunction*, std::string);
+QuadSet  buildQuadSet2DFromIPF(IvPFunction*);
 
 QuadSet1D  buildQuadSet1DFromIPF(IvPFunction*, std::string);
 
 
-std::vector<Quad3D> buildQuadsFromCache(const std::vector<std::vector<double> >&);
+std::vector<Quad3D> buildQuadsFromCache(const std::vector<std::vector<double> >&,
+					unsigned int patch_size=1);
 
 
 #endif
-
-
-
-
-

@@ -120,7 +120,7 @@ public:
   void applyPolar(double radextra, int dim, int pts=0);
   void applyColorIntensity(double intensity);
   void applyScale(double scale);
-  void applyBase(double scale);
+  void applyBase(double value);
   void applyTranslation(double x, double y);
 
   void interpolate(double xdelta);

@@ -241,7 +241,20 @@ bool ScalarPID::Run(double dfeIn, double dfErrorTime, double &dfOut)
     m_dfeSum = 0;
   }
 
+  // m_dfOut = (m_dfKp*m_dfe) + (m_dfKd*m_dfeDiff) + m_dfeSum; 
+  //        m_dfKp =
+  //        m_dfe  =
+  //     (m_dfKp * m_dfe) =
+  //        m_dfKd = 
+  //     m_dfeDiff = 0.10223 
+  //     (m_dfKd * m_dfeDiff) =
+  //     m_dfeSum  = 
 
+  // dfeIn=145.88560, dfErrorTime=1556750915.09088, m_dfDT=0.10035, dfDiffNow=0.09397, DiffHistSize=9,
+  // mdfeDiff(1)=0.92005, mdfeDiff(2)=0.10223, m_dfOut(1)218.84885, m_dfOut(1)100 
+
+  
+  
   //do pid control
   m_dfOut = (m_dfKp*m_dfe) + (m_dfKd*m_dfeDiff) + m_dfeSum; 
   if(m_debug) 

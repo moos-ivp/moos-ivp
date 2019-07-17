@@ -112,6 +112,7 @@ class PMV_Viewer : public MarineViewer
   double   m_mouse_lon;
   int      m_lclick_ix;
   int      m_rclick_ix;
+  int      m_bclick_ix;
 
   std::string m_left_mouse_key;
   std::string m_right_mouse_key;
@@ -129,10 +130,3 @@ class PMV_Viewer : public MarineViewer
 };
 
 #endif 
-
-
-
-
-
-
-

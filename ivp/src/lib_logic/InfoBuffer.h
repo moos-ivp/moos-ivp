@@ -50,6 +50,9 @@ public:
   bool   isKnown(std::string) const;
   void   print(std::string s="") const;
 
+  unsigned long int size() const;
+  unsigned long int sizeFull() const;
+
 public:
   bool   setValue(std::string, double, double msg_time=0);
   bool   setValue(std::string, std::string, double msg_time=0);

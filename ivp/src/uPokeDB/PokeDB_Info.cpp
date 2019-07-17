@@ -41,7 +41,7 @@ void showSynopsis()
   blk("  It finds the MOOSDB via mission file provided on the command  ");
   blk("  line, or the IP address and port number given on the command  ");
   blk("  line. It will connect to the DB, show the value prior to      ");
-  blk("  poking, poke the DB, and wait an iteratino for mail from the  "); 
+  blk("  poking, poke the DB, and wait an iteration for mail from the  "); 
   blk("  DB to confirm the result of the poke.                         ");
 }
 

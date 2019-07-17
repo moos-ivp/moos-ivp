@@ -620,8 +620,6 @@ double Regressor::evalPtBox(const IvPBox *gbox)
   double val = m_aof->evalPoint(pvals);
   if(val == 0)
     val = m_aof->evalBox(gbox);
-  if(val == 0)
-    val = m_aof->evalBoxDebug(gbox, m_messages);
   return(val);
 }
 

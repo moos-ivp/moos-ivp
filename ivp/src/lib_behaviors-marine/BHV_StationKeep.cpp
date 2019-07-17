@@ -268,7 +268,6 @@ IvPFunction *BHV_StationKeep::onRunState()
   else // m_dist_to_station >= m_outer_radius
     desired_speed = m_extra_speed;
 
-
   ZAIC_PEAK spd_zaic(m_domain, "speed");
   spd_zaic.setSummit(desired_speed);
   spd_zaic.setBaseWidth(0.4);

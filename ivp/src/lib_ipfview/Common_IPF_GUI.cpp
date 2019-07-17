@@ -111,9 +111,6 @@ void Common_IPF_GUI::augmentMenu()
 		 (Fl_Callback*)Common_IPF_GUI::cb_Zoom, (void*)-1, 0);
   m_menubar->add("RotateZoom/Zoom Out",  'o',
 		 (Fl_Callback*)Common_IPF_GUI::cb_Zoom, (void*)1, 0);
-  m_menubar->add("RotateZoom/Zoom Reset", 'Z',
-		 (Fl_Callback*)Common_IPF_GUI::cb_Zoom, (void*)0, 
-		 FL_MENU_DIVIDER);
   m_menubar->add("RotateZoom/Scale +", 'S',
 		 (Fl_Callback*)Common_IPF_GUI::cb_ModScale, (void*)+2, 0);
   m_menubar->add("RotateZoom/Scale -", 's',
@@ -270,8 +267,6 @@ inline void Common_IPF_GUI::cb_Zoom_i(int val) {
     m_viewer->setParam("mod_zoom", 1.25);
   if(val > 0)
     m_viewer->setParam("mod_zoom", 0.80);
-  //if(val ==0)
-  //  m_viewer->zoomReset();
 }
 void Common_IPF_GUI::cb_Zoom(Fl_Widget* o, int v) {
   ((Common_IPF_GUI*)(o->parent()->user_data()))->cb_Zoom_i(v);
@@ -445,12 +440,8 @@ void Common_IPF_GUI::cb_ColorBack(Fl_Widget* o, int v) {
 
 //----------------------------------------- cb_Polar
 inline void Common_IPF_GUI::cb_Polar_i(int index) {
-  if(index == 0)
-    m_viewer->setParam("polar", "0");
-  else if(index == 1)  
-    m_viewer->setParam("polar", "1");
-  else if(index == 2)  
-    m_viewer->setParam("polar", "2");
+  if((index >= 0) && (index <=2))
+    m_viewer->setParam("polar", index);
   else
     return;
   m_viewer->redraw();
@@ -463,8 +454,4 @@ void Common_IPF_GUI::cb_Polar(Fl_Widget* o, int v) {
 void Common_IPF_GUI::cb_Quit() {
   exit(0);
 }
-
-
-
-
 

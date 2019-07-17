@@ -41,7 +41,6 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_zRot         = 40;
   m_zoom         = 1;
 
-  m_base         = 0;
   m_scale        = 2;
   m_rad_ratio    = 1;
   m_rad_extent   = 0;
@@ -58,6 +57,11 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_frame_base   = -125;
   m_frame_on_top = false;
   
+  m_draw_aof     = true;
+  m_draw_ipf     = true;
+  m_base_aof     = m_frame_base;         // For shifting the AOF rendering
+  m_base_ipf     = m_base_aof + 100;     // For shifting the IPF rendering
+
   m_draw_ship    = true;
   m_ship_scale   = 4;
   
@@ -72,7 +76,9 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_grid_height = 0.5 * hgt;
 
   m_show_pieces = false;
-  m_quadset_refresh_pending = false;
+
+  m_refresh_quadset_aof_pending = true;
+  m_refresh_quadset_ipf_pending = true;
 }
 
 //-------------------------------------------------------------
@@ -116,17 +122,12 @@ bool Common_IPFViewer::setParam(string param, string value)
   else if(param == "draw_pclines") 
     return(setBooleanOnString(m_draw_pclines, value));
   else if(param == "draw_pieces") {
-    m_quadset_refresh_pending = true;
+    m_refresh_quadset_aof_pending = true;
+    m_refresh_quadset_ipf_pending = true;
     return(setBooleanOnString(m_show_pieces, value));
   }
   else if(param == "draw_pin")
     setBooleanOnString(m_draw_pin, value);
-  else if((param == "polar") && (value == "0"))
-    m_polar = 0;
-  else if((param == "polar") && (value == "1"))
-    m_polar = 1;
-  else if((param == "polar") && (value == "2"))
-    m_polar = 2;
   else if(param == "reset_view") {
     if(value=="1")
       {m_xRot=-78; m_zRot=40;}
@@ -168,10 +169,26 @@ bool Common_IPFViewer::setParam(string param, double value)
     m_frame_height = value;
   else if(param == "mod_zoom")
     m_zoom *= value;
+  else if((param == "polar") && (value >=0) && (value <=2)) {
+    m_refresh_quadset_aof_pending = true;
+    m_refresh_quadset_ipf_pending = true;
+    m_polar = (int)(value);
+  }
+  else if(param == "set_base_aof") {
+    double delta = m_base_aof - value;
+    m_base_aof = value;
+    m_quadset_aof.applyBase(delta);
+  }    
+  else if(param == "mod_base_aof") {
+    m_base_aof += value;
+    m_quadset_aof.applyBase(value);
+  }
   else if(param == "set_zoom")
     m_zoom = value;
-  else if(param == "mod_base_ipf")
-    m_base += value;
+  else if(param == "mod_base_ipf") {
+    m_base_ipf += value;
+    m_refresh_quadset_ipf_pending = true;
+  }
   else if(param == "mod_base_frame")
     m_frame_base += value;
   else if(param == "toggle_frame_on_top")
@@ -193,7 +210,15 @@ bool Common_IPFViewer::setParam(string param, double value)
     m_scale += value;
     if(m_scale < 0.1)
       m_scale = 0.1;
-    m_quadset_refresh_pending = true;
+    m_refresh_quadset_aof_pending = true;
+    m_refresh_quadset_ipf_pending = true;
+  }
+  else if(param == "set_scale") {
+    m_scale = value;
+    if(m_scale < 0.1)
+      m_scale = 0.1;
+    m_refresh_quadset_aof_pending = true;
+    m_refresh_quadset_ipf_pending = true;
   }
   else
     return(false);
@@ -220,6 +245,16 @@ void Common_IPFViewer::printParams()
     cout << "draw_base=true"   << endl;
   else
     cout << "draw_base=false"  << endl;
+}
+
+//-------------------------------------------------------------
+// Procedure: setColorMap()
+
+void Common_IPFViewer::setColorMap(string str)
+{
+  m_color_map.setType(str);
+  m_refresh_quadset_aof_pending = true;
+  m_refresh_quadset_ipf_pending = true;
 }
 
 //-------------------------------------------------------------
@@ -307,7 +342,7 @@ void Common_IPFViewer::draw()
 
 void Common_IPFViewer::resetRadVisuals()
 {
-  IvPDomain ivp_domain = m_quadset.getDomain();
+  IvPDomain ivp_domain = m_quadset_ipf.getDomain();
 
   double min_extent = w();
   if(h() < min_extent)
@@ -331,15 +366,6 @@ bool Common_IPFViewer::drawQuadSet(const QuadSet& quadset)
   if(quadset.size() != 0) 
     return(drawQuadSet2D(quadset));
 
-#if 0
-  if(qdim == 1) {
-    drawQuadSet1D();
-    draw1DAxes(m_quadset.getDomain());
-    draw1DLabels(m_quadset.getDomain());
-    draw1DLine();
-  }
-#endif
-  
   return(true);
 }
 
@@ -459,22 +485,6 @@ bool Common_IPFViewer::drawQuadSet2D(const QuadSet& quadset)
 
   for(unsigned int i=0; i<quad_cnt; i++) {
     drawQuad(quadset.getQuad(i));
-
-    if(i==10) {
-      Quad3D q = quadset.getQuad(i);
-#if 0
-      cout << "x0: " << q.getLLX() << endl;
-      cout << "x1: " << q.getHLX() << endl;
-      cout << "x2: " << q.getHHX() << endl;
-      cout << "x3: " << q.getLHX() << endl;
-      
-      cout << "y0: " << q.getLLY() << endl;
-      cout << "y1: " << q.getHLY() << endl;
-      cout << "y2: " << q.getHHY() << endl;
-      cout << "y3: " << q.getLHY() << endl;
-      cout << "m_zoom: " << m_zoom << endl;
-#endif
-    }
   }
 
   return(true);
@@ -502,9 +512,9 @@ void Common_IPFViewer::drawQuad(Quad3D q)
 
   // Draw the first two vertices
   glColor3f(q.getLLR(), q.getLLG(), q.getLLB());
-  glVertex3f(x0, y0, q.getLLZ()+m_base);
+  glVertex3f(x0, y0, q.getLLZ());
   glColor3f(q.getLHR(), q.getLHG(), q.getLHB());
-  glVertex3f(x3, y3, q.getLHZ()+m_base);
+  glVertex3f(x3, y3, q.getLHZ());
 
 
   // Draw potentially many or zero interpolated vertices common
@@ -512,23 +522,23 @@ void Common_IPFViewer::drawQuad(Quad3D q)
   unsigned int psize = q.getInPtsSize();
   for(unsigned int i=0; i<psize; i++) {
     glColor3f(q.getRinHGH(i),  q.getGinHGH(i), q.getBinHGH(i));
-    glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i)+m_base);
+    glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i));
     glColor3f(q.getRinLOW(i),  q.getGinLOW(i), q.getBinLOW(i));
-    glVertex3f(q.getXinLOW(i), q.getYinLOW(i), q.getZinLOW(i)+m_base);
+    glVertex3f(q.getXinLOW(i), q.getYinLOW(i), q.getZinLOW(i));
     glEnd();
     glShadeModel(GL_SMOOTH);
     glBegin(GL_TRIANGLE_FAN);
     glColor3f(q.getRinLOW(i),  q.getGinLOW(i), q.getBinLOW(i));
-    glVertex3f(q.getXinLOW(i), q.getYinLOW(i), q.getZinLOW(i)+m_base);
+    glVertex3f(q.getXinLOW(i), q.getYinLOW(i), q.getZinLOW(i));
     glColor3f(q.getRinHGH(i),  q.getGinHGH(i), q.getBinHGH(i));
-    glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i)+m_base);
+    glVertex3f(q.getXinHGH(i), q.getYinHGH(i), q.getZinHGH(i));
   }
 
   // Draw the last two vertices
   glColor3f(q.getHHR(), q.getHHG(), q.getHHB());
-  glVertex3f(x2, y2, q.getHHZ()+m_base);
+  glVertex3f(x2, y2, q.getHHZ());
   glColor3f(q.getHLR(), q.getHLG(), q.getHLB());
-  glVertex3f(x1, y1, q.getHLZ()+m_base);
+  glVertex3f(x1, y1, q.getHLZ());
 
   glEnd();
 
@@ -538,30 +548,30 @@ void Common_IPFViewer::drawQuad(Quad3D q)
     glColor3f(1.0, 1.0, 1.0);
 
     glBegin(GL_LINE_STRIP);
-    glVertex3f(x0, y0, q.getLLZ()+m_base);
+    glVertex3f(x0, y0, q.getLLZ());
 
     unsigned int psize = q.getInPtsSize();
     for(unsigned int i=0; i<psize; i++) {
       double x = q.getXinLOW(i);
       double y = q.getYinLOW(i);
-      double z = q.getZinLOW(i)+m_base;
+      double z = q.getZinLOW(i);
       glVertex3f(x, y, z);
     }
     
-    glVertex3f(x1, y1, q.getHLZ()+m_base);
-    glVertex3f(x2, y2, q.getHHZ()+m_base);
+    glVertex3f(x1, y1, q.getHLZ());
+    glVertex3f(x2, y2, q.getHHZ());
 
     for(unsigned int i=0; i<psize; i++) {
       unsigned int ix = psize-i-1;
       double x = q.getXinHGH(ix);
       double y = q.getYinHGH(ix);
-      double z = q.getZinHGH(ix)+m_base;
+      double z = q.getZinHGH(ix);
 
       glVertex3f(x, y, z);
     }
 
-    glVertex3f(x3, y3, q.getLHZ()+m_base);
-    glVertex3f(x0, y0, q.getLLZ()+m_base);
+    glVertex3f(x3, y3, q.getLHZ());
+    glVertex3f(x0, y0, q.getLLZ());
 
     glEnd();
     glLineWidth(1.0);
@@ -575,7 +585,7 @@ void Common_IPFViewer::drawFrame(bool full)
 {
   double w = 250;
 
-  IvPDomain domain = m_quadset.getDomain();
+  IvPDomain domain = m_quadset_ipf.getDomain();
   if(domain.size() != 0)
     w = domain.getVarPoints(0) / 2;
   
@@ -812,7 +822,7 @@ void Common_IPFViewer::drawOwnPoint()
 {
   if((m_xRot != 0) || (m_zRot != 0))
     return;
-  if(m_quadset.size() == 0)
+  if(m_quadset_ipf.size() == 0)
     return;
 
   double w = 250;
@@ -832,7 +842,7 @@ void Common_IPFViewer::drawOwnPoint()
 }
 
 //-------------------------------------------------------------
-// Procedure: toggleFrameOnToop()
+// Procedure: toggleFrameOnTop()
 //   Purpose: Toggle the mode where the ship and frame are drawn
 //            over the IvP function. Heuristically places it a bit
 //            higher than the base of the IvP function + 210. The
@@ -844,11 +854,11 @@ void Common_IPFViewer::toggleFrameOnTop()
 
   if(m_frame_on_top){
     m_draw_base = false;
-    m_frame_base = m_base + 210;
+    m_frame_base = m_base_ipf + 210;
   }
   else {
     m_draw_base = true;
-    m_frame_base = m_base + -100;
+    m_frame_base = m_base_ipf + -100;
   }
 }
 
@@ -857,13 +867,13 @@ void Common_IPFViewer::toggleFrameOnTop()
 
 void Common_IPFViewer::drawMaxPoint(double crs, double spd)
 {
-  if(m_quadset.size() == 0)
+  if(m_quadset_ipf.size() == 0)
     return;
 
   // Apply the radial extent
   spd *= m_rad_ratio;
 
-  double x,y,z=m_base+230;
+  double x,y,z=m_base_ipf+230;
   projectPoint(crs, spd, 0, 0, x, y);
   
   glPointSize(2.0 * m_zoom);

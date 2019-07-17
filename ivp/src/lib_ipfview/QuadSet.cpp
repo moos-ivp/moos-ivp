@@ -235,10 +235,23 @@ void QuadSet::applyScale(double scale)
 //-------------------------------------------------------------
 // Procedure: applyBase()
 
-void QuadSet::applyBase(double base)
+void QuadSet::applyBase(double base_delta)
 {
   for(unsigned int i=0; i<m_quads.size(); i++) 
-    m_quads[i].applyBase(base);
+    m_quads[i].applyBase(base_delta);
+}
+
+//-------------------------------------------------------------
+// Procedure: setBase()
+
+void QuadSet::setBase(double base)
+{
+  double base_delta = base - m_minpt_val;
+  for(unsigned int i=0; i<m_quads.size(); i++) 
+    m_quads[i].applyBase(base_delta);
+
+  m_maxpt_val += base_delta;
+  m_minpt_val += base_delta;
 }
 
 //-------------------------------------------------------------
@@ -279,7 +292,7 @@ void QuadSet::applyPolar(double rad_extra, int polar_dim)
     return;
   if(m_ivp_domain.size() != 2)
     return;
-     
+
   unsigned int pts = m_ivp_domain.getVarPoints(0);
   if(polar_dim == 2)
     pts = m_ivp_domain.getVarPoints(1);

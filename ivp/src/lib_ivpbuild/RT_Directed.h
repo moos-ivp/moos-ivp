@@ -24,40 +24,28 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
-#ifndef RT_FOCUS_HEADER
-#define RT_FOCUS_HEADER
+#ifndef RT_DIRECTED_HEADER
+#define RT_DIRECTED_HEADER
 
-#include <vector>
 #include "PDMap.h"
-#include "PQueue.h"
 
 class Regressor;
 
 class RT_Directed {
-public:
-  RT_Directed(Regressor*);
+ public:
+  RT_Directed() {m_verbose=false;}
   virtual ~RT_Directed() {}
 
-public: 
-  PDMap* create(PDMap*, const IvPBox&, const IvPBox&, PQueue&);
+ public: 
+  PDMap* create(PDMap*, const IvPBox&, const IvPBox&);
 
- protected:
-  void   updatePQueue(PQueue&, const std::vector<int>& idx_map);
-
-protected:
-  Regressor* m_regressor;
+  void   setVerbose(bool v=true) {m_verbose=v;}
+  
+ private:
+  bool m_verbose;
 };
 
 #endif
-
-
-
-
-
 
 
 

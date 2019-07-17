@@ -35,8 +35,12 @@ done
 #----------------------------------------------------------
 VNAME1="henry"           # The first vehicle Community
 VNAME2="gilda"           # The second vehicle Community
+VGROUP1="red"
+VGROUP2="blue"
+VTYPE1="kayak"
+VTYPE2="mokai"
 START_POS1="0,0"         
-START_POS2="80,0"        
+START_POS2="180,0"        
 LOITER_POS1="x=0,y=-75"
 LOITER_POS2="x=125,y=-50"
 SHORE_PSHARE="9200"

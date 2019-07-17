@@ -3,6 +3,8 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF_Contact.h                                        */
 /*    DATE: May 17th, 2013 (Generalizing over existing classes)  */
+/*    DATE: Nov 30th, 2017 (Revised handling of CPAEngine)       */
+/*    DATE: Jun 6th,  2018 (More Revised handling of CPAEngine)  */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -22,11 +24,6 @@
 /* Public License along with MOOS-IvP.  If not, see              */
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
-
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
 
 #include <iostream>
 #include "AOF_Contact.h"
@@ -55,15 +52,26 @@ AOF_Contact::AOF_Contact(IvPDomain gdomain) : AOF(gdomain)
 
   m_collision_distance = 0;
   m_all_clear_distance = 0;
-  m_pwt_inner_distance = 0;
-  m_pwt_outer_distance = 0;
 
   m_collision_distance_set = false;
   m_all_clear_distance_set = false;
-  m_pwt_inner_distance_set = false;
-  m_pwt_outer_distance_set = false;
 
   m_stat_bng_os_cn = 0;
+
+  m_cpa_engine_initialized = false;
+}
+
+//----------------------------------------------------------------
+// Procedure: setCPAEngine()
+//      Note: Typically a CPAEngine is owned by the caller and is passed
+//            along to this AOF after creation. The owner will have
+//            populated the trig cache once, thereby avoiding the needless
+//            recalculation of trig functions 
+
+void AOF_Contact::setCPAEngine(const CPAEngine& engine)
+{
+  m_cpa_engine = engine;
+  m_cpa_engine_initialized = true;
 }
 
 //----------------------------------------------------------------
@@ -81,7 +89,8 @@ void AOF_Contact::setOwnshipParams(double osx, double osy)
 //----------------------------------------------------------------
 // Procedure: setContactParams
 
-void AOF_Contact::setContactParams(double cnx, double cny, double cnh, double cnv)
+void AOF_Contact::setContactParams(double cnx, double cny,
+				   double cnh, double cnv)
 {
   m_cnx = cnx;
   m_cny = cny;
@@ -140,23 +149,17 @@ bool AOF_Contact::setParam(const string& param, double param_val)
     m_all_clear_distance_set = true;
     return(true);
   }
-  else if(param == "pwt_inner_distance") {
-    m_pwt_inner_distance = param_val;
-    m_pwt_inner_distance_set = true;
-    return(true);
-  }
-  else if(param == "pwt_outer_distance") {
-    m_pwt_outer_distance = param_val;
-    m_pwt_outer_distance_set = true;
-    return(true);
-  }
   else if(param == "tol") {
     m_tol = param_val;
     m_tol_set = true;
     return(true);
   }
-  else
+  else {
+    string msg = "bad param[" + param + "], value[";    
+    msg += doubleToStringX(param_val) + "]";    
+    postMsgAOF(msg);    
     return(false);
+  }
 }
 
 //----------------------------------------------------------------
@@ -166,29 +169,84 @@ bool AOF_Contact::initialize()
 {
   // Check that the domain is exactly over the two vars course and speed.
 
-  if(!m_domain.hasDomain("course") || !m_domain.hasDomain("speed"))
+  if(!m_domain.hasDomain("course") || !m_domain.hasDomain("speed")) {
+    postMsgAOF("no crs or spd in IvPDomain");
     return(false);
+  }
 
-  if(!m_osx_set || !m_osy_set || !m_cnx_set) 
+  if(!m_osx_set || !m_osy_set || !m_cnx_set) {
+    postMsgAOF("osx, osy, or cnx not set");
     return(false);
+  }
   
-  if(!m_cny_set || !m_cnh_set || !m_cnv_set) 
+  if(!m_cny_set || !m_cnh_set || !m_cnv_set) {
+    postMsgAOF("cny, cnh, or cnv not set");
     return(false);
+  }
   
-  if(!m_collision_distance_set || 
-     !m_all_clear_distance_set || !m_tol_set) 
+  if(!m_collision_distance_set) {
+    postMsgAOF("collision_distance not set");
     return(false);
+  }
+
+  if(!m_all_clear_distance_set) {
+    postMsgAOF("all_clear_distance not set");
+    return(false);
+  }
   
-  if(m_collision_distance > m_all_clear_distance)
+  if(!m_tol_set) {
+    postMsgAOF("tol not set");
     return(false);
+  }
+  
+  if(m_collision_distance > m_all_clear_distance) {
+    postMsgAOF("collision_dist > all_clear_dist");
+    return(false);
+  }
 
   m_stat_bng_os_cn = relAng(m_osx, m_osy, m_cnx, m_cny);
-  
-  m_cpa_engine = CPAEngine(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
+
+  // Initialization will be avoided if the user has already initialized
+  // or if the CPAEngine was set already via the setCPAEngine() function.
+  // For this reason, users should make sure that setCPAEngine() is called
+  // first, before this function, to make sure that the CPAEngine is not
+  // initialized twice. Not incorrect if so, but this is inefficient since
+  // CPAEngine initialization involves the building of caches.
+  if(!m_cpa_engine_initialized)
+    m_cpa_engine.reset(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
 
   return(true);
 }
 
 
+//----------------------------------------------------------------
+// Procedure: getCNSpeedInOSPos()
 
+double AOF_Contact::getCNSpeedInOSPos() const
+{
+  return(m_cpa_engine.getCNSpeedInOSPos());
+}
 
+//----------------------------------------------------------------
+// Procedure: aftOfContact()
+
+bool AOF_Contact::aftOfContact() const
+{
+  return(m_cpa_engine.aftOfContact());
+}
+
+//----------------------------------------------------------------
+// Procedure: portOfContact()
+
+bool AOF_Contact::portOfContact() const
+{
+  return(m_cpa_engine.portOfContact());
+}
+
+//----------------------------------------------------------------
+// Procedure: getRangeGamma()
+
+double AOF_Contact::getRangeGamma() const
+{
+  return(m_cpa_engine.getRangeGamma());
+}

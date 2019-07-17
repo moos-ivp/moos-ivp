@@ -98,7 +98,7 @@ void ZAIC_LEQ::setPointLocations()
 
   if(m_ipt_one > m_ipt_two)
     m_ipt_one = m_ipt_two;
-
+  
   i_basewidth = (int)((m_basewidth + (delta/2)) / delta);
 }
      
@@ -116,7 +116,7 @@ PDMap *ZAIC_LEQ::setPDMap()
     piece[i] = 0;
 
   // Handle piece0 if it exists
-  if(m_ipt_low < m_ipt_one) {
+  if(m_ipt_low <= m_ipt_one) {  // changed to leq, mikerb, nov1918
     piece[0] = new IvPBox(1,1);
     piece[0]->setPTS(0, 0, m_ipt_one);
     piece[0]->wt(0) = m_break_ties;

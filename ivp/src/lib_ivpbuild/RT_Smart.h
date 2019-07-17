@@ -40,11 +40,16 @@ public:
   RT_Smart(Regressor*);
   virtual ~RT_Smart() {}
 
-public: 
+ public: 
   PDMap* create(PDMap*, PQueue&, int more_pcs, double thresh=0);
 
-protected:
+  void   setVerbose(bool v=true) {m_verbose=v;}
+  
+ protected:
   Regressor* m_regressor;
+
+ private:
+  bool m_verbose;
 };
 
 #endif

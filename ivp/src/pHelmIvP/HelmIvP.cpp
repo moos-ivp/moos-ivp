@@ -89,6 +89,9 @@ HelmIvP::HelmIvP()
   m_init_vars_ready  = false;
   m_init_vars_done   = false;
 
+  m_helm_start_posted  = false;
+  m_hold_apps_all_seen = true; // will init to false if apps specified
+  
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
   // variable given by m_refresh_var. The user can set minimum interval
@@ -271,6 +274,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	}
       }
     }
+    else if((moosvar == "DB_CLIENTS") && !m_hold_apps_all_seen)
+      checkHoldOnApps(sval);
     else if(moosvar == "RESTART_HELM") {
       // type 1: kill and re-spawn new behaviors - don't touch info_buffer
       // tyep 2: kill and re-spawn new behaviors and re-init the info_buffer
@@ -309,6 +314,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 bool HelmIvP::Iterate()
 {
   AppCastingMOOSApp::Iterate();
+  handleHelmStartMessages();
 
   double cpu_load = GetCPULoad();
   Notify("IVPHELM_CPU", cpu_load);
@@ -467,8 +473,10 @@ bool HelmIvP::Iterate()
       string post_alias = "DESIRED_"+ toupper(domain_var);
       if(post_alias == "DESIRED_COURSE")
 	post_alias = "DESIRED_HEADING";
-      double domain_val = m_helm_report.getDecision(domain_var);
-      Notify(post_alias, domain_val);
+      if(m_helm_report.hasDecision(domain_var)) {
+	double domain_val = m_helm_report.getDecision(domain_var);
+	Notify(post_alias, domain_val);
+      }
     }
   }
   
@@ -646,6 +654,15 @@ bool HelmIvP::buildReport()
   for(p=summary.begin(); p!=summary.end(); p++)
     m_msgs << *p << endl;
 
+  string hold_on_status = "none";
+  if(m_hold_on_app_name.size() > 0) {
+    if(m_hold_apps_all_seen)
+      hold_on_status = "satisfied";
+    else
+      hold_on_status = "waiting";
+  }  
+  m_msgs << "Hold-On-Apps: " << hold_on_status << endl;
+  
   ACTable actab(5);
   actab << "Variable | Behavior | Time | Iter | Value";
   actab.addHeaderLines();
@@ -733,12 +750,30 @@ void HelmIvP::postModeMessages()
 
 //------------------------------------------------------------
 // Procedure: handleHelmStartMessages
+//      Note: In release 17.7.x this was only executed upon startup.
+//            In later releases this is executed on startup and in
+//            each iteration of the iterate loop, but it is also
+//            conditioned on m_hold_apps_all_seen=true and
+//            helm_start_posted=false. Therefore behavior startup
+//            messages will only be posted once, and only after
+//            any hold_on_apps have been detected in db_clients.
 
 void HelmIvP::handleHelmStartMessages()
 {
   if(!m_bhv_set) 
     return;
 
+  // If posted already, don't post again
+  if(m_helm_start_posted)
+    return;
+
+  // Make sure we have seen all apps identified as hold apps
+  if(!m_hold_apps_all_seen)
+    return;
+
+  retractRunWarning("Not all HoldOnApps have been detected");
+  m_helm_start_posted = true;
+  
   vector<VarDataPair> helm_start_msgs = m_bhv_set->getHelmStartMessages();
 
   unsigned int j, msize = helm_start_msgs.size();
@@ -1164,6 +1199,8 @@ bool HelmIvP::OnStartUp()
       handled = setBooleanOnString(m_park_on_allstop, value);
     else if(param == "NODE_SKEW") 
       handled = handleConfigNodeSkew(value);
+    else if((param == "HOLD_ON_APP") || (param == "HOLD_ON_APPS"))
+      handled = handleConfigHoldOnApp(value);
     else if(param == "DOMAIN")
       handled = handleConfigDomain(value);
     else if((param == "BHV_DIR_NOT_FOUND_OK") || (param == "BHV_DIRS_NOT_FOUND_OK"))
@@ -1328,6 +1365,59 @@ bool HelmIvP::handleConfigDomain(const string& g_entry)
 
   bool ok = m_ivp_domain.addDomain(dname.c_str(), dlow, dhgh, dcnt);
   return(ok);
+}
+
+//--------------------------------------------------------------------
+// Procedure: handleConfigHoldOnApp()
+//   Returns: true if all given apps are unique, and no app has a white
+//            space character in its name.
+
+bool HelmIvP::handleConfigHoldOnApp(string applist)
+{
+  vector<string> svector = parseString(applist, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string appname = stripBlankEnds(svector[i]);
+    if(!vectorContains(m_hold_on_app_name, appname) &&
+       !strContainsWhite(appname) &&
+       (appname != "")) {
+      m_hold_on_app_name.push_back(svector[i]);
+      m_hold_on_app_seen.push_back(false);
+      m_hold_apps_all_seen = false;
+    }
+    else
+      return(false);
+  }
+  
+  return(true);
+}
+
+//--------------------------------------------------------------------
+// Procedure: checkHoldOnApps()
+//     Notes: If any hold_on_apps have been specified, check DB_CLIENTS
+//            for each app and note accordingly
+
+void HelmIvP::checkHoldOnApps(string db_clients)
+{
+  if(m_hold_apps_all_seen)
+    return;
+
+  // parse the string of clients and ensure no white space on ends
+  vector<string> clients = parseString(db_clients,',');
+  for(unsigned int i=0; i<clients.size(); i++)
+    clients[i] = stripBlankEnds(clients[i]);
+
+  // For each hold app, check against the vector of db clients
+  m_hold_apps_all_seen = true;
+  for(unsigned int j=0; j<m_hold_on_app_name.size(); j++) {
+    if(!m_hold_on_app_seen[j]) {
+      if(vectorContains(clients, m_hold_on_app_name[j]))
+	m_hold_on_app_seen[j] = true;
+    }
+    if(!m_hold_on_app_seen[j])
+      m_hold_apps_all_seen = false;
+  }
+
+  reportRunWarning("Not all HoldOnApps have been detected");
 }
 
 //--------------------------------------------------------------------
@@ -1530,6 +1620,7 @@ bool HelmIvP::processNodeReport(const string& report)
   m_info_buffer->setValue(vname+"_NAV_LAT", new_record.getLat());
   m_info_buffer->setValue(vname+"_NAV_LONG", new_record.getLon());
   m_info_buffer->setValue(vname+"_NAV_GROUP", new_record.getGroup());
+  m_info_buffer->setValue(vname+"_NAV_TYPE", new_record.getType());
 
   double timestamp = new_record.getTimeStamp();
   
@@ -1584,11 +1675,4 @@ bool HelmIvP::helmStatusEnabled() const
     return(true);
   return(false);
 }
-  
-
-
-
-
-
-
 

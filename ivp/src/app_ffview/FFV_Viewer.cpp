@@ -40,35 +40,30 @@ using namespace std;
 FFV_Viewer::FFV_Viewer(int x, int y, int wid, int hgt, const char *label)
   : Common_IPFViewer(x, y, wid, hgt, label)
 {
-  m_base_aof   = -132;      // For shifting the AOF rendering
-  m_base_ipf   = -35;       // For shifting the IPF rendering
-  m_patch      = 5;         // Size of patch rendering the AOF
-  m_draw_aof   = true;
-  m_draw_ipf   = true;
-  m_unif_ipf   = 0;
-  m_polar      = 0;
+  // Config params for building IPF
+  m_patch_aof    = 5;         
   m_strict_range = true;
-  m_create_time = -1;
-  m_piece_count = 0;
+  m_create_time  = -1;
+  m_piece_count  = 0;
 
-  setParam("uniform_piece", 10);
+  m_smart_refine    = false;
+  m_directed_refine = false;
+  m_autopeak_refine = false;
+  m_uniform_piece_size = 10;
+
+  m_aof        = 0;
+  m_unif_ipf   = 0;
+
+  // Set config params of the superclass
+  setParam("polar", 0);
   setParam("set_scale", 1);
   setParam("reset_view", "1");
   setParam("clear_color", "white");
   setParam("frame_color", "gray");
+  setParam("set_zoom", 3);
 
-  m_smart_refine   = false;
-
-  m_directed_refine = false;
-  m_focus_box_x     = 0;
-  m_focus_box_y     = 0;
-  m_focus_box_len   = 100;
-  m_focus_unif_len  = 5;
-
-  m_quadset_refresh_pending = false;
-
-  //m_zoom = m_zoom * 1.25 * 1.25;  // Two zoom clicks in.
-  m_zoom = 1;
+  m_refresh_quadset_ipf_pending = true;
+  m_refresh_quadset_aof_pending = true;
 }
 
 //-------------------------------------------------------------
@@ -88,33 +83,25 @@ void FFV_Viewer::draw()
   glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
 
-  if(m_draw_ipf && m_unif_ipf) {
-    if(m_quadset_refresh_pending) {
-      m_quadset = buildQuadSetFromIPF(m_unif_ipf);
-      m_quadset_refresh_pending = false;
-      m_quadset.normalize(0, 100);
-      m_quadset.applyColorMap(m_color_map);
-      m_quadset.applyColorIntensity(m_intensity);
-      m_quadset.applyScale(m_scale);
-      m_quadset.applyBase(m_base);
-      m_quadset.applyTranslation();
-    }
-    Common_IPFViewer::drawQuadSet(m_quadset);
-  }
+  //cout << "m_base_aof: " << m_base_aof << endl;
+  //cout << "m_base_ipf: " << m_base_ipf << endl;
+  //cout << "m_scale: " << m_scale << endl;
+  
+  if(m_draw_ipf)
+    drawIPF();
     
-  if(m_draw_aof) {
-    if(m_aof_cache.getAOF())
-      drawAOF();
-  }
+  if(m_draw_aof) 
+    drawAOF();
 
   if(m_draw_frame) {
-    drawFrame(true);
-    //drawFocusBox();
+    if(m_polar)
+      drawPolarFrame(true);
+    else
+      drawFrame(true);
   }
-
+  
   // Restore transformations
   glPopMatrix();
-  
   glFlush();
 
   GLenum err = glGetError();
@@ -136,12 +123,7 @@ int FFV_Viewer::handle(int event)
 
 void FFV_Viewer::setAOF(AOF *aof)
 {
-  if(!aof)
-    return;
-
-  m_domain = aof->getDomain();
-
-  if(m_domain.size() != 2)
+  if((!aof) || (aof->getDomain().size() != 2))
     return;
 
   if(m_unif_ipf) {
@@ -150,19 +132,19 @@ void FFV_Viewer::setAOF(AOF *aof)
   }
   m_create_time = -1;
 
-  m_aof_cache.setAOF(aof);
+  m_aof = aof;
   m_rater.setAOF(aof);
-  
-  int dim_0_size = m_domain.getVarPoints(0);
-  int dim_1_size = m_domain.getVarPoints(0);
+}
 
-  m_focus_box_x    = dim_0_size / 2;
-  m_focus_box_y    = dim_1_size / 2;
+//-------------------------------------------------------------
+// Procedure: toggleSmartAug
 
-  //cout << "m_focus_box_x: "    << m_focus_box_x << endl;
-  //cout << "m_focus_box_y: "    << m_focus_box_y << endl;
-  //cout << "m_focus_box_len: "  << m_focus_box_len << endl;
-  //cout << "m_focus_unif_len: " << m_focus_unif_len << endl;
+void FFV_Viewer::toggleSmartAug()
+{
+  m_smart_refine = !m_smart_refine;
+
+  if(m_unif_ipf)
+    makeUniformIPF();
 }
 
 //-------------------------------------------------------------
@@ -173,51 +155,21 @@ bool FFV_Viewer::setParam(string param, string value)
   if(Common_IPFViewer::setParam(param, value))
     return(true);
 
+  value = stripBlankEnds(value);
   if(param == "uniform_piece")
-    m_uniform_piece_str = stripBlankEnds(value);
+    m_uniform_piece_str = value;
   else if(param == "refine_region")
-    m_refine_region_str = stripBlankEnds(value);
-  else if(param == "smart_percent")
-    m_smart_percent_str = stripBlankEnds(value);
-  else if(param == "smart_amount")
-    m_smart_amount_str = stripBlankEnds(value);
+    m_refine_regions.push_back(value);
   else if(param == "refine_piece")
-    m_refine_piece_str = stripBlankEnds(value);
-  else if(param == "aof_peak")
-    m_aof_peak = stripBlankEnds(value);
-  else if(param == "directed_refine") {
-    value = tolower(value);
-    if(value == "toggle")
-      m_directed_refine = !m_directed_refine;
-    else if((value == "off") || (value == "false"))
-      m_directed_refine = false;
-    else if((value == "on") || (value == "true"))
-      m_directed_refine = true;
-    else
-      return(false);
-  }
-  else if(param == "auto_peak") {
-    value = tolower(value);
-    if(value == "toggle")
-      m_autopeak_refine = !m_autopeak_refine;
-    else if((value == "off") || (value == "false"))
-      m_autopeak_refine = false;
-    else if((value == "on") || (value == "true"))
-      m_autopeak_refine = true;
-    else
-      return(false);
-  }
-  else if(param == "strict_range") {
-    value = tolower(value);
-    if(value == "toggle")
-      m_strict_range = !m_strict_range;
-    else if((value == "off") || (value == "false"))
-      m_strict_range = false;
-    else if((value == "on") || (value == "true"))
-      m_strict_range = true;
-    else
-      return(false);
-  }
+    m_refine_pieces.push_back(value);
+  else if(param == "directed_refine") 
+    return(setBooleanOnString(m_directed_refine, value));
+  else if(param == "auto_peak") 
+    return(setBooleanOnString(m_autopeak_refine, value));
+  else if(param == "strict_range") 
+    return(setBooleanOnString(m_strict_range, value));
+  else
+    return(false);
 
   return(true);
 }
@@ -230,37 +182,21 @@ bool FFV_Viewer::setParam(string param, double value)
   if(Common_IPFViewer::setParam(param, value))
     return(true);
 
-  if(param == "set_base_ipf")
-    m_base_ipf = value;
-  else if(param == "uniform_amount")
+  if(param == "uniform_amount")
     m_piece_count = (int)(value);
-  else if(param == "mod_base_ipf")
-    m_base_ipf += value;
-  else if(param == "set_base_aof")
-    m_base_aof = value;
-  else if(param == "mod_base_aof")
-    m_base_aof += value;
-  else if(param == "set_scale") {
-    m_scale = value;
-    if(m_scale < 0)
-      m_scale = 0;
-  }
-  else if(param == "mod_scale") {
-    m_scale += value;
-    if(m_scale < 0)
-      m_scale = 0;
-  }
+  else if((param == "smart_percent") && (value >= 0)) 
+    m_smart_percent = value;
+  else if((param == "smart_amount") && (value >= 0))
+    m_smart_amount = value;
   else if(param == "uniform_piece") {
     if(value >= 1) {
       m_uniform_piece_size = (int)(value);
       m_uniform_piece_str  = "";
     }
   }
-  else if(param == "mod_focus_len") {
-    m_focus_unif_len += (int)(value);
-    if(m_focus_unif_len < 1)
-      m_focus_unif_len = 1;
-    m_refine_piece_str  = "";
+  else if(param == "mod_uniform_piece") {
+    m_uniform_piece_size += (int)(value);
+    m_uniform_piece_str  = "";
   }
   else
     return(false);
@@ -283,17 +219,6 @@ void FFV_Viewer::printParams()
 }
 
 //-------------------------------------------------------------
-// Procedure: toggleSmartAug
-
-void FFV_Viewer::toggleSmartAug()
-{
-  m_smart_refine = !m_smart_refine;
-
-  if(m_unif_ipf)
-    makeUniformIPF();
-}
-
-//-------------------------------------------------------------
 // Procedure: makeUniformIPFxN
 
 void FFV_Viewer::makeUniformIPFxN(int iterations)
@@ -313,14 +238,15 @@ void FFV_Viewer::makeUniformIPFxN(int iterations)
 
 void FFV_Viewer::makeUniformIPF()
 {
-  AOF *aof = m_aof_cache.getAOF();
-  if(!aof)
+  if(!m_aof)
     return;
 
-  OF_Reflector reflector(aof, 1);
+  OF_Reflector reflector(m_aof, 1);
 
-  string dim0_name = m_domain.getVarName(0);
-  string dim1_name = m_domain.getVarName(1);
+  IvPDomain domain = m_aof->getDomain();
+  
+  string dim0_name = domain.getVarName(0);
+  string dim1_name = domain.getVarName(1);
 
   if(m_uniform_piece_str == "") {
     m_uniform_piece_str = "discrete @ ";
@@ -335,41 +261,31 @@ void FFV_Viewer::makeUniformIPF()
   else
     reflector.setParam("uniform_piece", m_uniform_piece_str);
 
-  if(m_strict_range)
-    reflector.setParam("strict_range", "true");
-  else
-    reflector.setParam("strict_range", "false");
+  reflector.setParam("strict_range", boolToString(m_strict_range));
+  reflector.setParam("auto_peak", boolToString(m_autopeak_refine));
+
   
   if(m_directed_refine) {
-    if(m_refine_region_str == "") {
-      m_refine_region_str = "native @";
-      m_refine_region_str += dim0_name + ":" + "-50:150" + ",";
-      m_refine_region_str += dim1_name + ":" + "-250:-50";
-    }
+    cout << "In Directed refine: " << endl;
+    cout << "refine_regions: " << m_refine_regions.size() << endl;
+    cout << "refine_pieces:  " << m_refine_pieces.size() << endl;
     
-    if(m_refine_piece_str == "") {
-      m_refine_piece_str = "discrete @";
-      m_refine_piece_str += dim0_name + ":";
-      m_refine_piece_str += intToString(m_focus_unif_len) + ",";
-      m_refine_piece_str += dim1_name + ":";
-      m_refine_piece_str += intToString(m_focus_unif_len);
+    if(m_refine_regions.size() != m_refine_pieces.size()) {
+      m_refine_regions.clear();
+      m_refine_pieces.clear();
     }
-    
-    reflector.setParam("refine_region", m_refine_region_str);
-    reflector.setParam("refine_piece",  m_refine_piece_str);
-  }
-  
-  if(m_smart_refine) {
-    if(m_smart_percent_str != "")
-      reflector.setParam("smart_percent", m_smart_percent_str);
-    if(m_smart_amount_str != "")
-      reflector.setParam("smart_amount",  m_smart_amount_str);
-  }
 
-  if(m_autopeak_refine)
-    reflector.setParam("auto_peak", "true");
-  else
-    reflector.setParam("auto_peak", "false");
+    for(unsigned int i=0; i<m_refine_regions.size(); i++) {
+      reflector.setParam("refine_region", m_refine_regions[i]);
+      reflector.setParam("refine_piece",  m_refine_pieces[i]);
+    }
+  }
+  if(m_smart_refine) {
+    if(m_smart_percent != 0)
+      reflector.setParam("smart_percent", m_smart_percent);
+    else if(m_smart_amount != 0)
+      reflector.setParam("smart_amount",  m_smart_amount);
+  }
 
   if(reflector.stateOK()) {
     reflector.create();
@@ -384,21 +300,14 @@ void FFV_Viewer::makeUniformIPF()
     delete(m_unif_ipf);
   // false means do not normalize as part of extractOF()
   m_unif_ipf = reflector.extractOF(false);
-  m_quadset_refresh_pending = true;
-  
+  m_refresh_quadset_ipf_pending = true;
+
+  if(m_unif_ipf) {
+    cout << "*********ipf is valid: " << boolToString(m_unif_ipf->valid()) << endl;
+  }
+								     
   if(m_unif_ipf && m_unif_ipf->getPDMap())
     m_rater.setPDMap(m_unif_ipf->getPDMap());
-  redraw();
-}
-
-//-------------------------------------------------------------
-// Procedure: modColorMap
-
-void FFV_Viewer::modColorMap(const string &str)
-{
-  m_cmap.setType(str);
-  //m_cmap.applyMidWhite(0.3, 0);
-  m_aof_cache.applyFColorMap(m_cmap);
   redraw();
 }
 
@@ -407,66 +316,11 @@ void FFV_Viewer::modColorMap(const string &str)
 
 void FFV_Viewer::modPatchAOF(int amt)
 {
-  m_patch += amt; 
-  if(m_patch < 1)  
-    m_patch = 1; 
+  m_patch_aof += amt; 
+  if(m_patch_aof < 1)  
+    m_patch_aof = 1; 
+  m_refresh_quadset_aof_pending = true;
   redraw();
-}
-
-//-------------------------------------------------------------
-// Procedure: modUniformAug
-
-void FFV_Viewer::modUniformAug(int amt)
-{
-  m_focus_unif_len += amt; 
-  if(m_focus_unif_len < 1)  
-    m_focus_unif_len = 1; 
-
-  if(m_unif_ipf)
-    makeUniformIPF();
-
-  redraw();
-}
-
-//-------------------------------------------------------------
-// Procedure: runScript
-
-void FFV_Viewer::runScript()
-{
-  int save_file_ix = 0;
-  int delta = 4;
-  for(int i=0; i<360; i=i+delta) {
-    setParam("mod_z_rotation", delta);
-    redraw();
-    Fl::flush();
-    capture(save_file_ix);
-    save_file_ix++;
-  }
-}
-
-//-------------------------------------------------------------
-// Procedure: capture
-
-void FFV_Viewer::capture(int save_file_ix)
-{
-  //string collect = "1024x768";
-  //string collect = "720x480";
-  //string collect = "800x600";
-  //string collect = "640x480";
-
-  string command;
-  command += "import -window aof-ipf-function-viewer ";
-  //command += "-crop " + collect + "+50+90 save_file_";
-  command += " save_file_";
-  if(save_file_ix < 10)   command += "0";
-  if(save_file_ix < 100)  command += "0";
-  if(save_file_ix < 1000) command += "0";
-  command += intToString(save_file_ix) + ".png";
-
-  // Pretend to care about the result to avoid compiler warning.
-  // Declare the result variable to be unused to avoid a compiler warning
-  int result __attribute__((unused));
-  result = system(command.c_str());
 }
 
 //-------------------------------------------------------------
@@ -474,7 +328,7 @@ void FFV_Viewer::capture(int save_file_ix)
 
 double FFV_Viewer::getParam(const string& param, bool&ok)
 {
-  if(!m_aof_cache.getAOF() || !m_unif_ipf) {
+  if(!m_aof || !m_unif_ipf) {
     ok = false;
     return(0);
   }
@@ -508,8 +362,6 @@ double FFV_Viewer::getParam(const string& param, bool&ok)
     return(m_rater.getWorstErr()*factor);
   else if((param == "squared_err") && cnt)
     return(sqrt(m_rater.getSquaredErr())*factor);
-  else if((param == "unif_aug_size"))
-    return((double)(m_focus_unif_len));
   else if((param == "create_time")) {
     if(m_create_time == -1)
       ok = false;
@@ -527,175 +379,94 @@ string FFV_Viewer::getParam(const string& param)
 {
   if(param == "uniform_piece")
     return(m_uniform_piece_str);
-  else if(param == "refine_region")
-    return(m_refine_region_str);
-  else if(param == "refine_piece")
-    return(m_refine_piece_str);
   else if(param == "reflector_errors")
     return(m_reflector_warnings);
   else if(param == "reflector_warnings")
     return(m_reflector_warnings);
-  else if(param == "auto_peak") {
-    if(m_autopeak_refine)
-      return("true");
-    else
-      return("false");
-  }
+  else if(param == "auto_peak")
+    return(boolToString(m_autopeak_refine));
   
   return("");
 }
 
 //-------------------------------------------------------------
-// Procedure: getPeakDelta
+// Procedure: drawIPF
 
-string FFV_Viewer::getPeakDelta()
+void FFV_Viewer::drawIPF()
 {
-  return("");
-}
+  if(!m_unif_ipf)
+    return;
 
+  if(m_refresh_quadset_ipf_pending) {
+    m_quadset_ipf = buildQuadSetFromIPF(m_unif_ipf);
+    m_refresh_quadset_ipf_pending = false;
+
+    m_quadset_ipf.normalize(0, 100);
+    m_quadset_ipf.applyColorMap(m_color_map);
+    m_quadset_ipf.applyColorIntensity(m_intensity);
+    m_quadset_ipf.applyScale(m_scale);
+    cout << "---- m_base_ipf: " << m_base_ipf << endl; 
+    m_quadset_ipf.applyBase(m_base_ipf);
+    m_quadset_ipf.interpolate(1);
+    
+    if(m_polar == 0)
+      m_quadset_ipf.applyTranslation();
+    else if(m_polar == 1)
+      m_quadset_ipf.applyPolar(m_rad_ratio, 1);
+    else if(m_polar == 2)
+      m_quadset_ipf.applyPolar(m_rad_ratio, 2);
+    
+  }
+
+  m_show_pieces = true;
+  Common_IPFViewer::drawQuadSet(m_quadset_ipf);
+}
+    
 //-------------------------------------------------------------
 // Procedure: drawAOF
 
 void FFV_Viewer::drawAOF()
 {
-  AOF *aof = m_aof_cache.getAOF();
-  if(!aof)
+  // Part 1 - Sanity Checks
+  if(!m_aof)
     return;
 
-  IvPDomain domain = aof->getDomain();
+  IvPDomain domain = m_aof->getDomain();
   int dim = domain.size();
   if((dim != 2) && (dim != 3))
     return;
-
-  int xmin = 0;
   int xmax = domain.getVarPoints(0)-1;
-  int ymin = 0;
   int ymax = domain.getVarPoints(1)-1;
 
-  int yc = ymin;
-  int xc = xmin;
-  Quad3D q;
+  //cout << "In drawAOF..............." << endl;
 
+  if(m_refresh_quadset_aof_pending) {
+    m_quadset_aof = buildQuadSetDense2DFromAOF(m_aof, m_patch_aof);
+    m_refresh_quadset_aof_pending = false;
+    
+    m_quadset_aof.normalize(0, 100);
+    m_quadset_aof.applyColorMap(m_color_map);
+    m_quadset_aof.applyColorIntensity(m_intensity);
+    m_quadset_aof.applyScale(m_scale);
+    m_quadset_aof.applyBase(m_base_aof);
+    m_quadset_aof.interpolate(1);
+    
+    if(m_polar == 0)
+      m_quadset_aof.applyTranslation(-(xmax/2), -(ymax/2));
+    else if(m_polar == 1)
+      m_quadset_aof.applyPolar(m_rad_ratio, 1);
+    else if(m_polar == 2)
+      m_quadset_aof.applyPolar(m_rad_ratio, 2);
+  }
+    
   bool draw_pclines_save = m_draw_pclines;
+  bool show_pieces_save = m_draw_pclines;
   m_draw_pclines = false;
-  
-  unsigned int count = 0;
-  while(yc < ymax) {
-    xc = xmin; 
-    while(xc < xmax) {
+  m_show_pieces = false;
 
-      int xl = xc;
-      int xh = xc+m_patch;
-      int yl = yc;
-      int yh = yc+m_patch;
+  Common_IPFViewer::drawQuadSet(m_quadset_aof);
 
-      if(xh > xmax)
-	xh = xmax;
-      if(yh > ymax)
-	yh = ymax;
-      
-#if 1
-      q.setLLX(xl);
-      q.setHLX(xh);
-      q.setHHX(xh);
-      q.setLHX(xl);
-
-      q.setLLY(yl);
-      q.setHLY(yl);
-      q.setHHY(yh);
-      q.setLHY(yh);
-#endif      
-      
-#if 0
-      q.setXL(xc);
-      q.setXH(xc + m_patch);
-      q.setYL(yc);
-      q.setYH(yc + m_patch);
-
-      if(q.getXH() > xmax)
-	q.setXH(xmax);
-      if(q.getYH() > ymax)
-	q.setYH(ymax);
-#endif
-      
-      //int xl = (int)(q.getXL());
-      //int xh = (int)(q.getXH());
-      //int yl = (int)(q.getYL());
-      //int yh = (int)(q.getYH());
-
-      q.setLLZ(m_aof_cache.getFVal(xl, yl));  // Low-Low's Height
-      q.setLLR(m_aof_cache.getRVal(xl, yl));  // Low-Low's Red
-      q.setLLG(m_aof_cache.getGVal(xl, yl));  // Low-Low's Green
-      q.setLLB(m_aof_cache.getBVal(xl, yl));  // Low-Low's Blue
-
-      q.setHLZ(m_aof_cache.getFVal(xh, yl));
-      q.setHLR(m_aof_cache.getRVal(xh, yl));
-      q.setHLG(m_aof_cache.getGVal(xh, yl));
-      q.setHLB(m_aof_cache.getBVal(xh, yl));
-
-      q.setHHZ(m_aof_cache.getFVal(xh, yh));
-      q.setHHR(m_aof_cache.getRVal(xh, yh));
-      q.setHHG(m_aof_cache.getGVal(xh, yh));
-      q.setHHB(m_aof_cache.getBVal(xh, yh));
-
-      q.setLHZ(m_aof_cache.getFVal(xl, yh));
-      q.setLHR(m_aof_cache.getRVal(xl, yh));
-      q.setLHG(m_aof_cache.getGVal(xl, yh));
-      q.setLHB(m_aof_cache.getBVal(xl, yh));
-
-      q.applyScale(m_scale);
-      q.applyBase(m_base_aof);
-      q.applyTranslation(-(xmax/2), -(ymax/2));
-      count++;
-      drawQuad(q);
-      xc += m_patch;
-    }
-    yc += m_patch;
-  }  
   m_draw_pclines = draw_pclines_save;
+  m_show_pieces = show_pieces_save;
 }
-
-//-------------------------------------------------------------
-// Procedure: drawFocusBox
-
-void FFV_Viewer::drawFocusBox()
-{
-  double w = 250;
-
-  double bxl = m_focus_box_x - (m_focus_box_len / 2);
-  double bxh = m_focus_box_x + (m_focus_box_len / 2);
-  double byl = m_focus_box_y - (m_focus_box_len / 2);
-  double byh = m_focus_box_y + (m_focus_box_len / 2);
-
-  bxl -= 250;
-  bxh -= 250;
-  byl -= 250;
-  byh -= 250;
-
-  glPushMatrix();
-  glColor3f(0.08f, 0.09f, 0.08f);
-
-  glLineWidth(1.0);
-  glBegin(GL_LINE_STRIP);
-
-  glVertex3f(bxl, byl, -w+1);  
-  glVertex3f(bxl, byh, -w+1);  
-  glVertex3f(bxh, byh, -w+1);  
-  glVertex3f(bxh, byl, -w+1);  
-  glVertex3f(bxl, byl, -w+1);  
-  glEnd();
-  glPopMatrix();
-
-  glFlush();
-
-}
-
-
-
-
-
-
-
-
-
 

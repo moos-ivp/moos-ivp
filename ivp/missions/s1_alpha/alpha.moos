@@ -200,6 +200,10 @@ ProcessConfig = pMarineViewer
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
 
+  scope  = HELM_CORE_SIZE_MAX
+  scope  = HELM_CORE_SIZE
+  scope  = HELM_ENGINE_SIZE
+  scope  = HELM_SIZE
   scope  = RETURN
   scope  = WPT_STAT
   scope  = VIEW_SEGLIST

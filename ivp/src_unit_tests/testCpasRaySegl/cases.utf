@@ -1,0 +1,16 @@
+cmd=testCpasRaySegl
+
+rx=0 ry=0 ra=90 segl=1,7:5,-7:7,-3:13,-1 thresh=0 # \
+cpa1=0 ray1=3
+
+rx=0 ry=0 ra=90 segl=1,7:5,-7:7,-3:13,-1 thresh=4 # \
+cpa1=0 ray1=3 cpa2=3 ray2=7 cpa3=1 ray3=13
+
+rx=0 ry=0 ra=90 segl=1,7:5,-7:7,-3:13,-1 thresh=10 # \
+cpa1=7 ray1=1 cpa2=0 ray2=3 cpa3=7 ray3=5 cpa4=3 ray4=7 cpa5=1 ray5=13
+
+// ---------------------------------
+
+rx=4 ry=4 ra=45 segl=8,14:14,8:4,-2  thresh=10 # \
+cpa1=4.24 ray1=9.9 cpa2=0 ray2=9.9 cpa3=4.24 ray3=9.9 cpa4=6 ray4=0 \
+

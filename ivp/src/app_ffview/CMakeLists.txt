@@ -16,7 +16,6 @@ endif(CMAKE_SYSTEM_NAME STREQUAL Linux)
 
 SET(SRC
   AOFFactory.cpp
-  AOF_Cache.cpp
   FFV_GUI.cpp
   FFV_Viewer.cpp
   PopulatorAOF.cpp

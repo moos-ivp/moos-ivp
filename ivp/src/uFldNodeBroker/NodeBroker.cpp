@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <unistd.h>
 #include <iterator>
 #include "HostRecord.h"
 #include "HostRecordUtils.h"
@@ -123,6 +124,8 @@ bool NodeBroker::Iterate()
 bool NodeBroker::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
+
+  Notify("UFLDNODEBROKER_PID", getpid());
 
   // host_community info grabbed and stored at AppCastingMOOSApp level
   m_node_host_record.setCommunity(m_host_community);

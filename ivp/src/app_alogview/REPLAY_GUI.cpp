@@ -371,7 +371,6 @@ int REPLAY_GUI::handle(int event)
 
 void REPLAY_GUI::setCurrTime(double curr_time)
 {
-  cout << "REPLAY_GUI::setCurrTime(): " << curr_time << endl;
   if(curr_time == -1)
     curr_time = np_viewer->getStartTimeHint();
 
@@ -1066,9 +1065,9 @@ void REPLAY_GUI::initLogPlotChoiceA(string vname, string varname)
   if(mix >= m_dbroker.sizeMix())
     return;
   
-  cout << "*****************************************" << endl;
-  cout << "In REPLAY_GUI::cb_LeftLogPlot_i: mix:" << mix << endl;
-  cout << "*****************************************" << endl;
+  //cout << "*****************************************" << endl;
+  //cout << "In REPLAY_GUI::cb_LeftLogPlot_i: mix:" << mix << endl;
+  //cout << "*****************************************" << endl;
   cb_LeftLogPlot_i((int)(mix));
 }
 

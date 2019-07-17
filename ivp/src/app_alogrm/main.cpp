@@ -49,7 +49,6 @@ int main(int argc, char *argv[])
     return(0);
   }
 
-
   bool verbose = true;
   if(scanArgs(argc, argv, "-q", "--quiet", "-quiet"))
     verbose = false;

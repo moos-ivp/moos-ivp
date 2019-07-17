@@ -51,6 +51,7 @@ public:
   void  setDataBroker(ALogDataBroker, std::string vname);
   void  setParentGUI(REPLAY_GUI*);
   void  setCurrTime(double=-1);
+  void  setCurrTimeX(double=-1);
   void  setReplayWarpMsg(std::string s) {m_replay_warp_msg=s; updateXY();}
   void  updateXY();
 

@@ -67,7 +67,7 @@ public:
   void      growBoxCount(int i=1) {m_boxCount += i;}
   bool      freeOfNan() const;
 
-  bool      valid() const;
+  bool      valid(bool verbose=false) const;
   
   const IvPBox *getBox(int i) const {return(m_boxes[i]);}
 

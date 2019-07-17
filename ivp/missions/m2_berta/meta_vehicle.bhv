@@ -48,6 +48,38 @@ Behavior = BHV_Loiter
   visual_hints = edge_size=1, vertex_size=2
 }
 
+//----------------------------------------------
+Behavior = BHV_AvoidCollisionT
+{
+  name         = ac_
+  pwt          = 500
+  condition    = AVOID = true 
+  updates      = CONTACT_INFO
+  idleflag     = AVOIDING = idle
+  activeflag   = AVOIDING = active
+  inactiveflag = AVOIDING = inactive
+  runflag      = AVOIDING = running
+  endflag      = AVOIDING = end
+  endflag      = CONTACT_RESOLVED = $[CONTACT]
+  templating   = spawn
+
+             contact = to-be-set
+    on_no_contact_ok = true
+         extrapolate = true
+               decay = 30,60
+
+          //match_type = mokai,uuv,ship
+
+        use_refinery = true
+
+        pwt_outer_dist = 20
+        pwt_inner_dist = 11
+        completed_dist = 40
+     min_util_cpa_dist = 8
+     max_util_cpa_dist = 15
+             pwt_grade = linear
+   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}
 
 //----------------------------------------------
 Behavior = BHV_Waypoint
@@ -83,36 +115,6 @@ Behavior = BHV_StationKeep
 
        transit_speed = 1.3
           swing_time = 7
-//  hibernation_radius = 25
         visual_hints = vertex_size=0, edge_color=gray50
 }
 
-
-//----------------------------------------------
-Behavior = BHV_AvoidCollision
-{
-  name         = ac_
-  pwt          = 200
-  condition    = AVOID = true 
-  updates      = CONTACT_INFO
-  idleflag     = AVOIDING = idle
-  activeflag   = AVOIDING = active
-  inactiveflag = AVOIDING = inactive
-  runflag      = AVOIDING = running
-  endflag      = AVOIDING = end
-  endflag      = CONTACT_RESOLVED = $[CONTACT]
-  templating   = spawn
-
-             contact = to-be-set
-    on_no_contact_ok = true
-         extrapolate = true
-               decay = 30,60
-
-        pwt_outer_dist = 20
-        pwt_inner_dist = 11
-        completed_dist = 40
-     min_util_cpa_dist = 8
-     max_util_cpa_dist = 15
-             pwt_grade = linear
-   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
-}

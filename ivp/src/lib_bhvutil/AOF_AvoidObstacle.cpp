@@ -194,9 +194,3 @@ double AOF_AvoidObstacle::evalBox(const IvPBox *b) const
 
   return(max_utility);
 }
-
-
-
-
-
-

@@ -23,10 +23,6 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
 #ifndef OF_REFLECTOR_HEADER
 #define OF_REFLECTOR_HEADER
 
@@ -39,7 +35,9 @@ class IvPFunction;
 class PDMap;
 class Regressor;
 class RT_Uniform;
+class RT_UniformX;
 class RT_Directed;
+class RT_Evaluator;
 class RT_Smart;
 class RT_AutoPeak;
 
@@ -57,7 +55,6 @@ public:
   IvPFunction* extractIvPFunction(bool normalize=true)
   {return(extractOF(normalize));}
   
-  std::string getUniformPieceStr() const {return(m_uniform_piece_str);}
   std::string getWarnings() const        {return(m_warnings);}
 
   bool   stateOK() const    {return(m_warnings=="");}
@@ -66,14 +63,23 @@ public:
   bool   setParam(std::string, double);
   bool   setParam(std::string, IvPBox);
     
+  void setVerbose(bool v=true) {m_verbose=v;}
+  
   // Added by mikerb May1614
   unsigned int getMessageCnt() const;
-  std::string  getMessage(unsigned int) const;
-  
+  std::string  getMessage(unsigned int) const;  
+
+  // Added by mikerb Nov2217
+  unsigned int getTotalEvals() const;
+
+  double checkPlateaus(bool verbose=false) const;
+  double checkBasins(bool verbose=false) const;
 
  protected:
   void   clearPDMap();
-  void   addWarning(std::string);
+  bool   addWarning(std::string);
+
+  void   makeUniform();
 
  protected:
   const AOF*   m_aof;
@@ -82,7 +88,9 @@ public:
 
   Regressor*   m_regressor;
   RT_Uniform*  m_rt_uniform;
+  RT_UniformX* m_rt_uniformx;
   RT_Directed* m_rt_directed;
+  RT_Evaluator* m_rt_evaluator;
   RT_Smart*    m_rt_smart;
   RT_AutoPeak* m_rt_autopeak;
   PQueue       m_pqueue;
@@ -97,16 +105,19 @@ public:
   bool         m_auto_peak;
   int          m_auto_peak_max_pcs;
 
+  double       m_pcheck_thresh;
+  
   std::vector<IvPBox>  m_refine_regions;
   std::vector<IvPBox>  m_refine_pieces;
   std::vector<IvPBox>  m_refine_points;
 
+  std::vector<IvPBox> m_plateaus;
+  std::vector<IvPBox> m_basins;
+  
   std::string  m_uniform_piece_str;
 
   std::string m_warnings;
+
+  bool m_verbose;
 };
 #endif
-
-
-
-

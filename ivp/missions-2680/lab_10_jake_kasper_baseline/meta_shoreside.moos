@@ -37,7 +37,7 @@ ProcessConfig = pShare
   CommsTick  = 2
 
   input = route = $(SHOREIP):$(SHORE_LISTEN)
-  input = route = multicast_9
+  //input = route = multicast_9
 }
 
 
@@ -74,7 +74,7 @@ ProcessConfig = uFldNodeComms
   AppTick       = 2
   CommsTick     = 2
 
-  comms_range          = 100
+  comms_range          = 1000
   critical_range       = 25
   min_msg_interval     = 60
   max_msg_length       = 100
@@ -131,7 +131,7 @@ ProcessConfig = uFldHazardSensor
   default_benign_shape = square
 
   min_classify_interval = 30
-  min_reset_interval    = 100000
+  min_reset_interval    = 300
 
   swath_transparency = 0.35
   seed_random        = false

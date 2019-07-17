@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: HelmEngine.cpp (Formerly HelmEngineBeta              */
+/*    FILE: HelmEngine.cpp (Formerly HelmEngineBeta)             */
 /*    DATE: July 29th 2009                                       */
 /*    DATE: Aug 17th, 2017 Lazy evaluation added                 */
 /*                                                               */
@@ -64,6 +64,24 @@ HelmEngine::HelmEngine(IvPDomain g_ivp_domain,
 HelmEngine::~HelmEngine()
 {
   delete(m_ivp_problem);
+}
+
+//-----------------------------------------------------------
+// Procedure: size()
+
+unsigned long int HelmEngine::size() const
+{
+  unsigned long int amt = 0;
+  map<string,IvPFunction*>::const_iterator p;
+
+  for(p=m_map_ipfs.begin(); p!=m_map_ipfs.end(); p++)
+    amt += p->first.size();
+  for(p=m_map_ipfs_prev.begin(); p!=m_map_ipfs_prev.end(); p++)
+    amt += p->first.size();
+
+  if(m_bhv_set)
+    amt += m_bhv_set->size();
+  return(amt);
 }
 
 //------------------------------------------------------------------
@@ -166,10 +184,10 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 						bhv_state, ipf_reuse);
 
 
-      cout << "*******************************************************" << endl;
-      string bname = m_bhv_set->getDescriptor(bhv_ix);
-      cout << " Reuse (" << bname << "):" << boolToString(ipf_reuse) << endl;
-      cout << "*******************************************************" << endl;
+      //cout << "*******************************************************" << endl;
+      //string bname = m_bhv_set->getDescriptor(bhv_ix);
+      //cout << " Reuse (" << bname << "):" << boolToString(ipf_reuse) << endl;
+      //cout << "*******************************************************" << endl;
       
       if(newof)
 	m_total_pcs_formed += (unsigned int)(newof->size());
@@ -407,7 +425,7 @@ bool HelmEngine::part4_BuildAndSolveIvPProblem(string phase)
     m_helm_report.addMsg("No Decision due to zero IvP functions");
     return(false);
   }
-
+  
   // Create, Prepare, and Solve the IvP problem
   m_ivp_problem = new IvPProblem;
   m_ivp_problem->setOwnerIPFs(false);

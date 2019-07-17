@@ -769,6 +769,33 @@ unsigned int XYSegList::closest_vertex(double x, double y) const
 
 
 //---------------------------------------------------------------
+// Procedure: dist_to_point
+//   Purpose: Find the closest distance from the given point to
+//            any point on any segment.
+
+double XYSegList::dist_to_point(double x, double y) const
+{
+  if(m_vx.size() == 0)
+    return(0);
+  if(m_vx.size() == 1)
+    return(hypot(m_vx[0]-x, m_vy[0]-y));
+  
+  // Use the distance to the first segment as initial "best-so-far"
+  double min_dist = distPointToSeg(m_vx[0], m_vy[0], 
+				   m_vx[1], m_vy[1], x, y);
+
+  for(unsigned int i=1; i<m_vx.size()-1; i++) {
+    double dist = distPointToSeg(m_vx[i], m_vy[i], 
+				 m_vx[i+1], m_vy[i+1], x, y);
+    if(dist < min_dist) 
+      min_dist = dist; 
+  }
+ 
+  return(min_dist);
+}
+
+
+//---------------------------------------------------------------
 // Procedure: closest_segment
 //   Purpose: Find the existing segment that is closest to the 
 //            given point.

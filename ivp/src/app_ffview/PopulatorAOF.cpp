@@ -30,6 +30,7 @@
 #include "AOF_Gaussian.h"
 #include "AOF_Linear.h"
 #include "AOF_Quadratic.h"
+#include "AOF_AvoidCollision.h"
 #include "PopulatorAOF.h"
 #include "MBUtils.h"
 #include "FileBuffer.h"
@@ -42,32 +43,24 @@ using namespace std;
 
 AOF *PopulatorAOF::populate(string filename)
 {
-  FILE *f = fopen(filename.c_str(), "r");
-    
-  if(!f) {
-    cout << "Could not find File: " << filename << endl;
-    return(0);
-  }
-
-  cout << "Successfully found file: " << filename << endl;
-  fclose(f);
-  
   vector<string> file_vector = fileBuffer(filename);
-  int lineCount = file_vector.size();
-    
-  for(int i=0; i<lineCount; i++) {
+  if(file_vector.size() == 0)
+    cout << "Invalid or empty file: " << filename << ". Exiting" << endl;
+  
+  for(unsigned int i=0; i<file_vector.size(); i++) {
     string line = stripBlankEnds(file_vector[i]);
     
-    if((line.length()!=0) && ((line)[0]!='#')) {
-      bool res = handleLine(line);
-      if(!res) {
-	cout << " Problem with line " << i+1;
-	cout << " in the file: " << filename << endl;
-	cout << line << endl;
-	if(aof)
-	  delete(aof);
-	return(0);
-      }
+    if((line.size()==0) || strBegins(line, "//") || strBegins(line, "#"))
+      continue;
+
+    bool ok_line = handleLine(line);
+    if(!ok_line) {
+      cout << " Problem with line " << i+1;
+      cout << " in the file: " << filename << endl;
+      cout << line << endl;
+      if(aof)
+	delete(aof);
+      return(0);
     }
   }
 

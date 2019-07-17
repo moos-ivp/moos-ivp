@@ -44,6 +44,16 @@ double  angle360(double degrees);
 double  angleDiff(double, double);
 double  aspectDiff(double, double);
 
+double  angleMinAcute(double, double);
+double  angleMaxAcute(double, double);
+double  angleMinReflex(double, double);
+double  angleMaxReflex(double, double);
+
+double  angleMinContains(double, double, double);
+double  angleMaxContains(double, double, double);
+double  angleMinExcludes(double, double, double);
+double  angleMaxExcludes(double, double, double);
+
 // true heading/E-N conversion added by henrik
 double  radToHeading(double radians);
 double  headingToRadians(double degrees);

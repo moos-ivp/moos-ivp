@@ -102,20 +102,3 @@ class WaypointEngine {
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -72,7 +72,7 @@ HazardSensor_MOOSApp::HazardSensor_MOOSApp()
   m_show_swath   = true;
   m_show_pd      = true;
   m_show_pfa     = true;
-  m_color_hazard = "green";
+  m_color_hazard = "red";
   m_color_benign = "light_blue";
   m_shape_hazard = "triangle";
   m_shape_benign = "triangle";
@@ -847,6 +847,15 @@ void HazardSensor_MOOSApp::processClassifyQueue()
       bool is_hazard = (tolower(post_hazard.getType()) == "hazard");
       XYCircle circ(post_hazard.getX(), post_hazard.getY(), 10);
       if(is_hazard) {
+	circ.set_color("edge", "red");
+	circ.set_color("fill", "red");
+      }
+      else {
+	circ.set_color("edge", "white");
+	circ.set_color("fill", "white");
+      }
+#if 0
+      if(is_hazard) {
 	circ.set_color("edge", "yellow");
 	circ.set_color("fill", "yellow");
       }
@@ -854,7 +863,7 @@ void HazardSensor_MOOSApp::processClassifyQueue()
 	circ.set_color("edge", "green");
 	circ.set_color("fill", "green");
       }
-
+#endif
       //circ.set_label(label);
       circ.setDrawVertices(5);
       circ.set_vertex_size(0);

@@ -84,12 +84,6 @@ int main(int argc, char *argv[])
   MOOSAppRunnerThread appRunner(&UMAC, (char*)(run_command.c_str()), 
 				mission_file.c_str(), argc, argv);
 
-  //UMAC.setInitialNode(initial_node);
-  //UMAC.setInitialProc(initial_proc);
-
-  cout << "Initial Proc:" << initial_proc << endl;
-  cout << "Initial Node:" << initial_node << endl;
-
   bool quit = false;
   while(!quit) {
     char c = getCharNoWait();

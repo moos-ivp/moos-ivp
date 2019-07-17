@@ -31,6 +31,7 @@
 #include "BHV_Loiter.h"
 #include "BHV_OpRegion.h"
 #include "BHV_MaxDepth.h"
+#include "BHV_MaxSpeed.h"
 #include "BHV_ConstantDepth.h"
 #include "BHV_ConstantHeading.h"
 #include "BHV_MaintainHeading.h"
@@ -39,6 +40,7 @@
 #include "BHV_PeriodicSurface.h"
 #include "BHV_Trail.h"
 #include "BHV_Convoy.h"
+
 #include "BHV_Shadow.h"
 #include "BHV_Timer.h"
 #include "BHV_TestFailure.h"
@@ -49,6 +51,7 @@
 #include "BHV_RStationKeep.h"
 #include "BHV_CutRange.h"
 #include "BHV_AvoidCollision.h"
+#include "BHV_AvoidCollisionT.h"
 #include "BHV_AvoidObstacle.h"
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
@@ -58,6 +61,7 @@
 #include "BHV_HeadingBias.h"
 #include "BHV_MinAltitudeX.h"
 #include "BHV_AvdColregsV17.h"
+#include "BHV_AvdColregsV18.h"
 
 using namespace std;
 
@@ -72,6 +76,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_Trail")           || 
      (bhv_name == "BHV_Convoy")          || 
      (bhv_name == "BHV_MaxDepth")        || 
+     (bhv_name == "BHV_MaxSpeed")        || 
      (bhv_name == "BHV_ConstantDepth")   || 
      (bhv_name == "BHV_ConstantHeading") || 
      (bhv_name == "BHV_MaintainHeading") || 
@@ -86,6 +91,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_Shadow")          || 
      (bhv_name == "BHV_CutRange")        || 
      (bhv_name == "BHV_AvoidCollision")  || 
+     (bhv_name == "BHV_AvoidCollisionT") || 
      (bhv_name == "BHV_AvoidObstacle")   || 
      (bhv_name == "BHV_PeriodicSpeed")   || 
      (bhv_name == "BHV_PeriodicSurface") || 
@@ -96,7 +102,8 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_RubberBand")      || 
      (bhv_name == "BHV_HeadingBias")     ||
      (bhv_name == "BHV_MinAltitudeX")    ||
-     (bhv_name == "BHV_AvdColregsV17"))
+     (bhv_name == "BHV_AvdColregsV17")   ||
+     (bhv_name == "BHV_AvdColregsV18"))
     return(true);
   else
     return(false);
@@ -109,7 +116,7 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
 {
   if(m_domain.size() == 0)
     return(0);
-
+  
   IvPBehavior *bhv = 0;
 
   if(bhv_name == "BHV_OpRegion")
@@ -124,6 +131,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_Convoy(m_domain);
   else if(bhv_name == "BHV_MaxDepth")      
     bhv = new BHV_MaxDepth(m_domain);
+  else if(bhv_name == "BHV_MaxSpeed")      
+    bhv = new BHV_MaxSpeed(m_domain);
   else if(bhv_name == "BHV_ConstantDepth")      
     bhv = new BHV_ConstantDepth(m_domain);
   else if(bhv_name == "BHV_ConstantHeading")      
@@ -152,6 +161,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_CutRange(m_domain);
   else if(bhv_name == "BHV_AvoidCollision") 
     bhv = new BHV_AvoidCollision(m_domain);
+  else if(bhv_name == "BHV_AvoidCollisionT") 
+    bhv = new BHV_AvoidCollisionT(m_domain);
   else if(bhv_name == "BHV_AvoidObstacle") 
     bhv = new BHV_AvoidObstacle(m_domain);
   else if(bhv_name == "BHV_PeriodicSpeed") 
@@ -174,17 +185,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_MinAltitudeX(m_domain);
   else if(bhv_name == "BHV_AvdColregsV17")     
     bhv = new BHV_AvdColregsV17(m_domain);
+  else if(bhv_name == "BHV_AvdColregsV18")     
+    bhv = new BHV_AvdColregsV18(m_domain);
 
   return(bhv);
 }
-
-
-
-
-
-
-
-
-
-
-

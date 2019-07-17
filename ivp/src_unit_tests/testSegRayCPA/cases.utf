@@ -1,0 +1,4 @@
+cmd=testSegRayCPA
+
+x1=84 y1=55 x2=84 y2=-55   rx=100 ry=-30 ra=270 # cpa=0
+

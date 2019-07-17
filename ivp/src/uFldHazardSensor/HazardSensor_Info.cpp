@@ -38,8 +38,8 @@ void showSynopsis()
   blk("------------------------------------                             ");
   blk("  Typically run in a shoreside community. Configured with a set  ");
   blk("  objects with a given x,y location and classification (hazard   ");
-  blk("  or beningn). The sensor simulator receives a series of requests");
-  blk("  from a remote vehicle. When sensor determines that an object is");
+  blk("  or benign). The sensor simulator receives a series of requests ");
+  blk("  from a remote vehicle. When sensor determines that an object   ");
   blk("  is within the sensor field of a requesting vehicle, it may or  ");
   blk("  may not return a sensor detection report for the object, and   ");
   blk("  perhaps also a proper classification. The odds of receiving a  ");

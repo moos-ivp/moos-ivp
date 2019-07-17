@@ -25,7 +25,7 @@
 #ifdef _WIN32
   #define _USE_MATH_DEFINES
 #endif
-
+#include <unistd.h>
 #include <cmath>
 #include <iterator>
 #include <vector>
@@ -165,6 +165,8 @@ bool BasicContactMgr::Iterate()
 bool BasicContactMgr::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
+
+  Notify("PBASICCONTACTMGR_PID", getpid());
 
   m_ownship = m_host_community;
   if(m_ownship == "") {

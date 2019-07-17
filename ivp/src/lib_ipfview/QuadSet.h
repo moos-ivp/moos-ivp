@@ -41,7 +41,7 @@ public:
   void   addQuad3D(Quad3D quad)         {m_quads.push_back(quad);}
   void   setIvPDomain(IvPDomain domain) {m_ivp_domain = domain;}
   void   resetMinMaxVals();
-  void   markDense(bool v)              {m_dense=v;}
+  //void   markDense(bool v)              {m_dense=v;}
   
   // Modifying the QuadSet
   void   applyColorMap(const FColorMap&);
@@ -52,6 +52,7 @@ public:
   void   applyColorIntensity(double);
   void   applyScale(double);
   void   applyBase(double);
+  void   setBase(double);
   void   applyTranslation(double x, double y);
   void   applyTranslation();
   void   applyPolar(double, int);
@@ -62,7 +63,6 @@ public:
   IvPDomain    getDomain() const             {return(m_ivp_domain);}
   double       getMaxVal() const             {return(m_maxpt_val);}
   double       getMinVal() const             {return(m_minpt_val);}
-  bool         isDense() const               {return(m_dense);}
   
   double       getMaxPoint(std::string) const;
   unsigned int getMaxPointQIX(std::string) const;
@@ -82,7 +82,4 @@ protected:
   unsigned int m_max_y_qix;
 };
 #endif
-
-
-
 

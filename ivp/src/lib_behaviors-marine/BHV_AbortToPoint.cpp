@@ -205,7 +205,7 @@ IvPFunction *BHV_AbortToPoint::buildOF(string method)
     if(ok) {
       OF_Reflector reflector(&aof_wpt);
       reflector.create(600, 500);
-      string info = reflector.getUniformPieceStr();
+      //string info = reflector.getUniformPieceStr();
       ipf = reflector.extractIvPFunction();
     }
   }    

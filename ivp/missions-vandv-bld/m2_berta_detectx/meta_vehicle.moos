@@ -1,0 +1,67 @@
+ServerHost = localhost
+ServerPort = $(VPORT)
+
+// Community name IS the vehicle name
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 50
+   
+  Run = MOOSDB           @ NewConsole = false
+  Run = uProcessWatch    @ NewConsole = false
+  Run = pShare           @ NewConsole = false
+  Run = uSimMarine       @ NewConsole = false
+  Run = pLogger          @ NewConsole = false
+  Run = pNodeReporter    @ NewConsole = false
+  Run = pMarinePID       @ NewConsole = false
+  Run = pHelmIvP         @ NewConsole = false
+#ifdef VNAME abe
+  Run = pBasicContactMgr @ NewConsole = false
+#else
+  Run = pBasicContactMgr @ NewConsole = false
+#endif
+  Run = pHostInfo        @ NewConsole = false
+  Run = uFldNodeBroker   @ NewConsole = false
+  Run = uLoadWatch       @ NewConsole = false
+  Run = pEvalLoiter      @ NewConsole = false
+
+#ifdef VNAME abe
+  Run = uTimerScript     @ NewConsole = false
+#endif
+
+}
+
+#include plug_pEvalLoiter.moos
+#include plug_uFldNodeBroker.moos
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+#include plug_uSimMarine.moos
+#include plug_pHelmIvP.moos
+#include plug_pMarinePID.moos
+#include plug_pLogger.moos
+#include plug_pNodeReporter.moos
+#include plug_uProcessWatch.moos
+#include plug_uLoadWatch.moos
+#include plug_pBasicContactMgr.moos
+
+
+#ifdef VNAME abe
+//------------------------------------------------------------
+ProcessConfig = uTimerScript  
+{
+  event = var=BCM_REPORT_REQUEST, val="var=CONTACTS_050, range=50", time=1
+  event = var=BCM_REPORT_REQUEST, val="var=CONTACTS_075, range=75", time=2
+  event = var=BCM_REPORT_REQUEST, val="var=CONTACTS_400, range=400", time=3
+  event = var=BCM_REPORT_REQUEST, val="var=CONTACTS_500, range=500, group=us", time=4
+  event = var=BCM_REPORT_REQUEST, val="var=CONTACTS_500M, range=500, type=mokai", time=4
+
+  delay_reset = 2
+  reset_time = all-posted
+  reset_max = nolimit
+}
+#endif
+

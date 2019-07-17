@@ -64,7 +64,7 @@ void showHelpAndExit()
   cout << "  --help, -h                                           " << endl;
   cout << "      Display this help message.                       " << endl;
   cout << "  --version,-v                                         " << endl;
-  cout << "      Display the release version of gen_object_field. " << endl;
+  cout << "      Display the release version of gen_hazards.      " << endl;
   cout << "  --objects=<object_set>                               " << endl;
   cout << "      Specify an object set of the form:               " << endl;
   cout << "      \"amount,type\"                                  " << endl;

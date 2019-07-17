@@ -21,11 +21,6 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
-
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
@@ -51,8 +46,6 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   this->setParam("descriptor", "avoid_collision");
   this->setParam("build_info", "uniform_piece = discrete @ course:3,speed:3");
   this->setParam("build_info", "uniform_grid  = discrete @ course:9,speed:6");
-  //this->setParam("build_info", "uniform_piece = discrete @ course:20,speed:6");
-  //this->setParam("build_info", "uniform_grid  = discrete @ course:20,speed:6");
   
   if(m_domain.hasDomain("depth"))
     m_domain = subDomain(m_domain, "course,speed,depth");
@@ -75,10 +68,13 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   m_no_alert_request  = false;
 
   // Initialize state variables
-  m_curr_closing_spd = 0;
-  m_avoiding = false;
-  
+  m_curr_closing_spd  = 0;
+  m_total_evals       = 0;
+  m_avoiding          = false;
+
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING, AVOIDING");
+
+  
 }
 
 //-----------------------------------------------------------
@@ -218,10 +214,22 @@ void BHV_AvoidCollision::onCompleteState()
 }
 
 //-----------------------------------------------------------
+// Procedure: getInfo()
+
+string BHV_AvoidCollision::getInfo(string str) 
+{
+  if(str == "debug1")
+    return(uintToString(m_total_evals));
+
+  return("");
+}
+
+//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_AvoidCollision::onRunState() 
 {
+  m_total_evals = 0;
   if(!updatePlatformInfo()) {
     postRange(false);
     return(0);
@@ -271,6 +279,9 @@ IvPFunction *BHV_AvoidCollision::onRunState()
     m_domain = subDomain(m_domain, "course,speed");
     reflector.create(m_build_info);
     ipf = reflector.extractIvPFunction();
+
+    m_total_evals = reflector.getTotalEvals();
+
     string warnings = reflector.getWarnings();
     postMessage("AVD_STATUS", warnings);
   }    
@@ -318,6 +329,9 @@ IvPFunction *BHV_AvoidCollision::onRunState()
     reflector.setParam("refine_piece", region_bot);
     reflector.create();
     ipf = reflector.extractIvPFunction();
+
+    m_total_evals = reflector.getTotalEvals();
+
     string warnings = reflector.getWarnings();
     postMessage("AVD_STATUS", warnings);
   }

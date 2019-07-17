@@ -1,79 +1,43 @@
-Name: M.Benjamin
-Date: May 10th 8th, 2019
+Author: Michael "Misha" Novitzky
+Date: April 25th 2017
 File: README
 
-This mission folder is meant to be a baseline bare-bones folder for
-preparing to launch a simple Alpha home-plate mission on one of the
-MIT Heron USVs. It can also be regarded as a template for creating
-more specific mission folder, like the 2.680 Front Estimation mission
-for example.
+This mission is the union of the Heron M300 alpha mission and that of using a PABLO box on an autonomous kayak.  The Heron M300s use just the launch_vehicle.sh script with a vehicle name flag.  However, the Kayak requires that the operator start the front seat as well as the back seat.  It is assumed that this folder is on both the front and backseat at the locations described below.
 
-This mission is designed to support THREE modes of operation:
 
-(1) Single machine simulation:
-------------------------------
-The "launch.sh" will support the launching of a simulation where both
-the shoreside and all vehicle communities are running on a single
-machine. For example, a single vehicle named "abe" may be launched
-with time warp 10 with:
+Steps to run the kayak Nostromo are:
 
-$ ./launch.sh -a 10
+Step 1: log onto the kayak front seat:
+$ ssh mit@192.168.1.103
 
-This will launch both the shoreside and vehicle MOOS communities.
-More than one vehicle may be launched:
+pword is hovergroup
 
-$ ./launch.sh -a -b -c -d 10
+Step 2: move to the directory with the front seat mission
 
-(2) Multi-machine simulation:
-------------------------------
-The "launch_shoreside.sh" and "launch_vehicle.sh" scripts will support
-the launching of shore and vehicle communities on different machines.
-This could mean multiple laptops, or more common in 2.680, a PABLO
-running a vehicle simulation connected to another laptop running the
-shoreside. For example:
+/hovergroup/moos-ivp-2680/missions/lab
 
-On the shoreside machine:
+Step 3: modify the launch script to include the proper PABLO IP address
+$ emacs launch_kayak_front_seat.sh
 
-$ ./launch_shoreside.sh WARP
+update the variable called BACKSEAT_IP
 
-Once this community is launched, there should be a pMarineViewer
-window showing the shoreside IP address on the top bar. This should
-be noted.
+Step 4: launch the script
+$ ./launch_kayak_front_seat.sh --nostromo
 
-On the vehicle machine, e.g., PABLO:
+Step 5: in a new window, log onto the PABLO box
+$ ssh student2680@192.168.1.242
 
-$ ./launch_vehicle.sh WARP --shoreip=192.168.2.1 -a --sim
+pword is waterbots
 
-This will launch the vehicle named "abe", and looking for the shoreside
-at the given IP address. The --sim flag launches the local vehicle
-community launching uSimMarine (the vehicle simulator).
+Step 6: move to the directory with the backseat mission
 
-(3) Heron operation:
-------------------------------
-This mode is very similar to (2). As before launch the shoreside,
-with no time warp, and note the IP address:
+/home/student2680/moos-ivp-aquaticus/missions/alpha_kayak
 
-$ ./launch_shoreside.sh WARP
+Step 7: update the Shore IP in the launch script
+$ emacs launch_vehicle.sh
 
-On the vehicle PABLO:
+update the variable SHORE_IP
 
-$ ./launch_vehicle.sh --shoreip=192.168.2.1 -g 
+Step 8: run the launch script
+$ ./launch_vehicle.sh -n
 
-This will launch the vehicle named "gus", and looking for the shoreside
-at the given IP address. Notes: we don't specify a WARP since robot
-ops are always warp=1. We don't invoke the --sim flag since this is not
-a simulation. This will result in uSimMarine not launching and iM200
-launching instead. iM200 is the PABLO interface to the Heron. Finally,
-we launch with one of the actual robot names:
-
-On Evan, launch with -e
-On Felix, launch with -f
-On Gus, launch with -g
-On Hal, launch with -h
-On Ida, launch with -i
-On Jing, launch with -j
-On Kirk, launch with -k
-On Luke, launch with -l
-
-Note: the vehicle name is the name of the robot computer box, not
-robot vehicle frame.

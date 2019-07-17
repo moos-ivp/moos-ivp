@@ -51,22 +51,22 @@ void FV_Viewer::resetQuadSet()
   bool dense = false;
   if(!m_show_pieces)
     dense = true;
-  m_quadset = m_model->getQuadSet(dense);
+  m_quadset_ipf = m_model->getQuadSet(dense);
 
   resetRadVisuals();
 
   //m_draw_pclines = true;
-  m_quadset.normalize(0, 100);
-  m_quadset.applyColorMap(m_color_map);	
-  m_quadset.applyColorIntensity(m_intensity);
-  m_quadset.interpolate(1);
+  m_quadset_ipf.normalize(0, 100);
+  m_quadset_ipf.applyColorMap(m_color_map);	
+  m_quadset_ipf.applyColorIntensity(m_intensity);
+  m_quadset_ipf.interpolate(1);
   
   if(m_polar == 0)
-    m_quadset.applyTranslation(-250, -250);
+    m_quadset_ipf.applyTranslation(-250, -250);
   else if(m_polar == 1)
-    m_quadset.applyPolar(m_rad_ratio, 1);
+    m_quadset_ipf.applyPolar(m_rad_ratio, 1);
   else if(m_polar == 2)
-    m_quadset.applyPolar(m_rad_ratio, 2);
+    m_quadset_ipf.applyPolar(m_rad_ratio, 2);
 }
 
 
@@ -81,13 +81,13 @@ void FV_Viewer::draw()
   glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
   
   if(m_draw_ipf) {
-    bool result = Common_IPFViewer::drawQuadSet(m_quadset);
+    bool result = Common_IPFViewer::drawQuadSet(m_quadset_ipf);
     if(result) {
       drawOwnPoint();
       
       if(m_draw_pin) {
-	unsigned int max_crs_qix = m_quadset.getMaxPointQIX("course");
-	unsigned int max_spd_qix = m_quadset.getMaxPointQIX("speed");
+	unsigned int max_crs_qix = m_quadset_ipf.getMaxPointQIX("course");
+	unsigned int max_spd_qix = m_quadset_ipf.getMaxPointQIX("speed");
 	drawMaxPoint(max_crs_qix, max_spd_qix);
       }
     }

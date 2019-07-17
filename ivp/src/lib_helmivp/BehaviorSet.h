@@ -130,6 +130,8 @@ public:
 
   void print();
 
+  unsigned long int size() const;
+  
 protected:
   std::vector<BehaviorSetEntry> m_bhv_entry;
   std::set<std::string>         m_bhv_names;

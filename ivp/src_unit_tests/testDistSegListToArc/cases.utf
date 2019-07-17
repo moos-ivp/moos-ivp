@@ -1,0 +1,14 @@
+cmd=testDistSegToArc
+
+x1=15 y1=-5 x2=9 y2=-4 cx=0 cy=0 cr=8 lang=270 rang=0 # dist=15
+x1=15 y1=-5 x2=9 y2=-4 cx=0 cy=0 cr=8 lang=180 rang=0 # dist=9.85
+
+x1=-15 y1=-4 x2=9 y2=-4 cx=0 cy=0 cr=8 lang=180 rang=0 # dist=0
+x1=-3 y1=12 x2=9 y2=-4 cx=0 cy=0 cr=8 lang=180 rang=0 # dist=0
+x1=0 y1=8 x2=9 y2=-4 cx=0 cy=0 cr=8 lang=180 rang=0 # dist=0
+
+x1=-105 y1=95 x2=-95 y2=105 cx=0 cy=0 cr=8 lang=180 rang=0 # dist=133.42
+
+ 
+x1=-5 y1=10 x2=9 y2=9 cx=2 cy=2 cr=9 lang=280 rang=80 # dist=0
+x1=-5 y1=14 x2=9 y2=13 cx=2 cy=2 cr=9 lang=280 rang=80 # dist=2.47

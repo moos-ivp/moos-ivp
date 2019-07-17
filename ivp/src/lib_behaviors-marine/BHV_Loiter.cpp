@@ -59,6 +59,9 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_dist_to_poly    = 0;
   m_eta_to_poly     = 0;
 
+  m_bng_total       = 0;
+  m_bng_last        = -1;
+  
   // Initialize Configuration Parameters
   m_desired_speed     = 0;      // meters per sec
   m_desired_speed_alt = -1;     // m/s. Value -1 means not used
@@ -70,6 +73,7 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
   m_use_alt_speed     = false;
   m_patience          = 50;     // [1,99]
   m_ipf_type          = "zaic";
+  m_slingshot         = -1;
   
   // Visual Hint Defaults
   m_hint_vertex_size   = 1;
@@ -152,6 +156,8 @@ bool BHV_Loiter::setParam(string param, string value)
     m_desired_speed = dval;
     return(true);
   }
+  else if(param == "slingshot")
+    return(setNonNegDoubleOnString(m_slingshot, value));
   else if((param == "ipf-type") || (param == "ipf_type")) {
     value = tolower(value);
     if((value=="zaic") || (value=="zaic_spd"))
@@ -215,6 +221,11 @@ void BHV_Loiter::onCompleteState()
 {
   postErasablePoint();
   postErasablePolygon();
+
+  postMessage("LOITER_COMPLETE", "true");
+  
+  m_bng_last  = -1;
+  m_bng_total = 0;
 }
 
 
@@ -234,6 +245,9 @@ void BHV_Loiter::onIdleState()
   m_loiter_mode = "idle";
   postStatusReports();
 
+  m_bng_last  = -1;
+  m_bng_total = 0;
+  
   if(!m_center_activate)
     return;
   m_center_pending = true;
@@ -284,7 +298,23 @@ IvPFunction *BHV_Loiter::onRunState()
     int curr_waypt = m_loiter_engine.acquireVertex(m_osh, m_osx, m_osy); 
     m_waypoint_engine.setCurrIndex(curr_waypt);
   }
-  
+
+  bool slingshot_done = false;
+  if(!m_acquire_mode && (m_slingshot > -1)) {
+    double ctx = m_loiter_engine.getCenterX();
+    double cty = m_loiter_engine.getCenterY();
+    double bng = relAng(m_osx, m_osy, ctx, cty);
+    if(m_bng_last != -1) {
+      double delta = angleDiff(bng, m_bng_last);
+      m_bng_total += delta;
+      postMessage("LOITER_BNG_TOTAL", m_bng_total);
+      postMessage("LOITER_BNG_DELTA", delta);
+    }
+    m_bng_last = bng;
+    if(m_bng_total > m_slingshot)
+      slingshot_done = true;
+  }
+      
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
   if((feedback_msg == "advanced") || (feedback_msg == "cycled"))
     m_acquire_mode = false;
@@ -305,6 +335,10 @@ IvPFunction *BHV_Loiter::onRunState()
   postViewablePolygon();
   postViewablePoint();
   postStatusReports();
+
+  if(slingshot_done)
+    setComplete();
+  
   return(ipf);
 }
 
@@ -587,8 +621,11 @@ void BHV_Loiter::postErasablePolygon()
   string bhv_tag = tolower(getDescriptor());
   bhv_tag = findReplace(bhv_tag, "(d)", "");
   bhv_tag = m_us_name + "_" + bhv_tag;
-  seglist.set_label(bhv_tag);
   seglist.set_active(false);
+  if(m_hint_poly_label == "")
+    seglist.set_label(bhv_tag);
+  else
+    seglist.set_label(m_hint_poly_label);
 
   string null_poly_spec = seglist.get_spec();
   postMessage("VIEW_POLYGON", null_poly_spec);
@@ -602,7 +639,6 @@ void BHV_Loiter::postViewablePoint()
   string bhv_tag = tolower(getDescriptor());
 
   XYPoint view_point(m_ptx, m_pty);
-  //view_point.set_label(m_us_name + "'s next_waypoint");
   view_point.set_label(m_us_name + "_waypoint");
   view_point.set_color("label", m_hint_nextpt_lcolor);
   view_point.set_color("vertex", m_hint_nextpt_color);
@@ -619,7 +655,6 @@ void BHV_Loiter::postErasablePoint()
   string bhv_tag = tolower(getDescriptor());
 
   XYPoint view_point(m_ptx, m_pty);
-  //view_point.set_label(m_us_name + "'s next waypoint");
   view_point.set_label(m_us_name + "_waypoint");
   view_point.set_active(false);
   postMessage("VIEW_POINT", view_point.get_spec());

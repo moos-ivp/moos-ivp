@@ -6,7 +6,7 @@ smart_percent  = 25
 
 # lib_ipfview Common_IPFViewer -----------------
 set_frame_height=250
-set_zoom=1.5625
+set_zoom=3
 set_radius=15
 set_x_rotation=-78
 set_z_rotation=40
@@ -16,8 +16,8 @@ frame_color=gray
 draw_frame=true
 draw_base=false
 # app_ffview Viewer -----------------------
-set_base_ipf=-35
-set_base_aof=-232
+#set_base_ipf=-35
+#set_base_aof=-232
 
 
 uniform_piece = discrete @ x:50,y:50

@@ -271,6 +271,61 @@ double IvPDomain::getVarDelta(const string& str) const
 }
 
 //-------------------------------------------------------------
+// Procedure: getNextLowerVal()
+
+double IvPDomain::getNextLowerVal(unsigned int index, double given_val,
+				  int snaptype, bool wrap) const
+{
+  if((snaptype < 0) || (snaptype > 2) || (index  >= m_dname.size())) 
+    return(given_val);
+
+  unsigned int value_index = getDiscreteVal(index, given_val, snaptype);
+  
+  if(value_index == 0) {
+    if(!wrap)
+      return(given_val);
+    else
+      return(getVarHigh(index));
+  }
+    
+  return(getVal(index, value_index-1));
+}
+
+//-------------------------------------------------------------
+// Procedure: getNextHigherVal()
+
+double IvPDomain::getNextHigherVal(unsigned int index, double given_val,
+				   int snaptype, bool wrap) const
+{
+  if((snaptype < 0) || (snaptype > 2) || (index  >= m_dname.size())) 
+    return(given_val);
+
+  unsigned int value_index = getDiscreteVal(index, given_val, snaptype);
+  
+  if(value_index+1 >= m_dpoints[index]) {
+    if(!wrap)
+      return(given_val);
+    else
+      return(getVarLow(index));
+  }
+    
+  return(getVal(index, value_index+1));
+}
+
+//-------------------------------------------------------------
+// Procedure: getSnappedVal
+
+double IvPDomain::getSnappedVal(unsigned int index, double given_val,
+				int snaptype) const
+{
+  if((snaptype < 0) || (snaptype > 2) || (index >= m_dname.size())) 
+    return(given_val);
+
+  unsigned int uint_val = getDiscreteVal(index, given_val, snaptype);
+  return(getVal(index, uint_val));
+}
+
+//-------------------------------------------------------------
 // Procedure: getDiscreteVal
 //   Purpose: Return the discrete index into the domain given 
 //            by a double input value. 
@@ -294,7 +349,7 @@ double IvPDomain::getVarDelta(const string& str) const
 unsigned int IvPDomain::getDiscreteVal(unsigned int index, 
 				       double val, int snaptype) const
 {
-  if((snaptype < 0) || (snaptype > 2))
+  if((snaptype < 0) || (snaptype > 2) || (index  >= m_dname.size()))
     return(0);
 
   if(val <= m_dlow[index])

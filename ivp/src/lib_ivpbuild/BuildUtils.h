@@ -71,12 +71,21 @@ IvPBox  stringNativeToRegionBox(const std::string&, const IvPDomain&,
 IvPBox  stringDiscreteToRegionBox(const std::string&, const IvPDomain&, 
 				  const char gsep=',', const char lsep=':');
 
+//--------------------------------------------------------------------
+// Heading/Speed Box Utilities
+
+IvPBox  buildBoxHdgAll(IvPDomain, double smin, double smax);
+
+std::vector<IvPBox>  buildBoxesSpdAll(IvPDomain, double hmin, double hmax);
+
+std::vector<IvPBox>  buildBoxesHdgSpd(IvPDomain, double hmin, double hmax,
+				      double smin, double smax);
+
+
+//--------------------------------------------------------------------
+// Utility added by mikerb April 2018 for testing Refineries
+
+std::vector<IvPBox> getPointBoxes(IvPBox);
+
 #endif
-
-
-
-
-
-
-
 

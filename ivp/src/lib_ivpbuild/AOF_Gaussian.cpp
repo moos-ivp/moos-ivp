@@ -54,42 +54,31 @@ bool AOF_Gaussian::setParam(const string& param, double value)
 
 //----------------------------------------------------------------
 // Procedure: evalPoint
-#if 0
+
 double AOF_Gaussian::evalPoint(const vector<double>& point) const
 {
   double xval = extract("x", point);
   double yval = extract("y", point);
 
   double dist = hypot((xval - m_xcent), (yval - m_ycent));
-  dist -= 80;
-  if(dist < 0)
-    dist = 0;
-
   double pct  = pow(M_E, -((dist*dist)/(2*(m_sigma * m_sigma))));
 
   return(pct * m_range);
 }
-#endif
-#if 1
+
 //----------------------------------------------------------------
-// Procedure: evalPoint
+// Procedure: evalBox
 
-double AOF_Gaussian::evalPoint(const vector<double>& point) const
+double AOF_Gaussian::evalBox(const IvPBox *b) const
 {
-  double xval = extract("x", point);
-  double yval = extract("y", point);
+  double xval = 0;
+  double yval = 0;
 
+  m_domain.getVal(0, b->pt(0,0), xval);
+  m_domain.getVal(1, b->pt(1,0), yval);
+  
   double dist = hypot((xval - m_xcent), (yval - m_ycent));
   double pct  = pow(M_E, -((dist*dist)/(2*(m_sigma * m_sigma))));
 
   return(pct * m_range);
 }
-#endif
-
-
-
-
-
-
-
-

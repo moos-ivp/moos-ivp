@@ -5,7 +5,7 @@ ProcessConfig = pNodeReporter
 {
   AppTick     = 2
   CommsTick   = 2
-  
-  vessel_type = KAYAK
-	terse_reports = true
+
+  vessel_type = kayak
+  terse_reports = true
 }

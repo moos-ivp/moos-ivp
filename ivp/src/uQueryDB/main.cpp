@@ -95,6 +95,14 @@ int main(int argc, char *argv[])
       }
     }
   }
+
+  if(mission_file != "") {
+    if(!okFileToRead(mission_file)) {
+      cout << "Unable to read mission file: " << mission_file << endl;
+      cout << "Exiting now as failure, return value=1" << endl;
+      exit(1);
+    }
+  }
   
   QueryDB query(server_host, server_port);
   
@@ -110,7 +118,8 @@ int main(int argc, char *argv[])
   }
 
   if(condition == "") {
-    cout << "A condition must be specified. Exiting now with value 1." << endl;
+    cout << "A condition must be specified. Exiting now with value 1.";
+    cout << endl;
     return(1);
   }
   
@@ -124,12 +133,3 @@ int main(int argc, char *argv[])
 
   return(1);
 }
-
-
-
-
-
-
-
-
-

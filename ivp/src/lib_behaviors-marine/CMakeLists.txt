@@ -7,10 +7,12 @@ SET(SRC
   BHV_AbortToPoint.cpp
   BHV_Attractor.cpp
   BHV_AvoidCollision.cpp
+  BHV_AvoidCollisionT.cpp
   BHV_AvoidObstacle.cpp
   BHV_ConstantDepth.cpp
   BHV_ConstantHeading.cpp
   BHV_MaxDepth.cpp
+  BHV_MaxSpeed.cpp
   BHV_MaintainHeading.cpp
   BHV_ConstantSpeed.cpp
   BHV_CutRange.cpp
@@ -72,7 +74,6 @@ SET(HEADERS
   BHV_Waypoint.h
   BHV_BearingLine.h
   BHV_TestFailure.h
-  BHV_KCache.h
 ) 
 
 ADD_LIBRARY(behaviors-marine ${SRC})

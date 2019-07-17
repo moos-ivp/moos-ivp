@@ -50,7 +50,31 @@ double AOF::extract(const string& varname, const vector<double>& point) const
 }
 
 
+//----------------------------------------------------------------
+// Procedure: getCatMsgsAOF()
+
+string AOF::getCatMsgsAOF() const
+{
+  list<string>::const_iterator p;
+  string return_str;
+  for(p=m_msgs.begin(); p!=m_msgs.end(); p++) {
+    if(return_str != "")
+      return_str += " # ";
+    return_str += *p;
+  }
+  return(return_str);
+}
 
 
+//----------------------------------------------------------------
+// Procedure: postMsgAOF()
 
+void AOF::postMsgAOF(string msg)
+{
+  if(msg != "") {
+    m_msgs.push_front(msg.substr(0,80));
+    if(m_msgs.size() > 20)
+      m_msgs.pop_back();
+  }
+}
 

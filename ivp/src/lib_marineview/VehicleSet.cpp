@@ -482,7 +482,8 @@ bool VehicleSet::handleNodeReport(string node_report_str, string& whynot)
   if((vtype == "slocum") || (vtype == "seaglider") || (vtype == "ant"))
     vtype = "glider";
   if((vtype != "auv") && (vtype != "ship") && (vtype != "glider") &&
-     (vtype != "wamv") && (vtype != "kayak") && (vtype != "mokai"))
+     (vtype != "wamv") && (vtype != "kayak") && (vtype != "mokai") &&
+     (vtype != "heron"))
     vtype = "ship";
   
   if(((vtype == "auv") || (vtype == "glider")) && !new_record.valid("depth")) {
@@ -498,7 +499,7 @@ bool VehicleSet::handleNodeReport(string node_report_str, string& whynot)
   
   double vlen = new_record.getLength();
   if(!new_record.valid("length") || (vlen == 0)) {
-    if((vtype=="auv") || (vtype=="kayak"))
+    if((vtype=="auv") || (vtype=="kayak") || (vtype=="heron"))
       vlen = 3.0; // meters
     if(vtype=="glider")
       vlen = 2.0; // meters

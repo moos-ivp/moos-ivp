@@ -63,8 +63,16 @@ int main(int argc, char *argv[])
   }
     
   bool ok = collision_reporter.handle();
-  if(ok)
-    collision_reporter.printReport();
+
+  if(!ok)
+    return(1);
+
+  collision_reporter.printReport();
+  if(collision_reporter.hadCollisions())
+    return(2);
+  if(!collision_reporter.hadEncounters())
+    return(3);
+
   return(0);
 }
 

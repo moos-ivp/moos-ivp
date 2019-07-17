@@ -29,6 +29,7 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   contacts
   behaviors-marine
   behaviors-colregs
+  ufield
   behaviors
   bhvutil	
   ivpbuild 

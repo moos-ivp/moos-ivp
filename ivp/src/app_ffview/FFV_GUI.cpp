@@ -248,17 +248,15 @@ void FFV_GUI::augmentMenu()
   //===================================================================
   // File    Pull-Down Menu
   //===================================================================
-  m_menubar->add("File/Script", 0,
-		 (Fl_Callback*)FFV_GUI::cb_Script, 0, 0);
-  m_menubar->add("File/Print Params", 'p',
+  m_menubar->add("File/Print Params", 0,
 		 (Fl_Callback*)FFV_GUI::cb_PrintParams, 0, 0);
 
   //===================================================================
   // AOF    Pull-Down Menu
   //===================================================================
-  m_menubar->add("AOF/Base +", FL_CTRL+'b',
+  m_menubar->add("AOF/Base +", FL_CTRL+'0',
 		 (Fl_Callback*)FFV_GUI::cb_ModBaseAOF, (void*)+1, 0);
-  m_menubar->add("AOF/Base -", FL_ALT+'b',
+  m_menubar->add("AOF/Base -", FL_CTRL+'9',
 		 (Fl_Callback*)FFV_GUI::cb_ModBaseAOF, (void*)-1, 0);
   m_menubar->add("AOF/AOF Patch +", 'P',
 		 (Fl_Callback*)FFV_GUI::cb_ModPatchAOF, (void*)+1, 0);
@@ -270,13 +268,6 @@ void FFV_GUI::augmentMenu()
   //===================================================================
   // IPF    Pull-Down Menu
   //===================================================================
-  m_menubar->add("IPF/Toggle IPF ", 'z',
-		 (Fl_Callback*)FFV_GUI::cb_ToggleIPF,  (void*)0,
-		 FL_MENU_RADIO|FL_MENU_DIVIDER);
-  m_menubar->add("IPF/Base +", 'e',
-		 (Fl_Callback*)FFV_GUI::cb_ModBaseIPF, (void*)+10, 0);
-  m_menubar->add("IPF/Base -", 'r',
-		 (Fl_Callback*)FFV_GUI::cb_ModBaseIPF, (void*)-10, FL_MENU_DIVIDER);
   m_menubar->add("IPF/Toggle Strict", '`',
 		 (Fl_Callback*)FFV_GUI::cb_ToggleStrict, (void*)0,
 		 FL_MENU_RADIO|FL_MENU_DIVIDER);
@@ -390,16 +381,16 @@ void FFV_GUI::augmentMenu()
   //===================================================================
   // Analysis Pull-Down Menu
   //===================================================================
-  m_menubar->add("Analysis/Sample-All",   0,
-		 (Fl_Callback*)FFV_GUI::cb_Sample, (void*)0,     0);
   m_menubar->add("Analysis/Sample+50K", ' ',
 		 (Fl_Callback*)FFV_GUI::cb_Sample, (void*)50000, 0);
-  m_menubar->add("Analysis/Rebuildx10", 0,
+  m_menubar->add("Analysis/Rebuildx10", '1',
 		 (Fl_Callback*)FFV_GUI::cb_Rebuild, (void*)10, 0);
-  m_menubar->add("Analysis/Rebuildx50", 0,
+  m_menubar->add("Analysis/Rebuildx50", '2',
 		 (Fl_Callback*)FFV_GUI::cb_Rebuild, (void*)50, 0);
-  m_menubar->add("Analysis/Rebuildx100", 0,
+  m_menubar->add("Analysis/Rebuildx100", '3',
 		 (Fl_Callback*)FFV_GUI::cb_Rebuild, (void*)100, 0);
+  m_menubar->add("Analysis/Rebuildx100", '4',
+		 (Fl_Callback*)FFV_GUI::cb_Rebuild, (void*)500, 0);
 }
 
 //----------------------------------------------------------
@@ -496,14 +487,6 @@ int FFV_GUI::handle(int event)
   return(Fl_Window::handle(event));
 }
 
-//----------------------------------------- Script
-inline void FFV_GUI::cb_Script_i() {
-  m_ffv_viewer->runScript();
-}
-void FFV_GUI::cb_Script(Fl_Widget* o) {
-  ((FFV_GUI*)(o->parent()->user_data()))->cb_Script_i();
-}
-
 //----------------------------------------- Mod BaseAOF
 inline void FFV_GUI::cb_ModBaseAOF_i(int amt) {
   m_ffv_viewer->setParam("mod_base_aof", amt);
@@ -523,7 +506,7 @@ void FFV_GUI::cb_ModPatchAOF(Fl_Widget* o, int v) {
 
 //----------------------------------------- Mod UniformAug
 inline void FFV_GUI::cb_ModUniformAug_i(int amt) {
-  m_ffv_viewer->setParam("mod_focus_len", amt);
+  m_ffv_viewer->setParam("mod_uniform_piece", amt);
   m_ffv_viewer->makeUniformIPF();
   updateXY();
 }
@@ -596,8 +579,8 @@ void FFV_GUI::cb_ToggleAutoPeak(Fl_Widget* o) {
 
 //----------------------------------------- SmartAugAmt
 inline void FFV_GUI::cb_SmartAugAmt_i(int amt) {
-  m_ffv_viewer->setParam("smart_amount",  intToString(amt));
-  m_ffv_viewer->setParam("smart_percent", "0");
+  m_ffv_viewer->setParam("smart_amount",  amt);
+  m_ffv_viewer->setParam("smart_percent", 0);
   m_ffv_viewer->makeUniformIPF();
   updateXY();
 }
@@ -607,8 +590,8 @@ void FFV_GUI::cb_SmartAugAmt(Fl_Widget* o, int i) {
 
 //----------------------------------------- SmartAugPct
 inline void FFV_GUI::cb_SmartAugPct_i(int amt) {
-  m_ffv_viewer->setParam("smart_amount",  "0");
-  m_ffv_viewer->setParam("smart_percent", intToString(amt));
+  m_ffv_viewer->setParam("smart_amount",  0);
+  m_ffv_viewer->setParam("smart_percent", amt);
   m_ffv_viewer->makeUniformIPF();
   updateXY();
 }

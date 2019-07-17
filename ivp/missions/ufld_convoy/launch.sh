@@ -1,20 +1,29 @@
 #!/bin/bash 
-#-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
-#-------------------------------------------------------
+#---------------------------------------------------------
+# File: launch.sh
+# Name: Mike Benjamin
+# Date: May 8th, 2019
+# Note: Goal of general pavilion vehicle launch script
+#---------------------------------------------------------
+#  Part 1: Initialize configurable variables with defaults
+#---------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
 CLOCKWISE="false"
 RANDSTART="false"
 AMT=1
+
+#---------------------------------------------------------
+#  Part 2: Check for and handle command-line arguments
+#---------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	printf "%s [SWITCHES] [time_warp]          \n" $0
-	printf "  --just_make, -j                  \n" 
-	printf "  --help, -h                       \n" 
-	printf "  --amt=N          (default is 1)  \n" 
-	printf "  --clockwise, -c                  \n" 
-	printf "  --norand                         \n" 
+	echo "launch.sh [SWITCHES] [time_warp]     "
+	echo "  --just_make, -j                    " 
+	echo "  --help, -h                         " 
+	echo "  --amt=N          (default is 1)    " 
+	echo "  --clockwise, -c                    " 
+	echo "  --norand                           " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
@@ -38,14 +47,14 @@ if [ ! $AMT -ge 1 ] ; then
 fi
 
 #-------------------------------------------------------------
-# Part 2: Build the Shoreside mission file
+# Part 3: Build the Shoreside mission file
 #-------------------------------------------------------------
 SHORE=localhost:9300
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
    VNAME="shoreside" 
 
 #-------------------------------------------------------------
-# Part 3: Generate random starting positions, speeds and vnames
+# Part 4: Generate random starting positions, speeds and vnames
 #         NEAST Poly: 90,20 : 150,30 : 200,-25 : 160,-65, 90,-15
 #         WEST  Poly: -30,-30 : -30,-135 : 15,-135 : 10,-30
 #         SEAST Poly: 145,-120 : 170,-135 : 140,-175 : 125,-160
@@ -65,7 +74,7 @@ VNAMES=(`cat vnames.txt`)
 GROOPS=(`cat vgroups.txt`)
 
 #-------------------------------------------------------------
-# Part 4: Generate the Vehicle mission files
+# Part 5: Generate the Vehicle mission files
 #-------------------------------------------------------------
 for INDEX in `seq 1 $AMT`;
 do

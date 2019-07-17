@@ -38,8 +38,6 @@ TARGET_LINK_LIBRARIES(uFunctionVis
    geometry
    ivpbuild
    mbutil
-   ivpcore
-   ivpsolve
    genutil
    fltk 
    fltk_gl

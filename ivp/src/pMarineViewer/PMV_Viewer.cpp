@@ -72,6 +72,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_mouse_lon = 0;
   m_lclick_ix = 0;
   m_rclick_ix = 0;
+  m_bclick_ix = 0;
  
   string str = "x=$(XPOS),y=$(YPOS),lat=$(LAT),lon=$(LON),";
   str += "vname=$(VNAME),counter=$(IX)";
@@ -622,6 +623,11 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	    if(strContains(str, "$[IX]"))
 	      str = findReplace(str, "$[IX]", intToString(m_lclick_ix));
 	    
+	    if(strContains(str, "$(BIX)"))
+	      str = findReplace(str, "$(BIX)", intToString(m_bclick_ix));
+	    if(strContains(str, "$[BIX]"))
+	      str = findReplace(str, "$[BIX]", intToString(m_bclick_ix));
+	    
 	    if(strContains(str, "$(Y)")) 
 	      str = findReplace(str, "$(Y)", doubleToString(sy,0));
 	    if(strContains(str, "$[Y]")) 
@@ -667,6 +673,7 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
       }
     }
     m_lclick_ix++;
+    m_bclick_ix++;
   }
 }
 
@@ -714,14 +721,28 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
 	  string str = m_var_data_pairs_all[i].get_sdata();
 	  if(strContains(str, "$(XPOS)")) 
 	    str = findReplace(str, "$(XPOS)", doubleToString(sx,1));
+	  if(strContains(str, "$[XPOS]")) 
+	    str = findReplace(str, "$[XPOS]", doubleToString(sx,1));
 	  if(strContains(str, "$(YPOS)")) 
 	    str = findReplace(str, "$(YPOS)", doubleToString(sy,1));
+	  if(strContains(str, "$[YPOS]")) 
+	    str = findReplace(str, "$[YPOS]", doubleToString(sy,1));
 	  if(strContains(str, "$(LAT)")) 
 	    str = findReplace(str, "$(LAT)", doubleToString(dlat,8));
+	  if(strContains(str, "$[LAT]")) 
+	    str = findReplace(str, "$[LAT]", doubleToString(dlat,8));
 	  if(strContains(str, "$(LON)")) 
-	  str = findReplace(str, "$(LON)", doubleToString(dlon,8));
+	    str = findReplace(str, "$(LON)", doubleToString(dlon,8));
+	  if(strContains(str, "$[LON]")) 
+	    str = findReplace(str, "$[LON]", doubleToString(dlon,8));
 	  if(strContains(str, "$(IX)")) 
 	    str = findReplace(str, "$(IX)", intToString(m_rclick_ix));
+	  if(strContains(str, "$[IX]")) 
+	    str = findReplace(str, "$[IX]", intToString(m_rclick_ix));
+	  if(strContains(str, "$(BIX)")) 
+	    str = findReplace(str, "$(BIX)", intToString(m_bclick_ix));
+	  if(strContains(str, "$[BIX]")) 
+	    str = findReplace(str, "$[BIX]", intToString(m_bclick_ix));
 	  pair.set_sdata(str);
 	}
 	m_var_data_pairs_rgt.push_back(pair);
@@ -729,6 +750,7 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
     }
   }
   m_rclick_ix++;
+  m_bclick_ix++;
 }
 
 //-------------------------------------------------------------

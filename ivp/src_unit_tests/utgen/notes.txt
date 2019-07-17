@@ -1,0 +1,28 @@
+
+
+A single point:
+  px,py
+
+A pair of points
+  px1,py1, px2,py2
+
+An arc:
+  cx, cy, cr, lang, rang
+  ax, ay, ar, lang, rang
+
+A line segment:
+  x1,y1, x2,y2
+
+A seglist:
+  segl={2,3:4,5:6,7}
+
+A ray:
+  rx,ry,ra
+
+
+utgen cases.utf id=N out.scn
+  draw_arc_center=true
+  draw_arc_edges=true
+  draw_pt_labels=true
+  draw_seg_labels=true
+  

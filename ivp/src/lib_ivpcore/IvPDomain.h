@@ -95,11 +95,23 @@ public:
 	return("");
       return(m_dname[i]);
     }
+
+  // Return next lowest value, if there is one
+  double getNextLowerVal(unsigned int index, double val,
+			 int snaptype, bool wrap=false) const;
+
+  // Return next higher value, if there is one
+  double getNextHigherVal(unsigned int index, double val,
+			  int snaptype, bool wrap=false) const;
+
   // Return the discrete index into the domain given by a double
   // input value. Round up, down or closest, depending on snaptype.
   unsigned int getDiscreteVal(unsigned int index, 
 			      double val, int snaptype) const;
 
+  double getSnappedVal(unsigned int index,
+		       double dval, int snaptype) const;
+  
 private:
   std::vector<std::string>  m_dname;
   std::vector<double>       m_dlow;

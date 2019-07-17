@@ -33,15 +33,18 @@
 
 class CPAEngine : public CPAEngineRoot {
 public:
-  CPAEngine(double cny=0, double cnx=0, double cnh=0,
-  	     double cnv=0, double osy=0, double osx=0);
+  CPAEngine();
+  CPAEngine(double cny, double cnx, double cnh,
+	    double cnv, double osy, double osx);
 
   void reset(double cny, double cnx, double cnh,
 	     double cnv, double osy, double osx);
   
   ~CPAEngine() {}
 
-public:    
+public:
+  void   initNonCache();
+  
   double evalCPA(double osh, double osv, double ostol) const;
   double evalTimeCPA(double osh, double osv, double ostol) const;
   double evalROC(double osh, double osv) const;
@@ -85,7 +88,9 @@ public:
 
   double ownshipContactRelBearing(double osh) const;
   double contactOwnshipRelBearing() const {return(m_stat_rel_bng_cn_os);}
-  
+
+  double ownshipContactAbsBearing() const {return(m_stat_abs_bng_os_cn);}
+
 
  public: // Getters for intermediate values used in other calculations
   double cnSpdToOS() const {return(m_stat_cn_to_os_spd);}
@@ -95,14 +100,17 @@ public:
   double getOSSpeedEpsilon(double osh, double osv) const;
   double getOSTimeGamma(double osh, double osv) const;
   double getOSTimeEpsilon(double osh, double osv) const;
+  double getCNSpeedInOSPos() const {return(m_stat_cn_to_os_spd);}
   double getRangeGamma() const   {return(m_stat_range_gam);}
   double getRangeEpsilon() const {return(m_stat_range_eps);}
   double getThetaGamma() const   {return(m_stat_theta_os_gam);}
   double getThetaEpsilon() const {return(m_stat_theta_os_eps);}
 
+  double getRange() const {return(m_stat_range);}
+
   double getARange(double osh, double osv, double time) const;
   double getARangeRate(double osh, double osv, double time) const;
-  
+
  protected:
   void   setStatic();
   double smallAngle(double, double) const;
@@ -121,7 +129,7 @@ public:
   void   setOSAftOfContact();
   void   setOSPortOfContact();
   void   setOSStarboardOfContact();
-
+  
  protected: // Cached values
   double m_cos_cnh;  // Cosine of  cnCRS.
   double m_sin_cnh;  // Sine  of   cnCRS.
@@ -181,8 +189,3 @@ public:
 };
 
 #endif
-
-
-
-
-

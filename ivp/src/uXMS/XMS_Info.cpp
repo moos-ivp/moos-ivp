@@ -36,7 +36,7 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  uXMS is a terminal-based (non GUI) tool for scoping a MOOSDB  ");
+  blk("  uXMS is a terminal-based (non GUI) tool for scoping a MOOSDB. ");
   blk("  Users may precisely configure the set of variables they wish  ");
   blk("  to scope on by naming them explicitly on the command line or  ");
   blk("  in the MOOS configuration block. The variable set may also be ");

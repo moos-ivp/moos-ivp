@@ -1242,16 +1242,275 @@ IvPBox stringDiscreteToRegionBox(const string& given_str,
   // If any one of the variables in the IvPDomain were not legally
   // specified in one of the elements of the string, return null_box
   for(i=0; i<dim; i++)
-    if(!dvar_legal[i])
+    if(!dvar_legal[i]) 
       return(null_box);
-  
+
   return(ret_box);
 }
 
 
+//-------------------------------------------------------------
+// Procedure: buildBoxHdgAll
+
+IvPBox buildBoxHdgAll(IvPDomain domain, double smin, double smax)
+{
+  // Sanity Checks
+  IvPBox nullbox;
+  if(smin > smax)
+    return(nullbox);
+  
+  int crs_ix = domain.getIndex("course"); 
+  int spd_ix = domain.getIndex("speed"); 
+  if((crs_ix < 0) || (spd_ix < 0))
+    return(nullbox);
+
+  unsigned int crs_pts = domain.getVarPoints((unsigned int)(crs_ix));
+  unsigned int spd_pts = domain.getVarPoints((unsigned int)(spd_ix));
+  if((crs_pts == 0) || (spd_pts == 0))
+    return(nullbox);
+
+  // Mappings from native to discrete values is done conservatively.
+  // If the domain is:
+  //     [0]   [1]   [2]   [3]   [4]   [5]   [6]   [7]   [8]   [9]
+  //     0.0   0.1   0.2   0.3   0.4   0.5   0.6   0.7   0.8   0.9
+  // And smin = 0.23, smax = 0.74
+  // Then the indices will be [3] and [7] respectively
+
+  unsigned int disc_spd_low = domain.getDiscreteVal(spd_ix, smin, 1);
+  unsigned int disc_spd_hgh = domain.getDiscreteVal(spd_ix, smax, 0);
+
+  // Handle edge case where both native values fall between the same
+  // pair of discrete indices:
+  if(disc_spd_low > disc_spd_hgh) {
+    double savg = (smin + smax)/2;
+    disc_spd_low = domain.getDiscreteVal(spd_ix, savg, 2);
+    disc_spd_hgh = disc_spd_low;
+  }
+  
+  IvPBox newbox(2);
+  newbox.setPTS(crs_ix, 0, crs_pts-1);
+  newbox.setPTS(spd_ix, disc_spd_low, disc_spd_hgh);
+  
+  return(newbox);
+}
+  
 
 
+//-------------------------------------------------------------
+// Procedure: buildBoxesSpdAll
+//      Note: It is assumed that the hmin/hmax values do represent the
+//            intended wrap direction.
+//            For example hmin=10,hmax=20  definitely is a 10 degree angle
+//            For example hmin=350,hmax=10 definitely is a 20 degree angle
+
+vector<IvPBox> buildBoxesSpdAll(IvPDomain domain, double hmin, double hmax)
+{
+  vector<IvPBox> boxes;
+  
+  // Sanity Checks
+  int crs_ix = domain.getIndex("course"); 
+  int spd_ix = domain.getIndex("speed"); 
+  if((crs_ix < 0) || (spd_ix < 0))
+    return(boxes);
+
+  unsigned int crs_pts = domain.getVarPoints((unsigned int)(crs_ix));
+  unsigned int spd_pts = domain.getVarPoints((unsigned int)(spd_ix));
+  if((crs_pts == 0) || (spd_pts == 0))
+    return(boxes);
+
+  // Mappings from native to discrete values is done conservatively.
+  unsigned int disc_hdg_low = domain.getDiscreteVal(crs_ix, hmin, 1); // rnd up
+  unsigned int disc_hdg_hgh = domain.getDiscreteVal(crs_ix, hmax, 0); // rnd down
+
+  // Case 1: Building ONE box (no wrap-around)
+  if(hmin <= hmax) {  // Will be building ONE box.    
+
+    // Handle edge case where both native values fall between the same
+    // pair of discrete indices:
+    // In the one-piece case, the lower discrete index should not be higher.
+    if(disc_hdg_low > disc_hdg_hgh) {
+      double havg = (hmin + hmax)/2;
+      disc_hdg_low = domain.getDiscreteVal(crs_ix, havg, 2);
+      disc_hdg_hgh = disc_hdg_low;
+    }
+  
+    IvPBox newbox(2);
+    newbox.setPTS(spd_ix, 0, spd_pts-1);
+    newbox.setPTS(crs_ix, disc_hdg_low, disc_hdg_hgh);
+    
+    boxes.push_back(newbox);
+    return(boxes);
+  }
+
+  // Case 2: Building TWO boxes (due to wrap-around)
+
+  // Handle edge case where both native values fall between the same
+  // pair of discrete indices:
+  // In the two-piece case, the upper discrete index should not be higher.
+#if 0
+  cout << "######################################################" << endl;
+  cout << "crs_pts: " << crs_pts << endl;
+  cout << "spd_pts: " << spd_pts << endl;
+  cout << "hmin: " << hmin << endl;
+  cout << "hmax: " << hmax << endl;
+  cout << "disc_hdg_low: " << disc_hdg_low << endl;
+  cout << "disc_hdg_hgh: " << disc_hdg_hgh << endl;
+  cout << "######################################################" << endl;
+#endif
+  
+  if(disc_hdg_hgh > disc_hdg_low) {
+    double havg = (hmin + hmax)/2;
+    disc_hdg_low = domain.getDiscreteVal(crs_ix, havg, 2);
+    disc_hdg_hgh = disc_hdg_low;
+  }
+
+  
+  IvPBox newbox_a(2);
+  newbox_a.setPTS(spd_ix, 0, spd_pts-1);
+  newbox_a.setPTS(crs_ix, 0, disc_hdg_hgh);
+  
+  IvPBox newbox_b(2);
+  newbox_b.setPTS(spd_ix, 0, spd_pts-1);
+  newbox_b.setPTS(crs_ix, disc_hdg_low, crs_pts-1);
+  
+  boxes.push_back(newbox_a);
+  boxes.push_back(newbox_b);
+
+  return(boxes);
+}
+  
+
+//-------------------------------------------------------------
+// Procedure: buildBoxesHdgSpd
+
+vector<IvPBox> buildBoxesHdgSpd(IvPDomain domain,
+				double hmin, double hmax,
+				double smin, double smax)
+{
+  vector<IvPBox> boxes;
+  
+  // Sanity Checks
+  int crs_ix = domain.getIndex("course"); 
+  int spd_ix = domain.getIndex("speed"); 
+  if((crs_ix < 0) || (spd_ix < 0))
+    return(boxes);
+
+  unsigned int crs_pts = domain.getVarPoints((unsigned int)(crs_ix));
+  unsigned int spd_pts = domain.getVarPoints((unsigned int)(spd_ix));
+  if((crs_pts == 0) || (spd_pts == 0))
+    return(boxes);
+
+  // Mappings from native to discrete values is done conservatively.
+  unsigned int disc_hdg_low = domain.getDiscreteVal(crs_ix, hmin, 1); // rnd up
+  unsigned int disc_hdg_hgh = domain.getDiscreteVal(crs_ix, hmax, 0); // rnd down
+
+  // Mappings from native to discrete values is done conservatively.
+  unsigned int disc_spd_low = domain.getDiscreteVal(spd_ix, smin, 1); // rnd up
+  unsigned int disc_spd_hgh = domain.getDiscreteVal(spd_ix, smax, 0); // rnd down
 
 
+  // Handle edge case where both native speed values fall between the same
+  // pair of discrete indices:
+  if(disc_spd_low > disc_spd_hgh) {
+      double spd_avg = (smin + smax)/2;
+      disc_spd_low = domain.getDiscreteVal(spd_ix, spd_avg, 2);
+      disc_spd_hgh = disc_spd_low;
+    }
+  
+  // Case 1: Building ONE box (no wrap-around)
+  if(hmin <= hmax) {  // Will be building ONE box.    
 
+    // Handle edge case where both native values fall between the same
+    // pair of discrete indices:
+    // In the one-piece case, the lower discrete index should not be higher.
+    if(disc_hdg_low > disc_hdg_hgh) {
+      double havg = (hmin + hmax)/2;
+      disc_hdg_low = domain.getDiscreteVal(crs_ix, havg, 2);
+      disc_hdg_hgh = disc_hdg_low;
+    }
+  
+    IvPBox newbox(2);
+    newbox.setPTS(spd_ix, disc_spd_low, disc_spd_hgh);
+    newbox.setPTS(crs_ix, disc_hdg_low, disc_hdg_hgh);
+    
+    boxes.push_back(newbox);
+    return(boxes);
+  }
 
+  // Case 2: Building TWO boxes (due to wrap-around)
+
+  // Handle edge case where both native values fall between the same
+  // pair of discrete indices:
+  // In the two-piece case, the upper discrete index should not be higher.
+#if 0
+  cout << "######################################################" << endl;
+  cout << "crs_pts: " << crs_pts << endl;
+  cout << "spd_pts: " << spd_pts << endl;
+  cout << "hmin: " << hmin << endl;
+  cout << "hmax: " << hmax << endl;
+  cout << "disc_hdg_low: " << disc_hdg_low << endl;
+  cout << "disc_hdg_hgh: " << disc_hdg_hgh << endl;
+  cout << "######################################################" << endl;
+#endif
+  
+  if(disc_hdg_hgh > disc_hdg_low) {
+    double havg = (hmin + hmax)/2;
+    disc_hdg_low = domain.getDiscreteVal(crs_ix, havg, 2);
+    disc_hdg_hgh = disc_hdg_low;
+  }
+
+  
+  IvPBox newbox_a(2);
+  newbox_a.setPTS(spd_ix, disc_spd_low, disc_spd_hgh);
+  newbox_a.setPTS(crs_ix, 0, disc_hdg_hgh);
+  
+  IvPBox newbox_b(2);
+  newbox_b.setPTS(spd_ix, disc_spd_low, disc_spd_hgh);
+  newbox_b.setPTS(crs_ix, disc_hdg_low, crs_pts-1);
+  
+  boxes.push_back(newbox_a);
+  boxes.push_back(newbox_b);
+
+  return(boxes);
+}
+  
+
+//-------------------------------------------------------------
+// Procedure: getPointBoxes()
+
+vector<IvPBox> getPointBoxes(IvPBox box)
+{
+  vector<IvPBox> boxes;
+  
+  int dim = box.getDim();
+  if(dim == 0)
+    return(boxes);
+
+  vector<int> idx(dim,0);
+  for(int d=0; d<dim; d++)
+    idx[d] = box.pt(d);
+  
+  bool done = false;
+  while(!done) {
+    IvPBox newbox(dim);
+    for(int d=0; d<dim; d++)
+      newbox.setPTS(d, idx[d], idx[d]);
+    boxes.push_back(newbox);
+
+    bool incremented = false;
+    for(int d=0; ((d<dim) && !incremented); d++) {
+      if(idx[d]+1 <= box.pt(d,1)) {
+	idx[d]++;
+	incremented = true;
+      }
+      else
+	idx[d] = box.pt(d);
+    }
+    if(!incremented)
+      done = true;
+  }
+      
+    
+  return(boxes);
+}
+  

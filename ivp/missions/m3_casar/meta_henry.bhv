@@ -124,7 +124,7 @@ Behavior = BHV_Trail
   templating = spawn
 
               contact = to-be-set
-       pwt_outer_dist = 325
+       pwt_outer_dist = 130
             nm_radius = 18
                radius = 8
           trail_angle = 155

@@ -51,7 +51,7 @@ FldWrapDetect::~FldWrapDetect()
 {
 }
 
-//---------------------------------------------------------`gg167
+//---------------------------------------------------------
 
 // Procedure: OnNewMail
 
@@ -79,57 +79,57 @@ bool FldWrapDetect::OnNewMail(MOOSMSG_LIST &NewMail)
   string key    = msg.GetKey();
 
   if((key == "NODE_REPORT") && (m_deployed)){
-      //if a node report is received, process the node report information.
-      string sval  = msg.GetString(); 
-      NodeRecord record = string2NodeRecord(sval);
-      string node_name = record.getName();
-      double x2 = record.getX();
-      double y2 = record.getY();
-
-      // find last (x,y) position
-      NodeRecord prev_record = m_node_record[node_name];
-      if(! (prev_record.valid()) ){
-	m_node_record[node_name] = record;
-	m_odometer[node_name] = 0;
-      }
-      else{
-	
-	double x1 = prev_record.getX();
-	double y1 = prev_record.getY();
-
-	double node_dist_traveled = distPointToPoint(x1,y1,x2,y2);
-	if(node_dist_traveled == 0){
-	  return false;
-	}
-	m_odometer[node_name] += node_dist_traveled;
-
-	// now have (x,y) data for making new XYSegment 
-	m_node_record[node_name] = record;
-	XYSegment new_segment;
-	new_segment.set(x1,y1,x2,y2);
-
-	// add new_segment to front of list;
-	m_xysegments[node_name].push_front(new_segment); 
-	
-	// trim segments down to allowed size
-	while(m_xysegments[node_name].size() > (unsigned int) m_max_num_segments){
-	  m_xysegments[node_name].pop_back();
-	} // end while
-
-	
-	if(CheckForWrap(node_name)){
-	  reportEvent("Wrap Around Detected: " + node_name);
-	  string out_string = "vname=" + node_name;
-	  Notify("WRAP_AROUND_DETECTED",out_string);
-	  m_num_wraps++;
-	  m_xysegments[node_name].clear();
-	}
-      } // end else for valide node record
-    } // end key=node report
-    else if(key == "DEPLOY_ALL"){
-      m_deployed = true;
+    //if a node report is received, process the node report information.
+    string sval  = msg.GetString(); 
+    NodeRecord record = string2NodeRecord(sval);
+    string node_name = record.getName();
+    double x2 = record.getX();
+    double y2 = record.getY();
+    
+    // find last (x,y) position
+    NodeRecord prev_record = m_node_record[node_name];
+    if(! (prev_record.valid()) ) {
+      m_node_record[node_name] = record;
+      m_odometer[node_name] = 0;
     }
-
+    else{
+      
+      double x1 = prev_record.getX();
+      double y1 = prev_record.getY();
+      
+      double node_dist_traveled = distPointToPoint(x1,y1,x2,y2);
+      if(node_dist_traveled == 0){
+	return false;
+      }
+      m_odometer[node_name] += node_dist_traveled;
+      
+      // now have (x,y) data for making new XYSegment 
+      m_node_record[node_name] = record;
+      XYSegment new_segment;
+      new_segment.set(x1,y1,x2,y2);
+      
+      // add new_segment to front of list;
+      m_xysegments[node_name].push_front(new_segment); 
+      
+      // trim segments down to allowed size
+      while(m_xysegments[node_name].size() > (unsigned int) m_max_num_segments){
+	m_xysegments[node_name].pop_back();
+      } // end while
+      
+      
+      if(CheckForWrap(node_name)){
+	reportEvent("Wrap Around Detected: " + node_name);
+	string out_string = "vname=" + node_name;
+	Notify("WRAP_AROUND_DETECTED",out_string);
+	m_num_wraps++;
+	m_xysegments[node_name].clear();
+      }
+    } // end else for valide node record
+  } // end key=node report
+  else if(key == "DEPLOY_ALL"){
+    m_deployed = true;
+  }
+  
   }// end for loop
   return(true);
 }
@@ -139,11 +139,6 @@ bool FldWrapDetect::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool FldWrapDetect::OnConnectToServer()
 {
-   // register for variables here
-   // possibly look at the mission file?
-   // m_MissionReader.GetConfigurationParam("Name", <string>);
-   // m_Comms.Register("VARNAME", 0);
-	
    RegisterVariables();
    return(true);
 }
@@ -156,9 +151,6 @@ bool FldWrapDetect::Iterate()
 {
   m_iterations++;
   AppCastingMOOSApp::Iterate();
-
-
-
 
   AppCastingMOOSApp::PostReport();
 
@@ -210,12 +202,17 @@ void FldWrapDetect::RegisterVariables()
   Register("WRAP_AROUND_DETECTED",0);
 }
 
-bool FldWrapDetect::CheckForWrap(string vname){
-  // returns true if wrap around is detected
 
+//---------------------------------------------------------
+// Procedure: checkForWrap()
+
+bool FldWrapDetect::CheckForWrap(string vname)
+{
+  // returns true if wrap around is detected
+  
   list<XYSegment> segment_list = m_xysegments[vname];
   std::list<XYSegment>::iterator seg_it = segment_list.begin();
-
+  
   double x1 = (*seg_it).get_x1();
   double y1 = (*seg_it).get_y1();
   double x2 = (*seg_it).get_x2();

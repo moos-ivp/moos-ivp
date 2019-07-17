@@ -36,10 +36,7 @@ TARGET_LINK_LIBRARIES(uPlotViewer
   ${SYSTEM_LIBS} 
   ${MOOS_LIBRARIES}
   genutil
-  ivpbuild
   mbutil
-  ivpcore
-  ivpsolve
   fltk 
   fltk_gl
   dl

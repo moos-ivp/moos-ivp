@@ -1,5 +1,5 @@
 #--------------------------------------------------------
-# The CMakeLists.txt for:                       pDeadManPost
+# The CMakeLists.txt for:                    pDeadManPost
 # Author(s):                              Mike Benjamin
 #--------------------------------------------------------
 

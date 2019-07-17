@@ -37,6 +37,7 @@
 #include "ColorPack.h"
 #include "FColorMap.h"
 #include "QuadSet1D.h"
+#include "AOF.h"
 
 class Common_IPFViewer : public Fl_Gl_Window
 {
@@ -57,7 +58,7 @@ public:
 
   void   setClearColor(std::string s)  {m_clear_color.setColor(s);}
   void   setFrameColor(std::string s)  {m_frame_color.setColor(s);}
-  void   setColorMap(std::string s)    {m_color_map.setType(s);}
+  void   setColorMap(std::string);
   bool   getShowPieces()               {return(m_show_pieces);}
   
 protected:
@@ -96,14 +97,17 @@ protected:
   double     m_zRot;
   double     m_zoom;
 
-  double     m_base;
+  bool       m_draw_aof;
+  bool       m_draw_ipf;
+  double     m_base_aof;
+  double     m_base_ipf;
+
   double     m_scale;
   double     m_rad_ratio;
   double     m_rad_extent;
   double     m_intensity;
   int        m_polar;
   
-  bool       m_draw_ipf;
   bool       m_draw_pin;
   bool       m_draw_base;
   bool       m_frame_on_top;
@@ -117,8 +121,15 @@ protected:
   double     m_ship_scale;
   
   QuadSet1D  m_quadset_1d;
-  QuadSet    m_quadset;
-  bool       m_quadset_refresh_pending;
+
+  QuadSet    m_quadset_ipf;
+  QuadSet    m_quadset_aof;
+
+  bool       m_refresh_quadset_aof_pending;
+  bool       m_refresh_quadset_ipf_pending;
+
+  AOF         *m_aof;
+  IvPFunction *m_unif_ipf;
 
   // Information for drawing 1D functions
   int        m_xoffset;
@@ -130,8 +141,3 @@ protected:
 };
 
 #endif 
-
-
-
-
-

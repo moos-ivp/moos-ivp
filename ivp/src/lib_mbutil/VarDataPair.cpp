@@ -167,10 +167,11 @@ bool VarDataPair::set_key(string key)
 //------------------------------------------------------------------
 // Procedure: set_sdata()
 
-bool VarDataPair::set_sdata(string sval)
+bool VarDataPair::set_sdata(string sval, bool overwrite_ok)
 {
   if(m_sdata_set || m_ddata_set)
-    return(false);
+    if(!overwrite_ok)
+      return(false);
   
   m_sdata = sval;
   m_is_string = true;
@@ -182,10 +183,11 @@ bool VarDataPair::set_sdata(string sval)
 //------------------------------------------------------------------
 // Procedure: set_ddata
 
-bool VarDataPair::set_ddata(double dval)
+bool VarDataPair::set_ddata(double dval, bool overwrite_ok)
 {
   if(m_sdata_set || m_ddata_set)
-    return(false);
+    if(!overwrite_ok)
+      return(false);
   
   m_ddata = dval;
   m_is_string = false;
@@ -200,10 +202,11 @@ bool VarDataPair::set_ddata(double dval)
 //------------------------------------------------------------------
 // Procedure: set_smart_data()
 
-bool VarDataPair::set_smart_data(string sval)
+bool VarDataPair::set_smart_data(string sval, bool overwrite_ok)
 {
   if(m_sdata_set || m_ddata_set)
-    return(false);
+    if(!overwrite_ok)
+      return(false);
 
   if(isNumber(sval)) {
     double dval = atof(sval.c_str());
@@ -233,6 +236,7 @@ bool VarDataPair::set_ptype(string sval)
 
   return(true);
 }
+
 
 
 //------------------------------------------------------------------

@@ -22,18 +22,7 @@ Processconfig = ANTLER
   Run = pShare          @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = false
 
-}
-
-//--------------------------------------------------------
-// uTimerScript Configuration Block
-
-ProcessConfig = uTimerScript  
-{
-        event = var = HEARTBEAT, val=true, time=1
-   reset_time = all-posted
-    reset_max = nolimit
 }
 
 //---------------------------------------------------------
@@ -47,7 +36,7 @@ ProcessConfig = pShare
   input = route =  localhost:$(SHORE_PSHARE)
 }
 
-//--------------------------------------------------------
+//--------------------------------------------------
 // ufldnodecomms Configuration Block
 
 ProcessConfig = uFldNodeComms
@@ -66,28 +55,30 @@ ProcessConfig = uFldNodeComms
 }
 
 
-//--------------------------------------------------------
+//--------------------------------------------------
 // uFldShoreBroker Configuration Block
-
 ProcessConfig = uFldShoreBroker
 {
   AppTick       = 1
   CommsTick     = 1
 
-  qbridge  = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE
-  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
-  qbridge  = STATION_KEEP
+  qbridge  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID, CHASE
+  qbridge  = TAGGED
+  qbridge  = HAS_FLAG
+  qbridge  = ACTION, AGGRESSIVE
   qbridge  = SAY_MOOS
 
-  bridge   = src=HEARTBEAT
+  bridge   = src=IN_OWN_TERRITORY
+  bridge   = src=IN_ENEMY_TERRITORY
+
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
+  bridge   = src=FLAG_SUMMARY
 }
 
 
-//--------------------------------------------------------
-// pHostInfo Configuration Block
-
+//--------------------------------------------------
 ProcessConfig = pHostInfo
 {
   AppTick     = 2
@@ -96,7 +87,7 @@ ProcessConfig = pHostInfo
 //  DEFAULT_HOSTIP = localhost
 }
 
-//--------------------------------------------------------
+//--------------------------------------------------
 // pLogger Configuration Block
 
 ProcessConfig = pLogger
@@ -120,20 +111,18 @@ ProcessConfig = pLogger
 }
 
 //--------------------------------------------------------
-// pMarineViewer Configuration Block
-
 ProcessConfig = pMarineViewer
 {
   AppTick    = 4
   CommsTick  = 4
 
-  //TIFF_FILE          = forrest19.tif
+  //TIFF_FILE            = forrest19.tif
   TIFF_FILE            = MIT_SP.tif
-  set_pan_x            = -10
+  set_pan_x            = 129
   set_pan_y            = -364
-  zoom                 = 1.6
-  vehicles_shape_scale = 1.1
-  vehicles_name_mode   = names+shortmode
+  zoom                 = 2.5
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names
 
   circle_viewable_all = true
 
@@ -150,14 +139,8 @@ ProcessConfig = pMarineViewer
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false
   button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
 
-  button_two   = RETURN  # MOOS_MANUAL_OVERRIDE=false
-  button_two   = RETURN_ALL=true # STATION_KEEP_ALL=false
-
-  button_three = All-Stop # MOOS_MANUAL_OVERRIDE_ALL=true
-
-  button_four  = STATION  # STATION_KEEP_ALL=true
-  button_four  = MOOS_MANUAL_OVERRIDE=false
-
+  button_two   = RETURN  # RETURN_ALL=true
+  button_two   = RETURN  # STATION_KEEP_ALL=false
 }
 
 //--------------------------------------------------------
@@ -178,3 +161,10 @@ ProcessConfig = uProcessWatch
   summary_wait = 10
 }
 
+ProcessConfig = uXMS
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  var    = NAV_HEADING, NAV_HEADING_CPNVG
+}

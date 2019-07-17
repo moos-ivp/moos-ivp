@@ -121,7 +121,7 @@ if [ "${OS}" = "osx" ]; then
     else
 	ARGS+=" -o cpu"
     fi
-    ARGS+=" -stats pid,pgrp,cpu,mem,user,command"
+    ARGS+=" -stats pid,pgrp,ppid,cpu,mem,user,command"
     for pid in "${PIDS[@]}"
     do
 	ARGS+=" -pid $pid"

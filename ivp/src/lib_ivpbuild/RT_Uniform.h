@@ -24,25 +24,22 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
 #ifndef RT_UNIFORM_HEADER
 #define RT_UNIFORM_HEADER
 
 #include "PDMap.h"
 #include "PQueue.h"
+#include "Regressor.h"
 
 class Regressor;
 
 class RT_Uniform {
 public:
-  RT_Uniform(Regressor*);
+  RT_Uniform(Regressor *regressor) {m_regressor=regressor;}
   virtual ~RT_Uniform() {}
   
 public: 
-  PDMap*  create(const IvPBox*u, const IvPBox*, PQueue&);
+  PDMap*  create(const IvPBox*u, const IvPBox*);
   
  protected:
   Regressor* m_regressor;

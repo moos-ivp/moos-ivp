@@ -983,6 +983,12 @@ bool PMV_MOOSApp::buildReport()
   double time_warp = m_gui->mviewer->getTimeWarp();
   m_msgs << "Time Warp:        " << doubleToString(time_warp,3) << endl;
 
+  double srep_thresh = m_gui->mviewer->getStaleReportThresh();
+  m_msgs << "Stale report thresh: " << doubleToStringX(srep_thresh,2) << endl;
+
+  double srem_thresh = m_gui->mviewer->getStaleRemoveThresh();
+  m_msgs << "Stale remove thresh: " << doubleToStringX(srem_thresh,2) << endl;
+
   double elapsed = m_gui->mviewer->getElapsed();
   m_msgs << "Elapsed:          " << doubleToString(elapsed,5) << endl;
 

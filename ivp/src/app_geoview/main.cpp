@@ -72,7 +72,8 @@ int main(int argc, char *argv[])
   Fl::add_idle(idleProc);
   GEO_GUI* gui = new GEO_GUI(900, 800, "geoview");
 
-  string tif_file = "Default.tif";  // default
+  //string tif_file = "Default.tif";  // default
+  string tif_file = "MIT_SP.tif";  // default
 
   for(i=1; i<argc; i++) {
     string argi  = tolower(argv[i]);

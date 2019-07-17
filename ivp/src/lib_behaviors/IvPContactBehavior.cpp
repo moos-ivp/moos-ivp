@@ -24,6 +24,7 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include "AngleUtils.h"
@@ -74,6 +75,9 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
 
   m_bearing_rate  = 0;
   m_contact_rate  = 0;
+
+  m_range_gamma   = 0;
+  m_range_epsilon = 0;
   
   m_bearing_line_show = false;
   m_bearing_line_info = "relevance";
@@ -88,8 +92,12 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_cn_port_of_os = false;
   m_cn_starboard_of_os = false;
   
+  m_cn_spd_in_os_pos = 0;
+
   m_os_cn_rel_bng = 0;
   m_cn_os_rel_bng = 0;
+
+  m_os_cn_abs_bng = 0;
   
   m_rate_of_closure = 0;
 
@@ -149,6 +157,16 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     m_ignore_contact_group = param_val;
     return(true);
   }
+  else if((param == "match_group") ||
+	  (param == "match_contact_group"))
+    return(handleSetParamMatchGroup(param_val));
+  else if((param == "ignore_group") ||
+	  (param == "ignore_contact_group"))
+    return(handleSetParamIgnoreGroup(param_val));
+  else if(param == "match_type")
+    return(handleSetParamMatchType(param_val));
+  else if(param == "ignore_type")
+    return(handleSetParamIgnoreType(param_val));
   else if(param == "decay") {
     string left  = biteStringX(param_val, ',');
     string right = param_val;
@@ -258,6 +276,7 @@ bool IvPContactBehavior::updatePlatformInfo()
   }
 
   m_cn_group = getBufferStringVal(m_contact+"_NAV_GROUP");
+  m_cn_vtype = getBufferStringVal(m_contact+"_NAV_TYPE");
   
   //==================================================================
   // Part 2: Extrapolate the contact position if extrapolation turn on
@@ -305,51 +324,56 @@ bool IvPContactBehavior::updatePlatformInfo()
 	m_cn_retired = true;
     }
   }
-  
+
   //==================================================================
   // Part 4: Update the useful relative vehicle information
   
+  m_cpa_engine.reset(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
+  m_rcpa_engine.reset(m_osy, m_osx, m_osh, m_osv, m_cny, m_cnx);    
+    
   m_contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
 
   m_os_cn_rel_bng = relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny);
   m_cn_os_rel_bng = relBearing(m_cnx, m_cny, m_cnh, m_osx, m_osy);
 
-   CPAEngine cpa_engine(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
-  CPAEngine rcpa_engine(m_osy, m_osx, m_osh, m_osv, m_cny, m_cnx);    
+  m_os_cn_abs_bng = m_cpa_engine.ownshipContactAbsBearing(); 
+  m_cn_spd_in_os_pos = m_cpa_engine.getCNSpeedInOSPos();
+  m_rate_of_closure = m_cpa_engine.evalROC(m_osh, m_osv);
 
-  m_range_gamma = cpa_engine.getRangeGamma();
+  m_os_fore_of_cn  = m_cpa_engine.foreOfContact();
+  m_os_aft_of_cn   = m_cpa_engine.aftOfContact();
+  m_os_port_of_cn  = m_cpa_engine.portOfContact();
+  m_os_starboard_of_cn = m_cpa_engine.starboardOfContact();
+
+  m_rate_of_closure = m_cpa_engine.evalROC(m_osh, m_osv);
+
+  m_cn_fore_of_os  = m_rcpa_engine.foreOfContact();
+  m_cn_aft_of_os   = m_rcpa_engine.aftOfContact();
+  m_cn_port_of_os  = m_rcpa_engine.portOfContact();
+  m_cn_starboard_of_os = m_rcpa_engine.starboardOfContact();
+
+  m_os_passes_cn         = m_cpa_engine.passesPortOrStar(m_osh, m_osv);
+  m_os_passes_cn_port    = m_cpa_engine.passesPort(m_osh, m_osv);
+  m_os_passes_cn_star    = m_cpa_engine.passesStar(m_osh, m_osv);
   
-  m_rate_of_closure = cpa_engine.evalROC(m_osh, m_osv);
-
-  m_os_fore_of_cn  = cpa_engine.foreOfContact();
-  m_os_aft_of_cn   = cpa_engine.aftOfContact();
-  m_os_port_of_cn  = cpa_engine.portOfContact();
-  m_os_starboard_of_cn = cpa_engine.starboardOfContact();
-
-  m_cn_fore_of_os  = rcpa_engine.foreOfContact();
-  m_cn_aft_of_os   = rcpa_engine.aftOfContact();
-  m_cn_port_of_os  = rcpa_engine.portOfContact();
-  m_cn_starboard_of_os = rcpa_engine.starboardOfContact();
-
-  m_os_passes_cn         = cpa_engine.passesPortOrStar(m_osh, m_osv);
-  m_os_passes_cn_port    = cpa_engine.passesPort(m_osh, m_osv);
-  m_os_passes_cn_star    = cpa_engine.passesStar(m_osh, m_osv);
+  m_cn_passes_os         = m_rcpa_engine.passesPortOrStar(m_cnh, m_cnv);
+  m_cn_passes_os_port    = m_rcpa_engine.passesPort(m_cnh, m_cnv);
+  m_cn_passes_os_star    = m_rcpa_engine.passesStar(m_cnh, m_cnv);
   
-  m_cn_passes_os         = rcpa_engine.passesPortOrStar(m_cnh, m_cnv);
-  m_cn_passes_os_port    = rcpa_engine.passesPort(m_cnh, m_cnv);
-  m_cn_passes_os_star    = rcpa_engine.passesStar(m_cnh, m_cnv);
-  
-  m_os_crosses_cn_stern        = cpa_engine.crossesStern(m_osh, m_osv);
-  m_os_crosses_cn_bow          = cpa_engine.crossesBow(m_osh, m_osv);
-  m_os_crosses_cn_bow_or_stern = cpa_engine.crossesBowOrStern(m_osh, m_osv);
-  m_os_crosses_cn_bow_dist     = cpa_engine.crossesBowDist(m_osh, m_osv);
+  m_os_crosses_cn_stern        = m_cpa_engine.crossesStern(m_osh, m_osv);
+  m_os_crosses_cn_bow          = m_cpa_engine.crossesBow(m_osh, m_osv);
+  m_os_crosses_cn_bow_or_stern = m_cpa_engine.crossesBowOrStern(m_osh, m_osv);
+  m_os_crosses_cn_bow_dist     = m_cpa_engine.crossesBowDist(m_osh, m_osv);
 
-  m_cn_crosses_os_stern        = rcpa_engine.crossesStern(m_cnh, m_cnv);
-  m_cn_crosses_os_bow          = rcpa_engine.crossesBow(m_cnh, m_cnv);
-  m_cn_crosses_os_bow_or_stern = rcpa_engine.crossesBowOrStern(m_cnh, m_cnv);
-  m_cn_crosses_os_bow_dist     = rcpa_engine.crossesBowDist(m_cnh, m_cnv);
+  m_cn_crosses_os_stern        = m_rcpa_engine.crossesStern(m_cnh, m_cnv);
+  m_cn_crosses_os_bow          = m_rcpa_engine.crossesBow(m_cnh, m_cnv);
+  m_cn_crosses_os_bow_or_stern = m_rcpa_engine.crossesBowOrStern(m_cnh, m_cnv);
+  m_cn_crosses_os_bow_dist     = m_rcpa_engine.crossesBowDist(m_cnh, m_cnv);
 
-  m_os_curr_cpa_dist = cpa_engine.evalCPA(m_osh, m_osv, 120);
+  m_range_gamma   = m_cpa_engine.getRangeGamma();
+  m_range_epsilon = m_cpa_engine.getRangeEpsilon();
+
+  m_os_curr_cpa_dist = m_cpa_engine.evalCPA(m_osh, m_osv, 120);
 
   return(ok);
 }
@@ -406,10 +430,240 @@ void IvPContactBehavior::postErasableBearingLine()
 
 
 //-----------------------------------------------------------
+// Procedure: handleSetParamMatchGroup()
+//   Example: "blue" "blue,red,alpha"
+//   Returns: false if provided no groups
+//            false if a group is on the ignore list
+//            true otherwise
+//      Note: If a group is on the ignore list, it will not be
+//            added to the match list, but if there are other
+//            groups not on the ignore list, they will be added
+//            to the match list.
+//      Note: If a group is already on the match list it will
+//            be ignored.
+
+bool IvPContactBehavior::handleSetParamMatchGroup(string grpstr)
+{
+  bool all_ok = true;
+  vector<string> svector = parseString(grpstr, ',');
+  if(svector.size() == 0)
+    all_ok = false;
+
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string cn_group = stripBlankEnds(svector[i]);
+    // Dont add a new match group if it is already an ignore group
+    if(vectorContains(m_ignore_group, cn_group))
+      all_ok = false;
+    else if(!vectorContains(m_match_group, cn_group))
+      m_match_group.push_back(cn_group);
+  }
+  return(all_ok);
+}
+
+//-----------------------------------------------------------
+// Procedure: handleSetParamIgnoreGroup()
+//   Example: "blue" "blue,red,alpha"
+//   Returns: false if provided no groups
+//            false if a group is on the match list
+//            true otherwise
+//      Note: If a group is on the match list, it will not be
+//            added to the ignore list, but if there are other
+//            groups not on the match list, they will be added
+//            to the ignore list.
+//      Note: If a group is already on the ignore list it will
+//            be ignored.
+
+bool IvPContactBehavior::handleSetParamIgnoreGroup(string grpstr)
+{
+  bool all_ok = true;
+  vector<string> svector = parseString(grpstr, ',');
+  if(svector.size() == 0)
+    all_ok = false;
+
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string cn_group = stripBlankEnds(svector[i]);
+    // Dont add a new ignore group if it is already a match group
+    if(vectorContains(m_match_group, cn_group))
+      all_ok = false;
+    else if(!vectorContains(m_ignore_group, cn_group))
+      m_ignore_group.push_back(cn_group);
+  }
+  return(all_ok);
+}
+
+//-----------------------------------------------------------
+// Procedure: handleSetParamMatchType()
+//   Example: "kayak" "uuv,auv,ship"
+//   Returns: false if provided no vehicle types
+//            false if a vehicle type is on the ignore list
+//            true otherwise
+//      Note: If a type is on the ignore list, it will not be
+//            added to the match list, but if there are other
+//            types not on the ignore list, they will be added
+//            to the match list.
+//      Note: If a type is already on the match list it will
+//            be ignored.
+
+bool IvPContactBehavior::handleSetParamMatchType(string typestr)
+{
+  bool all_ok = true;
+  vector<string> svector = parseString(typestr, ',');
+  if(svector.size() == 0)
+    all_ok = false;
+
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string cn_vtype = stripBlankEnds(svector[i]);
+    // Dont add a new match type if it is already an ignore type
+    if(vectorContains(m_ignore_type, cn_vtype))
+      all_ok = false;
+    else if(!vectorContains(m_match_type, cn_vtype))
+      m_match_type.push_back(cn_vtype);
+  }
+  return(all_ok);
+}
+
+//-----------------------------------------------------------
+// Procedure: handleSetParamIgnoreType()
+//   Example: "kayak" "uuv,auv,ship"
+//   Returns: false if provided no vehicle types
+//            false if a vehicle type is on the ignore list
+//            true otherwise
+//      Note: If a type is on the match list, it will not be
+//            added to the ignore list, but if there are other
+//            types not on the match list, they will be added
+//            to the ignore list.
+//      Note: If a type is already on the ignore list it will
+//            be ignored.
+
+bool IvPContactBehavior::handleSetParamIgnoreType(string typestr)
+{
+  bool all_ok = true;
+  vector<string> svector = parseString(typestr, ',');
+  if(svector.size() == 0)
+    all_ok = false;
+
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string cn_vtype = stripBlankEnds(svector[i]);
+    // Dont add a new ignore type if it is already a match type
+    if(vectorContains(m_match_type, cn_vtype))
+      all_ok = false;
+    else if(!vectorContains(m_ignore_type, cn_vtype))
+      m_ignore_type.push_back(cn_vtype);
+  }
+  return(all_ok);
+}
+
+//-----------------------------------------------------------
+// Procedure: getMatchGroupStr()
+
+string IvPContactBehavior::getMatchGroupStr(string separator) const
+{
+  string str;
+  for(unsigned int i=0; i<m_match_group.size(); i++) {
+    if(str != "")
+      str += separator;
+    str += m_match_group[i];
+  }
+  return(str);
+}
+
+//-----------------------------------------------------------
+// Procedure: getIgnoreGroupStr()
+
+string IvPContactBehavior::getIgnoreGroupStr(string separator) const
+{
+  string str;
+  for(unsigned int i=0; i<m_ignore_group.size(); i++) {
+    if(str != "")
+      str += separator;
+    str += m_ignore_group[i];
+  }
+  return(str);
+}
+
+//-----------------------------------------------------------
+// Procedure: getMatchTypeStr()
+
+string IvPContactBehavior::getMatchTypeStr(string separator) const
+{
+  string str;
+  for(unsigned int i=0; i<m_match_type.size(); i++) {
+    if(str != "")
+      str += separator;
+    str += m_match_type[i];
+  }
+  return(str);
+}
+
+//-----------------------------------------------------------
+// Procedure: getIgnoreTypeStr()
+
+string IvPContactBehavior::getIgnoreTypeStr(string separator) const
+{
+  string str;
+  for(unsigned int i=0; i<m_ignore_type.size(); i++) {
+    if(str != "")
+      str += separator;
+    str += m_ignore_type[i];
+  }
+  return(str);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getMatchIgnoreSummary()
+
+string IvPContactBehavior::getMatchIgnoreSummary() const
+{
+  string summary;
+
+  // Part 1: Add Match Groups if any
+  string match_group_str = getMatchGroupStr();
+  if(match_group_str != "") {
+    if(summary != "")
+      summary += ",";
+    summary += "match_group=" + match_group_str;
+  }
+
+  // Part 2: Add Ignore Groups if any
+  string ignore_group_str = getIgnoreGroupStr();
+  if(ignore_group_str != "") {
+    if(summary != "")
+      summary += ",";
+    summary += "ignore_group=" + ignore_group_str;
+  }
+  
+  // Part 3: Add Match Types if any
+  string match_type_str = getMatchTypeStr();
+  if(match_type_str != "") {     
+    if(summary != "") 
+      summary += ",";
+    summary += "match_type=" + match_type_str;
+  }
+  
+  // Part 4: Add Ignore Types if any
+  string ignore_type_str = getIgnoreTypeStr();
+  if(ignore_type_str != "") {
+    if(summary != "") 
+      summary += ",";
+    summary += "ignore_type=" + ignore_type_str;
+  }
+  
+  return(summary);
+}
+
+
+//-----------------------------------------------------------
 // Procedure: checkContactGroupRestrictions()
+//      Note: Check here that the contact group is allowed.
+//            Ideally group restrictions would have been conveyed
+//            to a contact manager or similar. And if this 
+//            behavior is a template, it would never have been
+//            spawned, but we allow for checks here as well.
 
 bool IvPContactBehavior::checkContactGroupRestrictions()
 {
+  // old style
   if((m_match_contact_group != "") &&
      (tolower(m_match_contact_group) != tolower(m_cn_group)))
     return(false);
@@ -417,10 +671,38 @@ bool IvPContactBehavior::checkContactGroupRestrictions()
   if((m_ignore_contact_group != "") &&
      (tolower(m_ignore_contact_group) == tolower(m_cn_group)))
     return(false);
+
+  // Passing false to vectorContains indicates not case sensitive
+  if(vectorContains(m_ignore_group, m_cn_group, false))
+    return(false);
+
+  if(m_match_group.size() != 0) {
+    if(!vectorContains(m_match_group, m_cn_group, false))
+      return(false);
+  }
   
   return(true);
 }
 
 
+//-----------------------------------------------------------
+// Procedure: checkContactTypeRestrictions()
+//      Note: Check here that the contact type is allowed.
+//            Ideally type restrictions would have been conveyed
+//            to a contact manager or similar. And if this 
+//            behavior is a template, it would never have been
+//            spawned, but we allow for checks here as well.
 
+bool IvPContactBehavior::checkContactTypeRestrictions()
+{
+  // Passing false to vectorContains indicates not case sensitive
+  if(vectorContains(m_ignore_type, m_cn_vtype, false))
+    return(false);
 
+  if(m_match_group.size() != 0) {
+    if(!vectorContains(m_match_type, m_cn_vtype, false))
+      return(false);
+  }
+  
+  return(true);
+}

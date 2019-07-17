@@ -1,0 +1,6 @@
+cmd=testArcSegCross
+x1=-15 y1=5 x2=100 y2=6 cx=0 cy=0 cr=12 lang=0 rang=89 # cross=true
+x1=-15 y1=5 x2=100 y2=6 cx=0 cy=0 cr=12 lang=88 rang=89 # cross=false
+x1=-15 y1=5 x2=100 y2=6 cx=0 cy=0 cr=12 lang=350 rang=89 # cross=true
+
+

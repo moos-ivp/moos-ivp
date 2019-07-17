@@ -4,16 +4,22 @@
 #--------------------------------------------------------
 
 SET(SRC
+  DubinsTurn.cpp
+  DubinsCache.cpp
   AngleUtils.cpp
   ArtifactUtils.cpp
+  WallEngine.cpp
   CPAEngineRoot.cpp
   CPAEngine.cpp
+  CPAEngineThin.cpp
+  CPAEngineV15.cpp
   BNGEngine.cpp
   CPA_Utils.cpp
   CircularUtils.cpp
   ConvexHullGenerator.cpp
   CurrentField.cpp
   GeomUtils.cpp
+  ArcUtils.cpp
   IO_GeomUtils.cpp
   LinearExtrapolator.cpp
   PathUtils.cpp
@@ -25,6 +31,7 @@ SET(SRC
   VPlug_GeoShapes.cpp
   VPlug_GeoShapesMap.cpp
   VPlug_VehiSettings.cpp
+  ProxPoint.cpp
   XYArc.cpp
   XYArtifactGrid.cpp
   XYCircle.cpp
@@ -65,11 +72,12 @@ SET(HEADERS
   ArtifactUtils.h
   ConvexHullGenerator.h
   CircularUtils.h
+  WallEngine.h
   CPAEngine.h
-  CPAEngineX.h
-  CPAEngineOld.h
+  CPAEngineThin.h
   CPA_Utils.h
   GeomUtils.h
+  ArcUtils.h
   PathUtils.h
   CurrentField.h
   XYRangePulse.h
@@ -79,6 +87,7 @@ SET(HEADERS
   Seglr.h
   SeglrUtils.h
   XYWedge.h
+  ProxPoint.h
   XYArc.h
   XYArtifactGrid.h
   XYBuildUtils.h

@@ -52,6 +52,7 @@ public:
   virtual bool setParam(std::string, std::string);
   virtual void onSetParamComplete() {postConfigStatus();}
   virtual void onHelmStart() {}
+  virtual void onSpawn() {}
   virtual void onIdleState() {}
   virtual void onCompleteState() {}
   virtual void onInactiveState() {}
@@ -60,7 +61,8 @@ public:
   virtual void postConfigStatus() {}
   virtual std::string getInfo(std::string)  {return("");}
   virtual double getDoubleInfo(std::string) {return(0);}
-
+  virtual double getMemSize() {return(0);}
+  
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
   bool   checkUpdates();
@@ -93,6 +95,7 @@ public:
   void    setComplete();
   void    postBadConfig(std::string);
   void    postMessage(std::string, double, std::string key="");
+
   void    postBoolMessage(std::string, bool, std::string key="");
   void    postIntMessage(std::string, double, std::string key="");
   void    postRepeatableMessage(std::string, double);
@@ -145,6 +148,7 @@ protected:
 
   std::vector<VarDataPair>       m_messages;
   std::vector<LogicCondition>    m_logic_conditions;
+  std::vector<VarDataPair>       m_spawn_flags;
   std::vector<VarDataPair>       m_run_flags;
   std::vector<VarDataPair>       m_active_flags;
   std::vector<VarDataPair>       m_inactive_flags;

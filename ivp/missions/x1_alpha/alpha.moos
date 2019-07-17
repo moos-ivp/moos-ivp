@@ -33,10 +33,20 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
+  Run = pTaskManager    @ NewConsole = false
   Run = pEchoVar        @ NewConsole = false
   //Run = iSay	        @ NewConsole = true
   //Run = uXMS	        @ NewConsole = false
   //Run = uTimerScript    @ NewConsole = false
+}
+
+//------------------------------------------
+// pTaskManager config block
+
+ProcessConfig = pTaskManager
+{
+  AppTick   = 4
+  CommsTick = 4
 }
 
 //------------------------------------------
@@ -78,6 +88,7 @@ ProcessConfig = pLogger
 
   AsyncLog = true
 
+  file=MOOSLog
   // For variables that are published in a bundle on their first post,
   // explicitly declare their logging request
 
@@ -99,9 +110,17 @@ ProcessConfig = uSimMarine
   AppTick	= 4
   CommsTick	= 4
 
-  start_x       = 0
-  start_y       = -10
+  start_x       = 95
+  start_y       = -30
+
+  //start_x       = 103
+  //start_y       = -30
+
+  
+  //start_x       = 0
+  //start_y       = -10
   start_speed   = 0
+  //start_heading = 180
   start_heading = 180
 
   prefix        = NAV
@@ -124,9 +143,12 @@ ProcessConfig = pHelmIvP
   bhv_dir_not_found_ok = true
   ivp_behavior_dir = /Users/ddmikerb
 
-  behaviors  = alpha.bhv
+  behaviors=alpha.bhv
   domain     = course:0:359:360
   domain     = speed:0:4:21
+
+  //hold_start_post_app = pFooBar,pBarFoo,
+  //hold_on_app = iSay
 }
 
 //------------------------------------------
@@ -186,6 +208,9 @@ ProcessConfig = pMarineViewer
 
   trails_point_size   = 1
 
+  stale_report_thresh = 10
+  stale_remove_thresh = 20
+
   // Appcast configuration
   appcast_height       = 75
   appcast_width        = 30
@@ -195,13 +220,17 @@ ProcessConfig = pMarineViewer
   procs_font_size      = medium
   appcast_font_size    = small
   
-  scope = BROTHER
+  scope = PHELMIVP_PID
+  scope = DB_UPTIME
 
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
-  button_two = STATION:T # STATION=True
+  button_two = STATION:T # STATION=true
   button_three = STATION:F # STATION=falSE
-}
+
+  //button_four = REVERSE # WPT_UPDATE=order=toggle
+  button_four = TASK # MISSION_TASK=type=waypoint,x=20,y=30
+ }
 
 //------------------------------------------
 // pNodeReporter config block

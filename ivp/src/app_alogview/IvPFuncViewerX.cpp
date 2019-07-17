@@ -61,9 +61,9 @@ IvPFuncViewerX::IvPFuncViewerX(int x, int y, int w, int h, const char *l)
 
 void IvPFuncViewerX::draw()
 {
-  if(m_quadset_refresh_pending) {
+  if(m_refresh_quadset_ipf_pending) {
     updateIPF();
-    m_quadset_refresh_pending = false;
+    m_refresh_quadset_ipf_pending = false;
   }
 
   if(m_showing_1d) {
@@ -73,18 +73,18 @@ void IvPFuncViewerX::draw()
   
   Common_IPFViewer::draw();
 
-  if(m_quadset.size() != 0) {
+  if(m_quadset_ipf.size() != 0) {
     glPushMatrix();
     glRotatef(m_xRot, 1.0f, 0.0f, 0.0f);
     glRotatef(m_zRot, 0.0f, 0.0f, 1.0f);
     
     //Common_IPFViewer::drawFrame();
-    bool result = Common_IPFViewer::drawQuadSet(m_quadset);
+    bool result = Common_IPFViewer::drawQuadSet(m_quadset_ipf);
     if(result) {
       drawOwnPoint();
       
-      unsigned int max_crs_qix = m_quadset.getMaxPointQIX("course");
-      unsigned int max_spd_qix = m_quadset.getMaxPointQIX("speed");
+      unsigned int max_crs_qix = m_quadset_ipf.getMaxPointQIX("course");
+      unsigned int max_spd_qix = m_quadset_ipf.getMaxPointQIX("speed");
       
       if(m_draw_pin)
 	Common_IPFViewer::drawMaxPoint(max_crs_qix, max_spd_qix);
@@ -361,11 +361,6 @@ double IvPFuncViewerX::getCurrTime() const
 
 string IvPFuncViewerX::getCurrPriority(string source) 
 {
-  map<string, IPF_Plot>::iterator p;
-  for(p=m_map_ipf_plots.begin(); p!=m_map_ipf_plots.end(); p++)
-    cout << " a source: " << p->first << endl;
-  
-  
   if(m_map_ipf_plots.count(source) == 0)
     return("--");
 
@@ -426,7 +421,7 @@ bool IvPFuncViewerX::buildIndividualIPF(string source)
   string ipf_string = ipf_plot.getIPFByHelmIteration(m_curr_iter);
 
   if(ipf_string == "") {
-    m_quadset = QuadSet();
+    m_quadset_ipf = QuadSet();
     setPiecesIPF("n/a");
     setPriorityIPF("n/a");
     return(false);
@@ -458,22 +453,22 @@ bool IvPFuncViewerX::buildIndividualIPF(string source)
   if(!m_show_pieces)
     dense = true;
   
-  m_quadset = buildQuadSetFromIPF(ipf, dense);
+  m_quadset_ipf = buildQuadSetFromIPF(ipf, dense);
   resetRadVisuals();
   
-  m_quadset.normalize(0, 100);
-  m_quadset.applyColorMap(m_color_map);	
-  m_quadset.applyColorIntensity(m_intensity);
-  m_quadset.applyScale(m_scale);
-  m_quadset.applyBase(m_base);
-  m_quadset.interpolate(1);
+  m_quadset_ipf.normalize(0, 100);
+  m_quadset_ipf.applyColorMap(m_color_map);	
+  m_quadset_ipf.applyColorIntensity(m_intensity);
+  m_quadset_ipf.applyScale(m_scale);
+  m_quadset_ipf.applyBase(m_base_ipf);
+  m_quadset_ipf.interpolate(1);
   
   if(m_polar == 0)
-    m_quadset.applyTranslation(-250, -250);
+    m_quadset_ipf.applyTranslation(-250, -250);
   else if(m_polar == 1)
-    m_quadset.applyPolar(m_rad_ratio, 1);
+    m_quadset_ipf.applyPolar(m_rad_ratio, 1);
   else if(m_polar == 2)
-    m_quadset.applyPolar(m_rad_ratio, 2);
+    m_quadset_ipf.applyPolar(m_rad_ratio, 2);
   
   delete(ipf);
 
@@ -523,12 +518,12 @@ bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
   // If there are no IPFs return false
   if(ipfs.size() == 0) {
     clear();
-    m_quadset = QuadSet();
+    m_quadset_ipf = QuadSet();
     return(false);
   }
 
   // Phase 4: Build the collective of the given functions.
-  m_quadset = QuadSet();
+  m_quadset_ipf = QuadSet();
 
   unsigned int i, vsize = ipfs.size();
   for(i=0; i<vsize; i++) {
@@ -548,26 +543,26 @@ bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
       bool dense = true;
       QuadSet quadset = buildQuadSetFromIPF(ipf, dense);
       //quadset.applyIPF(ipf, src);
-      m_quadset.addQuadSet(quadset);
+      m_quadset_ipf.addQuadSet(quadset);
       delete(ipf);
     }
   }
 
   if(ctype == "collective-hdgspd") {
-    m_quadset.normalize(0, 100);
-    m_quadset.applyColorMap(m_color_map);
-    m_quadset.applyColorIntensity(m_intensity);
-    m_quadset.applyScale(m_scale);
-    m_quadset.applyBase(m_base);
-    m_quadset.interpolate(1);
+    m_quadset_ipf.normalize(0, 100);
+    m_quadset_ipf.applyColorMap(m_color_map);
+    m_quadset_ipf.applyColorIntensity(m_intensity);
+    m_quadset_ipf.applyScale(m_scale);
+    m_quadset_ipf.applyBase(m_base_ipf);
+    m_quadset_ipf.interpolate(1);
   }
 
    if(m_polar == 0)
-    m_quadset.applyTranslation(-250, -250);
+    m_quadset_ipf.applyTranslation(-250, -250);
   else if(m_polar == 1)
-    m_quadset.applyPolar(m_rad_ratio, 1);
+    m_quadset_ipf.applyPolar(m_rad_ratio, 1);
   else if(m_polar == 2)
-    m_quadset.applyPolar(m_rad_ratio, 2);
+    m_quadset_ipf.applyPolar(m_rad_ratio, 2);
   
   // Phase 5: Set the text information for display
   setIterIPF(intToString(m_curr_iter));

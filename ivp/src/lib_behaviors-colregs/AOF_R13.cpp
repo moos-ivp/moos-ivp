@@ -173,7 +173,7 @@ double AOF_R13::metricPassesSide(double utility, double hdg, double spd) const
 
   if(m_pass_to_port) {
     if(m_cpa_engine.passesStar(hdg, spd)) {
-      if(m_cpa_engine.passesStarDist(hdg, spd) < m_collision_distance)
+      if(m_cpa_engine.passesPortDist(hdg, spd) < m_collision_distance)
 	return(0);
       else
 	return(utility);
@@ -192,7 +192,4 @@ double AOF_R13::metricPassesSide(double utility, double hdg, double spd) const
       return(utility);
   }
 }  
-
-
-
 

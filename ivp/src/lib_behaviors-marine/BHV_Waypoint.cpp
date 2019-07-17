@@ -143,7 +143,7 @@ void BHV_Waypoint::onSetParamComplete()
 
   svector = removeDuplicates(svector);
   for(unsigned int i=0; i<svector.size(); i++)
-    addInfoVars(svector[i], "nowarning");
+    addInfoVars(svector[i], "nowarning");  
 }
 
 //-----------------------------------------------------------
@@ -708,7 +708,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
       reflector.create(600, 500);
       //reflector.setParam("uniform_piece", "discrete @ course:3,speed:3");
       //reflector.create();
-      string info = reflector.getUniformPieceStr();
+      //string info = reflector.getUniformPieceStr();
       //postMessage("WAYPT_UPIECE", info);
       ipf = reflector.extractIvPFunction();
     }
@@ -917,7 +917,6 @@ void BHV_Waypoint::handleVisualHint(string hint)
     m_hint_nextpt_lcolor = value;
   else if((param == "nextpt_vertex_size") && isNumber(value) && (dval >=0))
     m_hint_nextpt_vertex_size = dval;
-
 }
 
 //-----------------------------------------------------------

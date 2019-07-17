@@ -388,6 +388,11 @@ double EvalLoiter::getDistToPolyAtTime(double& given_secs_ago) const
 
 void EvalLoiter::addPointEval(double eval)
 {
+  if(eval < 0)
+    eval = 0;
+  else if(eval > 100)
+    eval = 100;
+  
   m_point_evals.push_front(eval);
   m_point_times.push_front(m_curr_time);
   

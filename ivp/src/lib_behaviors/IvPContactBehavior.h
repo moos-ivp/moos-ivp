@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvoidCollision.h                                 */
-/*    DATE: Nov 18th 2006                                        */
+/*    FILE: IvPContactBehavior.h                                 */
+/*    DATE: Apr 3rd 2010 Separated/generalized from indiv. bhvs  */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -48,6 +48,23 @@ public:
   void  postErasableBearingLine();
 
   bool  checkContactGroupRestrictions();
+  bool  checkContactTypeRestrictions();
+
+  bool  handleSetParamMatchGroup(std::string);
+  bool  handleSetParamIgnoreGroup(std::string);
+  bool  handleSetParamMatchType(std::string);
+  bool  handleSetParamIgnoreType(std::string);
+  
+  std::vector<std::string> getMatchGroup() const {return(m_match_group);}
+  std::vector<std::string> getIgnoreGroup() const {return(m_ignore_group);}
+  std::vector<std::string> getMatchType() const {return(m_match_type);}
+  std::vector<std::string> getIgnoreType() const {return(m_ignore_type);}
+  
+  std::string getMatchGroupStr(std::string separator=":") const;
+  std::string getIgnoreGroupStr(std::string separator=":") const;
+  std::string getMatchTypeStr(std::string separator=":") const;
+  std::string getIgnoreTypeStr(std::string separator=":") const;
+  std::string getMatchIgnoreSummary() const;
   
  protected: // Configuration Parameters
   
@@ -82,12 +99,12 @@ public:
   double m_cnutc; // UTC time of last contact report
 
   std::string m_cn_group;
+  std::string m_cn_vtype;
 
   double m_cn_not_retired_tstamp;
   bool   m_cn_retired;
   
   double m_contact_range; // Current range to contact (meters) 
-  double m_range_gamma; 
   double m_relevance;
 
   LinearExtrapolator m_extrapolator;
@@ -101,13 +118,20 @@ public:
   bool   m_cn_aft_of_os;
   bool   m_cn_port_of_os;
   bool   m_cn_starboard_of_os;
+
+  double m_cn_spd_in_os_pos;
   
   double m_os_cn_rel_bng;
   double m_cn_os_rel_bng;
+
+  double m_os_cn_abs_bng;
   
   double m_rate_of_closure;
   double m_bearing_rate;
   double m_contact_rate;
+
+  double m_range_gamma;
+  double m_range_epsilon;
 
   bool   m_os_passes_cn;
   bool   m_os_passes_cn_port;
@@ -130,10 +154,14 @@ public:
   double m_os_curr_cpa_dist;
 
   CPAEngine m_cpa_engine;
+  CPAEngine m_rcpa_engine;
+
+private:
+  // Type and Group filters
+  std::vector<std::string> m_match_type;
+  std::vector<std::string> m_ignore_type;
+  std::vector<std::string> m_match_group;
+  std::vector<std::string> m_ignore_group;
 };
 
 #endif
-
-
-
-

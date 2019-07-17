@@ -1,8 +1,9 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: AOF_Contact.h                                        */
+/*    FILE: AOF_ContactX.h                                       */
 /*    DATE: May 17th, 2013 (Generalizing over existing classes)  */
+/*    DATE: Nov 30th, 2017 (Revised handling of CPAEngine)       */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -40,9 +41,16 @@ public: // virtual functions
   virtual bool   setParam(const std::string&, double);
   virtual bool   setParam(const std::string&, const std::string&) {return(false);}
   virtual bool   initialize();
+
+  void setCPAEngine(const CPAEngine& engine);
   
   void setOwnshipParams(double osx, double osy);
   void setContactParams(double cnx, double cny, double cnh, double cnv);
+
+  double getCNSpeedInOSPos() const;
+  double getRangeGamma() const;
+  bool   aftOfContact() const;
+  bool   portOfContact() const;
   
 protected:
   double m_tol;    // Ownship Time on Leg
@@ -53,8 +61,6 @@ protected:
   double m_cnh;    // Contact heading
   double m_cnv;    // Contact speed
 
-  double m_pwt_inner_distance;
-  double m_pwt_outer_distance;
   double m_collision_distance;
   double m_all_clear_distance;
 
@@ -67,16 +73,11 @@ protected:
   bool   m_cnv_set;
   bool   m_collision_distance_set;
   bool   m_all_clear_distance_set;
-  bool   m_pwt_inner_distance_set;
-  bool   m_pwt_outer_distance_set;
 
   double m_stat_bng_os_cn;
   
   CPAEngine m_cpa_engine;
+  bool      m_cpa_engine_initialized;
 };
 
 #endif
-
-
-
-

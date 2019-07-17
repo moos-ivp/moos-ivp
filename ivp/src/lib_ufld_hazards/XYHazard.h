@@ -70,7 +70,7 @@ class XYHazard
 
   std::string getLabel() const       {return(m_label);}
   std::string getType() const        {return(m_type);}
-  std::string gxetSource() const     {return(m_source);}
+  std::string getSource() const      {return(m_source);}
   std::string getShape() const       {return(m_shape);}
   std::string getColor() const       {return(m_color);}
 

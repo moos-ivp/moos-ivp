@@ -24,7 +24,6 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include <iostream>
 #include "RT_Uniform.h"
 #include "BuildUtils.h"
 #include "Regressor.h"
@@ -32,34 +31,15 @@
 using namespace std;
 
 //-------------------------------------------------------------
-// Procedure: Constructor
-
-RT_Uniform::RT_Uniform(Regressor *g_reg) 
-{
-  m_regressor = g_reg;
-}
-
-//-------------------------------------------------------------
 // Procedure: create
 //   Purpose: Make a uniform IvP function based on the given box.
 //            Each uniform piece will have the same size as the
 //            given box.
 
-PDMap* RT_Uniform::create(const IvPBox* unifbox, const IvPBox* gelbox, 
-			  PQueue& pqueue)
+PDMap* RT_Uniform::create(const IvPBox* unifbox, const IvPBox* gelbox)
 {
   if(!unifbox)
     return(0);
-
-  bool use_pqueue = true;
-  if(pqueue.null())
-    use_pqueue = false;
-  
-  // If a using a Priority Queue, we'll use the return values in 
-  // the setWeight() calls. Return value is the noted error at 
-  // sampled points w.r.t. the interior function chosen. We store 
-  // box-index,error pair in the priority queue, which can be used
-  // by other ReflectorTools for refining boxes with high error.
 
   IvPDomain domain = m_regressor->getAOF()->getDomain();
 
@@ -77,7 +57,6 @@ PDMap* RT_Uniform::create(const IvPBox* unifbox, const IvPBox* gelbox,
   int index = 0;
   while(bsn) {
     pdmap->bx(index) = bsn->getBox();
-    pdmap->bx(index)->ofindex() = index;
     index++;
     bsn = bsn->getNext();
   }
@@ -90,39 +69,9 @@ PDMap* RT_Uniform::create(const IvPBox* unifbox, const IvPBox* gelbox,
   if(!gridset)
     pdmap->setGelBox(*unifbox);
   
-  int unifCount = pdmap->size();
-  for(int i=0; i<unifCount; i++) {
-    if(use_pqueue) {
-      double delta = m_regressor->setWeight(pdmap->bx(i), true);
 
-      
-
-
-      pqueue.insert(i, delta);
-    }
-    else
-      m_regressor->setWeight(pdmap->bx(i), false);
-  }
-
-  pdmap->updateGrid(1,1);
+  // Do later, after directed refinement done?
+  // pdmap->updateGrid(1,1);
   
   return(pdmap);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

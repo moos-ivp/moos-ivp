@@ -146,13 +146,14 @@ void EncounterViewer::draw()
   if(m_encounter_plot.size() == 0)
     return;
 
-  cout << "In EncounterViewer::draw()  " << "w:" << w() << ", h:" << h() << endl;
+  //cout << "In EncounterViewer::draw()  " << "w:" << w() << ", h:" << h() << endl;
   //cout << "vname: " << m_vname << endl;
   //cout << "plotsize: " << m_encounter_plot.size() << endl;
 
-  cout << "m_collision_range: " << m_collision_range << endl;
-  cout << "m_near_miss_range: " << m_near_miss_range << endl;
-  cout << "m_encounter_range: " << m_encounter_range << endl;
+  //cout << "m_collision_range: " << m_collision_range << endl;
+  //cout << "m_near_miss_range: " << m_near_miss_range << endl;
+  //cout << "m_curr_time:       " << m_curr_time << endl;
+  //cout << "m_encounter_range: " << m_encounter_range << endl;
   
   refreshDrawBuffers();
 
@@ -321,27 +322,29 @@ int EncounterViewer::handle(int event)
 
 void EncounterViewer::handleLeftMouse(int vx, int vy)
 {
-  cout << "EncounterViewer::handleLeftMouse: x:" << vx << ", y:" << vx << endl; 
+  //cout << "EncounterViewer::handleLeftMouse: x:" << vx << ", y:" << vx << endl; 
 
   double xpct = (double)(vx) / (double)(w());
   double ypct = (double)(vy) / (double)(h());
 
-  cout << "xpct = " << xpct << endl;
-  cout << "ypct = " << ypct << endl;
+  //cout << "xpct = " << xpct << endl;
+  //cout << "ypct = " << ypct << endl;
 
-  double mouse_cpa = xpct * m_encounter_range;
-  double mouse_eff = ypct * 100;
+  //double mouse_cpa = xpct * m_encounter_range;
+  //double mouse_eff = ypct * 100;
 
-  cout << "mouse_cpa: " << mouse_cpa << endl;
-  cout << "mouse_eff: " << mouse_eff<< endl;
+  //cout << "mouse_cpa: " << mouse_cpa << endl;
+  //cout << "mouse_eff: " << mouse_eff<< endl;
 
   double mouse_cpa_pix = xpct * w();
   double mouse_eff_pix = ypct * h();
 
   setCurrBuffIndex(mouse_cpa_pix, mouse_eff_pix);
   redraw();
-  if(m_owning_gui)
+  if(m_owning_gui) {
     m_owning_gui->updateXY();
+    m_owning_gui->setCurrTimeX(getCurrIndexTime());
+  }
 }
 
 //-------------------------------------------------------------
@@ -349,7 +352,7 @@ void EncounterViewer::handleLeftMouse(int vx, int vy)
 
 void EncounterViewer::handleRightMouse(int vx, int vy)
 {
-  cout << "EncounterViewer::handleRightMouse: x:" << vx << ", y:" << vx << endl; 
+  //cout << "EncounterViewer::handleRightMouse: x:" << vx << ", y:" << vx << endl; 
 }
 
 

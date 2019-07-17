@@ -38,8 +38,10 @@ public:
   void         onIdleState();
   void         onRunToIdleState();
   void         onCompleteState();
+  
+  std::string  getInfo(std::string);
 
-protected:
+ protected:
   double getRelevance();
   double getPriority();
   void   postInfo(double, double);
@@ -61,19 +63,11 @@ private: // Configuration Parameters
   bool   m_no_alert_request;
 
   double m_collision_depth;
-
   
 private:  // State Variables
   double m_curr_closing_spd;
   bool   m_avoiding;
+
+  unsigned int m_total_evals;
 };
 #endif
-
-
-
-
-
-
-
-
-

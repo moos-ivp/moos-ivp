@@ -24,7 +24,6 @@
 #include <iostream>
 #include <time.h>
 #include "FFV_GUI.h"
-#include "AOF_Rings.h"
 #include "MBUtils.h"
 #include "ReleaseInfo.h"
 #include "IO_Utilities.h"

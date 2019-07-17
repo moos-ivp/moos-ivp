@@ -205,11 +205,6 @@ bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool ${1}::OnConnectToServer()
 {
-   // register for variables here
-   // possibly look at the mission file?
-   // m_MissionReader.GetConfigurationParam("Name", <string>);
-   // m_Comms.Register("VARNAME", 0);
-	
    RegisterVariables();
    return(true);
 }

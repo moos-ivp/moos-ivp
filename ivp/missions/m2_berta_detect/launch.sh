@@ -109,5 +109,5 @@ printf "Done \n"
 uMAC targ_shoreside.moos
 
 printf "Killing all processes ... \n"
-mykill
+mykill; ktm
 printf "Done killing processes.   \n"

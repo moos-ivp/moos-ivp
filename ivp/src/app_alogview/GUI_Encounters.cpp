@@ -468,6 +468,8 @@ int GUI_Encounters::handle(int event)
 
 //----------------------------------------------------------
 // Procedure: setCurrTime
+//      Note: Used when the parent gui or self needs to reach down
+//            into the eviewer to update time.
 
 void GUI_Encounters::setCurrTime(double curr_time)
 {
@@ -476,7 +478,23 @@ void GUI_Encounters::setCurrTime(double curr_time)
 
   m_eviewer->setTime(curr_time);
   m_eviewer->redraw();
+
   updateXY();
+}
+
+
+//----------------------------------------------------------
+// Procedure: setCurrTimeX
+//      Note: Used when the eviewer or self needs to reach up
+//            into the parent GUI to update time.
+
+void GUI_Encounters::setCurrTimeX(double curr_time)
+{
+  if(!m_parent_gui)
+    return;
+
+  m_parent_gui->setCurrTime(curr_time);
+  m_parent_gui->redraw();
 }
 
 
@@ -674,6 +692,7 @@ void GUI_Encounters::updateXY()
 
   string curr_contact = m_eviewer->getCurrIndexContact();
   m_fld_curr_contact->value(curr_contact.c_str());
+
 }
 
 

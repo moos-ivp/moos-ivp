@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: AOF.cpp                                              */
 /*    DATE: 1996                                                 */
+/*    DATE: Apr 2018 Added Known Min/Max functions               */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -35,6 +36,7 @@
 #include <string>
 #include "IvPBox.h"
 #include "IvPDomain.h"
+
 class AOF{
 public:
   AOF(const IvPDomain& dom) {m_domain=dom;}
@@ -55,23 +57,33 @@ public:
 			 std::vector<std::string>&, 
 			 std::vector<std::string>&) {return(0);}
 
-#if 0
-  bool setParams(const std::string& s1, double v1, const std::string& s2, double v2)
-  {
-    return(setParam(s1,v1) && setParam(s2,v2));
-  }
-#endif
+  virtual bool   minMaxKnown() const {return(false);}
+  virtual double getKnownMin() const {return(0);}
+  virtual double getKnownMax() const {return(0);}
 
+  
   double extract(const std::string& var, const IvPBox* pbox) const;
   double extract(const std::string& varname, 
 		 const std::vector<double>& point) const;
 
   IvPDomain getDomain() const {return(m_domain);}
 
-  int  getDim() const   {return(m_domain.size());}
+  unsigned int  getDim() const   {return(m_domain.size());}
+
+  std::list<std::string> getMsgsAOF() {return(m_msgs);}
+  std::string getCatMsgsAOF() const;
+  
+  void clearMsgsAOF()  {m_msgs.clear();}
+  bool hasMsgsAOF()    {return(m_msgs.size() != 0);}
+
+ protected:
+  void postMsgAOF(std::string msg);
+
 
 protected:
   IvPDomain m_domain;
+
+  std::list<std::string> m_msgs;
 };
 #endif
 

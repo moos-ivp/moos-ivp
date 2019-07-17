@@ -37,6 +37,14 @@ using namespace std;
 
 //----------------------------------------------------------
 // Procedure: Constructor
+
+CPAEngine::CPAEngine() : CPAEngineRoot(0, 0, 0, 0, 0, 0)
+{
+  initNonCache();
+}
+
+//----------------------------------------------------------
+// Procedure: Constructor
 //      args: cny  Given Contact Latitude Position
 //      args: cnx  Given Contact Longitude Position
 //      args: cnh  Given Contact Course
@@ -45,22 +53,17 @@ using namespace std;
 //      args: osx  Given Ownship Latitude Position
 
 CPAEngine::CPAEngine(double cny, double cnx, double cnh,
-		       double cnv, double osy, double osx)
+		     double cnv, double osy, double osx)
   : CPAEngineRoot(cny, cnx, cnh, cnv, osy, osx)
 {
   CPAEngine::reset(cny, cnx, cnh, cnv, osy, osx);
 }
 
 //----------------------------------------------------------
-// Procedure: reset
+// Procedure: initNonCache()
 
-void CPAEngine::reset(double cny, double cnx, double cnh,
-		       double cnv, double osy, double osx)
+void CPAEngine::initNonCache()
 {
-  CPAEngineRoot::reset(cny, cnx, cnh, cnv, osy, osx);
-
-  // Initialize cache variables. All will be set upon a call to 
-  // the setStatic() function.
   m_cos_cnh = 0;
   m_sin_cnh = 0;
 
@@ -76,6 +79,7 @@ void CPAEngine::reset(double cny, double cnx, double cnh,
   m_stat_os_on_bowline = false;
   m_stat_os_on_sternline = false;
   m_stat_os_on_bowsternline = false;
+  m_stat_os_on_beam = false;
 
   m_stat_theta_os_eps = 0;
   m_stat_theta_os_gam = 0;
@@ -94,15 +98,26 @@ void CPAEngine::reset(double cny, double cnx, double cnh,
   m_stat_os_aft_of_cn  = false;
   m_stat_os_port_of_cn = false;
   m_stat_os_star_of_cn = false;
-  m_stat_os_on_beam = false;
 
   m_stat_range_gam = 0;
   m_stat_range_eps = 0;
+}
+
+//----------------------------------------------------------
+// Procedure: reset
+
+void CPAEngine::reset(double cny, double cnx, double cnh,
+		      double cnv, double osy, double osx)
+{
+  CPAEngineRoot::reset(cny, cnx, cnh, cnv, osy, osx);
+
+  initNonCache();
   
   setStatic();
 
   if(m_cos_cache.size() == 0)
     initTrigCache();
+
   initK1Cache();
   initK2Cache();
   initRateCache();
@@ -356,9 +371,6 @@ double CPAEngine::bearingRateOld(double osCRS, double osSPD)
   double relang_os_to_cn = relAng(m_osx, m_osy, m_cnx, m_cny);
   double tangent_angle   = angle360(relang_os_to_cn - 90);
 
-  //cout << "bearingRateOSCN2()---------------" << endl;
-  //cout << "  tangent_angle: " << tangent_angle << endl;
-  
   // Part 2: Calculate the speed of ownship in the direction of the
   // tangent angle
   double os_delta_heading = osCRS - tangent_angle;
@@ -580,7 +592,6 @@ double CPAEngine::crossesBowDist(double osh, double osv) const
 
 bool CPAEngine::crossesBowDist(double osh, double osv, double& xdist) const
 {
-  //cout << "In crossesBowDist ===================================" << endl;
   // Sanity check 1: If on the bowline, return the current range
   if(m_stat_os_on_bowline) {
     xdist = m_stat_range;
@@ -686,7 +697,6 @@ double CPAEngine::crossesSternDist(double osh, double osv) const
 
 bool CPAEngine::crossesSternDist(double osh, double osv, double& xdist) const
 {
-  //cout << "In crossesSternDist ===================================" << endl;
   // Sanity check 1: If on the sternline, return the current range
   if(m_stat_os_on_sternline) {
     xdist = m_stat_range;
@@ -1232,7 +1242,6 @@ void CPAEngine::setOSStarboardOfContact()
 
 void CPAEngine::initTrigCache()
 {
-#if 1
   // Part 1: Create the fine resolution cache for use with contact
   vector<double> virgin_cache_3600(3600,0);
 
@@ -1244,7 +1253,6 @@ void CPAEngine::initTrigCache()
     m_cos_cache_3600[i] = cos((double)(rad));
     m_sin_cache_3600[i] = sin((double)(rad));
   }
-#endif
   
   // Part 2: Create the course resolution cache for use with ownship
   vector<double> virgin_cache(360,0);
@@ -1375,10 +1383,10 @@ void CPAEngine::initOSGammaCache()
     rel_bng_cn_to_os_180 = -rel_bng_cn_to_os_180;
   // Now rel_bng_cn_to_os_180 is in the range [0 180]
   
-  // Special case: os is directly on contact's beam
+  // Special case: os is directly on contact's bow-stern line
   if((rel_bng_cn_to_os_180 == 0) || (rel_bng_cn_to_os_180 == 180)) {
-    m_stat_range_gam = m_stat_range;
-    m_stat_range_eps = 0;
+    m_stat_range_gam = 0;
+    m_stat_range_eps = m_stat_range;
     return;
   }
     
@@ -1396,13 +1404,11 @@ void CPAEngine::initOSGammaCache()
 
   //theta_e = 
   
-#if 1
   double range_2d     = m_stat_range * m_stat_range;
   double range_gam_2d = m_stat_range_gam * m_stat_range_gam;
   m_stat_range_eps = sqrt(range_2d - range_gam_2d);
   //if(theta_b > 0)
   //  m_stat_range_eps = -m_stat_range_eps;
-#endif
   
 }
 
@@ -1538,3 +1544,4 @@ void CPAEngine::initRateCache()
     }
   }
 }
+

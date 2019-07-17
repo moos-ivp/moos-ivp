@@ -41,12 +41,17 @@ class PokeDB : public CMOOSApp
 
   void setPokeDouble(const std::string& varname, const std::string& val);
   void setPokeString(const std::string& varname, const std::string& val);
-
+  void setTimeWarp();
+  
  protected:
   void registerVariables();
   void updateVariable(CMOOSMsg& msg);
   void printReport();
 
+  bool anyVarsReceived() const;
+  bool allVarsReceived() const;
+  void clearVarsReceived();
+  
   bool ConfigureComms();
 
  protected: // Index for each is unique per variable name
@@ -57,7 +62,7 @@ class PokeDB : public CMOOSApp
   std::vector<std::string>  m_dvalue_read;
   std::vector<std::string>  m_source_read;
   std::vector<std::string>  m_valtype_read;
-  std::vector<std::string>  m_wrtime_read;
+  std::vector<double>       m_wrtime_read;
   std::vector<bool>         m_varname_recd;
 
   double m_db_time;
@@ -65,13 +70,11 @@ class PokeDB : public CMOOSApp
   double m_db_start_time;
   int    m_iteration;
   bool   m_configure_comms_locally;
+
+  bool   m_time_warp_set;
+  bool   m_values_poked;
+  bool   m_priors_reported;
+  bool   m_poked_reported;
+
+  unsigned int m_poke_iteration;
 };
-
-
-
-
-
-
-
-
-

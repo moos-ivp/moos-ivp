@@ -70,12 +70,9 @@ class BasicContactMgr : public AppCastingMOOSApp
   bool checkAlertApplies(std::string contact, std::string id);
   bool knownAlert(std::string id) const;
 
-  
   void checkForNewRetiredContacts();
   void postRangeReports();
 
-
-  
  protected: // Alert Getters
   double      getAlertRange(std::string id) const;
   double      getAlertRangeCPA(std::string id) const;

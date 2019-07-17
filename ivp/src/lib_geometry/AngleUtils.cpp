@@ -328,6 +328,250 @@ double angleDiff(double ang1, double ang2)
 }
 
 //---------------------------------------------------------------
+// Procedure: angleMinAcute
+//   Purpose: Given the two angles (headings from a center pt),
+//            determine in which direction they make an acute angle
+//            and return the lesser of the two.
+//  Examples: angleMinAcute(10,20) = 10
+//            angleMinAcute(10,350) = 350
+//            angleMinAcute(89,271) = 271
+//
+//  (10,20) = 10     10-20 = -10   = 350   *larger:choose(10)
+//                   20-10 = 10    = 10
+//
+//  (10,350) = 350   10-350 = -340 = 20    
+//                   350-10 = 340  = 340   *larger:choose(350)
+//
+//  (89,271) = 271   89-271 = -182 = 178
+//                   271-89 = 182  = 182   *larger:choose(271)
+
+double angleMinAcute(double ang1, double ang2)
+{
+  if(angle360(ang1-ang2) >= angle360(ang2-ang1))
+    return(ang1);
+
+  return(ang2);
+}
+
+//---------------------------------------------------------------
+// Procedure: angleMaxAcute
+//   Purpose: Given the two angles (headings from a center pt),
+//            determine in which direction they make an acute angle
+//            and return the greater of the two.
+//  Examples: angleMaxAcute(10,20) = 20
+//            angleMaxAcute(10,350) = 10
+//            angleMaxAcute(89,271) = 89
+//
+//  (10,20) = 20     10-20 = -10   = 350
+//                   20-10 = 10    = 10    *smaller:choose(20)
+//
+//  (10,350) = 10    10-350 = -340 = 20    *smaller:choose(10)
+//                   350-10 = 340  = 340
+//
+//  (89,271) = 271   89-271 = -182 = 178   *smaller:choose(89)
+//                   271-89 = 182  = 182
+
+double angleMaxAcute(double ang1, double ang2)
+{
+  if(angle360(ang1-ang2) < angle360(ang2-ang1))
+    return(ang1);
+
+  return(ang2);
+}
+
+//---------------------------------------------------------------
+// Procedure: angleMinReflex
+//   Purpose: Given the two angles (headings from a center pt),
+//            determine in which direction they make a reflex angle
+//            (geq 180 degs) and return the lesser of the two.
+//  Examples: angleMinReflex(10,20) = 20
+//            angleMinReflex(10,350) = 10
+//            angleMdinReflex(89,271) = 89
+//
+//  (10,20) = 20     10-20 = -10   = 350
+//                   20-10 = 10    = 10    *smaller:choose(20)
+//
+//  (10,350) = 10    10-350 = -340 = 20    *smaller:choose(10)
+//                   350-10 = 340  = 340
+//
+//  (89,271) = 89    89-271 = -182 = 178   *smaller:choose(89)
+//                   271-89 = 182  = 182
+
+double angleMinReflex(double ang1, double ang2)
+{
+  if(angle360(ang1-ang2) < angle360(ang2-ang1))
+    return(ang1);
+
+  return(ang2);
+}
+
+//---------------------------------------------------------------
+// Procedure: angleMaxReflex
+//   Purpose: Given the two angles (headings from a center pt),
+//            determine in which direction they make a reflex angle
+//            (geq 180 degs) and return the greater of the two.
+//  Examples: angleMaxReflex(10,20) = 10
+//            angleMaxReflex(10,350) = 350
+//            angleMaxReflex(89,271) = 271
+//
+//  (10,20) = 10     10-20 = -10   = 350
+//                   20-10 = 10    = 10
+//
+//  (10,350) = 350   10-350 = -340 = 20
+//                   350-10 = 340  = 340
+//
+//  (89,271) = 271   89-271 = -182 = 178
+//                   271-89 = 182  = 182
+
+double angleMaxReflex(double ang1, double ang2)
+{
+  if(angle360(ang1-ang2) >= angle360(ang2-ang1))
+    return(ang1);
+
+  return(ang2);
+}
+
+//---------------------------------------------------------------
+// Procedure: angleMinContains
+//   Purpose: Given three angles (headings from a center pt).
+//            Assuming first two angles are not equal, the 3rd angle
+//            must be between first two in one wrap direction or
+//            another. Determine direction and report min/start angle.
+//  Examples: angleMinContains(10,20,5) = 10
+//            angleMinContains(10,350,2)   = 350
+//            angleMinContains(10,350,20)  = 10
+//            angleMinContains(89,271,0)   = 271
+//            angleMinContains(89,271,180) = 89
+
+double angleMinContains(double ang1, double ang2, double ang3)
+{
+  // Sanity check
+  if(ang1 == ang2)
+    return(ang1);
+
+  // Order the two angles
+  double anglow = ang1; 
+  double anghgh = ang2; 
+  if(anglow > anghgh) {
+    anglow = ang2;
+    anghgh = ang1;
+  }
+
+  // Check the range
+  if((ang3 >= anglow) && (ang3 <= anghgh))
+    return(anglow);
+  return(anghgh);
+}
+
+//---------------------------------------------------------------
+// Procedure: angleMaxContains
+//   Purpose: Given three angles (headings from a center pt).
+//            Assuming first two angles are not equal, the 3rd angle
+//            must be between first two in one wrap direction or
+//            another. Determine direction and report max/end angle.
+//  Examples: angleMaxContains(10,20,5) = 20
+//            angleMaxContains(10,350,2)   = 10
+//            angleMaxContains(10,350,20)  = 350
+//            angleMaxContains(89,271,0)   = 89
+//            angleMaxContains(89,271,180) = 271
+
+double angleMaxContains(double ang1, double ang2, double ang3)
+{
+  // Sanity check
+  if(ang1 == ang2)
+    return(ang1);
+
+  // Order the two angles
+  double anglow = ang1; 
+  double anghgh = ang2; 
+  if(anglow > anghgh) {
+    anglow = ang2;
+    anghgh = ang1;
+  }
+
+  // Check the range
+  if((ang3 >= anglow) && (ang3 <= anghgh))
+    return(anghgh);
+  return(anglow);
+}
+
+//---------------------------------------------------------------
+// Procedure: angleMinExcludes
+//   Purpose: Given three angles (headings from a center pt).
+//            Assuming first two angles are not equal, the 3rd angle
+//            must be outside first two in one wrap direction or
+//            another. Determine direction and report min/start angle.
+//  Examples: angleMinExcludes(10,20,5) = 20
+//            angleMinExcludes(10,350,2)   = 10
+//            angleMinExcludes(10,350,20)  = 350
+//            angleMinExcludes(89,271,0)   = 89
+//            angleMinExcludes(89,271,180) = 271
+
+double angleMinExcludes(double ang1, double ang2, double ang3)
+{
+  // Sanity check
+  if(ang1 == ang2)
+    return(ang1);
+
+  // Order the two angles
+  double anglow = ang1; 
+  double anghgh = ang2; 
+  if(anglow > anghgh) {
+    anglow = ang2;
+    anghgh = ang1;
+  }
+
+  // If either angle equals the third, then there really is no
+  // reasonable answer. This should have been checked by the caller.
+  // But since this is a "min" function, we'll just return lowest angle.
+  if((ang1 == ang3) || (ang2 == ang3))
+    return(anglow);
+  
+  // Check the range
+  if((ang3 < anglow) || (ang3 > anghgh))
+    return(anglow);
+  return(anghgh);
+}
+
+//---------------------------------------------------------------
+// Procedure: angleMaxExcludes
+//   Purpose: Given three angles (headings from a center pt).
+//            Assuming first two angles are not equal, the 3rd angle
+//            must be outside first two in one wrap direction or
+//            another. Determine direction and report max/end angle.
+//  Examples: angleMaxExcludes(10,20,5) = 10
+//            angleMaxExcludes(10,350,2)   = 350
+//            angleMaxExcludes(10,350,20)  = 10
+//            angleMaxExcludes(89,271,0)   = 271
+//            angleMaxExcludes(89,271,180) = 89
+
+double angleMaxExcludes(double ang1, double ang2, double ang3)
+{
+  // Sanity check
+  if(ang1 == ang2)
+    return(ang1);
+
+  // Order the two angles
+  double anglow = ang1; 
+  double anghgh = ang2; 
+  if(anglow > anghgh) {
+    anglow = ang2;
+    anghgh = ang1;
+  }
+
+  // If either angle equals the third, then there really is no
+  // reasonable answer. This should have been checked by the caller.
+  // But since this is a "max" function, we'll just return lowest angle.
+  if((ang1 == ang3) || (ang2 == ang3))
+    return(anghgh);
+  
+  // Check the range
+  if((ang3 < anglow) || (ang3 > anghgh))
+    return(anghgh);
+  return(anglow);
+}
+
+//---------------------------------------------------------------
 // Procedure: aspectDiff
 //   Purpose: Determine the difference in degrees between the two
 //            given aspect angles, ensuring the range [0, 90].

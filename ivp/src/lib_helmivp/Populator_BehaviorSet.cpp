@@ -161,8 +161,10 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
     }
   }
   
-  for(i=0; i<m_behavior_specs.size(); i++)
+  for(i=0; i<m_behavior_specs.size(); i++) { 
     bset->addBehaviorSpec(m_behavior_specs[i]);
+    m_behavior_specs[i].print();    // mikerb-jan04
+  }
   bool ok = bset->buildBehaviorsFromSpecs();
 
   addConfigWarnings(bset->getWarnings());
@@ -219,7 +221,7 @@ bool Populator_BehaviorSet::handleLine(string filename, string line,
 {
   // Comments are anything to the right of a "#" or "//"
   line = stripComment(line, "//");
-  line = stripComment(line, "#");
+  //line = stripComment(line, "#");   mikerb-jan04
   line = stripBlankEnds(line);
 
   // HANDLE A BLANK LINE or COMMMENT LINE 

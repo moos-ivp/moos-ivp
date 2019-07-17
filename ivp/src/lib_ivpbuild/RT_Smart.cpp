@@ -24,6 +24,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <iostream>
 #include "RT_Smart.h"
 #include "BuildUtils.h"
 #include "Regressor.h"
@@ -36,6 +37,7 @@ using namespace std;
 RT_Smart::RT_Smart(Regressor *g_reg) 
 {
   m_regressor = g_reg;
+  m_verbose   = false;
 }
 
 //-------------------------------------------------------------
@@ -49,9 +51,15 @@ RT_Smart::RT_Smart(Regressor *g_reg)
 PDMap* RT_Smart::create(PDMap *pdmap, PQueue& pqueue, 
 			int amt, double thresh)
 {
+  if(m_verbose)
+    cout << "================ RT_Directed ===============" << endl;
+
   if(!pdmap || pqueue.null() || (amt < 1))
     return(pdmap);
 
+  if(m_verbose)
+    cout << "Pieces begin: " << pdmap->size() << endl;
+  
   pdmap->growBoxArray(amt);
   int dim = pdmap->getDim();
 
@@ -105,6 +113,10 @@ PDMap* RT_Smart::create(PDMap *pdmap, PQueue& pqueue,
   }
 
   pdmap->updateGrid();
+
+  if(m_verbose)
+    cout << "Pieces end:   " << pdmap->size() << endl;
+
   return(pdmap);
 }
 

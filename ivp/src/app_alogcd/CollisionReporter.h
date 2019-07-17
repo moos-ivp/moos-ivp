@@ -39,6 +39,9 @@ class CollisionReporter
   bool handle();
   void printReport();
 
+  bool hadCollisions() {return(m_collisions > 0);}
+  bool hadEncounters() {return(m_encounters > 0);}
+  
  protected:
   unsigned int m_encounters;
   unsigned int m_near_misses;

@@ -44,9 +44,9 @@ public:
   bool        set_var(std::string);
   bool        set_key(std::string);
   bool        set_ptype(std::string);
-  bool        set_sdata(std::string);
-  bool        set_ddata(double);
-  bool        set_smart_data(std::string);
+  bool        set_sdata(std::string, bool overwrite_ok=false);
+  bool        set_ddata(double, bool overwrite_ok=false);
+  bool        set_smart_data(std::string, bool overwrite_ok=false);
 
   std::string get_var()   const {return(m_var);}
   std::string get_sdata() const {return(m_sdata);}
@@ -58,6 +58,12 @@ public:
 
   bool        valid() const;
 
+  bool        get_var_set()   const {return(m_var_set);}
+  bool        get_sdata_set() const {return(m_sdata_set);}
+  bool        get_ddata_set() const {return(m_ddata_set);}
+  bool        get_ptype_set() const {return(m_ptype_set);}
+  bool        get_key_set()   const {return(m_key_set);}
+  
   std::string getPrintable();
 
 protected:

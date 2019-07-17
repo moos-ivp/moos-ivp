@@ -48,7 +48,6 @@ bool Populator_EncounterPlot::populateFromEntries(const vector<ALogEntry>& entri
       m_encounter_plot.addEncounter(time, event);
     }
     else if(var == "COLLISION_DETECT_PARAMS") {
-      cout << "Processing COLLISION_DETECT_PARAMS!!!!!!!!!!!!!!!!!!!!!!" << endl;
       vector<string> svector = parseString(entries[i].getStringVal(), ',');
       for(unsigned int j=0; j<svector.size(); j++) {
 	string param = biteStringX(svector[j], '=');
@@ -65,7 +64,3 @@ bool Populator_EncounterPlot::populateFromEntries(const vector<ALogEntry>& entri
   }
   return(true);
 }
-
-
-
-

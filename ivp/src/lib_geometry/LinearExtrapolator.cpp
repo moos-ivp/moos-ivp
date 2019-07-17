@@ -61,10 +61,11 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
 
   // Handle the error cases.
   double delta_time = g_timestamp - m_timestamp;
-  if((m_decay_end < m_decay_start) || (delta_time < 0)) {
+  if((m_decay_end < m_decay_start) || (delta_time < -0.1)) {
     r_xpos = m_xpos;
     r_ypos = m_ypos;
     m_failure_reason = "negative delta time, possible clock skew";
+    m_failure_reason += ", dtime=" + doubleToString(delta_time, 5);
     return(false);
   }
   m_failure_reason = "";

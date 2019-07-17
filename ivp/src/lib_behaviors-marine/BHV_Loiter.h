@@ -79,6 +79,8 @@ private:  // Configuration Parameters
 
   std::string  m_loiter_mode;
 
+  double       m_slingshot;
+  
 private:  // State Structures
   LoiterEngine   m_loiter_engine;
   WaypointEngine m_waypoint_engine;
@@ -98,6 +100,9 @@ private:  // State Variables
   
   bool         m_center_pending; 
   std::string  m_center_assign;
+
+  double       m_bng_total;
+  double       m_bng_last;
 };
 #endif
 

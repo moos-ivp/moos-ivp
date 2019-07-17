@@ -41,6 +41,8 @@ AOF_AvoidCollision::AOF_AvoidCollision(IvPDomain gdomain)
 {
   m_crs_ix = gdomain.getIndex("course");
   m_spd_ix = gdomain.getIndex("speed");
+
+  m_max_util = 100;
 }
 
 //----------------------------------------------------------------
@@ -65,6 +67,9 @@ bool AOF_AvoidCollision::initialize()
   if((m_crs_ix==-1) || (m_spd_ix==-1))
     return(false);
 
+  double range = hypot(m_osx-m_cnx, m_osy-m_cny);
+  m_max_util = metric(range);
+  
   return(true);
 }
 

@@ -57,6 +57,7 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   m_viewable_map["grid_viewable_all"]        = true;
   m_viewable_map["grid_viewable_labels"]     = true;
   m_viewable_map["comms_pulse_viewable_all"] = true;
+  m_viewable_map["node_pulse_viewable_all"]  = true;
   m_viewable_map["range_pulse_viewable_all"] = true;
   m_viewable_map["circle_viewable_all"]      = true;
   m_viewable_map["circle_viewable_labels"]   = true;
@@ -116,7 +117,8 @@ bool VPlug_GeoSettings::setParam(string param, string value)
      (param == "hash_viewable")            ||
      (param == "tiff_viewable")            ||
      (param == "range_pulse_viewable_all") ||
-     (param == "comms_pulse_viewable_all"))
+     (param == "comms_pulse_viewable_all") ||
+     (param == "node_pulse_viewable_all"))
      return(setViewMapping(param, value));
   
   else if((param == "vector_label_color")      ||
@@ -482,6 +484,7 @@ string VPlug_GeoSettings::strvalue(string attr)
      (attr == "marker_viewable_all")      ||
      (attr == "marker_viewable_labels")   ||
      (attr == "range_pulse_viewable_all") ||
+     (attr == "node_pulse_viewable_all")  ||
      (attr == "comms_pulse_viewable_all")) {
     return(boolToString(viewable(attr, false)));
   }

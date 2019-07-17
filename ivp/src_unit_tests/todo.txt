@@ -1,0 +1,91 @@
+//====================================================
+// Test program created and cases created
+//====================================================
+o testAngleDiff
+o testAngleInArc
+o testArcSegCross
+o testArcSegCrossPts
+o testDistPointToArc
+o testDistSegToArc
+o testLineCircleIntPts
+o testSegCircleIntPts
+
+//====================================================
+// Test program created (no cases yet)
+//====================================================
+o distPtsOnArc
+
+
+//====================================================
+// To Do
+//====================================================
+
+ArcUtils: ------------------------------
+o arcSegListCross
+o arcSegListCrossPts
+o distSegListToArc
+
+
+
+AngleUtils: ----------------------------
+
+o angleFromThreePoints
+o threePointTurnLeft
+o relAng
+o relAng
+o radAngleWrap
+o degToRadians
+o radToDegrees
+o angle180
+o angle360
+o angleDiff
+o aspectDiff
+o angleMinAcute
+o angleMaxAcute
+o angleMinReflex
+o angleMaxReflex
+o angleMinContains
+o angleMaxContains
+o angleMinExcludes
+o angleMaxExcludes
+o radToHeading
+o headingToRadians
+o speedInHeading
+o relBearing
+o absRelBearing
+o totAbsRelBearing
+o containsAngle
+o polyAft
+o turnGap
+o headingAvg
+o headingAvg
+
+GeomUtils: ----------------------------
+
+o distPointToPointXXX
+o distPointToPoint
+o distPointToPoint
+o distPointToSeg
+o distPointToSeg
+o distPointToSeg
+o distSegToSeg
+o linesCross
+o lineRayCross
+o segmentsCross
+o segmentAngle
+o perpSegIntPt
+o perpLineIntPt
+o projectPoint
+o projectPoint
+o addVectors
+o bearingMinMaxToPoly
+o distCircleToLine
+o ndPointInPoly
+o glRayCross
+o pointRayDist
+o segRayCPA
+o seglRayCPA
+o segSeglDist
+o gRayCross
+o eCircleIntPts
+o CircleIntPts

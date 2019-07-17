@@ -325,6 +325,7 @@ void HostInfo::gatherIPInfoFromFiles()
   m_ip_osx_ethernet2   = readOSXInfoIP("ipinfo_osx_ethernet2_" + name + ".txt");
   m_ip_osx_bridge100   = readLinuxInfoIP("ipinfo_osx_bridge100_" + name + ".txt");
   m_ip_osx_usb_ethernet = readOSXInfoIP("ipinfo_osx_usb_ethernet_" + name + ".txt");
+
   m_ip_linux_wifi      = readLinuxInfoIP("ipinfo_linux_wifi_" + name + ".txt");
   m_ip_linux_ethernet0 = readLinuxInfoIP("ipinfo_linux_ethernet0_" + name + ".txt");
   m_ip_linux_ethernet1 = readLinuxInfoIP("ipinfo_linux_ethernet1_" + name + ".txt");
@@ -393,7 +394,6 @@ void HostInfo::postIPInfo()
   else if((m_prefer_interface == "usb2") && (m_ip_linux_usb2 != ""))
     m_host_ip = m_ip_linux_usb0;
   
-
   if(m_host_ip != "")
     Notify("PHI_HOST_IP", m_host_ip);
   if(m_host_ip_all != "")
@@ -640,11 +640,4 @@ bool HostInfo::buildReport()
 
   return(true);
 }
-
-
-
-
-
-
-
 

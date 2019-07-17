@@ -97,6 +97,13 @@ double AOF_R14::evalBox(const IvPBox *b) const
   m_domain.getVal(m_crs_ix, b->pt(m_crs_ix), eval_crs);
   m_domain.getVal(m_spd_ix, b->pt(m_spd_ix), eval_spd);
 
+
+  if(portOfContact()) {
+    bool crosses_cn_bow = m_cpa_engine.crossesBow(eval_crs, eval_spd);
+    if(crosses_cn_bow)
+      return(0);
+  }
+  
   bool star_to_star = m_cpa_engine.passesStar(eval_crs,eval_spd);
   if(star_to_star)
     return(0);

@@ -25,6 +25,8 @@ SET(SRC
   RT_Directed.cpp
   RT_Smart.cpp
   RT_Uniform.cpp
+  RT_UniformX.cpp
+  RT_Evaluator.cpp
   RT_AutoPeak.cpp
   Regressor.cpp
   ZAIC_SPD.cpp
@@ -59,8 +61,9 @@ SET(HEADERS
   Regressor.h
   RT_AutoPeak.h
   RT_Directed.h
+  RT_Evaluator.h
   RT_Smart.h
-  RT_Uniform.h
+  RT_UniformX.h
   ZAIC_SPD.h
   ZAIC_HEQ.h
   ZAIC_HLEQ.h

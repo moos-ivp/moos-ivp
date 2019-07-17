@@ -747,7 +747,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   double factor_x = m_back_img.get_pix_per_mtr_x();
   double factor_y = m_back_img.get_pix_per_mtr_y();
   
-  if(vehibody == "kayak") {
+  if((vehibody == "kayak") || (vehibody == "heron")) {
     if(vlength > 0) {
       factor_x *= (vlength / g_kayakLength);
       factor_y *= (vlength / g_kayakLength);
@@ -2513,16 +2513,34 @@ void MarineViewer::drawRangePulse(const XYRangePulse& pulse,
 void MarineViewer::drawCommsPulses(const vector<XYCommsPulse>& pulses,
 				   double timestamp)
 {
-  // If the viewable parameter is set to false just return. In 
-  // querying the parameter the optional "true" argument means return
-  // true if nothing is known about the parameter.
+  bool draw_msgs = true;
+  // Optional "true" arg means return true if nothing known
   if(!m_geo_settings.viewable("comms_pulse_viewable_all", true))
+    draw_msgs = false;
+
+  bool draw_nreps = true;
+  // Optional "true" arg means return true if nothing known
+  if(!m_geo_settings.viewable("node_pulse_viewable_all", true))
+    draw_nreps = false;
+
+
+  // If neither of the two types of comms pulses, msg and nrep,
+  // are enable, we can just return now.
+
+  if(!draw_nreps && !draw_msgs)
     return;
   
-  unsigned int i, vsize = pulses.size();
-  for(i=0; i<vsize; i++)
-    if(pulses[i].active())
-      drawCommsPulse(pulses[i], timestamp);
+  for(unsigned int i=0; i<pulses.size(); i++) {
+    if(pulses[i].active()) {
+      bool will_draw = true;
+      if(!draw_msgs && (pulses[i].get_pulse_type() == "msg"))
+	will_draw = false;
+      else if(!draw_nreps && (pulses[i].get_pulse_type() == "nrep"))
+	will_draw = false;
+      if(will_draw)
+	drawCommsPulse(pulses[i], timestamp);
+    }
+  }
 }
 
 //-------------------------------------------------------------

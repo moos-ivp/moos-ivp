@@ -1,0 +1,9 @@
+cmd=testDistPointOnArc
+
+px=4 py=3 cx=0 cy=0 cr=5 lang=0 rang=90 # dist=4.64
+px=3 py=4 cx=0 cy=0 cr=5 lang=0 rang=90 # dist=3.22
+
+px=4 py=3 cx=0 cy=0 cr=5 lang=180 rang=90 # dist=20.34
+px=3 py=4 cx=0 cy=0 cr=5 lang=180 rang=90 # dist=18.93
+
+

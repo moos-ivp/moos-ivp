@@ -29,6 +29,10 @@
 #include "GeomUtils.h"
 #include "AngleUtils.h"
 
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
+#endif
+
 using namespace std;
 
 //---------------------------------------------------------------
@@ -51,7 +55,7 @@ double distToPoint(double x1, double y1, double x2, double y2)
 }
   
 //---------------------------------------------------------------
-// Procedure: distPointToSeg
+// Procedure: distPointToSeg()
 //   Purpose: Return the distance from the segment given by x1,y1 
 //            and x2,y2 to the point given by px,py
 
@@ -62,6 +66,22 @@ double distPointToSeg(double x1, double y1, double x2,
   perpSegIntPt(x1, y1, x2, y2, px, py, ix, iy);
   return(distPointToPoint(px, py, ix, iy));
 }
+
+//---------------------------------------------------------------
+// Procedure: distPointToSeg()
+//   Purpose: Return the distance from the segment given by x1,y1 
+//            and x2,y2 to the point given by px,py
+
+double distPointToSeg(double x1, double y1, double x2, 
+		      double y2, double px, double py,
+		      double& ix, double& iy)
+{
+  perpSegIntPt(x1, y1, x2, y2, px, py, ix, iy);
+  return(distPointToPoint(px, py, ix, iy));
+}
+
+//---------------------------------------------------------------
+// Procedure: distToSegment()
 
 double distToSegment(double x1, double y1, double x2, 
 		     double y2, double px, double py)
@@ -446,7 +466,6 @@ bool segmentsCross(double x1, double y1, double x2, double y2,
 //
 //            Ray Norm - Line Norm (9)
 
-#if 1
 bool lineRayCross(double x1, double y1, double ray_angle,
 		  double x3, double y3, double x4, double y4, 
 		  double& ix, double& iy) 
@@ -459,18 +478,22 @@ bool lineRayCross(double x1, double y1, double ray_angle,
   bool line_horz = (y3==y4);
 
   // Case 1 - both ray and line vertical (intersection pt not unique)
+  //          choose an intersection point on the line segment given
+  //          by the line definition
   if(ray_vert && line_vert) {
     if(x1==x3) {
-      ix = x1; iy = 0;
+      ix = x3; iy = y3;
       return(true);
     }
     else
       return(false);
   }
   // Case 2 - both ray and line horizontal (intersection pt not unique)
+  //          choose an intersection point on the line segment given
+  //          by the line definition
   if(ray_horz && line_horz) {
     if(y1==y3) {
-      iy = y1; ix = 0;
+      iy = y3; ix = x3;
       return(true);
     }
     else
@@ -574,10 +597,10 @@ bool lineRayCross(double x1, double y1, double ray_angle,
   double slope_b = (y4-y3) / (x4-x3);
   double inter_a = y1 - (slope_a * x1);
   double inter_b = y3 - (slope_b * x3);
-
+  
   if(slope_a == slope_b) {    // Special case: parallel lines
     if(inter_a == inter_b) {  // If identical/overlapping, just pick
-      ix = x1; iy = y1;       // any point. vertex of ray is fine.
+      ix = x3; iy = y3;       // any point. vertex of line is fine.
       return(true);
     }
     else
@@ -602,7 +625,7 @@ bool lineRayCross(double x1, double y1, double ray_angle,
     if((ix <= x1) && (iy <= y1))
       return(true);
   }
-  else if(ray_angle < 180) {
+  else {
     if((ix <= x1) && (iy >= y1))
       return(true);
   }
@@ -611,7 +634,6 @@ bool lineRayCross(double x1, double y1, double ray_angle,
   iy = 0;
   return(false);
 }
-#endif
 
 
 //---------------------------------------------------------------
@@ -654,8 +676,24 @@ double segmentAngle(double x1, double y1, double x2,
 
 //---------------------------------------------------------------
 // Procedure: perpSegIntPt
-//   Purpose: 
-//            
+//   Purpose: Determine the point on the given segment closest to
+//            the point which would make a line perpendicular if
+//            using the given query point. 
+//      Note: The line given by qx,qy and rx,ry may not be
+//            perpendiculary to the given line segment (see Case B)
+//                                                                 
+//                                                                 
+//          CASE A                     CASE B                   |   
+//          ======                     ======                   |
+//                                                              |  
+//       o             o             Q             Q            |
+//       |             |                            \           |          
+//       |             |                             \          |     
+//  Q    |   ==>  Q----X                   o     ==>  X         |
+//       |             |                   |          |         |
+//       |             |                   |          |         |
+//       |             |                   |          |         |
+//       o             o                   o          o         | 
 
 void perpSegIntPt(double x1, double y1, double x2, double y2, 
 		  double qx, double qy, double& rx, double& ry)
@@ -742,8 +780,6 @@ void perpSegIntPt(double x1, double y1, double x2, double y2,
 
 //---------------------------------------------------------------
 // Procedure: perpLineIntPt
-//   Purpose: 
-//            
 
 void perpLineIntPt(double x1, double y1, double x2, double y2, 
 		   double qx, double qy, double& rx, double& ry)
@@ -972,7 +1008,7 @@ double distCircleToLine(double cx, double cy, double radius,
   // the circle center
   double ix=0;
   double iy=0;
-  perpSegIntPt(px1, py1, px2, py2, cx, cy, ix, iy);
+  perpLineIntPt(px1, py1, px2, py2, cx, cy, ix, iy);
 
   // Step 2: Determine the distance from the circle center to the line
   double dist = hypot(cx-ix, cy-iy);
@@ -1033,3 +1069,521 @@ bool randPointInPoly(const XYPolygon& poly, double& rx, double& ry,
   return(false);
 }
 
+
+//---------------------------------------------------------------
+// Procedure: crossRaySegl()
+//   Purpose: Determine if the given ray crosses anywhere in the given
+//            SegList, and if so return the intersection point.
+//            If multiple intersection points, return the intersection
+//            point closes to the end of the ray.
+
+bool crossRaySegl(double px, double py, double ph,
+		  const XYSegList& segl,
+		  double& rx, double& ry, double& range)
+{
+  // Unless filled in with an intersection, rx and ry will be zero.
+  rx = 0;
+  ry = 0;
+  range = -1;
+  
+  unsigned int vsize = segl.size();
+
+  // Special case #1 the seglist is empty
+  if(vsize == 0)
+    return(false);
+  // Special case #2 the seglist contains only a single point
+  if(vsize == 1) {
+    double vx = segl.get_vx(0);
+    double vy = segl.get_vy(0);
+    return(lineRayCross(px, py, ph, vx, vy, vx, vy, rx, ry));
+  }
+
+  // For each line segment
+  for(unsigned int i=0; i<vsize-1; i++) {
+
+    double x1 = segl.get_vx(i);
+    double y1 = segl.get_vy(i);
+    double x2 = segl.get_vx(i+1);
+    double y2 = segl.get_vy(i+1);
+
+    double ix, iy;
+    bool may_intersect = lineRayCross(px, py, ph, x1, y1, x2, y2, ix, iy);
+
+    if(may_intersect) {
+      bool x_intersect = false;
+      if((x1==x2) && (x1==ix))
+	x_intersect = true;
+      else if((x1>x2) && (ix>=x2) && (ix<=x1))
+	x_intersect = true;
+      else {
+	if((ix>=x1) && (ix<=x2))
+	  x_intersect = true;
+      }
+
+      bool y_intersect = false;
+      if((y1==y2) && (y1==iy))
+	y_intersect = true;
+      else if((y1>y2) && (iy>=y2) && (iy<=y1))
+	y_intersect = true;
+      else {
+	if((iy>=y1) && (iy<=y2))
+	  y_intersect = true;
+      }
+
+      if(x_intersect && y_intersect) {
+	double this_range = hypot(px-ix, py-iy);
+	if((range == -1) || (this_range < range)) {
+	  rx = ix;
+	  ry = iy;
+	  range = this_range;
+	}
+      }
+    }
+  }
+
+  if(range > 0)
+    return(true);  
+  return(false);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: distPointToRay()
+//   Purpose: Determine distance from the given point to the given ray
+
+double distPointToRay(double px, double py,
+		      double rx, double ry, double ray_angle,
+		      double& ix, double& iy)
+{
+  // Special case #1 the two points are the same
+  if((rx == px) && (ry == py)) {
+    ix = rx;
+    iy = ry;
+    return(0);
+  }
+
+  // Turn the point into a line segment that is perpendicular to the ray
+  double x3,y3;
+  double perp_angle = angle360(ray_angle+90);
+  projectPoint(perp_angle, 10, px, py, x3, y3);
+    
+  bool crosses = lineRayCross(rx, ry, ray_angle, px, py, x3, y3, ix, iy);
+
+  // If it doesn't cross, the point is "behind" the ray and CPA is the
+  // base of the ray.
+  if(!crosses) {
+    ix = rx;
+    iy = ry;
+    return(hypot(rx-px, ry-py));
+  }
+  
+  return(hypot(ix-px, iy-py));
+}
+
+
+//---------------------------------------------------------------
+// Procedure: segRayCPA
+//   Purpose: Determine the minimum distance from the given
+//            segment to the given ray.
+//      NOTE: This algorithm ASSUMES THE RAY AND SEGMENT DO NOT CROSS.
+//            It assumes a prior check has determined that the ray does
+//            not cross the segment, and this is being used simply to
+//            determine how close the ray gets to the segment at its
+//            closest vertex.
+//            By not doing a check for crossing, it is much faster.
+
+double segRayCPA(double x1, double y1, double ray_angle,
+		 double x2, double y2, double x3, double y3,
+		 double& ix, double& iy)
+{
+  double rx1, ry1, rx2, ry2;
+  double dist1 = distPointToRay(x2,y2, x1,y1,ray_angle, rx1, ry1);
+  double dist2 = distPointToRay(x3,y3, x1,y1,ray_angle, rx2, ry2);
+
+  if(dist1 < dist2) {
+    ix = rx1;
+    iy = ry1;
+    return(dist1);
+  }
+  ix = rx2;
+  iy = ry2;
+  return(dist2);    
+}
+
+
+//---------------------------------------------------------------
+// Procedure: seglRayCPA
+//   Purpose: Determine the minimum distance from the given
+//            seglist to the given ray
+//      NOTE: This algorithm ASSUMES THE RAY AND SEGLIST DO NOT CROSS.
+//            It assumes a prior check has determined that the ray does
+//            not cross the seglist, and this is being used simply to
+//            determine how close the ray gets to the seglist at its
+//            closest vertex.
+//            By not doing a check for crossing, it is much faster.
+
+double seglRayCPA(double rx, double ry, double ray_angle,
+		  const XYSegList& segl,
+		  double& ix, double& iy)
+{
+  // Special case of empty seglist
+  if(segl.size() == 0) {
+    ix = 0;
+    iy = 0;
+    return(0);
+  }
+
+  // General case of non-empty seglist
+  double cpa = -1;  
+  for(unsigned int i=0; i<segl.size(); i++) {
+    double vx = segl.get_vx(i);
+    double vy = segl.get_vy(i);
+    double intx, inty;
+    double dist = distPointToRay(vx,vy, rx,ry,ray_angle, intx,inty);
+    if((cpa < 0) || (dist < cpa)) {
+      cpa = dist;
+      ix = intx;
+      iy = inty;
+    }
+  }
+  return(cpa);    
+}
+
+//---------------------------------------------------------------
+// Procedure: seglSeglDist
+//   Purpose: Determine the minimum distance from the given segment
+//            to the given seglist
+//      NOTE: This algorithm ASSUMES THE SEG AND SEGLIST DO NOT CROSS.
+//            It assumes a prior check has determined that the seg does
+//            not cross the seglist, and this is being used simply to
+//            determine how close the seg gets to the seglist at its
+//            closest vertex.
+//            By not doing a check for crossing, it is much faster.
+
+double segSeglDist(double x1, double y1, double x2, double y2,
+		   const XYSegList& segl, double& rx, double& ry)
+{
+  // Special case 1: empty seglist
+  if(segl.size() == 0) {
+    rx = 0;
+    ry = 0;
+    return(0);
+  }
+  
+  // Special case 2: seglist with one vertex
+  if(segl.size() == 1) {
+    double vx = segl.get_vx(0);
+    double vy = segl.get_vy(0);
+    perpSegIntPt(x1, y1, x2, y2, vx, vy, rx, ry);
+    return(distPointToSeg(x1, y1, x2, y2, vx, vy));
+  }
+
+  // General case of a seglist of at least two vertices
+  double cpa = -1;  
+  for(unsigned int i=0; i<segl.size()-1; i++) {
+    double x3 = segl.get_vx(i);
+    double y3 = segl.get_vy(i);
+    double x4 = segl.get_vx(i+1);
+    double y4 = segl.get_vy(i+1);
+    
+    double dist1 = distPointToSeg(x3, y3, x4, y4, x1, y1);
+    double dist2 = distPointToSeg(x3, y3, x4, y4, x2, y2);
+    if((cpa < 0) || (dist1 < cpa)) {
+      rx = x1;
+      ry = y1;
+      cpa = dist1;
+    }
+    if(dist2 < cpa) {
+      rx = x2;
+      ry = y2;
+      cpa = dist2;
+    }
+  }
+
+  // Part 2: check the distance all vertices in the seglist to
+  //         the line segment
+  for(unsigned int i=0; i<segl.size()-1; i++) {
+    double px = segl.get_vx(i);
+    double py = segl.get_vy(i);
+    
+    double dist = distPointToSeg(x1, y1, x2, y2, px, py);
+
+    if((cpa < 0) || (dist < cpa)) {
+      rx = px;
+      ry = py;
+      cpa = dist;
+    }
+  }
+
+  return(cpa);    
+}
+
+
+//---------------------------------------------------------------
+// Procedure: crossRaySeg()
+//   Purpose: Determines if the given ray and line segment cross, 
+//            and if so, calculates the point
+
+bool crossRaySeg(double rx, double ry, double ray_angle,
+		 double x1, double y1, double x2, double y2,
+		 double &ix, double& iy)
+{
+  ix = 0;
+  iy = 0;
+  
+  double kx, ky;
+  bool ray_crosses_line = lineRayCross(rx, ry, ray_angle,
+				       x1, y1, x2, y2, kx, ky);
+  if(!ray_crosses_line)
+    return(false);
+
+  double xmin = x1;
+  double xmax = x2;
+  if(x1 > x2) {
+    xmin = x2;
+    xmax = x1;
+  }
+  // If the seg is essentially vertical, assume the x component
+  // of the intersection point is on the segment.
+  if((xmax - xmin) > 0.000001) {
+    if((kx < xmin) || (kx > xmax))
+      return(false);
+  }
+    
+  double ymin = y1;
+  double ymax = y2;
+  if(y1 > y2) {
+    ymin = y2;
+    ymax = y1;
+  }
+  // If the seg is essentially horizontal, assume the y component
+  // of the intersection point is on the segment.
+  if((ymax - ymin) > 0.000001) {
+    if((ky < ymin) || (ky > ymax))
+      return(false);
+  }
+
+  ix = kx;
+  iy = ky;
+  return(true);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: lineCircleIntPts
+//   Purpose: Given a line and a circle, determine where the line
+//            intersects the circle. It will return the number of
+//            intersection points and fill in the return points if
+//            they exist.
+
+int lineCircleIntPts(double x1, double y1, double x2, double y2,
+		     double cx, double cy, double crad,
+		     double& rx1, double& ry1,
+		     double& rx2, double& ry2)
+{
+  // If a point is not defined, will still return 0,0
+  rx1 = 0;
+  ry1 = 0;
+  rx2 = 0;
+  ry2 = 0;
+
+  // Handle case if the given "line" is actually a point. ugh
+  if((x1==x2) && (y1==y2)) {
+    double pdist = hypot(cx-x1, cy-y1);
+    if(pdist == crad) {
+      rx1 = x1;
+      ry1 = y1;
+      return(1);
+    }
+    return(0);
+  }
+
+  double pix, piy;
+  perpLineIntPt(x1,y1, x2,y2, cx,cy, pix, piy);
+  //cout << "** PerpLineIntPt  pix=" << pix << ", piy=" << piy << endl;
+
+  double dist = hypot(cx-pix, cy-piy);
+  //cout << "   dist=" << dist << endl;
+  // Case 1: No intersection
+  if(dist > crad)
+    return(0);
+  
+  // Case 2: Tangent
+  if(dist == crad) {
+    rx1 = pix;
+    ry1 = piy;
+    return(1);
+  }
+
+  // Case 3: Line goes through center of circle
+  if(dist == 0) {
+    double line_ang1 = relAng(x1,y1, x1,y2);
+    double line_ang2 = line_ang1 + 180;
+    if(line_ang2 >= 360)
+      line_ang2 -= 360;
+    
+    projectPoint(line_ang1, crad, cx,cy, rx1,ry1);
+    projectPoint(line_ang2, crad, cx,cy, rx2,ry2);
+    return(2);
+  }
+
+  // Case 4: General intersection case 
+  double ang_to_perp_int = relAng(cx,cy, pix,piy);
+  double delta_ang = (acos(dist / crad)) / M_PI * 180;
+  double line_ang1 = ang_to_perp_int - delta_ang;
+  double line_ang2 = ang_to_perp_int + delta_ang;
+
+  //cout << " ) ang_to_per_int=" << ang_to_perp_int << endl;
+  //cout << " ) delta_ang=" << delta_ang << endl;
+  //cout << " ) line_ang1=" << line_ang1 << endl;
+  //cout << " ) line_ang2=" << line_ang2 << endl;
+
+  if(line_ang1 < 0)
+    line_ang1 += 360;
+  if(line_ang2 >= 360)
+    line_ang2 -= 360;
+  
+  projectPoint(line_ang1, crad, cx,cy, rx1,ry1);
+  projectPoint(line_ang2, crad, cx,cy, rx2,ry2);
+  return(2);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: segCircleIntPts
+//   Purpose: Given a line and a circle, determine where the line
+//            intersects the circle. It will return the number of
+//            intersection points and fill in the return points if
+//            they exist.
+
+int segCircleIntPts(double x1, double y1, double x2, double y2,
+		    double cx, double cy, double crad,
+		    double& rx1, double& ry1,
+		    double& rx2, double& ry2)
+{
+  // First determine whether or where the line, defined by the
+  // given segment, intersects the circle.
+  int cross_pts = lineCircleIntPts(x1,y1,x2,y2, cx,cy,crad,
+				   rx1,ry1,rx2,ry2);
+
+  //cout << "segCircleIntPts:" << endl;
+  //cout << "   cross_pts: " << cross_pts << endl;
+  //cout << "   rx1: " << rx1 << endl;
+  //cout << "   ry1: " << ry1 << endl;
+  //cout << "   rx2: " << rx2 << endl;
+  //cout << "   ry2: " << ry2 << endl;
+    
+  
+  if(cross_pts == 0)
+    return(0);
+
+  double xmin = x1;
+  double xmax = x2;
+  if(x1 > x2) {
+    xmin = x2;
+    xmax = x1;
+  }
+
+  double ymin = y1;
+  double ymax = y2;
+  if(y1 > y2) {
+    ymin = y2;
+    ymax = y1;
+  }
+
+  // If the y-range is ~zero (~horizontal line), then we do not
+  // check if the point lies on in the y-range. We rely on the
+  // the point-generating function in lineCircleIntPts to assure
+  // us that a point was generated on the ~horizontal line.
+  // Same in the case with a ~vertical line.
+  bool pt1_in_seg = true;
+  if((ymax-ymin) > 0.000001) {
+    if((ry1 < ymin) || (ry1 > ymax))
+      pt1_in_seg = false;
+  }
+  if((xmax-xmin) > 0.000001) {
+    if((rx1 < xmin) || (rx1 > xmax))
+      pt1_in_seg = false;
+  }
+  
+  if(cross_pts == 1) 
+    return(pt1_in_seg);
+
+  // By the above, we know we're dealing with TWO cross points
+
+  bool pt2_in_seg = true;
+  if((ymax-ymin) > 0.000001) {
+    if((ry2 < ymin) || (ry2 > ymax))
+      pt2_in_seg = false;
+  }
+  if((xmax-xmin) > 0.000001) {
+    if((rx2 < xmin) || (rx2 > xmax))
+      pt2_in_seg = false;
+  }
+
+  
+  if(pt1_in_seg && pt2_in_seg)
+    return(2);
+
+  if(pt1_in_seg && !pt2_in_seg) {
+    rx2 = 0;
+    ry2 = 0;
+    return(1);
+  }
+  
+  if(!pt1_in_seg && pt2_in_seg) {
+    rx1 = rx2;
+    ry1 = ry2;
+    rx2 = 0;
+    ry2 = 0;
+    return(1);
+  }
+
+  rx1 = 0;
+  ry1 = 0;
+  rx2 = 0;
+  ry2 = 0;
+  return(0);
+
+}
+
+//---------------------------------------------------------------
+// Procedure: distPointToLine
+
+double distPointToLine(double px, double py, double x1, double y1,
+		       double x2, double y2)
+{
+  double ix,iy;
+  perpLineIntPt(x1,y1,x2,y2,px,py,ix,iy);
+
+  return(hypot(px-ix, py-iy));
+}
+  
+
+//---------------------------------------------------------------
+// Procedure: distPointToSegl
+
+double distPointToSegl(double px, double py, const XYSegList& segl)
+{
+  if(segl.size() == 0)
+    return(-1);
+
+  if(segl.size() == 1) {
+    double vx = segl.get_vx(0);
+    double vy = segl.get_vy(0);
+    return(hypot(px-vx, py-vy));
+  }
+
+  double min_dist = -1;
+  for(unsigned int i=0; i<segl.size()-1; i++) {
+    double vx1 = segl.get_vx(i);
+    double vy1 = segl.get_vy(i);
+    double vx2 = segl.get_vx(i+1);
+    double vy2 = segl.get_vy(i+1);
+    double dist = distPointToSeg(vx1,vy1, vx2,vy2, px, py);
+    if((min_dist < 0) || (dist < min_dist))
+      min_dist = dist;
+  }
+  return(min_dist);
+}
+  

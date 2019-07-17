@@ -38,18 +38,19 @@ public:
   
   int  handle(int);
   void setAOF(AOF* aof)           
-    {m_ffv_viewer->setAOF(aof); m_ffv_viewer->modColorMap("default");}
+    {m_ffv_viewer->setAOF(aof);}
 
   bool setViewerParam(std::string, std::string);
   bool setViewerParam(std::string, double);
     
  protected:
   void augmentMenu();
+
+  void resize(int, int, int, int);
   void initWidgets();
   void resizeWidgetsShape();
   void resizeWidgetsText();
   void updateXY();
-  void resize(int, int, int, int);
   
  protected:
   FFV_Viewer  *m_ffv_viewer;
@@ -74,9 +75,6 @@ public:
   Fl_Output   *m_fld_refine_pce_str;
 
 private:
-  inline void cb_Script_i();
-  static void cb_Script(Fl_Widget*);
-
   inline void cb_ModBaseAOF_i(int);
   static void cb_ModBaseAOF(Fl_Widget*, int);
 
@@ -130,6 +128,9 @@ private:
 
   inline void cb_PrintParams_i();
   static void cb_PrintParams(Fl_Widget*);
+
+  inline void cb_ModPolar_i(int);
+  static void cb_ModPolar(Fl_Widget*, int);
 
 #if 0
   inline void cb_set_uniform_str_i();

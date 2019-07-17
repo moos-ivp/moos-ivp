@@ -77,6 +77,8 @@ XYCommsPulse stringStandard2CommsPulse(string str)
       new_pulse.set_duration(dval);
     else if((param == "fill") && isNumber(value))
       new_pulse.set_fill(dval);
+    else if(param == "ptype")
+      new_pulse.set_pulse_type(value);
     else
       new_pulse.set_param(param, value);
   }

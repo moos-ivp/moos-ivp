@@ -30,8 +30,10 @@
 #include "IvPFunction.h"
 #include "Regressor.h"
 #include "RT_Uniform.h"
+#include "RT_UniformX.h"
 #include "RT_Smart.h"
 #include "RT_Directed.h"
+#include "RT_Evaluator.h"
 #include "RT_AutoPeak.h"
 #include "MBUtils.h"
 
@@ -52,8 +54,10 @@ OF_Reflector::OF_Reflector(const AOF *g_aof, int g_degree)
     m_domain    = m_aof->getDomain();
 
   m_rt_uniform  = new RT_Uniform(m_regressor);
+  m_rt_uniformx = new RT_UniformX(m_regressor);
+  m_rt_directed = new RT_Directed;
+  m_rt_evaluator = new RT_Evaluator(m_regressor);
   m_rt_smart    = new RT_Smart(m_regressor);
-  m_rt_directed = new RT_Directed(m_regressor);
   m_rt_autopeak = new RT_AutoPeak(m_regressor);
   
   m_uniform_amount = 1;
@@ -62,6 +66,10 @@ OF_Reflector::OF_Reflector(const AOF *g_aof, int g_degree)
   m_smart_thresh   = 0;
   m_auto_peak      = false;
   m_qlevels        = 8;
+
+  m_pcheck_thresh  = 0.001;
+  
+  m_verbose = false;
 }
 
 //-------------------------------------------------------------
@@ -78,6 +86,7 @@ OF_Reflector::~OF_Reflector()
 
   delete(m_regressor);
   delete(m_rt_uniform);
+  delete(m_rt_uniformx);
   delete(m_rt_smart);
   delete(m_rt_directed);
   delete(m_rt_autopeak);
@@ -112,6 +121,92 @@ IvPFunction *OF_Reflector::extractOF(bool normalize)
 }
 
 //-------------------------------------------------------------
+// Procedure: checkPlateaus()
+//   Purpose: Will check all plateau pieces by generating a point
+//            box for each point in the piece, and evaluate that 
+//            point to ensure it evaluates to the max value of
+//            underlying function (aof).
+
+double OF_Reflector::checkPlateaus(bool verbose) const
+{
+  // Part 1: Sanity Checks
+  if(m_plateaus.size() == 0) 
+    return(0);
+  if(!m_aof || !m_aof->minMaxKnown())
+    return(1);
+
+  double maxval = m_aof->getKnownMax();
+
+  double worst_fail = 0;
+
+  // Part 2: Check all the point boxes for each plateau
+  for(unsigned int i=0; i<m_plateaus.size(); i++) {
+    vector<IvPBox> pboxes = getPointBoxes(m_plateaus[i]);
+    for(unsigned int j=0; j<pboxes.size(); j++) {
+      double pval = m_aof->evalBox(&pboxes[j]);
+      double delta = pval - maxval;
+      if(delta < 0)
+	delta *= -1;
+      if(delta > m_pcheck_thresh) {
+	if(delta > worst_fail)
+	  worst_fail = delta;
+	if(verbose) {
+	  pboxes[j].print();
+	  double pval = m_aof->evalBox(&pboxes[j]);
+	  cout << " --> max:" << maxval << ", ptval:" << pval << ", delta:"
+	       << delta << endl;
+	}
+      }
+    }
+  }
+  return(worst_fail);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: checkBasins()
+//   Purpose: Will check all basin pieces by generating a point
+//            box for each point in the piece, and evaluate that 
+//            point to ensure it evaluates to the MIN value of
+//            underlying function (aof).
+
+double OF_Reflector::checkBasins(bool verbose) const
+{
+  // Part 1: Sanity checks
+  if(m_basins.size() == 0) 
+    return(0);
+  if(!m_aof || !m_aof->minMaxKnown())
+    return(1);
+
+  double minval = m_aof->getKnownMax();
+
+  double worst_fail = 0;
+
+  // Part 2: Check all the point boxes for each basin
+  for(unsigned int i=0; i<m_basins.size(); i++) {
+    vector<IvPBox> pboxes = getPointBoxes(m_basins[i]);
+    for(unsigned int j=0; j<pboxes.size(); j++) {
+      double pval = m_aof->evalBox(&pboxes[j]);
+      double delta = pval - minval;
+      if(delta < 0)
+	delta *= -1;
+      if(delta > m_pcheck_thresh) {
+	if(delta > worst_fail)
+	  worst_fail = delta;
+	if(verbose) {
+	  pboxes[j].print();
+	  double pval = m_aof->evalBox(&pboxes[j]);
+	  cout << " --> min:" << minval << ", ptval:" << pval << ", delta:"
+	       << delta << endl;
+	}
+      }
+    }
+  }
+  return(worst_fail);
+}
+
+    
+//-------------------------------------------------------------
 // Procedure: clearPDMap()
 
 void OF_Reflector::clearPDMap()
@@ -129,10 +224,12 @@ void OF_Reflector::clearPDMap()
 
 int OF_Reflector::create(const string params)
 {
-  if(!setParam(params))
-    return(0);
-  else
-    return(create());
+  if(params != "") {
+    bool ok = setParam(params);
+    if(!ok)
+      return(0);
+  }
+  return(create());
 }
     
 //-------------------------------------------------------------
@@ -140,26 +237,39 @@ int OF_Reflector::create(const string params)
 
 bool OF_Reflector::setParam(string str)
 {
+  if(m_verbose) {
+    cout << "------------------------------------------------" << endl;
+    cout << "Beginning OF_Reflector::setParam(string)        " << endl;
+    cout << "param string: [" << str << "]" << endl;
+  }
+  
   bool ok = true;
   str = tolower(stripBlankEnds(str));
 
   vector<string> svector = parseString(str, '#');
-  int vsize = svector.size();
+  unsigned int vsize = svector.size();
 
-  if(vsize == 0) {
-    addWarning("setParam(string) Empty list of param/value pairs");
-    return(false);
-  }
-
-  for(int i=0; i<vsize; i++) {
+  if(vsize == 0)
+    return(addWarning("setParam(string) Empty list of param/value pairs"));
+  
+  for(unsigned int i=0; i<vsize; i++) {
+    if(m_verbose)
+      cout << "  Parameter line: [" << i << "]: " << svector[i] << endl;
     svector[i] = stripBlankEnds(svector[i]);
     vector<string> tvector = parseString(svector[i], '=');
     if(tvector.size() == 2) {
-      string param = tvector[0];
-      string value = tvector[1];
+      string param = stripBlankEnds(tvector[0]);
+      string value = stripBlankEnds(tvector[1]);
+
       ok = ok && setParam(param, value);
     }
   }
+
+  if(m_verbose) {
+    cout << "Total Refine Regions: " << m_refine_regions.size() << endl;
+    cout << "Total Refine Pieces:  " << m_refine_pieces.size() << endl;
+  }
+  
   return(ok);
 }
 
@@ -182,82 +292,58 @@ bool OF_Reflector::setParam(string str)
 
 bool OF_Reflector::setParam(string param, string value)
 {
+  if(m_verbose) {
+    cout << "-------------------------------------------------" << endl;
+    cout << "Beginning OF_Reflector::setParam(string, string) " << endl;
+    cout << "param: [" << param << "], value:" << value << endl;
+  }
+  
   param = tolower(stripBlankEnds(param));
   value = tolower(stripBlankEnds(value));
 
-  if(param == "strict_range") {
-    if((value != "true") && (value != "false")) {
-      addWarning("strict_range value must be true/false");
-      return(false);
-    }
+  int ival = atoi(value.c_str());
+
+  if((param == "strict_range") && isBoolean(value)) {
     if(m_regressor)
-      m_regressor->setStrictRange(value=="true");
+      m_regressor->setStrictRange(tolower(value) == "true");
   }
-  else if((param=="uniform_amount")||(param=="uniform_amt")) {
-    int uniform_amount = atoi(value.c_str());
-    if(!isNumber(value)) {
-      addWarning(param + " value must be numerical");
-      return(false);
-    }
-    if(!isNumber(value) || (uniform_amount < 1)) {
-      addWarning(param + " value must be >= 1");
-      return(false);
-    }
-    m_uniform_amount = uniform_amount;
+  else if((param=="uniform_amount") || (param=="uniform_amt")) {
+    if(!isNumber(value) || (ival < 1))  
+      return(addWarning(param + " value must be >= 1"));
+    m_uniform_amount = ival;
   }
-  else if(param=="queue_levels") {
-    int queue_levels = atoi(value.c_str());
-    if(!isNumber(value)) {
-      addWarning(param + " value must be numerical");
-      return(false);
-    }
-    if(!isNumber(value) || (queue_levels < 1)) {
-      addWarning(param + " value must be >= 1");
-      return(false);
-    }
-    m_qlevels = queue_levels;
+  else if((param=="queue_levels") && isNumber(value)) {
+    if(ival < 1)
+      return(addWarning(param + " value must be >= 1"));
+    m_qlevels = ival;
   }
   else if((param=="uniform_piece")||(param=="uniform_box")) {
     IvPBox foo = stringToPointBox(value, m_domain, ',', ':');
     m_uniform_piece = foo;
-    if(m_uniform_piece.null()) {
-      addWarning(param + " value is ill-defined");
-      return(false);
-    }
+    if(m_uniform_piece.null()) 
+      return(addWarning(param + " value is ill-defined"));
   }
   else if(param=="uniform_grid") {
     m_uniform_grid = stringToPointBox(value, m_domain, ',', ':');
-    if(m_uniform_grid.null()) {
-      addWarning(param + " value is ill-defined");
-      return(false);
-    }
+    if(m_uniform_grid.null()) 
+      return(addWarning(param + " value is ill-defined"));
   }
-  else if((param=="refine_region")||(param=="focus_region")) {
-    if(m_refine_regions.size() != m_refine_pieces.size()) {
-      addWarning(param + " and refine_piece must be added in pairs");
-      return(false);
-    }
+  else if(param=="plateau_region") {
+    IvPBox plateau_region = stringToRegionBox(value, m_domain, ',', ':');
+    return(setParam("plateau_region", plateau_region));
+  }
+  else if(param=="basin_region") {
+    IvPBox basin_region = stringToRegionBox(value, m_domain, ',', ':');
+    return(setParam("basin_region", basin_region));
+  }
+  else if((param=="refine_region") || (param=="focus_region")) {
     IvPBox refine_region = stringToRegionBox(value, m_domain, ',', ':');
-    if(refine_region.null()) {
-      //cout << "Bad Region Box" << endl;
-      addWarning(param + " value is ill-defined");
-      return(false);
-    }
-    else
-      m_refine_regions.push_back(refine_region);
+    return(setParam("refine_region", refine_region));
   }
-  else if((param=="refine_piece")||(param=="focus_box")) {
-    if((m_refine_regions.size() - m_refine_pieces.size()) != 1) {
-      addWarning(param + " and refine_region must be added in pairs");
-      return(false);
-    }
+  else if((param=="refine_piece") || (param=="focus_box")) {
+    //IvPBox refine_piece = stringToRegionBox(value, m_domain, ',', ':');
     IvPBox refine_piece = stringToPointBox(value, m_domain, ',', ':');
-    if(refine_piece.null()) {
-      m_refine_regions.pop_back();
-      addWarning(param + " value is ill-defined");
-      return(false);
-    }
-    m_refine_pieces.push_back(refine_piece);
+    return(setParam("refine_piece", refine_piece));
   }
   else if(param == "refine_clear") {
     m_refine_regions.clear();
@@ -265,72 +351,39 @@ bool OF_Reflector::setParam(string param, string value)
   }
   else if(param == "refine_point") {
     IvPBox refine_point = stringToPointBox(value, m_domain, ',', ':');
-    if(refine_point.null() || !refine_point.isPtBox()) {
-      addWarning(param + " value is ill-defined");
-      return(false);
-    }
+    if(refine_point.null() || !refine_point.isPtBox())
+      return(addWarning(param + " value is ill-defined"));
     m_refine_points.push_back(refine_point);
   }
-  else if((param=="smart_amount")||(param=="priority_amt")) {
-    int smart_amount = atoi(value.c_str());
-    if(!isNumber(value)) {
-      addWarning(param + " value must be numerical");
-      return(false);
-    }
-    if(smart_amount < 0) {
-      addWarning(param + " value must be >= 0");
-      return(false);
-    }
-    m_smart_amount = smart_amount;
+  else if((param=="smart_amount") && isNumber(value)) {
+    if(ival < 0) 
+      return(addWarning(param + " value must be >= 0"));
+    m_smart_amount = ival;
   }
-  else if(param == "smart_percent") {
-    int smart_percent = atoi(value.c_str());
-    if(!isNumber(value)) {
-      addWarning("smart_percent value must be numerical");
-      return(false);
-    }
-    if(smart_percent < 0) {
-      addWarning("smart_percent value must be >= 0");
-      return(false);
-    }
-    m_smart_percent = smart_percent;
+  else if((param == "smart_percent") && isNumber(value)) {
+    if(ival < 0) 
+      return(addWarning("smart_percent value must be >= 0"));
+    m_smart_percent = ival;
   }
-  else if((param=="smart_thresh")||(param=="priority_thresh")) {
+  else if((param=="smart_thresh") && isNumber(value)) {
     double smart_thresh = atof(value.c_str());
-    if(!isNumber(value)) {
-      addWarning(param + " value must be numerical");
-      return(false);
-    }
-    if(smart_thresh < 0) {
-      addWarning(param + " value must be >= 0");
-      return(false);
-    }
+    if(smart_thresh < 0) 
+      return(addWarning(param + " value must be >= 0"));
     m_smart_thresh = smart_thresh;
   }
   else if(param == "auto_peak") {
-    if((value != "true") && (value != "false")) {
-      addWarning("auto_peak value must be true/false");
-      return(false);
-    }
+    if((value != "true") && (value != "false")) 
+      return(addWarning("auto_peak value must be true/false"));
     m_auto_peak = (value == "true");
   }
-  else if(param == "auto_peak_max_pcs") {
-    if(!isNumber(value)) {
-      addWarning("auto_peak_max_pcs value must be numerical");
-      return(false);
-    }
-    int auto_peak_max_pcs = atoi(value.c_str());
-    if(auto_peak_max_pcs <= 0) {
-      addWarning("auto_peak_max_pcs value must be > 0");
-      return(false);
-    }
-    m_auto_peak_max_pcs = auto_peak_max_pcs;
+  else if((param == "auto_peak_max_pcs") && isNumber(value)) {
+    if(ival <= 0) 
+      return(addWarning("auto_peak_max_pcs value must be > 0"));
+    m_auto_peak_max_pcs = ival;
   }
-  else {
-    addWarning(param + ": undefined parameter");
-    return(false);
-  }
-  
+  else 
+    return(addWarning(param + ": unhandled parameter"));
+
   return(true);
 }
 
@@ -339,40 +392,41 @@ bool OF_Reflector::setParam(string param, string value)
 
 bool OF_Reflector::setParam(string param, double value)
 {
+  if(m_verbose) {
+    cout << "---------------------------------------------------" << endl;
+    cout << "Beginning OF_Reflector::setParam(string, double)   " << endl;
+    cout << "param: [" << param << "], value:" << value << endl;
+  }
+  
   param = tolower(stripBlankEnds(param));
   
-  if((param=="uniform_amount")||(param=="uniform_amt")) {
-    if(value < 1) {
-      addWarning(param + " value must be >= 1");
-      return(false);
-    }
+  if((param=="uniform_amount") || (param=="uniform_amt")) {
+    if(value < 1) 
+      return(addWarning(param + " value must be >= 1"));
     m_uniform_amount = (int)(value);
   }
-  else if((param=="smart_amount")||(param=="priority_amt")) {
-    if(value < 0) {
-      addWarning(param + " value must be >= 0");
-      return(false);
-    }
+  else if((param=="smart_amount") || (param=="priority_amt")) {
+    if(value < 0) 
+      return(addWarning(param + " value must be >= 0"));
     m_smart_amount = (int)(value);
   }
   else if(param == "smart_percent") {
-    if(value < 0) {
-      addWarning(param + " value must be >= 0");
-      return(false);
-    }
+    if(value < 0) 
+      return(addWarning(param + " value must be >= 0"));
     m_smart_percent = (int)(value);
   }
   else if(param=="smart_thresh") {
-    if(value < 0) {
-      addWarning(param + " value must be >= 0");
-      return(false);
-    }
+    if(value < 0) 
+      return(addWarning(param + " value must be >= 0"));
     m_smart_thresh = value;
   }
-  else {
-    addWarning(param + ": undefined parameter");
-    return(false);
+  else if(param=="pcheck_thresh") {
+    if((value < 0) || (value > 1)) 
+      return(addWarning(param + " value must be in range [0,1]"));
+    m_pcheck_thresh = value;
   }
+  else 
+    return(addWarning(param + ": undefined parameter"));
   
   return(true);
 }
@@ -395,59 +449,63 @@ bool OF_Reflector::setParam(string param, double value)
 
 bool OF_Reflector::setParam(string param, IvPBox gbox)
 {
+  if(m_verbose) {
+    cout << "-------------------------------------------------" << endl;
+    cout << "Beginning OF_Reflector::setParam(string, IvPBox) " << endl;
+    cout << "param: [" << param << endl;
+    cout << "Box :" << endl;
+    gbox.print();
+  }
+
   param = tolower(stripBlankEnds(param));
 
   if((param=="uniform_piece")||(param=="uniform_box")) {
     m_uniform_piece = gbox;
-    if(m_uniform_piece.null()) {
-      addWarning(param + " box value is ill-defined");
-      return(false);
-    }
+    if(m_uniform_piece.null()) 
+      return(addWarning(param + " box value is ill-defined"));
   }
   else if(param=="uniform_grid") {
     m_uniform_grid = gbox;
-    if(m_uniform_grid.null()) {
-      addWarning(param + " box value is ill-defined");
-      return(false);
-    }
+    if(m_uniform_grid.null())
+      return(addWarning(param + " box value is ill-defined"));
   }
-  else if((param=="refine_region")||(param=="focus_region")) {
-    if(m_refine_regions.size() != m_refine_pieces.size()) {
-      addWarning(param + " and refine_piece must be added in pairs");
-      return(false);
+  else if(param=="plateau_region") {
+    if(gbox.null()) 
+      return(addWarning(param + " plateau_region value ill-defined"));
+    m_plateaus.push_back(gbox);
+  }
+  else if(param=="basin_region") {
+    if(gbox.null()) 
+      return(addWarning(param + " basin_region value ill-defined"));
+    m_basins.push_back(gbox);
+  }
+  else if((param=="refine_region") || (param=="focus_region")) {
+    // Num refine regions must be equal or one less than num refine pieces
+    if((m_refine_regions.size() != m_refine_pieces.size()) &&
+       ((m_refine_regions.size() + 1) != m_refine_pieces.size())) {
+      return(addWarning(param + " and refine_piece must be added in pairs"));
     }
-    if(gbox.null()) {
-      addWarning(param + " box value is ill-defined");
-      return(false);
-    }
-    else
-      m_refine_regions.push_back(gbox);
+    if(gbox.null()) 
+      return(addWarning(param + " refine_region box value is ill-defined"));
+    m_refine_regions.push_back(gbox);
   }
   else if((param=="refine_piece")||(param=="focus_box")) {
-    if((m_refine_regions.size() - m_refine_pieces.size()) != 1) {
-      addWarning(param + " and refine_region must be added in pairs");
-      return(false);
-    }
-
-    if(gbox.null()) {
-      m_refine_regions.pop_back();
-      addWarning(param + " box value is ill-defined");
-      return(false);
-    }
+    // Num refine piecess must be equal or one less than num refine regions
+    if((m_refine_regions.size() != m_refine_pieces.size()) &&
+       ((m_refine_pieces.size() + 1) != m_refine_regions.size()))
+      return(addWarning(param + " and refine_region must be added in pairs"));
+    if(gbox.null())
+      return(addWarning(param + " refine_piece box value is null/ill-defined"));
     m_refine_pieces.push_back(gbox);
   }
   else if(param == "refine_point") {
     IvPBox refine_point = gbox;
-    if(refine_point.null() || !refine_point.isPtBox()) {
-      addWarning(param + " box value is ill-defined");
-      return(false);
-    }
+    if(refine_point.null() || !refine_point.isPtBox()) 
+      return(addWarning(param + " box value is ill-defined"));
     m_refine_points.push_back(refine_point);
   }
-  else {
-    addWarning(param + ": undefined parameter");
-    return(false);
-  }
+  else 
+    return(addWarning(param + ": undefined parameter"));
 
   return(true);
 }
@@ -457,10 +515,13 @@ bool OF_Reflector::setParam(string param, IvPBox gbox)
 
 int OF_Reflector::create(int unif_amt, int smart_amt, double smart_thresh)
 {
+  if(m_verbose) 
+    cout << "========== Begin OF_Reflector::create() ==============" << endl;
+    
   clearPDMap();
   if(!m_aof)
     return(0);
-  
+
   if(unif_amt >= 0)
     m_uniform_amount = unif_amt;
   if(smart_amt >= 0)
@@ -471,110 +532,101 @@ int OF_Reflector::create(int unif_amt, int smart_amt, double smart_thresh)
   // =============  Stage 1 - Uniform Pieces ======================
   // Make the initial uniform function based on the specified piece.
   // If no piece specified, base it on specified amount, default=1.
-  int qlevels = 0;
-  if((m_smart_amount > 0) || (m_smart_percent > 0))
-    qlevels = m_qlevels;
-  
-  PQueue pqueue(qlevels);
-  m_pqueue = pqueue;
-  
-  // Make a local copy of the uniform piece member variable
-  IvPBox uniform_piece = m_uniform_piece;
   
   if(m_uniform_piece.null())
-    uniform_piece = genUnifBox(m_domain, m_uniform_amount);
+    m_uniform_piece = genUnifBox(m_domain, m_uniform_amount);
+  if(m_uniform_grid.null())
+    m_uniform_grid = m_uniform_piece;
 
-  // Now check that our local copy, however made, is not null
-
-
-  if(!uniform_piece.null() && !m_uniform_grid.null())
-    m_pdmap = m_rt_uniform->create(&uniform_piece, &m_uniform_grid, m_pqueue);
-  else if(!uniform_piece.null())
-    m_pdmap = m_rt_uniform->create(&uniform_piece, 0, m_pqueue);
-  
-  m_uniform_piece_str = "count:";
-
-  if(m_pdmap) 
-    m_uniform_piece_str += intToString(m_pdmap->size());
-  else
-    m_uniform_piece_str += "0";
-  
-  if((int)(m_domain.size()) == uniform_piece.getDim()) {
-    unsigned int dsize = m_domain.size();
-    for(unsigned int i=0; i<dsize; i++) {
-      int len = uniform_piece.pt(i,1) + 1;
-      m_uniform_piece_str += ", ";
-      m_uniform_piece_str += (m_domain.getVarName(i) + ":");
-      m_uniform_piece_str += intToString(len);
-    }
-  }
-
+  if(m_verbose)
+    m_rt_uniformx->setVerbose();
+  m_rt_uniformx->setPlateaus(m_plateaus);
+  m_pdmap = m_rt_uniformx->create(m_uniform_piece, m_uniform_grid);
 
   if(!m_pdmap)  // This should never happen, but check anyway.
     return(0);
 
   // =============  Stage 2 - Directed Refinement ================
-  
-  int pcs_before_dref = m_pdmap->size();
-  
-  int i; 
+
   int reg_size = m_refine_regions.size();
   int pce_size = m_refine_pieces.size();
+
+  if(m_verbose) {
+    cout << "Stage2: DR: reg_size: " << reg_size << endl;
+    cout << "Stage2: DR: pce_size: " << pce_size << endl;
+  }
+
   if(reg_size > pce_size)
     reg_size = pce_size;
-  for(i=0; i<reg_size; i++) {
+  for(int i=0; i<reg_size; i++) {
     IvPBox region = m_refine_regions[i];
     IvPBox resbox = m_refine_pieces[i];
-    PDMap *new_pdmap = m_rt_directed->create(m_pdmap, region, 
-					     resbox, m_pqueue);
+    PDMap *new_pdmap = m_rt_directed->create(m_pdmap, region, resbox);
     if(new_pdmap != 0)
       m_pdmap = new_pdmap;
   }
   
-  int pcs_after_dref = m_pdmap->size();
-  int pcs_made_dref = pcs_after_dref - pcs_before_dref;
-
-  m_uniform_piece_str += ", dref_pcs:";
-  m_uniform_piece_str += (intToString(pcs_made_dref) + ", ");
-
   if(!m_pdmap)  // This should never happen, but check anyway.
     return(0);
 
-  // =============  Stage 3 - Smart Refinement ================
+  // =============  Stage 3 - Evaluation ================
 
-  int pcs_before_sref = m_pdmap->size();
+  int qlevels = 0;
+  if((m_smart_amount > 0) || (m_smart_percent > 0))
+    qlevels = m_qlevels;
+
+  if(m_verbose) {
+    cout << "Smart amount: " << m_smart_amount << endl; 
+    cout << "Smart percent: " << m_smart_percent << endl; 
+  }
+  
+  PQueue pqueue(qlevels);
+  m_pqueue = pqueue;
+
+  m_rt_evaluator->evaluate(m_pdmap, m_pqueue);  
+  
+  // =============  Stage 4 - Smart Refinement ================
+
+  if(m_verbose) {
+    cout << "m_pqueue.null(): " << m_pqueue.null() << endl;
+  }
   
   if(!m_pqueue.null()) {
     if((m_smart_amount > 0) || (m_smart_percent > 0)) {
       int  psize   = m_pdmap->size();
+
       int  use_amt = m_smart_amount;
       int  pct_amt = (psize * m_smart_percent) / 100;
       if(pct_amt > m_smart_amount)
 	use_amt = pct_amt;    
+
+      if(m_verbose) {
+	cout << "Amt prior to smart stage: " << psize << endl;
+	cout << "Use Amount: " << use_amt << endl;
+      }
+	
       PDMap *new_pdmap = m_rt_smart->create(m_pdmap, m_pqueue, use_amt, 
 					    m_smart_thresh);
+
       if(new_pdmap != 0)
 	m_pdmap = new_pdmap;
     }
   }
 
-  int pcs_after_sref = m_pdmap->size();
-  int pcs_made_sref = pcs_after_sref - pcs_before_sref;
-
-  m_uniform_piece_str += ", sref_pcs:";
-  m_uniform_piece_str += (intToString(pcs_made_sref));
-  
   if(!m_pdmap)  // This should never happen, but check anyway.
     return(0);
 
   // =============  Stage 4 - AutoPeak Refinement ================
 
-  //cout << "In OF_Reflector::autopeak " << endl;
   if(m_auto_peak) {
-    //cout << "  - performing autopeak " << endl;
     PDMap *new_pdmap = m_rt_autopeak->create(m_pdmap);
     if(new_pdmap != 0) 
       m_pdmap = new_pdmap;
+  }
+
+  if(m_verbose) {
+    cout << "Total SetWts: " << m_regressor->getTotalSetWts() << endl;
+    cout << "Total Evals:  " << m_regressor->getTotalEvals() << endl;
   }
   
   if(m_pdmap)
@@ -587,11 +639,13 @@ int OF_Reflector::create(int unif_amt, int smart_amt, double smart_thresh)
 //-------------------------------------------------------------
 // Procedure: addWarning
 
-void OF_Reflector::addWarning(string new_warning)
+bool OF_Reflector::addWarning(string new_warning)
 {
   if(m_warnings != "")
     m_warnings += " # ";
   m_warnings += new_warning;
+
+  return(false);
 }
 
 //-------------------------------------------------------------
@@ -614,6 +668,46 @@ unsigned int OF_Reflector::getMessageCnt() const
   return(0);
 }
 
+//-------------------------------------------------------------
+// Procedure: getTotalEvals()
+
+unsigned int OF_Reflector::getTotalEvals() const
+{
+  if(m_regressor)
+    return(m_regressor->getTotalEvals());
+  return(0);
+}
 
 
+//-------------------------------------------------------------
+// Procedure: makeUniform()
+
+void OF_Reflector::makeUniform()
+{
+  IvPDomain domain = m_regressor->getAOF()->getDomain();
+
+  IvPBox universe = domainToBox(domain);
+
+  int degree = m_regressor->getDegree();
+  
+  BoxSet *boxset = makeUniformDistro(universe, m_uniform_piece, degree);
+  int vsize = boxset->size();
+  if(vsize == 0)
+    return;
+  
+  m_pdmap = new PDMap(vsize, domain, degree);
+  BoxSetNode *bsn = boxset->retBSN(FIRST);
+  int index = 0;
+  while(bsn) {
+    m_pdmap->bx(index) = bsn->getBox();
+    index++;
+    bsn = bsn->getNext();
+  }
+  delete(boxset);
+
+  m_pdmap->setGelBox(m_uniform_grid);
+
+  // Do later, after directed refinement done?
+  // pdmap->updateGrid(1,1);
+}
 

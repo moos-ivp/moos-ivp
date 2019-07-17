@@ -1,0 +1,8 @@
+cmd=testIncIntString
+str=foo23       amt=1  keep=true  # new_str=foo24
+str=foo23bar    amt=3  keep=true  # new_str=foo26
+str=foo23bar34  amt=1  keep=true  # new_str=foo2335
+
+
+str=foo23bar34  amt=1  keep=false  # new_str=2335
+str=alpha88     amt=11 keep=false  # new_str=99

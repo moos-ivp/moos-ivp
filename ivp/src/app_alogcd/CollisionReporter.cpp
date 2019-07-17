@@ -113,14 +113,16 @@ bool CollisionReporter::handle()
     string var = getVarName(line_raw);
     if((var!="ENCOUNTER") && (var!="NEAR_MISS") && (var!="COLLISION") &&
        (var!="ENCOUNTER_SUMMARY")) 
-      continue;
+     continue;
 	
     string val = getDataEntry(line_raw);
     double cpa = atof(val.c_str());
     
     if(time_file_ptr && ((var=="NEAR_MISS") || (var=="COLLISION"))) {
       string time = getTimeStamp(line_raw);
-      fprintf(time_file_ptr, "%s\n", time.c_str());
+      string cpa_str = doubleToString(cpa,2);
+      fprintf(time_file_ptr, "%s,%s,%s\n", time.c_str(),
+	      var.c_str(), cpa_str.c_str());
     }
     
     if((var == "ENCOUNTER") || (var == "ENCOUNTER_SUMMARY")) {
@@ -139,8 +141,10 @@ bool CollisionReporter::handle()
     }
   }
   if(!m_terse) {
-    cout << endl << uintToCommaString(line_count) << " lines total." << endl;
-    cout << "tstamp_file: " << m_time_stamp_file << endl;
+    string line_count_str = uintToCommaString(line_count);
+    cout << endl << line_count_str << " total alog file lines." << endl;
+    if(m_time_stamp_file != "")
+      cout << "tstamp_file: " << m_time_stamp_file << endl;
   }
   
   if(alog_file_ptr)
@@ -177,7 +181,7 @@ void CollisionReporter::printReport()
     return;
   }
   
-  cout << endl << endl;
+  cout << endl;
   cout << "=========================================" << endl;
   cout << "Collision Report:                        " << endl;
   cout << "=========================================" << endl;
@@ -186,7 +190,7 @@ void CollisionReporter::printReport()
   cout << "Collisions:  " << m_collisions  << "  (avg " << cavg << " m)" << endl;
 
   if(m_collisions > 0)
-    cout << "Collision Worst: " << m_collision_worst << "m" << endl;
+    cout << "Collision Worst: " << doubleToString(m_collision_worst,2) << endl;
 }
 
 

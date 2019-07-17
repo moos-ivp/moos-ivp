@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: main_mviewer.cpp                                     */
+/*    FILE: main.cpp                                             */
 /*    DATE: November, 2004                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */

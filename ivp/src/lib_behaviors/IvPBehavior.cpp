@@ -187,6 +187,15 @@ bool IvPBehavior::setParam(string g_param, string g_val)
       return(true);
     }
   }
+  else if(g_param == "spawnflag") {
+    string var = biteStringX(g_val, '=');
+    string val = g_val;
+    if(strContainsWhite(var) || (val == ""))
+      return(false);
+    VarDataPair pair(var, val, "auto");
+    m_spawn_flags.push_back(pair);
+    return(true);
+  }
   else if(g_param == "runflag") {
     string var = biteStringX(g_val, '=');
     string val = g_val;
@@ -417,6 +426,7 @@ void IvPBehavior::postMessage(string var, double ddata, string key)
   }
   m_messages.push_back(pair);
 }
+
 
 //-----------------------------------------------------------
 // Procedure: postBoolMessage
@@ -971,8 +981,9 @@ void IvPBehavior::postFlags(const string& str, bool repeatable)
     flags = m_active_flags;
   else if(str == "inactiveflags")
     flags = m_inactive_flags;
+  else if(str == "spawnflags")
+    flags = m_spawn_flags;
   
-
   // The endflags are treated as a special case in that they are 
   // posted as "repeatable" - that is they will be posted to the 
   // MOOSDB regardless of whether the "outgoing" cache of postings
@@ -1192,10 +1203,3 @@ vector<string> IvPBehavior::getStateSpaceVars()
   
   return(rvector);
 }
-
-
-
-
-
-
-

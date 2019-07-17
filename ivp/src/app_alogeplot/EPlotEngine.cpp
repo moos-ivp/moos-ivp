@@ -42,10 +42,14 @@ EPlotEngine::EPlotEngine()
   m_point_size  = "0.1";
   m_point_color = "darkblue";
 
-  setPlotWidCM("30");
-  setPlotHgtCM("20");
-  setGridWidCM("30");
-  setGridHgtCM("20");
+  setPlotWidCM("15");
+  setPlotHgtCM("10");
+  setGridWidCM("15");
+  setGridHgtCM("10");
+  //setPlotWidCM("30");
+  //setPlotHgtCM("20");
+  //setGridWidCM("30");
+  //setGridHgtCM("20");
 }
 
 //--------------------------------------------------------

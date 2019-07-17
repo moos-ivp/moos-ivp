@@ -8,5 +8,5 @@ ProcessConfig = pDeadManPost
   max_noheart     = 15
   post_policy     = reset
   active_at_start = false
-  deadflag        = STATION_KEEP = true
+  deadflag        = DEPLOY = false
  }

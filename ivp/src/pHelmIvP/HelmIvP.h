@@ -54,6 +54,7 @@ public:
   bool handleConfigSkewAny(const std::string&);
   bool handleConfigStandBy(const std::string&);
   bool handleConfigDomain(const std::string&);
+  bool handleConfigHoldOnApp(std::string);
   
  protected:
   bool handleHeartBeat(const std::string&);
@@ -73,7 +74,8 @@ public:
   void registerNewVariables();
   void requestBehaviorLogging();
   void checkForTakeOver();
-
+  void checkHoldOnApps(std::string);
+  
   bool detectChangeOnKey(const std::string& key, 
 			 const std::string& sval);
   bool detectChangeOnKey(const std::string& key, 
@@ -174,9 +176,7 @@ protected:
   std::map<std::string, double>       m_outgoing_dval;
   std::map<std::string, unsigned int> m_outgoing_iter;
   std::map<std::string, std::string>  m_outgoing_bhv;
-  
   std::map<std::string, double>       m_outgoing_repinterval;
-  
   std::map<std::string, double>       m_var_reg_time;
   
   // A flag maintained on each iteration indicating whether the 
@@ -185,6 +185,12 @@ protected:
 
   // A mapping of vehicle node_report skews  VEHICLE_NAME --> SKEW
   std::map<std::string, double>  m_node_skews;
+
+  // Set of apps that ALL must be present before posting start posts
+  std::vector<std::string> m_hold_on_app_name;
+  std::vector<bool>        m_hold_on_app_seen;
+  bool                     m_hold_apps_all_seen;
+  bool                     m_helm_start_posted;
 };
 #endif 
 

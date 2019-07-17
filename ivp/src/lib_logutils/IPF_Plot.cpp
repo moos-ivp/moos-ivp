@@ -265,15 +265,12 @@ unsigned int IPF_Plot::getIndexByTime(double timestamp) const
 
 int IPF_Plot::getIndexByHelmIter(unsigned int iter) const
 {
-  cout << "IPF_Plot::getIndexByHelmIter(): iter:" << iter << endl;
   int vsize = m_helm_iteration.size();
 
   // Special case: if the query iter is outside the IPF_Plot 
   // iter range, then return -1;
-  cout << "m_helm_iteration[0]:" << m_helm_iteration[0] << endl;
   if(iter < m_helm_iteration[0])
     return(-1);
-  cout << "m_helm_iteration[vsize-1]:" << m_helm_iteration[vsize-1] << endl;
   if(iter > m_helm_iteration[vsize-1])
     return(-1);
   

@@ -203,6 +203,8 @@ IvPFunction *BHV_Trail::onRunState()
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
   double relevance = getRelevance();
+
+  postRepeatableMessage("TRAIL_RELEVANCE", relevance);		       
   
   m_cnh =angle360(m_cnh);  
 

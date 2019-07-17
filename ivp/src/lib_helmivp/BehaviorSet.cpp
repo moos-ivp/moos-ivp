@@ -326,14 +326,31 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
 
     specs_valid = specs_valid && valid;
   }
+
+  //cout << "========================================" << endl;
+  //cout << "buildBehaviorFromSpec()                 " << endl;
+  //cout << bhv->getDescriptor() << endl;
+  //cout << "========================================" << endl;
+  
   if(specs_valid) {
+    //cout << "========================================" << endl;
+    //cout << "buildBehaviorFromSpec()   (2)           " << endl;
+    //cout << bhv->getDescriptor() << endl;
+    //cout << "========================================" << endl;
+
     sbuild.setIvPBehavior(bhv);
-    // Added Oct 1313 mikerb - allow template behaviors to make an initial
-    // posting on helm startup, even if no instance made on startup (or ever).
-    if(on_startup)
+    // Added Oct 1313 mikerb - allow template behaviors to make an
+    // initial posting on helm startup, even if no instance made on
+    // startup (or ever).
+    if(on_startup) {
+      cout << "========================================" << endl;
+      cout << "buildBehaviorFromSpec()   (3)           " << endl;
+      cout << bhv->getDescriptor() << endl;
+      cout << "========================================" << endl;
       bhv->onHelmStart();
-    // The behavior may now have some messages (var-data pairs) ready for 
-    // retrieval
+    }
+    // The behavior may now have some messages (var-data pairs) ready
+    // for retrieval
   }
   else {
     delete(bhv);
@@ -382,7 +399,9 @@ bool BehaviorSet::handlePossibleSpawnings()
 	  // Called here now since it was just spawned and could not have
 	  // been called previously. 07/18/12 mikerb
 	  bhv->onSetParamComplete(); 
-	  addBehavior(bhv);
+	  bhv->onSpawn();
+	  bhv->postFlags("spawnflags", true);
+	  addBehavior(bhv); 
 	  life_event.setEventType("spawn");
 	  m_behavior_specs[i].spawnMade();
 	}
@@ -476,9 +495,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   if(ix >= m_bhv_entry.size())
     return(0);
   
-  // =========================================================================
-  // Part 1: Prepare and update the behavior, determine its new activity state
-  // =========================================================================
+  // ===================================================================
+  // Part 1: Prepare and update behavior, determine its new activity state
+  // ===================================================================
   IvPFunction *ipf = 0;
   IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
 
@@ -493,19 +512,22 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   vector<string> update_results = bhv->getUpdateResults();
   for(unsigned int i=0; i<update_results.size(); i++)
     m_update_results.push_back(update_results[i]);
-    
+
+
+  bhv->setHelmIteration(iteration);
   // Check if the behavior duration is to be reset
   bhv->checkForDurationReset();
   
   // Possible vals: "completed", "idle", "running"
   new_activity_state = bhv->isRunnable();
   
-  // =========================================================================
-  // Part 2: With new_activity_state set, act appropriately for each behavior.
-  // =========================================================================
-  // Part 2A: Handle completed behaviors (marked as comleted at the start of
-  // this iteration. Behaviors that become complete in this iteration are
-  // handled below, after executing onIdleState, onRunState() etc.
+  // ===================================================================
+  // Part 2: With new_activity_state set, act appropriately for
+  //         each behavior.
+  // ===================================================================
+  // Part 2A: Handle completed behaviors (marked as comleted at the start
+  // of this iteration. Behaviors that become complete in this iteration 
+  // are handled below, after executing onIdleState, onRunState() etc.
   if(new_activity_state == "completed")
     bhv->onCompleteState();
   
@@ -1030,7 +1052,32 @@ void BehaviorSet::print()
   }
 }
 
+//------------------------------------------------------------
+// Procedure: size()
 
+unsigned long int BehaviorSet::size() const
+{
+  unsigned long int amt = m_bhv_entry.size();
 
+  amt += m_bhv_names.size();
+  amt += m_initial_vars.size();
 
+  amt += m_initial_vars.size();
+  amt += m_default_vars.size();
+  amt += m_helm_start_msgs.size();
 
+  amt += m_prev_info_vars.size();
+  amt += m_state_space_vars.size();
+
+  amt += m_warnings.size();
+
+  amt += m_behavior_specs.size();
+
+  amt += m_life_events.size();
+
+  amt += m_update_results.size();
+
+  amt += m_map_update_vars.size();
+
+  return(amt);
+}

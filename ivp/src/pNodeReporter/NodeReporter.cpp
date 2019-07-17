@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <unistd.h>
 #include <list>
 #include <iterator>
 #include <algorithm>
@@ -275,6 +276,8 @@ bool NodeReporter::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
+  Notify("PNODEREPORTER_PID", getpid());
+    
   // m_host_community set in superclass OnStartUp()
   m_vessel_name = m_host_community;
 
@@ -829,8 +832,3 @@ bool NodeReporter::buildReport()
 
   return(true);
 }
-
-
-
-
-

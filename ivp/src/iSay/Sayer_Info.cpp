@@ -97,6 +97,8 @@ void showExampleConfigAndExit()
   blk("  default_rate       = 200                                      ");
   blk("  interval_policy    = from_end   // or from_start              ");
   blk("  min_utter_interval = 1                                        ");
+  blk("                                                                ");
+  blk("  os_mode            = linux      // Default is \"osx\"         ");
   blk("}                                                               ");
   exit(0);
 }

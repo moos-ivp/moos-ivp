@@ -10,8 +10,8 @@ ProcessConfig = pBasicContactMgr
 
   alert_verbose = true
 
-  contact_max_age = 3600
-  display_radii   = true
+  contact_max_age = 35
+  display_radii   = false
   //default_alert_region    = pts={60,10:60,-100:170,-100:170,10}
 
   default_alert_range = 50

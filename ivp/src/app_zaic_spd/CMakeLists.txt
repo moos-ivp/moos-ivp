@@ -26,8 +26,6 @@ TARGET_LINK_LIBRARIES(zaic_spd
   zaicview
   ivpbuild
   mbutil
-  ivpcore
-  ivpsolve
   fltk 
   fltk_gl
   dl

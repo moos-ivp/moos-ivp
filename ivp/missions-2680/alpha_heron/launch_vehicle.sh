@@ -13,10 +13,12 @@ HELP="no"
 SIM="false"
 INDEX=0
 STARTPOS="0,0,180"
-RETURN_POS="6,-6"
+RETURN_POS="5,0"
 INTERACTIVE="true"
 
-SHORE_IPADDR=192.168.10.100
+# The Shore IP is MIT Pavilion shore computer. 
+# The pShare port is by convention always 9200.
+SHORE_IPADDR=192.168.10.100  
 SHORE_PSHARE=9200
 
 VNAMES=(abe ben cal deb evan felix gus hal ida jing kirk luke)
@@ -54,8 +56,7 @@ for ARGI; do
     elif [ "${ARGI}" = "-v11" -o "${ARGI}" = "-k" ]; then INDEX=11
     elif [ "${ARGI}" = "-v12" -o "${ARGI}" = "-l" ]; then INDEX=12
     else
-        echo "Bad arg:" $ARGI "Run with -h for help."
-        echo "The launch_vehicle.sh script is exiting with (1)."
+        echo "Bad arg:" $ARGI "Run with -h for help. Exiting (1)."
         exit 1
     fi
 done
@@ -64,7 +65,7 @@ done
 #  Part 3: Produce the help message if it was requested
 #---------------------------------------------------------
 if [ ${HELP} = "yes" ] ; then
-    echo "$0 [SWITCHES]"
+    echo "$0 [SWITCHES] [WARP]"
     echo "  --help, -h         Show this help message            "        
     echo "  --just_make, -j    Just make targ files, dont launch "
     echo "  --sim, -s          Simulation mode                   "
@@ -119,11 +120,11 @@ BOT_MOOSDB="90$INDEX"
 #    Note: Failed nsplug will abort launch due to bash -e on line 1
 #    Note: Undef macros will be aletered to user with nsplug -i flag
 #---------------------------------------------------------
-nsplug meta_vehicle.moos targ_${VNAME}.moos -f -i              \
+nsplug smeta_vehicle.moos targ_${VNAME}.moos -f -i              \
        WARP=$TIME_WARP             VNAME=$VNAME                \
        BOT_PSHARE=$BOT_PSHARE      SHORE_PSHARE=$SHORE_PSHARE  \
        BOT_MOOSDB=$BOT_MOOSDB      SHORE_IPADDR=$SHORE_IPADDR  \
-       START_POS=$STARTPOS         HOSTIP_FORCE="localhost"    \
+       START_POS=$START_POS        HOSTIP_FORCE="localhost"    \
        M200_IP=$M200_IP            SIM=$SIM          
 
 nsplug meta_vehicle.bhv targ_${VNAME}.bhv -f -i \

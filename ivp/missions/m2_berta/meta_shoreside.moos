@@ -148,6 +148,9 @@ ProcessConfig = pMarineViewer
   appcast_viewable = true
   appcast_color_scheme = indigo
 
+  stale_report_thresh = 10
+  stale_remove_thresh = 18
+
   scope = PSHARE_INPUT_SUMMARY
   scope = NODE_BROKER_PING
   scope = DEPLOY_ALL

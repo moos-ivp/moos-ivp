@@ -271,6 +271,7 @@ SET(IVP_NON_GUI_APPS
   app_alogsplit
   app_alogsort
   app_alogcheck
+  app_alogtest
   app_gen_hazards
   app_gen_obstacles
   app_bhv2graphviz
@@ -303,6 +304,7 @@ IF( EXISTS ./uSimCurrent )
   LIST(APPEND IVP_NON_GUI_APPS uSimCurrent)  
 ENDIF( EXISTS ./uSimCurrent )
 
+message(" IVP_NON_GUI_APPS: ${IVP_NON_GUI_APPS}")
 
 #---------------------------------------------------------------------
 # Part 3 of 3: IVP_GUI_APPS

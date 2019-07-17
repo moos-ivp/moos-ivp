@@ -39,6 +39,11 @@ double distPointToSeg(double x1, double y1, double x2,
 		      double y2, double px, double py);
 
 // Determine the distance from a line segment to a point (px,py)
+double distPointToSeg(double x1, double y1, double x2, 
+		      double y2, double px, double py,
+		      double& ix, double& iy);
+
+// Determine the distance from a line segment to a point (px,py)
 // at a particular given angle. Returns -1 if doesn't intersect
 double distPointToSeg(double x1, double y1, double x2, double y2,
                       double px, double py, double ANGLE);
@@ -53,8 +58,8 @@ bool   linesCross(double x1, double y1, double x2, double y2,
 		  double &ix, double& iy);
 
 // Determine whether and where a given ray and line intersect
-bool   lineRayCross(double x1, double y1, double ray_angle,
-		    double x3, double y3, double x4, double y4,
+bool   lineRayCross(double rx, double ry, double ray_angle,
+		    double x1, double y1, double x2, double y2,
 		    double &ix, double& iy);
 
 // Determine if two line segments intersect
@@ -92,8 +97,50 @@ bool   bearingMinMaxToPoly(double x, double y, const XYPolygon& poly,
 double distCircleToLine(double cx, double cy, double radius,
 			double px1, double py1, double px2, double py2);
 
-bool randPointInPoly(const XYPolygon&, double& rx, double& ry,
+// Below is new after 17.7
+
+bool randPointInPoly(const XYPolygon&, double& ix, double& iy,
 		     unsigned int tries=1000);
+
+bool crossRaySegl(double rx, double ry, double ray_angle,
+		  const XYSegList& segl,
+		  double& ix, double& iy, double& idist);
+
+double distPointToRay(double px, double py, double rx, double ry,
+		      double ray_angle, double &ix, double& iy);
+
+double segRayCPA(double rx, double ry, double ray_angle,
+		 double x1, double y1, double x2, double y2,
+		 double &ix, double& iy);
+
+double seglRayCPA(double rx, double ry, double ray_angle,
+		  const XYSegList& segl,
+		  double& ix, double& iy);
+
+double segSeglDist(double x1, double y1, double x2, double y2,
+		   const XYSegList& segl,
+		   double& ix, double& iy);
+		   
+bool crossRaySeg(double rx, double ry, double ray_angle,
+		 double x1, double y1, double x2, double y2,
+		 double &ix, double& iy);
+
+int lineCircleIntPts(double x1, double y1, double x2, double y2,
+		     double cx, double cy, double cradius,
+		     double& ix1, double& iy1,
+		     double& ix2, double& iy2);
+
+int segCircleIntPts(double x1, double y1, double x2, double y2,
+		    double cx, double cy, double cradius,
+		    double& ix1, double& iy1,
+		    double& ix2, double& iy2);
+
+double distPointToLine(double px, double py, double x1, double y1,
+		       double x2, double y2);
+
+double distPointToSegl(double px, double py, const XYSegList& segl);
+
+
 
 // DEPRECATED INTERFACES
 double distToPoint(double x1, double y1, double x2, double y2);
