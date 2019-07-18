@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvoidCollision.cpp                               */
+/*    FILE: BHV_AvoidCollisionT.cpp                              */
 /*    DATE: Nov 18th 2006                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -28,8 +28,9 @@
 #include "GeomUtils.h"
 #include "AOF_AvoidCollision.h"
 #include "AOF_AvoidCollisionDepth.h"
-#include "BHV_AvoidCollision.h"
+#include "BHV_AvoidCollisionT.h"
 #include "OF_Reflector.h"
+#include "RefineryCPA.h"
 #include "BuildUtils.h"
 #include "MBUtils.h"
 #include "CPA_Utils.h"
@@ -40,7 +41,7 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) : 
+BHV_AvoidCollisionT::BHV_AvoidCollisionT(IvPDomain gdomain) : 
   IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "avoid_collision");
@@ -74,13 +75,19 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING, AVOIDING");
 
+  // Release 19.8 additions
+  m_use_refinery   = false;
+  m_check_plateaus = false;
+  m_check_validity = false;
+  m_pcheck_thresh  = 0.001;
+  m_verbose        = false;
   
 }
 
 //-----------------------------------------------------------
 // Procedure: setParam
 
-bool BHV_AvoidCollision::setParam(string param, string param_val) 
+bool BHV_AvoidCollisionT::setParam(string param, string param_val) 
 {
   if(IvPContactBehavior::setParam(param, param_val))
     return(true);
@@ -107,8 +114,9 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
   else if(param == "completed_dist")
     return(setNonNegDoubleOnString(m_completed_dist, param_val));
   else if((param == "contact_type_required") && (param_val != "")) {
-    m_contact_type_required = tolower(param_val);
-    return(true);
+    return(handleSetParamMatchType(param_val));
+    // m_contact_type_required = tolower(param_val);
+    // return(true);
   }  
   else if(param == "collision_depth") {
     if(dval <= 0)
@@ -155,9 +163,20 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
       m_roc_max_heighten = m_roc_max_dampen;
     return(true);
   }  
-  else if(param == "no_alert_request") {
+  else if(param == "no_alert_request")
     return(setBooleanOnString(m_no_alert_request, param_val));
-  }  
+  else if(param == "verbose")
+    return(setBooleanOnString(m_verbose, param_val));
+  else if(param == "use_refinery")
+    return(setBooleanOnString(m_use_refinery, param_val));
+  else if(param == "check_plateaus")
+    return(setBooleanOnString(m_check_plateaus, param_val));
+  else if(param == "check_validity") 
+    return(setBooleanOnString(m_check_validity, param_val));
+  else if(param == "pcheck_thresh")
+    return(setNonNegDoubleOnString(m_pcheck_thresh, param_val));
+
+
   return(false);
 }
 
@@ -165,7 +184,7 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
 //-----------------------------------------------------------
 // Procedure: onHelmStart()
 
-void BHV_AvoidCollision::onHelmStart()
+void BHV_AvoidCollisionT::onHelmStart()
 {
   if(m_no_alert_request || (m_update_var == ""))
     return;
@@ -179,6 +198,10 @@ void BHV_AvoidCollision::onHelmStart()
   alert_request += ", alert_range=" + s_alert_range;
   alert_request += ", cpa_range=" + s_cpa_range;
 
+  string match_ignore_summary = getMatchIgnoreSummary();
+  if(match_ignore_summary != "")
+    alert_request += "," + match_ignore_summary;
+  
   if(m_contact_type_required != "")
     alert_request += ", contact_type=" + m_contact_type_required;
   
@@ -188,7 +211,7 @@ void BHV_AvoidCollision::onHelmStart()
 //-----------------------------------------------------------
 // Procedure: onRunToIdleState()
 
-void BHV_AvoidCollision::onRunToIdleState() 
+void BHV_AvoidCollisionT::onRunToIdleState() 
 {
   postErasableBearingLine();
 }
@@ -196,7 +219,7 @@ void BHV_AvoidCollision::onRunToIdleState()
 //-----------------------------------------------------------
 // Procedure: onIdleState()
 
-void BHV_AvoidCollision::onIdleState() 
+void BHV_AvoidCollisionT::onIdleState() 
 {
   bool ok = updatePlatformInfo();
   if(!ok)
@@ -208,7 +231,7 @@ void BHV_AvoidCollision::onIdleState()
 //-----------------------------------------------------------
 // Procedure: onCompleteState()
 
-void BHV_AvoidCollision::onCompleteState() 
+void BHV_AvoidCollisionT::onCompleteState() 
 {
   postErasableBearingLine();
 }
@@ -216,7 +239,7 @@ void BHV_AvoidCollision::onCompleteState()
 //-----------------------------------------------------------
 // Procedure: getInfo()
 
-string BHV_AvoidCollision::getInfo(string str) 
+string BHV_AvoidCollisionT::getInfo(string str) 
 {
   if(str == "debug1")
     return(uintToString(m_total_evals));
@@ -227,7 +250,7 @@ string BHV_AvoidCollision::getInfo(string str)
 //-----------------------------------------------------------
 // Procedure: onRunState
 
-IvPFunction *BHV_AvoidCollision::onRunState() 
+IvPFunction *BHV_AvoidCollisionT::onRunState() 
 {
   m_total_evals = 0;
   if(!updatePlatformInfo()) {
@@ -245,114 +268,198 @@ IvPFunction *BHV_AvoidCollision::onRunState()
     return(0);
   }
   
-  if(m_cn_retired) {
-    setComplete();
-    return(0);
-  }
-  
   if(m_relevance <= 0) {
     postViewableBearingLine();
     return(0);
   }
 
-  double min_util_cpa_dist = m_min_util_cpa_dist;
-  if(m_contact_range <= m_min_util_cpa_dist)
-    min_util_cpa_dist = (m_contact_range / 2);
-    
-  bool ok = true;
   IvPFunction *ipf = 0;
-  if(m_collision_depth == 0) {
-    AOF_AvoidCollision aof(m_domain);
-    aof.setOwnshipParams(m_osx, m_osy);
-    aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
-    aof.setParam("tol", m_time_on_leg);
-    aof.setParam("collision_distance", min_util_cpa_dist);
-    aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-    bool ok = aof.initialize();
-    
-    if(!ok) {
-      postEMessage("Unable to init AOF_AvoidCollision.");
-      postErasableBearingLine();
-      return(0);
-    }    
-    OF_Reflector reflector(&aof, 1);
-    m_domain = subDomain(m_domain, "course,speed");
-    reflector.create(m_build_info);
-    ipf = reflector.extractIvPFunction();
+  if(m_collision_depth > 0)
+    ipf = getAvoidDepthIPF();
+  else
+    ipf = getAvoidIPF();
 
-    m_total_evals = reflector.getTotalEvals();
-
-    string warnings = reflector.getWarnings();
-    postMessage("AVD_STATUS", warnings);
-  }    
-
-  else if(m_domain.hasDomain("depth")) {
-    AOF_AvoidCollisionDepth aof(m_domain);
-    ok = ok && aof.setParam("osy", m_osy);
-    ok = ok && aof.setParam("osx", m_osx);
-    ok = ok && aof.setParam("osh", m_osh);
-    ok = ok && aof.setParam("osv", m_osv);
-    ok = ok && aof.setParam("cny", m_cny);
-    ok = ok && aof.setParam("cnx", m_cnx);
-    ok = ok && aof.setParam("cnh", m_cnh);
-    ok = ok && aof.setParam("cnv", m_cnv);
-    ok = ok && aof.setParam("tol", m_time_on_leg);
-    ok = ok && aof.setParam("collision_distance", m_min_util_cpa_dist);
-    ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
-    ok = ok && aof.setParam("collision_depth", m_collision_depth);
-    ok = ok && aof.initialize();
- 
-    double roc = aof.getROC();
-    postMessage("ROC", roc);
-
-    if(!ok) {
-      postEMessage("Unable to init AOF_AvoidCollision.");
-      postErasableBearingLine();
-      return(0);
-    }    
-    OF_Reflector reflector(&aof, 1);
-    
-    unsigned int index = (unsigned int)(m_domain.getIndex("depth"));
-    unsigned int disc_val = m_domain.getDiscreteVal(index, m_collision_depth, 1);
-
-    IvPBox region_bot = domainToBox(m_domain);
-    region_bot.pt(index,0) = disc_val;
-
-    IvPBox region_top = domainToBox(m_domain);
-    region_top.pt(index,1) = disc_val-1;
-
-    reflector.setParam("uniform_amount", "1");
-    reflector.setParam("refine_region", region_top);
-    reflector.setParam("refine_piece", "discrete @ course:10,speed:5,depth:100");
-
-    reflector.setParam("refine_region", region_bot);
-    reflector.setParam("refine_piece", region_bot);
-    reflector.create();
-    ipf = reflector.extractIvPFunction();
-
-    m_total_evals = reflector.getTotalEvals();
-
-    string warnings = reflector.getWarnings();
-    postMessage("AVD_STATUS", warnings);
-  }
-
+  
   if(ipf) {
     ipf->getPDMap()->normalize(0.0, 100.0);
     ipf->setPWT(m_relevance * m_priority_wt);
   }
-
 
   postViewableBearingLine();
 
   return(ipf);
 }
 
+
+
+//-----------------------------------------------------------
+// Procedure: getAvoidIPF()
+
+IvPFunction *BHV_AvoidCollisionT::getAvoidIPF()
+{
+  // ===========================================================
+  // Prepare the AOF to be passed to the Reflector
+  // ===========================================================
+  double min_util_cpa_dist = m_min_util_cpa_dist;
+  if(m_contact_range <= m_min_util_cpa_dist)
+    min_util_cpa_dist = (m_contact_range / 2);
+  
+  AOF_AvoidCollision aof(m_domain);
+  aof.setCPAEngine(m_cpa_engine);
+  aof.setOwnshipParams(m_osx, m_osy);
+  aof.setContactParams(m_cnx, m_cny, m_cnh, m_cnv);
+  aof.setParam("tol", m_time_on_leg);
+  aof.setParam("collision_distance", min_util_cpa_dist);
+  aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  bool ok = aof.initialize();
+  
+  if(!ok) {
+    postEMessage("Unable to init AOF_AvoidCollision.");
+    postErasableBearingLine();
+    return(0);
+  }    
+  
+  OF_Reflector reflector(&aof, 1);
+  m_domain = subDomain(m_domain, "course,speed");
+  
+  // ===========================================================
+  // Utilize the Refinery to identify plateau regions
+  // ===========================================================
+  if(m_use_refinery) {
+    RefineryCPA refinery;
+    refinery.init(m_osx, m_osy, m_cnx, m_cny, m_cnh, m_cnv, m_time_on_leg,
+		  m_min_util_cpa_dist, m_max_util_cpa_dist, m_domain,
+		  &m_cpa_engine);
+    refinery.setVerbose(m_verbose);
+    
+    vector<IvPBox> regions;
+    regions = refinery.getRefineRegions();
+    m_total_evals = refinery.getTotalQueriesCPA();
+
+    for(unsigned int i=0; i<regions.size(); i++) {
+      reflector.setParam("plateau_region", regions[i]);
+      string warnings = reflector.getWarnings();
+      postMessage("AVD_DEBUG", "["+intToString(i)+"]: "+warnings);
+    }
+
+    // Check plateaus code was used to verify correctness of plateaus
+    // and remains for future validation.
+    if(m_check_plateaus) {
+      reflector.setParam("pcheck_thresh", m_pcheck_thresh);
+      double worst_fail = reflector.checkPlateaus(true);
+
+      cout.precision(15);
+      cout << "Sworst fail: " << worst_fail << endl;
+      bool ok_plateaus = (worst_fail == 0);
+      cout << "ok_plateausA: " << boolToString(ok_plateaus) << endl;
+      if(m_verbose) {
+	cout << "  BHV_AvoidCollisionT checkPlateaus   START(3)" << endl;
+	cout << "  BHV_AvoidCollisionT plat_thresh: " << m_pcheck_thresh << endl;
+	cout << "Plateaus OK: " << boolToString(ok_plateaus) << endl;
+	cout << "  BHV_AvoidCollisionT checkPlateaus     END(3)" << endl;
+      }
+      postBoolMessage("PLATEAU_CHECK_OK", ok_plateaus);
+      postRepeatableMessage("PLATEAU_LOGIC_CASE", refinery.getLogicCase());
+
+      if(!ok_plateaus)
+	postRepeatableMessage("PLATEAU_WORST_FAIL", worst_fail);
+    }
+  }
+
+  // ===========================================================
+  // Build the IvP Function
+  // ===========================================================
+  reflector.create(m_build_info);
+  IvPFunction *ipf = reflector.extractIvPFunction();
+
+  m_total_evals += reflector.getTotalEvals();
+  
+  string warnings = reflector.getWarnings();
+  if(warnings != "")
+    postMessage("AVD_DEBUG", warnings);
+  else
+    postMessage("AVD_DEBUG", "no-warnings");
+
+  if(m_check_validity) {
+    bool valid_ipf = true;
+    if(ipf) 
+      valid_ipf = ipf->valid();
+ 
+    if(m_verbose)
+      cout << boolToString(valid_ipf) << endl;
+    postBoolMessage("VALID_CHECK_OK", valid_ipf);
+  }
+    
+  if(m_verbose)
+    cout << " In BHV_AvoidCollisionT::getAvoidIPF()         END(1)" << endl;
+  
+  return(ipf);
+}
+
+//-----------------------------------------------------------
+// Procedure: getAvoidDepthIPF()
+
+IvPFunction *BHV_AvoidCollisionT::getAvoidDepthIPF()
+{
+  AOF_AvoidCollisionDepth aof(m_domain);
+  bool ok = true;
+  ok = ok && aof.setParam("osy", m_osy);
+  ok = ok && aof.setParam("osx", m_osx);
+  ok = ok && aof.setParam("osh", m_osh);
+  ok = ok && aof.setParam("osv", m_osv);
+  ok = ok && aof.setParam("cny", m_cny);
+  ok = ok && aof.setParam("cnx", m_cnx);
+  ok = ok && aof.setParam("cnh", m_cnh);
+  ok = ok && aof.setParam("cnv", m_cnv);
+  ok = ok && aof.setParam("tol", m_time_on_leg);
+  ok = ok && aof.setParam("collision_distance", m_min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
+  ok = ok && aof.setParam("collision_depth", m_collision_depth);
+  ok = ok && aof.initialize();
+ 
+  double roc = aof.getROC();
+  postMessage("ROC", roc);
+
+  if(!ok) {
+    postEMessage("Unable to init AOF_AvoidCollision.");
+    postErasableBearingLine();
+    return(0);
+  }    
+  OF_Reflector reflector(&aof, 1);
+  
+  unsigned int index = (unsigned int)(m_domain.getIndex("depth"));
+  unsigned int disc_val = m_domain.getDiscreteVal(index, m_collision_depth, 1);
+  
+  IvPBox region_bot = domainToBox(m_domain);
+  region_bot.pt(index,0) = disc_val;
+  
+  IvPBox region_top = domainToBox(m_domain);
+  region_top.pt(index,1) = disc_val-1;
+  
+  reflector.setParam("uniform_amount", "1");
+  reflector.setParam("refine_region", region_top);
+  reflector.setParam("refine_piece", "discrete @ course:10,speed:5,depth:100");
+  
+  reflector.setParam("refine_region", region_bot);
+  reflector.setParam("refine_piece", region_bot);
+  reflector.create();
+  IvPFunction *ipf = reflector.extractIvPFunction();
+  
+  m_total_evals = reflector.getTotalEvals();
+  
+  string warnings = reflector.getWarnings();
+  postMessage("AVD_STATUS", warnings);
+
+  return(ipf);
+}
+
+
 //-----------------------------------------------------------
 // Procedure: getRelevance
 //            Calculate the relevance first. If zero-relevance, 
 //            we won't bother to create the objective function.
 
-double BHV_AvoidCollision::getRelevance()
+double BHV_AvoidCollisionT::getRelevance()
 {
   // First declare the range of relevance values to be calc'ed
   double min_dist_relevance = 0.0;
@@ -363,6 +470,7 @@ double BHV_AvoidCollision::getRelevance()
   m_curr_closing_spd = closingSpeed(m_osx, m_osy, m_osv, m_osh,
 				    m_cnx, m_cny, m_cnv, m_cnh);
 
+  postMessage("AVD_DEBUG", "In getRelevance: " + doubleToString(m_contact_range));
   if(m_contact_range >= m_pwt_outer_dist) {
     //postInfo(0,0);
     return(0);
@@ -386,52 +494,13 @@ double BHV_AvoidCollision::getRelevance()
 
   double d_relevance = (mod_dpct * rng_dist_relevance) + min_dist_relevance;
 
-
   return(d_relevance);  
-
-#if 0
-  // *********** DISABLED BELOW ******
-  //  default:            0.0                         1.0            
-  //                       o---------------------------o
-  //
-  //          o---------------------------o
-  //        -0.5                         0.5
-  //
-
-  double min_roc_relevance = min_dist_relevance - (0.75*rng_dist_relevance);
-  double max_roc_relevance = max_dist_relevance - (0.75*rng_dist_relevance);
-  double rng_roc_relevance = max_roc_relevance - min_roc_relevance;
-
-  double srange = m_roc_max_heighten - m_roc_max_dampen;
-  double spct = 0.0;
-  double eval_closing_spd = m_curr_closing_spd;
-  if(srange > 0) {
-    if(m_curr_closing_spd < m_roc_max_dampen)
-      eval_closing_spd = m_roc_max_dampen;
-    if(m_curr_closing_spd > m_roc_max_heighten)
-      eval_closing_spd = m_roc_max_heighten;
-    spct = (eval_closing_spd - m_roc_max_dampen) / srange;
-  }
-
-  double s_relevance = (spct * rng_roc_relevance) + min_roc_relevance;
-  
-  double combined_relevance = d_relevance + s_relevance;
-  
-  if(combined_relevance < min_dist_relevance)
-    combined_relevance = min_dist_relevance;
-  if(combined_relevance > max_dist_relevance)
-    combined_relevance = max_dist_relevance;
-  
-  postInfo(dpct, spct);
-
-  return(combined_relevance);
-#endif
 }
 
 //-----------------------------------------------------------
 // Procedure: postInfo
 
-void BHV_AvoidCollision::postInfo(double dpct, double spct)
+void BHV_AvoidCollisionT::postInfo(double dpct, double spct)
 {
   string bhv_tag = toupper(getDescriptor());
   bhv_tag = findReplace(bhv_tag, "BHV_", "");
@@ -445,7 +514,7 @@ void BHV_AvoidCollision::postInfo(double dpct, double spct)
 //-----------------------------------------------------------
 // Procedure: postRange
 
-void BHV_AvoidCollision::postRange(bool ok)
+void BHV_AvoidCollisionT::postRange(bool ok)
 {
   string bhv_tag = toupper(getDescriptor());
   bhv_tag = findReplace(bhv_tag, "BHV_", "");
@@ -472,23 +541,10 @@ void BHV_AvoidCollision::postRange(bool ok)
 //-----------------------------------------------------------
 // Procedure: updatePlatformInfo
 
-bool BHV_AvoidCollision::updatePlatformInfo()
+bool BHV_AvoidCollisionT::updatePlatformInfo()
 {
-#if 0
-  bool ok = true;
-  string avoiding = getBufferStringVal("AVOIDING", ok);
-  if(ok && (tolower(avoiding) == "true"))
-    m_avoiding = true;
-  else
-    m_avoiding = false;
-#endif
   return(IvPContactBehavior::updatePlatformInfo());
 }
-
-
-
-
-
 
 
 

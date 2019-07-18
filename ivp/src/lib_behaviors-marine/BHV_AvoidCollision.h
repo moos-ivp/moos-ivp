@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvoidCollision.h                                 */
+/*    FILE: BHV_AvoidCollisionT.h                                */
 /*    DATE: Nov 18th 2006                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,16 +21,16 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef BHV_AVOID_COLLISION_HEADER
-#define BHV_AVOID_COLLISION_HEADER
+#ifndef BHV_AVOID_COLLISION_T_HEADER
+#define BHV_AVOID_COLLISION_T_HEADER
 
 #include "IvPContactBehavior.h"
 
 class IvPDomain;
-class BHV_AvoidCollision : public IvPContactBehavior {
+class BHV_AvoidCollisionT : public IvPContactBehavior {
 public:
-  BHV_AvoidCollision(IvPDomain);
-  ~BHV_AvoidCollision() {}
+  BHV_AvoidCollisionT(IvPDomain);
+  ~BHV_AvoidCollisionT() {}
 
   void         onHelmStart();
   IvPFunction* onRunState();
@@ -38,17 +38,20 @@ public:
   void         onIdleState();
   void         onRunToIdleState();
   void         onCompleteState();
-  
-  std::string  getInfo(std::string);
 
+  std::string  getInfo(std::string);
+  
  protected:
   double getRelevance();
   double getPriority();
   void   postInfo(double, double);
   void   postRange(bool ok=true);
   bool   updatePlatformInfo();
+
+  IvPFunction* getAvoidIPF();
+  IvPFunction* getAvoidDepthIPF();
   
-private: // Configuration Parameters
+ private: // Configuration Parameters
 
   std::string m_pwt_grade;
   std::string m_contact_type_required;
@@ -63,6 +66,13 @@ private: // Configuration Parameters
   bool   m_no_alert_request;
 
   double m_collision_depth;
+
+  // Release 19.8 additions
+  bool   m_use_refinery;
+  bool   m_check_plateaus;
+  bool   m_check_validity;
+  double m_pcheck_thresh;
+  bool   m_verbose;
   
 private:  // State Variables
   double m_curr_closing_spd;
