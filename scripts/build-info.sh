@@ -1,5 +1,4 @@
 #!/bin/bash
-
 #=============================================================
 # Mike Benjamin, December 26th, 2017
 #=============================================================
@@ -45,7 +44,6 @@ for ARGI; do
 	exit
     else 
         echo "Bad arg:" $ARGI "Run with -h for help."
-        echo "The launch.sh script is exiting with (1)."
         exit 1
     fi
 done
