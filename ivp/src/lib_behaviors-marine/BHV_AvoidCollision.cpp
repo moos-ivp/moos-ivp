@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvoidCollisionT.cpp                              */
+/*    FILE: BHV_AvoidCollision.cpp                              */
 /*    DATE: Nov 18th 2006                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -28,7 +28,7 @@
 #include "GeomUtils.h"
 #include "AOF_AvoidCollision.h"
 #include "AOF_AvoidCollisionDepth.h"
-#include "BHV_AvoidCollisionT.h"
+#include "BHV_AvoidCollision.h"
 #include "OF_Reflector.h"
 #include "RefineryCPA.h"
 #include "BuildUtils.h"
@@ -41,7 +41,7 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-BHV_AvoidCollisionT::BHV_AvoidCollisionT(IvPDomain gdomain) : 
+BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) : 
   IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "avoid_collision");
@@ -87,7 +87,7 @@ BHV_AvoidCollisionT::BHV_AvoidCollisionT(IvPDomain gdomain) :
 //-----------------------------------------------------------
 // Procedure: setParam
 
-bool BHV_AvoidCollisionT::setParam(string param, string param_val) 
+bool BHV_AvoidCollision::setParam(string param, string param_val) 
 {
   if(IvPContactBehavior::setParam(param, param_val))
     return(true);
@@ -184,7 +184,7 @@ bool BHV_AvoidCollisionT::setParam(string param, string param_val)
 //-----------------------------------------------------------
 // Procedure: onHelmStart()
 
-void BHV_AvoidCollisionT::onHelmStart()
+void BHV_AvoidCollision::onHelmStart()
 {
   if(m_no_alert_request || (m_update_var == ""))
     return;
@@ -211,7 +211,7 @@ void BHV_AvoidCollisionT::onHelmStart()
 //-----------------------------------------------------------
 // Procedure: onRunToIdleState()
 
-void BHV_AvoidCollisionT::onRunToIdleState() 
+void BHV_AvoidCollision::onRunToIdleState() 
 {
   postErasableBearingLine();
 }
@@ -219,7 +219,7 @@ void BHV_AvoidCollisionT::onRunToIdleState()
 //-----------------------------------------------------------
 // Procedure: onIdleState()
 
-void BHV_AvoidCollisionT::onIdleState() 
+void BHV_AvoidCollision::onIdleState() 
 {
   bool ok = updatePlatformInfo();
   if(!ok)
@@ -231,7 +231,7 @@ void BHV_AvoidCollisionT::onIdleState()
 //-----------------------------------------------------------
 // Procedure: onCompleteState()
 
-void BHV_AvoidCollisionT::onCompleteState() 
+void BHV_AvoidCollision::onCompleteState() 
 {
   postErasableBearingLine();
 }
@@ -239,7 +239,7 @@ void BHV_AvoidCollisionT::onCompleteState()
 //-----------------------------------------------------------
 // Procedure: getInfo()
 
-string BHV_AvoidCollisionT::getInfo(string str) 
+string BHV_AvoidCollision::getInfo(string str) 
 {
   if(str == "debug1")
     return(uintToString(m_total_evals));
@@ -250,7 +250,7 @@ string BHV_AvoidCollisionT::getInfo(string str)
 //-----------------------------------------------------------
 // Procedure: onRunState
 
-IvPFunction *BHV_AvoidCollisionT::onRunState() 
+IvPFunction *BHV_AvoidCollision::onRunState() 
 {
   m_total_evals = 0;
   if(!updatePlatformInfo()) {
@@ -295,7 +295,7 @@ IvPFunction *BHV_AvoidCollisionT::onRunState()
 //-----------------------------------------------------------
 // Procedure: getAvoidIPF()
 
-IvPFunction *BHV_AvoidCollisionT::getAvoidIPF()
+IvPFunction *BHV_AvoidCollision::getAvoidIPF()
 {
   // ===========================================================
   // Prepare the AOF to be passed to the Reflector
@@ -338,8 +338,8 @@ IvPFunction *BHV_AvoidCollisionT::getAvoidIPF()
 
     for(unsigned int i=0; i<regions.size(); i++) {
       reflector.setParam("plateau_region", regions[i]);
-      string warnings = reflector.getWarnings();
-      postMessage("AVD_DEBUG", "["+intToString(i)+"]: "+warnings);
+      //string warnings = reflector.getWarnings();
+      //postMessage("AVD_DEBUG", "["+intToString(i)+"]: "+warnings);
     }
 
     // Check plateaus code was used to verify correctness of plateaus
@@ -347,19 +347,21 @@ IvPFunction *BHV_AvoidCollisionT::getAvoidIPF()
     if(m_check_plateaus) {
       reflector.setParam("pcheck_thresh", m_pcheck_thresh);
       double worst_fail = reflector.checkPlateaus(true);
-
-      cout.precision(15);
-      cout << "Sworst fail: " << worst_fail << endl;
       bool ok_plateaus = (worst_fail == 0);
-      cout << "ok_plateausA: " << boolToString(ok_plateaus) << endl;
+
       if(m_verbose) {
-	cout << "  BHV_AvoidCollisionT checkPlateaus   START(3)" << endl;
-	cout << "  BHV_AvoidCollisionT plat_thresh: " << m_pcheck_thresh << endl;
+	cout.precision(15);
+	cout << "Sworst fail: " << worst_fail << endl;
+	cout << "ok_plateaus: " << boolToString(ok_plateaus) << endl;
+	cout << "  BHV_AvoidCollision checkPlateaus   START()" << endl;
+	cout << "  BHV_AvoidCollision plat_thresh: " <<
+	  m_pcheck_thresh << endl;
 	cout << "Plateaus OK: " << boolToString(ok_plateaus) << endl;
-	cout << "  BHV_AvoidCollisionT checkPlateaus     END(3)" << endl;
+	cout << "  BHV_AvoidCollision checkPlateaus     END()" << endl;
+	postBoolMessage("PLATEAU_CHECK_OK", ok_plateaus);
+	postRepeatableMessage("PLATEAU_LOGIC_CASE",
+			      refinery.getLogicCase());
       }
-      postBoolMessage("PLATEAU_CHECK_OK", ok_plateaus);
-      postRepeatableMessage("PLATEAU_LOGIC_CASE", refinery.getLogicCase());
 
       if(!ok_plateaus)
 	postRepeatableMessage("PLATEAU_WORST_FAIL", worst_fail);
@@ -377,8 +379,6 @@ IvPFunction *BHV_AvoidCollisionT::getAvoidIPF()
   string warnings = reflector.getWarnings();
   if(warnings != "")
     postMessage("AVD_DEBUG", warnings);
-  else
-    postMessage("AVD_DEBUG", "no-warnings");
 
   if(m_check_validity) {
     bool valid_ipf = true;
@@ -390,16 +390,13 @@ IvPFunction *BHV_AvoidCollisionT::getAvoidIPF()
     postBoolMessage("VALID_CHECK_OK", valid_ipf);
   }
     
-  if(m_verbose)
-    cout << " In BHV_AvoidCollisionT::getAvoidIPF()         END(1)" << endl;
-  
   return(ipf);
 }
 
 //-----------------------------------------------------------
 // Procedure: getAvoidDepthIPF()
 
-IvPFunction *BHV_AvoidCollisionT::getAvoidDepthIPF()
+IvPFunction *BHV_AvoidCollision::getAvoidDepthIPF()
 {
   AOF_AvoidCollisionDepth aof(m_domain);
   bool ok = true;
@@ -417,8 +414,8 @@ IvPFunction *BHV_AvoidCollisionT::getAvoidDepthIPF()
   ok = ok && aof.setParam("collision_depth", m_collision_depth);
   ok = ok && aof.initialize();
  
-  double roc = aof.getROC();
-  postMessage("ROC", roc);
+  //double roc = aof.getROC();
+  //postMessage("ROC", roc);
 
   if(!ok) {
     postEMessage("Unable to init AOF_AvoidCollision.");
@@ -459,7 +456,7 @@ IvPFunction *BHV_AvoidCollisionT::getAvoidDepthIPF()
 //            Calculate the relevance first. If zero-relevance, 
 //            we won't bother to create the objective function.
 
-double BHV_AvoidCollisionT::getRelevance()
+double BHV_AvoidCollision::getRelevance()
 {
   // First declare the range of relevance values to be calc'ed
   double min_dist_relevance = 0.0;
@@ -500,7 +497,7 @@ double BHV_AvoidCollisionT::getRelevance()
 //-----------------------------------------------------------
 // Procedure: postInfo
 
-void BHV_AvoidCollisionT::postInfo(double dpct, double spct)
+void BHV_AvoidCollision::postInfo(double dpct, double spct)
 {
   string bhv_tag = toupper(getDescriptor());
   bhv_tag = findReplace(bhv_tag, "BHV_", "");
@@ -514,7 +511,7 @@ void BHV_AvoidCollisionT::postInfo(double dpct, double spct)
 //-----------------------------------------------------------
 // Procedure: postRange
 
-void BHV_AvoidCollisionT::postRange(bool ok)
+void BHV_AvoidCollision::postRange(bool ok)
 {
   string bhv_tag = toupper(getDescriptor());
   bhv_tag = findReplace(bhv_tag, "BHV_", "");
@@ -541,7 +538,7 @@ void BHV_AvoidCollisionT::postRange(bool ok)
 //-----------------------------------------------------------
 // Procedure: updatePlatformInfo
 
-bool BHV_AvoidCollisionT::updatePlatformInfo()
+bool BHV_AvoidCollision::updatePlatformInfo()
 {
   return(IvPContactBehavior::updatePlatformInfo());
 }

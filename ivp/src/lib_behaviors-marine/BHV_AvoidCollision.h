@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvoidCollisionT.h                                */
+/*    FILE: BHV_AvoidCollision.h                                 */
 /*    DATE: Nov 18th 2006                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,16 +21,16 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef BHV_AVOID_COLLISION_T_HEADER
-#define BHV_AVOID_COLLISION_T_HEADER
+#ifndef BHV_AVOID_COLLISION_HEADER
+#define BHV_AVOID_COLLISION_HEADER
 
 #include "IvPContactBehavior.h"
 
 class IvPDomain;
-class BHV_AvoidCollisionT : public IvPContactBehavior {
+class BHV_AvoidCollision : public IvPContactBehavior {
 public:
-  BHV_AvoidCollisionT(IvPDomain);
-  ~BHV_AvoidCollisionT() {}
+  BHV_AvoidCollision(IvPDomain);
+  ~BHV_AvoidCollision() {}
 
   void         onHelmStart();
   IvPFunction* onRunState();

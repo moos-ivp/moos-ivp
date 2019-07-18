@@ -51,7 +51,6 @@
 #include "BHV_RStationKeep.h"
 #include "BHV_CutRange.h"
 #include "BHV_AvoidCollision.h"
-#include "BHV_AvoidCollisionT.h"
 #include "BHV_AvoidObstacle.h"
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
@@ -91,7 +90,6 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_Shadow")          || 
      (bhv_name == "BHV_CutRange")        || 
      (bhv_name == "BHV_AvoidCollision")  || 
-     (bhv_name == "BHV_AvoidCollisionT") || 
      (bhv_name == "BHV_AvoidObstacle")   || 
      (bhv_name == "BHV_PeriodicSpeed")   || 
      (bhv_name == "BHV_PeriodicSurface") || 
@@ -161,8 +159,6 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_CutRange(m_domain);
   else if(bhv_name == "BHV_AvoidCollision") 
     bhv = new BHV_AvoidCollision(m_domain);
-  else if(bhv_name == "BHV_AvoidCollisionT") 
-    bhv = new BHV_AvoidCollisionT(m_domain);
   else if(bhv_name == "BHV_AvoidObstacle") 
     bhv = new BHV_AvoidObstacle(m_domain);
   else if(bhv_name == "BHV_PeriodicSpeed") 
