@@ -29,9 +29,16 @@
 #----------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-        echo "build-info.sh             " 
-        echo "  --help, -h              " 
-	echo "  --info, -i              "
+        echo "build-info.sh [OPTIONS]                                 " 
+	echo "                                                        "
+	echo "SYNOPSIS                                                "
+	echo "  This script will generate lines-of-code info suitable "
+	echo "  suitable for generating manifest reports. This should "
+	echo "  be run in the top-level src/ directory and will report"
+	echo "  on all subdirectories.                                "
+	echo "                                                        "
+        echo "  --help,    -h      Display this help message          " 
+        echo "  --info,    -i      Output brief description of script "  
         exit 0;
     elif [ "${ARGI}" = "--info" -o "${ARGI}" = "-i" ] ; then
 	echo "Generate lines_of_code info for manifests"

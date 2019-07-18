@@ -34,11 +34,12 @@ for ARGI; do
         echo "  on only a given set of apps named by the caller.      "
 	echo "                                                        "
         echo "Options:                                                "
-        echo "  --verbose,  -v      Increase verbosity                " 
-        echo "  --help,     -h      Display this help message         " 
-        echo "  --mem,      -m      Sort top output by Memory         " 
-        echo "  --core,     -c      Form app list with common biggies " 
-        echo "  --apps=<apps>       Form app list by given apps       " 
+        echo "  --verbose, -v      Increase verbosity                 " 
+        echo "  --help,    -h      Display this help message          " 
+        echo "  --mem,     -m      Sort top output by Memory          " 
+        echo "  --core,    -c      Form app list with common biggies  " 
+        echo "  --info,    -i      Output brief description of script "  
+        echo "  --apps=<apps>      Form app list by given apps        " 
 	echo "                                                        "
 	echo "Examples:                                               "
  	echo "  $ mtop.sh                                             "
@@ -47,6 +48,9 @@ for ARGI; do
         exit 0;
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ] ; then
 	VERBOSE="yes"
+    elif [ "${ARGI}" = "--info"   -o "${ARGI}" = "-i" ] ; then
+	echo "Run the top command showing only MOOS Apps"
+	exit 0
     elif [ "${ARGI}" = "--antler" -o "${ARGI}" = "-a" ] ; then
 	ANTLER="yes"
     elif [ "${ARGI}" = "--core" -o "${ARGI}" = "-c" ] ; then
