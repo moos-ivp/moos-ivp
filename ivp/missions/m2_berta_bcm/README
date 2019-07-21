@@ -1,0 +1,7 @@
+
+Based on the m2_berta mission
+
+Additionally this mission uses the new (MOOS-IvP 19.8) feature in 
+pBasicContactMgr to use a region (for henry only) to monitor contacts.
+The flags for going in and out of the region generate iSay events.
+

@@ -183,6 +183,8 @@ class BasicContactMgr : public AppCastingMOOSApp
 private:
   bool         m_use_geodesy;
   CMOOSGeodesy m_geodesy;
+
+  unsigned int m_alert_requests_received;
 };
 
 #endif 

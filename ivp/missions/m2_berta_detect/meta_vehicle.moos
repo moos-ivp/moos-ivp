@@ -9,7 +9,7 @@ Community  = $(VNAME)
 //------------------------------------------------------------
 Processconfig = ANTLER
 {
-  MSBetweenLaunches = 50
+  MSBetweenLaunches = 100
    
   Run = MOOSDB           @ NewConsole = false
   Run = uProcessWatch    @ NewConsole = false
@@ -19,11 +19,11 @@ Processconfig = ANTLER
   Run = pNodeReporter    @ NewConsole = false
   Run = pMarinePID       @ NewConsole = false
   Run = pHelmIvP         @ NewConsole = false
-  Run = pBasicContactMgr @ NewConsole = false
   Run = pHostInfo        @ NewConsole = false
   Run = uFldNodeBroker   @ NewConsole = false
   Run = uLoadWatch       @ NewConsole = false
   Run = pEvalLoiter      @ NewConsole = false
+  Run = pBasicContactMgr @ NewConsole = false
 }
 
 #include plug_pEvalLoiter.moos

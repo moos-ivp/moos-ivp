@@ -145,7 +145,6 @@ bool FldWrapDetect::OnConnectToServer()
 
 //---------------------------------------------------------
 // Procedure: Iterate()
-//            happens AppTick times per second
 
 bool FldWrapDetect::Iterate()
 {
@@ -159,7 +158,6 @@ bool FldWrapDetect::Iterate()
 
 //---------------------------------------------------------
 // Procedure: OnStartUp()
-//            happens before connection is open
 
 bool FldWrapDetect::OnStartUp()
 {
@@ -170,18 +168,19 @@ bool FldWrapDetect::OnStartUp()
   if(m_MissionReader.GetConfiguration(GetAppName(), sParams)) {
     list<string>::iterator p;
     for(p=sParams.begin(); p!=sParams.end(); p++) {
-      string original_line = *p;
-      string param = stripBlankEnds(toupper(biteString(*p, '=')));
-      string value = stripBlankEnds(*p);
-      
-      if(param == "MAX_SEGMENTS") {
-        //handled
-	m_max_num_segments = atof(value.c_str());
-      }
-      else if(param == "MAX_TRAIL_DISTANCE") {
-        //handled
-	m_max_trail_distance = atof(value.c_str());
-      }
+      string orig  = *p;
+      string line  = *p;
+      string param = tolower(biteStringX(line, '='));
+      string value = line;
+
+      bool handled = false;
+      if(param == "max_segments")
+	handled = setPosDouble(m_max_num_segments, value);
+      else if(param == "max_trail_distance")
+	handled = setPosDouble(m_max_trail_distance, value);
+
+      if(!handled)
+	reportUnhandledConfigWarning(orig);
     }
   }
   

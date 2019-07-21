@@ -83,6 +83,8 @@ BasicContactMgr::BasicContactMgr()
   m_contacts_recap_posted = 0;
   m_prev_contacts_count   = 0;
   m_prev_closest_range    = 0;
+
+  m_alert_requests_received = 0;
 }
 
 //---------------------------------------------------------
@@ -165,6 +167,10 @@ bool BasicContactMgr::Iterate()
 bool BasicContactMgr::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
+
+  cout << "======================================DEBUG===" << endl;
+  cout << "In OnStartUp!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
+  cout << "======================================DEBUG===" << endl;
 
   Notify("PBASICCONTACTMGR_PID", getpid());
 
@@ -620,6 +626,7 @@ void BasicContactMgr::handleMailReportRequest(string str)
                      
 void BasicContactMgr::handleMailAlertRequest(string value)
 {
+  m_alert_requests_received++;
   bool ok = handleConfigAlert(value);
   if(!ok)
     reportRunWarning("Unhandled Alert Request: " + value);   
@@ -635,6 +642,12 @@ bool BasicContactMgr::handleConfigAlert(string alert_str)
   string alert_id = tokStringParse(alert_str, "id", ',', '=');
   if(alert_id == "")
     alert_id = "no_id";
+
+  // Added mikerb July 2019
+  if(m_par.containsAlertID(alert_id))
+    return(false);
+  
+
   m_par.addAlertID(alert_id);
 
   if(m_map_alerts.count(alert_id) == 0) {
@@ -1586,6 +1599,7 @@ bool BasicContactMgr::buildReport()
   // Part 1: Header Content
   //=================================================================
   string alert_count = uintToString(m_map_alerts.size());
+  string bcm_req_received = uintToString(m_alert_requests_received);
   string max_age = doubleToStringX(m_contact_max_age,2);
   string reject_range = "off";
   if(m_reject_range > 0)
@@ -1593,8 +1607,9 @@ bool BasicContactMgr::buildReport()
   m_msgs << "DisplayRadii:              " << boolToString(m_display_radii) << endl;
   m_msgs << "Deriving X/Y from Lat/Lon: " << boolToString(m_use_geodesy)   << endl;
   m_msgs << "Contact Max Age: " << max_age << endl;
-  m_msgs << "Reject Range: " << reject_range << endl << endl;
-
+  m_msgs << "Reject Range: " << reject_range << endl;
+  m_msgs << "BCM_ALERT_REQUEST count: " << bcm_req_received << endl << endl; 
+  
 
   //=================================================================
   // Part 2: Alert Configurations

@@ -14,6 +14,7 @@ Processconfig = ANTLER
 
   Run = MOOSDB          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
+
 #ifdef LAUNCH_GUI yes
   Run = pMarineViewer   @ NewConsole = false
   Run = uXMS            @ NewConsole = false
@@ -25,6 +26,7 @@ Processconfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
+  Run = uFldWrapDetect  @ NewConsole = false
 
   Run = uFldCollisionDetect @ NewConsole = false
 }
@@ -231,7 +233,6 @@ ProcessConfig = pMarineViewer
 
   button_one   = DEPLOY  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  button_one   = AVOID_ALL=false
   button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
 
   button_two   = RETURN  # RETURN_ALL=true

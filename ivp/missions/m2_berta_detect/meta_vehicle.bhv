@@ -5,7 +5,7 @@ initialize   DEPLOY  = false
 initialize   RETURN  = false
 initialize   STATION_KEEP = false
 initialize   LOITER  = true
-initialize   AVOID   = false
+initialize   AVOID   = true
 
 set MODE = ACTIVE {
   DEPLOY = true
@@ -149,10 +149,8 @@ Behavior = BHV_AvdColregsV17
         pwt_outer_dist = 35
         pwt_inner_dist = 10
         completed_dist = 45
-//     min_util_cpa_dist = 1
-//     max_util_cpa_dist = 4
      min_util_cpa_dist = 10
      max_util_cpa_dist = 18
              pwt_grade = linear
-//   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 }

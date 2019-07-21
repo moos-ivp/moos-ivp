@@ -208,11 +208,15 @@ ProcessConfig = uTimerScript
   reset_max  = unlimited
   reset_time = end
 
-  randvar = varname=X1, min=-25,  max=25,  key=at_reset
-  randvar = varname=Y1, min=-100, max=-50, key=at_reset
+  //randvar = varname=X1, min=-25,  max=25,  key=at_reset
+  //randvar = varname=Y1, min=-100, max=-50, key=at_reset
+  //randvar = varname=X2, min=100,  max=150, key=at_reset
+  //randvar = varname=Y2, min=-75,  max=-25, key=at_reset
 
-  randvar = varname=X2, min=100,  max=150, key=at_reset
-  randvar = varname=Y2, min=-75,  max=-25, key=at_reset
+  randvar = varname=X1, min=0,     max=5,  key=at_reset
+  randvar = varname=Y1, min=-80,  max=-70, key=at_reset
+  randvar = varname=X2, min=120,  max=130, key=at_reset
+  randvar = varname=Y2, min=-80,  max=-70, key=at_reset
 
   event = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
   event = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180

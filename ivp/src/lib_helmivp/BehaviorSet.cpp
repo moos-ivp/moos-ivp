@@ -327,26 +327,26 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     specs_valid = specs_valid && valid;
   }
 
-  //cout << "========================================" << endl;
+  //cout << "==============================DEBUG=====" << endl;
   //cout << "buildBehaviorFromSpec()                 " << endl;
   //cout << bhv->getDescriptor() << endl;
-  //cout << "========================================" << endl;
+  //cout << "==============================DEBUG=====" << endl;
   
   if(specs_valid) {
-    //cout << "========================================" << endl;
+    //cout << "==============================DEBUG=====" << endl;
     //cout << "buildBehaviorFromSpec()   (2)           " << endl;
     //cout << bhv->getDescriptor() << endl;
-    //cout << "========================================" << endl;
+    //cout << "==============================DEBUG=====" << endl;
 
     sbuild.setIvPBehavior(bhv);
     // Added Oct 1313 mikerb - allow template behaviors to make an
     // initial posting on helm startup, even if no instance made on
     // startup (or ever).
     if(on_startup) {
-      cout << "========================================" << endl;
+      cout << "=============================DEBUG======" << endl;
       cout << "buildBehaviorFromSpec()   (3)           " << endl;
       cout << bhv->getDescriptor() << endl;
-      cout << "========================================" << endl;
+      cout << "=============================DEBUG======" << endl;
       bhv->onHelmStart();
     }
     // The behavior may now have some messages (var-data pairs) ready

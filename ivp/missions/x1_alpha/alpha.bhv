@@ -116,7 +116,7 @@ Behavior=BHV_ConstantSpeed
 }
 
 //----------------------------------------------
-Behavior=BHV_AvoidWalls
+//Behavior=BHV_AvoidWalls
 {
   name       = avd_walls2
   pwt        = 111

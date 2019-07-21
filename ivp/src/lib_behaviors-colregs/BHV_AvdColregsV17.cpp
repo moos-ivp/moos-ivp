@@ -192,6 +192,11 @@ void BHV_AvdColregsV17::onHelmStart()
     alert_request += ", contact_type=" + m_contact_type_required;
     
   postMessage("BCM_ALERT_REQUEST", alert_request);
+
+
+  cout << "====================================DEBUG=====" << endl;
+  cout << "Posting BCM_ALERT_REQUEST                     " << endl;
+  cout << "====================================DEBUG=====" << endl;
 }
 
 
