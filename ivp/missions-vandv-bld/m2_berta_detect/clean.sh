@@ -7,14 +7,14 @@ VERBOSE=""
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	printf "%s [SWITCHES]                       \n" $0
-	printf "  --verbose                         \n" 
-	printf "  --help, -h                        \n" 
+	echo "clean.sh [SWITCHES]                 "
+	echo "  --verbose                         " 
+	echo "  --help, -h                        " 
 	exit 0;	
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ] ; then
 	VERBOSE="-v"
     else 
-	printf "Bad Argument: %s \n" $ARGI
+	echo "Bad Argument: " $ARGI
 	exit 0
     fi
 done

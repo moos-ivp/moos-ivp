@@ -15,7 +15,9 @@ HIT_LIST+="LOGGER_DIRECTORY,APPCAST_REQ,DB_QOS,"
 HIT_LIST+="DB_CLIENTS,IVPHELM_ALLSTOP_DEBUG,NODE_BROKER_PING_0,"
 HIT_LIST+="NODE_BROKER_ACK"
 
-PARE_WINDOW=12
+PWIN_DEFAULT=12
+PARE_WINDOW=$PWIN_DEFAULT
+
 RMORIG="no"
 ALL_OK="yes"
 DIR="./"
@@ -30,7 +32,7 @@ for ARGI; do
 	printf "  --rmo         Remove Original Alog Files    \n" 
 	printf "  --dir=DIR     Act on files in directory DIR \n" 
 	exit 0;
-    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
+    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$PARE_WINDOW" = "$PWIN_DEFAULT" ]; then 
         PARE_WINDOW=$ARGI
     elif [ "${ARGI}" = "--rmo" ] ; then
 	RMORIG="yes"
