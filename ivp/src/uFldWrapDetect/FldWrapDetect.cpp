@@ -174,10 +174,13 @@ bool FldWrapDetect::OnStartUp()
       string value = line;
 
       bool handled = false;
-      if(param == "max_segments")
-	handled = setPosDouble(m_max_num_segments, value);
+      if(param == "max_segments") {
+	handled = setIntOnString(m_max_num_segments, value);
+	if(m_max_num_segments < 100)
+	  m_max_num_segments = 100;
+      }
       else if(param == "max_trail_distance")
-	handled = setPosDouble(m_max_trail_distance, value);
+	handled = setPosDoubleOnString(m_max_trail_distance, value);
 
       if(!handled)
 	reportUnhandledConfigWarning(orig);
