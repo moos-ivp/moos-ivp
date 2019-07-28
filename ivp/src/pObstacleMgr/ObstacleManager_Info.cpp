@@ -64,7 +64,6 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("pObstacleMgr Example MOOS Configuration                         ");
   blu("=============================================================== ");
@@ -76,6 +75,11 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  point_var = TRACKED_FEATURE    // default                     ");
   blk("                                                                ");
+  blk("  max_pts_per_cluster = 20         // default                   ");
+  blk("  max_age_per_point   = 20 (secs)  // default                   ");
+  blk("                                                                ");
+  blk("  alert_range         = 20 (meters) // default                  ");
+  blk("  ignore_range        = -1 (meters) // default is off           ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -98,16 +102,20 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  TRACKED_FEATURE = x=5,y=8,label=a,size=4,color=1              ");
   blk("                                                                ");
+  blk("  NAV_X = 103.0                                                 ");
+  blk("  NAV_Y = -23.8                                                 ");
   blk("  OBSTACLE_UPDATE_REQUEST = obstacle_key=d,                     ");
   blk("                            update_var=OBSTACLE_UPDATE_D        ");
   blk("                                                                ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  VIEW_POLYGON   = pts={32,-100:38,-98:40,-100:32,-104},        ");
-  blk("                   label=d,edge_color=white,vertex_color=blue   ");
-  blk("  OBSTACLE_ALERT = name=d#obstacle_key=d#                       ");
-  blk("                   poly=pts={32,-100:38,-98:40,-100:32,-104},label=d");
+  blk("  VEHICLE_CONNECT = true                                        ");
+  blk("  VIEW_POLYGON    = pts={32,-100:38,-98:40,-100:32,-104},       ");
+  blk("                    label=d,edge_color=white,vertex_color=blue  ");
+  blk("  OBSTACLE_ALERT  = name=d#obstacle_key=d#                      ");
+  blk("                    poly=pts={32,-100:38,-98:40,-100:32,-104},  ");
+  blk("                    label=d                                     ");
   blk("                                                                ");
   blk("                                                                ");
   blk("                                                                ");

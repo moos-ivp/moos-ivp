@@ -30,10 +30,16 @@ ObstacleManager::ObstacleManager()
   // Init configuration variables
   m_obstacle_alert_var  = "OBSTACLE_ALERT";
 
-  m_alert_range = 20;
+  m_alert_range  = 20;
+  m_ignore_range = -1;
+
+  m_max_pts_per_cluster = 20;
+  m_max_age_per_point   = 20;
   
   // Init state variables
-  m_points_total = 0;
+  m_points_total   = 0;
+  m_points_ignored = 0;
+  m_clusters_released = 0;
 }
 
 //---------------------------------------------------------
@@ -106,6 +112,7 @@ bool ObstacleManager::Iterate()
   AppCastingMOOSApp::Iterate();
   postConvexHullAlerts();
   postConvexHullUpdates();
+  manageMemory();
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -134,13 +141,20 @@ bool ObstacleManager::OnStartUp()
       handled = setNonWhiteVarOnString(m_point_var, value);
     else if(param == "alert_range")
       handled = setPosDoubleOnString(m_alert_range, value);
+    else if(param == "ignore_range")
+      handled = setPosDoubleOnString(m_ignore_range, value);
+    else if(param == "max_pts_per_cluster")
+      handled = setUIntOnString(m_max_pts_per_cluster, value);
+    else if(param == "max_age_per_point")
+      handled = setPosDoubleOnString(m_max_age_per_point, value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
 
-  // We left the m_point_var unset in the constructor because we don't want to 
-  // unnecessarily register for a variable that we don't actually need
+  // We left the m_point_var unset in the constructor because we don't
+  // want to unnecessarily register for a variable that we don't
+  // actually need
   if(m_point_var == "")
     m_point_var = "TRACKED_FEATURE";
 
@@ -225,7 +239,7 @@ bool ObstacleManager::handleMailObstacleResolved(string key)
 
 //------------------------------------------------------------
 // Procedure: handleMailKnownObstacle
-//   Example: pts={90.2,-80.4:...:82.1,-88.5:82.1,-83.7:85.4,-80.4},label=ob_0
+//   Example: pts={90.2,-80.4:...:82,-88:82.1,-83.7:85.4,-80.4},label=ob_0
 
 bool ObstacleManager::handleMailKnownObstacle(string poly)
 {
@@ -253,9 +267,20 @@ bool ObstacleManager::handleMailKnownObstacle(string poly)
 
 bool ObstacleManager::handleMailNewPoint(string value)
 {
-  // Part 1: Build the new point and check if it is an obstacle point
+  // Part 1: Build the new point and perhaps check its range to ownship
   XYPoint newpt = customStringToPoint(value);
-
+  if(m_ignore_range > 0) {
+    double ptx = newpt.get_vx();
+    double pty = newpt.get_vy();
+    double range = hypot(m_nav_x - ptx, m_nav_y - pty);
+    if(range > m_ignore_range) {
+      m_points_ignored++;
+      return(true);
+    }
+  }
+    
+  newpt.set_time(m_curr_time);
+  
   // Part 2: Increment the total points received but return if the point
   //         is not valid
   m_points_total++;
@@ -271,18 +296,11 @@ bool ObstacleManager::handleMailNewPoint(string value)
     obstacle_key = "generic";
 
   // Part 4: Add the new point to the points associated with that key
-#if 0
   m_map_points[obstacle_key].push_back(newpt);
-  m_map_points_total[obstacle_key]++;
-#endif
-
-#if 1
-  m_map_points[obstacle_key].push_back(newpt);
-  if(m_map_points[obstacle_key].size() > 10)
+  if(m_map_points[obstacle_key].size() > m_max_pts_per_cluster)
     m_map_points[obstacle_key].pop_front();
 
   m_map_points_total[obstacle_key] = m_map_points[obstacle_key].size();
-#endif
   
 
   // Part 6: If the set of points associated with the obstacle_key is too
@@ -407,19 +425,16 @@ void ObstacleManager::postConvexHullAlert(string obstacle_key)
   // Sanity check 1: if an alert has already been generated, dont repeat
   if(m_map_alerted_flag[obstacle_key])
     return;
-  Notify("OBM_DEBUG", "A");
 
   // Sanity check 2: if a convex hull has not been created for this key
   // no alert can be made
   if(m_map_convex_hull.count(obstacle_key) == 0)
     return;
-  Notify("OBM_DEBUG", "B");
 
   // Sanity check 3: if a hull/poly exists, but its not convex, return
   XYPolygon poly = m_map_convex_hull[obstacle_key];
   if(!poly.is_convex())
     return;
-  Notify("OBM_DEBUG", "C");
 
   // Part 1: Get the string version of the polygon
   string poly_str = poly.get_spec(3);
@@ -534,6 +549,73 @@ XYPolygon ObstacleManager::placeholderConvexHull(string obstacle_key)
   return(poly);
 }
 
+//------------------------------------------------------------
+// Procedure: getPseudoHul()
+
+XYPolygon ObstacleManager::genPseudoHull(const vector<XYPoint>& pts, 
+					 double radius)
+{
+  if(pts.size() == 0) {
+    XYPolygon null_poly;
+    return(null_poly);
+  }
+
+  double avg_x = 0;
+  double avg_y = 0;
+
+  for(unsigned int i=0; i<pts.size(); i++) {
+    avg_x += pts[i].x();
+    avg_y += pts[i].y();
+  }
+
+  avg_x = avg_x / ((double)(pts.size()));
+  avg_y = avg_y / ((double)(pts.size()));
+  
+  string spec = "x=" + doubleToString(avg_x,2) + ",";
+  spec += "y=" + doubleToString(avg_y,2) + ",";
+  spec += "radius=" + doubleToString(radius,2) + ",";
+  spec += "pts=8,snap=0.01";
+
+  XYPolygon octogon = stringRadial2Poly(spec);
+  return(octogon);
+}
+
+
+//------------------------------------------------------------
+// Procedure: manageMemory()
+
+void ObstacleManager::manageMemory()
+{
+  vector<string> keys_to_forget;
+
+  map<string, list<XYPoint> >::iterator p;
+  for(p=m_map_points.begin(); p!=m_map_points.end(); p++) {
+    string key = p->first;
+    list<XYPoint>::iterator q;
+    for(q=m_map_points[key].begin(); q!=m_map_points[key].end(); ) {
+      XYPoint pt = *q;
+      double age = m_curr_time - pt.get_time();
+      if(age > m_max_age_per_point)
+	q = m_map_points[key].erase(q);
+      else
+	++q;
+    }
+    if(m_map_points[key].size() == 0)
+      keys_to_forget.push_back(key);
+  }
+  
+  for(unsigned int i=0; i<keys_to_forget.size(); i++) {
+    string key = keys_to_forget[i];
+    m_map_points.erase(key);
+    m_map_convex_hull.erase(key);
+    m_map_points_total.erase(key);
+    m_map_hull_changed_flag.erase(key);
+    m_map_alerted_flag.erase(key);
+    m_map_updates_var.erase(key);
+    m_map_updates_total.erase(key);
+    m_clusters_released++;
+  }
+}
 
 
 //------------------------------------------------------------
@@ -546,8 +628,10 @@ bool ObstacleManager::buildReport()
   m_msgs << "  PointVar: " << m_point_var << endl;
   m_msgs << "============================================" << endl;
   m_msgs << "State:                                      " << endl;
-  m_msgs << "  Points Received:  " << m_points_total       << endl;
-  m_msgs << "  Clusters:         " << m_map_points.size()  << endl;
+  m_msgs << "  Points Received:   " << m_points_total      << endl;
+  m_msgs << "  Points Ignored:    " << m_points_ignored    << endl;
+  m_msgs << "  Clusters:          " << m_map_points.size() << endl;
+  m_msgs << "  Clusters released: " << m_clusters_released << endl;
 
   m_msgs << endl << endl;
 
@@ -588,33 +672,3 @@ bool ObstacleManager::buildReport()
 }
 
 
-//------------------------------------------------------------
-// Procedure: getPseudoHul()
-
-XYPolygon ObstacleManager::genPseudoHull(const vector<XYPoint>& pts, 
-					 double radius)
-{
-  if(pts.size() == 0) {
-    XYPolygon null_poly;
-    return(null_poly);
-  }
-
-  double avg_x = 0;
-  double avg_y = 0;
-
-  for(unsigned int i=0; i<pts.size(); i++) {
-    avg_x += pts[i].x();
-    avg_y += pts[i].y();
-  }
-
-  avg_x = avg_x / ((double)(pts.size()));
-  avg_y = avg_y / ((double)(pts.size()));
-  
-  string spec = "x=" + doubleToString(avg_x,2) + ",";
-  spec += "y=" + doubleToString(avg_y,2) + ",";
-  spec += "radius=" + doubleToString(radius,2) + ",";
-  spec += "pts=8,snap=0.01";
-
-  XYPolygon octogon = stringRadial2Poly(spec);
-  return(octogon);
-}
