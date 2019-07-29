@@ -336,7 +336,7 @@ bool ObstacleManager::handleMailNewPoint(string value)
 
   //const vector<XYPoint>& points = m_map_points[obstacle_key];
 
-#if 0
+#if 1
   ConvexHullGenerator chgen;
   for(unsigned int i=0; i<points.size(); i++) 
     chgen.addPoint(points[i].x(), points[i].y(), points[i].get_label());
@@ -344,7 +344,7 @@ bool ObstacleManager::handleMailNewPoint(string value)
   XYPolygon poly = chgen.generateConvexHull();
 #endif
 
-#if 1
+#if 0
   XYPolygon poly = genPseudoHull(points, 5);
 #endif
 
