@@ -28,6 +28,7 @@ protected: // Standard AppCastingMOOSApp function to overload
   
 protected:
   void registerVariables();
+
   bool handleMailNewPoint(std::string);
   bool handleMailUpdatesRequest(std::string);
   bool handleMailObstacleResolved(std::string);
@@ -55,6 +56,10 @@ private: // Configuration variables
   
   unsigned int m_max_pts_per_cluster;
   double       m_max_age_per_point;
+
+  bool         m_lasso;
+  unsigned int m_lasso_points;
+  double       m_lasso_radius;
   
 private: // State variables
   double m_nav_x;

@@ -30,11 +30,15 @@ ObstacleManager::ObstacleManager()
   // Init configuration variables
   m_obstacle_alert_var  = "OBSTACLE_ALERT";
 
-  m_alert_range  = 20;
-  m_ignore_range = -1;
+  m_alert_range  = 20;  // meters
+  m_ignore_range = -1;  // meters (neg value means off)
 
   m_max_pts_per_cluster = 20;
   m_max_age_per_point   = 20;
+
+  m_lasso = false;
+  m_lasso_points = 6;
+  m_lasso_radius = 5;  // meters
   
   // Init state variables
   m_points_total   = 0;
@@ -147,7 +151,22 @@ bool ObstacleManager::OnStartUp()
       handled = setUIntOnString(m_max_pts_per_cluster, value);
     else if(param == "max_age_per_point")
       handled = setPosDoubleOnString(m_max_age_per_point, value);
-
+    else if(param == "lasso")
+      handled = setBooleanOnString(m_lasso, value);
+    else if(param == "lasso_points") {
+      handled = setUIntOnString(m_lasso_points, value);
+      if(m_lasso_points < 3) {
+	reportConfigWarning("lasso_points must be at least 3 points");
+	m_lasso_points = 3;
+      }
+    }
+    else if(param == "lasso_radius") {
+      handled = setDoubleOnString(m_lasso_radius, value); 
+      if(m_lasso_radius <= 0) {
+	reportConfigWarning("lasso_radius must be at positive number");
+	m_lasso_radius = 1;
+      }
+    }      
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
@@ -336,18 +355,15 @@ bool ObstacleManager::handleMailNewPoint(string value)
 
   //const vector<XYPoint>& points = m_map_points[obstacle_key];
 
-#if 1
-  ConvexHullGenerator chgen;
-  for(unsigned int i=0; i<points.size(); i++) 
-    chgen.addPoint(points[i].x(), points[i].y(), points[i].get_label());
-  
-  XYPolygon poly = chgen.generateConvexHull();
-#endif
-
-#if 0
-  XYPolygon poly = genPseudoHull(points, 5);
-#endif
-
+  XYPolygon poly;
+  if(m_lasso)
+    poly = genPseudoHull(points, m_lasso_radius);
+  else {
+    ConvexHullGenerator chgen;
+    for(unsigned int i=0; i<points.size(); i++) 
+      chgen.addPoint(points[i].x(), points[i].y(), points[i].get_label());
+    poly = chgen.generateConvexHull();
+  }
 
   // First check if the polygon is convex. Certain edge cases may result
   // in a non convex polygon even with N>2 points, e.g., 3 colinear pts.
@@ -543,7 +559,8 @@ XYPolygon ObstacleManager::placeholderConvexHull(string obstacle_key)
 
   // Part 4: Build a octagonal polygon
   stringstream ss;
-  ss << "format=radial, x=" << ctr_x << ",y=" << ctr_y << ",radius=" << max_dist << ",pts=8";
+  ss << "format=radial, x=" << ctr_x << ",y=" << ctr_y << ",radius="
+     << max_dist << ",pts=8";
   XYPolygon poly = string2Poly(ss.str());
 
   return(poly);
@@ -571,10 +588,11 @@ XYPolygon ObstacleManager::genPseudoHull(const vector<XYPoint>& pts,
   avg_x = avg_x / ((double)(pts.size()));
   avg_y = avg_y / ((double)(pts.size()));
   
-  string spec = "x=" + doubleToString(avg_x,2) + ",";
-  spec += "y=" + doubleToString(avg_y,2) + ",";
-  spec += "radius=" + doubleToString(radius,2) + ",";
-  spec += "pts=8,snap=0.01";
+  string spec = "x=" + doubleToString(avg_x,2)  + ",";
+  spec += "y=" + doubleToString(avg_y,2)        + ",";
+  spec += "radius=" + doubleToString(radius,2)  + ",";
+  spec += "pts=" + uintToString(m_lasso_points) + ",";
+  spec += "snap=0.01";
 
   XYPolygon octogon = stringRadial2Poly(spec);
   return(octogon);
@@ -623,11 +641,32 @@ void ObstacleManager::manageMemory()
 
 bool ObstacleManager::buildReport() 
 {
+  string str_lasso = boolToString(m_lasso);
+  string str_lasso_pts = uintToString(m_lasso_points);
+  string str_lasso_rad = doubleToStringX(m_lasso_radius);
+
+  string str_alert_rng = doubleToStringX(m_alert_range);
+  string str_ignore_rng = doubleToStringX(m_ignore_range);
+
+  string str_max_pts_per = uintToString(m_max_pts_per_cluster);
+  string str_max_age_per = doubleToStringX(m_max_age_per_point);
+
+  string str_navx = doubleToStringX(m_nav_x,1);
+  string str_navy = doubleToStringX(m_nav_y,1);
+  string str_nav = "(" + str_navx + "," + str_navy + ")";
+  
   m_msgs << "============================================" << endl;
   m_msgs << "Configuration:                              " << endl;
-  m_msgs << "  PointVar: " << m_point_var << endl;
+  m_msgs << "  PointVar:     " << m_point_var              << endl;
+  m_msgs << "  AlertVar:     " << m_obstacle_alert_var     << endl;
+  m_msgs << "  lasso:        " << str_lasso                << endl;
+  m_msgs << "  lasso_points: " << str_lasso_pts            << endl;
+  m_msgs << "  lasso_radius: " << str_lasso_rad            << endl;
+  m_msgs << "  max_pts_per_cluster: " << str_max_pts_per   << endl;
+  m_msgs << "  max_age_per_point:   " << str_max_age_per   << endl;
   m_msgs << "============================================" << endl;
   m_msgs << "State:                                      " << endl;
+  m_msgs << "  Nav Position:      " << str_nav             << endl;
   m_msgs << "  Points Received:   " << m_points_total      << endl;
   m_msgs << "  Points Ignored:    " << m_points_ignored    << endl;
   m_msgs << "  Clusters:          " << m_map_points.size() << endl;
