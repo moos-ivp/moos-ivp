@@ -57,6 +57,10 @@ BHV_AvoidObstacle::BHV_AvoidObstacle(IvPDomain gdomain) :
   m_pwt_outer_dist    = 30;
   m_pwt_inner_dist    = 20;
 
+  m_completed_dist_set = false;
+  m_pwt_outer_dist_set = false;
+  m_pwt_inner_dist_set = false;
+
   m_obstacle_relevance = 0;
   
   m_pwt_grade = "linear";
@@ -107,16 +111,45 @@ bool BHV_AvoidObstacle::setParam(string param, string val)
   
   else if((param == "pwt_outer_dist") && non_neg_number) {
     m_pwt_outer_dist = dval;
-    if(m_pwt_inner_dist > m_pwt_outer_dist)
+    m_pwt_outer_dist_set = true;
+    
+    if(m_pwt_inner_dist > m_pwt_outer_dist) {
       m_pwt_inner_dist = m_pwt_outer_dist;
+      if(m_pwt_inner_dist_set) {
+	postBadConfig("pwt_outer_dist must be > pwt_inner_dist");
+	return(false);
+      }
+    }
+    if(m_completed_dist <= m_pwt_outer_dist) {
+      m_completed_dist = m_pwt_outer_dist + 1;
+      if(m_completed_dist_set)
+	return(false);
+    }
   }  
+
   else if((param == "pwt_inner_dist") && non_neg_number) {
     m_pwt_inner_dist = dval;
-    if(m_pwt_outer_dist < m_pwt_inner_dist)
+    m_pwt_inner_dist_set = true;
+
+    if(m_pwt_outer_dist < m_pwt_inner_dist) {
       m_pwt_outer_dist = m_pwt_inner_dist;
+      if(m_pwt_outer_dist_set)
+	return(false);
+    }
   }  
-  else if((param == "completed_dist") && non_neg_number) 
+
+  else if((param == "completed_dist") && non_neg_number) {
     m_completed_dist = dval;
+    m_completed_dist_set = true;
+
+    if(m_completed_dist <= m_pwt_outer_dist) {
+      m_completed_dist = m_pwt_outer_dist + 1;
+      if(m_pwt_outer_dist_set) {
+	postBadConfig("completed_dist must be > pwt_outer_dist");
+	return(false);
+      }
+    }
+  }
   else if(param == "no_alert_request")
     return(setBooleanOnString(m_no_alert_request, val));
   else if(param == "visual_hints")
@@ -135,13 +168,6 @@ bool BHV_AvoidObstacle::setParam(string param, string val)
 
 void BHV_AvoidObstacle::onSetParamComplete()
 {
-  if(m_obstacle_key != "") {
-    m_obstacle_update_var = "OBSTACLE_UPDATE_" + toupper(m_obstacle_key);
-    string msg = "obstacle_key=" + m_obstacle_key;
-    msg += ",update_var=" + m_obstacle_update_var;
-    postMessage("OBSTACLE_UPDATE_REQUEST", msg);
-    addInfoVars(m_obstacle_update_var, "no_warning");
-  }
   postConfigStatus();
 }
 
@@ -153,16 +179,11 @@ void BHV_AvoidObstacle::onHelmStart()
   if(m_no_alert_request || (m_update_var == ""))
     return;
 
-  string s_alert_range = doubleToStringX(m_pwt_outer_dist,1);
-  string s_cpa_range   = doubleToStringX(m_completed_dist,1);
-  string s_alert_templ = "name=obj_$[OBJNAME] # obstacle_key=$[OBJNAME]";
+  string alert_request = "name=" + m_descriptor;
+  alert_request += ",update_var=" + m_update_var;
+  alert_request += ",alert_range=" + doubleToStringX(m_pwt_outer_dist,1);
 
-  string alert_request = "id=obavoid, var=" + m_update_var;
-  alert_request += ", val=" + s_alert_templ;
-  alert_request += ", alert_range=" + s_alert_range;
-  alert_request += ", cpa_range=" + s_cpa_range;
-
-  postMessage("OBJ_ALERT_REQUEST", alert_request);
+  postMessage("OBM_ALERT_REQUEST", alert_request);
 }
 
 //-----------------------------------------------------------
@@ -197,6 +218,14 @@ void BHV_AvoidObstacle::onInactiveState()
 void BHV_AvoidObstacle::onIdleToRunState()
 {
   postConfigStatus();
+}
+
+//-----------------------------------------------------------
+// Procedure: onSpawn()
+
+void BHV_AvoidObstacle::onSpawn()
+{
+  postMessage("AVD_OB_SPAWN", m_descriptor);
 }
 
 //-----------------------------------------------------------

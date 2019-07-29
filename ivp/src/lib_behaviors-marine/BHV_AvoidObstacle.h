@@ -40,6 +40,7 @@ public:
   void         onSetParamComplete();
   void         onIdleToRunState();
   void         onInactiveState();
+  void         onSpawn();
   void         postConfigStatus();
 
  protected:
@@ -69,6 +70,10 @@ public:
   double  m_pwt_inner_dist;
   double  m_completed_dist;
 
+  bool    m_pwt_outer_dist_set;
+  bool    m_pwt_inner_dist_set;
+  bool    m_completed_dist_set;
+  
   bool    m_no_alert_request;
   
   std::string  m_pwt_grade;

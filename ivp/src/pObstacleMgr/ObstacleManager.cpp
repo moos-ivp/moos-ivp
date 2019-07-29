@@ -28,7 +28,7 @@ ObstacleManager::ObstacleManager()
   m_nav_y = 0;
 
   // Init configuration variables
-  m_obstacle_alert_var  = "OBSTACLE_ALERT";
+  m_alert_var  = "";    // Initially no alerts will be posted
 
   m_alert_range  = 20;  // meters
   m_ignore_range = -1;  // meters (neg value means off)
@@ -80,12 +80,10 @@ bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
       m_nav_y = dval;
       handled = true;
     }
-    else if(key == "OBSTACLE_RESOLVED") 
-      handled = handleMailObstacleResolved(sval);
     else if(key == "KNOWN_OBSTACLE") 
       handled = handleMailKnownObstacle(sval);
-    else if(key == "OBSTACLE_UPDATE_REQUEST") 
-      handled = handleMailUpdatesRequest(sval);
+    else if(key == "OBM_ALERT_REQUEST") 
+      handled = handleMailAlertRequest(sval);
     else if(key == "APPCAST_REQ") // handle by AppCastingMOOSApp
       handled = true;
 
@@ -114,7 +112,6 @@ bool ObstacleManager::OnConnectToServer()
 bool ObstacleManager::Iterate()
 {
   AppCastingMOOSApp::Iterate();
-  postConvexHullAlerts();
   postConvexHullUpdates();
   manageMemory();
   AppCastingMOOSApp::PostReport();
@@ -194,10 +191,9 @@ void ObstacleManager::registerVariables()
 
   Register("NAV_X", 0);
   Register("NAV_Y", 0);
-  Register("OBSTACLE_RESOLVED", 0);
-  Register("OBSTACLE_UPDATE_REQUEST");
 
   Register("KNOWN_OBSTACLE",0);
+  Register("OBM_ALERT_REQUEST",0);
 }
 
 
@@ -241,20 +237,6 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
   return(new_pt);
 }
 
-
-//------------------------------------------------------------
-// Procedure: handleMailObstacleResolved()
-//   Example: OBSTACLE_RESOLVED = key
-
-bool ObstacleManager::handleMailObstacleResolved(string key)
-{
-  if(m_map_alerted_flag.count(key) == 0) {
-    reportRunWarning("Unhandled mail, resolving unknown key: " + key);
-    return(false);
-  }
-  m_map_alerted_flag[key] = false;
-  return(true);
-}
 
 //------------------------------------------------------------
 // Procedure: handleMailKnownObstacle
@@ -368,7 +350,6 @@ bool ObstacleManager::handleMailNewPoint(string value)
   // First check if the polygon is convex. Certain edge cases may result
   // in a non convex polygon even with N>2 points, e.g., 3 colinear pts.
   if(!poly.is_convex())
-    //return(true);
     poly = placeholderConvexHull(obstacle_key);
   
   poly.set_label(obstacle_key);
@@ -387,96 +368,78 @@ bool ObstacleManager::handleMailNewPoint(string value)
 }
 
 //------------------------------------------------------------
-// Procedure: handleMailUpdatesRequest
-//   Example: OBSTACLE_UPDATE_REQUEST = "obstacle_key=a,bhv_name=avd_obstacle_a"
+// Procedure: handleMailAlertRequest
+//   Example: POM_ALERT_REQUEST = "name=avd_ostacle,
+//                                 update_var=OBSTACLE_ALERT,
+//                                 alert_range=20,
 
-bool ObstacleManager::handleMailUpdatesRequest(string request)
+bool ObstacleManager::handleMailAlertRequest(string request)
 {
-  string key;
-  string var;
+  string name, update_var, alert_range;
 
   vector<string> svector = parseString(request, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
-    string param = biteStringX(svector[i], '=');
+    string param = tolower(biteStringX(svector[i], '='));
     string value = svector[i];
-    if(param == "obstacle_key")
-      key = value;
+    if(param == "name")
+      name = value;
     else if(param == "update_var")
-      var = value;
+      update_var = value;
+    else if(param == "alert_range")
+      alert_range = value;
     else
       return(false);
   }
 
-  if((key == "") || (var == ""))
+  if((name == "") || (update_var == "") || (alert_range == ""))
+    return(false);
+
+  if(!isNumber(alert_range))
     return(false);
   
-  m_map_updates_var[key] = var;
+  double d_alert_range = atof(alert_range.c_str());
+  if(d_alert_range <= 0)
+    return(false);
+
+  // Alert request is valid, go ahead and set 
+  m_alert_var = update_var;
+  m_alert_name = name;
+  m_alert_range = d_alert_range;
+
+  // Upon new alert request, mark all convex hulls as changed, to ensure
+  // the latest will be posted, even if changed some time ago
+  map<string,bool>::iterator p;
+  for(p=m_map_hull_changed_flag.begin(); p!=m_map_hull_changed_flag.end(); p++) {
+    string obstacle_key = p->first;
+    m_map_hull_changed_flag[obstacle_key] = true;
+  }  
+  
   return(true);
 }
-
-
-//------------------------------------------------------------
-// Procedure: postConvexHullAlerts
-
-void ObstacleManager::postConvexHullAlerts()
-{
-  map<string, XYPolygon>::iterator p;
-  for(p=m_map_convex_hull.begin(); p!=m_map_convex_hull.end(); p++) {
-    XYPolygon poly = p->second;
-    if(poly.is_convex()) {
-      double dist = poly.dist_to_poly(m_nav_x, m_nav_y);
-      Notify("OBM_DIST_TO_POLY", dist);
-      if(dist <= m_alert_range)
-        postConvexHullAlert(p->first);
-    }
-  }
-}
-
-
-//------------------------------------------------------------
-// Procedure: postConvexHullAlert
-
-void ObstacleManager::postConvexHullAlert(string obstacle_key)
-{
-  // Sanity check 1: if an alert has already been generated, dont repeat
-  if(m_map_alerted_flag[obstacle_key])
-    return;
-
-  // Sanity check 2: if a convex hull has not been created for this key
-  // no alert can be made
-  if(m_map_convex_hull.count(obstacle_key) == 0)
-    return;
-
-  // Sanity check 3: if a hull/poly exists, but its not convex, return
-  XYPolygon poly = m_map_convex_hull[obstacle_key];
-  if(!poly.is_convex())
-    return;
-
-  // Part 1: Get the string version of the polygon
-  string poly_str = poly.get_spec(3);
-  Notify("VIEW_POLYGON", poly_str);
-
-  // Part 2: Construct the posting to be made
-  string obstacle_alert = "name=" + obstacle_key + "#poly=";
-  obstacle_alert += poly.get_spec_pts(2) + ",label=" + obstacle_key;
-  obstacle_alert += "#obstacle_key=" + obstacle_key;
-  
-  // Part 3: Make the posting
-  Notify(m_obstacle_alert_var, obstacle_alert);
-
-  // Part 4: Note that an alert has been generated for this obstacle key
-  m_map_alerted_flag[obstacle_key] = true;
-}
-
 
 //------------------------------------------------------------
 // Procedure: postConvexHullUpdates
 
 void ObstacleManager::postConvexHullUpdates()
 {
-  map<string, bool>::iterator p;
-  for(p=m_map_hull_changed_flag.begin(); p!=m_map_hull_changed_flag.end(); p++) {
-    postConvexHullUpdate(p->first);
+  // If no alert request has been made, no updates to be made
+  if(m_alert_var == "")
+    return;
+
+  map<string, XYPolygon>::iterator p;
+  // For all obstacles that have a convex hull
+  for(p=m_map_convex_hull.begin(); p!=m_map_convex_hull.end(); p++) {
+    string obs_key = p->first;
+    XYPolygon poly = p->second;
+
+    // Double check it is convex
+    if(poly.is_convex()) {
+      double dist = poly.dist_to_poly(m_nav_x, m_nav_y);
+      Notify("OBM_DIST_TO_OBJ_" + toupper(obs_key), dist);
+      // Only post if ownship is within the alert range
+      if(dist <= m_alert_range)
+        postConvexHullUpdate(obs_key);
+    }
   }
 }
 
@@ -486,11 +449,6 @@ void ObstacleManager::postConvexHullUpdates()
 
 void ObstacleManager::postConvexHullUpdate(string obstacle_key)
 {
-  // If there has not been an enitity, e.g., behavior, that has requested
-  // updates
-  if(m_map_updates_var.count(obstacle_key) == 0)
-    return;
-
   if(!m_map_hull_changed_flag[obstacle_key])
     return;
 
@@ -508,10 +466,10 @@ void ObstacleManager::postConvexHullUpdate(string obstacle_key)
   string poly_str = poly.get_spec(3);
   Notify("VIEW_POLYGON", poly_str);
 
-  string update_var = m_map_updates_var[obstacle_key];
-  string update_str = poly.get_spec_pts(2) + ",label=" + obstacle_key;
+  string update_str = "name=" + m_alert_name + obstacle_key + "#";
+  update_str += "poly=" + poly.get_spec_pts(2) + ",label=" + obstacle_key;
   
-  Notify(update_var, update_str);
+  Notify(m_alert_var, update_str);
 }
 
 //------------------------------------------------------------
@@ -628,8 +586,6 @@ void ObstacleManager::manageMemory()
     m_map_convex_hull.erase(key);
     m_map_points_total.erase(key);
     m_map_hull_changed_flag.erase(key);
-    m_map_alerted_flag.erase(key);
-    m_map_updates_var.erase(key);
     m_map_updates_total.erase(key);
     m_clusters_released++;
   }
@@ -645,8 +601,8 @@ bool ObstacleManager::buildReport()
   string str_lasso_pts = uintToString(m_lasso_points);
   string str_lasso_rad = doubleToStringX(m_lasso_radius);
 
-  string str_alert_rng = doubleToStringX(m_alert_range);
-  string str_ignore_rng = doubleToStringX(m_ignore_range);
+  string str_alert_rng = doubleToStringX(m_alert_range,1);
+  string str_ignore_rng = doubleToStringX(m_ignore_range,1);
 
   string str_max_pts_per = uintToString(m_max_pts_per_cluster);
   string str_max_age_per = doubleToStringX(m_max_age_per_point);
@@ -654,16 +610,22 @@ bool ObstacleManager::buildReport()
   string str_navx = doubleToStringX(m_nav_x,1);
   string str_navy = doubleToStringX(m_nav_y,1);
   string str_nav = "(" + str_navx + "," + str_navy + ")";
+
   
   m_msgs << "============================================" << endl;
-  m_msgs << "Configuration:                              " << endl;
-  m_msgs << "  PointVar:     " << m_point_var              << endl;
-  m_msgs << "  AlertVar:     " << m_obstacle_alert_var     << endl;
+  m_msgs << "Configuration (point handling):             " << endl;
+  m_msgs << "  point_var:    " << m_point_var              << endl;
+  m_msgs << "  max_pts_per_cluster: " << str_max_pts_per   << endl;
+  m_msgs << "  max_age_per_point:   " << str_max_age_per   << endl;
+  m_msgs << "  ignore_range:        " << str_ignore_rng    << endl;
+  m_msgs << "Configuration (alerts):                     " << endl;
+  m_msgs << "  alert_var:   " << m_alert_var               << endl;
+  m_msgs << "  alert_name:  " << m_alert_name              << endl;
+  m_msgs << "  alert_range: " << str_alert_rng             << endl;
+  m_msgs << "Configuration (lasso option):               " << endl;
   m_msgs << "  lasso:        " << str_lasso                << endl;
   m_msgs << "  lasso_points: " << str_lasso_pts            << endl;
   m_msgs << "  lasso_radius: " << str_lasso_rad            << endl;
-  m_msgs << "  max_pts_per_cluster: " << str_max_pts_per   << endl;
-  m_msgs << "  max_age_per_point:   " << str_max_age_per   << endl;
   m_msgs << "============================================" << endl;
   m_msgs << "State:                                      " << endl;
   m_msgs << "  Nav Position:      " << str_nav             << endl;
@@ -674,8 +636,8 @@ bool ObstacleManager::buildReport()
 
   m_msgs << endl << endl;
 
-  ACTable actab(5);
-  actab << "ObstacleKey | Points | HullSize | UpdatesVar | Updates ";
+  ACTable actab(4);
+  actab << "ObstacleKey | Points | HullSize | Updates ";
   actab.addHeaderLines();
 
   map<string, unsigned int>::iterator p;
@@ -689,10 +651,6 @@ bool ObstacleManager::buildReport()
     if(m_map_convex_hull.count(obstacle_key) !=0)
       hull_size_str = uintToString(m_map_convex_hull[obstacle_key].size());
 
-    string updates_var_str = "n/a";
-    if(m_map_updates_var.count(obstacle_key) !=0)
-      updates_var_str = m_map_updates_var[obstacle_key];
-
     string updates_total_str = "n/a";
     if(m_map_updates_total.count(obstacle_key) !=0)
       updates_total_str = uintToString(m_map_updates_total[obstacle_key]);
@@ -700,7 +658,6 @@ bool ObstacleManager::buildReport()
     actab << obstacle_key;
     actab << points_str;
     actab << hull_size_str;
-    actab << updates_var_str;
     actab << updates_total_str;
   }
 
