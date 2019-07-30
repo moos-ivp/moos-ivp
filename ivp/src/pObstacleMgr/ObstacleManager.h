@@ -42,6 +42,7 @@ protected:
   
   XYPoint customStringToPoint(std::string point_str);
 
+  void updatePolyRanges();
   void manageMemory();
   
 private: // Configuration variables
@@ -66,16 +67,19 @@ private: // State variables
   double m_nav_y;
   
   unsigned int  m_points_total;
+  unsigned int  m_points_invalid;
   unsigned int  m_points_ignored;
 
   unsigned int  m_clusters_released;
   
-  // Each map is keyed on the obstacle_key, e.g. buoy-a, buoy-b etc
-  std::map<std::string, std::list<XYPoint> >   m_map_points;
-  std::map<std::string, XYPolygon>             m_map_convex_hull;
-  std::map<std::string, bool>                  m_map_hull_changed_flag;
-  std::map<std::string, unsigned int>          m_map_points_total;
-  std::map<std::string, unsigned int>          m_map_updates_total;
+  // Each map is keyed on the obstacle_key
+  std::map<std::string, std::list<XYPoint> > m_map_points;
+  std::map<std::string, unsigned int>        m_map_points_total;
+  std::map<std::string, XYPolygon>           m_map_poly_convex;
+  std::map<std::string, double>              m_map_poly_range;
+  std::map<std::string, bool>                m_map_poly_given;
+  std::map<std::string, bool>                m_map_poly_changed;
+  std::map<std::string, unsigned int>        m_map_updates_total;
 };
 
 #endif 

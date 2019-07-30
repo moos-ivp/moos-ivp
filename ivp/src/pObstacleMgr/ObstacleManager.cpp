@@ -69,9 +69,8 @@ bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
 #endif
 
     bool handled = false;
-    if(key == m_point_var) { 
+    if(key == m_point_var)
       handled = handleMailNewPoint(sval);
-    }
     if(key == "NAV_X") {
       m_nav_x = dval;
       handled = true;
@@ -113,6 +112,7 @@ bool ObstacleManager::Iterate()
 {
   AppCastingMOOSApp::Iterate();
   postConvexHullUpdates();
+  updatePolyRanges();
   manageMemory();
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -249,16 +249,26 @@ bool ObstacleManager::handleMailKnownObstacle(string poly)
     return(false);
 
   string label = new_poly.get_label();
-  if(m_map_convex_hull.count(label) != 0) {
-    m_map_convex_hull[label] = new_poly;
-    m_map_points[label].clear();
-    m_map_hull_changed_flag[label] = true;
+
+  // Sanity check: If an obstacle with given label/key is already
+  // known, and associated with an obstacle that is NOT a given
+  // obstacle (rather it is associated with a data stream of points),
+  // then reject.
+  if(m_map_poly_given.count(label) && !m_map_poly_given[label]) {
+    string msg = "Reject given obst: already known as data obstacle"; 
+    reportRunWarning(msg);
+  }
+  
+  if(m_map_poly_given.count(label) != 0) {
+    m_map_poly_convex[label] = new_poly;
+    m_map_poly_given[label] = true;
+    m_map_poly_changed[label] = true;
     return(true);
   }
 
-  m_map_convex_hull[label] = new_poly;
-  m_map_points[label].clear();
-  m_map_hull_changed_flag[label] = true;
+  m_map_poly_convex[label] = new_poly;
+  m_map_poly_changed[label] = true;
+  m_map_poly_given[label]   = true;
   
   return(true);
 }
@@ -268,8 +278,15 @@ bool ObstacleManager::handleMailKnownObstacle(string poly)
 
 bool ObstacleManager::handleMailNewPoint(string value)
 {
-  // Part 1: Build the new point and perhaps check its range to ownship
+  // Part 1A: Build the new point and perhaps check its validity
   XYPoint newpt = customStringToPoint(value);
+  if(!newpt.valid()) {
+    m_points_invalid++;
+    reportRunWarning("Invalid point:" + value);
+    return(false);
+  }
+    
+  // Part 1B: Check the range of the point to ownship
   if(m_ignore_range > 0) {
     double ptx = newpt.get_vx();
     double pty = newpt.get_vy();
@@ -304,12 +321,12 @@ bool ObstacleManager::handleMailNewPoint(string value)
   m_map_points_total[obstacle_key] = m_map_points[obstacle_key].size();
   
 
-  // Part 6: If the set of points associated with the obstacle_key is too
+  // Part 5: If the set of points associated with the obstacle_key is too
   //         small to make a convex polygon, we can just return now.
-  //if(m_map_points_total[obstacle_key] < 3)
-  //  return(true);
+  if(m_map_points_total[obstacle_key] < 3)
+    return(true);
 
-  // Part 5: Determine if the convex hull associated with the obstacle
+  // Part 6: Determine if the convex hull associated with the obstacle
   //         key needs to be updated. 
   //   Note: If the hull doesn't exist and there are >2 points now then
   //         try to build the convex hull
@@ -317,9 +334,9 @@ bool ObstacleManager::handleMailNewPoint(string value)
   //         the hull does not need to be updated.
 
   bool hull_update_needed = false;
-  if(m_map_convex_hull.count(obstacle_key)==0)
+  if(m_map_poly_convex.count(obstacle_key)==0)
     hull_update_needed = true;
-  else if(!m_map_convex_hull[obstacle_key].contains(newpt.x(), newpt.y()))
+  else if(!m_map_poly_convex[obstacle_key].contains(newpt.x(), newpt.y()))
     hull_update_needed = true;
 
   if(!hull_update_needed)
@@ -334,8 +351,6 @@ bool ObstacleManager::handleMailNewPoint(string value)
     XYPoint pt = *p;
     points.push_back(pt);
   }
-
-  //const vector<XYPoint>& points = m_map_points[obstacle_key];
 
   XYPolygon poly;
   if(m_lasso)
@@ -353,8 +368,8 @@ bool ObstacleManager::handleMailNewPoint(string value)
     poly = placeholderConvexHull(obstacle_key);
   
   poly.set_label(obstacle_key);
-  m_map_convex_hull[obstacle_key]       = poly;
-  m_map_hull_changed_flag[obstacle_key] = true;
+  m_map_poly_convex[obstacle_key]       = poly;
+  m_map_poly_changed[obstacle_key] = true;
   
   
   poly.set_vertex_color("dodger_blue");
@@ -409,9 +424,9 @@ bool ObstacleManager::handleMailAlertRequest(string request)
   // Upon new alert request, mark all convex hulls as changed, to ensure
   // the latest will be posted, even if changed some time ago
   map<string,bool>::iterator p;
-  for(p=m_map_hull_changed_flag.begin(); p!=m_map_hull_changed_flag.end(); p++) {
+  for(p=m_map_poly_changed.begin(); p!=m_map_poly_changed.end(); p++) {
     string obstacle_key = p->first;
-    m_map_hull_changed_flag[obstacle_key] = true;
+    m_map_poly_changed[obstacle_key] = true;
   }  
   
   return(true);
@@ -428,7 +443,7 @@ void ObstacleManager::postConvexHullUpdates()
 
   map<string, XYPolygon>::iterator p;
   // For all obstacles that have a convex hull
-  for(p=m_map_convex_hull.begin(); p!=m_map_convex_hull.end(); p++) {
+  for(p=m_map_poly_convex.begin(); p!=m_map_poly_convex.end(); p++) {
     string obs_key = p->first;
     XYPolygon poly = p->second;
 
@@ -449,12 +464,12 @@ void ObstacleManager::postConvexHullUpdates()
 
 void ObstacleManager::postConvexHullUpdate(string obstacle_key)
 {
-  if(!m_map_hull_changed_flag[obstacle_key])
+  if(!m_map_poly_changed[obstacle_key])
     return;
 
   // At this point we're committed to posting an update so go ahead 
   // and mark this obstacle key as NOT changed.
-  m_map_hull_changed_flag[obstacle_key] = false;
+  m_map_poly_changed[obstacle_key] = false;
   
   // Increment the total number of updates posted for this obstacle key
   if(m_map_updates_total.count(obstacle_key) == 0)
@@ -462,11 +477,12 @@ void ObstacleManager::postConvexHullUpdate(string obstacle_key)
   m_map_updates_total[obstacle_key]++;
 
   
-  XYPolygon poly = m_map_convex_hull[obstacle_key];
+  XYPolygon poly = m_map_poly_convex[obstacle_key];
   string poly_str = poly.get_spec(3);
-  Notify("VIEW_POLYGON", poly_str);
+  //Notify("VIEW_POLYGON", poly_str);
 
-  string update_str = "name=" + m_alert_name + obstacle_key + "#";
+  //string update_str = "name=" + m_alert_name + obstacle_key + "#";
+  string update_str = "name=" + obstacle_key + "#";
   update_str += "poly=" + poly.get_spec_pts(2) + ",label=" + obstacle_key;
   
   Notify(m_alert_var, update_str);
@@ -558,12 +574,39 @@ XYPolygon ObstacleManager::genPseudoHull(const vector<XYPoint>& pts,
 
 
 //------------------------------------------------------------
+// Procedure: updatePolyRanges()
+
+void ObstacleManager::updatePolyRanges()
+{
+  map<string,XYPolygon>::iterator p;
+  for(p=m_map_poly_convex.begin(); p!=m_map_poly_convex.end(); p++) {
+    string key = p->first;
+    XYPolygon poly = p->second;
+    double range = poly.dist_to_poly(m_nav_x, m_nav_y);
+
+    bool update_needed = false;
+    if(m_map_poly_range.count(key) == 0)
+      update_needed = true;
+    else {
+      if((m_map_poly_range[key] > m_alert_range) &&
+	 (range <= m_alert_range))
+	update_needed = true;
+    }
+    if(update_needed)
+      m_map_poly_changed[key] = true;
+    m_map_poly_range[key] = range;
+  }
+}
+
+//------------------------------------------------------------
 // Procedure: manageMemory()
 
 void ObstacleManager::manageMemory()
 {
-  vector<string> keys_to_forget;
+  set<string> keys_to_forget;
 
+  // Part 1: Go through all sensor points and prune based on age
+  // Note which obstacle keys have no 
   map<string, list<XYPoint> >::iterator p;
   for(p=m_map_points.begin(); p!=m_map_points.end(); p++) {
     string key = p->first;
@@ -576,18 +619,52 @@ void ObstacleManager::manageMemory()
       else
 	++q;
     }
-    if(m_map_points[key].size() == 0)
-      keys_to_forget.push_back(key);
+    // Flag the obstacle for removal if the points list is empty and
+    // is it not a given obstacle.
+    bool forget_this_obstacle = true;
+    if(m_map_points[key].size() != 0)
+      forget_this_obstacle = false;
+    if(m_map_poly_given[key] == true)
+      forget_this_obstacle = false;
+    if(forget_this_obstacle)
+      keys_to_forget.insert(key);
   }
-  
-  for(unsigned int i=0; i<keys_to_forget.size(); i++) {
-    string key = keys_to_forget[i];
+
+  // Part 2: Just to be sure, check all polys and also flag it for
+  // removal if there are no points associated, and it is not a given
+  // obstacle.
+  map<string, XYPolygon>::iterator q;
+  for(q=m_map_poly_convex.begin(); q!=m_map_poly_convex.end(); q++) {
+    string key = q->first;
+
+    bool forget_this_obstacle = true;
+    if((m_map_points.count(key) > 0) && (m_map_points[key].size() > 0))
+      forget_this_obstacle = false;
+    if(m_map_poly_given[key] == true)
+      forget_this_obstacle = false;
+    if(forget_this_obstacle)
+      keys_to_forget.insert(key);
+  }
+    
+  // Part 3: Free memory for obstacles flagged above
+  set<string>::iterator p1;
+  for(p1=keys_to_forget.begin(); p1!=keys_to_forget.end(); p1++) {
+    string key = *p1;
     m_map_points.erase(key);
-    m_map_convex_hull.erase(key);
     m_map_points_total.erase(key);
-    m_map_hull_changed_flag.erase(key);
+    m_map_poly_given.erase(key);
+    m_map_poly_changed.erase(key);
     m_map_updates_total.erase(key);
     m_clusters_released++;
+
+    // If a poly is being freed, first post a viewable poly with
+    // active set to false, so a renderer knows to erase.
+    if(m_map_poly_convex.count(key)) {
+      m_map_poly_convex[key].set_active(false);
+      string spec = m_map_poly_convex[key].get_spec();
+      Notify("VIEW_POLYGON", spec);
+      m_map_poly_convex.erase(key);
+    }
   }
 }
 
@@ -630,7 +707,9 @@ bool ObstacleManager::buildReport()
   m_msgs << "State:                                      " << endl;
   m_msgs << "  Nav Position:      " << str_nav             << endl;
   m_msgs << "  Points Received:   " << m_points_total      << endl;
+  m_msgs << "  Points Invalid:    " << m_points_invalid    << endl;
   m_msgs << "  Points Ignored:    " << m_points_ignored    << endl;
+  m_msgs << "  Polygon obstacles: " << m_map_poly_convex.size() << endl;
   m_msgs << "  Clusters:          " << m_map_points.size() << endl;
   m_msgs << "  Clusters released: " << m_clusters_released << endl;
 
@@ -648,8 +727,8 @@ bool ObstacleManager::buildReport()
       points_str = uintToString(m_map_points[obstacle_key].size());
 
     string hull_size_str = "0";
-    if(m_map_convex_hull.count(obstacle_key) !=0)
-      hull_size_str = uintToString(m_map_convex_hull[obstacle_key].size());
+    if(m_map_poly_convex.count(obstacle_key) !=0)
+      hull_size_str = uintToString(m_map_poly_convex[obstacle_key].size());
 
     string updates_total_str = "n/a";
     if(m_map_updates_total.count(obstacle_key) !=0)
