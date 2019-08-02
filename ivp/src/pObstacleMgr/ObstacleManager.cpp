@@ -44,6 +44,10 @@ ObstacleManager::ObstacleManager()
   m_points_total   = 0;
   m_points_ignored = 0;
   m_clusters_released = 0;
+
+  // Init info output variables
+  m_post_dist_to_polys = true;
+  m_post_view_polys = true;
 }
 
 //---------------------------------------------------------
@@ -79,8 +83,8 @@ bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
       m_nav_y = dval;
       handled = true;
     }
-    else if(key == "KNOWN_OBSTACLE") 
-      handled = handleMailKnownObstacle(sval);
+    else if(key == "GIVEN_OBSTACLE") 
+      handled = handleGivenObstacle(sval);
     else if(key == "OBM_ALERT_REQUEST") 
       handled = handleMailAlertRequest(sval);
     else if(key == "APPCAST_REQ") // handle by AppCastingMOOSApp
@@ -140,6 +144,8 @@ bool ObstacleManager::OnStartUp()
     bool handled = false;
     if(param == "point_var")
       handled = setNonWhiteVarOnString(m_point_var, value);
+    else if(param == "given_obstable")
+      handled = handleGivenObstacle(value);
     else if(param == "alert_range")
       handled = setPosDoubleOnString(m_alert_range, value);
     else if(param == "ignore_range")
@@ -148,8 +154,13 @@ bool ObstacleManager::OnStartUp()
       handled = setUIntOnString(m_max_pts_per_cluster, value);
     else if(param == "max_age_per_point")
       handled = setPosDoubleOnString(m_max_age_per_point, value);
+    else if(param == "post_dist_to_polys")
+      handled = setBooleanOnString(m_post_dist_to_polys, value);
+    else if(param == "post_view_polys")
+      handled = setBooleanOnString(m_post_view_polys, value);
     else if(param == "lasso")
       handled = setBooleanOnString(m_lasso, value);
+
     else if(param == "lasso_points") {
       handled = setUIntOnString(m_lasso_points, value);
       if(m_lasso_points < 3) {
@@ -192,7 +203,7 @@ void ObstacleManager::registerVariables()
   Register("NAV_X", 0);
   Register("NAV_Y", 0);
 
-  Register("KNOWN_OBSTACLE",0);
+  Register("GIVEN_OBSTACLE",0);
   Register("OBM_ALERT_REQUEST",0);
 }
 
@@ -239,10 +250,10 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
 
 
 //------------------------------------------------------------
-// Procedure: handleMailKnownObstacle
+// Procedure: handleGivenObstacle
 //   Example: pts={90.2,-80.4:...:82,-88:82.1,-83.7:85.4,-80.4},label=ob_0
 
-bool ObstacleManager::handleMailKnownObstacle(string poly)
+bool ObstacleManager::handleGivenObstacle(string poly)
 {
   XYPolygon new_poly = string2Poly(poly);
   if(!new_poly.is_convex())
@@ -368,23 +379,24 @@ bool ObstacleManager::handleMailNewPoint(string value)
     poly = placeholderConvexHull(obstacle_key);
   
   poly.set_label(obstacle_key);
-  m_map_poly_convex[obstacle_key]       = poly;
+  m_map_poly_convex[obstacle_key]  = poly;
   m_map_poly_changed[obstacle_key] = true;
   
+  if(m_post_view_polys) {
+    poly.set_vertex_color("dodger_blue");
+    poly.set_edge_color("dodger_blue");
+    poly.set_vertex_size(4);
+    poly.set_edge_size(1);
+    string poly_str = poly.get_spec(3);
+    Notify("VIEW_POLYGON", poly_str);
+  }
   
-  poly.set_vertex_color("dodger_blue");
-  poly.set_edge_color("dodger_blue");
-  poly.set_vertex_size(4);
-  poly.set_edge_size(1);
-  string poly_str = poly.get_spec(3);
-  Notify("VIEW_POLYGON", poly_str);
-
   return(true);
 }
 
 //------------------------------------------------------------
 // Procedure: handleMailAlertRequest
-//   Example: POM_ALERT_REQUEST = "name=avd_ostacle,
+//   Example: OBM_ALERT_REQUEST = "name=avd_ostacle,
 //                                 update_var=OBSTACLE_ALERT,
 //                                 alert_range=20,
 
@@ -464,8 +476,9 @@ void ObstacleManager::postConvexHullUpdates()
 
 void ObstacleManager::postConvexHullUpdate(string obstacle_key)
 {
-  if(!m_map_poly_changed[obstacle_key])
-    return;
+  // Part 1: If the polygon hasn't changed, don't post an update
+  //if(!m_map_poly_changed[obstacle_key])
+  //  return;
 
   // At this point we're committed to posting an update so go ahead 
   // and mark this obstacle key as NOT changed.
@@ -479,7 +492,6 @@ void ObstacleManager::postConvexHullUpdate(string obstacle_key)
   
   XYPolygon poly = m_map_poly_convex[obstacle_key];
   string poly_str = poly.get_spec(3);
-  //Notify("VIEW_POLYGON", poly_str);
 
   //string update_str = "name=" + m_alert_name + obstacle_key + "#";
   string update_str = "name=" + obstacle_key + "#";
@@ -493,7 +505,8 @@ void ObstacleManager::postConvexHullUpdate(string obstacle_key)
 
 XYPolygon ObstacleManager::placeholderConvexHull(string obstacle_key)
 {
-  // Part 1: Sanity check: Can't build any kind of hull if no points at all.
+  // Part 1: Sanity check: Can't build any kind of hull if no points
+  // at all.
   XYPolygon null_poly;
   if(m_map_points.count(obstacle_key) == 0)
     return(null_poly);
@@ -659,12 +672,13 @@ void ObstacleManager::manageMemory()
 
     // If a poly is being freed, first post a viewable poly with
     // active set to false, so a renderer knows to erase.
-    if(m_map_poly_convex.count(key)) {
+    if(m_post_view_polys && m_map_poly_convex.count(key)) {
       m_map_poly_convex[key].set_active(false);
       string spec = m_map_poly_convex[key].get_spec();
       Notify("VIEW_POLYGON", spec);
-      m_map_poly_convex.erase(key);
     }
+
+    m_map_poly_convex.erase(key);
   }
 }
 

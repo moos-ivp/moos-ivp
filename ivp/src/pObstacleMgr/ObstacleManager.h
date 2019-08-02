@@ -31,7 +31,8 @@ protected:
 
   bool handleMailNewPoint(std::string);
   bool handleMailAlertRequest(std::string);
-  bool handleMailKnownObstacle(std::string);
+
+  bool handleGivenObstacle(std::string);
   
   void postConvexHullUpdates();
   void postConvexHullUpdate(std::string obstacle_key);
@@ -61,6 +62,9 @@ private: // Configuration variables
   bool         m_lasso;
   unsigned int m_lasso_points;
   double       m_lasso_radius;
+
+  bool         m_post_dist_to_polys;
+  bool         m_post_view_polys;
   
 private: // State variables
   double m_nav_x;

@@ -108,21 +108,17 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("  NAV_X = 103.0                                                 ");
   blk("  NAV_Y = -23.8                                                 ");
-  blk("  OBSTACLE_UPDATE_REQUEST = obstacle_key=d,                     ");
-  blk("                            update_var=OBSTACLE_UPDATE_D        ");
-  blk("                                                                ");
+  blk("  OBM_ALERT_REQUEST = alert_range=25,                           ");
+  blk("                      update_var=OBSTACLE_ALERT                 ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  VEHICLE_CONNECT = true                                        ");
   blk("  VIEW_POLYGON    = pts={32,-100:38,-98:40,-100:32,-104},       ");
   blk("                    label=d,edge_color=white,vertex_color=blue  ");
-  blk("  OBSTACLE_ALERT  = name=d#obstacle_key=d#                      ");
+  blk("  OBSTACLE_ALERT  = name=d#                                     ");
   blk("                    poly=pts={32,-100:38,-98:40,-100:32,-104},  ");
   blk("                    label=d                                     ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
   exit(0);
 }
 
