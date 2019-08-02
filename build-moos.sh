@@ -173,8 +173,19 @@ cd "${BUILD_ABS_DIR}/proj-5.2.0"
 if [ ! -e lib/libproj.a ]; then
     echo "Building Proj4. MOOSGeodesy now uses Proj4 with MOOSGeodesy wrapper"
 
+#    "${MOOS_SRC_DIR}/proj-5.2.0/configure" --prefix=$PWD --with-jni=no --enable-shared=no --enable-static=yes --with-pic  \
 
-    "${MOOS_SRC_DIR}/proj-5.2.0/configure" --prefix=$PWD --with-jni=no --enable-shared=no --enable-static=yes --with-pic  \
+    cmake -DCMAKE_INSTALL_PREFIX:PATH=$PWD       \
+	  -DBUILD_LIBPROJ_SHARED=OFF             \
+	  -DCMAKE_POSITION_INDEPENDENT_CODE=ON   \
+	  -DPROJ_TESTS=OFF                       \
+	  -DBUILD_CCT=OFF                        \
+	  -DBUILD_CS2CS=OFF                      \
+	  -DBUILD_GEOD=OFF                       \
+	  -DBUILD_GIE=OFF                        \
+	  -DBUILD_NAD2BIN=OFF                    \
+	  -DBUILD_PROJ=OFF                       \
+	  "${MOOS_SRC_DIR}/proj-5.2.0"           \
 	&& make -j$(getconf _NPROCESSORS_ONLN)           \
 	&& make install                                  \
 	&& echo "Done Building Proj4."
