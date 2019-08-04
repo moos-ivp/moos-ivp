@@ -327,26 +327,13 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
     specs_valid = specs_valid && valid;
   }
 
-  //cout << "==============================DEBUG=====" << endl;
-  //cout << "buildBehaviorFromSpec()                 " << endl;
-  //cout << bhv->getDescriptor() << endl;
-  //cout << "==============================DEBUG=====" << endl;
-  
   if(specs_valid) {
-    //cout << "==============================DEBUG=====" << endl;
-    //cout << "buildBehaviorFromSpec()   (2)           " << endl;
-    //cout << bhv->getDescriptor() << endl;
-    //cout << "==============================DEBUG=====" << endl;
-
     sbuild.setIvPBehavior(bhv);
     // Added Oct 1313 mikerb - allow template behaviors to make an
     // initial posting on helm startup, even if no instance made on
     // startup (or ever).
     if(on_startup) {
-      cout << "=============================DEBUG======" << endl;
-      cout << "buildBehaviorFromSpec()   (3)           " << endl;
       cout << bhv->getDescriptor() << endl;
-      cout << "=============================DEBUG======" << endl;
       bhv->onHelmStart();
     }
     // The behavior may now have some messages (var-data pairs) ready
@@ -379,11 +366,17 @@ bool BehaviorSet::handlePossibleSpawnings()
       string update_str = update_strs[j];
       
       // Check for unique behavior name
-      // e.g. if name is "henry", make sure "henry" and "prefix_henry" don't
-      // already exist.
+      // e.g. if name is "henry", make sure "henry" and "prefix_henry"
+      // don't already exist.
       
       string bname = tokStringParse(update_str, "name", '#', '=');
       string fullname = m_behavior_specs[i].getNamePrefix() + bname;
+
+      // For example: If the behavior name prefix is avd_obstacle_,
+      // and a behavior has already been spawned with the name
+      // avd_obstacle_blue, then an update with name=avd_obstacle_blue or
+      // name=blue would be applied to the previously spawned behavior.
+
       if((m_bhv_names.count(fullname)==0) && (m_bhv_names.count(bname) == 0)) {
 	SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], update_str);
 	m_behavior_specs[i].spawnTried();
