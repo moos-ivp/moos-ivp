@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
@@ -192,11 +193,6 @@ void BHV_AvdColregsV17::onHelmStart()
     alert_request += ", contact_type=" + m_contact_type_required;
     
   postMessage("BCM_ALERT_REQUEST", alert_request);
-
-
-  cout << "====================================DEBUG=====" << endl;
-  cout << "Posting BCM_ALERT_REQUEST                     " << endl;
-  cout << "====================================DEBUG=====" << endl;
 }
 
 
@@ -243,13 +239,10 @@ IvPFunction *BHV_AvdColregsV17::onRunState()
 
   bool prev_cn_port_of_os = m_cn_port_of_os;
 
-  postMessage("COL17_DEBUG", 1);
   if(!updatePlatformInfo())
     return(0);
-  postMessage("COL17_DEBUG", 2);
   if(!checkContactGroupRestrictions())
     return(0);
-  postMessage("COL17_DEBUG", 3);
 
   m_cn_crossed_os_port_star = false;
   if((m_iterations > 1) && (m_cn_port_of_os != prev_cn_port_of_os))
@@ -264,7 +257,6 @@ IvPFunction *BHV_AvdColregsV17::onRunState()
     setComplete();
     return(0);
   }
-  postMessage("COL17_DEBUG", 4);
 
   if(m_cn_retired) {
     setComplete();
@@ -552,10 +544,11 @@ void BHV_AvdColregsV17::checkModeHeadOn()
   string debug_var = "HEADON_DEBUG_" + toupper(m_us_name);
   string debug_msg = "contact=" + m_contact + ",";
   
-  //=====================================================================  
-  // Part 2: RELEASE conditions: if already in headon mode, check mode-exit 
-  // criteria. Release/entry conditions are not same, to prevent mode thrashing.
-  //=====================================================================  
+  //=====================================================================
+  // Part 2: RELEASE conditions: if already in headon mode, check
+  // mode-exit criteria. Release/entry conditions are not same, to
+  // prevent mode thrashing.
+  // =====================================================================
   if(m_avoid_mode == "headon") {
     if((m_contact_range > m_min_util_cpa_dist) && (m_rate_of_closure < 0)) {
       postMessage(debug_var, debug_msg + "release due to opening range");
@@ -760,7 +753,6 @@ IvPFunction* BHV_AvdColregsV17::buildGiveWayIPF()
   bool ok = true;
   ok = ok && aof.setParam("tol", 120);
   ok = ok && aof.setParam("osh", m_osh);
-  //ok = ok && aof.setParam("osv", m_osv);
   ok = ok && aof.setParam("passing_side", m_avoid_submode);  
   ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
   ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);

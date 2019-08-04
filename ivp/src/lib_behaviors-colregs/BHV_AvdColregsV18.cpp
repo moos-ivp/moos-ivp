@@ -86,7 +86,7 @@ BHV_AvdColregsV18::BHV_AvdColregsV18(IvPDomain gdomain) :
   m_iterations = 0;
   m_cn_crossed_os_port_star = false;
 
-  m_time_on_leg = 60;
+  m_time_on_leg = 120;
   
   m_debug1     = "n/a";
   m_debug2     = "n/a";
@@ -202,7 +202,7 @@ void BHV_AvdColregsV18::onHelmStart()
   string s_cpa_range   = doubleToStringX(m_completed_dist,1);
   string s_alert_templ = "name=$[VNAME] # contact=$[VNAME]";
 
-  string alert_request = "id=avdcol_" + getDescriptor();
+  string alert_request = "id=" + getDescriptor();
   alert_request += ", var=" + m_update_var;
   alert_request += ", val=" + s_alert_templ;
   alert_request += ", alert_range=" + s_alert_range;
@@ -284,6 +284,8 @@ IvPFunction *BHV_AvdColregsV18::onRunState()
 
   updateAvoidMode();
   double relevance = getRelevance();
+  
+  postMessage("COL19_RELEVANCE", relevance);
   
   IvPFunction *ipf = 0;
   if(relevance > 0) {
@@ -755,7 +757,6 @@ IvPFunction* BHV_AvdColregsV18::buildGiveWayIPF()
 
   m_debug2 = "Building Giveway IPF";
 
-  //AOF_AvoidCollision aof(m_domain);
   AOF_R16  aof(m_domain);
 
   aof.setOwnshipParams(m_osx, m_osy);
@@ -763,20 +764,20 @@ IvPFunction* BHV_AvdColregsV18::buildGiveWayIPF()
   bool ok = true;
   ok = ok && aof.setParam("tol", 120);
   ok = ok && aof.setParam("osh", m_osh);
-  //ok = ok && aof.setParam("osv", m_osv);
   ok = ok && aof.setParam("passing_side", m_avoid_submode);
+  ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
+  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
   ok = ok && aof.setParam("pwt_inner_distance", m_pwt_inner_dist);
   ok = ok && aof.setParam("pwt_outer_distance", m_pwt_outer_dist);
   
-  ok = ok && aof.setParam("collision_distance", min_util_cpa_dist);
-  ok = ok && aof.setParam("all_clear_distance", m_max_util_cpa_dist);
   bool init_ok = ok && aof.initialize();
 
   m_debug3 = boolToString(init_ok);
   
   if(!init_ok) {
     m_debug1 = "PROBLEM Init AOF_R16!!!!";
-    postEMessage("Unable to init AOF_R16.");
+    string aof_msg = aof.getCatMsgsAOF();
+    postEMessage("Unable to init AOF_R16:"+aof_msg);
     return(0);
   }
   m_debug4 = "GiveWay AOF initialized OK";
@@ -1106,8 +1107,9 @@ void BHV_AvdColregsV18::checkModeCPA()
 IvPFunction* BHV_AvdColregsV18::buildStandOnIPF()
 {
   // If ownship is already within the min_util_cpa_dist then we shrink
-  // this distance, otherwise the resulting ivp function will be universally
-  // negative, resulting a function with no preference in any direction.
+  // this distance, otherwise the resulting ivp function will be
+  // universally negative, resulting a function with no preference in
+  // any direction.
 
   double min_util_cpa_dist = m_min_util_cpa_dist;
   if(m_contact_range <= m_min_util_cpa_dist)
@@ -1184,25 +1186,16 @@ IvPFunction* BHV_AvdColregsV18::buildCPA_IPF()
 
   OF_Reflector reflector(&aof, 1);
 
-  if(m_verbose) {
-    cout << "***********************************************************" << endl;
-    cout << "In BHV_AvdColregsV18::buildCPA_IPF()!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-    cout << "***********************************************************" << endl;
-  }
-  
   // BEGIN Refinery
   if(m_use_refinery) {
     RefineryCPA refinery;
     refinery.init(m_osx, m_osy, m_cnx, m_cny, m_cnh, m_cnv, m_time_on_leg,
 		  m_min_util_cpa_dist, m_max_util_cpa_dist, m_domain,
 		  &m_cpa_engine);
-    //refinery.setVerbose(m_verbose);
+    refinery.setVerbose(m_verbose);
     
     vector<IvPBox> regions;
     regions = refinery.getRefineRegions();
-    //m_total_evals = refinery.getTotalQueriesCPA();
-
-    //cout << "Number of refine regions: " << regions.size() << endl;
 	
     for(unsigned int i=0; i<regions.size(); i++) 
       reflector.setParam("plateau_region", regions[i]);
@@ -1214,12 +1207,6 @@ IvPFunction* BHV_AvdColregsV18::buildCPA_IPF()
       double worst_fail_basin = reflector.checkBasins(true);
       double ok_plats = (worst_fail_plats == 0);
       double ok_basin = (worst_fail_basin == 0);
-      //if(m_verbose) {
-      //	cout << "  BHV_AvoidCollisionT checkPlateaus   START(3)" << endl;
-      //	cout << "  BHV_AvoidCollisionT plat_thresh: " << m_pcheck_thresh << endl;
-      //	cout << "Plateaus OK: " << boolToString(ok_plateaus) << endl;
-      //	cout << "  BHV_AvoidCollisionT checkPlateaus     END(3)" << endl;
-      //      }
       postBoolMessage("PLATEAU_CHECK_OK", ok_plats);
       postBoolMessage("BASIN_CHECK_OK", ok_basin);
       postRepeatableMessage("PLATEAU_LOGIC_CASE", refinery.getLogicCase());
