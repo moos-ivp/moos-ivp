@@ -233,16 +233,24 @@ void BHV_AvoidObstacle::onSpawn()
 
 IvPFunction *BHV_AvoidObstacle::onRunState() 
 {
-  checkForObstacleUpdate();
-
+  string debug_info = m_descriptor + uintToString(m_helm_iter);
+  
+  bool updated = checkForObstacleUpdate();
+  if(updated)
+    postMessage("AVD_OB_DEBUG", "obstacle updated " + debug_info); 
+  
   // Part 1: Sanity checks
   if(!updatePlatformInfo())
     return(0);  
+  postMessage("AVD_OB_DEBUG", "platform_info ok " + debug_info); 
   if(!m_obstacle_orig.is_convex())
     return(0);
+  postMessage("AVD_OB_DEBUG", "obstacle_convex_ok " + debug_info); 
   if(applyBuffer() == false)
     return(0);
+  postMessage("AVD_OB_DEBUG", "buffer_applied " + debug_info); 
 
+  
   // Part 2: Handle case where behavior is completed 
   double os_dist_to_poly = m_obstacle_orig.dist_to_poly(m_osx, m_osy);
   postMessage("OS_DIST_TO_POLY", os_dist_to_poly);
@@ -258,6 +266,7 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
   m_obstacle_relevance = getRelevance();
   if(m_obstacle_relevance <= 0)
     return(0);
+  postMessage("AVD_OB_DEBUG", "obstacle_relevant " + debug_info); 
     
   // Part 4: Build/update underlying objective function and initialize
   AOF_AvoidObstacle  aof_avoid(m_domain);
@@ -272,9 +281,11 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
   // Part 5: Initialize the AOF
   bool ok_init = aof_avoid.initialize();
   if(!ok_init) {
-    postWMessage("BHV_AvoidObstacles: AOF-Init Error");
+    string aof_msg = aof_avoid.getCatMsgsAOF();
+    postWMessage("Unable to init AOF_AvoidObstacle:"+aof_msg);
     return(0);
   }
+  postMessage("AVD_OB_DEBUG", "aof_ok " + debug_info); 
   
   // Part 6: Build the actual objective function with reflector
   OF_Reflector reflector(&aof_avoid, 1);
@@ -289,10 +300,12 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
     postWMessage(reflector.getWarnings());
     return(0);
   }
+  postMessage("AVD_OB_DEBUG", "reflector_ok " + debug_info); 
 
   // Part 7: Extract objective function, apply priority, post visuals
   IvPFunction *ipf = reflector.extractIvPFunction(true); // true means normalize
   if(ipf) {
+    postMessage("AVD_OB_DEBUG", "ipf_ok " + debug_info); 
     ipf->setPWT(m_obstacle_relevance * m_priority_wt);
     postViewablePolygons();
   }
