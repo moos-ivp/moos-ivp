@@ -168,10 +168,6 @@ bool BasicContactMgr::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
-  cout << "======================================DEBUG===" << endl;
-  cout << "In OnStartUp!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
-  cout << "======================================DEBUG===" << endl;
-
   Notify("PBASICCONTACTMGR_PID", getpid());
 
   m_ownship = m_host_community;
@@ -644,8 +640,8 @@ bool BasicContactMgr::handleConfigAlert(string alert_str)
     alert_id = "no_id";
 
   // Added mikerb July 2019
-  if(m_par.containsAlertID(alert_id))
-    return(false);
+  //if(m_par.containsAlertID(alert_id))
+  //  return(false);
   
 
   m_par.addAlertID(alert_id);

@@ -31,7 +31,8 @@ using namespace std;
 //---------------------------------------------------------------
 // Procedure: addAlertID
 //    Step 1: add it to a list of alert_ids
-//    Step 2: set m_par_alerted[vname][alert_id] = false for all known vnames
+//    Step 2: set m_par_alerted[vname][alert_id] = false for all
+//            known vnames
 
 void PlatformAlertRecord::addAlertID(std::string alertid)
 {
