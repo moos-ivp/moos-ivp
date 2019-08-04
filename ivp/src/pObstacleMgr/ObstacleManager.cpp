@@ -491,11 +491,10 @@ void ObstacleManager::postConvexHullUpdate(string obstacle_key)
 
   
   XYPolygon poly = m_map_poly_convex[obstacle_key];
-  string poly_str = poly.get_spec(3);
 
   //string update_str = "name=" + m_alert_name + obstacle_key + "#";
   string update_str = "name=" + obstacle_key + "#";
-  update_str += "poly=" + poly.get_spec_pts(2) + ",label=" + obstacle_key;
+  update_str += "poly=" + poly.get_spec_pts(5) + ",label=" + obstacle_key;
   
   Notify(m_alert_var, update_str);
 }
