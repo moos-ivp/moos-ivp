@@ -225,7 +225,7 @@ void ObstacleSim::postKnownObstacles()
 {
   for(unsigned int i=0; i<m_obstacles.size(); i++) {
     string spec = m_obstacles[i].get_spec();
-    Notify("KNOWN_OBSTACLE", spec);
+    Notify("GIVEN_OBSTACLE", spec);
   }
   m_obstacles_posted++;
 }
