@@ -703,7 +703,6 @@ bool ObstacleManager::buildReport()
   string str_nav = "(" + str_navx + "," + str_navy + ")";
 
   
-  m_msgs << "============================================" << endl;
   m_msgs << "Configuration (point handling):             " << endl;
   m_msgs << "  point_var:    " << m_point_var              << endl;
   m_msgs << "  max_pts_per_cluster: " << str_max_pts_per   << endl;
