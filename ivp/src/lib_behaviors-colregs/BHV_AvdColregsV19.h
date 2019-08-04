@@ -1,9 +1,9 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvdColregsV18.h                                  */
+/*    FILE: BHV_AvdColregsV19.h                                  */
 /*    DATE: May 16th, 2013 (combined from individual colrg bvs)  */
-/*    DATE: Oct 12th, 2018 (V18 from V17, plus refineries)       */
+/*    DATE: Oct 12th, 2018 (V19 from V17, plus refineries)       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -22,8 +22,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef BHV_AVD_COLREGS_V18_HEADER
-#define BHV_AVD_COLREGS_V18_HEADER
+#ifndef BHV_AVD_COLREGS_V19_HEADER
+#define BHV_AVD_COLREGS_V19_HEADER
 
 #include <list>
 #include <string>
@@ -31,10 +31,10 @@
 #include "XYSegList.h"
 
 class IvPDomain;
-class BHV_AvdColregsV18 : public IvPContactBehavior {
+class BHV_AvdColregsV19 : public IvPContactBehavior {
  public:
-  BHV_AvdColregsV18(IvPDomain);
-  ~BHV_AvdColregsV18() {};
+  BHV_AvdColregsV19(IvPDomain);
+  ~BHV_AvdColregsV19() {};
   
   void         onHelmStart();
   bool         onRunStatePrior();

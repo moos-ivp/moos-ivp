@@ -60,7 +60,7 @@
 #include "BHV_HeadingBias.h"
 #include "BHV_MinAltitudeX.h"
 #include "BHV_AvdColregsV17.h"
-#include "BHV_AvdColregsV18.h"
+#include "BHV_AvdColregsV19.h"
 
 using namespace std;
 
@@ -101,7 +101,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_HeadingBias")     ||
      (bhv_name == "BHV_MinAltitudeX")    ||
      (bhv_name == "BHV_AvdColregsV17")   ||
-     (bhv_name == "BHV_AvdColregsV18"))
+     (bhv_name == "BHV_AvdColregsV19"))
     return(true);
   else
     return(false);
@@ -181,8 +181,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_MinAltitudeX(m_domain);
   else if(bhv_name == "BHV_AvdColregsV17")     
     bhv = new BHV_AvdColregsV17(m_domain);
-  else if(bhv_name == "BHV_AvdColregsV18")     
-    bhv = new BHV_AvdColregsV18(m_domain);
+  else if(bhv_name == "BHV_AvdColregsV19")     
+    bhv = new BHV_AvdColregsV19(m_domain);
 
   return(bhv);
 }
