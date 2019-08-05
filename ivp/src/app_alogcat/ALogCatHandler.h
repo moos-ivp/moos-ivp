@@ -41,6 +41,8 @@ class ALogCatHandler
 
   bool      process();
 
+  unsigned int size() const {return(m_alog_files.size());}
+  
  protected:
   bool      preCheck();
   bool      processFirstFile();

@@ -38,13 +38,6 @@ void showHelpAndExit();
 
 int main(int argc, char *argv[])
 {
-  string test = "";
-  cout << "1[" << test << "]" << endl;
-
-  test = test.erase(test.size()-1);
-  cout << "2[" << test << "]" << endl;
-  return(0);
-  
   ALogCatHandler handler;
 
   //===================================================================
@@ -75,6 +68,10 @@ int main(int argc, char *argv[])
       cout << "Unhandled argument: " << argi << endl;
       exit(1);
     }
+  }
+
+  if(handler.size() < 2) {
+    showHelpAndExit();
   }
   
   // Now execute the job and note the result.
@@ -117,6 +114,7 @@ void showHelpAndExit()
   cout << "      overlapping. Their proper order is worked out       " << endl;
   cout << "      automatically.                                      " << endl;
   cout << endl;
+  exit(0);
 }
 
 
