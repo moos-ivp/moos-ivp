@@ -233,7 +233,7 @@ void BHV_AvoidObstacle::onSpawn()
 
 IvPFunction *BHV_AvoidObstacle::onRunState() 
 {
-  string debug_info = m_descriptor + uintToString(m_helm_iter);
+  string debug_info = m_descriptor + ":" + uintToString(m_helm_iter);
   
   bool updated = checkForObstacleUpdate();
   if(updated)
@@ -258,9 +258,11 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
     setComplete();
     return(0);
   }
+  postMessage("AVD_OB_DEBUG", "dist_to_poly_not_complete " + debug_info); 
 
   if(polyAft(m_osx, m_osy, m_osh, m_obstacle_orig, 20))
     return(0);
+  postMessage("AVD_OB_DEBUG", "poly_not_aft " + debug_info); 
   
   // Part 3: Determine the relevance
   m_obstacle_relevance = getRelevance();
