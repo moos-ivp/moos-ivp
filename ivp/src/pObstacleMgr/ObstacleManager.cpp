@@ -688,7 +688,7 @@ void ObstacleManager::manageMemory()
     m_map_updates_total.erase(key);
     m_clusters_released++;
 
-    string done_str = "name=" + key + ",resolved=true";
+    string done_str = "name=" + key + "#resolved=true";
     Notify(m_alert_var, done_str);
     
     // If a poly is being freed, first post a viewable poly with
