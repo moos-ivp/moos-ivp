@@ -75,6 +75,8 @@ public:
   bool    m_completed_dist_set;
   
   bool    m_no_alert_request;
+
+  bool    m_resolved_pending;
   
   std::string  m_pwt_grade;
  

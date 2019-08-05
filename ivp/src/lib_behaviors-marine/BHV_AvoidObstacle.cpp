@@ -76,7 +76,8 @@ BHV_AvoidObstacle::BHV_AvoidObstacle(IvPDomain gdomain) :
   m_hint_buff_fill_transparency = 0.1;
 
   m_no_alert_request  = false;
-
+  m_resolved_pending  = false;
+  
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
 }
 
@@ -152,6 +153,8 @@ bool BHV_AvoidObstacle::setParam(string param, string val)
   }
   else if(param == "no_alert_request")
     return(setBooleanOnString(m_no_alert_request, val));
+  else if(param == "resolved")
+    return(setBooleanOnString(m_resolved_pending, val));
   else if(param == "visual_hints")
     return(handleVisualHints(val));
   else
@@ -234,7 +237,13 @@ void BHV_AvoidObstacle::onSpawn()
 IvPFunction *BHV_AvoidObstacle::onRunState() 
 {
   string debug_info = m_descriptor + ":" + uintToString(m_helm_iter);
-  
+
+  if(m_resolved_pending) {
+    postMessage("AVD_OB_DEBUG", "resolved/complete " + debug_info); 
+    setComplete();
+    return(0);
+  }
+    
   bool updated = checkForObstacleUpdate();
   if(updated)
     postMessage("AVD_OB_DEBUG", "obstacle updated " + debug_info); 
