@@ -246,7 +246,8 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
   if(!m_obstacle_orig.is_convex())
     return(0);
   postMessage("AVD_OB_DEBUG", "obstacle_convex_ok " + debug_info); 
-  if(applyBuffer() == false)
+  bool buffer_applied = applyBuffer();
+  if(!buffer_applied)
     return(0);
   postMessage("AVD_OB_DEBUG", "buffer_applied " + debug_info); 
 
@@ -525,7 +526,13 @@ bool BHV_AvoidObstacle::applyBuffer()
 
   // Part 1: Build the buffer poly to spec size.
   m_obstacle_buff.grow_by_amt(m_buffer_dist);
-  
+
+  if(!m_obstacle_buff.is_convex()) {
+    string debug_info = m_descriptor + ":" + uintToString(m_helm_iter);
+    postMessage("AVD_OB_DEBUG", "new_buff is nonconvex " + debug_info); 
+    m_obstacle_buff = m_obstacle_orig;
+  }
+
   // Part 2: If ownship is currently in the buffer poly, then rebuild
   // the buffer poly by incrementally growing to the largest buffer
   // poly (up to m_buffer_dist) that does not contain ownship.
