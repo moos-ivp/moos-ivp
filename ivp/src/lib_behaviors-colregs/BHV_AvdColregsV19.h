@@ -81,6 +81,8 @@ class BHV_AvdColregsV19 : public IvPContactBehavior {
   double       m_max_util_cpa_dist;
   double       m_completed_dist;
 
+  double       m_giveway_bow_dist;
+  
   double       m_overtaking_bng_range;
   double       m_headon_abs_relbng_thresh;
 

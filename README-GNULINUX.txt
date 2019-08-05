@@ -19,8 +19,6 @@ Packages you probably already have installed:
   subversion - Advanced version control system
   cmake      - cross-platform, open-source make system
   xterm      - X terminal application 
-  autoconf   - GNU tool for producing configure scripts (needed by PROJ4)
-  automake   - GNU tool for automate compiling (needed by PROJ4)
 
 Additional packages:
 
@@ -30,7 +28,7 @@ Additional packages:
   libjpeg-dev     - Independent JPEG Group's JPEG runtime library 
   libxft-dev      - FreeType-based font drawing library for X
   libxinerama-dev - X11 Xinerama extension library (development headers)
-  libtiff4-dev    - Tag Image File Format library (TIFF), development files
+  libtiff5-dev    - Tag Image File Format library (TIFF), development files
 
 To do it all, cut and paste this:
 

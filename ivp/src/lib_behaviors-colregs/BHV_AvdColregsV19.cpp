@@ -87,15 +87,19 @@ BHV_AvdColregsV19::BHV_AvdColregsV19(IvPDomain gdomain) :
   m_cn_crossed_os_port_star = false;
 
   m_time_on_leg = 120;
+
+  // -1 Indicates disabled by default
+  m_giveway_bow_dist = -1; 
   
   m_debug1     = "n/a";
   m_debug2     = "n/a";
   m_debug3     = "n/a";
   m_debug4     = "n/a";
 
+  // Init refinery and refinery testing vars
+  m_use_refinery   = false;
   m_check_validity = false;
   m_check_plateaus = false;
-  m_use_refinery   = false;
   m_pcheck_thresh  = 0.001;
 
   m_verbose = false;
@@ -153,6 +157,13 @@ bool BHV_AvdColregsV19::setParam(string param, string value)
     m_max_util_cpa_dist = dval;
     if(m_max_util_cpa_dist < m_min_util_cpa_dist)
       m_min_util_cpa_dist = m_max_util_cpa_dist;
+  }
+  else if((param == "giveway_bow_dist") && non_neg_number) {
+    if(dval < m_min_util_cpa_dist)
+      dval = m_min_util_cpa_dist;
+    if(dval > m_max_util_cpa_dist)
+      dval = m_max_util_cpa_dist;
+    m_giveway_bow_dist = dval;
   }
   else if((param == "turn_radius") && non_neg_number) 
     m_turn_radius = dval;
@@ -713,6 +724,10 @@ void BHV_AvdColregsV19::checkModeGiveWay()
   if(m_os_crosses_cn_bow) {
     // Criteria A: os crossing cn by by a healthy amount
     double acceptable_dist  = (2*m_max_util_cpa_dist + m_min_util_cpa_dist) / 3; 
+
+    if(m_giveway_bow_dist > 0)
+      acceptable_dist = m_giveway_bow_dist;
+
     if(m_os_crosses_cn_bow_dist > acceptable_dist)
       m_avoid_submode = "bow";
     // Criteria B: os cannot cut behind cn even if it wanted to.

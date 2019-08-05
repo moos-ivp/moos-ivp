@@ -9,31 +9,31 @@ BUILD_BOT_CODE_ONLY="OFF"
 
 print_usage_and_exit()
 {
-    printf "build-ivp.sh [OPTIONS] [MAKE ARGS]            \n"
-    printf "Options:                                      \n"
-    printf "  --help, -h                                  \n"
-    printf "  --nodebug                                   \n"
-    printf "    Do not include the -g compiler flag       \n"
-    printf "  --noopt                                     \n"
-    printf "    Do not include the -Os compiler flag      \n"
-    printf "  --fast, -f                                  \n"
-    printf "    Do not include the -Os, -g compiler flags \n"
-    printf "  --nogui, -n                                 \n"
-    printf "    Do not build GUI related apps             \n"
-    printf "  --minrobot, -m                              \n"
-    printf "    Only build minimal robot apps             \n"
-    printf "    (Even smaller subset than with --nogui)   \n"
-    printf "  --clean, -c                                 \n"
-    printf "    Invokes make clean and removes build/*    \n"
-    printf "                                              \n"
-    printf "By default, all code is built, and the debug and   \n"
-    printf "optimization compiler flags are invoked.           \n"
-    printf "                                                   \n"
-    printf "Note:                                              \n"
-    printf "  By default -jN is provided to make to utilize up to N    \n"
-    printf "  processors in the build. This can be overridden simply   \n"
-    printf "  by using -j1 on the command line instead. This will give \n"
-    printf "  more reasonable output if there should be a build error. \n"
+    echo "build-ivp.sh [OPTIONS] [MAKE ARGS]            "
+    echo "Options:                                      "
+    echo "  --help, -h                                  "
+    echo "  --nodebug                                   "
+    echo "    Do not include the -g compiler flag       "
+    echo "  --noopt                                     "
+    echo "    Do not include the -Os compiler flag      "
+    echo "  --fast, -f                                  "
+    echo "    Do not include the -Os, -g compiler flags "
+    echo "  --nogui, -n                                 "
+    echo "    Do not build GUI related apps             "
+    echo "  --minrobot, -m                              "
+    echo "    Only build minimal robot apps             "
+    echo "    (Even smaller subset than with --nogui)   "
+    echo "  --clean, -c                                 "
+    echo "    Invokes make clean and removes build/*    "
+    echo "                                              "
+    echo "By default, all code is built, and the debug and   "
+    echo "optimization compiler flags are invoked.           "
+    echo "                                                   "
+    echo "Note:                                              "
+    echo "  By default -jN is provided to make to utilize up to N    "
+    echo "  processors in the build. This can be overridden simply   "
+    echo "  by using -j1 on the command line instead. This will give "
+    echo "  more reasonable output if there should be a build error. "
     exit 1
 }
 
@@ -72,7 +72,7 @@ if [ "${BUILD_OPTIM}" = "yes" ] ; then
     CMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS" -Os"
 fi
 
-printf "Compiler flags: ${CMAKE_CXX_FLAGS}  \n\n" 
+echo "Compiler flags: ${CMAKE_CXX_FLAGS}  " 
 
 
 #########################################################################
@@ -84,10 +84,10 @@ LIB_ABS_DIR="${SCRIPT_ABS_DIR}/lib"
 BIN_ABS_DIR="${SCRIPT_ABS_DIR}/bin"
 SRC_ABS_DIR="${SCRIPT_ABS_DIR}/ivp/src"
 
-printf "Built files will be placed into these directories: \n"
-printf "  Intermediate build files: ${BLD_ABS_DIR}         \n"
-printf "  Libraries:                ${LIB_ABS_DIR}         \n"
-printf "  Programs:                 ${BIN_ABS_DIR}       \n\n"
+echo "Built files will be placed into these directories: "
+echo "  Intermediate build files: ${BLD_ABS_DIR}         "
+echo "  Libraries:                ${LIB_ABS_DIR}         "
+echo "  Programs:                 ${BIN_ABS_DIR}       \n"
 
 mkdir -p "${BLD_ABS_DIR}"
 mkdir -p "${LIB_ABS_DIR}"
@@ -105,12 +105,12 @@ if [ "${IVP_BUILD_GUI_CODE}" = "OFF" ] ; then
     echo "IVP GUI Apps will not be built. IVP_BUILD_GUI_CODE env var is OFF"
 fi
 
-printf "BUILD_GUI_CODE = ${BUILD_GUI_CODE} \n"
+echo "BUILD_GUI_CODE = ${BUILD_GUI_CODE} "
 
 ########################################################################
-printf "Invoking cmake...\n"
+echo "Invoking cmake..."
 
-printf "BUILD_BOT_CODE_ONLY: ${BUILD_BOT_CODE_ONLY}   \n"
+echo "BUILD_BOT_CODE_ONLY: ${BUILD_BOT_CODE_ONLY}   "
 
 cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
       -DIVP_BUILD_BOT_CODE_ONLY=${BUILD_BOT_CODE_ONLY}     \
@@ -122,11 +122,11 @@ cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
       "${SRC_ABS_DIR}"
 
 ########################################################################
-printf "Invoking make ${CMD_ARGS}\n"
+echo "Invoking make ${CMD_ARGS}"
 
 RESULT=0
 if [ "${CLEAN}" = "yes" -o "${CMD_ARGS}" = "clean" ] ; then
-    printf "CLEANING....\n"
+    echo "CLEANING...."
     make clean
     RESULT=$?
     cd ${INVOCATION_ABS_DIR}

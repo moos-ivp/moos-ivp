@@ -92,19 +92,38 @@ bool AOF_AvoidObstacle::setParam(const string& param, const string& value)
 bool AOF_AvoidObstacle::initialize()
 {
   // Part 1: Sanity Checks
-  if((m_crs_ix==-1) || (m_spd_ix==-1))
+  if(m_crs_ix == -1) {
+    postMsgAOF("crs_ix is not set");
     return(false);
-  if((!m_osx_set) || (!m_osy_set) || (!m_osh_set))
+  }
+  if(m_spd_ix == -1) {
+    postMsgAOF("spd_ix is not set");
     return(false);
-  if(!m_allowable_ttc_set)
+  }
+  if((!m_osx_set) || (!m_osy_set)) {
+    postMsgAOF("osx or osy is not set");
     return(false);
-  if(!m_obstacle_orig.is_convex())
+  }
+  if(!m_osh_set) {
+    postMsgAOF("osh is not set");
     return(false);
-  if(!m_obstacle_buff.is_convex())
+  }
+  if(!m_allowable_ttc_set) {
+    postMsgAOF("m_allowable_ttc is not set");
     return(false);
-  if(m_obstacle_orig.contains(m_osx, m_osy))
+  }
+  if(!m_obstacle_orig.is_convex()) {
+    postMsgAOF("m_obstacle_orig is not convex");
     return(false);
-
+  }
+  if(!m_obstacle_buff.is_convex()) {
+    postMsgAOF("m_obstacle_orig is not convex");
+    return(false);
+  }
+  if(m_obstacle_orig.contains(m_osx, m_osy)) {
+    postMsgAOF("m_obstacle_orig contains osx,osy");
+    return(false);
+  }
 
   // Part 2: Cache the distances mapping a particular heading 
   // to the minimum/closest distance to any of the obstacle polygons.

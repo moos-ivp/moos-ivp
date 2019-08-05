@@ -50,33 +50,6 @@ fi
 #-------------------------------------------------------------------
 # Clean up old files left behind from in-source builds. 
 #-------------------------------------------------------------------
-
-if [ -e "${MOOS_SRC_DIR}/proj-5.2.0/Makefile" ] ; then
-    $(cd "${MOOS_SRC_DIR}/proj-5.2.0/" && make distclean) >& /dev/null
-fi
-if [ -d "${MOOS_SRC_DIR}/proj-5.2.0/bin" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/proj-5.2.0/bin" >& /dev/null
-fi
-if [ -d "${MOOS_SRC_DIR}/proj-5.2.0/include" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/proj-5.2.0/include" >& /dev/null
-fi
-if [ -d "${MOOS_SRC_DIR}/proj-5.2.0/lib" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/proj-5.2.0/lib" >& /dev/null
-fi
-if [ -d "${MOOS_SRC_DIR}/proj-5.2.0/share" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/proj-5.2.0/share" >& /dev/null
-fi
-
-if [ -d "${MOOS_SRC_DIR}/MOOSCore/lib" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/MOOSCore/lib" >& /dev/null
-fi
-if [ -d "${MOOS_SRC_DIR}/MOOSGeodesy/lib" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/MOOSGeodesy/lib" >& /dev/null
-fi
-if [ -d "${MOOS_SRC_DIR}/MOOSToolsUI/lib" ] ; then
-    rm -rf "${MOOS_SRC_DIR}/MOOSToolsUI/lib" >& /dev/null
-fi
-
 find "${MOOS_SRC_DIR}/" -type d -name "CMakeFiles" -exec rm -rf {} +
 find "${MOOS_SRC_DIR}/" -type f -name "CMakeCache.txt" -delete
 find "${MOOS_SRC_DIR}/" -type f -name "cmake_install.cmake" -delete
@@ -88,7 +61,6 @@ find "${MOOS_SRC_DIR}/" -type f -name "*.lo" -delete
 
 #===================================================================
 # Part #1:  BUILD CORE
-#      -DUPDATE_GIT_VERSION_INFO=OFF                          \
 #===================================================================
 mkdir -p "${BUILD_ABS_DIR}/MOOSCore"
 cd "${BUILD_ABS_DIR}/MOOSCore"
@@ -173,8 +145,6 @@ cd "${BUILD_ABS_DIR}/proj-5.2.0"
 if [ ! -e lib/libproj.a ]; then
     echo "Building Proj4. MOOSGeodesy now uses Proj4 with MOOSGeodesy wrapper"
 
-#    "${MOOS_SRC_DIR}/proj-5.2.0/configure" --prefix=$PWD --with-jni=no --enable-shared=no --enable-static=yes --with-pic  \
-
     cmake -DCMAKE_INSTALL_PREFIX:PATH=$PWD       \
 	  -DBUILD_LIBPROJ_SHARED=OFF             \
 	  -DCMAKE_POSITION_INDEPENDENT_CODE=ON   \
@@ -190,9 +160,9 @@ if [ ! -e lib/libproj.a ]; then
 	&& make install                                  \
 	&& echo "Done Building Proj4."
     if [ $? -ne 0 ] ; then
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	echo "ERROR! Failed to build PROJ4"
-	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+	echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
 	exit 4
     fi
 fi
@@ -211,19 +181,19 @@ echo "PROJ4 LIB DIR: " $PROJ4_LIB_DIR
 
 
 echo "Invoking cmake..." `pwd`
-cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                    \
-      -DPROJ4_INCLUDE_DIRS=${PROJ4_INCLUDE_DIR}                \
-      -DPROJ4_LIB_PATH=${PROJ4_LIB_DIR}                        \
-      "${MOOS_SRC_DIR}/MOOSGeodesy"                            \
-  && echo "" && echo "Invoking make..." `pwd` && echo ""       \
+cmake -DCMAKE_CXX_FLAGS="${MOOS_CXX_FLAGS}"                 \
+      -DPROJ4_INCLUDE_DIRS=${PROJ4_INCLUDE_DIR}             \
+      -DPROJ4_LIB_PATH=${PROJ4_LIB_DIR}                     \
+      "${MOOS_SRC_DIR}/MOOSGeodesy"                         \
+  && echo "" && echo "Invoking make..." `pwd` && echo ""    \
   && make ${CMD_ARGS}
 
 RESULT=$?
 
 if [ $RESULT -ne 0 ] ; then
-    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     echo "ERROR! Failed to build MOOSGeodesy"
-    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+    echo "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
     exit 5
 fi
 

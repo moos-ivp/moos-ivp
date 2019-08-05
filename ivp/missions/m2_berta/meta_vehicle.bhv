@@ -49,7 +49,7 @@ Behavior = BHV_Loiter
 }
 
 //----------------------------------------------
-Behavior = BHV_AvdColregsV17
+Behavior = BHV_AvdColregsV19
 {
   name       = avdcol_
   pwt        = 150

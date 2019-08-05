@@ -77,7 +77,8 @@ void showHelpAndExit()
   cout << "                                                    " << endl;
   cout << "Synopsis:                                           " << endl;
   cout << "  Scan an alog file, apply test criteria and return " << endl;
-  cout << "  a pass/fail result.                               " << endl;
+  cout << "  a pass/fail result. Used for automated mission    " << endl;
+  cout << "  testing.                                           " << endl;
   cout << "                                                    " << endl;
   cout << "Options:                                            " << endl;
   cout << "  -h,--help       Displays this help message        " << endl;

@@ -34,6 +34,16 @@ Processconfig = ANTLER
 #include plug_pShare.moos
 
 //--------------------------------------------------
+// uFldWrapDetect
+
+ProcessConfig = uFldWrapDetect
+{
+  AppTick   = 4
+  CommsTick = 4                                                               
+}       
+
+
+//--------------------------------------------------
 // uFldCollisionDetect
 
 ProcessConfig = uFldCollisionDetect
