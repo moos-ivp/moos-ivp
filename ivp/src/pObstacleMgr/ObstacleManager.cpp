@@ -337,7 +337,6 @@ bool ObstacleManager::handleMailNewPoint(string value)
       if((min_dist < 0) || (dist < min_dist))
 	min_dist = dist;
     }
-    cout << "mindist:" << min_dist << endl;
     if(min_dist < 0.1)
       return(true);
   }
