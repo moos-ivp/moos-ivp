@@ -251,6 +251,13 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
     return(0);
   postMessage("AVD_OB_DEBUG", "buffer_applied " + debug_info); 
 
+  if(!m_obstacle_orig.is_convex()) {
+    postMessage("AVD_OB_DEBUG", "buffer_NOT_convex " + debug_info); 
+    m_obstacle_buff = m_obstacle_orig;
+  }
+  else
+    postMessage("AVD_OB_DEBUG", "buffer_IS_convex " + debug_info); 
+  
   
   // Part 2: Handle case where behavior is completed 
   double os_dist_to_poly = m_obstacle_orig.dist_to_poly(m_osx, m_osy);
@@ -305,6 +312,15 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
   }
   postMessage("AVD_OB_DEBUG", "reflector_ok " + debug_info); 
 
+  string spec1 = "orig:" + debug_info + "::";
+  string spec2 = "buff:" + debug_info + "++";
+
+  spec1 += m_obstacle_orig.get_spec();
+  spec2 += m_obstacle_buff.get_spec();
+  postMessage("AVD_OB_DEBUG", spec1); 
+  postMessage("AVD_OB_DEBUG", spec2); 
+
+  
   // Part 7: Extract objective function, apply priority, post visuals
   IvPFunction *ipf = reflector.extractIvPFunction(true); // true means normalize
   if(ipf) {
@@ -437,6 +453,9 @@ bool BHV_AvoidObstacle::handleVisualHints(string hints)
 
 void BHV_AvoidObstacle::postViewablePolygons()
 {
+  string debug_info = m_descriptor + ":" + uintToString(m_helm_iter);
+  
+  postMessage("AVD_OB_DEBUG", "posting viewable polys " + debug_info); 
   // Part 1 - Render the original obstacle polygon
   if(m_obstacle_orig.is_convex()) {
     m_obstacle_orig.set_active(true);
@@ -455,6 +474,7 @@ void BHV_AvoidObstacle::postViewablePolygons()
     
   // Part 2 - Render the buffer obstacle polygon
   if(m_obstacle_buff.is_convex() && (m_buffer_dist > 0)) {
+    postMessage("AVD_OB_DEBUG", "v buff is convex " + debug_info); 
     m_obstacle_buff.set_active(true);
     m_obstacle_buff.set_color("edge", m_hint_buff_edge_color);
     m_obstacle_buff.set_color("vertex", m_hint_buff_vertex_color);
@@ -467,6 +487,10 @@ void BHV_AvoidObstacle::postViewablePolygons()
     string spec = m_obstacle_buff.get_spec();
     postMessage("VIEW_POLYGON", spec, "buff");
   }
+  else
+    postMessage("AVD_OB_DEBUG", "v buff NOT convex " + debug_info); 
+  postMessage("AVD_OB_DEBUG", "done posting view polys " + debug_info); 
+  
 }
 
 
