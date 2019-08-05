@@ -324,6 +324,26 @@ bool ObstacleManager::handleMailNewPoint(string value)
   if(obstacle_key == "") 
     obstacle_key = "generic";
 
+#if 1
+  // Part 4A: Check the distance of the newpoint to previously
+  // received points. Perhaps reject if dist is not high
+  if(m_map_points[obstacle_key].size() > 0) {
+    list<XYPoint>::iterator q;
+    double min_dist = -1;
+    for(q=m_map_points[obstacle_key].begin(); 
+	q!=m_map_points[obstacle_key].end(); q++) {
+      XYPoint pt = *q;
+      double dist = distPointToPoint(pt, newpt);
+      if((min_dist < 0) || (dist < min_dist))
+	min_dist = dist;
+    }
+    cout << "mindist:" << min_dist << endl;
+    if(min_dist < 0.1)
+      return(true);
+  }
+#endif
+
+
   // Part 4: Add the new point to the points associated with that key
   m_map_points[obstacle_key].push_back(newpt);
   if(m_map_points[obstacle_key].size() > m_max_pts_per_cluster)
