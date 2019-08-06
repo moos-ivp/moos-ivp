@@ -236,56 +236,40 @@ void BHV_AvoidObstacle::onSpawn()
 
 IvPFunction *BHV_AvoidObstacle::onRunState() 
 {
-  string debug_info = m_descriptor + ":" + uintToString(m_helm_iter);
-
   if(m_resolved_pending) {
-    postMessage("AVD_OB_DEBUG", "resolved/complete " + debug_info); 
     setComplete();
     return(0);
   }
     
-  bool updated = checkForObstacleUpdate();
-  if(updated)
-    postMessage("AVD_OB_DEBUG", "obstacle updated " + debug_info); 
+  checkForObstacleUpdate();
   
   // Part 1: Sanity checks
   if(!updatePlatformInfo())
     return(0);  
-  postMessage("AVD_OB_DEBUG", "platform_info ok " + debug_info); 
   if(!m_obstacle_orig.is_convex())
     return(0);
-  postMessage("AVD_OB_DEBUG", "obstacle_convex_ok " + debug_info); 
   bool buffer_applied = applyBuffer();
   if(!buffer_applied)
     return(0);
-  postMessage("AVD_OB_DEBUG", "buffer_applied " + debug_info); 
 
-  if(!m_obstacle_orig.is_convex()) {
-    postMessage("AVD_OB_DEBUG", "buffer_NOT_convex " + debug_info); 
+  // failsafe
+  if(!m_obstacle_orig.is_convex())
     m_obstacle_buff = m_obstacle_orig;
-  }
-  else
-    postMessage("AVD_OB_DEBUG", "buffer_IS_convex " + debug_info); 
-  
   
   // Part 2: Handle case where behavior is completed 
   double os_dist_to_poly = m_obstacle_orig.dist_to_poly(m_osx, m_osy);
-  postMessage("OS_DIST_TO_POLY", os_dist_to_poly);
   if(os_dist_to_poly > m_completed_dist) {
     setComplete();
     return(0);
   }
-  postMessage("AVD_OB_DEBUG", "dist_to_poly_not_complete " + debug_info); 
 
   if(polyAft(m_osx, m_osy, m_osh, m_obstacle_orig, 20))
     return(0);
-  postMessage("AVD_OB_DEBUG", "poly_not_aft " + debug_info); 
   
   // Part 3: Determine the relevance
   m_obstacle_relevance = getRelevance();
   if(m_obstacle_relevance <= 0)
     return(0);
-  postMessage("AVD_OB_DEBUG", "obstacle_relevant " + debug_info); 
     
   // Part 4: Build/update underlying objective function and initialize
   AOF_AvoidObstacle  aof_avoid(m_domain);
@@ -304,7 +288,6 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
     postWMessage("Unable to init AOF_AvoidObstacle:"+aof_msg);
     return(0);
   }
-  postMessage("AVD_OB_DEBUG", "aof_ok " + debug_info); 
   
   // Part 6: Build the actual objective function with reflector
   OF_Reflector reflector(&aof_avoid, 1);
@@ -319,21 +302,10 @@ IvPFunction *BHV_AvoidObstacle::onRunState()
     postWMessage(reflector.getWarnings());
     return(0);
   }
-  postMessage("AVD_OB_DEBUG", "reflector_ok " + debug_info); 
 
-  string spec1 = "orig:" + debug_info + "::";
-  string spec2 = "buff:" + debug_info + "++";
-
-  spec1 += m_obstacle_orig.get_spec();
-  spec2 += m_obstacle_buff.get_spec();
-  postMessage("AVD_OB_DEBUG", spec1); 
-  postMessage("AVD_OB_DEBUG", spec2); 
-
-  
   // Part 7: Extract objective function, apply priority, post visuals
   IvPFunction *ipf = reflector.extractIvPFunction(true); // true means normalize
   if(ipf) {
-    postMessage("AVD_OB_DEBUG", "ipf_ok " + debug_info); 
     ipf->setPWT(m_obstacle_relevance * m_priority_wt);
     postViewablePolygons();
   }
@@ -462,9 +434,6 @@ bool BHV_AvoidObstacle::handleVisualHints(string hints)
 
 void BHV_AvoidObstacle::postViewablePolygons()
 {
-  string debug_info = m_descriptor + ":" + uintToString(m_helm_iter);
-  
-  postMessage("AVD_OB_DEBUG", "posting viewable polys " + debug_info); 
   // Part 1 - Render the original obstacle polygon
   if(m_obstacle_orig.is_convex()) {
     m_obstacle_orig.set_active(true);
@@ -483,7 +452,6 @@ void BHV_AvoidObstacle::postViewablePolygons()
     
   // Part 2 - Render the buffer obstacle polygon
   if(m_obstacle_buff.is_convex() && (m_buffer_dist > 0)) {
-    postMessage("AVD_OB_DEBUG", "v buff is convex " + debug_info); 
     m_obstacle_buff.set_active(true);
     m_obstacle_buff.set_color("edge", m_hint_buff_edge_color);
     m_obstacle_buff.set_color("vertex", m_hint_buff_vertex_color);
@@ -496,10 +464,6 @@ void BHV_AvoidObstacle::postViewablePolygons()
     string spec = m_obstacle_buff.get_spec();
     postMessage("VIEW_POLYGON", spec, "buff");
   }
-  else
-    postMessage("AVD_OB_DEBUG", "v buff NOT convex " + debug_info); 
-  postMessage("AVD_OB_DEBUG", "done posting view polys " + debug_info); 
-  
 }
 
 
@@ -561,8 +525,6 @@ bool BHV_AvoidObstacle::applyBuffer()
   m_obstacle_buff.grow_by_amt(m_buffer_dist);
 
   if(!m_obstacle_buff.is_convex()) {
-    string debug_info = m_descriptor + ":" + uintToString(m_helm_iter);
-    postMessage("AVD_OB_DEBUG", "new_buff is nonconvex " + debug_info); 
     m_obstacle_buff = m_obstacle_orig;
   }
 
