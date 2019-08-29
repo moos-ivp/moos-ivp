@@ -1,0 +1,10 @@
+//-------------------------------------------------------
+// pObstacleMgr Configuration Block (created from plugin)
+
+ProcessConfig = pObstacleMgr
+{
+  AppTick   = 4 
+  CommsTick = 4 
+
+  point_var = TRACKED_FEATURE 
+} 
