@@ -86,9 +86,16 @@ class NodeRecord
   bool   isSetY() const        {return(m_y_set);}
   bool   isSetLatitude() const {return(m_lat_set);}
   bool   isSetLongitude() const {return(m_lon_set);}
-  bool   isSetAltitude() const {return(m_altitude_set);}
-  bool   isSetLength() const   {return(m_length_set);}
-  bool   isSetHeading() const  {return(m_heading_set);}
+  bool   isSetSpeed() const     {return(m_speed_set);}
+  bool   isSetSpeedOG() const   {return(m_speed_og_set);}
+  bool   isSetHeading() const   {return(m_heading_set);}
+  bool   isSetHeadingOG() const {return(m_heading_og_set);}
+  bool   isSetYaw() const       {return(m_yaw_set);}
+  bool   isSetPitch() const     {return(m_pitch_set);}
+  bool   isSetDepth() const     {return(m_depth_set);}
+  bool   isSetAltitude() const  {return(m_altitude_set);}
+  bool   isSetLength() const    {return(m_length_set);}
+  bool   isSetTimeStamp() const {return(m_timestamp_set);}
   bool   isSetTrajectory() const {return(m_trajectory_set);}
 
   bool   getThrustModeReverse() const {return(m_thrust_mode_reverse);}
