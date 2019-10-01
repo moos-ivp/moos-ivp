@@ -58,6 +58,7 @@ SET(SRC
   XYPatternBlock.cpp
   XYPoint.cpp
   XYPolygon.cpp
+  XYPolyExpander.cpp
   XYRangePulse.cpp
   XYSegList.cpp
   XYSeglr.cpp
@@ -116,6 +117,7 @@ SET(HEADERS
   XYFieldGenerator.h
   XYPoint.h
   XYPolygon.h
+  XYPolyExpander.h
   XYSegList.h
   XYSeglr.h
   XYSegment.h

@@ -67,6 +67,41 @@ bool XYPolygon::add_vertex(double x, double y, bool check_convexity)
 }
 
 //---------------------------------------------------------------
+// Procedure: add_vertex_delta
+//    o A call to "determine_convexity()" may be made since this
+//      operation may result in a change in the convexity.
+//    o The check_convexity option allows a bunch of vertices to be
+//      added and then just check for convexity at the end. 
+//    o The delta parameter will check the distance of new vertex
+//      to that of the previously added vertex, and if the dist
+//      is below the delta threshold it will not be added.
+//    o Care must be taken by the caller to not set delta too high.
+//      Otherwise the resulting polygon may just have one vertex.
+
+bool XYPolygon::add_vertex_delta(double x, double y, double delta,
+				 bool check_convexity)
+{
+  unsigned int vsize = size();
+  if(vsize > 1) {
+    double px = m_vx[vsize-1];
+    double py = m_vy[vsize-1];
+    if(((px==x)&&(py==y)) || (hypot(x-px,y-py) <= delta))
+      return(m_convex_state);
+  }
+  
+  XYSegList::add_vertex(x,y);
+  m_side_xy.push_back(-1);
+  
+  // With new vertex, we don't know if the new polygon is valid
+  if(check_convexity) {
+    determine_convexity();
+    return(m_convex_state);
+  }
+  else
+    return(true);
+}
+
+//---------------------------------------------------------------
 // Procedure: add_vertex
 //    o A call to "determine_convexity()" is made since this
 //      operation may result in a change in the convexity.

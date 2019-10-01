@@ -37,6 +37,7 @@ public:
 
   // Polygon create and edit functions
   bool   add_vertex(double, double, bool=true);
+  bool   add_vertex_delta(double x, double y, double delta=0, bool=true);
   bool   add_vertex(double, double, double, bool=true);
   bool   add_vertex(double, double, double, std::string, bool=true);
   bool   alter_vertex(double, double, double=0);
@@ -67,7 +68,6 @@ public:
 
   double max_radius() const;
   bool   closest_point_on_poly(double sx, double sy, double& rx, double& ry) const;
-
 
   XYSegList exportSegList(double x=0, double y=0);
 
