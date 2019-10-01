@@ -21,8 +21,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef BHV_AVOID_OBSTACLES_X_HEADER
-#define BHV_AVOID_OBSTACLES_X_HEADER
+#ifndef BHV_AVD_OBSTACLE_HEADER
+#define BHV_AVD_OBSTACLE_HEADER
 
 #include "IvPBehavior.h"
 #include "XYPolygon.h"
@@ -81,7 +81,6 @@ public:
   std::string  m_pwt_grade;
  
   std::string  m_obstacle_key;
-  std::string  m_obstacle_update_var;
 
  protected: // Visual hints
   std:: string m_hint_obst_edge_color;

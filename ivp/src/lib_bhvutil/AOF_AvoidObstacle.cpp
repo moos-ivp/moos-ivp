@@ -181,12 +181,13 @@ double AOF_AvoidObstacle::evalBox(const IvPBox *b) const
 
   int   heading_index = b->pt(m_crs_ix, 0);
   double dist_to_poly = m_cache_distance[heading_index];
-
+  
   // If on a collision trajectory at non-zero speed, look further at ttc
   if((dist_to_poly != -1) && (eval_spd != 0)) {
+    double min_dist_to_poly = m_obstacle_buff.dist_to_poly(m_osx, m_osy);
   
     // determine time to collision w/ poly (in seconds)
-    double time_to_collision = dist_to_poly / eval_spd;
+    double time_to_collision = min_dist_to_poly / eval_spd;
     if(time_to_collision <= m_allowable_ttc)
       return(min_utility);
   }

@@ -744,6 +744,23 @@ string XYSegList::get_spec_pts(unsigned int precision) const
 }
 
 //---------------------------------------------------------------
+// Procedure: get_spec_inactive()
+//   Purpose: In cases where we know the polygon spec is created
+//            simply to "erase" a previous poly with the same
+//            label, just generate a concise spec with a trivial
+//            convext poly.
+
+std::string XYSegList::get_spec_inactive() const
+{
+  string spec = "pts={0,0:9,0:0,9}";
+  spec += ",active=false";
+  if(m_label != "")
+    spec += ",label=" + m_label; 
+  
+  return(spec);
+}
+
+//---------------------------------------------------------------
 // Procedure: closest_vertex
 //   Purpose: Find the existing vertex that is closest to the 
 //            given point.
