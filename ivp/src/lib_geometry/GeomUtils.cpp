@@ -891,20 +891,48 @@ void addVectors(double deg1, double mag1, double deg2,
 
 //---------------------------------------------------------------
 // Procedure: bearingMinMaxToPoly
-//   Purpose: From a point outside a convex polygons, determine the two 
-//            bearing angles to the polygon forming a pseudo tangent.
+//   Purpose: From a point outside a convex polygons, determine
+//            the two bearing angles to the polygon forming a
+//            pseudo tangent.
 //   Returns: true if x,y is NOT in the polygon, false otherwise.
 
 bool bearingMinMaxToPoly(double osx, double osy, const XYPolygon& poly,
 			 double& bmin, double& bmax)
 {
-  // Step 1: Sanity checks
+  // Create some placeholder variables that the general function
+  // requires but are not needed for this simpler version.
+  double bmin_dist = 0;
+  double bmax_dist = 0;
+  return(bearingMinMaxToPolyX(osx, osy, poly, bmin, bmax,
+			      bmin_dist, bmax_dist));
+}
+
+
+//---------------------------------------------------------------
+// Procedure: bearingMinMaxToPolyZ
+//   Purpose: From a point outside a convex polygons, determine
+//            the two bearing angles to the polygon forming a
+//            pseudo tangent.
+//            This version also calculates the distance to the
+//            min/max points.
+//   Returns: true if x,y is NOT in the polygon, false otherwise.
+
+bool bearingMinMaxToPolyX(double osx, double osy,
+			  const XYPolygon& poly,
+			  double& bmin, double& bmax,
+			  double& bmin_dist, double& bmax_dist)
+{
+  //===========================================================
+  // Step 1: Sanity checks 
+  //===========================================================
   if(poly.size() == 0)
     return(false);
   if(poly.is_convex() && poly.contains(osx, osy))
     return(false);
   
+  //===========================================================
   // Step 2: Determine all the angles, noting their quadrants.
+  //===========================================================
   bool quad_1 = false;    // [0-90)
   bool quad_2 = false;    // [90-180)
   bool quad_3 = false;    // [180-270)
@@ -926,34 +954,36 @@ bool bearingMinMaxToPoly(double osx, double osy, const XYPolygon& poly,
   }
 
   bool wrap_around = false;
+  //============================================================
   // Step 3: Determine if we have an angle wrap-around situation
-  if(quad_1  &&  !quad_2  && !quad_3  &&  !quad_4)          // Case 1:  1
+  //============================================================
+  if(quad_1  &&  !quad_2  && !quad_3  &&  !quad_4)    // Case 1:  1
     wrap_around = false;
-  else if(!quad_1 &&   quad_2  && !quad_3  &&  !quad_4)     // Case 2:  2
+  else if(!quad_1 &&   quad_2 && !quad_3  && !quad_4) // Case 2:  2
     wrap_around = false;
-  else if(!quad_1 &&  !quad_2  &&  quad_3  &&  !quad_4)     // Case 3:  3
+  else if(!quad_1 &&  !quad_2 &&  quad_3  && !quad_4) // Case 3:  3
     wrap_around = false;
-  else if(!quad_1 &&  !quad_2  && !quad_3  &&   quad_4)     // Case 4:  4
+  else if(!quad_1 &&  !quad_2 && !quad_3  &&  quad_4) // Case 4:  4
     wrap_around = false;
 
-  else if(quad_1  &&   quad_2  && !quad_3  &&  !quad_4)     // Case 5:  1,2
+  else if(quad_1  &&   quad_2 && !quad_3  && !quad_4) // Case 5:  1,2
     wrap_around = false;
-  else if(!quad_1 &&   quad_2  &&  quad_3  &&  !quad_4)     // Case 6:  2,3
+  else if(!quad_1 &&   quad_2 &&  quad_3  && !quad_4) // Case 6:  2,3
     wrap_around = false;
-  else if(!quad_1 &&  !quad_2  &&  quad_3  &&   quad_4)     // Case 7:  3,4
+  else if(!quad_1 &&  !quad_2 &&  quad_3  &&  quad_4) // Case 7:  3,4
     wrap_around = false;
-  else if(quad_1  &&  !quad_2  && !quad_3  &&   quad_4)     // Case 8:  4,1   YYYY
+  else if(quad_1  &&  !quad_2 && !quad_3  &&  quad_4) // Case 8:  4,1  
     wrap_around = true;
-  else if(quad_1  &&   quad_2  &&  quad_3  &&  !quad_4)     // Case 9:  1,2,3 
+  else if(quad_1  &&   quad_2 &&  quad_3  && !quad_4) // Case 9:  1,2,3 
     wrap_around = false;
-  else if(!quad_1 &&   quad_2  &&  quad_3  &&   quad_4)     // Case 10: 2,3,4 
+  else if(!quad_1 &&   quad_2 &&  quad_3  &&  quad_4) // Case 10: 2,3,4 
     wrap_around = false;
-  else if(quad_1  &&  !quad_2  &&  quad_3  &&   quad_4)     // Case 11: 3,4,1 YYYY
+  else if(quad_1  &&  !quad_2 &&  quad_3  &&  quad_4) // Case 11: 3,4,1
     wrap_around = true;
-  else if(quad_1  &&   quad_2  && !quad_3  &&   quad_4)     // Case 12: 4,1,2 YYYY
+  else if(quad_1  &&   quad_2 && !quad_3  &&  quad_4) // Case 12: 4,1,2
     wrap_around = true;
 
-  else if(quad_1  &&  !quad_2  &&  quad_3  &&  !quad_4) {   // Case 13: 1,3
+  else if(quad_1  &&  !quad_2 &&  quad_3  && !quad_4) { // Case 13: 1,3
     double px, py;
     poly.closest_point_on_poly(osx, osy, px, py);
     double os_angle = relAng(osx, osy, px, py);
@@ -962,7 +992,7 @@ bool bearingMinMaxToPoly(double osx, double osy, const XYPolygon& poly,
     else
       wrap_around = true;
   }
-  else if(!quad_1 &&   quad_2  && !quad_3  &&   quad_4) {   // Case 14: 2,4
+  else if(!quad_1 && quad_2 && !quad_3 && quad_4) { // Case 14: 2,4
     double px, py;
     poly.closest_point_on_poly(osx, osy, px, py);
     double os_angle = relAng(osx, osy, px, py);
@@ -972,28 +1002,50 @@ bool bearingMinMaxToPoly(double osx, double osy, const XYPolygon& poly,
       wrap_around = true;
   }
 
+  //===========================================================
   // Step 4: Now determine the "min" and "max" bearing angles
+  //===========================================================
+  unsigned int bmin_ix = 0;
+  unsigned int bmax_ix = 0;
   if(!wrap_around) {
     bmin = 360;
     bmax = 0;
     for(i=0; i<psize; i++) {
-      if(angles[i] < bmin)
+      if(angles[i] < bmin) {
 	bmin = angles[i];
-      else if(angles[i] > bmax)
+	bmin_ix = i;
+      }
+      if(angles[i] > bmax) {
 	bmax = angles[i];
+	bmax_ix = i;
+      }
     }
   }
   else {
     bmin = 360;
     bmax = 0;
     for(i=0; i<psize; i++) {
-      if((angles[i] > 180) && (angles[i] < bmin))
+      if((angles[i] > 180) && (angles[i] < bmin)) {
 	bmin = angles[i];
-      else if((angles[i] <= 180) && (angles[i] > bmax))
+	bmin_ix = i;
+      }
+      else if((angles[i] <= 180) && (angles[i] > bmax)) {
 	bmax = angles[i];
+	bmax_ix = i;
+      }
     }
   }
-  
+
+  //===========================================================
+  // Step 5: Calculate distances to the bmin,bmax vertices
+  //===========================================================
+  double px1 = poly.get_vx(bmin_ix);
+  double py1 = poly.get_vy(bmin_ix);
+  double px2 = poly.get_vx(bmax_ix);
+  double py2 = poly.get_vy(bmax_ix);
+  bmin_dist = hypot(osx-px1, osy-py1);
+  bmax_dist = hypot(osx-px2, osy-py2);
+
   return(true);
 }
 
@@ -1189,25 +1241,33 @@ double distPointToRay(double px, double py,
 //            It assumes a prior check has determined that the ray does
 //            not cross the segment, and this is being used simply to
 //            determine how close the ray gets to the segment at its
-//            closest vertex.
+//            closest point.
 //            By not doing a check for crossing, it is much faster.
 
-double segRayCPA(double x1, double y1, double ray_angle,
-		 double x2, double y2, double x3, double y3,
+double segRayCPA(double rx, double ry, double ray_angle,
+		 double x1, double y1, double x2, double y2,
 		 double& ix, double& iy)
 {
-  double rx1, ry1, rx2, ry2;
-  double dist1 = distPointToRay(x2,y2, x1,y1,ray_angle, rx1, ry1);
-  double dist2 = distPointToRay(x3,y3, x1,y1,ray_angle, rx2, ry2);
+  double ix1, iy1, ix2, iy2, ix3, iy3;
+  double dist1 = distPointToRay(x1,y1, rx,ry,ray_angle, ix1, iy1);
+  double dist2 = distPointToRay(x2,y2, rx,ry,ray_angle, ix2, iy2);
 
-  if(dist1 < dist2) {
-    ix = rx1;
-    iy = ry1;
+  double dist3 = distPointToSeg(x1,y1, x2,y2, rx,ry, ix3,iy3);
+  
+  if((dist1 < dist2) && (dist1 < dist3)) {
+    ix = ix1;
+    iy = iy1;
     return(dist1);
   }
-  ix = rx2;
-  iy = ry2;
-  return(dist2);    
+  if(dist2 < dist3) {
+    ix = ix2;
+    iy = iy2;
+    return(dist2);    
+  }
+
+  ix = ix3;
+  iy = iy3;
+  return(dist3);    
 }
 
 
@@ -1587,3 +1647,67 @@ double distPointToSegl(double px, double py, const XYSegList& segl)
   return(min_dist);
 }
   
+
+
+
+//---------------------------------------------------------------
+// Procedure: polyRayCPA
+//   Purpose: Determine the closest point of approach of a point
+//            originating at rx,ry and moving along the ray in
+//            the direction of ray_angle, to the given polygon
+
+double polyRayCPA(double rx, double ry, double ray_angle,
+		  const XYPolygon& poly, double& rix, double& riy)
+{
+  // Part 1: Sanity check: This function requires a convex polygon
+  // therefore >=3 vertices
+  if(!poly.is_convex())
+    return(-1);
+
+  // Part 2: If the ray crosses any of the polygon segments, we're
+  // done, cpa=0
+  for(unsigned int i=0; i<poly.size(); i++) {
+    // Segment first vertex
+    double x1 = poly.get_vx(i);
+    double y1 = poly.get_vy(i);
+    // Segment second vertex
+    double x2 = poly.get_vx(0);
+    double y2 = poly.get_vy(0);
+    if((i+1) < poly.size()) {
+      x2 = poly.get_vx(i+1);
+      y2 = poly.get_vy(i+1);
+    }
+    double ix = 0;
+    double iy = 0;
+    if(crossRaySeg(rx, ry, ray_angle, x1, y1, x2, y2, ix, iy)) {
+      rix = ix;
+      riy = iy;
+      return(0);
+    }
+  }    
+  // Part 3: The ray does cross any of the polygon segments, so now
+  // we calculate the ray CPA for all segments and take the min
+  double min_cpa = -1;
+  for(unsigned int i=0; i<poly.size(); i++) {
+    // Segment first vertex
+    double x1 = poly.get_vx(i);
+    double y1 = poly.get_vy(i);
+    // Segment second vertex
+    double x2 = poly.get_vx(0);
+    double y2 = poly.get_vy(0);
+    if((i+1) < poly.size()) {
+      x2 = poly.get_vx(i+1);
+      y2 = poly.get_vy(i+1);
+    }
+    double ix = 0;
+    double iy = 0;
+    
+    double cpa = segRayCPA(rx, ry, ray_angle, x1, y1, x2, y2, ix, iy);
+    if((min_cpa < 0) || (cpa < min_cpa)) {
+      min_cpa = cpa;
+      rix = ix;
+      riy = iy;
+    }    
+  }
+  return(min_cpa);  
+}

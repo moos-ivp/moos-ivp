@@ -94,6 +94,10 @@ void   addVectors(double deg1, double mag1, double deg2, double mag2,
 bool   bearingMinMaxToPoly(double x, double y, const XYPolygon& poly,
 			   double& bmin, double& bmax);
 
+bool   bearingMinMaxToPolyX(double x, double y, const XYPolygon& poly,
+			    double& bmin, double& bmax,
+			    double& bmin_dist, double& bmax_dist);
+
 double distCircleToLine(double cx, double cy, double radius,
 			double px1, double py1, double px2, double py2);
 
@@ -140,7 +144,10 @@ double distPointToLine(double px, double py, double x1, double y1,
 
 double distPointToSegl(double px, double py, const XYSegList& segl);
 
+// Below is new after 19.8.1
 
+double polyRayCPA(double rx, double ry, double ray_angle,
+		  const XYPolygon& poly, double& ix, double& iy);
 
 // DEPRECATED INTERFACES
 double distToPoint(double x1, double y1, double x2, double y2);
