@@ -249,12 +249,15 @@ void BHV_AvdColregsV19::onCompleteState()
 
 bool BHV_AvdColregsV19::onRunStatePrior() 
 {
+#if 0
+  // Test feature
   if(m_last_runcheck_post) {
     m_last_runcheck_post = false;
     return(false);
   }
 
   m_last_runcheck_post = true;
+#endif
   return(true);
 }
 
