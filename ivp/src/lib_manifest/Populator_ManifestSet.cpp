@@ -215,7 +215,8 @@ bool Populator_ManifestSet::populateManifest(string filename)
     else if(param == "borndate") {
       bool ok_date = m_curr_manifest.setDate(value);
       if(!ok_date) {
-	cout << "Not ok borndate!! [" << filename << "][" << value << "]" << endl;
+	cout << "Not ok borndate!! [" << filename <<
+	  "][" << value << "]" << endl;
 	exit(1);
       }
     }

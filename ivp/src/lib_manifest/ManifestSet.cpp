@@ -137,6 +137,22 @@ ManifestSet ManifestSet::getManifestSetByGroup(string group) const
 }
 
 //-----------------------------------------------------------
+// Procedure: getManifestSetByDistro()
+
+ManifestSet ManifestSet::getManifestSetByDistro(string distro) const
+{
+  ManifestSet mset;
+
+  distro = tolower(distro);
+  for(unsigned int i=0; i<m_manifests.size(); i++) {
+    if(tolower(m_manifests[i].getDistro()) == distro)
+      mset.addManifest(m_manifests[i]);
+  }
+  
+  return(mset);
+}
+
+//-----------------------------------------------------------
 // Procedure: getManifestSetByDependency()
 
 ManifestSet ManifestSet::getManifestSetByDependency(string dep) const
@@ -247,6 +263,25 @@ vector<string> ManifestSet::getAllGroups() const
   vector<string> rvector; 
   set<string>::iterator p;
   for(p=group_set.begin(); p!=group_set.end(); p++)
+    rvector.push_back(*p);
+
+  return(rvector);
+}
+
+//-----------------------------------------------------------
+// Procedure: getAllDistros()
+
+vector<string> ManifestSet::getAllDistros() const
+{
+  set<string> distro_set;
+  for(unsigned int i=0; i<m_manifests.size(); i++) {
+    string distro = m_manifests[i].getDistro();
+    distro_set.insert(distro);
+  }
+
+  vector<string> rvector; 
+  set<string>::iterator p;
+  for(p=distro_set.begin(); p!=distro_set.end(); p++)
     rvector.push_back(*p);
 
   return(rvector);

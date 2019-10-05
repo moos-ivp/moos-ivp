@@ -33,6 +33,7 @@ class ManifestSet
   ManifestSet getManifestSetByAuthor(std::string key) const;
   ManifestSet getManifestSetByOrg(std::string key) const;
   ManifestSet getManifestSetByGroup(std::string key) const;
+  ManifestSet getManifestSetByDistro(std::string key) const;
   ManifestSet getManifestSetByDependency(std::string key) const;
   ManifestSet getManifestSetByType(std::string key) const;
 
@@ -40,6 +41,7 @@ class ManifestSet
   std::vector<std::string> getAllAuthorsX() const;
   std::vector<std::string> getAllOrgs() const;
   std::vector<std::string> getAllGroups() const;
+  std::vector<std::string> getAllDistros() const;
   std::vector<std::string> getAllDependencies() const;
   std::vector<std::string> getAllKeyWords() const;
   std::vector<std::string> getAllTypes() const;
