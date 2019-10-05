@@ -6,8 +6,6 @@ contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
 thumb    = A behavior for holding a vehicle at a given position. 
 
-depends  = 
-
 borndate = 060825
 doc_url  = http://oceanai.mit.edu/ivpman/bhvs/StationKeep
 license  = GPL

@@ -6,8 +6,6 @@ contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
 thumb    = A library holding most of the IvP behaviors of MOOS-IvP
 
-depends  = 
-
 borndate = 041101
 doc_url  = http://oceanai.mit.edu/ivpman/bhvs
 license  = GPL

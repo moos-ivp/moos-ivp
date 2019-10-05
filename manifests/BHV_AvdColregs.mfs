@@ -6,8 +6,6 @@ contact  = mikerb@mit.edu, issues@mit.edu
 org      = MIT
 thumb    = A behavior for avoiding collision based on CPA and COLREGS considerations.
 
-depends  = 
-
 borndate = 130516
 doc_url  = http://oceanai.mit.edu/ivpman/bhvs/AvdColregs
 license  = GPL
