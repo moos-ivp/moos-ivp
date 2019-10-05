@@ -10,7 +10,7 @@ depends  = lib_mbutil, lib_apputil, lib_logic, lib_geometry, lib_MOOS,
 borndate = 160106
 doc_url  = Pending
 license  = GPL
-group    = General Utility
+group    = MOOS-IvP, General Utility
 distro   = moos-ivp.org
 
 synopsis = The pEvalLoiter application is designed to measure the

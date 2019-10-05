@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_ivpcore, lib_ivpbuild
 borndate = 141118
 doc_url  = https://dspace.mit.edu/handle/1721.1/111117
 license  = GPL
-group    = IvP Benchmark
+group    = MOOS-IvP, IvP Benchmark
 distro   = moos-ivp.org/benchmarking
 
 synopsis = The ippgen utility may be used for generating random IvP
@@ -33,7 +33,7 @@ depends  = lib_mbutil, lib_ivpcore, lib_ivpbuild, lib_ivpsolve
 borndate = 141126
 doc_url  = https://dspace.mit.edu/handle/1721.1/111117
 license  = GPL
-group    = IvP Benchmark
+group    = MOOS-IvP, IvP Benchmark
 distro   = moos-ivp.org/benchmarking
 
 synopsis = The ippgen utility may be used for generating random IvP
@@ -56,7 +56,7 @@ depends  = lib_mbutil, lib_ivpcore, lib_ivpbuild, lib_ivpsolve
 borndate = 160103
 doc_url  = https://dspace.mit.edu/handle/1721.1/111117
 license  = GPL
-group    = IvP Benchmark
+group    = MOOS-IvP, IvP Benchmark
 distro   = moos-ivp.org/benchmarking
 
 synopsis = The isrplot utility allows the user to generate files
@@ -69,7 +69,7 @@ synopsis = The isrplot utility allows the user to generate files
   algorithm 2), these can be broken out into separate plotted lines.
 
 
-//====================================================================
+//= MOOS-IvP,===================================================================
 module   = ippview
 type     = Command line utility
 author   = Michael Benjamin
@@ -82,7 +82,7 @@ depends  = lib_mbutil, lib_ivpcore, lib_ivpbuild, lib_ivpsolve,
 borndate = 141130
 doc_url  = https://dspace.mit.edu/handle/1721.1/111117
 license  = GPL
-group    = IvP Benchmark
+group    = MOOS-IvP, IvP Benchmark
 distro   = moos-ivp.org/benchmarking
 
 synopsis = The ippview utility allows the user to visually inspect IvP
@@ -106,7 +106,7 @@ depends  = lib_mbutil, lib_apputil
 borndate = 141130
 doc_url  = https://dspace.mit.edu/handle/1721.1/111117
 license  = GPL
-group    = IvP Benchmark
+group    = MOOS-IvP, IvP Benchmark
 distro   = moos-ivp.org/benchmarking
 
 synopsis = The isrtex utility is similar to the isrplot utility in

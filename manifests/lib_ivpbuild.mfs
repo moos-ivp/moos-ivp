@@ -11,7 +11,7 @@ depends  =
 borndate = 030515
 doc_url  = http://oceanai.mit.edu/ivpman/ivpbuild
 license  = GPL
-group    = Libraries, Core Autonomy, IvPBuild Toolbox
+group    = MOOS-IvP, Libraries, Core Autonomy, IvPBuild Toolbox
 distro   = moos-ivp.org
 
 synopsis = The IvPBuild Toolbox is set of classes and utility

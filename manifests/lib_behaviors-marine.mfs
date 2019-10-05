@@ -9,7 +9,7 @@ thumb    = A library holding most of the IvP behaviors of MOOS-IvP
 borndate = 041101
 doc_url  = http://oceanai.mit.edu/ivpman/bhvs
 license  = GPL
-group    = Libraries, Core Autonomy, Helm Behaviors
+group    = MOOS-IvP, Libraries, Core Autonomy, Helm Behaviors
 distro   = moos-ivp.org
 
 synopsis = The lib_behaviors-marine library holds the two dozen+ IvP behaviors

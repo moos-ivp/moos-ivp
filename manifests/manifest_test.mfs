@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_apputil, lib_manifest
 borndate = 180109
 doc_url  = http://oceanai.mit.edu/moos-ivp/manifest-howto
 license  = GPL
-group    = General Utility
+group    = MOOS-IvP, General Utility
 distro   = moos-ivp.org
 
 synopsis = The manifest test utility is a convenience utility for

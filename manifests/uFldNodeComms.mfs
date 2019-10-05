@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_apputil, lib_ufield, lib_contacts, lib_geometry, lib_
 borndate = 111204
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uFldNodeComms
 license  = GPL
-group    = Simulation, uField ToolBox
+group    = MOOS-IvP, Simulation, uField ToolBox
 distro   = moos-ivp.org
 
 synopsis = The uFldNodeComms application is a tool for handling node

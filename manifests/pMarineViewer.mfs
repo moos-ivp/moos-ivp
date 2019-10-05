@@ -10,7 +10,7 @@ depends  = lib_mbutil, lib_apputil, lib_geometry, lib_contacts, lib_ucommand,
 borndate = 041101
 doc_url  = http://oceanai.mit.edu/ivpman/apps/pMarineViewer
 license  = GPL
-group    = Mission Control, Simulation
+group    = MOOS-IvP, Mission Control, Simulation
 distro   = moos-ivp.org
 
 synopsis = pMarineViewer is a GUI based MOOS App for rendering events

@@ -11,7 +11,7 @@ depends  =
 borndate = 040420
 doc_url  = http://oceanai.mit.edu/ivpman/apps/geometry
 license  = GPL
-group    = Libraries, General Utility, Core Autonomy, Helm Behaviors
+group    = MOOS-IvP, Libraries, General Utility, Core Autonomy, Helm Behaviors
 distro   = moos-ivp.org
 
 synopsis = The geometry library implements dozens of core geometry

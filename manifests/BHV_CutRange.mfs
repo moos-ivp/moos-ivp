@@ -11,7 +11,7 @@ depends  =
 borndate = 050510
 doc_url  = http://oceanai.mit.edu/ivpman/bhvs/CutRange
 license  = GPL
-group    = Helm Behaviors, Core Autonomy
+group    = MOOS-IvP, Helm Behaviors, Core Autonomy
 distro   = moos-ivp.org
 
 synopsis = This behavior will drive the vehicle to reduce the range

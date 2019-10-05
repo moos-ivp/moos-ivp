@@ -9,7 +9,7 @@ thumb    = A library used by applications having both a MOOS and user interface
 borndate = 041104
 doc_url  = Pending
 license  = GPL
-group    = Libraries, General Utility
+group    = MOOS-IvP, Libraries, General Utility
 distro   = moos-ivp.org
 
 synopsis = A library used by applications having both a MOOS and user interface,

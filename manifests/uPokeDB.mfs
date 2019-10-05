@@ -11,7 +11,7 @@ depends  = lib_mbutil, lib_MOOS
 borndate = 080509
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uPokeDB
 license  = GPL
-group    = General Utility, Simulation
+group    = MOOS-IvP, General Utility, Simulation
 distro   = moos-ivp.org
 
 synopsis = The uPokeDB application is a command-line tool for poking a

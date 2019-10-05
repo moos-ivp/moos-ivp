@@ -9,7 +9,7 @@ thumb    = A library for supporting AppCasting MOOS apps
 borndate = 120612 
 doc_url  = https://oceanai.mit.edu/ivpman/appcasting
 license  = GPL
-group    = Libraries, General Utility
+group    = MOOS-IvP, Libraries, General Utility
 distro   = moos-ivp.org
 
 synopsis = AppCasting MOOS apps produce an output on each iteration, separate

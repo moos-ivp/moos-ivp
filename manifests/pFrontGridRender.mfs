@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_geometry, lib_henrik_anneal, lib_MOOS
 borndate = 130413
 doc_url  = Pending
 license  = GPL
-group    = Simulation, 2.680
+group    = MOOS-IvP, Simulation, 2.680
 distro   = moos-ivp.org
 
 synopsis = The pFrontGridRender is typically used in the Front Estimation

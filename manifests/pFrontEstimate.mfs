@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_henrik_anneal, lib_MOOS
 borndate = 120315
 doc_url  = Pending
 license  = GPL
-group    = Simulation, Labs
+group    = MOOS-IvP, Simulation, Labs
 distro   = moos-ivp.org
 
 synopsis = The pFrontEstimate app is a baseline implementation of an

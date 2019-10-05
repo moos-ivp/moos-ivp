@@ -11,7 +11,7 @@ depends  = lib_MOOS
 borndate = 000101
 doc_url  = https://sites.google.com/site/moossoftware/
 license  = GPL
-group    = Oxford MOOS
+group    = MOOS-IvP, Oxford MOOS
 distro   = moos-ivp.org, themoos.org
 
 synopsis = MOOS has a star-like communications topology. Each application 

@@ -11,7 +11,7 @@ depends  = libMOOS
 borndate = 000101
 doc_url  = http://oceanai.mit.edu/ivpman/apps/pLogger
 license  = GPL
-group    = Oxford MOOS
+group    = MOOS-IvP, Oxford MOOS
 distro   = moos-ivp.org, themoos.org
 
 synopsis = The pLogger process is intended to record the activities of

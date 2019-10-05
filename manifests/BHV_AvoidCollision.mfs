@@ -9,7 +9,7 @@ thumb    = A behavior for avoiding collision based primarily on CPA consideratio
 borndate = 061118
 doc_url  = http://oceanai.mit.edu/ivpman/bhvs/AvoidCollision
 license  = GPL
-group    = Helm Behaviors, Core Autonomy
+group    = MOOS-IvP, Helm Behaviors, Core Autonomy
 distro   = moos-ivp.org
 
 synopsis = The AvoidCollision behavior will produce IvP objective

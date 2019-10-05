@@ -11,7 +11,7 @@ depends  = lib_mbutil, lib_logic, lib_MOOS
 borndate = 151229
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uQueryDB
 license  = GPL
-group    = Simulation, Mission Control, Mission Monitoring
+group    = MOOS-IvP, Simulation, Mission Control, Mission Monitoring
 distro   = moos-ivp.org
 
 synopsis = uQueryDB is a command line tool for querying a MOOSDB with

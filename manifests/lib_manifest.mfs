@@ -9,7 +9,7 @@ depends  =
 borndate = 180109
 doc_url  = http://oceanai.mit.edu/moos-ivp/manifest-howto
 license  = GPL
-group    = General Utility
+group    = MOOS-IvP, General Utility
 distro   = moos-ivp.org
 
 synopsis = The lib_manifest contains the class definitions for a Manifest,

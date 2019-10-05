@@ -11,7 +11,7 @@ depends  =
 borndate = 151215
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uFldCollisionDetect
 license  = GPL
-group    = Libraries
+group    = MOOS-IvP, Libraries
 distro   = moos-ivp.org
 
 synopsis = A vehicle "encounter" is an event comprised of two vehicles

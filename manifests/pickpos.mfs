@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_geometry
 borndate = 180922
 doc_url  = No documentation. Use pickpos --help
 license  = GPL
-group    = General Utility, Simulation
+group    = MOOS-IvP, General Utility, Simulation
 distro   = moos-ivp.org
 
 synopsis = pick_pos is a utility for generating starting points for      

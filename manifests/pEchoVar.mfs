@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_apputil, lib_logic, lib_geometry, lib_MOOS
 borndate = 060722
 doc_url  = http://oceanai.mit.edu/ivpman/apps/pEchoVar
 license  = GPL
-group    = General Utility
+group    = MOOS-IvP, General Utility
 distro   = moos-ivp.org
 
 synopsis = The pEchoVar application is a lightweight process that runs

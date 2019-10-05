@@ -11,7 +11,7 @@ depends  =
 borndate = 160701
 doc_url  = Pending
 license  = GPL
-group    = Libraries, Mission Control
+group    = MOOS-IvP, Libraries, Mission Control
 distro   = moos-ivp.org
 
 synopsis = The lib_ucommand library contains class definitions for

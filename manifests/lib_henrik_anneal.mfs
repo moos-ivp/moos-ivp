@@ -13,7 +13,7 @@ depends  =
 borndate = 120301
 doc_url  = http://oceanai.mit.edu/ivpman/labs/front_estimate
 license  = GPL
-group    = Libraries, 2.680, Simulation
+group    = MOOS-IvP, Libraries, 2.680, Simulation
 distro   = moos-ivp.org
 
 synopsis = The front estimation lab utilizes a simulated moving thermal

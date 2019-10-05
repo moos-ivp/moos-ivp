@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_geometry, lib_henrik_anneal, lib_MOOS
 borndate = 120301
 doc_url  = Pending
 license  = GPL
-group    = Simulation, 2.680
+group    = MOOS-IvP, Simulation, 2.680
 distro   = moos-ivp.org
 
 synopsis = The pGradeFrontEstimate application is part of 2.680 Front

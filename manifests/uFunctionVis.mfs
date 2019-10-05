@@ -12,7 +12,7 @@ depends  = lib_mbutil, lib_genutil, lib_apputil, lib_ivpbuild, lib_geometry,
 borndate = 060512
 doc_url  = Pending
 license  = GPL
-group    = Mission Control
+group    = MOOS-IvP, Mission Control
 distro   = moos-ivp.org
 
 synopsis = uFunctionVis is a GUI application for rendering IvP

@@ -9,7 +9,7 @@ thumb    = Core MOOS comms, MOOS App superclass, and utitlities implementation.
 borndate = 000101
 doc_url  = themoos.org
 license  = GPL
-group    = Libraries, Oxford MOOS
+group    = MOOS-IvP, Libraries, Oxford MOOS
 distro   = themoos.org, moos-ivp.org
 
 synopsis = 

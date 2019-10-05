@@ -11,7 +11,7 @@ depends  =
 borndate = 100919
 doc_url  = http://oceanai.mit.edu/ivpman/logic
 license  = LGPL
-group    = Libraries, Core Autonomy, ALog Toolbox
+group    = MOOS-IvP, Libraries, Core Autonomy, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = The lib_logic library implements simple Boolean logic,

@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_logutils
 borndate = 180813
 doc_url  = http://oceanai.mit.edu/ivpman/apps/alogcat
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = Create a new MOOS .alog file from two or more given .alog
@@ -27,7 +27,7 @@ depends  = lib_mbutil, lib_logutils
 borndate = 151223
 doc_url  = http://oceanai.mit.edu/ivpman/apps/alogcd
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = Scan an alog file for collision detection reports.  Tally
@@ -49,7 +49,7 @@ depends  = lib_mbutil, lib_logutils, lib_logic
 borndate = 151223
 doc_url  = Pending
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = alogcheck is a command line utility that checks if a
@@ -76,7 +76,7 @@ depends  = lib_mbutil, lib_logutils,
 borndate = 080605
 doc_url  = http://oceanai.mit.edu/ivpman/apps/alogclip
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = alogclip is a command line utility that creates a new alog
@@ -97,7 +97,7 @@ depends  = lib_mbutil, lib_logutils,
 borndate = 080806
 doc_url  = http://oceanai.mit.edu/ivpman/apps/aloggrep
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = aloggrep is a command line utility that create a new alog
@@ -118,7 +118,7 @@ depends  = lib_mbutil, lib_logutils, lib_encounters
 borndate = 160116
 doc_url  = Pending
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = alogeplot is a command line utility that creates an image, 
@@ -139,7 +139,7 @@ depends  = lib_mbutil, lib_logutils, lib_helmivp, lib_behaviors,
 borndate = 100310
 doc_url  = http://oceanai.mit.edu/ivpman/apps/aloghelm
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = aloghelm is a command line utility that will perform one of
@@ -167,7 +167,7 @@ depends  = lib_mbutil, lib_logutils
 borndate = 131222
 doc_url  = http://oceanai.mit.edu/ivpman/apps/alogiter
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = alogiter is a command line utility that will scan a given alog
@@ -189,7 +189,7 @@ depends  = lib_mbutil, lib_logutils
 borndate = 151225
 doc_url  = http://oceanai.mit.edu/ivpman/apps/alogpare
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = alogpare is a command line utility that will create a new
@@ -217,7 +217,7 @@ depends  = lib_mbutil, lib_logutils
 borndate = 080806
 doc_url  = http://oceanai.mit.edu/ivpman/apps/alogrm
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = alogrm is a command line utility that will generate a new
@@ -242,7 +242,7 @@ depends  = lib_mbutil, lib_logutils
 borndate = 080605
 doc_url  = http://oceanai.mit.edu/ivpman/apps/alogscan
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = alogscan is a command line utility that will create summary
@@ -262,7 +262,7 @@ depends  = lib_mbutil, lib_logutils
 borndate = 130622
 doc_url  = Pending
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = alogsort is a command line utility that will create a new alog
@@ -284,7 +284,7 @@ depends  = lib_mbutil, lib_logutils
 borndate = 150215
 doc_url  = http://oceanai.mit.edu/ivpman/apps/alogsplit
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = alogsplit is a command line utility that will take a given
@@ -314,7 +314,7 @@ depends  = lib_mbutil, lib_logutils, lib_marineview, lib_helmivp,
 borndate = 150215
 doc_url  = http://oceanai.mit.edu/ivpman/apps/alogview
 license  = GPL
-group    = ALog Toolbox
+group    = MOOS-IvP, ALog Toolbox
 distro   = moos-ivp.org
 
 synopsis = alogview is a GUI based tool for rendering vehicle paths

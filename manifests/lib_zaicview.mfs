@@ -11,7 +11,7 @@ depends  =
 borndate = 150602
 doc_url  = http://oceanai.mit.edu/ivpman/zaic
 license  = GPL
-group    = Libraries
+group    = MOOS-IvP, Libraries
 distro   = moos-ivp.org
 
 synopsis = The lib_zaicview library provides common GUI and OpenGL

@@ -9,6 +9,7 @@ depends  = lib_mbutil, lib_ufield, lib_apputil, lib_MOOS
 borndate = 111214
 doc_url  = http://oceanai.mit.edu/ivpman/apps/pHostInfo
 license  = GPL
+group    = MOOS-IvP, General Utility
 
 distro   = moos-ivp.org
 

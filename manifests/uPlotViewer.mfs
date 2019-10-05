@@ -11,7 +11,7 @@ depends  = lib_mbutil, lib_genutil, lib_MOOS, lib_fltk, lib_fltk_gl
 borndate = 120518
 doc_url  = Pending
 license  = GPL
-group    = Mission Monitoring
+group    = MOOS-IvP, Mission Monitoring
 distro   = moos-ivp.org
 
 synopsis = uPlotViewer is a GUI tool for rendering a frequency bar graph 

@@ -9,7 +9,7 @@ thumb    = A behavior for holding a vehicle at a given position.
 borndate = 060825
 doc_url  = http://oceanai.mit.edu/ivpman/bhvs/StationKeep
 license  = GPL
-group    = Helm Behaviors, Core Autonomy
+group    = MOOS-IvP, Helm Behaviors, Core Autonomy
 distro   = moos-ivp.org
 
 synopsis = This behavior is designed to keep the vehicle at a given

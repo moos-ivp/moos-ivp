@@ -9,7 +9,7 @@ thumb    = A behavior for repeatedly traversing a given convex polygon of waypoi
 borndate = 050726
 doc_url  = http://oceanai.mit.edu/ivpman/bhvs/Loiter
 license  = GPL
-group    = Helm Behaviors, Core Autonomy
+group    = MOOS-IvP, Helm Behaviors, Core Autonomy
 distro   = moos-ivp.org
 
 synopsis = A behavior for transiting to and repeatedly traversing a

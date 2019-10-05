@@ -11,7 +11,7 @@ depends  =
 borndate = 041027
 doc_url  = http://oceanai.mit.edu/ivpman/helm
 license  = GPL
-group    = Libraries, Core Autonomy
+group    = MOOS-IvP, Libraries, Core Autonomy
 distro   = moos-ivp.org
 
 synopsis = The lib_helmivp library contains a substantial portion of

@@ -11,7 +11,7 @@ depends  = lib_mbutil, lib_apputil, lib_geometry, lib_contacts, lib_MOOS
 borndate = 041025
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uSimMarine
 license  = GPL
-group    = Simulation
+group    = MOOS-IvP, Simulation
 distro   = moos-ivp.org
 
 synopsis = The uSimMarine application is a simple 3D vehicle simulator

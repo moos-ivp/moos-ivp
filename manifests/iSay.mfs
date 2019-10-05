@@ -9,7 +9,7 @@ depends  = lib_mbutil, lib_genutil, lib_apputil, lib_MOOS
 borndate = 130520
 doc_url  = http://oceanai.mit.edu/ivpman/apps/iSay
 license  = GPL
-group    = General Utility, Mission Control
+group    = MOOS-IvP, General Utility, Mission Control
 distro   = moos-ivp.org
 
 synopsis = The iSay application is a way to invoke the native speech

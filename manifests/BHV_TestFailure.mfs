@@ -11,7 +11,7 @@ depends  =
 borndate = 111031
 doc_url  = http://oceanai.mit.edu/ivpman/bhvs/TestFailure
 license  = GPL
-group    = Helm Behaviors, Core Autonomy
+group    = MOOS-IvP, Helm Behaviors, Core Autonomy
 distro   = moos-ivp.org
 
 synopsis = The TestFailure behavior is used to test the helm in two

@@ -11,7 +11,7 @@ depends  = lib_mbutil, lib_apputil, lib_MOOS
 borndate = 190504
 doc_url  = http://oceanai.mit.edu/ivpman/apps/uMemWatch
 license  = GPL
-group    = Mission Control
+group    = MOOS-IvP, Mission Control
 distro   = moos-ivp.org
 
 synopsis = The uMemWatch application is used for measuring the current
