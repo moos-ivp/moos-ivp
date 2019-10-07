@@ -39,7 +39,8 @@ class MovingSurvey : public AppCastingMOOSApp
   XYSegList m_survey;
   double    m_speed;
   double    m_heading;
-  double    m_rpm;
+  double    m_rpm;      // rotations per minute
+  double    m_dps;      // degrees per second
 
   double    m_survey_x;
   double    m_survey_y;
