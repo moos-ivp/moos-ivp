@@ -1,0 +1,9 @@
+//------------------------------------------------
+// pMovingSurvey config block
+
+ProcessConfig = pMovingSurvey
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+
