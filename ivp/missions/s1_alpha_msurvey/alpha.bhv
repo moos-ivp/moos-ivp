@@ -12,7 +12,7 @@ Behavior = BHV_Waypoint
   condition = DEPLOY = true
   endflag   = RETURN = true
 
-  updates    = WPT_UPDATE
+  updates    = SURVEY_UPDATE
   perpetual  = true
 
                 lead = 8
