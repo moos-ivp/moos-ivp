@@ -158,7 +158,7 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   double dval = atof(param_val.c_str());
   string param_val_lower = tolower(param_val);
 
-  if((param == "polygon") || (param == "points")) {
+  if((param == "polygon") || (param == "points") || (param == "xpoints")) {
     XYSegList new_seglist = string2SegList(param_val);
     if(new_seglist.size() == 0) {
       XYPolygon new_poly = string2Poly(param_val);
@@ -166,8 +166,24 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     }
     if(new_seglist.size() == 0)
       return(false);
+
+    // With the xpoints option, the waypoints are updated but also the
+    // current index is held the same. If the number of waypoints is
+    // different, the update is rejected.
+    int current_waypt = m_waypoint_engine.getCurrIndex();
+    if(param == "xpoints") {
+      if(new_seglist.size() != m_waypoint_engine.size())
+	return(false);
+    }
+    
     m_waypoint_engine.setSegList(new_seglist);
     m_markpt.set_active(false);
+
+    // After the waypoint engine is updated with new points, if the 
+    // xpoints option is used, we also restore the current index.
+    if(param == "xpoints")
+      m_waypoint_engine.setCurrIndex((unsigned int)(current_waypt));
+
     return(true);
   }
   else if(param == "point") {
@@ -746,10 +762,6 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
     
     IvPFunction *crs_ipf = crs_zaic.extractIvPFunction(false);
 
-    //cout << "crs pieces: " << crs_ipf->getPDMap()->size() << endl;
-    //crs_ipf->getPDMap()->print();
-
-    
     if(!crs_ipf) 
       postWMessage("Failure on the CRS ZAIC");
     
