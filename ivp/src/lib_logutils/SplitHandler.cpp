@@ -207,18 +207,28 @@ bool SplitHandler::handleMakeSplitFiles()
 
     // Part 2: Check if the file ptr for this variable already exists. 
     // If not, create a new file pointer and add it to the map.
+    if(varname == "OBM_DIST_TO_OBJ_118")
+      cout << "var: OBM_DIST_TO_OBJ_118" << endl;
+
+    bool cache_the_file_ptr = false;
     FILE *file_ptr = 0;
     if(m_file_ptr.count(varname) == 1) 
       file_ptr = m_file_ptr[varname];
     else {
       string new_file = m_basedir + "/" + varname + ".klog"; 
-      FILE *new_ptr = fopen(new_file.c_str(), "a");
+      errno = 0;
+      FILE *new_ptr = fopen(new_file.c_str(), "a+");
       if(new_ptr) {
-	m_file_ptr[varname] = new_ptr;
+	if(m_file_ptr.size() <= 100) {
+	  m_file_ptr[varname] = new_ptr;
+	  cache_the_file_ptr = true;
+	}
 	file_ptr = new_ptr;
       }
       else {
-	cout << "Unable to open new file for VarName: " << varname << endl;
+	cout << "Unable to open new file for VarName: [[" << varname << "]]" << endl;
+	cout << " full filename: [[" << new_file << "]]" << endl;
+	cout << "Error: " << errno << endl;
 	break;
       }
     }
@@ -238,6 +248,9 @@ bool SplitHandler::handleMakeSplitFiles()
 
     // Part 5: Write the line to the appropriate file
     fprintf(file_ptr, "%s\n", line_raw.c_str());
+    if(!cache_the_file_ptr)
+      fclose(file_ptr);
+    
   }
 
   if(m_verbose)
