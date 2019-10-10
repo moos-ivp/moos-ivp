@@ -28,7 +28,9 @@ class MovingSurvey : public AppCastingMOOSApp
  protected: // Standard AppCastingMOOSApp function to overload 
   bool buildReport();
   bool handleConfigSurvey(std::string);
-  void updateSurveyLocation();
+  
+  bool updateSurveyLocation();
+  void updateTurnStatus();
   void postUpdatedSurvey();
   
  protected:
@@ -41,16 +43,20 @@ class MovingSurvey : public AppCastingMOOSApp
   double    m_heading;
   double    m_rpm;      // rotations per minute
   double    m_dps;      // degrees per second
-
-  double    m_survey_x;
-  double    m_survey_y;
-  double    m_prev_time;
-
+  
   std::string m_update_var;
 
-  double    m_update_freq;
+  double    m_reverse_interval;
+  double    m_update_interval;
   
  private: // State variables
+
+  bool      m_active;
+  double    m_prev_time;
+  double    m_last_turn_time;
+  
+  double    m_survey_x;
+  double    m_survey_y;
 
 };
 
