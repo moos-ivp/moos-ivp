@@ -47,7 +47,9 @@ ProcessConfig = pMovingSurvey
   speed = 0.4
   heading = 45
   rpm = 0.05
-  
+
+  reverse_interval = 120
+  update_interval = 20
 }                                  
 
 //------------------------------------------
