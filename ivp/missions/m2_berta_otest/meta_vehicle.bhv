@@ -37,12 +37,13 @@ Behavior = BHV_Loiter
   runflag   = VEHICLE_UNDERWAY = TRUE
   endflag   = VEHICLE_UNDERWAY = FALSE
 
+      ipf_type = zaic_spd
    post_suffix = A
          speed = 1.4
      clockwise = false
         radius = 8.0
      nm_radius = 15.0
-       polygon = radial:: $(LOITER_POS), radius=20, pts=8, snap=1, label=$(VNAME)_LOITER
+       polygon = radial:: $(LOITER_POS), radius=15, pts=8, snap=1, label=$(VNAME)_LOITER
   visual_hints = nextpt_color=white, nextpt_lcolor=khaki
   visual_hints = edge_color=orange, vertex_color=white
   visual_hints = edge_size=1, vertex_size=2
@@ -89,19 +90,16 @@ Behavior = BHV_StationKeep
 
 
 //----------------------------------------------
-Behavior = BHV_AvoidCollision
+Behavior = BHV_AvdColregsV19
 {
-  name         = ac_
+  name         = avdcol_
   pwt          = 200
   condition    = AVOID = true 
   updates      = CONTACT_INFO
-  idleflag     = AVOIDING = idle
-  activeflag   = AVOIDING = active
-  inactiveflag = AVOIDING = inactive
-  runflag      = AVOIDING = running
-  endflag      = AVOIDING = end
   endflag      = CONTACT_RESOLVED = $[CONTACT]
   templating   = spawn
+
+        use_refinery = true
 
              contact = to-be-set
     on_no_contact_ok = true
@@ -118,18 +116,83 @@ Behavior = BHV_AvoidCollision
 }
 
 //----------------------------------------------
-Behavior=BHV_AvoidObstacle
+//Behavior = BHV_AvoidCollision
 {
-  name       = avd_obstacles_
-  pwt        = 500
+  name         = ac_
+  pwt          = 200
+  condition    = AVOID = true 
+  updates      = CONTACT_INFO
+  idleflag     = AVOIDING = idle
+  activeflag   = AVOIDING = active
+  inactiveflag = AVOIDING = inactive
+  runflag      = AVOIDING = running
+  endflag      = AVOIDING = end
+  endflag      = CONTACT_RESOLVED = $[CONTACT]
+  templating   = spawn
+
+        use_refinery = true
+
+             contact = to-be-set
+    on_no_contact_ok = true
+         extrapolate = true
+               decay = 30,60
+
+        pwt_outer_dist = 20
+        pwt_inner_dist = 11
+        completed_dist = 40
+     min_util_cpa_dist = 8
+     max_util_cpa_dist = 15
+             pwt_grade = linear
+   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}
+
+//----------------------------------------------
+//Behavior=BHV_AvoidObstacle
+{
+  name       = avdob_
+  pwt        = 300
   condition  = DEPLOY = true
-	templating = spawn
+  templating = spawn
   updates    = OBSTACLE_ALERT
 
+     allowable_ttc = 10 
+       buffer_dist = 7
+    pwt_outer_dist = 25
+    pwt_inner_dist = 15
+    completed_dist = 30
+}
 
-     allowable_ttc = 5 
-       buffer_dist = 3
-    pwt_outer_dist = 40
-    pwt_inner_dist = 10
-    completed_dist = 45
+//----------------------------------------------
+Behavior = BHV_AvoidObstacleX
+{
+  name       = avdob_
+  pwt        = 300
+  condition  = DEPLOY = true
+  templating = spawn
+  updates    = OBSTACLE_ALERT
+
+        use_refinery = true
+       allowable_ttc = 12 
+      pwt_outer_dist = 15
+      pwt_inner_dist = 5
+      completed_dist = 18
+   min_util_cpa_dist = 4
+   max_util_cpa_dist = 8
+
+    visual_hints = obstacle_edge_color = white
+    visual_hints = obstacle_vertex_color = gray60
+    visual_hints = obstacle_fill_color = gray60
+    visual_hints = obstacle_fill_transparency = 0.7
+    
+    visual_hints = buffer_min_edge_color = gray60
+    visual_hints = buffer_min_vertex_color = dodger_blue
+    visual_hints = buffer_min_vertex_size = 1
+    visual_hints = buffer_min_fill_color = gray70
+    visual_hints = buffer_min_fill_transparency = 0.25
+
+    visual_hints = buffer_max_edge_color = gray60
+    visual_hints = buffer_max_vertex_color = dodger_blue
+    visual_hints = buffer_max_vertex_size = 0
+    visual_hints = buffer_max_fill_color = gray80
+    visual_hints = buffer_max_fill_transparency = 0.1
 }

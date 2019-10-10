@@ -176,6 +176,18 @@ double Regressor::setWeight0(IvPBox *gbox, bool feedback)
 
 double Regressor::setWeight1(IvPBox *gbox, bool feedback)
 {
+  // Part 1: Handle case where piece is known plateau
+  if((gbox->getPlat() > 0) && (m_aof->minMaxKnown())) {
+    gbox->setWT(m_aof->getKnownMax());
+    return(0);
+  }
+  // Part 2: Handle case where piece is known basin
+  if((gbox->getPlat() < 0) && (m_aof->minMaxKnown())) {
+    gbox->setWT(m_aof->getKnownMin());
+    return(0);
+  }
+  
+  // Part 3: Handle the general case
   int i, d;
   setCorners(gbox);
   

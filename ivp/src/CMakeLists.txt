@@ -278,6 +278,7 @@ SET(IVP_NON_GUI_APPS
   app_bhv2graphviz
   pXRelay
   uFldCollisionDetect
+  uFldCollObDetect
   uFldLoiterAssign
   uFldPathCheck
   uFldShoreBroker

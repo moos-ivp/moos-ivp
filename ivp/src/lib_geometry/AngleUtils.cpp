@@ -591,6 +591,16 @@ double aspectDiff(double ang1, double ang2)
 // Procedure: containsAngle
 //   Purpose: Given a range of angle, in the domain [0, 360),
 //            determine if the query angle lies within.
+//      Note: The test angle range, in terms of wrap-around, will
+//            be the range that forms an ACUTE angle. Thus if the
+//            first two args are (350,10) or (10,350), these are
+//            treated the same.
+//  Examples: 10, 20, 15    --> true
+//            20, 10, 15    --> true
+//            20, 350, 15   --> true
+//            100, 280, 99  --> true (180 range accepts all)
+//            100, 280, 101 --> true (180 range accepts all)
+
 
 bool containsAngle(double aval, double bval, double qval)
 {
@@ -601,6 +611,7 @@ bool containsAngle(double aval, double bval, double qval)
   if(aval == bval)
     return(qval == bval);
 
+  // If the given angle is 180, then all query angles will pass
   if(fabs(bval-aval) == 180)
     return(true);
 

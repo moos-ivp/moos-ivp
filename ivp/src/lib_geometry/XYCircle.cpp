@@ -62,6 +62,7 @@ XYCircle::XYCircle(double g_x, double g_y, double g_rad)
   // Number of significant digits in x,y,rad fields in string spec
   m_sdigits = 2;  
   m_draw_vertices = 0;
+  m_duration = -1;
 }
 
 //-------------------------------------------------------------

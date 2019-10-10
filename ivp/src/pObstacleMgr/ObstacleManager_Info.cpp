@@ -22,9 +22,9 @@ void showSynopsis()
   blk("------------------------------------                            ");
   blk("  The pObstacleMgr manages incoming sensor data about obstacles ");
   blk("  and posts alerts suitable for spawning obstacle avoidance     ");
-  blk("  behaviors.                                                    ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  behaviors. It has an interface agnostic to the user, but it   ");
+  blk("  was designed with the IvP Helm's Avoid Obstacle behavior(s)   ");
+  blk("  in mind                                                       ");
 }
 
 //----------------------------------------------------------------
@@ -32,17 +32,16 @@ void showSynopsis()
 
 void showHelpAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
-  blu("Usage: pObstacleMgr file.moos [OPTIONS]                     ");
+  blu("Usage: pObstacleMgr file.moos [OPTIONS]                         ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch pObstacleMgr with the given process name       ");
-  blk("      rather than pObstacleMgr.                             ");
+  blk("      Launch pObstacleMgr with the given process name           ");
+  blk("      rather than pObstacleMgr.                                 ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -50,7 +49,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of pObstacleMgr.          ");
+  blk("      Display the release version of pObstacleMgr.              ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -74,6 +73,11 @@ void showExampleConfigAndExit()
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
   blk("  point_var = TRACKED_FEATURE  // default is TRACKED_FEATURE    ");
+  blk("                                                                ");
+  blk("  given_obstacle = pts={90.2,-80.4:...:85.4,-80.4},label=ob_23  ");
+  blk("                                                                ");
+  blk("  post_dist_to_polys = true  // true, false or (close)          ");
+  blk("  post_view_polys = true     // (true) or false or              ");
   blk("                                                                ");
   blk("  max_pts_per_cluster = 20   // default is 20                   ");
   blk("  max_age_per_point   = 20   // (secs)  default is 20           ");
@@ -105,6 +109,7 @@ void showInterfaceAndExit()
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
   blk("  TRACKED_FEATURE = x=5,y=8,label=a,size=4,color=1              ");
+  blk("  GIVEN_OBSTACLE  = pts={90.2,-80.4:...:85.4,-80.4},label=ob_23 ");
   blk("                                                                ");
   blk("  NAV_X = 103.0                                                 ");
   blk("  NAV_Y = -23.8                                                 ");
@@ -116,6 +121,7 @@ void showInterfaceAndExit()
   blk("  VEHICLE_CONNECT = true                                        ");
   blk("  VIEW_POLYGON    = pts={32,-100:38,-98:40,-100:32,-104},       ");
   blk("                    label=d,edge_color=white,vertex_color=blue  ");
+  blk("  OBM_DIST_TO_OBJ = ob_key,17.5                                 ");
   blk("  OBSTACLE_ALERT  = name=d#                                     ");
   blk("                    poly=pts={32,-100:38,-98:40,-100:32,-104},  ");
   blk("                    label=d                                     ");

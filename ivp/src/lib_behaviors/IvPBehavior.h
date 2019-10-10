@@ -84,7 +84,12 @@ public:
 
   void    postMessage(std::string, std::string, std::string key="");
   void    noteLastRunCheck(bool, double);
-
+  
+  void    setDynamicallySpawned(bool v)   {m_dynamically_spawned=v;}
+  void    setSpawnBaseName(std::string s) {m_spawn_basename=s;}
+  bool    isDynamicallySpawned() const {return(m_dynamically_spawned);}
+  std::string getSpawnBaseName() const {return(m_spawn_basename);}
+  
  protected:
   bool    setBehaviorName(std::string str);
   bool    augBehaviorName(std::string str);
@@ -156,7 +161,11 @@ protected:
   std::vector<VarDataPair>       m_idle_flags;
   std::map<std::string, double>  m_starve_vars;
   std::map<std::string, std::string> m_remap_vars;
- 
+
+  // Info about behaviors that are dynamically spawned
+  bool        m_dynamically_spawned;
+  std::string m_spawn_basename;
+  
   IvPDomain  m_domain;        
   double     m_priority_wt; 
 
@@ -199,7 +208,3 @@ private:
 };
 
 #endif
-
-
-
-

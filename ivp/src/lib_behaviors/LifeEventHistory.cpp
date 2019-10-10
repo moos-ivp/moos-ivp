@@ -54,6 +54,13 @@ LifeEventHistory::LifeEventHistory()
 
 void LifeEventHistory::addLifeEvent(const LifeEvent& event)
 {
+  // Check for duplicate life events (possibly due to duplicate
+  // entries for IVPHELM_LIFE_EVENT in alog files)
+  for(unsigned int i=0; i<m_life_events.size(); i++) {
+    if(m_life_events[i] == event)
+      return;
+  }
+
   m_life_events.push_back(event);
   m_stale_report = true;
 }
@@ -84,6 +91,9 @@ void LifeEventHistory::addLifeEvent(const string& str)
 	m_max_len_iter = rlen;
     }
 
+    else if(left == "posting_index")
+      event.setPostingIndex(atoi(right.c_str()));
+
     else if(left == "bname") {
       event.setBehaviorName(right);
       if(rlen > m_max_len_bname)
@@ -109,8 +119,7 @@ void LifeEventHistory::addLifeEvent(const string& str)
     }
   }
 
-  m_life_events.push_back(event);
-  m_stale_report = true;
+  addLifeEvent(event);
 }
 
 //-----------------------------------------------------------

@@ -31,7 +31,7 @@
 class LifeEvent
 {
 public:
-  LifeEvent() {m_timestamp=0; m_iteration=0;}
+  LifeEvent();
   ~LifeEvent() {}
   
   void   setTimeStamp(double val)         {m_timestamp = val;}
@@ -40,6 +40,7 @@ public:
   void   setBehaviorName(std::string str) {m_behavior_name = str;}
   void   setBehaviorType(std::string str) {m_behavior_type = str;}
   void   setSpawnString(std::string str)  {m_spawn_string = str;}
+  void   setPostingIndex(int val)         {m_posting_index = val;}
   
   double getTimeStamp() const         {return(m_timestamp);}
   unsigned int getIteration() const   {return(m_iteration);}
@@ -47,7 +48,10 @@ public:
   std::string getBehaviorName() const {return(m_behavior_name);}
   std::string getBehaviorType() const {return(m_behavior_type);}
   std::string getSpawnString() const  {return(m_spawn_string);}
+  int getPostingIndex() const         {return(m_posting_index);}
 
+  bool operator==(const LifeEvent&);
+  
 protected:
   double       m_timestamp;
   unsigned int m_iteration;
@@ -55,6 +59,7 @@ protected:
   std::string  m_behavior_name;
   std::string  m_behavior_type;
   std::string  m_spawn_string;
+  int          m_posting_index;
 };
 
 #endif 

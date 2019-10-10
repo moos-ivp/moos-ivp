@@ -44,7 +44,10 @@ int main(int argc, char** argv)
       y2_set = setDoubleOnString(y2, argi.substr(3));
 
     else if((argi=="-h") || (argi=="--help")) {
-      cout << "--help not supported. See main.cpp." << endl;
+      cout << "testSegRayCPA: test the segRayCPA() utility " << endl;
+      cout << "Example:                                    " << endl;
+      cout << "$ testSegRayCPA rx=5 ry=4 ra=90 x1=30 y1=34 x2=90 y2=34" << endl;
+      cout << "cpa=30" << endl;
       return(0);
     }
     else if(strBegins(argi, "id="))
@@ -54,7 +57,7 @@ int main(int argc, char** argv)
       return(1);
     }  
   }  
-   
+     
   if(!rx_set) return(cmdLineErr("rx is not set. Exiting."));
   if(!ry_set) return(cmdLineErr("ry is not set. Exiting."));
   if(!ra_set) return(cmdLineErr("ra is not set. Exiting."));

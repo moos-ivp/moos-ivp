@@ -42,25 +42,26 @@ PDMap* RT_UniformX::create(const IvPBox& unifbox, const IvPBox& gelbox)
   if(unifbox.getDim() == 0)
     return(0);
 
-  IvPDomain domain = m_regressor->getAOF()->getDomain();
-
-  IvPBox universe = domainToBox(domain);
-
-  int degree = m_regressor->getDegree();
+  IvPDomain domain   = m_regressor->getAOF()->getDomain();
+  IvPBox    universe = domainToBox(domain);
+  int       degree   = m_regressor->getDegree();
 
   BoxSet *boxset = makeUniformDistro(universe, unifbox, degree);
 
-  handleOverlappingPlateaus();
+  handleOverlappingPlatBasins();
   
   boxset = subtractPlateaus(boxset);
+  boxset = subtractBasins(boxset);
 
-  int vsize = boxset->size();
-  if(vsize == 0)
+  int remaining_pcs = boxset->size();
+  int plateau_pcs   = (int)(m_plateaus.size());
+  int basin_pcs     = (int)(m_basins.size());
+
+  int total_pdmap_pcs = remaining_pcs + plateau_pcs + basin_pcs;
+  if(total_pdmap_pcs <= 0)
     return(0);
 
-  int plateau_pcs = (int)(m_plateaus.size());
-  
-  PDMap *pdmap = new PDMap(vsize + plateau_pcs, domain, degree);
+  PDMap *pdmap = new PDMap(total_pdmap_pcs, domain, degree);
   BoxSetNode *bsn = boxset->retBSN(FIRST);
   int index = 0;
   while(bsn) {
@@ -72,6 +73,10 @@ PDMap* RT_UniformX::create(const IvPBox& unifbox, const IvPBox& gelbox)
 
   for(unsigned int i=0; i<m_plateaus.size(); i++) {
     pdmap->bx(index) = m_plateaus[i].copy();
+    index++;
+  }
+  for(unsigned int i=0; i<m_basins.size(); i++) {
+    pdmap->bx(index) = m_basins[i].copy();
     index++;
   }
 
@@ -90,6 +95,39 @@ PDMap* RT_UniformX::create(const IvPBox& unifbox, const IvPBox& gelbox)
   return(pdmap);
 }
 
+
+//------------------------------------------------------------------
+// Procedure: handleOverlappingPlatBasins()
+//   Purpose: Process the plateaus and basins and make sure that
+//            none of them overlap.
+
+void RT_UniformX::handleOverlappingPlatBasins()
+{
+  if((m_plateaus.size() + m_basins.size()) < 2)
+    return;
+
+  // Part 1: First combine the plateaus and basins into one vector
+  // of boxes. They need to be together since they will all be
+  // ordered based on the magnitude of the "plat value". Higher
+  // magnitude plat values will overrule lower ones. 
+  vector<IvPBox> boxes = m_plateaus;
+  for(unsigned int i=0; i<m_basins.size(); i++)
+    boxes.push_back(m_basins[i]);
+
+  // Part 2: Do the separating if needed
+  boxes = makeRegionsApart(boxes);
+  
+  // Part 3: Now that we are sure we have non-overlapping regions,
+  // sort them again into basins and plateaus
+  m_plateaus.clear();
+  m_basins.clear();
+  for(unsigned int i=0; i<boxes.size(); i++) {
+    if(boxes[i].getPlat() < 0)
+      m_basins.push_back(boxes[i]);
+    else
+      m_plateaus.push_back(boxes[i]);
+  }
+}	      
 
 //------------------------------------------------------------------
 // Procedure: subtractPlateaus()
@@ -139,61 +177,49 @@ BoxSet* RT_UniformX::subtractPlateau(BoxSet* bset, const IvPBox& plat)
 
 
 //------------------------------------------------------------------
-// Procedure: handleOverlappingPlateaus()
+// Procedure: subtractBasins()
 
-void RT_UniformX::handleOverlappingPlateaus()
+BoxSet* RT_UniformX::subtractBasins(BoxSet *bset)
 {
-  bool changed = true;
-  if(m_plateaus.size() < 2)
-    return;
-
-  vector<IvPBox> plats;
-  plats.push_back(m_plateaus[0]);
+  BoxSet *retbset = bset;
+  for(unsigned int i=0; i<m_basins.size(); i++)
+    retbset = subtractBasin(retbset, m_basins[i]);
   
-  list<IvPBox> oplats;
-  for(unsigned int i=1; i<m_plateaus.size(); i++)
-    oplats.push_back(m_plateaus[i]);
+  return(retbset);
+}
 
+//------------------------------------------------------------------
+// Procedure: subtractBasin()
+
+BoxSet* RT_UniformX::subtractBasin(BoxSet* bset, const IvPBox& basin)
+{
+  BoxSet rembs;  // The remainders
   
-  bool restart = false;
-  while(!restart && (oplats.size() != 0)) {
-
-    IvPBox oplat = oplats.front();
-    oplats.pop_front();
-
+  BoxSetNode *bsn = bset->retBSN();
+  while(bsn) {
+    BoxSetNode *nextbsn = bsn->getNext();
+    IvPBox* box = bsn->getBox();
     
-    bool restart = false;
-    for(unsigned int i=0; (i<plats.size() && !restart); i++) {
-      if(plats[i].intersect(&oplat)) { 
-	changed = true;
-	restart = true;
-	BoxSet *bs = subtractBox(oplat, plats[i]);
-	while(bs->size() > 0) {
-	  restart = true;
-	  BoxSetNode *bsn = bs->remBSN();
-	  if(bsn) {
-	    IvPBox new_plat = *(bsn->getBox());
-	    oplats.push_back(new_plat);
-	    delete(bsn->getBox());
-	    delete(bsn);
-	  }
-	}
-	delete(bs);
-      }
+    if(!basin.intersect(box)) {
+      bsn = nextbsn;
+      continue;
     }
-    if(!restart)
-      plats.push_back(oplat);
+    
+    if(!containedWithinBox(*box, basin)) {
+      BoxSet *bs = subtractBox(*box, basin);
+      rembs.merge(*bs);
+      delete(bs);
+    }
+
+    bset->remBSN(bsn);
+    delete(bsn->getBox());
+    delete(bsn);
+    bsn = nextbsn;
   }
 
-  if(changed && m_verbose) {
-    cout << "CHANGED!!!!!!!!!!" << endl;
-    cout << "Old Plateaus:" << endl;
-    for(unsigned int i=0; i<m_plateaus.size(); i++)
-      m_plateaus[i].print();
-    cout << "New Plateaus:" << endl;
-    for(unsigned int i=0; i<plats.size(); i++)
-      plats[i].print();
-  }
   
-  m_plateaus = plats;
-}	      
+  bset->merge(rembs);
+  return(bset);
+}
+
+

@@ -51,6 +51,8 @@ SET(APPS
   testAngleDiff
   testAngleInArc
   testSegRayCPA
+  testPolyRayCPA
+  testBearingMinMaxToPoly
   testDistPointToRay
   testCpasRaySegl
   testCpasArcSegl

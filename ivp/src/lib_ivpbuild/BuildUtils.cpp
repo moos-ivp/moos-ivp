@@ -24,9 +24,11 @@
 /*****************************************************************/
 
 #include <iostream>
+#include <algorithm>
 #include <cassert>
 #include <cmath>
 #include <cstdlib>
+#include <list>
 #include "BuildUtils.h"
 #include "MBUtils.h"
 
@@ -1345,8 +1347,9 @@ vector<IvPBox> buildBoxesSpdAll(IvPDomain domain, double hmin, double hmax)
   // Case 2: Building TWO boxes (due to wrap-around)
 
   // Handle edge case where both native values fall between the same
-  // pair of discrete indices:
-  // In the two-piece case, the upper discrete index should not be higher.
+  // pair of discrete indices: In the two-piece case, the upper
+  // discrete index should not be higher.
+
 #if 0
   cout << "######################################################" << endl;
   cout << "crs_pts: " << crs_pts << endl;
@@ -1510,7 +1513,150 @@ vector<IvPBox> getPointBoxes(IvPBox box)
       done = true;
   }
       
-    
   return(boxes);
 }
   
+
+//-------------------------------------------------------------
+// Procedure: testRegionsApart()
+//   Purpose: Test that no two given boxes intersect each other.
+//   Returns: false if any two boxes intersect one another.
+//            false if not all boxes have the same dimensions.
+//            true otherwise.
+//      Note: Will return true if vector size is < 2.
+
+bool testRegionsApart(vector<IvPBox> boxes)
+{
+  // Part 1: Determine amount of boxes and return true if <2
+  unsigned int box_amount = boxes.size();
+  if(box_amount < 2)
+    return(true);
+
+  // Part 2: Check that all boxes are of the same dimension
+  int dim = boxes[0].getDim();
+  for(unsigned int i=1; i<box_amount; i++) {
+    if(boxes[i].getDim() != dim)
+      return(false);
+  }
+
+  // Part 3: Check that no two boxes intersect one another
+  for(unsigned int i=0; i<box_amount-1; i++) {
+    for(unsigned int j=i+1; j<box_amount; j++) {
+      if(boxes[i].intersect(&boxes[j]))
+	return(false);
+    }
+  }
+
+  return(true);  
+}
+
+//-------------------------------------------------------------
+// Procedure: makeRegionsApart()
+//   Purpose: o Test that no two given boxes intersect each other.
+//            o If they do, then for each pair that intersect, 
+//              subtract one from the other and replace the 
+//              pair with possibly a set of pieces.
+//            o Each pairwise test consists of a major piece an
+//              a minor piece. The major piece will have a
+//              "plateau magnitude" >= to the minor piece.
+//            o If they intersect, the minor piece is subtracted
+//              from the major piece. The major piece is always
+//              unchanged. The minor piece is replaced by perhaps
+//              a set of pieces that comprise the minor piece
+//              region outside the major piece.
+//      Note: Will return the original vector if the original
+//            vector is of size < 2.
+//      Note: Will return the original vector if not all the 
+//            boxes are of the same dimension.
+
+vector<IvPBox> makeRegionsApart(vector<IvPBox> boxes)
+{
+  // Part 1: Determine amount of boxes and return true if <2
+  unsigned int box_amount = boxes.size();
+  if(box_amount < 2)
+    return(boxes);
+
+  // Part 2: Check that all boxes are of the same dimension
+  int dim = boxes[0].getDim();
+  for(unsigned int i=1; i<box_amount; i++) {
+    if(boxes[i].getDim() != dim)
+      return(boxes);
+  }
+
+  // Part 3: Sort the original boxes based on the magnitude, i.e,
+  // absolute value, of the plat value for each box. Highest
+  // values at the lower indices. Note: When there is a tie in
+  // the plat magnitude, we try to break the tie based on the
+  // piece size. By allowing larger pieces to be majors, it's
+  // more likely that the minor piece may be just completely
+  // consumed in the subtraction step. A minor but easy
+  // efficiency gain in reducing a handful of regions to an
+  // even smaller handful.
+  struct greater_than_key {
+    inline bool operator() (const IvPBox& a, const IvPBox& b) {
+      double plat_mag_a = abs(a.getPlat());
+      double plat_mag_b = abs(b.getPlat());
+      if(plat_mag_a != plat_mag_b)
+	return(plat_mag_a > plat_mag_b);
+      else
+	return(a.size() > b.size());
+    }
+  };
+  std::sort(boxes.begin(), boxes.end(), greater_than_key());
+
+  // Part 4: Set up initial state
+  bool changed = true;
+
+  vector<IvPBox> majors;
+  majors.push_back(boxes[0]);
+    list<IvPBox> minors;
+  for(unsigned int i=1; i<boxes.size(); i++)
+    minors.push_back(boxes[i]);
+  
+  // Part 5: Perform the body of the work
+  bool restart = false;
+  //while(!restart && (minors.size() != 0)) {
+  while(minors.size() != 0) {
+
+    IvPBox minor = minors.front();
+    minors.pop_front();
+    
+    bool restart = false;
+    for(unsigned int i=0; (i<majors.size() && !restart); i++) {
+      if(majors[i].intersect(&minor)) { 
+	changed = true;
+	restart = true;
+	BoxSet *bs = subtractBox(minor, majors[i]);
+	while(bs->size() > 0) {
+	  restart = true;
+	  BoxSetNode *bsn = bs->remBSN();
+	  if(bsn) {
+	    IvPBox new_minor = *(bsn->getBox());
+	    minors.push_front(new_minor);
+	    delete(bsn->getBox());
+	    delete(bsn);
+	  }
+	}
+	delete(bs);
+      }
+    }
+    if(!restart)
+      majors.push_back(minor);
+  }
+
+  // Part 6: Potentially be verbose
+  if(changed) {
+    cout << "CHANGED!!!!!!!!!!" << endl;
+    cout << "Old Regions:" << endl;
+    for(unsigned int i=0; i<boxes.size(); i++)
+      boxes[i].print();
+    cout << "New Regions:" << endl;
+    for(unsigned int i=0; i<majors.size(); i++)
+      majors[i].print();
+  }
+
+  // Part 7: return the result
+  return(majors);  
+}
+
+

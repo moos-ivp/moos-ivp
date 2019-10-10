@@ -39,14 +39,14 @@ ObstacleManager::ObstacleManager()
   m_lasso = false;
   m_lasso_points = 6;
   m_lasso_radius = 5;  // meters
-  
+
   // Init state variables
   m_points_total   = 0;
   m_points_ignored = 0;
   m_clusters_released = 0;
 
   // Init info output variables
-  m_post_dist_to_polys = true;
+  m_post_dist_to_polys = "close";
   m_post_view_polys = true;
 }
 
@@ -155,7 +155,7 @@ bool ObstacleManager::OnStartUp()
     else if(param == "max_age_per_point")
       handled = setPosDoubleOnString(m_max_age_per_point, value);
     else if(param == "post_dist_to_polys")
-      handled = setBooleanOnString(m_post_dist_to_polys, value);
+      handled = setPostDistToPolys(value);
     else if(param == "post_view_polys")
       handled = setBooleanOnString(m_post_view_polys, value);
     else if(param == "lasso")
@@ -363,6 +363,9 @@ bool ObstacleManager::handleMailNewPoint(string value)
   //   Note: If the hull does exist, but it contains the new point, then
   //         the hull does not need to be updated.
 
+  // mikerb: the below should be done once per app iteration not once
+  // per point received!!
+  
   bool hull_update_needed = false;
   if(m_map_poly_convex.count(obstacle_key)==0)
     hull_update_needed = true;
@@ -397,13 +400,14 @@ bool ObstacleManager::handleMailNewPoint(string value)
   if(!poly.is_convex())
     poly = placeholderConvexHull(obstacle_key);
   
-  poly.set_label(obstacle_key);
+  poly.set_label("obmgr_" + obstacle_key);
   m_map_poly_convex[obstacle_key]  = poly;
   m_map_poly_changed[obstacle_key] = true;
   
   if(m_post_view_polys) {
     poly.set_vertex_color("dodger_blue");
-    poly.set_edge_color("dodger_blue");
+    //poly.set_edge_color("dodger_blue");
+    poly.set_edge_color("red");
     poly.set_vertex_size(4);
     poly.set_edge_size(1);
     string poly_str = poly.get_spec(3);
@@ -481,9 +485,22 @@ void ObstacleManager::postConvexHullUpdates()
     // Double check it is convex
     if(poly.is_convex()) {
       double dist = poly.dist_to_poly(m_nav_x, m_nav_y);
-      Notify("OBM_DIST_TO_OBJ_" + toupper(obs_key), dist);
-      // Only post if ownship is within the alert range
-      if(dist <= m_alert_range)
+      bool close_range = (dist <= m_alert_range);
+
+      bool post_this_dist_to_poly = false;
+      if(m_post_dist_to_polys == "true")
+	post_this_dist_to_poly = true;
+      else if((m_post_dist_to_polys == "close") && close_range) 
+	post_this_dist_to_poly = true;
+
+      // Only post dist if ownship w/in alert range or always on
+      if(post_this_dist_to_poly) {
+	string msg = toupper(obs_key) + "," + doubleToString(dist,1);
+	Notify("OBM_DIST_TO_OBJ", msg);
+      }
+
+      // Only post hull if ownship is w/in alert range
+      if(close_range)
         postConvexHullUpdate(obs_key);
     }
   }
@@ -496,8 +513,8 @@ void ObstacleManager::postConvexHullUpdates()
 void ObstacleManager::postConvexHullUpdate(string obstacle_key)
 {
   // Part 1: If the polygon hasn't changed, don't post an update
-  //if(!m_map_poly_changed[obstacle_key])
-  //  return;
+  if(!m_map_poly_changed[obstacle_key])
+    return;
 
   // At this point we're committed to posting an update so go ahead 
   // and mark this obstacle key as NOT changed.
@@ -508,10 +525,8 @@ void ObstacleManager::postConvexHullUpdate(string obstacle_key)
     m_map_updates_total[obstacle_key] = 0;
   m_map_updates_total[obstacle_key]++;
 
-  
   XYPolygon poly = m_map_poly_convex[obstacle_key];
 
-  //string update_str = "name=" + m_alert_name + obstacle_key + "#";
   string update_str = "name=" + obstacle_key + "#";
   update_str += "poly=" + poly.get_spec_pts(5) + ",label=" + obstacle_key;
   
@@ -688,15 +703,15 @@ void ObstacleManager::manageMemory()
     m_map_updates_total.erase(key);
     m_clusters_released++;
 
-    //string done_str = "name=" + key + "#resolved=true";
-    string done_str = "name=" + m_alert_name + key + "#resolved=true";
+    string done_str = "name=" + key + "#resolved=true";
+    m_set_current_keys.erase(key);
     Notify(m_alert_var, done_str);
     
     // If a poly is being freed, first post a viewable poly with
     // active set to false, so a renderer knows to erase.
     if(m_post_view_polys && m_map_poly_convex.count(key)) {
-      m_map_poly_convex[key].set_active(false);
-      string spec = m_map_poly_convex[key].get_spec();
+      //m_map_poly_convex[key].set_active(false);
+      string spec = m_map_poly_convex[key].get_spec_inactive();
       Notify("VIEW_POLYGON", spec);
     }
 
@@ -704,6 +719,19 @@ void ObstacleManager::manageMemory()
   }
 }
 
+
+//------------------------------------------------------------
+// Procedure: setPostDistToPolys()
+
+bool ObstacleManager::setPostDistToPolys(string val) 
+{
+  val = tolower(stripBlankEnds(val));
+  if((val != "true") && (val != "false") && (val != "close"))
+    return(false);
+  
+  m_post_dist_to_polys = val;
+  return(true);
+}
 
 //------------------------------------------------------------
 // Procedure: buildReport()
@@ -724,12 +752,17 @@ bool ObstacleManager::buildReport()
   string str_navy = doubleToStringX(m_nav_y,1);
   string str_nav = "(" + str_navx + "," + str_navy + ")";
 
+  string str_post_view_polys = boolToString(m_post_view_polys);
+  
   
   m_msgs << "Configuration (point handling):             " << endl;
   m_msgs << "  point_var:    " << m_point_var              << endl;
   m_msgs << "  max_pts_per_cluster: " << str_max_pts_per   << endl;
   m_msgs << "  max_age_per_point:   " << str_max_age_per   << endl;
   m_msgs << "  ignore_range:        " << str_ignore_rng    << endl;
+  m_msgs << "Configuration (viewing):                    " << endl;
+  m_msgs << "  post_dist_to_polys: " << m_post_dist_to_polys << endl;
+  m_msgs << "  post_view_polys:    " << str_post_view_polys  << endl;
   m_msgs << "Configuration (alerts):                     " << endl;
   m_msgs << "  alert_var:   " << m_alert_var               << endl;
   m_msgs << "  alert_name:  " << m_alert_name              << endl;

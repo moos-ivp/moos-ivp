@@ -8,6 +8,7 @@ SET(SRC
   IvPContactBehavior.cpp
 #  IvPTaskBehavior.cpp
   LifeEventHistory.cpp
+  LifeEvent.cpp
 )
 
 SET(HEADERS
@@ -15,6 +16,8 @@ SET(HEADERS
   BehaviorSet.h
   IvPBehavior.h
   IvPContactBehavior.h
+  LifeEventHistory.h
+  LifeEvent.h
 #  IvPTaskBehavior.h
 )
 

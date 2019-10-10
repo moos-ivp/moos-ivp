@@ -36,7 +36,6 @@ public:
   LifeEventHistory();
   ~LifeEventHistory() {}
   
-  void addLifeEvent(const LifeEvent& event);
   void addLifeEvent(const std::string& event);
 
   bool isStale() {return(m_stale_report);}
@@ -48,8 +47,12 @@ public:
   std::vector<std::string> getReport(std::string mode="normal");
 
 protected:
+  void addLifeEvent(const LifeEvent& event);
+
+protected:
 
   std::vector<LifeEvent>   m_life_events;
+  std::vector<std::string> m_life_events_raw;
   std::vector<std::string> m_history_report;
 
   bool m_stale_report;

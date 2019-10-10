@@ -583,7 +583,3 @@ bool CollisionDetector::buildReport()
   m_msgs << actab.getFormattedString();
   return(true);
 }
-
-
-
-

@@ -35,10 +35,10 @@ done
 #-------------------------------------------------------
 VNAME1="henry"           # The first vehicle Community
 VNAME2="gilda"           # The second vehicle Community
-START_POS1="0,0"         
-START_POS2="80,0"        
-LOITER_POS1="x=50,y=-65"
-LOITER_POS2="x=125,y=-50"
+START_POS1="150,-80,290"        
+START_POS2="-20,-80,80"         
+LOITER_POS1="x=-15,y=-70"
+LOITER_POS2="x=150,y=-60"
 SHORE_PSHARE="9200"
 
 nsplug meta_vehicle.moos targ_henry.moos -i -f WARP=$TIME_WARP \

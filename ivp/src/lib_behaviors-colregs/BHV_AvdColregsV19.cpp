@@ -269,7 +269,7 @@ IvPFunction *BHV_AvdColregsV19::onRunState()
 
   bool prev_cn_port_of_os = m_cn_port_of_os;
 
-  if(!updatePlatformInfo())
+  if(!updatePlatformInfo()) 
     return(0);
   if(!checkContactGroupRestrictions())
     return(0);
@@ -1098,14 +1098,13 @@ void BHV_AvdColregsV19::checkModeStandOnOT()
 }  
 
 //--------------------------------------------------------------
-// Procedure: checkCPA                          (Catch-all)
+// Procedure: checkModeCPA                          (Catch-all)
 
 void BHV_AvdColregsV19::checkModeCPA()
 {
   // Part 0: Sanity check. Existing mode must be either "none", or "cpa"
   if((m_avoid_mode != "cpa") && (m_avoid_mode != "none"))
     return;
-
   if(m_contact_range > m_pwt_outer_dist) {
     resetAvoidModes();
     return;

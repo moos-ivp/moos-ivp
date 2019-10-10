@@ -332,17 +332,18 @@ bool HelmIvP::Iterate()
   if(m_init_vars_ready && !m_init_vars_done)
     handleInitialVarsPhase2();
 
-  // If the info_buffer curr_time is not synched in the OnNewMail function
-  //  (possibly because there was no new mail), synch the current time now.
+  // If the info_buffer curr_time is not synched in the OnNewMail
+  // function (possibly because there was no new mail), synch the
+  // current time now.
   if(!m_ibuffer_curr_time_updated) 
     m_info_buffer->setCurrTime(m_curr_time);
   if(m_start_time == 0)
     m_start_time = m_curr_time;
 
-  // Now we're done addressing whether the info_buffer curr_time is synched 
-  // on this iteration. It was done either in this function or in onNewMail().
-  // Now set m_ibuffer_curr_time_updated=false to reflect the ingoing state for
-  // the next iteration.
+  // Now we're done addressing whether the info_buffer curr_time is
+  // synched on this iteration. It was done either in this function or
+  // in onNewMail().  Now set m_ibuffer_curr_time_updated=false to
+  // reflect the ingoing state for the next iteration.
   m_ibuffer_curr_time_updated = false;
 
   if(!m_has_control) {
@@ -707,6 +708,7 @@ void HelmIvP::postLifeEvents()
     str += ", btype=" + events[i].getBehaviorType();
     str += ", event=" + events[i].getEventType();
     str += ", seed="  + events[i].getSpawnString();
+    str += ", posting_index=" + uintToString(i);
     Notify("IVPHELM_LIFE_EVENT", str);
   }
   if(vsize > 0)

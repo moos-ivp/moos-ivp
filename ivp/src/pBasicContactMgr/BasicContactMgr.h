@@ -89,9 +89,6 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::vector<VarDataPair> getAlertOnFlags(std::string id) const;
   std::vector<VarDataPair> getAlertOffFlags(std::string id) const;
 
-
-
-
   std::vector<std::string> getAlertMatchTypes(std::string id) const;
   std::vector<std::string> getAlertIgnoreTypes(std::string id) const;
 

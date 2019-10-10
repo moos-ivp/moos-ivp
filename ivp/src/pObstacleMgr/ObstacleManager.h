@@ -10,6 +10,7 @@
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "XYPolygon.h"
+#include <set>
 
 class ObstacleManager : public AppCastingMOOSApp
 {
@@ -45,6 +46,8 @@ protected:
 
   void updatePolyRanges();
   void manageMemory();
+  bool setPostDistToPolys(std::string);
+
   
 private: // Configuration variables
   std::string  m_point_var;            // incoming points
@@ -52,7 +55,7 @@ private: // Configuration variables
   std::string  m_alert_var;
   std::string  m_alert_name;
   double       m_alert_range;
-  
+
   // Managing incoming points
   double       m_ignore_range;
   unsigned int m_max_pts_per_cluster;
@@ -63,7 +66,7 @@ private: // Configuration variables
   unsigned int m_lasso_points;
   double       m_lasso_radius;
 
-  bool         m_post_dist_to_polys;
+  std::string  m_post_dist_to_polys;
   bool         m_post_view_polys;
   
 private: // State variables
@@ -75,6 +78,8 @@ private: // State variables
   unsigned int  m_points_ignored;
 
   unsigned int  m_clusters_released;
+
+  std::set<std::string> m_set_current_keys;
   
   // Each map is keyed on the obstacle_key
   std::map<std::string, std::list<XYPoint> > m_map_points;

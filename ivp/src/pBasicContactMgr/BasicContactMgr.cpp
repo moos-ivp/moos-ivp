@@ -649,6 +649,8 @@ bool BasicContactMgr::handleConfigAlert(string alert_str)
   if(m_map_alerts.count(alert_id) == 0) {
     m_map_alerts[alert_id].setAlertRange(m_default_alert_rng);
     m_map_alerts[alert_id].setAlertRangeFar(m_default_alert_rng_cpa);
+    m_map_alerts[alert_id].setAlertRangeColor(m_default_alert_rng_color);
+    m_map_alerts[alert_id].setAlertRangeFarColor(m_default_alert_rng_cpa_color);
   }
   
   string var, pattern;
@@ -1236,12 +1238,16 @@ void BasicContactMgr::postRadii(bool active)
     double alert_range = getAlertRange(alert_id);
     string alert_range_color = getAlertRangeColor(alert_id);
 
+    if(!active || (alert_range_color == "invisible") ||
+       (alert_range_color == "empty") || (alert_range_color == ""))
+      active = false;
+    
     XYCircle circle(m_nav_x, m_nav_y, alert_range);
     circle.set_label(alert_id + "_in");
     circle.set_color("edge", alert_range_color);
     circle.set_vertex_size(0);
     circle.set_edge_size(1);
-    circle.set_active(true);
+    circle.set_active(active);
     string s1 = circle.get_spec();
     Notify("VIEW_CIRCLE", s1);
 
@@ -1249,12 +1255,18 @@ void BasicContactMgr::postRadii(bool active)
     if(alert_range_cpa > alert_range) {
 
       string alert_range_cpa_color = getAlertRangeCPAColor(alert_id);
+
+      if(!active || (alert_range_cpa_color == "invisible") ||
+	 (alert_range_cpa_color == "empty") ||
+	 (alert_range_cpa_color == ""))
+	active = false;
+
       XYCircle circ(m_nav_x, m_nav_y, alert_range_cpa);
       circ.set_label(alert_id + "_out");
       circ.set_color("edge", alert_range_cpa_color);
       circ.set_vertex_size(0);
       circ.set_edge_size(1);
-      circ.set_active(true);
+      circ.set_active(active);
       string s2 = circ.get_spec();
 
       Notify("VIEW_CIRCLE", s2);

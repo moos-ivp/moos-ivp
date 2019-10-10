@@ -81,11 +81,18 @@ std::vector<IvPBox>  buildBoxesSpdAll(IvPDomain, double hmin, double hmax);
 std::vector<IvPBox>  buildBoxesHdgSpd(IvPDomain, double hmin, double hmax,
 				      double smin, double smax);
 
-
 //--------------------------------------------------------------------
 // Utility added by mikerb April 2018 for testing Refineries
 
 std::vector<IvPBox> getPointBoxes(IvPBox);
+
+//--------------------------------------------------------------------
+// Utility added by mikerb Sep 2019 for streamlining Refineries
+
+bool                testRegionsApart(const std::vector<IvPBox>&);
+std::vector<IvPBox> makeRegionsApart(std::vector<IvPBox>);
+
+
 
 #endif
 

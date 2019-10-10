@@ -190,7 +190,6 @@ std::string XYObject::get_spec(string param) const
   }
   
   return(spec);
-
 }
 
 //---------------------------------------------------------------

@@ -48,9 +48,10 @@ IvPBox::IvPBox(int g_dim, int g_degree)
   m_bds     = 0;
   m_wts     = 0;
 
-  m_markval = false;
   m_of      = 0;
-
+  m_markval = false;
+  m_plat    = 0;
+  
   if(m_dim > 0) {
     int wtc = (m_degree * m_dim)+1;
     m_pts = new int[m_dim * 2];
@@ -83,7 +84,7 @@ IvPBox::IvPBox(const IvPBox &b)
 
   m_markval = b.m_markval;
   m_of      = b.m_of;
-
+  m_plat    = b.m_plat;
 
   if(m_dim > 0) {
     int wtc = (m_degree * m_dim)+1;
@@ -127,7 +128,8 @@ const IvPBox &IvPBox::operator=(const IvPBox &right)
   if(&right != this) {
     m_markval = right.m_markval;
     m_of      = right.m_of;
-
+    m_plat    = right.m_plat;
+    
     int wtc = (right.m_degree * right.m_dim) + 1;
 
     if(m_dim != right.m_dim) {
@@ -196,6 +198,7 @@ void IvPBox::copy(const IvPBox *gbox)
 
   m_of      = gbox->m_of;
   m_markval = gbox->m_markval;
+  m_plat    = gbox->m_plat;
 }
 
 //------------------------------------------------------ setWT
@@ -570,12 +573,14 @@ void IvPBox::print(bool full) const
     cout << "[d" << d << ":" << bd(d,0) << bd(d,1);
     cout << "](" << pt(d,0) << "-" << pt(d,1) << ") ";
   }
-  int wtc = getWtc();
+  cout << "{" << getPlat() << "}";
   
   if(!full) {
     cout << endl;
     return;
   }
+
+  int wtc = getWtc();
 
   cout << " deg: " << m_degree; 
   cout << " wtc: " << wtc; 
@@ -652,20 +657,15 @@ void IvPBox::transDomain(int newEdges, const int *edgeMap)
 }
 
 
+//-------------------------------------------------------------
+// Procedure: size()
 
+unsigned int IvPBox::size() const
+{
+  unsigned int total_size = 0;
+  
+  for(uint16 d=0; d<m_dim; d++)
+    total_size += (unsigned int)(pt(d,1));
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  return(total_size);
+}

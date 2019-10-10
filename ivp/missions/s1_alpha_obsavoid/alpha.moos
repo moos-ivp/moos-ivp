@@ -84,8 +84,8 @@ ProcessConfig = uSimMarine
   AppTick	= 4
   CommsTick	= 4
 
-  start_x       = 0
-  start_y       = -20
+  start_x       = 60
+  start_y       = -30
   start_heading = 180
   start_speed   = 0
 	max_deceleration = 0.1

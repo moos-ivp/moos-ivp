@@ -169,6 +169,7 @@ void IvPDomain::print() const
   }
 }
 
+
 //-------------------------------------------------------------
 // Procedure: getIndex
 
@@ -179,52 +180,6 @@ int IvPDomain::getIndex(const string &g_name) const
       return(i);
   }
   return(-1);
-}
-
-
-// Build it well and they will come
-// Share it and it will grow
-// Keep it simple and people will use it
-
-
-
-//-------------------------------------------------------------
-// Procedure: getTotalPts
-
-double IvPDomain::getTotalPts() const
-{
-  double total_pts = 1;
-  unsigned int i, vsize = m_dname.size();
-  for(i=0; i<vsize; i++) 
-    total_pts *= (double)(m_dpoints[i]);
-  return(total_pts);
-}
-
-//-------------------------------------------------------------
-// Procedure: getVarPoints()
-
-unsigned int IvPDomain::getVarPoints(unsigned int index) const
-{
-  unsigned int vsize = m_dname.size();
-  if(index < vsize)
-    return(m_dpoints[index]);
-  else
-    return(0);
-}
-
-//-------------------------------------------------------------
-// Procedure: getVarPoints()
-
-unsigned int IvPDomain::getVarPoints(const string& str) const
-{
-  int index = getIndex(str);
-
-  if(index < 0)
-    return(0);
-  if((unsigned int)(index) >= m_dpoints.size())
-    return(0);
-
-  return(m_dpoints[index]);
 }
 
 
@@ -271,6 +226,96 @@ double IvPDomain::getVarDelta(const string& str) const
 }
 
 //-------------------------------------------------------------
+// Procedure: getTotalPts
+
+double IvPDomain::getTotalPts() const
+{
+  double total_pts = 1;
+  unsigned int i, vsize = m_dname.size();
+  for(i=0; i<vsize; i++) 
+    total_pts *= (double)(m_dpoints[i]);
+  return(total_pts);
+}
+
+//-------------------------------------------------------------
+// Procedure: getVarPoints()
+
+unsigned int IvPDomain::getVarPoints(const string& str) const
+{
+  int index = getIndex(str);
+
+  if(index < 0)
+    return(0);
+  if((unsigned int)(index) >= m_dpoints.size())
+    return(0);
+
+  return(m_dpoints[index]);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: getVarPoints()
+
+unsigned int IvPDomain::getVarPoints(unsigned int index) const
+{
+  unsigned int vsize = m_dname.size();
+  if(index < vsize)
+    return(m_dpoints[index]);
+  else
+    return(0);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: getVal()
+//   Purpose: For the ith domain index, and j steps into the
+//            domain, return corresponding floating point value.
+
+bool IvPDomain::getVal(unsigned int i, unsigned int j,
+		       double &val) const
+{
+  unsigned int dsize = m_dlow.size();
+  if((i<dsize) && (j<m_dpoints[i])) {
+    val = m_dlow[i] + (m_ddelta[i] * j);
+    return(true);
+  }      return(false);
+}
+
+//-------------------------------------------------------------
+// Procedure: getVal()
+//   Purpose: A simplified version of getVal where no error is
+//            indicated if the domain or index is out of range.
+double IvPDomain::getVal(unsigned int d, unsigned int j) const
+{
+  unsigned int dsize = m_dlow.size();
+  if((d<dsize) && (j<m_dpoints[d]))
+    return(m_dlow[d] + (m_ddelta[d] * j));
+  return(0);
+}
+
+//-------------------------------------------------------------
+// Procedure: getVal()
+//   Purpose: For domain given by var name, and j steps into
+//            the domain, return corresponding float value.
+
+bool IvPDomain::getVal(const std::string str, unsigned int j,
+		       double &val) const
+{
+  return(getVal(getIndex(str), j, val));
+}
+      
+//-------------------------------------------------------------
+// Procedure: getVarName()
+//   Purpose: Return the var name of ith element of the domain
+
+string IvPDomain::getVarName(unsigned int i) const
+{
+  if(i>=m_dname.size())
+    return("");
+  return(m_dname[i]);
+}
+
+//-------------------------------------------------------------
 // Procedure: getNextLowerVal()
 
 double IvPDomain::getNextLowerVal(unsigned int index, double given_val,
@@ -310,19 +355,6 @@ double IvPDomain::getNextHigherVal(unsigned int index, double given_val,
   }
     
   return(getVal(index, value_index+1));
-}
-
-//-------------------------------------------------------------
-// Procedure: getSnappedVal
-
-double IvPDomain::getSnappedVal(unsigned int index, double given_val,
-				int snaptype) const
-{
-  if((snaptype < 0) || (snaptype > 2) || (index >= m_dname.size())) 
-    return(given_val);
-
-  unsigned int uint_val = getDiscreteVal(index, given_val, snaptype);
-  return(getVal(index, uint_val));
 }
 
 //-------------------------------------------------------------
@@ -373,13 +405,147 @@ unsigned int IvPDomain::getDiscreteVal(unsigned int index,
   }
 }
 
+//-------------------------------------------------------------
+// Procedure: getSnappedVal()
+
+double IvPDomain::getSnappedVal(unsigned int index, double given_val,
+				int snaptype) const
+{
+  if((snaptype < 0) || (snaptype > 2) || (index >= m_dname.size())) 
+    return(given_val);
+
+  unsigned int uint_val = getDiscreteVal(index, given_val, snaptype);
+  return(getVal(index, uint_val));
+}
+
+//-------------------------------------------------------------
+// Procedure: getSnappedValCeil()
+
+double IvPDomain::getSnappedValCeil(unsigned int index, double gval) const
+{
+  unsigned int uint_val = getDiscreteVal(index, gval, 1);
+  return(getVal(index, uint_val));
+}
+
+//-------------------------------------------------------------
+// Procedure: getSnappedValFloor()
+
+double IvPDomain::getSnappedValFloor(unsigned int index, double gval) const
+{
+  unsigned int uint_val = getDiscreteVal(index, gval, 0);
+  return(getVal(index, uint_val));
+}
+
+//-------------------------------------------------------------
+// Procedure: getSnappedValProx()
+
+double IvPDomain::getSnappedValProx(unsigned int index, double gval) const
+{
+  unsigned int uint_val = getDiscreteVal(index, gval, 2);
+  return(getVal(index, uint_val));
+}
 
 
 
 
 
+//-------------------------------------------------------------
+// Procedure: coupleAux()
+//     Notes: Example wrap domain:
+//                course, [0, 359], 360 pts, e.g., 31,32,33,...
+//            Example non-wrap domain:
+//                speed, [0, 5], 51 pts, e.g., 1.0,1.1,1.2,...
 
+#if 0
+double IvPDomain::coupleAux(unsigned int ix, double& given_val,
+			    bool up, bool wrap) const
+{
+  if(ix >= m_dname.size())
+    return(given_val);
 
+  int snaptype = 0;
+  if(up)
+    snaptype = 1;
 
+  // Part 1: Choose the value in the domain that is closest to the
+  // given value. If given_val lands on one of the domain values, then
+  // just choose given_val. If given_val is in between domain values,
+  // then find either the next higher one (if up=true), or the next lower.
+  unsigned int value_index = getDiscreteVal(index, given_val, snaptype);
+  
+  // Part 2: Check if the given val, gval, lands on a domain value.
+  double domain_val = getVal(index, value_index);
+  if(domain_val == given_val)
+    return(given_val);
+  
 
+  // Part 3: Handle case where value_index is zero 
+  if(value_index == 0) {
+    if(up) {
+      if(!wrap) 
+	return(given_val);
+      else
+	return(getVarHigh(index));
+    }
+    else {
+      if(!wrap) 
+	return(given_val);
+      else
+	return(getVarHigh(index));
+    }
+  }
+}
+#endif
+
+//-------------------------------------------------------------
+// Procedure: getEqOrLowerVal()
+
+double IvPDomain::getEqOrLowerVal(unsigned int index, double given_val,
+				  int snaptype, bool wrap) const
+{
+  if((snaptype < 0) || (snaptype > 2) || (index  >= m_dname.size())) 
+    return(given_val);
+
+  unsigned int value_index = getDiscreteVal(index, given_val, snaptype);
+  
+  // Next 3 lines make difference w.r.t. getNextLowerVal
+  double domain_val = getVal(index, value_index);
+  if(domain_val == given_val)
+    return(given_val);
+  
+  if(value_index == 0) {
+    if(!wrap)
+      return(given_val);
+    else
+      return(getVarHigh(index));
+  }
+    
+  return(getVal(index, value_index-1));
+}
+
+//-------------------------------------------------------------
+// Procedure: getEqOrHigherVal()
+
+double IvPDomain::getEqOrHigherVal(unsigned int index, double given_val,
+				   int snaptype, bool wrap) const
+{
+  if((snaptype < 0) || (snaptype > 2) || (index  >= m_dname.size())) 
+    return(given_val);
+
+  unsigned int value_index = getDiscreteVal(index, given_val, snaptype);
+
+  // Next 3 lines make difference w.r.t. getNextHigherVal
+  double domain_val = getVal(index, value_index);
+  if(domain_val == given_val)
+    return(given_val);
+  
+  if(value_index+1 >= m_dpoints[index]) {
+    if(!wrap)
+      return(given_val);
+    else
+      return(getVarLow(index));
+  }
+    
+  return(getVal(index, value_index+1));
+}
 

@@ -9,6 +9,7 @@ SET(SRC
   AOF_AvoidCollision.cpp
   AOF_AvoidCollisionDepth.cpp
   AOF_AvoidObstacle.cpp
+  AOF_AvoidObstacleX.cpp
   AOF_AvoidWalls.cpp
   AOF_CutRangeCPA.cpp
   AOF_Shadow.cpp
@@ -16,7 +17,9 @@ SET(SRC
   LoiterEngine.cpp
   ObShipModel.cpp
   WaypointEngine.cpp
-  RefineryCPA.cpp)
+  RefineryObAvoid.cpp
+  RefineryCPA.cpp
+)
 
 SET(HEADERS
   AOF_Contact.h
@@ -26,6 +29,7 @@ SET(HEADERS
   AOF_AvoidCollision.h
   AOF_AvoidCollisionX.h
   AOF_AvoidObstacle.h
+  AOF_AvoidObstacleX.h
   AOF_AvoidWalls.h
   AOF_CutRangeCPA.h
   AOF_Shadow.h
@@ -33,6 +37,7 @@ SET(HEADERS
   LoiterEngine.h
   ObShipModel.h
   WaypointEngine.h
+  RefineryObAvoid.h
   RefineryCPA.h
 )
 

@@ -56,6 +56,8 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
 
   m_last_runcheck_post = false;
   m_last_runcheck_time = 0;
+
+  m_dynamically_spawned = false;
   
   m_duration     = -1;
   m_duration_started         =  false;
@@ -763,7 +765,8 @@ bool IvPBehavior::checkUpdates()
     update_result += ",var=" + m_update_var;
     update_result += ",time=" + doubleToString(getBufferLocalTime(),2);
 
-    // Added Mar 7th 2014, allow successive dupl updates with word toggle in it.
+    // Added Mar 7th 2014, allow successive dupl updates with word
+    // toggle in it.
     if(strContains(tolower(new_update_str), "toggle") ||
        ((new_update_str != "") && (new_update_str != m_prev_update_str))) {
     
@@ -780,8 +783,18 @@ bool IvPBehavior::checkUpdates()
 	string pair  = uvector[j];
 	string param = biteStringX(pair, '=');
 	string value = pair;
-	if((param=="name") && (value!=m_descriptor))
-	  name_mismatch = true;
+	// Match if exact match, or bhv name ends with given name val
+	if(param == "name") {
+	  // If dyn spawned update name need only match end of bhv name
+	  if(isDynamicallySpawned()) {
+	    string bhv_basename = getSpawnBaseName();
+	    if(m_descriptor != (bhv_basename + value))
+	      name_mismatch = true;
+	  }
+	  // If note dyn spawned update name must exactly match bhv name
+	  if(!isDynamicallySpawned() && (value != m_descriptor))
+	    name_mismatch = true;
+	}
       }
 
       if(name_mismatch)
@@ -794,9 +807,10 @@ bool IvPBehavior::checkUpdates()
 	  string param = biteStringX(pair, '=');
 	  string value = pair;
 	  bool  result = true;
-	  // Aug 28, 2015, Don't try to update "name" parameter. We don't want to
-	  // since "name" should only be set at creation time. We want to totally
-	  // ignore it since we dont want it flagged as an unhandled update.
+	  // Aug 28, 2015, Don't try to update "name" parameter. We
+	  // don't want to since "name" should only be set at creation
+	  // time. We want to totally ignore it since we dont want it
+	  // flagged as an unhandled update.
 	  if(param != "name") { 
 	    result = setParam(param, value);
 	    if(!result)

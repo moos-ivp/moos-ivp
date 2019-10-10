@@ -192,7 +192,7 @@ vector<IvPBox> RefineryCPA::getRefineRegions()
 vector<IvPBox> RefineryCPA::getRefineRegionsAft()
 {
   if(m_verbose)
-    cout << "====Start============ RefineryCPA::getRefineRegions AFT" << endl; 
+    cout << "====Start====== RefineryCPA::getRefineRegions AFT" << endl; 
 
   m_logic_case = "aft";
   vector<IvPBox> null_regions;

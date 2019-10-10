@@ -12,18 +12,19 @@ Processconfig = ANTLER
 {
   MSBetweenLaunches = 100
 
-  Run = MOOSDB          @ NewConsole = false
-  //Run = uTimerScript    @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = false
-  Run = pLogger         @ NewConsole = false
-  Run = uXMS            @ NewConsole = false
-  Run = uProcessWatch   @ NewConsole = false
+  Run = MOOSDB           @ NewConsole = false
+  Run = uTimerScript   @ NewConsole = false
+  Run = pMarineViewer    @ NewConsole = false
+  Run = pLogger          @ NewConsole = false
+  Run = uXMS             @ NewConsole = false
+  Run = uProcessWatch    @ NewConsole = false
 
-  Run = pShare          @ NewConsole = false
-  Run = pHostInfo       @ NewConsole = false
-  Run = uFldShoreBroker @ NewConsole = false
-  Run = uFldNodeComms   @ NewConsole = false
-  Run = uFldObstacleSim @ NewConsole = false
+  Run = pShare           @ NewConsole = false
+  Run = pHostInfo        @ NewConsole = false
+  Run = uFldShoreBroker  @ NewConsole = false
+  Run = uFldNodeComms    @ NewConsole = false
+  Run = uFldObstacleSim  @ NewConsole = false
+  //Run = uFldCollObDetect @ NewConsole = false
 }
 
 //---------------------------------------------------------
@@ -37,15 +38,40 @@ ProcessConfig = pShare
   input = route =  localhost:$(SHORE_PSHARE)
 }
 
+//---------------------------------------------------------
+// uFldCollObDetect Config Block
+
+ProcessConfig = uFldCollObDetect
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  collision_dist = 1
+  near_miss_dist = 5
+  encounter_dist = 14
+
+  encounter_flag = OB_TOTAL_ENCOUNTERS=$ENC_CNT
+  encounter_flag = OB_TOTAL_NEAR_MISSES=$MISS_CNT
+  encounter_flag = OB_TOTAL_COLLISIONS=$COLL_CNT
+  encounter_flag = OB_ENCOUNTER = $DIST
+  near_miss_flag = OB_NEAR_MISS = $DIST
+  collision_flag = OB_COLLISION = $DIST
+  near_miss_flag = OB_NEAR_MISS_FULL = vname=$VNAME,ob=$ID,dist=$DIST
+  collision_flag = OB_COLLISION_FULL = vname=$VNAME,ob=$ID,dist=$DIST
+}
+
 //--------------------------------------------------
 // uFldObstacleSim Configuration Block
 
 ProcessConfig = uFldObstacleSim
 {
-  AppTick       = 1
-  CommsTick     = 1
+  AppTick       = 2
+  CommsTick     = 2
 
-  obstacle_file = obstacles_one.txt
+  //obstacle_file = obstacles_one.txt
+  obstacle_file = obstacles.txt
+  //post_points   = true
+  //rate_points   = 2
 }
 
 //--------------------------------------------------
@@ -73,6 +99,7 @@ ProcessConfig = uFldShoreBroker
   qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID, UP_LOITER
   qbridge  = RETURN_UPDATES
 
+  bridge   = src=TRACKED_FEATURE
   bridge   = src=GIVEN_OBSTACLE
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
@@ -130,7 +157,7 @@ ProcessConfig = pLogger
   PATH          = ./
   SyncLog       = true @ 0.2
   AsyncLog      = true
-  FileTimeStamp = true
+  FileTime = true
 
   LogAuxSrc     = true
 
@@ -219,14 +246,14 @@ ProcessConfig = uTimerScript
   randvar = varname=X1, min=-25,  max=25,  key=at_reset
   randvar = varname=Y1, min=-100, max=-50, key=at_reset
 
-  randvar = varname=X2, min=100,  max=150, key=at_reset
+  randvar = varname=X2, min=150,  max=170, key=at_reset
   randvar = varname=Y2, min=-75,  max=-25, key=at_reset
 
-  event = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
-  event = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180
+  event = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=160 
+  event = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=160
 
-  event = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=360
-  event = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=360
+  event = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=320
+  event = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=320
 }
 
 

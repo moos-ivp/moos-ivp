@@ -218,13 +218,17 @@ bool BehaviorSet::buildBehaviorsFromSpecs()
   // with all the new IvPBehaviors, and add LifeEvents.
   unsigned int k, ksize = spec_builds.size();
   cout << "total specs::" << ksize << endl;
+
   for(k=0; k<ksize; k++) {
     IvPBehavior *bhv = spec_builds[k].getIvPBehavior();
     addBehavior(bhv);
 
+    string bhv_name = spec_builds[k].getBehaviorName();
+    string bhv_kind = spec_builds[k].getBehaviorKind();
+
     LifeEvent life_event;
-    life_event.setBehaviorName(spec_builds[k].getBehaviorName());
-    life_event.setBehaviorType(spec_builds[k].getBehaviorKind());
+    life_event.setBehaviorName(bhv_name);
+    life_event.setBehaviorType(bhv_kind);
     life_event.setSpawnString("helm_startup");
     life_event.setEventType("spawn");
     m_life_events.push_back(life_event);
@@ -369,22 +373,25 @@ bool BehaviorSet::handlePossibleSpawnings()
       // e.g. if name is "henry", make sure "henry" and "prefix_henry"
       // don't already exist.
       
-      string bname = tokStringParse(update_str, "name", '#', '=');
-      string fullname = m_behavior_specs[i].getNamePrefix() + bname;
+      string base_name = m_behavior_specs[i].getNamePrefix();
+      string update_name = tokStringParse(update_str, "name", '#', '=');
+      string fullname = base_name + update_name;
 
       // For example: If the behavior name prefix is avd_obstacle_,
       // and a behavior has already been spawned with the name
       // avd_obstacle_blue, then an update with name=avd_obstacle_blue or
       // name=blue would be applied to the previously spawned behavior.
 
-      if((m_bhv_names.count(fullname)==0) && (m_bhv_names.count(bname) == 0)) {
+      if((m_bhv_names.count(fullname)==0) && (m_bhv_names.count(update_name)==0)) {
 	SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], update_str);
 	m_behavior_specs[i].spawnTried();
 	//sbuild.print();
 	
 	LifeEvent life_event;
-	life_event.setBehaviorName(sbuild.getBehaviorName());
-	life_event.setBehaviorType(sbuild.getBehaviorKind());
+	string bhv_name = sbuild.getBehaviorName();
+	string bhv_kind = sbuild.getBehaviorKind();
+	life_event.setBehaviorName(bhv_name);
+	life_event.setBehaviorType(bhv_kind);
 	life_event.setSpawnString(update_str);
 	
 	if(sbuild.valid()) {
@@ -394,6 +401,8 @@ bool BehaviorSet::handlePossibleSpawnings()
 	  bhv->onSetParamComplete(); 
 	  bhv->onSpawn();
 	  bhv->postFlags("spawnflags", true);
+	  bhv->setDynamicallySpawned(true);
+	  bhv->setSpawnBaseName(base_name);
 	  addBehavior(bhv); 
 	  life_event.setEventType("spawn");
 	  m_behavior_specs[i].spawnMade();
@@ -402,16 +411,20 @@ bool BehaviorSet::handlePossibleSpawnings()
 	  life_event.setEventType("abort");
 	m_life_events.push_back(life_event);
       }
-      // If base+name already exists AND base does not exist, post warning
+      // If fullname already exists AND update does not exist, post warning
       else {
-	if(m_bhv_names.count(bname)!=0) 
-	  addWarning("Unhandled update: Existing bhv named [" + bname + "] not found. ");
+	if(m_bhv_names.count(update_name)!=0) {
+	  string warning_str = "Unhandled update: Existing bhv named [";
+	  warning_str += update_name + "] not found. ";
+	  addWarning(warning_str);
+	}
 
-	// The below check is disabled for now because the contact manager is
-	// erroneously posting two idential alerts. Once the contact manager is
-	// fixed, the below check should be re-enabled.
+	// The below check is disabled for now because the contact
+	// manager is erroneously posting two idential alerts. Once
+	// the contact manager is fixed, the below check should be
+	// re-enabled.
 
-	//if(m_bhv_names.count(fullname) != 0)
+	// if(m_bhv_names.count(fullname) != 0)
 	//  addWarning("Unhandled update: Spawned bhv named [" + fullname + "] is taken.");
       }
     }

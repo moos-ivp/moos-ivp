@@ -472,11 +472,13 @@ bool OF_Reflector::setParam(string param, IvPBox gbox)
   else if(param=="plateau_region") {
     if(gbox.null()) 
       return(addWarning(param + " plateau_region value ill-defined"));
+    gbox.setPlat(1);
     m_plateaus.push_back(gbox);
   }
   else if(param=="basin_region") {
     if(gbox.null()) 
       return(addWarning(param + " basin_region value ill-defined"));
+    gbox.setPlat(-1);
     m_basins.push_back(gbox);
   }
   else if((param=="refine_region") || (param=="focus_region")) {
@@ -516,7 +518,7 @@ bool OF_Reflector::setParam(string param, IvPBox gbox)
 int OF_Reflector::create(int unif_amt, int smart_amt, double smart_thresh)
 {
   if(m_verbose) 
-    cout << "========== Begin OF_Reflector::create() ==============" << endl;
+    cout << "========== Begin OF_Reflector::create() ===========" << endl;
     
   clearPDMap();
   if(!m_aof)
@@ -541,6 +543,7 @@ int OF_Reflector::create(int unif_amt, int smart_amt, double smart_thresh)
   if(m_verbose)
     m_rt_uniformx->setVerbose();
   m_rt_uniformx->setPlateaus(m_plateaus);
+  m_rt_uniformx->setBasins(m_basins);
   m_pdmap = m_rt_uniformx->create(m_uniform_piece, m_uniform_grid);
 
   if(!m_pdmap)  // This should never happen, but check anyway.

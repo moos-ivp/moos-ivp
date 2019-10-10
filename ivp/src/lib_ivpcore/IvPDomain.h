@@ -46,10 +46,10 @@ public:
   void   print() const;
   int    getIndex(const std::string&) const;
 
-  unsigned int size() const                 {return(m_dname.size());}
-  double getVarLow(unsigned int i) const    {return(m_dlow[i]);}
-  double getVarHigh(unsigned int i) const   {return(m_dhigh[i]);}
-  double getVarDelta(unsigned int i) const  {return(m_ddelta[i]);}
+  unsigned int size() const                  {return(m_dname.size());}
+  double getVarLow(unsigned int ix) const    {return(m_dlow[ix]);}
+  double getVarHigh(unsigned int ix) const   {return(m_dhigh[ix]);}
+  double getVarDelta(unsigned int ix) const  {return(m_ddelta[ix]);}
   double getVarLow(const std::string& s) const;    
   double getVarHigh(const std::string& s) const;    
   double getVarDelta(const std::string& s) const;    
@@ -58,59 +58,60 @@ public:
   // Return number of points in the domain for a given variable name.
   // If the variable name is unknown, just return zero.
   unsigned int getVarPoints(const std::string& str) const;
-  unsigned int getVarPoints(unsigned int i) const;    
+  unsigned int getVarPoints(unsigned int ix) const;    
 
   // For the ith domain index, and j steps into the domain, return
   // the corresponding floating point value.
-  bool getVal(unsigned int i, unsigned int j, double &val) const
-    {
-      unsigned int dsize = m_dlow.size();
-      if((i<dsize) && (j<m_dpoints[i])) {
-	val = m_dlow[i] + (m_ddelta[i] * j);
-	return(true);
-      }      return(false);
-    };
+  bool getVal(unsigned int ix, unsigned int j, double &val) const;
 
-  // A simplified version of getVal where no error is indicate
+  // A simplified version of getVal where no error is indicated
   // if the domain or index is out of range.
-  double getVal(unsigned int d, unsigned int j) const
-    {
-      unsigned int dsize = m_dlow.size();
-      if((d<dsize) && (j<m_dpoints[d]))
-	return(m_dlow[d] + (m_ddelta[d] * j));
-      return(0);
-    }
+  double getVal(unsigned int ix, unsigned int j) const;
 
   // For domain given by the varible name, and j steps into the 
   // domain, return the corresponding floating point value.
-  bool getVal(const std::string str, unsigned int j, double &val) const
-    {
-      return(getVal(getIndex(str), j, val));
-    }
+  bool getVal(const std::string str, unsigned int j, double &val) const;
       
   // Return the variable name of ith element of the domain
-  std::string getVarName(unsigned int i) const
-    {
-      if(i>=m_dname.size())
-	return("");
-      return(m_dname[i]);
-    }
+  std::string getVarName(unsigned int ix) const;
 
   // Return next lowest value, if there is one
-  double getNextLowerVal(unsigned int index, double val,
+  double getNextLowerVal(unsigned int ix, double val,
 			 int snaptype, bool wrap=false) const;
 
   // Return next higher value, if there is one
-  double getNextHigherVal(unsigned int index, double val,
+  double getNextHigherVal(unsigned int ix, double val,
 			  int snaptype, bool wrap=false) const;
 
   // Return the discrete index into the domain given by a double
   // input value. Round up, down or closest, depending on snaptype.
-  unsigned int getDiscreteVal(unsigned int index, 
+  unsigned int getDiscreteVal(unsigned int ix, 
 			      double val, int snaptype) const;
 
-  double getSnappedVal(unsigned int index,
+  double getSnappedVal(unsigned int ix,
 		       double dval, int snaptype) const;
+
+  double getSnappedValCeil(unsigned int ix, double dval) const;
+  double getSnappedValFloor(unsigned int ix, double dval) const;
+  double getSnappedValProx(unsigned int ix, double dval) const;
+
+
+  //==============================================================
+  
+
+  double coupleAux(unsigned int index, double& gval,
+		   bool up, bool wrap) const;
+
+  
+  // Return given val if in domain, or next higher value, if there is one
+  double getEqOrHigherVal(unsigned int index, double val,
+			  int snaptype, bool wrap=false) const;
+
+  // Return given val if in domain, or next lower value, if there is one
+  double getEqOrLowerVal(unsigned int index, double val,
+			 int snaptype, bool wrap=false) const;
+
+
   
 private:
   std::vector<std::string>  m_dname;
@@ -121,13 +122,3 @@ private:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-

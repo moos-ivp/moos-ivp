@@ -7,11 +7,13 @@
 
 #include <iterator>
 #include "MBUtils.h"
+#include "GeomUtils.h"
 #include "ACTable.h"
 #include "ObstacleSim.h"
 #include "FileBuffer.h"
 #include "ColorParse.h"
 #include "XYFormatUtilsPoly.h"
+#include "NodeRecordUtils.h"
 
 using namespace std;
 
@@ -20,7 +22,8 @@ using namespace std;
 
 ObstacleSim::ObstacleSim()
 {
-  m_min_range = 0;
+  // Init Config variables
+  m_min_range = 0;      
   m_min_poly_size = 0;
   m_max_poly_size = 0;
 
@@ -33,6 +36,10 @@ ObstacleSim::ObstacleSim()
   m_poly_edge_size   = 1;
   m_poly_vert_size   = 1;
 
+  m_post_points = false;
+  m_rate_points = 5;
+
+  // Init State variables
   m_viewables_queried = true;
   m_obstacles_queried = true;
 
@@ -66,8 +73,6 @@ bool ObstacleSim::OnNewMail(MOOSMSG_LIST &NewMail)
       m_viewables_queried = true;
     else if(key=="VEHICLE_CONNECT")
       m_obstacles_queried = true;
-    
-    
     else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
       reportRunWarning("Unhandled Mail: " + key);
   }
@@ -91,11 +96,13 @@ bool ObstacleSim::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
-  // Do your thing here!
   if(m_viewables_queried) {
     postViewableObstacles();
     m_viewables_queried = false;
   }
+
+  if(m_post_points)
+    postPoints();
 
   if(m_obstacles_queried) {
     postKnownObstacles();
@@ -136,6 +143,12 @@ bool ObstacleSim::OnStartUp()
       handled = setColorOnString(m_poly_edge_color, value);
     else if((param == "poly_label_color") && isColor(value))
       handled = setColorOnString(m_poly_label_color, value);
+    else if(param == "post_points")
+      handled = setBooleanOnString(m_post_points, value);
+    else if(param == "rate_points")
+      handled = setNonNegDoubleOnString(m_rate_points, value);
+    else if(param == "rate_pointsx")
+      handled = setNonNegDoubleOnString(m_rate_points, value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -154,7 +167,6 @@ void ObstacleSim::registerVariables()
   Register("PMV_CONNECT", 0);
   Register("VEHICLE_CONNECT", 0);
 }
-
 
 //------------------------------------------------------------
 // Procedure: processObstacleFile
@@ -183,6 +195,24 @@ bool ObstacleSim::processObstacleFile(string filename)
       }
       m_poly_region = region;
     }
+    else if(left == "min_range") {
+      if(isNumber(right)) 
+	m_min_range = atof(right.c_str());
+      else
+	reportConfigWarning("Poorly specified min_range: " + right);
+    }
+    else if(left == "min_size") {
+      if(isNumber(right)) 
+	m_min_poly_size = atof(right.c_str());
+      else
+	reportConfigWarning("Poorly specified min_size: " + right);
+    }
+    else if(left == "max_size") {
+      if(isNumber(right)) 
+	m_max_poly_size = atof(right.c_str());
+      else
+	reportConfigWarning("Poorly specified min_size: " + right);
+    }
     else if(left == "poly") {
       XYPolygon poly = string2Poly(right);
       if(!poly.is_convex()) {
@@ -207,9 +237,11 @@ bool ObstacleSim::processObstacleFile(string filename)
 
 void ObstacleSim::postViewableObstacles()
 {
-  for(unsigned int i=0; i<m_obstacles.size(); i++) {
-    string spec = m_obstacles[i].get_spec();
-    Notify("VIEW_POLYGON", spec);
+  if(!m_post_points) {
+    for(unsigned int i=0; i<m_obstacles.size(); i++) {
+      string spec = m_obstacles[i].get_spec();
+      Notify("VIEW_POLYGON", spec);
+    }
   }
 
   if(m_poly_region.is_convex())
@@ -220,14 +252,50 @@ void ObstacleSim::postViewableObstacles()
 
 //------------------------------------------------------------
 // Procedure: postKnownObstacles()
+//     Notes: o The KNOWN_OBSTACLE is intended for the benefit of
+//              other shoreside apps, e.g., uFldCollObDetect so it
+//              has access to ground truth. Thus KNOWN_OBSTACLE is
+//              not intented to be shared out to the vehicles
+//            o The GIVEN_OBSTACLE is intended for sharing to the
+//              vehicles, only if this sim is not in "post_points"
+//              mode. In post_points mode, this sim is sharing
+//              simulated sensor data, not actual obstacle info
 
 void ObstacleSim::postKnownObstacles()
 {
   for(unsigned int i=0; i<m_obstacles.size(); i++) {
     string spec = m_obstacles[i].get_spec();
-    Notify("GIVEN_OBSTACLE", spec);
+    // KNOWN_OBSTACLE is ground truth for other shoreside apps
+    Notify("KNOWN_OBSTACLE", spec);
+    // GIVEN_OBSTACLE is only posted and shared with vehicles
+    // if this sim is not generated simulated post_points.
+    if(!m_post_points)
+      Notify("GIVEN_OBSTACLE", spec);
   }
   m_obstacles_posted++;
+}
+
+//------------------------------------------------------------
+// Procedure: postPoints()
+//      Note: Points are published as:
+//            TRACKED_FEATURE = x=5,y=8,label=key,size=4,color=1
+
+void ObstacleSim::postPoints()
+{
+  for(unsigned int i=0; i<m_obstacles.size(); i++) {
+    for(unsigned int j=0; j<m_rate_points; j++) {
+      double x, y;
+      bool ok = randPointInPoly(m_obstacles[i], x, y);
+      if(ok) {
+	string key = m_obstacles[i].get_label();
+	string msg = "x=" + doubleToStringX(x,2);
+	msg += ",y=" + doubleToStringX(y,2);
+	msg += ",label=" + key + ",color=1,size=2";
+	Notify("TRACKED_FEATURE", msg);
+	reportEvent("TRACKED_FEATURE="+msg);
+      }
+    }
+  }
 }
 
 //------------------------------------------------------------
@@ -236,21 +304,19 @@ void ObstacleSim::postKnownObstacles()
 bool ObstacleSim::buildReport() 
 {
   m_msgs << "============================================" << endl;
-  m_msgs << "Obstacles: " << uintToString(m_obstacles.size()) << endl;
-  m_msgs << "MinRange: " << doubleToString(m_min_range) << endl;
+  m_msgs << "Configuration:                              " << endl;
+  m_msgs << "  Obstacles: " << uintToString(m_obstacles.size()) << endl;
+  m_msgs << "  MinRange:  " << doubleToStringX(m_min_range)     << endl;
+  m_msgs << "  MinSize:   " << doubleToStringX(m_min_poly_size) << endl;
+  m_msgs << "  MaxSize:   " << doubleToStringX(m_max_poly_size) << endl << endl;
 
-  m_msgs << "Viewables Posted: " << uintToString(m_viewables_posted) << endl;
-  m_msgs << "Obstacles Posted: " << uintToString(m_obstacles_posted) << endl;
+  m_msgs << "  Post Points:   " << boolToString(m_post_points) << endl;
+  m_msgs << "  Rate Points:   " << doubleToStringX(m_rate_points) << endl;
 
-  ACTable actab(4);
-  actab << "Alpha | Bravo | Charlie | Delta";
-  actab.addHeaderLines();
-  actab << "one" << "two" << "three" << "four";
-  m_msgs << actab.getFormattedString();
+  m_msgs << "State:                                      " << endl;
+  m_msgs << "  Viewables Posted: " << uintToString(m_viewables_posted) << endl;
+  m_msgs << "  Obstacles Posted: " << uintToString(m_obstacles_posted) << endl;
 
   return(true);
 }
-
-
-
 
