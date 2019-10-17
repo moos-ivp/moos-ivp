@@ -40,10 +40,12 @@ SplitHandler::SplitHandler(string alog_file)
   // Init config parameters
   m_alog_file = alog_file;
   m_verbose = false;
-
+  m_max_cache = 100;  // Default limit for concurrent fopen fileptrs
+  
   // Init state variables
   m_alog_file_confirmed = false;
   m_split_dir_prior     = false;
+  m_max_cache_exceeded  = false;
 }
 
 //--------------------------------------------------------
@@ -61,6 +63,20 @@ bool SplitHandler::handle()
     ok = true;
 
   return(ok);
+}
+
+//--------------------------------------------------------
+// Procedure: setMaxFilePtrCache
+
+void SplitHandler::setMaxFilePtrCache(unsigned int val)
+{
+  m_max_cache = val;
+
+  if(m_max_cache < 10)
+    m_max_cache = 10;
+
+  if(m_max_cache > 2000)
+    m_max_cache = 2000;
 }
 
 //--------------------------------------------------------
@@ -115,6 +131,7 @@ bool SplitHandler::handleMakeSplitFiles()
   while(!done) {    
     string line_raw = getNextRawLine(file_in);
 
+    //cout << "line: [" << line_raw << "]" << endl;
     // Check if the line has the timestamp
     if((m_logstart.length() == 0) && strContains(line_raw, "LOGSTART")) {
       line_raw = findReplace(line_raw, "LOGSTART", "X");
@@ -207,22 +224,28 @@ bool SplitHandler::handleMakeSplitFiles()
 
     // Part 2: Check if the file ptr for this variable already exists. 
     // If not, create a new file pointer and add it to the map.
-    if(varname == "OBM_DIST_TO_OBJ_118")
-      cout << "var: OBM_DIST_TO_OBJ_118" << endl;
+    bool cached_file_ptr = false;
 
-    bool cache_the_file_ptr = false;
     FILE *file_ptr = 0;
-    if(m_file_ptr.count(varname) == 1) 
+    if(m_file_ptr.count(varname) == 1) { 
       file_ptr = m_file_ptr[varname];
+      cached_file_ptr = true;
+    }
     else {
       string new_file = m_basedir + "/" + varname + ".klog"; 
       errno = 0;
-      FILE *new_ptr = fopen(new_file.c_str(), "a+");
+      FILE *new_ptr = fopen(new_file.c_str(), "a");
       if(new_ptr) {
-	if(m_file_ptr.size() <= 100) {
+	// 100 seems to be a safe bet for all OS types for allowing
+	// simultaneously open file pointers. Everything after 100
+	// will be slower.
+	if(m_file_ptr.size() <= m_max_cache) {
 	  m_file_ptr[varname] = new_ptr;
-	  cache_the_file_ptr = true;
+	  cached_file_ptr = true;
+	  if(m_verbose)
+	    cout << "Caching: " << varname << " (" << m_file_ptr.size() << ")" << endl;
 	}
+	m_max_cache_exceeded = true;
 	file_ptr = new_ptr;
       }
       else {
@@ -248,7 +271,7 @@ bool SplitHandler::handleMakeSplitFiles()
 
     // Part 5: Write the line to the appropriate file
     fprintf(file_ptr, "%s\n", line_raw.c_str());
-    if(!cache_the_file_ptr)
+    if(!cached_file_ptr)
       fclose(file_ptr);
     
   }
@@ -263,6 +286,13 @@ bool SplitHandler::handleMakeSplitFiles()
     fclose(ptr);
   }
 
+  if(m_max_cache_exceeded) {
+    cout << "WARNING: Maximum concurrent fopen fileptr cache exceeded." << endl;
+    cout << "This is not an error, but the alog file pre-splitting    " << endl;
+    cout << "phase will be slower in these cases.                     " << endl;
+    cout << "Total unique varnames: " << m_var_type.size() << endl;
+  }
+  
   if(file_in)
     fclose(file_in);
 
