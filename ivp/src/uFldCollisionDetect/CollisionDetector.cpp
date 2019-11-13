@@ -150,6 +150,7 @@ void CollisionDetector::handleCPAEvent(CPAEvent event)
     m_map_vname_collisions[v1]++;
     m_map_vname_collisions[v2]++;
     postFlags(m_collision_flags, event);
+    Notify("COLLISION_TOTAL", m_total_collisions);
   }
   else if(cpa <= m_near_miss_dist) {
     rank = "near_miss";
@@ -157,6 +158,7 @@ void CollisionDetector::handleCPAEvent(CPAEvent event)
     m_map_vname_near_misses[v1]++;
     m_map_vname_near_misses[v2]++;
     postFlags(m_near_miss_flags, event);
+    Notify("NEAR_MISS_TOTAL", m_total_near_misses);
   }
   
   // Perhaps done if clear encounter and minimal reporting
@@ -304,6 +306,10 @@ bool CollisionDetector::OnStartUp()
   m_param_summary += ", near_miss_range=" + doubleToStringX(m_near_miss_dist);
   m_param_summary += ", encounter_range=" + doubleToStringX(m_encounter_dist);
   Notify("COLLISION_DETECT_PARAMS", m_param_summary);
+
+  Notify("ENCOUNTER_TOTAL", 0);
+  Notify("NEAR_MISS_TOTAL", 0);
+  Notify("COLLISION_TOTAL", 0);
   
   registerVariables();	
   return(true);

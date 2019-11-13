@@ -153,6 +153,8 @@ void showInterfaceAndExit()
   blk("                     time=65286252381.7,edge_size=1             ");
   blk("                                                                ");
   blk("  ENCOUNTER_TOTAL  = 193                                        ");
+  blk("  NEAR_MISS_TOTAL  =   8                                        ");
+  blk("  COLLISION_TOTAL  =   0                                        ");
   blk("                                                                ");
   blk("  COLLISION_DETECT_PARAMS = collision_range=4,near_miss_range=8,");
   blk("                            encounter_range=20                  ");
