@@ -307,9 +307,9 @@ bool CollisionDetector::OnStartUp()
   m_param_summary += ", encounter_range=" + doubleToStringX(m_encounter_dist);
   Notify("COLLISION_DETECT_PARAMS", m_param_summary);
 
-  Notify("ENCOUNTER_TOTAL", 0);
-  Notify("NEAR_MISS_TOTAL", 0);
-  Notify("COLLISION_TOTAL", 0);
+  Notify("ENCOUNTER_TOTAL", (double)0);
+  Notify("NEAR_MISS_TOTAL", (double)0);
+  Notify("COLLISION_TOTAL", (double)0);
   
   registerVariables();	
   return(true);
