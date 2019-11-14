@@ -51,6 +51,8 @@ GrepHandler::GrepHandler()
   m_file_overwrite = false;
   m_gaplines_retained = true;
   m_appcast_retained = true;
+  m_final_entry_only = false;
+  m_final_value_only = false;
   
   // A "bad" line is a line that is not a comment, and does not begin
   // with a timestamp. As found in entries with CRLF's like DB_VARSUMMARY
@@ -191,6 +193,25 @@ bool GrepHandler::handle(string alogfile, string new_alogfile)
     fclose(m_file_in);
   m_file_in = 0;
 
+  // Part 7: Handle case where only final line is output
+  if(m_final_entry_only) {
+    if(m_final_line.length() == 0)
+      return(false);
+
+    if(!m_final_value_only)
+      cout << m_final_line << endl;
+    else {
+      string varval = getDataEntry(m_final_line);
+      if(isNumber(varval)) {
+	double dval = atof(varval.c_str());
+	string sval = doubleToStringX(dval);
+	cout << sval << endl;
+      }
+      else
+	cout << varval << endl;
+    }
+  }
+    
   return(true);
 }
 
@@ -267,7 +288,6 @@ void GrepHandler::addKey(string key)
 
 //--------------------------------------------------------
 // Procedure: getMatchedKeys()
-//     Notes: 
 
 vector<string> GrepHandler::getMatchedKeys()
 {
@@ -284,7 +304,6 @@ vector<string> GrepHandler::getMatchedKeys()
 
 //--------------------------------------------------------
 // Procedure: getUnMatchedKeys()
-//     Notes: 
 
 vector<string> GrepHandler::getUnMatchedKeys()
 {
@@ -303,11 +322,17 @@ vector<string> GrepHandler::getUnMatchedKeys()
 
 void GrepHandler::outputLine(const string& line, const string& var)
 {
-  if(m_file_out)
-    fprintf(m_file_out, "%s\n", line.c_str());
-  else
-    cout << line << endl;
-
+  if(!m_final_entry_only) {
+    if(m_file_out)
+      fprintf(m_file_out, "%s\n", line.c_str());
+    else
+      cout << line << endl;
+  }
+  else {
+    if(!strBegins(line, "%"))
+      m_final_line = line;
+  }
+  
   m_lines_retained++;
   m_chars_retained += line.length();
   if(var.length() > 0)

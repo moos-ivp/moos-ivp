@@ -61,12 +61,24 @@ int main(int argc, char *argv[])
   if(scanArgs(argc, argv, "--appcast", "-ac"))
     appcast_retained = false;
   
+  bool final_entry_only = false;
+  if(scanArgs(argc, argv, "--final")) {
+    final_entry_only = true;
+    make_end_report  = false;
+  }
+  
+  bool final_value_only = false;
+  if(scanArgs(argc, argv, "--finalx", "-x")) {
+    final_entry_only = true;
+    final_value_only = true;
+    make_end_report  = false;
+  }
+  
   if(scanArgs(argc, argv, "--quiet", "-q")) {
     comments_retained = false;
     make_end_report = false;
   }
     
-  
   bool file_overwrite = false;
   if(scanArgs(argc, argv, "-f", "--force", "-force"))
     file_overwrite = true;
@@ -143,6 +155,8 @@ int main(int argc, char *argv[])
   handler.setBadLinesRetained(badlines_retained);
   handler.setGapLinesRetained(gaplines_retained);
   handler.setAppCastRetained(appcast_retained);
+  handler.setFinalEntryOnly(final_entry_only);
+  handler.setFinalValueOnly(final_value_only);
 
   int ksize = keys.size();
   for(int i=0; i<ksize; i++)
