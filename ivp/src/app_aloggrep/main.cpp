@@ -110,6 +110,9 @@ int main(int argc, char *argv[])
     cout << "  -gl,--no_gaplen   Supress vars ending in _GAP or _LEN    " << endl;
     cout << "  -ac,--no_appcast  Supress APPCAST lines                  " << endl;
     cout << "                                                           " << endl;
+    cout << "  --final           Output only final matching line        " << endl;
+    cout << "  -x,--finalx       Output only final matching line's val. " << endl;
+    cout << "                                                           " << endl;
     cout << "  --keep_badlines   Do not disscard lines that don't begin " << endl;
     cout << "  -kb               with a timestamp or comment character. " << endl;
     cout << "                                                           " << endl;
