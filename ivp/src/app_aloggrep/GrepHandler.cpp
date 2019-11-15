@@ -201,7 +201,7 @@ bool GrepHandler::handle(string alogfile, string new_alogfile)
     if(!m_final_value_only)
       cout << m_final_line << endl;
     else {
-      string varval = getDataEntry(m_final_line);
+      string varval = stripBlankEnds(getDataEntry(m_final_line));
       if(isNumber(varval)) {
 	double dval = atof(varval.c_str());
 	string sval = doubleToStringX(dval);
