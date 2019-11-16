@@ -48,6 +48,7 @@ void HelmReport::initialize()
   m_create_time   = 0;
   m_solve_time    = 0;
   m_halted        = false;
+  m_active_goal   = false;
   m_max_create_time = 0;
   m_max_solve_time  = 0;
   m_max_loop_time   = 0;
@@ -489,6 +490,9 @@ string HelmReport::getReportAsString(const HelmReport& prep, bool full) const
   if(full || (m_halted != prep.getHalted()))
     report += (",halted=" + boolToString(m_halted));
 
+  if(full || (m_active_goal != prep.getActiveGoal()))
+    report += (",active_goal=" + boolToString(m_active_goal));
+  
   if(full || (m_modes != prep.getModeSummary())) {
     report += ",modes=";
     if(m_modes == "")
@@ -568,6 +572,7 @@ void HelmReport::print() const
   cout << "total_pcs_formed:" << m_total_pcs_formed << endl;
   cout << "total_pcs_cached:" << m_total_pcs_cached << endl;
   cout << "halted:" << boolToString(m_halted) << endl;
+  cout << "active_goal:" << boolToString(m_active_goal) << endl;
 }
 
 
@@ -582,6 +587,7 @@ void HelmReport::print() const
 //    CreateTime:     0.00    (max=0.00)
 //    LoopTime:       0.00    (max=0.00)
 //    Halted:         false   (0 warnings: 0 total)
+//    Active Goal:    true    
 //  Helm Decision: [speed,0,5,26] [course,0,359,360] 
 //    course = 195
 //    speed  = 1.2
@@ -618,6 +624,9 @@ list<string> HelmReport::formattedSummary(double curr_time, bool verbose) const
 
   str = "  Halted:         " + boolToString(m_halted);
   str += "   (" + uintToString(m_warning_count) + " warnings)";
+  rlist.push_back(str);
+
+  str = "  Active Goal:    " + boolToString(m_active_goal);
   rlist.push_back(str);
 
   string domain_str = "[" + domainToString(m_domain) + "]";

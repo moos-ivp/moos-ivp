@@ -25,6 +25,7 @@
 #pragma warning(disable : 4786)
 #pragma warning(disable : 4503)
 #endif
+
 #include <unistd.h>
 #include <iterator>
 #include <iostream>
@@ -61,10 +62,12 @@ HelmIvP::HelmIvP()
   m_bhv_count_ever = 0;
   m_ok_skew        = 60; 
   m_skews_matter   = true;
+  m_goals_mandatory = false; 
   m_helm_start_time = 0;
   m_curr_time      = 0;
   m_start_time     = 0;
   m_no_decisions   = 0;
+  m_no_goal_decisions = 0;
 
   // The m_has_control correlates to helm status
   m_has_control     = false;
@@ -434,12 +437,15 @@ bool HelmIvP::Iterate()
 
   m_prev_helm_report = m_helm_report;
 
-   string allstop_msg = "clear";
+  string allstop_msg = "clear";
 
   if(m_helm_report.getHalted())
     allstop_msg = "BehaviorError";
   else if(m_helm_report.getOFNUM() == 0)
     allstop_msg = "NothingToDo";
+  else if(m_goals_mandatory && m_helm_report.getActiveGoal() == false)
+    allstop_msg = "NoGoalBehavior";
+
   
   // First make sure the HelmEngine has made a decision for all 
   // non-optional variables - otherwise declare an incomplete decision.
@@ -464,6 +470,7 @@ bool HelmIvP::Iterate()
     }
   }
 
+  
   if(allstop_msg != "clear")
     postAllStop(allstop_msg);
   else {  // Post all the Decision Variable Results
@@ -1187,6 +1194,8 @@ bool HelmIvP::OnStartUp()
       handled = setVerbosity(value);
     else if(param == "ACTIVE_START")
       handled = setBooleanOnString(m_has_control, value);
+    else if(param == "GOALS_MANDATORY")
+      handled = setBooleanOnString(m_goals_mandatory, value);
     else if(param == "START_ENGAGED")
       handled = setBooleanOnString(m_has_control, value);
     else if((param == "START_INDRIVE") || (param == "START_IN_DRIVE"))
@@ -1577,16 +1586,30 @@ void HelmIvP::postAllStop(string msg)
   else
     m_no_decisions = 0;
 
+  if(msg == "NoGoalBehavior")
+    m_no_goal_decisions++;
+  else
+    m_no_goal_decisions = 0;
+
+
+  
   MOOSDebugWrite("pHelmIvP AllStop: " + m_allstop_msg);
   Notify("IVPHELM_ALLSTOP", m_allstop_msg);
 
   if(tolower(m_allstop_msg) == "clear")
     return;
 
-  // Willing to hold off one iteration if simply no decision. To give helm
-  // chance to transition between modes.
+  // Willing to hold off one iteration if simply no decision. To give
+  // helm chance to transition between modes.
   if(m_no_decisions == 1) {
     m_allstop_msg = "IncompleteOrEmptyDecision";
+    return;
+  }
+
+  // Willing to hold off one iteration with no goal behavior in play
+  // To give the helm chance to transition between modes.
+  if(m_no_goal_decisions == 1) {
+    m_allstop_msg = "NoActiveGoalBehavior";
     return;
   }
 

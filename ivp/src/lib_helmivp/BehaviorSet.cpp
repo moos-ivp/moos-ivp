@@ -800,6 +800,19 @@ IvPBehavior* BehaviorSet::getBehavior(unsigned int ix)
 }
 
 //------------------------------------------------------------
+// Procedure: isBehaviorAGoalBehavior
+
+bool BehaviorSet::isBehaviorAGoalBehavior(unsigned int ix)
+{
+  IvPBehavior* bhv = getBehavior(ix);
+  if(!bhv)
+    return(false);
+  if(bhv->isConstraint())
+    return(false);
+  return(true);
+}
+
+//------------------------------------------------------------
 // Procedure: getDescriptor
 
 string BehaviorSet::getDescriptor(unsigned int ix)

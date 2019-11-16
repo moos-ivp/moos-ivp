@@ -119,6 +119,9 @@ void showExampleConfigAndExit()
   blk("  // Configure the verbosity of terminal output.                ");
   blk("  verbose              = terse  "," // or {true,false,quiet}    ");
   blk("                                                                ");
+  blk("  // Insist that at least one non-constraint behavior be active ");
+  blk("  goals_mandatory      = true  "," // or {true,FALSE}           ");
+  blk("                                                                ");
   blk("  // Allow unfound bhv directories to not be a problem.         ");
   blk("  bhv_dir_not_found_ok = true "," // or {true,FALSE}            ");
   blk("                                                                ");

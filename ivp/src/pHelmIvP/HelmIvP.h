@@ -115,6 +115,7 @@ protected:
   bool          m_init_vars_done;
 
   unsigned int  m_no_decisions;
+  unsigned int  m_no_goal_decisions;
 
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
@@ -133,7 +134,8 @@ protected:
   unsigned int  m_bhv_count_ever;
   double        m_ok_skew;
   bool          m_skews_matter;
-
+  bool          m_goals_mandatory;
+  
   unsigned int  m_prev_total_completed;
   std::string   m_prev_compl_pending;
   

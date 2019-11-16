@@ -38,6 +38,7 @@ public:
   void         onIdleState();
   void         onRunToIdleState();
   void         onCompleteState();
+  bool         isConstraint() {return(true);}
 
   std::string  getInfo(std::string);
   

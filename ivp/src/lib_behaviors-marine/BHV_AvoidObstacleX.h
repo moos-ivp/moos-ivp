@@ -45,6 +45,7 @@ public:
   void         onSpawn();
   void         postConfigStatus();
   double       getDoubleInfo(std::string);
+  bool         isConstraint() {return(true);}
 
  protected: 
   bool   handleParamVisualHints(std::string);

@@ -62,6 +62,7 @@ public:
   virtual std::string getInfo(std::string)  {return("");}
   virtual double getDoubleInfo(std::string) {return(0);}
   virtual double getMemSize() {return(0);}
+  virtual bool isConstraint() {return(false);}
   
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);

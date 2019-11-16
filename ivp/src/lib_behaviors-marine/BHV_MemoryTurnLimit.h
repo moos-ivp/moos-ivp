@@ -34,6 +34,7 @@ public:
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
+  bool         isConstraint() {return(true);}
 
 protected:
   void  addHeading(double, double);
@@ -53,22 +54,3 @@ private: // State Variables
 
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

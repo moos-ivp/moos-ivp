@@ -96,7 +96,7 @@ bool LogTester::setMarkFile(string filename)
     return(false);
 
   // If mark file is already set, return false.
-  if(m_alog_file != "")
+  if(m_mark_file != "")
     return(false);
 
   m_mark_file = filename;

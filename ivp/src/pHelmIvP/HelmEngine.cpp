@@ -95,7 +95,6 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   m_bhv_set     = bhv_set;
   m_curr_time   = curr_time;
   m_helm_report.clear();
-  //m_ivp_functions.clear();
   m_map_ipfs.clear();
   
   vector<string> templating_summary = m_bhv_set->getTemplatingSummary();
@@ -189,8 +188,11 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       //cout << " Reuse (" << bname << "):" << boolToString(ipf_reuse) << endl;
       //cout << "*******************************************************" << endl;
       
-      if(newof)
+      if(newof) {
 	m_total_pcs_formed += (unsigned int)(newof->size());
+	if(m_bhv_set->isBehaviorAGoalBehavior(bhv_ix))
+	  m_helm_report.setActiveGoal(true);
+      }
       
       // check if reuse indicated. If so then get previous ipf
       if(!newof && ipf_reuse) {

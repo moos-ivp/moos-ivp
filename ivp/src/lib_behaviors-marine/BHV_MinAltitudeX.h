@@ -35,6 +35,7 @@ public:
   
   bool         setParam(std::string, std::string);
   IvPFunction* onRunState();
+  bool         isConstraint() {return(true);}
 
 protected:
   bool         updateInfoIn();

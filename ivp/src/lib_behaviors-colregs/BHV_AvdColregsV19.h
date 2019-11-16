@@ -44,6 +44,7 @@ class BHV_AvdColregsV19 : public IvPContactBehavior {
   void         onCompleteState();
   std::string  getInfo(std::string);
   double       getDoubleInfo(std::string);
+  bool         isConstraint() {return(true);}
 
  protected:
   void         updateAvoidMode();

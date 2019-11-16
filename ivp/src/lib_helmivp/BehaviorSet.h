@@ -81,6 +81,7 @@ public:
   
   unsigned int   removeCompletedBehaviors();
   IvPBehavior*   getBehavior(unsigned int);
+  bool           isBehaviorAGoalBehavior(unsigned int);
   std::string    getDescriptor(unsigned int);
   std::string    getUpdateSummary(unsigned int);
   std::string    getUpdateVarSummary();

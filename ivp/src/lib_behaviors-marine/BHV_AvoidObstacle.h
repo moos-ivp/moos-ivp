@@ -42,6 +42,7 @@ public:
   void         onInactiveState();
   void         onSpawn();
   void         postConfigStatus();
+  bool         isConstraint() {return(true);}
 
  protected:
   bool   handleVisualHints(std::string);

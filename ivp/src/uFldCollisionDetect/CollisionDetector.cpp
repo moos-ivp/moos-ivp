@@ -542,8 +542,8 @@ bool CollisionDetector::buildReport()
   string pulse_dur_str = doubleToString(m_pulse_duration,2);
   string pulse_rng_str = doubleToString(m_pulse_range,2);
   
-  m_msgs << "Configuration:                               \n";
-  m_msgs << "============================================ \n";
+  m_msgs << "Configuration:                               " << endl;
+  m_msgs << "============================================ " << endl;
   m_msgs << "       encounter_dist: " << encounter_str << endl;
   m_msgs << "       collision_dist: " << coll_dist_str << endl;
   m_msgs << "       near_miss_dist: " << near_miss_str << endl;

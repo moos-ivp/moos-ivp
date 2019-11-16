@@ -65,6 +65,7 @@ public:
   void  setTimeUTC(double v)                 {m_time_utc = v;}
   void  setWarningCount(unsigned int v)      {m_warning_count = v;}
   void  setHalted(bool v)                    {m_halted=v;}
+  void  setActiveGoal(bool v)                {m_active_goal=v;}
   void  setIteration(unsigned int iter)      {m_iteration=iter;}
   void  setOFNUM(unsigned int ofnum)         {m_ofnum=ofnum;}
   void  setTotalPcsFormed(unsigned int v)    {m_total_pcs_formed=v;}
@@ -89,6 +90,7 @@ public:
   double       getSolveTime()  const  {return(m_solve_time);}
   double       getLoopTime()   const  {return(m_solve_time+m_create_time);}
   bool         getHalted()     const  {return(m_halted);}
+  bool         getActiveGoal() const  {return(m_active_goal);}
   double       getMaxLoopTime() const {return(m_max_loop_time);}
   double       getMaxSolveTime()  const {return(m_max_solve_time);}
   double       getMaxCreateTime() const {return(m_max_create_time);}
@@ -164,6 +166,7 @@ protected:
   double        m_create_time;     // + 
   double        m_solve_time;      // + 
   bool          m_halted;          // +
+  bool          m_active_goal;     // + nov1419
 
   unsigned int  m_total_pcs_formed;
   unsigned int  m_total_pcs_cached;
