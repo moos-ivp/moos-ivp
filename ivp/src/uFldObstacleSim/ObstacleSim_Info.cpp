@@ -82,8 +82,10 @@ void showExampleConfigAndExit()
   blk("  poly_vert_size   = 1        (the default)                     ");
   blk("  poly_edge_size   = 1        (the default)                     ");
   blk("                                                                ");
+  blk("  draw_region      = true     (default is true)                 ");
+  blk("  post_points      = true                                       ");
   blk("                                                                ");
-  blk("                                                                ");
+  blk("  rate_points      = 5        (the default)                     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

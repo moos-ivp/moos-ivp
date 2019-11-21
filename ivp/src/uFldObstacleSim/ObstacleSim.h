@@ -51,7 +51,7 @@ class ObstacleSim : public AppCastingMOOSApp
   double    m_min_poly_size;
   double    m_max_poly_size;
 
-  // Visual params for rendering obstales
+  // Visual params for rendering obstacles
   std::string m_poly_fill_color;
   std::string m_poly_edge_color;
   std::string m_poly_vert_color;
@@ -60,6 +60,9 @@ class ObstacleSim : public AppCastingMOOSApp
   double    m_poly_edge_size;
   double    m_poly_vert_size;
   double    m_poly_transparency;
+  
+  // Visual params for rendering region
+  bool      m_draw_region;
 
   // Pseudo LIDAR generation mode
   bool      m_post_points;

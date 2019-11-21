@@ -39,6 +39,8 @@ ObstacleSim::ObstacleSim()
   m_post_points = false;
   m_rate_points = 5;
 
+  m_draw_region = true;
+
   // Init State variables
   m_viewables_queried = true;
   m_obstacles_queried = true;
@@ -143,6 +145,8 @@ bool ObstacleSim::OnStartUp()
       handled = setColorOnString(m_poly_edge_color, value);
     else if((param == "poly_label_color") && isColor(value))
       handled = setColorOnString(m_poly_label_color, value);
+    else if(param == "draw_region")
+      handled = setBooleanOnString(m_draw_region, value);
     else if(param == "post_points")
       handled = setBooleanOnString(m_post_points, value);
     else if(param == "rate_points")
@@ -244,10 +248,12 @@ void ObstacleSim::postViewableObstacles()
     }
   }
 
-  if(m_poly_region.is_convex())
-    Notify("VIEW_POLYGON", m_poly_region.get_spec());
+  if(m_draw_region) {
+    if(m_poly_region.is_convex())
+      Notify("VIEW_POLYGON", m_poly_region.get_spec());
+  }
+  
   m_viewables_posted++;
-
 }
 
 //------------------------------------------------------------
