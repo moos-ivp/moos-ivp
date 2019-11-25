@@ -56,6 +56,10 @@ class PickPos
   bool   setVNames() {m_vnames=true; return(true);}
 
   void   setVerbose(bool v)      {m_verbose=v;}
+  void   enableHeaders()         {m_headers_enabled=true;}
+
+  void   setArgSummary(std::string str)  {m_arg_summary=str;}
+
   bool   pick();
 
  protected:
@@ -96,6 +100,10 @@ class PickPos
   
   std::string  m_grp_type;
   std::vector<std::string>  m_groups;
+
+  std::string  m_arg_summary;
+  
+  bool         m_headers_enabled;
   
 protected: // State variables
   XYFieldGenerator          m_fld_generator;

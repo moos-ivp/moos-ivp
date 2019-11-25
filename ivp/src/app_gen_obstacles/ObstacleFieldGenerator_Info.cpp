@@ -58,13 +58,13 @@ void showHelpAndExit()
   cout << "      Display this help message.                       " << endl;
   cout << "  --version,-v                                         " << endl;
   cout << "      Display the release version.                     " << endl;
-  cout << "  --polygon=<poly>                                     " << endl;
+  cout << "  --poly=<poly>                                        " << endl;
   cout << "      Specify a polygon region of the form:            " << endl;
   cout << "      \"0,0 : 50,0 : 50,50 : 0,50\"                    " << endl;
-  cout << "  --min_range=<meters>                                     " << endl;
-  cout << "  --min_size=<meters>                                     " << endl;
-  cout << "  --max_size=<meters>                                     " << endl;
-  cout << "  --amt=<# of obstacles>                                     " << endl;
+  cout << "  --min_range=<meters>                                 " << endl;
+  cout << "  --min_size=<meters>                                  " << endl;
+  cout << "  --max_size=<meters>                                  " << endl;
+  cout << "  --amt=<# of obstacles>                               " << endl;
   cout << "                                                       " << endl;
   cout << "                                                       " << endl;
   cout << "Example:                                               " << endl;

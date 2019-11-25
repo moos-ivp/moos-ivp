@@ -68,7 +68,6 @@ PickPos::PickPos()
   m_circ_y = 0;
   m_circ_rad = 0;
   m_circ_set = false;
-
   
   m_pick_amt = 10;
 
@@ -77,6 +76,8 @@ PickPos::PickPos()
 
   m_grp_type = "random";
   m_output_type = "full";
+
+  m_headers_enabled = false;
 }
 
 
@@ -395,6 +396,11 @@ bool PickPos::pick()
   else if(m_circ_set)
     pickPosByCircle();
 
+  if(m_headers_enabled) {
+    cout << "# Values chosen by the pickpos utility" << endl;
+    cout << "# " << m_arg_summary << endl;
+  }
+  
   if(m_verbose) {
     cout << "heading type: " << m_hdg_type << endl;
     cout << "  heading val1: " << m_hdg_val1 << endl;

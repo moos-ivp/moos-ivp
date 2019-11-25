@@ -50,8 +50,10 @@ bool ObstacleFieldGenerator::setPolygon(string str)
 {
   XYPolygon poly = string2Poly(str);
 
-  if(!poly.is_convex())
+  if(!poly.is_convex()) {
+    cout << "Warning: non-convex polygon." << endl;
     return(false);
+  }
 
   m_poly_region = poly;
   return(true);

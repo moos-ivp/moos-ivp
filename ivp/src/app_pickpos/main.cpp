@@ -84,13 +84,18 @@ int main(int argc, char *argv[])
       handled = pickpos.setVNames();
     else if(strBegins(argi, "--grps="))
       handled = pickpos.setGroups(argi.substr(7));
-    
+    else if(argi == "--hdrs") {
+      pickpos.enableHeaders();
+      handled = true;
+    }
+      
     if(!handled) {
       cout << "Unhandled arg: " << argi << endl;
       return(0);
     }
   }
 
+  pickpos.setArgSummary(arg_summary);
   pickpos.setVerbose(verbose);
   pickpos.pick();
 
