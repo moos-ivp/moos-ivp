@@ -62,17 +62,8 @@ int main(int argc, char *argv[])
     }
   }
   
-  cout << "// " << arg_summary << endl;
+  cout << "# " << arg_summary << endl;
 
   generator.generate();
   return(0);
 }
-
-
-
-
-
-
-
-
-
