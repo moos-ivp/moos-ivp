@@ -63,7 +63,8 @@ int main(int argc, char** argv)
   if(!poly_set)
     return(cmdLineErr("poly is not set. Exiting."));
 
-  double cpa = polyRayCPA(rx,ry,ra, poly);
+  double rix,riy;
+  double cpa = polyRayCPA(rx,ry,ra,poly,rix,riy);
 
   cout << "cpa=" << doubleToStringX(cpa,2);
   return(0);
