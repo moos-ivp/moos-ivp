@@ -33,6 +33,8 @@ fi
 #  Part 2: Go into each of the subdirectories and repeat. 
 #-------------------------------------------------------
 
+ALL_OK=0
+
 for file in *; do
    if [ -d $file ]; then
        cd $file; 
@@ -41,6 +43,9 @@ for file in *; do
 	   echo "Checking: "$file"/cases.utf"
 	   echo "==========================================="
 	   utest cases.utf -v
+	   if [ $? != 0 ]; then
+	       ALL_OK=1
+	   fi
        else
 	   echo "==========================================="
 	   echo "NOTE: "$file " has no cases.utf file to check"
@@ -49,3 +54,5 @@ for file in *; do
        cd .. 
    fi
 done
+
+exit $ALL_OK
