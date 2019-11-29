@@ -1,4 +1,4 @@
-// gen_obstacles --poly=30,-20:30,-140:120,-140:120,-20 --amt=5 --min_size=1 --max_size=6
+// gen_obstacles --poly=40,-160:40,-125:110,-125:110,-60 --amt=2 --min_size=1 --max_size=3
 region    = pts={30,-20:30,-140:120,-140:120,-20}
 min_range = 2
 min_size  = 6

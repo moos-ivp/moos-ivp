@@ -70,6 +70,7 @@ ProcessConfig = uFldObstacleSim
 
   //obstacle_file = obstacles_one.txt
   obstacle_file = obstacles.txt
+  draw_region = false
   //post_points   = true
   //rate_points   = 2
 }
