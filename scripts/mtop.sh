@@ -18,6 +18,7 @@ ANTLER="no"
 SORTBY="cpu"
 APPS=""
 OS="osx"
+SURVEY=""
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -38,8 +39,17 @@ for ARGI; do
         echo "  --help,    -h      Display this help message          " 
         echo "  --mem,     -m      Sort top output by Memory          " 
         echo "  --core,    -c      Form app list with common biggies  " 
+        echo "  --survey,  -s      Survey if any MOOS apps running    " 
         echo "  --info,    -i      Output brief description of script "  
         echo "  --apps=<apps>      Form app list by given apps        " 
+	echo "                                                        "
+	echo "Returns:                                                "
+	echo "  0 on --help, -h                                       "
+	echo "  0 After top has exited, control returned to script.   "
+	echo "  1 upon bad argument                                   "
+	echo "  2 pgrep utility is missing                            "
+	echo "  3 No MOOS apps were detected                          "
+	echo "  4 MOOS apps WERE detected, but exited (--survey)      "
 	echo "                                                        "
 	echo "Examples:                                               "
  	echo "  $ mtop.sh                                             "
@@ -53,6 +63,8 @@ for ARGI; do
 	exit 0
     elif [ "${ARGI}" = "--antler" -o "${ARGI}" = "-a" ] ; then
 	ANTLER="yes"
+    elif [ "${ARGI}" = "--survey" -o "${ARGI}" = "-s" ] ; then
+	SURVEY="yes"
     elif [ "${ARGI}" = "--core" -o "${ARGI}" = "-c" ] ; then
 	APPS="pHelmIvP,MOOSDB,pMarineViewer,uSimMarine,pMarinePID"
     elif [ "${ARGI}" = "--mem" -o "${ARGI}" = "-m" ] ; then
@@ -72,7 +84,7 @@ done
 command -v pgrep
 if [ $? != 0 ]; then
     echo "The required utity pgrep is not found. Exiting."
-    exit 1
+    exit 2
 fi
     
 #-------------------------------------------------------
@@ -104,10 +116,11 @@ fi
 # Check for and handle if no PIDs to watch
 if [ -z "$PIDS" ]; then
     echo "No MOOS apps named or found. Exiting."
-    exit 1
+    exit 3
+elif [ "$SURVEY" = "yes" ]; then
+    exit 4
 fi
-
-
+ 
 #-------------------------------------------------------
 #  Part 5: Determine the operating system
 #-------------------------------------------------------
