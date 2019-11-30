@@ -53,6 +53,7 @@ GrepHandler::GrepHandler()
   m_appcast_retained = true;
   m_final_entry_only = false;
   m_final_value_only = false;
+  m_final_time_only  = false;
   
   // A "bad" line is a line that is not a comment, and does not begin
   // with a timestamp. As found in entries with CRLF's like DB_VARSUMMARY
@@ -193,14 +194,17 @@ bool GrepHandler::handle(string alogfile, string new_alogfile)
     fclose(m_file_in);
   m_file_in = 0;
 
+
   // Part 7: Handle case where only final line is output
   if(m_final_entry_only) {
     if(m_final_line.length() == 0)
       return(false);
 
-    if(!m_final_value_only)
-      cout << m_final_line << endl;
-    else {
+    if(m_final_time_only) {
+      string tstamp = stripBlankEnds(getTimeStamp(m_final_line));
+      cout << tstamp << endl;
+    }
+    else if(m_final_value_only) {
       string varval = stripBlankEnds(getDataEntry(m_final_line));
       if(isNumber(varval)) {
 	double dval = atof(varval.c_str());
@@ -210,6 +214,9 @@ bool GrepHandler::handle(string alogfile, string new_alogfile)
       else
 	cout << varval << endl;
     }
+    else
+      cout << m_final_line << endl;
+      
   }
     
   return(true);

@@ -43,6 +43,7 @@ class GrepHandler
   void setGapLinesRetained(bool v) {m_gaplines_retained=v;}
   void setAppCastRetained(bool v)  {m_appcast_retained=v;}
   void setFinalEntryOnly(bool v)   {m_final_entry_only=v;}
+  void setFinalTimeOnly(bool v)    {m_final_time_only=v;}
   void setFinalValueOnly(bool v)   {m_final_value_only=v;}
   
  protected:
@@ -72,6 +73,7 @@ class GrepHandler
   bool        m_gaplines_retained;
   bool        m_appcast_retained;
   bool        m_final_entry_only;
+  bool        m_final_time_only;
   bool        m_final_value_only;
   std::string m_final_line;
   
