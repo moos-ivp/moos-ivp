@@ -109,7 +109,7 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("uLoadWatch INTERFACE                                    ");
+  blu("uLoadWatch INTERFACE                                            ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -122,6 +122,10 @@ void showInterfaceAndExit()
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
   blk("  LOAD_WARNING = app=pHelmIvP, maxgap=1.54                      ");
+  blk("                                                                ");
+  blk("  ULW_BREACH       = true                                       ");
+  blk("  ULW_BREACH_COUNT = 3                                          ");
+  blk("  ULW_BREACH_LIST  = pHelmIvP,uSimMarine                        ");
   blk("                                                                ");
   exit(0);
 }

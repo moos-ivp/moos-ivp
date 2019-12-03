@@ -35,6 +35,9 @@ using namespace std;
 LoadWatch::LoadWatch()
 {
   m_breach_trigger = 1; // First offense forgiven, 2nd offense reported!
+
+  m_breach_count = 0;
+  m_breach       = false;
 }
 
 //---------------------------------------------------------
@@ -190,12 +193,34 @@ void LoadWatch::handleMailIterGap(string var, double dval)
     m_map_app_gap_xcount[app] = 0;
   m_map_app_gap_xcount[app]++;
 
+  // Breach detected. Record Raw breach stats and post (regardless of
+  // trigger threshold.
+  m_breach_count++;
+  Notify("ULW_BREACH_COUNT", m_breach_count);
+  
+  if(!m_breach) {
+    m_breach = true;
+    Notify("ULW_BREACH", "true");
+  }
+
+  unsigned int prev_size = m_breach_set.size();
+  m_breach_set.insert(app);
+  if(prev_size < m_breach_set.size()) {
+    string breached_apps;
+    set<string>::iterator p;
+    for(p=m_breach_set.begin(); p!=m_breach_set.end(); p++) {
+      if(breached_apps != "")
+	breached_apps = "," + breached_apps;
+      breached_apps += *p;
+    }
+    Notify("ULW_BREACH_LIST", breached_apps);
+  }
+  
   // Check how many times the threshold has been exceeded by this app. 
   // If it does not exceed the trigger amt, then just return
   if(m_map_app_gap_xcount[app] <= m_breach_trigger)
     return;
-    
-      
+
   // FINALLY: We have exceeded the threshold for this app and apparently we
   // exceeded it enough times to exceed the trigger amount. So lets act!
 
