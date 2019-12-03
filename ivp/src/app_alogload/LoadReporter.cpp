@@ -35,7 +35,11 @@ using namespace std;
 
 LoadReporter::LoadReporter()
 {
+  // Init config vars
   m_verbose = false;
+
+  // Init state vars
+  m_breach_count = 0;
 }
 
 
@@ -44,6 +48,10 @@ LoadReporter::LoadReporter()
 
 void LoadReporter::report()
 {
+  for(unsigned int i=0; i<m_alog_files.size(); i++)
+    breachCount(m_alog_files[i]);
+
+  cout << "Final Total Breaches: " << m_breach_count << endl;
 }
 
 //--------------------------------------------------------
@@ -67,42 +75,31 @@ bool LoadReporter::addALogFile(string alogfile)
   return(true);
 }
 
-#if 0
 //--------------------------------------------------------
-// Procedure: handle()
+// Procedure: breachCount()
 
-bool LoadReporter::handle(const string& alogfile)
+bool LoadReporter::breachCount(string alogfile)
 {
-  if(alogfile == "") {
-    cout << termColor("red");
-    cout << "Alog file was not specified. Exiting now." << endl;
-    cout << termColor();
+  if(m_verbose)
+    cout << "Examining alogfile: " << alogfile << endl;
+  
+  if(alogfile == "")
     return(false);
-  }
 
   FILE *file_ptr = fopen(alogfile.c_str(), "r");
   if(!file_ptr) {
-    cout << termColor("red");
-    cout << "Alog file not found or unable to open - exiting" << endl;
-    cout << termColor();
+    if(m_verbose)
+      cout << "Unable to open alog file: " << alogfile << endl;
     return(false);
   }
-  
-  cout << "Processing on file : " << alogfile << endl;
 
+  unsigned int max_breach_count = 0;
+  
   unsigned int line_count  = 0;
-  unsigned int life_events = 0;
   bool done = false;
   while(!done) {
     line_count++;
     string line_raw = getNextRawLine(file_ptr);
-
-    if(m_report_life_events && !m_report_mode_changes && !m_report_bhv_changes) {
-      if((line_count % 10000) == 0)
-	cout << "+" << flush;
-      if((line_count % 100000) == 0)
-	cout << " (" << uintToCommaString(line_count) << ") lines" << endl;
-    }
 
     bool line_is_comment = false;
     if((line_raw.length() > 0) && (line_raw.at(0) == '%'))
@@ -113,45 +110,23 @@ bool LoadReporter::handle(const string& alogfile)
     
     if(!done && !line_is_comment) {
       string varname = getVarName(line_raw);
-      string data = getDataEntry(line_raw);
-      if(varname == "IVPHELM_LIFE_EVENT") { 
-	m_life_events.addLifeEvent(data);
-	life_events++;
-      }
-      if(m_report_bhv_changes && (varname == "IVPHELM_SUMMARY")) {
-	string tstamp = getTimeStamp(line_raw);
-	handleNewHelmSummary(data, tstamp);
-      }
-      if((m_report_mode_changes || m_report_bhv_changes) && 
-	 (varname == "IVPHELM_MODESET")) {
-	m_mode_var = biteString(data, '#');
-      }
-      if((m_report_mode_changes || m_report_bhv_changes) && 
-	 (varname == m_mode_var)) {
-	if(data != m_prev_mode_value) {
-	  string tstamp = getTimeStamp(line_raw);
-	  cout << "====================================================" << endl;
-	  cout << tstamp << " Mode: " << data << endl;
-	  m_prev_mode_value = data;
+      string sdata = getDataEntry(line_raw);
+      if(varname == "ULW_BREACH_COUNT") {
+	if(isNumber(sdata)) {
+	  double dcount = atof(sdata.c_str());
+	  unsigned int count = (unsigned int)(dcount);
+	  if(count > max_breach_count)
+	    max_breach_count = count;
 	}
       }
-      if(vectorContains(m_watch_vars, varname)) {
-	if(m_var_trunc)
-	  cout << truncString(line_raw, 80) << endl;
-	else
-	  cout << line_raw << endl;
-      }
-
     }
   }
-  cout << endl << uintToCommaString(line_count) << " lines total." << endl;
-  if(m_report_life_events)
-    cout << uintToString(life_events) << " life events." << endl;
 
-  if(file_ptr)
-    fclose(file_ptr);
+  m_breach_count += max_breach_count;
 
+  if(m_verbose)
+    cout << "  Total breaches: " << max_breach_count << endl;
+
+  
   return(true);
 }
-
-#endif

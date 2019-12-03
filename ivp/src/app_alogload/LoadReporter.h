@@ -37,9 +37,14 @@ class LoadReporter
   void setVerbose() {m_verbose=true;}
   bool addALogFile(std::string);
   void report();
+
+ protected:
+  bool breachCount(std::string alogfile);
   
  protected: // State Variables
 
+  unsigned int m_breach_count;
+  
  protected: // Configuration Variables
 
   bool m_verbose;
