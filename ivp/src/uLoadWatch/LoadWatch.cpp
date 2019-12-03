@@ -52,18 +52,18 @@ bool LoadWatch::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     string key    = msg.GetKey();
     double dval   = msg.GetDouble();
+    string msrc   = msg.GetSource();
 
 #if 0 // Keep these around just for template
     string comm  = msg.GetCommunity();
     string sval  = msg.GetString(); 
-    string msrc  = msg.GetSource();
     double mtime = msg.GetTime();
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
 #endif
 
     if(strEnds(key, "_ITER_GAP")) 
-      handleMailIterGap(key, dval);
+      handleMailIterGap(msrc, key, dval);
     else if(strEnds(key, "_ITER_LEN"))
       handleMailIterLen(key, dval);
     else if(key != "APPCAST_REQ") // handle by AppCastingMOOSApp
@@ -151,7 +151,7 @@ void LoadWatch::registerVariables()
 //---------------------------------------------------------
 // Procedure: handleMailIterGap
 
-void LoadWatch::handleMailIterGap(string var, double dval)
+void LoadWatch::handleMailIterGap(string appname, string var, double dval)
 {
   string app = findReplace(var, "_ITER_GAP", "");
   
@@ -204,7 +204,7 @@ void LoadWatch::handleMailIterGap(string var, double dval)
   }
 
   unsigned int prev_size = m_breach_set.size();
-  m_breach_set.insert(app);
+  m_breach_set.insert(appname);
   if(prev_size < m_breach_set.size()) {
     string breached_apps;
     set<string>::iterator p;

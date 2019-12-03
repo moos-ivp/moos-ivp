@@ -211,6 +211,7 @@ ENDFOREACH(L)
 #---------------------------------------------------------------------
 
 SET(ROBOT_APPS
+  app_alogload
   app_aloggrep
   app_alogscan
   app_alogcd

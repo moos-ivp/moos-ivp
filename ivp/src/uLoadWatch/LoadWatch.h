@@ -46,7 +46,7 @@ class LoadWatch : public AppCastingMOOSApp
  protected:
   void registerVariables();
   
-  void handleMailIterGap(std::string, double);
+  void handleMailIterGap(std::string app, std::string sval, double);
   void handleMailIterLen(std::string, double);
   bool handleConfigThresh(std::string);
   
