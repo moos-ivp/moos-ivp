@@ -56,11 +56,19 @@ PokeDB::PokeDB()
 PokeDB::PokeDB(string g_server_host, long int g_server_port)
 {
   m_db_start_time = 0; 
+  m_db_time       = 0;
   m_iteration     = 0; 
   m_sServerHost   = g_server_host; 
   m_lServerPort   = g_server_port;
 
   m_configure_comms_locally = false;
+
+  m_time_warp_set = false;
+  m_priors_reported = false;
+  m_values_poked  = false;
+  m_poked_reported = false;
+
+  m_poke_iteration = 0;
 }
 
 //------------------------------------------------------------
