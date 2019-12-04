@@ -42,13 +42,15 @@ int main(int argc, char *argv[])
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
     bool   handled = true;
-
+ 
     if((argi == "-v") || (argi == "--version") || (argi =="-version"))
       showReleaseInfoAndExit("alogload", "gpl");
     else if((argi == "-h") || (argi == "--help") || (argi =="-help"))
       showHelpAndExit();
     else if((argi == "--verbose") || (argi == "-v") || (argi == "-verbose"))
       load_reporter.setVerbose();
+    else if((argi == "--terse") || (argi == "-t") || (argi == "-terse"))
+      load_reporter.setTerse();
     else if(strEnds(argi, ".alog")) 
       handled = load_reporter.addALogFile(argi);
     else
@@ -87,17 +89,3 @@ void showHelpAndExit()
   cout << endl;
   exit(0);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-

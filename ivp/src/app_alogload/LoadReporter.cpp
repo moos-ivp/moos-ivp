@@ -44,6 +44,15 @@ LoadReporter::LoadReporter()
 
 
 //--------------------------------------------------------
+// Procedure: setVerbose()
+
+void LoadReporter::setVerbose()
+{
+  if(!m_terse)
+    m_verbose = true;
+}
+
+//--------------------------------------------------------
 // Procedure: report()
 
 void LoadReporter::report()
@@ -51,7 +60,10 @@ void LoadReporter::report()
   for(unsigned int i=0; i<m_alog_files.size(); i++)
     breachCount(m_alog_files[i]);
 
-  cout << "Final Total Breaches: " << m_breach_count << endl;
+  if(m_terse)
+    cout << m_breach_count << endl;
+  else
+    cout << "Final Total Breaches: " << m_breach_count << endl;
 }
 
 //--------------------------------------------------------

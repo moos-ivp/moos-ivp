@@ -34,10 +34,13 @@ class LoadReporter
   LoadReporter();
   ~LoadReporter() {}
 
-  void setVerbose() {m_verbose=true;}
+  void setVerbose();
+  void setTerse()   {m_terse=true; m_verbose=false;}
   bool addALogFile(std::string);
   void report();
 
+  
+  
  protected:
   bool breachCount(std::string alogfile);
   
@@ -48,6 +51,7 @@ class LoadReporter
  protected: // Configuration Variables
 
   bool m_verbose;
+  bool m_terse;
   
   std::vector<std::string> m_alog_files;
 
