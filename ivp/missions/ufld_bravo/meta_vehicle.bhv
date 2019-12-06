@@ -59,7 +59,6 @@ Behavior = BHV_Waypoint
              points = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
              repeat = 1800
               order = $(ORDER)
- efficiency_measure = internal
 
     visual_hints = nextpt_color=red, nextpt_lcolor=green
     visual_hints = vertex_color=blue, edge_color=pink

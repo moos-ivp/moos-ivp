@@ -34,18 +34,21 @@ ProcessConfig = uFldCollisionDetect
 {
   AppTick    = 4
   CommsTick  = 4
-  COLLISION_RANGE = 10
-  DELAY_TIME_TO_CLEAR = 35 
-  PUBLISH_IMMEDIATELY = true
 
-  PULSE = TRUE
-  PULSE_RANGE = 50
-  PULSE_DURATION = 15
- 
-  PUBLISH_SINGLE = FALSE
-  PUBLISH_PAIRS = TRUE
+  condition = DEPLOY_ALL = true                                 
+                                                                
+  encounter_flag = ENCOUNTER = $CPA                             
+  collision_flag = COLLISION = $CPA                             
+  near_miss_flag = NEAR_MISS = vname1=$V1,vname2=$V2,cpa=$CPA   
+                                                                
+  encounter_range = 10        // (the default) in meters        
+  near_miss_range = 6         // (the default) in meters        
+  collision_range = 3         // (the default) in meters        
+                                                                
+  pulse_render   = true       // (the default)                  
+  pulse_range    = 20         // (the default) in meters        
+  pulse_duration = 10         // (the default) in seconds       
 
-  DEPLOY_DELAY_TIME = 15
 }
 //---------------------------------------------------------
 // pShare Config Block
