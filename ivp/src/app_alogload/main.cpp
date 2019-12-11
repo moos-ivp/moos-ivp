@@ -51,13 +51,22 @@ int main(int argc, char *argv[])
       load_reporter.setVerbose();
     else if((argi == "--terse") || (argi == "-t") || (argi == "-terse"))
       load_reporter.setTerse();
+    else if((argi == "--near") || (argi == "-n") || (argi == "-near"))
+      load_reporter.setNearMode();
     else if(strEnds(argi, ".alog")) 
       handled = load_reporter.addALogFile(argi);
     else
       handled = false;
+
+    if(!handled) {
+      cout << "alogload: Bad Arg: " << argi << endl;
+      return(1);
+    }      
   }
   
   load_reporter.report();
+
+  return(0);
 }
 
 
@@ -73,7 +82,7 @@ void showHelpAndExit()
   cout << "Synopsis:                                                 " << endl;
   cout << "  Scan the given alog files and generate one of several   " << endl;
   cout << "  possible report summaries from data produced by         " << endl;
-  cout << "  uLoadWatch                                              " << endl;
+  cout << "  uLoadWatch.                                             " << endl;
   cout << "                                                          " << endl;
   cout << "Standard Arguments:                                       " << endl;
   cout << "  one.alog  - An input alog file                          " << endl;
@@ -82,7 +91,13 @@ void showHelpAndExit()
   cout << "Options:                                                  " << endl;
   cout << "  -h,--help        Display this usage/help message.       " << endl;
   cout << "  -v,--version     Display version information.           " << endl;
+  cout << "  -t,--terse       Terse output, e.g., just total breaches" << endl;
+  cout << "  -n,--near        Count NEAR breaches, not breaches      " << endl;
   cout << "  --verbose        Produce verbose output.                " << endl;
+  cout << "                                                          " << endl;
+  cout << "Returns:                                                  " << endl;
+  cout << "  0 if all OK                                             " << endl;
+  cout << "  1 if unhandled command line arg, e.g., unreadable file. " << endl;
   cout << "                                                          " << endl;
   cout << "Further Notes:                                            " << endl;
   cout << "  (1) Order of all command line arguments do not matter.  " << endl;

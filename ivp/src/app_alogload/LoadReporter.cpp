@@ -37,9 +37,12 @@ LoadReporter::LoadReporter()
 {
   // Init config vars
   m_verbose = false;
-
+  m_terse = false;
+  m_near_mode = false;
+  
   // Init state vars
   m_breach_count = 0;
+  m_near_breach_count = 0;
 }
 
 
@@ -62,7 +65,9 @@ void LoadReporter::report()
 
   if(m_terse)
     cout << m_breach_count << endl;
-  else
+  else if(m_near_mode)
+    cout << "Final Total Near Breaches: " << m_breach_count << endl;
+  else 
     cout << "Final Total Breaches: " << m_breach_count << endl;
 }
 
@@ -105,7 +110,14 @@ bool LoadReporter::breachCount(string alogfile)
     return(false);
   }
 
+  // Get the max breach count for this alog file. By searching for
+  // max instead of the last value, we are guarding against an
+  // out-of-order alog file.
   unsigned int max_breach_count = 0;
+
+  string breach_varname = "ULW_BREACH_COUNT";
+  if(m_near_mode)
+    breach_varname = "ULW_NEAR_BREACH_COUNT";
   
   unsigned int line_count  = 0;
   bool done = false;
@@ -123,7 +135,7 @@ bool LoadReporter::breachCount(string alogfile)
     if(!done && !line_is_comment) {
       string varname = getVarName(line_raw);
       string sdata = getDataEntry(line_raw);
-      if(varname == "ULW_BREACH_COUNT") {
+      if(varname == breach_varname) {
 	if(isNumber(sdata)) {
 	  double dcount = atof(sdata.c_str());
 	  unsigned int count = (unsigned int)(dcount);

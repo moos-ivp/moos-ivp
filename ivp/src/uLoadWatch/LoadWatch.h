@@ -46,9 +46,13 @@ class LoadWatch : public AppCastingMOOSApp
  protected:
   void registerVariables();
   
-  void handleMailIterGap(std::string app, std::string sval, double);
+  void handleMailIterGap(std::string app, std::string mvar, double);
   void handleMailIterLen(std::string, double);
   bool handleConfigThresh(std::string);
+  bool handleConfigNearThresh(std::string);
+
+  void updateBreachSet(std::string app);
+  void updateNearBreachSet(std::string app);
   
  private: // Configuration variables
   std::map<std::string, double> m_map_thresh;
@@ -67,14 +71,11 @@ class LoadWatch : public AppCastingMOOSApp
   unsigned int          m_breach_count;  // For any app
   bool                  m_breach;        // For any app
   std::set<std::string> m_breach_set;
-  
+
+  unsigned int          m_near_breach_count;  // For any app
+  bool                  m_near_breach;        // For any app
+  std::set<std::string> m_near_breach_set;
+  double                m_near_breach_thresh;  
 };
 
 #endif 
-
-
-
-
-
-
-

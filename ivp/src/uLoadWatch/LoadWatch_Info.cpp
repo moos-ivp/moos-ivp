@@ -95,6 +95,8 @@ void showExampleConfigAndExit()
   blk("  thresh = app=pHelmIvP, gapthresh=1.5                          ");
   blk("  thresh = app=any,      gapthresh=2.0                          ");
   blk("                                                                ");
+  blk("  near_breach_thresh = 0.9  // default                          ");
+  blk("                                                                ");
   blk("  breach_trigger = 1    // default (first offense forgiven)     ");
   blk("}                                                               ");
   blk("                                                                ");
@@ -125,7 +127,11 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("  ULW_BREACH       = true                                       ");
   blk("  ULW_BREACH_COUNT = 3                                          ");
-  blk("  ULW_BREACH_LIST  = pHelmIvP,uSimMarine                        ");
+  blk("  ULW_BREACH_LIST  = uSimMarine                                 ");
+  blk("                                                                ");
+  blk("  ULW_NEAR_BREACH       = true                                  ");
+  blk("  ULW_NEAR_BREACH_COUNT = 12                                    ");
+  blk("  ULW_NEAR_BREACH_LIST  = pHelmIvP,uSimMarine                   ");
   blk("                                                                ");
   exit(0);
 }
@@ -138,11 +144,3 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uLoadWatch", "gpl");
   exit(0);
 }
-
-
-
-
-
-
-
-

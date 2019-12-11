@@ -35,7 +35,8 @@ class LoadReporter
   ~LoadReporter() {}
 
   void setVerbose();
-  void setTerse()   {m_terse=true; m_verbose=false;}
+  void setTerse()      {m_terse=true; m_verbose=false;}
+  void setNearMode()   {m_near_mode = true;}
   bool addALogFile(std::string);
   void report();
 
@@ -47,11 +48,14 @@ class LoadReporter
  protected: // State Variables
 
   unsigned int m_breach_count;
+  unsigned int m_near_breach_count;
   
  protected: // Configuration Variables
 
   bool m_verbose;
   bool m_terse;
+
+  bool m_near_mode;
   
   std::vector<std::string> m_alog_files;
 
