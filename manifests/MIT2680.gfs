@@ -7,7 +7,7 @@ org      = MIT
 
 synopsis = Modules used in MIT 2.680 Marine Autonomy, Sensing, and Communications
   
-group    = Core Autonomy
+group    = 2.680
 distro   = moos-ivp.org
 doc_url  = http://oceanai.mit.edu/2.680
 

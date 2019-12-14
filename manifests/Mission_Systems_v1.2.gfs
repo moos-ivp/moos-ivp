@@ -7,5 +7,4 @@ org      = Mission Systems
 synopsis = Mission Systems is company in Australia specializing in robotics and autonomy 
 
 group    = Mission Systems
-doc_url  = https://github.com/mission-systems-pty-ltd
-distro   = https://www.missionsystems.com.au
+doc_url  = https://www.missionsystems.com.au
