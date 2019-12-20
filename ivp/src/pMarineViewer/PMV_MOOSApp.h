@@ -91,15 +91,8 @@ class PMV_MOOSApp : public AppCastingMOOSApp
 
   CommandFolio   m_cmd_folio;
   CommandSummary m_cmd_summary;
+
+  unsigned int m_pmv_iteration;
 };
 
 #endif 
-
-
-
-
-
-
-
-
-

@@ -54,6 +54,8 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_node_reports_received = 0;
   m_node_report_index     = 0;
 
+  m_pmv_iteration = 0;
+
   m_log_the_image = false;
 }
 
@@ -419,17 +421,28 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 void PMV_MOOSApp::handleIterate(const MOOS_event & e) 
 {
   m_gui->clearStaleVehicles();
+
+  m_pmv_iteration++;
   
   double curr_time = e.moos_time - m_start_time;
   cout << "." << flush;
 
-  m_gui->mviewer->PMV_Viewer::draw();
-  m_gui->mviewer->redraw();
-  m_gui->updateXY();
+  double warp_elapsed = curr_time - m_lastredraw_time;
+  double real_elapsed = warp_elapsed / m_time_warp;
+  if(real_elapsed > 0.085) {
+    m_gui->mviewer->PMV_Viewer::draw();
+    m_gui->mviewer->redraw();
+    m_gui->updateXY();
+    m_lastredraw_time = curr_time;
+  }
+
   m_gui->mviewer->setParam("curr_time", e.moos_time);
   m_gui->setCurrTime(curr_time);
-  m_lastredraw_time = e.moos_time;
 
+
+  
+
+  
   // We want to detect when a vehicle has been cleared that may still be
   // active. Sent appcast requests to everyone/global when a vehicle has
   // ben recently cleared. Just to give everyone a chance to report back.
@@ -959,6 +972,9 @@ bool PMV_MOOSApp::buildReport()
   string tiff_file_b = m_gui->mviewer->getTiffFileB();
   string info_file_b = m_gui->mviewer->getInfoFileB();
 
+  string iter_ac  = uintToString(m_iteration);
+  string iter_pmv = uintToString(m_pmv_iteration);
+  
   m_msgs << "Tiff File A:      " << tiff_file_a << endl;
   m_msgs << "Info File A:      " << info_file_a << endl;
   m_msgs << "Tiff File B:      " << tiff_file_b << endl;
@@ -968,7 +984,11 @@ bool PMV_MOOSApp::buildReport()
   m_msgs << "Clear GeoShapes:  " << m_clear_geoshapes_received << endl;
   m_msgs << "NodeReports Recd: " << m_node_reports_received << endl;
   m_msgs << "NodeReport Index: " << m_node_report_index << endl;
-
+  m_msgs << "------------------" << endl;
+  m_msgs << "AC Iterations:    " << iter_ac << endl;
+  m_msgs << "PMV Iterations:   " << iter_pmv << endl;
+  
+  
   unsigned int drawcount = m_gui->mviewer->getDrawCount();
   
   double real_elapsed = (m_curr_time - m_start_time) / m_time_warp;
