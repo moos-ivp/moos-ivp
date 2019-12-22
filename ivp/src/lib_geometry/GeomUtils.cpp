@@ -637,6 +637,182 @@ bool lineRayCross(double x1, double y1, double ray_angle,
 
 
 //---------------------------------------------------------------
+// Procedure: lineSegCross
+//     Cases: Seg Vert - Line Vert (1)
+//            Seg Horz - Line Horz (2)
+//            Seg Horz - Line Vert (3)
+//            Seg Vert - Line Horz (4)
+//
+//            Seg Vert - Line Norm (5)
+//            Seg Horz - Line Norm (6)
+//            Seg Norm - Line Vert (7)
+//            Seg Norm - Line Horz (8)
+//
+//            Ray Norm - Line Norm (9)
+
+bool lineSegCross(double sx1, double sy1, double sx2, double sy2, 
+		  double x3, double y3, double x4, double y4, 
+		  double& ix1, double& iy1, double& ix2, double& iy2) 
+{
+  ix1 = 0; 
+  iy1 = 0;
+  bool seg_vert  = (sx1==sx2);
+  bool seg_horz  = (sy1==sy2);
+  bool line_vert = (x3==x4);
+  bool line_horz = (y3==y4);
+
+  // Case 1 - both seg and line vertical (intersection pt not unique)
+  //          choose an intersection point on the line segment. 
+  if(seg_vert && line_vert) {
+    if(sx1==x3) {
+      ix1 = sx1;
+      iy1 = sy1;
+      ix2 = sx2;
+      iy2 = sy2;
+      return(true);
+    }
+    else
+      return(false);
+  }
+  // Case 2 - both seg and line horizontal (intersection pt not unique)
+  //          choose an intersection point on the line segment.
+  if(seg_horz && line_horz) {
+    if(sy1==y3) {
+      ix1 = sx1;
+      iy1 = sy1;
+      ix2 = sx2;
+      iy2 = sy2;
+      return(true);
+    }
+    else
+      return(false);
+  }
+
+  // Case 3 - seg horizontal line vertical
+  if(seg_horz && line_vert) {
+    if((x3 < sx1) && (x3 < sx2))
+      return(false);
+    if((x3 > sx1) && (x3 > sx2))
+      return(false);
+    ix1 = ix2 = x3;
+    iy1 = iy2 = sy1;
+    return(true);
+  }
+
+  // Case 4 - seg vertical line horizontal
+  if(seg_vert && line_horz) {
+    if((y3 < sy1) && (y3 < sy2))
+      return(false);
+    if((y3 > sy1) && (y3 > sy2))
+      return(false);
+    ix1 = ix2 = sx1;
+    iy1 = iy2 = y3;    
+    return(true);
+  }
+
+  // Case 5 - seg vertical line normal
+  if(seg_vert && !line_horz & !line_vert) {
+    double maybe_ix = sx1;
+    double slope_b = (y4-y3) / (x4-x3);
+    double inter_b = y3 - (slope_b * x3);
+    double maybe_iy = (slope_b * maybe_ix) + inter_b;
+    if((maybe_iy > sy1) && (maybe_iy > sy2))
+      return(false);
+    if((maybe_iy < sy1) && (maybe_iy < sy2))
+      return(false);
+    ix1 = ix2 = maybe_ix;
+    iy1 = iy2 = maybe_iy;
+    return(true);
+  }
+
+  // Case 6 - seg horizontal line normal
+  if(seg_horz && !line_horz & !line_vert) {
+    double maybe_iy = sy1;
+    double slope_b = (y4-y3) / (x4-x3);
+    double inter_b = y3 - (slope_b * x3);
+    double maybe_ix = (maybe_iy - inter_b) / slope_b;
+    if((maybe_ix < sx1) && (maybe_ix < sx2))
+      return(false);
+    if((maybe_ix > sx1) && (maybe_ix > sx2))
+      return(false);
+    ix1 = ix2 = maybe_ix;
+    iy1 = iy2 = maybe_iy;
+    return(true);
+  }
+
+  // Case 7 - seg normal line vertical
+  if(!seg_vert && !seg_horz & line_vert) {
+    double maybe_ix = x3;
+    double slope_a = (sy2-sy1) / (sx2-sx1);
+    double inter_a = sy1 - (slope_a * sx1);
+    double maybe_iy = (slope_a * maybe_ix) + inter_a;
+    if((maybe_iy > sy1) && (maybe_iy > sy2))
+      return(false);
+    if((maybe_iy < sy1) && (maybe_iy < sy2))
+      return(false);
+    ix1 = ix2 = maybe_ix;
+    iy1 = iy2 = maybe_iy;
+    return(true);
+  }
+
+  // Case 8 - seg normal line horizontal
+  if(!seg_horz && !seg_vert & line_horz) {
+    double maybe_iy = y3;
+    double slope_a = (sy2-sy1) / (sx2-sx1);
+    double inter_a = sy1 - (slope_a * sx1);
+    double maybe_ix = (maybe_iy - inter_a) / slope_a;
+    if((maybe_ix < sx1) && (maybe_ix < sx2))
+      return(false);
+    if((maybe_ix > sx1) && (maybe_ix > sx2))
+      return(false);
+    ix1 = ix2 = maybe_ix;
+    iy1 = iy2 = maybe_iy;
+    return(true);
+
+  }
+
+  // Case 9 - the general case
+  // First find slope and intercept of the two lines. (y = mx + b)
+  // if "normal" ray create an artificial second vertex on the ray
+  cout << "case9:" << endl;
+  double slope_a = (sy2-sy1) / (sx2-sx1);
+  double slope_b = (y4-y3) / (x4-x3);
+  double inter_a = sy1 - (slope_a * sx1);
+  double inter_b = y3 - (slope_b * x3);
+  
+  if(slope_a == slope_b) {    // Special case: parallel lines
+    if(inter_a == inter_b) {  // If identical/overlapping, pick the 
+      ix1 = sx1;      // the two vertices of the seg
+      iy1 = sy1;   
+      ix2 = sx2;
+      iy2 = sy2;   
+      return(true);
+    }
+    else
+      return(false);
+  }
+
+  // Then solve for x. m1(x) + b1 = m2(x) + b2.
+  double maybe_ix = (inter_a - inter_b) / (slope_b - slope_a);
+
+  // Then plug ix into one of the line equations.
+  double maybe_iy = (slope_a * maybe_ix) + inter_a;
+
+  if((maybe_ix < sx1) && (maybe_ix < sx2))
+    return(false);
+  if((maybe_ix > sx1) && (maybe_ix > sx2))
+    return(false);
+  if((maybe_iy < sy1) && (maybe_iy < sy2))
+    return(false);
+  if((maybe_iy > sy1) && (maybe_iy > sy2))
+    return(false);
+  ix1 = ix2 = maybe_ix;
+  iy1 = iy2 = maybe_iy;
+  return(true);
+}
+
+
+//---------------------------------------------------------------
 // Procedure: segmentAngle
 //   Purpose: Return the angle between the two segments given by
 //            the segment x1,y1 and x2,y2 and the segment x2,y2 

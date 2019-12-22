@@ -677,6 +677,110 @@ bool XYPolygon::seg_intercepts(double x1, double y1,
 }
 
 //---------------------------------------------------------------
+// Procedure: line_intersects
+//   Purpose: Return true if the given segment intercepts the 
+//            polygon. Checks are made whether the line crosses
+//            any of the polygon edges. Under normal circumstances,
+//            a line will either (a) not intersect, or (b) intersect
+//            at exactly two points. If the line is parallel and
+//            overlapping one of the edges, then it will intersect
+//            infinitely many points. In this case the two points
+//            returned are the vertices of the segment that
+//            intersects.
+
+bool XYPolygon::line_intersects(double x1, double y1, 
+				double x2, double y2,
+				double& ix1, double& iy1,
+				double& ix2, double& iy2) const
+{
+  ix1 = 0;
+  iy1 = 0;
+  ix2 = 0;
+  iy2 = 0;
+
+  unsigned int cross_count = 0;
+  
+  unsigned int ix, vsize = m_vx.size();
+  if(vsize == 0)
+    return(false);
+
+  double x3,y3,x4,y4;
+
+  double rx1, ry1, rx2, ry2;
+  
+  if(vsize == 1) {
+    x3 = x4 = m_vx[0];
+    y3 = y4 = m_vy[0];
+    
+    bool cross = lineSegCross(x1,y1,x2,y2, x3,y3,x4,y4, rx1,ry1,rx2,ry2);
+    if(!cross)
+      return(false);
+    ix1 = ix2 = x3;
+    iy1 = iy2 = y3;
+    return(true);
+}
+
+  // Special case 2 vertices, otherwise the single edge will be checked
+  // twice if handled by the general case.
+  if(vsize == 2) {
+    x3 = m_vx[0];
+    y3 = m_vy[0];
+    x4 = m_vx[1];
+    y4 = m_vy[1];
+    bool cross = lineSegCross(x1,y1,x2,y2, x3,y3,x4,y4, rx1,ry1,rx2,ry2);
+    if(!cross)
+      return(false);
+    ix1 = rx1;
+    iy1 = ry2;
+    ix2 = rx2;
+    iy2 = ry2;
+  }
+
+  // Now handle the general case of more than two vertices
+
+  // Next check if the segment intersects any of the polgyon edges.
+  for(ix=0; ix<vsize; ix++) {
+    unsigned int ixx = ix+1;
+    if(ix == vsize-1)
+      ixx = 0;
+    x3 = m_vx[ix];
+    y3 = m_vy[ix];
+    x4 = m_vx[ixx];
+    y4 = m_vy[ixx];
+
+    
+    //cout << "Checking edge: " << ix << endl;
+    bool cross = lineSegCross(x3,y3,x4,y4, x1,y1,x2,y2, rx1,ry1,rx2,ry2);
+    if(cross) {
+
+      //cout << "  cross detected, edge: " << ix << endl;
+
+      if(cross_count == 0) {
+	ix1 = rx1;
+	iy1 = ry1;
+      }
+      else {
+	ix2 = rx1;
+	iy2 = ry1;
+      }
+      cross_count++;
+
+      if(cross_count == 1) {
+	if((rx1 != rx2) || (ry1 != ry2)) {
+	  ix2 = rx2;
+	  iy2 = ry2;
+	  cross_count++;
+	}
+      }
+    }
+    
+    if(cross_count >= 2)
+      return(true);
+  }
+  return(false);
+}
+
+//---------------------------------------------------------------
 // Procedure: vertex_is_viewable
 //   Purpose: Determine if the line segment given by the vertex ix, 
 //            and the point x1,y1, intersects the polygon *only*

@@ -62,6 +62,11 @@ bool   lineRayCross(double rx, double ry, double ray_angle,
 		    double x1, double y1, double x2, double y2,
 		    double &ix, double& iy);
 
+// Determine whether and where a given ray and segment intersect
+bool   lineSegCross(double x1, double y1, double x2, double y2,
+		    double x3, double y3, double x4, double y4,
+		    double &ix1, double& iy1, double& ix2, double& iy2);
+
 // Determine if two line segments intersect
 bool   segmentsCross(double x1, double y1, double x2, double y2,
 		     double x3, double y3, double x4, double y4);
