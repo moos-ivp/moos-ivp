@@ -78,6 +78,9 @@ SET(IVP_BUILD_BOT_CODE_ONLY OFF CACHE BOOL "Build IvP's minimal set of bot apps.
 #-------------------------------------------------------------------------------
 SET(USE_UTM ON CACHE BOOL "Use UTM coordinates vs Local coordinates.")
 
+message("-------------------------------------------------------Use UTM:" ${USE_UTM})
+
+
 #-------------------------------------------------------------------------------
 # Tell CMake (and thus C++) where to find IvP's header files...
 #-------------------------------------------------------------------------------
