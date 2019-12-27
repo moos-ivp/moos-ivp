@@ -74,6 +74,7 @@ class MarineViewer : public Fl_Gl_Window
   void   clear(std::string vname, std::string shape, std::string stype);
 
   void   handleNoTiff();
+  void   setVerbose(bool bval=true);
 
   double getStaleReportThresh() {return(m_vehi_settings.getStaleReportThresh());}
   double getStaleRemoveThresh() {return(m_vehi_settings.getStaleRemoveThresh());}
@@ -93,10 +94,10 @@ protected:
   bool   readTiffB(std::string);
 
   void   drawTiff();
-  double img2view(char, double);
-  double view2img(char, double);
-  double meters2img(char, double);
-  double img2meters(char, double);
+  double img2view(char, double) const;
+  double view2img(char, double) const;
+  double meters2img(char, double, bool verbose=false) const;
+  double img2meters(char, double) const;
 
   void   drawHash(double xl=0, double xr=0, double yb=0, double yt=0);
   void   drawFastHash(double xl=0, double xr=0, double yb=0, double yt=0);
@@ -172,6 +173,8 @@ protected:
   bool      m_back_img_b_on;
   bool      m_back_img_mod;
 
+  bool      m_verbose;
+  
   double    m_zoom;
   double    m_vshift_x; 
   double    m_vshift_y; 

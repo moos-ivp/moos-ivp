@@ -45,6 +45,7 @@ public:
   void         resize(int, int, int, int);
   int          handle(int);
 
+  void         setVerbose(bool bval);
   bool         addButton(std::string button, std::string pairs);
   bool         addAction(std::string pair, bool separator=false);
   void         setCurrTime(double v)       {m_curr_time=v;}

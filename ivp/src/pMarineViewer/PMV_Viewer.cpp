@@ -57,11 +57,13 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_scoping        = false;
+  m_verbose        = false;
   m_var_index      = 0;
   m_var_index_prev = 0;
   m_curr_time      = 0;
   m_draw_count     = 0;
-
+  m_last_draw_time = 0;
+  
   m_centric_view   = "";
   m_centric_view_sticky = true;
   m_reference_point     = "datum";
@@ -73,7 +75,7 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_lclick_ix = 0;
   m_rclick_ix = 0;
   m_bclick_ix = 0;
- 
+
   string str = "x=$(XPOS),y=$(YPOS),lat=$(LAT),lon=$(LON),";
   str += "vname=$(VNAME),counter=$(IX)";
   VarDataPair lft_pair("MVIEWER_LCLICK", str); 

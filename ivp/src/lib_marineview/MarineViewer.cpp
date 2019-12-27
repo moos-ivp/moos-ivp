@@ -81,6 +81,8 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 
   m_main_window  = 0;
 
+  m_verbose = false;
+  
   //  glGenTextures(1, m_textures);
 }
 
@@ -205,6 +207,15 @@ void MarineViewer::handleNoTiff()
     m_back_img.readTiffInfoEmpty(lat_north, lat_south, lon_east, lon_west);
 }
 
+//-------------------------------------------------------------
+// Procedure: setVerbose()
+
+void MarineViewer::setVerbose(bool bval)
+{
+  m_verbose = bval;
+  m_back_img.setVerbose(bval);
+  m_back_img_b.setVerbose(bval);
+}
 
 
 //-------------------------------------------------------------
@@ -321,7 +332,7 @@ bool MarineViewer::setTexture()
 //-------------------------------------------------------------
 // Procedure: img2view
 
-double MarineViewer::img2view(char xy, double img_val)
+double MarineViewer::img2view(char xy, double img_val) const
 {
   double view_val = 0.0;
 
@@ -343,8 +354,7 @@ double MarineViewer::img2view(char xy, double img_val)
 // Procedure: view2img
 //      Note: Derived as from img2view above
 
-double MarineViewer::view2img(char xy, double view_val)
-
+double MarineViewer::view2img(char xy, double view_val) const
 {
   double img_val = 0.0;
 
@@ -371,25 +381,37 @@ double MarineViewer::view2img(char xy, double view_val)
 //-------------------------------------------------------------
 // Procedure: meters2img
 
-double MarineViewer::meters2img(char xy, double meters_val)
+double MarineViewer::meters2img(char xy, double meters_val, bool verbose) const
 {
   double img_val = 0.0;
   if(xy == 'x') {
     double range = m_back_img.get_img_mtr_width();
+    if(verbose)
+      cout << "X: range:" << range << endl;
     if(range == 0)
       img_val = 0;
     else {
       double pct = (meters_val - m_back_img.get_x_at_img_ctr()) / range;
       img_val = pct + 0.5;
+      if(verbose) {
+	cout << "m_back_img.get_x_at_img_ctr():" << m_back_img.get_x_at_img_ctr() << endl;
+	cout << "img_val:" << img_val << endl;
+      }
     }
   }
   else if(xy == 'y') {
     double range = m_back_img.get_img_mtr_height();
+    if(verbose)
+      cout << "Y: range:" << range << endl;
     if(range == 0)
       img_val = 0;
     else {
       double pct = (meters_val - m_back_img.get_y_at_img_ctr()) / range;
       img_val = pct + 0.5;
+      if(verbose) {
+	cout << "m_back_img.get_y_at_img_ctr():" << m_back_img.get_y_at_img_ctr() << endl;
+	cout << "img_val:" << img_val << endl;
+      }
     }
   }
 
@@ -400,7 +422,7 @@ double MarineViewer::meters2img(char xy, double meters_val)
 // Procedure: img2meters
 //      Note: Derived as from meters2img above
 
-double MarineViewer::img2meters(char xy, double img_val)
+double MarineViewer::img2meters(char xy, double img_val) const
 {
   double meters_val = 0.0;
   if(xy == 'x') {
@@ -1849,9 +1871,6 @@ void MarineViewer::drawSeglr(const XYSeglr& seglr)
   double vbase_x = seglr.getRayBaseX();
   double vbase_y = seglr.getRayBaseY();
 
-  cout << "vbase_x: " << vbase_x << endl;
-  cout << "vbase_y: " << vbase_y << endl;
-  
   // First determine the point on the end of the vector
   double hx, hy;
   projectPoint(vang, vmag, vbase_x, vbase_y, hx, hy);
@@ -2221,9 +2240,6 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
   double py[4];
 
   double min_eval, max_eval, range = 0;
-
-  //cout << "min_limited:" << grid.cellVarMinLimited() << endl;
-  //cout << "max_limited:" << grid.cellVarMaxLimited() << endl << endl;
 
   if(grid.cellVarMaxLimited() && grid.cellVarMinLimited()) {
     min_eval = grid.getMinLimit();
@@ -2633,7 +2649,7 @@ void MarineViewer::drawPoints(const map<string, XYPoint>& points)
 //-------------------------------------------------------------
 // Procedure: drawPoint
 
-void MarineViewer::drawPoint(const XYPoint& point)
+void MarineViewer::drawPoint(const XYPoint& point) 
 {
   ColorPack vert_c("red");         // default if no drawing hint
   ColorPack labl_c("aqua_marine"); // default if no drawing hint
@@ -2650,11 +2666,18 @@ void MarineViewer::drawPoint(const XYPoint& point)
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
   
-  double tx = meters2img('x', 0);
-  double ty = meters2img('y', 0);
+  double tx = meters2img('x', 0, m_verbose);
+  double ty = meters2img('y', 0, m_verbose);
   double qx = img2view('x', tx);
   double qy = img2view('y', ty);
 
+  if(m_verbose) {
+    cout << "tx:" << tx << endl;
+    cout << "ty:" << ty << endl;
+    cout << " qx:" << qx << endl;
+    cout << " qy:" << qy << endl;
+  }
+  
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();

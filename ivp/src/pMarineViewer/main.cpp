@@ -47,11 +47,14 @@ int main(int argc, char *argv[])
   string mission_file;
   string run_command = argv[0];
   string size_request;
+  bool   verbose=false;
 
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
     if((argi=="-v") || (argi=="--version") || (argi=="-version"))
       showReleaseInfoAndExit();
+    if((argi=="--verbose") || (argi=="-verbose"))
+      verbose = true;
     else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
       showExampleConfigAndExit();
     else if((argi == "-h") || (argi == "--help") || (argi=="-help"))
@@ -97,6 +100,7 @@ int main(int argc, char *argv[])
     return(-1);
   }
   gui->setTitleBase(title_base);
+  gui->setVerbose(verbose);
 
 
   PMV_MOOSApp thePort;

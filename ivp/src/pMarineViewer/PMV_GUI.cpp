@@ -375,6 +375,15 @@ void PMV_GUI::resize(int lx, int ly, int lw, int lh)
 }
 
 //----------------------------------------------------------
+// Procedure: setVerbose()
+
+void PMV_GUI::setVerbose(bool bval)
+{
+  if(m_mviewer)
+    m_mviewer->setVerbose(bval);
+}
+
+//----------------------------------------------------------
 // Procedure: addButton
 
 bool PMV_GUI::addButton(string btype, string svalue) 

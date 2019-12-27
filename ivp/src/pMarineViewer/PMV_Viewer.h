@@ -73,6 +73,8 @@ class PMV_Viewer : public MarineViewer
   double       getTimeWarp() const {return(m_time_warp);}
   double       getElapsed() const {return(m_elapsed);}
 
+  void   setVerbose(bool bval=true) {m_verbose=bval;}
+  
   void   clearGeoShapes(std::string vname, std::string shape, std::string stype);
 
  private:
@@ -96,6 +98,8 @@ class PMV_Viewer : public MarineViewer
   unsigned int m_draw_count;
   double       m_last_draw_time;
 
+  bool         m_verbose;
+  
   // Member variables for holding scoped info
   bool                     m_scoping;
   std::vector<std::string> m_var_names;
