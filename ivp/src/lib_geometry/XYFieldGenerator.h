@@ -38,6 +38,7 @@ class XYFieldGenerator
   virtual ~XYFieldGenerator() {}
 
   bool addPolygon(std::string);
+  bool addPolygon(XYPolygon);
   bool setSnap(double);
   
   XYPoint generatePoint();

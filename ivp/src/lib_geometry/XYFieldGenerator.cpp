@@ -44,7 +44,15 @@ XYFieldGenerator::XYFieldGenerator()
 bool XYFieldGenerator::addPolygon(string spec)
 {
   XYPolygon poly = string2Poly(spec);
-  
+
+  return(addPolygon(poly));
+}
+
+//---------------------------------------------------------
+// Procedure: addPolygon
+
+bool XYFieldGenerator::addPolygon(XYPolygon poly)
+{
   if(!poly.is_convex())
     return(false);
   
