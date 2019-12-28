@@ -254,6 +254,7 @@ bool MarineViewer::setParam(string param, double v)
     double pix_shift = v * m_back_img.get_pix_per_mtr_x();
     m_vshift_x += pix_shift;
     cout << "pan_x:" << m_vshift_x << endl;
+    cout << "  (pix_per_mtr_x: " << m_back_img.get_pix_per_mtr_x() << ")" << endl;
   }
   else if(param == "set_pan_x") {
     m_vshift_x = v;
@@ -263,6 +264,7 @@ bool MarineViewer::setParam(string param, double v)
     double pix_shift = v * m_back_img.get_pix_per_mtr_y();
     m_vshift_y += pix_shift;
     cout << "pan_y:" << m_vshift_y << endl;
+    cout << "  (pix_per_mtr_y: " << m_back_img.get_pix_per_mtr_y() << ")" << endl;
   }
   else if(param == "set_pan_y") {
     m_vshift_y = v;
@@ -324,6 +326,7 @@ bool MarineViewer::setTexture()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     m_back_img_mod = false;
+    modColorScheme();
   }
   
   return(true);

@@ -39,6 +39,8 @@ class NavPlotViewer : public MarineViewer
   void   draw();
   bool   setParam(std::string p, std::string v);
   bool   setParam(std::string p, double v);  
+  void   modColorScheme() {};
+
   void   setMinimalMem();
   void   setDataBroker(ALogDataBroker dbroker);
 

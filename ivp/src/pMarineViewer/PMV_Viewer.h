@@ -41,6 +41,7 @@ class PMV_Viewer : public MarineViewer
   // Pure virtuals that need to be defined
   void  draw();
   int   handle(int);
+  void  modColorScheme() {};
 
   bool  setParam(std::string p, std::string v="");
   bool  setParam(std::string p, double v);

@@ -40,7 +40,10 @@ class GeoViewer : public MarineViewer
  public:
   GeoViewer(int x,int y,int w,int h,const char *l=0);
   
-  // Pure virtuals that need to be defined
+  // Pure virtual that need to be defined
+  void  modColorScheme() {};
+
+  // Virtual defined
   void  draw();
   int   handle(int);
   void  handle_left_mouse(int, int);

@@ -152,39 +152,60 @@ bool BackImg::readTiffData(string filename)
   m_img_pix_height = 0;
   m_img_pix_width  = 0;
 
-  string file = filename;
-
-  cout << "trying to open:[" << filename << "]" << endl;
-  
-  FILE *f = fopen(file.c_str(), "r");
-  cout << "Result:" << f << endl;
-
-  if(f) {
-    fclose(f);
+  // See if the tiff file exists
+  cout << "Checking for: [" << filename << "]" << endl;
+  bool ok_file = okFileToRead(filename);
+  if(!ok_file) {
+    filename = "/" + filename;
+    filename = DATA_DIR + filename;
+    cout << "Checking for: [" << filename << "]" << endl;
+    ok_file = okFileToRead(filename);
   }
-  else {
-    file = DATA_DIR;
-    file += "/";
-    file += filename;
-  } 
 
+  if(!ok_file) {
+    filename = findReplace(filename, "data", "data-local");
+    cout << "Checking for: [" << filename << "]" << endl;
+    ok_file = okFileToRead(filename);
+  }
+  if(!ok_file) {
+    filename = findReplace(filename, "data-local", "datax");
+    cout << "Checking for: [" << filename << "]" << endl;
+    ok_file = okFileToRead(filename);
+  }
+
+  if(ok_file)
+    cout << "Found file: " << filename << endl;
+  else {
+    cout << "File not found.";
+    return(false);
+  }
+  
   // We turn off Warnings (maybe a bad idea) since many photoshop 
   // images have newfangled tags that confuse libtiff
   TIFFErrorHandler warn = TIFFSetWarningHandler(0);
   
-  cout << "Trying to open: " << file << endl;
-  TIFF* tiff = TIFFOpen(file.c_str(), "r");
+  cout << "Trying to TiffOpen: " << filename << endl;
+  TIFF* tiff = TIFFOpen(filename.c_str(), "r");
   if(!tiff) {
-    file = findReplace(file, "data", "data-local");
-    cout << "Failed: Trying now to open: " << file << endl;
-    tiff = TIFFOpen(file.c_str(), "r");
+    filename = findReplace(filename, "data", "data-local");
+    cout << "Failed: Trying now to TiffOpen: " << filename << endl;
+    tiff = TIFFOpen(filename.c_str(), "r");
+  }
+  if(!tiff) {
+    filename = findReplace(filename, "data-local", "datax");
+    cout << "Failed: Trying now to TiffOpen: " << filename << endl;
+    tiff = TIFFOpen(filename.c_str(), "r");
   }
 
   if(tiff) {
-    cout << "Success: " << file << endl;
-    m_tiff_file = file;
+    cout << "Success: " << filename << endl;
+    m_tiff_file = filename;
   }
-
+  else {
+    cout << "Failed." << endl;
+    return(false);
+  }
+  
   // turn warnings back on, just in case
   TIFFSetWarningHandler(warn);
 
@@ -242,8 +263,19 @@ bool BackImg::readTiffInfo(string filename)
     cout << "Attempting to open: " << file << endl;
 
   vector<string> buffer = fileBuffer(file);
+  if(buffer.size() == 0) {
+    file = findReplace(file, "data", "datax");
+    buffer = fileBuffer(file);
+  }
+  if(buffer.size() == 0) {
+    file = findReplace(file, "datax", "data-local");
+    buffer = fileBuffer(file);
+  }
+
   unsigned int i, vsize = buffer.size();
 
+  cout << "Successfully found info file:" << file << endl;
+  
   if(vsize == 0) {
     if(m_verbose)
       cout << file << " contains zero lines" << endl;

@@ -65,7 +65,8 @@ class MarineViewer : public Fl_Gl_Window
   virtual int  handle(int event);
   virtual bool setParam(std::string p, std::string v="");
   virtual bool setParam(std::string p, double v);
-
+  virtual void modColorScheme()=0;
+  
   bool   initGeodesy(double, double);
   bool   initGeodesy(const std::string&);
   bool   setTexture();
