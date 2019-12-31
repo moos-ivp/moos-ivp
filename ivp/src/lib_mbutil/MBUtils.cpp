@@ -1842,9 +1842,9 @@ bool setBooleanOnString(bool& boolval, string str, bool case_tolow)
     str = tolower(str);
   if(str == "toggle")
     boolval = !boolval;
-  else if((str == "on") || (str == "true"))
+  else if((str == "on") || (str == "true") || (str == "yes"))
     boolval = true;
-  else if((str == "off") || (str == "false"))
+  else if((str == "off") || (str == "false") || (str == "no"))
     boolval = false;
   else
     return(false);
