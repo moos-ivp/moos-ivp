@@ -91,8 +91,17 @@ MarinePID::MarinePID()
 
 bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 {
+  AppCastingMOOSApp::OnNewMail(NewMail);
+  
   double curr_time = MOOSTime();
+  
+  string mail_debug;
 
+  if(m_max_sat_hdg_debug) {
+    mail_debug = uintToString(m_iteration) + ":";
+    mail_debug += doubleToString(curr_time,3) + ":";
+  }
+  
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
@@ -133,8 +142,11 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
       }
       else if(!m_ignore_nav_yaw && (key == "NAV_YAW"))
 	m_current_heading = angle360(-MOOSRad2Deg(msg.m_dfVal));
-      else if(key == "NAV_HEADING")
+      else if(key == "NAV_HEADING") {
 	m_current_heading = angle360(msg.m_dfVal);
+	if(m_max_sat_hdg_debug)
+	  mail_debug += doubleToStringX(m_current_heading,2) + ",";
+      }
       else if(key == "NAV_SPEED")
 	m_current_speed = msg.m_dfVal;
       else if(key == "NAV_DEPTH")
@@ -157,6 +169,8 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_desired_depth = msg.m_dfVal;
       }
   }
+  if(m_max_sat_hdg_debug)
+    Notify("PID_MAIL_DBG", mail_debug);
   return(true);
 }
 
@@ -165,11 +179,13 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool MarinePID::Iterate()
 {
-  m_iteration++;
+  AppCastingMOOSApp::Iterate();
+
   postCharStatus();
 
   if(!m_has_control) {
     postAllStop();
+    AppCastingMOOSApp::PostReport(); 
     return(false);
   }
 
@@ -189,6 +205,7 @@ bool MarinePID::Iterate()
     m_paused = true;
     Notify("DESIRED_THRUST", 0.0);
     m_current_thrust = 0;
+    AppCastingMOOSApp::PostReport(); 
     return(true);
   }
   
@@ -199,6 +216,7 @@ bool MarinePID::Iterate()
     m_paused = true;
     Notify("DESIRED_THRUST", 0.0);
     m_current_thrust = 0;
+    AppCastingMOOSApp::PostReport(); 
     return(true);
   }
 
@@ -239,8 +257,11 @@ bool MarinePID::Iterate()
   vector<string> pid_report;
   if(m_verbose == "verbose") {
     pid_report = m_pengine.getPIDReport();
-    for(unsigned int i=0; i<pid_report.size(); i++)
+    for(unsigned int i=0; i<pid_report.size(); i++) {
       cout << pid_report[i] << endl;
+      string report = uintToString(m_iteration) + ":" + pid_report[i];
+      Notify("PID_REPORT", report);
+    }
   }
   m_pengine.clearReport();
 
@@ -259,25 +280,26 @@ bool MarinePID::Iterate()
   // Added April 2019 by mikerb
   // Simple quick check if max saturation event occurred
   // If so, and debug was turned on, report debug info for the event
-  if(m_pengine.getMaxSatHdg()) {
+  if(m_max_sat_hdg_debug && m_pengine.getMaxSatHdg()) {
     Notify("PID_MAX_SAT_HDG", "true");
     string debug_info = m_pengine.getMaxSatHdgStr();
     if(debug_info != "")
       Notify("PID_MAX_SAT_HDG_DEBUG", debug_info);
   }
-  if(m_pengine.getMaxSatSpd()) {
+  if(m_max_sat_spd_debug && m_pengine.getMaxSatSpd()) {
     Notify("PID_MAX_SAT_SPD", "true");
     string debug_info = m_pengine.getMaxSatSpdStr();
     if(debug_info != "")
       Notify("PID_MAX_SAT_SPD_DEBUG", debug_info);
   }
-  if(m_pengine.getMaxSatDep()) {
+  if(m_max_sat_dep_debug && m_pengine.getMaxSatDep()) {
     Notify("PID_MAX_SAT_DEp", "true");
     string debug_info = m_pengine.getMaxSatDepStr();
     if(debug_info != "")
       Notify("PID_MAX_SAT_DEP_DEBUG", debug_info);
   }
-  
+
+  AppCastingMOOSApp::PostReport(); 
   return(true);
 }
   
@@ -325,6 +347,8 @@ bool MarinePID::OnConnectToServer()
 
 void MarinePID::registerVariables()
 {
+  AppCastingMOOSApp::RegisterVariables();
+  
   Register("NAV_HEADING", 0);
   Register("NAV_SPEED", 0);
   Register("NAV_DEPTH", 0);
@@ -348,6 +372,7 @@ void MarinePID::registerVariables()
 
 bool MarinePID::OnStartUp()
 {
+  AppCastingMOOSApp::OnStartUp();
   cout << "pMarinePID starting...." << endl;
   
   m_start_time = MOOSTime();
@@ -359,11 +384,13 @@ bool MarinePID::OnStartUp()
   
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
+    string orig  = *p;
     string sLine = *p;
     string param = toupper(biteStringX(sLine, '='));
-    string value = sLine;
+    string value = tolower(sLine);
     double dval  = atof(value.c_str());
-    
+
+    bool handled = true;
     if(param == "SPEED_FACTOR")
       m_speed_factor = vclip(dval, 0, 100);
     else if(param == "SIM_INSTABILITY")
@@ -373,25 +400,31 @@ bool MarinePID::OnStartUp()
     else if(param == "TARDY_NAV_THRESHOLD")
       m_tardy_nav_thresh = vclip_min(dval, 0);
     else if(param == "ACTIVE_START") 
-      setBooleanOnString(m_has_control, value);
+      handled = setBooleanOnString(m_has_control, value);
     else if(param == "MAX_SAT_HDG_DEBUG") 
-      setBooleanOnString(m_max_sat_hdg_debug, value);
+      handled = setBooleanOnString(m_max_sat_hdg_debug, value);
     else if(param == "MAX_SAT_SPD_DEBUG") 
-      setBooleanOnString(m_max_sat_spd_debug, value);
+      handled = setBooleanOnString(m_max_sat_spd_debug, value);
     else if(param == "MAX_SAT_DEP_DEBUG") 
-      setBooleanOnString(m_max_sat_dep_debug, value);
+      handled = setBooleanOnString(m_max_sat_dep_debug, value);
     else if(param == "IGNORE_NAV_YAW") 
-      setBooleanOnString(m_ignore_nav_yaw, value);
+      handled = setBooleanOnString(m_ignore_nav_yaw, value);
     //else if(param == "OK_SKEW") 
     //  handled = handleConfigSkewAny(value);
     else if(param == "VERBOSE") {
       if((sLine == "true") || (sLine == "verbose"))
 	m_verbose = "verbose";
-      if(sLine == "terse") 
+      else if(sLine == "terse") 
 	m_verbose = "terse";
-      if(sLine == "quiet")
+      else if(sLine == "quiet")
 	m_verbose = "quiet";
+      else
+	handled = false;
     }
+
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
+
   }
 
   bool ok_yaw = handleYawSettings();
@@ -615,9 +648,11 @@ bool MarinePID::handleDepthSettings()
 
 
 
-
-
-
-
-
-
+bool MarinePID::buildReport()
+{
+  m_msgs << "hello" << endl;
+  //m_msgs << "Number of good messages: " << m_good_message_count << endl;
+  //m_msgs << "Number of bad  messages: " << m_bad_message_count  << endl;
+  
+  return(true);
+}

@@ -25,10 +25,11 @@
 #define MARINE_PID_HEADER
 
 #include <string>
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "MOOS/libMOOS/MOOSLib.h"
 #include "PIDEngine.h"
 
-class MarinePID : public CMOOSApp
+class MarinePID : public AppCastingMOOSApp
 {
 public:
   MarinePID();
@@ -45,6 +46,8 @@ public:
   bool handleSpeedSettings();
   bool handleDepthSettings();
 
+  bool  buildReport();
+  
 protected:
   bool     m_has_control;
   bool     m_allow_overide;
@@ -74,7 +77,6 @@ protected:
   PIDEngine    m_pengine;
   std::string  m_verbose;
 
-  int     m_iteration;
   double  m_start_time;
   bool    m_depth_control;
   bool    m_paused;
