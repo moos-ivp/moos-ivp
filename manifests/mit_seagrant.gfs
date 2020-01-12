@@ -9,5 +9,5 @@ thumb    = Sensor processing modules for autonomous surface vehicles
 synopsis = The MIT Sea Grant AUV Lab Codebase contains a set of modules
 for supporting autonomous marine surface craft. 
 
-group    = Sensor-Processing
+group	 = MIT Sea Grant AUV Lab, Sensors
 
