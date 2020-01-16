@@ -205,7 +205,7 @@ bool VPlug_VehiSettings::setParam(string param, double value)
     m_stale_remove_thresh = value;
   else if((param == "vehicles_shape_scale") && (value >= 0)) {
     m_vehicles_shape_scale = value;
-    m_vehicles_shape_scale = vclip(m_vehicles_shape_scale, 0.1, 100);
+    m_vehicles_shape_scale = vclip(m_vehicles_shape_scale, 0.1, 5000);
   }
   else
     handled = false;
