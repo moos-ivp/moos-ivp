@@ -996,6 +996,29 @@ void XYPolygon::determine_convexity()
 
 
 //---------------------------------------------------------------
+// Procedure: area()
+
+double XYPolygon::area() const
+{
+  unsigned int vsize = m_vx.size();
+  if(vsize < 3)
+    return(0);
+  
+  double total = 0;
+  for(unsigned int i=0; i<vsize-1; i++) 
+    total += (m_vx[i] * m_vy[i+1]) - (m_vx[i+1] * m_vy[i]);
+
+  total += (m_vx[vsize-1] * m_vy[0]) - (m_vx[0] * m_vy[vsize-1]);
+
+  total = total / 2;
+  
+  if(total < 0)
+    total = -total;
+
+  return(total);
+}
+
+//---------------------------------------------------------------
 // Procedure: max_radius
 //   Purpose: Determine the maximum distance between the center of the
 //            polygon and any of its vertices.

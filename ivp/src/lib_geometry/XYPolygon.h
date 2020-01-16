@@ -70,6 +70,8 @@ public:
   bool   is_convex() const  {return(m_convex_state);}
   void   determine_convexity();
 
+  double area() const;
+  
   double max_radius() const;
   bool   closest_point_on_poly(double sx, double sy, double& rx, double& ry) const;
 
