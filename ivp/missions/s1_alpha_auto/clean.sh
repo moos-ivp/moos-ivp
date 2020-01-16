@@ -6,5 +6,4 @@ rm -f    *~
 rm -f    *.moos++
 rm -f    targ_*.moos
 rm -f    .LastOpenedMOOSLogDirectory
-mkdir -p logs
 

@@ -11,6 +11,9 @@ TIME_WARP=1
 COMMUNITY="alpha"
 GUI="yes"
 
+# cd into the location of launch.sh to ensure *.moos and *.bhv exist
+cd "$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
 #----------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #----------------------------------------------------------
@@ -29,17 +32,16 @@ for ARGI; do
     fi
 done
 
-
 #----------------------------------------------------------
 #  Part 3: Build the targ_*.moos file
 #----------------------------------------------------------
-nsplug $COMMUNITY.moos targ_${COMMUNITY}.moos -f GUI=$GUI
+nsplug $COMMUNITY.moos targ_${COMMUNITY}.moos -f WARP=$TIME_WARP GUI=$GUI
+mkdir -p logs/
 
 #----------------------------------------------------------
 #  Part 4: Launch the processes
 #----------------------------------------------------------
 echo "Launching $COMMUNITY MOOS Community. WARP is" $TIME_WARP
-
-pAntler targ_$COMMUNITY.moos --MOOSTimeWarp=$TIME_WARP >& /dev/null &
+pAntler targ_$COMMUNITY.moos >& /dev/null &
 
 uMAC -t $COMMUNITY.moos
