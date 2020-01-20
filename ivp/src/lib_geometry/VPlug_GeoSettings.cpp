@@ -75,6 +75,8 @@ VPlug_GeoSettings::VPlug_GeoSettings()
   m_gsize_map["vector_length_zoom"]     = 2.0;
   m_gsize_map["datum_size"]             = 2;
   m_opaque_map["grid_opaqueness"]       = 0.3;
+
+  m_attribute_map["polygon_label_pos"] = "top";
 }
 
 //-----------------------------------------------------------
@@ -144,6 +146,11 @@ bool VPlug_GeoSettings::setParam(string param, string value)
     return(setSizeMapping(param, value, 1, 10));
 
   else if(param == "drop_point_coords") {
+    m_attribute_map[param] = value;
+    return(true);
+  }
+  else if((param == "polygon_label_pos") &&
+	  ((tolower(value)=="top") || (tolower(value)=="mid"))) {
     m_attribute_map[param] = value;
     return(true);
   }
