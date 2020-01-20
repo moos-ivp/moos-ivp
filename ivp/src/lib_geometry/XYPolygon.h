@@ -71,6 +71,7 @@ public:
   void   determine_convexity();
 
   double area() const;
+  bool   simplify(double range_thresh);
   
   double max_radius() const;
   bool   closest_point_on_poly(double sx, double sy, double& rx, double& ry) const;

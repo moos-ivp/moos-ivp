@@ -1019,6 +1019,90 @@ double XYPolygon::area() const
 }
 
 //---------------------------------------------------------------
+// Procedure: simplify()
+//   Purpose: Search for the two closest vertices and if within the
+//            the given range, combine the two vertices into one.
+//   Returns: true if a simplification was performed, false otherwise.
+
+bool XYPolygon::simplify(double range_thresh)
+{
+  unsigned int vsize = size();
+  if(vsize < 4)
+    return(false);
+
+  // ===============================================================
+  // Part 1: Determine which pair of vertices has the smallest range
+  // ===============================================================
+  double min_dist = 0;
+  unsigned int mi = 0;
+  unsigned int mj = 0;
+  
+  for(unsigned int i=0; i<vsize; i++) {
+    unsigned int j = i+1;
+    if(j >= vsize)
+      j = 0;
+
+    double x1 = m_vx[i];
+    double y1 = m_vy[i];
+    double x2 = m_vx[j];
+    double y2 = m_vy[j];
+    double dist = hypot(x1-x2, y1-y2);
+
+    if((i==0) || (dist < min_dist)) {
+      min_dist = dist;
+      mi = i;
+      mj = j;
+    }
+  }
+  // If no pairs of vertices are close enough, we're done.
+  if(min_dist > range_thresh)
+    return(false);
+
+  // ===============================================================
+  // Part 2: Calculate the new combined vertex
+  // ===============================================================
+  double newx = (m_vx[mi] + m_vx[mj]) / 2; 
+  double newy = (m_vy[mi] + m_vy[mj]) / 2; 
+  double newz = (m_vz[mi] + m_vz[mj]) / 2; 
+
+  // ===============================================================
+  // Part 3: Build a copy of the this polygon's internal data while
+  //         replacing the pair of vertices with the combined one
+  // ===============================================================
+  vector<double> new_vx;
+  vector<double> new_vy;
+  vector<double> new_vz;
+  vector<int>    new_side_xy;
+
+  for(unsigned int i=0; i<vsize; i++) {
+    if((i!=mi) && (i!=mj)) {
+      new_vx.push_back(m_vx[i]);
+      new_vy.push_back(m_vy[i]);
+      new_vz.push_back(m_vz[i]);
+      new_side_xy.push_back(m_side_xy[i]);
+    }
+    else if(i == mi) {
+      new_vx.push_back(newx);
+      new_vy.push_back(newy);
+      new_vz.push_back(newz);
+      new_side_xy.push_back(m_side_xy[i]);
+    }
+  }
+
+  // ===============================================================
+  // Part 4: Install the new data and recalculate convexity info.
+  // ===============================================================
+  m_vx = new_vx;
+  m_vy = new_vy;
+  m_vz = new_vz;
+  m_side_xy = new_side_xy;
+
+  determine_convexity();
+  return(true);  
+}
+
+
+//---------------------------------------------------------------
 // Procedure: max_radius
 //   Purpose: Determine the maximum distance between the center of the
 //            polygon and any of its vertices.
