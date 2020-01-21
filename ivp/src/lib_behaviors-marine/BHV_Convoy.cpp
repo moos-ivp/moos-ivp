@@ -362,7 +362,7 @@ IvPFunction *BHV_Convoy::buildOF()
   
   double rel_ang_to_wpt = relAng(m_osx, m_osy, m_wptx, m_wpty);
 
-  postMessage("RANG", rel_ang_to_wpt);
+  //postMessage("RANG", rel_ang_to_wpt);
   
   ZAIC_PEAK crs_zaic(m_domain, "course");
   crs_zaic.setValueWrap(true);
