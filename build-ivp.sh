@@ -6,6 +6,7 @@ CLEAN="no"
 CMD_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
 BUILD_GUI_CODE="ON"
 BUILD_BOT_CODE_ONLY="OFF"
+BUILD_WITH_UTM="-DUSE_UTM=ON"
 
 print_usage_and_exit()
 {
@@ -20,6 +21,8 @@ print_usage_and_exit()
     echo "    Do not include the -Os, -g compiler flags "
     echo "  --nogui, -n                                 "
     echo "    Do not build GUI related apps             "
+    echo "  --utm_off, -u                               "
+    echo "    Do not build wit UTM for Geodesy          "
     echo "  --minrobot, -m                              "
     echo "    Only build minimal robot apps             "
     echo "    (Even smaller subset than with --nogui)   "
@@ -38,24 +41,26 @@ print_usage_and_exit()
 }
 
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
         print_usage_and_exit;
-    elif [ "${ARGI}" = "--nodebug" ] ; then
+    elif [ "${ARGI}" = "--nodebug" ]; then
         BUILD_DEBUG="no"
-    elif [ "${ARGI}" = "--noopt" ] ; then
+    elif [ "${ARGI}" = "--noopt" ]; then
         BUILD_OPTIM="no"
-    elif [ "${ARGI}" = "--fast" -o "${ARGI}" = "-f" ] ; then
+    elif [ "${ARGI}" = "--utm_off" -o "${ARGI}" = "-u" ]; then
+        BUILD_WITH_UTM="-DUSE_UTM=OFF"
+    elif [ "${ARGI}" = "--fast" -o "${ARGI}" = "-f" ]; then
         BUILD_DEBUG="no"
         BUILD_OPTIM="no"
-    elif [ "${ARGI}" = "--clean" -o "${ARGI}" = "-c" ] ; then
+    elif [ "${ARGI}" = "--clean" -o "${ARGI}" = "-c" ]; then
         CLEAN="yes"
-    elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ] ; then
+    elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ]; then
         BUILD_GUI_CODE="OFF"
-    elif [ "${ARGI}" = "--minrobot" -o "${ARGI}" = "-m" ] ; then
+    elif [ "${ARGI}" = "--minrobot" -o "${ARGI}" = "-m" ]; then
         BUILD_BOT_CODE_ONLY="ON"
 	BUILD_GUI_CODE="OFF"
     else
-	if [ "$CMD_ARGS" = "" ] ; then
+	if [ "$CMD_ARGS" = "" ]; then
 	    CMD_ARGS=$ARGI
 	else
 	    CMD_ARGS=$CMD_ARGS" "$ARGI
@@ -117,7 +122,7 @@ cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
       -DIVP_LIB_DIRECTORY="${LIB_ABS_DIR}"                 \
       -DIVP_BIN_DIRECTORY="${BIN_ABS_DIR}"                 \
       -DCMAKE_CXX_FLAGS="${CMAKE_CXX_FLAGS}"               \
-      -DUSE_UTM=ON                                         \
+      ${BUILD_WITH_UTM}                                    \
       ${IVP_CMAKE_FLAGS}                                   \
       "${SRC_ABS_DIR}"
 
