@@ -1400,10 +1400,18 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
   bool draw_labels = m_geo_settings.viewable("polygon_viewable_labels");
   if(draw_labels && labl_c.visible()) {
     double cx = poly.get_avg_x() * m_back_img.get_pix_per_mtr_x();
-    //double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
-    double my = poly.get_max_y() * m_back_img.get_pix_per_mtr_y();
-    glTranslatef(cx, my, 0);
-    
+
+    if(m_geo_settings.attribute("polygon_label_pos") == "mid") {
+      // The y position is at the center/middlle
+      double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr_y();
+      glTranslatef(cx, cy, 0);
+    }
+    else {
+      // The y position is at the top/max
+      double my = poly.get_max_y() * m_back_img.get_pix_per_mtr_y();
+      glTranslatef(cx, my, 0);
+    }
+      
     glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
     gl_font(1, 10);
     string plabel = poly.get_msg();
