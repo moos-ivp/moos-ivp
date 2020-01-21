@@ -61,7 +61,7 @@ VarDataPair::VarDataPair(string var, double ddata)
   m_var_set   = false;
   m_key_set   = false;
   m_ptype_set = false;
-  m_ddata_set = false;
+  m_ddata_set = true;
   m_sdata_set = false;
 }
 
@@ -82,7 +82,7 @@ VarDataPair::VarDataPair(string var, string sdata)
   m_key_set   = false;
   m_ptype_set = false;
   m_ddata_set = false;
-  m_sdata_set = false;
+  m_sdata_set = true;
 }
 
 //------------------------------------------------------------------
