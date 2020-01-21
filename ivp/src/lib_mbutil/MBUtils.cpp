@@ -1911,7 +1911,7 @@ bool setDoubleOnString(double& given_dval, string str)
 // Procedure: setUintOnString
 //      Note: This function is designed to possibly set the given 
 //            unsigned int based on the contents of the str.
-//   Returns: false if the string is not a positive number.
+//   Returns: false if the string is a negative number.
 //            true  otherwise.
 
 bool setUIntOnString(unsigned int& given_val, string str)
@@ -1921,6 +1921,26 @@ bool setUIntOnString(unsigned int& given_val, string str)
 
   double dval = atof(str.c_str());
   if(dval < 0)
+    return(false);
+
+  given_val = (unsigned int)(dval);
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setPosUintOnString
+//      Note: This function is designed to possibly set the given 
+//            unsigned int based on the contents of the str.
+//   Returns: false if the string is not a positive number.
+//            true  otherwise.
+
+bool setPosUIntOnString(unsigned int& given_val, string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  double dval = atof(str.c_str());
+  if(dval < 1)
     return(false);
 
   given_val = (unsigned int)(dval);

@@ -141,6 +141,7 @@ double snapDownToStep(double, double v=1.0);
 bool  setBooleanOnString(bool& boolval, std::string str, bool=true);
 bool  setDoubleOnString(double& dval, std::string str);
 bool  setUIntOnString(unsigned int& uint_val, std::string str);
+bool  setPosUIntOnString(unsigned int& uint_val, std::string str);
 bool  setIntOnString(int& int_val, std::string str);
 bool  setPosDoubleOnString(double& dval, std::string str);
 bool  setNonNegDoubleOnString(double& dval, std::string str);
