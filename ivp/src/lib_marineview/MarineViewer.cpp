@@ -2546,7 +2546,6 @@ void MarineViewer::drawCommsPulses(const vector<XYCommsPulse>& pulses,
   if(!m_geo_settings.viewable("node_pulse_viewable_all", true))
     draw_nreps = false;
 
-
   // If neither of the two types of comms pulses, msg and nrep,
   // are enable, we can just return now.
 
@@ -2615,7 +2614,7 @@ void MarineViewer::drawCommsPulse(const XYCommsPulse& pulse,
 
   // Determine the fill degree [0,1]. 1 is completely opaque
   double fill_degree = pulse.get_fill(timestamp);
-
+  
   // If filled option is on, draw the interior of the triangle
   if((fill_degree > 0) && fill_c.visible()) {
     glEnable(GL_BLEND);

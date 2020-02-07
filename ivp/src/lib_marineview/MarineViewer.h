@@ -76,7 +76,8 @@ class MarineViewer : public Fl_Gl_Window
 
   void   handleNoTiff();
   void   setVerbose(bool bval=true);
-
+  void   setZoom(double dval) {m_zoom = dval;}
+  
   double getStaleReportThresh() {return(m_vehi_settings.getStaleReportThresh());}
   double getStaleRemoveThresh() {return(m_vehi_settings.getStaleRemoveThresh());}
 

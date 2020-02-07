@@ -166,6 +166,11 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
 
   NodeRecord record;
   map<string, NodeRecord>::const_iterator p = m_rec_map.find(vname);
+  if(p == m_rec_map.end())
+    p = m_rec_map.find(tolower(vname));
+  if(p == m_rec_map.end())
+    p = m_rec_map.find(toupper(vname));
+
   if(p != m_rec_map.end())
     record = p->second;
   else
