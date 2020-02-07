@@ -184,7 +184,13 @@ bool FldNodeComms::OnStartUp()
     string value = line;
     
     bool handled = false;
-    if((param == "COMMS_RANGE") && isNumber(value)) {
+    if((param == "COMMS_RANGE") && (value == "nolimit")) {
+      // A negative comms range means all comms goes through
+      // A zero comms range means nothing goes through
+      m_comms_range = -1;
+      handled = true;
+    }
+    else if((param == "COMMS_RANGE") && isNumber(value)) {
       // A negative comms range means all comms goes through
       // A zero comms range means nothing goes through
       m_comms_range = atof(value.c_str());
@@ -666,6 +672,11 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
 bool FldNodeComms::meetsRangeThresh(const string& uname1,
 				    const string& uname2)
 {
+  if(m_comms_range < 0)
+    return(true);
+  if(m_comms_range == 0)
+    return(false);
+  
   NodeRecord record1 = m_map_record[uname1];
   NodeRecord record2 = m_map_record[uname2];
 
@@ -781,6 +792,11 @@ void FldNodeComms::postViewCommsPulse(const string& uname1,
   double x2 = record2.getX();
   double y2 = record2.getY();
 
+  double beam_length = hypot(x1-x2, y1-y2);
+  double beam_width = 0.1 * beam_length;
+  if(beam_width < 5)
+    beam_width = 5;
+  
   XYCommsPulse pulse(x1, y1, x2, y2);
   
   string label = uname1 + "2" + uname2;
@@ -791,7 +807,8 @@ void FldNodeComms::postViewCommsPulse(const string& uname1,
   pulse.set_duration(m_pulse_duration);
   pulse.set_label(label);
   pulse.set_time(m_curr_time);
-  pulse.set_beam_width(7);
+  //pulse.set_beam_width(7);
+  pulse.set_beam_width(beam_width);
   pulse.set_fill(fill_opaqueness);
   pulse.set_pulse_type(pulse_type);
   
