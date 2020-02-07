@@ -222,6 +222,7 @@ void PMV_MOOSApp::registerVariables()
   Register("VIEW_RANGE_PULSE", 0);
   Register("PMV_MENU_CONTEXT", 0);
   Register("PMV_CLEAR", 0);
+  Register("PMV_CENTER");
 
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++)
@@ -312,9 +313,11 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       handled = true;
     }
     
-    else if(key == "PMV_CLEAR") {
+    else if(key == "PMV_CLEAR") 
       handled = handleMailClear(sval);
-    }
+    else if(key == "PMV_CENTER") 
+      handled = handleMailCenter(sval);
+
       
     // PMV_MENU_CONTEXT = 
     // side=left, menukey=polyvert, post="POLY_VERT=x=$(XPOS),y=$(YPOS)"
@@ -780,6 +783,51 @@ bool PMV_MOOSApp::handleMailClear(string str)
       return(false);
   }
   m_gui->clearGeoShapes(vname, shape, stype);
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: handleMailCenter
+//   Example: "vname=henry"
+//   Example: "vname=henry, zoom=1.2"
+//   Example: "x=45,y=34"
+//   Example: "x=45,y=34, zoom=0.4"
+//   Example: "zoom=0.4"
+
+bool PMV_MOOSApp::handleMailCenter(string str)
+{
+  vector<string> svector = parseStringQ(str, ',');
+  string vname;
+  string xstr,ystr;
+  string zoom_str;
+  for(unsigned int k=0; k<svector.size(); k++) {
+    string param = tolower(biteStringX(svector[k], '='));
+    string value = svector[k];
+    if((param == "x") && isNumber(value))
+      xstr = value;
+    else if((param == "y") && isNumber(value))
+      ystr = value;
+    else if(param == "vname")
+      vname = value;
+    else if((param == "zoom") && isNumber(value))
+      zoom_str = value;
+    else
+      return(false);
+  }
+  
+  if((xstr != "") && (ystr != "")) {
+    double dx = atof(xstr.c_str());
+    double dy = atof(ystr.c_str());
+    m_gui->mviewer->setCenterView(dx, dy);
+  }
+  else if(vname != "")
+    m_gui->mviewer->setCenterView(vname);
+
+  if(zoom_str != "") {
+    double dzoom = atof(zoom_str.c_str());
+    m_gui->mviewer->setZoom(dzoom);
+  }    
+
   return(true);
 }
 

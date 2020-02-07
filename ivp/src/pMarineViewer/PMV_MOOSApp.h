@@ -63,6 +63,7 @@ class PMV_MOOSApp : public AppCastingMOOSApp
 
   std::string getContextKey(std::string);
   bool handleMailClear(std::string);
+  bool handleMailCenter(std::string);
   bool handleConfigCmd(std::string);
 
   void handlePendingPostsFromGUI();

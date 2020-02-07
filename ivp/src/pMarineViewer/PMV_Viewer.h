@@ -78,6 +78,9 @@ class PMV_Viewer : public MarineViewer
   
   void   clearGeoShapes(std::string vname, std::string shape, std::string stype);
 
+  void   setCenterView(double x, double y);
+  void   setCenterView(std::string vname);
+  
  private:
   void   drawVehicle(std::string, bool, std::string);
   void   calculateDrawHash();
@@ -86,7 +89,7 @@ class PMV_Viewer : public MarineViewer
   void   handleRightMouse(int, int);
   void   handleMoveMouse(int, int);
   void   setWeightedCenterView();
-
+  
  private:
   VehicleSet  m_vehiset;
 

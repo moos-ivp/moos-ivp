@@ -133,6 +133,7 @@ void PMV_Viewer::draw()
     drawPoints(points);
     drawVectors(vectors);
     drawWedges(wedges);
+    cout << "vname[" << i << "]: " << vnames[i] << "  pulses:" << cms_pulses.size() << endl;
     drawRangePulses(rng_pulses, m_curr_time);
     drawCommsPulses(cms_pulses, m_curr_time);
     drawMarkers(markers);
@@ -697,6 +698,9 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
   double sx = snapToStep(mx, 1.0);
   double sy = snapToStep(my, 1.0);
   
+  string vname_closest = m_vehiset.getClosestVehicle(sx, sy);
+  string up_vname_closest = toupper(vname_closest);
+  
   double dlat, dlon;
 
   bool ok = false;
@@ -745,6 +749,18 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
 	    str = findReplace(str, "$(BIX)", intToString(m_bclick_ix));
 	  if(strContains(str, "$[BIX]")) 
 	    str = findReplace(str, "$[BIX]", intToString(m_bclick_ix));
+
+	  if(strContains(str, "$(VNAME_CLOSEST)")) 
+	    str = findReplace(str, "$(VNAME_CLOSEST)", vname_closest);
+	  if(strContains(str, "$[VNAME_CLOSEST]")) 
+	    str = findReplace(str, "$[VNAME_CLOSEST]", vname_closest);
+	  
+	  if(strContains(str, "$(UP_VNAME_CLOSEST)")) 
+	    str = findReplace(str, "$(UP_VNAME_CLOSEST)", up_vname_closest);
+	  if(strContains(str, "$[UP_VNAME_CLOSEST]")) 
+	    str = findReplace(str, "$[UP_VNAME_CLOSEST]", up_vname_closest);
+
+	  
 	  pair.set_sdata(str);
 	}
 	m_var_data_pairs_rgt.push_back(pair);
@@ -782,6 +798,30 @@ void PMV_Viewer::setWeightedCenterView()
   if(!ok1 || !ok2)
     return;
 
+  setCenterView(pos_x, pos_y);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: setCenterView(vname)
+
+void PMV_Viewer::setCenterView(string vname)
+{
+  double pos_x, pos_y;
+  bool ok1 = m_vehiset.getDoubleInfo(vname, "xpos", pos_x);
+  bool ok2 = m_vehiset.getDoubleInfo(vname, "ypos", pos_y);
+
+  if(!ok1 || !ok2) 
+    return;
+
+  setCenterView(pos_x, pos_y);
+}
+
+//-------------------------------------------------------------
+// Procedure: setCenterView(x,y)
+
+void PMV_Viewer::setCenterView(double pos_x, double pos_y)
+{
   // First determine how much we're off in terms of meters
   double delta_x = pos_x - m_back_img.get_x_at_img_ctr();
   double delta_y = pos_y - m_back_img.get_y_at_img_ctr();
