@@ -476,6 +476,8 @@ bool VPlug_GeoShapes::addPolygon(const string& poly_str)
   XYPolygon new_poly = string2Poly(poly_str);
   if(new_poly.size() > 0) 
     addPolygon(new_poly);
+  else if(new_poly.active() == false)
+    addPolygon(new_poly);
   return(true);
 }
 
