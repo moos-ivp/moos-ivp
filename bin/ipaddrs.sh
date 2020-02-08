@@ -7,13 +7,13 @@
 #          all enabled network interfaces. It will auto-detect
 #          if it is being invoked on a linux or MacOS machine
 #          and perform the relevent linux or MacOS system calls.
-#    Uses: ipconfig - (getting network interface info)
+#    Uses: OSX: ipconfig, ifconfig - (getting network interface info)
+#          Linux: hostname - (getting network interface info)
 #--------------------------------------------------------------
 
 #-------------------------------------------------------
 #  Part 1: Initialize global variables
 #-------------------------------------------------------
-VERBOSE="no"
 HEADER="yes"
 OS="osx"
 RESFILE="$HOME/.ipaddrs"
@@ -33,11 +33,9 @@ for ARGI; do
 	echo "  and perform the relevent linux or MacOS system calls. "
 	echo "                                                        "
         echo "Options:                                                "
-        echo "  --verbose, -v      Increase verbosity                 " 
         echo "  --help,    -h      Display this help message          " 
         echo "  --info,    -i      Display short script description   " 
         echo "  --terse,   -t      Suppress header info               " 
-        echo "  --results, -r      Redirect to RESULTS_FILE           " 
 	echo "                                                        "
 	echo "Returns:                                                "
 	echo "  0 on --help, -h or --info, -i                         "
@@ -50,11 +48,10 @@ for ARGI; do
 	echo "  6 Missing the ifconfig system command                 "
 	echo "                                                        "
 	echo "Examples:                                               "
- 	echo "  $ ips_osx.sh                                          "
+ 	echo "  $ ipaddrs.sh                                          "
+ 	echo "  $ ipaddrs.sh  --terse                                 "
         exit 0;
-    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ] ; then
-	VERBOSE="yes"
-    elif [ "${ARGI}" = "--suppress" -o "${ARGI}" = "-t" ] ; then
+    elif [ "${ARGI}" = "--terse" -o "${ARGI}" = "-t" ] ; then
 	HEADER="no"
     elif [ "${ARGI}" = "--info"   -o "${ARGI}" = "-i" ] ; then
 	echo "List all active network interfaces and IP addresses "
@@ -80,7 +77,7 @@ if [ "${OS}" = "linux" ]; then
     # Make sure the hostname utility is present
     command -v hostname >& /dev/null
     if [ $? != 0 ]; then
-	echo "The required utility ipconfig is not found. Exiting."
+	echo "The required utility hostname is not found. Exiting."
 	exit 4
     fi
 fi
@@ -132,38 +129,35 @@ if [ "${OS}" = "osx" ]; then
 	fi
     done
 
-    if [ ${count} = 1 ]; then
-	exit 0
+    if [ ${count} > 1 ]; then
+	exit 2
     elif [ ${count} = 0 ]; then
 	exit 1
-    else
-	exit 2
     fi
+    
+    exit 0
+
 fi
 
 #-------------------------------------------------------
 #  Part 7: Handle the Linux case
 #-------------------------------------------------------
-if [ "${OS}" = "linux" ]; then
+declare -a interfaces=()
 
-    declare -a interfaces=()
-    
-    interfaces=( $(hostname -I) )
+interfaces=( $(hostname -I) )
 
-    count=0
-    for iface in "${interfaces[@]}"
-    do
-	echo $iface  >> $RESFILE
-	((count=count+1))
-    done
+count=0
+for iface in "${interfaces[@]}"
+do
+    echo $iface  >> $RESFILE
+    ((count=count+1))
+done
 
-    if [ ${count} = 1 ]; then
-	exit 0
-    elif [ ${count} = 0 ]; then
-	exit 1
-    else
-	exit 2
-    fi
+if [ ${count} > 1 ]; then
+    exit 2
+elif [ ${count} = 0 ]; then
+    exit 1
 fi
 
+exit 0
 
