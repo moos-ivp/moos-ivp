@@ -16,8 +16,8 @@
 #-------------------------------------------------------
 HEADER="yes"
 OS="osx"
+TMP_RESFILE="$HOME/.ipaddrs_pid$$"
 RESFILE="$HOME/.ipaddrs"
-DATE=$(date)
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -99,14 +99,14 @@ if [ "${OS}" = "osx" ]; then
 fi
 
 
+EXIT_CODE=0
 #-------------------------------------------------------
 #  Part 5: Clear results file and Write file header if desired
 #-------------------------------------------------------
-echo -n "" > $RESFILE
+echo -n "" > $TMP_RESFILE
 if [ "$HEADER" = "yes" ]; then
-    echo "// IP addresses of currently active network interfaces." >> $RESFILE
-    echo "// Produced automatically by the ipaddrs.sh utility.   " >> $RESFILE
-    echo "// $DATE" >> $RESFILE
+    echo "// IP addresses of currently active network interfaces." >> $TMP_RESFILE
+    echo "// Produced automatically by the ipaddrs.sh utility.   " >> $TMP_RESFILE
 fi
 
 #-------------------------------------------------------
@@ -124,40 +124,57 @@ if [ "${OS}" = "osx" ]; then
 	new_iface=${iface%?}
 	ipaddr="$(ipconfig getifaddr $new_iface)"
 	if [ $? = 0 ]; then
-	    echo $ipaddr >> $RESFILE
+	    echo $ipaddr >> $TMP_RESFILE
 	    ((count=count+1))
 	fi
     done
-
-    if [ ${count} > 1 ]; then
-	exit 2
-    elif [ ${count} = 0 ]; then
-	exit 1
-    fi
     
-    exit 0
-
+    if [ ${count} > 1 ]; then
+	EXIT_CODE=2
+    elif [ ${count} = 0 ]; then
+	EXIT_CODE=1
+    fi
 fi
 
 #-------------------------------------------------------
 #  Part 7: Handle the Linux case
 #-------------------------------------------------------
-declare -a interfaces=()
+if [ "${OS}" = "linux" ]; then
 
-interfaces=( $(hostname -I) )
-
-count=0
-for iface in "${interfaces[@]}"
-do
-    echo $iface  >> $RESFILE
-    ((count=count+1))
-done
-
-if [ ${count} > 1 ]; then
-    exit 2
-elif [ ${count} = 0 ]; then
-    exit 1
+    declare -a interfaces=()
+    
+    interfaces=( $(hostname -I) )
+    
+    count=0
+    for iface in "${interfaces[@]}"
+    do
+	echo $iface  >> $TMP_RESFILE
+	((count=count+1))
+    done
+    
+    if [ ${count} > 1 ]; then
+	EXIT_CODE=2
+    elif [ ${count} = 0 ]; then
+	EXIT_CODE=1
+    fi
 fi
 
-exit 0
+
+#-------------------------------------------------------
+#  Part 8: If the tmp file is different, install it. 
+#  By building a tmp file, with a unique file name based 
+#  on the PID, this gaurds against possibly several 
+#  versions of this script running at nearly the same 
+#  time, and possiblly all writing to the destinatin file.
+#-------------------------------------------------------
+
+diff $TMP_RESFILE $RESFILE >& /dev/null
+
+if [ $? != 0 ]; then
+    mv -f $TMP_RESFILE $RESFILE
+else
+    rm -f $TMP_RESFILE
+fi
+
+exit $EXIT_CODE
 
