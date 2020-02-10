@@ -17,6 +17,7 @@
 HEADER="yes"
 OS="osx"
 TMP_RESFILE="$HOME/.ipaddr_info_pid$$"
+ERRFILE="$HOME/.ipaddr_info_err"
 RESFILE="$HOME/.ipaddr_info"
 
 #-------------------------------------------------------
@@ -119,7 +120,7 @@ if [ "${OS}" = "linux" ]; then
     # Make sure the ifconfig utility is present
     command -v ifconfig >& /dev/null
     if [ $? != 0 ]; then
-	echo "The required utility ifconfig is not found. Exiting."
+	echo "The required utility ifconfig is not found. Exit code 2."  > $ERRFILE
 	exit 2
     fi
 fi
@@ -128,7 +129,7 @@ if [ "${OS}" = "osx" ]; then
     # Make sure the networksetup utility is present
     command -v networksetup >& /dev/null
     if [ $? != 0 ]; then
-	echo "The required utility networksetup is not found. Exit code 2."
+	echo "The required utility networksetup is not found. Exit code 3." > $ERRFILE
 	exit 3
     fi
 fi
@@ -215,5 +216,6 @@ else
     rm -f $TMP_RESFILE
 fi
 
+echo "all ok. Exit code 0." > $ERRFILE
 exit 0
 
