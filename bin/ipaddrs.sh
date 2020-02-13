@@ -14,6 +14,7 @@
 #-------------------------------------------------------
 #  Part 1: Initialize global variables
 #-------------------------------------------------------
+VERBOSE="yes"
 HEADER="yes"
 OS="osx"
 TMP_RESFILE="$HOME/.ipaddrs_pid$$"
@@ -36,6 +37,7 @@ for ARGI; do
         echo "  --help,    -h      Display this help message          " 
         echo "  --info,    -i      Display short script description   " 
         echo "  --terse,   -t      Suppress header info               " 
+        echo "  --verbose, -v      Verbose output IPs to terminal     " 
 	echo "                                                        "
 	echo "Returns:                                                "
 	echo "  0 on --help, -h or --info, -i                         "
@@ -51,6 +53,8 @@ for ARGI; do
  	echo "  $ ipaddrs.sh                                          "
  	echo "  $ ipaddrs.sh  --terse                                 "
         exit 0;
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ] ; then
+	VERBOSE="yes"
     elif [ "${ARGI}" = "--terse" -o "${ARGI}" = "-t" ] ; then
 	HEADER="no"
     elif [ "${ARGI}" = "--info"   -o "${ARGI}" = "-i" ] ; then
@@ -125,6 +129,9 @@ if [ "${OS}" = "osx" ]; then
 	ipaddr="$(ipconfig getifaddr $new_iface)"
 	if [ $? = 0 ]; then
 	    echo $ipaddr >> $TMP_RESFILE
+	    if [ $VERBOSE = "yes" ]; then
+		echo $ipaddr
+	    fi
 	    ((count=count+1))
 	fi
     done
@@ -148,6 +155,9 @@ if [ "${OS}" = "linux" ]; then
     count=0
     for iface in "${interfaces[@]}"
     do
+	if [ $VERBOSE = "yes" ]; then
+	    echo $iface
+	fi
 	echo $iface  >> $TMP_RESFILE
 	((count=count+1))
     done
