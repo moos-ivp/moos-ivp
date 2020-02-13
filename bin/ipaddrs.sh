@@ -14,7 +14,7 @@
 #-------------------------------------------------------
 #  Part 1: Initialize global variables
 #-------------------------------------------------------
-VERBOSE="yes"
+VERBOSE="no"
 HEADER="yes"
 OS="osx"
 TMP_RESFILE="$HOME/.ipaddrs_pid$$"
