@@ -41,6 +41,7 @@ for ARGI; do
         echo "  --core,    -c      Form app list with common biggies  " 
         echo "  --survey,  -s      Survey if any MOOS apps running    " 
         echo "  --info,    -i      Output brief description of script "  
+        echo "  --antler,  -a      Add pAntler to app list "  
         echo "  --apps=<apps>      Form app list by given apps        " 
 	echo "                                                        "
 	echo "Returns:                                                "
