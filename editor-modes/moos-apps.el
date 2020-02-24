@@ -24,6 +24,15 @@
 (setq moos-app-and-keyword-list
       (list
       '("ANTLER" "MSBetweenLaunches" "Run" "NewConsole")
+      '("uFldVoronoi" "stale_time" "verbose" "region")
+      '("uFldVoronoi" "reject_range" "post_poly" "post_region" "region")
+      '("uMemWatch" "ignore" "watch_only" "absolute_time_gap")
+      '("uFldCollObDetect" "collision_dist" "near_miss_dist" "encounter_dist" "collision_flag" "near_miss_flag" "encounter_flag")
+      '("uFldObstacleSim" "obstacle_file" "poly_vert_color" "poly_edge_color" "poly_fill_color" "poly_label_color" "poly_vert_size" "poly_edge_size" "draw_region" "post_points" "rate_points" "poly_transparency")
+      '("uFldWrapDetect" "max_segments" "max_trail_distance" "max_trail_dist")
+      '("pMovingSurvey" "survey" "heading" "speed" "reverse_interval" "update_interval" "rpm")
+
+      
       '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "rand_var" "randvar" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp" "time_zero" "pause_variable" "forward_variable")
       '("uProcessWatch"  "watch" "watch_all" "nowatch" "allow_retractions" "summary_wait" "post_mapping")
       '("uSimMarine"  "start_x" "start_y" "start_heading" "start_speed" "start_depth" "start_pos" "drift_x" "drift_y" "rotate_speed" "drift_vector" "buoyancy_rate" "max_acceleration" "max_deceleration" "max_depth_rate" "max_depth_rate_speed" "sim_pause" "dual_state" "thrust_reflect" "thrust_factor" "turn_rate" "thrust_map" "prefix" "default_water_depth" "trim_tolerance" "max_trim_delay" "max_rudder_degs_per_sec")
@@ -71,7 +80,7 @@
       '("uXMS" "var" "source" "history_var" "display_virgins" "display_source" "display_aux_source" "display_time" "display_community" "display_all" "trunc_data" "term_report_interval" "colormap" "color_map" "refresh_mode" "content_mode" "paused")
       '("uSimCurrent" "current_field")
 
-      '("pEvalLoiter" "eval_window" "nav_stale_thresh" "mode_thresh" "max_nav_age" "range_max_ineff")
+      '("pEvalLoiter" "eval_window" "nav_stale_thresh" "mode_thresh" "max_nav_age" "range_max_ineff" "notable_cpa_thresh" "notable_eff_thresh" "notable_cpa_var" "notable_eff_var")
       
       '("uFldSwarmAssign" "task")
       '("uFldCollisionDetect" "collision_range" "near_miss_range" "pulse_render" "pulse_range" "pulse_duration" "condition" "collision_flag" "near_miss_flag" "encounter_flag" "encounter_range")
