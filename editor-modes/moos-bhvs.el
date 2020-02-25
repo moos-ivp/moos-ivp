@@ -23,10 +23,15 @@
 
 (setq moos-bhv-and-keyword-list
       (list
-       '("BHV_Waypoint" "capture_radius" "capture_line" "cycleflag" "lead" "lead_damper" "lead_to_start" "order" "points" "point" "polygon" "post_suffix" "radius" "repeat" "nm_radius" "slip_radius" "ipf_type" "ipf-type" "speed" "speed_alt" "use_alt_speed" "visual_hints" "wptflag" "wpt_status_var" "wpt_index_var" "wpt_dist_to_prev" "wpt_dist_to_next" "efficiency_measure" "crs_spd_zaic_ratio")
+       '("BHV_AvdColregsV17" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade")
+       '("BHV_AvdColregsV19" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "giveway_bow_dist" "use_refinery" "check_plateaus" "check_validity" "pcheck_thresh")
+	 
+       '("BHV_Waypoint" "capture_radius" "activate_radius" "speed" "stale_nav_thresh" "stale_poly_thres" "setpt_method" "visual_hints")
+
+       '("BHV_Waypoint" "capture_radius" "capture_line" "cycleflag" "lead" "lead_damper" "lead_to_start" "order" "points" "point" "polygon" "post_suffix" "radius" "repeat" "nm_radius" "slip_radius" "ipf_type" "ipf-type" "speed" "speed_alt" "use_alt_speed" "visual_hints" "wptflag" "wpt_status_var" "wpt_index_var" "wpt_dist_to_prev" "wpt_dist_to_next" "efficiency_measure" "crs_spd_zaic_ratio")       
        '("BHV_OpRegion" "max_time" "max_depth" "min_altitude" "polygon" "trigger_entry_time" "trigger_exit_time" "visual_hints" "breached_altitude_flag" "breached_depth_flag" "breached_poly_flag" "breached_time_flag" "reset_var" "time_remaining_var" "opregion_poly_var")
        '("BHV_OpRegionRecover" "polygon" "trigger_entry_time" "trigger_exit_time" "visual_hints" "breached_poly_flag" "reset_var" "opregion_poly_var")
-       '("BHV_Loiter" "acquire_dist" "capture_radius" "center_activate" "center_assign" "clockwise" "polygon" "post_suffix" "radius" "nm_radius" "slip_radius" "speed" "speed_alt" "use_alt_speed" "spiral_factor" "visual_hints" "xcenter_assigne" "ycenter_assign" "patience")
+       '("BHV_Loiter" "acquire_dist" "capture_radius" "center_activate" "center_assign" "clockwise" "polygon" "post_suffix" "radius" "nm_radius" "slip_radius" "speed" "speed_alt" "use_alt_speed" "spiral_factor" "visual_hints" "xcenter_assign" "ycenter_assign" "patience" "ipf-type" "ipf_type")
        '("BHV_PeriodicSpeed" "basewidth" "initially_busy" "peakwidth" "period_busy" "period_lazy" "period_speed" "reset_upon_running" "summit_delta")
        '("BHV_PeriodicSurface" "acomms_mark_variable" "ascent_grade" "ascent_speed" "atsurface_status_var" "mark_variable" "max_time_at_surface" "pending_status_var" "period" "zero_speed_depth")
        '("BHV_ConstantDepth" "basewidth" "depth" "duration" "peakwidth" "summitdelta" "depth_mismatch_var")
