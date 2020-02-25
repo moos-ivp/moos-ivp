@@ -145,6 +145,14 @@ bool ObstacleSim::OnStartUp()
       handled = setColorOnString(m_poly_edge_color, value);
     else if((param == "poly_label_color") && isColor(value))
       handled = setColorOnString(m_poly_label_color, value);
+
+    else if(param == "poly_vert_size")
+      handled = setNonNegDoubleOnString(m_poly_vert_size, value);
+    else if(param == "poly_edge_size")
+      handled = setNonNegDoubleOnString(m_poly_edge_size, value);
+    else if(param == "poly_transparency")
+      handled = setNonNegDoubleOnString(m_poly_transparency, value);
+
     else if(param == "draw_region")
       handled = setBooleanOnString(m_draw_region, value);
     else if(param == "post_points")

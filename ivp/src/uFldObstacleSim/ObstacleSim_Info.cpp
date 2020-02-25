@@ -41,8 +41,8 @@ void showHelpAndExit()
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch uFldObstacleSim with the given process name         ");
-  blk("      rather than uFldObstacleSim.                           ");
+  blk("      Launch uFldObstacleSim with the given process name        ");
+  blk("      rather than uFldObstacleSim.                              ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -50,7 +50,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of uFldObstacleSim.        ");
+  blk("      Display the release version of uFldObstacleSim.           ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -79,8 +79,9 @@ void showExampleConfigAndExit()
   blk("  poly_fill_color  = color                                      ");
   blk("  poly_label_color = color                                      ");
   blk("                                                                ");
-  blk("  poly_vert_size   = 1        (the default)                     ");
-  blk("  poly_edge_size   = 1        (the default)                     ");
+  blk("  poly_vert_size    = 1       (the default)                     ");
+  blk("  poly_edge_size    = 1       (the default)                     ");
+  blk("  poly_transparency = 0.15    (the default)                     ");
   blk("                                                                ");
   blk("  draw_region      = true     (default is true)                 ");
   blk("  post_points      = true                                       ");
