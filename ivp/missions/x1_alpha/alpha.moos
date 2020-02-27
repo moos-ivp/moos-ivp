@@ -1,6 +1,6 @@
 //-------------------------------------------------
-// NAME: M. Benjamin, MIT CSAIL
-// FILE: bravo.moos
+// NAME: M. Benjamin, MIT MechE
+// FILE: alpha.moos
 //-------------------------------------------------
 
 ServerHost = localhost
@@ -8,7 +8,6 @@ ServerPort = 9005
 Community  = alpha
 
 MOOSTimeWarp = 1
-TERM_REPORTING = false
 
 // Forest Lake
 LatOrigin  = 43.825300 
@@ -21,43 +20,19 @@ LongOrigin = -70.330400
 
 //------------------------------------------
 // Antler configuration  block
+
 ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		@ NewConsole = false
-  Run = pLogger         @ NewConsole = false
-  Run = uSimMarine	@ NewConsole = false
-  Run = pMarinePID	@ NewConsole = false
-  Run = pHelmIvP	@ NewConsole = false
+  Run = MOOSDB		    @ NewConsole = false
+  Run = pLogger       @ NewConsole = false
+  Run = uSimMarine	  @ NewConsole = false
+  Run = pMarinePID	  @ NewConsole = false
+  Run = pHelmIvP	    @ NewConsole = false
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
-  Run = pTaskManager    @ NewConsole = false
-  Run = pEchoVar        @ NewConsole = false
-  //Run = iSay	        @ NewConsole = true
-  //Run = uXMS	        @ NewConsole = false
-  //Run = uTimerScript    @ NewConsole = false
-}
-
-//------------------------------------------
-// pTaskManager config block
-
-ProcessConfig = pTaskManager
-{
-  AppTick   = 4
-  CommsTick = 4
-}
-
-//------------------------------------------
-// pEchoVar config block
-
-ProcessConfig = pEchoVar
-{
-  AppTick   = 4
-  CommsTick = 4
-
-  echo = STATION  !-> BROTHER
 }
 
 //------------------------------------------
@@ -70,7 +45,7 @@ ProcessConfig = uProcessWatch
 
   summary_wait = 5
 
-  //nowatch   = uXMS*
+  nowatch   = uXMS*
   nowatch   = uMAC*
   nowatch   = uPokeDB*
   nowatch   = uTermCommand*
@@ -88,7 +63,6 @@ ProcessConfig = pLogger
 
   AsyncLog = true
 
-  file=MOOSLog
   // For variables that are published in a bundle on their first post,
   // explicitly declare their logging request
 
@@ -98,7 +72,7 @@ ProcessConfig = pLogger
 
   LogAuxSrc = true
   WildCardLogging = true
-  // WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = *_STATUS
   WildCardExclusionLog = true
 }
 
@@ -112,19 +86,10 @@ ProcessConfig = uSimMarine
 
   start_x       = 95
   start_y       = -30
-
-  //start_x       = 103
-  //start_y       = -30
-
-  
-  //start_x       = 0
-  //start_y       = -10
   start_speed   = 0
-  //start_heading = 180
   start_heading = 180
 
   prefix        = NAV
-
   turn_rate     = 40
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
 }
@@ -141,14 +106,11 @@ ProcessConfig = pHelmIvP
   term_report_interval=0
 
   bhv_dir_not_found_ok = true
-  ivp_behavior_dir = /Users/ddmikerb
+  //ivp_behavior_dir = /Users/ddmikerb
 
-  behaviors=alpha.bhv
+  behaviors  = alpha.bhv
   domain     = course:0:359:360
   domain     = speed:0:4:21
-
-  //hold_start_post_app = pFooBar,pBarFoo,
-  //hold_on_app = iSay
 }
 
 //------------------------------------------
@@ -156,8 +118,8 @@ ProcessConfig = pHelmIvP
 
 ProcessConfig = pMarinePID
 {
-  AppTick    = 20
-  CommsTick  = 20
+  AppTick    = 10
+  CommsTick  = 10
 
   max_sat_hdg_debug = false
   max_sat_spd_debug = true
@@ -228,9 +190,8 @@ ProcessConfig = pMarineViewer
   button_two = STATION:T # STATION=true
   button_three = STATION:F # STATION=falSE
 
-  //button_four = REVERSE # WPT_UPDATE=order=toggle
-  button_four = TASK # MISSION_TASK=type=waypoint,x=20,y=30
- }
+  button_four = REVERSE # WPT_UPDATE=order=toggle
+}
 
 //------------------------------------------
 // pNodeReporter config block
@@ -238,26 +199,9 @@ ProcessConfig = pMarineViewer
 ProcessConfig = pNodeReporter
 {
   MaxAppTick    = 2
-  AppTick	= 2
+  AppTick  	= 2
   CommsTick	= 2
 
   platform_type   = KAYAK
   platform_length = 4
 }
-
-
-// This block is here in conjunction with the uTermCommand 
-// documentation to demonstrate functionality of that tool.
-// This mission may be alternately 
-
-ProcessConfig = uTermCommandFoo
-{
-  cmd  = override_true  -->  MOOS_MANUAL_OVERRIDE --> true
-  cmd  = override_false -->  MOOS_MANUAL_OVERRIDE --> false
-  cmd  = deploy_true    -->  DEPLOY --> true
-  cmd  = deploy_false   -->  DEPLOY --> false
-  cmd  = return_true    -->  RETURN --> true
-  cmd  = return_false   -->  RETURN --> false
-}
-
-
