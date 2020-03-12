@@ -110,8 +110,6 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  bhv_dir_not_found_ok = true
-
   behaviors  = alpha.bhv
   domain     = course:0:359:360
   domain     = speed:0:4:41
