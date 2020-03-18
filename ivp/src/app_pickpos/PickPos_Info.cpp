@@ -96,6 +96,11 @@ void showHelpAndExit()
   cout << "  --vnames                                           " << endl;
   cout << "     Generate a set of unique vehicle names, one for " << endl;
   cout << "     each position or speed being generated.         " << endl;
+  cout << "  --vnames=kobe,tom,bernie                           " << endl;
+  cout << "     Generate a set of unique vehicle names, one for " << endl;
+  cout << "     each position or speed being generated. First   " << endl;
+  cout << "     names chosen from the given list, otherwise the " << endl;
+  cout << "     names names are chosen from stock list.         " << endl;
   cout << "  --hdg=<config>                                     " << endl;
   cout << "     Specify how initial heading vals are chosen. If " << endl;
   cout << "     left unspecified, no heading val will be made.  " << endl;
@@ -116,6 +121,7 @@ void showHelpAndExit()
   cout << "                                                     " << endl;
   cout << "Examples:                                            " << endl;
   cout << "  pickpos --amt=5 --vnames                           " << endl;
+  cout << "  pickpos --amt=5 --vnames=kobe,jack,wim,pete,sam    " << endl;
   cout << "  pickpos --amt=4 --grps=red,blue,blue               " << endl;
   cout << "  pickpos --amt=4 --grps=true,false:alt              " << endl;
   cout << "  pickpos --amt=5 --polygon=\"60,-40:60,-160:150,-160:180,-100\" " << endl;
