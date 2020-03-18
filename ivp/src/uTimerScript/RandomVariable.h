@@ -61,6 +61,8 @@ class RandomVariable
   double      m_min_val;
   double      m_max_val;
 
+  double      m_snap;
+  
  protected: // State Variables
   double      m_value;
   std::string m_value_str;

@@ -60,7 +60,17 @@ void RandVarUniform::reset()
   int    rand_int = rand() % 10000;
   double rand_pct = (double)(rand_int) / 10000;
   m_value = m_min_val + ((m_max_val-m_min_val) * rand_pct);
+
+  m_value = snapToStep(m_value, m_snap);
+  if(m_value < m_min_val)
+    m_value = m_min_val;
+  if(m_value > m_max_val)
+    m_value = m_max_val;
+
   m_value_str = doubleToStringX(m_value, 3);
+
+  
+
 }
   
 //---------------------------------------------------------
@@ -75,12 +85,4 @@ string RandVarUniform::getStringSummary() const
   str += "type=uniform";
   return(str);
 }
-  
-
-
-
-
-
-
-
 

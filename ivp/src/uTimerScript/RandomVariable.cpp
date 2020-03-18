@@ -38,6 +38,8 @@ RandomVariable::RandomVariable()
   // Initial values for configuration parameters
   m_varname = "random_var";
   m_keyname = "";
+
+  m_snap = 0.001;
 }
 
 //---------------------------------------------------------
@@ -54,6 +56,10 @@ bool RandomVariable::setParam(string param, double value)
     m_max_val = value;
     if(m_min_val > m_max_val)
       m_min_val = m_max_val;
+  }
+  else if(param == "snap") {
+    if(value > 0)
+      m_snap = value;
   }
   else
     return(false);

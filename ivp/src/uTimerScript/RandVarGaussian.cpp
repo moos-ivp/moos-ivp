@@ -66,12 +66,13 @@ void RandVarGaussian::reset()
   m_value = m_mu + noise;
   m_value_str = "";
 
+  m_value = snapToStep(m_value, m_snap);
   if(m_value > m_max_val)
     m_value = m_max_val;
   if(m_value < m_min_val)
     m_value = m_min_val;
 
-  m_value_str = doubleToStringX(m_value,0);
+  m_value_str = doubleToStringX(m_value,5);
 }
   
 //---------------------------------------------------------

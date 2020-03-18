@@ -78,12 +78,14 @@ string RandomVariableSet::addRandomVarUniform(const string& spec)
   string keyname;
   double minval=0;
   double maxval=1;
+  double snapval=-1;
   bool   minval_set = false;
   bool   maxval_set = false;
-
+  
   vector<string> svector = parseString(spec, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
+    string orig  = stripBlankEnds(svector[i]);
     string left  = biteStringX(svector[i], '=');
     string right = svector[i];
     if(left == "varname")
@@ -97,6 +99,9 @@ string RandomVariableSet::addRandomVarUniform(const string& spec)
     else if((left == "max") && isNumber(right)) {
       maxval = atof(right.c_str());
       maxval_set = true;
+    }
+    else if((left == "snap") && isNumber(right)) {
+      snapval = atof(right.c_str());
     }
     else if(left != "type")
       return("Bad parametery=value: " + left + "=" + right);
@@ -132,6 +137,8 @@ string RandomVariableSet::addRandomVarUniform(const string& spec)
   rand_var->setType("uniform");
   rand_var->setParam("min", minval);
   rand_var->setParam("max", maxval);
+  if(snapval > 0)
+    rand_var->setParam("snap", snapval);
   
   m_rvar_vector.push_back(rand_var);
   return("");
@@ -146,6 +153,7 @@ string RandomVariableSet::addRandomVarGaussian(const string& spec)
   string keyname;
   double minval=0;
   double maxval=1;
+  double snapval=-1;
   double mu=0;
   double sigma=1;
   bool   minval_set = false;
@@ -169,6 +177,9 @@ string RandomVariableSet::addRandomVarGaussian(const string& spec)
     else if((left == "max") && isNumber(right)) {
       maxval = atof(right.c_str());
       maxval_set = true;
+    }
+    else if((left == "snap") && isNumber(right)) {
+      snapval = atof(right.c_str());
     }
     else if((left == "mu") && isNumber(right)) {
       mu = atof(right.c_str());
@@ -218,6 +229,8 @@ string RandomVariableSet::addRandomVarGaussian(const string& spec)
   rand_var->setParam("max", maxval);
   rand_var->setParam("mu",  mu);
   rand_var->setParam("sigma", sigma);
+  if(snapval > 0)
+    rand_var->setParam("snap", snapval);
   
   m_rvar_vector.push_back(rand_var);
   return("");
