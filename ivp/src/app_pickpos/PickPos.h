@@ -53,6 +53,7 @@ class PickPos
   bool   setHdgConfig(std::string);
   bool   setSpdConfig(std::string);
   bool   setGroups(std::string);
+  bool   setVNames(std::string);
   bool   setVNames() {m_vnames=true; return(true);}
 
   void   setVerbose(bool v)      {m_verbose=v;}
@@ -63,6 +64,7 @@ class PickPos
   bool   pick();
 
  protected:
+  void setVNameCache();
   void pickPosByFile();
   void pickPosByPoly();
   bool pickPosByCircle(double minsep=-1);
@@ -110,7 +112,10 @@ protected: // State variables
   double                    m_pt_snap;
   double                    m_hdg_snap;
   double                    m_spd_snap;
-  
+
+  // The possible vehicle names, a cache to pick from.
+  std::vector<std::string>  m_vname_cache;
+
   // The possible positions specified by file input
   std::vector<std::string>  m_file_positions;
 

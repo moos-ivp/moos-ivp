@@ -78,6 +78,8 @@ PickPos::PickPos()
   m_output_type = "full";
 
   m_headers_enabled = false;
+
+  setVNameCache();
 }
 
 
@@ -155,6 +157,41 @@ bool PickPos::setOutputType(string str)
     return(true);
   }
   return(false);
+}
+
+//---------------------------------------------------------
+// Procedure: setVNames()
+
+bool PickPos::setVNames(string str)
+{
+  m_vnames = true;
+  
+  vector<string> names = parseString(str, ',');
+  for(unsigned int i=0; i<names.size(); i++) {
+    string name = stripBlankEnds(names[i]);
+    if(strContainsWhite(name))
+      return(false);
+    if(strContains(name, '*'))
+      return(false);
+    if(strContains(name, '"'))
+      return(false);
+    if(strContains(name, '\"'))
+      return(false);
+    if(strContains(name, ')'))
+      return(false);
+    if(strContains(name, '('))
+      return(false);
+    if(strContains(name, '$'))
+      return(false);
+  }
+
+  for(unsigned int i=0; i<names.size(); i++) {
+    string name = stripBlankEnds(names[i]);
+    if(i < m_vname_cache.size())
+      m_vname_cache[i] = name;
+  }
+    
+  return(true);
 }
 
 
@@ -690,46 +727,52 @@ void PickPos::pickGroupNames()
 }
 
 //---------------------------------------------------------
+// Procedure: setVNameCache()
+
+void PickPos::setVNameCache()
+{
+  m_vname_cache.clear();
+
+  m_vname_cache.push_back("abe");     m_vname_cache.push_back("ben");
+  m_vname_cache.push_back("cal");     m_vname_cache.push_back("deb");
+  m_vname_cache.push_back("eve");     m_vname_cache.push_back("fin");
+  m_vname_cache.push_back("gil");     m_vname_cache.push_back("hal");
+  m_vname_cache.push_back("ike");     m_vname_cache.push_back("jim");
+  m_vname_cache.push_back("kim");     m_vname_cache.push_back("lou");
+  m_vname_cache.push_back("mal");     m_vname_cache.push_back("ned");
+  m_vname_cache.push_back("opi");     m_vname_cache.push_back("pal");
+  m_vname_cache.push_back("que");     m_vname_cache.push_back("ray");
+  m_vname_cache.push_back("sam");     m_vname_cache.push_back("tim");
+  m_vname_cache.push_back("ula");     m_vname_cache.push_back("val");
+  m_vname_cache.push_back("wes");     m_vname_cache.push_back("xiu");
+  m_vname_cache.push_back("yen");     m_vname_cache.push_back("zan");
+  m_vname_cache.push_back("apia");    m_vname_cache.push_back("baku");
+  m_vname_cache.push_back("cary");    m_vname_cache.push_back("doha");
+  m_vname_cache.push_back("elko");    m_vname_cache.push_back("fahy");
+  m_vname_cache.push_back("galt");    m_vname_cache.push_back("hays");
+  m_vname_cache.push_back("iola");    m_vname_cache.push_back("juba");
+  m_vname_cache.push_back("kiev");    m_vname_cache.push_back("lima");
+  m_vname_cache.push_back("mesa");    m_vname_cache.push_back("nuuk");
+  m_vname_cache.push_back("oslo");    m_vname_cache.push_back("pace");
+  m_vname_cache.push_back("quay");    m_vname_cache.push_back("rome");
+  m_vname_cache.push_back("sako");    m_vname_cache.push_back("troy");
+  m_vname_cache.push_back("ubly");    m_vname_cache.push_back("vimy");
+  m_vname_cache.push_back("waco");    m_vname_cache.push_back("xian");
+  m_vname_cache.push_back("york");    m_vname_cache.push_back("zahl");
+}
+
+//---------------------------------------------------------
 // Procedure: pickVehicleNames()
 
 void PickPos::pickVehicleNames()
 {
-  // Part 1: Handle simple case where the user does not want headings
-  if(!m_vnames)
+  int choices = (int)(m_vname_cache.size());
+  if(choices == 0)
     return;
-
-  vector<string> vnames;  
-  vnames.push_back("abe");     vnames.push_back("ben");
-  vnames.push_back("cal");     vnames.push_back("deb");
-  vnames.push_back("eve");     vnames.push_back("fin");
-  vnames.push_back("gil");     vnames.push_back("hal");
-  vnames.push_back("ike");     vnames.push_back("jim");
-  vnames.push_back("kim");     vnames.push_back("lou");
-  vnames.push_back("mal");     vnames.push_back("ned");
-  vnames.push_back("opi");     vnames.push_back("pal");
-  vnames.push_back("que");     vnames.push_back("ray");
-  vnames.push_back("sam");     vnames.push_back("tim");
-  vnames.push_back("ula");     vnames.push_back("val");
-  vnames.push_back("wes");     vnames.push_back("xiu");
-  vnames.push_back("yen");     vnames.push_back("zan");
-  vnames.push_back("apia");    vnames.push_back("baku");
-  vnames.push_back("cary");    vnames.push_back("doha");
-  vnames.push_back("elko");    vnames.push_back("fahy");
-  vnames.push_back("galt");    vnames.push_back("hays");
-  vnames.push_back("iola");    vnames.push_back("juba");
-  vnames.push_back("kiev");    vnames.push_back("lima");
-  vnames.push_back("mesa");    vnames.push_back("nuuk");
-  vnames.push_back("oslo");    vnames.push_back("pace");
-  vnames.push_back("quay");    vnames.push_back("rome");
-  vnames.push_back("sako");    vnames.push_back("troy");
-  vnames.push_back("ubly");    vnames.push_back("vimy");
-  vnames.push_back("waco");    vnames.push_back("xian");
-  vnames.push_back("york");    vnames.push_back("zahl");
-
-  int choices = (int)(vnames.size());
+  
   for(unsigned int i=0; i<m_pick_amt; i++) {
     int index = i % choices;
-    m_pick_vnames.push_back(vnames[index]);
+    m_pick_vnames.push_back(m_vname_cache[index]);
   }
 }
 

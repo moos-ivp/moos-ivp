@@ -80,8 +80,10 @@ int main(int argc, char *argv[])
       handled = pickpos.setSpeedSnap(argi.substr(8));
     else if(strBegins(argi, "--psnap="))
       handled = pickpos.setPointSnap(argi.substr(8));
-    else if(strBegins(argi, "--vnames"))
+    else if(argi == "--vnames")
       handled = pickpos.setVNames();
+    else if(strBegins(argi, "--vnames="))
+      handled = pickpos.setVNames(argi.substr(9));
     else if(strBegins(argi, "--grps="))
       handled = pickpos.setGroups(argi.substr(7));
     else if(argi == "--hdrs") {
