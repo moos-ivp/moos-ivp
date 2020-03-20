@@ -173,4 +173,7 @@ std::vector<std::string> joinLines(const std::vector<std::string>&,
 
 std::vector<std::string> breakLen(const std::vector<std::string>&,
 				  unsigned int maxlen);
+
+std::string checksumHexStr(std::string);
+
 #endif

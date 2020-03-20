@@ -2406,3 +2406,27 @@ vector<string> breakLen(const vector<string>& svector, unsigned int maxlen)
   
   return(rvector);
 }
+
+
+//---------------------------------------------------------
+// Procedure: checksumHexStr()
+
+string checksumHexStr(string str)
+{
+  int dec = 0;
+  for(unsigned int i=0; i<str.size(); i++)
+    dec ^= str[i];
+  
+  string hexstr;
+  char hex[]={'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+
+  while(dec>0) {
+    int r = dec % 16;
+    hexstr = hex[r] + hexstr;
+    dec = dec/16;
+  }
+
+  return(hexstr);
+}
+
+

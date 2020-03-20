@@ -17,7 +17,8 @@ SET(SRC
   Odometer.cpp
   Figlog.cpp
   ReleaseInfo.cpp
-)
+  LatLonFormatUtils.cpp
+  )
 
 SET(HEADERS
   ColorPack.h
@@ -33,6 +34,7 @@ SET(HEADERS
   Odometer.h
   ReleaseInfo.h
   ScopeEntry.h
+  LatLonFormatUtils.h
 )
 
 # Build Library
