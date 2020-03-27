@@ -62,6 +62,9 @@ string latDDtoDDMM(double gval)
     str += "0";
   
   str += doubleToStringX(mins);
+
+  if(!strContains(str, ','))
+    str += ".00";
   
   return(str);
 }
@@ -69,13 +72,9 @@ string latDDtoDDMM(double gval)
 
 //--------------------------------------------------------
 // Procedure: lonDDDtoDDMM()
-//      Note: Convert 123.82530
-//                    12349.518
+//      Note: Convert 4849.518
+//                    48.82530
 //            49.518 minutes = 0.8253 degs * 60 minutes
-//      Note: Negative Longitutes are conveyed with positive
-//            values. -23.82530 ==> 02349.518
-//            It is assumed caller will handle appropriately
-//            In the case of NMEA msgs, an E/W designator is used
 
 string lonDDDtoDDDMM(double gval)
 {
@@ -102,7 +101,66 @@ string lonDDDtoDDDMM(double gval)
     str += "0";
   
   str += doubleToStringX(mins);
+  if(!strContains(str, ','))
+    str += ".00";
 
   return(str);
+}
+
+//--------------------------------------------------------
+// Procedure: latDDMMtoDD()
+//      Note: Convert 4849.518 to 
+//                    48.8253
+//            
+//            0.8253 degs = 49.518 minutes / 60 minutes
+
+double latDDMMtoDD(string sval)
+{
+  if(sval.length() < 2)  
+    return(0);
+
+  string sdegs;
+  if(sval[0] != '0')
+    sdegs += sval[0];
+  sdegs += sval[1];
+
+  string smins = sval.substr(2);
+
+  double degs = atof(sdegs.c_str());
+  double mins = atof(smins.c_str());
+
+  degs += (mins / 60);
+
+  return(degs);
+}
+
+
+//--------------------------------------------------------
+// Procedure: lonDDDMMtoDDD()
+//      Note: Convert 04849.518 to 
+//                    48.8253
+//            
+//            0.8253 degs = 49.518 minutes / 60 minutes
+
+double lonDDDMMtoDDD(string sval)
+{
+  if(sval.length() < 3)  
+    return(0);
+
+  string sdegs;
+  if(sval[0] != '0')
+    sdegs += sval[0];
+  if((sdegs != "") || (sval[1] != '0'))
+    sdegs += sval[1];
+  sdegs += sval[2];
+
+  string smins = sval.substr(3);
+
+  double degs = atof(sdegs.c_str());
+  double mins = atof(smins.c_str());
+
+  degs += (mins / 60);
+
+  return(degs);
 }
 

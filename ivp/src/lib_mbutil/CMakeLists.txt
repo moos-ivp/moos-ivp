@@ -16,6 +16,7 @@ SET(SRC
   VarDataPair.cpp
   Odometer.cpp
   Figlog.cpp
+  TStamp.cpp
   ReleaseInfo.cpp
   LatLonFormatUtils.cpp
   )
@@ -32,6 +33,7 @@ SET(HEADERS
   TermUtils.h
   VarDataPair.h
   Odometer.h
+  TStamp.h
   ReleaseInfo.h
   ScopeEntry.h
   LatLonFormatUtils.h
