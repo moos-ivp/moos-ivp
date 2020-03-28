@@ -67,7 +67,7 @@ for ARGI; do
     elif [ "${ARGI}" = "--survey" -o "${ARGI}" = "-s" ] ; then
 	SURVEY="yes"
     elif [ "${ARGI}" = "--core" -o "${ARGI}" = "-c" ] ; then
-	APPS="pHelmIvP,MOOSDB,pMarineViewer,uSimMarine,pMarinePID"
+	APPS="pHelmIvP,MOOSDB,pMarineViewer,uSimMarine,pMarinePID,pLogger"
     elif [ "${ARGI}" = "--mem" -o "${ARGI}" = "-m" ] ; then
 	SORTBY="mem"
     elif [ "${ARGI:0:7}" = "--apps=" ] ; then
