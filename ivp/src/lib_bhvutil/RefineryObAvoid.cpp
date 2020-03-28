@@ -45,9 +45,9 @@ RefineryObAvoid::RefineryObAvoid(IvPDomain domain)
   m_spd_ix = domain.getIndex("speed");
   if(m_crs_ix == m_spd_ix)
     return;
-  if((m_crs_ix < 0) || (domain.getVarPoints(m_crs_ix) == 0))
+  if(domain.getVarPoints(m_crs_ix) == 0)
     return;
-  if((m_spd_ix < 0) || (domain.getVarPoints(m_spd_ix) == 0))
+  if(domain.getVarPoints(m_spd_ix) == 0)
     return;
 
   m_domain = domain;
@@ -237,8 +237,6 @@ void RefineryObAvoid::setRefineRegionsMinor()
 double RefineryObAvoid::getHdgSnappedLow(double hdg) const
 {
   // Sanity checks
-  if(m_crs_ix < 0)
-    return(hdg);
   if((hdg < 0) || (hdg >= 360))
     hdg = angle360(hdg);
 
@@ -254,8 +252,6 @@ double RefineryObAvoid::getHdgSnappedLow(double hdg) const
 double RefineryObAvoid::getHdgSnappedHigh(double hdg) const
 {
   // Sanity checks
-  if(m_crs_ix < 0)
-    return(hdg);
   if((hdg < 0) || (hdg >= 360))
     hdg = angle360(hdg);
 
@@ -275,8 +271,6 @@ double RefineryObAvoid::getHdgSnappedHigh(double hdg) const
 double RefineryObAvoid::getHdgSnappedProx(double hdg) const
 {
   // Sanity check
-  if(m_crs_ix < 0)
-    return(hdg);
   if((hdg < 0) || (hdg >= 360))
     hdg = angle360(hdg);
 
@@ -301,10 +295,6 @@ double RefineryObAvoid::getHdgSnappedProx(double hdg) const
 
 double RefineryObAvoid::getSpdSnappedLow(double spd) const
 {
-  // Sanity check
-  if(m_spd_ix < 0)
-    return(spd);
-
   unsigned int uint_val = m_domain.getDiscreteVal(m_spd_ix, spd, 0);
   double new_spd = m_domain.getVal(m_spd_ix, uint_val);
 
@@ -316,10 +306,6 @@ double RefineryObAvoid::getSpdSnappedLow(double spd) const
 
 double RefineryObAvoid::getSpdSnappedHigh(double spd) const
 {
-  // Sanity check
-  if(m_spd_ix < 0)
-    return(spd);
-
   unsigned int uint_val = m_domain.getDiscreteVal(m_spd_ix, spd, 1);
   double new_spd = m_domain.getVal(m_spd_ix, uint_val);
 
