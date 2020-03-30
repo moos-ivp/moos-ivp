@@ -7,8 +7,9 @@ JUST_MAKE="no"
 IP_ADDR="localhost"
 VNAME=$(id -un)
 INDEX="1"
+SHORE=""
+START_POS="0,0"  
 SHORE="localhost:9300"
-START_POS="0,0"
 PSHARE_PORT=""
 
 for ARGI; do
@@ -51,14 +52,6 @@ if [ "${PSHARE_PORT}" = "" ] ; then
 fi
 
 VNAME=$VNAME"_"$INDEX
-
-SHARE_LISTEN=$IP_ADDR":"$PSHARE_PORT
-echo "IP_ADDR: ["$IP_ADDR"]"
-echo "PSHARE_PORT: ["$PSHARE_PORT"]"
-echo "SHARE_LISTEN: ["$SHARE_LISTEN"]"
-
-echo "VNAME 2 is" $VNAME
-
 
 #-------------------------------------------------------
 #  Part 2: Create the .moos and .bhv files. 
