@@ -27,6 +27,7 @@ for ARGI; do
         TIME_WARP=$ARGI
     elif [ "${ARGI:0:8}" = "--vname=" ] ; then
         VNAME="${ARGI#--vname=*}"
+	echo "VNAME is" $VNAME
     elif [ "${ARGI:0:8}" = "--index=" ] ; then
         INDEX="${ARGI#--index=*}"
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
@@ -56,6 +57,7 @@ echo "IP_ADDR: ["$IP_ADDR"]"
 echo "PSHARE_PORT: ["$PSHARE_PORT"]"
 echo "SHARE_LISTEN: ["$SHARE_LISTEN"]"
 
+echo "VNAME 2 is" $VNAME
 
 
 #-------------------------------------------------------
@@ -77,7 +79,8 @@ fi
 #-------------------------------------------------------
 #  Part 3: Launch the processes
 #-------------------------------------------------------
-printf "Launching $VNAME MOOS Community (WARP=%s) \n" $TIME_WARP
+echo "Launching $VNAME MOOS Community, WARP:" $TIME_WARP
+
 pAntler targ_$VNAME.moos >& /dev/null &
 sleep .25
 printf "Done \n"
