@@ -5,8 +5,6 @@ ServerHost = localhost
 ServerPort = 9000
 Community  = shoreside
 
-TERM_REPORTING = false
-
 #include plug_origin_warp.moos
   
 //--------------------------------------------------------
@@ -34,8 +32,7 @@ ProcessConfig = pShare
   AppTick    = 2
   CommsTick  = 2
 
-  input = route =  localhost:9200
-  //input = route = multicast_8
+  input = route = localhost:$(PSHARE_PORT)
 }
 
 
