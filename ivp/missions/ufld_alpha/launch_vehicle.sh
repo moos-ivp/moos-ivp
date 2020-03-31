@@ -22,7 +22,7 @@ for ARGI; do
 	echo "  --ip=<addr>       (default is localhost)      " 
 	echo "  --startpos=X,Y    (Default is 0,0)            " 
 	echo "  --shore=IP:PORT   (Default is localhost:9300) " 
-
+	echo "  --pshare=PORT     (Default is 9301)           " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
