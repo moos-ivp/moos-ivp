@@ -1,26 +1,29 @@
 #!/bin/bash 
-
+#-------------------------------------------------------
+#  Part 1: Check for and handle command-line arguments
+#-------------------------------------------------------
 TIME_WARP=1
-JUST_BUILD="no"
+JUST_MAKE="no"
 HOSTNAME=$(hostname -s)
 VNAME=$(id -un)
+
 MOOS_PORT="9001"
 UDP_LISTEN_PORT="9201"
 SHOREIP="localhost"
 SHORE_LISTEN="9200"
 
 #-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
+#  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	printf "%s [SWITCHES]                           \n" $0
-	printf "  --vname=VEHICLE_NAME                  \n" 
-	printf "  --shore=IP address of shoreside       \n" 
-	printf "  --mport=MOOSDB Port #                 \n" 
-	printf "  --lport=pShare UDPListen Port #       \n" 
-	printf "  --just_build, -j                      \n" 
-	printf "  --help, -h                            \n" 
+	echo "%s [SWITCHES]                            "
+	echo "  --vname=VEHICLE_NAME                   " 
+	echo "  --shore=IP address of shoreside        " 
+	echo "  --mport=MOOSDB Port #                  " 
+	echo "  --lport=pShare UDPListen Port #        " 
+	echo "  --just_make, -j                        " 
+	echo "  --help, -h                             " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
@@ -32,17 +35,17 @@ for ARGI; do
 	UDP_LISTEN_PORT="${ARGI#--lport=*}"
     elif [ "${ARGI:0:7}" = "--vname" ] ; then
 	VNAME="${ARGI#--vname=*}"
-    elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
-	JUST_BUILD="yes"
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
+	JUST_MADE="yes"
     else
-	printf "Bad Argument: %s \n" $ARGI
+	echo "launch_vehicle.sh: Bad Arg: " $ARGI
 	exit 0
     fi
 done
 
 
 #-------------------------------------------------------
-#  Part 2: Create the .moos and .bhv files. 
+#  Part 3: Create the .moos and .bhv files. 
 #-------------------------------------------------------
 
 FULL_VNAME=$VNAME"@"$HOSTNAME
@@ -65,7 +68,7 @@ nsplug meta_vehicle.bhv targ_$FULL_VNAME.bhv -f VNAME=$FULL_VNAME       \
     START_POS=$START_POS LOITER_POS=$LOITER_POS       
    
  
-if [ ${JUST_BUILD} = "yes" ] ; then
+if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi
 
