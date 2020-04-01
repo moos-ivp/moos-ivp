@@ -12,47 +12,53 @@ MOOS_PORT="9001"
 PSHARE_PORT="9201"
 SHORE="localhost:9300"
 SHORE_LISTEN="9200"
+GUI="yes"
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "launch_vehicle.sh [SWITCHES]                  "
-	echo "  --help, -h                                  " 
-	echo "    Display this help message                 "
-	echo "  --just_make, -j                             " 
-	echo "    Just make targ files, but do not launch   "
-	echo "                                              "
-	echo "  --vname=<vname>                             " 
-	echo "    Name of the vehicle being launched        " 
-	echo "                                              "
-	echo "  --shore=<ipaddr:port>                       "
-	echo "    IP address and pShare port of shoreside   "
-	echo "                                              "
-	echo "  --mport=<port>                              "
-	echo "    Port number of this vehicle's MOOSDB port "
-	echo "                                              "
-	echo "  --pshare=<port>                             " 
-	echo "    Port number of this vehicle's pShare port "
-	echo "                                              "
-	echo "  --ip=<ipaddr>                               " 
-	echo "    Force pHostInfo to use this IP Address    "
+	echo "launch_vehicle.sh [SWITCHES]                     "
+	echo "  --help, -h                                     " 
+	echo "    Display this help message                    "
+	echo "  --just_make, -j                                " 
+	echo "    Just make targ files, but do not launch      "
+	echo "                                                 "
+	echo "  --vname=<vname>                                " 
+	echo "    Name of the vehicle being launched           " 
+	echo "                                                 "
+	echo "  --shore=<ipaddr:port>                          "
+	echo "    IP address and pShare port of shoreside      "
+	echo "                                                 "
+	echo "  --mport=<port>                                 "
+	echo "    Port number of this vehicle's MOOSDB port    "
+	echo "                                                 "
+	echo "  --pshare=<port>                                " 
+	echo "    Port number of this vehicle's pShare port    "
+	echo "                                                 "
+	echo "  --ip=<ipaddr>                                  " 
+	echo "    Force pHostInfo to use this IP Address       "
+	echo "                                                 "
+	echo "  --nogui                                        " 
+	echo "    Do not launch pMarineViewer GUI with vehicle "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
+	JUST_MAKE="yes"
     elif [ "${ARGI:0:8}" = "--shore=" ] ; then
 	SHORE="${ARGI#--shore=*}"
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"
     elif [ "${ARGI:0:7}" = "--mport" ] ; then
 	MOOS_PORT="${ARGI#--mport=*}"
-    elif [ "${ARGI:0:7}" = "--pshare" ] ; then
+    elif [ "${ARGI:0:8}" = "--pshare" ] ; then
 	PSHARE_PORT="${ARGI#--pshare=*}"
     elif [ "${ARGI:0:7}" = "--vname" ] ; then
 	VNAME="${ARGI#--vname=*}"
-    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
-	JUST_MAKE="yes"
+    elif [ "${ARGI}" = "--nogui" ] ; then
+	GUI="no"
     else
 	echo "launch_vehicle.sh: Bad Arg: " $ARGI
 	exit 0
@@ -97,6 +103,10 @@ pAntler targ_$FULL_VNAME.moos >& /dev/null &
 #-------------------------------------------------------
 #  Part 4: Exiting and/or killing the simulation
 #-------------------------------------------------------
+
+if [ ${GUI} = "no" ] ; then
+    exit 0
+fi
 
 uMAC targ_$FULL_VNAME.moos
 

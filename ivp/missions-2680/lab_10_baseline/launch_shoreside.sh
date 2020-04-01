@@ -15,7 +15,7 @@ MOOS_PORT="9000"
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "launch_shoreside.sh [SWITCHES]                "
+	echo "launch_shoreside.sh [SWITCHES] [WARP]         "
 	echo "  --help, -h                                  " 
 	echo "    Display this help message                 "
 	echo "  --just_make, -j                             " 
