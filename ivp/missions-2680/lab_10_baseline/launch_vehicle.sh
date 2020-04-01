@@ -7,9 +7,10 @@ JUST_MAKE="no"
 HOSTNAME=$(hostname -s)
 VNAME=$(id -un)
 
+IP_ADDR=""
 MOOS_PORT="9001"
-UDP_LISTEN_PORT="9201"
-SHOREIP="localhost"
+PSHARE_PORT="9201"
+SHORE="localhost:9300"
 SHORE_LISTEN="9200"
 
 #-------------------------------------------------------
@@ -17,26 +18,38 @@ SHORE_LISTEN="9200"
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "%s [SWITCHES]                            "
-	echo "  --vname=VEHICLE_NAME                   " 
-	echo "  --shore=IP address of shoreside        " 
-	echo "  --mport=MOOSDB Port #                  " 
-	echo "  --lport=pShare UDPListen Port #        " 
-	echo "  --just_make, -j                        " 
-	echo "  --help, -h                             " 
+	echo "launch_vehicle.sh [SWITCHES]                  "
+	echo "  --help, -h                                  " 
+	echo "    Display this help message                 "
+	echo "  --just_make, -j                             " 
+	echo "    Just make targ files, but do not launch   "
+	echo "                                              "
+	echo "  --vname=<vname>                             " 
+	echo "    Name of the vehicle being launched        " 
+	echo "                                              "
+	echo "  --shore=<ipaddr:port>                       "
+	echo "    IP address and pShare port of shoreside   "
+	echo "                                              "
+	echo "  --mport=<port>                              "
+	echo "    Port number of this vehicle's MOOSDB port "
+	echo "                                              "
+	echo "  --pshare=<port>                             " 
+	echo "    Port number of this vehicle's pShare port "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI:0:8}" = "--shore=" ] ; then
-	SHOREIP="${ARGI#--shore=*}"
+	SHORE="${ARGI#--shore=*}"
+    elif [ "${ARGI:0:5}" = "--ip=" ]; then
+        IP_ADDR="${ARGI#--ip=*}"
     elif [ "${ARGI:0:7}" = "--mport" ] ; then
 	MOOS_PORT="${ARGI#--mport=*}"
-    elif [ "${ARGI:0:7}" = "--lport" ] ; then
-	UDP_LISTEN_PORT="${ARGI#--lport=*}"
+    elif [ "${ARGI:0:7}" = "--pshare" ] ; then
+	PSHARE_PORT="${ARGI#--pshare=*}"
     elif [ "${ARGI:0:7}" = "--vname" ] ; then
 	VNAME="${ARGI#--vname=*}"
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
-	JUST_MADE="yes"
+	JUST_MAKE="yes"
     else
 	echo "launch_vehicle.sh: Bad Arg: " $ARGI
 	exit 0
@@ -60,11 +73,11 @@ Y_LOITER_POS=$((($RANDOM % 50) - 125))
 START_POS="$X_START_POS,$Y_START_POS" 
 LOITER_POS="x=$X_LOITER_POS,y=$Y_LOITER_POS" 
 
-nsplug meta_vehicle.moos targ_$FULL_VNAME.moos -f WARP=$TIME_WARP       \
-    VNAME=$FULL_VNAME  VPORT=$MOOS_PORT  SHARE_LISTEN=$UDP_LISTEN_PORT  \
-    START_POS=$START_POS SHOREIP=$SHOREIP SHORE_LISTEN=$SHORE_LISTEN
+nsplug meta_vehicle.moos targ_$FULL_VNAME.moos -f WARP=$TIME_WARP  \
+    VNAME=$FULL_VNAME  VPORT=$MOOS_PORT  PSHARE_PORT=$PSHARE_PORT  \
+    START_POS=$START_POS SHORE=$SHORE IP_ADDR=$IP_ADDR
 
-nsplug meta_vehicle.bhv targ_$FULL_VNAME.bhv -f VNAME=$FULL_VNAME       \
+nsplug meta_vehicle.bhv targ_$FULL_VNAME.bhv -f VNAME=$FULL_VNAME  \
     START_POS=$START_POS LOITER_POS=$LOITER_POS       
    
  
