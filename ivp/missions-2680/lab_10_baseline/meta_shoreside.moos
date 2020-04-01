@@ -1,10 +1,9 @@
 //*******************************************************
 // ShoreSide Configuration File
-//
 
 ServerHost = localhost
-ServerPort = $(SPORT)
-Community  = $(SNAME)
+ServerPort = $(MOOS_PORT)
+Community  = shoreside
 
 #include plug_origin_warp.moos
   
@@ -22,18 +21,7 @@ Processconfig = ANTLER
 }
 
 #include plug_pHostInfo.moos
-
-//---------------------------------------------------------
-// pShare Config Block  (Created from Plugin)
-
-ProcessConfig = pShare
-{
-  AppTick    = 2
-  CommsTick  = 2
-
-  input = route =  localhost:$(SHARE_LISTEN)
-  input = route =  multicast_8
-}
+#include plug_pShare.moos
 
 //--------------------------------------------------
 // uFldShoreBroker Configuration Block
@@ -43,12 +31,12 @@ ProcessConfig = uFldShoreBroker
   AppTick       = 1
   CommsTick     = 1
 
-  QBRIDGE  = DEPLOY, NODE_REPORT, NODE_MESSAGE
-  QBRIDGE  = STATION
-  QBRIDGE  = MOOS_MANUAL_OVERRIDE
+  qbridge  = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  qbridge  = STATION
+  qbridge  = MOOS_MANUAL_OVERRIDE
 
-  BRIDGE   = src=RETURN_ALL, alias=RETURN
-  BRIDGE   = src=RETURN_$V,  alias=RETURN
+  bridge   = src=RETURN_ALL, alias=RETURN
+  bridge   = src=RETURN_$V,  alias=RETURN
 }
 
 //--------------------------------------------------
@@ -61,6 +49,7 @@ ProcessConfig = pLogger
   
   File          = LOG_SHORESIDE
   PATH          = ./
+
   //SyncLog       = true @ 0.2
   AsyncLog      = true
   FileTimeStamp = true

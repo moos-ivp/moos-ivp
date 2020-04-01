@@ -1,26 +1,47 @@
 #!/bin/bash 
+#-------------------------------------------------------
+#   Script: launch_shoreside.sh                       
+#  Mission: lab_10_baseline
+#-------------------------------------------------------
 
 TIME_WARP=1
-JUST_BUILD="no"
-
-THISNAME=$(id -un)"@"$(hostname -s)
-echo "Vehicle Name: " $THISNAME
+JUST_MAKE="no"
+IP_ADDR=""
+PSHARE_PORT="9300"
+MOOS_PORT="9000"
 
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	printf "%s [SWITCHES]         \n" $0
-	printf "  --just_build, -j    \n" 
-	printf "  --help, -h          \n" 
+	echo "launch_shoreside.sh [SWITCHES]                "
+	echo "  --help, -h                                  " 
+	echo "    Display this help message                 "
+	echo "  --just_make, -j                             " 
+	echo "    Just make targ files, but do not launch   "
+	echo "                                              "
+	echo "  --mport=<port>                              "
+	echo "    Port number of this vehicle's MOOSDB port "
+	echo "                                              "
+	echo "  --pshare=<port>                             " 
+	echo "    Port number of this vehicle's pShare port "
+	echo "                                              "
+	echo "  --ip=<ipaddr>                               " 
+	echo "    Force pHostInfo to use this IP Address    "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
-	JUST_BUILD="yes"
+	JUST_MAKE="yes"
+    elif [ "${ARGI:0:5}" = "--ip=" ]; then
+        IP_ADDR="${ARGI#--ip=*}"
+    elif [ "${ARGI:0:7}" = "--mport" ] ; then
+	MOOS_PORT="${ARGI#--mport=*}"
+    elif [ "${ARGI:0:9}" = "--pshare=" ]; then
+        PSHARE_PORT="${ARGI#--pshare=*}"
     else
-	printf "Bad Argument: %s \n" $ARGI
+	echo "launch_shoreside.sh Bad Arg:" $ARGI
 	exit 0
     fi
 done
@@ -28,22 +49,20 @@ done
 #-------------------------------------------------------
 #  Part 2: Create the .moos and .bhv files. 
 #-------------------------------------------------------
-SNAME="shoreside"
-SPORT="9000"
-SLPORT="9200"
 
-nsplug meta_shoreside.moos targ_$SNAME.moos -f WARP=$TIME_WARP    \
-    SHARE_LISTEN=$SLPORT  SPORT=$SPORT  SNAME=$SNAME
+nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP  \
+       IP_ADDR=$IP_ADDR       PSHARE_PORT=$PSHARE_PORT             \
+       MOOS_PORT=$MOOS_PORT  
 
-if [ ${JUST_BUILD} = "yes" ] ; then
+if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi
 
 #-------------------------------------------------------
 #  Part 3: Launch the processes
 #-------------------------------------------------------
-printf "Launching $SNAME MOOS Community (WARP=%s) \n" $TIME_WARP
-pAntler targ_$SNAME.moos >& /dev/null &
+echo "Launching shoreside MOOS Community (WARP=%s) \n" $TIME_WARP
+pAntler targ_shoreside.moos >& /dev/null &
 
 
 #-------------------------------------------------------
@@ -53,6 +72,6 @@ uMAC targ_shoreside.moos
 
 # %1, matches the PID of the first job in the active jobs list
 # namely the pAntler job(s) launched in Part 3.
-printf "Killing all processes ... \n"
+echo "Killing all processes ... \n"
 kill %1 
-printf "Done killing processes.   \n"
+echo "Done killing processes.   \n"

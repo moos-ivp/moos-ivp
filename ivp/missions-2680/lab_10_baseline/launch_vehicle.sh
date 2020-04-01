@@ -35,6 +35,9 @@ for ARGI; do
 	echo "                                              "
 	echo "  --pshare=<port>                             " 
 	echo "    Port number of this vehicle's pShare port "
+	echo "                                              "
+	echo "  --ip=<ipaddr>                               " 
+	echo "    Force pHostInfo to use this IP Address    "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
