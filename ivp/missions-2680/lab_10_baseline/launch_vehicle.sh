@@ -9,9 +9,8 @@ VNAME=$(id -un)
 
 IP_ADDR=""
 MOOS_PORT="9001"
-PSHARE_PORT="9201"
+PSHARE_PORT="9301"
 SHORE="localhost:9300"
-SHORE_LISTEN="9200"
 GUI="yes"
 
 #-------------------------------------------------------
