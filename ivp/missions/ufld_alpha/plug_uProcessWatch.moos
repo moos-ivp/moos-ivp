@@ -6,15 +6,14 @@ ProcessConfig = uProcessWatch
   AppTick   = 2
   CommsTick = 2
 
-  NOWATCH = uMAC*  
-  NOWATCH = uXMS*
+  nowatch = uMAC*  
+  nowatch = uXMS*
   
-  WATCH  = uSimMarine
-  WATCH  = pMOOSBridge*
-  WATCH  = pLogger
-  WATCH  = pNodeReporter
-  WATCH  = pMarinePID
-  WATCH  = pHelmIvP
+  watch  = uSimMarine
+  watch  = pLogger
+  watch  = pNodeReporter
+  watch  = pMarinePID
+  watch  = pHelmIvP
 }
 
 
