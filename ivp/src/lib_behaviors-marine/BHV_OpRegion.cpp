@@ -124,6 +124,7 @@ bool BHV_OpRegion::setParam(string param, string val)
     if(!new_poly.is_convex())  // Should be convex - false otherwise
       return(false);
     m_polygon = new_poly;
+    m_polygons.clear();
     m_polygons.push_back(new_poly);
     return(true);
   }

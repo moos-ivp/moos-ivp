@@ -886,6 +886,11 @@ void BHV_Waypoint::postWptFlags(double x, double y)
     if(m_wpt_flags[i].is_string()) {
       string sdata = m_wpt_flags[i].get_sdata();
 
+      sdata = findReplace(sdata, "$(OSX)", m_osx);
+      sdata = findReplace(sdata, "$(OSY)", m_osy);
+      sdata = findReplace(sdata, "$[OSX]", m_osx);
+      sdata = findReplace(sdata, "$[OSY]", m_osy);
+
       sdata = findReplace(sdata, "$(X)", xpos);
       sdata = findReplace(sdata, "$(Y)", ypos);
       sdata = findReplace(sdata, "$[X]", xpos);
