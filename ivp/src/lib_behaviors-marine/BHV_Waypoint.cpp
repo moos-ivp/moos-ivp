@@ -877,6 +877,9 @@ void BHV_Waypoint::postWptFlags(double x, double y)
   string xpos = doubleToStringX(x,2);
   string ypos = doubleToStringX(y,2);
 
+  string str_osx = doubleToStringX(m_osx,2);
+  string str_osy = doubleToStringX(m_osy,2);
+  
   string nextx = doubleToStringX(m_nextpt.x(),2);
   string nexty = doubleToStringX(m_nextpt.y(),2);
 
@@ -886,10 +889,10 @@ void BHV_Waypoint::postWptFlags(double x, double y)
     if(m_wpt_flags[i].is_string()) {
       string sdata = m_wpt_flags[i].get_sdata();
 
-      sdata = findReplace(sdata, "$(OSX)", m_osx);
-      sdata = findReplace(sdata, "$(OSY)", m_osy);
-      sdata = findReplace(sdata, "$[OSX]", m_osx);
-      sdata = findReplace(sdata, "$[OSY]", m_osy);
+      sdata = findReplace(sdata, "$(OSX)", str_osx);
+      sdata = findReplace(sdata, "$(OSY)", str_osy);
+      sdata = findReplace(sdata, "$[OSX]", str_osx);
+      sdata = findReplace(sdata, "$[OSY]", str_osy);
 
       sdata = findReplace(sdata, "$(X)", xpos);
       sdata = findReplace(sdata, "$(Y)", ypos);
