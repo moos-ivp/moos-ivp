@@ -25,6 +25,7 @@
       (list
       '("ANTLER" "MSBetweenLaunches" "Run" "NewConsole")
       '("uFldVoronoi" "stale_time" "verbose" "region")
+      '("uSimHeron" "port" "comms_type" "ip_addr")
       '("uFldVoronoi" "reject_range" "post_poly" "post_region" "region")
       '("uMemWatch" "ignore" "watch_only" "absolute_time_gap")
       '("uFldCollObDetect" "collision_dist" "near_miss_dist" "encounter_dist" "collision_flag" "near_miss_flag" "encounter_flag")
