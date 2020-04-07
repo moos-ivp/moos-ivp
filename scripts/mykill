@@ -67,7 +67,7 @@ killall -9 pCBF pBTracker pTrackMonitor uTimerScript pDTSP         \
 killall -9 pFleetControl uFldScope uFldContactRangeSensor         \
         uFldPathCheck uFldNodeComms pSearchGrid pHostInfo      \
         uFldShoreBroker uFldNodeBroker uFldBeaconRangeSensor   \
-        uFldHazardSensor uFldMessageHandler pGenPath           \
+        uFldHazardSensor uFldMessageHandler pGenPath pGenPath2 \
         pPointAssign uFldHazardMetric pHandleSensorData        \
         uFldCTDSensor pFrontGridRender uPlotViewer uMAC        \
         pShare uFldGenericSensor uFldHazardMgr pGradeFrontEstimate pFrontEstimate
