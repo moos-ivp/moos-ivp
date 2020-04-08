@@ -82,7 +82,7 @@ ProcessConfig = pMarineViewer
   procs_font_size      = medium
   appcast_font_size    = small
 
-  scope = PHI_HOST_INFO
+  scope = DB_CLIENTS
 
   action = STATION_ALL = false
   action = STATION_ALL = true

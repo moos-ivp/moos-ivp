@@ -72,6 +72,6 @@ uMAC targ_shoreside.moos
 
 # %1, matches the PID of the first job in the active jobs list
 # namely the pAntler job(s) launched in Part 3.
-echo "Killing all processes ... \n"
+echo "Killing all processes ... "
 kill %1 
-echo "Done killing processes.   \n"
+echo "Done killing processes.   "

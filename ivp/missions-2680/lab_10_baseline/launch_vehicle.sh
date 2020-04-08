@@ -111,6 +111,6 @@ uMAC targ_$FULL_VNAME.moos
 
 # %1, matches the PID of the first job in the active jobs list
 # namely the pAntler job(s) launched in Part 3.
-printf "Killing all processes ... \n"
+echo "Killing all processes ... "
 kill %1 
-printf "Done killing processes.   \n"
+echo "Done killing processes.   "
