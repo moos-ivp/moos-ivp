@@ -41,7 +41,7 @@ for ARGI; do
 	echo "                                                 "
 	echo "  --nogui                                        " 
 	echo "    Do not launch pMarineViewer GUI with vehicle "
-	exit 0;
+	exit 0
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
@@ -50,11 +50,11 @@ for ARGI; do
 	SHORE="${ARGI#--shore=*}"
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"
-    elif [ "${ARGI:0:7}" = "--mport" ] ; then
+    elif [ "${ARGI:0:8}" = "--mport=" ] ; then
 	MOOS_PORT="${ARGI#--mport=*}"
-    elif [ "${ARGI:0:8}" = "--pshare" ] ; then
+    elif [ "${ARGI:0:9}" = "--pshare=" ] ; then
 	PSHARE_PORT="${ARGI#--pshare=*}"
-    elif [ "${ARGI:0:7}" = "--vname" ] ; then
+    elif [ "${ARGI:0:8}" = "--vname=" ] ; then
 	VNAME="${ARGI#--vname=*}"
     elif [ "${ARGI}" = "--nogui" ] ; then
 	GUI="no"
