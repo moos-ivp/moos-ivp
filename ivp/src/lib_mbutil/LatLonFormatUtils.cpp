@@ -31,9 +31,10 @@ using namespace std;
 
 //--------------------------------------------------------
 // Procedure: latDDtoDDMM()
-//      Note: Convert 48.82530
-//                    4849.518
-//            49.518 minutes = 0.8253 degs * 60 minutes
+//      Note: Convert: 39.9054895  (double)
+//                 to: 3954.3294   (string)
+//                     DDMM.MMMMM
+//            54.3294 minutes = 0.9054895 degs * 60 minutes
 //      Note: Negative latitudes are conveyed with positive
 //            values. 23.82530 ==> 2349.518
 //            It is assumed caller will handle appropriately
@@ -63,7 +64,7 @@ string latDDtoDDMM(double gval)
   
   str += doubleToStringX(mins);
 
-  if(!strContains(str, ','))
+  if(!strContains(str, '.'))
     str += ".00";
   
   return(str);
@@ -72,9 +73,10 @@ string latDDtoDDMM(double gval)
 
 //--------------------------------------------------------
 // Procedure: lonDDDtoDDMM()
-//      Note: Convert 4849.518
-//                    48.82530
-//            49.518 minutes = 0.8253 degs * 60 minutes
+//      Note: Convert: -116.395443 (double)
+//                 to: 11623.7267
+//                     DDDMM.MMMM                     
+//            23.7267 minutes = 0.395443 degs * 60 minutes
 
 string lonDDDtoDDDMM(double gval)
 {
@@ -101,7 +103,7 @@ string lonDDDtoDDDMM(double gval)
     str += "0";
   
   str += doubleToStringX(mins);
-  if(!strContains(str, ','))
+  if(!strContains(str, '.'))
     str += ".00";
 
   return(str);

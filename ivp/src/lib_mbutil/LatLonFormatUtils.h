@@ -28,8 +28,11 @@
 
 #include <string>
 
+// Decimal Degrees DD.DDDD to string "DDMM.MMMM", Degs [0,90]
 std::string latDDtoDDMM(double);
+// Decimal Degrees DDD.DDDD to string "DDDMM.MMMM", Degs [0,180]
 std::string lonDDDtoDDDMM(double);
+
 double      latDDMMtoDD(std::string);
 double      lonDDDMMtoDDD(std::string);
 
