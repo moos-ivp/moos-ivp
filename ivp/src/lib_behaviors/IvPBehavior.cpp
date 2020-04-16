@@ -1082,6 +1082,15 @@ double IvPBehavior::getBufferMsgTimeVal(string varname)
 //-----------------------------------------------------------
 // Procedure: getBufferDoubleVal()
 
+double IvPBehavior::getBufferDoubleVal(string varname)
+{
+  bool ok_not_used = true;
+  return(getBufferDoubleVal(varname, ok_not_used));
+}
+
+//-----------------------------------------------------------
+// Procedure: getBufferDoubleVal()
+
 double IvPBehavior::getBufferDoubleVal(string varname, bool& ok)
 {
   if(!m_info_buffer) {

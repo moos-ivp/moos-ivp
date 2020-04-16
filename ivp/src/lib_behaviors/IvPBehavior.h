@@ -126,6 +126,7 @@ public:
   double                   getBufferLocalTime();
   double                   getBufferMsgTimeVal(std::string);
   double                   getBufferTimeVal(std::string);
+  double                   getBufferDoubleVal(std::string);
   double                   getBufferDoubleVal(std::string, bool&);
   std::string              getBufferStringVal(std::string);
   std::string              getBufferStringVal(std::string, bool&);
