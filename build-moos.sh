@@ -10,19 +10,27 @@ mkdir -p "${BUILD_ABS_DIR}"
 BUILD_TYPE="Release"
 BUILD_OPTIM="yes"
 J_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
+
+# By default, all code is built
+# On Raspbian, by default, only min-robot code is built
 BUILD_BOT_CODE_ONLY="OFF"
+OS_INFO=`lsb_release -i -s`
+if [ "${OS_INFO}" = "Raspbian" ]; then
+    BUILD_BOT_CODE_ONLY="ON"
+fi
 
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
         printf "%s [SWITCHES]  \n" $0
-        printf "  --help, -h                                   \n"
-        printf "  --debug, -d                                  \n"
-        printf "  --release, -r                                \n"
-        printf "Any other switches passed directly to \"make\" \n"
-        printf "Recommended:                                   \n"
+        printf "  --help, -h                                     \n"
+        printf "  --debug, -d                                    \n"
+        printf "  --release, -r                                  \n"
+        printf "Any other switches passed directly to \"make\"   \n"
+        printf "Recommended:                                     \n"
         printf " -jN    Speed up compile on multi-core machines. \n"
         printf " -k     Keep building after failed component.    \n"
 	printf " -m,    Only build minimal robot apps            \n"
+	printf " -mx,   Turn off build minimal robot apps        \n"
         printf " clean  Clean/remove any previous build.         \n"
         exit 0;
     elif [ "${ARGI}" = "--debug" -o "${ARGI}" = "-d" ] ; then
@@ -31,6 +39,8 @@ for ARGI; do
         BUILD_TYPE="Release"
     elif [ "${ARGI}" = "--minrobot" -o "${ARGI}" = "-m" ] ; then
         BUILD_BOT_CODE_ONLY="ON"
+    elif [ "${ARGI}" = "--minrobotx" -o "${ARGI}" = "-mx" ] ; then
+        BUILD_BOT_CODE_ONLY="OFF"
    elif [ "${ARGI}" = "--j1" -o "${ARGI}" = "-j1" ] ; then
         J_ARGS="-j1"
     else
@@ -116,6 +126,10 @@ if [ "${BUILD_BOT_CODE_ONLY}" = "OFF" ] ; then
 
     mkdir -p "${BUILD_ABS_DIR}/MOOSToolsUI"
     cd "${BUILD_ABS_DIR}/MOOSToolsUI"
+
+    echo "=============================================="
+    echo "SCRIPT_ABS_DIR:" ${SCRIPT_ABS_DIR}
+    echo "=============================================="
     
     echo "Invoking cmake..." `pwd`
     cmake -DBUILD_CONSOLE_TOOLS=ON                               \

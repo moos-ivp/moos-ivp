@@ -1,7 +1,14 @@
 #!/bin/bash -e
  
 CLEAN="no"
+
+# By default, all code is built
+# On Raspbian, by default, only min-robot code is built
 BUILD_BOT_CODE_ONLY="OFF"
+OS_INFO=`lsb_release -i -s`
+if [ "${OS_INFO}" = "Raspbian" ]; then
+    BUILD_BOT_CODE_ONLY="ON"
+fi
 
 print_usage_and_exit()
 {
@@ -10,6 +17,8 @@ print_usage_and_exit()
     echo "  --help, -h                                  "
     echo "  --minrobot, -m                              "
     echo "    Only build minimal robot apps             "
+    echo "  --minrobotx, -mx                            "
+    echo "    Override min-robot default on Raspbian    "
     echo "  --clean, -c, clean                          "
     echo "    Removes all build, bin, library files     "
     exit 1
@@ -24,6 +33,8 @@ for ARGI; do
         CLEAN="yes"
     elif [ "${ARGI}" = "--minrobot" -o "${ARGI}" = "-m" ] ; then
         BUILD_BOT_CODE_ONLY="ON"
+    elif [ "${ARGI}" = "--minrobotx" -o "${ARGI}" = "-mx" ] ; then
+        BUILD_BOT_CODE_ONLY="OFF"
     fi
 done
 

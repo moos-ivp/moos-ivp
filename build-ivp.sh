@@ -5,8 +5,16 @@ BUILD_OPTIM="yes"
 CLEAN="no"
 CMD_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
 BUILD_GUI_CODE="ON"
-BUILD_BOT_CODE_ONLY="OFF"
 BUILD_WITH_UTM="-DUSE_UTM=ON"
+
+# By default, all code is built
+# On Raspbian, by default, only min-robot code is built
+BUILD_BOT_CODE_ONLY="OFF"
+OS_INFO=`lsb_release -i -s`
+if [ "${OS_INFO}" = "Raspbian" ]; then
+    BUILD_BOT_CODE_ONLY="ON"
+    BUILD_GUI_CODE="OFF"
+fi
 
 print_usage_and_exit()
 {
@@ -26,6 +34,8 @@ print_usage_and_exit()
     echo "  --minrobot, -m                              "
     echo "    Only build minimal robot apps             "
     echo "    (Even smaller subset than with --nogui)   "
+    echo "  --minrobotx, -mx                            "
+    echo "    Override min-robot default on Raspbian    "
     echo "  --clean, -c                                 "
     echo "    Invokes make clean and removes build/*    "
     echo "                                              "
@@ -59,6 +69,9 @@ for ARGI; do
     elif [ "${ARGI}" = "--minrobot" -o "${ARGI}" = "-m" ]; then
         BUILD_BOT_CODE_ONLY="ON"
 	BUILD_GUI_CODE="OFF"
+    elif [ "${ARGI}" = "--minrobotx" -o "${ARGI}" = "-mx" ]; then
+        BUILD_BOT_CODE_ONLY="OFF"
+	BUILD_GUI_CODE="ON"
     else
 	if [ "$CMD_ARGS" = "" ]; then
 	    CMD_ARGS=$ARGI
