@@ -1,12 +1,21 @@
 #!/bin/bash -e
-#-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
-#-------------------------------------------------------
+#--------------------------------------------------------------
+#   Script: launch_shoreside.sh                                    
+#   Author: Michael Benjamin  
+#     Date: April 2020     
+#--------------------------------------------------------------
+#----------------------------------------------------------  
+#  Part 1: Set Exit actions and declare global var defaults
+#----------------------------------------------------------
+trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
 JUST_MAKE="no"
 IP_ADDR="localhost"
 PSHARE_PORT="9300"
 
+#-------------------------------------------------------
+#  Part 2: Check for and handle command-line arguments
+#-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	echo "launch_shoreside [SWITCHES] [time_warp]   "
@@ -44,14 +53,11 @@ fi
 #-------------------------------------------------------
 #  Part 3: Launch the processes
 #-------------------------------------------------------
-printf "Launching $VNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
+echo "Launching $VNAME MOOS Community WARP:"  $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
-printf "Done \n"
+echo "Done "
 
 uMAC targ_shoreside.moos
 
-echo "Killing all processes ... "
-kill %1 
-echo "Done killing processes.   "
-
-
+# Killing of all launched procs handled by the trap setting 
+# configured at the top of this script

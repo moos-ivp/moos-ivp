@@ -1,7 +1,13 @@
 #!/bin/bash 
-#-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
-#-------------------------------------------------------
+#--------------------------------------------------------------
+#   Script: launch_shoreside.sh                                    
+#   Author: Michael Benjamin  
+#     Date: April 2020     
+#--------------------------------------------------------------
+#----------------------------------------------------------  
+#  Part 1: Set Exit actions and declare global var defaults
+#----------------------------------------------------------
+trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
 JUST_MAKE="no"
 IP_ADDR="localhost"
@@ -12,6 +18,9 @@ START_POS="0,0"
 SHORE="localhost:9300"
 PSHARE_PORT=""
 
+#-------------------------------------------------------
+#  Part 1: Check for and handle command-line arguments
+#-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	echo "launch_vehicle.sh [SWITCHES] [time_warp]        "
@@ -54,7 +63,7 @@ fi
 VNAME=$VNAME"_"$INDEX
 
 #-------------------------------------------------------
-#  Part 2: Create the .moos and .bhv files. 
+#  Part 3: Create the .moos and .bhv files. 
 #-------------------------------------------------------
 # What is nsplug? Type "nsplug --help" or "nsplug --manual"
 
@@ -76,12 +85,10 @@ echo "Launching $VNAME MOOS Community, WARP:" $TIME_WARP
 
 pAntler targ_$VNAME.moos >& /dev/null &
 sleep .25
-printf "Done \n"
+echo "Done Launching the vehicle mission."
 
 uMAC targ_$VNAME.moos
 
-echo "Killing all processes ... "
-kill %1 
-echo "Done killing processes.   "
-
+# Killing of all launched procs handled by the trap setting 
+# configured at the top of this script
 
