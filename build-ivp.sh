@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash 
 
 BUILD_DEBUG="yes"  
 BUILD_OPTIM="yes"
@@ -10,10 +10,13 @@ BUILD_WITH_UTM="-DUSE_UTM=ON"
 # By default, all code is built
 # On Raspbian, by default, only min-robot code is built
 BUILD_BOT_CODE_ONLY="OFF"
-OS_INFO=`lsb_release -i -s`
-if [ "${OS_INFO}" = "Raspbian" ]; then
-    BUILD_BOT_CODE_ONLY="ON"
-    BUILD_GUI_CODE="OFF"
+LSB_RELEASE=`which lsb_release`
+if [ "$LSB_RELEASE" != "" ]; then
+    OS_INFO=`lsb_release -i -s`
+    if [ "${OS_INFO}" = "Raspbian" ]; then
+	BUILD_BOT_CODE_ONLY="ON"
+	BUILD_GUI_CODE="OFF"
+    fi
 fi
 
 print_usage_and_exit()
