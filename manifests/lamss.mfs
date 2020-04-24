@@ -33,7 +33,7 @@ group    = LAMSS, Mission_Management
 distro   = lamss.mit.edu
 
 //====================================================================
-module   = Sonar_Processing
+module   = SonarProcessing
 type     = group
 author   = Henrik Schmidt
 contact  = henrik@mit.edu
@@ -43,7 +43,7 @@ synopsis = Group of MOOSApps and GobyMoosApps constituting the
 acoustic signal processing chain for acoustic surveillance with
 passive and active sonars.
 
-group    = LAMSS, Sonar_Processing
+group    = LAMSS, SonarProcessing
 distro   = lamss.mit.edu
 
 //====================================================================
@@ -56,7 +56,7 @@ thumb    = Extracts a range-dependent bathymetry along a
 vertical slice of ocean between two latitude/longitude locations.
 depends  = goby/moos, goby/util, lib_lamss_protobuf, lib_henrik_util
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 150101
 distro   = lamss.mit.edu
 
@@ -92,7 +92,7 @@ org = MIT
 thumb = Passive sonar tracker for geo-referenced target motion analysis (TMA).
 depends = lib_henrik_util
 
-group    = LAMSS, Sonar_Processing
+group    = LAMSS, SonarProcessing
 borndate = 150701
 distro   = lamss.mit.edu
 
@@ -117,7 +117,7 @@ thumb = Low-fidelity model of towed array geometry for onboard sonar
 processing chain.
 depends = goby/moos, goby/util, goby/acomms, goby/time, lib_lamss_protobuf, lib_henrik_util
 
-group    = LAMSS, Sonar_Processing
+group    = LAMSS, SonarProcessing
 borndate = 150701
 distro   = lamss.mit.edu
 
@@ -139,7 +139,7 @@ thumb = Stabilized bearing tracker for embedded use on  UUVs with
 acoustic arrays.
 depends = goby/moos, goby/util, goby/acomms, goby/time, lib_lamss_protobuf, lib_henrik_util, lib_anrfp_util
 
-group    = LAMSS, Sonar_Processing
+group    = LAMSS, SonarProcessing
 borndate = 150701
 distro   = lamss.mit.edu
 
@@ -166,7 +166,7 @@ org = MIT
 thumb = Conventional beamformer for towed or fixed sonar receiving arrays   
 depends = goby/moos, goby/util, goby/time, boost, lib_lamss_protobuf, lib_henrik_util, lib_anrp_util
 
-group    = LAMSS, Sonar_Processing
+group    = LAMSS, SonarProcessing
 borndate = 150701
 distro   = lamss.mit.edu
 
@@ -243,7 +243,7 @@ tracking.
 depends  = goby/moos, goby/util, goby/acomms, goby/time, goby/protobuf,
             boost, lib_lamss_protobuf, lib_henrik_util
 	    
-group    = LAMSS, Mission_Management, Sonar_Processing
+group    = LAMSS, MissionManagement, SonarProcessing
 borndate = 150930
 distro   = lamss.mit.edu
 
@@ -276,7 +276,7 @@ slice of ocean between an acoustic source and receiver.
 depends  = goby/moos, goby/util, lib_lamss_protobuf, lib_henrik_util,
            lib_bellhop
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 130101
 distro   = lamss.mit.edu
 
@@ -303,7 +303,7 @@ extracted from a 4D NMetCdf file with modeled ocean currents.
 depends  = goby/moos, goby/util, lib_lamss_protobuf, lib_henrik_util,
            lib_bellhop
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 150101
 distro   = lamss.mit.edu
 
@@ -326,7 +326,7 @@ simulator supporting fixed, towed and volumetric hull-mounted arrays.
 
 depends = goby/moos, goby/util, boost, gsl, lib_lamss_protobuf, lib_henrik_util, lib_bellhop
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 110101
 distro   = lamss.mit.edu
 
@@ -359,7 +359,7 @@ salinity extracted from a 4D NMetCdf virtual ocean database.
 depends  = goby/moos, goby/util, lib_lamss_protobuf, lib_henrik_util,
            lib_bellhop
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 150101
 distro   = lamss.mit.edu
 
@@ -386,7 +386,7 @@ underwater modem network.
 depends = goby/moos, goby/util, boost, lib_lamss_protobuf,
 lib_henrik_util, lib_bellhop
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 170101
 distro   = lamss.mit.edu
 
@@ -425,7 +425,7 @@ modem network to ranges for use by ICEX20 integrated communication and
 navigation framework.
 depends = goby/moos, goby/util, lib_lamss_protobuf, lib_henrik_util, lib_bellhop
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 190701
 distro   = lamss.mit.edu
 
@@ -456,7 +456,7 @@ network in the Virtual Ocean.
 depends = goby/moos, goby/util, boost, gsl, lib_lamss_protobuf,
 lib_henrik_util, lib_bellhop
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 170101
 distro   = lamss.mit.edu
 
@@ -483,7 +483,7 @@ generated ambient noise in Virtual Ocean.
 
 depends = goby/moos, goby/util, boost, lib_henrik_util
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 070101
 distro   = lamss.mit.edu
 
@@ -508,7 +508,7 @@ of dynamic acoustic targets.
 
 depends = goby/moos, goby/util, lib_lamss_protobuf, lib_henrik_util, lib_bellhop
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 070101
 distro   = lamss.mit.edu
 
@@ -538,7 +538,7 @@ passive sonar on collaborator UUV.
 
 depends = goby/moos, goby/util, goby/time, lib_lamss_protobuf
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 170701
 distro   = lamss.mit.edu
 
@@ -562,7 +562,7 @@ directional transmissions in the Virtual Ocean.
    
 depends = goby/moos, goby/util, goby_time, lib_lamss_protobuf, lib_henrik_util
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 180701
 distro   = lamss.mit.edu
 
@@ -586,7 +586,7 @@ for the active and passive sonar simulators.  targets
 
 depends = goby/moos, goby/util, lib_lamss_protobuf, lib_henrik_util, lib_bellhop
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 180701
 distro   = lamss.mit.edu
 
@@ -613,7 +613,7 @@ hydrophones or vector sensors on fixed or mobile platforms.
 
 depends = goby/moos, goby/util, lib_henrik_util
 
-group    = LAMSS, Virtual_Ocean
+group    = LAMSS, VirtualOcean
 borndate = 070101
 distro   = lamss.mit.edu
 
