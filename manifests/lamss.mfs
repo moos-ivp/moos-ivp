@@ -30,7 +30,7 @@ environment and the associated response of the sensors, communication
 modems and the platform dynamics, providing a high-fidelity platform
 for realistic virtual experiments for payload autonomy development.
 
-group    = LAMSS, VirtualOcean
+group    = VirtualOcean
 distro   = lamss.mit.edu
 
 
@@ -46,7 +46,7 @@ and control, this group of GobyMOOS Applications use a Boost FSM State
 Machine framework for managing the state transitions and the dynamic
 behavior configurations for the hierarchical MODE structure of pHelmIvP.
 
-group    = LAMSS, MissionManagement
+group    = MissionManagement
 distro   = lamss.mit.edu
 
 //====================================================================
@@ -60,7 +60,7 @@ synopsis = Group of MOOSApps and GobyMoosApps constituting the
 acoustic signal processing chain for acoustic surveillance with
 passive and active sonars.
 
-group    = LAMSS, SonarProcessing
+group    = SonarProcessing
 distro   = lamss.mit.edu
 
 //====================================================================
