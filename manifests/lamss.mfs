@@ -195,9 +195,11 @@ thumb = State machine pplication for onboard autonomous mission
            command and control, responsible for defining the
            hierarchial MODE state of pHelmIvP, and filling the role of
            the operator during communication blackouts, emergencies
-           etc.  depends = goby/moos, goby/util, goby/acomms,
-           goby/time, goby/protobuf, boost, lib_lamss_protobuf,
-           lib_henrik_util
+           etc.  
+
+depends = goby/moos, goby/util, goby/acomms,
+goby/time, goby/protobuf, boost, lib_lamss_protobuf,
+lib_henrik_util
 
 group    = LAMSS, Mission_Management
 borndate = 150930
