@@ -18,7 +18,24 @@ group = LAMSS
 distro = lamss.mit.edu
 
 //====================================================================
-module   = Mission_Management
+module   = VirtualOcean
+type     = group
+author   = Henrik Schmidt
+contact  = henrik@mit.edu
+org      = LAMSS
+
+synopsis = The Virtual Ocean contains a number of MOOS and GobyMOOS
+Applications  for supporting physics-based simulation of the ocean
+environment and the associated response of the sensors, communication
+modems and the platform dynamics, providing a high-fidelity platform
+for realistic virtual experiments for payload autonomy development.
+
+group    = LAMSS, VirtualOcean
+distro   = lamss.mit.edu
+
+
+//====================================================================
+module   = MissionManagement
 type     = group
 author   = Henrik Schmidt
 contact  = henrik@mit.edu
@@ -29,7 +46,7 @@ and control, this group of GobyMOOS Applications use a Boost FSM State
 Machine framework for managing the state transitions and the dynamic
 behavior configurations for the hierarchical MODE structure of pHelmIvP.
 
-group    = LAMSS, Mission_Management
+group    = LAMSS, MissionManagement
 distro   = lamss.mit.edu
 
 //====================================================================
@@ -201,7 +218,7 @@ depends = goby/moos, goby/util, goby/acomms,
 goby/time, goby/protobuf, boost, lib_lamss_protobuf,
 lib_henrik_util
 
-group    = LAMSS, Mission_Management
+group    = LAMSS, MissionManagement
 borndate = 150930
 distro   = lamss.mit.edu
 
