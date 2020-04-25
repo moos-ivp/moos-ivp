@@ -42,13 +42,16 @@ ProcessConfig = pMovingSurvey
   AppTick   = 4                                                 
   CommsTick = 4
 
-  survey  = format=lawnmower, label=survey, x=50, y=-90, height=60, width=100, lane_width=12,  degs=45
+  //survey  = format=lawnmower, label=survey, x=50, y=-90, height=60, width=100, lane_width=12,  degs=45
+  survey  = format=lawnmower, label=survey, x=50, y=-90, height=200, width=100, lane_width=12,  degs=45
 
   speed = 0.4
   heading = 45
   rpm = 0.05
 
-  reverse_interval = 120
+  //reverse_interval = 120
+  //update_interval = 20
+  reverse_interval = 1000
   update_interval = 20
 }                                  
 

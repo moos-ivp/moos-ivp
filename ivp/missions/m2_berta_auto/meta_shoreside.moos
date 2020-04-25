@@ -2,8 +2,8 @@
 // ShoreSide Configuration File
 
 ServerHost = localhost
-ServerPort = $(SPORT)
-Community  = $(SNAME)
+ServerPort = $(SHORE_MOOSDB)
+Community  = shoreside
 
 #include plug_origin_warp.moos
   
@@ -27,11 +27,19 @@ Processconfig = ANTLER
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
   Run = uFldWrapDetect  @ NewConsole = false
-
   Run = uFldCollisionDetect @ NewConsole = false
 }
 
-#include plug_pShare.moos
+//---------------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  localhost:$(SHORE_PSHARE)
+}
 
 //--------------------------------------------------
 // uFldWrapDetect
@@ -86,24 +94,6 @@ ProcessConfig = uMAC
 }
 
 //--------------------------------------------------
-// uMACView Configuration Block
-
-ProcessConfig = uMACView
-{
-  AppTick       = 3
-  CommsTick     = 3
-
-  nodes_font_size      = medium
-  procs_font_size      = medium
-  appcast_font_size    = small
-  refresh_mode         = events
-  appcast_color_scheme = beige
-
-  appcast_height     = 30
-  appcast_color_scheme = beige
-}
-
-//--------------------------------------------------
 // uFldShoreBroker Configuration Block
 
 ProcessConfig = uFldShoreBroker
@@ -116,36 +106,26 @@ ProcessConfig = uFldShoreBroker
   //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
   qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
-  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID
+  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID, UP_LOITER
+  qbridge  = RETURN_UPDATES
 
-	bridge   = src=EVAL_LOITER_REQ_$V, alias=EVAL_LOITER_REQ
-	bridge   = src=ENCOUNTER_$V, alias=ENCOUNTER
-	bridge   = src=NEAR_MISS_$V, alias=NEAR_MISS
-	bridge   = src=COLLISION_$V, alias=COLLISION
-  bridge   = src=UP_LOITER_$V, alias=UP_LOITER
+  bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
   bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
-  bridge   = src=COLLISION_DETECT_PARAMS, alias=COLLISION_DETECT_PARAMS
-  bridge   = src=COLLISION_DETECT_PARAMS_$V, alias=COLLISION_DETECT_PARAMS
 }
 
 //--------------------------------------------------
-// ufldnodecomms Configuration Block
+// uFldNodeComms Configuration Block
 
 ProcessConfig = uFldNodeComms
 {
-  AppTick       = 2
-  CommsTick     = 2
-
-  //comms_range      = 15
-  //critical_range   = 15
+  AppTick   = 2
+  CommsTick = 2
 
   comms_range      = 500
   critical_range   = 25
-
   min_msg_interval = 15
   max_msg_length   = 1000
-
   groups           = true
 
   view_node_rpt_pulses = false
@@ -156,8 +136,8 @@ ProcessConfig = uFldNodeComms
 
 ProcessConfig = pHostInfo
 {
-  AppTick 	= 1
-  CommsTick = 1
+  AppTick    = 1
+  CommsTick  = 1
 }
 
 //--------------------------------------------------
@@ -168,7 +148,9 @@ ProcessConfig = uXMS
   AppTick       = 1
   CommsTick     = 1
 
-  var = APPCAST_REQ
+  var = APPCAST_REQ_ALL, DEPLOY_ALL, RETURN_ALL, STATION_KEEP_ALL
+  var = STATION_KEEP_HENRY, STATION_KEEP_GILDA
+  var = RETURN_UPDATES_HENRY, RETURN_UPDATES_GILDA
 }
 
 //--------------------------------------------------
@@ -185,7 +167,7 @@ ProcessConfig = pLogger
   AsyncLog      = true
   FileTimeStamp = true
 
-	LogAuxSrc     = true
+  LogAuxSrc     = true
 
   // Log it all!!!!!
   WildCardLogging = true 
@@ -193,7 +175,6 @@ ProcessConfig = pLogger
   WildCardOmitPattern = *_STATUS
   WildCardOmitPattern = DB_VARSUMMARY
   WildCardOmitPattern = DB_RWSUMMARY
-  WildCardOmitPattern = NODE* 
   WildCardOmitPattern = APPCAST* 
   WildCardOmitPattern = PSHARE* 
   WildCardOmitPattern = *_ITER_GAP
@@ -211,7 +192,7 @@ ProcessConfig = pMarineViewer
   TIFF_FILE            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
-  zoom                 = 0.65
+  zoom                 = 1.1
   vehicles_shape_scale = 1.5
   vehicles_name_mode   = names
 
@@ -219,36 +200,56 @@ ProcessConfig = pMarineViewer
   
   appcast_viewable = true
   appcast_color_scheme = indigo
+  appcast_font_size = large
+  procs_font_size = large
+  nodes_font_size = large
 
-  scope = ENCOUNTER
-  scope = VNAME_CLOSEST
+  stale_report_thresh = 10
+  stale_remove_thresh = 18
+
   scope = PSHARE_INPUT_SUMMARY
   scope = NODE_BROKER_PING
   scope = DEPLOY_ALL
-  scope = CONTACT_INFO
-
-	action = COLLISION_DETECT = true
-	action = COLLISION_DETECT = false
-	
-  action = PERMUTING = true
-  action = PERMUTING = false
-
-  action = WIND_GUSTS = true
-  action = WIND_GUSTS = false
 
   action = STATION_KEEP_ALL = false
   action = STATION_KEEP_ALL = true
 
-  left_context[surface_point] = RETURN_$[UP_VNAME_CLOSEST] = true
+  left_context[return_point] = RETURN_$[UP_VNAME_CLOSEST] = true
+  left_context[return_point] = RETURN_UPDATES_$[UP_VNAME_CLOSEST] = points=$[XPOS],$[YPOS]
+  left_context[station]      = STATION_KEEP_$[UP_VNAME_CLOSEST] = true
 
+  cmd = label=DEPLOY, var=DEPLOY,  sval=true,  receivers=all:$(VNAMES)
+  cmd = label=DEPLOY, var=MOOS_MANUAL_OVERRIDE,  sval=false,  receivers=all:$(VNAMES)
+  cmd = label=DEPLOY, var=AVOID,  sval=true,  receivers=all:$(VNAMES)
+  cmd = label=DEPLOY, var=RETURN,  sval=false,  receivers=all:$(VNAMES)
+  cmd = label=DEPLOY, var=STATION_KEEP,  sval=false,  receivers=all:$(VNAMES)
+
+  cmd = label=RETURN, var=RETURN, sval=true, receivers=all:$(VNAMES)
+  cmd = label=RETURN, var=STATION_KEEP, sval=false, receivers=all:$(VNAMES)
+
+  cmd = label=PERMUTE, var=UTS_FORWARD,  dval=0,  receivers=shore
+
+  cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all:$(VNAMES)
+
+  cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all:$(VNAMES)
+
+  cmd = label=LOITER-FAST, var=UP_LOITER,  sval=speed=2.8,  receivers=all:$(VNAMES)
+  cmd = label=LOITER-SLOW, var=UP_LOITER,  sval=speed=1.4,  receivers=all:$(VNAMES)
+
+  cmd = label=LOITER-CLOCKWISE-TRUE,  var=UP_LOITER, sval=clockwise=true,  receivers=all:$(VNAMES)
+  cmd = label=LOITER-CLOCKWISE-FALSE, var=UP_LOITER, sval=clockwise=false, receivers=all:$(VNAMES)
+  cmd = label=LOITER-CLOCKWISE-BEST, var=UP_LOITER,  sval=clockwise=false, receivers=all:$(VNAMES)
+	
   button_one   = DEPLOY  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = AVOID_ALL=true
   button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
 
   button_two   = RETURN  # RETURN_ALL=true
   button_two   = RETURN  # STATION_KEEP_ALL=false
   button_three = PERMUTE   # UTS_FORWARD=0
   button_four  = STATION   # STATION_KEEP_ALL=true
+
 }
 
 //--------------------------------------------------------
@@ -263,17 +264,21 @@ ProcessConfig = uTimerScript
   reset_max  = unlimited
   reset_time = end
 
-  randvar = varname=X1, min=-25,  max=25,  key=at_reset
-  randvar = varname=Y1, min=-100, max=-50, key=at_reset
+  //randvar = varname=X1, min=-25,  max=25,  key=at_reset
+  //randvar = varname=Y1, min=-100, max=-50, key=at_reset
+  //randvar = varname=X2, min=100,  max=150, key=at_reset
+  //randvar = varname=Y2, min=-75,  max=-25, key=at_reset
 
-  randvar = varname=X2, min=100,  max=150, key=at_reset
-  randvar = varname=Y2, min=-75,  max=-25, key=at_reset
+  randvar = varname=X1, min=0,     max=5,  key=at_reset
+  randvar = varname=Y1, min=-80,  max=-70, key=at_reset
+  randvar = varname=X2, min=120,  max=130, key=at_reset
+  randvar = varname=Y2, min=-80,  max=-70, key=at_reset
 
-  event = var=UP_LOITER_%(VNAME2), val="center_assign=$[X1],$[Y1]", time=180 
-  event = var=UP_LOITER_%(VNAME1), val="center_assign=$[X2],$[Y2]", time=180
+  event = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
+  event = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180
 
-  event = var=UP_LOITER_%(VNAME1), val="center_assign=$[X1],$[Y1]", time=360
-  event = var=UP_LOITER_%(VNAME2), val="center_assign=$[X2],$[Y2]", time=360
+  event = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=360
+  event = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=360
 }
 
 
@@ -290,9 +295,7 @@ ProcessConfig = uProcessWatch
   watch_all = true      // default is true
 
   nowatch = uXMS*
-  nowatch = uMAC*
   nowatch = uPokeDB*
-  nowatch = uQueryDB*
 
   summary_wait = 12
 }

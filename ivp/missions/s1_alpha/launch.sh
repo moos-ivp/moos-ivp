@@ -24,7 +24,7 @@ for ARGI; do
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     else 
-	printf "Bad Argument: %s \n" $ARGI
+	echo "launch.sh: Bad Arg:" $ARGI
 	exit 0
     fi
 done
@@ -33,7 +33,7 @@ done
 #----------------------------------------------------------
 #  Part 3: Launch the processes
 #----------------------------------------------------------
-echo "Launching $COMMUNITY MOOS Community. WARP is" $TIME_WARP
+echo "Launching $COMMUNITY MOOS Community with WARP:" $TIME_WARP
 pAntler $COMMUNITY.moos --MOOSTimeWarp=$TIME_WARP >& /dev/null &
 
 uMAC -t $COMMUNITY.moos

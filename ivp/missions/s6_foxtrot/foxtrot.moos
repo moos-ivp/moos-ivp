@@ -161,14 +161,18 @@ ProcessConfig = pMarineViewer
   marker_viewable_all = true
   marker_scale = 1.0
 
-	scope = MISSION_TIME_REMAINING
+  //scope = MISSION_TIME_REMAINING
+  scope = OPREG_TRAJECTORY_PERIM_DIST
 
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
 
-  button_three = OPR_RESET  # OPREGION_RESET=poly
-  button_four  = TIME_RESET # OPREGION_RESET=time
+  button_three = OPR_BIG  # UP_OPREGION=polygon=0,-50:0,-250:150,-250:150,-50
+  button_four  = OPR_SMALL  # UP_OPREGION=polygon=0,-50:0,-150:150,-150:150,-50
+
+  //button_three = OPR_RESET  # OPREGION_RESET=poly
+  //button_four  = TIME_RESET # OPREGION_RESET=time
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false

@@ -1,25 +1,33 @@
 #!/bin/bash -e
-#-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
-#-------------------------------------------------------
+#----------------------------------------------------------
+#  Script: launch.sh
+#  Author: Michael Benjamin
+#  LastEd: Apr 25th 2020
+#----------------------------------------------------------
+#  Part 1: Set Exit actions and declare global var defaults
+#----------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
 LAUNCH_GUI="yes"
+
+#-------------------------------------------------------
+#  Part 2: Check for and handle command-line arguments
+#-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	printf "%s [SWITCHES] [time_warp]   \n" $0
-	printf "  --just_make, -j    \n" 
-	printf "  --help, -h         \n" 
-	printf "  --no_gui, -n       \n" 
+	echo "launch.sh [SWITCHES] [time_warp]  "
+	echo "  --just_make, -j    " 
+	echo "  --help, -h         " 
+        echo "  --no_gui, -n       " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--no_gui" -o "${ARGI}" = "-n" ] ; then
 	LAUNCH_GUI="no"
     else 
-	printf "Bad Argument: %s \n" $ARGI
+	echo "launch.sh: Bad Arg:" $ARGI
 	exit 0
     fi
 done
@@ -94,20 +102,16 @@ fi
 #-------------------------------------------------------
 #  Part 3: Launch the processes
 #-------------------------------------------------------
-printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
+echo "Launching $SNAME MOOS Community with WARP:" $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
-printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
+echo "Launching $VNAME1 MOOS Community with WARP:" $TIME_WARP
 pAntler targ_abe.moos >& /dev/null &
-printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
+echo "Launching $VNAME2 MOOS Community with WARP:" $TIME_WARP
 pAntler targ_ben.moos >& /dev/null &
-printf "Launching $VNAME3 MOOS Community (WARP=%s) \n" $TIME_WARP
+echo "Launching $VNAME3 MOOS Community with WARP:" $TIME_WARP
 pAntler targ_cal.moos >& /dev/null &
-printf "Launching $VNAME4 MOOS Community (WARP=%s) \n" $TIME_WARP
+echo "Launching $VNAME4 MOOS Community with WARP:" $TIME_WARP
 pAntler targ_deb.moos >& /dev/null &
-printf "Done \n"
+echo "Done \n"
 
 uMAC targ_shoreside.moos
-
-printf "Killing all processes ... \n"
-mykill; ktm
-printf "Done killing processes.   \n"
