@@ -30,4 +30,3 @@ fi
 rm -rf  $VERBOSE   MOOSLog_*  LOG_* 
 rm -f   $VERBOSE   *~  *.moos++
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory
-
