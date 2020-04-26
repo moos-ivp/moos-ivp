@@ -85,4 +85,4 @@ pAntler targ_henry.moos >& /dev/null &
 echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_gilda.moos >& /dev/null &
 
-uMAC targ_shoreside.moos
+uMAC targ_shoreside.moos --node=shoreside --proc=uFldCollisionDetect

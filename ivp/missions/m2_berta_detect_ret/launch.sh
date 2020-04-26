@@ -14,7 +14,7 @@ for ARGI; do
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--no_gui" -o "${ARGI}" = "-n" ] ; then
 	LAUNCH_GUI="no"
