@@ -18,6 +18,32 @@ group = LAMSS
 distro = lamss.mit.edu
 
 //====================================================================
+module   = Environment
+type     = group
+author   = Henrik Schmidt
+contact  = henrik@mit.edu
+org      = LAMSS
+
+synopsis = Modules, libraries and behaviors for maintaining
+environmental situational awareness and adaptating to the environment
+for optimal performance
+
+group    = Environment
+distro   = lamss.mit.edu
+
+//====================================================================
+module   = FieldOperations
+type     = group
+author   = Henrik Schmidt
+contact  = henrik@mit.edu
+org      = LAMSS
+
+synopsis = Modules, libraries and behaviors for use in field
+operations, ncluding sensor acquisition system drivers and utilities.
+
+group    = FieldOperations
+distro   = lamss.mit.edu
+//====================================================================
 module   = VirtualOcean
 type     = group
 author   = Henrik Schmidt
@@ -646,6 +672,194 @@ array element locations and poses, subsequently used by
 uSimPassiveSonar and uSimActiveSonar for proper extraction of relevant
 impulse responses from the embedded acoustic model.
 
- 
 
- 
+
+
+
+
+//====================================================================
+module   = BHV_ConstantAltitude
+type     = Behavior
+author   = Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+thumb    = Behavior for executing bottom mapping missions maintaining constant altitude. 
+depends   = ivp_behaviors
+
+group    = LAMSS, Environment 
+borndate = 120101
+distro   = lamss.mit.edu
+
+synopsis = Behavior using a DVL or altimneter sensor for maintaining a
+constant altitude for bottom-following surveys.  Typically used for
+sidescan or sub-bottom profiling. Alternatively configurable for
+inverted, upward-looking DVL for underice missions following the ice
+contours.
+
+
+//====================================================================
+module   = BHV_MinAltitude
+type     = Behavior
+author   = Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+thumb    = Behavior for maintaining a minimum altitude above bottom or
+below under-ice excursions.  depends = ivp_behaviors
+
+group    = LAMSS, Environment, FieldOperations
+borndate = 120101
+distro   = lamss.mit.edu
+
+synopsis = Behavior using a DVL or altimeter sensor for ensuring a
+miniomum altitude above the bottom. Used routinely for shallow water
+opoerations. Alternatively configurable for inverted, upward-looking
+DVL for underice missions to ensure safe distance from ice keels etc.
+
+//====================================================================
+module   = BHV_OptAcommsDepth
+type     = Behavior
+author   = Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+thumb    = Behavior for creating depth objective function for
+optimizing acoustic communication performance, including coherence
+properties and multipath interferrence.
+depends   = goby/moos, goby/util, goby/time, boost, lib_bellhop, lib_henrik_util
+
+group    = LAMSS, Environment 
+borndate = 120101
+distro   = lamss.mit.edu
+
+synopsis = This behavior computes a HelmIvp depth objective function
+for optimizing communication performance, similar to
+BHV_OptAcousDepth, but using a suite of different performance metrics
+representing coherence properties of the acoustic
+environbment. Metrics implemented include SNR for multipath arrivals
+with a limited number of boundary bounces, and a metric penalizing
+multipath fading. In addition to depth dependent ambient noise, this b
+ehavior also allows for including vertical directionality of the noise
+by including the elevation dependent array gain in the optimization.
+
+//====================================================================
+module   = BHV_OptAcoustDepth
+type     = Behavior
+author   = Toby Schneider, Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+thumb    = Behavior for creating depth objective function for
+optimizing incoherent signal-to-noise ratio (SNR) for an acoustic
+signal originating at a contact.
+depends   = goby/moos, goby/util, goby/time, lib_bellhop, boost
+
+group    = LAMSS, MissionManagement, VirtualOcean, Environment, SonarProcessing 
+borndate = 110101
+distro   = lamss.mit.edu
+
+synopsis = This behavior computes a depth-objective function
+representing the SNR as a function of depth over a configurable
+look-ahead time. It is based on the original behavior developed by
+Toby Schneider which computes the incoherent Transmission Loss (TL)
+for a range-depth grid using the Embedded Virtual Ocean, but adding
+the feature of incorporating the depth-dependence of the ambient noise
+to base the adaptatiuon on incoherent SNR.
+
+//====================================================================
+module   = BHV_Racetrack
+type     = Behavior
+author   = Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+thumb    = Behavior for executing a racetrack survey with configurable
+length, width and heading, with tight tracklines.
+depends   = ivp_behaviors
+
+group    = LAMSS, FieldOperations
+borndate = 110101
+distro   = lamss.mit.edu
+
+synopsis = Behavior for executing a racetrack survey with configurable
+length, width, and heading, and combined with arbirary depth
+behavioors, including constant depth, dual in/out depths, smart yoyo,
+and environmentally adaptive for sensing optimization. The tight
+tracklines are only distorted by obstacle and collision avoidance
+behaviors. A behavior flag indicates when on a trackline and is
+typically used for disabling GPS surfacings to avoid distorting side
+scan images etc.
+
+
+//====================================================================
+module   = BHV_SmartYoyo
+type     = Behavior
+author   = Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+thumb    = Behavior for vertical yoyo surveys covering full water
+column in shallow water with horizontal bathymetry variation.
+depends   = ivp_behaviors
+
+group    = LAMSS, Environment 
+borndate = 120101
+distro   = lamss.mit.edu
+
+synopsis = Behavior for performing vertical yoyho suyrveys covering
+the full water column in shallow water with horizontal bathymetric
+variability. Uses DVL readings to scale verticval yoyo pattern with
+the water depth. The vertical path is configrable in terms of upper
+and lower depths and horizontal period, and can be either triangular
+or sinosoidal in shape. Can alternatively be configured for yoyo
+survey below ice cover using upward-looking DVL, with the upper yoyo
+limit being scaled by the measured ice excursions.
+
+
+//====================================================================
+module   = BHV_WiggleTail
+type     = Behavior
+author   = Don Eickstedt, Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+thumb    = Behavior for breaking left-right ambiguity of towed array
+response during acoustic surveillance surveys.
+depends   = ivp_behaviors
+
+group    = LAMSS, SonarProcessing
+borndate = 070101
+distro   = lamss.mit.edu
+
+synopsis = This behavior works in concert with pLamssBearingTracker to
+execute a maneuv er which allows the processing chain to break the
+left-right ambiguity of a linear towed array. Once the processing
+chain reports a new detection, the maneuver will initiate a turn at
+constant heading rate maintained until the processing chain declares
+the ambiguity to be broken. Originally developed and tested during the
+ONR PLUSnet program by Don Eickstedt, this behavior is now a standard
+component of a passive acoustic DCLT mission.
+
+//====================================================================
+module   = BHV_ConstantBearing
+type     = Behavior
+author   = Don Eickstedt, Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+thumb    = Behavior for maintaining a constant relative bearing to an
+acoustic target
+depends   = ivp_behaviors
+
+group    = LAMSS, SonarProcessing
+borndate = 110101
+distro   = lamss.mit.edu
+
+synopsis = This behavior works in concert with pLamssBearingTracker
+and pLamssTrackManager during acoustic tracking missions to optimize
+tracking resolution once the target signal is detected and the
+left-right ambiguity inherent to the towed array is broken.  Thus,
+when entering the Tracking phase of the DCLT sequence, this behavior
+computes a heading and speed objective function for maintaining a
+specified relative bearing to a target being tracked using either a
+hull-mounted or towed acoustic array. The desired relative bearing can
+be configured for only forward of broadside, or alternatively either
+forward or backward, and typically close to broadside,
+e.g. $80^{\circ}$. The behavior monitors bearing rate, and if it goes
+stale, the behavior autonomously reverses the heading to maximize
+target motion information. Originally developed and tested during the
+ONR PLUSnet program by Don Eickstedt, this behavior is now a standard
+component of a passive acoustic DCLT mission.
