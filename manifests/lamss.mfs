@@ -1,95 +1,4 @@
 //====================================================================
-module = LAMSS 
-type = group 
-author = Toby Schneider, Henrik Schmidt
-contact = henrik@mit.edu 
-org = MIT-LAMSS 
-
-synopsis = MOOS and GobyMOOS Applications for operating UUVs and
-associated communication and navigation frameworks under the Nested
-Autonomy operational paradigm, implemented using the MOOS-IvP Payload
-Autonomy framework in combination with the Goby acoustic communication
-architecture. Also includes the Virtual Ocean development platform
-with its suite of high-fidelity, physics-based ocean environmental
-modeling tools for executing real-time virtual experiments with
-multiple mobile and fixed node undersea networks.
-
-group = LAMSS
-distro = lamss.mit.edu
-
-//====================================================================
-module   = Environment
-type     = group
-author   = Henrik Schmidt
-contact  = henrik@mit.edu
-org      = LAMSS
-
-synopsis = Modules, libraries and behaviors for maintaining
-environmental situational awareness and adaptating to the environment
-for optimal performance
-
-group    = Environment
-distro   = lamss.mit.edu
-
-//====================================================================
-module   = FieldOperations
-type     = group
-author   = Henrik Schmidt
-contact  = henrik@mit.edu
-org      = LAMSS
-
-synopsis = Modules, libraries and behaviors for use in field
-operations, ncluding sensor acquisition system drivers and utilities.
-
-group    = FieldOperations
-distro   = lamss.mit.edu
-//====================================================================
-module   = VirtualOcean
-type     = group
-author   = Henrik Schmidt
-contact  = henrik@mit.edu
-org      = LAMSS
-
-synopsis = The Virtual Ocean contains a number of MOOS and GobyMOOS
-Applications  for supporting physics-based simulation of the ocean
-environment and the associated response of the sensors, communication
-modems and the platform dynamics, providing a high-fidelity platform
-for realistic virtual experiments for payload autonomy development.
-
-group    = VirtualOcean
-distro   = lamss.mit.edu
-
-
-//====================================================================
-module   = MissionManagement
-type     = group
-author   = Henrik Schmidt
-contact  = henrik@mit.edu
-org      = LAMSS
-
-synopsis = Responsible for the on-board mission autonomy and command
-and control, this group of GobyMOOS Applications use a Boost FSM State
-Machine framework for managing the state transitions and the dynamic
-behavior configurations for the hierarchical MODE structure of pHelmIvP.
-
-group    = MissionManagement
-distro   = lamss.mit.edu
-
-//====================================================================
-module   = SonarProcessing
-type     = group
-author   = Henrik Schmidt
-contact  = henrik@mit.edu
-org      = LAMSS
-
-synopsis = Group of MOOSApps and GobyMoosApps constituting the
-acoustic signal processing chain for acoustic surveillance with
-passive and active sonars.
-
-group    = SonarProcessing
-distro   = lamss.mit.edu
-
-//====================================================================
 module   = iNoaaBathy
 type     = MOOS App
 author   = Stephanie Petillo, Henrik Schmidt
@@ -690,7 +599,7 @@ group    = LAMSS, Environment
 borndate = 120101
 distro   = lamss.mit.edu
 
-synopsis = Behavior using a DVL or altimneter sensor for maintaining a
+synopsis = Behavior using a DVL or altimeter sensor for maintaining a
 constant altitude for bottom-following surveys.  Typically used for
 sidescan or sub-bottom profiling. Alternatively configurable for
 inverted, upward-looking DVL for underice missions following the ice
@@ -711,8 +620,8 @@ borndate = 120101
 distro   = lamss.mit.edu
 
 synopsis = Behavior using a DVL or altimeter sensor for ensuring a
-miniomum altitude above the bottom. Used routinely for shallow water
-opoerations. Alternatively configurable for inverted, upward-looking
+minimum altitude above the bottom. Used routinely for shallow water
+operations. Alternatively configurable for inverted, upward-looking
 DVL for underice missions to ensure safe distance from ice keels etc.
 
 //====================================================================
@@ -723,21 +632,21 @@ contact  = henrik@mit.edu
 org      = MIT
 thumb    = Behavior for creating depth objective function for
 optimizing acoustic communication performance, including coherence
-properties and multipath interferrence.
+properties and multipath interference.
 depends   = goby/moos, goby/util, goby/time, boost, lib_bellhop, lib_henrik_util
 
 group    = LAMSS, Environment 
 borndate = 120101
 distro   = lamss.mit.edu
 
-synopsis = This behavior computes a HelmIvp depth objective function
+synopsis = This behavior computes a pHelmIvP depth objective function
 for optimizing communication performance, similar to
 BHV_OptAcousDepth, but using a suite of different performance metrics
 representing coherence properties of the acoustic
-environbment. Metrics implemented include SNR for multipath arrivals
+environment. Metrics implemented include SNR for multipath arrivals
 with a limited number of boundary bounces, and a metric penalizing
 multipath fading. In addition to depth dependent ambient noise, this b
-ehavior also allows for including vertical directionality of the noise
+behavior also allows for including vertical directionality of the noise
 by including the elevation dependent array gain in the optimization.
 
 //====================================================================
@@ -761,7 +670,7 @@ look-ahead time. It is based on the original behavior developed by
 Toby Schneider which computes the incoherent Transmission Loss (TL)
 for a range-depth grid using the Embedded Virtual Ocean, but adding
 the feature of incorporating the depth-dependence of the ambient noise
-to base the adaptatiuon on incoherent SNR.
+to base the adaptation on incoherent SNR.
 
 //====================================================================
 module   = BHV_Racetrack
@@ -778,8 +687,8 @@ borndate = 110101
 distro   = lamss.mit.edu
 
 synopsis = Behavior for executing a racetrack survey with configurable
-length, width, and heading, and combined with arbirary depth
-behavioors, including constant depth, dual in/out depths, smart yoyo,
+length, width, and heading, and combined with arbitrary depth
+behaviors, including constant depth, dual in/out depths, smart yoyo,
 and environmentally adaptive for sensing optimization. The tight
 tracklines are only distorted by obstacle and collision avoidance
 behaviors. A behavior flag indicates when on a trackline and is
@@ -801,12 +710,12 @@ group    = LAMSS, Environment
 borndate = 120101
 distro   = lamss.mit.edu
 
-synopsis = Behavior for performing vertical yoyho suyrveys covering
+synopsis = Behavior for performing vertical yoyo surveys covering
 the full water column in shallow water with horizontal bathymetric
-variability. Uses DVL readings to scale verticval yoyo pattern with
-the water depth. The vertical path is configrable in terms of upper
+variability. Uses DVL readings to scale vertical yoyo pattern with
+the water depth. The vertical path is configurable in terms of upper
 and lower depths and horizontal period, and can be either triangular
-or sinosoidal in shape. Can alternatively be configured for yoyo
+or sinusoidal in shape. Can alternatively be configured for yoyo
 survey below ice cover using upward-looking DVL, with the upper yoyo
 limit being scaled by the measured ice excursions.
 
@@ -826,12 +735,12 @@ borndate = 070101
 distro   = lamss.mit.edu
 
 synopsis = This behavior works in concert with pLamssBearingTracker to
-execute a maneuv er which allows the processing chain to break the
+execute a maneuver which allows the processing chain to break the
 left-right ambiguity of a linear towed array. Once the processing
 chain reports a new detection, the maneuver will initiate a turn at
 constant heading rate maintained until the processing chain declares
 the ambiguity to be broken. Originally developed and tested during the
-ONR PLUSnet program by Don Eickstedt, this behavior is now a standard
+ONR PLUSNet program by Don Eickstedt, this behavior is now a standard
 component of a passive acoustic DCLT mission.
 
 //====================================================================
@@ -861,5 +770,5 @@ forward or backward, and typically close to broadside,
 e.g. $80^{\circ}$. The behavior monitors bearing rate, and if it goes
 stale, the behavior autonomously reverses the heading to maximize
 target motion information. Originally developed and tested during the
-ONR PLUSnet program by Don Eickstedt, this behavior is now a standard
+ONR PLUSNet program by Don Eickstedt, this behavior is now a standard
 component of a passive acoustic DCLT mission.
