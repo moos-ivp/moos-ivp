@@ -1,16 +1,14 @@
-#!/bin/bash 
-#--------------------------------------------------------------
-#   Script: launch_shoreside.sh                                    
+#!/bin/bash -e
+#-------------------------------------------------------------- 
+#   Script: launch_vehicle.sh                                    
 #   Author: Michael Benjamin  
 #     Date: April 2020     
 #--------------------------------------------------------------
-#----------------------------------------------------------  
-#  Part 1: Set Exit actions and declare global var defaults
-#----------------------------------------------------------
-trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
+#  Part 1: Declare global var defaults
+#--------------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
-AUTO_LAUNCHED="no"
+AUTO=""
 IP_ADDR="localhost"
 VNAME="abe"
 INDEX="1"
@@ -19,9 +17,9 @@ START_POS="0,0"
 SHORE="localhost:9300"
 PSHARE_PORT=""
 
-#-------------------------------------------------------
+#--------------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
-#-------------------------------------------------------
+#--------------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	echo "launch_vehicle.sh [SWITCHES] [time_warp]         "
@@ -40,15 +38,14 @@ for ARGI; do
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
-        AUTO_LAUNCHED="yes"
+        AUTO="yes"
     elif [ "${ARGI:0:8}" = "--vname=" ] ; then
         VNAME="${ARGI#--vname=*}"
-	echo "VNAME is" $VNAME
     elif [ "${ARGI:0:8}" = "--index=" ] ; then
         INDEX="${ARGI#--index=*}"
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"
-    elif [ "${ARGI:0:11xf}" = "--startpos=" ] ; then
+    elif [ "${ARGI:0:11}" = "--startpos=" ] ; then
         START_POS="${ARGI#--startpos=*}"
     elif [ "${ARGI:0:8}" = "--shore=" ] ; then
         SHORE="${ARGI#--shore=*}"
@@ -56,7 +53,7 @@ for ARGI; do
         PSHARE_PORT="${ARGI#--pshare=*}"
     else 
 	echo "launch_vehicle.sh: Bad Arg: " $ARGI
-	exit 0
+	exit 1
     fi
 done
 
@@ -66,33 +63,39 @@ fi
 
 VNAME=$VNAME"_"$INDEX
 
-#-------------------------------------------------------
+#--------------------------------------------------------------
 #  Part 3: Create the .moos and .bhv files. 
-#-------------------------------------------------------
+#--------------------------------------------------------------
 # What is nsplug? Type "nsplug --help" or "nsplug --manual"
 
-nsplug meta_vehicle.moos targ_$VNAME.moos -f WARP=$TIME_WARP  VTYPE=KAYAK  \
-   VNAME=$VNAME        START_POS=$START_POS                            \
-   VPORT="900"$INDEX   PSHARE_PORT=$PSHARE_PORT                        \
-   IP_ADDR=$IP_ADDR    SHORE=$SHORE  
+NSFLAGS="-s -f"
+if [ "${AUTO}" = "" ]; then
+    NSFLAGS="-i -f"
+fi
 
-nsplug meta_vehicle.bhv targ_$VNAME.bhv -f VNAME=$VNAME START_POS=$START_POS
+nsplug meta_vehicle.moos targ_$VNAME.moos $NSFLAGS WARP=$TIME_WARP \
+       VNAME=$VNAME        START_POS=$START_POS                    \
+       VPORT="900"$INDEX   PSHARE_PORT=$PSHARE_PORT                \
+       IP_ADDR=$IP_ADDR    SHORE=$SHORE  
+
+nsplug meta_vehicle.bhv targ_$VNAME.bhv $NSFLAGS VNAME=$VNAME      \
+       START_POS=$START_POS
 
 if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi
 
-#-------------------------------------------------------
-#  Part 3: Launch the processes
-#-------------------------------------------------------
+#--------------------------------------------------------------
+#  Part 4: Launch the processes
+#--------------------------------------------------------------
 echo "Launching $VNAME MOOS Community, WARP:" $TIME_WARP
 pAntler targ_$VNAME.moos >& /dev/null &
 echo "Done Launching the vehicle mission."
 
-if [ "${AUTO_LAUNCHED}" = "no" ]; then
+#-------------------------------------------------------------- 
+#  Part 5: Unless auto-launched, launch uMAC until mission quit          
+#-------------------------------------------------------------- 
+if [ "${AUTO}" = "" ]; then
     uMAC targ_$VNAME.moos
+    kill -- -$$
 fi
-
-exit 0
-# Killing of all launched procs handled by the trap setting 
-# configured at the top of this script
