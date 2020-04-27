@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash 
 #--------------------------------------------------------------
 #   Script: launch_shoreside.sh                                    
 #   Author: Michael Benjamin  
@@ -12,22 +12,28 @@ TIME_WARP=1
 JUST_MAKE="no"
 IP_ADDR="localhost"
 PSHARE_PORT="9300"
+AUTO_LAUNCHED="no"
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "launch_shoreside [SWITCHES] [time_warp]   "
-	echo "  --just_make, -j                         " 
-	echo "  --help, -h                              " 
-	echo "  --ip=<addr>     (default is localhost)  " 
-	echo "  --pshare=<port> (default is 9300)       " 
+	echo "launch_shoreside.sh [SWITCHES] [time_warp]   "
+	echo "  --just_make, -j                            " 
+	echo "  --help, -h                                 " 
+	echo "  --ip=<addr>        (default is localhost)  " 
+	echo "  --pshare=<port>    (default is 9300)       " 
+        echo "  --auto, -a                                 "
+        echo "     Auto-launched by a script.              "
+        echo "     Will not launch uMAC as the final step. "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
+    elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
+        AUTO_LAUNCHED="yes"
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"
     elif [ "${ARGI:0:9}" = "--pshare=" ]; then
@@ -39,7 +45,7 @@ for ARGI; do
 done
 
 #-------------------------------------------------------
-#  Part 2: Create the .moos and .bhv files. 
+#  Part 3: Create the .moos and .bhv files. 
 #-------------------------------------------------------
 # What is nsplug? Type "nsplug --help" or "nsplug --manual"
 
@@ -51,13 +57,18 @@ if [ ${JUST_MAKE} = "yes" ] ; then
 fi
 
 #-------------------------------------------------------
-#  Part 3: Launch the processes
+#  Part 4: Launch the processes
 #-------------------------------------------------------
-echo "Launching $VNAME MOOS Community WARP:"  $TIME_WARP
+echo "Launching $VNAME MOOS Community WARP:" $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
 echo "Done "
 
-uMAC targ_shoreside.moos
+#-------------------------------------------------------------- 
+# Part 5: Launch uMAC until the mission is quit          
+#-------------------------------------------------------------- 
+if [ "${AUTO_LAUNCHED}" = "no" ]; then
+    uMAC targ_shoreside.moos
+fi
 
 # Killing of all launched procs handled by the trap setting 
 # configured at the top of this script
