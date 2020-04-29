@@ -1,4 +1,134 @@
 //====================================================================
+module   = lib_bellhop
+type     = Library
+author   = Toby Schneider, Henrik Schmidt
+contact  = toby@ghobysoft.org, henrik@mit.edu
+org      = MIT
+
+thumb = Library of protobuf messages and utilities for requests of
+raytracing impulse responses in the Virtual Ocean.
+
+depends   = goby/protobuf, dccl/protobuf, goby/moos, boost
+
+group    = LAMSS, MissionManagement, VirtualOcean, Environment, SonarProcessing 
+borndate = 110101
+distro   = lamss.mit.edu
+
+synopsis = Library of Goby protobuf messages used for inter-module
+requesting and receiving raytracing impulse responses in the Virtual
+Ocean through the Request/Response service module iBellhop.
+
+//====================================================================
+module   = lib_henrik_util
+type     = Library
+author   = Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+
+thumb    = Library of utility functions used by the LAMSS Nested
+Autonomy modules, including linear algebra, environmental modeling and
+signal processing.
+
+depends   = libMOOS
+
+group    = LAMSS, MissionManagement, VirtualOcean, Environment, SonarProcessing 
+borndate = 110101
+distro   = lamss.mit.edu
+
+synopsis = Library of utilities used in MOOSApps and GobyMOOSApps in
+the LAMSS Nested Autonomy software infrastructure. It includes a vector
+and matrix manipulation suite, including equation solvers. Also
+includes a suite of random number generators, and functions used for
+generating pseudo random noise and simulated signals for timeseries
+generation in the Virtual Ocean, and functions for acoustic signal
+processing and target tracking.
+
+//====================================================================
+module   = lib_lamss_protobuf
+type     = Library
+author   = Toby Schneider, Henrik Schmidt
+contact  = toby@gobysoft.org,henrik@mit.edu
+org      = MIT
+
+thumb = Configurations of Goby-protobuf messages used for messages
+transmitted between Goby-MOOS applications through the MOOSDB or via
+the acoustic modem to and from the operators and collaborators.
+
+depends   = goby/protobuf, dccl/protobuf, goby/moos
+
+group    = LAMSS, MissionManagement, VirtualOcean, Environment, SonarProcessing 
+borndate = 110101
+distro   = lamss.mit.edu
+
+synopsis = Configurations of Goby protobuf messages used for
+transmitting information between Goby-MOOS Applications as an
+alternative to the traditional MOOS-IvP variable-value pairs. The
+message configurations are included and syntax checked in the
+Goby-MOOS applications at compile time, automatically generating C++
+variables accessible at runtime, where the messages are handled by a
+generic set of utilities for conversion to and from string format
+passed through the MOOSDB. Also include the protobuf configurations
+for the Goby Dynamic Command and Control Language (DCCL) messages
+transmitted to and from the operators and collaborating nodes via the
+acoustic modem network. Includes Goby protobuf configurations for most
+Request/Response services in the Virtual Ocean, including SVP sections
+and acoustic impulse responses.
+
+//====================================================================
+module = iBellhop
+type = Goby-MOOS App 
+author = Toby Schneider
+contact = topy@gobysoft.org 
+org = MIT, Gobysoft 
+
+thumb = Request/Response service module returning the eigenray
+solution for transmission from ownship to and from a depth-range
+receiver grid or a specific contact.
+
+depends = goby/moos, goby/util, boost, lib_lamss_protobuf, lib_bellhop
+
+group    = LAMSS, Virtual_Ocean
+borndate = 110101
+distro   = lamss.mit.edu
+
+synopsis = GobyMOOSApp which, upon requests through the MOOSDB,
+returns the multipath eigenray solution (delay, amplitude, doppler
+etc.) from ownship to and from a depth/range grid of receivers or a
+particular acoustic contact. Supports Nx2D SVP and bathymetry
+extracted from databases or ocean modeling and assimilation
+frameworks, managed onboard each platform by the nested modeling
+infrastructure of the Virtual Ocean. iBellhop is the core
+computational acoustics engine in the Virtual Ocean, and as such
+embedded on all platform autonomy systems in the LAMSS Nested Autonomy
+operational paradigm.
+
+//====================================================================
+module = uMVS_Bluefin
+type = MOOSApp 
+author = David Battle
+contact = david.battle@optusnet.com.au 
+org = MIT 
+thumb = High-fidelity dynamic model for BF21 UUV used for simulating
+platform maneuvering in  the Virtual Ocean.
+
+depends = libMOOS, mbutil, lib_newmat10D
+
+group    = LAMSS, Virtual_Ocean
+borndate = 050101
+distro   = lamss.mit.edu
+
+synopsis = Physics-based dynamic model for the Bluefin
+Robotics BF21 UUV, which provides the frontseat interface to the
+Virtual Ocean for simulating realistic platform maneuvering in
+response to speed, heading and depth commands from the backseat
+pHelmIvP. Calibrated for the MIT BF21 Macrura it is a high-fidelity
+alternative to the standard uSimMarine for UUVs, and with minor tuning of
+the PID parameters it is applicable to a wide range of torpedo-shaped
+UUVs. Handles platform response to ocean currents, and coupled
+response to a towed array, for example.
+
+
+//====================================================================
 module   = iNoaaBathy
 type     = MOOS App
 author   = Stephanie Petillo, Henrik Schmidt
@@ -585,6 +715,30 @@ impulse responses from the embedded acoustic model.
 
 
 
+
+//====================================================================
+module   = BHV_WiggleTail
+type     = Behavior
+author   = Don Eickstedt, Henrik Schmidt
+contact  = henrik@mit.edu
+org      = MIT
+thumb    = Behavior for breaking left-right ambiguity of towed array
+response during acoustic surveillance surveys.
+
+depends   = ivp_behaviors
+
+group    = LAMSS, SonarProcessing
+borndate = 070101
+distro   = lamss.mit.edu
+
+synopsis = This behavior works in concert with pLamssBearingTracker to
+execute a maneuver which allows the processing chain to break the
+left-right ambiguity of a linear towed array. Once the processing
+chain reports a new detection, the maneuver will initiate a turn at
+constant heading rate maintained until the processing chain declares
+the ambiguity to be broken. Originally developed and tested during the
+ONR PLUSNet program by Don Eickstedt, this behavior is now a standard
+component of a passive acoustic DCLT mission.
 
 //====================================================================
 module   = BHV_ConstantAltitude
