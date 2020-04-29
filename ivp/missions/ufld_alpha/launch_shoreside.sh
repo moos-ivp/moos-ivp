@@ -3,9 +3,8 @@
 #   Script: launch_shoreside.sh                                    
 #   Author: Michael Benjamin  
 #     Date: April 2020     
-#--------------------------------------------------------------
 #--------------------------------------------------------------  
-#  Part 1: Set Exit actions and declare global var defaults
+#  Part 1: Declare global var defaults
 #--------------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
