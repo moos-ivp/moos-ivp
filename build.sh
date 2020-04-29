@@ -6,8 +6,7 @@ CLEAN="no"
 # On Raspbian, by default, only min-robot code is built
 BUILD_BOT_CODE_ONLY="OFF"
 
-LSB_RELEASE=`which lsb_release`
-if [ "$LSB_RELEASE" != "" ]; then
+if [ -x "$(command -v lsb_release)" ]; then
     OS_INFO=`lsb_release -i -s`
     if [ "${OS_INFO}" = "Raspbian" ]; then
 	BUILD_BOT_CODE_ONLY="ON"
