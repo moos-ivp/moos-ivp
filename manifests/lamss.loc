@@ -19,3 +19,9 @@ module=uSimSelfNoise, loc=187, foc=2, wkyrs=0.03
 module=uSimSourceArray, loc=170, foc=2, wkyrs=0.03
 module=uSimTargets, loc=397, foc=2, wkyrs=0.08
 module=uSimTowedArray, loc=3404, foc=3, wkyrs=0.72
+
+module=lib_bellhop, loc=272, foc=3, wkyrs=0.05
+module=lib_henrik_util, loc=8463, foc=44, wkyrs=1.88
+module=lib_lamss_protobuf, loc=151, foc=3, wkyrs=0.03
+module=iBellhop, loc=567, foc=3, wkyrs=0.11
+module=uMVS_Bluefin, loc=3036, foc=35, wkyrs=0.64
