@@ -1,47 +1,51 @@
-#!/bin/bash 
-#-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
-#-------------------------------------------------------
+#!/bin/bash -e 
+#--------------------------------------------------------------  
+#  Part 1: Declare global var defaults
+#--------------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
 HAZARD_FILE="hazards.txt"
+
+#-------------------------------------------------------
+#  Part 2: Check for and handle command-line arguments
+#-------------------------------------------------------
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	printf "%s [SWITCHES] [time_warp]   \n" $0
-	printf "  --just_make, -j    \n"
-	printf "  --help, -h         \n" 
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
+	echo "launch_shoreside.sh [SWITCHES] [time_warp] "
+	echo "  --just_make, -j                          "
+	echo "  --help, -h                               " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
     else 
-	printf "Bad Argument: %s \n" $ARGI
+	echo "launch_shoreside.sh: Bad Arg:" $ARGI
 	exit 0
     fi
 done
 
 #-------------------------------------------------------
-#  Part 2: Create the .moos file(s)
+#  Part 3: Create the .moos file(s)
 #-------------------------------------------------------
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
    VNAME="shoreside" SHARE_LISTEN=$SHORE_LISTEN
 
-if [ ${JUST_MAKE} = "yes" ] ; then
+if [ ${JUST_MAKE} = "yes" ]; then
     exit 0
 fi
 
 #-------------------------------------------------------
-#  Part 3: Launch the processes
+#  Part 4: Launch the processes
 #-------------------------------------------------------
-printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
+echo "Launching Shoreside MOOS Community with WARP:" $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
-printf "Done \n"
+echo "Done "
 
 uMAC targ_shoreside.moos
 
-printf "Killing all processes ... \n"
+echo "Killing all processes ... "
 kill -- -$$
-printf "Done killing processes.   \n"
+echo "Done killing processes.   "
 
 

@@ -115,7 +115,7 @@ ProcessConfig = pMarineViewer
   TIFF_FILE            = AerialMIT.tif
   set_pan_x            = -30
   set_pan_y            = 60
-  zoom                 = 2.3
+  zoom                 = 3.5
   vehicles_shape_scale = 1.5
   vehicles_name_mode   = names+shortmode
   marker_viewable_labels = false
@@ -124,6 +124,9 @@ ProcessConfig = pMarineViewer
 
   appcast_viewable     = true
   appcast_color_scheme = indigo
+	appcast_font_size    = large
+	procs_font_size      = large
+	nodes_font_size      = xlarge
 
   SCOPE = UCTD_PARAMETER_ESTIMATE
   //ACTION = STATION_ALL = true
