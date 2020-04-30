@@ -12,9 +12,4 @@ ProcessConfig = pHelmIvP
   Domain       = speed:0:5:26
 
   ok_skew      = any
-
-#ifdef VTYPE UUV
-  Domain       = depth:0:10:101
-#endif
-
 }
