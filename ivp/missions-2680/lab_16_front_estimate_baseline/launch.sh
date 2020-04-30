@@ -1,7 +1,7 @@
-#!/bin/bash 
-#-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
-#-------------------------------------------------------
+#!/bin/bash -e
+#--------------------------------------------------------------  
+#  Part 1: Declare global var defaults
+#--------------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
 COOL_FAC=50
@@ -18,18 +18,30 @@ LANE_WIDTH1=25
 LANE_WIDTH2=25
 DEGREES1=270
 DEGREES2=0
+
+#-------------------------------------------------------
+#  Part 1: Check for and handle command-line arguments
+#-------------------------------------------------------
 for ARGI; do
-    #help:
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then 
-        HELP="yes"
-        UNDEFINED_ARG=""	
-    #time warmp
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then 
+	echo "launch.sh [SWITCHES]           " 
+	echo "Switches:                      "
+	echo "  --warp=WARP_VALUE            "
+	echo "  --adaptive, -a               "
+	echo "  --unconcurrent, -uc          "
+	echo "  --angle=DEGREE_VALUE         "
+	echo "  --angle1=DEGREE_VALUE archie "
+	echo "  --angle2=DEGREE_VALUE betty  "
+	echo "  --cool=COOL_FAC              "
+	echo "  --just_make, -j              "
+	echo "  --help, -h                   "
+	exit 0
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI:0:6}" = "--warp" ] ; then
         WARP="${ARGI#--warp=*}"
         UNDEFINED_ARG=""
-    elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ] ; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
     elif [ "${ARGI:0:6}" = "--cool" ] ; then
         COOL_FAC="${ARGI#--cool=*}"
@@ -61,22 +73,9 @@ for ARGI; do
 	exit 0
     fi
 done
-if [ "${HELP}" = "yes" ]; then
-    printf "%s [SWITCHES]            \n" $0
-    printf "Switches:                \n"
-    printf "  --warp=WARP_VALUE      \n"
-    printf "  --adaptive, -a         \n"
-    printf "  --unconcurrent, -uc       \n"
-    printf "  --angle=DEGREE_VALUE   \n"
-    printf "  --angle1=DEGREE_VALUE archie   \n"
-    printf "  --angle2=DEGREE_VALUE betty  \n"
-    printf "  --cool=COOL_FAC        \n"
-    printf "  --just_build, -j       \n"
-    printf "  --help, -h             \n"
-    exit 0;
-fi
+
 #-------------------------------------------------------
-#  Part 2: Create the .moos and .bhv files. 
+#  Part 3: Create the .moos and .bhv files. 
 #-------------------------------------------------------
 
 VNAME1="archie"      # The first  vehicle community
@@ -118,22 +117,22 @@ if [ ${JUST_MAKE} = "yes" ] ; then
 fi
 
 #-------------------------------------------------------
-#  Part 3: Launch the processes
+#  Part 4: Launch the processes
 #-------------------------------------------------------
-printf "Launching $VNAME1 MOOS Community (WARP=%s) \n" $TIME_WARP
+echo "Launching $VNAME1 MOOS Community with WARP:" $TIME_WARP
 pAntler targ_$VNAME1.moos >& /dev/null &
 sleep .25
-printf "Launching $VNAME2 MOOS Community (WARP=%s) \n" $TIME_WARP
+echo "Launching $VNAME2 MOOS Community with WARP: " $TIME_WARP
 pAntler targ_$VNAME2.moos >& /dev/null &
 sleep .25
-printf "Launching $SNAME MOOS Community (WARP=%s) \n"  $TIME_WARP
+echo "Launching $SNAME MOOS Community with WARP:"  $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
-printf "Done \n"
+echo "Done "
 
 uMAC targ_shoreside.moos
 
-printf "Killing all processes ... \n"
-kill %1 %2 %3
-printf "Done killing processes.   \n"
+echo "Killing all processes ..."
+kill -- -$$
+echo "Done killing processes.  "
 
 
