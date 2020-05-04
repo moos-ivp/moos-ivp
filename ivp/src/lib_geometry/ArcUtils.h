@@ -28,6 +28,7 @@
 
 #include <vector>
 #include "XYSegList.h"
+#include "XYArc.h"
 
 // Unit test: testAngleInArc
 bool angleInArc(double langle, double rangle, double query_angle);
@@ -42,6 +43,12 @@ double distPointToArc(double px, double py, double ax, double ay,
 double distPointToArcPt(double px, double py, double ax, double ay,
 			double ar, double langle, double rangle,
 			double&ix, double& iy);
+
+double arclen(double inscribed_angle, double radius);
+
+void arcturn(double px, double py, double ph, double ang,
+	     double radius, double& rx, double& ry);
+
 
 //===============================================================
 // Group 1: Whether and where arcs, segments, seglists intersect
@@ -107,7 +114,6 @@ unsigned int cpasRaySegl(double rx, double ry, double ray_angle,
 			 const XYSegList& segl, double thresh,	      
 			 std::vector<double>& vcpa,
 			 std::vector<double>& vray);
-	      
 
 // Unit test: tbd
 unsigned int cpasArcSegl(double ax, double ay, double ar,
@@ -116,6 +122,4 @@ unsigned int cpasArcSegl(double ax, double ay, double ar,
 			 bool langle_is_origin,
 			 std::vector<double>& vcpa,
 			 std::vector<double>& vray);
-	      
-
 #endif

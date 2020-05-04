@@ -176,6 +176,54 @@ double distPointToArcPt(double px, double py, double ax, double ay,
 }
 
 //---------------------------------------------------------------
+// Procedure: arclen()
+//   Purpose: Determine the length of arc given by its inscribed
+//            angle and its radius.
+
+double arclen(double angle, double radius)
+{
+  angle = angle360(angle);
+  double pct = angle / 360;
+  double circumference = radius * radius * 3.1415926536;
+  return(pct * circumference);
+}
+
+//---------------------------------------------------------------
+// Procedure: arcturn()
+//   Purpose: Determine the end position for vehicle beginning a
+//            turn arc at a given position and heading. And given
+//            an inscribed angle and radius.
+//      Note: A positive inscribed angle indicates a righthand or
+//            starboard turn. A negative angle is left/port turn.
+
+void arcturn(double px, double py, double ph, double ang,
+	     double radius, double& rx, double& ry)
+{
+  // Sanity checks
+  if((ang == 0) || (radius <= 0)) {
+    rx = px;
+    ry = py;
+    return;
+  }
+     
+  double offset   = 0;
+  double dest_ang = 0;
+  if(ang > 0) {
+    offset = angle360(ang+90);
+    dest_ang = angle360(offset + 180 + ang);
+  }
+  else {
+    offset = angle360(ang-90);
+    dest_ang = angle360(offset + 180 - ang);
+  }
+  
+  double cx,cy;
+  projectPoint(offset, radius, px,py, cx,cy);
+
+  projectPoint(dest_ang, radius, cx,cy, rx,ry);
+}
+
+//---------------------------------------------------------------
 // Procedure: arcSegCross()
 //   Purpose: Determine if the given segment crosses the given arc
 
