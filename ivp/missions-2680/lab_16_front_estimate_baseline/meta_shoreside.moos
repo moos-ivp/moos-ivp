@@ -131,6 +131,10 @@ ProcessConfig = pMarineViewer
   SCOPE = UCTD_PARAMETER_ESTIMATE
   //ACTION = STATION_ALL = true
 
+	action = FGR_SHOW = truth
+  action = FGR_SHOW = guess
+  action = FGR_SHOW = both
+
   button_one   = DEPLOY_ALL  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false # STATION_KEEP_ALL=false 
   button_one   = RETURN_ALL=false
