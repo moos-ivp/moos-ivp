@@ -85,12 +85,13 @@ VNAME2="betty"
 START_POS2="0,0"
 
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
-   VNAME="shoreside" SHARE_LISTEN=$SHORE_LISTEN
+   VNAME="shoreside" IP_ADDR="localhost" PSHARE_PORT="9300"
 
 #start first vehicle:
 nsplug meta_vehicle.moos targ_$VNAME1.moos -f WARP=$TIME_WARP  \
    VNAME=$VNAME1      START_POS=$START_POS1                    \
-   VPORT="9001"       SHARE_LISTEN="9301"                      \
+   VPORT="9001"       PSHARE_PORT="9301"                      \
+   IP_ADDR="localhost"                                        \
    VTYPE=KAYAK          COOL_FAC=$COOL_FAC  COOL_STEPS=$COOL_STEPS\
    CONCURRENT=$CONCURRENT  ADAPTIVE=$ADAPTIVE
 
@@ -102,7 +103,8 @@ nsplug meta_vehicle.bhv targ_$VNAME1.bhv -f VNAME=$VNAME1      \
 #start second vehicle:                                                                                                   
 nsplug meta_vehicle.moos targ_$VNAME2.moos -f WARP=$TIME_WARP  \
    VNAME=$VNAME2      START_POS=$START_POS1                    \
-   VPORT="9002"       SHARE_LISTEN="9302"                      \
+   VPORT="9002"       PSHARE_PORT="9302"                      \
+   IP_ADDR="localhost"                                        \
    VTYPE=KAYAK          COOL_FAC=$COOL_FAC  COOL_STEPS=$COOL_STEPS\
    CONCURRENT=$CONCURRENT  ADAPTIVE=$ADAPTIVE
 
