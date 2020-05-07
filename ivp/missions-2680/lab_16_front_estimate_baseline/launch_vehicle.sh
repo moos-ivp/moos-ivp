@@ -65,7 +65,7 @@ done
 #-------------------------------------------------------
 nsplug meta_vehicle.moos targ_$VNAME.moos -f WARP=$TIME_WARP  \
    VNAME=$VNAME      START_POS=$START_POS                    \
-   VPORT="9001"       SHARE_LISTEN="9301"                      \
+   VPORT="9001"      PSHARE_PORT="9301"                      \
    VTYPE=UUV          COOL_FAC=$COOL_FAC  COOL_STEPS=$COOL_STEPS\
    CONCURRENT=$CONCURRENT  ADAPTIVE=$ADAPTIVE
 
