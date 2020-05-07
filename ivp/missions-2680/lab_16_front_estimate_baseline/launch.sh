@@ -19,6 +19,8 @@ LANE_WIDTH2=25
 DEGREES1=270
 DEGREES2=0
 
+SHORE="localhost:9300"
+
 #-------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
 #-------------------------------------------------------
@@ -90,8 +92,8 @@ nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
 #start first vehicle:
 nsplug meta_vehicle.moos targ_$VNAME1.moos -f WARP=$TIME_WARP  \
    VNAME=$VNAME1      START_POS=$START_POS1                    \
-   VPORT="9001"       PSHARE_PORT="9301"                      \
-   IP_ADDR="localhost"                                        \
+   VPORT="9001"       PSHARE_PORT="9301"                       \
+   IP_ADDR="localhost"  SHORE=$SHORE                           \
    VTYPE=KAYAK          COOL_FAC=$COOL_FAC  COOL_STEPS=$COOL_STEPS\
    CONCURRENT=$CONCURRENT  ADAPTIVE=$ADAPTIVE
 
@@ -104,7 +106,7 @@ nsplug meta_vehicle.bhv targ_$VNAME1.bhv -f VNAME=$VNAME1      \
 nsplug meta_vehicle.moos targ_$VNAME2.moos -f WARP=$TIME_WARP  \
    VNAME=$VNAME2      START_POS=$START_POS1                    \
    VPORT="9002"       PSHARE_PORT="9302"                      \
-   IP_ADDR="localhost"                                        \
+   IP_ADDR="localhost"  SHORE=$SHORE                           \
    VTYPE=KAYAK          COOL_FAC=$COOL_FAC  COOL_STEPS=$COOL_STEPS\
    CONCURRENT=$CONCURRENT  ADAPTIVE=$ADAPTIVE
 
