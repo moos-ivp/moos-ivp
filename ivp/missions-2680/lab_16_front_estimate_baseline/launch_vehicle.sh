@@ -32,6 +32,7 @@ for ARGI; do
 	echo "  --vname=VNAME                            " 
 	echo "  --help, -h                               "
 	echo "  --ip=<addr>       (default is localhost) " 
+	echo "  --shore=<addr>    (default is localhost:9300) " 
 	echo "  --warp=WARP_VALUE                        "
 	echo "  --adaptive, -a                           "
 	echo "  --unconcurrent, -uc                      "
