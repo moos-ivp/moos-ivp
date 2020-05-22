@@ -47,6 +47,9 @@ class CPAMonitor
 
   bool addIgnoreGroup(std::string);
   bool addRejectGroup(std::string);
+
+  std::string getIgnoreGroups() const;
+  std::string getRejectGroups() const;
   
   unsigned int getEventCount() const {return(m_events.size());}
   CPAEvent     getEvent(unsigned int) const;

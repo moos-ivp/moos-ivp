@@ -515,6 +515,8 @@ void CollisionDetector::handleMailNodeReport(string sval)
 //         encounter_dist:
 //         collision_dist:
 //         near_miss_dist:
+//          ignore_groups:
+//          reject_groups:
 //     range_pulse_render:
 //   range_pulse_duration:
 //      range_pulse_range:
@@ -545,12 +547,16 @@ bool CollisionDetector::buildReport()
   string pulse_ren_str = boolToString(m_pulse_render);
   string pulse_dur_str = doubleToString(m_pulse_duration,2);
   string pulse_rng_str = doubleToString(m_pulse_range,2);
+  string ignore_grps_str = m_cpa_monitor.getIgnoreGroups();
+  string reject_grps_str = m_cpa_monitor.getRejectGroups();
   
   m_msgs << "Configuration:                               " << endl;
   m_msgs << "============================================ " << endl;
   m_msgs << "       encounter_dist: " << encounter_str << endl;
   m_msgs << "       collision_dist: " << coll_dist_str << endl;
   m_msgs << "       near_miss_dist: " << near_miss_str << endl;
+  m_msgs << "        ignore_groups: " << ignore_grps_str << endl;
+  m_msgs << "        reject_groups: " << reject_grps_str << endl;
   m_msgs << "   range_pulse_render: " << pulse_ren_str << endl;
   m_msgs << " range_pulse_duration: " << pulse_dur_str << endl;
   m_msgs << "    range_pulse_range: " << pulse_rng_str << endl << endl;
@@ -560,17 +566,17 @@ bool CollisionDetector::buildReport()
   string tot_near_miss_str = uintToString(m_total_near_misses);
   string tot_collision_str = uintToString(m_total_collisions);
   
-  m_msgs << "============================================ \n";
-  m_msgs << "State Overall:                               \n";
-  m_msgs << "============================================ \n";
-  m_msgs << "             Active: " << conditions_ok_str  << endl;
-  m_msgs << "   Total Encounters: " << tot_encounters_str << endl;
-  m_msgs << "  Total Near Misses: " << tot_near_miss_str  << endl;
-  m_msgs << "   Total Collisions: " << tot_collision_str  << endl << endl;
+  m_msgs << "============================================" << endl;
+  m_msgs << "State Overall:                              " << endl;
+  m_msgs << "============================================" << endl;
+  m_msgs << "             Active: " << conditions_ok_str   << endl;
+  m_msgs << "   Total Encounters: " << tot_encounters_str  << endl;
+  m_msgs << "  Total Near Misses: " << tot_near_miss_str   << endl;
+  m_msgs << "   Total Collisions: " << tot_collision_str   << endl << endl;
 
-  m_msgs << "============================================ \n";
-  m_msgs << "State By Vehicle:                            \n";
-  m_msgs << "============================================ \n";
+  m_msgs << "============================================" << endl;
+  m_msgs << "State By Vehicle:                           " << endl;
+  m_msgs << "============================================" << endl;
 
   ACTable actab(4);
 

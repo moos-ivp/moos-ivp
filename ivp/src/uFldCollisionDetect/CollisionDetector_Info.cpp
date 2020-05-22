@@ -109,6 +109,9 @@ void showExampleConfigAndExit()
   blk("  near_miss_range = 6         // (the default) in meters        ");
   blk("  collision_range = 3         // (the default) in meters        ");
   blk("                                                                ");
+  blk("  ignore_group = alpha                                          ");
+  blk("  reject_group = bravo                                          ");
+  blk("                                                                ");
   blk("  pulse_render   = true       // (the default)                  ");
   blk("  pulse_range    = 20         // (the default) in meters        ");  
   blk("  pulse_duration = 10         // (the default) in seconds       ");  

@@ -117,6 +117,37 @@ bool CPAMonitor::addRejectGroup(string grp_name)
 
 
 //---------------------------------------------------------
+// Procedure: getIgnoreGroups()
+
+string CPAMonitor::getIgnoreGroups() const
+{
+  string rval;
+  for(unsigned int i=0; i<m_ignore_groups.size(); i++) {
+    if(i != 0)
+      rval += ",";
+    rval += m_ignore_groups[i];
+  }
+
+  return(rval);
+}
+
+//---------------------------------------------------------
+// Procedure: getRejectGroups()
+
+string CPAMonitor::getRejectGroups() const
+{
+  string rval;
+  for(unsigned int i=0; i<m_reject_groups.size(); i++) {
+    if(i != 0)
+      rval += ",";
+    rval += m_reject_groups[i];
+  }
+
+  return(rval);
+}
+
+
+//---------------------------------------------------------
 // Procedure: getEvent()
 
 CPAEvent CPAMonitor::getEvent(unsigned int ix) const
