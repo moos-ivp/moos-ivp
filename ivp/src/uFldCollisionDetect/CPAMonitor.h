@@ -44,6 +44,9 @@ class CPAMonitor
   void setSwingRange(double);
 
   void setIteration(unsigned int v) {m_iteration = v;}
+
+  bool addIgnoreGroup(std::string);
+  bool addRejectGroup(std::string);
   
   unsigned int getEventCount() const {return(m_events.size());}
   CPAEvent     getEvent(unsigned int) const;
@@ -63,10 +66,16 @@ class CPAMonitor
   double  m_report_range;
   double  m_swing_range;
   bool    m_verbose;
+
+  // ignore encounters where both vehicles are in an ignore group 
+  std::vector<std::string>  m_ignore_groups; 
+  // NodeReports from a reject group are rejected on arrival
+  std::vector<std::string>  m_reject_groups;
   
  protected: // map keyed on vname
   std::map<std::string, std::list<NodeRecord> > m_map_vrecords;
   std::map<std::string, bool>                   m_map_updated;
+  std::map<std::string, std::string>            m_map_vgroup;
   
  protected: // map keyed on coupled vname#contact, abe#bob
   std::map<std::string, double>     m_map_pair_dist;

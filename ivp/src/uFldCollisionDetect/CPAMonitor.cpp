@@ -83,6 +83,40 @@ void CPAMonitor::setSwingRange(double val)
 
 
 //---------------------------------------------------------
+// Procedure: addIgnoreGroup()
+
+bool CPAMonitor::addIgnoreGroup(string grp_name)
+{
+  if(strContainsWhite(grp_name))
+    return(false);
+  
+  grp_name = tolower(grp_name);
+  if(vectorContains(m_ignore_groups, grp_name))
+    return(false);
+
+  m_ignore_groups.push_back(grp_name);
+  return(true);
+}
+
+
+//---------------------------------------------------------
+// Procedure: addRejectGroup()
+
+bool CPAMonitor::addRejectGroup(string grp_name)
+{
+  if(strContainsWhite(grp_name))
+    return(false);
+
+  grp_name = tolower(grp_name);
+  if(vectorContains(m_reject_groups, grp_name))
+    return(false);
+
+  m_reject_groups.push_back(grp_name);
+  return(true);
+}
+
+
+//---------------------------------------------------------
 // Procedure: getEvent()
 
 CPAEvent CPAMonitor::getEvent(unsigned int ix) const
@@ -97,6 +131,8 @@ CPAEvent CPAMonitor::getEvent(unsigned int ix) const
 // Procedure: handleNodeReport()
 //   Purpose: Handle a single node report, presumably within a
 //            round of multiple incoming updated reports.
+//    Return: false if syntactically invalid node report
+//            true otherwise
 
 bool CPAMonitor::handleNodeReport(string node_report)
 {
@@ -104,7 +140,12 @@ bool CPAMonitor::handleNodeReport(string node_report)
   if(!record.valid())
     return(false);
   string vname = record.getName();
+  string group = tolower(record.getGroup());
+  if(vectorContains(m_reject_groups, group))
+    return(true);
 
+  m_map_vgroup[vname] = group;
+  
   // Part 1: Update the node record list for this vehicle
   m_map_vrecords[vname].push_front(record);
   if(m_map_vrecords[vname].size() > 2)
@@ -157,6 +198,15 @@ bool CPAMonitor::examineAndReport(string vname, string contact)
   if(!m_map_vrecords.count(vname) || !m_map_vrecords.count(contact))
     return(false);
 
+  // Part 1B: Check ignore groups. If both vehicles have a group on
+  // the list of ignore groups, then just consider ourselves done now.  
+  string vname_group   = m_map_vgroup[vname];
+  string contact_group = m_map_vgroup[contact];
+  if(vectorContains(m_ignore_groups, vname_group) &&
+     vectorContains(m_ignore_groups, contact_group))
+    return(true);
+
+  
   // Part 2: Create a unique "pairtag" so an event betweeen two
   //         vehicles is singular and not treated twice
   string tag = pairTag(vname, contact);

@@ -279,6 +279,10 @@ bool CollisionDetector::OnStartUp()
       handled = setBooleanOnString(m_post_closest_range, value);
     else if(param == "report_all_encounters") 
       handled = setBooleanOnString(m_report_all_encounters, value);
+    else if(param == "ignore_group") 
+      handled = m_cpa_monitor.addIgnoreGroup(value);
+    else if(param == "reject_group") 
+      handled = m_cpa_monitor.addRejectGroup(value);
     else if(param == "condition") {
       LogicCondition new_condition;
       handled = new_condition.setCondition(value);
@@ -395,7 +399,7 @@ void CollisionDetector::postFlags(const vector<VarDataPair>& flags,
       double cpa_dbl = event.getCPA();
       string cpa_str = doubleToStringX(cpa_dbl, 4);
 
-      // If the string is just $CPA interpret as a double posting
+      // If the string is just $CPA or $IDX interpret as a double posting
       if(sval == "$CPA")
 	Notify(moosvar, cpa_dbl);
       else if(sval == "$IDX") 
