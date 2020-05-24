@@ -4,7 +4,7 @@ type     = group
 author   = Conlan Cesar
 contact  = conlanc <AT> csail.mit.edu
 org      = MIT
-synopsis = MOOS Utilities written by Conlan Cesar 
+synopsis = MOOS Utilities written by Conlan Cesar contributing to several MIT Pavlab projects.
 
 group    = moos-ivp-cc
 distro   = https://github.com/HeroCC/moos-ivp-cc
@@ -21,7 +21,7 @@ license  = GPL
 group    = moos-ivp-cc
 doc_url  = https://github.com/HeroCC/AnaxiMap
 
-thumb    = Python script for getting and stitching tiles from map servers
+thumb    = Python script for getting and stitching tiles from map servers (e.g., suitable for pMarineViewer)
 synopsis = A small utility to grab an area of tiles, and stitch them together.
   Can be used to create tiff and metadata files compatible with pMarineViewer.
 
