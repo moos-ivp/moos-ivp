@@ -24,11 +24,14 @@
 (setq moos-app-and-keyword-list
       (list
       '("ANTLER" "MSBetweenLaunches" "Run" "NewConsole")
+      '("iM300" "comms_type" "port" "ip_addr" "stale_thresh" "max_rudder" "max_thrust" "drive_mode")
+      '("uSockComms" "comms_type" "port" "ip_addr")
+      '("uSimTowBody" "tow_length")
       '("uFldVoronoi" "stale_time" "verbose" "region")
       '("uSimHeron" "port" "comms_type" "ip_addr")
       '("uFldVoronoi" "reject_range" "post_poly" "post_region" "region")
       '("uMemWatch" "ignore" "watch_only" "absolute_time_gap")
-      '("uFldCollObDetect" "collision_dist" "near_miss_dist" "encounter_dist" "collision_flag" "near_miss_flag" "encounter_flag")
+      '("uFldCollObDetect" "collision_dist" "near_miss_dist" "encounter_dist" "collision_flag" "near_miss_flag" "encounter_flag" "ignore_group" "reject_group")
       '("uFldObstacleSim" "obstacle_file" "poly_vert_color" "poly_edge_color" "poly_fill_color" "poly_label_color" "poly_vert_size" "poly_edge_size" "draw_region" "post_points" "rate_points" "poly_transparency")
       '("uFldWrapDetect" "max_segments" "max_trail_distance" "max_trail_dist")
       '("pMovingSurvey" "survey" "heading" "speed" "reverse_interval" "update_interval" "rpm")

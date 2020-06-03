@@ -23,8 +23,8 @@
 
 (setq moos-bhv-and-keyword-list
       (list
-       '("BHV_AvdColregsV17" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade")
-       '("BHV_AvdColregsV19" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "giveway_bow_dist" "use_refinery" "check_plateaus" "check_validity" "pcheck_thresh")
+       '("BHV_AvdColregsV17" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay")
+       '("BHV_AvdColregsV19" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "giveway_bow_dist" "use_refinery" "check_plateaus" "check_validity" "pcheck_thresh" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay")
 	 
        '("BHV_Waypoint" "capture_radius" "activate_radius" "speed" "stale_nav_thresh" "stale_poly_thres" "setpt_method" "visual_hints")
 
@@ -42,8 +42,8 @@
        '("BHV_MemoryTurnLimit" "memory_time" "turn_range")
        '("BHV_StationKeep" "center_activate" "hibernation_radius" "inner_radius" "outer_radius" "outer_speed" "station_pt" "swing_time" "transit_speed" "visual_hints")
        '("BHV_Timer")
-       '("BHV_AvoidObstacles" "poly" "allowable_ttc" "activation_dist" "buffer_dist" "pwt_outer_dist" "pwt_inner_dist" "obstacle_key" "completed_dist" "visual_hints")
        '("BHV_AvoidObstacle" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "buffer_dist" "obstacle_key" "completed_dist" "no_alert_request")
+       '("BHV_AvoidObstacleX" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "min_util_cpa_dist" "max_util_cpa_dist" "obstacle_key" "completed_dist" "no_alert_request" "use_refinery")
        '("BHV_HSLine" "time_on_leg")
        '("BHV_TestFailure" "failure_type")
        '("BHV_CutRange" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "pwt_inner_dist" "giveup_dist" "patience" "on_no_contact_ok")
