@@ -94,13 +94,16 @@ ProcessConfig = pMarineViewer
   TIFF_FILE            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
-  zoom                 = 0.65
+  zoom                 = 1
   vehicles_shape_scale = 1.5
   vehicles_name_mode   = names+shortmode
 
   appcast_viewable     = true
   appcast_color_scheme = indigo
-
+	appcast_font_size    = large
+	procs_font_size      = large
+	nodes_font_size      = xlarge
+	
   comms_pulse_viewable_all = false
   vehicles_name_mode = names
 
