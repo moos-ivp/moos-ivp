@@ -179,7 +179,7 @@ bool FldWrapDetect::OnStartUp()
 	if(m_max_num_segments < 100)
 	  m_max_num_segments = 100;
       }
-      else if(param == "max_trail_distance")
+      else if((param == "max_trail_distance") || (param == "max_trail_dist"))
 	handled = setPosDoubleOnString(m_max_trail_distance, value);
 
       if(!handled)
