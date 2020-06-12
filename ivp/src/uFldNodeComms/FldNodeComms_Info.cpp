@@ -132,8 +132,9 @@ void showInterfaceAndExit()
   blk("                      MODE=MODE@ACTIVE:LOITERING                ");
   blk("                                                                ");
   blk("  UNC_VIEW_NODE_RPT_PULSES = false                              ");
-  blk("  UNC_STEALTH = vname=alpha,stealth=0.4                         ");
-  blk("  UNC_EARANGE = vname=alpha,earange=0.5                         ");
+  blk("  UNC_STEALTH     = vname=alpha,stealth=0.4                     ");
+  blk("  UNC_COMMS_RANGE = 250                                         ");
+  blk("  UNC_EARANGE     = vname=alpha,earange=0.5                     ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");

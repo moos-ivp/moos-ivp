@@ -50,6 +50,7 @@ class FldNodeComms : public AppCastingMOOSApp
   void checkForDeletableNodes();
   bool handleMailNodeReport(const std::string& str, std::string& whynot);
   bool handleMailNodeMessage(const std::string& str);
+  bool handleMailCommsRange(double);
   bool handleStealth(const std::string&);
   bool handleEarange(const std::string&);
 

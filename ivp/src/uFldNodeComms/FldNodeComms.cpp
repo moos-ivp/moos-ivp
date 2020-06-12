@@ -94,6 +94,7 @@ bool FldNodeComms::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     string key    = msg.GetKey();
     string sval   = msg.GetString(); 
+    double dval   = msg.GetDouble(); 
 
     bool   handled = false;
     string whynot;
@@ -104,6 +105,8 @@ bool FldNodeComms::OnNewMail(MOOSMSG_LIST &NewMail)
       handled = handleMailNodeMessage(sval);
     else if(key == "UNC_STEALTH") 
       handled = handleStealth(sval);
+    else if(key == "UNC_COMMS_RANGE") 
+      handled = handleMailCommsRange(dval);
     else if(key == "UNC_VIEW_NODE_RPT_PULSES") 
       handled = setBooleanOnString(m_view_node_rpt_pulses, sval);
     else if(key == "UNC_EARANGE") 
@@ -281,6 +284,7 @@ void FldNodeComms::registerVariables()
   Register("NODE_REPORT", 0);
   Register("NODE_REPORT_LOCAL", 0);
   Register("NODE_MESSAGE", 0);
+  Register("UNC_COMMS_RANGE", 0);
   Register("UNC_STEALTH", 0);
   Register("UNC_EARANGE", 0);
   Register("UNC_VIEW_NODE_RPT_PULSES", 0);
@@ -386,6 +390,15 @@ bool FldNodeComms::handleStealth(const string& str)
     dbl_stealth = 1;
 
   m_map_stealth[vname] = dbl_stealth;
+  return(true);
+}
+//------------------------------------------------------------
+// Procedure: handleMailCommsRange
+//   Example: 300
+
+bool FldNodeComms::handleMailCommsRange(double new_range)
+{
+  m_comms_range = new_range;
   return(true);
 }
 
