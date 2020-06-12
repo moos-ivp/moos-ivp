@@ -187,7 +187,7 @@ bool LogViewLauncher::handleParamsGUI(string argi)
      strBegins(argi, "--grid_viewable_labels=")     ||
      strBegins(argi, "--range_pulse_viewable_all=") ||
      strBegins(argi, "--trails_color=")             ||
-     strBegins(argi, "--hash_vieweble=")            ||
+     strBegins(argi, "--hash_viewable=")            ||
      strBegins(argi, "--tiff_viewable=")            ||
      strBegins(argi, "--hash_delta=")               ||
      strBegins(argi, "--vehicles_shape_scale=")     ||
