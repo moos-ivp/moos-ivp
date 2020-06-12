@@ -165,6 +165,10 @@ ProcessConfig = pMarineViewer
   scope = NODE_BROKER_PING
   scope = DEPLOY_ALL
 
+  nodes_font_size = xlarge
+  procs_font_size = xlarge
+  appcast_font_size = large
+
   action = STATION_KEEP_ALL = false
   action = STATION_KEEP_ALL = true
 
