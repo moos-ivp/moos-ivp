@@ -47,6 +47,7 @@ class Expander
   void setPartialsOK(bool v) {m_partial_expand_ok=v;}
   void setTerminal(bool v)   {m_terminal=v;}
   void setInteractive(bool v) {m_interactive=v;}
+  void setImpatient(bool v)   {m_impatient=v;}
   void addPath(std::string);
 
  protected:
@@ -100,6 +101,7 @@ class Expander
   bool m_partial_expand_ok;
 
   bool m_interactive;
+  bool m_impatient;
 };
 
 #endif 

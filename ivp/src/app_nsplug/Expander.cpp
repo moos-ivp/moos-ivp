@@ -52,6 +52,7 @@ Expander::Expander(string given_infile, string given_outfile)
   m_partial_expand_ok = false;
 
   m_interactive = false;
+  m_impatient = false;
 }
 
 //--------------------------------------------------------
@@ -442,6 +443,8 @@ bool Expander::applyMacrosToLine(string& line,
 	    exit(1);
 	  if((c=='Y') || (c=='y') || (c==((int)(10))))  // ASCII 10 is ENTER
 	    answered = true;
+	  else if(m_impatient)
+	    exit(1);
 	}
       }
     }
