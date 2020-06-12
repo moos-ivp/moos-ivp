@@ -4,7 +4,7 @@
 //-------------------------------------------------
 
 ServerHost = localhost
-ServerPort = $(BOT_MOOSDB)
+ServerPort = $(VPORT)
 Community  = $(VNAME)
 
 #include plug_origin_warp.moos

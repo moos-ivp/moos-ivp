@@ -2,13 +2,13 @@
 #----------------------------------------------------------
 #  Script: launch.sh
 #  Author: Michael Benjamin
-#  LastEd: May 17th 2019
+#  LastEd: April 2020
 #----------------------------------------------------------
 #  Part 1: Set Exit actions and declare global var defaults
 #----------------------------------------------------------
 trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
-FLOW_DOWN_ARGS=""
+FLOW_DOWN_ARGS="--auto "
 AMT=1000
 MAX_TIME=600
 
@@ -43,7 +43,7 @@ done
 #-------------------------------------------------------
 #  Part 3: Launch mission, note PID for later killing
 #-------------------------------------------------------
-./launch.sh $FLOW_DOWN_ARGS $TIME_WARP >& /dev/null &
+./launch.sh $FLOW_DOWN_ARGS $TIME_WARP >& /dev/null 
 LAUNCH_PID=$!
 
 #-------------------------------------------------------
@@ -71,8 +71,10 @@ done
 #-------------------------------------------------------
 #  Part 6: Bring down all the mission modules
 #-------------------------------------------------------
-echo "Quitting...."
-kill -9 $LAUNCH_PID
+echo "Quitting....[${LAUNCH_PID}]"
+kill -9 -p $LAUNCH_PID
+
+
 
 #-------------------------------------------------------
 #  Part 7: Pare the log files before archiving
@@ -89,6 +91,3 @@ mkdir $RESULTS_DIR
 mv targ* *LOG* $RESULTS_DIR
 echo "Completely done with xlaunch."
 
-
-
-# HELM_BHV_PARAM = type=AvdColregsV19, name=avd_col_foo, param=pwt_outer_dist, value=35
