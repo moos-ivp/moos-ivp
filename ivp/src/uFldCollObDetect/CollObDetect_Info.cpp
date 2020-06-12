@@ -20,7 +20,7 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The uFldObstacleSim application is used for               ");
+  blk("  The uFldCollObDetect application is used for                  ");
   blk("                                                                ");
   blk("                                                                ");
   blk("                                                                ");
@@ -34,15 +34,15 @@ void showHelpAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("Usage: uFldObstacleSim file.moos [OPTIONS]                   ");
+  blu("Usage: uFldCollObDetect file.moos [OPTIONS]                     ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch uFldObstacleSim with the given process name         ");
-  blk("      rather than uFldObstacleSim.                           ");
+  blk("      Launch uFldCollObDetect with the given process name       ");
+  blk("      rather than uFldCollObDetect.                             ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -50,7 +50,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of uFldObstacleSim.        ");
+  blk("      Display the release version of uFldCollObDetect.          ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -65,25 +65,21 @@ void showHelpAndExit()
 void showExampleConfigAndExit()
 {
   blu("=============================================================== ");
-  blu("uFldObstacleSim Example MOOS Configuration                      ");
+  blu("uFldCollObDetect Example MOOS Configuration                     ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = uFldObstacleSim                                 ");
+  blk("ProcessConfig = uFldCollObDetect                                ");
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  obstacle_file    = filename                                   ");
-  blk("  poly_vert_color  = color                                      ");
-  blk("  poly_edge_color  = color                                      ");
-  blk("  poly_fill_color  = color                                      ");
-  blk("  poly_label_color = color                                      ");
+  blk("  collision_dist   = 10                                         ");
+  blk("  near_miss_dist   = 15                                         ");
+  blk("  encounter_dist   = 20                                         ");
   blk("                                                                ");
-  blk("  poly_vert_size   = 1        (the default)                     ");
-  blk("  poly_edge_size   = 1        (the default)                     ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  collision_flag   = OB_ENCOUNTER = $DIST                       ");
+  blk("  near_miss_flag   = OB_NEAR_MISS = $DIST                       ");
+  blk("  encounter_flag   = OB_COLLISION = $DIST                       ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -97,7 +93,7 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("uFldObstacleSim INTERFACE                                    ");
+  blu("uFldCollObDetect INTERFACE                                      ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -119,7 +115,7 @@ void showInterfaceAndExit()
 
 void showReleaseInfoAndExit()
 {
-  showReleaseInfo("uFldObstacleSim", "gpl");
+  showReleaseInfo("uFldCollObDetect", "gpl");
   exit(0);
 }
 
