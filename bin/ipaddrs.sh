@@ -116,6 +116,9 @@ fi
 #-------------------------------------------------------
 #  Part 6: Handle the MaxOS case
 #-------------------------------------------------------
+
+echo "TMP_RESFILE:" $TMP_RESFILE
+
 if [ "${OS}" = "osx" ]; then
     
     declare -a interfaces=()
@@ -136,9 +139,9 @@ if [ "${OS}" = "osx" ]; then
 	fi
     done
     
-    if [ ${count} > 1 ]; then
+    if [ "$count" -gt 1 ]; then
 	EXIT_CODE=2
-    elif [ ${count} = 0 ]; then
+    elif [ "$count" -gt 0 ]; then
 	EXIT_CODE=1
     fi
 fi
