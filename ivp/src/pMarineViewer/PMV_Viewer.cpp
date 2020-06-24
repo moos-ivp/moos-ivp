@@ -330,6 +330,7 @@ bool PMV_Viewer::setParam(string param, double value)
   else if(param == "curr_time") {
     m_curr_time = value;
     m_vehiset.setParam(param, value);
+    m_geoshapes_map.manageMemory(m_curr_time);
     return(true);
   }
   else if(param == "time_warp") {

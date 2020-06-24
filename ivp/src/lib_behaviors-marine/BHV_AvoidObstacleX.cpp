@@ -29,13 +29,11 @@
 #include "AOF_AvoidObstacleX.h"
 #include "OF_Reflector.h"
 #include "MBUtils.h"
-#include "ColorParse.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "BuildUtils.h"
 #include "RefineryObAvoid.h"
 #include "XYFormatUtilsPoly.h"
-#include "XYPolygonExpander.h"
 
 using namespace std;
 
@@ -96,7 +94,7 @@ bool BHV_AvoidObstacleX::setParam(string param, string val)
   bool   non_neg_number = (isNumber(val) && (dval >= 0));
 
   string config_result;
-  if((param=="polygon") || (param=="poly")) 
+  if((param=="polygon") || (param=="poly"))
     config_result = m_obship_model.setObstacle(val);
   else if(param == "allowable_ttc")
     config_result = m_obship_model.setAllowableTTC(dval);
@@ -202,13 +200,14 @@ IvPFunction *BHV_AvoidObstacleX::onRunState()
     return(0);
   }
   // Part 1: Sanity checks
-  cout << "BHV_AvoidObstacleX::onRunState(1)" << endl;
+  if(m_obship_model.getFailedExpandPolyStr(false) != "") {
+    string msg = m_obship_model.getFailedExpandPolyStr();
+    postWMessage(msg);
+  }
   if(!updatePlatformInfo())
     return(0);  
-  cout << "BHV_AvoidObstacleX::onRunState(2)" << endl;
   if(!m_obship_model.isValid())
     return(0);
-  cout << "BHV_AvoidObstacleX::onRunState(3)" << endl;
 
   // Part 2: Handle case where behavior is completed 
   double os_dist_to_poly = m_obship_model.getRange();
@@ -218,17 +217,14 @@ IvPFunction *BHV_AvoidObstacleX::onRunState()
     setComplete();
     return(0);
   }
-  cout << "BHV_AvoidObstacleX::onRunState(4)" << endl;
 
   if(m_obship_model.isObstacleAft(20))
     return(0);
-  cout << "BHV_AvoidObstacleX::onRunState(5)" << endl;
   
   // Part 3: Determine the relevance
   m_obstacle_relevance = getRelevance();
   if(m_obstacle_relevance <= 0)
     return(0);
-  cout << "BHV_AvoidObstacleX::onRunState(6)" << endl;
   
   // Part 4: Set and init the AOF
   AOF_AvoidObstacleX  aof_avoid(m_domain);
@@ -239,30 +235,25 @@ IvPFunction *BHV_AvoidObstacleX::onRunState()
     postWMessage("Unable to init AOF_AvoidObstacleX:"+aof_msg);
     return(0);
   }
-  cout << "BHV_AvoidObstacleX::onRunState(7)" << endl;
   
   // Part 6: Build the actual objective function with reflector
   OF_Reflector reflector(&aof_avoid, 1);
 
-  m_obship_model.print("BHV_AvoidObstacleX::OnRunState()");
   // ===========================================================
   // Utilize the Refinery to identify plateau, and basin regions
   // ===========================================================
   if(m_use_refinery) {
-    cout << "BHV_AvoidObstacleX::onRunState(7) use refinery" << endl;
     RefineryObAvoid refinery(m_domain);
     refinery.setVerbose(true);
     refinery.setRefineRegions(m_obship_model);
 
     vector<IvPBox> plateau_regions = refinery.getPlateaus();
     vector<IvPBox> basin_regions   = refinery.getBasins();
-    cout << "   onRunState(7) plats:  " << plateau_regions.size() << endl;
 
     for(unsigned int i=0; i<plateau_regions.size(); i++) {
       reflector.setParam("plateau_region", plateau_regions[i]);
       plateau_regions[i].print();
     }
-    cout << "   onRunState(7) basins: " << basin_regions.size() << endl;
     for(unsigned int i=0; i<basin_regions.size(); i++) {
       reflector.setParam("basin_region", basin_regions[i]);
       basin_regions[i].print();
@@ -380,7 +371,7 @@ bool BHV_AvoidObstacleX::handleParamVisualHints(string hints)
 
 void BHV_AvoidObstacleX::postViewablePolygons()
 {
-   // =================================================
+  // =================================================
   // Part 1 - Render the original obstacle polygon
   // =================================================
   XYPolygon obstacle = m_obship_model.getObstacle();
@@ -436,19 +427,13 @@ void BHV_AvoidObstacleX::postViewablePolygons()
 void BHV_AvoidObstacleX::postErasablePolygons()
 {
   XYPolygon obstacle = m_obship_model.getObstacle();
-  obstacle.set_active(false);
-  //postMessage("VIEW_POLYGON", obstacle.get_spec(5), "one");
   postMessage("VIEW_POLYGON", obstacle.get_spec_inactive(), "one");
 
   XYPolygon obstacle_buff_min = m_obship_model.getObstacleBuffMin();
-  obstacle_buff_min.set_active(false);
-  //postMessage("VIEW_POLYGON", obstacle_buff_min.get_spec(5), "two");
   postMessage("VIEW_POLYGON", obstacle_buff_min.get_spec_inactive(), "two");
 
   XYPolygon obstacle_buff_max = m_obship_model.getObstacleBuffMax();
   obstacle_buff_max.set_color("fill", "invisible");
-  obstacle_buff_max.set_active(false);
-  //postMessage("VIEW_POLYGON", obstacle_buff_max.get_spec(), "three");
   postMessage("VIEW_POLYGON", obstacle_buff_max.get_spec_inactive(), "three");
 
   

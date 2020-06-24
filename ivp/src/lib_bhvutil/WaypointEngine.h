@@ -51,18 +51,24 @@ class WaypointEngine {
 
   double getPointX(unsigned int) const;
   double getPointY(unsigned int) const;  
-  double getPointX() const      {return(m_seglist.get_vx(m_curr_ix));}
-  double getPointY() const      {return(m_seglist.get_vy(m_curr_ix));}
-  bool   isComplete() const     {return(m_complete);}
-  int    getCurrIndex() const   {return(m_curr_ix);}
+  double getPointX() const         {return(m_seglist.get_vx(m_curr_ix));}
+  double getPointY() const         {return(m_seglist.get_vy(m_curr_ix));}
+  double getCaptureRadius() const  {return(m_capture_radius);}
+  double getSlipRadius() const     {return(m_slip_radius);}
+  bool   isComplete() const        {return(m_complete);}
+  bool   getReverse() const        {return(m_reverse);}
+  bool   getRepeatsEndless() const {return(m_repeats_endless);}
+  bool   usingCaptureLine() const  {return(m_capture_line);}
+  int    getCurrIndex() const      {return(m_curr_ix);}
   bool   currPtChanged();
-  void   resetCPA()             {m_current_cpa = -1;}
+  void   resetCPA()                {m_current_cpa = -1;}
 
   unsigned int size() const     {return(m_seglist_raw.size());}
   unsigned int getCycleCount()  {return(m_cycle_count);}
   unsigned int getTotalHits()   {return(m_capture_hits + m_nonmono_hits);}
   unsigned int getCaptureHits() {return(m_capture_hits);}
   unsigned int getNonmonoHits() {return(m_nonmono_hits);}
+  unsigned int getRepeats()     {return(m_repeats_allowed);}
   unsigned int resetsRemaining() const;
 
   XYSegList getSegList()  {return(m_seglist);}

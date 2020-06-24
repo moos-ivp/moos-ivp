@@ -195,13 +195,12 @@ bool XYPolygon::delete_vertex(double x, double y)
   if(vsize == 0)
     return(false);
 
-  unsigned int i, ix = closest_vertex(x, y); 
+  unsigned int ix = closest_vertex(x, y); 
 
-  vector<int>  new_xy;
-  
-  for(i=0; i<ix; i++)
+  vector<int>  new_xy; 
+  for(unsigned int i=0; i<ix; i++)
     new_xy.push_back(m_side_xy[i]);
-  for(i=ix+1; i<vsize; i++)
+  for(unsigned int i=ix+1; i<vsize; i++)
     new_xy.push_back(m_side_xy[i]);
   
   m_side_xy  = new_xy;
@@ -210,6 +209,91 @@ bool XYPolygon::delete_vertex(double x, double y)
 
   determine_convexity();
   return(m_convex_state);
+}
+
+//---------------------------------------------------------------
+// Procedure: delete_vertex
+//   Purpose: Delete the vertex by the given index
+//      Note: A call to "determine_convexity()" is made since this
+//            operation may result in a change in the convexity.
+
+bool XYPolygon::delete_vertex(unsigned int ix)
+{
+  unsigned int vsize = m_vx.size();
+  if(ix >= vsize)
+    return(false);
+
+  vector<int>  new_xy; 
+  for(unsigned int i=0; i<ix; i++)
+    new_xy.push_back(m_side_xy[i]);
+  for(unsigned int i=ix+1; i<vsize; i++)
+    new_xy.push_back(m_side_xy[i]);
+  
+  m_side_xy  = new_xy;
+
+  XYSegList::delete_vertex(ix);
+
+  determine_convexity();
+  return(m_convex_state);
+}
+//---------------------------------------------------------------
+// Procedure: min_xproduct
+//   Purpose: Find the vertex with the minimum cross product formed
+//            by (1) the preceding vertex, (2) itself and (3) the
+//            following vertex.
+
+unsigned int XYPolygon::min_xproduct(bool& ok) const
+{
+  unsigned int vsize = m_vx.size();
+  if(vsize < 3) {
+    ok = false;
+    return(0);
+  }
+
+  double min_xprod = 0;
+  double min_index = 0;
+  
+  for(unsigned int i=0; i<vsize; i++) {
+
+    double x1 = 0;
+    double y1 = 0;
+    double x2 = m_vx[i];
+    double y2 = m_vy[i];
+    double x3 = 0;
+    double y3 = 0;
+    
+    if(i==0) {
+      x1 = m_vx[vsize-1];
+      y1 = m_vy[vsize-1];
+      x3 = m_vx[i+1];
+      y3 = m_vy[i+1];
+    }
+    else if(i==(vsize-1)) {
+      x1 = m_vx[i-1];
+      y1 = m_vy[i-1];
+      x3 = m_vx[0];
+      y3 = m_vy[0];
+    }
+    else {
+      x1 = m_vx[i-1];
+      y1 = m_vy[i-1];
+      x3 = m_vx[i+1];
+      y3 = m_vy[i+1];
+    }
+
+    double xprod = threePointXProduct(x1,y1, x2,y2, x3,y3);
+
+    // We don't care about turn direction, just magnitude
+    if(xprod < 0)
+      xprod = -xprod;
+
+    if((i == 0) || (xprod < min_xprod)) {
+      min_xprod = xprod;
+      min_index = i;
+    }
+  }
+  ok = true;
+  return(min_index);
 }
 
 //---------------------------------------------------------------
@@ -1226,10 +1310,35 @@ XYSegList XYPolygon::exportSegList(double x, double y)
 }
 
 
+//---------------------------------------------------------
+// Procedure: crossProductSettle()
+//   Purpose: If this polygon is nonconvex, try to make it convex
+//            by repeatedly removing middle points of the three-point
+//            group that is most colinear in the polygon.
+//      Note: If the poly is aready convex, or if the poly is has
+//            two points or less, just returns a copy of itself.
+ 
+XYPolygon XYPolygon::crossProductSettle() const
+{
+  XYPolygon poly = *this;
+  if(poly.is_convex())
+    return(poly);
+  if(poly.size() < 3)
+    return(poly);
 
+  bool done = false;
+  while(!done) {
+    bool ok = true;
+    unsigned int ix = poly.min_xproduct(ok);
+    if(ok) {
+      poly.delete_vertex(ix);
+      if(poly.is_convex() || (poly.size() < 3))
+	done = true;
+    }
+    else
+      done = true;
+  }
 
-
-
-
-
+  return(poly);
+}
 

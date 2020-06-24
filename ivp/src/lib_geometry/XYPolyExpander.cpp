@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYPolyExpander.cpp                                   */
 /*    DATE: Sep 7th, 2019                                        */
+/*    DATE: Jun 8th  2020 revisions and centroid bug fix         */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -36,16 +37,32 @@ using namespace std;
 
 XYPolyExpander::XYPolyExpander()
 {
+  // Buffer dist between original and buff poly. By default same.
   m_buff = 0;
+
+  // degree delta as circular corners are approximated
   m_deg_delta = 5;
+
+  // If non-zero, thresh is applied to incoming points. New points
+  // nearly on top of an existing point will be dropped.
   m_vertex_proximity_thresh = 0;
+
+  // If true, the polygon cross-product settling algorithm will
+  // be applied to remove nearly colinear points if a non-convex
+  // polygon is produced due to rounding errors.
+  m_settling_enabled = true;
 }
 
 //---------------------------------------------------------------
 // Procedure: setDegreeDelta()
+//      Note: This param sets the change in angle as new points are
+//            created around corners.
 
 void XYPolyExpander::setDegreeDelta(double delta)
 {
+  // Apply some reasonable bounds. Delta too low results in poly with
+  // excessive number of vertices. Delta too high results in poly with
+  // crudely uneven buffer distances from the original poly.
   if(delta < 0.2)
     delta = 0.2;
   if(delta > 45)
@@ -56,16 +73,23 @@ void XYPolyExpander::setDegreeDelta(double delta)
 
 //---------------------------------------------------------------
 // Procedure: setVertexProximityThresh()
+//      Note: The vertex_proximity_thresh is applied to new points
+//            added to the expander to reject points that are
+//            effectively identical. By default this is off.
 
 void XYPolyExpander::setVertexProximityThresh(double thresh)
 {
+  // Set reasonable bounds. Probably no right answer but a thresh
+  // of  more than 10 meters apart seems unreasonable. 
   if(thresh > 10)
     thresh = 10;
+  
   m_vertex_proximity_thresh = thresh;
 }
 
 //---------------------------------------------------------------
 // Procedure: getBufferPoly()
+//      Note: The main function call for this class
 
 XYPolygon XYPolyExpander::getBufferPoly(double buff)
 {
@@ -79,9 +103,11 @@ XYPolygon XYPolyExpander::getBufferPoly(double buff)
   m_poly_buff = m_poly_orig;
   m_buff = buff;
 
-  expandSegments();
-  buildCorners();
-  buildNewPoly();
+  bool ok = expandSegments();
+  if(ok)
+    ok = buildCorners();
+  if(ok)
+    ok = buildNewPoly();
   
   return(m_poly_buff);
 }
@@ -91,6 +117,7 @@ XYPolygon XYPolyExpander::getBufferPoly(double buff)
 
 bool XYPolyExpander::setPoly(XYPolygon poly)
 {
+  // Sanity check
   if(!poly.is_convex())
     return(false);
   
@@ -108,9 +135,9 @@ bool XYPolyExpander::expandSegments()
   if(!m_poly_orig.is_convex())
     return(false);
 
-  double cx = m_poly_orig.get_center_x();
-  double cy = m_poly_orig.get_center_y();
-
+  double cx = m_poly_orig.get_centroid_x();
+  double cy = m_poly_orig.get_centroid_y();
+  
   vector<double> px;
   vector<double> py;
   
@@ -236,8 +263,10 @@ bool XYPolyExpander::buildCorners()
 }
 
 //---------------------------------------------------------------
-// Procedure: buildNewPoly()
-
+// Procedure: buildNewPoly() 
+//   Purpose: Given (a) expanded edges, and (b) points representing
+//            rounded corners, stitch them together for single poly
+ 
 bool XYPolyExpander::buildNewPoly()
 {
   XYPolygon new_poly;
@@ -252,7 +281,14 @@ bool XYPolyExpander::buildNewPoly()
   }
 
   new_poly.determine_convexity();
-  
+
+  // If non-convex, make an attempt to adjust theh poly by removing
+  // the most colinear points until the poly is convex
+  if(!new_poly.is_convex() && m_settling_enabled)
+    new_poly = new_poly.crossProductSettle();
+
+  // If the poly is still convex, return while retaining the
+  // original unexpanded poly as the expanded poly.
   if(!new_poly.is_convex())
     return(false);
 
@@ -274,3 +310,5 @@ void XYPolyExpander::clear()
   m_ipx.clear();
   m_ipy.clear();
 }
+
+

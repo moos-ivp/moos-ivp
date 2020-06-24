@@ -14,6 +14,7 @@ ADD_EXECUTABLE(pObstacleMgr ${SRC})
 TARGET_LINK_LIBRARIES(pObstacleMgr
    ${MOOS_LIBRARIES}
    apputil
+   obstacles
    geometry
    mbutil
    m

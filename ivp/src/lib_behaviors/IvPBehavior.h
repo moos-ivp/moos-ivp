@@ -60,6 +60,7 @@ public:
   virtual void onRunToIdleState() {}
   virtual void postConfigStatus() {}
   virtual std::string getInfo(std::string)  {return("");}
+  virtual std::string expandMacros(std::string s) {return(s);}
   virtual double getDoubleInfo(std::string) {return(0);}
   virtual double getMemSize() {return(0);}
   virtual bool isConstraint() {return(false);}
@@ -120,7 +121,10 @@ public:
   bool    checkNoStarve();
 
   void    setHelmIteration(unsigned int iter) {m_helm_iter=iter;}
+
+  void    setConfigPosted(bool v=true) {m_config_posted=v;}
   
+  bool                     getConfigPosted() const {return(m_config_posted);}
   double                   getPriorityWt() {return(m_priority_wt);}
   double                   getBufferCurrTime();
   double                   getBufferLocalTime();
@@ -161,6 +165,7 @@ protected:
   std::vector<VarDataPair>       m_inactive_flags;
   std::vector<VarDataPair>       m_end_flags;
   std::vector<VarDataPair>       m_idle_flags;
+  std::vector<VarDataPair>       m_config_flags;
   std::map<std::string, double>  m_starve_vars;
   std::map<std::string, std::string> m_remap_vars;
 
@@ -201,6 +206,8 @@ protected:
   bool        m_last_runcheck_post;
   double      m_last_runcheck_time;
   
+  bool        m_config_posted;
+
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.
   // This variable should only be accessible via (1) postEMessage()

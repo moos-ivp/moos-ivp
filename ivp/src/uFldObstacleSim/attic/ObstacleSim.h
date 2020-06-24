@@ -3,7 +3,6 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ObstacleSim.h                                        */
 /*    DATE: October 19th, 2017                                   */
-/*    DATE: September 2019 Added collision detection             */
 /*****************************************************************/
 
 #ifndef OBSTACLESIM_HEADER
@@ -35,64 +34,83 @@ class ObstacleSim : public AppCastingMOOSApp
   
  protected:
   void registerVariables();
-  bool processObstacleFile(std::string filename);
+
+  bool handleConfigMinDuration(std::string);
+  bool handleConfigMaxDuration(std::string);
+  bool handleConfigObstacleFile(std::string filename);
+  void handleConfigObstacleDurations();
+
+  bool handleMailNodeReport(std::string);
+  
+  void postEraseObstacles();
   void postViewableObstacles();
   void postKnownObstacles();
-  bool handleMailNodeReport(std::string);
 
-  void updateVehiDists();
   void postPoints();
-  void postFlags(const std::vector<VarDataPair>&,
-		 double min_dist,
-		 std::string vname,
-		 unsigned int);
+
+  void updateVRanges();
+  void updateObstacles();
+  
   
  private: // Configuration variables
 
   // Core list of obtacles
   std::vector<XYPolygon> m_obstacles;
+  std::vector<double>    m_durations;
 
+  std::map<std::string, unsigned int> m_map_pts_published;
+  std::map<std::string, unsigned int> m_map_giv_published;
+  
   // Parameters if we're creating obstacles as we go
   XYPolygon m_poly_region;
   double    m_min_range;
   double    m_min_poly_size;
   double    m_max_poly_size;
-
-  // Visual params for rendering obstales
+  bool      m_reuse_ids;
+  
+  // Visual params for rendering obstacles
   std::string m_poly_fill_color;
   std::string m_poly_edge_color;
   std::string m_poly_vert_color;
   std::string m_poly_label_color;
-
-  double    m_poly_edge_size;
-  double    m_poly_vert_size;
-  double    m_poly_transparency;
+  double      m_poly_edge_size;
+  double      m_poly_vert_size;
+  double      m_poly_transparency;
+  
+  // Visual params for rendering region
+  bool        m_draw_region;
+  std::string m_region_edge_color;
+  std::string m_region_vert_color;
 
   // Pseudo LIDAR generation mode
-  bool      m_post_points;
-  double    m_rate_points;
+  bool    m_post_points;
+  double  m_rate_points;
   
-  // Params defining test/success
-  double m_near_miss_dist;
-  double m_collision_dist;
-  double m_encounter_dist;
+  // Params for random durations
+  double  m_min_duration;
+  double  m_max_duration;
 
-  std::vector<VarDataPair> m_collision_flags;
-  std::vector<VarDataPair> m_near_miss_flags;
-  std::vector<VarDataPair> m_encounter_flags;
+  double       m_reset_interval;
+  double       m_reset_range;
+  double       m_reset_tstamp;
+  bool         m_reset_request;
+  bool         m_reset_pending;
+  bool         m_newly_exited;
+  bool         m_region_entered;
+  unsigned int m_reset_total;
   
  private: // State variables
 
+  // Maps keyed on vnames. 
   std::map<std::string, NodeRecord> m_map_vrecords;
+  std::map<std::string, double>     m_map_vrange;
 
-  // For each vehicle and each obstacle
-  std::map<std::string, std::vector<double> > m_map_vdists;
-  std::map<std::string, std::vector<double> > m_map_vdists_min;
-
+  double m_min_vrange_to_region;
+  
   bool m_viewables_queried;
   bool m_obstacles_queried;
 
-  double m_total_encounters;
+  unsigned int m_obstacles_made;
   
   unsigned int m_viewables_posted;
   unsigned int m_obstacles_posted;

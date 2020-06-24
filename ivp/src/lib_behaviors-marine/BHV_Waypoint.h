@@ -42,6 +42,8 @@ public:
   void           onRunToIdleState();
   void           onSetParamComplete();
   void           onCompleteState() {postErasables();}
+  void           postConfigStatus();
+  std::string    expandMacros(std::string);
 
 protected:
   bool         updateInfoIn();
@@ -70,6 +72,7 @@ protected: // configuration parameters
   double      m_lead_distance;
   double      m_lead_damper;
   bool        m_lead_allowed;
+  bool        m_wpt_flag_on_start;
   std::string m_efficiency_measure;
   std::string m_ipf_type;
 
@@ -112,6 +115,8 @@ protected: // intermediate or object global variables.
   double    m_odo_sety;
   bool      m_odo_virgin;
 
+  bool      m_wpt_flag_published;
+  
   double    m_dist_leg_odo;
 
   double    m_dist_total_odo;

@@ -72,6 +72,8 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_duration_reset_on_transition = false;
 
   m_helm_iter = 0;
+
+  m_config_posted = false;
 }
 
 //-----------------------------------------------------------
@@ -241,6 +243,15 @@ bool IvPBehavior::setParam(string g_param, string g_val)
       return(false);
     VarDataPair pair(var, val, "auto");
     m_end_flags.push_back(pair);
+    return(true);
+  }
+  else if(g_param == "configflag") {
+    string var = biteStringX(g_val, '=');
+    string val = g_val;
+    if(strContainsWhite(var) || (val == ""))
+      return(false);
+    VarDataPair pair(var, val, "auto");
+    m_config_flags.push_back(pair);
     return(true);
   }
   else if((g_param == "no_starve") || (g_param == "nostarve")) {
@@ -997,6 +1008,8 @@ void IvPBehavior::postFlags(const string& str, bool repeatable)
     flags = m_inactive_flags;
   else if(str == "spawnflags")
     flags = m_spawn_flags;
+  else if(str == "configflags")
+    flags = m_config_flags;
   
   // The endflags are treated as a special case in that they are 
   // posted as "repeatable" - that is they will be posted to the 
@@ -1009,8 +1022,10 @@ void IvPBehavior::postFlags(const string& str, bool repeatable)
   for(i=0; i<vsize; i++) {
     string var = flags[i].get_var();
     
+    repeatable = true; // mikerb
     if(flags[i].is_string()) {
       string sdata = flags[i].get_sdata();
+      sdata = expandMacros(sdata);
       sdata = findReplace(sdata, "$[OWNSHIP]", m_us_name);
       sdata = findReplace(sdata, "$[BHVNAME]", m_descriptor);
       sdata = findReplace(sdata, "$[BHVTYPE]", m_behavior_type);

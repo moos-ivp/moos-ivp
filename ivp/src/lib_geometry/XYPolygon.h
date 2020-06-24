@@ -42,6 +42,7 @@ public:
   bool   add_vertex(double, double, double, std::string, bool=true);
   bool   alter_vertex(double, double, double=0);
   bool   delete_vertex(double, double);
+  bool   delete_vertex(unsigned int);
   void   grow_by_pct(double pct);
   void   grow_by_amt(double amt);
   bool   insert_vertex(double, double, double=0);
@@ -78,6 +79,10 @@ public:
 
   XYSegList exportSegList(double x=0, double y=0);
 
+  XYPolygon crossProductSettle() const;
+  
+  unsigned int min_xproduct(bool&) const;
+  
 protected:
   int    side(double x1, double y1, double x2, 
 	      double y2, double x3, double y3) const;

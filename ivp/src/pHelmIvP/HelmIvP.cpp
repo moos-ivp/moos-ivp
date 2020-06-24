@@ -1568,8 +1568,6 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
 
 void HelmIvP::postAllStop(string msg)
 {
-  Notify("IVPHELM_ALLSTOP_DEBUG", msg);
-
   // Don't post all-stop info if the helm is on standby or disabled.
   if(!helmStatusEnabled())
     return;

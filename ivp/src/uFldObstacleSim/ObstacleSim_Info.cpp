@@ -20,11 +20,9 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The uFldObstacleSim application is used for               ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  The uFldObstacleSim app will simulate the posting of obstacles");
+  blk("  loaded from a text file, to be shared to all vehicles in the  ");
+  blk("  uField environment.                                           ");
 }
 
 //----------------------------------------------------------------
@@ -73,20 +71,34 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  obstacle_file    = filename                                   ");
-  blk("  poly_vert_color  = color                                      ");
-  blk("  poly_edge_color  = color                                      ");
-  blk("  poly_fill_color  = color                                      ");
-  blk("  poly_label_color = color                                      ");
+  blk("  obstacle_file    = obstacles.txt                              ");
+  blk("  poly_vert_color  = color    (default is gray50)               ");
+  blk("  poly_edge_color  = color    (default is gray50)               ");
+  blk("  poly_fill_color  = color    (default is white)                ");
+  blk("  poly_label_color = color    (default is invisible)            ");
   blk("                                                                ");
-  blk("  poly_vert_size    = 1       (the default)                     ");
-  blk("  poly_edge_size    = 1       (the default)                     ");
-  blk("  poly_transparency = 0.15    (the default)                     ");
+  blk("  poly_vert_size    = 1       (default is 1)                    ");
+  blk("  poly_edge_size    = 1       (default is 1)                    ");
+  blk("  poly_transparency = 0.15    (default is 0.15)                 ");
   blk("                                                                ");
-  blk("  draw_region      = true     (default is true)                 ");
-  blk("  post_points      = true                                       ");
+  blk("  region_edge_color = color   (default is gray50)               ");
+  blk("  region_vert_color = color   (default is white )               ");
   blk("                                                                ");
-  blk("  rate_points      = 5        (the default)                     ");
+  blk("  draw_region       = true    (default is true)                 ");
+  blk("  region_edge_color = color   (default is gray50)               ");
+  blk("  region_vert_color = color   (default is white)                ");
+  blk("                                                                ");
+  blk("  post_points      = true     (default is false)                ");
+  blk("  rate_points      = 5        (default is 5                     ");
+  blk("                                                                ");
+  blk("  min_duration     = 10       (default is -1)                   ");
+  blk("  max_duration     = 15       (default is -1)                   ");
+  blk("  refresh_interval = 8        (default is -1)                   ");
+  blk("                                                                ");
+  blk("  reset_interval   = -1       (default is -1)                   ");
+  blk("  reset_range      = 10       (default is 10)                   ");
+  blk("                                                                ");
+  blk("  reuse_ids        = tru      (default is true)                 ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -100,20 +112,23 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("uFldObstacleSim INTERFACE                                    ");
+  blu("uFldObstacleSim INTERFACE                                       ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
-  blk("                 string_val=BAR                                 ");
+  blk("  PMV_CONNECT      = true                                       ");
+  blk("  VEHICLE_CONNECT  = true                                       ");
+  blk("  NODE_REPORT                                                   ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
-  blk("                                                                ");
+  blk("  VIEW_POLYGON                                                  ");
+  blk("  KNOWN_OBSTACLE                                                ");
+  blk("  GIVEN_OBSTACLE                                                ");
+  blk("  TRACKED_FEATURE                                               ");
   exit(0);
 }
 

@@ -118,16 +118,6 @@ void XYRangePulse::set_rad(double val)
 }
 
 //-------------------------------------------------------------
-// Procedure: set_duration()
-
-void XYRangePulse::set_duration(double val)
-{
-  m_duration = val;
-  if(m_duration < 0)
-    m_duration = 0;
-}
-
-//-------------------------------------------------------------
 // Procedure: set_linger()
 
 void XYRangePulse::set_linger(double val)
@@ -192,8 +182,6 @@ string XYRangePulse::get_spec(string param) const
   spec += doubleToStringX(m_y);
   spec += ",radius=";
   spec += doubleToStringX(m_rad); 
-  spec += ",duration=";
-  spec += doubleToStringX(m_duration); 
   spec += ",fill=";
   spec += doubleToStringX(m_fill); 
 

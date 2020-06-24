@@ -23,6 +23,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <iostream>
 #include <cstdlib>
 #include <cmath>
 #include "AngleUtils.h"
@@ -87,26 +88,58 @@ double angleFromThreePoints(double x1, double y1,
 
 //-------------------------------------------------------------
 // Procedure: threePointTurnLeft
-//
+//                                                      
+//        x2,y2  o-<<----------o (x1,y1)                                    
+//                            /                                       
+//                          /                                         
+//                        /                                           
+//                      /                                            
+//                    /                                               
+//          (x0,y0) o                                                
+//                                                      
 //      Note: From Cormen, Leiserson, Rivest and Stein:
 
 bool threePointTurnLeft(double x0, double y0, 
 			double x1, double y1,
 			double x2, double y2)
 { 
+  double cross_product = threePointXProduct(x0,y0, x1,y1, x2,y2);
+
+  std::cout << std::endl;
+  std::cout << "xp=" << cross_product << std::endl;
   
+  if(cross_product < -0.01)
+    return(true);
+
+  return(false);
+}
+
+//-------------------------------------------------------------
+// Procedure: threePointXProduct
+//                                                      
+//        x2,y2  o-<<----------o (x1,y1)                                    
+//                            /                                       
+//                          /                                         
+//                        /                                           
+//                      /                                            
+//                    /                                               
+//          (x0,y0) o                                                
+//                                                      
+//      Note: From Cormen, Leiserson, Rivest and Stein:
+
+double threePointXProduct(double x0, double y0, 
+			  double x1, double y1,
+			  double x2, double y2)
+{ 
   double ax = x2-x0;
   double ay = y2-y0;
   double bx = x1-x0; 
   double by = y1-y0; 
+
   // Now compute the cross product of a x b
-  
   double cross_product = (ax*by) - (bx*ay);
 
-  if(cross_product < 0)
-    return(true);
-
-  return(false);
+  return(cross_product);
 }
 
 //-------------------------------------------------------------

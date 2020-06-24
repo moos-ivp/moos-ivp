@@ -541,6 +541,18 @@ bool ObShipModel::isValid() const
   return(true);
 }
 
+
+// ----------------------------------------------------------
+// Procedure: getFailedExpandPolyStr()
+
+string ObShipModel::getFailedExpandPolyStr(bool clear_val) 
+{  
+  string rval = m_failed_expand_poly_str;
+  if(clear_val)
+    m_failed_expand_poly_str = "";
+  return(rval);
+}
+
 // ----------------------------------------------------------
 // Procedure: print()
 
@@ -617,8 +629,16 @@ bool ObShipModel::updateDynamic()
   
   XYPolygon new_poly_min = expander.getBufferPoly(m_min_util_cpa_flex);
   XYPolygon new_poly_max = expander.getBufferPoly(m_max_util_cpa_flex);
-  if(!new_poly_min.is_convex() || !new_poly_max.is_convex())
+
+  // Error checking and noting possible failures
+  if(!new_poly_min.is_convex() || !new_poly_max.is_convex()) {
+    m_failed_expand_poly_str = "Failed Expand: " + m_obstacle.get_spec();
     return(false);
+  }
+  if(!new_poly_min.contains(m_obstacle) ||
+     !new_poly_max.contains(m_obstacle)) {
+    m_failed_expand_poly_str = "Failed expand: " + m_obstacle.get_spec();
+  }
 
   string obs_label = m_obstacle.get_label();
   m_obstacle_buff_min = new_poly_min;

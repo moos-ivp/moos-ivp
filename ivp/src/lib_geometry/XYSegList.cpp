@@ -744,6 +744,19 @@ string XYSegList::get_spec_pts(unsigned int precision) const
 }
 
 //---------------------------------------------------------------
+// Procedure: get_spec_pts_label
+//   Purpose: Get a string specification of just the points and label.
+
+string XYSegList::get_spec_pts_label(unsigned int precision) const
+{
+  string spec = get_spec_pts(precision);
+  if(m_label != "")
+    spec += ",label=" + m_label;
+
+  return(spec);
+}
+
+//---------------------------------------------------------------
 // Procedure: get_spec_inactive()
 //   Purpose: In cases where we know the polygon spec is created
 //            simply to "erase" a previous poly with the same

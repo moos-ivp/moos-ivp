@@ -38,9 +38,12 @@ ObstacleFieldGenerator::ObstacleFieldGenerator()
 {
   m_min_poly_size = 6;
   m_max_poly_size = 10;
-
   m_min_range = 2;
+  m_precision = 0.1;    // vertices chosen at 1/10th meter
   m_amount    = 1;
+  m_begin_id  = 0;
+  
+  m_verbose = true;
 }
 
 //---------------------------------------------------------
@@ -49,7 +52,14 @@ ObstacleFieldGenerator::ObstacleFieldGenerator()
 bool ObstacleFieldGenerator::setPolygon(string str)
 {
   XYPolygon poly = string2Poly(str);
+  return(setPolygon(poly));
+}
 
+//---------------------------------------------------------
+// Procedure: setPolygon()
+
+bool ObstacleFieldGenerator::setPolygon(XYPolygon poly)
+{
   if(!poly.is_convex()) {
     cout << "Warning: non-convex polygon." << endl;
     return(false);
@@ -76,12 +86,32 @@ bool ObstacleFieldGenerator::setAmount(string str)
 }
 
 //---------------------------------------------------------
+// Procedure: setAmount()
+
+void ObstacleFieldGenerator::setAmount(unsigned int val)
+{
+  m_amount = val;
+}
+
+//---------------------------------------------------------
 // Procedure: setMinRange()
 
 bool ObstacleFieldGenerator::setMinRange(string str)
 {
   return(setNonNegDoubleOnString(m_min_range, str));
 }
+
+//---------------------------------------------------------
+// Procedure: setMinRange()
+
+bool ObstacleFieldGenerator::setMinRange(double dval)
+{
+  if(dval < 0)
+    return(false);
+  m_min_range = dval;
+  return(true);
+}
+
 
 //---------------------------------------------------------
 // Procedure: setObstacleMinSize()
@@ -92,6 +122,14 @@ bool ObstacleFieldGenerator::setObstacleMinSize(string str)
     return(false);
 
   double dval = atof(str.c_str());
+  return(setObstacleMinSize(dval));
+}
+
+//---------------------------------------------------------
+// Procedure: setObstacleMinSize()
+
+bool ObstacleFieldGenerator::setObstacleMinSize(double dval)
+{
   if(dval <= 0)
     return(false);
 
@@ -103,6 +141,21 @@ bool ObstacleFieldGenerator::setObstacleMinSize(string str)
 }
 
 //---------------------------------------------------------
+// Procedure: setPrecision()
+
+bool ObstacleFieldGenerator::setPrecision(double dval)
+{
+  if(dval <= 0)
+    return(false);
+  if(dval == 1000)
+    return(false);
+
+  m_precision = dval;
+  return(true);
+}
+
+
+//---------------------------------------------------------
 // Procedure: setObstacleMaxSize()
 
 bool ObstacleFieldGenerator::setObstacleMaxSize(string str)
@@ -111,6 +164,14 @@ bool ObstacleFieldGenerator::setObstacleMaxSize(string str)
     return(false);
 
   double dval = atof(str.c_str());
+  return(setObstacleMaxSize(dval));
+}
+
+//---------------------------------------------------------
+// Procedure: setObstacleMaxSize()
+
+bool ObstacleFieldGenerator::setObstacleMaxSize(double dval)
+{
   if(dval <= 0)
     return(false);
 
@@ -133,15 +194,17 @@ bool ObstacleFieldGenerator::generate()
   for(unsigned int i=0; (ok && (i<m_amount)); i++) {
     ok = ok && generateObstacle(1000);
   }
-
-  cout << "region    = " << m_poly_region.get_spec() << endl;
-  cout << "min_range = " << doubleToStringX(m_min_range,2) << endl;
-  cout << "min_size  = " << doubleToStringX(m_min_poly_size,2) << endl;
-  cout << "max_size  = " << doubleToStringX(m_max_poly_size,2) << endl;
-
-  if(ok) {
-    for(unsigned int i=0; i<m_obstacles.size(); i++) 
-      cout << "poly = " << m_obstacles[i].get_spec() << endl;
+  
+  if(m_verbose) {
+    cout << "region    = " << m_poly_region.get_spec() << endl;
+    cout << "min_range = " << doubleToStringX(m_min_range,2) << endl;
+    cout << "min_size  = " << doubleToStringX(m_min_poly_size,2) << endl;
+    cout << "max_size  = " << doubleToStringX(m_max_poly_size,2) << endl;
+    
+    if(ok) {
+      for(unsigned int i=0; i<m_obstacles.size(); i++) 
+	cout << "poly = " << m_obstacles[i].get_spec() << endl;
+    }
   }
 
   return(ok);
@@ -191,7 +254,6 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
     bool pt_in_obstacle = false;
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
       if(m_obstacles[i].contains(rand_x, rand_y)) {
-	//cout << "  " << k << " pt inside existing obstacle." << endl;
 	pt_in_obstacle = true;
       }
     }
@@ -202,7 +264,8 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
     string str = "format=radial, x=" + doubleToString(rand_x,1); 
     str += ", y=" + doubleToString(rand_y,1);
     str += ",radius=" + doubleToString(radius);
-    str += ",pts=8,label=ob_" + uintToString(m_obstacles.size());
+    str += ",snap=" + doubleToStringX(m_precision,3);
+    str += ",pts=8,label=ob_" + uintToString(m_begin_id + m_obstacles.size());
  
     XYPolygon try_poly = string2Poly(str);
     if(!try_poly.is_convex()) {
@@ -218,7 +281,6 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
     bool poly_ints_obstacle = false;
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
       if(m_obstacles[i].intersects(try_poly)) {
-	//cout << "  " << k << "    try_poly intersects an obstacle." << endl;
 	poly_ints_obstacle = true;
       }
     }
@@ -229,7 +291,6 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
     bool poly_closeto_obstacle = false;
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
       if(m_obstacles[i].dist_to_poly(try_poly) < m_min_range) {
-	//cout << "  " << k << "       try_poly too close to an obstacle." << endl;
 	poly_closeto_obstacle = true;
       }
     }

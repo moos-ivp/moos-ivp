@@ -37,12 +37,28 @@ class ObstacleFieldGenerator
   virtual ~ObstacleFieldGenerator() {}
 
   bool   setPolygon(std::string);
-  bool   setAmount(std::string);
-  bool   setMinRange(std::string);
-  bool   setObstacleMinSize(std::string);
-  bool   setObstacleMaxSize(std::string);
+  bool   setPolygon(XYPolygon);
 
+  bool   setAmount(std::string);
+  void   setAmount(unsigned int);
+
+  bool   setMinRange(std::string);
+  bool   setMinRange(double);
+
+  bool   setObstacleMinSize(std::string);
+  bool   setObstacleMinSize(double);
+
+  bool   setObstacleMaxSize(std::string);
+  bool   setObstacleMaxSize(double);
+
+  bool   setPrecision(double);
+
+  void   setBeginID(unsigned int v) {m_begin_id=v;}
+  void   setVerbose(bool v) {m_verbose=v;}
+  
   bool   generate();
+
+  std::vector<XYPolygon> getObstacles() const {return(m_obstacles);}
 
  protected:
   bool   generateObstacle(unsigned int tries);
@@ -53,11 +69,14 @@ class ObstacleFieldGenerator
   double   m_min_poly_size;
   double   m_max_poly_size;
   double   m_min_range;
+  double   m_precision;
+
+  bool     m_verbose;
 
   unsigned int m_amount;
+  unsigned int m_begin_id;
   
-  std::vector<XYPolygon> m_obstacles;
-  
+  std::vector<XYPolygon> m_obstacles;  
 };
 
 #endif 

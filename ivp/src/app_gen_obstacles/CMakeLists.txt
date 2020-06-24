@@ -4,7 +4,6 @@
 #--------------------------------------------------------
 
 SET(SRC
-  ObstacleFieldGenerator.cpp
   ObstacleFieldGenerator_Info.cpp
   main.cpp
 )
@@ -12,6 +11,7 @@ SET(SRC
 ADD_EXECUTABLE(gen_obstacles ${SRC})
 
 TARGET_LINK_LIBRARIES(gen_obstacles
+  obstacles
   geometry
   mbutil
   ${SYSTEM_LIBS}

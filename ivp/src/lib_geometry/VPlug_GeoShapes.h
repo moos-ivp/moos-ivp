@@ -54,6 +54,8 @@ public:
   
   void    clear(std::string shape="", std::string stype="");
 
+  void    manageMemory(double timestamp);
+  
   double  getXMin() const {return(m_xmin);}
   double  getXMax() const {return(m_xmax);}
   double  getYMin() const {return(m_ymin);}
@@ -74,12 +76,23 @@ public:
   void addCommsPulse(const XYCommsPulse&);
   void addMarker(const XYMarker&);
 
+  void forgetPolygon(std::string label);
+  void forgetSegList(std::string label);
+  void forgetSeglr(std::string label);
+  void forgetWedge(std::string label);
+  void forgetHexagon(std::string label);
+  void forgetArc(std::string label);
+  void forgetVector(std::string label);
+  void forgetRangePulse(std::string label);
+  void forgetCommsPulse(std::string label);
+
+
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
   bool addSeglr(const std::string&);
   bool addCircle(const std::string&, unsigned int drawpts=18);
   bool addWedge(const std::string&, unsigned int drawpts=18);
-  bool addPoint(const std::string&);
+  bool addPoint(const std::string&, double timestamp=0);
   bool addArc(const std::string&);
   bool addVector(const std::string&);
   bool addGrid(const std::string&);

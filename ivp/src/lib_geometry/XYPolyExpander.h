@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: XYPolyExpander.h                                     */
 /*    DATE: Sep 7th, 2019                                        */
+/*    DATE: Jun 8th  2020 revisions and centroid bug fix         */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -29,24 +30,28 @@
 #include <vector>
 #include <string>
 #include "XYPolygon.h"
+#include "XYSegList.h"
 
 class XYPolyExpander {
 public:
   XYPolyExpander();
   ~XYPolyExpander() {}
 
+public: // Config setting
   bool      setPoly(XYPolygon poly);
   void      setDegreeDelta(double);
   void      setVertexProximityThresh(double);
-  
+  void      disableSettling() {m_settling_enabled=false;}
+ 
+public: // Primary function  
   XYPolygon getBufferPoly(double buff);
-  
-protected:
+
+protected: // helper functions
   bool      expandSegments();
   bool      buildCorners();
   bool      buildNewPoly();
   void      clear();
-  
+
 private: // Config variables
   
   XYPolygon m_poly_orig;
@@ -56,6 +61,8 @@ private: // Config variables
   double    m_deg_delta;
   double    m_vertex_proximity_thresh;
 
+  bool      m_settling_enabled;
+  
 private: // State variables
 
   // Variables for holding the temporary edge vertices

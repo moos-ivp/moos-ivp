@@ -10,6 +10,7 @@
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "XYPolygon.h"
+#include "Obstacle.h"
 #include <set>
 
 class ObstacleManager : public AppCastingMOOSApp
@@ -30,6 +31,8 @@ protected: // Standard AppCastingMOOSApp function to overload
 protected:
   void registerVariables();
 
+  bool handleConfigPostDistToPolys(std::string);
+
   bool handleMailNewPoint(std::string);
   bool handleMailAlertRequest(std::string);
 
@@ -44,10 +47,10 @@ protected:
   
   XYPoint customStringToPoint(std::string point_str);
 
+  bool updatePointHulls();
   void updatePolyRanges();
   void manageMemory();
-  bool setPostDistToPolys(std::string);
-
+  
   
 private: // Configuration variables
   std::string  m_point_var;            // incoming points
@@ -69,26 +72,23 @@ private: // Configuration variables
   std::string  m_post_dist_to_polys;
   bool         m_post_view_polys;
   
+  std::string  m_obstacles_color;
+  
 private: // State variables
   double m_nav_x;
   double m_nav_y;
   
+  double m_min_dist_ever;
+  
   unsigned int  m_points_total;
   unsigned int  m_points_invalid;
   unsigned int  m_points_ignored;
+  unsigned int  m_obstacles_released;
 
-  unsigned int  m_clusters_released;
+  unsigned int  m_alerts_posted;
+  unsigned int  m_alerts_resolved;
 
-  std::set<std::string> m_set_current_keys;
-  
-  // Each map is keyed on the obstacle_key
-  std::map<std::string, std::list<XYPoint> > m_map_points;
-  std::map<std::string, unsigned int>        m_map_points_total;
-  std::map<std::string, XYPolygon>           m_map_poly_convex;
-  std::map<std::string, double>              m_map_poly_range;
-  std::map<std::string, bool>                m_map_poly_given;
-  std::map<std::string, bool>                m_map_poly_changed;
-  std::map<std::string, unsigned int>        m_map_updates_total;
+  std::map<std::string, Obstacle> m_map_obstacles;
 };
 
 #endif 

@@ -1862,7 +1862,7 @@ double polyRayCPA(double rx, double ry, double ray_angle,
       return(0);
     }
   }    
-  // Part 3: The ray does cross any of the polygon segments, so now
+  // Part 3: Ray does notcross any of the polygon segments, so now
   // we calculate the ray CPA for all segments and take the min
   double min_cpa = -1;
   for(unsigned int i=0; i<poly.size(); i++) {
@@ -1888,3 +1888,47 @@ double polyRayCPA(double rx, double ry, double ray_angle,
   }
   return(min_cpa);  
 }
+
+
+//---------------------------------------------------------------
+// Procedure: randPointOnPoly()
+//   Purpose: Find a random point on the boundary of the poly that
+//            is in line-of-site from the given viewing vertex.
+//            Try a random points inside the polygon's bounding box.
+//   Returns: true if random point found. 
+//            false otherwise, e.g., if viewpont is within poly
+
+bool randPointOnPoly(double vx, double vy,
+		     const XYPolygon& poly,
+		     double& rx, double& ry)
+{
+  if(!poly.is_convex())
+    return(false);
+  if(poly.contains(vx, vy))
+    return(false);
+
+  double bmin = 0;
+  double bmax = 0;
+  bool ok = bearingMinMaxToPoly(vx,vy, poly, bmin,bmax);
+  if(!ok)
+    return(false);
+
+  double bng_range = angleDiff(bmin, bmax);
+  int  bng_choices = (int)(bng_range + 1);
+ 
+  int rand_bng = rand() % bng_choices;
+
+  double bng = angle360(bmin + (double)(rand_bng));
+
+  double dist_to_poly = poly.dist_to_poly(vx, vy, bng);
+  if(dist_to_poly < 0)
+    return(false);
+  
+  double ix,iy;
+  projectPoint(bng, dist_to_poly, vx, vy, ix, iy);
+  rx = ix;
+  ry = iy;
+  return(true);
+}
+
+

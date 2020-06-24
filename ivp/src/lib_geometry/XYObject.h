@@ -47,6 +47,7 @@ public:
   void   set_vertex_size(double val);
   void   set_edge_size(double val);
   void   set_transparency(double);
+  void   set_duration(double);
 
   void   set_type()   {} // deprecated
   void   set_source() {} // deprecated
@@ -71,7 +72,9 @@ public:
   double    get_edge_size() const    {return(m_edge_size);}
   bool      edge_size_set() const    {return(m_edge_size>=0);}
   double    get_transparency() const {return(m_transparency);}
+  double    get_duration() const     {return(m_duration);}
   bool      transparency_set() const {return(m_transparency_set);}
+  bool      duration_set() const     {return(m_duration_set);}
 
   std::string get_label()     const {return(m_label);}
   std::string get_msg()       const {return(m_msg);}
@@ -79,6 +82,8 @@ public:
   std::string get_source()    const {return(m_source);}
   std::string get_spec(std::string s="") const;
 
+  bool expired(double curr_time) const;
+  
   bool set_param(const std::string&, const std::string&);
 
  protected:
@@ -93,6 +98,8 @@ protected:
   double       m_time;
   bool         m_time_set;
   bool         m_transparency_set;
+  double       m_duration;
+  bool         m_duration_set;
 
   std::map<std::string, ColorPack> m_color_map;
 

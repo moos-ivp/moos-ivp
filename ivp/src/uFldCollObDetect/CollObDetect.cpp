@@ -270,7 +270,7 @@ bool CollObDetect::handleMailNodeReport(string node_report)
     return(false);
   string vname = record.getName();
 
-  // Part 1: Update the node record list for this vehicle
+  // Update the node record list for this vehicle
   m_map_vrecords[vname] = record;
   return(true);
 }

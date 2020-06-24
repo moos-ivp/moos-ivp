@@ -121,16 +121,6 @@ void XYCommsPulse::set_beam_width(double val)
 }
 
 //-------------------------------------------------------------
-// Procedure: set_duration()
-
-void XYCommsPulse::set_duration(double val)
-{
-  m_duration = val;
-  if(m_duration < 0)
-    m_duration = 0;
-}
-
-//-------------------------------------------------------------
 // Procedure: set_fill()
 
 void XYCommsPulse::set_fill(double val)
@@ -194,8 +184,6 @@ string XYCommsPulse::get_spec(string param) const
   spec += doubleToStringX(m_ty);
   spec += ",beam_width=";
   spec += doubleToStringX(m_beam_width); 
-  spec += ",duration=";
-  spec += doubleToStringX(m_duration); 
   spec += ",fill=";
   spec += doubleToStringX(m_fill); 
 

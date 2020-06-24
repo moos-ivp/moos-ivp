@@ -88,6 +88,8 @@ void showExampleConfigAndExit()
   blk("  lasso = true               // default is false                ");
   blk("  lasso_points = 6           // default is 6                    ");
   blk("  lasso_radius = 5           // (meters) default is 5           ");
+  blk("                                                                ");
+  blk("  obstacles_color = color    // default is blue                 ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -118,13 +120,14 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  VEHICLE_CONNECT = true                                        ");
-  blk("  VIEW_POLYGON    = pts={32,-100:38,-98:40,-100:32,-104},       ");
-  blk("                    label=d,edge_color=white,vertex_color=blue  ");
-  blk("  OBM_DIST_TO_OBJ = ob_key,17.5                                 ");
-  blk("  OBSTACLE_ALERT  = name=d#                                     ");
-  blk("                    poly=pts={32,-100:38,-98:40,-100:32,-104},  ");
-  blk("                    label=d                                     ");
+  blk("  VEHICLE_CONNECT   = true                                      ");
+  blk("  VIEW_POLYGON      = pts={32,-100:38,-98:40,-100:32,-104},     ");
+  blk("                      label=d,edge_color=white,vertex_color=blue");
+  blk("  OBM_DIST_TO_OBJ   = ob_key,17.5                               ");
+  blk("  OBM_MIN_DIST_EVER = ob_key,17.5                               ");
+  blk("  OBSTACLE_ALERT    = name=d#                                   ");
+  blk("                      poly=pts={32,-100:38,-98:40,-100:32,-104},");
+  blk("                      label=d                                   ");
   exit(0);
 }
 

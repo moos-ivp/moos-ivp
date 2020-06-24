@@ -86,6 +86,7 @@ public:
   std::string get_spec(std::string param) const;
   std::string get_spec(unsigned int vertex_prec, std::string param) const;
   std::string get_spec_pts(unsigned int vertex_prec=1) const;
+  std::string get_spec_pts_label(unsigned int vertex_prec=1) const;
   std::string get_spec_inactive() const;
 
   unsigned int closest_vertex(double, double) const; 

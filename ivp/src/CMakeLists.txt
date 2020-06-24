@@ -132,6 +132,7 @@ SET(IVP_NON_GUI_LIBS
    lib_encounters
    lib_apputil
    lib_contacts
+   lib_obstacles
    lib_ufield
    lib_ufld_hazards
    lib_logutils

@@ -512,9 +512,11 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 
   // Look for possible dynamic updates to the behavior parameters
   bool update_made = bhv->checkUpdates();
-  if(update_made) 
+  if(update_made) {
+    bhv->setConfigPosted(false);
     bhv->onSetParamComplete();
-
+  }
+    
   vector<string> update_results = bhv->getUpdateResults();
   for(unsigned int i=0; i<update_results.size(); i++)
     m_update_results.push_back(update_results[i]);
@@ -536,6 +538,11 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   // are handled below, after executing onIdleState, onRunState() etc.
   if(new_activity_state == "completed")
     bhv->onCompleteState();
+
+  if(bhv->getConfigPosted() == false) {
+    bhv->postFlags("configflags");
+    bhv->setConfigPosted(true);
+  }
   
   // Part 2B: Handle idle behaviors
   if(new_activity_state == "idle") {

@@ -43,6 +43,8 @@ public:
 		     const std::string& value, 
 		     const std::string& community, 
 		     double time=0);
+
+  void   manageMemory(double curr_time);
   
   double getXMin() const {return(m_xmin);}
   double getXMax() const {return(m_xmax);}

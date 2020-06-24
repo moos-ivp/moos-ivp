@@ -91,6 +91,8 @@ class ObShipModel
   bool   osSpdInPlatMinor(double osv) const;
   bool   osHdgSpdInBasinMinor(double osh, double osv) const;
 
+  std::string getFailedExpandPolyStr(bool clear=true);
+    
   double getRangeRelevance() const;
   bool   isObstacleAft(double xbng) const;
   bool   isValid() const;
@@ -127,6 +129,8 @@ class ObShipModel
   double m_obcent_bng;
   double m_obcent_relbng;
 
+  std::string m_failed_expand_poly_str;
+  
   std::string m_passing_side;
 
   double m_range;

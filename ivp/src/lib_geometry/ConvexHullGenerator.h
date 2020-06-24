@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ConvexHull.h                                         */
 /*    DATE: Aug 26th 2014                                        */
+/*    DATE: Jun 8th  2020 Major revisions                        */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -34,31 +35,32 @@
 class ConvexHullGenerator
 {
  public:
-  ConvexHullGenerator() {}
+  ConvexHullGenerator() {m_settling_enabled=true;}
   ~ConvexHullGenerator() {}
 
-   void addPoint(double, double);
-   void addPoint(double, double, std::string);
+  void addPoint(XYPoint);
+  void addPoint(double, double);
+  void addPoint(double, double, std::string);
 
-   XYPolygon generateConvexHull();
-   XYPoint   getRootPoint() {return(m_root);}
+  void disableSettling() {m_settling_enabled=false;}
+  
+  XYPolygon generateConvexHull();
+  XYPoint   getRootPoint() {return(m_root);}
+  
+ protected: // helper funcctions
+  void   findRoot();
+  void   sortPoints();
 
- protected:
-   void   findRoot();
-   void   sortPoints();
+  XYPolygon generateConvexHullTwoPts(XYPoint, XYPoint);
+  XYPolygon generateConvexHullOnePt(XYPoint);
 
  private: // Configuration variables
-   std::vector<XYPoint>  m_original_pts;
+  std::vector<XYPoint>  m_original_pts;
+  bool                  m_settling_enabled;
 
  private: // State variables
-   XYPoint               m_root;
-   std::vector<XYPoint>  m_points;
-   
-   std::list<XYPoint>    m_stack;
+  XYPoint               m_root;
+  std::vector<XYPoint>  m_points;
 };
 
 #endif 
-
-
-
-

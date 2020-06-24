@@ -154,6 +154,11 @@ double distPointToSegl(double px, double py, const XYSegList& segl);
 double polyRayCPA(double rx, double ry, double ray_angle,
 		  const XYPolygon& poly, double& ix, double& iy);
 
+bool randPointOnPoly(double vx, double vy, const XYPolygon&,
+		     double& ix, double& iy);
+
+
+
 // DEPRECATED INTERFACES
 double distToPoint(double x1, double y1, double x2, double y2);
 

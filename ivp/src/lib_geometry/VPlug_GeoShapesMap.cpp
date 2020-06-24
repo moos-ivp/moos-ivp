@@ -89,7 +89,7 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
   string param = toupper(param_orig);
 
   if(param == "VIEW_POINT")
-    handled = m_geoshapes_map[vname].addPoint(value);
+    handled = m_geoshapes_map[vname].addPoint(value, timestamp);
   else if(param == "VIEW_POLYGON")
     handled = m_geoshapes_map[vname].addPolygon(value);
   else if(param == "VIEW_SEGLIST")
@@ -123,6 +123,16 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
     refreshVehiNames();
 
   return(handled);
+}
+
+//----------------------------------------------------------------
+// Procedure: manageMemory()
+
+void VPlug_GeoShapesMap::manageMemory(double curr_time)
+{
+  map<string, VPlug_GeoShapes>::iterator p;
+  for(p=m_geoshapes_map.begin(); p!=m_geoshapes_map.end(); p++)
+    p->second.manageMemory(curr_time);
 }
 
 

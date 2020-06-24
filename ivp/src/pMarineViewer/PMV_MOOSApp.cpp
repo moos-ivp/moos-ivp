@@ -442,10 +442,6 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   m_gui->mviewer->setParam("curr_time", e.moos_time);
   m_gui->setCurrTime(curr_time);
 
-
-  
-
-  
   // We want to detect when a vehicle has been cleared that may still be
   // active. Sent appcast requests to everyone/global when a vehicle has
   // ben recently cleared. Just to give everyone a chance to report back.
