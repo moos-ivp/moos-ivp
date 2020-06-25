@@ -10,6 +10,7 @@ SET(SRC
   FileBuffer.cpp
   MBTimer.cpp
   MBUtils.cpp
+  MacroUtils.cpp
   TermUtils.cpp
   StringTree.cpp
   StringNode.cpp
@@ -28,6 +29,7 @@ SET(HEADERS
   FileBuffer.h
   MBTimer.h
   MBUtils.h
+  MacroUtils.h
   StringNode.h
   StringTree.h
   TermUtils.h
