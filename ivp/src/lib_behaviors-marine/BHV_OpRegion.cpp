@@ -740,47 +740,31 @@ void BHV_OpRegion::checkForReset()
 
 void BHV_OpRegion::postBreachFlags(string str)
 {
-  if((str == "poly") && m_breached_poly_flags_posted)
-    return;
-  if((str == "time") && m_breached_time_flags_posted)
-    return;
-  if((str == "altitude") && m_breached_altitude_flags_posted)
-    return;
-  if((str == "depth") && m_breached_depth_flags_posted)
-    return;
-
-  vector<VarDataPair> flags;
   if(str == "poly") {
-    flags = m_breached_poly_flags;
-    m_breached_poly_flags_posted = true;
+    if(!m_breached_poly_flags_posted) {
+      m_breached_poly_flags_posted = true;
+      postFlags(m_breached_poly_flags);
+    }
   }
   else if(str == "time") {
-    flags = m_breached_time_flags;
-    m_breached_time_flags_posted = true;
+    if(!m_breached_time_flags_posted) {
+      m_breached_time_flags_posted = true;
+      postFlags(m_breached_time_flags);
+    }
   }
   else if(str == "altitude") {
-    flags = m_breached_altitude_flags;
-    m_breached_altitude_flags_posted = true;
+    if(!m_breached_altitude_flags_posted) {
+      m_breached_altitude_flags_posted = true;
+      postFlags(m_breached_altitude_flags);
+    }
   }
   else if(str == "depth") {
-    flags = m_breached_depth_flags;
-    m_breached_depth_flags_posted = true;
+    if(!m_breached_depth_flags_posted) {
+      m_breached_depth_flags_posted = true;
+      postFlags(m_breached_depth_flags);
+    }
   }
 
-  unsigned int i, vsize = flags.size();
-  for(i=0; i<vsize; i++) {
-    string var = flags[i].get_var();
-    if(flags[i].is_string()) {
-      string sdata = flags[i].get_sdata();
-      sdata = findReplace(sdata, "$[OWNSHIP]", m_us_name);
-      sdata = findReplace(sdata, "$[BHVNAME]", m_descriptor);
-      postRepeatableMessage(var, sdata);
-    }
-    else {
-      double ddata = flags[i].get_ddata();
-      postRepeatableMessage(var, ddata);
-    }	
-  }    
 }
 
 //-----------------------------------------------------------

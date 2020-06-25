@@ -27,6 +27,7 @@
 #include "BHV_Waypoint.h"
 #include "OF_Reflector.h"
 #include "MBUtils.h"
+#include "MacroUtils.h"
 #include "AngleUtils.h"
 #include "AOF_Waypoint.h"
 #include "GeomUtils.h"
@@ -499,7 +500,7 @@ IvPFunction *BHV_Waypoint::onRunState()
     post_wpt_flags = true;
   if(post_wpt_flags) {
     m_prevpt.set_vertex(this_x, this_y);
-    postWptFlags(this_x, this_y);
+    postFlags(m_wpt_flags);
     m_wpt_flag_published = true;
   }
 
@@ -632,13 +633,11 @@ bool BHV_Waypoint::setNextWaypoint()
       postMessage((m_var_report + m_var_suffix), feedback_msg_aug);
     }
     
-    postCycleFlags();
+    postFlags(m_cycle_flags);
   }
    
   if(feedback_msg == "completed") {
-    double this_x = m_waypoint_engine.getPointX();
-    double this_y = m_waypoint_engine.getPointY();
-    postWptFlags(this_x, this_y);
+    postFlags(m_wpt_flags);
     
     setComplete();
     m_markpt.set_active(false);
@@ -887,35 +886,11 @@ void BHV_Waypoint::postCycleFlags()
 
 void BHV_Waypoint::postWptFlags(double x, double y)
 {
-  string xpos = doubleToStringX(x,2);
-  string ypos = doubleToStringX(y,2);
-
-  string str_osx = doubleToStringX(m_osx,2);
-  string str_osy = doubleToStringX(m_osy,2);
-  
-  string nextx = doubleToStringX(m_nextpt.x(),2);
-  string nexty = doubleToStringX(m_nextpt.y(),2);
-
-  int vsize = m_wpt_flags.size();
-  for(int i=0; i<vsize; i++) {
-    string var   = m_wpt_flags[i].get_var();
+  for(unsigned int i=0; i<m_wpt_flags.size(); i++) {
+    string var = m_wpt_flags[i].get_var();
     if(m_wpt_flags[i].is_string()) {
       string sdata = m_wpt_flags[i].get_sdata();
-
-      sdata = findReplace(sdata, "$(OSX)", str_osx);
-      sdata = findReplace(sdata, "$(OSY)", str_osy);
-      sdata = findReplace(sdata, "$[OSX]", str_osx);
-      sdata = findReplace(sdata, "$[OSY]", str_osy);
-
-      sdata = findReplace(sdata, "$(X)", xpos);
-      sdata = findReplace(sdata, "$(Y)", ypos);
-      sdata = findReplace(sdata, "$[X]", xpos);
-      sdata = findReplace(sdata, "$[Y]", ypos);
-
-      sdata = findReplace(sdata, "$(NX)", nextx);
-      sdata = findReplace(sdata, "$(NY)", nexty);
-      sdata = findReplace(sdata, "$[NX]", nextx);
-      sdata = findReplace(sdata, "$[NY]", nexty);
+      sdata = expandMacros(sdata);
       postRepeatableMessage(var, sdata);
     }
     else {
@@ -1119,11 +1094,7 @@ void BHV_Waypoint::postConfigStatus()
 {
   string str = "type=BHV_Waypoint,name=" + m_descriptor;
 
-  // Get the list of points
-  XYSegList segl = m_waypoint_engine.getSegList();
-  string spec = segl.get_spec_pts();
-  
-  str += ",points=" + spec;
+  str += ",points=" + m_waypoint_engine.getPointsStr();
   str += ",speed=" + doubleToStringX(m_cruise_speed,1);
   str += ",speed_alt=" + doubleToStringX(m_cruise_speed_alt,1);
 
@@ -1143,11 +1114,7 @@ void BHV_Waypoint::postConfigStatus()
   str += ",lead_damper=" + doubleToStringX(m_lead_damper,1);
   str += ",lead_to_start=" + boolToString(m_lead_to_start);
 
-  bool reversed_order = m_waypoint_engine.getReverse();
-  if(reversed_order)
-    str += ",order=normal";
-  else
-    str += ",order=reverse";
+  str += ",order=" + getReverseStr();
 
   bool repeats_endless = m_waypoint_engine.getRepeatsEndless();
   if(repeats_endless)
@@ -1185,35 +1152,51 @@ void BHV_Waypoint::postConfigStatus()
 
 string BHV_Waypoint::expandMacros(string sdata)
 {
-  // Handle configuration parameters
-  sdata = findReplace(sdata, "$[SPEED]", doubleToStringX(m_cruise_speed,1));
-  sdata = findReplace(sdata, "$(SPEED)", doubleToStringX(m_cruise_speed,1));
+  // =======================================================
+  // First expand the macros defined at the superclass level
+  // =======================================================
+  sdata = IvPBehavior::expandMacros(sdata);
   
 
-  // Handle state variables
-  string str_osx = doubleToStringX(m_osx,2);
-  string str_osy = doubleToStringX(m_osy,2);
+  // =======================================================
+  // Expand configuration parameters
+  // =======================================================
+  sdata = macroExpand(sdata, "POINTS", m_waypoint_engine.getPointsStr());
+  sdata = macroExpand(sdata, "SPEED", m_cruise_speed);
+  sdata = macroExpand(sdata, "SPEED_ALT", m_cruise_speed_alt);
+  sdata = macroExpand(sdata, "USE_SPEED_ALT", m_use_alt_speed);
+  sdata = macroExpand(sdata, "IPF_TYPE", m_ipf_type);
+  sdata = macroExpand(sdata, "WPT_FLAG_ON_START", m_wpt_flag_on_start);
+  sdata = macroExpand(sdata, "LEAD_TO_START", m_lead_to_start);
+  sdata = macroExpand(sdata, "LEAD_DAMPER", m_lead_damper);
+  sdata = macroExpand(sdata, "ORDER", getReverseStr());
   
-  string nextx = doubleToStringX(m_nextpt.x(),2);
-  string nexty = doubleToStringX(m_nextpt.y(),2);
+  // =======================================================
+  // Expand Behavior State
+  // =======================================================
+  sdata = macroExpand(sdata, "OSX", m_osx);
+  sdata = macroExpand(sdata, "OSY", m_osy);
+  sdata = macroExpand(sdata, "NX", m_nextpt.x());
+  sdata = macroExpand(sdata, "NY", m_nextpt.y());
+  sdata = macroExpand(sdata, "PX", m_prevpt.x());
+  sdata = macroExpand(sdata, "PY", m_prevpt.y());
 
-  string prevx = doubleToStringX(m_prevpt.x(),2);
-  string prevy = doubleToStringX(m_prevpt.y(),2);
+  sdata = macroExpand(sdata, "X", m_prevpt.x()); // deprecated
+  sdata = macroExpand(sdata, "Y", m_prevpt.y()); // deprecated
 
-  sdata = findReplace(sdata, "$(OSX)", str_osx);
-  sdata = findReplace(sdata, "$(OSY)", str_osy);
-  sdata = findReplace(sdata, "$[OSX]", str_osx);
-  sdata = findReplace(sdata, "$[OSY]", str_osy);
   
-  sdata = findReplace(sdata, "$(NX)", nextx);
-  sdata = findReplace(sdata, "$(NY)", nexty);
-  sdata = findReplace(sdata, "$[NX]", nextx);
-  sdata = findReplace(sdata, "$[NY]", nexty);
-
-  sdata = findReplace(sdata, "$(PX)", prevx);
-  sdata = findReplace(sdata, "$(PY)", prevy);
-  sdata = findReplace(sdata, "$[PX]", prevx);
-  sdata = findReplace(sdata, "$[PY]", prevy);
-
   return(sdata);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getReverseStr()
+
+string BHV_Waypoint::getReverseStr() const
+{
+  bool reversed_order = m_waypoint_engine.getReverse();
+  if(reversed_order)
+    return("reverse");
+  
+  return("normal");
 }

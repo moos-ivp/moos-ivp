@@ -60,7 +60,8 @@ protected:
   void         handleVisualHint(std::string);
   void         updateOdoDistance();
   void         markOdoLeg();
-
+  std::string  getReverseStr() const;
+  
 protected: 
   WaypointEngine m_waypoint_engine;
 
