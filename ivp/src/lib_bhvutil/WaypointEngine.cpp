@@ -374,6 +374,15 @@ double WaypointEngine::distToNextWpt(double osx, double osy) const
   return(dist);
 }
 
+//-----------------------------------------------------------
+// Procedure: getPointsStr()
+
+string WaypointEngine::getPointsStr() const
+{
+  string spec = m_seglist.get_spec_pts();
+  return(spec);
+}
+  
 
 
 

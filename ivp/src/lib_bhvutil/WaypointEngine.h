@@ -75,6 +75,8 @@ class WaypointEngine {
 
   void        setPrevPoint(XYPoint pt) {m_prevpt=pt;}
   std::string setNextWaypoint(double osx, double osy);
+
+  std::string getPointsStr() const;
   
   double  distToPrevWpt(double osx, double osy) const;
   double  distToNextWpt(double osx, double osy) const;
