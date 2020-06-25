@@ -38,6 +38,8 @@ LINK_DIRECTORIES(../../lib)
 
 SET(APPS
   utest
+  testConvexHull
+  testLeftTurn
   testIncIntString
   testLineCircleIntPts
   testSegCircleIntPts
