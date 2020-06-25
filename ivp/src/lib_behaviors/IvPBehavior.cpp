@@ -33,6 +33,7 @@
 #include <cstdlib>
 #include "IvPBehavior.h"
 #include "MBUtils.h"
+#include "MacroUtils.h"
 #include "BuildUtils.h"
 #include "BehaviorReport.h"
 
@@ -487,7 +488,7 @@ void IvPBehavior::postRepeatableMessage(string var, double ddata)
 
 void IvPBehavior::setComplete()
 {
-  postFlags("endflags");
+  postFlags("endflags", true);
   // Removed by mikerb jun2213 to prevent double posting
   // postFlags("inactiveflags");  
   if(!m_perpetual)
@@ -995,49 +996,47 @@ void IvPBehavior::updateStateDurations(string bhv_state)
 
 void IvPBehavior::postFlags(const string& str, bool repeatable)
 {
-  vector<VarDataPair> flags;
   if(str == "runflags")
-    flags = m_run_flags;
+    postFlags(m_run_flags);
   else if(str == "endflags")
-    flags = m_end_flags;
+    postFlags(m_end_flags);
   else if(str == "idleflags")
-    flags = m_idle_flags;
+    postFlags(m_idle_flags);
   else if(str == "activeflags")
-    flags = m_active_flags;
+    postFlags(m_active_flags);
   else if(str == "inactiveflags")
-    flags = m_inactive_flags;
+    postFlags(m_inactive_flags);
   else if(str == "spawnflags")
-    flags = m_spawn_flags;
+    postFlags(m_spawn_flags);
   else if(str == "configflags")
-    flags = m_config_flags;
-  
-  // The endflags are treated as a special case in that they are 
-  // posted as "repeatable" - that is they will be posted to the 
-  // MOOSDB regardless of whether the "outgoing" cache of postings
-  // maintained by the helm indicates that the posting is the same
-  // as the previous posting to that MOOS variable. 
-  bool endflags = (str == "endflags");
+    postFlags(m_config_flags);
+}
 
-  unsigned int i, vsize = flags.size();
-  for(i=0; i<vsize; i++) {
+//-----------------------------------------------------------
+// Procedure: postFlags()
+//     Notes: The repeat argument indicates that the posting should
+//            be made as postRepeatable. This means the helm's
+//            duplication filter will let it through absolutely.
+
+void IvPBehavior::postFlags(const vector<VarDataPair>& flags, bool repeatable)
+{
+  for(unsigned int i=0; i<flags.size(); i++) {
     string var = flags[i].get_var();
-    
-    repeatable = true; // mikerb
+
+    // Handle String postings
     if(flags[i].is_string()) {
       string sdata = flags[i].get_sdata();
       sdata = expandMacros(sdata);
-      sdata = findReplace(sdata, "$[OWNSHIP]", m_us_name);
-      sdata = findReplace(sdata, "$[BHVNAME]", m_descriptor);
-      sdata = findReplace(sdata, "$[BHVTYPE]", m_behavior_type);
-      sdata = findReplace(sdata, "$[CONTACT]", m_contact);
-      if(endflags || repeatable) 
+
+      if(repeatable) 
 	postRepeatableMessage(var, sdata);
       else
 	postMessage(var, sdata);
     }
+    // Handle Double postings
     else {
       double ddata = flags[i].get_ddata();
-      if(endflags || repeatable)
+      if(repeatable)
 	postRepeatableMessage(var, ddata);
       else
 	postMessage(var, ddata);
@@ -1240,4 +1239,17 @@ vector<string> IvPBehavior::getStateSpaceVars()
     rvector.push_back(m_inactive_flags[i].get_var());
   
   return(rvector);
+}
+
+//-----------------------------------------------------------
+// Procedure: expandMacros()
+
+string IvPBehavior::expandMacros(string sdata)
+{
+  sdata = macroExpand(sdata, "OWNSHIP", m_us_name);
+  sdata = macroExpand(sdata, "BHVNAME", m_descriptor);
+  sdata = macroExpand(sdata, "BHVTYPE", m_behavior_type);
+  sdata = macroExpand(sdata, "CONTACT", m_contact);
+  return(sdata);
+
 }

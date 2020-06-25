@@ -59,8 +59,8 @@ public:
   virtual void onIdleToRunState() {}
   virtual void onRunToIdleState() {}
   virtual void postConfigStatus() {}
+  virtual std::string expandMacros(std::string);
   virtual std::string getInfo(std::string)  {return("");}
-  virtual std::string expandMacros(std::string s) {return(s);}
   virtual double getDoubleInfo(std::string) {return(0);}
   virtual double getMemSize() {return(0);}
   virtual bool isConstraint() {return(false);}
@@ -111,6 +111,7 @@ public:
   void    postWMessage(std::string);
   void    postRetractWMessage(std::string);
   void    postFlags(const std::string&, bool repeat=false);
+  void    postFlags(const std::vector<VarDataPair>&, bool repeat=false);
 
   void    postDurationStatus();
   bool    durationExceeded();
