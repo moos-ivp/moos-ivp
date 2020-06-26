@@ -11,7 +11,7 @@ JUST_MAKE="no"
 AUTO=""
 IP_ADDR="localhost"
 VNAME="abe"
-INDEX=""
+INDEX="1"
 SHORE=""
 START_POS="0,0"  
 SHORE="localhost:9300"
@@ -61,7 +61,7 @@ if [ "${PSHARE_PORT}" = "" ] ; then
     PSHARE_PORT="930"$INDEX
 fi
 
-if [ "${INDEX}" != "" ] ; then
+if [ "${INDEX}" != "1" ] ; then
     VNAME=$VNAME"_"$INDEX
 fi
 
