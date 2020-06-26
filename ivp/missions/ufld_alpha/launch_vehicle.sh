@@ -11,7 +11,7 @@ JUST_MAKE="no"
 AUTO=""
 IP_ADDR="localhost"
 VNAME="abe"
-INDEX="1"
+INDEX=""
 SHORE=""
 START_POS="0,0"  
 SHORE="localhost:9300"
@@ -61,7 +61,10 @@ if [ "${PSHARE_PORT}" = "" ] ; then
     PSHARE_PORT="930"$INDEX
 fi
 
-VNAME=$VNAME"_"$INDEX
+if [ "${INDEX}" != "" ] ; then
+    VNAME=$VNAME"_"$INDEX
+fi
+
 
 #--------------------------------------------------------------
 #  Part 3: Create the .moos and .bhv files. 
