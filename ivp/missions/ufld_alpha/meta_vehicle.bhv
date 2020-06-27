@@ -1,4 +1,5 @@
-//--------    FILE: alpha.bhv   -------------
+//*******************************************************
+// Vehicle behavior configuration file
 
 initialize   DEPLOY = false
 initialize   RETURN = false

@@ -48,6 +48,8 @@ ProcessConfig = uFldShoreBroker
  
   bridge  = src=RETURN_ALL, alias=RETURN
   bridge  = src=RETURN_$V,  alias=RETURN
+
+  bridge  = src=REGION_INFO,  alias=REGION_INFO
 }
 
 //--------------------------------------------------
