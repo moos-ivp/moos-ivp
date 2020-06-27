@@ -46,6 +46,9 @@ ProcessConfig = uFldObstacleSim
   CommsTick     = 1
 
   obstacle_file = obstacles.txt
+
+	min_duration = 4000
+  max_duration = 5000
 }
 
 //--------------------------------------------------
@@ -166,9 +169,9 @@ ProcessConfig = pMarineViewer
   scope = DEPLOY_ALL
 
   nodes_font_size = xlarge
-  procs_font_size = xlarge
-  appcast_font_size = large
-
+	procs_font_size = xlarge
+	appcast_font_size = large
+	
   action = STATION_KEEP_ALL = false
   action = STATION_KEEP_ALL = true
 

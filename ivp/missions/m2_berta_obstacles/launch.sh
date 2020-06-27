@@ -6,7 +6,6 @@
 #----------------------------------------------------------
 #  Part 1: Set Exit actions and declare global var defaults
 #----------------------------------------------------------
-trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
 JUST_MAKE="no"
 
@@ -78,4 +77,7 @@ pAntler targ_henry.moos >& /dev/null &
 echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_gilda.moos >& /dev/null &
 
-uMAC --node=gilda --proc=pObstacleMgr targ_shoreside.moos
+uMAC --proc=pObstacleMgr --node=gilda targ_shoreside.moos
+
+kill -- -$$
+

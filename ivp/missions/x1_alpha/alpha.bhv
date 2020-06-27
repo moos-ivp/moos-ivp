@@ -21,7 +21,9 @@ Behavior = BHV_Waypoint
 
       lead_condition = AVOIDING != active
 
-  
+
+      use_alt_speed = true
+           speed_alt = 1
                 lead = 8
          lead_damper = 1
        lead_to_start = true

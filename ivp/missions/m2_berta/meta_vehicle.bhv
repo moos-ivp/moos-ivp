@@ -59,6 +59,9 @@ Behavior = BHV_AvdColregsV19
   endflag    = CONTACT_RESOLVED = $[CONTACT]
   templating = spawn
 
+	activeflag = INFO=thoseguys=$[CONTACT]
+
+
              contact = to-be-set
     on_no_contact_ok = true
          extrapolate = true

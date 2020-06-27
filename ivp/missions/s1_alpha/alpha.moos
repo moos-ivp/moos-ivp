@@ -60,6 +60,9 @@ ProcessConfig = pLogger
   // explicitly declare their logging request
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
   Log = REPORT @ 0 NOSYNC
+  Log = BHV_SETTINGS @ 0 NOSYNC
+  Log = OSPOS @ 0 NOSYNC
+  Log = INFO @ 0 NOSYNC
 
   LogAuxSrc = true
   WildCardLogging = true
@@ -198,6 +201,7 @@ ProcessConfig = pMarineViewer
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
 
+	scope  = CRUISE_SPD
   scope  = HELM_CORE_SIZE_MAX
   scope  = HELM_CORE_SIZE
   scope  = HELM_ENGINE_SIZE
@@ -213,6 +217,8 @@ ProcessConfig = pMarineViewer
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = RETURN # RETURN=true
+  button_three = SLOWER # WPT_UPDATE=speed=1.5
+  button_four = FASTER # WPT_UPDATE=speed=3.5
 
   action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
   action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false

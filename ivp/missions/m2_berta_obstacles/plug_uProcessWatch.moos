@@ -18,6 +18,7 @@ ProcessConfig = uProcessWatch
 
   NOWATCH = uXMS*
   NOWATCH = uPokeDB*
+  NOWATCH = uMAC*
 
   SUMMARY_WAIT = 12
 }

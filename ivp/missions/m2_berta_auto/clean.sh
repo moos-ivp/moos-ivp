@@ -1,4 +1,8 @@
 #!/bin/bash 
+#--------------------------------------------------------------
+#   Script: clean.sh                                    
+#   Author: Michael Benjamin  
+#     Date: June 2020     
 #----------------------------------------------------------
 #  Part 1: Declare global var defaults
 #----------------------------------------------------------
@@ -9,15 +13,15 @@ VERBOSE=""
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "clean.sh [SWITCHES]                "
-	echo "  --verbose                        " 
-	echo "  --help, -h                       " 
+	echo "clean.sh [SWITCHES]        "
+	echo "  --verbose                " 
+	echo "  --help, -h               " 
 	exit 0;	
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ] ; then
 	VERBOSE="-v"
     else 
 	echo "clean.sh: Bad Arg:" $ARGI
-	exit 0
+	exit 1
     fi
 done
 
@@ -27,8 +31,9 @@ done
 if [ "${VERBOSE}" = "-v" ]; then
     echo "Cleaning: $PWD"
 fi
-rm -rf  $VERBOSE   MOOSLog_*  LOG_* LLOG_* XLOG_* *.ps
-rm -f   $VERBOSE   *~  targ_* *.moos++ .tmp*
+rm -rf  $VERBOSE   MOOSLog_*  XLOG_* LOG_* \#*
+rm -f   $VERBOSE   *~  *.moos++
+rm -f   $VERBOSE   targ_*
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory
 rm -rf  *alvtmp
 rm -rf  *pared.alog

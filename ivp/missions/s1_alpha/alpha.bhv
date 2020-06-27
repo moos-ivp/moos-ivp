@@ -12,9 +12,26 @@ Behavior = BHV_Waypoint
   condition = DEPLOY = true
   endflag   = RETURN = true
 
+	configflag = CRUISE_SPD = $[SPEED]
+	//configflag = OSPOS = $[OSX],$[OSY]
+
+	activeflag = INFO=$[OWNSHIP]
+	activeflag = INFO=$[BHVNAME]
+	activeflag = INFO=$[BHVTYPE]
+
+	cycleflag = CINFO=$[OSX],$[OSY]
+
+	wptflag = PREV=$(PX),$(PY)
+	wptflag = NEXT=$(NX),$(NY)
+	wptflag = TEST=$(X),$(Y)
+	wptflag = OSPOS=$(OSX),$(OSY)
+	wptflag_on_start = true
+
   updates    = WPT_UPDATE
   perpetual  = true
 
+	    speed_alt = 1.2
+  use_alt_speed = true
                 lead = 8
          lead_damper = 1
        lead_to_start = true
@@ -24,10 +41,12 @@ Behavior = BHV_Waypoint
          slip_radius = 15.0
 	efficiency_measure = all
 
-             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+  //           points = pts={107.5,-53.5:112,-43.8:112,-46.1:111.7,-49.3:108.3,-52.7:107.7,-53.3}
+	           polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
 
                order = normal
-             repeat  = 100000
+             //repeat  = 100000
+             repeat  = 3
 
     visual_hints = nextpt_color=yellow
     visual_hints = nextpt_vertex_size=8
