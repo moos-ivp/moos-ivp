@@ -90,6 +90,8 @@ class ALogDataBroker
   double getPrunedMinTime() const {return(m_pruned_logtmin);}
   double getPrunedMaxTime() const {return(m_pruned_logtmax);}
 
+  std::string getRegionInfo();
+  
  protected:
   std::vector<std::string> getRawVarSummary(unsigned int) const;
 
@@ -130,6 +132,8 @@ class ALogDataBroker
   std::vector<std::string>  m_bix_alog_file;
   std::vector<std::string>  m_bix_bhvname;
   std::vector<unsigned int> m_bix_alog_ix;
+
+  std::string m_region_info;
 };
 
 #endif

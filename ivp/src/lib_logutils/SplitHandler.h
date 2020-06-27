@@ -40,7 +40,7 @@ class SplitHandler
   void setVerbose(bool v)          {m_verbose=v;}
   void setDirectory(std::string s) {m_given_dir=s;}
   void setMaxFilePtrCache(unsigned int);
-  
+
  protected:
   bool handlePreCheckSplitDir();
   bool handleMakeSplitFiles();
@@ -79,8 +79,3 @@ class SplitHandler
 };
 
 #endif
-
-
-
-
-

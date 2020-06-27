@@ -232,6 +232,9 @@ void showInterfaceAndExit()
   blk("  MVIEWER_RCLICK                                                ");
   blk("  MVIEWER_UNHANDLED_MAIL                                        ");
   blk("  PLOGGER_CMD                                                   ");
+  blk("  REGION_INFO = lat_datum=43.8253, lon_datum=-70.3304,          ");
+  blk("                img_file=/Users/.../forrest19.tif, zoom=1,      ");
+  blk("                pan_x=-90, pan_y=-280                           ");
   exit(0);
 }
 

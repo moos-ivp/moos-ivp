@@ -70,6 +70,7 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
   ok = ok && parseCommandArgs(argc, argv);
   ok = ok && sanityCheck();
   ok = ok && configDataBroker();
+  ok = ok && configRegionInfo();
   ok = ok && configGraphical();
   
   total_timer.stop();
@@ -256,6 +257,41 @@ bool LogViewLauncher::configDataBroker()
 
   m_dbroker.cacheMasterIndices();
   m_dbroker.cacheBehaviorIndices();
+  
+  return(true);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: configRegionInfo()
+
+bool LogViewLauncher::configRegionInfo()
+{
+  string region_info = m_dbroker.getRegionInfo();
+  cout << "==========================================================" << endl;
+  cout << "REGION_INFO:[" << region_info << "]" << endl;
+  cout << "==========================================================" << endl;
+  if(region_info == "")
+    return(true);
+  
+  string tiff_file = tokStringParse(region_info, "img_file", ',', '=');
+  if(tiff_file != "")
+    handleBackground(tiff_file);
+  
+  string zoom_str = tokStringParse(region_info, "zoom", ',', '=');
+
+  // As a habit we prefer to start alogview more zoomed out than orig
+  if(isNumber(zoom_str)) {
+    double dval = atof(zoom_str.c_str());
+    dval = dval / 2;
+    string sval = doubleToString(dval);
+    handleZoom(zoom_str);
+  }
+
+  string panx_str = tokStringParse(region_info, "pan_x", ',', '=');
+  handlePanX(panx_str);
+  string pany_str = tokStringParse(region_info, "pan_y", ',', '=');
+  handlePanY(pany_str);
   
   return(true);
 }

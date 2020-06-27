@@ -43,6 +43,7 @@ protected:
  protected:
   bool handleConfigParam(std::string);
   bool configDataBroker();
+  bool configRegionInfo();
   bool configGraphical();
   
   bool handleParamsGUI(std::string);

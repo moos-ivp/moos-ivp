@@ -164,6 +164,9 @@ bool PMV_MOOSApp::OnStartUp()
   if(!ok1 || !ok2) 
     reportConfigWarning("Lat or Lon Origin not set in *.moos file");
 
+  m_region_info += "lat_datum=" + doubleToStringX(lat,6);
+  m_region_info += ", lon_datum=" + doubleToStringX(lon,6);
+
   // If both lat and lon origin ok - then initialize the Geodesy.
   if(m_gui && !m_gui->mviewer->initGeodesy(lat, lon))
     reportConfigWarning("Geodesy init failed");
@@ -396,6 +399,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
   if(new_node_count > old_node_count) {
     string key = GetAppName() + "startup";
     postAppCastRequest("all", "all", key, "any", (0.1*m_time_warp));
+    Notify("REGION_INFO", m_region_info);
   }
   // If we've just discovered a new app on the current node, send out a 
   // request to ALL apps on the current node.
@@ -715,7 +719,20 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   m_gui->mviewer->redraw();
   m_gui->updateRadios();
   m_gui->setMenuItemColors();
+
+  // Set the Region Info
+  string tiff_a = m_gui->mviewer->getTiffFileA();
+  string tiff_b = m_gui->mviewer->getTiffFileB();
+  if(tiff_a != "")
+    m_region_info += ", img_file=" + tiff_a;
+  if(tiff_b != "")
+    m_region_info += ", img_file=" + tiff_b;
+  m_region_info += ", zoom=" + doubleToStringX(m_gui->mviewer->getZoom(),2);
+  m_region_info += ", pan_x=" + doubleToStringX(m_gui->mviewer->getPanX(),2);
+  m_region_info += ", pan_y=" + doubleToStringX(m_gui->mviewer->getPanY(),2);
   
+  Notify("REGION_INFO", m_region_info);
+
   registerVariables();
 }
 

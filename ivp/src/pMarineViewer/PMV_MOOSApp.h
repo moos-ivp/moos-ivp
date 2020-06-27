@@ -94,6 +94,8 @@ class PMV_MOOSApp : public AppCastingMOOSApp
   CommandSummary m_cmd_summary;
 
   unsigned int m_pmv_iteration;
+
+  std::string  m_region_info;
 };
 
 #endif 

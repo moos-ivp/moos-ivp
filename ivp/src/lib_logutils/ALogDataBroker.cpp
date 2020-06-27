@@ -493,6 +493,47 @@ void ALogDataBroker::cacheBehaviorIndices()
 
 
 //----------------------------------------------------------------
+// Procedure: getRegionInfo()
+
+string ALogDataBroker::getRegionInfo()
+{
+  if(m_region_info != "")
+    return(m_region_info);
+  
+  for(unsigned int aix=0; aix< m_alog_files.size(); aix++) {
+
+    // Check if the klog file can be found and opened
+    string klog = m_base_dirs[aix] + "/REGION_INFO.klog";
+    FILE *f = fopen(klog.c_str(), "r");
+    if(f) {
+      while(m_region_info == "") {
+
+	string line_raw = getNextRawLine(f);
+	// Check if the line is a comment
+	if((line_raw.length() > 0) && (line_raw.at(0) == '%'))
+	  continue;
+	// Check for end of file
+	if(line_raw == "eof") 
+	  break;
+	
+	// Otherwise handle a normal line
+	string varname = getVarName(line_raw);
+	string varval  = getDataEntry(line_raw);
+	if(varname == "REGION_INFO")
+	  m_region_info = varval;
+      }
+      fclose(f);
+
+      if(m_region_info != "")
+	return(m_region_info);
+      
+    }
+  }
+  return("");
+}
+
+
+//----------------------------------------------------------------
 // Procedure: getLogPlot
 
 LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
@@ -512,7 +553,6 @@ LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
 
   unsigned int aix = m_mix_alog_ix[mix];
   
-    
   // Part 2: Confirm that the klog file can be found and opened
   string klog = m_base_dirs[aix] + "/" + varname + ".klog";
   FILE *f = fopen(klog.c_str(), "r");
