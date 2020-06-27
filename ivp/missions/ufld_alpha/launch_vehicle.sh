@@ -16,12 +16,13 @@ SHORE=""
 START_POS="0,0"  
 SHORE="localhost:9300"
 PSHARE_PORT=""
+REGION="forest_lake"
 
 #--------------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #--------------------------------------------------------------
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "launch_vehicle.sh [SWITCHES] [time_warp]         "
 	echo "  --just_make, -j                                " 
 	echo "  --vname=VNAME                                  " 
@@ -31,23 +32,26 @@ for ARGI; do
 	echo "  --startpos=X,Y    (Default is 0,0)             " 
 	echo "  --shore=IP:PORT   (Default is localhost:9300)  " 
 	echo "  --pshare=PORT     (Default is 9301)            " 
+	echo "  --pavlab, -p      Set region to be MIT pavlab  " 
         echo "  --auto, -a        Auto-launched. uMAC not used."
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
         AUTO="yes"
-    elif [ "${ARGI:0:8}" = "--vname=" ] ; then
+    elif [ "${ARGI}" = "--pavlab" -o "${ARGI}" = "-p" ]; then
+        REGION="pavlab"
+    elif [ "${ARGI:0:8}" = "--vname=" ]; then
         VNAME="${ARGI#--vname=*}"
-    elif [ "${ARGI:0:8}" = "--index=" ] ; then
+    elif [ "${ARGI:0:8}" = "--index=" ]; then
         INDEX="${ARGI#--index=*}"
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"
-    elif [ "${ARGI:0:11}" = "--startpos=" ] ; then
+    elif [ "${ARGI:0:11}" = "--startpos=" ]; then
         START_POS="${ARGI#--startpos=*}"
-    elif [ "${ARGI:0:8}" = "--shore=" ] ; then
+    elif [ "${ARGI:0:8}" = "--shore=" ]; then
         SHORE="${ARGI#--shore=*}"
     elif [ "${ARGI:0:9}" = "--pshare=" ]; then
         PSHARE_PORT="${ARGI#--pshare=*}"
@@ -77,12 +81,13 @@ if [ "${AUTO}" = "" ]; then
 fi
 
 nsplug meta_vehicle.moos targ_$VNAME.moos $NSFLAGS WARP=$TIME_WARP \
-       VNAME=$VNAME        START_POS=$START_POS                    \
-       VPORT="900"$INDEX   PSHARE_PORT=$PSHARE_PORT                \
-       IP_ADDR=$IP_ADDR    SHORE=$SHORE  
+       VNAME=$VNAME            START_POS=$START_POS                \
+       VPORT="900"$INDEX       PSHARE_PORT=$PSHARE_PORT            \
+       IP_ADDR=$IP_ADDR        SHORE=$SHORE                        \
+       REGION=$REGION
 
 nsplug meta_vehicle.bhv targ_$VNAME.bhv $NSFLAGS VNAME=$VNAME      \
-       START_POS=$START_POS
+       START_POS=$START_POS    REGION=$REGION
 
 if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0

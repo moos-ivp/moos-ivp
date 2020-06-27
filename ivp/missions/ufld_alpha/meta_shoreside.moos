@@ -19,7 +19,6 @@ Processconfig = ANTLER
   Run = pShare          @ NewConsole = false
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
-  Run = uFldNodeComms   @ NewConsole = false
 }
 
 #include plug_pHostInfo.moos
@@ -35,22 +34,6 @@ ProcessConfig = pShare
   input = route = $(IP_ADDR):$(PSHARE_PORT)
 }
 
-
-//--------------------------------------------------
-// uFldNodeComms Configuration Block
-
-ProcessConfig = uFldNodeComms
-{
-  AppTick   = 2
-  CommsTick = 2
-
-           COMMS_RANGE = 75
-        CRITICAL_RANGE = 25
-      MIN_MSG_INTERVAL = 20
-        MAX_MSG_LENGTH = 100
-  VIEW_NODE_RPT_PULSES = true
-}
-
 //--------------------------------------------------
 // uFldShoreBroker Configuration Block
 
@@ -59,12 +42,12 @@ ProcessConfig = uFldShoreBroker
   AppTick   = 1
   CommsTick = 1
 
-  QBRIDGE = DEPLOY, NODE_REPORT, NODE_MESSAGE
-  QBRIDGE = STATION_KEEP, APPCAST_REQ
-  QBRIDGE = MOOS_MANUAL_OVERRIDE
+  qbridge = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  qbridge = STATION_KEEP, APPCAST_REQ
+  qbridge = MOOS_MANUAL_OVERRIDE
  
-  BRIDGE  = src=RETURN_ALL, alias=RETURN
-  BRIDGE  = src=RETURN_$V,  alias=RETURN
+  bridge  = src=RETURN_ALL, alias=RETURN
+  bridge  = src=RETURN_$V,  alias=RETURN
 }
 
 //--------------------------------------------------
@@ -91,7 +74,11 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
+#ifdef REGION pavlab
+  tiff_file            = MIT_SP.tif
+#else
+  tiff_file            = forrest19.tif
+#endif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 1
@@ -110,11 +97,10 @@ ProcessConfig = pMarineViewer
   stale_report_thresh = 2
   stale_remove_thresh = 20
 
-  SCOPE = PHI_HOST_INFO
+  scope = PHI_HOST_INFO
 
-  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
-  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  BUTTON_ONE   = RETURN_ALL=false
-  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  button_one = DEPLOY  # DEPLOY_ALL=true 
+  button_one = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one = RETURN_ALL=false
+  button_two = RETURN  # RETURN_ALL=true
 }
-

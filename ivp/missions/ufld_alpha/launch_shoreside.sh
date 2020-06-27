@@ -11,17 +11,20 @@ JUST_MAKE="no"
 AUTO=""
 IP_ADDR="localhost"
 PSHARE_PORT="9300"
+REGION="forest_lake"
 
 #--------------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #--------------------------------------------------------------
 for ARGI; do
+    echo "Arg:["$ARGI"]"
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	echo "launch_shoreside.sh [SWITCHES] [time_warp]        "
 	echo "  --just_make, -j                                 " 
 	echo "  --help, -h                                      " 
 	echo "  --ip=<addr>       (default is localhost)        " 
 	echo "  --pshare=<port>   (default is 9300)             " 
+	echo "  --pavlab, -p      Set region to be MIT pavlab   " 
         echo "  --auto, -a        Auto-launched. uMAC not used. "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
@@ -30,6 +33,8 @@ for ARGI; do
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
         AUTO="yes"
+    elif [ "${ARGI}" = "--pavlab" -o "${ARGI}" = "-p" ]; then
+        REGION="pavlab"
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"
     elif [ "${ARGI:0:9}" = "--pshare=" ]; then
@@ -50,7 +55,7 @@ if [ "${AUTO}" = "" ]; then
     NSFLAGS="-i -f"
 fi
 nsplug meta_shoreside.moos targ_shoreside.moos $NSFLAGS WARP=$TIME_WARP  \
-       IP_ADDR=$IP_ADDR  PSHARE_PORT=$PSHARE_PORT
+       IP_ADDR=$IP_ADDR  PSHARE_PORT=$PSHARE_PORT  REGION=$REGION
 
 
 if [ ${JUST_MAKE} = "yes" ] ; then
