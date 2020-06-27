@@ -29,9 +29,11 @@ Behavior = BHV_Waypoint
           points = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
 #endif
 	
-    visual_hints = nextpt_color=red, nextpt_lcolor=green
-    visual_hints = vertex_color=blue, edge_color=pink
-    visual_hints = vertex_size=4, edge_size=1
+    visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+    visual_hints = nextpt_lcolor=gray70
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
 }
 
 //----------------------------------------------
