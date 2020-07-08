@@ -195,6 +195,12 @@ bool BasicContactMgr::OnStartUp()
     }
 
 
+    else if(param == "ignore_group") {
+      bool handled = handleConfigIgnoreGroup(value);
+      if(!handled)
+	reportConfigWarning("Unhandled ignore_group: " + value);
+    }
+
     else if(param == "decay") {
       string left  = biteStringX(value, ',');
       string right = value;
@@ -413,6 +419,10 @@ void BasicContactMgr::handleMailNodeReport(string report)
 {
   NodeRecord new_node_record = string2NodeRecord(report, true);
 
+  string group = tolower(new_node_record.getGroup());
+  if(vectorContains(m_ignore_groups, group))
+    return;
+
   // Part 1: Decide if we want to override X/Y with Lat/Lon based on 
   // user configuration and state of the node record.
   bool override_xy_with_latlon = true;
@@ -626,6 +636,25 @@ void BasicContactMgr::handleMailAlertRequest(string value)
   bool ok = handleConfigAlert(value);
   if(!ok)
     reportRunWarning("Unhandled Alert Request: " + value);   
+}
+
+//---------------------------------------------------------
+// Procedure: handleConfigIgnoreGroup
+//      Note: The ignore_group can also be set in the individual
+//            alert registration, but this is applied at the
+//            global level, right with a node report is received 
+
+
+bool BasicContactMgr::handleConfigIgnoreGroup(string grp_str)
+{
+  // All group names are treated case insensitive
+  grp_str = tolower(grp_str);
+  
+  if(vectorContains(m_ignore_groups, grp_str))
+    return(false);
+
+  m_ignore_groups.push_back(grp_str);
+  return(true);
 }
 
 //---------------------------------------------------------
