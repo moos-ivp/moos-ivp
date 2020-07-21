@@ -78,7 +78,7 @@
       '("uFldBeaconRangeSensor" "reach_distance" "reach_distance" "ping_wait" "ping_wait" "ping_payments" "report_vars" "ground_truth" "verbose" "default_beacon_shape" "default" "default_beacon_width" "default_beacon_report_range" "default_beacon_freq" "beacon" "beacon" "beacon" "rn_algorithm" "default_beacon_color" "default_beacon_push_dist" "default_beacon_pull_dist" "node_push_dist" "node_pull_dist")
       '("uFldPathCheck" "history_length")
       '("pShare" "input" "output" "" "" "" "")
-      '("pBasicContactMgr" "alert" "default_alert_range" "default_cpa_range" "default_alert_range_color" "default_cpa_range_color" "contact_max_age" "display_radii" "alert_verbose" "decay" "contacts_recap_interval" "contact_local_coords")
+      '("pBasicContactMgr" "alert" "alert_range_color" "cpa_range_color" "contact_max_age" "display_radii" "display_radii_id" "alert_verbose" "decay" "contacts_recap_interval" "contact_local_coords" "ignore_group" "ignore_type" "match_type" "match_group" "match_region" "ignore_region" "strict_ignore" "range_report_timeout" "post_closest_range" "max_retired_history" "reject_range" "contact_max_age" "eval_range_far" "eval_range_near")
       '("uLoadWatch" "thresh" "breach_trigger")
       '("uSimLidar" "poly" "polygon" "max_range" "mount_angle" "point_cloud_color" "range" "beams" "field_of_view" "scan_resolution")
       '("iSay" "default_voice" "default_rate" "interval_policy" "min_utter_interval" "audio_dir" "os_mode")
@@ -88,7 +88,7 @@
       '("pEvalLoiter" "eval_window" "nav_stale_thresh" "mode_thresh" "max_nav_age" "range_max_ineff" "notable_cpa_thresh" "notable_eff_thresh" "notable_cpa_var" "notable_eff_var")
       
       '("uFldSwarmAssign" "task")
-      '("uFldCollisionDetect" "collision_range" "near_miss_range" "pulse_render" "pulse_range" "pulse_duration" "condition" "collision_flag" "near_miss_flag" "encounter_flag" "encounter_range")
+      '("uFldCollisionDetect" "collision_range" "near_miss_range" "pulse_render" "pulse_range" "pulse_duration" "condition" "collision_flag" "near_miss_flag" "encounter_flag" "encounter_range" "report_all_encounters")
 
       '("pPolePath" "start_line" "end_line" "poles_number" "steps_number" "display_poles" "display_steps" "start_pole" "output_var" "random_end")
       '("pRangeSensorHangler" "local_range" "range_report" "target_name" "verbose" "disp_range_circle")

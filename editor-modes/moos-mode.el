@@ -172,7 +172,7 @@
 		 ;;and valid for all behaviors. If these end up getting highlighted
 		 ;;in other places, make this into an anchored matcher using
 		 ;;Behavior =
-		 '("\\<\\(?:initialize\\|set\\|name\\|pwt\\|duration\\|duration_idle_decay\\|duration_status\\|duration_reset\\|condition\\|updates\\|perpetual\\|endflag\\|runflag\\|idleflag\\|activeflag\\|inactiveflag\\|templating\\)\\>"
+		 '("\\<\\(?:initialize\\|set\\|name\\|pwt\\|duration\\|duration_idle_decay\\|duration_status\\|duration_reset\\|condition\\|updates\\|perpetual\\|configflag\\|spawnflag\\|endflag\\|runflag\\|idleflag\\|activeflag\\|inactiveflag\\|templating\\)\\>"
 			 . font-lock-keyword-face)
 
 		 '("\\<true\\|false\\>"
