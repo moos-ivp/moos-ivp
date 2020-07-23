@@ -429,3 +429,43 @@ double CPAMonitor::relBng(string vname1, string vname2)
 }
 
 
+//---------------------------------------------------------
+// Procedure: getContactDensity()
+
+unsigned int CPAMonitor::getContactDensity(string vname, double range) const
+{
+  // Sanity checks
+  if((vname == "") || (range <= 0))
+    return(0);
+
+  if(m_map_vrecords.count(vname) == 0)
+    return(0);
+  if(m_map_vrecords.at(vname).size() == 0)
+    return(0);
+  
+  // Part 1: Get ownship position
+  NodeRecord os_record = m_map_vrecords.at(vname).front();
+  double osx = os_record.getX();
+  double osy = os_record.getY();
+  
+  // Part 2: Examine contact ranges, maybe increment counter
+  unsigned int counter = 0;
+
+  map<string, list<NodeRecord> >::const_iterator p;
+  for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
+    string contact = p->first;
+    NodeRecord record = p->second.back();
+
+    if(vname != contact) {
+      double cnx = record.getX();
+      double cny = record.getY();
+      double cn_range = hypot(osx-cnx, osy-cny);
+      if(cn_range <= range)
+	counter++;
+    }
+  }
+      
+  return(counter);
+}
+
+

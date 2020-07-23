@@ -370,7 +370,53 @@ bool CollisionDetector::handleConfigFlag(string flag_type, string str)
 
 
 //------------------------------------------------------------
-// Procedure: postFlags
+// Procedure: expandMacroCD()
+//   Purpose: Examine the string and expand macros of the type
+//            $[vname@range]. The vname could be an known vehicle
+//            name, or just V1 or V2 involved in an encounter.
+//  Examples: "foo=$[nelson@40], bar=$[V2@50]"
+//            "$[abe,20]
+//      Note: The numerical component specifies a range. The macro
+//            will expand to an unsigned int string, indicating
+//            the number of contacts presently within that range,
+//            the Contact Density (CD) of the moment.
+
+string CollisionDetector::expandMacroCD(string orig, string vname1,
+					string vname2)
+{
+  string result = orig;
+
+  vector<string> svector = parseString(orig, '$');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string str = svector[i];
+    if(strBegins(str, "[") && strContains(str, "]")) {
+      biteString(str, '[');
+      rbiteString(str, ']');
+      string macro = "$[" + str + "]";
+      vector<string> jvector = parseString(str, '@');
+      if(jvector.size() == 2) {
+	string vname = jvector[0];
+	string range = jvector[1];
+	if(isNumber(range)) {
+	  double drng = atof(range.c_str());
+	  if(drng >= 0) {
+	    if((vname == "V1") || (vname == "v1"))
+	      vname = vname1;
+	    else if((vname == "V2") || (vname == "v2"))
+	      vname = vname2;
+	    unsigned int cd = m_cpa_monitor.getContactDensity(vname, drng);
+	    string cd_str = uintToString(cd);
+	    result = findReplace(result, macro, cd_str);
+	  }
+	}
+      }
+    }
+  }
+  return(result);
+}
+
+//------------------------------------------------------------
+// Procedure: postFlags()
 
 void CollisionDetector::postFlags(const vector<VarDataPair>& flags,
 				  const CPAEvent& event)
@@ -399,8 +445,13 @@ void CollisionDetector::postFlags(const vector<VarDataPair>& flags,
       double cpa_dbl = event.getCPA();
       string cpa_str = doubleToStringX(cpa_dbl, 4);
 
+      sval = expandMacroCD(sval, vname1, vname2);
+      if(isNumber(sval)) {
+	double dval = atof(sval.c_str());
+	Notify(moosvar, dval);
+      }
       // If the string is just $CPA or $IDX interpret as a double posting
-      if(sval == "$CPA")
+      else if(sval == "$CPA")
 	Notify(moosvar, cpa_dbl);
       else if(sval == "$IDX") 
 	Notify(moosvar, m_total_encounters);
@@ -416,6 +467,8 @@ void CollisionDetector::postFlags(const vector<VarDataPair>& flags,
     }
   }
 }
+
+
 
 
 //-----------------------------------------------------------

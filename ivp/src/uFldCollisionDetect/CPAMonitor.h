@@ -55,6 +55,8 @@ class CPAMonitor
   CPAEvent     getEvent(unsigned int) const;
 
   double getClosestRange() const {return(m_closest_range);}
+
+  unsigned int getContactDensity(std::string vname, double rng) const;
   
  protected: // Local utility functions
   std::string pairTag(std::string, std::string);

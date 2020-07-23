@@ -53,6 +53,8 @@ class CollisionDetector : public AppCastingMOOSApp
   void handleCPAEvent(CPAEvent);
   bool handleConfigFlag(std::string, std::string);
   void postFlags(const std::vector<VarDataPair>&, const CPAEvent&);
+
+  std::string expandMacroCD(std::string, std::string v1, std::string v2);
   
  protected: // Functions in support of logic conditions
   bool updateInfoBuffer(CMOOSMsg&);
