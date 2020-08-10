@@ -1,0 +1,24 @@
+//--------------------------------------------------------
+// pBasicContactMgrV20 Configuration Block (Created from Plugin)
+
+ProcessConfig = pBasicContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  alert_verbose = true
+
+  contact_max_age = 35
+  display_radii   = true
+	display_radii_id = avd
+
+  //alert = id=say, onflag=SAY_MOOS=hello,
+  //alert = id=say, offflag=SAY_MOOS=bye,
+  //alert = id=say, alert_range=80, cpa_range=100
+
+  display_radii = true
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+}
