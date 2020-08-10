@@ -265,14 +265,10 @@ bool USM_MOOSApp::OnStartUp()
       handled = m_model.setParam("max_depth_rate", dval);
     else if((param == "MAX_DEPTH_RATE_SPEED") && isNumber(value))
       handled = m_model.setParam("max_depth_rate_speed", dval);
-
     else if((param == "MAX_RUDDER_DEGS_PER_SEC") && isNumber(value))
       handled = m_model.setMaxRudderDegreesPerSec(dval);
-
-    else if((param == "PREFIX") && !strContainsWhite(value)) {      
-      m_sim_prefix = value;
-      handled = true;
-    }
+    else if(param == "PREFIX")
+      handled = setNonWhiteVarOnString(m_sim_prefix, value);
     else if(param == "DRIFT_VECTOR")
       handled = m_model.setDriftVector(value);
     else if((param == "SIM_PAUSE") && isBoolean(value)) {
@@ -592,7 +588,6 @@ bool USM_MOOSApp::handleThrustMapping(string mapping)
 
 //--------------------------------------------------------------------
 // Procedure: handleConfigDeprecations
-//
 
 string USM_MOOSApp::handleConfigDeprecations(string param)
 {
