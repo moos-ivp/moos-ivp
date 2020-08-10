@@ -27,6 +27,7 @@ Processconfig = ANTLER
   Run = uFldNodeBroker   @ NewConsole = false
   Run = uLoadWatch       @ NewConsole = false
   Run = uMemWatch        @ NewConsole = false
+  Run = isay            @ NewConsole = false
 }
 
 #include plug_uMemWatch.moos
@@ -41,4 +42,6 @@ Processconfig = ANTLER
 #include plug_uProcessWatch.moos
 #include plug_uLoadWatch.moos
 #include plug_pBasicContactMgr.moos
+
+#include plug_iSay.moos
 

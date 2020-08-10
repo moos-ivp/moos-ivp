@@ -193,14 +193,24 @@ void BHV_AvoidCollision::onHelmStart()
   string s_cpa_range   = doubleToStringX(m_completed_dist,1);
   string s_alert_templ = "name=avd_$[VNAME] # contact=$[VNAME]";
 
-  string alert_request = "id=avd, var=" + m_update_var;
-  alert_request += ", val=" + s_alert_templ;
+  //string alert_request = "id=avd, var=" + m_update_var;
+
+  string alert_request = "id=avd";
+  alert_request += ", onflag=" + m_update_var + "=name=avd_$[VNAME] # contact=$[VNAME]";
+
+  //alert_request += ", val=" + s_alert_templ;
   alert_request += ", alert_range=" + s_alert_range;
   alert_request += ", cpa_range=" + s_cpa_range;
 
+#if 0
   string match_ignore_summary = getMatchIgnoreSummary();
   if(match_ignore_summary != "")
     alert_request += "," + match_ignore_summary;
+#endif
+  
+  string filter_summary = getFilterSummary();
+  if(filter_summary != "")
+    alert_request += ", " + filter_summary;
   
   if(m_contact_type_required != "")
     alert_request += ", contact_type=" + m_contact_type_required;

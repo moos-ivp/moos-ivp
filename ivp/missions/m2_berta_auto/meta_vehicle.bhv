@@ -48,6 +48,7 @@ Behavior = BHV_Loiter
   visual_hints = edge_size=1, vertex_size=2
 }
 
+#ifdef COLREGS yes
 //----------------------------------------------
 Behavior = BHV_AvdColregsV19
 {
@@ -56,7 +57,6 @@ Behavior = BHV_AvdColregsV19
   condition  = AVOID = true 
   condition  = MODE==ACTIVE
   updates    = CONTACT_INFO
-  endflag    = CONTACT_RESOLVED = $[CONTACT]
   templating = spawn
 
              contact = to-be-set
@@ -74,9 +74,11 @@ Behavior = BHV_AvdColregsV19
              pwt_grade = linear
    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 }
-
+#endif
+	
+#ifdef COLREGS no
 //----------------------------------------------
-//Behavior = BHV_AvoidCollision
+Behavior = BHV_AvoidCollision
 {
   name         = ac_
   pwt          = 500
@@ -88,7 +90,6 @@ Behavior = BHV_AvdColregsV19
   runflag      = AVOIDING = running
   endflag      = AVOIDING = end
 
-endflag      = CONTACT_RESOLVED = $[CONTACT]
   templating   = spawn
 
              contact = to-be-set
@@ -108,7 +109,8 @@ endflag      = CONTACT_RESOLVED = $[CONTACT]
              pwt_grade = linear
    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 }
-
+#endif
+	
 //----------------------------------------------
 Behavior = BHV_Waypoint
 {

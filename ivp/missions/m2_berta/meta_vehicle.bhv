@@ -49,7 +49,7 @@ Behavior = BHV_Loiter
 }
 
 //----------------------------------------------
-Behavior = BHV_AvdColregsV19
+//Behavior = BHV_AvdColregsV19
 {
   name       = avdcol_
   pwt        = 150
@@ -79,7 +79,7 @@ Behavior = BHV_AvdColregsV19
 }
 
 //----------------------------------------------
-//Behavior = BHV_AvoidCollision
+Behavior = BHV_AvoidCollision
 {
   name         = ac_
   pwt          = 500
@@ -91,15 +91,15 @@ Behavior = BHV_AvdColregsV19
   runflag      = AVOIDING = running
   endflag      = AVOIDING = end
 
-endflag      = CONTACT_RESOLVED = $[CONTACT]
+  //ignore_group = lemons
+  //match_type   = kayak
+
   templating   = spawn
 
              contact = to-be-set
     on_no_contact_ok = true
          extrapolate = true
                decay = 30,60
-
-          //match_type = mokai,uuv,ship
 
         use_refinery = true
 

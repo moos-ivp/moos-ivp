@@ -248,7 +248,7 @@ bool VarDataPair::set_ptype(string sval)
 //         foo = bar  var is of type string since bar is NOT a number.
 
 
-string VarDataPair::getPrintable()
+string VarDataPair::getPrintable() const
 {
   string rstring = m_var;
   rstring += "=";

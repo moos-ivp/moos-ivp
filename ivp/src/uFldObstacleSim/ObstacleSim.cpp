@@ -619,7 +619,7 @@ void ObstacleSim::postPoints()
 	    XYPoint p(x,y);
 	    p.set_label(vname + ":" + key + ":" + intToString(label_index));
 	    p.set_vertex_color(vcolor);
-	    p.set_vertex_size(6);
+	    p.set_vertex_size(2);
 	    p.set_label_color("invisible");
 	    p.set_duration(10);
 	    string spec = p.get_spec();

@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BasicContactMgrMain.cpp                              */
-/*    DATE: Feb 27th 2010                                        */
+/*    FILE: RangeMark.cpp                                        */
+/*    DATE: July 19 2020                                         */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,57 +21,46 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include <iostream>
-#include "ColorParse.h"
-#include "MBUtils.h"
-#include "BasicContactMgr.h"
-#include "BasicContactMgr_Info.h"
+#include "RangeMark.h"
 
 using namespace std;
 
-int main(int argc, char *argv[])
+
+//--------------------------------------------------------
+// Constructor
+
+RangeMark::RangeMark(string contact, double range)
 {
-  string mission_file;
-  string run_command = argv[0];
+  m_contact = contact;
+  m_range   = range;
+}
 
-  for(int i=1; i<argc; i++) {
-    string argi = argv[i];
-    if((argi=="-v") || (argi=="--version") || (argi=="-version"))
-      showReleaseInfoAndExit();
-    else if((argi=="-e") || (argi=="--example") || (argi=="-example"))
-      showExampleConfigAndExit();
-    else if((argi == "-h") || (argi == "--help") || (argi=="-help"))
-      showHelpAndExit();
-    else if((argi == "-i") || (argi == "--interface"))
-      showInterfaceAndExit();
-    else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
-      mission_file = argv[i];
-    else if(strBegins(argi, "--alias="))
-      run_command = argi.substr(8);
-    else if(i==2)
-      run_command = argi;
-  }
-  
-  if(mission_file == "")
-    showHelpAndExit();
+//--------------------------------------------------------
+// Procedure: setRangeMark()
 
-  cout << termColor("green");
-  cout << "pBasicContactMgr launching as " << run_command << endl;
-  cout << termColor() << endl;
-
-  BasicContactMgr BasicContactMgr;
-	
-  BasicContactMgr.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
-
-  return(0);
+void RangeMark::setRangeMark(string contact, double range)
+{
+  m_contact = contact;
+  m_range   = range;
 }
 
 
+//--------------------------------------------------------
+// Procedure: overloaded less than operator
 
+bool operator< (const RangeMark& one, const RangeMark& two)
+{
+  if(one.getRange() < two.getRange())
+    return(true);
+  else
+    return(false);
+}
 
+//--------------------------------------------------------
+// Procedure: overload equals operator
 
-
-
-
-
+bool operator== (const RangeMark& one, const RangeMark& two)
+{
+  return(one.getRange() == two.getRange());
+}
 

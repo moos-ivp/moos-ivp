@@ -564,6 +564,8 @@ void VPlug_GeoShapes::addCircle(const XYCircle& new_circle,
   updateBounds(new_circle.get_min_x(), new_circle.get_max_x(), 
 	       new_circle.get_min_y(), new_circle.get_max_y());
 
+  if(drawpts > 100)
+    drawpts = 100;  
 
 #if 1
   if(new_label == "")
@@ -811,11 +813,15 @@ bool VPlug_GeoShapes::addPoint(const string& point_str,
 // Procedure: addCircle
 
 bool VPlug_GeoShapes::addCircle(const string& circle_str,
-				unsigned int drawpts)
+				unsigned int drawpts, double timestamp)
 {
   XYCircle new_circle = string2Circle(circle_str);
   if(!new_circle.valid())
     return(false);
+
+  if(new_circle.get_time() == 0)
+    new_circle.set_time(timestamp);
+
   addCircle(new_circle, drawpts);
   return(true);
 }

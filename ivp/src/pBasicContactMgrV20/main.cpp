@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: main.cpp                                             */
-/*    DATE: December 29th, 1963                                  */
+/*    FILE: BasicContactMgrMain.cpp                              */
+/*    DATE: Feb 27th 2010                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,11 +21,11 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include <string>
-#include "MBUtils.h"
+#include <iostream>
 #include "ColorParse.h"
-#include "CollisionDetector.h"
-#include "CollisionDetector_Info.h"
+#include "MBUtils.h"
+#include "BasicContactMgrV20.h"
+#include "BasicContactMgrV20_Info.h"
 
 using namespace std;
 
@@ -56,12 +56,22 @@ int main(int argc, char *argv[])
     showHelpAndExit();
 
   cout << termColor("green");
-  cout << "uCollisionDetect launching as " << run_command << endl;
+  cout << "pBasicContactMgrV20 launching as " << run_command << endl;
   cout << termColor() << endl;
 
-  CollisionDetector CollisionDetector;
+  BasicContactMgrV20 BasicContactMgr;
+	
+  BasicContactMgr.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
 
-  CollisionDetector.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
-  
   return(0);
 }
+
+
+
+
+
+
+
+
+
+

@@ -90,7 +90,7 @@ public:
   bool addPolygon(const std::string&);
   bool addSegList(const std::string&);
   bool addSeglr(const std::string&);
-  bool addCircle(const std::string&, unsigned int drawpts=18);
+  bool addCircle(const std::string&, unsigned int drawpts=18, double t=0);
   bool addWedge(const std::string&, unsigned int drawpts=18);
   bool addPoint(const std::string&, double timestamp=0);
   bool addArc(const std::string&);

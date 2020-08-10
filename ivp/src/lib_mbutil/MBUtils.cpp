@@ -1828,6 +1828,31 @@ double snapDownToStep(double value, double step)
 }
   
 //-------------------------------------------------------------
+// Procedure: setPortTurnOnString
+//      Note: This function is designed to set the given boolean value
+//            based on its existing value and the contents of the str.
+//      Note: The case_tolow argument is true by default. By giving 
+//            the caller this option, some efficiency can be gained if
+//            the caller knows that the str argument has already been
+//            converted to lower case.
+
+bool setPortTurnOnString(bool& boolval, string str, bool case_tolow)
+{
+  if(case_tolow)
+    str = tolower(str);
+
+  if(str == "toggle")
+    boolval = !boolval;
+  else if(str == "port")
+    boolval = true;
+  else if((str == "starboard") || (str == "star"))
+    boolval = false;
+  else
+    return(false);
+  return(true);
+}
+
+//-------------------------------------------------------------
 // Procedure: setBooleanOnString
 //      Note: This function is designed to set the given boolean value
 //            based on its existing value and the contents of the str.

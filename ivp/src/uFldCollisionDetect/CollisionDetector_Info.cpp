@@ -105,16 +105,18 @@ void showExampleConfigAndExit()
   blk("  collision_flag = COLLISION = $CPA                             ");
   blk("  near_miss_flag = NEAR_MISS = vname1=$V1,vname2=$V2,cpa=$CPA   ");
   blk("                                                                ");
-  blk("  encounter_range = 10        // (the default) in meters        ");
-  blk("  near_miss_range = 6         // (the default) in meters        ");
-  blk("  collision_range = 3         // (the default) in meters        ");
+  blk("  encounter_range = 10         // (the default) in meters       ");
+  blk("  near_miss_range = 6          // (the default) in meters       ");
+  blk("  collision_range = 3          // (the default) in meters       ");
   blk("                                                                ");
   blk("  ignore_group = alpha                                          ");
   blk("  reject_group = bravo                                          ");
   blk("                                                                ");
-  blk("  pulse_render   = true       // (the default)                  ");
-  blk("  pulse_range    = 20         // (the default) in meters        ");  
-  blk("  pulse_duration = 10         // (the default) in seconds       ");  
+  blk("  pulse_render   = true         // default true                 ");
+  blk("  pulse_range    = 20           // default is 20 meters         ");  
+  blk("  pulse_duration = 10           // default is 10 seconds        ");  
+  blk("                                                                ");
+  blk("  report_all_encounters = true  // default is false             ");
   blk("}                                                               ");  
 
 exit(0);

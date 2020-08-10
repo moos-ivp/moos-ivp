@@ -1,9 +1,10 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BasicContactMgr.h                                    */
+/*    FILE: BasicContactMgrV20.h                                 */
 /*    DATE: Feb 24th 2010                                        */
 /*    DATE: Sep 26th 2017 Added Alert Region Support / mikerb    */
+/*    DATE: Jul 8th  2020 Major Mods                             */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -32,12 +33,13 @@
 #include "XYPolygon.h"
 #include "PlatformAlertRecord.h"
 #include "CMAlert.h"
+#include "ExFilterSet.h"
 
-class BasicContactMgr : public AppCastingMOOSApp
+class BasicContactMgrV20 : public AppCastingMOOSApp
 {
  public:
-  BasicContactMgr();
-  virtual ~BasicContactMgr() {}
+  BasicContactMgrV20();
+  virtual ~BasicContactMgrV20() {}
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();
@@ -49,19 +51,25 @@ class BasicContactMgr : public AppCastingMOOSApp
 
  protected:
   void registerVariables();
-  bool handleConfigAlert(std::string);
-  bool handleConfigIgnoreGroup(std::string);
+
+  bool handleConfigAlert(std::string, std::string);
+  bool handleConfigDecay(std::string);
+
+  bool handleConfigMaxRetHist(std::string);
+  bool handleConfigCoords(std::string);
+  bool handleConfigRecapInterval(std::string);
+  bool handleConfigRejectRange(std::string);
+
+  std::string handleConfigDeprecations(std::string);
 
   void handleMailNodeReport(std::string);
   void handleMailReportRequest(std::string);
+  void handleMailAlertRequest(std::string, std::string);
   void handleMailDisplayRadii(std::string);
-  void handleMailAlertRequest(std::string);
-  void handleMailResolved(std::string);
 
   void updateRanges();
   void postSummaries();
   void checkForAlerts();
-  void checkForCloseInReports();
 
   void postRadii(bool=true);
   void postOnAlerts(NodeRecord, std::string id);
@@ -73,49 +81,37 @@ class BasicContactMgr : public AppCastingMOOSApp
 
   void checkForNewRetiredContacts();
   void postRangeReports();
+  
+  std::list<std::string> getRangeOrderedContacts() const;
+  
 
+  
  protected: // Alert Getters
   double      getAlertRange(std::string id) const;
   double      getAlertRangeCPA(std::string id) const;
 
-  bool        hasAlertRegion(std::string id) const;
-  XYPolygon   getAlertRegion(std::string id) const;
-
-  std::string getAlertRangeColor(std::string id) const;
-  std::string getAlertRangeCPAColor(std::string id) const;
-
-  bool        hasAlertOnFlag(std::string id) const;
-  bool        hasAlertOffFlag(std::string id) const;
-
   std::vector<VarDataPair> getAlertOnFlags(std::string id) const;
   std::vector<VarDataPair> getAlertOffFlags(std::string id) const;
-
-  std::vector<std::string> getAlertMatchTypes(std::string id) const;
-  std::vector<std::string> getAlertIgnoreTypes(std::string id) const;
-
-  std::vector<std::string> getAlertMatchGroups(std::string id) const;
-  std::vector<std::string> getAlertIgnoreGroups(std::string id) const;
 
  private: // main record of alerts, each keyed on the alert_id
   std::map<std::string, CMAlert> m_map_alerts;
   
  protected: // Configuration parameters
 
-  // Default values for various alert parameters
-  double       m_default_alert_rng;
-  double       m_default_alert_rng_cpa;
-  std::string  m_default_alert_rng_color;
-  std::string  m_default_alert_rng_cpa_color;
-
+  // Global Exclusion filters
   double       m_reject_range;
-
-  std::vector<std::string> m_ignore_groups;
-  std::vector<std::string> m_ignore_types;
+  ExFilterSet  m_filter_set;
+  unsigned int m_max_contacts;
   
   // Other configuration parameters
   std::string  m_ownship;
   bool         m_display_radii;
+  std::string  m_display_radii_id;
+  std::string  m_alert_rng_color;
+  std::string  m_alert_rng_cpa_color;
+
   bool         m_post_closest_range;
+  bool         m_post_all_ranges;
   double       m_contact_max_age;
   double       m_contacts_recap_interval;
   double       m_range_report_timeout;
@@ -128,19 +124,18 @@ class BasicContactMgr : public AppCastingMOOSApp
   double       m_closest_contact_rng_one;
   double       m_closest_contact_rng_two;
 
-  double       m_eval_range_far;
-  double       m_eval_range_near;
-
   unsigned int m_max_retired_hist;
   
  protected: // State variables
 
-  double m_nav_x;
-  double m_nav_y;
-  double m_nav_hdg;
-  double m_nav_spd;
+  double m_osx;
+  double m_osy;
+  double m_osh;
+  double m_osv;
 
   double m_contacts_recap_posted;
+
+  std::set<std::string> m_filtered_vnames;
 
   // Optional requested range reports
   std::map<std::string, double>      m_map_rep_range;
@@ -148,25 +143,24 @@ class BasicContactMgr : public AppCastingMOOSApp
   std::map<std::string, std::string> m_map_rep_group;
   std::map<std::string, std::string> m_map_rep_vtype;
   std::map<std::string, std::string> m_map_rep_contacts;
+
+
+  //  std::map<std::string, std::string> m_map_rep_duration;
+  //std::map<std::string, std::string> m_map_rep_count_or_list;
   
   // Main Record #2: The Vehicles (contacts) and position info
   std::map<std::string, NodeRecord>   m_map_node_records;
-  std::map<std::string, unsigned int> m_map_node_alerts_total;
-  std::map<std::string, unsigned int> m_map_node_alerts_active;
-  std::map<std::string, unsigned int> m_map_node_alerts_resolved;
   std::map<std::string, double>       m_map_node_ranges_actual;
   std::map<std::string, double>       m_map_node_ranges_extrap;
   std::map<std::string, double>       m_map_node_ranges_cpa;
 
   std::string m_closest_name;
 
-  // memory of previous status postings: A posting to the MOOS
-  // var is only made when a change is detected between
-  // curr and prev.
+  // memory of previous status postings: A posting to the MOOS var is
+  // only made when a change is detected between curr and prev.
   std::string m_prev_contacts_list;
   std::string m_prev_contacts_retired;
   std::string m_prev_contacts_alerted;
-  std::string m_prev_contacts_unalerted;
   std::string m_prev_contacts_recap;
   std::string m_prev_contact_closest;
   unsigned int m_prev_contacts_count;
@@ -180,7 +174,7 @@ class BasicContactMgr : public AppCastingMOOSApp
   PlatformAlertRecord  m_par;
 
   std::list<std::string> m_contacts_retired;
- 
+
 private:
   bool         m_use_geodesy;
   CMOOSGeodesy m_geodesy;

@@ -19,8 +19,6 @@ ProcessConfig = pBasicContactMgr
   //alert = id=avd, range=80, alert_range_color=white             
   //alert = id=avd, cpa_range=95, cpa_range_color=gray50      
 
-  default_alert_range = 50
-  default_cpa_range   = 75
-  default_alert_range_color = gray70
-  default_cpa_range_color   = gray30
+  alert_range_color = gray70
+  cpa_range_color   = gray30
 }

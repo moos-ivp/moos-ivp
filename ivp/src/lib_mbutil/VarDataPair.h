@@ -64,7 +64,7 @@ public:
   bool        get_ptype_set() const {return(m_ptype_set);}
   bool        get_key_set()   const {return(m_key_set);}
   
-  std::string getPrintable();
+  std::string getPrintable() const;
 
 protected:
   std::string m_var;

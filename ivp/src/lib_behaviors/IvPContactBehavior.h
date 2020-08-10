@@ -32,6 +32,7 @@
 #include "CPAEngine.h"
 #include "LinearExtrapolator.h"
 #include "XYSegList.h"
+#include "ExFilterSet.h"
 
 class IvPDomain;
 class IvPContactBehavior : public IvPBehavior {
@@ -55,16 +56,7 @@ public:
   bool  handleSetParamMatchType(std::string);
   bool  handleSetParamIgnoreType(std::string);
   
-  std::vector<std::string> getMatchGroup() const {return(m_match_group);}
-  std::vector<std::string> getIgnoreGroup() const {return(m_ignore_group);}
-  std::vector<std::string> getMatchType() const {return(m_match_type);}
-  std::vector<std::string> getIgnoreType() const {return(m_ignore_type);}
-  
-  std::string getMatchGroupStr(std::string separator=":") const;
-  std::string getIgnoreGroupStr(std::string separator=":") const;
-  std::string getMatchTypeStr(std::string separator=":") const;
-  std::string getIgnoreTypeStr(std::string separator=":") const;
-  std::string getMatchIgnoreSummary() const;
+  std::string getFilterSummary() const {return(m_filter_set.getSummary());}
   
  protected: // Configuration Parameters
   
@@ -75,6 +67,8 @@ public:
   double m_time_on_leg;
 
   double m_complete_after_retired;
+
+  ExFilterSet m_filter_set;
   
   XYSegList                m_bearing_line;
   bool                     m_bearing_line_show;

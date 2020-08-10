@@ -1,9 +1,10 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BasicContactMgr.cpp                                  */
+/*    FILE: BasicContactMgrV20.cpp                               */
 /*    DATE: Feb 24th 2010                                        */
 /*    DATE: Sep 26th 2017 Added Alert Region Support / mikerb    */
+/*    DATE: Jul 8th  2020 Major Mods                             */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -22,39 +23,36 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifdef _WIN32
-  #define _USE_MATH_DEFINES
-#endif
 #include <unistd.h>
 #include <cmath>
-#include <iterator>
-#include <vector>
 #include "LinearExtrapolator.h"
-#include "BasicContactMgr.h"
+#include "BasicContactMgrV20.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
 #include "CPAEngine.h"
 #include "NodeRecordUtils.h"
 #include "XYCircle.h"
-#include "XYFormatUtilsPoly.h"
 #include "ACTable.h"
+#include "RangeMark.h"
 
 using namespace std;
 
 //---------------------------------------------------------
 // Constructor
 
-BasicContactMgr::BasicContactMgr()
+BasicContactMgrV20::BasicContactMgrV20()
 {
   // Configuration Variables
-  m_default_alert_rng           = 1000;
-  m_default_alert_rng_cpa       = 1000;
-  m_default_alert_rng_color     = "gray65";
-  m_default_alert_rng_cpa_color = "gray35";
+  m_alert_rng_color     = "gray65";
+  m_alert_rng_cpa_color = "gray35";
 
-  m_display_radii      = false;
+  m_display_radii = false;
+
+  m_max_contacts  = 500;
+  
   m_post_closest_range = false;
-  m_contact_max_age    = 600;      // units in seconds 600 = 10 mins
+  m_post_all_ranges    = false;
+  m_contact_max_age    = 60;       // units in seconds 60 = 10 mins
   m_contacts_recap_interval = 1;
 
   // verbatim, lazy_lat_lon, or force_lat_lon
@@ -63,8 +61,6 @@ BasicContactMgr::BasicContactMgr()
   m_decay_start = 15;
   m_decay_end   = 30;
 
-  m_eval_range_far  = 20;
-  m_eval_range_near = 10;
   m_prev_closest_contact_val = 0;
 
   m_max_retired_hist   = 5;
@@ -75,10 +71,10 @@ BasicContactMgr::BasicContactMgr()
   m_reject_range = 2000;
   
   // State Variables
-  m_nav_x   = 0;
-  m_nav_y   = 0;
-  m_nav_hdg = 0;
-  m_nav_spd = 0;
+  m_osx = 0;
+  m_osy = 0;
+  m_osh = 0;
+  m_osv = 0;
 
   m_contacts_recap_posted = 0;
   m_prev_contacts_count   = 0;
@@ -90,27 +86,27 @@ BasicContactMgr::BasicContactMgr()
 //---------------------------------------------------------
 // Procedure: OnNewMail
 
-bool BasicContactMgr::OnNewMail(MOOSMSG_LIST &NewMail)
+bool BasicContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   AppCastingMOOSApp::OnNewMail(NewMail);
 
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
-	
-    string key   = msg.GetKey();
-    double dval  = msg.GetDouble();
-    string sval  = msg.GetString(); 
-    string msrc  = msg.GetSource();
-    
+
+    string key  = msg.GetKey();
+    double dval = msg.GetDouble();
+    string sval = msg.GetString(); 
+    string src  = msg.GetSource(); 
+
     if(key == "NAV_X")
-      m_nav_x = dval;
+      m_osx = dval;
     else if(key == "NAV_Y")
-      m_nav_y = dval;
+      m_osy = dval;
     else if(key == "NAV_HEADING")
-      m_nav_hdg = dval;
+      m_osh = dval;
     else if(key == "NAV_SPEED") 
-      m_nav_spd = dval;
+      m_osv = dval;
     else if(key == "NODE_REPORT") 
       handleMailNodeReport(sval);
     else if(key == "BCM_REPORT_REQUEST") 
@@ -118,10 +114,7 @@ bool BasicContactMgr::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "BCM_DISPLAY_RADII")
       handleMailDisplayRadii(sval);      
     else if(key == "BCM_ALERT_REQUEST")
-      handleMailAlertRequest(sval);      
-    else if(key == "CONTACT_RESOLVED")
-      handleMailResolved(sval);
-
+      handleMailAlertRequest(sval, src);
     else
       reportRunWarning("Unhandled Mail: " + key);
   }
@@ -131,7 +124,7 @@ bool BasicContactMgr::OnNewMail(MOOSMSG_LIST &NewMail)
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
 
-bool BasicContactMgr::OnConnectToServer()
+bool BasicContactMgrV20::OnConnectToServer()
 {
   registerVariables();  
   return(true);
@@ -140,22 +133,19 @@ bool BasicContactMgr::OnConnectToServer()
 
 //---------------------------------------------------------
 // Procedure: Iterate()
-//      Note: Happens AppTick times per second
 
-bool BasicContactMgr::Iterate()
+bool BasicContactMgrV20::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
   updateRanges();
-  checkForNewRetiredContacts();
+  checkForAlerts();
 
+  postRadii();
+
+  checkForNewRetiredContacts();
   postRangeReports();
   postSummaries();
-  checkForAlerts();
-  checkForCloseInReports();
-  
-  if(m_display_radii)
-    postRadii();
 
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -164,17 +154,15 @@ bool BasicContactMgr::Iterate()
 //---------------------------------------------------------
 // Procedure: OnStartUp()
 
-bool BasicContactMgr::OnStartUp()
+bool BasicContactMgrV20::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
-  Notify("PBASICCONTACTMGR_PID", getpid());
+  Notify("PCONTACTMGRV20_PID", getpid());
 
   m_ownship = m_host_community;
-  if(m_ownship == "") {
-    cout << "Vehicle Name (MOOS community) not provided" << endl;
-    return(false);
-  }
+  if(m_ownship == "") 
+    reportUnhandledConfigWarning("ownship name unknown, host_community unset");
   
   // Part 1: Set the basic configuration parameters.
   STRING_LIST sParams;
@@ -186,181 +174,78 @@ bool BasicContactMgr::OnStartUp()
     string line  = stripBlankEnds(*p);
     string param = tolower(biteStringX(line, '='));
     string value = line;
-    double dval  = atof(value.c_str());
+
+    param = handleConfigDeprecations(param);
     
-    if(param == "alert") {
-      bool ok = handleConfigAlert(value);
-      if(!ok) 
-	reportConfigWarning("Failed alert config: " + value);
-    }
+    bool handled = false;
+    if(param == "alert") 
+      handled = handleConfigAlert(value, "general");
+    else if(param == "ignore_name") 
+      handled = m_filter_set.addIgnoreName(value);
+    else if(param == "match_name") 
+      handled = m_filter_set.addMatchName(value);
+    else if(param == "ignore_group") 
+      handled = m_filter_set.addIgnoreGroup(value);
+    else if(param == "match_group") 
+      handled = m_filter_set.addMatchGroup(value);
+    else if(param == "ignore_type") 
+      handled = m_filter_set.addIgnoreType(value);
+    else if(param == "match_type") 
+      handled = m_filter_set.addMatchType(value);
+    else if(param == "match_region") 
+      handled = m_filter_set.addMatchRegion(value);
+    else if(param == "ignore_region") 
+      handled = m_filter_set.addIgnoreRegion(value);
+    else if(param == "strict_ignore")
+      handled = m_filter_set.setStrictIgnore(value);
+    else if(param == "max_contacts")
+      handled = setUIntOnString(m_max_contacts, value);
 
-
-    else if(param == "ignore_group") {
-      bool handled = handleConfigIgnoreGroup(value);
-      if(!handled)
-	reportConfigWarning("Unhandled ignore_group: " + value);
-    }
-
-    else if(param == "decay") {
-      string left  = biteStringX(value, ',');
-      string right = value;
-      bool   handled = false;
-      if(isNumber(left) && isNumber(right)) {
-	double start = atof(left.c_str());
-	double end   = atof(right.c_str());
-	if((start >= 0) && (start <= end)) {
-	  m_decay_start = start;
-	  m_decay_end   = end;
-	  handled = true;
-	}
-      }
-      if(!handled)
-	reportConfigWarning("Unhandled decay config: " + orig);	
-    }  
-
-
-    else if(param == "range_report_timeout") {
-      bool ok = setNonNegDoubleOnString(m_range_report_timeout, value);
-      if(!ok) {
-	string msg = "range_report_timeout cannot be negative val";
-	reportConfigWarning(msg);
-      }
-    }
+    else if(param == "decay")
+      handled = handleConfigDecay(value);
+    else if(param == "range_report_timeout")
+      handled = setNonNegDoubleOnString(m_range_report_timeout, value);
     else if(param == "display_radii")
-      setBooleanOnString(m_display_radii, value);
-    else if(param == "post_closest_range") {
-      bool ok = setBooleanOnString(m_post_closest_range, value);
-      if(!ok) {
-	string msg = "post_closest_range must be a Boolean";
-	reportConfigWarning(msg);
-      }
-    }
-    else if(param == "max_retired_history") {
-      bool ok = setUIntOnString(m_max_retired_hist, value);
-      if(!ok || (m_max_retired_hist > 50) || (m_max_retired_hist < 1)) {
-	string msg = "max_retired_hist should be in range [1,50]";
-	reportConfigWarning(msg);
-      }
-      if(m_max_retired_hist > 50)
-	m_max_retired_hist = 50;
-      if(m_max_retired_hist < 1)
-	m_max_retired_hist = 1;
-    }
-    else if(param == "contact_local_coords") {
-      string lval = tolower(value);
-      if((lval== "verbatim") || (lval=="lazy_lat_lon") ||
-	 (lval=="force_lat_lon"))
-	m_contact_local_coords = lval;
-      else {
-	string msg = "Illegal contact_local_coords configuration";
-	reportConfigWarning(msg);
-      }
-    }
-    else if((param=="alert_range") || (param=="default_alert_range")) {
-      bool ok = setPosDoubleOnString(m_default_alert_rng, value);
-      if(!ok)
-	reportConfigWarning("alert_range must be > zero: " + value);
-    }
-    
-    else if((param=="alert_cpa_range") || (param=="default_cpa_range")) {
-      bool ok = setPosDoubleOnString(m_default_alert_rng_cpa, value);
-      if(!ok) {
-	string msg = "default_alert_range_cpa must be >0: " + value;
-	reportConfigWarning(msg);
-      }
-    }
-    
-    else if(param == "contacts_recap_interval") {
-      if(tolower(value) == "off")
-	m_contacts_recap_interval = -1;
-      else if(dval >= 0)
-	m_contacts_recap_interval = dval;
-      else {
-	string msg = "contacts_recap_interval must be >=0: " + value;
-	reportConfigWarning(msg);
-      }
-    }
-    
-    else if(param == "reject_range") {
-      if(tolower(value) == "off")
-	m_reject_range = -1;
-      else if(dval >= 0)
-	m_reject_range = dval;
-      else {
-	string msg = "reject_range must be >=0: " + value;
-	reportConfigWarning(msg);
-      }
-    }
-    
-    else if(param=="alert_cpa_time") {
-      string msg = "alert_cpa_time parameter has been deprecated.";
-      reportConfigWarning(msg);
-    }
-    
-    else if(param=="alert_verbose") {
-      bool ok = setBooleanOnString(m_alert_verbose, value);
-      if(!ok)
-	reportConfigWarning("alert_verbose must be either true or false");
-    }
-    
-    else if(param == "default_alert_range_color") {
-      if(isColor(value))
-	m_default_alert_rng_color = value;
-      else {
-	string msg = "default_alert_range_color, " + value;
-	msg += ", not a color";
-	reportConfigWarning(msg);
-      }
-    }
-    
-    else if(param == "default_cpa_range_color") {
-      if(isColor(value))
-	m_default_alert_rng_cpa_color = value;
-      else {
-	string msg = "default_alert_range_cpa_color, " +value;
-	msg += ", not a color";
-	reportConfigWarning(msg);
-      }
-    }
-    
-    else if(param == "contact_max_age") {
-      if(dval > 0)
-	m_contact_max_age = dval;
-      else
-	reportConfigWarning("contact_max_age must be > zero: " + value);
-    }
-    
-    else if(param == "eval_range_far") {
-      if(dval >= 0) {
-	m_eval_range_far = dval;
-	if(m_eval_range_near > m_eval_range_far)
-	  m_eval_range_near = m_eval_range_far;
-      }
-      else {
-	string msg = "eval_range_far must be >= zero: ";
-	msg += value;
-	reportConfigWarning(msg);
-      }
-    }
-    
-    else if(param == "eval_range_near") {
-      if(dval >= 0) {
-	m_eval_range_near = dval;
-	if(m_eval_range_far < m_eval_range_near)
-	  m_eval_range_far = m_eval_range_near;
-      }
-      else {
-	string msg = "eval_range_near must be >= zero: ";
-	msg += value;
-	reportConfigWarning(msg);
-      }
-    }
-    
-    else 
+      handled = setBooleanOnString(m_display_radii, value);
+    else if(param == "display_radii_id")
+      handled = setNonWhiteVarOnString(m_display_radii_id, value);
+    else if(param == "post_closest_range") 
+      handled = setBooleanOnString(m_post_closest_range, value);
+    else if(param == "post_all_ranges") 
+      handled = setBooleanOnString(m_post_all_ranges, value);
+    else if(param == "max_retired_history")
+      handled = handleConfigMaxRetHist(value);
+    else if(param == "contact_local_coords") 
+      handled = handleConfigCoords(value);
+    else if(param == "recap_interval")
+      handled = handleConfigRecapInterval(value);
+    else if(param == "reject_range")
+      handled = handleConfigRejectRange(value);
+    else if(param=="alert_verbose")
+      handled = setBooleanOnString(m_alert_verbose, value);
+    else if(param == "contact_max_age")
+      handled = setPosDoubleOnString(m_contact_max_age, value);
+    else if(param == "alert_range_color")
+      handled = setColorOnString(m_alert_rng_color, value);
+    else if(param == "cpa_range_color") 
+      handled = setColorOnString(m_alert_rng_cpa_color, value);
+
+    if(!handled)
       reportUnhandledConfigWarning(orig);
   }
 
-  // Part 2: If we may possibly want to set our incoming X/Y report
+  // Part 2: If alerts were configured, ensure they are complete/valid
+  map<string, CMAlert>::iterator q;
+  for(q=m_map_alerts.begin(); q!=m_map_alerts.end(); q++) {
+    string  alert_id = q->first;
+    CMAlert alert = q->second;
+    if(!alert.valid())
+      reportConfigWarning("Invalid alert config:" + alert_id);
+  }
+
+
+  
+  // Part 3: If we may possibly want to set our incoming X/Y report
   // values based on Lat/Lon values, then we must check for and
   // initialized the MOOSGeodesy.
   if(m_contact_local_coords != "verbatim") {
@@ -391,14 +276,13 @@ bool BasicContactMgr::OnStartUp()
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
-void BasicContactMgr::registerVariables()
+void BasicContactMgrV20::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
 
   Register("NODE_REPORT", 0);
-  Register("CONTACT_RESOLVED", 0);
   Register("BCM_DISPLAY_RADII", 0);
   Register("BCM_ALERT_REQUEST", 0);
   Register("BCM_REPORT_REQUEST", 0);
@@ -409,22 +293,26 @@ void BasicContactMgr::registerVariables()
 }
 
 //---------------------------------------------------------
-// Procedure: handleMailNodeReport
+// Procedure: handleMailNodeReport()
 //   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
 //            X=29.66,Y=-23.49, LAT=43.825089,LON=-70.330030, 
 //            SPD=2.00,HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=DRIVE
 
-void BasicContactMgr::handleMailNodeReport(string report)
+void BasicContactMgrV20::handleMailNodeReport(string report)
 {
   NodeRecord new_node_record = string2NodeRecord(report, true);
-
-  string group = tolower(new_node_record.getGroup());
-  if(vectorContains(m_ignore_groups, group))
+  string vname = new_node_record.getName();
+  // If incoming node name matches ownship, just ignore the node report
+  if(vname == m_ownship)
     return;
 
-  // Part 1: Decide if we want to override X/Y with Lat/Lon based on 
-  // user configuration and state of the node record.
+
+  // ==============================================================
+  // Part 1: Settle contact x/y position if overriding with lat/lon
+  // ==============================================================
+  // Part 1A: Decide if we want to override X/Y with Lat/Lon based 
+  //         on user configuration and state of the node record.
   bool override_xy_with_latlon = true;
   if(m_contact_local_coords == "verbatim")
     override_xy_with_latlon = false;
@@ -437,8 +325,9 @@ void BasicContactMgr::handleMailNodeReport(string report)
   if(!new_node_record.isSetLatitude() || !new_node_record.isSetLongitude())
     override_xy_with_latlon = false;
  
-  // Part 2: If we can override xy with latlon and configured to do so
-  // then find the X/Y from MOOSGeodesy and Lat/Lon and replace.
+  // ==============================================================
+  // Part 1B: If overriding x/y with latlon and configured to do so
+  //          then find x/y from MOOSGeodesy and Lat/Lon and replace.
   if(override_xy_with_latlon) {
     double nav_x, nav_y;
     double lat = new_node_record.getLat();
@@ -453,41 +342,31 @@ void BasicContactMgr::handleMailNodeReport(string report)
     new_node_record.setY(nav_y);
   }
 
-  string vname = new_node_record.getName();
+  // ==============================================================
+  // Part 2: Check against ContactMgr level ExclusionFilterSet 
+  // ==============================================================
+  // Note: If this contact is filtered, add it to the set of filtered
+  // vnames. If for some reason it had passed this check previously,
+  // and failed now, we to retire it promptly. This may occur for
+  // example if the contact moved in/out of a match/ignore region.
 
-  // If incoming node name matches ownship, just ignore the node report
-  // but don't return false which would indicate an error.
-  if(vname == m_ownship)
+  bool ok_filt = m_filter_set.filterCheck(new_node_record, m_osx, m_osy);
+  if(!ok_filt) {
+    m_filtered_vnames.insert(new_node_record.getName());
     return;
+  }
 
+
+  // ==============================================================
+  // Part 3: Accept the contact, update data structures
+  // ==============================================================
   bool newly_known_vehicle = false;
   if(m_map_node_records.count(vname) == 0)
     newly_known_vehicle = true;
    
-  // If we are (a) not currently tracking the given vehicle, and (b)
-  // a reject_range is enabled, and (c) the contact is outside the
-  // reject_range, then ignore this contact.
-  if(newly_known_vehicle && (m_reject_range > 0)) {
-    double cnx = new_node_record.getX();
-    double cny = new_node_record.getY();
-    double range = hypot(m_nav_x - cnx, m_nav_y -cny);
-    if(range > m_reject_range)
-      return;
-  }
-  
-  //  if(!new_node_record.valid()) {
-  //  Notify("CONTACT_MGR_WARNING", "Bad Node Report Received");
-  //  reportRunWarning("Bad Node Report Received");
-  //  return;
-  //}
-  
   m_map_node_records[vname] = new_node_record;
   
   if(newly_known_vehicle) {
-    m_map_node_alerts_total[vname]    = 0;
-    m_map_node_alerts_active[vname]   = 0;
-    m_map_node_alerts_resolved[vname] = 0;
-
     m_map_node_ranges_actual[vname] = 0;
     m_map_node_ranges_extrap[vname] = 0;
     m_map_node_ranges_cpa[vname]    = 0;
@@ -500,84 +379,39 @@ void BasicContactMgr::handleMailNodeReport(string report)
   
   // Check if the contact had been on the retired list (due to age)
   // and if so, resurrect it and remove it from the retired list.
-  list<string>::iterator p;
-  for(p=m_contacts_retired.begin(); p!=m_contacts_retired.end(); ) {
-    if(vname == *p)
-      p = m_contacts_retired.erase(p);
-    else
-      ++p;
-  }
+  m_contacts_retired.remove(vname);
 }
 
 
 //---------------------------------------------------------
-// Procedure: handleMailResolved
-//      Note: This MOOS process is registering for the variable
-//            CONTACT_RESOLVED, which simply contains the string
-//            value of a contact name and an alert id. 
-//      Note: The notion of "resolved" means that this contact mgr
-//            needs to post another alert when or if the alert
-//            criteria is met again.
+// Procedure: handleMailDisplayRadii()
 
-void BasicContactMgr::handleMailResolved(string str)
+void BasicContactMgrV20::handleMailDisplayRadii(string value)
 {
-  string resolution = tolower(str);
-  string vehicle = biteStringX(resolution, ',');
-  string alertid = resolution;
+  value = tolower(stripBlankEnds(value));
 
-  if(alertid == "")
-    alertid = "all_alerts";
-
-  reportEvent("TryResolve: (" + vehicle + "," + alertid + ")");
-
-  // Error Check #1 - Make sure we know about the vehicle
-  if(!m_par.containsVehicle(vehicle)) {
-    string msg = "Resolution failed. Nothing known about vehicle: " + vehicle;
-    Notify("CONTACT_MGR_WARNING", msg);
-    reportRunWarning(msg);
-    return;
-  }
-  
-  // Error Check #2 - Make sure we know about the alert id
-  if((alertid != "all_alerts") && !m_par.containsAlertID(alertid)) {
-    string msg = "Resolution failed. Nothing known about alertid: " + alertid;
-    Notify("CONTACT_MGR_WARNING", msg);
-    reportRunWarning(msg);
-    return;
-  }
-  
-  m_map_node_alerts_active[vehicle]--;
-  m_map_node_alerts_resolved[vehicle]++;
-  
-  m_par.setAlertedValue(vehicle, alertid, false);
-  reportEvent("Resolved: (" + vehicle + "," + alertid + ")");
-}
-
-//---------------------------------------------------------
-// Procedure: handleMailDisplayRadii
-
-void BasicContactMgr::handleMailDisplayRadii(string value)
-{
-  bool ok = setBooleanOnString(m_display_radii, value);
-  if(ok) {
-    string msg = "DISPLAY_RADII set to " + boolToString(m_display_radii);
-    reportEvent(msg);
+  if((value == "off") || (value == "false")) 
+    m_display_radii = false;
+  else if((value == "on") || (value == "true")) 
+    m_display_radii = true;
+  else if(value == "toggle") 
+    m_display_radii = !m_display_radii;
+  else if(knownAlert(value)) {
+    m_display_radii = true;
+    m_display_radii_id = value;
+    reportEvent("Display_radii turn on and set to: " + value);
   }
   else {
-    string msg = "Failed attempt so set DISPLAY_RADII to: " + value;
-    reportEvent(msg);
+    string msg = "Failed attempt to set Display_radii set to: " + value;
     reportConfigWarning(msg);
   }
-
-  if(m_display_radii == false)
-    postRadii(false);
 }
 
 //---------------------------------------------------------
 // Procedure: handleMailReportRequest()
 //   Example: BCM_REPORT_REQUEST = var=BCM_CONTACTS_85, range=85
 
-void BasicContactMgr::handleMailReportRequest(string str)
+void BasicContactMgrV20::handleMailReportRequest(string str)
 {
   bool ok = true;
   
@@ -624,43 +458,137 @@ void BasicContactMgr::handleMailReportRequest(string str)
 }
 
 //---------------------------------------------------------
-// Procedure: handleMailAlertRequest
+// Procedure: handleMailAlertRequest()
 //    Format: BCM_ALERT_REQUEST = 
 //            var=CONTACT_INFO, val="name=avd_$[VNAME] # contact=$[VNAME]"
 //            alert_range=80, cpa_range=95
 
                      
-void BasicContactMgr::handleMailAlertRequest(string value)
+void BasicContactMgrV20::handleMailAlertRequest(string value, string source)
 {
   m_alert_requests_received++;
-  bool ok = handleConfigAlert(value);
+  bool ok = handleConfigAlert(value, source);
   if(!ok)
     reportRunWarning("Unhandled Alert Request: " + value);   
 }
 
-//---------------------------------------------------------
-// Procedure: handleConfigIgnoreGroup
-//      Note: The ignore_group can also be set in the individual
-//            alert registration, but this is applied at the
-//            global level, right with a node report is received 
+//--------------------------------------------------------------------
+// Procedure: handleConfigDeprecations
 
-
-bool BasicContactMgr::handleConfigIgnoreGroup(string grp_str)
+string BasicContactMgrV20::handleConfigDeprecations(string param)
 {
-  // All group names are treated case insensitive
-  grp_str = tolower(grp_str);
+  param = tolower(param);  
+
+  string new_param = param;
+
+  if(param == "alert_range")
+    reportConfigWarning(param + " is deprecated");
+  else if(param == "alert_cpa_range")
+    reportConfigWarning(param + " is deprecated");
+  else if(param == "default_alert_range_color")
+    new_param = "alert_range_color";
+  else if(param == "default_cpa_range_color")
+    new_param = "cpa_range_color";
+  else if(param == "contacts_recap_interval")
+    new_param = "recap_interval";
   
-  if(vectorContains(m_ignore_groups, grp_str))
+  if(param != new_param)
+    reportConfigWarning(param + " is deprecated. Use instead: " + new_param);
+
+  return(new_param);
+}
+
+
+//---------------------------------------------------------
+// Procedure: handleConfigDecay()
+//   Example: "30,60"
+
+bool BasicContactMgrV20::handleConfigDecay(string decay_str)
+{
+  string left  = biteStringX(decay_str, ',');
+  string right = decay_str;
+
+  if(!isNumber(left) || !isNumber(right))
+    return(false);
+  
+  double start = atof(left.c_str());
+  double end   = atof(right.c_str());
+
+  if((start >= 0) && (start <= end)) {
+    m_decay_start = start;
+    m_decay_end   = end;
+    return(true);
+  }  
+  return(false);
+}
+
+//---------------------------------------------------------
+// Procedure: handleConfigMaxRetHist()
+//      Note: Enforces the unsigned int to be in range [1,50]
+
+bool BasicContactMgrV20::handleConfigMaxRetHist(string str)
+{
+  bool ok = setUIntOnString(m_max_retired_hist, str);
+  if(!ok)
     return(false);
 
-  m_ignore_groups.push_back(grp_str);
+  if((m_max_retired_hist > 50) || (m_max_retired_hist < 1)) {
+    string msg = "max_retired_hist should be in range [1,50]";
+    reportConfigWarning(msg);
+  }
+  
+  if(m_max_retired_hist > 50)
+    m_max_retired_hist = 50;
+  if(m_max_retired_hist < 1)
+    m_max_retired_hist = 1;
+
   return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: handleConfigCoords()
+
+bool BasicContactMgrV20::handleConfigCoords(string str)
+{
+  str = tolower(str);
+  if((str != "verbatim") && (str != "lazy_lat_lon") &&
+     (str != "force_lat_lon"))
+    return(false);
+
+  m_contact_local_coords = str;
+
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: handleConfigRecapInterval()
+
+bool BasicContactMgrV20::handleConfigRecapInterval(string str)
+{
+  if(tolower(str) == "off") {
+    m_contacts_recap_interval = -1;
+    return(true);
+  }
+
+  return(setPosDoubleOnString(m_contacts_recap_interval, str));
+}
+
+//---------------------------------------------------------
+// Procedure: handleConfigRejectRange()
+
+bool BasicContactMgrV20::handleConfigRejectRange(string str)
+{
+  if(tolower(str) == "off") {
+    m_reject_range = -1;
+    return(true);
+  }
+  return(setPosDoubleOnString(m_reject_range, str));
 }
 
 //---------------------------------------------------------
 // Procedure: handleConfigAlert
 
-bool BasicContactMgr::handleConfigAlert(string alert_str)
+bool BasicContactMgrV20::handleConfigAlert(string alert_str, string source)
 {
   // Part 1: Get the alert id. Allow for an "empty" alert,
   // but call it "no_id".
@@ -668,24 +596,18 @@ bool BasicContactMgr::handleConfigAlert(string alert_str)
   if(alert_id == "")
     alert_id = "no_id";
 
-  // Added mikerb July 2019
-  //if(m_par.containsAlertID(alert_id))
-  //  return(false);
-  
-
+  // Part 2: Add to the Platform Alert Record. If alert_id is
+  // already known, it's just ignored.
   m_par.addAlertID(alert_id);
 
-  if(m_map_alerts.count(alert_id) == 0) {
-    m_map_alerts[alert_id].setAlertRange(m_default_alert_rng);
-    m_map_alerts[alert_id].setAlertRangeFar(m_default_alert_rng_cpa);
-    m_map_alerts[alert_id].setAlertRangeColor(m_default_alert_rng_color);
-    m_map_alerts[alert_id].setAlertRangeFarColor(m_default_alert_rng_cpa_color);
-  }
+  // Part 3: Apply the source to the Alert
+  if(source != "")
+    m_map_alerts[alert_id].setAlertSource(source);
   
+  // Part 4: Parse the configuration string
   string var, pattern;
   vector<string> svector = parseStringQ(alert_str, ',');
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<svector.size(); i++) {
     string left  = tolower(biteStringX(svector[i], '='));
     string right = svector[i];
     double dval  = atof(right.c_str());
@@ -693,41 +615,45 @@ bool BasicContactMgr::handleConfigAlert(string alert_str)
     if(isQuoted(right))
       right = stripQuotes(right);
 
-    bool ok = false;
-    
-    if(left == "var") {
+    bool ok = true;
+    if(left == "var")
       var = right;
-      ok = true;
-    }
-    else if((left == "val") || (left == "pattern")) {
+    else if((left == "val") || (left == "pattern")) 
       pattern = right;
-      ok = true;
-    }
-    else if((left == "on_flag")) 
+
+    else if((left == "on_flag") || (left == "onflag")) 
       ok = m_map_alerts[alert_id].addAlertOnFlag(right);
-    else if((left == "off_flag"))
+    else if((left == "off_flag") || (left == "offflag"))
       ok = m_map_alerts[alert_id].addAlertOffFlag(right);
-    else if(left == "region")
-      ok = m_map_alerts[alert_id].setAlertRegion(right);
     else if((left == "alert_range") && isNumber(right))
       ok = m_map_alerts[alert_id].setAlertRange(dval);
-    else if((left == "alert_range_color") && isColor(right))
-      ok = m_map_alerts[alert_id].setAlertRangeColor(right);
 
-    else if(left == "match_type")
-      ok = m_map_alerts[alert_id].addMatchType(right);
-    else if(left == "ignore_type")
-      ok = m_map_alerts[alert_id].addIgnoreType(right);
-
+    else if(left == "match_name")
+      ok = m_map_alerts[alert_id].configFilter(left, right);
+    else if(left == "ignore_name")
+      ok = m_map_alerts[alert_id].configFilter(left, right);
     else if(left == "match_group")
-      ok = m_map_alerts[alert_id].addMatchGroup(right);
+      ok = m_map_alerts[alert_id].configFilter(left, right);
     else if(left == "ignore_group")
-      ok = m_map_alerts[alert_id].addIgnoreGroup(right);
+      ok = m_map_alerts[alert_id].configFilter(left, right);
+    else if(left == "match_type")
+      ok = m_map_alerts[alert_id].configFilter(left, right);
+    else if(left == "ignore_type")
+      ok = m_map_alerts[alert_id].configFilter(left, right);
+    
+    else if(left == "match_region")
+      ok = m_map_alerts[alert_id].configFilter(left, right);
+    else if(left == "ignore_region")
+      ok = m_map_alerts[alert_id].configFilter(left, right);
+
+    else if(left == "strict_ignore")
+      ok = m_map_alerts[alert_id].configFilter(left, right);
 
     else if((left == "cpa_range") && isNumber(right))
       ok = m_map_alerts[alert_id].setAlertRangeFar(dval);
-    else if((left == "cpa_range_color") && isColor(right))
-      ok = m_map_alerts[alert_id].setAlertRangeFarColor(right);
+    else
+      ok = false;
+
     
     if(!ok && (left != "id")) {
       reportConfigWarning("unhandled alert config component: " + left);
@@ -735,8 +661,8 @@ bool BasicContactMgr::handleConfigAlert(string alert_str)
     }
   }
 
-  // For backward compatibility sake we allow the user to specify an on-flag
-  // with separate var,pattern fields.  
+  // For backward compatibility sake we allow the user to specify an
+  // on-flag with separate var,pattern fields.
   if((var != "") && (pattern != ""))
     m_map_alerts[alert_id].addAlertOnFlag(var + "=" + pattern);
   
@@ -746,9 +672,8 @@ bool BasicContactMgr::handleConfigAlert(string alert_str)
 
 //---------------------------------------------------------
 // Procedure: postRangeReports()
-//   Purpose: 
 
-void BasicContactMgr::postRangeReports()
+void BasicContactMgrV20::postRangeReports()
 {
   // Part 1: Check timestamps for all report requests and see if they
   // should be retired and deleted from memory. Build a list of
@@ -831,7 +756,7 @@ void BasicContactMgr::postRangeReports()
 //---------------------------------------------------------
 // Procedure: postSummaries
 
-void BasicContactMgr::postSummaries()
+void BasicContactMgrV20::postSummaries()
 {
   // ==========================================================
   // Part 1: Handle the contacts_retired list
@@ -860,11 +785,12 @@ void BasicContactMgr::postSummaries()
   // ==========================================================
   string contacts_list;
   string contacts_alerted;
-  string contacts_unalerted;
   string contacts_recap;
 
   string closest_contact;
   double closest_range = 0;
+
+  list<double> ranges;
   
   map<string, NodeRecord>::const_iterator p;
   for(p=m_map_node_records.begin(); p!= m_map_node_records.end(); p++) {
@@ -878,6 +804,8 @@ void BasicContactMgr::postSummaries()
     double age   = m_curr_time - node_record.getTimeStamp();
     double range = m_map_node_ranges_actual[contact_name];
 
+    ranges.push_front(range);
+    
     // Update who is the closest contact and it's range
     if((closest_contact == "") || (range < closest_range)) {
       closest_contact = contact_name;
@@ -925,12 +853,6 @@ void BasicContactMgr::postSummaries()
     m_prev_contacts_alerted = contacts_alerted;
   }
 
-  contacts_unalerted = m_par.getAlertedGroup(false);
-  if(m_prev_contacts_unalerted != contacts_unalerted) {
-    Notify("CONTACTS_UNALERTED", contacts_unalerted);
-    m_prev_contacts_unalerted = contacts_unalerted;
-  }
-
   double time_since_last_recap = m_curr_time - m_contacts_recap_posted;
 
   // recaps may be configured "off" and the interval would be -1.
@@ -940,6 +862,23 @@ void BasicContactMgr::postSummaries()
     Notify("CONTACTS_RECAP", contacts_recap);
     m_prev_contacts_recap = contacts_recap;
   }
+
+  //============================================================
+  // Build the CONTACT_RANGES posting
+
+  if(m_post_all_ranges) {
+    string ranges_report;
+    ranges.sort();
+    list<double>::iterator p2;
+    for(p2=ranges.begin(); p2!=ranges.end(); p2++) {
+      if(ranges_report != "")
+	ranges_report += ",";
+      double range = *p2;
+      ranges_report += doubleToStringX(range,1);
+    }
+    Notify("CONTACT_RANGES", ranges_report);
+  }
+
 }
 
 
@@ -948,7 +887,7 @@ void BasicContactMgr::postSummaries()
 //   Purpose: Check each contact/alert pair and handle if the
 //            alert condition changes.
 
-void BasicContactMgr::checkForAlerts()
+void BasicContactMgrV20::checkForAlerts()
 {
   //==============================================================
   // For each contact, check all alerts
@@ -957,7 +896,6 @@ void BasicContactMgr::checkForAlerts()
   for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
     string     contact = p->first;
     NodeRecord record  = p->second;
-    string     cntype  = record.getType();
     
     //==============================================================
     // For each alert_id, check if alert should be posted for this contact
@@ -974,8 +912,6 @@ void BasicContactMgr::checkForAlerts()
         postOnAlerts(record, id);
 	m_par.setAlertedValue(contact, id, true);
 	transition = "off-->alerted";
-	m_map_node_alerts_total[contact]++;
-	m_map_node_alerts_active[contact]++;
       }
       else if(!alert_applies && m_par.getAlertedValue(contact, id)) {
         postOffAlerts(record, id);
@@ -988,15 +924,18 @@ void BasicContactMgr::checkForAlerts()
 	string mval = "contact=" + contact;
 	mval += ",alert_id=" + id;
 	mval += "," + transition; 
-	mval += ", alerted=";
-	mval += boolToString(m_par.getAlertedValue(contact,id));
-	//mval += ",alert_range=" + doubleToString(alert_range,1);
-	//mval += ",alert_range_cpa=" + doubleToString(alert_range_cpa,1);
+
+	double alert_range = getAlertRange(id);
+	double alert_range_cpa = getAlertRangeCPA(id);
+	mval += ",alert_range=" + doubleToStringX(alert_range,1);
+	mval += ",alert_range_cpa=" + doubleToStringX(alert_range_cpa,1);
 	
-	//double range_actual = m_map_node_ranges_actual[contact];
-	//double range_cpa = m_map_node_ranges_cpa[contact];
-	//mval += ",range_actual=" + doubleToString(range_actual,1);	
-	//mval += ",range_cpa=" + doubleToString(range_cpa,1);
+	double range_actual = m_map_node_ranges_actual[contact];
+	mval += ",range_actual=" + doubleToString(range_actual,1);	
+	if(m_par.getAlertedValue(contact,id)) {
+	  double range_cpa = m_map_node_ranges_cpa[contact];
+	  mval += ",range_cpa=" + doubleToString(range_cpa,1);
+	}
 	
 	Notify(mvar, mval);
       }
@@ -1004,69 +943,22 @@ void BasicContactMgr::checkForAlerts()
   }
 }
 
-//---------------------------------------------------------
-// Procedure: checkForCloseInReports()
-//   Purpose: Report a single number {0, 1, 2} indicating the severity of
-//            range of the closest contact. The idea is to have a single
-//            number to plot in a timeline as in alogview to help the user
-//            jump to the interesting (miss or near-miss) points in time.
-//
-//    Report: 0 if closest contact is far away
-//            1 if closest contact is near (< m_eval_range_far)
-//            2 if closest contact is very near(< m_eval_range_near)
-//
-//   Example: m_eval_range_far = 12 (meters) near miss
-//            m_eval_range_near = 5  (meters) collision
-//      Note: Typically these two values will match what uFldCollisionDetect
-//            regards as near misses and hits.
-
-void BasicContactMgr::checkForCloseInReports()
-{
-  double report_val = 0;
-
-  //==============================================================
-  // For each contact, check all the absolute (no extrap) ranges
-  //==============================================================
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string    contact_name = p->first;
-    NodeRecord node_record = p->second;
-
-    // Skip this contact if age of node record exceeds max age
-    double age = m_curr_time - node_record.getTimeStamp();
-    if(age > m_contact_max_age)
-      continue;
-
-    double contact_range_abs = m_map_node_ranges_actual[contact_name]; 
-
-    double this_report_val = 0;
-    if(contact_range_abs < m_eval_range_far)
-      this_report_val = 1;
-    else if(contact_range_abs < m_eval_range_near)
-      this_report_val = 2;
-
-    // Overall report_val is max of the report_vals for each contact.
-    if(this_report_val > report_val)
-      report_val = this_report_val;
-  }    
-    
-  if(report_val != m_prev_closest_contact_val) { 
-    Notify("CONTACT_CLOSEST_EVAL", report_val);
-    m_prev_closest_contact_val = report_val;
-  }
-}
 
 //---------------------------------------------------------
 // Procedure: checkForNewRetiredContacts()
 //   Purpose: Check all contacts and see if any of them should be
 //            moved onto the retired list based on contact_max_age.
 
-void BasicContactMgr::checkForNewRetiredContacts()
+void BasicContactMgrV20::checkForNewRetiredContacts()
 {
+  unsigned int starting_amt = m_map_node_records.size();
+  
   //==============================================================
   // Part 1: Find new contacts that need to be retired.
   //==============================================================
-  list<string> newly_retired;
+  // To-be-retired set starts with the vnames flagged when receiving
+  // node reports, that did not survive one of the filter criteria
+  set<string> to_be_retired = m_filtered_vnames;
   map<string, NodeRecord>::iterator p;
   for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
     string     contact  = p->first;
@@ -1075,48 +967,93 @@ void BasicContactMgr::checkForNewRetiredContacts()
     // Possibly drop due to age
     double age = m_curr_time - record.getTimeStamp();
     if(age > m_contact_max_age) 
-      newly_retired.push_front(contact);
+      to_be_retired.insert(contact);
 
-    // Possibly drop due to reject_range. Note the range thresh has
-    // 10 meters added, to help prevent thrashing.
-    else if(m_map_node_ranges_actual.count(contact) &&
-	    (m_reject_range > 0) &&
-	    (m_map_node_ranges_actual[contact] > m_reject_range+10)) {
-      newly_retired.push_front(contact);
+    // Possibly drop due to reject_range. 
+    else if(m_map_node_ranges_actual.count(contact) && (m_reject_range > 0)) {
+      // Reject range adjusted 5pct higher to avoid thrashing
+      double adjusted_reject_range = m_reject_range * 1.05;
+      if(m_map_node_ranges_actual[contact] > adjusted_reject_range) {
+	to_be_retired.insert(contact);
+      }
     }
   }
-  if(newly_retired.size() == 0)
-    return;
+
+  //==============================================================
+  // Part 1A: Contingent Culling based on staleness. If pruning is
+  //          is still needed, remove based on lowere stale thresh.
+  //==============================================================
+  // Cull if needed
+  if((to_be_retired.size() + m_max_contacts) < starting_amt) {
+    map<string, NodeRecord>::iterator p;
+    for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
+      string     contact  = p->first;
+      NodeRecord record   = p->second;
+      
+      // Possibly drop due to age
+      double age = m_curr_time - record.getTimeStamp();
+      double lower_contact_max_age = m_contact_max_age / 2;
+      if(age > lower_contact_max_age) 
+	to_be_retired.insert(contact);      
+    }
+  }
   
   //==============================================================
-  // Part 2: Go through the list of newly retired contacts and do
+  // Part 1B: Dire Contingent Culling. Keep only the N closest
+  //==============================================================
+  if((to_be_retired.size() + m_max_contacts) < starting_amt) {
+    unsigned int to_cull = starting_amt - (to_be_retired.size() + m_max_contacts);
+    list<string> ordered_contacts = getRangeOrderedContacts();
+
+    unsigned int culled_so_far = 0;
+    list<string>::reverse_iterator p;
+    for(p=ordered_contacts.rbegin(); p!=ordered_contacts.rend(); p++) {
+      string contact = *p;
+      if(to_be_retired.count(contact) == 0) {
+	to_be_retired.insert(contact);
+	culled_so_far++;
+      }
+      if(culled_so_far >= to_cull)
+	break;
+    }
+  }
+  
+  //==============================================================
+  // Part 2: Go through the set of newly retired contacts and do
   //         (a) free up any memory associated with this contact
   //         (b) Merge newly retired contacts onto the front of 
   //         the list of previously retired contacts, since we
   //         always delete retired contacts from back of this list.
   //==============================================================
-  list<string>::iterator q;
-  for(q=newly_retired.begin(); q!=newly_retired.end(); q++) {
+  set<string>::iterator q;
+  for(q=to_be_retired.begin(); q!=to_be_retired.end(); q++) {
     string contact = *q;
-    // (a) Free up any memory associated with this contact
+
+    // (a) If contact currently in memory and will be removed,
+    // then add to front of list of retired contacts
+    if(m_map_node_records.count(contact))
+      m_contacts_retired.push_front(contact);
+
+    // (b) Free up any memory associated with this contact
     m_map_node_records.erase(contact);
-    m_map_node_alerts_total.erase(contact);
-    m_map_node_alerts_active.erase(contact);
-    m_map_node_alerts_resolved.erase(contact);
     m_map_node_ranges_actual.erase(contact);
     m_map_node_ranges_extrap.erase(contact);
     m_map_node_ranges_cpa.erase(contact);
     m_par.removeVehicle(contact);
-
-    // (b) Add to front of list of retired contacts
-    m_contacts_retired.push_front(contact);
   }
+
+  // Part 3: Clear the set of filtered_vnames. This list should start
+  // each iteration empty, with names added as node report mail is
+  // processed. Now that we have used it here in this function to seed
+  // the set of names to retire, it can be cleared now.
+  m_filtered_vnames.clear();
+  
 }
 
 //----------------------------------------------------------------
 // Procedure: postOnAlerts
 
-void BasicContactMgr::postOnAlerts(NodeRecord record, string id)
+void BasicContactMgrV20::postOnAlerts(NodeRecord record, string id)
 {
   if(!knownAlert(id))
     return;
@@ -1130,7 +1067,7 @@ void BasicContactMgr::postOnAlerts(NodeRecord record, string id)
 //----------------------------------------------------------------
 // Procedure: postOffAlerts
 
-void BasicContactMgr::postOffAlerts(NodeRecord record, string id)
+void BasicContactMgrV20::postOffAlerts(NodeRecord record, string id)
 {
   if(!knownAlert(id))
     return;
@@ -1144,7 +1081,7 @@ void BasicContactMgr::postOffAlerts(NodeRecord record, string id)
 //----------------------------------------------------------------
 // Procedure: postAlert
 
-void BasicContactMgr::postAlert(NodeRecord record, VarDataPair pair)
+void BasicContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
 {
   // Step 1: Get all potential macro info
   string x_str    = record.getStringValue("x");
@@ -1206,7 +1143,7 @@ void BasicContactMgr::postAlert(NodeRecord record, VarDataPair pair)
 //---------------------------------------------------------
 // Procedure: updateRanges
 
-void BasicContactMgr::updateRanges()
+void BasicContactMgrV20::updateRanges()
 {
   double alert_range_cpa_time = 36000; // 10 hours
 
@@ -1224,7 +1161,7 @@ void BasicContactMgr::updateRanges()
 
     // #1 Determine and store the actual point-to-point range between
     // ownship and the last absolute known position of the contact
-    double range_actual = hypot((m_nav_x - cnx), (m_nav_y - cny));
+    double range_actual = hypot((m_osx - cnx), (m_osy - cny));
     m_map_node_ranges_actual[vname] = range_actual;
 
     // #2 Determine and store the extrapolated range between ownship
@@ -1242,15 +1179,15 @@ void BasicContactMgr::updateRanges()
     if(ok) {
       cnx = extrap_x;
       cny = extrap_y;
-      range_extrap = hypot((m_nav_x - cnx), (m_nav_y - cny));
+      range_extrap = hypot((m_osx - cnx), (m_osy - cny));
     }
     m_map_node_ranges_extrap[vname] = range_extrap;
 
     // #3 Determine and store the cpa range between ownship and the
     // contact position determined by the contact's extrapolated position
     // and it's last known heading and speed.
-    CPAEngine engine(cny, cnx, cnh, cns, m_nav_y, m_nav_x);      
-    double range_cpa = engine.evalCPA(m_nav_hdg, m_nav_spd,
+    CPAEngine engine(cny, cnx, cnh, cns, m_osy, m_osx);      
+    double range_cpa = engine.evalCPA(m_osh, m_osv,
 				      alert_range_cpa_time);
     m_map_node_ranges_cpa[vname] = range_cpa;
   }
@@ -1259,63 +1196,77 @@ void BasicContactMgr::updateRanges()
 //---------------------------------------------------------
 // Procedure: postRadii
 
-void BasicContactMgr::postRadii(bool active)
+void BasicContactMgrV20::postRadii(bool active)
 {
-  map<string, CMAlert>::const_iterator p;
-  for(p=m_map_alerts.begin(); p!=m_map_alerts.end(); p++) {
-    string alert_id = p->first;
-    double alert_range = getAlertRange(alert_id);
-    string alert_range_color = getAlertRangeColor(alert_id);
+  // Sanity check 1: Check if all radii displaying is disabled
+  if(!m_display_radii)
+    return;
+  // Sanity check 2: Check that there is at lease one alert
+  if(m_map_alerts.size() == 0)
+    return;
+  // Sanity check 3: If ID is non-empty it must be a known id  
+  if((m_display_radii_id != "") && !knownAlert(m_display_radii_id))
+    return;
+  // Sanity check 4: If displaying enabled, but ID is empty, then
+  // pick one. Note that this setting persists.
+  if(m_display_radii && (m_display_radii_id == ""))
+    m_display_radii_id = m_map_alerts.begin()->first;
 
-    if(!active || (alert_range_color == "invisible") ||
-       (alert_range_color == "empty") || (alert_range_color == ""))
+  
+  // Part 1: Get the alert information based on ID 
+  string alert_id = m_display_radii_id;
+  double alert_range = getAlertRange(alert_id);
+  double alert_range_cpa = getAlertRangeCPA(alert_id);
+  
+  if(!active || (alert_range <= 0) || 
+     (m_alert_rng_color == "invisible") ||
+     (m_alert_rng_color == "empty") ||
+     (m_alert_rng_color == ""))
+    active = false;
+  
+  XYCircle circle(m_osx, m_osy, alert_range);
+  circle.set_label(alert_id + "_in");
+  circle.set_color("edge", m_alert_rng_color);
+  circle.set_vertex_size(0);
+  circle.set_edge_size(1);
+  circle.set_active(active);
+  circle.set_duration(3);
+  string s1 = circle.get_spec();
+  Notify("VIEW_CIRCLE", s1);
+
+  if(alert_range_cpa > alert_range) {
+    
+    if(!active || (m_alert_rng_cpa_color == "invisible") ||
+       (m_alert_rng_cpa_color == "empty") ||
+       (m_alert_rng_cpa_color == ""))
       active = false;
     
-    XYCircle circle(m_nav_x, m_nav_y, alert_range);
-    circle.set_label(alert_id + "_in");
-    circle.set_color("edge", alert_range_color);
-    circle.set_vertex_size(0);
-    circle.set_edge_size(1);
-    circle.set_active(active);
-    string s1 = circle.get_spec();
-    Notify("VIEW_CIRCLE", s1);
-
-    double alert_range_cpa = getAlertRangeCPA(alert_id);
-    if(alert_range_cpa > alert_range) {
-
-      string alert_range_cpa_color = getAlertRangeCPAColor(alert_id);
-
-      if(!active || (alert_range_cpa_color == "invisible") ||
-	 (alert_range_cpa_color == "empty") ||
-	 (alert_range_cpa_color == ""))
-	active = false;
-
-      XYCircle circ(m_nav_x, m_nav_y, alert_range_cpa);
-      circ.set_label(alert_id + "_out");
-      circ.set_color("edge", alert_range_cpa_color);
-      circ.set_vertex_size(0);
-      circ.set_edge_size(1);
-      circ.set_active(active);
-      string s2 = circ.get_spec();
-
-      Notify("VIEW_CIRCLE", s2);
-    }
+    XYCircle circ(m_osx, m_osy, alert_range_cpa);
+    circ.set_label(alert_id + "_out");
+    circ.set_color("edge", m_alert_rng_cpa_color);
+    circ.set_vertex_size(0);
+    circ.set_edge_size(1);
+    circ.set_active(active);
+    circ.set_duration(3);
+    string s2 = circ.get_spec();
+    
+    Notify("VIEW_CIRCLE", s2);
   }
 }
 
 //---------------------------------------------------------
 // Procedure: checkAlertApplies()
 
-bool BasicContactMgr::checkAlertApplies(string contact, string id) 
+bool BasicContactMgrV20::checkAlertApplies(string contact, string id) 
 {
   //=========================================================
   // Part 1: Sanity checks
   //=========================================================
-
   // Return false immediately if alert or contact are unknown
   if(!knownAlert(id))
     return(false);
-
+  if(!m_map_alerts.at(id).valid())
+    return(false);
   if(m_map_node_records.count(contact) == 0)
     return(false);
 
@@ -1325,59 +1276,21 @@ bool BasicContactMgr::checkAlertApplies(string contact, string id)
   if(age > m_contact_max_age)
     return(false);
 
+  //=========================================================
+  // Part 2: Apply the alert's exclusion filter
+  //=========================================================
+  bool okfilter = m_map_alerts.at(id).filterCheck(record, m_osx, m_osy);
+  if(!okfilter)
+    return(false);
 
   //=========================================================
-  // Part 2: Check if the contact has a known type that is
-  //         either excluded or mandated by alert spec
+  // Part 3: Check range and cpa_range of ownship to contact
   //=========================================================
-
-  string cntype = record.getType();
-  if(cntype != "") {
-    vector<string> match_types = getAlertMatchTypes(id);
-    // If this alert has any match types, must match at least one
-    if(match_types.size() != 0) {
-      if(!vectorContains(match_types, cntype))
-	return(false);
-    }
-    vector<string> ignore_types = getAlertIgnoreTypes(id);
-    // If this alert has any ignore types, must not match any
-    if(ignore_types.size() != 0) {
-      if(vectorContains(ignore_types, cntype))
-	return(false);
-    }
-  }
-
-  //=========================================================
-  // Part 3: Check if the contact has a known group that is
-  //         either excluded or mandated by alert spec
-  //=========================================================
-
-  string cngroup = record.getGroup();
-  if(cngroup != "") {
-    vector<string> match_groups = getAlertMatchGroups(id);
-    // If this alert has any match groups, must match at least one
-    if(match_groups.size() != 0) {
-      if(!vectorContains(match_groups, cngroup))
-	return(false);
-    }
-    vector<string> ignore_groups = getAlertIgnoreGroups(id);
-    // If this alert has any ignore groups, must not match any
-    if(ignore_groups.size() != 0) {
-      if(vectorContains(ignore_groups, cngroup))
-	return(false);
-    }
-  }
-
-  //=========================================================
-  // Part 4: Checks based on range of ownship to contact
-  //=========================================================
-
-  double alert_range = getAlertRange(id);
+  double alert_range     = getAlertRange(id);
   double alert_range_cpa = getAlertRangeCPA(id);
 
-  // If alert range is zero, this is regarded as having the range
+  // If alert range is not positive, regarded as having the range
   // criteria OFF. Likely this alert depends only on the region.
-
   if(alert_range > 0) {
     double contact_range_abs = m_map_node_ranges_actual[contact]; 
     double contact_range_cpa = m_map_node_ranges_cpa[contact];    
@@ -1389,19 +1302,6 @@ bool BasicContactMgr::checkAlertApplies(string contact, string id)
       return(false);
   }
   
-  //=========================================================
-  // Part 5: Checks based on Alert Region
-  //=========================================================
-  
-  // Skip if this alertid has valid convex region and contact not in region
-  if(hasAlertRegion(id)) {
-    double cnx = record.getX();
-    double cny = record.getY();
-    XYPolygon region = getAlertRegion(id);
-    if(region.is_convex() && !region.contains(cnx, cny))
-      return(false);
-  }
-
   // If none of the above no-apply conditions hold, return true!
   return(true);  
 }
@@ -1409,7 +1309,7 @@ bool BasicContactMgr::checkAlertApplies(string contact, string id)
 //---------------------------------------------------------
 // Procedure: knownAlert()
 
-bool BasicContactMgr::knownAlert(string alert_id) const
+bool BasicContactMgrV20::knownAlert(string alert_id) const
 {
   map<string, CMAlert>::const_iterator p;
   p = m_map_alerts.find(alert_id);
@@ -1423,10 +1323,10 @@ bool BasicContactMgr::knownAlert(string alert_id) const
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
-double BasicContactMgr::getAlertRange(string alert_id) const
+double BasicContactMgrV20::getAlertRange(string alert_id) const
 {
   if(!knownAlert(alert_id))
-    return(m_default_alert_rng);
+    return(-1);
   return(m_map_alerts.at(alert_id).getAlertRange());
 }
 
@@ -1435,137 +1335,17 @@ double BasicContactMgr::getAlertRange(string alert_id) const
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
-double BasicContactMgr::getAlertRangeCPA(string alert_id) const
+double BasicContactMgrV20::getAlertRangeCPA(string alert_id) const
 {
   if(!knownAlert(alert_id))
-    return(m_default_alert_rng_cpa);
+    return(-1);
   return(m_map_alerts.at(alert_id).getAlertRangeFar());
-}
-
-//---------------------------------------------------------
-// Procedure: getAlertRangeColor
-//      Note: Use this method to access map, not map directly. This 
-//            allows intelligent defaults to be applied if missing key.
-
-string BasicContactMgr::getAlertRangeColor(string alert_id) const
-{
-  if(!knownAlert(alert_id))
-    return(m_default_alert_rng_color);
-  return(m_map_alerts.at(alert_id).getAlertRangeColor());
-}
-
-//---------------------------------------------------------
-// Procedure: getAlertRangeCPAColor
-//      Note: Use this method to access map, not map directly. This 
-//            allows intelligent defaults to be applied if missing key.
-
-string BasicContactMgr::getAlertRangeCPAColor(string alert_id) const
-{
-  if(!knownAlert(alert_id))
-    return(m_default_alert_rng_cpa_color);
-  return(m_map_alerts.at(alert_id).getAlertRangeFarColor());
-}
-
-
-//---------------------------------------------------------
-// Procedure: hasAlertRegion
-//      Note: Use this method to access map, not map directly. This 
-//            allows intelligent defaults to be applied if missing key.
-
-bool BasicContactMgr::hasAlertRegion(string alert_id) const
-{
-  if(!knownAlert(alert_id)) {
-    return(false);
-  }
-  return(m_map_alerts.at(alert_id).hasAlertRegion());
-}
-
-//---------------------------------------------------------
-// Procedure: getAlertRegion
-//      Note: Use this method to access map, not map directly. This 
-//            allows intelligent defaults to be applied if missing key.
-
-XYPolygon BasicContactMgr::getAlertRegion(string alert_id) const
-{
-  if(!knownAlert(alert_id)) {
-    XYPolygon null_poly;
-    return(null_poly);
-  }
-  return(m_map_alerts.at(alert_id).getAlertRegion());
-}
-
-//---------------------------------------------------------
-// Procedure: getAlertMatchTypes()
-
-vector<string> BasicContactMgr::getAlertMatchTypes(string alert_id) const
-{
-  vector<string> rvector;
-  if(!knownAlert(alert_id)) 
-    return(rvector);
-
-  return(m_map_alerts.at(alert_id).getMatchTypes());
-}
-
-//---------------------------------------------------------
-// Procedure: getAlertIgnoreTypes()
-
-vector<string> BasicContactMgr::getAlertIgnoreTypes(string alert_id) const
-{
-  vector<string> rvector;
-  if(!knownAlert(alert_id)) 
-    return(rvector);
-
-  return(m_map_alerts.at(alert_id).getIgnoreTypes());
-}
-
-//---------------------------------------------------------
-// Procedure: getAlertMatchGroups()
-
-vector<string> BasicContactMgr::getAlertMatchGroups(string alert_id) const
-{
-  vector<string> rvector;
-  if(!knownAlert(alert_id)) 
-    return(rvector);
-
-  return(m_map_alerts.at(alert_id).getMatchGroups());
-}
-
-//---------------------------------------------------------
-// Procedure: getAlertIgnoreGroups()
-
-vector<string> BasicContactMgr::getAlertIgnoreGroups(string alert_id) const
-{
-  vector<string> rvector;
-  if(!knownAlert(alert_id)) 
-    return(rvector);
-
-  return(m_map_alerts.at(alert_id).getIgnoreGroups());
-}
-
-//---------------------------------------------------------
-// Procedure: hasAlertOnFlag
-
-bool BasicContactMgr::hasAlertOnFlag(string alert_id) const
-{
-  if(!knownAlert(alert_id))
-    return(false);
-  return(m_map_alerts.at(alert_id).hasAlertOnFlag());
-}
-
-//---------------------------------------------------------
-// Procedure: hasAlertOffFlag
-
-bool BasicContactMgr::hasAlertOffFlag(string alert_id) const
-{
-  if(!knownAlert(alert_id))
-    return(false);
-  return(m_map_alerts.at(alert_id).hasAlertOffFlag());
 }
 
 //---------------------------------------------------------
 // Procedure: getAlertOnFlags
 
-vector<VarDataPair> BasicContactMgr::getAlertOnFlags(string alert_id) const
+vector<VarDataPair> BasicContactMgrV20::getAlertOnFlags(string alert_id) const
 {
   vector<VarDataPair> empty;
   if(!knownAlert(alert_id))
@@ -1576,13 +1356,44 @@ vector<VarDataPair> BasicContactMgr::getAlertOnFlags(string alert_id) const
 //---------------------------------------------------------
 // Procedure: getAlertOffFlags
 
-vector<VarDataPair> BasicContactMgr::getAlertOffFlags(string alert_id) const
+vector<VarDataPair> BasicContactMgrV20::getAlertOffFlags(string alert_id) const
 {
   vector<VarDataPair> empty;
   if(!knownAlert(alert_id))
     return(empty);
   return(m_map_alerts.at(alert_id).getAlertOffFlags());
 }
+
+//---------------------------------------------------------
+// Procedure: getRangeOrderedContacts()
+//   Purpose: Get a list of all contact names, sorted by range,
+//            with the closest contact at the front of the list.
+
+list<string> BasicContactMgrV20::getRangeOrderedContacts() const
+{
+  list<string> to_be_returned_ordered_list;
+
+  list<RangeMark> working_list;
+  map<string,double>::const_iterator p;
+  for(p=m_map_node_ranges_actual.begin(); p!=m_map_node_ranges_actual.end(); p++) {
+    string vname = p->first;
+    double range = p->second;
+    RangeMark range_mark(vname, range);
+    working_list.push_front(range_mark);
+  }
+
+  working_list.sort();
+
+  list<RangeMark>::iterator q;
+  for(q=working_list.begin(); q!=working_list.end(); q++) {
+    RangeMark range_mark = *q;
+    to_be_returned_ordered_list.push_back(range_mark.getContact());
+  }
+
+  return(to_be_returned_ordered_list);
+}
+
+
 
 //---------------------------------------------------------
 // Procedure: buildReport
@@ -1595,20 +1406,19 @@ vector<VarDataPair> BasicContactMgr::getAlertOffFlags(string alert_id) const
 // Alert ID = avd
 //   VARNAME   = CONTACT_INFO
 //   PATTERN   = name=$[VNAME] # contact=$[VNAME]
-//   RANGE     = 1000, lightblue
-//   CPA_RANGE = 1200, green
+//   RANGE     = 1000
+//   CPA_RANGE = 1200
 //
 // Alert ID = trail
 //   VARNAME   = TRAIL_INFO
 //   PATTERN   = name=trail_$[VNAME] # contact=$[VNAME]
-//   RANGE     = 600, white
-//   CPA_RANGE = 750, grey45
+//   RANGE     = 600
+//   CPA_RANGE = 750
 //
 // Alert Status Summary
 // ----------------------
 //        List: henry
 //     Alerted: 
-//   UnAlerted: (henry,avd)
 //     Retired: 
 //       Recap: vname=henry,range=105.85,age=1.75
 //  
@@ -1625,12 +1435,10 @@ vector<VarDataPair> BasicContactMgr::getAlertOffFlags(string alert_id) const
 // Events (Last 5):
 // ---------------------
 // 203.1  CONTACT_INFO = name=gilda # contact=gilda
-// 192.0  CONTACT_RESOLVED = contact=gilda, alert=CONTACT_INFO 
 // 143.2  CONTACT_INFO = name=gilda # contact=gilda
-// 111.9  CONTACT_RESOLVED = contact=gilda, alert=CONTACT_INFO 
 //  43.2  CONTACT_INFO = name=gilda # contact=gilda
 
-bool BasicContactMgr::buildReport()
+bool BasicContactMgrV20::buildReport()
 {
   //=================================================================
   // Part 1: Header Content
@@ -1641,12 +1449,14 @@ bool BasicContactMgr::buildReport()
   string reject_range = "off";
   if(m_reject_range > 0)
     reject_range = doubleToStringX(m_reject_range,2);
-  m_msgs << "DisplayRadii:              " << boolToString(m_display_radii) << endl;
-  m_msgs << "Deriving X/Y from Lat/Lon: " << boolToString(m_use_geodesy)   << endl;
-  m_msgs << "Contact Max Age: " << max_age << endl;
-  m_msgs << "Reject Range: " << reject_range << endl;
-  m_msgs << "BCM_ALERT_REQUEST count: " << bcm_req_received << endl << endl; 
-  
+  m_msgs << "X/Y from Lat/Lon:   " << boolToString(m_use_geodesy)   << endl;
+  m_msgs << "Contact Max Age:    " << max_age << endl;
+  m_msgs << "Reject Range:       " << reject_range << endl;
+  m_msgs << "BCM_ALERT_REQUESTs: " << bcm_req_received << endl;
+  m_msgs << "DisplayRadii:       " << boolToString(m_display_radii) << endl;
+  if(m_display_radii_id != "")
+    m_msgs << "DisplayRadii ID:    " << m_display_radii_id << endl;
+  m_msgs << endl; 
 
   //=================================================================
   // Part 2: Alert Configurations
@@ -1654,40 +1464,18 @@ bool BasicContactMgr::buildReport()
   m_msgs << "Alert Configurations (" << alert_count << "):"  << endl;
   m_msgs << "---------------------" << endl;
   map<string, CMAlert>::iterator p;
+  unsigned int acounter = 1;
   for(p=m_map_alerts.begin(); p!=m_map_alerts.end(); p++) {
     string alert_id = p->first;
-    string alert_rng     = doubleToStringX(getAlertRange(alert_id));
-    string alert_rng_cpa = doubleToStringX(getAlertRangeCPA(alert_id));
-    string alert_rng_color  = getAlertRangeColor(alert_id);
-    string alert_rng_cpa_color = getAlertRangeCPAColor(alert_id);
-    string alert_region  = "n/a";
-    XYPolygon region = getAlertRegion(alert_id);
-    if(region.is_convex())
-      alert_region = region.get_spec();
-    m_msgs << "Alert ID = " << alert_id         << endl;
-    m_msgs << "  RANGE     = " << alert_rng     << ", " << alert_rng_color  << endl;
-    m_msgs << "  CPA_RANGE = " << alert_rng_cpa << ", " << alert_rng_cpa_color << endl;
-    m_msgs << "  ALERT_REG = " << alert_region << endl;
-    vector<VarDataPair> pairs = getAlertOnFlags(alert_id);
-    for(unsigned int i=0; i<pairs.size(); i++) {
-      VarDataPair pair = pairs[i];
-      string var = pair.get_var();
-      string val = pair.get_sdata();
-      if(!pair.is_string())
-	val = doubleToStringX(pair.get_ddata(), 3);
-      m_msgs << "  ON_FLAG = " << var << "=" << val << endl;
+    m_msgs << uintToString(acounter) << " ID: " << alert_id << endl;
+    vector<string> alert_summary = p->second.getSummary();
+    for(unsigned int i=0; i<alert_summary.size(); i++) {
+      m_msgs << "  " << alert_summary[i] << endl;;
     }
-    vector<VarDataPair> xpairs = getAlertOffFlags(alert_id);
-    for(unsigned int i=0; i<xpairs.size(); i++) {
-      VarDataPair pair = xpairs[i];
-      string var = pair.get_var();
-      string val = pair.get_sdata();
-      if(!pair.is_string())
-	val = doubleToStringX(pair.get_ddata(), 3);
-      m_msgs << "  OFF_FLAG = " << var << "=" << val << endl;
-    }
+    acounter++;
   }
   m_msgs << endl;
+
   //=================================================================
   // Part 3: Alert Status Summary
   //=================================================================
@@ -1695,7 +1483,6 @@ bool BasicContactMgr::buildReport()
   m_msgs << "----------------------" << endl;
   m_msgs << "       List: " << m_prev_contacts_list         << endl;
   m_msgs << "    Alerted: " << m_prev_contacts_alerted      << endl;
-  m_msgs << "  UnAlerted: " << m_prev_contacts_unalerted    << endl;
   m_msgs << "    Retired: " << m_prev_contacts_retired      << endl;
   m_msgs << "      Recap: " << m_prev_contacts_recap        << endl;
   m_msgs << endl;
@@ -1706,20 +1493,25 @@ bool BasicContactMgr::buildReport()
   m_msgs << "Contact Status Summary:" << endl;
   m_msgs << "-----------------------" << endl;
 
-  ACTable actab(5,5);
+  ACTable actab(4,4);
   actab.setColumnJustify(1, "right");
-  actab << "Contact | Range  | Alerts  | Alerts | Alerts   ";
-  actab << "        | Actual | Total   | Active | Resolved ";
+  actab << "Contact | Range  | Alerts  | Alerts ";
+  actab << "        | Actual | Total   | Active ";
   actab.addHeaderLines();
 
+  unsigned contacts_reported = 0;
   map<string, NodeRecord>::iterator q;
   for(q=m_map_node_records.begin(); q!=m_map_node_records.end(); q++) {
-    string vname = q->first;
-    string range = doubleToString(m_map_node_ranges_actual[vname], 1);
-    string alerts_total  = uintToString(m_map_node_alerts_total[vname]);
-    string alerts_active = uintToString(m_map_node_alerts_active[vname]);
-    string alerts_resolved = uintToString(m_map_node_alerts_resolved[vname]);
-    actab << vname << range << alerts_total << alerts_active << alerts_resolved;
+    contacts_reported++;
+    if(contacts_reported < 8) {
+      string vname = q->first;
+      string range = doubleToString(m_map_node_ranges_actual[vname], 1);
+      string alerts_total  = uintToString(m_par.getAlertsTotal(vname));
+      string alerts_active = uintToString(m_par.getAlertsActive(vname));
+      actab << vname << range << alerts_total << alerts_active;
+    }
+    else
+      break;
   }
   m_msgs << actab.getFormattedString();
 

@@ -21,8 +21,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef PBASIC_CONTACT_MANAGER_INFO_HEADER
-#define PBASIC_CONTACT_MANAGER_INFO_HEADER
+#ifndef PBASIC_CONTACT_MANAGER_V20_INFO_HEADER
+#define PBASIC_CONTACT_MANAGER_V20_INFO_HEADER
 
 void showSynopsis();
 void showHelpAndExit();

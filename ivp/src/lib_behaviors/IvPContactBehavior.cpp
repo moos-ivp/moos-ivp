@@ -145,28 +145,24 @@ bool IvPContactBehavior::setParam(string param, string param_val)
   }
   else if(param == "extrapolate")
     return(setBooleanOnString(m_extrapolate, param_val));
-  else if(param == "match_contact_group") {
-    if((m_match_contact_group != "") || (param_val == ""))
-      return(false);
-    m_match_contact_group = param_val;
-    return(true);
-  }
-  else if(param == "ignore_contact_group") {
-    if((m_ignore_contact_group != "") || (param_val == ""))
-      return(false);
-    m_ignore_contact_group = param_val;
-    return(true);
-  }
-  else if((param == "match_group") ||
-	  (param == "match_contact_group"))
-    return(handleSetParamMatchGroup(param_val));
-  else if((param == "ignore_group") ||
-	  (param == "ignore_contact_group"))
-    return(handleSetParamIgnoreGroup(param_val));
+
+  else if(param == "match_name")
+    return(m_filter_set.addMatchName(param_val));
+  else if(param == "ignore_name")
+    return(m_filter_set.addIgnoreName(param_val));
+  else if(param == "match_group")
+    return(m_filter_set.addMatchGroup(param_val));
+  else if(param == "ignore_group")
+    return(m_filter_set.addIgnoreGroup(param_val));
   else if(param == "match_type")
-    return(handleSetParamMatchType(param_val));
+    return(m_filter_set.addMatchType(param_val));
   else if(param == "ignore_type")
-    return(handleSetParamIgnoreType(param_val));
+    return(m_filter_set.addIgnoreType(param_val));
+  else if(param == "match_region")
+    return(m_filter_set.addMatchRegion(param_val));
+  else if(param == "ignore_region")
+    return(m_filter_set.addIgnoreRegion(param_val));
+
   else if(param == "decay") {
     string left  = biteStringX(param_val, ',');
     string right = param_val;
@@ -553,6 +549,7 @@ bool IvPContactBehavior::handleSetParamIgnoreType(string typestr)
   return(all_ok);
 }
 
+#if 0
 //-----------------------------------------------------------
 // Procedure: getMatchGroupStr()
 
@@ -651,7 +648,7 @@ string IvPContactBehavior::getMatchIgnoreSummary() const
   
   return(summary);
 }
-
+#endif
 
 //-----------------------------------------------------------
 // Procedure: checkContactGroupRestrictions()

@@ -64,6 +64,7 @@ ProcessConfig = uFldCollisionDetect
   collision_flag = COLLISION = $CPA
   near_miss_flag = NEAR_MISS = $CPA
   encounter_flag = ENCOUNTER = $CPA
+  //encounter_flag = DENSITY = $[cal@60]
 
   near_miss_flag = NEAR_MISS_$UP_V1 = $CPA
   near_miss_flag = NEAR_MISS_$UP_V2 = $CPA

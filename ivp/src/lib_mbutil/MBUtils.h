@@ -138,6 +138,7 @@ int   validateArgs(int, char **, std::string);
 double snapToStep(double, double v=1.0);
 double snapDownToStep(double, double v=1.0);
 
+bool  setPortTurnOnString(bool& boolval, std::string str, bool=true);
 bool  setBooleanOnString(bool& boolval, std::string str, bool=true);
 bool  setDoubleOnString(double& dval, std::string str);
 bool  setUIntOnString(unsigned int& uint_val, std::string str);

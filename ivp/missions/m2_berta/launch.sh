@@ -83,3 +83,5 @@ echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_gilda.moos >& /dev/null &
 
 uMAC targ_shoreside.moos
+
+kill -- -$$

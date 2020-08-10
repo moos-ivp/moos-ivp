@@ -16,6 +16,7 @@ SET(SRC
   AOF_Waypoint.cpp
   LoiterEngine.cpp
   ObShipModel.cpp
+  ExFilterSet.cpp
   WaypointEngine.cpp
   RefineryObAvoid.cpp
   RefineryCPA.cpp
@@ -36,6 +37,7 @@ SET(HEADERS
   AOF_Waypoint.h
   LoiterEngine.h
   ObShipModel.h
+  ExFilterSet.h
   WaypointEngine.h
   RefineryObAvoid.h
   RefineryCPA.h

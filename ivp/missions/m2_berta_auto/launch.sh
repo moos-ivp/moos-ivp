@@ -10,6 +10,7 @@ TIME_WARP=1
 JUST_MAKE="no"
 AUTO=""
 LAUNCH_GUI="yes"
+COLREGS="no"
 
 #----------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -21,6 +22,7 @@ for ARGI; do
 	echo "  --help, -h                                      " 
         echo "  --auto, -a        Auto-launched. uMAC not used. "
         echo "  --no_gui          Launch in headless mode       "
+        echo "  --colregs, -c     Use COLREGS avoidance         "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
@@ -30,6 +32,8 @@ for ARGI; do
         AUTO="yes"
     elif [ "${ARGI}" = "--no_gui" -o "${ARGI}" = "-n" ] ; then
 	LAUNCH_GUI="no"
+    elif [ "${ARGI}" = "--colregs" -o "${ARGI}" = "-c" ] ; then
+	COLREGS="yes"
     else 
         echo "Bad arg:" $ARGI "Run with -h for help."
         echo "The launch.sh script is exiting with (1)."
@@ -59,16 +63,18 @@ nsplug meta_vehicle.moos targ_gilda.moos -i -f WARP=$TIME_WARP \
        START_POS=$START_POS2  
 
 nsplug meta_shoreside.moos targ_shoreside.moos -i -f WARP=$TIME_WARP \
-       PSHARE_PORT="9200"                             \
-       VNAMES=$VNAME1:$VNAME2   LAUNCH_GUI=$LAUNCH_GUI
+       PSHARE_PORT="9200"       VNAMES=$VNAME1:$VNAME2        \
+       LAUNCH_GUI=$LAUNCH_GUI
 
 nsplug meta_vehicle.bhv targ_henry.bhv -i -f VNAME=$VNAME1    \
        START_POS=$START_POS1    LOITER_POS=$LOITER_POS1       \
-       MIN_UTIL_CPA_DIST=10     MAX_UTIL_CPA_DIST=20 
+       MIN_UTIL_CPA_DIST=10     MAX_UTIL_CPA_DIST=20          \
+       COLREGS=$COLREGS
 
 nsplug meta_vehicle.bhv targ_gilda.bhv -i -f VNAME=$VNAME2    \
        START_POS=$START_POS2    LOITER_POS=$LOITER_POS2       \
-       MIN_UTIL_CPA_DIST=10     MAX_UTIL_CPA_DIST=20 
+       MIN_UTIL_CPA_DIST=10     MAX_UTIL_CPA_DIST=20          \
+       COLREGS=$COLREGS
 
 if [ ${JUST_MAKE} = "yes" ] ; then
     echo "Files assembled; nothing launched; exiting per request."

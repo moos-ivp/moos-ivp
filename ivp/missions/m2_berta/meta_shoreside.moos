@@ -59,7 +59,7 @@ ProcessConfig = uFldShoreBroker
 
   qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
   qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID, UP_LOITER
-  qbridge  = RETURN_UPDATES
+  qbridge  = RETURN_UPDATES, BCM_DISPLAY_RADII
 
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
@@ -147,6 +147,9 @@ ProcessConfig = pMarineViewer
   
   appcast_viewable = true
   appcast_color_scheme = indigo
+	appcast_font_size    = xlarge
+  procs_font_size      = xlarge
+  nodes_font_size      = xlarge
 
   stale_report_thresh = 10
   stale_remove_thresh = 18
@@ -157,6 +160,9 @@ ProcessConfig = pMarineViewer
 
   action = STATION_KEEP_ALL = false
   action = STATION_KEEP_ALL = true
+
+	action = BCM_DISPLAY_RADII_ALL = say
+	action = BCM_DISPLAY_RADII_ALL = avd
 
   left_context[return_point] = RETURN_$[UP_VNAME_CLOSEST] = true
   left_context[return_point] = RETURN_UPDATES_$[UP_VNAME_CLOSEST] = points=$[XPOS],$[YPOS]

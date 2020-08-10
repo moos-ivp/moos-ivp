@@ -1,8 +1,9 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BasicContactMgr_Info.cpp                             */
+/*    FILE: BasicContactMgrV20_Info.cpp                          */
 /*    DATE: July 6th 2011                                        */
+/*    DATE: July 8th  2020 Major Mods                            */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -25,7 +26,7 @@
 #include <iostream>
 #include "ReleaseInfo.h"
 #include "ColorParse.h"
-#include "BasicContactMgr_Info.h"
+#include "BasicContactMgrV20_Info.h"
 
 using namespace std;
 
@@ -52,15 +53,15 @@ void showHelpAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blk("Usage: pBasicContactMgr file.moos [OPTIONS]                     ");
+  blk("Usage: pBasicContactMgrV20 file.moos [OPTIONS]                  ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch pBasicContactMgr with the given process            ");
-  blk("      name rather than pBasicContactMgr.                        ");
+  blk("      Launch pBasicContactMgrV20 with the given process         ");
+  blk("      name rather than pBasicContactMgrV20.                     ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -68,7 +69,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of pBasicContactMgr.          ");
+  blk("      Display the release version of pBasicContactMgrV20.       ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -84,10 +85,10 @@ void showExampleConfigAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("pBasicContactMgr Example MOOS Configuration                     ");
+  blu("pBasicContactMgrV20 Example MOOS Configuration                  ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = pBasicContactMgr                                ");
+  blk("ProcessConfig = pBasicContactMgrV20                             ");
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
@@ -134,14 +135,14 @@ void showExampleConfigAndExit()
 void showInterfaceAndExit()
 {
   blu("=============================================================== ");
-  blu("pBasicContactMgr INTERFACE                                      ");
+  blu("pBasicContactMgrV20 INTERFACE                                   ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  APPCAST_REQ       = node=henry,app=pBasicContactMgr,          ");
+  blk("  APPCAST_REQ       = node=henry,app=pBasicContactMgrV20,       ");
   blk("                      duration=6,key=uMAC_438                   ");
   blk("  BCM_ALERT_REQUEST = id=avd, var=CONTACT_INFO,                 ");
   blk("                      val=\"name=avd_$[VNAME] # contact=$[VNAME]\", ");
@@ -164,7 +165,7 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  Alert publications configured by the user.                    ");
   blk("                                                                ");
-  blk("  APPCAST = name=pBasicContactMgr!@#iter=91!@#node=hotel!@#     ");
+  blk("  APPCAST = name=pBasicContactMgrV20!@#iter=91!@#node=hotel!@#  ");
   blk("            messages=...                                        ");
   blk("                                                                ");
   blk("  ALERT_VERBOSE = contact=gilda,config_alert_range=40.0,        ");
@@ -194,7 +195,7 @@ void showInterfaceAndExit()
 
 void showReleaseInfoAndExit()
 {
-  showReleaseInfo("pBasicContactMgr", "gpl");
+  showReleaseInfo("pBasicContactMgrV20", "gpl");
   exit(0);
 }
 

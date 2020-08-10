@@ -101,7 +101,7 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
   else if(param == "VIEW_VECTOR")
     handled = m_geoshapes_map[vname].addVector(value);
   else if(param == "VIEW_CIRCLE")
-    handled = m_geoshapes_map[vname].addCircle(value);
+    handled = m_geoshapes_map[vname].addCircle(value, 18, timestamp);
   else if(param == "VIEW_RANGE_PULSE")
     handled = m_geoshapes_map[vname].addRangePulse(value, timestamp);
   else if(param == "VIEW_COMMS_PULSE")

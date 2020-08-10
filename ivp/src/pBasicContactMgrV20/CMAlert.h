@@ -28,6 +28,7 @@
 #include <string>
 #include "XYPolygon.h"
 #include "VarDataPair.h"
+#include "ExFilterSet.h"
 
 class CMAlert
 {
@@ -39,24 +40,24 @@ class CMAlert
   bool setAlertRange(double);
   bool setAlertRangeFar(double);
 
-  bool setAlertRegion(std::string);
+  bool setAlertRange(std::string);
+  bool setAlertRangeFar(std::string);
+
   bool addAlertOnFlag(std::string);
   bool addAlertOffFlag(std::string);
 
-  bool addMatchType(std::string);
-  bool addIgnoreType(std::string);
+  bool setAlertSource(std::string);
   
-  bool addMatchGroup(std::string);
-  bool addIgnoreGroup(std::string);
-  
-  bool setAlertRangeColor(std::string);
-  bool setAlertRangeFarColor(std::string);
+  bool configFilter(std::string, std::string);
 
+  bool filterCheck(NodeRecord) const;
+  bool filterCheck(NodeRecord, double osx, double osy) const;
+  
  public: // Getters
   double    getAlertRange() const    {return(m_range);}
   double    getAlertRangeFar() const {return(m_range_far);}
-  bool      hasAlertRegion() const   {return(m_region.is_convex());}
-  XYPolygon getAlertRegion() const   {return(m_region);}
+
+  bool valid() const;
   
   bool hasAlertOnFlag() const {return(m_on_flags.size() > 0);}
   bool hasAlertOffFlag() const {return(m_off_flags.size() > 0);}
@@ -64,40 +65,21 @@ class CMAlert
   std::vector<VarDataPair> getAlertOnFlags() const;
   std::vector<VarDataPair> getAlertOffFlags() const;
 
-  std::vector<std::string> getMatchTypes() const {return(m_match_type);}
-  std::vector<std::string> getIgnoreTypes() const {return(m_ignore_type);}
+  std::vector<std::string> getSummary() const;
   
-  std::vector<std::string> getMatchGroups() const {return(m_match_group);}
-  std::vector<std::string> getIgnoreGroups() const {return(m_ignore_group);}
-  
-  std::string getAlertRangeColor() const   {return(m_rng_color);}
-  std::string getAlertRangeFarColor() const {return(m_rng_far_color);}
-
  private:
   double      m_range;
   double      m_range_far;
-  XYPolygon   m_region;
 
-  std::vector<std::string> m_match_type;
-  std::vector<std::string> m_ignore_type;
-  
-  std::vector<std::string> m_match_group;
-  std::vector<std::string> m_ignore_group;
+  ExFilterSet m_filter_set; 
+
+  std::string m_alert_source;
   
   std::vector<VarDataPair> m_on_flags;
   std::vector<VarDataPair> m_off_flags;
-  
-  std::string m_rng_color;
-  std::string m_rng_far_color;  
 
+  std::set<std::string> m_on_flags_raw;
+  std::set<std::string> m_off_flags_raw;
 };
 
 #endif 
-
-
-
-
-
-
-
-

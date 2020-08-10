@@ -4,6 +4,7 @@
 /*    FILE: PlatformAlertRecord.cpp                              */
 /*    DATE: Feb 27th 2010                                        */
 /*    DATE: Sep 27th 2017 Added inrange inzone components/mikerb */
+/*    DATE: Jul 8th  2020 Major Mods                             */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -107,12 +108,33 @@ bool PlatformAlertRecord::containsVehicle(string vehicle) const
 
 
 //---------------------------------------------------------------
+// Procedure: getAlertsTotal()
+
+unsigned int PlatformAlertRecord::getAlertsTotal(string contact) const
+{
+  if(!m_map_alerts_total.count(contact))
+    return(0);
+
+  return(m_map_alerts_total.at(contact));
+}
+
+//---------------------------------------------------------------
+// Procedure: getAlertsActive()
+
+unsigned int PlatformAlertRecord::getAlertsActive(string contact) const
+{
+  if(!m_map_alerts_active.count(contact))
+    return(0);
+
+  return(m_map_alerts_active.at(contact));
+}
+
+
+//---------------------------------------------------------------
 // Procedure: containsAlertID
 
 bool PlatformAlertRecord::containsAlertID(string alertid) const
 {
-  if(alertid == "all_alerts")
-    return(true);
   return(m_alertids.count(tolower(alertid)) == 1);
 }
 
@@ -130,14 +152,19 @@ void PlatformAlertRecord::setAlertedValue(string vehicle, string alertid,
     return;
   vehicle = tolower(vehicle);
 
-  // If the caller specifies all_allerts, 
-  if(alertid != "all_alerts")
-    m_par_alerted[vehicle][alertid] = bval;
-  else {
-    map<string, bool>::iterator p;
-    for(p=m_par_alerted[vehicle].begin(); p!=m_par_alerted[vehicle].end(); p++) 
-      p->second = bval;
+  // If turning the alert on
+  if(bval && !m_par_alerted[vehicle][alertid]) {
+    m_map_alerts_total[vehicle]++;
+    m_map_alerts_active[vehicle]++;
   }
+  // If turning the alert off
+  else if(!bval && m_par_alerted[vehicle][alertid]) {
+    if(m_map_alerts_active[vehicle] > 0)
+      m_map_alerts_active[vehicle]--;
+  }
+
+  m_par_alerted[vehicle][alertid] = bval;
+
 }
 
 //---------------------------------------------------------------
@@ -241,6 +268,17 @@ bool PlatformAlertRecord::alertsPending() const
 }
 
 //---------------------------------------------------------------
+// Procedure: getReports
+//   Purpose: Reports to be posted by the contact manager
+
+vector<VarDataPair> PlatformAlertRecord::getReports() const
+{
+  vector<VarDataPair> rvector;
+
+  return(rvector);  
+}
+
+//---------------------------------------------------------------
 // Procedure: print
 
 void PlatformAlertRecord::print() const
@@ -250,7 +288,6 @@ void PlatformAlertRecord::print() const
   //=====================================================
   // Part 1: Print the alerted matrix
   //=====================================================
-
   cout << "Alerted Matrix" << endl;
   cout << "   rows:" << m_par_alerted.size() << ", cols:" << idcount << endl;
   map<string, map<string, bool> >::const_iterator p1;

@@ -10,4 +10,6 @@ ProcessConfig = pHelmIvP
   Verbose      = false
   Domain       = course:0:359:360
   Domain       = speed:0:5:26
+
+	hold_on_apps = pBasicContactMgr
 }

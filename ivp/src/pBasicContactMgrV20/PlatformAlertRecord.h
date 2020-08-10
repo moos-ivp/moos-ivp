@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: PlatformAlterRecord.h                                */
 /*    DATE: Apr 6th 2010                                         */
+/*    DATE: Jul 8th 2020 Major Mods                              */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -27,6 +28,8 @@
 #include <map>
 #include <set>
 #include <string>
+#include <vector>
+#include "VarDataPair.h"
 
 class PlatformAlertRecord
 {
@@ -45,28 +48,37 @@ class PlatformAlertRecord
   void setAlertedValue(std::string contact, std::string id, bool);
   bool getAlertedValue(std::string contact, std::string id) const;
 
+  unsigned int getAlertsTotal(std::string contact) const;
+  unsigned int getAlertsActive(std::string contact) const;
+  
  public:
-  std::string getAlertedGroup(bool alerted) const;
+  std::string  getAlertedGroup(bool alerted) const;
   unsigned int getAlertedGroupCount(bool alerted) const;
 
   bool alertsPending() const;
 
+  std::vector<VarDataPair> getReports() const;
+  
   void print() const;
 
  protected: 
-  //     map<vehicle, map<alertid, bool>>
+  //  map<vehicle, map<alertid, bool>>
   //  
-  //     vname   id=aa   id=bb
-  //     -----   -----   -----
-  //     gilda | true    false     "the gilda map"
-  //     henry | false   false     "the henry map"
-  //     ike   | true    false
-  //     jake  | false   true
+  //  vname   id=aa   id=bb
+  //  -----   -----   -----
+  //  gilda | true    false     "the gilda map"
+  //  henry | false   false     "the henry map"
+  //  ike   | true    false
+  //  jake  | false   true
 
 
   // The first Matix indicates whether a vehicle has been alerted,
   // for all defined alert-ids.
   std::map<std::string, std::map<std::string, bool> > m_par_alerted;
+
+  // Additional info keyed on [contact]
+  std::map<std::string, unsigned int> m_map_alerts_total;
+  std::map<std::string, unsigned int> m_map_alerts_active;
 
   std::set<std::string> m_alertids;
 };

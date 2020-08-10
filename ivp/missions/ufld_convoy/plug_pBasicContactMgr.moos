@@ -14,8 +14,6 @@ ProcessConfig = pBasicContactMgr
   contact_max_age = 3600
   display_radii   = false
 
-  default_alert_range = 30
-  default_cpa_range   = 35
-  default_alert_range_color = gray70
-  default_cpa_range_color   = gray30
+  alert_range_color = gray70
+  cpa_range_color   = gray30
 }
