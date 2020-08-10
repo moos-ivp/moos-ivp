@@ -6,6 +6,7 @@ ProcessConfig = pNodeReporter
   AppTick     = 2
   CommsTick   = 2
 
+  group = blue
   vessel_type = kayak
   terse_reports = true
 }

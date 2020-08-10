@@ -7,6 +7,7 @@ ProcessConfig = pBasicContactMgr
   CommsTick = 2
 
   decay = 30,60
+  decay = 5,10
 
   alert_verbose = true
 
