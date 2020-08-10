@@ -233,7 +233,7 @@ SET(ROBOT_APPS
   pEvalLoiter
   pHelmIvP
   pMarinePID
-  pBasicContactMgrV20
+  pContactMgrV20
   pDeadManPost
   pNodeReporter
   pMovingSurvey
