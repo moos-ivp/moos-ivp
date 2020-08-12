@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BasicContactMgrMain.cpp                              */
+/*    FILE: ContactMgrMain.cpp                                   */
 /*    DATE: Feb 27th 2010                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -24,8 +24,8 @@
 #include <iostream>
 #include "ColorParse.h"
 #include "MBUtils.h"
-#include "BasicContactMgrV20.h"
-#include "BasicContactMgrV20_Info.h"
+#include "ContactMgrV20.h"
+#include "ContactMgrV20_Info.h"
 
 using namespace std;
 
@@ -59,9 +59,9 @@ int main(int argc, char *argv[])
   cout << "pBasicContactMgrV20 launching as " << run_command << endl;
   cout << termColor() << endl;
 
-  BasicContactMgrV20 BasicContactMgr;
+  ContactMgrV20 ContactMgr;
 	
-  BasicContactMgr.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
+  ContactMgr.Run(run_command.c_str(), mission_file.c_str(), argc, argv);
 
   return(0);
 }

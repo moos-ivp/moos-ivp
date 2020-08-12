@@ -1,8 +1,9 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BasicContactMgr_Info.h                               */
+/*    FILE: ContactMgr_Info.h                                    */
 /*    DATE: July 6th 2011                                        */
+/*    DATE: July 8th 2020 Major Mods                             */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,8 +22,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef PBASIC_CONTACT_MANAGER_V20_INFO_HEADER
-#define PBASIC_CONTACT_MANAGER_V20_INFO_HEADER
+#ifndef P_CONTACT_MANAGER_V20_INFO_HEADER
+#define P_CONTACT_MANAGER_V20_INFO_HEADER
 
 void showSynopsis();
 void showHelpAndExit();

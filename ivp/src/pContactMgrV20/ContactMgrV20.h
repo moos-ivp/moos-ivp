@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BasicContactMgrV20.h                                 */
+/*    FILE: ContactMgrV20.h                                      */
 /*    DATE: Feb 24th 2010                                        */
 /*    DATE: Sep 26th 2017 Added Alert Region Support / mikerb    */
 /*    DATE: Jul 8th  2020 Major Mods                             */
@@ -23,8 +23,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef BASIC_CONTACT_MANAGER_HEADER
-#define BASIC_CONTACT_MANAGER_HEADER
+#ifndef CONTACT_MANAGER_V20_HEADER
+#define CONTACT_MANAGER_V20_HEADER
 
 #include <vector>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
@@ -35,11 +35,11 @@
 #include "CMAlert.h"
 #include "ExFilterSet.h"
 
-class BasicContactMgrV20 : public AppCastingMOOSApp
+class ContactMgrV20 : public AppCastingMOOSApp
 {
  public:
-  BasicContactMgrV20();
-  virtual ~BasicContactMgrV20() {}
+  ContactMgrV20();
+  virtual ~ContactMgrV20() {}
 
   bool OnNewMail(MOOSMSG_LIST &NewMail);
   bool Iterate();

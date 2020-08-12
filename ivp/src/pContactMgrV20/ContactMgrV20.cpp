@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BasicContactMgrV20.cpp                               */
+/*    FILE: ContactMgrV20.cpp                                    */
 /*    DATE: Feb 24th 2010                                        */
 /*    DATE: Sep 26th 2017 Added Alert Region Support / mikerb    */
 /*    DATE: Jul 8th  2020 Major Mods                             */
@@ -26,7 +26,7 @@
 #include <unistd.h>
 #include <cmath>
 #include "LinearExtrapolator.h"
-#include "BasicContactMgrV20.h"
+#include "ContactMgrV20.h"
 #include "MBUtils.h"
 #include "ColorParse.h"
 #include "CPAEngine.h"
@@ -40,7 +40,7 @@ using namespace std;
 //---------------------------------------------------------
 // Constructor
 
-BasicContactMgrV20::BasicContactMgrV20()
+ContactMgrV20::ContactMgrV20()
 {
   // Configuration Variables
   m_alert_rng_color     = "gray65";
@@ -86,7 +86,7 @@ BasicContactMgrV20::BasicContactMgrV20()
 //---------------------------------------------------------
 // Procedure: OnNewMail
 
-bool BasicContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
+bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   AppCastingMOOSApp::OnNewMail(NewMail);
 
@@ -124,7 +124,7 @@ bool BasicContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
 //---------------------------------------------------------
 // Procedure: OnConnectToServer
 
-bool BasicContactMgrV20::OnConnectToServer()
+bool ContactMgrV20::OnConnectToServer()
 {
   registerVariables();  
   return(true);
@@ -134,7 +134,7 @@ bool BasicContactMgrV20::OnConnectToServer()
 //---------------------------------------------------------
 // Procedure: Iterate()
 
-bool BasicContactMgrV20::Iterate()
+bool ContactMgrV20::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
@@ -154,7 +154,7 @@ bool BasicContactMgrV20::Iterate()
 //---------------------------------------------------------
 // Procedure: OnStartUp()
 
-bool BasicContactMgrV20::OnStartUp()
+bool ContactMgrV20::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
@@ -278,7 +278,7 @@ bool BasicContactMgrV20::OnStartUp()
 //------------------------------------------------------------
 // Procedure: registerVariables()
 
-void BasicContactMgrV20::registerVariables()
+void ContactMgrV20::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
 
@@ -299,7 +299,7 @@ void BasicContactMgrV20::registerVariables()
 //            SPD=2.00,HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=DRIVE
 
-void BasicContactMgrV20::handleMailNodeReport(string report)
+void ContactMgrV20::handleMailNodeReport(string report)
 {
   NodeRecord new_node_record = string2NodeRecord(report, true);
   string vname = new_node_record.getName();
@@ -386,7 +386,7 @@ void BasicContactMgrV20::handleMailNodeReport(string report)
 //---------------------------------------------------------
 // Procedure: handleMailDisplayRadii()
 
-void BasicContactMgrV20::handleMailDisplayRadii(string value)
+void ContactMgrV20::handleMailDisplayRadii(string value)
 {
   value = tolower(stripBlankEnds(value));
 
@@ -411,7 +411,7 @@ void BasicContactMgrV20::handleMailDisplayRadii(string value)
 // Procedure: handleMailReportRequest()
 //   Example: BCM_REPORT_REQUEST = var=BCM_CONTACTS_85, range=85
 
-void BasicContactMgrV20::handleMailReportRequest(string str)
+void ContactMgrV20::handleMailReportRequest(string str)
 {
   bool ok = true;
   
@@ -464,7 +464,7 @@ void BasicContactMgrV20::handleMailReportRequest(string str)
 //            alert_range=80, cpa_range=95
 
                      
-void BasicContactMgrV20::handleMailAlertRequest(string value, string source)
+void ContactMgrV20::handleMailAlertRequest(string value, string source)
 {
   m_alert_requests_received++;
   bool ok = handleConfigAlert(value, source);
@@ -475,7 +475,7 @@ void BasicContactMgrV20::handleMailAlertRequest(string value, string source)
 //--------------------------------------------------------------------
 // Procedure: handleConfigDeprecations
 
-string BasicContactMgrV20::handleConfigDeprecations(string param)
+string ContactMgrV20::handleConfigDeprecations(string param)
 {
   param = tolower(param);  
 
@@ -503,7 +503,7 @@ string BasicContactMgrV20::handleConfigDeprecations(string param)
 // Procedure: handleConfigDecay()
 //   Example: "30,60"
 
-bool BasicContactMgrV20::handleConfigDecay(string decay_str)
+bool ContactMgrV20::handleConfigDecay(string decay_str)
 {
   string left  = biteStringX(decay_str, ',');
   string right = decay_str;
@@ -526,7 +526,7 @@ bool BasicContactMgrV20::handleConfigDecay(string decay_str)
 // Procedure: handleConfigMaxRetHist()
 //      Note: Enforces the unsigned int to be in range [1,50]
 
-bool BasicContactMgrV20::handleConfigMaxRetHist(string str)
+bool ContactMgrV20::handleConfigMaxRetHist(string str)
 {
   bool ok = setUIntOnString(m_max_retired_hist, str);
   if(!ok)
@@ -548,7 +548,7 @@ bool BasicContactMgrV20::handleConfigMaxRetHist(string str)
 //---------------------------------------------------------
 // Procedure: handleConfigCoords()
 
-bool BasicContactMgrV20::handleConfigCoords(string str)
+bool ContactMgrV20::handleConfigCoords(string str)
 {
   str = tolower(str);
   if((str != "verbatim") && (str != "lazy_lat_lon") &&
@@ -563,7 +563,7 @@ bool BasicContactMgrV20::handleConfigCoords(string str)
 //---------------------------------------------------------
 // Procedure: handleConfigRecapInterval()
 
-bool BasicContactMgrV20::handleConfigRecapInterval(string str)
+bool ContactMgrV20::handleConfigRecapInterval(string str)
 {
   if(tolower(str) == "off") {
     m_contacts_recap_interval = -1;
@@ -576,7 +576,7 @@ bool BasicContactMgrV20::handleConfigRecapInterval(string str)
 //---------------------------------------------------------
 // Procedure: handleConfigRejectRange()
 
-bool BasicContactMgrV20::handleConfigRejectRange(string str)
+bool ContactMgrV20::handleConfigRejectRange(string str)
 {
   if(tolower(str) == "off") {
     m_reject_range = -1;
@@ -588,7 +588,7 @@ bool BasicContactMgrV20::handleConfigRejectRange(string str)
 //---------------------------------------------------------
 // Procedure: handleConfigAlert
 
-bool BasicContactMgrV20::handleConfigAlert(string alert_str, string source)
+bool ContactMgrV20::handleConfigAlert(string alert_str, string source)
 {
   // Part 1: Get the alert id. Allow for an "empty" alert,
   // but call it "no_id".
@@ -673,7 +673,7 @@ bool BasicContactMgrV20::handleConfigAlert(string alert_str, string source)
 //---------------------------------------------------------
 // Procedure: postRangeReports()
 
-void BasicContactMgrV20::postRangeReports()
+void ContactMgrV20::postRangeReports()
 {
   // Part 1: Check timestamps for all report requests and see if they
   // should be retired and deleted from memory. Build a list of
@@ -756,7 +756,7 @@ void BasicContactMgrV20::postRangeReports()
 //---------------------------------------------------------
 // Procedure: postSummaries
 
-void BasicContactMgrV20::postSummaries()
+void ContactMgrV20::postSummaries()
 {
   // ==========================================================
   // Part 1: Handle the contacts_retired list
@@ -887,7 +887,7 @@ void BasicContactMgrV20::postSummaries()
 //   Purpose: Check each contact/alert pair and handle if the
 //            alert condition changes.
 
-void BasicContactMgrV20::checkForAlerts()
+void ContactMgrV20::checkForAlerts()
 {
   //==============================================================
   // For each contact, check all alerts
@@ -949,7 +949,7 @@ void BasicContactMgrV20::checkForAlerts()
 //   Purpose: Check all contacts and see if any of them should be
 //            moved onto the retired list based on contact_max_age.
 
-void BasicContactMgrV20::checkForNewRetiredContacts()
+void ContactMgrV20::checkForNewRetiredContacts()
 {
   unsigned int starting_amt = m_map_node_records.size();
   
@@ -1053,7 +1053,7 @@ void BasicContactMgrV20::checkForNewRetiredContacts()
 //----------------------------------------------------------------
 // Procedure: postOnAlerts
 
-void BasicContactMgrV20::postOnAlerts(NodeRecord record, string id)
+void ContactMgrV20::postOnAlerts(NodeRecord record, string id)
 {
   if(!knownAlert(id))
     return;
@@ -1067,7 +1067,7 @@ void BasicContactMgrV20::postOnAlerts(NodeRecord record, string id)
 //----------------------------------------------------------------
 // Procedure: postOffAlerts
 
-void BasicContactMgrV20::postOffAlerts(NodeRecord record, string id)
+void ContactMgrV20::postOffAlerts(NodeRecord record, string id)
 {
   if(!knownAlert(id))
     return;
@@ -1081,7 +1081,7 @@ void BasicContactMgrV20::postOffAlerts(NodeRecord record, string id)
 //----------------------------------------------------------------
 // Procedure: postAlert
 
-void BasicContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
+void ContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
 {
   // Step 1: Get all potential macro info
   string x_str    = record.getStringValue("x");
@@ -1143,7 +1143,7 @@ void BasicContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
 //---------------------------------------------------------
 // Procedure: updateRanges
 
-void BasicContactMgrV20::updateRanges()
+void ContactMgrV20::updateRanges()
 {
   double alert_range_cpa_time = 36000; // 10 hours
 
@@ -1196,7 +1196,7 @@ void BasicContactMgrV20::updateRanges()
 //---------------------------------------------------------
 // Procedure: postRadii
 
-void BasicContactMgrV20::postRadii(bool active)
+void ContactMgrV20::postRadii(bool active)
 {
   // Sanity check 1: Check if all radii displaying is disabled
   if(!m_display_radii)
@@ -1257,7 +1257,7 @@ void BasicContactMgrV20::postRadii(bool active)
 //---------------------------------------------------------
 // Procedure: checkAlertApplies()
 
-bool BasicContactMgrV20::checkAlertApplies(string contact, string id) 
+bool ContactMgrV20::checkAlertApplies(string contact, string id) 
 {
   //=========================================================
   // Part 1: Sanity checks
@@ -1309,7 +1309,7 @@ bool BasicContactMgrV20::checkAlertApplies(string contact, string id)
 //---------------------------------------------------------
 // Procedure: knownAlert()
 
-bool BasicContactMgrV20::knownAlert(string alert_id) const
+bool ContactMgrV20::knownAlert(string alert_id) const
 {
   map<string, CMAlert>::const_iterator p;
   p = m_map_alerts.find(alert_id);
@@ -1323,7 +1323,7 @@ bool BasicContactMgrV20::knownAlert(string alert_id) const
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
-double BasicContactMgrV20::getAlertRange(string alert_id) const
+double ContactMgrV20::getAlertRange(string alert_id) const
 {
   if(!knownAlert(alert_id))
     return(-1);
@@ -1335,7 +1335,7 @@ double BasicContactMgrV20::getAlertRange(string alert_id) const
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
-double BasicContactMgrV20::getAlertRangeCPA(string alert_id) const
+double ContactMgrV20::getAlertRangeCPA(string alert_id) const
 {
   if(!knownAlert(alert_id))
     return(-1);
@@ -1345,7 +1345,7 @@ double BasicContactMgrV20::getAlertRangeCPA(string alert_id) const
 //---------------------------------------------------------
 // Procedure: getAlertOnFlags
 
-vector<VarDataPair> BasicContactMgrV20::getAlertOnFlags(string alert_id) const
+vector<VarDataPair> ContactMgrV20::getAlertOnFlags(string alert_id) const
 {
   vector<VarDataPair> empty;
   if(!knownAlert(alert_id))
@@ -1356,7 +1356,7 @@ vector<VarDataPair> BasicContactMgrV20::getAlertOnFlags(string alert_id) const
 //---------------------------------------------------------
 // Procedure: getAlertOffFlags
 
-vector<VarDataPair> BasicContactMgrV20::getAlertOffFlags(string alert_id) const
+vector<VarDataPair> ContactMgrV20::getAlertOffFlags(string alert_id) const
 {
   vector<VarDataPair> empty;
   if(!knownAlert(alert_id))
@@ -1369,7 +1369,7 @@ vector<VarDataPair> BasicContactMgrV20::getAlertOffFlags(string alert_id) const
 //   Purpose: Get a list of all contact names, sorted by range,
 //            with the closest contact at the front of the list.
 
-list<string> BasicContactMgrV20::getRangeOrderedContacts() const
+list<string> ContactMgrV20::getRangeOrderedContacts() const
 {
   list<string> to_be_returned_ordered_list;
 
@@ -1438,7 +1438,7 @@ list<string> BasicContactMgrV20::getRangeOrderedContacts() const
 // 143.2  CONTACT_INFO = name=gilda # contact=gilda
 //  43.2  CONTACT_INFO = name=gilda # contact=gilda
 
-bool BasicContactMgrV20::buildReport()
+bool ContactMgrV20::buildReport()
 {
   //=================================================================
   // Part 1: Header Content

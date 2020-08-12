@@ -1,7 +1,7 @@
 //--------------------------------------------------------
-// pBasicContactMgrV20 Configuration Block (Created from Plugin)
+// pContactMgrV20 Configuration Block (Created from Plugin)
 
-ProcessConfig = pBasicContactMgrV20
+ProcessConfig = pContactMgrV20
 {
   AppTick   = 2
   CommsTick = 2
