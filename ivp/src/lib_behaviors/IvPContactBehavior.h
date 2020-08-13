@@ -55,6 +55,8 @@ public:
   bool  handleSetParamIgnoreGroup(std::string);
   bool  handleSetParamMatchType(std::string);
   bool  handleSetParamIgnoreType(std::string);
+
+  bool  postingPerContactInfo() const {return(m_post_per_contact_info);}
   
   std::string getFilterSummary() const {return(m_filter_set.getSummary());}
   
@@ -66,6 +68,8 @@ public:
   double m_decay_end;
   double m_time_on_leg;
 
+  bool   m_post_per_contact_info;
+  
   double m_complete_after_retired;
 
   ExFilterSet m_filter_set;

@@ -61,9 +61,7 @@ ContactMgrV20::ContactMgrV20()
   m_decay_start = 15;
   m_decay_end   = 30;
 
-  m_prev_closest_contact_val = 0;
-
-  m_max_retired_hist   = 5;
+  m_max_retired_hist = 5;
   m_use_geodesy = false;
 
   m_range_report_timeout = 10;
@@ -79,6 +77,7 @@ ContactMgrV20::ContactMgrV20()
   m_contacts_recap_posted = 0;
   m_prev_contacts_count   = 0;
   m_prev_closest_range    = 0;
+  m_prev_closest_contact_val = 0;
 
   m_alert_requests_received = 0;
 }

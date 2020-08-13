@@ -49,7 +49,7 @@ Behavior = BHV_Loiter
 }
 
 //----------------------------------------------
-//Behavior = BHV_AvdColregsV19
+Behavior = BHV_AvdColregsV17
 {
   name       = avdcol_
   pwt        = 150
@@ -67,7 +67,7 @@ Behavior = BHV_Loiter
          extrapolate = true
                decay = 30,60
 
-        use_refinery = true
+//        use_refinery = true
 
         pwt_outer_dist = 35
         pwt_inner_dist = 10
@@ -79,7 +79,7 @@ Behavior = BHV_Loiter
 }
 
 //----------------------------------------------
-Behavior = BHV_AvoidCollision
+//Behavior = BHV_AvoidCollision
 {
   name         = ac_
   pwt          = 500

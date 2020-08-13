@@ -278,11 +278,6 @@ IvPFunction *BHV_AvdColregsV19::onRunState()
   if((m_iterations > 1) && (m_cn_port_of_os != prev_cn_port_of_os))
     m_cn_crossed_os_port_star = true;
 
-  postMessage("CN_FORE_OF_OS_"+m_contact, m_cn_fore_of_os);
-  postMessage("CN_PORT_OF_OS_"+m_contact, m_cn_port_of_os);
-
-  postMessage("CN_CROSSED_OS_PORT_STAR_"+m_contact, m_cn_crossed_os_port_star);
-  
   if(m_contact_range >= m_completed_dist) {
     setComplete();
     return(0);
@@ -1563,15 +1558,11 @@ bool BHV_AvdColregsV19::getRelBngRate(double& result)
 
 void BHV_AvdColregsV19::postStatusInfo()
 {
-  string suffix = "_" + toupper(m_contact);
-  postMessage("AVDCOL_RANGE" + suffix, m_contact_range);
-
+  // Part 1: Post the seglist if relevant
   string full_mode = m_avoid_mode;
   if(m_avoid_submode != "none")
     full_mode += ":" + m_avoid_submode;
   
-  postMessage("COLREGS_AVOID_MODE" + suffix, full_mode);
-
   if((m_avoid_mode != "none") && (m_avoid_mode != "complete")) {
     m_bearing_segl.clear();
     m_bearing_segl.set_label(m_us_name + m_descriptor);
@@ -1585,7 +1576,17 @@ void BHV_AvdColregsV19::postStatusInfo()
 
   postMessage("VIEW_SEGLIST", m_bearing_segl.get_spec());
 
+  // Part 2: Post contact specific, useful for debugging but
+  // typically not appropriate when there are many contacts
+  if(!postingPerContactInfo())
+    return;
 
+  string suffix = "_" + toupper(m_contact);
+
+  postMessage("CN_FORE_OF_OS" + suffix, m_cn_fore_of_os);
+  postMessage("CN_PORT_OF_OS_" + suffix, m_cn_port_of_os);
+  postMessage("CN_CROSSED_OS_PORT_STAR" + suffix, m_cn_crossed_os_port_star);
+  
   unsigned int avoid_mode_ix = 0;
   if(m_avoid_mode == "complete")
     avoid_mode_ix = 3;
@@ -1625,6 +1626,9 @@ void BHV_AvdColregsV19::postStatusInfo()
     avoid_mode_ix = 50;
   }
 
+  postMessage("AVDCOL_RANGE" + suffix, m_contact_range);
+  postMessage("COLREGS_AVOID_MODE" + suffix, full_mode);
+  
   string summary = "mode=" + m_avoid_mode + ":" + m_avoid_submode;
 
   postMessage("COLREGS_SUMMARY" + suffix, summary);

@@ -54,6 +54,8 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_time_on_leg  = 60;
 
   m_complete_after_retired = -1;  // seconds. -1 means don't use.
+
+  m_post_per_contact_info = false;
   
   // Initialize state variables
   m_osx = 0;
@@ -145,6 +147,8 @@ bool IvPContactBehavior::setParam(string param, string param_val)
   }
   else if(param == "extrapolate")
     return(setBooleanOnString(m_extrapolate, param_val));
+  else if(param == "post_per_contact_info")
+    return(setBooleanOnString(m_post_per_contact_info, param_val));
 
   else if(param == "match_name")
     return(m_filter_set.addMatchName(param_val));

@@ -523,6 +523,12 @@ void BHV_AvoidCollision::postInfo(double dpct, double spct)
 
 void BHV_AvoidCollision::postRange(bool ok)
 {
+  // Sanity check: Postings made to variables that contain contact
+  // name may be disabled. Set post_per_contact_info=true to enable.
+  // By default this is false.
+  if(!postingPerContactInfo())
+    return;
+  
   string bhv_tag = toupper(getDescriptor());
   bhv_tag = findReplace(bhv_tag, "BHV_", "");
   bhv_tag = findReplace(bhv_tag, "(d)", "");
