@@ -21,7 +21,7 @@ Processconfig = ANTLER
 
   Run = pHelmIvP           @ NewConsole = false
   Run = uProcessWatch      @ NewConsole = false
-  Run = pBasicContactMgr   @ NewConsole = false
+  Run = pContactMgrV20     @ NewConsole = false
   Run = pShare             @ NewConsole = false
   Run = pHostInfo          @ NewConsole = false
 
@@ -35,7 +35,7 @@ Processconfig = ANTLER
 #include plug_uLoadWatch.moos
 #include plug_pShare.moos
 #include plug_pHostInfo.moos
-#include plug_pBasicContactMgr.moos
+#include plug_pContactMgrV20.moos
 
 #include plug_uSimMarine.moos
 #include plug_pHelmIvP.moos
