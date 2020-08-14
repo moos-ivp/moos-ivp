@@ -19,7 +19,7 @@ Processconfig = ANTLER
   Run = pNodeReporter    @ NewConsole = false
   Run = pMarinePID       @ NewConsole = false
   Run = pHelmIvP         @ NewConsole = false
-  Run = pBasicContactMgr @ NewConsole = false
+  Run = pContactMgrV20   @ NewConsole = false
   Run = pHostInfo        @ NewConsole = false
   Run = uFldNodeBroker   @ NewConsole = false
 
@@ -46,7 +46,7 @@ Processconfig = ANTLER
 #include plug_pLogger.moos
 #include plug_pNodeReporter.moos
 #include plug_uProcessWatch.moos
-#include plug_pBasicContactMgr.moos
+#include plug_pContactMgrV20.moos
 
 #ifdef VARIATION 1 
   #include plug_V1_uXMS_GPS.moos

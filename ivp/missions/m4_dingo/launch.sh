@@ -14,13 +14,14 @@ VARIATION="0"
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------for ARGI; do
+for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	echo "launch.sh [SWITCHES] [time_warp] "
 	echo "  --just_make, -j                " 
 	echo "  --help, -h                     " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
-        TIME_WARP=$ARGI
+	TIME_WARP=$ARGI
     elif [ "${ARGI}" = "v1" ] ; then
 	VARIATION="1"
     elif [ "${ARGI}" = "v2" ] ; then
