@@ -1,7 +1,7 @@
 //--------------------------------------------------------
 // pBasicContactMgr Configuration Block (Created from Plugin)
 
-ProcessConfig = pBasicContactMgr
+ProcessConfig = pContactMgrV20
 {
   AppTick   = 2
   CommsTick = 2
@@ -16,10 +16,4 @@ ProcessConfig = pBasicContactMgr
 
   alert_range_color = gray70
   cpa_range_color   = gray30
-
-  //alert = id=avd, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
-  //alert = id=avd, alert_range=80
-  //alert = id=avd, cpa_range=100
-  //alert = id=avd, alert_range_color=green
-  //alert = id=avd, cpa_range_color=white
 }

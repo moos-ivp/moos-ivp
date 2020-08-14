@@ -6,10 +6,12 @@ ProcessConfig = pContactMgrV20
   AppTick   = 2
   CommsTick = 2
 
-  CONTACT_MAX_AGE = 3600
+  CONTACT_MAX_AGE = 600
   DISPLAY_RADII   = false
 
-  Alert = id=one, var=CONTACT_INFO, val="name=avd_$[VNAME] # contact=$[VNAME]"
-  Alert = id=two, var=TRAIL_INFO, val="name=trail_$[VNAME] # contact=$[VNAME]"
-  Alert = id=three, var=CONTACT_$[VTYPE], val="name=avd_$[VNAME] # contact_type=$[VTYPE]"
+  alert = id=one, on_flag=SAY_MOOS=hello
+
+  //alert = id=one, on_flag=CONTACT_INFO=name=avd_$[VNAME] # contact=$[VNAME]
+  //alert = id=two, on_flag=TRAIL_INFO="name=trail_$[VNAME] # contact=$[VNAME]"
+  //alert = id=three, on_flag=CONTACT_$[VTYPE]="name=avd_$[VNAME] # contact_type=$[VTYPE]"
 }

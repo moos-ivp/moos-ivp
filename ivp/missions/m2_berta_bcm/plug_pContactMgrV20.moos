@@ -1,7 +1,7 @@
 //--------------------------------------------------------
-// pBasicContactMgr Configuration Block (Created from Plugin)
+// pContactMgrV20 Configuration Block (Created from Plugin)
 
-ProcessConfig = pBasicContactMgr
+ProcessConfig = pContactMgrV20
 {
   AppTick   = 2
   CommsTick = 2
@@ -12,7 +12,6 @@ ProcessConfig = pBasicContactMgr
 
   contact_max_age = 3600
   display_radii   = true
-  //default_alert_region    = pts={60,10:60,-100:170,-100:170,10}
 
   alert_range_color = gray70
   cpa_range_color   = gray30
@@ -21,7 +20,7 @@ ProcessConfig = pBasicContactMgr
   alert = id=zone, var=IN_ZONE, val="inside"
   alert = id=zone, alert_range=9999
   alert = id=zone, cpa_range=9999
-  alert = id=zone, region=pts={-40,-35:40,-35:40,-110:-40,-110}
+  alert = id=zone, match_region=pts={-40,-35:40,-35:40,-110:-40,-110}
   alert = id=zone, on_flag=SAY_MOOS=say={hello}
   alert = id=zone, off_flag=SAY_MOOS=say={bye}
 #endif

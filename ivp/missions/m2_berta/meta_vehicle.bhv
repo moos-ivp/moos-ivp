@@ -67,7 +67,7 @@ Behavior = BHV_AvdColregsV17
          extrapolate = true
                decay = 30,60
 
-//        use_refinery = true
+        use_refinery = true
 
         pwt_outer_dist = 35
         pwt_inner_dist = 10
