@@ -20,7 +20,7 @@ ProcessConfig = ANTLER
   Run = uProcessWatch     @ NewConsole = false
 
 #ifdef KNOWS_CONTACTS
-  Run = pBasicContactMgr  @ NewConsole = false
+  Run = pContactMgrV20  @ NewConsole = false
 #endif
 
   Run = pShare             @ NewConsole = false
@@ -42,5 +42,5 @@ ProcessConfig = ANTLER
 #include plug_uProcessWatch.moos
 
 #ifdef KNOWS_CONTACTS 
-  #include plug_pBasicContactMgr.moos
+  #include plug_pContactMgrV20.moos
 #endif
