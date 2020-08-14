@@ -200,6 +200,8 @@ void showInterfaceAndExit()
   blk("  CONTACTS_RETIRED     = bravo,foxtrot,kilroy                   ");
   blk("  CONTACTS_UNALERTED   = (gus,avd)(henry,avd)                   ");
   blk("                                                                ");
+  blk("  VIEW_CIRCLE         = x=-150.3,y=-117.5,radius=10,edge_size=1 ");
+  blk("                                                                ");
   blk("  PCONTACTMGRV20_PID   = 3988                                   ");
   exit(0);
 }
