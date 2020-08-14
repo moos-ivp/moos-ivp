@@ -23,12 +23,12 @@ ADD_EXECUTABLE(bhv2graphviz ${SRC})
    
 TARGET_LINK_LIBRARIES(bhv2graphviz
   helmivp
-  contacts
   ufield
   behaviors-marine
   behaviors-colregs
   behaviors
   bhvutil	
+  contacts
   ivpbuild 
   ivpcore
   ivpsolve 
