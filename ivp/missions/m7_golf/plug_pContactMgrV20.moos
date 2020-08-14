@@ -1,13 +1,11 @@
 //--------------------------------------------------------
-// pBasicContactMgr Configuration Block (Created from Plugin)
+// pContactMgrV20 Configuration Block (Created from Plugin)
 
-ProcessConfig = pBasicContactMgr
+ProcessConfig = pContactMgrV20
 {
   AppTick   = 2
   CommsTick = 2
 
-  ALERT_RANGE     = 55
-  ALERT_CPA_RANGE = 70
   CONTACT_MAX_AGE = 3600
   DISPLAY_RADII   = false
 
