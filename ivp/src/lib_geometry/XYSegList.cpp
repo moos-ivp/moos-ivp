@@ -45,6 +45,21 @@ void XYSegList::add_vertex(double x, double y, double z, string vprop)
 }
 
 //---------------------------------------------------------------
+// Procedure: mod_vertex
+
+void XYSegList::mod_vertex(unsigned int ix, double x, double y,
+			   double z, string vprop)
+{
+  if(ix < size()) {
+    m_vx[ix] = x;
+    m_vy[ix] = y;
+    m_vz[ix] = z;
+    m_vprop[ix] = vprop;
+  }
+}
+
+
+//---------------------------------------------------------------
 // Procedure: add_vertex
 
 void XYSegList::add_vertex(const XYPoint &pt, string vprop)

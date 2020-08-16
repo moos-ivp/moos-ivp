@@ -69,8 +69,8 @@ bool XYPatternBlock::setParam(string param, string value)
   if((param == "angle") && isNumber(value))
     return(setParam(param, dval));
   else if(param == "id_point") {
-    string left = stripBlankEnds(biteString(value, ','));
-    string right = stripBlankEnds(value);
+    string left = biteStringX(value, ',');
+    string right = value;
     if(isNumber(left) && isNumber(right)) {
       XYPoint new_point(atof(left.c_str()), atof(right.c_str()));
       m_id_points.push_back(new_point);
