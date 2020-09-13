@@ -23,8 +23,8 @@
 
 (setq moos-bhv-and-keyword-list
       (list
-       '("BHV_AvdColregsV17" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay")
-       '("BHV_AvdColregsV19" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "giveway_bow_dist" "use_refinery" "check_plateaus" "check_validity" "pcheck_thresh" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay")
+       '("BHV_AvdColregsV17" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region")
+       '("BHV_AvdColregsV19" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "giveway_bow_dist" "use_refinery" "check_plateaus" "check_validity" "pcheck_thresh" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region")
 	 
        '("BHV_Waypoint" "capture_radius" "activate_radius" "speed" "stale_nav_thresh" "stale_poly_thres" "setpt_method" "visual_hints")
 
@@ -47,7 +47,7 @@
        '("BHV_AvoidObstacleX" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "min_util_cpa_dist" "max_util_cpa_dist" "obstacle_key" "completed_dist" "no_alert_request" "use_refinery")
        '("BHV_HSLine" "time_on_leg")
        '("BHV_TestFailure" "failure_type")
-       '("BHV_CutRange" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "pwt_inner_dist" "giveup_dist" "patience" "on_no_contact_ok" "pursueflag" "giveupflag")
-       '("BHV_Shadow" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "heading_peakwidth" "heading_basewidth" "speed_peakwidth" "speed_basewidth" "on_no_contact_ok")
+       '("BHV_CutRange" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "pwt_inner_dist" "giveup_dist" "patience" "on_no_contact_ok" "pursueflag" "giveupflag" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region")
+       '("BHV_Shadow" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "heading_peakwidth" "heading_basewidth" "speed_peakwidth" "speed_basewidth" "on_no_contact_ok" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region")
        '("BHV_Trail" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "nm_radius" "n_alert_request" "post_trail_dist_on_idle" "pwt_outer_dist" "radius" "trail_angle" "trail_angle_type" "trail_range" "on_no_contact_ok")
-       '("BHV_AvoidCollision" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "bearing_lines" "completed_dist" "max_util_cpa_dist" "min_util_cpa_dist" "no_alert_request" "contact_type_required" "on_no_contact_ok" "pwt_grade" "pwt_inner_dist" "pwt_outer_dist" "match_contact_group" "ignore_contact_group")))
+       '("BHV_AvoidCollision" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "bearing_lines" "completed_dist" "max_util_cpa_dist" "min_util_cpa_dist" "no_alert_request" "contact_type_required" "on_no_contact_ok" "pwt_grade" "pwt_inner_dist" "pwt_outer_dist" "match_contact_group" "ignore_contact_group" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region")))
