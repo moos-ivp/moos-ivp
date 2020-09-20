@@ -27,6 +27,7 @@
       '("iM300" "comms_type" "port" "ip_addr" "stale_thresh" "max_rudder" "max_thrust" "drive_mode")
       '("uSockComms" "comms_type" "port" "ip_addr")
       '("uSimTowBody" "tow_length")
+      '("pMissionEval" "lead_condition" "pass_condition" "fail_condition" "result_flag" "pass_flag" "fail_flag" )
       '("uFldVoronoi" "stale_time" "verbose" "region")
       '("uSimHeron" "port" "comms_type" "ip_addr")
       '("uFldVoronoi" "reject_range" "post_poly" "post_region" "region")
