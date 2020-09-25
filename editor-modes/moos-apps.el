@@ -73,7 +73,7 @@
       '("pDeadManPost" "heartbeat_var" "max_noheart" "deadflag" "post_policy" "active_at_start")
       '("pRangeEvent" "min_range" "max_range" "event_var" "ignore_group")
       '("uPokeDB")
-      '("uQueryDB" "max_time" "condition" "halt_condition" "pass_condition" "fail_condition" "check_var")
+      '("uQueryDB" "max_time" "halt_max_time" "condition" "halt_condition" "pass_condition" "fail_condition" "check_var")
       '("uHelmScope" "paused" "display_moos_scope" "display_bhv_posts" "display_virgins" "truncated_output" "behaviors_consise" "var")
       '("pSafetyRetreat" "polygon" "duration" "retreat_cue" "retreat_message_var" "retreat_notify_var" "verbose" "retreat_cue_var")
       '("uFldBeaconRangeSensor" "reach_distance" "reach_distance" "ping_wait" "ping_wait" "ping_payments" "report_vars" "ground_truth" "verbose" "default_beacon_shape" "default" "default_beacon_width" "default_beacon_report_range" "default_beacon_freq" "beacon" "beacon" "beacon" "rn_algorithm" "default_beacon_color" "default_beacon_push_dist" "default_beacon_pull_dist" "node_push_dist" "node_pull_dist")
