@@ -5,6 +5,7 @@
 /*   DATE: Sep 19th, 2020                                       */
 /****************************************************************/
 
+#include <algorithm>
 #include "MBUtils.h"
 #include "VCheckSet.h"
 #include "VarDataPairUtils.h"
