@@ -8,5 +8,7 @@ ProcessConfig = pObstacleMgr
 
   point_var = TRACKED_FEATURE 
 
+	max_age_per_point = 1000
+	
   post_view_polys = true
 } 

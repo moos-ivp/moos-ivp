@@ -27,8 +27,32 @@ Processconfig = ANTLER
   Run = uFldNodeBroker   @ NewConsole = false
   Run = uLoadWatch       @ NewConsole = false
   Run = pObstacleMgr     @ NewConsole = false
+
+#ifdef VNAME henry
+//  Run = uTimerScript     @ NewConsole = false
+#endif
+
 }
 
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 8
+  CommsTick = 8
+
+  paused     = false
+  reset_max  = unlimited
+  reset_time = end
+
+  randvar = varname=X1, min=0,    max=150,  key=at_reset
+  randvar = varname=Y1, min=-225,  max=-175,   key=at_reset
+
+  event = var=TRACKED_FEATURE, val="x=$[X1], y=$[Y1], label=TEST_$[TCOUNT]", time=0.05
+}
+
+	
 #include plug_uFldNodeBroker.moos
 #include plug_pShare.moos
 #include plug_pHostInfo.moos
