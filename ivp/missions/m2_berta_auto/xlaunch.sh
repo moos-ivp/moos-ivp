@@ -49,7 +49,7 @@ LAUNCH_PID=$!
 #-------------------------------------------------------
 #  Part 4: Start the mission with the right pokes
 #-------------------------------------------------------
-sleep 5
+sleep 2
 echo "Poking...." 
 uPokeDB targ_shoreside.moos DEPLOY_ALL=true MOOS_MANUAL_OVERRIDE_ALL=false
 
@@ -74,7 +74,7 @@ done
 echo "Quitting....[${LAUNCH_PID}]"
 kill -9 -p $LAUNCH_PID
 
-
+sleep 5
 
 #-------------------------------------------------------
 #  Part 7: Pare the log files before archiving
