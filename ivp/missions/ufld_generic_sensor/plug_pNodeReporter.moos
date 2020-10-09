@@ -6,6 +6,6 @@ ProcessConfig = pNodeReporter
   AppTick     = 2
   CommsTick   = 2
   
-  VESSEL_TYPE = KAYAK
-  GROUP       = RED_TEAM
+  platform_type = KAYAK
+  group         = RED_TEAM
 }

@@ -23,9 +23,9 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include <iostream>
-#include "LogicBuffer.h"
 #include "MBUtils.h"
+#include "LogicBuffer.h"
+#include "LogicUtils.h"
 
 using namespace std;
 
@@ -49,90 +49,121 @@ LogicBuffer::~LogicBuffer()
 //-----------------------------------------------------------
 // Procedure: addNewCondition
 
-bool LogicBuffer::addNewCondition(const string& str_value)
+bool LogicBuffer::addNewCondition(string str_value)
 {
   LogicCondition new_condition;
   bool ok = new_condition.setCondition(str_value);
-  if(ok)
+  if(ok) {
     m_logic_conditions.push_back(new_condition);
-
-  cout << "ok result: " << ok << endl;
+    m_logic_vars = getLogicVars(m_logic_conditions);
+  }
+    
   return(ok);
 }
 
 //-----------------------------------------------------------
 // Procedure: updateInfoBuffer
 
-bool LogicBuffer::updateInfoBuffer(const string& moosvar,
-				   const string& value)
+void LogicBuffer::updateInfoBuffer(string moosvar, string value)
 {
   if(!m_info_buffer)
-    return(false);
+    return;
+  if(m_logic_vars.count(moosvar) == 0)
+    return;
 
-  return(m_info_buffer->setValue(moosvar, value));
+  m_info_buffer->setValue(moosvar, value);
 }
 
 //-----------------------------------------------------------
 // Procedure: updateInfoBuffer
 
-bool LogicBuffer::updateInfoBuffer(const string& moosvar,
-				   double value)
+void LogicBuffer::updateInfoBuffer(string moosvar, double value)
 {
   if(!m_info_buffer)
-    return(false);
+    return;
+  if(m_logic_vars.count(moosvar) == 0)
+    return;
   
-  return(m_info_buffer->setValue(moosvar, value));
+  m_info_buffer->setValue(moosvar, value);
 }
 
 //-----------------------------------------------------------
 // Procedure: checkConditions()
 
-bool LogicBuffer::checkConditions()
+bool LogicBuffer::checkConditions(string required)
 {
   if(!m_info_buffer) 
     return(false);
 
-  unsigned int i, j, vsize, csize;
-
   // Phase 1: get all the variable names from all present conditions.
-  vector<string> all_vars;
-  csize = m_logic_conditions.size();
-  for(i=0; i<csize; i++) {
-    vector<string> svector = m_logic_conditions[i].getVarNames();
-    all_vars = mergeVectors(all_vars, svector);
-  }
-  all_vars = removeDuplicates(all_vars);
-
+  vector<string> condition_vars = getUniqueVars(m_logic_conditions);
+  
   // Phase 2: get values of all variables from the info_buffer and 
   // propogate these values down to all the logic conditions.
-  vsize = all_vars.size();
-  for(i=0; i<vsize; i++) {
-    string varname = all_vars[i];
+  for(unsigned int i=0; i<condition_vars.size(); i++) {
+    string varname = condition_vars[i];
     bool   ok_s, ok_d;
     string s_result = m_info_buffer->sQuery(varname, ok_s);
     double d_result = m_info_buffer->dQuery(varname, ok_d);
+    
+    if(ok_s) {
+      for(unsigned int j=0; j<m_logic_conditions.size(); j++)
+	m_logic_conditions[j].setVarVal(varname, s_result);
+    }
 
-    for(j=0; (j<csize)&&(ok_s); j++)
-      m_logic_conditions[j].setVarVal(varname, s_result);
-    for(j=0; (j<csize)&&(ok_d); j++)
+    if(ok_d) {
+      for(unsigned int j=0; j<m_logic_conditions.size(); j++)
       m_logic_conditions[j].setVarVal(varname, d_result);
+    }
   }
 
-  // Phase 3: evaluate all logic conditions. Return true only if all
-  // conditions evaluate to be true.
-  for(i=0; i<csize; i++) {
-    bool satisfied = m_logic_conditions[i].eval();
-    if(!satisfied)
-      return(false);
+    
+  // Phase 3: evaluate all logic conditions.
+  m_notable_condition = "";
+  if(required == "any") {
+    for(unsigned int i=0; i<m_logic_conditions.size(); i++) {
+      bool satisfied = m_logic_conditions[i].eval();    
+      if(satisfied) {
+	m_notable_condition = m_logic_conditions[i].getRawCondition();
+	return(true);
+      }
+    }
+    return(false);
   }
-  return(true);  
+
+  // required == all (the default)
+  for(unsigned int i=0; i<m_logic_conditions.size(); i++) {
+    bool satisfied = m_logic_conditions[i].eval();    
+    if(!satisfied) {
+      m_notable_condition = m_logic_conditions[i].getRawCondition();
+      return(false);
+    }
+  }
+  return(true);
 }
 
 
 //-----------------------------------------------------------
+// Procedure: getAllVarsSet()
+
+set<string> LogicBuffer::getAllVarsSet() const
+{
+  // Get all the variable names from all present conditions.
+  set<string> all_vars;
+  unsigned int vsize = m_logic_conditions.size();
+  for(unsigned int i=0; i<vsize; i++) {
+    vector<string> svector = m_logic_conditions[i].getVarNames();
+    for(unsigned int j=0; j<svector.size(); j++)
+      all_vars.insert(svector[j]);
+  }
+
+  return(all_vars);
+}
+ 
+//-----------------------------------------------------------
 // Procedure: getAllVars()
 
-vector<string> LogicBuffer::getAllVars()
+vector<string> LogicBuffer::getAllVars() const
 {
   // Get all the variable names from all present conditions.
   vector<string> all_vars;
@@ -146,12 +177,19 @@ vector<string> LogicBuffer::getAllVars()
   return(all_vars);
 }
  
+//-----------------------------------------------------------
+// Procedure: getInfoBuffReport()
 
+vector<string> LogicBuffer::getInfoBuffReport(bool allvars) const
+{
+  vector<string> null_vector;
+  if(!m_info_buffer)
+    return(null_vector);
 
-
-
-
-
-
-
-
+  if(allvars) {
+    vector<string> vars = getAllVars();
+    return(m_info_buffer->getReport(allvars));    
+  }
+  
+  return(m_info_buffer->getReport());    
+}

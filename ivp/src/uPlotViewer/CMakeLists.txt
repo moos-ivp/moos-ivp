@@ -39,6 +39,7 @@ TARGET_LINK_LIBRARIES(uPlotViewer
   mbutil
   fltk 
   fltk_gl
+# dl
 )
 
 # http://developer.apple.com/qa/qa2007/qa1567.html

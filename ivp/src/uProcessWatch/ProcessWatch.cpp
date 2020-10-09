@@ -132,6 +132,10 @@ bool ProcessWatch::Iterate()
   if(m_proc_watch_summary_changed || post_based_on_time) {
     AppCastingMOOSApp::Notify(postVar("PROC_WATCH_SUMMARY"), m_proc_watch_summary);
     m_last_posting_time = m_curr_time;
+    if(m_proc_watch_summary == "All Present")
+      Notify("PROC_WATCH_ALL_OK", "true");
+    else
+      Notify("PROC_WATCH_ALL_OK", "false");
   }
 
   if(m_proc_watch_summary_changed) {

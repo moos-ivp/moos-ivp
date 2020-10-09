@@ -41,7 +41,7 @@ Behavior = BHV_Waypoint
       //points = format=lawnmower, label=foxtrot, x=115, y=-100, height=120, width=100, lane_width=12, rows=north-south, startx=00, starty=0, degs=0
 
                order = normal
-	       repeat  = 99
+	       repeat  = 1
 
 	       // --panx=-90 --pany=70  --zoom=4.4 
 

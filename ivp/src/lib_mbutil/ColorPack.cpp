@@ -45,7 +45,7 @@ ColorPack::ColorPack()
 ColorPack::ColorPack(string str) 
 {
   // Handle special case first
-  if((str == "invisible") || (str == "empty")) {
+  if((str == "invisible") || (str == "empty") || (str == "off")) {
     m_visible = false;
     m_set = true;
     m_color_vector = std::vector<double>(3,0);

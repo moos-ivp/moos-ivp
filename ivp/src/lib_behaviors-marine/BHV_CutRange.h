@@ -25,6 +25,7 @@
 #define BHV_CUTRANGE_HEADER
 
 #include <string>
+#include "VarDataPair.h"
 #include "IvPContactBehavior.h"
 
 class IvPDomain;
@@ -35,35 +36,27 @@ public:
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
+  void         onHelmStart();
 
-protected:
+ protected:
+  void   checkPursuit();
   double getRelevance();
   double getPriority();
   
-private:
+ private: // Config params
   double  m_pwt_outer_dist;
   double  m_pwt_inner_dist;
 
   double  m_giveup_range;
+  double  m_giveup_thresh;
   double  m_patience;
+
+  bool    m_no_alert_request;
+
+private: // State vars
+  bool    m_in_pursuit;
+
+  std::vector<VarDataPair> m_pursue_flags;
+  std::vector<VarDataPair> m_giveup_flags;
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

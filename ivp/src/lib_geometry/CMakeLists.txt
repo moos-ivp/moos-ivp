@@ -6,6 +6,8 @@
 SET(SRC
   DubinsTurn.cpp
   DubinsCache.cpp
+  EdgeTag.cpp
+  EdgeTagSet.cpp
   AngleUtils.cpp
   ArtifactUtils.cpp
   WallEngine.cpp
@@ -69,6 +71,8 @@ SET(SRC
   )
 
 SET(HEADERS
+  EdgeTag.h
+  EdgeTagSet.h
   AngleUtils.h
   ArtifactUtils.h
   ConvexHullGenerator.h

@@ -40,7 +40,9 @@ public:
   bool  setParam(std::string, std::string);
   bool  setParam(std::string, double);
   void  addIDPoint(const XYPoint&);
-
+  void  setCoreWidth(bool v=true) {m_core_wid=v;}
+  void  setAutoDrop(bool v=true) {m_auto_drop=v;}
+  
  public:  // Interface for building components
   void  buildCompositeSegList(double osx, double osy);
 
@@ -65,6 +67,9 @@ public:
   double  m_swathwid;
   double  m_angle;
 
+  bool    m_core_wid;
+  bool    m_auto_drop;
+  
   // The pblock may contain several id points, but at least one.
   std::vector<XYPoint>   m_id_points;
 
@@ -80,13 +85,3 @@ public:
 };
 
 #endif
-
-
-
-
-
-
-
-
-
-

@@ -48,6 +48,8 @@ public:
   bool        set_ddata(double, bool overwrite_ok=false);
   bool        set_smart_data(std::string, bool overwrite_ok=false);
 
+  void        set_post_tag(std::string s)   {m_post_tag=s;}
+  
   std::string get_var()   const {return(m_var);}
   std::string get_sdata() const {return(m_sdata);}
   double      get_ddata() const {return(m_ddata);}
@@ -55,8 +57,11 @@ public:
   bool        is_quoted() const {return(m_is_quoted);}
   std::string get_key()   const {return(m_key);}
   std::string get_ptype() const {return(m_ptype);}
-
+  
+  std::string get_post_tag() const {return(m_post_tag);}
+  
   bool        valid() const;
+  int         why_invalid() const;
 
   bool        get_var_set()   const {return(m_var_set);}
   bool        get_sdata_set() const {return(m_sdata_set);}
@@ -74,12 +79,15 @@ protected:
   bool        m_is_quoted;
   std::string m_key;
   std::string m_ptype;
-
+ 
   bool        m_var_set;
   bool        m_key_set;
   bool        m_ptype_set;
   bool        m_ddata_set;
   bool        m_sdata_set;
+
+  // New in Release 20.X to support range related postings
+  std::string m_post_tag;   
 };
 
 VarDataPair stringToVarDataPair(std::string);

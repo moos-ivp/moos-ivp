@@ -45,6 +45,7 @@ class GrepHandler
   void setFinalEntryOnly(bool v)   {m_final_entry_only=v;}
   void setFinalTimeOnly(bool v)    {m_final_time_only=v;}
   void setFinalValueOnly(bool v)   {m_final_value_only=v;}
+  void setValuesOnly(bool v)       {m_values_only=v;}
   
  protected:
   std::vector<std::string> getMatchedKeys();
@@ -55,16 +56,7 @@ class GrepHandler
   void outputLine(const std::string& line, const std::string& varname="");
   void ignoreLine(const std::string& line, const std::string& varname="");
   
- protected:
-
-  std::vector<std::string> m_keys;
-  std::vector<bool>        m_pmatch;
-
-  double m_lines_removed;
-  double m_lines_retained;
-  double m_chars_removed;
-  double m_chars_retained;
-  bool   m_file_overwrite;
+ protected: // Config vars
 
   std::string m_var_condition;
   bool        m_var_condition_met;
@@ -75,22 +67,27 @@ class GrepHandler
   bool        m_final_entry_only;
   bool        m_final_time_only;
   bool        m_final_value_only;
+  bool        m_values_only;
+
+  FILE *m_file_in;
+  FILE *m_file_out;
+
+ protected: // State vars
   std::string m_final_line;
+  std::string m_last_tstamp;
   
+  std::vector<std::string> m_keys;
+  std::vector<bool>        m_pmatch;
+
+  double m_lines_removed;
+  double m_lines_retained;
+  double m_chars_removed;
+  double m_chars_retained;
+  bool   m_file_overwrite;
+
   std::set<std::string> m_vars_retained;
   std::set<std::string> m_vars_removed;
   
-  FILE *m_file_in;
-  FILE *m_file_out;
 };
 
 #endif
-
-
-
-
-
-
-
-
-

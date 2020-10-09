@@ -197,8 +197,9 @@ IvPFunction *BHV_Attractor::onRunState()
     return(0);
 
   double curr_time = getBufferCurrTime();
-  postIntMessage("ATTRACTOR_CONTACT_TIME", m_cnutc);
-  postIntMessage("ATTRACTOR_DELTA_TIME", curr_time-m_cnutc);
+  double cnutc = m_cnos.cnutc();
+  postIntMessage("ATTRACTOR_CONTACT_TIME", cnutc);
+  postIntMessage("ATTRACTOR_DELTA_TIME", curr_time - cnutc);
 
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.

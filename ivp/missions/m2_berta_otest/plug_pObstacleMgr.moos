@@ -8,7 +8,11 @@ ProcessConfig = pObstacleMgr
 
   point_var = TRACKED_FEATURE 
 
-	max_age_per_point = 1000
-	
+	//max_age_per_point = 1000
+
+	poly_label_thresh = 5000
+	poly_shade_thresh = 5000
+	poly_vertex_thresh = 5000
+
   post_view_polys = true
 } 

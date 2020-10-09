@@ -689,13 +689,17 @@ void VPlug_GeoShapes::addPoint(const XYPoint& new_point)
 //-----------------------------------------------------------
 // Procedure: addPolygon
 
-bool VPlug_GeoShapes::addPolygon(const string& poly_str)
+bool VPlug_GeoShapes::addPolygon(const string& poly_str,
+				 double timestamp)
 {
   XYPolygon new_poly = string2Poly(poly_str);
-  if(new_poly.size() > 0) 
-    addPolygon(new_poly);
-  else if(new_poly.active() == false)
-    addPolygon(new_poly);
+  if((new_poly.size()==0) && new_poly.active())
+    return(false);
+  
+  if(new_poly.get_time() == 0)
+    new_poly.set_time(timestamp);
+
+  addPolygon(new_poly);
   return(true);
 }
 
@@ -758,24 +762,33 @@ bool VPlug_GeoShapes::addCommsPulse(const string& pulse_str,
 //-----------------------------------------------------------
 // Procedure: addMarker
 
-bool VPlug_GeoShapes::addMarker(const string& marker_str)
+bool VPlug_GeoShapes::addMarker(const string& marker_str,
+				double timestamp)
 {
   XYMarker new_marker = string2Marker(marker_str);
-  if(new_marker.valid()) {
-    addMarker(new_marker);
-    return(true);
-  }
-  return(false);
+  if(!new_marker.valid())
+    return(false);
+
+  if(new_marker.get_time() == 0)
+    new_marker.set_time(timestamp);
+  
+  addMarker(new_marker);
+  return(true);
 }
 
 //-----------------------------------------------------------
 // Procedure: addSegList
 
-bool VPlug_GeoShapes::addSegList(const string& segl_str)
+bool VPlug_GeoShapes::addSegList(const string& segl_str,
+				 double timestamp)
 {
   XYSegList new_segl = string2SegList(segl_str);
   if((new_segl.size()==0) && new_segl.active())
     return(false);
+
+  if(new_segl.get_time() == 0)
+    new_segl.set_time(timestamp);
+
   addSegList(new_segl);
   return(true);
 }
@@ -1115,13 +1128,4 @@ bool VPlug_GeoShapes::typeMatch(XYObject* obj, string stype)
     return(strEnds(otype, pattern));
 
   return(otype == pattern);
-    
-
 }
-
-
-
-
-
-
-

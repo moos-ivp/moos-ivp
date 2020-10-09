@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_AvoidCollision.cpp                              */
 /*    DATE: Nov 18th 2006                                        */
@@ -81,7 +81,6 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
   m_check_validity = false;
   m_pcheck_thresh  = 0.001;
   m_verbose        = false;
-  
 }
 
 //-----------------------------------------------------------
@@ -95,29 +94,29 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
   double dval = atof(param_val.c_str());
   bool non_neg_number = (isNumber(param_val) && (dval >= 0));
 
-  if(param == "pwt_outer_dist") {
-    if(!non_neg_number)
-      return(false);
-    m_pwt_outer_dist = dval;
-    if(m_pwt_inner_dist > m_pwt_outer_dist)
-      m_pwt_inner_dist = m_pwt_outer_dist;
-    return(true);
+  if(param == "pwt_inner_dist") {
+    return(setMinPartOfPairOnString(m_pwt_inner_dist,
+				    m_pwt_outer_dist, param_val));
   }  
-  else if(param == "pwt_inner_dist") {
-    if(!non_neg_number)
-      return(false);
-    m_pwt_inner_dist = dval;
-    if(m_pwt_outer_dist < m_pwt_inner_dist)
-      m_pwt_outer_dist = m_pwt_inner_dist;
-    return(true);
-  }  
+  else if(param == "pwt_outer_dist") { 
+    return(setMaxPartOfPairOnString(m_pwt_inner_dist,
+				    m_pwt_outer_dist, param_val));
+  }
+
+  else if(param == "min_util_cpa_dist") {
+    return(setMinPartOfPairOnString(m_min_util_cpa_dist,
+				    m_max_util_cpa_dist, param_val));
+  }    
+  else if(param == "max_util_cpa_dist") {
+    return(setMaxPartOfPairOnString(m_min_util_cpa_dist,
+				    m_max_util_cpa_dist, param_val));
+  }
+  
   else if(param == "completed_dist")
     return(setNonNegDoubleOnString(m_completed_dist, param_val));
-  else if((param == "contact_type_required") && (param_val != "")) {
-    return(handleSetParamMatchType(param_val));
-    // m_contact_type_required = tolower(param_val);
-    // return(true);
-  }  
+  else if((param == "contact_type_required") && (param_val != "")) 
+    return(IvPContactBehavior::setParam("match_type", param_val));
+
   else if(param == "collision_depth") {
     if(dval <= 0)
       return(false);
@@ -128,18 +127,8 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
     m_collision_depth = dval;
     return(true);
   }  
-  else if((param == "max_util_cpa_dist") ||      // preferred
-	  (param == "all_clear_distance")) {     // deprecated 4/10
-    if(!non_neg_number)
-      return(false);
-    m_max_util_cpa_dist = dval;
-    return(true);
-  }  
-  else if(param == "min_util_cpa_dist")
-    return(setNonNegDoubleOnString(m_min_util_cpa_dist, param_val));
   
-  else if((param == "pwt_grade") ||              // preferred
-	  (param == "active_grade")) {           // deprecated 4/10
+  else if(param == "pwt_grade") {
     param_val = tolower(param_val);
     if((param_val!="linear") && (param_val!="quadratic") && 
        (param_val!="quasi"))
@@ -176,54 +165,39 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
   else if(param == "pcheck_thresh")
     return(setNonNegDoubleOnString(m_pcheck_thresh, param_val));
 
-
+  // Safety check, in case user did not explicitly set completed dist
+  if(m_completed_dist < m_pwt_outer_dist)
+    m_completed_dist = m_pwt_outer_dist;
+  
   return(false);
 }
 
 
 //-----------------------------------------------------------
 // Procedure: onHelmStart()
+//      Note: This function is called when the helm starts, even if,
+//            especially if, the behavior is just a template at start
+//            time to be spawned later. 
+//      Note: An alert request will be sent to the contact manager if
+//            the behavior is configured with templating enabled, and
+//            an updates variable has been provided.  In the rare case
+//            that the above is true but the user still does not want
+//            an alert request generated, this can be done by setting
+//            m_no_alert_request to true.
 
 void BHV_AvoidCollision::onHelmStart()
 {
-  if(m_no_alert_request || (m_update_var == ""))
+  if(m_no_alert_request || (m_update_var == "") || !m_dynamically_spawnable)
     return;
 
-  string s_alert_range = doubleToStringX(m_pwt_outer_dist,1);
-  string s_cpa_range   = doubleToStringX(m_completed_dist,1);
-  string s_alert_templ = "name=avd_$[VNAME] # contact=$[VNAME]";
-
-  //string alert_request = "id=avd, var=" + m_update_var;
-
-  string alert_request = "id=avd";
-  alert_request += ", onflag=" + m_update_var + "=name=avd_$[VNAME] # contact=$[VNAME]";
-
-  //alert_request += ", val=" + s_alert_templ;
-  alert_request += ", alert_range=" + s_alert_range;
-  alert_request += ", cpa_range=" + s_cpa_range;
-
-#if 0
-  string match_ignore_summary = getMatchIgnoreSummary();
-  if(match_ignore_summary != "")
-    alert_request += "," + match_ignore_summary;
-#endif
+  string alert_templ = m_update_var + "=name=$[VNAME] # contact=$[VNAME]";
+  string request = "id=" + getDescriptor();
+  request += ", onflag=" + alert_templ;
+  request += ",alert_range=" + doubleToStringX(m_pwt_outer_dist,1);
+  request += ", cpa_range=" + doubleToStringX(m_completed_dist,1);
+  request = augmentSpec(request, getFilterSummary());
   
-  string filter_summary = getFilterSummary();
-  if(filter_summary != "")
-    alert_request += ", " + filter_summary;
-  
-  if(m_contact_type_required != "")
-    alert_request += ", contact_type=" + m_contact_type_required;
-  
-  postMessage("BCM_ALERT_REQUEST", alert_request);
-}
-
-//-----------------------------------------------------------
-// Procedure: onRunToIdleState()
-
-void BHV_AvoidCollision::onRunToIdleState() 
-{
-  postErasableBearingLine();
+  postMessage("BCM_ALERT_REQUEST", request);
 }
 
 //-----------------------------------------------------------
@@ -231,19 +205,7 @@ void BHV_AvoidCollision::onRunToIdleState()
 
 void BHV_AvoidCollision::onIdleState() 
 {
-  bool ok = updatePlatformInfo();
-  if(!ok)
-    postRange(false);
-  else
-    postRange(true);
-}
-
-//-----------------------------------------------------------
-// Procedure: onCompleteState()
-
-void BHV_AvoidCollision::onCompleteState() 
-{
-  postErasableBearingLine();
+  postRange();
 }
 
 //-----------------------------------------------------------
@@ -263,25 +225,21 @@ string BHV_AvoidCollision::getInfo(string str)
 IvPFunction *BHV_AvoidCollision::onRunState() 
 {
   m_total_evals = 0;
-  if(!updatePlatformInfo()) {
-    postRange(false);
+  if(!platformUpdateOK()) {
+    postRange();
     return(0);
   }
-  if(!checkContactGroupRestrictions())
-    return(0);
   
   m_relevance = getRelevance();
-  postRange(true);
+  postRange();
 
   if(m_contact_range >= m_completed_dist) {
     setComplete();
     return(0);
   }
   
-  if(m_relevance <= 0) {
-    postViewableBearingLine();
+  if(m_relevance <= 0)
     return(0);
-  }
 
   IvPFunction *ipf = 0;
   if(m_collision_depth > 0)
@@ -291,7 +249,7 @@ IvPFunction *BHV_AvoidCollision::onRunState()
 
   
   if(ipf) {
-    ipf->getPDMap()->normalize(0.0, 100.0);
+    ipf->getPDMap()->normalize(0, 100);
     ipf->setPWT(m_relevance * m_priority_wt);
   }
 
@@ -325,7 +283,6 @@ IvPFunction *BHV_AvoidCollision::getAvoidIPF()
   
   if(!ok) {
     postEMessage("Unable to init AOF_AvoidCollision.");
-    postErasableBearingLine();
     return(0);
   }    
   
@@ -361,7 +318,7 @@ IvPFunction *BHV_AvoidCollision::getAvoidIPF()
 
       if(m_verbose) {
 	cout.precision(15);
-	cout << "Sworst fail: " << worst_fail << endl;
+	cout << "Worst fail: " << worst_fail << endl;
 	cout << "ok_plateaus: " << boolToString(ok_plateaus) << endl;
 	cout << "  BHV_AvoidCollision checkPlateaus   START()" << endl;
 	cout << "  BHV_AvoidCollision plat_thresh: " <<
@@ -429,7 +386,6 @@ IvPFunction *BHV_AvoidCollision::getAvoidDepthIPF()
 
   if(!ok) {
     postEMessage("Unable to init AOF_AvoidCollision.");
-    postErasableBearingLine();
     return(0);
   }    
   OF_Reflector reflector(&aof, 1);
@@ -479,7 +435,6 @@ double BHV_AvoidCollision::getRelevance()
 
   postMessage("AVD_DEBUG", "In getRelevance: " + doubleToString(m_contact_range));
   if(m_contact_range >= m_pwt_outer_dist) {
-    //postInfo(0,0);
     return(0);
   }
 
@@ -505,23 +460,9 @@ double BHV_AvoidCollision::getRelevance()
 }
 
 //-----------------------------------------------------------
-// Procedure: postInfo
+// Procedure: postRange()
 
-void BHV_AvoidCollision::postInfo(double dpct, double spct)
-{
-  string bhv_tag = toupper(getDescriptor());
-  bhv_tag = findReplace(bhv_tag, "BHV_", "");
-  bhv_tag = findReplace(bhv_tag, "(d)", "");
-
-  postMessage("DPCT_BHV_"+bhv_tag, dpct);
-  postMessage("SPCT_BHV_"+bhv_tag, spct);
-}
-
-
-//-----------------------------------------------------------
-// Procedure: postRange
-
-void BHV_AvoidCollision::postRange(bool ok)
+void BHV_AvoidCollision::postRange()
 {
   // Sanity check: Postings made to variables that contain contact
   // name may be disabled. Set post_per_contact_info=true to enable.
@@ -529,35 +470,14 @@ void BHV_AvoidCollision::postRange(bool ok)
   if(!postingPerContactInfo())
     return;
   
-  string bhv_tag = toupper(getDescriptor());
-  bhv_tag = findReplace(bhv_tag, "BHV_", "");
-  bhv_tag = findReplace(bhv_tag, "(d)", "");
-  if(!ok) {
-    postMessage("RANGE_AVD_" + m_contact, -1);
-    postMessage("CLOSING_SPD_AVD_"+ m_contact, 0);
-  }
-  else {
-    // round the speed a bit first so to reduce the number of 
-    // posts to the db which are based on change detection.
-    double cls_speed = snapToStep(m_curr_closing_spd, 0.1);
-    postMessage(("CLSG_SPD_AVD_"+m_contact), cls_speed);
+  // Round the speed a bit first so to reduce the number of posts 
+  // to the db which are based on change detection.
+  double cls_speed = snapToStep(m_curr_closing_spd, 0.1);
+  postMessage(("CLSG_SPD_AVD_" + m_contact), cls_speed);
     
-    // Post to integer precision unless very close to contact
-    if(m_contact_range <= 10)
-      postMessage(("RANGE_AVD_"+m_contact), m_contact_range);
-    else
-      postIntMessage(("RANGE_AVD_"+m_contact), m_contact_range);
-  }
+  // Post to integer precision unless very close to contact
+  if(m_contact_range <= 10)
+    postMessage(("RANGE_AVD_" + m_contact), m_contact_range);
+  else
+    postIntMessage(("RANGE_AVD_" + m_contact), m_contact_range);
 }
-
-
-//-----------------------------------------------------------
-// Procedure: updatePlatformInfo
-
-bool BHV_AvoidCollision::updatePlatformInfo()
-{
-  return(IvPContactBehavior::updatePlatformInfo());
-}
-
-
-

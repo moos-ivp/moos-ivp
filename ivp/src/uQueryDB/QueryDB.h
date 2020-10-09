@@ -23,14 +23,15 @@
 
 #include <map>
 #include <string>
-#include "MOOS/libMOOS/MOOSLib.h"
+#include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "LogicCondition.h"
+#include "LogicBuffer.h"
 #include "InfoBuffer.h"
 
-class QueryDB : public CMOOSApp  
+class QueryDB : public AppCastingMOOSApp
 {
  public:
-  QueryDB(std::string g_server="localhost", long int g_port=9000); 
+  QueryDB(); 
   virtual ~QueryDB() {}
   
   bool Iterate();
@@ -38,37 +39,56 @@ class QueryDB : public CMOOSApp
   bool OnConnectToServer();
   bool OnStartUp();
 
-  bool setLogicCondition(std::string);
+  bool setMissionFile(std::string);
+  bool setServerPort(std::string);   
+  void setServerHost(std::string s)     {m_sServerHost=s;}
   void setConfigCommsLocally(bool v)    {m_configure_comms_locally=v;}
   void setVerbose(bool v)               {m_verbose=v;}
   void setWaitTime(double v)            {m_wait_time=v;}
+  void setPassFail()                    {m_check_for_halt=false;}
+  void setReportCheckVars()             {m_report_check_vars=true;}
+  bool setWaitTime(std::string);
+  bool addHaltCondition(std::string);
+
+  std::string getMissionFile() const {return(m_mission_file);}
+  std::string getServerHost() const  {return(m_sServerHost);}
+  long int    getServerPort() const  {return(m_lServerPort);}
+  
+ protected: // Standard AppCastingMOOSApp function to overload 
+  bool buildReport();
   
  protected:
   void registerVariables();
   bool updateInfoBuffer(CMOOSMsg& msg);
   bool ConfigureComms();
-  bool checkCondition();
-  bool allMailReceived() const;
-  void printReport();
+  void reportCheckVars();
+  void checkMaxTimeReached();
+  void checkHaltConditions();
+  void checkPassFailConditions();
 
- protected: // Index for each is unique per variable name
-  double m_db_time;
+ protected: // State vars
+  LogicBuffer  m_halt_conditions;
+  LogicBuffer  m_pass_conditions;
+  LogicBuffer  m_fail_conditions;
 
-  LogicCondition  m_logic_condition;
-  InfoBuffer     *m_info_buffer;
+  InfoBuffer  *m_info_buffer;
+  double       m_start_time;
+  int          m_exit_value;
+  double       m_elapsed_time;
 
-  double m_wait_time;
-  double m_start_time;
-  int    m_iteration;
-  bool   m_verbose;
-  bool   m_configure_comms_locally;
+  // When/if a condition fails, this holds the clue
+  std::string  m_notable_condition;
+  
+ protected: // Config vars
+  std::string  m_mission_file;
+
+  std::vector<std::string> m_check_vars;
+  
+  bool    m_check_for_halt;
+  bool    m_report_check_vars;
+  
+  double  m_wait_time;
+  double  m_max_time;
+  bool    m_verbose;
+  bool    m_configure_comms_locally;
 };
-
-
-
-
-
-
-
-
-

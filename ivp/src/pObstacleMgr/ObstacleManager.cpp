@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ObstacleManager.cpp                                  */
 /*    DATE: Aug 27th 2014 For RobotX                             */
@@ -31,6 +31,13 @@ ObstacleManager::ObstacleManager()
   m_max_pts_per_cluster = 20;
   m_max_age_per_point   = 20;
 
+  m_poly_label_thresh = 25;
+  m_poly_shade_thresh = 100;
+  m_poly_vertex_thresh = 150;
+  m_poly_label_thresh_over = false;
+  m_poly_shade_thresh_over = false;
+  m_poly_vertex_thresh_over = false;
+  
   m_lasso = false;
   m_lasso_points = 6;
   m_lasso_radius = 5;  // meters
@@ -98,7 +105,6 @@ bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
       handled = handleMailAlertRequest(sval);
     else if(key == "APPCAST_REQ") // handle by AppCastingMOOSApp
       handled = true;
-
 
     if(!handled)
       reportRunWarning("Unhandled Mail: " + key);
@@ -172,6 +178,13 @@ bool ObstacleManager::OnStartUp()
       handled = setBooleanOnString(m_post_view_polys, value);
     else if(param == "obstacles_color")
       handled = setColorOnString(m_obstacles_color, value);
+    else if(param == "poly_label_thresh")
+      handled = setUIntOnString(m_poly_label_thresh, value);
+    else if(param == "poly_shade_thresh")
+      handled = setUIntOnString(m_poly_shade_thresh, value);
+    else if(param == "poly_vertex_thresh")
+      handled = setUIntOnString(m_poly_vertex_thresh, value);
+
     else if(param == "lasso")
       handled = setBooleanOnString(m_lasso, value);
 
@@ -352,12 +365,31 @@ bool ObstacleManager::handleMailNewPoint(string value)
 
 bool ObstacleManager::updatePointHulls()
 {
+  unsigned int pcount = m_map_obstacles.size();
+  
+  bool poly_label_thresh_over  = (pcount > m_poly_label_thresh);
+  bool poly_shade_thresh_over  = (pcount > m_poly_shade_thresh);
+  bool poly_vertex_thresh_over = (pcount > m_poly_vertex_thresh);
+
+  bool thresh_crossed = false;
+  if(poly_label_thresh_over != m_poly_label_thresh_over)
+    thresh_crossed = true; 
+  if(poly_shade_thresh_over != m_poly_shade_thresh_over)
+    thresh_crossed = true; 
+  if(poly_vertex_thresh_over != m_poly_vertex_thresh_over)
+    thresh_crossed = true; 
+  m_poly_label_thresh_over  = poly_label_thresh_over;
+  m_poly_shade_thresh_over  = poly_shade_thresh_over;
+  m_poly_vertex_thresh_over = poly_vertex_thresh_over;
+  
   map<string,Obstacle>::iterator p;
   for(p=m_map_obstacles.begin(); p!=m_map_obstacles.end(); p++) {
-    if(!p->second.hasChanged())
+    if(!p->second.hasChanged() && !thresh_crossed)
       continue;
     string key = p->first;
     vector<XYPoint> points = p->second.getPoints();
+    if(points.size() == 0)
+      continue;
     
     XYPolygon poly;
     if(m_lasso) {
@@ -375,7 +407,7 @@ bool ObstacleManager::updatePointHulls()
     // First check if the polygon is convex. Certain edge cases may result
     // in a non convex polygon even with N>2 points, e.g., 3 colinear pts.
     if(!poly.is_convex()) {
-      reportRunWarning("hull failure - Placeholder needed ");
+      reportRunWarning("hull failure - Placeholder needed " + uintToString(poly.size()));
       poly = placeholderConvexHull(key);
     }
     
@@ -383,11 +415,26 @@ bool ObstacleManager::updatePointHulls()
     p->second.setPoly(poly);
     
     if(m_post_view_polys) {
-      poly.set_vertex_color(m_obstacles_color);
+      if(poly_label_thresh_over)
+	poly.set_label_color("invisible");
+
+      if(poly_shade_thresh_over)
+	poly.set_color("fill", "invisible");
+      else {
+	poly.set_color("fill", m_obstacles_color);
+	poly.set_transparency(0.15);
+      }
+
+      if(poly_vertex_thresh_over) {
+	poly.set_vertex_color("invisible");
+	poly.set_vertex_size(0);
+      }
+      else {
+	poly.set_vertex_color(m_obstacles_color);
+	poly.set_vertex_size(3);
+      }
+      
       poly.set_edge_color(m_obstacles_color);
-      poly.set_color("fill", m_obstacles_color);
-      poly.set_transparency(0.15);
-      poly.set_vertex_size(4);
       poly.set_edge_size(1);
       string poly_str = poly.get_spec(3);
       Notify("VIEW_POLYGON", poly_str);

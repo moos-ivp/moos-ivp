@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_CutRange.cpp                                     */
 /*    DATE: May 10th 2005                                        */
@@ -31,7 +31,9 @@
 #include "AOF_CutRangeCPA.h"
 #include "BHV_CutRange.h"
 #include "OF_Reflector.h"
+#include "RefineryCPA.h"
 #include "BuildUtils.h"
+#include "VarDataPairUtils.h"
 #include "MBUtils.h"
 
 using namespace std;
@@ -39,21 +41,25 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-BHV_CutRange::BHV_CutRange(IvPDomain gdomain) : 
-  IvPContactBehavior(gdomain)
+BHV_CutRange::BHV_CutRange(IvPDomain gdomain) : IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "bhv_cutrange");
   this->setParam("build_info", "uniform_piece=discrete@course:2,speed:3");
   this->setParam("build_info", "uniform_grid =discrete@course:8,speed:6");
   
   m_domain = subDomain(m_domain, "course,speed");
-
+  
   m_pwt_outer_dist = 0;
   m_pwt_inner_dist = 0;
 
-  m_patience     = 0;
-  m_giveup_range = 0;   // meters - zero means never give up
-  m_time_on_leg  = 15;  // seconds
+  m_patience      = 0;
+  m_giveup_range  = 0;   // meters - zero means never give up
+  m_giveup_thresh = 1;   // meters - anti thrashing buffer
+  m_time_on_leg   = 15;  // seconds
+
+  m_in_pursuit = false;
+  
+  m_no_alert_request  = true;
   
   addInfoVars("NAV_X, NAV_Y");
 }
@@ -67,53 +73,56 @@ bool BHV_CutRange::setParam(string param, string param_val)
     return(true);
 
   double dval = atof(param_val.c_str());
-  bool non_neg_number = (isNumber(param_val) && (dval >= 0));
 
-  if(param == "pwt_outer_dist") { 
-    if(!non_neg_number)
-      return(false);
-    m_pwt_outer_dist = dval;
-    if(m_pwt_inner_dist > m_pwt_outer_dist)
-      m_pwt_inner_dist = m_pwt_outer_dist;
-    return(true);
+  if(param == "pwt_inner_dist") {
+    return(setMinPartOfPairOnString(m_pwt_inner_dist,
+				    m_pwt_outer_dist, param_val));
   }  
-  else if(param == "pwt_inner_dist") {
-    if(!non_neg_number)
-      return(false);
-    m_pwt_inner_dist = dval;
-    if(m_pwt_outer_dist < m_pwt_inner_dist)
-      m_pwt_outer_dist = m_pwt_inner_dist;
-    return(true);
-  }  
-  if(param == "dist_priority_interval") {     // Deprecated 4/2010
-    param_val = stripBlankEnds(param_val);
-    string left  = stripBlankEnds(biteString(param_val, ','));
-    string right = stripBlankEnds(param_val);
-    if(!isNumber(left) || !isNumber(right))
-      return(false);
-    double dval1 = atof(left.c_str());
-    double dval2 = atof(right.c_str());
-    if((dval1 < 0) || (dval2 < 0) || (dval1 > dval2))
-      return(false);
-    m_pwt_inner_dist = dval1;
-    m_pwt_outer_dist = dval2;
-    return(true);
-  }  
-  else if((param == "giveup_dist") ||      // preferred
-	  (param == "giveup_range")) {     // supported alternative
-    if(!non_neg_number)
-      return(false);
-    m_giveup_range = dval;
-    return(true);
-  }  
-  else if(param == "patience") {
-    if((dval < 0) || (dval > 100) || (!isNumber(param_val)))
+  else if(param == "pwt_outer_dist") { 
+    return(setMaxPartOfPairOnString(m_pwt_inner_dist,
+				    m_pwt_outer_dist, param_val));
+  }
+  else if((param == "giveup_dist") || (param == "giveup_range")) 
+    return(setNonNegDoubleOnString(m_giveup_range, param_val));
+  else if(param == "pursueflag")
+    return(addVarDataPairOnString(m_pursue_flags, param_val));
+  else if(param == "giveupflag") 
+    return(addVarDataPairOnString(m_giveup_flags, param_val));
+  else if((param == "patience") && isNumber(param_val)) {
+    if((dval < 0) || (dval > 100))
       return(false);
     m_patience = dval;
     return(true);
   }  
 
   return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: onHelmStart()
+//      Note: This function is called when the helm starts, even if,
+//            especially if, the behavior is just a template at start
+//            time to be spawned later. 
+//      Note: An alert request will be sent to the contact manager if
+//            the behavior is configured with templating enabled, and
+//            an updates variable has been provided.  In the rare case
+//            that the above is true but the user still does not want
+//            an alert request generated, this can be done by setting
+//            m_no_alert_request to true.
+
+void BHV_CutRange::onHelmStart()
+{
+  if(m_no_alert_request || (m_update_var == "") || !m_dynamically_spawnable)
+    return;
+
+  string alert_templ = m_update_var + "=name=$[VNAME] # contact=$[VNAME]";
+  string request = "id=" + getDescriptor();
+  request += ", onflag=" + alert_templ;
+  request += ",alert_range=" + doubleToStringX(m_pwt_outer_dist,1);
+  request += ", cpa_range=" + doubleToStringX(m_giveup_range,1);
+  request = augmentSpec(request, getFilterSummary());
+  
+  postMessage("BCM_ALERT_REQUEST", request);
 }
 
 //-----------------------------------------------------------
@@ -124,6 +133,7 @@ IvPFunction *BHV_CutRange::onRunState()
   if(!updatePlatformInfo())
     return(0);
 
+  checkPursuit();
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
   double relevance = getRelevance();
@@ -148,6 +158,7 @@ IvPFunction *BHV_CutRange::onRunState()
   
   IvPFunction *ipf = 0;
   OF_Reflector reflector(&aof);
+
   reflector.create(m_build_info);
   if(!reflector.stateOK())
     postWMessage(reflector.getWarnings());
@@ -156,14 +167,28 @@ IvPFunction *BHV_CutRange::onRunState()
     ipf->setPWT(relevance * m_priority_wt);
   }
 
-#if 0
-  cout << "CutRange Pre-Normalize MIN-WT: " << ipf->getPDMap()->getMinWT() << endl;
-  cout << "CutRange Pre-Normalize MAX-WT: " << ipf->getPDMap()->getMaxWT() << endl;
-  cout << "CutRange MIN-WT: " << ipf->getPDMap()->getMinWT() << endl;
-  cout << "CutRange MAX-WT: " << ipf->getPDMap()->getMaxWT() << endl;
-#endif
-  
   return(ipf);
+}
+
+//-----------------------------------------------------------
+// Procedure: checkPursuit()
+
+void BHV_CutRange::checkPursuit()
+{
+  // Sanity check
+  if(m_giveup_range <= 0)
+    return;
+  
+  bool in_pursuit = true;
+  if(m_contact_range > (m_giveup_range + m_giveup_thresh))
+    in_pursuit = false;
+  
+  if(in_pursuit && !m_in_pursuit)
+    postFlags(m_pursue_flags);
+  if(!in_pursuit && m_in_pursuit)
+    postFlags(m_giveup_flags);
+
+  m_in_pursuit = in_pursuit;
 }
 
 //-----------------------------------------------------------
@@ -171,42 +196,30 @@ IvPFunction *BHV_CutRange::onRunState()
 
 double BHV_CutRange::getRelevance()
 {
-  // Should be caught when setting the parameters, but check again
+  // Sanity check
   if((m_pwt_outer_dist < 0) || (m_pwt_inner_dist < 0) || 
      (m_pwt_inner_dist > m_pwt_outer_dist)) {
     postWMessage("Priority Range Error");
     return(0);
   }
-  
-  if((m_giveup_range > 0) && (m_contact_range > m_giveup_range))
+
+  // Sanity check
+  double total_range = m_pwt_outer_dist - m_pwt_inner_dist;  
+  if(total_range == 0)
     return(0);
 
-  double total_range = m_pwt_outer_dist - m_pwt_inner_dist;
-  
+  // Sanity check
+  if(!m_in_pursuit)
+    return(0);
+
+
   // if total_range==0 one of the two cases will result in a return
   if(m_contact_range >= m_pwt_outer_dist)
-    return(100.0);
+    return(1);
   if(m_contact_range < m_pwt_inner_dist)
-    return(0.0);
+    return(0);
+
 
   double pct = (m_contact_range - m_pwt_inner_dist) / total_range;
   return(pct);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

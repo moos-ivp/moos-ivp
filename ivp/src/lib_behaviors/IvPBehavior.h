@@ -58,6 +58,7 @@ public:
   virtual void onInactiveState() {}
   virtual void onIdleToRunState() {}
   virtual void onRunToIdleState() {}
+  virtual void onEveryState() {}
   virtual void postConfigStatus() {}
   virtual std::string expandMacros(std::string);
   virtual std::string getInfo(std::string)  {return("");}
@@ -88,9 +89,11 @@ public:
   void    noteLastRunCheck(bool, double);
   
   void    setDynamicallySpawned(bool v)   {m_dynamically_spawned=v;}
+  void    setDynamicallySpawnable(bool v) {m_dynamically_spawnable=v;}
   void    setSpawnBaseName(std::string s) {m_spawn_basename=s;}
-  bool    isDynamicallySpawned() const {return(m_dynamically_spawned);}
-  std::string getSpawnBaseName() const {return(m_spawn_basename);}
+  bool    isDynamicallySpawned() const    {return(m_dynamically_spawned);}
+  bool    isDynamicallySpawnable() const  {return(m_dynamically_spawnable);}
+  std::string getSpawnBaseName() const    {return(m_spawn_basename);}
   
  protected:
   bool    setBehaviorName(std::string str);
@@ -146,6 +149,7 @@ protected:
 
   std::string m_us_name;       
   std::string m_descriptor;    
+
   std::string m_contact; // Name for contact in InfoBuffer
   std::string m_behavior_type;
   std::string m_duration_status;
@@ -171,8 +175,9 @@ protected:
   std::map<std::string, std::string> m_remap_vars;
 
   // Info about behaviors that are dynamically spawned
-  bool        m_dynamically_spawned;
   std::string m_spawn_basename;
+  bool        m_dynamically_spawned;
+  bool        m_dynamically_spawnable;
   
   IvPDomain  m_domain;        
   double     m_priority_wt; 

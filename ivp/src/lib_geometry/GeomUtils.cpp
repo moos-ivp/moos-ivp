@@ -961,15 +961,21 @@ void perpSegIntPt(double x1, double y1, double x2, double y2,
 void perpLineIntPt(double x1, double y1, double x2, double y2, 
 		   double qx, double qy, double& rx, double& ry)
 {
-  // handle the special case where the segment is vertical
-  if(x1 == x2) {
+  double xdelta = x1-x2;
+  if(xdelta < 0)
+    xdelta = -xdelta;
+  // handle special case where line is vertical or essentially vertical
+  if(xdelta < 0.0001) {
     rx = x1;
     ry = qy;
     return;
   }
 
-  // handle the special case where the segment is horizontal
-  if(y1 == y2) {
+  // handle special case where segment is horizontal or essentially so
+  double ydelta = y1-y2;
+  if(ydelta < 0)
+    ydelta = -ydelta;
+  if(ydelta < 0.0001) {
     rx = qx;
     ry = y1;
     return;
@@ -1932,3 +1938,54 @@ bool randPointOnPoly(double vx, double vy,
 }
 
 
+//---------------------------------------------------------------
+// Procedure: polyWidth()
+
+double polyWidth(XYPolygon poly, double angle)
+{
+  poly.rotate(angle);
+
+  double xmin = 0;
+  double xmax = 0;
+  
+  unsigned int vsize = poly.size();
+  for(unsigned int i=0; i<vsize; i++) {
+    double px = poly.get_vx(i);
+    if(i == 0) {
+      xmin = px;
+      xmax = px;
+    }
+    else if(px < xmin)
+      xmin = px;
+    else if(px > xmax)
+      xmax = px;
+  }
+
+  return(xmax - xmin);
+}
+
+//---------------------------------------------------------------
+// Procedure: polyHeight()
+
+double polyHeight(XYPolygon poly, double angle)
+{
+  poly.rotate(angle);
+
+  double ymin = 0;
+  double ymax = 0;
+  
+  unsigned int vsize = poly.size();
+  for(unsigned int i=0; i<vsize; i++) {
+    double py = poly.get_vy(i);
+    if(i == 0) {
+      ymin = py;
+      ymax = py;
+    }
+    else if(py < ymin)
+      ymin = py;
+    else if(py > ymax)
+      ymax = py;
+  }
+
+  return(ymax - ymin);
+}

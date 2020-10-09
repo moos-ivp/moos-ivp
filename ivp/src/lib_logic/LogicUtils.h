@@ -28,6 +28,7 @@
 
 #include <vector>
 #include <string>
+#include <set>
 #include "LogicCondition.h"
 
 std::vector<std::string> parseRelation(std::string);
@@ -53,6 +54,10 @@ bool strFieldMatch(const std::string&,
 		   const std::string&, char c=':');
 
 std::vector<std::string> getUniqueVars(const std::vector<LogicCondition>&);
+
+std::set<std::string> getLogicVars(const std::vector<LogicCondition>&);
+
+bool setLogicConditionOnString(std::vector<LogicCondition>&, std::string);
 
 #endif
 

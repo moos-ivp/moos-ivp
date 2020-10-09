@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: VarDataPair.h                                        */
+/*    FILE: VarDataPair.cpp                                      */
 /*    DATE: Jul 4th 2005 Monday morning at Brueggers             */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
@@ -58,7 +58,7 @@ VarDataPair::VarDataPair(string var, double ddata)
   m_is_string = false;
   m_is_quoted = false;
 
-  m_var_set   = false;
+  m_var_set   = true;
   m_key_set   = false;
   m_ptype_set = false;
   m_ddata_set = true;
@@ -78,7 +78,7 @@ VarDataPair::VarDataPair(string var, string sdata)
   if(isQuoted(sdata))
     m_is_quoted = true;
 
-  m_var_set   = false;
+  m_var_set   = true;
   m_key_set   = false;
   m_ptype_set = false;
   m_ddata_set = false;
@@ -104,6 +104,8 @@ VarDataPair::VarDataPair(string var, string sdata, string hint)
   if(isNumber(data)) {
     m_ddata = atof(data.c_str());
     m_is_string = false;
+    m_ddata_set = true;
+    m_sdata_set = false;
   }
   else {
     if(isQuoted(data)) {
@@ -113,13 +115,13 @@ VarDataPair::VarDataPair(string var, string sdata, string hint)
     else
       m_sdata = data;
     m_is_string = true;
+    m_ddata_set = false;
+    m_sdata_set = true;
   }
 
-  m_var_set   = false;
+  m_var_set   = true;
   m_key_set   = false;
   m_ptype_set = false;
-  m_ddata_set = false;
-  m_sdata_set = false;
 }
 
 //------------------------------------------------------------------
@@ -134,6 +136,24 @@ bool VarDataPair::valid() const
     return(false);
 
   return(true);
+}
+
+//------------------------------------------------------------------
+// Procedure: why_invalid()
+
+int VarDataPair::why_invalid() const
+{
+  if(m_var == "")
+    return(1);
+  if(!m_var_set)
+    return(2);
+
+  if(!m_sdata_set)
+    return(3);
+  if(!m_ddata_set)
+    return(4);
+
+  return(0);
 }
 
 //------------------------------------------------------------------
@@ -273,6 +293,7 @@ string VarDataPair::getPrintable() const
 
 //------------------------------------------------------------------
 // Procedure: stringToVarDataPair()
+//   Example: var=MSG, sval=hello, key=foo, ptype=a
 
 VarDataPair stringToVarDataPair(string str)
 {

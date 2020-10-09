@@ -6,33 +6,9 @@
 #----------------------------------------------------------
 #  Part 1: Set Exit actions and declare global var defaults
 #----------------------------------------------------------
-trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
 JUST_MAKE="no"
 
-#----------------------------------------------------------
-#  Part 2: Check for and handle command-line arguments
-#----------------------------------------------------------
-for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "launch.sh [SWITCHES] [time_warp]    " 
-	echo "  --just_make, -j                   " 
-	echo "  --help, -h                        " 
-	exit 0;
-    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
-        TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
-	JUST_MAKE="yes"
-    else 
-        echo "Bad arg:" $ARGI "Run with -h for help."
-        echo "The launch.sh script is exiting with (1)."
-        exit 1
-    fi
-done
-
-#-------------------------------------------------------
-#  Part 3: Create the .moos and .bhv files. 
-#-------------------------------------------------------
 VNAME1="henry"           # The first vehicle Community
 VNAME2="gilda"           # The second vehicle Community
 START_POS1="150,-80,290"        
@@ -41,6 +17,28 @@ LOITER_POS1="x=-15,y=-70"
 LOITER_POS2="x=150,y=-60"
 SHORE_PSHARE="9200"
 
+#----------------------------------------------------------
+#  Part 2: Check for and handle command-line arguments
+#----------------------------------------------------------
+for ARGI; do
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+	echo "launch.sh [SWITCHES] [time_warp]    " 
+	echo "  --help, -h          Show this help message               " 
+        echo "  --just_make, -j     Just create targ files, no launch    "
+	exit 0;
+    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
+        TIME_WARP=$ARGI
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
+	JUST_MAKE="yes"
+    else 
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
+        exit 1
+    fi
+done
+
+#-------------------------------------------------------
+#  Part 3: Create the .moos and .bhv files. 
+#-------------------------------------------------------
 nsplug meta_vehicle.moos targ_henry.moos -i -f WARP=$TIME_WARP \
        VNAME=$VNAME1            BOT_PSHARE="9201"              \
        BOT_MOOSDB="9001"        SHORE_PSHARE=$SHORE_PSHARE     \
@@ -79,3 +77,5 @@ echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_gilda.moos >& /dev/null &
 
 uMAC targ_shoreside.moos
+
+kill -- -$$

@@ -81,6 +81,8 @@ void showHelpAndExit()
   blk("      from a .moos file.                                        ");
   mag("  --condition=val                                               ");
   blk("      Provide a logic condition.                                ");
+  mag("  --check_val, -cv                                              ");
+  blk("      Force check_var results to be written to .checkvars       ");
   mag("  --wait=val                                                    ");
   blk("      Specifiy the wait period (default is 10 seconds).         ");
   blk("                                                                ");
@@ -96,16 +98,27 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("uQueryDB Example MOOS Configuration                             ");
   blu("=============================================================== ");
   blk("                                                                ");
-  mag("Not Applicable"," - uQueryDB is run from the command line. If a ");
-  blk("MOOS file is provided on the command line, it is used solely to ");
-  blk("read the ServerHost and ServerPort information. uQueryDB does   ");
-  blk("not read a configuration block in the provided MOOS file.       ");
+  blk("ProcessConfig = uQueryDB                                        ");
+  blk("{                                                               ");
+  blk("  AppTick   = 4                                                 ");
+  blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
+  blk("  halt_max_time  = 1000    // In ses. Default is -1, disabled   ");
+  blk("  halt_condition = ENCOUNTER_TOTAL > 500                        ");
+  blk("                                                                ");
+  blk("  (note halt_max_time is preferred but same as max_time)        ");
+  blk("  (note halt_condition is preferred but same as condition)      ");
+  blk("                                                                ");
+  blk("                                                                ");
+  blk("  pass_condition = MISSION_RESULT = pass                        ");
+  blk("  fail_condition = COLLISION = true                             ");
+  blk("                                                                ");
+  blk("  check_var = MISSION_RESULT                                    ");
+  blk("  check_var = DB_UPTIME                                         ");
   exit(0);
 }
 
@@ -124,11 +137,11 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  Any variables involved in the specified logic condition.      ");
+  blk("  APPCAST_REQ                                                   ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  uQueryDB does not publish anything to the MOOSDB.             ");
+  blk("  APPCAST                                                       ");
   blk("                                                                ");
   exit(0);
 }

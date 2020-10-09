@@ -1270,56 +1270,6 @@ void MarineViewer::drawPolygons(const vector<XYPolygon>& polys)
   if(!m_geo_settings.viewable("polygon_viewable_all", true))
     return;
 
-  unsigned int i, vsize = polys.size();
-  for(i=0; i<vsize; i++) 
-    if(polys[i].active()) 
-      drawPolygon(polys[i]);
-}
-
-//-------------------------------------------------------------
-// Procedure: drawPolygon
-
-void MarineViewer::drawPolygon(const XYPolygon& poly)
-{
-  ColorPack edge_c("aqua");      // default if no drawing hint
-  ColorPack fill_c("invisible"); // default if no drawing hint
-  ColorPack vert_c("red");       // default if no drawing hint
-  ColorPack labl_c("white");     // default if no drawing hint
-  double transparency = 0.2;     // default if no drawing hint
-  double line_width   = 1;       // default if no drawing hint
-  double vertex_size  = 2;       // default if no drawing hint
-
-  if(poly.color_set("label"))            // label_color
-    labl_c = poly.get_color("label");
-  if(poly.color_set("vertex"))           // vertex_color
-    vert_c = poly.get_color("vertex");
-  if(poly.color_set("edge"))             // edge_color
-    edge_c = poly.get_color("edge");
-  if(poly.color_set("fill"))             // fill_color
-    fill_c = poly.get_color("fill");
-  if(poly.transparency_set())            // transparency
-    transparency = poly.get_transparency(); 
-  if(poly.edge_size_set())               // edge_size
-    line_width = poly.get_edge_size();
-  if(poly.vertex_size_set())             // vertex_size
-    vertex_size = poly.get_vertex_size();
-  
-  unsigned int vsize = poly.size();
-  if(vsize < 1)
-    return;
-  
-  unsigned int i, j;
-  double *points = new double[2*vsize];
-  
-  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
-  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
-  int pindex = 0;
-  for(i=0; i<vsize; i++) {
-    points[pindex]   = poly.get_vx(i) * pix_per_mtr_x;
-    points[pindex+1] = poly.get_vy(i) * pix_per_mtr_y;
-    pindex += 2;
-  }
-
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
@@ -1335,120 +1285,172 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
 
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
+
+  ColorPack default_edge_c("aqua");      // default if no drawing hint
+  ColorPack default_fill_c("invisible"); // default if no drawing hint
+  ColorPack default_vert_c("red");       // default if no drawing hint
+  ColorPack default_labl_c("white");     // default if no drawing hint
+  double default_transparency = 0.2;     // default if no drawing hint
+  double default_line_width   = 1;       // default if no drawing hint
+  double default_vertex_size  = 2;       // default if no drawing hint
+
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+
+  for(unsigned int k=0; k<polys.size(); k++) {
+    if(polys[k].active() && (polys[k].size() > 0)) {
+      XYPolygon poly = polys[k];
+      unsigned int vsize = poly.size();
+
+      vector<double> points((2*vsize), 2);
+      
+      int pindex = 0;
+      for(unsigned int i=0; i<vsize; i++) {
+	points[pindex]   = poly.get_vx(i) * pix_per_mtr_x;
+	points[pindex+1] = poly.get_vy(i) * pix_per_mtr_y;
+	pindex += 2;
+      }
+
+      // ========================================================
+      // Part 1: Draw the Interior of the polygon
+      // ========================================================
+      // Fill in the interior of polygon if it is a valid polygon
+      // with greater than two vertices. (Two vertex polygons are
+      // "valid" too, but we decide here not to draw the interior
+      // ========================================================
+      if(vsize > 2) {
+	ColorPack fill_c = default_fill_c;
+	if(poly.color_set("fill"))             // fill_color
+	  fill_c = poly.get_color("fill");
+      
+	if(fill_c.visible() && poly.is_convex()) {
+	  double transparency = default_transparency; 
+	  if(poly.transparency_set())            // transparency
+	    transparency = poly.get_transparency(); 
+	  
+	  glEnable(GL_BLEND);
+	  glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), transparency);
+	  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	  glBegin(GL_POLYGON);
+	  for(unsigned int i=0; i<vsize*2; i=i+2) {
+	    glVertex2f(points[i], points[i+1]);
+	  }
+	  glEnd();
+	  glDisable(GL_BLEND);
+	}
+      }
+
+      // ========================================================
+      // Part 2: Draw the Edges of the polygon
+      // ========================================================
+      // If polygon is invalid (non-convex), don't draw last edge.
+      if(vsize > 1) {
+	double line_width = default_line_width;
+	if(poly.edge_size_set())               // edge_size
+	  line_width = poly.get_edge_size();
+	if(line_width > 0) {
+	  ColorPack edge_c = default_edge_c;
+	  if(poly.color_set("edge"))             // edge_color
+	    edge_c = poly.get_color("edge");
+	  if(edge_c.visible()) {
+	    glLineWidth(line_width);
+	    glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
+	    
+	    if(poly.is_convex())
+	      glBegin(GL_LINE_LOOP);
+	    else
+	      glBegin(GL_LINE_STRIP);
+	    for(unsigned int i=0; i<vsize*2; i=i+2) {
+	      glVertex2f(points[i], points[i+1]);
+	    }
+	    glEnd();
+	    glLineWidth(1.0);
+	  }
+	}
+      }
+     
+      // ========================================================
+      // Part 3: Special Case Handle a Single Point Polygon
+      // ========================================================
+      // If the polygon is just a single point, draw it big!
+      if(vsize==1) {
+	glPointSize(1.2 * m_zoom);
+	// Draw the vertices with color coding for the first and last
+	
+	//glColor3f(0.7,0.13,0.13);  // Firebrick red b2 22 22
+	glColor3f(0.13, 0.13, 0.7);  // Blueish
+	glEnable(GL_POINT_SMOOTH);
+	glBegin(GL_POINTS);
+	glVertex2f(points[0], points[1]);
+	glEnd();
+	glDisable(GL_POINT_SMOOTH);
+      }
+      
+      // ========================================================
+      // Part 4: Draw the Vertices
+      // ========================================================
+      double vertex_size  = default_vertex_size;
+      if(poly.vertex_size_set())             // vertex_size
+	vertex_size = poly.get_vertex_size();
+      if(vertex_size > 0) {
+	ColorPack vert_c = default_vert_c;
+	if(poly.color_set("vertex"))           // vertex_color
+	  vert_c = poly.get_color("vertex");
+
+	glEnable(GL_POINT_SMOOTH);
+	glPointSize(vertex_size);
+	
+	glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu());
+	glBegin(GL_POINTS);
+	for(unsigned int j=0; j<vsize; j++) 
+	  glVertex2f(points[(j*2)], points[(j*2)+1]);
+	glEnd();
+	glDisable(GL_POINT_SMOOTH);
+      }
+      
+      // ========================================================
+      // Part 5: Draw the Labels
+      // ========================================================
+      // Draw the labels unless either the viewer has it shut off OR
+      // if the publisher of the polygon requested it not to be
+      // viewed, by setting the color to be "invisible".
+      bool draw_labels = m_geo_settings.viewable("polygon_viewable_labels");
+      if(draw_labels && (k<100)) {
+	ColorPack labl_c = default_labl_c;
+	if(poly.color_set("label"))            // label_color
+	  labl_c = poly.get_color("label");
+
+	if(labl_c.visible()) {
+	  double cx = poly.get_avg_x() * pix_per_mtr_x;
+	  double cy = poly.get_avg_y() * pix_per_mtr_y;
+
+	  glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+	  gl_font(1, 10);
+	  string plabel = poly.get_msg();
+	  if(plabel == "")
+	    plabel = poly.get_label();
+	  
+	  if((plabel != "") && (plabel != "_null_")) {
+	    glRasterPos3f(cx, cy, 0);
+	    gl_draw_aux(plabel);
+	  }
+	}
+      }
+    }
+  }
   
-  // Fill in the interior of polygon if it is a valid polygon
-  // with greater than two vertices. (Two vertex polygons are
-  // "valid" too, but we decide here not to draw the interior
-  if((vsize > 2) && poly.is_convex() && fill_c.visible()) {
-    glEnable(GL_BLEND);
-    glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), transparency);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glBegin(GL_POLYGON);
-    for(i=0; i<vsize*2; i=i+2) {
-      glVertex2f(points[i], points[i+1]);
-    }
-    glEnd();
-    glDisable(GL_BLEND);
-  }
-  
-  // Now draw the edges - if the polygon is invalid, don't draw
-  // the last edge.
-  if((vsize > 1) && (line_width > 0) && edge_c.visible()) {
-    glLineWidth(line_width);
-    glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
-    
-    if(poly.is_convex())
-      glBegin(GL_LINE_LOOP);
-    else
-      glBegin(GL_LINE_STRIP);
-    for(i=0; i<vsize*2; i=i+2) {
-      glVertex2f(points[i], points[i+1]);
-    }
-    glEnd();
-    glLineWidth(1.0);
-  }
-
-  // If the polygon is just a single point, draw it big!
-  if(vsize==1) {
-    glPointSize(1.2 * m_zoom);
-    // Draw the vertices with color coding for the first and last
-    
-    //glColor3f(0.7,0.13,0.13);  // Firebrick red b2 22 22
-    glColor3f(0.13, 0.13, 0.7);  // Blueish
-    glEnable(GL_POINT_SMOOTH);
-    glBegin(GL_POINTS);
-    glVertex2f(points[0], points[1]);
-    glEnd();
-    glDisable(GL_POINT_SMOOTH);
-  }
-
-  if(vertex_size > 0) {
-    glEnable(GL_POINT_SMOOTH);
-    glPointSize(vertex_size);
-
-    glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu());
-    glBegin(GL_POINTS);
-    for(j=0; j<vsize; j++) 
-      glVertex2f(points[(j*2)], points[(j*2)+1]);
-    glEnd();
-    glDisable(GL_POINT_SMOOTH);
-  }
-
-  // Draw the labels unless either the viewer has it shut off OR if 
-  // the publisher of the polygon requested it not to be viewed, by
-  // setting the color to be "invisible".
-  bool draw_labels = m_geo_settings.viewable("polygon_viewable_labels");
-  if(draw_labels && labl_c.visible()) {
-    double cx = poly.get_avg_x() * m_back_img.get_pix_per_mtr_x();
-
-    if(m_geo_settings.attribute("polygon_label_pos") == "mid") {
-      // The y position is at the center/middlle
-      double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr_y();
-      glTranslatef(cx, cy, 0);
-    }
-    else {
-      // The y position is at the top/max
-      double my = poly.get_max_y() * m_back_img.get_pix_per_mtr_y();
-      glTranslatef(cx, my, 0);
-    }
-      
-    glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
-    gl_font(1, 10);
-    string plabel = poly.get_msg();
-    if(plabel == "")
-      plabel = poly.get_label();
-
-    if((plabel != "") && (plabel != "_null_")) {
-      glRasterPos3f(0, 0, 0);
-      gl_draw_aux(plabel.c_str());
-    }
-  }
-  //-------------------------------- perhaps draw poly label
-
-
-#if 0
-  //-------------------------------- perhaps draw poly vertex labels
-  if(m_geo_settings.viewable("polygon_viewable_vertex_labels")) {
-    glTranslatef(0, 0, 0);
-    for(j=0; j<vsize; j++) {
-      double cx = points[(j*2)];
-      double cy = points[(j*2)+1];
-      
-      glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
-      gl_font(1, 10);
-      
-      string vlabel = intToString(j);
-      int slen = vlabel.length();
-      glRasterPos3f(cx, cy, 0);
-      gl_draw_aux(vlabel.c_str());
-    }
-  }
-  //-------------------------------- perhaps draw poly vertex_labels
-#endif
-
-  delete [] points;
   glFlush();
-  glPopMatrix();
+  glPopMatrix();  
+}
+
+//-------------------------------------------------------------
+// Procedure: drawPolygon
+
+void MarineViewer::drawPolygon(const XYPolygon& poly)
+{
+  vector<XYPolygon> vector_of_one;
+  vector_of_one.push_back(poly);
+  drawPolygons(vector_of_one);
 }
 
 //-------------------------------------------------------------
@@ -2755,7 +2757,10 @@ void MarineViewer::drawPoints(const map<string, XYPoint>& points)
   
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
-  
+
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+
   ColorPack default_vert_color("red");
   ColorPack default_labl_color("aqua_marine");
   bool      draw_labels = m_geo_settings.viewable("point_viewable_labels");
@@ -2777,8 +2782,8 @@ void MarineViewer::drawPoints(const map<string, XYPoint>& points)
       if(point.vertex_size_set())
 	vertex_size = point.get_vertex_size();
 
-      double px  = point.get_vx() * m_back_img.get_pix_per_mtr_x();
-      double py  = point.get_vy() * m_back_img.get_pix_per_mtr_y();
+      double px  = point.get_vx() * pix_per_mtr_x;
+      double py  = point.get_vy() * pix_per_mtr_y;
 
       if(vert_c.visible()) {
 	glPointSize(vertex_size);

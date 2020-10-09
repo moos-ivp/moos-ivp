@@ -36,8 +36,8 @@ for ARGI; do
     elif [ "${ARGI:0:6}" = "--amt=" ] ; then
         AMT="${ARGI#--amt=*}"
     else 
-	printf "Bad Argument: %s \n" $ARGI
-	exit 0
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
+        exit 1
     fi
 done
 

@@ -118,21 +118,41 @@ void XYSegList::delete_vertex(unsigned int ix)
   vector<double> new_x;
   vector<double> new_y;
   vector<double> new_z;
+  vector<string> new_vprop;
   
   for(unsigned int i=0; i<ix; i++) {
     new_x.push_back(m_vx[i]);
     new_y.push_back(m_vy[i]);
     new_z.push_back(m_vz[i]);
+    new_vprop.push_back(m_vprop[i]);
   }
   for(unsigned int i=ix+1; i<vsize; i++) {
     new_x.push_back(m_vx[i]);
     new_y.push_back(m_vy[i]);
     new_z.push_back(m_vz[i]);
+    new_vprop.push_back(m_vprop[i]);
   }
   
   m_vx = new_x;
   m_vy = new_y;
   m_vz = new_z;
+  m_vprop = new_vprop;
+}
+
+//---------------------------------------------------------------
+// Procedure: pop_last_vertex
+//   Purpose: Remove the last vertex
+
+void XYSegList::pop_last_vertex()
+{
+  unsigned int vsize = m_vx.size();
+  if(vsize == 0)
+    return;
+
+  m_vx.pop_back();
+  m_vy.pop_back();
+  m_vz.pop_back();
+  m_vprop.pop_back();
 }
 
 //---------------------------------------------------------------
@@ -650,7 +670,7 @@ bool XYSegList::segs_cross(bool loop) const
 //   Purpose: Determine the overall length between the first and
 //            the last point - distance in the X-Y Plane only
 
-double XYSegList::length()
+double XYSegList::length() const
 {
   unsigned int i, vsize = m_vx.size();
   if(vsize == 0)
@@ -700,21 +720,34 @@ string XYSegList::get_spec(unsigned int precision, string param) const
     precision = 6;
 
   unsigned int i, vsize = m_vx.size();
-  if(vsize > 0)
+  if(vsize > 0) {
     spec += "pts={";
-  for(i=0; i<vsize; i++) {
-    spec += doubleToStringX(m_vx[i],precision);
-    spec += ",";
-    spec += doubleToStringX(m_vy[i],precision);
-    if((m_vz[i] != 0) || (m_vprop[i] != ""))
-      spec += "," + doubleToStringX(m_vz[i], precision);
-    if(m_vprop[i] != "")
-      spec += "," + m_vprop[i];
-    if(i != vsize-1)
-      spec += ":";
-    else
-      spec += "}";
+    for(i=0; i<vsize; i++) {
+      spec += doubleToStringX(m_vx[i],precision);
+      spec += ",";
+      spec += doubleToStringX(m_vy[i],precision);
+      if((m_vz[i] != 0) || (m_vprop[i] != ""))
+	spec += "," + doubleToStringX(m_vz[i], precision);
+      if(m_vprop[i] != "")
+	spec += "," + m_vprop[i];
+      if(i != vsize-1)
+	spec += ":";
+      else
+	spec += "}";
+    }
   }
+
+  // Handle EdgeTags if any
+  if(m_edge_tags.size() > 0) {
+    string tag_str = m_edge_tags.getSpec();
+    if(tag_str != "") {
+      if(spec != "") 
+	spec += ",";
+      spec += tag_str;
+    }
+  }
+    
+  
   string obj_spec = XYObject::get_spec(param);
   if(obj_spec != "") {
     if(spec != "")

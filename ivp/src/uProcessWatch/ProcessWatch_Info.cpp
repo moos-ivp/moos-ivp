@@ -141,6 +141,8 @@ void showInterfaceAndExit()
   blk("  PROC_WATCH_SUMMARY      = All Present                         ");
   blk("  PROC_WATCH_EVENT        = Process [pMarinePID] is noted to be ");
   blk("                            present.                            ");
+  blk("  PROC_WATCH_ALL_OK       = true/false                          ");
+  blk("  PROC_WATCH_TIME_WARP    = 10                                  ");
   blk("                                                                ");
   exit(0);
 }

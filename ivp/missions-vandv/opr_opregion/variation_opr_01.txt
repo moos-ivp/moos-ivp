@@ -1,0 +1,47 @@
+#==================================================
+# Test opr_01                         opr: opregion
+#==================================================
+# Part 1: Mission Description
+#==================================================
+<tag><thumb>
+Test that OpRegion throws error when vehicle exits given convex polygon op-area
+
+<tag><synopsis>
+The vehicle begins inside the specified polygon opregion
+and proceeds on a path that exits the region about 45
+seconds later. This mission tests the basic function of
+detecting the vehicle exiting a convex polygon opregion.
+
+<tag><link>
+See the documentation on OpRegion @ https://oceanai.mit.edu/ivpman
+
+
+#==================================================
+# Part 2: Mission Configuration
+#==================================================
+
+#---------------------------------
+# For inclusion in pMissionEval
+<tag><evals>
+  lead_condition = TIMER_ENDED = true
+  pass_condition = BREACHED_POLY = true
+  pass_condition = IVPHELM_ALLSTOP = BehaviorError
+  pass_condition = DESIRED_SPEED = 0
+  pass_condition = IVPHELM_BHV_RUNNING != atimer
+  pass_condition = PROC_WATCH_ALL_OK = true 
+
+  result_flag = SAY_MOOS=Checking
+  pass_flag   = SAY_MOOS=pass
+  fail_flag   = SAY_MOOS=fail
+
+#---------------------------------
+# For inclusion in uSimMarine
+<tag> <start_pos>
+  start_pos = 0, -20, 180, 0
+
+
+#---------------------------------
+# For inclusion in BHV_OpRegion
+<tag> <opr_bhv>
+  breached_poly_flag = BREACHED_POLY = true
+  polygon = pts={-80,-50:-30,-175:150,-100:95,25}, label=area_x

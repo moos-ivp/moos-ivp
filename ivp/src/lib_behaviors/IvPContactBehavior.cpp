@@ -23,18 +23,14 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include <iostream>
-#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include "AngleUtils.h"
 #include "GeomUtils.h"
-#include "AOF_AvoidCollision.h"
 #include "IvPContactBehavior.h"
-#include "OF_Reflector.h"
-#include "BuildUtils.h"
 #include "MBUtils.h"
-#include "CPA_Utils.h"
+#include "MacroUtils.h"
+#include "VarDataPairUtils.h"
 
 using namespace std;
 
@@ -53,8 +49,6 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_extrapolator.setDecay(m_decay_start, m_decay_end);
   m_time_on_leg  = 60;
 
-  m_complete_after_retired = -1;  // seconds. -1 means don't use.
-
   m_post_per_contact_info = false;
   
   // Initialize state variables
@@ -66,62 +60,12 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_cny = 0;
   m_cnh = 0;
   m_cnv = 0;
-  m_cnutc = 0;
 
-  m_cn_not_retired_tstamp = -1;
-  m_cn_retired = false;
-  
   m_contact_range = 0;
-  m_range_gamma   = 0;
   m_relevance     = 0;
 
-  m_bearing_rate  = 0;
-  m_contact_rate  = 0;
-
-  m_range_gamma   = 0;
-  m_range_epsilon = 0;
-  
   m_bearing_line_show = false;
   m_bearing_line_info = "relevance";
-
-  m_os_fore_of_cn = false;
-  m_os_aft_of_cn  = false;
-  m_os_port_of_cn = false;
-  m_os_starboard_of_cn = false;
-
-  m_cn_fore_of_os = false;
-  m_cn_aft_of_os  = false;
-  m_cn_port_of_os = false;
-  m_cn_starboard_of_os = false;
-  
-  m_cn_spd_in_os_pos = 0;
-
-  m_os_cn_rel_bng = 0;
-  m_cn_os_rel_bng = 0;
-
-  m_os_cn_abs_bng = 0;
-  
-  m_rate_of_closure = 0;
-
-  m_os_passes_cn = false;
-  m_os_passes_cn_port = false;
-  m_os_passes_cn_star = false;
-  
-  m_cn_passes_os = false;
-  m_cn_passes_os_port = false;
-  m_cn_passes_os_star = false;
-  
-  m_os_crosses_cn_stern = false;
-  m_os_crosses_cn_bow   = false;
-  m_os_crosses_cn_bow_or_stern = false;
-  m_os_crosses_cn_bow_dist = 0;
-
-  m_cn_crosses_os_bow = false;
-  m_cn_crosses_os_stern = false;
-  m_cn_crosses_os_bow_or_stern = false;
-  m_cn_crosses_os_bow_dist = 0;
-
-  m_os_curr_cpa_dist = 0;
 }
 
 //-----------------------------------------------------------
@@ -132,24 +76,14 @@ bool IvPContactBehavior::setParam(string param, string param_val)
   if(IvPBehavior::setParam(param, param_val))
     return(true);
   
-  double dval = atof(param_val.c_str());
-  bool non_neg_number = (isNumber(param_val) && (dval >= 0));
-  
-  if((param == "contact") ||     // preferred
-     (param == "them")) {        // deprecated 4/2010
+  if(param == "contact") {
     m_contact = toupper(param_val);
     return(true);
   }  
-  else if((param == "complete_after_retired") && non_neg_number) {
-    addInfoVars("CONTACTS_RETIRED", "nowarning");
-    m_complete_after_retired = dval;
-    return(true);
-  }
   else if(param == "extrapolate")
     return(setBooleanOnString(m_extrapolate, param_val));
   else if(param == "post_per_contact_info")
     return(setBooleanOnString(m_post_per_contact_info, param_val));
-
   else if(param == "match_name")
     return(m_filter_set.addMatchName(param_val));
   else if(param == "ignore_name")
@@ -166,6 +100,9 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     return(m_filter_set.addMatchRegion(param_val));
   else if(param == "ignore_region")
     return(m_filter_set.addIgnoreRegion(param_val));
+
+  else if(param == "cnflag")
+    return(addContactFlag(param_val));
 
   else if(param == "decay") {
     string left  = biteStringX(param_val, ',');
@@ -184,18 +121,12 @@ bool IvPContactBehavior::setParam(string param, string param_val)
   else if(param == "on_no_contact_ok") 
     return(setBooleanOnString(m_on_no_contact_ok, param_val));
 
-  else if(param == "decay_end") {        // deprecated 4/2010
-    if(isNumber(param_val)) {
-      m_decay_end = dval;
-      return(true);
-    }
-  }  
-  else if(param == "time_on_leg") {
-    if(!non_neg_number)
-      return(false);
-    m_time_on_leg = dval;
-    return(true);
-  }  
+  else if(param == "decay_end")         // deprecated 4/2010
+    return(setDoubleOnString(m_decay_end, param_val));
+
+  else if(param == "time_on_leg")
+    return(setNonNegDoubleOnString(m_time_on_leg, param_val));
+
   // bearing_lines = white:0, green:0.65, yellow:0.8, red:1.0
   else if((param == "bearing_line_config") ||
 	  (param == "bearing_lines")) {
@@ -225,6 +156,214 @@ bool IvPContactBehavior::setParam(string param, string param_val)
 }
 
 //-----------------------------------------------------------
+// Procedure: postFlag()
+
+void IvPContactBehavior::postFlag(const VarDataPair& pair, bool repeat)
+{
+  // Handle data postings
+  string var = pair.get_var();
+  if(!pair.is_string()) {
+    double ddata = pair.get_ddata();
+    if(repeat)
+      postRepeatableMessage(var, ddata);
+    else
+      postMessage(var, ddata);
+    return;
+  }
+
+  // Handle pure data strings
+  string sdata = stripBlankEnds(pair.get_sdata());
+  if((sdata == "$[CPA]")      || (sdata == "$[OS_CN_REL_BNG]") ||
+     (sdata == "$[RANGE]")    || (sdata == "$[CN_OS_REL_BNG]") ||
+     (sdata == "$[BNG_RATE]")) {
+    sdata = expandMacros(sdata);
+    double dval = atof(sdata.c_str());
+    if(repeat)
+      postRepeatableMessage(var, dval);
+    else
+      postMessage(var, dval);
+    return;
+  }
+
+  // Handle normal textual strings
+  sdata = expandMacros(sdata);
+  if(repeat)
+    postRepeatableMessage(var, sdata);
+  else
+    postMessage(var, sdata);
+
+}
+
+
+//-----------------------------------------------------------
+// Procedure: addContactFlag
+//   Purpose: Before invoking the generic addVarDataPairOnString
+//            function, check if the flag has a recognized tag.
+//            Contact flags are posted on an event relative to a
+//            contact, so a supported tag is mandatory.
+
+bool IvPContactBehavior::addContactFlag(string str)
+{
+  str = stripBlankEnds(str);
+  if(strBegins(str, "@<") || strBegins(str, "@>")) {
+    string new_str = str.substr(2);
+    string rng_str = biteStringX(new_str, ' ');
+    double rng_dbl = atof(rng_str.c_str());
+    if(isNumber(rng_str) && (rng_dbl >= 0))
+      return(addVarDataPairOnString(m_cnflags, str));
+  }
+  else if(strBegins(str, "@cpa"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  else if(strBegins(str, "@os_passed_cn_port"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  else if(strBegins(str, "@os_passed_cn_star"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  else if(strBegins(str, "@os_passed_cn"))
+    return(addVarDataPairOnString(m_cnflags, str));
+
+  else if(strBegins(str, "@cn_passed_os_port"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  else if(strBegins(str, "@cn_passed_os_star"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  else if(strBegins(str, "@cn_passed_os"))
+    return(addVarDataPairOnString(m_cnflags, str));
+
+  else if(strBegins(str, "@os_crossed_cn"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  else if(strBegins(str, "@os_crossed_cn_bow"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  else if(strBegins(str, "@os_crossed_cn_stern"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  else if(strBegins(str, "@cn_crossed_os"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  else if(strBegins(str, "@cn_crossed_os_bow"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  else if(strBegins(str, "@cn_crossed_os_stern"))
+    return(addVarDataPairOnString(m_cnflags, str));
+  
+  
+  
+  return(false);    
+}
+
+//-----------------------------------------------------------
+// Procedure: onEveryState()
+//   Purpose: Invoked on every helm iteration regardless of the
+//            behavior state (e.g., idle, active etc)
+
+void IvPContactBehavior::onEveryState()
+{
+  IvPBehavior::onEveryState();
+
+  updatePlatformInfo();
+  handleContactFlags();
+}
+
+//-----------------------------------------------------------
+// Procedure: handleContactFlags()
+//   Purpose: Go through all the contact flags and send to
+//            appropriate handler
+//              Tag    Meaning
+//            -------- --------------------------------------
+//      Note: @< range posted when range transitions below val
+//            @> range posted when range transitions above val
+//            < range  posted constantly when range is below val
+//            > range  posted constantly when range is above val
+//            @cpa     posted when CPA is observed
+//            @osxcn   posted when os changes port/star of cn
+//            @ospcn   posted when os changes fore/aft of cn
+//            @cnxos   posted when cn changes port/star of os
+//            @ospcn   posted when cn changes fore/aft of os
+
+void IvPContactBehavior::handleContactFlags()
+{
+  //==================================================
+  // Handle Contact Flags
+  //==================================================
+  for(unsigned int i=0; i<m_cnflags.size(); i++) {
+    string tag = m_cnflags[i].get_post_tag();
+    
+    if(strBegins(tag, "@<") || strBegins(tag, "<") ||
+       strBegins(tag, "@>") || strBegins(tag, ">")) {
+      handleContactFlagRange(m_cnflags[i]);
+    }
+    else if((tag == "@cpa") && m_cnos.cpa_reached())
+      postFlag(m_cnflags[i]);
+    else if((tag == "@os_passed_cn") && m_cnos.os_passed_cn())
+      postFlag(m_cnflags[i]);
+    else if((tag == "@os_passed_cn_port") && m_cnos.os_passed_cn_port())
+      postFlag(m_cnflags[i]);
+    else if((tag == "@os_passed_cn_star") && m_cnos.os_passed_cn_star())
+      postFlag(m_cnflags[i]);
+
+    else if((tag == "@cn_passed_os") && m_cnos.cn_passed_os())
+      postFlag(m_cnflags[i]);
+    else if((tag == "@cn_passed_os_port") && m_cnos.cn_passed_os_port())
+      postFlag(m_cnflags[i]);
+    else if((tag == "@cn_passed_os_star") && m_cnos.cn_passed_os_star())
+      postFlag(m_cnflags[i]);
+  }
+}
+
+//-----------------------------------------------------------
+// Procedure: handleContactFlagRange()
+
+void IvPContactBehavior::handleContactFlagRange(VarDataPair flag)
+{
+  string post_tag   = flag.get_post_tag();
+  double rng_thresh = 0;
+  
+  if(strBegins(post_tag, "@<") && (post_tag.length() > 2)) {
+    bool ok = setNonNegDoubleOnString(rng_thresh, post_tag.substr(2));
+    if(ok && m_cnos.rng_entered(rng_thresh))
+      postFlag(flag);
+  }
+  else if(strBegins(post_tag, "@>") && (post_tag.length() > 2)) {
+    bool ok = setNonNegDoubleOnString(rng_thresh, post_tag.substr(2));
+    if(ok && m_cnos.rng_exited(rng_thresh))
+      postFlag(flag);
+  }
+  else if(strBegins(post_tag, "<") && (post_tag.length() > 1)) {
+    bool ok = setNonNegDoubleOnString(rng_thresh, post_tag.substr(1));
+    if(ok && (m_contact_range <= rng_thresh))
+      postFlag(flag, true);
+  }
+  else if(strBegins(post_tag, ">") && (post_tag.length() > 1)) {
+    bool ok = setNonNegDoubleOnString(rng_thresh, post_tag.substr(1));
+    if(ok && (m_contact_range >= rng_thresh))
+      postFlag(flag, true);
+  }
+}
+
+//-----------------------------------------------------------
+// Procedure: expandMacros()
+
+string IvPContactBehavior::expandMacros(string sdata)
+{
+  sdata = macroExpand(sdata, "CN_NAME", m_contact);
+  sdata = macroExpand(sdata, "CN_VTYPE", m_cn_vtype);
+  sdata = macroExpand(sdata, "CN_GROUP", m_cn_group);
+  sdata = macroExpand(sdata, "RANGE", doubleToStringX(m_contact_range,1));
+
+  sdata = m_cnos.cnMacroExpand(sdata, "ROC");
+  sdata = m_cnos.cnMacroExpand(sdata, "OS_CN_REL_BNG");
+  sdata = m_cnos.cnMacroExpand(sdata, "CN_OS_REL_BNG");
+  sdata = m_cnos.cnMacroExpand(sdata, "BNG_RATE");
+  sdata = m_cnos.cnMacroExpand(sdata, "CN_SPD_IN_OS_POS");
+  sdata = m_cnos.cnMacroExpand(sdata, "OS_FORE_OF_CN");
+  sdata = m_cnos.cnMacroExpand(sdata, "OS_AFT_OF_CN");
+  sdata = m_cnos.cnMacroExpand(sdata, "OS_PORT_OF_CN");
+  sdata = m_cnos.cnMacroExpand(sdata, "OS_STAR_OF_CN");
+  sdata = m_cnos.cnMacroExpand(sdata, "CN_FORE_OF_OS");
+  sdata = m_cnos.cnMacroExpand(sdata, "CN_AFT_OF_OS");
+  sdata = m_cnos.cnMacroExpand(sdata, "CN_PORT_OF_OS");
+  sdata = m_cnos.cnMacroExpand(sdata, "CN_STAR_OF_OS");
+  
+  return(sdata);
+}
+
+
+//-----------------------------------------------------------
 // Procedure: updatePlatformInfo
 //   Purpose: Update the following member variables:
 //             m_osx: Current ownship x position (meters) 
@@ -239,11 +378,16 @@ bool IvPContactBehavior::setParam(string param, string param_val)
 
 bool IvPContactBehavior::updatePlatformInfo()
 {
+  // Sanity check - skip if update already successfully done
+  if(m_cnos.helm_iter() == m_helm_iter)
+    return(true);
+
+  m_cnos.set_update_ok(false);
   if(m_contact == "") {
     postEMessage("contact ID not set.");
     return(0);
   }
-
+  
   bool ok = true;
 
   //==============================================================
@@ -257,15 +401,14 @@ bool IvPContactBehavior::updatePlatformInfo()
     postEMessage("ownship x,y,heading, or speed info not found.");
     return(false);
   }
-  m_osh = angle360(m_osh);
-  m_cnh = angle360(m_cnh);
 
   // Part 1B: ascertain current contact position and trajectory.
+  double cnutc = 0;
   if(ok) m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok);
   if(ok) m_cny = getBufferDoubleVal(m_contact+"_NAV_Y", ok);
   if(ok) m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok);
   if(ok) m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED",   ok);
-  if(ok) m_cnutc = getBufferDoubleVal(m_contact+"_NAV_UTC", ok);
+  if(ok) cnutc = getBufferDoubleVal(m_contact+"_NAV_UTC", ok);
   if(!ok) {    
     string msg = m_contact + " x/y/heading/speed info not found";
     if(m_on_no_contact_ok)
@@ -274,7 +417,17 @@ bool IvPContactBehavior::updatePlatformInfo()
       postEMessage(msg);
     return(false);
   }
+  m_osh = angle360(m_osh);
+  m_cnh = angle360(m_cnh);
 
+  // Part 1C: At this point we know this update will be a success, i.e.,
+  // it will return with true. So now is the time to invoke archive
+  // on the ContactStateSet, moving the previously current cnos into the
+  // cnos history and letting the newly current cnos hold current info.
+
+  m_cnos.archiveCurrent();
+  
+  m_cnos.set_cnutc(cnutc);
   m_cn_group = getBufferStringVal(m_contact+"_NAV_GROUP");
   m_cn_vtype = getBufferStringVal(m_contact+"_NAV_TYPE");
   
@@ -288,7 +441,7 @@ bool IvPContactBehavior::updatePlatformInfo()
     // of the position in this report may still be substantially 
     // behind the current own-platform UTC time.
     
-    m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, m_cnutc);
+    m_extrapolator.setPosition(m_cnx, m_cny, m_cnv, m_cnh, cnutc);
   
     double curr_time = getBufferCurrTime();
     double new_cnx, new_cny;
@@ -305,75 +458,66 @@ bool IvPContactBehavior::updatePlatformInfo()
   }
 
   //==================================================================
-  // Part 3: Monitor the retired contact list 
-
-  if(m_complete_after_retired > 0) {
-    string cns_retired = getBufferStringVal("CONTACTS_RETIRED");
-    vector<string> svector = parseString(cns_retired, ',');
-    double curr_time = getBufferCurrTime();
-    if(!vectorContains(svector, tolower(m_contact))) {  // NOT on retlist
-      m_cn_not_retired_tstamp = curr_time;
-      m_cn_retired = false;
-    }
-    else {  // IS on the retired list, possibly flag for completion
-      // Special case: if on ret list in first iter, just set tstamp
-      if(m_cn_not_retired_tstamp < 0)
-	m_cn_not_retired_tstamp = curr_time;     
-      double elapsed = curr_time - m_cn_not_retired_tstamp;
-      if(elapsed > m_complete_after_retired)
-	m_cn_retired = true;
-    }
-  }
-
-  //==================================================================
-  // Part 4: Update the useful relative vehicle information
+  // Part 3: Update the useful relative vehicle information
   
   m_cpa_engine.reset(m_cny, m_cnx, m_cnh, m_cnv, m_osy, m_osx);
   m_rcpa_engine.reset(m_osy, m_osx, m_osh, m_osv, m_cny, m_cnx);    
     
   m_contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
 
-  m_os_cn_rel_bng = relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny);
-  m_cn_os_rel_bng = relBearing(m_cnx, m_cny, m_cnh, m_osx, m_osy);
-
-  m_os_cn_abs_bng = m_cpa_engine.ownshipContactAbsBearing(); 
-  m_cn_spd_in_os_pos = m_cpa_engine.getCNSpeedInOSPos();
-  m_rate_of_closure = m_cpa_engine.evalROC(m_osh, m_osv);
-
-  m_os_fore_of_cn  = m_cpa_engine.foreOfContact();
-  m_os_aft_of_cn   = m_cpa_engine.aftOfContact();
-  m_os_port_of_cn  = m_cpa_engine.portOfContact();
-  m_os_starboard_of_cn = m_cpa_engine.starboardOfContact();
-
-  m_rate_of_closure = m_cpa_engine.evalROC(m_osh, m_osv);
-
-  m_cn_fore_of_os  = m_rcpa_engine.foreOfContact();
-  m_cn_aft_of_os   = m_rcpa_engine.aftOfContact();
-  m_cn_port_of_os  = m_rcpa_engine.portOfContact();
-  m_cn_starboard_of_os = m_rcpa_engine.starboardOfContact();
-
-  m_os_passes_cn         = m_cpa_engine.passesPortOrStar(m_osh, m_osv);
-  m_os_passes_cn_port    = m_cpa_engine.passesPort(m_osh, m_osv);
-  m_os_passes_cn_star    = m_cpa_engine.passesStar(m_osh, m_osv);
+  cout << "zzx contact_range: " << doubleToStringX(m_contact_range,2) << endl;
   
-  m_cn_passes_os         = m_rcpa_engine.passesPortOrStar(m_cnh, m_cnv);
-  m_cn_passes_os_port    = m_rcpa_engine.passesPort(m_cnh, m_cnv);
-  m_cn_passes_os_star    = m_rcpa_engine.passesStar(m_cnh, m_cnv);
+  // range is stored in both m_contact_range and the cnos structure
+  m_cnos.set_range(m_contact_range);
   
-  m_os_crosses_cn_stern        = m_cpa_engine.crossesStern(m_osh, m_osv);
-  m_os_crosses_cn_bow          = m_cpa_engine.crossesBow(m_osh, m_osv);
-  m_os_crosses_cn_bow_or_stern = m_cpa_engine.crossesBowOrStern(m_osh, m_osv);
-  m_os_crosses_cn_bow_dist     = m_cpa_engine.crossesBowDist(m_osh, m_osv);
+  m_cnos.set_os_fore_of_cn(m_cpa_engine.foreOfContact());
+  m_cnos.set_os_aft_of_cn(m_cpa_engine.aftOfContact());
+  m_cnos.set_os_port_of_cn(m_cpa_engine.portOfContact());
+  m_cnos.set_os_star_of_cn(m_cpa_engine.starboardOfContact());
 
-  m_cn_crosses_os_stern        = m_rcpa_engine.crossesStern(m_cnh, m_cnv);
-  m_cn_crosses_os_bow          = m_rcpa_engine.crossesBow(m_cnh, m_cnv);
-  m_cn_crosses_os_bow_or_stern = m_rcpa_engine.crossesBowOrStern(m_cnh, m_cnv);
-  m_cn_crosses_os_bow_dist     = m_rcpa_engine.crossesBowDist(m_cnh, m_cnv);
+  m_cnos.set_cn_fore_of_os(m_rcpa_engine.foreOfContact());
+  m_cnos.set_cn_aft_of_os(m_rcpa_engine.aftOfContact());
+  m_cnos.set_cn_port_of_os(m_rcpa_engine.portOfContact());
+  m_cnos.set_cn_star_of_os(m_rcpa_engine.starboardOfContact());
 
-  m_range_gamma   = m_cpa_engine.getRangeGamma();
-  m_range_epsilon = m_cpa_engine.getRangeEpsilon();
+  m_cnos.set_cn_spd_in_os_pos(m_cpa_engine.getCNSpeedInOSPos());
 
-  m_os_curr_cpa_dist = m_cpa_engine.evalCPA(m_osh, m_osv, 120);
+  m_cnos.set_os_cn_rel_bng(relBearing(m_osx, m_osy, m_osh, m_cnx, m_cny));
+  m_cnos.set_cn_os_rel_bng(relBearing(m_cnx, m_cny, m_cnh, m_osx, m_osy));
+  m_cnos.set_os_cn_abs_bng(m_cpa_engine.ownshipContactAbsBearing());
+
+  m_cnos.set_rate_of_closure(m_cpa_engine.evalROC(m_osh, m_osv));
+  m_cnos.set_bearing_rate(m_cpa_engine.bearingRate(m_osh, m_osv));
+  m_cnos.set_contact_rate(m_rcpa_engine.bearingRate(m_cnh, m_cnv));
+  
+  m_cnos.set_range_gamma(m_cpa_engine.getRangeGamma());
+  m_cnos.set_range_epsilon(m_cpa_engine.getRangeEpsilon());
+
+  m_cnos.set_os_passes_cn(m_cpa_engine.passesPortOrStar(m_osh, m_osv));
+  m_cnos.set_os_passes_cn_port(m_cpa_engine.passesPort(m_osh, m_osv));
+  m_cnos.set_os_passes_cn_star(m_cpa_engine.passesStar(m_osh, m_osv));
+  
+  m_cnos.set_cn_passes_os(m_rcpa_engine.passesPortOrStar(m_cnh, m_cnv));
+  m_cnos.set_cn_passes_os_port(m_rcpa_engine.passesPort(m_cnh, m_cnv));
+  m_cnos.set_cn_passes_os_star(m_rcpa_engine.passesStar(m_cnh, m_cnv));
+  
+  m_cnos.set_os_crosses_cn(m_cpa_engine.crossesBowOrStern(m_osh, m_osv));
+  m_cnos.set_os_crosses_cn_stern(m_cpa_engine.crossesStern(m_osh, m_osv));
+  m_cnos.set_os_crosses_cn_bow(m_cpa_engine.crossesBow(m_osh, m_osv));
+  m_cnos.set_os_crosses_cn_bow_dist(m_cpa_engine.crossesBowDist(m_osh, m_osv));
+
+  m_cnos.set_cn_crosses_os(m_rcpa_engine.crossesBowOrStern(m_cnh, m_cnv));
+  m_cnos.set_cn_crosses_os_stern(m_rcpa_engine.crossesStern(m_cnh, m_cnv));
+  m_cnos.set_cn_crosses_os_bow(m_rcpa_engine.crossesBow(m_cnh, m_cnv));
+  m_cnos.set_cn_crosses_os_bow_dist(m_rcpa_engine.crossesBowDist(m_cnh, m_cnv));
+
+  m_cnos.set_os_curr_cpa_dist(m_cpa_engine.evalCPA(m_osh, m_osv, 120));
+  
+  m_cnos.set_update_ok(true);
+
+  // Mark helm_iteration to further indicate the current ContactState
+  // has been successfully updated for this iteration.
+  m_cnos.set_helm_iter(m_helm_iter);
 
   return(ok);
 }
@@ -403,7 +547,7 @@ void IvPContactBehavior::postViewableBearingLine()
   if(color == "") 
     color = "blank";
 
-  m_bearing_line.clear(); 
+  XYSegList m_bearing_line;
   m_bearing_line.set_active(true);
   m_bearing_line.add_vertex(m_osx, m_osy);
   m_bearing_line.add_vertex(m_cnx, m_cny);
@@ -411,299 +555,9 @@ void IvPContactBehavior::postViewableBearingLine()
   //m_bearing_line.set_color("label", "invisible");
   m_bearing_line.set_color("label", "white");
   m_bearing_line.set_color("edge", color);
-
-  postMessage("VIEW_SEGLIST", m_bearing_line.get_spec());
-}
-
-
-//-----------------------------------------------------------
-// Procedure: postErasableBearingLine
-
-void IvPContactBehavior::postErasableBearingLine()
-{
-  if(m_bearing_line.size() == 0)
-    return;
-
-  m_bearing_line.set_active(false);
-  postMessage("VIEW_SEGLIST", m_bearing_line.get_spec());
-}
-
-
-//-----------------------------------------------------------
-// Procedure: handleSetParamMatchGroup()
-//   Example: "blue" "blue,red,alpha"
-//   Returns: false if provided no groups
-//            false if a group is on the ignore list
-//            true otherwise
-//      Note: If a group is on the ignore list, it will not be
-//            added to the match list, but if there are other
-//            groups not on the ignore list, they will be added
-//            to the match list.
-//      Note: If a group is already on the match list it will
-//            be ignored.
-
-bool IvPContactBehavior::handleSetParamMatchGroup(string grpstr)
-{
-  bool all_ok = true;
-  vector<string> svector = parseString(grpstr, ',');
-  if(svector.size() == 0)
-    all_ok = false;
-
-  for(unsigned int i=0; i<svector.size(); i++) {
-    string cn_group = stripBlankEnds(svector[i]);
-    // Dont add a new match group if it is already an ignore group
-    if(vectorContains(m_ignore_group, cn_group))
-      all_ok = false;
-    else if(!vectorContains(m_match_group, cn_group))
-      m_match_group.push_back(cn_group);
-  }
-  return(all_ok);
-}
-
-//-----------------------------------------------------------
-// Procedure: handleSetParamIgnoreGroup()
-//   Example: "blue" "blue,red,alpha"
-//   Returns: false if provided no groups
-//            false if a group is on the match list
-//            true otherwise
-//      Note: If a group is on the match list, it will not be
-//            added to the ignore list, but if there are other
-//            groups not on the match list, they will be added
-//            to the ignore list.
-//      Note: If a group is already on the ignore list it will
-//            be ignored.
-
-bool IvPContactBehavior::handleSetParamIgnoreGroup(string grpstr)
-{
-  bool all_ok = true;
-  vector<string> svector = parseString(grpstr, ',');
-  if(svector.size() == 0)
-    all_ok = false;
-
-  for(unsigned int i=0; i<svector.size(); i++) {
-    string cn_group = stripBlankEnds(svector[i]);
-    // Dont add a new ignore group if it is already a match group
-    if(vectorContains(m_match_group, cn_group))
-      all_ok = false;
-    else if(!vectorContains(m_ignore_group, cn_group))
-      m_ignore_group.push_back(cn_group);
-  }
-  return(all_ok);
-}
-
-//-----------------------------------------------------------
-// Procedure: handleSetParamMatchType()
-//   Example: "kayak" "uuv,auv,ship"
-//   Returns: false if provided no vehicle types
-//            false if a vehicle type is on the ignore list
-//            true otherwise
-//      Note: If a type is on the ignore list, it will not be
-//            added to the match list, but if there are other
-//            types not on the ignore list, they will be added
-//            to the match list.
-//      Note: If a type is already on the match list it will
-//            be ignored.
-
-bool IvPContactBehavior::handleSetParamMatchType(string typestr)
-{
-  bool all_ok = true;
-  vector<string> svector = parseString(typestr, ',');
-  if(svector.size() == 0)
-    all_ok = false;
-
-  for(unsigned int i=0; i<svector.size(); i++) {
-    string cn_vtype = stripBlankEnds(svector[i]);
-    // Dont add a new match type if it is already an ignore type
-    if(vectorContains(m_ignore_type, cn_vtype))
-      all_ok = false;
-    else if(!vectorContains(m_match_type, cn_vtype))
-      m_match_type.push_back(cn_vtype);
-  }
-  return(all_ok);
-}
-
-//-----------------------------------------------------------
-// Procedure: handleSetParamIgnoreType()
-//   Example: "kayak" "uuv,auv,ship"
-//   Returns: false if provided no vehicle types
-//            false if a vehicle type is on the ignore list
-//            true otherwise
-//      Note: If a type is on the match list, it will not be
-//            added to the ignore list, but if there are other
-//            types not on the match list, they will be added
-//            to the ignore list.
-//      Note: If a type is already on the ignore list it will
-//            be ignored.
-
-bool IvPContactBehavior::handleSetParamIgnoreType(string typestr)
-{
-  bool all_ok = true;
-  vector<string> svector = parseString(typestr, ',');
-  if(svector.size() == 0)
-    all_ok = false;
-
-  for(unsigned int i=0; i<svector.size(); i++) {
-    string cn_vtype = stripBlankEnds(svector[i]);
-    // Dont add a new ignore type if it is already a match type
-    if(vectorContains(m_match_type, cn_vtype))
-      all_ok = false;
-    else if(!vectorContains(m_ignore_type, cn_vtype))
-      m_ignore_type.push_back(cn_vtype);
-  }
-  return(all_ok);
-}
-
-#if 0
-//-----------------------------------------------------------
-// Procedure: getMatchGroupStr()
-
-string IvPContactBehavior::getMatchGroupStr(string separator) const
-{
-  string str;
-  for(unsigned int i=0; i<m_match_group.size(); i++) {
-    if(str != "")
-      str += separator;
-    str += m_match_group[i];
-  }
-  return(str);
-}
-
-//-----------------------------------------------------------
-// Procedure: getIgnoreGroupStr()
-
-string IvPContactBehavior::getIgnoreGroupStr(string separator) const
-{
-  string str;
-  for(unsigned int i=0; i<m_ignore_group.size(); i++) {
-    if(str != "")
-      str += separator;
-    str += m_ignore_group[i];
-  }
-  return(str);
-}
-
-//-----------------------------------------------------------
-// Procedure: getMatchTypeStr()
-
-string IvPContactBehavior::getMatchTypeStr(string separator) const
-{
-  string str;
-  for(unsigned int i=0; i<m_match_type.size(); i++) {
-    if(str != "")
-      str += separator;
-    str += m_match_type[i];
-  }
-  return(str);
-}
-
-//-----------------------------------------------------------
-// Procedure: getIgnoreTypeStr()
-
-string IvPContactBehavior::getIgnoreTypeStr(string separator) const
-{
-  string str;
-  for(unsigned int i=0; i<m_ignore_type.size(); i++) {
-    if(str != "")
-      str += separator;
-    str += m_ignore_type[i];
-  }
-  return(str);
-}
-
-
-//-----------------------------------------------------------
-// Procedure: getMatchIgnoreSummary()
-
-string IvPContactBehavior::getMatchIgnoreSummary() const
-{
-  string summary;
-
-  // Part 1: Add Match Groups if any
-  string match_group_str = getMatchGroupStr();
-  if(match_group_str != "") {
-    if(summary != "")
-      summary += ",";
-    summary += "match_group=" + match_group_str;
-  }
-
-  // Part 2: Add Ignore Groups if any
-  string ignore_group_str = getIgnoreGroupStr();
-  if(ignore_group_str != "") {
-    if(summary != "")
-      summary += ",";
-    summary += "ignore_group=" + ignore_group_str;
-  }
+  m_bearing_line.set_duration(1);
   
-  // Part 3: Add Match Types if any
-  string match_type_str = getMatchTypeStr();
-  if(match_type_str != "") {     
-    if(summary != "") 
-      summary += ",";
-    summary += "match_type=" + match_type_str;
-  }
+  string segl_spec = m_bearing_line.get_spec();
   
-  // Part 4: Add Ignore Types if any
-  string ignore_type_str = getIgnoreTypeStr();
-  if(ignore_type_str != "") {
-    if(summary != "") 
-      summary += ",";
-    summary += "ignore_type=" + ignore_type_str;
-  }
-  
-  return(summary);
-}
-#endif
-
-//-----------------------------------------------------------
-// Procedure: checkContactGroupRestrictions()
-//      Note: Check here that the contact group is allowed.
-//            Ideally group restrictions would have been conveyed
-//            to a contact manager or similar. And if this 
-//            behavior is a template, it would never have been
-//            spawned, but we allow for checks here as well.
-
-bool IvPContactBehavior::checkContactGroupRestrictions()
-{
-  // old style
-  if((m_match_contact_group != "") &&
-     (tolower(m_match_contact_group) != tolower(m_cn_group)))
-    return(false);
-  
-  if((m_ignore_contact_group != "") &&
-     (tolower(m_ignore_contact_group) == tolower(m_cn_group)))
-    return(false);
-
-  // Passing false to vectorContains indicates not case sensitive
-  if(vectorContains(m_ignore_group, m_cn_group, false))
-    return(false);
-
-  if(m_match_group.size() != 0) {
-    if(!vectorContains(m_match_group, m_cn_group, false))
-      return(false);
-  }
-  
-  return(true);
-}
-
-
-//-----------------------------------------------------------
-// Procedure: checkContactTypeRestrictions()
-//      Note: Check here that the contact type is allowed.
-//            Ideally type restrictions would have been conveyed
-//            to a contact manager or similar. And if this 
-//            behavior is a template, it would never have been
-//            spawned, but we allow for checks here as well.
-
-bool IvPContactBehavior::checkContactTypeRestrictions()
-{
-  // Passing false to vectorContains indicates not case sensitive
-  if(vectorContains(m_ignore_type, m_cn_vtype, false))
-    return(false);
-
-  if(m_match_group.size() != 0) {
-    if(!vectorContains(m_match_type, m_cn_vtype, false))
-      return(false);
-  }
-  
-  return(true);
+  postMessage("VIEW_SEGLIST", segl_spec);
 }

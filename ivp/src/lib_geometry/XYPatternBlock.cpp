@@ -46,6 +46,10 @@ XYPatternBlock::XYPatternBlock()
   m_blockwid = 40;
   m_swathwid = 10;
   m_angle    = 0;
+
+  // Defaults are false for backward compatibility prior to 19.8.1
+  m_core_wid = false;
+  m_auto_drop = false;
 }
 
 //-----------------------------------------------------------
@@ -124,6 +128,12 @@ int XYPatternBlock::setLanePoints()
   
   double alter_ang1 = angle360(m_angle - 90);
   double alter_ang2 = angle360(m_angle + 90);
+
+  // When core_wid enabled, prune a half a lane width from both
+  // sides. Presumably the sensor has a range of at least half a
+  // lane width so we can start/end a half lane from the block edge
+  if(m_core_wid && (m_blockwid > m_swathwid))
+    m_blockwid -= m_swathwid;
   
   double lane_pts_count_d = (m_blockwid / m_swathwid) + 1; 
 #ifdef _WIN32
@@ -264,6 +274,8 @@ int XYPatternBlock::setCompositeSegList(double osx, double osy)
     //segls = new_segls;
   }
 
+  EdgeTagSet edge_tags;
+  
   // Now build the combined XYSegList from the vector of segls. We
   // alternate taking the zeroth or end point from each segl for 
   // building the combined SegList.
@@ -282,8 +294,18 @@ int XYPatternBlock::setCompositeSegList(double osx, double osy)
       new_segl.add_vertex(x0, y0);
     }
     zeroth = !zeroth;
+
+    // Mark each of the non-turning legs as lanes
+    if(new_segl.size() >= 2) {
+      unsigned int ix1 = new_segl.size() - 2;
+      unsigned int ix2 = new_segl.size() - 1;
+      EdgeTag tag(ix1, ix2, "lane");
+      edge_tags.addEdgeTag(tag);
+    }
+      
   }
 
+  new_segl.set_edge_tags(edge_tags);
   m_composite_seglist = new_segl;
   return(m_composite_seglist.size());
 }

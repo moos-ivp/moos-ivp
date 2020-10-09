@@ -95,6 +95,13 @@ XYSegList stringStandard2SegList(string str)
   while(rest != "") {
     string left = biteStringX(rest, '=');
     
+    if(left == "tags") {
+      EdgeTagSet edge_tags;
+      bool ok = edge_tags.setOnSpec(rest);
+      if(ok)
+	new_seglist.set_edge_tags(edge_tags);
+    }
+      
     if(left == "pts") {
       string pstr = biteStringX(rest, '}');
       

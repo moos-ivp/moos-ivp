@@ -41,6 +41,17 @@ ProcessConfig = uFldWrapDetect
   CommsTick = 4                                                               
 }       
 
+//--------------------------------------------------
+// uFldQueryDB
+
+ProcessConfig = uQueryDB
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  max_time  = $(MAX_TIME)
+  condition = ENCOUNTER_TOTAL > $(MAX_ENCOUNTERS)
+}       
 
 //--------------------------------------------------
 // uFldCollisionDetect

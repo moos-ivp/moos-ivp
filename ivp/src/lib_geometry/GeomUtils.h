@@ -157,6 +157,9 @@ double polyRayCPA(double rx, double ry, double ray_angle,
 bool randPointOnPoly(double vx, double vy, const XYPolygon&,
 		     double& ix, double& iy);
 
+double polyWidth(XYPolygon, double angle=0);
+double polyHeight(XYPolygon, double angle=0);
+
 
 
 // DEPRECATED INTERFACES

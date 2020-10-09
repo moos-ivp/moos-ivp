@@ -65,6 +65,7 @@ std::string biteStringX(std::string&, char);
 std::string biteString(std::string&, char, char);
 
 std::string rbiteString(std::string&, char);
+std::string rbiteStringX(std::string&, char);
 
 
 std::string stripBlankEnds(const std::string&);
@@ -94,6 +95,7 @@ std::vector<std::string> padVector(const std::vector<std::string>&,
 std::string stripComment(const std::string&, const std::string&);
 std::string stripQuotes(const std::string&);
 std::string stripBraces(const std::string&);
+std::string stripChevrons(const std::string&);
 std::string doubleToHex(double);
 
 std::string svectorToString(const std::vector<std::string>&, char=',');
@@ -130,6 +132,7 @@ bool  isNumber(const std::string&, bool=true);
 bool  isAlphaNum(const std::string&, const std::string& s="");
 bool  isQuoted(const std::string&);
 bool  isBraced(const std::string&);
+bool  isChevroned(const std::string&);
 
 int   getArg(int, char**, int, const char*, const char *s=0);
 bool  scanArgs(int, char**, const char*, const char *a=0, const char *b=0);
@@ -147,6 +150,10 @@ bool  setIntOnString(int& int_val, std::string str);
 bool  setPosDoubleOnString(double& dval, std::string str);
 bool  setNonNegDoubleOnString(double& dval, std::string str);
 bool  setNonWhiteVarOnString(std::string& svar, std::string str);
+bool  setMinPartOfPairOnString(double& minval, double& maxval,
+			       std::string str, bool negok=false);
+bool  setMaxPartOfPairOnString(double& minval, double& maxval,
+			       std::string str, bool negok=false);
 
 bool  okFileToRead(std::string);
 bool  okFileToWrite(std::string);

@@ -43,6 +43,7 @@ ProcessConfig = uFldObstacleSim
 	
 	min_duration = 400
   max_duration = 500
+	refresh_interval = 200
 
 	post_points = $(POINTS)
 
@@ -248,11 +249,12 @@ ProcessConfig = uTimerScript
   randvar = varname=X2, min=150,  max=180, key=at_reset
   randvar = varname=Y2, min=-125, max=-35, key=at_reset
 
-  event = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
+	event = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
   event = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180
 
   event = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=360
   event = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=360
+
 }
 
 

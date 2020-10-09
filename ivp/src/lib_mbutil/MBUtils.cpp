@@ -395,6 +395,9 @@ vector<string> chompString(const string& string_str, char separator)
 
 string augmentSpec(const string& orig, const string& new_part, char sep)
 {
+  if(new_part == "")
+    return(orig);
+
   string return_str = orig;
   if(orig != "")
     return_str += sep;
@@ -487,6 +490,18 @@ string biteStringX(string& str, char separator)
   string front = stripBlankEnds(biteString(str, separator));
   str = stripBlankEnds(str);
   return(front);
+}
+
+//----------------------------------------------------------------
+// Procedure: rbiteStringX(string&, char)
+//      Note: Same as rbiteString except blank ends will be removed
+//            from both the returned and remaining value.
+
+string rbiteStringX(string& str, char separator)
+{
+  string str_back = stripBlankEnds(rbiteString(str, separator));
+  str = stripBlankEnds(str);
+  return(str_back);
 }
 
 //----------------------------------------------------------------
@@ -1554,6 +1569,10 @@ bool isNumber(const string& str, bool blanks_allowed)
 bool isQuoted(const string& str)
 {
   string mod_str = stripBlankEnds(str);
+  string::size_type len = mod_str.length();
+  if(len < 2)
+    return(false);
+
   if((mod_str[0] == '"') && (mod_str[str.length()-1] == '"'))
     return(true);
   return(false);
@@ -1567,7 +1586,28 @@ bool isQuoted(const string& str)
 bool isBraced(const string& str)
 {
   string mod_str = stripBlankEnds(str);
+  string::size_type len = mod_str.length();
+  if(len < 2)
+    return(false);
+
   if((mod_str[0] == '{') && (mod_str[str.length()-1] == '}'))
+    return(true);
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: isChevroned
+//      Note: Returns true if the given string begins with a '<' and 
+//            ends witha a '>'. Returns false otherwise.
+
+bool isChevroned(const string& str)
+{
+  string mod_str = stripBlankEnds(str);
+  string::size_type len = mod_str.length();
+  if(len < 2)
+    return(false);
+  
+  if((mod_str[0] == '<') && (mod_str[str.length()-1] == '>'))
     return(true);
   return(false);
 }
@@ -1601,6 +1641,24 @@ string stripBraces(const string& given_str)
     return(given_str);
 
   if((str[0] != '{') || (str[len-1] != '}'))
+    return(given_str);
+
+  str.replace(len-1, 1, "");
+  str.replace(0, 1, "");
+  return(str);
+}
+
+//----------------------------------------------------------------
+// Procedure: stripChevrons
+
+string stripChevrons(const string& given_str)
+{
+  string str = stripBlankEnds(given_str);
+  string::size_type len = str.length();
+  if(len < 2)
+    return(given_str);
+
+  if((str[0] != '<') || (str[len-1] != '>'))
     return(given_str);
 
   str.replace(len-1, 1, "");
@@ -2003,6 +2061,56 @@ bool setNonWhiteVarOnString(string& given_var, string str)
     return(false);
 
   given_var = str;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setMinPartOfPairOnString()
+//   Purpose: Sets given min value reference based on given string.
+//      Note: If given max value is less than the given min, then
+//            the given max will be adjusted.
+//   Returns: true if given string is a non-negative number.
+//            If negok=true then negative numbers are permitted
+
+
+bool setMinPartOfPairOnString(double& minval, double& maxval,
+			      string str, bool negok)
+{
+  if(!isNumber(str))
+    return(false);
+  double dval = atof(str.c_str());
+  if((dval < 0) && !negok)
+    return(false);
+
+  minval = dval;
+  if(maxval < minval)
+    maxval = minval;
+
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setMaxPartOfPairOnString()
+//   Purpose: Sets given max value reference based on given string.
+//      Note: If given min value is more than the given max, then
+//            the given min will be adjusted.
+//   Returns: true if given string is a non-negative number.
+//            If negok=true then negative numbers are permitted
+
+
+bool setMaxPartOfPairOnString(double& minval, double& maxval,
+			      string str, bool negok)
+{
+  if(!isNumber(str))
+    return(false);
+  double dval = atof(str.c_str());
+  if((dval < 0) && !negok)
+    return(false);
+
+  maxval = dval;
+  if(minval > maxval)
+    minval = maxval;
+
   return(true);
 }
 

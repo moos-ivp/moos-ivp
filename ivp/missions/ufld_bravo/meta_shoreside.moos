@@ -14,14 +14,14 @@ Processconfig = ANTLER
 {
   MSBetweenLaunches = 100
 
-  Run = MOOSDB          @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = false
-  Run = pLogger         @ NewConsole = false
+  Run = MOOSDB              @ NewConsole = false
+  Run = pMarineViewer       @ NewConsole = false
+  Run = pLogger             @ NewConsole = false
 
-  Run = pShare          @ NewConsole = false
-  Run = pHostInfo       @ NewConsole = false
-  Run = uFldShoreBroker @ NewConsole = false
-  Run = uFldNodeComms   @ NewConsole = false
+  Run = pShare              @ NewConsole = false
+  Run = pHostInfo           @ NewConsole = false
+  Run = uFldShoreBroker     @ NewConsole = false
+  Run = uFldNodeComms       @ NewConsole = false
   Run = uFldCollisionDetect @NewConsole = false
 }
 

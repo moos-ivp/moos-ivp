@@ -59,6 +59,8 @@ int main(int argc, char *argv[])
       expander.setForce(true);
     else if(strBegins(arg, "--path=")) 
       expander.addPath(arg.substr(7));
+    else if(strBegins(arg, "--tag=")) 
+      expander.setIncTag(arg.substr(6));
     else if(((arg=="-p") || (arg=="--path")) && (i<(argc-1))) 
       expander.addPath(argv[i+1]);
     else if(((arg=="-s") || (arg=="--strict")))

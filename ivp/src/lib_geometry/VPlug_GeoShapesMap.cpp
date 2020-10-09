@@ -91,9 +91,9 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
   if(param == "VIEW_POINT")
     handled = m_geoshapes_map[vname].addPoint(value, timestamp);
   else if(param == "VIEW_POLYGON")
-    handled = m_geoshapes_map[vname].addPolygon(value);
+    handled = m_geoshapes_map[vname].addPolygon(value, timestamp);
   else if(param == "VIEW_SEGLIST")
-    handled = m_geoshapes_map[vname].addSegList(value);
+    handled = m_geoshapes_map[vname].addSegList(value, timestamp);
   else if(param == "VIEW_SEGLR")
     handled = m_geoshapes_map[vname].addSeglr(value);
   else if(param == "VIEW_WEDGE")
@@ -107,7 +107,7 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
   else if(param == "VIEW_COMMS_PULSE")
     handled = m_geoshapes_map[vname].addCommsPulse(value, timestamp);
   else if((param == "VIEW_MARKER") || (param == "MARKER")) 
-    handled = m_geoshapes_map[vname].addMarker(value);
+    handled = m_geoshapes_map[vname].addMarker(value, timestamp);
   else if(param == "GRID_CONFIG")
     handled = m_geoshapes_map[vname].addGrid(value);
   else if(param == "GRID_DELTA")

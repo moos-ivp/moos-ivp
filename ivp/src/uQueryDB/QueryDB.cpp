@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <cstdio>
 #include "QueryDB.h"
 #include "MBUtils.h"
 
@@ -32,55 +33,95 @@ extern bool MOOSAPP_OnDisconnect(void*);
 //------------------------------------------------------------
 // Constructor
 
-QueryDB::QueryDB(string g_server_host, long int g_server_port)
+QueryDB::QueryDB()
 {
-  m_wait_time     = 10;
-  m_start_time    = 0; 
-  m_iteration     = 0; 
-  m_verbose       = true;
-  m_sServerHost   = g_server_host; 
-  m_lServerPort   = g_server_port;
+  // Init State Vars
+  m_info_buffer  = new InfoBuffer;
+  m_exit_value   = -1;
+  m_elapsed_time = 0;
+  
+  // Init Config Vars
+  m_wait_time   = 10;
+  m_verbose     = true;
+  m_sServerHost = ""; 
+  m_lServerPort = 0;
+  m_max_time    = -1;
 
+  m_check_for_halt = true; // By default checking halt conditions
+  m_report_check_vars = false;
+  
   m_configure_comms_locally = false;
-  m_info_buffer    = new InfoBuffer;
 }
+
+//------------------------------------------------------------
+// Procedure: setWaitTime()
+
+bool QueryDB::setWaitTime(string str)
+{
+  return(setNonNegDoubleOnString(m_wait_time, str));
+}
+
+//------------------------------------------------------------
+// Procedure: setServerPort()
+
+bool QueryDB::setServerPort(string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  m_sServerPort = atoi(str.c_str());
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: setMissionFile()
+
+bool QueryDB::setMissionFile(string file_str)
+{
+  // Sanity Check: If mission file previously set, return false
+  if(m_mission_file != "")
+    return(false);
+  
+  if(!okFileToRead(file_str))
+    return(false);
+
+  m_mission_file = file_str;
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: addHaltCondition()
+
+bool QueryDB::addHaltCondition(string str)
+{
+  return(m_halt_conditions.addNewCondition(str));
+}
+
 
 //------------------------------------------------------------
 // Procedure: Iterate()
 
 bool QueryDB::Iterate()
 {
-  m_iteration++;
-  if(m_verbose)
-    printReport();
-  
-  // First check if the logic condition is true. If so we want to exit
-  // with ZERO which indicates SUCCESS. 
-  if(checkCondition()) {
-    if(m_verbose)
-      cout << "Logic condition succeeded: exit(0)" << endl;
-    exit(0);
-  }
-  
-  // If all variables involved in the logic condition have been updated
-  // through MOOS mail, then we can declare FAILURE by exiting with ONE
-  if(allMailReceived()) {
-    if(m_verbose) 
-      cout << "Logic condition failed, all mail received: exit(1)" << endl;
-    exit(1);
+  AppCastingMOOSApp::Iterate();
+
+  if(m_exit_value >= 0) {
+    reportCheckVars();
+    exit(m_exit_value);
   }
 
-  // Otherwise, the condition may yet still prove to be true. We may
-  // just need to wait until further mail has arrived. But we can only
-  // wait as long as allowed by m_wait_time.
-  double elapsed_time = MOOSTime() - m_start_time;
-  if(m_verbose)
-    cout << "Elapsed time: " << elapsed_time << endl;
-  if(elapsed_time > m_wait_time) {
-    if(m_verbose) 
-      cout << "Logic condition failed by timeout: exit(1)" << endl;    
-    exit(1);
+  if(m_check_for_halt) {
+    checkMaxTimeReached();
+    checkHaltConditions();
   }
+  else
+    checkPassFailConditions();
+
+  reportRunWarning("bogus");
+  retractRunWarning("bogus");
+
+  if(m_verbose) 
+    AppCastingMOOSApp::PostReport();  
 
   return(true);
 }
@@ -89,12 +130,32 @@ bool QueryDB::Iterate()
 // Procedure: OnNewMail()
 
 bool QueryDB::OnNewMail(MOOSMSG_LIST &NewMail)
-{    
+{
+  AppCastingMOOSApp::OnNewMail(NewMail);
+ 
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
+    string key    = msg.GetKey();
+    double dval   = msg.GetDouble();
+    string sval   = msg.GetString(); 
+
+    if(key == "DB_UPTIME")
+      m_elapsed_time = dval;
+
+    if(msg.IsDouble()) {
+      m_halt_conditions.updateInfoBuffer(key, dval);
+      m_pass_conditions.updateInfoBuffer(key, dval);
+      m_fail_conditions.updateInfoBuffer(key, dval);
+    }
+    else if(msg.IsString()) {
+      m_halt_conditions.updateInfoBuffer(key, sval);
+      m_pass_conditions.updateInfoBuffer(key, sval);
+      m_fail_conditions.updateInfoBuffer(key, sval);
+    }
     updateInfoBuffer(msg);
-   }
+    
+  }
 
   return(true);
 }
@@ -104,9 +165,54 @@ bool QueryDB::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool QueryDB::OnStartUp()
 {
-  CMOOSApp::OnStartUp();
+  AppCastingMOOSApp::OnStartUp();
 
-  m_start_time = MOOSTime();
+  STRING_LIST sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams))
+    reportConfigWarning("No config block found for " + GetAppName());
+
+  STRING_LIST::iterator p;
+  for(p=sParams.begin(); p!=sParams.end(); p++) {
+    string orig  = *p;
+    string line  = *p;
+    string param = tolower(biteStringX(line, '='));
+    string value = line;
+
+    bool handled = true;
+    if((param == "condition") || (param == "halt_condition"))
+      handled = m_halt_conditions.addNewCondition(value);
+    else if((param == "max_time") || (param == "halt_max_time"))
+      handled = setDoubleOnString(m_max_time, value);
+
+    else if(param == "pass_condition")
+      handled = m_pass_conditions.addNewCondition(value);
+    else if(param == "fail_condition")
+      handled = m_fail_conditions.addNewCondition(value);
+    else if((param == "check_var") && !strContainsWhite(value)) {
+      if(!vectorContains(m_check_vars, value))
+	m_check_vars.push_back(value);
+      m_report_check_vars = true;
+    }
+    else
+      handled = false;
+      
+    if(!handled)
+      reportUnhandledConfigWarning(orig);
+  }
+
+  // Fake an appcast request
+  string req = "node=" + m_host_community;
+  req += ", app=" + GetAppName();
+  req += ", duration=" + doubleToStringX(m_wait_time+30);
+  req += ", key=uQueryDB,thresh=any";
+  Notify("APPCAST_REQ", req);
+
+  // Heuristic: Always add DB_UPTIME to the list of check_vars.
+  // If other check_vars are being used, this will also be
+  // reported. Especially important report var for bookkeeping
+  if(!vectorContains(m_check_vars, "DB_UPTIME"))
+    m_check_vars.push_back("DB_UPTIME");
   
   registerVariables();
   return(true);
@@ -122,30 +228,27 @@ bool QueryDB::OnConnectToServer()
 }
 
 //------------------------------------------------------------
-// Procedure: setLogicCondition
-
-bool QueryDB::setLogicCondition(string str)
-{
-  LogicCondition new_condition;
-  bool ok = new_condition.setCondition(str);
-  if(!ok)
-    return(false);
-
-  m_logic_condition = new_condition;
-
-  return(true);
-}
-
-
-//------------------------------------------------------------
 // Procedure: registerVariables
 
 void QueryDB::registerVariables()
 {
-  vector<string> vars = m_logic_condition.getVarNames();
+  AppCastingMOOSApp::RegisterVariables();
+  
+  vector<string> vars = m_halt_conditions.getAllVars();
   for(unsigned int i=0; i<vars.size(); i++) 
     Register(vars[i], 0);
 
+  vars = m_pass_conditions.getAllVars();
+  for(unsigned int i=0; i<vars.size(); i++) 
+    Register(vars[i], 0);
+  
+  vars = m_fail_conditions.getAllVars();
+  for(unsigned int i=0; i<vars.size(); i++) 
+    Register(vars[i], 0);
+  
+  for(unsigned int i=0; i<m_check_vars.size(); i++) 
+    Register(m_check_vars[i], 0);
+  
   Register("DB_UPTIME", 0);
   Register("DB_TIME", 0);
 }
@@ -201,82 +304,184 @@ bool QueryDB::ConfigureComms()
   return(true);
 }
 
+//-----------------------------------------------------------
+// Procedure: reportCheckVars()
+//   Purpose: If check_vars are specified, summarize these
+//            vars to stdout upon exit. The intention is that
+//            these lines may be picked up by a shell script.
+
+void QueryDB::reportCheckVars()
+{
+  vector<string> svector = m_info_buffer->getReport(m_check_vars);
+  if(svector.size() == 0)
+    return;
+  
+  FILE *f = fopen(".checkvars", "w");
+  if(!f)
+    return;
+  
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string line = stripBlankEnds(svector[i]);
+    string var = biteStringX(line, ' ');
+    string val = line;
+    fprintf(f, "checkvar = %s=%s\n", var.c_str(), val.c_str());
+  }
+
+  fclose(f);
+}
 
 
 //-----------------------------------------------------------
-// Procedure: checkCondition()
+// Procedure: checkMaxTimeReached()
+//      Sets: m_exit_value
+//            0 if enabled and time has been reached
+//            1 if disabled or time has not been reached
 
-bool QueryDB::checkCondition()
+void QueryDB::checkMaxTimeReached()
 {
-  if(!m_info_buffer) 
-    return(false);
+  // Sanity check: if max_time not enabled, do nothing
+  if(m_max_time < 0)
+    return;
 
-  // Phase 1: get all the variable names from the logic condition.
-  vector<string> vars = m_logic_condition.getVarNames();
-
-  // Phase 2: get values of all variables from the info_buffer and 
-  // propogate these values down to all the logic conditions.
-  for(unsigned int i=0; i<vars.size(); i++) {
-    string varname = vars[i];
-    bool   ok_s, ok_d;
-    string s_result = m_info_buffer->sQuery(varname, ok_s);
-    double d_result = m_info_buffer->dQuery(varname, ok_d);
-    if(ok_s)
-      m_logic_condition.setVarVal(varname, s_result);
-    if(ok_d)
-      m_logic_condition.setVarVal(varname, d_result);
-  }
-
-  bool satisfied = m_logic_condition.eval();
-  return(satisfied);
+  // Sanity check: if exit value has been set, it cannot change
+  if(m_exit_value != -1)
+    return;
+  
+  if(m_elapsed_time < m_max_time)
+    return;
+  
+  m_exit_value = 0;
 }
 
 
+//-----------------------------------------------------------
+// Procedure: checkHaltConditions()
+//      Sets: m_exit_value
+//            1  if not all mail has been received yet
+//               for all variables involved in condition
+//            1  Logic condition is false
+//            0  Logic condition is true
+
+void QueryDB::checkHaltConditions()
+{
+  bool satisfied = m_halt_conditions.checkConditions();
+  if(satisfied)
+    m_exit_value = 0;
+  else
+    m_exit_value = 1;
+}
+
+//-----------------------------------------------------------
+// Procedure: checkPassFailConditions()
+//      Sets: m_exit_value
+//            1  if not all mail has been received yet for all
+//               vars involved in either pass or fail conditions
+//            1  A pass condition unsat
+//            1  Not all fail conditions unsat
+//            0  otherwise (THIS MEANS PASS)
+
+void QueryDB::checkPassFailConditions()
+{
+  bool all_pass_conds_met = m_pass_conditions.checkConditions("all");
+  bool any_fail_conds_met = m_fail_conditions.checkConditions("any");
+
+  if(!all_pass_conds_met) {
+    m_exit_value = 1;
+    m_notable_condition = m_pass_conditions.getNotableCondition();
+  }
+  else if(any_fail_conds_met) {
+    m_exit_value = 1;
+    m_notable_condition = m_fail_conditions.getNotableCondition();
+  }
+  else
+    m_exit_value = 0;
+}
 
 
 //------------------------------------------------------------
-// Procedure: allMailReceived()
-//   Purpose: Get all variables involved in the logic condition and
-//            check if mail has been received for all variables by 
-//            checking if each variable is known to the info_buffer.
+// Procedure: buildReport()
 
-bool QueryDB::allMailReceived() const
+bool QueryDB::buildReport() 
 {
-  if(!m_info_buffer)
-    return(false);
-  
-  vector<string> vars = m_logic_condition.getVarNames();
-  for(unsigned int i=0; i<vars.size(); i++) {
-    bool known = m_info_buffer->isKnown(vars[i]);
-    if(!known)
-      return(false);
+  // =======================================================
+  // Report Style 1: When in halt condition mode
+  // =======================================================
+  if(m_check_for_halt) {
+    string max_time_str = "n/a";
+    if(m_max_time > 0)
+      max_time_str = doubleToStringX(m_max_time,2);
+
+    string hconds_count_str = uintToString(m_halt_conditions.size());
+    string unmet_logic_str = m_halt_conditions.getNotableCondition();
+    if(unmet_logic_str == "")
+      unmet_logic_str = "n/a";
+    
+    m_msgs << "Config (halting):  " << endl;
+    m_msgs << "  max_time:        " << max_time_str      << endl;
+    m_msgs << "  halt_conditions: " << hconds_count_str  << endl;
+    m_msgs << "  unmet condition: " << unmet_logic_str   << endl;
+    m_msgs << endl;
+    
+    if(m_max_time > 0) {
+      string str_elapsed = doubleToString(m_elapsed_time,1);
+      m_msgs << "Elapsed Time: " << str_elapsed << endl;
+    }
+
+    m_msgs << endl;
+    m_msgs << "InfoBuffer: (halt condition vars)            " << endl;
+    m_msgs << "============================================ " << endl;
+    vector<string> ibh_report = m_halt_conditions.getInfoBuffReport(true);
+    if(ibh_report.size() == 0)
+      m_msgs << "<empty>" << endl;
+    for(unsigned int i=0; i<ibh_report.size(); i++)
+      m_msgs << ibh_report[i] << endl;
+    
   }
+  // =======================================================
+  // Report Style 2: When in pass/fail condition mode
+  // =======================================================
+  else {
+    string pconds_count_str = uintToString(m_pass_conditions.size());
+    string fconds_count_str = uintToString(m_fail_conditions.size());
+    string pass_fail_result = "fail: " + m_notable_condition;
+    if(m_exit_value == 0)
+      pass_fail_result = "pass";
+    
+    m_msgs << "Config (pass/fail):" << endl;
+    m_msgs << "  pass_conditions: " << pconds_count_str  << endl;
+    m_msgs << "  fail_conditions: " << fconds_count_str  << endl;
+    m_msgs << "Result: " << pass_fail_result << endl;
+    m_msgs << endl;
+    
+    m_msgs << endl;
+    m_msgs << "InfoBuffer: (pass condition vars)            " << endl;
+    m_msgs << "============================================ " << endl;
+    vector<string> ibp_report = m_pass_conditions.getInfoBuffReport(true);
+    if(ibp_report.size() == 0)
+      m_msgs << "<empty>" << endl;
+    for(unsigned int i=0; i<ibp_report.size(); i++)
+      m_msgs << ibp_report[i] << endl;
+    
+    m_msgs << endl;
+    m_msgs << "InfoBuffer: (fail condition vars)            " << endl;
+    m_msgs << "============================================ " << endl;
+    vector<string> ibf_report = m_fail_conditions.getInfoBuffReport(true);
+    if(ibf_report.size() == 0)
+      m_msgs << "<empty>" << endl;
+    for(unsigned int i=0; i<ibf_report.size(); i++)
+      m_msgs << ibf_report[i] << endl;
+
+    m_msgs << endl;
+    m_msgs << "InfoBuffer: (check vars)                     " << endl;
+    m_msgs << "============================================ " << endl;
+    vector<string> var_report = m_info_buffer->getReport(m_check_vars);
+    if(var_report.size() == 0)
+      m_msgs << "<empty>" << endl;
+    for(unsigned int i=0; i<var_report.size(); i++)
+      m_msgs << var_report[i] << endl;
+  }
+  
   return(true);
 }
-
-//------------------------------------------------------------
-// Procedure: printReport()
-
-void QueryDB::printReport()
-{
-  printf("====================================\n");
-  printf("Iteration: %i \n", m_iteration);
-  printf("Condition: %s \n", m_logic_condition.getRawCondition().c_str());
-  vector<string> vars = m_logic_condition.getVarNames();
-  for(unsigned int i=0; i<vars.size(); i++) {
-    bool ok_str, ok_dbl;
-    string sval = m_info_buffer->sQuery(vars[i], ok_str);
-    double dval = m_info_buffer->dQuery(vars[i], ok_dbl);
-    printf("Var:  %-18s", vars[i].c_str());
-    if(ok_str)
-      printf(" [%s] \n", sval.c_str());
-    else if(ok_dbl)
-      printf(" [%f] \n", dval);
-    else
-      printf(" [---] \n");
-  }
-}
-
-
 
 

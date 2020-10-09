@@ -17,9 +17,9 @@ PASS_ARGS=""
 #--------------------------------------------------------------  
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo"launch.sh [SWITCHES] [time_warp]    "
-	echo "  --just_make, -j                  " 
+	echo "launch.sh [SWITCHES] [time_warp]    "
 	echo "  --help, -h                       " 
+	echo "  --just_make, -j                  " 
 	echo "  --pavlab, -p                     "
 	echo "    Set region to be MIT pavlab    " 
 	exit 0;
@@ -30,8 +30,8 @@ for ARGI; do
     elif [ "${ARGI}" = "--pavlab" -o "${ARGI}" = "-p" ]; then
         PASS_ARGS+=$ARGI
     else 
-	echo"launch.sh: Bad Arg:" $ARGI
-	exit 1
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
+        exit 1
     fi
 done
 

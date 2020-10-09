@@ -28,6 +28,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include "InfoBuffer.h"
 #include "LogicCondition.h"
 
@@ -37,32 +38,33 @@ public:
   ~LogicBuffer();
 
 public:
-  bool addNewCondition(const std::string&);
+  bool addNewCondition(std::string);
 
-  bool updateInfoBuffer(const std::string& moosvar,
-			const std::string& value);
+  void updateInfoBuffer(std::string var, std::string val);
 
-  bool updateInfoBuffer(const std::string& moosvar,
-			double value);
+  void updateInfoBuffer(std::string var, double val);
 
-  bool checkConditions();
+  bool checkConditions(std::string required="all");
 
-  unsigned int size() {return(m_logic_conditions.size());}
+  unsigned int size() const {return(m_logic_conditions.size());}
 
-  std::vector<std::string> getAllVars();
+  std::set<std::string> getAllVarsSet() const;
+  std::vector<std::string> getAllVars() const;
+  std::vector<std::string> getInfoBuffReport(bool allvars=false) const;
 
-protected:
-  std::vector<LogicCondition> m_logic_conditions;
+  std::string getNotableCondition() const {return(m_notable_condition);}
   
+protected:
   InfoBuffer *m_info_buffer;
+
+  std::vector<LogicCondition> m_logic_conditions;
+
+  // notable_condition is a failed condition if required=all
+  // notable_condition is a passed condition if required=any
+  std::string m_notable_condition;
+
+  // cache of relevant vars, updated upon new conditions
+  std::set<std::string> m_logic_vars;
+
 };
 #endif
-
-
-
-
-
-
-
-
-

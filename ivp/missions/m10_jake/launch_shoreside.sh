@@ -19,8 +19,8 @@ for ARGI; do
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
     else 
-	printf "Bad Argument: %s \n" $ARGI
-	exit 0
+        echo "launch_shoreside.sh Bad arg:" $ARGI " Exiting with code: 1"
+        exit 1
     fi
 done
 

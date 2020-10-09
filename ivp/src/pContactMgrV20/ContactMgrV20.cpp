@@ -157,6 +157,7 @@ bool ContactMgrV20::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
+  // PID published to support uMemWatch or similar oversight
   Notify("PCONTACTMGRV20_PID", getpid());
 
   m_ownship = m_host_community;
@@ -466,6 +467,10 @@ void ContactMgrV20::handleMailReportRequest(string str)
 void ContactMgrV20::handleMailAlertRequest(string value, string source)
 {
   m_alert_requests_received++;
+
+  string msg = "New REPORT_REQUEST: " + value + ":" + source;
+  reportEvent(msg);
+
   bool ok = handleConfigAlert(value, source);
   if(!ok)
     reportRunWarning("Unhandled Alert Request: " + value);   
@@ -1093,7 +1098,8 @@ void ContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
   string time_str = record.getStringValue("time");
   string name_str = record.getName();
   string type_str = record.getType();
-
+  string group_str = record.getGroup();
+  
   // Step 2: Get var to post, and expand macros if any
   string var = pair.get_var();
 
@@ -1131,9 +1137,11 @@ void ContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
   msg = findReplace(msg, "$[DEP]", dep_str);
   msg = findReplace(msg, "$[VNAME]", name_str);
   msg = findReplace(msg, "$[VTYPE]", type_str);
+  msg = findReplace(msg, "$[GROUP]", group_str);
   msg = findReplace(msg, "$[UTIME]", time_str);
   msg = findReplace(msg, "%[VNAME]", tolower(name_str));
   msg = findReplace(msg, "%[VTYPE]", tolower(type_str));
+  msg = findReplace(msg, "%[GROUP]", tolower(group_str));
 
   Notify(var, msg);
   reportEvent(var + "=" + msg);

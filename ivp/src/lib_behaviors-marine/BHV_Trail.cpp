@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Trail.cpp                                        */
 /*    DATE: Jul 3rd 2005 Sunday morning at Brueggers             */
@@ -42,17 +42,11 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-BHV_Trail::BHV_Trail(IvPDomain gdomain) : 
-  IvPContactBehavior(gdomain)
+BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPContactBehavior(gdomain)
 {
   this->setParam("descriptor", "(d)trail");
   this->setParam("build_info", "uniform_piece=discrete@course:3,speed:2");
   this->setParam("build_info", "uniform_grid =discrete@course:9,speed:6");
-  
-  // These parameters really should be set in the behavior file, but are
-  // left here for now to smoothen the transition (Aug 10, 2008, mikerb)
-  //this->setParam("activeflag",   "PURSUIT=1");
-  //this->setParam("inactiveflag", "PURSUIT=0");
   
   m_domain = subDomain(m_domain, "course,speed");
   
@@ -60,14 +54,15 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) :
   m_trail_angle    = 180;
   m_radius         = 5;
   m_nm_radius      = 20;
-  m_max_range      = 0;
+  m_pwt_outer_dist = 0;
   m_angle_relative = true; // as opposed to angle being absolute
   m_time_on_leg    = 60;
-  m_post_trail_distance_on_idle = true;
   m_trail_pt_x     = 0;
   m_trail_pt_y     = 0;
 
-  m_no_alert_request  = false;
+  m_post_trail_dist_on_idle = true;
+
+  m_no_alert_request  = true;
   
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
@@ -75,13 +70,12 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) :
 //-----------------------------------------------------------
 // Procedure: setParam
 //  
-//        "them": the name of the vehicle to trail.
-// "trail_range": desired range to the vehicle trailed.
-// "trail_angle": desired angle to the vehicle trailed.
-//      "radius": distance to the desired trailing point within
-//                which the behavior is "shadowing".
-//   "nm_radius": If within this and heading ahead of target slow down
-//   "max_range": contact range outside which priority is zero.
+//    trail_range: desired range to the vehicle trailed.
+//    trail_angle: desired angle to the vehicle trailed.
+//         radius: distance to the desired trailing point within
+//                 which the behavior is "shadowing".
+//      nm_radius: If within this and heading ahead of target slow down
+// pwt_outer_dist: contact range outside which priority is zero.
 
 bool BHV_Trail::setParam(string param, string param_val) 
 {
@@ -89,37 +83,19 @@ bool BHV_Trail::setParam(string param, string param_val)
     return(true);
   
   double dval = atof(param_val.c_str());
-  bool non_neg_number = (isNumber(param_val) && (dval >= 0));
 
-  if(param == "nm_radius") {
-    if(non_neg_number) {
-      m_nm_radius = dval;
-      return(true);
-    }  
-  }
-  else if(param == "no_alert_request") {
+  if(param == "nm_radius")
+    return(setNonNegDoubleOnString(m_nm_radius, param_val));
+  else if(param == "no_alert_request")
     return(setBooleanOnString(m_no_alert_request, param_val));
-  }  
-  else if(param == "post_trail_dist_on_idle") {
-    return(setBooleanOnString(m_post_trail_distance_on_idle, param_val));
-  }
-
-  else if(param == "post_trail_distance_on_idle") {
-    return(setBooleanOnString(m_post_trail_distance_on_idle, param_val));
-  }
-  else if((param == "pwt_outer_dist") ||   // preferred
-	  (param == "max_range")) {        // deprecated
-    if(non_neg_number) {
-      m_max_range = dval;
-      return(true);
-    }  
-  }
-  else if(param == "radius") {
-    if(non_neg_number) {
-      m_radius = dval;
-      return(true);
-    }  
-  }
+  else if(param == "post_trail_dist_on_idle")
+    return(setBooleanOnString(m_post_trail_dist_on_idle, param_val));
+  else if(param == "pwt_outer_dist")
+    return(setNonNegDoubleOnString(m_pwt_outer_dist, param_val));
+  else if(param == "radius")
+    return(setNonNegDoubleOnString(m_radius, param_val));
+  else if(param == "trail_range")
+    return(setNonNegDoubleOnString(m_trail_range, param_val));
   else if(param == "trail_angle") {
     if(isNumber(param_val)) {
       m_trail_angle = angle180(dval);
@@ -136,60 +112,46 @@ bool BHV_Trail::setParam(string param, string param_val)
       return(false);
     return(true);
   }
-
-  else if(param == "trail_range") {
-    if(non_neg_number) {
-      m_trail_range = dval;
-      return(true);
-    }  
-  }
-
+  
   return(false);
 }
 
 
 //-----------------------------------------------------------
-// Procedure: onSetParamComplete
-
-void BHV_Trail::onSetParamComplete() 
-{
-  m_trail_point.set_label(m_us_name + "_trailpoint");
-  m_trail_point.set_active("false");
-  string bhv_tag = tolower(getDescriptor());
-}
-
-
-//-----------------------------------------------------------
 // Procedure: onHelmStart()
+//      Note: This function is called when the helm starts, even if,
+//            especially if, the behavior is just a template at start
+//            time to be spawned later. 
+//      Note: An alert request will be sent to the contact manager if
+//            the behavior is configured with templating enabled, and
+//            an updates variable has been provided.  In the rare case
+//            that the above is true but the user still does not want
+//            an alert request generated, this can be done by setting
+//            m_no_alert_request to true.
 
 void BHV_Trail::onHelmStart() 
 {
-#if 0
-  if(m_no_alert_request || (m_update_var == ""))
+  if(m_no_alert_request || (m_update_var == "") || !m_dynamically_spawnable)
     return;
+
+  string alert_templ = m_update_var + "=name=$[VNAME] # contact=$[VNAME]";
+  string request = "id=" + getDescriptor();
+  request += ", onflag=" + alert_templ;
+  request += ",alert_range=" + doubleToStringX(m_pwt_outer_dist,1);
+  request += ", cpa_range=" + doubleToStringX(m_pwt_outer_dist+5,1);
+  request = augmentSpec(request, getFilterSummary());
   
-  string s_alert_range = doubleToStringX(m_pwt_outer_dist,1);
-  string s_cpa_range   = doubleToStringX(m_completed_dist,1);
-  string s_alert_templ = "name=avd_$[VNAME] # contact=$[VNAME]";
-
-  string alert_request = "id=avd, var=" + m_update_var;
-  alert_request += ", val=" + s_alert_templ;
-  alert_request += ", alert_range=" + s_alert_range;
-  alert_request += ", cpa_range=" + s_cpa_range;
-
-  postMessage("BCM_ALERT_REQUEST", alert_request);
-#endif
+  postMessage("BCM_ALERT_REQUEST", request);
 }
-
 
 //-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_Trail::onRunState() 
 {
-  if(!updatePlatformInfo())
+  if(!platformUpdateOK())
     return(0);
-    
+  
   // Added Aug11,2008 on GLINT to handle sync AUV multistatic - mikerb
   if(m_extrapolate && m_extrapolator.isDecayMaxed())
     return(0);
@@ -347,27 +309,25 @@ IvPFunction *BHV_Trail::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunToIdleState
+// Procedure: onRunToIdleState()
 
 void BHV_Trail::onRunToIdleState()
 {
   postMessage("PURSUIT", 0);
-  postErasableTrailPoint();
 }
 
 //-----------------------------------------------------------
-// Procedure: onIdleState
+// Procedure: onIdleState()
 
 void BHV_Trail::onIdleState()
 {
-  updatePlatformInfo();
   calculateTrailPoint();
-  if(m_post_trail_distance_on_idle)
+  if(m_post_trail_dist_on_idle)
     updateTrailDistance();
 }
 
 //-----------------------------------------------------------
-// Procedure: getRelevance
+// Procedure: getRelevance()
 
 double BHV_Trail::getRelevance()
 {
@@ -375,23 +335,26 @@ double BHV_Trail::getRelevance()
   // imagine that we would reduce its relevance (linearly perhaps) 
   // if the vehicle were already in a good position.
   
-  if(m_max_range == 0)
+  if(m_pwt_outer_dist == 0)
     return(1.0);
   
   postIntMessage("TRAIL_RANGE", m_contact_range );
-  postIntMessage("MAX_RANGE", m_max_range );
   
-  if(m_contact_range < m_max_range)
+  if(m_contact_range < m_pwt_outer_dist)
     return(1.0);
   else
     return(0.0);
 }
 
 //-----------------------------------------------------------
-// Procedure: postViewableTrailPoint
+// Procedure: postViewableTrailPoint()
 
 void BHV_Trail::postViewableTrailPoint()
 {
+  XYPoint m_trail_point;
+  m_trail_point.set_vertex(m_trail_pt_x, m_trail_pt_y);
+  m_trail_point.set_label(m_us_name + "_trailpoint");
+  m_trail_point.set_duration(1);
   m_trail_point.set_active(true);
   string spec = m_trail_point.get_spec();
   postMessage("VIEW_POINT", spec);
@@ -399,16 +362,9 @@ void BHV_Trail::postViewableTrailPoint()
 
 
 //-----------------------------------------------------------
-// Procedure: postErasableTrailPoint
+// Procedure: updateTrailDistance()
 
-void BHV_Trail::postErasableTrailPoint()
-{
-  m_trail_point.set_active(false);
-  string spec = m_trail_point.get_spec();
-  postMessage("VIEW_POINT", spec);
-}
-
-double  BHV_Trail::updateTrailDistance()
+double BHV_Trail::updateTrailDistance()
 {
   double distance = distPointToPoint(m_osx, m_osy, m_trail_pt_x, m_trail_pt_y); 
   postIntMessage("TRAIL_DISTANCE", distance);
@@ -416,7 +372,7 @@ double  BHV_Trail::updateTrailDistance()
 }
 
 //-----------------------------------------------------------
-// Procedure: calculateTrailPoint
+// Procedure: calculateTrailPoint()
 
 void BHV_Trail::calculateTrailPoint()
 {
@@ -431,12 +387,5 @@ void BHV_Trail::calculateTrailPoint()
   else 
     projectPoint(m_trail_angle, m_trail_range, m_cnx, m_cny, m_trail_pt_x, m_trail_pt_y);
 
-  m_trail_point.set_vertex(m_trail_pt_x, m_trail_pt_y);
 }
-
-
-
-
-
-
 

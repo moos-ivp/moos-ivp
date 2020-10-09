@@ -168,6 +168,7 @@ bool BasicContactMgr::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
+  // PID published to support uMemWatch or similar oversight
   Notify("PBASICCONTACTMGR_PID", getpid());
 
   m_ownship = m_host_community;

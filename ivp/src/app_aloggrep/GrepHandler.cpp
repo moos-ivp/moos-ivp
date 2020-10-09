@@ -54,6 +54,7 @@ GrepHandler::GrepHandler()
   m_final_entry_only = false;
   m_final_value_only = false;
   m_final_time_only  = false;
+  m_values_only      = false;
   
   // A "bad" line is a line that is not a comment, and does not begin
   // with a timestamp. As found in entries with CRLF's like DB_VARSUMMARY
@@ -218,7 +219,7 @@ bool GrepHandler::handle(string alogfile, string new_alogfile)
       cout << m_final_line << endl;
       
   }
-    
+  
   return(true);
 }
 
@@ -329,6 +330,22 @@ vector<string> GrepHandler::getUnMatchedKeys()
 
 void GrepHandler::outputLine(const string& line, const string& var)
 {
+  // First handle if just output value field
+  if(m_values_only) {
+    string line_val = getDataEntry(line);
+    string tstamp = getTimeStamp(line);
+    if(tstamp != m_last_tstamp) {
+      if(m_file_out)
+	fprintf(m_file_out, "%s\n", line_val.c_str());
+      else
+	cout << line_val << endl;
+      m_last_tstamp = tstamp;
+    }
+    return;
+  }
+  
+
+  
   if(!m_final_entry_only) {
     if(m_file_out)
       fprintf(m_file_out, "%s\n", line.c_str());

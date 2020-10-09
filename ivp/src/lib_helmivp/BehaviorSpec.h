@@ -38,7 +38,6 @@ class BehaviorSpec {
   void setBehaviorKind(std::string, unsigned int line_num);
   void addBehaviorConfig(std::string, unsigned int line_num);
 
-
   std::vector<std::string>  checkForSpawningStrings();
 
   void setFileName(std::string filename)  {m_filename = filename;}

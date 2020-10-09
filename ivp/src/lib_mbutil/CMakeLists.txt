@@ -15,6 +15,7 @@ SET(SRC
   StringTree.cpp
   StringNode.cpp
   VarDataPair.cpp
+  VarDataPairUtils.cpp
   Odometer.cpp
   Figlog.cpp
   TStamp.cpp
@@ -34,6 +35,7 @@ SET(HEADERS
   StringTree.h
   TermUtils.h
   VarDataPair.h
+  VarDataPairUtils.h
   Odometer.h
   TStamp.h
   ReleaseInfo.h

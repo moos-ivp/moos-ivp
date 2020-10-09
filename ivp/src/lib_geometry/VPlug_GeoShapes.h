@@ -87,8 +87,8 @@ public:
   void forgetCommsPulse(std::string label);
 
 
-  bool addPolygon(const std::string&);
-  bool addSegList(const std::string&);
+  bool addPolygon(const std::string&, double timestamp=0);
+  bool addSegList(const std::string&, double timestamp=0);
   bool addSeglr(const std::string&);
   bool addCircle(const std::string&, unsigned int drawpts=18, double t=0);
   bool addWedge(const std::string&, unsigned int drawpts=18);
@@ -99,7 +99,7 @@ public:
   bool addConvexGrid(const std::string&);
   bool addRangePulse(const std::string&, double timestamp=0);
   bool addCommsPulse(const std::string&, double timestamp=0);
-  bool addMarker(const std::string&);
+  bool addMarker(const std::string&, double timestamp=0);
 
   bool updateGrid(const std::string&);
   bool updateConvexGrid(const std::string&);

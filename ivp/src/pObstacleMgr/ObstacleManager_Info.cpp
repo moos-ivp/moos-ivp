@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ObstacleManager_Info.cpp                             */
 /*    DATE: Aug 27th 2014                                        */
@@ -90,6 +90,11 @@ void showExampleConfigAndExit()
   blk("  lasso_radius = 5           // (meters) default is 5           ");
   blk("                                                                ");
   blk("  obstacles_color = color    // default is blue                 ");
+  blk("                                                                ");
+  blk("  // To squeeze more viewer effic when large # of obstacles:    ");
+  blk("  poly_label_thresh = 25     // Set label color=off if amt>25   ");
+  blk("  poly_shade_thresh = 100    // Set shade color=off if amt>100  ");
+  blk("  poly_vertex_thresh = 150   // Set vertex size=0 if amt>150    ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

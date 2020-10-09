@@ -33,7 +33,7 @@
       '("uFldVoronoi" "reject_range" "post_poly" "post_region" "region")
       '("uMemWatch" "ignore" "watch_only" "absolute_time_gap")
       '("uFldCollObDetect" "collision_dist" "near_miss_dist" "encounter_dist" "collision_flag" "near_miss_flag" "encounter_flag" "ignore_group" "reject_group")
-      '("uFldObstacleSim" "obstacle_file" "poly_vert_color" "poly_edge_color" "poly_fill_color" "poly_label_color" "poly_vert_size" "poly_edge_size" "draw_region" "post_points" "rate_points" "poly_transparency" "region_edge_color" "min_duration" "max_duration" "reuse_ids" "reset_interval" "reset_range")
+      '("uFldObstacleSim" "obstacle_file" "poly_vert_color" "poly_edge_color" "poly_fill_color" "poly_label_color" "poly_vert_size" "poly_edge_size" "draw_region" "post_points" "rate_points" "poly_transparency" "region_edge_color" "min_duration" "max_duration" "reuse_ids" "reset_interval" "reset_range" "refresh_interval")
       '("uFldWrapDetect" "max_segments" "max_trail_distance" "max_trail_dist")
       '("pMovingSurvey" "survey" "heading" "speed" "reverse_interval" "update_interval" "rpm")
       '("pHostInfoV2" "prefer_hostip" "backup_hostip")

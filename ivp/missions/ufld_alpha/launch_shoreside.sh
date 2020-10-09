@@ -57,7 +57,6 @@ fi
 nsplug meta_shoreside.moos targ_shoreside.moos $NSFLAGS WARP=$TIME_WARP  \
        IP_ADDR=$IP_ADDR  PSHARE_PORT=$PSHARE_PORT  REGION=$REGION
 
-
 if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi

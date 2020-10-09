@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Shadow.cpp                                       */
 /*    DATE: May 10th 2005                                        */
@@ -63,45 +63,21 @@ bool BHV_Shadow::setParam(string param, string param_val)
   if(IvPContactBehavior::setParam(param, param_val))
     return(true);
 
-  double dval = atof(param_val.c_str());
-  bool non_neg_number = (isNumber(param_val) && (dval >= 0));
-
-  if((param == "pwt_outer_dist") ||         // preferred
-	  (param == "max_range")) {         // deprecated 4/2010
-    if(!non_neg_number)
-      return(false);    
-    m_pwt_outer_dist = dval;
-    return(true);
-  }  
+  if(param == "pwt_outer_dist")
+    return(setNonNegDoubleOnString(m_pwt_outer_dist, param_val));
   else if((param == "heading_peakwidth") ||  // preferred
-	  (param == "hdg_peakwidth")) {      // supported alternative
-    if(!non_neg_number)
-      return(false);
-    m_hdg_peakwidth = dval;
-    return(true);
-  }
+	  (param == "hdg_peakwidth"))        // supported alternative
+    return(setNonNegDoubleOnString(m_hdg_peakwidth, param_val));
   else if((param == "heading_basewidth") ||  // preferred
-	  (param == "hdg_basewidth")) {      // supported alternative
-    if(!non_neg_number)
-      return(false);
-    m_hdg_basewidth = dval;
-    return(true);
-  }
+	  (param == "hdg_basewidth"))        // supported alternative
+    return(setNonNegDoubleOnString(m_hdg_basewidth, param_val));
   else if((param == "speed_peakwidth") ||    // preferred
-	  (param == "spd_peakwidth")) {      // supported alternative
-    if(!non_neg_number)
-      return(false);
-    m_spd_peakwidth = dval;
-    return(true);
-  }
+	  (param == "spd_peakwidth"))        // supported alternative
+    return(setNonNegDoubleOnString(m_spd_peakwidth, param_val));
   else if((param == "speed_basewidth") ||    // preferred
-	  (param == "spd_basewidth")) {      // supported alternative
-    if(!non_neg_number)
-      return(false);
-    m_spd_basewidth = dval;
-    return(true);
-  }
-
+	  (param == "spd_basewidth"))        // supported alternative
+    return(setNonNegDoubleOnString(m_spd_basewidth, param_val));
+  
   return(false);
 }
 

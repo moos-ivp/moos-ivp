@@ -30,6 +30,7 @@
 #include <string>
 #include "XYObject.h"
 #include "XYPoint.h"
+#include "EdgeTagSet.h"
 #include <iostream>
 
 class XYSegList : public XYObject {
@@ -46,6 +47,8 @@ public:
   void   delete_vertex(double, double);
   void   delete_vertex(unsigned int);
   void   insert_vertex(double, double, double=0, std::string s="");
+  void   set_edge_tags(EdgeTagSet v) {m_edge_tags=v;}
+  void   pop_last_vertex();
   void   clear();
 
 public:
@@ -82,7 +85,7 @@ public:
   double dist_to_ctr(double x, double y) const;
   double max_dist_to_ctr() const;
   bool   segs_cross(bool loop=true) const;
-  double length();
+  double length() const;
 
   std::string get_spec(unsigned int vertex_prec=1) const;
   std::string get_spec(std::string param) const;
@@ -94,6 +97,8 @@ public:
   unsigned int closest_vertex(double, double) const; 
   unsigned int closest_segment(double, double, bool implseg=true) const;
 
+  EdgeTagSet get_edge_tags() const {return(m_edge_tags);}
+  
 protected:
   void   grow_pt_by_pct(double, double, double, double&, double&);
   void   grow_pt_by_amt(double, double, double, double&, double&);
@@ -105,6 +110,8 @@ protected:
   std::vector<double> m_vz;
   std::vector<std::string> m_vprop;
 
+  EdgeTagSet m_edge_tags;
+  
   double   m_transparency;
 
 };

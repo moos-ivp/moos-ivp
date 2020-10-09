@@ -49,7 +49,7 @@ Behavior = BHV_Loiter
 }
 
 //----------------------------------------------
-Behavior = BHV_AvdColregsV17
+Behavior = BHV_AvdColregsV19
 {
   name       = avdcol_
   pwt        = 150
@@ -59,19 +59,21 @@ Behavior = BHV_AvdColregsV17
   endflag    = CONTACT_RESOLVED = $[CONTACT]
   templating = spawn
 
-	activeflag = INFO=thoseguys=$[CONTACT]
-
 
              contact = to-be-set
     on_no_contact_ok = true
          extrapolate = true
                decay = 30,60
 
+          match_type = mokai
+
+	post_per_contact_info = true
+	
         use_refinery = true
 
-        pwt_outer_dist = 35
-        pwt_inner_dist = 10
-        completed_dist = 45
+        pwt_outer_dist = 80
+        pwt_inner_dist = 50
+        completed_dist = 85
      min_util_cpa_dist = 10
      max_util_cpa_dist = 18
              pwt_grade = linear
@@ -91,15 +93,20 @@ Behavior = BHV_AvdColregsV17
   runflag      = AVOIDING = running
   endflag      = AVOIDING = end
 
-  //ignore_group = lemons
-  //match_type   = kayak
-
   templating   = spawn
 
              contact = to-be-set
     on_no_contact_ok = true
          extrapolate = true
                decay = 30,60
+
+//	           cnflag = @<20 SAY_MOOS=hello
+	           cnflag = @<20 ROC=$[ROC]
+	           cnflag = @<20 OS_PORT_OF_CN = $[OS_PORT_OF_CN]
+	           cnflag = @<20 OS_STAR_OF_CN = $[OS_STAR_OF_CN]
+	           cnflag = @<20 OS_AFT_OF_CN = $[OS_AFT_OF_CN]
+	           cnflag = @<20 OS_FORE_OF_CN = $[OS_FORE_OF_CN]
+//             cnflag = @>39 SAY_MOOS=bye
 
         use_refinery = true
 

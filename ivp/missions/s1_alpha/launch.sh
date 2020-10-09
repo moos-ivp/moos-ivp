@@ -17,15 +17,15 @@ GUI="yes"
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	echo "launch.sh [SWITCHES] [time_warp]   "
-	echo "  --help, -h                       " 
+	echo "  --help, -h           Show this help message            " 
 	exit 0;
     elif [ "${ARGI}" = "--nogui" ] ; then
 	GUI="no"
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     else 
-	echo "launch.sh: Bad Arg:" $ARGI
-	exit 0
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
+        exit 1
     fi
 done
 

@@ -182,9 +182,6 @@ ProcessConfig = pMarineViewer
   ACTION = PERMUTING = true
   ACTION = PERMUTING = false
 
-  ACTION = WIND_GUSTS = true
-  ACTION = WIND_GUSTS = false
-
   ACTION = STATION_ALL = false
   ACTION = STATION_ALL = true
 

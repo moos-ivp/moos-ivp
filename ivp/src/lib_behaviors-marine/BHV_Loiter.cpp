@@ -1,5 +1,5 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Loiter.cpp                                       */
 /*    DATE: July 26th 2005 In Elba w/ M.Grund, P.Newman          */
@@ -360,14 +360,6 @@ bool BHV_Loiter::updateInfoIn()
     postWMessage("Empty/NULL Loiter Specification.");
     return(false);
   }
-
-#if 0  
-  int rval = rand() % 1000;
-  if((rval % 53) == 0)
-    postWMessage("Test warning message: " + intToString(rval));
-  if((rval % 307) == 0)
-    postEMessage("Test Error message: " + intToString(rval));
-#endif
 
   bool ok1, ok2, ok3, ok4;
   // ownship position in meters from some 0,0 reference point.

@@ -24,8 +24,8 @@ for ARGI; do
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     else 
-	printf "Bad Argument: %s \n" $ARGI
-	exit 0
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
+        exit 1
     fi
 done
 

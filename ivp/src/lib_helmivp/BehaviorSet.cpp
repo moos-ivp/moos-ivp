@@ -270,7 +270,9 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
   
   bhv->setBehaviorType(bhv_kind);
   bhv->IvPBehavior::setParam("us", m_ownship);
-
+  if(spec.templating())
+    bhv->setDynamicallySpawnable(true);
+  
 
   // First apply all the behavior specs from the original specification
   // given in the .bhv file. All bad specs are noted, not just the first.
@@ -528,6 +530,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   
   // Possible vals: "completed", "idle", "running"
   new_activity_state = bhv->isRunnable();
+  
+  // Invoke the onEveryState() function applicable in all situations
+  bhv->onEveryState();
   
   // ===================================================================
   // Part 2: With new_activity_state set, act appropriately for

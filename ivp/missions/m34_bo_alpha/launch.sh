@@ -19,8 +19,10 @@ OBAVD="avoidx"
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	echo "launch.sh [SWITCHES] [time_warp]                   " 
-	echo "  --just_make, -j                                  " 
-	echo "  --help, -h                                       " 
+	echo "  --help, -h                                       "
+	echo "    Show this help message                         " 
+	echo "  --just_make, -j                                  "
+	echo "    Just create targ files, no launch " 
 	echo "  --dynamic_reset, -d                              " 
 	echo "    Enable dynamice resetting of obstacles in the  "
 	echo "    obstacle simulator                             "
@@ -47,7 +49,7 @@ for ARGI; do
     elif [ "${ARGI}" = "--old_avd" -o "${ARGI}" = "-o" ] ; then
 	OBAVD="old"
     else 
-        echo "launch.sh: Bad arg:" $ARGI 
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
         exit 1
     fi
 done
@@ -57,8 +59,12 @@ done
 #-------------------------------------------------------
 VNAME1="henry"           # The first vehicle Community
 VNAME2="gilda"           # The second vehicle Community
-START_POS1="0,0"         
-START_POS2="80,0"        
+#START_POS1="0,0"         
+#START_POS2="80,0"        
+
+START_POS1="-10,-30,180"         
+START_POS2="150,-130,0"        
+
 LOITER_POS1="x=0,y=-75"
 LOITER_POS2="x=145,y=-70"
 VCOLOR1="light_green"

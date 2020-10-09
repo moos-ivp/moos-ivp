@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: ConvexHull.h                                         */
+/*    FILE: ConvexHullGenerator.h                                */
 /*    DATE: Aug 26th 2014                                        */
 /*    DATE: Jun 8th  2020 Major revisions                        */
 /*                                                               */

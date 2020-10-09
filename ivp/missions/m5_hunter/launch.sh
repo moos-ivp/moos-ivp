@@ -24,8 +24,8 @@ for ARGI; do
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
     else 
-	echo "launch.sh: Bad:" $ARGI
-	exit 0
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
+        exit 1
     fi
 done
 

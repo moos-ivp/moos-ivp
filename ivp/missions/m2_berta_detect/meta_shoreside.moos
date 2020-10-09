@@ -42,6 +42,18 @@ ProcessConfig = uFldWrapDetect
   CommsTick = 4                                                               
 }       
 
+//--------------------------------------------------
+// uFldQueryDB
+
+ProcessConfig = uQueryDB
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  max_time  = $(MAX_TIME)
+  condition = ENCOUNTER_TOTAL > $(MAX_ENCOUNTERS)
+}       
+
 
 //--------------------------------------------------
 // uFldCollisionDetect
@@ -197,7 +209,7 @@ ProcessConfig = pLogger
   WildCardOmitPattern = DB_VARSUMMARY
   WildCardOmitPattern = DB_RWSUMMARY
   WildCardOmitPattern = NODE* 
-  WildCardOmitPattern = APPCAST* 
+  //WildCardOmitPattern = APPCAST* 
   WildCardOmitPattern = PSHARE* 
   WildCardOmitPattern = *_ITER_GAP
   WildCardOmitPattern = *_ITER_LEN
@@ -272,11 +284,16 @@ ProcessConfig = uTimerScript
   randvar = varname=X2, min=100,  max=150, key=at_reset
   randvar = varname=Y2, min=-75,  max=-25, key=at_reset
 
+#ifdef MISSION_TAG
+  event = var=MISSION_TAG, val="$(MISSION_TAG)", time=0
+#endif
+
   event = var=UP_LOITER_%(VNAME2), val="center_assign=$[X1],$[Y1]", time=180 
   event = var=UP_LOITER_%(VNAME1), val="center_assign=$[X2],$[Y2]", time=180
 
   event = var=UP_LOITER_%(VNAME1), val="center_assign=$[X1],$[Y1]", time=360
   event = var=UP_LOITER_%(VNAME2), val="center_assign=$[X2],$[Y2]", time=360
+
 }
 
 

@@ -5,7 +5,7 @@ initialize   DEPLOY  = false
 initialize   RETURN  = false
 initialize   STATION_KEEP = false
 initialize   LOITER  = true
-initialize   AVOID   = true
+initialize   AVOID   = $(COLAVD)
 
 set MODE = ACTIVE {
   DEPLOY = true
@@ -41,7 +41,10 @@ Behavior = BHV_Loiter
         radius = 8.0
      nm_radius = 15.0
        polygon = radial:: $(LOITER_POS), radius=20, pts=8, snap=1, label=$(VNAME)_LOITER
-  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
+
+    	patience = $(PATIENCE)
+	
+	visual_hints = nextpt_color=white, nextpt_lcolor=khaki
   visual_hints = edge_color=orange, vertex_color=white
   visual_hints = edge_size=1, vertex_size=2
 }
@@ -61,7 +64,11 @@ Behavior = BHV_Loiter
         radius = 8.0
      nm_radius = 15.0
        polygon = format=ellipse, x=60, y=-50, degs=90, minor=35, major=125, pts=16
-  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
+
+	  	patience = $(PATIENCE)
+			ipf_type = zaic_spd
+	
+	visual_hints = nextpt_color=white, nextpt_lcolor=khaki
   visual_hints = edge_color=orange, vertex_color=white
   visual_hints = edge_size=1, vertex_size=2
 }
@@ -75,7 +82,7 @@ Behavior = BHV_Waypoint
   updates   = RETURN_UPDATES
   condition = MODE==RETURNING
   endflag   = STATION_KEEP = true
-  endflag   = AVOID = false
+  endflag   = AVOID = off
 
       speed = 1.3
      radius = 3.0
@@ -107,13 +114,12 @@ Behavior = BHV_StationKeep
 
 
 //----------------------------------------------
-//Behavior = BHV_AvoidCollision
+Behavior = BHV_AvoidCollision
 {
   name         = ac_
   pwt          = 150
-  condition    = AVOID = true 
-  updates      = CONTACT_INFO
-  endflag      = CONTACT_RESOLVED = $[CONTACT]
+  condition    = AVOID = cpa 
+  updates      = CONTACT_INFO_CPA
   templating   = spawn
 
              contact = to-be-set
@@ -135,10 +141,9 @@ Behavior = BHV_AvdColregsV19
 {
   name       = avdcol_
   pwt        = 150
-  condition  = AVOID = true 
+  condition  = AVOID = colregs 
   condition  = MODE==ACTIVE
-  updates    = CONTACT_INFO
-  endflag    = CONTACT_RESOLVED = $[CONTACT]
+  updates    = CONTACT_INFO_V19
   templating = spawn
 
              contact = to-be-set

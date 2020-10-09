@@ -14,6 +14,7 @@
 #include "ColorParse.h"
 #include "XYFormatUtilsPoly.h"
 #include "NodeRecordUtils.h"
+#include "VarDataPairUtils.h"
 
 using namespace std;
 
@@ -57,8 +58,11 @@ bool CollObDetect::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
 
-    if(key == "KNOWN_OBSTACLE")
-      handleMailKnownObstacle(sval);
+    if(key == "KNOWN_OBSTACLE") {
+      bool ok = handleMailKnownObstacle(sval);
+      if(!ok) 
+	reportRunWarning("Unhandled KNOWN_OBSTACLE:" + sval);    
+    }
     
     else if(key=="NODE_REPORT") {
       bool ok = handleMailNodeReport(sval);
@@ -123,11 +127,11 @@ bool CollObDetect::OnStartUp()
     else if(param == "encounter_dist")
       handled = setNonNegDoubleOnString(m_encounter_dist, value);
     else if(param == "collision_flag") 
-      handled = handleConfigFlag("collision", value);
+      handled = addVarDataPairOnString(m_collision_flags, value);
     else if(param == "near_miss_flag") 
-      handled = handleConfigFlag("near_miss", value);
+      handled = addVarDataPairOnString(m_near_miss_flags, value);
     else if(param == "encounter_flag") 
-      handled = handleConfigFlag("encounter", value);
+      handled = addVarDataPairOnString(m_encounter_flags, value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -155,31 +159,6 @@ void CollObDetect::registerVariables()
   Register("KNOWN_OBSTACLE", 0);
   Register("NODE_REPORT", 0);
 }
-
-//------------------------------------------------------------
-// Procedure: handleConfigFlag()
-
-bool CollObDetect::handleConfigFlag(string flag_type, string str)
-{
-  string moosvar = biteStringX(str, '=');
-  string moosval = str;
-
-  if((moosvar == "") || (moosval == ""))
-    return(false);
-  
-  VarDataPair pair(moosvar, moosval, "auto");
-  if(flag_type == "collision")
-    m_collision_flags.push_back(pair);
-  else if(flag_type == "near_miss")
-    m_near_miss_flags.push_back(pair);
-  else if(flag_type == "encounter")
-    m_encounter_flags.push_back(pair);
-  else
-    return(false);
-
-  return(true);
-}
-
 
 //------------------------------------------------------------
 // Procedure: handleMailKnownObstacle()

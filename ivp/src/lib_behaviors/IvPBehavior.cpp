@@ -59,6 +59,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_last_runcheck_time = 0;
 
   m_dynamically_spawned = false;
+  m_dynamically_spawnable = false;
   
   m_duration     = -1;
   m_duration_started         =  false;
@@ -1251,5 +1252,4 @@ string IvPBehavior::expandMacros(string sdata)
   sdata = macroExpand(sdata, "BHVTYPE", m_behavior_type);
   sdata = macroExpand(sdata, "CONTACT", m_contact);
   return(sdata);
-
 }

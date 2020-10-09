@@ -7,11 +7,11 @@ ProcessConfig = pNodeReporter
   CommsTick   = 2
 
 #ifdef GILDA
-  PLATFORM_TYPE = SHIP
-  PLATFORM_LENGTH = 11
+  platform_type = ship
+  platform_length = 11
 #elseifdef HENRY
-  PLATFORM_TYPE = UUV
+  platform_type = uuv
 #else
-  PLATFORM_TYPE = KAYAK
+  platform_type = kayak
 #endif
 }

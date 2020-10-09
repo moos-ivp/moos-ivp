@@ -11,32 +11,40 @@ JUST_MAKE="no"
 AUTO=""
 LAUNCH_GUI="yes"
 COLREGS="no"
+MAX_ENCOUNTERS="1000"
+MAX_TIME="-1"
+
 
 #----------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #----------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "launch.sh [SWITCHES] [time_warp]                  " 
-	echo "  --just_make, -j                                 " 
-	echo "  --help, -h                                      " 
-        echo "  --auto, -a        Auto-launched. uMAC not used. "
-        echo "  --no_gui          Launch in headless mode       "
-        echo "  --colregs, -c     Use COLREGS avoidance         "
+	echo "launch.sh [SWITCHES] [time_warp]                      " 
+	echo "  --help, -h                                          " 
+	echo "  --just_make, -j                                     " 
+        echo "  --auto, -a        Auto-launched. uMAC not used      "
+        echo "  --nogui           Launch in headless mode           "
+        echo "  --me=<amt>        Max encounters when uQueryDB used " 
+        echo "  --mt=<secs>       Max time when uQueryDB used       " 
+        echo "  --colregs, -c     Use COLREGS avoidance             "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
         AUTO="yes"
-    elif [ "${ARGI}" = "--no_gui" -o "${ARGI}" = "-n" ] ; then
+    elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ]; then
 	LAUNCH_GUI="no"
-    elif [ "${ARGI}" = "--colregs" -o "${ARGI}" = "-c" ] ; then
+    elif [ "${ARGI:0:5}" = "--me=" ]; then
+        MAX_ENCOUNTERS="${ARGI#--me=*}"
+    elif [ "${ARGI:0:5}" = "--mt=" ]; then
+        MAX_TIME="${ARGI#--mt=*}"
+    elif [ "${ARGI}" = "--colregs" -o "${ARGI}" = "-c" ]; then
 	COLREGS="yes"
     else 
-        echo "Bad arg:" $ARGI "Run with -h for help."
-        echo "The launch.sh script is exiting with (1)."
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
         exit 1
     fi
 done
@@ -63,8 +71,9 @@ nsplug meta_vehicle.moos targ_gilda.moos -i -f WARP=$TIME_WARP \
        START_POS=$START_POS2  
 
 nsplug meta_shoreside.moos targ_shoreside.moos -i -f WARP=$TIME_WARP \
-       PSHARE_PORT="9200"       VNAMES=$VNAME1:$VNAME2        \
-       LAUNCH_GUI=$LAUNCH_GUI
+       PSHARE_PORT="9200"       VNAMES=$VNAME1:$VNAME2         \
+       LAUNCH_GUI=$LAUNCH_GUI   MAX_ENCOUNTERS=$MAX_ENCOUNTERS \
+       MAX_TIME=$MAX_TIME
 
 nsplug meta_vehicle.bhv targ_henry.bhv -i -f VNAME=$VNAME1    \
        START_POS=$START_POS1    LOITER_POS=$LOITER_POS1       \
@@ -74,7 +83,13 @@ nsplug meta_vehicle.bhv targ_henry.bhv -i -f VNAME=$VNAME1    \
 nsplug meta_vehicle.bhv targ_gilda.bhv -i -f VNAME=$VNAME2    \
        START_POS=$START_POS2    LOITER_POS=$LOITER_POS2       \
        MIN_UTIL_CPA_DIST=10     MAX_UTIL_CPA_DIST=20          \
-       COLREGS=$COLREGS
+       COLREGS=$COLREGS       
+
+if [ ! -e targ_henry.moos ]; then echo "no targ_henry.moos"; exit; fi
+if [ ! -e targ_henry.bhv  ]; then echo "no targ_henry.bhv "; exit; fi
+if [ ! -e targ_gilda.moos ]; then echo "no targ_gilda.moos"; exit; fi
+if [ ! -e targ_gilda.bhv  ]; then echo "no targ_gilda.bhv "; exit; fi
+if [ ! -e targ_shoreside.moos ]; then echo "no targ_shoreside.moos"; exit; fi
 
 if [ ${JUST_MAKE} = "yes" ] ; then
     echo "Files assembled; nothing launched; exiting per request."

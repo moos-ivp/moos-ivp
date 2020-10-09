@@ -6,35 +6,63 @@
 #----------------------------------------------------------
 #  Part 1: Set Exit actions and declare global var defaults
 #----------------------------------------------------------
-trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
 JUST_MAKE="no"
+AUTO=""
 LAUNCH_GUI="yes"
+
+MAX_ENCOUNTERS="1000"
+MAX_TIME="-1"
+COLAVD="colregs"
+MISSION_TAG=""
+PATIENCE="50"
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "launch.sh [SWITCHES] [time_warp]  "
-	echo "  --just_make, -j    " 
-	echo "  --help, -h         " 
-        echo "  --no_gui, -n       " 
+    echo "Arg:["$ARGI"]"
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
+	echo "launch.sh [SWITCHES] [time_warp] "
+	echo "  --help, -h          Show this help message               " 
+        echo "  --just_make, -j     Just create targ files, no launch    "
+        echo "  --auto, -a          Auto-launched. uMAC not used         "
+        echo "  --nogui, -n         Launch in headless mode              " 
+        echo "  --me=<amt>          Max encounters when uQueryDB used    " 
+        echo "  --mt=<secs>         Max time when uQueryDB used          " 
+        echo "  --avd=cpa           Basic CPA coll avoidance, no COLREGS " 
+        echo "  --avd=off           No Collision avoidance at all        " 
+        echo "  --pat=<N=1..99>     Set Loiter patience to N (default 50)" 
+        echo "  --tag=<tag>         Post MISSION_TAG=<tag> in shoreside  " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
-    elif [ "${ARGI}" = "--no_gui" -o "${ARGI}" = "-n" ] ; then
+    elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
+        AUTO="yes"
+    elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ]; then
 	LAUNCH_GUI="no"
+    elif [ "${ARGI:0:6}" = "--tag=" ]; then
+        MISSION_TAG="${ARGI#--tag=*}"
+    elif [ "${ARGI:0:5}" = "--me=" ]; then
+        MAX_ENCOUNTERS="${ARGI#--me=*}"
+    elif [ "${ARGI:0:5}" = "--mt=" ]; then
+        MAX_TIME="${ARGI#--mt=*}"
+    elif [ "${ARGI}" = "--avd=cpa" ]; then
+	COLAVD="cpa"
+    elif [ "${ARGI}" = "--avd=off" ]; then
+	COLAVD="off"
+    elif [ "${ARGI:0:6}" = "--pat=" ]; then
+        PATIENCE="${ARGI#--pat=*}"
     else 
-	echo "launch.sh: Bad Arg:" $ARGI
-	exit 0
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
+        exit 1
     fi
 done
 
 #-------------------------------------------------------
-#  Part 2: Create the .moos and .bhv files. 
+#  Part 3: Create the .moos and .bhv files. 
 #-------------------------------------------------------
 VNAME1="abe"           # The first vehicle Community
 VNAME2="ben"           # The second vehicle Community
@@ -49,41 +77,50 @@ LOITER_POS2="x=125,y=-50"
 SHORE_LISTEN="9300"
 
 nsplug meta_vehicle.moos targ_abe.moos -f WARP=$TIME_WARP \
-    VNAME=$VNAME1          SHARE_LISTEN="9301"            \
-    VPORT="9001"           SHORE_LISTEN=$SHORE_LISTEN     \
-    START_POS=$START_POS1  
+       VNAME=$VNAME1          SHARE_LISTEN="9301"         \
+       VPORT="9001"           SHORE_LISTEN=$SHORE_LISTEN  \
+       START_POS=$START_POS1  
 
 nsplug meta_vehicle.moos targ_ben.moos -f WARP=$TIME_WARP \
-    VNAME=$VNAME2          SHARE_LISTEN="9302"            \
-    VPORT="9002"           SHORE_LISTEN=$SHORE_LISTEN     \
-    START_POS=$START_POS2  
+       VNAME=$VNAME2          SHARE_LISTEN="9302"         \
+       VPORT="9002"           SHORE_LISTEN=$SHORE_LISTEN  \
+       START_POS=$START_POS2  
 
 nsplug meta_vehicle.moos targ_cal.moos -f WARP=$TIME_WARP \
-    VNAME=$VNAME3          SHARE_LISTEN="9303"            \
-    VPORT="9003"           SHORE_LISTEN=$SHORE_LISTEN     \
-    START_POS=$START_POS3  
+       VNAME=$VNAME3          SHARE_LISTEN="9303"         \
+       VPORT="9003"           SHORE_LISTEN=$SHORE_LISTEN  \
+       START_POS=$START_POS3  
 
 nsplug meta_vehicle.moos targ_deb.moos -f WARP=$TIME_WARP \
-    VNAME=$VNAME4          SHARE_LISTEN="9304"            \
-    VPORT="9004"           SHORE_LISTEN=$SHORE_LISTEN     \
-    START_POS=$START_POS4  
+       VNAME=$VNAME4          SHARE_LISTEN="9304"         \
+       VPORT="9004"           SHORE_LISTEN=$SHORE_LISTEN  \
+       START_POS=$START_POS4  
 
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
-    SNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                 \
-    SPORT="9000"       VNAME1=$VNAME1                             \
-    VNAME2=$VNAME2     LAUNCH_GUI=$LAUNCH_GUI
+       SNAME="shoreside"      SHARE_LISTEN=$SHORE_LISTEN          \
+       SPORT="9000"           MISSION_TAG=$MISSION_TAG            \
+       VNAME1=$VNAME1         LAUNCH_GUI=$LAUNCH_GUI              \
+       VNAME2=$VNAME2         MAX_ENCOUNTERS=$MAX_ENCOUNTERS      \
+       MAX_TIME=$MAX_TIME
+	  
 
 nsplug meta_vehicle.bhv targ_abe.bhv -f VNAME=$VNAME1     \
-    START_POS=$START_POS1 LOITER_POS=$LOITER_POS1 MISSION_ROLE="SIDE"      
+       START_POS=$START_POS1     COLAVD=$COLAVD           \
+       LOITER_POS=$LOITER_POS1   MISSION_ROLE="SIDE"      \
+       PATIENCE=$PATIENCE
 
 nsplug meta_vehicle.bhv targ_ben.bhv -f VNAME=$VNAME2     \
-    START_POS=$START_POS2 LOITER_POS=$LOITER_POS2 MISSION_ROLE="SIDE"      
+       START_POS=$START_POS2     COLAVD=$COLAVD           \
+       LOITER_POS=$LOITER_POS2   MISSION_ROLE="SIDE"      \
+       PATIENCE=$PATIENCE
 
 nsplug meta_vehicle.bhv targ_cal.bhv -f VNAME=$VNAME3     \
-    START_POS=$START_POS3 MISSION_ROLE="MIDDLE"
+       START_POS=$START_POS3     COLAVD=$COLAVD           \
+       MISSION_ROLE="MIDDLE"     PATIENCE=$PATIENCE
 
 nsplug meta_vehicle.bhv targ_deb.bhv -f VNAME=$VNAME4     \
-    START_POS=$START_POS4 MISSION_ROLE="MIDDLE"
+       START_POS=$START_POS4     COLAVD=$COLAVD           \
+       MISSION_ROLE="MIDDLE"     PATIENCE=$PATIENCE
 
 if [ ! -e targ_abe.moos ]; then echo "no targ_abe.moos"; exit; fi
 if [ ! -e targ_abe.bhv  ]; then echo "no targ_abe.bhv "; exit; fi
@@ -99,9 +136,8 @@ if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi
 
-
 #-------------------------------------------------------
-#  Part 3: Launch the processes
+#  Part 4: Launch the processes
 #-------------------------------------------------------
 echo "Launching $SNAME MOOS Community with WARP:" $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
@@ -115,4 +151,13 @@ echo "Launching $VNAME4 MOOS Community with WARP:" $TIME_WARP
 pAntler targ_deb.moos >& /dev/null &
 echo "Done "
 
-uMAC targ_shoreside.moos
+#-------------------------------------------------------------- 
+#  Part 5: Unless auto-launched, launch uMAC until mission quit          
+#-------------------------------------------------------------- 
+
+if [ "${AUTO}" = "yes" ]; then
+    exit 0
+fi
+
+uMAC targ_shoreside.moos --node=shoreside --proc=uFldCollisionDetect
+kill -- -$$

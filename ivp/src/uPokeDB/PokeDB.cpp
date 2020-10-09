@@ -368,13 +368,13 @@ void PokeDB::updateVariable(CMOOSMsg &msg)
 
 void PokeDB::printReport()
 {
-  printf("  %-22s", "VarName");
+  printf("  %-24s", "VarName");
   
   printf("%-12s", "(S)ource");
   printf("%-12s", "(T)ime");
   printf("VarValue\n");
   
-  printf("  %-22s", "----------------");
+  printf("  %-24s", "----------------");
   printf("%-12s", "----------");
   printf("%-12s", "----------");
   printf(" -------------\n");
@@ -389,7 +389,7 @@ void PokeDB::printReport()
       wrtime_sval = doubleToString(wrtime_dval,2);
     }
 
-    printf("  %-22s ", m_varname[i].c_str());
+    printf("  %-24s ", m_varname[i].c_str());
     printf("%-12s",    m_source_read[i].c_str());
     printf("%-12s",    wrtime_sval.c_str());
     if(m_valtype_read[i] == "string") {

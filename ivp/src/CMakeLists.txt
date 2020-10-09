@@ -129,6 +129,7 @@ SET(IVP_NON_GUI_LIBS
    lib_ivpcore
    lib_ivpsolve
    lib_logic
+   lib_evalutil
    lib_encounters
    lib_apputil
    lib_contacts
@@ -215,6 +216,9 @@ ENDFOREACH(L)
 #---------------------------------------------------------------------
 
 SET(ROBOT_APPS
+  app_alogbin
+  app_alogtm
+  app_alogeval
   app_alogload
   app_aloggrep
   app_alogscan
@@ -229,7 +233,9 @@ SET(ROBOT_APPS
   app_nsplug
   app_pickpos
   app_manifest_test
+  app_tagrep
   pEchoVar
+  pMissionEval
   pEvalLoiter
   pHelmIvP
   pMarinePID

@@ -6,7 +6,6 @@
 #----------------------------------------------------------
 #  Part 1: Set Exit actions and declare global var defaults
 #----------------------------------------------------------
-trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
 JUST_MAKE="no"
 
@@ -15,17 +14,17 @@ JUST_MAKE="no"
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "%s [SWITCHES] [time_warp]    "
-	echo "  --just_make, -j            " 
-	echo "  --help, -h                 " 
+	echo "launch.sh [SWITCHES] [time_warp] "
+	echo "  --just_make, -j                " 
+	echo "  --help, -h                     " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
     else 
-	echo "launch.sh: Bad Arg:" $ARGI
-	exit 0
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
+        exit 1
     fi
 done
 
@@ -53,10 +52,10 @@ nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
    SNAME="shoreside"  SHARE_LISTEN=$SHORE_LISTEN                  \
    SPORT="9000"     
 
-nsplug meta_henry.bhv targ_henry.bhv -f VNAME=$VNAME1  \
+nsplug meta_henry.bhv targ_henry.bhv -i -f VNAME=$VNAME1  \
     OVNAME=$VNAME2 START_POS=$START_POS2 
 
-nsplug meta_gilda.bhv targ_gilda.bhv -f VNAME=$VNAME2  \
+nsplug meta_gilda.bhv targ_gilda.bhv -i -f VNAME=$VNAME2  \
     OVNAME=$VNAME1 START_POS=$START_POS1 
 
 if [ ${JUST_MAKE} = "yes" ] ; then
@@ -77,6 +76,7 @@ pAntler targ_shoreside.moos >& /dev/null &
 echo "Done "
 
 uMAC targ_shoreside.moos
+kill -- -$$
 
 
 

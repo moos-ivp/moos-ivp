@@ -4,11 +4,23 @@
 #  Author: Michael Benjamin
 #  LastEd: May 17th 2019
 #----------------------------------------------------------
-#  Part 1: Set Exit actions and declare global var defaults
+#  Part 1: Set global var defaults
 #----------------------------------------------------------
 trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
 JUST_MAKE="no"
+
+VNAME1="henry"           # The first vehicle Community
+VNAME2="gilda"           # The second vehicle Community
+VGROUP1="red"
+VGROUP2="blue"
+VTYPE1="kayak"
+VTYPE2="mokai"
+START_POS1="0,0,180"         
+START_POS2="180,0,180"        
+LOITER_POS1="x=0,y=-75"
+LOITER_POS2="x=125,y=-50"
+SHORE_PSHARE="9200"
 
 #----------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -16,16 +28,21 @@ JUST_MAKE="no"
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	echo "launch.sh [SWITCHES] [time_warp]    " 
-	echo "  --just_make, -j                   " 
-	echo "  --help, -h                        " 
+	echo "  --help, -h           Show this help message            " 
+	echo "  --just_make, -j      Just create targ files, no launch " 
+	echo "  --fast, -f           Init positions for fast encounter " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
+    elif [ "${ARGI}" = "--fast" -o "${ARGI}" = "-f" ] ; then
+	START_POS1="170,-80,270"         
+	START_POS2="-30,-80,90"        
+	LOITER_POS1="x=0,y=-95"
+	LOITER_POS2="x=125,y=-65"
     else 
-        echo "Bad arg:" $ARGI "Run with -h for help."
-        echo "The launch.sh script is exiting with (1)."
+        echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
         exit 1
     fi
 done
@@ -33,27 +50,15 @@ done
 #----------------------------------------------------------
 #  Part 3: Create the .moos and .bhv files. 
 #----------------------------------------------------------
-VNAME1="henry"           # The first vehicle Community
-VNAME2="gilda"           # The second vehicle Community
-VGROUP1="red"
-VGROUP2="blue"
-VTYPE1="kayak"
-VTYPE2="mokai"
-START_POS1="0,0"         
-START_POS2="180,0"        
-LOITER_POS1="x=0,y=-75"
-LOITER_POS2="x=125,y=-50"
-SHORE_PSHARE="9200"
-
 nsplug meta_vehicle.moos targ_henry.moos -i -f WARP=$TIME_WARP \
        VNAME=$VNAME1            BOT_PSHARE="9201"              \
        BOT_MOOSDB="9001"        SHORE_PSHARE=$SHORE_PSHARE     \
-       START_POS=$START_POS1  
+       VTYPE=$VTYPE1            START_POS=$START_POS1  
 
 nsplug meta_vehicle.moos targ_gilda.moos -i -f WARP=$TIME_WARP \
        VNAME=$VNAME2            BOT_PSHARE="9202"              \
        BOT_MOOSDB="9002"        SHORE_PSHARE=$SHORE_PSHARE     \
-       START_POS=$START_POS2  
+       VTYPE=$VTYPE2            START_POS=$START_POS2  
 
 nsplug meta_shoreside.moos targ_shoreside.moos -i -f WARP=$TIME_WARP \
        SHORE_PSHARE=$SHORE_PSHARE  SHORE_MOOSDB="9000"        \

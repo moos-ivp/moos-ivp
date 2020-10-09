@@ -40,10 +40,7 @@ public:
   bool         setParam(std::string, std::string);
 
 protected:
-  bool   updateInfoIn();
-
   double getRelevance();
-  double getPriority();
   
 private: // Configuration Parameters
   double  m_pwt_outer_dist;     // if target not in range, 0 relevance
@@ -53,22 +50,3 @@ private: // Configuration Parameters
   double  m_spd_peakwidth;
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

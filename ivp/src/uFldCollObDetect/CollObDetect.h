@@ -2,7 +2,7 @@
 /*    NAME: Michael R. Benjamin                                  */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CollObDetect.h                                       */
-/*    DATE: Septtember 2nd, 2019                                 */
+/*    DATE: September 2nd, 2019                                  */
 /*****************************************************************/
 
 #ifndef COLL_OB_DETECT_HEADER
@@ -35,7 +35,6 @@ class CollObDetect : public AppCastingMOOSApp
  protected:
   void registerVariables();
 
-  bool handleConfigFlag(std::string, std::string);
   bool handleMailKnownObstacle(std::string);
   bool handleMailNodeReport(std::string);
 

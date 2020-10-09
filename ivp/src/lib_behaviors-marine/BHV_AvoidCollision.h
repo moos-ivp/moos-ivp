@@ -36,8 +36,6 @@ public:
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
-  void         onRunToIdleState();
-  void         onCompleteState();
   bool         isConstraint() {return(true);}
 
   std::string  getInfo(std::string);
@@ -45,9 +43,7 @@ public:
  protected:
   double getRelevance();
   double getPriority();
-  void   postInfo(double, double);
-  void   postRange(bool ok=true);
-  bool   updatePlatformInfo();
+  void   postRange();
 
   IvPFunction* getAvoidIPF();
   IvPFunction* getAvoidDepthIPF();

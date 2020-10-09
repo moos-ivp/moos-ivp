@@ -1,0 +1,151 @@
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: $(VNAME).moos
+//-------------------------------------------------
+
+ServerHost = localhost
+ServerPort = $(BOT_MOOSDB)
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 50
+   
+  Run = MOOSDB           @ NewConsole = false
+  Run = uProcessWatch    @ NewConsole = false
+  Run = pShare           @ NewConsole = false
+  Run = uSimMarine       @ NewConsole = false
+  Run = pLogger          @ NewConsole = false
+  Run = pNodeReporter    @ NewConsole = false
+  Run = pMarinePID       @ NewConsole = false
+  Run = pHelmIvP         @ NewConsole = false
+  Run = pHostInfo        @ NewConsole = false
+  Run = uFldNodeBroker   @ NewConsole = false
+  Run = pObstacleMgr     @ NewConsole = false
+
+#ifdef VNAME henry
+  Run = uTimerScript     @ NewConsole = false
+#endif
+	
+}
+
+//--------------------------------------------------------
+// uTimerScript Configuration Block   
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 8
+  CommsTick = 8
+
+  paused     = false
+  reset_max  = unlimited
+  reset_time = end
+
+  randvar = varname=X1, min=0,    max=150,  key=at_reset
+  randvar = varname=Y1, min=-225,  max=-175,   key=at_reset
+
+  event = var=TRACKED_FEATURE, val="x=$[X1], y=$[Y1], label=TEST_$[TCOUNT]", time=0.05
+}
+
+	
+//----------------------------------------------------
+// pHelmIvP Configuration Block  
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  Behaviors    = targ_$(VNAME).bhv  
+  Verbose      = false
+  Domain       = course:0:359:360
+  Domain       = speed:0:5:26
+}
+	
+//--------------------------------------------------------
+// pNodeReporter Configuration Block 
+
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 2
+  CommsTick   = 2
+
+  vessel_type = kayak
+  terse_reports = true
+}
+
+//-----------------------------------------------------
+// pMarinePID Configuration Block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+  
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+  ACTIVE_START  = true
+  
+  // Yaw PID controller
+  YAW_PID_KP             = 0.4
+  YAW_PID_KD             = 0.1
+  YAW_PID_KI             = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Speed PID controller
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Maximums
+  MAXRUDDER  = 100
+  MAXTHRUST  = 100
+  
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//------------------------------------------------------
+// uSimMarine Configuration Block  (Created from plugin)
+
+ProcessConfig = uSimMarine
+{
+  AppTick   = 10
+  CommsTick = 10
+
+  START_POS = $(START_POS), 0
+  PREFIX    = NAV
+
+}
+
+//--------------------------------------------------
+// uFldNodeBroker configuration block from plugin
+
+ProcessConfig = uFldNodeBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  try_shore_host = pshare_route=localhost:$(SHORE_PSHARE)
+
+  bridge = src=VIEW_POLYGON
+  bridge = src=VIEW_CIRCLE
+  bridge = src=VIEW_POINT
+  bridge = src=VIEW_SEGLIST
+  bridge = src=VEHICLE_CONNECT
+  bridge = src=APPCAST
+  bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+  bridge = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
+}
+
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+#include plug_pLogger.moos
+#include plug_uProcessWatch.moos
+#include plug_pObstacleMgr.moos
+

@@ -59,6 +59,14 @@ private: // Configuration variables
   std::string  m_alert_name;
   double       m_alert_range;
 
+  // When view_polys get numerous, skimp on extras
+  unsigned int m_poly_label_thresh;
+  unsigned int m_poly_shade_thresh;
+  unsigned int m_poly_vertex_thresh;
+  bool m_poly_label_thresh_over;
+  bool m_poly_shade_thresh_over;
+  bool m_poly_vertex_thresh_over;
+  
   // Managing incoming points
   double       m_ignore_range;
   unsigned int m_max_pts_per_cluster;

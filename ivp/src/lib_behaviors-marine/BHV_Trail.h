@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_Trail.h                                          */
 /*    DATE: Jul 3rd 2005 Sunday morning at Brueggers             */
+/*    DATE: Sep 10th 2020 Minor mods/corrections                 */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -35,7 +36,6 @@ public:
   
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
-  void         onSetParamComplete();
   void         onRunToIdleState();
   void         onIdleState();
   void         onHelmStart();
@@ -45,45 +45,21 @@ protected:
   double  getPriority();
 
   void    postViewableTrailPoint();
-  void    postErasableTrailPoint();
   double  updateTrailDistance();  
   void    calculateTrailPoint();
- protected: // State variables
-
-  XYPoint m_trail_point;
 
 private: // Configuration parameters
   double  m_trail_range;
   double  m_trail_angle;
   double  m_radius;
   double  m_nm_radius;
-  double  m_max_range;
+  double  m_pwt_outer_dist;
   double  m_max_util_cpa_dist;
   double  m_trail_pt_x;
   double  m_trail_pt_y;
   bool    m_angle_relative;
-  bool    m_post_trail_distance_on_idle;
+  bool    m_post_trail_dist_on_idle;
 
   bool    m_no_alert_request;
-
 };
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

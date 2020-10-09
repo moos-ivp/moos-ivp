@@ -36,6 +36,7 @@ class Expander
   
   void setInFile(std::string s)  {m_infile  = s;}
   void setOutFile(std::string s) {m_outfile = s;}
+  void setIncTag(std::string s)  {m_inctag = s;}
 
   bool expand();
   bool verifyInfile();
@@ -55,7 +56,7 @@ class Expander
     expandFile(std::string filename,
 	       std::map<std::string, std::string>& macros,
 	       std::vector<std::string> filenames, 
-	       bool& result);
+	       std::string inctag, bool& result);
   
   bool applyMacrosToLine(std::string&, 
 			 std::map<std::string, std::string>,
@@ -90,7 +91,8 @@ class Expander
 
   std::string m_infile;
   std::string m_outfile;
-
+  std::string m_inctag;
+  
   // if m_strict, quit if undefined macros are found
   bool m_strict;
   bool m_terminal;

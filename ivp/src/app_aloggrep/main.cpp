@@ -81,6 +81,13 @@ int main(int argc, char *argv[])
     make_end_report  = false;
   }
   
+  bool values_only = false;
+  if(scanArgs(argc, argv, "--values_only", "-vo")) {
+    values_only       = true;
+    comments_retained = false;
+    make_end_report   = false;
+  }
+  
   if(scanArgs(argc, argv, "--quiet", "-q")) {
     comments_retained = false;
     make_end_report = false;
@@ -121,7 +128,10 @@ int main(int argc, char *argv[])
     cout << "  -x,--finalx       Output only final matching line's val  " << endl;
     cout << "  -z,--finalz       Output only final matching line's time " << endl;
     cout << "                                                           " << endl;
-    cout << "  --keep_badlines   Do not disscard lines that don't begin " << endl;
+    cout << "  --values_only     Output only value part of each line    " << endl;
+    cout << "  -vo                                                      " << endl;
+    cout << "                                                           " << endl;
+    cout << "  --keep_badlines   Do not discard lines that don't begin  " << endl;
     cout << "  -kb               with a timestamp or comment character. " << endl;
     cout << "                                                           " << endl;
     cout << "Further Notes:                                             " << endl;
@@ -169,6 +179,7 @@ int main(int argc, char *argv[])
   handler.setFinalEntryOnly(final_entry_only);
   handler.setFinalTimeOnly(final_time_only);
   handler.setFinalValueOnly(final_value_only);
+  handler.setValuesOnly(values_only);
 
   int ksize = keys.size();
   for(int i=0; i<ksize; i++)
