@@ -49,24 +49,14 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
       new_record.setName(value);
     else if(param == "TYPE")
       new_record.setType(value);
-    else if(param == "COLOR")
-      new_record.setColor(value);
-    else if(param == "GROUP")
-      new_record.setGroup(value);
     else if(param == "MODE")
       new_record.setMode(value);
     else if(param == "ALLSTOP")
       new_record.setAllStop(value);
-    else if(param == "LOAD_WARNING")
-      new_record.setLoadWarning(value);
     else if(param == "INDEX")
       new_record.setIndex(atof(value.c_str()));
-    else if((param == "THRUST_MODE_REVERSE") && (tolower(value) == "true")) 
-      new_record.setThrustModeReverse(true);
-    else if(param == "TRAJECTORY")
-      new_record.setTrajectory(stripBraces(value));
     else if(isNumber(value)) {
-      if((param == "UTC_TIME") || (param == "TIME"))
+      if((param == "TIME") || (param == "UTC_TIME"))
 	new_record.setTimeStamp(atof(value.c_str()));
       else if(param == "X")
 	new_record.setX(atof(value.c_str()));
@@ -79,25 +69,34 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
 
       else if((param == "SPD") || (param == "SPEED"))
 	new_record.setSpeed(atof(value.c_str()));
+      else if((param == "HDG") || (param == "HEADING"))
+	new_record.setHeading(atof(value.c_str()));
+
+      else if((param == "DEP") || (param == "DEPTH"))
+	new_record.setDepth(atof(value.c_str()));
+      else if((param == "LENGTH") || (param == "LEN"))
+	new_record.setLength(atof(value.c_str()));
+      else if(param == "YAW")
+	new_record.setYaw(atof(value.c_str()));
+      else if((param == "ALT") || (param == "ALTITUDE"))
+	new_record.setAltitude(atof(value.c_str()));
+      else if(param == "HDG_OG")
+	new_record.setHeadingOG(atof(value.c_str()));
       else if(param == "SPD_OG")
 	new_record.setSpeedOG(atof(value.c_str()));
 
-      else if((param == "HDG") || (param == "HEADING"))
-	new_record.setHeading(atof(value.c_str()));
-      else if(param == "HDG_OG")
-	new_record.setHeadingOG(atof(value.c_str()));
-
-      
-
-      else if(param == "YAW")
-	new_record.setYaw(atof(value.c_str()));
-      else if((param == "DEP") || (param == "DEPTH"))
-	new_record.setDepth(atof(value.c_str()));
-      else if((param == "ALT") || (param == "ALTITUDE"))
-	new_record.setAltitude(atof(value.c_str()));
-      else if((param == "LENGTH") || (param == "LEN"))
-	new_record.setLength(atof(value.c_str()));
     }
+    else if(param == "COLOR")
+      new_record.setColor(value);
+    else if(param == "GROUP")
+      new_record.setGroup(value);
+    else if(param == "LOAD_WARNING")
+      new_record.setLoadWarning(value);
+    else if((param == "THRUST_MODE_REVERSE") && (tolower(value) == "true")) 
+      new_record.setThrustModeReverse(true);
+    else if(param == "TRAJECTORY")
+      new_record.setTrajectory(stripBraces(value));
+
   }
   
   //  if(!new_record.valid()&&(!returnPartialResult))

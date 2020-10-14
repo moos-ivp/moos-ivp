@@ -587,7 +587,11 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	VarDataPair pair = m_var_data_pairs_all[i];
 	if(pair.get_ptype() == "left") {
 	  string var = pair.get_var();
-
+	  cout << endl;
+	  cout << "============================================= ===" << endl;
+	  cout << pair.getPrintable() << endl;
+	  cout << "============================================= ===" << endl;
+	  
 	  // In most cases pattern replacement is done on the right side of
 	  // vardata pair, but in these cases it can be done on the left side,
 	  // affecting the MOOS variable name involved in the post.
@@ -598,10 +602,15 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	  
 	  if(strContains(var, "$(UP_VNAME_CLOSEST)")) 
 	    var = findReplace(var, "$(UP_VNAME_CLOSEST)", up_vname_closest);
-	  if(strContains(var, "$[UP_VNAME_CLOSEST]")) 
+	  if(strContains(var, "$[UP_VNAME_CLOSEST]")) {
+	    cout << "---------- found ------------" << endl;
 	    var = findReplace(var, "$[UP_VNAME_CLOSEST]", up_vname_closest);
+	  }
 	  pair.set_var(var);
 
+	  cout << "============================================= ===XX" << endl;
+	  cout << pair.getPrintable() << endl;
+	  cout << "============================================= ===XX" << endl;
 
 	  if(pair.is_string()) {
 	    string str = m_var_data_pairs_all[i].get_sdata();
@@ -670,7 +679,7 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	      string vname = getStringInfo("active_vehicle_name");
 	      str = findReplace(str, "$[VNAME]", vname);
 	    }
-	    pair.set_sdata(str);
+	    pair.set_sdata(str, true);
 	  }
 	  m_var_data_pairs_lft.push_back(pair);
 	}
@@ -761,8 +770,7 @@ void PMV_Viewer::handleRightMouse(int vx, int vy)
 	  if(strContains(str, "$[UP_VNAME_CLOSEST]")) 
 	    str = findReplace(str, "$[UP_VNAME_CLOSEST]", up_vname_closest);
 
-	  
-	  pair.set_sdata(str);
+	  pair.set_sdata(str, true);
 	}
 	m_var_data_pairs_rgt.push_back(pair);
       }
@@ -1082,6 +1090,14 @@ unsigned int PMV_Viewer::shapeCount(const string& gtype,
 				    const string& vname) const
 {
   return(m_geoshapes_map.size(gtype, vname));
+}
+
+//-------------------------------------------------------------
+// Procedure: getVehiclesShapeScale()
+
+double PMV_Viewer::getVehiclesShapeScale() const
+{
+  return(m_vehi_settings.getVehiclesShapeScale());
 }
 
 //-------------------------------------------------------------

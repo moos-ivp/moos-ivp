@@ -87,6 +87,7 @@ class PMV_MOOSApp : public AppCastingMOOSApp
 
   unsigned int m_node_reports_received;
   unsigned int m_clear_geoshapes_received;
+  double       m_node_report_start;
   int          m_node_report_index;
   bool         m_log_the_image;
 

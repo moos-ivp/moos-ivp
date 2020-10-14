@@ -69,6 +69,7 @@ class PMV_Viewer : public MarineViewer
   std::vector<std::string> getStaleVehicles(double thresh=10);
 
   unsigned int shapeCount(const std::string& gtype, const std::string& vname="") const;
+  double       getVehiclesShapeScale() const;
   unsigned int getDrawCount() const {return(m_draw_count);}
   double       getCurrTime() const {return(m_curr_time);}
   double       getTimeWarp() const {return(m_time_warp);}

@@ -51,16 +51,21 @@ class FldNodeComms : public AppCastingMOOSApp
   bool handleMailNodeReport(const std::string& str, std::string& whynot);
   bool handleMailNodeMessage(const std::string& str);
   bool handleMailCommsRange(double);
+  bool handleMailFullReportReq(std::string);
   bool handleStealth(const std::string&);
   bool handleEarange(const std::string&);
-
+  bool handleEnableSharedNodeReports(std::string);
+  
   void distributeNodeReportInfo(const std::string& uname);
+  void localShareNodeReportInfo(const std::string& uname);
   void distributeNodeMessageInfo(const std::string& uname);
   void distributeNodeMessageInfo(std::string src, NodeMessage msg);
 
+  
   void clearStaleNodes();
   bool meetsDropPercentage();
   bool meetsRangeThresh(const std::string& v1, const std::string& v2);
+  bool meetsReportRateThresh(const std::string& v1, const std::string& v2);
   bool meetsCriticalRangeThresh(const std::string&, const std::string&);
   void postViewCommsPulse(const std::string& v1, 
 			  const std::string& v2,
@@ -91,10 +96,16 @@ class FldNodeComms : public AppCastingMOOSApp
   // Seconds after which a vehicle does not received node reports 
   // or messages unless a node report has been received from it.
   double  m_stale_time;
+  double  m_stale_forget;  // always 20 * m_stale_time
 
   // Minimum time between message sends (doesn't affect node reports)
   double  m_min_msg_interval;
+  // Minimum time between message sends (doesn't affect messages)
+  double  m_min_rpt_interval;
 
+  // Min time between reposting node reports locally, if enabled
+  double  m_min_share_interval;
+  
   // Maximum length of strings allowed in node messages
   unsigned int m_max_msg_length;
 
@@ -107,6 +118,8 @@ class FldNodeComms : public AppCastingMOOSApp
  protected: // State variables
   // Holds last node report received for vehicle vname
   std::map<std::string, NodeRecord>   m_map_record;     
+  // Holds last time posted local share, if enabled, for each vname
+  std::map<std::string, double>       m_map_lshare_tstamp;     
   // Holds last node messsages received for vehicle vname
   std::map<std::string, std::vector<NodeMessage> > m_map_message;    
 
@@ -124,6 +137,12 @@ class FldNodeComms : public AppCastingMOOSApp
   // Name of group if any for vehicle vname according to node reports
   std::map<std::string, std::string>  m_map_vgroup;  
 
+  // Time last node report send from Vehicle A to B. Key is vname:vname2
+  std::map<std::string, double> m_map_last_rpt_tstamp;
+
+  std::string           m_full_rpt_vname;
+  std::set<std::string> m_full_rpt_waiting;
+  
   std::vector<std::string> m_colors;
 
  protected: // State (statistics) variables

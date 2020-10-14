@@ -484,11 +484,10 @@ bool VehicleSet::handleNodeReport(string node_report_str, string& whynot)
   string vtype = tolower(new_record.getType());
   if(vtype == "uuv")
     vtype = "auv";
-  if((vtype == "slocum") || (vtype == "seaglider") || (vtype == "ant"))
+  else if((vtype == "slocum") || (vtype == "seaglider") || (vtype == "ant"))
     vtype = "glider";
-  if((vtype != "auv") && (vtype != "ship") && (vtype != "glider") &&
-     (vtype != "wamv") && (vtype != "kayak") && (vtype != "mokai") &&
-     (vtype != "heron"))
+  else if((vtype != "auv") && (vtype != "glider") && (vtype != "wamv") &&
+	  (vtype != "kayak") && (vtype != "mokai") && (vtype != "heron"))
     vtype = "ship";
   
   if(((vtype == "auv") || (vtype == "glider")) && !new_record.valid("depth")) {

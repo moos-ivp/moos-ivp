@@ -93,17 +93,20 @@ void showExampleConfigAndExit()
   blk("  critical_range = 30       // default (in meters)              ");
   blk("  stale_time     = 5        // default (in seconds)             ");
   blk("                                                                ");
-  blk("  min_msg_interval = 30     // default (in seconds)             ");
   blk("  max_msg_length   = 1000   // default (# of characters)        ");
+  blk("  min_msg_interval = 30     // default (in seconds)             ");
+  blk("  min_rpt_interval = -1     // default (in seconds)             ");
   blk("                                                                ");
-  blk("  view_node_rpt_pulses = true // default                        ");
-  blk("                                                                ");
-  blk("  verbose  = true           // default                          ");
+  blk("  verbose  = true             // default                        ");
+  blk("  groups   = false            // default                        ");
   blk("                                                                ");
   blk("  stealth  = vname=alpha, stealth=0.8                           ");
   blk("  earange  = vname=alpha, earange=4.5                           ");
   blk("                                                                ");
-  blk("  groups   = true                                               ");
+  blk("  shared_node_reports = false  // default                       "); 
+  blk("                                                                ");
+  blk("  pulse_duration = 10          // default (in seconds)          ");
+  blk("  view_node_rpt_pulses = true  // default                       ");
   blk("}                                                               ");
   exit(0);
 }
@@ -131,7 +134,10 @@ void showInterfaceAndExit()
   blk("                      YAW=118.8,DEPTH=4.6,LENGTH=3.8,           ");
   blk("                      MODE=MODE@ACTIVE:LOITERING                ");
   blk("                                                                ");
+  blk("  UNC_SHARED_NODE_REPORTS  = true                               ");
   blk("  UNC_VIEW_NODE_RPT_PULSES = false                              ");
+  blk("  UNC_FULL_REPORT_REQ      = henry                              ");
+  blk("                                                                ");
   blk("  UNC_STEALTH     = vname=alpha,stealth=0.4                     ");
   blk("  UNC_COMMS_RANGE = 250                                         ");
   blk("  UNC_EARANGE     = vname=alpha,earange=0.5                     ");

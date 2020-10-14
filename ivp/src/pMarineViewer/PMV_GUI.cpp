@@ -1501,9 +1501,13 @@ void PMV_GUI::updateAppCast()
   AppCast appcast = m_repo->actree().getAppCast(node, proc);
   vector<string> svector = parseString(appcast.getFormattedString(), '\n');
 
+
+
   // Step 3: De-colorize the report lines and add to the Browser
+  // Disable the removeTermColors() call by mikerb Oct 11, 2020. 
   for(unsigned int i=0; i<svector.size(); i++) {
-    m_brw_casts->add(removeTermColors(svector[i]).c_str());
+    m_brw_casts->add(svector[i].c_str());
+    //m_brw_casts->add(removeTermColors(svector[i]).c_str());
   }
 
   // Step 4: If there are warnings, colorize line 2 of the browser

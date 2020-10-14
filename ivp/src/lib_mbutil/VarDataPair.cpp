@@ -161,7 +161,7 @@ int VarDataPair::why_invalid() const
 
 bool VarDataPair::set_var(string var)
 {
-  if(m_var_set || strContainsWhite(var))
+  if(strContainsWhite(var))
     return(false);
   
   m_var = var;

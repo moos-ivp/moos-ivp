@@ -37,8 +37,6 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_pending_moos_events = 0;
   m_gui             = 0; 
   m_lastredraw_time = 0;
-  m_node_report_vars.push_back("NODE_REPORT");
-  m_node_report_vars.push_back("NODE_REPORT_LOCAL");
 
   VarDataPair pair1("HELM_MAP_CLEAR", 0);
   VarDataPair pair2("PMV_CONNECT", 0);
@@ -52,6 +50,7 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_clear_geoshapes_received = 0;
 
   m_node_reports_received = 0;
+  m_node_report_start     = -1;
   m_node_report_index     = 0;
 
   m_pmv_iteration = 0;
@@ -304,10 +303,11 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     bool     handled = false;
     string   why_not;
 
-    if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL")) {
+    // Check for NODE_REPORT, NODE_REPORT_LOCAL, NODE_REPORT_UNC etc
+    if(vectorContains(m_node_report_vars, key)) {
       m_node_reports_received++;
-      NodeRecord record = string2NodeRecord(sval);
-      m_node_report_index = record.getIndex();
+      if(m_node_report_start < 0)
+	m_node_report_start = e.moos_time;
       handled = m_gui->mviewer->handleNodeReport(sval, why_not);
     }
 
@@ -645,10 +645,15 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     }
     else if(param == "node_report_variable") {
       if(!strContainsWhite(value)) {
-	m_gui->mviewer->setParam(param, value);
 	m_node_report_vars.push_back(value);
 	handled = true;
       }
+    }
+    else if((param == "node_report_unc") && isBoolean(value)) {
+      if(tolower(value) == "true")
+	m_node_report_vars.push_back("NODE_REPORT_UNC");
+      Notify("UNC_SHARED_NODE_REPORTS", "true");
+      handled = true;
     }
     else if(param == "connection_posting") {
       string var = biteStringX(value, '=');
@@ -730,6 +735,11 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   m_region_info += ", zoom=" + doubleToStringX(m_gui->mviewer->getZoom(),2);
   m_region_info += ", pan_x=" + doubleToStringX(m_gui->mviewer->getPanX(),2);
   m_region_info += ", pan_y=" + doubleToStringX(m_gui->mviewer->getPanY(),2);
+
+  if(m_node_report_vars.size() == 0) {
+    m_node_report_vars.push_back("NODE_REPORT_LOCAL");
+    m_node_report_vars.push_back("NODE_REPORT");
+  }
   
   Notify("REGION_INFO", m_region_info);
 
@@ -1035,20 +1045,40 @@ bool PMV_MOOSApp::buildReport()
 
   string iter_ac  = uintToString(m_iteration);
   string iter_pmv = uintToString(m_pmv_iteration);
+
+  double node_rep_real_rate = 0;
+  double node_rep_warp_rate = 0;
+  if(m_node_report_start > 0) {
+    double elapsed = m_curr_time - m_node_report_start;
+    if(elapsed > 0) {
+      node_rep_real_rate = (double)(m_node_reports_received) / elapsed;
+      node_rep_warp_rate = node_rep_real_rate * m_time_warp;
+    }
+  }
+  string node_rep_real_rate_str = doubleToStringX(node_rep_real_rate,1);
+  string node_rep_warp_rate_str = doubleToStringX(node_rep_warp_rate,1);
+
+  string node_rpt_vars;
+  for(unsigned int i=0; i<m_node_report_vars.size(); i++) {
+    if(i > 0)
+      node_rpt_vars += ",";
+    node_rpt_vars += m_node_report_vars[i];
+  }
   
-  m_msgs << "Tiff File A:      " << tiff_file_a << endl;
-  m_msgs << "Info File A:      " << info_file_a << endl;
-  m_msgs << "Tiff File B:      " << tiff_file_b << endl;
-  m_msgs << "Info File B:      " << info_file_b << endl;
-  m_msgs << "------------------" << endl;
-  m_msgs << "Total GeoShapes:  " << m_gui->mviewer->shapeCount("total_shapes") << endl;
-  m_msgs << "Clear GeoShapes:  " << m_clear_geoshapes_received << endl;
-  m_msgs << "NodeReports Recd: " << m_node_reports_received << endl;
-  m_msgs << "NodeReport Index: " << m_node_report_index << endl;
-  m_msgs << "------------------" << endl;
-  m_msgs << "AC Iterations:    " << iter_ac << endl;
-  m_msgs << "PMV Iterations:   " << iter_pmv << endl;
-  
+  m_msgs << "Tiff File A:       " << tiff_file_a << endl;
+  m_msgs << "Info File A:       " << info_file_a << endl;
+  m_msgs << "Tiff File B:       " << tiff_file_b << endl;
+  m_msgs << "Info File B:       " << info_file_b << endl;
+  m_msgs << "------------------ " << endl;
+  m_msgs << "Total GeoShapes:   " << m_gui->mviewer->shapeCount("total_shapes") << endl;
+  m_msgs << "Clear GeoShapes:   " << m_clear_geoshapes_received << endl;
+  m_msgs << "NodeReports Recd:  " << m_node_reports_received << endl;
+  m_msgs << "Node Rpt Rate(R):  " << node_rep_real_rate_str << endl;
+  m_msgs << "Node Rpt Rate(W):  " << node_rep_warp_rate_str << endl;
+  m_msgs << "Node Report Vars:  " << node_rpt_vars << endl;
+  m_msgs << "------------------ " << endl;
+  m_msgs << "AC Iterations:     " << iter_ac << endl;
+  m_msgs << "PMV Iterations:    " << iter_pmv << endl;
   
   unsigned int drawcount = m_gui->mviewer->getDrawCount();
   
@@ -1082,16 +1112,13 @@ bool PMV_MOOSApp::buildReport()
   string pany_str = doubleToString(m_gui->getMarineViewer()->getPanY(), 2);
   string zoom_str = doubleToString(m_gui->getMarineViewer()->getZoom(), 2);
 
-  m_msgs << "  pan_x:   " << panx_str << endl;
-  m_msgs << "  pan_y:   " << pany_str << endl;
-  m_msgs << "  zoom :   " << zoom_str << endl;
-
+  double vzoom_dbl = m_gui->mviewer->getVehiclesShapeScale();
+  string vzoom_str = doubleToStringX(vzoom_dbl, 2);
+  
+  m_msgs << "  window pan_x:  " << panx_str << endl;
+  m_msgs << "  window pan_y:  " << pany_str << endl;
+  m_msgs << "  window  zoom:  " << zoom_str << endl;
+  m_msgs << "  vehicle zoom:  " << vzoom_str << endl;
+  
   return(true);
 }
-
-
-
-
-
-
-

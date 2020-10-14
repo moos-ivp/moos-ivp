@@ -147,9 +147,9 @@ void showExampleConfigAndExit()
   blk("  // Vehicles Pull-Down Menu                                    ");
   blk("  appcast_viewable     = true                                   ");
   blk("  refresh_mode         = events   // {paused, streaming}        ");
-  blk("  nodes_font_size      = medium   // {large, small, xsmall}     ");
-  blk("  procs_font_size      = medium   // {large, small, xsmall}     ");
-  blk("  appcast_font_size    = small    // {large, medium, xsmall}    ");
+  blk("  nodes_font_size      = medium   // {xlarge, large, small, xsmall}");
+  blk("  procs_font_size      = medium   // {xlarge, large, small, xsmall}");
+  blk("  appcast_font_size    = small    // {xlare, large, medium, xsmall}");
   blk("  appcast_color_scheme = default  // {default, indigo, beige}   ");
   blk("  appcast_width        = 40       // {20, 25, 30, ..., 65, 70}  ");
   blk("  appcast_height       = 70       // {30, 35, 40, ..., 85, 90}  ");
@@ -178,6 +178,9 @@ void showExampleConfigAndExit()
   blk("  button_two   = RETURN # RETURN=true                           ");
   blk("  button_three = SURVEY-true # SURVEY=true                      ");
   blk("  button_four  = SURVEY-false # SURVEY=false                    ");
+  blk("                                                                ");
+  blk("  // Node Report Source                                         ");
+  blk("  node_report_unc = true       {true, FALSE}                    ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
