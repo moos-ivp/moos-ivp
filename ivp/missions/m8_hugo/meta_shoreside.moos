@@ -1,6 +1,5 @@
 //*******************************************************
 // ShoreSide Configuration File
-//
 
 ServerHost = localhost
 ServerPort = $(SPORT)
@@ -55,19 +54,20 @@ ProcessConfig = uFldNodeComms
   AppTick   = 2
   CommsTick = 2
 
-           COMMS_RANGE = 150
-        CRITICAL_RANGE = 25
-      MIN_MSG_INTERVAL = 20
-        MAX_MSG_LENGTH = 1000
-                GROUPS = true
-  VIEW_NODE_RPT_PULSES = true
+           comms_range = 150
+        critical_range = 25
+      min_msg_interval = 20
+        max_msg_length = 1000
+                groups = true
+  view_node_rpt_pulses = true
 }
 
 //---------------------------------------------------- uProcessWatch
 ProcessConfig = uProcessWatch                                   
 {                                                               
-  WATCH_ALL = true                                              
-  NOWATCH = uXMS* 
+  watch_all = true                                              
+  nowatch = uXMS*
+  nowatch = uMAC*
 }                                                   
 
 //------------------------------------------------------------- uXMS
@@ -76,19 +76,19 @@ ProcessConfig = uXMS
   AppTick   = 2
   CommsTick = 2
   
-  VAR = PMB_REGISTER
-  VAR = PMB_UDP_LISTEN
-  VAR = APPCAST_REQ
-  VAR = DB_CLIENTS
-  VAR = PROC_WATCH_SUMMARY
-  VAR = CRS_RANGE_REQUEST
-  VAR = CRS_RANGE_REPORT
+  var = PMB_REGISTER
+  var = PMB_UDP_LISTEN
+  var = APPCAST_REQ
+  var = DB_CLIENTS
+  var = PROC_WATCH_SUMMARY
+  var = CRS_RANGE_REQUEST
+  var = CRS_RANGE_REPORT
 
-  DISPLAY_SOURCE        = true
-  DISPLAY_TIME          = true
-  DISPLAY_COMMUNITY     = false   // default
+  display_source        = true
+  display_time          = true
+  display_community     = false   // default
 
-  REFRESH_MODE = streaming
+  refresh_mode = streaming
 }
 
 //------------------------------------------------------------ uMAC
@@ -135,8 +135,8 @@ ProcessConfig = uFldContactRangeSensor
 
   allow_echo_types = uuv,auv,glider
 
-  //rn_algorithm = uniform,pct=0.04
-  rn_algorithm = gaussian,sigma=50
+  //rn_uniform_pct = 0.04
+  rn_gaussian_sigma = 50
 }
 
 //------------------------------------------------- pMarineViewer
@@ -145,7 +145,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = AerialMIT.tif
+  tiff_file            = MIT_SP.tif
   set_pan_x            = -32
   set_pan_y            = 150
   zoom                 = 1.3
@@ -156,14 +156,14 @@ ProcessConfig = pMarineViewer
   appcast_viewable     = true
   appcast_color_scheme = indigo
 
-  SCOPE = CONTACT_INFO
+  scope = CONTACT_INFO
 
-  ACTION = STATION_ALL = false
-  ACTION = STATION_ALL = true
+  action = STATION_ALL = false
+  action = STATION_ALL = true
 
-  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
-  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  BUTTON_ONE   = RETURN_ALL=false
-  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false
+  button_two   = RETURN  # RETURN_ALL=true
 }
 
