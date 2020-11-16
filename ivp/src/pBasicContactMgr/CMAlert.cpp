@@ -37,7 +37,7 @@ CMAlert::CMAlert()
 }
 
 //---------------------------------------------------------------
-// Procedure: setAlertRange
+// Procedure: setAlertRange()
 //      Note: We ensure that m_range_far is always greater than or
 //            equal to m_range. 
 
@@ -53,7 +53,7 @@ bool CMAlert::setAlertRange(double dval)
 }
 
 //---------------------------------------------------------------
-// Procedure: setAlertRangeFar
+// Procedure: setAlertRangeFar()
 //      Note: We ensure that m_range_far is always greater than or
 //            equal to m_range. 
 
@@ -69,7 +69,7 @@ bool CMAlert::setAlertRangeFar(double dval)
 }
 
 //---------------------------------------------------------------
-// Procedure: setAlertRangeColor
+// Procedure: setAlertRangeColor()
 
 bool CMAlert::setAlertRangeColor(string str)
 {
@@ -80,7 +80,7 @@ bool CMAlert::setAlertRangeColor(string str)
 }
 
 //---------------------------------------------------------------
-// Procedure: setAlertRangeFarColor
+// Procedure: setAlertRangeFarColor()
 
 bool CMAlert::setAlertRangeFarColor(string str)
 {
@@ -91,7 +91,7 @@ bool CMAlert::setAlertRangeFarColor(string str)
 }
 
 //---------------------------------------------------------------
-// Procedure: setAlertRegion
+// Procedure: setAlertRegion()
 
 bool CMAlert::setAlertRegion(string str)
 {
@@ -104,34 +104,40 @@ bool CMAlert::setAlertRegion(string str)
 }
 
 //---------------------------------------------------------------
-// Procedure: addAlertOnFlag
+// Procedure: addAlertOnFlag()
 
 bool CMAlert::addAlertOnFlag(string str)
 {
-  string lft = biteStringX(str, '=');
-  string rgt = str;
+  vector<string> svector = parseString(str, '#');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string lft = biteStringX(svector[i], '=');
+    string rgt = str;
 
-  if((lft == "") || (rgt == ""))
-    return(false);
+    if((lft == "") || (rgt == ""))
+      return(false);
 
-  VarDataPair pair(lft, rgt, "auto");
-  m_on_flags.push_back(pair);
+    VarDataPair pair(lft, rgt, "auto");
+    m_on_flags.push_back(pair);
+  }
   return(true);    
 }
 
 //---------------------------------------------------------------
-// Procedure: addAlertOffFlag
+// Procedure: addAlertOffFlag()
 
 bool CMAlert::addAlertOffFlag(string str)
 {
-  string lft = biteStringX(str, '=');
-  string rgt = str;
+  vector<string> svector = parseString(str, '#');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string lft = biteStringX(str, '=');
+    string rgt = str;
 
-  if((lft == "") || (rgt == ""))
-    return(false);
+    if((lft == "") || (rgt == ""))
+      return(false);
   
-  VarDataPair pair(lft, rgt, "auto");
-  m_off_flags.push_back(pair);
+    VarDataPair pair(lft, rgt, "auto");
+    m_off_flags.push_back(pair);
+  }
   return(true);    
 }
 

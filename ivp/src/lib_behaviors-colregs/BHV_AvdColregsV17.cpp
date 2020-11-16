@@ -189,7 +189,7 @@ void BHV_AvdColregsV17::onHelmStart()
 
   string alert_templ = m_update_var + "=name=$[VNAME] # contact=$[VNAME]";
   string request = "id=" + getDescriptor();
-  request += ", onflag=" + alert_templ;
+  request += ", on_flag=" + alert_templ;
   request += ",alert_range=" + doubleToStringX(m_pwt_outer_dist,1);
   request += ", cpa_range=" + doubleToStringX(m_completed_dist,1);
   request = augmentSpec(request, getFilterSummary());

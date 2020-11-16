@@ -704,9 +704,9 @@ bool BasicContactMgr::handleConfigAlert(string alert_str)
       pattern = right;
       ok = true;
     }
-    else if((left == "on_flag")) 
+    else if((left == "on_flag") || (left == "onflag")) 
       ok = m_map_alerts[alert_id].addAlertOnFlag(right);
-    else if((left == "off_flag"))
+    else if((left == "off_flag") || (left == "offflag"))
       ok = m_map_alerts[alert_id].addAlertOffFlag(right);
     else if(left == "region")
       ok = m_map_alerts[alert_id].setAlertRegion(right);
