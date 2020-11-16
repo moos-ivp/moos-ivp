@@ -609,13 +609,3 @@ void XYConvexGrid::print() const
   for(i=0; i<vsize; i++) 
     cout << "[" << i << "]: " << m_elements[i].get_spec() << endl;
 }
-
-
-
-
-
-
-
-
-
-

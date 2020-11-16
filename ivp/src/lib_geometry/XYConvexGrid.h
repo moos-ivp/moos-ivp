@@ -77,6 +77,8 @@ public:
   bool        cellVarMinLimited(unsigned int cix=0) const;
   bool        cellVarMaxLimited(unsigned int cix=0) const;
 
+  double  getCellSize() const {return(m_config_cell_size);}
+  
   void    reset();
   void    reset(const std::string& cell_var);
   void    print() const; 
@@ -112,11 +114,3 @@ protected:
 };
 
 #endif
-
-
-
-
-
-
-
-

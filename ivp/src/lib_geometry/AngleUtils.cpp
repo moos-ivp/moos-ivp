@@ -105,8 +105,7 @@ bool threePointTurnLeft(double x0, double y0,
 { 
   double cross_product = threePointXProduct(x0,y0, x1,y1, x2,y2);
 
-  std::cout << std::endl;
-  std::cout << "xp=" << cross_product << std::endl;
+  //std::cout << "xp=" << cross_product << std::endl;
   
   if(cross_product < -0.01)
     return(true);
