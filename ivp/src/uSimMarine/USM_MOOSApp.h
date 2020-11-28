@@ -56,7 +56,8 @@ protected:
   std::string  m_sim_prefix;
   USM_Model    m_model;
   unsigned int m_reset_count;
-
+  bool         m_enabled;
+  
   CMOOSGeodesy m_geodesy;
   bool         m_geo_ok;
   bool         m_thrust_mode_reverse;

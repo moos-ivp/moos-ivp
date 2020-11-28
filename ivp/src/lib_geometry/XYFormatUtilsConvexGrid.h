@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: XYFormatUtilsPoly.h                                  */
+/*    FILE: XYFormatUtilsConvexGrid.h                            */
 /*    DATE: Dec 7th, 2011                                        */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */

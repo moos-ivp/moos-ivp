@@ -41,26 +41,27 @@ public:
   PMV_GUI(int w, int h, const char *l=0);
   virtual ~PMV_GUI() {}
 
-  void         augmentMenu();
-  void         resize(int, int, int, int);
-  int          handle(int);
+  void   augmentMenu();
+  void   resize(int, int, int, int);
+  int    handle(int);
 
-  void         setVerbose(bool bval);
-  bool         addButton(std::string button, std::string pairs);
-  bool         addAction(std::string pair, bool separator=false);
-  void         setCurrTime(double v)       {m_curr_time=v;}
-  void         setTitleBase(std::string s) {m_title_base=s;}
-  void         augmentTitle(std::string ip_str);
-  bool         syncNodesAtoB();
-  bool         syncNodesBtoA();
-  void         updateXY();
-  void         clearGeoShapes(std::string, std::string, std::string);
+  void   setVerbose(bool bval);
+  bool   addButton(std::string button, std::string pairs);
+  bool   addAction(std::string pair, bool separator=false);
+  void   calcButtonColumns();
+  void   setCurrTime(double v)       {m_curr_time=v;}
+  void   setTitleBase(std::string s) {m_title_base=s;}
+  void   augmentTitle(std::string ip_str);
+  bool   syncNodesAtoB();
+  bool   syncNodesBtoA();
+  void   updateXY();
+  void   clearGeoShapes(std::string, std::string, std::string);
 
-  void         setCommandFolio(CommandFolio v)     {m_cmd_folio=v;}
-  void         setCommandSummary(CommandSummary v) {m_cmd_summary=v;}
+  void   setCommandFolio(CommandFolio v)     {m_cmd_folio=v;}
+  void   setCommandSummary(CommandSummary v) {m_cmd_summary=v;}
   
-  bool         clearStaleVehicles(bool force=false);
-  double       getClearStaleTimeStamp() {return(m_clear_stale_timestamp);}
+  bool   clearStaleVehicles(bool force=false);
+  double getClearStaleTimeStamp() {return(m_clear_stale_timestamp);}
 
   std::string  getPendingVar(unsigned int index);
   std::string  getPendingVal(unsigned int index);
@@ -78,22 +79,24 @@ public:
   
  public: // AppCasting Related Functions
 
-  void         updateNodes(bool clear=false);
-  void         updateProcs(bool clear=false);
-  void         updateAppCast();
-  void         setAppCastRepo(AppCastRepo* repo) {m_repo = repo;}
-  bool         showingAppCasts() const;
-  void         updateRadios();
-  void         setMenuItemColors();
-  bool         setRadioCastAttrib(std::string attr, std::string val="");
+  void  updateNodes(bool clear=false);
+  void  updateProcs(bool clear=false);
+  void  updateAppCast();
+  void  setAppCastRepo(AppCastRepo* repo) {m_repo = repo;}
+  bool  showingAppCasts() const;
+  void  updateRadios();
+  void  setMenuItemColors();
+  bool  setRadioCastAttrib(std::string attr, std::string val="");
 
  protected:
-  void         removeFilterVehicle(std::string vname);
-  void         showDataFields();
-  void         hideDataFields();
-  void         resizeDataText(int);
-  void         resizeWidgets();
-
+  void  removeFilterVehicle(std::string vname);
+  void  showDataFields();
+  void  hideDataFields();
+  void  resizeDataText(int);
+  void  resizeWidgets();
+  void  setButtonColor(std::string btype, std::string color);
+  std::string getButtonAction(std::string) const;
+  
  private:
   inline void cb_MOOS_Button_i(unsigned int);
   static void cb_MOOS_Button(Fl_Widget*, unsigned int);
@@ -152,7 +155,27 @@ public:
   Fl_Button  *m_user_button_2;
   Fl_Button  *m_user_button_3;
   Fl_Button  *m_user_button_4;
+  Fl_Button  *m_user_button_5;
+  Fl_Button  *m_user_button_6;
+  Fl_Button  *m_user_button_7;
+  Fl_Button  *m_user_button_8;
+  Fl_Button  *m_user_button_9;
+  Fl_Button  *m_user_button_10;
+  Fl_Button  *m_user_button_11;
+  Fl_Button  *m_user_button_12;
+  Fl_Button  *m_user_button_13;
+  Fl_Button  *m_user_button_14;
+  Fl_Button  *m_user_button_15;
+  Fl_Button  *m_user_button_16;
+  Fl_Button  *m_user_button_17;
+  Fl_Button  *m_user_button_18;
+  Fl_Button  *m_user_button_19;
+  Fl_Button  *m_user_button_20;
 
+  std::vector<Fl_Button*> m_buttons;
+  
+  unsigned int m_button_cols;
+  
   std::vector<std::string> m_scope_vars;
   
   // Poking via on-screen buttons
@@ -174,6 +197,9 @@ public:
 
   double    m_curr_time;
   double    m_clear_stale_timestamp;
+
+  int m_start_wid;
+  int m_start_hgt;
   
  protected: // Member variables added for AppCasting
   AppCastRepo     *m_repo;

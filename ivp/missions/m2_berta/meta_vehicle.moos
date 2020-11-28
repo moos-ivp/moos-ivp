@@ -27,7 +27,8 @@ Processconfig = ANTLER
   Run = uLoadWatch     @ NewConsole = false
   Run = uMemWatch      @ NewConsole = false
   Run = isay           @ NewConsole = false
-  Run = pContactMgrV20 @ NewConsole = false
+  //Run = pContactMgrV20 @ NewConsole = false
+  Run = pBasicContactMgr @ NewConsole = false
 }
 
 //----------------------------------------------------
@@ -43,7 +44,8 @@ ProcessConfig = pHelmIvP
   Domain       = course:0:359:360
   Domain       = speed:0:5:26
 
-	hold_on_apps = pContactMgrV20
+	//hold_on_apps = pContactMgrV20
+	hold_on_apps = pBasicContactMgr
 }
 	
 //--------------------------------------------------------
@@ -80,6 +82,32 @@ ProcessConfig = pContactMgrV20
   display_radii     = true
   alert_range_color = gray70
   cpa_range_color   = gray30
+}
+
+//--------------------------------------------------------
+// pBasicContactMgr Configuration Block
+
+ProcessConfig = pBasicContactMgr
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  alert_verbose = true
+
+  contact_max_age = 35
+
+	//match_region = pts = {60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40}
+	//match_type = kayak, uuv
+	
+  //alert = id=say, onflag=SAY_MOOS=hello,
+  //alert = id=say, offflag=SAY_MOOS=bye,
+  //alert = id=say, alert_range=80, cpa_range=100
+
+  display_radii = true
+  default_alert_range_color = gray70
+  default_cpa_range_color   = gray30
 }
 
 //--------------------------------------------------

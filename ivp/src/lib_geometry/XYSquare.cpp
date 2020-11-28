@@ -272,7 +272,6 @@ double XYSquare::getVal(int xy, int lh) const
 
 //---------------------------------------------------------------
 // Procedure: get_spec
-//   Purpose: 
 
 string XYSquare::get_spec(string param) const
 {
@@ -282,6 +281,28 @@ string XYSquare::get_spec(string param) const
   spec += ",xhigh=" + doubleToStringX(m_xhigh, 3);
   spec += ",ylow="  + doubleToStringX(m_ylow,  3);
   spec += ",yhigh=" + doubleToStringX(m_yhigh, 3);
+  
+  spec += "," + XYObject::get_spec(param);
+
+  return(spec);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_spec_as_poly
+
+string XYSquare::get_spec_as_poly(string param) const
+{
+  string spec = "pts={";
+
+  string xl = doubleToStringX(m_xlow,3);
+  string xh = doubleToStringX(m_xhigh,3);
+  string yl = doubleToStringX(m_ylow,3);
+  string yh = doubleToStringX(m_yhigh,3);
+
+  spec += xl + "," + yl + ":";
+  spec += xh + "," + yl + ":";
+  spec += xh + "," + yh + ":";
+  spec += xl + "," + yh + "}";
   
   spec += "," + XYObject::get_spec(param);
 

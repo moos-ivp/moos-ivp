@@ -29,6 +29,7 @@
 #include <vector>
 #include <string>
 #include "XYSegList.h"
+#include "XYSquare.h"
 
 class XYPolygon : public XYSegList {
 public:
@@ -46,7 +47,6 @@ public:
   void   grow_by_pct(double pct);
   void   grow_by_amt(double amt);
   bool   insert_vertex(double, double, double=0);
-  bool   is_clockwise() const;
 
   void   clear();
   bool   apply_snap(double snapval);
@@ -58,6 +58,7 @@ public:
   bool   contains(double, double) const;
   bool   contains(const XYPolygon&) const;
   bool   intersects(const XYPolygon&) const;
+  bool   intersects(const XYSquare&) const;
   double dist_to_poly(const XYPolygon&) const;
   double dist_to_poly(double px, double py) const;
   double dist_to_poly(double x1, double y1, double x2, double y2) const;

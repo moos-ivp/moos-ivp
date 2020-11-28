@@ -26,6 +26,7 @@
 #ifndef XY_GEOM_UTILS_HEADER
 #define XY_GEOM_UTILS_HEADER
 
+#include <vector>
 #include "XYPoint.h"
 #include "XYPolygon.h"
 
@@ -160,6 +161,7 @@ bool randPointOnPoly(double vx, double vy, const XYPolygon&,
 double polyWidth(XYPolygon, double angle=0);
 double polyHeight(XYPolygon, double angle=0);
 
+void shiftVertices(std::vector<double>& vx, std::vector<double>& vy); 
 
 
 // DEPRECATED INTERFACES

@@ -34,7 +34,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: add_vertex
+// Procedure: add_vertex()
 
 void XYSegList::add_vertex(double x, double y, double z, string vprop)
 {
@@ -45,7 +45,7 @@ void XYSegList::add_vertex(double x, double y, double z, string vprop)
 }
 
 //---------------------------------------------------------------
-// Procedure: mod_vertex
+// Procedure: mod_vertex()
 
 void XYSegList::mod_vertex(unsigned int ix, double x, double y,
 			   double z, string vprop)
@@ -60,7 +60,7 @@ void XYSegList::mod_vertex(unsigned int ix, double x, double y,
 
 
 //---------------------------------------------------------------
-// Procedure: add_vertex
+// Procedure: add_vertex()
 
 void XYSegList::add_vertex(const XYPoint &pt, string vprop)
 {
@@ -71,7 +71,7 @@ void XYSegList::add_vertex(const XYPoint &pt, string vprop)
 }
 
 //---------------------------------------------------------------
-// Procedure: alter_vertex
+// Procedure: alter_vertex()
 //   Purpose: Given a new vertex, find the existing vertex that is
 //            closest, and replace it with the new one.
 
@@ -89,7 +89,7 @@ void XYSegList::alter_vertex(double x, double y, double z, string vprop)
 }
 
 //---------------------------------------------------------------
-// Procedure: delete_vertex
+// Procedure: delete_vertex()
 //   Purpose: Given a new vertex, find the existing vertex that is
 //            closest, and delete it.
 
@@ -105,7 +105,7 @@ void XYSegList::delete_vertex(double x, double y)
 }
 
 //---------------------------------------------------------------
-// Procedure: delete_vertex
+// Procedure: delete_vertex()
 //   Purpose: Given a valid vertex index, delete that vertex from
 //            the SegList.
 
@@ -140,7 +140,7 @@ void XYSegList::delete_vertex(unsigned int ix)
 }
 
 //---------------------------------------------------------------
-// Procedure: pop_last_vertex
+// Procedure: pop_last_vertex()
 //   Purpose: Remove the last vertex
 
 void XYSegList::pop_last_vertex()
@@ -156,7 +156,7 @@ void XYSegList::pop_last_vertex()
 }
 
 //---------------------------------------------------------------
-// Procedure: insert_vertex
+// Procedure: insert_vertex()
 //   Purpose: Given a new vertex, find the existing segment that is
 //            closest, and add the vertex between points
 
@@ -199,7 +199,7 @@ void XYSegList::insert_vertex(double x, double y, double z, string vprop)
 }
 
 //---------------------------------------------------------------
-// Procedure: clear
+// Procedure: clear()
 
 void XYSegList::clear()
 {
@@ -212,7 +212,7 @@ void XYSegList::clear()
 
 
 //---------------------------------------------------------------
-// Procedure: shift_horz
+// Procedure: shift_horz()
 
 void XYSegList::shift_horz(double shift_val)
 {
@@ -222,7 +222,7 @@ void XYSegList::shift_horz(double shift_val)
 }
 
 //---------------------------------------------------------------
-// Procedure: shift_vert
+// Procedure: shift_vert()
 
 void XYSegList::shift_vert(double shift_val)
 {
@@ -232,7 +232,7 @@ void XYSegList::shift_vert(double shift_val)
 }
 
 //---------------------------------------------------------------
-// Procedure: grow_by_pct
+// Procedure: grow_by_pct()
 
 void XYSegList::grow_by_pct(double pct)
 {
@@ -245,7 +245,7 @@ void XYSegList::grow_by_pct(double pct)
 }
 
 //---------------------------------------------------------------
-// Procedure: grow_by_amt
+// Procedure: grow_by_amt()
 
 void XYSegList::grow_by_amt(double amt)
 {
@@ -258,7 +258,7 @@ void XYSegList::grow_by_amt(double amt)
 }
 
 //---------------------------------------------------------------
-// Procedure: rotate
+// Procedure: rotate()
 
 void XYSegList::rotate(double degval, double cx, double cy)
 {
@@ -268,7 +268,7 @@ void XYSegList::rotate(double degval, double cx, double cy)
 }
 
 //---------------------------------------------------------------
-// Procedure: rotate
+// Procedure: rotate()
 
 void XYSegList::rotate(double degval)
 {
@@ -279,7 +279,7 @@ void XYSegList::rotate(double degval)
 }
 
 //---------------------------------------------------------------
-// Procedure: apply_snap
+// Procedure: apply_snap()
 
 void XYSegList::apply_snap(double snapval)
 {
@@ -291,7 +291,7 @@ void XYSegList::apply_snap(double snapval)
 }
 
 //---------------------------------------------------------------
-// Procedure: reverse
+// Procedure: reverse()
 
 void XYSegList::reverse()
 {
@@ -314,7 +314,7 @@ void XYSegList::reverse()
 }
 
 //---------------------------------------------------------------
-// Procedure: new_center
+// Procedure: new_center()
 
 void XYSegList::new_center(double new_cx, double new_cy)
 {
@@ -326,7 +326,7 @@ void XYSegList::new_center(double new_cx, double new_cy)
 }
 
 //---------------------------------------------------------------
-// Procedure: new_centroid
+// Procedure: new_centroid()
 
 void XYSegList::new_centroid(double new_cx, double new_cy)
 {
@@ -337,8 +337,57 @@ void XYSegList::new_centroid(double new_cx, double new_cy)
   shift_vert(diff_y);
 }
 
+
 //---------------------------------------------------------------
-// Procedure: valid
+// Procedure: is_clockwise()
+//      Note: Determine if the ordering of points in the internal
+//            vector of stored points constitutes a clockwise walk
+//            around the center. Algorithm based on progression of
+//            relative angle from the center. Result is somewhat
+//            undefined if set of points has crossing line segs.
+//      Note: Formerly defined in the XYPolygon class. It has been
+//            moved up the hierarchy tree since it is sometimes
+//            useful in a XYSegList or XYSegList decendents that 
+//            are not XYPolygon.
+
+
+bool XYSegList::is_clockwise() const
+{
+  unsigned int i, vsize = m_vx.size();
+  if(vsize < 3)
+    return(false);
+
+  int inc_count = 0;
+  int dec_count = 0;
+
+  double cx = get_center_x();
+  double cy = get_center_y();
+
+  for(i=0; i<vsize; i++) {
+    unsigned int j = i+1; 
+    if(j == vsize)
+      j = 0;
+    double relative_angle_1 = relAng(cx, cy, m_vx[i], m_vy[i]);
+    double relative_angle_2 = relAng(cx, cy, m_vx[j], m_vy[j]);
+    if(relative_angle_2 > relative_angle_1)
+      inc_count++;
+    else
+      dec_count++;
+  }
+
+  bool clockwise;
+  if(inc_count > dec_count)
+    clockwise = true;
+  else
+    clockwise = false;
+
+  return(clockwise);
+}
+
+
+
+//---------------------------------------------------------------
+// Procedure: valid()
 
 bool XYSegList::valid() const
 {
@@ -348,7 +397,7 @@ bool XYSegList::valid() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_vx
+// Procedure: get_vx()
 
 double XYSegList::get_vx(unsigned int i) const
 {
@@ -359,7 +408,7 @@ double XYSegList::get_vx(unsigned int i) const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_vy
+// Procedure: get_vy()
 
 double XYSegList::get_vy(unsigned int i) const
 {
@@ -381,7 +430,7 @@ double XYSegList::get_vz(unsigned int i) const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_vprop
+// Procedure: get_vprop()
 
 string XYSegList::get_vprop(unsigned int i) const
 {
@@ -392,7 +441,7 @@ string XYSegList::get_vprop(unsigned int i) const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_center_x
+// Procedure: get_center_x()
 //   Purpose: Return the mid point between the extreme x low, high
 
 double XYSegList::get_center_x() const
@@ -413,7 +462,7 @@ double XYSegList::get_center_x() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_center_y
+// Procedure: get_center_y()
 //   Purpose: Return the mid point between the extreme y low, high
 
 double XYSegList::get_center_y() const
@@ -435,7 +484,7 @@ double XYSegList::get_center_y() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_centroid_x
+// Procedure: get_centroid_x()
 //   Purpose: Return the x center of mass of all points
 
 double XYSegList::get_centroid_x() const
@@ -452,7 +501,7 @@ double XYSegList::get_centroid_x() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_centroid_y
+// Procedure: get_centroid_y()
 //   Purpose: Return the y center of mass of all points
 
 double XYSegList::get_centroid_y() const
@@ -469,7 +518,7 @@ double XYSegList::get_centroid_y() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_min_x
+// Procedure: get_min_x()
 //   Purpose: Return the min of the x values
 
 double XYSegList::get_min_x() const
@@ -486,7 +535,7 @@ double XYSegList::get_min_x() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_max_x
+// Procedure: get_max_x()
 //   Purpose: Return the max of the x values
 
 double XYSegList::get_max_x() const
@@ -503,7 +552,7 @@ double XYSegList::get_max_x() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_min_y
+// Procedure: get_min_y()
 //   Purpose: Return the min of the y values
 
 double XYSegList::get_min_y() const
@@ -520,7 +569,7 @@ double XYSegList::get_min_y() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_max_y
+// Procedure: get_max_y()
 //   Purpose: Return the max of the x values
 
 double XYSegList::get_max_y() const
@@ -537,7 +586,7 @@ double XYSegList::get_max_y() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_avg_x
+// Procedure: get_avg_x()
 //   Purpose: Return the avg of the x values
 
 double XYSegList::get_avg_x() const
@@ -554,7 +603,7 @@ double XYSegList::get_avg_x() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_avg_y
+// Procedure: get_avg_y()
 //   Purpose: Return the avg of the y values
 
 double XYSegList::get_avg_y() const
@@ -571,8 +620,7 @@ double XYSegList::get_avg_y() const
 }
 
 //---------------------------------------------------------------
-// Procedure: dist_to_ctr
-//   Purpose: 
+// Procedure: dist_to_ctr()
 
 double XYSegList::dist_to_ctr(double x, double y) const
 {
@@ -584,7 +632,7 @@ double XYSegList::dist_to_ctr(double x, double y) const
 
 
 //---------------------------------------------------------------
-// Procedure: max_dist_to_ctr
+// Procedure: max_dist_to_ctr()
 //   Purpose: Return the maximum distance between the center and
 //            any one of the vertices in the SegList.
 
@@ -609,7 +657,7 @@ double XYSegList::max_dist_to_ctr() const
 
 
 //---------------------------------------------------------------
-// Procedure: segs_cross
+// Procedure: segs_cross()
 //   Purpose: Determine if any two segments intersect one another
 //            We exclude from consideration any two segments that
 //            share a vertex. If the result is false, then this set
@@ -666,7 +714,7 @@ bool XYSegList::segs_cross(bool loop) const
 }
 
 //---------------------------------------------------------------
-// Procedure: length
+// Procedure: length()
 //   Purpose: Determine the overall length between the first and
 //            the last point - distance in the X-Y Plane only
 
@@ -691,7 +739,7 @@ double XYSegList::length() const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_spec
+// Procedure: get_spec()
 
 string XYSegList::get_spec(unsigned int precision) const
 {
@@ -699,7 +747,7 @@ string XYSegList::get_spec(unsigned int precision) const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_spec
+// Procedure: get_spec()
 
 string XYSegList::get_spec(string param) const
 {
@@ -707,7 +755,7 @@ string XYSegList::get_spec(string param) const
 }
 
 //---------------------------------------------------------------
-// Procedure: get_spec
+// Procedure: get_spec()
 //   Purpose: Get a string specification of the seglist. We set 
 //            the vertex precision to be at the integer by default.
 
@@ -760,7 +808,7 @@ string XYSegList::get_spec(unsigned int precision, string param) const
 
 
 //---------------------------------------------------------------
-// Procedure: get_spec_pts
+// Procedure: get_spec_pts()
 //   Purpose: Get a string specification of the just the points. We set
 //            the vertex precision to be at the integer by default.
 
@@ -822,7 +870,7 @@ std::string XYSegList::get_spec_inactive() const
 }
 
 //---------------------------------------------------------------
-// Procedure: closest_vertex
+// Procedure: closest_vertex()
 //   Purpose: Find the existing vertex that is closest to the 
 //            given point.
 
@@ -847,7 +895,7 @@ unsigned int XYSegList::closest_vertex(double x, double y) const
 
 
 //---------------------------------------------------------------
-// Procedure: dist_to_point
+// Procedure: dist_to_point()
 //   Purpose: Find the closest distance from the given point to
 //            any point on any segment.
 
@@ -874,7 +922,7 @@ double XYSegList::dist_to_point(double x, double y) const
 
 
 //---------------------------------------------------------------
-// Procedure: closest_segment
+// Procedure: closest_segment()
 //   Purpose: Find the existing segment that is closest to the 
 //            given point.
 //      Note: Returns the "leading" index of the segment. 
@@ -913,7 +961,7 @@ unsigned int XYSegList::closest_segment(double x, double y,
 
 
 //---------------------------------------------------------------
-// Procedure: grow_pt_by_pct                                    |
+// Procedure: grow_pt_by_pct()                                  |
 //                                  o (px, py)                  |
 //                                   \                          |
 //                                    \                         |
@@ -934,7 +982,7 @@ void XYSegList::grow_pt_by_pct(double pct, double cx, double cy,
 
 
 //---------------------------------------------------------------
-// Procedure: grow_pt_by_amt                                    |
+// Procedure: grow_pt_by_amt()                                  |
 //                                  o (px, py)                  |
 //                                   \                          | 
 //                                    \                         |
@@ -955,7 +1003,7 @@ void XYSegList::grow_pt_by_amt(double amt, double cx, double cy,
 
 
 //---------------------------------------------------------------
-// Procedure: rotate_pt
+// Procedure: rotate_pt()
 
 void XYSegList::rotate_pt(double deg, double cx, double cy, 
 			  double &px, double &py)

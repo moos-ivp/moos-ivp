@@ -55,7 +55,7 @@ public:
   
   std::vector<double> getPointCache() const {return(m_pt_cache);}
 
-  std::string get_spec();
+  std::string get_spec(unsigned int prec=1, std::string param="") const;
 
   bool   isValid() const;
   bool   initialize(double degrees_per_pt=1);

@@ -211,7 +211,7 @@ void MissionEval::postResults()
 }
 
 //------------------------------------------------------------
-// Procedure: postFlags
+// Procedure: postFlags()
 
 void MissionEval::postFlags(const vector<VarDataPair>& flags)
 {

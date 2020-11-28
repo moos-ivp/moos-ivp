@@ -40,6 +40,9 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   this->begin();
   this->size_range(600,400);
 
+  m_start_hgt = g_h;
+  m_start_wid = g_w;
+
   m_cmd_gui = 0;
   m_curr_time = 0;
   m_clear_stale_timestamp = 0;
@@ -49,6 +52,8 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_cmd_gui_start_bpost_cnt = 0;
   m_cmd_gui_start_cpost_cnt = 0;
   m_cmd_gui_start_show_posts = true;
+
+  m_button_cols = 0;
   
   mviewer   = new PMV_Viewer(0, 0, 1, 1);
   m_mviewer = mviewer;
@@ -110,21 +115,70 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_user_button_2 = new Fl_Button(0, 0, 1, 1, "Disabled");
   m_user_button_3 = new Fl_Button(0, 0, 1, 1, "Disabled");
   m_user_button_4 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_5 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_6 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_7 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_8 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_9 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_10 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_11 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_12 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_13 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_14 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_15 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_16 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_17 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_18 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_19 = new Fl_Button(0, 0, 1, 1, "Disabled");
+  m_user_button_20 = new Fl_Button(0, 0, 1, 1, "Disabled");
 
-  m_user_button_1->clear_visible_focus();
-  m_user_button_2->clear_visible_focus();
-  m_user_button_3->clear_visible_focus();
-  m_user_button_4->clear_visible_focus();
+  m_buttons.push_back(m_user_button_1);
+  m_buttons.push_back(m_user_button_2);
+  m_buttons.push_back(m_user_button_3);
+  m_buttons.push_back(m_user_button_4);
+  m_buttons.push_back(m_user_button_5);
+  m_buttons.push_back(m_user_button_6);
+  m_buttons.push_back(m_user_button_7);
+  m_buttons.push_back(m_user_button_8);
+  m_buttons.push_back(m_user_button_9);
+  m_buttons.push_back(m_user_button_10);
+  m_buttons.push_back(m_user_button_11);
+  m_buttons.push_back(m_user_button_12);
+  m_buttons.push_back(m_user_button_13);
+  m_buttons.push_back(m_user_button_14);
+  m_buttons.push_back(m_user_button_15);
+  m_buttons.push_back(m_user_button_16);
+  m_buttons.push_back(m_user_button_17);
+  m_buttons.push_back(m_user_button_18);
+  m_buttons.push_back(m_user_button_19);
+  m_buttons.push_back(m_user_button_20);
+
+  for(unsigned int i=0; i<m_buttons.size(); i++)
+    m_buttons[i]->clear_visible_focus();
 
   m_user_button_1->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)1);
   m_user_button_2->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)2);
   m_user_button_3->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)3);
   m_user_button_4->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)4);
+  m_user_button_5->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)5);
+  m_user_button_6->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)6);
+  m_user_button_7->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)7);  
+  m_user_button_8->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)8);  
+  m_user_button_9->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)9);  
+  m_user_button_10->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)10);  
+  m_user_button_11->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)11);  
+  m_user_button_12->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)12);  
+  m_user_button_13->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)13);  
+  m_user_button_14->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)14);  
+  m_user_button_15->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)15);  
+  m_user_button_16->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)16);  
+  m_user_button_17->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)17);  
+  m_user_button_18->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)18);  
+  m_user_button_19->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)19);  
+  m_user_button_20->callback((Fl_Callback*)PMV_GUI::cb_MOOS_Button,(void*)20);  
   
-  m_user_button_1->hide();
-  m_user_button_2->hide();
-  m_user_button_3->hide();
-  m_user_button_4->hide();
+  for(unsigned int i=0; i<m_buttons.size(); i++)
+    m_buttons[i]->clear_visible_focus();
 
   augmentMenu();
 
@@ -135,7 +189,7 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
 }
 
 //----------------------------------------------------------
-// Procedure: augmentMenu
+// Procedure: augmentMenu()
 
 void PMV_GUI::augmentMenu()
 {
@@ -366,7 +420,7 @@ void PMV_GUI::augmentMenu()
 }
 
 //----------------------------------------------------------
-// Procedure: resize
+// Procedure: resize()
 
 void PMV_GUI::resize(int lx, int ly, int lw, int lh)
 {
@@ -384,24 +438,108 @@ void PMV_GUI::setVerbose(bool bval)
 }
 
 //----------------------------------------------------------
-// Procedure: addButton
+// Procedure: calcButtonColumns()
+
+void PMV_GUI::calcButtonColumns()
+{
+  string label_1  = m_user_button_1->label();
+  string label_2  = m_user_button_2->label();
+  string label_3  = m_user_button_3->label();
+  string label_4  = m_user_button_4->label();
+  string label_5  = m_user_button_5->label();
+  string label_6  = m_user_button_6->label();
+  string label_7  = m_user_button_7->label();
+  string label_8  = m_user_button_8->label();
+  string label_9  = m_user_button_9->label();
+  string label_10 = m_user_button_10->label();
+  string label_11 = m_user_button_11->label();
+  string label_12 = m_user_button_12->label();
+  string label_13 = m_user_button_13->label();
+  string label_14 = m_user_button_14->label();
+  string label_15 = m_user_button_15->label();
+  string label_16 = m_user_button_16->label();
+  string label_17 = m_user_button_17->label();
+  string label_18 = m_user_button_18->label();
+  string label_19 = m_user_button_19->label();
+  string label_20 = m_user_button_20->label();
+
+  if((label_20 != "Disabled") || (label_19 != "Disabled"))
+    m_button_cols = 10;
+  else if((label_18 != "Disabled") || (label_17 != "Disabled"))
+    m_button_cols = 9;
+  else if((label_16 != "Disabled") || (label_15 != "Disabled"))
+    m_button_cols = 8;
+  else if((label_14 != "Disabled") || (label_13 != "Disabled"))
+    m_button_cols = 7;
+  else if((label_12 != "Disabled") || (label_11 != "Disabled"))
+    m_button_cols = 6;
+  else if((label_10 != "Disabled") || (label_9 != "Disabled"))
+    m_button_cols = 5;
+  else if((label_8 != "Disabled") || (label_7 != "Disabled"))
+    m_button_cols = 4;
+  else if((label_6 != "Disabled") || (label_5 != "Disabled"))
+    m_button_cols = 3;
+
+  else if((label_4 != "Disabled") || (label_3 != "Disabled"))
+    m_button_cols = 2;
+  else if((label_2 != "Disabled") || (label_1 != "Disabled"))
+    m_button_cols = 1;
+  else 
+    m_button_cols = 0;
+}
+
+//----------------------------------------------------------
+// Procedure: addButtonAction()
+
+string PMV_GUI::getButtonAction(string btype) const
+{
+  string action_str;
+  for(unsigned int i=0; i<m_button_keys.size(); i++) {
+    if(m_button_keys[i] == btype) {
+      if(action_str != "")
+	action_str += " # ";
+      action_str += m_button_vars[i] + "=";
+      action_str += m_button_vals[i];
+    }
+  }
+
+  return(action_str);
+}
+
+//----------------------------------------------------------
+// Procedure: addButton()
 
 bool PMV_GUI::addButton(string btype, string svalue) 
 {
-  if((btype != "button_one") && (btype != "button_two") &&
-     (btype != "button_three") && (btype != "button_four"))
+  Fl_Button *button = 0;
+  if(btype == "button_one") button = m_user_button_1;
+  else if(btype == "button_two")      button = m_user_button_2;
+  else if(btype == "button_three")    button = m_user_button_3;
+  else if(btype == "button_four")     button = m_user_button_4;
+  else if(btype == "button_five")     button = m_user_button_5;
+  else if(btype == "button_six")      button = m_user_button_6;
+  else if(btype == "button_seven")    button = m_user_button_7;
+  else if(btype == "button_eight")    button = m_user_button_8;
+  else if(btype == "button_nine")     button = m_user_button_9;
+  else if(btype == "button_ten")      button = m_user_button_10;
+  else if(btype == "button_eleven")   button = m_user_button_11;
+  else if(btype == "button_twelve")   button = m_user_button_12;
+  else if(btype == "button_thirteen") button = m_user_button_13;
+  else if(btype == "button_fourteen") button = m_user_button_14;
+  else if(btype == "button_fifteen")  button = m_user_button_15;
+  else if(btype == "button_sixteen")  button = m_user_button_16;
+  else if(btype == "button_seventeen") button = m_user_button_17;
+  else if(btype == "button_eighteen") button = m_user_button_18;
+  else if(btype == "button_nineteen") button = m_user_button_19;
+  else if(btype == "button_twenty")   button = m_user_button_20;
+  else
     return(false);
-  
+
   // Set the default label if none is provided in the svalue.
   // The default is the *current* value of the label.
-  string button_label = m_user_button_1->label();
-  if(btype == "button_two")
-    button_label = m_user_button_2->label();
-  else if(btype == "button_three")
-    button_label = m_user_button_3->label();
-  else if(btype == "button_four")
-    button_label = m_user_button_4->label();
-
+  string button_label = button->label();
+  string bcolor;
+  
   bool ok_line = true;
   vector<string> svector = parseStringQ(svalue, '#');
   unsigned int i, vsize = svector.size();
@@ -410,6 +548,8 @@ bool PMV_GUI::addButton(string btype, string svalue)
     string value = stripBlankEnds(svector[i]);
     if(param == "") 
       ok_line = false;
+    else if(param == "color") 
+      bcolor = value;
     else {
       if(value == "")
         button_label = param;
@@ -420,33 +560,30 @@ bool PMV_GUI::addButton(string btype, string svalue)
       }
     }
   }
+  
+  button->copy_label(button_label.c_str());
+  button->show();
 
-  if(btype == "button_one") { 
-    m_user_button_1->copy_label(button_label.c_str());
-    m_user_button_1->show();
-    m_user_button_1->redraw();
-  }    
-  else if (btype == "button_two") {
-    m_user_button_2->copy_label(button_label.c_str());
-    m_user_button_2->show();
-    m_user_button_2->redraw();
-  }
-  else if (btype == "button_three") {
-    m_user_button_3->copy_label(button_label.c_str());
-    m_user_button_3->show();
-    m_user_button_3->redraw();
-  }
-  else if (btype == "button_four") {
-    m_user_button_4->copy_label(button_label.c_str());
-    m_user_button_4->show();
-    m_user_button_4->redraw();
-  }
+  string tooltip = getButtonAction(btype);
+  button->copy_tooltip(tooltip.c_str());
 
+  if(isColor(bcolor)) {
+    ColorPack cpack(bcolor);
+    int red_int = cpack.red() * 255;
+    int grn_int = cpack.grn() * 255;
+    int blu_int = cpack.blu() * 255;
+    Fl_Color fcolor = fl_rgb_color(red_int, grn_int, blu_int);
+    button->color(fcolor);
+  }
+  button->redraw();
+  
+  calcButtonColumns();
+  resizeWidgets();
   return(ok_line);
 }
 
 //----------------------------------------------------------
-// Procedure: addAction
+// Procedure: addAction()
 
 bool PMV_GUI::addAction(string svalue, bool separator) 
 {
@@ -499,7 +636,7 @@ bool PMV_GUI::addAction(string svalue, bool separator)
 }
 
 //----------------------------------------------------------
-// Procedure: handle
+// Procedure: handle()
 //      Note: As it stands, this method could be eliminated entirely, and the 
 //            default behavior of the parent class should work fine. But if
 //            we want to tinker with event handling, this method is the place.
@@ -530,7 +667,7 @@ void PMV_GUI::augmentTitle(string ip_str)
 }
 
 //----------------------------------------------------
-// Procedure: syncNodesAtoB
+// Procedure: syncNodesAtoB()
 //   Purpose: Used when the user toggles the "active vehicle" shown in the 
 //            panes at the bottom of the window. If the new active vehicle
 //            is also a known appcast node, adjust the appcast browsers
@@ -551,7 +688,7 @@ bool PMV_GUI::syncNodesAtoB()
 }
 
 //----------------------------------------------------
-// Procedure: syncNodesBtoA
+// Procedure: syncNodesBtoA()
 //   Purpose: Used when the user selects a new new in the appcast browsers.
 //            If the new node is a known vehicle, i.e., we have received
 //            node reports for it, then make it the active vehicle in the 
@@ -571,7 +708,7 @@ bool PMV_GUI::syncNodesBtoA()
 }
 
 //----------------------------------------------------
-// Procedure: clearGeoShapes
+// Procedure: clearGeoShapes()
 
 void PMV_GUI::clearGeoShapes(string vname, string shape, string stype)
 {
@@ -662,6 +799,38 @@ inline void PMV_GUI::cb_MOOS_Button_i(unsigned int val) {
     skey = "button_three";
   else if(val == 4)
     skey = "button_four";
+  else if(val == 5)
+    skey = "button_five";
+  else if(val == 6)
+    skey = "button_six";
+  else if(val == 7)
+    skey = "button_seven";
+  else if(val == 8)
+    skey = "button_eight";
+  else if(val == 9)
+    skey = "button_nine";
+  else if(val == 10)
+    skey = "button_ten";
+  else if(val == 11)
+    skey = "button_eleven";
+  else if(val == 12)
+    skey = "button_twelve";
+  else if(val == 13)
+    skey = "button_thirteen";
+  else if(val == 14)
+    skey = "button_fourteen";
+  else if(val ==15 )
+    skey = "button_fifteen";
+  else if(val == 16)
+    skey = "button_sixteen";
+  else if(val == 17)
+    skey = "button_seventeen";
+  else if(val == 18)
+    skey = "button_eighteen";
+  else if(val == 19)
+    skey = "button_nineteen";
+  else if(val == 20)
+    skey = "button_twenty";
   
   unsigned int i, vsize = m_button_keys.size();
   for(i=0; i<vsize; i++) {
@@ -934,7 +1103,7 @@ void PMV_GUI::cb_CommandGUI(Fl_Widget* o) {
 
 
 //----------------------------------------------------------
-// Procedure: clearStaleVehicles
+// Procedure: clearStaleVehicles()
 
 bool PMV_GUI::clearStaleVehicles(bool force) 
 {
@@ -1049,7 +1218,7 @@ void PMV_GUI::cb_SelectProc(Fl_Widget* o, long)
 }
 
 //-------------------------------------------------------------------
-// Procedure: getPendingVar
+// Procedure: getPendingVar()
 
 string PMV_GUI::getPendingVar(unsigned int ix)
 {
@@ -1060,7 +1229,7 @@ string PMV_GUI::getPendingVar(unsigned int ix)
 }
 
 //-------------------------------------------------------------------
-// Procedure: getPendingVal
+// Procedure: getPendingVal()
 
 string PMV_GUI::getPendingVal(unsigned int ix)
 {
@@ -1071,7 +1240,7 @@ string PMV_GUI::getPendingVal(unsigned int ix)
 }
 
 //-------------------------------------------------------------------
-// Procedure: clearPending
+// Procedure: clearPending()
 
 void PMV_GUI::clearPending()
 {
@@ -1080,7 +1249,7 @@ void PMV_GUI::clearPending()
 }
 
 //-------------------------------------------------------------------
-// Procedure: pushPending
+// Procedure: pushPending()
 
 void PMV_GUI::pushPending(string var, string val)
 {
@@ -1089,7 +1258,7 @@ void PMV_GUI::pushPending(string var, string val)
 }
 
 //-------------------------------------------------------------------
-// Procedure: addScopeVariable
+// Procedure: addScopeVariable()
 //   Returns: false if no variable added
 //            true if the given variable is added
 
@@ -1133,7 +1302,7 @@ bool PMV_GUI::addScopeVariable(string varname)
 }
 
 //-------------------------------------------------------------------
-// Procedure: addMousePoke
+// Procedure: addMousePoke()
 
 bool PMV_GUI::addMousePoke(string side, string key, string vardata_pair)
 {
@@ -1207,7 +1376,7 @@ bool PMV_GUI::addMousePoke(string side, string key, string vardata_pair)
 }
 
 //-------------------------------------------------------------------
-// Procedure: addReferenceVehicle
+// Procedure: addReferenceVehicle()
 //      NOte: Add the vehicle with the given name as one of the possible
 //            reference vehicles. When none are given the datum is the
 //            the default reference point. So when the first vehicle is
@@ -1254,7 +1423,7 @@ bool PMV_GUI::addReferenceVehicle(string vehicle_name)
 }
 
 //-------------------------------------------------------------------
-// Procedure: addFilterVehicle
+// Procedure: addFilterVehicle()
 
 bool PMV_GUI::addFilterVehicle(string vehicle_name)
 {
@@ -1278,7 +1447,7 @@ bool PMV_GUI::addFilterVehicle(string vehicle_name)
 }
 
 //-------------------------------------------------------------------
-// Procedure: removeFilterVehicle
+// Procedure: removeFilterVehicle()
 
 void PMV_GUI::removeFilterVehicle(string vehicle_name)
 {
@@ -1482,7 +1651,7 @@ void PMV_GUI::updateProcs(bool clear)
 }
 
 //----------------------------------------- 
-// Procedure: updateAppCast
+// Procedure: updateAppCast()
 
 void PMV_GUI::updateAppCast() 
 {
@@ -1528,7 +1697,7 @@ void PMV_GUI::updateAppCast()
 
 
 //----------------------------------------------------- 
-// Procedure: updateRadios
+// Procedure: updateRadios()
 
 void PMV_GUI::updateRadios()
 {
@@ -1545,7 +1714,7 @@ void PMV_GUI::updateRadios()
 
 
 //----------------------------------------------------- 
-// Procedure: setMenuItemColors
+// Procedure: setMenuItemColors()
 
 void PMV_GUI::setMenuItemColors()
 {
@@ -1611,7 +1780,7 @@ void PMV_GUI::setMenuItemColors()
 
 
 //----------------------------------------------------- 
-// Procedure: setRadioCastAttrib
+// Procedure: setRadioCastAttrib()
 //   Purpose: A way of setting the appcast attribute assureing that 
 //            the GUI radio buttons are properly updated.
 //  
@@ -1651,7 +1820,7 @@ bool PMV_GUI::setRadioCastAttrib(string attr, string value)
 
 
 //-------------------------------------------------------------------
-// Procedure: showDataFields
+// Procedure: showDataFields()
 
 void PMV_GUI::showDataFields()
 {
@@ -1671,18 +1840,17 @@ void PMV_GUI::showDataFields()
   m_scope_time->show();
   m_scope_value->show();
 
-  string label_1 = m_user_button_1->label();
-  string label_2 = m_user_button_2->label();
-  string label_3 = m_user_button_3->label();
-  string label_4 = m_user_button_4->label();
-  if(label_1 != "Disabled")   m_user_button_1->show();
-  if(label_2 != "Disabled")   m_user_button_2->show();
-  if(label_3 != "Disabled")   m_user_button_3->show();
-  if(label_4 != "Disabled")   m_user_button_4->show();
+  for(unsigned int i=0; i<m_buttons.size(); i++) {
+    string label = m_buttons[i]->label();
+    if(label != "Disabled")
+      m_buttons[i]->show();
+    else
+      m_buttons[i]->hide();
+  }
 }
 
 //-------------------------------------------------------------------
-// Procedure: hideDataFields
+// Procedure: hideDataFields()
 
 void PMV_GUI::hideDataFields()
 {
@@ -1701,21 +1869,19 @@ void PMV_GUI::hideDataFields()
   m_scope_variable->hide();
   m_scope_time->hide();
   m_scope_value->hide();
-  m_user_button_1->hide();
-  m_user_button_2->hide();
-  m_user_button_3->hide();
-  m_user_button_4->hide();
+
+  for(unsigned int i=0; i<m_buttons.size(); i++) 
+    m_buttons[i]->hide();    
+
 }
 
 //----------------------------------------------------------
-// Procedure: resizeDataText
+// Procedure: resizeDataText()
 
 void PMV_GUI::resizeDataText(int wsize) 
 {
-  m_user_button_1->labelsize(wsize);
-  m_user_button_2->labelsize(wsize);
-  m_user_button_3->labelsize(wsize);
-  m_user_button_4->labelsize(wsize);
+  for(unsigned int i=0; i<m_buttons.size(); i++) 
+    m_buttons[i]->labelsize(wsize);
   
   v_nam->labelsize(wsize);
   v_typ->labelsize(wsize);
@@ -1966,38 +2132,133 @@ void PMV_GUI::resizeWidgets()
     resizeDataText(12);
     m_scope_value->label("Value:");
   }
-  
+
   // height = 150 is the "baseline" design. All adjustments from there.
   double row1 = dy + 10 * (dh/150);
   double row2 = dy + 55 * (dh/150);
   double row3 = dy + 100 * (dh/150);
 
-  v_nam->resize(dw*0.07, row1, dw*0.07, fld_hgt); 
-  v_typ->resize(dw*0.07, row2, dw*0.07, fld_hgt); 
-  x_mtr->resize(dw*0.20, row1, dw*0.06, fld_hgt); 
-  y_mtr->resize(dw*0.20, row2, dw*0.06, fld_hgt); 
-  v_lat->resize(dw*0.31, row1, dw*0.11, fld_hgt); 
-  v_lon->resize(dw*0.31, row2, dw*0.11, fld_hgt); 
-  v_spd->resize(dw*0.49, row1, dw*0.06, fld_hgt); 
-  v_crs->resize(dw*0.49, row2, dw*0.06, fld_hgt); 
-  v_dep->resize(dw*0.62, row1, dw*0.07, fld_hgt); 
-  v_ais->resize(dw*0.62, row2, dw*0.07, fld_hgt); 
-  time->resize(dw*0.75, row1, dw*0.06, fld_hgt); 
-  warp->resize(dw*0.75, row2, dw*0.06, fld_hgt); 
+  // Calculate the Data columns and wids
   
-  m_scope_variable->resize(dw*0.07, row3, dw*0.1, fld_hgt); 
-  m_scope_time->resize(dw*0.20, row3, dw*0.1, fld_hgt); 
-  m_scope_value->resize(dw*0.35, row3, dw*0.65, fld_hgt); 
+  int col1_pos = 60;
+  int col1_wid = 150;
+  
+  int col2_pos = col1_pos + col1_wid + 50;
+  int col2_wid = 55;
+  
+  int col3_pos = col2_pos + col2_wid + 50;
+  int col3_wid = 80;
 
-  m_user_button_1->resize(dw*0.91, row1, dw*0.09, fld_hgt);
-  m_user_button_2->resize(dw*0.91, row2, dw*0.09, fld_hgt);
-  m_user_button_3->resize(dw*0.82, row1, dw*0.09, fld_hgt);
-  m_user_button_4->resize(dw*0.82, row2, dw*0.09, fld_hgt);
+  int col4_pos = col3_pos + col3_wid + 50;
+  int col4_wid = 50;
+
+  int col5_pos = col4_pos + col4_wid + 60;
+  int col5_wid = 50;
+
+  int col6_pos = col5_pos + col5_wid + 50;
+  int col6_wid = 55;
+
+  int lft_min_wid = col6_pos + col6_wid + 20;
+  int rgt_min_wid = m_button_cols * 110 + 10;
+
+  cout << "========================================================" << endl;
+  cout << "w():" << w() << endl;
+  cout << "lft_min_wid: " << lft_min_wid << endl;
+  cout << "rgt_min_wid: " << rgt_min_wid << endl;
+  
+  int extra_wid = w() - (lft_min_wid + rgt_min_wid);
+  cout << "extra_wid: " << extra_wid << endl;
+
+  cout << "button_cols: " << m_button_cols << endl;
+  int extra_rgt = extra_wid / 2;
+  int max_extra_rgt = (m_button_cols * 75);
+  if(extra_rgt > max_extra_rgt)
+    extra_rgt = max_extra_rgt;
+
+  cout << "extra_rgt: " << extra_rgt << endl;
+  
+  int extra_lft = extra_wid - extra_rgt;
+  int dwid = extra_lft / 6;
+
+  cout << "extra_lft: " << extra_lft << endl;
+  cout << "dwid: " << dwid << endl;
+  
+
+  col2_pos += (dwid * 1);
+  col3_pos += (dwid * 2);
+  col4_pos += (dwid * 3);
+  col5_pos += (dwid * 4);
+  col6_pos += (dwid * 5);
+  col1_wid += dwid;
+  col2_wid += dwid;
+  col3_wid += dwid;
+  col4_wid += dwid;
+  col5_wid += dwid;
+  col6_wid += dwid;
+
+  int extra_bwid = 0;
+  if(m_button_cols > 0)
+    extra_bwid = (extra_rgt / (int)(m_button_cols));
+
+  cout << "extra_rgt: " << extra_rgt << endl;
+  cout << "extra_bwid: " << extra_bwid << endl;
+  
+  int button_wid  = 100 + extra_bwid;
+  int col_b1_pos  = w() - (button_wid + 10);  
+  int col_b3_pos  = w() - ((button_wid + 10) * 2);  
+  int col_b5_pos  = w() - ((button_wid + 10) * 3);  
+  int col_b7_pos  = w() - ((button_wid + 10) * 4);  
+  int col_b9_pos  = w() - ((button_wid + 10) * 5);  
+  int col_b11_pos = w() - ((button_wid + 10) * 6);  
+  int col_b13_pos = w() - ((button_wid + 10) * 7);  
+  int col_b15_pos = w() - ((button_wid + 10) * 8);  
+  int col_b17_pos = w() - ((button_wid + 10) * 9);  
+  int col_b19_pos = w() - ((button_wid + 10) * 10);  
+  
+  int col1_xwid = (col2_pos + col2_wid) - col1_pos;
+  int col4_xwid = w() - col4_pos - 10;
+  
+  v_nam->resize(col1_pos, row1, col1_wid, fld_hgt); 
+  v_typ->resize(col1_pos, row2, col1_wid, fld_hgt); 
+
+  x_mtr->resize(col2_pos, row1, col2_wid, fld_hgt); 
+  y_mtr->resize(col2_pos, row2, col2_wid, fld_hgt); 
+
+  v_lat->resize(col3_pos, row1, col3_wid, fld_hgt); 
+  v_lon->resize(col3_pos, row2, col3_wid, fld_hgt); 
+
+  v_spd->resize(col4_pos, row1, col4_wid, fld_hgt); 
+  v_crs->resize(col4_pos, row2, col4_wid, fld_hgt); 
+
+  v_dep->resize(col5_pos, row1, col5_wid, fld_hgt); 
+  v_ais->resize(col5_pos, row2, col5_wid, fld_hgt); 
+
+  time->resize(col6_pos, row1, col6_wid, fld_hgt); 
+  warp->resize(col6_pos, row2, col6_wid, fld_hgt); 
+  
+  m_scope_variable->resize(col1_pos, row3, col1_xwid, fld_hgt); 
+  m_scope_time->resize(col3_pos, row3, col3_wid, fld_hgt); 
+  m_scope_value->resize(col4_pos, row3, col4_xwid, fld_hgt); 
+
+  m_user_button_1->resize(col_b1_pos, row1, button_wid, fld_hgt);
+  m_user_button_2->resize(col_b1_pos, row2, button_wid, fld_hgt);
+  m_user_button_3->resize(col_b3_pos, row1, button_wid, fld_hgt);
+  m_user_button_4->resize(col_b3_pos, row2, button_wid, fld_hgt);
+  m_user_button_5->resize(col_b5_pos, row1, button_wid, fld_hgt);
+  m_user_button_6->resize(col_b5_pos, row2, button_wid, fld_hgt);
+
+  m_user_button_7->resize(col_b7_pos, row1, button_wid, fld_hgt);
+  m_user_button_8->resize(col_b7_pos, row2, button_wid, fld_hgt);
+  m_user_button_9->resize(col_b9_pos, row1, button_wid, fld_hgt);
+  m_user_button_10->resize(col_b9_pos, row2, button_wid, fld_hgt);
+  m_user_button_11->resize(col_b11_pos, row1, button_wid, fld_hgt);
+  m_user_button_12->resize(col_b11_pos, row2, button_wid, fld_hgt);
+  m_user_button_13->resize(col_b13_pos, row1, button_wid, fld_hgt);
+  m_user_button_14->resize(col_b13_pos, row2, button_wid, fld_hgt);
+  m_user_button_15->resize(col_b15_pos, row1, button_wid, fld_hgt);
+  m_user_button_16->resize(col_b15_pos, row2, button_wid, fld_hgt);
+  m_user_button_17->resize(col_b17_pos, row1, button_wid, fld_hgt);
+  m_user_button_18->resize(col_b17_pos, row2, button_wid, fld_hgt);
+  m_user_button_19->resize(col_b19_pos, row1, button_wid, fld_hgt);
+  m_user_button_20->resize(col_b19_pos, row2, button_wid, fld_hgt);
 }
-
-
-
-
-
-
-

@@ -62,6 +62,7 @@ public:
   double getCenterY() const   {return((m_yhigh-m_ylow)/2 + m_ylow);}
 
   std::string get_spec(std::string s="") const;
+  std::string get_spec_as_poly(std::string s="") const;
 
 protected:
   double m_xlow;

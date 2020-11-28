@@ -160,6 +160,8 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("  USM_RESET            (value not read)                         ");
   blk("  USM_SIM_PAUSED     = [true/false]                             ");
+  blk("  USM_ENABLED        = [true/false]                             ");
+  blk("  USM_TURN_RATE      = [0,100]                                  ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");

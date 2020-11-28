@@ -434,8 +434,22 @@ bool segmentsCross(double x1, double y1, double x2, double y2,
     double intercept1 = y2 - (slope1 * x2);
     double slope2 = (y4-y3)/(x4-x3);
     double intercept2 = y4 - (slope2 * x4);
-    if(slope1 == slope2)
-      return(intercept1 == intercept2);
+    if(slope1 == slope2) {           // bug fix mikerb Nov0120
+      if(intercept1 != intercept2)
+	return(false);
+      double xmin12 = x1;
+      double xmax12 = x2;
+      if(x1>x2) {
+	xmin12 = x2;
+	xmax12 = x1;
+      }
+      if((x3 < xmin12) && (x4 < xmin12))
+	return(false);
+      if((x3 > xmax12) && (x4 > xmax12))
+	return(false);
+      return(true);
+    }
+    
     double intx = (intercept2 - intercept1) / (slope1 - slope2);
 
     if((intx < x1) && (intx < x2))
@@ -1989,3 +2003,32 @@ double polyHeight(XYPolygon poly, double angle)
 
   return(ymax - ymin);
 }
+
+
+//---------------------------------------------------------------
+// Procedure: shiftVertices()
+//   Purpose: Shift each vertex index to be lower by one, and moving
+//            the first vertex to the end.
+//            A convenience function for certain other geometric
+//            calculations. 
+
+void shiftVertices(vector<double>& vx, vector<double>& vy)
+{
+  if((vx.size() != vy.size()) || (vx.size() < 2))
+    return;
+  
+  vector<double> new_vx;
+  vector<double> new_vy;
+  for(unsigned int i=1; i<vx.size(); i++) {
+    new_vx.push_back(vx[i]);
+    new_vy.push_back(vy[i]);
+  }
+  new_vx.push_back(vx[0]);
+  new_vy.push_back(vy[0]);
+
+  vx = new_vx;
+  vy = new_vy;
+}
+
+
+  

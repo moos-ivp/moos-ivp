@@ -339,48 +339,6 @@ void XYPolygon::clear()
 
 
 //---------------------------------------------------------------
-// Procedure: is_clockwise()
-//      Note: Determine if the ordering of points in the internal
-//            vector of stored points constitutes a clockwise walk
-//            around the polygon. Algorithm base on progression of
-//            relative angle from the center. Result is somewhat
-//            undefined if the polygon is not convex. If it is 
-//            "nearly" convex, it should still be accurate.
-
-bool XYPolygon::is_clockwise() const
-{
-  unsigned int i, vsize = m_vx.size();
-  if(vsize < 3)
-    return(false);
-
-  int inc_count = 0;
-  int dec_count = 0;
-
-  double cx = get_center_x();
-  double cy = get_center_y();
-
-  for(i=0; i<vsize; i++) {
-    unsigned int j = i+1; 
-    if(j == vsize)
-      j = 0;
-    double relative_angle_1 = relAng(cx, cy, m_vx[i], m_vy[i]);
-    double relative_angle_2 = relAng(cx, cy, m_vx[j], m_vy[j]);
-    if(relative_angle_2 > relative_angle_1)
-      inc_count++;
-    else
-      dec_count++;
-  }
-
-  bool clockwise;
-  if(inc_count > dec_count)
-    clockwise = true;
-  else
-    clockwise = false;
-
-  return(clockwise);
-}
-
-//---------------------------------------------------------------
 // Procedure: apply_snap
 //      Note: A call to "determine_convexity()" is made since this
 //            operation may result in a change in the convexity.
@@ -463,6 +421,9 @@ bool XYPolygon::contains(double x, double y) const
     x1 = m_vx[ix];
     y1 = m_vy[ix];
     
+    if((x==x1)&&(y==y1))
+      return(true);
+    
     int ixx = ix+1;
     if(ix == vsize-1)
       ixx = 0;
@@ -541,9 +502,54 @@ bool XYPolygon::intersects(const XYPolygon &poly) const
       x2 = this->get_vx(i+1);
       y2 = this->get_vy(i+1);
     }
-    if(poly.seg_intercepts(x1,y1,x2,y2))
+    if(poly.seg_intercepts(x1,y1,x2,y2)) {
+      return(true);
+    }
+  }
+
+  return(false);
+}
+
+
+//---------------------------------------------------------------
+// Procedure: intersects
+
+bool XYPolygon::intersects(const XYSquare &square) const
+{
+  if(size() == 0)
+    return(false);
+
+  // First check that no vertices from "this" polygon are
+  // contained in the given polygon
+  for(unsigned int i=0; i<m_vx.size(); i++) {
+    double x = m_vx[i];
+    double y = m_vy[i];
+    if(square.containsPoint(x, y))
       return(true);
   }
+  // Then check that no vertices from the given square are
+  // contained in "this" polygon
+  double x1 = square.get_min_x();
+  double y1 = square.get_min_y();
+  double x2 = square.get_max_x();
+  double y2 = square.get_min_y();
+  double x3 = square.get_max_x();
+  double y3 = square.get_max_y();
+  double x4 = square.get_min_x();
+  double y4 = square.get_max_y();
+
+  if(contains(x1,y1) || contains(x2,y2) || 
+     contains(x3,y3) || contains(x4,y4)) 
+    return(true);
+  
+  if(seg_intercepts(x1,y1,x2,y2))
+    return(true);
+  if(seg_intercepts(x2,y2,x3,y3))
+    return(true);
+  if(seg_intercepts(x3,y3,x4,y4))
+    return(true);
+  if(seg_intercepts(x4,y4,x1,y1))
+    return(true);
 
   return(false);
 }
@@ -756,6 +762,7 @@ bool XYPolygon::seg_intercepts(double x1, double y1,
     bool result = segmentsCross(x1,y1,x2,y2,x3,y3,x4,y4);
     if(result == true)
       return(true);
+
   }
   return(false);
 }
@@ -832,13 +839,8 @@ bool XYPolygon::line_intersects(double x1, double y1,
     x4 = m_vx[ixx];
     y4 = m_vy[ixx];
 
-    
-    //cout << "Checking edge: " << ix << endl;
     bool cross = lineSegCross(x3,y3,x4,y4, x1,y1,x2,y2, rx1,ry1,rx2,ry2);
     if(cross) {
-
-      //cout << "  cross detected, edge: " << ix << endl;
-
       if(cross_count == 0) {
 	ix1 = rx1;
 	iy1 = ry1;

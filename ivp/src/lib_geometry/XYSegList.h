@@ -35,7 +35,7 @@
 
 class XYSegList : public XYObject {
 public:
-  XYSegList() {}
+  XYSegList() {m_transparency=0.1;}
   virtual ~XYSegList() {}
 
   // XYSegList create and edit functions
@@ -62,6 +62,7 @@ public:
   void   reverse();
   void   new_center(double x, double y);
   void   new_centroid(double x, double y);
+  bool   is_clockwise() const;
   bool   valid() const;
 
 public:

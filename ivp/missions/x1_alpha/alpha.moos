@@ -165,7 +165,7 @@ ProcessConfig = pMarineViewer
 
   set_pan_x            = -90
   set_pan_y            = -280
-  zoom                 = 0.65
+  zoom                 = 0.95
   vehicle_shape_scale  = 1.5
   hash_delta           = 50
   hash_shade           = 0.4
@@ -181,20 +181,28 @@ ProcessConfig = pMarineViewer
   appcast_width        = 30
   appcast_viewable     = true
   appcast_color_scheme = indigo
-  nodes_font_size      = medium
-  procs_font_size      = medium
-  appcast_font_size    = small
+  nodes_font_size      = large
+  procs_font_size      = large
+  appcast_font_size    = medium
   
   scope = PROX_POLY_VIEW_ALPHA
   scope = PHELMIVP_PID
   scope = DB_UPTIME
 
   left_context[vehicle_pick] = PROX_POLY_VIEW_$[UP_VNAME_CLOSEST]=toggle
+
+	action = USM_ENABLED=false
+	action = USM_TURN_RATE = 70
+	action = USM_TURN_RATE = 50
+	action = USM_TURN_RATE = 30
+	action = USM_TURN_RATE = 10
+	action = USM_TURN_RATE = 5
+	action = USM_TURN_RATE = 2
 	
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
-  button_two = STATION:T # STATION=true
-  button_three = STATION:F # STATION=falSE
+  button_two = RETURN:T # RETURN=true
+  button_three = RETURN:F # RETURN=false
 
   button_four = REVERSE # WPT_UPDATE=order=toggle
 }

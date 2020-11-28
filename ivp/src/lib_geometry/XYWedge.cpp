@@ -162,6 +162,13 @@ void XYWedge::setHangle(double angle)
 
 bool XYWedge::isValid() const
 {
+  cout << "langle_set " << boolToString(m_langle_set) << endl;
+  cout << "hangle_set " << boolToString(m_hangle_set) << endl;
+  cout << "m_x_set " << boolToString(m_x_set) << endl;
+  cout << "m_y_set " << boolToString(m_y_set) << endl;
+  cout << "m_radlow_set " << boolToString(m_radlow_set) << endl;
+  cout << "m_radhgh_set " << boolToString(m_radhgh_set) << endl;
+  
   return(m_langle_set && m_hangle_set && m_x_set && m_y_set &&
 	 m_radlow_set && m_radhgh_set);
 }
@@ -172,10 +179,14 @@ bool XYWedge::isValid() const
 bool XYWedge::initialize(double degrees_per_pt)
 {
   // Part 1: Sanity checks
+  cout << "XYWedge::initialize() 111" << endl;
   if(m_initialized)
     return(true);
+  cout << "XYWedge::initialize() 222" << endl;
+
   if(!isValid())
     return(false);
+  cout << "XYWedge::initialize() 333" << endl;
 
   // Part 2: Initialize the wedge corner points
   projectPoint(m_langle, m_radlow, m_x, m_y, m_llx, m_lly);
@@ -261,13 +272,31 @@ bool XYWedge::initialize(double degrees_per_pt)
     m_pt_cache.push_back(new_y);
   }
 
-
-
   m_initialized = true;
   return(true);
 }
 
 
+//-------------------------------------------------------------
+// Procedure: get_spec()
 
+string XYWedge::get_spec(unsigned int precision, std::string param) const
+{
+  string spec;
+  spec += "x=" + doubleToString(m_x, precision);
+  spec += ",y=" + doubleToString(m_y, precision);
 
+  spec += ",rad_low=" + doubleToStringX(m_radlow, precision);
+  spec += ",rad_hgh=" + doubleToStringX(m_radhgh, precision);
+  spec += ",ang_low=" + doubleToStringX(m_langle, precision);
+  spec += ",ang_hgh=" + doubleToStringX(m_hangle, precision);
+  
+  string obj_spec = XYObject::get_spec(param);
+  if(obj_spec != "") {
+    if(spec != "")
+      spec += ",";
+    spec += obj_spec;
+  }
 
+  return(spec);
+}

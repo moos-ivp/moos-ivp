@@ -585,14 +585,47 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       m_gui->size(800,600);
       handled = true;
     }
-    else if(param == "button_one")
-      handled = m_gui->addButton(param, value);
-    else if(param == "button_two")
-      handled = m_gui->addButton(param, value);
-    else if(param == "button_three")
-      handled = m_gui->addButton(param, value);
-    else if(param == "button_four")
-      handled = m_gui->addButton(param, value);
+    else if((param == "button_one") || (param == "button_1"))
+      handled = m_gui->addButton("button_one", value);
+    else if((param == "button_two") || (param == "button_2"))
+      handled = m_gui->addButton("button_two", value);
+    else if((param == "button_three")  || (param == "button_3"))
+      handled = m_gui->addButton("button_three", value);
+    else if((param == "button_four")  || (param == "button_4"))
+      handled = m_gui->addButton("button_four", value);
+    else if((param == "button_five") || (param == "button_5"))
+      handled = m_gui->addButton("button_five", value);
+    else if((param == "button_six") || (param == "button_6"))
+      handled = m_gui->addButton("button_six", value);
+    else if((param == "button_seven") || (param == "button_7"))
+      handled = m_gui->addButton("button_seven", value);
+    else if((param == "button_eight") || (param == "button_8"))
+      handled = m_gui->addButton("button_eight", value);
+    else if((param == "button_nine") || (param == "button_9"))
+      handled = m_gui->addButton("button_nine", value);
+    else if((param == "button_ten") || (param == "button_10"))
+      handled = m_gui->addButton("button_ten", value);
+    else if((param == "button_eleven") || (param == "button_11"))
+      handled = m_gui->addButton("button_eleven", value);
+    else if((param == "button_twelve") || (param == "button_12"))
+      handled = m_gui->addButton("button_twelve", value);
+    else if((param == "button_thirteen") || (param == "button_13"))
+      handled = m_gui->addButton("button_thirteen", value);
+    else if((param == "button_fourteen") || (param == "button_14"))
+      handled = m_gui->addButton("button_fourteen", value);
+    else if((param == "button_fifteen") || (param == "button_15"))
+      handled = m_gui->addButton("button_fifteen", value);
+    else if((param == "button_sixteen") || (param == "button_16"))
+      handled = m_gui->addButton("button_sixteen", value);
+    else if((param == "button_seventeen") || (param == "button_17"))
+      handled = m_gui->addButton("button_seventeen", value);
+    else if((param == "button_eighteen") || (param == "button_18"))
+      handled = m_gui->addButton("button_eighteen", value);
+    else if((param == "button_nineteen") || (param == "button_19"))
+      handled = m_gui->addButton("button_nineteen", value);
+    else if((param == "button_twenty") || (param == "button_20"))
+      handled = m_gui->addButton("button_twenty", value);
+
     else if(param == "action")
       handled = m_gui->addAction(value);
     else if(param == "action+")
@@ -724,7 +757,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   m_gui->mviewer->redraw();
   m_gui->updateRadios();
   m_gui->setMenuItemColors();
-
+  m_gui->calcButtonColumns();
+  
   // Set the Region Info
   string tiff_a = m_gui->mviewer->getTiffFileA();
   string tiff_b = m_gui->mviewer->getTiffFileB();
