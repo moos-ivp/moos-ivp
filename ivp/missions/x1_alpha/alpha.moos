@@ -185,9 +185,12 @@ ProcessConfig = pMarineViewer
   procs_font_size      = medium
   appcast_font_size    = small
   
+  scope = PROX_POLY_VIEW_ALPHA
   scope = PHELMIVP_PID
   scope = DB_UPTIME
 
+  left_context[vehicle_pick] = PROX_POLY_VIEW_$[UP_VNAME_CLOSEST]=toggle
+	
   button_one = DEPLOY # DEPLOY=true
   button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
   button_two = STATION:T # STATION=true

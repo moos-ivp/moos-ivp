@@ -6,9 +6,9 @@ TIME_WARP=1
 JUST_MAKE="no"
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	printf "%s [SWITCHES] [time_warp]   \n" $0
-	printf "  --just_make, -j    \n" 
-	printf "  --help, -h         \n" 
+	echo "launch.sh [SWITCHES] [time_warp]   "
+	echo "  --just_make, -j    " 
+	echo "  --help, -h         " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
