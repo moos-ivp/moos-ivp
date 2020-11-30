@@ -199,9 +199,6 @@ ProcessConfig = pMarineViewer
   button_two   = RETURN  # STATION_KEEP_ALL=false
   button_three = PERMUTE   # UTS_FORWARD=0
   button_four  = STATION   # STATION_KEEP_ALL=true
-
-  button_five = TOW-ON   # TOW = true
-  button_six  = TOW-OFF  # TOW = false
 }
 
 //--------------------------------------------------------

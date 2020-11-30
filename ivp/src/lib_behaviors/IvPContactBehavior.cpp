@@ -340,6 +340,7 @@ void IvPContactBehavior::handleContactFlagRange(VarDataPair flag)
 
 string IvPContactBehavior::expandMacros(string sdata)
 {
+  sdata = macroExpand(sdata, "CONTACT", m_contact);
   sdata = macroExpand(sdata, "CN_NAME", m_contact);
   sdata = macroExpand(sdata, "CN_VTYPE", m_cn_vtype);
   sdata = macroExpand(sdata, "CN_GROUP", m_cn_group);

@@ -27,8 +27,8 @@ Processconfig = ANTLER
   Run = uLoadWatch     @ NewConsole = false
   Run = uMemWatch      @ NewConsole = false
   Run = isay           @ NewConsole = false
-  //Run = pContactMgrV20 @ NewConsole = false
-  Run = pBasicContactMgr @ NewConsole = false
+  Run = pContactMgrV20 @ NewConsole = false
+  //Run = pBasicContactMgr @ NewConsole = false
 }
 
 //----------------------------------------------------
@@ -44,8 +44,8 @@ ProcessConfig = pHelmIvP
   Domain       = course:0:359:360
   Domain       = speed:0:5:26
 
-	//hold_on_apps = pContactMgrV20
-	hold_on_apps = pBasicContactMgr
+	hold_on_apps = pContactMgrV20
+	//hold_on_apps = pBasicContactMgr
 }
 	
 //--------------------------------------------------------

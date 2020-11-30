@@ -1678,6 +1678,7 @@ bool BasicContactMgr::buildReport()
 	val = doubleToStringX(pair.get_ddata(), 3);
       m_msgs << "  ON_FLAG = " << var << "=" << val << endl;
     }
+
     vector<VarDataPair> xpairs = getAlertOffFlags(alert_id);
     for(unsigned int i=0; i<xpairs.size(); i++) {
       VarDataPair pair = xpairs[i];

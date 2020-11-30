@@ -172,6 +172,27 @@ bool CMAlert::setAlertRangeFar(double dval)
 
 bool CMAlert::addAlertOnFlag(string str)
 {
+  // Sanity check: Make sure this isn't a duplicate
+  str = stripBlankEnds(str);
+  if(m_on_flags_raw.count(str))
+    return(true);
+  m_on_flags_raw.insert(str);
+  
+  // Ok, create and add the VarDataPair
+  string lft = biteStringX(str, '=');
+  string rgt = str;
+
+  if((lft == "") || (rgt == ""))
+    return(false);
+
+  VarDataPair pair(lft, rgt, "auto");
+  m_on_flags.push_back(pair);
+  return(true);    
+}
+
+#if 0
+bool CMAlert::addAlertOnFlag(string str)
+{
   vector<string> svector = parseString(str, '#');
   for(unsigned int i=0; i<svector.size(); i++) {
     // Sanity check: Make sure this isn't a duplicate
@@ -192,8 +213,9 @@ bool CMAlert::addAlertOnFlag(string str)
     m_on_flags.push_back(pair);
     
   }
-  return(true);    
+  return(true);  
 }
+#endif
 
 //---------------------------------------------------------------
 // Procedure: addAlertOffFlag
