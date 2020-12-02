@@ -59,7 +59,7 @@ BHV_CutRange::BHV_CutRange(IvPDomain gdomain) : IvPContactBehavior(gdomain)
 
   m_in_pursuit = false;
   
-  m_no_alert_request  = true;
+  m_no_alert_request  = false;
   
   addInfoVars("NAV_X, NAV_Y");
 }
@@ -119,7 +119,7 @@ void BHV_CutRange::onHelmStart()
   string request = "id=" + getDescriptor();
   request += ", on_flag=" + alert_templ;
   request += ",alert_range=" + doubleToStringX(m_pwt_outer_dist,1);
-  request += ", cpa_range=" + doubleToStringX(m_giveup_range,1);
+  request += ", cpa_range=" + doubleToStringX(m_pwt_outer_dist+1,1);
   request = augmentSpec(request, getFilterSummary());
   
   postMessage("BCM_ALERT_REQUEST", request);

@@ -998,19 +998,19 @@ void IvPBehavior::updateStateDurations(string bhv_state)
 void IvPBehavior::postFlags(const string& str, bool repeatable)
 {
   if(str == "runflags")
-    postFlags(m_run_flags);
+    postFlags(m_run_flags, repeatable);
   else if(str == "endflags")
-    postFlags(m_end_flags);
+    postFlags(m_end_flags, repeatable);
   else if(str == "idleflags")
-    postFlags(m_idle_flags);
+    postFlags(m_idle_flags, repeatable);
   else if(str == "activeflags")
-    postFlags(m_active_flags);
+    postFlags(m_active_flags, repeatable);
   else if(str == "inactiveflags")
-    postFlags(m_inactive_flags);
+    postFlags(m_inactive_flags, repeatable);
   else if(str == "spawnflags")
-    postFlags(m_spawn_flags);
+    postFlags(m_spawn_flags, repeatable);
   else if(str == "configflags")
-    postFlags(m_config_flags);
+    postFlags(m_config_flags, repeatable);
 }
 
 //-----------------------------------------------------------

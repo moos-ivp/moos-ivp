@@ -58,7 +58,7 @@ public:
   virtual void onInactiveState() {}
   virtual void onIdleToRunState() {}
   virtual void onRunToIdleState() {}
-  virtual void onEveryState() {}
+  virtual void onEveryState(std::string) {}
   virtual void postConfigStatus() {}
   virtual std::string expandMacros(std::string);
   virtual std::string getInfo(std::string)  {return("");}

@@ -43,7 +43,7 @@ public:
  public: // Override virtual funcions 
   bool  setParam(std::string, std::string);
   void  setCPAEngine(const CPAEngine& engine) {m_cpa_engine=engine;}
-  void  onEveryState();
+  void  onEveryState(std::string new_state);
   std::string expandMacros(std::string);
   
  protected:

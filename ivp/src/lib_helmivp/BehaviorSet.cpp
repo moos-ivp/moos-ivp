@@ -532,7 +532,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   new_activity_state = bhv->isRunnable();
   
   // Invoke the onEveryState() function applicable in all situations
-  bhv->onEveryState();
+  bhv->onEveryState(new_activity_state);
   
   // ===================================================================
   // Part 2: With new_activity_state set, act appropriately for

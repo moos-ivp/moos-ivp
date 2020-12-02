@@ -212,6 +212,13 @@ bool IvPContactBehavior::addContactFlag(string str)
     if(isNumber(rng_str) && (rng_dbl >= 0))
       return(addVarDataPairOnString(m_cnflags, str));
   }
+  else if(strBegins(str, "<") || strBegins(str, ">")) {
+    string new_str = str.substr(1);
+    string rng_str = biteStringX(new_str, ' ');
+    double rng_dbl = atof(rng_str.c_str());
+    if(isNumber(rng_str) && (rng_dbl >= 0))
+      return(addVarDataPairOnString(m_cnflags, str));
+  }
   else if(strBegins(str, "@cpa"))
     return(addVarDataPairOnString(m_cnflags, str));
   else if(strBegins(str, "@os_passed_cn_port"))
@@ -251,12 +258,13 @@ bool IvPContactBehavior::addContactFlag(string str)
 //   Purpose: Invoked on every helm iteration regardless of the
 //            behavior state (e.g., idle, active etc)
 
-void IvPContactBehavior::onEveryState()
+void IvPContactBehavior::onEveryState(string new_state)
 {
-  IvPBehavior::onEveryState();
+  IvPBehavior::onEveryState(new_state);
 
   updatePlatformInfo();
-  handleContactFlags();
+  if(new_state == "running")
+    handleContactFlags();
 }
 
 //-----------------------------------------------------------
@@ -288,20 +296,20 @@ void IvPContactBehavior::handleContactFlags()
       handleContactFlagRange(m_cnflags[i]);
     }
     else if((tag == "@cpa") && m_cnos.cpa_reached())
-      postFlag(m_cnflags[i]);
+      postFlag(m_cnflags[i], true);
     else if((tag == "@os_passed_cn") && m_cnos.os_passed_cn())
-      postFlag(m_cnflags[i]);
+      postFlag(m_cnflags[i], true);
     else if((tag == "@os_passed_cn_port") && m_cnos.os_passed_cn_port())
-      postFlag(m_cnflags[i]);
+      postFlag(m_cnflags[i], true);
     else if((tag == "@os_passed_cn_star") && m_cnos.os_passed_cn_star())
-      postFlag(m_cnflags[i]);
+      postFlag(m_cnflags[i], true);
 
     else if((tag == "@cn_passed_os") && m_cnos.cn_passed_os())
-      postFlag(m_cnflags[i]);
+      postFlag(m_cnflags[i], true);
     else if((tag == "@cn_passed_os_port") && m_cnos.cn_passed_os_port())
-      postFlag(m_cnflags[i]);
+      postFlag(m_cnflags[i], true);
     else if((tag == "@cn_passed_os_star") && m_cnos.cn_passed_os_star())
-      postFlag(m_cnflags[i]);
+      postFlag(m_cnflags[i], true);
   }
 }
 
@@ -316,12 +324,12 @@ void IvPContactBehavior::handleContactFlagRange(VarDataPair flag)
   if(strBegins(post_tag, "@<") && (post_tag.length() > 2)) {
     bool ok = setNonNegDoubleOnString(rng_thresh, post_tag.substr(2));
     if(ok && m_cnos.rng_entered(rng_thresh))
-      postFlag(flag);
+      postFlag(flag, true);
   }
   else if(strBegins(post_tag, "@>") && (post_tag.length() > 2)) {
     bool ok = setNonNegDoubleOnString(rng_thresh, post_tag.substr(2));
     if(ok && m_cnos.rng_exited(rng_thresh))
-      postFlag(flag);
+      postFlag(flag, true);
   }
   else if(strBegins(post_tag, "<") && (post_tag.length() > 1)) {
     bool ok = setNonNegDoubleOnString(rng_thresh, post_tag.substr(1));
@@ -340,7 +348,8 @@ void IvPContactBehavior::handleContactFlagRange(VarDataPair flag)
 
 string IvPContactBehavior::expandMacros(string sdata)
 {
-  sdata = macroExpand(sdata, "CONTACT", m_contact);
+  sdata = IvPBehavior::expandMacros(sdata);
+  
   sdata = macroExpand(sdata, "CN_NAME", m_contact);
   sdata = macroExpand(sdata, "CN_VTYPE", m_cn_vtype);
   sdata = macroExpand(sdata, "CN_GROUP", m_cn_group);
