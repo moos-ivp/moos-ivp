@@ -22,29 +22,15 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB          @ NewConsole = false
-  Run = pLogger         @ NewConsole = false
-  Run = uSimMarine	@ NewConsole = false
-  Run = pMarinePID      @ NewConsole = false
-  Run = pHelmIvP        @ NewConsole = false
+  Run = MOOSDB        @ NewConsole = false
+  Run = pLogger       @ NewConsole = false
+  Run = uSimMarine    @ NewConsole = false
+  Run = pMarinePID    @ NewConsole = false
+  Run = pHelmIvP      @ NewConsole = false
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
-  Run = uMemWatch       @ NewConsole = false
 }
-
-//------------------------------------------
-// uMemWatch config block
-
-ProcessConfig = uMemWatch                                       
-{                                                               
-  AppTick   = 4                                                 
-  CommsTick = 4                                                 
-                                                                
-  absolute_time_gap = 1   // In Seconds, Default is 4
-
-  watch_only = pHelmIvP,pMarineViewer
-}                                  
 
 //------------------------------------------
 // pLogger config block
@@ -61,8 +47,6 @@ ProcessConfig = pLogger
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
   Log = REPORT @ 0 NOSYNC
   Log = BHV_SETTINGS @ 0 NOSYNC
-  Log = OSPOS @ 0 NOSYNC
-  Log = INFO @ 0 NOSYNC
 
   LogAuxSrc = true
   WildCardLogging = true
@@ -83,6 +67,7 @@ ProcessConfig = uProcessWatch
   watch_all = true
 	nowatch   = uPokeDB*
 	nowatch   = uXMS*
+	nowatch   = uMAC*
 }
 
 //------------------------------------------
@@ -175,16 +160,14 @@ ProcessConfig = pMarineViewer
   //op_vertex = x=94.6, y=-62.2,   lwidth=1,lcolor=yellow,looped=true,group=moa
   //op_vertex = x=58,   y=20,    lwidth=1,lcolor=yellow,looped=true,group=moa
 
-	// vcolor = alpha=dodgerblue
-
   // Appcast configuration
   appcast_height       = 75
   appcast_width        = 30
   appcast_viewable     = true
   appcast_color_scheme = indigo
-  nodes_font_size      = medium
-  procs_font_size      = medium
-  appcast_font_size    = small
+  nodes_font_size      = xlarge
+  procs_font_size      = xlarge
+  appcast_font_size    = large
   
   // datum_viewable = true
   // datum_size     = 18
@@ -198,11 +181,6 @@ ProcessConfig = pMarineViewer
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
 
-	scope  = CRUISE_SPD
-  scope  = HELM_CORE_SIZE_MAX
-  scope  = HELM_CORE_SIZE
-  scope  = HELM_ENGINE_SIZE
-  scope  = HELM_SIZE
   scope  = RETURN
   scope  = WPT_STAT
   scope  = VIEW_SEGLIST
