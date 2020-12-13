@@ -30,6 +30,7 @@
       '("uSimWaterway" "border" "cover_poly" "cell_size" "cell_val")
       '("pMissionEval" "lead_condition" "pass_condition" "fail_condition" "result_flag" "pass_flag" "fail_flag" )
       '("uFldVoronoi" "stale_time" "verbose" "region")
+      '("pRealm" "relcast_interval" "summary_interval" "wrap_length" "trunc_length" "msg_max_history" )
       '("uSimHeron" "port" "comms_type" "ip_addr")
       '("uFldVoronoi" "reject_range" "post_poly" "post_region" "region")
       '("uMemWatch" "ignore" "watch_only" "absolute_time_gap")
