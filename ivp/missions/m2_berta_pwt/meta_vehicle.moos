@@ -15,6 +15,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 50
    
   Run = MOOSDB         @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
   Run = uProcessWatch  @ NewConsole = false
   Run = pShare         @ NewConsole = false
   Run = uSimMarine     @ NewConsole = false
@@ -26,7 +27,7 @@ Processconfig = ANTLER
   Run = uFldNodeBroker @ NewConsole = false
   Run = uLoadWatch     @ NewConsole = false
   Run = uMemWatch      @ NewConsole = false
-  Run = isay           @ NewConsole = false
+  Run = iSay           @ NewConsole = false
   Run = pContactMgrV20 @ NewConsole = false
 }
 

@@ -26,6 +26,7 @@
 #include "PMV_MOOSApp.h"
 #include "MBUtils.h"
 #include "NodeRecordUtils.h"
+#include "RealmSummary.h"
 
 using namespace std;
 
@@ -47,6 +48,12 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_appcast_repo             = 0;
   m_appcast_last_req_time    = 0;
   m_appcast_request_interval = 1.0;  // seconds
+
+  m_realm_repo               = 0;
+  m_relcast_last_req_time    = 0;
+  m_relcast_request_interval = 1.0;  // seconds
+  m_relcast_count = 0;
+  
   m_clear_geoshapes_received = 0;
 
   m_node_reports_received = 0;
@@ -207,6 +214,8 @@ void PMV_MOOSApp::registerVariables()
   AppCastingMOOSApp::RegisterVariables();
 
   Register("APPCAST", 0);
+  Register("REALMCAST", 0);
+  Register("REALMCAST_CHANNELS", 0);
   Register("VIEW_POLYGON", 0);
   Register("VIEW_WEDGE", 0);
   Register("PHI_HOST_IP",  0);
@@ -291,7 +300,9 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
   unsigned int old_proc_count    = m_appcast_repo->getProcCount();
   unsigned int old_cast_count_n  = m_appcast_repo->getAppCastCount(node);
   unsigned int old_cast_count_np = m_appcast_repo->getAppCastCount(node, proc);
+
   bool         handled_appcast   = false;
+  bool         handled_relcast   = false;
   // End gather appcast repo info prior to mail handling
 
   for(size_t i = 0; i < e.mail.size(); ++i) {
@@ -342,7 +353,6 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 	m_gui->addMousePoke(side, menukey, post);
       
       handled = true;
-      cout << "Handling PMV_MENUS_CONTEXT" << endl;
     }
       
 
@@ -374,6 +384,17 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       handled_appcast = true;
     }
 
+    if(!handled && (key == "REALMCAST")) {
+      handled = m_realm_repo->addRealmCast(sval);
+      m_relcast_count++;
+      handled_relcast = true;
+    }
+    
+    if(!handled && (key == "REALMCAST_CHANNELS")) {
+      RealmSummary summary = string2RealmSummary(sval);
+      handled = m_realm_repo->addRealmSummary(summary);
+    }
+    
     if(!handled && !handled_scope) {
       string warning = "Unhandled Mail: " + key + " ";
       if(why_not != "")
@@ -383,12 +404,14 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 	if(msg.GetSourceAux() != "")
 	  warning += " aux=" + msg.GetSourceAux();
       }
-      Notify("MVIEWER_UNHANDLED_MAIL", key + "=" + sval);
+      Notify("MVIEWER_UNHANDLED_MAIL", key + "=" + sval.substr(0,10) + "...");
       reportRunWarning(warning);
     }
   }
 
+  // ===================================================================
   // Part II: Handle Appcasting updates and possible new appcast requests
+  // ===================================================================
   unsigned int new_node_count    = m_appcast_repo->getNodeCount();
   unsigned int new_proc_count    = m_appcast_repo->getProcCount();
   unsigned int new_cast_count_n  = m_appcast_repo->getAppCastCount(node);
@@ -411,15 +434,26 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 
   // Update the Node entries if there is ANY new appcast
   if(handled_appcast)
-    m_gui->updateNodes();
+    m_gui->updateAppCastNodes();
 
   // Update the Proc entries if new appcasts for current Node
   if(new_cast_count_n > old_cast_count_n)
-    m_gui->updateProcs();
+    m_gui->updateAppCastProcs();
 
   // Update the Appcast content if new appcast for current node/proc
   if(new_cast_count_np > old_cast_count_np)
     m_gui->updateAppCast();
+
+  // ===================================================================
+  // Part III: Handle Realmcast updates and possible new relcast requests
+  // ===================================================================
+
+  // Update the RealmCast GUI content if handled new relcast
+  if(handled_relcast) {
+    m_gui->updateRealmCastNodes();
+    m_gui->updateRealmCastProcs();
+    m_gui->updateRealmCast();
+  }
 }
 
 //----------------------------------------------------------------------
@@ -447,14 +481,16 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   m_gui->setCurrTime(curr_time);
 
   // We want to detect when a vehicle has been cleared that may still be
-  // active. Sent appcast requests to everyone/global when a vehicle has
-  // ben recently cleared. Just to give everyone a chance to report back.
+  // active. Send appcast requests to everyone/global when a vehicle has
+  // been recently cleared. Just to give everyone a chance to report back.
   double clear_stale_timestamp = m_gui->getClearStaleTimeStamp();
   double elapsed = curr_time - clear_stale_timestamp;
   double force = false;
   if(elapsed < 2)
     force = true;
   handleAppCastRequesting(force);
+
+  handleRealmCastRequesting();
   
   string vname = m_gui->mviewer->getStringInfo("active_vehicle_name");
 
@@ -501,17 +537,12 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   else
     window_val = m_gui->getCmdGUI()->isVisible();
 
-  //cout << "window_val: " << uintToString(window_val) << endl;
-
   if(window_val == 0)
     m_gui->closeCmdGUI();
   else {
     if(m_gui->getCmdGUI()->getConcedeTop())
       m_gui->show();
   }
-
-
-  
 }
 
 //-------------------------------------------------------------
@@ -520,7 +551,9 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
 void PMV_MOOSApp::handleAppCastRequesting(bool force)
 {
   // If appcasts are not being viewed dont request refreshes 
-  if(m_gui && (m_gui->showingAppCasts() == false))
+  if(m_gui && (m_gui->showingInfoCasts() == false))
+    return;
+  if(m_gui && (m_gui->getInfoCastSettings().getContentMode() != "appcast"))
     return;
 
   if(force) {
@@ -555,6 +588,72 @@ void PMV_MOOSApp::handleAppCastRequesting(bool force)
   }
 }
 
+//-------------------------------------------------------------
+// Procedure: handleRealmCastRequesting()
+
+void PMV_MOOSApp::handleRealmCastRequesting()
+{
+  if(!m_gui)
+    return;
+
+  // If realmcasts are not being viewed dont request refreshes 
+  if(m_gui->showingInfoCasts() == false)
+    return;
+  if(m_gui->getInfoCastSettings().getContentMode() != "realmcast")
+    return;
+  if(m_gui->getInfoCastSettings().getRefreshMode() == "paused")
+    return;
+
+  
+  // Consider how long its been since our realmcast request.
+  // Want to request less frequently if using a higher time warp.
+  bool post_request = false;
+  if(m_realm_repo->getNodeProcChanged())
+    post_request = true;
+  else {
+    double moos_elapsed_time = m_curr_time - m_relcast_last_req_time;
+    double real_elapsed_time = moos_elapsed_time / m_time_warp;
+    if(real_elapsed_time >= m_relcast_request_interval) 
+      post_request = true;
+  }
+
+  if(!post_request)
+    return;
+
+  string current_node = m_realm_repo->getCurrentNode();
+  string current_proc = m_realm_repo->getCurrentProc();
+
+  if((current_node == "") || (current_proc == "")) {
+    cout << "REJECTED postRealmCastRequest!!!!" << endl;
+    return;
+  }
+
+  // Build the request message
+  string str = "channel=" + current_proc + ",duration=3";
+
+  // Depending on relcast button state, augment the request message
+  if(!m_gui->getInfoCastSettings().getShowRealmCastSource())
+    str += ",nosrc";
+  if(!m_gui->getInfoCastSettings().getShowRealmCastCommunity())
+    str += ",nocom";
+  if(!m_gui->getInfoCastSettings().getShowRealmCastSubs())
+    str += ",nosubs";
+  if(m_gui->getInfoCastSettings().getWrapRealmCastContent())
+    str += ",wrap";
+  if(!m_gui->getInfoCastSettings().getShowRealmCastMasked())
+    str += ",mask";
+  if(m_gui->getInfoCastSettings().getTruncRealmCastContent())
+    str += ",trunc";
+  
+  if(current_node == m_host_community)  
+    Notify("REALMCAST_REQ", str);
+  else
+    Notify("REALMCAST_REQ_"+toupper(current_node), str);
+  
+  m_relcast_last_req_time = m_curr_time;
+
+}
+
 //----------------------------------------------------------------------
 // Procedure: handleStartUp  (OnStartUp)
 
@@ -576,6 +675,14 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     string param = tolower(biteStringX(line, '='));
     string value = line;
     bool   handled = false;
+
+    // Certain appcast params are replaced with the more general
+    // infocast parameters. For backward compatibility the older
+    // params just map into the infocast params.
+    if(param=="appcast_viewable")  param="infocast_viewable";
+    if(param=="appcast_height")    param="infocast_height";
+    if(param=="appcast_width")     param="infocast_width";
+    if(param=="appcast_font_size") param="infocast_font_size";
 
     if((param == "gui_size") && (tolower(value) == "small")) {
       m_gui->size(1000,750);
@@ -637,15 +744,21 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "procs_font_size") 
       handled = m_gui->setRadioCastAttrib(param, value);
-    else if(param == "appcast_font_size") 
+
+    else if(param == "content_mode") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+
+    else if(param == "infocast_font_size") 
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "appcast_color_scheme") 
       handled = m_gui->setRadioCastAttrib(param, value);
-    else if(param == "appcast_viewable") 
+    else if(param == "realmcast_color_scheme") 
       handled = m_gui->setRadioCastAttrib(param, value);
-    else if(param == "appcast_height") 
+    else if(param == "infocast_viewable") 
       handled = m_gui->setRadioCastAttrib(param, value);
-    else if(param == "appcast_width") 
+    else if(param == "infocast_height") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "infocast_width") 
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "stale_report_thresh") 
       handled = m_gui->mviewer->setParam(param, value);
@@ -978,8 +1091,6 @@ void PMV_MOOSApp::handlePendingPostsFromGUI()
     bool        cmd_test = cmd_posts[i].getCommandTest();
     string      cmd_pid  = cmd_posts[i].getCommandPID();
 
-    cout << "cmd_targ: " << cmd_targ << endl;
-
     string moosvar = cmd_item.getCmdPostVar();
     if((cmd_targ != "local") && (cmd_targ != "shore"))
       moosvar += "_" + toupper(cmd_targ);
@@ -1065,13 +1176,13 @@ void PMV_MOOSApp::postAppCastRequest(string channel_node,
 
 //------------------------------------------------------------
 // Procedure: buildReport
-//      Note: A virtual function of the AppCastingMOOSApp superclass, conditionally 
-//            invoked if either a terminal or appcast report is needed.
+//      Note: A virtual function of the AppCastingMOOSApp superclass,
+//            conditionally invoked if either a terminal or appcast
+//            report is needed.
 
 bool PMV_MOOSApp::buildReport()
 {
-  // Nothing for now. AppCasting mostly to catch configuration warnings.
-
+  return(false);
   string tiff_file_a = m_gui->mviewer->getTiffFileA();
   string info_file_a = m_gui->mviewer->getInfoFileA();
   string tiff_file_b = m_gui->mviewer->getTiffFileB();
@@ -1113,6 +1224,9 @@ bool PMV_MOOSApp::buildReport()
   m_msgs << "------------------ " << endl;
   m_msgs << "AC Iterations:     " << iter_ac << endl;
   m_msgs << "PMV Iterations:    " << iter_pmv << endl;
+  m_msgs << "------------------ " << endl;
+  m_msgs << "RC Count:          " << m_relcast_count << endl;
+
   
   unsigned int drawcount = m_gui->mviewer->getDrawCount();
   

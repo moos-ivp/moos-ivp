@@ -424,6 +424,26 @@ string removeWhite(const string& str)
 }
 
 //----------------------------------------------------------------
+// Procedure: removeWhiteEnd(const string&)
+//   Example: input_str = "apples, pears, bananas     "
+//            str = removeWhiteEnd(input_str)
+//            str = "apples, pears, bananas"
+
+string removeWhiteEnd(const string& str)
+{
+  unsigned int vsize = str.size();
+  
+  for(unsigned int i=0; i<vsize; i++) {
+    unsigned int index = vsize-1-i;
+    
+    int c = (int)(str.at(index));
+    if((c != 9) && (c != 32))
+      return(str.substr(0,index+1));
+  }
+  return("");
+}
+
+//----------------------------------------------------------------
 // Procedure: removeWhiteLN(const string&)
 //      Note: Same as removeWhite(), but also looks for CR and LF
 //   Example: input_str = "apples, pears, bananas "
@@ -1991,6 +2011,36 @@ bool setDoubleOnString(double& given_dval, string str)
 }
 
 //-------------------------------------------------------------
+// Procedure: setDoubleRngOnString
+//      Note: This function is designed to possibly set the given 
+//            double based on the contents of the str.
+//      Note: If the given value is outside the given range, the
+//            given value is clipped.
+//   Returns: false if the string is not numerical.
+//            false if the given value is outside the given range
+//            false if the given range is not proper.
+//            true otherwise
+
+bool setDoubleRngOnString(double& dval, string str,
+			  double minv, double maxv)
+{
+  if(!isNumber(str))
+    return(false);
+  if(minv > maxv)
+    return(false);
+  
+  dval = atof(str.c_str());
+  if(dval < minv)
+    dval = minv;
+  else if(dval > maxv)
+    dval = maxv;
+  else
+    return(true);
+     
+  return(false);
+}
+
+//-------------------------------------------------------------
 // Procedure: setUintOnString
 //      Note: This function is designed to possibly set the given 
 //            unsigned int based on the contents of the str.
@@ -2538,6 +2588,18 @@ vector<string> breakLen(const vector<string>& svector, unsigned int maxlen)
   }
   
   return(rvector);
+}
+
+//----------------------------------------------------------------
+// Procedure: breakLen
+//   Purpose: Convenience function to accept single string input
+
+vector<string> breakLen(const string& str, unsigned int maxlen) 
+{
+  vector<string> svector;
+  svector.push_back(str);
+
+  return(breakLen(svector, maxlen));
 }
 
 

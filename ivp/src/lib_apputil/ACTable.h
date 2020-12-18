@@ -58,7 +58,7 @@ public:
 
  public: // Getters
   std::vector<std::string> getTableOutput();
-  std::string getFormattedString();
+  std::string getFormattedString(bool remove_end_whites=true);
 
   void print();
 

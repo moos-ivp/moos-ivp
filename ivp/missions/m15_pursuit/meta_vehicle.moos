@@ -26,7 +26,7 @@ Processconfig = ANTLER
   Run = uFldNodeBroker @ NewConsole = false
   Run = uLoadWatch     @ NewConsole = false
   Run = uMemWatch      @ NewConsole = false
-  Run = isay           @ NewConsole = false
+  Run = iSay           @ NewConsole = false
   Run = pContactMgrV20 @ NewConsole = false
 }
 

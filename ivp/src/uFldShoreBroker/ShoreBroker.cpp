@@ -50,7 +50,7 @@ ShoreBroker::ShoreBroker()
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool ShoreBroker::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -88,7 +88,7 @@ bool ShoreBroker::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool ShoreBroker::OnConnectToServer()
 {
@@ -124,48 +124,61 @@ bool ShoreBroker::OnStartUp()
   STRING_LIST sParams;
   if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
     reportConfigWarning("No config block found for " + GetAppName());
+
+  bool auto_bridge_realmcast = true;
+  bool auto_bridge_appcast = true;
   
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
     string orig  = *p;
     string line  = *p;
-    string param = toupper(biteStringX(line, '='));
+    string param = tolower(biteStringX(line, '='));
     string value = line;
-    
-    if(param == "BRIDGE")
+
+    bool handled = true;
+    if(param == "bridge")
       handleConfigBridge(value);
-    else if(param == "QBRIDGE") 
+    else if(param == "qbridge") 
       handleConfigQBridge(value);
-    else if(param == "KEYWORD") 
+    else if(param == "keyword") 
       m_keyword = value;
-    else if(param == "WARNING_ON_STALE") {
-      bool handled = setBooleanOnString(m_warning_on_stale, value);
-      if(!handled)
-	reportUnhandledConfigWarning(orig);
-    }
-    else 
+    else if(param == "auto_bridge_realmcast") 
+      handled = setBooleanOnString(auto_bridge_realmcast, value);
+    else if(param == "auto_bridge_appcast") 
+      handled = setBooleanOnString(auto_bridge_appcast, value);
+    else if(param == "warning_on_stale") 
+      handled = setBooleanOnString(m_warning_on_stale, value);
+    else
+      handled = false;
+
+    if(!handled)
       reportUnhandledConfigWarning(orig);
   }
   
   m_time_warp_str = doubleToStringX(m_time_warp);
+
+  if(auto_bridge_realmcast)
+    handleConfigQBridge("REALMCAST_REQ");
+  if(auto_bridge_appcast)
+    handleConfigQBridge("APPCAST_REQ");
   
   registerVariables();
   return(true);
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void ShoreBroker::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
 
-  m_Comms.Register("NODE_BROKER_PING", 0);
-  m_Comms.Register("PHI_HOST_INFO", 0);
+  Register("NODE_BROKER_PING", 0);
+  Register("PHI_HOST_INFO", 0);
 }
 
 //------------------------------------------------------------
-// Procedure: sendAcks
+// Procedure: sendAcks()
 
 void ShoreBroker::sendAcks()
 {
@@ -220,8 +233,9 @@ void ShoreBroker::checkForStaleNodes()
   }
 }
 
+
 //------------------------------------------------------------
-// Procedure: handleMailNodePing
+// Procedure: handleMailNodePing()
 //   Example: NODE_BROKER_PING = "COMMUNITY=alpha,IP=128.2.3.4,
 //                       PORT=9000,PORT_UDP=9200,keyword=lemon
 //                       pshare_iroutes=multicast_8#localhost:9000"
@@ -323,7 +337,7 @@ void ShoreBroker::makeBridgeRequestAll()
 }
 
 //------------------------------------------------------------
-// Procedure: makeBridgeRequest
+// Procedure: makeBridgeRequest()
 //  
 // PSHARE_CMD="cmd=output,
 //             src_name=FOO,
@@ -363,10 +377,11 @@ void ShoreBroker::makeBridgeRequest(string src_var, HostRecord hrecord,
   
   
 //------------------------------------------------------------
-// Procedure: handleConfigBridge
-//   Example: BRIDGE = src=FOO, alias=BAR
-//   Example: BRIDGE = src=DEPLOY_ALL, alias=DEPLOY
-//   Example: BRIDGE = src=DEPLOY_$V,  alias=DEPLOY
+// Procedure: handleConfigBridge()
+//   Example: bridge = src=FOO
+//   Example: bridge = src=FOO, alias=BAR
+//   Example: bridge = src=DEPLOY_ALL, alias=DEPLOY
+//   Example: bridge = src=DEPLOY_$V,  alias=DEPLOY
 
 void ShoreBroker::handleConfigBridge(const string& line)
 {
@@ -393,13 +408,12 @@ void ShoreBroker::handleConfigBridge(const string& line)
   if(alias == "")
     alias = src;
   
-  m_bridge_src_var.push_back(src);
-  m_bridge_alias.push_back(alias);
+  handleConfigBridgeAux(src, alias);
 }
 
 
 //------------------------------------------------------------
-// Procedure: handleConfigQBridge
+// Procedure: handleConfigQBridge()
 //      Note: line is expected to be simply a MOOS variable.
 // 
 //  QBRIDGE = FOOBAR
@@ -417,17 +431,28 @@ void ShoreBroker::handleConfigQBridge(const string& line)
     if(strContains(src_var, '=')) 
       reportConfigWarning("Invalid QBRIDGE component: " + src_var);
     else {
-      m_bridge_src_var.push_back(src_var+"_ALL");
-      m_bridge_alias.push_back(src_var);
-      
-      m_bridge_src_var.push_back(src_var+"_$V");
-      m_bridge_alias.push_back(src_var);
+      handleConfigBridgeAux(src_var+"_ALL", src_var);
+      handleConfigBridgeAux(src_var+"_$V", src_var);
     }
   }
 }
 
 //------------------------------------------------------------
-// Procedure: buildReport
+// Procedure: handleConfigBridgeAux()
+//   Purpose: Add the bridge config but also check for duplicates
+
+void ShoreBroker::handleConfigBridgeAux(string src_var, string alias)
+{
+  if(vectorContains(m_bridge_src_var, src_var) &&
+     vectorContains(m_bridge_alias, alias))
+    return;
+
+  m_bridge_src_var.push_back(src_var);
+  m_bridge_alias.push_back(alias);
+}
+
+//------------------------------------------------------------
+// Procedure: buildReport()
 //      Note: A virtual function of the AppCastingMOOSApp superclass, 
 //            conditionally invoked if either a terminal or appcast 
 //            report is needed.

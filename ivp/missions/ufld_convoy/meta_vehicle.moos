@@ -14,6 +14,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 200
    
   Run = MOOSDB             @ NewConsole = false
+  Run = pRealm             @ NewConsole = false
   Run = uSimMarine         @ NewConsole = false
   Run = pLogger            @ NewConsole = false
   Run = pNodeReporter      @ NewConsole = false

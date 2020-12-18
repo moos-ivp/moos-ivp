@@ -81,6 +81,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   AppCastRepo appcast_repo;
+  RealmRepo   realm_repo;
 
   int gui_wid = 0.85 * Fl::w();
   int gui_hgt = 0.85 * Fl::h();
@@ -102,13 +103,14 @@ int main(int argc, char *argv[])
   gui->setTitleBase(title_base);
   gui->setVerbose(verbose);
 
-
   PMV_MOOSApp thePort;
 
   thePort.setGUI(gui);
   thePort.setPendingEventsPipe(& g_pending_moos_events);
   thePort.setAppCastRepo(&appcast_repo);
+  thePort.setRealmRepo(&realm_repo);
   gui->setAppCastRepo(&appcast_repo);
+  gui->setRealmRepo(&realm_repo);
   
   // start the MOOSPort in its own thread
   

@@ -58,6 +58,7 @@ bool vectorContains(const std::vector<std::string>&,
 
 std::string augmentSpec(const std::string&, const std::string&, char=',');
 std::string removeWhite(const std::string&);
+std::string removeWhiteEnd(const std::string&);
 std::string removeWhiteNL(const std::string&);
 
 std::string biteString(std::string&, char);
@@ -154,6 +155,8 @@ bool  setMinPartOfPairOnString(double& minval, double& maxval,
 			       std::string str, bool negok=false);
 bool  setMaxPartOfPairOnString(double& minval, double& maxval,
 			       std::string str, bool negok=false);
+bool  setDoubleRngOnString(double& dval, std::string str,
+			   double minv, double maxv);
 
 bool  okFileToRead(std::string);
 bool  okFileToWrite(std::string);
@@ -180,6 +183,8 @@ std::vector<std::string> joinLines(const std::vector<std::string>&,
 				   bool preserve_line_count=false);
 
 std::vector<std::string> breakLen(const std::vector<std::string>&,
+				  unsigned int maxlen);
+std::vector<std::string> breakLen(const std::string&,
 				  unsigned int maxlen);
 
 std::string checksumHexStr(std::string);

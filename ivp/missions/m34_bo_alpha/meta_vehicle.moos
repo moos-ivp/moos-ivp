@@ -15,6 +15,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 50
    
   Run = MOOSDB           @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
   Run = uProcessWatch    @ NewConsole = false
   Run = pShare           @ NewConsole = false
   Run = uSimMarine       @ NewConsole = false

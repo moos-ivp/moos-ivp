@@ -36,7 +36,20 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
+  Run = pRealm        @ NewConsole = false
 }
+
+//------------------------------------------
+// pRealm config block
+
+ProcessConfig = pRealm
+{
+  AppTick   = 4
+  CommsTick = 4
+
+	channel = pNodeReporter
+}
+
 
 //------------------------------------------
 // uProcessWatch config block

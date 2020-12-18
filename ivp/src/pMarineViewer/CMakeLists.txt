@@ -32,6 +32,7 @@ TARGET_LINK_LIBRARIES(pMarineViewer
   marineview
   ucommand
   contacts
+  realm
   apputil
   mbutil
   # Standard libraries used by this project's FLTK apps...

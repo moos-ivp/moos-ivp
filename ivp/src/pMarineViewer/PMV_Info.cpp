@@ -130,6 +130,7 @@ void showExampleConfigAndExit()
   blk("  drop_point_coords        = as-dropped  // {lat-lon,local-grid}");
   blk("  drop_point_vertex_size   = true  // {1, 2, 3, ..., 10}        ");
   blk("  comms_pulse_viewable_all = true  // {TRUE, false}             ");
+  blk("  range_pulse_viewable_all = true  // {TRUE, false}             ");
   blk("                                                                ");
   blk("  // Vehicles Pull-Down Menu ===================================");
   blk("  vehicles_viewable       = true   // {TRUE, false}             ");

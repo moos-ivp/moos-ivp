@@ -133,7 +133,6 @@ void PMV_Viewer::draw()
     drawPoints(points);
     drawVectors(vectors);
     drawWedges(wedges);
-    cout << "vname[" << i << "]: " << vnames[i] << "  pulses:" << cms_pulses.size() << endl;
     drawRangePulses(rng_pulses, m_curr_time);
     drawCommsPulses(cms_pulses, m_curr_time);
     drawMarkers(markers);
@@ -587,11 +586,6 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	VarDataPair pair = m_var_data_pairs_all[i];
 	if(pair.get_ptype() == "left") {
 	  string var = pair.get_var();
-	  cout << endl;
-	  cout << "============================================= ===" << endl;
-	  cout << pair.getPrintable() << endl;
-	  cout << "============================================= ===" << endl;
-	  
 	  // In most cases pattern replacement is done on the right side of
 	  // vardata pair, but in these cases it can be done on the left side,
 	  // affecting the MOOS variable name involved in the post.
@@ -602,15 +596,10 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	  
 	  if(strContains(var, "$(UP_VNAME_CLOSEST)")) 
 	    var = findReplace(var, "$(UP_VNAME_CLOSEST)", up_vname_closest);
-	  if(strContains(var, "$[UP_VNAME_CLOSEST]")) {
-	    cout << "---------- found ------------" << endl;
+	  if(strContains(var, "$[UP_VNAME_CLOSEST]")) 
 	    var = findReplace(var, "$[UP_VNAME_CLOSEST]", up_vname_closest);
-	  }
-	  pair.set_var(var);
 
-	  cout << "============================================= ===XX" << endl;
-	  cout << pair.getPrintable() << endl;
-	  cout << "============================================= ===XX" << endl;
+	  pair.set_var(var);
 
 	  if(pair.is_string()) {
 	    string str = m_var_data_pairs_all[i].get_sdata();

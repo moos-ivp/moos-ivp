@@ -171,6 +171,9 @@ void ACTable::addCell(const string& value, const string& color)
 
 ACTable& ACTable::operator<< (const string& s)
 {
+  if(s == "_ignore_")
+    return(*this);
+  
   if(s == "") {
     m_cell_values_linear.push_back("");
     m_cell_colors_linear.push_back("");
@@ -244,7 +247,7 @@ vector<string> ACTable::getTableOutput()
 //----------------------------------------------------------------
 // Procedure: getFormattedString
 
-string ACTable::getFormattedString()
+string ACTable::getFormattedString(bool remove_end_whites)
 {
   convertCellValuesLinearToRawTable();
   convertCellColorsLinearToRawTable();
@@ -260,6 +263,9 @@ string ACTable::getFormattedString()
       if(j+1 < m_columns)
 	row += m_column_pad[j];
     }
+    if(remove_end_whites)
+      row = removeWhiteEnd(row);
+    
     table_as_string += row;
     if(i < (rows-1))
       table_as_string += "\n";

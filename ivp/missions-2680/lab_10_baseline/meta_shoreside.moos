@@ -13,6 +13,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = pHostInfo       @ NewConsole = false
@@ -31,6 +32,12 @@ ProcessConfig = uFldShoreBroker
   AppTick       = 1
   CommsTick     = 1
 
+  // Note: [qbridge = FOO]  is shorthand for                    
+  //       [bridge = src=FOO_$V,  alias=FOO] and                
+  //       [bridge = src=FOO_ALL, alias=FOO]
+
+	// Note: qbridge for APPCAST_REQ and REALMCAST_REQ are automatic
+	
   qbridge  = DEPLOY, NODE_REPORT, NODE_MESSAGE
   qbridge  = STATION
   qbridge  = MOOS_MANUAL_OVERRIDE

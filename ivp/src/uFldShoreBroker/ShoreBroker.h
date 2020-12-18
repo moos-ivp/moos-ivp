@@ -45,6 +45,8 @@ class ShoreBroker : public AppCastingMOOSApp
  protected:
   void handleConfigBridge(const std::string&);
   void handleConfigQBridge(const std::string&);
+  void handleConfigBridgeAux(std::string, std::string);
+
   void handleMailNodePing(const std::string&);
 
   void makeBridgeRequestAll();

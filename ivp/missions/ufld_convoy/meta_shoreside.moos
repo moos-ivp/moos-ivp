@@ -15,6 +15,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
 
@@ -83,11 +84,11 @@ ProcessConfig = uFldNodeComms
   AppTick   = 2
   CommsTick = 2
 
-           COMMS_RANGE = 99999
-        CRITICAL_RANGE = 225
-      MIN_MSG_INTERVAL = 0
-        MAX_MSG_LENGTH = 1000
-  VIEW_NODE_RPT_PULSES = true
+  comms_range      = 99999
+  critical_range   = 225
+  min_msg_interval = 0
+  max_msg_length   = 1000
+  view_node_rpt_pulses = true
 }
 
 //--------------------------------------------------
@@ -98,15 +99,15 @@ ProcessConfig = uFldShoreBroker
   AppTick   = 1
   CommsTick = 1
 
-  QBRIDGE = DEPLOY, NODE_REPORT, NODE_MESSAGE
-  QBRIDGE = STATION_KEEP, APPCAST_REQ
-  QBRIDGE = MOOS_MANUAL_OVERIDE, TRANSIT, WPT_UPDATE
-  QBRIDGE = MISSION_TASK, CONVOY, LOITER 
+  qbridge = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  qbridge = STATION_KEEP, APPCAST_REQ
+  qbridge = MOOS_MANUAL_OVERIDE, TRANSIT, WPT_UPDATE
+  qbridge = MISSION_TASK, CONVOY, LOITER 
   
-  BRIDGE  = src=AVOID, alias=AVOID
+  bridge  = src=AVOID, alias=AVOID
  
-  BRIDGE  = src=RETURN_ALL, alias=RETURN
-  BRIDGE  = src=RETURN_$V,  alias=RETURN
+  bridge  = src=RETURN_ALL, alias=RETURN
+  bridge  = src=RETURN_$V,  alias=RETURN
 }
 
 //--------------------------------------------------
@@ -133,7 +134,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
@@ -147,6 +148,9 @@ ProcessConfig = pMarineViewer
   point_viewable_all    = true
   point_viewable_labels = false
 
+	nodes_font_size      = xlarge
+	procs_font_size      = xlarge
+	appcast_font_size    = large
   appcast_viewable     = true
   appcast_color_scheme = indigo
 
@@ -181,9 +185,7 @@ ProcessConfig = pMarineViewer
   stale_report_thresh = 2
   stale_remove_thresh = 20000
 
-  SCOPE = DEPLOY_ALL
-
-
+  scope = DEPLOY_ALL
 
   button_one   = DEPLOY  # DEPLOY_ALL=true 
   button_one   = DEPLOY  # MOOS_MANUAL_OVERIDE_ALL=false 

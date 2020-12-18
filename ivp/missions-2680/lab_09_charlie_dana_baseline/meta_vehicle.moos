@@ -1,6 +1,5 @@
 ServerHost = localhost
 ServerPort = $(VPORT)
-Simulator  = true
 
 // Community name IS the vehicle name
 Community  = $(VNAME)
@@ -13,6 +12,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
    
   Run = MOOSDB           @ NewConsole = false
+  Run = pRealm           @ NewConsole = false
   Run = uProcessWatch    @ NewConsole = false
   Run = pShare           @ NewConsole = false
   Run = uSimMarine       @ NewConsole = false

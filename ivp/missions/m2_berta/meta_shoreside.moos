@@ -13,6 +13,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
@@ -23,6 +24,15 @@ Processconfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
+}
+
+//---------------------------------------------------------
+// pRealm Config Block
+
+ProcessConfig = pRealm
+{
+  AppTick    = 2
+  CommsTick  = 2
 }
 
 //---------------------------------------------------------
@@ -57,8 +67,10 @@ ProcessConfig = uFldShoreBroker
   //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
   //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
+	auto_bridge_appcast = true
+	
   qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
-  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, AVOID, UP_LOITER
+  qbridge  = MOOS_MANUAL_OVERRIDE, AVOID, UP_LOITER
   qbridge  = RETURN_UPDATES, BCM_DISPLAY_RADII
 
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
@@ -126,7 +138,7 @@ ProcessConfig = pLogger
 
   WildCardOmitPattern = *_STATUS
   WildCardOmitPattern = DB_VARSUMMARY
-  WildCardOmitPattern = DB_RWSUMMARY
+  //WildCardOmitPattern = DB_RWSUMMARY
 }
 
 
@@ -154,9 +166,13 @@ ProcessConfig = pMarineViewer
   stale_report_thresh = 10
   stale_remove_thresh = 18
 
-  scope = PSHARE_INPUT_SUMMARY
-  scope = NODE_BROKER_PING
-  scope = DEPLOY_ALL
+	scope = REALMCAST_REQ
+	scope = REALMCAST_REQ_GILDA
+	scope = REALMCAST_REQ_HENRY
+	
+  //scope = PSHARE_INPUT_SUMMARY
+  //scope = NODE_BROKER_PING
+  //scope = DEPLOY_ALL
 
   action = STATION_KEEP_ALL = false
   action = STATION_KEEP_ALL = true

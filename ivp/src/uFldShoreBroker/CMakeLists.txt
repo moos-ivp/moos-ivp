@@ -3,7 +3,11 @@
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
  
-FILE(GLOB SRC *.cpp)
+SET(SRC
+  main.cpp
+  ShoreBroker.cpp
+  ShoreBroker_Info.cpp
+)
 
 ADD_EXECUTABLE(uFldShoreBroker ${SRC})
 

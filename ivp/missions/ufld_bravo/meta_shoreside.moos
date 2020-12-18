@@ -15,6 +15,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB              @ NewConsole = false
+  Run = pRealm              @ NewConsole = false
   Run = pMarineViewer       @ NewConsole = false
   Run = pLogger             @ NewConsole = false
 
@@ -70,11 +71,11 @@ ProcessConfig = uFldNodeComms
   AppTick   = 2
   CommsTick = 2
 
-           COMMS_RANGE = 75
-        CRITICAL_RANGE = 25
-      MIN_MSG_INTERVAL = 20
-        MAX_MSG_LENGTH = 100
-  VIEW_NODE_RPT_PULSES = true
+  comms_range      = 75
+  critical_range   = 25
+  min_msg_interval = 20
+  max_msg_length   = 100
+  view_node_rpt_pulses = true
 }
 
 //--------------------------------------------------
@@ -85,13 +86,13 @@ ProcessConfig = uFldShoreBroker
   AppTick   = 1
   CommsTick = 1
 
-  QBRIDGE = DEPLOY, NODE_REPORT, NODE_MESSAGE
-  QBRIDGE = STATION_KEEP, APPCAST_REQ
-  QBRIDGE = MOOS_MANUAL_OVERRIDE
-  QBRIDGE = AVOID
+  qbridge = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  qbridge = STATION_KEEP, APPCAST_REQ
+  qbridge = MOOS_MANUAL_OVERRIDE
+  qbridge = AVOID
  
-  BRIDGE  = src=RETURN_ALL, alias=RETURN
-  BRIDGE  = src=RETURN_$V,  alias=RETURN
+  bridge  = src=RETURN_ALL, alias=RETURN
+  bridge  = src=RETURN_$V,  alias=RETURN
 }
 
 //--------------------------------------------------
@@ -118,7 +119,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
@@ -141,13 +142,13 @@ ProcessConfig = pMarineViewer
   stale_report_thresh = 2
   stale_remove_thresh = 20000
 
-  SCOPE = PHI_HOST_INFO
+  scope = PHI_HOST_INFO
 
-  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
-  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  BUTTON_ONE   = RETURN_ALL=false
-  BUTTON_TWO   = RETURN  # RETURN_ALL=true
-  BUTTON_THREE = AVOID:ON  # AVOID_ALL=true
-  BUTTON_FOUR  = AVOID:OFF # AVOID_ALL=false
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false
+  button_two   = RETURN  # RETURN_ALL=true
+  button_three = AVOID:ON  # AVOID_ALL=true
+  button_four  = AVOID:OFF # AVOID_ALL=false
 }
 

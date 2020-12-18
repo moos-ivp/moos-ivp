@@ -13,6 +13,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = pShare          @ NewConsole = false
@@ -32,12 +33,12 @@ ProcessConfig = uFldShoreBroker
   AppTick       = 1
   CommsTick     = 1
 
-  QBRIDGE  = DEPLOY, NODE_REPORT
-  QBRIDGE  = STATION_KEEP, APPCAST_REQ
-  QBRIDGE  = MOOS_MANUAL_OVERRIDE
+  qbridge  = DEPLOY, NODE_REPORT
+  qbridge  = STATION_KEEP, APPCAST_REQ
+  qbridge  = MOOS_MANUAL_OVERRIDE
 
-  BRIDGE   = src=RETURN_ALL, alias=RETURN
-  BRIDGE   = src=RETURN_$V,  alias=RETURN
+  bridge   = src=RETURN_ALL, alias=RETURN
+  bridge   = src=RETURN_$V,  alias=RETURN
 }
 
 //--------------------------------------------------------
@@ -46,13 +47,17 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
   vehicles_shape_scale = 1.5
   vehicles_name_mode   = names+shortmode
 
+	nodes_font_size = xlarge
+	procs_font_size = xlarge
+	appcast_font_size = large
+	
   point_viewable_labels   = false
   polygon_viewable_labels = false
   appcast_viewable     = true
@@ -61,14 +66,14 @@ ProcessConfig = pMarineViewer
   hash_viewable        = true
   hash_shade           = 0.35
 
-  SCOPE = PHI_HOST_INFO
+  scope = PHI_HOST_INFO
 
-  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
-  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  BUTTON_ONE   = RETURN_ALL=false # STATION_KEEP_ALL=false
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
 
-  BUTTON_TWO   = RETURN  # RETURN_ALL=true
-  BUTTON_TWO   = STATION_KEEP_ALL=false
+  button_two   = RETURN  # RETURN_ALL=true
+  button_two   = STATION_KEEP_ALL=false
 
-  BUTTON_THREE = STATION  # STATION_KEEP_ALL=true
+  button_three = STATION  # STATION_KEEP_ALL=true
 }

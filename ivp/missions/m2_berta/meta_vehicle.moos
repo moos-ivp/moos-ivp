@@ -26,9 +26,22 @@ Processconfig = ANTLER
   Run = uFldNodeBroker @ NewConsole = false
   Run = uLoadWatch     @ NewConsole = false
   Run = uMemWatch      @ NewConsole = false
-  Run = isay           @ NewConsole = false
+  Run = iSay           @ NewConsole = false
   Run = pContactMgrV20 @ NewConsole = false
+  Run = pRealm @ NewConsole = false
   //Run = pBasicContactMgr @ NewConsole = false
+}
+
+//---------------------------------------------------------
+// pRealm Config Block
+
+ProcessConfig = pRealm
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+	summary_interval = 7.6
+  relcast_interval = 0.55
 }
 
 //----------------------------------------------------
@@ -124,7 +137,6 @@ ProcessConfig = uFldNodeBroker
   bridge = src=VIEW_CIRCLE
   bridge = src=VIEW_POINT
   bridge = src=VIEW_SEGLIST
-  bridge = src=APPCAST
   bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
   bridge = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
 }

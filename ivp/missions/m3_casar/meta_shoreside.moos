@@ -14,6 +14,7 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
 
   Run = pShare          @ NewConsole = false
@@ -37,11 +38,11 @@ ProcessConfig = uFldShoreBroker
   //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
   //       [BRIDGE = src=FOO_ALL, alias=FOO]
 
-  QBRIDGE  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
-  QBRIDGE  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
+  qbridge  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
 
-  BRIDGE   = src=TRAILING_ALLOWED, alias=TRAILING_ALLOWED
-  BRIDGE   = src=PATROL, alias=PATROL
+  bridge   = src=TRAILING_ALLOWED, alias=TRAILING_ALLOWED
+  bridge   = src=PATROL, alias=PATROL
 }
 
 //--------------------------------------------------
@@ -52,12 +53,12 @@ ProcessConfig = uFldNodeComms
   AppTick       = 2
   CommsTick     = 2
 
-           COMMS_RANGE = 250
-        CRITICAL_RANGE = 25
-      MIN_MSG_INTERVAL = 20
-        MAX_MSG_LENGTH = 1000
-                GROUPS = true
-  VIEW_NODE_RPT_PULSES = true
+           comms_range = 250
+        critical_range = 25
+      min_msg_interval = 20
+        max_msg_length = 1000
+                groups = true
+  view_node_rpt_pulses = true
 }
 
 //--------------------------------------------------------
@@ -66,7 +67,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.55
@@ -76,21 +77,21 @@ ProcessConfig = pMarineViewer
   appcast_viewable     = true
   appcast_color_scheme = indigo
 
-  SCOPE = CONTACT_INFO
+  scope = CONTACT_INFO
 
-  ACTION = STATION_ALL = false
-  ACTION = STATION_ALL = true
+  action = STATION_ALL = false
+  action = STATION_ALL = true
 
-  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
-  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  BUTTON_ONE   = RETURN_ALL=false 
-  BUTTON_ONE   = PATROL=true
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false 
+  button_one   = PATROL=true
 
-  BUTTON_TWO   = RETURN  # RETURN_ALL=true # PATROL=false
-  BUTTON_TWO   = PATROL=false # TRAIL=false
+  button_two   = RETURN  # RETURN_ALL=true # PATROL=false
+  button_two   = PATROL=false # TRAIL=false
 
-  BUTTON_THREE = TRAIL-YES # PATROL=true # TRAILING_ALLOWED=true
-  BUTTON_FOUR = TRAIL-NO # TRAILING_ALLOWED=false
+  button_three = TRAIL-YES # PATROL=true # TRAILING_ALLOWED=true
+  button_four = TRAIL-NO # TRAILING_ALLOWED=false
 }
 
 //--------------------------------------------------------
@@ -99,8 +100,8 @@ ProcessConfig = uXMS
   AppTick    = 5
   CommsTick  = 5
 
-  VAR  = NODE_REPORT
-  VAR  = VIEW_POLYGON
-  VAR  = VIEW_POINT
-  VAR  = DEPLOY_ALL
+  var  = NODE_REPORT
+  var  = VIEW_POLYGON
+  var  = VIEW_POINT
+  var  = DEPLOY_ALL
 }   

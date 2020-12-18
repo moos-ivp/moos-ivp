@@ -31,7 +31,9 @@
 #include <FL/Fl_Hold_Browser.H>
 #include "MY_Fl_Hold_Browser.h"
 #include "AppCastRepo.h"
+#include "RealmRepo.h"
 #include "VPlug_AppCastSettings.h"
+#include "InfoCastSettings.h"
 #include "CommandFolio.h"
 #include "CommandSummary.h"
 #include "UCMD_GUI.h"
@@ -76,17 +78,26 @@ public:
 
   UCMD_GUI*    getCmdGUI() {return(m_cmd_gui);}
   void         closeCmdGUI();
-  
- public: // AppCasting Related Functions
 
-  void  updateNodes(bool clear=false);
-  void  updateProcs(bool clear=false);
-  void  updateAppCast();
-  void  setAppCastRepo(AppCastRepo* repo) {m_repo = repo;}
-  bool  showingAppCasts() const;
+  InfoCastSettings getInfoCastSettings() const {return(m_icast_settings);}
+  
+ public: // InfoCast Related Functions
+  bool  showingInfoCasts() const;
   void  updateRadios();
   void  setMenuItemColors();
   bool  setRadioCastAttrib(std::string attr, std::string val="");
+
+ public: // AppCast Related Functions
+  void  updateAppCastNodes(bool clear=false);
+  void  updateAppCastProcs(bool clear=false);
+  void  updateAppCast();
+  void  setAppCastRepo(AppCastRepo* repo) {m_repo=repo;}
+
+ public: // RealmCast Related Functions
+  void  updateRealmCastNodes(bool clear=false);
+  void  updateRealmCastProcs(bool clear=false);
+  void  updateRealmCast();
+  void  setRealmRepo(RealmRepo* repo) {m_rc_repo=repo;}
 
  protected:
   void  removeFilterVehicle(std::string vname);
@@ -98,6 +109,8 @@ public:
   std::string getButtonAction(std::string) const;
   
  private:
+  inline void cb_REALM_Button_i(unsigned int);
+  static void cb_REALM_Button(Fl_Widget*, unsigned int);
   inline void cb_MOOS_Button_i(unsigned int);
   static void cb_MOOS_Button(Fl_Widget*, unsigned int);
   inline void cb_DoAction_i(unsigned int);
@@ -105,8 +118,8 @@ public:
   inline void cb_Scope_i(unsigned int);
   static void cb_Scope(Fl_Widget*, unsigned int);
 
-  inline void cb_AppCastSetting_i(unsigned int);
-  static void cb_AppCastSetting(Fl_Widget*, unsigned int);
+  inline void cb_InfoCastSetting_i(unsigned int);
+  static void cb_InfoCastSetting(Fl_Widget*, unsigned int);
 
   inline void cb_LeftContext_i(unsigned int);
   static void cb_LeftContext(Fl_Widget*, unsigned int);
@@ -123,10 +136,15 @@ public:
   inline void cb_CommandGUI_i();
   static void cb_CommandGUI(Fl_Widget*);
 
-  inline void cb_SelectNode_i();
-  static void cb_SelectNode(Fl_Widget*, long);
-  inline void cb_SelectProc_i();
-  static void cb_SelectProc(Fl_Widget*, long);
+  inline void cb_SelectAppCastNode_i();
+  static void cb_SelectAppCastNode(Fl_Widget*, long);
+  inline void cb_SelectAppCastProc_i();
+  static void cb_SelectAppCastProc(Fl_Widget*, long);
+
+  inline void cb_SelectRealmCastNode_i();
+  static void cb_SelectRealmCastNode(Fl_Widget*, long);
+  inline void cb_SelectRealmCastProc_i();
+  static void cb_SelectRealmCastProc(Fl_Widget*, long);
 
  public:
   PMV_Viewer*  mviewer;
@@ -150,6 +168,14 @@ public:
   Fl_Output  *m_scope_variable;
   Fl_Output  *m_scope_time;
   Fl_Output  *m_scope_value;
+
+  Fl_Button  *m_rc_button_src;
+  Fl_Button  *m_rc_button_com;
+  Fl_Button  *m_rc_button_wrp;
+
+  Fl_Button  *m_rc_button_sub;
+  Fl_Button  *m_rc_button_msk;
+  Fl_Button  *m_rc_button_trc;
 
   Fl_Button  *m_user_button_1;
   Fl_Button  *m_user_button_2;
@@ -207,7 +233,13 @@ public:
   MY_Fl_Hold_Browser *m_brw_procs;
   MY_Fl_Hold_Browser *m_brw_casts;
 
-  VPlug_AppCastSettings m_ac_settings;
+ protected: // Member variables added for AppCasting
+  RealmRepo          *m_rc_repo;
+  MY_Fl_Hold_Browser *m_rc_brw_nodes;
+  MY_Fl_Hold_Browser *m_rc_brw_procs;
+  MY_Fl_Hold_Browser *m_rc_brw_casts;
+
+  InfoCastSettings m_icast_settings;
 
   Fl_Color    m_color_runw;
   Fl_Color    m_color_cfgw;

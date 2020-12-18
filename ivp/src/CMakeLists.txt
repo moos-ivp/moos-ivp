@@ -132,6 +132,7 @@ SET(IVP_NON_GUI_LIBS
    lib_evalutil
    lib_encounters
    lib_apputil
+   lib_realm
    lib_contacts
    lib_obstacles
    lib_ufield
@@ -216,6 +217,7 @@ ENDFOREACH(L)
 #---------------------------------------------------------------------
 
 SET(ROBOT_APPS
+  pRealm
   app_alogbin
   app_alogtm
   app_alogeval

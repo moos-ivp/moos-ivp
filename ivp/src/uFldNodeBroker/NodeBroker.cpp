@@ -133,24 +133,38 @@ bool NodeBroker::OnStartUp()
   STRING_LIST sParams;
   if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
     reportConfigWarning("No config block found for " + GetAppName());
+
+  bool auto_bridge_realmcast = true;
+  bool auto_bridge_appcast = true;
   
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
     string orig  = *p;
     string line  = *p;
-    string param = toupper(biteStringX(line, '='));
+    string param = tolower(biteStringX(line, '='));
     string value = line;
 
     bool handled = false;
-    if(param == "TRY_SHORE_HOST") 
+    if(param == "try_shore_host") 
       handled = handleConfigTryShoreHost(value);
-    else if(param == "BRIDGE") 
+    else if(param == "bridge") 
       handled = handleConfigBridge(value);
+    else if(param == "auto_bridge_realmcast") 
+      handled = setBooleanOnString(auto_bridge_realmcast, value);
+    else if(param == "auto_bridge_appcast") 
+      handled = setBooleanOnString(auto_bridge_appcast, value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
 
+  if(auto_bridge_realmcast) {
+    handleConfigBridge("src=REALMCAST");
+    handleConfigBridge("src=REALMCAST_CHANNELS");
+  }
+  if(auto_bridge_appcast)
+    handleConfigBridge("src=APPCAST");
+  
   registerVariables();
   registerPingBridges();
   return(true);
@@ -235,7 +249,7 @@ void NodeBroker::registerUserBridges()
 
 //------------------------------------------------------------
 // Procedure: handleConfigBridge
-//   Example: BRIDGE = src=FOO, alias=BAR
+//   Example: bridge = src=FOO, alias=BAR
 
 bool NodeBroker::handleConfigBridge(string line)
 {
@@ -257,7 +271,13 @@ bool NodeBroker::handleConfigBridge(string line)
 
   if((alias == "") || strContainsWhite(alias))
     alias = src;
-  
+
+  // If this bridge was already established, this request is ignored
+  // with no error or warning.
+  if(vectorContains(m_bridge_src_var, src) &&
+     vectorContains(m_bridge_alias, alias))
+    return(true);
+
   m_bridge_src_var.push_back(src);
   m_bridge_alias.push_back(alias);
   return(true);

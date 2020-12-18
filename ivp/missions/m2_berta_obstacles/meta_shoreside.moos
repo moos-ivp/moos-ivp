@@ -13,10 +13,10 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = uXMS            @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
 
   Run = pShare          @ NewConsole = false
@@ -109,19 +109,6 @@ ProcessConfig = pHostInfo
 }
 
 //--------------------------------------------------
-// uXMS Configuration Block
-
-ProcessConfig = uXMS
-{
-  AppTick       = 1
-  CommsTick     = 1
-
-  var = APPCAST_REQ_ALL, DEPLOY_ALL, RETURN_ALL, STATION_KEEP_ALL
-  var = STATION_KEEP_HENRY, STATION_KEEP_GILDA
-  var = RETURN_UPDATES_HENRY, RETURN_UPDATES_GILDA
-}
-
-//--------------------------------------------------
 // pLogger Configuration Block
 
 ProcessConfig = pLogger
@@ -152,7 +139,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
