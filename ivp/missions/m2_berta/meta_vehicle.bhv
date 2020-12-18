@@ -56,7 +56,6 @@ Behavior = BHV_AvdColregsV19
   condition  = AVOID = true 
   condition  = MODE==ACTIVE
   updates    = CONTACT_INFO
-  endflag    = CONTACT_RESOLVED = $[CONTACT]
   templating = spawn
 
 
