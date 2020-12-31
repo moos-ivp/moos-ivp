@@ -26,7 +26,8 @@ IF(FLTK_FOUND)
    #(note the WIN32 bit says under windows use /subsystem:windows not console
    #this prevents fltk app from producing an annoying console as well
    
-   ADD_EXECUTABLE( uMS WIN32  MACOSX_BUNDLE ${UMS_SRCS})
+   # ADD_EXECUTABLE( uMS WIN32  MACOSX_BUNDLE ${UMS_SRCS})   # mikerb
+   ADD_EXECUTABLE( uMS WIN32 ${UMS_SRCS})
 
    # Link the executable
    TARGET_LINK_LIBRARIES( uMS ${MOOS_LIBRARIES} ${MOOS_DEPEND_LIBRARIES} ${fltkvw_LIBRARIES} ${fltkvw_DEPEND_LIBRARIES}  )
