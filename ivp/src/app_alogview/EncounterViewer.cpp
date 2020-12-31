@@ -64,6 +64,8 @@ EncounterViewer::EncounterViewer(int x, int y, int w, int h, const char *l)
   m_avg_eff = 0;
 
   m_owning_gui = 0;
+
+  Fl::use_high_res_GL(1);  
 }
 
 //-------------------------------------------------------------
@@ -161,7 +163,7 @@ void EncounterViewer::draw()
   // Prepare to draw
   glClearColor(m_clear_color.red(),m_clear_color.grn(),m_clear_color.blu(),0.0);
   glClear(GL_COLOR_BUFFER_BIT);
-  glViewport(0, 0, w(), h());
+  glViewport(0, 0, pixel_w(), pixel_h());
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);

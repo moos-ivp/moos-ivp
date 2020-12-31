@@ -84,8 +84,6 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_verbose = false;
 
   Fl::use_high_res_GL(1);
-  
-  //  glGenTextures(1, m_textures);
 }
 
 //-------------------------------------------------------------

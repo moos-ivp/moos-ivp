@@ -79,6 +79,8 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
 
   m_refresh_quadset_aof_pending = true;
   m_refresh_quadset_ipf_pending = true;
+
+  Fl::use_high_res_GL(1);
 }
 
 //-------------------------------------------------------------
@@ -283,7 +285,7 @@ void Common_IPFViewer::draw()
   //if((m_quadset.size2D() == 0) && (m_quadset.size1D() == 0))
   //  return;
 
-  glViewport(0,0,w(),h());
+  glViewport(0,0, pixel_w(), pixel_h());
 
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();

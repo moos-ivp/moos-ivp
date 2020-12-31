@@ -63,6 +63,8 @@ LogPlotViewer::LogPlotViewer(int gx, int gy, int gw, int gh, const char *gl)
   m_extreme_max_time = 0;
   m_display_min_time = 0;
   m_display_max_time = 0;
+
+  Fl::use_high_res_GL(1);  
 }
 
 //-------------------------------------------------------------
@@ -98,7 +100,7 @@ void LogPlotViewer::draw()
   //glClearColor(0.5,0.5,0.5 ,0.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glViewport(0, 0, w(), h());
+  glViewport(0, 0, pixel_w(), pixel_h());
 
   drawLogPlot();
   drawTimeText();

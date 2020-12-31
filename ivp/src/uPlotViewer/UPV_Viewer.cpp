@@ -45,6 +45,8 @@ UPV_Viewer::UPV_Viewer(int gx, int gy, int gw, int gh, const char *gl)
   setParam("gridshade", "default");
   setParam("backshade", "default");
   setParam("lineshade", "default");
+
+  Fl::use_high_res_GL(1);
 }
 
 //-------------------------------------------------------------
@@ -55,7 +57,7 @@ void UPV_Viewer::draw()
   glClearColor(0.5,0.5,0.5 ,0.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  glViewport(0, 0, w(), h());
+  glViewport(0, 0, pixel_w(), pixel_h());
 
   drawGrids();
   drawPartitions();
