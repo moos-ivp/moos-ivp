@@ -96,9 +96,9 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
 
-    string key   = msg.m_sKey;
-    string sdata = msg.m_sVal;
-    double ddata = msg.m_dfVal;
+    string key   = msg.GetKey();
+    string sdata = msg.GetString();
+    double ddata = msg.GetDouble();
 
     if(key == "NAV_X") {
       m_record.setX(ddata);

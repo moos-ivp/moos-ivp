@@ -56,6 +56,19 @@ ProcessConfig = uMAC
 }
 
 //--------------------------------------------------
+// uMACView Configuration Block
+
+ProcessConfig = uMACView
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+	watch_cluster = key=mission_top, vars=DEPLOY:RETURN
+	watch_cluster = key=mission_top, vars=STATION_KEEP:LOITER:AVOID
+	watch_cluster = key=mission2, vars=RETURN
+}
+
+//--------------------------------------------------
 // uFldShoreBroker Configuration Block
 
 ProcessConfig = uFldShoreBroker
@@ -155,13 +168,18 @@ ProcessConfig = pMarineViewer
   vehicles_shape_scale = 1.5
   vehicles_name_mode   = names
 
+	watch_cluster = key=mission_top, vars=DEPLOY:RETURN
+	watch_cluster = key=mission_top, vars=STATION_KEEP:LOITER:AVOID
+	
   circle_viewable_all = false
-  
-  appcast_viewable = true
+
+	content_mode      = appcast       // or realmcast
+	realmcast_channel = mission_top
+	
   appcast_color_scheme = indigo
-	appcast_font_size    = xlarge
-  procs_font_size      = xlarge
-  nodes_font_size      = xlarge
+	appcast_font_size    = large
+  procs_font_size      = large
+  nodes_font_size      = large
 
   stale_report_thresh = 10
   stale_remove_thresh = 18
@@ -170,16 +188,6 @@ ProcessConfig = pMarineViewer
 	scope = REALMCAST_REQ_GILDA
 	scope = REALMCAST_REQ_HENRY
 	
-  //scope = PSHARE_INPUT_SUMMARY
-  //scope = NODE_BROKER_PING
-  //scope = DEPLOY_ALL
-
-  action = STATION_KEEP_ALL = false
-  action = STATION_KEEP_ALL = true
-
-	action = BCM_DISPLAY_RADII_ALL = say
-	action = BCM_DISPLAY_RADII_ALL = avd
-
   left_context[return_point] = RETURN_$[UP_VNAME_CLOSEST] = true
   left_context[return_point] = RETURN_UPDATES_$[UP_VNAME_CLOSEST] = points=$[XPOS],$[YPOS]
   left_context[station]      = STATION_KEEP_$[UP_VNAME_CLOSEST] = true
@@ -214,7 +222,8 @@ ProcessConfig = pMarineViewer
   button_two   = RETURN  # RETURN_ALL=true
   button_two   = RETURN  # STATION_KEEP_ALL=false
   button_three = PERMUTE   # UTS_FORWARD=0
-  button_four  = STATION   # STATION_KEEP_ALL=true
+  button_five  = STATION:true # STATION_KEEP_ALL=true
+  button_six   = STATION:false # STATION_KEEP_ALL=false
 }
 
 //--------------------------------------------------------
@@ -260,6 +269,7 @@ ProcessConfig = uProcessWatch
   watch_all = true      // default is true
 
   nowatch = uXMS*
+  nowatch = uMACView*
   nowatch = uPokeDB*
 
   summary_wait = 12

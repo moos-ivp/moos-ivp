@@ -160,6 +160,7 @@ bool NodeBroker::OnStartUp()
 
   if(auto_bridge_realmcast) {
     handleConfigBridge("src=REALMCAST");
+    handleConfigBridge("src=WATCHCAST");
     handleConfigBridge("src=REALMCAST_CHANNELS");
   }
   if(auto_bridge_appcast)

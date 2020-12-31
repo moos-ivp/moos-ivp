@@ -59,7 +59,9 @@ string RealmCastTree::report() const
 // Procedure: addRealmSummary()
 //   Example: node=alpha # channels=pHelmIvP,pNodeReporter,...
 
-bool RealmCastTree::addRealmSummary(RealmSummary summary)
+bool RealmCastTree::addRealmSummary(RealmSummary summary,
+				    string onstart_node,
+				    string onstart_proc)
 {
   if(!summary.valid())
     return(false);
@@ -73,13 +75,18 @@ bool RealmCastTree::addRealmSummary(RealmSummary summary)
     setNewNodeID(node);
   }
 
-  bool ok = m_map_relcast_sets[node].addRealmSummary(summary);
+  bool ok = m_map_relcast_sets[node].addRealmSummary(summary, onstart_proc);
 
-  // If this is virgin, does not have a node set yet, might as well
-  // use this one!
-  if(m_current_node == "")
-    m_current_node = node;
+  // Normally we dont switch the current_node upon an incoming summary,
+  // except for these two cases:
+
+  string old = m_current_node;
   
+  if((onstart_node != "") && (node == onstart_node))
+    m_current_node = node;
+  if(m_current_node == "") 
+    m_current_node = node;
+
   return(ok);
 }
 

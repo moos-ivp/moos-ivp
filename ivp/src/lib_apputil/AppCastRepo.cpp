@@ -165,6 +165,19 @@ vector<string> AppCastRepo::getCurrentNodes() const
 {
   vector<string> rvector;
   rvector = m_appcast_tree.getNodes();
+  if(rvector.size() == 0)
+    return(rvector);
+
+  std::sort(rvector.begin(), rvector.end());
+
+  if(rvector.back() == "shoreside") {
+    vector<string> rvector2;
+    rvector2.push_back("shoreside");
+    for(unsigned int i=0; i<rvector.size()-1; i++)
+      rvector2.push_back(rvector[i]);
+    rvector = rvector2;
+  }
+
   return(rvector);
 }
 

@@ -52,7 +52,6 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_realm_repo               = 0;
   m_relcast_last_req_time    = 0;
   m_relcast_request_interval = 1.0;  // seconds
-  m_relcast_count = 0;
   
   m_clear_geoshapes_received = 0;
 
@@ -214,6 +213,7 @@ void PMV_MOOSApp::registerVariables()
   AppCastingMOOSApp::RegisterVariables();
 
   Register("APPCAST", 0);
+  Register("WATCHCAST", 0);
   Register("REALMCAST", 0);
   Register("REALMCAST_CHANNELS", 0);
   Register("VIEW_POLYGON", 0);
@@ -386,13 +386,27 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 
     if(!handled && (key == "REALMCAST")) {
       handled = m_realm_repo->addRealmCast(sval);
-      m_relcast_count++;
+      handled_relcast = true;
+    }
+    
+    if(!handled && (key == "WATCHCAST")) {
+      handled = m_realm_repo->addWatchCast(sval);
       handled_relcast = true;
     }
     
     if(!handled && (key == "REALMCAST_CHANNELS")) {
       RealmSummary summary = string2RealmSummary(sval);
-      handled = m_realm_repo->addRealmSummary(summary);
+      
+      bool changed_node_or_proc = false;
+      handled = m_realm_repo->addRealmSummary(summary, changed_node_or_proc);
+      if(changed_node_or_proc) {
+	m_gui->updateRealmCastNodes(true);
+	m_gui->updateRealmCastProcs(true);
+      }
+      else {
+	m_gui->updateRealmCastNodes(false);
+	m_gui->updateRealmCastProcs(false);
+      }
     }
     
     if(!handled && !handled_scope) {
@@ -531,6 +545,9 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   handlePendingPostsFromGUI();
   handlePendingCommandSummary();
 
+  if((m_curr_time - m_start_time) < 30)
+    m_realm_repo->setForceRefreshWC(true);
+  
   unsigned int window_val = 1;
   if(!m_gui || !m_gui->getCmdGUI())
     window_val = 0;
@@ -593,10 +610,9 @@ void PMV_MOOSApp::handleAppCastRequesting(bool force)
 
 void PMV_MOOSApp::handleRealmCastRequesting()
 {
-  if(!m_gui)
+  // Sanity Checks
+  if(!m_gui || !m_realm_repo)
     return;
-
-  // If realmcasts are not being viewed dont request refreshes 
   if(m_gui->showingInfoCasts() == false)
     return;
   if(m_gui->getInfoCastSettings().getContentMode() != "realmcast")
@@ -604,8 +620,7 @@ void PMV_MOOSApp::handleRealmCastRequesting()
   if(m_gui->getInfoCastSettings().getRefreshMode() == "paused")
     return;
 
-  
-  // Consider how long its been since our realmcast request.
+  // Part 1: Consider how long its been since our realmcast request.
   // Want to request less frequently if using a higher time warp.
   bool post_request = false;
   if(m_realm_repo->getNodeProcChanged())
@@ -616,40 +631,63 @@ void PMV_MOOSApp::handleRealmCastRequesting()
     if(real_elapsed_time >= m_relcast_request_interval) 
       post_request = true;
   }
-
   if(!post_request)
     return;
 
-  string current_node = m_realm_repo->getCurrentNode();
-  string current_proc = m_realm_repo->getCurrentProc();
+  // Part 2: Build the general compnents of the request: who is requesting
+  // and what kinds of modifiers should be applied.
+  string request_str = "client=pmv,duration=3";
+  if(!m_gui->getInfoCastSettings().getShowRealmCastSource())
+    request_str += ",nosrc";
+  if(!m_gui->getInfoCastSettings().getShowRealmCastCommunity())
+    request_str += ",nocom";
+  if(!m_gui->getInfoCastSettings().getShowRealmCastSubs())
+    request_str += ",nosubs";
+  if(m_gui->getInfoCastSettings().getWrapRealmCastContent())
+    request_str += ",wrap";
+  if(!m_gui->getInfoCastSettings().getShowRealmCastMasked())
+    request_str += ",mask";
+  if(m_gui->getInfoCastSettings().getTruncRealmCastContent())
+    request_str += ",trunc";
+  if(m_gui->getInfoCastSettings().getRealmCastTimeFormatUTC())
+    request_str += ",utc";
 
-  if((current_node == "") || (current_proc == "")) {
-    cout << "REJECTED postRealmCastRequest!!!!" << endl;
-    return;
+  // Part 3: Content requested depends on whether a cluster_key has
+  // been selected. If cluster_key then WATCHCAST_REQ. 
+  string curr_cluster_key = m_realm_repo->getCurrClusterKey();
+  
+  // Part 3A: Post a REALMCAST_REQ for a particular node
+  if(curr_cluster_key == "") {
+    string current_node = m_realm_repo->getCurrentNode();
+    string current_proc = m_realm_repo->getCurrentProc();
+    if((current_node == "") || (current_proc == "")) {
+      cout << "REJECTED postRealmCastRequest!!!!" << endl;
+      return;
+    }
+    request_str += ",channel=" + current_proc;
+    if(current_node == m_host_community)  
+      Notify("REALMCAST_REQ", request_str);
+    else
+      Notify("REALMCAST_REQ_"+toupper(current_node), request_str);
   }
 
-  // Build the request message
-  string str = "channel=" + current_proc + ",duration=3";
+  // Part 3B: Post a REALMCAST_REQ for a cluster ~WATCHCAST_REQ
+  else {
+    string curr_cluster_var = m_realm_repo->getCurrClusterVar();
+    if(curr_cluster_var != "")
+      request_str += ",vars=" + curr_cluster_var;
+    else {
+      string cluster_vars = m_realm_repo->getCurrClusterVars();
+      request_str += ",vars=" + cluster_vars;
+    }
+    if(m_realm_repo->getForceRefreshWC()) {
+      request_str += ",force";
+      m_realm_repo->setForceRefreshWC(false);
+    }
 
-  // Depending on relcast button state, augment the request message
-  if(!m_gui->getInfoCastSettings().getShowRealmCastSource())
-    str += ",nosrc";
-  if(!m_gui->getInfoCastSettings().getShowRealmCastCommunity())
-    str += ",nocom";
-  if(!m_gui->getInfoCastSettings().getShowRealmCastSubs())
-    str += ",nosubs";
-  if(m_gui->getInfoCastSettings().getWrapRealmCastContent())
-    str += ",wrap";
-  if(!m_gui->getInfoCastSettings().getShowRealmCastMasked())
-    str += ",mask";
-  if(m_gui->getInfoCastSettings().getTruncRealmCastContent())
-    str += ",trunc";
-  
-  if(current_node == m_host_community)  
-    Notify("REALMCAST_REQ", str);
-  else
-    Notify("REALMCAST_REQ_"+toupper(current_node), str);
-  
+    Notify("REALMCAST_REQ_ALL", request_str);
+  }
+    
   m_relcast_last_req_time = m_curr_time;
 
 }
@@ -747,7 +785,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 
     else if(param == "content_mode") 
       handled = m_gui->setRadioCastAttrib(param, value);
-
+    else if(param == "realmcast_channel")
+	handled = m_realm_repo->setOnStartPreferences(value);
     else if(param == "infocast_font_size") 
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "appcast_color_scheme") 
@@ -769,6 +808,9 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 
     else if(param == "log_the_image") 
       handled = setBooleanOnString(m_log_the_image, value);
+    
+    else if(param == "watch_cluster")
+      handled = handleConfigWatchCluster(value);
     
     else if(strBegins(param, "left_context", false)) {
       string key = getContextKey(param);
@@ -862,6 +904,12 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   }
 #endif
 
+  bool changed = m_realm_repo->checkStartCluster();
+  if(changed) {
+    m_gui->updateRealmCastNodes(true);
+    m_gui->updateRealmCastProcs(true);
+  }
+  
   m_gui->mviewer->handleNoTiff();
   m_gui->setCommandFolio(m_cmd_folio);
 
@@ -1066,13 +1114,25 @@ bool PMV_MOOSApp::handleConfigCmd(string cmd)
     return(false);
 
   // Part 3: Add the new command item
-  cout << "Adding Command item:" << endl;
   bool result = m_cmd_folio.addCmdItem(item);
-  cout << "result: " << boolToString(result) << endl;
   
-  return(true);
+  return(result);
 }
 
+
+//---------------------------------------------------------
+// Procedure: handleConfigWatchCluster()
+//  Examples:
+//   str = key=helm_state, vars=DEPLOY:RETURN:MODE:STATION_KEEP
+//   str = vars=SURVEY_POINTS:SURVEY_REQUESt    (key auto-assigned "cluster2")
+
+bool PMV_MOOSApp::handleConfigWatchCluster(string str)
+{
+  if(!m_realm_repo)
+    return(false);
+  
+  return(m_realm_repo->addWatchCluster(str));
+}
 
 
 //----------------------------------------------------------------------
@@ -1225,7 +1285,8 @@ bool PMV_MOOSApp::buildReport()
   m_msgs << "AC Iterations:     " << iter_ac << endl;
   m_msgs << "PMV Iterations:    " << iter_pmv << endl;
   m_msgs << "------------------ " << endl;
-  m_msgs << "RC Count:          " << m_relcast_count << endl;
+  m_msgs << "RC Count:          " << m_realm_repo->getRealmCastCount() << endl;
+  m_msgs << "WC Count:          " << m_realm_repo->getWatchCastCount() << endl;
 
   
   unsigned int drawcount = m_gui->mviewer->getDrawCount();

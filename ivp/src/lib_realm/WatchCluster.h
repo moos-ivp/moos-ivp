@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: RealmCast.h                                          */
-/*    DATE: Dec 4th 2020                                         */
+/*    FILE: WatchCluster.h                                       */
+/*    DATE: Dec 22nd 2020                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,39 +21,54 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef REALM_CAST_HEADER
-#define REALM_CAST_HEADER
+#ifndef WATCH_CLUSTER_HEADER
+#define WATCH_CLUSTER_HEADER
 
 #include <string>
+#include <map>
+#include "WatchCast.h"
+#include "InfoCastSettings.h"
 
-class RealmCast
+class WatchCluster
 {
  public:
-  RealmCast();
-  virtual ~RealmCast() {};
-  
-  void  msg(const std::string& str)     {m_messages = str;};
-  void  setProcName(std::string s)      {m_proc_name=s;}; 
-  void  setNodeName(std::string s)      {m_node_name=s;}; 
-  void  setCount(unsigned int val)      {m_count=val;}
-  
-  std::string::size_type size() const   {return(m_messages.size());}
-  
-  std::string  getProcName() const      {return(m_proc_name);}
-  std::string  getNodeName() const      {return(m_node_name);}
-  unsigned int getCount() const         {return(m_count);}
-  
-  std::string  getRealmCastString() const;
-  std::string  getFormattedString() const;
-  
- protected: // Configuration vars
-  std::string  m_proc_name;
-  std::string  m_node_name;
-  std::string  m_messages;
+  WatchCluster();
+  ~WatchCluster() {}
 
-  unsigned int m_count;
+  void setKey(std::string s)    {m_key=s;}
+  bool addVar(std::string s);
+
+  bool addWatchCast(const WatchCast&);
+
+  std::string getKey() const   {return(m_key);}
+
+  std::vector<std::string> getVars() const   {return(m_cluster_vars);}
+  std::string getVarsAsString() const;
+  
+  std::vector<std::string> getReport(std::string var, InfoCastSettings ics);
+
+  unsigned int getVarCount(std::string var) const;
+  unsigned int getWCastCount() const {return(m_wcast_cnt);}
+
+ protected:
+  std::vector<std::string> getReportSingle(std::string, InfoCastSettings) const;
+  std::vector<std::string> getReportMulti() const;
+  
+ private: 
+  std::string m_key;
+
+  unsigned int m_report_cnt;
+  unsigned int m_wcast_cnt;
+  
+  std::vector<std::string> m_cluster_vars;
+
+  // outer key is the node. Inner key is the varname.
+  // m_map_info[node][varname] = watchast
+  
+  std::map<std::string, std::map<std::string, WatchCast> > m_map_info;
+
+  // key is varname, count is number of watchcast updates for this var
+  std::map<std::string, unsigned int> m_map_varcount;
 };
 
-RealmCast string2RealmCast(std::string);
-
-#endif
+#endif 

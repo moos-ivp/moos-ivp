@@ -57,7 +57,8 @@ string RealmCastSet::report() const
 //---------------------------------------------------------
 // Procedure: addRealmSummary()
 
-bool RealmCastSet::addRealmSummary(RealmSummary summary)
+bool RealmCastSet::addRealmSummary(RealmSummary summary,
+				   string onstart_proc)
 {
   if(!summary.valid())
     return(false);
@@ -78,6 +79,8 @@ bool RealmCastSet::addRealmSummary(RealmSummary summary)
     }
 
     if(m_current_proc == "")
+      m_current_proc = proc;
+    if((onstart_proc != "") && (proc == onstart_proc))
       m_current_proc = proc;
     
   }
@@ -103,8 +106,12 @@ bool RealmCastSet::addRealmCast(const RealmCast& relcast)
   if(m_map_relcasts.count(proc) == 0)
     new_proc = true;
 
+  // Update the count for this channel/proc and store the info
+  // in the realmcast itself.
   m_map_relcast_cnt[proc]++;
   m_map_relcasts[proc] = relcast;
+
+  m_map_relcasts[proc].setCount(m_map_relcast_cnt[proc]);
 
   if(!new_proc)
     return(false);

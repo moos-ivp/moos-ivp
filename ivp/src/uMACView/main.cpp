@@ -72,6 +72,7 @@ int main(int argc, char *argv[])
   cout << termColor() << endl;
 
   AppCastRepo appcast_repo;
+  RealmRepo   realm_repo;
 
   UMV_GUI* gui = new UMV_GUI(500,800, run_command.c_str());
   if(!gui) {
@@ -84,9 +85,10 @@ int main(int argc, char *argv[])
   theUMV.setGUI(gui);
   theUMV.setPendingEventsPipe(& g_pending_moos_events);
   theUMV.setAppCastRepo(&appcast_repo);
+  theUMV.setRealmRepo(&realm_repo);
   gui->setAppCastRepo(&appcast_repo);
+  gui->setRealmRepo(&realm_repo);
   
-
   // start the MOOSPort in its own thread
   MOOSAppRunnerThread appRunner(&theUMV, (char*)(run_command.c_str()),
 				mission_file.c_str(), argc, argv);

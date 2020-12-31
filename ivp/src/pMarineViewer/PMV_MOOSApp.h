@@ -67,6 +67,7 @@ class PMV_MOOSApp : public AppCastingMOOSApp
   bool handleMailClear(std::string);
   bool handleMailCenter(std::string);
   bool handleConfigCmd(std::string);
+  bool handleConfigWatchCluster(std::string);
 
   void handlePendingPostsFromGUI();
   void handlePendingCommandSummary();
@@ -90,7 +91,6 @@ class PMV_MOOSApp : public AppCastingMOOSApp
   RealmRepo   *m_realm_repo;
   double       m_relcast_last_req_time;
   double       m_relcast_request_interval;
-  unsigned int m_relcast_count;
   
   unsigned int m_node_reports_received;
   unsigned int m_clear_geoshapes_received;

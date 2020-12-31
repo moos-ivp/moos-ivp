@@ -116,7 +116,9 @@ void showInterfaceAndExit()
   blk("                       pHelmIvP,pHostInfo,pLogger,pMarinePID,   ");
   blk("                       pNodeReporter,pShare,uFldNodeBroker,     ");
   blk("                       uLoadWatch,uProcessWatch,uSimMarine      ");
-  blk("                                                                ");
+  blk("  WATCHCAST = node=gilda!Z!var=RETURN!Z!src=pHelmIvP!Z!         ");
+  blk("              comm=gilda!Z!loc_time=-3!Z!utc_time=12874303123.04!Z!");
+  blk("              sval=false                                        ");
   exit(0);
 }
 

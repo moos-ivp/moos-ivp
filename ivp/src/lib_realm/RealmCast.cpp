@@ -38,19 +38,21 @@ RealmCast::RealmCast()
 
 //----------------------------------------------------------------
 // Procedure: getRealmCastString()
-//   Example: str = "node=henry!Q#proc=pFoobar!Q#count=!Q#
-//                   messages=now is the!Z#time for all!Z#good men to"
+//   Example: str = "node=henry!Q!proc=pFoobar!Q!count=!Q!
+//                   messages=now is the!Z!time for all!Z!good men to"
 
 string RealmCast::getRealmCastString() const
 {
-  string osep = "!Q#"; // outer separator
-  string isep = "!Z#"; // inner separator
+  string osep = "!Q!"; // outer separator
+  string isep = "!Z!"; // inner separator
   
   stringstream ss;
   ss << "node="  << m_node_name << osep;
   ss << "proc="  << m_proc_name << osep;
-  ss << "count=" << m_count << osep;
+  if(m_count > 0)
+    ss << "count="  << m_count << osep;
     
+  
   // Add the messages (the free-form content of the realmcast)
   ss << "messages=";
   string messages_copy = m_messages;
@@ -89,13 +91,13 @@ string RealmCast::getFormattedString() const
 
 //----------------------------------------------------------------
 // Procedure: string2RealmCast
-//   Example: str = "node=henry!Q#proc=pFoobar!Q#count=!Q#
-//                   messages=now is the!Z#time for all!Z#good men to"
+//   Example: str = "node=henry!Q!proc=pFoobar!Q!
+//                   messages=now is the!Z!time for all!Z!good men to"
 
 RealmCast string2RealmCast(std::string str)
 {
-  string osep = "!Q#"; // outer separator
-  string isep = "!Z#"; // inner separator
+  string osep = "!Q!"; // outer separator
+  string isep = "!Z!"; // inner separator
 
   char c_osep = 30;  // ASCII 30 is "Record separator"
   char c_isep = 29;  // ASCII 29 is "Group separator"

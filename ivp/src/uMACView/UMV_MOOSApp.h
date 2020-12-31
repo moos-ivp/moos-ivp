@@ -30,6 +30,7 @@
 #include "Threadsafe_pipe.h"
 #include "VarDataPair.h"
 #include "AppCastRepo.h"
+#include "RealmRepo.h"
 #include "MOOS_event.h"
 
 class UMV_MOOSApp : public AppCastingMOOSApp  
@@ -47,15 +48,17 @@ class UMV_MOOSApp : public AppCastingMOOSApp
 
   void setGUI(UMV_GUI* g_gui)            {m_gui=g_gui;}
   void setAppCastRepo(AppCastRepo* repo) {m_appcast_repo=repo;}
+  void setRealmRepo(RealmRepo* repo)     {m_realm_repo=repo;}
   void setPendingEventsPipe(Threadsafe_pipe<MOOS_event>*); 
   
-
   // Only call these methods in the main FLTK l thread, for thread
   // safety w.r.t. that library...
   void handleNewMail(const MOOS_event & e);
   void handleIterate(const MOOS_event & e);
   void handleStartUp(const MOOS_event & e);
-
+  void handleRealmCastRequesting();
+  bool handleConfigWatchCluster(std::string);
+  
  protected:
   void registerVariables();
   void postAppCastRequest(std::string node, std::string app,
@@ -70,6 +73,12 @@ class UMV_MOOSApp : public AppCastingMOOSApp
   AppCastRepo *m_appcast_repo;
   double       m_appcast_last_req_time;
   double       m_appcast_request_interval;
+
+  RealmRepo   *m_realm_repo;
+  double       m_relcast_last_req_time;
+  double       m_relcast_request_interval;
+  std::string  m_relcast_client_name;
+  
 };
 
 #endif 

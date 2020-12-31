@@ -9,6 +9,8 @@ SET(SRC
   RealmCastTree.cpp
   RealmRepo.cpp
   RealmSummary.cpp
+  WatchCast.cpp
+  WatchCluster.cpp
 )
 
 SET(HEADERS
@@ -17,6 +19,8 @@ SET(HEADERS
   RealmCastTree.h
   RealmRepo.h
   RealmSummary.h
+  WatchCast.h
+  WatchCluster.h
 )
 
 # Build Library

@@ -32,7 +32,6 @@
 #include "MY_Fl_Hold_Browser.h"
 #include "AppCastRepo.h"
 #include "RealmRepo.h"
-#include "VPlug_AppCastSettings.h"
 #include "InfoCastSettings.h"
 #include "CommandFolio.h"
 #include "CommandSummary.h"
@@ -96,6 +95,9 @@ public:
  public: // RealmCast Related Functions
   void  updateRealmCastNodes(bool clear=false);
   void  updateRealmCastProcs(bool clear=false);
+  void  updateRealmCastProcsRC(bool);
+  void  updateRealmCastProcsWC(bool);
+
   void  updateRealmCast();
   void  setRealmRepo(RealmRepo* repo) {m_rc_repo=repo;}
 
@@ -171,8 +173,9 @@ public:
 
   Fl_Button  *m_rc_button_src;
   Fl_Button  *m_rc_button_com;
-  Fl_Button  *m_rc_button_wrp;
+  Fl_Button  *m_rc_button_utc;
 
+  Fl_Button  *m_rc_button_wrp;
   Fl_Button  *m_rc_button_sub;
   Fl_Button  *m_rc_button_msk;
   Fl_Button  *m_rc_button_trc;
@@ -233,7 +236,7 @@ public:
   MY_Fl_Hold_Browser *m_brw_procs;
   MY_Fl_Hold_Browser *m_brw_casts;
 
- protected: // Member variables added for AppCasting
+ protected: // Member variables added for RealmCasting
   RealmRepo          *m_rc_repo;
   MY_Fl_Hold_Browser *m_rc_brw_nodes;
   MY_Fl_Hold_Browser *m_rc_brw_procs;
@@ -260,12 +263,3 @@ public:
   std::string m_title_base;
 };
 #endif
-
-
-
-
-
-
-
-
-

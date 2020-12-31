@@ -132,6 +132,7 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   
   m_rc_button_src = new Fl_Button(0, 0, 1, 1, "SRC");
   m_rc_button_com = new Fl_Button(0, 0, 1, 1, "COM");
+  m_rc_button_utc = new Fl_Button(0, 0, 1, 1, "UTC");
   m_rc_button_wrp = new Fl_Button(0, 0, 1, 1, "WRP");
   m_rc_button_sub = new Fl_Button(0, 0, 1, 1, "SUBS");
   m_rc_button_msk = new Fl_Button(0, 0, 1, 1, "MASK");
@@ -181,6 +182,7 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
 
   m_buttons.push_back(m_rc_button_src);
   m_buttons.push_back(m_rc_button_com);
+  m_buttons.push_back(m_rc_button_utc);
   m_buttons.push_back(m_rc_button_wrp);
 
   m_buttons.push_back(m_rc_button_sub);
@@ -191,6 +193,7 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   for(unsigned int i=0; i<m_buttons.size(); i++)
     m_buttons[i]->clear_visible_focus();
 
+  m_rc_button_utc->callback((Fl_Callback*)PMV_GUI::cb_REALM_Button,(void*)24);
   m_rc_button_src->callback((Fl_Callback*)PMV_GUI::cb_REALM_Button,(void*)25);
   m_rc_button_com->callback((Fl_Callback*)PMV_GUI::cb_REALM_Button,(void*)26);
   m_rc_button_wrp->callback((Fl_Callback*)PMV_GUI::cb_REALM_Button,(void*)27);
@@ -352,6 +355,9 @@ void PMV_GUI::augmentMenu()
   m_menubar->add("InfoCasting/realmcast_color_scheme=beige", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)307,
 		 FL_MENU_RADIO);
+  m_menubar->add("InfoCasting/realmcast_color_scheme=hillside", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)308,
+		 FL_MENU_RADIO);
   m_menubar->add("InfoCasting/realmcast_color_scheme Toggle", FL_SHIFT+FL_ALT+'a',
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)309,
 		 FL_MENU_DIVIDER);
@@ -507,6 +513,16 @@ void PMV_GUI::augmentMenu()
 		 FL_MENU_RADIO);
   m_menubar->add("InfoCasting/realmcast_trunc_content/realmcast_trunc_content Toggle", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)372,
+		 FL_MENU_RADIO|FL_MENU_DIVIDER);
+
+  m_menubar->add("InfoCasting/realmcast_time_format_utc/realmcast_time_format_utc=true", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)380,
+		 FL_MENU_RADIO);
+  m_menubar->add("InfoCasting/realmcast_time_format_utc/realmcast_time_format_utc=false", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)381,
+		 FL_MENU_RADIO);
+  m_menubar->add("InfoCasting/realmcast_time_format_utc/realmcast_time_format_utc Toggle", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)382,
 		 FL_MENU_RADIO|FL_MENU_DIVIDER);
 
   
@@ -899,7 +915,9 @@ void PMV_GUI::updateXY()
 //----------------------------------------- REALM_Button
 inline void PMV_GUI::cb_REALM_Button_i(unsigned int val) {  
 
-  if(val == 25)
+  if(val == 24)
+    setRadioCastAttrib("realmcast_time_format_utc", "toggle");
+  else if(val == 25)
     setRadioCastAttrib("realmcast_show_source", "toggle");
   else if(val == 26)
     setRadioCastAttrib("realmcast_show_community", "toggle");
@@ -1115,6 +1133,7 @@ inline void PMV_GUI::cb_InfoCastSetting_i(unsigned int v) {
   else if(v==305) setRadioCastAttrib("realmcast_color_scheme", "white");
   else if(v==306) setRadioCastAttrib("realmcast_color_scheme", "indigo");
   else if(v==307) setRadioCastAttrib("realmcast_color_scheme", "beige");
+  else if(v==308) setRadioCastAttrib("realmcast_color_scheme", "hillside");
   else if(v==309) setRadioCastAttrib("realmcast_color_scheme", "toggle");
 
   else if(v==320) setRadioCastAttrib("realmcast_show_source", "true");
@@ -1141,6 +1160,10 @@ inline void PMV_GUI::cb_InfoCastSetting_i(unsigned int v) {
   else if(v==371) setRadioCastAttrib("realmcast_trunc_content", "false");
   else if(v==372) setRadioCastAttrib("realmcast_trunc_content", "toggle");
 
+  else if(v==380) setRadioCastAttrib("realmcast_time_format_utc", "true");
+  else if(v==381) setRadioCastAttrib("realmcast_time_format_utc", "false");
+  else if(v==382) setRadioCastAttrib("realmcast_time_format_utc", "toggle");
+  
   resizeWidgets();
   redraw();
 }
@@ -1393,25 +1416,39 @@ inline void PMV_GUI::cb_SelectRealmCastNode_i()
   if(nodes.size() == 0)
     return;
 
+  vector<string> cluster_keys = m_rc_repo->getClusterKeys();
+
+  // Note the first item on the browser list has index=1 (not 0)
   int ix = ((Fl_Browser *)m_rc_brw_nodes)->value();
 
-  // If the user clicks below the list of items, treat as if the
-  // last item were clicked. Figure out its index and set it.
-  if(ix == 0) {
-    ix = 2 + (int)(nodes.size()); // Add 2 due to table header lines
-    m_rc_brw_nodes->select(ix,1); 
-  }
-
-  // If the user clicks one of the two header lines, treat this
+  // If the user clicked one of the two header lines, treat this
   // as a click of the first item in the list.
   if(ix <= 2) {
     ix = 3;
     m_rc_brw_nodes->select(ix,1);
   }
 
-  unsigned int node_ix = ix - 3;
-  string new_node = nodes[node_ix];
+  string new_node = "error";
   
+  unsigned int node_ix = ix - 3;
+  if(node_ix < nodes.size())
+    new_node = nodes[node_ix];
+
+  else if(cluster_keys.size() > 0) {
+    if(ix == (int)(3 + nodes.size())) {
+      ix = 4 + nodes.size();
+      m_rc_brw_nodes->select(ix,1);
+    }
+    if(ix >= (int)((nodes.size() + 4))) {
+      unsigned int key_ix = ix - (nodes.size() +4);
+      new_node = cluster_keys[key_ix];
+      m_rc_repo->setForceRefreshWC();
+    }
+  }
+
+  if(new_node == "error")
+    return;
+
   m_rc_repo->setCurrentNode(new_node);
 
   updateRealmCastNodes();
@@ -1419,6 +1456,7 @@ inline void PMV_GUI::cb_SelectRealmCastNode_i()
   updateRealmCast();
   updateXY();
 }
+
 
 //----------------------------------------------------
 // Procedure: cb_SelectRealmCastNode()
@@ -1729,8 +1767,6 @@ void PMV_GUI::closeCmdGUI()
     m_cmd_gui_start_cpost_cnt  = m_cmd_gui->getCmdPostCount();
     m_cmd_gui_start_show_posts = m_cmd_gui->getShowPosts();
 
-    cout << "closing wid=" << wid << ", hgt=" << hgt << endl;
-    
     delete(m_cmd_gui);
     m_cmd_gui = 0;
   }
@@ -1748,61 +1784,54 @@ void PMV_GUI::updateRealmCastNodes(bool clear)
   if(nodes.size() == 0)
     return;
 
-  int    curr_brw_ix  = ((Fl_Browser *)m_rc_brw_nodes)->value();
-  string current_node = m_rc_repo->getCurrentNode();
-
-  // Part one: build the table which will be the items in the browser.
+  // Part 1A: build the table which will be the items in the browser.
   // Note which line in the table corresponds to the "current_node".
   ACTable actab(2,2);
   actab << "Node | RC";
   actab.addHeaderLines();
   
-  int brw_item_index = 0;   // Zero indicates current_node not found
   for(unsigned int i=0; i<nodes.size(); i++) {
     string node = nodes[i];
-
-    if(current_node == node)  // +1 because browser indices go 1-N
-      brw_item_index = i+3;   // +2 because of the two header lines
-
     unsigned int rc_cnt = m_rc_repo->rctree().getNodeRealmCastCount(node);
-
     actab << node;
     actab << rc_cnt;
   }
 
+  // Part 1B: Add the cluster keys if there are any
+  vector<string> cluster_keys = m_rc_repo->getClusterKeys();
+  if(cluster_keys.size() > 0) {
+    actab.addHeaderLines();
+    for(unsigned int i=0; i<cluster_keys.size(); i++) {
+      string key = cluster_keys[i];
+      unsigned int cluster_wcast_cnt = m_rc_repo->getWatchCastCount(key);
+      actab << key << cluster_wcast_cnt;
+    }
+  }
+  
   // Part 2: Build up the browser lines from the previously gen'ed table.
   if(clear)
     m_rc_brw_nodes->clear();
 
-  
-  double stale_thresh = mviewer->getStaleReportThresh();
-  vector<string> stale_names = mviewer->getStaleVehicles(stale_thresh);
-
-  unsigned int   curr_brw_size = m_rc_brw_nodes->size();
   vector<string> browser_lines = actab.getTableOutput();
 
+  string current_node    = m_rc_repo->getCurrentNode();
+  string current_cluster = m_rc_repo->getCurrClusterKey();
+
+  int brw_item_index = 3;
   for(unsigned int j=0; j<browser_lines.size(); j++) {
     string line = browser_lines[j];
-    if(j>=2) {
-
-      string line_copy = line;
-      string node  = biteString(line_copy, ' ');
-      bool   stale = vectorContains(stale_names, node);
-      
-      if(stale) // Draw as yellow if the node is stale
-      	line = "@B" + uintToString(m_color_stlw) + line;
-      
-    }
-    if((j+1) > curr_brw_size)
+    if(clear)
       m_rc_brw_nodes->add(line.c_str());
     else
       m_rc_brw_nodes->text(j+1, line.c_str());
+
+    if(strBegins(line, current_cluster))
+      brw_item_index = j+1;
+    else if(strBegins(line, current_node))
+      brw_item_index = j+1;
   }
 
-  // Part 3: Possibly select an item in the browser under rare circumstances
-  // If we've cleared the nodes to build this, or if no userclicks prior
-  // to this call, set the browser select to be the current_node.
-  if(clear || (curr_brw_ix==0))
+  if(clear)
     m_rc_brw_nodes->select(brw_item_index, 1);
 }
 
@@ -1898,6 +1927,85 @@ void PMV_GUI::updateAppCastNodes(bool clear)
 // Procedure: updateRealmCastProcs()
 
 void PMV_GUI::updateRealmCastProcs(bool clear) 
+{
+  string curr_cluster_key = m_rc_repo->getCurrClusterKey();
+
+  if(curr_cluster_key != "")
+    updateRealmCastProcsWC(clear);
+  else
+    updateRealmCastProcsRC(clear);
+}
+
+//---------------------------------------------------------- 
+// Procedure: updateRealmCastProcsWC()
+
+void PMV_GUI::updateRealmCastProcsWC(bool clear) 
+{
+  if(!m_rc_repo)
+    return;
+
+  string curr_cluster_key = m_rc_repo->getCurrClusterKey();
+  string curr_cluster_var = m_rc_repo->getCurrClusterVar();
+  if(curr_cluster_key == "")
+    return;
+  
+  vector<string> vars = m_rc_repo->getClusterVars(curr_cluster_key);
+  if(vars.size() == 0)
+    return;
+
+  int curr_brw_ix = ((Fl_Browser *)m_rc_brw_procs)->value();
+
+  // Part one: build the table which will be the items in the browser.
+  // Note which line in the table corresponds to the "current_proc".
+  ACTable actab(2,2);
+  actab << "Variable | Updates ";
+  actab.addHeaderLines();
+
+  int brw_item_index = 0;     // Zero indicates curr_cluster_var not found.
+  for(unsigned int i=0; i<vars.size(); i++) {
+    string var = vars[i];
+
+    if(curr_cluster_key == var) // +1 because browser indices go 1-N
+      brw_item_index = i+3;     // +2 because of the two header lines
+
+    unsigned int watch_cnt = 0;
+    //watch_cnt = m_rc_repo->getWatchCount(curr_cluster_key, curr_cluster_var);
+    watch_cnt = m_rc_repo->getWatchCount(curr_cluster_key, var);
+    
+    actab << var;
+    actab << watch_cnt;
+  }
+
+  // Part 2: Build up the browser lines from the previously gen'ed table.
+  if(clear)
+    m_rc_brw_procs->clear();
+
+  unsigned int curr_brw_size = m_rc_brw_procs->size();
+
+  vector<string> browser_lines = actab.getTableOutput();
+  for(unsigned int j=0; j<browser_lines.size(); j++) {
+    string line = browser_lines[j];
+    if((j+1) > curr_brw_size)
+      m_rc_brw_procs->add(line.c_str());
+    else
+      m_rc_brw_procs->text(j+1, line.c_str());
+
+    if(strBegins(line, curr_cluster_var))
+      brw_item_index = j+1;    
+  }
+
+  // Part 3: Possibly select an item in the browser under rare circumstances
+  // If we've cleared the procs to build this, or if no userclicks prior
+  // to this call, set the browser select to be the current_proc.
+  if(clear || (curr_brw_ix==0))
+    m_rc_brw_procs->select(brw_item_index, 1);
+
+}
+
+//---------------------------------------------------------- 
+// Procedure: updateRealmCastProcsRC()
+
+void PMV_GUI::updateRealmCastProcsRC(bool clear) 
 {
   if(!m_rc_repo)
     return;
@@ -2048,16 +2156,24 @@ void PMV_GUI::updateRealmCast()
   // Step 1: clear the Fl_Browser contents
   m_rc_brw_casts->clear();
 
-  // Step 2: retrieve the current appcast and its report lines
-  RealmCast relcast = m_rc_repo->rctree().getRealmCast(node, proc);
-  vector<string> svector = parseString(relcast.getFormattedString(), '\n');
-
-  // Step 3: De-colorize the report lines and add to the Browser
-  // Disable the removeTermColors() call by mikerb Oct 11, 2020. 
-  for(unsigned int i=0; i<svector.size(); i++) {
-    m_rc_brw_casts->add(svector[i].c_str());
-    //cout << svector[i].c_str() << endl; // mikerb
-    //m_brw_casts->add(removeTermColors(svector[i]).c_str());
+  if(m_rc_repo->getCurrClusterKey() == "") {
+    // Step 2: retrieve the current realmcast and its report lines
+    RealmCast relcast = m_rc_repo->rctree().getRealmCast(node, proc);
+    vector<string> svector = parseString(relcast.getFormattedString(), '\n');
+    
+    // Step 3: De-colorize the report lines and add to the Browser
+    // Disable the removeTermColors() call by mikerb Oct 11, 2020. 
+    for(unsigned int i=0; i<svector.size(); i++) {
+      m_rc_brw_casts->add(svector[i].c_str());
+      //cout << svector[i].c_str() << endl; // mikerb
+      //m_brw_casts->add(removeTermColors(svector[i]).c_str());
+    }
+  }
+  else {
+    vector<string> svector = m_rc_repo->getClusterReport(m_icast_settings);
+    for(unsigned int i=0; i<svector.size(); i++) {
+      m_rc_brw_casts->add(svector[i].c_str());
+    }
   }
 }
 
@@ -2130,6 +2246,7 @@ void PMV_GUI::updateRadios()
   setRadioCastAttrib("realmcast_show_masked");
   setRadioCastAttrib("realmcast_wrap_content");
   setRadioCastAttrib("realmcast_trunc_content");
+  setRadioCastAttrib("realmcast_time_format_utc");
 }
 
 
@@ -2174,32 +2291,33 @@ void PMV_GUI::setMenuItemColors()
   setMenuItemColor("InfoCasting/realmcast_color_scheme=white");
   setMenuItemColor("InfoCasting/realmcast_color_scheme=indigo");
   setMenuItemColor("InfoCasting/realmcast_color_scheme=beige");
+  setMenuItemColor("InfoCasting/realmcast_color_scheme=hillside");
 
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=20");
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=25");
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=30");
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=35");
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=40");
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=45");
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=50");
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=55");
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=60");
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=65");
-  setMenuItemColor("InfoCasting/InfoCast Window Width/infocast_width=70");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=20");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=25");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=30");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=35");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=40");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=45");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=50");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=55");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=60");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=65");
+  setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=70");
 
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=30");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=35");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=40");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=45");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=50");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=55");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=60");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=65");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=70");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=75");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=80");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=85");
-  setMenuItemColor("InfoCasting/InfoCast Window Height/infocast_height=90");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=30");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=35");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=40");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=45");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=50");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=55");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=60");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=65");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=70");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=75");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=80");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=85");
+  setMenuItemColor("InfoCasting/InfoCast Pane Height/infocast_height=90");
 
   setMenuItemColor("InfoCasting/realmcast_show_source/realmcast_show_source=true");
   setMenuItemColor("InfoCasting/realmcast_show_source/realmcast_show_source=false");
@@ -2218,7 +2336,10 @@ void PMV_GUI::setMenuItemColors()
   
   setMenuItemColor("InfoCasting/realmcast_trunc_content/realmcast_trunc_content=true");
   setMenuItemColor("InfoCasting/realmcast_trunc_content/realmcast_trunc_content=false");
-  
+
+  setMenuItemColor("InfoCasting/realmcast_time_format_utc/realmcast_time_format_utc=true");
+  setMenuItemColor("InfoCasting/realmcast_time_format_utc/realmcast_time_format_utc=false");
+
   setMenuItemColor("BackView/full_screen=true");
   setMenuItemColor("BackView/full_screen=false");
 }
@@ -2291,6 +2412,7 @@ bool PMV_GUI::setRadioCastAttrib(string attr, string value)
       m_rc_button_src->color(fcolor_gray185);
     else
       m_rc_button_src->color(fcolor_grayRed);
+    updateRealmCast();
   }
   
   else if(attr == "realmcast_show_community") {
@@ -2301,6 +2423,7 @@ bool PMV_GUI::setRadioCastAttrib(string attr, string value)
       m_rc_button_com->color(fcolor_gray185);
     else
       m_rc_button_com->color(fcolor_grayRed);
+    updateRealmCast();
   }
   
   else if(attr == "realmcast_show_subscriptions") {
@@ -2341,6 +2464,17 @@ bool PMV_GUI::setRadioCastAttrib(string attr, string value)
       m_rc_button_trc->color(fcolor_grayBlu);
     else
       m_rc_button_trc->color(fcolor_gray185);
+  }
+  
+  else if(attr == "realmcast_time_format_utc") {
+    ok = m_icast_settings.setRealmCastTimeFormatUTC(value);
+    item_str = "InfoCasting/realmcast_time_format_utc/realmcast_time_format_utc=";
+    item_str += boolToString(m_icast_settings.getRealmCastTimeFormatUTC());
+    if(m_icast_settings.getRealmCastTimeFormatUTC())
+      m_rc_button_utc->color(fcolor_grayBlu);
+    else
+      m_rc_button_utc->color(fcolor_gray185);
+    updateRealmCast();
   }
   
   else if(attr == "appcast_color_scheme") {
@@ -2586,6 +2720,7 @@ void PMV_GUI::resizeWidgets()
 
     m_rc_button_src->hide();
     m_rc_button_com->hide();
+    m_rc_button_utc->hide();
     m_rc_button_sub->hide();
     m_rc_button_msk->hide();
     m_rc_button_wrp->hide();
@@ -2595,7 +2730,7 @@ void PMV_GUI::resizeWidgets()
     m_brw_procs->show();
     m_brw_casts->show();
 
-    m_brw_nodes->resize(bx, menu_hgt, node_wid, node_hgt);
+   m_brw_nodes->resize(bx, menu_hgt, node_wid, node_hgt);
     m_brw_procs->resize(node_wid, menu_hgt, proc_wid, proc_hgt);
     m_brw_casts->resize(bx, by+node_hgt, cast_wid, cast_hgt);
     
@@ -2632,6 +2767,7 @@ void PMV_GUI::resizeWidgets()
 
     m_rc_button_src->show();
     m_rc_button_com->show();
+    m_rc_button_utc->show();
     m_rc_button_sub->show();
     m_rc_button_msk->show();
     m_rc_button_wrp->show();
@@ -2684,6 +2820,12 @@ void PMV_GUI::resizeWidgets()
   }
   else if(infocast_color_scheme == "beige") {
     color_back = fl_rgb_color(223, 219, 195);   // beige
+    color_text = fl_rgb_color(0, 0, 0);         // black
+    m_color_runw = fl_rgb_color(205, 71, 71);   // redish
+    m_color_cfgw = fl_rgb_color(0, 189, 149);   // greenish
+  }
+  else if(infocast_color_scheme == "hillside") {
+    color_back = fl_rgb_color(209, 203, 127);   // hillside
     color_text = fl_rgb_color(0, 0, 0);         // black
     m_color_runw = fl_rgb_color(205, 71, 71);   // redish
     m_color_cfgw = fl_rgb_color(0, 189, 149);   // greenish
@@ -2820,12 +2962,14 @@ void PMV_GUI::resizeWidgets()
   if(m_button_cols > 0)
     extra_bwid = (extra_rgt / (int)(m_button_cols));
 
-  m_rc_button_src->resize(10, row1, 50, fld_hgt);
-  m_rc_button_com->resize(10, row2, 50, fld_hgt);
-  m_rc_button_wrp->resize(10, row3, 50, fld_hgt);
-  m_rc_button_sub->resize(70, row1, 60, fld_hgt);
-  m_rc_button_msk->resize(70, row2, 60, fld_hgt);
-  m_rc_button_trc->resize(70, row3, 60, fld_hgt);
+  m_rc_button_src->resize(10, row1, 40, fld_hgt);
+  m_rc_button_com->resize(55, row1, 40, fld_hgt);
+  m_rc_button_utc->resize(100, row1, 40, fld_hgt);
+
+  m_rc_button_wrp->resize(10, row3, 60, fld_hgt);
+  m_rc_button_sub->resize(10, row2, 60, fld_hgt);
+  m_rc_button_msk->resize(80, row2, 60, fld_hgt);
+  m_rc_button_trc->resize(80, row3, 60, fld_hgt);
     
   int button_wid  = 100 + extra_bwid;
   int col_b1_pos  = w() - (button_wid + 10);  

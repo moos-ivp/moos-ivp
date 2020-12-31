@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: VPlug_AppCastSettings.h                              */
+/*    FILE: InfoCastSettings.h                                   */
 /*    DATE: Dec 5th, 2020                                        */
 /*    NOTE: Migrated from VPlug_AppCastSettings.h                */
 /*                                                               */
@@ -63,6 +63,7 @@ public:
   bool setShowRealmCastMasked(std::string);
   bool setWrapRealmCastContent(std::string);
   bool setTruncRealmCastContent(std::string);
+  bool setRealmCastTimeFormatUTC(std::string);
   
  public: // Getters
   
@@ -88,6 +89,7 @@ public:
   bool getShowRealmCastMasked() const    {return(m_show_rc_masked);}
   bool getWrapRealmCastContent() const   {return(m_wrap_rc_content);}
   bool getTruncRealmCastContent() const  {return(m_trunc_rc_content);}
+  bool getRealmCastTimeFormatUTC() const {return(m_time_format_utc);}
   
  protected:
   std::string fontChange(std::string, std::string);
@@ -116,6 +118,7 @@ protected:
   bool  m_show_rc_masked;
   bool  m_wrap_rc_content;
   bool  m_trunc_rc_content;
+  bool  m_time_format_utc;
 };
 
 #endif

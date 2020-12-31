@@ -14,6 +14,7 @@
 #include <string>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "ACTable.h"
+#include "PipeWay.h"
 
 class Realm : public AppCastingMOOSApp
 {
@@ -34,28 +35,29 @@ class Realm : public AppCastingMOOSApp
  protected: // Auxilliary functions
 
   void buildRealmCast();
-  void buildRealmCast(std::string channel);
-
+  bool buildRealmCastChannel(PipeWay);
+  bool buildWatchCast(PipeWay);
   void buildRealmCastSummary();
   
  protected:
   void handleMailDBRWSummary(std::string);
-  void handleMailRealmCastReq(std::string, std::string, std::string);
+  void handleMailRealmCastReq(std::string);
 
   void handleGeneralMail(const CMOOSMsg&);
 
   std::vector<std::string> getAppsVector() const;
 
-  void resetACTable();
-  void addRowACTab(std::string var, std::string src, std::string time,
-		   std::string community, std::string value);
-
   bool isIgnoreVar(std::string) const;
 
+ protected: // convenience functions for ACTable operations
+  void resetACTable(PipeWay);
+  void addRowACTab(PipeWay, std::string var, std::string src,
+		   std::string time, std::string comm, std::string val);
+
+  void addLatestOutCast(std::string);
+  
   
  private: // Configuration variables
-
-  std::string m_channel;
 
   unsigned int m_msg_max_hist;
 
@@ -65,7 +67,7 @@ class Realm : public AppCastingMOOSApp
   unsigned int m_wrap_length;
   unsigned int m_trunc_length;
   
- private: // State variables
+ private: // State variables (DB Info)
 
   // A Map from var name to recently received values;
   std::map<std::string, std::list<CMOOSMsg> > m_map_data;
@@ -73,37 +75,36 @@ class Realm : public AppCastingMOOSApp
   // Maps from app name to list of pub/sub variables
   std::map<std::string, std::set<std::string> > m_map_subs;
   std::map<std::string, std::set<std::string> > m_map_pubs;
-  std::map<std::string, unsigned int> m_map_post_count;
 
+  // Convenient summaries of overall pubs,subs,apps,vars
   std::set<std::string> m_set_apps;
   std::set<std::string> m_set_realm_subs;
   std::set<std::string> m_set_realm_pubs;
   std::set<std::string> m_set_unique_vars;
 
+  // Info about local MOOSDB
+  std::string m_moosdb_name;
+  double      m_time_warp;
+  bool        m_new_app_noticed; 
+
+  // Info about client interactions on requests and postings
   unsigned int m_summaries_posted;
 
-  std::map<std::string, double> m_map_key_expire;
-  std::map<std::string, std::string> m_map_key_channel;
+  // Key is the client, e.g., pmv, umview 
+  std::map<std::string, PipeWay> m_map_pipeways;
+
+  std::map<std::string, double> m_map_var_last_wcast;
   
-  double m_expire_time;
-  double m_time_warp;
   double m_last_post_summary;
   double m_last_post_relcast;
 
-  bool m_new_app_noticed; 
+  unsigned int m_total_realmcasts;
+  unsigned int m_total_watchcasts;
   
-  bool m_show_source;
-  bool m_show_community;
-  bool m_wrap_content;
-
-  bool m_show_subscriptions;
-  bool m_show_masked;
-  bool m_trunc_content;
+  std::list<std::string> m_recent_outcasts;
   
-  std::string m_moosdb_name;
-
+  // Keep an ACTable scope available  
   ACTable m_actab;
-
 };
 
 #endif 

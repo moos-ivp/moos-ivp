@@ -6,6 +6,7 @@
 SET(SRC
   Realm.cpp
   Realm_Info.cpp
+  PipeWay.cpp
   main.cpp
 )
 

@@ -27,7 +27,6 @@ SET(SRC
   PathUtils.cpp
   Seglr.cpp
   SeglrUtils.cpp
-  VPlug_AppCastSettings.cpp
   VPlug_DropPoints.cpp
   VPlug_GeoSettings.cpp
   VPlug_GeoShapes.cpp

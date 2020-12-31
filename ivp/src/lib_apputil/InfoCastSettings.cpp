@@ -50,7 +50,7 @@ InfoCastSettings::InfoCastSettings()
   m_infocast_width  = 30;  
 
   m_appcast_color_scheme = "indigo";
-  m_realmcast_color_scheme = "beige";
+  m_realmcast_color_scheme = "hillside";
 
   m_show_rc_source = true;
   m_show_rc_community = true;
@@ -59,6 +59,8 @@ InfoCastSettings::InfoCastSettings()
 
   m_wrap_rc_content = false;
   m_trunc_rc_content = false;
+
+  m_time_format_utc = false;
 }
 
 //-------------------------------------------------------------
@@ -67,6 +69,11 @@ InfoCastSettings::InfoCastSettings()
 bool InfoCastSettings::setAppCastColorScheme(string str)
 {
   str = tolower(stripBlankEnds(str));
+
+  if(str == "default") {
+    m_appcast_color_scheme = "indigo";
+    return(true);
+  }
   
   if((str != "white") && (str != "indigo") &&
      (str != "beige") && (str != "toggle"))
@@ -93,16 +100,26 @@ bool InfoCastSettings::setRealmCastColorScheme(string str)
 {
   str = tolower(stripBlankEnds(str));
   
-  if((str != "white") && (str != "indigo") &&
+  if(str == "default") {
+    m_appcast_color_scheme = "hillside";
+    return(true);
+  }
+  
+  if((str != "white") && (str != "indigo") && (str != "hillside") &&
      (str != "beige") && (str != "toggle"))
     return(false);
 
   if(str == "toggle") {
     if(m_realmcast_color_scheme == "white")
-      m_realmcast_color_scheme = "indigo";
-    else if(m_realmcast_color_scheme == "indigo")
+      m_realmcast_color_scheme = "hillside";
+
+    else if(m_realmcast_color_scheme == "hillside")
       m_realmcast_color_scheme = "beige";
+
     else if(m_realmcast_color_scheme == "beige")
+      m_realmcast_color_scheme = "indigo";
+
+    else if(m_realmcast_color_scheme == "indigo")
       m_realmcast_color_scheme = "white";
   }
   else
@@ -242,6 +259,15 @@ bool InfoCastSettings::setTruncRealmCastContent(string str)
 {
   return(setBooleanOnString(m_trunc_rc_content, str));
 }
+
+//-------------------------------------------------------------
+// Procedure: setRealmCastTimeFormatUTC()
+
+bool InfoCastSettings::setRealmCastTimeFormatUTC(string str)
+{
+  return(setBooleanOnString(m_time_format_utc, str));
+}
+
 
 //-------------------------------------------------------------
 // Procedure: fontChange()

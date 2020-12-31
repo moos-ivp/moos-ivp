@@ -329,6 +329,7 @@ string colorNameToHex(const string &str)
   if(cstr == "grey95")         return("0.95,0.95,0.95");
   if(cstr == "gray95")         return("0.95,0.95,0.95");
   if(cstr == "greenyellow")    return("hex:ad,ff,2f");
+  if(cstr == "hillside")       return("hex:d8,d0,a4");
   if(cstr == "honeydew")       return("hex:f0,ff,f0");
   if(cstr == "hotpink")        return("hex:ff,69,b4");
   if(cstr == "indianred")      return("hex:cd,5c,5c");

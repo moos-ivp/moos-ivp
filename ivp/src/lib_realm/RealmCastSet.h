@@ -36,7 +36,7 @@ class RealmCastSet
   RealmCastSet();
   ~RealmCastSet() {}
 
-  bool         addRealmSummary(RealmSummary);
+  bool         addRealmSummary(RealmSummary, std::string onstart_proc);
   
   bool         addRealmCast(const RealmCast& relcast);
   RealmCast    getRealmCast(const std::string& proc) const;
@@ -77,10 +77,15 @@ class RealmCastSet
 
   std::string m_current_proc;
   
-  // Keep a separate vector of proc names so that when proc name vector is
-  // retrieved by caller, the earlier items stay in the same order. The 
-  // alternative, iterating through the map, means order may shift as map grows.
+  // Keep a separate vector of proc names so that when proc name
+  // vector is retrieved by caller, the earlier items stay in the same
+  // order. The alternative, iterating through the map, means order
+  // may shift as map grows.
   std::vector<std::string> m_procs;
+
+  
+
+  
 };
 
 #endif 

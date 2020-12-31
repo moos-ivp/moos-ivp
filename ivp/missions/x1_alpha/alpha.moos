@@ -40,18 +40,6 @@ ProcessConfig = ANTLER
 }
 
 //------------------------------------------
-// pRealm config block
-
-ProcessConfig = pRealm
-{
-  AppTick   = 4
-  CommsTick = 4
-
-	channel = pNodeReporter
-}
-
-
-//------------------------------------------
 // uProcessWatch config block
 
 ProcessConfig = uProcessWatch

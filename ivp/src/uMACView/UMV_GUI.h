@@ -27,9 +27,11 @@
 #include <FL/Fl.H>
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
+#include <FL/Fl_Button.H>
 #include "MY_Fl_Hold_Browser.h"
-#include "VPlug_AppCastSettings.h"
+#include "InfoCastSettings.h"
 #include "AppCastRepo.h"
+#include "RealmRepo.h"
 
 class UMV_GUI : Fl_Window {
 public:
@@ -39,50 +41,78 @@ public:
   void augmentMenu();
   void resize(int, int, int, int);
 
-  void updateNodes(bool clear=false);
-  void updateProcs(bool clear=false);
+  void updateAppCastNodes(bool clear=false);
+  void updateAppCastProcs(bool clear=false);
   void updateAppCast();
 
-  void setAppCastRepo(AppCastRepo* repo) {m_repo = repo;}
+  void setAppCastRepo(AppCastRepo* repo) {m_ac_repo = repo;}
+  void setRealmRepo(RealmRepo* repo)     {m_rc_repo = repo;}
+
+  void updateRealmCastNodes(bool clear=false);
+  void updateRealmCastProcs(bool clear=false);
+  void updateRealmCastProcsRC(bool);
+  void updateRealmCastProcsWC(bool);
+
+
+  void updateRealmCast();
 
   bool setRadioCastAttrib(std::string attr, std::string val="");
+  void setMenuItemColor(std::string item, int r=31, int g=71, int b=155);
 
   void updateRadios();
+  void setMenuItemColors();
 
+  InfoCastSettings getInfoCastSettings() const {return(m_icast_settings);}
+  
  protected:
   void resizeWidgets();
 
  private:
-  inline void cb_SelectNode_i();
-  static void cb_SelectNode(Fl_Widget*, long);
+  inline void cb_REALM_Button_i(unsigned int);
+  static void cb_REALM_Button(Fl_Widget*, unsigned int);
+  
+  inline void cb_SelectAppCastNode_i();
+  static void cb_SelectAppCastNode(Fl_Widget*, long);
+  inline void cb_SelectAppCastProc_i();
+  static void cb_SelectAppCastProc(Fl_Widget*, long);
 
-  inline void cb_SelectProc_i();
-  static void cb_SelectProc(Fl_Widget*, long);
+  inline void cb_SelectRealmCastNode_i();
+  static void cb_SelectRealmCastNode(Fl_Widget*, long);
+  inline void cb_SelectRealmCastProc_i();
+  static void cb_SelectRealmCastProc(Fl_Widget*, long);
 
-  inline void cb_AppCastSetting_i(unsigned int);
-  static void cb_AppCastSetting(Fl_Widget*, unsigned int);
+  inline void cb_InfoCastSetting_i(unsigned int);
+  static void cb_InfoCastSetting(Fl_Widget*, unsigned int);
 
   static void cb_Quit();
 
  protected:
-  MY_Fl_Hold_Browser *m_brw_nodes;
-  MY_Fl_Hold_Browser *m_brw_procs;
-  MY_Fl_Hold_Browser *m_brw_casts;
   Fl_Menu_Bar        *m_menubar;
-  AppCastRepo        *m_repo;
 
-  VPlug_AppCastSettings m_ac_settings;
+ protected: // Member variables added for AppCasting 
+  MY_Fl_Hold_Browser *m_ac_brw_nodes;
+  MY_Fl_Hold_Browser *m_ac_brw_procs;
+  MY_Fl_Hold_Browser *m_ac_brw_casts;
+  AppCastRepo        *m_ac_repo;
 
+  MY_Fl_Hold_Browser *m_rc_brw_nodes;
+  MY_Fl_Hold_Browser *m_rc_brw_procs;
+  MY_Fl_Hold_Browser *m_rc_brw_casts;
+  RealmRepo          *m_rc_repo;
+
+  Fl_Button  *m_rc_button_src;
+  Fl_Button  *m_rc_button_com;
+  Fl_Button  *m_rc_button_wrp;
+
+  Fl_Button  *m_rc_button_sub;
+  Fl_Button  *m_rc_button_msk;
+  Fl_Button  *m_rc_button_trc;
+
+  Fl_Button  *m_rc_button_utc;
+
+  InfoCastSettings m_icast_settings;
+  
   Fl_Color     m_color_runw;
   Fl_Color     m_color_cfgw;
 };
 #endif
-
-
-
-
-
-
-
-
-

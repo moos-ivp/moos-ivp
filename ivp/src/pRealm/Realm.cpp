@@ -9,6 +9,7 @@
 #include "MBUtils.h"
 #include "Realm.h"
 #include "RealmCast.h"
+#include "WatchCast.h"
 #include "RealmSummary.h"
 
 using namespace std;
@@ -19,7 +20,6 @@ using namespace std;
 Realm::Realm()
 {
   // Init Config Variables
-  m_channel      = "unset";
   m_msg_max_hist = 10;
 
   m_relcast_interval = 0.8;
@@ -29,23 +29,17 @@ Realm::Realm()
   m_trunc_length = 270;
 
   // Init State Variables
-  m_expire_time = 0;
 
   m_last_post_relcast = 0;
   m_last_post_summary = 0;
+
+  m_total_realmcasts = 0;
+  m_total_watchcasts = 0;
   
   m_time_warp = 1;
 
   m_new_app_noticed = false;
   m_summaries_posted = 0;
-  
-  m_show_source = true;
-  m_show_community = true;
-  m_wrap_content = false;
-
-  m_show_subscriptions = true;
-  m_show_masked = true;
-  m_trunc_content = false;
 }
 
 //---------------------------------------------------------
@@ -58,13 +52,11 @@ bool Realm::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     string key    = msg.GetKey();
     string sval   = msg.GetString();
-    string comm   = msg.GetCommunity();
-    string src    = msg.GetSource();
 
     if(key == "DB_RWSUMMARY") 
       handleMailDBRWSummary(sval);
     else if(key == "REALMCAST_REQ") 
-      handleMailRealmCastReq(comm, src, sval);
+      handleMailRealmCastReq(sval);
 
     handleGeneralMail(msg);
   }
@@ -116,9 +108,7 @@ bool Realm::OnStartUp()
     string value = line;
 
     bool handled = true;
-    if(param == "channel")
-      m_channel = value;
-    else if(param == "relcast_interval")
+    if(param == "relcast_interval")
       handled = setDoubleRngOnString(m_relcast_interval, value, 0.4, 15);
     else if(param == "summary_interval")
       handled = setDoubleRngOnString(m_summary_interval, value, 1, 10);
@@ -153,6 +143,7 @@ void Realm::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   Register("DB_RWSUMMARY", 0);
+  Register("REALMCAST_REQ", 0);
 }
 
 
@@ -198,67 +189,28 @@ void Realm::handleMailDBRWSummary(string str)
 // Procedure: handleMailRealmCastReq()
 //   Example: channel=pNodeReporter,
 
-void Realm::handleMailRealmCastReq(string comm, string src, string sval)
+void Realm::handleMailRealmCastReq(string sval)
 {
-  string prev_channel = m_channel;
-
-  // Prior to handling each request, we revert back to our defaults
-  // for source, community and wrapping. Deviation from the defaults
-  // must be explicitly requested on each relcast request.
-  m_show_source = true;
-  m_show_community = true;
-  m_wrap_content = false;
-
-  m_show_subscriptions = true;
-  m_show_masked = true;
-  m_trunc_content = false;
-  
-  vector<string> svector = parseString(sval, ',');
-  for(unsigned int i=0; i<svector.size(); i++) {
-    string param = biteStringX(svector[i], '=');
-    string value = svector[i];
-
-    bool handled = true;
-    if(param == "channel")
-      m_channel = value;
-    else if(param == "duration") {
-      double dval = atof(value.c_str());
-      if(dval <= 0)
-	handled = false;
-      else {
-	// Want duration to be in real time, so mult by warp
-	dval *= m_time_warp;
-	m_expire_time = m_curr_time + dval;
-	string request_key = tolower(comm) + ":" + tolower(src);
-	m_map_key_expire[request_key]  = m_expire_time;
-	m_map_key_channel[request_key] = m_channel;
-      }
-    }
-    else if(param == "nosrc")
-      m_show_source = false;
-    else if(param == "nocom")
-      m_show_community = false;
-    else if(param == "nosubs")
-      m_show_subscriptions = false;
-    else if(param == "mask")
-      m_show_masked = false;
-    else if(param == "wrap")
-      m_wrap_content = true;
-    else if(param == "trunc")
-      m_trunc_content = true;
-    else
-      handled = false;
-
-    if(!handled)
-      reportRunWarning("Unhandled Request:" + sval);
+  PipeWay pipeway = string2PipeWay(sval);
+  if(!pipeway.valid()) {
+    reportRunWarning("Bad RealmCastReq:" + sval);
+    return;
   }
 
-  // If we changed channels, then don't wait to produce
-  // the next realmcast!
-  if(m_channel != prev_channel)
-    m_last_post_relcast = 0;
+  string client = pipeway.getClient();
+
+  if(m_map_pipeways.count(client) == 0) {
+    m_map_pipeways[client] = pipeway;
+  }
+  else {  
+    if(m_map_pipeways[client] != pipeway) {
+      m_map_pipeways[client] = pipeway;
+      string pinfo = pipeway.getContentDescriptor();
+      reportEvent("Client " + client + ", new pipe: " + pinfo);
+    }
+  }
   
-  reportEvent("New Request. Now Channel:" + m_channel);
+  m_map_pipeways[client].setStartExpTime(m_curr_time, m_time_warp);
 }
 
 //---------------------------------------------------------
@@ -268,7 +220,6 @@ void Realm::handleGeneralMail(const CMOOSMsg& msg)
 {
   string key = msg.GetKey();
   string src = msg.GetSource();
-
   
   // Autodetect what the MOOSDB is publishing so the MOOSDB can have
   // its own app channel
@@ -303,63 +254,144 @@ void Realm::buildRealmCast()
   if(elapsed < m_relcast_interval)
     return;
   
-  // Part 2: Determine for each key_expire pair if the pair has
-  // expired or not. If not, then generate a realmcast for the
-  // channel associated with that key. If the key_expire pair
-  // has expired, make note of the key, and cleanup afterwards
-  vector<string> expired_keys;
+  // Part 2: Determine for each client if the pipeway has expired or
+  // not. If not, then generate a realmcast for the channel associated
+  // with that pipeway. If the pipeway has expired, make note of the
+  // client key, and cleanup afterwards. 
+  vector<string> expired_clients;
        
-  map<string, double>::iterator p;
-  for(p=m_map_key_expire.begin(); p!=m_map_key_expire.end(); p++) {
-    string key = p->first;
-    double expire_time = p->second;
+  map<string, PipeWay>::iterator p;
+  for(p=m_map_pipeways.begin(); p!=m_map_pipeways.end(); p++) {
+    string  client = p->first;
+    PipeWay pipeway = p->second;
 
-    if(m_curr_time <= expire_time) {
-      buildRealmCast(m_map_key_channel[key]);
-      m_last_post_relcast = m_curr_time;
+    double time_until_expire = pipeway.timeUntilExpire(m_curr_time);
+    
+    if(time_until_expire > 0) {
+      bool posted = false;
+      if(pipeway.isChanneled()) 
+	posted = buildRealmCastChannel(pipeway);
+      else 
+	posted = buildWatchCast(pipeway);
+
+      if(posted) {
+	string info_str = client + ":" + pipeway.getContentDescriptor(55);
+	addLatestOutCast(info_str);
+	m_last_post_relcast = m_curr_time;
+      }
     }
-    else
-      expired_keys.push_back(key);
+    else if(time_until_expire < -30)
+      expired_clients.push_back(client);
   }
 
-  // Part 3: For key_expire pairs that have indeed expired, remove
-  // these entries from the maps.
-  for(unsigned int i=0; i<expired_keys.size(); i++) {
-    string key = expired_keys[i];
-    m_map_key_expire.erase(key);
-    m_map_key_channel.erase(key);
+  // Part 3: For client pipeways that have indeed expired, remove
+  // these entries from the map.
+  for(unsigned int i=0; i<expired_clients.size(); i++) {
+    string client = expired_clients[i];
+    m_map_pipeways.erase(client);
   }
 }
 
 
 //---------------------------------------------------------
-// Procedure: buildRealmCast(channel)
+// Procedure: buildWatchCast()
+//   Returns: true if Posting is posted
 
-void Realm::buildRealmCast(string channel)
+bool Realm::buildWatchCast(PipeWay pipeway)
 {
+  // Sanity checks
+  if(pipeway.isChanneled())
+    return(false);
+
+  bool posted = false;
+  set<string> vars = pipeway.getVars();
+  set<string>::iterator p;
+  for(p=vars.begin(); p!=vars.end(); p++) {
+    string var = *p;
+
+    bool has_entry = false;
+    CMOOSMsg msg;
+    
+    if(m_map_data.count(var) != 0) {
+      list<CMOOSMsg> msgs = m_map_data[var];
+      if(msgs.size() != 0) {
+	msg = msgs.front();
+	has_entry = true;
+      }
+    }
+
+    double msg_utc_time = msg.GetTime();
+    bool force_refresh = pipeway.forceRefresh();
+    
+    if(!force_refresh && (msg_utc_time < m_map_var_last_wcast[var]))
+      continue;
+    
+    WatchCast wcast;
+    wcast.setVarName(var);
+    wcast.setNode(m_host_community);
+
+    if(has_entry) {
+      wcast.setCommunity(msg.GetCommunity());
+      wcast.setSource(msg.GetSource());
+      wcast.setLocTime(msg_utc_time - m_start_time);
+      wcast.setUtcTime(msg_utc_time);
+      if(msg.IsString())
+	wcast.setSVal(msg.GetString());
+      else if(msg.IsDouble())
+	wcast.setDVal(msg.GetDouble());
+      m_map_var_last_wcast[var] = m_curr_time;
+    }
+    else {
+      wcast.setCommunity("n/a");
+      wcast.setSource("n/a");
+      wcast.setLocTime(-1);
+      wcast.setSVal("n/a");
+    }
+
+    posted = true;
+    m_total_watchcasts++;
+    string wcast_str = wcast.get_spec();
+    Notify("WATCHCAST", wcast_str);
+  }
+  return(posted);
+}
+
+
+//---------------------------------------------------------
+// Procedure: buildRealmCastChannel
+
+bool Realm::buildRealmCastChannel(PipeWay pipeway)
+{
+  string channel = pipeway.getChannel();
+  if(channel == "")
+    return(false);
+    
   vector<string> output;
   stringstream ss;
   
   set<string> pubs = m_map_pubs[channel];
-
-  if(m_show_subscriptions && m_map_subs.count(channel)) {
+  
+  if(pipeway.showSubscriptions() && m_map_subs.count(channel)) {
     set<string> subs = m_map_subs[channel];
     ss << "Subscriptions" << endl;
     ss << "=======================================" << endl;
-    resetACTable();
-
+    resetACTable(pipeway);
+    
     set<string>::iterator p;
     for(p=subs.begin(); p!=subs.end(); p++) {
       string var = *p;
-
-      if(m_show_masked && (m_map_data.count(var) == 0))
-	addRowACTab(var, "-", "never", "-", "-");
+      
+      if(pipeway.showMasked() && (m_map_data.count(var) == 0))
+	addRowACTab(pipeway, var, "-", "never", "-", "-");
       
       if(m_map_data.count(var) != 0) {
 	CMOOSMsg msg   = m_map_data[var].front();
 	string   src   = msg.GetSource();
 	string   comm  = msg.GetCommunity();
-	double   dtime = msg.GetTime() - m_start_time;
+	double   dtime = msg.GetTime();
+	if(!pipeway.timeFormatUTC())
+	  dtime = dtime - m_start_time;
+	  
 	string   stime = doubleToString(dtime, 2);
 	string   sval  = "formatted report";
 	if(msg.IsDouble())
@@ -369,7 +401,7 @@ void Realm::buildRealmCast(string channel)
 	else if(!isIgnoreVar(var)) 
 	  sval  = msg.GetString();
 	
-	addRowACTab(var, src, stime, comm, sval);
+	addRowACTab(pipeway, var, src, stime, comm, sval);
       }
     }
     ss << m_actab.getFormattedString(true) << endl << endl;
@@ -378,12 +410,12 @@ void Realm::buildRealmCast(string channel)
   if(m_map_pubs.count(channel)) {
     set<string> pubs = m_map_pubs[channel];
     // if not showing subscriptions, we don't need the upper bar
-    if(m_show_subscriptions)
+    if(pipeway.showSubscriptions())
       ss << "=======================================" << endl;
     ss << "Publications" << endl;
     ss << "=======================================" << endl;
-
-    resetACTable();
+    
+    resetACTable(pipeway);
     
     set<string>::iterator q;
     for(q=pubs.begin(); q!=pubs.end(); q++) {
@@ -393,7 +425,10 @@ void Realm::buildRealmCast(string channel)
 	CMOOSMsg msg   = m_map_data[var].front();
 	string   src   = msg.GetSource();
 	string   comm  = msg.GetCommunity();
-	double   dtime = msg.GetTime() - m_start_time;
+	double   dtime = msg.GetTime();
+	if(!pipeway.timeFormatUTC())
+	  dtime = dtime - m_start_time;
+	
 	string   stime = doubleToString(dtime, 2);
 	string   sval  = "formatted report";
 	if(msg.IsDouble())
@@ -403,24 +438,21 @@ void Realm::buildRealmCast(string channel)
 	else if(!isIgnoreVar(var))
 	  sval  = msg.GetString();
 	
-	addRowACTab(var, src, stime, comm, sval);
+	addRowACTab(pipeway, var, src, stime, comm, sval);
       }
     }
     ss << m_actab.getFormattedString(true) << endl;
   }
   
-  m_map_post_count[channel]++;
-  unsigned int count = m_map_post_count[channel];
-  
   RealmCast relcast;
   relcast.setNodeName(m_host_community);
   relcast.setProcName(channel);
-  relcast.setCount(count);
   relcast.msg(ss.str());
   
+  m_total_realmcasts++;
   string relcast_str = relcast.getRealmCastString();
-  
   Notify("REALMCAST", relcast_str);
+  return(true);
 }
 
 
@@ -472,15 +504,15 @@ void Realm::buildRealmCastSummary()
 //------------------------------------------------------------
 // Procedure: resetACTable()
 
-void Realm::resetACTable()
+void Realm::resetACTable(PipeWay pipeway)
 {
   int table_cols = 5;
   string header = "Variable | Source | Time | Comm | Value";
-  if(!m_show_source) {
+  if(!pipeway.showSource()) {
     table_cols--;
     header = findReplace(header,"Source |", "");
   }
-  if(!m_show_community) {
+  if(!pipeway.showCommunity()) {
     table_cols--;
     header = findReplace(header,"Comm |", "");
   }
@@ -496,15 +528,15 @@ void Realm::resetACTable()
 //------------------------------------------------------------
 // Procedure: addRowACTab()
 
-void Realm::addRowACTab(string var, string source, string time,
-			string comm, string value)
+void Realm::addRowACTab(PipeWay pipeway, string var, string source,
+			string time, string comm, string value)
 {
-  if(!m_show_source)
+  if(!pipeway.showSource())
     source  = "_ignore_";
-  if(!m_show_community)
+  if(!pipeway.showCommunity())
     comm = "_ignore_";
 
-  if(m_trunc_content)
+  if(pipeway.truncContent())
     value = value.substr(0, m_trunc_length);
   
   if(strEnds(var, "_STATUS") && strContains(value, "MOOSName")) {
@@ -512,7 +544,7 @@ void Realm::addRowACTab(string var, string source, string time,
     value = biteString(value, '$');
   }
   
-  if(!m_wrap_content)	
+  if(!pipeway.wrapContent())
     m_actab << var << source << time << comm << value;
   else {
     vector<string> svector = breakLen(value, m_wrap_length);
@@ -520,9 +552,9 @@ void Realm::addRowACTab(string var, string source, string time,
       if(i == 0)
 	m_actab << var << source << time << comm << svector[i];
       else {
-	if(m_show_source)
+	if(pipeway.showSource())
 	  source = "";
-	if(m_show_community)
+	if(pipeway.showCommunity())
 	  comm = "";
 	m_actab << "" << source << "" << comm << svector[i];
       }
@@ -566,6 +598,46 @@ vector<string> Realm::getAppsVector() const
   return(svector);
 }
 
+//------------------------------------------------------------
+// Procedure: addLatestOutCast()
+
+void Realm::addLatestOutCast(string str)
+{
+  // First find out if it is different from the most recent
+  bool new_outcast = true;
+  string previous_outcast, amt, time;
+
+  if(m_recent_outcasts.size() > 0) {
+    string recent = m_recent_outcasts.front();
+    amt  = biteStringX(recent, ' ');
+    time = biteStringX(recent, ' ');
+    previous_outcast = recent;
+    if(previous_outcast == str)
+      new_outcast = false;
+  }
+
+  double curr_loc_time = m_curr_time - m_start_time;
+  string curr_str_time = doubleToString(curr_loc_time,2);
+
+  string new_entry;
+  if(new_outcast) {
+    new_entry = "1 " + curr_str_time + " " + str;
+    m_recent_outcasts.push_front(new_entry);
+  }
+  else {
+    int int_amt = atoi(amt.c_str());
+    string str_amt = intToString(int_amt+1);
+    new_entry = "" + str_amt + " " + curr_str_time + " " + str;
+    if(m_recent_outcasts.size() == 0)
+      m_recent_outcasts.push_front(new_entry);
+    else
+      m_recent_outcasts.front() = new_entry;
+  }
+  
+  if(m_recent_outcasts.size() > 5)
+    m_recent_outcasts.pop_back();
+}
+
 
 //------------------------------------------------------------
 // Procedure: buildReport()
@@ -579,17 +651,6 @@ bool Realm::buildReport()
   m_msgs << "  Wrap Length:  " << uintToString(m_wrap_length) << endl;
   m_msgs << "  Trunc Length: " << uintToString(m_trunc_length) << endl;
   m_msgs << "  Max Msg Hist: " << uintToString(m_msg_max_hist) << endl;
-
-  m_msgs << endl;
-  m_msgs << "Content Config (from connected client): " << endl;
-  m_msgs << "--------------------------------------------" << endl;
-  m_msgs << "  Show Source: " << boolToString(m_show_source) << endl;
-  m_msgs << "  Show Commun: " << boolToString(m_show_community) << endl;
-  m_msgs << "  Show Subscr: " << boolToString(m_show_subscriptions) << endl;
-  m_msgs << "  Show Masked: " << boolToString(m_show_masked) << endl;
-  m_msgs << "  Wrp Content: " << boolToString(m_wrap_content) << endl;
-  m_msgs << "  Trc Content: " << boolToString(m_trunc_content) << endl;
-  m_msgs << "  Cur Channel: " << m_channel << endl;
 
   m_msgs << endl;
   m_msgs << "MOOS Community State: " << endl;
@@ -607,27 +668,50 @@ bool Realm::buildReport()
   m_msgs << "  Total SVars: " << uintToString(m_set_realm_subs.size()) << endl;
   m_msgs << "  Total PVars: " << uintToString(m_set_realm_pubs.size()) << endl;
   m_msgs << "  Unique Vars: " << uintToString(m_set_unique_vars.size()) << endl;
-  m_msgs << "  CurrTime:  " << doubleToString(m_curr_time, 2) << endl;
-  m_msgs << "  Exp Time:  " << doubleToString(m_expire_time, 2) << endl;
-  m_msgs << "  Summaries: " << uintToString(m_summaries_posted) << endl;
-  
-  m_msgs << endl;
-
-  ACTable actab(2);
-  actab << "Channel | Count";
-  actab.addHeaderLines();
-  
-  map<string, unsigned int>::iterator q;
-  for(q=m_map_post_count.begin(); q!=m_map_post_count.end(); q++) {
-    string channel = q->first;
-    string count = uintToString(q->second);
-   
-    actab << channel << count;
-  }
+  m_msgs << "  UTC Time:    " << doubleToString(m_curr_time, 2) << endl;
+  m_msgs << "  Local Time:  " << doubleToString(m_curr_time-m_start_time, 2) << endl;
+  m_msgs << "  Summaries:   " << uintToString(m_summaries_posted) << endl;
 
   m_msgs << endl;
-  m_msgs << "RealmCasts Generated: " << endl;
+  m_msgs << "Recent RealmCasts or WatchCasts:" << endl;
   m_msgs << "--------------------------------------------" << endl;
+  m_msgs << "  Total RealmCasts: " << uintToString(m_total_realmcasts) << endl;
+  m_msgs << "  Total WatchCasts: " << uintToString(m_total_watchcasts) << endl;
+  m_msgs << "--------------------------------------------" << endl;
+
+  ACTable wctab(4);
+  wctab << "Count | Time | Client | Content";
+  wctab.addHeaderLines();
+  wctab.setColumnJustify(1, "right");
+  list<string>::iterator p;
+  for(p=m_recent_outcasts.begin(); p!=m_recent_outcasts.end(); p++) {
+    string entry = *p;
+    string amt  = "(" + biteStringX(entry, ' ') + ")";
+    string time = biteStringX(entry, ' ');
+    string client = biteStringX(entry, ':');
+    string info = entry;
+    wctab << amt << time << client << info;
+  }
+  m_msgs << wctab.getFormattedString();
+
+  
+  m_msgs << endl;
+  m_msgs << "Currently Active Clients:" << endl;
+  m_msgs << "--------------------------------------------" << endl;
+  ACTable actab(3);
+  actab << "Client | Active | Content";
+  actab.addHeaderLines();
+
+  map<string, PipeWay>::iterator q;
+  for(q=m_map_pipeways.begin(); q!=m_map_pipeways.end(); q++) {
+    string client = q->first;
+    PipeWay pipeway = q->second;
+    double time_until_expire = pipeway.timeUntilExpire(m_curr_time);
+    string content = pipeway.getContentDescriptor();
+    string active = doubleToString(time_until_expire,2);
+    actab << client << active << content;    
+  }
+    
   m_msgs << actab.getFormattedString();
 
   return(true);

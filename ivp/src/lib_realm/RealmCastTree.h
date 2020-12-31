@@ -36,7 +36,9 @@ class RealmCastTree
   RealmCastTree();
   ~RealmCastTree() {}
 
-  bool addRealmSummary(RealmSummary);
+  bool addRealmSummary(RealmSummary, std::string, std::string);
+  void setDefaultNode(std::string s)   {m_default_node=s;}
+  void clearDefaultNode(std::string s) {m_default_node="";}
   
   // Return true if first time heard from this node
   bool addRealmCast(const std::string&);
@@ -81,7 +83,11 @@ class RealmCastTree
   
 private: 
   std::string m_current_node;
-
+  
+  // Default node used only if user wants the client app to view a node upon
+  // upon client app startup
+  std::string m_default_node;
+  
   // Mapping from ID to NodeName
   std::map<std::string, std::string>  m_map_id_node;
 

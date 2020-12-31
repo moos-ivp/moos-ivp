@@ -9,6 +9,7 @@ SET(SRC
   AppCastTree.cpp
   ACTable.cpp
   ACBlock.cpp
+  InfoCastSettings.cpp
 )
 
 SET(HEADERS
@@ -17,6 +18,7 @@ SET(HEADERS
   AppCastTree.h
   ACBlock.h
   ACTable.h
+  InfoCastSettings.h
 )
 
 # Build Library
