@@ -83,7 +83,12 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 
   m_verbose = false;
 
+  // The use_high_res_GL function is supported in more recent FLTK
+  // packages. FLTK on older non-MacOS systems may not have this
+  // feature. It is mostly needed to support Mac Retina displays.
+#ifdef __APPLE__
   Fl::use_high_res_GL(1);
+#endif
 }
 
 //-------------------------------------------------------------
@@ -453,9 +458,14 @@ void MarineViewer::draw()
   glClearColor(r,g,b,0.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
-  //glViewport(0, 0, w(), h());
+  // The pixel_w/h() functions are supported in more recent FLTK
+  // packages. FLTK on older non-MacOS systems may not have this
+  // feature. It is mostly needed to support Mac Retina displays.
+#ifdef __APPLE__
   glViewport(0, 0, pixel_w(), pixel_h());
-  
+#else
+  glViewport(0, 0, w(), h());
+#endif
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();

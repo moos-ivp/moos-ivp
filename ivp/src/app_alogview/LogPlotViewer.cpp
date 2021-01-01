@@ -64,7 +64,12 @@ LogPlotViewer::LogPlotViewer(int gx, int gy, int gw, int gh, const char *gl)
   m_display_min_time = 0;
   m_display_max_time = 0;
 
-  Fl::use_high_res_GL(1);  
+  // The use_high_res_GL function is supported in more recent FLTK
+  // packages. FLTK on older non-MacOS systems may not have this
+  // feature. It is mostly needed to support Mac Retina displays.
+#ifdef __APPLE__
+  Fl::use_high_res_GL(1);
+#endif
 }
 
 //-------------------------------------------------------------
@@ -100,8 +105,15 @@ void LogPlotViewer::draw()
   //glClearColor(0.5,0.5,0.5 ,0.0);
   glClear(GL_COLOR_BUFFER_BIT);
 
+  // The pixel_w/h() functions are supported in more recent FLTK
+  // packages. FLTK on older non-MacOS systems may not have this
+  // feature. It is mostly needed to support Mac Retina displays.
+#ifdef __APPLE__
   glViewport(0, 0, pixel_w(), pixel_h());
-
+#else
+  glViewport(0, 0, w(), h());
+#endif
+  
   drawLogPlot();
   drawTimeText();
   drawMinMaxVarText();

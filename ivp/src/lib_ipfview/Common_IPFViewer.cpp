@@ -80,7 +80,12 @@ Common_IPFViewer::Common_IPFViewer(int x, int y, int wid, int hgt,
   m_refresh_quadset_aof_pending = true;
   m_refresh_quadset_ipf_pending = true;
 
+  // The use_high_res_GL function is supported in more recent FLTK
+  // packages. FLTK on older non-MacOS systems may not have this
+  // feature. It is mostly needed to support Mac Retina displays.
+#ifdef __APPLE__
   Fl::use_high_res_GL(1);
+#endif
 }
 
 //-------------------------------------------------------------
@@ -284,9 +289,16 @@ void Common_IPFViewer::draw()
 
   //if((m_quadset.size2D() == 0) && (m_quadset.size1D() == 0))
   //  return;
-
+  
+  // The pixel_w/h() functions are supported in more recent FLTK
+  // packages. FLTK on older non-MacOS systems may not have this
+  // feature. It is mostly needed to support Mac Retina displays.
+#ifdef __APPLE__
   glViewport(0,0, pixel_w(), pixel_h());
-
+#else
+  glViewport(0,0, w(), h());
+#endif
+  
   glMatrixMode(GL_MODELVIEW);
   glLoadIdentity();
   glColor3f(0.0, 0.25, 0.0);
