@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <algorithm>
 #include <iostream>
 #include <iterator>
 #include "MBUtils.h"
