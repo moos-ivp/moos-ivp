@@ -1242,7 +1242,6 @@ void PMV_MOOSApp::postAppCastRequest(string channel_node,
 
 bool PMV_MOOSApp::buildReport()
 {
-  return(false);
   string tiff_file_a = m_gui->mviewer->getTiffFileA();
   string info_file_a = m_gui->mviewer->getInfoFileA();
   string tiff_file_b = m_gui->mviewer->getTiffFileB();
