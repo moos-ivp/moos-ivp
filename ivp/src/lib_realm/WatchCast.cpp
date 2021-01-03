@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <cstdlib>
 #include "MBUtils.h"
 #include "WatchCast.h"
 
