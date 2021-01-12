@@ -9,10 +9,8 @@
 #          all child processes. It may also be configured to run
 #          on only a given set of apps named by the caller.
 #--------------------------------------------------------------
-
-#-------------------------------------------------------
 #  Part 1: Initialize global variables
-#-------------------------------------------------------
+#--------------------------------------------------------------
 VERBOSE="no"
 ANTLER="no"
 SORTBY="cpu"
@@ -24,7 +22,7 @@ SURVEY=""
 #  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
         echo "mtop.sh [OPTIONS]                                       "
 	echo "                                                        "
 	echo "SYNOPSIS:                                               "
@@ -57,23 +55,23 @@ for ARGI; do
 	echo "  $ mtop.sh --apps=pHelmIvP,pFooBar                     "
 	echo "  $ mtop.sh -c -m                                       "
         exit 0;
-    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ] ; then
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
 	VERBOSE="yes"
-    elif [ "${ARGI}" = "--info"   -o "${ARGI}" = "-i" ] ; then
+    elif [ "${ARGI}" = "--info"   -o "${ARGI}" = "-i" ]; then
 	echo "Run the top command showing only MOOS Apps"
 	exit 0
-    elif [ "${ARGI}" = "--antler" -o "${ARGI}" = "-a" ] ; then
+    elif [ "${ARGI}" = "--antler" -o "${ARGI}" = "-a" ]; then
 	ANTLER="yes"
-    elif [ "${ARGI}" = "--survey" -o "${ARGI}" = "-s" ] ; then
+    elif [ "${ARGI}" = "--survey" -o "${ARGI}" = "-s" ]; then
 	SURVEY="yes"
-    elif [ "${ARGI}" = "--core" -o "${ARGI}" = "-c" ] ; then
+    elif [ "${ARGI}" = "--core" -o "${ARGI}" = "-c" ]; then
 	APPS="pHelmIvP,MOOSDB,pMarineViewer,uSimMarine,pMarinePID,pLogger"
     elif [ "${ARGI}" = "--mem" -o "${ARGI}" = "-m" ] ; then
 	SORTBY="mem"
-    elif [ "${ARGI:0:7}" = "--apps=" ] ; then
+    elif [ "${ARGI:0:7}" = "--apps=" ]; then
         APPS="${ARGI#--apps=*}"
     else
-        echo "Bad Argument: "$ARGI
+        echo "mtop.sh: Bad Arg: $ARGI. Exit Code 1."
         exit 1
     fi
 done
@@ -84,7 +82,7 @@ done
 #-------------------------------------------------------
 command -v pgrep
 if [ $? != 0 ]; then
-    echo "The required utity pgrep is not found. Exiting."
+    echo "The required utity pgrep is not found. Exit Code 2."
     exit 2
 fi
     
@@ -94,7 +92,7 @@ fi
 declare -a PIDS=()
 
 # If apps are named explicitly, just use the list
-if [ "${APPS}" != "" ] ; then
+if [ "${APPS}" != "" ]; then
     IFS=', ' read -r -a apps_array <<< "$APPS"
     for app in "${apps_array[@]}"
     do
@@ -116,7 +114,7 @@ fi
 
 # Check for and handle if no PIDs to watch
 if [ -z "$PIDS" ]; then
-    echo "No MOOS apps named or found. Exiting."
+    echo "mtop.sh: No MOOS apps named or found. Exiting."
     exit 3
 elif [ "$SURVEY" = "yes" ]; then
     exit 4
