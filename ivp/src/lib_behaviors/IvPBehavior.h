@@ -27,8 +27,8 @@
 #define IVP_BEHAVIOR_HEADER
 
 #include <map>
-#include <vector>
 #include <string>
+#include <vector>
 #include "IvPFunction.h"
 #include "InfoBuffer.h"
 #include "CPAEngine.h"
