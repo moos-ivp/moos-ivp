@@ -746,11 +746,11 @@ void PickPos::setVNameCache()
   m_vname_cache.push_back("ula");     m_vname_cache.push_back("val");
   m_vname_cache.push_back("wes");     m_vname_cache.push_back("xiu");
   m_vname_cache.push_back("yen");     m_vname_cache.push_back("zan");
-  m_vname_cache.push_back("apia");    m_vname_cache.push_back("baku");
+  m_vname_cache.push_back("apia");    m_vname_cache.push_back("baka");
   m_vname_cache.push_back("cary");    m_vname_cache.push_back("doha");
-  m_vname_cache.push_back("elko");    m_vname_cache.push_back("fahy");
+  m_vname_cache.push_back("evie");    m_vname_cache.push_back("fahy");
   m_vname_cache.push_back("galt");    m_vname_cache.push_back("hays");
-  m_vname_cache.push_back("iola");    m_vname_cache.push_back("juba");
+  m_vname_cache.push_back("iola");    m_vname_cache.push_back("jing");
   m_vname_cache.push_back("kiev");    m_vname_cache.push_back("lima");
   m_vname_cache.push_back("mesa");    m_vname_cache.push_back("nuuk");
   m_vname_cache.push_back("oslo");    m_vname_cache.push_back("pace");
