@@ -469,8 +469,8 @@ bool Expander::applyMacrosToLine(string& line,
 	while(!answered) {
 	  cout << "Continue? [Y/n]" << endl;
 	  char c = getCharNoWait();
-	  cout << "char:[" << (int)c << "]" << endl;
-	  cout << "char:[" << c << "]" << endl;
+	  //cout << "char:[" << (int)c << "]" << endl;
+	  //cout << "char:[" << c << "]" << endl;
 	  if((c=='n') || (c=='N') || (c==((int)(3))))   // ASCII 03 is control-c
 	    exit(1);
 	  if((c=='Y') || (c=='y') || (c==((int)(10))))  // ASCII 10 is ENTER
