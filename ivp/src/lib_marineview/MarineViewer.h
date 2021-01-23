@@ -113,7 +113,8 @@ protected:
 			   const ColorPack& body_color,
 			   const ColorPack& vname_color,
 			   bool vname_draw, 
-			   unsigned int line=0);
+			   unsigned int line=0,
+			   double transparency=1);
 
   void  drawMarkers(const std::map<std::string, XYMarker>&);
   void  drawMarker(const XYMarker&);

@@ -732,7 +732,8 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
 				     const ColorPack& body_color,
 				     const ColorPack& vname_color,
 				     bool  vname_draw, 
-				     unsigned int outer_line)
+				     unsigned int outer_line,
+				     double transparency)
 {
   NodeRecord record = record_mikerb;
 
@@ -789,10 +790,10 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     double cx = g_kayakCtrX * factor_x;
     double cy = g_kayakCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_kayakBody, g_kayakBodySize, body_color, 0, factor_x);    
+    drawGLPoly(g_kayakBody, g_kayakBodySize, body_color, 0, factor_x, transparency);    
     if(outer_line)
-      drawGLPoly(g_kayakBody, g_kayakBodySize, black, outer_line, factor_x);    
-    drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, gray, 0, factor_x);
+      drawGLPoly(g_kayakBody, g_kayakBodySize, black, outer_line, factor_x, transparency);    
+    drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, gray, 0, factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "mokai") {
@@ -803,14 +804,14 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     double cx = g_mokaiCtrX * factor_x;
     double cy = g_mokaiCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_mokaiStern,  g_mokaiSternSize, body_color, 0, factor_x);    
-    drawGLPoly(g_mokaiSlice1, g_mokaiSlice1Size, body_color, 0, factor_x);    
-    drawGLPoly(g_mokaiSlice2, g_mokaiSlice2Size, body_color, 0, factor_x);    
-    drawGLPoly(g_mokaiSlice3, g_mokaiSlice3Size, body_color, 0, factor_x);    
-    drawGLPoly(g_mokaiBow,    g_mokaiBowSize, body_color, 0, factor_x);    
+    drawGLPoly(g_mokaiStern,  g_mokaiSternSize, body_color, 0, factor_x, transparency);    
+    drawGLPoly(g_mokaiSlice1, g_mokaiSlice1Size, body_color, 0, factor_x, transparency);    
+    drawGLPoly(g_mokaiSlice2, g_mokaiSlice2Size, body_color, 0, factor_x, transparency);    
+    drawGLPoly(g_mokaiSlice3, g_mokaiSlice3Size, body_color, 0, factor_x, transparency);    
+    drawGLPoly(g_mokaiBow,    g_mokaiBowSize, body_color, 0, factor_x, transparency);    
     if(outer_line)
-      drawGLPoly(g_mokaiBody, g_mokaiBodySize, black, outer_line, factor_x);    
-    drawGLPoly(g_mokaiMidOpen, g_mokaiMidOpenSize, gray, 0, factor_x);
+      drawGLPoly(g_mokaiBody, g_mokaiBodySize, black, outer_line, factor_x, transparency);    
+    drawGLPoly(g_mokaiMidOpen, g_mokaiMidOpenSize, gray, 0, factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "wamv"){
@@ -822,12 +823,17 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     double cx = (g_wamvCtrX + g_wamvBase/2) * factor_x;
     double cy = g_wamvCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_wamvBody, g_wamvBodySize, body_color, 0, factor_x);
-    drawGLPoly(g_wamvpropUnit, g_wamvpropUnitSize, blue, 0, factor_x);
+    drawGLPoly(g_wamvBody, g_wamvBodySize, body_color, 0,
+	       factor_x, transparency);
+    drawGLPoly(g_wamvpropUnit, g_wamvpropUnitSize, blue, 0,
+	       factor_x, transparency);
     glTranslatef(2*cx, 0, 0);
-    drawGLPoly(g_wamvBody, g_wamvBodySize, body_color, 0, factor_x);
-    drawGLPoly(g_wamvpropUnit, g_wamvpropUnitSize, blue, 0, factor_x);
-    drawGLPoly(g_wamvPontoonConnector, g_pontoonConnectorSize, gray, 0, factor_x);
+    drawGLPoly(g_wamvBody, g_wamvBodySize, body_color, 0,
+	       factor_x, transparency);
+    drawGLPoly(g_wamvpropUnit, g_wamvpropUnitSize, blue, 0,
+	       factor_x, transparency);
+    drawGLPoly(g_wamvPontoonConnector, g_pontoonConnectorSize, gray, 0,
+	       factor_x, transparency);
     glTranslatef(-cx, cy, 0);
   }
   else if((vehibody == "auv") || (vehibody == "uuv")) {
@@ -839,10 +845,13 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     double cx = g_auvCtrX * factor_x;
     double cy = g_auvCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_auvBody, g_auvBodySize, body_color, 0, factor_x);
+    drawGLPoly(g_auvBody, g_auvBodySize, body_color, 0,
+	       factor_x, transparency);
     if(outer_line > 0)
-      drawGLPoly(g_auvBody, g_auvBodySize, black, outer_line, factor_x);
-    drawGLPoly(g_propUnit, g_propUnitSize, blue, 0, factor_x);
+      drawGLPoly(g_auvBody, g_auvBodySize, black, outer_line,
+		 factor_x, transparency);
+    drawGLPoly(g_propUnit, g_propUnitSize, blue, 0,
+	       factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "glider") {
@@ -853,10 +862,14 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     double cx = g_gliderCtrX * factor_x;
     double cy = g_gliderCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_gliderWing, g_gliderWingSize, body_color,  0, factor_x);
-    drawGLPoly(g_gliderWing, g_gliderWingSize, black, 1, factor_x);
-    drawGLPoly(g_gliderBody, g_gliderBodySize, body_color,  0, factor_x);
-    drawGLPoly(g_gliderBody, g_gliderBodySize, black, 1, factor_x);
+    drawGLPoly(g_gliderWing, g_gliderWingSize, body_color,  0,
+	       factor_x, transparency);
+    drawGLPoly(g_gliderWing, g_gliderWingSize, black, 1,
+	       factor_x, transparency);
+    drawGLPoly(g_gliderBody, g_gliderBodySize, body_color,  0,
+	       factor_x, transparency);
+    drawGLPoly(g_gliderBody, g_gliderBodySize, black, 1,
+	       factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "ship") {  
@@ -867,18 +880,22 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     double cx = g_shipCtrX * factor_x;
     double cy = g_shipCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_shipBody, g_shipBodySize, body_color, 0, factor_x);
+    drawGLPoly(g_shipBody, g_shipBodySize, body_color, 0,
+	       factor_x, transparency);
     if(outer_line > 0)
-      drawGLPoly(g_shipBody, g_shipBodySize, black, outer_line, factor_x);
+      drawGLPoly(g_shipBody, g_shipBodySize, black, outer_line,
+		 factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "track") {
     double cx = g_shipCtrX * factor_x;
     double cy = g_shipCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_shipBody, g_shipBodySize, body_color, 0, factor_x);
+    drawGLPoly(g_shipBody, g_shipBodySize, body_color, 0,
+	       factor_x, transparency);
     if(outer_line > 0)
-      drawGLPoly(g_shipBody, g_shipBodySize, black, outer_line, factor_x);
+      drawGLPoly(g_shipBody, g_shipBodySize, black, outer_line,
+		 factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
   else {  // vehibody == "auv" is the default
@@ -890,10 +907,13 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     double cx = g_auvCtrX * factor_x;
     double cy = g_auvCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
-    drawGLPoly(g_auvBody, g_auvBodySize, body_color, 0, factor_x);
+    drawGLPoly(g_auvBody, g_auvBodySize, body_color, 0,
+	       factor_x, transparency);
     if(outer_line > 0)
-      drawGLPoly(g_auvBody, g_auvBodySize, blue, outer_line, factor_x);
-    drawGLPoly(g_propUnit, g_propUnitSize, blue, 0, factor_x);
+      drawGLPoly(g_auvBody, g_auvBodySize, blue, outer_line,
+		 factor_x, transparency);
+    drawGLPoly(g_propUnit, g_propUnitSize, blue, 0,
+	       factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
 

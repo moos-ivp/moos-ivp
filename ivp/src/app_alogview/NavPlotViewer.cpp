@@ -494,7 +494,7 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
   BearingLine bng_line;
   
   if(m_vehi_settings.isViewableVehicles())
-    drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw);
+    drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw, 1);
 }
 
 

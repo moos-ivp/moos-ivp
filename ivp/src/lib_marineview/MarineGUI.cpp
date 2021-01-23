@@ -45,7 +45,7 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"File", 0,  0, 0, 64, 0, 0, 14, 0},
  {"Quit ", FL_CTRL+'q', (Fl_Callback*)MarineGUI::cb_Quit, 0, 0},
  {0},
-
+ 
  {"BackView", 0,  0, 0, 64, 0, 0, 14, 0},
  {"Zoom In",          'i', (Fl_Callback*)MarineGUI::cb_Zoom, (void*)-1, 0},
  {"Zoom Out",         'o', (Fl_Callback*)MarineGUI::cb_Zoom, (void*)1, 0},

@@ -54,7 +54,7 @@ vector<string> parseString(const string& string_str, char separator)
 
   char *buff = new char[strlen(str)+1];
 
-  vector<string> rvector;
+  vector<string> rvector; 
 
   while(str[0] != '\0') {    
     int i=0;

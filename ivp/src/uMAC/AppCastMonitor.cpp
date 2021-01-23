@@ -115,6 +115,7 @@ bool AppCastMonitor::Iterate()
 {
   // Part 1: Update the key state variables
   m_iteration++;
+
   m_curr_time = MOOSTime();
   trySetInitialNodeProc();
   
@@ -228,7 +229,9 @@ bool AppCastMonitor::handleMailAppCast(const string& str)
     string key = GetAppName() + "startup";
     postAppCastRequest(node_name, "all", key, "any", 0.1);
   }
-  m_update_pending = true;
+
+  if(m_refresh_mode != "paused")
+    m_update_pending = true;
 
   return(true);
 }

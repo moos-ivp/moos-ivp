@@ -46,8 +46,9 @@ NodeRecord::NodeRecord(string vname, string vtype)
   m_heading_og = 0;
   m_depth      = 0;
   m_altitude   = 0;
-  m_timestamp  = 0;
   m_length     = 0;
+  m_timestamp  = 0;
+  m_transparency = 1;  // render fully opaque
   m_name       = vname;
   m_type       = vtype;
  
@@ -65,6 +66,7 @@ NodeRecord::NodeRecord(string vname, string vtype)
   m_altitude_set   = false;
   m_length_set     = false;
   m_timestamp_set  = false;
+  m_transparency_set = false;
   m_trajectory_set = false;
 
   m_thrust_mode_reverse = false;
@@ -102,6 +104,8 @@ string NodeRecord::getStringValue(string key) const
     return(doubleToStringX(m_length, 2));
   else if((key == "timestamp") || (key == "time") || (key == "utime"))
     return(doubleToStringX(m_timestamp, 2));
+  else if(key == "transparency")
+    return(doubleToStringX(m_transparency, 2));
   else if((key == "trajectory") || (key == "traj"))
     return(m_trajectory);
   else if(hasProperty(key))
@@ -209,6 +213,8 @@ string NodeRecord::getSpec(bool terse) const
     //str += ",YAW="  + doubleToStringX(m_heading,2);
   if(m_timestamp_set)
     str += ",TIME=" + doubleToStringX(m_timestamp,2);
+  if(m_transparency_set)
+    str += ",TRANSPARENCY=" + doubleToStringX(m_transparency,2);
   if(m_length_set)
     str += ",LENGTH=" + doubleToStringX(m_length,2);
 
@@ -360,6 +366,8 @@ bool NodeRecord::valid(string check, string& why) const
       missing += "depth,";
     if((field == "time") && !m_timestamp_set) 
       missing += "time,";
+    if((field == "transparency") && !m_transparency_set) 
+      missing += "transparency,";
     if((field == "length") && !m_length_set) 
       missing += "length,";
     if((field == "yaw") && !m_yaw_set) 

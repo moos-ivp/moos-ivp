@@ -271,7 +271,8 @@ SET(ROBOT_APPS
 IF( EXISTS ./pSafetyRetreat )
   LIST(APPEND ROBOT_APPS pSafetyRetreat
 )  
-ENDIF( EXISTS ./pSafetyRetreat )
+#ENDIF( EXISTS ./pSafetyRetreat )
+ENDIF()
 
 message(" ROBOT_APPS: ${ROBOT_APPS}")
 

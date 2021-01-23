@@ -84,7 +84,8 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
 	new_record.setHeadingOG(atof(value.c_str()));
       else if(param == "SPD_OG")
 	new_record.setSpeedOG(atof(value.c_str()));
-
+      else if(param == "TRANSPARENCY")
+	new_record.setTransparency(atof(value.c_str()));
     }
     else if(param == "COLOR")
       new_record.setColor(value);

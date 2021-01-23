@@ -46,6 +46,7 @@ class NodeRecord
   void setDepth(double v)     {m_depth=v;      m_depth_set=true;}
   void setLength(double v)    {m_length=v;     m_length_set=true;}
   void setTimeStamp(double v) {m_timestamp=v;  m_timestamp_set=true;}
+  void setTransparency(double v) {m_transparency=v; m_transparency_set=true;}
   void setAltitude(double v)  {m_altitude=v;   m_altitude_set=true;}
 
   void setTrajectory(std::string s) {m_trajectory=s; m_trajectory_set=true;}
@@ -80,6 +81,7 @@ class NodeRecord
   double getAltitude() const   {return(m_altitude);}
   double getLength() const     {return(m_length);}
   double getTimeStamp() const  {return(m_timestamp);}
+  double getTransparency() const {return(m_transparency);}
   std::string getTrajectory() const {return(m_trajectory);}
 
   bool   isSetX() const        {return(m_x_set);}
@@ -96,6 +98,7 @@ class NodeRecord
   bool   isSetAltitude() const  {return(m_altitude_set);}
   bool   isSetLength() const    {return(m_length_set);}
   bool   isSetTimeStamp() const {return(m_timestamp_set);}
+  bool   isSetTransparency() const {return(m_transparency_set);}
   bool   isSetTrajectory() const {return(m_trajectory_set);}
 
   bool   getThrustModeReverse() const {return(m_thrust_mode_reverse);}
@@ -134,6 +137,7 @@ class NodeRecord
   double m_lon;
   double m_length;
   double m_timestamp;
+  double m_transparency;
   std::string  m_trajectory;
   std::string  m_name;
   std::string  m_group;
@@ -158,6 +162,7 @@ class NodeRecord
   bool m_altitude_set;
   bool m_length_set;
   bool m_timestamp_set;
+  bool m_transparency_set;
   bool m_thrust_mode_reverse;
   bool m_trajectory_set;
 

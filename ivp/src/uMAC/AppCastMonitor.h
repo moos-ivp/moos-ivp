@@ -40,6 +40,7 @@ class AppCastMonitor : public CMOOSApp
 
   void setInitialProc(std::string s) {m_initial_proc=s;}
   void setInitialNode(std::string s) {m_initial_node=s;}
+  void setRefreshPaused() {m_refresh_mode = "paused";}
   
  protected:
   bool OnNewMail(MOOSMSG_LIST &NewMail);
