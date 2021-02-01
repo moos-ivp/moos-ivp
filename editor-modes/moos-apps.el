@@ -30,7 +30,7 @@
       '("uSimWaterway" "border" "cover_poly" "cell_size" "cell_val")
       '("pMissionEval" "lead_condition" "pass_condition" "fail_condition" "result_flag" "pass_flag" "fail_flag" )
       '("uFldVoronoi" "stale_time" "verbose" "region")
-      '("pRealm" "relcast_interval" "summary_interval" "wrap_length" "trunc_length" "msg_max_history" )
+      '("pRealm" "relcast_interval" "summary_interval" "wrap_length" "trunc_length" "msg_max_history" "hist_var" "scope_set")
       '("uSimHeron" "port" "comms_type" "ip_addr")
       '("uFldVoronoi" "reject_range" "post_poly" "post_region" "region")
       '("uMemWatch" "ignore" "watch_only" "absolute_time_gap")
@@ -43,8 +43,8 @@
       '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "rand_var" "randvar" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp" "time_zero" "pause_variable" "forward_variable")
       '("uProcessWatch"  "watch" "watch_all" "nowatch" "allow_retractions" "summary_wait" "post_mapping")
       '("uSimMarine"  "start_x" "start_y" "start_heading" "start_speed" "start_depth" "start_pos" "drift_x" "drift_y" "rotate_speed" "drift_vector" "buoyancy_rate" "max_acceleration" "max_deceleration" "max_depth_rate" "max_depth_rate_speed" "sim_pause" "dual_state" "thrust_reflect" "thrust_factor" "turn_rate" "thrust_map" "prefix" "default_water_depth" "trim_tolerance" "max_trim_delay" "max_rudder_degs_per_sec")
-      '("uSimMarineTow" "tow_dist" "lead_vname") 
-      '("uSimMarineX"  "start_x" "start_y" "start_heading" "start_speed" "start_depth" "start_pos" "drift_x" "drift_y" "rotate_speed" "drift_vector" "buoyancy_rate" "max_acceleration" "max_deceleration" "max_depth_rate" "max_depth_rate_speed" "sim_pause" "dual_state" "thrust_reflect" "thrust_factor" "turn_rate" "thrust_map" "prefix" "default_water_depth" "trim_tolerance" "max_trim_delay" "max_rudder_degs_per_sec")
+      '("uSimMarineTow" "tow_dist" "lead_vname" "enabled_flag" "disabled_flag") 
+      '("uSimMarineX"  "start_x" "start_y" "start_heading" "start_speed" "start_depth" "start_pos" "drift_x" "drift_y" "rotate_speed" "drift_vector" "buoyancy_rate" "max_acceleration" "max_deceleration" "max_depth_rate" "max_depth_rate_speed" "sim_pause" "dual_state" "thrust_reflect" "thrust_factor" "turn_rate" "thrust_map" "prefix" "default_water_depth" "trim_tolerance" "max_trim_delay" "max_rudder_degs_per_sec" "wormhole" "depth_control" "yaw_pid_kp" "yaw_pid_kd" "yaw_pid_ki" "yaw_pid_integral_limit" "speed_pid_kp" "speed_pid_kd" "speed_pid_ki" "speed_pid_integral_limit" "maxrudder" "maxthrust" "speed_factor" )
       '("pHelmIvP" "term_report_interval" "ivp_behavior_dir" "behaviors" "domain" "start_engaged" "allow_disengaged" "disengage_on_allstop" "other_override_var" "node_skew" "ok_skew" "verbose" "bhv_dir_not_found_ok" "start_in_drive" "kcache" "hold_on_apps")
       '("pMarinePID" "speed_factor" "sim_instability" "tardy_helm_threshold" "tardy_nav_threshold" "active_start" "verbose" "yaw_pid_kp" "yaw_pid_kd" "yaw_pid_ki" "yaw_pid_integral_limit" "yaw_pid_ki_limit" "maxrudder" "speed_pid_" "speed_pid_kp" "speed_pid_kd" "speed_pid_ki" "speed_pid_integral_limit" "maxthrust" "depth_control" "z_to_pitch_pid_kp" "z_to_pitch_pid_kd" "z_to_pitch_pid_ki" "z_to_pitch_pid_integral_limit" "maxpitch" "pitch_pid_kp" "pitch_pid_kd" "pitch_pid_ki" "pitch_pid_integral_limit" "maxelevator")
       '("uTermCommand" "cmd")
@@ -111,6 +111,8 @@
       '("pEncircle" "circle_position" "max_speed" "aggression" "encircle_active" "consider_thresh" "on_circle_thres" "message_color")
       
       '("pTaskManager")
+
+      '("pTowManager" "ownship" )
       
       '("pLogger" "AsyncLog" "WildCardLogging" "Log" "LogAuxSrc" "WildCardExclusionLog" "WildCardOmitPattern" "file" "path" "synclog" "filetimestamp" "LoggingDirectorySummaryFile"  "UTCLogDirectories" "DoublePrecision" "MarkExternalCommunityMessages" "MarkDataType" "CompressAlogs" "file")))
 

@@ -50,4 +50,7 @@
        '("BHV_CutRange" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "pwt_inner_dist" "giveup_dist" "patience" "on_no_contact_ok" "pursueflag" "giveupflag" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region")
        '("BHV_Shadow" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "heading_peakwidth" "heading_basewidth" "speed_peakwidth" "speed_basewidth" "on_no_contact_ok" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region")
        '("BHV_Trail" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "nm_radius" "n_alert_request" "post_trail_dist_on_idle" "pwt_outer_dist" "radius" "trail_angle" "trail_angle_type" "trail_range" "on_no_contact_ok")
+
+       '("BHV_TaskWaypoint" "type" "max_bid_wins" "team_range" "bidwonflag" "xbidwonflag" "waypt_x" "waypt_y" "waypt" )
+
        '("BHV_AvoidCollision" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "bearing_lines" "completed_dist" "max_util_cpa_dist" "min_util_cpa_dist" "no_alert_request" "contact_type_required" "on_no_contact_ok" "pwt_grade" "pwt_inner_dist" "pwt_outer_dist" "match_contact_group" "ignore_contact_group" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region")))
