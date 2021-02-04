@@ -1,15 +1,125 @@
 README-WINDOWS.txt
-Last updated: 19 June 2012
+Last updated: 02 February 2021
 Maintainer: No one (volunteer?)
 
 
+==============================================================================
+OVERVIEW
+==============================================================================
+This file gives steps specific to Windows 10, for building and running
+MOOS-IvP software.
 
 
-The below Windows help was last updated in 2009. We would be happy to have 
-volunteers for updating the build process for Windows.
+==============================================================================
+NEEDED APPLICATIONS
+==============================================================================
+
+1) Windows Subsystem for Linux (WSL)
+   You need to install the Windows Subsystem for Linux (WSL). The official,
+   detailed instructions can be found at the following link:
+   https://docs.microsoft.com/en-us/windows/wsl/install-win10
+
+   Key instructions are reproduced here for reference. In a PowerShell
+   session, run the following:
+
+   > dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+   > dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+
+   To switch your default to WSL2:
+
+   > wsl --set-default-version 2
 
 
+2) WSL Linux distro
+   You will also need to install a suitable Linux distro to run in your WSL.
+   We typically recommend Ubuntu, and these instructions are made with the
+   assumption that you will use this distro in particular. The distro image
+   can be downloaded and installed via the Microsoft Store.
 
+
+3) X11 Server
+   In order to launch MOOS-IvP graphical utilities, you will need to install
+   an X11 server. Some options include:
+
+   - VcXsrv:   https://sourceforge.net/projects/vcxsrv/
+   - Xming:    https://sourceforge.net/projects/xming/
+   - Cygwin/X: https://x.cygwin.com/
+
+   These instructions are based on testing with VcXsrv, where the key
+   requirement is that the Windows firewall must allow VcXsrv to access
+
+                     ** BOTH PUBLIC AND PRIVATE **
+
+   networks; otherwise, the WSL distro will not be able to connect to the
+   X11 server to show graphical interfaces. The options for VcXsrv, by
+   configuration screen, are:
+
+   1. Multiple windows
+   2. Start no client
+   3. Check all boxes, including 'Disable access control'
+
+   To configure your WSL distro to connect to the X server, add the following
+   to your distro's .bashrc:
+
+   export DISPLAY=$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):0.0
+   export LIBGL_ALWAYS_INDIRECT=1
+
+
+==============================================================================
+SOFTWARE PACKAGES
+==============================================================================
+
+Once you install Ubuntu for WSL, you'll need to install the following
+packages. These instructions assume you are running Ubuntu 20.04
+
+Packages you probably already have installed:
+
+   g++        - GNU C++ compiler
+
+Additional packages and development libraries:
+
+   subversion - Advanced version control system
+   cmake      - cross-platform, open-source make system
+   xterm      - X terminal application
+
+   libfltk1.3-dev  - Fast Light Toolkit - development files
+   freeglut3-dev   - OpenGL Utility Toolkit development files
+   libpng-dev      - PNG library - development
+   libjpeg-dev     - Independent JPEG Group's JPEG runtime library
+   libtiff-dev     - Tag Image File Format library (TIFF), development files
+
+** libxft-dev      - FreeType-based font drawing library for X
+** libxinerama-dev - X11 Xinerama extension library (development headers)  ??
+
+To do it all, cut and paste this:
+
+   sudo apt install g++ subversion xterm cmake libfltk1.3-dev freeglut3-dev libpng-dev libjpeg-dev libxft-dev libxinerama-dev libtiff4-dev
+
+
+==============================================================================
+BUILDING MOOS-IvP
+==============================================================================
+To build both MOOS and MOOS-IvP in one go, run the following command:
+   ./build.sh
+
+To build the MOOS core and MOOS-IvP separately, run the following commands:
+   ./build-moos.sh
+   ./build-ivp.sh
+
+
+==============================================================================
+ENVIRONMENT VARIABLES
+==============================================================================
+When you build the MOOS-IvP software, the executable programs are placed
+in the "moos-ivp/bin" subdirectory of the source code tree.
+
+We recommend that you put the absolute path to this directory into
+your PATH environment variable.  This is especially important because the
+"pAntler" program, which can launch other MOOS/IvP programs, relies on the
+PATH variable to find those programs.
+
+We normally just add lines to our ~/.bashrc or ~/.cshrc files to always append
+these two directories to the PATH environment variable.
 
 
 ******************************************************************************
@@ -17,119 +127,4 @@ volunteers for updating the build process for Windows.
 *** APPRECIATED. PLEASE CONTACT THE MAINTAINER FOR CLARIFICATIONS OR       ***
 *** SUGGESTIONS.                                                           ***
 ******************************************************************************
-
-OVERVIEW
-========
-This file gives Windows-specific steps for building and running 
-MOOS-IvP software.
-
-
-PROGRAMS
-========
-The following software programs must be installed on the Windows computer 
-in order to build MOOS-IvP.  For each program we've listed some information 
-on how it can be obtained.
-
-********************
-* Windows programs *
-********************
-
-(1) CMake (at least version 2.6)
-Website: cmake.org
-
-*********************
-* Windows Compilers *
-*********************
-The following are the compilers that are known to successfully build MOOS-IvP. 
-
-(1) Microsoft Visual Studio 9 2008
-Website: http://msdn.microsoft.com/en-us/vstudio/default.aspx
-
-DIRECTORY OVERVIEW
-==================
-The following is an overview of some of the important directories used by
-the MOOS-IvP project. Please note that there are other important directories,
-but these directories should get you started:
-
-bin--------------------- Location of IvP generated binary files
-ivp--------------------- Location of IvP files
-ivp\src----------------- Location of IvP source files and IvP CMakeLists.txt 
-                         file
-lib--------------------- Location of IvP generated library files
-MOOS-####-DATE---------- Location of MOOS files where #### is the revision 
-                         number and DATE is the date that it was added to 
-                         MOOS-IvP. Also the location of the MOOS 
-                         CMakeLists.txt file.
-MOOS-####-DATE\MOOSBin-- Location of MOOS generated library files and binary
-                         files.
-
-
-BUILDING MOOS-IvP
-=================
-
-**************
-* Build MOOS *
-**************
-Use CMake to generate the project files for the MOOS project:
-(1) Launch CMake.
-(2) Set the directory of the source code for MOOS ( MOOS-####-DATE ).
-(3) Set the binaries to be placed in the same directory as the 
-    source code.
-(4) Select "Configure".
-(5) Select the compiler (Visual Studio 9 2008)
-(6) CMake will generate some options for the project. (No action)
-(7) Select "Configure"
-(8) Select "OK"
-
-Use the solution files to open the MOOS project in Visual Studio. 
-Select the "Build" Menu and select "Build Solution".
-
-*************
-* Build IvP *
-*************
-Use CMake to generate the project files for the IvP project:
-(1) Launch CMake.
-(2) Set the directory of the source code for IvP ( ivp\src ).
-(3) Set the binaries to be placed in the same directory as the 
-    source code.
-(4) Select "Configure".
-(5) Select the compiler (Visual Studio 9 2008)
-(6) CMake will generate some options for the project. (No action)
-(7) Select "Configure"
-(8) Select "OK"
-
-Use the solution files to open the IvP project in Visual Studio. 
-Select the "Build" Menu and select "Build Solution".
-
-
-ENVIRONMENT VARIABLES
-=====================
-The MOOS-IvP source tree contains the source code for two somewhat independent
-software packages: MOOS, and IvP.  
-
-When you build the MOOS software, the MOOS executable programs get placed in 
-the "MOOS/MOOSBin" subdirectory of the source code tree. Under some compilers
-the executable programs may also be placed in a configuration directory such
-as Debug. In these cases the path will be "MOOS/MOOSBin/Debug".
-
-When you build the IvP software, the IvP executable programs get placed in
-the "bin" subdirectory of the source code tree. Under some compilers
-the executable programs may also be place in a configuration director such
-as Debug. In these cases the path will be "bin/Debug".
-
-We recommend that you put the absolute path to both of those directories into
-your PATH environment variable.  This is especially important because the 
-"pAntler" program, which can launch other MOOS/IvP programs, relies on the
-PATH variable to find those programs. 
-
-To view or change environment variables:
-(1) Right-click "My Computer", and then click "Properties".
-(2) Click the "Advanced" tab.
-(3) Click "Environment variables".
-(4) Click one of the following options, for either a user or a system variable:
-    (a) Click "New" to add a new variable name and value.
-    (b) Click an existing variable, and then click "Edit" to change its name 
-        or value.
-    (c) Click an existing variable, and then click "delete to remove it.
-
 
