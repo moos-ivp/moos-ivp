@@ -20,7 +20,7 @@ for ARGI; do
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ] ; then
 	VERBOSE="-v"
     else 
-	echo "clean.sh: Bad Arg:" $ARGI
+	echo "clean.sh: Bad Arg:[$ARGI]. Exit Code 1.
 	exit 1
     fi
 done
