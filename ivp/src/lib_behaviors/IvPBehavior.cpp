@@ -75,6 +75,12 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
 
   m_helm_iter = 0;
 
+  // Initialize ownship pose state variables
+  m_osx = 0;
+  m_osy = 0;
+  m_osh = 0;
+  m_osv = 0;
+  
   m_config_posted = false;
 }
 
@@ -1250,6 +1256,16 @@ string IvPBehavior::expandMacros(string sdata)
   sdata = macroExpand(sdata, "OWNSHIP", m_us_name);
   sdata = macroExpand(sdata, "BHVNAME", m_descriptor);
   sdata = macroExpand(sdata, "BHVTYPE", m_behavior_type);
+  sdata = macroExpand(sdata, "PWT", m_priority_wt);
+
   sdata = macroExpand(sdata, "CONTACT", m_contact);
+
+  sdata = macroExpand(sdata, "UTC", getBufferCurrTime());
+
+  sdata = macroExpand(sdata, "OSX", m_osx);
+  sdata = macroExpand(sdata, "OSY", m_osy);
+  sdata = macroExpand(sdata, "OSH", m_osh);
+  sdata = macroExpand(sdata, "OSV", m_osv);
+
   return(sdata);
 }

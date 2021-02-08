@@ -31,7 +31,7 @@ using namespace std;
 //----------------------------------------------------------------
 // Procedure: macroExpand()
 
-string macroExpand(const string& str, const string& macro, const string& repl)
+string macroExpand(string str, string macro, string repl)
 {
   string macro1 = "$(" + macro + ")";
   string rstr = findReplace(str, macro1, repl);
@@ -43,12 +43,12 @@ string macroExpand(const string& str, const string& macro, const string& repl)
 }
 
 //----------------------------------------------------------------
-// Procedure: macroExpand()
+// Procedure: macroExpandBool()
 
-string macroExpand(const string& str, const string& macro, bool bool_repl)
+string macroExpandBool(string str, string macro, bool bool_repl)
 {
   string macro1 = "$(" + macro + ")";
-  string repl = boolToString(bool_repl);
+  string repl = "meh"+boolToString(bool_repl);
   
   string rstr = findReplace(str, macro1, repl);
 
@@ -61,7 +61,7 @@ string macroExpand(const string& str, const string& macro, bool bool_repl)
 //----------------------------------------------------------------
 // Procedure: macroExpand()
 
-string macroExpand(const string& str, const string& macro, double double_repl)
+string macroExpand(string str, string macro, double double_repl)
 {
   string macro1 = "$(" + macro + ")";
   string repl = doubleToStringX(double_repl,3);
@@ -78,7 +78,7 @@ string macroExpand(const string& str, const string& macro, double double_repl)
 //----------------------------------------------------------------
 // Procedure: macroExpand()
 
-string macroExpand(const string& str, const string& macro, int int_repl)
+string macroExpand(string str, string macro, int int_repl)
 {
   string macro1 = "$(" + macro + ")";
   string repl = intToString(int_repl);
@@ -95,7 +95,7 @@ string macroExpand(const string& str, const string& macro, int int_repl)
 //----------------------------------------------------------------
 // Procedure: macroExpand()
 
-string macroExpand(const string& str, const string& macro, unsigned int int_repl)
+string macroExpand(string str, string macro, unsigned int int_repl)
 {
   string macro1 = "$(" + macro + ")";
   string repl = uintToString(int_repl);

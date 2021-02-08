@@ -23,8 +23,8 @@ void showSynopsis()
   blk("  The pRealm application is used for shadowing the local MOOSDB ");
   blk("  and generating on-demand RealmCast reports. These reports are ");
   blk("  requested and consumed by pMarineViewer or similar app        ");
-  blk("  configured to interact with pRealm. Typically pRealm is run on");
-  blk("  both the shoreside and vehicle communities.                   ");
+  blk("  configured to interact with pRealm. Typically pRealm is run   ");
+  blk("  on both the shoreside and vehicle communities.                ");
 }
 
 //----------------------------------------------------------------
@@ -79,6 +79,9 @@ void showExampleConfigAndExit()
   blk("  wrap_length = 90             //  [1,inf] Default is 90        ");
   blk("  trunc_length = 270           //  [1,inf] Default is 270       ");
   blk("  msg_max_history = 10         //  [1,inf] Default is 10        ");
+  blk("                                                                ");
+  blk("  hist_var  = TASK_BID                                          ");
+  blk("  scope_set = name=events, vars=DEPLOY:RETURN:STATION           ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

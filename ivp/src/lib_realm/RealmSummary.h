@@ -35,11 +35,13 @@ class RealmSummary
 
   void setNode(std::string s) {m_node=s;}
   void addProc(std::string s);
+  void addHistVar(std::string s);
 
   std::string get_spec() const;
 
-  std::string getNode() const         {return(m_node);}
-  std::vector<std::string> getProcs() {return(m_procs);}
+  std::string getNode() const            {return(m_node);}
+  std::vector<std::string> getProcs()    {return(m_procs);}
+  std::vector<std::string> getHistVars() {return(m_hist_vars);}
 
   unsigned int size() const {return(m_procs.size());}
 
@@ -49,6 +51,8 @@ class RealmSummary
   std::string m_node;
 
   std::vector<std::string> m_procs;
+
+  std::vector<std::string> m_hist_vars;
 };
 
 RealmSummary string2RealmSummary(std::string);

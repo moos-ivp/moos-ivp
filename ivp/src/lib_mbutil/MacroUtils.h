@@ -28,14 +28,14 @@
 
 #include <string>
 
-std::string macroExpand(const std::string&, const std::string&, const std::string&);
+std::string macroExpand(std::string, std::string, std::string);
 
-std::string macroExpand(const std::string&, const std::string&, bool);
+std::string macroExpandBool(std::string, std::string, bool);
 
-std::string macroExpand(const std::string&, const std::string&, double);
+std::string macroExpand(std::string, std::string, double);
 
-std::string macroExpand(const std::string&, const std::string&, int);
+std::string macroExpand(std::string, std::string, int);
 
-std::string macroExpand(const std::string&, const std::string&, unsigned int);
+std::string macroExpand(std::string, std::string, unsigned int);
 
 #endif

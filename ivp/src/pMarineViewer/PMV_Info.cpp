@@ -154,6 +154,7 @@ void showExampleConfigAndExit()
   blk("  infocast_font_size   = medium   // {xlarge, large, medium, small, xsmall}");
   blk("  appcast_color_scheme = indigo   // {default, indigo, beige, white} ");
   blk("  realmcast_color_scheme = hillside // {default, indigo, beige, white, hillside}");
+  blk("  realmcast_channel    = abe:pHelmIvP // node:channel           ");
   blk("  infocast_width        = 40      // {20, 25, 30, ..., 65, 70}  ");
   blk("  infocast_height       = 70      // {30, 35, 40, ..., 85, 90}  ");
   blk("                                                                ");

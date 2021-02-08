@@ -92,11 +92,6 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_course_pct = 50;
   m_speed_pct  = 50;
 
-  m_osx   = 0;
-  m_osy   = 0;
-  m_osv   = 0;
-  m_osh   = 0;
-
   m_odo_set_flag = false;
   m_odo_setx = 0;
   m_odo_sety = 0;
@@ -1156,7 +1151,6 @@ string BHV_Waypoint::expandMacros(string sdata)
   // First expand the macros defined at the superclass level
   // =======================================================
   sdata = IvPBehavior::expandMacros(sdata);
-  
 
   // =======================================================
   // Expand configuration parameters
@@ -1174,12 +1168,18 @@ string BHV_Waypoint::expandMacros(string sdata)
   // =======================================================
   // Expand Behavior State
   // =======================================================
-  sdata = macroExpand(sdata, "OSX", m_osx);
-  sdata = macroExpand(sdata, "OSY", m_osy);
   sdata = macroExpand(sdata, "NX", m_nextpt.x());
   sdata = macroExpand(sdata, "NY", m_nextpt.y());
   sdata = macroExpand(sdata, "PX", m_prevpt.x());
   sdata = macroExpand(sdata, "PY", m_prevpt.y());
+
+  sdata = macroExpand(sdata, "IX", m_waypoint_engine.getCurrIndex());
+  sdata = macroExpand(sdata, "CYCLES", m_waypoint_engine.getCycleCount());
+  sdata = macroExpand(sdata, "CYCREM", m_waypoint_engine.resetsRemaining());
+  sdata = macroExpand(sdata, "WPTS_HIT", m_waypoint_engine.getTotalHits());
+ 
+  sdata = macroExpand(sdata, "WPTS_REM", m_waypoint_engine.size() -
+		      m_waypoint_engine.getCurrIndex());
 
   sdata = macroExpand(sdata, "X", m_prevpt.x()); // deprecated
   sdata = macroExpand(sdata, "Y", m_prevpt.y()); // deprecated

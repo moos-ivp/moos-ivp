@@ -40,6 +40,8 @@ class Realm : public AppCastingMOOSApp
   void buildRealmCastSummary();
   
  protected:
+  bool handleConfigHistVar(std::string);
+  bool handleConfigScopeSet(std::string);
   void handleMailDBRWSummary(std::string);
   void handleMailRealmCastReq(std::string);
 
@@ -55,7 +57,8 @@ class Realm : public AppCastingMOOSApp
 		   std::string time, std::string comm, std::string val);
 
   void addLatestOutCast(std::string);
-  
+
+  std::string getHistoryVars() const;
   
  private: // Configuration variables
 
@@ -66,6 +69,10 @@ class Realm : public AppCastingMOOSApp
 
   unsigned int m_wrap_length;
   unsigned int m_trunc_length;
+
+  std::set<std::string> m_set_hist_vars;
+
+  std::map<std::string, std::set<std::string> > m_map_scope_sets;
   
  private: // State variables (DB Info)
 

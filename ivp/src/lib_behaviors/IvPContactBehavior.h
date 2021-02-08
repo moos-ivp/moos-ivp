@@ -80,11 +80,6 @@ public:
 
  protected:  // State Variables
   
-  double m_osx;   // Current ownship x position (meters) 
-  double m_osy;   // Current ownship y position (meters) 
-  double m_osh;   // Current ownship heading (degrees 0-359)
-  double m_osv;   // Current ownship speed (meters) 
-
   double m_cnx;   // Current contact x position (meters) 
   double m_cny;   // Current contact y position (meters) 
   double m_cnh;   // Current contact heading (degrees 0-359)

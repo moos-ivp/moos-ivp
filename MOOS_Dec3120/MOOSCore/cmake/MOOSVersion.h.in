@@ -1,0 +1,6 @@
+#pragma once
+//this file is auto generated and defines
+//MOOS version and the current git commit hash
+
+#define MOOS_GIT_VERSION "@MOOS_GIT_VERSION@"
+#define MOOS_VERSION_NUMBER "@PACKAGE_VERSION@"

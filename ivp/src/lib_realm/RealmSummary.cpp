@@ -38,6 +38,15 @@ void RealmSummary::addProc(string proc_str)
 }
 
 //---------------------------------------------------------
+// Procedure: addHistVar()
+
+void RealmSummary::addHistVar(string var_str)
+{
+  if(!vectorContains(m_hist_vars, var_str))
+    m_hist_vars.push_back(var_str);
+}
+
+//---------------------------------------------------------
 // Procedure: valid()
 
 bool RealmSummary::valid() const
@@ -57,14 +66,23 @@ string RealmSummary::get_spec() const
     return("realm_summary_err");
   
   string msg = "node=" + m_node + "#channels=";
-  string channels;
 
+  string channels;
   for(unsigned int i=0; i<m_procs.size(); i++) {
     if(channels != "")
       channels += ",";
     channels += m_procs[i];
   }
   msg += channels;
+
+
+  string hist_vars;
+  for(unsigned int i=0; i<m_hist_vars.size(); i++) {
+    if(hist_vars != "")
+      hist_vars += ",";
+    hist_vars += m_hist_vars[i];
+  }
+  msg += "," + hist_vars;
 
   return(msg);
 }

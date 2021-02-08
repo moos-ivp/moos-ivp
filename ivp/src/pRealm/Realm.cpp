@@ -118,6 +118,10 @@ bool Realm::OnStartUp()
       handled = setPosUIntOnString(m_trunc_length, value);
     else if(param == "msg_max_hist")
       handled = setPosUIntOnString(m_msg_max_hist, value);
+    else if(param == "hist_var")
+      handled = handleConfigHistVar(value);
+    else if(param == "scope_set")
+      handled = handleConfigScopeSet(value);
     else
       handled = false;
 
@@ -146,6 +150,75 @@ void Realm::registerVariables()
   Register("REALMCAST_REQ", 0);
 }
 
+
+//---------------------------------------------------------
+// Procedure: handleConfigHistVar()
+
+bool Realm::handleConfigHistVar(string var)
+{
+  if(strContainsWhite(var))
+    return(false);
+
+  // If this is a duplicate, we just quietly ignore it with no warning
+  if(m_set_hist_vars.count(var))
+    return(true);
+
+  // For history vars we register immediately. Don't wait for the
+  // varsummary to act.
+  Register(var, 0);
+  
+  m_set_hist_vars.insert(var);
+
+  m_map_scope_sets[var].insert(var);
+
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: handleConfigScopeSet()
+//   Example: scope_set = name=life, vars=FOO:BAR:DEPLOY
+
+bool Realm::handleConfigScopeSet(string scope_set)
+{
+
+  // Part 1: Parse the config line and syntax check
+  string name;
+  set<string> vars;
+
+  vector<string> svector = parseString(scope_set, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = svector[i];
+    if(param == "name")
+      name = value;
+    else if(param == "vars") {
+      vector<string> jvector = parseString(value, ':');
+      for(unsigned int j=0; j<jvector.size(); j++)
+	vars.insert(jvector[j]);
+    }
+    else
+      return(false);
+  }
+  if((name == "") || (vars.size() == 0))
+    return(false);
+
+  // Part 2: update the scopeset map and set of history vars
+  set<string>::iterator p;
+  for(p=vars.begin(); p!=vars.end(); p++) {
+    string var = *p;
+
+    // Part 2A: If hist var unknown, add it, and register
+    if(m_set_hist_vars.count(var) == 0) {
+      m_set_hist_vars.insert(var);
+      Register(var, 0);
+    }
+
+    // Part 2B: Add hist var to appropriate scope_set
+    m_map_scope_sets[name].insert(var);
+  }
+
+  return(true);
+}
 
 //---------------------------------------------------------
 // Procedure: handleMailDBRWSummary()
@@ -235,7 +308,11 @@ void Realm::handleGeneralMail(const CMOOSMsg& msg)
       m_map_data[key].pop_back();
   }
   else {
-    if(m_map_data[key].size() > 1)
+    unsigned int max_hist = 1;       // default for strings
+    if(m_set_hist_vars.count(key))
+      max_hist = m_msg_max_hist;     // except if it is a history variable
+    
+    if(m_map_data[key].size() > max_hist)
       m_map_data[key].pop_back();
   }
 
@@ -366,11 +443,56 @@ bool Realm::buildRealmCastChannel(PipeWay pipeway)
   if(channel == "")
     return(false);
     
-  vector<string> output;
   stringstream ss;
+
+  bool hist_channel = false;
+  if(m_map_scope_sets.count(channel)) {
+    list<CMOOSMsg> msgs;
+    string all_vars;
+    set<string> hist_vars = m_map_scope_sets[channel];
+    set<string>::iterator q;
+    for(q=hist_vars.begin(); q!=hist_vars.end(); q++) {
+      string var = *q;
+      if(all_vars != "")
+	all_vars += ",";
+      all_vars += var;
+      
+      list<CMOOSMsg> var_msgs = m_map_data[var];
+      msgs.merge(var_msgs);
+    }
+    msgs.sort();
+    msgs.reverse();
+
+    ss << "History Channel [" << channel << "]: " << all_vars << endl;
+    ss << "=======================================" << endl;
+    resetACTable(pipeway);
+    
+    list<CMOOSMsg>::iterator p;
+    for(p=msgs.begin(); p!=msgs.end(); p++) {
+      CMOOSMsg msg = *p;
+      string   key   = msg.GetKey();
+      string   src   = msg.GetSource();
+      string   comm  = msg.GetCommunity();
+      double   dtime = msg.GetTime();
+      if(!pipeway.timeFormatUTC())
+	dtime = dtime - m_start_time;
+      
+      string   stime = doubleToString(dtime, 2);
+      string   sval  = "formatted report";
+      if(msg.IsDouble())
+	sval = doubleToStringX(msg.GetDouble(),6);
+      else if(msg.IsBinary())
+	sval = "binary";
+      else 
+	sval  = msg.GetString();
+      
+      addRowACTab(pipeway, key, src, stime, comm, sval);
+    }
+    ss << m_actab.getFormattedString(true) << endl << endl;
+    hist_channel = true;
+  }
   
-  set<string> pubs = m_map_pubs[channel];
-  
+  set<string> pubs = m_map_pubs[channel];  
   if(pipeway.showSubscriptions() && m_map_subs.count(channel)) {
     set<string> subs = m_map_subs[channel];
     ss << "Subscriptions" << endl;
@@ -407,7 +529,7 @@ bool Realm::buildRealmCastChannel(PipeWay pipeway)
     ss << m_actab.getFormattedString(true) << endl << endl;
   }
 
-  if(m_map_pubs.count(channel)) {
+  if(m_map_pubs.count(channel) && !hist_channel) {
     set<string> pubs = m_map_pubs[channel];
     // if not showing subscriptions, we don't need the upper bar
     if(pipeway.showSubscriptions())
@@ -463,15 +585,16 @@ bool Realm::buildRealmCastChannel(PipeWay pipeway)
 
 void Realm::buildRealmCastSummary()
 {
+  // ======================================================
+  // Part 1: Determine if it is time to post a summary
+  // ======================================================
   double elapsed = m_curr_time - m_last_post_summary;
   elapsed = elapsed / m_time_warp;
 
-  // By default the summery interval is the value configured by the
-  // user.
+  // By default summery interval configured by the user.
   double summary_interval = m_summary_interval;
 
-  // But, for the first minute of operation, the summary interval will
-  // be much more frequent.
+  // But, for first minute, interval will be much more frequent.
   if((m_curr_time - m_start_time) < 60)
     summary_interval = 0.5;
 
@@ -484,9 +607,11 @@ void Realm::buildRealmCastSummary()
     
   if(elapsed < summary_interval)
     return;
-
   m_last_post_summary = m_curr_time;
   
+  // ======================================================
+  // Part 2: Build summary: apps + history channels
+  // ======================================================
   RealmSummary realm_summary;
   realm_summary.setNode(m_host_community);
   
@@ -496,6 +621,12 @@ void Realm::buildRealmCastSummary()
     realm_summary.addProc(app);
   }
 
+  map<string, set<string> >::iterator q;
+  for(q=m_map_scope_sets.begin(); q!=m_map_scope_sets.end(); q++) {
+    string channel = q->first;
+    realm_summary.addHistVar(channel);
+  }
+  
   m_summaries_posted++;
   
   Notify("REALMCAST_CHANNELS", realm_summary.get_spec());
@@ -640,6 +771,23 @@ void Realm::addLatestOutCast(string str)
 
 
 //------------------------------------------------------------
+// Procedure: getHistoryVars()
+
+string Realm::getHistoryVars() const
+{
+  string result;
+  set<string>::iterator p;
+  for(p=m_set_hist_vars.begin(); p!=m_set_hist_vars.end(); p++) {
+    string var = *p;
+    if(result != "")
+      result += ",";
+    result += var;
+  }
+
+  return(result);
+}
+
+//------------------------------------------------------------
 // Procedure: buildReport()
 
 bool Realm::buildReport() 
@@ -648,6 +796,7 @@ bool Realm::buildReport()
   m_msgs << "--------------------------------------------" << endl;
   m_msgs << "  RelCast Interval: " << doubleToString(m_relcast_interval,2) << endl;
   m_msgs << "  Summary Interval: " << doubleToString(m_summary_interval,2) << endl;
+  m_msgs << "  Hist Variables:   " << getHistoryVars() << endl;
   m_msgs << "  Wrap Length:  " << uintToString(m_wrap_length) << endl;
   m_msgs << "  Trunc Length: " << uintToString(m_trunc_length) << endl;
   m_msgs << "  Max Msg Hist: " << uintToString(m_msg_max_hist) << endl;

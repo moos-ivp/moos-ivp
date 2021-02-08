@@ -110,7 +110,7 @@
 
       '("pEncircle" "circle_position" "max_speed" "aggression" "encircle_active" "consider_thresh" "on_circle_thres" "message_color" "max_appcast_events")
       
-      '("pTaskManager" "max_appcast_events")
+       '("pTaskManager" "max_appcast_events")
 
       '("pTowManager" "ownship"  "max_appcast_events")
       

@@ -5,8 +5,6 @@ SET(SOURCES
    Flv_Style.cxx
    Flv_Table.cxx)
 
-
-
 FIND_PACKAGE( FLTK REQUIRED)
 
 # commented out by mikerb Oct 8th 2020

@@ -1,0 +1,14 @@
+/Core/docs/\#UsingV10.lyx\#
+.DS_Store
+*~
+/Core/libMOOS/testing/CMakeLists.txt.orig
+
+/Core/libMOOS/include/MOOS/libMOOS/GitVersion.h
+
+/GitVersion.h
+
+/Core/libMOOS/App/include/MOOS/libMOOS/App/ClientDefines.h
+
+/CMakeLists.txt.user
+
+build*

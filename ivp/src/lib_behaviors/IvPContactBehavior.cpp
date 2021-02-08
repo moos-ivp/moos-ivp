@@ -51,11 +51,7 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
 
   m_post_per_contact_info = false;
   
-  // Initialize state variables
-  m_osx = 0;
-  m_osy = 0;
-  m_osh = 0;
-  m_osv = 0;
+  // Initialize contact pose state variables
   m_cnx = 0;
   m_cny = 0;
   m_cnh = 0;
@@ -350,9 +346,15 @@ string IvPContactBehavior::expandMacros(string sdata)
 {
   sdata = IvPBehavior::expandMacros(sdata);
   
+  sdata = macroExpand(sdata, "CNX", m_cnx);
+  sdata = macroExpand(sdata, "CNY", m_cny);
+  sdata = macroExpand(sdata, "CNH", m_cnh);
+  sdata = macroExpand(sdata, "CNV", m_cnv);
+
   sdata = macroExpand(sdata, "CN_NAME", m_contact);
   sdata = macroExpand(sdata, "CN_VTYPE", m_cn_vtype);
   sdata = macroExpand(sdata, "CN_GROUP", m_cn_group);
+  sdata = macroExpand(sdata, "CN_RANGE", doubleToStringX(m_contact_range,1));
   sdata = macroExpand(sdata, "RANGE", doubleToStringX(m_contact_range,1));
 
   sdata = m_cnos.cnMacroExpand(sdata, "ROC");
@@ -392,12 +394,6 @@ bool IvPContactBehavior::updatePlatformInfo()
   if(m_cnos.helm_iter() == m_helm_iter)
     return(true);
 
-  m_cnos.set_update_ok(false);
-  if(m_contact == "") {
-    postEMessage("contact ID not set.");
-    return(0);
-  }
-  
   bool ok = true;
 
   //==============================================================
@@ -411,7 +407,20 @@ bool IvPContactBehavior::updatePlatformInfo()
     postEMessage("ownship x,y,heading, or speed info not found.");
     return(false);
   }
+  m_osh = angle360(m_osh);
 
+  m_cnos.set_update_ok(false);
+  if(m_contact == "") {
+    if(m_on_no_contact_ok)
+      return(true);
+    postEMessage("contact IDX not set.");
+    return(false);
+  }
+  
+
+  if(tolower(m_contact) == "unset_ok")
+    return(ok);
+  
   // Part 1B: ascertain current contact position and trajectory.
   double cnutc = 0;
   if(ok) m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok);
@@ -427,7 +436,6 @@ bool IvPContactBehavior::updatePlatformInfo()
       postEMessage(msg);
     return(false);
   }
-  m_osh = angle360(m_osh);
   m_cnh = angle360(m_cnh);
 
   // Part 1C: At this point we know this update will be a success, i.e.,
@@ -475,8 +483,6 @@ bool IvPContactBehavior::updatePlatformInfo()
     
   m_contact_range = hypot((m_osx-m_cnx), (m_osy-m_cny));
 
-  cout << "zzx contact_range: " << doubleToStringX(m_contact_range,2) << endl;
-  
   // range is stored in both m_contact_range and the cnos structure
   m_cnos.set_range(m_contact_range);
   

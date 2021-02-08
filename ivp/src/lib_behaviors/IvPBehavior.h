@@ -150,6 +150,11 @@ protected:
   std::string m_us_name;       
   std::string m_descriptor;    
 
+  double m_osx;   // Current ownship x position (meters) 
+  double m_osy;   // Current ownship y position (meters) 
+  double m_osh;   // Current ownship heading (degrees 0-359)
+  double m_osv;   // Current ownship speed (meters) 
+
   std::string m_contact; // Name for contact in InfoBuffer
   std::string m_behavior_type;
   std::string m_duration_status;

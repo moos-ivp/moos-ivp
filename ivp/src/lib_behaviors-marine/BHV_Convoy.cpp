@@ -113,11 +113,11 @@ bool BHV_Convoy::setParam(string param, string param_val)
       handled = false;
   }
   
-  else if(param == "rng_estop") 
+  else if((param == "rng_estop") || (param == "range_estop"))
     handled = setPosDoubleOnString(m_rng_estop, param_val);
-  else if(param == "rng_tgating") 
+  else if((param == "rng_tgating") || (param == "range_tailgating"))
     handled = setPosDoubleOnString(m_rng_tgating, param_val);
-  else if(param == "rng_lagging") 
+  else if((param == "rng_lagging") || (param == "range_lagging"))
     handled = setPosDoubleOnString(m_rng_lagging, param_val);
 
   return(handled);
@@ -191,8 +191,6 @@ IvPFunction *BHV_Convoy::onRunState()
   postMessage("QLEN", getQueueLen());
 
   postMessage("MXRNG", m_max_mark_range);
-
-
   
   handleNewContactSpd(m_cnv);
   postMessage("AVG2", m_cnv_avg_2sec);

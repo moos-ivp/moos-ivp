@@ -1,5 +1,3 @@
-
-
 # next few lines are simply to insert icons into
 # the console application on windows
 IF(WIN32)
@@ -20,7 +18,6 @@ FIND_PACKAGE( OpenGL REQUIRED )
 IF(FLTK_FOUND)
 
    INCLUDE_DIRECTORIES(${fltkvw_DEPEND_INCLUDE_DIRS} ${fltkvw_INCLUDE_DIRS} ${MOOS_INCLUDE_DIRS} ${MOOS_DEPEND_INCLUDE_DIRS})
-
   
    # Add executable
    #(note the WIN32 bit says under windows use /subsystem:windows not console
