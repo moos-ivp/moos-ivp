@@ -130,6 +130,8 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
       bool reverse = (tolower(sdata)=="true");
       m_record.setThrustModeReverse(reverse);
     }
+    else if(key == "NAV_TRANSP") 
+      m_record.setTransparency(ddata);
     // BEGIN logic for checking for alternative nav reporting
     if(m_alt_nav_prefix != "") {
       bool record_gt_updated = true;
@@ -149,6 +151,8 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_record_gt.setLon(ddata);
 	m_nav_latlon_updated_gt = m_curr_time;
       }
+      else if(key == (m_alt_nav_prefix + "TRANSP"))
+	m_record_gt.setTransparency(ddata);
       else if(key == (m_alt_nav_prefix + "SPEED"))
 	m_record_gt.setSpeed(ddata);
       else if(key == (m_alt_nav_prefix + "HEADING"))
@@ -243,6 +247,7 @@ void NodeReporter::registerVariables()
   Register("NAV_YAW", 0);
   Register("NAV_DEPTH", 0);
   Register("NAV_TRAJECTORY", 0);
+  Register("NAV_TRANSP", 0);
 
   if(m_alt_nav_prefix != "") {
     if(!strEnds(m_alt_nav_prefix, "_"))
@@ -255,6 +260,7 @@ void NodeReporter::registerVariables()
     Register(m_alt_nav_prefix + "HEADING", 0);
     Register(m_alt_nav_prefix + "YAW", 0);
     Register(m_alt_nav_prefix + "DEPTH", 0);
+    Register(m_alt_nav_prefix + "TRANSP", 0);
   }  
 
   Register("IVPHELM_SUMMARY", 0);
@@ -311,7 +317,7 @@ bool NodeReporter::OnStartUp()
       m_record.setType(value);
       handled = true;
     }
-    if((param == "platform_color") && isColor(value)) { 
+    else if((param == "platform_color") && isColor(value)) { 
       m_record.setColor(value);
       handled = true;
     }
@@ -322,6 +328,11 @@ bool NodeReporter::OnStartUp()
 	handled = true;
       }
     }
+    else if((param == "platform_transparency") && isNumber(value)) { 
+      m_record.setTransparency(atof(value.c_str()));
+      handled = true;
+    }
+
     else if(param == "terse_reports") 
       handled = setBooleanOnString(m_terse_reports, value);
     else if(param == "blackout_interval") 

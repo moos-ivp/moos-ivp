@@ -376,6 +376,8 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   if(!record.valid())  // FIXME more rigorous test
     return;
 
+  double transp = record.getTransparency();
+  
   double age_report = m_vehiset.getDoubleInfo(vname, "age_ais");
 
   BearingLine bng_line = m_vehiset.getBearingLine(vname);
@@ -448,7 +450,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
   record.setName(vname_aug);
 
-  drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw, 1);
+  drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw, 1, transp);
 }
 
 //-------------------------------------------------------------
