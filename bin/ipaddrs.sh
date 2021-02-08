@@ -10,19 +10,25 @@
 #    Uses: OSX: ipconfig, ifconfig - (getting network interface info)
 #          Linux: hostname - (getting network interface info)
 #--------------------------------------------------------------
+#  Part 1: Define a convenience function for producing terminal
+#          debugging/status output depending on the verbosity.
+#-------------------------------------------------------------- 
+vecho() { if [ "$VERBOSE" != "" ]; then echo $1; fi }
 
-#-------------------------------------------------------
-#  Part 1: Initialize global variables
-#-------------------------------------------------------
-VERBOSE="no"
+#--------------------------------------------------------------
+#  Part 2: Initialize global variables
+#--------------------------------------------------------------
+VERBOSE=""
 HEADER="yes"
 OS="osx"
+MATCH="192.168.7"
+MATCH_RES=""
 TMP_RESFILE="$HOME/.ipaddrs_pid$$"
 RESFILE="$HOME/.ipaddrs"
 
-#-------------------------------------------------------
-#  Part 2: Check for and handle command-line arguments
-#-------------------------------------------------------
+#--------------------------------------------------------------
+#  Part 3: Check for and handle command-line arguments
+#--------------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
         echo "ipaddrs.sh [OPTIONS]                                    "
@@ -38,6 +44,7 @@ for ARGI; do
         echo "  --info,    -i      Display short script description   " 
         echo "  --terse,   -t      Suppress header info               " 
         echo "  --verbose, -v      Verbose output IPs to terminal     " 
+        echo "  --match=<pattern>  Return an IP matching a pattern    " 
 	echo "                                                        "
 	echo "Returns:                                                "
 	echo "  0 on --help, -h or --info, -i                         "
@@ -52,31 +59,34 @@ for ARGI; do
 	echo "Examples:                                               "
  	echo "  $ ipaddrs.sh                                          "
  	echo "  $ ipaddrs.sh  --terse                                 "
+ 	echo "  $ ipaddrs.sh  --match=192.168.7                       "
         exit 0;
-    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ] ; then
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
 	VERBOSE="yes"
-    elif [ "${ARGI}" = "--terse" -o "${ARGI}" = "-t" ] ; then
+    elif [ "${ARGI}" = "--terse" -o "${ARGI}" = "-t" ]; then
 	HEADER="no"
-    elif [ "${ARGI}" = "--info"   -o "${ARGI}" = "-i" ] ; then
+    elif [ "${ARGI:0:8}" = "--match=" ]; then
+        MATCH="${ARGI#--match=*}"
+    elif [ "${ARGI}" = "--info"   -o "${ARGI}" = "-i" ]; then
 	echo "List all active network interfaces and IP addresses "
 	exit 0
     else
-        echo "Bad Argument: "$ARGI
+        echo "ipaddrs.sh: Bad Arg: $ARGI. Exit Code 3"
         exit 3
     fi
 done
 
 
-#-------------------------------------------------------
-#  Part 3: Determine the operating system
-#-------------------------------------------------------
+#--------------------------------------------------------------
+#  Part 4: Determine the operating system
+#--------------------------------------------------------------
 if [ -d "/proc" ]; then
     OS="linux"
 fi
 
-#-------------------------------------------------------
-#  Part 4: Ensure System Utilities are installed per OS
-#-------------------------------------------------------
+#--------------------------------------------------------------
+#  Part 5: Ensure System Utilities are installed per OS
+#--------------------------------------------------------------
 if [ "${OS}" = "linux" ]; then
     # Make sure the hostname utility is present
     command -v hostname >& /dev/null
@@ -104,20 +114,19 @@ fi
 
 
 EXIT_CODE=0
-#-------------------------------------------------------
-#  Part 5: Clear results file and Write file header if desired
-#-------------------------------------------------------
+#--------------------------------------------------------------
+#  Part 6: Clear results file and Write file header if desired
+#--------------------------------------------------------------
 echo -n "" > $TMP_RESFILE
 if [ "$HEADER" = "yes" ]; then
     echo "// IP addresses of currently active network interfaces." >> $TMP_RESFILE
     echo "// Produced automatically by the ipaddrs.sh utility.   " >> $TMP_RESFILE
 fi
 
-#-------------------------------------------------------
-#  Part 6: Handle the MaxOS case
-#-------------------------------------------------------
-
-echo "TMP_RESFILE:" $TMP_RESFILE
+#--------------------------------------------------------------
+#  Part 7: Handle the MaxOS case
+#--------------------------------------------------------------
+vecho "TMP_RESFILE:" $TMP_RESFILE
 
 if [ "${OS}" = "osx" ]; then
     
@@ -129,12 +138,17 @@ if [ "${OS}" = "osx" ]; then
     for iface in "${interfaces[@]}"
     do
 	new_iface=${iface%?}
+	vecho "new_iface:$new_iface"
 	ipaddr="$(ipconfig getifaddr $new_iface)"
 	if [ $? = 0 ]; then
 	    echo $ipaddr >> $TMP_RESFILE
-	    if [ $VERBOSE = "yes" ]; then
+
+	    if [[ "$ipaddr" == "$MATCH"* ]]; then
 		echo $ipaddr
 	    fi
+	    
+
+	    vecho $ipaddr
 	    ((count=count+1))
 	fi
     done
@@ -146,9 +160,9 @@ if [ "${OS}" = "osx" ]; then
     fi
 fi
 
-#-------------------------------------------------------
-#  Part 7: Handle the Linux case
-#-------------------------------------------------------
+#--------------------------------------------------------------
+#  Part 8: Handle the Linux case
+#--------------------------------------------------------------
 if [ "${OS}" = "linux" ]; then
 
     declare -a interfaces=()
@@ -173,13 +187,12 @@ if [ "${OS}" = "linux" ]; then
 fi
 
 
-#-------------------------------------------------------
-#  Part 8: If the tmp file is different, install it. 
-#  By building a tmp file, with a unique file name based 
-#  on the PID, this gaurds against possibly several 
-#  versions of this script running at nearly the same 
-#  time, and possiblly all writing to the destinatin file.
-#-------------------------------------------------------
+#--------------------------------------------------------------
+#  Part 9: If the tmp file is different, install it.  By building a
+#  tmp file, with a unique file name based on the PID, this gaurds
+#  against possibly several versions of this script running at nearly
+#  the same time, and possiblly all writing to the destinatin file.
+#--------------------------------------------------------------
 
 diff $TMP_RESFILE $RESFILE >& /dev/null
 
