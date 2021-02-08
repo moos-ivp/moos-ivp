@@ -2625,3 +2625,58 @@ string checksumHexStr(string str)
 }
 
 
+
+//---------------------------------------------------------
+// Procedure: stringListToString()
+
+string stringListToString(list<string> str_list, char sep)
+{
+  string result;
+  
+  list<string>::iterator p;
+  for(p=str_list.begin(); p!=str_list.end(); p++) {
+    if(result != "")
+      result += sep;
+    result += *p;
+  }
+
+  return(result);
+}
+
+
+//---------------------------------------------------------
+// Procedure: stringSetToString()
+
+string stringSetToString(set<string> str_set, char sep)
+{
+  string result;
+  
+  set<string>::iterator p;
+  for(p=str_set.begin(); p!=str_set.end(); p++) {
+    if(result != "")
+      result += sep;
+    result += *p;
+  }
+
+  return(result);
+}
+
+
+//---------------------------------------------------------
+// Procedure: stringVectorToString()
+
+string stringSetToString(vector<string> str_vector, char sep)
+{
+  string result;
+  
+  vector<string>::iterator p;
+  for(p=str_vector.begin(); p!=str_vector.end(); p++) {
+    if(result != "")
+      result += sep;
+    result += *p;
+  }
+
+  return(result);
+}
+
+
