@@ -2665,7 +2665,7 @@ string stringSetToString(set<string> str_set, char sep)
 //---------------------------------------------------------
 // Procedure: stringVectorToString()
 
-string stringSetToString(vector<string> str_vector, char sep)
+string stringVectorToString(vector<string> str_vector, char sep)
 {
   string result;
   
