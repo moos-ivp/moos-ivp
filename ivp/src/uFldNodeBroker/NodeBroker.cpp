@@ -302,9 +302,12 @@ bool NodeBroker::handleConfigTryShoreHost(string original_line)
     else 
       return(false);
   }
-  
-  if(!isValidPShareRoute(pshare_route))
+
+  string ip_err_msg;
+  if(!isValidPShareRoute(pshare_route, ip_err_msg)) {
+    reportConfigWarning(ip_err_msg);
     return(false);
+  }
   
   m_shore_routes.push_back(pshare_route);
   m_shore_community.push_back("");
