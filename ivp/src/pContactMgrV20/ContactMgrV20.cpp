@@ -419,6 +419,7 @@ void ContactMgrV20::handleMailReportRequest(string str)
   double range = -1;
   string group;
   string vtype;
+  bool   refresh = false;
   vector<string> svector = parseString(str, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
     string param = tolower(biteStringX(svector[i], '='));
@@ -431,6 +432,8 @@ void ContactMgrV20::handleMailReportRequest(string str)
       group = value;
     else if(param == "type")
       vtype = value;
+    else if(param == "refresh")
+      refresh = (tolower(value) == "true");
     else
       ok = false;
   }
@@ -450,10 +453,12 @@ void ContactMgrV20::handleMailReportRequest(string str)
       m_map_rep_group[moos_var] = group;
       m_map_rep_vtype[moos_var] = vtype;
       m_map_rep_contacts[moos_var] = "";
+      m_map_rep_refresh[moos_var] = refresh;
     }
     // If this is a repeat request (same moos_var and range) then
     // just update the current time.
     m_map_rep_reqtime[moos_var] = m_curr_time;
+    m_map_rep_refresh[moos_var] = refresh;
   }
 }
 
@@ -749,10 +754,11 @@ void ContactMgrV20::postRangeReports()
 	vcontacts.push_back(vname);
       }
     }
-    // Part 3B: If the report is different post it!
-    if(contacts != m_map_rep_contacts[varname]) {
+    // Part 3B: If refresh requested or the report is different, then post it!
+    if(m_map_rep_refresh[varname] || (contacts != m_map_rep_contacts[varname])) {
       Notify(varname, contacts);
       m_map_rep_contacts[varname] = contacts;
+      m_map_rep_refresh[varname]  = false;
     }
   }
 }

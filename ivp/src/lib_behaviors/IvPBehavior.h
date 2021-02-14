@@ -125,15 +125,17 @@ public:
   bool    checkNoStarve();
 
   void    setHelmIteration(unsigned int iter) {m_helm_iter=iter;}
-
   void    setConfigPosted(bool v=true) {m_config_posted=v;}
-  
+
+  double  getBehaviorTOC() const {return(m_time_of_creation);} 
+  double  getBehaviorAge() const;
+    
   bool                     getConfigPosted() const {return(m_config_posted);}
   double                   getPriorityWt() {return(m_priority_wt);}
-  double                   getBufferCurrTime();
-  double                   getBufferLocalTime();
-  double                   getBufferMsgTimeVal(std::string);
-  double                   getBufferTimeVal(std::string);
+  double                   getBufferCurrTime() const;
+  double                   getBufferLocalTime() const;
+  double                   getBufferMsgTimeVal(std::string) const;
+  double                   getBufferTimeVal(std::string) const;
   double                   getBufferDoubleVal(std::string);
   double                   getBufferDoubleVal(std::string, bool&);
   std::string              getBufferStringVal(std::string);
@@ -219,6 +221,8 @@ protected:
   
   bool        m_config_posted;
 
+  double      m_time_of_creation;
+  
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.
   // This variable should only be accessible via (1) postEMessage()

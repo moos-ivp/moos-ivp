@@ -41,7 +41,7 @@ using namespace std;
 // Procedure: Constructor
 
 HelmEngine::HelmEngine(IvPDomain g_ivp_domain, 
-			       InfoBuffer *g_info_buffer)
+		       InfoBuffer *g_info_buffer)
 {
   m_ivp_domain  = g_ivp_domain;
   m_info_buffer = g_info_buffer;

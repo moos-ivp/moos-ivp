@@ -642,6 +642,11 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	    if(strContains(str, "$(Y:2)")) 
 	      str = findReplace(str, "$(Y:2)", doubleToString(sy,2));
 	    
+	    if(strContains(str, "$(UTC)")) 
+	      str = findReplace(str, "$(UTC)", doubleToString(m_curr_time,3));
+	    if(strContains(str, "$[UTC]")) 
+	      str = findReplace(str, "$[UTC]", doubleToString(m_curr_time,3));
+
 	    if(strContains(str, "$(LAT)")) 
 	      str = findReplace(str, "$(LAT)", doubleToString(dlat,8));
 	    if(strContains(str, "$[LAT]")) 

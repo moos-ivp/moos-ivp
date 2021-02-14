@@ -80,6 +80,8 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_osy = 0;
   m_osh = 0;
   m_osv = 0;
+
+  m_time_of_creation = 0;
   
   m_config_posted = false;
 }
@@ -381,6 +383,7 @@ string IvPBehavior::isRunnable()
 void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 {
   m_info_buffer = ib;
+  m_time_of_creation = getBufferCurrTime();
 }
 
 //-----------------------------------------------------------
@@ -1053,9 +1056,21 @@ void IvPBehavior::postFlags(const vector<VarDataPair>& flags, bool repeatable)
 
 
 //-----------------------------------------------------------
+// Procedure: getBehaviorAge()
+
+double IvPBehavior::getBehaviorAge() const
+{
+  if(!m_info_buffer)
+    return(0);
+  
+  return(getBufferCurrTime() - getBehaviorTOC());
+}
+
+
+//-----------------------------------------------------------
 // Procedure: getBufferCurrTime()
 
-double IvPBehavior::getBufferCurrTime()
+double IvPBehavior::getBufferCurrTime() const
 {
   if(!m_info_buffer)
     return(0);
@@ -1066,7 +1081,7 @@ double IvPBehavior::getBufferCurrTime()
 //-----------------------------------------------------------
 // Procedure: getBufferLocalTime()
 
-double IvPBehavior::getBufferLocalTime()
+double IvPBehavior::getBufferLocalTime() const
 {
   if(!m_info_buffer)
     return(0);
@@ -1083,7 +1098,7 @@ double IvPBehavior::getBufferLocalTime()
 //            N otherwise the time since last updated.
 //      Note: If updated on the current helm iteration, will be zero.
 
-double IvPBehavior::getBufferTimeVal(string varname)
+double IvPBehavior::getBufferTimeVal(string varname) const
 {
   if(!m_info_buffer)
     return(0);
@@ -1093,7 +1108,7 @@ double IvPBehavior::getBufferTimeVal(string varname)
 //-----------------------------------------------------------
 // Procedure: getBufferMsgTimeVal()
 
-double IvPBehavior::getBufferMsgTimeVal(string varname)
+double IvPBehavior::getBufferMsgTimeVal(string varname) const
 {
   if(!m_info_buffer)
     return(0);
@@ -1259,9 +1274,8 @@ string IvPBehavior::expandMacros(string sdata)
   sdata = macroExpand(sdata, "PWT", m_priority_wt);
 
   sdata = macroExpand(sdata, "CONTACT", m_contact);
-
   sdata = macroExpand(sdata, "UTC", getBufferCurrTime());
-
+    
   sdata = macroExpand(sdata, "OSX", m_osx);
   sdata = macroExpand(sdata, "OSY", m_osy);
   sdata = macroExpand(sdata, "OSH", m_osh);
