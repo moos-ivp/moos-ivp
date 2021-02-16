@@ -52,7 +52,7 @@ MACPORT PACKAGES
 ==============================================================================
 
 sudo port install cmake
-sudo port install fltk
+sudo port install fltk-devl
 sudo port install tiff
 sudo port install subversion
 sudo port install autoconf - GNU tool for producing config scripts (needed by PROJ4)
