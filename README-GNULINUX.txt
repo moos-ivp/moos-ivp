@@ -25,7 +25,7 @@ Additional packages:
 
   libfltk1.3-dev  - Fast Light Toolkit - development files
   freeglut3-dev   - OpenGL Utility Toolkit development files
-  libpng12-dev    - PNG library - development
+  libpng-dev      - PNG library - development
   libjpeg-dev     - Independent JPEG Group's JPEG runtime library 
   libxft-dev      - FreeType-based font drawing library for X
   libxinerama-dev - X11 Xinerama extension library (development headers)
