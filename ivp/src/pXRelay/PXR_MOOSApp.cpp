@@ -59,7 +59,7 @@ bool PXR_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     if(key == m_incoming_var) 
       m_tally_recd++;
   }
-  cout << "In On New Mail!!!!!!!!!!!!" << endl; 
+  //  cout << "In On New Mail!!!!!!!!!!!!" << endl; 
   return(false);
   return(true);
 }
