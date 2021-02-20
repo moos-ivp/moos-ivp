@@ -26,7 +26,7 @@
       '("ANTLER" "MSBetweenLaunches" "Run" "NewConsole")
       '("iM300" "comms_type" "port" "ip_addr" "stale_thresh" "max_rudder" "max_thrust" "drive_mode" "max_appcast_events")
       '("uSockComms" "comms_type" "port" "ip_addr" "max_appcast_events")
-      '("uSimTowBody" "tow_length" "max_appcast_events" )
+      '("uSimTowBody" "tow_cable_length" "tow_body_length" "swath_width" "swath_length" "swath_color" "swath_transparency" "max_appcast_events" )
       '("uSimWaterway" "border" "cover_poly" "cell_size" "cell_val" "max_appcast_events" )
       '("pMissionEval" "lead_condition" "pass_condition" "fail_condition" "result_flag" "pass_flag" "fail_flag"  "max_appcast_events")
       '("uFldVoronoi" "stale_time" "verbose" "region" "max_appcast_events")
@@ -34,7 +34,7 @@
       '("uSimHeron" "port" "comms_type" "ip_addr" "max_appcast_events")
       '("uFldVoronoi" "reject_range" "post_poly" "post_region" "region" "max_appcast_events")
       '("uMemWatch" "ignore" "watch_only" "absolute_time_gap" "max_appcast_events")
-      '("uFldCollObDetect" "collision_dist" "near_miss_dist" "encounter_dist" "collision_flag" "near_miss_flag" "encounter_flag" "ignore_group" "reject_group" "max_appcast_events")
+      '("uFldCollObDetect" "collision_dist" "near_miss_dist" "encounter_dist" "collision_range" "near_miss_range" "encounter_range" "collision_flag" "near_miss_flag" "encounter_flag" "ignore_group" "reject_group" "max_appcast_events")
       '("uFldObstacleSim" "obstacle_file" "poly_vert_color" "poly_edge_color" "poly_fill_color" "poly_label_color" "poly_vert_size" "poly_edge_size" "draw_region" "post_points" "rate_points" "poly_transparency" "region_edge_color" "min_duration" "max_duration" "reuse_ids" "reset_interval" "reset_range" "refresh_interval" "max_appcast_events")
       '("uFldWrapDetect" "max_segments" "max_trail_distance" "max_trail_dist" "max_appcast_events")
       '("pMovingSurvey" "survey" "heading" "speed" "reverse_interval" "update_interval" "rpm" "max_appcast_events")
@@ -97,7 +97,7 @@
       
       '("uFldSwarmAssign" "task")
       '("pProxonoi" "region" "max_appcast_events")
-      '("uFldCollisionDetect" "collision_range" "near_miss_range" "pulse_render" "pulse_range" "pulse_duration" "condition" "collision_flag" "near_miss_flag" "encounter_flag" "encounter_range" "report_all_encounters" "max_appcast_events")
+      '("uFldCollisionDetect" "collision_range" "collision_dist" "near_miss_range" "near_miss_range" "pulse_render" "pulse_range" "pulse_duration" "condition" "collision_flag" "near_miss_flag" "encounter_flag" "encounter_range" "encounter_dist" "report_all_encounters" "max_appcast_events")
 
       '("pPolePath" "start_line" "end_line" "poles_number" "steps_number" "display_poles" "display_steps" "start_pole" "output_var" "random_end")
       '("pRangeSensorHangler" "local_range" "range_report" "target_name" "verbose" "disp_range_circle" "max_appcast_events")
@@ -111,6 +111,7 @@
       '("pEncircle" "circle_position" "max_speed" "aggression" "encircle_active" "consider_thresh" "on_circle_thres" "message_color" "max_appcast_events")
       
        '("pTaskManager" "max_appcast_events")
+       '("uFldTaskMonitor")
 
       '("pTowManager" "ownship"  "max_appcast_events")
       
