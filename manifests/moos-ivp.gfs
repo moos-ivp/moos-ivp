@@ -44,7 +44,10 @@ author   = Michael Benjamin
 contact  = mikerb@mit.edu, issues@moos-ivp.org
 org      = MIT
 
-synopsis =
+synopsis = The Core autonomy codebase primarily consists of the helm and core
+ libraries comprising the helm. This includes the geometry and behavior libraries.
+ Also included in this group the COLREGS behavior which includes several supporting
+ libraries. The obstacle manager and contact manager are also in this group. 
   
 group    = Core Autonomy
 distro   = moos-ivp.org
