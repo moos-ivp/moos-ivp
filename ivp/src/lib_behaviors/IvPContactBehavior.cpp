@@ -97,7 +97,7 @@ bool IvPContactBehavior::setParam(string param, string param_val)
   else if(param == "ignore_region")
     return(m_filter_set.addIgnoreRegion(param_val));
   else if(param == "strict_ignore")
-    return(m_filter_set.addIgnoreRegion(param_val));
+    return(m_filter_set.setStrictIgnore(param_val));
 
   else if(param == "cnflag")
     return(addContactFlag(param_val));

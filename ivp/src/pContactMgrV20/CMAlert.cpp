@@ -60,6 +60,9 @@ bool CMAlert::configFilter(string param, string value)
     return(m_filter_set.addMatchRegion(value));
   else if(param == "ignore_region")
     return(m_filter_set.addIgnoreRegion(value));
+
+  else if(param == "strict_ignore")
+    return(m_filter_set.setStrictIgnore(value));
   
   return(false);
 }
