@@ -41,6 +41,7 @@
 #include "FColorMap.h"
 #include "ColorParse.h"
 #include "Shape_Ship.h"
+#include "Shape_LongShip.h"
 #include "Shape_Kayak.h"
 #include "Shape_WAMV.h"
 #include "Shape_AUV.h"
@@ -884,6 +885,21 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
 	       factor_x, transparency);
     if(outer_line > 0)
       drawGLPoly(g_shipBody, g_shipBodySize, black, outer_line,
+		 factor_x, transparency);
+    glTranslatef(cx, cy, 0);
+  }
+  else if(vehibody == "longship") {  
+    if(vlength > 0) {
+      factor_x *= (vlength / g_longShipLength);
+      factor_y *= (vlength / g_longShipLength);
+    }
+    double cx = g_longShipCtrX * factor_x;
+    double cy = g_longShipCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_longShipBody, g_longShipBodySize, body_color, 0,
+	       factor_x, transparency);
+    if(outer_line > 0)
+      drawGLPoly(g_longShipBody, g_longShipBodySize, black, outer_line,
 		 factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }

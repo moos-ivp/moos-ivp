@@ -24,7 +24,7 @@
 #ifndef SHAPE_LONG_SHIP_HEADER
 #define SHAPE_LONG_SHIP_HEADER
 
-double g_shipBody[]=
+double g_longShipBody[]=
 {
  3.5, 0,
  3.85, 5,
@@ -40,7 +40,7 @@ double g_shipBody[]=
  1.2, 49, 
  1, 50,
  0.2, 51,
- 0, 51.2
+ 0, 51.2,
  -0.2, 51,
  -1, 50,
  -1.2, 49, 
