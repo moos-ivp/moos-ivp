@@ -402,6 +402,8 @@ bool NodeReporter::OnStartUp()
       m_record.setLength(4); // meters;
     else if(vtype == "ship")
       m_record.setLength(8); // meters
+    else if(vtype == "longship")
+      m_record.setLength(15); // meters
     else if(vtype == "glider")
       m_record.setLength(3); // meters
     else if(vtype == "usv")

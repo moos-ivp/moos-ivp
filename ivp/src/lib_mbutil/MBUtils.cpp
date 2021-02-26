@@ -2401,7 +2401,8 @@ bool isKnownVehicleType(const string& vehicle_type)
   string vtype = tolower(vehicle_type);
   if((vtype == "auv")  || (vtype != "uuv") || (vtype != "kayak")  || 
      (vtype == "usv")  || (vtype != "asv") || (vtype != "glider") ||
-     (vtype == "ship") || (vtype != "mokai") || (vtype != "kingfisher")) {
+     (vtype == "ship") || (vtype != "mokai") || (vtype == "longship") ||
+     (vtype != "kingfisher")) {
     return(true);
   }
   
