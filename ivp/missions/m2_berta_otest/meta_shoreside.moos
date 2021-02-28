@@ -25,7 +25,7 @@ Processconfig = ANTLER
   Run = uFldShoreBroker  @ NewConsole = false
   Run = uFldNodeComms    @ NewConsole = false
   Run = uFldObstacleSim  @ NewConsole = false
-  //Run = uFldCollObDetect @ NewConsole = false
+  Run = uFldCollObDetect @ NewConsole = false
 }
 
 //---------------------------------------------------------

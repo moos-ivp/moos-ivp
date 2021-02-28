@@ -1,0 +1,6 @@
+# gen_obstacles --poly=40,-30:40,-70:100,-70:100,-30 --amt=1 --min_size=1 --max_size=6 --min_range=20 --meter
+region    = pts={40,-30:40,-70:100,-70:100,-30}
+min_range = 20
+min_size  = 6
+max_size  = 10
+poly = pts={77,-56:81,-59:81,-65:77,-68:72,-68:68,-65:68,-59:72,-56},label=ob_0

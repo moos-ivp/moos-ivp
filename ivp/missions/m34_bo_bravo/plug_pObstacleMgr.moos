@@ -11,7 +11,5 @@ ProcessConfig = pObstacleMgr
 	//obstacles_color = $(VCOLOR)
 	obstacles_color = invisible
 
-	post_view_polys = false
-	
 	given_max_duration = 1000
-	} 
+} 

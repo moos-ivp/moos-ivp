@@ -14,7 +14,6 @@ Processconfig = ANTLER
 
   Run = MOOSDB          @ NewConsole = false
   Run = pRealm          @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = uXMS            @ NewConsole = false
@@ -37,7 +36,12 @@ ProcessConfig = pRealm
 
 	hist_var = VIEW_POLYGON
 	hist_var = GIVEN_OBSTACLE
-}
+	hist_var = KNOWN_OBSTACLE
+
+	hist_var = VIEW_POINT
+	
+	scope_set = name=obstacles, vars=VIEW_POLYGON:GIVEN_OBSTACLE:KNOWN_OBSTACLEa
+	}
 
 	
 //--------------------------------------------------
@@ -60,12 +64,13 @@ ProcessConfig = uFldObstacleSim
 	poly_edge_size  = 2           // default is 1
 	
 
-	min_duration = 400
-  max_duration = 500
-	refresh_interval = 200
+	min_duration = 250
+  max_duration = 300
+	refresh_interval = 350
 
 	post_points = $(POINTS)
-
+	point_size = 5
+	
 	reuse_ids = false
 	
 #ifdef DRESET true
@@ -210,72 +215,11 @@ ProcessConfig = pMarineViewer
 	procs_font_size = xlarge
 	appcast_font_size = large
 	
-  action = STATION_KEEP_ALL = false
-  action = STATION_KEEP_ALL = true
-
-  left_context[return_point] = RETURN_$[UP_VNAME_CLOSEST] = true
-  left_context[return_point] = RETURN_UPDATES_$[UP_VNAME_CLOSEST] = points=$[XPOS],$[YPOS]
-  left_context[station]      = STATION_KEEP_$[UP_VNAME_CLOSEST] = true
-
-  cmd = label=DEPLOY, var=DEPLOY,  sval=true,  receivers=all:$(VNAMES)
-  cmd = label=DEPLOY, var=MOOS_MANUAL_OVERRIDE,  sval=false,  receivers=all:$(VNAMES)
-  cmd = label=DEPLOY, var=AVOID,  sval=true,  receivers=all:$(VNAMES)
-  cmd = label=DEPLOY, var=RETURN,  sval=false,  receivers=all:$(VNAMES)
-  cmd = label=DEPLOY, var=STATION_KEEP,  sval=false,  receivers=all:$(VNAMES)
-
-  cmd = label=RETURN, var=RETURN, sval=true, receivers=all:$(VNAMES)
-  cmd = label=RETURN, var=STATION_KEEP, sval=false, receivers=all:$(VNAMES)
-
-  cmd = label=PERMUTE, var=UTS_FORWARD,  dval=0,  receivers=shore
-
-  cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all:$(VNAMES), color=pink
-
-  cmd = label=LOITER-FAST, var=UP_LOITER,  sval=speed=2.8,  receivers=all:$(VNAMES)
-  cmd = label=LOITER-SLOW, var=UP_LOITER,  sval=speed=1.4,  receivers=all:$(VNAMES)
-
-  cmd = label=LOITER-CLOCKWISE-TRUE,  var=UP_LOITER, sval=clockwise=true,  receivers=all:$(VNAMES)
-  cmd = label=LOITER-CLOCKWISE-FALSE, var=UP_LOITER, sval=clockwise=false, receivers=all:$(VNAMES)
-  cmd = label=LOITER-CLOCKWISE-BEST, var=UP_LOITER,  sval=clockwise=false, receivers=all:$(VNAMES)
-	
   button_one   = DEPLOY  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  button_one   = AVOID_ALL=true
-  button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
 
-  button_two   = RETURN  # RETURN_ALL=true
-  button_two   = RETURN  # STATION_KEEP_ALL=false
-  button_three = PERMUTE   # UTS_FORWARD=0
-  button_four  = STATION   # STATION_KEEP_ALL=true
-  //button_four  = DRESET   # UFOS_RESET=now
-
+  button_two   = STOP  # DEPLOY_ALL=false
 }
-
-//--------------------------------------------------------
-// uTimerScript Configuration Block
-
-ProcessConfig = uTimerScript
-{
-  AppTick   = 4
-  CommsTick = 4
-  
-  paused     = false
-  reset_max  = unlimited
-  reset_time = end
-
-  randvar = varname=X1, min=-45,  max=5,   key=at_reset
-  randvar = varname=Y1, min=-135, max=-35, key=at_reset
-
-  randvar = varname=X2, min=150,  max=180, key=at_reset
-  randvar = varname=Y2, min=-125, max=-35, key=at_reset
-
-	event = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
-  event = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180
-
-  event = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=360
-  event = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=360
-
-}
-
 
 //--------------------------------------------------------
 // uProcessWatch Configuration Block

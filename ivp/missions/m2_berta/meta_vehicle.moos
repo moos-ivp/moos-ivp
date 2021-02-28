@@ -29,6 +29,7 @@ Processconfig = ANTLER
   Run = iSay           @ NewConsole = false
   Run = pContactMgrV20 @ NewConsole = false
   Run = pRealm @ NewConsole = false
+	Run = uFunctionVis   @ NewConsole = false
   //Run = pBasicContactMgr @ NewConsole = false
 }
 
@@ -132,6 +133,7 @@ ProcessConfig = uFldNodeBroker
   CommsTick = 1
 
   try_shore_host = pshare_route=localhost:$(SHORE_PSHARE)
+  try_shore_host = pshare_route=sdfsdfdoceanai.mit.edu:$(SHORE_PSHARE)
 
   bridge = src=VIEW_POLYGON
   bridge = src=VIEW_CIRCLE

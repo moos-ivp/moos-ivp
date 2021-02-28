@@ -196,9 +196,9 @@ ProcessConfig = pMarineViewer
   appcast_width        = 30
   appcast_viewable     = true
   appcast_color_scheme = indigo
-  nodes_font_size      = large
-  procs_font_size      = large
-  appcast_font_size    = medium
+  nodes_font_size      = xlarge
+  procs_font_size      = xlarge
+  appcast_font_size    = large
   
   scope = PROX_POLY_VIEW_ALPHA
   scope = PHELMIVP_PID

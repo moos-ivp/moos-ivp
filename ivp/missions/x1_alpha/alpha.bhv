@@ -21,7 +21,8 @@ Behavior = BHV_Waypoint
 
       lead_condition = AVOIDING != active
 
-
+	wptflag = TESTU=$[UID] 
+	
       use_alt_speed = true
            speed_alt = 1
                 lead = 8
