@@ -102,10 +102,14 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
   blk("                 string_val=BAR                                 ");
+  blk("  APP_CAST_REQ                                                  ");
+  blk("  KNOWN_OBSTACLE                                                ");
+  blk("  NODE_REPORT                                                   ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
-  blk("  Publications are determined by the node message content.      ");
+  blk("  APPCAST                                                       ");
+  blk("  <flags>                                                       ");
   blk("                                                                ");
   exit(0);
 }
