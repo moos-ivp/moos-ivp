@@ -6,7 +6,6 @@
 #----------------------------------------------------------
 #  Part 1: Set global var defaults
 #----------------------------------------------------------
-trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
 JUST_MAKE="no"
 
@@ -26,7 +25,7 @@ SHORE_PSHARE="9200"
 #  Part 2: Check for and handle command-line arguments
 #----------------------------------------------------------
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "launch.sh [SWITCHES] [time_warp]    " 
 	echo "  --help, -h           Show this help message            " 
 	echo "  --just_make, -j      Just create targ files, no launch " 
