@@ -47,6 +47,8 @@ ObstacleManager::ObstacleManager()
   m_post_view_polys = true;
 
   m_obstacles_color = "blue";
+
+  m_given_max_duration = 60; // seconds
   
   // Init State Variables
   m_nav_x = 0;
@@ -163,7 +165,7 @@ bool ObstacleManager::OnStartUp()
     if(param == "point_var")
       handled = setNonWhiteVarOnString(m_point_var, value);
     else if(param == "given_obstable")
-      handled = handleGivenObstacle(value);
+      handled = handleGivenObstacle(value, "mission");
     else if(param == "alert_range")
       handled = setPosDoubleOnString(m_alert_range, value);
     else if(param == "ignore_range")
@@ -184,6 +186,8 @@ bool ObstacleManager::OnStartUp()
       handled = setUIntOnString(m_poly_shade_thresh, value);
     else if(param == "poly_vertex_thresh")
       handled = setUIntOnString(m_poly_vertex_thresh, value);
+    else if(param == "given_max_duration")
+      handled = handleConfigGivenMaxDuration(value);
 
     else if(param == "lasso")
       handled = setBooleanOnString(m_lasso, value);
@@ -212,8 +216,8 @@ bool ObstacleManager::OnStartUp()
   if(m_point_var == "")
     m_point_var = "TRACKED_FEATURE";
 
-  Notify("VEHICLE_CONNECT", "true");
-  reportEvent("VEHICLE_CONNECT=true");
+  Notify("OBM_CONNECT", "true");
+  reportEvent("OBM_CONNECT=true");
   
   registerVariables();	
   return(true);
@@ -284,7 +288,7 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
 //      Note: The duration parameter is optional
 
 
-bool ObstacleManager::handleGivenObstacle(string poly)
+bool ObstacleManager::handleGivenObstacle(string poly, string source)
 {
   XYPolygon new_poly = string2Poly(poly);
   if(!new_poly.is_convex())
@@ -297,6 +301,20 @@ bool ObstacleManager::handleGivenObstacle(string poly)
   
   string key = new_poly.get_label();
 
+  if(source == "mail") {
+    string msg;
+    if((dur_str == "") && (m_given_max_duration > 0)) {
+      msg = "Incoming GIVEN_OBSTACLE has missing duration"; 
+      reportRunWarning(msg);
+      return(false);
+    }
+    if((duration > m_given_max_duration)) {
+      string msg = "Incoming GIVEN_OBSTACLE has duration exceeding max duration";
+      reportRunWarning(msg);
+      return(false);
+    }
+  }
+  
   // Sanity check: If an obstacle with given label/key is already
   // known, and associated with an obstacle that is NOT a given
   // obstacle (rather it is associated with a data stream of points),
@@ -436,10 +454,10 @@ bool ObstacleManager::updatePointHulls()
       
       poly.set_edge_color(m_obstacles_color);
       poly.set_edge_size(1);
-      string poly_str = poly.get_spec(3);
+      string poly_str = poly.get_spec(5);
       Notify("VIEW_POLYGON", poly_str);
     }
-    p->second.setChanged(false);
+    //p->second.setChanged(false);
   }
   
   return(true);
@@ -551,7 +569,7 @@ void ObstacleManager::postConvexHullUpdate(string key)
 
   XYPolygon poly = m_map_obstacles[key].getPoly();
 
-  string update_str = "name=" + key + "#";
+  string update_str = "name=" + m_alert_name + key + "#";
   update_str += "poly=" + poly.get_spec_pts(5) + ",label=" + key;
 
   m_alerts_posted++;
@@ -654,10 +672,6 @@ void ObstacleManager::updatePolyRanges()
     // Also keep track of closest range ever to any obstacle
     if((m_min_dist_ever < 0) || (range < m_min_dist_ever)) {
       m_min_dist_ever = range;
-
-      if(m_min_dist_ever < -1)
-	Notify("OBM_kEY", key + ":" + uintToString(poly.size()) + ":" + poly.get_spec());
-
       Notify("OBM_MIN_DIST_EVER", m_min_dist_ever);
     }
      
@@ -703,10 +717,10 @@ void ObstacleManager::manageMemory()
     }
 
     // Post to alert variabe that this obstacle is resolved
-    string done_str = "name=" + key + "#resolved=true";
+    Notify("OBM_RESOLVED", key);
     m_alerts_resolved++;
-    Notify(m_alert_var, done_str);
-    reportEvent(m_alert_var + "=" + done_str);
+    reportEvent("OBM_RESOLVED=" + key);
+
     
     // Update key obstacle manager state
     m_map_obstacles.erase(key);
@@ -726,6 +740,19 @@ bool ObstacleManager::handleConfigPostDistToPolys(string val)
   
   m_post_dist_to_polys = val;
   return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: handleConfigGivenMaxDuration()
+
+bool ObstacleManager::handleConfigGivenMaxDuration(string val) 
+{
+  if(tolower(val) == "off") {
+    m_given_max_duration = -1;
+    return(true);
+  }
+
+  return(setPosDoubleOnString(m_given_max_duration, val));
 }
 
 //------------------------------------------------------------
@@ -758,7 +785,8 @@ bool ObstacleManager::buildReport()
   m_msgs << "  ignore_range:        " << str_ignore_rng    << endl;
   m_msgs << "Configuration (viewing):                    " << endl;
   m_msgs << "  post_dist_to_polys: " << m_post_dist_to_polys << endl;
-  m_msgs << "  post_view_polys:    " << str_post_view_polys  << endl;
+  m_msgs << "  post_view_polys:    " << str_post_view_polys << endl;
+  m_msgs << "  obstacle color:     " << m_obstacles_color  << endl;
   m_msgs << "Configuration (alerts):                     " << endl;
   m_msgs << "  alert_var:   " << m_alert_var               << endl;
   m_msgs << "  alert_name:  " << m_alert_name              << endl;

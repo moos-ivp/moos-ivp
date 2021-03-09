@@ -32,11 +32,12 @@ protected:
   void registerVariables();
 
   bool handleConfigPostDistToPolys(std::string);
+  bool handleConfigGivenMaxDuration(std::string);
 
   bool handleMailNewPoint(std::string);
   bool handleMailAlertRequest(std::string);
 
-  bool handleGivenObstacle(std::string);
+  bool handleGivenObstacle(std::string, std::string src="mail");
   
   void postConvexHullUpdates();
   void postConvexHullUpdate(std::string obstacle_key);
@@ -81,6 +82,8 @@ private: // Configuration variables
   bool         m_post_view_polys;
   
   std::string  m_obstacles_color;
+
+  double       m_given_max_duration;
   
 private: // State variables
   double m_nav_x;
