@@ -7,9 +7,7 @@
 // geoview
 // manifest_test
 // nsplug
-// pickpos
 // lib_evalutil
-// pContactMgrV20
 // uFldWrapDetect
 
 //====================================================================
@@ -1793,6 +1791,46 @@ synopsis = The pBasicContactMgr application deals with information
   MOOS variables, with select content about one or more of the
   contacts. An alert is typically used by the helm to spawn
   a behavior for a new contact, for collision avoidance for example.
+
+//====================================================================
+module   = pContactMgrV20
+type     = MOOS App
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Manages known contacts and generates alerts consumed by the helm
+depends  = lib_mbutil, lib_bhvutil, lib_apputil, lib_geometry, lib_contacts, lib_MOOS
+borndate = 200708
+doc_url  = http://oceanai.mit.edu/ivpman/apps/pContactMgrV20
+license  = GPL
+group    = MOOS-IvP, Core Autonomy
+distro   = moos-ivp.org
+
+synopsis = The pContactMgrV20 application is newer version to replace
+  pBasicContactMgr. It is designed to be backward compatible with
+  pBasicContactMgr but for ease in adoption, the user continues to
+  have the option of using the earlier version. Like pBasicContactMgr,
+  it deals with information about other known vehicles in its
+  vicinity. It is not a sensor application, but rather handles
+  incoming "contact reports" which may represent information received
+  by the vehicle over a communications link, or may be the result of
+  on-board sensor processing.
+
+  The contact manager may also may be configured to post alerts, i.e.,
+  MOOS variables, with select content about one or more of the
+  contacts. An alert is typically used by the helm to spawn
+  a behavior for a new contact, for collision avoidance for example.
+
+  This new contact manager has better suport for memory management,
+  guarding against unbounded growth of contacts, using a policy for
+  dropping contacts based on contact age, range, and total number
+  of contacts. It also has imroved support for exclusion filters, allowing
+  the user to control which types of contacts are ignored. This can be
+  configured in both the contact manager and within behaviors using
+  the contact manager. The exclusion filter can also be based on the
+  operation region. The new contact manager also supports some swarm
+  autonomy algorithms by posting configurable information about the
+  set of teammates in range, and/or the closest teammate.
 
 //====================================================================
 module   = pDeadManPost
