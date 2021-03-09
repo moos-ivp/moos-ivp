@@ -410,15 +410,15 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     }
     
     if(!handled && !handled_scope) {
-      string warning = "Unhandled Mail: " + key + " ";
+      string warning = "Unhandled Mail: src=" + msg.GetSource();
+      if(msg.GetSourceAux() != "")
+	warning += ", aux=" + msg.GetSourceAux();
+
       if(why_not != "")
-	warning += why_not;
-      else {
-	warning += "=[" + sval + "] src=" + msg.GetSource();
-	if(msg.GetSourceAux() != "")
-	  warning += " aux=" + msg.GetSourceAux();
-      }
-      Notify("MVIEWER_UNHANDLED_MAIL", key + "=" + sval.substr(0,10) + "...");
+	warning += ", reason=:" + why_not;
+      warning += " [" + sval + "]";
+
+      Notify("MVIEWER_UNHANDLED_MAIL", warning);
       reportRunWarning(warning);
     }
   }
