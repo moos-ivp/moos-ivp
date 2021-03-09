@@ -4,6 +4,8 @@
 /*    FILE: BHV_AvoidObstacle.cpp                                */
 /*    DATE: Aug 2nd 2006                                         */
 /*    DATE: Sep 9th 2019 Rewrite with different AOF and refinery */
+/*    DATE: Feb 27th 2021 Further mods related to completion.    */
+/*    DATE: Feb 27th 2021 Created AvoidObstacleV21 version       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -25,7 +27,7 @@
 #include <iostream>
 #include <cmath> 
 #include <cstdlib>
-#include "BHV_AvoidObstacleX.h"
+#include "BHV_AvoidObstacleV21.h"
 #include "AOF_AvoidObstacleX.h"
 #include "OF_Reflector.h"
 #include "MBUtils.h"
@@ -42,7 +44,7 @@ using namespace std;
 //      Note: Most of the behavior state is contained in the
 //            member variable m_obship_model
 
-BHV_AvoidObstacleX::BHV_AvoidObstacleX(IvPDomain gdomain) : 
+BHV_AvoidObstacleV21::BHV_AvoidObstacleV21(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
 {
   this->setParam("descriptor", "avoid_obstacle");
@@ -74,8 +76,6 @@ BHV_AvoidObstacleX::BHV_AvoidObstacleX(IvPDomain gdomain) :
 
   m_resolved_obstacle_var = "OBM_RESOLVED";
   
-  m_hide_deprecation_warning = false;
-  
   // Initialize state vars
   m_obstacle_relevance = 0;
 
@@ -90,7 +90,7 @@ BHV_AvoidObstacleX::BHV_AvoidObstacleX(IvPDomain gdomain) :
 //            The "radius" parameter indicates what it means to have
 //            arrived at the waypoint.
 
-bool BHV_AvoidObstacleX::setParam(string param, string val) 
+bool BHV_AvoidObstacleV21::setParam(string param, string val) 
 {
   if(IvPBehavior::setParam(param, val))
     return(true);
@@ -113,16 +113,16 @@ bool BHV_AvoidObstacleX::setParam(string param, string val)
     config_result = m_obship_model.setPwtOuterDist(dval);
   else if((param == "completed_dist") && non_neg_number) 
     config_result = m_obship_model.setCompletedDist(dval);
-  else if(param == "resolved")
-    return(setBooleanOnString(m_resolved_pending, val));
   else if(param == "visual_hints")
     return(handleParamVisualHints(val));
   else if(param == "use_refinery")
     return(setBooleanOnString(m_use_refinery, val));
-  else if(param == "id")
+  else if(param == "id") {
+    // Once the obstacle id is set, it cannot be overwritten
+    if((m_obstacle_id != "") && (m_obstacle_id != val))
+      return(false);
     return(setNonWhiteVarOnString(m_obstacle_id, val));
-  else if(param == "i_understand_this_behavior_is_deprecated")
-    return(setBooleanOnString(m_hide_deprecation_warning, val));
+  }
   else
     return(false);
 
@@ -137,32 +137,15 @@ bool BHV_AvoidObstacleX::setParam(string param, string val)
 //-----------------------------------------------------------
 // Procedure: onSetParamComplete
 
-void BHV_AvoidObstacleX::onSetParamComplete()
+void BHV_AvoidObstacleV21::onSetParamComplete()
 {
   postConfigStatus();
 }
 
 //-----------------------------------------------------------
-// Procedure: isDeprecated()
-//   Purpose: Users of this behavior will get a configuration warning unless
-//            they use the "i_understand" parameter, essentially saying use
-//            at your own risk.
-
-string BHV_AvoidObstacleX::isDeprecated()
-{
-  if(m_hide_deprecation_warning)
-    return("");
-  
-  string msg;
-  msg += "AvoidObstacleX not supported. Use AvoidObstacleV20 instead.";
-  msg += "# Set i_understand_this_behavior_is_deprecated=true to suppress this warning";  
-  return(msg);
-}
-
-//-----------------------------------------------------------
 // Procedure: onHelmStart()
 
-void BHV_AvoidObstacleX::onHelmStart()
+void BHV_AvoidObstacleV21::onHelmStart()
 {
   if(isDynamicallySpawnable() && (m_update_var != "")) {
     double pwt_outer_dist = m_obship_model.getPwtOuterDist();
@@ -176,7 +159,7 @@ void BHV_AvoidObstacleX::onHelmStart()
 //-----------------------------------------------------------
 // Procedure: onEveryState()
 
-void BHV_AvoidObstacleX::onEveryState(string str)
+void BHV_AvoidObstacleV21::onEveryState(string str)
 {
   // Get list of all obstacles declared to be resolved by the obstacle mgr
   bool ok = true;
@@ -199,7 +182,7 @@ void BHV_AvoidObstacleX::onEveryState(string str)
 //-----------------------------------------------------------
 // Procedure: onIdleState()
 
-void BHV_AvoidObstacleX::onIdleState()
+void BHV_AvoidObstacleV21::onIdleState()
 {
   postErasablePolygons();
 
@@ -210,7 +193,7 @@ void BHV_AvoidObstacleX::onIdleState()
 //-----------------------------------------------------------
 // Procedure: onCompleteState()
 
-void BHV_AvoidObstacleX::onCompleteState() 
+void BHV_AvoidObstacleV21::onCompleteState() 
 {
   postErasablePolygons();
 }
@@ -218,7 +201,7 @@ void BHV_AvoidObstacleX::onCompleteState()
 //-----------------------------------------------------------
 // Procedure: onInactiveState()
 
-void BHV_AvoidObstacleX::onInactiveState()
+void BHV_AvoidObstacleV21::onInactiveState()
 {
   postErasablePolygons();
 }
@@ -226,7 +209,7 @@ void BHV_AvoidObstacleX::onInactiveState()
 //-----------------------------------------------------------
 // Procedure: onIdleToRunState()
 
-void BHV_AvoidObstacleX::onIdleToRunState()
+void BHV_AvoidObstacleV21::onIdleToRunState()
 {
   postConfigStatus();
 }
@@ -234,7 +217,7 @@ void BHV_AvoidObstacleX::onIdleToRunState()
 //-----------------------------------------------------------
 // Procedure: onSpawn()
 
-void BHV_AvoidObstacleX::onSpawn()
+void BHV_AvoidObstacleV21::onSpawn()
 {
   postMessage("AVD_OB_SPAWN", m_descriptor);
 }
@@ -242,7 +225,7 @@ void BHV_AvoidObstacleX::onSpawn()
 //-----------------------------------------------------------
 // Procedure: onRunState
 
-IvPFunction *BHV_AvoidObstacleX::onRunState() 
+IvPFunction *BHV_AvoidObstacleV21::onRunState() 
 {
   string debug_info = m_descriptor + ":" + uintToString(m_helm_iter);
 
@@ -283,7 +266,7 @@ IvPFunction *BHV_AvoidObstacleX::onRunState()
   bool ok_init = aof_avoid.initialize();
   if(!ok_init) {
     string aof_msg = aof_avoid.getCatMsgsAOF();
-    postWMessage("Unable to init AOF_AvoidObstacleX:"+aof_msg);
+    postWMessage("Unable to init AOF_AvoidObstacleV21:"+aof_msg);
     return(0);
   }
   
@@ -338,7 +321,7 @@ IvPFunction *BHV_AvoidObstacleX::onRunState()
 //            Calculate the relevance first. If zero-relevance, 
 //            we won't bother to create the objective function.
 
-double BHV_AvoidObstacleX::getRelevance()
+double BHV_AvoidObstacleV21::getRelevance()
 {
   // Let the ObShipModel tell us the raw range relevance
   double range_relevance = m_obship_model.getRangeRelevance();
@@ -359,7 +342,7 @@ double BHV_AvoidObstacleX::getRelevance()
 //-----------------------------------------------------------
 // Procedure: handleParamVisualHints()
 
-bool BHV_AvoidObstacleX::handleParamVisualHints(string hints)
+bool BHV_AvoidObstacleV21::handleParamVisualHints(string hints)
 {
   vector<string> svector = parseStringQ(hints, ',');
 
@@ -420,7 +403,7 @@ bool BHV_AvoidObstacleX::handleParamVisualHints(string hints)
 //-----------------------------------------------------------
 // Procedure: postViewablePolygons
 
-void BHV_AvoidObstacleX::postViewablePolygons()
+void BHV_AvoidObstacleV21::postViewablePolygons()
 {
   // =================================================
   // Part 1 - Render the original obstacle polygon
@@ -436,7 +419,7 @@ void BHV_AvoidObstacleX::postViewablePolygons()
     obstacle.set_color("fill", m_hint_obst_fill_color);
     obstacle.set_transparency(m_hint_obst_fill_transparency);
   }
-  postMessage("VIEW_POLYGON", obstacle.get_spec(3), "one");
+  postMessage("VIEW_POLYGON", obstacle.get_spec(5), "one");
     
   // =================================================
   // Part 2 - Render the buffer min_cpa obstacle polygon
@@ -452,7 +435,7 @@ void BHV_AvoidObstacleX::postViewablePolygons()
     obstacle_buff_min.set_color("fill", m_hint_buff_min_fill_color);
     obstacle_buff_min.set_transparency(m_hint_buff_min_fill_transparency);
   }
-  postMessage("VIEW_POLYGON", obstacle_buff_min.get_spec(3), "two");
+  postMessage("VIEW_POLYGON", obstacle_buff_min.get_spec(5), "two");
 
   // =================================================
   // Part 3 - Render the buffer max_cpa obstacle polygon
@@ -468,14 +451,14 @@ void BHV_AvoidObstacleX::postViewablePolygons()
     obstacle_buff_max.set_color("fill", m_hint_buff_max_fill_color);
     obstacle_buff_max.set_transparency(m_hint_buff_max_fill_transparency);
   }
-  postMessage("VIEW_POLYGON", obstacle_buff_max.get_spec(3), "three");
+  postMessage("VIEW_POLYGON", obstacle_buff_max.get_spec(5), "three");
 }
 
 
 //-----------------------------------------------------------
 // Procedure: postErasablePolygons
 
-void BHV_AvoidObstacleX::postErasablePolygons()
+void BHV_AvoidObstacleV21::postErasablePolygons()
 {
   XYPolygon obstacle = m_obship_model.getObstacle();
   postMessage("VIEW_POLYGON", obstacle.get_spec_inactive(), "one");
@@ -493,7 +476,7 @@ void BHV_AvoidObstacleX::postErasablePolygons()
 //-----------------------------------------------------------
 // Procedure: updatePlatformInfo()
 
-bool BHV_AvoidObstacleX::updatePlatformInfo()
+bool BHV_AvoidObstacleV21::updatePlatformInfo()
 {
   bool ok1, ok2, ok3;
   double osx = getBufferDoubleVal("NAV_X", ok1);
@@ -533,9 +516,9 @@ bool BHV_AvoidObstacleX::updatePlatformInfo()
 //-----------------------------------------------------------
 // Procedure: postConfigStatus
 
-void BHV_AvoidObstacleX::postConfigStatus()
+void BHV_AvoidObstacleV21::postConfigStatus()
 {
-  string str = "type=BHV_AvoidObstacleXs,name=" + m_descriptor;
+  string str = "type=BHV_AvoidObstacleV21,name=" + m_descriptor;
 
   double pwt_inner_dist = m_obship_model.getPwtInnerDist();
   double pwt_outer_dist = m_obship_model.getPwtOuterDist();
@@ -557,7 +540,7 @@ void BHV_AvoidObstacleX::postConfigStatus()
 //-----------------------------------------------------------
 // Procedure: getDoubleInfo()
 
-double BHV_AvoidObstacleX::getDoubleInfo(string str)
+double BHV_AvoidObstacleV21::getDoubleInfo(string str)
 {
   if(str == "osx")
     return(m_obship_model.getOSX());

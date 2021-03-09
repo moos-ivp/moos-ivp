@@ -3,7 +3,9 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BHV_AvoidObstacleX.h                                 */
 /*    DATE: Aug 2nd 2006                                         */
-/*    DATE: Sep 9th 2019 Rewrite with different AOF and refinery */
+/*    DATE: Sep 9th 2019  Rewrite with different AOF & refinery  */
+/*    DATE: Feb 27th 2021 Further mods related to completion.    */
+/*    DATE: Feb 27th 2021 Created AvoidObstacleV21 version       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -22,17 +24,17 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef BHV_AVOID_OBSTACLEX_HEADER
-#define BHV_AVOID_OBSTACLEX_HEADER
+#ifndef BHV_AVOID_OBSTACLE_V21_HEADER
+#define BHV_AVOID_OBSTACLE_V21_HEADER
 
 #include "IvPBehavior.h"
 #include "ObShipModel.h"
 #include "XYPolygon.h"
 
-class BHV_AvoidObstacleX : public IvPBehavior {
+class BHV_AvoidObstacleV21 : public IvPBehavior {
 public:
-  BHV_AvoidObstacleX(IvPDomain);
-  ~BHV_AvoidObstacleX() {}
+  BHV_AvoidObstacleV21(IvPDomain);
+  ~BHV_AvoidObstacleV21() {}
   
   bool         setParam(std::string, std::string);
   void         onHelmStart();
@@ -47,7 +49,6 @@ public:
   void         postConfigStatus();
   double       getDoubleInfo(std::string);
   bool         isConstraint() {return(true);}
-  std::string  isDeprecated();
 
  protected: 
   bool   handleParamVisualHints(std::string);
@@ -68,8 +69,6 @@ public:
 
   std::string m_resolved_obstacle_var;
   std::string m_obstacle_id;
-
-  bool        m_hide_deprecation_warning;
   
  protected: // State variables
 
