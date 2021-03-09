@@ -89,7 +89,8 @@ void showExampleConfigAndExit()
   blk("  region_vert_color = color   (default is white)                ");
   blk("                                                                ");
   blk("  post_points      = true     (default is false)                ");
-  blk("  rate_points      = 5        (default is 5                     ");
+  blk("  rate_points      = 5        (default is 5)                    ");
+  blk("  point_size       = 5        (default is 2)                    ");
   blk("                                                                ");
   blk("  min_duration     = 10       (default is -1)                   ");
   blk("  max_duration     = 15       (default is -1)                   ");

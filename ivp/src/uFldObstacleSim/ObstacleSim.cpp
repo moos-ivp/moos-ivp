@@ -45,7 +45,8 @@ ObstacleSim::ObstacleSim()
   
   m_post_points = false;
   m_rate_points = 5;
-
+  m_point_size  = 2;
+  
   m_min_duration = -1;
   m_max_duration = -1;
   m_obs_refresh_interval = -1;
@@ -91,22 +92,25 @@ bool ObstacleSim::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
 #endif
-    
+
+    bool handled = true;
     if(key=="PMV_CONNECT")
       m_obs_refresh_needed = true;
-    else if(key=="VEHICLE_CONNECT")
+    else if(key=="OBM_CONNECT")
       m_obs_refresh_needed = true;
     else if(key=="UFOS_RESET")
       m_reset_request = true;
-    else if(key=="NODE_REPORT") {
-      bool ok = handleMailNodeReport(sval);
-      if(!ok) 
-	reportRunWarning("Unhandled Node Report:" + sval);    
-    }
+    else if(key=="UFOS_POINT_SIZE")
+      handled = handleMailPointSize(sval);
+    else if(key=="NODE_REPORT") 
+      handled = handleMailNodeReport(sval);
     else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
-      reportRunWarning("Unhandled Mail: " + key);
+      handled = false;
+    
+    if(!handled) 
+      reportRunWarning("Unhandled Mail: " + key + "=" + sval);    
   }
-	
+  
   return(true);
 }
 
@@ -190,6 +194,8 @@ bool ObstacleSim::OnStartUp()
       handled = setBooleanOnString(m_post_points, value);
     else if(param == "rate_points")
       handled = setNonNegDoubleOnString(m_rate_points, value);
+    else if(param == "point_size")
+      handled = setNonNegDoubleOnString(m_point_size, value);
 
     else if(param == "min_duration")
       handled = handleConfigMinDuration(value);
@@ -239,6 +245,7 @@ void ObstacleSim::registerVariables()
   Register("PMV_CONNECT", 0);
   Register("VEHICLE_CONNECT", 0);
   Register("UFOS_RESET", 0);
+  Register("UFOS_POINT_SIZE", 0);
   Register("NODE_REPORT", 0);
 }
 
@@ -259,6 +266,26 @@ bool ObstacleSim::handleMailNodeReport(string node_report)
   
   // Update the node record list for this vehicle
   m_map_vrecords[vname] = record;
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: handleMailPointSize()
+
+bool ObstacleSim::handleMailPointSize(string str)
+{
+  str = tolower(str);
+  double dval = atof(str.c_str());
+
+  if(dval >= 1) 
+    m_point_size = dval;
+  else if((str == "smaller") && (m_point_size >=2))
+    m_point_size -= 1;
+  else if(str == "bigger") 
+    m_point_size += 1;
+  else
+    return(false);
+  
   return(true);
 }
 
@@ -543,7 +570,7 @@ void ObstacleSim::postObstaclesRefresh()
   // Part 1: Post the viewable info
   // =================================================
   for(unsigned int i=0; i<m_obstacles.size(); i++) {
-    string spec = m_obstacles[i].get_spec();
+    string spec = m_obstacles[i].get_spec(2);
     Notify("VIEW_POLYGON", spec);
   }
   if(m_draw_region && m_poly_region.is_convex())
@@ -599,7 +626,7 @@ void ObstacleSim::postPoints()
     string uvname = toupper(p->first);
     double osx = p->second.getX();
     double osy = p->second.getY();
-    string vcolor = p->second.getColor("yello");
+    string vcolor = p->second.getColor("yellow");
     
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
       if(m_obstacles[i].dist_to_poly(osx,osy) <= sensor_range) {
@@ -619,7 +646,7 @@ void ObstacleSim::postPoints()
 	    XYPoint p(x,y);
 	    p.set_label(vname + ":" + key + ":" + intToString(label_index));
 	    p.set_vertex_color(vcolor);
-	    p.set_vertex_size(2);
+	    p.set_vertex_size(m_point_size);
 	    p.set_label_color("invisible");
 	    p.set_duration(10);
 	    string spec = p.get_spec();
