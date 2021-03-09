@@ -53,6 +53,7 @@
 #include "BHV_AvoidCollision.h"
 #include "BHV_AvoidObstacle.h"
 #include "BHV_AvoidObstacleX.h"
+#include "BHV_AvoidObstacleV21.h"
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
 #include "BHV_Hysteresis.h"
@@ -93,6 +94,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_AvoidCollision")  || 
      (bhv_name == "BHV_AvoidObstacle")   || 
      (bhv_name == "BHV_AvoidObstacleX")  || 
+     (bhv_name == "BHV_AvoidObstacleV21")|| 
      (bhv_name == "BHV_PeriodicSpeed")   || 
      (bhv_name == "BHV_PeriodicSurface") || 
      (bhv_name == "BHV_GoToDepth")       || 
@@ -165,6 +167,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_AvoidObstacle(m_domain);
   else if(bhv_name == "BHV_AvoidObstacleX") 
     bhv = new BHV_AvoidObstacleX(m_domain);
+  else if(bhv_name == "BHV_AvoidObstacleV21") 
+    bhv = new BHV_AvoidObstacleV21(m_domain);
   else if(bhv_name == "BHV_PeriodicSpeed") 
     bhv = new BHV_PeriodicSpeed(m_domain);
   else if(bhv_name == "BHV_PeriodicSurface") 

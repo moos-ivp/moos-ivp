@@ -303,7 +303,15 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
 
     specs_valid = specs_valid && valid;
   }
+  
+  string deprecated_msg = bhv->isDeprecated();
+  if(deprecated_msg != "") {
+    vector<string> svector = parseString(deprecated_msg, '#');
+    for(unsigned int i=0; i<svector.size(); i++)
+      addWarning(stripBlankEnds(svector[i]));
+  }
 
+  
   // Then apply all the behavior specs from an UPDATES string which may
   // possibly be empty.
   // NOTE: If the update_str is non-empty we can assume this is a spawning
