@@ -52,13 +52,20 @@ bool Obstacle::addPoint(XYPoint point)
 //            and sometimes from a source that has generated
 //            the poly from the obstacle points.
 
-bool Obstacle::setPoly(XYPolygon poly)
+bool Obstacle::setPoly(XYPolygon new_poly)
 {
-  if(!poly.is_convex())
+  if(!new_poly.is_convex())
     return(false);
 
-  m_polygon = poly;
-
+  // If new poly is the same when rounding vertices to 1/10 meter
+  // then we skip the update.
+  string new_spec = new_poly.get_spec_pts_label(1);
+  if(new_spec == m_poly_spec)
+    return(true);
+  
+  m_polygon   = new_poly;
+  m_poly_spec = new_spec;
+  
   m_changed = true;
   m_updates_total++;
   return(true);

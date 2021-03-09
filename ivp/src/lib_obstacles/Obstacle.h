@@ -50,18 +50,19 @@ public:
   std::vector<XYPoint> getPoints() const;
   
 protected: // set externally
-  std::list<XYPoint>  m_points;
-  XYPolygon           m_polygon;
-  double              m_range;
-  double              m_duration;
-  double              m_tstamp;
-  unsigned int        m_max_points;
+  std::list<XYPoint> m_points;
+  XYPolygon          m_polygon;
+  double             m_range;
+  double             m_duration;
+  double             m_tstamp;
+  unsigned int       m_max_points;
   
 private:  // set internally
-  unsigned int        m_pts_total;
-  bool                m_changed;  
-  unsigned int        m_updates_total;
-  double              m_min_range;
+  unsigned int   m_pts_total;
+  bool           m_changed;  
+  unsigned int   m_updates_total;
+  double         m_min_range;
+  std::string    m_poly_spec;
 };
 
 #endif 

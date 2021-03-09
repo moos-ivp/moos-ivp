@@ -51,8 +51,11 @@ class ObstacleFieldGenerator
   bool   setObstacleMaxSize(std::string);
   bool   setObstacleMaxSize(double);
 
-  bool   setPrecision(double);
+  bool   setPolyVertices(std::string);
+  bool   setPolyVertices(unsigned int);
 
+  bool   setPrecision(double);
+  
   void   setBeginID(unsigned int v) {m_begin_id=v;}
   void   setVerbose(bool v) {m_verbose=v;}
   
@@ -75,6 +78,8 @@ class ObstacleFieldGenerator
 
   unsigned int m_amount;
   unsigned int m_begin_id;
+
+  unsigned int m_poly_vertices;
   
   std::vector<XYPolygon> m_obstacles;  
 };

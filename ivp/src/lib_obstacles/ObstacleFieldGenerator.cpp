@@ -42,6 +42,8 @@ ObstacleFieldGenerator::ObstacleFieldGenerator()
   m_precision = 0.1;    // vertices chosen at 1/10th meter
   m_amount    = 1;
   m_begin_id  = 0;
+
+  m_poly_vertices = 8;
   
   m_verbose = true;
 }
@@ -182,6 +184,31 @@ bool ObstacleFieldGenerator::setObstacleMaxSize(double dval)
   return(true);
 }
 
+//---------------------------------------------------------
+// Procedure: setPolyVertices()
+
+bool ObstacleFieldGenerator::setPolyVertices(string str)
+{
+  int ival = atoi(str.c_str());
+  if(ival < 3)
+    return(false);
+
+  return(setObstacleMaxSize((unsigned int)(ival)));
+}
+
+
+//---------------------------------------------------------
+// Procedure: setPolyVertices()
+
+bool ObstacleFieldGenerator::setPolyVertices(unsigned int val)
+{
+  if(val < 3)
+    return(false);
+
+  m_poly_vertices = val;
+  return(true);
+}
+
 
 //---------------------------------------------------------
 // Procedure: generate()
@@ -265,7 +292,8 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
     str += ", y=" + doubleToString(rand_y,1);
     str += ",radius=" + doubleToString(radius);
     str += ",snap=" + doubleToStringX(m_precision,3);
-    str += ",pts=8,label=ob_" + uintToString(m_begin_id + m_obstacles.size());
+    str += ",pts=" + uintToString(m_poly_vertices);
+    str += ",label=ob_" + uintToString(m_begin_id + m_obstacles.size());
  
     XYPolygon try_poly = string2Poly(str);
     if(!try_poly.is_convex()) {
