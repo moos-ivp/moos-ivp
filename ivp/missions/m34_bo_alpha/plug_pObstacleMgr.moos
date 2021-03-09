@@ -8,6 +8,7 @@ ProcessConfig = pObstacleMgr
 
   point_var = TRACKED_FEATURE 
 
+	
 	//obstacles_color = $(VCOLOR)
 	obstacles_color = invisible
 

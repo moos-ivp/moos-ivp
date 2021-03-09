@@ -2,7 +2,7 @@
 Behavior = BHV_AvdColregsV19
 {
   name       = avdcol_
-  pwt        = 150
+  pwt        = 550
   condition  = AVOID = true
   condition  = MODE==ACTIVE
   updates    = CONTACT_INFO
