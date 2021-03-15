@@ -154,7 +154,7 @@ string BHV_AvoidObstacleX::isDeprecated()
     return("");
   
   string msg;
-  msg += "AvoidObstacleX not supported. Use AvoidObstacleV20 instead.";
+  msg += "AvoidObstacleX not supported. Use AvoidObstacleV21 instead.";
   msg += "# Set i_understand_this_behavior_is_deprecated=true to suppress this warning";  
   return(msg);
 }
