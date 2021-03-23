@@ -236,6 +236,7 @@ SET(ROBOT_APPS
   app_pickpos
   app_manifest_test
   app_tagrep
+  app_gen_moos_app
   pEchoVar
   pMissionEval
   pEvalLoiter
