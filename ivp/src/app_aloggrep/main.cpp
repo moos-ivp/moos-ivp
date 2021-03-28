@@ -41,26 +41,18 @@ int main(int argc, char *argv[])
     return(0);
   }
   
-  bool comments_retained = true;
-  if(scanArgs(argc, argv, "--no_comments", "-nc"))
-    comments_retained = false;
-  
-  bool badlines_retained = false;
-  if(scanArgs(argc, argv, "--keep_badlines", "-kb"))
-    badlines_retained = true;
-  
-  bool make_end_report = true;
-  if(scanArgs(argc, argv, "--no_report", "-nr"))
-    make_end_report = false;
-  
-  bool gaplines_retained = true;
-  if(scanArgs(argc, argv, "--gap_len", "-gl"))
-    gaplines_retained = false;
-  
-  bool appcast_retained = true;
-  if(scanArgs(argc, argv, "--appcast", "-ac"))
-    appcast_retained = false;
-  
+  bool no_keep_comments  = scanArgs(argc, argv, "--no_comments", "-nc");
+  bool badlines_retained = scanArgs(argc, argv, "--keep_badlines", "-kb");
+  bool make_end_report   = scanArgs(argc, argv, "--no_report", "-nr");
+  bool gaplines_retained = scanArgs(argc, argv, "--gap_len", "-gl");
+  bool appcast_retained  = scanArgs(argc, argv, "--appcast", "-ac");
+  bool sort_by_time      = scanArgs(argc, argv, "--sort", "-s");
+  bool remove_duplicates = scanArgs(argc, argv, "--duplicates", "-d");
+  if(scanArgs(argc, argv, "--sd", "-sd")) {
+    sort_by_time = true;
+    remove_duplicates = true;
+  }
+
   bool final_entry_only = false;
   if(scanArgs(argc, argv, "--final")) {
     final_entry_only = true;
@@ -83,14 +75,14 @@ int main(int argc, char *argv[])
   
   bool values_only = false;
   if(scanArgs(argc, argv, "--values_only", "-vo")) {
-    values_only       = true;
-    comments_retained = false;
-    make_end_report   = false;
+    values_only      = true;
+    no_keep_comments = false;
+    make_end_report  = false;
   }
   
   if(scanArgs(argc, argv, "--quiet", "-q")) {
-    comments_retained = false;
-    make_end_report = false;
+    no_keep_comments = false;
+    make_end_report  = false;
   }
     
   bool file_overwrite = false;
@@ -122,7 +114,9 @@ int main(int argc, char *argv[])
     cout << "  -nc,--no_comments Supress comment (header) lines         " << endl;
     cout << "  -nr,--no_report   Supress summary report                 " << endl;
     cout << "  -gl,--no_gaplen   Supress vars ending in _GAP or _LEN    " << endl;
-    cout << "  -ac,--no_appcast  Supress APPCAST lines                  " << endl;
+    cout << "  -s,--sort         Sort the log entries                   " << endl;
+    cout << "  -d,--duplicates   Remove Duplicate entries               " << endl;
+    cout << "  -sd,--sd          Remove Duplicate AND sort              " << endl;
     cout << "                                                           " << endl;
     cout << "  --final           Output only final matching line        " << endl;
     cout << "  -x,--finalx       Output only final matching line's val  " << endl;
@@ -138,11 +132,14 @@ int main(int argc, char *argv[])
     cout << "  (1) The second alog is the output file. Otherwise the    " << endl;
     cout << "      order of arguments is irrelevant.                    " << endl;
     cout << "  (2) VAR* matches any MOOS variable starting with VAR     " << endl;
-    cout << "  (3) See also: alogscan, alogrm, alogclip, alogsplit,     " << endl;
-    cout << "      alogview                                             " << endl;
+    cout << "  (3) The --sort and --duplicates options address an issue " << endl;
+    cout << "      with pLogger in that some entries are out of order   " << endl;
+    cout << "      and some entries are logged twice.                   " << endl;
     cout << "  (4) If the output file name is vname.alog, will attempt  " << endl;
     cout << "      to replace with vname_STR.alog where STR is the      " << endl;
     cout << "      detected community taken from DB_TIME source.        " << endl;
+    cout << "  (5) See also: alogscan, alogrm, alogclip, alogsplit,     " << endl;
+    cout << "      alogview, alogsort                                   " << endl;
     cout << endl;
     return(0);
   }
@@ -172,7 +169,7 @@ int main(int argc, char *argv[])
   
   GrepHandler handler;
   handler.setFileOverWrite(file_overwrite);
-  handler.setCommentsRetained(comments_retained);
+  handler.setCommentsRetained(!no_keep_comments);
   handler.setBadLinesRetained(badlines_retained);
   handler.setGapLinesRetained(gaplines_retained);
   handler.setAppCastRetained(appcast_retained);
@@ -180,6 +177,8 @@ int main(int argc, char *argv[])
   handler.setFinalTimeOnly(final_time_only);
   handler.setFinalValueOnly(final_value_only);
   handler.setValuesOnly(values_only);
+  handler.setSortEntries(sort_by_time);
+  handler.setRemoveDuplicates(remove_duplicates);
 
   int ksize = keys.size();
   for(int i=0; i<ksize; i++)

@@ -102,27 +102,23 @@ ALogEntry ALogSorter::popEntry()
   if(!m_check_for_duplicates)
     return(return_entry);
 
-  // Begin checking for and popping duplicates
-  bool done = false;
-  while(!done) {
-    if(m_entries.size() == 0)
-      done = true;
-    else {
-      if(m_entries.front() == return_entry)
-	m_entries.pop_front();
-      else
-	done = true;
-    }
+  // Go through the remaining entries and continue to check for
+  // duplicate. We assume the entries are all sorted by now, so we can
+  // stop checking once we hit an entry with a different timestamp
+  
+  double return_entry_tstamp = return_entry.time();
+  
+  list<ALogEntry>::iterator p;
+  for(p=m_entries.begin(); p!= m_entries.end(); ) {
+    ALogEntry entry = *p;
+    if(entry.time() != return_entry_tstamp)
+      break;
+
+    if(entry == return_entry)
+      p = m_entries.erase(p);
+    else
+      p++;
   }
-  // Done checking for duplicates
 
   return(return_entry);
 }
-
-
-
-
-
-
-
-

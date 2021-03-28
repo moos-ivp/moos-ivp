@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
 
   string alogfile_in;
   string alogfile_out;
-  string cache_size;
+  string cache_size = "1000";
 
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -124,6 +124,8 @@ int main(int argc, char *argv[])
     handler.handleSort(alogfile_in, alogfile_out);
     handler.printReport();
   }
+
+  cout << "Sorter Cache size: " << handler.getCacheSize() << endl;
 }
 
 

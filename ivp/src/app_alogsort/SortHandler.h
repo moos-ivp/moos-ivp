@@ -39,6 +39,8 @@ class SortHandler
   void printReport();
   void setCacheSize(unsigned int v) {m_cache_size=v;}
   void setFileOverWrite(bool v)     {m_file_overwrite=v;}
+
+  unsigned int getCacheSize() const {return(m_cache_size);}
   
  protected:
   unsigned int m_cache_size;

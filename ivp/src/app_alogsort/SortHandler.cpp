@@ -114,8 +114,11 @@ bool SortHandler::handleSort(const string& alogfile, const string& new_alogfile)
 	entry.setRawLine(line_raw);
       
 	bool re_sort_noted = sorter.addEntry(entry);
-	if(re_sort_noted)
+	if(re_sort_noted) {
 	  m_re_sorts++;
+	  //cout << "re-sorted:" << entry.getRawLine() << endl;
+	}
+	  
       }
     }
      
