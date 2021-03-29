@@ -493,6 +493,8 @@ IvPFunction *BHV_Waypoint::onRunState()
     post_wpt_flags = true;
   if(m_wpt_flag_on_start && !m_wpt_flag_published)
     post_wpt_flags = true;
+  if(m_completed)
+    post_wpt_flags = true;
   if(post_wpt_flags) {
     m_prevpt.set_vertex(this_x, this_y);
     postFlags(m_wpt_flags);
@@ -541,7 +543,6 @@ IvPFunction *BHV_Waypoint::onRunState()
   IvPFunction *ipf = buildOF(m_ipf_type);
   if(ipf)
     ipf->setPWT(m_priority_wt);
-
 
   return(ipf);
 }
@@ -632,7 +633,7 @@ bool BHV_Waypoint::setNextWaypoint()
   }
    
   if(feedback_msg == "completed") {
-    postFlags(m_wpt_flags);
+    //postFlags(m_wpt_flags);
     
     setComplete();
     m_markpt.set_active(false);
@@ -640,7 +641,7 @@ bool BHV_Waypoint::setNextWaypoint()
       m_waypoint_engine.resetForNewTraversal();
     return(false);
   }
-  
+
   double next_ptx = m_waypoint_engine.getPointX();
   double next_pty = m_waypoint_engine.getPointY();
   m_nextpt.set_vertex(next_ptx, next_pty);
@@ -879,6 +880,7 @@ void BHV_Waypoint::postCycleFlags()
 //-----------------------------------------------------------
 // Procedure: postWptFlags()
 
+#if 0
 void BHV_Waypoint::postWptFlags(double x, double y)
 {
   for(unsigned int i=0; i<m_wpt_flags.size(); i++) {
@@ -894,6 +896,8 @@ void BHV_Waypoint::postWptFlags(double x, double y)
     }
   }
 }
+#endif
+
 
 //-----------------------------------------------------------
 // Procedure: handleVisualHint()
@@ -1173,6 +1177,11 @@ string BHV_Waypoint::expandMacros(string sdata)
   sdata = macroExpand(sdata, "PX", m_prevpt.x());
   sdata = macroExpand(sdata, "PY", m_prevpt.y());
 
+  sdata = macroExpand(sdata, "X", m_prevpt.x()); // deprecated
+  sdata = macroExpand(sdata, "Y", m_prevpt.y()); // deprecated
+
+
+  
   sdata = macroExpand(sdata, "IX", m_waypoint_engine.getCurrIndex());
   sdata = macroExpand(sdata, "CYCLES", m_waypoint_engine.getCycleCount());
   sdata = macroExpand(sdata, "CYCREM", m_waypoint_engine.resetsRemaining());
@@ -1181,10 +1190,6 @@ string BHV_Waypoint::expandMacros(string sdata)
   sdata = macroExpand(sdata, "WPTS_REM", m_waypoint_engine.size() -
 		      m_waypoint_engine.getCurrIndex());
 
-  sdata = macroExpand(sdata, "X", m_prevpt.x()); // deprecated
-  sdata = macroExpand(sdata, "Y", m_prevpt.y()); // deprecated
-
-  
   return(sdata);
 }
 
