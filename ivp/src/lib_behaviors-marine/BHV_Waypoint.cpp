@@ -634,7 +634,7 @@ bool BHV_Waypoint::setNextWaypoint()
    
   if(feedback_msg == "completed") {
     //postFlags(m_wpt_flags);
-    
+    m_completed = true;
     setComplete();
     m_markpt.set_active(false);
     if(m_perpetual)
