@@ -302,16 +302,17 @@ bool ObstacleManager::handleGivenObstacle(string poly, string source)
   string key = new_poly.get_label();
 
   if(source == "mail") {
-    string msg;
-    if((dur_str == "") && (m_given_max_duration > 0)) {
-      msg = "Incoming GIVEN_OBSTACLE has missing duration"; 
-      reportRunWarning(msg);
-      return(false);
-    }
-    if((duration > m_given_max_duration)) {
-      string msg = "Incoming GIVEN_OBSTACLE has duration exceeding max duration";
-      reportRunWarning(msg);
-      return(false);
+    if(m_given_max_duration > 0) {
+      if(dur_str == "") {
+	string msg = "Incoming GIVEN_OBSTACLE has missing duration"; 
+	reportRunWarning(msg);
+	return(false);
+      }
+      if(duration > m_given_max_duration) {
+	string msg = "Incoming GIVEN_OBSTACLE has duration exceeding max duration";
+	reportRunWarning(msg);
+	return(false);
+      }
     }
   }
   
