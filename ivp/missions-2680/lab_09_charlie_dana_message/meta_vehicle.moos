@@ -24,6 +24,7 @@ Processconfig = ANTLER
   Run = pHostInfo        @ NewConsole = false
   Run = uFldNodeBroker   @ NewConsole = false
   Run = uFldMessageHandler @ NewConsole = false
+  Run = pRealm           @ NewConsole = false
 }
 
 //------------------------------------------------------------
@@ -35,6 +36,23 @@ ProcessConfig = uFldMessageHandler
   CommsTick  = 2
 
   strict_addressing = false
+}
+
+//--------------------------------------------------
+// pRealm Configuration Block
+
+ProcessConfig = pRealm                                          
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  wrap_length  = 90       
+  trunc_length = 270     
+  msg_max_hist = 10      
+                                                                
+  hist_var  = NODE_MESSAGE
+  hist_var  = NODE_MESSAGE_LOCAL
+  scope_set = name=msgs, vars=NODE_MESSAGE:NODE_MESSAGE_LOCAL
 }
 
 

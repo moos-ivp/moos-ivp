@@ -21,6 +21,7 @@ Processconfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
 }
 
 #include plug_pShare.moos
@@ -39,6 +40,23 @@ ProcessConfig = uFldNodeComms
 
   view_node_rpt_pulses = true
 }
+
+//--------------------------------------------------
+// pRealm Configuration Block
+
+ProcessConfig = pRealm                                          
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  wrap_length  = 90       
+  trunc_length = 270     
+  msg_max_hist = 10      
+                                                                
+  hist_var  = NODE_MESSAGE                                          
+  scope_set = name=msgs, vars=NODE_MESSAGE
+}
+
 
 //--------------------------------------------------
 // uMAC Configuration Block
