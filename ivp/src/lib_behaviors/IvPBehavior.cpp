@@ -82,6 +82,13 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_osv = 0;
 
   m_time_of_creation = 0;
+
+  m_macro_ctr = 0;
+  m_macro_ctr_01 = 0;
+  m_macro_ctr_02 = 0;
+  m_macro_ctr_03 = 0;
+  m_macro_ctr_04 = 0;
+  m_macro_ctr_05 = 0;
   
   m_config_posted = false;
 }
@@ -1008,14 +1015,15 @@ void IvPBehavior::postFlags(const string& str, bool repeatable)
 {
   if(str == "runflags")
     postFlags(m_run_flags, repeatable);
-  else if(str == "endflags")
-    postFlags(m_end_flags, repeatable);
   else if(str == "idleflags")
     postFlags(m_idle_flags, repeatable);
   else if(str == "activeflags")
     postFlags(m_active_flags, repeatable);
   else if(str == "inactiveflags")
     postFlags(m_inactive_flags, repeatable);
+
+  else if(str == "endflags")
+    postFlags(m_end_flags, repeatable);
   else if(str == "spawnflags")
     postFlags(m_spawn_flags, repeatable);
   else if(str == "configflags")
@@ -1281,5 +1289,31 @@ string IvPBehavior::expandMacros(string sdata)
   sdata = macroExpand(sdata, "OSH", m_osh);
   sdata = macroExpand(sdata, "OSV", m_osv);
 
+  if(strContains(sdata, "$[CTR]")) {
+    m_macro_ctr++;
+    sdata = macroExpand(sdata, "CTR", m_macro_ctr);
+  }    
+  if(strContains(sdata, "$[CTR1]")) {
+    m_macro_ctr_01++;
+    sdata = macroExpand(sdata, "CTR1", m_macro_ctr_01);
+  }
+  if(strContains(sdata, "$[CTR2]")) {
+    m_macro_ctr_02++;
+    sdata = macroExpand(sdata, "CTR2", m_macro_ctr_02);
+  }
+  if(strContains(sdata, "$[CTR3]")) {
+    m_macro_ctr_03++;
+    sdata = macroExpand(sdata, "CTR3", m_macro_ctr_03);
+  }
+  if(strContains(sdata, "$[CTR4]")) {
+    m_macro_ctr_04++;
+    sdata = macroExpand(sdata, "CTR4", m_macro_ctr_04);
+  }
+  if(strContains(sdata, "$[CTR5]")) {
+    m_macro_ctr_05++;
+    sdata = macroExpand(sdata, "CTR5", m_macro_ctr_05);
+  }
+    
+  
   return(sdata);
 }

@@ -224,6 +224,14 @@ protected:
 
   double      m_time_of_creation;
   
+
+  unsigned int m_macro_ctr;
+  unsigned int m_macro_ctr_01;
+  unsigned int m_macro_ctr_02;
+  unsigned int m_macro_ctr_03;
+  unsigned int m_macro_ctr_04;
+  unsigned int m_macro_ctr_05;
+
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.
   // This variable should only be accessible via (1) postEMessage()
