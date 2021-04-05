@@ -78,7 +78,7 @@ void showExampleConfigAndExit()
   blk("  summary_interval = 2.0       //  [1, 10] Default is 2         ");
   blk("  wrap_length = 90             //  [1,inf] Default is 90        ");
   blk("  trunc_length = 270           //  [1,inf] Default is 270       ");
-  blk("  msg_max_history = 10         //  [1,inf] Default is 10        ");
+  blk("  msg_max_hist = 10            //  [1,inf] Default is 10        ");
   blk("                                                                ");
   blk("  hist_var  = TASK_BID                                          ");
   blk("  scope_set = name=events, vars=DEPLOY:RETURN:STATION           ");

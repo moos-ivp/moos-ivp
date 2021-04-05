@@ -116,7 +116,7 @@ bool Realm::OnStartUp()
       handled = setPosUIntOnString(m_wrap_length, value);
     else if(param == "trunc_length")
       handled = setPosUIntOnString(m_trunc_length, value);
-    else if(param == "msg_max_hist")
+    else if((param == "msg_max_hist") || (param == "msg_max_history"))
       handled = setPosUIntOnString(m_msg_max_hist, value);
     else if(param == "hist_var")
       handled = handleConfigHistVar(value);
