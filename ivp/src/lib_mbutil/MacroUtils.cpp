@@ -108,3 +108,31 @@ string macroExpand(string str, string macro, unsigned int int_repl)
   return(rstr);
 }
 
+
+//---------------------------------------------------------
+// Procedure: getCounterMacro()
+//   Example: getCounterMacro("The world is $[CTR_WORLD] year old");
+//            returns: "CTR_WORLD"
+//   Returns: empty string if none found
+
+string getCounterMacro(string str)
+{
+  if(!strContains(str, "$[CTR"))
+    return("");
+
+  char c_osep = 30; // ASCII 30 is "record separator"
+  string str_osep(1, c_osep);
+  
+  str = findReplace(str, "$[CTR", str_osep);
+
+  biteString(str, c_osep);
+
+  if(!strContains(str, ']'))
+    return("");
+  
+  string macro = "CTR" + biteString(str, ']');
+  
+  return(macro);
+}
+
+
