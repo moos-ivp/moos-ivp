@@ -30,7 +30,7 @@
       '("uSimWaterway" "border" "cover_poly" "cell_size" "cell_val" "max_appcast_events" )
       '("pMissionEval" "lead_condition" "pass_condition" "fail_condition" "result_flag" "pass_flag" "fail_flag"  "max_appcast_events")
       '("uFldVoronoi" "stale_time" "verbose" "region" "max_appcast_events")
-      '("pRealm" "relcast_interval" "summary_interval" "wrap_length" "trunc_length" "msg_max_hist" "hist_var" "scope_set" "max_appcast_events")
+      '("pRealm" "relcast_interval" "summary_interval" "wrap_length" "trunc_length" "msg_max_hist" "hist_var" "scope_set" "max_appcast_events" "msg_max_history")
       '("uSimHeron" "port" "comms_type" "ip_addr" "max_appcast_events")
       '("uFldVoronoi" "reject_range" "post_poly" "post_region" "region" "max_appcast_events")
       '("uMemWatch" "ignore" "watch_only" "absolute_time_gap" "max_appcast_events")
@@ -40,7 +40,7 @@
       '("pMovingSurvey" "survey" "heading" "speed" "reverse_interval" "update_interval" "rpm" "max_appcast_events")
       '("pHostInfoV2" "prefer_hostip" "backup_hostip" "max_appcast_events")
       
-      '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "rand_var" "randvar" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp" "time_zero" "pause_variable" "forward_variable" "max_appcast_events")
+      '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "rand_var" "randvar" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp" "time_zero" "pause_variable" "forward_variable" "max_appcast_events" "block_on")
       '("uProcessWatch"  "watch" "watch_all" "nowatch" "allow_retractions" "summary_wait" "post_mapping" "max_appcast_events")
       '("uSimMarine"  "start_x" "start_y" "start_heading" "start_speed" "start_depth" "start_pos" "drift_x" "drift_y" "rotate_speed" "drift_vector" "buoyancy_rate" "max_acceleration" "max_deceleration" "max_depth_rate" "max_depth_rate_speed" "sim_pause" "dual_state" "thrust_reflect" "thrust_factor" "turn_rate" "thrust_map" "prefix" "default_water_depth" "trim_tolerance" "max_trim_delay" "max_rudder_degs_per_sec" "max_appcast_events")
       '("uSimMarineTow" "tow_dist" "lead_vname" "enabled_flag" "disabled_flag" "max_appcast_events") 
