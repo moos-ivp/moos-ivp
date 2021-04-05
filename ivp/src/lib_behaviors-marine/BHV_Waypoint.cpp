@@ -108,6 +108,8 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_osx_prev = 0;
   m_osy_prev = 0;
 
+  m_waypt_hit = false;
+  
   m_greedy_tour_pending = false;
 
   m_prev_cycle_index = 0;
@@ -495,12 +497,14 @@ IvPFunction *BHV_Waypoint::onRunState()
     post_wpt_flags = true;
   if(m_completed)
     post_wpt_flags = true;
+  if(m_waypt_hit)
+    post_wpt_flags = true;
+
   if(post_wpt_flags) {
     m_prevpt.set_vertex(this_x, this_y);
     postFlags(m_wpt_flags);
     m_wpt_flag_published = true;
   }
-
 
   // We want to report the updated cycle info regardless of the 
   // above result. Even if the next_point is false and there are
@@ -607,6 +611,7 @@ bool BHV_Waypoint::updateInfoIn()
 
 bool BHV_Waypoint::setNextWaypoint()
 {
+  m_waypt_hit = false;
   if(m_waypoint_engine.size() == 0)
     return(false);
 
@@ -614,6 +619,10 @@ bool BHV_Waypoint::setNextWaypoint()
 
   // Returns either: empty_seglist, completed, cycled, advanced, or in-transit
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
+
+  if((feedback_msg == "completed") || (feedback_msg == "cycled") ||
+     (feedback_msg == "advanced"))
+    m_waypt_hit = true;
   
   if(feedback_msg == "empty_seglist")
     return(false);
@@ -631,6 +640,8 @@ bool BHV_Waypoint::setNextWaypoint()
     
     postFlags(m_cycle_flags);
   }
+
+  postMessage("FEEDBACK_MSG", feedback_msg);
    
   if(feedback_msg == "completed") {
     //postFlags(m_wpt_flags);
