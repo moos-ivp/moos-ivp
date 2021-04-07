@@ -46,6 +46,7 @@ public:
 
   bool         isGiven() const;
 
+  std::string  getInfo(double curr_time=0) const;
   
   std::vector<XYPoint> getPoints() const;
   

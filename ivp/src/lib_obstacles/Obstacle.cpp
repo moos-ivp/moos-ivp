@@ -128,6 +128,25 @@ bool Obstacle::isGiven() const
 }
 
 
+//---------------------------------------------------------
+// Procedure: getInfo()
+
+string Obstacle::getInfo(double curr_time) const
+{
+  string info;
+
+  info += "given=" + boolToString(isGiven());
+  info += ", duration=" + doubleToStringX(m_duration);
+
+  if(curr_time > 0) {
+    double age = curr_time - m_tstamp;
+    info += ", age=" + doubleToStringX(age,1);
+  }
+
+  return(info);
+}
+
+
   
 //---------------------------------------------------------
 // Procedure: pruneByAge()
