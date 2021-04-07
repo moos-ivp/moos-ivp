@@ -60,6 +60,10 @@ ObstacleManager::ObstacleManager()
   m_points_invalid = 0;
   m_obstacles_released = 0;
 
+  m_given_mail_ever = 0;
+  m_given_mail_good = 0;
+  m_given_config_ever = 0;
+  
   m_min_dist_ever = -1;
   
   m_alerts_posted = 0;
@@ -290,11 +294,19 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
 
 bool ObstacleManager::handleGivenObstacle(string poly, string source)
 {
+  // Regardless of result or return value, increment the right counter
+  if(source == "mail")
+    m_given_mail_ever++;
+  else if(source == "mission")
+    m_given_config_ever++;
+
+
   XYPolygon new_poly = string2Poly(poly);
   if(!new_poly.is_convex())
     return(false);
 
-  double duration = 0;
+  // By default set the duration to be off (-1)
+  double duration = -1;
   string dur_str = tokStringParse(poly, "duration", ',', '=');
   if(isNumber(dur_str))
     duration = atof(dur_str.c_str());
@@ -314,6 +326,7 @@ bool ObstacleManager::handleGivenObstacle(string poly, string source)
 	return(false);
       }
     }
+    m_given_mail_good++;
   }
   
   // Sanity check: If an obstacle with given label/key is already
@@ -329,6 +342,8 @@ bool ObstacleManager::handleGivenObstacle(string poly, string source)
   m_map_obstacles[key].setPoly(new_poly);
   m_map_obstacles[key].setDuration(duration);
   m_map_obstacles[key].setTStamp(m_curr_time);
+  
+  reportEvent("new obstacle: " + m_map_obstacles[key].getInfo(m_curr_time)); 
   
   return(true);
 }
@@ -543,7 +558,7 @@ void ObstacleManager::postConvexHullUpdates()
       if(post_this_dist_to_poly) {
 	string msg = toupper(key) + "," + doubleToString(dist,1);
 	Notify("OBM_DIST_TO_OBJ", msg);
-	reportEvent("OBM_DIST_TO_OBJ="+msg);
+	//reportEvent("OBM_DIST_TO_OBJ="+msg);
       }
 
       // Only post hull if ownship is w/in alert range
@@ -784,9 +799,11 @@ bool ObstacleManager::buildReport()
   m_msgs << "  max_pts_per_cluster: " << str_max_pts_per   << endl;
   m_msgs << "  max_age_per_point:   " << str_max_age_per   << endl;
   m_msgs << "  ignore_range:        " << str_ignore_rng    << endl;
+  m_msgs << "Configuration (given_obstacles):            " << endl;
+  m_msgs << "  given_max_duration: " << m_given_max_duration << endl;
   m_msgs << "Configuration (viewing):                    " << endl;
   m_msgs << "  post_dist_to_polys: " << m_post_dist_to_polys << endl;
-  m_msgs << "  post_view_polys:    " << str_post_view_polys << endl;
+  m_msgs << "  post_view_polys:    " << str_post_view_polys  << endl;
   m_msgs << "  obstacle color:     " << m_obstacles_color  << endl;
   m_msgs << "Configuration (alerts):                     " << endl;
   m_msgs << "  alert_var:   " << m_alert_var               << endl;
@@ -803,6 +820,10 @@ bool ObstacleManager::buildReport()
   m_msgs << "  Points Received:   " << m_points_total      << endl;
   m_msgs << "  Points Invalid:    " << m_points_invalid    << endl;
   m_msgs << "  Points Ignored:    " << m_points_ignored    << endl;
+  m_msgs << "State: (given_obstacles):                   " << endl;
+  m_msgs << "  Given Obstacles (mail) ever: " << m_given_mail_ever << endl;
+  m_msgs << "  Given Obstacles (mail) good: " << m_given_mail_good << endl;
+  m_msgs << "  Given Obstacles (config):    " << m_given_config_ever << endl;
   m_msgs << "State: (obstacles):                         " << endl;
   m_msgs << "  Obstacles:          " << m_map_obstacles.size() << endl;
   m_msgs << "  Obstacles released: " << m_obstacles_released << endl;

@@ -84,6 +84,10 @@ private: // Configuration variables
   std::string  m_obstacles_color;
 
   double       m_given_max_duration;
+
+  unsigned int m_given_mail_ever;
+  unsigned int m_given_mail_good;
+  unsigned int m_given_config_ever;
   
 private: // State variables
   double m_nav_x;
