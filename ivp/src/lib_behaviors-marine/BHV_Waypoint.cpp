@@ -1200,6 +1200,7 @@ string BHV_Waypoint::expandMacros(string sdata)
  
   sdata = macroExpand(sdata, "WPTS_REM", m_waypoint_engine.size() -
 		      m_waypoint_engine.getCurrIndex());
+  sdata = macroExpand(sdata, "WPTS", m_waypoint_engine.size());
 
   return(sdata);
 }
