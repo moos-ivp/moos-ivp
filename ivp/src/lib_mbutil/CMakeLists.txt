@@ -20,6 +20,7 @@ SET(SRC
   Figlog.cpp
   TStamp.cpp
   ReleaseInfo.cpp
+  MailFlagSet.cpp
   LatLonFormatUtils.cpp
   )
 
@@ -40,6 +41,7 @@ SET(HEADERS
   TStamp.h
   ReleaseInfo.h
   ScopeEntry.h
+  MailFlagSet.h
   LatLonFormatUtils.h
 )
 
