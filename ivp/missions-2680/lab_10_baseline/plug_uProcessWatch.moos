@@ -6,7 +6,8 @@ ProcessConfig = uProcessWatch
   AppTick   = 2
   CommsTick = 2
   
-  WATCH_ALL = true
+	watch_all = true
+  nowatch   = uMAC*
 }
 
 

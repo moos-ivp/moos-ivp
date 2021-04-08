@@ -1,23 +1,28 @@
 #!/bin/bash 
 #-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
+#   Script: launch_vehicle.sh                       
+#  Mission: lab_10_baseline
 #-------------------------------------------------------
+#  Part 1: Set global var defaults
+#----------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
 HOSTNAME=$(hostname -s)
 VNAME=$(id -un)
 
-IP_ADDR=""
+IP_ADDR="localhost"
 MOOS_PORT="9001"
-PSHARE_PORT="9301"
-SHORE="localhost:9300"
+PSHARE_PORT="9201"
+SHORE="localhost:9200"
 GUI="yes"
+CONF="yes"
+
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "launch_vehicle.sh [SWITCHES]                     "
 	echo "  --help, -h                                     " 
 	echo "    Display this help message                    "
@@ -27,7 +32,7 @@ for ARGI; do
 	echo "  --vname=<vname>                                " 
 	echo "    Name of the vehicle being launched           " 
 	echo "                                                 "
-	echo "  --shore=<ipaddr:port>(localhost:9300)          "
+	echo "  --shore=<ipaddr:port>(localhost:9200)          "
 	echo "    IP address and pShare port of shoreside      "
 	echo "                                                 "
 	echo "  --mport=<port>(9001)                           "
@@ -41,29 +46,43 @@ for ARGI; do
 	echo "                                                 "
 	echo "  --nogui                                        " 
 	echo "    Do not launch pMarineViewer GUI with vehicle "
+	echo "  --nc                                           " 
+	echo "    No confirmation before launching             "
 	exit 0
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
-    elif [ "${ARGI:0:8}" = "--shore=" ] ; then
+    elif [ "${ARGI}" = "-nc" -o "${ARGI}" = "--nc" ]; then
+	CONF="no"
+    elif [ "${ARGI:0:8}" = "--shore=" ]; then
 	SHORE="${ARGI#--shore=*}"
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"
-    elif [ "${ARGI:0:8}" = "--mport=" ] ; then
+    elif [ "${ARGI:0:8}" = "--mport=" ]; then
 	MOOS_PORT="${ARGI#--mport=*}"
-    elif [ "${ARGI:0:9}" = "--pshare=" ] ; then
+    elif [ "${ARGI:0:9}" = "--pshare=" ]; then
 	PSHARE_PORT="${ARGI#--pshare=*}"
-    elif [ "${ARGI:0:8}" = "--vname=" ] ; then
+    elif [ "${ARGI:0:8}" = "--vname=" ]; then
 	VNAME="${ARGI#--vname=*}"
-    elif [ "${ARGI}" = "--nogui" ] ; then
+    elif [ "${ARGI}" = "--nogui" ]; then
 	GUI="no"
     else
-	echo "launch_vehicle.sh: Bad Arg: " $ARGI
-	exit 0
+	echo "launch_vehicle.sh: Bad Arg: $ARGI Exit Code 1"
+	exit 1
     fi
 done
 
+if [ "${CONF}" = "yes" ]; then 
+    echo "PSHARE_PORT = [${PSHARE_PORT}]"
+    echo "MOOS_PORT =   [${MOOS_PORT}]"
+    echo "IP_ADDR =     [${IP_ADDR}]"
+    echo "VNAME =       [${VNAME}]"
+    echo "SHORE =       [${SHORE}]"
+    echo "TIME_WARP =   [${TIME_WARP}]"
+    echo -n "Hit any key to continue with launching"
+    read ANSWER
+fi
 
 #-------------------------------------------------------
 #  Part 3: Create the .moos and .bhv files. 
@@ -89,28 +108,26 @@ nsplug meta_vehicle.bhv targ_$FULL_VNAME.bhv -f VNAME=$FULL_VNAME  \
     START_POS=$START_POS LOITER_POS=$LOITER_POS       
    
  
-if [ ${JUST_MAKE} = "yes" ] ; then
+if [ ${JUST_MAKE} = "yes" ]; then
     exit 0
 fi
 
 #-------------------------------------------------------
-#  Part 3: Launch the processes
+#  Part 4: Launch the processes
 #-------------------------------------------------------
 printf "Launching $VNAME MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_$FULL_VNAME.moos >& /dev/null &
 
 #-------------------------------------------------------
-#  Part 4: Exiting and/or killing the simulation
+#  Part 5: Launch the GUI if desired
 #-------------------------------------------------------
-
-if [ ${GUI} = "no" ] ; then
+if [ ${GUI} = "no" ]; then
     exit 0
 fi
 
 uMAC targ_$FULL_VNAME.moos
 
-# %1, matches the PID of the first job in the active jobs list
-# namely the pAntler job(s) launched in Part 3.
-echo "Killing all processes ... "
-kill %1 
-echo "Done killing processes.   "
+#-------------------------------------------------------
+#  Part 6: Exiting and/or killing the simulation
+#-------------------------------------------------------
+kill -- -$$
