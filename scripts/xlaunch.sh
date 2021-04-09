@@ -4,7 +4,7 @@
 #  Author: Michael Benjamin
 #  LastEd: August 2020
 #----------------------------------------------------------
-#  Part 1: Set Exit actions and declare global var defaults
+#  Part 1: Declare global var defaults
 #----------------------------------------------------------
 TIME_WARP=1
 COMMUNITY="shoreside"
@@ -40,6 +40,7 @@ for ARGI; do
 	echo "  --res, -r          Make a results file                   " 
 	echo "  --send, -s         Make and send a results file          " 
 	echo "  --clean, -c        Remove outcome file after OK send     " 
+	echo "  --com=alpha        Name the community to poke            " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
 	TIME_WARP=$ARGI
