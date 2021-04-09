@@ -162,9 +162,12 @@ bool SuicidalSleeper::Work()
             }
             else if(Action=="K")
             {
-                std::cerr<<MOOS::ConsoleColours::Red()<<"\n ** Received suicide instruction **\n";
+	      //std::cerr<<MOOS::ConsoleColours::Red()<<"\n ** Received suicide instruction **\n";
+                std::cerr<<MOOS::ConsoleColours::Red()<<"\n ** Received self-exit instruction **\n";
 
-                std::string response = MOOSFormat("%s is committing suicide\n",sHeader.c_str());
+		//                std::string response = MOOSFormat("%s is committing suicide\n",sHeader.c_str());
+		// Change by mikerb Apr0921
+                std::string response = MOOSFormat("%s is self-exiting\n",sHeader.c_str());
                 MCN.Write(response);
 
                 CMOOSThread count_down;

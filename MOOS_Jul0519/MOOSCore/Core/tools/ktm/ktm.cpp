@@ -102,7 +102,9 @@ int main(int argc, char *argv[])
     }
     else
     {
-        std::cerr<<"sending suicide instruction to "<<multicast_address<<":"<< multicast_port<<"\n";
+      //std::cerr<<"sending suicide instruction to "<<multicast_address<<":"<< multicast_port<<"\n";
+      // Change by mikerb Apr 09, 2021
+      std::cerr<<"sending self-exit instruction to "<<multicast_address<<":"<< multicast_port<<"\n";
     }
 
     std::string command = action+":"+phrase+":"+name_pattern;
