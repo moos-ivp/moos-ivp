@@ -164,7 +164,8 @@ bool SuicidalSleeper::Work()
             {
                 std::cerr<<MOOS::ConsoleColours::Red()<<"\n ** Received suicide instruction **\n";
 
-                std::string response = MOOSFormat("%s is committing suicide\n",sHeader.c_str());
+                //std::string response = MOOSFormat("%s is committing suicide\n",sHeader.c_str());
+                std::string response = MOOSFormat("%s is self-Exiting\n",sHeader.c_str());
                 MCN.Write(response);
 
                 CMOOSThread count_down;
