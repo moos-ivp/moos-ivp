@@ -6,7 +6,6 @@
 #----------------------------------------------------------
 #  Part 1: Set Exit actions and declare global var defaults
 #----------------------------------------------------------
-trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
 TIME_WARP=1
 COMMUNITY="alpha"
 GUI="yes"
@@ -15,7 +14,7 @@ GUI="yes"
 #  Part 2: Check for and handle command-line arguments
 #----------------------------------------------------------
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "launch.sh [SWITCHES] [time_warp]   "
 	echo "  --help, -h                       " 
 	exit 0;
@@ -37,3 +36,5 @@ echo "Launching $COMMUNITY MOOS Community. WARP is" $TIME_WARP
 pAntler $COMMUNITY.moos --MOOSTimeWarp=$TIME_WARP >& /dev/null &
 
 uMAC -t $COMMUNITY.moos
+
+kill -- -$$

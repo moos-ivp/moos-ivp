@@ -47,9 +47,14 @@ ProcessConfig = pRealm
   AppTick   = 4
   CommsTick = 4
 
+	hist_var = FEEDBACK_MSG
+
+	msg_max_hist = 20
+	
 	scope_set = name=events, vars=NEXT_POINT:PREV_POINT:RF_NEXT:RF_PREV:CURR_TIME
 	scope_set = name=events, vars=CYCLE_STATUS:INDEX
 	scope_set = name=events2, vars=WPTS_TOTAL:CYCLES_REMAINING:WPTS_REMAIN
+	scope_set = name=bflags, vars=CFLAG:WFLAG:EFLAG
 }
 
 	
@@ -91,6 +96,9 @@ ProcessConfig = pLogger
   LogAuxSrc = true
   WildCardLogging = true
   WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+  WildCardOmitPattern = APPCAST
   WildCardExclusionLog = true
 }
 
@@ -200,10 +208,9 @@ ProcessConfig = pMarineViewer
   procs_font_size      = xlarge
   appcast_font_size    = large
   
-  scope = PROX_POLY_VIEW_ALPHA
   scope = PHELMIVP_PID
   scope = DB_UPTIME
-
+	
   left_context[vehicle_pick] = PROX_POLY_VIEW_$[UP_VNAME_CLOSEST]=toggle
 
 	action = USM_ENABLED=false

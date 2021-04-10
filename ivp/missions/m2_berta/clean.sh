@@ -26,7 +26,7 @@ for ARGI; do
 done
 
 #-------------------------------------------------------
-#  Part 2: Do the cleaning!
+#  Part 3: Do the cleaning!
 #-------------------------------------------------------
 if [ "${VERBOSE}" = "-v" ]; then
     echo "Cleaning: $PWD"

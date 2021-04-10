@@ -163,7 +163,7 @@ Behavior = BHV_AvdColregsV19
 }
 
 //----------------------------------------------
-Behavior = BHV_AvoidObstacleX
+Behavior = BHV_AvoidObstacleV21
 {
   name       = avdob_
   pwt        = 300
