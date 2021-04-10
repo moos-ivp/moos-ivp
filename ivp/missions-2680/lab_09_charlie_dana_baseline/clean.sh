@@ -1,28 +1,36 @@
 #!/bin/bash 
-
+#--------------------------------------------------------------
+#   Script: clean.sh                                    
+#   Author: Michael Benjamin  
+#     Date: June 2020     
+#----------------------------------------------------------
+#  Part 1: Declare global var defaults
+#----------------------------------------------------------
 VERBOSE=""
 
 #-------------------------------------------------------
-#  Part 1: Check for and handle command-line arguments
+#  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	printf "%s [SWITCHES]                       \n" $0
-	printf "  --verbose                         \n" 
-	printf "  --help, -h                        \n" 
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
+	echo "clean.sh [SWITCHES]        "
+	echo "  --verbose                " 
+	echo "  --help, -h               " 
 	exit 0;	
-    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ] ; then
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
 	VERBOSE="-v"
     else 
-	printf "Bad Argument: %s \n" $ARGI
-	exit 0
+	echo "clean.sh: Bad Arg:[$ARGI]. Exit Code 1."
+	exit 1
     fi
 done
 
 #-------------------------------------------------------
-#  Part 2: Do the cleaning!
+#  Part 3: Do the cleaning!
 #-------------------------------------------------------
-
-rm -rf  $VERBOSE   MOOSLog_*  LOG_* 
-rm -f   $VERBOSE   *~  targ_* *.moos++
+rm -rf  $VERBOSE   MOOSLog_*  XLOG_* LOG_* 
+rm -f   $VERBOSE   *~  *.moos++
+rm -f   $VERBOSE   targ_*
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory
+
+

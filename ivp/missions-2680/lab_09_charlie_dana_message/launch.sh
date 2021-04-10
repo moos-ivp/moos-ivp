@@ -76,6 +76,9 @@ echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_$VNAME2.moos >& /dev/null &
 echo "Done"
 
+#-----------------------------------------------------------
+#  Part 5: Launch uMAC and kill everything upon exiting uMAC
+#-----------------------------------------------------------
 uMAC targ_shoreside.moos
 
 kill -- -$$
