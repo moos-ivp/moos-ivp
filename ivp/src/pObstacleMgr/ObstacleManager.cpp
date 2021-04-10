@@ -11,6 +11,7 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
+#include "MacroUtils.h"
 #include "ACTable.h"
 #include "ObstacleManager.h"
 #include "ConvexHullGenerator.h"
@@ -59,6 +60,7 @@ ObstacleManager::ObstacleManager()
   m_points_ignored = 0;
   m_points_invalid = 0;
   m_obstacles_released = 0;
+  m_obstacles_ever = 0;
 
   m_given_mail_ever = 0;
   m_given_mail_good = 0;
@@ -94,7 +96,9 @@ bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
 
-    bool handled = false;
+    // Consider mail handled by default if handled by mail_flag_set
+    bool handled = m_mfset.handleMail(key, m_curr_time);
+    
     if(key == m_point_var)
       handled = handleMailNewPoint(sval);
     if(key == "NAV_X") {
@@ -114,10 +118,14 @@ bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(!handled)
       reportRunWarning("Unhandled Mail: " + key);
-
+    
   }
-	
-   return(true);
+
+  // After MailFlagSet has handled all mail from this iteration,
+  // post any flags that result. Flags will be cleared in m_mfset.
+  postFlags(m_mfset.getNewFlags());
+  
+  return(true);
 }
 
 //---------------------------------------------------------
@@ -193,6 +201,12 @@ bool ObstacleManager::OnStartUp()
     else if(param == "given_max_duration")
       handled = handleConfigGivenMaxDuration(value);
 
+    else if(param == "new_obs_flag") 
+      handled = handleConfigFlag("new_obs", value);
+
+    else if(param == "mailflag") 
+      handled = m_mfset.addFlag(value);
+
     else if(param == "lasso")
       handled = setBooleanOnString(m_lasso, value);
 
@@ -241,6 +255,12 @@ void ObstacleManager::registerVariables()
 
   Register("GIVEN_OBSTACLE",0);
   Register("OBM_ALERT_REQUEST",0);
+
+  // Register for any variables involved in the MailFlagSet
+  vector<string> mflag_vars = m_mfset.getMailFlagKeys();
+  for(unsigned int i=0; i<mflag_vars.size(); i++)
+    Register(mflag_vars[i], 0);
+
 }
 
 
@@ -342,6 +362,7 @@ bool ObstacleManager::handleGivenObstacle(string poly, string source)
   m_map_obstacles[key].setPoly(new_poly);
   m_map_obstacles[key].setDuration(duration);
   m_map_obstacles[key].setTStamp(m_curr_time);
+  onNewObstacle("given");  
   
   reportEvent("new obstacle: " + m_map_obstacles[key].getInfo(m_curr_time)); 
   
@@ -387,6 +408,7 @@ bool ObstacleManager::handleMailNewPoint(string value)
   m_map_obstacles[key].addPoint(newpt);
   m_map_obstacles[key].setChanged(true);
   m_map_obstacles[key].setMaxPts(m_max_pts_per_cluster);
+  onNewObstacle("points");  
 
   return(true);
 }
@@ -770,6 +792,70 @@ bool ObstacleManager::handleConfigGivenMaxDuration(string val)
 
   return(setPosDoubleOnString(m_given_max_duration, val));
 }
+
+//------------------------------------------------------------
+// Procedure: handleConfigFlag()
+
+bool ObstacleManager::handleConfigFlag(string flag_type, string str)
+{
+  string moosvar = biteStringX(str, '=');
+  string moosval = str;
+
+  if((moosvar == "") || (moosval == ""))
+    return(false);
+  
+  VarDataPair pair(moosvar, moosval, "auto");
+  if(flag_type == "new_obs")
+    m_new_obs_flags.push_back(pair);
+  else
+    return(false);
+  
+  return(true);
+}
+
+
+//------------------------------------------------------------
+// Procedure: onNewObstacle()
+
+void ObstacleManager::onNewObstacle(string obs_type)
+{
+  if((obs_type != "points") && (obs_type != "given"))
+    return;
+  
+  m_obstacles_ever++;
+
+
+  postFlags(m_new_obs_flags);  
+}
+
+//------------------------------------------------------------
+// Procedure: postFlags()
+
+void ObstacleManager::postFlags(const vector<VarDataPair>& flags)
+{
+  for(unsigned int i=0; i<flags.size(); i++) {
+    VarDataPair pair = flags[i];
+    string moosvar = pair.get_var();
+
+    // If posting is a double, just post. No macro expansion
+    if(!pair.is_string()) {
+      double dval = pair.get_ddata();
+      Notify(moosvar, dval);
+    }
+    // Otherwise if string posting, handle macro expansion
+    else {
+      string sval = pair.get_sdata();
+
+      unsigned int obs_now = m_map_obstacles.size();
+      
+      sval = macroExpand(sval, "OBS_NOW", obs_now);
+      sval = macroExpand(sval, "OBS_EVER", m_obstacles_ever);
+      
+      Notify(moosvar, sval);
+    }
+  }
+}
+
 
 //------------------------------------------------------------
 // Procedure: buildReport()

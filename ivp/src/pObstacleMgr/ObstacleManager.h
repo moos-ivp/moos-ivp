@@ -11,6 +11,8 @@
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "XYPolygon.h"
 #include "Obstacle.h"
+#include "VarDataPair.h"
+#include "MailFlagSet.h"
 #include <set>
 
 class ObstacleManager : public AppCastingMOOSApp
@@ -33,6 +35,7 @@ protected:
 
   bool handleConfigPostDistToPolys(std::string);
   bool handleConfigGivenMaxDuration(std::string);
+  bool handleConfigFlag(std::string, std::string);
 
   bool handleMailNewPoint(std::string);
   bool handleMailAlertRequest(std::string);
@@ -51,7 +54,10 @@ protected:
   bool updatePointHulls();
   void updatePolyRanges();
   void manageMemory();
+
+  void postFlags(const std::vector<VarDataPair>& flags);
   
+  void onNewObstacle(std::string obs_type);
   
 private: // Configuration variables
   std::string  m_point_var;            // incoming points
@@ -85,9 +91,10 @@ private: // Configuration variables
 
   double       m_given_max_duration;
 
-  unsigned int m_given_mail_ever;
-  unsigned int m_given_mail_good;
-  unsigned int m_given_config_ever;
+  std::vector<VarDataPair> m_new_obs_flags;
+
+  MailFlagSet m_mfset;
+  
   
 private: // State variables
   double m_nav_x;
@@ -103,6 +110,12 @@ private: // State variables
   unsigned int  m_alerts_posted;
   unsigned int  m_alerts_resolved;
 
+  unsigned int m_given_mail_ever;
+  unsigned int m_given_mail_good;
+  unsigned int m_given_config_ever;
+
+  unsigned int m_obstacles_ever;
+  
   std::map<std::string, Obstacle> m_map_obstacles;
 };
 
