@@ -63,6 +63,8 @@ ProcessConfig = pMissionEval
   // This var for xlaunch query 
   result_flag = MISSION_EVALUATED = true
 }
+
+
 //--------------------------------------------------------
 // iSay Configuration Block
 

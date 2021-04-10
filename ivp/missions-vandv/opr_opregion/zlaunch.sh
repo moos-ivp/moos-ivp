@@ -14,12 +14,14 @@ FLOW_DOWN_ARGS=""
 #  Part 2: Check for and handle command-line arguments
 #----------------------------------------------------------
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "zlaunch.sh [SWITCHES] [time_warp]                       " 
-	echo "  --help, -h        Show this help message              " 
-        echo "  --verbose, -v     Enable verbose mode                 "
-	echo "  --res, -r         Tell xlaunch to generate report     " 
-	echo "  --send, -s        Tell xlaunch to gen and send report " 
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
+	echo "zlaunch.sh [SWITCHES] [time_warp]                      " 
+	echo "  --help, -h      Show this help message               " 
+        echo "  --verbose, -v   Enable verbose mode                  "
+	echo "  --res, -r       Tell xlaunch to generate report      " 
+	echo "  --send, -s      Tell xlaunch to gen and send report  " 
+	echo "  --ubu           Fake coming from Ubuntu (for testing)" 
+	echo "  --pi            Fake coming from RasPi (for testing) " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
