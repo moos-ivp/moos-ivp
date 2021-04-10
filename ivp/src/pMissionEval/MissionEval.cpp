@@ -192,15 +192,6 @@ void MissionEval::registerVariables()
     string moos_var = *p;
     Register(moos_var, 0);
     m_reg_vars.insert(moos_var);
-#if 0
-    if(strEnds(moos_var, "_DELTA")) {
-      rbiteStringX(moos_var, '_');
-      if(moos_var != "") {
-	m_reg_vars.insert(moos_var);
-	Register(moos_var, 0);
-      }
-    }
-#endif
   }
 
   // Register for any variables involved in the MailFlagSet

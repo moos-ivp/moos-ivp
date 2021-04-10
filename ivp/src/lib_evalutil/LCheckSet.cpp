@@ -123,23 +123,6 @@ string LCheckSet::checkConfig()
   if(m_lead_cbuff.size() != 0)
     m_lcheck_status = "unmet_lead_conds";
 
-#if 0
-  // Check if any of the logic_vars are of the type VAR_DELTA
-  // If so, then consider VAR to be of interest too.
-  set<string> delta_vars;
-  set<string>::iterator p;
-  for(p=m_logic_vars.begin(); p!=m_logic_vars.end(); p++) {
-    string var = *p;
-    if(strEnds(var, "_DELTA")) {
-      rbiteString(var, '_');
-      if(var != "")
-	delta_vars.insert(var);
-    }
-  }
-  m_logic_vars.insert(delta_vars.begin(), delta_vars.end());
-#endif
-
-  
   return(warning);
 }
 

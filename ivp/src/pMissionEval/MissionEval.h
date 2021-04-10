@@ -59,7 +59,6 @@ protected: // Utility functions
   VCheckSet   m_vcheck_set;
   std::string m_vcheck_status_prev;
 
-
   std::set<std::string> m_reg_vars;
 };
 
