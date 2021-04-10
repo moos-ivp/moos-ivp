@@ -44,6 +44,37 @@ double InfoBuffer::dQuery(string var, bool& result) const
     result = true;
     return(p2->second);
   }
+
+  // Added by mikerb Apr 9th, 2021.  For vars ending in _DELTA, for
+  // example MARK_DELTA. If MARK_DELTA is not known to the InfoBuffer,
+  // then check if MARK is known, and treat it as a UTC
+  // timestamp. Then return delta time since that time stamp as the
+  // value of MARK_DELTA.
+  if(strEnds(var, "_DELTA") && (var.length() > 6)) {
+    rbiteString(var, '_');
+    // Handle case if the base variable is of type double
+    map<string, double>::const_iterator p = dmap.find(var);
+    if(p != dmap.end()) {
+      result = true;
+      double var_utc = p->second;
+      double delta = m_curr_time_utc - var_utc;
+      cout << " delta: " << delta << endl;
+      return(delta);
+    }
+    
+    // Handle case if the base variable is of type string
+    map<string, string>::const_iterator q = smap.find(var);
+    if(q != smap.end()) {
+      string sval = q->second;
+      if(isNumber(sval)) {
+	double var_utc = atof(sval.c_str());
+	double delta = m_curr_time_utc - var_utc;
+	cout << " delta: " << delta << endl;
+	result = true;
+	return(delta);
+      }
+    }
+  }
   
   // If all fails, return ZERO and indicate failure.  
   result = false;

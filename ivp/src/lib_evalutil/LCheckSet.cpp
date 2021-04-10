@@ -48,8 +48,12 @@ bool LCheckSet::addFailCondition(string str)
 //------------------------------------------------------------
 // Procedure: update()
 
-void LCheckSet::update()
+void LCheckSet::update(double curr_time)
 {
+  m_lead_cbuff.setCurrTime(curr_time);
+  m_pass_cbuff.setCurrTime(curr_time);
+  m_fail_cbuff.setCurrTime(curr_time);
+
   // If lead conditions not yet met, try again
   if(!m_lead_conditions_met)
     m_lead_conditions_met = m_lead_cbuff.checkConditions();
@@ -118,7 +122,24 @@ string LCheckSet::checkConfig()
 
   if(m_lead_cbuff.size() != 0)
     m_lcheck_status = "unmet_lead_conds";
-    
+
+#if 0
+  // Check if any of the logic_vars are of the type VAR_DELTA
+  // If so, then consider VAR to be of interest too.
+  set<string> delta_vars;
+  set<string>::iterator p;
+  for(p=m_logic_vars.begin(); p!=m_logic_vars.end(); p++) {
+    string var = *p;
+    if(strEnds(var, "_DELTA")) {
+      rbiteString(var, '_');
+      if(var != "")
+	delta_vars.insert(var);
+    }
+  }
+  m_logic_vars.insert(delta_vars.begin(), delta_vars.end());
+#endif
+
+  
   return(warning);
 }
 
@@ -177,6 +198,28 @@ void LCheckSet::handleMail(std::string key, double dval)
 }
 
 
+//------------------------------------------------------------
+// Procedure: getInfoBufferReport()
+
+set<string> LCheckSet::getInfoBufferReport() const
+{
+  set<string> total_report;
+
+  vector<string> lead_report = m_lead_cbuff.getInfoBuffReport(true);
+  vector<string> pass_report = m_lead_cbuff.getInfoBuffReport(true);
+  vector<string> fail_report = m_lead_cbuff.getInfoBuffReport(true);
+
+  for(unsigned int i=0; i<lead_report.size(); i++)
+    total_report.insert(lead_report[i]);
+  for(unsigned int i=0; i<pass_report.size(); i++)
+    total_report.insert(pass_report[i]);
+  for(unsigned int i=0; i<fail_report.size(); i++)
+    total_report.insert(fail_report[i]);
+
+  return(total_report);
+}
+
+
 //---------------------------------------------------------
 // Procecure: getReport()
 
@@ -208,9 +251,11 @@ list<string> LCheckSet::getReport() const
   rep.push_back(" eval_conditions_met    = " + econ_met_str);
   rep.push_back(" mission_eval_status    = " + m_lcheck_status);
 
+  double lead_curr_time = m_lead_cbuff.getCurrTime();
   rep.push_back("");
   rep.push_back("InfoBuffer: (lead conditions)");
   rep.push_back("============================================");
+  rep.push_back(" curr_time: " + doubleToString(lead_curr_time,2));
   vector<string> ibl_report = m_lead_cbuff.getInfoBuffReport();
   if(ibl_report.size() == 0)
     rep.push_back("<empty>");
@@ -218,8 +263,10 @@ list<string> LCheckSet::getReport() const
     rep.push_back(ibl_report[i]);
 
   rep.push_back("");
+  double pass_curr_time = m_pass_cbuff.getCurrTime();
   rep.push_back("InfoBuffer: (pass conditions) ");
   rep.push_back("============================================");
+  rep.push_back(" curr_time: " + doubleToString(pass_curr_time,2));
   vector<string> ibp_report = m_pass_cbuff.getInfoBuffReport();
   if(ibp_report.size() == 0)
     rep.push_back("<empty>");
@@ -227,8 +274,10 @@ list<string> LCheckSet::getReport() const
     rep.push_back(ibp_report[i]);
 
   rep.push_back("");
+  double fail_curr_time = m_fail_cbuff.getCurrTime();
   rep.push_back("InfoBuffer: (fail conditions)");
   rep.push_back("============================================");
+  rep.push_back(" curr_time: " + doubleToString(fail_curr_time,2));
   vector<string> ibf_report = m_fail_cbuff.getInfoBuffReport();
   if(ibf_report.size() == 0)
     rep.push_back("<empty>");

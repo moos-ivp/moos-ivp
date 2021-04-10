@@ -14,7 +14,7 @@
 #include "VarDataPair.h"
 #include "VCheckSet.h"
 #include "LCheckSet.h"
-
+#include "MailFlagSet.h"
 
 class MissionEval : public AppCastingMOOSApp
 {
@@ -50,12 +50,17 @@ protected: // Utility functions
   bool        m_result_flags_posted;
   std::string m_mission_result;
 
+  MailFlagSet m_mfset;
+  
  private: // State variables 
   LCheckSet   m_lcheck_set;
   std::string m_lcheck_status_prev;
   
   VCheckSet   m_vcheck_set;
   std::string m_vcheck_status_prev;
+
+
+  std::set<std::string> m_reg_vars;
 };
 
 #endif 

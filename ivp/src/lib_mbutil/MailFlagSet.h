@@ -42,14 +42,27 @@ public:
 
   bool addFlag(std::string);
   
-  std::vector<VarDataPair> handleMail(std::string key, double curr_time);
+  bool handleMail(std::string key, double curr_time);
+
+  std::vector<VarDataPair> getNewFlags();
+
+  std::vector<std::string> getMailFlagKeys() const;
+
+ protected: // config vars
+
+  // Map keyed on Mail Key (MOOS Var Name)
+  std::map<std::string, std::vector<VarDataPair> > m_map_mail_flags;
+
+  unsigned int m_max_new_flags;
   
-protected:
+ protected: // state vars
 
   unsigned int m_mail_total;
-  
-  std::map<std::string, unsigned int>              m_map_mail_total;
-  std::map<std::string, std::vector<VarDataPair> > m_map_mail_flags;
+
+  // Map keyed on Mail Key (MOOS Var Name)
+  std::map<std::string, unsigned int> m_map_mail_total;
+
+  std::vector<VarDataPair> m_new_flags;
   
 };
 

@@ -41,7 +41,8 @@ public:
   bool addNewCondition(std::string);
 
   void updateInfoBuffer(std::string var, std::string val);
-
+  void setCurrTime(double v);
+  
   void updateInfoBuffer(std::string var, double val);
 
   bool checkConditions(std::string required="all");
@@ -53,6 +54,8 @@ public:
   std::vector<std::string> getInfoBuffReport(bool allvars=false) const;
 
   std::string getNotableCondition() const {return(m_notable_condition);}
+
+  double getCurrTime() const;
   
 protected:
   InfoBuffer *m_info_buffer;

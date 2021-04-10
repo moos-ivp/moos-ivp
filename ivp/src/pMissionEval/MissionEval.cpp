@@ -35,6 +35,11 @@ bool MissionEval::OnNewMail(MOOSMSG_LIST &NewMail)
     double dval  = msg.GetDouble();
     double mtime = msg.GetTime();
 
+    reportEvent("Mail:" + key);
+    
+    // Consider mail handled by default if handled by mail_flag_set
+    m_mfset.handleMail(key, m_curr_time);
+    
     // Pass mail to LCheckSet
     if(msg.IsDouble())
       m_lcheck_set.handleMail(key, dval);
@@ -44,6 +49,10 @@ bool MissionEval::OnNewMail(MOOSMSG_LIST &NewMail)
     // Pass mail to VCheckSet
     m_vcheck_set.handleMail(key, sval, dval, mtime);
   }
+
+  // After MailFlagSet has handled all mail from this iteration,
+  // post any flags that result. Flags will be cleared in m_mfset.
+  postFlags(m_mfset.getNewFlags());
   
   return(true);
 }
@@ -64,7 +73,7 @@ bool MissionEval::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
-  m_lcheck_set.update();
+  m_lcheck_set.update(m_curr_time);
   m_vcheck_set.update(m_curr_time);
 
   // If both lcheck_set and vcheck_set evaluated, post results
@@ -129,6 +138,8 @@ bool MissionEval::OnStartUp()
       handled = m_vcheck_set.setFailOnFirst(value);
     else if(param == "vcheck_max_report")
       handled = m_vcheck_set.setMaxReportSize(value);
+    else if(param == "mailflag") 
+      handled = m_mfset.addFlag(value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -168,18 +179,34 @@ void MissionEval::registerVariables()
 
   // Register for variables used in lcheck_set
   set<string> lcheck_vars = m_lcheck_set.getVars();
+  // Register for variables used in vcheck_set
+  set<string> vcheck_vars = m_vcheck_set.getVars();
+
+  // Make one set
   set<string>::iterator p;
+  for(p=vcheck_vars.begin(); p!=vcheck_vars.end(); p++) 
+    lcheck_vars.insert(*p);
+  
+  // Now register for all unique vars
   for(p=lcheck_vars.begin(); p!=lcheck_vars.end(); p++) {
     string moos_var = *p;
     Register(moos_var, 0);
+    m_reg_vars.insert(moos_var);
+#if 0
+    if(strEnds(moos_var, "_DELTA")) {
+      rbiteStringX(moos_var, '_');
+      if(moos_var != "") {
+	m_reg_vars.insert(moos_var);
+	Register(moos_var, 0);
+      }
+    }
+#endif
   }
 
-  // Register for variables used in vcheck_set
-  set<string> vcheck_vars = m_vcheck_set.getVars();
-  for(p=vcheck_vars.begin(); p!=vcheck_vars.end(); p++) {
-    string moos_var = *p;
-    Register(moos_var, 0);
-  }
+  // Register for any variables involved in the MailFlagSet
+  vector<string> mflag_vars = m_mfset.getMailFlagKeys();
+  for(unsigned int i=0; i<mflag_vars.size(); i++)
+    Register(mflag_vars[i], 0);
 }
 
 
@@ -258,8 +285,6 @@ string MissionEval::expandMacros(string sdata) const
   return(sdata);
 }
 
-
-
   
 //------------------------------------------------------------
 // Procedure: buildReport()
@@ -297,6 +322,15 @@ bool MissionEval::buildReport()
       m_msgs << line << endl;
     }
   }
+
+  set<string> logic_vars = m_lcheck_set.getVars();
+  
+  m_msgs << endl;
+  m_msgs << "LogicVars: " << endl;
+  m_msgs << "============================================ " << endl;
+  set<string>::iterator q;
+  for(q=logic_vars.begin(); q!=logic_vars.end(); q++)
+    m_msgs << "  " << *q << endl;
   
   return(true);
 }

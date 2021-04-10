@@ -22,7 +22,7 @@ class LCheckSet
   bool addPassCondition(std::string);
   bool addFailCondition(std::string);
 
-  void update();
+  void update(double curr_time=0);
 
   std::string checkConfig();
   std::string getStatus() const {return(m_lcheck_status);}
@@ -36,6 +36,8 @@ class LCheckSet
 
   std::set<std::string> getVars() const {return(m_logic_vars);}
 
+  std::set<std::string> getInfoBufferReport() const;
+  
   std::list<std::string> getReport() const;
 
 private: 

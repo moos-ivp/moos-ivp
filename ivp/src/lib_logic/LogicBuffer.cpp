@@ -47,7 +47,7 @@ LogicBuffer::~LogicBuffer()
 }
 
 //-----------------------------------------------------------
-// Procedure: addNewCondition
+// Procedure: addNewCondition()
 
 bool LogicBuffer::addNewCondition(string str_value)
 {
@@ -62,7 +62,7 @@ bool LogicBuffer::addNewCondition(string str_value)
 }
 
 //-----------------------------------------------------------
-// Procedure: updateInfoBuffer
+// Procedure: updateInfoBuffer()
 
 void LogicBuffer::updateInfoBuffer(string moosvar, string value)
 {
@@ -75,7 +75,30 @@ void LogicBuffer::updateInfoBuffer(string moosvar, string value)
 }
 
 //-----------------------------------------------------------
-// Procedure: updateInfoBuffer
+// Procedure: setCurrTime()
+
+void LogicBuffer::setCurrTime(double curr_time)
+{
+  if(!m_info_buffer)
+    return;
+
+  m_info_buffer->setCurrTime(curr_time);
+}
+
+//-----------------------------------------------------------
+// Procedure: getCurrTime()
+
+double LogicBuffer::getCurrTime() const
+{
+  if(!m_info_buffer)
+    return(0);
+
+  double curr_time = m_info_buffer->getCurrTime();
+  return(curr_time);
+}
+
+//-----------------------------------------------------------
+// Procedure: updateInfoBuffer()
 
 void LogicBuffer::updateInfoBuffer(string moosvar, double value)
 {
@@ -145,18 +168,11 @@ bool LogicBuffer::checkConditions(string required)
 
 //-----------------------------------------------------------
 // Procedure: getAllVarsSet()
+//   Purpose: Get all the var names from all present conditions.
 
 set<string> LogicBuffer::getAllVarsSet() const
 {
-  // Get all the variable names from all present conditions.
-  set<string> all_vars;
-  unsigned int vsize = m_logic_conditions.size();
-  for(unsigned int i=0; i<vsize; i++) {
-    vector<string> svector = m_logic_conditions[i].getVarNames();
-    for(unsigned int j=0; j<svector.size(); j++)
-      all_vars.insert(svector[j]);
-  }
-
+  set<string> all_vars = getLogicVars(m_logic_conditions);
   return(all_vars);
 }
  
@@ -165,18 +181,16 @@ set<string> LogicBuffer::getAllVarsSet() const
 
 vector<string> LogicBuffer::getAllVars() const
 {
-  // Get all the variable names from all present conditions.
   vector<string> all_vars;
-  unsigned int i, vsize = m_logic_conditions.size();
-  for(i=0; i<vsize; i++) {
-    vector<string> svector = m_logic_conditions[i].getVarNames();
-    all_vars = mergeVectors(all_vars, svector);
-  }
-  all_vars = removeDuplicates(all_vars);
+
+  set<string> all_vars_set = getLogicVars(m_logic_conditions);
+  set<string>::iterator p;
+  for(p=all_vars_set.begin(); p!=all_vars_set.end(); p++)
+    all_vars.push_back(*p);
 
   return(all_vars);
 }
- 
+
 //-----------------------------------------------------------
 // Procedure: getInfoBuffReport()
 

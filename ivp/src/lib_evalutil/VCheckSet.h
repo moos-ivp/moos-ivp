@@ -48,6 +48,9 @@ class VCheckSet
   
   std::list<std::string> getReport() const;
 
+  std::set<std::string> getInfoBufferReport() const;
+  
+
   
  protected:
   void handleMailKey(std::string, std::string, double, double);  

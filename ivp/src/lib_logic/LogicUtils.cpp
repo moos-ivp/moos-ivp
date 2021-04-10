@@ -478,8 +478,14 @@ set<string> getLogicVars(const vector<LogicCondition>& conditions)
   set<string> all_vars;
   for(unsigned int i=0; i<conditions.size(); i++) {
     vector<string> svector = conditions[i].getVarNames();
-    for(unsigned int j=0; j<svector.size(); j++) {
-      all_vars.insert(svector[j]);
+    for(unsigned int j=0; j<svector.size(); j++) { 
+      string var = svector[j];
+      all_vars.insert(var);
+      if(strEnds(var, "_DELTA")) {
+	rbiteString(var, '_');
+	if(var != "")
+	  all_vars.insert(var);
+      }
     }
   }
   
