@@ -85,6 +85,9 @@ int main(int argc ,char * argv[])
     else if(strContains(argi, "=")) {
       string left  = biteStringX(argi, '=');
       string right = argi;
+      if(right == "@UTC")
+	right = "@MOOSTIME";
+
       varname.push_back(left);
       if(isNumber(right)) {
 	varvalue.push_back(right);
