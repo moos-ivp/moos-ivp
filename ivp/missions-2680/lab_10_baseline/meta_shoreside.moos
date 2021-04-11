@@ -85,9 +85,9 @@ ProcessConfig = pMarineViewer
   appcast_width        = 30
   appcast_viewable     = true
   appcast_color_scheme = indigo
-  nodes_font_size      = medium
-  procs_font_size      = medium
-  appcast_font_size    = small
+  nodes_font_size      = xlarge
+  procs_font_size      = xlarge
+  appcast_font_size    = large
 
   scope = DB_CLIENTS
 
