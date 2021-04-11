@@ -35,11 +35,11 @@ done
 #-------------------------------------------------------
 echo "Launching Henry...."
 ./launch_vehicle.sh --vname=henry --mport=9001 --pshare=9201  \
-		    --nogui --nc  $JUST_MAKE $TIME_WARP &
+		    --nogui --nc --auto $JUST_MAKE $TIME_WARP &
 
 echo "Launching Gilda...."
 ./launch_vehicle.sh --vname=gilda --mport=9002 --pshare=9202  \
-		    --nogui --nc  $JUST_MAKE $TIME_WARP &
+		    --nogui --nc --auto $JUST_MAKE $TIME_WARP &
 
 #-------------------------------------------------------
 #  Part 4: Launch the shoreside

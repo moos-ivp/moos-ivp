@@ -17,7 +17,7 @@ SHORE_PSHARE="9200"
 SHORE_IP="localhost"
 GUI="yes"
 CONF="yes"
-UMAC="no"
+AUTO="no"
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -48,8 +48,8 @@ for ARGI; do
 	echo "                                                 "
 	echo "  --nogui                                        " 
 	echo "    Do not launch pMarineViewer GUI with vehicle "
-	echo "  --umac,-u                                      " 
-	echo "    Launch uMAC after launching the vehicle      "
+	echo "  --auto,-a                                      " 
+	echo "    Exit after launching. Do not launch uMAC     "
 	echo "  --nc,-nc                                       " 
 	echo "    No confirmation before launching             "
 	exit 0
@@ -57,10 +57,10 @@ for ARGI; do
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
-    elif [ "${ARGI}" = "-nc" -o "${ARGI}" = "--nc" ]; then
+    elif [ "${ARGI}" = "--nc" -o "${ARGI}" = "-nc" ]; then
 	CONF="no"
-    elif [ "${ARGI}" = "-u" -o "${ARGI}" = "--umac" ]; then
-	UMAC="yes"
+    elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
+	AUTO="yes"
     elif [ "${ARGI:0:8}" = "--shore=" ]; then
 	SHORE_IP="${ARGI#--shore=*}"
     elif [ "${ARGI:0:10}" = "--shoreip=" ]; then
@@ -132,9 +132,9 @@ printf "Launching $VNAME MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_$FULL_VNAME.moos >& /dev/null &
 
 #-------------------------------------------------------
-#  Part 5: Launch the GUI if desired
+#  Part 5: If auto launched from a script, we're done
 #-------------------------------------------------------
-if [ "${GUI}" = "no" -a "${UMAC}" = "no" ]; then
+if [ "${AUTO}" = "yes" ]; then
     exit 0
 fi
 
