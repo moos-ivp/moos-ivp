@@ -17,7 +17,7 @@ SHORE_PSHARE="9200"
 SHORE_IP="localhost"
 GUI="yes"
 CONF="yes"
-
+UMAC="no"
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -48,7 +48,9 @@ for ARGI; do
 	echo "                                                 "
 	echo "  --nogui                                        " 
 	echo "    Do not launch pMarineViewer GUI with vehicle "
-	echo "  --nc                                           " 
+	echo "  --umac,-u                                      " 
+	echo "    Launch uMAC after launching the vehicle      "
+	echo "  --nc,-nc                                       " 
 	echo "    No confirmation before launching             "
 	exit 0
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
@@ -57,6 +59,8 @@ for ARGI; do
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "-nc" -o "${ARGI}" = "--nc" ]; then
 	CONF="no"
+    elif [ "${ARGI}" = "-u" -o "${ARGI}" = "--umac" ]; then
+	UMAC="yes"
     elif [ "${ARGI:0:8}" = "--shore=" ]; then
 	SHORE_IP="${ARGI#--shore=*}"
     elif [ "${ARGI:0:10}" = "--shoreip=" ]; then
@@ -86,6 +90,7 @@ if [ "${CONF}" = "yes" ]; then
     echo "SHORE_PSHARE = [${SHORE_PSHARE}]"
     echo "TIME_WARP =    [${TIME_WARP}]"
     echo "GUI =          [${GUI}]"
+    echo "UMAC =         [${UMAC}]"
     echo -n "Hit any key to continue with launching"
     read ANSWER
 fi
@@ -129,7 +134,7 @@ pAntler targ_$FULL_VNAME.moos >& /dev/null &
 #-------------------------------------------------------
 #  Part 5: Launch the GUI if desired
 #-------------------------------------------------------
-if [ ${GUI} = "no" ]; then
+if [ "${GUI}" = "no" -a "${UMAC}" = "no" ]; then
     exit 0
 fi
 
