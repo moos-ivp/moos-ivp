@@ -13,7 +13,8 @@ VNAME=$(id -un)
 IP_ADDR="localhost"
 MOOS_PORT="9001"
 PSHARE_PORT="9201"
-SHORE="localhost:9200"
+SHORE_PSHARE="9200"
+SHORE_IP="localhost"
 GUI="yes"
 CONF="yes"
 
@@ -32,8 +33,9 @@ for ARGI; do
 	echo "  --vname=<vname>                                " 
 	echo "    Name of the vehicle being launched           " 
 	echo "                                                 "
-	echo "  --shore=<ipaddr:port>(localhost:9200)          "
-	echo "    IP address and pShare port of shoreside      "
+	echo "  --shore=<ipaddr>                               "
+	echo "  --shoreip=<ipaddr>                             "
+	echo "    IP address of the shoreside                  "
 	echo "                                                 "
 	echo "  --mport=<port>(9001)                           "
 	echo "    Port number of this vehicle's MOOSDB port    "
@@ -56,7 +58,9 @@ for ARGI; do
     elif [ "${ARGI}" = "-nc" -o "${ARGI}" = "--nc" ]; then
 	CONF="no"
     elif [ "${ARGI:0:8}" = "--shore=" ]; then
-	SHORE="${ARGI#--shore=*}"
+	SHORE_IP="${ARGI#--shore=*}"
+    elif [ "${ARGI:0:10}" = "--shoreip=" ]; then
+	SHORE_IP="${ARGI#--shoreip=*}"
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"
     elif [ "${ARGI:0:8}" = "--mport=" ]; then
@@ -74,12 +78,13 @@ for ARGI; do
 done
 
 if [ "${CONF}" = "yes" ]; then 
-    echo "PSHARE_PORT = [${PSHARE_PORT}]"
-    echo "MOOS_PORT =   [${MOOS_PORT}]"
-    echo "IP_ADDR =     [${IP_ADDR}]"
-    echo "VNAME =       [${VNAME}]"
-    echo "SHORE =       [${SHORE}]"
-    echo "TIME_WARP =   [${TIME_WARP}]"
+    echo "PSHARE_PORT =  [${PSHARE_PORT}]"
+    echo "MOOS_PORT =    [${MOOS_PORT}]"
+    echo "IP_ADDR =      [${IP_ADDR}]"
+    echo "VNAME =        [${VNAME}]"
+    echo "SHORE_IP =     [${SHORE_IP}]"
+    echo "SHORE_PSHARE = [${SHORE_PSHARE}]"
+    echo "TIME_WARP =    [${TIME_WARP}]"
     echo -n "Hit any key to continue with launching"
     read ANSWER
 fi
@@ -101,8 +106,10 @@ START_POS="$X_START_POS,$Y_START_POS"
 LOITER_POS="x=$X_LOITER_POS,y=$Y_LOITER_POS" 
 
 nsplug meta_vehicle.moos targ_$FULL_VNAME.moos -f WARP=$TIME_WARP  \
-    VNAME=$FULL_VNAME  VPORT=$MOOS_PORT  PSHARE_PORT=$PSHARE_PORT  \
-    START_POS=$START_POS SHORE=$SHORE IP_ADDR=$IP_ADDR
+    PSHARE_PORT=$PSHARE_PORT     VNAME=$FULL_VNAME                 \
+    START_POS=$START_POS         SHORE_IP=$SHORE_IP                \
+    SHORE_PSHARE=$SHORE_PSHARE   VPORT=$MOOS_PORT                  \
+    IP_ADDR=$IP_ADDR    
 
 nsplug meta_vehicle.bhv targ_$FULL_VNAME.bhv -f VNAME=$FULL_VNAME  \
     START_POS=$START_POS LOITER_POS=$LOITER_POS       
