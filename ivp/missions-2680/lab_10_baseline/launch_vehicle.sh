@@ -109,7 +109,7 @@ nsplug meta_vehicle.moos targ_$FULL_VNAME.moos -f WARP=$TIME_WARP  \
     PSHARE_PORT=$PSHARE_PORT     VNAME=$FULL_VNAME                 \
     START_POS=$START_POS         SHORE_IP=$SHORE_IP                \
     SHORE_PSHARE=$SHORE_PSHARE   VPORT=$MOOS_PORT                  \
-    IP_ADDR=$IP_ADDR    
+    IP_ADDR=$IP_ADDR             GUI=$GUI
 
 nsplug meta_vehicle.bhv targ_$FULL_VNAME.bhv -f VNAME=$FULL_VNAME  \
     START_POS=$START_POS LOITER_POS=$LOITER_POS       

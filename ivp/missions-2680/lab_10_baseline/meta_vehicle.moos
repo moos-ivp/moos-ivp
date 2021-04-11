@@ -23,7 +23,7 @@ Processconfig = ANTLER
   Run = pHostInfo          @ NewConsole = false
   Run = uFldNodeBroker     @ NewConsole = false
 #ifdef GUI yes
-	/Run = pMarineViewer      @ NewConsole = false
+	Run = pMarineViewer      @ NewConsole = false
 #endif
 }
   
@@ -56,9 +56,9 @@ ProcessConfig = pMarineViewer
   appcast_width        = 30
   appcast_viewable     = true
   appcast_color_scheme = indigo
-  nodes_font_size      = large
-  procs_font_size      = large
-  appcast_font_size    = large
+  nodes_font_size      = xlarge
+  procs_font_size      = slarge
+  appcast_font_size    = xlarge
 
   scope = PSHARE_INPUT_SUMMARY
 
