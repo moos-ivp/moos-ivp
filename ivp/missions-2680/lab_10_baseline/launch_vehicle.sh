@@ -85,6 +85,7 @@ if [ "${CONF}" = "yes" ]; then
     echo "SHORE_IP =     [${SHORE_IP}]"
     echo "SHORE_PSHARE = [${SHORE_PSHARE}]"
     echo "TIME_WARP =    [${TIME_WARP}]"
+    echo "GUI =          [${GUI}]"
     echo -n "Hit any key to continue with launching"
     read ANSWER
 fi

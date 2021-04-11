@@ -1,7 +1,5 @@
 ServerHost = localhost
 ServerPort = $(VPORT)
-
-// Community name IS the vehicle name
 Community  = $(VNAME)
 
 #include plug_origin_warp.moos
@@ -44,7 +42,7 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
@@ -57,7 +55,7 @@ ProcessConfig = pMarineViewer
   appcast_viewable     = true
   appcast_color_scheme = indigo
   nodes_font_size      = xlarge
-  procs_font_size      = slarge
+  procs_font_size      = xlarge
   appcast_font_size    = xlarge
 
   scope = PSHARE_INPUT_SUMMARY
