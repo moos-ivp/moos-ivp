@@ -9,14 +9,17 @@
 TIME_WARP=1
 JUST_MAKE="no"
 AUTO=""
-IP_ADDR="localhost"
 VNAME="abe"
+
+IP_ADDR="localhost"
 INDEX="1"
-SHORE=""
-START_POS="0,0"  
-SHORE="localhost:9300"
-PSHARE_PORT=""
+SHORE_PSHARE="9201"
+SHORE_IP="localhost"
+PSHARE_PORT="9201"
+
 REGION="forest_lake"
+START_POS="0,0"  
+
 
 #--------------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -56,7 +59,7 @@ for ARGI; do
     elif [ "${ARGI:0:9}" = "--pshare=" ]; then
         PSHARE_PORT="${ARGI#--pshare=*}"
     else 
-	echo "launch_vehicle.sh: Bad Arg: " $ARGI
+	echo "launch_vehicle.sh: Bad Arg: " $ARGI " Exit Code 1."
 	exit 1
     fi
 done
@@ -73,8 +76,6 @@ fi
 #--------------------------------------------------------------
 #  Part 3: Create the .moos and .bhv files. 
 #--------------------------------------------------------------
-# What is nsplug? Type "nsplug --help" or "nsplug --manual"
-
 NSFLAGS="-s -f"
 if [ "${AUTO}" = "" ]; then
     NSFLAGS="-i -f"
@@ -82,14 +83,15 @@ fi
 
 nsplug meta_vehicle.moos targ_$VNAME.moos $NSFLAGS WARP=$TIME_WARP \
        VNAME=$VNAME            START_POS=$START_POS                \
-       VPORT="900"$INDEX       PSHARE_PORT=$PSHARE_PORT            \
-       IP_ADDR=$IP_ADDR        SHORE=$SHORE                        \
-       REGION=$REGION
+       VPORT="900"$INDEX       SHORE_PSHARE=$SHORE_PSHARE          \
+       IP_ADDR=$IP_ADDR        SHORE_IP=$SHORE_IP                  \
+       REGION=$REGION          PSHARE_PORT=$PSHARE_PORT
 
 nsplug meta_vehicle.bhv targ_$VNAME.bhv $NSFLAGS VNAME=$VNAME      \
        START_POS=$START_POS    REGION=$REGION
 
 if [ ${JUST_MAKE} = "yes" ] ; then
+    echo "Files assembled; nothing launched; exiting per request."
     exit 0
 fi
 
@@ -107,3 +109,5 @@ if [ "${AUTO}" = "" ]; then
     uMAC targ_$VNAME.moos
     kill -- -$$
 fi
+
+

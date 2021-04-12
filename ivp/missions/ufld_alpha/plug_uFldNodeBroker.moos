@@ -6,11 +6,7 @@ ProcessConfig = uFldNodeBroker
   AppTick   = 1
   CommsTick = 1
 
-  try_shore_host = pshare_route=$(SHORE)
-
-  //TRY_SHORE_HOST = pshare_route=multicast_9
-  //TRY_SHORE_HOST = pshare_route=128.30.31.155:9300
-
+  try_shore_host = pshare_route=$(SHORE_IP):$(SHORE_PSHARE)
 
   bridge = src=VIEW_POLYGON
   bridge = src=VIEW_POINT

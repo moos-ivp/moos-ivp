@@ -8,22 +8,37 @@
 #--------------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
-AUTO=""
+
 IP_ADDR="localhost"
-PSHARE_PORT="9300"
+MOOS_PORT="9000"
+
+AUTO=""
+PSHARE_PORT="9200"
+
 REGION="forest_lake"
 
 #--------------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #--------------------------------------------------------------
 for ARGI; do
-    echo "Arg:["$ARGI"]"
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "launch_shoreside.sh [SWITCHES] [time_warp]        "
-	echo "  --just_make, -j                                 " 
 	echo "  --help, -h                                      " 
-	echo "  --ip=<addr>       (default is localhost)        " 
-	echo "  --pshare=<port>   (default is 9300)             " 
+	echo "    Display this help message                     "
+	echo "  --just_make, -j                                 " 
+	echo "    Just make targ files, but do not launch       "
+	echo "                                                  "
+	echo "  --mport=<port>                                  "
+	echo "    Port number of this vehicle's MOOSDB port     "
+	echo "                                                  "
+	echo "  --pshare=<port>                                 " 
+	echo "    Port number of this vehicle's pShare port     "
+	echo "                                                  "
+	echo "  --ip=<ipaddr>       (default is localhost)      " 
+	echo "                                                  "
+	echo "  --ip=<ipaddr>                                   " 
+	echo "    Force pHostInfo to use this IP Address        "
+	echo "                                                  "
 	echo "  --pavlab, -p      Set region to be MIT pavlab   " 
         echo "  --auto, -a        Auto-launched. uMAC not used. "
 	exit 0;
@@ -31,16 +46,19 @@ for ARGI; do
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
 	JUST_MAKE="yes"
+    elif [ "${ARGI:0:5}" = "--ip=" ]; then
+        IP_ADDR="${ARGI#--ip=*}"
+    elif [ "${ARGI:0:7}" = "--mport" ]; then
+	MOOS_PORT="${ARGI#--mport=*}"
+    elif [ "${ARGI:0:9}" = "--pshare=" ]; then
+        PSHARE_PORT="${ARGI#--pshare=*}"
+
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
         AUTO="yes"
     elif [ "${ARGI}" = "--pavlab" -o "${ARGI}" = "-p" ]; then
         REGION="pavlab"
-    elif [ "${ARGI:0:5}" = "--ip=" ]; then
-        IP_ADDR="${ARGI#--ip=*}"
-    elif [ "${ARGI:0:9}" = "--pshare=" ]; then
-        PSHARE_PORT="${ARGI#--pshare=*}"
     else 
-	echo "launch_shoreside.sh: Bad Arg: " $ARGI
+	echo "launch_shoreside.sh: Bad Arg: " $ARGI "Exit Code 1."
 	exit 1
     fi
 done
@@ -48,16 +66,12 @@ done
 #--------------------------------------------------------------
 #  Part 3: Create the .moos and .bhv files using nsplug
 #--------------------------------------------------------------
-# What is nsplug? Type "nsplug --help" or "nsplug --manual"
+nsplug meta_shoreside.moos targ_shoreside.moos -i -f WARP=$TIME_WARP  \
+       IP_ADDR=$IP_ADDR  PSHARE_PORT=$PSHARE_PORT                     \
+       REGION=$REGION    MOOS_PORT=$MOOS_PORT
 
-NSFLAGS="-s -f"
-if [ "${AUTO}" = "" ]; then
-    NSFLAGS="-i -f"
-fi
-nsplug meta_shoreside.moos targ_shoreside.moos $NSFLAGS WARP=$TIME_WARP  \
-       IP_ADDR=$IP_ADDR  PSHARE_PORT=$PSHARE_PORT  REGION=$REGION
-
-if [ ${JUST_MAKE} = "yes" ] ; then
+if [ ${JUST_MAKE} = "yes" ]; then
+    echo "Files assembled; nothing launched; exiting per request."
     exit 0
 fi
 
