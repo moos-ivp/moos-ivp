@@ -1,8 +1,7 @@
 #!/bin/bash 
 #----------------------------------------------------------
 #  Script: launch.sh
-#  Author:                                                                
-#  LastEd: May 17th 2019
+#  LastEd: Apr 11th 2021
 #----------------------------------------------------------
 #  Part 1: Set global var defaults
 #----------------------------------------------------------
@@ -70,7 +69,7 @@ fi
 #-----------------------------------------------------------
 #  Part 4: Launch the processes
 #-----------------------------------------------------------
-echo "Launching $SNAME MOOS Community. WARP is" $TIME_WARP
+echo "Launching Shoreside MOOS Community. WARP is" $TIME_WARP
 pAntler targ_shoreside.moos >& /dev/null &
 echo "Launching $VNAME1 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_$VNAME1.moos >& /dev/null &
