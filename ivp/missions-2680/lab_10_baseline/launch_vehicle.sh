@@ -40,7 +40,7 @@ for ARGI; do
 	echo "  --mport=<port>(9001)                           "
 	echo "    Port number of this vehicle's MOOSDB port    "
 	echo "                                                 "
-	echo "  --pshare=<port>                                " 
+	echo "  --pshare=<port>(9201)                          " 
 	echo "    Port number of this vehicle's pShare port    "
 	echo "                                                 "
 	echo "  --ip=<ipaddr>                                  " 

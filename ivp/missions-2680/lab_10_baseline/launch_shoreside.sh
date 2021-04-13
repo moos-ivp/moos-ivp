@@ -7,8 +7,10 @@
 #----------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
+
 IP_ADDR="localhost"
 PSHARE_PORT="9200"
+
 MOOS_PORT="9000"
 CONF="yes"
 
@@ -71,6 +73,7 @@ nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP  \
        MOOS_PORT=$MOOS_PORT  
 
 if [ ${JUST_MAKE} = "yes" ]; then
+    echo "Files assembled; nothing launched; exiting per request."
     exit 0
 fi
 
