@@ -19,6 +19,16 @@ GUI="yes"
 CONF="yes"
 AUTO="no"
 
+# Generate a random start position in range x=[0,180], y=[0,-50]
+X_START_POS=$(($RANDOM % 180))
+Y_START_POS=$((($RANDOM % 50)  - 50))
+START_POS="$X_START_POS,$Y_START_POS" 
+
+# Generate a random start position in range x=[0,180], y=[0,-125]
+X_LOITER_POS=$(($RANDOM % 180))
+Y_LOITER_POS=$((($RANDOM % 50) - 125))
+LOITER_POS="x=$X_LOITER_POS,y=$Y_LOITER_POS" 
+
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
@@ -29,7 +39,6 @@ for ARGI; do
 	echo "    Display this help message                    "
 	echo "  --just_make, -j                                " 
 	echo "    Just make targ files, but do not launch      "
-	echo "                                                 "
 	echo "  --vname=<vname>                                " 
 	echo "    Name of the vehicle being launched           " 
 	echo "                                                 "
@@ -39,13 +48,10 @@ for ARGI; do
 	echo "                                                 "
 	echo "  --mport=<port>(9001)                           "
 	echo "    Port number of this vehicle's MOOSDB port    "
-	echo "                                                 "
 	echo "  --pshare=<port>(9201)                          " 
 	echo "    Port number of this vehicle's pShare port    "
-	echo "                                                 "
 	echo "  --ip=<ipaddr>                                  " 
 	echo "    Force pHostInfo to use this IP Address       "
-	echo "                                                 "
 	echo "  --nogui                                        " 
 	echo "    Do not launch pMarineViewer GUI with vehicle "
 	echo "  --auto,-a                                      " 
@@ -76,10 +82,13 @@ for ARGI; do
     elif [ "${ARGI}" = "--nogui" ]; then
 	GUI="no"
     else
-	echo "launch_vehicle.sh: Bad Arg: $ARGI Exit Code 1"
+	echo "launch_vehicle.sh: Bad Arg:" ${ARGI} " Exit Code 1"
 	exit 1
     fi
 done
+
+# Set the FULL_NAME after possibly overriding VNAME in command args
+FULL_VNAME=$VNAME"@"$HOSTNAME
 
 if [ "${CONF}" = "yes" ]; then 
     echo "PSHARE_PORT =  [${PSHARE_PORT}]"
@@ -91,6 +100,9 @@ if [ "${CONF}" = "yes" ]; then
     echo "TIME_WARP =    [${TIME_WARP}]"
     echo "GUI =          [${GUI}]"
     echo "UMAC =         [${UMAC}]"
+    echo "FULL_NAME =    [${FULL_NAME}]"
+    echo "START_POS =    [${START_POS}]"
+    echo "LOITER_POS =   [${LOITER_POS}]"
     echo -n "Hit any key to continue with launching"
     read ANSWER
 fi
@@ -98,18 +110,6 @@ fi
 #-------------------------------------------------------
 #  Part 3: Create the .moos and .bhv files. 
 #-------------------------------------------------------
-
-FULL_VNAME=$VNAME"@"$HOSTNAME
-WPT_COLOR="light_blue"
-
-# Generate a random start position in range x=[0,180], y=[0,-50]
-X_START_POS=$(($RANDOM % 180))
-Y_START_POS=$((($RANDOM % 50)  - 50))
-# Generate a random start position in range x=[0,180], y=[0,-125]
-X_LOITER_POS=$(($RANDOM % 180))
-Y_LOITER_POS=$((($RANDOM % 50) - 125))
-START_POS="$X_START_POS,$Y_START_POS" 
-LOITER_POS="x=$X_LOITER_POS,y=$Y_LOITER_POS" 
 
 nsplug meta_vehicle.moos targ_$FULL_VNAME.moos -f WARP=$TIME_WARP  \
     PSHARE_PORT=$PSHARE_PORT     VNAME=$FULL_VNAME                 \
@@ -132,7 +132,7 @@ printf "Launching $VNAME MOOS Community (WARP=%s) \n" $TIME_WARP
 pAntler targ_$FULL_VNAME.moos >& /dev/null &
 
 #-------------------------------------------------------
-#  Part 5: If auto launched from a script, we're done
+#  Part 5: If launched from script, we're done, exit now
 #-------------------------------------------------------
 if [ "${AUTO}" = "yes" ]; then
     exit 0
