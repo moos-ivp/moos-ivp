@@ -7,10 +7,9 @@
 #  Part 1: Declare global var defaults
 #----------------------------------------------------------
 TIME_WARP=1
-COMMUNITY="shoreside"
+COMMUNITY=""
 JUST_MAKE="no"
 FLOW_DOWN_ARGS="--auto "
-
 SEND="no"
 RESFILE="no"
 CLEAN="no"
@@ -85,6 +84,17 @@ fi
 #-------------------------------------------------------
 #  Part 4: Start the mission with the right pokes
 #-------------------------------------------------------
+if [ "${COMMUNITY}" = "" ]; then
+    if [ -f "targ_shoreside.moos" ]; then
+	COMMUNITY="shoreside";
+    elif [ -f "targ_alpha.moos" ]; then
+	COMMUNITY="alpha";
+    else
+	echo "Community name unknown. Use --com=<community>. Exit Code 9."
+	exit 9
+    fi
+fi
+
 echo "Poking/Starting the mission $TNUM in 4 seconds ...." 
 sleep 4
 if [ "${COMMUNITY}" = "shoreside" ]; then
