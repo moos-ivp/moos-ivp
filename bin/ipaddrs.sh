@@ -13,7 +13,8 @@
 #  Part 1: Define a convenience function for producing terminal
 #          debugging/status output depending on the verbosity.
 #-------------------------------------------------------------- 
-vecho() { if [ "$VERBOSE" != "" ]; then echo $1; fi }
+vecho()  { if [ "$VERBOSE" != "" ]; then echo $1; fi }
+vechon() { if [ "$VERBOSE" != "" ]; then echo -n $1; fi }
 
 #--------------------------------------------------------------
 #  Part 2: Initialize global variables
@@ -141,6 +142,7 @@ if [ "${OS}" = "osx" ]; then
 	vecho "new_iface:$new_iface"
 	ipaddr="$(ipconfig getifaddr $new_iface)"
 	if [ $? = 0 ]; then
+	    vecho "ipaddr:["$ipaddr"]"
 	    echo $ipaddr >> $TMP_RESFILE
 
 	    if [[ "$ipaddr" == "$MATCH"* ]]; then
