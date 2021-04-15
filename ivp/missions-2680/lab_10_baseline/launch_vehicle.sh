@@ -7,7 +7,6 @@
 #----------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
-HOSTNAME=$(hostname -s)
 VNAME=$(id -un)
 
 IP_ADDR="localhost"
@@ -88,7 +87,7 @@ for ARGI; do
 done
 
 # Set the FULL_NAME after possibly overriding VNAME in command args
-FULL_VNAME=$VNAME"@"$HOSTNAME
+FULL_VNAME=$VNAME
 
 if [ "${CONF}" = "yes" ]; then 
     echo "PSHARE_PORT =  [${PSHARE_PORT}]"
@@ -110,7 +109,6 @@ fi
 #-------------------------------------------------------
 #  Part 3: Create the .moos and .bhv files. 
 #-------------------------------------------------------
-
 nsplug meta_vehicle.moos targ_$FULL_VNAME.moos -f WARP=$TIME_WARP  \
     PSHARE_PORT=$PSHARE_PORT     VNAME=$FULL_VNAME                 \
     START_POS=$START_POS         SHORE_IP=$SHORE_IP                \
