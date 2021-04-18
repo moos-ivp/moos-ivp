@@ -38,7 +38,7 @@
       '("uFldObstacleSim" "obstacle_file" "poly_vert_color" "poly_edge_color" "poly_fill_color" "poly_label_color" "poly_vert_size" "poly_edge_size" "draw_region" "post_points" "rate_points" "poly_transparency" "region_edge_color" "min_duration" "max_duration" "reuse_ids" "reset_interval" "reset_range" "refresh_interval" "max_appcast_events" "point_size")
       '("uFldWrapDetect" "max_segments" "max_trail_distance" "max_trail_dist" "max_appcast_events")
       '("pMovingSurvey" "survey" "heading" "speed" "reverse_interval" "update_interval" "rpm" "max_appcast_events")
-      '("pHostInfoV2" "prefer_hostip" "backup_hostip" "max_appcast_events")
+      '("pHostInfoV2" "prefer_hostip" "backup_hostip" "max_appcast_events" "prefer_subnet" )
       
       '("uTimerScript" "event" "paused" "reset_max" "reset_time" "delay_reset" "condition" "delay_start" "forward_var" "pause_var" "rand_var" "randvar" "reset_var" "script_atomic" "script_name" "shuffle" "verbose" "upon_awake" "status_var" "time_warp" "time_zero" "pause_variable" "forward_variable" "max_appcast_events" "block_on")
       '("uProcessWatch"  "watch" "watch_all" "nowatch" "allow_retractions" "summary_wait" "post_mapping" "max_appcast_events")

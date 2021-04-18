@@ -140,28 +140,28 @@ bool HostInfo::OnStartUp()
   for(p=sParams.begin(); p!=sParams.end(); p++) {
     string orig  = *p;
     string line  = *p;
-    string param = toupper(biteStringX(line, '='));
+    string param = tolower(biteStringX(line, '='));
     string value = line;
     
     bool handled = false;
-    if(param == "TEMP_FILE_DIR") {
+    if(param == "temp_file_dir") {
       if(!strContainsWhite(value)) {
 	m_tmp_file_dir = value;
 	handled = true;
       }
     }
     
-    else if(param == "PREFER_INTERFACE")
-      handled = handleConfigPreferInterface(value);
-    else if((param == "DEFAULT_HOSTIP") ||
-	    (param == "DEFAULT_HOST_IP")) {
+    else if(param == "prefer_interface") 
+      handled = handleConfigPreferInterface(value); 
+    else if((param == "default_hostip") ||
+	    (param == "default_host_ip")) {
       if(isValidIPAddress(value)) {
 	m_default_hostip = value;
 	handled = true;
       }
     }
-    else if((param == "DEFAULT_HOSTIP_FORCE") || 
-	    (param == "DEFAULT_HOST_IP_FORCE")) {
+    else if((param == "default_hostip_force") || 
+	    (param == "default_host_ip_force")) {
       if(isValidIPAddress(value)) {
 	m_default_hostip = value;
 	m_default_hostip_force = true;

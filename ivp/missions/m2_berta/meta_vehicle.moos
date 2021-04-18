@@ -28,9 +28,7 @@ Processconfig = ANTLER
   Run = uMemWatch      @ NewConsole = false
   Run = iSay           @ NewConsole = false
   Run = pContactMgrV20 @ NewConsole = false
-  Run = pRealm @ NewConsole = false
-	Run = uFunctionVis   @ NewConsole = false
-  //Run = pBasicContactMgr @ NewConsole = false
+  Run = pRealm         @ NewConsole = false
 }
 
 //---------------------------------------------------------
