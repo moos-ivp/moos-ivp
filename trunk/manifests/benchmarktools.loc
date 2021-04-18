@@ -1,0 +1,6 @@
+module=ippgen, loc=397, foc=3, wkyrs=0.08
+module=ippplt, loc=184, foc=3, wkyrs=0.03
+module=ippsolve, loc=314, foc=3, wkyrs=0.06
+module=ippview, loc=517, foc=5, wkyrs=0.10
+module=isrplot, loc=555, foc=6, wkyrs=0.11
+module=isrtex, loc=635, foc=7, wkyrs=0.12

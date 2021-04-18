@@ -1,0 +1,135 @@
+//--------    FILE: delta.bhv   -------------
+
+initialize   DEPLOY   = false
+initialize   RETURN   = false
+initialize   SURVEY   = false
+initialize   PSURFACE = true
+
+//========================================================
+// Hierarchical Mode Declarations
+//  o ROOT                     o ROOT
+//  |--o INACTIVE              |--o PSURFACING
+//  |--o ACTIVE                |--o NOT_PSURFACING
+//     |--o RETURNING
+//     |--o LOITERING
+//     |--o SURVEYING
+//========================================================
+
+
+Set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = LOITERING {
+  MODE = ACTIVE
+  RETURN != true
+  SURVEY != true
+} 
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} SURVEYING
+
+
+//----------------------------------------------
+Behavior = BHV_MaxDepth
+{
+  name = maxdepth
+  pwt  = 200
+  condition = MODE==ACTIVE
+
+  max_depth = 7
+  tolerance = 1
+  duration = no-time-limit
+}
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter
+  pwt       = 100
+  condition = MODE == LOITERING
+  updates   = UP_LOITER
+
+         speed = 1.3
+     clockwise = best
+        radius = 4.0
+     nm_radius = 15.0
+       polygon = radial:: x=20, y=-80, radius=20, pts=8, snap=1, label=DUDLEY_LOITER
+  visual_hints = nextpt_color=red, nextpt_lcolor=khaki
+  visual_hints = edge_color=khaki, vertex_color=white
+  visual_hints = edge_size=1, vertex_size=4
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE == RETURNING
+  updates    = UPDATES_RETURN
+  perpetual  = true
+  endflag    = RETURNING = false
+  endflag    = DEPLOY = false
+
+       speed = 2.0
+      radius = 2.0
+   nm_radius = 8.0
+       point = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_PeriodicSurface
+{
+  name             = bhv_periodic_surface
+  pwt              = 1000
+  condition        = (MODE == LOITERING)
+  condition        = PSURFACE = true
+
+               period = 120
+     zero_speed_depth = 0.5
+  max_time_at_surface = 60
+         ascent_speed = 1.0
+         ascent_grade = fullspeed
+}
+
+//----------------------------------------------
+Behavior = BHV_ConstantDepth
+{
+  name      = bhv_const_depth
+  pwt       = 100
+  duration  = no-time-limit
+  condition = MODE==ACTIVE
+  updates   = DEPTH_VALUE
+
+        depth = 50
+    peakwidth = 8
+    basewidth = 12
+  summitdelta = 10
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_survey
+  pwt       = 100
+  condition = MODE==SURVEYING
+  perpetual = true
+  updates   = SURVEY_UPDATES
+  endflag   = SURVEY = false
+
+     endflag = SURVEY = false
+          lead = 8
+   lead_damper = 1
+         speed = 2.0   // meters per second
+        radius = 8.0
+//        points = format=lawnmower, label=dudley_survey, x=80, y=-80, width=70, height=30, lane_width=8, rows=north-south, degs=30
+        points = format=bowtie, label=dudley_bowtie, x=80, y=-80, wid1=10, wid2=25, wid3=30, height=20
+        repeat = 10
+  visual_hints = nextpt_color=red, nextpt_lcolor=khaki
+  visual_hints = vertex_color=yellow, line_color=white
+  visual_hints = vertex_size=2, edge_size=1
+}
+

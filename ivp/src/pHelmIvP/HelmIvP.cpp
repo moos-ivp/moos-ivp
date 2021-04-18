@@ -597,6 +597,9 @@ void HelmIvP::postBehaviorMessages()
 	    m_outgoing_iter[var] = m_helm_iteration;
 	    m_outgoing_sval[var] = sdata;
 	    m_outgoing_bhv[var]  = bhv_descriptor;
+
+	    if(var == "BHV_EVENT")
+	      reportEvent(sdata);
 	  }
 	}
 	else {

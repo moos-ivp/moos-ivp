@@ -1,0 +1,73 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = $(VPORT)
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+}
+
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+#include plug_pLogger.moos
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+  QBRIDGE  = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE  = STATION_KEEP, APPCAST_REQ
+  QBRIDGE  = MOOS_MANUAL_OVERIDE
+
+  BRIDGE   = src=RETURN_ALL, alias=RETURN
+  BRIDGE   = src=RETURN_$V,  alias=RETURN
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names+shortmode
+
+  point_viewable_labels = false
+  polygon_viewable_labels = false
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  SCOPE = PHI_HOST_INFO
+
+  ACTION = STATION_ALL = false
+  ACTION = STATION_ALL = true
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true # STATION_KEEP_ALL=false
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+}
+
+
+
+ 

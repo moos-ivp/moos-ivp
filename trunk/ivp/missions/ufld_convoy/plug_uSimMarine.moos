@@ -1,0 +1,12 @@
+//------------------------------------------------------
+// uSimMarine Configuration Block  (Created from plugin)
+
+ProcessConfig = uSimMarine
+{
+  AppTick   = 6
+  CommsTick = 6
+
+  start_pos     = $(START_POS)
+  prefix        = NAV
+}
+

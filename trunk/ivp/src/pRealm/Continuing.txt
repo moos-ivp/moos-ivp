@@ -1,0 +1,43 @@
+
+(1) pRealm
+    o Subscribes for REALMCAST_REQ and REALMCAST_REQ_VNAME
+      The latter for when non uField mode like alpha mission since PMV will likely
+      always publish either REALMCAST_REQ_ALL or REALMCAST_REQ_VNAME
+
+(2) REALMCAST_REQ content on pMarineViewer
+    o channel=app, mask=community,source,time
+    Anything else? Duration needed? No threshold
+    
+    pRealm just generates for N seconds after receiving a request
+
+(3) pRealm
+    o fix the timestamp issue
+    o handle channel changes
+
+(4) PMV_GUI - perhaps only one set of Browser widgets, and just change the
+    content/color etc.
+
+
+Remember an app is a channel but we may add other channels later on, e.g.
+- custom watch list, or history on a single var
+- everything received from shoreside
+- everything received from other vehicles
+- behavior output
+
+It seems that getFormattedString falls into an infinite loops when pRealm is
+processing DBVARSUMMARY, which is heavily formatted. Can we detect which types
+of incoming mail are bad? Can we figure out why getFormattedString gets stuck
+in an infinte loop?
+
+History - for string variables just keep one. For Double variables keep 20 (configurable)?
+
+Optional variable channel:
+
+App:pOne
+--------
+VAR  TIME  VALUE
+
+App:pTwo
+--------
+VAR  TIME  VALUE
+

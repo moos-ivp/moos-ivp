@@ -23,28 +23,12 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <iostream>
 #include "MBUtils.h"
 #include "LogicBuffer.h"
 #include "LogicUtils.h"
 
 using namespace std;
-
-//-----------------------------------------------------------
-// Constructor
-
-LogicBuffer::LogicBuffer()
-{
-  m_info_buffer = new InfoBuffer;
-}
-
-//-----------------------------------------------------------
-// Destructor
-
-LogicBuffer::~LogicBuffer()
-{
-  if(m_info_buffer)
-    delete(m_info_buffer);
-}
 
 //-----------------------------------------------------------
 // Procedure: addNewCondition()
@@ -59,6 +43,14 @@ bool LogicBuffer::addNewCondition(string str_value)
   }
     
   return(ok);
+}
+
+//-----------------------------------------------------------
+// Procedure: setInfoBuffer()
+
+void LogicBuffer::setInfoBuffer(InfoBuffer *info_buffer)
+{
+  m_info_buffer = info_buffer;
 }
 
 //-----------------------------------------------------------
@@ -115,7 +107,7 @@ void LogicBuffer::updateInfoBuffer(string moosvar, double value)
 
 bool LogicBuffer::checkConditions(string required)
 {
-  if(!m_info_buffer) 
+  if(!m_info_buffer)
     return(false);
 
   // Phase 1: get all the variable names from all present conditions.
@@ -142,7 +134,7 @@ bool LogicBuffer::checkConditions(string required)
 
     
   // Phase 3: evaluate all logic conditions.
-  m_notable_condition = "";
+  m_notable_condition = "required=" + required;
   if(required == "any") {
     for(unsigned int i=0; i<m_logic_conditions.size(); i++) {
       bool satisfied = m_logic_conditions[i].eval();    
@@ -206,4 +198,16 @@ vector<string> LogicBuffer::getInfoBuffReport(bool allvars) const
   }
   
   return(m_info_buffer->getReport());    
+}
+
+//-----------------------------------------------------------
+// Procedure: getSpec()
+
+vector<string> LogicBuffer::getSpec(string pad) const
+{
+  vector<string> spec;
+  for(unsigned int i=0; i<m_logic_conditions.size(); i++)
+    spec.push_back(pad + m_logic_conditions[i].getRawCondition());
+
+  return(spec);
 }

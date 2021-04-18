@@ -1,0 +1,15 @@
+//====================================================================
+module   = ALog Toolbox
+type     = group
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+synopsis = The ALog Toolbox provides a number of utilities for post-mission 
+  analysis and/or editing of mission log files. They all assume the 
+  .alog file format produced by pLogger. There are two groups of tools, 
+  graphical tools (alogview) and command line tools (alogscan, aloggrep, 
+  alogrm etc). 
+
+group    = ALog Toolbox
+doc_url  = http://oceanai.mit.edu/ivpman/alog
+distro   = moos-ivp.org

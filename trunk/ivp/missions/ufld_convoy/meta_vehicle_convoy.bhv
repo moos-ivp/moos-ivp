@@ -1,0 +1,155 @@
+//--------    FILE: alpha.bhv  -------------
+
+initialize   DEPLOY  = false
+initialize   RETURN  = false
+initialize   LOITER  = true
+initialize   CONVOY  = false
+initialize   AVOID   = true
+  
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = STATION-KEEPING {
+  MODE = ACTIVE
+  STATION_KEEP = true
+}                       
+
+set MODE = CONVOYING {
+  MODE = ACTIVE
+  CONVOY = true
+  RETURN != true
+} 
+
+set MODE = LOITERING {
+  MODE = ACTIVE
+  RETURN != true
+  LOITER = true
+} 
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} 
+
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter
+  pwt       = 100
+  condition = MODE==LOITERING
+  updates   = UP_LOITER
+
+         speed = 3.4
+     clockwise = false
+        radius = 8.0
+     nm_radius = 15.0
+       polygon = radial:: x=0, y=-70, radius=20, pts=8, snap=1, label=$(VNAME)_LOITER
+  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
+  visual_hints = edge_color=orange, vertex_color=white
+  visual_hints = edge_size=1, vertex_size=2
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Convoy
+{
+  name       = convoy
+  pwt        = 100
+  condition  = MODE==CONVOYING
+  updates    = UP_CONVOY
+
+  contact    = abe
+
+  rng_estop = 15
+  spd_max   = 4
+
+  // Speed Regime A: Just specify the cruise speed and this
+  // will be used unless it gets within estop range
+  // cruise_speed = 3.5
+
+  // Speed Regime B: Specify a speed range between tailgating
+  // and lagging, where the chosen speed will match the leader
+  // vehicle's speed. If tailgating chosen speed will be
+  // leader_speed * speed_slower
+  // If lagging, chosen speed will be leader_speed * spd_faster
+   spd_slower = 0.8
+   spd_faster = 1.2
+   rng_tgating = 25
+   rng_lagging = 40
+
+        radius = 8.0
+     nm_radius = 15.0
+
+  inter_mark_range = 5
+  max_mark_range = 80
+}
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name         = station-keep
+  pwt          = 100
+  condition    = MODE==STATION-KEEPING
+  inactiveflag = STATIONING = false
+  activeflag   = STATIONING = true
+
+     center_activate = true
+        inner_radius = 5
+        outer_radius = 10 
+         outer_speed = 1.0
+
+       transit_speed = 1.3
+          swing_time = 7
+        visual_hints = vertex_size=0, edge_color=gray50
+}
+
+
+//----------------------------------------------
+//Behavior = BHV_AvoidCollision
+{
+  name       = avdcol_
+  pwt        = 350
+  condition  = AVOID = true 
+  condition  = MODE==ACTIVE
+  condition  = MODE!=ACTIVE:STATION-KEEPING
+  updates    = CONTACT_INFO
+  endflag    = CONTACT_RESOLVED = $[CONTACT]
+  templating = spawn
+
+             contact = to-be-set
+    on_no_contact_ok = true
+         extrapolate = true
+               decay = 30,60
+
+        pwt_outer_dist = 35
+        pwt_inner_dist = 10
+        completed_dist = 40
+     min_util_cpa_dist = 10
+     max_util_cpa_dist = 18
+             pwt_grade = linear
+//   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  updates    = RETURN_UPDATE
+  condition  = MODE==RETURNING
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = STATION_KEEP = true
+
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+           point = $(START_POS)
+
+     visual_hints = vertex_size  = 4             // default
+     visual_hints = vertex_color = dodger_blue   // default
+
+}

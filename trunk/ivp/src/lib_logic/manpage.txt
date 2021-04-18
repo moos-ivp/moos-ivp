@@ -1,0 +1,52 @@
+
+
+Boolean logic relations allowed:
+  AND, OR, NOT (!)
+
+Relational expressions allowd:
+  =, !=, >, >=, <, <=
+
+
+General idea
+------------
+
+All expressions will have at least one relational expression.  Each
+relational expression assume the lefthand side is a variable name, and
+the righthand side is a literal.
+
+ DEPLOY_STATE = TRUE
+ !(DEPLOY_STATE != TRUE)
+ (DEPLOY_STATE = TRUE) or (DEPLOY_STATE = MAYBE)
+ ((QUALITY <= 75) and (K != 9)) or (DEFAULT = no)
+
+Literals - strings or doubles
+-----------------------------
+Recall that all MOOS variables are either a string or a double
+(numerical value). Likewise all literals are either a string or a
+double. If the literal is given in quotes, it is treated as a
+string. If not in quotes, it will be treated as a double if it 
+represents a numerical value, and a string otherwise. 
+
+Examples:
+
+  (STATE = "TRUE")   literal is treated as a string   
+  (STATE = TRUE)     literal is treated as a string   
+  (STATE = 888)      literal is treated as a double
+  (STATE = "888")    literal is treated as a string
+
+
+Use of parentheses:
+-------------------
+If boolean conditions are used, parenthesis must surround each
+subcomponent:
+
+Examples:
+
+  ((K <= 98) or (RAW != 0))     LEGAL
+  (K <= 98) or (RAW != 0)       LEGAL
+  K <= 98 or (RAW != 0)         ILLEGAL
+  K <= 98 or RAW != 0           ILLEGAL
+
+  (A=1) and (B<2) and (C!=4)    ILLEGAL
+  ((A=1) and (B<2)) and (C!=4)  LEGAL
+

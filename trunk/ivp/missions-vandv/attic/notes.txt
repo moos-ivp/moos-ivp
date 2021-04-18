@@ -1,0 +1,11 @@
+
+
+Alpha mission
+
+  - traverses pattern, returns home, posts "MISSION=success"
+  - tests for the presence of "MISSION=success"
+
+  - time window for posting MISSION=success
+  - location when posting MISSION=success
+
+

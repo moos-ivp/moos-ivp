@@ -1,0 +1,23 @@
+=============================================================== 
+uHelmScope Example MOOS Configuration                           
+=============================================================== 
+                                                                
+ProcessConfig = uHelmScope                                      
+{                                                               
+  AppTick   = 1    // MOOSApp default is 4                   
+  CommsTick = 1    // MOOSApp default is 4                   
+                                                                
+  paused    = false   // default                                
+                                                                
+  hz_memory = 5,100   // default                                
+                                                                
+  display_moos_scope = true     // default                   
+  display_bhv_posts  = true     // default                   
+  display_virgins    = true     // default                   
+  display_statevars  = true     // default                   
+  truncated_output   = false    // default                   
+  behaviors_concise  = true     // default                   
+                                                                
+  var  = NAV_X, NAV_Y, NAV_SPEED, NAV_DEPTH   // MOOS vars are  
+  var  = DESIRED_HEADING, DESIRED_SPEED       // case sensitive 
+}                                       

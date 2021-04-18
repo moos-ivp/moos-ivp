@@ -1,0 +1,6 @@
+AOF = AOF_Linear = x,-250,249,500:y,-250,249,500
+{
+  mcoeff = 0.3
+  ncoeff = 0
+  bscalar = 8
+}

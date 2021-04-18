@@ -1,0 +1,24 @@
+cmd=testAngleDiff
+ang1=20   ang2=40   # diff=20
+ang1=40   ang2=20   # diff=20
+ang1=20   ang2=20   # diff=0
+
+ang1=0    ang2=0    # diff=0
+
+ang1=360  ang2=0    # diff=0
+ang1=360  ang2=720  # diff=0
+ang1=359  ang2=1    # diff=2
+ang1=1    ang2=359  # diff=2
+ang1=-2   ang2=2    # diff=4
+ang1=-160 ang2=160  # diff=40
+ang1=-200 ang2=160  # diff=0
+ang1=-202 ang2=160  # diff=2
+ang1=-0   ang2=0    # diff=0
+ang1=90   ang2=270  # diff=180
+ang1=0    ang2=180  # diff=180
+ang1=270  ang2=90   # diff=180
+ang1=180  ang2=0    # diff=180
+ang1=180  ang2=-180 # diff=0
+ang1=180  ang2=315  # diff=135
+ang1=271  ang2=269  # diff=2
+ang1=269  ang2=275  # diff=6

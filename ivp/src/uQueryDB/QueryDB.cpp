@@ -51,6 +51,10 @@ QueryDB::QueryDB()
   m_report_check_vars = false;
   
   m_configure_comms_locally = false;
+
+  m_halt_conditions.setInfoBuffer(m_info_buffer);
+  m_pass_conditions.setInfoBuffer(m_info_buffer);
+  m_fail_conditions.setInfoBuffer(m_info_buffer);
 }
 
 //------------------------------------------------------------

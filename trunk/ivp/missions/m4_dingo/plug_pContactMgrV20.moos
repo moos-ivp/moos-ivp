@@ -1,0 +1,16 @@
+//--------------------------------------------------------
+// pContactMgrV20 Configuration Block (Created from Plugin)
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  contact_max_age = 300
+  display_radii   = true
+
+  recap_interval = 5
+
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+}

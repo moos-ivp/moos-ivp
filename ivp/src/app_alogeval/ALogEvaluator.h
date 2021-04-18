@@ -27,7 +27,8 @@
 #include <vector>
 #include <string>
 #include "VCheckSet.h"
-#include "LCheckSet.h"
+#include "LogicAspect.h"
+#include "InfoBuffer.h"
 
 class ALogEvaluator
 {
@@ -56,11 +57,14 @@ class ALogEvaluator
   bool        m_verbose;
 
  protected: // State vars
-  LCheckSet   m_lcheck_set;
+  LogicAspect m_lcheck_set;
   std::string m_lcheck_status_prev;
   
   VCheckSet   m_vcheck_set;
   std::string m_vcheck_status_prev;
+
+  InfoBuffer *m_info_buffer;
+
 };
 
 #endif

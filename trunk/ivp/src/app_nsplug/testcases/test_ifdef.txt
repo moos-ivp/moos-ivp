@@ -1,0 +1,57 @@
+
+#define FOO 11
+#define BAR 22
+
+#ifdef BAR || NOTHING
+ Test #1 -----> PASS
+#else
+ Test #2 -----> FAIL!!!!!!!
+#endif
+
+#ifdef NOTHING
+ Test #2 -----> FAIL!!!!!!!
+#else
+ Test #2 -----> PASS
+#endif
+
+#ifdef FOO && BAR
+ Test #3 -----> PASS
+#else
+ Test #3 -----> FAIL!!!!!!!
+#endif
+
+#ifdef FOO && BAR && NOTHING
+ Test #4 -----> FAIL!!!!!!!
+#else
+ Test #4 -----> PASS 
+#endif
+
+#ifdef FOO 11
+ Test #5 -----> PASS
+#else
+ Test #5 -----> FAIL!!!!!!! 
+#endif
+
+#ifdef FOO 11 && BAR 22
+ Test #6 -----> PASS
+#else
+ Test #6 -----> FAIL!!!!!!! 
+#endif
+
+#ifdef FOO 11 && BAR 33
+ Test #7 -----> FAIL!!!!!!!
+#else
+ Test #7 -----> PASS 
+#endif
+
+#ifdef BAR 33 || BAR 22 || BAR 11
+ Test #8 -----> PASS
+#else
+ Test #8 -----> FAIL!!!!!!! 
+#endif
+
+#ifdef BAR 33 || BAR 22 && FOO 11
+ Test #9 -----> FAIL!!!!!!!
+#else
+ Test #9 -----> PASS 
+#endif

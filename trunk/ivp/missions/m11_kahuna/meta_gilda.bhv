@@ -1,0 +1,64 @@
+initialize LOITER = true
+
+//-----------------------------------------------
+// Helm Behavior File
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = STATION-KEEPING {
+  MODE = ACTIVE
+  STATION_KEEP = true
+}                       
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} 
+
+set MODE = TRANSIT {
+  MODE = ACTIVE
+  LOITER = true
+} 
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = bhv_loiter
+  pwt       = 100
+  condition = MODE==LOITERING
+
+         speed = 2.5
+     clockwise = true
+        radius = 8 
+     nm_radius = 20 
+  acquire_dist = 12
+       polygon = label,A : 40,-270:60,-290:100,-290:120,-270:120,-180:100,-160:60,-160:40,-180
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypoint
+  pwt       = 100	
+  condition = MODE==RETURNING
+
+     speed  = 2.5
+     points = $(START_POS)
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_transit
+  pwt       = 100	
+  condition = MODE==TRANSIT
+  updates   = GILDA_UPDATES
+
+     speed  = 1.0
+     points = -100,-100:200,-100
+     repeat = forever
+}
+

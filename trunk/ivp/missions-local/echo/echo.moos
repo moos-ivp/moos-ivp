@@ -1,0 +1,134 @@
+// Level 2 Configuration file: M. Benjamin
+
+ServerHost = localhost
+ServerPort = 9000
+Simulator  = true
+
+Community  = henry
+
+MOOSTimeWarp = 25
+
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB		@ NewConsole = false
+  Run = iMarineSim	@ NewConsole = false
+  Run = pTransponderAIS	@ NewConsole = false
+  Run = pMarinePID	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = true
+  Run = pHelmIvP	@ NewConsole = true
+}
+
+//------------------------------------------
+// iMarineSim config block
+
+ProcessConfig = iMarineSim
+{
+  AppTick	= 10
+  CommsTick	= 10
+
+  START_X       = 0
+  START_Y       = 0
+  START_SPEED   = 0
+  START_HEADING = 180
+  THRUST_FACTOR = 10
+
+  PREFIX        = NAV
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  Behaviors  = echo.bhv
+  Domain     = course:0:359:360
+  Domain     = speed:0:7:71
+
+  verbose    = quiet
+  ACTIVE_START = true
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 0.5
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+  //MAXIMUMS
+  MAXRUDDER    = 100
+  MAXTHRUST    = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 10
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 0.40
+  seglist_edge_width   = 2.0
+  seglist_vertex_size  = 8
+  seglist_vertex_color = red
+  point_vertex_size    = 12
+  hash_delta           = 50
+  hash_shade           = 0.4
+  hash_view            = true
+
+  BUTTON_ONE   = DEPLOY # DEPLOY=true
+  BUTTON_ONE   = MOOS_MANUAL_OVERIDE=false # RETURN=false
+  BUTTON_TWO   = RETURN # RETURN=true
+  BUTTON_THREE = CWISE # UP_LOITERA=clockwise=true
+  BUTTON_THREE = UP_LOITERB=clockwise=true
+  BUTTON_FOUR  = CCWISE # UP_LOITERA=clockwise=false
+  BUTTON_FOUR  = UP_LOITERB=clockwise=false
+}
+
+//------------------------------------------
+// pTransponderAIS config block
+
+ProcessConfig = pTransponderAIS
+{
+  AppTick	= 2
+  CommsTick	= 2
+  VESSEL_TYPE   = KAYAK
+}
+
+
+

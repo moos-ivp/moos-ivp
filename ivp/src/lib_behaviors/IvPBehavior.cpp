@@ -385,7 +385,7 @@ string IvPBehavior::isRunnable()
 }
   
 //-----------------------------------------------------------
-// Procedure: setInfoBuffer
+// Procedure: setInfoBuffer()
 
 void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 {
@@ -394,7 +394,7 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 }
 
 //-----------------------------------------------------------
-// Procedure: postMessage
+// Procedure: postMessage()
 //     Notes: If the key is set to be "repeatable" then in effect 
 //            there is no key is associated with this variable-value 
 //            pair and it will NOT be filtered.
@@ -523,6 +523,28 @@ void IvPBehavior::postEMessage(string g_emsg)
 
   postMessage("BHV_ERROR", g_emsg, "repeatable");
   m_bhv_state_ok = false;
+}
+
+//-----------------------------------------------------------
+// Procedure: postEventMessage()
+
+void IvPBehavior::postEventMessage(string g_emsg)
+{
+  if(m_descriptor != "")
+    g_emsg = (m_descriptor + ": " + g_emsg);
+
+  postMessage("BHV_EVENT", g_emsg);
+}
+
+//-----------------------------------------------------------
+// Procedure: postRepeatableEventMessage()
+
+void IvPBehavior::postRepeatableEventMessage(string g_emsg)
+{
+  if(m_descriptor != "")
+    g_emsg = (m_descriptor + ": " + g_emsg);
+
+  postMessage("BHV_EVENT", g_emsg, "repeatable");
 }
 
 //-----------------------------------------------------------
@@ -1038,26 +1060,36 @@ void IvPBehavior::postFlags(const string& str, bool repeatable)
 
 void IvPBehavior::postFlags(const vector<VarDataPair>& flags, bool repeatable)
 {
+  string key;
+  if(repeatable)
+    key = "repeatable";
+  
   for(unsigned int i=0; i<flags.size(); i++) {
     string var = flags[i].get_var();
 
-    // Handle String postings
-    if(flags[i].is_string()) {
+    if(flags[i].is_solo_macro()) {
       string sdata = flags[i].get_sdata();
       sdata = expandMacros(sdata);
 
-      if(repeatable) 
-	postRepeatableMessage(var, sdata);
-      else
-	postMessage(var, sdata);
+      if(isNumber(sdata)) {
+	double ddata = atof(sdata.c_str());
+	postMessage(var, ddata, key);
+      }
+      else 
+	postMessage(var, sdata, key);
+    }
+
+
+    // Handle String postings
+    else if(flags[i].is_string()) {
+      string sdata = flags[i].get_sdata();
+      sdata = expandMacros(sdata);
+      postMessage(var, sdata, key);
     }
     // Handle Double postings
     else {
       double ddata = flags[i].get_ddata();
-      if(repeatable)
-	postRepeatableMessage(var, ddata);
-      else
-	postMessage(var, ddata);
+      postMessage(var, ddata, key);
     }	
   }    
 }
@@ -1289,31 +1321,26 @@ string IvPBehavior::expandMacros(string sdata)
   sdata = macroExpand(sdata, "OSH", m_osh);
   sdata = macroExpand(sdata, "OSV", m_osv);
 
-  if(strContains(sdata, "$[CTR]")) {
-    m_macro_ctr++;
-    sdata = macroExpand(sdata, "CTR", m_macro_ctr);
-  }    
-  if(strContains(sdata, "$[CTR1]")) {
-    m_macro_ctr_01++;
-    sdata = macroExpand(sdata, "CTR1", m_macro_ctr_01);
-  }
-  if(strContains(sdata, "$[CTR2]")) {
-    m_macro_ctr_02++;
-    sdata = macroExpand(sdata, "CTR2", m_macro_ctr_02);
-  }
-  if(strContains(sdata, "$[CTR3]")) {
-    m_macro_ctr_03++;
-    sdata = macroExpand(sdata, "CTR3", m_macro_ctr_03);
-  }
-  if(strContains(sdata, "$[CTR4]")) {
-    m_macro_ctr_04++;
-    sdata = macroExpand(sdata, "CTR4", m_macro_ctr_04);
-  }
-  if(strContains(sdata, "$[CTR5]")) {
-    m_macro_ctr_05++;
-    sdata = macroExpand(sdata, "CTR5", m_macro_ctr_05);
-  }
-    
+  sdata = expandCtrMacro(sdata, "CTR", m_macro_ctr);
+  sdata = expandCtrMacro(sdata, "CTR1", m_macro_ctr_01);
+  sdata = expandCtrMacro(sdata, "CTR2", m_macro_ctr_02);
+  sdata = expandCtrMacro(sdata, "CTR3", m_macro_ctr_03);
+  sdata = expandCtrMacro(sdata, "CTR4", m_macro_ctr_04);
+  sdata = expandCtrMacro(sdata, "CTR5", m_macro_ctr_05);
   
+  return(sdata);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: expandCtrMacro()
+
+string IvPBehavior::expandCtrMacro(string sdata, string macro, unsigned int& ctr)
+{
+  string full_macro = "$[" + macro + "]";
+  if(strContains(sdata, full_macro)) {
+    ctr++;
+    sdata = macroExpand(sdata, macro, ctr);
+  }    
   return(sdata);
 }

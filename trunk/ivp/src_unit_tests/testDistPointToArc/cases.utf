@@ -1,0 +1,12 @@
+cmd=testDistPointToArc
+
+x1=4 y1=3 cx=0 cy=0 cr=5 lang=0 rang=90 # dist=0
+x1=3 y1=4 cx=0 cy=0 cr=5 lang=0 rang=90 # dist=0
+x1=2 y1=1.5 cx=0 cy=0 cr=5 lang=0 rang=90 # dist=2.5
+x1=8 y1=6 cx=0 cy=0 cr=5 lang=0 rang=90 # dist=5
+
+x1=-4 y1=3 cx=0 cy=0 cr=5 lang=0 rang=350 # dist=0
+x1=-4 y1=3 cx=0 cy=0 cr=5 lang=45 rang=270 # dist=3.16
+x1=-40 y1=0 cx=0 cy=0 cr=5 lang=45 rang=270 # dist=35
+
+

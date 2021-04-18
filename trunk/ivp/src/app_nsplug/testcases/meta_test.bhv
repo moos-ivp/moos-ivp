@@ -1,0 +1,17 @@
+//--------    FILE: meta_test.bhv   -------------
+
+#define BAR 22
+
+BAR is $(BAR) HELLO=$(WORLD)
+
+#define BAR 33
+
+BAR is $(BAR)
+
+// FOOBAR is $(FOOBAR)
+
+FOO is $(FOO)
+
+#include meta_test_inc.bhv
+
+Done

@@ -1,0 +1,37 @@
+Behavior                 Normalization
+------------------       ------------------------------------
+AbortToPoint             No getRelevance, no application of pwt
+Attractor                IPF normalized to [0,100] then pwt*relevance - wonky relevance
+AvoidCollision           IPF normalized to [0,100] then pwt*relevance - relevance from superclass
+AvoidObstacle            IPF normalized to [0,100] then pwt*relevance - relevance OK
+BearingLine              n/a
+ConstantDepth            built by zaic (no normalize), then pwt applied
+ConstantHeading          built by zaic (no normalize), then pwt applied
+ConstantSpeed            built by zaic (no normalize), then pwt applied
+CutRange                 IPF normalized to [0,100] then pwt*relevance relevance[0,1] (but 100 in the extreme)
+GoToDepth                built by zaic (no normalize), then pwt applied
+HAttractor               IPF normalized to [0,100], then ptw*relevance - wonky relevance 
+HSLine                   n/a
+HeadingBias              built by zaic (no normalize), then pwt applied
+HeadingChange            IPF normalized by OF_Coupler, NO pwt applied
+HeadingHysteresis        n/a (seems to be a non-functioning behavior)
+Hysteresis               built by zaic (no normalize), then pwt applied
+Loiter                 * IPF normalized to [0,100] then pwt applied
+MaintainHeading        * built by zaic (no normalize), then pwt applied (zaic not explicitly normalized but min/max default utils left alone)
+MaxDepth               * built by zaic (no normalize), then pwt applied (zaic not explicitly normalized but min/max default utils left alone)
+MemoryTurnLimit        * built by zaic (no normalize), then pwt applied (zaic not explicitly normalized but min/max default utils left alone)
+MinAltitudeX           * built by zaic (no normalize), then pwt applied (zaic not explicitly normalized but min/max default utils left alone)
+OpRegion                 n/a
+PeriodicSpeed          * built by zaic (no normalize), then explicitly normalized, then pwt applied 
+PeriodicSurface        * IPF normalized by OF_Coupler, then pwt applied
+RStationKeep           * IPF normalized by OF_Coupler, then pwt applied
+RangePulse               n/a
+RubberBand               IPF normalized to [0,100], then ptw*relevance - wonky relevance 
+Shadow                 * IPF normalized by OF_Coupler, then pwt*relevance, relevance [0,1]
+StationKeep            * IPF normalized by OF_Coupler, then pwt applied
+TestFailure              n/a
+TimeOut                  n/a
+Timer                    n/a
+Trail                  * IPF normalized explicitly, then pwt*relevance, relevance [0,1]
+Waypoint                 (zaic mode) IPF normalized by OF_Coupler, then pwt applied
+                         (roc mode) IPF NOT normalized, then pwt applied

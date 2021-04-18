@@ -1,0 +1,46 @@
+#==================================================
+# Test opr_02                         opr: opregion
+#==================================================
+# Part 1: Mission Description
+#==================================================
+<tag><thumb>
+Test OpRegion polygon constraint doesn't begin until entering the op-area
+
+<tag><synopsis>
+In this variation the vehicle begins outside the op-area and
+we verify that the OpRegion polygon constraint doesn't engage
+until the vehicle has entered the polygon opregion
+
+<tag><link>
+See the documentation on OpRegion @ https://oceanai.mit.edu/ivpman
+
+
+#==================================================
+# Part 2: Mission Configuration
+#==================================================
+
+#---------------------------------
+# For inclusion in pMissionEval
+<tag><evals>
+  lead_condition = TIMER_ENDED = true
+  pass_condition = BREACHED_POLY = true
+  pass_condition = IVPHELM_ALLSTOP = BehaviorError
+  pass_condition = DESIRED_SPEED = 0
+  pass_condition = IVPHELM_BHV_RUNNING != atimer
+  pass_condition = PROC_WATCH_ALL_OK = true 
+
+  result_flag = SAY_MOOS=Checking
+  pass_flag   = SAY_MOOS=pass
+  fail_flag   = SAY_MOOS=fail
+
+#---------------------------------
+# For inclusion in uSimMarine
+<tag> <start_pos>
+  start_pos = 0, 0, 180, 0
+
+#---------------------------------
+# For inclusion in BHV_OpRegion
+<tag> <opr_bhv>
+  breached_poly_flag = BREACHED_POLY = true
+  polygon = pts={-80,-50:-30,-175:150,-100:95,25}, label=area_x
+

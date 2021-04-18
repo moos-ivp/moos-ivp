@@ -1,0 +1,109 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = shoreside
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+}
+
+#include plug_pHostInfo.moos
+
+//---------------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route = $(IP_ADDR):$(PSHARE_PORT)
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  qbridge = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  qbridge = STATION_KEEP, APPCAST_REQ
+  qbridge = MOOS_MANUAL_OVERRIDE
+ 
+  bridge  = src=RETURN_ALL, alias=RETURN
+  bridge  = src=RETURN_$V,  alias=RETURN
+
+  bridge  = src=REGION_INFO,  alias=REGION_INFO
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+#ifdef REGION pavlab
+  tiff_file            = MIT_SP.tif
+#else
+  tiff_file            = forrest19.tif
+#endif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 1
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names+shortmode
+
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+	appcast_font_size    = large
+	procs_font_size      = large
+	nodes_font_size      = xlarge
+	
+  comms_pulse_viewable_all = false
+  vehicles_name_mode = names
+
+  stale_report_thresh = 2
+  stale_remove_thresh = 20
+
+  scope = PHI_HOST_INFO
+
+  button_one = DEPLOY  # DEPLOY_ALL=true 
+  button_one = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one = RETURN_ALL=false
+  button_two = RETURN  # RETURN_ALL=true
+}

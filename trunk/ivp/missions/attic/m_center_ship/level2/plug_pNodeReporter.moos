@@ -1,0 +1,8 @@
+//---------------------------------------
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 5
+  CommsTick   = 5
+  
+  VESSEL_TYPE = $(VEHI_TYPE)
+}

@@ -1,0 +1,29 @@
+cmd=testDistPointToArcPt
+
+// Case 1: Point is inside th arc angle 
+//-----------------------------------------------------------------
+x1=-5 y1=10 cx=2 cy=2 cr=9 lang=295 rang=95 # dist=1.63 ix=-3.93 iy=8.77
+
+// Case 2: Point is outside of arc angle closer to langle point
+//-----------------------------------------------------------------
+x1=-2 y1=-3 cx=2 cy=2 cr=9 lang=260 rang=95 # dist=5.96 ix=-6.86 iy=0.44
+
+// Case 3: Point is outside of arc angle closer to rangle point
+//-----------------------------------------------------------------
+x1=-2 y1=-3 cx=2 cy=2 cr=9 lang=260 rang=180 # dist=5.66 ix=2 iy=-7
+
+// Case 3A: Same but arc has zero argangle length
+//-----------------------------------------------------------------
+x1=-2 y1=-3 cx=2 cy=2 cr=9 lang=260 rang=260 # dist=5.96 ix=-6.86 iy=0.44
+
+// Case 3B: Same but arc has zero argangle length
+//-----------------------------------------------------------------
+x1=-2 y1=-3 cx=2 cy=2 cr=9 lang=260 rang=-30 # dist=5.96 ix=-6.86 iy=0.44
+
+// Case 4: Point is ON the arc's center point. Return point should 
+//  be on langle of arc
+//-----------------------------------------------------------------
+x1=2 y1=2 cx=2 cy=2 cr=9 lang=260 rang=180 # dist=0 ix=-6.86 iy=0.44
+
+
+

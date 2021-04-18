@@ -1,0 +1,19 @@
+//====================================================================
+module   = Mission Control
+type     = group
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+
+synopsis = The Mission Control modules are run-time modules for either
+  direct monitoring and control of the mission (e.g., pMarineViewer),
+  or for passively scoping the mission (e.g., uXMS, uMS, uHelmScope,
+  uQueryDB, uFunctionVis, uMAC, uMACView, uLoadWatch, uProcessWatch),
+  or for injecting messages to one or more vehicles, (e.g., uPokeDB,
+  uTermCommand). The common theme is that they are run-time modules
+  for either scoping or injecting changes in the missions, or both.
+
+group    = Mission Control
+doc_url  = http://oceanai.mit.edu/ivpman/apps/tools
+distro   = moos-ivp.org
+

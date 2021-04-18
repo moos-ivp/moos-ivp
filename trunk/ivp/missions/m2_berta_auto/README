@@ -1,0 +1,8 @@
+Example multi-vehicle mission with auto-launch support
+
+To auto-run the mission, run:
+
+$ xlaunch.sh ARGS
+
+The xlaunch.sh script is generic and resides in moos-ivp/scripts. 
+Run xlaunch.sh --help for further info.

@@ -1,0 +1,8 @@
+Safety Retreat
+
+Two vehicles Henry, Gilda
+Henry is a UUV performing a survey. Gilda is a surface appoaching
+the survey area. When Henry detects Gilda, it interupts the survey
+and loiters outside the shipping channel for a while before
+returning.
+Notable Modules: pSafetyRetreat, pBasicContactMgr

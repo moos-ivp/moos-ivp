@@ -1,0 +1,49 @@
+//-----------------------------------------------------
+// pMarinePID Configuration Block (created from plugin)
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+  
+  verbose       = true
+  depth_control = false
+  active_start  = true
+  
+  // Yaw PID controller
+  yaw_pid_kp             = 0.4
+  yaw_pid_kd             = 0.1
+  yaw_pid_ki             = 0.0
+  yaw_pid_integral_limit = 0.07
+  
+  // Speed PID controller
+  speed_pid_kp           = 1.0
+  speed_pid_kd           = 0.0
+  speed_pid_ki           = 0.0
+  speed_pid_integral_limit = 0.07
+  
+#ifdef VTYPE UUV
+  //Pitch PID controller
+  pitch_pid_kp                   = 0.5
+  pitch_pid_kd                   = 1.0
+  pitch_pid_ki                   = 0
+  pitch_pid_integral_limit       = 0
+
+  //ZPID controller
+  z_to_pitch_pid_kp              = 0.12
+  z_to_pitch_pid_kd              = 0
+  z_to_pitch_pid_ki              = 0.004
+  z_to_pitch_pid_integral_limit  = 0.05
+
+  maxpitch     = 15
+  maxelevator  = 13
+#endif
+
+  // Maximums
+  maxrudder  = 100
+  maxthrust  = 100
+  
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  speed_factor = 20
+}

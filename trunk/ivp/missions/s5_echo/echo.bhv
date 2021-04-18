@@ -1,0 +1,69 @@
+//--------    FILE: echo.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   MOOS_MANUAL_OVERRIDE = false
+initialize   AUTO_SPAWN = false
+initialize   RETURN = false
+
+
+set IVPHELM_MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set IVPHELM_MODE = SURVEYING {
+  IVPHELM_MODE = ACTIVE
+  RETURN != true
+} RETURNING
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = IVPHELM_MODE == SURVEYING
+  endflag   = RETURN = true
+  perpetual = true
+
+          lead = 8
+   lead_damper = 1
+         speed = 2.0   // meters per second
+        radius = 8.0
+        repeat = 100000
+        points = 60,-40:60,-140:150,-140:170,-90:150,-40
+  visual_hints = nextpt_color=yellow, nextpt_lcolor=aqua
+  visual_hints = vertex_color=yellow, line_color=white
+  visual_hints = vertex_size=2, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = IVPHELM_MODE == RETURNING
+  updates    = UPDATES_RETURN
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_BearingLine
+{
+  name       = bng-line-
+  condition  = IVPHELM_MODE == SURVEYING
+  updates    = BEARING_POINT
+  templating = clone
+  duration_idle_decay = true
+
+  bearing_point = 100,-100
+       line_pct = 50
+        show_pt = true
+}
+
+

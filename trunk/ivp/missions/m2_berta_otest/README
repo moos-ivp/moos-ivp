@@ -1,0 +1,11 @@
+Two-vehicle Collision Avoidance and Obstacle Avoidance
+
+Collision avoidance similar to the m2_berta mission with two vehicles
+transiting East-West to randomly altered polygons to loiter.
+
+In between a random number of obstacles are generated within a specified
+polygon obstacle region
+
+Uses uFldObstacleSim for generating random placement of obstacles
+
+

@@ -1,0 +1,24 @@
+=============================================================== 
+pBasicContactMgr Example MOOS Configuration                     
+=============================================================== 
+                                                                
+ProcessConfig = pBasicContactMgr                                
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  // Alert configurations (one or more)                         
+  alert = var=CONTACT_INFO, val="name=avd_$[VNAME] # contact=$[VNAME]"
+                                                                
+  // Properties for all alerts                                  
+  alert_range      = 1000      // meters.   Range [0,inf)    
+  alert_cpa_range  = 1000      // meters.   Range [0,inf)    
+  alert_cpa_time   = 0         // seconds.  Range [0,inf)    
+                                                                
+  // Policy for retaining potentiall stale contacts             
+  contact_max_age  = 3600      // seconds.  Range [0,inf)    
+                                                                
+  // Configuring other output                                   
+  display_radii    = false     // or {true}                  
+  verbose          = true      // or {false}                 
+}                                                               

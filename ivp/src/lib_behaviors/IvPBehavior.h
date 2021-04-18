@@ -113,6 +113,8 @@ public:
   void    postRepeatableMessage(std::string, std::string);
   void    postEMessage(std::string);
   void    postWMessage(std::string);
+  void    postEventMessage(std::string);
+  void    postRepeatableEventMessage(std::string);
   void    postRetractWMessage(std::string);
   void    postFlags(const std::string&, bool repeat=false);
   void    postFlags(const std::vector<VarDataPair>&, bool repeat=false);
@@ -146,6 +148,8 @@ public:
   std::vector<std::string> getStateSpaceVars();
 
   std::vector<std::string> getUpdateResults() const {return(m_update_results);}
+
+  std::string expandCtrMacro(std::string sdata, std::string macro, unsigned int&);
   
 protected:
   const InfoBuffer* m_info_buffer;
@@ -171,6 +175,7 @@ protected:
   std::vector<std::string>       m_info_vars_no_warning;
 
   std::vector<VarDataPair>       m_messages;
+  std::vector<VarDataPair>       m_event_messages;
   std::vector<LogicCondition>    m_logic_conditions;
   std::vector<VarDataPair>       m_spawn_flags;
   std::vector<VarDataPair>       m_run_flags;

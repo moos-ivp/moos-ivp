@@ -1,0 +1,17 @@
+//--------------------------------------------------------
+// pNodeReporter Configuration Block (Created from Plugin)
+
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 2
+  CommsTick   = 2
+
+#ifdef GILDA
+  platform_type = ship
+  platform_length = 11
+#elseifdef HENRY
+  platform_type = uuv
+#else
+  platform_type = kayak
+#endif
+}

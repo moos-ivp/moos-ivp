@@ -1,0 +1,11 @@
+//---------------------------------------------------------
+// pShare Config Block  (Created from Plugin)
+
+ProcessConfig = pShare
+{
+  AppTick    = 5
+  CommsTick  = 5
+
+  input = route =  localhost:$(SHARE_LISTEN)
+}
+

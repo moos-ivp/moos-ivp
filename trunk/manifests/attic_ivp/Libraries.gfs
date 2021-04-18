@@ -1,0 +1,15 @@
+//====================================================================
+module   = Libraries
+type     = group
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+synopsis = Library modules contain code used in typically at least two
+  or more applications. For example, over 95% of the Helm is implemented
+  in over a dozen libraries, with some of the libraries also supporting
+  related applications such as uHelmScope, pMarineViewer, alogview and 
+  others. In general the goal is to maximimze code-reuse by putting any
+  multi-use code in a library to be used by multiple applications. 
+
+group    = Libraries
+distro   = moos-ivp.org

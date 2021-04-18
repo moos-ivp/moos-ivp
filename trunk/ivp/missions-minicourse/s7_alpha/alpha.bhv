@@ -1,0 +1,84 @@
+//--------    FILE: alpha.bhv   -------------
+
+initialize   DEPLOY  = false
+initialize   RETURN  = false
+initialize   STATION = false
+	
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = STATION != true
+  endflag   = RETURN = true
+
+  updates    = WPT_UPDATE
+  perpetual  = true
+
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+               speed = 3   // meters per second
+        capture_line = true
+      capture_radius = 15
+         slip_radius = 25
+	efficiency_measure = all
+
+    wptflag = STATION=true
+
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+
+               order = normal
+             repeat  = 1
+
+    visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+    visual_hints = nextpt_lcolor=gray70
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
+}
+
+
+//----------------------------------------------
+Behavior=BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  condition  = STATION != true
+  perpetual  = true
+  updates    = RETURN_UPDATE
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = MISSION = complete
+	
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = 0,-20
+}
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name         = station-keep          
+  pwt          = 100                   
+  condition    = DEPLOY  = true
+  condition    = STATION = true
+
+     duration = 60
+     endflag  = STATION = false
+     perpetual = true
+     duration_idle_decay = false
+
+     center_activate = true   // default
+         inner_radius = 8       // default
+         outer_radius = 15      // default
+//         outer_speed  = 1.2     // default
+//       transit_speed  = 2.5     // default
+//           station_pt = 0,0     // default
+           swing_time = 6       // default
+}

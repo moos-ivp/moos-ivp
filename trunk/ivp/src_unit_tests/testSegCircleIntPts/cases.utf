@@ -1,0 +1,9 @@
+cmd=testSegCircleIntPts
+cx=0 cy=0 cr=14 x1=-15 y1=5 x2=100 y2=6 # num_pts=2
+cx=0 cy=0 cr=14 x1=-10 y1=5 x2=100 y2=6 # num_pts=1
+
+cx=0 cy=0 cr=14 x1=-15 y1=5 x2=100 y2=5 # num_pts=2
+cx=0 cy=0 cr=14 x1=-10 y1=5 x2=100 y2=5 # num_pts=1
+
+cx=0 cy=0 cr=14 x1=-10 y1=5 x2=100 y2=5.00001 # num_pts=1
+

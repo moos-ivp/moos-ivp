@@ -1,0 +1,15 @@
+//====================================================================
+module   = Simulation
+type     = group
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+synopsis = The Simulation Toolbox contains a number of tools for supporting 
+   multi-vehicle missions where each vehicle is connected to a shoreside 
+   community. This includes both simulation and real field experiments. 
+   It also contains a number of simulated sensors that run on off-board 
+   the vehicle on the shoreside.
+
+group    = Simulation
+doc_url  = http://oceanai.mit.edu/ivpman/tools
+distro   = moos-ivp.org

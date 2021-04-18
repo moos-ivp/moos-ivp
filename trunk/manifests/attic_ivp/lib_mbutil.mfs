@@ -1,0 +1,23 @@
+//====================================================================
+module   = lib_mbutil
+type     = Library
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@mit.edu
+org      = MIT
+thumb    = A library of kitchen-sink utilities used by many applications.
+
+depends  = 
+
+borndate = 970101
+doc_url  = Pending
+license  = GPL
+group    = Libraries, General Utility
+distro   = moos-ivp.org
+
+synopsis = The lib_mbutil library contains many basic utility classes
+  and C++ functions used in virtually all applications. This include
+  many string manipulation utilities, classes supporting definitions
+  of supported colors in many apps, utilities for reading from files
+  into a vector of strings and many more.
+
+

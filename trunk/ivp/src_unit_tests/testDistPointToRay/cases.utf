@@ -1,0 +1,10 @@
+cmd=testDistPointToRay
+
+px=0 py=0 cx=0 cy=10 cr=45 # dist=10
+
+px=0 py=0 cx=4 cy=3 cr=45 # dist=5
+px=0 py=0 cx=4 cy=3 cr=180 # dist=4
+px=0 py=0 cx=4 cy=3 cr=270 # dist=3
+
+px=4 py=-2 cx=4 cy=4 cr=24 # dist=6
+

@@ -1,0 +1,10 @@
+cmd=testLineCircleIntPts
+
+cx=0 cy=0 cr=14 x1=-10 y1=5 x2=100 y2=5 # num_pts=2
+cx=0 cy=0 cr=14 x1=-10 y1=4.5 x2=100 y2=5 # num_pts=2
+cx=0 cy=0 cr=14 x1=-10 y1=4 x2=100 y2=5 # num_pts=2
+cx=0 cy=0 cr=14 x1=-10 y1=40 x2=100 y2=45 # num_pts=0
+cx=10 cy=0 cr=14 x1=-10 y1=14 x2=100 y2=14 # num_pts=1
+cx=10 cy=0 cr=14 x1=-10 y1=14 x2=1 y2=14 # num_pts=1
+
+cx=10 cy=10 cr=14 x1=24 y1=1 x2=24 y2=14 # num_pts=1

@@ -1,0 +1,110 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = false
+}
+
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
+
+  QBRIDGE  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, SURVEY
+  QBRIDGE  = TRANSIT, SAFETY_RETREAT
+
+  BRIDGE   = src=UP_LOITER_$N,   alias=UP_LOITER
+  //BRIDGE   = src=TRANSIT,        alias=TRANSIT
+  //BRIDGE   = src=SAFETY_RETREAT, alias=SAFETY_RETREAT
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 2
+  CommsTick = 2
+
+           COMMS_RANGE = 150
+        CRITICAL_RANGE = 25
+      MIN_MSG_INTERVAL = 20
+        MAX_MSG_LENGTH = 1000
+                GROUPS = true
+  VIEW_NODE_RPT_PULSES = true
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -425
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_viewable = names+shortmode
+
+  vehicles_inactive_color = green
+
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  SCOPE = THREAT_DETECTED
+
+  ACTION  = DEPLOY_%(VNAME1) = true
+  ACTION  = DEPLOY_%(VNAME1) = false
+  ACTION  = RETURN_%(VNAME1) = true
+  ACTION  = SURVEY_%(VNAME1) = true
+  ACTION+ = RETURN_%(VNAME1) = false
+
+  ACTION  = DEPLOY_%(VNAME2) = true
+  ACTION  = DEPLOY_%(VNAME2) = false
+  ACTION  = TRANSIT_%(VNAME2) = true
+  ACTION  = TRANSIT_%(VNAME2) = false
+  ACTION  = RETURN_%(VNAME2) = true
+  ACTION+ = RETURN_%(VNAME2) = false
+
+
+  BUTTON_ONE   = DEPLOY_H  # DEPLOY_%(VNAME1)=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_%(VNAME1)=false 
+  BUTTON_ONE   = RETURN_$(VNAME1)=false
+  BUTTON_ONE   = SURVEY_%(VNAME1) = true
+  BUTTON_TWO   = RETURN_H # RETURN_%(VNAME1)=true
+  BUTTON_THREE = DEPLOY_G  # DEPLOY_%(VNAME2)=true
+  BUTTON_THREE = MOOS_MANUAL_OVERRIDE_%(VNAME2)=false
+  BUTTON_THREE = RETURN_%(VNAME2)=false # TRANSIT_%(VNAME2)=true
+  BUTTON_FOUR  = RETURN_G  # RETURN_%(VNAME2)=true
+  BUTTON_FOUR  = TRANSIT_%(VNAME2)=true
+}
+

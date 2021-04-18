@@ -1,0 +1,240 @@
+##############################################################################
+# AUTHOR:      Christopher Gagner
+# DATE:        November 8, 2010
+# FILE:        automated_build.txt
+# DESCRIPTION: Documentation for the MOOS-IvP Automated build configuration.
+##############################################################################
+
+
+#=============================================================================
+# Introduction
+#=============================================================================
+Automated nightly builds help to improve the reliability and maintainabilty of
+software projects. The MOOS-IvP project has implemented an automated build
+system using the CMake, CTest, and CDash toolset. CMake is a client-side
+application that is responsible for generating native build files. CTest is
+delivered with CMake and allows automated tests to be run on on the built
+applications. CDash is a server-side, web-based application that collects and
+displays the results from build clients. 
+
+#=============================================================================
+# CDash Configuration
+#=============================================================================
+Version: 1.6.4
+Website: http://www.cdash.org/
+
+NOTE: More up-to-date information for configuring the CDash application can
+      be found at http://www.cdash.org/cdash/resources/software.html
+
+Presequisites:
+   1) Webserver ( apache2 )
+   2) MySQL ( mysql-server, php5-mysql ) 
+   3) XSL module for PHP ( php5-xsl )
+   4) PHP module ( libapache2-mod-php5 )
+   5) cURL module for PHP ( php5-curl )
+   6) GD module for PHP ( php5-gd )
+
+NOTE: After installation, reload the apache server: 
+      sudo /etc/init.d/apache2 reload
+
+Installation Setps
+   1) Install and configure the Apache2 webserver.
+   2) Install and configure MySQL. Be sure to record the MySQL root password.
+      Add the MySQL user 'cdash' and record the password for the user. Create
+      a table 'cdash' and give permission fo the MySQL user 'cdash'.
+   3) Download the CDash zip file or checkout CDash using subverions:
+      a) wget http://www.cdash.org/download/CDash-1.6.4.zip && \
+         unzip CDash-1.6.4.zip
+      b) svn co https://www.kitware.com/svn/CDash/Release-1-6-4 
+   4) Move the CDash-1.6.4 directory into a directory controlled by the
+      webserver ( /var/wwww or /home/web ).
+   5) Set the permisions of the CDash directory to be writable by the 
+      webserver ( typically the 'www-data' user )
+   6) Edit the cdash/config.local.php file:
+      a) Set the CDASH_DB_HOST to 'localhost'
+      b) Set the CDASH_DB_LOGIN to 'cdash'
+      c) Set the CDASH_DB_PASS to be the password for the MySQL user 'cdash'
+      d) Set the CDASH_DB_NAME to be 'cdash'
+      e) Set the CDASH_DB_TYPE to be 'mysql'
+   7) Open a web browser and navigate to your CDash website. 
+      (Typically http://localhost/CDash )
+   8) Follow installation instructions provided by CDash.
+   9) Create a public project for moos-ivp. Fill in as much infomation as 
+      possible when creating the project. 
+
+#=============================================================================
+# CDash RSS Feed
+#=============================================================================
+Really Simple Syndication (RSS) is a web feed format that is used to publish
+frequently updated works. By default, CDash publishes an RSS feed to display
+the builds that have been submitted in the past 24 hours. See
+https://oceanai.mit.edu/CDash/rss/SubmissionRSSmoos-ivp.xml 
+
+RSS feeds are convenient because they can be embedded in other websites. This
+allows that portion of the webpage to be updated without needed to change
+any of the source code of the webpage. For MOOS-IvP, it was desired to have
+a list of the last time MOOS-IvP was built on each supported platform. To do
+this, a custom RSS feed was created:
+https://oceanai.mit.edu/CDash/rss/LatestBuildsRSSmoos-ivp.xml
+
+To create the RSS feed, a PHP script was created on oceanai:
+'/home/web/CDash/cdash/moos-ivpRSS.php'
+
+The PHP script was initially a copy of createRSS.php, which is used to create
+the default RSS feed. The PHP script was modified to query the CDash 
+MySQL data base for the builds of the moos-ivp project. Specifically,
+it looks for the last submissions by a designated list of hosts. At the 
+moment, it is using "fedora-13-32bit-testvm", "wacoma", and "GAGNERC-LT".
+
+Finally, to get CDash to update the RSS feed every time a build has been
+submitted, the following line was added to the top of the 
+CDash/cdash/do_submit.php file:
+   include_once("cdash/moos-ivpRSS.php");
+
+Additionally, the following line was added under the comment for creating an
+RSS feed:
+   CreateMoosIvpRSSFeed($projectid); 
+
+
+To add the RSS feed to the MOOS-IvP PmWiki page, the follow steps were used:
+   1) Navigate to http://www.pmwiki.org/wiki/Cookbook/PmFeed
+   2) Select to download the "pmfeed.php" file found in the 'Description' 
+      section.
+   3) Move the "pmfeed.php" file into the cookbook directory in the 
+      pmwiki folder (/home/web/moos-ivp/pmwiki)
+   4) Add the following line to the local/config.php:
+      include_once("$FarmD/cookbook/pmfeed.php");
+
+      NOTE: If local/config.php does not exist, copy docs/sample-config.php to
+            local/config.php and set the permissions to be owned by the
+            web username ( probably www-data )
+   5) Create the directory "public/cache" and set the permisions to be 
+      writable by the web username ( probably www-data ).
+   6) Add the following line to the desired website (in pmwiki):
+      (:pmfeed feed='http://oceanai.mit.edu/CDash/rss/LatestBuildsRSSmoos-ivp.xml' showitemdescr='false' max_count=10 showtitle='false':)
+
+      NOTE: Step 6 should be done by navigating to the desired website in
+            a web browser and selecting to edit the page.
+
+
+
+
+#=============================================================================
+# CTest Clients
+#=============================================================================
+As of November 8, 2010, CDash/CTest does not support a server initiated
+build. As a result, each client machine needs to have a task schedule in its
+repective operating system. For Apple and Linux computer, cron jobs will be
+used. For Windows, a task must be scheduled using the "Scheduled Tasks" in 
+the control panel. 
+
+Although CDash/CTest cannot automatically start a build, it does have a 
+built in scripting lanuage that allows the same build script to be executed 
+on all supported operating systems. To run CMake script using CTest, issue
+the following command:
+   #> ctest -S nightly.cmake -V
+where nightly.cmake is the name of the script. Two scripts have been created
+to perform builds for MOOS-IvP: 'nightly.cmake' and 'continuous.cmake'. The
+scripts are located in the MOOS-IvP repository under trunk/scripts. The
+nightly.cmake script will check out a fresh copy of MOOS-IvP, configure 
+and build MOOS, configure and build IvP, run all CTest tests found in
+the CMakeLists.txt files for IvP, and submit the results to the server. The 
+continuous.cmake script updates to the latest revision and only builds
+MOOS and IvP if the revision has updated. 
+
+
+
+
+#=============================================================================
+# Setting up a new CTest client
+#=============================================================================
+To setup a new build machine, first, verify that all of the dependancies of
+MOOS-IvP have been insalled and verify that MOOS-IvP can be built. Any
+machine that can build MOOS-IvP can then be used as a CTest client. 
+
+It is recommended that new user be created that executes the build. In most
+cases, the 'moosivp' user has been used. To test a nightly build, run the
+following steps as your test user:
+
+   1) Checkout the MOOS-IvP scripts:
+      #> svn checkout https://oceanai.mit.edu/svn/moos-ivp-aro/scripts \ 
+         moos-ivp-scripts
+   2) Change into the moos-ivp-scripts directory.
+   3) Issue the following command to start a build:
+      #> ctest -S nightly.cmake -V
+      This command will build MOOS-IvP and submit the results under the
+      nightly builds. The '-V' sets the build to be verbose so that you
+      can see the build results.
+   4) After the build completes, navigate a web browser to 
+      https://oceanai.mit.edu/CDash and select the moos-ivp project. 
+   5) Verify that your computer name appears in the list of computers and 
+      verify that there are not any errors under the build section.
+
+Once you have been able to successfully submit a build to CDash, you'll need
+to setup a task for performing the build periodically. 
+
+For Apple and Linux users, you'll need to setup a crontab. Below is an example
+crontab:
+
+#  .-------------------- minute (0 - 59)
+#  |   .---------------- hour (0 - 23)
+#  |   |   .------------ day of month (1 - 31)
+#  |   |   |   .-------- month (1 - 12)
+#  |   |   |   |  .----- day of week (0 - 6)
+#  |   |   |   |  |
+#  *   *   *   *  *  command to be executed
+   0   4  *   *  *  cd ~moosivp/moos-ivp-scripts && /usr/bin/ctest -S \
+                     nightly.cmake -V
+
+The above example will change into the into the moos-ivp-scripts direcotry in
+'moosivp' user's home directory and execute the nightly.cmake script using
+CTest. The crontab will be performed every day at 04:00 AM. To schedule the
+crontab, issue the following command:
+   #> crontab nightly_crontab.txt
+where nightly_crontab.txt is the text file containing the crontab. To verify
+that the crontab has been scheduled, issue the following command:
+   #> crontab -l
+If the crontab has been scheduled, the above command will display the 
+contents of the crontab.
+
+For Windows XP users, you'll need to schedule a task using the "Scheduled
+Tasks" in the control panel. Use the following steps:
+   1)  Navigate to the "Control Panel"
+   2)  Navigate to the "Scheduled Tasks". 
+   3)  Select "Add Scheduled Task"
+   4)  In the Scheduled Task Wizard, select 'Next' until you are prompted
+       to select a program.
+   5)  Select the 'Browse' pushbutton and navigate to the location of the
+       CTest application ('ctest.exe')
+   6)  Select a name for the tasks, and select to perform the task daily.
+       Select 'Next'.
+   7)  Select the time of day you want the task to run. Select 'Next'.
+   8)  Enter the name of the user that will be running the test allong with
+       their password. Select 'Next'.
+   9)  Select 'Finish'.
+   10) Inside the Scheduled Tasks window, right click on the task you just
+       created and select properties.
+   11) Add "-S nightly.cmake -V" to the run command like this:
+       "C:\opt\CMake\CMake 2.8\bin\ctest.exe" -S nightly.cmake -V
+       NOTE: The path to the CTest executable must be in quotes and the
+             arguments starting with '-S' should be outside of the quotes.
+   12) Set the "Start in" directory to the location of the nightly.cmake
+       script. 
+   13) Select 'Ok' to set the settings. You may be asked to enter the username
+       and password for the user that will be running the task.
+   
+If you run into any problem, the following site has a more indepth walk-through
+with pictures:
+   http://www.cmake.org/Wiki/CMake_Scripting_Of_CTest#On_Windows_.2F_Cygwin_.2F_MinGW
+
+
+
+
+
+
+
+
+##############################################################################
+#                           END of automated_build.txt
+##############################################################################
+

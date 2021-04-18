@@ -1,0 +1,100 @@
+/*****************************************************************/
+/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
+/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    FILE: BHV_AvoidObstacleX.h                                 */
+/*    DATE: Aug 2nd 2006                                         */
+/*    DATE: Sep 9th 2019 Rewrite with different AOF and refinery */
+/*                                                               */
+/* This file is part of MOOS-IvP                                 */
+/*                                                               */
+/* MOOS-IvP is free software: you can redistribute it and/or     */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation, either version  */
+/* 3 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* MOOS-IvP is distributed in the hope that it will be useful,   */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty   */
+/* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See  */
+/* the GNU General Public License for more details.              */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with MOOS-IvP.  If not, see                     */
+/* <http://www.gnu.org/licenses/>.                               */
+/*****************************************************************/
+ 
+#ifndef BHV_AVOID_OBSTACLEX_HEADER
+#define BHV_AVOID_OBSTACLEX_HEADER
+
+#include "IvPBehavior.h"
+#include "ObShipModel.h"
+#include "XYPolygon.h"
+
+class BHV_AvoidObstacleX : public IvPBehavior {
+public:
+  BHV_AvoidObstacleX(IvPDomain);
+  ~BHV_AvoidObstacleX() {}
+  
+  bool         setParam(std::string, std::string);
+  void         onHelmStart();
+  IvPFunction* onRunState();
+  void         onIdleState();
+  void         onCompleteState();
+  void         onSetParamComplete();
+  void         onIdleToRunState();
+  void         onInactiveState();
+  void         onEveryState(std::string);
+  void         onSpawn();
+  void         postConfigStatus();
+  double       getDoubleInfo(std::string);
+  bool         isConstraint() {return(true);}
+  std::string  isDeprecated();
+
+ protected: 
+  bool   handleParamVisualHints(std::string);
+  double getRelevance();
+  bool   updatePlatformInfo();
+  void   postViewablePolygons();
+  void   postErasablePolygons();
+
+  bool   applyBuffer();
+
+  
+ protected:
+  ObShipModel m_obship_model;
+
+ protected: // Config Params
+  bool        m_use_refinery;
+  std::string m_pwt_grade;
+
+  std::string m_resolved_obstacle_var;
+  std::string m_obstacle_id;
+
+  bool        m_hide_deprecation_warning;
+  
+ protected: // State variables
+
+  double  m_obstacle_relevance;
+  bool    m_resolved_pending;
+
+ protected: // Config Visual hints
+  std::string m_hint_obst_edge_color;
+  std::string m_hint_obst_vertex_color;
+  double      m_hint_obst_vertex_size;
+  std::string m_hint_obst_fill_color;
+  double      m_hint_obst_fill_transparency;
+
+  std::string m_hint_buff_min_edge_color;
+  std::string m_hint_buff_min_vertex_color;
+  double      m_hint_buff_min_vertex_size;
+  std::string m_hint_buff_min_fill_color;
+  double      m_hint_buff_min_fill_transparency;
+
+  std::string m_hint_buff_max_edge_color;
+  std::string m_hint_buff_max_vertex_color;
+  double      m_hint_buff_max_vertex_size;
+  std::string m_hint_buff_max_fill_color;
+  double      m_hint_buff_max_fill_transparency;
+
+};
+
+#endif

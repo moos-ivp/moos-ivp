@@ -1,0 +1,24 @@
+//----------------------------------------------------
+// pBasicContactMgr config block (created from plugin) 
+
+ProcessConfig = pBasicContactMgr
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+  //decay = 2,5  // Don't really want extrapolation here
+
+  alert_verbose = true
+
+  contact_max_age = 3600
+  display_radii   = false
+
+  default_alert_range = 50
+  default_cpa_range   = 35
+  default_alert_range_color = gray70
+  default_cpa_range_color   = gray30
+
+
+  Alert = id=trail, var=TRAIL_INFO, val="name=$[VNAME] # contact=mokai", alert_range=140
+}

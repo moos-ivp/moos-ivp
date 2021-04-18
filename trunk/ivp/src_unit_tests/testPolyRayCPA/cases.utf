@@ -1,0 +1,8 @@
+cmd=testPolyRayCPA
+
+poly=0,0:10,0:10,10:0,10 rx=15 ry=5 ra=90  # cpa=5
+poly=0,0:10,0:10,10:0,10 rx=15 ry=5 ra=0   # cpa=5
+poly=0,0:10,0:10,10:0,10 rx=15 ry=5 ra=270 # cpa=0
+poly=0,0:10,0:10,10:0,10 rx=15 ry=5 ra=315 # cpa=0
+
+

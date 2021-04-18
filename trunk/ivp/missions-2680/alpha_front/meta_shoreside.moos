@@ -1,0 +1,215 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = $(SHORE_MOOSDB)
+Community  = shoreside
+
+#include plug_origin_warp.moos
+
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+
+  Run = pMarineViewer   @ NewConsole = false
+
+  Run = pHostInfo       @ NewConsole = false
+  Run = pShare          @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
+
+  Run = uFldCTDSensor       @ NewConsole = false
+  Run = pFrontGridRender    @ NewConsole = false
+  Run = pGradeFrontEstimate @ NewConsole=false
+}
+
+#ifdef CTD two
+   #include plug_uFldCTDSensor2.moos
+#elseifdef CTD three
+   #include plug_uFldCTDSensor3.moos
+#elseifdef CTD four
+   #include plug_uFldCTDSensor4.moos
+#else
+   #include plug_uFldCTDSensor.moos
+#endif
+
+//--------------------------------------------------------
+// pGradeFrontEstiamte Configuration Block
+
+ProcessConfig = pGradeFrontEstimate
+{
+  AppTick=1
+  CommsTick = 1
+
+}
+
+//--------------------------------------------------------
+// pFrontGridRender Configuration Block
+
+ProcessConfig = pFrontGridRender
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  GRID_CONFIG = pts={-100,-200: 200,-200: 200,25: -100,25}
+  GRID_CONFIG = cell_size=7
+  GRID_CONFIG = cell_vars=x:0
+}
+
+
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript  
+{
+        event = var = HEARTBEAT, val=true, time=1
+   reset_time = all-posted
+    reset_max = nolimit
+}
+
+//---------------------------------------------------------
+// pShare Configuration Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  localhost:$(SHORE_PSHARE)
+}
+
+//--------------------------------------------------------
+// ufldnodecomms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick       = 2
+  CommsTick     = 2
+
+  comms_range      = 5000
+  critical_range   = 25
+
+  min_msg_interval = 0
+  max_msg_length   = 10000
+  groups           = false
+
+  view_node_rpt_pulses = false
+}
+
+
+//--------------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  qbridge  = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
+  qbridge  = STATION_KEEP
+  qbridge  = SAY_MOOS, UCTD_MSMNT_REPORT
+
+  bridge   = src=HEARTBEAT
+  bridge   = src=UP_LOITER_$N, alias=UP_LOITER
+  bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
+}
+
+
+//--------------------------------------------------------
+// pHostInfo Configuration Block
+
+ProcessConfig = pHostInfo
+{
+  AppTick     = 2
+  CommsTick   = 2
+
+//  DEFAULT_HOSTIP = localhost
+}
+
+//--------------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  LogAuxSrc     = true
+
+  // Log it all!!!!!
+  WildCardLogging = true
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  //TIFF_FILE          = forrest19.tif
+  TIFF_FILE            = MIT_SP.tif
+  set_pan_x            = -10
+  set_pan_y            = -170
+  zoom                 = 0.8
+  vehicles_shape_scale = 1.1
+  vehicles_name_mode   = names+shortmode
+
+  circle_viewable_all = true
+
+  appcast_viewable = true
+  appcast_color_scheme = indigo
+
+  scope = DEPLOY_ALL
+
+  action = STATION_KEEP_ALL = false
+  action = STATION_KEEP_ALL = true
+  action = CHASE_ALL = false
+
+  button_one   = DEPLOY  # DEPLOY_ALL=true
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false
+  button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
+
+  button_two   = RETURN  # MOOS_MANUAL_OVERRIDE=false
+  button_two   = RETURN_ALL=true # STATION_KEEP_ALL=false
+
+  button_three = All-Stop # MOOS_MANUAL_OVERRIDE_ALL=true
+
+  button_four  = STATION  # STATION_KEEP_ALL=true
+  button_four  = MOOS_MANUAL_OVERRIDE=false
+
+}
+
+//--------------------------------------------------------
+// uProcessWatch Configuration Block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  allow_retractions = true
+
+  watch_all = true      // default is true
+
+  nowatch = uXMS*
+  nowatch = uPokeDB*
+
+  summary_wait = 10
+}
+

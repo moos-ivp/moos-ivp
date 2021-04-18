@@ -1,0 +1,11 @@
+//--------------------------------------------------------
+// pContactMgrV20 Configuration Block (Created from Plugin)
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  contact_max_age = 3600
+  display_radii   = false
+}

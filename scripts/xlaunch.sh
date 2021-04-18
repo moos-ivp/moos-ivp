@@ -13,6 +13,7 @@ FLOW_DOWN_ARGS="--auto "
 SEND="no"
 RESFILE="no"
 CLEAN="no"
+DELAY="4"
 FAKEOS=""
 
 #-------------------------------------------------------
@@ -21,25 +22,26 @@ FAKEOS=""
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	echo "xlaunch.sh [OPTIONS] [time_warp]     "
-	echo "Synopsis:                                                  " 
-	echo "  Run from within a mission folder:                        "
-	echo "    - Auto launch a mission                                " 
-	echo "    - Poke the mission with start commands                 " 
-	echo "    - Periodically connect to the mission to detect if     " 
-	echo "      quit conditions are met.                             " 
-	echo "    - After quit conditions met, check for results         " 
-	echo "    - Bring down the mission                               " 
-	echo "    - Optionally generate an outcome report file           " 
-	echo "    - Optionally send the report file to a central server  " 
-	echo "                                                           " 
-	echo "Options:                                                   " 
-	echo "  --help, -h         Show this help message                " 
-	echo "  --just_make, -j    Just create targ files, no launch     " 
-	echo "  --test=cnf_01      Config for variation_cnf_01.txt       " 
-	echo "  --res, -r          Make a results file                   " 
-	echo "  --send, -s         Make and send a results file          " 
-	echo "  --clean, -c        Remove outcome file after OK send     " 
-	echo "  --com=alpha        Name the community to poke            " 
+	echo "Synopsis:                                                    " 
+	echo "  Run from within a mission folder:                          "
+	echo "    - Auto launch a mission                                  " 
+	echo "    - Poke the mission with start commands                   " 
+	echo "    - Periodically connect to the mission to detect if       " 
+	echo "      quit conditions are met.                               " 
+	echo "    - After quit conditions met, check for results           " 
+	echo "    - Bring down the mission                                 " 
+	echo "    - Optionally generate an outcome report file             " 
+	echo "    - Optionally send the report file to a central server    " 
+	echo "                                                             " 
+	echo "Options:                                                     " 
+	echo "  --help, -h         Show this help message                  " 
+	echo "  --just_make, -j    Just create targ files, no launch       " 
+	echo "  --test=cnf_01      Config for variation_cnf_01.txt         " 
+	echo "  --res, -r          Make a results file                     " 
+	echo "  --send, -s         Make and send a results file            " 
+	echo "  --clean, -c        Remove outcome file after OK send       " 
+	echo "  --com=alpha        Name the community to poke              " 
+	echo "  --delay=<secs>     Delay N secs before launch. Default is 4" 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
 	TIME_WARP=$ARGI
@@ -51,6 +53,8 @@ for ARGI; do
     elif [ "${ARGI:0:7}" = "--test=" ]; then
 	FLOW_DOWN_ARGS+="${ARGI} "
         TNUM="${ARGI#--test=*}"
+    elif [ "${ARGI:0:8}" = "--delay=" ]; then
+	DELAY="${ARGI#--delay=*}"
     elif [ "${ARGI}" = "--res" -o "${ARGI}" = "-r" ]; then
         RESFILE="yes"
     elif [ "${ARGI}" = "--send" -o "${ARGI}" = "-s" ]; then
@@ -95,8 +99,8 @@ if [ "${COMMUNITY}" = "" ]; then
     fi
 fi
 
-echo "Poking/Starting the mission $TNUM in 4 seconds ...." 
-sleep 4
+echo "Poking/Starting the mission $TNUM in $DELAY seconds ...." 
+sleep $DELAY
 if [ "${COMMUNITY}" = "shoreside" ]; then
     uPokeDB targ_shoreside.moos DEPLOY_ALL=true MOOS_MANUAL_OVERRIDE_ALL=false
 else

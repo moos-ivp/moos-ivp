@@ -1,0 +1,36 @@
+ServerHost = localhost
+ServerPort = $(VPORT)
+
+// Community name IS the vehicle name
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+  
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+   
+  Run = MOOSDB           @ NewConsole = false
+  Run = pRealm           @ NewConsole = false
+  Run = uProcessWatch    @ NewConsole = false
+  Run = pShare           @ NewConsole = false
+  Run = uSimMarine       @ NewConsole = false
+  Run = pLogger          @ NewConsole = false
+  Run = pNodeReporter    @ NewConsole = false
+  Run = pMarinePID       @ NewConsole = false
+  Run = pHelmIvP         @ NewConsole = false
+  Run = pHostInfo        @ NewConsole = false
+  Run = uFldNodeBroker   @ NewConsole = false
+}
+
+#include plug_uFldNodeBroker.moos
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+#include plug_uSimMarine.moos
+#include plug_pHelmIvP.moos
+#include plug_pMarinePID.moos
+#include plug_pLogger.moos
+#include plug_pNodeReporter.moos
+#include plug_uProcessWatch.moos
+

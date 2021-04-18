@@ -1,0 +1,21 @@
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  PAUSED     = false
+  RESET_MAX  = unlimited
+  RESET_TIME = 100
+
+  RANDVAR = varname=S, min=1,  max=3, key=at_reset
+  
+//  EVENT = var=NODE_MESSAGE_LOCAL, val="src_node=gilda,dest_node=all,var_name=GILDA_UPDATES,string_val=speed=$[S]", time=0:5 
+  EVENT = var=GILDA_UPDATES, val="speed=$[S]", time=0:5 
+}
+
+
+ 
+

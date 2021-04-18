@@ -1,0 +1,176 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = shoreside
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 400
+
+  Run = MOOSDB           @ NewConsole = false
+  Run = pRealm           @ NewConsole = false
+  Run = pMarineViewer    @ NewConsole = false
+  Run = pLogger          @ NewConsole = false
+  Run = uFldHazardSensor @ NewConsole = false
+  Run = uFldHazardMetric @ NewConsole = false
+
+  Run = pShare           @ NewConsole = false
+  Run = pHostInfo        @ NewConsole = false
+  Run = uFldShoreBroker  @ NewConsole = false
+  Run = uFldNodeComms    @ NewConsole = false
+}
+
+#include plug_pHostInfo.moos
+#include plug_pLogger.moos
+
+//---------------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route = localhost:9300
+  input = route = multicast_9
+}
+
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  // Note: [qbridge = FOO]  is shorthand for                    
+  //       [bridge = src=FOO_$V,  alias=FOO] and                
+  //       [bridge = src=FOO_ALL, alias=FOO]
+
+	// Note  APPCAST_REQ and REALMCAST_REQ bridged automaticall
+	
+  qbridge  = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE
+
+  bridge   = src=UHZ_MISSION_PARAMS
+  bridge   = src=UHZ_OPTIONS_SUMMARY
+
+  bridge   = src=UHZ_CONFIG_ACK_$V,       alias=UHZ_CONFIG_ACK
+  bridge   = src=UHZ_HAZARD_REPORT_$V,    alias=UHZ_HAZARD_REPORT
+  bridge   = src=UHZ_DETECTION_REPORT_$V, alias=UHZ_DETECTION_REPORT
+  bridge   = src=HAZARDSET_REQUEST_ALL,   alias=HAZARDSET_REQUEST
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick       = 2
+  CommsTick     = 2
+
+  comms_range          = 150
+  critical_range       = 25
+  min_msg_interval     = 60
+  max_msg_length       = 100
+  groups               = true
+  view_node_rpt_pulses = true
+}
+
+//--------------------------------------------------
+// uFldHazardMetric Configuration Block
+
+ProcessConfig = uFldHazardMetric
+{
+  AppTick   = 4
+  CommsTick = 4
+ 
+  penalty_missed_hazard = 150
+  penalty_false_alarm   = 25     
+  max_time              = 7202 
+  penalty_max_time_over = 300    
+  penalty_max_time_rate = 0.25 
+
+  show_xpath    = false
+
+  hazard_file   = $(HAZARD_FILE)
+
+}
+
+//--------------------------------------------------
+// uFldHazardSensor Configuration Block
+
+ProcessConfig = uFldHazardSensor
+{
+  AppTick       = 4
+  CommsTick     = 4
+
+  max_appcast_events = 20
+
+  sensor_config = width=5,  exp=8, pclass=0.88, max=1
+  sensor_config = width=10, exp=6, pclass=0.70
+  sensor_config = width=25, exp=4, pclass=0.63
+  sensor_config = width=50, exp=2, pclass=0.55
+
+  swath_length  = 5
+
+  default_hazard_shape = triangle
+  default_benign_shape = square
+
+  min_classify_interval = 30
+  min_reset_interval    = 100000
+
+  swath_transparency = 0.35
+  seed_random        = false
+
+  options_summary_interval = 5
+
+  show_swath=true
+  show_hazards=true
+  show_reports=30
+
+  hazard_file   = $(HAZARD_FILE)
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = AerialMIT.tif
+  set_pan_x            = -32
+  set_pan_y            = 200
+  zoom                 = 1.8
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names+shortmode
+  marker_viewable_labels = false
+
+  appcast_width = 30
+	procs_font_size = large
+	nodes_font_size = large
+	appcast_font_size = large
+	
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  SCOPE = HAZARDSET_REPORT
+
+  //ACTION = STATION_ALL = true
+
+  button_one   = DEPLOY_ALL  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false
+  button_one   = HAZARD_SEARCH_START=true
+  button_two   = RETURN_ALL  # RETURN_ALL=true
+
+  button_three   = REQ_REPORT  # HAZARDSET_REQUEST_ALL=true
+}
+

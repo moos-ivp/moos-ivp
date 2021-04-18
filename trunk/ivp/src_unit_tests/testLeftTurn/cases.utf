@@ -1,0 +1,3 @@
+cmd=testLeftTurn
+x1=0 y1=0 x2=0 y2=40 x3=50 y3=40 # left_turn=true
+x1=0 y1=0 x2=0 y2=40 x3=-50 y3=40 # left_turn=true

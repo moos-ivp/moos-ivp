@@ -1,0 +1,123 @@
+//--------    FILE: alpha.bhv  -------------
+
+initialize   DEPLOY  = false
+initialize   RETURN  = false
+initialize   TRANSIT = false
+initialize   AVOID   = true
+  
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = STATION-KEEPING {
+  MODE = ACTIVE
+  STATION_KEEP = true
+}                       
+
+set MODE = TRANSITING {
+  MODE = ACTIVE
+  RETURN != true
+  TRANSIT = true
+} 
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} 
+
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name         = station-keep
+  pwt          = 100
+  condition    = MODE==STATION-KEEPING
+  inactiveflag = STATIONING = false
+  activeflag   = STATIONING = true
+
+     center_activate = true
+        inner_radius = 5
+        outer_radius = 10 
+         outer_speed = 1.0
+
+       transit_speed = 1.3
+          swing_time = 7
+        visual_hints = vertex_size=0, edge_color=gray50
+}
+
+
+//----------------------------------------------
+//Behavior = BHV_AvdColregsV17
+
+Behavior = BHV_AvoidCollision
+{
+  name       = avdcol_
+  pwt        = 350
+  condition  = AVOID = true 
+  condition  = MODE==ACTIVE
+  condition  = MODE!=ACTIVE:STATION-KEEPING
+  updates    = CONTACT_INFO
+  endflag    = CONTACT_RESOLVED = $[CONTACT]
+  templating = spawn
+
+             contact = to-be-set
+    on_no_contact_ok = true
+         extrapolate = true
+               decay = 30,60
+
+        pwt_outer_dist = 20
+        pwt_inner_dist = 8
+        completed_dist = 40
+     min_util_cpa_dist = 10
+     max_util_cpa_dist = 15
+             pwt_grade = linear
+//   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = transit
+  pwt       = 100
+  condition = MODE==TRANSITING
+  UPDATES   = WPT_UPDATE
+  perpetual = true
+
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+               speed = 3   // meters per second
+        capture_line = true
+      capture_radius = 5.0
+         slip_radius = 15.0
+
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+             repeat = 0
+
+  visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+    visual_hints = nextpt_lcolor=gray70
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  updates    = RETURN_UPDATE
+  condition  = MODE==RETURNING
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = STATION_KEEP = true
+
+           speed = 3.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+           point = $(START_POS)
+
+     visual_hints = vertex_size  = 4             // default
+     visual_hints = vertex_color = dodger_blue   // default
+
+}

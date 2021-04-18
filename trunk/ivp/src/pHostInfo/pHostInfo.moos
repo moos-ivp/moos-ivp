@@ -1,0 +1,11 @@
+=============================================================== 
+pHostInfo Example MOOS Configuration                            
+=============================================================== 
+                                                                
+ProcessConfig = pHostInfo                                       
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  TEMP_FILE_DIR = ./                                            
+}                                 

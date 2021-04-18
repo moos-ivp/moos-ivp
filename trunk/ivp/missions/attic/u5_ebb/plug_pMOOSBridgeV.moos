@@ -1,0 +1,20 @@
+//---------------------------------------------------------
+// pMOOSBridge_%(VNAME) Config Block  (Created from Plugin)
+
+ProcessConfig = pMOOSBridge_%(VNAME)
+{
+  AppTick    = 4
+  CommsTick  = 4 
+  
+  UDPListen = $(LPORT)
+  BridgeFrequency = 0
+  
+  SHARE = [VIEW_POLYGON]        -> $(SNAME) @ localhost:$(SPORT) [VIEW_POLYGON]
+  SHARE = [VIEW_POINT]          -> $(SNAME) @ localhost:$(SPORT) [VIEW_POINT]
+  SHARE = [VIEW_SEGLIST]        -> $(SNAME) @ localhost:$(SPORT) [VIEW_SEGLIST]
+  SHARE = [CONTACT_INFO]        -> $(SNAME) @ localhost:$(SPORT) [CONTACT_INFO]
+  SHARE = [PROC_WATCH_SUMMARY]  -> $(SNAME) @ localhost:$(SPORT) [PROC_WATCH_SUMMARY_VH1]
+  SHARE = [PHI_HOST_INFO]       -> $(SNAME) @ localhost:$(SPORT) [PHI_HOST_INFO]
+  
+  UDPSHARE = [NODE_REPORT_LOCAL] -> $(SNAME) @ localhost:$(SLPORT) [NODE_REPORT]
+}

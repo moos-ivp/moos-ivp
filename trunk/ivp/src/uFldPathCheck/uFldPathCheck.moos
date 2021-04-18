@@ -1,0 +1,12 @@
+=============================================================== 
+uFldPathCheck Example MOOS Configuration                        
+=============================================================== 
+                                                                
+ProcessConfig = uFldPathCheck                                   
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  HISTORY_LENGTH = 10   // The default                          
+}                                             
+

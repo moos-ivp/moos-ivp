@@ -1,0 +1,15 @@
+//====================================================================
+module   = uField Toolbox
+type     = group
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+synopsis = The uField Toolbox contains a number of tools for supporting 
+   multi-vehicle missions where each vehicle is connected to a shoreside 
+   community. This includes both simulation and real field experiments. 
+   It also contains a number of simulated sensors that run on off-board 
+   the vehicle on the shoreside.
+
+group    = uField Toolbox
+doc_url  = http://oceanai.mit.edu/ivpman/apps/uFldToolBox
+distro   = moos-ivp.org

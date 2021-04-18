@@ -899,7 +899,7 @@ bool BehaviorSet::filterBehaviorsPresent()
 }
 
 //------------------------------------------------------------
-// Procedure: getMessages
+// Procedure: getMessages()
 
 vector<VarDataPair> BehaviorSet::getMessages(unsigned int ix, 
 					     bool clear)

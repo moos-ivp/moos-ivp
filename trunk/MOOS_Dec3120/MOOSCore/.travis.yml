@@ -1,0 +1,49 @@
+language: cpp
+
+os:
+  - linux
+  - osx
+
+dist:
+  - trusty
+
+compiler:
+  - clang
+  - gcc
+
+git:
+  depth: 3
+
+env:
+  global:
+    - BUILD_SHARED_LIBS=OFF
+    - BUILD_TYPE=Release
+  matrix:
+    - USE_CXX11_IF_AVAILABLE=OFF
+    - USE_CXX11_IF_AVAILABLE=ON
+
+matrix:
+  exclude:
+    # Don't compile with gcc on MacOS
+    - os: osx
+      compiler: gcc
+  include:
+    - os: linux
+      dist: xenial
+      env: DIST=xenial # Just to provide a useful label in travis web view
+    # Check that a shared libs build works
+    - os: linux
+      dist: trusty
+      env: BUILD_SHARED_LIBS=ON
+
+before_install:
+  - .travis/install_packages.sh
+
+before_script:
+  - mkdir build/
+
+script:
+  - cd build/
+  - cmake -DCMAKE_INSTALL_PREFIX=install_dir -DENABLE_EXPORT=ON -DUSE_ASYNC_COMMS=ON -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DBUILD_SHARED_LIBS=${BUILD_SHARED_LIBS} -DUSE_CXX11_IF_AVAILABLE=$USE_CXX11_IF_AVAILABLE ..
+  - cmake --build . --config Release -- -j3
+  - cmake --build . --config Release --target install

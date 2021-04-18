@@ -1,0 +1,166 @@
+//--------    FILE: alpha.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   SPDLIMIT = true
+//initialize   DRIFT_X = 0.5
+//initialize   DRIFT_Y = 0.7
+initialize   AVOIDING = idle
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+
+  updates    = WPT_UPDATE
+  perpetual  = true
+
+	cycleflag = WPT_UPDATE = order=toggle
+	
+      lead_condition = AVOIDING != active
+
+	runflag = RF_NEXT=$[NX],$[NY]
+	runflag = RF_PREV=$[PX],$[PY]
+	runflag = CURR_TIME=$[UTC]
+	
+	wptflag = NEXT_POINT=$[NX],$[NY]
+	wptflag = PREV_POINT=$[PX],$[PY]
+
+	wptflag = CYCLE_STATUS=$[CYCLES]
+	wptflag = INDEX=$[IX]
+
+	wptflag = WPTS_REMAIN=$[WPTS_REM]
+	wptflag = WPTS_TOTAL=$[WPTS_HIT]
+	wptflag = CYCLES_REMAINING=$[CYCREM]
+	
+      use_alt_speed = true
+           speed_alt = 1
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+               speed = 4.0   // meters per second
+        capture_line = true
+      capture_radius = 5.0
+         slip_radius = 15.0
+	efficiency_measure = all
+
+//   cycleflag = WPT_UPDATE=order=reverse
+
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+             //polygon = 60,-40 : 60,-160
+             //point = 80,-33
+
+               order = normal
+	            repeat = 12
+
+	       // --panx=-90 --pany=70  --zoom=4.4 
+
+    //visual_hints = nextpt_vertex_size=8
+    //visual_hints = nextpt_lcolor=invisible
+    //visual_hints = vertex_color=invisible, edge_color=invisible
+    //visual_hints = vertex_size=5, edge_size=1
+    //visual_hints = label_color=invisible
+
+   visual_hints = nextpt_color=yellow
+   visual_hints = nextpt_vertex_size=8
+   visual_hints = nextpt_lcolor=gray70
+   visual_hints = vertex_color=dodger_blue, edge_color=white
+   visual_hints = vertex_size=5, edge_size=1
+}
+
+//----------------------------------------------
+Behavior=BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = RETURN_UPDATE
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = MISSION = complete
+
+      lead_condition = AVOIDING != active
+
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          point = 0,-20
+ }
+
+//----------------------------------------------
+Behavior=BHV_ConstantSpeed
+{
+  name       = const_speed
+  pwt        = 200
+  //condition  = SPD=true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = SPEED_UPDATE
+  endflag    = SPD = false
+
+     speed = 2.5
+
+   duration = 10
+   peakwidth = 0.5
+   basewidth = 0.5
+   duration_reset = CONST_SPD_RESET=true
+	
+}
+
+//----------------------------------------------
+//Behavior=BHV_MaxSpeed
+{
+  name       = maxspd
+  pwt        = 500
+  condition  = DEPLOY = true
+  condition  = SPDLIMIT = true
+  perpetual  = true
+
+   max_speed = 0
+
+   basewidth = 0
+}
+
+//----------------------------------------------
+//Behavior=BHV_AvoidWalls
+{
+  name       = avd_walls2
+  pwt        = 111
+  condition  = DEPLOY = true
+  perpetual  = true
+
+  ttc_base = 8
+  ttc_rate = .5
+
+//            wall = pts={84,-45 : 84,-15}, label=north_single
+
+            wall = pts={0,-72: 47,-72 : 43,-89 : 40,-100}, label=west
+            wall = pts={120,-72 : 93,-72 : 67,-89 : 47,-121}, label=east
+
+//            wall = pts={-60,-191 : 75,-190}, label=south
+
+//            wall = pts={31,55 : 51,-55 : 84,-55 : 84,55}, label=north
+//            wall = pts={37,-180 : 53,-104 : 106,-102 : 125, -181}, label=east
+
+  idleflag     = AVOIDING = idle
+  activeflag   = AVOIDING = active
+
+         nogo_ttcpa = 5
+         safe_ttcpa = 15
+  min_util_cpa_dist = 2
+  max_util_cpa_dist = 10
+     pwt_outer_dist = 20
+     pwt_inner_dist = 10
+     completed_dist = 6000
+}
+

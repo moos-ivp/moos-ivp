@@ -34,8 +34,10 @@
 #include "AngleUtils.h"
 #include "GeomUtils.h"
 #include "BuildUtils.h"
+#include "MacroUtils.h"
 #include "RefineryObAvoid.h"
 #include "XYFormatUtilsPoly.h"
+#include "VarDataPairUtils.h"
 
 using namespace std;
 
@@ -79,16 +81,20 @@ BHV_AvoidObstacleV21::BHV_AvoidObstacleV21(IvPDomain gdomain) :
   // Initialize state vars
   m_obstacle_relevance = 0;
 
+  m_valid_cn_obs_info = false;
+
+  m_cpa_rng_sofar = -1;
+  m_fpa_rng_sofar = -1;
+  m_cpa_reported = -1;
+  m_cpa_rng_ever = -1;
+  m_closing = false;
+  
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING");
   addInfoVars(m_resolved_obstacle_var);
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
-//     Notes: We expect the "waypoint" entries will be of the form
-//            "xposition,yposition".
-//            The "radius" parameter indicates what it means to have
-//            arrived at the waypoint.
+// Procedure: setParam()
 
 bool BHV_AvoidObstacleV21::setParam(string param, string val) 
 {
@@ -113,6 +119,10 @@ bool BHV_AvoidObstacleV21::setParam(string param, string val)
     config_result = m_obship_model.setPwtOuterDist(dval);
   else if((param == "completed_dist") && non_neg_number) 
     config_result = m_obship_model.setCompletedDist(dval);
+  else if(param == "rng_flag")
+    return(handleParamRangeFlag(val));
+  else if(param == "cpa_flag")
+    return(addVarDataPairOnString(m_cpa_flags, val));
   else if(param == "visual_hints")
     return(handleParamVisualHints(val));
   else if(param == "use_refinery")
@@ -135,7 +145,38 @@ bool BHV_AvoidObstacleV21::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: onSetParamComplete
+// Procedure: handleParamRangeFlag()
+//   Example: rng_flag = <100 RNG_INFO = $[RNG]
+//            rng_flag = RNG_INFO = range=$[RNG],speed=$[SPD]
+//      Note: Whenever a range threshold is satisfied, flag is posted.
+//            So it will be posted continuously when in range
+
+bool BHV_AvoidObstacleV21::handleParamRangeFlag(string str)
+{
+  double thresh = -1;
+
+  if(str.length() == 0)
+    return(false);
+
+  if(str[0] == '<') {
+    biteString(str, '<');
+    
+    string rng_str = biteStringX(str, ' ');
+    if(!isNumber(rng_str))
+      return(false);
+    thresh = atof(rng_str.c_str());
+  }
+  
+  // Sanity checks on the value part
+  bool ok = addVarDataPairOnString(m_rng_flags, str);
+  if(ok)
+    m_rng_thresh.push_back(thresh);
+
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: onSetParamComplete()
 
 void BHV_AvoidObstacleV21::onSetParamComplete()
 {
@@ -161,13 +202,14 @@ void BHV_AvoidObstacleV21::onHelmStart()
 
 void BHV_AvoidObstacleV21::onEveryState(string str)
 {
-  // Get list of all obstacles declared to be resolved by the obstacle mgr
+  // =================================================================
+  // Part 1: Check for completion based on obstacle manager 
+  // =================================================================
+  // Get list of all obstacles declared to be resolved by obstacle mgr
   bool ok = true;
   vector<string> obstacles_resolved;
   obstacles_resolved = getBufferStringVector(m_resolved_obstacle_var, ok);
-  if(!ok)
-    return;
-
+  
   // Check ids of all resolved obstacles against our own id. If match then
   // declare the resolution to be pending.
   for(unsigned int i=0; i<obstacles_resolved.size(); i++) {
@@ -177,6 +219,93 @@ void BHV_AvoidObstacleV21::onEveryState(string str)
     if(m_obstacle_id == obstacle_id)
       m_resolved_pending = true;
   }
+
+  // =================================================================
+  // Part 2: Update the platform info and obship model
+  // =================================================================
+  //double prev_os_range_to_poly = m_obship_model.getRange();
+  m_valid_cn_obs_info = true;
+  if(!updatePlatformInfo())
+    m_valid_cn_obs_info = false;
+  if(!m_obship_model.isValid())
+    m_valid_cn_obs_info = false;
+  if(!m_valid_cn_obs_info)
+    postWMessage("Invalid update of ownship/obship model");
+  
+  if(m_obship_model.getFailedExpandPolyStr(false) != "") {
+    string msg = m_obship_model.getFailedExpandPolyStr();
+    postWMessage(msg);
+  }
+  if(!m_valid_cn_obs_info)
+    return;
+
+  double os_range_to_poly = m_obship_model.getRange();
+  if((m_cpa_rng_ever < 0) || (os_range_to_poly < m_cpa_rng_ever))
+    m_cpa_rng_ever = os_range_to_poly;
+  m_cpa_reported = m_cpa_rng_ever;
+
+  
+  
+  // =================================================================
+  // Part 3: Handle Range Flags if any
+  // =================================================================
+  if(m_rng_thresh.size() != m_rng_flags.size())
+    postWMessage("Range flag mismatch");
+  else {
+    vector<VarDataPair> rng_flags;
+    for(unsigned int i=0; i<m_rng_thresh.size(); i++) {
+      double thresh = m_rng_thresh[i];
+      if((thresh <= 0) || (os_range_to_poly < thresh))
+	rng_flags.push_back(m_rng_flags[i]);
+    }
+    postFlags(rng_flags);
+  }
+
+  // =================================================================
+  // Part 4: Handle CPA Flags if any, if a CPA event is observed
+  // =================================================================
+  // Part 4A: Check for CPA Event
+  bool cpa_event = false;
+  if((m_cpa_rng_sofar < 0) || (m_fpa_rng_sofar < 0)) {
+    m_cpa_rng_sofar = os_range_to_poly;
+    m_fpa_rng_sofar = os_range_to_poly;
+  }
+  
+  if(m_closing) {
+    if(os_range_to_poly < m_cpa_rng_sofar)
+      m_cpa_rng_sofar = os_range_to_poly;
+    if(os_range_to_poly > (m_cpa_rng_sofar + 1)) {
+      m_closing = false;
+      cpa_event = true;
+      m_fpa_rng_sofar = os_range_to_poly;
+    }
+  }
+  else {
+    if(os_range_to_poly > m_fpa_rng_sofar)
+      m_fpa_rng_sofar = os_range_to_poly;
+    if(os_range_to_poly < (m_fpa_rng_sofar - 1)) {
+      m_closing = true;
+      m_cpa_rng_sofar = os_range_to_poly;
+    }
+  }
+
+  // Part 4B: If CPA event observed, post CPA flags if any
+  // NOTE: When posting CPA events, the $[CPA] macro will expand to the CPA
+  //       value for this encounter. Otherwise $[CPA] is min CPA ever.
+  if((cpa_event) && (os_range_to_poly < m_obship_model.getPwtOuterDist())) {
+    m_cpa_reported = m_cpa_rng_sofar;
+    postFlags(m_cpa_flags);
+    m_cpa_reported = m_cpa_rng_ever;
+  }
+  
+  
+  postMessage("OS_DIST_TO_POLY", os_range_to_poly);
+
+  // =================================================================
+  // Part 5: Check for completion based on range
+  // =================================================================
+  if(os_range_to_poly > m_obship_model.getCompletedDist())
+    m_resolved_pending = true;
 }
 
 //-----------------------------------------------------------
@@ -227,31 +356,15 @@ void BHV_AvoidObstacleV21::onSpawn()
 
 IvPFunction *BHV_AvoidObstacleV21::onRunState() 
 {
-  string debug_info = m_descriptor + ":" + uintToString(m_helm_iter);
-
+  // Part 1: Handle if obstacle has been resolved
   if(m_resolved_pending) {
     setComplete();
     return(0);
   }
-  // Part 1: Sanity checks
-  if(m_obship_model.getFailedExpandPolyStr(false) != "") {
-    string msg = m_obship_model.getFailedExpandPolyStr();
-    postWMessage(msg);
-  }
-  if(!updatePlatformInfo())
-    return(0);  
-  if(!m_obship_model.isValid())
+  if(!m_valid_cn_obs_info)
     return(0);
 
-  // Part 2: Handle case where behavior is completed 
-  double os_dist_to_poly = m_obship_model.getRange();
-  postMessage("OS_DIST_TO_POLY", os_dist_to_poly);
-
-  if(os_dist_to_poly > m_obship_model.getCompletedDist()) {
-    setComplete();
-    return(0);
-  }
-
+  // Part 2: No IvP function if obstacle is aft
   if(m_obship_model.isObstacleAft(20))
     return(0);
   
@@ -562,4 +675,29 @@ double BHV_AvoidObstacleV21::getDoubleInfo(string str)
     return(m_obship_model.getMaxUtilCPA());
 
   return(0);
+}
+
+//-----------------------------------------------------------
+// Procedure: expandMacros()
+
+string BHV_AvoidObstacleV21::expandMacros(string sdata)
+{
+  double os_rng_to_poly = m_obship_model.getRange();
+  double os_bng_to_poly = m_obship_model.getObcentBng();
+  double os_rbng_to_poly = m_obship_model.getObcentRelBng();
+  string side = m_obship_model.getPassingSide();
+  double osv = m_obship_model.getOSV();
+  string obs_id = m_obship_model.getObstacleLabel();
+  
+  sdata = macroExpand(sdata, "CPA", m_cpa_reported);
+  sdata = macroExpand(sdata, "RNG", os_rng_to_poly);
+  sdata = macroExpand(sdata, "BNG", os_bng_to_poly);
+  sdata = macroExpand(sdata, "RBNG", os_rbng_to_poly);
+  sdata = macroExpand(sdata, "SIDE", side);
+  sdata = macroExpand(sdata, "OSV", osv);
+  sdata = macroExpand(sdata, "SPD", osv);
+  sdata = macroExpand(sdata, "OID", obs_id);
+  //sdata = macroExpand(sdata, "PWT", m_);
+
+  return(sdata);
 }

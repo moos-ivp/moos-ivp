@@ -1,0 +1,9 @@
+
+
+(1) Randomly generated obstacles in a polygon, with
+    random size, aspect ratio, minimal distance. 
+    Recalculate/posted upon MOOS message or on startup
+
+(2) Obstacle conveyer
+    periodic random obstacle spawning at random point on 
+    a starting line

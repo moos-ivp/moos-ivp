@@ -1,0 +1,10 @@
+//---------------------------------------------------------
+// pShare config block (created from plugin) (ROBOT ONLY!)
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  localhost:$(BOT_PSHARE)
+}

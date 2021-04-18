@@ -1,0 +1,22 @@
+//====================================================================
+module   = IvP Benchmark
+type     = group
+author   = Michael Benjamin
+contact  = mikerb@mit.edu, issues@moos-ivp.org
+org      = MIT
+
+synopsis = The IvP Benchmark utilities were designed to test and analyze
+  the core IvP solution algorithm on randomly generated problem instances.
+  The tools include the ability to generate random problem instances with
+  varying number of pieces, objective functions and dimensions, and tools
+  for solving these instances in batch jobs. Other tools are included for
+  analyzing and visualizing the data. The software can be downloaded by 
+  svn from the following URL: https://oceanai.mit.edu/svn/moos-ivp-bench-aro.
+  The software AND experimental data can be downloaded by svn from the 
+  following URL: https://oceanai.mit.edu/svn/moos-ivp-bench-data-aro.
+
+distro   = moos-ivp.org  
+group    = IvP Benchmark
+doc_url  = https://dspace.mit.edu/handle/1721.1/111117
+
+

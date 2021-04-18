@@ -1,0 +1,19 @@
+//--------------------------------------------------------
+// pContactMgrV20 Configuration Block (Created from Plugin)
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+  //decay = 2,5  // Don't really want extrapolation here
+
+  alert_verbose = true
+
+  contact_max_age = 3600
+  display_radii   = false
+
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+}

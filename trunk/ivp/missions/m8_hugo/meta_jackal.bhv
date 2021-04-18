@@ -1,0 +1,57 @@
+//--------    FILE: jackal.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{ 
+  name      = loiter
+  pwt       = 100
+  condition = RETURN = false
+  condition = (DEPLOY = true)
+  updates   = UP_LOITER
+
+         speed = 1.5   // meters per second
+     clockwise = best
+        radius = 5
+     nm_radius = 10
+       polygon = pts={-200,-200:30,-60:350,-60:130,-330:-100,-320}, label=loiter 
+
+  visual_hints = nextpt_color=yellow, nextpt_lcolor=aqua
+  visual_hints = vertex_color=yellow, edge_color=gray40
+  visual_hints = vertex_size=2, edge_size=1
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+         speed = 2.0
+        radius = 2.0
+     nm_radius = 8.0
+        points = $(START_POS)
+}
+
+
+//----------------------------------------------
+Behavior = BHV_ConstantDepth
+{
+  name      = bhv_const_depth_b
+  pwt       = 60
+  duration  = no-time-limit
+  condition = DEPLOY = true
+
+        depth = 5
+    peakwidth = 3
+    basewidth = 2
+  summitdelta = 20
+}
+

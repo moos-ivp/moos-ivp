@@ -1,0 +1,216 @@
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: delta.moos
+//-------------------------------------------------
+ServerHost   = localhost
+ServerPort   = 9000
+Community    = henry
+MOOSTimeWarp = 1
+
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uSimMarine      @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+}
+
+//------------------------------------------
+// uProcessWatch config block
+
+ProcessConfig = uProcessWatch                                   
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  watch_all = true                                              
+  nowatch   = uXMS*                                               
+}                                                             
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick	= 5
+  CommsTick	= 5
+
+  File		= LOG
+  PATH		= ./
+  SyncLog 	= true @ 0.2
+  AsyncLog 	= true
+  FileTimeStamp = true
+
+  LogAuxSrc = true
+  WildCardLogging = true
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+}
+
+//------------------------------------------
+// uSimMarine config block
+
+ProcessConfig = uSimMarine
+{
+  AppTick	= 10
+  CommsTick	= 10
+
+  start_x       = 0
+  start_y       = 0
+  start_speed   = 0
+  start_heading = 180
+
+  buoyancy_rate    = 0.025
+  max_depth_rate = 5
+  max_depth_rate_speed = 2.0
+
+  default_water_depth = 400
+
+  prefix        = NAV
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  behaviors  = delta.bhv
+  verbose    = quiet
+  domain     = course:0:359:360
+  domain     = speed:0:4:41
+  domain     = depth:0:199:200
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  verbose       = true
+  depth_control = true
+
+  // Yaw PID controller
+  yaw_pid_kp		 = 0.5
+  yaw_pid_kd		 = 0.0
+  yaw_pid_ki		 = 0.0
+  yaw_pid_integral_limit = 0.07
+
+  // Speed PID controller
+  speed_pid_kp		 = 1.0
+  speed_pid_kd		 = 0.0
+  speed_pid_ki		 = 0.0
+  speed_pid_integral_limit = 0.07
+
+  //Pitch PID controller
+  pitch_pid_kp                   = 1.5
+  pitch_pid_kd                   = 1.0
+  pitch_pid_ki                   = 0
+  pitch_pid_integral_limit       = 0
+
+  //ZPID controller
+  z_to_pitch_pid_kp              = 0.12
+  z_to_pitch_pid_kd              = 0
+  z_to_pitch_pid_ki              = 0.004
+  z_to_pitch_pid_integral_limit  = 0.05
+
+  //MAXIMUMS
+  maxrudder    = 100
+  maxthrust    = 100
+  maxpitch     = 15
+  maxelevator  = 13
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  speed_factor = 20
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.35
+  hash_delta           = 50
+  hash_shade           = 0.4
+  hash_viewable        = true
+
+  left_context[survey-point] = SURVEY_UPDATES = points = vname=$(VNAME), x=$(XPOS), y=$(YPOS), format=bowtie, label=delta, wid1=10, wid2=25, wid3=30, height=20
+
+//  left_context[survey-point] = SURVEY_UPDATES = points = vname=$(VNAME), x=$(XPOS), y=$(YPOS), format=lawnmower, label=delta, width=70, height=30, lane_width=8, rows=north-south, degs=80
+
+  left_context[survey-point] = SURVEY = true
+
+  scope = SURVEY_UPDATES
+  scope = MVIEWER_LCLICK
+  scope = GPS_UPDATE_RECEIVED
+  scope = TIME_AT_SURFACE
+
+  action = DEPTH_VALUE="depth=50"
+  action = DEPTH_VALUE="depth=25"
+  action = DEPTH_VALUE="depth=7"
+  action = UP_LOITER="speed=0"
+  action = UP_LOITER="speed=1.2"
+  action = PSURFACE=true
+  action = PSURFACE=false
+
+  button_one   = DEPLOY # DEPLOY=true # MOOS_MANUAL_OVERRIDE=false
+  button_two   = MOOS_MANUAL_OVERRIDE=false # RETURN=false
+  button_two   = RETURN # RETURN=true
+  button_three = SURVEY-true # SURVEY=true
+  button_four  = SURVEY-false # SURVEY=false
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick	= 2
+  CommsTick	= 2
+  vessel_type   = UUV
+}
+
+//------------------------------------------
+// uTimerScript configuration  block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  paused      = false
+  reset_max   = any
+  reset_time  = end
+  condition   = TIME_AT_SURFACE > 3   
+  upon_awake  = restart
+  delay_start = 20:120
+  script_name = GPS_SCRIPT
+ 
+  event       = var=GPS_UPDATE_RECEIVED, val="RCVD_$(COUNT)", time=0.5:1.0
+}

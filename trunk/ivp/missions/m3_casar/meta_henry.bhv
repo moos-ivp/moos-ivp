@@ -1,0 +1,138 @@
+initialize PATROL = true
+initialize TRAILING_ALLOWED = false
+initialize TRAIL = false
+
+//-----------------------------------------------
+// Helm Behavior File
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = STATION-KEEPING {
+  MODE = ACTIVE
+  STATION_KEEP = true
+}                       
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} 
+
+set MODE = PATROLLING {
+  MODE   = ACTIVE
+  PATROL = true
+  TRAIL != true
+} 
+
+set MODE = TRAILING {
+  MODE   = ACTIVE
+  PATROL = true
+  TRAILING_ALLOWED = true
+  TRAIL  = true
+} 
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter
+  pwt       = 100
+  condition = MODE == PATROLLING
+  updates   = UP_LOITER
+
+         speed = 1.3
+     clockwise = false
+        radius = 8.0
+     nm_radius = 15.0
+       polygon = radial:: x=110, y=-50, radius=20, pts=8, snap=1, label=HENRY_LOITER
+  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
+  visual_hints = edge_color=blue, vertex_color=blue
+  visual_hints = edge_size=1, vertex_size=2
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_return
+  pwt       = 100
+  updates   = RETURN_UPDATES
+  condition = MODE == RETURNING
+  endflag   = STATION_KEEP = true
+
+      speed = 1.3
+     radius = 3.0
+  nm_radius = 15.0
+     points = $(START_POS)
+     repeat = 10
+       lead = 8
+}
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name      = station-keep
+  pwt       = 100
+  condition = MODE == STATION-KEEPING
+
+     center_activate = true
+        inner_radius = 5
+        outer_radius = 10 
+         outer_speed = 1.0
+
+       transit_speed = 1.3
+          swing_time = 7
+  hibernation_radius = 25
+        visual_hints = vertex_size=0, edge_color=blue
+}
+
+
+//----------------------------------------------
+Behavior = BHV_AvoidCollision
+{
+  name       = avd_collision
+  pwt        = 400
+  condition  = MODE == ACTIVE
+  condition  = MODE != STATION-KEEPING
+  updates    = CONTACT_INFO
+  endflag    = CONTACT_RESOLVED = $[CONTACT],avd 
+  templating = spawn
+
+              contact = to-be-set
+       pwt_outer_dist = 50
+       pwt_inner_dist = 20
+       completed_dist = 145
+    min_util_cpa_dist = 8
+    max_util_cpa_dist = 25
+         active_grade = linear
+     on_no_contact_ok = true
+          extrapolate = true
+                decay = 30,60
+  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}
+
+//----------------------------------------------
+Behavior = BHV_Trail
+{
+  name       = trail_contact
+  pwt        = 100
+  condition  = (MODE == TRAILING) or (MODE == PATROLLING)
+  condition  = TRAILING_ALLOWED = true
+  runflag    = TRAIL = true
+  idleflag   = TRAIL = false
+  updates    = TRAIL_INFO
+  templating = spawn
+
+              contact = to-be-set
+       pwt_outer_dist = 130
+            nm_radius = 18
+               radius = 8
+          trail_angle = 155
+          trail_range = 35
+
+     trail_angle_type = relative
+     on_no_contact_ok = true
+          extrapolate = true
+                decay = 30,60
+  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}

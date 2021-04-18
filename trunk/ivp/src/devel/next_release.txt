@@ -1,0 +1,23 @@
+
+Revised COLREGS behavior
+  -> change in R14 separation distance
+  -> use of refineries
+  -> parameterizable in-extremis for stand-on
+
+Obstacle avoidance
+  -> new algorithm for evaluating maneuvers
+  -> use of refineries
+  -> variable speed
+
+Obstacle Manager
+
+New Trail behavior based on bread-crumbs
+
+Updated uSimMarine to allow for faster simulation
+
+New memory monitor MOOS app
+
+Documentation for nsplug and guidance in general for launching
+
+Behaviors publish their own parameters
+

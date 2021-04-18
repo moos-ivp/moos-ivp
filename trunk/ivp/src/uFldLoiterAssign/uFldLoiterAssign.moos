@@ -1,0 +1,9 @@
+//------------------------------------------------
+// uFldLoiterAssign config block
+
+ProcessConfig = uFldLoiterAssign
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

@@ -1,0 +1,199 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = shoreside
+
+TERM_REPORTING = true
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = false
+  Run = uFldCollisionDetect  @ NewConsole = false
+}
+
+#include plug_pHostInfo.moos
+
+//--------------------------------------------------
+// uFldCollisionDetect
+
+ProcessConfig = uFldCollisionDetect
+{
+  AppTick       = 4
+  CommsTick     = 4
+
+  encounter_range = 30
+  collision_range = 8
+  near_miss_range = 12
+
+  post_closest_range = true
+
+  // condition = COLLISION_DETECT=true
+  condition = DEPLOY_ALL=true
+
+  // collision_flag = COLLISION_$UP_V1_$UP_V2 = $CPA
+  //collision_flag = COLLISION = $CPA
+  //near_miss_flag = NEAR_MISS = $CPA
+  //encounter_flag = ENCOUNTER = $CPA
+
+  //near_miss_flag = NEAR_MISS_$UP_V1 = $CPA
+  //near_miss_flag = NEAR_MISS_$UP_V2 = $CPA
+  //collision_flag = COLLISION_$UP_V1 = $CPA
+  //collision_flag = COLLISION_$UP_V2 = $CPA
+
+  //encounter_flag = EVAL_LOITER_REQ_$UP_V1 = id=$IDX, cpa=$CPA, v2=$V2
+  //encounter_flag = EVAL_LOITER_REQ_$UP_V2 = id=$IDX, cpa=$CPA, v2=$V1
+
+  //pulse_render   = true
+  //pulse_range    = 20
+  //pulse_duration = 30
+}
+
+
+//---------------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route = localhost:9300
+}
+
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  comms_range      = 99999
+  critical_range   = 225
+  min_msg_interval = 0
+  max_msg_length   = 1000
+  view_node_rpt_pulses = true
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  qbridge = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  qbridge = STATION_KEEP, APPCAST_REQ
+  qbridge = MOOS_MANUAL_OVERIDE, TRANSIT, WPT_UPDATE
+  qbridge = MISSION_TASK, CONVOY, LOITER 
+  
+  bridge  = src=AVOID, alias=AVOID
+ 
+  bridge  = src=RETURN_ALL, alias=RETURN
+  bridge  = src=RETURN_$V,  alias=RETURN
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = XLOG_SHORESIDE
+  PATH          = ./
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names+shortmode
+
+  polygon_viewable_all    = true
+  polygon_viewable_labels = false
+  seglist_viewable_all    = false
+  seglist_viewable_labels = false
+  point_viewable_all    = true
+  point_viewable_labels = false
+
+	nodes_font_size      = xlarge
+	procs_font_size      = xlarge
+	appcast_font_size    = large
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  action = menu_key=abe_stop # DEPLOY_ABE=false
+  action = menu_key=abe_stop # MOOS_MANUAL_OVERIDE_ABE=true
+
+  action = menu_key=abe # DEPLOY_ABE=true
+  action = menu_key=abe # MOOS_MANUAL_OVERIDE_ABE=false
+  action = menu_key=abe # RETURN_ABE=false
+  action = menu_key=abe # LOITER_ABE=true
+
+  action = menu_key=abe_spd_5 # WPT_UPDATE_ABE=speed=5
+  action = menu_key=abe_spd_4 # WPT_UPDATE_ABE=speed=4
+  action = menu_key=abe_spd_3 # WPT_UPDATE_ABE=speed=3
+  action = menu_key=abe_spd_2 # WPT_UPDATE_ABE=speed=2
+  action = menu_key=abe_spd_1 # WPT_UPDATE_ABE=speed=1
+
+  action = menu_key=ben # DEPLOY_BEN=true
+  action = menu_key=ben # MOOS_MANUAL_OVERIDE_BEN=false
+  action = menu_key=ben # RETURN_BEN=false
+  action = menu_key=ben # LOITER_BEN=true
+
+  action = menu_key=convoy_ben # CONVOY_BEN=true
+  action = menu_key=convoy_ben # MOOS_MANUAL_OVERIDE_BEN=false
+  action = menu_key=convoy_ben # RETURN_BEN=false
+  action = menu_key=convoy_ben # LOITER_BEN=false
+
+  comms_pulse_viewable_all = true
+  //node_pulse_viewable_all = false
+  vehicles_name_mode = names
+
+  stale_report_thresh = 2
+  stale_remove_thresh = 20000
+
+  scope = DEPLOY_ALL
+
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = DEPLOY  # MOOS_MANUAL_OVERIDE_ALL=false 
+  button_one   = RETURN_ALL=false # TRANSIT_ALL=true
+  button_one   = STATION_KEEP_ALL=false # CONVOY_ALL=false
+
+  button_two   = CONVOY:Y  # CONVOY_BEN=true
+  button_four  = CONVOY:N  # CONVOY_BEN=false
+  button_three = RETURN  # RETURN_ALL=true # TRANSIT_ALL=false
+  }
+

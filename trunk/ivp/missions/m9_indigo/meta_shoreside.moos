@@ -1,0 +1,152 @@
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB                 @ NewConsole = false
+  Run = pMarineViewer          @ NewConsole = false
+  Run = pLogger                @ NewConsole = false
+  Run = uProcessWatch          @ NewConsole = false
+  Run = uFldBeaconRangeSensor  @ NewConsole = false
+
+  Run = pShare             @ NewConsole = false
+  Run = pHostInfo          @ NewConsole = false
+  Run = uFldShoreBroker    @ NewConsole = false
+  Run = uFldNodeComms      @ NewConsole = false
+}
+
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+
+//------------------------------------------
+// uFldBeaconRangeSensor config block
+
+ProcessConfig = uFldBeaconRangeSensor
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  // System-wide Simulator configuration
+  ping_payments = upon_accept
+  report_vars   = long
+
+  // Configurations for all vehicles/nodes
+  //reach_distance = default = nolimit
+  node_push_dist = default = 100
+  node_pull_dist = default = 100
+  ping_wait      = default = 20
+
+  // Configurations for all beacons
+  //default_beacon_report_range  = nolimit
+  default_beacon_push_dist  = 85
+  default_beacon_pull_dist  = 75
+  default_beacon_shape  = circle
+  default_beacon_color  = blue
+  default_beacon_width  = 5
+  default_beacon_freq   = never
+  //default_beacon_freq   = 30:50
+
+
+  // Configurations for individual beacons
+  // Example:
+  // beacon = x=1,y=2,label=foo,freq=17,shape=square,width=3,color=orange
+
+  beacon    = x=200,  y=0,    label=01
+  beacon    = x=-100, y=-100, label=02
+  beacon    = x=0,   y=-200, label=03, freq=15
+  beacon    = x=-65, y=-345, label=04
+  beacon    = x=115, y=-150, label=05, push_dist=33, pull_dist=95
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
+
+  qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE
+
+  bridge   = src=APPCAST_REQ
+  bridge   = src=CRS_RANGE_REPORT_$V, alias=CRS_RANGE_REPORT
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 2
+  CommsTick = 2
+
+           COMMS_RANGE = 150
+        CRITICAL_RANGE = 25
+      MIN_MSG_INTERVAL = 20
+        MAX_MSG_LENGTH = 1000
+                GROUPS = true
+  VIEW_NODE_RPT_PULSES = true
+}
+
+//---------------------------------------------------- uProcessWatch
+ProcessConfig = uProcessWatch                                   
+{                                                               
+  WATCH_ALL = true                                              
+  NOWATCH = uXMS* 
+}                                                   
+
+//---------------------------------------------------------- pLogger
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  WildCardOmitPattern = *_STATUS
+}
+
+
+//------------------------------------------------- pMarineViewer
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = AerialMIT.tif
+  set_pan_x            = -32
+  set_pan_y            = 150
+  zoom                 = 1.3
+  vehicles_shape_scale = 3.5
+  vehicles_name_viewable = names
+
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  SCOPE = CONTACT_INFO
+
+  ACTION = STATION_ALL = false
+  ACTION = STATION_ALL = true
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+}
+

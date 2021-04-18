@@ -1,0 +1,57 @@
+//====================================================================
+module   = alogcd
+type     = Command line utility
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Scan an alog file for collision detection reports.
+depends  = lib_mbutil, lib_logutils
+borndate = 151223
+doc_url  = Pending
+license  = GPL
+group    = ALog Toolbox
+distro   = moos-ivp.org
+synopsis = 
+
+
+Missing          Manifests       Documentation
+=========        =========       =============
+alogcd           OK              Missing
+alogcheck        OK              Missing
+alogeplot        OK              Missing
+alogsort         OK              Missing
+
+ffview           Missing         Missing
+gen_hazards      Missing         Missing
+gen_obstacles    Missing         Missing
+nsplug           Missing         Missing
+zaic_hdg         OK              Missing
+zaic_hleq        OK              Missing
+zaic_peak        OK              Missing
+zaic_spd         OK              Missing
+zaic_vect        OK              Missing
+
+pEvalLoiter      OK              Missing
+pFrontEstimate   OK              Missing
+pFrontGridRender OK              Missing
+pGradtFrontEst   OK              Missing
+pMarinePID       OK              Missing
+pSafetyRetreat   Missing         Missing
+uCommand         Missing         Missing
+uFldCTDSensor    OK              Missing
+uFldLoiterAssign Missing         Missing
+
+uFldObstacleSim  Missing         Missing
+uFldPathCheck    Missing         Missing
+
+uFldWrapDetect   Missing         Missing
+uPlotViewer      OK              Missing
+
+uSimCurrent      Missing         Missing
+
+Resolved:
+------------------------------------------------
+uFldNodeComms    Missing         OK
+uFldScope        Missing         OK
+alogpare         OK              Missing
+

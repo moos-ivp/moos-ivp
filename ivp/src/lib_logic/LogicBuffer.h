@@ -34,12 +34,14 @@
 
 class LogicBuffer {
 public:
-  LogicBuffer();
-  ~LogicBuffer();
+  LogicBuffer() {m_info_buffer=0;}
+  ~LogicBuffer() {};
 
 public:
   bool addNewCondition(std::string);
 
+  void setInfoBuffer(InfoBuffer*);
+  
   void updateInfoBuffer(std::string var, std::string val);
   void setCurrTime(double v);
   
@@ -56,10 +58,12 @@ public:
   std::string getNotableCondition() const {return(m_notable_condition);}
 
   double getCurrTime() const;
+
+  std::vector<std::string> getSpec(std::string pad="") const;
   
 protected:
   InfoBuffer *m_info_buffer;
-
+  
   std::vector<LogicCondition> m_logic_conditions;
 
   // notable_condition is a failed condition if required=all

@@ -4,14 +4,16 @@
 #--------------------------------------------------------
 
 SET(SRC
-  LCheckSet.cpp
+  LogicAspect.cpp
+  LogicTestSequence.cpp
   VCheck.cpp
   VCheckSet.cpp
   )
 
 SET(HEADERS
+  LogicAspect.h
+  LogicTestSequence.h
   VCheckSet.h
-  LCheckSet.h
   VCheck.h
 )
 

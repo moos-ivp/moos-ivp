@@ -1,0 +1,62 @@
+ServerHost = localhost
+ServerPort = $(VPORT)
+
+// Community name IS the vehicle name
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+  
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+   
+  Run = MOOSDB             @ NewConsole = false
+  Run = pShare             @ NewConsole = false
+  Run = pLogger            @ NewConsole = false
+  Run = pNodeReporter      @ NewConsole = false
+  Run = pMarinePID         @ NewConsole = false
+  Run = pHelmIvP           @ NewConsole = false
+
+  Run = pEchoVar           @ NewConsole = false
+  Run = pBasicContactMgr   @ NewConsole = false
+
+  Run = pHostInfo          @ NewConsole = false
+  Run = uFldNodeBroker     @ NewConsole = false
+  Run = uFldMessageHandler @ NewConsole = false
+  Run = iActuationKFAC     @ NewConsole = false
+
+  Run = iGPS_KF            @ NewConsole = false
+  Run = iOS5000AC          @ NewConsole = false
+  Run = uProcessWatch      @ NewConsole = false
+  Run = iHealth_KF100      @ NewConsole = false
+  Run = uFldHazardMgr      @ NewConsole = false
+}
+  
+#include plug_pShare.moos
+#include plug_pLogger.moos
+#include plug_pNodeReporter.moos
+#include plug_pMarinePID.moos
+#include plug_pHelmIvP.moos
+#include plug_pEchoVar.moos
+#include plug_pBasicContactMgr.moos
+#include plug_pHostInfo.moos
+#include plug_uFldNodeBroker.moos
+#include plug_uFldMessageHandler.moos
+
+#include plug_iGPS_KF.moos
+#include plug_iOS5000AC.moos
+#include plug_uProcessWatch_fld.moos
+#include plug_iHealthKF100.moos
+
+#include plug_uFldHazardMgr.moos
+
+#ifdef VNAME archie
+  #include plug_iActuationKFAC_archie.moos
+#elseifdef VNAME betty
+  #include plug_iActuationKFAC_betty.moos
+#elseifdef VNAME charlie
+  #include plug_iActuationKFAC_charlie.moos
+#elseifdef VNAME davis
+  #include plug_iActuationKFAC_davis.moos
+#endif

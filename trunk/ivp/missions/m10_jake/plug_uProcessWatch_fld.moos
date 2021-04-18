@@ -1,0 +1,31 @@
+//--------------------------------------------------------
+// uProcessWatch Configuration Block (Created from Plugin)
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  ALLOW_RETRACTIONS = true
+
+  WATCH_ALL = true // default is true
+
+  NOWATCH = uMAC*  
+  NOWATCH = uXMS*
+  NOWATCH = uPokeDB*
+  
+  //WATCH  = uSimMarine
+  WATCH  = pMOOSBridge*
+  //WATCH  = pLogger
+  WATCH  = pNodeReporter
+  WATCH  = pMarinePID
+  WATCH  = pHelmIvP
+  WATCH  = iOS5000AC
+  WATCH  = iHealth_KF100
+  WATCH  = iGPS_KF
+  WATCH  = iActuationKFAC*
+  
+  SUMMARY_WAIT = 12
+}
+
+

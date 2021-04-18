@@ -1,0 +1,12 @@
+//------------------------------------------
+ProcessConfig = pDeadManPost
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  heartbeat_var   = HEARTBEAT
+  max_noheart     = 15
+  post_policy     = reset
+  active_at_start = false
+  deadflag        = DEPLOY = false
+ }

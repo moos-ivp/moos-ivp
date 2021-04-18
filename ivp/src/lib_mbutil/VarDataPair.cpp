@@ -258,6 +258,21 @@ bool VarDataPair::set_ptype(string sval)
 }
 
 
+//------------------------------------------------------------------
+// Procedure: is_solo_macro()
+
+bool VarDataPair::is_solo_macro() const
+{
+  if(!strBegins(m_sdata, "$[") || !strEnds(m_sdata, "]"))
+    return(false);
+
+  if((charCount(m_sdata, '[') != 1) || (charCount(m_sdata, ']') != 1))
+    return(false);
+  
+  return(true);
+}
+
+
 
 //------------------------------------------------------------------
 // Procedure: getPrintable

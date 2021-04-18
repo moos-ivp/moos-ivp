@@ -1,0 +1,143 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = $(VPORT)
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 400
+
+  Run = MOOSDB           @ NewConsole = false
+  Run = pMarineViewer    @ NewConsole = false
+  Run = pLogger          @ NewConsole = false
+  Run = uFldHazardSensor @ NewConsole = false
+  Run = uFldHazardMetric @ NewConsole = false
+
+  Run = pShare           @ NewConsole = false
+  Run = pHostInfo        @ NewConsole = false
+  Run = uFldShoreBroker  @ NewConsole = false
+  Run = uFldNodeComms    @ NewConsole = false
+}
+
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+#include plug_pLogger.moos
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
+
+  BRIDGE   = src=UHZ_OPTIONS_SUMMARY
+
+  QBRIDGE  = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE
+  QBRIDGE  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ, UHZ_CONFIG_ACK
+  QBRIDGE  = UHZ_HAZARD_REPORT, UHZ_DETECTION_REPORT, UHZ_CONFIG_ACK
+  QBRIDGE  = UHM_REPORT_REQUEST
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick       = 2
+  CommsTick     = 2
+
+           COMMS_RANGE = 50
+        CRITICAL_RANGE = 25
+      MIN_MSG_INTERVAL = 20
+        MAX_MSG_LENGTH = 1000
+                GROUPS = true
+  VIEW_NODE_RPT_PULSES = true
+}
+
+//--------------------------------------------------
+// uFldHazardSensor Configuration Block
+
+ProcessConfig = uFldHazardMetric
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  penalty_missed_hazard = 100
+  penalty_false_alarm   = 35     
+  max_time              = 600    
+  penalty_max_time_over = 500    
+  penalty_max_time_overage = 0.5 
+
+  //hazard_file   = hazards_lab14.txt
+  hazard_file   = hazards.txt
+}
+
+//--------------------------------------------------
+// uFldHazardSensor Configuration Block
+
+ProcessConfig = uFldHazardSensor
+{
+  AppTick       = 4
+  CommsTick     = 4
+
+  sensor_config = width=25, exp=4, pclass=0.85
+  sensor_config = width=50, exp=2, pclass=0.60
+  sensor_config = width=10, exp=6, pclass=0.93
+
+  swath_length  = 5
+
+  default_hazard_shape = triangle
+  default_benign_shape = triangle
+
+  swath_transparency = 0.35
+  seed_random        = false
+
+  options_summary_interval = 5
+
+  show_swath=true
+  show_hazards=true
+  //show_reports=44
+
+  hazard_file   = hazards.txt
+  //hazard_file   = hazards_lab14.txt
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = AerialMIT.tif
+  set_pan_x            = -32
+  set_pan_y            = 200
+  zoom                 = 1.3
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names+shortmode
+  marker_viewable_labels = false
+
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  SCOPE = UHZ_HAZARD_REPORT
+
+  //ACTION = STATION_ALL = true
+
+  BUTTON_ONE   = DEPLOY_ARCH  # DEPLOY_ARCHIE=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ARCHIE=false 
+  BUTTON_ONE   = RETURN_ARCHIE=false
+  BUTTON_TWO   = RETURN_ARCH  # RETURN_ARCHIE=true
+
+  BUTTON_THREE   = REQ_REPORT  # UHM_REPORT_REQUEST_ARCHIE=true
+}
+

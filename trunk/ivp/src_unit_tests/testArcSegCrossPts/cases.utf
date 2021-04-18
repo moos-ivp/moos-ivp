@@ -1,0 +1,7 @@
+cmd=testArcSegCrossPts
+x1=-15 y1=5 x2=100 y2=6 cx=0 cy=0 cr=12 lang=88 rang=89 # xpts=0
+x1=-150 y1=10 x2=150 y2=10 cx=0 cy=0 cr=12 lang=280 rang=80 # xpts=2 rx1=-6.63 ry1=10 rx2=6.63 ry2=10
+
+
+x1=0 y1=0 x2=0 y2=12 cx=0 cy=0 cr=10 lang=-30 rang=40 # xpts=1 rx1=0 ry1=10
+

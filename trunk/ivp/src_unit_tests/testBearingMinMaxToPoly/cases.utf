@@ -1,0 +1,8 @@
+cmd=testBearingMinMaxToPoly
+
+poly=250,-50:275,-50:275,-25:250,-25  px=15 py=5   # bmin=96.58,bmax=97.28
+poly=250,-50:275,-50:275,-25:250,-25  px=15 py=-40 # bmin=86.35,bmax=92.44
+
+
+
+

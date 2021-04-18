@@ -1,0 +1,12 @@
+//====================================================================
+module   = General Utility
+type     = group
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+synopsis = This group of modules represents utilities that may not 
+  otherwise fall into the other specialized toolboxes.
+
+group    = General Utility
+doc_url  = http://oceanai.mit.edu/ivpman/tools
+distro   = moos-ivp.org

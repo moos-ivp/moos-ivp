@@ -1,0 +1,72 @@
+//------------------------------------------------
+// File: bravo.bhv
+// Name: M. Benjamin
+// Date: Jan 1, 2010
+//------------------------------------------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = SURVEYING {
+  MODE = ACTIVE
+  RETURN != true
+} RETURNING
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = MODE == SURVEYING
+  endflag   = RETURN = true
+  perpetual = true
+
+          lead = 8
+   lead_damper = 1
+         speed = 2.0   // meters per second
+        radius = 4.0
+     nm_radius = 10.0
+        points = 60,-40:60,-160:150,-160:180,-100:150,-40
+        repeat = 0
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE == RETURNING
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+       speed = 2.0
+      radius = 2.0
+   nm_radius = 8.0
+       point = 0,0
+}
+
+//* Constant Heading
+Behavior=BHV_ConstantHeading
+{
+  name       = const_hdg
+  pwt        = 100
+  perpetual  = true  
+
+	condition  = MODE==TURNING
+  updates    = TURN_HEADING
+  endflag    = CONDITIONS_SET = false
+  endflag    = TURN_FINISH = true
+	endflag    = TURN  = finish
+  endflag    = TURNING = false
+	
+          heading = 190
+         duration = no-time-limit
+  complete_thresh = 4
+  heading_mismatch_var = DBG_CH
+}
+

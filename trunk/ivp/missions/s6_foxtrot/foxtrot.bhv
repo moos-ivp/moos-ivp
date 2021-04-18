@@ -1,0 +1,59 @@
+//--------    FILE: alpha.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   SAFETY = true
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = SURVEYING {
+  MODE = ACTIVE
+  RETURN != true
+} RETURNING
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = MODE==SURVEYING
+  perpetual = true
+
+  wpt_status_var = SURVEY_STAT
+   wpt_index_var = SURVEY_INDEX
+           speed = 2.0   // meters per second
+          radius = 8.0
+          points = 60,-40:60,-160:150,-160:180,-100:150,-40
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = MODE==RETURNING
+  updates    = UPDATES_RETURN
+  perpetual  = true
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+
+  speed      = 2.0
+  radius     = 2.0
+  nm_radius  = 2.0
+  points     = 0,0
+}
+
+//----------------------------------------------
+Behavior = BHV_HSLine
+{
+  name       = hsline
+  condition  = MODE == ACTIVE
+  condition  = HSLINE = true
+
+  time_on_leg = 20
+}
+
+
+

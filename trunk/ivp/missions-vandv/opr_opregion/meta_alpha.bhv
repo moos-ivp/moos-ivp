@@ -1,0 +1,110 @@
+//--------    FILE: alpha.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+initialize   SAFETY = true
+	
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{ 
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+
+  updates    = WPT_UPDATE
+  perpetual  = true
+
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+               speed = 4   // meters per second
+        capture_line = true
+      capture_radius = 5.0
+         slip_radius = 15.0
+	efficiency_measure = all
+
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+
+               order = normal
+             repeat  = 100000
+
+    visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+    visual_hints = nextpt_lcolor=gray70
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
+}
+
+//----------------------------------------------
+Behavior=BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = RETURN_UPDATE
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = MISSION = complete
+	
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = 0,-20
+}
+
+
+//----------------------------------------------
+Behavior=BHV_Timer
+{
+  name  = atimer
+
+	duration = 60
+
+	duration_idle_decay = false
+	duration_status = TIMER_STATUS
+	
+	runflag = TIMER_ENDED = false	
+	endflag = TIMER_ENDED = true
+	
+}
+	
+//----------------------------------------------
+Behavior=BHV_OpRegion
+{
+  name       = opregion
+  pwt        = 100
+
+  condition  = SAFETY=true               // example
+  updates    = OPREGION_UPDATES          // example
+	
+  // Parameters specific to this behavior
+  // ------------------------------------
+               max_depth = 0              // default (meters)
+            min_altitude = 0              // default (meters)
+               reset_var = OPREGION_RESET // example
+      trigger_entry_time = 1              // default (seconds)
+       trigger_exit_time = 0.5            // default (seconds) 
+
+  breached_altitude_flag = SAY_MOOS = min altitude has been excceded
+     breached_depth_flag = SAY_MOOS = max depth has been excceded
+      breached_poly_flag = SAY_MOOS = op region has been violated
+      breached_time_flag = SAY_MOOS = max mission time has been exceeded
+
+#include variation_$(TNUM).txt <opr_bhv>
+
+//opr03    breached_time_flag = BREACHED_MAX_TIME = true
+//                     max_time = 0              
+//opr01/2  polygon = pts={-80,-50:-30,-175:150,-100:95,25}, label=area_x
+//  breached_poly_flag = BREACHED_POLY = true
+		 
+
+            visual_hints = vertex_color = brown  // default
+            visual_hints = vertex_size  = 3      // default
+            visual_hints = edge_color   = aqua   // default
+            visual_hints = edge_size    = 1      // default
+}
+

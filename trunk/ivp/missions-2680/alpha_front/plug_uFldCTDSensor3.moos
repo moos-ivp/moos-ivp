@@ -1,0 +1,38 @@
+//--------------------------------------------------
+// uFldCTDSensor (3) configuration block from plugin
+
+ProcessConfig = uFldCTDSensor
+{
+  AppTick   = 3
+  CommsTick = 3
+
+   // Configuring Artificial Noise                               
+  xmin  = 0       
+  xmax  = 500       
+  ymin  = -400       
+  ymax  =  0  
+     
+  offset = -100
+  angle  = -14
+  amplitude = 8
+  period = 119
+  wavelength = 232
+  alpha = 350
+  beta = 45
+  temperature_north = 22
+  temperature_south = 28
+  sigma = 0.01
+
+  // 2018 -----------------------------
+  //offset = -100
+  //angle  = -4
+  //amplitude = 5
+  //period = 100
+  //wavelength = 212
+  //alpha = 350
+  //beta = 43
+  //temperature_north = 22
+  //temperature_south = 28
+  /sigma = 0.01
+}
+

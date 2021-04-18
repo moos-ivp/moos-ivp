@@ -1,0 +1,15 @@
+//-------------------------------------------------------
+// pObstacleMgr Configuration Block (created from plugin)
+
+ProcessConfig = pObstacleMgr
+{
+  AppTick   = 4 
+  CommsTick = 4 
+
+  point_var = TRACKED_FEATURE 
+
+	//obstacles_color = $(VCOLOR)
+	obstacles_color = invisible
+
+	given_max_duration = 1000
+} 

@@ -1,0 +1,119 @@
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: $(VNAME).moos
+//-------------------------------------------------
+
+ServerHost = localhost
+ServerPort = $(BOT_MOOSDB)
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 50
+   
+  Run = MOOSDB           @ NewConsole = false
+  Run = pRealm           @ NewConsole = false
+  Run = uProcessWatch    @ NewConsole = false
+  Run = pShare           @ NewConsole = false
+  Run = uSimMarine       @ NewConsole = false
+  Run = pLogger          @ NewConsole = false
+  Run = pNodeReporter    @ NewConsole = false
+  Run = pMarinePID       @ NewConsole = false
+  Run = pHelmIvP         @ NewConsole = false
+  Run = pHostInfo        @ NewConsole = false
+  Run = uFldNodeBroker   @ NewConsole = false
+  Run = uLoadWatch       @ NewConsole = false
+  Run = pObstacleMgr     @ NewConsole = false
+  Run = pContactMgrV20   @ NewConsole = false
+#ifdef VNAME henry
+//  Run = uTimerScript     @ NewConsole = false
+#endif
+
+//--------------------------------------------------------
+// uTimerScript Configuration Block   
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 8
+  CommsTick = 8
+
+  paused     = false
+  reset_max  = unlimited
+  reset_time = end
+
+  randvar = varname=X1, min=0,    max=150,  key=at_reset
+  randvar = varname=Y1, min=-225,  max=-175,   key=at_reset
+
+  event = var=TRACKED_FEATURE, val="x=$[X1], y=$[Y1], label=TEST_$[TCOUNT]", time=0.05
+}
+
+	
+//----------------------------------------------------
+// pHelmIvP Configuration Block  
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  Behaviors    = targ_$(VNAME).bhv  
+  Verbose      = false
+  Domain       = course:0:359:360
+  Domain       = speed:0:5:26
+
+	hold_on_apps = pContactMgrV20
+}
+	
+//--------------------------------------------------------
+// pNodeReporter Configuration Block 
+
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 2
+  CommsTick   = 2
+
+  vessel_type = kayak
+  terse_reports = true
+}
+
+//--------------------------------------------------------
+// pContactMgrV20 Configuration Block
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  alert_verbose = true
+
+  contact_max_age = 35
+  display_radii   = true
+	display_radii_id = avd
+
+	//match_region = pts = {60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40}
+	//match_type = kayak, uuv
+	
+  //alert = id=say, onflag=SAY_MOOS=hello,
+  //alert = id=say, offflag=SAY_MOOS=bye,
+  //alert = id=say, alert_range=80, cpa_range=100
+
+  display_radii = true
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+}
+
+#include plug_uFldNodeBroker.moos
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+#include plug_uSimMarine.moos
+#include plug_pMarinePID.moos
+#include plug_pLogger.moos
+#include plug_uProcessWatch.moos
+#include plug_uLoadWatch.moos
+#include plug_pObstacleMgr.moos
+

@@ -1,0 +1,236 @@
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: echo.moos
+//-------------------------------------------------
+
+ServerHost   = localhost
+ServerPort   = 9000
+Community    = echo
+MOOSTimeWarp = 1
+
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+//------------------------------------------
+// Antler configuration  block
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = uSimMarine      @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = pNodeReporter   @ NewConsole = false
+  Run = pMarinePID      @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = pHelmIvP        @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
+  Run = uXMS            @ NewConsole = false
+  Run = uMemWatch       @ NewConsole = false
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  var = IVPHELM_ITER
+  var = IVPHELM_DOMAIN
+  var = IVPHELM_BHV_CNT
+  var = IVPHELM_BHV_CNT_EVER
+  var = IVPHELM_ALLSTOP
+  var = IVPHELM_STATE
+}
+
+//------------------------------------------
+// uMemWatch config block
+
+ProcessConfig = uMemWatch                                       
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  absolute_time_gap = 1   // In Seconds, Default is 1.          
+                                                                
+  watch_only = pHelmIvP,pMarineViewer
+}                                  
+
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  SyncLog = false
+  AsyncLog = true
+  WildCardLogging = true
+
+  LogAuxSrc = true
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+}
+
+//------------------------------------------
+// uSimMarine config block
+
+ProcessConfig = uSimMarine
+{
+  AppTick	= 10
+  CommsTick	= 10
+
+  start_x       = 0
+  start_y       = -10
+  start_speed   = 0
+  start_heading = 180
+
+  prefix        = NAV
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  behaviors  = echo.bhv
+  verbose    = quiet
+  domain     = course:0:359:360
+  domain     = speed:0:4:21
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  verbose       = true
+  depth_control = false
+
+  // Yaw PID controller
+  yaw_pid_kp		 = 0.5
+  yaw_pid_kd		 = 0.0
+  yaw_pid_ki		 = 0.0
+  yaw_pid_integral_limit = 0.07
+
+  // Speed PID controller
+  speed_pid_kp		 = 1.0
+  speed_pid_kd		 = 0.0
+  speed_pid_ki		 = 0.0
+  speed_pid_integral_limit = 0.07
+
+  //MAXIMUMS
+  maxrudder    = 100
+  maxthrust    = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  speed_factor = 20
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -240
+  zoom                 = 0.65
+  vehicle_shape_scale  = 1.8
+  hash_delta           = 50
+  hash_shade           = 0.4
+  hash_viewable        = true
+
+  // Appcast configuration
+  appcast_height       = 75
+  appcast_width        = 30
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  nodes_font_size      = medium
+  procs_font_size      = medium
+  appcast_font_size    = medium
+
+  scope  = PHELMIVP_MEM
+  scope  = HVARS
+  scope  = BCOUNT
+  scope  = BEARING_POINT
+  scope  = VIEW_SEGLIST
+  scope  = VIEW_POINT
+  scope  = VIEW_POLYGON
+  scope  = NAV_X
+  scope  = NAV_Y
+  scope  = MVIEWER_LCLICK
+  scope  = MVIEWER_RCLICK
+
+  left_context[bng_point] = BEARING_POINT = name=bng-line$(X)-$(Y) # bearing_point=$(X),$(Y)
+
+  button_one = DEPLOY # DEPLOY=true
+  button_one = MOOS_MANUAL_OVERRIDE=false # RETURN=false
+  button_two = RETURN # RETURN=true
+  button_three = AUTO_SPAWN # AUTO_SPAWN=true
+
+  action  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  action+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
+  action+ = RETURN=true
+  action  = BEARING_POINT = show_pt=true
+  action+ = BEARING_POINT = show_pt=false
+  action  = BEARING_POINT = line_pct=0
+  action  = BEARING_POINT = line_pct=25
+  action  = BEARING_POINT = line_pct=50
+  action  = BEARING_POINT = line_pct=75
+  action+ = BEARING_POINT = line_pct=100
+  action  = BEARING_POINT = "name=bng-line # line_pct=0"
+  action  = BEARING_POINT = "name=bng-line # line_pct=50"
+  action+ = BEARING_POINT = "name=bng-line # line_pct=100"
+  action  = AUTO_SPAWN = true
+  action+ = AUTO_SPAWN = false
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick	= 2
+  CommsTick	= 2
+
+  vessel_type   = KAYAK
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  paused     = false
+  reset_max  = nolimit
+  reset_time = end
+  condition  = AUTO_SPAWN=true
+
+  randvar = varname=FOO, min=1, max=800, key=at_reset
+  randvar = varname=DUR, min=25, max=50, key=at_reset
+  randvar = varname=X, min=0, max=150, key=at_reset
+  randvar = varname=Y, min=-150, max=0, key=at_reset
+
+  event = var=BEARING_POINT, val="name=B$[TCOUNT] # bearing_point=$[X],$[Y] # duration=$[DUR] # line_pct=100", time=0:2
+}

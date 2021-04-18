@@ -1,0 +1,21 @@
+// gen_hazards --polygon=-150,-75:-150,-400:400,-400:400,-75 --objects=14,hazard --objects=6,benign --aspect=180
+hazard = x=-60,y=-297,label=88,type=hazard,aspect=109.1
+hazard = x=41,y=-273,label=93,type=hazard,aspect=20.1
+hazard = x=24,y=-394,label=58,type=hazard,aspect=41.6
+hazard = x=8,y=-304,label=45,type=hazard,aspect=144.8
+hazard = x=159,y=-166,label=24,type=hazard,aspect=154.7
+hazard = x=-105,y=-198,label=11,type=hazard,aspect=103.8
+hazard = x=-66,y=-120,label=43,type=hazard,aspect=19.2
+hazard = x=-45,y=-310,label=29,type=hazard,aspect=35
+hazard = x=121,y=-76,label=64,type=hazard,aspect=83.5
+hazard = x=345,y=-334,label=75,type=hazard,aspect=112.8
+hazard = x=55,y=-165,label=44,type=hazard,aspect=27.4
+hazard = x=115,y=-346,label=13,type=hazard,aspect=20.7
+hazard = x=175,y=-242,label=51,type=hazard,aspect=31.3
+hazard = x=-90,y=-212,label=79,type=hazard,aspect=22.8
+hazard = x=-93,y=-371,label=56,type=benign
+hazard = x=210,y=-176,label=48,type=benign
+hazard = x=309,y=-293,label=53,type=benign
+hazard = x=211,y=-292,label=4,type=benign
+hazard = x=-44,y=-182,label=73,type=benign
+hazard = x=393,y=-307,label=37,type=benign

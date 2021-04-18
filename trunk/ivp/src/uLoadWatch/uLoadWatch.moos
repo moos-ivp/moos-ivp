@@ -1,0 +1,9 @@
+//------------------------------------------------
+// uLoadWatch config block
+
+ProcessConfig = uLoadWatch
+{
+   AppTick   = 4
+   CommsTick = 4
+}
+

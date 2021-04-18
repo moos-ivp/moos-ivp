@@ -1,0 +1,26 @@
+//====================================================================
+module   = Oxford MOOS
+type     = group
+author   = Paul Newman
+contact  = pnewman@robots.ox.ac.uk
+org      = Oxford
+
+synopsis = MOOS is often described as autonomy middleware which
+  implies that it is a kind of glue that connects a collection of
+  applications where the real work happens. MOOS does indeed connect a
+  collection of applications, of which the IvP Helm is one. MOOS is
+  cross platform stand-alone and dependency free. It needs no other
+  third-party libraries. Each application inherits a generic MOOS
+  interface whose implementation provides a powerful, easy-to-use
+  means of communicating with other applications and controlling the
+  relative frequency at which the application executes its primary set
+  of functions. Due to its combination of ease-of-use, general
+  extendibility and reliability, it has been used in the classroom by
+  students with no prior experience, as well as on many extended field
+  exercises with substantial robotic resources at stake.
+  
+group    = Oxford MOOS
+distro   = http://www.themoos.org
+doc_url  = http://www.themoos.org
+
+

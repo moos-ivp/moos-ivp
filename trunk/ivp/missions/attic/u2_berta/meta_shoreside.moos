@@ -1,0 +1,133 @@
+//*******************************************************
+// ShoreSide Configuration File
+//
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pMOOSBridge     @ NewConsole = true
+  Run = uTimerScript    @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = true
+  Run = pLogger         @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = true
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick       = 2
+  CommsTick     = 2
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  UDPListen = 9200
+
+  SHARE = [DEPLOY_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [DEPLOY]
+  SHARE = [DEPLOY_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [DEPLOY]
+  SHARE = [RETURN_ALL]  -> $(VNAME1) @ localhost:$(VPORT1) [RETURN]
+  SHARE = [RETURN_ALL]  -> $(VNAME2) @ localhost:$(VPORT2) [RETURN]
+  SHARE = [STATION_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [STATION_KEEP]
+  SHARE = [STATION_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [STATION_KEEP]
+
+  SHARE = [UP_LOITER_1] -> $(VNAME1) @ localhost:$(VPORT1) [UP_LOITER]
+  SHARE = [UP_LOITER_2] -> $(VNAME2) @ localhost:$(VPORT2) [UP_LOITER]
+
+  SHARE = [MOOS_MANUAL_OVERRIDE_ALL] -> $(VNAME1) @ localhost:$(VPORT1) [MOOS_MANUAL_OVERRIDE]
+  SHARE = [MOOS_MANUAL_OVERRIDE_ALL] -> $(VNAME2) @ localhost:$(VPORT2) [MOOS_MANUAL_OVERRIDE]
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_viewable = names
+
+  reference_vehicle = $(VNAME1)
+  reference_vehicle = $(VNAME2)
+
+
+  SCOPE = CONTACT_INFO
+
+  ACTION = PERMUTING = true
+  ACTION = PERMUTING = false
+
+  ACTION = STATION_ALL = false
+  ACTION = STATION_ALL = true
+
+  ACTION = UNC_STEALTH = gilda,0.8
+
+  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
+  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  BUTTON_ONE   = RETURN_ALL=false
+  BUTTON_TWO   = RETURN  # RETURN_ALL=true
+  BUTTON_THREE = PERMUTE-NOW   # UTS_FORWARD=0
+}
+
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  PAUSED     = false
+  RESET_MAX  = unlimited
+  RESET_TIME = end
+
+  RANDVAR = varname=X1, min=-25,  max=25,  key=at_reset
+  RANDVAR = varname=Y1, min=-100, max=-50, key=at_reset
+
+  RANDVAR = varname=X2, min=100,  max=150, key=at_reset
+  RANDVAR = varname=Y2, min=-75,  max=-25, key=at_reset
+
+  EVENT = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
+  EVENT = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180
+
+  EVENT = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=360
+  EVENT = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=360
+}
+
+

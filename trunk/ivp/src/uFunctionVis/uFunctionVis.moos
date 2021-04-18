@@ -1,0 +1,9 @@
+=============================================================== 
+uFunctionVis Example MOOS Configuration                         
+=============================================================== 
+                                                                
+ProcessConfig = uFunctionVis                                    
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+}                                                               

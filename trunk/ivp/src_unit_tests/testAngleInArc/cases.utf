@@ -1,0 +1,21 @@
+cmd=testAngleInArc
+lang=20   rang=40   qang=25  # inarc=true
+lang=20   rang=40   qang=15  # inarc=false
+lang=350  rang=340  qang=345 # inarc=false
+lang=350  rang=340  qang=351 # inarc=true
+lang=350  rang=340  qang=1   # inarc=true
+lang=350  rang=340  qang=0   # inarc=true
+lang=12   rang=10   qang=11  # inarc=false
+
+lang=12   rang=10   qang=111 # inarc=true
+lang=12   rang=10   qang=0   # inarc=true
+
+lang=357  rang=10   qang=-1  # inarc=true
+lang=-90  rang=94   qang=11 # inarc=true
+
+lang=-200   rang=-210  qang=165  # inarc=true
+lang=-200   rang=-210  qang=155  # inarc=false
+
+// lang=10   rang=315  qang=155  # inarc=true
+
+lang=31680 rang=31635 qang=155 # inarc=true

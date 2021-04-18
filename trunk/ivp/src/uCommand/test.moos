@@ -1,0 +1,49 @@
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT CSAIL
+// FILE: ucmd_test.moos
+//-------------------------------------------------
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = alpha
+
+MOOSTimeWarp = 1
+
+// Forest Lake
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = uCommand        @ NewConsole = false
+}
+
+//------------------------------------------
+// uCommand
+
+ProcessConfig = uCommand
+{ 
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+
+	limited_vnames = gus,felix,evan
+
+	cmd = label=station:True,  var=STATION,   sval=true, receivers=all
+	cmd = label=station:False,  var=STATION,  sval=false, receivers=all
+
+
+  cmd = label=loiter,   var=LOITER,      sval=true, receivers=gus
+  cmd = label=loiter,   var=STATION,     sval=false, receivers=gus
+  cmd = label=poly_west, var=LOITER_POLY, sval={60,-40:60,-160:150,-160}, receivers=evan:felix
+
+  cmd = label=cover,    var=LOITER,      sval=true, receivers=gus:felix:henry:gilda:davis
+
+	cmd = label=defend-A, var=DEFEND,      sval={region=a}, receivers=gus:felix
+	cmd = label=defend-B, var=DEFEND,      sval={region=b}, receivers=gus:felix
+	cmd = label=defend-C, var=DEFEND,      sval={region=c}, receivers=gus:felix
+}

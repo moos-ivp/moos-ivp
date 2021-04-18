@@ -1,0 +1,12 @@
+//--------------------------------------------------
+// pHostInfo configuration block from plugin
+
+ProcessConfig = pHostInfo
+{
+  AppTick 	  = 1
+  CommsTick 	= 1
+  Temp_File_Dir = ./
+
+//  DEFAULT_HOSTIP_FORCE = $(HOSTIP_FORCE)
+}
+

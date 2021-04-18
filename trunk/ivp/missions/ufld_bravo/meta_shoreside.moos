@@ -1,0 +1,154 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = 9000
+Community  = shoreside
+
+TERM_REPORTING = false
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB              @ NewConsole = false
+  Run = pRealm              @ NewConsole = false
+  Run = pMarineViewer       @ NewConsole = false
+  Run = pLogger             @ NewConsole = false
+
+  Run = pShare              @ NewConsole = false
+  Run = pHostInfo           @ NewConsole = false
+  Run = uFldShoreBroker     @ NewConsole = false
+  Run = uFldNodeComms       @ NewConsole = false
+  Run = uFldCollisionDetect @NewConsole = false
+}
+
+#include plug_pHostInfo.moos
+
+//---------------------------------------------------------
+// uFldCollisionDetect Config Block
+
+ProcessConfig = uFldCollisionDetect
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  condition = DEPLOY_ALL = true                                 
+                                                                
+  encounter_flag = ENCOUNTER = $CPA                             
+  collision_flag = COLLISION = $CPA                             
+  near_miss_flag = NEAR_MISS = vname1=$V1,vname2=$V2,cpa=$CPA   
+                                                                
+  encounter_range = 10        // (the default) in meters        
+  near_miss_range = 6         // (the default) in meters        
+  collision_range = 3         // (the default) in meters        
+                                                                
+  pulse_render   = true       // (the default)                  
+  pulse_range    = 20         // (the default) in meters        
+  pulse_duration = 10         // (the default) in seconds       
+
+}
+//---------------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route = localhost:9300 & multicast_9
+}
+
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  comms_range      = 75
+  critical_range   = 25
+  min_msg_interval = 20
+  max_msg_length   = 100
+  view_node_rpt_pulses = true
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  qbridge = DEPLOY, NODE_REPORT, NODE_MESSAGE
+  qbridge = STATION_KEEP, APPCAST_REQ
+  qbridge = MOOS_MANUAL_OVERRIDE
+  qbridge = AVOID
+ 
+  bridge  = src=RETURN_ALL, alias=RETURN
+  bridge  = src=RETURN_$V,  alias=RETURN
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names+shortmode
+
+  polygon_viewable_all    = false
+  polygon_viewable_labels = false
+  seglist_viewable_all    = false
+  seglist_viewable_labels = false
+  point_viewable_all    = false
+  point_viewable_labels = false
+
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  comms_pulse_viewable_all = false
+  vehicles_name_mode = names
+
+  stale_report_thresh = 2
+  stale_remove_thresh = 20000
+
+  scope = PHI_HOST_INFO
+
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false
+  button_two   = RETURN  # RETURN_ALL=true
+  button_three = AVOID:ON  # AVOID_ALL=true
+  button_four  = AVOID:OFF # AVOID_ALL=false
+}
+

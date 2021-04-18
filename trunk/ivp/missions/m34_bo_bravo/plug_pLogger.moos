@@ -1,0 +1,41 @@
+//--------------------------------------------------
+// pLogger Configuration Block (Created from Plugin)
+
+ProcessConfig = pLogger
+{
+  AppTick 	= 5
+  CommsTick = 5
+  
+  File          = LOG_%(VNAME)
+  PATH	        = ./
+  AsyncLog 	    = true
+  FileTimeStamp = true
+
+
+  Log = IVPHELM_LIFE_EVENT @ 0 nosync
+
+  LogAuxSrc = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  //WildCardOmitPattern = *_STATUS
+	WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = APPCAST
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+	WildCardOmitPattern = *_ITER_GAP
+	WildCardOmitPattern = *_ITER_LEN
+	WildCardOmitPattern = SIMULATION_MODE
+	WildCardOmitPattern = NAV_YAW
+	WildCardOmitPattern = NAV_Z
+	WildCardOmitPattern = TRUE_X
+	WildCardOmitPattern = TRUE_Y
+	WildCardOmitPattern = NAV_SPEED_OVER_GROUND
+	WildCardOmitPattern = NAV_HEADING_OVER_GROUND
+	WildCardOmitPattern = NAV_PITCH
+	WildCardOmitPattern = NAV_DEPTH
+
+	WildCardOmitPattern = PID_REPORT
+	
+}
+	

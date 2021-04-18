@@ -1,0 +1,19 @@
+//--------------------------------------------------------
+// pBasicContactMgr Configuration Block (Created from Plugin)
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  alert_verbose = true
+
+  contact_max_age = 3600
+  display_radii   = false
+  //default_alert_region    = pts={60,10:60,-100:170,-100:170,10}
+
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+}

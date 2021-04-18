@@ -1,0 +1,270 @@
+ServerHost = localhost
+ServerPort = 9000
+
+Community  = hotel
+
+MOOSTimeWarp = 1
+
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+//------------------------------------------
+// Antler configuration  block
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 500
+
+  Run = MOOSDB                @ NewConsole = false
+  Run = pMarineViewer         @ NewConsole = true
+  Run = pLogger               @ NewConsole = false
+  Run = uSimMarine            @ NewConsole = true
+  Run = pNodeReporter         @ NewConsole = false
+  Run = pMarinePID            @ NewConsole = false
+  Run = pHelmIvP              @ NewConsole = true
+  Run = uTimerScript          @ NewConsole = true
+  Run = uFldBeaconRangeSensor @ NewConsole = true
+}
+
+//------------------------------------------
+// uFldBeaconRangeSensor config block
+
+ProcessConfig = uFldBeaconRangeSensor
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  // System-wide Simulator configuration
+  ping_payments = upon_accept
+  report_vars   = long
+
+  // Configurations for all vehicles/nodes
+  //reach_distance = default = nolimit
+  node_push_dist = default = 100
+  node_pull_dist = default = 100
+  ping_wait      = default = 20
+
+  // Configurations for all beacons
+  //default_beacon_report_range  = nolimit
+  default_beacon_push_dist  = 85
+  default_beacon_pull_dist  = 75
+  default_beacon_shape  = circle
+  default_beacon_color  = blue
+  default_beacon_width  = 5
+  default_beacon_freq   = never
+  //default_beacon_freq   = 30:50
+
+
+  // Configurations for individual beacons
+  // Example:
+  // beacon = x=1,y=2,label=foo,freq=17,shape=square,width=3,color=orange
+
+  beacon    = x=200,  y=0,    label=01
+  beacon    = x=-100, y=-100, label=02
+  beacon    = x=0,   y=-200, label=03, freq=15
+  beacon    = x=-65, y=-345, label=04
+  beacon    = x=115, y=-150, label=05, push_dist=33, pull_dist=95
+
+  //beacon    = x=160, y=-100, label=01
+  //beacon    = x=290, y=-190, label=02, freq=30:45
+  //beacon    = x=200, y=-260, label=03
+  //beacon    = x=-40, y=-150, label=04, qrange=200
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  AppTick	= 4
+  CommsTick	= 4
+
+  PAUSED     = false
+  RESET_MAX  = 5000
+  RESET_TIME = end
+  CONDITION  = (NAV_SPEED > 0)
+
+  randvar        = varname=UVAR, min=0, max=359, key=at_post
+  randvar        = varname=GVAR, type=gaussian, min=0, max=400, mu=200, sigma=20, key=at_post
+  randvar        = varname=LGVAR, type=gaussian, min=0, max=400, mu=80, sigma=10, key=at_post
+
+  //event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=4  
+  //event          = var=GAUSS_TEST_VAL, val=$(GVAR), time=0:40
+
+  //event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=5  
+  //event          = var=LGAUSS_TEST_VAL, val=$(LGVAR), time=0:20
+
+  //event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=0  
+  //event          = var=UNIFORM_TEST_VAL, val=$(UVAR), time=15:20
+
+  reset_max  = no_limit
+  reset_time = all-posted
+
+  time_warp   = 1:2
+  //delay_reset = 25
+  //delay_start = 10:20
+
+  EVENT = var=BRS_RANGE_REQUEST, val="name=hotel", time=1:2
+  //EVENT = var=BRS_RANGE_REQUEST, val="name=hotel", time=15:20
+}
+
+
+//------------------------------------------
+// pLogger config block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  SyncLog = false
+  AsyncLog = true
+
+  Log = VIEW_VECTOR @ 0
+
+  LogAuxSrc = true
+  WildCardLogging = true
+
+  LoggingDirectorySummaryFile = /Users/mikerb/.plogger2
+}
+
+//------------------------------------------
+// uXMS config block
+
+ProcessConfig = uXMS
+{
+  AppTick   = 0.5
+  CommsTick = 0.5
+
+  VAR = IMS_*
+  VAR = NAV_X
+  VAR = NAV_Y
+  VAR = NAV_SPEED
+}
+
+
+//------------------------------------------
+// uSimMarine config block
+
+ProcessConfig = uSimMarine
+{
+  AppTick	= 10
+  CommsTick	= 10
+
+  START_X       = 0
+  START_Y       = 0
+  START_SPEED   = 0
+  START_HEADING = 180
+
+  PREFIX        = NAV
+
+  TURN_RATE     = 40
+  THRUST_MAP    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
+
+}
+
+//------------------------------------------
+// pHelmIvP config block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  Behaviors  = hotel.bhv
+  Verbose    = quiet
+  Domain     = course:0:359:360
+  Domain     = speed:0:4:21
+}
+
+//------------------------------------------
+// pMarinePID config block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 20
+  CommsTick  = 20
+
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+
+  // SIM_INSTABILITY = 20
+
+  // Yaw PID controller
+  YAW_PID_KP		 = 1.2
+  YAW_PID_KD		 = 0.0
+  YAW_PID_KI		 = 0.3
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+
+  // Speed PID controller
+  SPEED_PID_KP		 = 1.0
+  SPEED_PID_KD		 = 0.0
+  SPEED_PID_KI		 = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+
+  //MAXIMUMS
+  MAXRUDDER    = 100
+  MAXTHRUST    = 100
+
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//------------------------------------------
+// pMarineViewer config block
+
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  TIFF_FILE            = AerialMIT.tif
+  set_pan_x            = -60
+  set_pan_y            = 160
+  zoom                 = 1.25
+  vehicle_shape_scale  = 1.5
+  seglist_edge_width   = 2.0
+  seglist_vertex_size  = 4
+  seglist_vertex_color = red
+  point_vertex_size    = 6
+  hash_delta           = 50
+  hash_shade           = 0.25
+  hash_view            = true
+
+  scope  = VIEW_SEGLIST
+  scope  = VIEW_POINT
+  scope  = VIEW_POLYGON
+  scope  = NAV_X
+  scope  = NAV_Y
+  scope  = MVIEWER_LCLICK
+  scope  = MVIEWER_RCLICK
+
+  BUTTON_ONE = DEPLOY # DEPLOY=true
+  BUTTON_ONE = MOOS_MANUAL_OVERRIDE=false # RETURN=false
+  BUTTON_TWO = RETURN # RETURN=true
+
+  ACTION  = MENU_KEY=deploy # DEPLOY = true # RETURN = false
+  ACTION+ = MENU_KEY=deploy # MOOS_MANUAL_OVERRIDE=false
+  ACTION  = RETURN=true
+  ACTION  = HSLINE=off
+  ACTION  = HSLINE=on
+  ACTION  = UPDATES_RETURN=speed=1.4
+
+  // MIT OP-AREA
+  op_vertex = x=-220, y=-120,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=-100, y=-430,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=380, y=-240,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=254, y=46,lwidth=1,lcolor=yellow,looped=true,group=moa
+  op_vertex = x=112, y=21,lwidth=1,lcolor=yellow,looped=true,group=moa
+}
+
+//------------------------------------------
+// pNodeReporter config block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick	= 2
+  CommsTick	= 2
+  VESSEL_TYPE   = KAYAK
+}
+

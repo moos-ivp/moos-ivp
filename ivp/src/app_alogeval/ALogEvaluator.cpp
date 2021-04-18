@@ -37,6 +37,10 @@ using namespace std;
 ALogEvaluator::ALogEvaluator()
 {
   m_verbose = false;
+  
+  m_info_buffer = new InfoBuffer;
+
+  m_lcheck_set.setInfoBuffer(m_info_buffer);
 }
 
 //--------------------------------------------------------
@@ -111,12 +115,19 @@ bool ALogEvaluator::handle()
   if(!ok)
     return(false);
 
+  m_lcheck_set.isEvaluated(); 
+  m_lcheck_set.isSatisfied();
+  m_vcheck_set.isEvaluated(); 
+  m_vcheck_set.isSatisfied();
+
+#if 0
   bool lcheck_evaluated = m_lcheck_set.isEvaluated(); 
   bool lcheck_satisfied = m_lcheck_set.isSatisfied();
 
   bool vcheck_evaluated = m_vcheck_set.isEvaluated(); 
   bool vcheck_satisfied = m_vcheck_set.isSatisfied();
-
+#endif
+  
   return(ok);
 }
 
@@ -229,14 +240,20 @@ bool ALogEvaluator::handleALogFile()
 
     m_vcheck_set.handleMail(varname, varval, dval, tstamp_dbl);
 
+#if 0
     //    if(isNumber(varval))
     // m_lcheck_set.handleMail(varname, dval);
     //else
     m_lcheck_set.handleMail(varname, varval);
+#endif 
+    
+    if(isNumber(varval))
+      m_info_buffer->setValue(varname, dval, tstamp_dbl);
+    else
+      m_info_buffer->setValue(varname, varval, tstamp_dbl);
     
     m_lcheck_set.update();
     m_vcheck_set.update(tstamp_dbl);
-      
 
   }
   

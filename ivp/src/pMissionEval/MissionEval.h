@@ -13,8 +13,11 @@
 #include <string>
 #include "VarDataPair.h"
 #include "VCheckSet.h"
-#include "LCheckSet.h"
+#include "LogicAspect.h"
 #include "MailFlagSet.h"
+#include "InfoBuffer.h"
+#include "LogicTestSequence.h"
+
 
 class MissionEval : public AppCastingMOOSApp
 {
@@ -53,13 +56,15 @@ protected: // Utility functions
   MailFlagSet m_mfset;
   
  private: // State variables 
-  LCheckSet   m_lcheck_set;
-  std::string m_lcheck_status_prev;
+  LogicTestSequence m_logic_tests;
+  std::string       m_logic_tests_status_prev;
   
   VCheckSet   m_vcheck_set;
   std::string m_vcheck_status_prev;
 
   std::set<std::string> m_reg_vars;
+
+  InfoBuffer *m_info_buffer;
 };
 
 #endif 

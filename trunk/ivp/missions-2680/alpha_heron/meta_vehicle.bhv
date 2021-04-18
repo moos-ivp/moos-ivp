@@ -1,0 +1,85 @@
+//--------    FILE: alpha.bhv   -------------
+
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_survey
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  endflag   = RETURN = true
+
+  updates    = WPT_UPDATE
+  perpetual  = true
+//  templating = clone
+
+                lead = 8
+         lead_damper = 1
+       lead_to_start = true
+               speed = 5   // meters per second
+        capture_line = true
+      capture_radius = 5.0
+         slip_radius = 5.0
+	efficiency_measure = all
+
+	// Bigger home plate
+  // polygon = pts={-17,-26:52,1:69,-40:41,-67:1,-68} //
+
+	// Smaller home plate
+  polygon = pts={-2,-21:44,-2:56,-29:37,-48:10,-49}
+
+	// Saad's original small rectangle
+  // polygon = 0,-10 : 15,-45 : 80,-15 : 60,15
+						 order = reverse
+             repeat = 10000
+
+//	ipf_type = roc
+
+    visual_hints = nextpt_color=yellow
+    visual_hints = nextpt_vertex_size=8
+    visual_hints = nextpt_lcolor=gray70
+    visual_hints = vertex_color=dodger_blue, edge_color=white
+    visual_hints = vertex_size=5, edge_size=1
+}
+
+//----------------------------------------------
+Behavior=BHV_Waypoint
+{
+  name       = waypt_return
+  pwt        = 100
+  condition  = RETURN = true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = RETURN_UPDATE
+  endflag    = RETURN = false
+  endflag    = DEPLOY = false
+  endflag    = MISSION = complete
+
+           speed = 2.0
+  capture_radius = 2.0
+     slip_radius = 8.0
+          points = 0,-10
+ }
+
+//----------------------------------------------
+Behavior=BHV_ConstantSpeed
+{
+  name       = const_speed
+  pwt        = 200
+  condition  = SPD=true
+  condition  = DEPLOY = true
+  perpetual  = true
+  updates    = SPEED_UPDATE
+  endflag    = SPD = false
+
+     speed = 0.5
+		 duration = 10
+		 duration_reset = CONST_SPD_RESET=true
+
+}
+
+	// uPokeDB alpha.moos SPEED_UPDATE=speed=0.7#duration=20
+	// uPokeDB alpha.moos RETURN_UPDATE=slip_radius=7

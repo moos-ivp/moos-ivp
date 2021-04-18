@@ -1,0 +1,28 @@
+//--------------------------------------------------------
+// pContactMgrV20 Configuration Block (Created from Plugin)
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  alert_verbose = true
+
+  contact_max_age = 3600
+  display_radii   = true
+
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+
+#ifdef VNAME henry
+  alert = id=zone, var=IN_ZONE, val="inside"
+  alert = id=zone, alert_range=9999
+  alert = id=zone, cpa_range=9999
+  alert = id=zone, match_region=pts={-40,-35:40,-35:40,-110:-40,-110}
+  alert = id=zone, on_flag=SAY_MOOS=say={hello}
+  alert = id=zone, off_flag=SAY_MOOS=say={bye}
+#endif
+
+}

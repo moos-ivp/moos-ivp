@@ -59,6 +59,8 @@ public:
   std::string get_ptype() const {return(m_ptype);}
   
   std::string get_post_tag() const {return(m_post_tag);}
+
+  bool        is_solo_macro() const;
   
   bool        valid() const;
   int         why_invalid() const;

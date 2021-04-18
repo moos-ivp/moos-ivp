@@ -1,0 +1,72 @@
+initialize   DEPLOY = false
+initialize   RETURN = false
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name       = bhv_loiter_A
+  pwt        = 100
+  speed      = 3.0
+  radius     = 8.0
+  polygon    = radial:100,-100,80,10
+  clockwise  = false
+  //updates    = NEW_LOITER
+  condition  = RETURN = false
+  condition  = DEPLOY = true
+}
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = bhv_waypt_return
+  pwt       = 100
+  speed     = 3.0
+  radius    = 8.0
+  points    = 0,0
+  condition = RETURN = true
+  condition = DEPLOY = true
+}
+
+//----------------------------------------------
+Behavior = BHV_ConstantDepth
+{
+  name      = bhv_const_depth
+  pwt       = 100
+  duration  = 3600
+  depth     = 15
+  condition = DEPLOY = true
+}
+
+//----------------------------------------------
+Behavior = BHV_PeriodicSurface
+{
+  name             = bhv_periodic_surface
+  pwt              = 1000
+  period           = 35
+  zero_speed_depth = 2
+  max_time_at_surface = 10
+  ascent_speed     = 4.0
+  ascent_grade     = fullspeed
+  condition        = DEPLOY = true
+}
+
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name      = station-keep
+  pwt       = 100
+  condition = MODE==STATION-KEEPING
+
+     center_activate = true
+        inner_radius = 5
+        outer_radius = 10 
+         outer_speed = 1.0
+
+       transit_speed = 1.3
+          swing_time = 7
+  hibernation_radius = 25
+        visual_hints = vertex_size=0, edge_color=blue
+
+}
+

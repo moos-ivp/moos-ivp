@@ -1,0 +1,29 @@
+ServerHost = localhost
+ServerPort = 9000
+Community  = ufld_topside
+//=============================================================== 
+// uFldCTDSensor Example MOOS Configuration                      
+// =============================================================== 
+ProcessConfig uFldCTDSensor
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  // Configuring Artificial Noise                               
+  xmin  = 0;       
+  xmax  = 500;       
+  ymin  = 0;       
+  ymax  = 400;       
+  offset = 200;
+  angle = 20;
+  amplitude = 50;
+  period = 30;
+  wavelength = 300;
+  alpha = 100;
+  temperature_north = 20;
+  temperature_south = 25;
+  sigma = 0.1;
+    
+}                                               
+
+

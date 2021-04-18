@@ -1,0 +1,12 @@
+//====================================================================
+module   = All
+type     = group
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+synopsis = This group contains all modules in the MOOS-IvP release. All
+  MOOS apps, all behaviors, all command line utitlities and all libraries.
+
+group    = All
+doc_url  = http://oceanai.mit.edu/ivpman/
+distro   = moos-ivp.org

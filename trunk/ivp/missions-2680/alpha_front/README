@@ -1,0 +1,73 @@
+Name: M.Benjamin
+Date: May 14th, 2019
+File: README
+
+This mission folder is meant to be a baseline folder for the 2.680
+Front Estimation lab. 
+
+This mission is designed to support THREE modes of operation:
+
+(1) Single machine simulation:
+------------------------------
+The "launch.sh" will support the launching of a simulation where both
+the shoreside and all vehicle communities are running on a single
+machine. For example, a single vehicle named "abe" may be launched
+with time warp 10 with:
+
+$ ./launch.sh 10
+
+This will launch both the shoreside and two vehicle MOOS communities.
+
+(2) Multi-machine simulation:
+------------------------------
+The "launch_shoreside.sh" and "launch_vehicle.sh" scripts will support
+the launching of shore and vehicle communities on different machines.
+This could mean multiple laptops, or more common in 2.680, a PABLO
+running a vehicle simulation connected to another laptop running the
+shoreside. For example:
+
+On the shoreside machine:
+
+$ ./launch_shoreside.sh WARP
+
+Once this community is launched, there should be a pMarineViewer
+window showing the shoreside IP address on the top bar. This should
+be noted.
+
+On the vehicle machine, e.g., PABLO:
+
+$ ./launch_vehicle.sh WARP --shoreip=192.168.2.1 -a --sim
+
+This will launch the vehicle named "abe", and looking for the shoreside
+at the given IP address. The --sim flag launches the local vehicle
+community launching uSimMarine (the vehicle simulator).
+
+(3) Heron operation:
+------------------------------
+This mode is very similar to (2). As before launch the shoreside,
+with no time warp, and note the IP address:
+
+$ ./launch_shoreside.sh WARP
+
+On the vehicle PABLO:
+
+$ ./launch_vehicle.sh --shoreip=192.168.2.1 -g 
+
+This will launch the vehicle named "gus", and looking for the shoreside
+at the given IP address. Notes: we don't specify a WARP since robot
+ops are always warp=1. We don't invoke the --sim flag since this is not
+a simulation. This will result in uSimMarine not launching and iM200
+launching instead. iM200 is the PABLO interface to the Heron. Finally,
+we launch with one of the actual robot names:
+
+On Evan, launch with -e
+On Felix, launch with -f
+On Gus, launch with -g
+On Hal, launch with -h
+On Ida, launch with -i
+On Jing, launch with -j
+On Kirk, launch with -k
+On Luke, launch with -l
+
+Note: the vehicle name is the name of the robot computer box, not
+robot vehicle frame.

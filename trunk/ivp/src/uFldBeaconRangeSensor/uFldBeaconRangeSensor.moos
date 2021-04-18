@@ -1,0 +1,36 @@
+=============================================================== 
+uFldBeaconRangeSensor Example MOOS Configuration                      
+=============================================================== 
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  // Configuring aspects of vehicles in the sim                 
+  reach_distance = default = 200   // or {nolimit}           
+  reach_distance = henry = 40      // meters                 
+  ping_wait      = default = 30    // seconds                
+  ping_wait      = henry   = 120                                
+  ping_payments  = upon_response   // or {upon_receipt, upon_request}
+                                                                
+  // Configuring manner of reporting                            
+  report_vars    = short  // or {long, both}                 
+  ground_truth   = true   // or {false}                      
+  verbose        = true   // or {false}                      
+                                                                
+  // Configuring default beacon properties                      
+  default_beacon_shape = circle    // or {square, diamond, etc.}  
+  default beacon_color = orange    // or {red, green, etc.}       
+  default_beacon_width = 4                                      
+  default_beacon_report_range = 100                             
+  default_beacon_freq  = never     // or [0,inf]             
+                                                                
+  // Configuring Beacon properties                              
+  beacon = x=200, y=435, label=01, report_range=45              
+  beacon = x=690, y=205, label=02, freq=90                      
+  beacon = x=350, y=705, label=03, width=8, color=blue          
+                                                                
+  // Configuring Artificial Noise                               
+  rn_algorithm  =  uniform,pct=0   // pct may be in [0,1]    
+}                                               
+
+

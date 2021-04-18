@@ -1,0 +1,169 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = $(SPORT)
+Community  = $(SNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB                 @ NewConsole = false
+  Run = pMarineViewer          @ NewConsole = false
+  Run = pLogger                @ NewConsole = false
+  Run = uProcessWatch          @ NewConsole = false
+  Run = uFldContactRangeSensor @ NewConsole = false
+
+  Run = pShare             @ NewConsole = false
+  Run = pHostInfo          @ NewConsole = false
+  Run = uFldShoreBroker    @ NewConsole = false
+  Run = uFldNodeComms      @ NewConsole = false
+}
+
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
+
+  qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE
+
+  bridge   = src=APPCAST_REQ
+  bridge   = src=CRS_RANGE_REPORT_$V, alias=CRS_RANGE_REPORT
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 2
+  CommsTick = 2
+
+           comms_range = 150
+        critical_range = 25
+      min_msg_interval = 20
+        max_msg_length = 1000
+                groups = true
+  view_node_rpt_pulses = true
+}
+
+//---------------------------------------------------- uProcessWatch
+ProcessConfig = uProcessWatch                                   
+{                                                               
+  watch_all = true                                              
+  nowatch = uXMS*
+  nowatch = uMAC*
+}                                                   
+
+//------------------------------------------------------------- uXMS
+ProcessConfig = uXMS
+{
+  AppTick   = 2
+  CommsTick = 2
+  
+  var = PMB_REGISTER
+  var = PMB_UDP_LISTEN
+  var = APPCAST_REQ
+  var = DB_CLIENTS
+  var = PROC_WATCH_SUMMARY
+  var = CRS_RANGE_REQUEST
+  var = CRS_RANGE_REPORT
+
+  display_source        = true
+  display_time          = true
+  display_community     = false   // default
+
+  refresh_mode = streaming
+}
+
+//------------------------------------------------------------ uMAC
+ProcessConfig = uMAC
+{
+  AppTick       = 1
+  CommsTick     = 1
+}
+
+//------------------------------------------------------ pMOOSBridge
+ProcessConfig = pMOOSBridge
+{
+  AppTick   = 3
+  CommsTick = 3
+  UDPListen = 9200
+}
+
+//---------------------------------------------------------- pLogger
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  File          = LOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  WildCardOmitPattern = *_STATUS
+}
+//-------------------------------------------- uFldContactRangeSensor
+ProcessConfig = uFldContactRangeSensor
+{
+  AppTick   = 4
+  CommsTick = 4
+
+  push_distance = jackal = 50
+  push_distance = archie = 190
+  ping_wait     = archie = 32  
+  ping_color    = white
+  echo_color    = chartreuse
+
+  allow_echo_types = uuv,auv,glider
+
+  //rn_uniform_pct = 0.04
+  rn_gaussian_sigma = 50
+}
+
+//------------------------------------------------- pMarineViewer
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = MIT_SP.tif
+  set_pan_x            = -32
+  set_pan_y            = 150
+  zoom                 = 1.3
+  vehicles_shape_scale = 3.5
+  vehicles_name_viewable   = names
+  comms_pulse_viewable_all = false
+
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+
+  scope = CONTACT_INFO
+
+  action = STATION_ALL = false
+  action = STATION_ALL = true
+
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false
+  button_two   = RETURN  # RETURN_ALL=true
+}
+
