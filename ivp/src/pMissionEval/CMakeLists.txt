@@ -13,8 +13,8 @@ ADD_EXECUTABLE(pMissionEval ${SRC})
 
 TARGET_LINK_LIBRARIES(pMissionEval
    ${MOOS_LIBRARIES}
-   logic
    evalutil
+   logic
    apputil
    mbutil
    m
