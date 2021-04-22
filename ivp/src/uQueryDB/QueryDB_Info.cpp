@@ -44,12 +44,8 @@ void showSynopsis()
   blk("  involved in the logic condition and determine if the condition"); 
   blk("  holds. It will then exit with 0 if it holds or 1 otherwise.   ");
   blk("                                                                ");
-  blk("  It will return its value as soon as the app has received mail ");
-  blk("  for all variables involved in the logic condition. Otherwise  ");
-  blk("  it will wait for 10 seconds. This can be changed with the     ");
-  blk("  --wait=N parameter. If a variable in the logic condition is   ");
-  blk("  unknown to the MOOSDB, then the whole condition will fail     ");
-  blk("  after the wait period.                                        ");
+  blk("  If a variable in the logic condition is unknown to the MOOSDB ");
+  blk("  then the whole condition will fail.                           ");
 }
 
 //----------------------------------------------------------------
@@ -83,11 +79,9 @@ void showHelpAndExit()
   blk("      Provide a logic condition.                                ");
   mag("  --check_val, -cv                                              ");
   blk("      Force check_var results to be written to .checkvars       ");
-  mag("  --wait=val                                                    ");
-  blk("      Specifiy the wait period (default is 10 seconds).         ");
   blk("                                                                ");
   blk("Examples:                                                       ");
-  blk("   $ uQueryDB alpha.moos --condition=\"DB_UPTIME > 20\" --wait=5");
+  blk("   $ uQueryDB alpha.moos --condition=\"DB_UPTIME > 20\"         ");
   blk("   $ uQueryDB --condition=\"DEPLOY=false\" --host=localhost --port=9000");
   blk("   $ uQueryDB alpha.moos --condition=\"((MISSION=complete) or (MISSION=halt))\"");
   exit(0);
@@ -106,6 +100,9 @@ void showExampleConfigAndExit()
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
+  blk("                                                                ");
+  blk("  // In this exammple uQueryDB will return 0 if either the halt ");
+  blk("  // halt time is exceeded or ENCOUNTER_TOTAL is 501 or higher  ");
   blk("                                                                ");
   blk("  halt_max_time  = 1000    // In ses. Default is -1, disabled   ");
   blk("  halt_condition = ENCOUNTER_TOTAL > 500                        ");

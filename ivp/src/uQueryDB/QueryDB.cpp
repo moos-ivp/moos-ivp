@@ -39,9 +39,11 @@ QueryDB::QueryDB()
   m_info_buffer  = new InfoBuffer;
   m_exit_value   = -1;
   m_elapsed_time = 0;
+
+  m_halt_max_time_elapsed = false;
+  m_halt_conditions_met = false;
   
   // Init Config Vars
-  m_wait_time   = 10;
   m_verbose     = true;
   m_sServerHost = ""; 
   m_lServerPort = 0;
@@ -55,14 +57,6 @@ QueryDB::QueryDB()
   m_halt_conditions.setInfoBuffer(m_info_buffer);
   m_pass_conditions.setInfoBuffer(m_info_buffer);
   m_fail_conditions.setInfoBuffer(m_info_buffer);
-}
-
-//------------------------------------------------------------
-// Procedure: setWaitTime()
-
-bool QueryDB::setWaitTime(string str)
-{
-  return(setNonNegDoubleOnString(m_wait_time, str));
 }
 
 //------------------------------------------------------------
@@ -115,8 +109,14 @@ bool QueryDB::Iterate()
   }
 
   if(m_check_for_halt) {
-    checkMaxTimeReached();
-    checkHaltConditions();
+    if((m_max_time > 0) && (m_elapsed_time >= m_max_time))
+      m_halt_max_time_elapsed = true;
+    m_halt_conditions_met = m_halt_conditions.checkConditions();
+
+    if(m_halt_max_time_elapsed || m_halt_conditions_met)
+      m_exit_value = 0;
+    else
+      m_exit_value = 1;
   }
   else
     checkPassFailConditions();
@@ -204,14 +204,16 @@ bool QueryDB::OnStartUp()
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
-
+  
+#if 0
   // Fake an appcast request
   string req = "node=" + m_host_community;
   req += ", app=" + GetAppName();
   req += ", duration=" + doubleToStringX(m_wait_time+30);
   req += ", key=uQueryDB,thresh=any";
   Notify("APPCAST_REQ", req);
-
+#endif
+  
   // Heuristic: Always add DB_UPTIME to the list of check_vars.
   // If other check_vars are being used, this will also be
   // reported. Especially important report var for bookkeeping
@@ -336,46 +338,6 @@ void QueryDB::reportCheckVars()
 
 
 //-----------------------------------------------------------
-// Procedure: checkMaxTimeReached()
-//      Sets: m_exit_value
-//            0 if enabled and time has been reached
-//            1 if disabled or time has not been reached
-
-void QueryDB::checkMaxTimeReached()
-{
-  // Sanity check: if max_time not enabled, do nothing
-  if(m_max_time < 0)
-    return;
-
-  // Sanity check: if exit value has been set, it cannot change
-  if(m_exit_value != -1)
-    return;
-  
-  if(m_elapsed_time < m_max_time)
-    return;
-  
-  m_exit_value = 0;
-}
-
-
-//-----------------------------------------------------------
-// Procedure: checkHaltConditions()
-//      Sets: m_exit_value
-//            1  if not all mail has been received yet
-//               for all variables involved in condition
-//            1  Logic condition is false
-//            0  Logic condition is true
-
-void QueryDB::checkHaltConditions()
-{
-  bool satisfied = m_halt_conditions.checkConditions();
-  if(satisfied)
-    m_exit_value = 0;
-  else
-    m_exit_value = 1;
-}
-
-//-----------------------------------------------------------
 // Procedure: checkPassFailConditions()
 //      Sets: m_exit_value
 //            1  if not all mail has been received yet for all
@@ -415,15 +377,21 @@ bool QueryDB::buildReport()
     if(m_max_time > 0)
       max_time_str = doubleToStringX(m_max_time,2);
 
+
     string hconds_count_str = uintToString(m_halt_conditions.size());
     string unmet_logic_str = m_halt_conditions.getNotableCondition();
     if(unmet_logic_str == "")
       unmet_logic_str = "n/a";
     
     m_msgs << "Config (halting):  " << endl;
-    m_msgs << "  max_time:        " << max_time_str      << endl;
-    m_msgs << "  halt_conditions: " << hconds_count_str  << endl;
-    m_msgs << "  unmet condition: " << unmet_logic_str   << endl;
+    m_msgs << "  max_time:        " << max_time_str     << endl;
+    m_msgs << "  halt_conditions: " << hconds_count_str << endl;
+    m_msgs << "  unmet condition: " << unmet_logic_str  << endl << endl;
+
+    m_msgs << "Status (halting):  " << endl;
+    m_msgs << "  Max_time reached:   " << boolToString(m_halt_max_time_elapsed) << endl;
+    m_msgs << "  All Conditions met: " << boolToString(m_halt_conditions_met) << endl;
+    m_msgs << "  Exit Value:         " << m_exit_value << endl;
     m_msgs << endl;
     
     if(m_max_time > 0) {

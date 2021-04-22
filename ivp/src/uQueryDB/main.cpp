@@ -57,8 +57,6 @@ int main(int argc, char *argv[])
       query.setServerHost(argi.substr(7));
     else if(strBegins(argi, "--port="))      
       handled = query.setServerPort(argi.substr(7));
-    else if(strBegins(argi, "--wait="))      
-      handled = query.setWaitTime(argi.substr(7));
     else if(strBegins(argi, "--condition="))
       handled = query.addHaltCondition(argi.substr(12));
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++")) 
