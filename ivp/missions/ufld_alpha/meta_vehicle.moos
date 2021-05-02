@@ -2,9 +2,7 @@
 // Vehicle MOOS configuration file
 
 ServerHost = localhost
-ServerPort = $(VPORT)
-
-// Community name IS the vehicle name
+ServerPort = $(MOOS_PORT)
 Community  = $(VNAME)
 
 #include plug_origin_warp.moos

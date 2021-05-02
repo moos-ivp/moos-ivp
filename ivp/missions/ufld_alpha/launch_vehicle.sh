@@ -1,21 +1,27 @@
 #!/bin/bash -e
 #-------------------------------------------------------------- 
 #   Script: launch_vehicle.sh                                    
+#  Mission: ufld_alpha
 #   Author: Michael Benjamin  
-#     Date: April 2020     
+#     Date: April 2021
 #--------------------------------------------------------------
 #  Part 1: Declare global var defaults
 #--------------------------------------------------------------
+ME=`basename "$0"`
 TIME_WARP=1
 JUST_MAKE="no"
-AUTO=""
-VNAME="abe"
+VERBOSE="no"
+AUTO_LAUNCHED="no"
+CMD_ARGS=""
 
 IP_ADDR="localhost"
-INDEX="1"
-SHORE_PSHARE="9201"
-SHORE_IP="localhost"
+MOOS_PORT="9001"
 PSHARE_PORT="9201"
+
+SHORE_IP="localhost"
+SHORE_PSHARE="9200"
+VNAME="abe"
+INDEX="1"
 
 REGION="forest_lake"
 START_POS="0,0"  
@@ -25,56 +31,100 @@ START_POS="0,0"
 #  Part 2: Check for and handle command-line arguments
 #--------------------------------------------------------------
 for ARGI; do
+    CMD_ARGS+=" ${ARGI}"
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
-	echo "launch_vehicle.sh [SWITCHES] [time_warp]         "
-	echo "  --just_make, -j                                " 
-	echo "  --vname=VNAME                                  " 
-	echo "  --index=INDEX                                  " 
+	echo "$ME [OPTIONS] [time_warp]                        "
+	echo "                                                 " 
+	echo "Options:                                         "
 	echo "  --help, -h                                     " 
-	echo "  --ip=<addr>       (default is localhost)       " 
-	echo "  --startpos=X,Y    (Default is 0,0)             " 
-	echo "  --shore=IP:PORT   (Default is localhost:9300)  " 
-	echo "  --pshare=PORT     (Default is 9301)            " 
-	echo "  --pavlab, -p      Set region to be MIT pavlab  " 
-        echo "  --auto, -a        Auto-launched. uMAC not used."
+	echo "    Print this help message and exit             "
+	echo "  --just_make, -j                                " 
+	echo "    Just make targ files, but do not launch      "
+	echo "  --verbose, -v                                  " 
+	echo "    Verbose output, confirm before launching     "
+        echo "  --auto, -a                                     "
+        echo "     Auto-launched by a script.                  "
+        echo "     Will not launch uMAC as the final step.     "
+	echo "                                                 "
+	echo "  --ip=<localhost>                               " 
+	echo "    Force pHostInfo to use this IP Address       "
+	echo "  --mport=<9001>                                 "
+	echo "    Port number of this vehicle's MOOSDB port    "
+	echo "  --pshare=<9201>                                " 
+	echo "    Port number of this vehicle's pShare port    "
+	echo "                                                 "
+	echo "  --shore=<localhost>                            " 
+	echo "    IP address location of shoreside             "
+	echo "  --vname=<abe>                                  " 
+	echo "    Name of the vehicle being launched           " 
+	echo "  --index=<1>                                    " 
+	echo "    Index for setting MOOSDB and pShare ports    "
+
+	echo "  --start=<X,Y>     (default is 0,0)             " 
+	echo "    Start position chosen by script launching    "
+	echo "    this script (to ensure separation)           "
 	exit 0;
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
+        VERBOSE="yes"
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
-        AUTO="yes"
-    elif [ "${ARGI}" = "--pavlab" -o "${ARGI}" = "-p" ]; then
-        REGION="pavlab"
+        AUTO_LAUNCHED="yes" 
+
+    elif [ "${ARGI:0:5}" = "--ip=" ]; then
+        IP_ADDR="${ARGI#--ip=*}"
+    elif [ "${ARGI:0:7}" = "--mport" ]; then
+	MOOS_PORT="${ARGI#--mport=*}"
+    elif [ "${ARGI:0:9}" = "--pshare=" ]; then
+        PSHARE_PORT="${ARGI#--pshare=*}"
+
+    elif [ "${ARGI:0:8}" = "--shore=" ]; then
+        SHORE_IP="${ARGI#--shore=*}"
     elif [ "${ARGI:0:8}" = "--vname=" ]; then
         VNAME="${ARGI#--vname=*}"
     elif [ "${ARGI:0:8}" = "--index=" ]; then
         INDEX="${ARGI#--index=*}"
-    elif [ "${ARGI:0:5}" = "--ip=" ]; then
-        IP_ADDR="${ARGI#--ip=*}"
-    elif [ "${ARGI:0:11}" = "--startpos=" ]; then
-        START_POS="${ARGI#--startpos=*}"
-    elif [ "${ARGI:0:8}" = "--shore=" ]; then
-        SHORE="${ARGI#--shore=*}"
-    elif [ "${ARGI:0:9}" = "--pshare=" ]; then
-        PSHARE_PORT="${ARGI#--pshare=*}"
+	
+    elif [ "${ARGI:0:8}" = "--start=" ]; then
+        START_POS="${ARGI#--start=*}"
+
     else 
-	echo "launch_vehicle.sh: Bad Arg: " $ARGI " Exit Code 1."
+	echo "$ME: Bad Arg:[$ARGI]. Exit Code 1."
 	exit 1
     fi
 done
 
-if [ "${PSHARE_PORT}" = "" ] ; then
-    PSHARE_PORT="930"$INDEX
-fi
-
-if [ "${INDEX}" != "1" ] ; then
-    VNAME=$VNAME"_"$INDEX
+MOOS_PORT=`expr $INDEX + 9000`
+PSHARE_PORT=`expr $INDEX + 9200`
+     
+#---------------------------------------------------------------
+#  Part 3: If verbose, show vars and confirm before launching
+#---------------------------------------------------------------
+if [ "${VERBOSE}" = "yes" ]; then 
+    echo "$ME"
+    echo "CMD_ARGS =      [${CMD_ARGS}]     "
+    echo "TIME_WARP =     [${TIME_WARP}]    "
+    echo "AUTO_LAUNCHED = [${AUTO_LAUNCHED}]"
+    echo "----------------------------------"
+    echo "MOOS_PORT =     [${MOOS_PORT}]    "
+    echo "PSHARE_PORT =   [${PSHARE_PORT}]  "
+    echo "IP_ADDR =       [${IP_ADDR}]      "
+    echo "----------------------------------"
+    echo "SHORE_IP =      [${SHORE_IP}]     "
+    echo "SHORE_PSHARE =  [${SHORE_PSHARE}] "
+    echo "VNAME =         [${VNAME}]        "
+    echo "INDEX =         [${INDEX}]        "
+    echo "----------------------------------"
+    echo "START_POS =     [${START_POS}]"
+    echo -n "Hit any key to continue with launching"
+    read ANSWER
 fi
 
 
 #--------------------------------------------------------------
-#  Part 3: Create the .moos and .bhv files. 
+#  Part 4: Create the .moos and .bhv files. 
 #--------------------------------------------------------------
 NSFLAGS="-s -f"
 if [ "${AUTO}" = "" ]; then
@@ -82,10 +132,10 @@ if [ "${AUTO}" = "" ]; then
 fi
 
 nsplug meta_vehicle.moos targ_$VNAME.moos $NSFLAGS WARP=$TIME_WARP \
-       VNAME=$VNAME            START_POS=$START_POS                \
-       VPORT="900"$INDEX       SHORE_PSHARE=$SHORE_PSHARE          \
-       IP_ADDR=$IP_ADDR        SHORE_IP=$SHORE_IP                  \
-       REGION=$REGION          PSHARE_PORT=$PSHARE_PORT
+       PSHARE_PORT=$PSHARE_PORT     VNAME=$VNAME                   \
+       START_POS=$START_POS         SHORE_IP=$SHORE_IP             \
+       SHORE_PSHARE=$SHORE_PSHARE   MOOS_PORT=$MOOS_PORT           \
+       IP_ADDR=$IP_ADDR             REGION=$REGION         
 
 nsplug meta_vehicle.bhv targ_$VNAME.bhv $NSFLAGS VNAME=$VNAME      \
        START_POS=$START_POS    REGION=$REGION
@@ -96,18 +146,21 @@ if [ ${JUST_MAKE} = "yes" ] ; then
 fi
 
 #--------------------------------------------------------------
-#  Part 4: Launch the processes
+#  Part 5: Launch the processes
 #--------------------------------------------------------------
-echo "Launching $VNAME MOOS Community, WARP:" $TIME_WARP
+echo "Launching $VNAME MOOS Community. WARP="$TIME_WARP
 pAntler targ_$VNAME.moos >& /dev/null &
-echo "Done Launching the vehicle mission."
+echo "Done Launching the $VNAME MOOS Community"
 
-#-------------------------------------------------------------- 
-#  Part 5: Unless auto-launched, launch uMAC until mission quit          
-#-------------------------------------------------------------- 
-if [ "${AUTO}" = "" ]; then
-    uMAC targ_$VNAME.moos
-    kill -- -$$
+#---------------------------------------------------------------
+#  Part 6: If launched from script, we're done, exit now
+#---------------------------------------------------------------
+if [ "${AUTO_LAUNCHED}" = "yes" ]; then
+    exit 0
 fi
 
-
+#---------------------------------------------------------------
+# Part 7: Launch uMAC until the mission is quit
+#---------------------------------------------------------------
+uMAC targ_$VNAME.moos
+kill -- -$$
