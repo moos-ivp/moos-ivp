@@ -107,7 +107,7 @@ PSHARE_PORT=`expr $INDEX + 9200`
 #---------------------------------------------------------------
 #  Part 3: If verbose, show vars and confirm before launching
 #---------------------------------------------------------------
-if [ "${VERBOSE}" = "yes" ]; then 
+if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then 
     echo "$ME"
     echo "CMD_ARGS =      [${CMD_ARGS}]     "
     echo "TIME_WARP =     [${TIME_WARP}]    "
