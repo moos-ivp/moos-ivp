@@ -11,6 +11,7 @@ ME=`basename "$0"`
 TIME_WARP=1
 JUST_MAKE="no"
 VERBOSE=""
+CONFIRM="yes"
 AUTO_LAUNCHED="no"
 CMD_ARGS=""
 
@@ -33,6 +34,8 @@ for ARGI; do
         echo "    Display this help message                    "
         echo "  --verbose, -v                                  "
         echo "    Increase verbosity                           "
+	echo "  --noconfirm, -nc                               " 
+	echo "    No confirmation before launching             "
 	echo "  --just_make, -j                                " 
 	echo "    Just make target files. Do not launch.       "
         echo "  --auto, -a                                     "
@@ -54,6 +57,8 @@ for ARGI; do
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
 	VERBOSE="yes"
+    elif [ "${ARGI}" = "--noconfirm" -o "${ARGI}" = "-nc" ]; then
+	CONFIRM="no"
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
         AUTO_LAUNCHED="yes"
 
@@ -75,7 +80,7 @@ done
 #---------------------------------------------------------------
 #  Part 3: If verbose, show vars and confirm before launching
 #---------------------------------------------------------------
-if [ "${VERBOSE}" = "yes" ]; then 
+if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then 
     echo "$ME"
     echo "CMD_ARGS =      [${CMD_ARGS}]"
     echo "TIME_WARP =     [${TIME_WARP}]"

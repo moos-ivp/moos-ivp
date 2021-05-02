@@ -11,6 +11,7 @@ ME=`basename "$0"`
 TIME_WARP=1
 JUST_MAKE="no"
 VERBOSE="no"
+CONFIRM="yes"
 AUTO_LAUNCHED="no"
 CMD_ARGS=""
 
@@ -42,6 +43,8 @@ for ARGI; do
 	echo "    Just make targ files, but do not launch      "
 	echo "  --verbose, -v                                  " 
 	echo "    Verbose output, confirm before launching     "
+	echo "  --noconfirm, -nc                               " 
+	echo "    No confirmation before launching             "
         echo "  --auto, -a                                     "
         echo "     Auto-launched by a script.                  "
         echo "     Will not launch uMAC as the final step.     "
@@ -64,12 +67,14 @@ for ARGI; do
 	echo "    Start position chosen by script launching    "
 	echo "    this script (to ensure separation)           "
 	exit 0;
-    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
-        VERBOSE="yes"
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
+        VERBOSE="yes"
+    elif [ "${ARGI}" = "--noconfirm" -o "${ARGI}" = "-nc" ]; then
+	CONFIRM="no"
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
         AUTO_LAUNCHED="yes" 
 
