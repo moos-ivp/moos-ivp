@@ -1,7 +1,9 @@
 #!/bin/bash 
 #---------------------------------------------------------------
-#   Script: launch_vehicle.sh                       
+#   Script: launch_vehicle.sh
 #  Mission: m2_berta
+#   Author: Michael Benjamin
+#   LastEd: May 8th 2021
 #---------------------------------------------------------------
 #  Part 1: Set global var defaults
 #---------------------------------------------------------------

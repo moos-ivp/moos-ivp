@@ -12,6 +12,7 @@ TIME_WARP=1
 JUST_MAKE=""
 VERBOSE=""
 AUTO_LAUNCHED="no"
+NOGUI=""
 
 VNAME1="henry"    
 VNAME2="gilda"    
@@ -25,13 +26,16 @@ for ARGI; do
 	echo "  --help, -h           Show this help message                " 
 	echo "  --just_make, -j      Just make targ files, no launch       " 
 	echo "  --verbose, -v        Verbose output, confirm before launch " 
-	exit 0;
+	echo "  --nogui, -n          Headless mode - no pMarineViewer etc  " 
+	exit 0
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="-j"
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
 	VERBOSE="--verbose"
+    elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ]; then
+	NOGUI="--nogui"
     else 
         echo "$ME: Bad arg:" $ARGI "Exit Code 1."
         exit 1
@@ -55,9 +59,9 @@ echo "$ME: Launching $VNAME2 ..."
 #---------------------------------------------------------------
 #  Part 4: Launch the shoreside
 #---------------------------------------------------------------
-echo "Launching Shoreside ..."
-SLAUNCH_ARGS=" --auto --vnames=$VNAME1:$VNAME2 "
-./launch_shoreside.sh $SLAUNCH_ARGS $VERBOSE $JUST_MAKE $TIME_WARP  \
+echo "$ME: Launching Shoreside ..."
+SLAUNCH_ARGS=" --auto --vnames=$VNAME1:$VNAME2 $NOGUI "
+./launch_shoreside.sh $SLAUNCH_ARGS $VERBOSE $JUST_MAKE $TIME_WARP
 
 #---------------------------------------------------------------
 #  Part 5: If launched from script, we're done, exit now
@@ -67,7 +71,7 @@ if [ "${AUTO_LAUNCHED}" = "yes" -o "${JUST_MAKE}" != "" ]; then
 fi
 
 #---------------------------------------------------------------
-# Part 6: Launch uMAC in paused mode until the mission is quit
+# Part 6: Launch uMAC until the mission is quit
 #---------------------------------------------------------------
 uMAC targ_shoreside.moos
 kill -- -$$
