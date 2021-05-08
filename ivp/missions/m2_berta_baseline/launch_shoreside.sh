@@ -14,6 +14,7 @@ AUTO_LAUNCHED="no"
 LAUNCH_GUI="yes"
 CMD_ARGS=""
 
+IP_ADDR="localhost"
 PSHARE_PORT="9200"
 VNAMES=""
 
@@ -38,6 +39,8 @@ for ARGI; do
         echo "  --nogui, -n                                    "
         echo "     Headless mode - no pMarineViewer etc        "
 	echo "                                                 "
+        echo "  --ip=<localhost>                               "
+        echo "    Force pHostInfo to use this IP Address       "
         echo "  --pshare=<9200>                                "
         echo "    Port number of this vehicle's pShare port    "
 	echo "  --vnames=<vnames>                              " 
@@ -57,7 +60,8 @@ for ARGI; do
     elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ]; then
 	LAUNCH_GUI="no"
 
-
+    elif [ "${ARGI:0:5}" = "--ip=" ]; then
+        IP_ADDR="${ARGI#--ip=*}"
     elif [ "${ARGI:0:9}" = "--pshare=" ]; then
         PSHARE_PORT="${ARGI#--pshare=*}"
     elif [ "${ARGI:0:9}" = "--vnames=" ]; then
@@ -86,7 +90,8 @@ fi
 #  Part 4: Create the .moos and .bhv files. 
 #---------------------------------------------------------------
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP  \
-       PSHARE_PORT=$PSHARE_PORT     VNAMES=$VNAMES
+       PSHARE_PORT=$PSHARE_PORT     VNAMES=$VNAMES                 \
+       IP_ADDR=$IP_ADDR             LAUNCH_GUI=$LAUNCH_GUI
        
 
 if [ ${JUST_MAKE} = "yes" ]; then
