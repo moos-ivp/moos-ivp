@@ -6,26 +6,36 @@
 #--------------------------------------------------------------  
 #  Part 1: Set Exit actions and declare global var defaults
 #--------------------------------------------------------------
-trap "kill -- -$$" EXIT SIGTERM SIGHUP SIGINT SIGKILL
-
+ME=`basename "$0"`
 TIME_WARP=1
 JUST_MAKE=""
+VERBOSE=""
+AUTO_LAUNCHED="no"
+
+
 PASS_ARGS=""
 
 #--------------------------------------------------------------  
 #  Part 2: Check for and handle command-line arguments
 #--------------------------------------------------------------  
 for ARGI; do
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "launch.sh [SWITCHES] [time_warp]    "
-	echo "  --help, -h                       " 
-	echo "  --just_make, -j                  " 
-	echo "  --pavlab, -p                     "
-	echo "    Set region to be MIT pavlab    " 
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
+	echo "$ME [SWITCHES] [time_warp]         "
+	echo "  --help, -h                                     " 
+	echo "    Display this help message                    "
+	echo "  --just_make, -j                                " 
+	echo "    Just make targ files, but do not launch      "
+	echo "  --verbose, -v                                  " 
+	echo "    Verbose output, confirm before launching.    "
+	echo "  --auto, -a                                     "
+	echo "     Auto-launched by a script.                  "
+	echo "     Will not launch uMAC as the final step.     "
+	echo "  --pavlab, -p                                   "
+	echo "    Set region to be MIT pavlab                  " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--pavlab" -o "${ARGI}" = "-p" ]; then
         PASS_ARGS+=$ARGI

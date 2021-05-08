@@ -11,8 +11,6 @@ JUST_MAKE="no"
 
 VNAME1="henry"           # The first vehicle Community
 VNAME2="gilda"           # The second vehicle Community
-VGROUP1="red"
-VGROUP2="blue"
 VTYPE1="kayak"
 VTYPE2="mokai"
 START_POS1="0,0,180"         
@@ -64,10 +62,10 @@ nsplug meta_shoreside.moos targ_shoreside.moos -i -f WARP=$TIME_WARP \
        VNAMES=$VNAME1:$VNAME2
 
 nsplug meta_vehicle.bhv targ_henry.bhv -i -f VNAME=$VNAME1    \
-    START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
+       START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
 
 nsplug meta_vehicle.bhv targ_gilda.bhv -i -f VNAME=$VNAME2    \
-    START_POS=$START_POS2 LOITER_POS=$LOITER_POS2       
+       START_POS=$START_POS2 LOITER_POS=$LOITER_POS2       
 
 if [ ${JUST_MAKE} = "yes" ] ; then
     echo "Files assembled; nothing launched; exiting per request."
