@@ -24,10 +24,10 @@ VTYPE="KAYAK"
 INDEX="1"
 
 MAXSPD="5"
-START_POS="0,0"  
-START_HDG="0"  
+START_POS="170,-80"  
+START_HDG="270"  
 START_SPD="0"  
-LOITER_POS="0,0"
+LOITER_POS="x=0,y=-95"
 
 #---------------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
