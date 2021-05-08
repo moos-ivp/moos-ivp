@@ -14,8 +14,8 @@ AUTO_LAUNCHED="no"
 CMD_ARGS=""
 
 IP_ADDR="localhost"
-MOOS_PORT="9001"
-PSHARE_PORT="9201"
+MOOS_PORT="9000"
+PSHARE_PORT=""
 
 SHORE_IP="localhost"
 SHORE_PSHARE="9200"
@@ -130,7 +130,10 @@ for ARGI; do
 done
 
 MOOS_PORT=`expr $INDEX + 9000`
-PSHARE_PORT=`expr $INDEX + 9200`
+
+if [ "${PSHARE_PORT}" = "" ]; then
+    PSHARE_PORT=`expr $INDEX + 9200`
+fi
 
 #---------------------------------------------------------------
 #  Part 3: If verbose, show vars and confirm before launching
