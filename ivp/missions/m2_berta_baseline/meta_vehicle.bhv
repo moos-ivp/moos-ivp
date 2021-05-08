@@ -1,8 +1,8 @@
 //---------------------------------------------------
 // Helm Behavior file 
 
-//initialize   DEPLOY  = false
-//initialize   RETURN  = false
+initialize   DEPLOY  = false
+initialize   RETURN  = false
 initialize   STATION_KEEP = false
 initialize   LOITER  = true
 initialize   AVOID   = true
@@ -34,8 +34,6 @@ Behavior = BHV_Loiter
   pwt       = 100
   condition = MODE==LOITERING
   updates   = UP_LOITER
-  runflag   = VEHICLE_UNDERWAY = TRUE
-  endflag   = VEHICLE_UNDERWAY = FALSE
 
    post_suffix = A
          speed = 1.4
@@ -58,13 +56,10 @@ Behavior = BHV_AvdColregsV19
   updates    = CONTACT_INFO
   templating = spawn
 
-
              contact = to-be-set
     on_no_contact_ok = true
          extrapolate = true
                decay = 30,60
-
-          match_type = mokai
 
 	post_per_contact_info = true
 	
@@ -75,45 +70,6 @@ Behavior = BHV_AvdColregsV19
         completed_dist = 85
      min_util_cpa_dist = 10
      max_util_cpa_dist = 18
-             pwt_grade = linear
-   bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
-}
-
-//----------------------------------------------
-//Behavior = BHV_AvoidCollision
-{
-  name         = ac_
-  pwt          = 500
-  condition    = AVOID = true 
-  updates      = CONTACT_INFO
-
-  activeflag   = AVOIDING = active
-  inactiveflag = AVOIDING = inactive
-  runflag      = AVOIDING = running
-  endflag      = AVOIDING = end
-
-  templating   = spawn
-
-             contact = to-be-set
-    on_no_contact_ok = true
-         extrapolate = true
-               decay = 30,60
-
-//	           cnflag = @<20 SAY_MOOS=hello
-	           cnflag = @<20 ROC=$[ROC]
-	           cnflag = @<20 OS_PORT_OF_CN = $[OS_PORT_OF_CN]
-	           cnflag = @<20 OS_STAR_OF_CN = $[OS_STAR_OF_CN]
-	           cnflag = @<20 OS_AFT_OF_CN = $[OS_AFT_OF_CN]
-	           cnflag = @<20 OS_FORE_OF_CN = $[OS_FORE_OF_CN]
-//             cnflag = @>39 SAY_MOOS=bye
-
-        use_refinery = true
-
-        pwt_outer_dist = 20
-        pwt_inner_dist = 11
-        completed_dist = 40
-     min_util_cpa_dist = 8
-     max_util_cpa_dist = 15
              pwt_grade = linear
    bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
 }

@@ -90,6 +90,7 @@ for ARGI; do
 	CONFIRM="no"
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
 	AUTO_LAUNCHED="yes"
+	CONFIRM="no"
 
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"

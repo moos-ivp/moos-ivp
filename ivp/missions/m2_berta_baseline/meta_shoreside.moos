@@ -104,7 +104,7 @@ ProcessConfig = pLogger
 
   WildCardOmitPattern = *_STATUS
   WildCardOmitPattern = DB_VARSUMMARY
-  //WildCardOmitPattern = DB_RWSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
 }
 
 
@@ -130,9 +130,9 @@ ProcessConfig = pMarineViewer
 	realmcast_channel = mission_top
 	
   appcast_color_scheme = indigo
-	appcast_font_size    = large
-  procs_font_size      = large
-  nodes_font_size      = large
+	appcast_font_size    = xlarge
+  procs_font_size      = xlarge
+  nodes_font_size      = xlarge
 
   stale_report_thresh = 10
   stale_remove_thresh = 18
@@ -158,14 +158,9 @@ ProcessConfig = pMarineViewer
 
   cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all:$(VNAMES)
 
-  cmd = label=STATION, var=STATION_KEEP,  sval=true,  receivers=all:$(VNAMES)
-
   cmd = label=LOITER-FAST, var=UP_LOITER,  sval=speed=2.8,  receivers=all:$(VNAMES)
   cmd = label=LOITER-SLOW, var=UP_LOITER,  sval=speed=1.4,  receivers=all:$(VNAMES)
 
-  cmd = label=LOITER-CLOCKWISE-TRUE,  var=UP_LOITER, sval=clockwise=true,  receivers=all:$(VNAMES)
-  cmd = label=LOITER-CLOCKWISE-FALSE, var=UP_LOITER, sval=clockwise=false, receivers=all:$(VNAMES)
-  cmd = label=LOITER-CLOCKWISE-BEST, var=UP_LOITER,  sval=clockwise=false, receivers=all:$(VNAMES)
 	
   button_one   = DEPLOY  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
@@ -178,8 +173,6 @@ ProcessConfig = pMarineViewer
   button_five  = STATION:true # STATION_KEEP_ALL=true
   button_six   = STATION:false # STATION_KEEP_ALL=false
 
-	button_seven = REFINE:N # CONTACT_INFO_ALL = name=avdcol # use_refinery=false
-	button_eight = REFINE:Y # CONTACT_INFO_ALL = name=avdcol # use_refinery=true
 
 }
 

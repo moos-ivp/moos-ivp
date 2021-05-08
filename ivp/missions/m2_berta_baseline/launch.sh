@@ -57,19 +57,17 @@ echo "$ME: Launching $VNAME2 ..."
 #---------------------------------------------------------------
 echo "Launching Shoreside ..."
 SLAUNCH_ARGS=" --auto --vnames=$VNAME1:$VNAME2 "
-./launch_shoreside.sh $SLAUNCH_ARGS $VERBOSE $JUST_MAKE $TIME_WARP
-       SHORE_PSHARE=$SHORE_PSHARE  SHORE_MOOSDB="9000"        \
-       VNAMES=$VNAME1:$VNAME2
+./launch_shoreside.sh $SLAUNCH_ARGS $VERBOSE $JUST_MAKE $TIME_WARP  \
 
-#---------------------------------------------------------------                                         
-#  Part 7: If launched from script, we're done, exit now                                                 
-#---------------------------------------------------------------                                         
+#---------------------------------------------------------------
+#  Part 5: If launched from script, we're done, exit now
+#---------------------------------------------------------------
 if [ "${AUTO_LAUNCHED}" = "yes" -o "${JUST_MAKE}" != "" ]; then
     exit 0
 fi
 
-#---------------------------------------------------------------                                         
-# Part 8: Launch uMAC in paused mode until the mission is quit                                           
-#---------------------------------------------------------------                                         
-uMAC --paused targ_shoreside.moos
+#---------------------------------------------------------------
+# Part 6: Launch uMAC in paused mode until the mission is quit
+#---------------------------------------------------------------
+uMAC targ_shoreside.moos
 kill -- -$$

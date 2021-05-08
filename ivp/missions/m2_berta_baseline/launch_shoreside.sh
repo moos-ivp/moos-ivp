@@ -9,7 +9,7 @@ ME=`basename "$0"`
 TIME_WARP=1
 JUST_MAKE="no"
 VERBOSE="no"
-CONFIRM="no"
+CONFIRM="yes"
 AUTO_LAUNCHED="no"
 CMD_ARGS=""
 
@@ -50,6 +50,7 @@ for ARGI; do
 	CONFIRM="no"
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
 	AUTO_LAUNCHED="yes"
+	CONFIRM="no"
 
     elif [ "${ARGI:0:9}" = "--pshare=" ]; then
         PSHARE_PORT="${ARGI#--pshare=*}"
