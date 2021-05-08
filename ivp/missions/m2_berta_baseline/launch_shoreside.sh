@@ -11,6 +11,7 @@ JUST_MAKE="no"
 VERBOSE="no"
 CONFIRM="yes"
 AUTO_LAUNCHED="no"
+LAUNCH_GUI="yes"
 CMD_ARGS=""
 
 PSHARE_PORT="9200"
@@ -34,6 +35,8 @@ for ARGI; do
 	echo "  --auto, -a                                     "
 	echo "     Auto-launched by a script.                  "
 	echo "     Will not launch uMAC as the final step.     "
+        echo "  --nogui, -n                                    "
+        echo "     Headless mode - no pMarineViewer etc        "
 	echo "                                                 "
         echo "  --pshare=<9200>                                "
         echo "    Port number of this vehicle's pShare port    "
@@ -51,6 +54,9 @@ for ARGI; do
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
 	AUTO_LAUNCHED="yes"
 	CONFIRM="no"
+    elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ]; then
+	LAUNCH_GUI="no"
+
 
     elif [ "${ARGI:0:9}" = "--pshare=" ]; then
         PSHARE_PORT="${ARGI#--pshare=*}"

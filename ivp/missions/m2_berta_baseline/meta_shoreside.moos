@@ -15,11 +15,14 @@ Processconfig = ANTLER
   Run = MOOSDB          @ NewConsole = false
   Run = pRealm          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
-  Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = uXMS            @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
 
+#ifdef LAUNCH_GUI yes
+  Run = pMarineViewer   @ NewConsole = false
+  Run = uXMS            @ NewConsole = false
+#endif
+	
   Run = pShare          @ NewConsole = false
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
