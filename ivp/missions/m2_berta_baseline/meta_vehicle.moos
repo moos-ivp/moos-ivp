@@ -54,7 +54,7 @@ ProcessConfig = pHelmIvP
   behaviors    = targ_$(VNAME).bhv  
   verbose      = false
   domain       = course:0:359:360
-  domain       = speed:0:5:26
+  domain       = speed:0:$(MAXSPD):26
 
 	hold_on_apps = pContactMgrV20
 }
@@ -125,6 +125,8 @@ ProcessConfig = uSimMarine
   start_pos = $(START_POS), $(START_HDG), $(START_SPD))
   prefix    = NAV
 
+	thrust_map = 100:$(MAXSPD)
+	
   //rotate_speed = 0.012
   //drift_x      = 0.0045
 
