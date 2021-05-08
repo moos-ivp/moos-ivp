@@ -123,7 +123,7 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("  NAV_X = 103.0                                                 ");
   blk("  NAV_Y = -23.8                                                 ");
-  blk("  OBM_ALERT_REQUEST = alert_range=25,                           ");
+  blk("  OBM_ALERT_REQUEST = name=avd_obstacle, alert_range=25,        ");
   blk("                      update_var=OBSTACLE_ALERT                 ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
