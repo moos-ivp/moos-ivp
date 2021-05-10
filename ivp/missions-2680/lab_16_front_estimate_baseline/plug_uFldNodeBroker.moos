@@ -6,15 +6,14 @@ ProcessConfig = uFldNodeBroker
   AppTick   = 1
   CommsTick = 1
 
-  TRY_SHORE_HOST = pshare_route=$(SHORE)
-//  TRY_SHORE_HOST = pshare_route=multicast_9
+  try_shore_host = pshare_route=$(SHORE)
 
-  BRIDGE = src=VIEW_POLYGON
-  BRIDGE = src=VIEW_POINT
-  BRIDGE = src=VIEW_SEGLIST
-  BRIDGE = src=APPCAST
-  BRIDGE = src=UCTD_SENSOR_REQUEST
-  BRIDGE = src=UCTD_PARAMETER_ESTIMATE
-  BRIDGE = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
-  BRIDGE = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
+  bridge = src=VIEW_POLYGON
+  bridge = src=VIEW_POINT
+  bridge = src=VIEW_SEGLIST
+  bridge = src=APPCAST
+  bridge = src=UCTD_SENSOR_REQUEST
+  bridge = src=UCTD_PARAMETER_ESTIMATE
+  bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+  bridge = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
 }

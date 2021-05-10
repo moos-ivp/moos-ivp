@@ -27,6 +27,7 @@ Processconfig = ANTLER
   Run = uTimerScript       @ NewConsole = false
   Run = pBasicContactMgr   @ NewConsole = false
 
+  Run = pRealm             @ NewConsole = false
   Run = pFrontEstimate     @ NewConsole = false
 }
 
