@@ -4,10 +4,15 @@
 ProcessConfig = pLogger
 {
   AppTick 	= 5
-  CommsTick 	= 5
-  
-  File		= LOG_%(VNAME)
-  PATH		= ./
+  CommsTick	= 5
+
+#ifdef VNAME
+  File    = LOG_%(VNAME)
+#else
+  File    = LOG_Shoreside
+#endif
+	
+	PATH      = ./
   SyncLog 	= true @ 0.2
   AsyncLog 	= true
   FileTimeStamp = true

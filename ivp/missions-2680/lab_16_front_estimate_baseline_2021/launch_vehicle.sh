@@ -141,7 +141,7 @@ for ARGI; do
     elif [ "${ARGI:0:7}" = "--cool=" ]; then
         COOL_FAC="${ARGI#--cool=*}"
     elif [ "${ARGI:0:8}" = "--steps=" ]; then
-        COOL_STEPS="${ARGI#--cool=*}"
+        COOL_STEPS="${ARGI#--steps=*}"
     elif [ "${ARGI}" = "--unconcurrent" -o "${ARGI}" = "-uc" ]; then
         CONCURRENT="false"
     elif [ "${ARGI}" = "--adaptive" -o "${ARGI}" = "-a" ]; then
@@ -197,7 +197,7 @@ if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then
     echo "START_SPD =     [${START_SPD}]"
     echo "----------------------------------"
     echo "COOL_FAC =      [${COOL_FAC}]"
-    echo "COOL_STEPS =    [${COOL_STES}]"
+    echo "COOL_STEPS =    [${COOL_STEPS}]"
     echo "CONCURRENT =    [${CONCURRENT}]"
     echo "ADAPTIVE =      [${ADAPTIVE}]"
     echo "DEGREES =       [${DEGREES}]"
