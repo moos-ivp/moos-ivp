@@ -1,2 +1,0 @@
-x=12,y=-92,heading=97
-x=155,y=1,heading=218

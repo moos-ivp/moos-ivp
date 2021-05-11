@@ -1,8 +1,0 @@
-//---------------------------------------
-ProcessConfig = pNodeReporter
-{
-  AppTick     = 2
-  CommsTick   = 2
-  
-  platform_type = kayak
-}
