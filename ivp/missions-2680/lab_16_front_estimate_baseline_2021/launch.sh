@@ -14,10 +14,13 @@ JUST_MAKE=""
 VERBOSE=""
 AUTO_LAUNCHED="no"
 
-COOL_FAC=50
-COOL_STEPS=1000
+# parameters to vehicles
+COOL_FAC="--cool=50"
+COOL_STEPS="--steps=1000"
 UNCONCURRENT=""
-ADAPTIVE="false"
+ADAPTIVE=""
+DEGREES1=270
+DEGREES2=0
 
 SURVEY_X=70
 SURVEY_Y=-100
@@ -27,8 +30,6 @@ WIDTH1=120
 WIDTH2=120
 LANE_WIDTH1=25
 LANE_WIDTH2=25
-DEGREES1=270
-DEGREES2=0
 
 #---------------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments
@@ -76,12 +77,20 @@ START_POS1="0,0"
 START_POS2="10,-5"
 
 VLAUNCH_ARGS=" --auto $COOL_FAC $COOL_STEPS $UNCONCURRENT $ADAPTIVE "
+VLAUNCH_ARGS+=" --survey_x=$SURVEY_X --survey_y=$SURVEY_Y "
+
 
 VLAUNCH_ARGS1="$VLAUNCH_ARGS --vname=$VNAME1 --index=1 --start=$START_POS1 "
+VLAUNCH_ARGS1+="--angle=$DEGREES1 --width=$WIDTH1 "
+VLAUNCH_ARGS1+="--height=$HEIGHT1 --lwidth=$LANE_WIDTH1"
+
 echo "$ME: Launching $VNAME1 ..."
 ./launch_vehicle.sh $VLAUNCH_ARGS1 $VERBOSE $JUST_MAKE $TIME_WARP
 
 VLAUNCH_ARGS2="$VLAUNCH_ARGS --vname=$VNAME2 --index=2 --start=$START_POS2 "
+VLAUNCH_ARGS2+="--angle=$DEGREES2 --width=$WIDTH2 "
+VLAUNCH_ARGS2+="--height=$HEIGHT2 --lwidth=$LANE_WIDTH2"
+
 echo "$ME: Launching $VNAME2 ..."
 ./launch_vehicle.sh $VLAUNCH_ARGS2 $VERBOSE $JUST_MAKE $TIME_WARP
 
@@ -89,8 +98,7 @@ echo "$ME: Launching $VNAME2 ..."
 #  Part 4: Launch the shoreside
 #---------------------------------------------------------------
 echo "$ME: Launching Shoreside ..."
-SLAUNCH_ARGS=" --auto --vnames=$VNAME1:$VNAME2 $NOGUI "
-./launch_shoreside.sh $SLAUNCH_ARGS $VERBOSE $JUST_MAKE $TIME_WARP
+./launch_shoreside.sh --auto $VERBOSE $JUST_MAKE $TIME_WARP
 
 #---------------------------------------------------------------
 #  Part 5: If launched from script, we're done, exit now

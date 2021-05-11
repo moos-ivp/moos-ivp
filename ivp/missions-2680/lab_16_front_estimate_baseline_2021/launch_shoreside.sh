@@ -76,7 +76,7 @@ if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then
     echo "TIME_WARP =     [${TIME_WARP}]"
     echo "AUTO_LAUNCHED = [${AUTO_LAUNCHED}]"
     echo "PSHARE_PORT =   [${PSHARE_PORT}]"
-    echo "MOOS_PORT =   [${MOOS_PORT}]"
+    echo "MOOS_PORT =     [${MOOS_PORT}]"
     echo -n "Hit any key to continue with launching"
     read ANSWER
 fi

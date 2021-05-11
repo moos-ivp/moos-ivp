@@ -2,6 +2,7 @@
 #--------------------------------------------------------------  
 #  Part 1: Declare global var defaults
 #--------------------------------------------------------------
+ME=`basename "$0"`
 TIME_WARP=1
 JUST_MAKE="no"
 VERBOSE="no"
@@ -88,8 +89,15 @@ for ARGI; do
         echo "                                                 "
 	echo "  --adaptive, -a                                 "
 	echo "  --unconcurrent, -uc                            "
-	echo "  --angle=DEGREE_VALUE                           "
 	echo "  --cool=COOL_FAC                                "
+	echo "  --steps=COOL_STEPS                             "
+	echo "  --angle=DEGREE_VALUE                           "
+        echo "                                                 "
+        echo "  --survey_x=X                                   "
+        echo "  --survey_y=Y                                   "
+        echo "  --width=WIDTH                                  "
+        echo "  --height=HEIGHT                                "
+        echo "  --lane_width=WIDTH                             "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then
         TIME_WARP=$ARGI
@@ -130,16 +138,30 @@ for ARGI; do
     elif [ "${ARGI:0:6}" = "--spd=" ]; then
         START_SPD="${ARGI#--spd=*}"
 
-    elif [ "${ARGI:0:6}" = "--cool" ]; then
+    elif [ "${ARGI:0:7}" = "--cool=" ]; then
         COOL_FAC="${ARGI#--cool=*}"
-    elif [ "${ARGI:0:7}" = "--angle" ]; then
-        DEGREES="${ARGI#--angle=*}"
+    elif [ "${ARGI:0:8}" = "--steps=" ]; then
+        COOL_STEPS="${ARGI#--cool=*}"
     elif [ "${ARGI}" = "--unconcurrent" -o "${ARGI}" = "-uc" ]; then
         CONCURRENT="false"
     elif [ "${ARGI}" = "--adaptive" -o "${ARGI}" = "-a" ]; then
         ADAPTIVE="true"
+
+    elif [ "${ARGI:0:11}" = "--survey_x=" ]; then
+        SURVEY_X="${ARGI#--survey_x=*}"
+    elif [ "${ARGI:0:11}" = "--survey_y=" ]; then
+        SURVEY_Y="${ARGI#--survey_y=*}"
+    elif [ "${ARGI:0:9}" = "--height=" ]; then
+        HEIGHT="${ARGI#--height=*}"
+    elif [ "${ARGI:0:8}" = "--width=" ]; then
+        WIDTH="${ARGI#--width=*}"
+    elif [ "${ARGI:0:9}" = "--lwidth=" ]; then
+        LANE_WIDTH="${ARGI#--lwidth=*}"
+    elif [ "${ARGI:0:8}" = "--angle=" ]; then
+        DEGREES="${ARGI#--angle=*}"
+
     else 
-	echo "$ME: Bad Arg:" ${ARGI} "Exit Code 1"
+	echo "$ME: Bad Arg:[$ARGI]. Exit Code 1."
 	exit 1
     fi
 done
@@ -175,6 +197,7 @@ if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then
     echo "START_SPD =     [${START_SPD}]"
     echo "----------------------------------"
     echo "COOL_FAC =      [${COOL_FAC}]"
+    echo "COOL_STEPS =    [${COOL_STES}]"
     echo "CONCURRENT =    [${CONCURRENT}]"
     echo "ADAPTIVE =      [${ADAPTIVE}]"
     echo "DEGREES =       [${DEGREES}]"
