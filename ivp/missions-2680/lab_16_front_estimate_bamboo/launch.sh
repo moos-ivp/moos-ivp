@@ -22,14 +22,14 @@ ADAPTIVE=""
 DEGREES1=270
 DEGREES2=0
 
-SURVEY_X=70
-SURVEY_Y=-100
-HEIGHT1=150
-HEIGHT2=150
-WIDTH1=120
-WIDTH2=120
-LANE_WIDTH1=25
-LANE_WIDTH2=25
+SURVEY_X=30
+SURVEY_Y=-50
+HEIGHT1=50
+HEIGHT2=50
+WIDTH1=50
+WIDTH2=50
+LANE_WIDTH1=10
+LANE_WIDTH2=10
 
 #---------------------------------------------------------------
 #  Part 1: Check for and handle command-line arguments

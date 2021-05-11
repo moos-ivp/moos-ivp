@@ -31,6 +31,7 @@ Processconfig = ANTLER
 
 #include plug_pHostInfo.moos
 #include plug_pLogger.moos
+#include plug_pShare.moos
 
 //--------------------------------------------------
 // pGradeFrontEstiamte Configuration Block
@@ -48,21 +49,9 @@ ProcessConfig = pFrontGridRender
   AppTick       = 1
   CommsTick     = 1
 
-  GRID_CONFIG = pts={-95,-170: 85,-170: 85,10: -95,10}
-  GRID_CONFIG = cell_size=3
-  GRID_CONFIG = cell_vars=x:0
-}
-
-
-//---------------------------------------------------------
-// pShare Config Block
-
-ProcessConfig = pShare
-{
-  AppTick    = 2
-  CommsTick  = 2
-
-  input = route = $(IP_ADDR):$(PSHARE_PORT)
+  grid_config = pts={-95,-170: 85,-170: 85,10: -95,10}
+  grid_config = cell_size=3
+  grid_config = cell_vars=x:0
 }
 
 
@@ -79,14 +68,13 @@ ProcessConfig = uFldShoreBroker
   //       [bridge = src=FOO_ALL, alias=FOO]
 
   qbridge  = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE, STATION_KEEP
-//  qbridge = STATION_KEEP
   qbridge  = MOOS_MANUAL_OVERRIDE
 
   bridge = src=RETURN_ALL, alias=RETURN
   bridge = src=RETURN_$V, alias=RETURN
-  bridge= src=UP_LOITER_$N,alias=UP_LOITER
-  bridge= src=UCTD_MSMNT_REPORT_$V,alias=UCTD_MSMNT_REPORT
-  bridge   = src=APPCAST_REQ 
+  bridge = src=UP_LOITER_$N,alias=UP_LOITER
+  bridge = src=UCTD_MSMNT_REPORT_$V,alias=UCTD_MSMNT_REPORT
+  bridge = src=APPCAST_REQ 
 }
 
 //--------------------------------------------------
@@ -116,10 +104,13 @@ ProcessConfig = pMarineViewer
   set_pan_x            = -85
   set_pan_y            = -40
   zoom                 = 6
+
   vehicles_shape_scale = 1.5
   vehicles_name_mode   = names+shortmode
   marker_viewable_labels = false
 
+	polygon_viewable_labels = false
+	
   appcast_width = 30
 
   appcast_viewable     = true

@@ -4,8 +4,10 @@
 ProcessConfig = pHostInfo
 {
   AppTick 	= 1
-  CommsTick 	= 1
+  CommsTick	= 1
 
+#ifdef IP_ADDR
   default_hostip_force = $(IP_ADDR)
+#endif
 }
 
