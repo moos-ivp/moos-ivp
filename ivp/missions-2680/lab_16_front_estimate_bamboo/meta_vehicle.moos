@@ -33,7 +33,6 @@ Processconfig = ANTLER
 #include plug_pHostInfo.moos
 #include plug_pLogger.moos
 #include plug_uProcessWatch.moos
-#include plug_pBasicContactMgr.moos
 
 //----------------------------------------------------
 // pFrontEstimate Configuration Block
@@ -192,4 +191,21 @@ ProcessConfig = pMarinePID
   // A non-zero SPEED_FACTOR overrides use of SPEED_PID
   // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
   speed_factor = 20
+}
+
+//--------------------------------------------------------
+// pBasicContactMgr Configuration Block 
+
+ProcessConfig = pBasicContactMgr
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  alert_verbose = true
+
+  contact_max_age = 3600
+  display_radii   = false
+
 }
