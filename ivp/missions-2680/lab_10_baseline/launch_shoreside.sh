@@ -5,43 +5,49 @@
 #-------------------------------------------------------
 #  Part 1: Set global var defaults
 #----------------------------------------------------------
+ME=`basename "$0"`
 TIME_WARP=1
 JUST_MAKE="no"
+VERBOSE=""
+CONFIRM="yes"
+CMD_ARGS=""
 
 IP_ADDR="localhost"
-PSHARE_PORT="9200"
-
 MOOS_PORT="9000"
-CONF="yes"
+PSHARE_PORT="9200"
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
+    CMD_ARGS+="${ARGI} "
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
-	echo "launch_shoreside.sh [SWITCHES] [WARP]         "
+	echo "$ME [SWITCHES] [WARP]         "
 	echo "  --help, -h                                  " 
 	echo "    Display this help message                 "
 	echo "  --just_make, -j                             " 
 	echo "    Just make targ files, but do not launch   "
-	echo "                                              "
-	echo "  --mport=<port>                              "
-	echo "    Port number of this vehicle's MOOSDB port "
-	echo "                                              "
-	echo "  --pshare=<port>                             " 
-	echo "    Port number of this vehicle's pShare port "
-	echo "                                              "
-	echo "  --ip=<ipaddr>                               " 
-	echo "    Force pHostInfo to use this IP Address    "
-	echo "  --nc                                        " 
+        echo "  --verbose, -v                               "
+        echo "    Increase verbosity                        "
+	echo "  --noconfirm, -nc                            " 
 	echo "    No confirmation before launching          "
+	echo "                                              "
+	echo "  --ip=<localhost>                            " 
+	echo "    Force pHostInfo to use this IP Address    "
+	echo "  --mport=<9000>                              "
+	echo "    Port number of this vehicle's MOOSDB port "
+	echo "  --pshare=<9200>                             " 
+	echo "    Port number of this vehicle's pShare port "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_build" -o "${ARGI}" = "-j" ]; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
-    elif [ "${ARGI}" = "-nc" -o "${ARGI}" = "--nc" ]; then
-	CONF="no"
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
+	VERBOSE="yes"
+    elif [ "${ARGI}" = "--noconfirm" -o "${ARGI}" = "-nc" ]; then
+	CONFIRM="no"
+
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"
     elif [ "${ARGI:0:7}" = "--mport" ]; then
@@ -49,17 +55,19 @@ for ARGI; do
     elif [ "${ARGI:0:9}" = "--pshare=" ]; then
         PSHARE_PORT="${ARGI#--pshare=*}"
     else
-	echo "launch_shoreside.sh Bad Arg:" $ARGI
+	echo "$ME Bad Arg:" $ARGI "Exit Code 1"
 	exit 1
     fi
 done
 
 
-if [ "${CONF}" = "yes" ]; then 
-    echo "PSHARE_PORT = [${PSHARE_PORT}]"
-    echo "MOOS_PORT =   [${MOOS_PORT}]"
-    echo "IP_ADDR =     [${IP_ADDR}]"
+if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then 
+    echo "$ME"
+    echo "CMD_ARGS =    [${CMD_ARGS}]"
     echo "TIME_WARP =   [${TIME_WARP}]"
+    echo "MOOS_PORT =   [${MOOS_PORT}]"
+    echo "PSHARE_PORT = [${PSHARE_PORT}]"
+    echo "IP_ADDR =     [${IP_ADDR}]"
     echo -n "Hit any key to continue with launching"
     read ANSWER
 fi

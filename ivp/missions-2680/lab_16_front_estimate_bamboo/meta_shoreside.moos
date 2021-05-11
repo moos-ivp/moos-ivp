@@ -1,0 +1,147 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = $(MOOS_PORT)
+Community  = shoreside
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 400
+
+  Run = MOOSDB              @ NewConsole = false
+  Run = pMarineViewer       @ NewConsole = false
+  Run = pLogger             @ NewConsole = false
+
+  Run = pShare              @ NewConsole = false
+  Run = pHostInfo           @ NewConsole = false
+  Run = uFldShoreBroker     @ NewConsole = false
+  Run = uFldNodeComms       @ NewConsole = false
+
+  Run = uFldCTDSensor       @ NewConsole = false
+  Run = pFrontGridRender    @ NewConsole = false
+  Run = pGradeFrontEstimate @ NewConsole=false
+}
+
+//#include plug_uFldCTDSensor.moos
+#include plug_uFldCTDSensor_1.moos
+
+#include plug_pHostInfo.moos
+#include plug_pLogger.moos
+
+//--------------------------------------------------
+// pGradeFrontEstiamte Configuration Block
+
+ProcessConfig = pGradeFrontEstimate
+{
+  AppTick=1
+  CommsTick = 1
+
+}
+//--------------------------------------------------
+// pFrontGridRender Configuration Block
+ProcessConfig = pFrontGridRender
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  GRID_CONFIG = pts={-95,-170: 85,-170: 85,10: -95,10}
+  GRID_CONFIG = cell_size=3
+  GRID_CONFIG = cell_vars=x:0
+}
+
+
+//---------------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route = $(IP_ADDR):$(PSHARE_PORT)
+}
+
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  // Note: [qbridge = FOO]  is shorthand for                    
+  //       [bridge = src=FOO_$V,  alias=FOO] and                
+  //       [bridge = src=FOO_ALL, alias=FOO]
+
+  qbridge  = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE, STATION_KEEP
+//  qbridge = STATION_KEEP
+  qbridge  = MOOS_MANUAL_OVERRIDE
+
+  bridge = src=RETURN_ALL, alias=RETURN
+  bridge = src=RETURN_$V, alias=RETURN
+  bridge= src=UP_LOITER_$N,alias=UP_LOITER
+  bridge= src=UCTD_MSMNT_REPORT_$V,alias=UCTD_MSMNT_REPORT
+  bridge   = src=APPCAST_REQ 
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+	AppTick   = 2
+	CommsTick = 2
+
+	comms_range      = 100
+	critical_range   = 25
+	min_msg_interval = 0
+	max_msg_length   = 48000
+	groups           = true
+	view_node_rpt_pulses = true
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = bamboo_17_map.tif
+  tiff_file_b          = bamboo_17_sat.tif
+  set_pan_x            = -85
+  set_pan_y            = -40
+  zoom                 = 6
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names+shortmode
+  marker_viewable_labels = false
+
+  appcast_width = 30
+
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+	appcast_font_size    = large
+	procs_font_size      = large
+	nodes_font_size      = xlarge
+
+  SCOPE = UCTD_PARAMETER_ESTIMATE
+  //ACTION = STATION_ALL = true
+
+	action = FGR_SHOW = truth
+  action = FGR_SHOW = guess
+  action = FGR_SHOW = both
+
+  button_one   = DEPLOY_ALL  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false # STATION_KEEP_ALL=false 
+  button_one   = RETURN_ALL=false
+  button_one   = FRONT_SURVEY=true
+  button_two   = RETURN_ALL  # RETURN_ALL=true 
+
+  button_three = ALLSTOP  # DEPLOY_ALL=false # MOOS_MANUAL_OVERRIDE_ALL=true
+//  button_four  = SHOW:both   # FGR_SHOW=both
+  button_four = STATION # STATION_KEEP_ALL=true
+}

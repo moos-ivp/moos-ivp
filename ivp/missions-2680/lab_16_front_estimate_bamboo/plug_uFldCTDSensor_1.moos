@@ -1,0 +1,26 @@
+//--------------------------------------------------
+// uFldGenericSensor configuration block from plugin
+
+ProcessConfig = uFldCTDSensor
+{
+  AppTick   = 3
+  CommsTick = 3
+
+   // Configuring Artificial Noise                               
+  xmin  = 0       
+  xmax  = 500       
+  ymin  = -400       
+  ymax  =  0  
+     
+  offset = -30
+  angle  = 30
+  amplitude = 34
+  period = 40
+  wavelength = 80
+  alpha = 350
+  beta = 15
+  temperature_north = 16
+  temperature_south = 29
+  sigma = 0.01
+}
+
