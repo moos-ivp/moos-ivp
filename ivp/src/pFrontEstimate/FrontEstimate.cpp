@@ -62,6 +62,9 @@ CFrontEstimate::CFrontEstimate()
   min_T_S = 20;
   max_T_S = 30; 
 
+  m_report_interval = -1;
+  m_report_last = 0;
+  
   report_var = "UCTD_PARAMETER_ESTIMATE";
 }
 
@@ -181,6 +184,10 @@ bool CFrontEstimate::OnStartUp()
       if ( concurrent )
 	MOOSTrace("Annealing Concurrently with Survey \n");
     }     
+
+  if(m_MissionReader.GetConfigurationParam("report_interval",sVal))
+    m_report_interval = atof(sVal.c_str());
+
   
   if(m_MissionReader.GetConfigurationParam("adaptive",sVal))
     {
@@ -234,6 +241,7 @@ bool CFrontEstimate::OnConnectToServer()
 {
   Register("SURVEY_UNDERWAY",0);
   Register("UCTD_MSMNT_REPORT",0);
+  Register("FE_REPORT_REQ",0);
   Register("APPCAST_REQ",0);
   AppCastingMOOSApp::RegisterVariables();
   return(true);
@@ -264,22 +272,19 @@ bool CFrontEstimate::Iterate()
       ((concurrent && completed) || 
        (!concurrent && anneal_step == cooling_steps)))
     {
-      vector<double> result;
-      anneal.getEstimate(result);
-      offset =     result[0];
-      angle  =     result[1];
-      amplitude =  result[2];
-      period =     result[3];
-      wavelength = result[4];
-      alpha =      result[5];
-      beta =       result[6];
-      T_N  =       result[7];
-      T_S  =       result[8];
-      
       postParameterReport();
       report_sent = true;
       new_anneal_report=true;
     }
+
+  if(in_survey && (m_report_interval > 0)) {
+    double elapsed = m_curr_time - m_report_last;
+    if(elapsed > m_report_interval) {
+      postParameterReport();
+      m_report_last = m_curr_time;
+    }
+  }
+
   
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -311,6 +316,9 @@ bool CFrontEstimate::OnNewMail(MOOSMSG_LIST &NewMail)
 	  num_meas += 1;
 	  MOOSTrace("New measurement added, Total = %d\n", num_meas);
 	}
+      else if (rMsg.m_sKey == "FE_REPORT_REQ" && in_survey)
+	postParameterReport();
+	
       else if (rMsg.m_sKey == "SURVEY_UNDERWAY")
 	{
 	  if ( !in_survey && rMsg.m_sVal =="true")
@@ -337,6 +345,18 @@ bool CFrontEstimate::OnNewMail(MOOSMSG_LIST &NewMail)
 
 void CFrontEstimate::postParameterReport()
 {
+  vector<double> result;
+  anneal.getEstimate(result);
+  offset =     result[0];
+  angle  =     result[1];
+  amplitude =  result[2];
+  period =     result[3];
+  wavelength = result[4];
+  alpha =      result[5];
+  beta =       result[6];
+  T_N  =       result[7];
+  T_S  =       result[8];
+      
   string sval;
   sval = "vname=" + vname;
   sval += ",offset=" + doubleToString(offset);

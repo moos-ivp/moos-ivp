@@ -1,15 +1,17 @@
 /************************************************************/
-/*    NAME:                                                 */
+/*    NAME: H.Schmidt and M.Benjamin                        */
 /*    ORGN: MIT                                             */
 /*    FILE: GradeFrontEstimate.h                            */
 /*    DATE: January 2012                                    */
 /************************************************************/
 
-#ifndef GradeFrontEstimate_HEADER
-#define GradeFrontEstimate_HEADER
+#ifndef GRADE_FRONT_ESTIMATE_HEADER
+#define GRADE_FRONT_ESTIMATE_HEADER
 
+#include <string> 
 #include "MOOS/libMOOS/MOOSLib.h"
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
+
 class GradeFrontEstimate : public AppCastingMOOSApp
 {
  public:
@@ -23,14 +25,15 @@ class GradeFrontEstimate : public AppCastingMOOSApp
    bool OnStartUp();
    void RegisterVariables();
    
-   std::string    handleSensingReport(const std::string&);
-   bool buildReport();
-   void    postSensingScore(std::string vname, double error, double score);
-   bool SetParam(std::string param,std::string value);
-   void setCurrTime(double new_time);
-   void setStartTime(double new_time);
+   std::string  handleSensingReport(const std::string&);
+   bool  buildReport();
+   void  postSensingScore(std::string vname, double error, double score);
+   bool  SetParam(std::string param,std::string value);
+   void  setCurrTime(double new_time);
+   void  setStartTime(double new_time);
  protected:
-   std::string estimate_report;//what you get from UCTD_PARAMETER_ESTIMATE
+   std::string estimate_report;      // Curr Contents of UCTD_PARAMETER_ESTIMATE
+   std::string estimate_report_prev; // Prev Contents of UCTD_PARAMETER_ESTIMATE
    bool reported;
    std::string msg_appcast;//message for appcasting report
    std::string front_model_vars;//string from CTDSensor_MOOSApp that describes true values
@@ -68,6 +71,9 @@ class GradeFrontEstimate : public AppCastingMOOSApp
   // added by mikerb may1518
   double m_start_time_local;
   double m_db_uptime;
+
+  unsigned int m_report_count;
+  
 };
 
 #endif 

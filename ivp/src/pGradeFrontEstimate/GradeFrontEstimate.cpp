@@ -29,6 +29,7 @@ GradeFrontEstimate::GradeFrontEstimate()
   m_start_time_local = 0;
   m_db_uptime  = 0;
 
+  m_report_count = 0;
   
   // Configuration variables
   m_term_report_interval = 0.8;      // realtime (non-timewarp) seconds
@@ -61,18 +62,21 @@ GradeFrontEstimate::~GradeFrontEstimate()
 
 bool GradeFrontEstimate::OnNewMail(MOOSMSG_LIST &NewMail)
 {
-  MOOSMSG_LIST::iterator p;
   AppCastingMOOSApp::OnNewMail(NewMail);
+
+  MOOSMSG_LIST::iterator p;
   std::string old_front_model_vars=front_model_vars;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 
     double dval  = msg.GetDouble(); 
-    if (key=="UCTD_PARAMETER_ESTIMATE" && !reported ){
+    if(key=="UCTD_PARAMETER_ESTIMATE"){
+      estimate_report_prev=estimate_report;
       estimate_report=sval;
       setCurrTime(MOOSTime());
       reported=true;
+      m_report_count++;
     }
     if(key == "DB_UPTIME") {
       m_db_uptime = dval;
@@ -366,26 +370,32 @@ std::string GradeFrontEstimate::handleSensingReport(const string& request)
   postSensingScore(vname,error, score);
   return(s.str());
 }
+
+//---------------------------------------------------------------------
+// Procedure: buildReport()
+
 bool GradeFrontEstimate::buildReport()
 {
-  m_msgs << "GradeFrontEstimate      " << endl;
-  m_msgs << "------------------------" << endl;
-  m_msgs << "Start time   " << m_start_time_local << endl ;
-  std::string outstring;
-  if (reported){
-    
-    outstring=handleSensingReport(estimate_report);
-    msg_appcast=outstring;
-    reported=false;
+  //if(!reported || (estimate_report == "")) {
+  if(estimate_report == "") {
+    m_msgs << "waiting for an estimate report ..." << endl;
+    return(true);
   }
   
-  else if (estimate_report=="") {
-    outstring= "waiting for an estimate report ...\n";
-  }
-  else {
-    outstring=msg_appcast;
-  }
-  m_msgs << outstring;
+  m_msgs << "GradeFrontEstimate      " << endl;
+  m_msgs << "------------------------" << endl;
+  m_msgs << "Start time: " << m_start_time_local << endl;
+  m_msgs << "Reports:    " << m_report_count << endl;
+
+  string outstring1 = handleSensingReport(estimate_report);
+  m_msgs << outstring1 << endl;
+
+  if(estimate_report_prev == "")
+    return(true);
+
+  m_msgs << endl;
+  string outstring2 = handleSensingReport(estimate_report_prev);
+  m_msgs << outstring2 << endl;
   
   return(true);
 }

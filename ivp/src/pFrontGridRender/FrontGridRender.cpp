@@ -21,21 +21,24 @@ FrontGridRender::FrontGridRender()
   m_iterations = 0;
   m_timewarp   = 1;
 
-  m_true_params_set  = 0;
-  m_guess_params_set = 0;
+  m_true_params_set   = 0;
+  m_guess_params_set1 = 0;
+  m_guess_params_set2 = 0;
   
   // Last time a grid was posted and how often do we post (realtime)
   m_last_grid_post_time = 0;
   m_grid_post_interval  = 0.15;
 
   // Set the default rendering values
-  m_grid_truth_show = true;
-  m_grid_guess_show = false;
+  m_grid_truth_show  = true;
+  m_grid_guess1_show = false;
+  m_grid_guess2_show = false;
 
   // The m_grid_*_active variables represent whether the last grid posting of
   // that type was made with active=true or not.
-  m_grid_truth_active = false;
-  m_grid_guess_active = false;
+  m_grid_truth_active  = false;
+  m_grid_guess1_active = false;
+  m_grid_guess2_active = false;
 
   // Last time terminal report generated and how often do we post (realtime)
   m_last_report_time = 0;
@@ -54,21 +57,6 @@ bool FrontGridRender::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     string key   = msg.GetKey();
     string sval  = msg.GetString(); 
-    
-    if(key == "UCTD_TRUE_PARAMETERS")
-      handleCTDParameters(sval, "truth");
-    else if(key == "UCTD_PARAMETER_ESTIMATE")
-      handleCTDParameters(sval, "guess");
-    else if(key == "FGR_SHOW") {
-      sval = tolower(sval);
-      m_grid_truth_show = false;
-      m_grid_guess_show = false;
-      if((sval == "truth") || (sval == "both"))
-	m_grid_truth_show = true;
-      if((sval == "guess") || (sval == "both"))
-	m_grid_guess_show = true;
-    }
-    
 #if 0 // Keep these around just for template
     string comm  = msg.GetCommunity();
     double dval  = msg.GetDouble();
@@ -77,9 +65,29 @@ bool FrontGridRender::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
 #endif
-   }
+    
+    if(key == "UCTD_TRUE_PARAMETERS")
+      handleCTDParameters(sval, "truth");
+    else if(key == "UCTD_PARAMETER_ESTIMATE")
+      handleCTDParameters(sval, "guess");
+    else if(key == "FGR_SHOW_TRUTH") 
+      setBooleanOnString(m_grid_truth_show, sval);
+    else if(key == "FGR_SHOW_GUESS") {
+      if(tolower(sval) == m_vname1)
+	m_grid_guess1_show = true;
+      if(tolower(sval) == m_vname2)
+	m_grid_guess2_show = true;
+    }
+    else if(key == "FGR_HIDE_GUESS") {
+      if(tolower(sval) == m_vname1)
+	m_grid_guess1_show = false;
+      if(tolower(sval) == m_vname2)
+	m_grid_guess2_show = false;
+    }
+    
+  }
 	
-   return(true);
+  return(true);
 }
 
 //---------------------------------------------------------
@@ -112,12 +120,19 @@ bool FrontGridRender::Iterate()
     else
       postGridTruth(false);
 
-    if(m_grid_guess_show) {
-      updateGridGuess();
-      postGridGuess(true);
+    if(m_grid_guess1_show) {
+      updateGridGuess1();
+      postGridGuess1(true);
     }
     else
-      postGridGuess(false);
+      postGridGuess1(false);
+
+    if(m_grid_guess2_show) {
+      updateGridGuess2();
+      postGridGuess2(true);
+    }
+    else
+      postGridGuess2(false);
 
     m_last_grid_post_time = m_curr_time;
   }
@@ -163,8 +178,9 @@ bool FrontGridRender::OnStartUp()
     }
   }
   
-  m_grid_truth = string2ConvexGrid(grid_config);
-  m_grid_guess = string2ConvexGrid(grid_config);
+  m_grid_truth  = string2ConvexGrid(grid_config);
+  m_grid_guess1 = string2ConvexGrid(grid_config);
+  m_grid_guess2 = string2ConvexGrid(grid_config);
   unsigned int grid_elements = m_grid_truth.size();
 
   m_map_memos["Initial Grid Elements: " + uintToString(grid_elements)]++;
@@ -182,7 +198,9 @@ void FrontGridRender::RegisterVariables()
 {
   Register("UCTD_TRUE_PARAMETERS", 0);
   Register("UCTD_PARAMETER_ESTIMATE", 0);
-  Register("FGR_SHOW", 0);
+  Register("FGR_SHOW_TRUTH", 0);
+  Register("FGR_SHOW_GUESS", 0);
+  Register("FGR_HIDE_GUESS", 0);
   AppCastingMOOSApp::RegisterVariables();
 }
 
@@ -214,7 +232,7 @@ bool FrontGridRender::handleCTDParameters(string str, string truth_or_guess)
     string value = svector[i];
 
     if(param == "vname")
-      s_vname = value;
+      s_vname = tolower(value);
     else if((param == "offset") && isNumber(value))
        s_offset = value;
     else if((param == "angle") && isNumber(value))
@@ -279,6 +297,19 @@ bool FrontGridRender::handleCTDParameters(string str, string truth_or_guess)
     return(false);
   }
 
+  if(s_vname != "shoreside") {
+    if(m_vname1 == "")
+      m_vname1 = s_vname;
+    else if((m_vname2 == "") && (s_vname != m_vname1))
+      m_vname2 = s_vname;
+
+    if((s_vname != m_vname1) && (s_vname != m_vname2)) {
+      m_map_memos["Guess from third vehicle rejected"]++;
+      return(false);
+    }
+  }
+
+  
   if(truth_or_guess == "truth") {
     m_true_params_set++;
     m_frontsim_truth.setVars(atof(s_offset.c_str()),
@@ -292,18 +323,31 @@ bool FrontGridRender::handleCTDParameters(string str, string truth_or_guess)
 			     atof(s_tsouth.c_str()));
     m_map_memos["Successful CTD True-Parameter Set"]++;
   }  
-  else {
-    m_guess_params_set++;
-    m_frontsim_guess.setVars(atof(s_offset.c_str()),
-			     atof(s_angle.c_str()),
-			     atof(s_amplitude.c_str()),
-			     atof(s_period.c_str()),
-			     atof(s_wavelength.c_str()),
-			     atof(s_alpha.c_str()),
-			     atof(s_beta.c_str()),
-			     atof(s_tnorth.c_str()),
-			     atof(s_tsouth.c_str()));
-    m_map_memos["Successful CTD Guess-Parameter Set"]++;
+  else if(s_vname == m_vname1) {
+    m_guess_params_set1++;
+    m_frontsim_guess1.setVars(atof(s_offset.c_str()),
+			      atof(s_angle.c_str()),
+			      atof(s_amplitude.c_str()),
+			      atof(s_period.c_str()),
+			      atof(s_wavelength.c_str()),
+			      atof(s_alpha.c_str()),
+			      atof(s_beta.c_str()),
+			      atof(s_tnorth.c_str()),
+			      atof(s_tsouth.c_str()));
+    m_map_memos["Successful CTD Guess-Parameter Set1"]++;
+  }
+  else if(s_vname == m_vname2) {
+    m_guess_params_set2++;
+    m_frontsim_guess2.setVars(atof(s_offset.c_str()),
+			      atof(s_angle.c_str()),
+			      atof(s_amplitude.c_str()),
+			      atof(s_period.c_str()),
+			      atof(s_wavelength.c_str()),
+			      atof(s_alpha.c_str()),
+			      atof(s_beta.c_str()),
+			      atof(s_tnorth.c_str()),
+			      atof(s_tsouth.c_str()));
+    m_map_memos["Successful CTD Guess-Parameter Set2"]++;
   }
 
   return(true);
@@ -326,18 +370,34 @@ void FrontGridRender::updateGridTruth()
 }
 
 //------------------------------------------------------------
-// Procedure: updateGridGuess()
+// Procedure: updateGridGuess1()
 
-void FrontGridRender::updateGridGuess()
+void FrontGridRender::updateGridGuess1()
 {
-  unsigned int i, gsize = m_grid_guess.size();
+  unsigned int i, gsize = m_grid_guess1.size();
   for(i=0; i<gsize; i++) {
-    double cx = m_grid_guess.getElement(i).getCenterX();
-    double cy = m_grid_guess.getElement(i).getCenterY();
+    double cx = m_grid_guess1.getElement(i).getCenterX();
+    double cy = m_grid_guess1.getElement(i).getCenterY();
 
-    double temp = m_frontsim_guess.tempFunction(m_curr_time, cx, cy);
+    double temp = m_frontsim_guess1.tempFunction(m_curr_time, cx, cy);
 
-    m_grid_guess.setVal(i, temp);
+    m_grid_guess1.setVal(i, temp);
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: updateGridGuess2()
+
+void FrontGridRender::updateGridGuess2()
+{
+  unsigned int i, gsize = m_grid_guess2.size();
+  for(i=0; i<gsize; i++) {
+    double cx = m_grid_guess2.getElement(i).getCenterX();
+    double cy = m_grid_guess2.getElement(i).getCenterY();
+    
+    double temp = m_frontsim_guess2.tempFunction(m_curr_time, cx, cy);
+    
+    m_grid_guess2.setVal(i, temp);
   }
 }
 
@@ -368,26 +428,50 @@ void FrontGridRender::postGridTruth(bool active)
 }
 
 //------------------------------------------------------------
-// Procedure: postGridGuess
+// Procedure: postGridGuess1()
 
-void FrontGridRender::postGridGuess(bool active)
+void FrontGridRender::postGridGuess1(bool active)
 {
   // If setting inactive and already inactive, just ignore
-  if(!active && !m_grid_guess_active)
+  if(!active && !m_grid_guess1_active)
     return;
 
   if(active) {
-    m_grid_guess_active = true;
-    m_grid_guess.set_active(true);
+    m_grid_guess1_active = true;
+    m_grid_guess1.set_active(true);
   }
   else {
-    m_grid_guess_active = false;
-    m_grid_guess.set_active(false);
+    m_grid_guess1_active = false;
+    m_grid_guess1.set_active(false);
   }
 
-  m_grid_guess.set_label("front_grid_guess");
-  string spec = m_grid_guess.get_spec();
-  m_Comms.Notify("VIEW_GRID", spec);
+  m_grid_guess1.set_label("front_grid1_guess");
+  string spec = m_grid_guess1.get_spec();
+  Notify("VIEW_GRID", spec);
+}
+
+
+//------------------------------------------------------------
+// Procedure: postGridGuess2()
+
+void FrontGridRender::postGridGuess2(bool active)
+{
+  // If setting inactive and already inactive, just ignore
+  if(!active && !m_grid_guess2_active)
+    return;
+
+  if(active) {
+    m_grid_guess2_active = true;
+    m_grid_guess2.set_active(true);
+  }
+  else {
+    m_grid_guess2_active = false;
+    m_grid_guess2.set_active(false);
+  }
+
+  m_grid_guess2.set_label("front_grid2_guess");
+  string spec = m_grid_guess2.get_spec();
+  Notify("VIEW_GRID", spec);
 }
 
 
@@ -403,12 +487,14 @@ void FrontGridRender::printReport()
   cout << "pFrontGridRender Report (" << m_iterations << ")" << endl;
 
   cout << termColor() << endl;
-  cout << "Grid Size:       " << m_grid_truth.size() << endl;
-  cout << "True-Params Set: " << m_true_params_set << endl;
-  cout << "Guess-Params Set: " << m_guess_params_set << endl;
+  cout << "Grid Size:         " << m_grid_truth.size() << endl;
+  cout << "True-Params Set:   " << m_true_params_set << endl;
+  cout << "Guess-Params Set1: " << m_guess_params_set1 << endl;
+  cout << "Guess-Params Set2: " << m_guess_params_set2 << endl;
   
-  cout << "Grid Truth Show: " << boolToString(m_grid_truth_show) << endl;
-  cout << "Grid Guess Show: " << boolToString(m_grid_guess_show) << endl;
+  cout << "Grid Truth  Show: " << boolToString(m_grid_truth_show)  << endl;
+  cout << "Grid Guess1 Show: " << boolToString(m_grid_guess1_show) << endl;
+  cout << "Grid Guess2 Show: " << boolToString(m_grid_guess2_show) << endl;
 
   // Part 2: Memo Messages
   cout << endl;
@@ -423,19 +509,24 @@ void FrontGridRender::printReport()
 
 bool FrontGridRender::buildReport()
 {
-  // Part 1: Header                                                                                                                                                                                                                           
+  // Part 1: Header 
   m_msgs << endl << endl << endl << endl << endl;
   m_msgs << "======================================================" << endl;
   m_msgs << "pFrontGridRender Report (" << m_iterations << ")" << endl;
 
   m_msgs << termColor() << endl;
-  m_msgs << "Grid Size:       " << m_grid_truth.size() << endl;
-  m_msgs << "True-Params Set: " << m_true_params_set << endl;
-  m_msgs << "Guess-Params Set: " << m_guess_params_set << endl;
+  m_msgs << "Grid Size:         " << m_grid_truth.size() << endl;
+  m_msgs << "True-Params Set:   " << m_true_params_set << endl;
+  m_msgs << "Guess-Params Set1: " << m_guess_params_set1 << endl;
+  m_msgs << "Guess-Params Set2: " << m_guess_params_set2 << endl;
 
-  m_msgs << "Grid Truth Show: " << boolToString(m_grid_truth_show) << endl;
-  m_msgs << "Grid Guess Show: " << boolToString(m_grid_guess_show) << endl;
+  m_msgs << "Grid Truth  Show: " << boolToString(m_grid_truth_show)  << endl;
+  m_msgs << "Grid Guess1 Show: " << boolToString(m_grid_guess1_show) << endl;
+  m_msgs << "Grid Guess2 Show: " << boolToString(m_grid_guess2_show) << endl;
 
+  m_msgs << "VName 1: [" << m_vname1 << "]" << endl;
+  m_msgs << "VName 2: [" << m_vname2 << "]" << endl;
+  
   // Part 2: Memo Messages                                                                                                                                                                                                                    
   m_msgs << endl;
   m_msgs << "Internal Memos:                            " << endl;
