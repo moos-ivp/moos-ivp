@@ -126,6 +126,10 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
       m_record.setYaw(ddata);
     else if(key == "NAV_TRAJECTORY")
       m_record.setTrajectory(sdata);
+    else if(key == "PLATFORM_COLOR") {
+      if(isColor(sdata))
+	m_record.setColor(sdata);
+    }
     else if(key == "THRUST_MODE_REVERSE") {
       bool reverse = (tolower(sdata)=="true");
       m_record.setThrustModeReverse(reverse);
@@ -271,7 +275,7 @@ void NodeReporter::registerVariables()
   Register("THRUST_MODE_REVERSE", 0);
   
   Register("PNR_PAUSE", 0);
-
+  Register("PLATFORM_COLOR", 0);
 }
 
 //-----------------------------------------------------------------
@@ -359,7 +363,8 @@ bool NodeReporter::OnStartUp()
 	handled = true;
       }
     }      
-    else if(param == "group") {
+    else if((param == "platform_group") ||
+	    (param == "group")) {
       m_group_name = value;
       handled = true;
     }

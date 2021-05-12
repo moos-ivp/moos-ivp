@@ -93,6 +93,7 @@ void showExampleConfigAndExit()
   blk("  // Configure key aspects of the node                          ");
   blk("  platform_type      = glider  "," // or {uuv,auv,ship,kayak}   ");
   blk("  platform_length    = 8       "," // meters.  Range [0,inf)    ");
+  blk("  platform_group     = alpha   "," // Default is no group       ");
   blk("  platform_color     = green   "," // or any legal color        ");
   blk("                                                                ");
   blk("  // Configure optional blackout functionality                  ");
