@@ -27,6 +27,8 @@
 #define VAR_DATA_PAIR_HEADER
 
 #include <string>
+#include <vector>
+#include <set>
 
 class VarDataPair
 {
@@ -73,6 +75,9 @@ public:
   
   std::string getPrintable() const;
 
+  std::vector<std::string> getMacroVector() const;
+  std::set<std::string>    getMacroSet() const;
+  
 protected:
   std::string m_var;
   std::string m_sdata;

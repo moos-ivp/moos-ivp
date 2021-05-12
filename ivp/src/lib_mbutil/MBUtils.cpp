@@ -2680,4 +2680,41 @@ string stringVectorToString(vector<string> str_vector, char sep)
   return(result);
 }
 
+//---------------------------------------------------------
+// Procedure: intToMonth()
+
+string intToMonth(int imonth, bool brief)
+{
+  string month = "unknown";
+  if(imonth == 1)
+    month = "January";
+  else if(imonth == 2)
+    month = "February";
+  else if(imonth == 3)
+    month = "March";
+  else if(imonth == 4)
+    month = "April";
+  else if(imonth == 5)
+    month = "May";
+  else if(imonth == 6)
+    month = "June";
+  else if(imonth == 7)
+    month = "July";
+  else if(imonth == 8)
+    month = "August";
+  else if(imonth == 9)
+    month = "September";
+  else if(imonth == 10)
+    month = "October";
+  else if(imonth == 11)
+    month = "November";
+  else if(imonth == 12)
+    month = "December";
+  
+  if(brief)
+    month = month.substr(0,3);
+
+  return(month);
+}
+
 

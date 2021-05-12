@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include "VarDataPair.h"
 #include "MBUtils.h"
+#include "MacroUtils.h"
 
 using namespace std;
 
@@ -306,6 +307,30 @@ string VarDataPair::getPrintable() const
   return(rstring);
 }
 
+
+//------------------------------------------------------------------
+// Procedure: getMacroSet()
+
+set<string> VarDataPair::getMacroSet() const
+{
+  set<string> macro_set;
+  vector<string> macros = getMacrosFromString(m_sdata);
+  for(unsigned int i=0; i<macros.size(); i++)
+    macro_set.insert(macros[i]);
+    
+  return(macro_set);
+}
+
+
+//------------------------------------------------------------------
+// Procedure: getMacroVector()
+
+vector<string> VarDataPair::getMacroVector() const
+{
+  return(getMacrosFromString(m_sdata));
+}
+
+
 //------------------------------------------------------------------
 // Procedure: stringToVarDataPair()
 //   Example: var=MSG, sval=hello, key=foo, ptype=a
@@ -342,7 +367,4 @@ VarDataPair stringToVarDataPair(string str)
 
   return(pair);
 }
-
-
-
 

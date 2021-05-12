@@ -27,6 +27,7 @@
 #define MACRO_UTILS_HEADER
 
 #include <string>
+#include <vector>
 
 std::string macroExpand(std::string, std::string, std::string);
 
@@ -40,5 +41,7 @@ std::string macroExpand(std::string, std::string, unsigned int);
 
 
 std::string getCounterMacro(std::string);
+
+std::vector<std::string> getMacrosFromString(std::string);
 
 #endif

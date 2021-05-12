@@ -2166,7 +2166,7 @@ void MarineViewer::drawHexagons()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawGrids
+// Procedure: drawGrids()
 
 void MarineViewer::drawGrids(const vector<XYGrid>& grids)
 {
@@ -2174,12 +2174,14 @@ void MarineViewer::drawGrids(const vector<XYGrid>& grids)
     return;
 
   unsigned int i, vsize = grids.size();
-  for(i=0; i<vsize; i++)
-    drawGrid(grids[i]);
+  for(i=0; i<vsize; i++) {
+    //if(grids[i].active())
+      drawGrid(grids[i]);
+  }
 }
 
 //-------------------------------------------------------------
-// Procedure: drawGrid
+// Procedure: drawGrid()
 
 void MarineViewer::drawGrid(const XYGrid& grid)
 {
@@ -2261,8 +2263,10 @@ void MarineViewer::drawConvexGrids(const vector<XYConvexGrid>& grids)
     return;
 
   unsigned int i, vsize = grids.size();
-  for(i=0; i<vsize; i++)
-    drawConvexGrid(grids[i]);
+  for(i=0; i<vsize; i++) {
+    if(grids[i].active())
+      drawConvexGrid(grids[i]);
+  }
 }
 
 //-------------------------------------------------------------

@@ -136,3 +136,35 @@ string getCounterMacro(string str)
 }
 
 
+
+//---------------------------------------------------------
+// Procedure: getMacrosFromString()
+//   Example: getMacroFromString("World is $[CTR_WORLD] years $[OLD]");
+//            returns: CTR_WORLD, OLD
+//   Returns: empty string if no macros found
+
+vector<string> getMacrosFromString(string str)
+{
+  vector<string> macros;
+  if(!strContains(str, '$'))
+    return(macros);
+
+  bool done = false;
+  while(!done) {
+    biteStringX(str, '$');
+    if(str.size() > 2) {    // At least [X]
+      if((str[0] == '[') && strContains(str, ']')) {
+	str = str.substr(1);
+	string macro = biteStringX(str, ']');
+	if(macro.size() != 0)
+	  macros.push_back(macro);
+      }
+    }
+    if((str.size() == 0) || !strContains(str, '$'))
+      done = true;
+  }
+
+  return(macros);
+}
+
+
