@@ -17,6 +17,9 @@ IP_ADDR="localhost"
 MOOS_PORT="9000"
 PSHARE_PORT="9200"
 
+VNAME1="archie"
+VNAME2="betty"
+
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
@@ -42,6 +45,9 @@ for ARGI; do
         echo "    Port number of this vehicle's pShare port    "
 	echo "  --mport=<9000>                                 "
 	echo "    Port number of this vehicle's MOOSDB port    "
+        echo "                                                 "
+	echo "  --vname1=<archie>                              "
+	echo "  --vname2=<betty>                               "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" ]; then
         TIME_WARP=$ARGI
@@ -61,6 +67,11 @@ for ARGI; do
         PSHARE_PORT="${ARGI#--pshare=*}"
     elif [ "${ARGI:0:7}" = "--mport" ]; then
 	MOOS_PORT="${ARGI#--mport=*}"
+
+    elif [ "${ARGI:0:9}" = "--vname1=" ]; then
+	VNAME1="${ARGI#--vname1=*}"
+    elif [ "${ARGI:0:9}" = "--vname2=" ]; then
+	VNAME2="${ARGI#--vname2=*}"
     else 
 	echo "$ME Bad Arg:[$ARGI]. Exit Code 1."
 	exit 1
@@ -77,6 +88,8 @@ if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then
     echo "AUTO_LAUNCHED = [${AUTO_LAUNCHED}]"
     echo "PSHARE_PORT =   [${PSHARE_PORT}]"
     echo "MOOS_PORT =     [${MOOS_PORT}]"
+    echo "VNAME1 =        [${VNAME1}]"
+    echo "VNAME2 =        [${VNAME2}]"
     echo -n "Hit any key to continue with launching"
     read ANSWER
 fi
@@ -86,7 +99,8 @@ fi
 #-------------------------------------------------------
 nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
        PSHARE_PORT=$PSHARE_PORT     MOOS_PORT=$MOOS_PORT          \
-       IP_ADDR=$IP_ADDR  
+       IP_ADDR=$IP_ADDR             VNAME1=$VNAME1                \
+       VNAME2=$VNAME2
 
 if [ ${JUST_MAKE} = "yes" ]; then
     echo "Files assembled; No launches; exiting per request."

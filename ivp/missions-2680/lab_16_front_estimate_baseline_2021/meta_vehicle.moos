@@ -59,8 +59,8 @@ ProcessConfig = pFrontEstimate
   min_wavelength = 100
   max_wavelength = 300
 
-  min_alpha = 399
-  max_alpha = 401
+  min_alpha = 500
+  max_alpha = 500
 
   min_beta = 10
   max_beta = 30  //
@@ -70,6 +70,8 @@ ProcessConfig = pFrontEstimate
   max_T_S = 30 
   concurrent = $(CONCURRENT)
   adaptive=$(ADAPTIVE)
+
+	report_interval = 30;
 }
 
 //----------------------------------------------------

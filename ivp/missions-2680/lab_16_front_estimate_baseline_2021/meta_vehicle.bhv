@@ -46,7 +46,7 @@ Behavior = BHV_Waypoint
 
         repeat = 0
   visual_hints = nextpt_color=red, nextpt_lcolor=green
-  visual_hints = vertex_color=yellow, edge_color=gray25
+  visual_hints = vertex_color=yellow, edge_color=gray75
   visual_hints = vertex_size=1, edge_size=1
 }
 

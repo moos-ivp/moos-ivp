@@ -9,7 +9,7 @@ ProcessConfig = pLogger
 #ifdef VNAME
   File    = LOG_%(VNAME)
 #else
-  File    = LOG_Shoreside
+  File    = LOG_SHORESIDE
 #endif
 	
 	PATH      = ./
