@@ -2893,9 +2893,17 @@ void PMV_GUI::resizeWidgets()
 
   double fld_hgt = dh * 0.24; // height of data field output
 
-  if(dw < 800) {
-    resizeDataText(10);
+  if(dw < 900) {
+    resizeDataText(6);
     m_scope_value->label("Val:");
+  }
+  else if(dw < 1100) {
+    resizeDataText(8);
+    m_scope_value->label("Val:");
+  }
+  else if(dw < 1400) {
+    resizeDataText(10);
+    m_scope_value->label("Valx:");
   }
   else {
     resizeDataText(12);
