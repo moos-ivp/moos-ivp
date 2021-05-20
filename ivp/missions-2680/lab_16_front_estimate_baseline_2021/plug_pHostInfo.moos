@@ -9,5 +9,7 @@ ProcessConfig = pHostInfo
 #ifdef IP_ADDR
   default_hostip_force = $(IP_ADDR)
 #endif
+
+  secondary_hostip = localhost
 }
 

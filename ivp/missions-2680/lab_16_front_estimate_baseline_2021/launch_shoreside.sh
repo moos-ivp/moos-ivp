@@ -86,6 +86,7 @@ if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then
     echo "CMD_ARGS =      [${CMD_ARGS}]"
     echo "TIME_WARP =     [${TIME_WARP}]"
     echo "AUTO_LAUNCHED = [${AUTO_LAUNCHED}]"
+    echo "IP_ADDR =       [${IP_ADDR}]"
     echo "PSHARE_PORT =   [${PSHARE_PORT}]"
     echo "MOOS_PORT =     [${MOOS_PORT}]"
     echo "VNAME1 =        [${VNAME1}]"

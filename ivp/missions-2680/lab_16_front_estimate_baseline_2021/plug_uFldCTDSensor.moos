@@ -23,4 +23,3 @@ ProcessConfig = uFldCTDSensor
   temperature_south = 28
   sigma = 0.01
 }
-

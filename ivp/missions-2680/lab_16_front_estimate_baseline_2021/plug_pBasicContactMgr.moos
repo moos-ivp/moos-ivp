@@ -10,6 +10,8 @@ ProcessConfig = pBasicContactMgr
 
   alert_verbose = true
 
+	post_closest_range = true
+	
   contact_max_age = 3600
   display_radii   = false
 

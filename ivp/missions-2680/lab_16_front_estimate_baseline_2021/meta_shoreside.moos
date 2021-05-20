@@ -27,8 +27,8 @@ Processconfig = ANTLER
   Run = pRealm              @ NewConsole = false
 }
 
-//include plug_uFldCTDSensor.moos
-#include plug_uFldCTDSensor_1.moos
+//#include plug_uFldCTDSensor.moos
+#include plug_uFldCTDSensor_B.moos
 
 #include plug_pHostInfo.moos
 #include plug_pLogger.moos
@@ -86,7 +86,7 @@ ProcessConfig = uFldShoreBroker
 
   qbridge = DEPLOY, RETURN, NODE_REPORT, NODE_MESSAGE, STATION_KEEP
   qbridge = MOOS_MANUAL_OVERRIDE, FE_REPORT_REQ
-	qbridge  
+	qbridge = OPR_RESET
 
   bridge = src=RETURN_ALL, alias=RETURN
   bridge = src=RETURN_$V, alias=RETURN
@@ -103,9 +103,9 @@ ProcessConfig = uFldNodeComms
 	AppTick   = 2
 	CommsTick = 2
 
-	comms_range      = 1000
+	comms_range      = 75
 	critical_range   = 25
-	min_msg_interval = 0
+	min_msg_interval = 40
 	max_msg_length   = 48000
 	groups           = true
 	view_node_rpt_pulses = true
@@ -139,9 +139,7 @@ ProcessConfig = pMarineViewer
   SCOPE = UCTD_PARAMETER_ESTIMATE
   //ACTION = STATION_ALL = true
 
-	action = FGR_SHOW = truth
-  action = FGR_SHOW = guess
-  action = FGR_SHOW = both
+	action = OPR_RESET_ALL = poly
 
   button_one   = DEPLOY_ALL  # DEPLOY_ALL=true 
   button_one   = MOOS_MANUAL_OVERRIDE_ALL=false # STATION_KEEP_ALL=false 

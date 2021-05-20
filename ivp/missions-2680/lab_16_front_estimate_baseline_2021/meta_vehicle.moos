@@ -24,6 +24,7 @@ Processconfig = ANTLER
   
   Run = uTimerScript       @ NewConsole = false
   Run = pBasicContactMgr   @ NewConsole = false
+  //Run = pContactMgrV20     @ NewConsole = false
 
   Run = pRealm             @ NewConsole = false
   Run = pFrontEstimate     @ NewConsole = false
@@ -33,6 +34,7 @@ Processconfig = ANTLER
 #include plug_pHostInfo.moos
 #include plug_pLogger.moos
 #include plug_uProcessWatch.moos
+//#include plug_pContactMgrV20.moos
 #include plug_pBasicContactMgr.moos
 
 //----------------------------------------------------
