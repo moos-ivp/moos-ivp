@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// uLoadWatch configuration block from plugin
+// uLoadWatch Config Block
 
 ProcessConfig = uLoadWatch
 {

@@ -13,9 +13,9 @@ VERBOSE=""
 #-------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
-	echo "clean.sh [SWITCHES]        "
-	echo "  --verbose                " 
-	echo "  --help, -h               " 
+	echo "clean.sh [SWITCHES]                            "
+	echo "  --help, -h           Show this help message  "
+	echo "  --verbose, -v        Verbose output          "
 	exit 0;	
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ] ; then
 	VERBOSE="-v"
@@ -32,7 +32,6 @@ if [ "${VERBOSE}" = "-v" ]; then
     echo "Cleaning: $PWD"
 fi
 rm -rf  $VERBOSE   MOOSLog_*  XLOG_* LOG_* 
-rm -f   $VERBOSE   *~  *.moos++
-rm -f   $VERBOSE   targ_*
+rm -f   $VERBOSE   *~  *.moos++ targ_*
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory
 rm -f   $VERBOSE   .mem_info*

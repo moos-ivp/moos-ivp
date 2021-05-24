@@ -1,5 +1,5 @@
 //--------------------------------------------------------
-// uMemWatch Configuration Block (Created from Plugin)
+// uMemWatch Config Block
 
 ProcessConfig = uMemWatch
 {
@@ -7,6 +7,7 @@ ProcessConfig = uMemWatch
   CommsTick = 0.4
 
   absolute_time_gap = 2
+
   watch_only = pHelmIvP
 }
 

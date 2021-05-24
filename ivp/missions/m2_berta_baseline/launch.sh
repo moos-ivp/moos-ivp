@@ -1,9 +1,9 @@
 #!/bin/bash -e
 #---------------------------------------------------------------
 #   Script: launch.sh
-#  Mission: m2_berta
-#   Author: Michael Benjamin
-#   LastEd: May 8th 2021
+#  Mission:
+#   Author:
+#   LastEd: 2021-May-10
 #---------------------------------------------------------------
 #  Part 1: Set global var defaults
 #---------------------------------------------------------------
@@ -14,21 +14,18 @@ VERBOSE=""
 AUTO_LAUNCHED="no"
 NOGUI=""
 
-VNAME1="henry"    
-VNAME2="gilda"    
-
 #---------------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #---------------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
-	echo "$ME [SWITCHES] [time_warp]                                   " 
-	echo "  --help, -h           Show this help message                " 
-	echo "  --just_make, -j      Just make targ files, no launch       " 
-	echo "  --verbose, -v        Verbose output, confirm before launch " 
-	echo "  --nogui, -n          Headless mode - no pMarineViewer etc  " 
+	echo "$ME [SWITCHES] [time_warp]                                   "
+	echo "  --help, -h           Show this help message                "
+	echo "  --just_make, -j      Just make targ files, no launch       "
+	echo "  --verbose, -v        Verbose output, confirm before launch "
+	echo "  --nogui, -n          Headless mode - no pMarineViewer etc  "
 	exit 0
-    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
+    elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="-j"
@@ -36,25 +33,27 @@ for ARGI; do
 	VERBOSE="--verbose"
     elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ]; then
 	NOGUI="--nogui"
-    else 
+    else
         echo "$ME: Bad arg:" $ARGI "Exit Code 1."
         exit 1
     fi
 done
 
 #---------------------------------------------------------------
-#  Part 3: Launch the vehicles
+#  Part 3: Initialize and Launch the vehicles
 #---------------------------------------------------------------
-VLAUNCH_ARGS=" --auto --vname=henry --index=1 --start=170,-80 "
-VLAUNCH_ARGS+="--hdg=270 --spd=0 --loiter_pos=x=0,y=-95 "
+VNAME1="henry"
+VNAME2="gilda"
+
+VLAUNCH_ARGS=" --auto --vname=$VNAME1 --index=1 --start=170,-80 "
+VLAUNCH_ARGS+="--hdg=270 --spd=0 --loiter_pos=x=0,y=-95       "
 echo "$ME: Launching $VNAME1 ..."
 ./launch_vehicle.sh $VLAUNCH_ARGS $VERBOSE $JUST_MAKE $TIME_WARP
 
-VLAUNCH_ARGS=" --auto --vname=gilda --index=2 --start=-30,-80 "
-VLAUNCH_ARGS+="--hdg=90 --spd=0 --loiter_pos=x=125,y=-65 "
-echo "$ME: Launching $VNAME2 ..."
+VLAUNCH_ARGS=" --auto --vname=$VNAME2 --index=2 --start=-30,-80 "
+VLAUNCH_ARGS+="--hdg=90 --spd=0 --loiter_pos=x=125,y=-65      "
+echo "$ME: Launching $VNAME2 ..."la
 ./launch_vehicle.sh $VLAUNCH_ARGS $VERBOSE $JUST_MAKE $TIME_WARP
-
 
 #---------------------------------------------------------------
 #  Part 4: Launch the shoreside
@@ -75,3 +74,4 @@ fi
 #---------------------------------------------------------------
 uMAC targ_shoreside.moos
 kill -- -$$
+

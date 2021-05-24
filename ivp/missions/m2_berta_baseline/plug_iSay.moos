@@ -1,5 +1,5 @@
 //--------------------------------------------------------
-// iSay Configuration Block (Created from Plugin)
+// iSay Config Block
 
 ProcessConfig = iSay                                            
 {                                                               
@@ -8,10 +8,9 @@ ProcessConfig = iSay
                                                                 
   default_voice      = alex       // iSay --voices for others   
   default_rate       = 200                                      
-  //interval_policy    = from_end   // or from_start
-  interval_policy    = from_start   // or from_start
-  min_utter_interval = 1                                        
-                                                                
-  os_mode            = osx      // Default is "osx"         
+
+  interval_policy    = from_start // or from_end
+  min_utter_interval = 1                                                                 
+  os_mode            = osx        // Default is "osx"         
 }                                 
 

@@ -1,8 +1,8 @@
-#!/bin/bash 
+#!/bin/bash
 #---------------------------------------------------------------
-#   Script: launch_shoreside.sh                       
-#  Mission: m2_berta
-#--------------------------------------------------------------- 
+#   Script: launch_shoreside.sh
+#  Mission:
+#---------------------------------------------------------------
 #  Part 1: Set global var defaults
 #---------------------------------------------------------------
 ME=`basename "$0"`
@@ -24,58 +24,58 @@ VNAMES=""
 for ARGI; do
     CMD_ARGS+="${ARGI} "
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
-	echo "$ME [SWITCHES] [WARP]                            "
-	echo "  --help, -h                                     " 
-	echo "    Display this help message                    "
-	echo "  --just_make, -j                                " 
-	echo "    Just make targ files, but do not launch      "
-	echo "  --verbose, -v                                  " 
-	echo "    Verbose output, confirm before launching.    "
-	echo "  --noconfirm, -nc                               "
-	echo "    No confirmation before launching             "
-	echo "  --auto, -a                                     "
-	echo "     Auto-launched by a script.                  "
-	echo "     Will not launch uMAC as the final step.     "
+        echo "$ME [SWITCHES] [WARP]                            "
+        echo "  --help, -h                                     "
+        echo "    Display this help message                    "
+        echo "  --just_make, -j                                "
+        echo "    Just make targ files, but do not launch      "
+        echo "  --verbose, -v                                  "
+        echo "    Verbose output, confirm before launching.    "
+        echo "  --noconfirm, -nc                               "
+        echo "    No confirmation before launching             "
+        echo "  --auto, -a                                     "
+        echo "     Auto-launched by a script.                  "
+        echo "     Will not launch uMAC as the final step.     "
         echo "  --nogui, -n                                    "
         echo "     Headless mode - no pMarineViewer etc        "
-	echo "                                                 "
+        echo "                                                 "
         echo "  --ip=<localhost>                               "
         echo "    Force pHostInfo to use this IP Address       "
         echo "  --pshare=<9200>                                "
         echo "    Port number of this vehicle's pShare port    "
-	echo "  --vnames=<vnames>                              " 
-	echo "    Colon-separate list of all vehicle names     "
-	exit 0;
-    elif [ "${ARGI//[^0-9]/}" = "$ARGI" ]; then 
+        echo "  --vnames=<vnames>                              "
+        echo "    Colon-separate list of all vehicle names     "
+        exit 0;
+    elif [ "${ARGI//[^0-9]/}" = "$ARGI" ]; then
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
-	JUST_MAKE="yes"
+        JUST_MAKE="yes"
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
-	VERBOSE="yes"
+        VERBOSE="yes"
     elif [ "${ARGI}" = "--noconfirm" -o "${ARGI}" = "-nc" ]; then
-	CONFIRM="no"
+        CONFIRM="no"
     elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
-	AUTO_LAUNCHED="yes"
-	CONFIRM="no"
+        AUTO_LAUNCHED="yes"
+        CONFIRM="no"
     elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ]; then
-	LAUNCH_GUI="no"
-
+        LAUNCH_GUI="no"
+	
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
         IP_ADDR="${ARGI#--ip=*}"
     elif [ "${ARGI:0:9}" = "--pshare=" ]; then
         PSHARE_PORT="${ARGI#--pshare=*}"
     elif [ "${ARGI:0:9}" = "--vnames=" ]; then
-	VNAMES="${ARGI#--vnames=*}"
+        VNAMES="${ARGI#--vnames=*}"
     else
-	echo "$ME Bad Arg:" $ARGI " Exit Code 1"
-	exit 1
+        echo "$ME Bad Arg:" $ARGI " Exit Code 1"
+        exit 1
     fi
 done
 
 #---------------------------------------------------------------
 #  Part 3: If verbose, show vars and confirm before launching
 #---------------------------------------------------------------
-if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then 
+if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then
     echo "$ME"
     echo "CMD_ARGS =      [${CMD_ARGS}]"
     echo "TIME_WARP =     [${TIME_WARP}]"
@@ -87,15 +87,14 @@ if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then
 fi
 
 #---------------------------------------------------------------
-#  Part 4: Create the .moos and .bhv files. 
+#  Part 4: Create the .moos file.
 #---------------------------------------------------------------
-nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP  \
-       PSHARE_PORT=$PSHARE_PORT     VNAMES=$VNAMES                 \
+nsplug meta_shoreside.moos targ_shoreside.moos -f WARP=$TIME_WARP \
+       PSHARE_PORT=$PSHARE_PORT     VNAMES=$VNAMES                \
        IP_ADDR=$IP_ADDR             LAUNCH_GUI=$LAUNCH_GUI
-       
 
 if [ ${JUST_MAKE} = "yes" ]; then
-    echo "Files assembled; nothing launched; exiting per request."
+    echo "Files assembled; No launches; exiting per request."
     exit 0
 fi
 
@@ -118,3 +117,4 @@ fi
 #---------------------------------------------------------------
 uMAC targ_shoreside.moos
 kill -- -$$
+
