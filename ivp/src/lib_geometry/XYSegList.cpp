@@ -873,6 +873,10 @@ std::string XYSegList::get_spec_inactive() const
 // Procedure: closest_vertex()
 //   Purpose: Find the existing vertex that is closest to the 
 //            given point.
+//   Returns: The index of the vertex that is closest. A return
+//            of zero indicates either vertex index=0, or the
+//            SegList is empty. This can be discerned by the caller
+//            by checking the size() of the SegList.
 
 unsigned int XYSegList::closest_vertex(double x, double y) const
 {
