@@ -276,6 +276,22 @@ bool ExFilterSet::addMatchRegion(XYPolygon poly)
 }
 
 // ----------------------------------------------------------
+// Procedure: setOwnshipGroup()
+
+bool ExFilterSet::setOwnshipGroup(string group_name)
+{
+  return(setNonWhiteVarOnString(m_os_group, group_name));
+}
+
+// ----------------------------------------------------------
+// Procedure: setOwnshipType()
+
+bool ExFilterSet::setOwnshipType(string type_name)
+{
+  return(setNonWhiteVarOnString(m_os_type, type_name));
+}
+
+// ----------------------------------------------------------
 // Procedure: filterCheck()
 //   Returns: true if it passes all filters
 //      Note: This filter check will perform additional filter checks
@@ -321,17 +337,42 @@ bool ExFilterSet::filterCheck(NodeRecord record) const
   // Part 2: Handle Groups
   // ===============================================
   // Part 2A: Apply Match Groups
+#if 1
   if(m_match_groups.size() > 0) {
     if(m_match_groups.count(group) == 0)
       return(false);
   }
+  // Part 2B: Apply Ignore Groups                                                                           
+  if(m_ignore_groups.size() > 0) {
+    if(m_strict_ignore && (group == ""))
+      return(false);
+    if(m_ignore_groups.count(group))
+      return(false);
+  }
+#endif
+#if 0
+  if(m_match_groups.size() > 0) {
+    bool self_match = false;
+    if(m_match_groups.count("self") && (m_os_group == group))
+      self_match = true;
+    
+    if((m_match_groups.count(group) == 0) && !self_match)
+      return(false);
+  }
   // Part 2B: Apply Ignore Groups
   if(m_ignore_groups.size() > 0) {
+    bool self_ignore = false;
+    if(m_match_groups.count("self") && (m_os_group == group))
+      self_ignore = true;
+
+    if(self_ignore)
+      return(false);    
     if(m_strict_ignore && (group == ""))
       return(false);   
     if(m_ignore_groups.count(group))
       return(false);
   }
+#endif
 
   // ===============================================
   // Part 3: Handle Types

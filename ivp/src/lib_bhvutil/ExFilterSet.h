@@ -48,6 +48,9 @@ class ExFilterSet
   bool addIgnoreRegion(std::string);
   bool addMatchRegion(std::string);
 
+  bool setOwnshipGroup(std::string);
+  bool setOwnshipType(std::string);
+  
   bool setStrictIgnore(std::string);
   
   bool addIgnoreRegion(XYPolygon);
@@ -67,6 +70,9 @@ class ExFilterSet
  private: 
   bool     m_strict_ignore;
 
+  std::string m_os_group;
+  std::string m_os_type;
+  
   std::set<std::string> m_ignore_names;
   std::set<std::string> m_match_names;
 
