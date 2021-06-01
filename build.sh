@@ -61,8 +61,8 @@ else
     echo "=========================================" 
     echo "BUILDING All MOOS and IvP code           " 
     echo "=========================================" 
-    ./build-moos.sh
-    ./build-ivp.sh 
+    ./build-moos.sh -mx
+    ./build-ivp.sh -mx 
 fi
 
 cd "${INVOC_ABS_DIR}"
