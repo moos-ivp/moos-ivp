@@ -172,10 +172,11 @@ void showInterfaceAndExit()
   blk("                  range_actual=40.8,range_extrap=40.8,          ");
   blk("                  range_cpa=13                                  ");
   blk("                                                                ");
-  blk("  CONTACT_CLOSEST      = charlie                                ");
-  blk("  CONTACT_CLOSEST_TIME = 17514261063.3                          ");
-  blk("  CONTACT_CLOSEST_EVAL = 1                                      ");
-  blk("  CONTACT_MGR_WARNING  = Bad Node Report Received               ");
+  blk("  CONTACT_CLOSEST       = charlie                               ");
+  blk("  CONTACT_CLOSEST_TIME  = 17514261063.3                         ");
+  blk("  CONTACT_CLOSEST_RANGE = 73                      (if enabled)  ");
+  blk("  CONTACT_CLOSEST_EVAL  = 1                                     ");
+  blk("  CONTACT_MGR_WARNING   = Bad Node Report Received              ");
   blk("                                                                ");
   blk("  CONTACTS_ALERTED     = (delta,avd)(charlie,avd)               ");
   blk("  CONTACTS_COUNT       = 2  (number of alerted contacts)        ");
