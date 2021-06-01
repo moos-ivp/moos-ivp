@@ -104,9 +104,9 @@ bool GenericSensor_MOOSApp::OnConnectToServer()
 void GenericSensor_MOOSApp::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("NODE_REPORT", 0);
-  m_Comms.Register("UGS_SENSOR_REQUEST", 0);
-  m_Comms.Register("UGS_CONFIG_REQUEST", 0);
+  Register("NODE_REPORT", 0);
+  Register("UGS_SENSOR_REQUEST", 0);
+  Register("UGS_CONFIG_REQUEST", 0);
 }
 
 

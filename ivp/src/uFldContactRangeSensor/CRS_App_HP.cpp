@@ -173,9 +173,9 @@ bool CRS_App::OnConnectToServer()
 void CRS_App::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("NODE_REPORT", 0);
-  m_Comms.Register("NODE_REPORT_LOCAL", 0);
-  m_Comms.Register("CRS_RANGE_REQUEST", 0);
+  Register("NODE_REPORT", 0);
+  Register("NODE_REPORT_LOCAL", 0);
+  Register("CRS_RANGE_REQUEST", 0);
 }
 
 //---------------------------------------------------------
@@ -352,7 +352,7 @@ void CRS_App::postRangePulse(const string& node, const string& color,
     pulse.set_color("fill", color);
   }
   string spec = pulse.get_spec();
-  m_Comms.Notify("VIEW_RANGE_PULSE", spec);
+  Notify("VIEW_RANGE_PULSE", spec);
 }
 
 //------------------------------------------------------------
@@ -380,11 +380,11 @@ void CRS_App::postNodeRangeReport(const string& rec_name,
 
   if((m_report_vars == "short") || (m_report_vars == "both")) {
     string full_str = "vname=" + rec_name + "," + str;
-    m_Comms.Notify("CRS_RANGE_REPORT", full_str);
+    Notify("CRS_RANGE_REPORT", full_str);
   }
 
   if((m_report_vars == "long") || (m_report_vars == "both"))
-    m_Comms.Notify("CRS_RANGE_REPORT_" + toupper(rec_name), str);
+    Notify("CRS_RANGE_REPORT_" + toupper(rec_name), str);
 
   // Phase 2: Possibly Post the "ground-truth" reports
   if((m_rn_algorithm != "") && m_ground_truth) {
@@ -394,11 +394,11 @@ void CRS_App::postNodeRangeReport(const string& rec_name,
     
     if((m_report_vars == "short") || (m_report_vars == "both")) {
       string full_str = "vname=" + rec_name + "," + str;
-      m_Comms.Notify("CRS_RANGE_REPORT_GT", full_str);
+      Notify("CRS_RANGE_REPORT_GT", full_str);
     }
     
     if((m_report_vars == "long") || (m_report_vars == "both"))
-      m_Comms.Notify("CRS_RANGE_REPORT_GT_" + toupper(rec_name), str);
+      Notify("CRS_RANGE_REPORT_GT_" + toupper(rec_name), str);
   }
 
 }

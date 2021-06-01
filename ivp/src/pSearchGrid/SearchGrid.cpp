@@ -126,9 +126,9 @@ bool SearchGrid::OnStartUp()
 void SearchGrid::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("NODE_REPORT_LOCAL", 0);
-  m_Comms.Register("NODE_REPORT", 0);
-  m_Comms.Register("PSG_RESET_GRID", 0);
+  Register("NODE_REPORT_LOCAL", 0);
+  Register("NODE_REPORT", 0);
+  Register("PSG_RESET_GRID", 0);
 }
 
 

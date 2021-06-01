@@ -164,8 +164,8 @@ bool FV_MOOSApp::OnStartUp()
 
 void FV_MOOSApp::registerVariables()
 {
-  m_Comms.Register("BHV_IPF", 0);
-  m_Comms.Register("NAV_HEADING", 0);
+  Register("BHV_IPF", 0);
+  Register("NAV_HEADING", 0);
 }
 
 

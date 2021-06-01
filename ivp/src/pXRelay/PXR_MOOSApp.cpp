@@ -81,7 +81,7 @@ bool PXR_MOOSApp::OnConnectToServer()
 void PXR_MOOSApp::RegisterVariables()
 {
   if(m_incoming_var != "")
-    m_Comms.Register(m_incoming_var, 0);
+    Register(m_incoming_var, 0);
 }
 
 

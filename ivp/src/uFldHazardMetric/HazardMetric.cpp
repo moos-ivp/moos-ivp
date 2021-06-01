@@ -209,8 +209,8 @@ bool HazardMetric::OnStartUp()
 void HazardMetric::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("HAZARDSET_REPORT", 0);
-  m_Comms.Register("HAZARD_SEARCH_START", 0);
+  Register("HAZARDSET_REPORT", 0);
+  Register("HAZARD_SEARCH_START", 0);
 }
 
 //------------------------------------------------------------

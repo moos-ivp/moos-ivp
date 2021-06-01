@@ -199,7 +199,7 @@ bool AppCastMonitor::OnStartUp()
 
 void AppCastMonitor::RegisterVariables()
 {
-  m_Comms.Register("APPCAST", 0);
+  Register("APPCAST", 0);
 }
 
 //---------------------------------------------------------

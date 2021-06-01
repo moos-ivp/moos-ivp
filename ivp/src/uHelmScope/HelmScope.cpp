@@ -480,7 +480,7 @@ void HelmScope::handleHelmStatusVar(const string& sval)
       for(k=0; k<ksize; k++) {
 	if(m_set_helmvars.count(kvector[k]) == 0) {
 	  m_set_helmvars.insert(kvector[k]);
-	  m_Comms.Register(kvector[k], 0);
+	  Register(kvector[k], 0);
 	}
       }
     } 
@@ -521,7 +521,7 @@ void HelmScope::addScopeVariable(const string& varname)
   m_set_scopevars.insert(varname);
 
   cout << "Registering for: " << varname << endl;
-  m_Comms.Register(varname, 0);
+  Register(varname, 0);
 
   // If not already an entry for this variable add empty placeholder
   if(m_map_posts.count(varname) == 0) {

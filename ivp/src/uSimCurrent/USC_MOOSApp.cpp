@@ -134,8 +134,8 @@ bool USC_MOOSApp::OnConnectToServer()
 
 void USC_MOOSApp::registerVariables()
 {
-  m_Comms.Register("NAV_X", 0);
-  m_Comms.Register("NAV_Y", 0);
+  Register("NAV_X", 0);
+  Register("NAV_Y", 0);
 }
 
 //------------------------------------------------------------------------

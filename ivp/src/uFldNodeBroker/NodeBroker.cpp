@@ -178,8 +178,8 @@ void NodeBroker::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
 
-  m_Comms.Register("NODE_BROKER_ACK", 0);
-  m_Comms.Register("PHI_HOST_INFO", 0);
+  Register("NODE_BROKER_ACK", 0);
+  Register("PHI_HOST_INFO", 0);
 }
 
 

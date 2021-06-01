@@ -192,8 +192,8 @@ bool HostInfo::OnStartUp()
 void HostInfo::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("HOST_INFO_REQUEST", 0);
-  m_Comms.Register("PSHARE_INPUT_SUMMARY", 0);
+  Register("HOST_INFO_REQUEST", 0);
+  Register("PSHARE_INPUT_SUMMARY", 0);
 }
 
 

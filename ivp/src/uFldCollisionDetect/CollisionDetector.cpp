@@ -161,6 +161,10 @@ void CollisionDetector::handleCPAEvent(CPAEvent event)
     Notify("NEAR_MISS_TOTAL", m_total_near_misses);
   }
   
+  string event_str = "Encounter: " + v1 + " and " + v2 + ":";
+  event_str += "rank=" + rank + ", cpa=" + cpas;
+  reportEvent(event_str);
+  
   // Perhaps done if clear encounter and minimal reporting
   if((rank == "clear") && !m_report_all_encounters)
     return;

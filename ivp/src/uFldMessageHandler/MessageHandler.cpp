@@ -144,7 +144,7 @@ bool MessageHandler::OnStartUp()
 void MessageHandler::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
-  m_Comms.Register("NODE_MESSAGE", 0);
+  Register("NODE_MESSAGE", 0);
 }
 
 

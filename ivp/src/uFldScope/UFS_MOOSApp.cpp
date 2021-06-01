@@ -135,7 +135,7 @@ void UFS_MOOSApp::registerVariables()
   map<string,string>::iterator p = m_map_varkeys.begin();
   while(p != m_map_varkeys.end()) {
     string moos_var = p->first;
-    m_Comms.Register(moos_var, 0);
+    Register(moos_var, 0);
     p++;
   }
 }
