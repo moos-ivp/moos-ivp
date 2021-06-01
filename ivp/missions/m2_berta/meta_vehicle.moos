@@ -90,6 +90,8 @@ ProcessConfig = pContactMgrV20
 
 	//match_region = pts = {60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40}
 	//match_type = kayak, uuv
+
+	post_closest_range = true
 	
   display_radii     = true
   alert_range_color = gray70
