@@ -131,8 +131,12 @@ bool BHV_OpRegion::setParam(string param, string val)
   }
   else if(param == "max_depth") 
     return(setNonNegDoubleOnString(m_max_depth, val));
-  else if(param == "reset_var")
-    return(setNonWhiteVarOnString(m_reset_var, val));
+  else if(param == "reset_var") {
+    bool ok = setNonWhiteVarOnString(m_reset_var, val);
+    if(ok)
+      addInfoVars(m_reset_var);
+    return(ok);
+  }
   else if(param == "time_remaining_var")
     return(setNonWhiteVarOnString(m_time_remaining_var, val));
   else if(param == "breached_poly_flag") 

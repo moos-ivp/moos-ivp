@@ -114,12 +114,3 @@ class BHV_OpRegion : public IvPBehavior {
   bool      m_soft_poly_breach_posted;
 };
 #endif
-
-
-
-
-
-
-
-
-
