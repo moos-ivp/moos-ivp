@@ -272,6 +272,7 @@ void ZAIC_Viewer::drawLabels()
 
 void ZAIC_Viewer::drawText(int x, int y, string str)
 {
+#if 0
   int slen = str.length();
   char *buff = new char(slen+1);
   strncpy(buff, str.c_str(), slen);
@@ -279,6 +280,8 @@ void ZAIC_Viewer::drawText(int x, int y, string str)
   glRasterPos3f(x, y, 0);
   gl_draw(buff, slen);
   delete(buff);
+#endif
+  gl_draw(str.c_str(), str.length());
 }
 
 //-------------------------------------------------------------
