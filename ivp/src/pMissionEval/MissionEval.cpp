@@ -179,6 +179,8 @@ bool MissionEval::OnStartUp()
   m_mission_result = "pending";
   Notify("MISSION_RESULT", "pending");
 
+  findGeneralFlagMacros();
+  
   registerVariables();	
 
   cout << "OnStartUp() ===========================" << endl;
@@ -189,6 +191,26 @@ bool MissionEval::OnStartUp()
 
   return(true);
 }
+
+//---------------------------------------------------------
+// Procedure: findGeneralFlagMacros()
+
+void MissionEval::findGeneralFlagMacros()
+{
+  for(unsigned int i=0; i<m_result_flags.size(); i++) {
+    set<string> macro_set = m_result_flags[i].getMacroSet();
+    m_flag_macros.insert(macro_set.begin(), macro_set.end());
+  }
+  for(unsigned int i=0; i<m_pass_flags.size(); i++) {
+    set<string> macro_set = m_pass_flags[i].getMacroSet();
+    m_flag_macros.insert(macro_set.begin(), macro_set.end());
+  }
+  for(unsigned int i=0; i<m_fail_flags.size(); i++) {
+    set<string> macro_set = m_fail_flags[i].getMacroSet();
+    m_flag_macros.insert(macro_set.begin(), macro_set.end());
+  }
+}
+
 
 //---------------------------------------------------------
 // Procedure: registerVariables
@@ -208,6 +230,13 @@ void MissionEval::registerVariables()
   // Now register for all unique vars
   set<string>::iterator p;
   for(p=aspect_vars.begin(); p!=aspect_vars.end(); p++) {
+    string moos_var = *p;
+    Register(moos_var, 0);
+    m_reg_vars.insert(moos_var);
+  }
+
+  // Now register for all flag macros
+  for(p=m_flag_macros.begin(); p!=m_flag_macros.end(); p++) {
     string moos_var = *p;
     Register(moos_var, 0);
     m_reg_vars.insert(moos_var);

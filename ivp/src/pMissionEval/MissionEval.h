@@ -38,6 +38,8 @@ protected: // Utility functions
   void postResults();
   void postFlags(const std::vector<VarDataPair>&);
 
+  void findGeneralFlagMacros();
+  
   std::string expandMacros(std::string) const;
   
  protected:
@@ -50,6 +52,8 @@ protected: // Utility functions
   std::vector<VarDataPair> m_pass_flags;
   std::vector<VarDataPair> m_fail_flags;
 
+  std::set<std::string> m_flag_macros;
+  
   bool        m_result_flags_posted;
   std::string m_mission_result;
 
