@@ -133,7 +133,6 @@ ProcessConfig = uFldNodeBroker
   CommsTick = 1
 
   try_shore_host = pshare_route=localhost:$(SHORE_PSHARE)
-  try_shore_host = pshare_route=sdfsdfdoceanai.mit.edu:$(SHORE_PSHARE)
 
   bridge = src=VIEW_POLYGON
   bridge = src=VIEW_CIRCLE
