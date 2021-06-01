@@ -98,6 +98,10 @@ void showExampleConfigAndExit()
   blk("  alert = id=say, off_flag=SAY_MOOS=bye                         ");
   blk("  alert = id=say, alert_range=80, cpa_range=100                 ");
   blk("                                                                ");
+  blk("  // Type and group info about ownship                          ");
+  blk("  ownship_group = blue_team                                     ");
+  blk("  ownship_type  = kayak                                         ");
+  blk("                                                                ");
   blk("  // Global alert filters (providing nothing is fine)           ");
   blk("  ignore_name = henry,gilda                                     ");
   blk("  match_name  = abe, cal                                        ");
@@ -187,8 +191,10 @@ void showInterfaceAndExit()
   blk("                  range_actual=40.8,range_extrap=40.8,          ");
   blk("                  range_cpa=13                                  ");
   blk("                                                                ");
-  blk("  CONTACT_CLOSEST      = charlie                                ");
-  blk("  CONTACT_CLOSEST_TIME = 17514261063.3                          ");
+  blk("  CONTACT_CLOSEST       = charlie                               ");
+  blk("  CONTACT_CLOSEST_TIME  = 17514261063.3                         ");
+  blk("  CONTACT_CLOSEST_RANGE = 23.1              (if enabled)        ");
+  blk("  CONTACT_RANGES        = 23.1,63.2,77.5    (if enabled)        ");
   blk("                                                                ");
   blk("  CONTACTS_ALERTED     = (delta,avd)(charlie,avd)               ");
   blk("  CONTACTS_COUNT       = 2  (number of alerted contacts)        ");

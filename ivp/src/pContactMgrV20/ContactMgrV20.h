@@ -133,6 +133,9 @@ class ContactMgrV20 : public AppCastingMOOSApp
   double m_osh;
   double m_osv;
 
+  std::string m_os_group;
+  std::string m_os_type;
+
   double m_contacts_recap_posted;
 
   std::set<std::string> m_filtered_vnames;

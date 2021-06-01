@@ -229,7 +229,14 @@ bool ContactMgrV20::OnStartUp()
       handled = setColorOnString(m_alert_rng_color, value);
     else if(param == "cpa_range_color") 
       handled = setColorOnString(m_alert_rng_cpa_color, value);
-
+    else if(param == "ownship_group") { 
+      setNonWhiteVarOnString(m_os_group, value);
+      handled = m_filter_set.setOwnshipGroup(value);
+    }
+    else if(param == "ownship_type") {
+      setNonWhiteVarOnString(m_os_type, value);
+      handled = m_filter_set.setOwnshipType(value);
+    }
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
@@ -1460,8 +1467,18 @@ bool ContactMgrV20::buildReport()
   string bcm_req_received = uintToString(m_alert_requests_received);
   string max_age = doubleToStringX(m_contact_max_age,2);
   string reject_range = "off";
+
+  string os_group = m_os_group;
+  if(os_group == "")
+    os_group = "not specified";
+  string os_type = m_os_type;
+  if(os_type == "")
+    os_type = "not specified";
+
   if(m_reject_range > 0)
     reject_range = doubleToStringX(m_reject_range,2);
+  m_msgs << "Ownship Group:      " << os_group << endl;
+  m_msgs << "Ownship Type:       " << os_type << endl;
   m_msgs << "X/Y from Lat/Lon:   " << boolToString(m_use_geodesy)   << endl;
   m_msgs << "Contact Max Age:    " << max_age << endl;
   m_msgs << "Reject Range:       " << reject_range << endl;
