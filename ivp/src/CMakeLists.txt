@@ -136,11 +136,9 @@ SET(IVP_NON_GUI_LIBS
    lib_contacts
    lib_obstacles
    lib_ufield
-   lib_ufld_hazards
    lib_logutils
    lib_mbutil
    lib_manifest
-   lib_henrik_anneal
    )
 
 IF (${WIN32})
@@ -248,7 +246,6 @@ SET(ROBOT_APPS
   pNodeReporter
   pMovingSurvey
   pObstacleMgr
-  pFrontEstimate
   uFldMessageHandler
   uFldNodeBroker
   uHelmScope
@@ -289,7 +286,6 @@ SET(IVP_NON_GUI_APPS
   app_alogsort
   app_alogcheck
   app_alogtest
-  app_gen_hazards
   app_gen_obstacles
   app_bhv2graphviz
   pXRelay
@@ -303,16 +299,10 @@ SET(IVP_NON_GUI_APPS
   uFldBeaconRangeSensor
   uFldContactRangeSensor
   uFldObstacleSim
-  uFldHazardSensor
-  uFldHazardMgr
-  uFldHazardMetric
   uFldGenericSensor
   uFldWrapDetect
   pSearchGrid
   uSimMarine
-  pFrontGridRender
-  pGradeFrontEstimate
-  uFldCTDSensor
   )
 
 #---------------------------------------------------------------------
