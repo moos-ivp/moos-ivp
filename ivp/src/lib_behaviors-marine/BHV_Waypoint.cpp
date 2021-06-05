@@ -520,6 +520,7 @@ IvPFunction *BHV_Waypoint::onRunState()
   // Only publish these reports if we have another point to go.
   if(next_point) {
     postStatusReport();
+    m_prev_waypt_index = m_waypoint_engine.getCurrIndex();
     postViewableSegList();
     //postMessage("VIEW_POINT", m_prevpt.get_spec("active=true"), "prevpt");
     postMessage("VIEW_POINT", m_nextpt.get_spec("active=true"), "wpt");
@@ -822,7 +823,6 @@ void BHV_Waypoint::postStatusReport()
   if(m_var_index != "silent") {
     if(current_waypt != m_prev_waypt_index) {
       postMessage((m_var_index + m_var_suffix), current_waypt);
-      m_prev_waypt_index = current_waypt;
     }
   }
 }
@@ -1183,8 +1183,11 @@ string BHV_Waypoint::expandMacros(string sdata)
   // =======================================================
   // Expand Behavior State
   // =======================================================
+  sdata = macroExpand(sdata, "NI", m_waypoint_engine.getCurrIndex());
   sdata = macroExpand(sdata, "NX", m_nextpt.x());
   sdata = macroExpand(sdata, "NY", m_nextpt.y());
+
+  sdata = macroExpand(sdata, "PI", m_prev_waypt_index); 
   sdata = macroExpand(sdata, "PX", m_prevpt.x());
   sdata = macroExpand(sdata, "PY", m_prevpt.y());
 
@@ -1193,7 +1196,7 @@ string BHV_Waypoint::expandMacros(string sdata)
 
 
   
-  sdata = macroExpand(sdata, "IX", m_waypoint_engine.getCurrIndex());
+  sdata = macroExpand(sdata, "IX", m_waypoint_engine.getCurrIndex()); // deprecated
   sdata = macroExpand(sdata, "CYCLES", m_waypoint_engine.getCycleCount());
   sdata = macroExpand(sdata, "CYCREM", m_waypoint_engine.resetsRemaining());
   sdata = macroExpand(sdata, "WPTS_HIT", m_waypoint_engine.getTotalHits());
