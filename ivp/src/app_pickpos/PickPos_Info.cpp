@@ -103,6 +103,10 @@ void showHelpAndExit()
   cout << "     names names are chosen from stock list.         " << endl;
   cout << "  --colors                                           " << endl;
   cout << "     Generate a set of unique colors.                " << endl;
+  cout << "  --colors=red,white,blue,green                      " << endl;
+  cout << "     Generate a set of colors. First colors chosen   " << endl;
+  cout << "     from the given list, otherwise the colors are   " << endl;
+  cout << "     chosen from stock list.                         " << endl;
   cout << "  --hdg=<config>                                     " << endl;
   cout << "     Specify how initial heading vals are chosen. If " << endl;
   cout << "     left unspecified, no heading val will be made.  " << endl;
