@@ -101,6 +101,8 @@ void showHelpAndExit()
   cout << "     each position or speed being generated. First   " << endl;
   cout << "     names chosen from the given list, otherwise the " << endl;
   cout << "     names names are chosen from stock list.         " << endl;
+  cout << "  --colors                                           " << endl;
+  cout << "     Generate a set of unique colors.                " << endl;
   cout << "  --hdg=<config>                                     " << endl;
   cout << "     Specify how initial heading vals are chosen. If " << endl;
   cout << "     left unspecified, no heading val will be made.  " << endl;
