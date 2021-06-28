@@ -47,6 +47,7 @@ BHV_OpRegion::BHV_OpRegion(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_hint_vertex_color = "brown"; 
   m_hint_edge_size    = 1;
   m_hint_edge_color   = "aqua"; 
+  m_hint_label_color  = "aqua"; 
 
   m_breached_poly_flags_posted  = false;
   m_breached_time_flags_posted  = false;
@@ -589,6 +590,8 @@ void BHV_OpRegion::postViewablePolygon()
     poly_duplicate.set_color("vertex", m_hint_vertex_color);
   if(m_hint_edge_color != "")
     poly_duplicate.set_color("edge", m_hint_edge_color);
+  if(m_hint_label_color != "")
+    poly_duplicate.set_color("label", m_hint_label_color);
   if(m_hint_edge_size >= 0)
     poly_duplicate.set_edge_size(m_hint_edge_size);
   if(m_hint_vertex_size >= 0)
@@ -715,14 +718,16 @@ void BHV_OpRegion::postBreachFlags(string str)
 
 void BHV_OpRegion::handleVisualHint(string hint)
 {
-  string param = tolower(stripBlankEnds(biteString(hint, '=')));
-  string value = stripBlankEnds(hint);
+  string param = tolower(biteStringX(hint, '='));
+  string value = hint;
   double dval  = atof(value.c_str());
 
   if((param == "vertex_color") && isColor(value))
     m_hint_vertex_color = value;
   else if((param == "edge_color") && isColor(value))
     m_hint_edge_color = value;
+  else if((param == "label_color") && isColor(value))
+    m_hint_label_color = value;
   else if((param == "edge_size") && isNumber(value) && (dval >= 0))
     m_hint_edge_size = dval;
   else if((param == "vertex_size") && isNumber(value) && (dval >= 0))

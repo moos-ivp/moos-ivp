@@ -174,6 +174,9 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     // current index is held the same. If the number of waypoints is
     // different, the update is rejected.
     int current_waypt = m_waypoint_engine.getCurrIndex();
+    int prev_waypt_ix = m_prev_waypt_index;
+    int prev_cycle_ix = m_prev_cycle_index;
+
     if(param == "xpoints") {
       if(new_seglist.size() != m_waypoint_engine.size())
 	return(false);
@@ -181,12 +184,18 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     
     m_waypoint_engine.setSegList(new_seglist);
     m_markpt.set_active(false);
+    m_prev_cycle_index = 0;
+    m_prev_waypt_index = -1;
 
     // After the waypoint engine is updated with new points, if the 
-    // xpoints option is used, we also restore the current index.
-    if(param == "xpoints")
+    // xpoints option is used, we also restore the current index,
+    // prev_waypt_ix and cycle_ix.
+    if(param == "xpoints") {
       m_waypoint_engine.setCurrIndex((unsigned int)(current_waypt));
-
+      m_prev_waypt_index = prev_waypt_ix;
+      m_prev_cycle_index = prev_cycle_ix;
+    }
+    
     return(true);
   }
   else if(param == "point") {

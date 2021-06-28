@@ -91,6 +91,7 @@ class BHV_OpRegion : public IvPBehavior {
   // Visual hints affecting properties of polygons/points
   std::string m_hint_vertex_color;
   std::string m_hint_edge_color;
+  std::string m_hint_label_color;
   double      m_hint_vertex_size;
   double      m_hint_edge_size;
 

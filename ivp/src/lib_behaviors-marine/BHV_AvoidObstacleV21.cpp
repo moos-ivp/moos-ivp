@@ -344,14 +344,6 @@ void BHV_AvoidObstacleV21::onIdleToRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: onSpawn()
-
-void BHV_AvoidObstacleV21::onSpawn()
-{
-  postMessage("AVD_OB_SPAWN", m_descriptor);
-}
-
-//-----------------------------------------------------------
 // Procedure: onRunState
 
 IvPFunction *BHV_AvoidObstacleV21::onRunState() 

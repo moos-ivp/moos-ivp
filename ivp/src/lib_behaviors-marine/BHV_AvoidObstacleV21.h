@@ -45,7 +45,6 @@ public:
   void         onIdleToRunState();
   void         onInactiveState();
   void         onEveryState(std::string);
-  void         onSpawn();
   void         postConfigStatus();
   double       getDoubleInfo(std::string);
   bool         isConstraint() {return(true);}
