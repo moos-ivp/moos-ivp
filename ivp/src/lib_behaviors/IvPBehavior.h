@@ -60,6 +60,7 @@ public:
   virtual void onRunToIdleState() {}
   virtual void onEveryState(std::string) {}
   virtual void postConfigStatus() {}
+  virtual std::string checkParamCollective() {return("");}
   virtual std::string expandMacros(std::string);
   virtual std::string getInfo(std::string)  {return("");}
   virtual double getDoubleInfo(std::string) {return(0);}

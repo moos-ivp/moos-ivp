@@ -300,9 +300,22 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
       msg += "Line " + uintToString(bad_line) + ": " + orig;
       addWarning(msg);
     }
-
     specs_valid = specs_valid && valid;
   }
+
+  // June 30th, 2021: Additional check to see if collectively the
+  // params are valid, if there are otherwise no problems with individual
+  // params. 
+  if(specs_valid) {
+    cout << "Checking Param Collective: " << bhv->getDescriptor() << endl;
+    string msg = bhv->checkParamCollective();
+    cout << "Checking Param Collective Done: Msg:[" << msg << "]" << endl;
+    if(msg != "") {
+      specs_valid = false;
+      addWarning(msg);
+    }    
+  }
+
   
   string deprecated_msg = bhv->isDeprecated();
   if(deprecated_msg != "") {
