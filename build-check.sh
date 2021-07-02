@@ -146,8 +146,8 @@ if [ ! -e lib/libmanifest.a ];      then  MISSING=$MISSING"manifest,"; fi
 if [ ! -e lib/libmbutil.a ];        then  MISSING=$MISSING"mbutil,"; fi
 
 if [ ! -e lib/libobstacles.a ];     then  MISSING=$MISSING"obstacles,"; fi
-if [ ! -e lib/librealm.a ];     then  MISSING=$MISSING"obstacles,"; fi
-if [ ! -e lib/libufield.a ];       then  MISSING=$MISSING"ufield,"; fi
+if [ ! -e lib/librealm.a ];         then  MISSING=$MISSING"realm,"; fi
+if [ ! -e lib/libufield.a ];        then  MISSING=$MISSING"ufield,"; fi
 
 if [ "${MIN_ROBOT}" = "no" ] ; then
     if [ ! -e lib/libucommand.a ];   then  MISSING=$MISSING"ucommand,"; fi
