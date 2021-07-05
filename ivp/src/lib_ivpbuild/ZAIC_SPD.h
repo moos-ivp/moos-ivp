@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: ZAIC_PHTP.h                                          */
+/*    FILE: ZAIC_SPD.h                                          */
 /*    DATE: May 31st 2015                                        */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
@@ -27,6 +27,7 @@
 #define OF_ZAIC_SPD_HEADER
 
 #include <string>
+#include <vector>
 #include "IvPDomain.h"
 #include "IvPFunction.h"
 
@@ -34,43 +35,58 @@ class PDMap;
 
 class ZAIC_SPD {
 public:
-  ZAIC_SPD(IvPDomain g_domain, const std::string& g_varname);
+  ZAIC_SPD(IvPDomain domain, std::string varname="");
   virtual ~ZAIC_SPD() {};
 
-  bool setParams(double medspd, double lowspd, double hghspd, 
-		 double lowspd_util, double hghspd_util,
-		 double lminutil=0, double hminutil=0, double maxutil=100);
+  bool setParams(double med_spd, double low_spd, double hgh_spd, 
+		 double low_spd_util, double hgh_spd_util,
+		 double min_spd_util=0, double max_spd_util=0,
+		 double max_util=100);
 
   bool   setMedSpeed(double);
   bool   setLowSpeed(double);
   bool   setHghSpeed(double);
+
   bool   setLowSpeedUtil(double);
   bool   setHghSpeedUtil(double);
+  bool   setMinSpdUtil(double);
+  bool   setMaxSpdUtil(double);
+  bool   setMaxUtil(double);
   bool   setMinMaxUtil(double, double, double);
   
   double getParam(std::string);
 
+  void   disableLowSpeed();
+  void   disableHighSpeed();
+  
+  bool   adjustParams();
+  
   bool         stateOK()     {return(m_ivp_domain.size() == 0);};
   std::string  getWarnings() {return(m_warning);};
   IvPFunction* extractOF();
   IvPDomain    getIvPDomain() {return(m_ivp_domain);}
   IvPFunction* extractIvPFunction() {return(extractOF());};
+
+  std::vector<std::string> getSummary() const;
   
 protected:
   void   setPointLocations();
   PDMap* setPDMap();
   
 protected:
-  double m_medspd;
-  double m_lowspd;
-  double m_hghspd;
-  double m_lowspd_util;
-  double m_hghspd_util;
+  double m_med_spd;
+  double m_low_spd;
+  double m_hgh_spd;
+  double m_low_spd_util;
+  double m_hgh_spd_util;
 
-  double m_lminutil;
-  double m_hminutil;
-  double m_maxutil;
+  double m_min_spd_util;
+  double m_max_spd_util;
+  double m_max_util;
 
+  bool   m_low_spd_enabled;
+  bool   m_hgh_spd_enabled;
+  
  protected:
   std::vector<unsigned int> m_dom;
   std::vector<double>       m_rng;
@@ -84,7 +100,3 @@ private:
 };
 
 #endif
-
-
-
-

@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: ZAIC_SPD.cpp                                         */
 /*    DATE: June 1st 2015                                        */
+/*    DATE: July 3rd 2021 Substantial mods                       */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -24,9 +25,9 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <cmath>
 #include "ZAIC_SPD.h"
 #include "BuildUtils.h"
+#include "MBUtils.h"
 #include "PDMapBuilder.h"
 
 using namespace std;
@@ -34,19 +35,12 @@ using namespace std;
 //-------------------------------------------------------------
 // Procedure: Constructor
 
-ZAIC_SPD::ZAIC_SPD(IvPDomain g_domain, const string& g_varname) 
+ZAIC_SPD::ZAIC_SPD(IvPDomain domain, string varname) 
 {
-  m_medspd       = 0;
-  m_lowspd       = 0;
-  m_hghspd       = 0;
-  m_lowspd_util  = 0;
-  m_hghspd_util  = 0;
-
-  m_lminutil     = 0;
-  m_hminutil     = 0;
-  m_maxutil      = 100;
-  
-  m_ivp_domain = subDomain(g_domain, g_varname);
+  if((domain.size() == 1) && (varname == ""))
+    m_ivp_domain = domain;
+  else if(domain.hasDomain(varname))
+    m_ivp_domain = subDomain(domain, varname);
 
   m_domain_high = 0;
   m_domain_low  = 0;
@@ -56,30 +50,45 @@ ZAIC_SPD::ZAIC_SPD(IvPDomain g_domain, const string& g_varname)
     m_domain_low   = m_ivp_domain.getVarLow(0);
   }
 
+  m_med_spd      = 0;
+  m_min_spd_util = 0;
+  m_max_spd_util = 0;
+  m_max_util     = 100;
+
+  // By default the low/hgh spd components are not used. They are
+  // snapped to the min/max spd components/
+  m_low_spd      = m_domain_low;
+  m_hgh_spd      = m_domain_high;
+  m_low_spd_util = 0;
+  m_hgh_spd_util = 0;
 }
 
 //-------------------------------------------------------------
-// Procedure: setParams
+// Procedure: setParams()
 //    Return: true if all ok
 
-bool ZAIC_SPD::setParams(double medspd, double lowspd, double hghspd, 
-			 double lowspd_util, double hghspd_util,
-			 double lminutil, double hminutil, double maxutil)
+bool ZAIC_SPD::setParams(double med_spd, double low_spd, double hgh_spd, 
+			 double low_spd_util, double hgh_spd_util,
+			 double min_spd_util, double max_spd_util, double max_util)
 {
   bool ok = true;
-  ok = ok && setMedSpeed(medspd);
-  ok = ok && setLowSpeed(lowspd);
-  ok = ok && setHghSpeed(hghspd);
-  ok = ok && setLowSpeedUtil(lowspd_util);
-  ok = ok && setHghSpeedUtil(hghspd_util);
-  ok = ok && setMinMaxUtil(lminutil, hminutil, maxutil);
+  ok = ok && setMedSpeed(med_spd);
+  ok = ok && setLowSpeed(low_spd);
+  ok = ok && setHghSpeed(hgh_spd);
+  ok = ok && setLowSpeedUtil(low_spd_util);
+  ok = ok && setHghSpeedUtil(hgh_spd_util);
+  ok = ok && setMaxUtil(max_util);
+  ok = ok && setMinSpdUtil(min_spd_util);
+  ok = ok && setMaxSpdUtil(max_spd_util);
 
+  ok = ok && adjustParams();
+  
   return(ok);
 }
 
 
 //-------------------------------------------------------------
-// Procedure: setMedSpeed
+// Procedure: setMedSpeed()
 
 bool ZAIC_SPD::setMedSpeed(double val)
 {
@@ -94,20 +103,14 @@ bool ZAIC_SPD::setMedSpeed(double val)
     val = m_domain_low;
 
   // Part 3: Ok now make the assignment
-  m_medspd = val;
+  m_med_spd = val;
 
-  // Part 4: Enforce that lowspd <= medspd <= hghspd
-  if(m_lowspd > m_medspd)
-    m_lowspd = m_medspd;
-  if(m_hghspd < m_medspd)
-    m_hghspd = m_medspd;
-  
   return(true);
 }
 
 
 //------------------------------------------------
-// Procedure: setLowSped
+// Procedure: setLowSpeed()
 
 bool ZAIC_SPD::setLowSpeed(double val)
 {
@@ -122,19 +125,14 @@ bool ZAIC_SPD::setLowSpeed(double val)
     val = m_domain_low;
 
   // Part 3: Ok now make the assignment
-  m_lowspd = val;
+  m_low_spd = val;
 
-  // Part 4: Enforce that lowspd <= medspd <= hghspd
-  if(m_medspd < m_lowspd)
-    m_medspd = m_lowspd;
-  if(m_hghspd < m_lowspd)
-    m_hghspd = m_lowspd;
-  
   return(true);
 }
 
+
 //------------------------------------------------
-// Procedure: setHghSpeed
+// Procedure: setHghSpeed()
 
 bool ZAIC_SPD::setHghSpeed(double val)
 {
@@ -149,13 +147,7 @@ bool ZAIC_SPD::setHghSpeed(double val)
     val = m_domain_low;
 
   // Part 3: Ok now make the assignment
-  m_hghspd = val;
-
-  // Part 4: Enforce that lowspd <= medspd <= hghspd
-  if(m_medspd > m_hghspd)
-    m_medspd = m_hghspd;
-  if(m_lowspd > m_hghspd)
-    m_lowspd = m_hghspd;
+  m_hgh_spd = val;
   
   return(true);
 }
@@ -172,21 +164,17 @@ bool ZAIC_SPD::setLowSpeedUtil(double val)
   // Part 2: Sanity check we can deal with and fix
   if(val < 0)
     val = 0;
-  if(val > m_maxutil)
-    val = m_maxutil;
+  if(val > m_max_util)
+    val = m_max_util;
   
   // Part 3: Ok now make the assignment
-  m_lowspd_util = val;
+  m_low_spd_util = val;
   
-  // Part 4: Enforce that lminutil <= lowspd_util
-  if(m_lminutil > m_lowspd_util)
-    m_lminutil = m_lowspd_util;
-
   return(true);
 }
 
 //------------------------------------------------
-// Procedure: setHghSpeedUtil
+// Procedure: setHghSpeedUtil()
 
 bool ZAIC_SPD::setHghSpeedUtil(double val)
 {
@@ -197,86 +185,177 @@ bool ZAIC_SPD::setHghSpeedUtil(double val)
   // Part 2: Sanity check we can deal with and fix
   if(val < 0)
     val = 0;
-  if(val > m_maxutil)
-    val = m_maxutil;
+  if(val > m_max_util)
+    val = m_max_util;
 
   // Part 3: Ok now make the assignment
-  m_hghspd_util = val;
-
-  // Part 4: Enforce that hminutil <= hghspd_util
-  if(m_hminutil > m_hghspd_util)
-    m_hminutil = m_hghspd_util;
+  m_hgh_spd_util = val;
 
   return(true);
 }
 
 //-------------------------------------------------------------
-// Procedure: setMinMaxUtil
+// Procedure: setMinSpdUtil()
 
-bool ZAIC_SPD::setMinMaxUtil(double lminval, double hminval, double maxval)
+bool ZAIC_SPD::setMinSpdUtil(double min_spd_util)
 {
-  // Part 1: Sanity checks resulting in return of false
-  if(m_ivp_domain.size() == 0)
-    return(false);
-  if((lminval > maxval) || (hminval > maxval))
-    return(false);
-  if((lminval == maxval) && (hminval == maxval))
-    return(false);
-  
-  // Part 2: Sanity checks we can deal with and fix
-  if(lminval < 0)
-    lminval = 0;
-  if(hminval < 0)
-    hminval = 0;
-
-  // Part 3: Ok now make the assignments
-  m_lminutil = lminval;
-  m_hminutil = hminval;
-  m_maxutil  = maxval;
-
-  // Part 4: Enforce that low/hghspd utils are (a) less than the
-  // maxutil, and each greater than the minutils on either side.
-  if(m_lowspd_util < m_lminutil)
-    m_lowspd_util = m_lminutil;
-  if(m_lowspd_util > m_maxutil)
-    m_lowspd_util = m_maxutil;
-  
-  if(m_hghspd_util < m_hminutil)
-    m_hghspd_util = m_hminutil;
-  if(m_hghspd_util > m_maxutil)
-    m_hghspd_util = m_maxutil;
-  
+  if(m_min_spd_util < 0)
+    m_min_spd_util = 0;
+  m_min_spd_util = min_spd_util;
   return(true);
 }
 
 //-------------------------------------------------------------
-// Procedure: getParam
+// Procedure: setMaxSpdUtil()
+
+bool ZAIC_SPD::setMaxSpdUtil(double max_spd_util)
+{
+  if(m_max_spd_util < 0)
+    m_max_spd_util = 0;
+  
+  m_max_spd_util = max_spd_util;
+
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setMaxUtil()
+
+bool ZAIC_SPD::setMaxUtil(double max_util)
+{
+  if(m_max_util < 0)
+    m_max_util = 0;
+  m_max_util = max_util;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setMinMaxUtil()
+
+bool ZAIC_SPD::setMinMaxUtil(double min_spd_util, double max_spd_util, double max_util)
+{
+  bool ok = true;
+
+  ok = ok && setMaxUtil(max_util);
+  ok = ok && setMinSpdUtil(min_spd_util);
+  ok = ok && setMaxSpdUtil(max_spd_util);
+
+  return(ok);
+}
+
+//-------------------------------------------------------------
+// Procedure: disableLowSpeed()
+
+void ZAIC_SPD::disableLowSpeed()
+{
+  m_low_spd = m_domain_low;
+  m_low_spd_util = m_min_spd_util;
+}
+
+//-------------------------------------------------------------
+// Procedure: disableHighSpeed()
+
+void ZAIC_SPD::disableHighSpeed()
+{
+  m_hgh_spd = m_domain_high;
+  m_hgh_spd_util = m_max_spd_util;
+}
+
+//-------------------------------------------------------------
+// Procedure: adjustParams()
+
+bool ZAIC_SPD::adjustParams()
+{
+  bool adjustment_made = false;
+  // Ensure med_spd is somewhere in the domain range
+  if(m_med_spd < m_domain_low) {
+    m_med_spd = m_domain_low;
+    adjustment_made = true;
+  }
+  if(m_med_spd > m_domain_high) {
+    m_med_spd = m_domain_high;
+    adjustment_made = true;
+  }
+  // Ensure low_spd is between domain_low and med_spd
+  if(m_low_spd < m_domain_low) {
+    m_low_spd = m_domain_low;
+    adjustment_made = true;
+  }
+  if(m_low_spd > m_med_spd) {
+    m_low_spd = m_med_spd;
+    adjustment_made = true;
+  }
+  // Ensure high_spd is between med_spd and domain_high
+  if(m_hgh_spd > m_domain_high) {
+    m_hgh_spd = m_domain_high;
+    adjustment_made = true;
+  }
+  if(m_hgh_spd < m_med_spd) {
+    m_hgh_spd = m_med_spd;
+    adjustment_made = true;
+  }
+
+  // Ensure utils are sane
+  if(m_min_spd_util > m_max_util) {
+    m_min_spd_util = m_max_util;
+    adjustment_made = true;
+  }
+  if(m_low_spd_util > m_max_util) {
+    m_low_spd_util = m_max_util;
+    adjustment_made = true;
+  }
+  if(m_hgh_spd_util > m_max_util) {
+    m_hgh_spd_util = m_max_util;
+    adjustment_made = true;
+  }
+  if(m_max_spd_util > m_max_util) {
+    m_max_spd_util = m_max_util;
+    adjustment_made = true;
+  }
+  
+  // If low_spd is same as domain_low, low_spd_util set to min_spd_util
+  if(m_low_spd == m_domain_low) {
+    m_low_spd_util = m_min_spd_util;
+    adjustment_made = true;
+  }
+  // If hgh_spd is same as domain_high, hgh_spd_util set to max_spd_util
+  if(m_hgh_spd == m_domain_high) {
+    m_hgh_spd_util = m_max_spd_util;
+    adjustment_made = true;
+  }
+
+  return(adjustment_made);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: getParam()
 
 double ZAIC_SPD::getParam(string param)
 {
-  if(param == "medspd")
-    return(m_medspd);
-  else if(param == "lowspd")
-    return(m_lowspd);
-  else if(param == "hghspd")
-    return(m_hghspd);
-  else if(param == "lowspd_util")
-    return(m_lowspd_util);
-  else if(param == "hghspd_util")
-    return(m_hghspd_util);
-  else if(param == "lminutil")
-    return(m_lminutil);
-  else if(param == "hminutil")
-    return(m_hminutil);
-  else if(param == "maxutil")
-    return(m_maxutil);
+  if((param == "medspd") || (param == "med_spd"))
+    return(m_med_spd);
+  else if((param == "lowspd") || (param == "low_spd"))
+    return(m_low_spd);
+  else if((param == "hghspd") || (param == "hgh_spd"))
+    return(m_hgh_spd);
+  else if((param == "lowspd_util") || (param == "low_spd_util"))
+    return(m_low_spd_util);
+  else if((param == "hghspd_util") || (param == "hgh_spd_util"))
+    return(m_hgh_spd_util);
+  else if((param == "lminutil") || (param == "min_spd_util"))
+    return(m_min_spd_util);
+  else if((param == "hminutil") || (param == "max_spd_util"))
+    return(m_max_spd_util);
+  else if((param == "maxutil") || (param == "max_util"))
+    return(m_max_util);
   else
     return(0);
 }
 
 
 //-------------------------------------------------------------
-// Procedure: extractOF
+// Procedure: extractOF()
 //   Purpose: Build and return for the caller an IvP objective
 //            function built from the pdmap. Once this is done
 //            the caller "owns" the PDMap. The reason for this is
@@ -287,7 +366,8 @@ IvPFunction *ZAIC_SPD::extractOF()
 {
   if(m_ivp_domain.size() == 0)
     return(0);
-  
+
+  adjustParams();
   setPointLocations();
 
   PDMap *pdmap = setPDMap();
@@ -322,22 +402,15 @@ void ZAIC_SPD::setPointLocations()
 
   if(m_ivp_domain.size() != 1)
     return;
-  
-  cout << "========================================*" << endl;
-  cout << "medspd: " << m_medspd << endl;
-  cout << "lowspd: " << m_lowspd << endl;
-  cout << "hghspd: " << m_hghspd << endl;
-  cout << "lowspd_util: " << m_lowspd_util << endl;
-  cout << "hghspd_util: " << m_hghspd_util << endl;
 
   int    domain_pts  = m_ivp_domain.getVarPoints(0);
   double delta       = m_ivp_domain.getVarDelta(0);
 
   // Most of the time the domain_low value for speed is zero. In case
   // it is not, we handle it here:
-  double lowspd_diff = m_lowspd - m_domain_low;
-  double medspd_diff = m_medspd - m_domain_low;
-  double hghspd_diff = m_hghspd - m_domain_low;
+  double lowspd_diff = m_low_spd - m_domain_low;
+  double medspd_diff = m_med_spd - m_domain_low;
+  double hghspd_diff = m_hgh_spd - m_domain_low;
 
   int ipt_low   = 0;
   int ipt_one   = (int)((lowspd_diff/delta)+0.5);
@@ -360,29 +433,25 @@ void ZAIC_SPD::setPointLocations()
 
   if(ipt_low != ipt_two) {
     m_dom.push_back(ipt_low);
-    m_rng.push_back(m_lminutil);
+    m_rng.push_back(m_min_spd_util);
   }
   
   if((ipt_one != ipt_low) && (ipt_one != ipt_two)){
     m_dom.push_back(ipt_one);
-    m_rng.push_back(m_lowspd_util);
+    m_rng.push_back(m_low_spd_util);
   }
 
   m_dom.push_back(ipt_two);
-  m_rng.push_back(m_maxutil);
+  m_rng.push_back(m_max_util);
 
   if(ipt_three != ipt_two) {
     m_dom.push_back(ipt_three);
-    m_rng.push_back(m_hghspd_util);
+    m_rng.push_back(m_hgh_spd_util);
   }
 
   if(ipt_high != ipt_three) {
     m_dom.push_back(ipt_high);
-    m_rng.push_back(m_hminutil);
-  }
-
-  for(unsigned int i=0; i<m_dom.size(); i++) {
-    cout << "[" << i << "]: dom:" << m_dom[i] << ", val:" << m_rng[i] << endl;
+    m_rng.push_back(m_max_spd_util);
   }
 }
      
@@ -402,6 +471,24 @@ PDMap *ZAIC_SPD::setPDMap()
 }
 
 
+//-------------------------------------------------------------
+// Procedure: getSummary()
 
+vector<string> ZAIC_SPD::getSummary() const
+{
+  vector<string> svector;
+  svector.push_back(domainToString(m_ivp_domain));
 
+  svector.push_back("min_spd: " + doubleToStringX(m_domain_low));
+  svector.push_back("low_spd: " + doubleToStringX(m_low_spd));
+  svector.push_back("med_spd: " + doubleToStringX(m_med_spd));
+  svector.push_back("hgh_spd: " + doubleToStringX(m_hgh_spd));
+  svector.push_back("max_spd: " + doubleToStringX(m_domain_high));
+  svector.push_back("min_spd_util: " + doubleToStringX(m_min_spd_util));
+  svector.push_back("low_spd_util: " + doubleToStringX(m_low_spd_util));
+  svector.push_back("med_spd_util: " + doubleToStringX(m_max_util));
+  svector.push_back("hgh_spd_util: " + doubleToStringX(m_hgh_spd_util));
+  svector.push_back("max_spd_util: " + doubleToStringX(m_max_spd_util));
 
+  return(svector);
+}
