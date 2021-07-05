@@ -37,13 +37,18 @@ class ZAIC_SPD_Model : public ZAIC_Model
 
  public: // Virtual functions overloaded
   IvPFunction *getIvPFunction();
-  void  setDomain(unsigned int);
+  void  setDomain(unsigned int) {};
   bool  setParam(std::string, std::string);
   void  moveX(double amt);
+  void  disableLowSpeed();
+  void  disableHighSpeed();
   void  currMode(int);
 
  public:
-  int getCurrMode() const {return(m_curr_mode);}
+  void  setDomain(std::string);
+  int   getCurrMode() const {return(m_curr_mode);}
+
+  void  print() const;
   
   // Getters
   double getMedVal();
@@ -59,6 +64,8 @@ class ZAIC_SPD_Model : public ZAIC_Model
  protected:
   ZAIC_SPD*  m_zaic_spd;
   int        m_curr_mode;
+
+  unsigned int m_ipf_pieces;
 };
 #endif 
 

@@ -25,6 +25,7 @@
 #define ZAIC_SPD_GUI_HEADER
 
 #include "ZAIC_GUI.h"
+#include <FL/Fl_Button.H>
 
 class ZAIC_SPD_GUI : public ZAIC_GUI {
  public:
@@ -39,17 +40,19 @@ class ZAIC_SPD_GUI : public ZAIC_GUI {
   void updateFieldColors();
   
  public:
-  Fl_Output   *m_fld_medval;
-  Fl_Output   *m_fld_lowval;
-  Fl_Output   *m_fld_hghval;
-  Fl_Output   *m_fld_lowval_util;
-  Fl_Output   *m_fld_hghval_util;
+  Fl_Output  *m_fld_med_spd;
+  Fl_Output  *m_fld_low_spd;
+  Fl_Output  *m_fld_hgh_spd;
+  Fl_Output  *m_fld_low_spd_util;
+  Fl_Output  *m_fld_hgh_spd_util;
 
-  Fl_Output   *m_fld_lowmin_util;
-  Fl_Output   *m_fld_hghmin_util;
+  Fl_Output  *m_fld_min_spd_util;
+  Fl_Output  *m_fld_max_spd_util;
+
+  Fl_Button  *m_but_disable_lowspd;
+  Fl_Button  *m_but_enable_lowspd;
+
+  inline void cb_Snap_i(int);
+  static void cb_Snap(Fl_Widget*, int);
 };
 #endif
-
-
-
-

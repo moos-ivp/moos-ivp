@@ -25,6 +25,7 @@
 #include <iostream>
 #include "ZAIC_SPD_Model.h"
 #include "MBUtils.h"
+#include "BuildUtils.h"
 
 using namespace std;
 
@@ -35,8 +36,10 @@ ZAIC_SPD_Model::ZAIC_SPD_Model() : ZAIC_Model()
 {
   m_curr_mode = 0;  // 0:medval 1:lowval 2:hghval 3:lowval_utile 4:hghval_util
   m_zaic_spd  = 0;
+
+  m_ipf_pieces = 0;
   
-  setDomain(100);
+  setDomain("speed,0,5,51");
 }
 
 //-------------------------------------------------------------
@@ -45,7 +48,12 @@ ZAIC_SPD_Model::ZAIC_SPD_Model() : ZAIC_Model()
 
 IvPFunction *ZAIC_SPD_Model::getIvPFunction()
 {
-  return(m_zaic_spd->extractOF());
+  IvPFunction *ipf = m_zaic_spd->extractOF();
+
+  if(ipf)
+    m_ipf_pieces = ipf->size();
+  
+  return(ipf);
 }
 
 //-------------------------------------------------------------
@@ -54,26 +62,21 @@ IvPFunction *ZAIC_SPD_Model::getIvPFunction()
 
 bool ZAIC_SPD_Model::setParam(string param, string value)
 {
-  cout << "KK setParam() param: " << param << ", value: " << value << endl;
-  
   if(!m_zaic_spd)
     return(false);
 
-  if(!isNumber(value))
-    return(false);
-
-  if(param == "medspd")
+  if(param == "med_spd")
     m_zaic_spd->setMedSpeed(atof(value.c_str()));
-  else if(param == "lowspd")
+  else if(param == "low_spd")
     m_zaic_spd->setLowSpeed(atof(value.c_str()));
-  else if(param == "hghspd")
+  else if(param == "hgh_spd")
     m_zaic_spd->setHghSpeed(atof(value.c_str()));
-  else if(param == "lowspd_util")
+  else if(param == "low_spd_util")
     m_zaic_spd->setLowSpeedUtil(atof(value.c_str()));
-  else if(param == "hghspd_util")
+  else if(param == "hgh_spd_util")
     m_zaic_spd->setHghSpeedUtil(atof(value.c_str()));
   else if(param == "domain")
-    setDomain(atoi(value.c_str()));
+    setDomain(value);
   else
     return(false);
   
@@ -81,47 +84,41 @@ bool ZAIC_SPD_Model::setParam(string param, string value)
 }
 
 //-------------------------------------------------------------
-// Procedure: setDomain
+// Procedure: setDomain()
 
-void ZAIC_SPD_Model::setDomain(unsigned int domain_pts)
+void ZAIC_SPD_Model::setDomain(string domain_str)
 {
-  if(domain_pts < 101)
-    domain_pts = 100;
-  if(domain_pts > 1001)
-    domain_pts = 1001;
+  cout << "Setting Domain based on str: " << domain_str << endl;
+  IvPDomain ivp_domain = stringToDomain(domain_str);
 
-  cout << "setDomain: " << domain_pts << endl;
-  
-  // Initialize the IvP Domain with the new number of points
-  IvPDomain ivp_domain;
-  ivp_domain.addDomain("x", 0, domain_pts-1, domain_pts);
-  
-  // Rebuild the zaic with default initial values
-  double medspd = 0.50 * domain_pts;
-  double lowspd = 0.15 * domain_pts;
-  double hghspd = 0.75 * domain_pts;
-  double lowspd_util = 80; 
-  double hghspd_util = 10; 
-
-  // If a the zaic existed previously, keeping using thoss values
-  if(m_zaic_spd) {
-    medspd = getMedVal();
-    lowspd = getLowVal();
-    hghspd = getHghVal();
-    lowspd_util = getLowValUtil();
-    hghspd_util = getHghValUtil();
+  if(ivp_domain.size() != 1) {
+    cout << "Invalid IvPDomain from str:[" << domain_str << "]" << endl;
+    return;
   }
-  
-  ZAIC_SPD *new_zaic = new ZAIC_SPD(ivp_domain, "x");
-  bool ok = new_zaic->setParams(medspd, lowspd, hghspd, 
-				lowspd_util, hghspd_util);
 
-  if(ok)
+  double max_spd = ivp_domain.getVarHigh(0);
+
+  cout << "Domain:" << endl;
+  ivp_domain.print();
+  cout << "Max Speed:" << max_spd << endl;
+  
+  ZAIC_SPD *new_zaic = new ZAIC_SPD(ivp_domain);
+  new_zaic->setMedSpeed(max_spd/2);
+  new_zaic->setMaxSpdUtil(80);
+
+  bool ok = new_zaic->adjustParams();
+
+  if(ok) {
+    cout << "Setting New ZAIC!!!" << endl;
     m_zaic_spd = new_zaic;
+  }
+  else
+    cout << "NOT setting new ZAIC..............." << endl;
 }
 
+
 //-------------------------------------------------------------
-// Procedure: currMode
+// Procedure: currMode()
 
 void ZAIC_SPD_Model::currMode(int new_mode)
 {
@@ -129,8 +126,31 @@ void ZAIC_SPD_Model::currMode(int new_mode)
     m_curr_mode = new_mode; 
 }
 
+
 //-------------------------------------------------------------
-// Procedure: moveX
+// Procedure: disableLowSpeed()
+
+void ZAIC_SPD_Model::disableLowSpeed()
+{
+  if(!m_zaic_spd)
+    return;
+  m_zaic_spd->disableLowSpeed();
+}
+
+
+//-------------------------------------------------------------
+// Procedure: disableHighSpeed()
+
+void ZAIC_SPD_Model::disableHighSpeed()
+{
+  if(!m_zaic_spd)
+    return;
+  m_zaic_spd->disableHighSpeed();
+}
+
+
+//-------------------------------------------------------------
+// Procedure: moveX()
 
 void ZAIC_SPD_Model::moveX(double delta)
 {
@@ -140,12 +160,13 @@ void ZAIC_SPD_Model::moveX(double delta)
 
   double dom_low  = domain.getVarLow(0);
   double dom_high = domain.getVarHigh(0);
+  double var_delta = domain.getVarDelta(0);
   double medval   = m_zaic_spd->getParam("medspd");
   double lowval   = m_zaic_spd->getParam("lowspd");
   double hghval   = m_zaic_spd->getParam("hghspd");
   
   if(m_curr_mode==0) {   // Altering MedVal
-    medval += delta;
+    medval += (delta * var_delta);
     medval = vclip(medval, dom_low, dom_high);
     m_zaic_spd->setMedSpeed(medval);
     if(medval < lowval) {
@@ -158,12 +179,12 @@ void ZAIC_SPD_Model::moveX(double delta)
     }
   }
   else if(m_curr_mode == 1) { // Altering LowVal
-    lowval += delta;
+    lowval += (delta * var_delta);
     lowval = vclip(lowval, dom_low, medval);
     m_zaic_spd->setLowSpeed(lowval);
   }
   else if(m_curr_mode == 2) { // Altering HghVal
-    hghval += delta;
+    hghval += (delta * var_delta);
     hghval = vclip(hghval, medval, dom_high);
     m_zaic_spd->setHghSpeed(hghval);
   }
@@ -197,6 +218,8 @@ void ZAIC_SPD_Model::moveX(double delta)
   }
   else
     cout << "Uh-Oh!  Mode problem" << endl;
+
+  m_zaic_spd->adjustParams();
 }
 
 //----------------------------------------------------------------
@@ -277,6 +300,23 @@ double ZAIC_SPD_Model::getMaxUtil()
   if(!m_zaic_spd)
     return(0);
   return(m_zaic_spd->getParam("maxutil"));
+}
+
+//----------------------------------------------------------------
+// Procedure: print()
+
+void ZAIC_SPD_Model::print() const
+{
+  if(!m_zaic_spd) {
+    cout << "Null zaic_spd" << endl;
+    return;
+  }
+
+  vector<string> svector = m_zaic_spd->getSummary();
+  for(unsigned int i=0; i<svector.size(); i++)
+    cout << svector[i] << endl;
+
+  cout << "IPF Pieces: " << m_ipf_pieces << endl;
 }
 
 

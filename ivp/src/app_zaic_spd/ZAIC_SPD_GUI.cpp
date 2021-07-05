@@ -56,46 +56,45 @@ void ZAIC_SPD_GUI::initWidgets()
   int row2 = row1 + 30;
 
   m_zaic_model = new ZAIC_SPD_Model();
-  m_zaic_model->setDomain(501);
 
   m_zaic_viewer = new ZAIC_Viewer(sid_marg, top_marg, w()-(sid_marg*2), q_height);
   m_zaic_viewer->setModel(m_zaic_model);
 
-  m_fld_lowval = new Fl_Output(50, row1, 60, 20, "lowval:"); 
-  m_fld_lowval->textsize(txt_size); 
-  m_fld_lowval->labelsize(txt_size);
-  m_fld_lowval->clear_visible_focus();
+  m_fld_low_spd = new Fl_Output(50, row1, 60, 20, "low_spd:"); 
+  m_fld_low_spd->textsize(txt_size); 
+  m_fld_low_spd->labelsize(txt_size);
+  m_fld_low_spd->clear_visible_focus();
 
-  m_fld_medval = new Fl_Output(160, row1, 60, 20, "medval:"); 
-  m_fld_medval->textsize(txt_size); 
-  m_fld_medval->labelsize(txt_size);
-  m_fld_medval->clear_visible_focus();
+  m_fld_med_spd = new Fl_Output(160, row1, 60, 20, "med_spd:"); 
+  m_fld_med_spd->textsize(txt_size); 
+  m_fld_med_spd->labelsize(txt_size);
+  m_fld_med_spd->clear_visible_focus();
 
-  m_fld_hghval = new Fl_Output(270, row1, 60, 20, "hghval:"); 
-  m_fld_hghval->textsize(txt_size); 
-  m_fld_hghval->labelsize(txt_size);
-  m_fld_hghval->clear_visible_focus();
+  m_fld_hgh_spd = new Fl_Output(270, row1, 60, 20, "hgh_spd:"); 
+  m_fld_hgh_spd->textsize(txt_size); 
+  m_fld_hgh_spd->labelsize(txt_size);
+  m_fld_hgh_spd->clear_visible_focus();
 
-  m_fld_lowval_util = new Fl_Output(430, row1, 60, 20, "lowval_util:"); 
-  m_fld_lowval_util->textsize(txt_size); 
-  m_fld_lowval_util->labelsize(txt_size);
-  m_fld_lowval_util->clear_visible_focus();
+  m_fld_low_spd_util = new Fl_Output(430, row1, 60, 20, "low_spd_util:"); 
+  m_fld_low_spd_util->textsize(txt_size); 
+  m_fld_low_spd_util->labelsize(txt_size);
+  m_fld_low_spd_util->clear_visible_focus();
 
-  m_fld_hghval_util = new Fl_Output(580, row1, 60, 20, "hghval_util:"); 
-  m_fld_hghval_util->textsize(txt_size); 
-  m_fld_hghval_util->labelsize(txt_size);
-  m_fld_hghval_util->clear_visible_focus();  
+  m_fld_hgh_spd_util = new Fl_Output(580, row1, 60, 20, "hgh_spd_util:"); 
+  m_fld_hgh_spd_util->textsize(txt_size); 
+  m_fld_hgh_spd_util->labelsize(txt_size);
+  m_fld_hgh_spd_util->clear_visible_focus();  
 
 
-  m_fld_lowmin_util = new Fl_Output(430, row2, 60, 20, "lowmin_util:"); 
-  m_fld_lowmin_util->textsize(txt_size); 
-  m_fld_lowmin_util->labelsize(txt_size);
-  m_fld_lowmin_util->clear_visible_focus();
+  m_fld_min_spd_util = new Fl_Output(430, row2, 60, 20, "min_spd_util:"); 
+  m_fld_min_spd_util->textsize(txt_size); 
+  m_fld_min_spd_util->labelsize(txt_size);
+  m_fld_min_spd_util->clear_visible_focus();
 
-  m_fld_hghmin_util = new Fl_Output(580, row2, 60, 20, "hghmin_util:"); 
-  m_fld_hghmin_util->textsize(txt_size); 
-  m_fld_hghmin_util->labelsize(txt_size);
-  m_fld_hghmin_util->clear_visible_focus();  
+  m_fld_max_spd_util = new Fl_Output(580, row2, 60, 20, "max_spd_util:"); 
+  m_fld_max_spd_util->textsize(txt_size); 
+  m_fld_max_spd_util->labelsize(txt_size);
+  m_fld_max_spd_util->clear_visible_focus();  
 
 } 
 
@@ -104,7 +103,7 @@ void ZAIC_SPD_GUI::initWidgets()
 
 void ZAIC_SPD_GUI::augmentMenu()
 {
-  mbar->add("Modify Mode/Adjust MedVal ", '0',
+  mbar->add("Modify Mode/Adjust MedSpd ", '0',
 	    (Fl_Callback*)ZAIC_GUI::cb_CurrMode, (void*)0,
 	    FL_MENU_RADIO|FL_MENU_VALUE);
 
@@ -125,6 +124,28 @@ void ZAIC_SPD_GUI::augmentMenu()
 
   mbar->add("Modify Mode/Adjust HighMinUtil ", '6',
 	    (Fl_Callback*)ZAIC_GUI::cb_CurrMode, (void*)6, FL_MENU_RADIO);
+
+  mbar->add("Snap/Snap LowSpd to MinSpd ", 'm',
+	    (Fl_Callback*)ZAIC_SPD_GUI::cb_Snap, (void*)0, 0);
+
+  mbar->add("Snap/Snap HgSpd to MaxSpd ", 'n',
+	    (Fl_Callback*)ZAIC_SPD_GUI::cb_Snap, (void*)1, 0);
+}
+
+//----------------------------------------- Snap
+inline void ZAIC_SPD_GUI::cb_Snap_i(int index) {
+  ZAIC_SPD_Model *model = (ZAIC_SPD_Model*)(m_zaic_model);
+
+  if(index == 0)
+    model->disableLowSpeed();
+  if(index == 1)
+    model->disableHighSpeed();
+
+  updateOutput();
+  m_zaic_viewer->redraw();
+}
+void ZAIC_SPD_GUI::cb_Snap(Fl_Widget* o, int v) {
+  ((ZAIC_SPD_GUI*)(o->parent()->user_data()))->cb_Snap_i(v);
 }
 
 //----------------------------------------------------------
@@ -137,27 +158,27 @@ void ZAIC_SPD_GUI::updateOutput()
   ZAIC_SPD_Model *model = (ZAIC_SPD_Model*)(m_zaic_model);
   
   str = doubleToString(model->getMedVal(),2);
-  m_fld_medval->value(str.c_str());
+  m_fld_med_spd->value(str.c_str());
 
   str = doubleToString(model->getLowVal(),2);
-  m_fld_lowval->value(str.c_str());
+  m_fld_low_spd->value(str.c_str());
 
   str = doubleToString(model->getHghVal(),2);
-  m_fld_hghval->value(str.c_str());
+  m_fld_hgh_spd->value(str.c_str());
 
   str = doubleToString(model->getLowValUtil(),2);
-  m_fld_lowval_util->value(str.c_str());
+  m_fld_low_spd_util->value(str.c_str());
 
   str = doubleToString(model->getHghValUtil(),2);
-  m_fld_hghval_util->value(str.c_str());
-
+  m_fld_hgh_spd_util->value(str.c_str());
 
   str = doubleToString(model->getLowMinUtil(),2);
-  m_fld_lowmin_util->value(str.c_str());
+  m_fld_min_spd_util->value(str.c_str());
 
   str = doubleToString(model->getHighMinUtil(),2);
-  m_fld_hghmin_util->value(str.c_str());
+  m_fld_max_spd_util->value(str.c_str());
 
+  model->print();
   updateFieldColors();
 }
 
@@ -175,39 +196,39 @@ void ZAIC_SPD_GUI::updateFieldColors()
   Fl_Color fcolor_wht  = fl_rgb_color(255, 255, 255);
 
   if(curr_mode == 0)
-    m_fld_medval->color(fcolor_red);
+    m_fld_med_spd->color(fcolor_red);
   else
-    m_fld_medval->color(fcolor_wht);
+    m_fld_med_spd->color(fcolor_wht);
 
   if(curr_mode == 1)
-    m_fld_lowval->color(fcolor_red);
+    m_fld_low_spd->color(fcolor_red);
   else
-    m_fld_lowval->color(fcolor_wht);
+    m_fld_low_spd->color(fcolor_wht);
 
   if(curr_mode == 2)
-    m_fld_hghval->color(fcolor_red);
+    m_fld_hgh_spd->color(fcolor_red);
   else
-    m_fld_hghval->color(fcolor_wht);
+    m_fld_hgh_spd->color(fcolor_wht);
 
   if(curr_mode == 3)
-    m_fld_lowval_util->color(fcolor_red);
+    m_fld_low_spd_util->color(fcolor_red);
   else
-    m_fld_lowval_util->color(fcolor_wht);
+    m_fld_low_spd_util->color(fcolor_wht);
 
   if(curr_mode == 4)
-    m_fld_hghval_util->color(fcolor_red);
+    m_fld_hgh_spd_util->color(fcolor_red);
   else
-    m_fld_hghval_util->color(fcolor_wht);
+    m_fld_hgh_spd_util->color(fcolor_wht);
 
   if(curr_mode == 5)
-    m_fld_lowmin_util->color(fcolor_red);
+    m_fld_min_spd_util->color(fcolor_red);
   else
-    m_fld_lowmin_util->color(fcolor_wht);
+    m_fld_min_spd_util->color(fcolor_wht);
 
   if(curr_mode == 6)
-    m_fld_hghmin_util->color(fcolor_red);
+    m_fld_max_spd_util->color(fcolor_red);
   else
-    m_fld_hghmin_util->color(fcolor_wht);
+    m_fld_max_spd_util->color(fcolor_wht);
 }
 
 

@@ -61,16 +61,20 @@ int main(int argc, char *argv[])
       gui->setVerbose(true);
     else if(strBegins(argi, "--domain=")) 
       gui->setParam("domain", argi.substr(9));
-    else if(strBegins(argi, "--medspd=")) 
-      gui->setParam("medspd", argi.substr(9));
-    else if(strBegins(argi, "--lowspd=")) 
-      gui->setParam("lowspd", argi.substr(9));
-    else if(strBegins(argi, "--hghspd=")) 
-      gui->setParam("hghspd", argi.substr(9));
-    else if(strBegins(argi, "--lowspd_util=")) 
-      gui->setParam("lowspd_util", argi.substr(14));
-    else if(strBegins(argi, "--hghspd_util=")) 
-      gui->setParam("hghspd_util", argi.substr(14));
+    else if(strBegins(argi, "--med_spd=")) 
+      gui->setParam("med_spd", argi.substr(10));
+    else if(strBegins(argi, "--low_spd=")) 
+      gui->setParam("low_spd", argi.substr(10));
+    else if(strBegins(argi, "--hgh_spd=")) 
+      gui->setParam("hgh_spd", argi.substr(10));
+    else if(strBegins(argi, "--low_spd_util=")) 
+      gui->setParam("low_spd_util", argi.substr(15));
+    else if(strBegins(argi, "--hgh_spd_util=")) 
+      gui->setParam("hgh_spd_util", argi.substr(15));
+    else if(strBegins(argi, "--max_spd_util=")) 
+      gui->setParam("max_spd_util", argi.substr(15));
+    else if(strBegins(argi, "--min_spd_util=")) 
+      gui->setParam("min_spd_util", argi.substr(15));
     else {
       cout << "Exiting due to Unhandled arg: " << argi << endl;
       exit(1);
@@ -90,22 +94,22 @@ int main(int argc, char *argv[])
 void showHelpAndExit()
 {
   cout << endl;
-  cout << "Usage: zaic_spd [OPTIONS]                           " << endl;
-  cout << "Options:                                            " << endl;
-  cout << "  --help, -h           Display this help message    " << endl;
-  cout << "  --domain=410         Set upper value of domain    " << endl;
-  cout << "  --verbose,           Enable verbose output        " << endl;
-  cout << "  --version, -v,       Display the release version  " << endl;
-  cout << "                                                    " << endl;
-  cout << "  --medspd=200                                      " << endl;
-  cout << "  --hghspd=220                                      " << endl;
-  cout << "  --lowspd=180                                      " << endl;
-  cout << "  --lowspd_util=120                                 " << endl;
-  cout << "  --hghspd_util=230                                 " << endl;
-  cout << "                                                    " << endl;
-  cout << "Example:                                            " << endl;
-  cout << " $ zaic_spd --domain=500 --verbose                  " << endl;
-  cout << " $ zaic_spd --domain=100 --medspd=120 --lowspd=110 --hghspd=150 " << endl;
+  cout << "Usage: zaic_spd [OPTIONS]                            " << endl;
+  cout << "Options:                                             " << endl;
+  cout << "  --help, -h             Display this help message   " << endl;
+  cout << "  --domain=speed,0,4,41  Set the IvP domain domain   " << endl;
+  cout << "  --verbose,             Enable verbose output       " << endl;
+  cout << "  --version, -v,         Display the release version " << endl;
+  cout << "                                                     " << endl;
+  cout << "  --med_spd=200                                      " << endl;
+  cout << "  --hghspd=220                                       " << endl;
+  cout << "  --lowspd=180                                       " << endl;
+  cout << "  --lowspd_util=120                                  " << endl;
+  cout << "  --hghspd_util=230                                  " << endl;
+  cout << "                                                     " << endl;
+  cout << "Example:                                             " << endl;
+  cout << " $ zaic_spd --domain=speed,0,5,51 --verbose          " << endl;
+  cout << " $ zaic_spd --domain=speed,0,8,41 --med_spd=4.5 --spd_max_util=80 " << endl;
   exit(0);
 }
 
