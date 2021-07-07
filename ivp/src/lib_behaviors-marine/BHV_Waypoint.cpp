@@ -313,7 +313,7 @@ bool BHV_Waypoint::setParam(string param, string param_val)
       m_ipf_type = param_val;
     return(true);
   }
-  else if(param == "lead"){
+  else if((param == "lead") && isNumber(param_val)) {
     if(dval <= 0) // indicating it is off
       m_lead_distance = -1;
     else
