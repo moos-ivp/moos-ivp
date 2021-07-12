@@ -48,7 +48,7 @@ string macroExpand(string str, string macro, string repl)
 string macroExpandBool(string str, string macro, bool bool_repl)
 {
   string macro1 = "$(" + macro + ")";
-  string repl = "meh"+boolToString(bool_repl);
+  string repl = boolToString(bool_repl);
   
   string rstr = findReplace(str, macro1, repl);
 
