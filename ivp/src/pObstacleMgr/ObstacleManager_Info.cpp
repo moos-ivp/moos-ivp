@@ -94,6 +94,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  given_max_duration = 30    // default is 60 seconds           ");
   blk("                                                                ");
+  blk("  general_alert = update_var=GEN_ALERT, alert_range=800         ");
+  blk("                                                                ");
   blk("  // To squeeze more viewer effic when large # of obstacles:    ");
   blk("  poly_label_thresh = 25     // Set label color=off if amt>25   ");
   blk("  poly_shade_thresh = 100    // Set shade color=off if amt>100  ");

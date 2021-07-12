@@ -28,7 +28,8 @@ ObstacleManager::ObstacleManager()
   // Init Config Variables
   m_alert_range  = 20;  // meters
   m_ignore_range = -1;  // meters (neg value means off)
-
+  m_gen_alert_range = -1;
+  
   m_max_pts_per_cluster = 20;
   m_max_age_per_point   = 20;
 
@@ -200,6 +201,8 @@ bool ObstacleManager::OnStartUp()
       handled = setUIntOnString(m_poly_vertex_thresh, value);
     else if(param == "given_max_duration")
       handled = handleConfigGivenMaxDuration(value);
+    else if(param == "general_alert")
+      handled = handleConfigGeneralAlert(value);
 
     else if(param == "new_obs_flag") 
       handled = handleConfigFlag("new_obs", value);
@@ -306,11 +309,10 @@ XYPoint ObstacleManager::customStringToPoint(string point_str)
 
 
 //------------------------------------------------------------
-// Procedure: handleGivenObstacle
+// Procedure: handleGivenObstacle()
 //   Example: pts={90.2,-80.4:...:82,-88:82.1,-83.7:85.4,-80.4},
 //            label=ob_0,duration=60
 //      Note: The duration parameter is optional
-
 
 bool ObstacleManager::handleGivenObstacle(string poly, string source)
 {
@@ -338,6 +340,7 @@ bool ObstacleManager::handleGivenObstacle(string poly, string source)
       if(dur_str == "") {
 	string msg = "Incoming GIVEN_OBSTACLE has missing duration"; 
 	reportRunWarning(msg);
+	reportRunWarning(poly);
 	return(false);
       }
       if(duration > m_given_max_duration) {
@@ -550,6 +553,52 @@ bool ObstacleManager::handleMailAlertRequest(string request)
 }
 
 //------------------------------------------------------------
+// Procedure: handleConfigGeneralAlert
+//   Example: general_alert = "name=gen_alert,
+//                             update_var=GEN_OBSTACLE_ALERT,
+//                             alert_range=2000,
+
+bool ObstacleManager::handleConfigGeneralAlert(string request)
+{
+  string name = "gen_alert";
+  string update_var, alert_range;
+
+  vector<string> svector = parseString(request, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = svector[i];
+    if(param == "name")
+      name = value;
+    else if(param == "update_var")
+      update_var = value;
+    else if(param == "alert_range")
+      alert_range = value;
+    else
+      return(false);
+  }
+
+  if((name == "") || (update_var == "") || (alert_range == ""))
+    return(false);
+
+  if(!isNumber(alert_range))
+    return(false);
+
+  if(!strEnds(name, "_"))
+     name += "_";
+  
+  double d_alert_range = atof(alert_range.c_str());
+  if(d_alert_range <= 0)
+    return(false);
+
+  // Alert request is valid, go ahead and set 
+  m_gen_alert_var   = update_var;
+  m_gen_alert_name  = name;
+  m_gen_alert_range = d_alert_range;
+
+  return(true);
+}
+
+//------------------------------------------------------------
 // Procedure: postConvexHullUpdates
 
 void ObstacleManager::postConvexHullUpdates()
@@ -583,9 +632,20 @@ void ObstacleManager::postConvexHullUpdates()
 	//reportEvent("OBM_DIST_TO_OBJ="+msg);
       }
 
-      // Only post hull if ownship is w/in alert range
-      if(close_range)
-        postConvexHullUpdate(key);
+      // Only post obstacle hull if it has changed.
+      if(m_map_obstacles[key].hasChanged()) {
+
+	// At this point we're committed to posting an update so go ahead 
+	// and mark this obstacle key as NOT changed.
+	m_map_obstacles[key].setChanged(false);
+	m_map_obstacles[key].incUpdatesTotal();
+
+	// Only post hull if ownship is w/in alert range
+	if(close_range)
+	  postConvexHullUpdate(key, m_alert_var, m_alert_name);
+	if((m_alert_var != "") && (dist <= m_gen_alert_range))
+	  postConvexHullUpdate(key, m_gen_alert_var, m_gen_alert_name);
+      }      
     }
   }
 }
@@ -594,25 +654,17 @@ void ObstacleManager::postConvexHullUpdates()
 //------------------------------------------------------------
 // Procedure: postConvexHullUpdate
 
-void ObstacleManager::postConvexHullUpdate(string key)
+void ObstacleManager::postConvexHullUpdate(string key, string alert_var,
+					   string alert_name)
 {
-  // Part 1: If the polygon hasn't changed, don't post an update
-  if(!m_map_obstacles[key].hasChanged())
-    return;
-
-  // At this point we're committed to posting an update so go ahead 
-  // and mark this obstacle key as NOT changed.
-  m_map_obstacles[key].setChanged(false);
-  m_map_obstacles[key].incUpdatesTotal();
-
   XYPolygon poly = m_map_obstacles[key].getPoly();
 
-  string update_str = "name=" + m_alert_name + key + "#";
+  string update_str = "name=" + alert_name + key + "#";
   update_str += "poly=" + poly.get_spec_pts(5) + ",label=" + key;
 
   m_alerts_posted++;
-  Notify(m_alert_var, update_str);
-  reportEvent(m_alert_var + "=" + update_str);
+  Notify(alert_var, update_str);
+  reportEvent(alert_var + "=" + update_str);
 }
 
 //------------------------------------------------------------
@@ -867,6 +919,7 @@ bool ObstacleManager::buildReport()
   string str_lasso_rad = doubleToStringX(m_lasso_radius);
 
   string str_alert_rng  = doubleToStringX(m_alert_range,1);
+  string str_gen_alert_rng  = doubleToStringX(m_gen_alert_range,1);
   string str_ignore_rng = doubleToStringX(m_ignore_range,1);
 
   string str_max_pts_per = uintToString(m_max_pts_per_cluster);
@@ -895,6 +948,10 @@ bool ObstacleManager::buildReport()
   m_msgs << "  alert_var:   " << m_alert_var               << endl;
   m_msgs << "  alert_name:  " << m_alert_name              << endl;
   m_msgs << "  alert_range: " << str_alert_rng             << endl;
+  m_msgs << "Configuration (general alert):              " << endl;
+  m_msgs << "  gen_alert_var:   " << m_gen_alert_var       << endl;
+  m_msgs << "  gen_alert_name:  " << m_gen_alert_name      << endl;
+  m_msgs << "  gen_alert_range: " << str_gen_alert_rng     << endl;
   m_msgs << "Configuration (lasso option):               " << endl;
   m_msgs << "  lasso:        " << str_lasso                << endl;
   m_msgs << "  lasso_points: " << str_lasso_pts            << endl;

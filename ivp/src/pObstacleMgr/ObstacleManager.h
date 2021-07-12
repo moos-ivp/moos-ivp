@@ -36,6 +36,7 @@ protected:
   bool handleConfigPostDistToPolys(std::string);
   bool handleConfigGivenMaxDuration(std::string);
   bool handleConfigFlag(std::string, std::string);
+  bool handleConfigGeneralAlert(std::string);
 
   bool handleMailNewPoint(std::string);
   bool handleMailAlertRequest(std::string);
@@ -43,7 +44,8 @@ protected:
   bool handleGivenObstacle(std::string, std::string src="mail");
   
   void postConvexHullUpdates();
-  void postConvexHullUpdate(std::string obstacle_key);
+  void postConvexHullUpdate(std::string obstacle_key, std::string alert_var,
+			    std::string alert_name);
   
   XYPolygon genPseudoHull(const std::vector<XYPoint>& pts, double radius);
   
@@ -65,6 +67,11 @@ private: // Configuration variables
   std::string  m_alert_var;
   std::string  m_alert_name;
   double       m_alert_range;
+
+  // General alert var
+  std::string  m_gen_alert_var;
+  std::string  m_gen_alert_name;
+  double       m_gen_alert_range;
 
   // When view_polys get numerous, skimp on extras
   unsigned int m_poly_label_thresh;
