@@ -99,7 +99,8 @@ void showExampleConfigAndExit()
   blk("  reset_interval   = -1       (default is -1)                   ");
   blk("  reset_range      = 10       (default is 10)                   ");
   blk("                                                                ");
-  blk("  reuse_ids        = tru      (default is true)                 ");
+  blk("  reuse_ids        = true     (default is true)                 ");
+  blk("  sensor_range     = 50       (default is 50)                   ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

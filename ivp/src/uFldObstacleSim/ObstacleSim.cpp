@@ -69,6 +69,8 @@ ObstacleSim::ObstacleSim()
 
   m_obstacles_posted = 0;
   m_obstacles_made   = 0;
+
+  m_sensor_range = 50;
 }
 
 //---------------------------------------------------------
@@ -197,6 +199,9 @@ bool ObstacleSim::OnStartUp()
     else if(param == "point_size")
       handled = setNonNegDoubleOnString(m_point_size, value);
 
+    else if(param == "sensor_range")
+      handled = setNonNegDoubleOnString(m_sensor_range, value);
+    
     else if(param == "min_duration")
       handled = handleConfigMinDuration(value);
     else if(param == "max_duration")
@@ -493,6 +498,8 @@ void ObstacleSim::updateObstaclesField()
 {
   if(!m_reset_pending)
     return;
+
+  Notify("KNOWN_OBSTACLE_CLEAR", "all");
   
   // Do the obstacle regeneration
   ObstacleFieldGenerator generator;
@@ -603,7 +610,9 @@ void ObstacleSim::postObstaclesRefresh()
 void ObstacleSim::postObstaclesErase()
 {
   for(unsigned int i=0; i<m_obstacles.size(); i++) {
-    string spec = m_obstacles[i].get_spec_inactive();
+    XYPolygon obstacle = m_obstacles[i];
+    obstacle.set_duration(0);
+    string spec = obstacle.get_spec_inactive();
     Notify("VIEW_POLYGON", spec);
     Notify("KNOWN_OBSTACLE", spec);
     if(!m_post_points)
@@ -619,7 +628,6 @@ void ObstacleSim::postObstaclesErase()
 void ObstacleSim::postPoints()
 {
 #if 1
-  double sensor_range = 50;
   map<string,NodeRecord>::iterator p;
   for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
     string vname  = p->first;
@@ -629,7 +637,7 @@ void ObstacleSim::postPoints()
     string vcolor = p->second.getColor("yellow");
     
     for(unsigned int i=0; i<m_obstacles.size(); i++) {
-      if(m_obstacles[i].dist_to_poly(osx,osy) <= sensor_range) {
+      if(m_obstacles[i].dist_to_poly(osx,osy) <= m_sensor_range) {
 	for(unsigned int j=0; j<m_rate_points; j++) {
 	  double x, y;
 	  bool ok = randPointOnPoly(osx, osy, m_obstacles[i], x, y);

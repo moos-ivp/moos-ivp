@@ -89,6 +89,9 @@ class ObstacleSim : public AppCastingMOOSApp
   double       m_reset_interval;
   double       m_reset_range;
 
+  //range of the sensor for generating point updates
+  double m_sensor_range;
+
 private: // State variables
 
   // Core list of obtacles
