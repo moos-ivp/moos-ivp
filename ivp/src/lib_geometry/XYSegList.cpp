@@ -865,7 +865,10 @@ std::string XYSegList::get_spec_inactive() const
   spec += ",active=false";
   if(m_label != "")
     spec += ",label=" + m_label; 
-  
+
+  if(m_duration_set && (m_duration==0))
+    aug_spec(spec, "duration=0");
+
   return(spec);
 }
 
