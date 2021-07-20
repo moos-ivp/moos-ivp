@@ -53,6 +53,8 @@ ObShipModel::ObShipModel()
   m_pwt_inner_dist = 10;
   m_pwt_outer_dist = 50;
   m_allowable_ttc  = 20;
+
+  m_completed_dist = 50;
   
   // State variables
   m_cx = 0;
