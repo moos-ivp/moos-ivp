@@ -36,6 +36,7 @@ class CollObDetect : public AppCastingMOOSApp
   void registerVariables();
 
   bool handleMailKnownObstacle(std::string);
+  void handleMailKnownObstacleClear(std::string);
   bool handleMailNodeReport(std::string);
 
   void updateVehiDists();
@@ -58,8 +59,9 @@ class CollObDetect : public AppCastingMOOSApp
   
  private: // Configuration variables
 
-  // Core list of obtacles
+  // Core map of obtacles and time received
   std::map<std::string, XYPolygon> m_map_obstacles;
+  std::map<std::string, double>    m_map_ob_tstamp;
 
   // Params defining test/success
   double m_near_miss_dist;

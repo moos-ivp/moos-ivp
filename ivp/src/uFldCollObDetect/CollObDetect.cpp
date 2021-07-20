@@ -64,6 +64,9 @@ bool CollObDetect::OnNewMail(MOOSMSG_LIST &NewMail)
 	reportRunWarning("Unhandled KNOWN_OBSTACLE:" + sval);    
     }
     
+    else if(key == "KNOWN_OBSTACLE_CLEAR")
+      handleMailKnownObstacleClear(sval);
+    
     else if(key=="NODE_REPORT") {
       bool ok = handleMailNodeReport(sval);
       if(!ok) 
@@ -157,6 +160,7 @@ void CollObDetect::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   Register("KNOWN_OBSTACLE", 0);
+  Register("KNOWN_OBSTACLE_CLEAR", 0);
   Register("NODE_REPORT", 0);
 }
 
@@ -165,7 +169,7 @@ void CollObDetect::registerVariables()
 //            Known obstacles may come from (a) simulation,
 //            (b) simulated sensors, (c) known locations e.g. of
 //            of buoys when operatingin the field, or (d) via
-//            actual sensors when operatingin the field.
+//            actual sensors when operating in the field.
 //
 //   Example: pts={90.2,-80.4:...:82,-88:82.1,-83.7:85.4,-80.4},label=ob_0
 
@@ -178,7 +182,49 @@ bool CollObDetect::handleMailKnownObstacle(string poly)
   string label = new_poly.get_label();
 
   m_map_obstacles[label] = new_poly;
+  m_map_ob_tstamp[label] = m_curr_time;
   return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: handleMailKnownObstacleClear()
+//      Note: May occur when used with an obstacle simulator that
+//            is resetting the obstacle field mid-mission.
+//      Note: Timestamps are checked and a threshold is applied before
+//            clearing an obstacle. This is to ensure the clear-and-
+//            replace event is more robust to the possibility that the
+//            clear message arrives after one of the new replacement
+//            obstacles.
+//   Example: "all", "obs_001"
+
+void CollObDetect::handleMailKnownObstacleClear(string str)
+{
+  if(str == "")
+    return;
+
+  double delete_time_thresh = 4;
+  
+  set<string> remove_ids;
+  
+  map<string, double>::iterator p;
+  for(p=m_map_ob_tstamp.begin(); p!=m_map_ob_tstamp.end(); p++) {
+    string id = p->first;
+    double tstamp = p->second;
+    if((id == str) || (tolower(str) == "all")) {
+      double age = m_curr_time - tstamp;
+      if(age > delete_time_thresh)
+	remove_ids.insert(id);
+    }
+  }
+
+  set<string>::iterator q;
+  for(q=remove_ids.begin(); q!=remove_ids.end(); q++) {
+    string obstacle_id = *q;
+    m_map_obstacles.erase(obstacle_id);
+    m_map_vdist.erase(obstacle_id);
+    m_map_vdist_prev.erase(obstacle_id);
+    m_map_vdist_min.erase(obstacle_id);
+  }
 }
 
 //------------------------------------------------------------

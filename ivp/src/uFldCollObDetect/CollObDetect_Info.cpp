@@ -102,9 +102,19 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  NODE_MESSAGE = src_node=alpha,dest_node=bravo,var_name=FOO,   ");
   blk("                 string_val=BAR                                 ");
-  blk("  APP_CAST_REQ                                                  ");
-  blk("  KNOWN_OBSTACLE                                                ");
-  blk("  NODE_REPORT                                                   ");
+  blk("  APPCAST_REQ  = node=all,app=uFldCollObDetect,duration=3.0     ");
+  blk("                 key=pMarineViewer:alphaapp,thresh=run_warning  ");
+  blk("                                                                ");
+  blk("  KNOWN_OBSTACLE = pts={59,-101:64,-105:64,-112:59,-116:53},    ");
+  blk("                   label=ob_3,duration=451.74                   ");
+  blk("                                                                ");
+  blk("  KNOWN_OBSTACLE_CLEAR = ob_3     (or \"all\")                  ");
+  
+  blk("  NODE_REPORT = NAME=alpha,TYPE=UUV,TIME=1252348077.59,         ");
+  blk("                COLOR=red,X=51.71,Y=-35.50, LAT=43.824981,      ");
+  blk("                LON=-70.329755,SPD=2.0,HDG=118.8,               ");
+  blk("                YAW=118.8,DEPTH=4.6,LENGTH=3.8,                 ");
+  blk("                MODE=MODE@ACTIVE:LOITERING                      ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
