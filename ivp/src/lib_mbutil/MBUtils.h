@@ -57,6 +57,10 @@ bool vectorContains(const std::vector<std::string>&,
 		    const std::string&,
 		    bool case_sensitive=true);
 
+bool listContains(const std::list<std::string>&, 
+		  const std::string&,
+		  bool case_sensitive=true);
+
 std::string augmentSpec(const std::string&, const std::string&, char=',');
 std::string removeWhite(const std::string&);
 std::string removeWhiteEnd(const std::string&);

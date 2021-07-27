@@ -663,6 +663,29 @@ bool vectorContains(const vector<string>& svector,
 }
 
 //----------------------------------------------------------------
+// Procedure: listContains()
+
+bool listContains(const list<string>& str_list,
+		  const string& str,
+		  bool case_sensitive)
+{
+  list<string>::const_iterator p;
+  if(case_sensitive) {
+    for(p=str_list.begin(); p!=str_list.end(); p++)
+      if(*p == str)
+	return(true);
+  }
+  else {
+    string lower_str = tolower(str);
+    for(p=str_list.begin(); p!=str_list.end(); p++)
+      if(tolower(*p) == lower_str)
+	return(true);
+  }
+
+  return(false);
+}
+
+//----------------------------------------------------------------
 // Procedure: stripBlankEnds(string)
 
 string stripBlankEnds(const string& str)
