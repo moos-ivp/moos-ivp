@@ -102,6 +102,8 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
+  blk("  APPCAST_REQ  = node=all,app=pRealm,duration=3.0               ");
+  blk("                 key=pMarineViewer:alphaapp,thresh=run_warning  ");
   blk("  REALMCAST_REQ = channel=pHostInfo,duration=3,nosrc,nocom,     ");
   blk("                          nosubs,wrap,trunc                     ");
   blk("  DB_RWSUMMARY  = MOOSDB_shoreside uFldNodeComms=APPCAST_REQ:   ");

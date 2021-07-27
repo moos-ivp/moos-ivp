@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
-/*    DATE: June 3rd, 2008                                       */
+/*    DATE: Dec 23rd, 2015                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */

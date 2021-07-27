@@ -156,6 +156,8 @@ void showInterfaceAndExit()
   blk("  RESTART_HELM                                                  ");
   blk("  IVPHELM_VERBOSE                                               ");
   blk("  IVPHELM_REJOURNAL                                             ");
+  blk("  APPCAST_REQ  = node=all,app=uFldCollObDetect,duration=3.0     ");
+  blk("                 key=pMarineViewer:alphaapp,thresh=run_warning  ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
