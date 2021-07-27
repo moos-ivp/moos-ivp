@@ -46,6 +46,7 @@ class GrepHandler
   void setFinalTimeOnly(bool v)    {m_final_time_only=v;}
   void setFinalValueOnly(bool v)   {m_final_value_only=v;}
   void setValuesOnly(bool v)       {m_values_only=v;}
+  void setTimesOnly(bool v)        {m_times_only=v;}
   void setSortEntries(bool v)      {m_sort_entries=v;}
   void setRemoveDuplicates(bool v) {m_rm_duplicates=v;}
 
@@ -73,6 +74,7 @@ class GrepHandler
   bool        m_final_time_only;
   bool        m_final_value_only;
   bool        m_values_only;
+  bool        m_times_only;
 
   bool        m_sort_entries;
   bool        m_rm_duplicates;

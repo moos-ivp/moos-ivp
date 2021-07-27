@@ -80,6 +80,14 @@ int main(int argc, char *argv[])
     make_end_report  = false;
   }
   
+  bool times_only = false;
+  if(scanArgs(argc, argv, "--times_values_only", "-tvo")) {
+    values_only      = true;
+    times_only       = true;
+    no_keep_comments = true;
+    make_end_report  = false;
+  }
+  
   if(scanArgs(argc, argv, "--quiet", "-q")) {
     no_keep_comments = false;
     make_end_report  = false;
@@ -124,6 +132,9 @@ int main(int argc, char *argv[])
     cout << "                                                           " << endl;
     cout << "  --values_only     Output only value part of each line    " << endl;
     cout << "  -vo                                                      " << endl;
+    cout << "                                                           " << endl;
+    cout << "  --times_only      Output time also in values_only mode   " << endl;
+    cout << "  -to                                                      " << endl;
     cout << "                                                           " << endl;
     cout << "  --keep_badlines   Do not discard lines that don't begin  " << endl;
     cout << "  -kb               with a timestamp or comment character. " << endl;
@@ -177,6 +188,7 @@ int main(int argc, char *argv[])
   handler.setFinalTimeOnly(final_time_only);
   handler.setFinalValueOnly(final_value_only);
   handler.setValuesOnly(values_only);
+  handler.setTimesOnly(times_only);
   handler.setSortEntries(sort_by_time);
   handler.setRemoveDuplicates(remove_duplicates);
 

@@ -56,6 +56,7 @@ GrepHandler::GrepHandler()
   m_final_value_only = false;
   m_final_time_only  = false;
   m_values_only      = false;
+  m_times_only       = false;
 
   m_cache_size = 1000;
 
@@ -141,7 +142,7 @@ bool GrepHandler::handle(string alogfile, string new_alogfile)
       // Part 1: Check for end of file
       if(line_raw == "eof") 
 	done_reading_raw = true;
-      else {      
+      else { 
 	if(!checkRetain(line_raw))
 	  ignoreLine(line_raw);
 	else {
@@ -374,6 +375,9 @@ void GrepHandler::outputLine(const string& line)
     string line_val = getDataEntry(line);
     string tstamp = getTimeStamp(line);
     if(tstamp != m_last_tstamp) {
+      if(m_times_only)
+	line_val = tstamp + "," + stripBlankEnds(line_val);
+
       if(m_file_out)
 	fprintf(m_file_out, "%s\n", line_val.c_str());
       else
@@ -414,7 +418,6 @@ void GrepHandler::ignoreLine(const string& line)
 
 //--------------------------------------------------------
 // Procedure: printReport
-//     Notes: 
 
 void GrepHandler::printReport()
 {
