@@ -15,4 +15,7 @@ ProcessConfig = pObstacleMgr
 	post_view_polys = false
 	
 	given_max_duration = 1000
-	} 
+
+	general_alert = update_var=GEN_ALERT, alert_range=40000
+	
+} 

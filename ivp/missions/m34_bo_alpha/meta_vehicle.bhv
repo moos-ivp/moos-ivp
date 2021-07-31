@@ -36,7 +36,7 @@ Behavior = BHV_Loiter
   updates   = UP_LOITER
   runflag   = VEHICLE_UNDERWAY = TRUE
   endflag   = VEHICLE_UNDERWAY = FALSE
-
+	
    post_suffix = A
          speed = 1.4
      clockwise = false

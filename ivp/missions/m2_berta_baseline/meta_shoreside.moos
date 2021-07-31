@@ -33,7 +33,7 @@ Processconfig = ANTLER
 #include plug_pHostInfo.moos
 	
 //--------------------------------------------------
-// uFldShoreBroker Configuration Block
+// uFldShoreBroker Config Block
 
 ProcessConfig = uFldShoreBroker
 {
@@ -54,7 +54,7 @@ ProcessConfig = uFldShoreBroker
 }
 
 //--------------------------------------------------
-// uFldNodeComms Configuration Block
+// uFldNodeComms Config Block
 
 ProcessConfig = uFldNodeComms
 {
@@ -71,7 +71,7 @@ ProcessConfig = uFldNodeComms
 }
 
 //--------------------------------------------------
-// uXMS Configuration Block
+// uXMS Config Block
 
 ProcessConfig = uXMS
 {
@@ -84,7 +84,7 @@ ProcessConfig = uXMS
 }
 
 //--------------------------------------------------
-// pLogger Configuration Block
+// pLogger Config Block
 
 ProcessConfig = pLogger
 {

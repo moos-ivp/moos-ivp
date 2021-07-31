@@ -22,26 +22,14 @@ Behavior = BHV_Waypoint
   updates    = WPT_UPDATE
   perpetual  = true
 
-      lead_condition = AVOIDING != active
+  lead_condition = AVOIDING != active
 
-	wptflag = TEST_P=$[X],$[Y]
-	wptflag = TEST_NP=$[NX],$[NY]
-	wptflag = TEST_WOS=$[OSX],$[OSY]
+	//wptflag = TEST_P=$[X],$[Y]
+	//wptflag = TEST_NP=$[NX],$[NY]
+	//wptflag = TEST_WOS=$[OSX],$[OSY]
 
 	//wptflag_on_start = true
 
-	activeflag = TEST_A = $[X]
-	activeflag = TEST_OSX = $[OSX]
-	activeflag = TEST_OSY = $[OSY]
-	
-	//wptflag = TESTU=$[UID] 
-
-	//wptflag = TESTW="$(PX),$(PY)"
-	//wptflag = TESTZ=$(NX),$(NY)
-
-  //wptflag = NEPTUNE_SURVEY_VISITED_POINT="$(PX),$(PY)"
-  //wptflag    = NEPTUNE_SURVEY_NEXT_POINT=$(NX),$(NY)
-	
       use_alt_speed = true
            speed_alt = 1
                 lead = 8
@@ -53,20 +41,10 @@ Behavior = BHV_Waypoint
          slip_radius = 15.0
 	efficiency_measure = all
 
-//   cycleflag = WPT_UPDATE=order=reverse
-
-             //polygon = 60,-40
-             //polygon = 60,-40 : 60,-160 
-             polygon = 60,-40 : 60,-160 : 150,-160 
-             //polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
-             //point = 80,-33
-
-      //points = format=lawnmower, label=foxtrot, x=115, y=-100, height=120, width=100, lane_width=12, rows=north-south, startx=00, starty=0, degs=0
+             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
 
                order = normal
-	       //repeat  = 1
-
-	       // --panx=-90 --pany=70  --zoom=4.4 
+	       repeat  = 4
 
     //visual_hints = nextpt_vertex_size=8
     //visual_hints = nextpt_lcolor=invisible
@@ -113,7 +91,7 @@ Behavior=BHV_Waypoint
  }
 
 //----------------------------------------------
-Behavior=BHV_ConstantSpeed
+//Behavior=BHV_ConstantSpeed
 {
   name       = const_speed
   pwt        = 200

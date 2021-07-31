@@ -114,6 +114,7 @@
        '("uFldTaskMonitor")
 
       '("pTowManager" "ownship"  "max_appcast_events")
+      '("pEvalConvoy" "on_tail_thresh"  "alignment_thresh" "on_tail_thresh" "alignment_thresh" "recap_var" "stat_recap_var" "tracking_thresh" "rng_switch_thresh")
 
       '("pFrontGridRender" "grid_config" )
 
