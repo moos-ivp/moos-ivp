@@ -601,6 +601,18 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	  if(strContains(var, "$[UP_VNAME_CLOSEST]")) 
 	    var = findReplace(var, "$[UP_VNAME_CLOSEST]", up_vname_closest);
 
+	  // rmod Aug1821 allow clicks to change based on active vname
+	  string active_vname = getStringInfo("active_vehicle_name");
+	  if(strContains(var, "$(VNAME)")) 
+	    var = findReplace(var, "$(VNAME)", active_vname);
+	  if(strContains(var, "$[VNAME]")) 
+	    var = findReplace(var, "$[VNAME]", active_vname);
+	  if(strContains(var, "$(UP_VNAME)"))
+	    var = findReplace(var, "$(UP_VNAME)", toupper(active_vname));
+	  if(strContains(var, "$[UP_VNAME]")) 
+	    var = findReplace(var, "$[UP_VNAME]", toupper(active_vname));
+	  // end rmod Aug1821
+	  
 	  pair.set_var(var);
 
 	  if(pair.is_string()) {
@@ -667,14 +679,11 @@ void PMV_Viewer::handleLeftMouse(int vx, int vy)
 	    if(strContains(str, "$[UP_VNAME_CLOSEST]")) 
 	      str = findReplace(str, "$[UP_VNAME_CLOSEST]", up_vname_closest);
 	    
-	    if(strContains(str, "$(VNAME)")) {
-	      string vname = getStringInfo("active_vehicle_name");
-	      str = findReplace(str, "$(VNAME)", vname);
-	    }
-	    if(strContains(str, "$[VNAME]")) {
-	      string vname = getStringInfo("active_vehicle_name");
-	      str = findReplace(str, "$[VNAME]", vname);
-	    }
+	    if(strContains(str, "$(VNAME)")) 
+	      str = findReplace(str, "$(VNAME)", active_vname);
+	    if(strContains(str, "$[VNAME]")) 
+	      str = findReplace(str, "$[VNAME]", active_vname);
+
 	    pair.set_sdata(str, true);
 	  }
 	  m_var_data_pairs_lft.push_back(pair);
