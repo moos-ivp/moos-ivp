@@ -26,6 +26,7 @@
 #include <algorithm>
 #include "PMV_Viewer.h"
 #include "MBUtils.h"
+#include "MacroUtils.h"
 #include "AngleUtils.h"
 #include "ColorParse.h"
 #include "BearingLine.h"
@@ -192,9 +193,9 @@ int PMV_Viewer::handle(int event)
     vy = h() - Fl::event_y();
     if(Fl_Window::handle(event) != 1) {
       if(Fl::event_button() == FL_LEFT_MOUSE)
-	handleLeftMouse(vx, vy);
+	handleMouse(vx, vy, "left");
       if(Fl::event_button() == FL_RIGHT_MOUSE)
-	handleRightMouse(vx, vy);
+	handleMouse(vx, vy, "right");
     }
     return(1);
     break;
@@ -522,267 +523,143 @@ void PMV_Viewer::handleMoveMouse(int vx, int vy)
 }
 
 //-------------------------------------------------------------
-// Procedure: handleLeftMouse                       
-//      Note: The MOOSGeodesy is a superclass variable, initialized
-//            in the superclass. The m_geodesy_initialized variable
-//            is also a superclass variable.
+// Procedure: handleMouse()                       
+//      Note: m_goedesy and m_geodesy_initialized are superclass vars
 
-void PMV_Viewer::handleLeftMouse(int vx, int vy)
+void PMV_Viewer::handleMouse(int vx, int vy, string button_side)
 {
+  // Part 1: Initial Sanity checks
   if(!m_geodesy_initialized)
     return;
+  if((button_side != "left") && (button_side != "right"))
+    return;
 
+  // Part 2: Get the mouse click location info
   double ix = view2img('x', vx);
   double iy = view2img('y', vy);
   double mx = img2meters('x', ix);
   double my = img2meters('y', iy);
-  double sx = snapToStep(mx, 1.0);
-  double sy = snapToStep(my, 1.0);
+  double sx = snapToStep(mx, 0.1);
+  double sy = snapToStep(my, 0.1);
 
+  // Part 3: Get Context info based on mouse and/or active vehicle
   string vname_closest = m_vehiset.getClosestVehicle(sx, sy);
   string up_vname_closest = toupper(vname_closest);
-  
-  double dlat, dlon;
+  string active_vname = getStringInfo("active_vehicle_name");
+  string up_active_vname = toupper(active_vname);
 
-  bool ok = false;
+  // Part 4: Get lat/lon info related to mouse click
+  double dlat, dlon;
 #ifdef USE_UTM
-  ok = m_geodesy.UTM2LatLong(sx, sy, dlat, dlon);
+  bool ok = m_geodesy.UTM2LatLong(sx, sy, dlat, dlon);
 #else
-  ok = m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
+  bool ok = m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
 #endif
 
+  // Part 5: Sanity check lat/lon info was properly obtained
   if(!ok || my_isnan(dlat) || my_isnan(dlon))
     return;
 
-  string slat = doubleToString(dlat, 8);
-  string slon = doubleToString(dlon, 8);
+  string str_lat = doubleToString(dlat, 8);
+  string str_lon = doubleToString(dlon, 8);
 
-  // If the mouse is clicked while holding down either the SHIFT or
-  // CONTROL keys, this is interpreted as a request for a drop-point.
-  if((Fl::event_state(FL_SHIFT)) || (Fl::event_state(FL_ALT))) {
-    XYPoint dpt(mx, my);
-    string latlon, localg, native;
-    localg = "(" + intToString(mx) + ", " + intToString(my) + ")";
-    latlon = "("  + slat + ", " + slon + ")";
-    if(Fl::event_state(FL_SHIFT))
-      native = localg;
-    else 
-      native = latlon;
-    dpt.set_label(native);
-    dpt.set_vertex_size(3);
-    m_drop_points.addPoint(dpt, latlon, localg, native);
-  }
-  else if(Fl::event_state(FL_CTRL))
-    return(handleRightMouse(vx, vy));
-  // Otherwise (no SHIFT/CONTROL key), the left click will be 
-  // interpreted as a "mouse-poke". 
-  else {
-    // The aim is to build a vector of VarDataPairs from the "raw" set
-    // residing in m_var_data_pairs_all, by replacing all $(KEY) 
-    // occurances with the values found under the mouse location. 
-    m_var_data_pairs_lft.clear();
-    unsigned int i, vsize = m_var_data_pairs_all.size();
-    for(i=0; i<vsize; i++) {
-      string ikey = m_var_data_pairs_all[i].get_key();
-      if((ikey == "any_left") || (ikey == m_left_mouse_key)) {
-	VarDataPair pair = m_var_data_pairs_all[i];
-	if(pair.get_ptype() == "left") {
-	  string var = pair.get_var();
-	  // In most cases pattern replacement is done on the right side of
-	  // vardata pair, but in these cases it can be done on the left side,
-	  // affecting the MOOS variable name involved in the post.
-	  if(strContains(var, "$(VNAME_CLOSEST)")) 
-	    var = findReplace(var, "$(VNAME_CLOSEST)", vname_closest);
-	  if(strContains(var, "$[VNAME_CLOSEST]")) 
-	    var = findReplace(var, "$[VNAME_CLOSEST]", vname_closest);
-	  
-	  if(strContains(var, "$(UP_VNAME_CLOSEST)")) 
-	    var = findReplace(var, "$(UP_VNAME_CLOSEST)", up_vname_closest);
-	  if(strContains(var, "$[UP_VNAME_CLOSEST]")) 
-	    var = findReplace(var, "$[UP_VNAME_CLOSEST]", up_vname_closest);
+  // Part 6: ctrl-click IS a right-click on a single-button mouse/trackpad
+  if(Fl::event_state(FL_CTRL))
+    button_side = "right";
 
-	  // rmod Aug1821 allow clicks to change based on active vname
-	  string active_vname = getStringInfo("active_vehicle_name");
-	  if(strContains(var, "$(VNAME)")) 
-	    var = findReplace(var, "$(VNAME)", active_vname);
-	  if(strContains(var, "$[VNAME]")) 
-	    var = findReplace(var, "$[VNAME]", active_vname);
-	  if(strContains(var, "$(UP_VNAME)"))
-	    var = findReplace(var, "$(UP_VNAME)", toupper(active_vname));
-	  if(strContains(var, "$[UP_VNAME]")) 
-	    var = findReplace(var, "$[UP_VNAME]", toupper(active_vname));
-	  // end rmod Aug1821
-	  
-	  pair.set_var(var);
-
-	  if(pair.is_string()) {
-	    string str = m_var_data_pairs_all[i].get_sdata();
-	    if(strContains(str, "$(XPOS)")) 
-	      str = findReplace(str, "$(XPOS)", doubleToString(sx,1));
-	    if(strContains(str, "$[XPOS]")) 
-	      str = findReplace(str, "$[XPOS]", doubleToString(sx,1));
-	    if(strContains(str, "$(X)")) 
-	      str = findReplace(str, "$(X)", doubleToString(sx,0));
-	    
-	    if(strContains(str, "$(X:1)")) 
-	      str = findReplace(str, "$(X:1)", doubleToString(sx,1));
-	    if(strContains(str, "$(X:2)")) 
-	      str = findReplace(str, "$(X:2)", doubleToString(sx,2));
-	    
-	    if(strContains(str, "$(YPOS)")) 
-	      str = findReplace(str, "$(YPOS)", doubleToString(sy,1));
-	    if(strContains(str, "$[YPOS]")) 
-	      str = findReplace(str, "$[YPOS]", doubleToString(sy,1));
-
-	    if(strContains(str, "$(IX)"))
-	      str = findReplace(str, "$(IX)", intToString(m_lclick_ix));
-	    if(strContains(str, "$[IX]"))
-	      str = findReplace(str, "$[IX]", intToString(m_lclick_ix));
-	    
-	    if(strContains(str, "$(BIX)"))
-	      str = findReplace(str, "$(BIX)", intToString(m_bclick_ix));
-	    if(strContains(str, "$[BIX]"))
-	      str = findReplace(str, "$[BIX]", intToString(m_bclick_ix));
-	    
-	    if(strContains(str, "$(Y)")) 
-	      str = findReplace(str, "$(Y)", doubleToString(sy,0));
-	    if(strContains(str, "$[Y]")) 
-	      str = findReplace(str, "$[Y]", doubleToString(sy,0));
-
-	    if(strContains(str, "$(Y:1)")) 
-	      str = findReplace(str, "$(Y:1)", doubleToString(sy,1));
-	    if(strContains(str, "$(Y:2)")) 
-	      str = findReplace(str, "$(Y:2)", doubleToString(sy,2));
-	    
-	    if(strContains(str, "$(UTC)")) 
-	      str = findReplace(str, "$(UTC)", doubleToString(m_curr_time,3));
-	    if(strContains(str, "$[UTC]")) 
-	      str = findReplace(str, "$[UTC]", doubleToString(m_curr_time,3));
-
-	    if(strContains(str, "$(LAT)")) 
-	      str = findReplace(str, "$(LAT)", doubleToString(dlat,8));
-	    if(strContains(str, "$[LAT]")) 
-	      str = findReplace(str, "$[LAT]", doubleToString(dlat,8));
-
-	    if(strContains(str, "$(LON)")) 
-	      str = findReplace(str, "$(LON)", doubleToString(dlon,8));
-	    if(strContains(str, "$[LON]")) 
-	      str = findReplace(str, "$[LON]", doubleToString(dlon,8));
-
-	    if(strContains(str, "$(VNAME_CLOSEST)")) 
-	      str = findReplace(str, "$(VNAME_CLOSEST)", vname_closest);
-	    if(strContains(str, "$[VNAME_CLOSEST]")) 
-	      str = findReplace(str, "$[VNAME_CLOSEST]", vname_closest);
-
-	    if(strContains(str, "$(UP_VNAME_CLOSEST)")) 
-	      str = findReplace(str, "$(UP_VNAME_CLOSEST)", up_vname_closest);
-	    if(strContains(str, "$[UP_VNAME_CLOSEST]")) 
-	      str = findReplace(str, "$[UP_VNAME_CLOSEST]", up_vname_closest);
-	    
-	    if(strContains(str, "$(VNAME)")) 
-	      str = findReplace(str, "$(VNAME)", active_vname);
-	    if(strContains(str, "$[VNAME]")) 
-	      str = findReplace(str, "$[VNAME]", active_vname);
-
-	    pair.set_sdata(str, true);
-	  }
-	  m_var_data_pairs_lft.push_back(pair);
-	}
-      }
+  // Part 7: Handle drop point if left button click and ALT or SHIFT
+  // If left mouse is clicked while holding down either the SHIFT or
+  // ALT keys, this is interpreted as a request for a drop-point.
+  if(button_side == "left") {
+    if((Fl::event_state(FL_SHIFT)) || (Fl::event_state(FL_ALT))) {
+      XYPoint dpt(mx, my);
+      string latlon, localg, native;
+      localg = "(" + intToString(mx) + ", " + intToString(my) + ")";
+      latlon = "("  + str_lat + ", " + str_lon + ")";
+      if(Fl::event_state(FL_SHIFT))
+	native = localg;
+      else 
+	native = latlon;
+      dpt.set_label(native);
+      dpt.set_vertex_size(3);
+      m_drop_points.addPoint(dpt, latlon, localg, native);
+      return;
     }
-    m_lclick_ix++;
-    m_bclick_ix++;
   }
-}
 
-//-------------------------------------------------------------
-// Procedure: handleRightMouse
-//      Note: The MOOSGeodesy is a superclass variable, initialized
-//            in the superclass. The m_geodesy_initialized variable
-//            is also a superclass variable.
-
-void PMV_Viewer::handleRightMouse(int vx, int vy)
-{
-  if(!m_geodesy_initialized)
-    return;
-
-  double ix = view2img('x', vx);
-  double iy = view2img('y', vy);
-  double mx = img2meters('x', ix);
-  double my = img2meters('y', iy);
-  double sx = snapToStep(mx, 1.0);
-  double sy = snapToStep(my, 1.0);
-  
-  string vname_closest = m_vehiset.getClosestVehicle(sx, sy);
-  string up_vname_closest = toupper(vname_closest);
-  
-  double dlat, dlon;
-
-  bool ok = false;
-#ifdef USE_UTM
-  ok = m_geodesy.UTM2LatLong(sx, sy, dlat, dlon);
-#else
-  ok = m_geodesy.LocalGrid2LatLong(sx, sy, dlat, dlon);
-#endif
-
-  if(!ok || my_isnan(dlat) || my_isnan(dlon))
-    return;
-
-  // The aim is to build a vector of VarDataPairs from the "raw" set
+  // Part 8: build a vector of VarDataPairs from the "raw" set
   // residing in m_var_data_pairs_all, by replacing all $(KEY) 
   // occurances with the values found under the mouse location. 
-  m_var_data_pairs_rgt.clear();
+  vector<VarDataPair> var_data_pairs_mouse;
   unsigned int i, vsize = m_var_data_pairs_all.size();
   for(i=0; i<vsize; i++) {
-    string ikey = m_var_data_pairs_all[i].get_key();
-    if((ikey == "any_right") || (ikey == m_right_mouse_key)) {
-      VarDataPair pair = m_var_data_pairs_all[i];
-      if(pair.get_ptype() == "right") {
-	if(pair.is_string()) {
-	  string str = m_var_data_pairs_all[i].get_sdata();
-	  if(strContains(str, "$(XPOS)")) 
-	    str = findReplace(str, "$(XPOS)", doubleToString(sx,1));
-	  if(strContains(str, "$[XPOS]")) 
-	    str = findReplace(str, "$[XPOS]", doubleToString(sx,1));
-	  if(strContains(str, "$(YPOS)")) 
-	    str = findReplace(str, "$(YPOS)", doubleToString(sy,1));
-	  if(strContains(str, "$[YPOS]")) 
-	    str = findReplace(str, "$[YPOS]", doubleToString(sy,1));
-	  if(strContains(str, "$(LAT)")) 
-	    str = findReplace(str, "$(LAT)", doubleToString(dlat,8));
-	  if(strContains(str, "$[LAT]")) 
-	    str = findReplace(str, "$[LAT]", doubleToString(dlat,8));
-	  if(strContains(str, "$(LON)")) 
-	    str = findReplace(str, "$(LON)", doubleToString(dlon,8));
-	  if(strContains(str, "$[LON]")) 
-	    str = findReplace(str, "$[LON]", doubleToString(dlon,8));
-	  if(strContains(str, "$(IX)")) 
-	    str = findReplace(str, "$(IX)", intToString(m_rclick_ix));
-	  if(strContains(str, "$[IX]")) 
-	    str = findReplace(str, "$[IX]", intToString(m_rclick_ix));
-	  if(strContains(str, "$(BIX)")) 
-	    str = findReplace(str, "$(BIX)", intToString(m_bclick_ix));
-	  if(strContains(str, "$[BIX]")) 
-	    str = findReplace(str, "$[BIX]", intToString(m_bclick_ix));
+    VarDataPair pair = m_var_data_pairs_all[i];
 
-	  if(strContains(str, "$(VNAME_CLOSEST)")) 
-	    str = findReplace(str, "$(VNAME_CLOSEST)", vname_closest);
-	  if(strContains(str, "$[VNAME_CLOSEST]")) 
-	    str = findReplace(str, "$[VNAME_CLOSEST]", vname_closest);
-	  
-	  if(strContains(str, "$(UP_VNAME_CLOSEST)")) 
-	    str = findReplace(str, "$(UP_VNAME_CLOSEST)", up_vname_closest);
-	  if(strContains(str, "$[UP_VNAME_CLOSEST]")) 
-	    str = findReplace(str, "$[UP_VNAME_CLOSEST]", up_vname_closest);
+    if(pair.get_ptype() != button_side)
+      continue;
 
-	  pair.set_sdata(str, true);
-	}
-	m_var_data_pairs_rgt.push_back(pair);
-      }
+    string ikey = pair.get_key();
+    if(button_side == "left") {
+      if((ikey != "any_left") && (ikey != m_left_mouse_key))
+	continue;
     }
+    else if(button_side == "right") {
+      if((ikey != "any_right") && (ikey != m_right_mouse_key))
+	continue;
+    }
+
+    string var = pair.get_var();
+    // In most cases pattern replacement is done on the right side of
+    // vardata pair, but in these cases it can be done on the left side,
+    // affecting the MOOS variable name involved in the post.
+    var = macroExpand(var, "VNAME_CLOSEST", vname_closest);
+    var = macroExpand(var, "UP_VNAME_CLOSEST", up_vname_closest);
+    var = macroExpand(var, "VNAME", active_vname);
+    var = macroExpand(var, "UP_VNAME", up_active_vname);
+    
+    pair.set_var(var);
+    
+    if(pair.is_string()) {
+      string str = m_var_data_pairs_all[i].get_sdata();
+      str = macroExpand(str, "XPOS", doubleToStringX(sx,1));
+      str = macroExpand(str, "X",    doubleToString(sx,0));
+      str = macroExpand(str, "YPOS", doubleToStringX(sy,1));
+      str = macroExpand(str, "Y",    doubleToString(sy,0));
+      
+      if(button_side == "left")
+	str = macroExpand(str, "IX",  intToString(m_lclick_ix));
+      else if(button_side == "right")
+	str = macroExpand(str, "IX",  intToString(m_rclick_ix));
+      
+      str = macroExpand(str, "BIX", intToString(m_bclick_ix));
+      str = macroExpand(str, "UTC", doubleToString(m_curr_time,3));
+      str = macroExpand(str, "LAT", str_lat);
+      str = macroExpand(str, "LON", str_lon);
+      
+      str = macroExpand(str, "VNAME_CLOSEST", vname_closest);
+      str = macroExpand(str, "UP_VNAME_CLOSEST", up_vname_closest);
+      str = macroExpand(str, "VNAME", active_vname);
+      str = macroExpand(str, "UP_VNAME", up_active_vname);
+      
+      NodeRecord rec = m_vehiset.getNodeRecord(active_vname);
+      double heading = relAng(rec.getX(),rec.getY(),sx,sy);
+      str = macroExpand(str, "HDG", doubleToString(heading,2));
+      
+      pair.set_sdata(str, true);
+    }
+    var_data_pairs_mouse.push_back(pair);
   }
-  m_rclick_ix++;
+
   m_bclick_ix++;
+
+  if(button_side == "left") {
+    m_lclick_ix++;
+    m_var_data_pairs_lft = var_data_pairs_mouse;
+  }
+  else if(button_side == "right") {
+    m_rclick_ix++;
+    m_var_data_pairs_rgt = var_data_pairs_mouse;
+  }
 }
 
 //-------------------------------------------------------------
