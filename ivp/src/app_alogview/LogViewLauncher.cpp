@@ -385,7 +385,9 @@ bool LogViewLauncher::handleBackground(string val)
     return(true);
   }
 
-  if((val == "mit") || (val=="charles"))
+  if(val == "mit") 
+    m_tiff_file = "MIT_SP.tif";
+  else if(val=="charles")
     m_tiff_file = "AerialMIT.tif";
   else if((val == "fl") || (val == "forrest"))
     m_tiff_file = "forrest19.tif";
