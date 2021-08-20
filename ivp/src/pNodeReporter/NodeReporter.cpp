@@ -186,7 +186,13 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_record.setLoadWarning(app + ":" + gap);
     }
 
-    else if(key == "IVPHELM_SUMMARY") {
+    // rmod Aug1821: Group info may be dynamically altered
+    else if(key == "NODE_GROUP_UPDATE") {
+      m_record.setGroup(sdata);
+      m_record_gt.setGroup(sdata);
+    }
+
+  else if(key == "IVPHELM_SUMMARY") {
       m_helm_lastmsg = m_curr_time;
       handleLocalHelmSummary(sdata);
     }
@@ -273,7 +279,8 @@ void NodeReporter::registerVariables()
   Register("AUX_MODE", 0);
   Register("LOAD_WARNING", 0);
   Register("THRUST_MODE_REVERSE", 0);
-  
+
+  Register("NODE_GROUP_UPDATE", 0);
   Register("PNR_PAUSE", 0);
   Register("PLATFORM_COLOR", 0);
 }
@@ -376,7 +383,8 @@ bool NodeReporter::OnStartUp()
 	handled = true;
       }
     }      
-    else if(param =="crossfill_policy")
+    else if((param =="cross_fill_policy") ||
+	    (param =="crossfill_policy"))
       handled = setCrossFillPolicy(value);
     else if(param =="alt_nav_prefix") {
       m_alt_nav_prefix = value;
@@ -449,12 +457,13 @@ bool NodeReporter::Iterate()
   // post exceeds the blackout interval, then perform a posting.
   if((m_last_post_time == -1) || (m_blackout_interval <= 0) ||
      ((m_curr_time - m_last_post_time) > m_blackout_interval)) {
-
+    
     if(m_crossfill_policy != "literal")
       crossFillCoords(m_record, m_nav_xy_updated, m_nav_latlon_updated);
     
     m_record.setIndex(m_reports_posted);
     string report = assembleNodeReport(m_record);    
+
     if(!m_paused) {
       if(m_reports_posted == 0) 
 	Notify(m_node_report_var+"_FIRST", report);
@@ -671,7 +680,8 @@ bool NodeReporter::setCrossFillPolicy(string policy)
 {
   policy = tolower(policy);
   policy = findReplace(policy, '_', '-');
-  if((policy=="literal")||(policy=="fill-empty")||(policy=="use-latest")) {
+  if((policy=="literal") || (policy=="fill-empty") ||
+     (policy=="global")  || (policy=="use-latest")) {
     m_crossfill_policy = policy;
     return(true);
   }
@@ -689,6 +699,11 @@ void NodeReporter::crossFillCoords(NodeRecord& record,
 				   double nav_xy_updated,
 				   double nav_latlon_updated)
 {
+  if(m_crossfill_policy == "global") {
+    if(record.valid("lat") && record.valid("lon"))
+      crossFillGlobalToLocal(record);
+  }
+
   // The "fill-empty" policy will fill the other coordinates only if 
   // the other coordinates have NEVER been written to.
   if(m_crossfill_policy == "fill-empty") {

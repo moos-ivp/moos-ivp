@@ -112,7 +112,8 @@ void showExampleConfigAndExit()
   blu("  nohelm_threshold   = 5       "," // seconds                   ");
   blk("                                                                ");
   blk("  // Policy for filling in missing lat/lon from x/y or v.versa  ");
-  blu("  crossfill_policy   = literal "," // or {fill-empty,use-latest}");
+  blk("  // Valid policies: [literal], fill-empty, use-latest, global  ");
+  blu("  cross_fill_policy   = literal                                 ");
   blk("                                                                ");
   blk("  // Configure monitor/reporting of dual nav solution           ");
   blk("  alt_nav_prefix     = NAV_GT                                   ");
