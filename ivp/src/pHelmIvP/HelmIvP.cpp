@@ -483,7 +483,7 @@ bool HelmIvP::Iterate()
 	post_alias = "DESIRED_HEADING";
       if(m_helm_report.hasDecision(domain_var)) {
 	double domain_val = m_helm_report.getDecision(domain_var);
-	Notify(post_alias, domain_val);
+	Notify(m_helm_prefix + post_alias, domain_val);
       }
     }
   }
@@ -1213,6 +1213,8 @@ bool HelmIvP::OnStartUp()
       handled = setBooleanOnString(m_park_on_allstop, value);
     else if(param == "NODE_SKEW") 
       handled = handleConfigNodeSkew(value);
+    else if(param == "HELM_PREFIX") 
+      handled = setNonWhiteVarOnString(m_helm_prefix, value);
     else if((param == "HOLD_ON_APP") || (param == "HOLD_ON_APPS"))
       handled = handleConfigHoldOnApp(value);
     else if(param == "DOMAIN")

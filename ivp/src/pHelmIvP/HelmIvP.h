@@ -193,6 +193,8 @@ protected:
   std::vector<bool>        m_hold_on_app_seen;
   bool                     m_hold_apps_all_seen;
   bool                     m_helm_start_posted;
+
+  std::string  m_helm_prefix;
 };
 #endif 
 
