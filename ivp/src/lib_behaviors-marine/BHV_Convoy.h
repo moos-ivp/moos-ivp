@@ -111,6 +111,8 @@ private: // Configuration parameters
   double m_rng_estop;
   double m_rng_tgating;
   double m_rng_lagging;
+
+  bool m_rng_safety_enabled;
   
 };
 #endif
