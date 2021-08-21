@@ -704,6 +704,7 @@ bool CRS_App::buildReport()
   m_msgs << "Ping Color:               " << m_ping_color             << endl;
   m_msgs << "Echo Color:               " << m_echo_color             << endl;
   m_msgs << "Ground Truth Reporting:   " << boolToString(m_ground_truth) << endl;
+  m_msgs << "Ignore Group:             " << m_ignore_group << endl;
 
   // Part 2: Build a report on the Vehicles
   m_msgs << endl;

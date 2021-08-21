@@ -1027,6 +1027,7 @@ bool FldNodeComms::buildReport()
   m_msgs << "   Min Report  Int: " << doubleToStringX(m_min_rpt_interval,2) << endl;
   m_msgs << "       Apply Group: " << boolToString(m_apply_groups)      << endl;
   m_msgs << "     Share Reports: " << share_rpt_string << endl;
+  m_msgs << "      Ignore Group: " << m_ignore_group << endl;
   m_msgs << endl;
 
   double elapsed_app = (m_curr_time - m_start_time);

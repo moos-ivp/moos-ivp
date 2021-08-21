@@ -844,6 +844,12 @@ bool NodeReporter::buildReport()
   m_msgs << "     Vehicle name: " << m_vessel_name      << endl;
   m_msgs << "     Vehicle type: " << m_record.getType() << endl; 
   m_msgs << "   Vehicle length: " << str_vlength        << endl;
+  m_msgs << "    Vehicle group: " << m_group_name       << endl;
+  m_msgs << endl;
+  m_msgs << "CrossFill Policy:"                          << endl;
+  m_msgs << "----------------------------"               << endl;
+  m_msgs << " cross_fill_policy: " << m_crossfill_policy << endl;
+
   m_msgs << endl;
   m_msgs << "Blackout Configuration:"                   << endl;
   m_msgs << "----------------------------"              << endl;
@@ -852,9 +858,10 @@ bool NodeReporter::buildReport()
   m_msgs  << endl;
   m_msgs << "AltNav Config and Status:"                 << endl;
   m_msgs << "----------------------------"              << endl;
-  m_msgs << "   ALT_NAV_PREFIX: " << m_alt_nav_prefix   << endl;
-  m_msgs << "     ALT_NAV_NAME: " << m_alt_nav_name     << endl;
-  m_msgs << " ALT_NAV_POSTINGS: " << m_reports_posted_alt_nav << endl;
+  m_msgs << "   alt_nav_prefix: " << m_alt_nav_prefix   << endl;
+  m_msgs << "     alt_nav_name: " << m_alt_nav_name     << endl;
+  m_msgs << "    alt_nav_group: " << m_alt_nav_group    << endl;
+  m_msgs << " alt_nav_postings: " << m_reports_posted_alt_nav << endl;
   m_msgs << endl;
   m_msgs << "Node Report Summary:"                 << endl;
   m_msgs << "----------------------------"         << endl;
