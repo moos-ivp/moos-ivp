@@ -159,6 +159,7 @@ void showInterfaceAndExit()
   blk("     completed_bhvs=none                                        ");
   blk("  IVPHELM_ENGAGED = ENGAGED                                     ");
   blk("  IVPHELM_ALLSTOP = clear                                       ");
+  blk("  NODE_GROUP_UPDATE = friendly                                  ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
