@@ -139,6 +139,8 @@ bool CRS_App::OnStartUp()
       handled = setSensorArc(value);
     else if((param != "apptick") && (param != "commstick"))
       handled = false;
+    else if(param == "ignore_group") 
+      handled = setNonWhiteVarOnString(m_ignore_group, value);
 
     if(!handled)
       reportConfigWarning("Unhandled config: " + origl);
@@ -184,6 +186,7 @@ void CRS_App::registerVariables()
 //            X=29.66,Y=-23.49,LAT=43.825089, LON=-70.330030,
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,   
 //            LENGTH=4.0,MODE=ENGAGED
+//   Returns: true if proper report received, even if ignored
 
 bool CRS_App::handleNodeReport(const string& node_report_str)
 {
@@ -192,6 +195,12 @@ bool CRS_App::handleNodeReport(const string& node_report_str)
   if(!new_node_record.valid())
     return(false);
 
+  string group = new_node_record.getGroup();
+  if(m_ignore_group != "") {
+    if(tolower(m_ignore_group) == tolower(group))
+      return(true);
+  }
+  
   string vname = new_node_record.getName();
   if(vname == "") {
     reportRunWarning("Unhandled NODE_REPORT. Missing Vehicle/Node name.");

@@ -105,7 +105,8 @@ class CRS_App : public AppCastingMOOSApp
   double      m_rn_uniform_pct;
   double      m_rn_gaussian_sigma;
 
-  // Added by Alon Yaari Jan 2013
+  std::string m_ignore_group;
+  
   bool        m_display_range_pulse;
 };
 
