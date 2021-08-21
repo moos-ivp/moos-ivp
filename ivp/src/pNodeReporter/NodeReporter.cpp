@@ -69,6 +69,7 @@ NodeReporter::NodeReporter()
   // Below is a good alt_nav prefix suggestion,  but left blank to keep
   // feature off unless another app is generating the alt nav solution.
   // m_alt_nav_prefix    = "NAV_GT";
+
   m_alt_nav_name      = "_GT";
 
   m_crossfill_policy = "literal";
@@ -394,6 +395,8 @@ bool NodeReporter::OnStartUp()
       m_alt_nav_name = value;
       handled = true;
     }
+    else if(param =="alt_nav_group") 
+      handled = setNonWhiteVarOnString(m_alt_nav_group, value);
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -429,9 +432,13 @@ bool NodeReporter::OnStartUp()
   
   m_record.setName(m_vessel_name);
   m_record.setGroup(m_group_name);
+
   // To start with m_record_gt is just a copy of m_record.
   m_record_gt = m_record;       
 
+  if(m_alt_nav_group != "")
+    m_record_gt.setGroup(m_alt_nav_group);
+  
   if(strBegins(m_alt_nav_name, "_"))
     m_record_gt.setName(m_vessel_name + m_alt_nav_name);
   else

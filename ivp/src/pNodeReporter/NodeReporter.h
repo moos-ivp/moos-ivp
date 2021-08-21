@@ -72,6 +72,7 @@ public:
   std::string  m_helm_allstop_mode;
   std::string  m_alt_nav_prefix;
   std::string  m_alt_nav_name;
+  std::string  m_alt_nav_group;
   std::string  m_helm_status_primary;
   std::string  m_helm_status_standby;
   double       m_helm_lastmsg;
