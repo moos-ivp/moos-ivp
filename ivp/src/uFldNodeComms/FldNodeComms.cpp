@@ -178,7 +178,6 @@ bool FldNodeComms::Iterate()
 
 //---------------------------------------------------------
 // Procedure: OnStartUp()
-//            Happens before connection is open
 
 bool FldNodeComms::OnStartUp()
 {
@@ -238,6 +237,8 @@ bool FldNodeComms::OnStartUp()
       handled = setDoubleOnString(m_pulse_duration, value);
     else if(param == "shared_node_reports") 
       handled = handleEnableSharedNodeReports(value);
+    else if(param == "ignore_group") 
+      handled = setNonWhiteVarOnString(m_ignore_group, value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -321,6 +322,11 @@ bool FldNodeComms::handleMailNodeReport(const string& str, string& whynot)
   string upp_name = toupper(new_record.getName());
   string grp_name = toupper(new_record.getGroup());
 
+  if(m_ignore_group != "") {
+    if(toupper(m_ignore_group) == grp_name)
+      return(true);
+  }
+  
   m_map_record[upp_name] = new_record;
   m_map_newrecord[upp_name] = true;
   m_map_time_nreport[upp_name] = m_curr_time;

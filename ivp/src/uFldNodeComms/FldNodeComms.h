@@ -89,6 +89,9 @@ class FldNodeComms : public AppCastingMOOSApp
   double  m_max_earange;
   double  m_drop_pct;
 
+  // Added Aug 20th, 2021
+  std::string m_ignore_group;
+  
   // The duration in seconds associated the comms pulses posted. A 
   // duration of zero means no pulses are to be posted.
   double m_pulse_duration;
