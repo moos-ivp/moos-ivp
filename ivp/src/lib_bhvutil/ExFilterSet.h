@@ -60,7 +60,11 @@ class ExFilterSet
  public: // Analysis
   bool filterCheck(NodeRecord) const;
   bool filterCheck(NodeRecord, double osx, double osy) const;
-
+  bool filterCheckGroup(std::string group) const;
+  bool filterCheckVType(std::string vtype) const;
+  bool filterCheckVName(std::string vtype) const;
+  bool filterCheckRegion(double cnx, double cny) const;
+  
  public: // Serialization
   std::string configFilter(std::string);
   std::string getSummary() const;
