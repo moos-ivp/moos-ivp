@@ -51,6 +51,13 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
 
   m_post_per_contact_info = false;
   
+  // Initialize in-mission exit criteria from filters
+  m_exit_on_filter_vname  = false;
+  m_exit_on_filter_vtype  = false;
+  m_exit_on_filter_group  = false;
+  m_exit_on_filter_region = false;
+
+
   // Initialize contact pose state variables
   m_cnx = 0;
   m_cny = 0;
@@ -98,7 +105,15 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     return(m_filter_set.addIgnoreRegion(param_val));
   else if(param == "strict_ignore")
     return(m_filter_set.setStrictIgnore(param_val));
-
+  else if(param == "exit_on_filter_vname")
+    return(setBooleanOnString(m_exit_on_filter_vname, param_val));
+  else if(param == "exit_on_filter_vtype")
+    return(setBooleanOnString(m_exit_on_filter_vtype, param_val));
+  else if(param == "exit_on_filter_group")
+    return(setBooleanOnString(m_exit_on_filter_group, param_val));
+  else if(param == "exit_on_filter_region")
+    return(setBooleanOnString(m_exit_on_filter_region, param_val));
+      
   else if(param == "cnflag")
     return(addContactFlag(param_val));
 
@@ -192,7 +207,6 @@ void IvPContactBehavior::postFlag(const VarDataPair& pair, bool repeat)
 
 }
 
-
 //-----------------------------------------------------------
 // Procedure: addContactFlag
 //   Purpose: Before invoking the generic addVarDataPairOnString
@@ -246,9 +260,35 @@ bool IvPContactBehavior::addContactFlag(string str)
   else if(strBegins(str, "@cn_crossed_os_stern"))
     return(addVarDataPairOnString(m_cnflags, str));
   
-  
-  
   return(false);    
+}
+
+//-----------------------------------------------------------
+// Procedure: filterCheckHolds()
+//   Purpose: If there are any applicable filters, check if
+//            they still hold.
+//    Return: false if any ONE filter has failed
+//            true otherwise
+
+bool IvPContactBehavior::filterCheckHolds() const
+{
+  if(m_exit_on_filter_vname) {
+    if(!m_filter_set.filterCheckVName(m_contact))
+      return(false);
+  }
+  if(m_exit_on_filter_vtype) {
+    if(!m_filter_set.filterCheckVType(m_cn_vtype))
+      return(false);
+  }
+  if(m_exit_on_filter_group) {
+    if(!m_filter_set.filterCheckGroup(m_cn_group))
+      return(false);
+  }
+  if(m_exit_on_filter_region) {
+    if(!m_filter_set.filterCheckRegion(m_cnx, m_cny))
+      return(false);
+  }
+  return(true);
 }
 
 //-----------------------------------------------------------
