@@ -74,7 +74,6 @@ public:
   bool   m_post_per_contact_info;
 
   ExFilterSet m_filter_set;
-  bool m_exit_on_filter_vname;
   bool m_exit_on_filter_vtype;
   bool m_exit_on_filter_group;
   bool m_exit_on_filter_region;

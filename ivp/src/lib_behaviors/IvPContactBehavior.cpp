@@ -52,7 +52,6 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
   m_post_per_contact_info = false;
   
   // Initialize in-mission exit criteria from filters
-  m_exit_on_filter_vname  = false;
   m_exit_on_filter_vtype  = false;
   m_exit_on_filter_group  = false;
   m_exit_on_filter_region = false;
@@ -105,8 +104,6 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     return(m_filter_set.addIgnoreRegion(param_val));
   else if(param == "strict_ignore")
     return(m_filter_set.setStrictIgnore(param_val));
-  else if(param == "exit_on_filter_vname")
-    return(setBooleanOnString(m_exit_on_filter_vname, param_val));
   else if(param == "exit_on_filter_vtype")
     return(setBooleanOnString(m_exit_on_filter_vtype, param_val));
   else if(param == "exit_on_filter_group")
@@ -272,12 +269,6 @@ bool IvPContactBehavior::addContactFlag(string str)
 
 bool IvPContactBehavior::filterCheckHolds() const
 {
-  cout << "m_exit_on_filter_group: " << boolToString(m_exit_on_filter_group) << endl;
-  cout << "Group:[" << m_cn_group << "]" << endl;
-  if(m_exit_on_filter_vname) {
-    if(!m_filter_set.filterCheckVName(m_contact))
-      return(false);
-  }
   if(m_exit_on_filter_vtype) {
     if(!m_filter_set.filterCheckVType(m_cn_vtype))
       return(false);
