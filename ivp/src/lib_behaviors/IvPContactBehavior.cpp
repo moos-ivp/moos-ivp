@@ -272,6 +272,8 @@ bool IvPContactBehavior::addContactFlag(string str)
 
 bool IvPContactBehavior::filterCheckHolds() const
 {
+  cout << "m_exit_on_filter_group: " << boolToString(m_exit_on_filter_group) << endl;
+  cout << "Group:[" << m_cn_group << "]" << endl;
   if(m_exit_on_filter_vname) {
     if(!m_filter_set.filterCheckVName(m_contact))
       return(false);
@@ -490,7 +492,7 @@ bool IvPContactBehavior::updatePlatformInfo()
   m_cnos.set_cnutc(cnutc);
   m_cn_group = getBufferStringVal(m_contact+"_NAV_GROUP");
   m_cn_vtype = getBufferStringVal(m_contact+"_NAV_TYPE");
-  
+
   //==================================================================
   // Part 2: Extrapolate the contact position if extrapolation turn on
 

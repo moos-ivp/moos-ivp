@@ -232,8 +232,13 @@ void BHV_AvdColregsV19::onHelmStart()
 
 void BHV_AvdColregsV19::onIdleState() 
 {
-  if(updatePlatformInfo())
-    postStatusInfo();
+  if(!updatePlatformInfo())
+    return;
+  
+  postStatusInfo();
+
+  if(!filterCheckHolds() || (m_contact_range >= m_completed_dist))
+    setComplete();  
 }
 
 //-----------------------------------------------------------
@@ -277,7 +282,7 @@ IvPFunction *BHV_AvdColregsV19::onRunState()
   if((m_iterations > 1) && (m_cnos.cn_port_of_os() != prev_cn_port_of_os))
     m_cn_crossed_os_port_star = true;
 
-  if(m_contact_range >= m_completed_dist) {
+  if(!filterCheckHolds() || (m_contact_range >= m_completed_dist)) {
     setComplete();
     return(0);
   }

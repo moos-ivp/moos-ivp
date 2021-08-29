@@ -205,7 +205,13 @@ void BHV_AvoidCollision::onHelmStart()
 
 void BHV_AvoidCollision::onIdleState() 
 {
+  if(!updatePlatformInfo())
+    return;
+
   postRange();
+
+  if(!filterCheckHolds() || (m_contact_range >= m_completed_dist))
+    setComplete();  
 }
 
 //-----------------------------------------------------------
@@ -230,14 +236,14 @@ IvPFunction *BHV_AvoidCollision::onRunState()
     return(0);
   }
   
-  m_relevance = getRelevance();
   postRange();
 
-  if(m_contact_range >= m_completed_dist) {
+  if(!filterCheckHolds() || (m_contact_range >= m_completed_dist)) {
     setComplete();
     return(0);
   }
   
+  m_relevance = getRelevance();
   if(m_relevance <= 0)
     return(0);
 
