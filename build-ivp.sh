@@ -17,19 +17,7 @@ BUILD_BOT_CODE_ONLY="OFF"
 BUILD_GUI_CODE="ON"
 
 #---------------------------------------------------------
-# Part 2: On Raspbian, by default, only min-robot code is built
-#---------------------------------------------------------
-LSB_RELEASE=`which lsb_release`
-if [ "$LSB_RELEASE" != "" ]; then
-    OS_INFO=`lsb_release -i -s`
-    if [ "${OS_INFO}" = "Raspbian" ]; then
-	BUILD_BOT_CODE_ONLY="ON"
-	BUILD_GUI_CODE="OFF"
-    fi
-fi
-
-#---------------------------------------------------------
-# Part 3: Handle Command Line Arguments
+# Part 2: Handle Command Line Arguments
 #---------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
@@ -90,6 +78,28 @@ for ARGI; do
 	fi
     fi
 done
+
+
+#-------------------------------------------------------------- 
+#  Part 3: If this is Raspbian and minrobot not selected, and
+#          no explicit override given with --mx, CONFIRM first
+#-------------------------------------------------------------- 
+OS=`lsb_release -i -s`
+if [ "${OS}" = "Raspbian" -a "${BUILD_BOT_CODE_ONLY}" = "OFF" ]; then
+    if [ ! "${FORCE_FULL_RASPI_BUILD}" = "yes" ]; then
+	echo "Raspbian detected without --minrobotx or -mx selected."
+	echo "[y] Continue with full build"
+	echo "[M] Continue with minrobot build"
+	echo -n "Continue? [y/M] "
+	read ANSWER
+	if [ ! "${ANSWER}" = "y" ]; then
+            BUILD_BOT_CODE_ONLY="ON"
+	fi
+    fi
+fi
+	
+
+
 
 #---------------------------------------------------------
 # Part 4: Set Compiler flags
