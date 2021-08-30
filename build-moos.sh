@@ -11,17 +11,12 @@ BUILD_TYPE="Release"
 BUILD_OPTIM="yes"
 J_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
 
-# By default, all code is built
-# On Raspbian, by default, only min-robot code is built
 BUILD_BOT_CODE_ONLY="OFF"
-LSB_RELEASE=`which lsb_release`
-if [ "$LSB_RELEASE" != "" ]; then
-    OS_INFO=`lsb_release -i -s`
-    if [ "${OS_INFO}" = "Raspbian" ]; then
-	BUILD_BOT_CODE_ONLY="ON"
-    fi
-fi
+FORCE_FULL_RASPI_BUILD=""
 
+#-------------------------------------------------------------------
+#  Check for and handle command-line arguments
+#-------------------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
         printf "%s [SWITCHES]  \n" $0
@@ -43,7 +38,7 @@ for ARGI; do
     elif [ "${ARGI}" = "--minrobot" -o "${ARGI}" = "-m" ] ; then
         BUILD_BOT_CODE_ONLY="ON"
     elif [ "${ARGI}" = "--minrobotx" -o "${ARGI}" = "-mx" ] ; then
-        BUILD_BOT_CODE_ONLY="OFF"
+        FORCE_FULL_RASPI_BUILD="yes"
    elif [ "${ARGI}" = "--j1" -o "${ARGI}" = "-j1" ] ; then
         J_ARGS="-j1"
     else
@@ -51,6 +46,25 @@ for ARGI; do
     fi
 done
 CMD_ARGS+=" "$J_ARGS
+
+#-------------------------------------------------------------- 
+#  If this is Raspbian and minrobot not selected, and
+#  no explicit override given with -mx, CONFIRM first
+#-------------------------------------------------------------- 
+OS=`lsb_release -i -s`
+if [ "${OS}" = "Raspbian" -a "${BUILD_BOT_CODE_ONLY}" = "OFF" ]; then
+    if [ ! "${FORCE_FULL_RASPI_BUILD}" = "yes" ]; then
+	echo "Raspbian detected without --minrobotx or -mx selected."
+	echo "[y] Continue with full build"
+	echo "[M] Continue with minrobot build"
+	echo -n "Continue? [y/M] "
+	read ANSWER
+	if [ ! "${ANSWER}" = "y" ]; then
+            BUILD_BOT_CODE_ONLY="ON"
+	fi
+    fi
+fi
+	
 
 echo "  SCRIPT_ABS_DIR: " ${SCRIPT_ABS_DIR}
 

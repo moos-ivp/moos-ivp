@@ -82,7 +82,7 @@ done
 
 #-------------------------------------------------------------- 
 #  Part 3: If this is Raspbian and minrobot not selected, and
-#          no explicit override given with --mx, CONFIRM first
+#          no explicit override given with -mx, CONFIRM first
 #-------------------------------------------------------------- 
 OS=`lsb_release -i -s`
 if [ "${OS}" = "Raspbian" -a "${BUILD_BOT_CODE_ONLY}" = "OFF" ]; then
