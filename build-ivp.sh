@@ -15,6 +15,7 @@ BUILD_WITH_UTM="-DUSE_UTM=ON"
 # By default, all code is built
 BUILD_BOT_CODE_ONLY="OFF"
 BUILD_GUI_CODE="ON"
+FORCE_FULL_RASPI_BUILD=""
 
 #---------------------------------------------------------
 # Part 2: Handle Command Line Arguments
@@ -68,8 +69,7 @@ for ARGI; do
         BUILD_BOT_CODE_ONLY="ON"
 	BUILD_GUI_CODE="OFF"
     elif [ "${ARGI}" = "--minrobotx" -o "${ARGI}" = "-mx" ]; then
-        BUILD_BOT_CODE_ONLY="OFF"
-	BUILD_GUI_CODE="ON"
+        FORCE_FULL_RASPI_BUILD="yes"
     else
 	if [ "$CMD_ARGS" = "" ]; then
 	    CMD_ARGS=$ARGI
@@ -94,6 +94,7 @@ if [ "${OS}" = "Raspbian" -a "${BUILD_BOT_CODE_ONLY}" = "OFF" ]; then
 	read ANSWER
 	if [ ! "${ANSWER}" = "y" ]; then
             BUILD_BOT_CODE_ONLY="ON"
+	    BUILD_GUI_CODE="OFF"
 	fi
     fi
 fi
