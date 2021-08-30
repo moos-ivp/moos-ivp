@@ -3,6 +3,7 @@
 #  Script: mtop.sh
 #  Author: Michael Benjamin
 #  Date:   May 17th 2019
+#  Date:   Aug 30th 2021 added --query switch
 #  About:  This script is a convenience script for launching top
 #          for monitoring MOOS apps. The primary launch mode (no
 #          args), will look for all Antler processes, and find
@@ -17,6 +18,7 @@ SORTBY="cpu"
 APPS=""
 OS="osx"
 SURVEY=""
+QUERY=""
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -38,6 +40,7 @@ for ARGI; do
         echo "  --mem,     -m      Sort top output by Memory          " 
         echo "  --core,    -c      Form app list with common biggies  " 
         echo "  --survey,  -s      Survey if any MOOS apps running    " 
+        echo "  --query,   -q      Query/List any MOOS apps running   " 
         echo "  --info,    -i      Output brief description of script "  
         echo "  --antler,  -a      Add pAntler to app list "  
         echo "  --apps=<apps>      Form app list by given apps        " 
@@ -64,6 +67,8 @@ for ARGI; do
 	ANTLER="yes"
     elif [ "${ARGI}" = "--survey" -o "${ARGI}" = "-s" ]; then
 	SURVEY="yes"
+    elif [ "${ARGI}" = "--query" -o "${ARGI}" = "-q" ]; then
+	QUERY="yes"
     elif [ "${ARGI}" = "--core" -o "${ARGI}" = "-c" ]; then
 	APPS="pHelmIvP,MOOSDB,pMarineViewer,uSimMarine,pMarinePID,pLogger"
     elif [ "${ARGI}" = "--mem" -o "${ARGI}" = "-m" ] ; then
@@ -80,7 +85,7 @@ done
 #-------------------------------------------------------
 #  Part 3: Make sure the pgrep utility is present
 #-------------------------------------------------------
-command -v pgrep
+command -v pgrep >& /dev/null
 if [ $? != 0 ]; then
     echo "The required utity pgrep is not found. Exit Code 2."
     exit 2
@@ -128,7 +133,18 @@ if [ -d "/proc" ]; then
 fi
 
 #-------------------------------------------------------
-#  Part 6: Based on the OS, form cmdline args for top
+#  Part 6: If just querying, list the proceses
+#-------------------------------------------------------
+if [ "${QUERY}" != "" ]; then
+    for pid in "${PIDS[@]}"
+    do
+	ps -p $pid -o comm=
+    done    
+    exit 0
+fi
+    
+#-------------------------------------------------------
+#  Part 7: Based on the OS, form cmdline args for top
 #-------------------------------------------------------
 ARGS=""
 if [ "${OS}" = "osx" ]; then
