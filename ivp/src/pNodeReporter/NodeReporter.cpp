@@ -688,7 +688,8 @@ bool NodeReporter::setCrossFillPolicy(string policy)
   policy = tolower(policy);
   policy = findReplace(policy, '_', '-');
   if((policy=="literal") || (policy=="fill-empty") ||
-     (policy=="global")  || (policy=="use-latest")) {
+     (policy=="global")  || (policy=="use-latest") ||
+     (policy=="local")) {
     m_crossfill_policy = policy;
     return(true);
   }
@@ -709,6 +710,11 @@ void NodeReporter::crossFillCoords(NodeRecord& record,
   if(m_crossfill_policy == "global") {
     if(record.valid("lat") && record.valid("lon"))
       crossFillGlobalToLocal(record);
+  }
+
+  if(m_crossfill_policy == "local") {
+    if(record.valid("x") && record.valid("y"))
+      crossFillLocalToGlobal(record);
   }
 
   // The "fill-empty" policy will fill the other coordinates only if 
