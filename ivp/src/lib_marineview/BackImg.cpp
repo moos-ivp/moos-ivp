@@ -37,7 +37,7 @@
 	#include <windows.h>
 	#include <GL/gl.h>
 	#include "glext.h" // http://www.opengl.org/registry/api/glext.h
-	typedef UINT32 uint32;
+	typedef UINT32 uint32_t;
 #elif OPSYS_IS_LINUX
    #include <GL/gl.h>
 #elif OPSYS_IS_OS_X
@@ -211,9 +211,9 @@ bool BackImg::readTiffData(string filename)
 
   if(tiff) {
     bool rval = true;			// what to return
-    uint32 w, h;
+    uint32_t w, h;
     size_t npixels;
-    uint32* raster;
+    uint32_t* raster;
     
     TIFFGetField(tiff, TIFFTAG_IMAGEWIDTH, &w);
     TIFFGetField(tiff, TIFFTAG_IMAGELENGTH, &h);
@@ -223,7 +223,7 @@ bool BackImg::readTiffData(string filename)
     m_img_pix_height = h;
     
     npixels = w * h;
-    raster = (uint32*) _TIFFmalloc(npixels * sizeof (uint32));
+    raster = (uint32_t*) _TIFFmalloc(npixels * sizeof (uint32_t));
     if (raster != NULL) {
       if (TIFFReadRGBAImage(tiff, w, h, raster, 0)) {
 	m_img_data = (unsigned char*) raster;

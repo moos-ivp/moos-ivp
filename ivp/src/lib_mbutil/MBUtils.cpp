@@ -2704,6 +2704,23 @@ string stringVectorToString(vector<string> str_vector, char sep)
 }
 
 //---------------------------------------------------------
+// Procedure: uintVectorToString()
+
+string uintVectorToString(vector<unsigned int> uint_vector, char sep)
+{
+  string result;
+  
+  vector<unsigned int>::iterator p;
+  for(p=uint_vector.begin(); p!=uint_vector.end(); p++) {
+    if(result != "")
+      result += sep;
+    result += uintToString(*p);
+  }
+
+  return(result);
+}
+
+//---------------------------------------------------------
 // Procedure: intToMonth()
 
 string intToMonth(int imonth, bool brief)

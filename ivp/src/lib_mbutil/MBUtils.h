@@ -198,6 +198,7 @@ std::string checksumHexStr(std::string);
 std::string stringListToString(std::list<std::string>, char sep_char=',');
 std::string stringSetToString(std::set<std::string>, char sep_char=',');
 std::string stringVectorToString(std::vector<std::string>, char sep_char=',');
+std::string uintVectorToString(std::vector<unsigned int>, char sep_char=',');
 
 std::string intToMonth(int, bool brief=false);
 
