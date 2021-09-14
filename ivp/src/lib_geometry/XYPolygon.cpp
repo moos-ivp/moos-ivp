@@ -1105,6 +1105,22 @@ double XYPolygon::area() const
 }
 
 //---------------------------------------------------------------
+// Procedure: perim()
+
+double XYPolygon::perim() const
+{
+  unsigned int vsize = m_vx.size();
+  if(vsize < 2)
+    return(0);
+  
+  double total = hypot(m_vx[vsize-1]-m_vx[0], m_vy[vsize-1]-m_vy[0]);
+  for(unsigned int i=0; i<vsize-1; i++) 
+    total += hypot(m_vx[i]-m_vx[i+1], m_vy[i]-m_vy[i+1]);
+
+  return(total);
+}
+
+//---------------------------------------------------------------
 // Procedure: simplify()
 //   Purpose: Search for the two closest vertices and if within the
 //            the given range, combine the two vertices into one.

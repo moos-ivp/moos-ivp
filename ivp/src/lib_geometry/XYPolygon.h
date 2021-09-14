@@ -73,6 +73,7 @@ public:
   void   determine_convexity();
 
   double area() const;
+  double perim() const;
   bool   simplify(double range_thresh);
   
   double max_radius() const;

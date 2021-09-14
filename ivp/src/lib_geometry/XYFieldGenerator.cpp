@@ -37,7 +37,7 @@ using namespace std;
 XYFieldGenerator::XYFieldGenerator()
 {
   m_snap = 0.1;
-  m_max_tries = 10000;
+  m_max_tries = 5000;
   m_targ_amt = 10;
   
   // A non-positive buffer dist disables this feature
@@ -213,7 +213,7 @@ bool XYFieldGenerator::addPoint(double vx, double vy)
   }
 
   double adjustable_dist = m_buffer_dist + 1;
- 
+
   for(unsigned int tries=0; tries<m_max_tries; tries++) {
     int rand_ang = rand() % 360;
     double tx = vx;
@@ -271,7 +271,8 @@ bool XYFieldGenerator::isPointTooClose(double vx, double vy)
 {
   XYPoint point(vx, vy);
   for(unsigned int i=0; i<m_vpoints.size(); i++) {
-    if(distPointToPoint(point, m_vpoints[i]) < m_buffer_dist)
+    double dist = distPointToPoint(point, m_vpoints[i]);
+    if(dist < m_buffer_dist)
       return(true);
   }
   
