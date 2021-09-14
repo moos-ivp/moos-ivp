@@ -30,8 +30,12 @@ using namespace std;
 //------------------------------------------------------------
 // Constructor
 
-NodeMessage::NodeMessage()
+NodeMessage::NodeMessage(string src, string dest, string var)
 {
+  m_src_node   = src;
+  m_dest_node  = dest;
+  m_var_name   = var;
+
   m_double_val       = 0; 
   m_double_val_set   = false;
 }

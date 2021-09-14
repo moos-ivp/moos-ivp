@@ -29,7 +29,7 @@
 class NodeMessage
 {
  public:
-  NodeMessage();
+  NodeMessage(std::string src="", std::string dest="", std::string var="");
   ~NodeMessage() {}
 
   void setSourceNode(const std::string& s)  {m_src_node=s;}
