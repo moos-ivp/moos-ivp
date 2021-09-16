@@ -74,6 +74,10 @@ public:
   std::string get_vprop(unsigned int) const;
   double get_center_x() const;
   double get_center_y() const;
+
+  XYPoint get_center_pt() const;
+  XYPoint get_centroid_pt() const;
+
   double get_centroid_x() const;
   double get_centroid_y() const;
   double get_min_x() const;

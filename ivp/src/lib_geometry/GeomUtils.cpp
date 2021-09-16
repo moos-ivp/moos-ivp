@@ -1064,10 +1064,23 @@ XYPoint projectPoint(double degval, double dist, double cx, double cy)
   return(return_point);
 }
 
+//---------------------------------------------------------------
+// Procedure: midPoint()
+
+XYPoint midPoint(const XYPoint& pt1, const XYPoint& pt2)
+{
+  double x1 = pt1.x();
+  double y1 = pt1.y();
+  double x2 = pt2.x();
+  double y2 = pt2.y();
+  double mx = (x1+x2)/2;
+  double my = (y1+y2)/2;
+  XYPoint mid_point(mx, my);
+  return(mid_point);
+}
 
 //---------------------------------------------------------------
-// Procedure: addVectors
-//   Purpose: 
+// Procedure: addVectors()
 
 void addVectors(double deg1, double mag1, double deg2, 
 		double mag2, double &rdeg, double &rmag)

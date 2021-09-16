@@ -484,6 +484,28 @@ double XYSegList::get_center_y() const
 }
 
 //---------------------------------------------------------------
+// Procedure: get_center_pt()
+
+XYPoint XYSegList::get_center_pt() const
+{
+  double cx = get_center_x();
+  double cy = get_center_y();
+  XYPoint pt(cx, cy);
+  return(pt);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_centroid_pt()
+
+XYPoint XYSegList::get_centroid_pt() const
+{
+  double cx = get_centroid_x();
+  double cy = get_centroid_y();
+  XYPoint pt(cx, cy);
+  return(pt);
+}
+
+//---------------------------------------------------------------
 // Procedure: get_centroid_x()
 //   Purpose: Return the x center of mass of all points
 
