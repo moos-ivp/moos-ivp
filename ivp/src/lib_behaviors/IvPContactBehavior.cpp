@@ -137,6 +137,9 @@ bool IvPContactBehavior::setParam(string param, string param_val)
   else if(param == "time_on_leg")
     return(setNonNegDoubleOnString(m_time_on_leg, param_val));
 
+  else if(param == "bearing_line_label_show")
+    return(setBooleanOnString(m_bearing_line_label_show, param_val));
+
   // bearing_lines = white:0, green:0.65, yellow:0.8, red:1.0
   else if((param == "bearing_line_config") ||
 	  (param == "bearing_lines")) {
@@ -603,8 +606,10 @@ void IvPContactBehavior::postViewableBearingLine()
   m_bearing_line.add_vertex(m_osx, m_osy);
   m_bearing_line.add_vertex(m_cnx, m_cny);
   m_bearing_line.set_label(m_us_name + "_" + m_descriptor);
-  //m_bearing_line.set_color("label", "invisible");
-  m_bearing_line.set_color("label", "white");
+  if(m_bearing_line_label_show)
+    m_bearing_line.set_color("label", "white");
+  else
+    m_bearing_line.set_color("label", "invisible");
   m_bearing_line.set_color("edge", color);
   m_bearing_line.set_duration(1);
   

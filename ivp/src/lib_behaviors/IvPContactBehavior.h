@@ -82,6 +82,7 @@ public:
   std::vector<std::string> m_bearing_line_colors;
   std::vector<double>      m_bearing_line_thresh;
   std::string              m_bearing_line_info;
+  bool                     m_bearing_line_label_show;
 
  protected:  // State Variables
   
