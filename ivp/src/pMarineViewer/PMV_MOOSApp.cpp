@@ -25,8 +25,15 @@
 #include <iostream>
 #include "PMV_MOOSApp.h"
 #include "MBUtils.h"
+#include "MacroUtils.h"
 #include "NodeRecordUtils.h"
 #include "RealmSummary.h"
+
+
+
+#include "XYFormatUtilsPoly.h"
+
+
 
 using namespace std;
 
@@ -58,7 +65,8 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_node_reports_received = 0;
   m_node_report_start     = -1;
   m_node_report_index     = 0;
-
+  m_button_clicks         = 0;
+  
   m_pmv_iteration = 0;
 
   m_log_the_image = false;
@@ -272,11 +280,21 @@ void PMV_MOOSApp::handlePendingGUI()
 	dval = atof(val.c_str());
       }
       
-      if(val_type == "string")
-	Notify(var, val);
+      if(val_type == "string") {
+	if(val == "$[UTC]")
+	  Notify(var, m_curr_time);
+	else if(val == "$[BIX]") 
+	  Notify(var, m_button_clicks);
+	else {
+	  val= macroExpand(val, "UTC", doubleToString(m_curr_time,3));
+	  val= macroExpand(val, "BIX", uintToString(m_button_clicks));
+	  Notify(var, val);
+	}
+      }
       else
 	Notify(var, dval);
     }
+    m_button_clicks++;    
   }
 
   m_gui->clearPending();
@@ -387,6 +405,11 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     if(!handled && (key == "REALMCAST")) {
       handled = m_realm_repo->addRealmCast(sval);
       handled_relcast = true;
+    }
+    
+    if(key == "VIEW_POLYGON") {
+      XYPolygon tpoly = string2Poly(sval);
+      Notify("VPOLY", tpoly.get_spec());
     }
     
     if(!handled && (key == "WATCHCAST")) {
