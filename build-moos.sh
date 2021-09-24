@@ -71,7 +71,9 @@ fi
 echo "  SCRIPT_ABS_DIR: " ${SCRIPT_ABS_DIR}
 
 # Setup C and C++ Compiler flags for Mac and Linux. 
-MOOS_CXX_FLAGS="-Wall -Wextra -Wno-unused-parameter -pedantic -fPIC"
+MOOS_CXX_FLAGS="-Wall -Wextra -Wno-unused-parameter -pedantic -fPIC "
+MOOS_CXX_FLAGS="-Wno-c++11-extensions"
+
 if [ "${BUILD_OPTIM}" = "yes" ] ; then
     MOOS_CXX_FLAGS=$MOOS_CXX_FLAGS" -Os"
 fi
