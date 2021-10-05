@@ -88,6 +88,11 @@ public:
   void   resetStateOK()                  {m_bhv_state_ok=true;}
 
   void    postMessage(std::string, std::string, std::string key="");
+
+  void    postXMessage(std::string, std::string, std::string key="");
+  void    postXMessage(std::string, double, std::string key="");
+  void    postXBoolMessage(std::string, double, std::string key="");
+
   void    noteLastRunCheck(bool, double);
   
   void    setDynamicallySpawned(bool v)   {m_dynamically_spawned=v;}

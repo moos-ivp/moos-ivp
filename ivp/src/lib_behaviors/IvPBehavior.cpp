@@ -36,6 +36,7 @@
 #include "MacroUtils.h"
 #include "BuildUtils.h"
 #include "BehaviorReport.h"
+#include "NodeMessage.h"
 
 using namespace std;
 
@@ -412,6 +413,34 @@ void IvPBehavior::postMessage(string var, string sdata, string key)
       return;
   }
   VarDataPair pair(var, sdata);
+
+  if(tolower(key) != "repeatable") {
+    key = (m_descriptor + var + key);
+    pair.set_key(key);
+  }
+
+  m_messages.push_back(pair);
+}
+
+//-----------------------------------------------------------
+// Procedure: postXMessage()
+//     Notes: Post an external message to another vehicle/node, by
+//            wrapping the posting in NODE_MESSAGE_LOCAL
+//            If the key is set to be "repeatable" then in effect 
+//            there is no key is associated with this variable-value 
+//            pair and it will NOT be filtered.
+
+void IvPBehavior::postXMessage(string var, string sdata, string key)
+{
+  NodeMessage node_message;
+  node_message.setSourceNode(m_us_name);
+  node_message.setDestNode("all");
+  node_message.setVarName(var);
+  node_message.setStringVal(sdata);
+
+  string msg_all = node_message.getSpec();
+  
+  VarDataPair pair("NODE_MESSAGE_LOCAL", msg_all);
 
   if(tolower(key) != "repeatable") {
     key = (m_descriptor + var + key);
