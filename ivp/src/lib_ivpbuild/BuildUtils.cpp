@@ -1645,6 +1645,7 @@ vector<IvPBox> makeRegionsApart(vector<IvPBox> boxes)
   }
 
   // Part 6: Potentially be verbose
+#if 0
   if(changed) {
     cout << "CHANGED!!!!!!!!!!" << endl;
     cout << "Old Regions:" << endl;
@@ -1654,7 +1655,7 @@ vector<IvPBox> makeRegionsApart(vector<IvPBox> boxes)
     for(unsigned int i=0; i<majors.size(); i++)
       majors[i].print();
   }
-
+#endif
   // Part 7: return the result
   return(majors);  
 }
