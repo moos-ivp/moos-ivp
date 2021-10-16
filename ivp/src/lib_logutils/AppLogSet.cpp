@@ -27,13 +27,28 @@
 using namespace std;
 
 //----------------------------------------------------------------
+// Procedure: addAppLogEntry
+
+void AppLogSet::addAppLogEntry(string app_name, AppLogEntry entry)
+{
+  m_map_entries[app_name].push_back(entry);
+}
+
+//----------------------------------------------------------------
 // Procedure: getEntry()
 
-AppLogEntry AppLogSet::getEntry(unsigned int ix) const
+AppLogEntry AppLogSet::getEntry(string app_name, unsigned int ix) const
 {
   AppLogEntry null_entry;
-  if(ix >= m_entries.size())
+  map<string, std::vector<AppLogEntry> >::const_iterator p;
+  p = m_map_entries.find(app_name);
+  if(p == m_map_entries.end())
     return(null_entry);
-  return(m_entries[ix]);
+
+  vector<AppLogEntry> entries = p->second;
+  if(ix >= entries.size())
+    return(null_entry);
+
+  return(entries[ix]);
 }
 

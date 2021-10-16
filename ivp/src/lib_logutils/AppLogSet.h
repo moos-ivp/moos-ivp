@@ -24,6 +24,7 @@
 #ifndef APP_LOG_SET_HEADER
 #define APP_LOG_SET_HEADER
 
+#include <map>
 #include <vector>
 #include <string>
 #include "AppLogEntry.h"
@@ -35,15 +36,16 @@ class AppLogSet
   virtual ~AppLogSet() {}
 
   // Setters
-  void addAppLogEntry(AppLogEntry entry) {m_entries.push_back(entry);}
+  void addAppLogEntry(std::string app_name, AppLogEntry entry);
   
   // Getters
-  unsigned int size() const {return(m_entries.size());}
+  unsigned int size() const {return(m_map_entries.size());}
 
-  AppLogEntry  getEntry(unsigned int) const;
+  AppLogEntry  getEntry(std::string app_name, unsigned int index) const;
 
 private:
-  std::vector<AppLogEntry> m_entries;
+
+  std::map<std::string, std::vector<AppLogEntry> > m_map_entries;
 
 };
 
