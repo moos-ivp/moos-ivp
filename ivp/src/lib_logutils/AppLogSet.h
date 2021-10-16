@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: AppLogEntry.h                                        */
+/*    FILE: AppLogSet.h                                          */
 /*    DATE: Oct 15th 2021                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,42 +21,31 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef APP_LOG_ENTRY_HEADER
-#define APP_LOG_ENTRY_HEADER
+#ifndef APP_LOG_SET_HEADER
+#define APP_LOG_SET_HEADER
 
 #include <vector>
 #include <string>
+#include "AppLogEntry.h"
 
-class AppLogEntry
+class AppLogSet
 {
  public:
-  AppLogEntry(double tstamp=0)  {m_tstamp=tstamp; m_iteration=0;}
-  virtual ~AppLogEntry() {}
+  AppLogSet() {};
+  virtual ~AppLogSet() {}
 
   // Setters
-  void setAppLogLines(std::vector<std::string> lines) {m_lines=lines;}
+  void addAppLogEntry(AppLogEntry entry) {m_entries.push_back(entry);}
   
   // Getters
-  unsigned int size() const {return(m_lines.size());}
+  unsigned int size() const {return(m_entries.size());}
 
-  double       getTStamp() const    {return(m_tstamp);}
-  std::string  getAppName() const   {return(m_appname);}
-  unsigned int getIteration() const {return(m_iteration);}
-  std::string  getLine(unsigned int) const;
-
-  std::vector<std::string> getLines() const {return(m_lines);}
+  AppLogEntry  getEntry(unsigned int) const;
 
 private:
-  double       m_tstamp;
-
-  std::string  m_appname;
-  unsigned int m_iteration;
-
-  std::vector<std::string> m_lines;
+  std::vector<AppLogEntry> m_entries;
 
 };
-
-AppLogEntry stringToAppLogEntry(std::string);
 
 
 #endif

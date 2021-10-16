@@ -40,10 +40,10 @@ string AppLogEntry::getLine(unsigned int ix) const
 // Procedure: setAppLogEntry()
 //   Example: APP_LOG = "iter=23,log=line!@#line!@#...!@#line"
 
-
-bool AppLogEntry::setAppLogEntry(string raw)
+AppLogEntry stringToAppLogEntry(string raw)
 {
-  bool ok = true;
+  AppLogEntry null_entry;
+  AppLogEntry good_entry;
   
   while(raw != "") {
     string field = biteStringX(raw, ',');
@@ -51,24 +51,18 @@ bool AppLogEntry::setAppLogEntry(string raw)
     string value = field;
     if(param == "iter") {
       int ival = atoi(value.c_str());
-      if(ival < 1) {
-	ok = false;
-	break;
-      }
+      if(ival < 1)
+	return(null_entry);
     }
-    else if(param == "log") 
-      m_lines = parseString(value, "!@#");
+    else if(param == "log") {
+      vector<string> lines = parseString(value, "!@#");
+      good_entry.setAppLogLines(lines);
+    }
     else
-      ok = false;
+      return(null_entry);
   }
 
-  if(!ok) {
-    m_iteration = 0;
-    m_lines.clear();
-    return(false);
-  }
-
-  return(true);
+  return(good_entry);
 }
 
 
