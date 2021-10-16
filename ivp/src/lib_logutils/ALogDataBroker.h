@@ -29,6 +29,7 @@
 #include "SplitHandler.h"
 #include "LogPlot.h"
 #include "VarPlot.h"
+#include "AppLogPlot.h"
 #include "HelmPlot.h"
 #include "EncounterPlot.h"
 #include "VPlugPlot.h"
@@ -50,6 +51,7 @@ class ALogDataBroker
 
   LogPlot      getLogPlot(unsigned int mix);
   VarPlot      getVarPlot(unsigned int mix, bool src=false);
+  AppLogPlot   getAppLogPlot(unsigned int mix, bool src=false);
   EncounterPlot getEncounterPlot(unsigned int aix);
   HelmPlot     getHelmPlot(unsigned int aix);
   VPlugPlot    getVPlugPlot(unsigned int aix);

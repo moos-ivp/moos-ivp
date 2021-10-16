@@ -197,6 +197,12 @@ bool SplitHandler::handleMakeSplitFiles()
       m_bhv_names.insert(bhv_name);
     }
 
+    // Handle APP_LOG: Break out into sep files for each MOOSApp
+    if(varname == "APP_LOG") {
+      string src = getSourceName(line_raw);       
+      varname = "APP_LOG_" + src; 
+    }
+
     // Part 1: Determine the vehicle name if not already known
     // Typically the MOOSDB automatically names itself MOOSDB_COMMUNITY, 
     // For example, MOOSDB_alpha. DB_TIME is published by the MOOSDB.
