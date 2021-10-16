@@ -76,6 +76,8 @@ class SplitHandler
 
   // Keep track of all unique bhv names for summary file
   std::set<std::string> m_bhv_names;
+  // Keep track of all unique apps with applogging for summary file
+  std::set<std::string> m_applogging_app_names;
 };
 
 #endif

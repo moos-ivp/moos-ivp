@@ -201,6 +201,7 @@ bool SplitHandler::handleMakeSplitFiles()
     if(varname == "APP_LOG") {
       string src = getSourceName(line_raw);       
       varname = "APP_LOG_" + src; 
+      m_applogging_app_names.insert(src);
     }
 
     // Part 1: Determine the vehicle name if not already known
@@ -340,6 +341,11 @@ bool SplitHandler::handleMakeSplitSummary()
       fprintf(f, "%s", bhv_name.c_str());
     }
     fprintf(f, "\n");
+  }
+
+  if(m_applogging_app_names.size() != 0) {
+    string apps = stringSetToString(m_applogging_app_names);
+    fprintf(f, "applogging_aps=%s\n", apps.c_str());
   }
 
   map<string, string>::iterator p;
