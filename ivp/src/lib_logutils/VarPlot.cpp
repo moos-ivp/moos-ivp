@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE:                                                      */
+/*    FILE: VarPlot.cpp                                          */
 /*    DATE: Oct 10th 2011                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -41,7 +41,7 @@ VarPlot::VarPlot()
 }
 
 //---------------------------------------------------------------
-// Procedure: setValue
+// Procedure: setValue()
 
 bool VarPlot::setValue(double gtime, string gvalue, string gsource)
 {
@@ -71,7 +71,7 @@ bool VarPlot::setValue(double gtime, string gvalue, string gsource)
 }
 
 //---------------------------------------------------------------
-// Procedure: applySkew
+// Procedure: applySkew()
 
 void VarPlot::applySkew(double skew)
 {
@@ -81,7 +81,7 @@ void VarPlot::applySkew(double skew)
      
 
 //---------------------------------------------------------------
-// Procedure: containsTime
+// Procedure: containsTime()
 
 bool VarPlot::containsTime(double gtime) const
 {
@@ -97,7 +97,7 @@ bool VarPlot::containsTime(double gtime) const
      
 
 //---------------------------------------------------------------
-// Procedure: print
+// Procedure: print()
 
 void VarPlot::print() const
 {
@@ -112,7 +112,7 @@ void VarPlot::print() const
 
 
 //---------------------------------------------------------------
-// Procedure: getEntryByIndex
+// Procedure: getEntryByIndex()
 
 string VarPlot::getEntryByIndex(unsigned int index) const
 {  
@@ -122,7 +122,7 @@ string VarPlot::getEntryByIndex(unsigned int index) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getSourceByIndex
+// Procedure: getSourceByIndex()
 
 string VarPlot::getSourceByIndex(unsigned int index) const
 {  
@@ -135,7 +135,7 @@ string VarPlot::getSourceByIndex(unsigned int index) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getTStampByIndex
+// Procedure: getTStampByIndex()
 
 double VarPlot::getTStampByIndex(unsigned int index) const
 {  
@@ -145,7 +145,7 @@ double VarPlot::getTStampByIndex(unsigned int index) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getEntryByTime
+// Procedure: getEntryByTime()
 
 string VarPlot::getEntryByTime(double gtime) const
 {
@@ -158,7 +158,7 @@ string VarPlot::getEntryByTime(double gtime) const
      
 
 //---------------------------------------------------------------
-// Procedure: getSourceByTime
+// Procedure: getSourceByTime()
 
 string VarPlot::getSourceByTime(double gtime) const
 {
@@ -173,7 +173,7 @@ string VarPlot::getSourceByTime(double gtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: getTStampByTime
+// Procedure: getTStampByTime()
 
 double VarPlot::getTStampByTime(double gtime) const
 {
@@ -186,7 +186,7 @@ double VarPlot::getTStampByTime(double gtime) const
      
 
 //---------------------------------------------------------------
-// Procedure: getVarPlotEntriesUpToTime
+// Procedure: getVarPlotEntriesUpToTime()
 
 list<VarPlotEntry> VarPlot::getVarPlotEntriesUpToTime(double gtime) const
 {
@@ -212,7 +212,7 @@ list<VarPlotEntry> VarPlot::getVarPlotEntriesUpToTime(double gtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: getVarPlotEntriesPastTime
+// Procedure: getVarPlotEntriesPastTime()
 
 list<VarPlotEntry> VarPlot::getVarPlotEntriesPastTime(double gtime) const
 {
@@ -241,7 +241,7 @@ list<VarPlotEntry> VarPlot::getVarPlotEntriesPastTime(double gtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: getEntriesUpToTime
+// Procedure: getEntriesUpToTime()
 
 vector<string> VarPlot::getEntriesUpToTime(double gtime) const
 {
@@ -257,7 +257,7 @@ vector<string> VarPlot::getEntriesUpToTime(double gtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: getSourcesUpToTime
+// Procedure: getSourcesUpToTime()
 
 vector<string> VarPlot::getSourcesUpToTime(double gtime) const
 {
@@ -276,7 +276,7 @@ vector<string> VarPlot::getSourcesUpToTime(double gtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: getTStampsUpToTime
+// Procedure: getTStampsUpToTime()
 
 vector<double> VarPlot::getTStampsUpToTime(double gtime) const
 {
@@ -292,7 +292,7 @@ vector<double> VarPlot::getTStampsUpToTime(double gtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: getEntriesPastTime
+// Procedure: getEntriesPastTime()
 
 vector<string> VarPlot::getEntriesPastTime(double gtime) const
 {
@@ -311,7 +311,7 @@ vector<string> VarPlot::getEntriesPastTime(double gtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: getSourcesPastTime
+// Procedure: getSourcesPastTime()
 
 vector<string> VarPlot::getSourcesPastTime(double gtime) const
 {
@@ -333,7 +333,7 @@ vector<string> VarPlot::getSourcesPastTime(double gtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: getTStampsUpToTime
+// Procedure: getTStampsUpToTime()
 
 vector<double> VarPlot::getTStampsPastTime(double gtime) const
 {

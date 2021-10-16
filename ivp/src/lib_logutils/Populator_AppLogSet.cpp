@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: AppLogSet.h                                          */
-/*    DATE: Oct 15th 2021                                        */
+/*    FILE: Populator_AppLogset.cpp                              */
+/*    DATE: Oct 16th, 2021                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,36 +21,38 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef APP_LOG_SET_HEADER
-#define APP_LOG_SET_HEADER
+#include <cstdlib>
+#include <cstdio>
+#include <iostream>
+#include "Populator_AppLogSet.h"
+#include "MBUtils.h"
 
-#include <map>
-#include <vector>
-#include <string>
-#include "AppLogEntry.h"
+using namespace std;
 
-class AppLogSet
+//---------------------------------------------------------------
+// Procedure: populateFromEntries
+
+bool Populator_AppLogSet::populateFromEntries(const vector<ALogEntry>& entries)
 {
- public:
-  AppLogSet() {};
-  virtual ~AppLogSet() {}
-
-  // Setters
-  void addAppLogEntry(std::string app_name, AppLogEntry entry);
+  if(entries.size() == 0)
+    return(false);
   
-  // Getters
-  unsigned int size() const {return(m_map_entries.size());}
+  for(unsigned int i=0; i<entries.size(); i++) {
+    string var = entries[i].getVarName();
+    if(var == "APP_LOG") {
+      double time = entries[i].getTimeStamp();
+      string sval = entries[i].getStringVal();
+      m_helm_plot.addEntry(time, sval);
+    }
+  }
+  return(true);
+}
 
-  AppLogEntry  getEntry(std::string app_name, unsigned int index) const;
-
-private:
-
-  std::map<std::string, std::vector<AppLogEntry> > m_map_entries;
-
-};
 
 
-#endif
+
+
+
 
 
 

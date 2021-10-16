@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: AppLogSet.cpp                                      */
+/*    FILE: AppLogPlot.h                                          */
 /*    DATE: Oct 15th 2021                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,34 +21,48 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include "AppLogSet.h"
-#include "MBUtils.h"
+#ifndef APP_LOG_PLOT_HEADER
+#define APP_LOG_PLOT_HEADER
 
-using namespace std;
+#include <map>
+#include <vector>
+#include <string>
+#include "AppLogEntry.h"
 
-//----------------------------------------------------------------
-// Procedure: addAppLogEntry
-
-void AppLogSet::addAppLogEntry(string app_name, AppLogEntry entry)
+class AppLogPlot
 {
-  m_map_entries[app_name].push_back(entry);
-}
+ public:
+  AppLogPlot() {};
+  virtual ~AppLogPlot() {}
 
-//----------------------------------------------------------------
-// Procedure: getEntry()
+  // Setters
+  void   setVName(std::string s)     {m_vname=s;}
+  void   setAppName(std::string s)   {m_app_name=s;}
+  
+  void addAppLogEntry(double gtime, AppLogEntry entry);
+  
+  // Getters
+  unsigned int size() const        {return(m_entries.size());}
 
-AppLogEntry AppLogSet::getEntry(string app_name, unsigned int ix) const
-{
-  AppLogEntry null_entry;
-  map<string, std::vector<AppLogEntry> >::const_iterator p;
-  p = m_map_entries.find(app_name);
-  if(p == m_map_entries.end())
-    return(null_entry);
+  std::string  getAppName() const  {return(m_app_name);}
 
-  vector<AppLogEntry> entries = p->second;
-  if(ix >= entries.size())
-    return(null_entry);
+  bool         containsTime(double) const;
 
-  return(entries[ix]);
-}
+  AppLogEntry  getEntryByIndex(unsigned int index) const;
+  AppLogEntry  getEntryByTime(double gtime) const;
+
+private:
+  std::string m_vname;
+  std::string m_app_name;
+
+  std::vector<double>      m_time;
+  std::vector<AppLogEntry> m_entries;
+
+};
+
+
+#endif
+
+
+
 
