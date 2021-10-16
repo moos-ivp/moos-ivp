@@ -9,6 +9,7 @@ SET(SRC
   ALogSorter.cpp
   LogUtils.cpp
   ALogEntry.cpp
+  AppLogEntry.cpp
   SplitHandler.cpp  
   ALogDataBroker.cpp
   LogPlot.cpp
@@ -28,6 +29,7 @@ SET(SRC
 
 SET(HEADERS
    ALogEntry.h
+   AppLogEntry.h
    ALogScanner.h
    ALogSorter.h
    LogUtils.h
