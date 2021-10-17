@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: Populator_AppLogSet.h                                */
+/*    FILE: Populator_AppLogPlot.h                               */
 /*    DATE: Oct 16th, 2021                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -21,25 +21,25 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef POPULATOR_APP_LOG_SET_HEADER
-#define POPULATOR_APP_LOG_SET_HEADER
+#ifndef POPULATOR_APP_LOG_PLOT_HEADER
+#define POPULATOR_APP_LOG_PLOT_HEADER
 
 #include <string>
 #include <vector>
-#include "AppLogSet.h"
+#include "AppLogPlot.h"
 #include "ALogEntry.h"
 
-class Populator_AppLogSet
+class Populator_AppLogPlot
 {
 public:
-  Populator_AppLogSet() {}
-  ~Populator_AppLogSet() {}
+  Populator_AppLogPlot() {}
+  ~Populator_AppLogPlot() {}
 
-  bool      populateFromEntries(const std::vector<ALogEntry>&);
-  AppLogSet getAppLogSet() {return(m_helm_plot);}
+  bool       populateFromEntries(const std::vector<ALogEntry>&);
+  AppLogPlot getAppLogPlot() {return(m_alplot);}
 
 protected:
-  AppLogSet m_alset;
+  AppLogPlot m_alplot;
 };
 #endif 
 

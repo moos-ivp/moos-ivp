@@ -26,9 +26,7 @@
 
 #include <vector>
 #include <string>
-#include "VarPlot.h"
-#include "ALogDataBroker.h"
-#include "AppLogEntry.h"
+#include "AppLogPlot.h"
 
 class ModelAppLogScope
 {
@@ -37,32 +35,22 @@ class ModelAppLogScope
   virtual ~ModelAppLogScope() {}
 
   // Setters
-  void   setDataBroker(ALogDataBroker, unsigned int mix);
   void   setTime(double tstamp);
-  void   setAppLogPlot(unsigned int mix);
-
-  void   reformat();
+  void   setAppLogPlot(const AppLogPlot&);
 
   // Getters
   double        getCurrTime() const {return(m_curr_time);}
-  unsigned int  getAppLogPlotSize(std::string) const;
+  //unsigned int  getAppLogPlotSize(std::string) const;
   
-  std::vector<std::string>  getNowEntries() const;
+  std::vector<std::string>  getNowLines() const;
  
- protected:
-  std::vector<std::string>  getEntries(const std::list<AppLogEntry>&) const;
-
-  void   reformat(std::list<AppLogEntry>&);
-
 private:
-  double         m_curr_time;
-  ALogDataBroker m_dbroker;
-
+  double      m_curr_time;
+  AppLogPlot  m_alplot;
+  
   // Vehicle name and app_name stay constant once it is set initially
   std::string m_vname; 
-  std::string m_app_name; 
-
-  std::list<AppLogEntry> m_now_entries;
+  std::string m_app_name;   
 };
 
 #endif

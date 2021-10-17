@@ -46,6 +46,8 @@ class AppLogEntry
 
   std::vector<std::string> getLines() const {return(m_lines);}
 
+  bool valid() const {return(m_lines.size() != 0);}
+  
 private:
   double       m_tstamp;
 
@@ -53,14 +55,8 @@ private:
   unsigned int m_iteration;
 
   std::vector<std::string> m_lines;
-
 };
 
-AppLogEntry stringToAppLogEntry(std::string);
-
+AppLogEntry stringToAppLogEntry(std::string, bool verbose=false);
 
 #endif
-
-
-
-

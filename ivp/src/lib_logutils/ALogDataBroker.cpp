@@ -32,6 +32,7 @@
 #include "Populator_HelmPlots.h"
 #include "Populator_IPF_Plot.h"
 #include "Populator_EncounterPlot.h"
+#include "Populator_AppLogPlot.h"
 
 using namespace std;
 
@@ -183,7 +184,7 @@ bool ALogDataBroker::setTimingInfo()
 
 
 //----------------------------------------------------------------
-// Procedure: getVNameFromAix
+// Procedure: getVNameFromAix()
 //      Note: An "aix" is an index into list of known vehicle names
 
 string ALogDataBroker::getVNameFromAix(unsigned int aix) const
@@ -194,7 +195,7 @@ string ALogDataBroker::getVNameFromAix(unsigned int aix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getVTypeFromAix
+// Procedure: getVTypeFromAix()
 //      Note: An "aix" is an index into list of known vehicle names
 
 string ALogDataBroker::getVTypeFromAix(unsigned int aix) const
@@ -205,7 +206,7 @@ string ALogDataBroker::getVTypeFromAix(unsigned int aix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getVColorFromAix
+// Procedure: getVColorFromAix()
 //      Note: An "aix" is an index into list of known vehicle names
 
 string ALogDataBroker::getVColorFromAix(unsigned int aix) const
@@ -216,7 +217,7 @@ string ALogDataBroker::getVColorFromAix(unsigned int aix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getVLengthFromAix
+// Procedure: getVLengthFromAix()
 
 double ALogDataBroker::getVLengthFromAix(unsigned int aix) const
 {
@@ -226,7 +227,7 @@ double ALogDataBroker::getVLengthFromAix(unsigned int aix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getLogStartFromAix
+// Procedure: getLogStartFromAix()
 
 double ALogDataBroker::getLogStartFromAix(unsigned int aix) const
 {
@@ -236,7 +237,7 @@ double ALogDataBroker::getLogStartFromAix(unsigned int aix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getVNameFromMix
+// Procedure: getVNameFromMix()
 //      Note: A "mix" is a master index. Unique to each known 
 //            vehicle/varname pair in all alog files.
 
@@ -248,7 +249,7 @@ string ALogDataBroker::getVNameFromMix(unsigned int mix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getVarNameFromMix
+// Procedure: getVarNameFromMix()
 //      Note: A "mix" is a master index. Unique to each known 
 //            vehicle/varname pair in all alog files.
 
@@ -260,7 +261,7 @@ string ALogDataBroker::getVarNameFromMix(unsigned int mix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getVarSourceFromMix
+// Procedure: getVarSourceFromMix()
 //      Note: A "mix" is a master index. Unique to each known 
 //            vehicle/varname pair in all alog files.
 
@@ -272,7 +273,7 @@ string ALogDataBroker::getVarSourceFromMix(unsigned int mix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getVarTypeFromMix
+// Procedure: getVarTypeFromMix()
 
 string ALogDataBroker::getVarTypeFromMix(unsigned int mix) const
 {
@@ -282,7 +283,7 @@ string ALogDataBroker::getVarTypeFromMix(unsigned int mix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getVNameFromBix
+// Procedure: getVNameFromBix()
 //      Note: A "bix" is a behavior index. Unique to each known 
 //            vehicle/behavior pair in all alog files.
 
@@ -294,7 +295,7 @@ string ALogDataBroker::getVNameFromBix(unsigned int bix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getVarNameFromBix
+// Procedure: getVarNameFromBix()
 //      Note: A "bix" is a behavior index. Unique to each known 
 //            vehicle/behavior pair in all alog files.
 
@@ -303,6 +304,30 @@ string ALogDataBroker::getBNameFromBix(unsigned int bix) const
   if(bix >= m_bix_bhvname.size())
     return("");
   return(m_bix_bhvname[bix]);
+}
+
+//----------------------------------------------------------------
+// Procedure: getVNameFromALix()
+//      Note: A "alix" is an AppLog index. Unique to each known 
+//            vehicle/applogging_app pair in all alog files.
+
+string ALogDataBroker::getVNameFromALix(unsigned int alix) const
+{
+  if(alix >= m_alix_vname.size())
+    return("");
+  return(m_alix_vname[alix]);
+}
+
+//----------------------------------------------------------------
+// Procedure: getAppNameFromALix()
+//      Note: A "alix" is an AppLog index. Unique to each known 
+//            vehicle/applogging_app pair in all alog files.
+
+string ALogDataBroker::getAppNameFromALix(unsigned int alix) const
+{
+  if(alix >= m_alix_appname.size())
+    return("");
+  return(m_alix_appname[alix]);
 }
 
 
@@ -404,8 +429,8 @@ vector<string> ALogDataBroker::getBhvsInALog(unsigned int ix) const
   for(unsigned int i=0; i<svector.size(); i++) {
     string param = biteStringX(svector[i], '=');
     string value = svector[i];
-      if(param == "bhvs")
-	all_bhvs_str = value;
+    if(param == "bhvs")
+      all_bhvs_str = value;
   }
 
   bhvs = parseString(all_bhvs_str, ',');
@@ -413,7 +438,32 @@ vector<string> ALogDataBroker::getBhvsInALog(unsigned int ix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: getRawVarSummary
+// Procedure: getAppLogsInALog()
+
+vector<string> ALogDataBroker::getAppLogsInALog(unsigned int ix) const
+{
+  vector<string> app_logs;
+
+  if(ix >= m_alog_files.size())
+    return(app_logs);
+
+  string summary_file = m_summ_files[ix];
+  
+  string applogging_apps_str;
+  vector<string> svector = fileBuffer(summary_file);
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+    if(param == "applogging_apps")
+      applogging_apps_str = value;
+  }
+  
+  app_logs = parseString(applogging_apps_str, ',');
+  return(app_logs);
+}
+
+//----------------------------------------------------------------
+// Procedure: getRawVarSummary()
 
 vector<string> ALogDataBroker::getRawVarSummary(unsigned int ix) const
 {
@@ -483,9 +533,28 @@ void ALogDataBroker::cacheBehaviorIndices()
     vector<string> bhvs = getBhvsInALog(i);
     for(unsigned int j=0; j<bhvs.size(); j++) {
       m_bix_vname.push_back(m_vnames[i]);
-      m_bix_alog_file.push_back(m_alog_files[i]);
       m_bix_alog_ix.push_back(i);
       m_bix_bhvname.push_back(bhvs[j]);
+      // Index of all above vectors is the master index
+    }
+  }
+}
+
+
+//----------------------------------------------------------------
+// Procedure: cacheAppLogIndices()
+//     Notes: AppLogs are alog file entries of the variable APP_LOG.
+//            These capture stdout output from an app if enabled
+//            for that app.
+
+void ALogDataBroker::cacheAppLogIndices()
+{
+  for(unsigned int i=0; i<m_alog_files.size(); i++) {
+    vector<string> applogs = getAppLogsInALog(i);
+    for(unsigned int j=0; j<applogs.size(); j++) {
+      m_alix_vname.push_back(m_vnames[i]);
+      m_alix_alog_ix.push_back(i);
+      m_alix_appname.push_back(applogs[j]);
       // Index of all above vectors is the master index
     }
   }
@@ -532,9 +601,8 @@ string ALogDataBroker::getRegionInfo()
   return("");
 }
 
-
 //----------------------------------------------------------------
-// Procedure: getLogPlot
+// Procedure: getLogPlot()
 
 LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
 {
@@ -603,7 +671,7 @@ LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
 }
 
 //----------------------------------------------------------------
-// Procedure: getVarPlot
+// Procedure: getVarPlot()
 
 VarPlot ALogDataBroker::getVarPlot(unsigned int mix, bool include_source)
 {
@@ -696,7 +764,7 @@ VarPlot ALogDataBroker::getVarPlot(unsigned int mix, bool include_source)
 
 
 //----------------------------------------------------------------
-// Procedure: getHelmPlot
+// Procedure: getHelmPlot()
 //      Note: aix is the index into the vector of alog files
 
 HelmPlot ALogDataBroker::getHelmPlot(unsigned int aix)
@@ -751,7 +819,64 @@ HelmPlot ALogDataBroker::getHelmPlot(unsigned int aix)
 
 
 //----------------------------------------------------------------
-// Procedure: getEncounterPlot
+// Procedure: getAppLogPlot()
+//      Note: alix is the index into the vector of AppLogs
+
+AppLogPlot ALogDataBroker::getAppLogPlot(unsigned int alix)
+{
+  AppLogPlot alplot;
+
+  // Part 1: Sanity check the alix and aix indices
+  if(alix >= m_alix_vname.size())
+    return(alplot);
+  unsigned int aix = m_alix_alog_ix[alix];
+  if(aix >= m_alog_files.size())
+    return(alplot);  
+  
+  // Part 2: Confirm that the APP_LOG_app.klog file can be found and opened
+  string app_name = m_alix_appname[alix];
+  string klog = m_base_dirs[aix] + "/APP_LOG_" + app_name + ".klog";
+  FILE *f = fopen(klog.c_str(), "r");
+  if(!f) {
+    cout << "Could not create AppLogPlot from " << klog << endl;
+    return(alplot);
+  }
+
+  // Part 3: Populate the AppLogPlot
+  Populator_AppLogPlot populator;
+
+  vector<ALogEntry> entries;
+  bool done = false;
+  while(!done) {
+    ALogEntry entry = getNextRawALogEntry(f, true);
+
+    // Check if the line is a comment
+    if(entry.getStatus() == "invalid")
+      continue;
+    // Check for end of file
+    if(entry.getStatus() == "eof") 
+      break;
+
+    double tstamp = entry.getTimeStamp();
+    if(tstamp < m_pruned_logtmin)
+      continue;
+    if(tstamp > m_pruned_logtmax)
+      break;
+
+    entries.push_back(entry);
+  }
+
+  populator.populateFromEntries(entries);
+  alplot = populator.getAppLogPlot();
+
+  //hplot.applySkew(m_logskew[aix]);
+
+  return(alplot);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: getEncounterPlot()
 //      Note: aix is the index into the vector of alog files
 
 EncounterPlot ALogDataBroker::getEncounterPlot(unsigned int aix)
@@ -829,7 +954,7 @@ EncounterPlot ALogDataBroker::getEncounterPlot(unsigned int aix)
 
 
 //----------------------------------------------------------------
-// Procedure: getVPlugPlot
+// Procedure: getVPlugPlot()
 //      Note: aix is the index into the vector of alog files
 
 VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
@@ -911,7 +1036,7 @@ void ALogDataBroker::setPrunedMaxTime(double max_time)
 
 
 //----------------------------------------------------------------
-// Procedure: getIPFPlot
+// Procedure: getIPFPlot()
 //      Note: aix is the index into the vector of alog files
 
 IPF_Plot ALogDataBroker::getIPFPlot(unsigned int aix, string bhv_name)

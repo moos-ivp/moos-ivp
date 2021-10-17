@@ -57,7 +57,6 @@ private:
 
   std::vector<double>      m_time;
   std::vector<AppLogEntry> m_entries;
-
 };
 
 

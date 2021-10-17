@@ -24,8 +24,10 @@ SET(SRC
   Populator_HelmPlots.cpp
   Populator_IPF_Plot.cpp
   Populator_EncounterPlot.cpp
+  Populator_AppLogPlot.cpp
   ModelHelmScope.cpp
   ModelVarScope.cpp
+  ModelAppLogScope.cpp
 )
 
 SET(HEADERS

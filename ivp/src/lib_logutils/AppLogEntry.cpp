@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <iostream>
 #include "AppLogEntry.h"
 #include "MBUtils.h"
 
@@ -40,7 +41,7 @@ string AppLogEntry::getLine(unsigned int ix) const
 // Procedure: setAppLogEntry()
 //   Example: APP_LOG = "iter=23,log=line!@#line!@#...!@#line"
 
-AppLogEntry stringToAppLogEntry(string raw)
+AppLogEntry stringToAppLogEntry(string raw, bool verbose)
 {
   AppLogEntry null_entry;
   AppLogEntry good_entry;
@@ -51,15 +52,24 @@ AppLogEntry stringToAppLogEntry(string raw)
     string value = field;
     if(param == "iter") {
       int ival = atoi(value.c_str());
-      if(ival < 1)
+      if(ival < 1) {
+	if(verbose)
+	  cout << "VERBOSE: bad ival:" << ival << endl;
 	return(null_entry);
+      }
     }
     else if(param == "log") {
       vector<string> lines = parseString(value, "!@#");
       good_entry.setAppLogLines(lines);
+      if(verbose)
+	cout << "VERBOSE: numlines: " << lines.size() << endl;
+      raw = "";
     }
-    else
+    else {
+      if(verbose)
+	cout << "bad param:[" << param << "]" << endl;
       return(null_entry);
+    }
   }
 
   return(good_entry);
