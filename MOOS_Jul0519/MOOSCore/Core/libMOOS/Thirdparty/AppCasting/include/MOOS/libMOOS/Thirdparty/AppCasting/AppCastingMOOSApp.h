@@ -31,6 +31,7 @@
 
 #include <sstream>
 #include <iostream>
+#include <fstream>
 #include <vector>
 #include <string>
 #include "MOOS/libMOOS/App/MOOSApp.h"
@@ -56,8 +57,10 @@ public:
   bool         reportRunWarning(const std::string&);
   void         retractRunWarning(const std::string&);
   unsigned int getWarningCount(const std::string&) const;
-  bool 			OnStartUpDirectives(std::string directives="");
-
+  void 	       preOnStartUp();
+  bool 	       OnStartUpDirectives(std::string directives="");
+  void         setAppLoggingInfo(std::string s) {m_app_logging_info=s;}
+  
  private:
   void         handleMailAppCastRequest(const std::string&);
   bool         appcastRequested();
@@ -74,7 +77,8 @@ protected:
   bool         m_term_reporting;
 
   std::stringstream m_msgs;
-
+  std::stringstream m_cout;
+  
   AppCast      m_ac;
   std::string  m_host_community;
 
@@ -82,6 +86,10 @@ protected:
   double       m_last_report_time_appcast;
   bool         m_new_run_warning;
   bool         m_new_cfg_warning;
+
+  std::ofstream m_outfile;
+  std::string  m_app_logging;
+  std::string  m_app_logging_info;
 
   // Map from KEY (AC requestor) to config param.
   std::map<std::string, double>       m_map_bcast_duration;

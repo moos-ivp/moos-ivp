@@ -20,6 +20,7 @@
 /* Boston, MA 02111-1307, USA.                                   */
 /*****************************************************************/
 
+#include <algorithm>
 #include <iostream>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 
@@ -51,6 +52,9 @@ AppCastingMOOSApp::AppCastingMOOSApp()
   m_term_reporting  = true;
   m_new_run_warning = false;
   m_new_cfg_warning = false;
+
+  // If "log" stdio is posted. If "file" stdio goes to a file.
+  m_app_logging  = "off";
 }
 
 //----------------------------------------------------------------
@@ -61,6 +65,40 @@ bool AppCastingMOOSApp::Iterate()
   m_iteration++;
   m_curr_time = MOOSTime();
 
+  if(m_app_logging == "log") {
+    if(m_iteration == 1)
+      std::cout.rdbuf(m_cout.rdbuf());
+
+    // Part 1: Put together the report from the PREVIOUS iteration
+    string str_log;
+    if(m_app_logging_info != "")
+      str_log = m_app_logging_info + ",";
+
+    str_log += m_cout.str();
+    // Replace all newline chars with "!@#"
+    char rs_char = 30; 
+    std::replace(str_log.begin(), str_log.end(), '\n', rs_char);
+    size_t index = 0;
+    string rs_str(1, rs_char);
+    while(true) {
+      index = str_log.find(rs_str, index);
+      if(index == std::string::npos)
+	break;
+      str_log.replace(index, 1, "!@#");
+      index += 3;
+    }
+
+    // Part 2: Publish the report
+    Notify("APP_LOG", str_log);
+
+    // Part 3: Create the base message for the next iteration 
+    m_cout.str("");
+    m_cout << "iter=" << m_iteration + 1 << ",log=";
+    m_app_logging_info = "";
+  }
+
+  //m_cout << "test message on iteration " << m_iteration << endl;
+  
   // Handle the construction of the ITER_GAP
   if(m_last_iterate_time != 0) {
     double app_freq = GetAppFreq();
@@ -163,11 +201,52 @@ void AppCastingMOOSApp::PostReport(const string& directive)
 }
 
 //----------------------------------------------------------------
-// Procedure: OnStartUp
+// Procedure: OnStartUp()
 
 bool AppCastingMOOSApp::OnStartUp()
 {
+  preOnStartUp();
   return(OnStartUpDirectives());
+}
+
+//----------------------------------------------------------------
+// Procedure: preOnStartUp()
+//      Note: Do this prior to OnStartUp in case stdout has been
+//            redirected, it will catch all the startup output.
+
+void AppCastingMOOSApp::preOnStartUp()
+{
+  STRING_LIST sParams;
+  string config_block = GetAppName();
+  m_MissionReader.GetConfiguration(config_block, sParams);
+
+  STRING_LIST::iterator p;
+  for(p=sParams.begin(); p!=sParams.end(); ++p) {
+    string line  = *p;
+    string param = MOOSToUpper(MOOSChomp(line, "="));
+    string value = line;
+    string lvalue = value;
+    MOOSToLower(lvalue);
+    MOOSTrimWhiteSpace(param);
+    MOOSTrimWhiteSpace(value);
+
+    if(param == "APP_LOGGING") {
+      if((lvalue == "log") || (lvalue == "file") || (lvalue == "off"))
+	m_app_logging = lvalue;
+      else
+	reportConfigWarning("Invalid APP_LOGGING: " + value);
+    }
+  }
+  
+  if(m_app_logging == "file") {
+    string filename = ("cout_" + m_host_community + "_" + m_sMOOSName);
+    MOOSToLower(filename);
+    m_outfile = std::ofstream(filename.c_str());
+    std::cout.rdbuf(m_outfile.rdbuf()); //redirect std::cout to out.txt!
+  }
+
+  else if(m_app_logging == "log")
+    std::cout.rdbuf(m_cout.rdbuf());
 }
 
 //----------------------------------------------------------------
@@ -251,7 +330,6 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
 
     cout << "+++++++++++++++++++++++++++++++++++++++++++++++++" << endl;
     cout << "param =  " << param << endl;
-    cout << "+++++++++++++++++++++++++++++++++++++++++++++++++" << endl;      
 
     if(param == "TERM_REPORT_INTERVAL") {
       if(!MOOSIsNumeric(value))
@@ -315,7 +393,7 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
   // If so, set m_term_reporting to false.
   if(!MOOSStrCmp(term_reporting, "true") && (isatty(1) == 0))
     m_term_reporting = false;
-  
+
   return(return_value);
 }
 
@@ -438,9 +516,6 @@ void AppCastingMOOSApp::reportEvent(const string& str)
 {
   double timestamp = m_curr_time - m_start_time;
   m_ac.event(str, timestamp);
-
-  cout << "reportEvent: max_event: " << m_ac.getMaxEvents() << endl;
-
 }
 
 //----------------------------------------------------------------
@@ -460,9 +535,9 @@ void AppCastingMOOSApp::reportUnhandledConfigWarning(const string& orig)
   string orig_copy = orig;
   string param = MOOSToUpper(MOOSChomp(orig_copy, "="));
   MOOSTrimWhiteSpace(param);
-  if((param == "APPTICK")      || (param == "COMMSTICK")            ||
-     (param == "MAXAPPTICK")   || (param == "TERM_REPORT_INTERVAL") ||
-     (param == "MAX_APPCAST_EVENTS"))
+  if((param == "APPTICK")    || (param == "APP_LOGGING")          ||
+     (param == "MAXAPPTICK") || (param == "TERM_REPORT_INTERVAL") ||
+     (param == "COMMSTICK")  || (param == "MAX_APPCAST_EVENTS"))
     return;
 
   reportConfigWarning("Unhandled config line: " + orig);
