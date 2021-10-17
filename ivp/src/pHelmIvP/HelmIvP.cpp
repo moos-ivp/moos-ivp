@@ -1162,6 +1162,7 @@ void HelmIvP::checkForTakeOver()
 bool HelmIvP::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
+  cout << "In Helm OnStartUp()" << endl;
 
   Notify("PHELMIVP_PID", getpid());
     
