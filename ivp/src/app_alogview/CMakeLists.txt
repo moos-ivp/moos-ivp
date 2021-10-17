@@ -25,6 +25,7 @@ SET(SRC
   GUI_IPF.cpp
   GUI_HelmScope.cpp
   GUI_VarScope.cpp
+  GUI_AppLogScope.cpp
   IvPFuncViewerX.cpp
   LogViewLauncher.cpp
   main.cpp

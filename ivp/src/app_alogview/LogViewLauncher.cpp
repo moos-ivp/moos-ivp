@@ -257,7 +257,8 @@ bool LogViewLauncher::configDataBroker()
 
   m_dbroker.cacheMasterIndices();
   m_dbroker.cacheBehaviorIndices();
-  
+  m_dbroker.cacheAppLogIndices();
+
   return(true);
 }
 

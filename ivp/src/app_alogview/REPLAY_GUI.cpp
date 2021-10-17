@@ -614,7 +614,7 @@ void REPLAY_GUI::cb_Encounter(Fl_Widget* o, int v) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_Encounter_i(val);
 }
 
-//----------------------------------------- VarHist
+//----------------------------------------- cb_VarHist
 inline void REPLAY_GUI::cb_VarHist_i(int mix) {
   string vname = m_dbroker.getVNameFromMix(mix);
   string varname = m_dbroker.getVarNameFromMix(mix);
@@ -636,7 +636,29 @@ void REPLAY_GUI::cb_VarHist(Fl_Widget* o, int v) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_VarHist_i(val);
 }
 
-//----------------------------------------- IPF_GUI
+//----------------------------------------- cb_AppLog
+inline void REPLAY_GUI::cb_AppLog_i(int alix) {
+  string vname    = m_dbroker.getVNameFromALix(alix);
+  string app_name = m_dbroker.getAppNameFromALix(alix);
+  if((vname == "") || (app_name == ""))
+    return;
+
+  double curr_time = np_viewer->getCurrTime();
+  string title = vname + ":" + app_name;
+  GUI_AppLogScope *algui = new GUI_AppLogScope(500,500, title.c_str());   
+  algui->setDataBroker(m_dbroker, alix);
+  algui->setParentGUI(this);
+  algui->setCurrTime(curr_time);
+
+  m_sub_guis_a.push_front(algui);
+  updateXY();
+}
+void REPLAY_GUI::cb_AppLog(Fl_Widget* o, int v) {
+  int val = (int)(v);
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_AppLog_i(val);
+}
+
+//----------------------------------------- cb_IPF_GUI
 inline void REPLAY_GUI::cb_IPF_GUI_i(int aix) {
   string vname = m_dbroker.getVNameFromAix(aix);
   if(vname == "")
@@ -658,7 +680,7 @@ void REPLAY_GUI::cb_IPF_GUI(Fl_Widget* o, int v) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_IPF_GUI_i(val);
 }
 
-//----------------------------------------- Helm_GUI
+//----------------------------------------- cb_Helm_GUI
 inline void REPLAY_GUI::cb_Helm_GUI_i(int aix) {
   string vname = m_dbroker.getVNameFromAix(aix);
   if(vname == "")
@@ -908,6 +930,7 @@ void REPLAY_GUI::setDataBroker(ALogDataBroker broker)
   setEncounterPlotMenus();
   setHelmPlotMenus();
   setVarHistMenus();
+  setAppLogMenus();
 
   if(np_viewer) {
     np_viewer->setDataBroker(broker);
@@ -963,7 +986,7 @@ void REPLAY_GUI::setBehaviorVarMap(map<string,string> map_bhv_vars)
 }
 
 //----------------------------------------------------------
-// Procedure: setVarHistMenus
+// Procedure: setVarHistMenus()
 //      Note: MIX short for MasterIndex
 
 void REPLAY_GUI::setVarHistMenus()
@@ -988,7 +1011,30 @@ void REPLAY_GUI::setVarHistMenus()
 }
 
 //----------------------------------------------------------
-// Procedure: setIPFPlotMenus
+// Procedure: setAppLogMenus()
+//      Note: MIX short for MasterIndex
+
+void REPLAY_GUI::setAppLogMenus()
+{
+  unsigned int alix_count = m_dbroker.sizeALix();
+
+  for(unsigned int alix=0; alix<alix_count; alix++) {
+    string vname    = m_dbroker.getVNameFromALix(alix);
+    string app_name = m_dbroker.getAppNameFromALix(alix);
+
+    // Use special unsigned int type having same size a pointer (void*)
+    uintptr_t ix = alix;
+
+    string label = "AppLogs/" + vname + "/" + app_name;
+    
+    m_menubar->add(label.c_str(), 0, 
+		   (Fl_Callback*)REPLAY_GUI::cb_AppLog, (void*)ix);
+    m_menubar->redraw();
+  }
+}
+
+//----------------------------------------------------------
+// Procedure: setIPFPlotMenus()
 
 void REPLAY_GUI::setIPFPlotMenus()
 {
@@ -1009,7 +1055,7 @@ void REPLAY_GUI::setIPFPlotMenus()
 }
 
 //----------------------------------------------------------
-// Procedure: setEncounterPlotMenus
+// Procedure: setEncounterPlotMenus()
 
 void REPLAY_GUI::setEncounterPlotMenus()
 {
@@ -1030,7 +1076,7 @@ void REPLAY_GUI::setEncounterPlotMenus()
 }
 
 //----------------------------------------------------------
-// Procedure: setHelmPlotMenus
+// Procedure: setHelmPlotMenus()
 //   Purpose: Add the pull-down menu for selecting a vehicle and opening
 //            a Helm Report sub-gui
 
@@ -1088,7 +1134,7 @@ void REPLAY_GUI::initLogPlotChoiceB(string vname, string varname)
 
 
 //----------------------------------------------------------
-// Procedure: conditionalStep
+// Procedure: conditionalStep()
 
 void REPLAY_GUI::conditionalStep() 
 {
@@ -1111,7 +1157,7 @@ void REPLAY_GUI::conditionalStep()
 }
 
 //----------------------------------------------------------
-// Procedure: updateTimeSubGUI
+// Procedure: updateTimeSubGUI()
 
 void REPLAY_GUI::updateTimeSubGUI()
 {
@@ -1141,11 +1187,17 @@ void REPLAY_GUI::updateTimeSubGUI()
     sub_gui->setCurrTime(curr_time);
     sub_gui->setReplayWarpMsg(m_replay_warp_msg);
   }
+  list<GUI_AppLogScope*>::iterator p5;
+  for(p5=m_sub_guis_a.begin(); p5!=m_sub_guis_a.end(); p5++) {
+    GUI_AppLogScope *sub_gui = *p5;
+    sub_gui->setCurrTime(curr_time);
+    sub_gui->setReplayWarpMsg(m_replay_warp_msg);
+  }
 }
 
 
 //----------------------------------------------------------
-// Procedure: resizeWidgetsText
+// Procedure: resizeWidgetsText()
 
 void REPLAY_GUI::resizeWidgetsText(int wsize) 
 {
