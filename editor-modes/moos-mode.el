@@ -165,7 +165,7 @@
 
 		 ;;Generic mission file keywords. These are either common to all
 		 ;;apps or outside of the processConfig blocks.
-		 '("\\<AppTick\\|CommsTick\\|Community\\|ProcessConfig\\|ServerHost\\|ServerPort\\|LatOrigin\\|LongOrigin\\|MOOSTimeWarp\\|MaxAppTick\\|IterateMode\\>"
+		 '("\\<AppTick\\|CommsTick\\|Community\\|ProcessConfig\\|ServerHost\\|ServerPort\\|LatOrigin\\|LongOrigin\\|MOOSTimeWarp\\|MaxAppTick\\|app_logging\\|IterateMode\\>"
 			 . font-lock-keyword-face)
 
 		 ;;Generic behavior keywords. These are defined on the superclass
