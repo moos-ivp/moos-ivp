@@ -220,6 +220,8 @@ void AppCastingMOOSApp::preOnStartUp()
   string config_block = GetAppName();
   m_MissionReader.GetConfiguration(config_block, sParams);
 
+  m_MissionReader.GetValue("COMMUNITY", m_host_community);
+    
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); ++p) {
     string line  = *p;
