@@ -119,6 +119,9 @@ void showExampleConfigAndExit()
   blk("  alt_nav_prefix     = NAV_GT                                   ");
   blk("  alt_nav_name       = _GT                                      ");
   blk("                                                                ");
+  blk("  // Set grace period before posting reports with no NAV info   ");
+  blu("  nav_grace_period = 40       "," // seconds. -1 means infinity ");
+  blk("                                                                ");
   blk("  // Declare the vehicle to be part of group tango.             ");
   blk("  group = tango                                                 ");
   blk("}                                                               ");

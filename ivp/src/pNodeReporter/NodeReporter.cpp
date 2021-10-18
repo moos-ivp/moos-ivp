@@ -84,6 +84,13 @@ NodeReporter::NodeReporter()
 
   m_node_report_var = "NODE_REPORT_LOCAL";
   m_plat_report_var = "PLATFORM_REPORT_LOCAL";
+
+  m_nav_x_received = false;
+  m_nav_y_received = false;
+  m_nav_lat_received = false;
+  m_nav_lon_received = false;
+  m_nav_grace_period = 40; // seconds, -1 means no grace period
+  m_nav_warning_posted = false;
 }
 
 //-----------------------------------------------------------------
@@ -103,18 +110,22 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(key == "NAV_X") {
       m_record.setX(ddata);
+      m_nav_x_received = true;
       m_nav_xy_updated = m_curr_time;
     }
     else if(key == "NAV_Y") {
       m_record.setY(ddata);
+      m_nav_y_received = true;
       m_nav_xy_updated = m_curr_time;
     }
     else if(key == "NAV_LAT") {
       m_record.setLat(ddata);
+      m_nav_lat_received = true;
       m_nav_latlon_updated = m_curr_time;
     }
     else if(key == "NAV_LONG") {
       m_record.setLon(ddata);
+      m_nav_lon_received = true;
       m_nav_latlon_updated = m_curr_time;
     }
     else if(key == "NAV_SPEED")
@@ -397,6 +408,8 @@ bool NodeReporter::OnStartUp()
     }
     else if(param =="alt_nav_group") 
       handled = setNonWhiteVarOnString(m_alt_nav_group, value);
+    else if(param =="nav_grace_period") 
+      handled = setDoubleOnString(m_nav_grace_period, value);
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -459,12 +472,38 @@ bool NodeReporter::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
+  // Part 1: Determine if posting is ok based on time criteria
   // If (a) this is the first chance to post, or (b) there is no
   // blackout interval being implemented, or (c) the time since last
   // post exceeds the blackout interval, then perform a posting.
-  if((m_last_post_time == -1) || (m_blackout_interval <= 0) ||
-     ((m_curr_time - m_last_post_time) > m_blackout_interval)) {
-    
+  bool time_to_post = false;
+  if((m_last_post_time == -1) || (m_blackout_interval <= 0))
+    time_to_post = true;
+  if((m_curr_time - m_last_post_time) > m_blackout_interval)
+    time_to_post = true;
+
+  // Part 2: Determine if posting is ok based on NAV criteria
+  bool ok_nav_to_post = false;
+  if(navInfoReceived())
+    ok_nav_to_post = true;
+  else {
+    double elapsed_since_start = m_curr_time - m_start_time;
+    if((m_nav_grace_period > 0) && (elapsed_since_start > m_nav_grace_period))
+      ok_nav_to_post = true;
+  }
+
+  // Part 3: Post or retract run warning about Nav if needed
+  if(!ok_nav_to_post && !m_nav_warning_posted) {
+    reportRunWarning("Waiting for NAV_X/Y or NAV_LAT/LONG");
+    m_nav_warning_posted = true;
+  }
+  if(ok_nav_to_post && m_nav_warning_posted) {
+    retractRunWarning("Waiting for NAV_X/Y or NAV_LAT/LONG");
+    m_nav_warning_posted = false;
+  }
+        
+  // Part 4: Post NodeReport if both TIME and NAV criteria ok  
+  if(time_to_post && ok_nav_to_post) {
     if(m_crossfill_policy != "literal")
       crossFillCoords(m_record, m_nav_xy_updated, m_nav_latlon_updated);
     
@@ -508,6 +547,7 @@ bool NodeReporter::Iterate()
       m_blackout_interval = 0;
   }
 
+  // Part 5: Handle the Platform Report
   string platform_report = assemblePlatformReport();
   if((platform_report != "") && !m_paused)
     Notify(m_plat_report_var, platform_report);
@@ -801,6 +841,19 @@ void NodeReporter::handleHelmSwitch()
   m_helm_mode = "";
   m_helm_allstop_mode = "";
   m_helm_switch_noted = true;
+}
+
+
+//------------------------------------------------------------------
+// Procedure: navInfoReceived()
+
+bool NodeReporter::navInfoReceived() const
+{
+  if(m_nav_x_received && m_nav_y_received)
+    return(true);
+  if(m_nav_lat_received && m_nav_lon_received)
+    return(true);
+  return(false);
 }
 
 
