@@ -79,7 +79,10 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     return(true);
   
   if(param == "contact") {
-    m_contact = toupper(param_val);
+    string new_contact_name = toupper(param_val);
+    if(m_contact != new_contact_name)
+      onParamUpdate("contact");
+    m_contact = new_contact_name;
     return(true);
   }  
   else if(param == "extrapolate")
