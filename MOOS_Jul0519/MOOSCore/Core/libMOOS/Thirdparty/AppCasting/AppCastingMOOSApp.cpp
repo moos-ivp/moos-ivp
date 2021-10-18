@@ -239,16 +239,18 @@ void AppCastingMOOSApp::preOnStartUp()
 	reportConfigWarning("Invalid APP_LOGGING: " + value);
     }
   }
-  
-  if(m_app_logging == "file") {
+
+  if(m_app_logging == "log")
+    std::cout.rdbuf(m_cout.rdbuf());
+
+#if 0
+  else if(m_app_logging == "file") {
     string filename = ("cout_" + m_host_community + "_" + m_sMOOSName);
     MOOSToLower(filename);
     m_outfile = std::ofstream(filename.c_str());
     std::cout.rdbuf(m_outfile.rdbuf()); //redirect std::cout to out.txt!
   }
-
-  else if(m_app_logging == "log")
-    std::cout.rdbuf(m_cout.rdbuf());
+#endif
 }
 
 //----------------------------------------------------------------
