@@ -35,7 +35,6 @@ int main(int argc, char *argv[])
   string mission_file;
   string run_command = argv[0];
   string verbose_setting;
-  bool   file_redirect = false;
   
   vector<string>  bhv_files;
 
@@ -51,8 +50,6 @@ int main(int argc, char *argv[])
       showInterfaceAndExit();
     else if(strBegins(argi, "--verbose=")) 
       verbose_setting = argi.substr(10);
-    else if((argi == "-fr") || (argi == "--file_redirect"))
-      file_redirect = true;
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
@@ -63,13 +60,6 @@ int main(int argc, char *argv[])
       run_command = argi;
   }
 
-#if 0
-  string file = findReplace(mission_file, ".moos", ".info");  
-  std::ofstream out(file.c_str());
-  std::streambuf *coutbuf = std::cout.rdbuf(); //save old buf
-  std::cout.rdbuf(out.rdbuf()); // redirect std::cout to out.txt!
-#endif
-  
   if(mission_file == "")
     showHelpAndExit();
   
