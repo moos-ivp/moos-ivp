@@ -85,11 +85,7 @@ NodeReporter::NodeReporter()
   m_node_report_var = "NODE_REPORT_LOCAL";
   m_plat_report_var = "PLATFORM_REPORT_LOCAL";
 
-  m_nav_x_received = false;
-  m_nav_y_received = false;
-  m_nav_lat_received = false;
-  m_nav_lon_received = false;
-  m_nav_grace_period = 40; // seconds, -1 means no grace period
+  m_nav_grace_period = 25; // seconds, -1 means no grace period
   m_nav_warning_posted = false;
 }
 
@@ -110,25 +106,21 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(key == "NAV_X") {
       m_record.setX(ddata);
-      m_nav_x_received = true;
       m_nav_xy_updated = m_curr_time;
     }
     else if(key == "NAV_Y") {
       m_record.setY(ddata);
-      m_nav_y_received = true;
       m_nav_xy_updated = m_curr_time;
     }
     else if(key == "NAV_LAT") {
       m_record.setLat(ddata);
-      m_nav_lat_received = true;
       m_nav_latlon_updated = m_curr_time;
     }
     else if(key == "NAV_LONG") {
       m_record.setLon(ddata);
-      m_nav_lon_received = true;
       m_nav_latlon_updated = m_curr_time;
     }
-    else if(key == "NAV_SPEED")
+    else if(key == "NAV_SPEED") 
       m_record.setSpeed(ddata);
     else if(key == "NAV_HEADING")
       m_record.setHeading(angle360(ddata));
@@ -484,7 +476,7 @@ bool NodeReporter::Iterate()
 
   // Part 2: Determine if posting is ok based on NAV criteria
   bool ok_nav_to_post = false;
-  if(navInfoReceived())
+  if(m_record.valid()) // name, speed, heading, x/y, or lat/lon
     ok_nav_to_post = true;
   else {
     double elapsed_since_start = m_curr_time - m_start_time;
@@ -841,19 +833,6 @@ void NodeReporter::handleHelmSwitch()
   m_helm_mode = "";
   m_helm_allstop_mode = "";
   m_helm_switch_noted = true;
-}
-
-
-//------------------------------------------------------------------
-// Procedure: navInfoReceived()
-
-bool NodeReporter::navInfoReceived() const
-{
-  if(m_nav_x_received && m_nav_y_received)
-    return(true);
-  if(m_nav_lat_received && m_nav_lon_received)
-    return(true);
-  return(false);
 }
 
 

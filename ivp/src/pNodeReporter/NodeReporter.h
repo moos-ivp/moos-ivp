@@ -57,7 +57,6 @@ public:
   void crossFillGlobalToLocal(NodeRecord&);
   void handleHelmSwitch();
 
-  bool navInfoReceived() const;
   void updateNavWarning(bool ok_nav) const;
   
  protected: // Configuration Variables (Node Reports)
@@ -81,10 +80,6 @@ public:
   double       m_helm_lastmsg;
 
   // Oct 18, 2021
-  bool m_nav_x_received;
-  bool m_nav_y_received;
-  bool m_nav_lat_received;
-  bool m_nav_lon_received;
   double m_nav_grace_period;
   bool m_nav_warning_posted;
   
