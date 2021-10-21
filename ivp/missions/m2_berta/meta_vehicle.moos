@@ -70,6 +70,8 @@ ProcessConfig = pNodeReporter
 
   vessel_type = $(VTYPE)
   terse_reports = true
+
+	group = alpha
 }
 
 //--------------------------------------------------------

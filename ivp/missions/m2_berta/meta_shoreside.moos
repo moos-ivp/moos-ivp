@@ -85,7 +85,7 @@ ProcessConfig = uFldShoreBroker
   qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
   qbridge  = MOOS_MANUAL_OVERRIDE, AVOID, UP_LOITER
   qbridge  = RETURN_UPDATES, BCM_DISPLAY_RADII
-  qbridge  = CONTACT_INFO
+  qbridge  = CONTACT_INFO, NODE_GROUP_UPDATE
 
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
@@ -104,7 +104,7 @@ ProcessConfig = uFldNodeComms
   critical_range   = 25
   min_msg_interval = 15
   max_msg_length   = 1000
-  groups           = true
+//  groups           = true
 
   view_node_rpt_pulses = false
 }
@@ -228,6 +228,8 @@ ProcessConfig = pMarineViewer
 
 	button_seven = REFINE:N # CONTACT_INFO_ALL = name=avdcol # use_refinery=false
 	button_eight = REFINE:Y # CONTACT_INFO_ALL = name=avdcol # use_refinery=true
+
+	button_nine = GRP_BRAVO # NODE_GROUP_UPDATE_HENRY = bravo
 
 }
 

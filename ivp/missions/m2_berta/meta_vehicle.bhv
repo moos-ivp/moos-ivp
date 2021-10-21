@@ -37,6 +37,8 @@ Behavior = BHV_Loiter
   runflag   = VEHICLE_UNDERWAY = TRUE
   endflag   = VEHICLE_UNDERWAY = FALSE
 
+  ipf_type = zaic_spd
+	
    post_suffix = A
          speed = 1.4
      clockwise = false
@@ -64,8 +66,11 @@ Behavior = BHV_AvdColregsV19
          extrapolate = true
                decay = 30,60
 
-          match_type = mokai
+	       match_group = alpha
+        //  match_type = mokai
 
+	exit_on_filter_group = true
+	
 	post_per_contact_info = true
 	
         use_refinery = true
