@@ -105,7 +105,7 @@ Behavior = BHV_Waypoint
 
 
 //----------------------------------------------
-Behavior = BHV_AvoidObstacle
+Behavior = BHV_AvoidObstacleV21
 {
   name       = avd_obstacles
   pwt        = 425
@@ -114,7 +114,8 @@ Behavior = BHV_AvoidObstacle
     //poly = pts={40,-100:40,-120:80,-120:80,-100}, label=one
 
     poly = label=golf,format=ellipse,x=60, y=-105, degs=90, pts=20, snap=1, major=50, minor=10
-
+   use_refinery = true
+	
      allowable_ttc = 60 
     pwt_outer_dist = 35
     pwt_inner_dist = 15
