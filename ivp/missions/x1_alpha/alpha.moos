@@ -13,9 +13,6 @@ MOOSTimeWarp = 1
 LatOrigin  = 43.825300 
 LongOrigin = -70.330400 
 
-//LatOrigin  = 62.0000 
-//LongOrigin = -37.5000 
-
 // MIT Sailing Pavilion (use this one)
 // LatOrigin  = 42.358456 
 // LongOrigin = -71.087589
@@ -30,12 +27,12 @@ ProcessConfig = ANTLER
 
   Run = MOOSDB		    @ NewConsole = false
   Run = pLogger       @ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
   Run = uSimMarine	  @ NewConsole = false
+  Run = pNodeReporter	@ NewConsole = false
   Run = pMarinePID	  @ NewConsole = false
   Run = pHelmIvP	    @ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
-  Run = pNodeReporter	@ NewConsole = false
   Run = pRealm        @ NewConsole = false
 }
 
@@ -90,6 +87,7 @@ ProcessConfig = pLogger
   // explicitly declare their logging request
 
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
+  Log = APP_LOG @ 0 NOSYNC
 
   file = alpha
 
@@ -129,11 +127,15 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  term_report_interval=0
+  term_report_interval = 0
 
+	app_logging = log
+	
   bhv_dir_not_found_ok = true
   //ivp_behavior_dir = /Users/ddmikerb
 
+	verbose = terse
+	
   behaviors  = alpha.bhv
   domain     = course:0:359:360
   domain     = speed:0:4:21
@@ -150,30 +152,30 @@ ProcessConfig = pMarinePID
   max_sat_hdg_debug = false
   max_sat_spd_debug = true
 
-  VERBOSE       = true
-  DEPTH_CONTROL = false
+  verbose       = true
+  depth_control = false
 
   // SIM_INSTABILITY = 20
 
   // Yaw PID controller
-  YAW_PID_KP		 = 1.2
-  YAW_PID_KD		 = 0.0
-  YAW_PID_KI		 = 0.3
-  YAW_PID_INTEGRAL_LIMIT = 0.07
+  yaw_pid_kp		 = 1.2
+  yaw_pid_kd		 = 0.0
+  yaw_pid_ki		 = 0.3
+  yaw_pid_integral_limit = 0.07
 
   // Speed PID controller
-  SPEED_PID_KP		 = 1.0
-  SPEED_PID_KD		 = 0.0
-  SPEED_PID_KI		 = 0.0
-  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  speed_pid_kp		 = 1.0
+  speed_pid_kd		 = 0.0
+  speed_pid_ki		 = 0.0
+  speed_pid_integral_limit = 0.07
 
   //MAXIMUMS
-  MAXRUDDER    = 100
-  MAXTHRUST    = 100
+  maxrudder    = 100
+  maxthrust    = 100
 
   // A non-zero SPEED_FACTOR overrides use of SPEED_PID
   // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
-  SPEED_FACTOR = 20
+  speed_factor = 20
 }
 
 //------------------------------------------
