@@ -84,9 +84,12 @@ ProcessConfig = pNodeReporter
 
   platform_type   = kayak
   platform_length = 3
+  platform_group  = normal
 
   alt_nav_prefix = NAV_GT
-}
+	alt_nav_group  = gnd_truth
+
+	}
 //------------------------------------------
 // pMarinePID config block
 
