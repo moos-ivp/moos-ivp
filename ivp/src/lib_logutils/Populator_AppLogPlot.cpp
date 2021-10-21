@@ -38,11 +38,6 @@ bool Populator_AppLogPlot::populateFromEntries(const vector<ALogEntry>& entries)
   if(entries.size() == 0)
     return(false);
 
-  cout << "******    ******    ******    ******    ******    ******    " << endl;
-  cout << "    ******    ******    ******    ******    ******    " << endl;
-  cout << "Populator_AppLogPlot::populateFromEntries()" << endl;
-  cout << "Number of entries: " << entries.size() << endl;
-  
   AppLogPlot alplot;
   
   for(unsigned int i=0; i<entries.size(); i++) {
@@ -74,7 +69,6 @@ bool Populator_AppLogPlot::populateFromEntries(const vector<ALogEntry>& entries)
   }
 
   m_alplot = alplot;
-  cout << "Populator_AppLogPlot::populateFromEntries() size:" << alplot.size() << endl;
   
   return(true);
 }

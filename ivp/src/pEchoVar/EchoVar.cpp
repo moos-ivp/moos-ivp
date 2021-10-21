@@ -78,7 +78,7 @@ bool EchoVar::OnNewMail(MOOSMSG_LIST &NewMail)
 
   // If the logic conditions are not satisfied, ignore the rest of 
   // the mail.
-  m_conditions_met = m_logic_buffer.checkConditions();
+  //m_conditions_met = m_logic_buffer.checkConditions();
 
   if((!m_conditions_met)  && !m_hold_messages_during_pause)
     return(true);

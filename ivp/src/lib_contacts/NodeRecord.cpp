@@ -316,8 +316,11 @@ string NodeRecord::getLoadWarning(string default_warning) const
 
 bool NodeRecord::valid() const
 {
+  if(valid("name,x,y,speed,heading"))
+    return(true);
+  
   string why;
-  return(valid("name,x,y,speed,heading", why));
+  return(valid("name,lat,lon,speed,heading", why));
 }
 
 //---------------------------------------------------------------

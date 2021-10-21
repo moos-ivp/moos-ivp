@@ -356,11 +356,8 @@ void GUI_AppLogScope::updateMutableTextSize(string val)
 //----------------------------------------- UpdateBrowser
 void GUI_AppLogScope::updateBrowser()
 {
-  cout << "==============================================================" << endl;
-  cout << "In GUI_AppLogScope::updateBrowser!!!!!!!!!!" << endl;
   m_brw_info->clear();
   vector<string> pvector = m_alsmodel.getNowLines();
-  cout << "Number of lines:" << pvector.size() << endl;
   for(unsigned i=0; i<pvector.size(); i++) {
     m_brw_info->add(pvector[i].c_str());
   }

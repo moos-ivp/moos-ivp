@@ -34,6 +34,7 @@ class AppLogEntry
   virtual ~AppLogEntry() {}
 
   // Setters
+  void setIteration(unsigned int ival)                {m_iteration=ival;}
   void setAppLogLines(std::vector<std::string> lines) {m_lines=lines;}
   
   // Getters
@@ -46,7 +47,8 @@ class AppLogEntry
 
   std::vector<std::string> getLines() const {return(m_lines);}
 
-  bool valid() const {return(m_lines.size() != 0);}
+  //bool valid() const {return(m_lines.size() != 0);}
+  bool valid() const {return(true);}
   
 private:
   double       m_tstamp;
