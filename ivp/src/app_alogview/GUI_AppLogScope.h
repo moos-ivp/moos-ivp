@@ -70,6 +70,12 @@ private:
   inline void cb_ButtonTruncate_i(int);
   static void cb_ButtonTruncate(Fl_Widget*, int);
 
+  inline void cb_ButtonSeparate_i(int);
+  static void cb_ButtonSeparate(Fl_Widget*, int);
+
+  inline void cb_ButtonWrapLine_i(int);
+  static void cb_ButtonWrapLine(Fl_Widget*, int);
+
   inline void cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
 
@@ -82,6 +88,8 @@ protected:
   Fl_Output   *m_fld_time;
 
   Fl_Check_Button *m_but_truncate;
+  Fl_Check_Button *m_but_separate;
+  Fl_Check_Button *m_but_wrapline;
 
   Fl_Browser *m_brw_info;
 

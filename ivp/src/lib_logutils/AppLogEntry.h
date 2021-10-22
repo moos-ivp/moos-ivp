@@ -44,8 +44,11 @@ class AppLogEntry
   std::string  getAppName() const   {return(m_appname);}
   unsigned int getIteration() const {return(m_iteration);}
   std::string  getLine(unsigned int) const;
+  std::string  getTruncLine(unsigned int) const;
 
   std::vector<std::string> getLines() const {return(m_lines);}
+  std::vector<std::string> getTruncLines();
+  std::vector<std::string> getWrapLines();
 
   //bool valid() const {return(m_lines.size() != 0);}
   bool valid() const {return(true);}

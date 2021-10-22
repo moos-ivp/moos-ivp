@@ -38,7 +38,43 @@ string AppLogEntry::getLine(unsigned int ix) const
 }
 
 //----------------------------------------------------------------
-// Procedure: setAppLogEntry()
+// Procedure: getTruncLine()
+
+string AppLogEntry::getTruncLine(unsigned int ix) const
+{
+  if(ix >= m_lines.size())
+    return("");
+  return(truncString(m_lines[ix],80));
+}
+
+//----------------------------------------------------------------
+// Procedure: getTruncLines()
+
+vector<string> AppLogEntry::getTruncLines()
+{
+  vector<string> trunc_lines;
+  for(unsigned int i=0; i<m_lines.size(); i++) {
+    string str = truncString(m_lines[i], 80);
+    trunc_lines.push_back(str);
+  }
+  return(trunc_lines);
+}
+
+//----------------------------------------------------------------
+// Procedure: getWrapLines()
+
+vector<string> AppLogEntry::getWrapLines()
+{
+  vector<string> all_lines;
+  for(unsigned int i=0; i<m_lines.size(); i++) {
+    vector<string> wrap_strings = breakLen(m_lines[i], 70);
+    all_lines = mergeVectors(all_lines, wrap_strings);
+  }
+  return(all_lines);
+}
+
+//----------------------------------------------------------------
+// Procedure: stringtoAppLogEntry()
 //   Example: APP_LOG = "iter=23,log=line!@#line!@#...!@#line"
 
 AppLogEntry stringToAppLogEntry(string raw, bool verbose)
@@ -74,7 +110,4 @@ AppLogEntry stringToAppLogEntry(string raw, bool verbose)
 
   return(good_entry);
 }
-
-
-
 

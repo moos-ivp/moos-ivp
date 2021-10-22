@@ -68,6 +68,8 @@ GUI_AppLogScope::~GUI_AppLogScope()
     delete(m_fld_time);
   if(m_but_truncate)  
     delete(m_but_truncate);
+  if(m_but_separate)  
+    delete(m_but_separate);
   if(m_brw_info)
     delete(m_brw_info);
 }
@@ -77,7 +79,8 @@ GUI_AppLogScope::~GUI_AppLogScope()
 
 void GUI_AppLogScope::initWidgets()
 {
-  Fl_Color fcolor2 = fl_rgb_color(190, 255, 190); // green
+  Fl_Color fcolor2 = fl_rgb_color(190, 235, 210); // green
+  //Fl_Color fcolor2 = fl_rgb_color(190, 255, 190); // green
   //Fl_Color fcolor3 = fl_rgb_color(245, 245, 170); // yellow
   //Fl_Color fcolor4 = fl_rgb_color(225, 170, 170); // red
   Fl_Color bcolor = fl_rgb_color(0, 0, 120);     // dark blue
@@ -96,6 +99,18 @@ void GUI_AppLogScope::initWidgets()
   m_but_truncate->callback((Fl_Callback*)GUI_AppLogScope::cb_ButtonTruncate, (void*)0);
   m_but_truncate->clear_visible_focus();
   m_but_truncate->value(0);
+
+  m_but_separate = new Fl_Check_Button(0, 0, 0, 0, "separate");
+  m_but_separate->labelcolor(bcolor);
+  m_but_separate->callback((Fl_Callback*)GUI_AppLogScope::cb_ButtonSeparate, (void*)0);
+  m_but_separate->clear_visible_focus();
+  m_but_separate->value(0);
+
+  m_but_wrapline = new Fl_Check_Button(0, 0, 0, 0, "wrapline");
+  m_but_wrapline->labelcolor(bcolor);
+  m_but_wrapline->callback((Fl_Callback*)GUI_AppLogScope::cb_ButtonWrapLine, (void*)0);
+  m_but_wrapline->clear_visible_focus();
+  m_but_wrapline->value(0);
 
   m_fld_time = new Fl_Output(0, 0, 0, 0, "Time:"); 
   m_fld_time->clear_visible_focus();
@@ -122,6 +137,18 @@ void GUI_AppLogScope::resizeWidgetsShape()
   int trunc_hgt = 20;
   m_but_truncate->resize(trunc_x, trunc_y, trunc_wid, trunc_hgt);
 
+  int sep_x = 150;
+  int sep_y = 30; 
+  int sep_wid = 50;
+  int sep_hgt = 20;
+  m_but_separate->resize(sep_x, sep_y, sep_wid, sep_hgt);
+
+  int wrp_x = sep_x + sep_wid + 30;
+  int wrp_y = 30; 
+  int wrp_wid = 50;
+  int wrp_hgt = 20;
+  m_but_wrapline->resize(wrp_x, wrp_y, wrp_wid, wrp_hgt);
+
   int y_info = total_dat_hgt;
   int h_info = total_brw_hgt;
   m_brw_info->resize(lmarg, y_info, bwid, h_info); 
@@ -139,6 +166,8 @@ void GUI_AppLogScope::resizeWidgetsText()
   m_brw_info->labelsize(m_mutable_text_size);
 
   m_but_truncate->labelsize(blab_size);
+  m_but_separate->labelsize(blab_size);
+  m_but_wrapline->labelsize(blab_size);
 
   m_fld_time->textsize(m_mutable_text_size); 
   m_fld_time->labelsize(m_mutable_text_size);
@@ -259,32 +288,35 @@ void GUI_AppLogScope::cb_BrowserInfo(Fl_Widget* o) {
 
 //----------------------------------------- ButtonTruncate
 inline void GUI_AppLogScope::cb_ButtonTruncate_i(int v) {
-#if 0
-  if(v == 0) {
-    bool show = m_but_vname->value();
-    m_vsmodel.setShowVName(show);
-  }
-  else if(v == 1) {
-    bool show = m_but_varname->value();
-    m_vsmodel.setShowVarName(show);
-  }
-  else if(v == 2) {
-    bool show = m_but_source->value();
-    m_vsmodel.setShowSource(show);
-  }
-  else if(v == 3) {
-    bool show = m_but_srcaux->value();
-    m_vsmodel.setShowSrcAux(show);
-  }
-  else
-    return;
+  bool trunc = m_but_truncate->value();
+  m_alsmodel.setTruncateVal(trunc);
 
-  m_vsmodel.reformat();  
   updateBrowser();
-#endif
 }
 void GUI_AppLogScope::cb_ButtonTruncate(Fl_Widget* o, int val) {
   ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ButtonTruncate_i(val);
+}
+
+//----------------------------------------- ButtonSeparate
+inline void GUI_AppLogScope::cb_ButtonSeparate_i(int v) {
+  bool sep = m_but_separate->value();
+  m_alsmodel.setShowSeparator(sep);
+
+  updateBrowser();
+}
+void GUI_AppLogScope::cb_ButtonSeparate(Fl_Widget* o, int val) {
+  ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ButtonSeparate_i(val);
+}
+
+//----------------------------------------- ButtonWrapLine
+inline void GUI_AppLogScope::cb_ButtonWrapLine_i(int v) {
+  bool wrap = m_but_wrapline->value();
+  m_alsmodel.setWrapVal(wrap);
+
+  updateBrowser();
+}
+void GUI_AppLogScope::cb_ButtonWrapLine(Fl_Widget* o, int val) {
+  ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ButtonWrapLine_i(val);
 }
 
 //----------------------------------------- Step
@@ -357,13 +389,13 @@ void GUI_AppLogScope::updateMutableTextSize(string val)
 void GUI_AppLogScope::updateBrowser()
 {
   m_brw_info->clear();
-  vector<string> pvector = m_alsmodel.getNowLines();
-  for(unsigned i=0; i<pvector.size(); i++) {
-    m_brw_info->add(pvector[i].c_str());
-  }
+
+  bool show_sep = m_alsmodel.getShowSeparator();
+  
+  vector<string> pvector = m_alsmodel.getLinesUpToNow(show_sep);
+  for(unsigned i=0; i<pvector.size(); i++) 
+      m_brw_info->add(pvector[i].c_str());
+
   m_brw_info->bottomline(m_brw_info->size());
 }
-
-
-
 

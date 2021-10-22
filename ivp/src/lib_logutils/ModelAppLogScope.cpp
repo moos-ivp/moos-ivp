@@ -36,6 +36,11 @@ using namespace std;
 ModelAppLogScope::ModelAppLogScope()
 {
   m_curr_time = 0;
+
+  m_grep           = "";
+  m_wrap           = false;
+  m_truncate       = false;
+  m_show_separator = false;
 }
 
 //-------------------------------------------------------------
@@ -70,19 +75,66 @@ vector<string> ModelAppLogScope::getNowLines() const
 
 
 //-------------------------------------------------------------
-// Procedure: getPrevLines()
+// Procedure: getLinesUpToNow()
 
-vector<string> ModelAppLogScope::getPrevLines() const
+vector<string> ModelAppLogScope::getLinesUpToNow(bool separator) const
 {
-  cout << "ModelAppLogScope::getPrevLines() " << endl;
+  cout << "ModelAppLogScope::getLinesUpToNow() " << endl;
   cout << "alplot size: " << m_alplot.size() << endl;
-  AppLogEntry entry = m_alplot.getEntryByTime(m_curr_time);
+  vector<AppLogEntry> entries = m_alplot.getEntriesUpToTime(m_curr_time);
 
-  vector<string> rvector = entry.getLines();
-  
-  return(rvector);
+  vector<string> all_lines;
+  for(unsigned int i=0; i<entries.size(); i++) {  
+    if(separator)
+      all_lines.push_back("===================================== " + uintToString(i));
+    
+    vector<string> lines;
+    if(m_wrap)
+      lines = entries[i].getWrapLines();
+    else if(m_truncate)
+      lines = entries[i].getTruncLines();
+    else
+      lines = entries[i].getLines();
+
+    if(m_grep != "") {
+      vector<string> grep_lines;
+      for(unsigned int j=0; j<lines.size(); j++) {
+	if(strContains(lines[j], m_grep))
+	  grep_lines.push_back(lines[j]);
+      }
+      lines = grep_lines;
+    }
+	
+    all_lines = mergeVectors(all_lines, lines);
+  }
+    
+  return(all_lines);
 }
 
 
 
+//-------------------------------------------------------------
+// Procedure: getLinesPastNow()
 
+vector<string> ModelAppLogScope::getLinesPastNow(bool separator) const
+{
+  cout << "ModelAppLogScope::getLinesPastNow() " << endl;
+  cout << "alplot size: " << m_alplot.size() << endl;
+  vector<AppLogEntry> entries = m_alplot.getEntriesPastTime(m_curr_time);
+
+  vector<string> all_lines;
+  for(unsigned int i=0; i<entries.size(); i++) {  
+    if(separator)
+      all_lines.push_back("===================================== " + uintToString(i));
+    vector<string> lines;
+    if(m_wrap)
+      lines = entries[i].getWrapLines();
+    else if(m_truncate)
+      lines = entries[i].getTruncLines();
+    else
+      lines = entries[i].getLines();
+    all_lines = mergeVectors(all_lines, lines);
+  }
+    
+  return(all_lines);
+}

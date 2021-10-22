@@ -37,19 +37,31 @@ class ModelAppLogScope
   // Setters
   void   setTime(double tstamp);
   void   setAppLogPlot(const AppLogPlot&);
+  void   setShowSeparator(bool v)  {m_show_separator=v;}
+  void   setTruncateVal(bool v)    {m_truncate=v;}
+  void   setWrapVal(bool v)        {m_wrap=v;}
+  void   setGrepStr(std::string s) {m_grep=s;}
 
   // Getters
-  double        getCurrTime() const {return(m_curr_time);}
-  //unsigned int  getAppLogPlotSize(std::string) const;
+  double        getCurrTime() const      {return(m_curr_time);}
+  bool          getShowSeparator() const {return(m_show_separator);}
+  bool          getTruncateVal() const   {return(m_truncate);}
+  bool          getWrapVal() const       {return(m_wrap);}
+  std::string   getGrepStr() const       {return(m_grep);}
 
-  std::vector<std::string>  getPrevLines() const;
-  std::vector<std::string>  getFutureLines() const;
-
+  std::vector<std::string>  getLinesUpToNow(bool sep=false) const;
+  std::vector<std::string>  getLinesPastNow(bool sep=false) const;
   std::vector<std::string>  getNowLines() const;
  
 private:
   double      m_curr_time;
   AppLogPlot  m_alplot;
+
+  bool        m_show_separator;
+  bool        m_truncate;
+  bool        m_wrap;
+
+  std::string m_grep;
   
   // Vehicle name and app_name stay constant once it is set initially
   std::string m_vname; 
@@ -57,7 +69,4 @@ private:
 };
 
 #endif
-
-
-
 
