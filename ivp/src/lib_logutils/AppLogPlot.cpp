@@ -49,21 +49,6 @@ AppLogEntry AppLogPlot::getEntryByIndex(unsigned int ix) const
 }
 
 
-//----------------------------------------------------------------
-// Procedure: getEntryByTime()
-
-AppLogEntry AppLogPlot::getEntryByTime(double gtime) const
-{
-  AppLogEntry null_entry;
-  if(!containsTime(gtime))
-    return(null_entry);
-
-  unsigned int ix = getIndexByTime(m_time, gtime);
-  return(m_entries[ix]);
-}
-
-
-
 //---------------------------------------------------------------
 // Procedure: containsTime()
 
@@ -79,4 +64,52 @@ bool AppLogPlot::containsTime(double gtime) const
   return(true);
 }
      
+
+//----------------------------------------------------------------
+// Procedure: getEntryByTime()
+
+AppLogEntry AppLogPlot::getEntryByTime(double gtime) const
+{
+  AppLogEntry null_entry;
+  if(!containsTime(gtime))
+    return(null_entry);
+
+  unsigned int ix = getIndexByTime(m_time, gtime);
+  return(m_entries[ix]);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: getEntriesUpToTime()
+
+vector<AppLogEntry> AppLogPlot::getEntriesUpToTime(double gtime) const
+{
+  vector<AppLogEntry> entries;
+
+  if(!containsTime(gtime))
+    return(entries);
+
+  unsigned int now_index = getIndexByTime(m_time, gtime);
+  for(unsigned int i=0; i<=now_index; i++) 
+    entries.push_back(m_entries[i]);
+
+  return(entries);
+}
+
+//----------------------------------------------------------------
+// Procedure: getEntriesPastTime()
+
+vector<AppLogEntry> AppLogPlot::getEntriesPastTime(double gtime) const
+{
+  vector<AppLogEntry> entries;
+
+  if(!containsTime(gtime))
+    return(entries);
+
+  unsigned int now_index = getIndexByTime(m_time, gtime);
+  for(unsigned int i=now_index+1; i<m_entries.size(); i++) 
+    entries.push_back(m_entries[i]);
+
+  return(entries);
+}
 

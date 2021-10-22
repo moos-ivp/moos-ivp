@@ -41,7 +41,10 @@ class ModelAppLogScope
   // Getters
   double        getCurrTime() const {return(m_curr_time);}
   //unsigned int  getAppLogPlotSize(std::string) const;
-  
+
+  std::vector<std::string>  getPrevLines() const;
+  std::vector<std::string>  getFutureLines() const;
+
   std::vector<std::string>  getNowLines() const;
  
 private:

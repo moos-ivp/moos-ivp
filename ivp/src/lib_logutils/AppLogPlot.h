@@ -51,6 +51,9 @@ class AppLogPlot
   AppLogEntry  getEntryByIndex(unsigned int index) const;
   AppLogEntry  getEntryByTime(double gtime) const;
 
+  std::vector<AppLogEntry> getEntriesUpToTime(double gtime) const;
+  std::vector<AppLogEntry> getEntriesPastTime(double gtime) const;
+  
 private:
   std::string m_vname;
   std::string m_app_name;

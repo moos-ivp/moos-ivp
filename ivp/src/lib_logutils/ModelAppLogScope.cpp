@@ -63,7 +63,21 @@ vector<string> ModelAppLogScope::getNowLines() const
   cout << "alplot size: " << m_alplot.size() << endl;
   AppLogEntry entry = m_alplot.getEntryByTime(m_curr_time);
 
+  vector<string> rvector = entry.getLines();
   
+  return(rvector);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: getPrevLines()
+
+vector<string> ModelAppLogScope::getPrevLines() const
+{
+  cout << "ModelAppLogScope::getPrevLines() " << endl;
+  cout << "alplot size: " << m_alplot.size() << endl;
+  AppLogEntry entry = m_alplot.getEntryByTime(m_curr_time);
+
   vector<string> rvector = entry.getLines();
   
   return(rvector);
