@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <FL/fl_ask.H>
 #include <cstdio>
 #include <cstdlib>
 #include <iostream>
@@ -64,14 +65,39 @@ GUI_AppLogScope::GUI_AppLogScope(int g_w, int g_h, const char *g_l)
 
 GUI_AppLogScope::~GUI_AppLogScope()
 {
+  // Fields
   if(m_fld_time)      
     delete(m_fld_time);
+  if(m_fld_grep1)      
+    delete(m_fld_grep1);
+  if(m_fld_grep2)      
+    delete(m_fld_grep2);
+
+  // Check-box buttons
   if(m_but_truncate)  
     delete(m_but_truncate);
   if(m_but_separate)  
     delete(m_but_separate);
-  if(m_brw_info)
-    delete(m_brw_info);
+  if(m_but_wrapline)  
+    delete(m_but_wrapline);
+  if(m_but_future)  
+    delete(m_but_future);
+  if(m_but_apply_grep1)  
+    delete(m_but_apply_grep1);
+  if(m_but_apply_grep2)  
+    delete(m_but_apply_grep2);
+
+  // Standard buttons
+  if(m_but_mod_grep1)
+    delete(m_but_mod_grep1);
+  if(m_but_mod_grep2)
+    delete(m_but_mod_grep2);
+
+  // Main content browser
+  if(m_brw_info1)
+    delete(m_brw_info1);
+  if(m_brw_info2)
+    delete(m_brw_info2);
 }
 
 //---------------------------------------------------------------------------
@@ -84,15 +110,19 @@ void GUI_AppLogScope::initWidgets()
   //Fl_Color fcolor3 = fl_rgb_color(245, 245, 170); // yellow
   //Fl_Color fcolor4 = fl_rgb_color(225, 170, 170); // red
   Fl_Color bcolor = fl_rgb_color(0, 0, 120);     // dark blue
-  //Fl_Color bcolor_gray = fl_rgb_color(200, 220, 200); // light blueish gray
+  Fl_Color bcolor_gray = fl_rgb_color(200, 220, 200); // light blueish gray
 
-  m_brw_info = new Fl_Browser(0, 0, 1, 1); 
-  m_brw_info->align(FL_ALIGN_LEFT);
-  m_brw_info->color(fcolor2);
-  m_brw_info->tooltip("Terminal Output");
-  m_brw_info->callback((Fl_Callback*)GUI_AppLogScope::cb_BrowserInfo);
-  m_brw_info->when(FL_WHEN_RELEASE);
-  m_brw_info->textfont(FL_COURIER_BOLD);
+  //==========================================================
+  // Row 1
+  //==========================================================
+  m_fld_time = new Fl_Output(0, 0, 0, 0, "Time:"); 
+  m_fld_time->clear_visible_focus();
+
+  m_but_separate = new Fl_Check_Button(0, 0, 0, 0, "Separate");
+  m_but_separate->labelcolor(bcolor);
+  m_but_separate->callback((Fl_Callback*)GUI_AppLogScope::cb_ButtonSeparate, (void*)0);
+  m_but_separate->clear_visible_focus();
+  m_but_separate->value(0);
 
   m_but_truncate = new Fl_Check_Button(0, 0, 0, 0, "Truncate");
   m_but_truncate->labelcolor(bcolor);
@@ -100,20 +130,69 @@ void GUI_AppLogScope::initWidgets()
   m_but_truncate->clear_visible_focus();
   m_but_truncate->value(0);
 
-  m_but_separate = new Fl_Check_Button(0, 0, 0, 0, "separate");
-  m_but_separate->labelcolor(bcolor);
-  m_but_separate->callback((Fl_Callback*)GUI_AppLogScope::cb_ButtonSeparate, (void*)0);
-  m_but_separate->clear_visible_focus();
-  m_but_separate->value(0);
-
-  m_but_wrapline = new Fl_Check_Button(0, 0, 0, 0, "wrapline");
+  m_but_wrapline = new Fl_Check_Button(0, 0, 0, 0, "Wrapline");
   m_but_wrapline->labelcolor(bcolor);
   m_but_wrapline->callback((Fl_Callback*)GUI_AppLogScope::cb_ButtonWrapLine, (void*)0);
   m_but_wrapline->clear_visible_focus();
   m_but_wrapline->value(0);
 
-  m_fld_time = new Fl_Output(0, 0, 0, 0, "Time:"); 
-  m_fld_time->clear_visible_focus();
+  m_but_future = new Fl_Check_Button(0, 0, 0, 0, "Future");
+  m_but_future->labelcolor(bcolor);
+  m_but_future->callback((Fl_Callback*)GUI_AppLogScope::cb_ButtonFuture, (void*)0);
+  m_but_future->clear_visible_focus();
+  m_but_future->value(0);
+
+  //==========================================================
+  // Row 2: First Grep option
+  //==========================================================
+  m_fld_grep1 = new Fl_Output(0, 0, 0, 0, "Grep1:"); 
+  m_fld_grep1->clear_visible_focus();
+
+  m_but_mod_grep1 = new Fl_Button(0, 0, 0, 0, "Modify");
+  m_but_mod_grep1->clear_visible_focus();
+  m_but_mod_grep1->callback((Fl_Callback*)GUI_AppLogScope::cb_ModGrep, (void*)1);
+
+  m_but_apply_grep1 = new Fl_Check_Button(0, 0, 0, 0, "ApplyGrep1");
+  m_but_apply_grep1->labelcolor(bcolor);
+  m_but_apply_grep1->callback((Fl_Callback*)GUI_AppLogScope::cb_ButtonApplyGrep, (void*)1);
+  m_but_apply_grep1->clear_visible_focus();
+  m_but_apply_grep1->value(0);
+
+  //==========================================================
+  // Row 3: Second Grep option
+  //==========================================================
+  m_but_apply_grep2 = new Fl_Check_Button(0, 0, 0, 0, "ApplyGrep2");
+  m_but_apply_grep2->labelcolor(bcolor);
+  m_but_apply_grep2->callback((Fl_Callback*)GUI_AppLogScope::cb_ButtonApplyGrep, (void*)2);
+  m_but_apply_grep2->clear_visible_focus();
+  m_but_apply_grep2->value(0);
+
+  m_fld_grep2 = new Fl_Output(0, 0, 0, 0, "Grep2:"); 
+  m_fld_grep2->clear_visible_focus();
+
+  m_but_mod_grep2 = new Fl_Button(0, 0, 0, 0, "Modify");
+  m_but_mod_grep2->clear_visible_focus();
+  m_but_mod_grep2->callback((Fl_Callback*)GUI_AppLogScope::cb_ModGrep, (void*)2);
+
+  //==========================================================
+  // Row 4/5 Browser panels
+  //==========================================================
+  m_brw_info1 = new Fl_Browser(0, 0, 1, 1); 
+  m_brw_info1->align(FL_ALIGN_LEFT);
+  m_brw_info1->color(fcolor2);
+  m_brw_info1->tooltip("Terminal Output Now/Past");
+  m_brw_info1->callback((Fl_Callback*)GUI_AppLogScope::cb_BrowserInfo);
+  m_brw_info1->when(FL_WHEN_RELEASE);
+  m_brw_info1->textfont(FL_COURIER_BOLD);
+
+  m_brw_info2 = new Fl_Browser(0, 0, 1, 1); 
+  m_brw_info2->align(FL_ALIGN_LEFT);
+  m_brw_info2->color(bcolor_gray);
+  m_brw_info2->tooltip("Terminal Output Future");
+  m_brw_info2->callback((Fl_Callback*)GUI_AppLogScope::cb_BrowserInfo);
+  m_brw_info2->when(FL_WHEN_RELEASE);
+  m_brw_info2->textfont(FL_COURIER_BOLD);
+
 }
 
 //---------------------------------------------------------------------------
@@ -124,36 +203,99 @@ void GUI_AppLogScope::resizeWidgetsShape()
   // General params
   int lmarg = 10;
   int rmarg = 10;
+  int row1  = 5;
+  int row2  = 30;
+  int row3  = 55;
+    
   int bwid  = w() - (lmarg + rmarg);
-  int total_dat_hgt = 70;
-  int total_brw_hgt = h() - total_dat_hgt;
+  int total_dat_hgt = 90;
+  int total_brw_hgt = h() - total_dat_hgt - 5;
 
   // Part 1: Set top row: time, add, set, remove buttons
-  m_fld_time->resize(40, 5, 95, 20);
-
-  int trunc_x = 150;
-  int trunc_y = 5; 
-  int trunc_wid = ((w()-155) / 3) - 5;
-  int trunc_hgt = 20;
-  m_but_truncate->resize(trunc_x, trunc_y, trunc_wid, trunc_hgt);
+  m_fld_time->resize(40, row1, 95, 20);
 
   int sep_x = 150;
-  int sep_y = 30; 
+  int sep_y = row1; 
   int sep_wid = 50;
   int sep_hgt = 20;
   m_but_separate->resize(sep_x, sep_y, sep_wid, sep_hgt);
 
-  int wrp_x = sep_x + sep_wid + 30;
-  int wrp_y = 30; 
+  int trunc_x = sep_x + sep_wid + 25;
+  int trunc_y = row1; 
+  int trunc_wid = 50;
+  int trunc_hgt = 20;
+  m_but_truncate->resize(trunc_x, trunc_y, trunc_wid, trunc_hgt);
+
+  int wrp_x = trunc_x + trunc_wid + 25;
+  int wrp_y = row1; 
   int wrp_wid = 50;
   int wrp_hgt = 20;
   m_but_wrapline->resize(wrp_x, wrp_y, wrp_wid, wrp_hgt);
 
-  int y_info = total_dat_hgt;
-  int h_info = total_brw_hgt;
-  m_brw_info->resize(lmarg, y_info, bwid, h_info); 
-  m_brw_info->bottomline(m_brw_info->size());
+  int fut_x = wrp_x + wrp_wid + 25;
+  int fut_y = row1; 
+  int fut_wid = 50;
+  int fut_hgt = 20;
+  m_but_future->resize(fut_x, fut_y, fut_wid, fut_hgt);
+
+  // Row 2: First Grep Field
+  m_fld_grep1->resize(40, row2, 95, 20);
+
+  int mgr1_x = sep_x;
+  int mgr1_y = row2; 
+  int mgr1_wid = 40;
+  int mgr1_hgt = 20;
+  m_but_mod_grep1->resize(mgr1_x, mgr1_y, mgr1_wid, mgr1_hgt);
+
+  int bag1_x = mgr1_x + mgr1_wid + 10;
+  int bag1_y = row2; 
+  int bag1_wid = 50;
+  int bag1_hgt = 20;
+  m_but_apply_grep1->resize(bag1_x, bag1_y, bag1_wid, bag1_hgt);
+  
+
+  // Row 3: Second Grep Field
+  m_fld_grep2->resize(40, row3, 95, 20);
+  
+  int mgr2_x = sep_x;
+  int mgr2_y = row3; 
+  int mgr2_wid = 40;
+  int mgr2_hgt = 20;
+  m_but_mod_grep2->resize(mgr2_x, mgr2_y, mgr2_wid, mgr2_hgt);
+
+  int bag2_x = mgr2_x + mgr2_wid + 10;
+  int bag2_y = row3; 
+  int bag2_wid = 50;
+  int bag2_hgt = 20;
+  m_but_apply_grep2->resize(bag2_x, bag2_y, bag2_wid, bag2_hgt);
+  
+
+  // Row 4/5: The browser Window(s)
+  if(m_alsmodel.getFutureVal() == false) {
+    int brw_x = lmarg;
+    int brw_y = total_dat_hgt;
+    int brw_wid = bwid;
+    int brw_hgt = total_brw_hgt;
+    m_brw_info1->resize(brw_x, brw_y, brw_wid, brw_hgt); 
+    m_brw_info1->bottomline(m_brw_info1->size());
+    m_brw_info2->resize(0, 0, 0, 0); 
+  }
+  else { 
+    int brw1_x = lmarg;
+    int brw1_y = total_dat_hgt;
+    int brw1_wid = bwid;
+    int brw1_hgt = total_brw_hgt/2 - 5;
+    m_brw_info1->resize(brw1_x, brw1_y, brw1_wid, brw1_hgt); 
+    m_brw_info1->bottomline(m_brw_info1->size());
+    int brw2_x = lmarg;
+    int brw2_y = brw1_y + brw1_hgt + 5;
+    int brw2_wid = bwid;
+    int brw2_hgt = total_brw_hgt/2 - 5;
+    m_brw_info2->resize(brw2_x, brw2_y, brw2_wid, brw2_hgt); 
+    m_brw_info2->bottomline(0);
+  }
 }
+
 
 //---------------------------------------------------------------------------
 // Procedure: resizeWidgetsText()
@@ -162,15 +304,30 @@ void GUI_AppLogScope::resizeWidgetsText()
 {
   int blab_size = 12; // blab=button_label size
 
-  m_brw_info->textsize(m_mutable_text_size); 
-  m_brw_info->labelsize(m_mutable_text_size);
+  m_brw_info1->textsize(m_mutable_text_size); 
+  m_brw_info1->labelsize(m_mutable_text_size);
+
+  m_brw_info2->textsize(m_mutable_text_size); 
+  m_brw_info2->labelsize(m_mutable_text_size);
 
   m_but_truncate->labelsize(blab_size);
   m_but_separate->labelsize(blab_size);
   m_but_wrapline->labelsize(blab_size);
+  m_but_future->labelsize(blab_size);
+  m_but_apply_grep1->labelsize(blab_size);
+  m_but_apply_grep2->labelsize(blab_size);
 
   m_fld_time->textsize(m_mutable_text_size); 
   m_fld_time->labelsize(m_mutable_text_size);
+
+  m_fld_grep1->textsize(m_mutable_text_size); 
+  m_fld_grep1->labelsize(m_mutable_text_size);
+
+  m_fld_grep2->textsize(m_mutable_text_size); 
+  m_fld_grep2->labelsize(m_mutable_text_size);
+
+  m_but_mod_grep1->labelsize(m_mutable_text_size);
+  m_but_mod_grep2->labelsize(m_mutable_text_size);
 }
 
 //-------------------------------------------------------------------
@@ -273,7 +430,7 @@ void GUI_AppLogScope::setCurrTime(double curr_time)
   if(m_alsmodel.getCurrTime() == curr_time)
     return;
   m_alsmodel.setTime(curr_time);
-  updateBrowser();
+  updateBrowsers();
   updateXY();
 }
 
@@ -291,7 +448,7 @@ inline void GUI_AppLogScope::cb_ButtonTruncate_i(int v) {
   bool trunc = m_but_truncate->value();
   m_alsmodel.setTruncateVal(trunc);
 
-  updateBrowser();
+  updateBrowsers();
 }
 void GUI_AppLogScope::cb_ButtonTruncate(Fl_Widget* o, int val) {
   ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ButtonTruncate_i(val);
@@ -302,7 +459,7 @@ inline void GUI_AppLogScope::cb_ButtonSeparate_i(int v) {
   bool sep = m_but_separate->value();
   m_alsmodel.setShowSeparator(sep);
 
-  updateBrowser();
+  updateBrowsers();
 }
 void GUI_AppLogScope::cb_ButtonSeparate(Fl_Widget* o, int val) {
   ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ButtonSeparate_i(val);
@@ -313,22 +470,80 @@ inline void GUI_AppLogScope::cb_ButtonWrapLine_i(int v) {
   bool wrap = m_but_wrapline->value();
   m_alsmodel.setWrapVal(wrap);
 
-  updateBrowser();
+  updateBrowsers();
 }
 void GUI_AppLogScope::cb_ButtonWrapLine(Fl_Widget* o, int val) {
   ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ButtonWrapLine_i(val);
+}
+
+//----------------------------------------- ButtonFuture
+inline void GUI_AppLogScope::cb_ButtonFuture_i(int v) {
+  bool future = m_but_future->value();
+  m_alsmodel.setFutureVal(future);
+
+  resizeWidgetsShape();
+  updateBrowsers();
+  updateXY();
+}
+void GUI_AppLogScope::cb_ButtonFuture(Fl_Widget* o, int val) {
+  ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ButtonFuture_i(val);
+}
+
+//----------------------------------------- ButtonApplyGrep
+inline void GUI_AppLogScope::cb_ButtonApplyGrep_i(int v) {
+  if(v==1) {
+    bool agrep = m_but_apply_grep1->value();
+    m_alsmodel.setGrepApply1(agrep);
+  }
+  if(v==2) {
+    bool agrep = m_but_apply_grep2->value();
+    m_alsmodel.setGrepApply2(agrep);
+  }
+
+  updateBrowsers();
+}
+void GUI_AppLogScope::cb_ButtonApplyGrep(Fl_Widget* o, int val) {
+  ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ButtonApplyGrep_i(val);
 }
 
 //----------------------------------------- Step
 inline void GUI_AppLogScope::cb_Step_i(int val) {
   if(m_parent_gui)
     m_parent_gui->steptime(val);
-  updateBrowser();
+  updateBrowsers();
   updateXY();
 }
 
 void GUI_AppLogScope::cb_Step(Fl_Widget* o, int val) {
   ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_Step_i(val);
+}
+
+//----------------------------------------- ModGrep
+inline void GUI_AppLogScope::cb_ModGrep_i(int val) {
+  if(val == 1) {
+    string curr_grepstr = m_alsmodel.getGrepStr1();
+    const char *str = fl_input("Enter grep1 string:", curr_grepstr.c_str());
+    if(str != 0) {
+      string new_str = stripBlankEnds(str);
+      if(!strContainsWhite(new_str)) 
+	m_alsmodel.setGrepStr1(new_str);
+    }
+  }
+  if(val == 2) {
+    string curr_grepstr = m_alsmodel.getGrepStr2();
+    const char *str = fl_input("Enter grep2 string:", curr_grepstr.c_str());
+    if(str != 0) {
+      string new_str = stripBlankEnds(str);
+      if(!strContainsWhite(new_str)) 
+	m_alsmodel.setGrepStr2(new_str);
+    }
+  }
+  updateBrowsers();
+  updateXY();
+}
+
+void GUI_AppLogScope::cb_ModGrep(Fl_Widget* o, int val) {
+  ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ModGrep_i(val);
 }
 
 //----------------------------------------- UpdateXY
@@ -340,7 +555,13 @@ void GUI_AppLogScope::updateXY()
   double vtime_loc = m_alsmodel.getCurrTime();
   string stime_loc = doubleToString(vtime_loc, 3);
   m_fld_time->value(stime_loc.c_str());
-
+  
+  string grep_str1 = m_alsmodel.getGrepStr1();
+  m_fld_grep1->value(grep_str1.c_str());
+  
+  string grep_str2 = m_alsmodel.getGrepStr2();
+  m_fld_grep2->value(grep_str2.c_str());
+  
   redraw();
 }
 
@@ -381,21 +602,39 @@ void GUI_AppLogScope::updateMutableTextSize(string val)
   else
     return;
   resizeWidgetsText();
-  updateBrowser();
+  updateBrowsers();
 }
 
 
-//----------------------------------------- UpdateBrowser
-void GUI_AppLogScope::updateBrowser()
+//----------------------------------------- UpdateBrowsers
+void GUI_AppLogScope::updateBrowsers()
 {
-  m_brw_info->clear();
+  m_brw_info1->clear();
+  m_brw_info2->clear();
 
-  bool show_sep = m_alsmodel.getShowSeparator();
-  
-  vector<string> pvector = m_alsmodel.getLinesUpToNow(show_sep);
+  updateBrowser1();
+  if(m_alsmodel.getFutureVal())
+    updateBrowser2();
+}
+
+//----------------------------------------- UpdateBrowser1
+void GUI_AppLogScope::updateBrowser1()
+{
+  vector<string> pvector = m_alsmodel.getLinesUpToNow();
   for(unsigned i=0; i<pvector.size(); i++) 
-      m_brw_info->add(pvector[i].c_str());
+      m_brw_info1->add(pvector[i].c_str());
 
-  m_brw_info->bottomline(m_brw_info->size());
+  m_brw_info1->bottomline(m_brw_info1->size());
+}
+
+//----------------------------------------- UpdateBrowser2
+void GUI_AppLogScope::updateBrowser2()
+{
+  vector<string> pvector = m_alsmodel.getLinesPastNow();
+  for(unsigned i=0; i<pvector.size(); i++) 
+      m_brw_info2->add(pvector[i].c_str());
+
+  m_brw_info2->bottomline(0);
+  //m_brw_info2->bottomline(m_brw_info1->size());
 }
 

@@ -37,10 +37,16 @@ ModelAppLogScope::ModelAppLogScope()
 {
   m_curr_time = 0;
 
-  m_grep           = "";
+  m_grep1          = "size";
+  m_grep2          = "";
   m_wrap           = false;
+  m_future         = false;
   m_truncate       = false;
   m_show_separator = false;
+  m_grep_apply1    = false;
+  m_grep_apply2    = false;
+
+  m_entries_upto_now_cnt = 0;
 }
 
 //-------------------------------------------------------------
@@ -77,37 +83,13 @@ vector<string> ModelAppLogScope::getNowLines() const
 //-------------------------------------------------------------
 // Procedure: getLinesUpToNow()
 
-vector<string> ModelAppLogScope::getLinesUpToNow(bool separator) const
+vector<string> ModelAppLogScope::getLinesUpToNow()
 {
   cout << "ModelAppLogScope::getLinesUpToNow() " << endl;
-  cout << "alplot size: " << m_alplot.size() << endl;
   vector<AppLogEntry> entries = m_alplot.getEntriesUpToTime(m_curr_time);
-
-  vector<string> all_lines;
-  for(unsigned int i=0; i<entries.size(); i++) {  
-    if(separator)
-      all_lines.push_back("===================================== " + uintToString(i));
     
-    vector<string> lines;
-    if(m_wrap)
-      lines = entries[i].getWrapLines();
-    else if(m_truncate)
-      lines = entries[i].getTruncLines();
-    else
-      lines = entries[i].getLines();
+  vector<string> all_lines = processLines(entries);
 
-    if(m_grep != "") {
-      vector<string> grep_lines;
-      for(unsigned int j=0; j<lines.size(); j++) {
-	if(strContains(lines[j], m_grep))
-	  grep_lines.push_back(lines[j]);
-      }
-      lines = grep_lines;
-    }
-	
-    all_lines = mergeVectors(all_lines, lines);
-  }
-    
   return(all_lines);
 }
 
@@ -116,23 +98,66 @@ vector<string> ModelAppLogScope::getLinesUpToNow(bool separator) const
 //-------------------------------------------------------------
 // Procedure: getLinesPastNow()
 
-vector<string> ModelAppLogScope::getLinesPastNow(bool separator) const
+vector<string> ModelAppLogScope::getLinesPastNow() const
 {
   cout << "ModelAppLogScope::getLinesPastNow() " << endl;
-  cout << "alplot size: " << m_alplot.size() << endl;
   vector<AppLogEntry> entries = m_alplot.getEntriesPastTime(m_curr_time);
 
+  vector<string> all_lines = processLines(entries, m_entries_upto_now_cnt);
+
+  return(all_lines);
+}
+
+
+
+//-------------------------------------------------------------
+// Procedure: processLines()
+//   Purpose: Do the work of converting all AppLogEntrie into a set of
+//            user consumable lines. Applying:
+//              a) separator lines if activated
+//              b) truncation and/or wrapping if activated
+//              c) Grep1 and Grep2 patterns if activated
+
+vector<string> ModelAppLogScope::processLines(vector<AppLogEntry> entries,
+					      unsigned int start_ctr) const
+{
   vector<string> all_lines;
   for(unsigned int i=0; i<entries.size(); i++) {  
-    if(separator)
-      all_lines.push_back("===================================== " + uintToString(i));
-    vector<string> lines;
+    unsigned int ctr = start_ctr + i;
+    if(m_show_separator)
+      all_lines.push_back("===================================== " + uintToString(ctr));
+
+    // Get the set of lines from this entry, possibly truncating
+    // and possibly wrapping if these features are activated.
+    vector<string> lines;    
     if(m_wrap)
       lines = entries[i].getWrapLines();
     else if(m_truncate)
       lines = entries[i].getTruncLines();
     else
       lines = entries[i].getLines();
+    
+    // Apply Grep 1 if activated
+    if((m_grep1 != "") && m_grep_apply1) {
+      vector<string> grep_lines;
+      for(unsigned int j=0; j<lines.size(); j++) {
+	if(strContains(lines[j], m_grep1))
+	  grep_lines.push_back(lines[j]);
+      }
+      lines = grep_lines;
+    }
+	
+    // Apply Grep 2 if activated
+    if((m_grep2 != "") && m_grep_apply2) {
+      vector<string> grep_lines;
+      for(unsigned int j=0; j<lines.size(); j++) {
+	if(strContains(lines[j], m_grep2))
+	  grep_lines.push_back(lines[j]);
+      }
+      lines = grep_lines;
+    }
+    
+    
     all_lines = mergeVectors(all_lines, lines);
   }
     

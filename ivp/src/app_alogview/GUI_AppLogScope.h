@@ -29,9 +29,9 @@
 #include <FL/Fl_Window.H>
 #include <FL/Fl_Menu_Bar.H>
 #include <FL/Fl_Check_Button.H>
+#include "FL/Fl_Button.H"
 #include <FL/Fl_Browser.H>
 #include <FL/Fl_Output.H>
-#include <FL/Fl_Menu_Button.H>
 #include "ModelAppLogScope.h"
 #include "ALogDataBroker.h"
 
@@ -59,10 +59,13 @@ public:
  protected:
   void resizeWidgetsShape();
   void resizeWidgetsText();
-  void updateBrowser();
+  void updateBrowsers();
   void updateXY();
   void updateMutableTextSize(std::string);
 
+  void updateBrowser1();
+  void updateBrowser2();
+  
 private:
   inline void cb_BrowserInfo_i();
   static void cb_BrowserInfo(Fl_Widget*);
@@ -76,30 +79,46 @@ private:
   inline void cb_ButtonWrapLine_i(int);
   static void cb_ButtonWrapLine(Fl_Widget*, int);
 
+  inline void cb_ButtonFuture_i(int);
+  static void cb_ButtonFuture(Fl_Widget*, int);
+
+  inline void cb_ModGrep_i(int);
+  static void cb_ModGrep(Fl_Widget*, int);
+
   inline void cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
+
+  inline void cb_ButtonApplyGrep_i(int);
+  static void cb_ButtonApplyGrep(Fl_Widget*, int);
 
  public:
   ModelAppLogScope m_alsmodel;
   REPLAY_GUI      *m_parent_gui;
   ALogDataBroker   m_dbroker;
 
-protected:
+ protected:
   Fl_Output   *m_fld_time;
+  Fl_Output   *m_fld_grep1;
+  Fl_Output   *m_fld_grep2;
 
   Fl_Check_Button *m_but_truncate;
   Fl_Check_Button *m_but_separate;
   Fl_Check_Button *m_but_wrapline;
+  Fl_Check_Button *m_but_future;
+  Fl_Check_Button *m_but_apply_grep1;
+  Fl_Check_Button *m_but_apply_grep2;
 
-  Fl_Browser *m_brw_info;
+  Fl_Browser *m_brw_info1;
+  Fl_Browser *m_brw_info2;
 
+  Fl_Button  *m_but_mod_grep1;
+  Fl_Button  *m_but_mod_grep2;
+  
   std::string m_replay_warp_msg;
   std::string m_vname;
   std::string m_app_name;
 
   int m_mutable_text_size;
-  
-  //  std::vector<unsigned int> m_current_mix_vars;
 };
 
 #endif
