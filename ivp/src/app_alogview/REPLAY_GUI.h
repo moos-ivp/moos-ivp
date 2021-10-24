@@ -77,6 +77,9 @@ class REPLAY_GUI : public MarineVehiGUI {
 
   void   resizeWidgetsShape();
 
+  void   setGrepStr1(std::string s) {m_grep1=s;}
+  void   setGrepStr2(std::string s) {m_grep2=s;}
+  
  protected:
   void   augmentMenu();
   
@@ -197,6 +200,8 @@ class REPLAY_GUI : public MarineVehiGUI {
   std::list<double> m_warp_gaps;
   double            m_replay_warp_actual;
 
+  std::string m_grep1;
+  std::string m_grep2;
 };
 #endif
 

@@ -92,6 +92,10 @@ GUI_AppLogScope::~GUI_AppLogScope()
     delete(m_but_mod_grep1);
   if(m_but_mod_grep2)
     delete(m_but_mod_grep2);
+  if(m_but_text_more)
+    delete(m_but_text_more);
+  if(m_but_text_less)
+    delete(m_but_text_less);
 
   // Main content browser
   if(m_brw_info1)
@@ -158,6 +162,11 @@ void GUI_AppLogScope::initWidgets()
   m_but_apply_grep1->clear_visible_focus();
   m_but_apply_grep1->value(0);
 
+  m_but_text_more = new Fl_Button(0, 0, 0, 0, "Text");
+  m_but_text_more->clear_visible_focus();
+  m_but_text_more->callback((Fl_Callback*)GUI_AppLogScope::cb_ModText, (void*)1);
+
+
   //==========================================================
   // Row 3: Second Grep option
   //==========================================================
@@ -174,6 +183,11 @@ void GUI_AppLogScope::initWidgets()
   m_but_mod_grep2->clear_visible_focus();
   m_but_mod_grep2->callback((Fl_Callback*)GUI_AppLogScope::cb_ModGrep, (void*)2);
 
+  m_but_text_less = new Fl_Button(0, 0, 0, 0, "Text");
+  m_but_text_less->clear_visible_focus();
+  m_but_text_less->callback((Fl_Callback*)GUI_AppLogScope::cb_ModText, (void*)2);
+
+  
   //==========================================================
   // Row 4/5 Browser panels
   //==========================================================
@@ -252,8 +266,13 @@ void GUI_AppLogScope::resizeWidgetsShape()
   int bag1_wid = 50;
   int bag1_hgt = 20;
   m_but_apply_grep1->resize(bag1_x, bag1_y, bag1_wid, bag1_hgt);
-  
 
+  int txtm_x = w() - lmarg - 50;
+  int txtm_y = row2; 
+  int txtm_wid = 50;
+  int txtm_hgt = 20;
+  m_but_text_more->resize(txtm_x, txtm_y, txtm_wid, txtm_hgt);
+  
   // Row 3: Second Grep Field
   m_fld_grep2->resize(40, row3, 95, 20);
   
@@ -268,8 +287,13 @@ void GUI_AppLogScope::resizeWidgetsShape()
   int bag2_wid = 50;
   int bag2_hgt = 20;
   m_but_apply_grep2->resize(bag2_x, bag2_y, bag2_wid, bag2_hgt);
-  
 
+  int txtl_x = w() - lmarg - 50;
+  int txtl_y = row3; 
+  int txtl_wid = 50;
+  int txtl_hgt = 20;
+  m_but_text_less->resize(txtl_x, txtl_y, txtl_wid, txtl_hgt);
+  
   // Row 4/5: The browser Window(s)
   if(m_alsmodel.getFutureVal() == false) {
     int brw_x = lmarg;
@@ -302,7 +326,12 @@ void GUI_AppLogScope::resizeWidgetsShape()
 
 void GUI_AppLogScope::resizeWidgetsText()
 {
-  int blab_size = 12; // blab=button_label size
+  int blab_size = 10; // blab=button_label size
+
+  if(m_mutable_text_size < 9)
+    blab_size = 8;
+  if(m_mutable_text_size > 14)
+    blab_size = 12;
 
   m_brw_info1->textsize(m_mutable_text_size); 
   m_brw_info1->labelsize(m_mutable_text_size);
@@ -317,17 +346,20 @@ void GUI_AppLogScope::resizeWidgetsText()
   m_but_apply_grep1->labelsize(blab_size);
   m_but_apply_grep2->labelsize(blab_size);
 
-  m_fld_time->textsize(m_mutable_text_size); 
-  m_fld_time->labelsize(m_mutable_text_size);
+  m_fld_time->textsize(blab_size); 
+  m_fld_time->labelsize(blab_size);
 
-  m_fld_grep1->textsize(m_mutable_text_size); 
-  m_fld_grep1->labelsize(m_mutable_text_size);
+  m_fld_grep1->textsize(blab_size); 
+  m_fld_grep1->labelsize(blab_size);
 
-  m_fld_grep2->textsize(m_mutable_text_size); 
-  m_fld_grep2->labelsize(m_mutable_text_size);
+  m_fld_grep2->textsize(blab_size); 
+  m_fld_grep2->labelsize(blab_size);
 
-  m_but_mod_grep1->labelsize(m_mutable_text_size);
-  m_but_mod_grep2->labelsize(m_mutable_text_size);
+  m_but_mod_grep1->labelsize(blab_size);
+  m_but_mod_grep2->labelsize(blab_size);
+
+  m_but_text_more->labelsize(14);
+  m_but_text_less->labelsize(9);
 }
 
 //-------------------------------------------------------------------
@@ -383,6 +415,26 @@ int GUI_AppLogScope::handle(int event)
       m_parent_gui->streamspeed(false);
     else if(Fl::event_key() == '=') 
       m_parent_gui->streaming(2);
+    else if(Fl::event_key() == 'f') {
+      bool future = m_but_future->value();
+      m_but_future->value(!future);
+      cb_ButtonFuture_i(0);
+    }
+    else if(Fl::event_key() == 's') {
+      bool sep = m_but_separate->value();
+      m_but_separate->value(!sep);
+      cb_ButtonSeparate_i(0);
+    }
+    else if(Fl::event_key() == 't') {
+      bool trunc = m_but_truncate->value();
+      m_but_truncate->value(!trunc);
+      cb_ButtonTruncate_i(0);
+    }
+    else if(Fl::event_key() == 'w') {
+      bool wrp = m_but_wrapline->value();
+      m_but_wrapline->value(!wrp);
+      cb_ButtonWrapLine_i(0);
+    }
     else if(Fl::event_key() == '+') 
       updateMutableTextSize("bigger");
     else if(Fl::event_key() == '-') 
@@ -546,6 +598,18 @@ void GUI_AppLogScope::cb_ModGrep(Fl_Widget* o, int val) {
   ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ModGrep_i(val);
 }
 
+//----------------------------------------- ModText
+inline void GUI_AppLogScope::cb_ModText_i(int val) {
+  if(val == 1)
+    updateMutableTextSize("bigger");
+  if(val == 2)
+    updateMutableTextSize("smaller");
+}
+
+void GUI_AppLogScope::cb_ModText(Fl_Widget* o, int val) {
+  ((GUI_AppLogScope*)(o->parent()->user_data()))->cb_ModText_i(val);
+}
+
 //----------------------------------------- UpdateXY
 void GUI_AppLogScope::updateXY() 
 {
@@ -601,10 +665,12 @@ void GUI_AppLogScope::updateMutableTextSize(string val)
   }
   else
     return;
+
   resizeWidgetsText();
   updateBrowsers();
+  updateXY();
+  redraw();
 }
-
 
 //----------------------------------------- UpdateBrowsers
 void GUI_AppLogScope::updateBrowsers()

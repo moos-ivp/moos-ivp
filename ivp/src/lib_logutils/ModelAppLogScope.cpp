@@ -70,8 +70,6 @@ void ModelAppLogScope::setTime(double gtime)
 
 vector<string> ModelAppLogScope::getNowLines() const
 {
-  cout << "ModelAppLogScope::getNowLines() " << endl;
-  cout << "alplot size: " << m_alplot.size() << endl;
   AppLogEntry entry = m_alplot.getEntryByTime(m_curr_time);
 
   vector<string> rvector = entry.getLines();
@@ -85,7 +83,6 @@ vector<string> ModelAppLogScope::getNowLines() const
 
 vector<string> ModelAppLogScope::getLinesUpToNow()
 {
-  cout << "ModelAppLogScope::getLinesUpToNow() " << endl;
   vector<AppLogEntry> entries = m_alplot.getEntriesUpToTime(m_curr_time);
     
   vector<string> all_lines = processLines(entries);
@@ -100,7 +97,6 @@ vector<string> ModelAppLogScope::getLinesUpToNow()
 
 vector<string> ModelAppLogScope::getLinesPastNow() const
 {
-  cout << "ModelAppLogScope::getLinesPastNow() " << endl;
   vector<AppLogEntry> entries = m_alplot.getEntriesPastTime(m_curr_time);
 
   vector<string> all_lines = processLines(entries, m_entries_upto_now_cnt);

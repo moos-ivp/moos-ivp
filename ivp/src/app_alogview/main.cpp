@@ -130,6 +130,8 @@ void help_message()
   cout << "  --panx=val      Set initial panx value (default: 0)         " << endl;
   cout << "  --pany=val      Set initial pany value (default: 0)         " << endl;
   cout << "                                                              " << endl;
+  cout << "  --grep=str      Set grep pattern in AppLog viewer           " << endl;
+  cout << "                                                              " << endl;
   cout << "  --alc=FILE      Read config params from file named FILE.    " << endl;
   cout << "                  FILE may contain any param except this one. " << endl;
   cout << "                                                              " << endl;

@@ -648,6 +648,8 @@ inline void REPLAY_GUI::cb_AppLog_i(int alix) {
   GUI_AppLogScope *algui = new GUI_AppLogScope(500,500, title.c_str());   
   algui->setDataBroker(m_dbroker, alix);
   algui->setParentGUI(this);
+  algui->setGrepStr1(m_grep1);
+  algui->setGrepStr2(m_grep2);
   algui->setCurrTime(curr_time);
 
   m_sub_guis_a.push_front(algui);

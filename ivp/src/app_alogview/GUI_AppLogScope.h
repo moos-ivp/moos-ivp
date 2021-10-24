@@ -50,12 +50,15 @@ public:
   void setParentGUI(REPLAY_GUI *gui) {m_parent_gui=gui;}
   void setDataBroker(ALogDataBroker, unsigned int mix);
   void setCurrTime(double=-1);
-  void setReplayWarpMsg(std::string s)
-  {m_replay_warp_msg=s; updateXY();}
+  void setReplayWarpMsg(std::string s) {m_replay_warp_msg=s; updateXY();}
 
+  void setGrepStr1(std::string s) {m_alsmodel.setGrepStr1(s);}
+  void setGrepStr2(std::string s) {m_alsmodel.setGrepStr2(s);}
+    
   void resize(int, int, int, int);
   int  handle(int);
 
+  
  protected:
   void resizeWidgetsShape();
   void resizeWidgetsText();
@@ -65,7 +68,7 @@ public:
 
   void updateBrowser1();
   void updateBrowser2();
-  
+
 private:
   inline void cb_BrowserInfo_i();
   static void cb_BrowserInfo(Fl_Widget*);
@@ -84,6 +87,9 @@ private:
 
   inline void cb_ModGrep_i(int);
   static void cb_ModGrep(Fl_Widget*, int);
+
+  inline void cb_ModText_i(int);
+  static void cb_ModText(Fl_Widget*, int);
 
   inline void cb_Step_i(int);
   static void cb_Step(Fl_Widget*, int);
@@ -113,6 +119,9 @@ private:
 
   Fl_Button  *m_but_mod_grep1;
   Fl_Button  *m_but_mod_grep2;
+  
+  Fl_Button  *m_but_text_more;
+  Fl_Button  *m_but_text_less;
   
   std::string m_replay_warp_msg;
   std::string m_vname;

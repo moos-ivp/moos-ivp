@@ -57,6 +57,7 @@ protected:
   bool handlePanY(std::string);
   bool handleZoom(std::string);
   bool handleNowTime(std::string);
+  bool handleGrep(std::string);
 
   bool handleALogViewConfig(std::string);
   bool handleBehaviorVarMapping(std::string);
@@ -83,7 +84,10 @@ protected:
 
   bool         m_config_file_read;
   bool         m_quick_start;
-  
+
+  std::string  m_grep1;
+  std::string  m_grep2;
+ 
   ALogDataBroker m_dbroker;
 
   std::map<std::string, std::string> m_map_bhv_vars;
