@@ -433,7 +433,8 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     }
     
     if(!handled && !handled_scope) {
-      string warning = "Unhandled Mail: src=" + msg.GetSource();
+      string warning = "Unhandled Mail: var=" + key;
+      warning += ", src=" + msg.GetSource();
       if(msg.GetSourceAux() != "")
 	warning += ", aux=" + msg.GetSourceAux();
 
