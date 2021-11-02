@@ -163,6 +163,8 @@ bool  setMaxPartOfPairOnString(double& minval, double& maxval,
 			       std::string str, bool negok=false);
 bool  setDoubleRngOnString(double& dval, std::string str,
 			   double minv, double maxv);
+bool  setDoubleStrictRngOnString(double& dval, std::string str,
+				 double minv, double maxv);
 
 bool  okFileToRead(std::string);
 bool  okFileToWrite(std::string);

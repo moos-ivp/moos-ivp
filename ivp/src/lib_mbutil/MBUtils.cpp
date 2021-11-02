@@ -2064,6 +2064,33 @@ bool setDoubleRngOnString(double& dval, string str,
 }
 
 //-------------------------------------------------------------
+// Procedure: setDoubleStrictRngOnString
+//      Note: This function is designed to possibly set the given 
+//            double based on the contents of the str.
+//      Note: If the given value is outside the given range, the
+//            given value is NOT SET.
+//   Returns: false if the string is not numerical.
+//            false if the given value is outside the given range
+//            false if the given range is not proper.
+//            true otherwise
+
+bool setDoubleStrictRngOnString(double& dval, string str,
+				double minv, double maxv)
+{
+  if(!isNumber(str))
+    return(false);
+  if(minv > maxv)
+    return(false);
+  
+  double maybe_val = atof(str.c_str());
+  if((maybe_val < minv) || (maybe_val > maxv))
+    return(false);
+
+  dval = maybe_val;
+  return(true);     
+}
+
+//-------------------------------------------------------------
 // Procedure: setUintOnString
 //      Note: This function is designed to possibly set the given 
 //            unsigned int based on the contents of the str.
