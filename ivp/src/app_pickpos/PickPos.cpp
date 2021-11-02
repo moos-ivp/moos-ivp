@@ -75,6 +75,8 @@ PickPos::PickPos()
   m_colors  = false;
   m_verbose = false;
 
+  m_reverse_names = false;
+  
   m_grp_type = "random";
   m_output_type = "full";
 
@@ -783,7 +785,7 @@ void PickPos::setVNameCache()
   m_vname_cache.push_back("quay");    m_vname_cache.push_back("rome");
   m_vname_cache.push_back("sako");    m_vname_cache.push_back("troy");
   m_vname_cache.push_back("ubly");    m_vname_cache.push_back("vimy");
-  m_vname_cache.push_back("waco");    m_vname_cache.push_back("xian");
+  m_vname_cache.push_back("waco");    m_vname_cache.push_back("xane");
   m_vname_cache.push_back("york");    m_vname_cache.push_back("zahl");
 }
 
@@ -798,6 +800,9 @@ void PickPos::pickVehicleNames()
   
   for(unsigned int i=0; i<m_pick_amt; i++) {
     int index = i % choices;
+    if(m_reverse_names)
+      index = (choices-1)-i;
+
     m_pick_vnames.push_back(m_vname_cache[index]);
   }
 }

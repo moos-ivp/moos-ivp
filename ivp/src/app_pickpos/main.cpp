@@ -54,6 +54,8 @@ int main(int argc, char *argv[])
     }
     else if((argi == "--multiline") || (argi=="--ml") || (argi=="-ml"))
       handled = pickpos.setMultiLine();
+    else if((argi == "--reverse_names") || (argi=="-r"))
+      handled = pickpos.setReverseNames();
     else if(strBegins(argi, "--amt="))
       handled = pickpos.setPickAmt(argi.substr(6));
     else if(strBegins(argi, "--posfile="))

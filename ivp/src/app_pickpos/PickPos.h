@@ -46,6 +46,7 @@ class PickPos
   bool   setBufferDist(std::string);
   bool   setMaxTries(std::string);
   bool   setOutputType(std::string);
+  bool   setReverseNames() {m_reverse_names=true; return(true);}
 
   bool   setHeadingSnap(std::string);
   bool   setSpeedSnap(std::string);
@@ -100,6 +101,8 @@ class PickPos
   bool         m_vnames;
   bool         m_colors;
 
+  bool         m_reverse_names;
+  
   double       m_circ_x;
   double       m_circ_y;
   double       m_circ_rad;
