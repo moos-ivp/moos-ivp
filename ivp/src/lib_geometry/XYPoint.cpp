@@ -77,8 +77,7 @@ void XYPoint::projectPt(const XYPoint& pt, double ang, double dist)
 }
 
 //---------------------------------------------------------------
-// Procedure: get_spec
-//   Purpose: 
+// Procedure: get_spec()
 
 string XYPoint::get_spec(string param) const
 {
@@ -99,11 +98,21 @@ string XYPoint::get_spec(string param) const
   return(spec);
 }
 
+//---------------------------------------------------------------
+// Procedure: get_spec_inactive()
+//   Purpose: In cases where we know the point spec is created
+//            simply to "erase" a previous point with the same
+//            label, just generate a concise spec with a trivial
+//            coordinates.
 
-
-
-
-
+string XYPoint::get_spec_inactive() const
+{
+  string spec = "x=0,y=0,active=false";
+  if(m_label != "")
+    spec += ",label=" + m_label; 
+  
+  return(spec);
+}
 
 
 

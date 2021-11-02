@@ -879,7 +879,7 @@ string XYSegList::get_spec_pts_label(unsigned int precision) const
 //   Purpose: In cases where we know the polygon spec is created
 //            simply to "erase" a previous poly with the same
 //            label, just generate a concise spec with a trivial
-//            convext poly.
+//            convex poly.
 
 std::string XYSegList::get_spec_inactive() const
 {

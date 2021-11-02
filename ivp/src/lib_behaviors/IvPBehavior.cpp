@@ -589,7 +589,8 @@ void IvPBehavior::postBadConfig(string message)
 
 
 //-----------------------------------------------------------
-// Procedure: postWMessage
+// Procedure: postWMessage()
+//      Note: An empty message is simply ignored!
 
 void IvPBehavior::postWMessage(string g_msg)
 {
@@ -604,6 +605,7 @@ void IvPBehavior::postWMessage(string g_msg)
 
 //-----------------------------------------------------------
 // Procedure: postRetractWMessage
+//      Note: An empty message is simply ignored!
 
 void IvPBehavior::postRetractWMessage(string g_msg)
 {
@@ -848,8 +850,9 @@ bool IvPBehavior::checkUpdates()
     // Added Mar 7th 2014, allow successive dupl updates with word
     // toggle in it.
     if(strContains(tolower(new_update_str), "toggle") ||
+       strContains(tolower(new_update_str), "engage") ||
        ((new_update_str != "") && (new_update_str != m_prev_update_str))) {
-    
+      
       vector<string> uvector = parseString(new_update_str, '#');
       unsigned int j, usize = uvector.size();
       
@@ -1175,6 +1178,23 @@ double IvPBehavior::getBufferTimeVal(string varname) const
 }
 
 //-----------------------------------------------------------
+// Procedure: getBufferVarUpdated()
+//   Purpose: Return true if var is known and has been updated
+//            on the current helm iteration.
+
+bool IvPBehavior::getBufferVarUpdated(string varname) const
+{
+  if(!m_info_buffer)
+    return(false);
+  if(!m_info_buffer->isKnown(varname))
+    return(false);
+  double elapsed = m_info_buffer->tQuery(varname);
+  if(elapsed == 0)
+    return(true);
+  return(false);
+}
+
+//-----------------------------------------------------------
 // Procedure: getBufferMsgTimeVal()
 
 double IvPBehavior::getBufferMsgTimeVal(string varname) const
@@ -1212,9 +1232,20 @@ double IvPBehavior::getBufferDoubleVal(string varname, bool& ok)
       ok = true;
     }
   }
-  if((!ok) && !vectorContains(m_info_vars_no_warning, varname)) 
+  if((!ok) && !vectorContains(m_info_vars_no_warning, varname))     
     postWMessage(varname + " dbl info not found in helm info_buffer");
   return(value);
+}
+
+//-----------------------------------------------------------
+// Procedure: getBufferDoubleValX()
+//   Purpose: A convenience function to return Boolean result
+
+bool IvPBehavior::getBufferDoubleValX(string varname, double& dval)
+{
+  bool ok;
+  dval = getBufferDoubleVal(varname, ok);
+  return(ok);
 }
 
 //-----------------------------------------------------------
@@ -1241,6 +1272,15 @@ string IvPBehavior::getBufferStringVal(string varname, bool& ok)
   return(value);
 }
 
+//-----------------------------------------------------------
+// Procedure: getBufferStringValX()
+
+bool IvPBehavior::getBufferStringValX(string varname, string& sval)
+{
+  bool ok;
+  sval = getBufferStringVal(varname, ok);
+  return(ok);
+}
 
 //-----------------------------------------------------------
 // Procedure: getBufferStringVal()

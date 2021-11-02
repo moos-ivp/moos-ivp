@@ -145,6 +145,7 @@ public:
   double                   getBufferCurrTime() const;
   double                   getBufferLocalTime() const;
   double                   getBufferMsgTimeVal(std::string) const;
+  bool                     getBufferVarUpdated(std::string) const;
   double                   getBufferTimeVal(std::string) const;
   double                   getBufferDoubleVal(std::string);
   double                   getBufferDoubleVal(std::string, bool&);
@@ -154,6 +155,9 @@ public:
   std::vector<std::string> getBufferStringVector(std::string, bool&);
   std::vector<std::string> getStateSpaceVars();
 
+  bool                     getBufferDoubleValX(std::string, double&);
+  bool                     getBufferStringValX(std::string, std::string&);
+  
   std::vector<std::string> getUpdateResults() const {return(m_update_results);}
 
   std::string expandCtrMacro(std::string sdata, std::string macro, unsigned int&);
