@@ -29,11 +29,16 @@
       '("uSimTowBody" "tow_cable_length" "tow_body_length" "swath_width" "swath_length" "swath_color" "swath_transparency" "max_appcast_events" )
       '("uSimWaterway" "border" "cover_poly" "cell_size" "cell_val" "max_appcast_events" )
       '("pMissionEval" "lead_condition" "pass_condition" "fail_condition" "result_flag" "pass_flag" "fail_flag"  "max_appcast_events")
-      '("uFldVoronoi" "stale_time" "verbose" "region" "max_appcast_events")
+
+
       '("pRealm" "relcast_interval" "summary_interval" "wrap_length" "trunc_length" "msg_max_hist" "hist_var" "scope_set" "max_appcast_events" "msg_max_history")
       '("pDatumMgr" "resolution" "historesis")
       '("uSimHeron" "port" "comms_type" "ip_addr" "max_appcast_events")
-      '("uFldVoronoi" "reject_range" "post_poly" "post_region" "region" "max_appcast_events")
+
+      '("uFldConvoyEval" "recap_var" "stat_recap_var" "spd_policy_var" )
+      
+      '("uFldVoronoi" "stale_time" "region" "prox_edge_color" "prox_vertex_color" "prox_fill_color" "prox_label_color" "max_appcast_events")
+
       '("uMemWatch" "ignore" "watch_only" "absolute_time_gap" "max_appcast_events")
       '("uFldCollObDetect" "collision_dist" "near_miss_dist" "encounter_dist" "collision_range" "near_miss_range" "encounter_range" "collision_flag" "near_miss_flag" "encounter_flag" "ignore_group" "reject_group" "max_appcast_events")
       '("uFldObstacleSim" "obstacle_file" "poly_vert_color" "poly_edge_color" "poly_fill_color" "poly_label_color" "poly_vert_size" "poly_edge_size" "draw_region" "post_points" "rate_points" "poly_transparency" "region_edge_color" "min_duration" "max_duration" "reuse_ids" "reset_interval" "reset_range" "refresh_interval" "max_appcast_events" "point_size")
@@ -46,7 +51,7 @@
       '("uSimMarine"  "start_x" "start_y" "start_heading" "start_speed" "start_depth" "start_pos" "drift_x" "drift_y" "rotate_speed" "drift_vector" "buoyancy_rate" "max_acceleration" "max_deceleration" "max_depth_rate" "max_depth_rate_speed" "sim_pause" "dual_state" "thrust_reflect" "thrust_factor" "turn_rate" "thrust_map" "prefix" "default_water_depth" "trim_tolerance" "max_trim_delay" "max_rudder_degs_per_sec" "max_appcast_events")
       '("uSimMarineTow" "tow_dist" "lead_vname" "enabled_flag" "disabled_flag" "max_appcast_events") 
       '("uSimMarineX"  "start_x" "start_y" "start_heading" "start_speed" "start_depth" "start_pos" "drift_x" "drift_y" "rotate_speed" "drift_vector" "buoyancy_rate" "max_acceleration" "max_deceleration" "max_depth_rate" "max_depth_rate_speed" "sim_pause" "dual_state" "thrust_reflect" "thrust_factor" "turn_rate" "thrust_map" "prefix" "default_water_depth" "trim_tolerance" "max_trim_delay" "max_rudder_degs_per_sec" "wormhole" "depth_control" "yaw_pid_kp" "yaw_pid_kd" "yaw_pid_ki" "yaw_pid_integral_limit" "speed_pid_kp" "speed_pid_kd" "speed_pid_ki" "speed_pid_integral_limit" "maxrudder" "maxthrust" "speed_factor"  "max_appcast_events")
-      '("pHelmIvP" "term_report_interval" "ivp_behavior_dir" "behaviors" "domain" "start_engaged" "allow_disengaged" "disengage_on_allstop" "other_override_var" "node_skew" "ok_skew" "verbose" "bhv_dir_not_found_ok" "start_in_drive" "kcache" "hold_on_apps" "max_appcast_events" "helm_prefix")
+      '("pHelmIvP" "goals_mandatory" "term_report_interval" "ivp_behavior_dir" "behaviors" "domain" "start_engaged" "allow_disengaged" "disengage_on_allstop" "other_override_var" "node_skew" "ok_skew" "verbose" "bhv_dir_not_found_ok" "start_in_drive" "kcache" "hold_on_apps" "max_appcast_events" "helm_prefix")
       '("pMarinePID" "speed_factor" "sim_instability" "tardy_helm_threshold" "tardy_nav_threshold" "active_start" "verbose" "yaw_pid_kp" "yaw_pid_kd" "yaw_pid_ki" "yaw_pid_integral_limit" "yaw_pid_ki_limit" "maxrudder" "speed_pid_" "speed_pid_kp" "speed_pid_kd" "speed_pid_ki" "speed_pid_integral_limit" "maxthrust" "depth_control" "z_to_pitch_pid_kp" "z_to_pitch_pid_kd" "z_to_pitch_pid_ki" "z_to_pitch_pid_integral_limit" "maxpitch" "pitch_pid_kp" "pitch_pid_kd" "pitch_pid_ki" "pitch_pid_integral_limit" "maxelevator" "max_appcast_events")
       '("uTermCommand" "cmd")
       '("pNodeReporter" "platform_type" "platform_length" "blackout_interval" "plat_report_input" "plat_report_output" "node_report_output" "nohelm_threshold" "crossfill_policy" "alt_nav_prefix" "alt_nav_name" "vessel_type" "group" "paused" "terse_reports" "platform_color" "max_appcast_events" "platform_group" "alt_nav_group")
