@@ -24,10 +24,6 @@ Behavior = BHV_Waypoint
 
   lead_condition = AVOIDING != active
 
-	//wptflag = TEST_P=$[X],$[Y]
-	//wptflag = TEST_NP=$[NX],$[NY]
-	//wptflag = TEST_WOS=$[OSX],$[OSY]
-
 	//wptflag_on_start = true
 
       use_alt_speed = true
@@ -76,8 +72,6 @@ Behavior=BHV_Waypoint
 	cycleflag = CFLAG  = r_cyles=$[CTR_01]
 	wptflag   = WFLAG  = r_waypoints=$[CTR]
 
-
-	
       lead_condition = AVOIDING != active
 
                 lead = 8
@@ -89,71 +83,4 @@ Behavior=BHV_Waypoint
      slip_radius = 8.0
           point = 0,-20
  }
-
-//----------------------------------------------
-//Behavior=BHV_ConstantSpeed
-{
-  name       = const_speed
-  pwt        = 200
-  //condition  = SPD=true
-  condition  = DEPLOY = true
-  perpetual  = true
-  updates    = SPEED_UPDATE
-  endflag    = SPD = false
-
-     speed = 2.5
-
-   duration = 10
-   peakwidth = 0.5
-   basewidth = 0.5
-   duration_reset = CONST_SPD_RESET=true
-	
-}
-
-//----------------------------------------------
-//Behavior=BHV_MaxSpeed
-{
-  name       = maxspd
-  pwt        = 500
-  condition  = DEPLOY = true
-  condition  = SPDLIMIT = true
-  perpetual  = true
-
-   max_speed = 0
-
-   basewidth = 0
-}
-
-//----------------------------------------------
-//Behavior=BHV_AvoidWalls
-{
-  name       = avd_walls2
-  pwt        = 111
-  condition  = DEPLOY = true
-  perpetual  = true
-
-  ttc_base = 8
-  ttc_rate = .5
-
-//            wall = pts={84,-45 : 84,-15}, label=north_single
-
-            wall = pts={0,-72: 47,-72 : 43,-89 : 40,-100}, label=west
-            wall = pts={120,-72 : 93,-72 : 67,-89 : 47,-121}, label=east
-
-//            wall = pts={-60,-191 : 75,-190}, label=south
-
-//            wall = pts={31,55 : 51,-55 : 84,-55 : 84,55}, label=north
-//            wall = pts={37,-180 : 53,-104 : 106,-102 : 125, -181}, label=east
-
-  idleflag     = AVOIDING = idle
-  activeflag   = AVOIDING = active
-
-         nogo_ttcpa = 5
-         safe_ttcpa = 15
-  min_util_cpa_dist = 2
-  max_util_cpa_dist = 10
-     pwt_outer_dist = 20
-     pwt_inner_dist = 10
-     completed_dist = 6000
-}
 

@@ -59,9 +59,9 @@
        '("BHV_Shadow" "post_mapping" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "heading_peakwidth" "heading_basewidth" "speed_peakwidth" "speed_basewidth" "on_no_contact_ok" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "exit_on_filter_region")
        '("BHV_Trail" "post_mapping" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "nm_radius" "n_alert_request" "post_trail_dist_on_idle" "pwt_outer_dist" "radius" "trail_angle" "trail_angle_type" "trail_range" "on_no_contact_ok" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "exit_on_filter_region")
 
-       '("BHV_TaskWaypoint" "post_mapping" "type" "max_bid_wins" "team_range" "bidwonflag" "xbidwonflag" "waypt_x" "waypt_y" "waypt" )
+       '("BHV_TaskWaypoint" "post_mapping" "type" "max_bid_wins" "team_range" "team_by_group" "bidwonflag" "xbidwonflag" "waypt_x" "waypt_y" "waypt" )
 
-       '("BHV_TaskConvoy" "type" "max_bid_wins" "team_range" "bidwonflag" "xbidwonflag" )
+       '("BHV_TaskConvoy" "type" "max_bid_wins" "team_range" "team_by_group" "bidwonflag" "xbidwonflag" )
 
        '("BHV_AndersonTurn" "default_turn_thresh" "default_turn_points" "default_turn_radius" "default_capture_radius" "engage_var" )
 
