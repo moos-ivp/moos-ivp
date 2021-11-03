@@ -65,13 +65,14 @@ string ExFilterSet::configFilter(string str)
       ok = addMatchRegion(value);
     else if(param == "strict_ignore")
       ok = setStrictIgnore(value);
-    else {
+
+    if(!ok) {
       if(unhandled_params != "")
 	unhandled_params += ",";
       unhandled_params += param + "=" + value;
     }
   }
-
+  
   return(unhandled_params);
 }
   
