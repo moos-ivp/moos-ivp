@@ -726,6 +726,22 @@ void MarineViewer::drawGLPoly(double *points, unsigned int numPoints,
 }
 
 //-------------------------------------------------------------
+// Procedure: coordInView()
+
+bool MarineViewer::coordInView(double x, double y)
+{
+  if((x < 0) || (y < 0))
+    return(false);
+  if(x > pixel_w())
+    return(false);
+  if(y > pixel_h())
+    return(false);
+
+  return(true);
+}
+
+
+//-------------------------------------------------------------
 // Procedure: drawCommonVehicle
 
 void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb, 
@@ -760,6 +776,9 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   double vehicle_vx = img2view('x', vehicle_ix);
   double vehicle_vy = img2view('y', vehicle_iy);
 
+  if(!coordInView(vehicle_vx, vehicle_vy))
+    return;
+  
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
@@ -1027,6 +1046,9 @@ void MarineViewer::drawMarker(const XYMarker& marker)
   double marker_vx = img2view('x', marker_ix);
   double marker_vy = img2view('y', marker_iy);
 
+  if(!coordInView(marker_vx, marker_vy))
+    return;
+  
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
@@ -1181,6 +1203,9 @@ void MarineViewer::drawOpArea(const OpAreaSpec& op_area)
   double qx = img2view('x', tx);
   double qy = img2view('y', ty);
 
+  if(!coordInView(x, qy))
+    return;
+  
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
@@ -2731,6 +2756,9 @@ void MarineViewer::drawPoint(const XYPoint& point)
   double ty = meters2img('y', 0, m_verbose);
   double qx = img2view('x', tx);
   double qy = img2view('y', ty);
+
+  if(!coordInView(qx, qy))
+    return;
 
   if(m_verbose) {
     cout << "tx:" << tx << endl;

@@ -168,6 +168,8 @@ protected:
 		   double alpha=100);
 
   void gl_draw_aux(const std::string);
+
+  bool coordInView(double x, double y);
   
 protected:
   BackImg   m_back_img;
