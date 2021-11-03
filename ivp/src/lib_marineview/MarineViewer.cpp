@@ -1203,7 +1203,7 @@ void MarineViewer::drawOpArea(const OpAreaSpec& op_area)
   double qx = img2view('x', tx);
   double qy = img2view('y', ty);
 
-  if(!coordInView(x, qy))
+  if(!coordInView(qx, qy))
     return;
   
   glMatrixMode(GL_MODELVIEW);
