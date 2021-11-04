@@ -72,7 +72,8 @@ FldNodeComms::FldNodeComms()
 
   // If true then comms between vehicles only happens if they are
   // part of the same group. (unless range is within critical).
-  m_apply_groups     = false;
+  m_apply_groups      = false;
+  m_apply_groups_msgs = false;
 
   m_total_reports_rcvd  = 0;
   m_total_reports_sent  = 0;
@@ -88,7 +89,7 @@ FldNodeComms::FldNodeComms()
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool FldNodeComms::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -133,7 +134,7 @@ bool FldNodeComms::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool FldNodeComms::OnConnectToServer()
 {
@@ -225,6 +226,8 @@ bool FldNodeComms::OnStartUp()
       handled = handleEarange(value);
     else if(param == "groups") 
       handled  = setBooleanOnString(m_apply_groups, value);
+    else if(param == "msg_groups") 
+      handled  = setBooleanOnString(m_apply_groups_msgs, value);
     else if(param == "verbose") 
       handled = setBooleanOnString(m_verbose, value);
     else if(param == "view_node_rpt_pulses") 
@@ -727,6 +730,16 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
     if(m_debug) 
       cout << src_name << "--->" << a_dest_name << ": " << endl;
   
+    // Criteria #N: vehicles in same group if enforced
+    if(m_apply_groups_msgs) {
+      string src_grp  = m_map_record[src_name].getGroup();
+      string dest_grp = m_map_record[a_dest_name].getGroup();
+      if((src_grp == "") || (dest_grp == ""))
+	msg_send = false;
+      if(src_grp != dest_grp)
+	msg_send = false;
+    }
+
     // Criteria #1: vehicles different
     if(a_dest_name == src_name)
       msg_send = false;

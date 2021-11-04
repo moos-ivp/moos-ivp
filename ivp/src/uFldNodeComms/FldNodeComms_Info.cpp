@@ -79,7 +79,6 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("uFldNodeComms Example MOOS Configuration                        ");
   blu("=============================================================== ");
@@ -97,8 +96,9 @@ void showExampleConfigAndExit()
   blk("  min_msg_interval = 30     // default (in seconds)             ");
   blk("  min_rpt_interval = -1     // default (in seconds)             ");
   blk("                                                                ");
-  blk("  verbose  = true             // default                        ");
-  blk("  groups   = false            // default                        ");
+  blk("  verbose    = true         // default                          ");
+  blk("  groups     = false        // default                          ");
+  blk("  msg_groups = false        // default                          ");
   blk("                                                                ");
   blk("  stealth  = vname=alpha, stealth=0.8                           ");
   blk("  earange  = vname=alpha, earange=4.5                           ");

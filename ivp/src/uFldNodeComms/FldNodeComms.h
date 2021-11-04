@@ -77,6 +77,7 @@ class FldNodeComms : public AppCastingMOOSApp
   bool    m_verbose;
   bool    m_debug;
   bool    m_apply_groups;
+  bool    m_apply_groups_msgs;
   bool    m_view_node_rpt_pulses;
 
   // Default range to source threshold for vehicle to receive
