@@ -730,11 +730,40 @@ void MarineViewer::drawGLPoly(double *points, unsigned int numPoints,
 
 bool MarineViewer::coordInView(double x, double y)
 {
+  // Determine position in terms of image percentage
+  double ax = meters2img('x', x);
+  double ay = meters2img('y', y);
+  
+  // Determine position in terms of view percentage
+  double bx = img2view('x', ax);
+  double by = img2view('y', ay);
+
+  // cout << " PositionF: " << doubleToString(bx,0) << "," << doubleToString(by,0) << endl;
+  //cout << "   PixelsF: " << w() << "," << h() << endl;
+  
+  double wid = w();
+  double hgt = h();
+  
+  if((bx < 0.01 * wid) || (by < 0.01*hgt))
+    return(false);
+  if(bx > 0.99 * wid)
+    return(false);
+  if(by > 0.99 * hgt)
+    return(false);
+
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: coordInViewX()
+
+bool MarineViewer::coordInViewX(double x, double y)
+{
   if((x < 0) || (y < 0))
     return(false);
-  if(x > pixel_w())
+  if(x > w())
     return(false);
-  if(y > pixel_h())
+  if(y > h())
     return(false);
 
   return(true);
@@ -776,9 +805,6 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   double vehicle_vx = img2view('x', vehicle_ix);
   double vehicle_vy = img2view('y', vehicle_iy);
 
-  if(!coordInView(vehicle_vx, vehicle_vy))
-    return;
-  
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
@@ -953,6 +979,11 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   }
 
   if(vname_draw) {
+    double vx = record.getX();
+    double vy = record.getY();    
+    if(!coordInView(vx, vy))
+      return;
+  
     glColor3f(vname_color.red(), vname_color.grn(), vname_color.blu());
     gl_font(1, 10);
     if(m_zoom > 4)
@@ -1046,9 +1077,6 @@ void MarineViewer::drawMarker(const XYMarker& marker)
   double marker_vx = img2view('x', marker_ix);
   double marker_vy = img2view('y', marker_iy);
 
-  if(!coordInView(marker_vx, marker_vy))
-    return;
-  
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
   glLoadIdentity();
@@ -1155,7 +1183,7 @@ void MarineViewer::drawMarker(const XYMarker& marker)
 
   bool draw_labels = m_geo_settings.viewable("marker_viewable_labels");
 
-  if(draw_labels && ((label != "") || (message != ""))) {
+  if(draw_labels && ((label != "") || (message != "")) && coordInView(x,y)) {
     glColor3f(labelc.red(), labelc.grn(), labelc.blu());
     gl_font(1, 10);
     if(m_zoom > 4)
@@ -1495,18 +1523,22 @@ void MarineViewer::drawPolygons(const vector<XYPolygon>& polys)
 	  labl_c = poly.get_color("label");
 
 	if(labl_c.visible()) {
-	  double cx = poly.get_avg_x() * pix_per_mtr_x;
-	  double cy = poly.get_avg_y() * pix_per_mtr_y;
+	  double vx = poly.get_avg_x();
+	  double vy = poly.get_avg_y();
+	  double cx = vx * pix_per_mtr_x;
+	  double cy = vy * pix_per_mtr_y;
 
-	  glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
-	  gl_font(1, 10);
-	  string plabel = poly.get_msg();
-	  if(plabel == "")
-	    plabel = poly.get_label();
-	  
-	  if((plabel != "") && (plabel != "_null_")) {
-	    glRasterPos3f(cx, cy, 0);
-	    gl_draw_aux(plabel);
+	  if(coordInView(vx,vy)) {
+	    glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+	    gl_font(1, 10);
+	    string plabel = poly.get_msg();
+	    if(plabel == "")
+	      plabel = poly.get_label();
+	    
+	    if((plabel != "") && (plabel != "_null_")) {
+	      glRasterPos3f(cx, cy, 0);
+	      gl_draw_aux(plabel);
+	    }
 	  }
 	}
       }
@@ -1627,17 +1659,21 @@ void MarineViewer::drawWedge(const XYWedge& wedge)
     glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
     gl_font(1, 10);
     
-    double px = wedge.getX() * m_back_img.get_pix_per_mtr_x();
-    double py = wedge.getY() * m_back_img.get_pix_per_mtr_y();
-
     string plabel = wedge.get_msg();
     if(plabel == "")
       plabel = wedge.get_label();
-
+    
     if(plabel != "") {    
-      double offset = 3.0 * (1/m_zoom);
-      glRasterPos3f(px+offset, py+offset, 0);
-      gl_draw_aux(plabel);
+      double vx = wedge.getX();
+      double vy = wedge.getY();
+      double px = vx * pix_per_mtr_x;
+      double py = vy * pix_per_mtr_y;
+
+      if(coordInView(vx,vy)) {     
+	double offset = 3.0 * (1/m_zoom);
+	glRasterPos3f(px+offset, py+offset, 0);
+	gl_draw_aux(plabel);
+      }
     }
   }
 
@@ -1803,19 +1839,21 @@ void MarineViewer::drawSegList(const XYSegList& segl)
   // setting the color to be "invisible".
   bool draw_labels = m_geo_settings.viewable("seglist_viewable_labels");
   if(draw_labels && labl_c.visible()) {
-    double cx = segl.get_avg_x() * m_back_img.get_pix_per_mtr_x();
-    //double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
-    double my = segl.get_max_y() * m_back_img.get_pix_per_mtr_y();
-    glTranslatef(cx, my, 0);
-    
-    glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
-    gl_font(1, 10);
     string plabel = segl.get_msg();
     if(plabel == "")
       plabel = segl.get_label();
     if(plabel != "") {
-      glRasterPos3f(0, 0, 0);
-      gl_draw_aux(plabel);
+      double cx = segl.get_avg_x() * m_back_img.get_pix_per_mtr_x();
+      //double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
+      double my = segl.get_max_y() * m_back_img.get_pix_per_mtr_y();
+      
+      if(coordInView(cx,my)) {
+	glTranslatef(cx, my, 0);
+	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+	gl_font(1, 10);
+	glRasterPos3f(0, 0, 0);
+	gl_draw_aux(plabel);
+      }
     }
   }
   //-------------------------------- perhaps draw seglist label
@@ -2000,23 +2038,20 @@ void MarineViewer::drawSeglr(const XYSeglr& seglr)
   // setting the color to be "invisible".
   
   bool draw_labels = m_geo_settings.viewable("seglr_viewable_labels");
-  if(draw_labels && labl_c.visible()) {
-
+  string plabel = seglr.get_msg();
+  if(draw_labels && labl_c.visible() && (plabel != "")) {
     double cx, cy;
     projectPoint(vang, head_size+4, hx, hy, cx, cy);
-    cx *= m_back_img.get_pix_per_mtr_x();
-    cy *= m_back_img.get_pix_per_mtr_x();
-
-    //double cx = seglr.getAvgX() * m_back_img.get_pix_per_mtr_x();
-    //double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
-    //double my = seglr.getMaxY() * m_back_img.get_pix_per_mtr_y();
-    glTranslatef(cx, cy, 0);
-    
-    glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
-    gl_font(1, 10);
-    string plabel = seglr.get_msg();
-
-    if(plabel != "") {
+    if(coordInView(cx,cy)) {
+      cx *= m_back_img.get_pix_per_mtr_x();
+      cy *= m_back_img.get_pix_per_mtr_x();
+      
+      //double cx = seglr.getAvgX() * m_back_img.get_pix_per_mtr_x();
+      //double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
+      //double my = seglr.getMaxY() * m_back_img.get_pix_per_mtr_y();
+      glTranslatef(cx, cy, 0);
+      glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+      gl_font(1, 10);
       glRasterPos3f(0, 0, 0);
       gl_draw_aux(plabel);
     }
@@ -2154,21 +2189,25 @@ void MarineViewer::drawVector(const XYVector& vect)
   // setting the color to be "invisible".
   bool draw_labels = m_geo_settings.viewable("vector_viewable_labels");
   if(draw_labels && labl_c.visible()) {
-    double cx = vect.xpos() * m_back_img.get_pix_per_mtr_x();
-    double cy = vect.ypos() * m_back_img.get_pix_per_mtr_y();
-    glTranslatef(cx, cy, 0);
-    
-    glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
-    gl_font(1, 10);
     string plabel = vect.get_msg();
     if(plabel == "")
       plabel = vect.get_label();
-
+    
     if(plabel != "") {
-      glRasterPos3f(0, 0, 0);
-      gl_draw_aux(plabel);
-    }
 
+      double vx = vect.xpos();
+      double vy = vect.ypos();
+      double cx = vx * pix_per_mtr_x;
+      double cy = vy * pix_per_mtr_y;
+
+      if(coordInView(vx,vy)) {
+	glTranslatef(cx, cy, 0);      
+	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+	gl_font(1, 10);
+	glRasterPos3f(0, 0, 0);
+	gl_draw_aux(plabel);
+      }
+    }
   }
   //-----------------------------end perhaps draw vect label
 
@@ -2502,20 +2541,25 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
     draw_labels = false;
 
   if(draw_labels && labl_c.visible()) {
-    glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
-    gl_font(1, 10);
-    
-    double px = circle.getX() * m_back_img.get_pix_per_mtr_x();
-    double py = circle.get_max_y() * m_back_img.get_pix_per_mtr_y();
-
     string plabel = circle.get_msg();
     if(plabel == "")
       plabel = circle.get_label();
-
     if(plabel != "") {    
-      double offset = 3.0 * (1/m_zoom);
-      glRasterPos3f(px+offset, py+offset, 0);
-      gl_draw_aux(plabel);
+
+      double vx = circle.getX();
+      double vy = circle.get_max_y();
+
+      if(coordInView(vx,vy)) {
+	double px = vx * pix_per_mtr_x;
+	double py = vy * pix_per_mtr_y;
+	
+	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+	gl_font(1, 10);
+	
+	double offset = 3.0 * (1/m_zoom);
+	glRasterPos3f(px+offset, py+offset, 0);
+	gl_draw_aux(plabel);
+      }
     }
   }
 
@@ -2774,8 +2818,10 @@ void MarineViewer::drawPoint(const XYPoint& point)
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
-  double px  = point.get_vx() * m_back_img.get_pix_per_mtr_x();
-  double py  = point.get_vy() * m_back_img.get_pix_per_mtr_y();
+  double vx = point.get_vx();
+  double vy = point.get_vy();
+  double px = vx * m_back_img.get_pix_per_mtr_x();
+  double py = vy * m_back_img.get_pix_per_mtr_y();
 
   if(vert_c.visible()) {
     glPointSize(vertex_size);
@@ -2791,18 +2837,19 @@ void MarineViewer::drawPoint(const XYPoint& point)
   // the publisher of the point requested it not to be viewed, by
   // setting the color to be "invisible".
   bool draw_labels = m_geo_settings.viewable("point_viewable_labels");
-  if(draw_labels && labl_c.visible()) {
-    glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
-    gl_font(1, 12);
-    
+  if(draw_labels && labl_c.visible() && coordInView(vx,vy)) {
     string plabel = point.get_msg();
     if(plabel == "")
-      plabel = point.get_label();
-
+      plabel = point.get_label();    
     if(plabel != "") {    
-      double offset = 3.0 * (1/m_zoom);
-      glRasterPos3f(px+offset, py+offset, 0);
-      gl_draw_aux(plabel);
+
+      if(coordInView(vx,vy)) {      
+	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+	gl_font(1, 12);
+	double offset = 3.0 * (1/m_zoom);
+	glRasterPos3f(px+offset, py+offset, 0);
+	gl_draw_aux(plabel);
+      }
     }
   }
 
@@ -2813,7 +2860,7 @@ void MarineViewer::drawPoint(const XYPoint& point)
 
 
 //-------------------------------------------------------------
-// Procedure: drawPoints
+// Procedure: drawPoints()
 
 void MarineViewer::drawPoints(const map<string, XYPoint>& points)
 {
@@ -2863,8 +2910,10 @@ void MarineViewer::drawPoints(const map<string, XYPoint>& points)
       if(point.vertex_size_set())
 	vertex_size = point.get_vertex_size();
 
-      double px  = point.get_vx() * pix_per_mtr_x;
-      double py  = point.get_vy() * pix_per_mtr_y;
+      double vx = point.get_vx();
+      double vy = point.get_vy();
+      double px = vx * pix_per_mtr_x;
+      double py = vy * pix_per_mtr_y;
 
       if(vert_c.visible()) {
 	glPointSize(vertex_size);
@@ -2878,7 +2927,7 @@ void MarineViewer::drawPoints(const map<string, XYPoint>& points)
       
       // Draw the labels unless either the viewer has it shut off OR if 
       // the publisher of the point set the color to "invisible".
-      if(draw_labels && labl_c.visible()) {
+      if(draw_labels && labl_c.visible() && coordInView(vx,vy)) {
 	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
 	gl_font(1, 10);
 	
@@ -2989,10 +3038,5 @@ void MarineViewer::gl_draw_aux(const string text)
   if(Fl_Window::current() == m_main_window) 
     gl_draw(text.c_str());
 }
-
-
-  
-
-
 
 
