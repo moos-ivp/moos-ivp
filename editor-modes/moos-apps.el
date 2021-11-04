@@ -59,7 +59,7 @@
       '("pMarineViewer" "tiff_file" "tiff_file_b" "set_pan_x" "set_pan_y" "zoom" "center_view" "vehicle_shape_scale" "hash_delta" "hash_shade" "hash_viewable" "full_screen" "polygon_viewable_all" "polygon_viewable_labels" "seglist_viewable_all" "seglist_viewable_labels" "point_viewable_all" "point_viewable_labels" "vector_viewable_all" "vector_viewable_labels" "circle_viewable_all" "circle_viewable_labels" "grid_viewable_all" "grid_viewable_labels" "grid_opaqueness" "datum_viewable_all" "datum_viewable_labels" "marker_viewable_all" "marker_viewable_labels" "oparea_viewable_all" "oparea_viewable_labels" "drop_point_viewable_all" "drop_point_coords" "drop_point_vertex_size" "range_pulse_viewable_all" "comms_pulse_viewable_all" "vehicles_viewable" "vehicles_name_mode" "stale_report_thresh" "stale_remove_thresh" "vehicles_active_color" "vehicles_inactive_color" "trails_viewable" "trails_color" "trails_point_size" "bearing_lines" "appcast_viewable" "refresh_mode" "nodes_font_size" "procs_font_size" "infocast_font_size" "appcast_font_size" "appcast_color_scheme" "appcast_width" "appcast_height" "scope" "action" "action+" "button_one" "button_two" "button_three" "button_four" "button_five" "button_six" "button_seven" "button_eight" "button_nine" "button_ten" "button_eleven" "button_twelve" "button_thirteen" "button_fourteen" "button_fifteen" "button_sixteen" "button_seventeen" "button_eighteen" "button_nineteen" "button_twenty" "button_1" "button_2" "button_3" "button_4" "button_5" "button_6" "button_7" "button_8" "button_9" "button_10" "button_11" "button_12" "button_13" "button_14" "button_15" "button_16" "button_17" "button_18" "button_19" "button_20" "op_vertex" "marker" "marker_scale" "vehicles_shape_scale" "vcolor" "cmd" "node_pulse_viewable_all" "watch_cluster" "content_mode" "realmcast_channel" "infocast_viewable" "max_appcast_events")
 
       '("uFldContactRangeSensor" "push_distance" "pull_distance" "push_dist" "pull_dist" "ping_wait" "report_vars" "ground_truth" "verbose" "display_pulses" "ping_color" "echo_color" "reply_color" "allow_echo_types" "rn_uniform_pct" "rn_gaussian_sigma" "sensor_arc" "max_appcast_events")
-      '("uFldNodeComms" "comms_range" "critical_range" "stale_time" "min_msg_interval" "max_msg_length" "view_node_rpt_pulses" "verbose" "stealth" "earange" "groups" "min_rpt_interval" "pulse_duration" "drop_percentage" "max_appcast_events")
+      '("uFldNodeComms" "comms_range" "critical_range" "stale_time" "min_msg_interval" "max_msg_length" "view_node_rpt_pulses" "verbose" "stealth" "earange" "msg_groups" "groups" "min_rpt_interval" "pulse_duration" "drop_percentage" "max_appcast_events")
       '("uFldFlagManager" "flag" "grabbed_color" "ungrabbed_color" "default_flag_type" "default_flag_width" "default_flag_range" "grab_post" "near_post" "away_post" "deny_post" "goal_post" "home_post" "max_appcast_events")
       '("uDialogManager" "nickname")
       '("uFunctionVis")
@@ -91,6 +91,7 @@
       '("uFldPathCheck" "history_length")
       '("pShare" "input" "output" "" "" "" "")
       '("pBasicContactMgr" "alert" "alert_range_color" "cpa_range_color" "contact_max_age" "display_radii" "display_radii_id" "alert_verbose" "decay" "contacts_recap_interval" "contact_local_coords" "ignore_group" "ignore_type" "match_type" "match_group" "match_region" "ignore_region" "strict_ignore" "range_report_timeout" "post_closest_range" "max_retired_history" "reject_range" "contact_max_age" "eval_range_far" "eval_range_near" "max_appcast_events")
+
       '("pContactMgrV20" "alert" "alert_range_color" "cpa_range_color" "contact_max_age" "display_radii" "display_radii_id" "alert_verbose" "decay" "recap_interval" "contact_local_coords" "ignore_group" "ignore_type" "match_type" "match_group" "match_region" "ignore_region" "strict_ignore" "range_report_timeout" "post_closest_range" "max_retired_history" "reject_range" "contact_max_age" "eval_range_far" "eval_range_near" "max_appcast_events" "post_all_ranges" )
 
       '("uLoadWatch" "thresh" "breach_trigger" "max_appcast_events")
@@ -120,7 +121,7 @@
        '("uFldTaskMonitor")
 
       '("pTowManager" "ownship"  "max_appcast_events")
-      '("pEvalConvoy" "on_tail_thresh"  "alignment_thresh" "on_tail_thresh" "alignment_thresh" "recap_var" "stat_recap_var" "tracking_thresh" "rng_switch_thresh")
+      '("pEvalConvoy" "on_tail_thresh"  "alignment_thresh" "on_tail_thresh" "alignment_thresh" "recap_var" "stat_recap_var" "tracking_thresh" "rng_switch_thresh" "match_group" )
 
       '("pFrontGridRender" "grid_config" )
 

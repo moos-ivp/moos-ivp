@@ -53,7 +53,7 @@
        '("BHV_AvoidObstacle" "post_mapping" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "buffer_dist" "obstacle_key" "completed_dist" "no_alert_request" "i_understand_this_behavior_is_deprecated")
        '("BHV_AvoidObstacleX" "post_mapping" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "min_util_cpa_dist" "max_util_cpa_dist" "obstacle_key" "completed_dist" "no_alert_request" "use_refinery" "i_understand_this_behavior_is_deprecated")
        '("BHV_AvoidObstacleV21" "post_mapping" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "min_util_cpa_dist" "max_util_cpa_dist" "obstacle_key" "completed_dist" "no_alert_request" "use_refinery" "id")
-       '("BHV_HSLine" "post_mapping" "time_on_leg")
+       '("BHV_HSLine" "post_mapping" "time_on_leg" )
        '("BHV_TestFailure" "post_mapping" "failure_type")
        '("BHV_CutRange" "post_mapping" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "pwt_inner_dist" "giveup_dist" "patience" "on_no_contact_ok" "pursueflag" "giveupflag" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "exit_on_filter_region")
        '("BHV_Shadow" "post_mapping" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "heading_peakwidth" "heading_basewidth" "speed_peakwidth" "speed_basewidth" "on_no_contact_ok" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "exit_on_filter_region")
