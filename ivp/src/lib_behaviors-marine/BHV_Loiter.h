@@ -76,6 +76,7 @@ private:  // Configuration Parameters
   std::string  m_hint_nextpt_lcolor;
   double       m_hint_nextpt_vertex_size;
   std::string  m_hint_poly_label;
+  std::string  m_hint_poly_lcolor;
 
   std::string  m_loiter_mode;
 

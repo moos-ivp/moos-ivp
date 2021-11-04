@@ -597,7 +597,10 @@ void BHV_Loiter::postViewablePolygon()
     seglist.set_label(bhv_tag);
   else
     seglist.set_label(m_hint_poly_label);
-
+  if(m_hint_poly_lcolor != "")
+    seglist.set_label_color(m_hint_poly_lcolor);
+    
+  
   string poly_spec = seglist.get_spec();
   postMessage("VIEW_POLYGON", poly_spec);
 }
@@ -677,6 +680,8 @@ void BHV_Loiter::handleVisualHint(string hint)
     m_hint_nextpt_vertex_size = atof(value.c_str());
   else if(param == "label")
     m_hint_poly_label = value;
+  else if((param == "lcolor") || (param == "label_color"))
+    m_hint_poly_lcolor = value;
 }
 
 //-----------------------------------------------------------
