@@ -179,6 +179,7 @@ bool isColor(const string &str)
 {
   if((tolower(str) == "black") || 
      (tolower(str) == "empty") ||
+     (tolower(str) == "off") ||
      (tolower(str) == "invisible"))
     return(true);
   
