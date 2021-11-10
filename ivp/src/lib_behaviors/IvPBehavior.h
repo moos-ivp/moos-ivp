@@ -88,12 +88,6 @@ public:
   void   clearMessages()                 {m_messages.clear();}
   void   resetStateOK()                  {m_bhv_state_ok=true;}
 
-  void    postMessage(std::string, std::string, std::string key="");
-
-  void    postXMessage(std::string, std::string, std::string key="");
-  void    postXMessage(std::string, double, std::string key="");
-  void    postXBoolMessage(std::string, double, std::string key="");
-
   void    noteLastRunCheck(bool, double);
   
   void    setDynamicallySpawned(bool v)   {m_dynamically_spawned=v;}
@@ -112,6 +106,8 @@ public:
   void    addInfoVars(std::string, std::string="");
   void    setComplete();
   void    postBadConfig(std::string);
+
+  void    postMessage(std::string, std::string, std::string key="");
   void    postMessage(std::string, double, std::string key="");
 
   void    postBoolMessage(std::string, bool, std::string key="");
@@ -120,12 +116,28 @@ public:
   void    postRepeatableMessage(std::string, std::string);
   void    postEMessage(std::string);
   void    postWMessage(std::string);
+
   void    postEventMessage(std::string);
   void    postRepeatableEventMessage(std::string);
   void    postRetractWMessage(std::string);
   void    postFlags(const std::string&, bool repeat=false);
   void    postFlags(const std::vector<VarDataPair>&, bool repeat=false);
 
+  void    postXMessage(std::string, std::string, std::string key="");
+  void    postXMessage(std::string, double, std::string key="");
+  void    postXMessage(std::string, bool, std::string key="");
+
+  void    postGMessage(std::string, std::string, std::string key="");
+  void    postGMessage(std::string, double, std::string key="");
+  void    postGMessage(std::string, bool, std::string key="");
+
+  void    postOffboardMessage(std::string, std::string,
+			      std::string, std::string key="");
+  void    postOffboardMessage(std::string, std::string,
+			      double, std::string key="");
+  void    postOffboardMessage(std::string, std::string,
+			      bool, std::string key="");
+  
   void    postDurationStatus();
   bool    durationExceeded();
   void    durationReset();
@@ -154,6 +166,7 @@ public:
   std::vector<double>      getBufferDoubleVector(std::string, bool&);
   std::vector<std::string> getBufferStringVector(std::string, bool&);
   std::vector<std::string> getStateSpaceVars();
+  std::string              getOwnGroup();
 
   bool                     getBufferDoubleValX(std::string, double&);
   bool                     getBufferStringValX(std::string, std::string&);
