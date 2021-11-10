@@ -1169,6 +1169,7 @@ bool HelmIvP::OnStartUp()
   m_helm_start_time = m_curr_time;
   if(!m_info_buffer) {
     m_info_buffer = new InfoBuffer;
+    m_info_buffer->setCurrTime(m_curr_time);
     m_info_buffer->setStartTime(m_helm_start_time);
   }
     
