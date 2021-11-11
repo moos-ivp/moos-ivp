@@ -24,6 +24,7 @@
 #include <iostream>
 #include "AppLogEntry.h"
 #include "MBUtils.h"
+#include "ColorParse.h"
 
 using namespace std;
 
@@ -74,21 +75,29 @@ vector<string> AppLogEntry::getWrapLines()
 }
 
 //----------------------------------------------------------------
-// Procedure: stringtoAppLogEntry()
+// Procedure: stringToAppLogEntry()
 //   Example: APP_LOG = "iter=23,log=line!@#line!@#...!@#line"
 
 AppLogEntry stringToAppLogEntry(string raw, bool verbose)
 {
   AppLogEntry null_entry;
   AppLogEntry good_entry;
-  
+
   while(raw != "") {
-    string field = biteStringX(raw, ',');
-    string param = biteStringX(field, '=');
-    string value = field;
+    string param, value;
+    if(strBegins(raw, "log=")) {
+      param = biteStringX(raw, '=');
+      value = raw;
+    }
+    else {
+      string field = biteStringX(raw, ',');
+      param = biteStringX(field, '=');
+      value = field;
+    }
+    
     if(param == "iter") {
       int ival = atoi(value.c_str());
-      if(ival < 1) {
+      if(ival < 0) {
 	if(verbose)
 	  cout << "VERBOSE: bad ival:" << ival << endl;
 	return(null_entry);
@@ -96,6 +105,9 @@ AppLogEntry stringToAppLogEntry(string raw, bool verbose)
     }
     else if(param == "log") {
       vector<string> lines = parseString(value, "!@#");
+      for(unsigned int i=0; i<lines.size(); i++)  {
+	lines[i] = removeTermColors(lines[i]);
+      }
       good_entry.setAppLogLines(lines);
       if(verbose)
 	cout << "VERBOSE: numlines: " << lines.size() << endl;

@@ -518,6 +518,10 @@ ALogEntry getNextRawALogEntry(FILE *fileptr, bool allstrings)
 	buffix = 0;
 	state=5;
       }
+      else if(state==6) {      // mikerb nov1121
+	buff[buffix] = mychar;
+	buffix++;
+      }
       break;	  
     case '\n':
       buff[buffix] = '\0';  // attach terminating NULL
