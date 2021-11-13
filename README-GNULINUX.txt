@@ -1,5 +1,5 @@
 README-LINUX.txt
-Last updated: 19 June 2012
+Last updated: 12 November 2021
 Maintainer: Mike Benjamin (issues@moos-ivp.org)
 
 
@@ -8,7 +8,7 @@ OVERVIEW
 This file gives GNU/Linux-specific steps for building and running 
 MOOS-IvP software.
 
-Testing is primarily done on Ubuntu 12.2LTS 32bit and 64bit. We are 
+Testing is primarily done on Ubuntu 18.4LTS. We are 
 happy to feedback from user of other GNU/Linux distros.
 
 UBUNTU PACKAGES
@@ -30,10 +30,11 @@ Additional packages:
   libxft-dev      - FreeType-based font drawing library for X
   libxinerama-dev - X11 Xinerama extension library (development headers)
   libtiff5-dev    - Tag Image File Format library (TIFF), development files
-
+  espeak          - Text to voice (used in the iSay app)
+  
 To do it all, cut and paste this:
 
-  sudo apt-get install g++ subversion xterm cmake libfltk1.3-dev freeglut3-dev libpng12-dev libjpeg-dev libxft-dev libxinerama-dev libtiff4-dev
+  sudo apt install g++ subversion xterm cmake libfltk1.3-dev freeglut3-dev libpng12-dev libjpeg-dev libxft-dev libxinerama-dev libtiff4-dev espeak
 
 
 NOTE: As of this date we are no longer including FLTK as part of the 
