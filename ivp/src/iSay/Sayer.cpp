@@ -43,7 +43,8 @@ Sayer::Sayer()
   m_min_utter_interval   = 1.0;  // seconds
   m_interval_policy      = "from_end";
   m_os_mode              = "both";
-
+  m_volume               = 1; // normal volume
+  
   // Initialize state variables
   m_last_utter_time  = 0;
   m_isay_filter      = "none";  // or ignore, or hold
@@ -58,7 +59,7 @@ Sayer::Sayer()
 bool Sayer::OnNewMail(MOOSMSG_LIST &NewMail)
 {
   AppCastingMOOSApp::OnNewMail(NewMail);
-
+  
   MOOSMSG_LIST::iterator p;
   for(p=NewMail.begin(); p!=NewMail.end(); p++) {
     CMOOSMsg &msg = *p;
@@ -68,7 +69,7 @@ bool Sayer::OnNewMail(MOOSMSG_LIST &NewMail)
     string comm  = msg.GetCommunity();
 
     string utter_source = comm + ":" + msrc;
-
+    
 #if 0 // Keep these around just for template
     double dval  = msg.GetDouble();
     double mtime = msg.GetTime();
@@ -76,21 +77,29 @@ bool Sayer::OnNewMail(MOOSMSG_LIST &NewMail)
     bool   mstr  = msg.IsString();
 #endif
 
+    bool handled = true;
     if(key == "SAY_MOOS") {
       m_total_received++;
-      addUtterance(sval, utter_source);
+      handled = addUtterance(sval, utter_source);
     }
     else if(key == "SAY_FILTER") {
       string val = tolower(sval);
       if((val=="none") || (val=="ignore") || (val=="hold"))
 	m_isay_filter = val;
+      else
+	handled = false;
     }
+    else if(key == "SAY_VOLUME")
+      handled = handleSetVolume(sval);
 
-     else if(key != "APPCAST_REQ") // handle by AppCastingMOOSApp
-       reportRunWarning("Unhandled Mail: " + key);
-   }
-	
-   return(true);
+    else if(key != "APPCAST_REQ") // handle by AppCastingMOOSApp
+      handled = false;
+
+    if(!handled)
+      reportRunWarning("Unhandled Mail: " + key + "=" + sval);
+  }
+  
+  return(true);
 }
 
 //---------------------------------------------------------
@@ -182,6 +191,8 @@ bool Sayer::OnStartUp()
       m_audio_dirs.push_back(value);
       handled = true;
     }
+    else if(param == "volume")
+      handled = handleSetVolume(value);
     else if((param == "min_utter_interval") && isNumber(value)) {
       m_min_utter_interval = atof(value.c_str());
       if(m_min_utter_interval < 0)
@@ -207,6 +218,7 @@ void Sayer::registerVariables()
   AppCastingMOOSApp::RegisterVariables();
   Register("SAY_MOOS", 0);
   Register("SAY_FILTER", 0);
+  Register("SAY_VOLUME", 0);
 }
 
 
@@ -237,6 +249,51 @@ bool Sayer::addUtterance(string utterance_str, string utter_source)
       m_utter_pqueue.push(utter);
   }
   return(ok);
+}
+
+//---------------------------------------------------------
+// Procedure: handleSetVolume()
+//      Note: AFPlay (used when playing wav or mp3 files) takes a
+//            numerical value between 0 and 255. Zero is mute. 255
+//            might damage your speakers. 1 is normal. Values
+//            between [0,2] are allowed. Convenience arguments of
+//            mute=0, soft=0.5, vsoft=0.2, and loud=1.5 are supported.
+//      Note: The MacOS say command will accept volume adjustments with
+//            $ say "[[volm 1.5]] Hello World". Same range of values
+//            used for afplay
+
+bool Sayer::handleSetVolume(string volume)
+{
+  if(volume == "mute")
+    m_volume = 0;
+  else if(volume == "vsoft")
+    m_volume = 0.1;
+  else if(volume == "soft")
+    m_volume = 0.4;
+  else if(volume == "normal")
+    m_volume = 1.0;
+  else if(volume == "loud")
+    m_volume = 1.5;
+  else if(volume == "vloud")
+    m_volume = 2.0;
+  else if(volume == "softer")
+    m_volume -= 0.1;
+  else if(volume == "louder")
+    m_volume += 0.1;
+  else if(isNumber(volume))
+    m_volume = atof(volume.c_str());
+  else
+    return(false);
+
+  // Clip the volume. In my experience, setting the volume super high
+  // may blow past sensible limits normally in place for the computer,
+  // perhaps damaging internal speakers.
+  if(m_volume < 0)
+    m_volume = 0;
+  if(m_volume > 2)
+    m_volume = 2;
+  
+  return(true);
 }
 
 //---------------------------------------------------------
@@ -287,6 +344,11 @@ bool Sayer::sayUtterance()
       cmd  = "say -r " + str_rate;
       if(voice != "")
 	cmd += " -v " + voice;
+
+      // Ex: $ say "[[volm 2]] Hello"
+      if(m_volume != 1)
+	text = "[[volm " + doubleToStringX(m_volume) + "]] " + text;
+
       cmd += " \"" + text + "\" ";
     }
     // Build the system command string (Linux)
@@ -328,8 +390,10 @@ bool Sayer::sayUtterance()
     }
 
     // Build the system command string (OSX)
-    if((m_os_mode == "osx") || (m_os_mode == "both"))
-      cmd = "afplay " + found_file;
+    if((m_os_mode == "osx") || (m_os_mode == "both")) {
+      cmd = "afplay -v " + doubleToString(m_volume);
+      cmd += " " + found_file;
+    }
     // Build the system command string (Linux)
     else if((m_os_mode == "linux") || (m_os_mode == "both"))
       cmd = "aplay " + found_file;

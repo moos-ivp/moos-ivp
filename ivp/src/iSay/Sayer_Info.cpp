@@ -118,8 +118,11 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("SUBSCRIPTIONS:                                                  ");
   blk("------------------------------------                            ");
-  blk("  SAY_MOOS = say={Would you like to play a game?}, rate=200     ");
-  blk("  SAY_MOOS = file=file.wav                                      ");
+  blk("  SAY_MOOS   = say={Would you like to play a game?}, rate=200   ");
+  blk("  SAY_MOOS   = file=file.wav                                    ");
+  blk("                                                                ");
+  blk("  SAY_VOLUME = soft   // Options: mute,vsoft,soft,normal,loud,  ");
+  blk("                      // vloud,softer,louder, or number [0,2].  ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
