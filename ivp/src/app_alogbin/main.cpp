@@ -76,7 +76,7 @@ int main(int argc, char *argv[])
 void showHelpAndExit()
 {
   cout << "Usage: " << endl;
-  cout << "  aloggrep file.log [OPTIONS]                              " << endl;
+  cout << "  alogbin file.log [OPTIONS]                               " << endl;
   cout << "                                                           " << endl;
   cout << "Synopsis:                                                  " << endl;
   cout << "  Given a file of data, one value per line, bin each value " << endl;
