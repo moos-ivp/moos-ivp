@@ -23,6 +23,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <iostream>
 #include "VarDataPairUtils.h"
 #include "MBUtils.h"
 
@@ -30,25 +31,33 @@ using namespace std;
 
 //------------------------------------------------------------------
 // Procedure: setVarDataPairOnString()
-//      Note: Basic form:  MESSAGE = hello
-//                         AMOUNT = 34
-//            Range posts: @<40 MESSAGE = hello
-//                         @>55 MESSAGE = bye
-//                         <10 MESSAGE = trouble
+//      Note: Basic form: MESSAGE = hello
+//                        AMOUNT = 34
+//            Event tags: @cpa MESSAGE = hello
+//                        @>55 MESSAGE = bye
+//            Dest tags:  #group MESSAGE = disperse
+//                        #all+  MESSAGE = gather
+//      Example: @cpa #group RETURN_HOME=tru
 
 bool setVarDataPairOnString(VarDataPair& pair, string str)
 {
-  // Sanity check
+  // Part 1: Sanity check
   str = stripBlankEnds(str);
   if(str == "")
     return(false);
 
-  // Check if this posting has a post_tag. This supports VarData Pairs
-  // tied to inter-vehicle ranges in the IvPContactBehavior and contact
-  // behaviors.
+  // Part 2: Check if this posting has a post_tag. This supports
+  // VarData Pairs tied to inter-vehicle ranges in the
+  // IvPContactBehavior and contact behaviors.
   string post_tag;
   if((str.at(0) == '@') || (str.at(0) == '<') || (str.at(0) == '>'))
     post_tag = tolower(biteStringX(str, ' '));
+
+  string dest_tag;
+  if(str.at(0) == '#') {
+    biteStringX(str, '#');
+    dest_tag = tolower(biteStringX(str, ' '));
+  }
   
   string var = biteStringX(str, '=');
   string val = str;
@@ -56,7 +65,9 @@ bool setVarDataPairOnString(VarDataPair& pair, string str)
     return(false);
   VarDataPair new_pair(var, val, "auto");
   new_pair.set_post_tag(post_tag);
+  new_pair.set_dest_tag(dest_tag);
   pair = new_pair;
+
   return(true);
 }
 

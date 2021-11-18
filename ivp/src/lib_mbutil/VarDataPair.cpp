@@ -286,8 +286,13 @@ bool VarDataPair::is_solo_macro() const
 
 string VarDataPair::getPrintable() const
 {
-  string rstring = m_var;
-  rstring += "=";
+  string rstring;
+  if(m_post_tag != "")
+    rstring += m_post_tag + " ";
+  if(m_dest_tag != "")
+    rstring += m_dest_tag + " ";
+
+  rstring += m_var + "=";
 
   if(m_is_string) {
     if(isNumber(m_sdata)) {
