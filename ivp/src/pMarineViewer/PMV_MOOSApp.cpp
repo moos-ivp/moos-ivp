@@ -138,6 +138,8 @@ bool PMV_MOOSApp::Iterate()
 
   m_pending_moos_events->enqueue(e);
   Fl::awake();
+
+  // m_gui->mviewer->autoZoom();
   
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -242,6 +244,7 @@ void PMV_MOOSApp::registerVariables()
   Register("PMV_MENU_CONTEXT", 0);
   Register("PMV_CLEAR", 0);
   Register("PMV_CENTER");
+  Register("PMV_CONFIG");
 
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++)
@@ -349,6 +352,8 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       handled = handleMailClear(sval);
     else if(key == "PMV_CENTER") 
       handled = handleMailCenter(sval);
+    else if(key == "PMV_CONFIG") 
+      handled = handleMailConfig(sval);
 
       
     // PMV_MENU_CONTEXT = 
@@ -392,11 +397,6 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       }
     }
 
-    if(!handled)
-      handled = m_gui->mviewer->addGeoShape(key, sval, community, MOOSTime());
-    if(!handled)
-      handled = m_gui->mviewer->setParam(key, sval);
-
     if(!handled && (key == "APPCAST")) {
       handled = m_appcast_repo->addAppCast(sval);
       handled_appcast = true;
@@ -405,11 +405,6 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     if(!handled && (key == "REALMCAST")) {
       handled = m_realm_repo->addRealmCast(sval);
       handled_relcast = true;
-    }
-    
-    if(key == "VIEW_POLYGON") {
-      XYPolygon tpoly = string2Poly(sval);
-      Notify("VPOLY", tpoly.get_spec());
     }
     
     if(!handled && (key == "WATCHCAST")) {
@@ -432,6 +427,11 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       }
     }
     
+    if(!handled)
+      handled = m_gui->mviewer->addGeoShape(key, sval, community, MOOSTime());
+    if(!handled)
+      handled = m_gui->mviewer->setParam(key, sval);
+
     if(!handled && !handled_scope) {
       string warning = "Unhandled Mail: var=" + key;
       warning += ", src=" + msg.GetSource();
@@ -1060,7 +1060,8 @@ bool PMV_MOOSApp::handleMailCenter(string str)
   if((xstr != "") && (ystr != "")) {
     double dx = atof(xstr.c_str());
     double dy = atof(ystr.c_str());
-    m_gui->mviewer->setCenterView(dx, dy);
+    //m_gui->mviewer->setCenterView(dx, dy);
+    m_gui->mviewer->setAutoZoom(dx, dy);
   }
   else if(vname != "")
     m_gui->mviewer->setCenterView(vname);
