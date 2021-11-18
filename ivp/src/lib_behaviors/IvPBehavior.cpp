@@ -396,6 +396,19 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 
 //-----------------------------------------------------------
 // Procedure: postMessage()
+//     Notes: Convenience function. If string value is non-empty
+//            then post as a string and ignore the double value
+
+void IvPBehavior::postMessage(string var, string sval, double dval, string key)
+{
+  if(sval != "")
+    postMessage(var, sval, key);
+  else
+    postMessage(var, dval, key);
+}
+
+//-----------------------------------------------------------
+// Procedure: postMessage()
 //     Notes: If the key is set to be "repeatable" then in effect 
 //            there is no key is associated with this variable-value 
 //            pair and it will NOT be filtered.
@@ -420,6 +433,19 @@ void IvPBehavior::postMessage(string var, string sdata, string key)
   }
 
   m_messages.push_back(pair);
+}
+
+//-----------------------------------------------------------
+// Procedure: postXMessage()
+//     Notes: Convenience function. If string value is non-empty
+//            then post as a string and ignore the double value
+
+void IvPBehavior::postXMessage(string var, string sdata,
+			       double ddata, string key)
+{  if(sdata != "")
+    postOffboardMessage("all", var, sdata, key);
+  else
+    postOffboardMessage("all", var, ddata, key);
 }
 
 //-----------------------------------------------------------
@@ -451,13 +477,24 @@ void IvPBehavior::postXMessage(string var, bool bdata, string key)
 
 //-----------------------------------------------------------
 // Procedure: postGMessage()
+//     Notes: Convenience function. If string value is non-empty
+//            then post as a string and ignore the double value
+
+void IvPBehavior::postGMessage(string var, string sdata,
+			       double ddata, string key)
+{  if(sdata != "")
+    postOffboardMessage("group", var, sdata, key);
+  else
+    postOffboardMessage("group", var, ddata, key);
+}
+
+//-----------------------------------------------------------
+// Procedure: postGMessage()
 //     Notes: Convenience function
 
 void IvPBehavior::postGMessage(string var, string sdata, string key)
 {
-  cout << "postGMessage1" << endl;
   postOffboardMessage("group", var, sdata, key);
-  cout << "postGMessage2" << endl;
 }
 
 //-----------------------------------------------------------
@@ -1234,6 +1271,10 @@ void IvPBehavior::postFlags(const string& str, bool repeatable)
 
 void IvPBehavior::postFlags(const vector<VarDataPair>& flags, bool repeatable)
 {
+  for(unsigned int i=0; i<flags.size(); i++) 
+    postFlag(flags[i], repeatable);
+
+#if 0
   string key;
   if(repeatable)
     key = "repeatable";
@@ -1266,6 +1307,65 @@ void IvPBehavior::postFlags(const vector<VarDataPair>& flags, bool repeatable)
       postMessage(var, ddata, key);
     }	
   }    
+#endif
+}
+
+
+//-----------------------------------------------------------
+// Procedure: postFlag()
+//     Notes: The repeat argument indicates that the posting should
+//            be made as postRepeatable. This means the helm's
+//            duplication filter will let it through absolutely.
+
+void IvPBehavior::postFlag(const VarDataPair& flag, bool repeatable)
+{
+  cout << "pfl: " << flag.getPrintable() << endl;
+  // Part 1: If flag is tagged as repeatable, create a key used for
+  // engaging with the helm duplication filter. 
+  string key;
+  if(repeatable)
+    key = "repeatable";
+  
+  // Part 2: Get the variable name and initialize the sdata/ddata
+  // fields. A non-empty-string sdata will mean this is a string posting
+  string var = flag.get_var();
+  string sdata;
+  double ddata = 0;
+
+  // Part 3: Detect if the posting is a stand-alone macro. If it is, and
+  // it expands to a numerical value, post it as a number not a string
+  if(flag.is_solo_macro()) {
+    string tmp_sdata = flag.get_sdata();
+    tmp_sdata = expandMacros(tmp_sdata);
+    if(isNumber(tmp_sdata))
+      ddata = atof(tmp_sdata.c_str());
+    else 
+      sdata = tmp_sdata;
+  }
+  else if(flag.is_string()) {
+    sdata = flag.get_sdata();
+    sdata = expandMacros(sdata);
+  }
+  else
+    ddata = flag.get_ddata();
+
+  // Part 4: Determine the destination of the post. By default if no
+  // destination is given, the post is just made locally to ownship as
+  // was always the case since the earliest versions.
+  string dest_tag = flag.get_dest_tag();
+  cout << "pfl: dest_tag:" << dest_tag << endl;
+  
+  // Part 4A: Determine if post is made to local (ownship) MOOSDB
+  if((dest_tag == "") || (dest_tag == "all+") || (dest_tag == "group+"))
+    postMessage(var, sdata, ddata, key);
+
+  // Part 4B: Determine if we post is made to ownship group
+  if((dest_tag == "group") || (dest_tag == "group+"))
+    postGMessage(var, sdata, ddata, key);
+
+  // Part 4C: Determine if we post is made to everyone
+  if((dest_tag == "all") || (dest_tag == "all+"))
+    postXMessage(var, sdata, ddata, key);
 }
 
 

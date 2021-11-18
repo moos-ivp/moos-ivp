@@ -107,30 +107,31 @@ public:
   void    setComplete();
   void    postBadConfig(std::string);
 
+  void    postFlags(const std::string&, bool repeat=false);
+  void    postFlags(const std::vector<VarDataPair>&, bool repeat=false);
+  void    postFlag(const VarDataPair&, bool repeat=false);
+
+  void    postMessage(std::string, std::string, double, std::string key="");
   void    postMessage(std::string, std::string, std::string key="");
   void    postMessage(std::string, double, std::string key="");
-
   void    postBoolMessage(std::string, bool, std::string key="");
   void    postIntMessage(std::string, double, std::string key="");
   void    postRepeatableMessage(std::string, double);
   void    postRepeatableMessage(std::string, std::string);
   void    postEMessage(std::string);
   void    postWMessage(std::string);
-
   void    postEventMessage(std::string);
   void    postRepeatableEventMessage(std::string);
   void    postRetractWMessage(std::string);
-  void    postFlags(const std::string&, bool repeat=false);
-  void    postFlags(const std::vector<VarDataPair>&, bool repeat=false);
 
+  void    postXMessage(std::string, std::string, double, std::string key="");
   void    postXMessage(std::string, std::string, std::string key="");
   void    postXMessage(std::string, double, std::string key="");
   void    postXMessage(std::string, bool, std::string key="");
-
+  void    postGMessage(std::string, std::string, double, std::string key="");
   void    postGMessage(std::string, std::string, std::string key="");
   void    postGMessage(std::string, double, std::string key="");
   void    postGMessage(std::string, bool, std::string key="");
-
   void    postOffboardMessage(std::string, std::string,
 			      std::string, std::string key="");
   void    postOffboardMessage(std::string, std::string,
