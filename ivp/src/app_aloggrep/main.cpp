@@ -47,7 +47,13 @@ int main(int argc, char *argv[])
   bool gaplines_retained = scanArgs(argc, argv, "--gap_len", "-gl");
   bool appcast_retained  = scanArgs(argc, argv, "--appcast", "-ac");
   bool sort_by_time      = scanArgs(argc, argv, "--sort", "-s");
-  bool remove_duplicates = scanArgs(argc, argv, "--duplicates", "-d");
+
+  bool remove_duplicates = false;
+  if(scanArgs(argc, argv, "--duplicates", "-d")) {
+    sort_by_time = true;
+    remove_duplicates = true;
+  }
+
   if(scanArgs(argc, argv, "--sd", "-sd")) {
     sort_by_time = true;
     remove_duplicates = true;
@@ -155,6 +161,7 @@ int main(int argc, char *argv[])
     return(0);
   }
 
+  
   vector<string> keys;
   string alogfile_in;
   string alogfile_out;
