@@ -25,7 +25,6 @@
 #include <windows.h>
 #include <GL/gl.h>
 #include "glext.h" // http://www.opengl.org/registry/api/glext.h
- //#include "tiffio.h" // CWG - TIFFIO Not needed
 #else
 #include <tiffio.h>
 #endif
@@ -65,6 +64,11 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_zoom        = 1.0;
   m_vshift_x    = 0;
   m_vshift_y    = 0;
+
+  m_targ_zoom     = -1;
+  m_targ_vshift_x = 0;
+  m_targ_vshift_y = 0;
+
   m_x_origin    = 0;
   m_y_origin    = 0;
 
@@ -451,6 +455,7 @@ double MarineViewer::img2meters(char xy, double img_val) const
 
 void MarineViewer::draw()
 {
+  autoZoom();
   double r = m_fill_shade;
   double g = m_fill_shade;
   double b = m_fill_shade + 0.1;
@@ -1025,7 +1030,8 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
 //-------------------------------------------------------------
 // Procedure: drawMarkers
 
-void MarineViewer::drawMarkers(const map<string, XYMarker>& markers)
+void MarineViewer::drawMarkers(const map<string, XYMarker>& markers,
+			       double timestamp)
 {
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the optional "true" argument means return
@@ -1035,18 +1041,19 @@ void MarineViewer::drawMarkers(const map<string, XYMarker>& markers)
 
   map<string, XYMarker>::const_iterator p;
   for(p=markers.begin(); p!=markers.end(); p++)
-    if(p->second.active())
-      drawMarker(p->second);
+    drawMarker(p->second, timestamp);
 }
 
 //-------------------------------------------------------------
 // Procedure: drawMarker
 
-void MarineViewer::drawMarker(const XYMarker& marker)
+void MarineViewer::drawMarker(const XYMarker& marker, double timestamp)
 {
   if(!marker.active())
     return;
   if(!marker.valid())
+    return;
+  if(marker.expired(timestamp))
     return;
 
   double    gscale = m_geo_settings.geosize("marker_scale");
@@ -1364,7 +1371,8 @@ bool MarineViewer::initGeodesy(const string& str)
 //-------------------------------------------------------------
 // Procedure: drawPolygons
 
-void MarineViewer::drawPolygons(const vector<XYPolygon>& polys)
+void MarineViewer::drawPolygons(const vector<XYPolygon>& polys,
+				double timestamp)
 {
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the optional "true" argument means return
@@ -1400,8 +1408,12 @@ void MarineViewer::drawPolygons(const vector<XYPolygon>& polys)
   double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
 
   for(unsigned int k=0; k<polys.size(); k++) {
-    if(polys[k].active() && (polys[k].size() > 0)) {
+    //cout << "drawing poly with label: " << polys[k].get_label() << endl;
+    bool expired = polys[k].expired(timestamp);
+      
+    if(!expired && polys[k].active() && (polys[k].size() > 0)) {
       XYPolygon poly = polys[k];
+      //cout << "active poly with label: " << poly.get_label() << endl;
       unsigned int vsize = poly.size();
 
       vector<double> points((2*vsize), 2);
@@ -1727,17 +1739,21 @@ void MarineViewer::drawSegment(double x1, double y1, double x2, double y2,
 //-------------------------------------------------------------
 // Procedure: drawSegLists()
 
-void MarineViewer::drawSegLists(const vector<XYSegList>& segls)
+void MarineViewer::drawSegLists(const vector<XYSegList>& segls,
+				double timestamp)
 {
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the optional "true" argument means return
   // true if nothing is known about the parameter.
   if(!m_geo_settings.viewable("seglist_viewable_all", "true"))
     return;
-
-  for(unsigned int i=0; i<segls.size(); i++)
-    if(segls[i].active()) 
-      drawSegList(segls[i]); 
+  
+  for(unsigned int i=0; i<segls.size(); i++) {
+    XYSegList segl = segls[i];
+    
+    if(segl.active() && !segl.expired(timestamp))
+      drawSegList(segl);
+  }
 }
 
 //-------------------------------------------------------------
@@ -2442,8 +2458,7 @@ void MarineViewer::drawCircles(const map<string, XYCircle>& circles,
   
   map<string, XYCircle>::const_iterator p;
   for(p=circles.begin(); p!=circles.end(); p++)
-    if(p->second.active())
-      drawCircle(p->second, timestamp); 
+    drawCircle(p->second, timestamp); 
   
 }
 
@@ -2452,14 +2467,8 @@ void MarineViewer::drawCircles(const map<string, XYCircle>& circles,
 
 void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
 {
-  if(timestamp != 0) {
-    double circle_duration = circle.getDuration();
-    if(circle_duration > 0) {
-      double elapsed = timestamp - circle.get_time();
-      if(elapsed > circle_duration)
-	return;
-    }
-  }
+  if(circle.expired(timestamp) || !circle.active())
+    return;
 
   ColorPack edge_c("blue");
   ColorPack labl_c("white");
@@ -2664,6 +2673,7 @@ void MarineViewer::drawCommsPulses(const vector<XYCommsPulse>& pulses,
   // Optional "true" arg means return true if nothing known
   if(!m_geo_settings.viewable("comms_pulse_viewable_all", true))
     draw_msgs = false;
+  
 
   bool draw_nreps = true;
   // Optional "true" arg means return true if nothing known
@@ -2862,7 +2872,8 @@ void MarineViewer::drawPoint(const XYPoint& point)
 //-------------------------------------------------------------
 // Procedure: drawPoints()
 
-void MarineViewer::drawPoints(const map<string, XYPoint>& points)
+void MarineViewer::drawPoints(const map<string, XYPoint>& points,
+			      double timestamp)
 {
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the optional "true" argument means return
@@ -2895,8 +2906,9 @@ void MarineViewer::drawPoints(const map<string, XYPoint>& points)
 
   map<string, XYPoint>::const_iterator p;
   for(p=points.begin(); p!=points.end(); p++) {
-    if(p->second.active()) {
-      XYPoint point = p->second;
+    XYPoint point = p->second;
+
+    if(!point.expired(timestamp) && point.active()) {
       
       // Set defaults if no drawing hints found
       ColorPack vert_c = default_vert_color; 
@@ -3037,6 +3049,52 @@ void MarineViewer::gl_draw_aux(const string text)
   // returns a bad pointer.
   if(Fl_Window::current() == m_main_window) 
     gl_draw(text.c_str());
+}
+
+
+
+//-------------------------------------------------------------
+// Procedure: setAutoZoom()
+
+void MarineViewer::setAutoZoom(double tx, double ty)
+{
+  m_targ_zoom = 1;
+  m_targ_vshift_x = tx;
+  m_targ_vshift_y = ty;
+}
+
+//-------------------------------------------------------------
+// Procedure: autoZoom()
+
+void MarineViewer::autoZoom()
+{
+  if(m_targ_zoom < 0)
+    return;
+
+  double rate = 0.08;
+  
+  double cx = m_vshift_x;
+  double cy = m_vshift_y;
+  double tx = m_targ_vshift_x;
+  double ty = m_targ_vshift_y;
+  
+  double dist = hypot(cx-tx, cy-ty);
+  if(dist < 5) {
+    m_vshift_x = tx;
+    m_vshift_y = ty;
+    m_targ_zoom = -1;
+    return;
+  }
+
+  double rang = relAng(cx,cy, tx,ty);
+  
+  double mv_dist = rate * dist;
+
+  double new_cx, new_cy;
+  projectPoint(rang, mv_dist, cx,cy, new_cx,new_cy);
+
+  m_vshift_x = new_cx;
+  m_vshift_y = new_cy;
 }
 
 

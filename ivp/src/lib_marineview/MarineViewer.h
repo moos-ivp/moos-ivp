@@ -74,6 +74,9 @@ class MarineViewer : public Fl_Gl_Window
   std::string vehisetting(const std::string& s);
   void   clear(std::string vname, std::string shape, std::string stype);
 
+  void   setAutoZoom(double, double);
+  void   autoZoom();
+  
   void   handleNoTiff();
   void   setVerbose(bool bval=true);
   void   setZoom(double dval) {m_zoom = dval;}
@@ -116,13 +119,13 @@ protected:
 			   unsigned int line=0,
 			   double transparency=1);
 
-  void  drawMarkers(const std::map<std::string, XYMarker>&);
-  void  drawMarker(const XYMarker&);
+  void  drawMarkers(const std::map<std::string, XYMarker>&, double tstamp=0);
+  void  drawMarker(const XYMarker&, double tstamp=0);
 
-  void  drawPolygons(const std::vector<XYPolygon>&);
+  void  drawPolygons(const std::vector<XYPolygon>&, double timestamp=0);
   void  drawPolygon(const XYPolygon&);
   
-  void  drawSegLists(const std::vector<XYSegList>&);
+  void  drawSegLists(const std::vector<XYSegList>&, double timestamp=0);
   void  drawSegList(const XYSegList&);
 
   void  drawSeglrs(const std::vector<XYSeglr>&);
@@ -141,7 +144,7 @@ protected:
   void  drawConvexGrid(const XYConvexGrid&);
 
   void  drawCircles(const std::map<std::string, XYCircle>&, double timestamp=0);
-  void  drawCircle(const XYCircle&, double timestamp);
+  void  drawCircle(const XYCircle&, double timestamp=0);
 
   void  drawRangePulses(const std::vector<XYRangePulse>&, double timstamp);
   void  drawRangePulse(const XYRangePulse&, double timestamp);
@@ -149,7 +152,7 @@ protected:
   void  drawCommsPulses(const std::vector<XYCommsPulse>&, double timstamp);
   void  drawCommsPulse(const XYCommsPulse&, double timestamp);
   
-  void  drawPoints(const std::map<std::string, XYPoint>&);
+  void  drawPoints(const std::map<std::string, XYPoint>&, double timestamp=0);
 
   //  void  drawPoints(const std::map<std::string, XYPoint>&);
   void  drawPoint(const XYPoint&);
@@ -180,6 +183,10 @@ protected:
   bool      m_back_img_mod;
 
   bool      m_verbose;
+
+  double    m_targ_zoom;
+  double    m_targ_vshift_x;
+  double    m_targ_vshift_y;
   
   double    m_zoom;
   double    m_vshift_x; 
