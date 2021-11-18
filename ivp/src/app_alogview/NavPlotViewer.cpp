@@ -597,19 +597,19 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
   const map<string, XYCircle>& circles = geo_shapes.getCircles();
   const map<string, XYMarker>& markers = geo_shapes.getMarkers();
 
-  drawPolygons(polys);
-  drawGrids(grids);
-  drawSegLists(segls);
-  //drawSeglrs(seglrs);
-  drawCircles(circles);
-  drawPoints(points);
-  drawMarkers(markers);
-
   double global_logstart = m_dbroker.getGlobalLogStart();
   double utc_timestamp = global_logstart + m_curr_time;
 
+  drawPolygons(polys,  utc_timestamp);
+  drawSegLists(segls,  utc_timestamp);
+  drawCircles(circles, utc_timestamp);
+  drawPoints(points,   utc_timestamp);
+  drawMarkers(markers, utc_timestamp);
   drawRangePulses(rpulses, utc_timestamp);
   drawCommsPulses(cpulses, utc_timestamp);
+  //drawSeglrs(seglrs);
+
+  drawGrids(grids);
 }
 
 //-------------------------------------------------------------

@@ -267,8 +267,8 @@ void REPLAY_GUI::augmentMenu()
   if(item) item->hide();
   item = (Fl_Menu_Item*)m_menubar->find_item("GeoAttr/Datum");
   if(item) item->hide();
-  item = (Fl_Menu_Item*)m_menubar->find_item("GeoAttr/CommsPulses");
-  if(item) item->hide();
+  //item = (Fl_Menu_Item*)m_menubar->find_item("GeoAttr/CommsPulses");
+  //if(item) item->hide();
   item = (Fl_Menu_Item*)m_menubar->find_item("GeoAttr/OpArea");
   if(item) item->hide();
 
