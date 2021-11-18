@@ -66,6 +66,8 @@ bool VPlugPlot::addEvent(const string& var, const string& val, double time)
     m_vplugs[vsize-1].updateGrid(val);
   else if(var == "VIEW_RANGE_PULSE")
     m_vplugs[vsize-1].addRangePulse(val);
+  else if(var == "VIEW_COMMS_PULSE")
+    m_vplugs[vsize-1].addCommsPulse(val);
   else if(var == "VIEW_MARKER")
     m_vplugs[vsize-1].addMarker(val);
   return true;

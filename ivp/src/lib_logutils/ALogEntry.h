@@ -49,6 +49,7 @@ public:
   void setVarName(const std::string& s) {m_varname = s;}
   void setSource(const std::string& s)  {m_source = s;}
   void setSrcAux(const std::string& s)  {m_srcaux = s;}
+  void setNode(const std::string& s)    {m_node = s;}
   void setStatus(const std::string& s)  {m_status = s;}
   void setRawLine(const std::string& s) {m_raw_line = s;}
   void skewBackward(double v)           {m_timestamp -= v;}
@@ -61,6 +62,7 @@ public:
   std::string getVarName() const   {return(m_varname);}
   std::string getSource() const    {return(m_source);}
   std::string getSrcAux() const    {return(m_srcaux);}
+  std::string getNode() const      {return(m_node);}
   std::string getStringVal() const {return(m_sval);}
   double      getDoubleVal() const {return(m_dval);}
   bool        isNumerical() const  {return(m_isnum);}
@@ -76,6 +78,7 @@ protected:
   std::string m_varname;
   std::string m_source;
   std::string m_srcaux;
+  std::string m_node;
   std::string m_sval;
   double      m_dval;
   bool        m_isnum;

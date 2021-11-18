@@ -83,6 +83,7 @@ bool operator== (const ALogEntry& one, const ALogEntry& two)
      (one.getSource() == two.getSource())   &&
      (one.getSrcAux() == two.getSrcAux())   &&
      (one.getStringVal() == two.getStringVal()) &&
+     (one.getNode() == two.getNode()) &&
      (one.getDoubleVal() == two.getDoubleVal()) &&
      (one.isNumerical() == two.isNumerical())   &&
      (one.getRawLine() == two.getRawLine())   &&
