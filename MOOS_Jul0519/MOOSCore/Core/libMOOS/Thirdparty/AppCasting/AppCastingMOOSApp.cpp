@@ -66,14 +66,15 @@ bool AppCastingMOOSApp::Iterate()
   m_curr_time = MOOSTime();
 
   if(m_app_logging == "log") {
-    if(m_iteration == 1)
-      std::cout.rdbuf(m_cout.rdbuf());
 
-    // Part 1: Put together the report from the PREVIOUS iteration
+    // Part 1: Put together the report from the PREVIOUS iteration                        
     string str_log;
+    if(m_iteration == 1)
+      str_log = "iter=1,log=";
     if(m_app_logging_info != "")
       str_log = m_app_logging_info + ",";
-
+    
+    
     str_log += m_cout.str();
     // Replace all newline chars with "!@#"
     char rs_char = 30; 
@@ -93,7 +94,7 @@ bool AppCastingMOOSApp::Iterate()
 
     // Part 3: Create the base message for the next iteration 
     m_cout.str("");
-    m_cout << "iter=" << m_iteration + 1 << ",log=";
+    m_cout << "iter=" << m_iteration +1 << ",log=";
     m_app_logging_info = "";
   }
 
