@@ -1251,6 +1251,7 @@ void ContactMgrV20::postRadii(bool active)
   circle.set_edge_size(1);
   circle.set_active(active);
   circle.set_duration(3);
+  circle.set_time(m_curr_time);
   string s1 = circle.get_spec();
   Notify("VIEW_CIRCLE", s1);
 
@@ -1268,6 +1269,7 @@ void ContactMgrV20::postRadii(bool active)
     circ.set_edge_size(1);
     circ.set_active(active);
     circ.set_duration(3);
+    circ.set_time(m_curr_time);
     string s2 = circ.get_spec();
     
     Notify("VIEW_CIRCLE", s2);

@@ -354,8 +354,11 @@ void BHV_Trail::postViewableTrailPoint()
   XYPoint m_trail_point;
   m_trail_point.set_vertex(m_trail_pt_x, m_trail_pt_y);
   m_trail_point.set_label(m_us_name + "_trailpoint");
-  m_trail_point.set_duration(1);
   m_trail_point.set_active(true);
+
+  m_trail_point.set_duration(1);
+  m_trail_point.set_time(getBufferCurrTime());
+
   string spec = m_trail_point.get_spec();
   postMessage("VIEW_POINT", spec);
 }
