@@ -164,6 +164,7 @@ echo "Invoking cmake..."
 echo "BUILD_BOT_CODE_ONLY: ${BUILD_BOT_CODE_ONLY}   "
 
 cmake -DIVP_BUILD_GUI_CODE=${BUILD_GUI_CODE}               \
+      -DFLTK_SKIP_FLUID=ON                                 \
       -DIVP_BUILD_BOT_CODE_ONLY=${BUILD_BOT_CODE_ONLY}     \
       -DIVP_LIB_DIRECTORY="${LIB_ABS_DIR}"                 \
       -DIVP_BIN_DIRECTORY="${BIN_ABS_DIR}"                 \

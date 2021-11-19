@@ -61,10 +61,14 @@
 
        '("BHV_TaskWaypoint" "post_mapping" "type" "max_bid_wins" "team_range" "team_by_group" "bidwonflag" "xbidwonflag" "waypt_x" "waypt_y" "waypt" )
 
+       '("BHV_TaskMuster" "post_mapping" "type" "max_bid_wins" "team_range" "team_by_group" "bidwonflag" "xbidwonflag" "muster_region" )
+
        '("BHV_TaskConvoy" "type" "max_bid_wins" "team_range" "team_by_group" "bidwonflag" "xbidwonflag" )
 
        '("BHV_AndersonTurn" "default_turn_thresh" "default_turn_points" "default_turn_radius" "default_capture_radius" "engage_var" )
 
        '("BHV_Muster" "capture_radius" "activate_radius" "speed" "stale_nav_thresh" "stale_poly_thresh" "muster_region" "setpt_method" "capture_flag" "post_prox_poly" "visual_hints" )
+
+       '("BHV_MusterX" "capture_radius" "activate_radius" "speed" "stale_nav_thresh" "muster_region" "setpt_method" "capture_flag" "region_in_flag" "region_out_flag" "visual_hints" )
 
        '("BHV_AvoidCollision" "post_mapping" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "bearing_lines" "completed_dist" "max_util_cpa_dist" "min_util_cpa_dist" "no_alert_request" "contact_type_required" "on_no_contact_ok" "pwt_grade" "pwt_inner_dist" "pwt_outer_dist" "match_contact_group" "ignore_contact_group" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "use_refinery" "bearing_line_label_show" "exit_on_filter_region")))

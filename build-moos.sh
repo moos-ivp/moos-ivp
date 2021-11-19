@@ -154,7 +154,8 @@ if [ "${BUILD_BOT_CODE_ONLY}" = "OFF" ] ; then
     
     echo "Invoking cmake..." `pwd`
     cmake -DBUILD_CONSOLE_TOOLS=ON                               \
-	-DBUILD_GRAPHICAL_TOOLS=ON                               \
+	-DFLTK_SKIP_FLUID=ON                                     \
+        -DBUILD_GRAPHICAL_TOOLS=ON                               \
 	-DBUILD_UPB=ON                                           \
 	-DCMAKE_BUILD_TYPE=${BUILD_TYPE}                         \
 	-DCMAKE_RUNTIME_OUTPUT_DIRECTORY="${SCRIPT_ABS_DIR}/bin" \
