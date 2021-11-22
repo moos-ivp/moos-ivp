@@ -2396,18 +2396,21 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
   
   double cell_opaqueness = m_geo_settings.opaqueness("grid_opaqueness", 0.3);
   double edge_opaqueness = cell_opaqueness * 0.6;
-  
+
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+
   for(i=0; i<gsize; i++) {
     XYSquare element = grid.getElement(i);
 
-    px[0] = element.getVal(0,0) * m_back_img.get_pix_per_mtr_x();
-    py[0] = element.getVal(1,0) * m_back_img.get_pix_per_mtr_y();
-    px[1] = element.getVal(0,1) * m_back_img.get_pix_per_mtr_x();
-    py[1] = element.getVal(1,0) * m_back_img.get_pix_per_mtr_y();
-    px[2] = element.getVal(0,1) * m_back_img.get_pix_per_mtr_x();
-    py[2] = element.getVal(1,1) * m_back_img.get_pix_per_mtr_y();
-    px[3] = element.getVal(0,0) * m_back_img.get_pix_per_mtr_x();
-    py[3] = element.getVal(1,1) * m_back_img.get_pix_per_mtr_y();
+    px[0] = element.getVal(0,0) * pix_per_mtr_x;
+    py[0] = element.getVal(1,0) * pix_per_mtr_y;
+    px[1] = element.getVal(0,1) * pix_per_mtr_x;
+    py[1] = element.getVal(1,0) * pix_per_mtr_y;
+    px[2] = element.getVal(0,1) * pix_per_mtr_x;
+    py[2] = element.getVal(1,1) * pix_per_mtr_y;
+    px[3] = element.getVal(0,0) * pix_per_mtr_x;
+    py[3] = element.getVal(1,1) * pix_per_mtr_y;
 
     // Draw the internal parts of the cells if range is nonzero.
     if(range > 0) {
