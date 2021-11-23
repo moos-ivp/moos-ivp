@@ -416,7 +416,10 @@ void ContactMgrV20::handleMailDisplayRadii(string value)
 
 //---------------------------------------------------------
 // Procedure: handleMailReportRequest()
-//   Example: BCM_REPORT_REQUEST = var=BCM_CONTACTS_85, range=85
+//   Example: BCM_REPORT_REQUEST = var=BCM_CONTACTS_85, range=85, reason=teaming
+//      Note: The reason field is allowed but not processed.
+//            It is allowed to support apps such as alogmtask that
+//            want to grab report variables related to task teaming
 
 void ContactMgrV20::handleMailReportRequest(string str)
 {
@@ -426,6 +429,7 @@ void ContactMgrV20::handleMailReportRequest(string str)
   double range = -1;
   string group;
   string vtype;
+  string reason;
   bool   refresh = false;
   vector<string> svector = parseString(str, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
@@ -441,6 +445,8 @@ void ContactMgrV20::handleMailReportRequest(string str)
       vtype = value;
     else if(param == "refresh")
       refresh = (tolower(value) == "true");
+    else if(param == "reason")
+      reason = value;
     else
       ok = false;
   }

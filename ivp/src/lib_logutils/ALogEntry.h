@@ -70,6 +70,8 @@ public:
   std::string getStatus() const    {return(m_status);}
   bool        isNull() const       {return(m_status=="null");}
 
+  std::string getSummary() const;
+  
   bool        tokenField(const std::string& field, double& value) const;
 
 
@@ -92,6 +94,7 @@ protected:
 
 bool operator< (const ALogEntry& one, const ALogEntry& two);
 bool operator== (const ALogEntry& one, const ALogEntry& two);
+bool operator!= (const ALogEntry& one, const ALogEntry& two);
 
 #endif 
 
