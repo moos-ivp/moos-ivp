@@ -51,6 +51,8 @@ class MessageHandler : public AppCastingMOOSApp
  protected: // Config vars
   bool         m_strict_addressing;
   unsigned int m_appcast_trunc_msg;
+
+  std::string  m_aux_info; 
   
  protected: // State vars
   unsigned int m_reports;

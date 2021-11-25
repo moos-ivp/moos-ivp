@@ -522,44 +522,14 @@ void IvPBehavior::postGMessage(string var, bool bdata, string key)
 //            dest = "group"       (send to other vehicles in owngroup)
 //            dest = "group=red"   (send to other vehicles in group "red")
 //            dest = "abe"         (send to abe)
-//            dest = "abe:ben:eve" (send to abe, ben and eve)
-
 
 void IvPBehavior::postOffboardMessage(string dest, string var,
 				      double ddata, string key)
 {
-  // Part 1: create core parts of message except for destination
-  NodeMessage node_message;
-  node_message.setSourceNode(m_us_name);
-  node_message.setVarName(var);
-  node_message.setDoubleVal(ddata);
-
-  // Part 2: Aid in setting destination, supporting some patterns
-  if(dest == "group") {
-    string owngroup = getOwnGroup();
-    node_message.setDestGroup(owngroup);
-    node_message.setDestNode("all");
-  }
-  else if(strBegins(dest, "group=")) {
-    biteStringX(dest, '=');
-    node_message.setDestGroup(dest);
-    node_message.setDestNode("all");
-  }
-  else
-    node_message.setDestNode(dest);
-
-  
-  // Part 3: Create the outgoing message and post it.
-  string msg_all = node_message.getSpec();
-  VarDataPair pair("NODE_MESSAGE_LOCAL", msg_all);
-
-  if(tolower(key) != "repeatable") {
-    key = (m_descriptor + var + key);
-    pair.set_key(key);
-  }
-
-  m_messages.push_back(pair);
+  VarDataPair pair(var, ddata);
+  postOffboardMessage(dest, pair, key);
 }
+  
 
 //-----------------------------------------------------------
 // Procedure: postOffboardMessage()
@@ -568,43 +538,12 @@ void IvPBehavior::postOffboardMessage(string dest, string var,
 //            dest = "group"       (send to other vehicles in owngroup)
 //            dest = "group=red"   (send to other vehicles in group "red")
 //            dest = "abe"         (send to abe)
-//            dest = "abe:ben:eve" (send to abe, ben and eve)
-
 
 void IvPBehavior::postOffboardMessage(string dest, string var,
 				      string sdata, string key)
 {
-  // Part 1: create core parts of message except for destination
-  NodeMessage node_message;
-  node_message.setSourceNode(m_us_name);
-  node_message.setVarName(var);
-  node_message.setStringVal(sdata);
-
-  // Part 2: Aid in setting destination, supporting some patterns
-  if(dest == "group") {
-    string owngroup = getOwnGroup();
-    node_message.setDestGroup(owngroup);
-    node_message.setDestNode("all");
-  }
-  else if(strBegins(dest, "group=")) {
-    biteStringX(dest, '=');
-    node_message.setDestGroup(dest);
-    node_message.setDestNode("all");
-  }
-  else
-    node_message.setDestNode(dest);
-
-  
-  // Part 3: Create the outgoing message and post it.
-  string msg_all = node_message.getSpec();
-  VarDataPair pair("NODE_MESSAGE_LOCAL", msg_all);
-
-  if(tolower(key) != "repeatable") {
-    key = (m_descriptor + var + key);
-    pair.set_key(key);
-  }
-
-  m_messages.push_back(pair);
+  VarDataPair pair(var, sdata);
+  postOffboardMessage(dest, pair, key);
 }
 
 //-----------------------------------------------------------
@@ -614,8 +553,58 @@ void IvPBehavior::postOffboardMessage(string dest, string var,
 void IvPBehavior::postOffboardMessage(string dest, string var,
 				      bool bdata, string key)
 {
-  string bool_str = boolToString(bdata);
-  postOffboardMessage(dest, var, bool_str, key);
+  VarDataPair pair(var, boolToString(bdata));
+  postOffboardMessage(dest, pair, key);
+}
+
+//-----------------------------------------------------------
+// Procedure: postOffboardMessage()
+//     Notes: Possible destination patterns:
+//            dest = "all"         (send to all other vehicles)
+//            dest = "group"       (send to other vehicles in owngroup)
+//            dest = "group=red"   (send to other vehicles in group "red")
+//            dest = "abe"         (send to abe)
+
+void IvPBehavior::postOffboardMessage(string dest, VarDataPair pair,
+				      string key)
+{
+  // Part 1: create core parts of message except for destination
+  string var_name = pair.get_var();
+
+  NodeMessage node_message;
+  node_message.setSourceNode(m_us_name);
+  node_message.setSourceApp("pHelmIvP");
+  node_message.setSourceBehavior(m_descriptor);
+  node_message.setVarName(var_name);
+  if(pair.is_string())
+    node_message.setStringVal(pair.get_sdata());
+  else
+    node_message.setDoubleVal(pair.get_ddata());
+
+  // Part 2: Aid in setting destination, supporting some patterns
+  if(dest == "group") {
+    string owngroup = getOwnGroup();
+    node_message.setDestGroup(owngroup);
+    node_message.setDestNode("all");
+  }
+  else if(strBegins(dest, "group=")) {
+    biteStringX(dest, '=');
+    node_message.setDestGroup(dest);
+    node_message.setDestNode("all");
+  }
+  else
+    node_message.setDestNode(dest);
+
+  
+  // Part 3: Create the outgoing message and post it.
+  string msg_all = node_message.getSpec();
+  VarDataPair post_pair("NODE_MESSAGE_LOCAL", msg_all);
+  
+  if(tolower(key) != "repeatable") {
+    key = (m_descriptor + var_name + key);
+    post_pair.set_key(key);
+  }
+  m_messages.push_back(post_pair);
 }
 
 //-----------------------------------------------------------

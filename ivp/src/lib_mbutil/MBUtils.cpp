@@ -391,7 +391,7 @@ vector<string> chompString(const string& string_str, char separator)
 }
 
 //----------------------------------------------------------------
-// Procedure: augmentSpec
+// Procedure: augmentSpec()
 
 string augmentSpec(const string& orig, const string& new_part, char sep)
 {

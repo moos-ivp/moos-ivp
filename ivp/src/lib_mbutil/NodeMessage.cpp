@@ -67,35 +67,23 @@ void NodeMessage::setColor(const string& color_str)
 string NodeMessage::getSpec() const
 {
   string str;
-  if(m_src_node != "") {
-    if(str != "")
-      str += ",";
-    str += "src_node=" + m_src_node;
-  }
-  if(m_dest_node != "") {
-    if(str != "")
-      str += ",";
-    str += "dest_node=" + m_dest_node;
-  }
-  if(m_dest_group != "") {
-    if(str != "")
-      str += ",";
-    str += "dest_group=" + m_dest_group;
-  }
-  if(m_var_name != "") {
-    if(str != "")
-      str += ",";
-    str += "var_name=" + m_var_name;
-  }
-  if(m_color != "") {
-    if(str != "")
-      str += ",";
-    str += "color=" + m_color;
-  }
+  if(m_src_node != "")
+    str = augmentSpec(str, "src_node=" + m_src_node);
+  if(m_src_app != "") 
+    str = augmentSpec(str, "src_app=" + m_src_app);
+  if(m_src_bhv != "") 
+    str = augmentSpec(str, "src_bhv=" + m_src_bhv);
+  if(m_dest_node != "") 
+    str = augmentSpec(str, "dest_node=" + m_dest_node);
+  if(m_dest_group != "") 
+    str = augmentSpec(str, "dest_group=" + m_dest_group);
+  if(m_var_name != "") 
+    str = augmentSpec(str, "var_name=" + m_var_name);
+  if(m_color != "") 
+    str = augmentSpec(str, "color=" + m_color);
   if(m_double_val_set) {
-    if(str != "")
-      str += ",";
-    str += "double_val=" + doubleToStringX(m_double_val,6);
+    string str_dval = doubleToStringX(m_double_val,6);
+    str = augmentSpec(str, "double_val=" + str_dval);
   }
 
   if(m_string_val != "") {
@@ -112,7 +100,7 @@ string NodeMessage::getSpec() const
 }
 
 //---------------------------------------------------------------
-// Procedure: valid
+// Procedure: valid()
 //      Note: Determines if all the required fields have been set
 
 bool NodeMessage::valid() const
@@ -134,7 +122,7 @@ bool NodeMessage::valid() const
 
 
 //---------------------------------------------------------------
-// Procedure: getLength
+// Procedure: getLength()
 //      Note: Length is max of:
 //            - size of double (2)
 //            - length of string contents (1 per char)
@@ -159,11 +147,3 @@ string NodeMessage::getStringValX() const
 {
   return(stripQuotes(m_string_val));
 }
-
-
-
-
-
-
-
-

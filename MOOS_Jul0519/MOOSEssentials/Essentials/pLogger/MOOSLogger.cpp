@@ -960,7 +960,7 @@ bool CMOOSLogger::DoLogBanner(ostream &os, string &sFileName)
     os<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n";
     os<<"%% LOG FILE:       "<<sFileName.c_str()<<endl;
     os<<"%% FILE OPENED ON  "<<MOOSGetDate().c_str();
-    os<<"%% LOGSTART        "<<setw(20)<<setprecision(12)<<GetAppStartTime()<<endl;
+    os<<"%% LOGSTART        "<<setw(20)<<setprecision(16)<<GetAppStartTime()<<endl; // mikerb 12->16
     if(m_bMarkDataType)
     	os<<"%% DATATYPE MARKING ON\n";
     os<<"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%\n";
@@ -1239,7 +1239,7 @@ bool CMOOSLogger::DoAsyncLog(MOOSMSG_LIST &NewMail)
 				
 				sEntry.setf(ios::fixed);
 
-				sEntry<<setw(15)<<setprecision(3)<<rMsg.GetTime()-GetAppStartTime()<<' ';
+				sEntry<<setw(15)<<setprecision(5)<<rMsg.GetTime()-GetAppStartTime()<<' ';  // mikerb change from 3-5
 
 				sEntry<<setw(20)<<rMsg.GetKey()<<' ';
 

@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeMessage.h                                        */
 /*    DATE: Jan 7th 2011                                         */
+/*    DATE: Nov 24th 2021 Added src_app, src_bhv fields          */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -38,6 +39,8 @@ class NodeMessage
   void setVarName(const std::string& s)     {m_var_name=s;}
   void setStringVal(const std::string&);
   void setColor(const std::string&);
+  void setSourceApp(const std::string& s)      {m_src_app=s;}
+  void setSourceBehavior(const std::string& s) {m_src_bhv=s;}
 
   void setDoubleVal(double v) {m_double_val=v; m_double_val_set=true;}
 
@@ -48,6 +51,8 @@ class NodeMessage
   std::string getVarName() const     {return(m_var_name);}
   double      getDoubleVal() const   {return(m_double_val);}
   std::string getColor() const       {return(m_color);}
+  std::string getSourceApp() const   {return(m_src_app);}
+  std::string getSourceBehavior() const {return(m_src_bhv);}
   std::string getStringVal() const   {return(m_string_val);}
   std::string getStringValX() const;
 
@@ -65,6 +70,8 @@ class NodeMessage
   std::string  m_string_val;
   double       m_double_val;
   bool         m_double_val_set;
+  std::string  m_src_app;
+  std::string  m_src_bhv;
   std::string  m_color;
 };
 

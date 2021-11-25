@@ -52,6 +52,10 @@ NodeMessage string2NodeMessage(const string& message_string)
     
     if(param == "src_node")
       new_message.setSourceNode(value);
+    else if(param == "src_app")
+      new_message.setSourceApp(value);
+    else if(param == "src_bhv")
+      new_message.setSourceBehavior(value);
     else if(param == "dest_node")
       new_message.setDestNode(value);
     else if(param == "dest_group")

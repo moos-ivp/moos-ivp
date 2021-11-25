@@ -132,12 +132,14 @@ public:
   void    postGMessage(std::string, std::string, std::string key="");
   void    postGMessage(std::string, double, std::string key="");
   void    postGMessage(std::string, bool, std::string key="");
-  void    postOffboardMessage(std::string, std::string,
-			      std::string, std::string key="");
-  void    postOffboardMessage(std::string, std::string,
-			      double, std::string key="");
-  void    postOffboardMessage(std::string, std::string,
-			      bool, std::string key="");
+  void    postOffboardMessage(std::string dest, std::string var,
+			      std::string sval, std::string key="");
+  void    postOffboardMessage(std::string dest, std::string var,
+			      double dval, std::string key="");
+  void    postOffboardMessage(std::string dest, std::string var,
+			      bool bval, std::string key="");
+  void    postOffboardMessage(std::string dest, VarDataPair pair,
+			      std::string key="");
   
   void    postDurationStatus();
   bool    durationExceeded();

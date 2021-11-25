@@ -47,6 +47,8 @@ MessageHandler::MessageHandler()
   // Initialize config variables
   m_strict_addressing   = false;
   m_appcast_trunc_msg   = 75;
+
+  m_aux_info = "node";  // or else "node+app"
 }
 
 //---------------------------------------------------------
@@ -121,6 +123,12 @@ bool MessageHandler::OnStartUp()
     if(param == "strict_addressing")
       handled = setBooleanOnString(m_strict_addressing, value);
 
+    if(param == "aux_info") {
+      if((value == "node") || (value == "node+app")) {
+	m_aux_info = value;
+	handled = true;
+      }
+    }
     else if((param == "appcast_trunc_msg") && isNumber(value)) {
       int ival = atoi(value.c_str());
       if(ival < 0)
@@ -171,6 +179,7 @@ bool MessageHandler::handleMailNodeMessage(const string& msg)
   m_valid_messages_rcvd++;
 
   string src_node   = message.getSourceNode();
+  string src_app    = message.getSourceApp();
   string dest_node  = message.getDestNode();
   string dest_group = message.getDestGroup();
   string var_name   = message.getVarName();
@@ -220,6 +229,8 @@ bool MessageHandler::handleMailNodeMessage(const string& msg)
     return(false);
   }
 
+  if((m_aux_info == "node+app") && (src_app != ""))
+    src_node += "+" + src_app;
 
   // Part 3: Handling and Posting the Message
   if(is_string) 
