@@ -16,6 +16,7 @@ SET(SRC
   LogPlot.cpp
   VarPlot.cpp
   HelmPlot.cpp
+  TaskDiary.cpp
   EncounterPlot.cpp
   VPlugPlot.cpp
   IPF_Plot.cpp
@@ -25,6 +26,7 @@ SET(SRC
   Populator_IPF_Plot.cpp
   Populator_EncounterPlot.cpp
   Populator_AppLogPlot.cpp
+  Populator_TaskDiary.cpp
   ModelHelmScope.cpp
   ModelVarScope.cpp
   ModelAppLogScope.cpp

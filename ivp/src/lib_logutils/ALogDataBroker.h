@@ -34,6 +34,7 @@
 #include "EncounterPlot.h"
 #include "VPlugPlot.h"
 #include "IPF_Plot.h"
+#include "TaskDiary.h"
 
 class ALogDataBroker
 {
@@ -57,6 +58,7 @@ class ALogDataBroker
   HelmPlot     getHelmPlot(unsigned int aix);
   VPlugPlot    getVPlugPlot(unsigned int aix);
   IPF_Plot     getIPFPlot(unsigned int aix, std::string bhv);
+  TaskDiary    getTaskDiary();
 
   unsigned int sizeALogs() const {return(m_alog_files.size());}
   unsigned int sizeMix() const   {return(m_mix_vname.size());}

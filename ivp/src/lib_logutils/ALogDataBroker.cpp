@@ -33,6 +33,7 @@
 #include "Populator_IPF_Plot.h"
 #include "Populator_EncounterPlot.h"
 #include "Populator_AppLogPlot.h"
+#include "Populator_TaskDiary.h"
 
 using namespace std;
 
@@ -1106,6 +1107,43 @@ IPF_Plot ALogDataBroker::getIPFPlot(unsigned int aix, string bhv_name)
   ipf_plot.applySkew(m_logskew[aix]);
 
   return(ipf_plot);
+}
+
+
+//----------------------------------------------------------------
+// Procedure: getTaskDiary()
+//      Note: aix is the index into the vector of alog files. The
+//            TaskDiary is built from all vehicle alog files, so all
+//            aix values will be visited
+
+TaskDiary ALogDataBroker::getTaskDiary()
+{
+  TaskDiary task_diary;
+  // Part 1: Sanity check 
+  if(m_alog_files.size() == 0) {
+    cout << "Could not create TaskDiary. No ALog files provided." << endl;
+    return(task_diary);
+  }
+
+  // Part 2: Create the Populator.
+  Populator_TaskDiary populator;
+
+  // Part 3: Add the MISSION_TASK and TASK_WON klogs from each vehicle
+  for(unsigned int aix=0; aix<m_alog_files.size(); aix++) {
+    string vname = m_vnames[aix];
+    double utc_start = m_logstart[aix];
+    string file1 = m_base_dirs[aix] + "/MISSION_TASK.klog";
+    string file2 = m_base_dirs[aix] + "/TASK_WON.klog";
+    populator.addKLogFile(file1, vname, utc_start);
+    populator.addKLogFile(file2, vname, utc_start);
+  }      
+
+  // Populate from the KLogs
+  populator.populateFromKLogs();
+
+  task_diary = populator.getTaskDiary();
+
+  return(task_diary);
 }
 
 
