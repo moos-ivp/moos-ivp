@@ -29,9 +29,16 @@ public:
 
   void processAllEntries(double min_start_time);
 
-  std::vector<TaskDiaryEntry> getDiaryEntriesUpToTime(double);
+  std::vector<TaskDiaryEntry> getDiaryEntriesUpToTime(double) const;
+  std::vector<TaskDiaryEntry> getDiaryEntriesPastTime(double) const;
   std::vector<TaskDiaryEntry> getDiaryEntries() const;
 
+  unsigned int size() const {return(m_task_entries.size());}
+
+  std::vector<std::string> formattedLines(std::vector<TaskDiaryEntry>,
+					  bool show_separator,
+					  bool wrap_lines) const;
+  
  protected: // utilities 
   void order();
   void removeDuplicates();

@@ -40,6 +40,7 @@
 #include "GUI_VarScope.h"
 #include "GUI_AppLogScope.h"
 #include "GUI_Encounters.h"
+#include "GUI_TaskDiary.h"
 #include "ALogDataBroker.h"
 
 class REPLAY_GUI : public MarineVehiGUI {
@@ -54,6 +55,7 @@ class REPLAY_GUI : public MarineVehiGUI {
   void   setLogPlotMenus();
   void   setVarHistMenus();
   void   setAppLogMenus();
+  void   setTaskDiaryMenus();
   void   setBehaviorVarMap(std::map<std::string, std::string>);
   void   initLogPlotChoiceA(std::string vname, std::string varname);
   void   initLogPlotChoiceB(std::string vname, std::string varname);
@@ -123,6 +125,9 @@ class REPLAY_GUI : public MarineVehiGUI {
   inline void cb_AppLog_i(int);
   static void cb_AppLog(Fl_Widget*, int);
 
+  inline void cb_TaskDiary_i();
+  static void cb_TaskDiary(Fl_Widget*);
+
   inline void cb_Encounter_i(int);
   static void cb_Encounter(Fl_Widget*, int);
 
@@ -159,6 +164,7 @@ class REPLAY_GUI : public MarineVehiGUI {
   std::list<GUI_VarScope*>    m_sub_guis_v;
   std::list<GUI_Encounters*>  m_sub_guis_e;
   std::list<GUI_AppLogScope*> m_sub_guis_a;
+  std::list<GUI_TaskDiary*>   m_sub_guis_t;
 
  protected:
   ALogDataBroker m_dbroker;

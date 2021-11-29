@@ -660,6 +660,23 @@ void REPLAY_GUI::cb_AppLog(Fl_Widget* o, int v) {
   ((REPLAY_GUI*)(o->parent()->user_data()))->cb_AppLog_i(val);
 }
 
+//----------------------------------------- cb_TaskDiary
+inline void REPLAY_GUI::cb_TaskDiary_i() {
+
+  double curr_time = np_viewer->getCurrTime();
+  string title = "Task Diary (All Vehicles)";
+  GUI_TaskDiary *tdgui = new GUI_TaskDiary(500,500, title.c_str());   
+  tdgui->setDataBroker(m_dbroker);
+  tdgui->setParentGUI(this);
+  tdgui->setCurrTime(curr_time);
+
+  m_sub_guis_t.push_front(tdgui);
+  updateXY();
+}
+void REPLAY_GUI::cb_TaskDiary(Fl_Widget* o) {
+  ((REPLAY_GUI*)(o->parent()->user_data()))->cb_TaskDiary_i();
+}
+
 //----------------------------------------- cb_IPF_GUI
 inline void REPLAY_GUI::cb_IPF_GUI_i(int aix) {
   string vname = m_dbroker.getVNameFromAix(aix);
@@ -933,6 +950,7 @@ void REPLAY_GUI::setDataBroker(ALogDataBroker broker)
   setHelmPlotMenus();
   setVarHistMenus();
   setAppLogMenus();
+  setTaskDiaryMenus();
 
   if(np_viewer) {
     np_viewer->setDataBroker(broker);
@@ -1033,6 +1051,22 @@ void REPLAY_GUI::setAppLogMenus()
 		   (Fl_Callback*)REPLAY_GUI::cb_AppLog, (void*)ix);
     m_menubar->redraw();
   }
+}
+
+//----------------------------------------------------------
+// Procedure: setTaskDiaryMenus()
+
+void REPLAY_GUI::setTaskDiaryMenus()
+{
+  TaskDiary task_diary = m_dbroker.getTaskDiary();
+  if(task_diary.size() == 0)
+    return;
+  
+  string label = "TaskDiary";
+  
+  m_menubar->add(label.c_str(), 0, 
+		 (Fl_Callback*)REPLAY_GUI::cb_TaskDiary);
+  m_menubar->redraw();
 }
 
 //----------------------------------------------------------
@@ -1192,6 +1226,12 @@ void REPLAY_GUI::updateTimeSubGUI()
   list<GUI_AppLogScope*>::iterator p5;
   for(p5=m_sub_guis_a.begin(); p5!=m_sub_guis_a.end(); p5++) {
     GUI_AppLogScope *sub_gui = *p5;
+    sub_gui->setCurrTime(curr_time);
+    sub_gui->setReplayWarpMsg(m_replay_warp_msg);
+  }
+  list<GUI_TaskDiary*>::iterator p6;
+  for(p6=m_sub_guis_t.begin(); p6!=m_sub_guis_t.end(); p6++) {
+    GUI_TaskDiary *sub_gui = *p6;
     sub_gui->setCurrTime(curr_time);
     sub_gui->setReplayWarpMsg(m_replay_warp_msg);
   }

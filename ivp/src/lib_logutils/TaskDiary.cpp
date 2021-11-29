@@ -40,6 +40,164 @@ vector<TaskDiaryEntry> TaskDiary::getDiaryEntries() const
 }
 
 //---------------------------------------------------------
+// Procedure: getDiaryEntriesUpToTime()
+
+vector<TaskDiaryEntry> TaskDiary::getDiaryEntriesUpToTime(double gtime) const
+{
+  vector<TaskDiaryEntry> entries;
+
+  for(unsigned int i=0; i<m_task_entries.size(); i++) {
+    if(m_task_entries[i].getTaskTime() <= gtime)
+      entries.push_back(m_task_entries[i]);
+  }
+
+  return(entries);
+}
+
+//---------------------------------------------------------
+// Procedure: getDiaryEntriesPastTime()
+
+vector<TaskDiaryEntry> TaskDiary::getDiaryEntriesPastTime(double gtime) const
+{
+  vector<TaskDiaryEntry> entries;
+
+  for(unsigned int i=0; i<m_task_entries.size(); i++) {
+    if(m_task_entries[i].getTaskTime() > gtime)
+      entries.push_back(m_task_entries[i]);
+  }
+  
+  return(entries);
+}
+
+//-------------------------------------------------------------
+// Procedure: getFormattedLines()
+//   Purpose: Do the work of converting all TaskDiaryEntries into 
+//            a set of user consumable lines. Applying:
+//              a) separator lines if activated
+//              b) truncation and/or wrapping if activated
+
+#if 0
+vector<string> TaskDiary::formattedLines(vector<TaskDiaryEntry> entries,
+					 bool show_separator) const
+{
+  ACTable actab(4,2);
+  actab.setColumnJustify(0, "right");
+  actab << "Time | Source   | Received By  | Mission Task ";
+  actab.addHeaderLines();
+ 
+  for(unsigned int i=0; i<entries.size(); i++) {  
+    TaskDiaryEntry entry = entries[i];
+    if((i != 0) && show_separator)
+      actab.addHeaderLines();
+
+    string time     = doubleToString(entry.getTaskTime(),4);
+    string info     = entry.getTaskInfo();
+    string src_app  = entry.getSourceApp();
+    string src_node = entry.getSourceNode();
+    string dest_nodes = entry.getDestNodesAll();
+    string res_time = doubleToString(entry.getResultTime(),4);
+    string result   = entry.getResultInfo();
+    if(result != "") {
+      result = findReplace(result, ":", "=");
+      result = findReplace(result, "#", ", ");
+    }
+
+    src_node = "(" + src_node + ")";
+    actab << time     << src_app  << dest_nodes << info;
+    actab << res_time << src_node << ""         << result;
+  }
+
+  vector<string> all_lines = actab.getTableOutput();
+    
+  return(all_lines);
+}
+#endif
+
+
+//-------------------------------------------------------------
+// Procedure: getFormattedLines()
+//   Purpose: Do the work of converting all TaskDiaryEntries into 
+//            a set of user consumable lines. Applying:
+//              a) separator lines if activated
+//              b) truncation and/or wrapping if activated
+
+vector<string> TaskDiary::formattedLines(vector<TaskDiaryEntry> entries,
+					 bool show_separator,
+					 bool wrap_lines) const
+{
+  ACTable actab(4,2);
+  actab.setColumnJustify(0, "right");
+  actab << "Time | Source   | Received By  | Mission Task ";
+  actab.addHeaderLines();
+ 
+  for(unsigned int i=0; i<entries.size(); i++) {  
+    TaskDiaryEntry entry = entries[i];
+    if((i != 0) && show_separator)
+      actab.addHeaderLines();
+
+    string time     = doubleToString(entry.getTaskTime(),4);
+    string info     = entry.getTaskInfo();
+    string src_app  = entry.getSourceApp();
+    string src_node = entry.getSourceNode();
+    string dest_nodes = entry.getDestNodesAll();
+    string res_time = doubleToString(entry.getResultTime(),4);
+    string result   = entry.getResultInfo();
+    if(result != "") {
+      result = findReplace(result, ":", "=");
+      result = findReplace(result, "#", ", ");
+    }
+    src_node = "(" + src_node + ")";
+
+    // ================================================
+    // No Wrap
+    // ================================================
+    if(!wrap_lines) {
+      actab << time     << src_app  << dest_nodes << info;
+      actab << res_time << src_node << ""         << result;
+      continue;
+    }
+
+    // ================================================
+    // Handle Wrap Line Option
+    // ================================================
+    // Part A: Handle Mission Task (top) portion
+    vector<string> vdest = breakLen(dest_nodes, 25);
+    vector<string> vinfo = breakLen(info, 50);
+    unsigned int max_size = vdest.size();
+    if(vinfo.size() > max_size)
+      max_size = vinfo.size();
+
+    for(unsigned int j=0; j<max_size; j++) {
+      string j_dest;
+      if(j < vdest.size())
+	j_dest = vdest[j];
+      string j_info;
+      if(j < vinfo.size())
+	j_info = vinfo[j];
+      if(j==0)
+	actab << time << src_app  << j_dest << j_info;
+      else
+	actab << ""   << ""       << j_dest << j_info;
+    }
+
+    // Part b: Handle Mission Result (bottom) portion
+    vector<string> vresult = breakLen(result, 50);
+    for(unsigned int j=0; j<vresult.size(); j++) {
+      string j_result = vresult[j];
+      if(j==0)
+	actab << res_time << src_node << "" << j_result;
+      else
+	actab << ""       << ""       << "" << j_result;
+    }
+  }
+
+  vector<string> all_lines = actab.getTableOutput();
+    
+  return(all_lines);
+}
+
+
+//---------------------------------------------------------
 // Procedure: order()
 
 void TaskDiary::order()
@@ -216,4 +374,7 @@ bool TaskDiary::contentsMatch(string s1, string s2, string field) const
 
   return(val1 == val2);
 }
+
+
+
 

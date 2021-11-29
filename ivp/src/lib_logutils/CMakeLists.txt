@@ -30,6 +30,7 @@ SET(SRC
   ModelHelmScope.cpp
   ModelVarScope.cpp
   ModelAppLogScope.cpp
+  ModelTaskDiary.cpp
 )
 
 SET(HEADERS
@@ -41,6 +42,16 @@ SET(HEADERS
    LogUtils.h
    ScanReport.h
    SplitHandler.h
+   Populator_VPlugPlots.h
+   Populator_HelmPlots.h
+   Populator_IPF_Plot.h
+   Populator_EncounterPlot.h
+   Populator_AppLogPlot.h
+   Populator_TaskDiary.h
+   ModelHelmScope.h
+   ModelVarScope.h
+   ModelAppLogScope.h
+   ModelTaskDiary.h
 )
 
 # Build Library

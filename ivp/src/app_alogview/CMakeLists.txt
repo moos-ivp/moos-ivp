@@ -26,6 +26,7 @@ SET(SRC
   GUI_HelmScope.cpp
   GUI_VarScope.cpp
   GUI_AppLogScope.cpp
+  GUI_TaskDiary.cpp
   IvPFuncViewerX.cpp
   LogViewLauncher.cpp
   main.cpp
