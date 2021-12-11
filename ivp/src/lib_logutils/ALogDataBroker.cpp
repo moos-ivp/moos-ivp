@@ -49,6 +49,7 @@ ALogDataBroker::ALogDataBroker()
 
   m_pruned_logtmin  = 0;
   m_pruned_logtmax  = 0;
+  m_verbose = false;
 }
 
 //----------------------------------------------------------------
@@ -607,13 +608,15 @@ string ALogDataBroker::getRegionInfo()
 
 LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
 {
-  cout << "ALogDataBroker::getLogPlot() mix: " << mix << endl;
+  if(m_verbose)
+    cout << "ALogDataBroker::getLogPlot() mix: " << mix << endl;
 
   LogPlot logplot;
 
   // Part 1: Sanity check the master index
   if(mix >= m_mix_vname.size()) {
-    cout << "Could not create LogPlot for MasterIndex: " << mix << endl;
+    if(m_verbose)
+      cout << "Could not create LogPlot for MasterIndex: " << mix << endl;
     return(logplot);
   }
 
@@ -626,11 +629,13 @@ LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
   string klog = m_base_dirs[aix] + "/" + varname + ".klog";
   FILE *f = fopen(klog.c_str(), "r");
   if(!f) {
-    cout << "Could not create LogPlot from " << klog << endl;
+    if(m_verbose)
+      cout << "Could not create LogPlot from " << klog << endl;
     return(logplot);
   }
 
-  cout << "ALogDataBroker::getLogPlot() varname: " << varname << endl;
+  if(m_verbose)
+    cout << "ALogDataBroker::getLogPlot() varname: " << varname << endl;
 
   // Part 3: Populate the LogPlot
   logplot.setVarName(varname);
@@ -666,7 +671,8 @@ LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
 
   logplot.applySkew(m_logskew[aix]);
 
-  cout << "ALogDataBroker::getLogPlot() size: " << logplot.size() << endl;
+  if(m_verbose)
+    cout << "ALogDataBroker::getLogPlot() size: " << logplot.size() << endl;
 
   return(logplot);
 }
@@ -680,7 +686,8 @@ VarPlot ALogDataBroker::getVarPlot(unsigned int mix, bool include_source)
 
   // Part 1: Sanity check the master index
   if(mix >= m_mix_vname.size()) {
-    cout << "Could not create VarPlot for MasterIndex: " << mix << endl;
+    if(m_verbose)    
+      cout << "Could not create VarPlot for MasterIndex: " << mix << endl;
     return(varplot);
   }
 
@@ -697,7 +704,8 @@ VarPlot ALogDataBroker::getVarPlot(unsigned int mix, bool include_source)
   string klog = m_base_dirs[aix] + "/" + varname + ".klog";
   FILE *f = fopen(klog.c_str(), "r");
   if(!f) {
-    cout << "Could not create VarPlot from " << klog << endl;
+    if(m_verbose)
+      cout << "Could not create VarPlot from " << klog << endl;
     return(varplot);
   }
 
@@ -774,7 +782,8 @@ HelmPlot ALogDataBroker::getHelmPlot(unsigned int aix)
 
   // Part 1: Sanity check the master index
   if(aix >= m_alog_files.size()) {
-    cout << "Could not create HelmPlot for ALog Index: " << aix << endl;
+    if(m_verbose)
+      cout << "Could not create HelmPlot for ALog Index: " << aix << endl;
     return(hplot);
   }
 
@@ -782,7 +791,8 @@ HelmPlot ALogDataBroker::getHelmPlot(unsigned int aix)
   string klog = m_base_dirs[aix] + "/IVPHELM_SUMMARY.klog";
   FILE *f = fopen(klog.c_str(), "r");
   if(!f) {
-    cout << "Could not create HelmPlot from " << klog << endl;
+    if(m_verbose)
+      cout << "Could not create HelmPlot from " << klog << endl;
     return(hplot);
   }
 
@@ -839,7 +849,8 @@ AppLogPlot ALogDataBroker::getAppLogPlot(unsigned int alix)
   string klog = m_base_dirs[aix] + "/APP_LOG_" + app_name + ".klog";
   FILE *f = fopen(klog.c_str(), "r");
   if(!f) {
-    cout << "Could not create AppLogPlot from " << klog << endl;
+    if(m_verbose)
+      cout << "Could not create AppLogPlot from " << klog << endl;
     return(alplot);
   }
 
@@ -886,7 +897,8 @@ EncounterPlot ALogDataBroker::getEncounterPlot(unsigned int aix)
   
   // Part 1: Sanity check the master index
   if(aix >= m_alog_files.size()) {
-    cout << "Could not create EncounterPlot for ALog Index: " << aix << endl;
+    if(m_verbose)
+      cout << "Could not create EncounterPlot for ALog Index: " << aix << endl;
     return(eplot);
   }
 
@@ -896,8 +908,11 @@ EncounterPlot ALogDataBroker::getEncounterPlot(unsigned int aix)
   // Confirm COLLISION_DETECT_PARAMS.klog file can be found and opened
   string klog1 = m_base_dirs[aix] + "/COLLISION_DETECT_PARAMS.klog";
   FILE *f1 = fopen(klog1.c_str(), "r");
-  if(!f1)
-    cout << "WARNING: No COLLISION_DETECT_PARAMS info. Using defaults." << endl;
+  if(!f1) {
+    if(m_verbose) {
+      cout << "WARNING: No COLLISION_DETECT_PARAMS info. Using defaults." << endl;
+    }
+  }
   else {
     while(1) {
       ALogEntry entry = getNextRawALogEntry(f1, true);      
@@ -917,7 +932,8 @@ EncounterPlot ALogDataBroker::getEncounterPlot(unsigned int aix)
   string klog2 = m_base_dirs[aix] + "/ENCOUNTER_SUMMARY.klog";
   FILE *f2 = fopen(klog2.c_str(), "r");
   if(!f2) {
-    cout << "Could not create EncounterPlot from " << klog2 << endl;
+    if(m_verbose)
+      cout << "Could not create EncounterPlot from " << klog2 << endl;
     return(eplot);
   }
   
@@ -964,16 +980,19 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
 
   // Part 1: Sanity check the master index
   if(aix >= m_alog_files.size()) {
-    cout << "Could not create VPlugPlot for ALog Index: " << aix << endl;
+    if(m_verbose)
+      cout << "Could not create VPlugPlot for ALog Index: " << aix << endl;
     return(vplot);
   }
 
   // Part 2: Confirm that the VISUALS.klog file can be found and opened
   string klog = m_base_dirs[aix] + "/VISUALS.klog";
-  cout << "klog: " << klog << endl;
+  if(m_verbose)
+    cout << "klog: " << klog << endl;
   FILE *f = fopen(klog.c_str(), "r");
   if(!f) {
-    cout << "Could not create VPlugPlot from " << klog << endl;
+    if(m_verbose)
+      cout << "Could not create VPlugPlot from " << klog << endl;
     return(vplot);
   }
 
@@ -1046,7 +1065,8 @@ IPF_Plot ALogDataBroker::getIPFPlot(unsigned int aix, string bhv_name)
 
   // Part 1: Sanity check the master index
   if(aix >= m_alog_files.size()) {
-    cout << "Could not create IPF_Plot for ALog Index: " << aix << endl;
+    if(m_verbose)
+      cout << "Could not create IPF_Plot for ALog Index: " << aix << endl;
     return(ipf_plot);
   }
 
@@ -1059,7 +1079,8 @@ IPF_Plot ALogDataBroker::getIPFPlot(unsigned int aix, string bhv_name)
   string domain_klog = m_base_dirs[aix] + "/IVPHELM_DOMAIN.klog";
   FILE *f1 = fopen(domain_klog.c_str(), "r");
   if(!f1) {
-    cout << "Could not find IVPHELM_DOMAIN from " << domain_klog << endl;
+    if(m_verbose)
+      cout << "Could not find IVPHELM_DOMAIN from " << domain_klog << endl;
     return(ipf_plot);
   }
   ALogEntry domain_entry = getNextRawALogEntry(f1);
@@ -1076,7 +1097,8 @@ IPF_Plot ALogDataBroker::getIPFPlot(unsigned int aix, string bhv_name)
   string klog = m_base_dirs[aix] + "/BHV_IPF_" + bhv_name + ".klog";
   FILE *f = fopen(klog.c_str(), "r");
   if(!f) {
-    cout << "Could not create IPFPlot from " << klog << endl;
+    if(m_verbose)
+      cout << "Could not create IPFPlot from " << klog << endl;
     return(ipf_plot);
   }
 
@@ -1121,7 +1143,8 @@ TaskDiary ALogDataBroker::getTaskDiary()
   TaskDiary task_diary;
   // Part 1: Sanity check 
   if(m_alog_files.size() == 0) {
-    cout << "Could not create TaskDiary. No ALog files provided." << endl;
+    if(m_verbose)
+      cout << "Could not create TaskDiary. No ALog files provided." << endl;
     return(task_diary);
   }
 
@@ -1145,7 +1168,4 @@ TaskDiary ALogDataBroker::getTaskDiary()
 
   return(task_diary);
 }
-
-
-
 

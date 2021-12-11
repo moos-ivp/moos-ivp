@@ -161,8 +161,9 @@ vector<string> TaskDiary::formattedLines(vector<TaskDiaryEntry> entries,
     // Handle Wrap Line Option
     // ================================================
     // Part A: Handle Mission Task (top) portion
-    vector<string> vdest = breakLen(dest_nodes, 25);
-    vector<string> vinfo = breakLen(info, 50);
+    vector<string> vdest = parseStringQ(dest_nodes, ',', 12);
+    vector<string> vinfo = parseStringQ(info, ',', 50);
+    
     unsigned int max_size = vdest.size();
     if(vinfo.size() > max_size)
       max_size = vinfo.size();
@@ -181,7 +182,7 @@ vector<string> TaskDiary::formattedLines(vector<TaskDiaryEntry> entries,
     }
 
     // Part b: Handle Mission Result (bottom) portion
-    vector<string> vresult = breakLen(result, 50);
+    vector<string> vresult = parseStringQ(result, ',', 50);
     for(unsigned int j=0; j<vresult.size(); j++) {
       string j_result = vresult[j];
       if(j==0)

@@ -50,7 +50,8 @@ class ALogDataBroker
   void cacheMasterIndices();
   void cacheBehaviorIndices();
   void cacheAppLogIndices();
-
+  void setVerbose(bool v=true) {m_verbose=v;}
+  
   LogPlot      getLogPlot(unsigned int mix);
   VarPlot      getVarPlot(unsigned int mix, bool src=false);
   AppLogPlot   getAppLogPlot(unsigned int alix);
@@ -148,6 +149,8 @@ class ALogDataBroker
   std::vector<unsigned int> m_alix_alog_ix;
 
   std::string m_region_info;
+
+  bool m_verbose;
 };
 
 #endif
