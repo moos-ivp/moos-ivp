@@ -2814,9 +2814,6 @@ void MarineViewer::drawPoint(const XYPoint& point)
   double qx = img2view('x', tx);
   double qy = img2view('y', ty);
 
-  if(!coordInView(qx, qy))
-    return;
-
   if(m_verbose) {
     cout << "tx:" << tx << endl;
     cout << "ty:" << ty << endl;
