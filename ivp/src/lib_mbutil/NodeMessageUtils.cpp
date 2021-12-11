@@ -66,6 +66,8 @@ NodeMessage string2NodeMessage(const string& message_string)
       string_val = value;
     else if(param == "color")
       new_message.setColor(value);
+    else if(param == "id")
+      new_message.setMessageID(value);
     else if((param == "string_val_quoted") && (value == "true"))
       string_val_quoted = true;
     else if(param == "double_val")

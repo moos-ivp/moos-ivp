@@ -41,6 +41,7 @@ class NodeMessage
   void setColor(const std::string&);
   void setSourceApp(const std::string& s)      {m_src_app=s;}
   void setSourceBehavior(const std::string& s) {m_src_bhv=s;}
+  void setMessageID(const std::string& s)      {m_msg_id=s;}
 
   void setDoubleVal(double v) {m_double_val=v; m_double_val_set=true;}
 
@@ -53,6 +54,7 @@ class NodeMessage
   std::string getColor() const       {return(m_color);}
   std::string getSourceApp() const   {return(m_src_app);}
   std::string getSourceBehavior() const {return(m_src_bhv);}
+  std::string getMessageID() const   {return(m_msg_id);}
   std::string getStringVal() const   {return(m_string_val);}
   std::string getStringValX() const;
 
@@ -73,6 +75,7 @@ class NodeMessage
   std::string  m_src_app;
   std::string  m_src_bhv;
   std::string  m_color;
+  std::string  m_msg_id;
 };
 
 #endif 

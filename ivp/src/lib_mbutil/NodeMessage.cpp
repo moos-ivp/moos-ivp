@@ -81,6 +81,8 @@ string NodeMessage::getSpec() const
     str = augmentSpec(str, "var_name=" + m_var_name);
   if(m_color != "") 
     str = augmentSpec(str, "color=" + m_color);
+  if(m_msg_id != "") 
+    str = augmentSpec(str, "id=" + m_msg_id);
   if(m_double_val_set) {
     string str_dval = doubleToStringX(m_double_val,6);
     str = augmentSpec(str, "double_val=" + str_dval);

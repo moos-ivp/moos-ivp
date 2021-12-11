@@ -80,7 +80,6 @@ bool MailFlagSet::addFlag(string flag_str)
 
 bool MailFlagSet::handleMail(string key, double curr_time)
 {
-
   // Check if there are any pairs/flags for this key in particular
   vector<VarDataPair> flags;
   if(m_map_mail_flags.count(key))
