@@ -966,6 +966,9 @@ void FldNodeComms::postViewCommsPulse(const string& uname1,
   if(m_pulse_duration <= 0)
     return;
 
+  if(pcolor == "invisible")
+    return;
+  
   if(uname1 == uname2)
     return;
 
