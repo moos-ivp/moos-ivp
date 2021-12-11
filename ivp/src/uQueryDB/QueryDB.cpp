@@ -41,7 +41,6 @@ QueryDB::QueryDB()
   m_elapsed_time = 0;
 
   m_halt_max_time_elapsed = false;
-  m_halt_conditions_met = false;
   
   // Init Config Vars
   m_verbose     = true;
@@ -49,12 +48,8 @@ QueryDB::QueryDB()
   m_lServerPort = 0;
   m_max_time    = -1;
 
-  m_check_for_halt = true; // By default checking halt conditions
-  m_report_check_vars = false;
-  
   m_configure_comms_locally = false;
 
-  m_halt_conditions.setInfoBuffer(m_info_buffer);
   m_pass_conditions.setInfoBuffer(m_info_buffer);
   m_fail_conditions.setInfoBuffer(m_info_buffer);
 }
@@ -88,13 +83,25 @@ bool QueryDB::setMissionFile(string file_str)
 }
 
 //------------------------------------------------------------
-// Procedure: addHaltCondition()
+// Procedure: addPassCondition()
 
-bool QueryDB::addHaltCondition(string str)
+bool QueryDB::addPassCondition(string str)
 {
-  return(m_halt_conditions.addNewCondition(str));
+  bool handled = m_pass_conditions.addNewCondition(str);
+
+  return(handled);
 }
 
+
+//------------------------------------------------------------
+// Procedure: addFailCondition()
+
+bool QueryDB::addFailCondition(string str)
+{
+  bool handled = m_fail_conditions.addNewCondition(str);
+
+  return(handled);
+}
 
 //------------------------------------------------------------
 // Procedure: Iterate()
@@ -108,21 +115,12 @@ bool QueryDB::Iterate()
     exit(m_exit_value);
   }
 
-  if(m_check_for_halt) {
-    if((m_max_time > 0) && (m_elapsed_time >= m_max_time))
-      m_halt_max_time_elapsed = true;
-    m_halt_conditions_met = m_halt_conditions.checkConditions();
-
-    if(m_halt_max_time_elapsed || m_halt_conditions_met)
-      m_exit_value = 0;
-    else
-      m_exit_value = 1;
+  if((m_max_time > 0) && (m_elapsed_time >= m_max_time)) {
+    m_halt_max_time_elapsed = true;    
+    m_exit_value = 1;
   }
-  else
-    checkPassFailConditions();
 
-  reportRunWarning("bogus");
-  retractRunWarning("bogus");
+  checkPassFailConditions();
 
   if(m_verbose) 
     AppCastingMOOSApp::PostReport();  
@@ -148,12 +146,10 @@ bool QueryDB::OnNewMail(MOOSMSG_LIST &NewMail)
       m_elapsed_time = dval;
 
     if(msg.IsDouble()) {
-      m_halt_conditions.updateInfoBuffer(key, dval);
       m_pass_conditions.updateInfoBuffer(key, dval);
       m_fail_conditions.updateInfoBuffer(key, dval);
     }
     else if(msg.IsString()) {
-      m_halt_conditions.updateInfoBuffer(key, sval);
       m_pass_conditions.updateInfoBuffer(key, sval);
       m_fail_conditions.updateInfoBuffer(key, sval);
     }
@@ -184,9 +180,7 @@ bool QueryDB::OnStartUp()
     string value = line;
 
     bool handled = true;
-    if((param == "condition") || (param == "halt_condition"))
-      handled = m_halt_conditions.addNewCondition(value);
-    else if((param == "max_time") || (param == "halt_max_time"))
+    if((param == "max_time") || (param == "halt_max_time"))
       handled = setDoubleOnString(m_max_time, value);
 
     else if(param == "pass_condition")
@@ -196,7 +190,6 @@ bool QueryDB::OnStartUp()
     else if((param == "check_var") && !strContainsWhite(value)) {
       if(!vectorContains(m_check_vars, value))
 	m_check_vars.push_back(value);
-      m_report_check_vars = true;
     }
     else
       handled = false;
@@ -240,11 +233,7 @@ void QueryDB::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   
-  vector<string> vars = m_halt_conditions.getAllVars();
-  for(unsigned int i=0; i<vars.size(); i++) 
-    Register(vars[i], 0);
-
-  vars = m_pass_conditions.getAllVars();
+  vector<string> vars = m_pass_conditions.getAllVars();
   for(unsigned int i=0; i<vars.size(); i++) 
     Register(vars[i], 0);
   
@@ -343,7 +332,7 @@ void QueryDB::reportCheckVars()
 //            1  if not all mail has been received yet for all
 //               vars involved in either pass or fail conditions
 //            1  A pass condition unsat
-//            1  Not all fail conditions unsat
+//            1  Any fail conditions satisfied
 //            0  otherwise (THIS MEANS PASS)
 
 void QueryDB::checkPassFailConditions()
@@ -372,87 +361,57 @@ bool QueryDB::buildReport()
   // =======================================================
   // Report Style 1: When in halt condition mode
   // =======================================================
-  if(m_check_for_halt) {
-    string max_time_str = "n/a";
-    if(m_max_time > 0)
-      max_time_str = doubleToStringX(m_max_time,2);
-
-
-    string hconds_count_str = uintToString(m_halt_conditions.size());
-    string unmet_logic_str = m_halt_conditions.getNotableCondition();
-    if(unmet_logic_str == "")
-      unmet_logic_str = "n/a";
-    
-    m_msgs << "Config (halting):  " << endl;
-    m_msgs << "  max_time:        " << max_time_str     << endl;
-    m_msgs << "  halt_conditions: " << hconds_count_str << endl;
-    m_msgs << "  unmet condition: " << unmet_logic_str  << endl << endl;
-
-    m_msgs << "Status (halting):  " << endl;
-    m_msgs << "  Max_time reached:   " << boolToString(m_halt_max_time_elapsed) << endl;
-    m_msgs << "  All Conditions met: " << boolToString(m_halt_conditions_met) << endl;
-    m_msgs << "  Exit Value:         " << m_exit_value << endl;
-    m_msgs << endl;
-    
-    if(m_max_time > 0) {
-      string str_elapsed = doubleToString(m_elapsed_time,1);
-      m_msgs << "Elapsed Time: " << str_elapsed << endl;
-    }
-
-    m_msgs << endl;
-    m_msgs << "InfoBuffer: (halt condition vars)            " << endl;
-    m_msgs << "============================================ " << endl;
-    vector<string> ibh_report = m_halt_conditions.getInfoBuffReport(true);
-    if(ibh_report.size() == 0)
-      m_msgs << "<empty>" << endl;
-    for(unsigned int i=0; i<ibh_report.size(); i++)
-      m_msgs << ibh_report[i] << endl;
-    
-  }
-  // =======================================================
-  // Report Style 2: When in pass/fail condition mode
-  // =======================================================
-  else {
-    string pconds_count_str = uintToString(m_pass_conditions.size());
-    string fconds_count_str = uintToString(m_fail_conditions.size());
-    string pass_fail_result = "fail: " + m_notable_condition;
-    if(m_exit_value == 0)
-      pass_fail_result = "pass";
-    
-    m_msgs << "Config (pass/fail):" << endl;
-    m_msgs << "  pass_conditions: " << pconds_count_str  << endl;
-    m_msgs << "  fail_conditions: " << fconds_count_str  << endl;
-    m_msgs << "Result: " << pass_fail_result << endl;
-    m_msgs << endl;
-    
-    m_msgs << endl;
-    m_msgs << "InfoBuffer: (pass condition vars)            " << endl;
-    m_msgs << "============================================ " << endl;
-    vector<string> ibp_report = m_pass_conditions.getInfoBuffReport(true);
-    if(ibp_report.size() == 0)
-      m_msgs << "<empty>" << endl;
-    for(unsigned int i=0; i<ibp_report.size(); i++)
-      m_msgs << ibp_report[i] << endl;
-    
-    m_msgs << endl;
-    m_msgs << "InfoBuffer: (fail condition vars)            " << endl;
-    m_msgs << "============================================ " << endl;
-    vector<string> ibf_report = m_fail_conditions.getInfoBuffReport(true);
-    if(ibf_report.size() == 0)
-      m_msgs << "<empty>" << endl;
-    for(unsigned int i=0; i<ibf_report.size(); i++)
-      m_msgs << ibf_report[i] << endl;
-
-    m_msgs << endl;
-    m_msgs << "InfoBuffer: (check vars)                     " << endl;
-    m_msgs << "============================================ " << endl;
-    vector<string> var_report = m_info_buffer->getReport(m_check_vars);
-    if(var_report.size() == 0)
-      m_msgs << "<empty>" << endl;
-    for(unsigned int i=0; i<var_report.size(); i++)
-      m_msgs << var_report[i] << endl;
+  string maxtime_str = "n/a";
+  string elapsed_str  = "n/a";
+  if(m_max_time > 0) {
+    elapsed_str = doubleToString(m_elapsed_time,1);
+    maxtime_str = doubleToString(m_max_time, 1);
   }
   
+  m_msgs << "Exit Value:       " << m_exit_value << endl;
+  m_msgs << "Max Time:         " << maxtime_str << endl;
+  m_msgs << "Elapsed Time:     " << elapsed_str  << endl;
+  m_msgs << "Max_time reached: " << boolToString(m_halt_max_time_elapsed) << endl;
+
+  string pconds_count_str = uintToString(m_pass_conditions.size());
+  string fconds_count_str = uintToString(m_fail_conditions.size());
+  string pass_fail_result = "fail: " + m_notable_condition;
+  if(m_exit_value == 0)
+    pass_fail_result = "pass";
+  
+  m_msgs << "Config (pass/fail):" << endl;
+  m_msgs << "  pass_conditions: " << pconds_count_str  << endl;
+  m_msgs << "  fail_conditions: " << fconds_count_str  << endl;
+  m_msgs << "Result: " << pass_fail_result << endl;
+  m_msgs << endl;
+  
+  m_msgs << endl;
+  m_msgs << "InfoBuffer: (pass condition vars)            " << endl;
+  m_msgs << "============================================ " << endl;
+  vector<string> ibp_report = m_pass_conditions.getInfoBuffReport(true);
+  if(ibp_report.size() == 0)
+    m_msgs << "<empty>" << endl;
+  for(unsigned int i=0; i<ibp_report.size(); i++)
+    m_msgs << ibp_report[i] << endl;
+  
+  m_msgs << endl;
+  m_msgs << "InfoBuffer: (fail condition vars)            " << endl;
+  m_msgs << "============================================ " << endl;
+  vector<string> ibf_report = m_fail_conditions.getInfoBuffReport(true);
+  if(ibf_report.size() == 0)
+    m_msgs << "<empty>" << endl;
+  for(unsigned int i=0; i<ibf_report.size(); i++)
+    m_msgs << ibf_report[i] << endl;
+  
+  m_msgs << endl;
+  m_msgs << "InfoBuffer: (check vars)                     " << endl;
+  m_msgs << "============================================ " << endl;
+  vector<string> var_report = m_info_buffer->getReport(m_check_vars);
+  if(var_report.size() == 0)
+    m_msgs << "<empty>" << endl;
+  for(unsigned int i=0; i<var_report.size(); i++)
+    m_msgs << var_report[i] << endl;
+
   return(true);
 }
 

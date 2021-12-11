@@ -49,16 +49,16 @@ int main(int argc, char *argv[])
     bool handled = true;
     if((argi == "-q") || (argi == "--quiet"))
       query.setVerbose(false);
-    else if((argi == "-pf") || (argi == "--passfail"))
-      query.setPassFail();
-    else if((argi == "-cv") || (argi == "--checkvars"))
-      query.setReportCheckVars();
     else if(strBegins(argi, "--host="))
       query.setServerHost(argi.substr(7));
     else if(strBegins(argi, "--port="))      
       handled = query.setServerPort(argi.substr(7));
     else if(strBegins(argi, "--condition="))
-      handled = query.addHaltCondition(argi.substr(12));
+      handled = query.addPassCondition(argi.substr(12));
+    else if(strBegins(argi, "--pass_condition="))
+      handled = query.addPassCondition(argi.substr(17));
+    else if(strBegins(argi, "--fail_condition="))
+      handled = query.addFailCondition(argi.substr(17));
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++")) 
       handled = query.setMissionFile(argi);
     else

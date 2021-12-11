@@ -41,12 +41,11 @@ class QueryDB : public AppCastingMOOSApp
 
   bool setMissionFile(std::string);
   bool setServerPort(std::string);   
+  bool addPassCondition(std::string);
+  bool addFailCondition(std::string);
   void setServerHost(std::string s)     {m_sServerHost=s;}
   void setConfigCommsLocally(bool v)    {m_configure_comms_locally=v;}
   void setVerbose(bool v)               {m_verbose=v;}
-  void setPassFail()                    {m_check_for_halt=false;}
-  void setReportCheckVars()             {m_report_check_vars=true;}
-  bool addHaltCondition(std::string);
 
   std::string getMissionFile() const {return(m_mission_file);}
   std::string getServerHost() const  {return(m_sServerHost);}
@@ -60,13 +59,10 @@ class QueryDB : public AppCastingMOOSApp
   bool updateInfoBuffer(CMOOSMsg& msg);
   bool ConfigureComms();
   void reportCheckVars();
-  bool checkMaxTimeReached();
-  bool checkHaltConditions();
 
   void checkPassFailConditions();
 
  protected: // State vars
-  LogicBuffer  m_halt_conditions;
   LogicBuffer  m_pass_conditions;
   LogicBuffer  m_fail_conditions;
 
@@ -76,7 +72,6 @@ class QueryDB : public AppCastingMOOSApp
   double       m_elapsed_time;
 
   bool         m_halt_max_time_elapsed;
-  bool         m_halt_conditions_met;
   
   // When/if a condition fails, this holds the clue
   std::string  m_notable_condition;
@@ -85,9 +80,6 @@ class QueryDB : public AppCastingMOOSApp
   std::string  m_mission_file;
 
   std::vector<std::string> m_check_vars;
-  
-  bool    m_check_for_halt;
-  bool    m_report_check_vars;
   
   double  m_max_time;
   bool    m_verbose;
