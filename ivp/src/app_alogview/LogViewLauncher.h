@@ -84,7 +84,8 @@ protected:
 
   bool         m_config_file_read;
   bool         m_quick_start;
-
+  bool         m_verbose;
+  
   std::string  m_grep1;
   std::string  m_grep2;
  

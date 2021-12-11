@@ -40,7 +40,8 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
   m_hash_shade   = 0.35;
-
+  m_verbose      = false;
+  
   m_trails       = "window"; // "none, to-present, window, all"
   m_curr_time    = 0;
   m_step_by_secs = true;

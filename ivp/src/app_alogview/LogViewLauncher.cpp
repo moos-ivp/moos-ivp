@@ -38,7 +38,8 @@ LogViewLauncher::LogViewLauncher()
   m_gui_width  = 1200;
   m_gui_height = 800;
   m_gui        = 0;
-
+  m_verbose    = false;
+  
   m_tiff_file      = "Default.tif";
   m_start_var_lft  = "NAV_SPEED";
   m_start_var_rgt  = "DESIRED_HEADING";
@@ -67,6 +68,7 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
   total_timer.start();
 
   bool ok = true;
+
   ok = ok && parseCommandArgs(argc, argv);
   ok = ok && sanityCheck();
   ok = ok && configDataBroker();
@@ -89,6 +91,8 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
 
 bool LogViewLauncher::parseCommandArgs(int argc, char **argv)
 {
+  if(m_verbose)
+    cout << "Parsing Command Args..." << endl;
   // Part 1: Handle any alogview config file explicitly given
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -134,6 +138,8 @@ bool LogViewLauncher::parseCommandArgs(int argc, char **argv)
 
 bool LogViewLauncher::handleConfigParam(string argi)
 {
+  if(m_verbose)
+    cout << "Handling Config Params..." << endl;
   bool handled = true;
   if(strEnds(argi, ".alog")) 
     m_dbroker.addALogFile(argi);
@@ -161,6 +167,8 @@ bool LogViewLauncher::handleConfigParam(string argi)
     handled = handleGrep(argi.substr(7));
   else if(strBegins(argi, "--bv=")) 
     handled = handleBehaviorVarMapping(argi.substr(5));
+  else if((argi == "-vb") || (argi == "--verbose")) 
+    m_verbose = true;
   else if((argi == "--quick") || (argi == "-q")) 
     m_quick_start = true;
   else if(strBegins(argi, "--altnav=")) 
@@ -176,6 +184,8 @@ bool LogViewLauncher::handleConfigParam(string argi)
 
 bool LogViewLauncher::handleParamsGUI(string argi)
 {
+  if(m_verbose)
+    cout << "Handling GUI Params..." << endl;
   if(strBegins(argi, "--seglist_viewable_all=")     ||
      strBegins(argi, "--seglist_viewable_labels=")  ||
      strBegins(argi, "--seglr_viewable_all=")       ||
@@ -218,6 +228,8 @@ bool LogViewLauncher::handleParamsGUI(string argi)
 
 bool LogViewLauncher::sanityCheck()
 {
+  if(m_verbose)
+    cout << "Handling Sanity Checks..." << endl;
   if(m_dbroker.sizeALogs() == 0)
     return(false);
 
@@ -241,6 +253,11 @@ bool LogViewLauncher::sanityCheck()
 
 bool LogViewLauncher::configDataBroker()
 {
+  if(m_verbose) {
+    cout << "Handling Config of Data Broker..." << endl;
+    m_dbroker.setVerbose();
+  }
+
   bool ok = true;
   cout << "Begin Checking alog file(s)------------------" << endl;
   ok = ok && m_dbroker.checkALogFiles();
@@ -270,13 +287,18 @@ bool LogViewLauncher::configDataBroker()
 
 bool LogViewLauncher::configRegionInfo()
 {
+  if(m_verbose)
+    cout << "Handling Config of Region Info..." << endl;
+
   string region_info = m_dbroker.getRegionInfo();
-  cout << "==========================================================" << endl;
-  cout << "REGION_INFO:[" << region_info << "]" << endl;
-  cout << "==========================================================" << endl;
+  if(m_verbose) {
+    cout << "=================================================" << endl;
+    cout << "REGION_INFO:[" << region_info << "]" << endl;
+    cout << "=================================================" << endl;
+  }
   if(region_info == "")
     return(true);
-  
+    
   string tiff_file = tokStringParse(region_info, "img_file", ',', '=');
   if(tiff_file != "")
     handleBackground(tiff_file);
@@ -306,10 +328,14 @@ bool LogViewLauncher::configRegionInfo()
 
 bool LogViewLauncher::configGraphical()
 {
+  if(m_verbose)
+    cout << "Handling Config Graphical..." << endl;
   m_gui = new REPLAY_GUI(m_gui_width, m_gui_height, "alogview");
   if(!m_gui)
     return(false);
 
+  m_gui->np_viewer->setVerbose(m_verbose);
+  
   if(m_quick_start)
     m_gui->np_viewer->setMinimalMem();
   if(m_alt_nav_prefix != "")

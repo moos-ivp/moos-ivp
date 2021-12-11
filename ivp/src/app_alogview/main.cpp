@@ -109,6 +109,7 @@ void help_message()
   cout << "Options:                                                      " << endl;
   cout << "  -h,--help       Displays this help message                  " << endl;
   cout << "  -v,--version    Displays the current release version        " << endl;
+  cout << "  -vb, --verbose  Verbose output                              " << endl;
   cout << "                                                              " << endl;
   cout << "  --bg=file.tiff  Specify an alternate background image.      " << endl;
   cout << "                                                              " << endl;
