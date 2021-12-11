@@ -147,6 +147,15 @@ set<string> LogicAspect::getLogicVars() const
 
 string LogicAspect::checkConfig()
 {
+#if 1
+  unsigned int lead_cnt = m_lead_cbuff.size();
+  if(lead_cnt == 0)
+    return("No lead_conditions");
+
+  m_enabled = true;
+  return("");
+#endif
+#if 0
   unsigned int lead_cnt = m_lead_cbuff.size();
   unsigned int pass_cnt = m_pass_cbuff.size();
   unsigned int fail_cnt = m_fail_cbuff.size();
@@ -162,6 +171,7 @@ string LogicAspect::checkConfig()
 
   m_enabled = true;
   return("");
+#endif
 }
 
 //------------------------------------------------------------

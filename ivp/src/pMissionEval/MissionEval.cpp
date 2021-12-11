@@ -106,21 +106,13 @@ bool MissionEval::Iterate()
 
 bool MissionEval::OnStartUp()
 {
-  cout << "OnStartUp() 1" << endl;
   AppCastingMOOSApp::OnStartUp();
-  cout << "OnStartUp() 2" << endl;
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
-  cout << "OnStartUp() 3" << endl;
-  //if(!m_MissionReader.GetConfigurationAndPreserveSpace(GetAppName(), sParams))
-  //  reportConfigWarning("No config block found for " + GetAppName());
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams))
+    reportConfigWarning("No config block found for " + GetAppName());
 
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
-  cout << "OnStartUp() 4" << endl;
-
-  cout << "Total params: " << sParams.size() << endl;
-  
   STRING_LIST::reverse_iterator p;
   for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
     string orig  = *p;
@@ -128,8 +120,6 @@ bool MissionEval::OnStartUp()
     string param = tolower(biteStringX(line, '='));
     string value = line;
 
-    cout << "param:[" << param << "], value:[" << value << "]" << endl;
-    
     bool handled = true;
     if(param == "lead_condition") 
       handled = m_logic_tests.addLeadCondition(value);
@@ -165,8 +155,6 @@ bool MissionEval::OnStartUp()
     else if(param == "mailflag") 
       handled = m_mfset.addFlag(value);
 
-    cout << "handled:" << boolToString(handled) << endl;
-    
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
@@ -195,11 +183,9 @@ bool MissionEval::OnStartUp()
   
   registerVariables();	
 
-  cout << "OnStartUp() ===========================" << endl;
   vector<string> spec = m_logic_tests.getSpec();
   for(unsigned int i=0; i<spec.size(); i++)
     cout << spec[i] << endl;
-  cout << "END OnStartUp() ===========================" << endl;
 
   return(true);
 }
