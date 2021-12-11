@@ -38,7 +38,7 @@ protected: // Utility functions
   void postResults();
   void postFlags(const std::vector<VarDataPair>&);
 
-  void findGeneralFlagMacros();
+  void findMacroVars();
   
   std::string expandMacros(std::string) const;
   
@@ -47,17 +47,18 @@ protected: // Utility functions
 
  private: // Configuration variables
 
+  MailFlagSet m_mfset;
+  
   // Vars for posting results
   std::vector<VarDataPair> m_result_flags;
   std::vector<VarDataPair> m_pass_flags;
   std::vector<VarDataPair> m_fail_flags;
 
-  std::set<std::string> m_flag_macros;
-  
   bool        m_result_flags_posted;
   std::string m_mission_result;
 
-  MailFlagSet m_mfset;
+  std::vector<std::string> m_report_columns;
+  std::string m_report_file;
   
  private: // State variables 
   LogicTestSequence m_logic_tests;
@@ -66,8 +67,8 @@ protected: // Utility functions
   VCheckSet   m_vcheck_set;
   std::string m_vcheck_status_prev;
 
-  std::set<std::string> m_reg_vars;
-
+  std::set<std::string> m_macro_vars;
+  
   InfoBuffer *m_info_buffer;
 };
 

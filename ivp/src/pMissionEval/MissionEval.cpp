@@ -17,17 +17,14 @@ using namespace std;
 
 MissionEval::MissionEval()
 {
-  cout << "constructor 1" << endl;
   m_result_flags_posted = false;
 
   m_info_buffer = new InfoBuffer;
-  cout << "MissionEval::info_buffer: " << m_info_buffer << endl;
   m_logic_tests.setInfoBuffer(m_info_buffer);
-  cout << "constructor 2" << endl;
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool MissionEval::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -64,7 +61,7 @@ bool MissionEval::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
   
 bool MissionEval::OnConnectToServer()
 {
@@ -111,12 +108,19 @@ bool MissionEval::OnStartUp()
 {
   cout << "OnStartUp() 1" << endl;
   AppCastingMOOSApp::OnStartUp();
+  cout << "OnStartUp() 2" << endl;
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
-  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams))
-    reportConfigWarning("No config block found for " + GetAppName());
+  cout << "OnStartUp() 3" << endl;
+  //if(!m_MissionReader.GetConfigurationAndPreserveSpace(GetAppName(), sParams))
+  //  reportConfigWarning("No config block found for " + GetAppName());
 
+  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  cout << "OnStartUp() 4" << endl;
+
+  cout << "Total params: " << sParams.size() << endl;
+  
   STRING_LIST::reverse_iterator p;
   for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
     string orig  = *p;
@@ -124,19 +128,25 @@ bool MissionEval::OnStartUp()
     string param = tolower(biteStringX(line, '='));
     string value = line;
 
-    cout << "param:" << param << ", value:" << value << endl;
+    cout << "param:[" << param << "], value:[" << value << "]" << endl;
     
-    bool handled = false;
-    if(param == "lead_condition") {
+    bool handled = true;
+    if(param == "lead_condition") 
       handled = m_logic_tests.addLeadCondition(value);
-    }
-    else if(param == "pass_condition") {
+    else if(param == "pass_condition") 
       handled = m_logic_tests.addPassCondition(value);
-    }
-    else if(param == "fail_condition") {
+    else if(param == "fail_condition") 
       handled = m_logic_tests.addFailCondition(value);
-    }
+
     
+    else if(param == "report_column")
+      m_report_columns.push_back(value);
+    else if(param == "report_file") {
+      handled = okFileToWrite(value);
+      m_report_file = value;
+    }
+
+
     else if(param == "result_flag")
       handled = addVarDataPairOnString(m_result_flags, value);
     else if(param == "pass_flag")
@@ -155,6 +165,8 @@ bool MissionEval::OnStartUp()
     else if(param == "mailflag") 
       handled = m_mfset.addFlag(value);
 
+    cout << "handled:" << boolToString(handled) << endl;
+    
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
@@ -179,7 +191,7 @@ bool MissionEval::OnStartUp()
   m_mission_result = "pending";
   Notify("MISSION_RESULT", "pending");
 
-  findGeneralFlagMacros();
+  findMacroVars();
   
   registerVariables();	
 
@@ -193,27 +205,42 @@ bool MissionEval::OnStartUp()
 }
 
 //---------------------------------------------------------
-// Procedure: findGeneralFlagMacros()
+// Procedure: findMacroVars()
+//   Purpose: o Look in the result, pass and fail flags, for macros
+//              like result_flag = SCORE=$[CLOSE_ENCOUNTERS]. 
+//            o The macro CLOSE_ENCOUNTERS will be regarded as a 
+//              variable to register for. When the flag is posted, 
+//              the latest value of CLOSE_ENCOUNTERS (e.g. 8), will
+//              be published: SCORE=8
 
-void MissionEval::findGeneralFlagMacros()
+void MissionEval::findMacroVars()
 {
   for(unsigned int i=0; i<m_result_flags.size(); i++) {
     set<string> macro_set = m_result_flags[i].getMacroSet();
-    m_flag_macros.insert(macro_set.begin(), macro_set.end());
+    m_macro_vars.insert(macro_set.begin(), macro_set.end());
   }
   for(unsigned int i=0; i<m_pass_flags.size(); i++) {
     set<string> macro_set = m_pass_flags[i].getMacroSet();
-    m_flag_macros.insert(macro_set.begin(), macro_set.end());
+    m_macro_vars.insert(macro_set.begin(), macro_set.end());
   }
   for(unsigned int i=0; i<m_fail_flags.size(); i++) {
     set<string> macro_set = m_fail_flags[i].getMacroSet();
-    m_flag_macros.insert(macro_set.begin(), macro_set.end());
+    m_macro_vars.insert(macro_set.begin(), macro_set.end());
+  }
+
+  // Discover macros in the report line
+  for(unsigned int i=0; i<m_report_columns.size(); i++) {
+    string column = m_report_columns[i];
+    vector<string> report_vars = getMacrosFromString(column);
+    for(unsigned int j=0; j<report_vars.size(); j++) {
+      m_macro_vars.insert(report_vars[j]);
+    }
   }
 }
 
 
 //---------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void MissionEval::registerVariables()
 {
@@ -232,25 +259,24 @@ void MissionEval::registerVariables()
   for(p=aspect_vars.begin(); p!=aspect_vars.end(); p++) {
     string moos_var = *p;
     Register(moos_var, 0);
-    m_reg_vars.insert(moos_var);
   }
 
   // Now register for all flag macros
-  for(p=m_flag_macros.begin(); p!=m_flag_macros.end(); p++) {
+  for(p=m_macro_vars.begin(); p!=m_macro_vars.end(); p++) {
     string moos_var = *p;
     Register(moos_var, 0);
-    m_reg_vars.insert(moos_var);
   }
 
   // Register for any variables involved in the MailFlagSet
   vector<string> mflag_vars = m_mfset.getMailFlagKeys();
   for(unsigned int i=0; i<mflag_vars.size(); i++)
     Register(mflag_vars[i], 0);
+
 }
 
 
 //------------------------------------------------------------
-// Procedure: postResults
+// Procedure: postResults()
 
 void MissionEval::postResults()
 {
@@ -258,12 +284,16 @@ void MissionEval::postResults()
     return;
   m_result_flags_posted = true;
 
-  // No matter the results, once the eval conditions have been
-  // evaluated, the result_flags are posted, if any
+  // =========================================================
+  // Part 1: No matter the results, once the eval conditions 
+  // have been evaluated, the result_flags are posted, if any
   postFlags(m_result_flags);
   Notify("MISSION_EVALUATED", "true");
   
-  // If eval conditions met, post pass_flags, otherwise fail_flags
+
+  // =========================================================
+  // Part 2: If eval conditions met, post pass_flags, otherwise
+  // fail_flags
   if(m_logic_tests.isSatisfied() && m_vcheck_set.isSatisfied()) {
     m_mission_result = "pass";
     Notify("MISSION_RESULT", "pass");
@@ -274,10 +304,34 @@ void MissionEval::postResults()
     Notify("MISSION_RESULT", "fail");
     postFlags(m_fail_flags);
   }
+
+  // =========================================================
+  // Part 3: Post report_line to a file if configured
+  if(m_report_file == "")
+    return;
+
+  FILE *f = fopen(m_report_file.c_str(), "a");
+  if(!f) {
+    reportRunWarning("Unable to write to file: " + m_report_file);
+    return;
+  }
+
+  for(unsigned int i=0; i<m_report_columns.size(); i++) {
+    string column = expandMacros(m_report_columns[i]);
+    if(i != 0)
+      column = "  " + column;
+    fprintf(f, "%s", column.c_str());
+  }
+  fprintf(f, "\n");
+  fclose(f);
+  
 }
+
 
 //------------------------------------------------------------
 // Procedure: postFlags()
+//   Purpose: For any set of flags, post each. For flags that
+//            contain a macro, expand the macro first.
 
 void MissionEval::postFlags(const vector<VarDataPair>& flags)
 {
@@ -321,6 +375,20 @@ string MissionEval::expandMacros(string sdata) const
   sdata = macroExpand(sdata, "VCHK_PASS_RATE", vcheck_pass_rate);
   sdata = macroExpand(sdata, "VCHK_FAIL_RPT", vcheck_fail_rpt);
 
+  set<string>::iterator p;
+  for(p=m_macro_vars.begin(); p!=m_macro_vars.end(); p++) {
+    string var = *p;
+    bool ok;
+    string sval = m_info_buffer->sQuery(var, ok);
+    if(ok) 
+      sdata = macroExpand(sdata, var, sval);
+    else {
+      double dval = m_info_buffer->dQuery(var, ok);
+      if(ok) 
+	sdata = macroExpand(sdata, var, dval);
+    }
+  }
+  
   return(sdata);
 }
 
@@ -342,10 +410,25 @@ bool MissionEval::buildReport()
   m_msgs << "       pass flags: " << pflag_count_str << endl;
   m_msgs << "       fail flags: " << fflag_count_str << endl << endl;
   m_msgs << "       curr_index: " << m_logic_tests.currIndex() << endl << endl;
+  //  m_msgs << "      report_line: [" << m_report_line << "]" << endl;
+  m_msgs << "      report_file: " << m_report_file << endl << endl;
 
+  m_msgs << "FlagMacrosVars: " << m_macro_vars.size() << endl;
+  m_msgs << "============================================ " << endl;
+  set<string>::iterator q;
+  for(q=m_macro_vars.begin(); q!=m_macro_vars.end(); q++) {
+    string var = *q;
+    bool ok;
+    string sval = m_info_buffer->sQuery(var, ok);
+    double dval = m_info_buffer->dQuery(var, ok);
+    if(sval == "")
+      sval = doubleToStringX(dval,2);
+    m_msgs << " macro:" << *q << "=" << sval << endl;
+  }
+  m_msgs << endl;
+  
   list<string>::iterator p;
   // Part 2: LogicAspect Info
-
   if(m_logic_tests.enabled()) {
     list<string> summary_lines1 = m_logic_tests.getReport();
     for(p=summary_lines1.begin(); p!=summary_lines1.end(); p++) {
