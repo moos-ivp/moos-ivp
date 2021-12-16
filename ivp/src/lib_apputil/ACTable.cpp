@@ -214,7 +214,7 @@ ACTable& ACTable::operator<< (int int_val)
 
 ACTable& ACTable::operator<< (double double_val)
 {
-  m_cell_values_linear.push_back(doubleToString(double_val,2));
+  m_cell_values_linear.push_back(doubleToStringX(double_val,6));
   m_cell_colors_linear.push_back("");
   return(*this);
 }
