@@ -15,11 +15,14 @@ RESFILE="no"
 CLEAN="no"
 DELAY="4"
 FAKEOS=""
+TERSE=""
+ALL_ARGS=""
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #-------------------------------------------------------
 for ARGI; do
+    ALL_ARGS+=$ARGI" "
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
 	echo "xlaunch.sh [OPTIONS] [time_warp]     "
 	echo "Synopsis:                                                    " 
@@ -40,6 +43,7 @@ for ARGI; do
 	echo "  --res, -r          Make a results file                     " 
 	echo "  --send, -s         Make and send a results file            " 
 	echo "  --clean, -c        Remove outcome file after OK send       " 
+	echo "  --terse, -t        Terse uQueryDB, uPokeDB                 " 
 	echo "  --com=alpha        Name the community to poke              " 
 	echo "  --delay=<secs>     Delay N secs before launch. Default is 4" 
 	exit 0;
@@ -62,6 +66,8 @@ for ARGI; do
         SEND="yes"
     elif [ "${ARGI}" = "--clean" -o "${ARGI}" = "-c" ]; then
         CLEAN="yes"
+    elif [ "${ARGI}" = "--terse" -o "${ARGI}" = "-t" ]; then
+        TERSE="--terse"
     elif [ "${ARGI}" = "--pi" ]; then
         FAKEOS="--fakeos=Raspbian-10-buster"
     elif [ "${ARGI}" = "--ubu" ]; then
@@ -74,7 +80,12 @@ done
 #-------------------------------------------------------
 #  Part 3: Launch mission
 #-------------------------------------------------------
-./launch.sh $FLOW_DOWN_ARGS $TIME_WARP
+echo "=================================================="
+echo "xlaunch.sh: $ALL_ARGS"
+echo "=================================================="
+echo -n "Part 1: Launching the Mission... "
+
+./launch.sh $FLOW_DOWN_ARGS $TIME_WARP >& /dev/null
 LEXIT_CODE=$?
 
 if [ $LEXIT_CODE != 0 ]; then
@@ -84,6 +95,7 @@ fi
 if [ ${JUST_MAKE} = "yes" ] ; then
     exit 0
 fi
+echo "DONE"
 
 #-------------------------------------------------------
 #  Part 4: Start the mission with the right pokes
@@ -99,39 +111,35 @@ if [ "${COMMUNITY}" = "" ]; then
     fi
 fi
 
-echo "Poking/Starting the mission $TNUM in $DELAY seconds ...." 
+echo -n "Part 2: Poking/Starting mission $TNUM in $DELAY seconds... "  
 sleep $DELAY
 if [ "${COMMUNITY}" = "shoreside" ]; then
     uPokeDB targ_shoreside.moos DEPLOY_ALL=true MOOS_MANUAL_OVERRIDE_ALL=false
 else
-    uPokeDB targ_$COMMUNITY.moos DEPLOY=true MOOS_MANUAL_OVERRIDE=false
+    uPokeDB targ_$COMMUNITY.moos DEPLOY=true MOOS_MANUAL_OVERRIDE=false >& /dev/null
 fi
+echo "DONE"
 
 #-------------------------------------------------------
 #  Part 5: Monitor mission, kill MOOS processes when done
 #-------------------------------------------------------
+echo "Part 3: Query the mission $TNUM for halt conditions"
 while [ 1 ]; do 
+    echo -n "Waiting to Query... "
     sleep 6
-    if uQueryDB targ_$COMMUNITY.moos ; then 
+    rm -f .checkvars
+    uQueryDB targ_$COMMUNITY.moos >& /dev/null
+    if [ "$?" = 0 ]; then 
         break;
     fi
-    echo After uQueryDB, waiting to try again.
-    echo Mission: $TNUM TimeWarp: $TIME_WARP
+    echo "Not Done"
 done
 
-echo "Checking for Pass/Fail....."
-rm -f .checkvars
-uQueryDB --passfail -cv targ_$COMMUNITY.moos
-QRESULT=$?
-
-RESULT="pass"
-if [ $QRESULT != 0 ]; then
-    RESULT="fail"
-fi
-echo "Done Checking for Pass/Fail. Bringing down the mission..."
+echo "DONE"
+echo -n "Part 4: Bringing down the mission... "
 killall pAntler
 sleep 4
-echo "Done bringing down the mision."
+echo "DONE"
 
 #=======================================================
 #  Part 6: If not building results file, WE'RE DONE   == 
@@ -158,8 +166,7 @@ echo "test_name = ${TNUM}"      >> $OUTFILE
 echo "utc_time = ${UTC_TIME}"   >> $OUTFILE
 echo "host = $HOSTNAME"         >> $OUTFILE 
 echo "warp = $TIME_WARP"        >> $OUTFILE
-echo "score = $RESULT"          >> $OUTFILE
-echo "xlaunch = 1.0"            >> $OUTFILE
+echo "xlaunch = 1.1"            >> $OUTFILE
 echo "location = $LOCATION"     >> $OUTFILE
 
 echo "run = ./launch.sh --test=${TNUM} <warp>" >> $OUTFILE
