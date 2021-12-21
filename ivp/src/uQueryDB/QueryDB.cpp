@@ -40,14 +40,12 @@ QueryDB::QueryDB()
   m_exit_value   = -1;
   m_elapsed_time = 0;
 
-  m_halt_max_time_elapsed = false;
-  
   // Init Config Vars
-  m_verbose     = true;
   m_sServerHost = ""; 
   m_lServerPort = 0;
-  m_max_time    = -1;
+  m_max_time    = 0;
 
+  m_check_var_format = "esv";
   m_configure_comms_locally = false;
 
   m_pass_conditions.setInfoBuffer(m_info_buffer);
@@ -104,26 +102,70 @@ bool QueryDB::addFailCondition(string str)
 }
 
 //------------------------------------------------------------
+// Procedure: setConfigWaitTime()
+
+bool QueryDB::setConfigWaitTime(string str)
+{
+  return(setNonNegDoubleOnString(m_max_time, str));
+}
+
+//------------------------------------------------------------
+// Procedure: addConfigCheckVar()
+
+bool QueryDB::addConfigCheckVar(string str)
+{
+  if(strContainsWhite(str))
+    return(false);
+  
+  if(vectorContains(m_check_vars, str))
+    return(false);
+
+  m_check_vars.push_back(str);
+
+  return(true);
+}
+
+//------------------------------------------------------------
+// Procedure: setConfigCheckVarFormat()
+//     Notes: csv is comma-separated-value
+//            esv is equals-separated-value
+//            wsv is whitespace-separated-value
+//            vo is value only
+
+bool QueryDB::setConfigCheckVarFormat(string str)
+{
+  str = tolower(str);
+  if((str != "esv") && (str != "csv") && (str != "wsv") && (str != "vo"))
+    return(false);
+
+  m_check_var_format = str;
+
+  return(true);
+}
+
+//------------------------------------------------------------
 // Procedure: Iterate()
 
 bool QueryDB::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
+  // Part 1: Handle exiting if exiting is warranted  
   if(m_exit_value >= 0) {
     reportCheckVars();
     exit(m_exit_value);
   }
 
-  if((m_max_time > 0) && (m_elapsed_time >= m_max_time)) {
-    m_halt_max_time_elapsed = true;    
+  // Part 2: Re-evaluate exit conditions AFTER the above exit handling
+  // to allow a PostReport to reflect the reason for exit.
+  m_elapsed_time = m_curr_time - m_start_time;
+  if(m_elapsed_time >= m_max_time)
     m_exit_value = 1;
-  }
 
   checkPassFailConditions();
 
-  if(m_verbose) 
-    AppCastingMOOSApp::PostReport();  
+  cout << "Posting report: " << m_exit_value << endl;
+  AppCastingMOOSApp::PostReport();  
 
   return(true);
 }
@@ -142,9 +184,6 @@ bool QueryDB::OnNewMail(MOOSMSG_LIST &NewMail)
     double dval   = msg.GetDouble();
     string sval   = msg.GetString(); 
 
-    if(key == "DB_UPTIME")
-      m_elapsed_time = dval;
-
     if(msg.IsDouble()) {
       m_pass_conditions.updateInfoBuffer(key, dval);
       m_fail_conditions.updateInfoBuffer(key, dval);
@@ -154,7 +193,6 @@ bool QueryDB::OnNewMail(MOOSMSG_LIST &NewMail)
       m_fail_conditions.updateInfoBuffer(key, sval);
     }
     updateInfoBuffer(msg);
-    
   }
 
   return(true);
@@ -165,12 +203,12 @@ bool QueryDB::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool QueryDB::OnStartUp()
 {
-  AppCastingMOOSApp::OnStartUp();
+  string directives = "must_have_moosblock=false";
+  AppCastingMOOSApp::OnStartUpDirectives(directives);
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
-  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams))
-    reportConfigWarning("No config block found for " + GetAppName());
+  m_MissionReader.GetConfiguration(GetAppName(), sParams);
 
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
@@ -178,41 +216,28 @@ bool QueryDB::OnStartUp()
     string line  = *p;
     string param = tolower(biteStringX(line, '='));
     string value = line;
-
+    
     bool handled = true;
-    if((param == "max_time") || (param == "halt_max_time"))
+    if(param == "wait")
       handled = setDoubleOnString(m_max_time, value);
 
+    else if(param == "condition")
+      handled = m_pass_conditions.addNewCondition(value);
     else if(param == "pass_condition")
       handled = m_pass_conditions.addNewCondition(value);
     else if(param == "fail_condition")
       handled = m_fail_conditions.addNewCondition(value);
-    else if((param == "check_var") && !strContainsWhite(value)) {
-      if(!vectorContains(m_check_vars, value))
-	m_check_vars.push_back(value);
-    }
+    else if(param == "check_var")
+      handled = addConfigCheckVar(value);
+    else if(param == "check_var_format")
+      handled = setConfigCheckVarFormat(value);
     else
       handled = false;
       
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
-  
-#if 0
-  // Fake an appcast request
-  string req = "node=" + m_host_community;
-  req += ", app=" + GetAppName();
-  req += ", duration=" + doubleToStringX(m_wait_time+30);
-  req += ", key=uQueryDB,thresh=any";
-  Notify("APPCAST_REQ", req);
-#endif
-  
-  // Heuristic: Always add DB_UPTIME to the list of check_vars.
-  // If other check_vars are being used, this will also be
-  // reported. Especially important report var for bookkeeping
-  if(!vectorContains(m_check_vars, "DB_UPTIME"))
-    m_check_vars.push_back("DB_UPTIME");
-  
+    
   registerVariables();
   return(true);
 }
@@ -244,8 +269,8 @@ void QueryDB::registerVariables()
   for(unsigned int i=0; i<m_check_vars.size(); i++) 
     Register(m_check_vars[i], 0);
   
-  Register("DB_UPTIME", 0);
-  Register("DB_TIME", 0);
+  //Register("DB_UPTIME", 0);
+  //Register("DB_TIME", 0);
 }
 
 //------------------------------------------------------------
@@ -272,10 +297,6 @@ bool QueryDB::updateInfoBuffer(CMOOSMsg &msg)
 
 bool QueryDB::ConfigureComms()
 {
-  //cout << "QueryDB::ConfigureComms:" << endl;
-  //cout << "  m_sServerHost: " << M_Sserverhost << endl;
-  //cout << "  m_lServErport: " << m_lServerPort << endl;
-
   if(!m_configure_comms_locally) 
     return(CMOOSApp::ConfigureComms());
 
@@ -291,10 +312,8 @@ bool QueryDB::ConfigureComms()
   
   m_nCommsFreq = 10;
 
-  m_Comms.Run(m_sServerHost.c_str(), 
-	      m_lServerPort,
-	      m_sMOOSName.c_str(), 
-	      m_nCommsFreq);
+  m_Comms.Run(m_sServerHost.c_str(), m_lServerPort,
+	      m_sMOOSName.c_str(), m_nCommsFreq);
   
   return(true);
 }
@@ -319,7 +338,14 @@ void QueryDB::reportCheckVars()
     string line = stripBlankEnds(svector[i]);
     string var = biteStringX(line, ' ');
     string val = line;
-    fprintf(f, "checkvar = %s=%s\n", var.c_str(), val.c_str());
+    if(m_check_var_format == "wsv")
+      fprintf(f, "%s %s\n", var.c_str(), val.c_str());
+    else if(m_check_var_format == "csv")
+      fprintf(f, "%s,%s\n", var.c_str(), val.c_str());
+    else if(m_check_var_format == "esv")
+      fprintf(f, " %s=%s\n", var.c_str(), val.c_str());
+    else
+      fprintf(f, "%s\n", val.c_str());
   }
 
   fclose(f);
@@ -340,14 +366,10 @@ void QueryDB::checkPassFailConditions()
   bool all_pass_conds_met = m_pass_conditions.checkConditions("all");
   bool any_fail_conds_met = m_fail_conditions.checkConditions("any");
 
-  if(!all_pass_conds_met) {
-    m_exit_value = 1;
+  if(!all_pass_conds_met)
     m_notable_condition = m_pass_conditions.getNotableCondition();
-  }
-  else if(any_fail_conds_met) {
-    m_exit_value = 1;
+  else if(any_fail_conds_met)
     m_notable_condition = m_fail_conditions.getNotableCondition();
-  }
   else
     m_exit_value = 0;
 }
@@ -368,10 +390,15 @@ bool QueryDB::buildReport()
     maxtime_str = doubleToString(m_max_time, 1);
   }
   
-  m_msgs << "Exit Value:       " << m_exit_value << endl;
-  m_msgs << "Max Time:         " << maxtime_str << endl;
-  m_msgs << "Elapsed Time:     " << elapsed_str  << endl;
-  m_msgs << "Max_time reached: " << boolToString(m_halt_max_time_elapsed) << endl;
+  m_msgs << "Config:" << endl;
+  m_msgs << "  m_sServerHost: " << m_sServerHost << endl;
+  m_msgs << "  m_lServErport: " << m_lServerPort << endl;
+  m_msgs << "  Max Time:      " << maxtime_str << endl;
+  m_msgs << "State:           " << endl;
+  m_msgs << "  Start Time:    " << doubleToStringX(m_start_time) << endl;
+  m_msgs << "  Curr Time:     " << doubleToStringX(m_curr_time) << endl;
+  m_msgs << "  Elapsed Time:  " << elapsed_str  << endl;
+  m_msgs << "  Exit Value:    " << m_exit_value << endl;
 
   string pconds_count_str = uintToString(m_pass_conditions.size());
   string fconds_count_str = uintToString(m_fail_conditions.size());

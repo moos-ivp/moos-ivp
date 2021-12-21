@@ -22,12 +22,9 @@
 /*****************************************************************/
 
 #include <iostream>
-#include <cstring>
-#include <vector>
 #include "MBUtils.h"
 #include "QueryDB.h"
 #include "QueryDB_Info.h"
-#include "LogicCondition.h"
 
 using namespace std;
 
@@ -47,8 +44,8 @@ int main(int argc, char *argv[])
       showInterfaceAndExit();
     
     bool handled = true;
-    if((argi == "-q") || (argi == "--quiet"))
-      query.setVerbose(false);
+    if(strBegins(argi, "--wait="))
+      query.setConfigWaitTime(argi.substr(7));
     else if(strBegins(argi, "--host="))
       query.setServerHost(argi.substr(7));
     else if(strBegins(argi, "--port="))      
@@ -59,6 +56,16 @@ int main(int argc, char *argv[])
       handled = query.addPassCondition(argi.substr(17));
     else if(strBegins(argi, "--fail_condition="))
       handled = query.addFailCondition(argi.substr(17));
+    else if(strBegins(argi, "--check_var="))
+      handled = query.addConfigCheckVar(argi.substr(12));
+    else if(argi == "--csv")
+      handled = query.setConfigCheckVarFormat("csv");
+    else if(argi == "--wsv")
+      handled = query.setConfigCheckVarFormat("wsv");
+    else if(argi == "--esv")
+      handled = query.setConfigCheckVarFormat("esv");
+    else if((argi == "--vo") || (argi == "--vo"))
+      handled = query.setConfigCheckVarFormat("esv");
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++")) 
       handled = query.setMissionFile(argi);
     else

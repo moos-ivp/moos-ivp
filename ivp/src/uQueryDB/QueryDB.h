@@ -43,9 +43,11 @@ class QueryDB : public AppCastingMOOSApp
   bool setServerPort(std::string);   
   bool addPassCondition(std::string);
   bool addFailCondition(std::string);
+  bool addConfigCheckVar(std::string);
+  bool setConfigCheckVarFormat(std::string);
+  bool setConfigWaitTime(std::string);
   void setServerHost(std::string s)     {m_sServerHost=s;}
   void setConfigCommsLocally(bool v)    {m_configure_comms_locally=v;}
-  void setVerbose(bool v)               {m_verbose=v;}
 
   std::string getMissionFile() const {return(m_mission_file);}
   std::string getServerHost() const  {return(m_sServerHost);}
@@ -67,21 +69,18 @@ class QueryDB : public AppCastingMOOSApp
   LogicBuffer  m_fail_conditions;
 
   InfoBuffer  *m_info_buffer;
-  double       m_start_time;
   int          m_exit_value;
   double       m_elapsed_time;
 
-  bool         m_halt_max_time_elapsed;
-  
   // When/if a condition fails, this holds the clue
   std::string  m_notable_condition;
   
  protected: // Config vars
   std::string  m_mission_file;
-
+  std::string  m_check_var_format;
+  
   std::vector<std::string> m_check_vars;
   
   double  m_max_time;
-  bool    m_verbose;
   bool    m_configure_comms_locally;
 };
