@@ -118,8 +118,6 @@ int main(int argc, char *argv[])
 }
 
 
-
-
 //------------------------------------------------------------
 // Procedure: showHelpAndExit()  
 
@@ -187,6 +185,7 @@ void showHelpAndExit()
   cout << "  --csc,-csc        Columns separated with a comma         " << endl;
   cout << "  --cso,-cso        Columns separated with a colon         " << endl;
   cout << "  --csc,-csc        Columns separated with a semi-colon    " << endl;
+  cout << "                    (Default column separator is a comma)  " << endl;
   cout << "                                                           " << endl;
   cout << "Further Notes:                                             " << endl;
   cout << "  (1) The second alog is the output file. Otherwise the    " << endl;
@@ -195,11 +194,21 @@ void showHelpAndExit()
   cout << "  (3) The --sort and --duplicates options address an issue " << endl;
   cout << "      with pLogger in that some entries are out of order   " << endl;
   cout << "      and some entries are logged twice.                   " << endl;
-  cout << "  (4) If the output file name is vname.alog, will attempt  " << endl;
-  cout << "      to replace with vname_STR.alog where STR is the      " << endl;
-  cout << "      detected community taken from DB_TIME source.        " << endl;
-  cout << "  (5) See also: alogscan, alogrm, alogclip, alogsplit,     " << endl;
-  cout << "      alogview, alogsort                                   " << endl;
+  cout << "  (4) If output file name contains the string \"vname\",   " << endl;
+  cout << "      e.g., foobar_vname.alog, aloggrep will attempt to    " << endl;
+  cout << "      replace with vname pattern with the detected vehicle " << endl;
+  cout << "      neme found in input alog, by searching for DB_TIME   " << endl;
+  cout << "      entries and counting on the conventin that the source" << endl;
+  cout << "      for these postings is ~MOOSDB_alpha.                 " << endl;
+  cout << "                                                           " << endl;
+  cout << "Examples:                                                  " << endl;
+  cout << " $ aloggrep DEPLOY RETURN file.alog newfile.alog           " << endl;
+  cout << " $ aloggrep file.alog ENCOUNTER_CPA --tv -csw results.dat  " << endl;
+  cout << " $ aloggrep --sd file.alog new_file.alog                   " << endl;
+  cout << "                                                           " << endl;
+  cout << "See Also:                                                  " << endl;
+  cout << "  (5) alogscan, alogrm, alogclip, alogsplit, alogavg,      " << endl;
+  cout << "      alogview, alogsort.                                  " << endl;
   exit(0);
 }
 
