@@ -34,7 +34,8 @@ class GrepHandler
   GrepHandler();
   ~GrepHandler() {}
 
-  bool handle(std::string, std::string str="");
+  bool handle();
+  bool setALogFile(std::string);
   void addKey(std::string str);
   void printReport();
   void setFileOverWrite(bool v)    {m_file_overwrite=v;}
@@ -42,48 +43,43 @@ class GrepHandler
   void setBadLinesRetained(bool v) {m_badlines_retained=v;}
   void setGapLinesRetained(bool v) {m_gaplines_retained=v;}
   void setAppCastRetained(bool v)  {m_appcast_retained=v;}
-  void setFinalEntryOnly(bool v)   {m_final_entry_only=v;}
-  void setFinalTimeOnly(bool v)    {m_final_time_only=v;}
-  void setFinalValueOnly(bool v)   {m_final_value_only=v;}
-  void setValuesOnly(bool v)       {m_values_only=v;}
-  void setTimesOnly(bool v)        {m_times_only=v;}
   void setSortEntries(bool v)      {m_sort_entries=v;}
-  void setRemoveDuplicates(bool v) {m_rm_duplicates=v;}
+  void setMakeReport(bool v)       {m_make_report=v;}
+  void setRemoveDups(bool v)       {m_rm_duplicates=v;}
+
+  void setFinalOnly(bool v)        {m_final_only=v;}
+  bool setFormat(std::string);
   void setColSep(char c);
+
 
  protected:
 
   bool checkRetain(std::string& line_raw);
-  
-  std::vector<std::string> getMatchedKeys();
-  std::vector<std::string> getUnMatchedKeys();
-
-  std::string quickPassGetVName(const std::string);
-  
-  void outputLine(const std::string& line);
+  void outputLine(const std::string& line, bool last=false);
   void ignoreLine(const std::string& line);
+    
+  std::string quickPassGetVName(const std::string);
   
  protected: // Config vars
 
-  std::string m_var_condition;
-
-  bool   m_var_condition_met;
   bool   m_comments_retained;
   bool   m_badlines_retained;
   bool   m_gaplines_retained;
   bool   m_appcast_retained;
-  bool   m_final_entry_only;
-  bool   m_final_time_only;
-  bool   m_final_value_only;
-  bool   m_values_only;
-  bool   m_times_only;
   bool   m_sort_entries;
   bool   m_rm_duplicates;
 
+  bool   m_final_only;
+  bool   m_format_vals;
+  bool   m_format_vars;
+  bool   m_format_time;
+  bool   m_make_report;
   char   m_colsep;
   
   double m_cache_size;
   
+  std::string m_filename_in;
+
   FILE *m_file_in;
   FILE *m_file_out;
 
@@ -100,7 +96,7 @@ class GrepHandler
   double m_chars_retained;
   bool   m_file_overwrite;
 
-  double m_re_sorts;
+  unsigned int m_re_sorts;
   
   std::set<std::string> m_vars_retained;
 };

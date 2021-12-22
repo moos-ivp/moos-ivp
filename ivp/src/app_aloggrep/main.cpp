@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: main.cpp                                             */
 /*    DATE: June 3rd, 2008                                       */
+/*    DATE: Dec 22nd, 2021 Substantial restructure               */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -39,25 +40,21 @@ int main(int argc, char *argv[])
 {
   GrepHandler handler;
 
-  vector<string> keys;
-  bool make_end_report = true;
-  string alogfile_in;
-  string alogfile_out;
-  
   for(int i=1; i<argc; i++) {
+    bool handled = true;
     string argi = argv[i];
     if((argi=="-h") || (argi == "--help") || (argi=="-help"))
       showHelpAndExit();
     else if((argi=="-v") || (argi=="--version") || (argi=="-version")) {
-      showReleaseInfo("alogavg", "gpl");
+      showReleaseInfo("alogrep", "gpl");
       return(0);
     }
     else if((argi == "--no_comments") || (argi == "-nc"))
       handler.setCommentsRetained(false);
-    else if((argi == "--keep_badlines") || (argi == "-kb"))
+    else if((argi == "--keep_bad") || (argi == "-kb"))
       handler.setBadLinesRetained(false);
     else if((argi == "--no_report") || (argi == "-nr"))
-      make_end_report = false;
+      handler.setMakeReport(false);
     else if((argi == "--gap_len") || (argi == "-gl"))
       handler.setGapLinesRetained(true);
     else if((argi == "--appcast") || (argi == "-ac"))
@@ -65,7 +62,12 @@ int main(int argc, char *argv[])
     else if((argi == "--sort") || (argi == "-s"))
       handler.setSortEntries(true);
     else if((argi == "--duplicates") || (argi == "-d"))
-      handler.setRemoveDuplicates(true);
+      handler.setRemoveDups(true);
+    else if((argi == "--sd") || (argi == "-sd")) {
+      handler.setSortEntries(true);
+      handler.setRemoveDups(true);
+    }
+
     else if((argi == "--csw") || (argi == "-csw"))
       handler.setColSep(' ');
     else if((argi == "--csc") || (argi == "-csc"))
@@ -74,65 +76,44 @@ int main(int argc, char *argv[])
       handler.setColSep(':');
     else if((argi == "--css") || (argi == "-css"))
       handler.setColSep(';');
-    else if((argi == "--sd") || (argi == "-sd")) {
-      handler.setSortEntries(true);
-      handler.setRemoveDuplicates(true);
-    }
-    else if(argi == "--final") {
-      handler.setFinalEntryOnly(true);
-      make_end_report  = false;
-    }   
-    else if((argi == "--finalx") || (argi == "-x")) {
-      handler.setFinalEntryOnly(true);
-      handler.setFinalValueOnly(true);
-      make_end_report  = false;
-    }   
-    else if((argi == "--finalz") || (argi == "-z")) {
-      handler.setFinalEntryOnly(true);
-      handler.setFinalTimeOnly(true);
-      make_end_report  = false;
-    }   
-    else if((argi == "--values_only") || (argi == "-vo")) {
-      make_end_report  = false;
-      handler.setValuesOnly(true);
-      handler.setCommentsRetained(false);
-    }
-    else if((argi == "--times_values_only") || (argi == "-tvo")) {
-      make_end_report  = false;
-      handler.setValuesOnly(true);
-      handler.setTimesOnly(true);
-      handler.setCommentsRetained(false);
-    }
+
+    else if((argi == "--v") || (argi == "-vo")) 
+      handler.setFormat("val");
+    else if((argi == "--tv") || (argi == "-tvo"))
+      handler.setFormat("time:val");
+    else if(argi == "--tvv")
+      handler.setFormat("time:var:val");
+
+    else if(strBegins(argi, "--format=")) 
+      handled = handler.setFormat(argi.substr(9));
+    else if(argi == "--final") 
+      handler.setFinalOnly(true);
+
+
     else if((argi == "--quiet") || (argi == "-q")) {
       handler.setCommentsRetained(false);
-      make_end_report  = false;
+      handler.setMakeReport(false);
     }
     else if((argi == "--force") || (argi == "-force") || (argi == "-f")) 
       handler.setFileOverWrite(true);
-    else if(strEnds(argi, ".alog") || strEnds(argi, ".klog")) {
-      if(alogfile_in == "")
-	alogfile_in = argi;
-      else 
-	alogfile_out = argi;
-    }
+    else if(strEnds(argi, ".alog") || strEnds(argi, ".klog")) 
+      handled = handler.setALogFile(argi);
+    else if(strBegins(argi, "-"))
+      handled = false;
     else
       handler.addKey(argi);
+
+    if(!handled) {
+      cout << "Exiting due to bad arg: " << argi << endl;
+      return(1);
+    }
   }
- 
-  if(alogfile_in == "") {
-    cout << "No alog file given - exiting" << endl;
-    exit(1);
-  }
-  else if(make_end_report)
-    cout << "aloggrep - Processing on file: " << alogfile_in << endl;
-  
-  bool handled = handler.handle(alogfile_in, alogfile_out);
+
+  bool handled = handler.handle();
   if(!handled)
     return(1);
 
-  if(make_end_report)
-    handler.printReport();
-
+  handler.printReport();
   return(0);
 }
 
@@ -148,9 +129,26 @@ void showHelpAndExit()
   cout << "  aloggrep in.alog [VAR] [SRC] [out.alog] [OPTIONS]        " << endl;
   cout << "                                                           " << endl;
   cout << "Synopsis:                                                  " << endl;
-  cout << "  Create a new MOOS .alog file by retaining only the       " << endl;
-  cout << "  given MOOS variables or sources, named on the command    " << endl;
-  cout << "  line, from a given .alog file.                           " << endl;
+  cout << "  aloggrep is typically used in one of three ways:         " << endl;
+  cout << "  (1) Create a new filtered alog file                      " << endl;
+  cout << "  (2) Create a csv file for plotting                       " << endl;
+  cout << "  (3) A quick-look command-line utility                    " << endl;
+  cout << "                                                           " << endl;
+  cout << "  In (1) a new alog file is provided as a target and some  " << endl;
+  cout << "  set of variables to retain are specified. The new alog   " << endl;
+  cout << "  file retains syntactic structure of an alog file, but all" << endl;
+  cout << "  lines that don't match the grep pattern are removed.     " << endl;
+  cout << "  In addition to variables to be retained, the user may    " << endl;
+  cout << "  specifiy a MOOSApp source, and all variables published   " << endl;
+  cout << "  by that source will be retained.                         " << endl;
+  cout << "                                                           " << endl;
+  cout << "  In (2) some subset of columns will be retained for one   " << endl;
+  cout << "  or more specified variables. The columns are separated by" << endl;
+  cout << "  a comma, or another chosen column separator.             " << endl;
+  cout << "                                                           " << endl;
+  cout << "  In (3), the user omits the second/target alog file and   " << endl;
+  cout << "  output instead just goes to the terminal to enable a     " << endl;
+  cout << "  quick look at log file contents                          " << endl;
   cout << "                                                           " << endl;
   cout << "Standard Arguments:                                        " << endl;
   cout << "  in.alog  - The input logfile.                            " << endl;
@@ -167,22 +165,28 @@ void showHelpAndExit()
   cout << "  -nc,--no_comments Supress comment (header) lines         " << endl;
   cout << "  -nr,--no_report   Supress summary report                 " << endl;
   cout << "  -gl,--no_gaplen   Supress vars ending in _GAP or _LEN    " << endl;
+  cout << "  -kb,--keep_bad    Don't discard lines that don't begin   " << endl;
+  cout << "                    with a timestamp or comment character. " << endl;
+  cout << "                                                           " << endl;
   cout << "  -s,--sort         Sort the log entries                   " << endl;
   cout << "  -d,--duplicates   Remove Duplicate entries               " << endl;
   cout << "  -sd,--sd          Remove Duplicate AND sort              " << endl;
   cout << "                                                           " << endl;
+  cout << "Content/format Options:                                    " << endl;
+  cout << "  --format=val or --v                                      " << endl;
+  cout << "    Output only the value column                           " << endl;
+  cout << "                                                           " << endl;
+  cout << "  --format=time:val or --tv                                " << endl;
+  cout << "    Output only the time and value columns                 " << endl;
+  cout << "                                                           " << endl;
+  cout << "  --format=time:var:val or --tvv                           " << endl;
+  cout << "    Output only time, variable, and value columns          " << endl;
+  cout << "                                                           " << endl;
   cout << "  --final           Output only final matching line        " << endl;
-  cout << "  -x,--finalx       Output only final matching line's val  " << endl;
-  cout << "  -z,--finalz       Output only final matching line's time " << endl;
-  cout << "                                                           " << endl;
-  cout << "  --values_only     Output only value part of each line    " << endl;
-  cout << "  -vo                                                      " << endl;
-  cout << "                                                           " << endl;
-  cout << "  --times_vals_only Output time also in values_only mode   " << endl;
-  cout << "  -tvo                                                     " << endl;
-  cout << "                                                           " << endl;
-  cout << "  --keep_badlines   Do not discard lines that don't begin  " << endl;
-  cout << "  -kb               with a timestamp or comment character. " << endl;
+  cout << "  --csw,-csw        Columns separated with white space     " << endl;
+  cout << "  --csc,-csc        Columns separated with a comma         " << endl;
+  cout << "  --cso,-cso        Columns separated with a colon         " << endl;
+  cout << "  --csc,-csc        Columns separated with a semi-colon    " << endl;
   cout << "                                                           " << endl;
   cout << "Further Notes:                                             " << endl;
   cout << "  (1) The second alog is the output file. Otherwise the    " << endl;

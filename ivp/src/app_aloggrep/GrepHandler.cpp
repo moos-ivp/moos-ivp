@@ -33,7 +33,6 @@
 
 using namespace std;
 
-
 //--------------------------------------------------------
 // Constructor
 
@@ -48,18 +47,19 @@ GrepHandler::GrepHandler()
   m_chars_retained = 0;
 
   m_comments_retained = true;
-  m_var_condition_met = true;
   m_file_overwrite = false;
   m_appcast_retained = false;
-  m_final_entry_only = false;
-  m_final_value_only = false;
-  m_final_time_only  = false;
-  m_values_only      = false;
-  m_times_only       = false;
 
+  m_final_only   = false;
+
+  m_format_vals  = false;
+  m_format_vars  = false;
+  m_format_time  = false;
+  m_make_report  = true;
+  
   m_cache_size = 1000;
 
-  m_sort_entries = false;
+  m_sort_entries  = false;
   m_rm_duplicates = false;
   
   // A "bad" line is a line that is not a comment, and does not begin
@@ -74,51 +74,80 @@ GrepHandler::GrepHandler()
 }
 
 //--------------------------------------------------------
-// Procedure: handle
+// Procedure: setALogFile()
 
-bool GrepHandler::handle(string alogfile, string new_alogfile)
+bool GrepHandler::setALogFile(string alogfile)
 {
-  // ==========================================================
-  // Phase 1: Sanity Checks
-  // ==========================================================
-  if(alogfile == new_alogfile) {
-    cout << "Input and output .alog files cannot be the same. " << endl;
-    cout << "Exiting now." << endl;
+  // =====================================================
+  // Part 1: Sanity Checks
+  if(alogfile == "")
     return(false);
-  }
-
-  if(strContains(new_alogfile, "vname")) {
-    string vname_discovered = quickPassGetVName(alogfile);
-    if(vname_discovered != "")
-      new_alogfile = findReplace(new_alogfile, "vname", vname_discovered);
-  }
-
-
-  m_file_in = fopen(alogfile.c_str(), "r");
-  if(!m_file_in) {
-    cout << "input not found or unable to open - exiting" << endl;
+  if(m_file_in && m_file_out) {
+    cout << "input and output alog files already specified" << endl;
     return(false);
   }
   
-  if(new_alogfile != "") {
-    m_file_out = fopen(new_alogfile.c_str(), "r");
-    if(m_file_out && !m_file_overwrite) {
-      bool done = false;
-      while(!done) {
-	cout << new_alogfile << " already exists. Replace? (y/n [n])" << endl;
-	char answer = getCharNoWait();
-	if((answer != 'y') && (answer != 'Y')){
-	  cout << "Aborted: The file " << new_alogfile;
-	  cout << " will not be overwritten." << endl;
-	  return(false);
-	}
-	if(answer == 'y')
-	  done = true;
-      }
+  
+  // =====================================================
+  // Part 2: If no input file yet, treat this as input file
+  if(!m_file_in) {
+    m_file_in = fopen(alogfile.c_str(), "r");
+    if(!m_file_in) {
+      cout << "Unable to open file for reading: " << alogfile << endl;
+      return(false);
     }
-    m_file_out = fopen(new_alogfile.c_str(), "w");
+    m_filename_in = alogfile;
+    return(true);
   }
 
+  // =====================================================
+  // Part 3: If input file has already been set, treat as output
+  if(alogfile == m_filename_in) {
+    cout << "Input and output .alog files cannot be the same. " << endl;
+    return(false);
+  }
+  
+  if(strContains(alogfile, "vname")) {
+    string vname_discovered = quickPassGetVName(m_filename_in);
+    cout << "vname_discovered:[" << vname_discovered << "]" << endl;
+    if(vname_discovered != "")
+      alogfile = findReplace(alogfile, "vname", vname_discovered);
+  }
+
+  m_file_out = fopen(alogfile.c_str(), "r");
+  if(m_file_out && !m_file_overwrite) {
+    bool done = false;
+    while(!done) {
+      cout << alogfile << " already exists. Replace? (y/n [n])" << endl;
+      char answer = getCharNoWait();
+      if((answer != 'y') && (answer != 'Y')){
+	cout << "Aborted: The file " << alogfile;
+	cout << " will not be overwritten." << endl;
+	return(false);
+      }
+      if(answer == 'y')
+	done = true;
+    }
+  }
+  m_file_out = fopen(alogfile.c_str(), "w");    
+  if(!m_file_out) {
+    cout << "unable to open " << alogfile << " for writing" << endl;
+    return(false);
+  }
+  return(true);  
+}
+
+//--------------------------------------------------------
+// Procedure: handle()
+
+bool GrepHandler::handle()
+{
+  if(!m_file_in) {
+    cout << "No input alog file given - exiting" << endl;    
+    return(false);
+  }
+
+  
   // If DB_VARSUMMARY is explicitly on the variable grep list, then
   // retain all its bad lines (lines not starting with a timestamp)
   for(unsigned int i=0; i<m_keys.size(); i++) {
@@ -165,7 +194,7 @@ bool GrepHandler::handle(string alogfile, string new_alogfile)
       }
     }
 
-    // Step 2: pull back the sorted line from the sorter, if any left
+    // Part 2: pull back the sorted line from the sorter, if any left
     if((sorter.size() > m_cache_size) || done_reading_raw) {
       if(sorter.size() == 0) 
 	done_reading_sorted = true;
@@ -177,39 +206,17 @@ bool GrepHandler::handle(string alogfile, string new_alogfile)
     }
   }
 
+  // ==========================================================
+  // Phase 3: Handle last line only case
+  // ==========================================================
+  if(m_final_only)
+    outputLine(m_final_line, true);
 
+  
   if(m_file_out)
     fclose(m_file_out);
-  m_file_out = 0;
-
   if(m_file_in)
     fclose(m_file_in);
-  m_file_in = 0;
-
-
-  // Part 7: Handle case where only final line is output
-  if(m_final_entry_only) {
-    if(m_final_line.length() == 0)
-      return(false);
-
-    if(m_final_time_only) {
-      string tstamp = stripBlankEnds(getTimeStamp(m_final_line));
-      cout << tstamp << endl;
-    }
-    else if(m_final_value_only) {
-      string varval = stripBlankEnds(getDataEntry(m_final_line));
-      if(isNumber(varval)) {
-	double dval = atof(varval.c_str());
-	string sval = doubleToStringX(dval);
-	cout << sval << endl;
-      }
-      else
-	cout << varval << endl;
-    }
-    else
-      cout << m_final_line << endl;
-      
-  }
   
   return(true);
 }
@@ -228,18 +235,7 @@ bool GrepHandler::checkRetain(string& line_raw)
   if(!isNumber(line_raw.substr(0,1)))
     return(m_badlines_retained);
       
-  // Part 4: If there is a condition, see if it has been met
   string varname = getVarName(line_raw);
-  if((m_var_condition != "") && (varname == m_var_condition)) {
-    string varval = getDataEntry(line_raw);
-    if(tolower(varval) == "true")
-      m_var_condition_met = true;
-    else
-      m_var_condition_met = false;
-  }
-      
-  if(!m_var_condition_met)
-    return(false);
       
   if(!m_gaplines_retained) {
     if(strEnds(varname, "_LEN") || strEnds(varname, "_GAP"))
@@ -343,49 +339,60 @@ void GrepHandler::addKey(string key)
 
 
 //--------------------------------------------------------
-// Procedure: getMatchedKeys()
+// Procedure: setFormat()
+//    Format: part:part:part
+//  Examples: time:val
+//            val
+//            time:var:val
+//      Note: Ok components: var,val,time
 
-vector<string> GrepHandler::getMatchedKeys()
+bool GrepHandler::setFormat(string str)
 {
-  vector<string> rvector;
-
-  unsigned int i, vsize = m_keys.size();
-  for(i=0; i<vsize; i++) {
-    if(m_pmatch[i])
-      rvector.push_back(m_keys[i]);
+  if(str == "")
+    return(false);
+  
+  vector<string> svector = parseString(str, ':');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string part = tolower(svector[i]);
+    if(part == "var")
+      m_format_vars = true;
+    else if(part == "time")
+      m_format_time = true;
+    else if(part != "val")
+      return(false);
   }
-  return(rvector);
-}
-
-
-//--------------------------------------------------------
-// Procedure: getUnMatchedKeys()
-
-vector<string> GrepHandler::getUnMatchedKeys()
-{
-  vector<string> rvector;
-
-  unsigned int i, vsize = m_keys.size();
-  for(i=0; i<vsize; i++) {
-    if(!m_pmatch[i])
-      rvector.push_back(m_keys[i]);
-  }
-  return(rvector);
+  
+  m_format_vals = true;
+  m_comments_retained = false;
+  return(true);
 }
 
 //--------------------------------------------------------
 // Procedure: outputLine()
 
-void GrepHandler::outputLine(const string& line)
+void GrepHandler::outputLine(const string& line, bool last)
 {
+  if(line == "")
+    return;
+  
+  if(!last && m_final_only) {
+    m_final_line = line;
+    return;
+  }
+  
   // First handle if just output value field
-  if(m_values_only) {
-    string line_val = getDataEntry(line);
+  if(m_format_vals) {
+    string line_val = stripBlankEnds(getDataEntry(line));
     string tstamp = getTimeStamp(line);
     if(tstamp != m_last_tstamp) {
-      if(m_times_only)
-	line_val = tstamp + m_colsep + stripBlankEnds(line_val);
+      if(m_format_vars) {
+	string line_var = stripBlankEnds(getVarName(line));	
+	line_val = line_var + m_colsep + line_val;
+      }
 
+      if(m_format_time)
+	line_val = tstamp + m_colsep + line_val;
+      
       if(m_file_out)
 	fprintf(m_file_out, "%s\n", line_val.c_str());
       else
@@ -397,17 +404,15 @@ void GrepHandler::outputLine(const string& line)
 
   string varname = getVarName(line);
   
-  if(!m_final_entry_only) {
-    if(m_file_out)
-      fprintf(m_file_out, "%s\n", line.c_str());
-    else
-      cout << line << endl;
-  }
-  else {
-    if(!strBegins(line, "%"))
-      m_final_line = line;
-  }
-  
+  if(m_file_out)
+    fprintf(m_file_out, "%s\n", line.c_str());
+  else
+    cout << line << endl;
+
+  // If line is a comment, don't include in statistics
+  if(strBegins(line, "%%"))
+     return;
+     
   m_lines_retained++;
   m_chars_retained += line.length();
   if(varname.length() > 0)
@@ -425,10 +430,21 @@ void GrepHandler::ignoreLine(const string& line)
 
 
 //--------------------------------------------------------
-// Procedure: printReport
+// Procedure: printReport()
 
 void GrepHandler::printReport()
 {
+  // If explicitly asked not to make the report, then dont
+  if(!m_make_report)
+    return;
+
+  // Don't print the report if in column-data mode
+  if(m_format_vals)
+    return;
+
+  if(m_sort_entries) 
+    cout << "Total re-sorts:" << uintToString(m_re_sorts) << endl;
+  
   double total_lines = m_lines_retained + m_lines_removed;
   double total_chars = m_chars_retained + m_chars_removed;
 
