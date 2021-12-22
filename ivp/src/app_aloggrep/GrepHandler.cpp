@@ -57,7 +57,7 @@ GrepHandler::GrepHandler()
   m_format_time  = false;
   m_make_report  = true;
   
-  m_cache_size = 1000;
+  m_cache_size   = 1000;
 
   m_sort_entries  = false;
   m_rm_duplicates = false;
@@ -384,21 +384,31 @@ void GrepHandler::outputLine(const string& line, bool last)
   if(m_format_vals) {
     string line_val = stripBlankEnds(getDataEntry(line));
     string tstamp = getTimeStamp(line);
-    if(tstamp != m_last_tstamp) {
-      if(m_format_vars) {
-	string line_var = stripBlankEnds(getVarName(line));	
-	line_val = line_var + m_colsep + line_val;
-      }
+    if(tstamp == m_last_tstamp)
+      return;
 
-      if(m_format_time)
-	line_val = tstamp + m_colsep + line_val;
-      
-      if(m_file_out)
-	fprintf(m_file_out, "%s\n", line_val.c_str());
-      else
-	cout << line_val << endl;
-      m_last_tstamp = tstamp;
+    if(m_subpat != "") {
+      string line_val_low = tolower(line_val);
+      if(strContains(line_val_low, m_subpat)) {
+	string val = tokStringParse(line_val_low, m_subpat, ',', '=');
+	if(val != "")
+	  line_val = val;
+      }
     }
+    
+    if(m_format_vars) {
+      string line_var = stripBlankEnds(getVarName(line));	
+      line_val = line_var + m_colsep + line_val;
+    }
+
+    if(m_format_time)
+      line_val = tstamp + m_colsep + line_val;
+      
+    if(m_file_out)
+      fprintf(m_file_out, "%s\n", line_val.c_str());
+    else
+      cout << line_val << endl;
+    m_last_tstamp = tstamp;
     return;
   }
 

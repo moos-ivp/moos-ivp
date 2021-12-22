@@ -38,19 +38,19 @@ class GrepHandler
   bool setALogFile(std::string);
   void addKey(std::string str);
   void printReport();
-  void setFileOverWrite(bool v)    {m_file_overwrite=v;}
-  void setCommentsRetained(bool v) {m_comments_retained=v;}
-  void setBadLinesRetained(bool v) {m_badlines_retained=v;}
-  void setGapLinesRetained(bool v) {m_gaplines_retained=v;}
-  void setAppCastRetained(bool v)  {m_appcast_retained=v;}
-  void setSortEntries(bool v)      {m_sort_entries=v;}
-  void setMakeReport(bool v)       {m_make_report=v;}
-  void setRemoveDups(bool v)       {m_rm_duplicates=v;}
+  void setFileOverWrite(bool v)     {m_file_overwrite=v;}
+  void setCommentsRetained(bool v)  {m_comments_retained=v;}
+  void setBadLinesRetained(bool v)  {m_badlines_retained=v;}
+  void setGapLinesRetained(bool v)  {m_gaplines_retained=v;}
+  void setAppCastRetained(bool v)   {m_appcast_retained=v;}
+  void setSortEntries(bool v)       {m_sort_entries=v;}
+  void setMakeReport(bool v)        {m_make_report=v;}
+  void setRemoveDups(bool v)        {m_rm_duplicates=v;}
 
-  void setFinalOnly(bool v)        {m_final_only=v;}
+  void setFinalOnly(bool v)         {m_final_only=v;}
+  void setSubPattern(std::string s) {m_subpat=s;}
   bool setFormat(std::string);
   void setColSep(char c);
-
 
  protected:
 
@@ -79,7 +79,8 @@ class GrepHandler
   double m_cache_size;
   
   std::string m_filename_in;
-
+  std::string m_subpat;
+  
   FILE *m_file_in;
   FILE *m_file_out;
 

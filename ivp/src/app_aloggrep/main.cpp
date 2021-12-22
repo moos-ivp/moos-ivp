@@ -84,6 +84,8 @@ int main(int argc, char *argv[])
     else if(argi == "--tvv")
       handler.setFormat("time:var:val");
 
+    else if(strBegins(argi, "--subpat=")) 
+      handler.setSubPattern(argi.substr(9));
     else if(strBegins(argi, "--format=")) 
       handled = handler.setFormat(argi.substr(9));
     else if(argi == "--final") 
@@ -187,6 +189,10 @@ void showHelpAndExit()
   cout << "  --csc,-csc        Columns separated with a semi-colon    " << endl;
   cout << "                    (Default column separator is a comma)  " << endl;
   cout << "                                                           " << endl;
+  cout << "  --subpat=pattern                                         " << endl;
+  cout << "    For postings with components with comma-separated      " << endl;
+  cout << "    param=value components, a component can be isolated.   " << endl;
+  cout << "                                                           " << endl;
   cout << "Further Notes:                                             " << endl;
   cout << "  (1) The second alog is the output file. Otherwise the    " << endl;
   cout << "      order of arguments is irrelevant.                    " << endl;
@@ -205,6 +211,8 @@ void showHelpAndExit()
   cout << " $ aloggrep DEPLOY RETURN file.alog newfile.alog           " << endl;
   cout << " $ aloggrep file.alog ENCOUNTER_CPA --tv -csw results.dat  " << endl;
   cout << " $ aloggrep --sd file.alog new_file.alog                   " << endl;
+  cout << " $ aloggrep file.alog NODE_REPORT_LOCAL --subpat=index     " << endl;
+  cout << "                                                           " << endl;
   cout << "                                                           " << endl;
   cout << "See Also:                                                  " << endl;
   cout << "  (5) alogscan, alogrm, alogclip, alogsplit, alogavg,      " << endl;
