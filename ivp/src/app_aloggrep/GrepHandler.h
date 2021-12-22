@@ -49,6 +49,7 @@ class GrepHandler
   void setTimesOnly(bool v)        {m_times_only=v;}
   void setSortEntries(bool v)      {m_sort_entries=v;}
   void setRemoveDuplicates(bool v) {m_rm_duplicates=v;}
+  void setColSep(char c);
 
  protected:
 
@@ -65,19 +66,21 @@ class GrepHandler
  protected: // Config vars
 
   std::string m_var_condition;
-  bool        m_var_condition_met;
-  bool        m_comments_retained;
-  bool        m_badlines_retained;
-  bool        m_gaplines_retained;
-  bool        m_appcast_retained;
-  bool        m_final_entry_only;
-  bool        m_final_time_only;
-  bool        m_final_value_only;
-  bool        m_values_only;
-  bool        m_times_only;
 
-  bool        m_sort_entries;
-  bool        m_rm_duplicates;
+  bool   m_var_condition_met;
+  bool   m_comments_retained;
+  bool   m_badlines_retained;
+  bool   m_gaplines_retained;
+  bool   m_appcast_retained;
+  bool   m_final_entry_only;
+  bool   m_final_time_only;
+  bool   m_final_value_only;
+  bool   m_values_only;
+  bool   m_times_only;
+  bool   m_sort_entries;
+  bool   m_rm_duplicates;
+
+  char   m_colsep;
   
   double m_cache_size;
   

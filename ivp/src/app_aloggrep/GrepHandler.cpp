@@ -50,8 +50,7 @@ GrepHandler::GrepHandler()
   m_comments_retained = true;
   m_var_condition_met = true;
   m_file_overwrite = false;
-  m_gaplines_retained = true;
-  m_appcast_retained = true;
+  m_appcast_retained = false;
   m_final_entry_only = false;
   m_final_value_only = false;
   m_final_time_only  = false;
@@ -68,9 +67,10 @@ GrepHandler::GrepHandler()
   m_badlines_retained = false;
 
   // A "gapline" is a line that ends in _GAP or _LEN
-  m_gaplines_retained = true;
+  m_gaplines_retained = false;
 
   m_re_sorts = 0;
+  m_colsep = ',';
 }
 
 //--------------------------------------------------------
@@ -302,8 +302,16 @@ string GrepHandler::quickPassGetVName(string alogfile)
 }
 
 //--------------------------------------------------------
-// Procedure: addKey
-//     Notes: 
+// Procedure: setColSep()
+
+void GrepHandler::setColSep(char c)
+{
+  if((c == ',') || (c == ':') || (c == ';') || (c == ' '))
+    m_colsep = c;  
+}
+
+//--------------------------------------------------------
+// Procedure: addKey()
 
 void GrepHandler::addKey(string key)
 {
@@ -376,7 +384,7 @@ void GrepHandler::outputLine(const string& line)
     string tstamp = getTimeStamp(line);
     if(tstamp != m_last_tstamp) {
       if(m_times_only)
-	line_val = tstamp + "," + stripBlankEnds(line_val);
+	line_val = tstamp + m_colsep + stripBlankEnds(line_val);
 
       if(m_file_out)
 	fprintf(m_file_out, "%s\n", line_val.c_str());
