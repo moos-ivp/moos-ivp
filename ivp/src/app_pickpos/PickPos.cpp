@@ -437,10 +437,6 @@ bool PickPos::addPosFile(string filename)
       m_file_positions.push_back(lines[i]);
   }
 
-  for(unsigned int i=0; i<m_file_positions.size(); i++)
-    cout << "[" << i << "]:" << m_file_positions[i] << endl;
-
-  
   return(true);
 }
 
@@ -568,8 +564,9 @@ void PickPos::pickPosByPoly()
 	  double floor = m_max_tries * 0.8;
 	  double window = m_max_tries - floor;
 	  double pct = 1 - (tries - floor) / window;
-	  cout << "   " << pct << endl;
 	  adjustable_buffer_dist = pct * m_buffer_dist;
+	  if(m_verbose)
+	    cout << "Relaxed buffer_dist: " << adjustable_buffer_dist << endl;
 	}
       }
       
