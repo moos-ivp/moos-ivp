@@ -28,9 +28,9 @@
 #include "OpenURL.h"
 #include "MBUtils.h"
 
-#ifdef UNIX
+#ifdef __linux__
   #define OPEN_URL_FUNCTION "xdg-open "
-#elif WIN32
+#elif _WIN32
   #define OPEN_URL_FUNCTION "xdg-open "
 #else
   #define OPEN_URL_FUNCTION "open "
