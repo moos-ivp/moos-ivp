@@ -18,8 +18,8 @@ SET(SRC main.cpp AvgHandler.cpp ExpEntry.cpp)
 ADD_EXECUTABLE(alogavg ${SRC})
    
 TARGET_LINK_LIBRARIES(alogavg
-  mbutil
   apputil
+  mbutil
   logutils
   ${SYSTEM_LIBS})
 
