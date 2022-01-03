@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "QueryDB.h"
 #include "QueryDB_Info.h"
 
@@ -68,6 +69,8 @@ int main(int argc, char *argv[])
       handled = query.setConfigCheckVarFormat("esv");
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++")) 
       handled = query.setMissionFile(argi);
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/uQueryDB");
     else
       handled = false;
     

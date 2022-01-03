@@ -25,6 +25,7 @@
 #include <cstring>
 #include <vector>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "PokeDB.h"
 #include "PokeDB_Info.h"
 
@@ -52,6 +53,16 @@ int main(int argc ,char * argv[])
     else if((argi == "-i") || (argi == "--interface"))
       showInterfaceAndExit();
 
+    else if((argi == "-q") || (argi == "--quiet")) {
+      std::ofstream file("/dev/null");
+      std::streambuf *strm_buffer = std::cout.rdbuf();
+      cout.rdbuf(file.rdbuf());
+      
+      //cout.rdbuf(ss.rdbuf());
+      //cerr.rdbuf(ss.rdbuf());
+      
+      cout.rdbuf(strm_buffer);
+    }
     else if(strBegins(argi, "--host="))       // recommended to user
       server_host = argi.substr(7);
     else if(strBegins(argi, "host="))
@@ -69,6 +80,8 @@ int main(int argc ,char * argv[])
       server_port = atoi(argi.substr(11).c_str());
     else if(strBegins(argi, "server_port="))
       server_port = atoi(argi.substr(12).c_str());
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/uPokeDB");
 
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
@@ -125,7 +138,7 @@ int main(int argc ,char * argv[])
       }
     }
   }
-  
+
   PokeDB Poker(server_host, server_port);
   
   if(mission_file == "") {

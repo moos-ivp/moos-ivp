@@ -79,6 +79,8 @@ void showHelpAndExit()
   blk("      Column truncation of scope output is enabled.             ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of uHelmScope.                ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to: https://oceanai.mit.edu/ivpman/apps/uHelmScope ");
   blk("                                                                ");
   blk("MOOS Variables                                                  ");
   blk("  MOOS_VAR1 MOOSVAR_2, ..., MOOSVAR_N                           ");

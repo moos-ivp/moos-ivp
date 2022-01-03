@@ -42,6 +42,7 @@ CPAMonitor::CPAMonitor()
   m_verbose      = false;
 
   m_closest_range = -1;
+  m_closest_range_ever = -1;
 }
 
 //---------------------------------------------------------
@@ -316,6 +317,9 @@ bool CPAMonitor::updatePairRangeAndRate(string vname, string contact)
 
   if((m_closest_range < 0) || (dist < m_closest_range))
     m_closest_range = dist;
+  
+  if((m_closest_range_ever < 0) || (dist < m_closest_range_ever))
+    m_closest_range_ever = dist;
   
   // Note that this pair has been examined on this round. This is cleared
   // for all pairs at the end of a round.

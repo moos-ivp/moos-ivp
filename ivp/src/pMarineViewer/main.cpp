@@ -25,6 +25,7 @@
 #include <iostream>
 #include <FL/Fl.H>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "Threadsafe_pipe.h"
 #include "MOOS_event.h"
 #include "MOOSAppRunnerThread.h"
@@ -69,6 +70,8 @@ int main(int argc, char *argv[])
       size_request = argi.substr(7);
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/pMarineViewer");
     else if(i==2)
       run_command = argi;
   }

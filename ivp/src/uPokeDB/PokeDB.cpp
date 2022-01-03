@@ -179,7 +179,6 @@ bool PokeDB::Iterate()
     }
     m_values_poked = true;
     m_poke_iteration = m_iteration;
-    printf("\n\nAFTER Poking the MOOSDB \n");
     return(true);
   }
   

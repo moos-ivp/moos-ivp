@@ -66,6 +66,8 @@ void showHelpAndExit()
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of uPokeDB.                   ");
+  mag("  --quiet,-q                                                    ");
+  blk("      Silence cout, cerr output.                                ");
   mag("  --host=val                                                    ");
   blk("      Provide MOOSDB IP address on the command line rather than ");
   blk("      from a .moos file.                                        ");
@@ -78,6 +80,8 @@ void showHelpAndExit()
   mag("  <var:=value>                                                  ");
   blk("      Poke the variable-value pair as a string even if the value");
   blk("      looks like a double.                                      ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to: https://oceanai.mit.edu/ivpman/apps/uPokeDB ");
   blk("                                                                ");
   blk("Examples:                                                       ");
   blk("     $ uPokeDB alpha.moos DEPLOY=true RETURN_SPEED=2.0          ");

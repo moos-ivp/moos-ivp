@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "GrepHandler.h"
 
@@ -100,6 +101,8 @@ int main(int argc, char *argv[])
       handler.setFileOverWrite(true);
     else if(strEnds(argi, ".alog") || strEnds(argi, ".klog")) 
       handled = handler.setALogFile(argi);
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/aloggrep");
     else if(strBegins(argi, "-"))
       handled = false;
     else
@@ -171,6 +174,9 @@ void showHelpAndExit()
   cout << "  -s,--sort         Sort the log entries                   " << endl;
   cout << "  -d,--duplicates   Remove Duplicate entries               " << endl;
   cout << "  -sd,--sd          Remove Duplicate AND sort              " << endl;
+  cout << "                                                           " << endl;
+  cout << "  --web,-w   Open browser to:                              " << endl;
+  cout << "             https://oceanai.mit.edu/ivpman/apps/aloggrep  " << endl;
   cout << "                                                           " << endl;
   cout << "Content/format Options:                                    " << endl;
   cout << "  --format=val or --v                                      " << endl;

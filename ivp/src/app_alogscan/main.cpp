@@ -26,6 +26,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "ScanHandler.h"
 
@@ -41,7 +42,9 @@ int main(int argc, char *argv[])
     showReleaseInfo("alogscan", "gpl");
     return(0);
   }
-  
+  if(scanArgs(argc, argv, "-w", "-web", "--web"))
+    openURLX("https://oceanai.mit.edu/ivpman/apps/alogscan");
+    
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage:                                               " << endl;
@@ -71,6 +74,9 @@ int main(int argc, char *argv[])
     cout << "  -v,--version  Displays the current release version " << endl;
     cout << "  --rate_only   Only report the data rate            " << endl;
     cout << "  --noaux       Ignore auxilliary source info        " << endl;
+    cout << "                                                     " << endl;
+    cout << "  --web,-w   Open browser to:                        " << endl;
+    cout << "             https://oceanai.mit.edu/ivpman/apps/alogscan " << endl;
     cout << "                                                     " << endl;
     cout << "See also: aloggrp, alogrm, alogclip, alogview        " << endl;
     return(0);

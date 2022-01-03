@@ -69,6 +69,8 @@ void showHelpAndExit()
   blk("      Display the release version of pHelmIvP.                  ");
   mag("  --verbose=<setting>                                           ");
   blk("      May be \"VERBOSE\", \"terse\", or \"quiet\".              ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to: https://oceanai.mit.edu/apps/pHelmIvP    ");
   blk("                                                                ");
   blk("Behavior files:                                                 ");
   blk("      One or more filenames to get IvP Helm config parameters.  ");

@@ -25,6 +25,7 @@
 #include <iostream>
 #include "cmath"
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "TermUtils.h"
 #include "ALogClipHandler.h"
@@ -62,6 +63,9 @@ int main(int argc, char *argv[])
       handler.setBatch();
     else if(strBegins(argi, "--suffix=")) 
       handled = handler.setSuffix(argi.substr(9));
+    else if((argi == "-w") || (argi == "--web") || (argi =="-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/alogclip");
+    
     else
       pass_two_args.push_back(argi);
 
@@ -133,6 +137,9 @@ void display_usage()
   cout << "  -b,--batch    Batch clip all given alog files.         " << endl;
   cout << "  --suffix=N    Batch clipped file in.alog to in_N.alog. " << endl;
   cout << "                The default suffix is \"_clipped\".      " << endl;
+  cout << "  --web,-w   Open browser to:                            " << endl;
+  cout << "             https://oceanai.mit.edu/ivpman/apps/alogclip " << endl;
+  cout << "                                                         " << endl;
   cout << "                                                         " << endl;
   cout << "Further Notes:                                           " << endl;
   cout << "  (1) The order of arguments may vary. The first alog    " << endl;

@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "SplitHandler.h"
 
@@ -40,7 +41,9 @@ int main(int argc, char *argv[])
     showReleaseInfo("alogsplit", "gpl");
     return(0);
   }
-  
+  if(scanArgs(argc, argv, "-w", "-web", "--web")) 
+    openURLX("https://oceanai.mit.edu/ivpman/apps/alogsplit");
+    
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
     cout << "Usage: " << endl;
@@ -65,6 +68,9 @@ int main(int argc, char *argv[])
     cout << "  -v,--version   Displays the current release version      " << endl;
     cout << "  --verbose      Show output for successful operation      " << endl;
     cout << "  --dir=DIR      Override the default dir with given dir.  " << endl;
+    cout << "                                                           " << endl;
+    cout << "  --web,-w   Open browser to:                              " << endl;
+    cout << "             https://oceanai.mit.edu/ivpman/apps/alogiter  " << endl;
     cout << "                                                           " << endl;
     cout << "Further Notes:                                             " << endl;
     cout << "  (1) The order of arguments is irrelevant.                " << endl;

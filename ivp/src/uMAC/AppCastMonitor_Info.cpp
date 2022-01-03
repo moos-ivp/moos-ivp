@@ -78,6 +78,8 @@ void showHelpAndExit()
   blk("      Specify initial process to scope on.                      ");
   mag("  --node","=<NodeName>                                          ");
   blk("      Specify initial node to scope on.                         ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to: https://oceanai.mit.edu/ivpman/apps/uMAC ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");

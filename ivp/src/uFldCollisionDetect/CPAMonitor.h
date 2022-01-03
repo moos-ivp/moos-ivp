@@ -42,9 +42,11 @@ class CPAMonitor
   void setIgnoreRange(double);
   void setReportRange(double);
   void setSwingRange(double);
-
+  void resetClosestRangeEver()      {m_closest_range_ever=-1;}
+  
   void setIteration(unsigned int v) {m_iteration = v;}
-
+  void resetClosestRange()          {m_closest_range_ever = -1;}
+  
   bool addIgnoreGroup(std::string);
   bool addRejectGroup(std::string);
 
@@ -54,7 +56,8 @@ class CPAMonitor
   unsigned int getEventCount() const {return(m_events.size());}
   CPAEvent     getEvent(unsigned int) const;
 
-  double getClosestRange() const {return(m_closest_range);}
+  double getClosestRange() const     {return(m_closest_range);}
+  double getClosestRangeEver() const {return(m_closest_range_ever);}
 
   unsigned int getContactDensity(std::string vname, double rng) const;
   
@@ -98,6 +101,7 @@ class CPAMonitor
  protected: // Overall state
 
   double m_closest_range;
+  double m_closest_range_ever;
   unsigned int m_iteration;
 };
 

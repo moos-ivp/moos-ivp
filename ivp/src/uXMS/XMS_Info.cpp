@@ -101,6 +101,8 @@ void showHelpAndExit()
   blk("    Minimum real-time seconds between terminal reports.         ");
   mag("  --version,-v                                                  ");
   blk("    Display the release version of uXMS.                        ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to: https://oceanai.mit.edu/ivpman/apps/uXMS ");
   blk("                                                                ");
   blk("Shortcuts                                                       ");
   blk("                                                                ");

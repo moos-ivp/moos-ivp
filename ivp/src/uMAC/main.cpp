@@ -23,6 +23,7 @@
 
 #include <string>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "TermUtils.h"
 #include "ColorParse.h"
 #include "AppCastMonitor.h"
@@ -62,6 +63,8 @@ int main(int argc, char *argv[])
       initial_proc = argi.substr(7);
     else if((argi == "--paused") || (argi == "-p"))
       refresh_mode = "paused";
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/uMAC");
     else if(i==2)
       run_command = argi;
   }

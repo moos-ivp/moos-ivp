@@ -24,6 +24,7 @@
 #include <string>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "ALogCatHandler.h"
 #include <cstdlib>
@@ -61,6 +62,8 @@ int main(int argc, char *argv[])
       handler.setVerbose();
     else if((argi == "--force") || (argi == "-f") || (argi == "-force"))
       handler.setForceOverwrite();
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/alogcat");
     else
       handled = false;
     
@@ -107,6 +110,9 @@ void showHelpAndExit()
   cout << "  --verbose        Produce verbose output.                " << endl;
   cout << "  --verbose(again) Produce verbose and debugging output.  " << endl;
   cout << "  --new=file.alog  Name of new concatenated alog file.    " << endl;
+  cout << "                                                          " << endl;
+  cout << "  --web,-w   Open browser to:                             " << endl;
+  cout << "             https://oceanai.mit.edu/ivpman/apps/alogcat  " << endl;
   cout << "                                                          " << endl;
   cout << "Further Notes:                                            " << endl;
   cout << "  (1) Order of all command line arguments do not matter.  " << endl;

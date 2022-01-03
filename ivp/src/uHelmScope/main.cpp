@@ -24,6 +24,7 @@
 #include <iostream>
 #include "TermUtils.h"
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "HelmScope.h"
 #include "HelmScope_Info.h"
 #include "MOOSAppRunnerThread.h"
@@ -73,6 +74,8 @@ int main(int argc ,char * argv[])
       server_port = argi.substr(13);
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/uHelmScope");
     else // This check needs to be last:
       theHelmScope.addScopeVariable(argi);
   }

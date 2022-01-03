@@ -67,7 +67,7 @@ void showHelpAndExit()
   mag("  --version,-v                                                  ");
   blk("      Display the release version of iSay.                      ");
   mag("  --web,-w                                                      ");
-  blk("      Open browser to: https://oceani.mit.edu/apps/iSay         ");
+  blk("      Open browser to: https://oceanai.mit.edu/apps/iSay        ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");

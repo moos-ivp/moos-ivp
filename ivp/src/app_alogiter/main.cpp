@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "IterHandler.h"
 
@@ -40,6 +41,8 @@ int main(int argc, char *argv[])
     showReleaseInfo("alogiter", "gpl");
     return(0);
   }
+  if(scanArgs(argc, argv, "-w", "-web", "--web")) 
+    openURLX("https://oceanai.mit.edu/ivpman/apps/alogiter");
   
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
@@ -47,8 +50,8 @@ int main(int argc, char *argv[])
     cout << "  alogiter in.alog [OPTIONS]                               " << endl;
     cout << "                                                           " << endl;
     cout << "Synopsis:                                                  " << endl;
-    cout << "  Analyze the ITER_GAP and ITER_LEN information provided by" << endl;
-    cout << "  all applications recorded in the given alog file.        " << endl;
+    cout << "  Analyze the ITER_GAP and ITER_LEN information provided   " << endl;
+    cout << "  by all applications recorded in the given alog file.     " << endl;
     cout << "                                                           " << endl;
     cout << "Standard Arguments:                                        " << endl;
     cout << "  file.alog - The input logfile.                           " << endl;
@@ -56,6 +59,9 @@ int main(int argc, char *argv[])
     cout << "Options:                                                   " << endl;
     cout << "  -h,--help     Displays this help message                 " << endl;
     cout << "  -v,--version  Displays the current release version       " << endl;
+    cout << "                                                           " << endl;
+    cout << "  --web,-w   Open browser to:                              " << endl;
+    cout << "             https://oceanai.mit.edu/ivpman/apps/alogiter  " << endl;
     cout << "                                                           " << endl;
     cout << "Further Notes:                                             " << endl;
     cout << "  See also: alogscan, alogrm, alogclip, alogview, aloggrep " << endl;

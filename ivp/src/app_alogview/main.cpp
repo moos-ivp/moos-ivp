@@ -27,6 +27,7 @@
 #include <cstring>
 #include "REPLAY_GUI.h"
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "LogViewLauncher.h"
 
@@ -54,6 +55,9 @@ int main(int argc, char *argv[])
 {
   LogViewLauncher launcher;
 
+  if(scanArgs(argc, argv, "-w", "-web", "--web"))
+    openURLX("https://oceanai.mit.edu/ivpman/apps/alogview");
+  
   bool alog_provided = false;
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -169,6 +173,9 @@ void help_message()
   cout << "  --marker_viewable_labels=true/false                         " << endl;
   cout << "  --polygon_viewable_all=true/false                           " << endl;
   cout << "  --polygon_viewable_labels=true/false                        " << endl;
+  cout << "                                                              " << endl;
+  cout << "  --web,-w   Open browser to:                                 " << endl;
+  cout << "             https://oceanai.mit.edu/ivpman/apps/alogview     " << endl;
   cout << "                                                              " << endl;
   cout << "Further Notes:                                                " << endl;
   cout << "  (1) Multiple .alog files ok - typically one per vehicle     " << endl;

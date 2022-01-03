@@ -7,6 +7,7 @@
 
 #include <string>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ColorParse.h"
 #include "CollObDetect.h"
 #include "CollObDetect_Info.h"
@@ -32,6 +33,8 @@ int main(int argc, char *argv[])
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/uFldCollObDetect");
     else if(i==2)
       run_command = argi;
   }

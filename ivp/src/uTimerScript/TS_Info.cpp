@@ -76,6 +76,8 @@ void showHelpAndExit()
   blk("      Display the release version of uTimerScript.             ");
   mag("  --noterm_appcast                                             ");
   blk("      Do not generate appcasts to the terminal.                ");
+  mag("  --web,-w                                                     ");
+  blk("      Open browser to: https://oceanai.mit.edu/ivpman/apps/uTimerScript");
   blk("                                                               ");
   blk("Note: If argv[2] does not otherwise match a known option,      ");
   blk("      then it will be interpreted as a run alias. This is      ");

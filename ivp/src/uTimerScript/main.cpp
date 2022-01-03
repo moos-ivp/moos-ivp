@@ -22,6 +22,7 @@
 /*****************************************************************/
 
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ColorParse.h"
 #include "TS_MOOSApp.h"
 #include "TS_Info.h"
@@ -57,6 +58,8 @@ int main(int argc, char *argv[])
       string val = tolower(argi.substr(10));
       setBooleanOnString(shuffle_setting, val);
     }
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/uTimerScript");
     else if(i == 2)
       run_command = argi;
   }

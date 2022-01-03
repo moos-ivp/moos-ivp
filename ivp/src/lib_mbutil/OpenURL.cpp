@@ -38,13 +38,26 @@
 
 using namespace std;
 
+//---------------------------------------------------------
+// Procedure: openURL
+
 void openURL(string url)
 {
   if(!strBegins(url, "http"))
     return;
 
   string system_cmd = OPEN_URL_FUNCTION + url;
-  cout << "cmd:[" << system_cmd << "]" << endl;
+  system(system_cmd.c_str());
+}
+
+//---------------------------------------------------------
+// Procedure: openURLX
+
+void openURLX(string url)
+{
+  cout << "Opening browser to: " << url << endl;
+  openURL(url);
+  exit(0);
 }
 
 

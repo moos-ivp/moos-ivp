@@ -72,6 +72,8 @@ void showHelpAndExit()
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
   blk("      Display release version of pHostInfo.                     ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to: https://oceanai.mit.edu/apps/pHelmIvP    ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");

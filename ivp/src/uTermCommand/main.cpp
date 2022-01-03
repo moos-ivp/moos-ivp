@@ -24,6 +24,7 @@
 #include <cstring>
 #include "TermUtils.h"
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "TermCommand.h"
 #include "ColorParse.h"
 #include "TermCommand_Info.h"
@@ -56,6 +57,8 @@ int main(int argc ,char * argv[])
       run_command = argi.substr(8);
     else if(strBegins(argi, "--verbose="))
       verbose_setting = tolower(argi.substr(10));
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/uTermCommand");
     else if(i==2)
       run_command = argi;
   }

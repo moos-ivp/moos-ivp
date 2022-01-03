@@ -77,6 +77,8 @@ void showHelpAndExit()
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of uCollisionDetector.        ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to: https://oceanai.mit.edu/apps/uFldCollisionDetect ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -111,6 +113,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  ignore_group = alpha                                          ");
   blk("  reject_group = bravo                                          ");
+  blk("                                                                ");
+  blk("  post_closest_range = true     // default is false             ");
   blk("                                                                ");
   blk("  pulse_render   = true         // default true                 ");
   blk("  pulse_range    = 20           // default is 20 meters         ");  

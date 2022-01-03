@@ -51,14 +51,15 @@ CollisionDetector::CollisionDetector()
   m_conditions_ok = true;
 
   m_post_closest_range = false;
+  m_post_closest_range_ever = false;
 
   m_report_all_encounters = false;
   
-  m_info_buffer   = new InfoBuffer;
+  m_info_buffer = new InfoBuffer;
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool CollisionDetector::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -72,6 +73,8 @@ bool CollisionDetector::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(key == "NODE_REPORT") 
       handleMailNodeReport(sval);
+    if(key == "UCD_RESET") 
+      m_cpa_monitor.resetClosestRange();
     else 
       updateInfoBuffer(msg);
   }
@@ -79,7 +82,7 @@ bool CollisionDetector::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool CollisionDetector::OnConnectToServer()
 {
@@ -101,6 +104,12 @@ bool CollisionDetector::Iterate()
     double closest_range = m_cpa_monitor.getClosestRange();
     if(closest_range > 0)
       Notify("UCD_CLOSEST_RANGE", closest_range);
+  }
+  
+  if(m_post_closest_range_ever) {
+    double closest_range_ever = m_cpa_monitor.getClosestRangeEver();
+    if(closest_range_ever > 0)
+      Notify("UCD_CLOSEST_RANGE_EVER", closest_range_ever);
   }
   
   m_conditions_ok = checkConditions();
@@ -281,6 +290,8 @@ bool CollisionDetector::OnStartUp()
       handled = handleConfigFlag("encounter", value);
     else if(param == "post_closest_range") 
       handled = setBooleanOnString(m_post_closest_range, value);
+    else if(param == "post_closest_range_ever") 
+      handled = setBooleanOnString(m_post_closest_range_ever, value);
     else if(param == "report_all_encounters") 
       handled = setBooleanOnString(m_report_all_encounters, value);
     else if(param == "ignore_group") 
@@ -330,7 +341,8 @@ void CollisionDetector::registerVariables()
 {
   AppCastingMOOSApp::RegisterVariables();
   Register("NODE_REPORT", 0);
-
+  Register("UCD_RESET", 0);
+  
   //=======================================================
   // Register for variables used in the logic conditions
   //=======================================================
@@ -606,27 +618,38 @@ bool CollisionDetector::buildReport()
   string pulse_rng_str = doubleToString(m_pulse_range,2);
   string ignore_grps_str = m_cpa_monitor.getIgnoreGroups();
   string reject_grps_str = m_cpa_monitor.getRejectGroups();
+  string post_cr_str  = boolToString(m_post_closest_range);
+  string post_cre_str = boolToString(m_post_closest_range_ever);
   
   m_msgs << "Configuration:                               " << endl;
   m_msgs << "============================================ " << endl;
-  m_msgs << "       encounter_dist: " << encounter_str << endl;
-  m_msgs << "       collision_dist: " << coll_dist_str << endl;
-  m_msgs << "       near_miss_dist: " << near_miss_str << endl;
-  m_msgs << "        ignore_groups: " << ignore_grps_str << endl;
-  m_msgs << "        reject_groups: " << reject_grps_str << endl;
-  m_msgs << "   range_pulse_render: " << pulse_ren_str << endl;
-  m_msgs << " range_pulse_duration: " << pulse_dur_str << endl;
-  m_msgs << "    range_pulse_range: " << pulse_rng_str << endl << endl;
+  m_msgs << "         encounter_dist: " << encounter_str << endl;
+  m_msgs << "         collision_dist: " << coll_dist_str << endl;
+  m_msgs << "         near_miss_dist: " << near_miss_str << endl;
+  m_msgs << "          ignore_groups: " << ignore_grps_str << endl;
+  m_msgs << "          reject_groups: " << reject_grps_str << endl;
+  m_msgs << "     range_pulse_render: " << pulse_ren_str << endl;
+  m_msgs << "   range_pulse_duration: " << pulse_dur_str << endl;
+  m_msgs << "      range_pulse_range: " << pulse_rng_str << endl;
+  m_msgs << "     post_closest_range: " << post_cr_str << endl;
+  m_msgs << "post_closest_range_ever: " << post_cre_str << endl << endl;
   
   string conditions_ok_str  = boolToString(m_conditions_ok);
   string tot_encounters_str = uintToString(m_total_encounters);
   string tot_near_miss_str = uintToString(m_total_near_misses);
   string tot_collision_str = uintToString(m_total_collisions);
+
+  double closest_range = m_cpa_monitor.getClosestRange();
+  double closest_range_ever = m_cpa_monitor.getClosestRangeEver();
+  string cr_str  = doubleToStringX(closest_range,2);
+  string cre_str = doubleToStringX(closest_range_ever,2);
   
   m_msgs << "============================================" << endl;
   m_msgs << "State Overall:                              " << endl;
   m_msgs << "============================================" << endl;
   m_msgs << "             Active: " << conditions_ok_str   << endl;
+  m_msgs << "      Closest Range: " << cr_str              << endl;
+  m_msgs << " Closest Range Ever: " << cre_str             << endl;
   m_msgs << "   Total Encounters: " << tot_encounters_str  << endl;
   m_msgs << "  Total Near Misses: " << tot_near_miss_str   << endl;
   m_msgs << "   Total Collisions: " << tot_collision_str   << endl << endl;

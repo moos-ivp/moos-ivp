@@ -99,16 +99,13 @@ int main(int argc, char *argv[])
       
     if(!handled) {
       cout << "Unhandled arg: " << argi << endl;
-      return(0);
+      return(1);
     }
   }
 
   pickpos.setArgSummary(arg_summary);
   pickpos.setVerbose(verbose);
   pickpos.pick();
-
-  if(verbose)
-    cout << "// " << arg_summary << endl;
 
   return(0);
 }

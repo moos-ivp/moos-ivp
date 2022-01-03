@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "HelmReporter.h"
 
@@ -40,6 +41,8 @@ int main(int argc, char *argv[])
     showReleaseInfo("aloghelm", "gpl");
     return(0);
   }
+  if(scanArgs(argc, argv, "-w", "-web", "--web")) 
+    openURLX("https://oceanai.mit.edu/ivpman/apps/aloghelm");
 
   // Look for a request for usage information
   if(scanArgs(argc, argv, "-h", "--help", "-help")) {
@@ -60,6 +63,8 @@ int main(int argc, char *argv[])
     cout << "  --nocolor     Turn off use of color coding               " << endl;
     cout << "  --notrunc     Don't truncate MOOSVAR output (on by default)" << endl;
     cout << "                                                           " << endl;
+    cout << "  --web,-w   Open browser to:                              " << endl;
+    cout << "             https://oceanai.mit.edu/ivpman/apps/aloghelm  " << endl;
     cout << "Further Notes:                                             " << endl;
     cout << "  (1) The order of arguments is irrelevant.                " << endl;
     cout << "  (2) Only the first specified .alog file is reported on.  " << endl;

@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "PareEngine.h"
 
@@ -77,6 +78,8 @@ int main(int argc, char *argv[])
       handled = pare_engine.addHitListVars("NODE_REPORT*,PSHARE*");
       handled = pare_engine.addPareListVars("BHV_IPF,VIEW_SEGLIST");
     }
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/alogpare");
     else 
       handled = false;
     
@@ -122,6 +125,9 @@ void showHelpAndExit()
   cout << "  --hitvars=<L>     Comma-separated list of hit vars     " << endl;
   cout << "  --parevars=<L>    Comma-separated list of pare vars    " << endl;
   cout << "  --pare_window=<N> Set window to N seconds (default 30) " << endl;
+  cout << "                                                         " << endl;
+  cout << "  --web,-w   Open browser to:                            " << endl;
+  cout << "             https://oceanai.mit.edu/ivpman/apps/alogpare " << endl;
   cout << "                                                         " << endl;
   cout << "Examples:                                                " << endl;
   cout << "  alogpare --markvars=ENCOUNTER --parevars=BHV_IPF       " << endl;

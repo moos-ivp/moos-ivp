@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "FiltHandler.h"
 
@@ -65,6 +66,10 @@ int main(int argc, char *argv[])
   if(scanArgs(argc, argv, "-f", "-force", "--force"))
     handler.setParam("file_overwrite", "true");
 
+  if(scanArgs(argc, argv, "-w", "-web", "--web"))
+    openURLX("https://oceanai.mit.edu/ivpman/apps/alogrm");
+
+  
   string alogfile_in;
   string alogfile_out;
   string bad_switch;
@@ -128,6 +133,9 @@ void help_message()
   cout << "                non-numerical or lines w/ no 4th column     " << endl;
   //cout << "  --times       Rewrite all timestamps to be time since   " << endl;
   //cout << "                logger started and LOGSTART is set to zero" << endl;
+  cout << "                                                            " << endl;
+  cout << "  --web,-w   Open browser to:                               " << endl;
+  cout << "             https://oceanai.mit.edu/ivpman/apps/alogrm     " << endl;
   cout << "                                                            " << endl;
   cout << "Further Notes:                                              " << endl;
   cout << "  (1) The second alog is the output file. Otherwise the     " << endl;

@@ -25,6 +25,7 @@
 #include "XMS.h"
 #include "TermUtils.h"
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "XMS_Info.h"
 #include "MOOSAppRunnerThread.h"
 
@@ -100,6 +101,9 @@ int main(int argc ,char * argv[])
       theXMS.setTruncData(argi.substr(8));
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/uXMS");
+
     // To support pAntler convention where argv[2] indicates an alternative
     // procname, we allow this when argv[2] begins with uXMS. In this case
     // it is likely that argv[2] does not represent a var to be scoped.

@@ -95,6 +95,8 @@ void showHelpAndExit()
   blk("      Format of .checkvars is whitespace-separated-value        ");
   mag("  --vo,-vo                                                      ");
   blk("      Format of .checkvars is value-only                        ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to: https://oceanai.mit.edu/ivpman/apps/uQueryDB ");
   blk("                                                                ");
   blk("Returns:                                                        ");
   blk("   0 if all pass conditions met and no fail condition met       ");

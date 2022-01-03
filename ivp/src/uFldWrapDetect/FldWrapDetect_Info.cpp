@@ -36,10 +36,9 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The uFldWrapDetect application is used for               ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("  The uFldWrapDetect application is used for detecting when a   ");
+  blk("  vehicle performs a maneuver that essentially wraps around and ");
+  blk("  crosses its own path shortly later.                           ");
   blk("                                                                ");
 }
 
@@ -50,7 +49,7 @@ void showHelpAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("Usage: uFldWrapDetect file.moos [OPTIONS]                   ");
+  blu("Usage: uFldWrapDetect file.moos [OPTIONS]                       ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -58,7 +57,7 @@ void showHelpAndExit()
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
   blk("      Launch uFldWrapDetect with the given process name         ");
-  blk("      rather than uFldWrapDetect.                           ");
+  blk("      rather than uFldWrapDetect.                               ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -66,7 +65,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of uFldWrapDetect.        ");
+  blk("      Display the release version of uFldWrapDetect.            ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");

@@ -456,26 +456,39 @@ bool PickPos::pick()
   else if(m_circ_set)
     pickPosByCircle();
 
+  if(m_hdg_type != "none")
+    pickHeadingVals();
+
+  if(m_spd_type != "none")
+    pickSpeedVals();
+
+  if(m_vname_cache.size() != 0)
+    pickVehicleNames();
+  
+  if(m_colors)
+    pickColors();
+
+  if(m_groups.size() != 0)
+    pickGroupNames();
+
   if(m_headers_enabled) {
     cout << "# Values chosen by the pickpos utility" << endl;
     cout << "# " << m_arg_summary << endl;
   }
-  
+
   if(m_verbose) {
-    cout << "heading type: " << m_hdg_type << endl;
-    cout << "  heading val1: " << m_hdg_val1 << endl;
-    cout << "  heading val2: " << m_hdg_val2 << endl;
-    cout << "  heading val3: " << m_hdg_val3 << endl;
-    cout << "speed type: " << m_spd_type << endl;
-    cout << "  speed val1: " << m_spd_val1 << endl;
-    cout << "  speed val2: " << m_spd_val2 << endl;
+    if(m_hdg_type != "none") {
+      cout << "heading type: " << m_hdg_type << endl;
+      cout << "  heading val1: " << m_hdg_val1 << endl;
+      cout << "  heading val2: " << m_hdg_val2 << endl;
+      cout << "  heading val3: " << m_hdg_val3 << endl;
+    }
+    if(m_spd_type != "none") {
+      cout << "speed type: " << m_spd_type << endl;
+      cout << "  speed val1: " << m_spd_val1 << endl;
+      cout << "  speed val2: " << m_spd_val2 << endl;
+    }
   }
-  
-  pickHeadingVals();
-  pickSpeedVals();
-  pickVehicleNames();
-  pickColors();
-  pickGroupNames();
   printChoices();
   
   return(true);
@@ -492,7 +505,7 @@ void PickPos::pickPosByFile()
   if(m_pick_amt > choices) {
     cout << "Cannot pick " << m_pick_amt << " positions." << endl;
     cout << "File(s) only had " << choices << " lines." << endl;
-    return;
+    exit(1);
   }
   srand(time(NULL));
 
@@ -524,7 +537,7 @@ void PickPos::pickPosByPoly()
   if(m_fld_generator.size() == 0) {
     cout << "Cannot pick " << m_pick_amt << " positions." << endl;
     cout << "No polygons have been specified." << endl;
-    return;
+    exit(1);
   }
   srand(time(NULL));
 
@@ -705,15 +718,15 @@ void PickPos::pickSpeedVals()
 
   // Part 2: Handle making random speeds from a range of speeds
   if(m_spd_type == "rand") {
-    
     double range = m_spd_val2 - m_spd_val1;
     for(unsigned int i=0; i<m_pick_amt; i++) {
-      if(range == 0)
-	m_pick_headings.push_back(m_spd_val1);
+      if(range == 0) {
+	m_pick_speeds.push_back(m_spd_val1);
+      }
       else {
-	int choices = (int)((100 * range));
+	int choices = (int)((10000 * range));
 	int rval = rand() % choices;
-	double spd = m_spd_val1 + (double)(rval) / 100;
+	double spd = m_spd_val1 + (double)(rval) / 10000;
 	m_pick_speeds.push_back(spd);
       }
     }
@@ -726,14 +739,14 @@ void PickPos::pickSpeedVals()
 void PickPos::pickGroupNames()
 {
   // Part 1: Handle simple case where user does not want groups
-  if(m_groups.size() == 0)
+  int choices = (int)(m_groups.size());
+  if(choices == 0)
     return;
   
   srand(time(NULL));
 
   // Part 2: Select random group names from configured set
   if(m_grp_type == "random") {
-    int choices = (int)(m_groups.size());
     for(unsigned int i=0; i<m_pick_amt; i++) {
       int rval = rand() % choices;
       string chosen_group = m_groups[rval];
@@ -742,7 +755,6 @@ void PickPos::pickGroupNames()
   }
   // Part 3: Select alternating group names from configured set
   if(m_grp_type == "alternating") {
-    int choices = (int)(m_groups.size());
     for(unsigned int i=0; i<m_pick_amt; i++) {
       int alt_val = i % choices;
       string chosen_group = m_groups[alt_val];
@@ -879,15 +891,20 @@ void PickPos::printChoices()
 
   for(unsigned int i=0; i<max_index; i++) {
     string line;
-    if(i<m_pick_positions.size())
+    bool position_info = false;
+    if(i<m_pick_positions.size()) {
       line = m_pick_positions[i];
+      position_info = true;
+    }
 
     if((m_hdg_type != "none") && (i<m_pick_headings.size())) {
       double hdg = angle360(m_pick_headings[i]);
       hdg = snapToStep(hdg, m_hdg_snap);
       if(line != "")
 	line += ",";
-      line += "heading=" + doubleToStringX(hdg,2);
+      if(position_info)
+	line += "heading=";
+      line += doubleToStringX(hdg,3);
     }
 
     if((m_spd_type != "none") && (i<m_pick_speeds.size())) {
@@ -895,7 +912,9 @@ void PickPos::printChoices()
       spd = snapToStep(spd, m_spd_snap);
       if(line != "")
 	line += ",";
-      line += doubleToStringX(spd,2);
+      if(position_info)
+	line += "speed=";
+      line += doubleToStringX(spd,5);
     }
       
     if(m_vnames && (i<m_pick_vnames.size())) {
@@ -920,12 +939,14 @@ void PickPos::printChoices()
       line = findReplace(line, "x=", "");
       line = findReplace(line, "y=", "");
       line = findReplace(line, "heading=", "");
+      line = findReplace(line, "speed=", "");
     }
     cout << line;
 
-    if(m_verbose)
-      cout << "   nearest=" << doubleToString(m_near_positions[i],2);
-
+    if(m_verbose) {
+      if(i < m_near_positions.size())
+	cout << "   nearest=" << doubleToString(m_near_positions[i],2);
+    }
     cout << endl;
   }
 }

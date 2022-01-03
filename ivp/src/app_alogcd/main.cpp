@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "CollisionReporter.h"
 
@@ -54,6 +55,8 @@ int main(int argc, char *argv[])
       handled = collision_reporter.setALogFile(argi);
     else if(strBegins(argi, "--tfile="))
       handled = collision_reporter.setTimeStampFile(argi.substr(8));
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/alogcd");
 
     if(!handled) {
       cout << "Unhandled command line argument: " << argi << endl;
@@ -102,6 +105,10 @@ void showHelpAndExit()
   cout << "  -v,--version    Display current release version     " << endl;
   cout << "  -t,--terse      Write terse output.                 " << endl;
   cout << "  --tfile=<file>  Write time-stamped events to file.  " << endl;
+  cout << "                                                      " << endl;
+  cout << "  --web,-w   Open browser to:                         " << endl;
+  cout << "             https://oceanai.mit.edu/ivpman/apps/alogcd " << endl;
+  cout << "                                                      " << endl;
   cout << "                                                      " << endl;
   cout << "Returns:                                              " << endl;
   cout << "  0 if alog file ok, has encounters, no collisions.   " << endl;
