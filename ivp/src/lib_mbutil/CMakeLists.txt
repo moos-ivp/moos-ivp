@@ -24,6 +24,7 @@ SET(SRC
   ReleaseInfo.cpp
   MailFlagSet.cpp
   LatLonFormatUtils.cpp
+  OpenURL.cpp
   )
 
 SET(HEADERS
@@ -47,6 +48,7 @@ SET(HEADERS
   ScopeEntry.h
   MailFlagSet.h
   LatLonFormatUtils.h
+  OpenURL.h
 )
 
 # Build Library
