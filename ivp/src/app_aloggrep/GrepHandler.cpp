@@ -70,7 +70,7 @@ GrepHandler::GrepHandler()
   m_gaplines_retained = false;
 
   m_re_sorts = 0;
-  m_colsep = ',';
+  m_colsep = ' ';
 }
 
 //--------------------------------------------------------
@@ -453,7 +453,7 @@ void GrepHandler::printReport()
     return;
 
   if(m_sort_entries) 
-    cout << "Total re-sorts:" << uintToString(m_re_sorts) << endl;
+    cout << "  Total re-sorts: " << uintToString(m_re_sorts) << endl;
   
   double total_lines = m_lines_retained + m_lines_removed;
   double total_chars = m_chars_retained + m_chars_removed;

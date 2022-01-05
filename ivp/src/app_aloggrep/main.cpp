@@ -167,7 +167,7 @@ void showHelpAndExit()
   cout << "  -q,--quiet        Supress summary report, header comments" << endl;
   cout << "  -nc,--no_comments Supress comment (header) lines         " << endl;
   cout << "  -nr,--no_report   Supress summary report                 " << endl;
-  cout << "  -gl,--no_gaplen   Supress vars ending in _GAP or _LEN    " << endl;
+  cout << "  -gl,--no_gaplen   Retain vars ending in _GAP or _LEN     " << endl;
   cout << "  -kb,--keep_bad    Don't discard lines that don't begin   " << endl;
   cout << "                    with a timestamp or comment character. " << endl;
   cout << "                                                           " << endl;
@@ -193,7 +193,7 @@ void showHelpAndExit()
   cout << "  --csc,-csc        Columns separated with a comma         " << endl;
   cout << "  --cso,-cso        Columns separated with a colon         " << endl;
   cout << "  --csc,-csc        Columns separated with a semi-colon    " << endl;
-  cout << "                    (Default column separator is a comma)  " << endl;
+  cout << "                    (Default separator is white space )    " << endl;
   cout << "                                                           " << endl;
   cout << "  --subpat=pattern                                         " << endl;
   cout << "    For postings with components with comma-separated      " << endl;
