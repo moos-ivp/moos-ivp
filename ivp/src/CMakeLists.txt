@@ -37,7 +37,6 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 message("FIND_PACKAGE CONSIDERED:" ${MOOS_CONSIDERED_CONFIGS})
 message("+++++++++++++++++++++++++++++++++++++++++")
 
-
 if(NOT DEFINED MOOS_LIBRARIES)
   message("Defining MOOS_LIBRARIES")
   set(MOOS_LIBRARIES MOOS)
@@ -93,6 +92,12 @@ IF (${APPLE})
 		INCLUDE_DIRECTORIES(/opt/local/include)
 		LINK_DIRECTORIES(/opt/local/lib)
 	ENDIF( EXISTS /opt/local/include AND EXISTS /opt/local/lib )
+
+	IF( EXISTS /opt/homebrew/include AND EXISTS /opt/homebrew/lib )
+		message(STATUS "Detected use of 'HomeBrew' for dependencies")
+		INCLUDE_DIRECTORIES(/opt/homebrew/include)
+		LINK_DIRECTORIES(/opt/homebrew/lib)
+	ENDIF( EXISTS /opt/local/include AND EXISTS /opt/homebrew/lib )
 
 	# If Mac users installed libtiff using 'fink', it will likely appear
 	# under the '/sw' directory, which is not in the CMake search path.
