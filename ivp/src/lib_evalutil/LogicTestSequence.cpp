@@ -123,6 +123,7 @@ void LogicTestSequence::update()
     return;
   }
 
+
   // Update the the current aspect
   m_aspects[m_currix].update();
   m_status = "[" + intToString(m_currix) + "]: ";
@@ -142,6 +143,14 @@ void LogicTestSequence::update()
 
   // Otherwise if this aspect IS satisfied, on to the next one!
   m_currix++;
+
+  // If this was the last aspect: since this was evaluated and
+  // satisfied, the whole sequence is marked evaluated and satisfied
+  if(m_currix >= m_aspects.size()) {
+    m_evaluated = true;
+    m_satisfied = true;
+    return;
+  }
 }
 
 //------------------------------------------------------------
@@ -164,14 +173,16 @@ set<string> LogicTestSequence::getLogicVars() const
 vector<string> LogicTestSequence::getSpec() const
 {
   vector<string> spec;
-  spec.push_back("LogicTestSequence: " + uintToString(m_aspects.size()));
+  string aspect_cnt = uintToString(m_aspects.size());
+  spec.push_back("LogicTestSequence: Total Aspects:" + aspect_cnt); 
   spec.push_back("Enabled:   " + boolToString(m_enabled));
   spec.push_back("Evaluated: " + boolToString(m_evaluated));
   spec.push_back("Satisfied: " + boolToString(m_satisfied));
   spec.push_back("Status:    " + m_status);
   
   for(unsigned int i=0; i<m_aspects.size(); i++) {
-    spec.push_back("++++++++++++++++++++++++++++++++++++");
+    string sep = "++++++++++ aspect[" + intToString(i) + "] +++++++++++++"; 
+    spec.push_back(sep);
     vector<string> aspec = m_aspects[i].getSpec();
     spec = mergeVectors(spec, aspec);
   }
@@ -199,11 +210,18 @@ list<string> LogicTestSequence::getReport() const
 
   if(!m_info_buffer)
     return(report);
-    
+
+  vector<string> logic_vars;
+
+  set<string> logic_vars_set = getLogicVars();
+  set<string>::iterator p;
+  for(p=logic_vars_set.begin(); p!=logic_vars_set.end(); p++)
+    logic_vars.push_back(*p);
+  
   report.push_back("");
   report.push_back("InfoBuffer:");
   report.push_back("============================================");
-  vector<string> ibuff_report = m_info_buffer->getReport(true);
+  vector<string> ibuff_report = m_info_buffer->getReport(logic_vars, true);
   if(ibuff_report.size() == 0)
     report.push_back("<empty>");
   for(unsigned int i=0; i<ibuff_report.size(); i++)
