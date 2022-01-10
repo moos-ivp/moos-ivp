@@ -58,7 +58,7 @@ double InfoBuffer::dQuery(string var, bool& result) const
       result = true;
       double var_utc = p->second;
       double delta = m_curr_time_utc - var_utc;
-      cout << " delta: " << delta << endl;
+      //cout << " delta: " << delta << endl;
       return(delta);
     }
     
@@ -69,7 +69,7 @@ double InfoBuffer::dQuery(string var, bool& result) const
       if(isNumber(sval)) {
 	double var_utc = atof(sval.c_str());
 	double delta = m_curr_time_utc - var_utc;
-	cout << " delta: " << delta << endl;
+	//cout << " delta: " << delta << endl;
 	result = true;
 	return(delta);
       }
@@ -338,7 +338,7 @@ void InfoBuffer::print(string vars_str) const
   cout << " Time Data: " << endl;
   map<string, double>::const_iterator pt;
   for(pt=tmap.begin(); pt!=tmap.end(); pt++) {
-    string var = ps->first;
+    string var = pt->first;
     if((vars.size() == 0) || vectorContains(vars, var))
       cout << "  " << var << ": " << m_curr_time_utc - pt->second << endl;
   }
