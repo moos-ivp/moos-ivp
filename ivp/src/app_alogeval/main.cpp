@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "ALogEvaluator.h"
 
@@ -39,28 +40,31 @@ int main(int argc, char *argv[])
 
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
-    cout << "argi: " << argi << endl;
     if((argi=="-h") || (argi == "--help") || (argi=="-help")) {
       cout << "Usage: " << endl;
-      cout << "  alogeval in.alog criteria.txt [OPTIONS]                      " << endl;
-      cout << "                                                               " << endl;
-      cout << "Synopsis:                                                      " << endl;
-      cout << "  Scan the given alog file and apply the test criteria found   " << endl;
-      cout << "  in criteria.txt. The criteria should be in the same format   " << endl;
-      cout << "  as would be provided in pMissionEval.                        " << endl;
-      cout << "                                                               " << endl;
-      cout << "Standard Arguments:                                            " << endl;
-      cout << "  in.alog       - The input logfile.                           " << endl;
-      cout << "  criteria.txt  - The test criteria file                       " << endl;
-      cout << "                                                               " << endl;
-      cout << "Options:                                                       " << endl;
-      cout << "  -h,--help         Displays this help message                 " << endl;
-      cout << "  -v,--version      Displays the current release version       " << endl;
-      cout << "  --verbose         Verbose mode                               " << endl;
-      cout << "                                                               " << endl;
-      cout << "Examples:                                                      " << endl;
-      cout << "$ alogeval  " << endl;
-      cout << "$ alogeval  " << endl;
+      cout << "  alogeval in.alog criteria.txt [OPTIONS]                " << endl;
+      cout << "                                                         " << endl;
+      cout << "Synopsis:                                                " << endl;
+      cout << "  Scan the given alog file and apply the test criteria   " << endl;
+      cout << "  found in criteria.txt. The criteria should be in the   " << endl;
+      cout << "  same format as would be provided in pMissionEval.      " << endl;
+      cout << "                                                         " << endl;
+      cout << "Standard Arguments:                                      " << endl;
+      cout << "  in.alog       - The input logfile.                     " << endl;
+      cout << "  criteria.txt  - The test criteria file                 " << endl;
+      cout << "                                                         " << endl;
+      cout << "Options:                                                 " << endl;
+      cout << "  -h,--help         Displays this help message           " << endl;
+      cout << "  -v,--version      Displays the current release version " << endl;
+      cout << "  --verbose         Verbose mode                         " << endl;
+      cout << "  --show_seq, -ss   Show Logic Sequence                  " << endl;
+      cout << "                                                         " << endl;
+      cout << "  --web,-w   Open browser to:                            " << endl;
+      cout << "             https://oceanai.mit.edu/ivpman/apps/alogeval" << endl;
+      cout << "                                                         " << endl;
+      cout << "Examples:                                                " << endl;
+      cout << "$ alogeval in.alog criteria.txt                          " << endl;
+      cout << "$ alogeval in.alog --testfile=criteria.txt               " << endl;
       cout << endl;
       return(0);
     }
@@ -74,8 +78,15 @@ int main(int argc, char *argv[])
       handled = evaluator.setALogFile(argi);
     else if(strEnds(argi, ".txt"))
       handled = evaluator.setTestFile(argi);
+    else if(strBegins(argi, "--testfile="))
+      handled = evaluator.setTestFile(argi.substr(11));
     else if(argi == "--verbose")
       evaluator.setVerbose();
+    else if((argi == "--show_seq") || (argi == "-ss"))
+      evaluator.showSequence();
+    else if((argi=="-w") || (argi=="--web") || (argi=="-web")) 
+      openURLX("https://oceanai.mit.edu/ivpman/apps/alogeval");
+    
     else
       handled = false;
     
@@ -98,8 +109,9 @@ int main(int argc, char *argv[])
   bool handled = evaluator.handle();
   if(!handled)
     return(4);
-  evaluator.print();
 
-  
+  if(!evaluator.passed())
+    return(5);
+    
   return(0);
 }

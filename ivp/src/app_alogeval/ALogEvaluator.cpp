@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <cstdio>
 #include "MBUtils.h"
+#include "BundleOut.h"
 #include "ALogEvaluator.h"
 #include "LogUtils.h"
 #include "FileBuffer.h"
@@ -37,10 +38,14 @@ using namespace std;
 ALogEvaluator::ALogEvaluator()
 {
   m_verbose = false;
+  m_show_sequence = false;
   
   m_info_buffer = new InfoBuffer;
 
+  m_passed = false;
+  
   m_lcheck_set.setInfoBuffer(m_info_buffer);
+  m_logic_tests.setInfoBuffer(m_info_buffer);
 }
 
 //--------------------------------------------------------
@@ -75,60 +80,29 @@ bool ALogEvaluator::setTestFile(string test_file)
 
 
 //--------------------------------------------------------
-// Procedure: print()
-
-void ALogEvaluator::print() const
-{
-  list<string>::iterator p;
-  // Part 1: LCheck Info
-  //if(m_lcheck_set.enabled()) {
-  if(1) { 
-    list<string> summary_lines1 = m_lcheck_set.getReport();
-    for(p=summary_lines1.begin(); p!=summary_lines1.end(); p++) {
-      string line = *p;
-      cout << line << endl;
-    }
-    cout << endl;
-  }
-
-  // Part 2: VCheck Info                                            
-  //if(m_vcheck_set.enabled()) {
-  if(1) {
-    list<string> summary_lines2 = m_vcheck_set.getReport();
-    for(p=summary_lines2.begin(); p!=summary_lines2.end(); p++) {
-      string line = *p;
-      cout << line << endl;
-    }
-  }
-}
-
-
-//--------------------------------------------------------
 // Procedure: handle()
 
 bool ALogEvaluator::handle()
 {
   bool ok = handleTestFile();
-  if(ok)
-    ok = handleALogFile();
-
   if(!ok)
     return(false);
 
-  m_lcheck_set.isEvaluated(); 
-  m_lcheck_set.isSatisfied();
-  m_vcheck_set.isEvaluated(); 
-  m_vcheck_set.isSatisfied();
+  outputTestSequence();
+  ok = handleALogFile();
+  if(!ok)
+    return(false);
+  outputTestSequence();
 
-#if 0
-  bool lcheck_evaluated = m_lcheck_set.isEvaluated(); 
-  bool lcheck_satisfied = m_lcheck_set.isSatisfied();
+  if(m_logic_tests.isEvaluated()) {
+    if(m_logic_tests.isSatisfied())
+      m_passed = true;
+  }
 
-  bool vcheck_evaluated = m_vcheck_set.isEvaluated(); 
-  bool vcheck_satisfied = m_vcheck_set.isSatisfied();
-#endif
-  
-  return(ok);
+  if(m_verbose)
+    cout << "Result: pass=" << boolToString(m_passed) << endl;
+
+  return(true);
 }
 
 
@@ -137,7 +111,9 @@ bool ALogEvaluator::handle()
 
 bool ALogEvaluator::handleTestFile()
 {
-  cout << "In ALogEvaluator::handleTestFile()" << endl;
+  if(m_show_sequence)
+    cout << "BEGIN ALogEvaluator::handleTestFile()" << endl;
+
   vector<string> lines = fileBuffer(m_test_file);
   if(lines.size() == 0) {
     cout << "Empty or unfound testfile: " << m_test_file << endl;
@@ -156,11 +132,11 @@ bool ALogEvaluator::handleTestFile()
 	   
     bool handled = false;
     if(param == "lead_condition")
-      handled = m_lcheck_set.addLeadCondition(value);
+      handled = m_logic_tests.addLeadCondition(value);
     else if(param == "pass_condition") 
-      handled = m_lcheck_set.addPassCondition(value);
+      handled = m_logic_tests.addPassCondition(value);
     else if(param == "fail_condition") 
-      handled = m_lcheck_set.addFailCondition(value);
+      handled = m_logic_tests.addFailCondition(value);
 
     else if(param == "vcheck_start")
       handled = m_vcheck_set.setStartTrigger(value);
@@ -177,7 +153,7 @@ bool ALogEvaluator::handleTestFile()
     }
   }
 
-  string lcheck_config_warning = m_lcheck_set.checkConfig();
+  string lcheck_config_warning = m_logic_tests.checkConfig();
   if(lcheck_config_warning != "") {
     cout << "Problem with lcheck_config:" << lcheck_config_warning << endl;
     return(false);
@@ -189,7 +165,9 @@ bool ALogEvaluator::handleTestFile()
     return(false);
   }
 
-  cout << "End ALogEvaluator::handleTestFile()" << endl;
+  if(m_show_sequence)
+    
+    cout << "END   ALogEvaluator::handleTestFile()" << endl;
   return(true);
 }
 
@@ -199,9 +177,11 @@ bool ALogEvaluator::handleTestFile()
 
 bool ALogEvaluator::handleALogFile()
 {
-  if(m_verbose) {
-    cout << "Starting handle: " << endl;
-  }
+  set<string> logic_vars = m_logic_tests.getLogicVars();
+  string logic_vars_str = stringSetToString(logic_vars);
+
+  if(m_verbose) 
+    cout << "BEGIN ALogEvaluator: Handling ALog File:" << endl;
 
   FILE *file_ptr = fopen(m_alog_file.c_str(), "r");
   if(!file_ptr) {
@@ -210,6 +190,7 @@ bool ALogEvaluator::handleALogFile()
   }
 
   bool done = false;
+  string prev_entry;
   while(!done) {
     string line_raw = getNextRawLine(file_ptr);
     
@@ -230,36 +211,77 @@ bool ALogEvaluator::handleALogFile()
     string tstamp_str = getTimeStamp(line_raw);
     double tstamp_dbl = atof(tstamp_str.c_str());
 
-    if((varname == "DEPLOY") || (varname == "MISSION")) {
-      cout << "var:[" << varname << "], val:[" << varval << "]" << endl;
-    }
-    
+    bool relevant_var = false;
+    if(logic_vars.count(varname))
+      relevant_var = true;
+
     double dval = 0;
     if(isNumber(varval))
       dval = atof(varval.c_str());
 
     m_vcheck_set.handleMail(varname, varval, dval, tstamp_dbl);
 
-#if 0
-    //    if(isNumber(varval))
-    // m_lcheck_set.handleMail(varname, dval);
-    //else
-    m_lcheck_set.handleMail(varname, varval);
-#endif 
-    
     if(isNumber(varval))
       m_info_buffer->setValue(varname, dval, tstamp_dbl);
     else
       m_info_buffer->setValue(varname, varval, tstamp_dbl);
     
-    m_lcheck_set.update();
-    m_vcheck_set.update(tstamp_dbl);
+    if(relevant_var) {
+      m_logic_tests.update();
+      bool evaluated = m_logic_tests.isEvaluated();
 
+      if(m_verbose) {
+	tstamp_str = padString(tstamp_str, 11, true);
+	varname = padString(varname, 9, true);
+	if(isNumber(varval))
+	   varval = doubleToStringX(dval, 5);
+	unsigned int logic_curr_ix = m_logic_tests.currIndex();
+	bool satisfied = m_logic_tests.isSatisfied();
+	string result = "[" + boolToString(evaluated);
+	result += "," + boolToString(satisfied) + "]";
+	result = padString(result, 13, false);
+	result += " (" + uintToString(logic_curr_ix) + ")";
+
+	string entry = " " + tstamp_str + "  " + varname + "  ";
+	entry += varval + "   " + result;
+
+	if(entry != prev_entry) {
+	  cout << entry << endl;
+	  prev_entry = entry;
+	}
+      }	
+
+      if(evaluated) {
+	done = true;
+	if(m_verbose)
+	  cout << "EVALUATION COMPLETE" << endl;
+      }
+      
+    }
   }
-  
   if(file_ptr)
     fclose(file_ptr);
   
+  if(m_verbose) 
+    cout << "END  ALogEvaluator: Handling ALog File" << endl;
+
   return(true);
 }
+
+
+//--------------------------------------------------------
+// Procedure: outputTestSequence()
+
+void ALogEvaluator::outputTestSequence()
+{
+  if(!m_show_sequence || !m_verbose)
+    return;
+
+  cout << "BEGIN ALogEvaluator LogicTestSequence ========= " << endl;
+  vector<string> spec = m_logic_tests.getSpec();
+  for(unsigned int i=0; i<spec.size(); i++)
+    cout << spec[i] << endl;
+  cout << "END   ALogEvaluator LogicTestSequence ========= " << endl;
+}
+
 
