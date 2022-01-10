@@ -128,6 +128,10 @@ void showHelpAndExit()
   cout << "     given set. Choices will be random unless :alt   " << endl;
   cout << "     suffix is used, in which case they alternate.   " << endl;
   cout << "                                                     " << endl;
+  cout << "  --web,-w   Open browser to:                        " << endl;
+  cout << "             https://oceanai.mit.edu/ivpman/apps/pickpos " << endl;
+  cout << "                                                     " << endl;
+  cout << "                                                     " << endl;
   cout << "Examples:                                            " << endl;
   cout << "  pickpos --amt=5 --vnames                           " << endl;
   cout << "  pickpos --amt=5 --vnames=kobe,jack,wim,pete,sam    " << endl;

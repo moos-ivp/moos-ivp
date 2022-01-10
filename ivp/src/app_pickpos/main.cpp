@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "PickPos.h"
 #include "PickPos_Info.h"
 
@@ -96,6 +97,8 @@ int main(int argc, char *argv[])
       pickpos.enableHeaders();
       handled = true;
     }
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/pickpos");
       
     if(!handled) {
       cout << "Unhandled arg: " << argi << endl;
