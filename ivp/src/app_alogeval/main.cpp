@@ -57,14 +57,24 @@ int main(int argc, char *argv[])
       cout << "  -h,--help         Displays this help message           " << endl;
       cout << "  -v,--version      Displays the current release version " << endl;
       cout << "  --verbose         Verbose mode                         " << endl;
-      cout << "  --show_seq, -ss   Show Logic Sequence                  " << endl;
+      cout << "  --show_seq, -ss   Show Logic test structure at start,  " << endl;
+      cout << "                    and at finish. --verbose also needed " << endl;
       cout << "                                                         " << endl;
       cout << "  --web,-w   Open browser to:                            " << endl;
       cout << "             https://oceanai.mit.edu/ivpman/apps/alogeval" << endl;
       cout << "                                                         " << endl;
+      cout << "Returns:                                                 " << endl;
+      cout << "  0 if all input ok, and passes test logic               " << endl;
+      cout << "  1 if unhandled command line argument.                  " << endl;
+      cout << "  2 if unreadable or missing alog file input             " << endl;
+      cout << "  3 if unreadable or missing test criteria input file    " << endl;
+      cout << "  4 if invalid contents of alog or criteria input file   " << endl;
+      cout << "  5 All valid files, but one or more test criteria failed" << endl;
+      cout << "                                                         " << endl;
       cout << "Examples:                                                " << endl;
       cout << "$ alogeval in.alog criteria.txt                          " << endl;
       cout << "$ alogeval in.alog --testfile=criteria.txt               " << endl;
+      cout << "$ alogeval in.alog criteria.txt --verbose -ss            " << endl;
       cout << endl;
       return(0);
     }
