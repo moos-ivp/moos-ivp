@@ -46,11 +46,13 @@ ALogCatHandler::ALogCatHandler()
 
 void ALogCatHandler::setVerbose()
 {
+  // On the first call just set verbose to be true
   if(!m_verbose) {
     m_verbose = true;
     return;
   }
 
+  // On a subsequent call, set debugging to be true
   m_debug = true;
 }
 
@@ -194,6 +196,9 @@ bool ALogCatHandler::processOtherFiles()
       
       // Part 4: Apply the delta. Show warning if negative tstamp
       double dtime = atof(timestamp.c_str());
+      if(dtime < 0)
+	continue;
+
       dtime += delta;
       if(dtime < 0) {
 	cout << "[" << doubleToString(delta,2) << "]";
@@ -260,6 +265,9 @@ bool ALogCatHandler::preCheck()
     m_utc_log_start_times.push_back(utc_log_start_time);
 
     double local_data_start_time = getDataStartTimeFromFile(m_alog_files[i]);
+    if(local_data_start_time < 0)
+      local_data_start_time = 0;
+
     double utc_data_start_time = utc_log_start_time + local_data_start_time;
     
     double local_data_end_time = getDataEndTimeFromFile(m_alog_files[i]);

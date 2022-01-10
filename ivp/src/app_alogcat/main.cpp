@@ -114,6 +114,10 @@ void showHelpAndExit()
   cout << "  --web,-w   Open browser to:                             " << endl;
   cout << "             https://oceanai.mit.edu/ivpman/apps/alogcat  " << endl;
   cout << "                                                          " << endl;
+  cout << "Returns:                                                  " << endl;
+  cout << "  0 if a new concatenated file created successfuly.       " << endl;
+  cout << "  1 otherwise                                             " << endl;
+  cout << "                                                          " << endl;
   cout << "Further Notes:                                            " << endl;
   cout << "  (1) Order of all command line arguments do not matter.  " << endl;
   cout << "  (2) All alog files are scanned to ensure they are not   " << endl;
