@@ -86,7 +86,7 @@ bool AvgHandler::handle()
     if(line_raw.at(0) == '%')
       continue;
 
-    string line = line_raw;
+    string line = stripBlankEnds(line_raw);
     string col1 = biteStringX(line, ' ');
     string col2 = line;
 

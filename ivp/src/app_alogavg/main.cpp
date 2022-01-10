@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <iostream>
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ReleaseInfo.h"
 #include "AvgHandler.h"
 
@@ -56,6 +57,8 @@ int main(int argc, char *argv[])
       handled = handler.setLogFile(argi);
     else if(strBegins(argi, "--file="))
       handled = handler.setLogFile(argi.substr(7));
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/alogavg");
 
     if(!handled) {
       cout << "Unhandled command line argument: " << argi << endl;
@@ -110,12 +113,14 @@ void showHelpAndExit()
   cout << "Further Notes:                                             " << endl;
   cout << "  (1) Order of arguments is irrelevant.                    " << endl;
   cout << "  (2) Files ending in .log suffix are assumed to be input  " << endl;
-  cout << "      log file. Specifying --file=file.log be specified    " << endl;
-  cout << "      simple with file.log.                                " << endl;
+  cout << "      log file. Specifying --file=file.log can be          " << endl;
+  cout << "      specified simply with file.log.                      " << endl;
   cout << "  (3) Only one data file may be provided.                  " << endl;
   cout << "  (4) By default, column output is aligned with padded     " << endl;
   cout << "      cells. With --noformat, one space is used instead    " << endl;
   cout << "      between columns.                                     " << endl;
+  cout << "  (5) To save the output to a new file, simply use the     " << endl;
+  cout << "      command-line redirect operator.                      " << endl;
   cout << endl;
   exit(0);
 }
