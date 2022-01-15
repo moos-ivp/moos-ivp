@@ -22,6 +22,7 @@ public:
   void setType(std::string s)            {m_type=s;};
   void setThumb(std::string s)           {m_thumb=s;};
   void setDistro(std::string s)          {m_distro=s;};
+  void setDownload(std::string s)        {m_download=s;};
   void setContactEmail(std::string s)    {m_contact_email=s;};
   void setLicense(std::string s)         {m_license=s;};
   bool setDate(std::string s);
@@ -47,6 +48,7 @@ public:
   std::string getThumb()        const {return(m_thumb);};
   std::string getDocURL()       const {return(m_doc_url);};
   std::string getDistro()       const {return(m_distro);};
+  std::string getDownload()     const {return(m_download);};
   std::string getDate()         const {return(m_date);};
   std::string getContactEmail() const {return(m_contact_email);};
   std::string getLicense()      const {return(m_license);};
@@ -95,6 +97,7 @@ public:
   std::string  m_type;
   std::string  m_thumb;
   std::string  m_distro;
+  std::string  m_download;
   std::string  m_date;
   std::string  m_contact_email;
   std::string  m_license;

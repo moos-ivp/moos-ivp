@@ -328,7 +328,7 @@ vector<string> ManifestSet::getAllTypes() const
 }
 
 //-----------------------------------------------------------
-// Procedure: getGroupDocURL
+// Procedure: getGroupDocURL()
 
 string ManifestSet::getGroupDocURL(string grp_name) const
 {
@@ -338,6 +338,38 @@ string ManifestSet::getGroupDocURL(string grp_name) const
     if(tolower(m_manifests[i].getType()) == "group")
       if(m_manifests[i].hasGroup(grp_name))
 	result = m_manifests[i].getDocURL();
+  }
+
+  return(result);
+}
+
+//-----------------------------------------------------------
+// Procedure: getGroupDistro()
+
+string ManifestSet::getGroupDistro(string grp_name) const
+{
+  string result;
+  
+  for(unsigned int i=0; i<m_manifests.size(); i++) {
+    if(tolower(m_manifests[i].getType()) == "group")
+      if(m_manifests[i].hasGroup(grp_name))
+	result = m_manifests[i].getDistro();
+  }
+
+  return(result);
+}
+
+//-----------------------------------------------------------
+// Procedure: getGroupDownload()
+
+string ManifestSet::getGroupDownload(string grp_name) const
+{
+  string result;
+  
+  for(unsigned int i=0; i<m_manifests.size(); i++) {
+    if(tolower(m_manifests[i].getType()) == "group")
+      if(m_manifests[i].hasGroup(grp_name))
+	result = m_manifests[i].getDownload();
   }
 
   return(result);
@@ -487,6 +519,19 @@ bool ManifestSet::containsLibrary(string library) const
   }
 
   return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: size()
+
+unsigned int ManifestSet::size() const
+{
+  unsigned int count = 0;
+  for(unsigned int i=0; i<m_manifests.size(); i++) {
+    if(tolower(m_manifests[i].getType()) != "group")
+      count++;
+  }
+  return(count);
 }
 
 //-----------------------------------------------------------

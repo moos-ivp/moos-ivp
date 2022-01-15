@@ -240,6 +240,8 @@ bool Populator_ManifestSet::populateManifest(string filename)
       m_curr_manifest.setLicense(value);
     else if(param == "distro")
       m_curr_manifest.setDistro(value);
+    else if(param == "download")
+      m_curr_manifest.setDownload(value);
     else if(param == "mod_date")
       m_curr_manifest.addModDate(value);
     else {
@@ -319,6 +321,8 @@ bool Populator_ManifestSet::validLineKey(string linekey) const
   else if(linekey == "group")
     return(true);
   else if(linekey == "distro")
+    return(true);
+  else if(linekey == "download")
     return(true);
   else if(linekey == "mod_date")
     return(true);
