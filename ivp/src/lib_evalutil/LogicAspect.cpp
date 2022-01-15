@@ -181,25 +181,55 @@ vector<string> LogicAspect::getSpec() const
 {
   vector<string> spec;
 
-  spec.push_back("LogicAspect:");
+  vector<string> lead_spec = m_lead_cbuff.getSpec(" ");
+  if(lead_spec.size() == 0) 
+    spec.push_back("Lead Conditions: (none)");
+  else if(lead_spec.size() == 1) 
+    spec.push_back("Lead Conditions: (1) " + lead_spec[0]);
+  else {
+    string lead_str = "(" + uintToString(lead_spec.size()) + ")";
+    spec.push_back("Lead Conditions: " + lead_str);
+    spec = mergeVectors(spec, lead_spec);
+  }
 
-  spec.push_back("Lead Conditions:");
-  vector<string> lead_spec = m_lead_cbuff.getSpec("  ");
-  spec = mergeVectors(spec, lead_spec);
 
-  spec.push_back("Pass Conditions:");
-  vector<string> pass_spec = m_pass_cbuff.getSpec("  ");
-  spec = mergeVectors(spec, pass_spec);
+  vector<string> pass_spec = m_pass_cbuff.getSpec(" ");
+  if(pass_spec.size() == 0) 
+    spec.push_back("Pass Conditions: (none)");
+  else if(pass_spec.size() == 1) 
+    spec.push_back("Pass Conditions: (1) " + pass_spec[0]);
+  else {
+    string pass_str = "(" + uintToString(pass_spec.size()) + ")";
+    spec.push_back("Pass Conditions: " + pass_str);
+    spec = mergeVectors(spec, pass_spec);
+  }
 
-  spec.push_back("Fail Conditions:");
+
   vector<string> fail_spec = m_fail_cbuff.getSpec("  ");
-  spec = mergeVectors(spec, fail_spec);
+  if(fail_spec.size() == 0) 
+    spec.push_back("Fail Conditions: (none)");
+  else if(fail_spec.size() == 1) 
+    spec.push_back("Fail Conditions: (1) " + fail_spec[0]);
+  else {
+    string fail_str = "(" + uintToString(fail_spec.size()) + ")";
+    spec.push_back("Fail Conditions: " + fail_str);
+    spec = mergeVectors(spec, fail_spec);
+  }
 
+  
+  string str = "Enabled(" + boolToString(m_enabled) + "), ";
+  str += "Evaluated(" + boolToString(m_evaluated) + "), ";
+  str += "Satisfied(" + boolToString(m_satisfied) + "), ";
+  str += "Status(" + m_status + ")";
+  spec.push_back(str);
+  
+#if 0  
   spec.push_back("Enabled:   " + boolToString(m_enabled));
   spec.push_back("Evaluated: " + boolToString(m_evaluated));
   spec.push_back("Satisfied: " + boolToString(m_satisfied));
   spec.push_back("Status:    " + m_status);
-  
+#endif
+
   return(spec);
 }
 

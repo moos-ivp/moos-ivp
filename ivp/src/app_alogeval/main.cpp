@@ -65,11 +65,11 @@ int main(int argc, char *argv[])
       cout << "                                                         " << endl;
       cout << "Returns:                                                 " << endl;
       cout << "  0 if all input ok, and passes test logic               " << endl;
-      cout << "  1 if unhandled command line argument.                  " << endl;
-      cout << "  2 if unreadable or missing alog file input             " << endl;
-      cout << "  3 if unreadable or missing test criteria input file    " << endl;
-      cout << "  4 if invalid contents of alog or criteria input file   " << endl;
-      cout << "  5 All valid files, but one or more test criteria failed" << endl;
+      cout << "  1 All valid files, but one or more test criteria failed" << endl;
+      cout << "  2 if unhandled command line argument.                  " << endl;
+      cout << "  3 if unreadable or missing alog file input             " << endl;
+      cout << "  4 if unreadable or missing test criteria input file    " << endl;
+      cout << "  5 if invalid contents of alog or criteria input file   " << endl;
       cout << "                                                         " << endl;
       cout << "Examples:                                                " << endl;
       cout << "$ alogeval in.alog criteria.txt                          " << endl;
@@ -103,25 +103,25 @@ int main(int argc, char *argv[])
     if(!handled) {
       cout << "Unhandled command line argument: " << argi << endl;
       cout << "Use --help for usage. Exiting.   " << endl;
-      return(1);
+      return(2);
     }
   }
 
   if(!evaluator.okALogFile()) {
     cout << "A valid alog file must be given. Exiting. " << endl;
-    return(2);
+    return(3);
   }    
   if(!evaluator.okALogFile()) {
     cout << "A valid criteria file must be given. Exiting. " << endl;
-    return(3);
+    return(4);
   }
     
   bool handled = evaluator.handle();
   if(!handled)
-    return(4);
+    return(5);
 
   if(!evaluator.passed())
-    return(5);
+    return(1);
     
   return(0);
 }

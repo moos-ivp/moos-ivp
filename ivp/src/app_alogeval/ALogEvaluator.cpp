@@ -111,9 +111,6 @@ bool ALogEvaluator::handle()
 
 bool ALogEvaluator::handleTestFile()
 {
-  if(m_show_sequence)
-    cout << "BEGIN ALogEvaluator::handleTestFile()" << endl;
-
   vector<string> lines = fileBuffer(m_test_file);
   if(lines.size() == 0) {
     cout << "Empty or unfound testfile: " << m_test_file << endl;
@@ -165,9 +162,6 @@ bool ALogEvaluator::handleTestFile()
     return(false);
   }
 
-  if(m_show_sequence)
-    
-    cout << "END   ALogEvaluator::handleTestFile()" << endl;
   return(true);
 }
 

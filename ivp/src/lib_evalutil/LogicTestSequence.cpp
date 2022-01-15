@@ -126,8 +126,8 @@ void LogicTestSequence::update()
 
   // Update the the current aspect
   m_aspects[m_currix].update();
-  m_status = "[" + intToString(m_currix) + "]: ";
-  m_status += m_aspects[m_currix].getStatus();
+  //m_status = "[" + intToString(m_currix) + "]: ";
+  m_status = m_aspects[m_currix].getStatus();
 
   // If current aspect is not evaluated, just return
   if(!m_aspects[m_currix].isEvaluated())
