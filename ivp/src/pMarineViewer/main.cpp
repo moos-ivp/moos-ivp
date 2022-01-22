@@ -122,7 +122,9 @@ int main(int argc, char *argv[])
   // sections are looked up in the .moos file based on the simple
   // filename, we need to strip off other pathname components.
 
-  string name = parseAppName(argv[0]);
+  //string name = parseAppName(argv[0]);
+  string name = parseAppName(run_command);
+
   char * appFilename = const_cast<char*>(name.c_str());
 
   MOOSAppRunnerThread portAppRunnerThread(&thePort, appFilename, 
