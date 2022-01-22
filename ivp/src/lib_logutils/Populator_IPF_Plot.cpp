@@ -40,7 +40,7 @@ bool Populator_IPF_Plot::populateFromEntries(const vector<ALogEntry>& entries)
   for(i=0; i<vsize; i++) {
     if(entries[i].getVarName() == "BHV_IPF") {
       double time_stamp = entries[i].getTimeStamp();
-      string var_value  = entries[i].getStringVal();
+      string var_value  = stripBlankEnds(entries[i].getStringVal());
       m_demuxer.addMuxPacket(var_value, time_stamp);
     }
   }
