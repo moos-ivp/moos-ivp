@@ -144,7 +144,7 @@ protected:
   void  drawConvexGrid(const XYConvexGrid&);
 
   void  drawCircles(const std::map<std::string, XYCircle>&, double timestamp=0);
-  void  drawCircle(const XYCircle&, double timestamp=0);
+  void  drawCircle(XYCircle, double timestamp=0);
 
   void  drawRangePulses(const std::vector<XYRangePulse>&, double timstamp);
   void  drawRangePulse(const XYRangePulse&, double timestamp);

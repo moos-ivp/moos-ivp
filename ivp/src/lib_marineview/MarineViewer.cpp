@@ -2468,7 +2468,7 @@ void MarineViewer::drawCircles(const map<string, XYCircle>& circles,
 //-------------------------------------------------------------
 // Procedure: drawCircle
 
-void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
+void MarineViewer::drawCircle(XYCircle circle, double timestamp)
 {
   if(circle.expired(timestamp) || !circle.active())
     return;
@@ -2494,7 +2494,6 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
   if(!edge_c.visible() && !fill_c.visible())
     return;
 
-
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
@@ -2512,6 +2511,7 @@ void MarineViewer::drawCircle(const XYCircle& circle, double timestamp)
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
 
+  circle.setPointCache(180);
   vector<double> draw_pts = circle.getPointCache();
   double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
   double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
