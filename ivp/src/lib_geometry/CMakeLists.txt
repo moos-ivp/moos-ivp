@@ -34,6 +34,7 @@ SET(SRC
   VPlug_VehiSettings.cpp
   ProxPoint.cpp
   XYArc.cpp
+  XYArrow.cpp
   XYArtifactGrid.cpp
   XYCircle.cpp
   XYCommsPulse.cpp
@@ -93,6 +94,7 @@ SET(HEADERS
   XYWedge.h
   ProxPoint.h
   XYArc.h
+  XYArrow.h
   XYArtifactGrid.h
   XYBuildUtils.h
   XYCircle.h
