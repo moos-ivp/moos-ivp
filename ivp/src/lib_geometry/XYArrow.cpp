@@ -84,6 +84,11 @@ void XYArrow::init()
   m_hy2 = 0;
   m_hx3 = 0;
   m_hy3 = 0;
+
+  m_xmin = 0;
+  m_xmax = 0;
+  m_ymin = 0;
+  m_ymax = 0;
 }
 
 //-------------------------------------------------------------
@@ -229,9 +234,9 @@ void XYArrow::setAngle(double angle)
 }
 
 //-------------------------------------------------------------
-// Procedure: setCache()
+// Procedure: setPointCache()
 
-void XYArrow::setCache()
+void XYArrow::setPointCache()
 {
   // ==============================================
   // Part 1: Set Base coordinates
@@ -268,8 +273,101 @@ void XYArrow::setCache()
   double side_dist = hypot(m_base_len/2, m_head_wid/2);
   projectPoint(head_ang_lft, side_dist, m_ctr_x, m_ctr_y, m_hx2, m_hy2);
   projectPoint(head_ang_rgt, side_dist, m_ctr_x, m_ctr_y, m_hx3, m_hy3);
-    
+
+  double m_xmax = m_bx1;
+  if(m_bx2 > m_xmax)
+    m_xmax = m_bx2;
+  if(m_bx3 > m_xmax)
+    m_xmax = m_bx3;
+
+  if(m_hx1 > m_xmax)
+    m_xmax = m_hx1;
+  if(m_hx2 > m_xmax)
+    m_xmax = m_hx2;
+  if(m_hx3 > m_xmax)
+    m_xmax = m_hx3;
+
+  double m_ymax = m_by1;
+  if(m_by2 > m_ymax)
+    m_ymax = m_by2;
+  if(m_by3 > m_ymax)
+    m_ymax = m_by3;
+
+  if(m_hy1 > m_ymax)
+    m_ymax = m_hy1;
+  if(m_hy2 > m_ymax)
+    m_ymax = m_hy2;
+  if(m_hy3 > m_ymax)
+    m_ymax = m_hy3;
+  
+  double m_xmin = m_bx1;
+  if(m_bx2 > m_xmin)
+    m_xmin = m_bx2;
+  if(m_bx3 > m_xmin)
+    m_xmin = m_bx3;
+
+  if(m_hx1 > m_xmin)
+    m_xmin = m_hx1;
+  if(m_hx2 > m_xmin)
+    m_xmin = m_hx2;
+  if(m_hx3 > m_xmin)
+    m_xmin = m_hx3;
+
+  double m_ymin = m_by1;
+  if(m_by2 > m_ymin)
+    m_ymin = m_by2;
+  if(m_by3 > m_ymin)
+    m_ymin = m_by3;
+
+  if(m_hy1 > m_ymin)
+    m_ymin = m_hy1;
+  if(m_hy2 > m_ymin)
+    m_ymin = m_hy2;
+  if(m_hy3 > m_ymin)
+    m_ymin = m_hy3;
+  
   m_cache_set = true;
+}
+
+
+//-------------------------------------------------------------
+// Procedure: getMinX()
+
+double XYArrow::getMinX()
+{
+  if(!m_cache_set)
+    setPointCache();
+  return(m_xmin);
+}
+
+//-------------------------------------------------------------
+// Procedure: getMaxX()
+
+double XYArrow::getMaxX()
+{
+  if(!m_cache_set)
+    setPointCache();
+  return(m_xmax);
+}
+
+//-------------------------------------------------------------
+// Procedure: getMinY()
+
+double XYArrow::getMinY()
+{
+  if(!m_cache_set)
+    setPointCache();
+  return(m_ymin);
+}
+
+//-------------------------------------------------------------
+// Procedure: getMaxY()
+
+double XYArrow::getMaxY()
+{
+  if(!m_cache_set)
+    setPointCache();
+  return(m_ymax);
 }
 
 
@@ -279,7 +377,7 @@ void XYArrow::setCache()
 vector<double> XYArrow::getBaseVertices()
 {
   if(!m_cache_set)
-    setCache();
+    setPointCache();
 
   vector<double> rvector;
   rvector.push_back(m_bx1);
@@ -301,7 +399,7 @@ vector<double> XYArrow::getBaseVertices()
 vector<double> XYArrow::getHeadVertices() 
 {
   if(!m_cache_set)
-    setCache();
+    setPointCache();
 
   vector<double> rvector;
   rvector.push_back(m_hx1);

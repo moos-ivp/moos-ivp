@@ -228,6 +228,7 @@ void showInterfaceAndExit()
   blk("  VIEW_VECTOR                                                   ");
   blk("  VIEW_MARKER                                                   ");
   blk("  VIEW_CIRCLE                                                   ");
+  blk("  VIEW_ARROW                                                    ");
   blk("  VIEW_GRID                                                     ");
   blk("  VIEW_RANGE_PULSE                                              ");
   blk("  VIEW_COMMS_PULSE                                              ");

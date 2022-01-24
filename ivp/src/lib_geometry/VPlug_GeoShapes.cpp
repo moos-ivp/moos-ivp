@@ -65,6 +65,7 @@ void VPlug_GeoShapes::clear(string shape, string stype)
     m_hexagons.clear();
     m_grids.clear();
     m_circles.clear();
+    m_arrows.clear();
     m_points.clear();
     m_vectors.clear();
     m_range_pulses.clear();
@@ -118,6 +119,8 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
     }
     else if(value == "circles")
       m_circles.clear();
+    else if(value == "arrows")
+      m_arrows.clear();
     else if(value == "points")
       m_points.clear();
     else if(value == "hexagons")
@@ -164,6 +167,15 @@ void VPlug_GeoShapes::manageMemory(double curr_time)
       ++p3;
   }
 
+  //-------------------------------------------------- Arrows
+  map<string,XYArrow>::iterator p4;
+  for(p4=m_arrows.begin(); p4!=m_arrows.end();) {
+    if(p4->second.expired(curr_time))
+      p4 = m_arrows.erase(p4);
+    else
+      ++p4;
+  }
+
   //-------------------------------------------------- Polygons
   vector<XYPolygon> save_polys;
   for(unsigned int i=0; i<m_polygons.size(); i++) {
@@ -183,7 +195,7 @@ void VPlug_GeoShapes::manageMemory(double curr_time)
 }
 
 //-----------------------------------------------------------
-// Procedure: forgetPolygon
+// Procedure: forgetPolygon()
 
 void VPlug_GeoShapes::forgetPolygon(string label)
 {
@@ -197,7 +209,7 @@ void VPlug_GeoShapes::forgetPolygon(string label)
 
 
 //-----------------------------------------------------------
-// Procedure: addPolygon
+// Procedure: addPolygon()
 
 void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
 {
@@ -228,7 +240,7 @@ void VPlug_GeoShapes::addPolygon(const XYPolygon& new_poly)
 }
 
 //-----------------------------------------------------------
-// Procedure: forgetSegList
+// Procedure: forgetSegList()
 
 void VPlug_GeoShapes::forgetSegList(string label)
 {
@@ -242,7 +254,7 @@ void VPlug_GeoShapes::forgetSegList(string label)
 
 
 //-----------------------------------------------------------
-// Procedure: addSegList
+// Procedure: addSegList()
 
 void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
 {
@@ -273,7 +285,7 @@ void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
 }
 
 //-----------------------------------------------------------
-// Procedure: forgetSeglr
+// Procedure: forgetSeglr()
 
 void VPlug_GeoShapes::forgetSeglr(string label)
 {
@@ -287,7 +299,7 @@ void VPlug_GeoShapes::forgetSeglr(string label)
 
 
 //-----------------------------------------------------------
-// Procedure: addSeglr
+// Procedure: addSeglr()
 
 void VPlug_GeoShapes::addSeglr(const XYSeglr& new_seglr)
 {
@@ -440,7 +452,7 @@ void VPlug_GeoShapes::addCommsPulse(const XYCommsPulse& new_pulse)
 }
 
 //-----------------------------------------------------------
-// Procedure: addMarker
+// Procedure: addMarker()
 
 void VPlug_GeoShapes::addMarker(const XYMarker& new_marker)
 {
@@ -459,7 +471,7 @@ void VPlug_GeoShapes::addMarker(const XYMarker& new_marker)
 }
 
 //-----------------------------------------------------------
-// Procedure: updateGrid
+// Procedure: updateGrid()
 
 bool VPlug_GeoShapes::updateGrid(const string& delta)
 {
@@ -471,7 +483,7 @@ bool VPlug_GeoShapes::updateGrid(const string& delta)
 }
 
 //-----------------------------------------------------------
-// Procedure: updateConvexGrid
+// Procedure: updateConvexGrid()
 
 bool VPlug_GeoShapes::updateConvexGrid(const string& delta)
 {
@@ -494,11 +506,12 @@ unsigned int VPlug_GeoShapes::sizeTotalShapes() const
 	 sizePoints()      + sizeVectors()  + 
 	 sizeGrids()       + sizeConvexGrids() + 
 	 sizeMarkers()     + sizeRangePulses() + 
-	 sizeSeglrs()      + sizeCommsPulses());
+	 sizeSeglrs()      + sizeArrows() + 
+	 sizeCommsPulses());
 }
 
 //-----------------------------------------------------------
-// Procedure: addGrid
+// Procedure: addGrid()
 
 void VPlug_GeoShapes::addGrid(const XYGrid& new_grid)
 {
@@ -524,7 +537,7 @@ void VPlug_GeoShapes::addGrid(const XYGrid& new_grid)
 }
 
 //-----------------------------------------------------------
-// Procedure: addConvexGrid
+// Procedure: addConvexGrid()
 
 void VPlug_GeoShapes::addConvexGrid(const XYConvexGrid& new_grid)
 {
@@ -550,7 +563,7 @@ void VPlug_GeoShapes::addConvexGrid(const XYConvexGrid& new_grid)
 }
 
 //-----------------------------------------------------------
-// Procedure: addCircle
+// Procedure: addCircle()
 
 void VPlug_GeoShapes::addCircle(const XYCircle& new_circle, 
 				unsigned int drawpts)
@@ -593,6 +606,32 @@ void VPlug_GeoShapes::addCircle(const XYCircle& new_circle,
 
 
 //-----------------------------------------------------------
+// Procedure: addArrow()
+
+void VPlug_GeoShapes::addArrow(const XYArrow& new_arrow)
+{
+  string new_label = new_arrow.get_label();
+  if(!new_arrow.active()) {
+    m_arrows.erase(new_label);
+    return;
+  }
+
+  if(new_label == "")
+    new_label = uintToString(m_arrows.size());
+  m_arrows[new_label] = new_arrow;
+
+  // Important to set the cache upon receipt so it is built
+  // only upon receipt, not each time it is rendered.  
+  m_arrows[new_label].setPointCache();
+
+  updateBounds(m_arrows[new_label].getMinX(),
+	       m_arrows[new_label].getMaxX(), 
+	       m_arrows[new_label].getMinY(),
+	       m_arrows[new_label].getMaxY());
+}
+
+
+//-----------------------------------------------------------
 // Procedure: forgetWedge()
 
 void VPlug_GeoShapes::forgetWedge(string label)
@@ -606,7 +645,7 @@ void VPlug_GeoShapes::forgetWedge(string label)
 }
 
 //-----------------------------------------------------------
-// Procedure: addWedge
+// Procedure: addWedge()
 
 void VPlug_GeoShapes::addWedge(const XYWedge& new_wedge)
 {
@@ -687,7 +726,7 @@ void VPlug_GeoShapes::addPoint(const XYPoint& new_point)
 }
 
 //-----------------------------------------------------------
-// Procedure: addPolygon
+// Procedure: addPolygon()
 
 bool VPlug_GeoShapes::addPolygon(const string& poly_str,
 				 double timestamp)
@@ -704,7 +743,7 @@ bool VPlug_GeoShapes::addPolygon(const string& poly_str,
 }
 
 //-----------------------------------------------------------
-// Procedure: addWedge
+// Procedure: addWedge()
 
 bool VPlug_GeoShapes::addWedge(const string& wedge_str,
 			       unsigned int draw_pts)
@@ -718,7 +757,7 @@ bool VPlug_GeoShapes::addWedge(const string& wedge_str,
 }
 
 //-----------------------------------------------------------
-// Procedure: addVector
+// Procedure: addVector()
 
 bool VPlug_GeoShapes::addVector(const string& vect_str)
 {
@@ -728,7 +767,7 @@ bool VPlug_GeoShapes::addVector(const string& vect_str)
 }
 
 //-----------------------------------------------------------
-// Procedure: addRangePulse
+// Procedure: addRangePulse()
 
 bool VPlug_GeoShapes::addRangePulse(const string& pulse_str,
 				    double timestamp)
@@ -744,7 +783,7 @@ bool VPlug_GeoShapes::addRangePulse(const string& pulse_str,
 }
 
 //-----------------------------------------------------------
-// Procedure: addCommsPulse
+// Procedure: addCommsPulse()
 
 bool VPlug_GeoShapes::addCommsPulse(const string& pulse_str,
 				    double timestamp)
@@ -760,7 +799,7 @@ bool VPlug_GeoShapes::addCommsPulse(const string& pulse_str,
 }
 
 //-----------------------------------------------------------
-// Procedure: addMarker
+// Procedure: addMarker()
 
 bool VPlug_GeoShapes::addMarker(const string& marker_str,
 				double timestamp)
@@ -777,7 +816,7 @@ bool VPlug_GeoShapes::addMarker(const string& marker_str,
 }
 
 //-----------------------------------------------------------
-// Procedure: addSegList
+// Procedure: addSegList()
 
 bool VPlug_GeoShapes::addSegList(const string& segl_str,
 				 double timestamp)
@@ -794,7 +833,7 @@ bool VPlug_GeoShapes::addSegList(const string& segl_str,
 }
 
 //-----------------------------------------------------------
-// Procedure: addSeglr
+// Procedure: addSeglr()
 
 bool VPlug_GeoShapes::addSeglr(const string& seglr_str)
 {
@@ -806,7 +845,7 @@ bool VPlug_GeoShapes::addSeglr(const string& seglr_str)
 }
 
 //-----------------------------------------------------------
-// Procedure: addPoint
+// Procedure: addPoint()
 
 bool VPlug_GeoShapes::addPoint(const string& point_str,
 			       double timestamp)
@@ -823,7 +862,7 @@ bool VPlug_GeoShapes::addPoint(const string& point_str,
 }
 
 //-----------------------------------------------------------
-// Procedure: addCircle
+// Procedure: addCircle()
 
 bool VPlug_GeoShapes::addCircle(const string& circle_str,
 				unsigned int drawpts, double timestamp)
@@ -840,7 +879,24 @@ bool VPlug_GeoShapes::addCircle(const string& circle_str,
 }
 
 //-----------------------------------------------------------
-// Procedure: addGrid
+// Procedure: addArrow()
+
+bool VPlug_GeoShapes::addArrow(const string& arrow_str,
+			       double timestamp)
+{
+  XYArrow new_arrow = stringToArrow(arrow_str);
+  if(!new_arrow.valid())
+    return(false);
+
+  if(new_arrow.get_time() == 0)
+    new_arrow.set_time(timestamp);
+
+  addArrow(new_arrow);
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: addGrid()
 
 bool VPlug_GeoShapes::addGrid(const string& grid_str)
 {
@@ -853,7 +909,7 @@ bool VPlug_GeoShapes::addGrid(const string& grid_str)
 }
 
 //-----------------------------------------------------------
-// Procedure: addConvexGrid
+// Procedure: addConvexGrid()
 
 bool VPlug_GeoShapes::addConvexGrid(const string& grid_str)
 {
@@ -999,11 +1055,18 @@ void VPlug_GeoShapes::updateBounds()
     updateBounds(circle.get_min_x(), circle.get_max_x(), 
 		 circle.get_min_y(), circle.get_max_y());
   }
+
+  map<string, XYArrow>::iterator p4;
+  for(p4=m_arrows.begin(); p4!=m_arrows.end(); p4++) {
+    XYArrow arrow = p4->second;
+    updateBounds(arrow.getMinX(), arrow.getMaxX(), 
+		 arrow.getMinY(), arrow.getMaxY());
+  }
 }
 
 
 //-----------------------------------------------------------
-// Procedure: clearPolygons
+// Procedure: clearPolygons()
 
 void VPlug_GeoShapes::clearPolygons(string stype)
 {
@@ -1021,7 +1084,7 @@ void VPlug_GeoShapes::clearPolygons(string stype)
 }
 
 //-----------------------------------------------------------
-// Procedure: clearSegLists
+// Procedure: clearSegLists()
 
 void VPlug_GeoShapes::clearSegLists(string stype)
 {
@@ -1039,7 +1102,7 @@ void VPlug_GeoShapes::clearSegLists(string stype)
 }
 
 //-----------------------------------------------------------
-// Procedure: clearSeglrs
+// Procedure: clearSeglrs()
 
 void VPlug_GeoShapes::clearSeglrs(string stype)
 {
@@ -1057,7 +1120,7 @@ void VPlug_GeoShapes::clearSeglrs(string stype)
 }
 
 //-----------------------------------------------------------
-// Procedure: clearWedges
+// Procedure: clearWedges()
 
 void VPlug_GeoShapes::clearWedges(string stype)
 {
@@ -1076,7 +1139,7 @@ void VPlug_GeoShapes::clearWedges(string stype)
 
 
 //-----------------------------------------------------------
-// Procedure: clearPoints
+// Procedure: clearPoints()
 
 void VPlug_GeoShapes::clearPoints(string stype)
 {
@@ -1096,7 +1159,7 @@ void VPlug_GeoShapes::clearPoints(string stype)
 
 
 //-----------------------------------------------------------
-// Procedure: typeMatch
+// Procedure: typeMatch()
 
 bool VPlug_GeoShapes::typeMatch(XYObject* obj, string stype)
 {

@@ -60,6 +60,8 @@ bool VPlugPlot::addEvent(const string& var, const string& val, double time)
     m_vplugs[vsize-1].addSeglr(val);
   else if(var == "VIEW_CIRCLE")
     m_vplugs[vsize-1].addCircle(val);
+  else if(var == "VIEW_ARROW")
+    m_vplugs[vsize-1].addArrow(val);
   else if(var == "GRID_CONFIG")
     m_vplugs[vsize-1].addGrid(val);
   else if(var == "GRID_DELTA")

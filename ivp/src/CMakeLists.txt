@@ -84,7 +84,6 @@ message("-------------------------------------------------------Use UTM:" ${USE_
 # Tell CMake (and thus C++) where to find IvP's header files...
 #-------------------------------------------------------------------------------
 IF (${APPLE})
-
 	# If Mac users installed libtiff using 'MacPorts', it will likely appear
 	# under the '/opt/local' directory, which is not in the CMake search path.
 	IF( EXISTS /opt/local/include AND EXISTS /opt/local/lib )

@@ -2581,6 +2581,179 @@ void MarineViewer::drawCircle(XYCircle circle, double timestamp)
 }
 
 //-------------------------------------------------------------
+// Procedure: drawArrows
+
+void MarineViewer::drawArrows(const map<string, XYArrow>& arrows, 
+			      double timestamp)
+{
+  // If the viewable parameter is set to false just return. In
+  // querying the parameter the optional "true" argument means return
+  // true if nothing is known about the parameter.
+  if(!m_geo_settings.viewable("arrow_viewable_all", true))
+    return;
+  
+  map<string, XYArrow>::const_iterator p;
+  for(p=arrows.begin(); p!=arrows.end(); p++)
+    drawArrow(p->second, timestamp); 
+  
+}
+
+//-------------------------------------------------------------
+// Procedure: drawArrow
+
+void MarineViewer::drawArrow(XYArrow arrow, double timestamp)
+{
+  if(arrow.expired(timestamp) || !arrow.active())
+    return;
+
+  ColorPack edge_c("blue");
+  ColorPack labl_c("white");
+  ColorPack fill_c("invisible");
+  double line_width = 1;
+  double transparency = 0.2;
+
+  if(arrow.color_set("edge"))             // edge_color
+    edge_c = arrow.get_color("edge");  
+  if(arrow.color_set("label"))            // label_color
+    labl_c = arrow.get_color("label");  
+  if(arrow.color_set("fill"))             // fill_color
+    fill_c = arrow.get_color("fill");
+  if(arrow.transparency_set())            // transparency
+    transparency = arrow.get_transparency();
+  if(arrow.edge_size_set())               // edge_size
+    line_width = arrow.get_edge_size();
+
+  // If neither edges or arrow-fill are visible, just quit now!
+  if(!edge_c.visible() && !fill_c.visible())
+    return;
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  glLineWidth(1.0);  
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+
+  arrow.setPointCache();
+
+  // --------------------------------------------------
+  // Part 1: draw the base
+  // --------------------------------------------------
+  vector<double> base_pts = arrow.getBaseVertices();
+  for(unsigned int i=0; i<base_pts.size(); i++) {
+    if((i%2)==0)
+      base_pts[i] *= pix_per_mtr_x;
+    else
+      base_pts[i] *= pix_per_mtr_y;
+  }
+  
+  if(edge_c.visible()) {
+    glLineWidth(line_width);
+    glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
+    glBegin(GL_LINE_LOOP);
+    for(unsigned int i=0; i<base_pts.size(); i=i+2) {
+      glVertex2f(base_pts[i], base_pts[i+1]);
+    }
+    glEnd();
+  }
+  
+  // If filled option is on, draw the interior of the circle
+  if(fill_c.visible()) {
+    glEnable(GL_BLEND);
+    glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), transparency);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_POLYGON);
+    for(unsigned int i=0; i<base_pts.size(); i=i+2) {
+      glVertex2f(base_pts[i], base_pts[i+1]);
+    }
+    glEnd();
+    glDisable(GL_BLEND);
+  }
+
+  // --------------------------------------------------
+  // Part 2: draw the head
+  // --------------------------------------------------
+  vector<double> head_pts = arrow.getHeadVertices();
+  for(unsigned int i=0; i<head_pts.size(); i++) {
+    if((i%2)==0)
+      head_pts[i] *= pix_per_mtr_x;
+    else
+      head_pts[i] *= pix_per_mtr_y;
+  }
+  
+  if(edge_c.visible()) {
+    glLineWidth(line_width);
+    glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
+    glBegin(GL_LINE_LOOP);
+    for(unsigned int i=0; i<head_pts.size(); i=i+2) {
+      glVertex2f(head_pts[i], head_pts[i+1]);
+    }
+    glEnd();
+  }
+  
+  // If filled option is on, draw the interior of the circle
+  if(fill_c.visible()) {
+    glEnable(GL_BLEND);
+    glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), transparency);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_POLYGON);
+    for(unsigned int i=0; i<head_pts.size(); i=i+2) {
+      glVertex2f(head_pts[i], head_pts[i+1]);
+    }
+    glEnd();
+    glDisable(GL_BLEND);
+  }
+
+
+  // Draw the labels unless either the viewer has it shut off OR if 
+  // the publisher of the point requested it not to be viewed, by
+  // setting the color to be "invisible".
+  bool draw_labels = m_geo_settings.viewable("arrow_viewable_labels");
+  if(!edge_c.visible() && !fill_c.visible())
+    draw_labels = false;
+
+  if(draw_labels && labl_c.visible()) {
+    string plabel = arrow.get_msg();
+    if(plabel == "")
+      plabel = arrow.get_label();
+    if(plabel != "") {    
+
+      double vx = arrow.getCenterX();
+      double vy = arrow.getMaxY();
+
+      if(coordInView(vx,vy)) {
+	double px = vx * pix_per_mtr_x;
+	double py = vy * pix_per_mtr_y;
+	
+	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+	gl_font(1, 10);
+	
+	double offset = 3.0 * (1/m_zoom);
+	glRasterPos3f(px+offset, py+offset, 0);
+	gl_draw_aux(plabel);
+      }
+    }
+  }
+
+  glFlush();
+  glPopMatrix();
+
+}
+
+//-------------------------------------------------------------
 // Procedure: drawRangePulses
 
 void MarineViewer::drawRangePulses(const vector<XYRangePulse>& pulses,

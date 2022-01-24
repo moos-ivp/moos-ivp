@@ -50,8 +50,16 @@ public:
   bool   setHeadLen(double head_len);
   void   setAngle(double angle);
 
-  void   setCache();
+  void   setPointCache();
 
+  double getCenterX() {return(m_ctr_x);}
+  double getCenterY() {return(m_ctr_y);}
+
+  double getMinX();
+  double getMaxX();
+  double getMinY();
+  double getMaxY();
+  
   std::vector<double> getBaseVertices();
   std::vector<double> getHeadVertices();
 
@@ -89,6 +97,11 @@ protected: // Specs
   double m_hy2;
   double m_hx3;
   double m_hy3;
+
+  double m_xmin;
+  double m_xmax;
+  double m_ymin;
+  double m_ymax;
 };
 
 XYArrow stringToArrow(std::string);

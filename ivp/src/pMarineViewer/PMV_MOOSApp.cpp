@@ -232,6 +232,7 @@ void PMV_MOOSApp::registerVariables()
   Register("VIEW_POINT",   0);
   Register("VIEW_VECTOR",  0);
   Register("VIEW_CIRCLE",  0);
+  Register("VIEW_ARROW",   0);
   Register("VIEW_SEGLIST", 0);
   Register("VIEW_SEGLR",   0);
   Register("TRAIL_RESET",  0);
