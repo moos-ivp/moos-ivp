@@ -884,10 +884,14 @@ bool VPlug_GeoShapes::addCircle(const string& circle_str,
 bool VPlug_GeoShapes::addArrow(const string& arrow_str,
 			       double timestamp)
 {
+  cout << "VPlug_GeoShapes::addArrow()" << endl;
+  cout << "str: " << arrow_str << endl;
   XYArrow new_arrow = stringToArrow(arrow_str);
   if(!new_arrow.valid())
     return(false);
 
+  cout << "spec: " << new_arrow.get_spec() << endl;
+  
   if(new_arrow.get_time() == 0)
     new_arrow.set_time(timestamp);
 

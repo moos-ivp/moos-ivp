@@ -59,6 +59,11 @@ XYArrow::XYArrow(double ctr_x, double ctr_y)
 
 void XYArrow::init()
 {
+  XYObject::set_edge_color("off");
+  XYObject::set_vertex_color("off");
+  XYObject::set_color("fill", "yellow");
+  XYObject::set_transparency(0.2);
+  
   m_ctr_x = 0;
   m_ctr_y = 0;
   m_base_wid = 5;
@@ -274,7 +279,7 @@ void XYArrow::setPointCache()
   projectPoint(head_ang_lft, side_dist, m_ctr_x, m_ctr_y, m_hx2, m_hy2);
   projectPoint(head_ang_rgt, side_dist, m_ctr_x, m_ctr_y, m_hx3, m_hy3);
 
-  double m_xmax = m_bx1;
+  m_xmax = m_bx1;
   if(m_bx2 > m_xmax)
     m_xmax = m_bx2;
   if(m_bx3 > m_xmax)
@@ -287,7 +292,7 @@ void XYArrow::setPointCache()
   if(m_hx3 > m_xmax)
     m_xmax = m_hx3;
 
-  double m_ymax = m_by1;
+  m_ymax = m_by1;
   if(m_by2 > m_ymax)
     m_ymax = m_by2;
   if(m_by3 > m_ymax)
@@ -300,7 +305,7 @@ void XYArrow::setPointCache()
   if(m_hy3 > m_ymax)
     m_ymax = m_hy3;
   
-  double m_xmin = m_bx1;
+  m_xmin = m_bx1;
   if(m_bx2 > m_xmin)
     m_xmin = m_bx2;
   if(m_bx3 > m_xmin)
@@ -313,7 +318,7 @@ void XYArrow::setPointCache()
   if(m_hx3 > m_xmin)
     m_xmin = m_hx3;
 
-  double m_ymin = m_by1;
+  m_ymin = m_by1;
   if(m_by2 > m_ymin)
     m_ymin = m_by2;
   if(m_by3 > m_ymin)
@@ -485,7 +490,11 @@ XYArrow stringToArrow(string str)
     string param = tolower(biteStringX(svector[i], '='));
     string value = svector[i];
 
+    cout << "setting arrow_param:" << param << ", val:" << value << endl;
+    
     bool ok = arrow.set_param(param, value);
+
+    cout << "result:" << boolToString(ok) << endl;
     if(!ok)
       return(null_arrow);
   }
