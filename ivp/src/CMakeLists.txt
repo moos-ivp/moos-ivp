@@ -265,19 +265,7 @@ SET(ROBOT_APPS
   iSay
   )
 
-#---------------------------------------------------------------------
-# pSafetyRetreat is excluded in moos-ivp-aro downloads to check if the 
-# source code is present before adding it to the build list.
-
-IF( EXISTS ./pSafetyRetreat )
-  LIST(APPEND ROBOT_APPS pSafetyRetreat
-)  
-#ENDIF( EXISTS ./pSafetyRetreat )
-ENDIF()
-
 message(" ROBOT_APPS: ${ROBOT_APPS}")
-
-
 
 #---------------------------------------------------------------------
 # Part 2 of 3: IVP_NON_GUI_APPS
