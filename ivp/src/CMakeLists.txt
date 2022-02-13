@@ -297,9 +297,9 @@ SET(IVP_NON_GUI_APPS
 #---------------------------------------------------------------------
 # uSimCurrent is excluded in moos-ivp-aro downloads to check if the 
 # source code is present before adding it to the build list.
-IF( EXISTS ./uSimCurrent )
-  LIST(APPEND IVP_NON_GUI_APPS uSimCurrent)  
-ENDIF( EXISTS ./uSimCurrent )
+#IF( EXISTS ./uSimCurrent )
+#  LIST(APPEND IVP_NON_GUI_APPS uSimCurrent)  
+#ENDIF( EXISTS ./uSimCurrent )
 
 message(" IVP_NON_GUI_APPS: ${IVP_NON_GUI_APPS}")
 
