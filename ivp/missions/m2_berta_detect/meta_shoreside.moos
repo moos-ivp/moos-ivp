@@ -13,6 +13,7 @@ Processconfig = ANTLER
   MSBetweenLaunches = 100
 
   Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
 
 #ifdef LAUNCH_GUI yes
@@ -67,6 +68,9 @@ ProcessConfig = uFldCollisionDetect
   collision_range = 8
   near_miss_range = 12
 
+	post_closest_range = true
+	post_closest_range_ever = true
+	
   // condition = COLLISION_DETECT=true
   condition = DEPLOY_ALL=true
 
@@ -264,6 +268,8 @@ ProcessConfig = pMarineViewer
   button_two   = RETURN  # STATION_KEEP_ALL=false
   button_three = PERMUTE   # UTS_FORWARD=0
   button_four  = STATION   # STATION_KEEP_ALL=true
+
+	button_five  = UCD_RESET # UCD_RESET=true
 }
 
 //--------------------------------------------------------
@@ -279,10 +285,10 @@ ProcessConfig = uTimerScript
   reset_time = end
 
   randvar = varname=X1, min=-25,  max=25,  key=at_reset
-  randvar = varname=Y1, min=-100, max=-50, key=at_reset
+  randvar = varname=Y1, min=-100, max=0, key=at_reset
 
   randvar = varname=X2, min=100,  max=150, key=at_reset
-  randvar = varname=Y2, min=-75,  max=-25, key=at_reset
+  randvar = varname=Y2, min=-100, max=0, key=at_reset
 
 #ifdef MISSION_TAG
   event = var=MISSION_TAG, val="$(MISSION_TAG)", time=0

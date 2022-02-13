@@ -39,6 +39,7 @@ std::string macroExpand(std::string, std::string, int);
 
 std::string macroExpand(std::string, std::string, unsigned int);
 
+bool hasMacro(std::string, std::string);
 
 std::string getCounterMacro(std::string);
 

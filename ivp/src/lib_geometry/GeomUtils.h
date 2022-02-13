@@ -164,6 +164,8 @@ double polyHeight(XYPolygon, double angle=0);
 
 void shiftVertices(std::vector<double>& vx, std::vector<double>& vy); 
 
+double polyAspectRatio(XYPolygon);
+
 
 // DEPRECATED INTERFACES
 double distToPoint(double x1, double y1, double x2, double y2);

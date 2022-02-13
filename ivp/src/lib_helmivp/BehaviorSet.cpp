@@ -586,6 +586,12 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   if(new_activity_state == "running") {
     double pwt = 0;
     int    pcs = 0;
+
+    // Added Jan 29th, 2022 run flags that are posted on each
+    // iteration of the helm in the run state, not just when
+    // transitioning to run state.
+    bhv->postFlags("runxflags", true); // true means    
+    
     if((old_activity_state == "idle") || (old_activity_state == ""))
       bhv->postFlags("runflags", true); // true means repeatable
     bhv->postDurationStatus();

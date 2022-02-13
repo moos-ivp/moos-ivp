@@ -2019,6 +2019,63 @@ double polyHeight(XYPolygon poly, double angle)
 
 
 //---------------------------------------------------------------
+// Procedure: polyAspectRatio()
+
+double polyAspectRatio(XYPolygon poly)
+{
+  // Sanity checks
+  if(!poly.is_convex()) {
+    poly.determine_convexity();
+    if(!poly.is_convex())
+      return(0);
+  }
+
+  double cx = poly.get_centroid_x();
+  double cy = poly.get_centroid_y();
+  
+  // Part 1: get farthest point on the polygon perimeter, which
+  // will be a vertex
+  double max_dist = 0;
+  for(unsigned int i=0; i<poly.size(); i++) {
+    double vx = poly.get_vx(i);
+    double vy = poly.get_vy(i);
+    double dist = hypot(cx-vx, cy-vy);
+    if((i==0) || (dist > max_dist))
+      max_dist = dist;
+  }
+
+  // Part 2: get the closest point on the polygon perimeter, which
+  // will be on an edge
+  double min_dist = 0;
+  for(unsigned int i=0; i<poly.size(); i++) {
+    double x1 = poly.get_vx(i);
+    double y1 = poly.get_vy(i);
+    double x2 = 0;
+    double y2 = 0;
+    if((i+1) >= poly.size()) {
+      x2 = poly.get_vx(0);
+      y2 = poly.get_vy(0);
+    }
+    else {
+      x2 = poly.get_vx(i+1);
+      y2 = poly.get_vy(i+1);
+    }
+    double dist = distPointToSeg(x1,y1, x2,y2, cx,cy);
+    if((i==0) || (dist > min_dist))
+      min_dist = dist;
+  }
+
+  // Sanity check
+  if(min_dist <= 0)
+    return(0);
+  
+  double aspect_ratio = max_dist / min_dist;
+  
+  return(aspect_ratio);
+}
+
+
+//---------------------------------------------------------------
 // Procedure: shiftVertices()
 //   Purpose: Shift each vertex index to be lower by one, and moving
 //            the first vertex to the end.

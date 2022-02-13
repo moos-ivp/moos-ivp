@@ -84,7 +84,7 @@ public:
   XYPolygon crossProductSettle() const;
   
   unsigned int min_xproduct(bool&) const;
-  
+
 protected:
   int    side(double x1, double y1, double x2, 
 	      double y2, double x3, double y3) const;

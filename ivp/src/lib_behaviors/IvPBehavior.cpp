@@ -37,6 +37,7 @@
 #include "BuildUtils.h"
 #include "BehaviorReport.h"
 #include "NodeMessage.h"
+#include "VarDataPairUtils.h"
 
 using namespace std;
 
@@ -209,7 +210,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
       return(true);
     }
   }
-  else if(g_param == "spawnflag") {
+  else if((g_param == "spawnflag") || (g_param == "spawn_flag")) {
     string var = biteStringX(g_val, '=');
     string val = g_val;
     if(strContainsWhite(var) || (val == ""))
@@ -218,7 +219,9 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     m_spawn_flags.push_back(pair);
     return(true);
   }
-  else if(g_param == "runflag") {
+  else if((g_param == "runxflag") || (g_param == "runx_flag"))
+    return(addVarDataPairOnString(m_runx_flags, g_val));
+  else if((g_param == "runflag") || (g_param == "run_flag")) {
     string var = biteStringX(g_val, '=');
     string val = g_val;
     if(strContainsWhite(var) || (val == ""))
@@ -227,7 +230,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     m_run_flags.push_back(pair);
     return(true);
   }
-  else if(g_param == "activeflag") {
+  else if((g_param == "activeflag") || (g_param == "active_flag")) {
     string var = biteStringX(g_val, '=');
     string val = g_val;
     if(strContainsWhite(var) || (val == ""))
@@ -236,7 +239,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     m_active_flags.push_back(pair);
     return(true);
   }
-  else if(g_param == "inactiveflag") {
+  else if((g_param == "inactiveflag") || (g_param == "inactive_flag")) {
     string var = biteStringX(g_val, '=');
     string val = g_val;
     if(strContainsWhite(var) || (val == ""))
@@ -245,7 +248,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     m_inactive_flags.push_back(pair);
     return(true);
   }
-  else if(g_param == "idleflag") {
+  else if((g_param == "idleflag") || (g_param == "idle_flag")) {
     string var = biteStringX(g_val, '=');
     string val = g_val;
     if(strContainsWhite(var) || (val == ""))
@@ -254,7 +257,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     m_idle_flags.push_back(pair);
     return(true);
   }
-  else if(g_param == "endflag") {
+  else if((g_param == "endflag") || (g_param == "end_flag")) {
     string var = biteStringX(g_val, '=');
     string val = g_val;
     if(strContainsWhite(var) || (val == ""))
@@ -263,7 +266,7 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     m_end_flags.push_back(pair);
     return(true);
   }
-  else if(g_param == "configflag") {
+  else if((g_param == "configflag") || (g_param == "config_flag")) {
     string var = biteStringX(g_val, '=');
     string val = g_val;
     if(strContainsWhite(var) || (val == ""))
@@ -1237,6 +1240,8 @@ void IvPBehavior::postFlags(const string& str, bool repeatable)
 {
   if(str == "runflags")
     postFlags(m_run_flags, repeatable);
+  else if(str == "runxflags")
+    postFlags(m_runx_flags, repeatable);
   else if(str == "idleflags")
     postFlags(m_idle_flags, repeatable);
   else if(str == "activeflags")
@@ -1308,7 +1313,6 @@ void IvPBehavior::postFlags(const vector<VarDataPair>& flags, bool repeatable)
 
 void IvPBehavior::postFlag(const VarDataPair& flag, bool repeatable)
 {
-  cout << "pfl: " << flag.getPrintable() << endl;
   // Part 1: If flag is tagged as repeatable, create a key used for
   // engaging with the helm duplication filter. 
   string key;
@@ -1342,7 +1346,6 @@ void IvPBehavior::postFlag(const VarDataPair& flag, bool repeatable)
   // destination is given, the post is just made locally to ownship as
   // was always the case since the earliest versions.
   string dest_tag = flag.get_dest_tag();
-  cout << "pfl: dest_tag:" << dest_tag << endl;
   
   // Part 4A: Determine if post is made to local (ownship) MOOSDB
   if((dest_tag == "") || (dest_tag == "all+") || (dest_tag == "group+"))
@@ -1583,6 +1586,10 @@ vector<string> IvPBehavior::getStateSpaceVars()
   vsize = m_run_flags.size();
   for(i=0; i<vsize; i++)
     rvector.push_back(m_run_flags[i].get_var());
+  
+  vsize = m_runx_flags.size();
+  for(i=0; i<vsize; i++)
+    rvector.push_back(m_runx_flags[i].get_var());
   
   vsize = m_idle_flags.size();
   for(i=0; i<vsize; i++)

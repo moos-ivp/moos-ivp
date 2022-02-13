@@ -109,6 +109,23 @@ string macroExpand(string str, string macro, unsigned int int_repl)
 }
 
 
+//----------------------------------------------------------------
+// Procedure: hasMacro()
+
+bool hasMacro(string str, string macro)
+{
+  string macro1 = "$(" + macro + ")";
+  if(strContains(str, macro1))
+    return(true);
+
+  string macro2 = "$[" + macro + "]";
+  if(strContains(str, macro2))
+    return(true);
+
+  return(false);
+}
+
+
 //---------------------------------------------------------
 // Procedure: getCounterMacro()
 //   Example: getCounterMacro("The world is $[CTR_WORLD] year old");

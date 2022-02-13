@@ -103,6 +103,8 @@ public:
   void    setBehaviorType(std::string str) {m_behavior_type = str;}
   void    setPriorityWt(double);
 
+  std::string getOwnshipName() const {return(m_us_name);}
+  
   void    addInfoVars(std::string, std::string="");
   void    setComplete();
   void    postBadConfig(std::string);
@@ -206,6 +208,7 @@ protected:
   std::vector<LogicCondition>    m_logic_conditions;
   std::vector<VarDataPair>       m_spawn_flags;
   std::vector<VarDataPair>       m_run_flags;
+  std::vector<VarDataPair>       m_runx_flags;
   std::vector<VarDataPair>       m_active_flags;
   std::vector<VarDataPair>       m_inactive_flags;
   std::vector<VarDataPair>       m_end_flags;

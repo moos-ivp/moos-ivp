@@ -1226,7 +1226,7 @@ double XYPolygon::max_radius() const
 }
 
 //---------------------------------------------------------------
-// Procedure: closest_point_on_poly
+// Procedure: closest_point_on_poly()
 //   Purpose: Determine the point on the polygon (on an edge or 
 //            vertex) closest to the given point.
 //   Returns: true if the polygon is convex, false otherwise
@@ -1292,7 +1292,7 @@ bool XYPolygon::closest_point_on_poly(double sx, double sy,
 
 
 //---------------------------------------------------------------
-// Procedure: exportSegList
+// Procedure: exportSegList()
 //   Purpose: Build an XYSegList from the polygon. Make the first 
 //            point in the XYSegList the point in the polygon
 //            that is closest to the x,y point.

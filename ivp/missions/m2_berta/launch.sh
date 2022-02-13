@@ -1,4 +1,5 @@
 #!/bin/bash -e
+
 #----------------------------------------------------------
 #  Script: launch.sh
 #  Author: Michael Benjamin

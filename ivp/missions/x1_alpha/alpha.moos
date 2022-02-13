@@ -28,7 +28,7 @@ ProcessConfig = ANTLER
   Run = MOOSDB		    @ NewConsole = false
   Run = pLogger       @ NewConsole = false
   Run = pMarineViewer	@ NewConsole = false
-  Run = uSimMarine	  @ NewConsole = false
+  Run = uSimMarineX	  @ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
   Run = pMarinePID	  @ NewConsole = false
   Run = pHelmIvP	    @ NewConsole = false
@@ -103,16 +103,28 @@ ProcessConfig = pLogger
 //------------------------------------------
 // uSimMarine config block
 
-ProcessConfig = uSimMarine
+ProcessConfig = uSimMarineX
 {
-  AppTick	= 4
-  CommsTick	= 4
-
+  AppTick	  = 8
+  CommsTick	= 8
+ 
+	app_logging = true
+	
   start_x       = 95
   start_y       = -30
   start_speed   = 0
   start_heading = 180
 
+	max_acceleration = 0.25
+
+	wind_conditions = spd=3.3, dir=180
+	polar_plot = 0,0: 20,40: 45,65: 90,80: 110,90: 135,83: 150,83: 165,60: 180,50
+	
+	turn_spd_map_full_speed = 4
+	turn_spd_map_null_speed = 0.5
+	turn_spd_map_full_rate  = 100
+	turn_spd_map_null_rate  = 2
+	
   prefix        = NAV
   turn_rate     = 40
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
@@ -229,7 +241,14 @@ ProcessConfig = pMarineViewer
   button_three = RETURN:F # RETURN=false
 
   button_four = REVERSE # WPT_UPDATE=order=toggle
-}
+
+  //button_5 = ARROW # VIEW_ARROW="ctrx=20,ctry=-40,ang=135,bwid=10,blen=30,hwid=20,hlen=10,label=a,fill_color=yellow,fill_transparency=0.2,edge_color=off"
+  button_5 = ARROW # VIEW_ARROW="ctrx=20,ctry=-40,ang=135,bwid=10,blen=30,hwid=20,hlen=10,label=a"
+  button_6 = ARROW # VIEW_ARROW="ctrx=20,ctry=-40,ang=270,bwid=10,blen=30,hwid=20,hlen=10,label=a,fill_color=white,fill_transparency=0.1,edge_color=off"
+
+
+	button_7 = DEPLOY:F # DEPLOY=false 
+	}
 
 //------------------------------------------
 // pNodeReporter config block
