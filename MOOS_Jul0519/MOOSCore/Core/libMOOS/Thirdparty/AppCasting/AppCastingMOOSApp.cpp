@@ -234,6 +234,8 @@ void AppCastingMOOSApp::preOnStartUp()
     MOOSTrimWhiteSpace(value);
 
     if(param == "APP_LOGGING") {
+      if(lvalue == "true")
+	lvalue = "log";
       if((lvalue == "log") || (lvalue == "file") || (lvalue == "off"))
 	m_app_logging = lvalue;
       else
