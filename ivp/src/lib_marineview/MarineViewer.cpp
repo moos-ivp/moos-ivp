@@ -792,6 +792,8 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   string vehibody = tolower(record.getType());
   double vlength  = record.getLength();
 
+  cout << "MV:drawCommonVehicle: vehibody:" << vehibody << endl;
+  
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
@@ -935,6 +937,21 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
 	       factor_x, transparency);
     if(outer_line > 0)
       drawGLPoly(g_shipBody, g_shipBodySize, black, outer_line,
+		 factor_x, transparency);
+    glTranslatef(cx, cy, 0);
+  }
+  else if(vehibody == "swimmer") {  
+    if(vlength > 0) {
+      factor_x *= (vlength / g_triangleWidth);
+      factor_y *= (vlength / g_triangleWidth);
+    }
+    double cx = g_triangleCtrX * factor_x;
+    double cy = g_triangleCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_triangleBody, g_triangleBodySize, body_color, 0,
+	       factor_x, transparency);
+    if(outer_line > 0)
+      drawGLPoly(g_triangleBody, g_triangleBodySize, black, outer_line,
 		 factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
@@ -3006,7 +3023,9 @@ void MarineViewer::drawPoint(const XYPoint& point)
   double px = vx * m_back_img.get_pix_per_mtr_x();
   double py = vy * m_back_img.get_pix_per_mtr_y();
 
+  cout << "IN DrawPoint 1" << endl;
   if(vert_c.visible()) {
+    cout << "IN DrawPoint 2" << endl;
     glPointSize(vertex_size);
     glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu()); 
     glEnable(GL_POINT_SMOOTH);

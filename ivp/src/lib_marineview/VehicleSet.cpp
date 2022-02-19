@@ -467,9 +467,9 @@ bool VehicleSet::handleNodeReport(string node_report_str, string& whynot)
 //-------------------------------------------------------------
 // Procedure: handleNodeReport
 
-  bool VehicleSet::handleNodeReport(double local_time, 
-				    string node_report_str, 
-				    string& whynot)
+bool VehicleSet::handleNodeReport(double local_time, 
+				  string node_report_str, 
+				  string& whynot)
 {
   NodeRecord new_record = string2NodeRecord(node_report_str);
 
@@ -488,7 +488,7 @@ bool VehicleSet::handleNodeReport(string node_report_str, string& whynot)
     vtype = "glider";
   else if((vtype != "auv") && (vtype != "glider") && (vtype != "wamv") &&
 	  (vtype != "kayak") && (vtype != "mokai") && (vtype != "heron") &&
-	  (vtype != "longship"))
+	  (vtype != "longship") && (vtype != "swimmer"))
     vtype = "ship";
   
   if(((vtype == "auv") || (vtype == "glider")) && !new_record.valid("depth")) {

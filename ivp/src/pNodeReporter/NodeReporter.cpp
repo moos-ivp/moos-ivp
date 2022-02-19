@@ -431,6 +431,8 @@ bool NodeReporter::OnStartUp()
       m_record.setLength(6); // meters
     else if(vtype == "kingfisher")
       m_record.setLength(3); // meters
+    else if(vtype == "swimmer")
+      m_record.setLength(3); // meters
     else
       reportConfigWarning("Unrecognized platform type: " + vtype);
   }
