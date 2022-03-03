@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// uFldNodeBroker configuration block from plugin
+// uFldNodeBroker Block
 
 ProcessConfig = uFldNodeBroker
 {

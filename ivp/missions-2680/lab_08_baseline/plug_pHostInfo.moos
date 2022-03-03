@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// pHostInfo configuration block from plugin
+// pHostInfo Block
 
 ProcessConfig = pHostInfo
 {
