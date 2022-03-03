@@ -29,8 +29,8 @@ for ARGI; do
 	echo "    Just make targ files, but do not launch   "
         echo "  --verbose, -v                               "
         echo "    Increase verbosity                        "
-	echo "  --noconfirm, -nc                            " 
-	echo "    No confirmation before launching          "
+	echo "  --nc,-nc                                       " 
+	echo "    No confirmation before launching             "
 	echo "                                              "
 	echo "  --ip=<localhost>                            " 
 	echo "    Force pHostInfo to use this IP Address    "
@@ -45,7 +45,7 @@ for ARGI; do
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
 	VERBOSE="yes"
-    elif [ "${ARGI}" = "--noconfirm" -o "${ARGI}" = "-nc" ]; then
+    elif [ "${ARGI}" = "--nc" -o "${ARGI}" = "-nc" ]; then
 	CONFIRM="no"
 
     elif [ "${ARGI:0:5}" = "--ip=" ]; then
