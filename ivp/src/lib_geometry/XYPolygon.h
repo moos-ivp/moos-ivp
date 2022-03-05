@@ -79,6 +79,9 @@ public:
   double max_radius() const;
   bool   closest_point_on_poly(double sx, double sy, double& rx, double& ry) const;
 
+  bool   setRadial(double x, double y, double rad, unsigned int pts,
+		   double snap=-1);
+  
   XYSegList exportSegList(double x=0, double y=0);
 
   XYPolygon crossProductSettle() const;

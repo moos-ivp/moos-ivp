@@ -1360,3 +1360,31 @@ XYPolygon XYPolygon::crossProductSettle() const
   return(poly);
 }
 
+//---------------------------------------------------------
+// Procedure: setRadial()
+//   Purpose: Create the vertices for a radial polygon, overwriting
+//            any previously set vertices.
+ 
+bool XYPolygon::setRadial(double xpos, double ypos, double radius,
+			  unsigned int pts, double snap)
+{
+  if(radius <= 0)
+    return(false);
+  if(pts < 3)
+    return(false);
+
+  clear();
+
+  double delta = 360 / (double)(pts);
+  for(double deg=(delta/2); deg<360; deg+=delta) {
+    double new_x, new_y;
+    projectPoint(deg, radius, xpos, ypos, new_x, new_y);
+    add_vertex(new_x, new_y, false);
+  }
+  determine_convexity();
+  if(snap >= 0)
+    apply_snap(snap);
+  
+  return(true);
+}
+
