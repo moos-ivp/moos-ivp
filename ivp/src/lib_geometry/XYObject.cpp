@@ -184,7 +184,7 @@ std::string XYObject::get_spec(string param) const
     aug_spec(spec, "label=" + m_label); 
   if(m_msg != "")
     aug_spec(spec, "msg=" + m_msg); 
-  if(m_msg != "")
+  if(m_id != "")
     aug_spec(spec, "id=" + m_id); 
   if(color_set("label"))
     aug_spec(spec, "label_color=" + get_color("label").str(':'));
