@@ -42,6 +42,7 @@ public:
   void   set_source(const std::string& str) {m_source=str;}
   void   set_type(const std::string& str)   {m_type=str;}
   void   set_msg(const std::string& str)    {m_msg=str;}
+  void   set_id(const std::string& str)     {m_id=str;}
   void   set_active(bool val)               {m_active=val;}
   void   set_time(double val)               {m_time=val;m_time_set=true;}
   void   set_vertex_size(double val);
@@ -78,6 +79,7 @@ public:
 
   std::string get_label()     const {return(m_label);}
   std::string get_msg()       const {return(m_msg);}
+  std::string get_id()        const {return(m_id);}
   std::string get_type()      const {return(m_type);}
   std::string get_source()    const {return(m_source);}
   std::string get_spec(std::string s="") const;
@@ -94,6 +96,7 @@ protected:
   std::string  m_type;
   std::string  m_source;  
   std::string  m_msg;
+  std::string  m_id;
   bool         m_active;
   double       m_time;
   bool         m_time_set;

@@ -66,6 +66,7 @@ void XYObject::clear()
 
   m_label        = ""; 
   m_msg          = ""; 
+  m_id           = ""; 
 
   m_color_map.clear();
 }
@@ -183,6 +184,8 @@ std::string XYObject::get_spec(string param) const
     aug_spec(spec, "label=" + m_label); 
   if(m_msg != "")
     aug_spec(spec, "msg=" + m_msg); 
+  if(m_msg != "")
+    aug_spec(spec, "id=" + m_id); 
   if(color_set("label"))
     aug_spec(spec, "label_color=" + get_color("label").str(':'));
   if(color_set("edge"))
@@ -231,6 +234,8 @@ bool XYObject::set_param(const string& param, const string& value)
     set_type(value);
   else if(param == "msg")
     set_msg(value);
+  else if(param == "id")
+    set_id(value);
   else if(param == "time")
     set_time(atof(value.c_str()));
   else if(param == "duration")
