@@ -16,6 +16,7 @@ SET(SRC
   StringNode.cpp
   VarDataPair.cpp
   VarDataPairUtils.cpp
+  AckMessage.cpp
   NodeMessage.cpp
   NodeMessageUtils.cpp
   Odometer.cpp

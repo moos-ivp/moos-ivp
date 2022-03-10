@@ -42,6 +42,7 @@ class NodeMessage
   void setSourceApp(const std::string& s)      {m_src_app=s;}
   void setSourceBehavior(const std::string& s) {m_src_bhv=s;}
   void setMessageID(const std::string& s)      {m_msg_id=s;}
+  void setAckRequested(bool v=true)            {m_ack_requested=v;}
 
   void setDoubleVal(double v) {m_double_val=v; m_double_val_set=true;}
 
@@ -58,6 +59,8 @@ class NodeMessage
   std::string getStringVal() const   {return(m_string_val);}
   std::string getStringValX() const;
 
+  bool getAckRequested() const {return(m_ack_requested);}
+  
   unsigned int length() const;
     
   bool valid() const;
@@ -76,6 +79,7 @@ class NodeMessage
   std::string  m_src_bhv;
   std::string  m_color;
   std::string  m_msg_id;
+  bool         m_ack_requested;
 };
 
 #endif 

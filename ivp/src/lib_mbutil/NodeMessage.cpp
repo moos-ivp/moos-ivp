@@ -36,8 +36,9 @@ NodeMessage::NodeMessage(string src, string dest, string var)
   m_dest_node  = dest;
   m_var_name   = var;
 
-  m_double_val       = 0; 
-  m_double_val_set   = false;
+  m_double_val     = 0; 
+  m_double_val_set = false;
+  m_ack_requested  = false;
 }
 
 //------------------------------------------------------------
@@ -67,22 +68,24 @@ void NodeMessage::setColor(const string& color_str)
 string NodeMessage::getSpec() const
 {
   string str;
+  if(m_msg_id != "") 
+    str = augmentSpec(str, "ack_id=" + m_msg_id);
   if(m_src_node != "")
     str = augmentSpec(str, "src_node=" + m_src_node);
-  if(m_src_app != "") 
-    str = augmentSpec(str, "src_app=" + m_src_app);
-  if(m_src_bhv != "") 
-    str = augmentSpec(str, "src_bhv=" + m_src_bhv);
   if(m_dest_node != "") 
     str = augmentSpec(str, "dest_node=" + m_dest_node);
   if(m_dest_group != "") 
     str = augmentSpec(str, "dest_group=" + m_dest_group);
+  if(m_src_app != "") 
+    str = augmentSpec(str, "src_app=" + m_src_app);
+  if(m_src_bhv != "") 
+    str = augmentSpec(str, "src_bhv=" + m_src_bhv);
   if(m_var_name != "") 
     str = augmentSpec(str, "var_name=" + m_var_name);
   if(m_color != "") 
     str = augmentSpec(str, "color=" + m_color);
-  if(m_msg_id != "") 
-    str = augmentSpec(str, "id=" + m_msg_id);
+  if(m_ack_requested) 
+    str = augmentSpec(str, "ack=true");
   if(m_double_val_set) {
     string str_dval = doubleToStringX(m_double_val,6);
     str = augmentSpec(str, "double_val=" + str_dval);

@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: NodeMessageUtils.cpp                                 */
-/*    DATE: Jan 7th 2011                                         */
+/*    FILE: AckMessage.cpp                                       */
+/*    DATE: Feb 17th 2022                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,71 +21,99 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#include <iostream>
-#include <cstdlib>
-#include "NodeMessageUtils.h"
+#include "AckMessage.h"
 #include "MBUtils.h"
 
 using namespace std;
 
-//---------------------------------------------------------
-// Procedure: string2NodeMessage
-//   Example: src_node=ike,dest_node=henry,var_name=FOO,string_val=bar
-//            or
-//            src_node=ike,dest_group=red,var_name=FOO,string_val=bar
-//            or
-//            src_node=ike,dest_group=red,var_name=FOO,double_val=3.4
+//------------------------------------------------------------
+// Constructor
 
-NodeMessage string2NodeMessage(const string& message_string)
+AckMessage::AckMessage(string src, string dest, string id)
 {
-  NodeMessage empty_message;
-  NodeMessage new_message;
+  m_id = id;
+  m_src_node = src;
+  m_dest_node = dest;
+}
+
+//------------------------------------------------------------
+// Procedure: setSourceNode()
+
+void AckMessage::setSourceNode(string str)
+{
+  if(strContainsWhite(str))
+    return;
+  if(str == m_dest_node)
+    return;
+  m_src_node = str;
+}
+
+//------------------------------------------------------------
+// Procedure: setDestNode()
+
+void AckMessage::setDestNode(string str)
+{
+  if(strContainsWhite(str))
+    return;
+  if(str == m_src_node)
+    return;
+  m_dest_node = str;
+}
+
+//------------------------------------------------------------
+// Procedure: getSpec()
+
+string AckMessage::getSpec() const
+{
+  string str = "id=" + m_id;
+  str += ", src=" + m_src_node + ", dest=" + m_dest_node;
+  return(str);
+}
+
+//---------------------------------------------------------------
+// Procedure: valid()
+//      Note: Determines if all the required fields have been set
+
+bool AckMessage::valid() const
+{
+  if((m_id == "") || (m_src_node == "")  || (m_dest_node == ""))
+    return(false);
+  
+  return(true);
+}
+
+
+//---------------------------------------------------------
+// Procedure: string2AckMessage()
+//   Example: src=ike, dest=abe, id=abe_124
+
+AckMessage string2AckMessage(const string& message_string)
+{
+  AckMessage empty_message;
+  AckMessage new_message;
 
   string string_val;
-  bool   string_val_quoted = false;
 
   vector<string> svector = parseStringQ(message_string, ',');
-  unsigned int i, vsize = svector.size();
-  for(i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<svector.size(); i++) {
     string param = tolower(biteStringX(svector[i], '='));
     string value = svector[i];
     
-    if(param == "src_node")
+    if(param == "src")
       new_message.setSourceNode(value);
-    else if(param == "src_app")
-      new_message.setSourceApp(value);
-    else if(param == "src_bhv")
-      new_message.setSourceBehavior(value);
-    else if(param == "dest_node")
+    else if(param == "dest")
       new_message.setDestNode(value);
-    else if(param == "dest_group")
-      new_message.setDestGroup(value);
-    else if(param == "var_name")
-      new_message.setVarName(value);
-    else if(param == "string_val")
-      string_val = value;
-    else if(param == "color")
-      new_message.setColor(value);
-    else if(param == "ack_id")
+    else if(param == "id")
       new_message.setMessageID(value);
-    else if((param == "string_val_quoted") && (value == "true"))
-      string_val_quoted = true;
-    else if((param == "ack") && (value == "true"))
-      new_message.setAckRequested(true);
-    else if(param == "double_val")
-      new_message.setDoubleVal(atof(value.c_str()));
   }
-
-  // If extra quotes were automatically added to the string val to hide
-  // separators in the string, remove them now.
-  
-  if(isQuoted(string_val) && string_val_quoted)
-    string_val = stripQuotes(string_val);
-  
-  new_message.setStringVal(string_val);
 
   if(!new_message.valid())
     return(empty_message);
 
   return(new_message);
 }
+
+
+
+
+

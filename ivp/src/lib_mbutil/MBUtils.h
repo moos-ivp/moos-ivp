@@ -123,9 +123,9 @@ bool  tokParse(const std::string&, const std::string&,
 		char, char, bool&);
 
 std::string tokStringParse(const std::string&, const std::string&, 
-			   char, char);
+			   char gsep=',', char lsep='=');
 double tokDoubleParse(const std::string&, const std::string&, 
-		      char, char);
+		      char gsep=',', char lsep='=');
 
 double minElement(const std::vector<double>&);
 double maxElement(const std::vector<double>&);
