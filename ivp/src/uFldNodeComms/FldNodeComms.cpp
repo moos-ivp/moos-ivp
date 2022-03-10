@@ -1218,6 +1218,7 @@ bool FldNodeComms::buildReport()
   m_msgs << "   Max Message Len: " << doubleToStringX(m_max_msg_length) << endl;
   m_msgs << "   Min Message Int: " << doubleToStringX(m_min_msg_interval) << endl;
   m_msgs << "   Min Report  Int: " << doubleToStringX(m_min_rpt_interval,2) << endl;
+  m_msgs << "          Drop Pct: " << doubleToStringX(m_drop_pct,2)     << endl;
   m_msgs << "       Apply Group: " << boolToString(m_apply_groups)      << endl;
   m_msgs << "     Share Reports: " << share_rpt_string << endl;
   m_msgs << "      Ignore Group: " << m_ignore_group << endl;
