@@ -65,6 +65,9 @@ FldNodeComms::FldNodeComms()
   m_verbose          = false;
   m_debug            = false;
 
+  m_msg_color = "white";
+  m_msg_repeat_color = "light_green";
+  
   m_min_share_interval = 0.1;
   
   m_pulse_duration   = 10;      // zero means no pulses posted.
@@ -263,6 +266,10 @@ bool FldNodeComms::OnStartUp()
       handled = handleEnableSharedNodeReports(value);
     else if(param == "ignore_group") 
       handled = setNonWhiteVarOnString(m_ignore_group, value);
+    else if(param == "msg_color") 
+      handled = setColorOnString(m_msg_color, value);
+    else if(param == "msg_repeat_color") 
+      handled = setColorOnString(m_msg_repeat_color, value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -380,13 +387,13 @@ bool FldNodeComms::handleMailNodeMessage(const string& msg)
 {
   NodeMessage new_message = string2NodeMessage(msg);
 
-  // #1 List of "last" messages store solely for user debug 
-  //    viewing at the console window.
+  // Part 1: List of "last" messages store solely for user
+  // debug viewing at the console window.
   m_last_messages.push_back(msg);
   if(m_last_messages.size() > 5) 
     m_last_messages.pop_front();
 
-  // #2 Check that the message is valid
+  // Part 2: Check that the message is valid
   if(!new_message.valid())
     return(false);
 
@@ -742,7 +749,7 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
     return;
   }
 
-  string msg_color = "white";
+  string msg_color = m_msg_color;
   if(message.getColor() != "")
     msg_color = message.getColor();
   
@@ -848,7 +855,20 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
 
       string node_message = message.getSpec();
       Notify(moos_var, node_message);
-      postViewCommsPulse(src_name, a_dest_name, "msg", msg_color, 0.6);
+
+      string id = message.getMessageID();
+      if((id != "") && listContains(m_recent_ackids,id))
+	postViewCommsPulse(src_name, a_dest_name, "msg", m_msg_repeat_color, 0.6);
+      else
+	postViewCommsPulse(src_name, a_dest_name, "msg", msg_color, 0.6);
+
+      if(id != "") {
+	m_recent_ackids.push_front(id);
+	if(m_recent_ackids.size() > 100)
+	  m_recent_ackids.pop_back();
+      }
+      
+
       m_total_messages_sent++;
       m_map_messages_sent[a_dest_name]++;
     }
@@ -1122,7 +1142,8 @@ void FldNodeComms::postViewCommsPulse(const string& uname1,
   if(m_pulse_duration <= 0)
     return;
 
-  if(pcolor == "invisible")
+  string lpcolor = tolower(pcolor);
+  if((lpcolor == "invisible") || (lpcolor == "off"))
     return;
   
   if(uname1 == uname2)

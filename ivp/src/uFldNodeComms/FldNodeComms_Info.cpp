@@ -112,6 +112,9 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  drop_percentage = 10         // Drop 10% msgs. Default is 0.  ");
   blk("                                                                ");
+  blk("  msg_color        = white         // default                   ");
+  blk("  msg_repeat_color = light_green   // default                   ");
+  blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   exit(0);

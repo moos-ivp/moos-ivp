@@ -159,7 +159,8 @@ class FldNodeComms : public AppCastingMOOSApp
   std::string           m_full_rpt_vname;
   std::set<std::string> m_full_rpt_waiting;
   
-  std::vector<std::string> m_colors;
+  std::string m_msg_color;
+  std::string m_msg_repeat_color;
 
  protected: // State (statistics) variables
 
@@ -185,6 +186,8 @@ class FldNodeComms : public AppCastingMOOSApp
   unsigned int   m_blk_msg_noinfo;
   
   std::list<std::string> m_last_messages;
+
+  std::list<std::string> m_recent_ackids;
 };
 
 #endif 
