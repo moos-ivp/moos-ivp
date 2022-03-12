@@ -84,7 +84,6 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("uFldNodeBroker Example MOOS Configuration                       ");
   blu("=============================================================== ");
@@ -108,6 +107,8 @@ void showExampleConfigAndExit()
   blk("  bridge = src=VIEW_SEGLIST                                     ");
   blk("                                                                ");
   blk("  bridge = src=NODE_REPORT_LOCAL, alias=NODE_REPORT             ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

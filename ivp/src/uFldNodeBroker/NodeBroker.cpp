@@ -34,7 +34,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 NodeBroker::NodeBroker()
 { 
@@ -46,10 +46,12 @@ NodeBroker::NodeBroker()
   m_ok_acks_received  = 0;
   m_bad_acks_received = 0;
   m_host_info_changes = 0;
+
+  m_messaging_policy = "";
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool NodeBroker::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -76,6 +78,9 @@ bool NodeBroker::OnNewMail(MOOSMSG_LIST &NewMail)
     if((key == "PHI_HOST_INFO") && msg_is_local) 
       handleMailHostInfo(sval);
 
+    else if(key == "DB_CLIENTS")
+      checkMessagingPolicy(sval);
+
     // Only accept an ACK coming from a different community
     else if((key == "NODE_BROKER_ACK") && !msg_is_local) 
       handleMailAck(sval); 
@@ -88,7 +93,7 @@ bool NodeBroker::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool NodeBroker::OnConnectToServer()
 {
@@ -113,7 +118,7 @@ bool NodeBroker::Iterate()
     registerPingBridges();
   
   sendNodeBrokerPing();
-
+  
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -165,14 +170,14 @@ bool NodeBroker::OnStartUp()
   }
   if(auto_bridge_appcast)
     handleConfigBridge("src=APPCAST");
-  
+
   registerVariables();
   registerPingBridges();
   return(true);
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void NodeBroker::registerVariables()
 {
@@ -180,6 +185,9 @@ void NodeBroker::registerVariables()
 
   Register("NODE_BROKER_ACK", 0);
   Register("PHI_HOST_INFO", 0);
+
+  if(m_messaging_policy == "auto")
+    Register("DB_CLIENTS", 0);
 }
 
 
@@ -209,9 +217,44 @@ void NodeBroker::sendNodeBrokerPing()
   }
 }
 
+//------------------------------------------------------------
+// Procedure: checkMessagingPolicy()
+//   Purpose: We should only be sharing MEDIATED_MESSAGE_LOCAL
+//              to the shoreside when pMediator is in use.
+//            And NODE_MESSAGE_LOCAL only when pMediator is
+//              NOT in use.
+//            Here we check for the presence of pMediator and
+//              publish relevant warnings re: consistency
+//            There is a 5 sec grace period to give time for
+//              pMediator to show up on the db_clients list.
+
+void NodeBroker::checkMessagingPolicy(string db_clients)
+{
+  // Give pMediator some time to show up on the db_clients list.
+  // A 5 second grace period. The number is not terribly important
+  // since the run warning will be quickly retracted if pMediator
+  // shows up later.
+  double elapsed = m_curr_time - m_start_time;
+  if(elapsed < 5)
+    return;
+
+  if(strContains(db_clients, "pMediator")) {
+    if(m_messaging_policy != "mediated") 
+      reportRunWarning("Messaging Policy Mismatch");
+    if(m_messaging_policy == "mediated") 
+      retractRunWarning("Messaging Policy Mismatch");
+    UnRegister("DB_CLIENTS");
+  }
+  
+  else {
+    if(m_messaging_policy == "mediated")
+      reportRunWarning("Messaging Policy Mismatch");
+  }
+}
+
 
 //------------------------------------------------------------
-// Procedure: registerPingBridges
+// Procedure: registerPingBridges()
 
 void NodeBroker::registerPingBridges()
 {
@@ -224,7 +267,7 @@ void NodeBroker::registerPingBridges()
 }
 
 //------------------------------------------------------------
-// Procedure: registerUserBridges
+// Procedure: registerUserBridges()
 
 void NodeBroker::registerUserBridges()
 {
@@ -249,13 +292,13 @@ void NodeBroker::registerUserBridges()
 
 
 //------------------------------------------------------------
-// Procedure: handleConfigBridge
+// Procedure: handleConfigBridge()
 //   Example: bridge = src=FOO, alias=BAR
 
 bool NodeBroker::handleConfigBridge(string line)
 {
+  // Part 1: Get the Source and Alias components
   string src, alias;
-
   vector<string> svector = parseString(line, ',');
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
@@ -266,19 +309,37 @@ bool NodeBroker::handleConfigBridge(string line)
     else if(left == "alias")
       alias = right;
   }
-
   if((src == "") || strContainsWhite(src))
     return(false);
-
   if((alias == "") || strContainsWhite(alias))
     alias = src;
 
-  // If this bridge was already established, this request is ignored
-  // with no error or warning.
+  // Part 2: If this bridge was already established, this request is
+  // ignored with no error or warning.
   if(vectorContains(m_bridge_src_var, src) &&
      vectorContains(m_bridge_alias, alias))
     return(true);
 
+  // Part 3: Take note of the implied messaging policy, so we can
+  // post a run warning based on the presence of pMediator
+  
+  if((src == "NODE_MESSAGE_LOCAL") && (alias == "NODE_MESSAGE")) {
+    if(m_messaging_policy == "mediated") {
+      reportConfigWarning("Conflicted messaging policy");
+      return(false);
+    }
+    m_messaging_policy = "unmediated";
+  }
+  
+  if((src == "MEDIATED_MESSAGE_LOCAL") && (alias == "MEDIATED_MESSAGE")) {
+    if(m_messaging_policy == "unmediated") {
+      reportConfigWarning("Conflicted messaging policy");
+      return(false);
+    }
+    m_messaging_policy = "mediated";
+  }
+
+  // Part 4: Add the components.
   m_bridge_src_var.push_back(src);
   m_bridge_alias.push_back(alias);
   return(true);
@@ -286,7 +347,7 @@ bool NodeBroker::handleConfigBridge(string line)
 
 
 //------------------------------------------------------------
-// Procedure: handleConfigTryShoreHost
+// Procedure: handleConfigTryShoreHost()
 
 bool NodeBroker::handleConfigTryShoreHost(string original_line)
 {
@@ -328,7 +389,7 @@ bool NodeBroker::handleConfigTryShoreHost(string original_line)
 }
 
 //------------------------------------------------------------
-// Procedure: handleMailAck
+// Procedure: handleMailAck()
 //      Note: Parse NODE_BROKER_ACK and update the info about the
 //            shoreside node that sent it.
 
@@ -363,7 +424,24 @@ void NodeBroker::handleMailAck(string ack_msg)
 
 
 //------------------------------------------------------------
-// Procedure: handleMailHostInfo
+// Procedure: handleMailDBClients()
+
+void NodeBroker::handleMailDBClients(string str)
+{
+  if(strContains(str, "pMediator")) {
+  }
+    
+
+  double up_time = m_curr_time - m_start_time;
+  if(up_time > 20) {
+    m_messaging_policy = "unmediated";
+    UnRegister("DB_CLIENTS");
+    return;
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: handleMailHostInfo()
 
 void NodeBroker::handleMailHostInfo(string phi_msg)
 {
@@ -389,10 +467,16 @@ void NodeBroker::handleMailHostInfo(string phi_msg)
 }
 
 //------------------------------------------------------------
-// Procedure: postPShareCommand
+// Procedure: postPShareCommand()
 
 void NodeBroker::postPShareCommand(string src, string dest, string route)
 {
+  if((src == "NODE_MESSAGE_LOCAL") && (m_messaging_policy != "unmediated"))
+    return;
+  
+  if((src == "MEDIATED_MESSAGE_LOCAL") && (m_messaging_policy != "mediated"))
+    return;
+  
   string msg = "cmd=output";
   msg += ",src_name="  + src;
   msg += ",dest_name=" + dest;
@@ -404,7 +488,7 @@ void NodeBroker::postPShareCommand(string src, string dest, string route)
 }
   
 //------------------------------------------------------------
-// Procedure: buildReport
+// Procedure: buildReport()
 //      Note: A virtual function of the AppCastingMOOSApp superclass, 
 //            conditionally invoked if either a terminal or appcast 
 //            report is needed.

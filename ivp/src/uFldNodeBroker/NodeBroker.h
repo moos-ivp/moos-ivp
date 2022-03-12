@@ -47,8 +47,10 @@ class NodeBroker : public AppCastingMOOSApp
   bool handleConfigBridge(std::string);
 
   void sendNodeBrokerPing();
-
+  void checkMessagingPolicy(std::string);
+  
   void handleMailHostInfo(std::string);
+  void handleMailDBClients(std::string);
   void handleMailAck(std::string);
 
   void registerVariables();
@@ -73,6 +75,8 @@ class NodeBroker : public AppCastingMOOSApp
   // A list of IP addresses on the pulled from the try_shore_host param
   std::vector<std::string>  m_try_host_ips;
 
+  std::string m_messaging_policy;
+  
  protected: // State Variables
   HostRecord   m_node_host_record;  // From PHI_HOST_INFO
 
