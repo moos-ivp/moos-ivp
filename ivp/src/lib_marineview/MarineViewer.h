@@ -141,8 +141,11 @@ protected:
   void  drawGrids(const std::vector<XYGrid>&);
   void  drawGrid(const XYGrid&);
 
-  void  drawConvexGrids(const std::vector<XYConvexGrid>&);
-  void  drawConvexGrid(const XYConvexGrid&);
+  //void  drawConvexGrids(const std::vector<XYConvexGrid>&);
+  //void  drawConvexGrid(const XYConvexGrid&);
+
+  void  drawConvexGrids(std::vector<XYConvexGrid>);
+  void  drawConvexGrid(XYConvexGrid);
 
   void  drawCircles(const std::map<std::string, XYCircle>&, double timestamp=0);
   void  drawCircle(XYCircle, double timestamp=0);

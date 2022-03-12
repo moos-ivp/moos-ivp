@@ -114,6 +114,8 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
     handled = m_geoshapes_map[vname].addGrid(value);
   else if(param == "GRID_DELTA")
     handled = m_geoshapes_map[vname].updateGrid(value);
+  else if(param == "VIEW_GRID_DELTA")
+    handled = m_geoshapes_map[vname].updateConvexGrid(value);
   else if(param == "VIEW_GRID")
     handled = m_geoshapes_map[vname].addConvexGrid(value);
 

@@ -34,7 +34,7 @@
 
 class XYConvexGrid : public XYObject {
 public:
-  XYConvexGrid() {}
+  XYConvexGrid();
   ~XYConvexGrid() {}
 
   bool      initialize(const XYPolygon&, double cell_size, double init_val);
@@ -78,11 +78,22 @@ public:
   bool        cellVarMaxLimited(unsigned int cix=0) const;
 
   double  getCellSize() const {return(m_config_cell_size);}
-  
+
+  bool    processDelta(std::string);
+
   void    reset();
   void    reset(const std::string& cell_var);
   void    print() const; 
 
+ public: // Support for caching for drawing
+  bool    setEdgeCache(double, double);
+  double  getPixPerMtrX() const {return(m_pix_per_mtr_x);}
+  double  getPixPerMtrY() const {return(m_pix_per_mtr_y);}
+
+  std::vector<std::vector<double> > getEdgeCache() const {return(m_edge_cache);}
+
+
+  
 protected:
   bool    initialize(const XYSquare&, const XYSquare&);
     
@@ -111,6 +122,13 @@ protected:
   std::vector<double>                m_cell_max_sofar;
   std::vector<double>                m_cell_min_sofar;
   std::vector<bool>                  m_cell_minmax_noted;
+
+ protected: // Support for caching for drawing
+  std::vector<std::vector<double> > m_edge_cache;
+  double m_pix_per_mtr_x;
+  double m_pix_per_mtr_y;
+
+  
 };
 
 #endif

@@ -33,6 +33,16 @@
 using namespace std;
 
 //-------------------------------------------------------------
+// Constructor()
+
+XYConvexGrid::XYConvexGrid()
+{
+  m_pix_per_mtr_x = -1;
+  m_pix_per_mtr_y = -1;
+}
+
+
+//-------------------------------------------------------------
 // Procedure: initialize
 //      Note: A convenience function. Only one cell variable is 
 //            implied with an initial value as given. Calles the 
@@ -598,6 +608,88 @@ string XYConvexGrid::getConfigStr() const
 
   return(spec);
 }
+
+
+//-------------------------------------------------------------
+// Procedure: processDelta()
+//   Example: label@ix,delta:ix,delta : ... :ix,delta
+
+
+bool XYConvexGrid::processDelta(string str)
+{
+  string label = biteStringX(str, '@');
+
+  // Sanity check proper string
+  if((label == "") || (str == ""))
+    return(false);
+
+  // Check if this update was simply meant for some other grid
+  if(label != m_label) 
+    return(true);
+
+  // Assume this update is for cell index zero
+  unsigned int cix = 0;
+  
+  vector<string> svector = parseString(str, ':');
+
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string str_gix   = biteStringX(svector[i], ',');
+    string str_delta = svector[i];
+    int    int_gix   = atoi(str_gix.c_str());
+    double delta = atof(str_delta.c_str());
+
+    if(int_gix < 0)
+      continue;
+
+    unsigned int uint_gix = (unsigned int)(int_gix);
+	
+    if(uint_gix >= m_cell_vals.size())
+      continue;
+    
+    m_cell_vals[uint_gix][cix] += delta; 
+    
+  }
+  return(true);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: setEdgeCache()
+//   Returns: true if the cache changed, false otherwise
+
+bool XYConvexGrid::setEdgeCache(double pix_per_mtr_x,
+				double pix_per_mtr_y)
+{
+  if((m_pix_per_mtr_x == pix_per_mtr_x) &&
+     (m_pix_per_mtr_y == pix_per_mtr_y))
+    return(false);
+
+  m_pix_per_mtr_x = pix_per_mtr_x;
+  m_pix_per_mtr_y = pix_per_mtr_y;
+  
+  vector<vector<double> > new_cache;
+  for(unsigned int i=0; i<m_elements.size(); i++) {
+    vector<double> element_cache;
+    
+    element_cache.push_back(m_elements[i].getVal(0,0) * pix_per_mtr_x);
+    element_cache.push_back(m_elements[i].getVal(1,0) * pix_per_mtr_y);
+    
+    element_cache.push_back(m_elements[i].getVal(0,1) * pix_per_mtr_x);
+    element_cache.push_back(m_elements[i].getVal(1,0) * pix_per_mtr_y);
+    
+    element_cache.push_back(m_elements[i].getVal(0,1) * pix_per_mtr_x);
+    element_cache.push_back(m_elements[i].getVal(1,1) * pix_per_mtr_y);
+    
+    element_cache.push_back(m_elements[i].getVal(0,0) * pix_per_mtr_x);
+    element_cache.push_back(m_elements[i].getVal(1,1) * pix_per_mtr_y);
+
+    new_cache.push_back(element_cache);
+  }
+
+  m_edge_cache = new_cache;
+  return(true);
+}
+
 
 //-------------------------------------------------------------
 // Procedure: print

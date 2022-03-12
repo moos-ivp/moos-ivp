@@ -64,7 +64,6 @@ public:
   bool      ptIntersectBound(double, double) const;
   bool      segIntersectBound(double, double, double, double) const;
   bool      processDelta(const std::string&);
-  void      processDelta(const std::string&, const std::string&);
 
   std::string getConfigString() const {return(config_string);}
   std::string getLabel() const {return(label);}

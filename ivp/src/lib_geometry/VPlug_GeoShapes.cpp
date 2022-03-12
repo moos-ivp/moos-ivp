@@ -79,11 +79,11 @@ void VPlug_GeoShapes::clear(string shape, string stype)
 
   if((shape == "polygons") || (shape=="polygon"))
     clearPolygons(stype);
-  else if(shape == "points")
+  else if((shape == "points") || (shape == "point"))
     clearPoints(stype);
-  else if(shape == "seglists")
+  else if((shape == "seglists") || (shape == "seglist"))
     clearSegLists(stype);
-  else if(shape == "seglrs")
+  else if((shape == "seglrs") || (shape == "seglr"))
     clearSeglrs(stype);
 
   
@@ -484,15 +484,17 @@ bool VPlug_GeoShapes::updateGrid(const string& delta)
 
 //-----------------------------------------------------------
 // Procedure: updateConvexGrid()
+//   Example: label@ix,delta:ix,delta : ... :ix,delta
+//      Note: Rejecting updates with label mismatch will be
+//            handled in the call to the grid.
 
 bool VPlug_GeoShapes::updateConvexGrid(const string& delta)
 {
   bool ok = true;
-#if 0
-  unsigned int i, vsize = m_convex_grids.size();
-  for(i=0; i<vsize; i++)
+
+  for(unsigned int i=0; i<m_convex_grids.size(); i++)
     ok = ok && m_convex_grids[i].processDelta(delta);
-#endif
+
   return(ok);
 }
 

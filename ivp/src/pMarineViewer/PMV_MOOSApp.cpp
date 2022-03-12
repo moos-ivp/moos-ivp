@@ -44,7 +44,8 @@ PMV_MOOSApp::PMV_MOOSApp()
 {
   m_pending_moos_events = 0;
   m_gui             = 0; 
-  m_lastredraw_time = 0;
+  m_last_redraw_time = 0;
+  m_last_updatexy_time = 0;
 
   VarDataPair pair1("HELM_MAP_CLEAR", 0);
   VarDataPair pair2("PMV_CONNECT", 0);
@@ -240,6 +241,7 @@ void PMV_MOOSApp::registerVariables()
   Register("VIEW_COMMS_PULSE", 0);
   Register("GRID_CONFIG",  0);
   Register("GRID_DELTA",   0);
+  Register("VIEW_GRID_DELTA", 0);
   Register("VIEW_GRID", 0);
   Register("VIEW_RANGE_PULSE", 0);
   Register("PMV_MENU_CONTEXT", 0);
@@ -446,6 +448,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       Notify("MVIEWER_UNHANDLED_MAIL", warning);
       reportRunWarning(warning);
     }
+    
   }
 
   // ===================================================================
@@ -507,13 +510,19 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   double curr_time = e.moos_time - m_start_time;
   cout << "." << flush;
 
-  double warp_elapsed = curr_time - m_lastredraw_time;
+  double warp_elapsed = curr_time - m_last_redraw_time;
   double real_elapsed = warp_elapsed / m_time_warp;
   if(real_elapsed > 0.085) {
     m_gui->mviewer->PMV_Viewer::draw();
     m_gui->mviewer->redraw();
+    m_last_redraw_time = curr_time;
+  }
+
+  warp_elapsed = curr_time - m_last_updatexy_time;
+  real_elapsed = warp_elapsed / m_time_warp;
+  if(real_elapsed > 0.75) {
     m_gui->updateXY();
-    m_lastredraw_time = curr_time;
+    m_last_updatexy_time = curr_time;
   }
 
   m_gui->mviewer->setParam("curr_time", e.moos_time);

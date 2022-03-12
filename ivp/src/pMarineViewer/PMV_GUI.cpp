@@ -844,19 +844,17 @@ void PMV_GUI::updateXY()
 {
   double dwarp = GetMOOSTimeWarp();
   string time_str = doubleToString(m_curr_time, 1);
-  time->value(time_str.c_str());
 
+  string swarp      = dstringCompact(doubleToString(dwarp,2));
   string scope_var  = mviewer->getStringInfo("scope_var");
   string scope_time = mviewer->getStringInfo("scope_time");
   string scope_val  = mviewer->getStringInfo("scope_val");
-  string swarp      = dstringCompact(doubleToString(dwarp,2));
+  string vname = mviewer->getStringInfo("active_vehicle_name");
 
   m_scope_variable->value(scope_var.c_str());
   m_scope_time->value(scope_time.c_str());
   m_scope_value->value(scope_val.c_str());
-
-  string vname = mviewer->getStringInfo("active_vehicle_name");
-
+  
   if((vname == "") || (vname == "error")) {
     v_nam->value(" n/a");
     v_typ->value(" n/a");
@@ -888,7 +886,6 @@ void PMV_GUI::updateXY()
   if(age_ais == "-1")
     age_ais = "n/a";
 
-  warp->value(swarp.c_str());
   v_nam->value(vname.c_str());
   v_typ->value(vtype.c_str());
   x_mtr->value(xpos.c_str());
@@ -899,9 +896,14 @@ void PMV_GUI::updateXY()
   v_crs->value(crs.c_str());
   v_dep->value(dep.c_str());
   v_ais->value(age_ais.c_str());
+
+  time->value(time_str.c_str());
+  warp->value(swarp.c_str());
+
   //v_range->value(range.c_str());
   //v_bearing->value(bearing.c_str());
 
+  time->redraw();
   warp->redraw();
   v_nam->redraw();
   v_typ->redraw();

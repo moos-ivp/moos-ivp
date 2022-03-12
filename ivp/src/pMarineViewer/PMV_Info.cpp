@@ -195,6 +195,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Node Report Source                                         ");
   blk("  node_report_unc = true       {true, FALSE}                    ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

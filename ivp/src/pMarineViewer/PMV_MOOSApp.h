@@ -77,7 +77,8 @@ class PMV_MOOSApp : public AppCastingMOOSApp
   Threadsafe_pipe<MOOS_event> *m_pending_moos_events;
 
   PMV_GUI     *m_gui;
-  double       m_lastredraw_time;
+  double       m_last_redraw_time;
+  double       m_last_updatexy_time;
   bool         m_verbose;
   bool         m_pending_pairs;
 

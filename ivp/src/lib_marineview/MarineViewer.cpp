@@ -2352,24 +2352,24 @@ void MarineViewer::drawGrid(const XYGrid& grid)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawConvexGrids
+// Procedure: drawConvexGrids()
 
-void MarineViewer::drawConvexGrids(const vector<XYConvexGrid>& grids)
+void MarineViewer::drawConvexGrids(vector<XYConvexGrid> grids)
 {
   if(m_geo_settings.viewable("grid_viewable_all", true) == false)
     return;
 
   unsigned int i, vsize = grids.size();
   for(i=0; i<vsize; i++) {
-    if(grids[i].active())
+    if(grids[i].active()) 
       drawConvexGrid(grids[i]);
   }
 }
 
 //-------------------------------------------------------------
-// Procedure: drawConvexGrid
+// Procedure: drawConvexGrid()
 
-void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
+void MarineViewer::drawConvexGrid(XYConvexGrid grid)
 {
   FColorMap cmap;
 
@@ -2379,6 +2379,7 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
+
   glOrtho(0, w(), 0, h(), -1 ,1);
 
   double tx = meters2img('x', 0);
@@ -2393,10 +2394,6 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
   glLineWidth(0.5);  // added dec1306
   glTranslatef(qx, qy, 0);
   glScalef(m_zoom, m_zoom, m_zoom);
-
-  unsigned int i;
-  double px[4];
-  double py[4];
 
   double min_eval, max_eval, range = 0;
 
@@ -2417,20 +2414,13 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
   double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
   double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
 
-  for(i=0; i<gsize; i++) {
-    XYSquare element = grid.getElement(i);
-
-    px[0] = element.getVal(0,0) * pix_per_mtr_x;
-    py[0] = element.getVal(1,0) * pix_per_mtr_y;
-    px[1] = element.getVal(0,1) * pix_per_mtr_x;
-    py[1] = element.getVal(1,0) * pix_per_mtr_y;
-    px[2] = element.getVal(0,1) * pix_per_mtr_x;
-    py[2] = element.getVal(1,1) * pix_per_mtr_y;
-    px[3] = element.getVal(0,0) * pix_per_mtr_x;
-    py[3] = element.getVal(1,1) * pix_per_mtr_y;
-
-    // Draw the internal parts of the cells if range is nonzero.
-    if(range > 0) {
+  grid.setEdgeCache(pix_per_mtr_x, pix_per_mtr_y);
+  vector<vector<double> > edge_cache = grid.getEdgeCache();
+  unsigned int esize = edge_cache.size();
+  
+  // Part 1 Draw Interiors
+  if(range > 0) {
+    for(unsigned int i=0; i<esize; i++) {
       double   eval = grid.getVal(i);
       double   pct  = (eval-min_eval)/(range);
       double   r    = cmap.getIRVal(pct);
@@ -2438,27 +2428,27 @@ void MarineViewer::drawConvexGrid(const XYConvexGrid& grid)
       double   b    = cmap.getIBVal(pct);
       
       glEnable(GL_BLEND);
-      //glColor4f(r,g,b,0.3);
       glColor4f(r,g,b,cell_opaqueness);
       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
       glBegin(GL_POLYGON);
       for(int j=0; j<4; j++)
-	glVertex2f(px[j], py[j]);
+	glVertex2f(edge_cache[i][j*2], edge_cache[i][j*2+1]); 
       glEnd();
       glDisable(GL_BLEND);
     }
+  }
 
-    // Begin Draw the cell edges
-    glEnable(GL_BLEND);
-    glColor4f(0.6,0.6,0.6,edge_opaqueness);
+  // Part 2 Draw edges
+  glEnable(GL_BLEND);
+  glColor4f(0.6,0.6,0.6,edge_opaqueness);
+  for(unsigned int i=0; i<esize; i++) {
+
     glBegin(GL_LINE_LOOP);
     for(int k=0; k<4; k++)
-      glVertex2f(px[k], py[k]);
+      glVertex2f(edge_cache[i][k*2], edge_cache[i][k*2+1]); 
     glEnd();
-    glDisable(GL_BLEND);
-    // End Draw the cell edges
-    
   }
+  glDisable(GL_BLEND);
 
   glFlush();
   glPopMatrix();

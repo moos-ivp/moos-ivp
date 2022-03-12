@@ -256,7 +256,7 @@ bool XYGrid::segIntersectBound(double x1, double y1,
 }
 
 //-------------------------------------------------------------
-// Procedure: processDelta
+// Procedure: processDelta()
 //      Note: format: 
 //
 //              "LABEL @ index,old_val,new_val,old_util,new_util
