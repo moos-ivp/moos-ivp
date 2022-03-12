@@ -391,7 +391,7 @@ bool BehaviorSet::handlePossibleSpawnings()
     unsigned int jsize = update_strs.size();
     for(unsigned int j=0; j<jsize; j++) {
       string update_str = update_strs[j];
-      
+
       // Check for unique behavior name
       // e.g. if name is "henry", make sure "henry" and "prefix_henry"
       // don't already exist.
@@ -409,7 +409,7 @@ bool BehaviorSet::handlePossibleSpawnings()
 	SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], update_str);
 	m_behavior_specs[i].spawnTried();
 	//sbuild.print();
-	
+
 	LifeEvent life_event;
 	string bhv_name = sbuild.getBehaviorName();
 	string bhv_kind = sbuild.getBehaviorKind();
@@ -434,21 +434,15 @@ bool BehaviorSet::handlePossibleSpawnings()
 	  life_event.setEventType("abort");
 	m_life_events.push_back(life_event);
       }
-      // If fullname already exists AND update does not exist, post warning
-      else {
-	if(m_bhv_names.count(update_name)!=0) {
-	  string warning_str = "Unhandled update: Existing bhv named [";
-	  warning_str += update_name + "] not found. ";
-	  addWarning(warning_str);
-	}
 
-	// The below check is disabled for now because the contact
-	// manager is erroneously posting two idential alerts. Once
-	// the contact manager is fixed, the below check should be
-	// re-enabled.
-
-	// if(m_bhv_names.count(fullname) != 0)
-	//  addWarning("Unhandled update: Spawned bhv named [" + fullname + "] is taken.");
+      
+      // If the behavior name still doesn't exist, then the spawning failed
+      // so post a warning.
+      if((m_bhv_names.count(fullname)==0) && (m_bhv_names.count(update_name)==0)) {
+	string warning_str;
+	warning_str += "Behavior named [" + update_name + "] or [";
+	warning_str += fullname + "] not found or spawned.";
+	addWarning(warning_str);
       }
     }
   }
