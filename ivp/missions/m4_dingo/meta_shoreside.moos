@@ -18,7 +18,6 @@ Processconfig = ANTLER
   Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = pSearchGrid     @ NewConsole = false
   Run = uXMS            @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
 
@@ -26,6 +25,7 @@ Processconfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
+  Run = pSearchGrid     @ NewConsole = false
 }
 
 #include plug_pShare.moos
@@ -103,6 +103,8 @@ ProcessConfig = uFldNodeComms
   min_msg_interval = 15
   max_msg_length   = 1000
 
+	shared_node_reports = true
+	
   view_node_rpt_pulses = false
 }
 
@@ -134,11 +136,11 @@ ProcessConfig = pSearchGrid
   AppTick       = 1
   CommsTick     = 1
 
-  GRID_CONFIG = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150}
-  GRID_CONFIG = cell_size=5
-  GRID_CONFIG = cell_vars=x:0:y:0:z:0
-  GRID_CONFIG = cell_min=x:0
-  GRID_CONFIG = cell_max=x:10
+  grid_config = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150}
+  grid_config = cell_size=5
+  grid_config = cell_vars=x:0:y:0:z:0
+  grid_config = cell_min=x:0
+  grid_config = cell_max=x:10
 }
 
 //--------------------------------------------------
@@ -173,24 +175,26 @@ ProcessConfig = pMarineViewer
   vehicles_shape_scale = 1.5
   vehicles_name_viewable = names
 
+	node_report_unc = true
+
   appcast_viewable = true
   appcast_color_scheme = indigo
 
-  SCOPE = NODE_BROKER_PING
-  SCOPE = DEPLOY_ALL
-  SCOPE = CONTACT_INFO
+  scope = NODE_BROKER_PING
+  scope = DEPLOY_ALL
+  scope = CONTACT_INFO
 
-  ACTION = PERMUTING = true
-  ACTION = PERMUTING = false
+  action = PERMUTING = true
+  action = PERMUTING = false
 
-  ACTION = STATION_ALL = false
-  ACTION = STATION_ALL = true
+  action = STATION_ALL = false
+  action = STATION_ALL = true
 
-  BUTTON_ONE   = DEPLOY  # DEPLOY_ALL=true 
-  BUTTON_ONE   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  BUTTON_ONE   = RETURN_ALL=false
-  BUTTON_TWO   = RETURN  # RETURN_ALL=true
-  BUTTON_THREE = PERMUTE   # UTS_FORWARD=0
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false
+  button_two   = RETURN  # RETURN_ALL=true
+  button_three = PERMUTE   # UTS_FORWARD=0
 }
 
 //--------------------------------------------------------
