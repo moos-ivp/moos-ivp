@@ -84,6 +84,8 @@ void showExampleConfigAndExit()
   blk("  watch_only = pHelmIvP,pNodeReporter                           ");
   blk("                                                                ");
   blk("  ignore     = pBasicContactMgr                                 ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   blk("Note: If the watch list is non-empty, ignore list is ignored    ");

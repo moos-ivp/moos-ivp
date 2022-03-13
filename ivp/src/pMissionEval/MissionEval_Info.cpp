@@ -87,6 +87,8 @@ void showExampleConfigAndExit()
   blk("  result_flag = SAY_MOOS=Checking                               ");
   blk("  pass_flag   = SAY_MOOS=pass                                   ");
   blk("  fail_flag   = SAY_MOOS=fail                                   ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

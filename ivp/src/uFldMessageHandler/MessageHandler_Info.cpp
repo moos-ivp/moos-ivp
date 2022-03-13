@@ -95,6 +95,8 @@ void showExampleConfigAndExit()
   blk("  strict_addressing = false  // default                         ");
   blk("  appcast_trunc_msg = 75     // default: the number of chars per");
   blk("                             // line in the appcasting output   ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

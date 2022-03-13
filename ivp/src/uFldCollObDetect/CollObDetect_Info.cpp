@@ -82,6 +82,8 @@ void showExampleConfigAndExit()
   blk("  collision_flag   = OB_ENCOUNTER = $DIST                       ");
   blk("  near_miss_flag   = OB_NEAR_MISS = $DIST                       ");
   blk("  encounter_flag   = OB_COLLISION = $DIST                       ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

@@ -983,7 +983,7 @@ bool IvPBehavior::checkNoStarve()
 
 
 //-----------------------------------------------------------
-// Procedure: checkUpdates
+// Procedure: checkUpdates()
 
 // (1) We want to be efficient and avoid applying an update string 
 //     if it hasn't change since the last application - in case some

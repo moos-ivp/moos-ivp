@@ -142,6 +142,8 @@ void showExampleConfigAndExit()
   blk("  reject_range = 2000              // Default is 2000 meters    ");
   blk("  max_contacts = 500               // Default is 500            ");
   blk("  alert_verbose = false            // Default is false          ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   exit(0);
 }

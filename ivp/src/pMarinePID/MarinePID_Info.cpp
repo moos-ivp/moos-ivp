@@ -134,6 +134,8 @@ void showExampleConfigAndExit()
   blk("  pitch_pid_ki       = 0                                        ");
   blk("  pitch_pid_integral_limit = 0                                  ");
   blk("  maxelevator        = 13                                       ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

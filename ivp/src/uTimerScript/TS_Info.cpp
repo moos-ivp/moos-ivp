@@ -142,6 +142,8 @@ void showExampleConfigAndExit()
   blu("  time_warp      = 1                                            ");
   blk("  // Base time upon which script event times are based          ");
   blu("  time_zero      = db_start "," // Or script_start (default)    ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

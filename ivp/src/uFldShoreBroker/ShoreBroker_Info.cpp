@@ -109,6 +109,8 @@ void showExampleConfigAndExit()
   blk("  // Note: [qbridge = FOO]  is shorthand for                    ");
   blk("  //       [bridge = src=FOO_$V,  alias=FOO] and                ");
   blk("  //       [bridge = src=FOO_ALL, alias=FOO]                    ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

@@ -101,6 +101,8 @@ void showExampleConfigAndExit()
   blk("  min_utter_interval = 1                                        ");
   blk("                                                                ");
   blk("  os_mode            = linux      // Default is \"osx\"         ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   exit(0);
 }

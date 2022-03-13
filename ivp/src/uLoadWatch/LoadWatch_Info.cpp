@@ -100,6 +100,8 @@ void showExampleConfigAndExit()
   blk("  near_breach_thresh = 0.9  // default                          ");
   blk("                                                                ");
   blk("  breach_trigger = 1    // default (first offense forgiven)     ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

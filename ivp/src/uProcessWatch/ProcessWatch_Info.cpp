@@ -109,6 +109,8 @@ void showExampleConfigAndExit()
   blk("  summary_wait = 10 // Seconds. Default is -1.                  ");
   blk("                                                                ");
   blk("  post_mapping = PROC_WATCH_FULL_SUMMARY, UPW_FULL_SUMMARY      ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

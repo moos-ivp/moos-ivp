@@ -32,7 +32,16 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Constructor()
+
+SearchGrid::SearchGrid()
+{
+  m_report_deltas = true;
+  m_grid_label = "psg";
+}
+
+//---------------------------------------------------------
+// Procedure: OnNewMail()
 
 bool SearchGrid::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -51,7 +60,7 @@ bool SearchGrid::OnNewMail(MOOSMSG_LIST &NewMail)
     //string msrc  = msg.GetSource();
 
     if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL"))
-      handleNodeReport(sval);
+      handleMailNodeReport(sval);
     else if(key == "PSG_RESET_GRID")
       m_grid.reset();
   }
@@ -60,7 +69,7 @@ bool SearchGrid::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool SearchGrid::OnConnectToServer()
 {
@@ -75,7 +84,12 @@ bool SearchGrid::OnConnectToServer()
 bool SearchGrid::Iterate()
 {
   AppCastingMOOSApp::Iterate();
-  postGrid();
+
+  if(m_report_deltas)
+    postGridUpdates();
+  else
+    postGrid();
+
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -97,16 +111,26 @@ bool SearchGrid::OnStartUp()
     
     list<string>::reverse_iterator p;
     for(p=sParams.rbegin(); p!=sParams.rend(); p++) {
-      string config_line = *p;
-      string param = toupper(biteStringX(config_line, '='));
-      string value = config_line;
+      string orig = *p;
+      string line = *p;
+      string param = tolower(biteStringX(line, '='));
+      string value = line;
 
-      if(param == "GRID_CONFIG") {
+      bool handled = false;
+      if(param == "grid_config") {
 	unsigned int len = grid_config.length();
 	if((len > 0) && (grid_config.at(len-1) != ','))
 	  grid_config += ",";
 	grid_config += value;
+	handled = true;
       }	
+      else if(param == "report_deltas") 
+	handled = setBooleanOnString(m_report_deltas, value);
+      else if(param == "grid_label") 
+	handled = setNonWhiteVarOnString(m_grid_label, value);
+      
+      if(!handled)
+	reportUnhandledConfigWarning(orig);
     }
   }
 
@@ -116,12 +140,13 @@ bool SearchGrid::OnStartUp()
     reportConfigWarning("Unsuccessful ConvexGrid construction.");
 
   m_grid.set_label("psg");
+  postGrid();
   registerVariables();
   return(true);
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void SearchGrid::registerVariables()
 {
@@ -133,9 +158,9 @@ void SearchGrid::registerVariables()
 
 
 //------------------------------------------------------------
-// Procedure: handleNodeReport
+// Procedure: handleMailNodeReport()
 
-void SearchGrid::handleNodeReport(string str)
+void SearchGrid::handleMailNodeReport(string str)
 {
   NodeRecord record = string2NodeRecord(str);
   if(!record.valid())
@@ -144,18 +169,18 @@ void SearchGrid::handleNodeReport(string str)
   double posx = record.getX();
   double posy = record.getY();
 
-  unsigned index, gsize = m_grid.size();
-  for(index=0; index<gsize; index++) {
-    bool contained = m_grid.ptIntersect(index, posx, posy);
+  for(unsigned int ix=0; ix<m_grid.size(); ix++) {
+    bool contained = m_grid.ptIntersect(ix, posx, posy);
     if(contained) {
-      m_grid.incVal(index, 1);
+      m_map_deltas[ix] = m_map_deltas[ix] + 1;
+      m_grid.incVal(ix, 1);
     }
   }
 
 }
 
 //------------------------------------------------------------
-// Procedure: postGrid
+// Procedure: postGrid()
 
 void SearchGrid::postGrid()
 {
@@ -164,7 +189,31 @@ void SearchGrid::postGrid()
 }
 
 //------------------------------------------------------------
-// Procedure: buildReport
+// Procedure: postGridUpdates()
+
+void SearchGrid::postGridUpdates()
+{
+  if(m_map_deltas.size() == 0)
+    return;
+  
+  string msg = m_grid_label + "@";
+  
+  map<unsigned int, double >::iterator p;
+  for(p=m_map_deltas.begin(); p!=m_map_deltas.end(); p++) {
+    unsigned int ix = p->first;
+    double delta = p->second;
+    if(msg != "")
+      msg += ":";
+    msg += uintToString(ix) + "," + doubleToStringX(delta);
+  }
+
+  m_map_deltas.clear();
+  
+  Notify("VIEW_GRID_DELTA", msg);
+}
+
+//------------------------------------------------------------
+// Procedure: buildReport()
 //
 //  Grid characteristics:
 //        Cells: 1024

@@ -99,6 +99,8 @@ void showExampleConfigAndExit()
   blk("  deadflag        = RETURN=true                                 ");
   blk("  post_policy     = once               // default               ");
   blk("  active_at_start = true               // default               ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

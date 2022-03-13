@@ -2,8 +2,12 @@
 # The CMakeLists.txt for:                   uFldNodeComms
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
- 
-FILE(GLOB SRC *.cpp)
+
+SET(SRC
+  FldNodeComms.cpp
+  FldNodeComms_Info.cpp
+  main.cpp
+)
 
 ADD_EXECUTABLE(uFldNodeComms ${SRC})
 

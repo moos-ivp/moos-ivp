@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CollisionDetector_Info.cpp                           */
-/*    DATE: Dec 29th 1963                                        */
+/*    DATE: Dec 21st 2015                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -121,6 +121,8 @@ void showExampleConfigAndExit()
   blk("  pulse_duration = 10           // default is 10 seconds        ");  
   blk("                                                                ");
   blk("  report_all_encounters = true  // default is false             ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");  
 
 exit(0);

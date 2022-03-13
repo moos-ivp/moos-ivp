@@ -116,6 +116,8 @@ void showExampleConfigAndExit()
   blk("  condition = (CHECK1 = hello) or (CHECK2 < 10)                 ");
   blk("                                                                ");
   blk("  hold_messages = false                                         ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

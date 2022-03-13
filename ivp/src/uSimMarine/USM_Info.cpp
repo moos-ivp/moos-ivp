@@ -118,6 +118,8 @@ void showExampleConfigAndExit()
   blk("  thrust_map           = 0:0, 20:1, 40:2, 60:3, 80:5, 100:5     ");
   blk("                                                                ");
   blk("  prefix               = NAV_  ","// default is USM_            ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

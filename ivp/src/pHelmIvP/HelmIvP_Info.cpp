@@ -129,6 +129,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Name apps to wait on before posting onHelmStart messages.  ");
   blk("  hold_on_apps = pBasicContactMgr, pTaskManager                 ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

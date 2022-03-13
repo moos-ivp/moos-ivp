@@ -49,7 +49,7 @@ void showHelpAndExit()
 {
   blk("                                                           ");
   blu("========================================================== ");
-  blu("Usage: uFldCommsRegister file.moos [OPTIONS]               ");
+  blu("Usage: uFldScope file.moos [OPTIONS]                       ");
   blu("========================================================== ");
   blk("                                                           ");
   showSynopsis();

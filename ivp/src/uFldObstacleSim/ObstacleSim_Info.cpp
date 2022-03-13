@@ -103,6 +103,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  reuse_ids        = true     (default is true)                 ");
   blk("  sensor_range     = 50       (default is 50)                   ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

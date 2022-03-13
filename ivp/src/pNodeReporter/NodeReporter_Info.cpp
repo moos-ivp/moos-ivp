@@ -82,7 +82,6 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("pNodeReporter Example MOOS Configuration                        ");
   blu("=============================================================== ");
@@ -127,6 +126,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Declare the vehicle to be part of group tango.             ");
   blk("  group = tango                                                 ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

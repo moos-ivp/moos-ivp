@@ -122,6 +122,8 @@ void showExampleConfigAndExit()
   blk("  eval_range_far          = 20        // default in meters      ");
   blk("  eval_range_near         = 10        // default in meters      ");
   blk("  post_closest_range      = false     // default is false       ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

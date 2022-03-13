@@ -84,6 +84,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  hist_var  = TASK_BID                                          ");
   blk("  scope_set = name=events, vars=DEPLOY:RETURN:STATION           ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: CollisionDetector_Info.h                             */
-/*    DATE: Dec 29th 1963                                        */
+/*    DATE: Dec 21st 2015                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */

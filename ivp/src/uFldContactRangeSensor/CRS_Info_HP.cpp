@@ -122,6 +122,7 @@ void showExampleConfigAndExit()
   blk("  // sensor_arc = 315:45      // just for front                 ");
   blk("  // sensor_arc = 360         // default, sets full circle      ");
   blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

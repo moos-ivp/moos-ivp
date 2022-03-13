@@ -2,7 +2,7 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: LoadWatch_Info.h                                     */
-/*    DATE: Dec 29th 1963                                        */
+/*    DATE: Dec 24th, 2013                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,8 +21,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef LoadWatch_INFO_HEADER
-#define LoadWatch_INFO_HEADER
+#ifndef LOADWATCH_INFO_HEADER
+#define LOADWATCH_INFO_HEADER
 
 void showSynopsis();
 void showHelpAndExit();

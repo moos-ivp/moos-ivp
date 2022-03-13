@@ -102,6 +102,8 @@ void showExampleConfigAndExit()
   blk("  poly_label_thresh = 25     // Set label color=off if amt>25   ");
   blk("  poly_shade_thresh = 100    // Set shade color=off if amt>100  ");
   blk("  poly_vertex_thresh = 150   // Set vertex size=0 if amt>150    ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

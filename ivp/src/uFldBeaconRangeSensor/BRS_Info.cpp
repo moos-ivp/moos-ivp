@@ -121,6 +121,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Configuring Artificial Noise                               ");
   blk("  rn_algorithm  =  uniform,pct=0  "," // pct may be in [0,1]    ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

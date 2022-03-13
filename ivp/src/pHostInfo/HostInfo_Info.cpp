@@ -87,7 +87,6 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("pHostInfo Example MOOS Configuration                            ");
   blu("=============================================================== ");
@@ -102,6 +101,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  default_hostip_force = 192.168.0.55                           ");
   blk("  prefer_interface     = wlan0                                  ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   exit(0);
 }

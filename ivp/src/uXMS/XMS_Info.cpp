@@ -151,6 +151,8 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  refresh_mode = events     // default (or streaming/paused)    ");
   blk("  content_mode = scoping    // default (or history,procs)       ");
+  blk("                                                                ");
+  blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
