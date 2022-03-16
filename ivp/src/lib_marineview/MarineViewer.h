@@ -41,6 +41,7 @@
 #include "XYSegList.h"
 #include "XYSeglr.h"
 #include "XYCircle.h"
+#include "XYOval.h"
 #include "XYArrow.h"
 #include "XYHexagon.h"
 #include "XYRangePulse.h"
@@ -149,6 +150,9 @@ protected:
 
   void  drawCircles(const std::map<std::string, XYCircle>&, double timestamp=0);
   void  drawCircle(XYCircle, double timestamp=0);
+
+  void  drawOvals(const std::map<std::string, XYOval>&, double timestamp=0);
+  void  drawOval(XYOval, double timestamp=0);
 
   void  drawArrows(const std::map<std::string, XYArrow>&, double timestamp=0);
   void  drawArrow(XYArrow, double timestamp=0);

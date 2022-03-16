@@ -428,7 +428,7 @@ double MarineViewer::meters2img(char xy, double meters_val, bool verbose) const
 }
 
 // ----------------------------------------------------------
-// Procedure: img2meters
+// Procedure: img2meters()
 //      Note: Derived as from meters2img above
 
 double MarineViewer::img2meters(char xy, double img_val) const
@@ -449,7 +449,7 @@ double MarineViewer::img2meters(char xy, double img_val) const
 }
 
 // ----------------------------------------------------------
-// Procedure: draw
+// Procedure: draw()
 //   Purpose: This is the "root" drawing routine - it is typically
 //            invoked in the draw routines of subclasses. 
 
@@ -2565,6 +2565,148 @@ void MarineViewer::drawCircle(XYCircle circle, double timestamp)
 
       double vx = circle.getX();
       double vy = circle.get_max_y();
+
+      if(coordInView(vx,vy)) {
+	double px = vx * pix_per_mtr_x;
+	double py = vy * pix_per_mtr_y;
+	
+	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
+	gl_font(1, 10);
+	
+	double offset = 3.0 * (1/m_zoom);
+	glRasterPos3f(px+offset, py+offset, 0);
+	gl_draw_aux(plabel);
+      }
+    }
+  }
+
+  glFlush();
+  glPopMatrix();
+
+}
+
+//-------------------------------------------------------------
+// Procedure: drawOvals()
+
+void MarineViewer::drawOvals(const map<string, XYOval>& ovals, 
+			     double timestamp)
+{
+  // If the viewable parameter is set to false just return. In 
+  // querying the parameter the optional "true" argument means return
+  // true if nothing is known about the parameter.
+  if(!m_geo_settings.viewable("oval_viewable_all", true))
+    return;
+  
+  map<string, XYOval>::const_iterator p;
+  for(p=ovals.begin(); p!=ovals.end(); p++)
+    drawOval(p->second, timestamp); 
+  
+}
+
+//-------------------------------------------------------------
+// Procedure: drawOval()
+
+void MarineViewer::drawOval(XYOval oval, double timestamp)
+{
+  cout << "oval_spec:" << oval.get_spec() << endl;
+  if(oval.expired(timestamp) || !oval.active())
+    return;
+  cout << "Drawing oval:" << endl;
+  
+  ColorPack edge_c("blue");
+  ColorPack labl_c("white");
+  ColorPack fill_c("invisible");
+  double line_width = 1;
+  double transparency = 0.2;
+
+  if(oval.color_set("edge"))             // edge_color
+    edge_c = oval.get_color("edge");  
+  if(oval.color_set("label"))            // label_color
+    labl_c = oval.get_color("label");  
+  if(oval.color_set("fill"))             // fill_color
+    fill_c = oval.get_color("fill");
+  if(oval.transparency_set())            // transparency
+    transparency = oval.get_transparency();
+  if(oval.edge_size_set())               // edge_size
+    line_width = oval.get_edge_size();
+
+  // If neither edges or circle-fill are visible, just quit now!
+  if(!edge_c.visible() && !fill_c.visible())
+    return;
+
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+  
+  double tx = meters2img('x', 0);
+  double ty = meters2img('y', 0);
+  double qx = img2view('x', tx);
+  double qy = img2view('y', ty);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+  
+  glLineWidth(1.0);  
+  glTranslatef(qx, qy, 0);
+  glScalef(m_zoom, m_zoom, m_zoom);
+  
+  if(!oval.isSetPointCache()) {
+    oval.setBoundaryCache();
+    oval.setPointCache(15);
+  }
+
+  cout << "========================================" << endl;
+  oval.print();
+  
+  vector<double> draw_pts = oval.getPointCache();
+  double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
+  double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
+  for(unsigned int i=0; i<draw_pts.size(); i++) {
+    if((i%2)==0)
+      draw_pts[i] *= pix_per_mtr_x;
+    else
+      draw_pts[i] *= pix_per_mtr_y;
+  }
+  
+  if(edge_c.visible()) {
+    glLineWidth(line_width);
+    glColor3f(edge_c.red(), edge_c.grn(), edge_c.blu());
+    glBegin(GL_LINE_LOOP);
+    for(unsigned int i=0; i<draw_pts.size(); i=i+2) {
+      glVertex2f(draw_pts[i], draw_pts[i+1]);
+    }
+    glEnd();
+  }
+  
+  // If filled option is on, draw the interior of the circle
+  if(fill_c.visible()) {
+    glEnable(GL_BLEND);
+    glColor4f(fill_c.red(), fill_c.grn(), fill_c.blu(), transparency);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glBegin(GL_POLYGON);
+    for(unsigned int i=0; i<draw_pts.size(); i=i+2) {
+      glVertex2f(draw_pts[i], draw_pts[i+1]);
+    }
+    glEnd();
+    glDisable(GL_BLEND);
+  }
+
+  // Draw the labels unless either the viewer has it shut off OR if 
+  // the publisher of the point requested it not to be viewed, by
+  // setting the color to be "invisible".
+  bool draw_labels = m_geo_settings.viewable("circle_viewable_labels");
+  if(!edge_c.visible() && !fill_c.visible())
+    draw_labels = false;
+
+  if(draw_labels && labl_c.visible()) {
+    string plabel = oval.get_msg();
+    if(plabel == "")
+      plabel = oval.get_label();
+    if(plabel != "") {    
+
+      double vx = oval.getX();
+      double vy = oval.get_max_y();
 
       if(coordInView(vx,vy)) {
 	double px = vx * pix_per_mtr_x;
