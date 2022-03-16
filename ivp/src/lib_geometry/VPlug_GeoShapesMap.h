@@ -57,6 +57,7 @@ public:
   unsigned int sizeSegLists() const    {return(size("seglists"));}
   unsigned int sizeSeglrs() const      {return(size("seglrs"));}
   unsigned int sizeCircles() const     {return(size("circles"));}
+  unsigned int sizeOvals() const       {return(size("ovals"));}
   unsigned int sizeArrows() const      {return(size("arrows"));}
   unsigned int sizeHexagons() const    {return(size("hexagons"));}
   unsigned int sizePoints() const      {return(size("points"));}
@@ -75,6 +76,7 @@ public:
   std::vector<XYHexagon> getHexagons(const std::string&);
 
   const std::map<std::string, XYCircle>& getCircles(const std::string&);
+  const std::map<std::string, XYOval>&   getOvals(const std::string&);
   const std::map<std::string, XYArrow>&  getArrows(const std::string&);
   const std::map<std::string, XYMarker>& getMarkers(const std::string&);
   const std::map<std::string, XYPoint>&  getPoints(const std::string&);

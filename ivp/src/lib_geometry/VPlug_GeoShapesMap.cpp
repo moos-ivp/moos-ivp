@@ -102,6 +102,8 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
     handled = m_geoshapes_map[vname].addVector(value);
   else if(param == "VIEW_CIRCLE")
     handled = m_geoshapes_map[vname].addCircle(value, 18, timestamp);
+  else if(param == "VIEW_OVAL")
+    handled = m_geoshapes_map[vname].addOval(value, 5, timestamp);
   else if(param == "VIEW_ARROW")
     handled = m_geoshapes_map[vname].addArrow(value, timestamp);
   else if(param == "VIEW_RANGE_PULSE")
@@ -146,6 +148,7 @@ void VPlug_GeoShapesMap::manageMemory(double curr_time)
 // Procedure: getHexagons
 // Procedure: getGrids
 // Procedure: getCircles
+// Procedure: getOvals
 // Procedure: getArrows
 // Procedure: getPoints
 // Procedure: getVectors
@@ -184,6 +187,10 @@ vector<XYConvexGrid> VPlug_GeoShapesMap::getConvexGrids(const string& vname)
 const map<string, XYCircle>& VPlug_GeoShapesMap::getCircles(const string& vname)
 {
   return(m_geoshapes_map[vname].getCircles());
+}
+const map<string, XYOval>& VPlug_GeoShapesMap::getOvals(const string& vname)
+{
+  return(m_geoshapes_map[vname].getOvals());
 }
 const map<string, XYArrow>& VPlug_GeoShapesMap::getArrows(const string& vname)
 {
@@ -243,6 +250,8 @@ unsigned int VPlug_GeoShapesMap::size(const string& gtype,
 	return_size += p->second.sizeVectors();
       else if(gtype == "circles")
 	return_size += p->second.sizeCircles();
+      else if(gtype == "ovals")
+	return_size += p->second.sizeOvals();
       else if(gtype == "arrows")
 	return_size += p->second.sizeArrows();
       else if(gtype == "grids")

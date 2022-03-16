@@ -37,6 +37,7 @@ SET(SRC
   XYArrow.cpp
   XYArtifactGrid.cpp
   XYCircle.cpp
+  XYOval.cpp
   XYCommsPulse.cpp
   XYConvexGrid.cpp
   XYEncoders.cpp
@@ -98,6 +99,7 @@ SET(HEADERS
   XYArtifactGrid.h
   XYBuildUtils.h
   XYCircle.h
+  XYOval.h
   XYEncoders.h
   XYFormatUtilsCircle.h
   XYFormatUtilsWedge.h

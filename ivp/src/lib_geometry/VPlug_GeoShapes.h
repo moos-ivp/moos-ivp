@@ -35,6 +35,7 @@
 #include "XYGrid.h"
 #include "XYConvexGrid.h"
 #include "XYCircle.h"
+#include "XYOval.h"
 #include "XYArrow.h"
 #include "XYWedge.h"
 #include "XYArc.h"
@@ -66,6 +67,7 @@ public:
   void addSegList(const XYSegList&);
   void addSeglr(const XYSeglr&);
   void addCircle(const XYCircle&, unsigned int drawpts=18);
+  void addOval(const XYOval&, double draw_degs=5);
   void addArrow(const XYArrow&);
   void addWedge(const XYWedge&);
   void addHexagon(const XYHexagon&);
@@ -93,6 +95,7 @@ public:
   bool addSegList(const std::string&, double timestamp=0);
   bool addSeglr(const std::string&);
   bool addCircle(const std::string&, unsigned int drawpts=18, double t=0);
+  bool addOval(const std::string&, double draw_degs=5, double t=0);
   bool addArrow(const std::string&, double t=0);
   bool addWedge(const std::string&, unsigned int drawpts=18);
   bool addPoint(const std::string&, double timestamp=0);
@@ -111,6 +114,7 @@ public:
   unsigned int sizeSegLists() const    {return(m_seglists.size());}
   unsigned int sizeSeglrs() const      {return(m_seglrs.size());}
   unsigned int sizeCircles() const     {return(m_circles.size());}
+  unsigned int sizeOvals() const       {return(m_ovals.size());}
   unsigned int sizeArrows() const      {return(m_arrows.size());}
   unsigned int sizeWedges() const      {return(m_wedges.size());}
   unsigned int sizeHexagons() const    {return(m_hexagons.size());}
@@ -138,6 +142,7 @@ public:
 
   const std::map<std::string, XYPoint>&  getPoints() const  {return(m_points);}
   const std::map<std::string, XYCircle>& getCircles() const {return(m_circles);}
+  const std::map<std::string, XYOval>& getOvals() const     {return(m_ovals);}
   const std::map<std::string, XYArrow>& getArrows() const   {return(m_arrows);}
   const std::map<std::string, XYMarker>& getMarkers() const {return(m_markers);}
 
@@ -161,6 +166,7 @@ public:
   void clearHexagons(std::string stype="");
   void clearGrids(std::string  stype="");
   void clearCircles(std::string stype="");
+  void clearOvals(std::string stype="");
   void clearArrowss(std::string stype="");
   void clearPoints(std::string  stype="");
   void clearVectors(std::string stype="");
@@ -186,6 +192,7 @@ protected:
   std::map<std::string, XYPoint>  m_points;
   std::map<std::string, XYMarker> m_markers;
   std::map<std::string, XYCircle> m_circles;
+  std::map<std::string, XYOval>   m_ovals;
   std::map<std::string, XYArrow>  m_arrows;
 
   double  m_xmin;

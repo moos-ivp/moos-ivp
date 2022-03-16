@@ -65,6 +65,7 @@ void VPlug_GeoShapes::clear(string shape, string stype)
     m_hexagons.clear();
     m_grids.clear();
     m_circles.clear();
+    m_ovals.clear();
     m_arrows.clear();
     m_points.clear();
     m_vectors.clear();
@@ -83,6 +84,8 @@ void VPlug_GeoShapes::clear(string shape, string stype)
     clearPoints(stype);
   else if((shape == "seglists") || (shape == "seglist"))
     clearSegLists(stype);
+  else if((shape == "ovals") || (shape == "oval"))
+    clearOvals(stype);
   else if((shape == "seglrs") || (shape == "seglr"))
     clearSeglrs(stype);
 
@@ -119,6 +122,8 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
     }
     else if(value == "circles")
       m_circles.clear();
+    else if(value == "ovals")
+      m_ovals.clear();
     else if(value == "arrows")
       m_arrows.clear();
     else if(value == "points")
@@ -165,6 +170,15 @@ void VPlug_GeoShapes::manageMemory(double curr_time)
       p3 = m_circles.erase(p3);
     else
       ++p3;
+  }
+
+  //-------------------------------------------------- Ovals
+  map<string,XYOval>::iterator p3b;
+  for(p3b=m_ovals.begin(); p3b!=m_ovals.end();) {
+    if(p3b->second.expired(curr_time))
+      p3b = m_ovals.erase(p3b);
+    else
+      ++p3b;
   }
 
   //-------------------------------------------------- Arrows
@@ -509,7 +523,7 @@ unsigned int VPlug_GeoShapes::sizeTotalShapes() const
 	 sizeGrids()       + sizeConvexGrids() + 
 	 sizeMarkers()     + sizeRangePulses() + 
 	 sizeSeglrs()      + sizeArrows() + 
-	 sizeCommsPulses());
+	 sizeOvals()       + sizeCommsPulses());
 }
 
 //-----------------------------------------------------------
@@ -604,6 +618,29 @@ void VPlug_GeoShapes::addCircle(const XYCircle& new_circle,
   }
   m_circles.push_back(new_circle);
 #endif
+}
+
+
+//-----------------------------------------------------------
+// Procedure: addOval()
+
+void VPlug_GeoShapes::addOval(const XYOval& new_oval, 
+			      double draw_degs)
+{
+  string new_label = new_oval.get_label();
+  if(!new_oval.active()) {
+    m_ovals.erase(new_label);
+    return;
+  }
+
+  updateBounds(new_oval.get_min_x(), new_oval.get_max_x(), 
+	       new_oval.get_min_y(), new_oval.get_max_y());
+
+  if(new_label == "")
+    new_label = uintToString(m_ovals.size());
+  m_ovals[new_label] = new_oval;
+  m_ovals[new_label].setBoundaryCache();
+  m_ovals[new_label].setPointCache(draw_degs);
 }
 
 
@@ -881,19 +918,32 @@ bool VPlug_GeoShapes::addCircle(const string& circle_str,
 }
 
 //-----------------------------------------------------------
+// Procedure: addOval()
+
+bool VPlug_GeoShapes::addOval(const string& oval_str,
+			      double draw_degs, double timestamp)
+{
+  XYOval new_oval = stringToOval(oval_str);
+  if(!new_oval.valid())
+    return(false);
+
+  if(new_oval.get_time() == 0)
+    new_oval.set_time(timestamp);
+
+  addOval(new_oval, draw_degs);
+  return(true);
+}
+
+//-----------------------------------------------------------
 // Procedure: addArrow()
 
 bool VPlug_GeoShapes::addArrow(const string& arrow_str,
 			       double timestamp)
 {
-  cout << "VPlug_GeoShapes::addArrow()" << endl;
-  cout << "str: " << arrow_str << endl;
   XYArrow new_arrow = stringToArrow(arrow_str);
   if(!new_arrow.valid())
     return(false);
 
-  cout << "spec: " << new_arrow.get_spec() << endl;
-  
   if(new_arrow.get_time() == 0)
     new_arrow.set_time(timestamp);
 
@@ -1161,6 +1211,25 @@ void VPlug_GeoShapes::clearPoints(string stype)
       new_points[p->first] = p->second;
   }
   m_points = new_points;
+}
+
+//-----------------------------------------------------------
+// Procedure: clearOvals()
+
+void VPlug_GeoShapes::clearOvals(string stype)
+{
+  if(stype == "") {
+    m_ovals.clear();
+    return;
+  }
+
+  map<string, XYOval> new_ovals;
+  map<string, XYOval>::iterator p;
+  for(p=m_ovals.begin(); p!=m_ovals.end(); p++) {
+    if(typeMatch(&(p->second), stype))
+      new_ovals[p->first] = p->second;
+  }
+  m_ovals = new_ovals;
 }
 
 
