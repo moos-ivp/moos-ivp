@@ -335,6 +335,10 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
     string   sval  = msg.GetString();
     string   community = msg.GetCommunity();
 
+    bool     ok_community = m_filter_set.filterCheckVName(community);
+    if(!ok_community)
+      continue;
+    
     bool     handled = false;
     string   why_not;
 
@@ -764,6 +768,10 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       m_gui->size(800,600);
       handled = true;
     }
+    else if(param == "ignore_name") 
+      handled = m_filter_set.addIgnoreName(value);
+    else if(param == "match_name") 
+      handled = m_filter_set.addMatchName(value);    
     else if((param == "button_one") || (param == "button_1"))
       handled = m_gui->addButton("button_one", value);
     else if((param == "button_two") || (param == "button_2"))

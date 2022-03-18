@@ -35,6 +35,7 @@ TARGET_LINK_LIBRARIES(pMarineViewer
   realm
   apputil
   mbutil
+  bhvutil
   # Standard libraries used by this project's FLTK apps...
   fltk 
   fltk_gl 
