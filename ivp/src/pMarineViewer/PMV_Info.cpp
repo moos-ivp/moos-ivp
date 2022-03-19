@@ -173,6 +173,10 @@ void showExampleConfigAndExit()
   blk("         rows=north-south, degs=80                              ");
   blk("  left_context[survey-point] = SURVEY = true                    ");
   blk("                                                                ");
+  blk("  // Exclusion Filter ========================================= ");
+  blk("  ignore_name = abe                                             ");
+  blk("  match_name = ben,cal                                          ");
+  blk("                                                                ");
   blk("  // MOOS-Scope Pull-Down Menu ================================ ");
   blk("  scope = SURVEY_UPDATES                                        ");
   blk("  scope = TIME_AT_SURFACE                                       ");
