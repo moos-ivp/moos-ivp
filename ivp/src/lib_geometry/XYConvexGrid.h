@@ -116,8 +116,9 @@ protected:
   XYSquare              m_bounding_square;
   
   // Outer IX: per grid element. Inner IX: per cellvar
-  std::vector<std::vector<double> >  m_cell_vals;
-
+  std::vector<std::vector<double> >     m_cell_vals;
+  //std::vector<std::vector<unsigned int> m_cell_vals_cnt;
+  
   // Index is per cell variable
   std::vector<double>                m_cell_max_sofar;
   std::vector<double>                m_cell_min_sofar;

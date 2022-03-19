@@ -27,6 +27,7 @@
 #include <cmath>
 #include <cstdlib>
 #include "XYConvexGrid.h"
+#include "XYGridUpdate.h"
 #include "MBUtils.h"
 #include "XYFormatUtilsPoly.h"
 
@@ -199,8 +200,13 @@ XYSquare XYConvexGrid::getElement(unsigned int ix) const
 
 bool XYConvexGrid::hasCellVar(const string& cell_var) const
 {
-  unsigned int i, vsize = m_cell_vars.size();
-  for(i=0; i<vsize; i++) {
+  unsigned int vsize = m_cell_vars.size();
+
+  // An empty-string cell_var is OK if there is only one cell_var
+  if((cell_var == "") && (vsize == 1))
+    return(true);
+  
+  for(unsigned int i=0; i<vsize; i++) {
     if(m_cell_vars[i] == cell_var)
       return(true);
   }
@@ -213,8 +219,13 @@ bool XYConvexGrid::hasCellVar(const string& cell_var) const
 
 unsigned int XYConvexGrid::getCellVarIX(const string& cell_var) const
 {
-  unsigned int i, vsize = m_cell_vars.size();
-  for(i=0; i<vsize; i++) {
+  unsigned int vsize = m_cell_vars.size();
+  
+  // An empty-string cell_var is OK if there is only one cell_var  
+  if((cell_var == "") && (vsize == 1))
+    return(0);
+  
+  for(unsigned int i=0; i<vsize; i++) {
     if(m_cell_vars[i] == cell_var)
       return(i);
   }
@@ -614,44 +625,44 @@ string XYConvexGrid::getConfigStr() const
 // Procedure: processDelta()
 //   Example: label@ix,delta:ix,delta : ... :ix,delta
 
+//   label@cell=ix:var:val:var:val:var:val, or
+//   wind@cell=23:force_angle:180:magnitude:2.3
+
 
 bool XYConvexGrid::processDelta(string str)
 {
-  string label = biteStringX(str, '@');
-
-  // Sanity check proper string
-  if((label == "") || (str == ""))
+  XYGridUpdate update = stringToGridUpdate(str);
+  if(!update.valid())
     return(false);
 
-  // Check if this update was simply meant for some other grid
-  if(label != m_label) 
-    return(true);
-
-  // Assume this update is for cell index zero
-  unsigned int cix = 0;
+  if(update.getGridName() != m_label)
+    return(false);
   
-  vector<string> svector = parseString(str, ':');
-
-  for(unsigned int i=0; i<svector.size(); i++) {
-    string str_gix   = biteStringX(svector[i], ',');
-    string str_delta = svector[i];
-    int    int_gix   = atoi(str_gix.c_str());
-    double delta = atof(str_delta.c_str());
-
-    if(int_gix < 0)
-      continue;
-
-    unsigned int uint_gix = (unsigned int)(int_gix);
-	
-    if(uint_gix >= m_cell_vals.size())
-      continue;
-    
-    m_cell_vals[uint_gix][cix] += delta; 
-    
+  // Make a first pass over all updates. Reject them all (return false
+  // before applying) if even one of them is invalid.
+  for(unsigned int i=0; i<update.size(); i++) {
+    unsigned int grid_ix = update.getCellIX(i);
+    string cell_var      = update.getCellVar(i);
+    if(grid_ix >= m_cell_vals.size())
+      return(false);
+    if(!hasCellVar(cell_var))
+      return(false);
   }
+
+  for(unsigned int i=0; i<update.size(); i++) {
+    unsigned int grid_ix = update.getCellIX(i);
+    string cell_var      = update.getCellVar(i);
+    double cell_val      = update.getCellVal(i);
+    unsigned int cix     = getCellVarIX(cell_var);
+
+    if(update.isUpdateTypeDelta())
+      m_cell_vals[grid_ix][cix] += cell_val; 
+    else if(update.isUpdateTypeReplace())
+      m_cell_vals[grid_ix][cix] = cell_val; 
+  }
+  
   return(true);
 }
-
 
 //-------------------------------------------------------------
 // Procedure: setEdgeCache()

@@ -40,6 +40,7 @@ SET(SRC
   XYOval.cpp
   XYCommsPulse.cpp
   XYConvexGrid.cpp
+  XYGridUpdate.cpp
   XYEncoders.cpp
   XYFieldGenerator.cpp
   XYFormatUtilsCircle.cpp

@@ -60,7 +60,3 @@ protected: // State vars
 };
 
 #endif 
-
-
-
-

@@ -842,6 +842,10 @@ void PMV_GUI::clearGeoShapes(string vname, string shape, string stype)
 //----------------------------------------- UpdateXY
 void PMV_GUI::updateXY() 
 {
+  if(m_icast_settings.getFullScreen())
+    return;
+
+  
   double dwarp = GetMOOSTimeWarp();
   string time_str = doubleToString(m_curr_time, 1);
 

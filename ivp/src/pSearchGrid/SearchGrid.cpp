@@ -27,6 +27,7 @@
 #include "NodeRecord.h"
 #include "NodeRecordUtils.h"
 #include "XYFormatUtilsConvexGrid.h"
+#include "XYGridUpdate.h"
 #include "ACTable.h"
 
 using namespace std;
@@ -196,16 +197,15 @@ void SearchGrid::postGridUpdates()
   if(m_map_deltas.size() == 0)
     return;
   
-  string msg = m_grid_label + "@";
+  XYGridUpdate update(m_grid_label);
   
   map<unsigned int, double >::iterator p;
   for(p=m_map_deltas.begin(); p!=m_map_deltas.end(); p++) {
     unsigned int ix = p->first;
     double delta = p->second;
-    if(msg != "")
-      msg += ":";
-    msg += uintToString(ix) + "," + doubleToStringX(delta);
+    update.addUpdate(ix, "x", delta);
   }
+  string msg = update.get_spec();
 
   m_map_deltas.clear();
   
