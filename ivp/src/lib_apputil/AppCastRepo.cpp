@@ -32,11 +32,13 @@ using namespace std;
 //---------------------------------------------------------
 // Constructor
 
-AppCastRepo::AppCastRepo()
+AppCastRepo::AppCastRepo(bool strip_color)
 {
   m_current_node = "";
   m_current_proc = "";
   m_refresh_mode = "events";
+
+  m_strip_color = strip_color;
 }
 
 //---------------------------------------------------------
@@ -45,7 +47,15 @@ AppCastRepo::AppCastRepo()
 
 bool AppCastRepo::addAppCast(const string& appcast_str)
 {
-  AppCast appcast = string2AppCast(appcast_str);
+  string str = appcast_str;
+
+  if(m_strip_color) {
+    str = findReplace(appcast_str, "\33[7;32m", "");
+    str = findReplace(str, "\33[7;31m", "");
+    str = findReplace(str, "\33[0m", "");
+  }
+
+  AppCast appcast = string2AppCast(str);
   return(addAppCast(appcast));
 }
 

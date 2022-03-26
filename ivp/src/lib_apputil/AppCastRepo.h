@@ -31,7 +31,7 @@
 class AppCastRepo
 {
  public:
-  AppCastRepo();
+  AppCastRepo(bool strip_color=false);
   ~AppCastRepo() {}
   
   // Return true if first time heard from this node
@@ -67,6 +67,8 @@ class AppCastRepo
   std::string  m_refresh_mode; // paused,events,streaming
 
   std::map<std::string, std::string> m_map_node_proc;
+
+  bool m_strip_color;
 };
 
 #endif 

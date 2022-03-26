@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
   cout << "pMarineViewer launching as " << run_command << endl;
   cout << termColor() << endl;
 
-  AppCastRepo appcast_repo;
+  AppCastRepo appcast_repo(true);
   RealmRepo   realm_repo;
 
   int gui_wid = 0.85 * Fl::w();
