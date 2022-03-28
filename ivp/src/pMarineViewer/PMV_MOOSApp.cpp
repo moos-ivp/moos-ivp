@@ -243,6 +243,7 @@ void PMV_MOOSApp::registerVariables()
   Register("GRID_DELTA",   0);
   Register("VIEW_GRID_DELTA", 0);
   Register("VIEW_GRID", 0);
+  Register("VIEW_OVAL", 0);
   Register("VIEW_RANGE_PULSE", 0);
   Register("PMV_MENU_CONTEXT", 0);
   Register("PMV_CLEAR", 0);

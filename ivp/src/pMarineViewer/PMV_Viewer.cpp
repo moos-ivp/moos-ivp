@@ -123,6 +123,7 @@ void PMV_Viewer::draw()
     vector<XYCommsPulse> cms_pulses = m_geoshapes_map.getCommsPulses(vnames[i]);
     const map<string, XYPoint>&  points  = m_geoshapes_map.getPoints(vnames[i]);
     const map<string, XYCircle>& circles = m_geoshapes_map.getCircles(vnames[i]);
+    const map<string, XYOval>& ovals = m_geoshapes_map.getOvals(vnames[i]);
     const map<string, XYArrow>&  arrows = m_geoshapes_map.getArrows(vnames[i]);
     const map<string, XYMarker>& markers = m_geoshapes_map.getMarkers(vnames[i]);
 
@@ -132,6 +133,7 @@ void PMV_Viewer::draw()
     drawSegLists(segls);
     drawSeglrs(seglrs);
     drawCircles(circles, m_curr_time);
+    drawOvals(ovals, m_curr_time);
     drawArrows(arrows, m_curr_time);
     drawPoints(points);
     drawVectors(vectors);
