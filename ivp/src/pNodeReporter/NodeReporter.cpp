@@ -85,7 +85,7 @@ NodeReporter::NodeReporter()
   m_node_report_var = "NODE_REPORT_LOCAL";
   m_plat_report_var = "PLATFORM_REPORT_LOCAL";
 
-  m_nav_grace_period = 25; // seconds, -1 means no grace period
+  m_nav_grace_period = 60; // seconds, -1 means no grace period
   m_nav_warning_posted = false;
 }
 
