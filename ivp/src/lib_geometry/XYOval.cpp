@@ -162,8 +162,6 @@ void XYOval::setPointCache(double gdegs)
   double rng_low = -90;
   double rng_hgh = +90;
 
-  cout << "*** rng_low: " << rng_low << ", rng_hgh: " << rng_hgh << endl;
-  
   for(double deg=rng_low; deg<=rng_hgh; deg+=degs) {
     double new_x, new_y;
     projectPoint(m_ang + deg, m_rad, m_cx1, m_cy1, new_x, new_y);
@@ -347,9 +345,9 @@ XYOval stringToOval(string str)
     else if((param == "rad") && (dval > 0))
       oval.setRadius(dval);
     else if((param == "len") && (dval > 0))
-      oval.setAngle(dval);
-    else if(param == "ang")
       oval.setLength(dval);
+    else if(param == "ang")
+      oval.setAngle(dval);
     else if(param == "draw_degs")
       oval.setDrawDegs(dval);
     else
@@ -358,7 +356,7 @@ XYOval stringToOval(string str)
 
   if(!oval.valid())
     return(null_oval);
-    
+
   return(oval);
 }
 
