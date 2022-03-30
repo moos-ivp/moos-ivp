@@ -27,6 +27,7 @@
 
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "XYConvexGrid.h"
+#include "ExFilterSet.h"
 
 class SearchGrid : public AppCastingMOOSApp
 {
@@ -50,7 +51,10 @@ class SearchGrid : public AppCastingMOOSApp
 protected: // Config vars
   bool        m_report_deltas;
   std::string m_grid_label;
-  
+  std::string m_grid_var_name;
+
+  ExFilterSet m_filter_set;
+
 protected: // State vars
   
   XYConvexGrid m_grid;

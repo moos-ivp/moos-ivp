@@ -13,6 +13,7 @@ ADD_EXECUTABLE(pSearchGrid ${SRC})
 
 TARGET_LINK_LIBRARIES(pSearchGrid
    ${MOOS_LIBRARIES}
+   bhvutil
    geometry
    mbutil
    apputil

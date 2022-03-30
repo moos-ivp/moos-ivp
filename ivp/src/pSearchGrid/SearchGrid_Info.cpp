@@ -88,13 +88,19 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  GRID_CONFIG = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150} ");
-  blk("  GRID_CONFIG = cell_size=5                                     ");
-  blk("  GRID_CONFIG = cell_vars=x:0:y:0:z:0                           ");
-  blk("  GRID_CONFIG = cell_min=x:0                                    ");
-  blk("  GRID_CONFIG = cell_max=x:10                                   ");
-  blk("  GRID_CONFIG = cell_min=y:0                                    ");
-  blk("  GRID_CONFIG = cell_max=y:1000                                 ");
+  blk("  report_deltas = true         // default                       ");
+  blk("  grid_var_name = VIEW_GRID    // default                       ");
+  blk("  grid_label    = psg          // default                       ");
+  blk("  match_name    = abe                                           ");
+  blk("  ignore_name   = ben                                           ");
+  blk("                                                                ");
+  blk("  grid_config = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150} ");
+  blk("  grid_config = cell_size=5                                     ");
+  blk("  grid_config = cell_vars=x:0:y:0:z:0                           ");
+  blk("  grid_config = cell_min=x:0                                    ");
+  blk("  grid_config = cell_max=x:10                                   ");
+  blk("  grid_config = cell_min=y:0                                    ");
+  blk("  grid_config = cell_max=y:1000                                 ");
   blk("}                                                               ");
   exit(0);
 }

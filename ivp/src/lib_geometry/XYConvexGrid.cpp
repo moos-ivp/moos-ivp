@@ -559,10 +559,12 @@ string XYConvexGrid::get_spec() const
     for(cix=0; cix<csize; cix++) {
       if(m_cell_vals[ix][cix] != m_cell_init_vals[cix]) {
 	double dval = m_cell_vals[ix][cix];
-	cell_spec += m_cell_vars[cix] + ":" + doubleToStringX(dval);	
+	//cell_spec += m_cell_vars[cix] + ":" + doubleToStringX(dval);	
+	cell_spec += ":" + m_cell_vars[cix] + ":" + doubleToStringX(dval);
       }
     }
     if(cell_spec != "") {
+      //cell_spec = ",cell=" + uintToString(ix) + cell_spec;
       cell_spec = ",cell=" + uintToString(ix) + ":" + cell_spec;
       spec += cell_spec;
     }

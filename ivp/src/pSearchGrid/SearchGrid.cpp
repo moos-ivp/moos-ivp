@@ -38,7 +38,8 @@ using namespace std;
 SearchGrid::SearchGrid()
 {
   m_report_deltas = true;
-  m_grid_label = "psg";
+  m_grid_label    = "psg";
+  m_grid_var_name = "VIEW_GRID";
 }
 
 //---------------------------------------------------------
@@ -59,6 +60,11 @@ bool SearchGrid::OnNewMail(MOOSMSG_LIST &NewMail)
     //bool   mdbl  = msg.IsDouble();
     //bool   mstr  = msg.IsString();
     //string msrc  = msg.GetSource();
+    string community = msg.GetCommunity();
+
+    bool ok_community = m_filter_set.filterCheckVName(community);
+    if(!ok_community)
+      continue;
 
     if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL"))
       handleMailNodeReport(sval);
@@ -127,8 +133,14 @@ bool SearchGrid::OnStartUp()
       }	
       else if(param == "report_deltas") 
 	handled = setBooleanOnString(m_report_deltas, value);
+      else if(param == "ignore_name") 
+	handled = m_filter_set.addIgnoreName(value);
+      else if(param == "match_name") 
+	handled = m_filter_set.addMatchName(value); 
       else if(param == "grid_label") 
 	handled = setNonWhiteVarOnString(m_grid_label, value);
+      else if(param == "grid_var_name")
+	handled = setNonWhiteVarOnString(m_grid_var_name, toupper(value));
       
       if(!handled)
 	reportUnhandledConfigWarning(orig);
@@ -186,7 +198,9 @@ void SearchGrid::handleMailNodeReport(string str)
 void SearchGrid::postGrid()
 {
   string spec = m_grid.get_spec();
-  Notify("VIEW_GRID", spec);
+
+  // By default m_grid_var_name="VIEW_GRID"
+  Notify(m_grid_var_name, spec);   
 }
 
 //------------------------------------------------------------
@@ -209,7 +223,8 @@ void SearchGrid::postGridUpdates()
 
   m_map_deltas.clear();
   
-  Notify("VIEW_GRID_DELTA", msg);
+  // By default m_grid_var_name="VIEW_GRID"
+  Notify(m_grid_var_name+"_DELTA", msg);
 }
 
 //------------------------------------------------------------
