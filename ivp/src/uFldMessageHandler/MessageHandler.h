@@ -27,6 +27,7 @@
 #include <string>
 #include <map>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
+#include "VarDataPair.h"
 
 class MessageHandler : public AppCastingMOOSApp
 {
@@ -47,12 +48,16 @@ class MessageHandler : public AppCastingMOOSApp
   void registerVariables();
   bool handleMailNodeMessage(const std::string&);
   void postMsgSummary();
-
+  void postFlags(const std::vector<VarDataPair>& flags);
+  
  protected: // Config vars
   bool         m_strict_addressing;
   unsigned int m_appcast_trunc_msg;
 
   std::string  m_aux_info; 
+
+  std::vector<VarDataPair> m_msg_flags;
+  std::vector<VarDataPair> m_bad_msg_flags;
   
  protected: // State vars
   unsigned int m_reports;
@@ -80,11 +85,3 @@ class MessageHandler : public AppCastingMOOSApp
 };
 
 #endif 
-
-
-
-
-
-
-
-

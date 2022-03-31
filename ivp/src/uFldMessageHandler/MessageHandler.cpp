@@ -25,7 +25,9 @@
 #include "MessageHandler.h"
 #include "MBUtils.h"
 #include "NodeMessage.h"
+#include "MacroUtils.h"
 #include "NodeMessageUtils.h"
+#include "VarDataPairUtils.h"
 #include "ACTable.h"
 
 using namespace std;
@@ -136,6 +138,10 @@ bool MessageHandler::OnStartUp()
       m_appcast_trunc_msg = (unsigned int)(ival);
       handled = true;
     }
+    else if(param == "msg_flag") 
+      handled = addVarDataPairOnString(m_msg_flags, value);
+    else if(param == "bad_msg_flag") 
+      handled = addVarDataPairOnString(m_bad_msg_flags, value);
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -226,6 +232,7 @@ bool MessageHandler::handleMailNodeMessage(const string& msg)
     m_last_rejected_msgs.push_back(msg);
     if(m_last_rejected_msgs.size() > 5) 
       m_last_rejected_msgs.pop_front();
+    postFlags(m_bad_msg_flags);
     return(false);
   }
 
@@ -238,7 +245,35 @@ bool MessageHandler::handleMailNodeMessage(const string& msg)
   else
     Notify(var_name, var_dval, src_node);
 
+  postFlags(m_msg_flags);
   return(true);
+}
+
+
+//------------------------------------------------------------
+// Procedure: postFlags()
+
+void MessageHandler::postFlags(const vector<VarDataPair>& flags)
+{
+  for(unsigned int i=0; i<flags.size(); i++) {
+    VarDataPair pair = flags[i];
+    string moosvar = pair.get_var();
+
+    // If posting is a double, just post. No macro expansion
+    if(!pair.is_string()) {
+      double dval = pair.get_ddata();
+      Notify(moosvar, dval);
+    }
+    // Otherwise if string posting, handle macro expansion
+    else {
+      string sval = pair.get_sdata();
+      sval = macroExpand(sval, "CTR", m_total_messages_rcvd);
+      sval = macroExpand(sval, "GOOD_CTR", m_valid_messages_rcvd);
+      sval = macroExpand(sval, "BAD_CTR", m_rejected_messages_rcvd);
+      
+      Notify(moosvar, sval);
+    }
+  }
 }
 
 
@@ -365,11 +400,3 @@ bool MessageHandler::buildReport()
   
   return(true);
 }
-
-
-
-
-
-
-
-
