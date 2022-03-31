@@ -86,8 +86,14 @@ void showExampleConfigAndExit()
   blk("  scope_set = name=events, vars=DEPLOY:RETURN:STATION           ");
   blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
-  blk("}                                                               ");
   blk("                                                                ");
+  blk("  // Note: To utilize the watchcast feature of pRealm,          ");
+  blk("  // configure a client like pMarineViewer, to set up a watch   ");
+  blk("  // cluster. For example, in pMarineViewer:                    ");
+  blk("                                                                ");
+  blk("  //     watch_cluster key=mission_top, vars=DEPLOY:RETURN:COVER");
+  blk("                                                                ");
+  blk("}                                                               ");
   exit(0);
 }
 
