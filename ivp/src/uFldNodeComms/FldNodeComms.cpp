@@ -105,15 +105,16 @@ bool FldNodeComms::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     string key    = msg.GetKey();
     string sval   = msg.GetString(); 
+    string msrc   = msg.GetSource(); 
     double dval   = msg.GetDouble(); 
-
+    
     bool   handled = false;
     string whynot;
 
     if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL")) 
       handled = handleMailNodeReport(sval, whynot);
     else if((key == "NODE_MESSAGE") || (key == "MEDIATED_MESSAGE"))
-      handled = handleMailNodeMessage(sval);
+      handled = handleMailNodeMessage(sval, msrc);
     else if(key == "ACK_MESSAGE") 
       handled = handleMailAckMessage(sval);
     else if(key == "UNC_SHARED_NODE_REPORTS") 
@@ -383,10 +384,11 @@ bool FldNodeComms::handleMailNodeReport(const string& str, string& whynot)
 //   Example: NODE_MESSAGE = src_node=henry,dest_node=ike,
 //                           var_name=FOO, string_val=bar   
 
-bool FldNodeComms::handleMailNodeMessage(const string& msg)
+bool FldNodeComms::handleMailNodeMessage(const string& msg,
+					 const string& msg_src)
 {
   NodeMessage new_message = string2NodeMessage(msg);
-
+  
   // Part 1: List of "last" messages store solely for user
   // debug viewing at the console window.
   m_last_messages.push_back(msg);
@@ -397,6 +399,12 @@ bool FldNodeComms::handleMailNodeMessage(const string& msg)
   if(!new_message.valid())
     return(false);
 
+  // Part 3: If the source app is not named in the message,
+  // then add it here. Added Mar 30, 2022.
+  if(new_message.getSourceApp() == "")
+    new_message.setSourceApp(msg_src);
+
+  // Part 4: 
   string upp_src_node = toupper(new_message.getSourceNode());
 
   m_map_message[upp_src_node].push_back(new_message);
@@ -1318,7 +1326,4 @@ bool FldNodeComms::buildReport()
 
   return(true);
 }
-
-
-
 
