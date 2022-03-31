@@ -1016,16 +1016,21 @@ void REPLAY_GUI::setVarHistMenus()
   for(unsigned int mix=0; mix<mix_count; mix++) {
     string vname   = m_dbroker.getVNameFromMix(mix);
     string varname = m_dbroker.getVarNameFromMix(mix);
-      
+    string vartype = m_dbroker.getVarTypeFromMix(mix);
+    
     // Use special unsigned int type having same size a pointer (void*)
     uintptr_t ix = mix;
       
     string label = "VarHist/" + varname;
     if(vname != "") 
       label = "VarHist/" + vname + "/" + varname;
-    
+
     m_menubar->add(label.c_str(), 0, 
 		   (Fl_Callback*)REPLAY_GUI::cb_VarHist,  (void*)ix);
+
+    if(vartype == "string")
+      setMenuItemColor(label);
+    
     m_menubar->redraw();
   }
 }
