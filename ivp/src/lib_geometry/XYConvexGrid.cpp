@@ -564,8 +564,7 @@ string XYConvexGrid::get_spec() const
       }
     }
     if(cell_spec != "") {
-      //cell_spec = ",cell=" + uintToString(ix) + cell_spec;
-      cell_spec = ",cell=" + uintToString(ix) + ":" + cell_spec;
+      cell_spec = ",cell=" + uintToString(ix) + cell_spec;
       spec += cell_spec;
     }
   }

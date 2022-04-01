@@ -286,6 +286,40 @@ XYPolygon XYOval::getRectPoly()
 }
 
 //-------------------------------------------------------------
+// Procedure: getOvalPoly()
+
+XYPolygon XYOval::getOvalPoly(double degs)
+{
+  setBoundaryCache();
+  setPointCache(degs);
+  
+  XYPolygon null_poly;
+  unsigned int pt_size = m_pt_cache.size();
+  if((pt_size % 2) != 0)
+    return(null_poly);
+
+  XYPolygon oval_poly;
+
+  vector<double> ptx;
+  vector<double> pty;
+  
+  for(unsigned int i=0; i<m_pt_cache.size(); i++) {
+    if((i%2) == 0)
+      ptx.push_back(m_pt_cache[i]);
+    else
+      pty.push_back(m_pt_cache[i]);
+  }	    
+  if(ptx.size() != pty.size())
+    return(null_poly);
+
+  for(unsigned int i=0; i<ptx.size(); i++) {
+    oval_poly.add_vertex(ptx[i], pty[i]);
+  }
+
+  return(oval_poly);
+}
+
+//-------------------------------------------------------------
 // Procedure: valid()
 
 bool XYOval::valid() const

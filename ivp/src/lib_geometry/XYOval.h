@@ -65,6 +65,7 @@ public:
   XYPoint getEndPt1();
   XYPoint getEndPt2();
   XYPolygon getRectPoly();
+  XYPolygon getOvalPoly(double degs=5);
   
   double get_min_x() const    {return(m_xmin);}
   double get_max_x() const    {return(m_xmax);}
