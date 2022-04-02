@@ -56,6 +56,7 @@ public:
 
 public:
   bool   contains(double, double) const;
+  bool   contains(const XYPoint&) const;
   bool   contains(const XYPolygon&) const;
   bool   intersects(const XYPolygon&) const;
   bool   intersects(const XYSquare&) const;
@@ -76,8 +77,9 @@ public:
   double perim() const;
   bool   simplify(double range_thresh);
   
-  double max_radius() const;
-  bool   closest_point_on_poly(double sx, double sy, double& rx, double& ry) const;
+  double  max_radius() const;
+  bool    closest_point_on_poly(double sx, double sy, double& rx, double& ry) const;
+  XYPoint closest_point_on_poly(XYPoint spt) const;
 
   bool   setRadial(double x, double y, double rad, unsigned int pts,
 		   double snap=-1);

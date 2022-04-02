@@ -378,7 +378,7 @@ void XYPolygon::reverse()
 }
 
 //---------------------------------------------------------------
-// Procedure: rotate
+// Procedure: rotate()
 //      Note: A call to "determine_convexity()" is made since this
 //            operation needs to have m_side_xy[i] reset for each i.
 
@@ -391,7 +391,7 @@ void XYPolygon::rotate(double val)
 
 
 //---------------------------------------------------------------
-// Procedure: rotate
+// Procedure: rotate()
 //      Note: A call to "determine_convexity()" is made since this
 //            operation needs to have m_side_xy[i] reset for each i.
 
@@ -404,7 +404,15 @@ void XYPolygon::rotate(double val, double cx, double cy)
 
 
 //---------------------------------------------------------------
-// Procedure: contains
+// Procedure: contains()
+
+bool XYPolygon::contains(const XYPoint& pt) const
+{
+  return(contains(pt.x(), pt.y()));
+}
+
+//---------------------------------------------------------------
+// Procedure: contains()
 
 bool XYPolygon::contains(double x, double y) const
 {
@@ -1223,6 +1231,23 @@ double XYPolygon::max_radius() const
       max_dist_so_far = dist;
   }
   return(max_dist_so_far);
+}
+
+//---------------------------------------------------------------
+// Procedure: closest_point_on_poly()
+//   Purpose: Determine the point on the polygon (on an edge or 
+//            vertex) closest to the given point.
+//   Returns: given point if polygon is not convex
+
+XYPoint XYPolygon::closest_point_on_poly(XYPoint spt) const
+{
+  double rx, ry;
+  bool ok = closest_point_on_poly(spt.x(), spt.y(), rx, ry);
+  if(!ok)
+    return(spt);
+
+  XYPoint rpt(rx, ry);
+  return(rpt);
 }
 
 //---------------------------------------------------------------

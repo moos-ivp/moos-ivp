@@ -1065,6 +1065,16 @@ XYPoint projectPoint(double degval, double dist, double cx, double cy)
 }
 
 //---------------------------------------------------------------
+// Procedure: projectPoint
+//   Purpose: Same as the other projectPoint function except this 
+//            function returns an XYPoint object.
+
+XYPoint projectPoint(double degval, double dist, XYPoint pt)
+{
+  return(projectPoint(degval, dist, pt.x(), pt.y()));
+}
+
+//---------------------------------------------------------------
 // Procedure: midPoint()
 
 XYPoint midPoint(const XYPoint& pt1, const XYPoint& pt2)
