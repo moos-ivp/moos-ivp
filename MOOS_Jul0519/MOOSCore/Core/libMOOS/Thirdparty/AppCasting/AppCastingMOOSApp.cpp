@@ -530,6 +530,9 @@ void AppCastingMOOSApp::reportEvent(const string& str)
 
 void AppCastingMOOSApp::reportConfigWarning(const string& str)
 {
+  if(str == "")
+    return;
+  
   m_new_cfg_warning = true;
   m_ac.cfgWarning(str);
 }
@@ -539,6 +542,9 @@ void AppCastingMOOSApp::reportConfigWarning(const string& str)
 
 void AppCastingMOOSApp::reportUnhandledConfigWarning(const string& orig)
 {
+  if(orig == "")
+    return;
+  
   string orig_copy = orig;
   string param = MOOSToUpper(MOOSChomp(orig_copy, "="));
   MOOSTrimWhiteSpace(param);
@@ -555,6 +561,8 @@ void AppCastingMOOSApp::reportUnhandledConfigWarning(const string& orig)
 
 bool AppCastingMOOSApp::reportRunWarning(const string& str)
 {
+  if(str == "")
+    return(false);
   m_new_run_warning = true;
   m_ac.runWarning(str);
   return(false);
