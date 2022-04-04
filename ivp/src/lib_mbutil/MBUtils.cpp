@@ -833,11 +833,14 @@ string intToString(int val)
   return(str);
 }
 
-string uintToString(unsigned int val)
+string uintToString(unsigned int val, unsigned int padlen)
 {
   char buff[500];
   sprintf(buff, "%u", val);
   string str = buff;
+  while(str.size() < padlen)
+    str = "0" + str;
+  
   return(str);
 }
 
@@ -2783,5 +2786,4 @@ string intToMonth(int imonth, bool brief)
 
   return(month);
 }
-
 

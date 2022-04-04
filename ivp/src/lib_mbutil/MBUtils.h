@@ -81,7 +81,7 @@ std::string toupper(const std::string&);
 std::string truncString(const std::string&, unsigned int newlen, 
 			std::string="");
 std::string boolToString(bool);
-std::string uintToString(unsigned int);
+std::string uintToString(unsigned int, unsigned int padlen=0);
 std::string ulintToString(unsigned long int);
 std::string intToString(int);
 std::string intToCommaString(int);
