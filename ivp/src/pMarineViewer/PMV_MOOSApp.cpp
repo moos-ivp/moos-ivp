@@ -26,19 +26,15 @@
 #include "PMV_MOOSApp.h"
 #include "MBUtils.h"
 #include "MacroUtils.h"
+#include "VarDataPairUtils.h"
 #include "NodeRecordUtils.h"
 #include "RealmSummary.h"
-
-
-
 #include "XYFormatUtilsPoly.h"
-
-
 
 using namespace std;
 
 //----------------------------------------------------------------
-// Constructor
+// Constructor()
 
 PMV_MOOSApp::PMV_MOOSApp() 
 {
@@ -70,6 +66,8 @@ PMV_MOOSApp::PMV_MOOSApp()
   
   m_pmv_iteration = 0;
 
+  m_last_beat_time = 0;
+  
   m_log_the_image = false;
 }
 
@@ -83,7 +81,7 @@ void PMV_MOOSApp::setPendingEventsPipe(Threadsafe_pipe<MOOS_event>
 }
 
 //----------------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool PMV_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -121,7 +119,7 @@ bool PMV_MOOSApp::OnConnectToServer()
 }
 
 //-------------------------------------------------------------
-// Procedure: Iterate
+// Procedure: Iterate()
 //      Note: virtual overide of base class CMOOSApp member.
 
 bool PMV_MOOSApp::Iterate()
@@ -147,8 +145,7 @@ bool PMV_MOOSApp::Iterate()
 }
 
 //-------------------------------------------------------------
-// Procedure: postConnectionPairs
-//      Note: 
+// Procedure: postConnectionPairs()
 
 void PMV_MOOSApp::postConnectionPairs()
 {
@@ -217,7 +214,7 @@ bool PMV_MOOSApp::OnStartUp()
 
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void PMV_MOOSApp::registerVariables()
 {
@@ -260,7 +257,7 @@ void PMV_MOOSApp::registerVariables()
 }
 
 //----------------------------------------------------------------------
-// Procedure: handlePendingGUI
+// Procedure: handlePendingGUI()
 
 void PMV_MOOSApp::handlePendingGUI()
 {
@@ -504,7 +501,7 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
 }
 
 //----------------------------------------------------------------------
-// Procedure: handleIterate
+// Procedure: handleIterate()
 
 void PMV_MOOSApp::handleIterate(const MOOS_event & e) 
 {
@@ -516,6 +513,7 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   cout << "." << flush;
 
   double warp_elapsed = curr_time - m_last_redraw_time;
+  double beat_elapsed = curr_time - m_last_beat_time;
   double real_elapsed = warp_elapsed / m_time_warp;
   if(real_elapsed > 0.085) {
     m_gui->mviewer->PMV_Viewer::draw();
@@ -530,6 +528,9 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
     m_last_updatexy_time = curr_time;
   }
 
+  if(beat_elapsed > 4)
+    postFlags(m_beat_flags);
+  
   m_gui->mviewer->setParam("curr_time", e.moos_time);
   m_gui->setCurrTime(curr_time);
 
@@ -814,6 +815,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     else if((param == "button_twenty") || (param == "button_20"))
       handled = m_gui->addButton("button_twenty", value);
 
+    else if(param == "beat_flag") 
+      handled = addVarDataPairOnString(m_beat_flags, value);
     else if(param == "action")
       handled = m_gui->addAction(value);
     else if(param == "action+")
@@ -835,6 +838,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     else if(param == "appcast_color_scheme") 
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "realmcast_color_scheme") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "full_screen") 
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "infocast_viewable") 
       handled = m_gui->setRadioCastAttrib(param, value);
@@ -985,7 +990,7 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 }
 
 //----------------------------------------------------------------------
-// Procedure: getContextKey
+// Procedure: getContextKey()
 //   Purpose: To determine the "key" in strings of the following form:
 //            "left_context[mode]" or "right_context[mode]". 
 
@@ -1020,7 +1025,7 @@ string PMV_MOOSApp::getContextKey(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: handleMailClear
+// Procedure: handleMailClear()
 //   Example: "vname=henry, shape=polygon, stype=hull*"
 //   Example: "vname=henry"
 //   Example: "shape=polygon"
@@ -1048,7 +1053,7 @@ bool PMV_MOOSApp::handleMailClear(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: handleMailCenter
+// Procedure: handleMailCenter()
 //   Example: "vname=henry"
 //   Example: "vname=henry, zoom=1.2"
 //   Example: "x=45,y=34"
@@ -1094,7 +1099,7 @@ bool PMV_MOOSApp::handleMailCenter(string str)
 }
 
 //---------------------------------------------------------
-// Procedure: handleConfigCmd
+// Procedure: handleConfigCmd()
 //  Examples:
 //   cmd = label=loiter,   var=LOITER,      sval=true
 //   cmd = label=go_deep,  var=DEPTH,       dval=400
@@ -1180,7 +1185,7 @@ bool PMV_MOOSApp::handleConfigWatchCluster(string str)
 
 
 //----------------------------------------------------------------------
-// Procedure: handlePendingPostsFromGUI
+// Procedure: handlePendingPostsFromGUI()
 
 void PMV_MOOSApp::handlePendingPostsFromGUI()
 {
@@ -1279,7 +1284,31 @@ void PMV_MOOSApp::postAppCastRequest(string channel_node,
 }
 
 //------------------------------------------------------------
-// Procedure: buildReport
+// Procedure: postFlags()
+
+void PMV_MOOSApp::postFlags(const vector<VarDataPair>& flags)
+{
+  for(unsigned int i=0; i<m_beat_flags.size(); i++) {
+    VarDataPair pair = m_beat_flags[i];
+    string moosvar = pair.get_var();
+
+    // If posting is a double, just post. No macro expansion
+    if(!pair.is_string()) {
+      double dval = pair.get_ddata();
+      string postval = doubleToStringX(dval, 4);
+      Notify(moosvar, dval);
+    }
+    // Otherwise if string posting, handle macro expansion
+    else {
+      string sval = pair.get_sdata();
+      Notify(moosvar, sval);
+    }
+  }
+}
+
+
+//------------------------------------------------------------
+// Procedure: buildReport()
 //      Note: A virtual function of the AppCastingMOOSApp superclass,
 //            conditionally invoked if either a terminal or appcast
 //            report is needed.

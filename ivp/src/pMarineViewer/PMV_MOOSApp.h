@@ -73,12 +73,15 @@ class PMV_MOOSApp : public AppCastingMOOSApp
 
   void handlePendingPostsFromGUI();
   void handlePendingCommandSummary();
-  
+
+  void postFlags(const std::vector<VarDataPair>&);
+
  protected:
   Threadsafe_pipe<MOOS_event> *m_pending_moos_events;
 
   PMV_GUI     *m_gui;
   double       m_last_redraw_time;
+  double       m_last_beat_time;
   double       m_last_updatexy_time;
   bool         m_verbose;
   bool         m_pending_pairs;
@@ -111,6 +114,7 @@ class PMV_MOOSApp : public AppCastingMOOSApp
 
   std::string  m_region_info;
 
+  std::vector<VarDataPair> m_beat_flags;  
 };
 
 #endif 

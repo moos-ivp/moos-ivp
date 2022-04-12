@@ -203,6 +203,8 @@ void showExampleConfigAndExit()
   blk("  node_report_unc = true       {true, FALSE}                    ");
   blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
+  blk("                                                                ");
+  blk("  beat_flag = HEARTBEAT=true                                    ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
