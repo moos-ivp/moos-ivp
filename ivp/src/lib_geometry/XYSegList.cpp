@@ -164,7 +164,7 @@ void XYSegList::insert_vertex(double x, double y, double z, string vprop)
 {
   unsigned int vsize = m_vx.size();
   if(vsize <= 1)
-    return(add_vertex(x,y));
+    return(add_vertex(x,y,z,vprop));
 
   unsigned int i, ix = closest_segment(x, y); 
 
