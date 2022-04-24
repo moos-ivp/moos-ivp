@@ -111,13 +111,7 @@ protected:
   double       m_transparency;
 };
 
+bool operator== (const XYObject& one, const XYObject& two);
+bool operator< (const XYObject& one, const XYObject& two);
+
 #endif
-
-
-
-
-
-
-
-
-

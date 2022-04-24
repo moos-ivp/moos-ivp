@@ -31,7 +31,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: bruteShortestPath
+// Procedure: greedyPath()
 
 XYSegList greedyPath(XYSegList segl, double sx, double sy)
 {
@@ -39,12 +39,14 @@ XYSegList greedyPath(XYSegList segl, double sx, double sy)
   vector<unsigned int> vertex_visited;
   vector<double>       vertex_x;
   vector<double>       vertex_y;
+  vector<string>       vertex_vprop;
   
   unsigned int i, j, vsize = segl.size();
   
   for(i=0; i<vsize; i++) {
     vertex_x.push_back(segl.get_vx(i));
     vertex_y.push_back(segl.get_vy(i));
+    vertex_vprop.push_back(segl.get_vprop(i));
     vertex_visited.push_back(false);
   }
   
@@ -69,8 +71,9 @@ XYSegList greedyPath(XYSegList segl, double sx, double sy)
     if(smallest_dist >= 0) {
       double nextx = vertex_x[best_ix];
       double nexty = vertex_y[best_ix];
+      string next_vprop = vertex_vprop[best_ix];
       vertex_visited[best_ix] = true;
-      new_segl.add_vertex(nextx, nexty);
+      new_segl.add_vertex(nextx, nexty, 0, next_vprop);
       sx = nextx;
       sy = nexty;
     }
