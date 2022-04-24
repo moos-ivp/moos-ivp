@@ -207,7 +207,9 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     if(reg_skew_time < skew_time)
       skew_time = reg_skew_time;
 
-    if(moosvar=="MOOS_MANUAL_OVERIDE") {
+    // OVERRIDE is correct spelling, OVERIDE is legacy supported
+    if((moosvar=="MOOS_MANUAL_OVERIDE") ||
+       (moosvar=="MOOS_MANUAL_OVERRIDE")) {
       string skew_info = "var=" + moosvar + ":";
       skew_info += "matter="+boolToString(m_skews_matter);
       skew_info += ", skew=" + doubleToString(skew_time,2);
@@ -232,6 +234,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       }
     }
 
+    // OVERRIDE is correct spelling, OVERIDE is legacy supported
     if((moosvar =="MOOS_MANUAL_OVERIDE") || 
        (moosvar =="MOOS_MANUAL_OVERRIDE") ||
        ((moosvar == m_additional_override) && (moosvar != ""))) {

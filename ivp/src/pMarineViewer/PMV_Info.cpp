@@ -192,7 +192,7 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  // Button Configurations                                      ");
   blk("  button_one   = DEPLOY # DEPLOY=true                           ");
-  blk("  button_one   = MOOS_MANUAL_OVERIDE=false # RETURN=false       ");
+  blk("  button_one   = MOOS_MANUAL_OVERRIDE=false # RETURN=false      ");
   blk("  button_two   = RETURN # RETURN=true                           ");
   blk("  button_three = SURVEY-true # SURVEY=true                      ");
   blk("  button_four  = SURVEY-false # SURVEY=false                    ");
