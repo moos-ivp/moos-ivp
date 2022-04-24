@@ -201,14 +201,20 @@ bool DeadManPost::possiblyMakePostings()
   if(m_delta_time > m_max_noheart) {
     for(unsigned int i=0; i<m_deadflags.size(); i++) {
       string moos_var = m_deadflags[i].get_var();
+      string moos_val = m_deadflags[i].get_sdata();
       if(m_deadflags[i].is_string()) 
-	Notify(moos_var, m_deadflags[i].get_sdata());
-      else
-	Notify(moos_var, m_deadflags[i].get_ddata());
+	Notify(moos_var, moos_val);
+      else {
+	double dval = m_deadflags[i].get_ddata();
+	moos_val = doubleToStringX(dval,3);
+	Notify(moos_var, dval);
+      }
+      reportRunWarning("dead_flag: " + moos_var + "=" + moos_val);
       new_postings++;
     }
     m_postings_done = true;
   }
+
   
   m_total_postings += new_postings;
   if(new_postings > 0)
@@ -247,8 +253,8 @@ bool DeadManPost::buildReport()
     m_msgs << "Time Remaining: N/A" << endl;
   }
   else {
-    m_msgs << "  Elapsed Time: " << m_delta_time << endl;
-    m_msgs << "Time Remaining: " << time_remaining << endl;
+    m_msgs << "  Elapsed Time: " << doubleToString(m_delta_time,2) << endl;
+    m_msgs << "Time Remaining: " << doubleToString(time_remaining,2) << endl;
   }
 
   m_msgs << "    Heartbeats: " << m_total_heartbeats << endl;
