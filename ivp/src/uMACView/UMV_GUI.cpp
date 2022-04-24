@@ -910,6 +910,9 @@ bool UMV_GUI::setRadioCastAttrib(string attr, string value)
 
   resizeWidgets();
   redraw();
+  if(!ok)
+    return(false);
+
   return(true);
 }
 
