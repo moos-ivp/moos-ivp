@@ -218,7 +218,7 @@ bool QueryDB::OnStartUp()
     string value = line;
     
     bool handled = true;
-    if(param == "wait")
+    if((param == "wait") || (param == "halt_max_time"))
       handled = setDoubleOnString(m_max_time, value);
 
     else if(param == "condition")
