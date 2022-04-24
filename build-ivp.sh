@@ -94,6 +94,7 @@ if [ "$?" = "0" -a "${BUILD_BOT_CODE_ONLY}" = "OFF" ]; then
 	read ANSWER
 	if [ ! "${ANSWER}" = "y" ]; then
 	    BUILD_BOT_CODE_ONLY="ON"
+	    BUILD_GUI_CODE="OFF"
 	fi
     fi
 fi
