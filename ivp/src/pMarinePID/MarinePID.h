@@ -50,7 +50,7 @@ public:
   
 protected:
   bool     m_has_control;
-  bool     m_allow_overide;
+  bool     m_allow_override;
   bool     m_allstop_posted;
   double   m_speed_factor;
 

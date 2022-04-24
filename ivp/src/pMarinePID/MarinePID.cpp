@@ -43,7 +43,7 @@ using namespace std;
 MarinePID::MarinePID()
 {
   m_has_control    = false;
-  m_allow_overide  = true;
+  m_allow_override = true;
   m_allstop_posted = false;
   m_depth_control  = true;
   m_verbose        = "terse";
@@ -125,7 +125,7 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 	  MOOSDebugWrite("pMarinePID Control Is On");
 	}
 	else if(MOOSStrCmp(msg.m_sVal, "TRUE")) {
-	  if(m_allow_overide) {
+	  if(m_allow_override) {
 	    m_has_control = false;
 	    MOOSTrace("\n");
 	    MOOSDebugWrite("pMarinePID Control Is Off");
@@ -361,6 +361,8 @@ void MarinePID::registerVariables()
   Register("MOOS_MANUAL_OVERIDE", 0);
   Register("MOOS_MANUAL_OVERRIDE", 0);
 
+  // OVERRIDE is correct spelling, OVERIDE is legacy supported
+  
   if(m_ignore_nav_yaw)
     UnRegister("NAV_YAW");
   else
