@@ -122,7 +122,7 @@
 
       '("pTowManager" "ownship"  "max_appcast_events")
 
-      '("uFldRescueMgr" "swim_file" "rescue_rng_min" "rescue_rng_max" "rescue_rng_pd" "show_rescue_rng" "rescue_rng_transparency")
+      '("uFldRescueMgr" "swim_file" "rescue_rng_min" "rescue_rng_max" "rescue_rng_pd" "show_rescue_rng" "rescue_rng_transparency" "finish_flag" "swimmer_color" )
 
       '("pEvalConvoy" "on_tail_thresh"  "alignment_thresh" "on_tail_thresh" "alignment_thresh" "recap_var" "stat_recap_var" "tracking_thresh" "rng_switch_thresh" "match_group" )
 
