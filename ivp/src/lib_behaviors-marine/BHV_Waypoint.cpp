@@ -73,6 +73,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_use_alt_speed   = false;
 
   // Visual Hint Defaults
+  m_hint_active        = true;
   m_hint_vertex_size   = 3;
   m_hint_edge_size     = 1;
   m_hint_vertex_color  = "dodger_blue";
@@ -81,7 +82,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_hint_nextpt_color  = "yellow";
   m_hint_nextpt_lcolor = "aqua";
   m_hint_nextpt_vertex_size = 5;
-
+  
   m_lead_to_start     = false;
 
   // The completed and perpetual vars are initialized in superclass
@@ -764,9 +765,15 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 
     if(method == "zaic_spd") {
       ZAIC_SPD spd_zaic(m_domain, "speed");
+      //spd_zaic.setMedSpeed(m_cruise_speed);
+      //spd_zaic.setLowSpeed(0.1);
+      //spd_zaic.setHghSpeed(m_cruise_speed+0.4);
+      //spd_zaic.setLowSpeedUtil(70);
+      //spd_zaic.setHghSpeedUtil(20);
+      //spd_zaic.setMaxSpdUtil(20);
+
       spd_zaic.setParams(m_cruise_speed, 0.1, m_cruise_speed+0.4, 70, 20);
       spd_ipf = spd_zaic.extractIvPFunction();
-      //spd_ipf->getPDMap()->print();
       if(!spd_ipf)
 	postWMessage("Failure on the SPD ZAIC via ZAIC_SPD utility");
     }
@@ -857,6 +864,7 @@ void BHV_Waypoint::postViewableSegList()
     seglist.set_edge_size(m_hint_edge_size);
   if(m_hint_vertex_size >= 0)
     seglist.set_vertex_size(m_hint_vertex_size);
+  seglist.set_active(m_hint_active);
   string segmsg = seglist.get_spec();
   postMessage("VIEW_SEGLIST", segmsg);
 }
@@ -938,6 +946,8 @@ void BHV_Waypoint::handleVisualHint(string hint)
     m_hint_edge_color = value;
   else if((param == "label_color") && isColor(value))
     m_hint_label_color = value;
+  else if(param == "active")
+    setBooleanOnString(m_hint_active, value);
   else if((param == "nextpt_color") && isColor(value)) 
     m_hint_nextpt_color = value;
   else if((param == "nextpt_lcolor") && isColor(value)) 
