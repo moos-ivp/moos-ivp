@@ -271,6 +271,12 @@ void PMV_MOOSApp::handlePendingGUI()
     string val  = m_gui->getPendingVal(i);
     double dval = 0;
 
+    if(strEnds(var, "_$[VNAME]")) {
+      string vname = m_gui->mviewer->getStringInfo("active_vehicle_name");
+      if(vname != "")
+	var = findReplace(var, "$[VNAME]", toupper(vname));
+    }
+    
     if(var == "scope_register") {
       Register(val, 0);
       m_scope_vars.push_back(val);
