@@ -24,7 +24,7 @@
 (setq moos-app-and-keyword-list
       (list
       '("ANTLER" "MSBetweenLaunches" "Run" "NewConsole")
-      '("iM300" "comms_type" "port" "ip_addr" "stale_thresh" "max_rudder" "max_thrust" "drive_mode" "max_appcast_events" "ignore_msg" "ignore_checksum_errors" "use_imu_heading" "nav_prefix" "gps_prefix" "compass_prefix" )
+      '("iM300" "comms_type" "port" "ip_addr" "stale_thresh" "max_rudder" "max_thrust" "drive_mode" "max_appcast_events" "ignore_msg" "ignore_checksum_errors" "use_imu_heading" "nav_prefix" "gps_prefix" "compass_prefix" "heading_source" "stale_nav_msg_thres" )
       '("uSockComms" "comms_type" "port" "ip_addr" "max_appcast_events")
       '("uSimTowBody" "tow_cable_length" "tow_body_length" "swath_width" "swath_length" "swath_color" "swath_transparency" "max_appcast_events" )
       '("uSimWaterway" "border" "cover_poly" "cell_size" "cell_val" "max_appcast_events" )
