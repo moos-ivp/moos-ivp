@@ -43,6 +43,7 @@
 #include "Shape_LongShip.h"
 #include "Shape_Kayak.h"
 #include "Shape_WAMV.h"
+#include "Shape_Heron.h"
 #include "Shape_AUV.h"
 #include "Shape_Glider.h"
 #include "Shape_MOKAI.h"
@@ -833,7 +834,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   double factor_x = m_back_img.get_pix_per_mtr_x();
   double factor_y = m_back_img.get_pix_per_mtr_y();
   
-  if((vehibody == "kayak") || (vehibody == "heron")) {
+  if(vehibody == "kayak") {
     if(vlength > 0) {
       factor_x *= (vlength / g_kayakLength);
       factor_y *= (vlength / g_kayakLength);
@@ -846,6 +847,24 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
       drawGLPoly(g_kayakBody, g_kayakBodySize, black, outer_line, factor_x, transparency);    
     drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, gray, 0, factor_x, transparency);
     glTranslatef(cx, cy, 0);
+  }
+  if(vehibody == "heron") {
+    ColorPack dk_gray(0.4, 0.4, 0.6);
+    ColorPack lt_gray(0.8, 0.8, 0.8);
+    if(vlength > 0) {
+      factor_x *= (vlength / g_heronLength);
+      factor_y *= (vlength / g_heronLength);
+    }
+    double cx = (g_heronCtrX + g_heronBase/2) * factor_x;
+    double cy = g_heronCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+
+    drawGLPoly(g_heronBody, g_heronBodySize, dk_gray, 0, factor_x, transparency);
+    glTranslatef(2*cx, 0, 0);
+    drawGLPoly(g_heronBody, g_heronBodySize, dk_gray, 0, factor_x, transparency);
+    glTranslatef(-cx, 0, 0);
+    drawGLPoly(g_heronBack, g_heronBackSize, body_color, 0, factor_x, transparency);
+    drawGLPoly(g_heronFront, g_heronFrontSize, dk_gray, 0, factor_x, transparency);
   }
   else if(vehibody == "mokai") {
     if(vlength > 0) {

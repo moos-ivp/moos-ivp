@@ -75,7 +75,7 @@ void showHelpAndExit()
   blk("      this option is used, the whole line would be ignored.     ");
   mag("  --interactive,-i                                              ");
   blk("      If an undefined macro is encountered in one of the meta   ");
-  blk("      files (or pluts), the user will be prompted to confirm if ");
+  blk("      files (or plugs), the user will be prompted to confirm if ");
   blk("      he or she wishes to continue or abort. If the user chooses");
   blk("      the latter, the return value will be 1.                   ");
   mag("  --version,-v                                                  ");

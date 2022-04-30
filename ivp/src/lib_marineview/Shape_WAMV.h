@@ -25,59 +25,50 @@
 #define SHAPE_WAMV_HEADER
 
 double g_wamvBody[]=
-{
-    5.0,    0.0,    
+  {
+   5.0,    0.0,    
    15.5,   18.0,
    15.5,   90.0,   
    15.0,   92.0,
    12.0,   95.0,  
-    8.0,   97.0,
-    5.0,   99.0,   
-    2.0,  100.0,
+   8.0,    97.0,
+   5.0,    99.0,   
+   2.0,   100.0,
    -2.0,  100.0,  
    -5.0,   99.0,
    -8.0,   97.0,   
-  -12.0,   95.0,
-  -15.0,   92.0,  
-  -15.5,   90.0, 
-  -15.5,   18.0,   
+   -12.0,  95.0,
+   -15.0,  92.0,  
+   -15.5,  90.0, 
+   -15.5,  18.0,   
    -5.0,    0.0
-};
+  };
 unsigned int g_wamvBodySize = 16;
 double       g_wamvLength   = 100.0;
 
 double g_wamvpropUnit[]=
-{
+  {
    16.0,  0.0,   
    16.0, -9.0,
-  -16.0, -9.0, 
-  -16.0,  0.0
-};
-
+   -16.0, -9.0, 
+   -16.0,  0.0
+  };
 unsigned int g_wamvpropUnitSize =  4;
 
 double g_wamvPontoonConnector[]=
   {
-    0.0, 40.0,
-    0.0, 50.0,
-    -50.0, 50.0,
-    -50.0, 40.0
+   0.0, 40.0,
+   0.0, 50.0,
+   -50.0, 50.0,
+   -50.0, 40.0
   };
-
 unsigned int g_pontoonConnectorSize = 4;
 
 double  g_wamvCtrX = 0.0;
 double  g_wamvCtrY = 45.5;
-
 double  g_wamvBase = 50.0;
 
 #endif
-
-
-
-
-
-
 
 
 

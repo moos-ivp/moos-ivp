@@ -48,7 +48,7 @@ XYMarker string2Marker(string str)
 }
 
 //---------------------------------------------------------------
-// Procedure: stringStandard2Point  (Method #1)
+// Procedure: stringStandard2Marker()
 //      Note: This function is standard because it processes the 
 //            string format used when a string is created from an 
 //            existing XYMarker instance.
@@ -69,7 +69,7 @@ XYMarker stringStandard2Marker(string str)
   for(i=0; i<vsize; i++) {
     string param = tolower(biteStringX(mvector[i], '='));
     string value = mvector[i];
-    
+
     if(((param == "x") || (param == "xpos")) && isNumber(value))
       x = value;
     else if(((param == "y") || (param == "ypos")) && isNumber(value))
