@@ -849,7 +849,8 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     glTranslatef(cx, cy, 0);
   }
   if(vehibody == "heron") {
-    ColorPack dk_gray(0.4, 0.4, 0.6);
+    //ColorPack dk_gray(0.4, 0.4, 0.6);
+    ColorPack dk_gray(0.5, 0.5, 0.9);
     ColorPack lt_gray(0.8, 0.8, 0.8);
     if(vlength > 0) {
       factor_x *= (vlength / g_heronLength);
