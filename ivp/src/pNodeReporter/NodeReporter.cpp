@@ -74,6 +74,8 @@ NodeReporter::NodeReporter()
 
   m_crossfill_policy = "literal";
 
+  m_allow_color_change = false;
+  
   // Timestamps used for executing the "use-latest" crossfill policy 
   m_nav_xy_updated        = 0;
   m_nav_latlon_updated    = 0;
@@ -103,7 +105,8 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
     string key   = msg.GetKey();
     string sdata = msg.GetString();
     double ddata = msg.GetDouble();
-
+    string msrc  = msg.GetSource();
+    
     if(key == "NAV_X") {
       m_record.setX(ddata);
       m_nav_xy_updated = m_curr_time;
@@ -132,6 +135,10 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
       m_record.setTrajectory(sdata);
     else if(key == "PLATFORM_COLOR") {
       if(isColor(sdata))
+	m_record.setColor(sdata);
+    }
+    else if((key == "NODE_COLOR_CHANGE") && isColor(sdata)) {
+      if((msrc == m_allow_color_change) || (m_allow_color_change == "true"))
 	m_record.setColor(sdata);
     }
     else if(key == "THRUST_MODE_REVERSE") {
@@ -277,6 +284,7 @@ void NodeReporter::registerVariables()
     Register(m_alt_nav_prefix + "TRANSP", 0);
   }  
 
+  Register("NODE_COLOR_CHANGE");
   Register("IVPHELM_SUMMARY", 0);
   Register("IVPHELM_STATE", 0);
   Register("IVPHELM_ALLSTOP", 0);
@@ -347,6 +355,9 @@ bool NodeReporter::OnStartUp()
       m_record.setTransparency(atof(value.c_str()));
       handled = true;
     }
+
+    else if(param == "allow_color_change") 
+      handled = setNonWhiteVarOnString(m_allow_color_change, value);
 
     else if(param == "terse_reports") 
       handled = setBooleanOnString(m_terse_reports, value);

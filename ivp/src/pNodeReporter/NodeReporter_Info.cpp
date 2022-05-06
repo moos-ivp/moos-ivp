@@ -127,6 +127,9 @@ void showExampleConfigAndExit()
   blk("  // Declare the vehicle to be part of group tango.             ");
   blk("  group = tango                                                 ");
   blk("                                                                ");
+  blk("  // Allow NODE_COLOR_CHANGE msgs to dyn modify vcolor.         ");
+  blk("  allow_color_change = true (default is false)                  ");
+  blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");
@@ -156,6 +159,9 @@ void showInterfaceAndExit()
   blk("  NAV_SPEED       = 2.0                                         ");
   blk("  NAV_YAW         = 118.8                                       ");
   blk("  NAV_DEPTH       = 4.6                                         ");
+  blk("                                                                ");
+  blk("  NODE_COLOR_CHANGE = yellow                                    ");
+  blk("                                                                ");
   blk("  IVPHELM_SUMMARY =                                             ");
   blk("     iter=1,ofnum=1,warnings=0,utc_time=23839589908.76,         ");
   blk("     solve_time=0.00,create_time=0.00,loop_time=0.00,           ");

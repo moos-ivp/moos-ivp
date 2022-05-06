@@ -66,7 +66,8 @@ public:
   double       m_nohelm_thresh;
   std::string  m_group_name;
   bool         m_terse_reports;
-
+  std::string  m_allow_color_change;
+  
  protected: // State Variables (Node Reports)
   CMOOSGeodesy m_geodesy;
   std::string  m_helm_mode;
