@@ -32,17 +32,20 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 XYFieldGenerator::XYFieldGenerator()
 {
   m_snap = 0.1;
-  m_max_tries = 5000;
-  m_targ_amt = 10;
   
-  // A non-positive buffer dist disables this feature
-  m_buffer_dist = 0;
+  m_max_tries   = 5000;
+  m_targ_amt    = 10;
+  m_verbose     = false;
+  m_flex_buffer = false;
+  m_buffer_dist = 0;     
+  
   srand(time(NULL));
+
 }
 
 //---------------------------------------------------------
@@ -128,8 +131,10 @@ XYPolygon XYFieldGenerator::getPolygon(unsigned int ix)
 //---------------------------------------------------------
 // Procedure: generatePoint()
 //   Purpose: Generate a new XYPoint that resides one of the
-//            field regions.
+//               field regions.
 //            No check made here for buffer distance.
+//            Could be used directly by the user of generator,
+//               but is also used by generatePoints()
 
 XYPoint XYFieldGenerator::generatePoint()
 {
@@ -178,18 +183,6 @@ bool XYFieldGenerator::addPoint(const XYPoint& point)
 }
 
 //---------------------------------------------------------
-// Procedure: getNewestPoint()
-
-XYPoint XYFieldGenerator::getNewestPoint() const
-{
-  XYPoint null_pt;
-  if(m_vpoints.size() == 0)
-    return(null_pt);
-
-  return(m_vpoints.back());
-}
-
-//---------------------------------------------------------
 // Procedure: addPoint(double vx, double vy)
 //   Purpose: If point is in one of the field regions, add
 //              it to the vector of points.
@@ -201,13 +194,14 @@ XYPoint XYFieldGenerator::getNewestPoint() const
 
 bool XYFieldGenerator::addPoint(double vx, double vy)
 {
-  if(m_polygons.size() == 0)
-    return(false); 
   if(!isPointInRegion(vx, vy))
     return(false);
 
   XYPoint new_point(vx, vy);
+  new_point.set_label("P" + uintToString(m_vpoints.size()));
+
   if(!isPointTooClose(new_point)) {
+    m_nearest.clear();
     m_vpoints.push_back(new_point);
     return(true);
   }
@@ -219,13 +213,12 @@ bool XYFieldGenerator::addPoint(double vx, double vy)
     double tx = vx;
     double ty = vy;
     
-    if(tries != 0)
-      projectPoint(rand_ang, adjustable_dist, vx, vy, tx, ty); 
+    projectPoint(rand_ang, adjustable_dist, vx, vy, tx, ty); 
 
     if(isPointInRegion(tx, ty) && !isPointTooClose(tx, ty)) {
-      XYPoint new_point(tx, ty);
-      new_point.set_label("P" + uintToString(m_vpoints.size()));
+      new_point.set_vertex(tx, ty);
       m_vpoints.push_back(new_point);
+      m_nearest.clear();
       return(true);
     }
     if((tries % 10) == 0)
@@ -238,18 +231,66 @@ bool XYFieldGenerator::addPoint(double vx, double vy)
 //---------------------------------------------------------
 // Procedure: generatePoints()
 
-void XYFieldGenerator::generatePoints(unsigned int amt)
+bool XYFieldGenerator::generatePoints(unsigned int amt)
 {
   if(amt == 0)
     amt = m_targ_amt;
 
-  m_vpoints.clear();
-
-  for(unsigned int i=0; i<amt; i++) {
-    XYPoint new_point = generatePoint();
-    addPoint(new_point);
+  if(m_verbose) {
+    cout << "XYFieldGenerator::generatePoints()" << endl;
+    cout << "Buffer_dist:" << m_buffer_dist << endl;
   }
+  // Mode 1: Insist buffer distance must not be compromised.
+  if(!m_flex_buffer)
+    return(addAllRandomPoints(amt));
+
+  // Mode 2: Keep lowering buffer distance until successful
+  double orig_buffer_dist = m_buffer_dist;
+  bool success = false;
+  for(double i=1.0; ((i>0) && !success); i-=0.01) {
+    m_buffer_dist *= i;
+    success = addAllRandomPoints(amt);
+    if(m_verbose) {
+      cout << "buffer_dist: " << m_buffer_dist << endl;
+      cout << "success:" << boolToString(success) << endl;
+      cout << "created:" << uintToString(m_vpoints.size()) << endl;
+    }
+  }
+
+  m_buffer_dist = orig_buffer_dist;
+  return(success);
 }
+  
+//---------------------------------------------------------
+// Procedure: addAllRandomPoints()
+
+bool XYFieldGenerator::addAllRandomPoints(unsigned int amt)
+{
+  m_vpoints.clear();
+  bool ok = true;
+  for(unsigned int i=0; ((i<amt) && ok); i++)
+    ok = addRandomPoint();
+
+  return(ok);
+}
+  
+
+//---------------------------------------------------------
+// Procedure: addRandomPoint()
+
+bool XYFieldGenerator::addRandomPoint()
+{
+  m_nearest.clear();
+  for(unsigned int i=0; i<m_max_tries; i++) {
+    XYPoint new_point = generatePoint();
+    if(!isPointTooClose(new_point)) {
+      m_vpoints.push_back(new_point);
+      return(true);
+    }
+  }
+  return(false);
+}
+  
 
 //---------------------------------------------------------
 // Procedure: isPointTooClose()
@@ -301,5 +342,63 @@ bool XYFieldGenerator::isPointInRegion(double vx, double vy)
       return(true);
   
   return(false);
+}
+
+//---------------------------------------------------------
+// Procedure: getNewestPoint()
+
+XYPoint XYFieldGenerator::getNewestPoint() const
+{
+  XYPoint null_pt;
+  if(m_vpoints.size() == 0)
+    return(null_pt);
+
+  return(m_vpoints.back());
+}
+
+//---------------------------------------------------------
+// Procedure: updateGlobalNearestVals()
+
+void XYFieldGenerator::updateGlobalNearestVals(bool force)
+{
+  if(!force && (m_nearest.size() != 0))
+    return;
+
+  m_nearest.clear();
+  m_global_nearest = -1;
+  
+  // Create an array of distances same size at points
+  for(unsigned int i=0; i<m_vpoints.size(); i++) {
+    double closest = -1;
+    for(unsigned int j=0; j<m_vpoints.size(); j++) {
+      if(i!=j) {
+	double dist = distPointToPoint(m_vpoints[i], m_vpoints[j]);
+	if((closest == -1) || (dist < closest))
+	  closest = dist;
+      }
+    }
+    m_nearest.push_back(closest);
+
+    if((m_global_nearest < 0) || (closest < m_global_nearest))
+      m_global_nearest = closest;
+  }
+}
+
+//---------------------------------------------------------
+// Procedure: getNearestVals()
+
+vector<double> XYFieldGenerator::getNearestVals(bool force)
+{
+  updateGlobalNearestVals(force);
+  return(m_nearest);
+}
+
+//---------------------------------------------------------
+// Procedure: getGlobalNearest()
+
+double XYFieldGenerator::getGlobalNearest(bool force)
+{
+  updateGlobalNearestVals(force);
+  return(m_global_nearest);
 }
 
