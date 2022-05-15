@@ -39,7 +39,7 @@ using namespace std;
 PickPos::PickPos()
 {
   // By default, positions and headings are rounded to nearest integer
-  m_pt_snap   = 1;
+  m_pt_snap   = 0.1;
   m_hdg_snap   = 1;
   m_spd_snap   = 0.1;
 
@@ -82,6 +82,8 @@ PickPos::PickPos()
 
   m_headers_enabled = false;
 
+  m_global_nearest = -1;
+  
   setVNameCache();
   setColorCache();
 }
@@ -530,7 +532,7 @@ void PickPos::pickPosByFile()
 }
 
 //---------------------------------------------------------
-// Procedure: pickPosByPoly
+// Procedure: pickPosByPoly()
 
 void PickPos::pickPosByPoly()
 {
@@ -542,73 +544,30 @@ void PickPos::pickPosByPoly()
   srand(time(NULL));
 
   m_fld_generator.setSnap(m_pt_snap);
+  m_fld_generator.setBufferDist(m_buffer_dist);
+  m_fld_generator.setFlexBuffer(true);
+  m_fld_generator.generatePoints(m_pick_amt);
 
-  vector<XYPoint> points;
-  for(unsigned int i=0; i<m_pick_amt; i++) {
-    double adjustable_buffer_dist = m_buffer_dist;
- 
-    XYPoint pick_pt;
-
-    unsigned int tries = 0;
-    
-    bool done = false;
-    while(!done && (tries < m_max_tries)) {
-      pick_pt = m_fld_generator.generatePoint();
-
-      if(i==0) {
-	done = true;
-      }
-      else {
-	bool found_neighbor_too_close = false;
-	for(unsigned int j=0; j<points.size(); j++) {
-	  double dist = distPointToPoint(pick_pt, points[j]);
-	  if(dist < adjustable_buffer_dist)
-	    found_neighbor_too_close = true;
-	}
-	if(!found_neighbor_too_close)
-	  done = true;
-	else
-	  tries++;
-      }
-
-      // Smart adjustment of buffer_dist
-      if(m_max_tries > 10) {
-	if(tries > (m_max_tries * 0.8)) {
-	  double floor = m_max_tries * 0.8;
-	  double window = m_max_tries - floor;
-	  double pct = 1 - (tries - floor) / window;
-	  adjustable_buffer_dist = pct * m_buffer_dist;
-	  if(m_verbose)
-	    cout << "Relaxed buffer_dist: " << adjustable_buffer_dist << endl;
-	}
-      }
-      
-    }
+  vector<XYPoint> points = m_fld_generator.getPoints();
+  if(points.size() != m_pick_amt) {
+    cout << "Unable to squeeze " << m_pick_amt << " pts in given region." << endl;
+    cout << "Wanted: " << m_pick_amt << ", Found: " << points.size() << endl;
+    exit(2);
+  }
+  
+  for(unsigned int i=0; i<points.size(); i++) {
+    XYPoint pick_pt = points[i];
     
     double x = pick_pt.get_vx();
     double y = pick_pt.get_vy();
-
     string s="x="+doubleToStringX(x,2)+",y="+doubleToStringX(y,2);
-
-    points.push_back(pick_pt);
+    
     m_pick_positions.push_back(s);
     m_near_positions.push_back(0);
   }    
 
-
-  // Create an array of Booleans the same size as num of file choices
-  for(unsigned int i=0; i<m_pick_amt; i++) {
-    double closest = -1;
-    for(unsigned int j=0; j<m_pick_amt; j++) {
-      if(i!=j) {
-	double dist = distPointToPoint(points[i], points[j]);
-	if((closest == -1) || (dist < closest))
-	  closest = dist;
-      }
-    }
-    m_near_positions[i] = closest;
-  }
-
+  m_near_positions = m_fld_generator.getNearestVals();
+  m_global_nearest = m_fld_generator.getGlobalNearest();
 }
 
 //---------------------------------------------------------
@@ -949,5 +908,7 @@ void PickPos::printChoices()
     }
     cout << endl;
   }
+  if(m_verbose)
+    cout << "Global nearest = " << doubleToStringX(m_global_nearest,2) << endl;
 }
 

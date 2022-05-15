@@ -61,6 +61,7 @@ class PickPos
 
   void   setVerbose(bool v)      {m_verbose=v;}
   void   enableHeaders()         {m_headers_enabled=true;}
+  void   setDebug()              {m_fld_generator.setVerbose(true);}
 
   void   setArgSummary(std::string str)  {m_arg_summary=str;}
 
@@ -140,6 +141,7 @@ protected: // State variables
 
   // Nearest neighbor for each chosen position
   std::vector<double>       m_near_positions;
+  double                    m_global_nearest;
 };
 
 #endif 

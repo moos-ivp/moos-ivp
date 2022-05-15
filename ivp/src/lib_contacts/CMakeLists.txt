@@ -6,10 +6,15 @@
 SET(SRC
   NodeRecord.cpp
   NodeRecordUtils.cpp
+  NodeRider.cpp
+  NodeRiderSet.cpp
 )
 
 SET(HEADERS
-  ContactRecord.h
+  NodeRecord.h
+  NodeRecordUtils.h
+  NodeRider.h
+  NodeRiderSet.h
 )
 
 # Build Library

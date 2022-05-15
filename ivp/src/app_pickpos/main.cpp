@@ -53,6 +53,10 @@ int main(int argc, char *argv[])
       verbose=true;
       handled = true;
     }
+    else if(argi=="--debug") {
+      pickpos.setDebug();
+      handled = true;
+    }
     else if((argi == "--multiline") || (argi=="--ml") || (argi=="-ml"))
       handled = pickpos.setMultiLine();
     else if((argi == "--reverse_names") || (argi=="-r"))
@@ -81,8 +85,6 @@ int main(int argc, char *argv[])
       handled = pickpos.setHeadingSnap(argi.substr(8));
     else if(strBegins(argi, "--ssnap="))
       handled = pickpos.setSpeedSnap(argi.substr(8));
-    else if(strBegins(argi, "--psnap="))
-      handled = pickpos.setPointSnap(argi.substr(8));
     else if(argi == "--vnames")
       handled = pickpos.setVNames();
     else if(argi == "--colors")
