@@ -94,6 +94,17 @@ protected:
   bool    m_max_sat_dep_debug;
 
   bool    m_ignore_nav_yaw;
+
+  // Added May 2022 to reset integral when crossing desired command
+  // and/or when desired command changes.
+  bool    m_reset_hdg_i_zero_error;
+  bool    m_reset_spd_i_zero_error;
+  bool    m_reset_dep_i_zero_error;
+  bool    m_reset_pch_i_zero_error;
+  bool    m_reset_hdg_i_new_desired;
+  bool    m_reset_spd_i_new_desired;
+  bool    m_reset_dep_i_new_desired;
+  bool    m_reset_pch_i_new_desired;
 };
 #endif 
 

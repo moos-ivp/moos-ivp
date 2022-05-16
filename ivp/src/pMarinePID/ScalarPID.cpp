@@ -158,7 +158,7 @@ ScalarPID::~ScalarPID()
 }
 
 //-------------------------------------------------------------------
-bool ScalarPID::Run(double dfeIn, double dfErrorTime, double &dfOut)
+bool ScalarPID::Run(double dfeIn, double dfErrorTime, bool reset_I, double &dfOut)
 {
   // Reset max_sat flag on every interation
   m_max_sat = false;
@@ -220,6 +220,13 @@ bool ScalarPID::Run(double dfeIn, double dfErrorTime, double &dfOut)
   
   
   if(m_dfKi>0) {
+    // Added May 2022 to reset integral when crossing desired command
+    // and/or when desired command changes.
+    if (reset_I){
+      cout << "Resetting integral sum of " << m_dfeSum << "to zero." << endl;
+      m_dfeSum = 0.0;
+    }
+
     //calculate integral term  
     m_dfeSum    +=  m_dfKi*m_dfe*m_dfDT;
 

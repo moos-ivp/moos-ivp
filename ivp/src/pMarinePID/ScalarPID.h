@@ -63,7 +63,7 @@ public:
   void SetLogPath(std::string & sPath);
   void SetLog(bool bLog);
   void SetName(std::string sName);
-  bool Run(double dfeIn, double dfErrorTime, double& dfOut);
+  bool Run(double dfeIn, double dfErrorTime, bool reset_I, double& dfOut);
 
   void setDebug(bool v=true) {m_debug=v;}
   bool getDebug() const      {return(m_debug);}

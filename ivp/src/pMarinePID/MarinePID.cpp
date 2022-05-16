@@ -84,6 +84,15 @@ MarinePID::MarinePID()
   m_max_sat_dep_debug = false;
 
   m_ignore_nav_yaw = false;
+
+  m_reset_hdg_i_zero_error  = false;
+  m_reset_spd_i_zero_error  = false;
+  m_reset_dep_i_zero_error  = false;
+  m_reset_pch_i_zero_error  = false;
+  m_reset_hdg_i_new_desired = false;
+  m_reset_spd_i_new_desired = false;
+  m_reset_dep_i_new_desired = false;
+  m_reset_pch_i_new_desired = false;
 }
 
 //--------------------------------------------------------------------
@@ -411,6 +420,22 @@ bool MarinePID::OnStartUp()
       handled = setBooleanOnString(m_max_sat_dep_debug, value);
     else if(param == "IGNORE_NAV_YAW") 
       handled = setBooleanOnString(m_ignore_nav_yaw, value);
+    else if(param == "RESET_HEADING_I_AT_ZERO_ERROR") 
+      handled = setBooleanOnString(m_reset_hdg_i_zero_error, value);
+    else if(param == "RESET_SPEED_I_AT_ZERO_ERROR") 
+      handled = setBooleanOnString(m_reset_spd_i_zero_error, value);
+    else if(param == "RESET_DEPTH_I_AT_ZERO_ERROR") 
+      handled = setBooleanOnString(m_reset_dep_i_zero_error, value);
+    else if(param == "RESET_PITCH_I_AT_ZERO_ERROR") 
+      handled = setBooleanOnString(m_reset_pch_i_zero_error, value);
+    else if(param == "RESET_HEADING_I_AT_NEW_DESIRED") 
+      handled = setBooleanOnString(m_reset_hdg_i_new_desired, value);
+    else if(param == "RESET_SPEED_I_AT_NEW_DESIRED") 
+      handled = setBooleanOnString(m_reset_spd_i_new_desired, value);
+    else if(param == "RESET_DEPTH_I_AT_NEW_DESIRED") 
+      handled = setBooleanOnString(m_reset_dep_i_new_desired, value);
+    else if(param == "RESET_PITCH_I_AT_NEW_DESIRED") 
+      handled = setBooleanOnString(m_reset_pch_i_new_desired, value);
     //else if(param == "OK_SKEW") 
     //  handled = handleConfigSkewAny(value);
     else if(param == "VERBOSE") {
@@ -484,6 +509,9 @@ bool MarinePID::handleYawSettings()
   m_pengine.setPID(0, crsPID);
   if(m_max_sat_hdg_debug)
     m_pengine.setDebugHdg();
+
+  if(m_reset_hdg_i_zero_error || m_reset_hdg_i_new_desired)
+    m_pengine.setHdgIntegralReset(m_reset_hdg_i_zero_error, m_reset_hdg_i_new_desired);
   
   MOOSDebugWrite(MOOSFormat("** NEW CONTROLLER GAINS ARE **"));
   MOOSDebugWrite(MOOSFormat("YAW_PID_KP             = %.3f",yaw_pid_Kp));
@@ -533,6 +561,9 @@ bool MarinePID::handleSpeedSettings()
   m_pengine.setPID(1, spdPID);
   if(m_max_sat_spd_debug)
     m_pengine.setDebugSpd();
+
+  if(m_reset_spd_i_zero_error || m_reset_spd_i_new_desired)
+    m_pengine.setSpdIntegralReset(m_reset_spd_i_zero_error, m_reset_spd_i_new_desired);
   
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KP           = %.3f",spd_pid_Kp));
   MOOSDebugWrite(MOOSFormat("SPEED_PID_KD           = %.3f",spd_pid_Kd));
@@ -602,6 +633,9 @@ bool MarinePID::handleDepthSettings()
   ztopPID.SetGains(z_top_pid_Kp, z_top_pid_Kd, z_top_pid_Ki);
   ztopPID.SetLimits(z_top_pid_ilim, 100);
   m_pengine.setPID(2, ztopPID);
+
+  if(m_reset_dep_i_zero_error || m_reset_dep_i_new_desired)
+    m_pengine.setDepIntegralReset(m_reset_dep_i_zero_error, m_reset_dep_i_new_desired);
   
   MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KP      = %.3f",z_top_pid_Kp));
   MOOSDebugWrite(MOOSFormat("Z_TO_PITCH_PID_KD      = %.3f",z_top_pid_Kd));
@@ -638,6 +672,9 @@ bool MarinePID::handleDepthSettings()
   m_pengine.setPID(3, pitchPID);
   if(m_max_sat_dep_debug)
     m_pengine.setDebugDep();
+
+  if(m_reset_pch_i_zero_error || m_reset_pch_i_new_desired)
+    m_pengine.setPchIntegralReset(m_reset_pch_i_zero_error, m_reset_pch_i_new_desired);
 
   MOOSDebugWrite(MOOSFormat("PITCH_PID_KP           = %.3f",pitch_pid_Kp));
   MOOSDebugWrite(MOOSFormat("PITCH_PID_KD           = %.3f",pitch_pid_Kd));

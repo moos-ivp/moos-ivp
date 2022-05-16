@@ -40,6 +40,15 @@ public:
   void setDebugHdg();
   void setDebugSpd();
   void setDebugDep();
+
+  void setHdgIntegralReset(bool zero_error, bool new_desired) 
+        {m_reset_hdg_i_zero_error = zero_error; m_reset_hdg_i_new_desired = new_desired;}
+  void setSpdIntegralReset(bool zero_error, bool new_desired)
+        {m_reset_spd_i_zero_error = zero_error; m_reset_spd_i_new_desired = new_desired;}
+  void setDepIntegralReset(bool zero_error, bool new_desired)
+        {m_reset_dep_i_zero_error = zero_error; m_reset_dep_i_new_desired = new_desired;}
+  void setPchIntegralReset(bool zero_error, bool new_desired)
+        {m_reset_pch_i_zero_error = zero_error; m_reset_pch_i_new_desired = new_desired;}
   
   double getDesiredRudder(double desired_heading, 
 			  double current_heading,
@@ -96,6 +105,26 @@ protected:
   std::string m_max_sat_hdg_str;
   std::string m_max_sat_spd_str;
   std::string m_max_sat_dep_str;  
+
+  // Added May 2022 to reset integral when crossing desired command
+  // and/or when desired command changes.
+  double m_desired_headingOld;
+  double m_desired_speedOld;
+  double m_desired_depthOld;
+  double m_desired_pitchOld;
+  double m_heading_errorOld;
+  double m_speed_errorOld;
+  double m_depth_errorOld;
+  double m_pitch_errorOld;
+
+  bool    m_reset_hdg_i_zero_error;
+  bool    m_reset_spd_i_zero_error;
+  bool    m_reset_dep_i_zero_error;
+  bool    m_reset_pch_i_zero_error;
+  bool    m_reset_hdg_i_new_desired;
+  bool    m_reset_spd_i_new_desired;
+  bool    m_reset_dep_i_new_desired;
+  bool    m_reset_pch_i_new_desired;
 };
 #endif
 
