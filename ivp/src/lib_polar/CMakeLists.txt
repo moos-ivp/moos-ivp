@@ -1,0 +1,18 @@
+#--------------------------------------------------------
+# The CMakeLists.txt for:                       lib_polar
+# Author(s):                                Mike Benjamin
+#--------------------------------------------------------
+
+SET(SRC
+  PolarPlot.cpp
+  PopulatorPolarPlot.cpp
+)
+
+SET(HEADERS
+  PolarPlot.h
+  PopulatorPolarPlot.h
+)
+
+# Build Library
+ADD_LIBRARY(polar ${SRC})
+

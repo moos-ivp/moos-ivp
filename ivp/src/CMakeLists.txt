@@ -128,6 +128,7 @@ SET(IVP_NON_GUI_LIBS
    lib_bhvutil
    lib_genutil
    lib_geometry
+   lib_polar
    lib_helmivp
    lib_ivpbuild
    lib_ivpcore

@@ -1614,7 +1614,7 @@ vector<IvPBox> makeRegionsApart(vector<IvPBox> boxes)
     minors.push_back(boxes[i]);
   
   // Part 5: Perform the body of the work
-  bool restart = false;
+  //bool restart = false;
   //while(!restart && (minors.size() != 0)) {
   while(minors.size() != 0) {
 
