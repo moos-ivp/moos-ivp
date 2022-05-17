@@ -453,7 +453,7 @@ bool NodeReporter::OnStartUp()
       m_record.setLength(3); // meters
     else if(vtype == "usv")
       m_record.setLength(6); // meters
-    else if(vtype == "kingfisher")
+    else if(vtype == "heron")
       m_record.setLength(3); // meters
     else if(vtype == "swimmer")
       m_record.setLength(3); // meters
