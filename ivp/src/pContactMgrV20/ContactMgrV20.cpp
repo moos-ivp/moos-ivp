@@ -65,6 +65,7 @@ ContactMgrV20::ContactMgrV20()
   m_use_geodesy = false;
 
   m_range_report_timeout = 10;
+  m_range_report_maxsize = 20;
   
   m_reject_range = 2000;
   
@@ -97,7 +98,11 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
     double dval = msg.GetDouble();
     string sval = msg.GetString(); 
     string src  = msg.GetSource(); 
+    string aux  = msg.GetSourceAux(); 
 
+    if(aux != "")
+      src += ":" + aux;
+    
     if(key == "NAV_X")
       m_osx = dval;
     else if(key == "NAV_Y")
@@ -109,7 +114,7 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "NODE_REPORT") 
       handleMailNodeReport(sval);
     else if(key == "BCM_REPORT_REQUEST") 
-      handleMailReportRequest(sval);
+      handleMailReportRequest(sval, src);
     else if(key == "BCM_DISPLAY_RADII")
       handleMailDisplayRadii(sval);      
     else if(key == "BCM_ALERT_REQUEST")
@@ -205,6 +210,8 @@ bool ContactMgrV20::OnStartUp()
       handled = handleConfigDecay(value);
     else if(param == "range_report_timeout")
       handled = setNonNegDoubleOnString(m_range_report_timeout, value);
+    else if(param == "range_report_maxsize")
+      handled = setUIntOnString(m_range_report_maxsize, value);
     else if(param == "display_radii")
       handled = setBooleanOnString(m_display_radii, value);
     else if(param == "display_radii_id")
@@ -421,7 +428,7 @@ void ContactMgrV20::handleMailDisplayRadii(string value)
 //            It is allowed to support apps such as alogmtask that
 //            want to grab report variables related to task teaming
 
-void ContactMgrV20::handleMailReportRequest(string str)
+void ContactMgrV20::handleMailReportRequest(string str, string src)
 {
   bool ok = true;
   
@@ -457,7 +464,7 @@ void ContactMgrV20::handleMailReportRequest(string str)
     reportRunWarning(msg);
   }    
   else {
-    string msg = "New REPORT_REQUEST: " + str;
+    string msg = "New BCM_REPORT_REQUEST (src=" + src + "): " + str;
     reportEvent(msg);
     // If this is a new request, make new map entry for all fields
     if(!m_map_rep_range.count(moos_var) ||
@@ -482,14 +489,14 @@ void ContactMgrV20::handleMailReportRequest(string str)
 //            alert_range=80, cpa_range=95
 
                      
-void ContactMgrV20::handleMailAlertRequest(string value, string source)
+void ContactMgrV20::handleMailAlertRequest(string value, string src)
 {
   m_alert_requests_received++;
 
-  string msg = "New REPORT_REQUEST: " + value + ":" + source;
+  string msg = "New BCM_ALERT_REQUEST (src=" + src + "): " + value;
   reportEvent(msg);
 
-  bool ok = handleConfigAlert(value, source);
+  bool ok = handleConfigAlert(value, src);
   if(!ok)
     reportRunWarning("Unhandled Alert Request: " + value);   
 }
@@ -693,44 +700,61 @@ bool ContactMgrV20::handleConfigAlert(string alert_str, string source)
 
 
 //---------------------------------------------------------
-// Procedure: postRangeReports()
+// Procedure: pruneRangeReports()
 
-void ContactMgrV20::postRangeReports()
+void ContactMgrV20::pruneRangeReports()
 {
-  // Part 1: Check timestamps for all report requests and see if they
-  // should be retired and deleted from memory. Build a list of
-  // reports to retire. Recall that requested customized range reports
-  // must be periodically refreshed with a new request as a guard
-  // against unbounded memory and cpu growth.
-  vector<string> to_retire;
+  // Part 1: Identify the oldest report
+  string oldest_varname;
+  double oldest_age = 0;
+  
   map<string, double>::iterator p;
   for(p=m_map_rep_reqtime.begin(); p!=m_map_rep_reqtime.end(); p++) {
     string varname = p->first;
     double reqtime = p->second;
-
     double age = m_curr_time - reqtime;
-    if(age > m_range_report_timeout)
-      to_retire.push_back(varname);
+
+    if(age < m_range_report_timeout)
+      continue;
+    
+    if((oldest_varname == "") || (age > oldest_age)) {
+      oldest_varname = varname;
+      oldest_age = age;
+    }
   }
 
-  // Part 2: Go through the list of reports to retire and actually
-  // remove them from memory.
-  for(unsigned int i=0; i<to_retire.size(); i++) {
-    string varname = to_retire[i];
-    m_map_rep_range.erase(varname);
-    m_map_rep_reqtime.erase(varname);
-    m_map_rep_contacts.erase(varname);
-  }
+  if(oldest_varname == "")
+    return;
+  
+  // Part 2: Remove from memory the oldest report
+  m_map_rep_range.erase(oldest_varname);
+  m_map_rep_reqtime.erase(oldest_varname);
+  m_map_rep_group.erase(oldest_varname);
+  m_map_rep_vtype.erase(oldest_varname);
+  m_map_rep_contacts.erase(oldest_varname);
+  m_map_rep_refresh.erase(oldest_varname);
+}
 
-  // Part 3: For each report (varname), figure out which contacts
+
+//---------------------------------------------------------
+// Procedure: postRangeReports()
+
+void ContactMgrV20::postRangeReports()
+{
+  // Part 1: Ensure requested range reports don't grow unbounded
+  if(m_map_rep_range.size() > m_range_report_maxsize)
+    pruneRangeReports();
+  
+  // Part 2: For each report (varname), figure out which contacts
   //         satisfy the range threshold for that report
   //         Also check contact group name if report specifies
   //         Also check contact vehicle type if report specifies
+  map<string, double>::iterator p;
   for(p=m_map_rep_range.begin(); p!=m_map_rep_range.end(); p++) {
     string varname = p->first;
     double rthresh = p->second;
 
-    // Part 3A: Get the list of contacts for this report
+    // Part 2A: Get the list of contacts for this report
     string contacts;   
     vector<string> vcontacts;
     map<string, double>::iterator q;
@@ -738,7 +762,7 @@ void ContactMgrV20::postRangeReports()
 	q!=m_map_node_ranges_extrap.end(); q++) {
       string vname = q->first;
 
-      // Part 3AA: If report specifies group, check contact for match
+      // Part 2AA: If report specifies group, check contact for match
       bool group_match = true;
       if(m_map_rep_group[varname] != "") { 
 	if(tolower(m_map_rep_group[varname]) !=
@@ -746,7 +770,7 @@ void ContactMgrV20::postRangeReports()
 	  group_match = false;
       }
 
-      // Part 3AB: If report specifies vtype, check contact for match
+      // Part 2AB: If report specifies vtype, check contact for match
       bool vtype_match = true;
       if(m_map_rep_vtype[varname] != "") {
 	if(tolower(m_map_rep_vtype[varname]) !=
@@ -754,7 +778,7 @@ void ContactMgrV20::postRangeReports()
 	  vtype_match = false;
       }
 
-      // Part 3AC: Check if the range is satisfied
+      // Part 2AC: Check if the range is satisfied
       bool range_sat = false;
       double now_range = q->second;
       if(now_range < rthresh) 
@@ -767,7 +791,7 @@ void ContactMgrV20::postRangeReports()
 	vcontacts.push_back(vname);
       }
     }
-    // Part 3B: If refresh requested or the report is different, then post it!
+    // Part 2B: If refresh requested or the report is different, then post it!
     if(m_map_rep_refresh[varname] || (contacts != m_map_rep_contacts[varname])) {
       Notify(varname, contacts);
       m_map_rep_contacts[varname] = contacts;

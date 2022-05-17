@@ -63,7 +63,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
   std::string handleConfigDeprecations(std::string);
 
   void handleMailNodeReport(std::string);
-  void handleMailReportRequest(std::string);
+  void handleMailReportRequest(std::string, std::string);
   void handleMailAlertRequest(std::string, std::string);
   void handleMailDisplayRadii(std::string);
 
@@ -84,7 +84,8 @@ class ContactMgrV20 : public AppCastingMOOSApp
   
   std::list<std::string> getRangeOrderedContacts() const;
   
-
+  void pruneRangeReports();
+  
   
  protected: // Alert Getters
   double      getAlertRange(std::string id) const;
@@ -115,6 +116,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
   double       m_contact_max_age;
   double       m_contacts_recap_interval;
   double       m_range_report_timeout;
+  unsigned int m_range_report_maxsize;
   
   std::string  m_contact_local_coords;
   bool         m_alert_verbose;
@@ -147,10 +149,6 @@ class ContactMgrV20 : public AppCastingMOOSApp
   std::map<std::string, std::string> m_map_rep_vtype;
   std::map<std::string, std::string> m_map_rep_contacts;
   std::map<std::string, bool>        m_map_rep_refresh;
-
-
-  //  std::map<std::string, std::string> m_map_rep_duration;
-  //std::map<std::string, std::string> m_map_rep_count_or_list;
   
   // Main Record #2: The Vehicles (contacts) and position info
   std::map<std::string, NodeRecord>   m_map_node_records;

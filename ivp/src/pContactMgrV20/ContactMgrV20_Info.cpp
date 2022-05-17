@@ -134,6 +134,7 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  recap_interval       = 1         // Default is 1 sec          ");
   blk("  range_report_timeout = 10        // Default is 10 secs        ");
+  blk("  range_report_maxsize = 20        // Default is 20 reports     ");
   blk("                                                                ");
   blk("  contact_local_coords = verbatim  // Default is verbatim       ");
   blk("  post_closest_range   = false     // Default is false          ");
