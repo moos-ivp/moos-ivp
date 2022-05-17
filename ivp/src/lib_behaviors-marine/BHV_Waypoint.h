@@ -102,7 +102,7 @@ protected: // configuration parameters
   double      m_hint_edge_size;
   double      m_hint_nextpt_vertex_size;
   bool        m_hint_active;
-  
+
 protected: // intermediate or object global variables.
   
   // Time/Distance efficiency state information

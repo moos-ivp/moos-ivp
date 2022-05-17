@@ -82,7 +82,7 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_hint_nextpt_color  = "yellow";
   m_hint_nextpt_lcolor = "aqua";
   m_hint_nextpt_vertex_size = 5;
-  
+
   m_lead_to_start     = false;
 
   // The completed and perpetual vars are initialized in superclass
@@ -512,7 +512,6 @@ IvPFunction *BHV_Waypoint::onRunState()
 
   if(post_wpt_flags) {
     m_prevpt.set_vertex(this_x, this_y);
-    m_prev_waypt_index = m_waypoint_engine.getCurrIndex(); // moved 5/15/22 from below
     postFlags(m_wpt_flags);
     m_wpt_flag_published = true;
   }
@@ -531,7 +530,7 @@ IvPFunction *BHV_Waypoint::onRunState()
   // Only publish these reports if we have another point to go.
   if(next_point) {
     postStatusReport();
-    // m_prev_waypt_index = m_waypoint_engine.getCurrIndex(); // disabled 5/15/22 to above
+    m_prev_waypt_index = m_waypoint_engine.getCurrIndex();
     postViewableSegList();
     //postMessage("VIEW_POINT", m_prevpt.get_spec("active=true"), "prevpt");
     postMessage("VIEW_POINT", m_nextpt.get_spec("active=true"), "wpt");
