@@ -33,7 +33,7 @@
       '("pGenRescue" "")
       '("iM300Health" "StaleTime" "MaxHeadingDelta" "LowBattThresh" "FullBattThresh" )
 
-      
+      '("pSpoofNode" "refresh_interval" "default_length" "default_vtype" "default_color" "default_group" )
 
       '("pRealm" "relcast_interval" "summary_interval" "wrap_length" "trunc_length" "msg_max_hist" "hist_var" "scope_set" "max_appcast_events" "msg_max_history")
       '("pDatumMgr" "resolution" "historesis")
