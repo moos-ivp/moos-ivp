@@ -74,6 +74,7 @@ protected: // configuration parameters
   double      m_lead_damper;
   bool        m_lead_allowed;
   bool        m_wpt_flag_on_start;
+  bool        m_eager_prev_index_flag;
   std::string m_efficiency_measure;
   std::string m_ipf_type;
 

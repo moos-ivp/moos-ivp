@@ -100,6 +100,10 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 
   m_wpt_flag_published = false;
   
+  // false is existing behavior of later PI updates, and true ties
+  // PX,PI,PI together
+  m_eager_prev_index_flag = false; 
+
   m_dist_leg_odo = 0;
   m_dist_total_odo    = 0;
   m_dist_total_linear = 0;
@@ -323,6 +327,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   }
   else if(param == "wptflag_on_start")
     return(setBooleanOnString(m_wpt_flag_on_start, param_val));
+  else if(param == "eager_prev_index_flag")
+    return(setBooleanOnString(m_eager_prev_index_flag, param_val));
   else if(param == "lead_to_start")
     return(setBooleanOnString(m_lead_to_start, param_val));
   else if((param == "lead_damper") && (dval > 0)) {
@@ -490,6 +496,7 @@ IvPFunction *BHV_Waypoint::onRunState()
   // Note the waypoint prior to possibly incrementing the waypoint
   double this_x = m_waypoint_engine.getPointX();
   double this_y = m_waypoint_engine.getPointY();
+  int    this_i = m_waypoint_engine.getCurrIndex();
   if(!m_prevpt.valid())
     m_prevpt.set_vertex(m_osx, m_osy);
 
@@ -512,6 +519,8 @@ IvPFunction *BHV_Waypoint::onRunState()
 
   if(post_wpt_flags) {
     m_prevpt.set_vertex(this_x, this_y);
+    if(m_eager_prev_index_flag)
+      m_prev_waypt_index = this_i;
     postFlags(m_wpt_flags);
     m_wpt_flag_published = true;
   }
@@ -530,7 +539,8 @@ IvPFunction *BHV_Waypoint::onRunState()
   // Only publish these reports if we have another point to go.
   if(next_point) {
     postStatusReport();
-    m_prev_waypt_index = m_waypoint_engine.getCurrIndex();
+    if(!m_eager_prev_index_flag)
+      m_prev_waypt_index = m_waypoint_engine.getCurrIndex();
     postViewableSegList();
     //postMessage("VIEW_POINT", m_prevpt.get_spec("active=true"), "prevpt");
     postMessage("VIEW_POINT", m_nextpt.get_spec("active=true"), "wpt");
