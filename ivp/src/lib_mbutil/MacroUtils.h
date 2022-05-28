@@ -39,6 +39,8 @@ std::string macroExpand(std::string, std::string, int);
 
 std::string macroExpand(std::string, std::string, unsigned int);
 
+std::string macroHashExpand(std::string, std::string);
+
 bool hasMacro(std::string, std::string);
 
 std::string getCounterMacro(std::string);

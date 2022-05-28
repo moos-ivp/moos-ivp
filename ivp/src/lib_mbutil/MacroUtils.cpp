@@ -91,6 +91,40 @@ string macroExpand(string str, string macro, int int_repl)
   return(rstr);
 }
 
+//----------------------------------------------------------------
+// Procedure: macroHashExpand()
+
+string macroHashExpand(string str, string macro)
+{
+  string repl;
+  if((macro == "HASH") || (macro == "HASH6"))
+    repl = hashAlphaNum(6);
+  else if(macro == "HASH2")
+    repl = hashAlphaNum(2);
+  else if(macro == "HASH3")
+    repl = hashAlphaNum(3);
+  else if(macro == "HASH4")
+    repl = hashAlphaNum(4);
+  else if(macro == "HASH5")
+    repl = hashAlphaNum(5);
+  else if(macro == "HASH7")
+    repl = hashAlphaNum(7);
+  else if(macro == "HASH8")
+    repl = hashAlphaNum(8);
+  else if(macro == "HASH9")
+    repl = hashAlphaNum(9);
+
+  if(repl == "")
+    return(str);
+    
+  string macro1 = "$(" + macro + ")";
+  string rstr = findReplace(str, macro1, repl);
+
+  string macro2 = "$[" + macro + "]";
+  rstr = findReplace(rstr, macro2, repl);
+
+  return(rstr);
+}
 
 //----------------------------------------------------------------
 // Procedure: macroExpand()

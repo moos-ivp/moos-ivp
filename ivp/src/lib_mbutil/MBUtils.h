@@ -204,4 +204,6 @@ std::string uintVectorToString(std::vector<unsigned int>, char sep_char=',');
 
 std::string intToMonth(int, bool brief=false);
 
+std::string hashAlphaNum(unsigned int len=6);
+
 #endif
