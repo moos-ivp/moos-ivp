@@ -88,7 +88,8 @@ public:
   std::string helmStatus() const {return(m_helm_status);}
   void        helmStatusUpdate(const std::string& val="");
   bool        helmStatusEnabled() const;
-
+  void        seedRandom();
+  
 protected:
   InfoBuffer*   m_info_buffer;
   std::string   m_helm_status;   // STANDBY,PARK,DRIVE,DISABLED,MALCONFIG
@@ -194,6 +195,8 @@ protected:
   bool                     m_hold_apps_all_seen;
   bool                     m_helm_start_posted;
 
+  bool         m_seed_random;
+  
   std::string  m_helm_prefix;
 };
 #endif 

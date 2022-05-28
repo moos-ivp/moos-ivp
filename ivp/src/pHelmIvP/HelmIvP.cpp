@@ -107,6 +107,8 @@ HelmIvP::HelmIvP()
   m_refresh_pending  = false;
   m_refresh_time     = 0;
 
+  m_seed_random = true;
+  
   m_node_report_vars.push_back("AIS_REPORT");
   m_node_report_vars.push_back("NODE_REPORT");
   m_node_report_vars.push_back("AIS_REPORT_LOCAL");
@@ -1202,6 +1204,8 @@ bool HelmIvP::OnStartUp()
       handled = setVerbosity(value);
     else if(param == "ACTIVE_START")
       handled = setBooleanOnString(m_has_control, value);
+    else if(param == "SEED_RANDOM")
+      handled = setBooleanOnString(m_seed_random, value);
     else if(param == "GOALS_MANDATORY")
       handled = setBooleanOnString(m_goals_mandatory, value);
     else if(param == "START_ENGAGED")
@@ -1236,6 +1240,9 @@ bool HelmIvP::OnStartUp()
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
+
+  if(m_seed_random)
+    seedRandom();
   
   // Check for Config Warnings first here after reading pHelmIvP block.
   if(getWarningCount("config") > 0) {
@@ -1709,3 +1716,18 @@ bool HelmIvP::helmStatusEnabled() const
   return(false);
 }
 
+
+//--------------------------------------------------------------------
+// Procedure: seedRandom()
+//   Purpose: Create a seed for the random number generated created in
+//            part by the current time and process ID of the helm.
+
+void HelmIvP::seedRandom()
+{
+  unsigned long tseed = time(NULL)+1;
+  unsigned long pid = (long)getpid()+1;
+  unsigned long seed = (tseed%999999);
+  seed = ((rand())*seed)%999999;
+  seed = (seed*pid)%999999;
+  srand(seed);
+}
