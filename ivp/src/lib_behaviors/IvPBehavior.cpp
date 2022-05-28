@@ -1630,6 +1630,18 @@ string IvPBehavior::expandMacros(string sdata)
   sdata = macroExpand(sdata, "OSH", m_osh);
   sdata = macroExpand(sdata, "OSV", m_osv);
 
+  if(strContains(sdata, "HASH")) {
+    sdata = macroHashExpand(sdata, "HASH");
+    sdata = macroHashExpand(sdata, "HASH2");
+    sdata = macroHashExpand(sdata, "HASH3");
+    sdata = macroHashExpand(sdata, "HASH4");
+    sdata = macroHashExpand(sdata, "HASH5");
+    sdata = macroHashExpand(sdata, "HASH6");
+    sdata = macroHashExpand(sdata, "HASH7");
+    sdata = macroHashExpand(sdata, "HASH8");
+    sdata = macroHashExpand(sdata, "HASH9");
+  }
+  
   sdata = expandCtrMacro(sdata, "CTR", m_macro_ctr);
   sdata = expandCtrMacro(sdata, "CTR1", m_macro_ctr_01);
   sdata = expandCtrMacro(sdata, "CTR2", m_macro_ctr_02);
