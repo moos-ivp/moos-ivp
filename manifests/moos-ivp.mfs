@@ -10,6 +10,25 @@
 // uFldWrapDetect
 
 //====================================================================
+module   = alogavg
+type     = Command line utility
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Utility for averaging Y-values per X-Value for file with X-Y value per line
+depends  = lib_mbutil, lib_logutils, lib_apputil
+borndate = 211215
+doc_url  = http://oceanai.mit.edu/ivpman/apps/to-be-written
+license  = GPL
+group    = MOOS-IvP, ALog Toolbox
+distro   = moos-ivp.org
+
+synopsis = Given a file of data, two values per line, treat each line
+  as having an x value and y value. This tool will calculate the
+  average y value given several (x,y) pairs.  It will also calculate
+  the min, max, standard deviation of for each x value.
+
+//====================================================================
 module   = alogbin
 type     = Command line utility
 author   = Michael Benjamin

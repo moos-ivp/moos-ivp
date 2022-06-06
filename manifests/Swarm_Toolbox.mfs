@@ -1,0 +1,78 @@
+//====================================================================
+module   = pTaskManager
+type     = MOOS App
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Manage incoming tasks and bids for decentralized decision-making
+
+synopsis = The pTaskManager app is a broker that resides on any
+vehicle participating in decentralized collaborative decision making
+with other vehicles.  The task manager does four primary things: (1)
+Accept registrations for alerts from helm behaviors related to bidding
+on tasks.  (2) Accept incoming MISSION_TASK messages and spawn helm
+behaviors related to bidding on tasks.  (3) As a persistent app that
+is running during the entire mission, it will monitor incoming task
+bids from other vehicles that may arrive prior to the spawning of a
+task behavior that needs these bid messages. It retains a cache of
+"early-arriving" task bids and re-posts them when the task behavior is
+spawned. (4) The task manager monitors outgoing MISSION_TASK messages
+and TASK_STATE status messages produced by local task behaviors. It
+consolidates this information to generate appcasting output which may
+be useful for debugging and monitoring a mission.
+
+distro   = moos-ivp.org
+group    = SwarmBox
+borndate = 181202
+doc_url  = https://oceanai.mit.edu/swarmbox/apps/pTaskManager
+license  = unreleased
+depends  = lib_helmtask, lib_apputil, lib_ufield, lib_logic, lib_mbutil
+
+
+//====================================================================
+module   = pMediator
+type     = MOOS App
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Manage inter-vehcicle messaging, supporting acknowledgements and re-sends
+
+synopsis = The pMediator app implements mediated inter-vehicle
+  messaging by adding a message ID, return ack message and re-send
+  protocol. It provides for a customizable re-send policy per message
+  (MOOS Variable). It is run as a independent optional app when
+  inter-vehicle node messaging is conducted throught NODE_MESSAGE and
+  uFldMessageHandler mechanisms.
+
+
+distro   = moos-ivp.org
+group    = SwarmBox
+borndate = 220214
+doc_url  = https://oceanai.mit.edu/swarmbox/apps/pMediator
+license  = unreleased
+depends  = lib_apputil, lib_mbutil
+
+//====================================================================
+module   = pEncircle
+type     = MOOS App
+author   = Michael Benjamin
+contact  = mikerb@mit.edu
+org      = MIT
+thumb    = Advise the Helm Loiter behavior on speeds relative to contacts
+
+synopsis = The pEncircle app works in conjuction with the Helm Loiter
+  behavior by posting adjustments to the loiter speed based on ownship
+  position relative to other contacts also traversing the same loiter
+  polygon. The goal is to adjust ownship speed to keep the distances
+  between ownship and the vehicle fore and aft, as similar as
+  possible.  It subscribes for the node reports of ownship and all
+  contacts and is capable of receiving commands to adjust the applied
+  algorithm.
+
+distro   = moos-ivp.org
+group    = SwarmBox
+borndate = 170327
+doc_url  = https://oceanai.mit.edu/swarmbox/apps/pEncircle
+license  = unreleased
+depends  = lib_apputil, lib_mbutil, lib_contacts, lib_ufield, lib_geometry
+
