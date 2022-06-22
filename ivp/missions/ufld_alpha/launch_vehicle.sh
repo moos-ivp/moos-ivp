@@ -8,7 +8,7 @@
 #  Part 1: Declare global var defaults
 #--------------------------------------------------------------
 ME=`basename "$0"`
-TIME_WARP=1
+TIME_WARP=${TIME_WARP:-1}
 JUST_MAKE="no"
 VERBOSE="no"
 CONFIRM="yes"
@@ -19,7 +19,7 @@ IP_ADDR="localhost"
 MOOS_PORT="9001"
 PSHARE_PORT="9201"
 
-SHORE_IP="localhost"
+SHORE_IP=${SHORE_IP:-"localhost"}
 SHORE_PSHARE="9200"
 VNAME="abe"
 INDEX="1"
