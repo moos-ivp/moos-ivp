@@ -11,21 +11,21 @@ ME=`basename "$0"`
 TIME_WARP=${TIME_WARP:-1}
 JUST_MAKE="no"
 VERBOSE="no"
-CONFIRM="yes"
-AUTO_LAUNCHED="no"
+CONFIRM=${CONFIRM:-"yes"}
+AUTO_LAUNCHED=${AUTO_LAUNCHED:-"no"}
 CMD_ARGS=""
 
 IP_ADDR="localhost"
-MOOS_PORT="9001"
-PSHARE_PORT="9201"
+MOOS_PORT=${MOOS_PORT:-"9001"}
+PSHARE_PORT=${PSHARE_PORT:-"9201"}
 
 SHORE_IP=${SHORE_IP:-"localhost"}
-SHORE_PSHARE="9200"
-VNAME="abe"
-INDEX="1"
+SHORE_PSHARE=${SHORE_PSHARE:-"9200"}
+VNAME=${VNAME:-"abe"}
+INDEX=${INDEX:-"1"}
 
 REGION="forest_lake"
-START_POS="0,0"  
+START_POS=${START_POS:-"0,0"}
 
 
 #--------------------------------------------------------------
