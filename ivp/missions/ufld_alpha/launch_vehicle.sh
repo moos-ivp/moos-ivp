@@ -27,6 +27,9 @@ INDEX=${INDEX:-"1"}
 REGION="forest_lake"
 START_POS=${START_POS:-"0,0"}
 
+echo "CONFIRM:["$CONFIRM"]"
+echo "VERBOSE:["$VERBOSE"]"
+
 
 #--------------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
