@@ -115,6 +115,7 @@ if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then
     echo "CMD_ARGS =      [${CMD_ARGS}]     "
     echo "TIME_WARP =     [${TIME_WARP}]    "
     echo "AUTO_LAUNCHED = [${AUTO_LAUNCHED}]"
+    echo "CONFIRM =       [${CONFIRM}]      "
     echo "----------------------------------"
     echo "MOOS_PORT =     [${MOOS_PORT}]    "
     echo "PSHARE_PORT =   [${PSHARE_PORT}]  "
@@ -126,6 +127,9 @@ if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then
     echo "INDEX =         [${INDEX}]        "
     echo "----------------------------------"
     echo "START_POS =     [${START_POS}]"
+fi
+
+if [ "${CONFIRM}" = "yes" ]; then 
     echo -n "Hit any key to continue with launching"
     read ANSWER
 fi
