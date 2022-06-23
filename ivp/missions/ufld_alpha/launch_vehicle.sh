@@ -29,6 +29,7 @@ START_POS=${START_POS:-"0,0"}
 
 echo "CONFIRM:["$CONFIRM"]"
 echo "VERBOSE:["$VERBOSE"]"
+echo "AUTO_LAUNCHED:["$AUTO_LAUNCHED"]"
 
 
 #--------------------------------------------------------------
