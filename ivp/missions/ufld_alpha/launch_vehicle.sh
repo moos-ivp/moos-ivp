@@ -31,6 +31,8 @@ echo "CONFIRM:["$CONFIRM"]"
 echo "VERBOSE:["$VERBOSE"]"
 echo "AUTO_LAUNCHED:["$AUTO_LAUNCHED"]"
 
+echo "Version 1"
+
 if [ "${VERBOSE}" = "yes" ]; then 
     echo 1111
 fi
