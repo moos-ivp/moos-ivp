@@ -31,6 +31,14 @@ echo "CONFIRM:["$CONFIRM"]"
 echo "VERBOSE:["$VERBOSE"]"
 echo "AUTO_LAUNCHED:["$AUTO_LAUNCHED"]"
 
+if [ "${VERBOSE}" = "yes" ]; then 
+    echo 1111
+fi
+
+if [ ${VERBOSE} = "yes" ]; then 
+    echo 2222
+fi
+
 
 #--------------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
