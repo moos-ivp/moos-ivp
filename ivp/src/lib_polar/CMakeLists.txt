@@ -5,11 +5,13 @@
 
 SET(SRC
   PolarPlot.cpp
+  WindModel.cpp
   PopulatorPolarPlot.cpp
 )
 
 SET(HEADERS
   PolarPlot.h
+  WindModel.h
   PopulatorPolarPlot.h
 )
 

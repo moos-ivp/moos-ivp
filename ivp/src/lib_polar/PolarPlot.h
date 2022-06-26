@@ -57,6 +57,7 @@ protected:
   
 protected:
 
+  // key is heading, mapped value is a spd value
   std::map<double, double> m_setpts;
 
   std::map<int, double> m_allpts;
