@@ -230,6 +230,41 @@ bool XYArrow::setHeadLen(double head_len)
 }
 
 //-------------------------------------------------------------
+// Procedure: resize()
+
+bool XYArrow::resize(double factor)
+{
+  if(factor <= 0.01)
+    return(false);
+  
+  m_base_wid *= factor;
+  m_base_len *= factor;
+  m_head_wid *= factor;
+  m_head_len *= factor;
+
+  m_cache_set = false;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: modCenterX()
+
+void XYArrow::modCenterX(double delta)
+{
+  m_ctr_x += delta;
+  m_cache_set = false;
+}
+
+//-------------------------------------------------------------
+// Procedure: modCenterY()
+
+void XYArrow::modCenterY(double delta)
+{
+  m_ctr_y += delta;
+  m_cache_set = false;
+}
+
+//-------------------------------------------------------------
 // Procedure: setAngle()
 
 void XYArrow::setAngle(double angle)

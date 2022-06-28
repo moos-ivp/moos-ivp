@@ -50,6 +50,10 @@ public:
   bool   setHeadLen(double head_len);
   void   setAngle(double angle);
 
+  bool   resize(double);
+  void   modCenterX(double);
+  void   modCenterY(double);
+  
   void   setPointCache();
 
   double getCenterX() {return(m_ctr_x);}
