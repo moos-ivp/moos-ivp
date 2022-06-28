@@ -27,11 +27,17 @@ public:
 
   bool   setWindDir(double);  // Set
   bool   setWindSpd(double);  // and Drift
+  bool   modWindDir(double);
+  bool   modWindSpd(double);
+
+  void   setTimeUTC(double v) {m_time_utc=v;}
 
  public: // Getters
   double getWindDir() const {return(m_wind_dir);}
   double getWindSpd() const {return(m_wind_spd);}
 
+  double getTimeUTC() const {return(m_time_utc);}
+  
   bool   set() const {return(m_set);}
   
  public:
@@ -54,9 +60,13 @@ protected:
 
   double m_wind_dir;
   double m_wind_spd;
+
+  double m_time_utc;
   
   XYArrow m_arrow;
 };
+
+WindModel stringToWindModel(std::string);
 
 #endif 
 

@@ -66,7 +66,10 @@ bool WindModel::setWindDir(double dval)
 { 
   m_wind_dir = angle360(dval);
 
-  m_arrow.setAngle(m_wind_dir);
+  // NOTE: The wind direction is the direction it is coming FROM.
+  // The arrow will point 180 degs + the wind direction.
+  double arrow_angle = angle360(m_wind_dir + 180);
+  m_arrow.setAngle(arrow_angle);
 
   m_set = true;
   return(true);
@@ -82,6 +85,35 @@ bool WindModel::setWindSpd(double dval)
 
   m_wind_spd = dval;
 
+  m_set = true;
+  return(true);
+}
+
+//----------------------------------------------------------------
+// Procedure: modWindDir()
+
+bool WindModel::modWindDir(double dval)
+{ 
+  m_wind_dir = angle360(m_wind_dir + dval);
+
+  // NOTE: The wind direction is the direction it is coming FROM.
+  // The arrow will point 180 degs + the wind direction.
+  double arrow_angle = angle360(m_wind_dir + 180);
+  m_arrow.setAngle(arrow_angle);
+
+  m_set = true;
+  return(true);
+}
+
+//----------------------------------------------------------------
+// Procedure: modWindSpd()
+
+bool WindModel::modWindSpd(double dval)
+{ 
+  m_wind_spd += dval;
+  if(m_wind_spd < 0)
+    m_wind_spd = 0;
+  
   m_set = true;
   return(true);
 }
@@ -175,5 +207,27 @@ string WindModel::getModelSpec() const
   spec += ", dir=" + doubleToStringX(m_wind_dir);
 
   return(spec);
+}
+
+//----------------------------------------------------------------
+// Procedure: stringToWindModel()
+
+WindModel stringToWindModel(string str)
+{
+  WindModel model;
+  
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+    double dval  = atof(value.c_str());
+    
+    if((param == "spd") && isNumber(value))
+      model.setWindSpd(dval);
+    else if((param == "dir") && isNumber(value))
+      model.setWindDir(dval);
+  }
+
+  return(model);
 }
 
