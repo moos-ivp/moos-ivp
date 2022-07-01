@@ -138,9 +138,11 @@ ProcessConfig = pSearchGrid
 
   grid_config = pts={-50,-40: -10,0: 180,0: 180,-150: -50,-150}
   grid_config = cell_size=5
-  grid_config = cell_vars=x:0:y:0:z:0
+  grid_config = cell_vars=x:0:y:0
   grid_config = cell_min=x:0
   grid_config = cell_max=x:10
+
+	report_deltas = true
 }
 
 //--------------------------------------------------
@@ -151,7 +153,7 @@ ProcessConfig = pLogger
   AppTick       = 10
   CommsTick     = 10
   
-  File          = LOG_SHORESIDE
+  File          = XLOG_SHORESIDE
   PATH          = ./
   SyncLog       = true @ 0.2
   AsyncLog      = true

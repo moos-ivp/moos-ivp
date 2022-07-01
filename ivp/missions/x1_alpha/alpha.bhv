@@ -8,6 +8,15 @@ initialize   SPDLIMIT = true
 initialize   AVOIDING = idle
 
 //----------------------------------------------
+Behavior = BHV_HSLine
+{ 
+  name = hsline
+
+	time_on_leg = 5
+	condition = DEPLOY=true
+}
+
+//----------------------------------------------
 Behavior = BHV_Waypoint
 { 
   name      = waypt_survey
@@ -15,9 +24,11 @@ Behavior = BHV_Waypoint
   condition = RETURN = false
   condition = DEPLOY = true
 	endflag   = RETURN = true
-	endflag   = EFLAG  = endings=$[CTR_02]
-	cycleflag = CFLAG  = cyles=$[CTR_01]
+	endflag   = EFLAG  = endings=$[CTR2]
+	cycleflag = CFLAG  = cyles=$[CTR1]
 	wptflag   = WFLAG  = waypoints=$[CTR]
+	wptflag   = WPI  = $[PI]
+	wptflag   = WNI  = $[NI]
 
   updates    = WPT_UPDATE
   perpetual  = true

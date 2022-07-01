@@ -6,6 +6,7 @@
 #----------------------------------------------------------
 #  Part 1: Set Exit actions and declare global var defaults
 #----------------------------------------------------------
+
 TIME_WARP=1
 COMMUNITY="alpha"
 

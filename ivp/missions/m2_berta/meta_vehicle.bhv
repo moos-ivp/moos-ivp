@@ -73,7 +73,7 @@ Behavior = BHV_AvdColregsV19
 	
 	post_per_contact_info = true
 	
-        use_refinery = true
+  use_refinery = true
 
         pwt_outer_dist = 80
         pwt_inner_dist = 50
@@ -114,9 +114,9 @@ Behavior = BHV_AvdColregsV19
 
         use_refinery = true
 
-        pwt_outer_dist = 20
+        pwt_outer_dist = 75
         pwt_inner_dist = 11
-        completed_dist = 40
+        completed_dist = 80
      min_util_cpa_dist = 8
      max_util_cpa_dist = 15
              pwt_grade = linear

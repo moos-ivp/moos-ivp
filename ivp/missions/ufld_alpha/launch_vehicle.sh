@@ -27,21 +27,6 @@ INDEX=${INDEX:-"1"}
 REGION="forest_lake"
 START_POS=${START_POS:-"0,0"}
 
-echo "CONFIRM:["$CONFIRM"]"
-echo "VERBOSE:["$VERBOSE"]"
-echo "AUTO_LAUNCHED:["$AUTO_LAUNCHED"]"
-
-echo "Version 1"
-
-if [ "${VERBOSE}" = "yes" ]; then 
-    echo 1111
-fi
-
-if [ ${VERBOSE} = "yes" ]; then 
-    echo 2222
-fi
-
-
 #--------------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
 #--------------------------------------------------------------
@@ -76,7 +61,6 @@ for ARGI; do
 	echo "    Name of the vehicle being launched           " 
 	echo "  --index=<1>                                    " 
 	echo "    Index for setting MOOSDB and pShare ports    "
-
 	echo "  --start=<X,Y>     (default is 0,0)             " 
 	echo "    Start position chosen by script launching    "
 	echo "    this script (to ensure separation)           "

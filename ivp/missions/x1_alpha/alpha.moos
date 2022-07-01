@@ -210,6 +210,8 @@ ProcessConfig = pMarineViewer
 
   trails_point_size   = 1
 
+	full_screen = true
+	
   stale_report_thresh = 10
   stale_remove_thresh = 20
 
@@ -261,4 +263,7 @@ ProcessConfig = pNodeReporter
 
   platform_type   = KAYAK
   platform_length = 4
+
+	rider = var=WFLAG, policy=always, rfld=mflagx
+	rider = var=CFLAG, policy=10
 }
