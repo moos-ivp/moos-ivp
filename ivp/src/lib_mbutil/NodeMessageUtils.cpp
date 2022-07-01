@@ -68,9 +68,9 @@ NodeMessage string2NodeMessage(const string& message_string)
       new_message.setColor(value);
     else if(param == "ack_id")
       new_message.setMessageID(value);
-    else if((param == "string_val_quoted") && (value == "true"))
+    else if((param == "string_val_quoted") && (tolower(value) == "true"))
       string_val_quoted = true;
-    else if((param == "ack") && (value == "true"))
+    else if((param == "ack") && (tolower(value) == "true"))
       new_message.setAckRequested(true);
     else if(param == "double_val")
       new_message.setDoubleVal(atof(value.c_str()));

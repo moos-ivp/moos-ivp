@@ -411,7 +411,7 @@ void USM_MOOSApp::registerVariables()
   Register("CURRENT_X",0);
   Register("DRIFT_X",0);
 
-  //Register("USM_FORCE_Y", 0);  // Dperecated
+  //Register("USM_FORCE_Y", 0);  // Deprecated
   Register("CURRENT_Y",0);
   Register("DRIFT_Y",0);
 

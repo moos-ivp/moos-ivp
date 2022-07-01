@@ -1024,6 +1024,9 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
 
   vplot.applySkew(m_logskew[aix]);
 
+  if(m_verbose)
+    cout << "klog done: " << klog << endl;
+
   return(vplot);
 }
 

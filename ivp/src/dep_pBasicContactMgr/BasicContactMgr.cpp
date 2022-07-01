@@ -85,6 +85,9 @@ BasicContactMgr::BasicContactMgr()
   m_prev_closest_range    = 0;
 
   m_alert_requests_received = 0;
+
+  // This app is deprecated. Suggest an alternative
+  m_deprecated_alt = "pContactMgrV20";
 }
 
 //---------------------------------------------------------

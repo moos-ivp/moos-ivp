@@ -268,7 +268,7 @@ bool Populator_TaskDiary::handleKLogFile(unsigned int ix)
   double utc_start_time = m_klog_files_utc[ix];
   string node_name = m_klog_files_node[ix];
   
-  cout << "Populator_TaskDiary::handleKLogFIle: " << klogfile << endl;
+  cout << "Populator_TaskDiary::handleKLogFile: " << klogfile << endl;
   FILE *fileptr = fopen(klogfile.c_str(), "r");
   if(!fileptr) {
     cout << "klog file not found or unable to open: " << klogfile << endl;
@@ -287,13 +287,16 @@ bool Populator_TaskDiary::handleKLogFile(unsigned int ix)
     if(status == "invalid")
       continue;
 
+    cout << "+" << flush;
     entry.setNode(node_name);
     double local_tstamp = entry.getTimeStamp();
     double utc_tstamp = utc_start_time + local_tstamp;
     entry.setTimeStamp(utc_tstamp);
     m_task_diary.addALogEntry(entry);
+    cout << "/" << flush;
   }
-  
+  cout << endl;
+  cout << "Populator_TaskDiary::handleKLogFile: Done: " << klogfile << endl;
   fclose(fileptr);
   return(true);
 }

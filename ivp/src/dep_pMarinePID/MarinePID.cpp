@@ -685,13 +685,36 @@ bool MarinePID::handleDepthSettings()
   return(ok);
 }
 
-
+//--------------------------------------------------------------------
+// Procedure: buildReport()
 
 bool MarinePID::buildReport()
 {
-  m_msgs << "hello" << endl;
-  //m_msgs << "Number of good messages: " << m_good_message_count << endl;
-  //m_msgs << "Number of bad  messages: " << m_bad_message_count  << endl;
-  
+  m_msgs << "State:            " << endl;
+  m_msgs << "  start_time:     " << doubleToString(m_start_time) << endl;
+  m_msgs << "  has_contro:     " << boolToString(m_has_control)    << endl;
+  m_msgs << "  paused:         " << boolToString(m_paused)         << endl;
+  m_msgs << "  allstop_posted: " << boolToString(m_allstop_posted) << endl;
+  m_msgs << "  depth_control:  " << boolToString(m_depth_control)  << endl;
+  m_msgs << "  time_last_helm_msg: " << doubleToString(m_time_of_last_helm_msg,2) << endl;
+  m_msgs << "  time_last_nav_msg:  " << doubleToString(m_time_of_last_nav_msg,2) << endl;
+  m_msgs << "                  " << endl;
+  m_msgs << "  desired_hdg: " << doubleToString(m_desired_heading,1) << endl;
+  m_msgs << "  desired_spd: " << doubleToString(m_desired_speed,1) << endl;
+  m_msgs << "  desired_dep: " << doubleToString(m_desired_depth,1) << endl;
+  m_msgs << "  curr_thrust: " << doubleToString(m_current_thrust,1) << endl;
+  m_msgs << "                  " << endl;
+  m_msgs << "Configuration:    " << endl;
+  m_msgs << "  allow_override: " << boolToString(m_allow_override) << endl;
+  m_msgs << "  ok_skew         " << doubleToString(m_ok_skew,2) << endl;
+  m_msgs << "                  " << endl;
+  m_msgs << "  max_pitch:      " << doubleToString(m_max_pitch) << endl;
+  m_msgs << "  max_rudder:     " << doubleToString(m_max_rudder) << endl;
+  m_msgs << "  max_thrust:     " << doubleToString(m_max_thrust) << endl;
+  m_msgs << "  max_elevator:   " << doubleToString(m_max_elevator) << endl;
+  m_msgs << "                     " << endl;
+  m_msgs << "  tardy_helm_thresh: " << doubleToString(m_tardy_helm_thresh) << endl;
+  m_msgs << "  tardy_nav_thresh:  " << doubleToString(m_tardy_nav_thresh) << endl;
+    
   return(true);
 }

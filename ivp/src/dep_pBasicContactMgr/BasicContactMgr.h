@@ -46,7 +46,8 @@ class BasicContactMgr : public AppCastingMOOSApp
 
  public:
   bool buildReport();
-
+  bool deprecated() {return(true);}
+  
  protected:
   void registerVariables();
   bool handleConfigAlert(std::string);

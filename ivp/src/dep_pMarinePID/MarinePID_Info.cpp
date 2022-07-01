@@ -30,7 +30,7 @@
 using namespace std;
 
 //----------------------------------------------------------------
-// Procedure: showSynopsis
+// Procedure: showSynopsis()
 
 void showSynopsis()
 {
@@ -40,11 +40,13 @@ void showSynopsis()
   blk("  speed and depth based on incoming desired heading, speed and  ");
   blk("  depth objectives and output on rudder, thrust and elevator    ");
   blk("  fed through three PID controllers.                            ");
+  blk("  Note: As of July 2022, this app has been deprecated in favor  ");
+  blk("  of pMarinePIDV22.                                             ");
 }
 
 
 //----------------------------------------------------------------
-// Procedure: showHelpAndExit
+// Procedure: showHelpAndExit()
 
 void showHelpAndExit()
 {
@@ -58,7 +60,7 @@ void showHelpAndExit()
   blk("Options:                                                   ");
   mag("  --alias","=<ProcessName>                                 ");
   blk("      Launch pMarinePID with the given process name rather ");
-  blk("      than uFldCommsRegister.                              ");
+  blk("      than pMarinePID.                                     ");
   mag("  --example, -e                                            ");
   blk("      Display example MOOS configuration block.            ");
   mag("  --help, -h                                               ");
@@ -209,7 +211,7 @@ void showInterfaceAndExit()
 }
 
 //----------------------------------------------------------------
-// Procedure: showReleaseInfoAndExit
+// Procedure: showReleaseInfoAndExit()
 
 void showReleaseInfoAndExit()
 {

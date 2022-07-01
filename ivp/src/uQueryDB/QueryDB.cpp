@@ -31,7 +31,7 @@ extern bool MOOSAPP_OnConnect(void*);
 extern bool MOOSAPP_OnDisconnect(void*);
 
 //------------------------------------------------------------
-// Constructor
+// Constructor()
 
 QueryDB::QueryDB()
 {
@@ -360,6 +360,9 @@ void QueryDB::reportCheckVars()
 //            1  A pass condition unsat
 //            1  Any fail conditions satisfied
 //            0  otherwise (THIS MEANS PASS)
+//      Note: The xlaunch.sh utility script, which uses uQueryDB,
+//            looks for a return value of 0 (pass). Upon 0, it
+//            will halt the mission. 
 
 void QueryDB::checkPassFailConditions()
 {
