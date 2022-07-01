@@ -54,7 +54,8 @@ AppCastingMOOSApp::AppCastingMOOSApp()
   m_new_cfg_warning = false;
 
   // If "log" stdio is posted. If "file" stdio goes to a file.
-  m_app_logging  = "off";
+  m_app_logging   = "off";
+  m_deprecated_ok = false;
 }
 
 //----------------------------------------------------------------
@@ -241,11 +242,29 @@ void AppCastingMOOSApp::preOnStartUp()
       else
 	reportConfigWarning("Invalid APP_LOGGING: " + value);
     }
+
+    else if(param == "DEPRECATED_OK") {
+      if(lvalue == "true")
+	m_deprecated_ok = true;
+      else if(lvalue == "false")
+	m_deprecated_ok = false;
+      else
+	reportConfigWarning("Invalid DEPRECATED_OK: " + value);
+    }
   }
 
   if(m_app_logging == "log")
     std::cout.rdbuf(m_cout.rdbuf());
 
+  if(deprecated() && !m_deprecated_ok) {
+    string msg1 = GetAppName() + " is deprecated.";
+    string msg2 = "Set deprecated_ok = true to silence deprecation warning.";
+    reportRunWarning(msg1);
+    reportRunWarning(msg2);
+    if(m_deprecated_alt != "")
+      reportRunWarning("The supported alternative is: " + m_deprecated_alt);
+  }
+  
 #if 0
   else if(m_app_logging == "file") {
     string filename = ("cout_" + m_host_community + "_" + m_sMOOSName);
@@ -550,7 +569,8 @@ void AppCastingMOOSApp::reportUnhandledConfigWarning(const string& orig)
   MOOSTrimWhiteSpace(param);
   if((param == "APPTICK")    || (param == "APP_LOGGING")          ||
      (param == "MAXAPPTICK") || (param == "TERM_REPORT_INTERVAL") ||
-     (param == "COMMSTICK")  || (param == "MAX_APPCAST_EVENTS"))
+     (param == "COMMSTICK")  || (param == "MAX_APPCAST_EVENTS")   ||
+     (param == "DEPRECATED_OK"))
     return;
 
   reportConfigWarning("Unhandled config line: " + orig);

@@ -47,6 +47,7 @@ public:
   virtual bool OnNewMail(MOOSMSG_LIST&);
   virtual bool OnStartUp();
   virtual bool buildReport() {return(false);};
+  virtual bool deprecated()  {return(false);}
   
  protected:
   void         RegisterVariables();
@@ -75,7 +76,9 @@ protected:
   double       m_last_report_time;
   double       m_term_report_interval;
   bool         m_term_reporting;
-
+  bool         m_deprecated_ok;
+  std::string  m_deprecated_alt;
+  
   std::stringstream m_msgs;
   std::stringstream m_cout;
   
