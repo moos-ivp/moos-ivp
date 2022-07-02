@@ -28,7 +28,7 @@ ProcessConfig = ANTLER
   Run = MOOSDB		    @ NewConsole = false
   Run = pLogger       @ NewConsole = false
   Run = pMarineViewer	@ NewConsole = false
-  Run = uSimMarineX	  @ NewConsole = false
+  Run = uSimMarineV22 @ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
   Run = pMarinePID	  @ NewConsole = false
   Run = pHelmIvP	    @ NewConsole = false
@@ -101,10 +101,9 @@ ProcessConfig = pLogger
 }
 
 //------------------------------------------
-// uSimMarine config block
+// uSimMarineV22 config block
 
-ProcessConfig = uSimMarineX
-{
+ProcessConfig = uSimMarineV22 {
   AppTick	  = 8
   CommsTick	= 8
  
