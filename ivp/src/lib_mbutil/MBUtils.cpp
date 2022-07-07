@@ -2675,6 +2675,9 @@ string checksumHexStr(string str)
     dec = dec/16;
   }
 
+  if(hexstr.length() == 1)
+    hexstr = "0" + hexstr;
+  
   return(hexstr);
 }
 
