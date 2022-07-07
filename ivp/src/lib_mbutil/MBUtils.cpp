@@ -2675,7 +2675,10 @@ string checksumHexStr(string str)
     dec = dec/16;
   }
 
-  if(hexstr.length() == 1)
+  // edge cases
+  if(hexstr.length() == 0)
+    hexstr = "00";
+  else if(hexstr.length() == 1)
     hexstr = "0" + hexstr;
   
   return(hexstr);
