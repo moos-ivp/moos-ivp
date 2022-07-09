@@ -208,7 +208,8 @@ bool QueryDB::OnStartUp()
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  //m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  m_MissionReader.GetConfiguration("uQueryDB", sParams);
 
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
@@ -238,6 +239,8 @@ bool QueryDB::OnStartUp()
       reportUnhandledConfigWarning(orig);
   }
     
+  m_ac.setProcName("uQueryDB");
+
   registerVariables();
   return(true);
 }

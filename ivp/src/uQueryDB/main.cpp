@@ -32,6 +32,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   QueryDB query;
+  bool unique_name = false;
   
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -59,6 +60,8 @@ int main(int argc, char *argv[])
       handled = query.addFailCondition(argi.substr(17));
     else if(strBegins(argi, "--check_var="))
       handled = query.addConfigCheckVar(argi.substr(12));
+    else if((argi == "--unique") || (argi == "-u"))
+      unique_name = true;
     else if(argi == "--csv")
       handled = query.setConfigCheckVarFormat("csv");
     else if(argi == "--wsv")
@@ -114,8 +117,16 @@ int main(int argc, char *argv[])
     cout << "  server_port  = " << query.getServerPort() << endl;
     query.setConfigCommsLocally(true);
   }
-  
-  query.Run("uQueryDB", mission_file.c_str(), argc, argv);
+
+  string app_name = "uQueryDB";
+  if(unique_name) {
+    srand(time(NULL));
+    int rand_int = rand() % 10000;
+    string rand_str = intToString(rand_int);
+    app_name += "_" + rand_str;
+  }
+
+  query.Run(app_name.c_str(), mission_file.c_str(), argc, argv);
 
   return(1);
 }

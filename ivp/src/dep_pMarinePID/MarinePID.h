@@ -46,7 +46,9 @@ public:
   bool handleSpeedSettings();
   bool handleDepthSettings();
 
-  bool  buildReport();
+ protected: // Standard AppCastingMOOSApp function to overload
+  bool buildReport();
+  bool deprecated() {return(true);}
   
 protected:
   bool     m_has_control;

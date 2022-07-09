@@ -567,6 +567,9 @@ bool Realm::buildRealmCastChannel(PipeWay pipeway)
   }
   
   RealmCast relcast;
+  if(strContains(channel, "uQueryDB"))
+    channel = "uQueryDB";
+
   relcast.setNodeName(m_host_community);
   relcast.setProcName(channel);
   relcast.msg(ss.str());
@@ -618,6 +621,13 @@ void Realm::buildRealmCastSummary()
   set<string>::iterator p;
   for(p=m_set_apps.begin(); p!=m_set_apps.end(); p++) {
     string app = *p;
+
+    if(strContains(app, "uQueryDB") ||
+       strContains(app, "uPokeDB") ||
+       strContains(app, "uXMS") ||
+       strContains(app, "uMAC"))
+      continue;
+    
     realm_summary.addProc(app);
   }
 

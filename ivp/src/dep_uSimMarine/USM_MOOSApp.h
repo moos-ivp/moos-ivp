@@ -43,6 +43,7 @@ public:
 
  protected: // Standard AppCastingMOOSApp function to overload
   bool buildReport();
+  bool deprecated() {return(true);}
 
  protected:
   void registerVariables();

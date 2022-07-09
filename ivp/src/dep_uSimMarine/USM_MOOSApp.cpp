@@ -57,6 +57,9 @@ USM_MOOSApp::USM_MOOSApp()
 
   m_thrust_mode_reverse = false;
   m_thrust_mode_differential = false;
+
+  // This app is deprecated. Suggest an alternative
+  m_deprecated_alt = "uSimMarineV22";
 }
 
 //------------------------------------------------------------------------
