@@ -15,7 +15,7 @@ RESFILE="no"
 CLEAN="no"
 DELAY="4"
 FAKEOS=""
-TERSE=""
+QUIET="no"
 ALL_ARGS=""
 
 #-------------------------------------------------------
@@ -43,7 +43,7 @@ for ARGI; do
 	echo "  --res, -r          Make a results file                     " 
 	echo "  --send, -s         Make and send a results file            " 
 	echo "  --clean, -c        Remove outcome file after OK send       " 
-	echo "  --terse, -t        Terse uQueryDB, uPokeDB                 " 
+	echo "  --quiet, -q        Quiet uQueryDB, uPokeDB                 " 
 	echo "  --com=alpha        Name the community to poke              " 
 	echo "  --delay=<secs>     Delay N secs before launch. Default is 4" 
 	exit 0;
@@ -66,8 +66,8 @@ for ARGI; do
         SEND="yes"
     elif [ "${ARGI}" = "--clean" -o "${ARGI}" = "-c" ]; then
         CLEAN="yes"
-    elif [ "${ARGI}" = "--terse" -o "${ARGI}" = "-t" ]; then
-        TERSE="--terse"
+    elif [ "${ARGI}" = "--quiet" -o "${ARGI}" = "-q" ]; then
+        QUIET="yes"
     elif [ "${ARGI}" = "--pi" ]; then
         FAKEOS="--fakeos=Raspbian-10-buster"
     elif [ "${ARGI}" = "--ubu" ]; then
@@ -85,14 +85,18 @@ echo "xlaunch.sh: $ALL_ARGS"
 echo "=================================================="
 echo -n "Part 1: Launching the Mission... "
 
-./launch.sh $FLOW_DOWN_ARGS $TIME_WARP >& /dev/null
+if [ "${QUIET}" = "yes" ]; then
+    ./launch.sh $FLOW_DOWN_ARGS $TIME_WARP >& /dev/null
+else
+    ./launch.sh $FLOW_DOWN_ARGS $TIME_WARP
+fi
 LEXIT_CODE=$?
 
 if [ $LEXIT_CODE != 0 ]; then
     echo "The launch.sh cmd return non-zero exit code: " $LEXIT_CODE
     exit 1
 fi
-if [ ${JUST_MAKE} = "yes" ] ; then
+if [ ${JUST_MAKE} = "yes" ]; then
     exit 0
 fi
 echo "DONE"
@@ -113,10 +117,15 @@ fi
 
 echo -n "Part 2: Poking/Starting mission $TNUM in $DELAY seconds... "  
 sleep $DELAY
+START="DEPLOY=true MOOS_MANUAL_OVERRIDE=false"
 if [ "${COMMUNITY}" = "shoreside" ]; then
-    uPokeDB targ_shoreside.moos DEPLOY_ALL=true MOOS_MANUAL_OVERRIDE_ALL=false
+    START="DEPLOY_ALL=true MOOS_MANUAL_OVERRIDE_ALL=false"
+fi
+
+if [ "${QUIET}" = "yes" ]; then
+    uPokeDB targ_$COMMUNITY.moos $START >& /dev/null
 else
-    uPokeDB targ_$COMMUNITY.moos DEPLOY=true MOOS_MANUAL_OVERRIDE=false >& /dev/null
+    uPokeDB targ_$COMMUNITY.moos $START
 fi
 echo "DONE"
 
@@ -128,7 +137,12 @@ while [ 1 ]; do
     echo -n "Waiting to Query... "
     sleep 6
     rm -f .checkvars
-    uQueryDB targ_$COMMUNITY.moos >& /dev/null
+    if [ "${QUIET}" = "yes" ]; then
+	uQueryDB -u targ_$COMMUNITY.moos >& /dev/null
+    else
+	uQueryDB -u targ_$COMMUNITY.moos
+    fi
+
     if [ "$?" = 0 ]; then 
         break;
     fi
@@ -196,6 +210,3 @@ if [ "${SEND}" = "yes" ]; then
 	fi
     fi
 fi
-
-
-

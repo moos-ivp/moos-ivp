@@ -167,7 +167,7 @@ cat > ${1}.cpp <<EOF
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 ${1}::${1}()
 {
@@ -181,7 +181,7 @@ ${1}::~${1}()
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -213,7 +213,7 @@ bool ${1}::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool ${1}::OnConnectToServer()
 {
@@ -271,7 +271,7 @@ bool ${1}::OnStartUp()
 }
 
 //---------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void ${1}::registerVariables()
 {

@@ -16,30 +16,28 @@ else
     echo "moos was not running, doing nothing."
 fi
 
-killall -9 iActuationRobotX iVelodyne pFeatureTracker       \
-        pFeatureVision pGenWaypoint pManageAcousticVars     \
-        pMarinePIDWAMV pObstacleMgr                         \
-        uSimAcousticOutput uSimMarineWAMV pPoseKeep         \
-        uTaskManager pBearingTracker pCBF pMergeArrayData   \
-        iGPS_KFAC iActuationRobot pDeadManPost              \
-        ddConsoleApp pTaskManager iM200 iActuationKFAC
+killall -9 iVelodyne pFeatureTracker pObstacleMgr    \
+	uFldRescueMgr pPoseKeep pContactMgrV20       \
+        pDeadManPost  pTaskManager iM200 iM300       \
+	pMediator pSpoofNode uFldVoronoi pProxonoi   \
+	pEncircle uFldTaskMonitor uFldAnemo          \
+	uFldConvoyEval uSimHeron uSockComms          \
+	pGeoSelect 
 
-killall -9 pLocalizePinger turnview pContactMgrV20 
-
-killall -9 uFldFlagManager uFldTagManager
+killall -9 uFldFlagManager uFldTagManager pGenRescue
 
 killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav  \
         pHelm pHelmIvP pMarineViewer iMarineSim uSimMarine  \
         pLogger iPWMController MOOSDump pAntler umm         \
         iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
-        pHuxley pMessageSim pBeamform uTermCommand          \
-        pBearingTrack uMissionTester pTestBug2
+        pHuxley pMessageSim pBeamform uTermCommand pRealm   \
+        pBearingTrack uMissionTester uSimMarineV22
 
 killall -9 pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim     \
         iPNICompass iMetaCompass iHeadingMonitor  pAEL       \
         iWifi p1BTracker p2BTracker pBearings uMS pTarget    \
         pRedirect pLoiterControl pTransponderAIS uMVS        \
-        pMarinePID uTMS uMVS_Bluefin pEchoVar pDeployHandler \
+        pMarinePID uTMS uMVS_Bluefin pEchoVar pMarinePIDV22  \
         pTrafficControl pShipsideViewer uRepeater uXMS       \
         pViewerRelay uHelmScope pClusterPriority zLoggerNG
 
@@ -51,7 +49,7 @@ killall -9 iMicroModem pRouter pFramer pMessageSim             \
 	iModemSim pFunctionSender uFunctionViewer uFunctionVis \
         uSimBeaconRange uSimCurrent pBasicContactMgr           \
         uSimActiveSonar bngview pConvexHull pObstacleMgr       \
-        pObstacleManager
+        pObstacleManager pContactMgrV20 uFldWrapDetect
 
 killall -9 pSensorSim pArtifactMapper pNoiseSim uNafconSplitter    \
         pBlast pSweepLines pNSWCPC pXRelay pXRelayTest alogview  \
