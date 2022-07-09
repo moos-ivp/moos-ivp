@@ -735,8 +735,8 @@ void PickPos::setVNameCache()
   m_vname_cache.push_back("gil");     m_vname_cache.push_back("hix");
   m_vname_cache.push_back("ike");     m_vname_cache.push_back("jim");
   m_vname_cache.push_back("kim");     m_vname_cache.push_back("lou");
-  m_vname_cache.push_back("mal");     m_vname_cache.push_back("ned");
-  m_vname_cache.push_back("opi");     m_vname_cache.push_back("pal");
+  m_vname_cache.push_back("max");     m_vname_cache.push_back("ned");
+  m_vname_cache.push_back("oak");     m_vname_cache.push_back("pal");
   m_vname_cache.push_back("que");     m_vname_cache.push_back("ray");
   m_vname_cache.push_back("sam");     m_vname_cache.push_back("tim");
   m_vname_cache.push_back("ula");     m_vname_cache.push_back("val");
