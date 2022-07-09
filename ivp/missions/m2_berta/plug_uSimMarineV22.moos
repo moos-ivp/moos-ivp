@@ -1,7 +1,7 @@
 //------------------------------------------------------
-// uSimMarine Configuration Block  (Created from plugin)
+// uSimMarine Config Block
 
-ProcessConfig = uSimMarine
+ProcessConfig = uSimMarineV22
 {
   AppTick   = 10
   CommsTick = 10

@@ -140,7 +140,7 @@ ProcessConfig = pHelmIvP
 
   term_report_interval = 0
 
-	app_logging = log
+	app_logging = true
 	
   bhv_dir_not_found_ok = true
   //ivp_behavior_dir = /Users/ddmikerb

@@ -24,8 +24,8 @@ ProcessConfig = ANTLER
 
   Run = MOOSDB        @ NewConsole = false
   Run = pLogger       @ NewConsole = false
-  Run = uSimMarine    @ NewConsole = false
-  Run = pMarinePID    @ NewConsole = false
+  Run = uSimMarineV22 @ NewConsole = false
+  Run = pMarinePIDV22 @ NewConsole = false
   Run = pHelmIvP      @ NewConsole = false
   Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
@@ -58,7 +58,7 @@ ProcessConfig = pLogger
 }
 
 //------------------------------------------
-// uProcessWatch
+// uProcessWatch config block
 
 ProcessConfig = uProcessWatch
 {
@@ -67,14 +67,15 @@ ProcessConfig = uProcessWatch
 
   watch_all = true
 	nowatch   = uPokeDB*
+	nowatch   = uQueryDB*
 	nowatch   = uXMS*
 	nowatch   = uMAC*
 }
 
 //------------------------------------------
-// uSimMarine config block
+// uSimMarineV22 config block
 
-ProcessConfig = uSimMarine
+ProcessConfig = uSimMarineV22
 {
   AppTick  	= 4
   CommsTick	= 4
@@ -85,7 +86,7 @@ ProcessConfig = uSimMarine
 
   turn_rate     = 40
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
-  thrust_reflect = true
+  //thrust_reflect = true
 }
 
 //------------------------------------------
@@ -104,7 +105,7 @@ ProcessConfig = pHelmIvP
 //------------------------------------------
 // pMarinePID config block
 
-ProcessConfig = pMarinePID
+ProcessConfig = pMarinePIDV22
 {
   AppTick    = 20
   CommsTick  = 20
