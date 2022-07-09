@@ -499,8 +499,31 @@ XYPoint XYSegList::get_center_pt() const
 
 XYPoint XYSegList::get_centroid_pt() const
 {
-  double cx = get_centroid_x();
-  double cy = get_centroid_y();
+  double signed_area = 0;
+  double first  = 0;
+  double second = 0;
+
+  // For all vertices
+  unsigned int vxsize = m_vx.size();
+  for(unsigned int i=0; i<vxsize; i++) {
+    
+    double x0 = m_vx[i];
+    double y0 = m_vy[i];
+    //Ensure don't increment beyond vector
+    double x1 = m_vx[(i + 1) % vxsize];
+    double y1 = m_vy[(i + 1) % vxsize];
+    double A = (x0 * y1) - (x1 * y0);
+    signed_area += A;
+    first += (x0 + x1) * A;
+    second += (y0 + y1) * A;
+  }
+  
+  signed_area *= 0.5;
+  first = (first) / (6 * signed_area);
+  second = (second) / (6 * signed_area);
+  
+  double cx = first;
+  double cy = second;
   XYPoint pt(cx, cy);
   return(pt);
 }
