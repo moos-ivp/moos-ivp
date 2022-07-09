@@ -34,6 +34,8 @@ void showSynopsis()
   blk("  the simulator for tighter coordination between sim and control");
   blk("  which allows for much higher time warp simulations.           ");
   blk("  The PID controller is the same as in pMarinePIDV22.           ");
+  blk("  uSimMarineV22 also supports simulation for sailing, and the   ");
+  blk("  use of wormholes.");
 }
 
 //----------------------------------------------------------------
@@ -184,6 +186,9 @@ void showInterfaceAndExit()
   blk("  USM_SIM_PAUSED     = [true/false]                             ");
   blk("  USM_ENABLED        = [true/false]                             ");
   blk("  USM_TURN_RATE      = [0,100]                                  ");
+  blk("                                                                ");
+  blk("  WIND_CONDITIONS    = spd=4, dir=155                           ");
+  blk("  OBSTACLE_HIT       = true                                     ");
   blk("                                                                ");
   blk("  NAV_X                                                         ");
   blk("  NAV_Y                                                         ");

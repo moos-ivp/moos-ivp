@@ -183,24 +183,6 @@ bool USM_Model::setTSMapNullRate(string value)
 }
 
 //------------------------------------------------------------------------
-// Procedure: setThrustModeSailing()
-
-bool USM_Model::setThrustModeSailing(string value)
-{
-  m_sailing = true;
-#if 0
-  value = tolower(value);
-  if((value == "sailing") || (value == "true"))
-    m_thrust_mode = "sailing";
-  else if((value == "normal") || (value == "false"))
-    m_thrust_mode = "normal";
-  else
-    return(false);
-#endif
-  return(true);
-}
-
-//------------------------------------------------------------------------
 // Procedure: setThrustModeDiff()
 
 bool USM_Model::setThrustModeDiff(string value)
@@ -741,8 +723,6 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
   double prior_spd = record.getSpeed();
   double prior_hdg = record.getHeading();
 
-  cout << "Prior Speed:" << prior_spd << endl;
-  
   // Applying sailing if enabled
   double max_sail_spd = -1; 
   if(m_wind_model.set() && m_polar_plot.set()) {
@@ -751,10 +731,6 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
   }
   else
     m_sailing = false;
-
-  cout << "Max Sail Speed:" << max_sail_spd << endl;
-  
-
   
   m_sim_engine.setThrustModeReverse(m_thrust_mode_reverse);
 

@@ -174,7 +174,6 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 
 bool USM_MOOSApp::Iterate()
 {
-  cout << "In USMX_MOOSApp::Iterate()" << endl;
   AppCastingMOOSApp::Iterate();
   if(!m_enabled) {
     m_model.resetTime(m_curr_time);
@@ -186,7 +185,6 @@ bool USM_MOOSApp::Iterate()
   // Part I: PID Controller Function (optional)
   //====================================================
   if(m_pid_coupled) {
-
     // Part A: update the PID Engine with latest hdg,spd,dep
     // info. Normally in a stand-alone PID app this is coming
     // via mail in the form of NAV_HEADING etc messages. With
@@ -324,14 +322,12 @@ bool USM_MOOSApp::OnStartUp()
       handled = m_model.setParam("max_depth_rate", dval);
     else if((param == "max_depth_rate_speed") && isNumber(value))
       handled = m_model.setParam("max_depth_rate_speed", dval);
-    else if((param == "max_rudder_degs_per_SEC") && isNumber(value))
+    else if((param == "max_rudder_degs_per_sec") && isNumber(value))
       handled = m_model.setMaxRudderDegreesPerSec(dval);
     else if(param == "prefix")
       handled = setNonWhiteVarOnString(m_sim_prefix, value);
     else if(param == "drift_vector")
       handled = m_model.setDriftVector(value, "");
-    else if(param == "sailing")
-      handled = m_model.setThrustModeSailing(value);
     else if(param == "sim_pause")
       handled = m_model.setPaused(value);
     else if(param == "dual_state")

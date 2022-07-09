@@ -51,7 +51,6 @@ public:
   bool   setTSMapFullSpeed(std::string);
   bool   setTSMapNullSpeed(std::string);
   
-  bool   setThrustModeSailing(std::string);
   bool   setThrustModeReverse(std::string);
   bool   setThrustModeDiff(std::string);
   bool   setDualState(std::string);
