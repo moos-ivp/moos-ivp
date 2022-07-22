@@ -20,7 +20,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 ObstacleSim::ObstacleSim()
 {
@@ -54,6 +54,8 @@ ObstacleSim::ObstacleSim()
   m_reset_interval = -1;
   m_reset_range    = 10;
 
+  m_post_visuals = true;
+  
   // Init State variables
   m_reset_tstamp   = 0;
   m_reset_request  = false;
@@ -74,7 +76,7 @@ ObstacleSim::ObstacleSim()
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool ObstacleSim::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -215,7 +217,10 @@ bool ObstacleSim::OnStartUp()
       handled = setNonNegDoubleOnString(m_reset_range, value);
     else if(param == "reuse_ids")
       handled = setBooleanOnString(m_reuse_ids, value);
-
+    
+    else if(param == "post_visuals")
+      handled = setBooleanOnString(m_post_visuals, value);
+    
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
@@ -473,7 +478,7 @@ void ObstacleSim::updateVRanges()
   // Part 3: If resetting is enabled, determine if reset warranted
   if((m_reset_interval > 0) || m_reset_request) {
     if(m_min_vrange_to_region > m_reset_range) {
-      if(m_newly_exited) {
+      if(m_newly_exited || m_reset_request) {
 	double elapsed = m_curr_time - m_reset_tstamp;
 	if((elapsed > m_reset_interval) || m_reset_request) {
 	  m_reset_pending = true;
@@ -576,12 +581,15 @@ void ObstacleSim::postObstaclesRefresh()
   // =================================================
   // Part 1: Post the viewable info
   // =================================================
-  for(unsigned int i=0; i<m_obstacles.size(); i++) {
-    string spec = m_obstacles[i].get_spec(2);
-    Notify("VIEW_POLYGON", spec);
+  if(m_post_visuals) {
+    for(unsigned int i=0; i<m_obstacles.size(); i++) {
+      string spec = m_obstacles[i].get_spec(2);
+      Notify("VIEW_POLYGON", spec);
+    }
+    if(m_draw_region && m_poly_region.is_convex())
+      Notify("VIEW_POLYGON", m_poly_region.get_spec());
   }
-  if(m_draw_region && m_poly_region.is_convex())
-    Notify("VIEW_POLYGON", m_poly_region.get_spec());
+
   
   // =================================================
   // Part 2: Post ground truth 
@@ -613,7 +621,8 @@ void ObstacleSim::postObstaclesErase()
     XYPolygon obstacle = m_obstacles[i];
     obstacle.set_duration(0);
     string spec = obstacle.get_spec_inactive();
-    Notify("VIEW_POLYGON", spec);
+    if(m_post_visuals)
+      Notify("VIEW_POLYGON", spec);
     Notify("KNOWN_OBSTACLE", spec);
     if(!m_post_points)
       Notify("GIVEN_OBSTACLE", spec);
@@ -650,15 +659,17 @@ void ObstacleSim::postPoints()
 	    m_map_pts_published[key]++;
 
 	    int label_index = (int)(m_map_pts_published[key]) % 100;
-	    
-	    XYPoint p(x,y);
-	    p.set_label(vname + ":" + key + ":" + intToString(label_index));
-	    p.set_vertex_color(vcolor);
-	    p.set_vertex_size(m_point_size);
-	    p.set_label_color("invisible");
-	    p.set_duration(10);
-	    string spec = p.get_spec();
-	    Notify("VIEW_POINT", spec);
+
+	    if(m_post_visuals) {
+	      XYPoint p(x,y);
+	      p.set_label(vname + ":" + key + ":" + intToString(label_index));
+	      p.set_vertex_color(vcolor);
+	      p.set_vertex_size(m_point_size);
+	      p.set_label_color("invisible");
+	      p.set_duration(10);
+	      string spec = p.get_spec();
+	      Notify("VIEW_POINT", spec);
+	    }
 	  }
 	}
       }

@@ -92,6 +92,9 @@ class ObstacleSim : public AppCastingMOOSApp
   //range of the sensor for generating point updates
   double m_sensor_range;
 
+  bool   m_post_visuals;
+
+  
 private: // State variables
 
   // Core list of obtacles
