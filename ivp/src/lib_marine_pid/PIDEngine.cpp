@@ -26,9 +26,9 @@ using namespace std;
 
 PIDEngine::PIDEngine()
 {
-  // If spid_active is zero speed is controlled via PID. 
+  // If speed_factor is zero speed is controlled via PID. 
   // If not, thrust is set to multiple of desired speed.
-  m_speed_factor = 20.0;
+  m_speed_factor = 0;
   m_curr_time    = 0;
   m_curr_thrust  = 0;
   m_start_time   = 0;
