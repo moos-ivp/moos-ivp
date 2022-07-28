@@ -26,7 +26,9 @@
        '("BHV_AvdColregsV17" "post_mapping" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "exit_on_filter_region")
 
        '("BHV_AvdColregsV19" "post_mapping" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "giveway_bow_dist" "use_refinery" "check_plateaus" "check_validity" "pcheck_thresh" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "exit_on_filter_region")
-	 
+
+       '("BHV_AvdColregsV22" "post_mapping" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "giveway_bow_dist" "use_refinery" "check_plateaus" "check_validity" "pcheck_thresh" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "exit_on_filter_region" "headon_only" "velocity_filter" )
+       
        '("BHV_Waypoint" "post_mapping" "capture_radius" "activate_radius" "speed" "stale_nav_thresh" "stale_poly_thres" "setpt_method" "visual_hints")
 
        '("BHV_Convoy" "post_mapping" "contact" "radius" "nm_radius" "max_mark_range" "cruise_speed" "spd_max" "spd_slower" "spd_faster" "rng_estop" "range_estop" "rng_tgating" "range_tailgating" "rng_lagging" "range_lagging" "inter_mark_range")
