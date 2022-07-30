@@ -792,8 +792,10 @@ bool USM_MOOSApp::buildReport()
   string wmod_str  = m_model.getWindModelSpec();
   string polar_str = m_model.getPolarPlotSpec();
   string sailing_str = boolToString(m_model.sailingEnabled());
+  string trate_str = doubleToStringX(m_model.getTurnRate(),2);
   
-  m_msgs << "Enabled: " + boolToString(m_enabled) << endl;
+  m_msgs << "Enabled:  " + boolToString(m_enabled) << endl;
+  m_msgs << "TurnRate: " + trate_str << endl;
   m_msgs << "Datum: " + datum_lat + "," + datum_lon << endl;
   m_msgs << "Sailing:" << endl;
   m_msgs << "  WindModel: " << wmod_str << endl;

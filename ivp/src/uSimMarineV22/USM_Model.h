@@ -75,6 +75,7 @@ public:
   void   setObstacleHit(bool v=true) {m_obstacle_hit=v;}
   
   // Getters
+  double     getTurnRate() const     {return(m_turn_rate);}
   double     getThrust() const       {return(m_thrust);}
   double     getThrustLeft() const   {return(m_thrust_lft);}
   double     getThrustRight() const  {return(m_thrust_rgt);}
