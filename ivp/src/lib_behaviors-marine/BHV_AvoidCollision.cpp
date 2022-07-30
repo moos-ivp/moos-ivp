@@ -210,7 +210,8 @@ void BHV_AvoidCollision::onIdleState()
 
   postRange();
 
-  if(!filterCheckHolds() || (m_contact_range >= m_completed_dist))
+  // See the Mod July 30th, 2022 comment below.
+  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist * 1.1)))
     setComplete();  
 }
 
@@ -238,7 +239,18 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   
   postRange();
 
-  if(!filterCheckHolds() || (m_contact_range >= m_completed_dist)) {
+  // Mod July 30th, 2022: Changed the actual comleted distance to be
+  // 10pct greater than set completed distance. This is to ensure that
+  // the behavior isn't spawned and killed immediately. If the
+  // spawning and completed distances are exactly the same, then it's
+  // possible that, if the entity doing the spawning and the helm
+  // disagree slightly on the range between vessels due to timing, the
+  // behavior will meet the complete threshold immediately, and the
+  // entity doing the spawning may not notice and re-alert the helm
+  // since from its perspective the range never crossedb back over the
+  // threshhold for sending a new alert.
+  
+  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist * 1.1))) {
     setComplete();
     return(0);
   }
