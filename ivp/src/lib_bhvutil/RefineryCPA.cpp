@@ -194,6 +194,9 @@ vector<IvPBox> RefineryCPA::getRefineRegionsAft()
   if(m_verbose)
     cout << "====Start====== RefineryCPA::getRefineRegions AFT" << endl; 
 
+  double os_to_cn_bng = relAng(m_osx, m_osy, m_cnx, m_cny);
+  double cn_to_os_bng = angle360(os_to_cn_bng + 180);
+  
   m_logic_case = "aft";
   vector<IvPBox> null_regions;
   vector<IvPBox> regions;
@@ -305,8 +308,11 @@ vector<IvPBox> RefineryCPA::getRefineRegionsAft()
   }
 #endif
    
-  double min_hdg = angleMinReflex(min_hdg_raw, max_hdg_raw);
-  double max_hdg = angleMaxReflex(min_hdg_raw, max_hdg_raw);
+  //double min_hdg = angleMinReflex(min_hdg_raw, max_hdg_raw);
+  //double max_hdg = angleMaxReflex(min_hdg_raw, max_hdg_raw);
+  
+  double min_hdg = angleMinContains(min_hdg_raw, max_hdg_raw, cn_to_os_bng);
+  double max_hdg = angleMaxContains(min_hdg_raw, max_hdg_raw, cn_to_os_bng);
   
 
   double inner_max_spd_next = m_domain.getNextHigherVal(m_spd_ix, inner_max_spd, 1, 0);
