@@ -169,7 +169,7 @@ SET(ROBOT_APPS
   uLoadWatch         uTermCommand        uXMS
   uMAC               uPokeDB             uQueryDB
   pHostInfo          iSay                pContactMgrV20
-  pMarinePIDV22
+  pMarinePIDV22      uSimMarineV22
 )
 SET(IVP_NON_GUI_APPS
   app_alogsplit      app_alogsort        app_alogcheck
@@ -178,7 +178,6 @@ SET(IVP_NON_GUI_APPS
   uFldPathCheck      uFldShoreBroker     uFldObstacleSim
   uFldScope          uFldNodeComms       uFldBeaconRangeSensor
   pSearchGrid        uFldGenericSensor   uFldContactRangeSensor
-  uSimMarineV22
 )
 SET(IVP_GUI_APPS
   app_ffview         app_geoview         app_alogview
