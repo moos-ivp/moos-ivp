@@ -70,6 +70,8 @@ echo "  SCRIPT_ABS_DIR: " ${SCRIPT_ABS_DIR}
 # Setup C and C++ Compiler flags for Mac and Linux. 
 MOOS_CXX_FLAGS="-Wall -Wextra -Wno-unused-parameter -pedantic -fPIC "
 MOOS_CXX_FLAGS="-Wno-c++11-extensions -Wno-deprecated-declarations "
+# -Wno-psabi turns off warnings about ABI change between gcc 6 and 7.1
+CMAKE_CXX_FLAGS+="-Wno-psabi "
 
 if [ "${BUILD_OPTIM}" = "yes" ] ; then
     MOOS_CXX_FLAGS=$MOOS_CXX_FLAGS" -Os"

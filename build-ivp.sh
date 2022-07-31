@@ -106,6 +106,10 @@ fi
 CMAKE_CXX_FLAGS="-Wall -Wextra -Wno-unused-parameter "
 CMAKE_CXX_FLAGS+="-Wno-missing-field-initializers -pedantic -fPIC "
 
+# -Wno-psabi turns off warnings about ABI change between gcc 6 and 7.1
+CMAKE_CXX_FLAGS+="-Wno-psabi "
+
+
 if [ "${BUILD_DEBUG}" = "yes" ] ; then
     CMAKE_CXX_FLAGS=$CMAKE_CXX_FLAGS" -g"
 fi
