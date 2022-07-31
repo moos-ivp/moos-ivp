@@ -94,6 +94,7 @@ LEXIT_CODE=$?
 
 if [ $LEXIT_CODE != 0 ]; then
     echo "The launch.sh cmd return non-zero exit code: " $LEXIT_CODE
+    echo "FLOW_DOWN_ARGS: "$FLOW_DOWN_ARGS
     exit 1
 fi
 if [ ${JUST_MAKE} = "yes" ]; then
