@@ -108,6 +108,7 @@ CMAKE_CXX_FLAGS+="-Wno-missing-field-initializers -pedantic -fPIC "
 
 # -Wno-psabi turns off warnings about ABI change between gcc 6 and 7.1
 CMAKE_CXX_FLAGS+="-Wno-psabi "
+CMAKE_CXX_FLAGS+="-Wno-cast-function-typec "
 
 
 if [ "${BUILD_DEBUG}" = "yes" ] ; then
