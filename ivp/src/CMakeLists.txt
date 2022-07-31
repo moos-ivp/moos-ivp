@@ -188,6 +188,7 @@ SET(IVP_GUI_APPS
 # app_vzaicview      app_gzaicview
 )
 
+# We also consider the below to be robot apps just in case needed
 SET(IVP_NON_GUI_APPS_DEPRECATED
   dep_pBasicContactMgr
   dep_uSimMarine
@@ -205,7 +206,7 @@ message(" IVP_NON_GUI_APPS_DEP: ${IVP_NON_GUI_APPS_DEPRECATED}")
 # Part 8: Set actual libs/apps to build based on user preferences
 #=====================================================================
 SET(IVP_LIBS_TO_BUILD ${IVP_NON_GUI_LIBS})
-SET(IVP_APPS_TO_BUILD ${ROBOT_APPS})
+SET(IVP_APPS_TO_BUILD ${ROBOT_APPS} ${IVP_NON_GUI_APPS_DEPRECATED})
 
 message("+++++++++++++++++++++++++++++++++++++++++")
 message(" IVP_BUILD_BOT_CODE_ONLY: ${IVP_BUILD_BOT_CODE_ONLY}")
