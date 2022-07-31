@@ -74,7 +74,7 @@ NodeReporter::NodeReporter()
 
   m_crossfill_policy = "literal";
 
-  m_allow_color_change = false;
+  m_allow_color_change = "false";
   
   // Timestamps used for executing the "use-latest" crossfill policy 
   m_nav_xy_updated        = 0;
