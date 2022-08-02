@@ -127,6 +127,13 @@ bool FldNodeComms::OnNewMail(MOOSMSG_LIST &NewMail)
       handled = setBooleanOnString(m_view_node_rpt_pulses, sval);
     else if(key == "UNC_EARANGE") 
       handled = handleEarange(sval);
+    else if(key == "UNC_DROP_PCT") {
+      handled = false;
+      if((dval >= 0) && (dval <= 100)) {
+	m_drop_pct = dval;
+	handled = true;
+      }
+    }      
     else if(key == "UNC_FULL_REPORT_REQ")
       handled = handleMailFullReportReq(sval);
     
@@ -157,6 +164,8 @@ bool FldNodeComms::Iterate()
 {
   AppCastingMOOSApp::Iterate();
 
+  cout << "Iterating..." << endl;
+  
   // Part 2: Distribute Node reports
   map<string, bool>::iterator p;
   for(p=m_map_newrecord.begin(); p!=m_map_newrecord.end(); p++) {
@@ -208,12 +217,14 @@ bool FldNodeComms::Iterate()
 bool FldNodeComms::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
+  cout << "OnStartup Starting" << endl;
 
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
   if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
     reportConfigWarning("No config block found for " + GetAppName());
 
+  cout << "OnStartup 111" << endl;
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
     string orig  = *p;
@@ -222,6 +233,7 @@ bool FldNodeComms::OnStartUp()
     string value = line;
     
     bool handled = false;
+    cout << "param: " << param << endl;
     if((param == "comms_range") && (value == "nolimit")) {
       // A negative comms range means all comms goes through
       // A zero comms range means nothing goes through
@@ -276,6 +288,8 @@ bool FldNodeComms::OnStartUp()
       reportUnhandledConfigWarning(orig);
   }
 
+
+  cout << "OnStartupCompleted" << endl;
   registerVariables();
   return(true);
 }
@@ -339,6 +353,7 @@ void FldNodeComms::registerVariables()
   Register("UNC_COMMS_RANGE", 0);
   Register("UNC_STEALTH", 0);
   Register("UNC_EARANGE", 0);
+  Register("UNC_DROP_PCT", 0);
   Register("UNC_FULL_REPORT_REQ", 0);
   Register("UNC_VIEW_NODE_RPT_PULSES", 0);
 }
