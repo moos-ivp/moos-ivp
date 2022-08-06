@@ -248,7 +248,7 @@ void BFactoryDynamic::loadEnvVarDirectories(string envVar)
     }
     else {
       cerr << "  Skipping: " << directory << endl;
-      cerr << "  (Seems not not be a directory.)" << endl;
+      cerr << "  (Seems not be a directory.)" << endl;
     }
   }
 
