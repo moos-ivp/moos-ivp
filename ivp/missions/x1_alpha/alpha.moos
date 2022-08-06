@@ -25,15 +25,15 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB		    @ NewConsole = false
-  Run = pLogger       @ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = false
-  Run = uSimMarineV22 @ NewConsole = false
-  Run = pNodeReporter	@ NewConsole = false
-  Run = pMarinePID	  @ NewConsole = false
-  Run = pHelmIvP	    @ NewConsole = false
-  Run = uProcessWatch	@ NewConsole = false
-  Run = pRealm        @ NewConsole = false
+  Run = MOOSDB		     @ NewConsole = false
+  Run = pLogger        @ NewConsole = false
+  Run = pMarineViewer	 @ NewConsole = false
+  Run = uSimMarineV22  @ NewConsole = false
+  Run = pNodeReporter	 @ NewConsole = false
+  Run = pMarinePIDV22	 @ NewConsole = false
+  Run = pHelmIvP	     @ NewConsole = false
+  Run = uProcessWatch	 @ NewConsole = false
+  Run = pRealm         @ NewConsole = false
 }
 
 //------------------------------------------
@@ -103,7 +103,9 @@ ProcessConfig = pLogger
 //------------------------------------------
 // uSimMarineV22 config block
 
-ProcessConfig = uSimMarineV22 {
+ProcessConfig = uSimMarineV22
+{
+
   AppTick	  = 8
   CommsTick	= 8
  
@@ -116,8 +118,8 @@ ProcessConfig = uSimMarineV22 {
 
 	max_acceleration = 0.25
 
-	wind_conditions = spd=3.3, dir=180
-	polar_plot = 0,0: 20,40: 45,65: 90,80: 110,90: 135,83: 150,83: 165,60: 180,50
+	//wind_conditions = spd=3.3, dir=180
+	//polar_plot = 0,0: 20,40: 45,65: 90,80: 110,90: 135,83: 150,83: 165,60: 180,50
 	
 	turn_spd_map_full_speed = 4
 	turn_spd_map_null_speed = 0.5
@@ -153,9 +155,9 @@ ProcessConfig = pHelmIvP
 }
 
 //------------------------------------------
-// pMarinePID config block
+// pMarinePIDV22 config block
 
-ProcessConfig = pMarinePID
+ProcessConfig = pMarinePIDV22
 {
   AppTick    = 10
   CommsTick  = 10
@@ -209,7 +211,7 @@ ProcessConfig = pMarineViewer
 
   trails_point_size   = 1
 
-	full_screen = true
+	//full_screen = true
 	
   stale_report_thresh = 10
   stale_remove_thresh = 20
