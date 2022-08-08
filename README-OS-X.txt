@@ -1,5 +1,5 @@
 README-OS-X.txt
-Last updated: 31 July 2017
+Last updated: 07 Aug 2022
 Maintainer: Mike Benjamin (issues@moos-ivp.org)
 
 ==============================================================================
@@ -33,7 +33,7 @@ NEEDED APPLICATIONS
    As of Nov 2014, this is where you get/install X11:
       http://xquartz.macosforge.org/landing/
 
-3) MacPorts
+3) MacPorts (or the Homebrew)
    Website: http://www.macports.org
 
    MacPorts is an open-source project that provides an easy-to-use system for
@@ -48,7 +48,7 @@ NEEDED APPLICATIONS
    variables can be found below.
 
 ==============================================================================
-MACPORT PACKAGES
+MACPORT PACKAGES (Or similar with Homebrew)
 ==============================================================================
 
 sudo port install cmake
