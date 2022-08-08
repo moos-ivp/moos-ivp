@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael R. Benjamin                                  */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
 /*    FILE: CollObDetect_Info.cpp                                */
 /*    DATE: September 2nd, 2019                                  */
 /*****************************************************************/
@@ -18,13 +18,17 @@ using namespace std;
 
 void showSynopsis()
 {
-  blk("SYNOPSIS:                                                       ");
-  blk("------------------------------------                            ");
-  blk("  The uFldCollObDetect application is used for                  ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
-  blk("                                                                ");
+  blk("SYNOPSIS:                                                        ");
+  blk("------------------------------------                             ");
+  blk(" The uFldCollObDetect application is run on the shoreside and    ");
+  blk(" maintains a current knowledge of all vehicle positions and      ");
+  blk(" obstacle locations and monitors for encounters between vehicles ");
+  blk(" and obstacles that come within a certain range. The closest     ");
+  blk(" point of approach (CPA) is noted when the range between a       ");
+  blk(" vehicle to an obstacle transitions from closing to opening.     ");
+  blk(" Depending on the CPA value, one of three events may be          ");
+  blk(" declared, either an encounter, a near miss, or a collision,     ");
+  blk(" depending on user configured range parameters.                  ");
 }
 
 //----------------------------------------------------------------
