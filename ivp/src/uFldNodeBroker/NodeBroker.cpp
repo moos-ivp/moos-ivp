@@ -81,6 +81,13 @@ bool NodeBroker::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "DB_CLIENTS")
       checkMessagingPolicy(sval);
 
+    else if(key == "SHADOW_SHORE") {
+      string msg;
+      bool handled = handleConfigShadow(sval, msg);
+      if(!handled)
+	reportRunWarning(msg);      
+    }
+
     // Only accept an ACK coming from a different community
     else if((key == "NODE_BROKER_ACK") && !msg_is_local) 
       handleMailAck(sval); 
@@ -158,6 +165,12 @@ bool NodeBroker::OnStartUp()
       handled = setBooleanOnString(auto_bridge_realmcast, value);
     else if(param == "auto_bridge_appcast") 
       handled = setBooleanOnString(auto_bridge_appcast, value);
+    else if(param == "shadow_shore") {
+      string msg;
+      handled = handleConfigShadow(value, msg);
+      if(!handled)
+	reportConfigWarning(msg);      
+    }
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -185,6 +198,7 @@ void NodeBroker::registerVariables()
 
   Register("NODE_BROKER_ACK", 0);
   Register("PHI_HOST_INFO", 0);
+  Register("SHADOW_SHORE", 0);
 
   if(m_messaging_policy == "auto")
     Register("DB_CLIENTS", 0);
@@ -290,6 +304,79 @@ void NodeBroker::registerUserBridges()
   }
 }
 
+
+//------------------------------------------------------------
+// Procedure: handleConfigShadow()
+//   Example: shadow_shore = ip=123.45.67.89, name=johndoe, dur=60
+
+bool NodeBroker::handleConfigShadow(string line, string& msg)
+{
+  // Sanity check
+  line = tolower(stripBlankEnds(line));
+  if(line == "") {
+    msg = "empty shadow config";
+    return(false);
+  }
+  
+  string ip, name;
+  double start = MOOSTime();
+  double duration = -1;
+  
+  vector<string> svector = parseString(line, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = tolower(svector[i]);
+    if(param == "ip") {
+      if(isValidIPAddress(value))
+	ip = value;
+      else {
+	msg = "Invalid IP addr:[" + value + "]";
+	return(false);
+      }
+    }
+    else if((param == "name") && !strContainsWhite(value))
+      name = value;
+    else if((param == "dur") || (param == "duration")) {
+      bool ok_dur = setDoubleOnString(duration, value);
+      if(!ok_dur) {
+	msg = "unhandled duration:[" + value + "]";
+	return(false);
+      }
+    }
+    else {
+      msg = "unhandled shadow config param:[" + param + "]";
+      return(false);
+    }
+  }
+
+  if(ip == "") {
+    msg = "bad/missing shadow ip";
+    return(false);
+  }
+  
+  if(name == "")
+    name = "mystery";
+
+  bool m_allow_mystery_shadows = true;
+  if(!m_allow_mystery_shadows && (name == "mystery")) {
+    msg = "undeclared/mystery shadows not allowed";
+    return(false);
+  }
+
+  if(m_map_xshore_name.count(ip) != 0) {
+    if(m_map_xshore_name[ip] != name) {
+      msg = "shadow ip already exists w/ different name";
+      return(false);
+    }
+  }
+
+  m_map_xshore_name[ip] = name;
+  m_map_xshore_start[ip] = start;
+  m_map_xshore_duration[ip] = duration;
+  m_map_xshore_handled[ip] = false;
+
+  return(true);
+}
 
 //------------------------------------------------------------
 // Procedure: handleConfigBridge()
@@ -550,6 +637,30 @@ bool NodeBroker::buildReport()
 
   m_msgs << endl << endl;
 
+  if(m_map_xshore_name.size() != 0) {
+
+    m_msgs << "===========================================================" << endl;
+    m_msgs << "            SHADOW Shoreside Information:" << endl;
+    m_msgs << "===========================================================" << endl;
+    ACTable actab2(5);
+    actab2 << "Shadow IP | Name  | Start | Duration | Remaining ";
+    actab2.addHeaderLines();
+
+    map<string, string>::iterator p;
+    for(p=m_map_xshore_name.begin(); p!=m_map_xshore_name.end(); p++) {
+      string ip   = p->first;
+      string name = p->second;
+      double dur  = m_map_xshore_duration[ip];
+      double start = m_map_xshore_start[ip];
+      actab2 << ip << name;
+      actab2 << doubleToString(start,1);
+      actab2 << doubleToStringX(dur,1);
+      actab2 << "tbd";
+    }
+    m_msgs << actab2.getFormattedString();
+    m_msgs << endl << endl;
+  }
+      
   m_msgs << "Phase Completion Summary:"             << endl;
   m_msgs << "------------------------------------" << endl;
   string s1 = (m_ok_phis_received > 0) ? "(Y)" : "(N)";
