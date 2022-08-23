@@ -1,0 +1,11 @@
+# Configuration file for @PROJECTNAME@ library.
+
+# Pick up the auto-generated file which knows how to add the library targets
+# This will mean that we don't have to supply full paths for the libraries
+set(exports_file "@CMAKE_CURRENT_BINARY_DIR@/Use@PROJECTNAME@.cmake")
+if (EXISTS ${exports_file})
+  message(STATUS "CMake is running ${exports_file}")
+  include(${exports_file})
+endif ()
+
+# Project specific variables are dynamically inserted here

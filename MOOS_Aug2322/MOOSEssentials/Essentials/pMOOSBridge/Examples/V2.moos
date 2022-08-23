@@ -1,0 +1,28 @@
+// This is an example configuration for testing pMOOSBridgeUDP
+
+ServerHost = localhost
+ServerPort = 9001
+
+// you can name tag processes connected to a particular
+// DB under a community name
+Community = V2
+
+ProcessConfig = pMOOSBridge
+{
+	//this is the port *this* bridge will be listening for incoming UDP packets from other
+	//bridges in other communities. If you omit this line then *no* incoming UDP packets
+	//will be inserted into the local community
+	UDPListen = 9200	
+
+	//set up a UDP share of some local variables. Here we are sending DB_TIME and to 
+	//a community called V1 which is receiving UDP on port 9100. So in the mission file for that
+	//community your would expect to see a bridge being configured with UDPListen =9100
+
+	UDPShare = [DB_CLIENTS] -> V1@localhost:9100 [V2_DB_CLIENTS]
+
+	//this is a standard tcp/ip share sending the local DB's time to community V1 which
+	//is expected to have a DB serving on port 9000
+	SHARE= [DB_TIME]->V1@localhost:9000 [V2_DB_TIME] 
+
+
+}
