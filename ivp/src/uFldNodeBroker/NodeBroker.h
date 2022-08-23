@@ -49,6 +49,7 @@ class NodeBroker : public AppCastingMOOSApp
 
   void sendNodeBrokerPing();
   void checkMessagingPolicy(std::string);
+  void checkUnhandledShadows();
   
   void handleMailHostInfo(std::string);
   void handleMailDBClients(std::string);

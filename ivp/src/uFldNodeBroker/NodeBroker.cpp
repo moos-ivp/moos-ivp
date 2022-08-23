@@ -125,6 +125,8 @@ bool NodeBroker::Iterate()
     registerPingBridges();
   
   sendNodeBrokerPing();
+
+  checkUnhandledShadows();
   
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -229,6 +231,40 @@ void NodeBroker::sendNodeBrokerPing()
     m_shore_pings_sent[i]++;
     m_pings_posted++;
   }
+}
+
+//------------------------------------------------------------
+// Procedure: checkUnhandledShadows()
+//   Purpose: For each of configured shore_shadow check if the
+//            the shadow currently requires an outgoing msg to
+//            pShare to implement the shadow.
+//            Some shadows have a fixed duration, requiring a
+//            heart-beat sort of periodic renewal or else the
+//            sharing times out.
+
+void NodeBroker::checkUnhandledShadows()
+{
+  vector<string> donot_shadow_vars;
+  donot_shadow_vars.push_back("NODE_BROKER_PING");
+
+  map<string, bool>::iterator p;
+  for(p=m_map_xshore_handled.begin(); p!=m_map_xshore_handled.end(); p++) {
+    string ip    = p->first; 
+    bool handled = p->second;
+    if(!handled) {
+
+      unsigned int vsize = m_bridge_src_var.size();
+      for(unsigned int i=0; i<vsize; i++) {			  
+	string src   = m_bridge_src_var[i];
+	string dest  = m_bridge_alias[i];
+	string route = ip + ":9200";
+	if(!vectorContains(donot_shadow_vars, src))
+	  postPShareCommand(src, dest, route);
+      }
+
+      m_map_xshore_handled[ip] = true;
+    }
+  }      
 }
 
 //------------------------------------------------------------
