@@ -7,12 +7,16 @@ SET(SRC
   HostRecord.cpp
   HostRecordUtils.cpp
   UFieldUtils.cpp
-)
+  CommsCatalog.cpp
+  CommsEntry.cpp
+  )
 
 SET(HEADERS
   HostRecord.h
   HostRecordUtils.h
   UFieldUtils.h
+  CommsCatalog.h
+  CommsEntry.h
 )
 
 # Build Library
