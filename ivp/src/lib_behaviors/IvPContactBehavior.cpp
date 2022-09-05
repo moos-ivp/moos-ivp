@@ -139,10 +139,13 @@ bool IvPContactBehavior::setParam(string param, string param_val)
 
   else if(param == "time_on_leg")
     return(setNonNegDoubleOnString(m_time_on_leg, param_val));
-
+  
   else if(param == "bearing_line_label_show")
     return(setBooleanOnString(m_bearing_line_label_show, param_val));
-
+  
+  else if(param == "bearing_line_show")
+    return(setBooleanOnString(m_bearing_line_show, param_val));
+  
   // bearing_lines = white:0, green:0.65, yellow:0.8, red:1.0
   else if((param == "bearing_line_config") ||
 	  (param == "bearing_lines")) {
@@ -580,11 +583,14 @@ bool IvPContactBehavior::updatePlatformInfo()
 }
 
 //-----------------------------------------------------------
-// Procedure: postViewableBearingLine
+// Procedure: postViewableBearingLine()
 
 void IvPContactBehavior::postViewableBearingLine()
 {
   if(!m_bearing_line_show)
+    return;
+
+  if(commsPolicy() != "open")
     return;
 
   double index_value;

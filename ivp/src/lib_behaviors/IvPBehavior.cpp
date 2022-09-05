@@ -93,6 +93,14 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_macro_ctr_05 = 0;
   
   m_config_posted = false;
+
+  // comms_policy is the prevailing value. comms_policy_config
+  // is the value set through .bhv file config or udates. This
+  // is the ceiling. If comms policy is set through incoming
+  // COMMS_POLICY MOOS var, it cannot be more liberal than the
+  // original policy_config.
+  m_comms_policy = "open";
+  m_comms_policy_config = "open";
 }
 
 //-----------------------------------------------------------
@@ -105,7 +113,7 @@ BehaviorReport IvPBehavior::onRunState(string)
 }
 
 //-----------------------------------------------------------
-// Procedure: setParamCommon
+// Procedure: setParamCommon()
 
 bool IvPBehavior::setParamCommon(string g_param, string g_val) 
 {
@@ -151,7 +159,7 @@ void IvPBehavior::setPriorityWt(double val)
 
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool IvPBehavior::setParam(string g_param, string g_val) 
 {
@@ -184,6 +192,14 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     if(ok)
       m_logic_conditions.push_back(new_condition);
     return(ok);
+  }
+  else if(g_param == "comms_policy") {
+    string val = tolower(g_val);
+    if((val != "open") && (val != "lean") && (val != "dire"))
+      return(false);
+    m_comms_policy = val;
+    m_comms_policy_config = val;
+    return(true);
   }
   else if(g_param == "duration_status") {
     m_duration_status = g_val;
@@ -897,6 +913,35 @@ bool IvPBehavior::checkForDurationReset()
   }
   else
     return(false);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: checkForUpdatedCommsPolicy()
+
+void IvPBehavior::checkForUpdatedCommsPolicy()
+{
+  if(!m_info_buffer) 
+    return;
+
+  bool ok;
+  string result = m_info_buffer->sQuery("COMMS_POLICY", ok);
+  if(!ok)
+    return;
+
+  string res = tolower(result);
+  if((res != "open") && (res != "lean") && (res != "dire"))
+    return;
+
+  // Policy set by COMMS_POLICY MOOS variable cannot be more
+  // lenient than that set by the original .bhv file config,
+  // or config param received by updates variable.
+  if((res == "open") && (m_comms_policy_config != "open"))
+    return;
+  if((res == "lean") && (m_comms_policy_config == "dire"))
+    return;
+
+  m_comms_policy = res;
 }
 
 
@@ -1629,6 +1674,9 @@ string IvPBehavior::expandMacros(string sdata)
   sdata = macroExpand(sdata, "OSY", m_osy);
   sdata = macroExpand(sdata, "OSH", m_osh);
   sdata = macroExpand(sdata, "OSV", m_osv);
+
+  sdata = macroExpand(sdata, "DUR_RUN_TIME", m_duration_running_time);
+  sdata = macroExpand(sdata, "DUR_IDLE_TIME", m_duration_idle_time);
 
   if(strContains(sdata, "HASH")) {
     sdata = macroHashExpand(sdata, "HASH");

@@ -149,6 +149,7 @@ public:
   void    updateStateDurations(std::string);
   bool    checkConditions();
   bool    checkForDurationReset();
+  void    checkForUpdatedCommsPolicy();
   bool    checkNoStarve();
 
   void    setHelmIteration(unsigned int iter) {m_helm_iter=iter;}
@@ -179,6 +180,8 @@ public:
   std::vector<std::string> getUpdateResults() const {return(m_update_results);}
 
   std::string expandCtrMacro(std::string sdata, std::string macro, unsigned int&);
+
+  std::string commsPolicy() const {return(m_comms_policy);}
   
 protected:
   const InfoBuffer* m_info_buffer;
@@ -259,7 +262,9 @@ protected:
 
   double      m_time_of_creation;
   
-
+  std::string m_comms_policy;
+  std::string m_comms_policy_config;
+  
   unsigned int m_macro_ctr;
   unsigned int m_macro_ctr_01;
   unsigned int m_macro_ctr_02;
