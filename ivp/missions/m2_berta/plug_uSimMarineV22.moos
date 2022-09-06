@@ -9,6 +9,8 @@ ProcessConfig = uSimMarineV22
   START_POS = $(START_POS), 0
   PREFIX    = NAV
 
+	turn_rate = 90
+	
   //rotate_speed = 0.012
   //drift_x      = 0.0045
 
