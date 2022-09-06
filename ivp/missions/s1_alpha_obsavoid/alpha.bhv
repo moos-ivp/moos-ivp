@@ -65,62 +65,24 @@ Behavior = BHV_Waypoint
           points = 0,-20
 }
 
-//----------------------------------------------
-// Behavior=BHV_AvoidObstacleX
-{
-  name       = avd_obstacles
-  pwt        = 425
-  condition  = MODE == ACTIVE
-
-    //  poly = pts={40,-100:40,-120:80,-120:80,-100}, label=one
-
-    poly = label=golf,format=ellipse,x=60, y=-105, degs=90, pts=200, snap=1, major=50, minor=10
-
-    allowable_ttc = 60 
-    pwt_outer_dist = 35
-    pwt_inner_dist = 15
-    completed_dist = 500
-
-    visual_hints = obstacle_edge_color = white
-    visual_hints = obstacle_vertex_color = gray60
-    visual_hints = obstacle_fill_color = gray60
-    visual_hints = obstacle_fill_transparency = 0.7
-    
-    visual_hints = buffer_min_edge_color = gray60
-    visual_hints = buffer_min_vertex_color = dodger_blue
-    visual_hints = buffer_min_vertex_size = 1
-    visual_hints = buffer_min_fill_color = gray70
-    visual_hints = buffer_min_fill_transparency = 0.25
-
-    visual_hints = buffer_max_edge_color = gray60
-    visual_hints = buffer_max_vertex_color = dodger_blue
-    visual_hints = buffer_max_vertex_size = 0
-    visual_hints = buffer_max_fill_color = gray80
-    visual_hints = buffer_max_fill_transparency = 0.1
-
-        use_refinery = true
-   min_util_cpa_dist = 10
-   max_util_cpa_dist = 25
-}
-
 
 //----------------------------------------------
 Behavior = BHV_AvoidObstacleV21
 {
-  name       = avd_obstacles
-  pwt        = 425
+  name       = avd_obs
+  pwt        = 110
   condition  = MODE == ACTIVE
+	templating = spawn
+  updates    = OBSTACLE_ALERT
 
-    //poly = pts={40,-100:40,-120:80,-120:80,-100}, label=one
-
-    poly = label=golf,format=ellipse,x=60, y=-105, degs=90, pts=20, snap=1, major=50, minor=10
    use_refinery = true
-	
-     allowable_ttc = 60 
-    pwt_outer_dist = 35
-    pwt_inner_dist = 15
-    completed_dist = 200
-       buffer_dist = 10
+
+      allowable_ttc = 100
+     pwt_outer_dist = 40
+     pwt_inner_dist = 25
+  max_util_cpa_dist = 20
+  min_util_cpa_dist = 10
+     completed_dist = 45
 }
 
 

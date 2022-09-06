@@ -32,6 +32,7 @@ ProcessConfig = ANTLER
   Run = pMarineViewer	  @ NewConsole = false
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
+  Run = pObstacleMgr	  @ NewConsole = false
 }
 
 //------------------------------------------
@@ -107,6 +108,8 @@ ProcessConfig = pHelmIvP
   AppTick    = 2
   CommsTick  = 2
 
+	app_logging = true
+	
   term_report_interval=0
 
   bhv_dir_not_found_ok = true
@@ -212,3 +215,18 @@ ProcessConfig = pNodeReporter
   platform_length = 4
 }
 
+//-------------------------------------------------------
+// pObstacleMgr Configuration Block (created from plugin)
+
+ProcessConfig = pObstacleMgr
+{
+  AppTick   = 4 
+  CommsTick = 4 
+
+  given_obstable = pts={50,-100:50,-120:80,-120:80,-100}, label=one
+	
+	obstacles_color = yellow
+
+	post_view_polys = false	
+	given_max_duration = 1000
+} 
