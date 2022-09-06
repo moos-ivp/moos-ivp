@@ -31,6 +31,7 @@
 #include "ColoredPoint.h"
 #include "ColorPack.h"
 #include "BearingLine.h"
+#include "ContactLedger.h"
 
 class VehicleSet
 {
@@ -90,6 +91,8 @@ class VehicleSet
   bool  updateVehicleBearingLine(const std::string& bearing_line); 
 
  private:
+  ContactLedger m_ledger;
+  
   // Mapping from Vehicle Name to Vehicle Position
   std::map<std::string, NodeRecord>   m_rec_map;
   // Mapping from Vehicle Name to Local Receive time

@@ -24,6 +24,16 @@ Processconfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
+  Run = uFldOffboard    @ NewConsole = false
+}
+
+//---------------------------------------------------------
+// uFldOffBoard Config Block
+
+ProcessConfig = uFldOffboard
+{
+  AppTick    = 2
+  CommsTick  = 2
 }
 
 //---------------------------------------------------------

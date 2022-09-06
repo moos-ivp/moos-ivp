@@ -10,7 +10,7 @@ Community  = shoreside
 //--------------------------------------------------------
 Processconfig = ANTLER
 {
-  MSBetweenLaunches = 100
+  MSBetweenLaunches = 150
 
   Run = MOOSDB          @ NewConsole = false
   Run = pRealm          @ NewConsole = false
@@ -20,13 +20,25 @@ Processconfig = ANTLER
   Run = pShare          @ NewConsole = false
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+  Run = uFldOffboard    @ NewConsole = false
 }
 
 #include plug_pShare.moos
 #include plug_pHostInfo.moos
+#include plug_uProcessWatch.moos
 
 //--------------------------------------------------
-// uFldShoreBroker Configuration Block
+// uFldOffboard config Block
+
+ProcessConfig = uFldOffboard
+{
+  AppTick   = 2
+  CommsTick = 2
+}
+
+//--------------------------------------------------
+// uFldShoreBroker config Block
 
 ProcessConfig = uFldShoreBroker
 {
@@ -44,24 +56,28 @@ ProcessConfig = uFldShoreBroker
 }
 
 //--------------------------------------------------
-// pLogger Configuration Block
+// pLogger config Block
 
 ProcessConfig = pLogger
 {
   AppTick       = 10
   CommsTick     = 10
   
-  File          = LOG_SHORESIDE
+  File          = XLOG_SHORESIDE
   PATH          = ./
   AsyncLog      = true
   FileTimeStamp = true
 
   // Log it all!!!!!
   WildCardLogging = true 
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
 }
 
 
 //--------------------------------------------------------
+// pMarineViewer config Block
+
 ProcessConfig = pMarineViewer
 {
   AppTick    = 4
@@ -87,7 +103,7 @@ ProcessConfig = pMarineViewer
   comms_pulse_viewable_all = false
   vehicles_name_mode = names
 
-  stale_report_thresh = 2
+  stale_report_thresh = 10
   stale_remove_thresh = 20
 
   scope = PHI_HOST_INFO

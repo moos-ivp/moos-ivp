@@ -30,6 +30,7 @@
 #include "AngleUtils.h"
 #include "ColorParse.h"
 #include "BearingLine.h"
+#include "NodeRecordUtils.h"
 
 // As of Release 15.4 this is now set in CMake, defaulting to be defined
 // #define USE_UTM 
@@ -77,6 +78,8 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_rclick_ix = 0;
   m_bclick_ix = 0;
 
+  m_extrapolate = 5; // default extrapolate 5 secs for stale reps
+  
   string str = "x=$(XPOS),y=$(YPOS),lat=$(LAT),lon=$(LON),";
   str += "vname=$(VNAME),counter=$(IX)";
   VarDataPair lft_pair("MVIEWER_LCLICK", str); 
@@ -341,7 +344,11 @@ bool PMV_Viewer::setParam(string param, double value)
     m_time_warp = value;
     return(true);
   }
-
+  else if(param == "extrapolate") {
+    m_extrapolate = value;
+    return(true);
+  }
+  
   bool handled = MarineViewer::setParam(param, value);
 
   handled = handled || m_vehi_settings.setParam(param, value);
@@ -455,11 +462,14 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 
   record.setName(vname_aug);
 
+  if(m_extrapolate > 0)
+    record = extrapolateRecord(record, m_curr_time, m_extrapolate);
+  
   drawCommonVehicle(record, bng_line, vehi_color, vname_color, vname_draw, 1, transp);
 }
 
 //-------------------------------------------------------------
-// Procedure: drawTrailPoints
+// Procedure: drawTrailPoints()
 
 void PMV_Viewer::drawTrailPoints(CPList &cps, unsigned int trail_length)
 {

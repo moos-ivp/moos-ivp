@@ -195,6 +195,8 @@ protected:
 
   bool      m_verbose;
 
+  double    m_extrapolate;
+  
   double    m_targ_zoom;
   double    m_targ_vshift_x;
   double    m_targ_vshift_y;

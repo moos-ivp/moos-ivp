@@ -201,6 +201,8 @@ ProcessConfig = pMarineViewer
 
   tiff_file            = forrest19.tif
 
+	app_logging = true
+	
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.95
@@ -258,10 +260,12 @@ ProcessConfig = pMarineViewer
 
 ProcessConfig = pNodeReporter
 {
-  MaxAppTick    = 2
-  AppTick  	= 2
-  CommsTick	= 2
+//  MaxAppTick = 2
+  AppTick  	 = 2
+  CommsTick	 = 2
 
+	app_logging = true
+	
   platform_type   = KAYAK
   platform_length = 4
 

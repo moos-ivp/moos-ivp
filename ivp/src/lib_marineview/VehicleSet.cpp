@@ -29,6 +29,7 @@
 #include "ColorParse.h"
 #include "NodeRecord.h"
 #include "NodeRecordUtils.h"
+#include "LinearExtrapolator.h"
 
 using namespace std;
 
@@ -176,6 +177,21 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
   else
     return(false);
 
+  // If x/y position is being queried, extrapolate the position
+  if((info_type == "xpos") || (info_type == "meters_x") ||
+     (info_type == "ypos") || (info_type == "meters_y")) {
+    LinearExtrapolator extrapolator;
+    extrapolator.setPosition(record.getX(), record.getY(),
+			     record.getSpeed(), record.getHeading(),
+			     record.getTimeStamp());
+    double new_x, new_y;
+    bool ok = extrapolator.getPosition(new_x, new_y, m_curr_time);
+    if(ok && ((info_type == "xpos") || (info_type == "meters_x")))
+      return(new_x);
+    if(ok && ((info_type == "ypos") || (info_type == "meters_y")))
+      return(new_y);
+  }
+    
   double node_local_time = 0;
   map<string,double>::const_iterator q = m_map_node_local_time.find(vname);
   if(q != m_map_node_local_time.end())

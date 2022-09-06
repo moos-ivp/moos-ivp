@@ -777,7 +777,7 @@ bool MarineViewer::coordInViewX(double x, double y)
 
 
 //-------------------------------------------------------------
-// Procedure: drawCommonVehicle
+// Procedure: drawCommonVehicle()
 
 void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb, 
 				     const BearingLine& bng_line, 

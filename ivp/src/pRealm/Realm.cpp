@@ -610,7 +610,6 @@ void Realm::buildRealmCastSummary()
     
   if(elapsed < summary_interval)
     return;
-  m_last_post_summary = m_curr_time;
   
   // ======================================================
   // Part 2: Build summary: apps + history channels
@@ -636,10 +635,19 @@ void Realm::buildRealmCastSummary()
     string channel = q->first;
     realm_summary.addHistVar(channel);
   }
-  
+
+  // If the summary has not changed, the interval time is 10x
+  string new_summary = realm_summary.get_spec();
+  if(new_summary == m_last_post_summary_info) {
+    if(elapsed < (summary_interval * 10))
+      return;
+  }
+
+  m_last_post_summary_info = new_summary;
+  m_last_post_summary = m_curr_time;
   m_summaries_posted++;
   
-  Notify("REALMCAST_CHANNELS", realm_summary.get_spec());
+  Notify("REALMCAST_CHANNELS", new_summary);
 }
 
 //------------------------------------------------------------

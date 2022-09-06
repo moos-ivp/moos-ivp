@@ -311,6 +311,12 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       updateInfoBuffer(msg);
   }
 
+  // COMMS_POLICY mail is handled at the AppCastingMOOSApp superclass
+  // level. The current state of the comms policy is a member variable
+  // of this class (superclass). Pass along this value to the
+  // info_buffer.
+  m_info_buffer->setValue("COMMS_POLICY", commsPolicy(), m_curr_time);
+  
   if(helmStatus() == "STANDBY")
     checkForTakeOver();
   return(true);
@@ -645,7 +651,7 @@ void HelmIvP::postBehaviorMessages()
 }
 
 //------------------------------------------------------------
-// Procedure: buildReport
+// Procedure: buildReport()
 //      Note: A virtual function of the AppCastingMOOSApp superclass, conditionally 
 //            invoked if either a terminal or appcast report is needed.
 
@@ -664,6 +670,8 @@ bool HelmIvP::buildReport()
     m_msgs << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!" << endl;
     return(true);
   }
+
+  m_msgs << "  Comms Policy: " << commsPolicy()  << endl; 
 
   list<string> summary = m_helm_report.formattedSummary(m_curr_time);
   list<string>::iterator p;
@@ -1046,7 +1054,7 @@ bool HelmIvP::updateInfoBuffer(CMOOSMsg &msg)
   double msg_time = msg.GetTime();
   if(src_aux == "HELM_VAR_INIT")
     return(false);
-    
+
   if(msg.IsDouble()) {
     return(m_info_buffer->setValue(moosvar, msg.GetDouble(), msg_time));
   }
@@ -1093,6 +1101,7 @@ void HelmIvP::registerVariables()
   
   if(m_bhv_set) {
     vector<string> info_vars = m_bhv_set->getInfoVars();
+
     unsigned int j, jsize = info_vars.size();
     for(j=0; j<jsize; j++)
       registerSingleVariable(info_vars[j]);
@@ -1167,7 +1176,6 @@ void HelmIvP::checkForTakeOver()
 bool HelmIvP::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
-  cout << "In Helm OnStartUp()" << endl;
 
   Notify("PHELMIVP_PID", getpid());
     

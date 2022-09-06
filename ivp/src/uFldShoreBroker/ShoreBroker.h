@@ -52,9 +52,12 @@ class ShoreBroker : public AppCastingMOOSApp
   void makeBridgeRequestAll();
   void makeBridgeRequest(std::string src, HostRecord, std::string alias,
 			 unsigned int node_index=0);
-
+  
   void sendAcks();
   void checkForStaleNodes();
+  void postQBridgeSet();
+  void postBridgeSet();
+  void postNodeCount();
   void registerVariables();
 
  protected: // Config Variables
@@ -65,8 +68,14 @@ class ShoreBroker : public AppCastingMOOSApp
 
   bool m_warning_on_stale;
 
+  std::set<std::string> m_set_qbridge_vars;
+  std::set<std::string> m_set_bridge_vars;
+
  protected: // State Variables
 
+  unsigned int m_prev_node_count;
+  double       m_prev_node_count_tstamp;
+  
   // Index of below vectors is unique on a connected node.
   std::vector<HostRecord>   m_node_host_records;
   std::vector<double>       m_node_total_skew;

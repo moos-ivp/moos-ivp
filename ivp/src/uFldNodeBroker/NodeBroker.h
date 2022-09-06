@@ -84,7 +84,6 @@ class NodeBroker : public AppCastingMOOSApp
   std::vector<std::string>  m_try_host_ips;
 
   std::string m_messaging_policy;
-
   
  protected: // State Variables
   HostRecord   m_node_host_record;  // From PHI_HOST_INFO
@@ -97,15 +96,6 @@ class NodeBroker : public AppCastingMOOSApp
   unsigned int m_bad_acks_received;
   unsigned int m_host_info_changes;
 
-  std::string m_pshare_cmd_latest;
+  std::string m_pshare_cmd_latest;  
 };
-
-#endif 
-
-
-
-
-
-
-
-
+#endif

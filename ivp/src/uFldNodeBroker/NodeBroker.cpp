@@ -226,10 +226,12 @@ void NodeBroker::sendNodeBrokerPing()
   string ping_msg = m_node_host_record.getSpec();
   
   for(unsigned int i=0; i<m_shore_routes.size(); i++) {
-    string aug_ping_msg = ping_msg + ",key=" + uintToString(i);
-    Notify("NODE_BROKER_PING_"+uintToString(i), aug_ping_msg);
-    m_shore_pings_sent[i]++;
-    m_pings_posted++;
+    if(m_shore_pings_ack[i] == 0) {
+      string aug_ping_msg = ping_msg + ",key=" + uintToString(i);
+      Notify("NODE_BROKER_PING_"+uintToString(i), aug_ping_msg);
+      m_shore_pings_sent[i]++;
+      m_pings_posted++;
+    }
   }
 }
 
@@ -539,6 +541,9 @@ void NodeBroker::handleMailAck(string ack_msg)
   m_shore_timewarp[key_ix] = hrecord.getTimeWarp();
   m_shore_pings_ack[key_ix]++;
 
+  string msg = stringVectorToString(m_bridge_alias);
+  Notify("NODE_PSHARE_VARS", msg);
+  
   m_ok_acks_received++;
 
   // Set up the user-configured variable bridges.
@@ -633,6 +638,7 @@ bool NodeBroker::buildReport()
   m_msgs << "        HostIP: " << m_node_host_record.getHostIP()          << endl; 
   m_msgs << "   Port MOOSDB: " << m_node_host_record.getPortDB()          << endl; 
   m_msgs << "     Time Warp: " << m_node_host_record.getTimeWarp()        << endl; 
+  m_msgs << "  Comms Policy: " << commsPolicy()                           << endl; 
 
   string try_host_ips;
   for(unsigned int i=0; i<m_try_host_ips.size(); i++) {

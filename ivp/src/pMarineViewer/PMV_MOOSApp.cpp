@@ -51,7 +51,7 @@ PMV_MOOSApp::PMV_MOOSApp()
 
   m_appcast_repo             = 0;
   m_appcast_last_req_time    = 0;
-  m_appcast_request_interval = 1.0;  // seconds
+  m_appcast_request_interval = 2.0;  // seconds
 
   m_realm_repo               = 0;
   m_relcast_last_req_time    = 0;
@@ -629,8 +629,15 @@ void PMV_MOOSApp::handleAppCastRequesting(bool force)
   // Want to request less frequently if using a higher time warp.
   double moos_elapsed_time = m_curr_time - m_appcast_last_req_time;
   double real_elapsed_time = moos_elapsed_time / m_time_warp;
-  
-  if(real_elapsed_time >= m_appcast_request_interval) {
+
+  double appcast_request_interval = m_appcast_request_interval;
+  double appcast_dur = 3;
+  if(commsPolicy() != "open") {
+    appcast_request_interval *= 5;
+    appcast_dur *= 4;
+  }
+    
+  if(real_elapsed_time >= appcast_request_interval) {
     m_appcast_last_req_time = m_curr_time;
     string refresh_mode = m_appcast_repo->getRefreshMode();
     string current_node = m_appcast_repo->getCurrentNode();
@@ -638,15 +645,15 @@ void PMV_MOOSApp::handleAppCastRequesting(bool force)
     
     if(refresh_mode == "streaming") {
       string key = GetAppName() + ":" + m_host_community;      
-      postAppCastRequest("all", "all", key, "any", 3);
+      postAppCastRequest("all", "all", key, "any", appcast_dur);
     }
     else if(refresh_mode == "events") {
       // Not critical that key names be unique, but good practice to 
       // head off multiple uMAC clients from interfering
       string key_app = GetAppName() + ":" + m_host_community + "app";      
       string key_gen = GetAppName() + ":" + m_host_community + "gen";      
-      postAppCastRequest(current_node, current_proc, key_app, "any", 3);
-      postAppCastRequest("all", "all", key_gen, "run_warning", 3);
+      postAppCastRequest(current_node, current_proc, key_app, "any", appcast_dur);
+      postAppCastRequest("all", "all", key_gen, "run_warning", appcast_dur);
     }
   }
 }

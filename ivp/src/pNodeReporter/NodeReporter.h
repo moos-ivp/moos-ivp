@@ -30,6 +30,7 @@
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "NodeRecord.h"
 #include "NodeRiderSet.h"
+#include "LinearExtrapolator.h"
 
 class NodeReporter : public AppCastingMOOSApp
 {
@@ -70,6 +71,12 @@ public:
   std::string  m_group_name;
   bool         m_terse_reports;
   std::string  m_allow_color_change;
+
+  // Sep 01, 2022
+  bool         m_extrap_enabled;
+  double       m_extrap_pos_thresh;
+  double       m_extrap_hdg_thresh;
+  double       m_extrap_max_gap;
   
  protected: // State Variables (Node Reports)
   CMOOSGeodesy m_geodesy;
@@ -85,7 +92,7 @@ public:
 
   // Oct 18, 2021
   double m_nav_grace_period;
-  bool m_nav_warning_posted;
+  bool   m_nav_warning_posted;
   
   NodeRecord   m_record;
   NodeRecord   m_record_gt;
@@ -119,6 +126,10 @@ public:
   std::vector<double>      m_plat_post_tstamp;
   std::vector<double>      m_plat_recv_tstamp;
 
+ protected: 
+  LinearExtrapolator m_extrapolator;
+  NodeRecord         m_record_last_posted;
+  
  protected: // NodeRider support
   NodeRiderSet m_riderset;
 };

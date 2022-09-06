@@ -61,9 +61,11 @@ public:
   void 	       preOnStartUp();
   bool 	       OnStartUpDirectives(std::string directives="");
   void         setAppLoggingInfo(std::string s) {m_app_logging_info=s;}
+  std::string  commsPolicy() const {return(m_comms_policy);}
   
  private:
   void         handleMailAppCastRequest(const std::string&);
+  bool         handleMailCommsPolicy(const std::string&);
   bool         appcastRequested();
 
 protected:
@@ -94,6 +96,9 @@ protected:
   std::string  m_app_logging;
   std::string  m_app_logging_info;
 
+  std::string  m_comms_policy;
+  std::string  m_comms_policy_config;
+  
   // Map from KEY (AC requestor) to config param.
   std::map<std::string, double>       m_map_bcast_duration;
   std::map<std::string, double>       m_map_bcast_tstart;

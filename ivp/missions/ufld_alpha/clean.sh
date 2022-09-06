@@ -30,7 +30,7 @@ done
 if [ "${VERBOSE}" = "-v" ]; then
     echo "Cleaning: $PWD"
 fi
-rm -rf  $VERBOSE   MOOSLog_* XLOG_ LOG_*
+rm -rf  $VERBOSE   MOOSLog_* XLOG_* LOG_*
 rm -f   $VERBOSE   *~  *.moos++
 rm -f   $VERBOSE   targ_*
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory

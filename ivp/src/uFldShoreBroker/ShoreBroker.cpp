@@ -33,12 +33,15 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 ShoreBroker::ShoreBroker()
 {
   // Initialize config variables
   m_warning_on_stale = false;
+
+  m_prev_node_count = 0;
+  m_prev_node_count_tstamp = 0;
 
   // Initialize state variables
   m_iteration_last_ack = 0;
@@ -106,7 +109,8 @@ bool ShoreBroker::Iterate()
   makeBridgeRequestAll();
   sendAcks();
   checkForStaleNodes();
-
+  postNodeCount();
+  
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -162,6 +166,7 @@ bool ShoreBroker::OnStartUp()
   if(auto_bridge_appcast)
     handleConfigQBridge("APPCAST_REQ");
   
+  postQBridgeSet();
   registerVariables();
   return(true);
 }
@@ -206,7 +211,63 @@ void ShoreBroker::sendAcks()
 }
 
 //------------------------------------------------------------
-// Procedure: checkForStaleNodes
+// Procedure: postNodeCount()
+
+void ShoreBroker::postNodeCount()
+{
+  bool post_now = false;
+
+  unsigned int node_cnt_now = m_node_host_records.size();
+  if(node_cnt_now != m_prev_node_count)
+    post_now = true;
+  
+  if((m_curr_time - m_prev_node_count_tstamp) > 30)
+    post_now = true;
+
+  if(!post_now)
+    return;
+
+  Notify("UFSB_NODE_COUNT", node_cnt_now);
+  m_prev_node_count = node_cnt_now;
+  m_prev_node_count_tstamp = m_curr_time;
+
+}
+
+//------------------------------------------------------------
+// Procedure: postQBridgeSet()
+
+void ShoreBroker::postQBridgeSet()
+{
+  string msg;
+  set<string>::iterator p;
+  for(p=m_set_qbridge_vars.begin(); p!=m_set_qbridge_vars.end(); p++) {
+    string var = *p;
+    if(msg != "")
+      msg += ",";
+    msg += var;
+  }
+  Notify("UFSB_QBRIDGE_VARS", msg);
+}
+
+//------------------------------------------------------------
+// Procedure: postBridgeSet()
+
+void ShoreBroker::postBridgeSet()
+{
+  string msg;
+  set<string>::iterator p;
+  for(p=m_set_bridge_vars.begin(); p!=m_set_bridge_vars.end(); p++) {
+    string var = *p;
+    if(msg != "")
+      msg += ",";
+    msg += var;
+  }
+  if(msg != "")
+    Notify("UFSB_BRIDGE_VARS", msg);
+}
+
+//------------------------------------------------------------
+// Procedure: checkForStaleNodes()
 
 void ShoreBroker::checkForStaleNodes()
 {
@@ -371,6 +432,12 @@ void ShoreBroker::makeBridgeRequest(string src_var, HostRecord hrecord,
   pshare_post += ",route=" + pshare_iroutes;
   Notify("PSHARE_CMD", pshare_post);
 
+  // If this is a new bridge, update the posted list of bridges
+  if(!m_set_bridge_vars.count(src_var)) {
+    m_set_bridge_vars.insert(src_var);
+    postBridgeSet();
+  }
+  
   reportEvent("PSHARE_CMD:" + pshare_post);
   m_pshare_cmd_posted++;
 }
@@ -407,6 +474,8 @@ void ShoreBroker::handleConfigBridge(const string& line)
 
   if(alias == "")
     alias = src;
+
+  m_set_bridge_vars.insert(src);
   
   handleConfigBridgeAux(src, alias);
 }
@@ -431,6 +500,7 @@ void ShoreBroker::handleConfigQBridge(const string& line)
     if(strContains(src_var, '=')) 
       reportConfigWarning("Invalid QBRIDGE component: " + src_var);
     else {
+      m_set_qbridge_vars.insert(src_var);
       handleConfigBridgeAux(src_var+"_ALL", src_var);
       handleConfigBridgeAux(src_var+"_$V", src_var);
     }

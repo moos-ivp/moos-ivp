@@ -542,6 +542,10 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   bhv->setHelmIteration(iteration);
   // Check if the behavior duration is to be reset
   bhv->checkForDurationReset();
+
+  // Check if the behavior comms policy has been updated via
+  // MOOS posting to COMMS_POLICY
+  bhv->checkForUpdatedCommsPolicy();
   
   // Possible vals: "completed", "idle", "running"
   new_activity_state = bhv->isRunnable();
@@ -927,7 +931,7 @@ vector<VarDataPair> BehaviorSet::getMessages(unsigned int ix,
 }
 
 //------------------------------------------------------------
-// Procedure: getInfoVars
+// Procedure: getInfoVars()
 
 vector<string> BehaviorSet::getInfoVars()
 {
@@ -950,7 +954,7 @@ vector<string> BehaviorSet::getInfoVars()
 }
 
 //------------------------------------------------------------
-// Procedure: getNewInfoVars
+// Procedure: getNewInfoVars()
 
 vector<string> BehaviorSet::getNewInfoVars()
 {

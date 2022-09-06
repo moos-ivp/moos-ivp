@@ -21,14 +21,65 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <iostream>
+#include <cmath>
 #include <cstdlib>
 #include "NodeRecordUtils.h"
 #include "MBUtils.h"
+#include "LinearExtrapolator.h"
 
 using namespace std;
 
 //---------------------------------------------------------
-// Procedure: string2NodeRecord
+// Procedure: rangeBetweenRecords()
+
+double rangeBetweenRecords(const NodeRecord& rec1,
+			   const NodeRecord& rec2)
+{
+  double x1 = rec1.getX();
+  double y1 = rec1.getY();
+  double x2 = rec2.getX();
+  double y2 = rec2.getY();
+  
+  return(hypot(x1-x2, y1-y2));
+}
+
+//---------------------------------------------------------
+// Procedure: extrapolateRecord()
+
+NodeRecord extrapolateRecord(const NodeRecord& record, double curr_time,
+			     double max_delta)
+{
+  // Sanity Check 1
+  if(curr_time <= 0)
+    return(record);
+  
+  double record_utc = record.getTimeStamp();
+
+  // Sanity Check 2
+  if(curr_time <= (record_utc+0.05))
+    return(record);
+
+  LinearExtrapolator extrapolator;
+  extrapolator.setDecay(max_delta, max_delta);
+  extrapolator.setPosition(record.getX(), record.getY(),
+			   record.getSpeed(), record.getHeading(),
+			   record_utc);
+
+  double new_x, new_y;
+  bool ok = extrapolator.getPosition(new_x, new_y, curr_time);
+  if(ok) {
+    NodeRecord new_record = record;
+    new_record.setX(new_x);
+    new_record.setY(new_y);
+    return(new_record);
+  }
+
+  return(record);
+}
+
+//---------------------------------------------------------
+// Procedure: string2NodeRecord()
 //   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
 //            X=29.66,Y=-23.49,LAT=43.825089, LON=-70.330030, 
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,     

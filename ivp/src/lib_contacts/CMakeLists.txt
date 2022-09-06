@@ -15,7 +15,7 @@ SET(HEADERS
   NodeRecord.h
   NodeRecordUtils.h
   NodeRider.h
-  NodeRiderSet.h
+  ContactLedger.h
   ContactLedger.h
 )
 

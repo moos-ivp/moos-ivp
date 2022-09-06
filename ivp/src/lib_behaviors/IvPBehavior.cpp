@@ -961,8 +961,9 @@ void IvPBehavior::durationReset()
 }
 
 //-----------------------------------------------------------
-// Procedure: addInfoVars
-//      Note: If post_warning is false, then the 
+// Procedure: addInfoVars()
+//      Note: If warning "no_warning" then a warning will not be
+//            posted if the variable is not in the info_buffer
 
 void IvPBehavior::addInfoVars(string var_string, string warning)
 {

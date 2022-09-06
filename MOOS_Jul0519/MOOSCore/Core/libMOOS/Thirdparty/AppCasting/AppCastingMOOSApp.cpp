@@ -47,7 +47,7 @@ AppCastingMOOSApp::AppCastingMOOSApp()
   m_last_report_time         = 0;
   m_last_report_time_appcast = 0;
   m_iterate_start_time       = 0;
-  m_term_report_interval = 0.4;
+  m_term_report_interval     = 0.5;
 
   m_term_reporting  = true;
   m_new_run_warning = false;
@@ -56,6 +56,9 @@ AppCastingMOOSApp::AppCastingMOOSApp()
   // If "log" stdio is posted. If "file" stdio goes to a file.
   m_app_logging   = "off";
   m_deprecated_ok = false;
+
+  m_comms_policy = "open";
+  m_comms_policy_config = "open";
 }
 
 //----------------------------------------------------------------
@@ -234,7 +237,15 @@ void AppCastingMOOSApp::preOnStartUp()
     MOOSTrimWhiteSpace(param);
     MOOSTrimWhiteSpace(value);
 
-    if(param == "APP_LOGGING") {
+    if(param == "COMMS_POLICY") {
+      if((lvalue != "open") && (lvalue != "lean") && (lvalue != "dire"))
+	reportConfigWarning("Invalid comms_policy: " + value);
+      else {
+	m_comms_policy = lvalue;
+	m_comms_policy_config = lvalue;
+      }
+    }
+    else if(param == "APP_LOGGING") {
       if(lvalue == "true")
 	lvalue = "log";
       if((lvalue == "log") || (lvalue == "file") || (lvalue == "off"))
@@ -429,6 +440,8 @@ bool AppCastingMOOSApp::OnStartUpDirectives(string directives)
 void AppCastingMOOSApp::RegisterVariables()
 {
   m_Comms.Register("APPCAST_REQ", 0);
+  m_Comms.Register("TERM_REPORT_INTERVAL", 0);
+  m_Comms.Register("COMMS_POLICY", 0);
 }
 
 //----------------------------------------------------------------
@@ -443,6 +456,21 @@ bool AppCastingMOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     CMOOSMsg &msg = *p;
     if(msg.GetKey() == "APPCAST_REQ") {
       handleMailAppCastRequest(msg.GetString());
+      p = NewMail.erase(p);
+    }
+    else if(msg.GetKey() == "COMMS_POLICY") {
+      string sval = msg.GetString();
+      MOOSToLower(sval);
+      bool ok = handleMailCommsPolicy(sval);
+      if(!ok)
+	reportRunWarning("Unhandled COMMS_POLICY:" + sval);      
+      p = NewMail.erase(p);
+    }
+    else if(msg.GetKey() == "TERM_REPORT_INTERVAL") {
+      double dval = msg.GetDouble();
+      m_term_report_interval = dval;
+      if(m_term_report_interval < 0.4)
+	m_term_report_interval = 0.4;
       p = NewMail.erase(p);
     }
     else if(msg.GetKey() == "_async_timing")
@@ -620,4 +648,31 @@ unsigned int AppCastingMOOSApp::getWarningCount(const string& filter) const
     total += m_ac.getRunWarningCount();
 
   return(total);
+}
+
+//----------------------------------------------------------------
+// Procedure: handleMailCommsPolicy()
+
+bool AppCastingMOOSApp::handleMailCommsPolicy(const string& str)
+{
+  // Sanity check valid policy
+  if((str != "open") && (str != "lean") && (str != "dire"))
+    return(false);
+
+  // Cannot have open policy if original param config is stricter
+  if(str == "open") {
+    if((m_comms_policy_config == "lean") ||
+       (m_comms_policy_config == "dire"))
+	return(true);
+  }
+  
+  // Cannot have lean policy if original param config is dire
+  if(str == "lean") {
+    if(m_comms_policy_config == "dire")
+      return(false);
+  }
+
+  m_comms_policy = str;
+  
+  return(true);
 }

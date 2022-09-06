@@ -1,28 +1,38 @@
 #!/bin/bash -e
 #--------------------------------------------------------------
-#   Script: launch_shoreside.sh                                    
+#   Script: launch.sh
+#  Mission: ufld_alpha
 #   Author: Michael Benjamin  
-#     Date: April 2020     
+#   LastEd: Sep 4th, 2022     
+#-------------------------------------------------------------- 
+#  Part 1: Define a convenience function for producing terminal
+#          debugging/status output depending on the verbosity.
+#-------------------------------------------------------------- 
+vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
+
 #--------------------------------------------------------------  
-#  Part 1: Set Exit actions and declare global var defaults
+#  Part 2: Set global variables
 #--------------------------------------------------------------
 ME=`basename "$0"`
 TIME_WARP=1
 JUST_MAKE=""
 VERBOSE=""
 AUTO_LAUNCHED="no"
-
-
+CMD_ARGS=""
+NOCONFIRM="-nc"
 PASS_ARGS=""
 
 #--------------------------------------------------------------  
-#  Part 2: Check for and handle command-line arguments
+#  Part 3: Check for and handle command-line arguments
 #--------------------------------------------------------------  
 for ARGI; do
+    CMD_ARGS+=" ${ARGI}"
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "$ME [SWITCHES] [time_warp]         "
 	echo "  --help, -h                                     " 
 	echo "    Display this help message                    "
+        echo "  --verbose, -v                                  "
+        echo "    Increase verbosity                           "
 	echo "  --just_make, -j                                " 
 	echo "    Just make targ files, but do not launch      "
 	echo "  --verbose, -v                                  " 
@@ -35,6 +45,9 @@ for ARGI; do
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
+	VERBOSE="--verbose"
+	NOCONFIRM=""
     elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE="yes"
     elif [ "${ARGI}" = "--pavlab" -o "${ARGI}" = "-p" ]; then
@@ -45,25 +58,42 @@ for ARGI; do
     fi
 done
 
+#---------------------------------------------------------------
+#  Part 4: If verbose, show vars and confirm before launching
+#---------------------------------------------------------------
+if [ "${VERBOSE}" != "" ]; then 
+    echo "======================================================"
+    echo "              launch.sh SUMMARY                       "
+    echo "======================================================"
+    echo "$ME"
+    echo "CMD_ARGS  =  [${CMD_ARGS}]  "
+    echo "VERBOSE   =  [${VERBOSE}]   "
+    echo "JUST_MAKE =  [${JUST_MAKE}] "
+    echo "TIME_WARP =  [${TIME_WARP}] "
+    echo "PASS_ARGS =  [${PASS_ARGS}] "
+    echo "--------------------------- "
+    echo -n "Hit the RETURN key to continue with launching"
+    read ANSWER
+fi
+
+PASS_ARGS+=" ${NOCONFIRM} ${JUST_MAKE} ${VERBOSE}"
 
 #--------------------------------------------------------------  
-#  Part 3: Pre-launch. Better to exit now if err building targs
+#  Part 5: Actual launch
 #--------------------------------------------------------------  
-./launch_shoreside.sh -j --auto $PASS_ARGS $TIME_WARP
-./launch_vehicle.sh   -j --auto $PASS_ARGS $TIME_WARP --vname=abe
+./launch_vehicle.sh   --auto $PASS_ARGS $TIME_WARP --vname=abe
+sleep 1
+./launch_shoreside.sh --auto $PASS_ARGS $TIME_WARP
 
-if [ ${JUST_MAKE} = "yes" ] ; then
+#---------------------------------------------------------------
+#  Part 6: If launched from script, we're done, exit now
+#---------------------------------------------------------------
+if [ "${AUTO_LAUNCHED}" = "yes" -o "${JUST_MAKE}" != "" ]; then
     exit 0
 fi
 
-#--------------------------------------------------------------  
-#  Part 4: Actual launch
-#--------------------------------------------------------------  
-./launch_shoreside.sh --auto $PASS_ARGS $TIME_WARP
-sleep 1
-./launch_vehicle.sh   --auto $PASS_ARGS $TIME_WARP --vname=abe
 
 #--------------------------------------------------------------  
-#  Part 5: Launch uMAC until mission quit
+#  Part 7: Launch uMAC until mission quit
 #--------------------------------------------------------------  
-uMAC targ_shoreside.moos
+uMAC --paused targ_shoreside.moos

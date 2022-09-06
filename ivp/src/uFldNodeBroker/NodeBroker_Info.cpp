@@ -143,6 +143,8 @@ void showInterfaceAndExit()
   blk("                     time_warp=8,pshare_iroutes=12.18.1.22:9200,");
   blk("                     time=1325178800.81                         ");
   blk("                                                                ");
+  blk("  NODE_PSHARE_VARS = list of all pshare aliases (for uFldDelve) ");
+  blk("                                                                ");
   exit(0);
 }
 

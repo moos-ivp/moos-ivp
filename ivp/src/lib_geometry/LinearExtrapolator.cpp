@@ -29,7 +29,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Constructor
+// Constructor()
 
 LinearExtrapolator::LinearExtrapolator()
 {
@@ -46,7 +46,7 @@ LinearExtrapolator::LinearExtrapolator()
 }
 
 //---------------------------------------------------------------
-// Procedure: getPosition
+// Procedure: getPosition()
 
 bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
 				     double g_timestamp)
@@ -69,7 +69,7 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
     return(false);
   }
   m_failure_reason = "";
-  
+
   // Handle a special (easy) case.
   if(delta_time == 0) {
     r_xpos = m_xpos;
@@ -106,7 +106,6 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
       }
     }
   }
-
 
   projectPoint(m_hdg, distance, m_xpos, m_ypos, r_xpos, r_ypos);
   return(true);

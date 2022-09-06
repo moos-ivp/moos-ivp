@@ -101,8 +101,9 @@ class Realm : public AppCastingMOOSApp
   std::map<std::string, PipeWay> m_map_pipeways;
 
   std::map<std::string, double> m_map_var_last_wcast;
-  
-  double m_last_post_summary;
+
+  std::string m_last_post_summary_info;
+  double m_last_post_summary;  
   double m_last_post_relcast;
 
   unsigned int m_total_realmcasts;

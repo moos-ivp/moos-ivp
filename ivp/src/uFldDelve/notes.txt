@@ -1,0 +1,89 @@
+***********************
+        TODO
+***********************
+
+NODE_REPORT(s)
+===============================================
+o pHelmIvP needs to start using ContactCatalog to handle all incoming node reports
+  and handle extrapolation.
+  Helm should continue to support info_buffer queries of the form HENRY_NAV_X,
+  but should support a more specialized format:
+  e.g., info_buffer->getContactX(vname);
+        info_buffer->getContactY(vname);
+        info_buffer->getContactHdg(vname);
+        info_buffer->getContactSpd(vname);
+        info_buffer->getContactDep(vname);
+        info_buffer->getContactLat(vname);
+        info_buffer->getContactLon(vname);
+
+o pEncircle needs to also support a ContactCatalog
+
+o Consider using ContactCatalog inside pMarineViewer. For now the code is
+  pretty simple, but with more advanced forms of extrapolation, it may be
+  better to use a ContactCatalog for ANY app that receives NODE_REPORT(s)
+
+o The ContactCatalog should support journaling, so certain fields like LENGTH
+  can be transmitted just periodically.
+
+pNodeReporter
+===============================================
+
+o Consider extrapolation that includes bearing rate. Rate could be an other
+  optional field (assumed zero if not given), but could be helpful in extrapolation,
+  keeping the extrapolation within tolerance for longer, and ultimately less
+  reports generated.
+
+o Currently pNodeReporter does not have a commsPolicy() reaction.
+  Perhaps extrap_enabled could accept "lean" as a parameter, and automatically
+  engage in extrapolation when "lean" is detected.
+
+uFlDelve
+===============================================
+
+o Currently not checking for dropped NODE_REPORT(s) which it could do easily by
+  just counting skipped indices in successive node reports from each vehicle.
+
+o It could also check for MEDIATED_MESSAGE(s) that needed to be re-sent
+
+o uFldDelve could post a MOOS variable alerting for degrated comms.
+
+o We should be able to have the option to collaps FOO_ABE, FOO_BEN into FOO_*
+  to shrink the reporting lines in the appcast output.
+
+alogdelve
+===============================================
+
+o How can we build an alog tool version of this? 
+
+o At the very least we should be able to have uFldDelve periodically publish
+  totals (not rates) to a single string var. And maybe NODE_REPORT drops and
+  MEDIATED_MESSAGE drops, for a single final tally.
+
+alogview
+===============================================
+
+o How can we pull this into alogview? Should uFldDelve just periodically
+  publish a serialization of the whole APPCAST output? Or should we log
+  only enough in the alog files to re-derive the delve reports
+
+pRealm
+===============================================
+
+o pRealm publishes REALMCAST_CHANNEL(s). We already scaled these back,
+  but they should probably have a reaction to commsPolicy.
+
+o We haven't checked if REALMCAST output itself is scaled back in reaction
+  to commsPolicy()
+
+AppCasting
+===============================================
+o Confirm that the term_report_interval is scaled back automatically for
+any appcasting MOOSApp in reaction to commsPolicy()
+
+Other Collision Avoidance or Contact behaviors
+===============================================
+
+o Add a reaction to commsPolicy() to disable bearing lines.
+  Dont rely on this capability in the IvPBehavior superclass.
+
+  

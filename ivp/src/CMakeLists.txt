@@ -184,6 +184,7 @@ SET(IVP_NON_GUI_APPS
   uFldPathCheck      uFldShoreBroker     uFldObstacleSim
   uFldScope          uFldNodeComms       uFldBeaconRangeSensor
   pSearchGrid        uFldGenericSensor   uFldContactRangeSensor
+  uFldDelve
 )
 SET(IVP_GUI_APPS
   app_ffview         app_geoview         app_alogview
