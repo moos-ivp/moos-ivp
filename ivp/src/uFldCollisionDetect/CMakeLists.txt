@@ -25,11 +25,11 @@ ADD_EXECUTABLE(uFldCollisionDetect ${SRC})
 TARGET_LINK_LIBRARIES(uFldCollisionDetect
    ${MOOS_LIBRARIES}
    apputil
+   contacts
+   geometry
    mbutil
    ufield
    encounters
-   geometry
    logic
-   contacts
    ${SYSTEM_LIBS}
 )

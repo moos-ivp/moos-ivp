@@ -28,10 +28,10 @@ TARGET_LINK_LIBRARIES(pMarineViewer
   ${MOOSGeodesy_LIBRARIES}
   ${SYSTEM_LIBS}
   genutil
-  geometry
   marineview
-  ucommand
   contacts
+  geometry
+  ucommand
   realm
   apputil
   mbutil

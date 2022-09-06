@@ -25,8 +25,8 @@ TARGET_LINK_LIBRARIES(uFldContactRangeSensor
   ${MOOS_LIBRARIES}
   apputil
   mbutil
-  geometry 
   contacts
+  geometry 
   ${SYSTEM_LIBS}
 )
 

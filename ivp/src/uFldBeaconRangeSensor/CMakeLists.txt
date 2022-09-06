@@ -26,8 +26,8 @@ TARGET_LINK_LIBRARIES(uFldBeaconRangeSensor
   ${MOOS_LIBRARIES}
   mbutil
   apputil
-  geometry 
   contacts
+  geometry 
   ${SYSTEM_LIBS}
 )
 
