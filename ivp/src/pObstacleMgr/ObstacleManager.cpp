@@ -177,7 +177,7 @@ bool ObstacleManager::OnStartUp()
     bool handled = false;
     if(param == "point_var")
       handled = setNonWhiteVarOnString(m_point_var, value);
-    else if(param == "given_obstable")
+    else if((param == "given_obstable") || (param == "given_obstacle"))
       handled = handleGivenObstacle(value, "mission");
     else if(param == "alert_range")
       handled = setPosDoubleOnString(m_alert_range, value);
