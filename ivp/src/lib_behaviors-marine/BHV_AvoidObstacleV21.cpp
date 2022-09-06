@@ -430,7 +430,7 @@ double BHV_AvoidObstacleV21::getRelevance()
 {
   // Let the ObShipModel tell us the raw range relevance
   double range_relevance = m_obship_model.getRangeRelevance();
-  cout << "Range Relevance: " << range_relevance << endl;
+  //cout << "Range Relevance: " << range_relevance << endl;
   if(range_relevance <= 0)
     return(0);
   

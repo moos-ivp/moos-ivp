@@ -33,7 +33,7 @@
 using namespace std;
 
 //-------------------------------------------------------------
-// Constructor
+// Constructor()
 
 VehicleSet::VehicleSet()
 {
@@ -47,7 +47,7 @@ VehicleSet::VehicleSet()
 }
 
 //-------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 //     Ntoes: The "handled" variable is set to true if a known and 
 //            acceptable value are passed. This Boolean is returned 
 //            and may be vital to the caller to either pass a warning
@@ -92,7 +92,7 @@ bool VehicleSet::setParam(string param, string value)
 
 
 //-------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 //     Ntoes: The "handled" variable is set to true if a known
 //            and acceptable value are passed. This boolean is 
 //            returned and may be vital to the caller to either
@@ -134,7 +134,7 @@ void VehicleSet::clear(const string& vname)
 }
 
 // ----------------------------------------------------------
-// Procedure: getNodeRecord
+// Procedure: getNodeRecord()
 
 NodeRecord VehicleSet::getNodeRecord(const string& vname) const
 {
@@ -207,7 +207,7 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
 }
 
 // ----------------------------------------------------------
-// Procedure: getStringInfo
+// Procedure: getStringInfo()
 //   Purpose: Return the string info associated with the given
 //            vehicle name and info_type. The result is placed
 //            in the given string reference, and a boolean is 
@@ -246,7 +246,7 @@ bool VehicleSet::getStringInfo(const string& g_vname,
 }
 
 // ----------------------------------------------------------
-// Procedure: getStringInfo
+// Procedure: getStringInfo()
 //   Purpose: Return the string info associated with the given
 //            vehicle name and info_type. This is a convenience
 //            function when the caller does not care to check
@@ -264,7 +264,7 @@ string VehicleSet::getStringInfo(const string& vname,
 }
 
 // ----------------------------------------------------------
-// Procedure: getDoubleInfo
+// Procedure: getDoubleInfo()
 //   Purpose: Return the numerical (double) info associated with
 //            the given vehicle name and info_type. This is a 
 //            convenience function when the caller does not care
@@ -282,7 +282,7 @@ double VehicleSet::getDoubleInfo(const string& vname,
 }
 
 // ----------------------------------------------------------
-// Procedure: getStringInfo
+// Procedure: getStringInfo()
 //   Purpose: Return the string info associated with the "active"
 //            vehicle and info_type. This is a convenience
 //            function when the caller does not care to check
