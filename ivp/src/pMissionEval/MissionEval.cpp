@@ -127,7 +127,6 @@ bool MissionEval::OnStartUp()
       handled = m_logic_tests.addPassCondition(value);
     else if(param == "fail_condition") 
       handled = m_logic_tests.addFailCondition(value);
-
     
     else if(param == "report_column")
       m_report_columns.push_back(value);

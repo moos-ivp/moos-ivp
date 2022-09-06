@@ -15,7 +15,6 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-  cout << "main 1" << endl;
   string mission_file;
   string run_command = argv[0];
 
@@ -44,9 +43,7 @@ int main(int argc, char *argv[])
   cout << "pMissionEval launching as " << run_command << endl;
   cout << termColor() << endl;
 
-  cout << "main 2" << endl;
   MissionEval MissionEval;
-  cout << "main 3" << endl;
 
   MissionEval.Run(run_command.c_str(), mission_file.c_str());
   
