@@ -149,7 +149,8 @@ bool NodeBroker::OnStartUp()
     reportConfigWarning("No config block found for " + GetAppName());
 
   bool auto_bridge_realmcast = true;
-  bool auto_bridge_appcast = true;
+  bool auto_bridge_appcast   = true;
+  bool auto_bridge_pshare_vars = true;
   
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
@@ -167,6 +168,8 @@ bool NodeBroker::OnStartUp()
       handled = setBooleanOnString(auto_bridge_realmcast, value);
     else if(param == "auto_bridge_appcast") 
       handled = setBooleanOnString(auto_bridge_appcast, value);
+    else if(param == "auto_bridge_pshare_vars") 
+      handled = setBooleanOnString(auto_bridge_pshare_vars, value);
     else if(param == "shadow_shore") {
       string msg;
       handled = handleConfigShadow(value, msg);
@@ -185,6 +188,8 @@ bool NodeBroker::OnStartUp()
   }
   if(auto_bridge_appcast)
     handleConfigBridge("src=APPCAST");
+  if(auto_bridge_pshare_vars)
+    handleConfigBridge("src=NODE_PSHARE_VARS");
 
   registerVariables();
   registerPingBridges();
