@@ -34,6 +34,16 @@ using namespace std;
 Odometer::Odometer()
 {
   // Init state variables
+  reset();
+  
+  m_paused = false;
+}
+
+//-----------------------------------------------------------
+// Procedure: reset()
+
+void Odometer::reset()
+{
   m_curr_x = 0;
   m_curr_y = 0;
   m_prev_x = 0;
@@ -42,9 +52,8 @@ Odometer::Odometer()
   m_nav_x_received = false;
   m_nav_y_received = false;  
   m_total_distance = 0;
-
-  m_paused = false;
 }
+
 
 //-----------------------------------------------------------
 // Procedure: setX()

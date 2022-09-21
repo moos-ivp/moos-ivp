@@ -34,6 +34,8 @@ class Odometer {
   void   setX(double);
   void   setY(double);
 
+  void   reset();
+  
   void   pause()   {m_paused = true;}
   void   unpause() {m_paused = false;}
   
