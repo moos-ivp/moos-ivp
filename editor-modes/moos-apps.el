@@ -109,7 +109,7 @@
       '("pEvalLoiter" "eval_window" "nav_stale_thresh" "mode_thresh" "max_nav_age" "range_max_ineff" "notable_cpa_thresh" "notable_eff_thresh" "notable_cpa_var" "notable_eff_var" "max_appcast_events")
       
       '("uFldSwarmAssign" "task")
-      '("pProxonoi" "region" "max_appcast_events")
+      '("pProxonoi" "region" "post_poly" "post_region" "reject_range" "ignore_name" "max_appcast_events")
       '("uFldCollisionDetect" "collision_range" "collision_dist" "near_miss_range" "near_miss_range" "pulse_render" "pulse_range" "pulse_duration" "condition" "collision_flag" "near_miss_flag" "encounter_flag" "encounter_range" "encounter_dist" "report_all_encounters" "post_closest_range" "ignore_group" "reject_group" "max_appcast_events")
 
       '("pPolePath" "start_line" "end_line" "poles_number" "steps_number" "display_poles" "display_steps" "start_pole" "output_var" "random_end")
