@@ -78,6 +78,8 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_rclick_ix = 0;
   m_bclick_ix = 0;
 
+  m_config_complete = false;
+  
   m_extrapolate = 5; // default extrapolate 5 secs for stale reps
   
   string str = "x=$(XPOS),y=$(YPOS),lat=$(LAT),lon=$(LON),";
@@ -97,6 +99,11 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
 
 void PMV_Viewer::draw()
 {
+  if(!m_config_complete) {
+    clearBackground();
+    return;
+  }
+  
   m_elapsed = (m_curr_time - m_last_draw_time);
 
 #if 0
@@ -1029,13 +1036,3 @@ void PMV_Viewer::calculateDrawHash()
 
   drawFastHash(xl-buffer, xh+buffer, yl-buffer, yh+buffer);
 }
-
-
-
-
-
-
-
-
-
-

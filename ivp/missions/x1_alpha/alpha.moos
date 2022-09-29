@@ -14,8 +14,8 @@ LatOrigin  = 43.825300
 LongOrigin = -70.330400 
 
 // MIT Sailing Pavilion (use this one)
-// LatOrigin  = 42.358456 
-// LongOrigin = -71.087589
+//LatOrigin  = 42.358456 
+//LongOrigin = -71.087589
 
 
 //------------------------------------------
@@ -199,13 +199,17 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  tiff_file            = forrest19.tif
+  set_pan_x   = -90
+  set_pan_y   = -280
+  zoom        = 0.95
+  tiff_file   = forrest19.tif
+  //tiff_file = MIT_SP.tif
+  //tiff_file = null.tif
 
-	app_logging = true
+  // log_the_image = true
 	
-  set_pan_x            = -90
-  set_pan_y            = -280
-  zoom                 = 0.95
+	// app_logging = true
+	
   vehicle_shape_scale  = 1.5
   hash_delta           = 50
   hash_shade           = 0.4

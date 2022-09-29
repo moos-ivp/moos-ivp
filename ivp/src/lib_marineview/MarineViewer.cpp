@@ -76,19 +76,22 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
   m_hash_shade  = 0.65;
   m_fill_shade  = 0.55;
   m_texture_set = 0;
-  m_texture_init = false;
   m_textures    = new GLuint[1];
 
-  m_back_img_b_ok = false;
-  m_back_img_b_on = false;
-  m_back_img_mod  = false;
+  //m_back_img_b_ok = false;
+  //m_back_img_b_on = false;
+  //m_back_img_mod  = false;
 
   m_geodesy_initialized = false;
 
   m_main_window  = 0;
 
+  m_textures_init = false;
+  
   m_verbose = false;
 
+  m_curr_back_img_ix = 0;
+  
   // The use_high_res_GL function is supported in more recent FLTK
   // packages. FLTK on older non-MacOS systems may not have this
   // feature. It is mostly needed to support Mac Retina displays.
@@ -111,7 +114,29 @@ int MarineViewer::handle(int event)
 {
   int result;
  
-  if(event == FL_MOUSEWHEEL) {
+  if((event == FL_MOUSEWHEEL) && (Fl::event_state() == FL_ALT)) {
+    if(Fl::event_dy () < 0) {
+      setParam("pan_y", 100);
+      redraw();
+    }
+    else if(Fl::event_dy () > 0) {
+      setParam("pan_y", -100);
+      redraw();
+    }
+    result = 1;
+  }
+  else if((event == FL_MOUSEWHEEL) && (Fl::event_state() == FL_META)) {
+    if(Fl::event_dy () < 0) {
+      setParam("pan_x", 100);
+      redraw();
+    }
+    else if(Fl::event_dy () > 0) {
+      setParam("pan_x", -100);
+      redraw();
+    }
+    result = 1;
+  }
+  else if(event == FL_MOUSEWHEEL) {
     if(Fl::event_dy () < 0) {
       setParam("zoom", 1.05);
       redraw();
@@ -129,30 +154,77 @@ int MarineViewer::handle(int event)
 }
 
 //-------------------------------------------------------------
-// Procedure: setParam
+// Procedure: getTiffFileA()
+
+string MarineViewer::getTiffFileA()
+{
+  if(m_back_imgs.size() < 1)
+    return("");
+  return(m_back_imgs[0].getTiffFile());
+}
+
+//-------------------------------------------------------------
+// Procedure: getInfoFileA()
+
+string MarineViewer::getInfoFileA()
+{
+  if(m_back_imgs.size() < 1)
+    return("");
+  return(m_back_imgs[0].getInfoFile());
+}
+
+//-------------------------------------------------------------
+// Procedure: getTiffFileB()
+
+string MarineViewer::getTiffFileB()
+{
+  if(m_back_imgs.size() < 2)
+    return("");
+  return(m_back_imgs[1].getTiffFile());
+}
+
+//-------------------------------------------------------------
+// Procedure: getInfoFileB()
+
+string MarineViewer::getInfoFileB()
+{
+  if(m_back_imgs.size() < 2)
+    return("");
+  return(m_back_imgs[1].getInfoFile());
+}
+
+//-------------------------------------------------------------
+// Procedure: setParam()
 
 bool MarineViewer::setParam(string param, string value)
 {
   string p = tolower(stripBlankEnds(param));
-
+  if(p == "tiff_file_b")
+    p = "tiff_file";
+  
   // For some, we want value without tolower performed.
   value = stripBlankEnds(value);
   string v = tolower(value);
   
   bool handled = false;
   if(p=="tiff_type") {
-    m_back_img_mod = true;
-    handled = setBooleanOnString(m_back_img_b_on, v);
+    m_curr_back_img_ix++;
+    if(m_curr_back_img_ix >= m_back_imgs.size())
+      m_curr_back_img_ix = 0;
+
+    glBindTexture(GL_TEXTURE_2D, m_textures[m_curr_back_img_ix]); 
+    
+    m_back_img.copy(m_back_imgs[m_curr_back_img_ix]);
   }
-  else if(p=="tiff_file")
-    handled = m_back_img.readTiff(value);
-  else if(p=="tiff_file_b") {
-    handled = m_back_img_b.readTiff(value);
-    if(handled)
-      m_back_img_b_ok = true;
+  else if(p=="tiff_file") {
+    cout << "Processing tif file: [" << value << "]" << endl;
+    if(value == "null.tif")
+      handled = handleNoTiff();
+    else {
+      m_tif_files.push_back(value);
+      handled = true;
+    }
   }
-  //  else if(p=="hash_viewable")
-  //  handled = setBooleanOnString(m_hash_offon, v);
   else if(p=="geodesy_init")
     handled = initGeodesy(v);
   else if(p=="zoom") {
@@ -173,8 +245,14 @@ bool MarineViewer::setParam(string param, string value)
       hash_val = "200";
     else if(dval < 1000)
       hash_val = "500";
-    else
+    else if(dval < 10000)
       hash_val = "1000";
+    else if(dval < 100000)
+      hash_val = "10000";
+    else if(dval < 1000000)
+      hash_val = "100000";
+    else
+      hash_val = "1000000";
     handled = m_geo_settings.setParam("hash_delta", hash_val);
   }
   else if(p=="datum") {
@@ -193,16 +271,17 @@ bool MarineViewer::setParam(string param, string value)
     handled = handled || m_geo_settings.setParam(p,v);
     handled = m_drop_points.setParam(p,v) || handled;
   }
+
   return(handled);
 }
 
 //-------------------------------------------------------------
-// Procedure: handleNoTiff
+// Procedure: handleNoTiff()
 
-void MarineViewer::handleNoTiff()
+bool MarineViewer::handleNoTiff()
 {
-  if(m_back_img.get_img_data() != 0)
-    return;
+  if(m_tif_files.size() > 0)
+    return(false);
 
   cout << "No Image Data found. Faking it...." << endl;
 
@@ -214,8 +293,13 @@ void MarineViewer::handleNoTiff()
   bool ok1 = m_geodesy.LocalGrid2LatLong(400, 100, lat_north, lon_east);
   bool ok2 = m_geodesy.LocalGrid2LatLong(-100, -400, lat_south, lon_west);
 
-  if(ok1 && ok2)
-    m_back_img.readTiffInfoEmpty(lat_north, lat_south, lon_east, lon_west);
+  if(!ok1 || !ok2)
+    return(false);
+
+  m_back_img.readTiffInfoEmpty(lat_north, lat_south, lon_east, lon_west);
+  m_tif_files.push_back("null.tif");
+
+  return(true);
 }
 
 //-------------------------------------------------------------
@@ -225,7 +309,6 @@ void MarineViewer::setVerbose(bool bval)
 {
   m_verbose = bval;
   m_back_img.setVerbose(bval);
-  m_back_img_b.setVerbose(bval);
 }
 
 
@@ -290,54 +373,60 @@ bool MarineViewer::setParam(string param, double v)
 }
 
 // ----------------------------------------------------------
-// Procedure: setTexture
-//   Purpose: 
+// Procedure: applyTiffFiles()
 
-bool MarineViewer::setTexture()
+bool MarineViewer::applyTiffFiles()
 {
-  //static bool texture_init;
+  if(m_textures_init)
+    return(true);
+
+  cout << "TIFF FILES COUNT:" << m_tif_files.size() << endl;
+  
+  if(m_tif_files.size() == 0)
+    return(false);
+
+  m_textures_init = true;
+  if(m_tif_files[0] == "null.tif")
+    return(false);
+
+  unsigned int cnt = m_tif_files.size();
+  
+  m_back_imgs = vector<BackImg>(cnt);
   
   glEnable(GL_TEXTURE_2D);
   glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
-  if(!m_texture_init) {
-    glGenTextures(1, m_textures);
-    m_texture_init = true;
-  }	  
-  
-  glBindTexture(GL_TEXTURE_2D, m_textures[0]);
+  glGenTextures(cnt, m_textures);
 
-  if((m_texture_set <1) || m_back_img_mod) {
-    unsigned char *img_data;
-    unsigned int img_width;
-    unsigned int img_height;
+  for(unsigned int ix=0; ix<cnt; ix++) {
+    m_back_imgs[ix].readTiff(m_tif_files[ix]);
+    m_back_imgs[ix].printTerse();
     
-    if(m_back_img_b_ok && m_back_img_b_on) {
-      img_data = m_back_img_b.get_img_data();
-      img_width  = m_back_img_b.get_img_pix_width();
-      img_height = m_back_img_b.get_img_pix_height();
-    }
-    else {
-      img_data = m_back_img.get_img_data();
-      img_width  = m_back_img.get_img_pix_width();
-      img_height = m_back_img.get_img_pix_height();
-    }
+    unsigned char* img_data = m_back_imgs[ix].get_img_data();
+    unsigned int   img_width  = m_back_imgs[ix].get_img_pix_width();
+    unsigned int   img_height = m_back_imgs[ix].get_img_pix_height();
     
+    glBindTexture(GL_TEXTURE_2D, m_textures[ix]);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 
 		 img_width, img_height, 0, 
 		 GL_RGBA, GL_UNSIGNED_INT_8_8_8_8_REV, 
 		 (unsigned char *)img_data);
-    m_texture_set++;
-
+    
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    m_back_img_mod = false;
-    modColorScheme();
+    //modColorScheme();
+    //m_back_imgs[ix].clearData();
   }
-  
+
+  glBindTexture(GL_TEXTURE_2D, m_textures[0]); 
+
+  m_back_img.copy(m_back_imgs[0]);
+
   return(true);
 }
+
+
 
 //-------------------------------------------------------------
 // Procedure: img2view
@@ -396,32 +485,32 @@ double MarineViewer::meters2img(char xy, double meters_val, bool verbose) const
   double img_val = 0.0;
   if(xy == 'x') {
     double range = m_back_img.get_img_mtr_width();
-    if(verbose)
-      cout << "X: range:" << range << endl;
+    //if(verbose)
+    //  cout << "X: range:" << range << endl;
     if(range == 0)
       img_val = 0;
     else {
       double pct = (meters_val - m_back_img.get_x_at_img_ctr()) / range;
       img_val = pct + 0.5;
-      if(verbose) {
-	cout << "m_back_img.get_x_at_img_ctr():" << m_back_img.get_x_at_img_ctr() << endl;
-	cout << "img_val:" << img_val << endl;
-      }
+      //if(verbose) {
+      //cout << "m_back_img.get_x_at_img_ctr():" << m_back_img.get_x_at_img_ctr() << endl;
+      //cout << "img_val:" << img_val << endl;
+      //}
     }
   }
   else if(xy == 'y') {
     double range = m_back_img.get_img_mtr_height();
-    if(verbose)
-      cout << "Y: range:" << range << endl;
+    //if(verbose)
+    //  cout << "Y: range:" << range << endl;
     if(range == 0)
       img_val = 0;
     else {
       double pct = (meters_val - m_back_img.get_y_at_img_ctr()) / range;
       img_val = pct + 0.5;
-      if(verbose) {
-	cout << "m_back_img.get_y_at_img_ctr():" << m_back_img.get_y_at_img_ctr() << endl;
-	cout << "img_val:" << img_val << endl;
-      }
+      //if(verbose) {
+      //cout << "m_back_img.get_y_at_img_ctr():" << m_back_img.get_y_at_img_ctr() << endl;
+      //cout << "img_val:" << img_val << endl;
+      //}
     }
   }
 
@@ -450,13 +539,10 @@ double MarineViewer::img2meters(char xy, double img_val) const
 }
 
 // ----------------------------------------------------------
-// Procedure: draw()
-//   Purpose: This is the "root" drawing routine - it is typically
-//            invoked in the draw routines of subclasses. 
+// Procedure: clearBackground()
 
-void MarineViewer::draw()
+void MarineViewer::clearBackground()
 {
-  autoZoom();
   double r = m_fill_shade;
   double g = m_fill_shade;
   double b = m_fill_shade + 0.1;
@@ -464,7 +550,22 @@ void MarineViewer::draw()
     b = 1.0;
   glClearColor(r,g,b,0.0);
   glClear(GL_COLOR_BUFFER_BIT);
+}
 
+
+// ----------------------------------------------------------
+// Procedure: draw()
+//   Purpose: This is the "root" drawing routine - it is typically
+//            invoked in the draw routines of subclasses. 
+
+void MarineViewer::draw()
+{
+  if(!m_textures_init)
+    applyTiffFiles();
+  
+  autoZoom();
+  clearBackground();
+  
   // The pixel_w/h() functions are supported in more recent FLTK
   // packages. FLTK on older non-MacOS systems may not have this
   // feature. It is mostly needed to support Mac Retina displays.
@@ -494,18 +595,15 @@ void MarineViewer::draw()
 
   if(m_main_window == 0)
     m_main_window  = Fl_Window::current();
-
 }
 
 // ----------------------------------------------------------
-// Procedure: drawTiff
+// Procedure: drawTiff()
 
 void MarineViewer::drawTiff()
 {
-  if(m_back_img.get_img_data() == 0)
+  if(!m_textures_init)
     return;
-
-  setTexture();
 
   unsigned int image_width  = m_back_img.get_img_pix_width();
   unsigned int image_height = m_back_img.get_img_pix_height();
@@ -1597,7 +1695,7 @@ void MarineViewer::drawPolygons(const vector<XYPolygon>& polys,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawPolygon
+// Procedure: drawPolygon()
 
 void MarineViewer::drawPolygon(const XYPolygon& poly)
 {
@@ -1607,7 +1705,7 @@ void MarineViewer::drawPolygon(const XYPolygon& poly)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawWedges
+// Procedure: drawWedges()
 
 void MarineViewer::drawWedges(const vector<XYWedge>& wedges)
 {
@@ -3154,12 +3252,12 @@ void MarineViewer::drawPoint(const XYPoint& point)
   double qx = img2view('x', tx);
   double qy = img2view('y', ty);
 
-  if(m_verbose) {
-    cout << "tx:" << tx << endl;
-    cout << "ty:" << ty << endl;
-    cout << " qx:" << qx << endl;
-    cout << " qy:" << qy << endl;
-  }
+  //if(m_verbose) {
+  // cout << "tx:" << tx << endl;
+  //  cout << "ty:" << ty << endl;
+  //  cout << " qx:" << qx << endl;
+  //  cout << " qy:" << qy << endl;
+  //}
   
   glMatrixMode(GL_MODELVIEW);
   glPushMatrix();
@@ -3389,6 +3487,42 @@ void MarineViewer::gl_draw_aux(const string text)
   // returns a bad pointer.
   if(Fl_Window::current() == m_main_window) 
     gl_draw(text.c_str());
+}
+
+
+//-------------------------------------------------------------
+// Procedure: getTiffFiles()
+
+vector<string> MarineViewer::getTiffFiles() const
+{
+  vector<string> svector;
+  for(unsigned int i=0; i<m_tif_files.size(); i++)
+    svector.push_back(m_tif_files[i]);
+
+  return(svector);
+}
+
+//-------------------------------------------------------------
+// Procedure: getInfoFiles()
+
+vector<string> MarineViewer::getInfoFiles() const
+{
+  vector<string> svector;
+  for(unsigned int i=0; i<m_back_imgs.size(); i++)
+    svector.push_back(m_back_imgs[i].getInfoFile());
+
+  return(svector);
+}
+
+
+//-------------------------------------------------------------
+// Procedure: getTiffFileCurrent()
+
+string MarineViewer::getTiffFileCurrent() const
+{
+  if(m_curr_back_img_ix >= m_tif_files.size())
+    return("");
+  return(m_tif_files[m_curr_back_img_ix]);
 }
 
 

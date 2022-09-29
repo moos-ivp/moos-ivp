@@ -143,12 +143,14 @@ bool LogViewLauncher::handleConfigParam(string argi)
   bool handled = true;
   if(strEnds(argi, ".alog")) 
     m_dbroker.addALogFile(argi);
+  else if(strEnds(argi, ".tif")) 
+    handled = handleBackground(argi);
+  else if(strBegins(argi, "--bg="))
+    handled = handleBackground(argi.substr(5));
   else if(strBegins(argi, "--mintime=")) 
     handled = handleMinTime(argi.substr(10));
   else if(strBegins(argi, "--maxtime=")) 
     handled = handleMaxTime(argi.substr(10));
-  else if(strBegins(argi, "--bg="))
-    handled = handleBackground(argi.substr(5));
   else if(strBegins(argi, "--geometry=")) 
     handled = handleGeometry(argi.substr(11));
   else if(strBegins(argi, "--lp="))
@@ -298,10 +300,14 @@ bool LogViewLauncher::configRegionInfo()
   }
   if(region_info == "")
     return(true);
-    
-  string tiff_file = tokStringParse(region_info, "img_file", ',', '=');
-  if(tiff_file != "")
-    handleBackground(tiff_file);
+
+  vector<string> svector = parseString(region_info, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+    if(param == "img_file")
+      handleBackground(value);
+  }
   
   string zoom_str = tokStringParse(region_info, "zoom", ',', '=');
 
@@ -317,6 +323,8 @@ bool LogViewLauncher::configRegionInfo()
   handlePanX(panx_str);
   string pany_str = tokStringParse(region_info, "pan_y", ',', '=');
   handlePanY(pany_str);
+
+  cout << "END HANDLE REGION_INFO" << endl;
   
   return(true);
 }
@@ -324,7 +332,7 @@ bool LogViewLauncher::configRegionInfo()
 
 
 //-------------------------------------------------------------
-// Procedure: configGraphical
+// Procedure: configGraphical()
 
 bool LogViewLauncher::configGraphical()
 {
@@ -357,7 +365,6 @@ bool LogViewLauncher::configGraphical()
   m_gui->np_viewer->setParam("set_pan_x", m_start_panx);
   m_gui->np_viewer->setParam("set_pan_y", m_start_pany);
   m_gui->np_viewer->setParam("set_zoom", m_start_zoom);
-  m_gui->np_viewer->setParam("tiff_file", m_tiff_file);
 
   for(unsigned int i=0; i<m_gui_params.size(); i++) {
     string param = m_gui_params[i];
@@ -374,6 +381,9 @@ bool LogViewLauncher::configGraphical()
   // Map associating scope variables with given behaviors. For convencience
   // in using the GUI_IPF viewer.
   m_gui->setBehaviorVarMap(m_map_bhv_vars);
+
+  for(unsigned int i=0; i<m_tiff_files.size(); i++)
+    m_gui->np_viewer->setParam("tiff_file", m_tiff_files[i]);
   
   return(true);
 }
@@ -411,21 +421,26 @@ bool LogViewLauncher::handleMaxTime(string val)
 
 bool LogViewLauncher::handleBackground(string val)
 {
+  cout << "Handle Background: " << val << endl;
   if(val == "none") {
     m_tiff_file = "";
     return(true);
   }
 
+  // Handle legacy aliases
   if(val == "mit") 
     m_tiff_file = "MIT_SP.tif";
   else if(val=="charles")
-    m_tiff_file = "AerialMIT.tif";
+    m_tiff_file = "MIT_SP.tif";
   else if((val == "fl") || (val == "forrest"))
     m_tiff_file = "forrest19.tif";
-  else if(strEnds(val, ".tif") || strEnds(val, ".tiff"))
-    m_tiff_file = val;
   else
+    m_tiff_file = val;
+  
+  if(!strEnds(m_tiff_file, ".tif"))
     return(false);
+
+  m_tiff_files.push_back(m_tiff_file);
 
   return(true);
 }

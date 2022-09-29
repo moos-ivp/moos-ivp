@@ -83,7 +83,10 @@ Fl_Menu_Item MarineGUI::menu_[] = {
  {"hash_delta=100",  FL_ALT+'3', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)100, FL_MENU_RADIO},
  {"hash_delta=200",  FL_ALT+'4', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)200, FL_MENU_RADIO},
  {"hash_delta=500",  FL_ALT+'5', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)500, FL_MENU_RADIO},
- {"hash_delta=1000", FL_ALT+'6', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)1000, FL_MENU_RADIO|FL_MENU_DIVIDER},
+ {"hash_delta=1000", FL_ALT+'6', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)1000, FL_MENU_RADIO},
+ {"hash_delta=10000", FL_ALT+'7', (Fl_Callback*)MarineGUI::cb_HashDelta,   (void*)10000, FL_MENU_RADIO},
+ {"hash_delta=100000", FL_ALT+'8', (Fl_Callback*)MarineGUI::cb_HashDelta,  (void*)100000, FL_MENU_RADIO},
+ {"hash_delta=1000000", FL_ALT+'9', (Fl_Callback*)MarineGUI::cb_HashDelta, (void*)1000000, FL_MENU_RADIO|FL_MENU_DIVIDER},
  {0},
 
  {0}
@@ -704,11 +707,11 @@ void MarineGUI::cb_SetGeoAttr(Fl_Widget* o, int v) {
 }
 
 //----------------------------------------- HashDelta
-inline void MarineGUI::cb_HashDelta_i(int amt) {
-  m_mviewer->setParam("hash_delta", intToString(amt));
+inline void MarineGUI::cb_HashDelta_i(unsigned long int amt) {
+  m_mviewer->setParam("hash_delta", ulintToString(amt));
   m_mviewer->redraw();
 }
-void MarineGUI::cb_HashDelta(Fl_Widget* o, int v) {
+void MarineGUI::cb_HashDelta(Fl_Widget* o, unsigned long int v) {
   ((MarineGUI*)(o->parent()->user_data()))->cb_HashDelta_i(v);
 }
 

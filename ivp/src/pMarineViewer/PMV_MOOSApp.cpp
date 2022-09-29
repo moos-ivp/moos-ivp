@@ -751,9 +751,6 @@ void PMV_MOOSApp::handleRealmCastRequesting()
 void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   // Keep track of whether the back images were user configured.
   // If not, we'll use the default image afterwards.
-  bool tiff_a_set = false;
-  bool tiff_b_set = false;
-
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
   if(!m_MissionReader.GetConfiguration(GetAppName(), sParams)) 
@@ -881,17 +878,12 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       string key = getContextKey(param);
       handled = m_gui->addMousePoke("right", key, value);
     }
-    else if(param == "tiff_file") {
-      if(!tiff_a_set) {
-	tiff_a_set = m_gui->mviewer->setParam(param, value);
-      }
-      handled = true;
-    }
-    else if(param == "tiff_file_b") {
-      if(!tiff_b_set) 
-	tiff_b_set = m_gui->mviewer->setParam(param, value);
-      handled = true;
-    }
+    else if(param == "null_tiff")
+      handled = m_gui->mviewer->handleNoTiff();
+    else if(param == "tiff_file")
+      handled = m_gui->mviewer->setParam(param, value);
+    else if(param == "tiff_file_b")
+      handled = m_gui->mviewer->setParam(param, value);
     else if(param == "node_report_variable") {
       if(!strContainsWhite(value)) {
 	m_node_report_vars.push_back(value);
@@ -937,41 +929,31 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       reportUnhandledConfigWarning(orig);
   }
 
-  if(tiff_a_set && m_log_the_image) {
-    string command = "COPY_FILE_REQUEST=";
-    string tiff_file = m_gui->mviewer->getTiffFileA();
-    string info_file = m_gui->mviewer->getInfoFileA();
-    if((tiff_file != "") && (info_file != "")) {
-      Notify("PLOGGER_CMD", command + tiff_file);
-      Notify("PLOGGER_CMD", command + info_file);
-    }
-  }
-
-  if(tiff_b_set && m_log_the_image) {
-    string command = "COPY_FILE_REQUEST=";
-    string tiff_file = m_gui->mviewer->getTiffFileB();
-    string info_file = m_gui->mviewer->getInfoFileB();
-    if((tiff_file != "") && (info_file != "")) {
-      Notify("PLOGGER_CMD", command + tiff_file);
-      Notify("PLOGGER_CMD", command + info_file);
-    }
-  }
-
-#if 0
   // If no images were specified, use the default images.
-  if(!tiff_a_set && !tiff_b_set) {
+  if(m_gui->mviewer->getTiffFileCount() == 0)
     m_gui->mviewer->setParam("tiff_file", "Default.tif");
-    m_gui->mviewer->setParam("tiff_file_b", "DefaultB.tif");
-  }
-#endif
 
   bool changed = m_realm_repo->checkStartCluster();
   if(changed) {
     m_gui->updateRealmCastNodes(true);
     m_gui->updateRealmCastProcs(true);
   }
-  
-  m_gui->mviewer->handleNoTiff();
+
+  m_gui->mviewer->setConfigComplete();
+
+  if(m_log_the_image) {
+    vector<string> tiff_files = m_gui->mviewer->getTiffFiles();
+    for(unsigned int i=0; i<tiff_files.size(); i++) {
+      string tiff_file = tiff_files[i];
+      string info_file = findReplace(tiff_files[i], ".tif", ".info");
+      string command = "COPY_FILE_REQUEST=";
+      if(tiff_file != "") {
+	Notify("PLOGGER_CMD", command + tiff_file);
+	Notify("PLOGGER_CMD", command + info_file);
+      }
+    }
+  }
+
   m_gui->setCommandFolio(m_cmd_folio);
 
   m_start_time = MOOSTime();
@@ -982,23 +964,24 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   m_gui->calcButtonColumns();
   
   // Set the Region Info
-  string tiff_a = m_gui->mviewer->getTiffFileA();
-  string tiff_b = m_gui->mviewer->getTiffFileB();
-  if(tiff_a != "")
-    m_region_info += ", img_file=" + tiff_a;
-  if(tiff_b != "")
-    m_region_info += ", img_file=" + tiff_b;
+  vector<string> tiff_files = m_gui->mviewer->getTiffFiles();
+  if(tiff_files.size() == 0)
+    m_region_info += ", no_img_files";
+  for(unsigned int i=0; i<tiff_files.size(); i++) {
+    string tiff_file = rbiteString(tiff_files[i], '/');
+    m_region_info += ", img_file=" + tiff_file;
+  }
+  
   m_region_info += ", zoom=" + doubleToStringX(m_gui->mviewer->getZoom(),2);
   m_region_info += ", pan_x=" + doubleToStringX(m_gui->mviewer->getPanX(),2);
   m_region_info += ", pan_y=" + doubleToStringX(m_gui->mviewer->getPanY(),2);
-
+  Notify("REGION_INFO", m_region_info);
+ 
   if(m_node_report_vars.size() == 0) {
     m_node_report_vars.push_back("NODE_REPORT_LOCAL");
     m_node_report_vars.push_back("NODE_REPORT");
   }
   
-  Notify("REGION_INFO", m_region_info);
-
   registerVariables();
 }
 
@@ -1328,10 +1311,15 @@ void PMV_MOOSApp::postFlags(const vector<VarDataPair>& flags)
 
 bool PMV_MOOSApp::buildReport()
 {
-  string tiff_file_a = m_gui->mviewer->getTiffFileA();
-  string info_file_a = m_gui->mviewer->getInfoFileA();
-  string tiff_file_b = m_gui->mviewer->getTiffFileB();
-  string info_file_b = m_gui->mviewer->getInfoFileB();
+  return(false);
+  vector<string> tiff_files = m_gui->mviewer->getTiffFiles();
+  for(unsigned int i=0; i<tiff_files.size(); i++) {
+    string tiff_file = tiff_files[i];
+    tiff_file = rbiteString(tiff_file, '/');
+    m_msgs << "Tiff File: " << tiff_file << endl;
+  }
+  string curr_tiff_file = m_gui->mviewer->getTiffFileCurrent();
+  m_msgs << "Tiff File (Current): " << curr_tiff_file << endl;
 
   string iter_ac  = uintToString(m_iteration);
   string iter_pmv = uintToString(m_pmv_iteration);
@@ -1355,10 +1343,6 @@ bool PMV_MOOSApp::buildReport()
     node_rpt_vars += m_node_report_vars[i];
   }
   
-  m_msgs << "Tiff File A:       " << tiff_file_a << endl;
-  m_msgs << "Info File A:       " << info_file_a << endl;
-  m_msgs << "Tiff File B:       " << tiff_file_b << endl;
-  m_msgs << "Info File B:       " << info_file_b << endl;
   m_msgs << "------------------ " << endl;
   m_msgs << "Total GeoShapes:   " << m_gui->mviewer->shapeCount("total_shapes") << endl;
   m_msgs << "Clear GeoShapes:   " << m_clear_geoshapes_received << endl;

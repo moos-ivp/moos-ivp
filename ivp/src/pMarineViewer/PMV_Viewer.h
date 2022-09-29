@@ -45,7 +45,8 @@ class PMV_Viewer : public MarineViewer
 
   bool  setParam(std::string p, std::string v="");
   bool  setParam(std::string p, double v);
-
+  void  setConfigComplete() {m_config_complete=true;}
+  
   bool  handleNodeReport(std::string, std::string&);
 
   bool  addGeoShape(std::string p, std::string v, std::string c, double=0);
@@ -99,6 +100,8 @@ class PMV_Viewer : public MarineViewer
   double      m_time_warp;
   double      m_elapsed;
 
+  bool        m_config_complete;
+  
   unsigned int m_draw_count;
   double       m_last_draw_time;
 

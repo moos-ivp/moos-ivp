@@ -32,9 +32,14 @@ public:
   BackImg();
   ~BackImg();
 
+  void copy(const BackImg&);
+
+  void clearData();
   bool readTiff(std::string filename);
   void setTexture();
 
+  bool locateTiffAndInfoFiles(std::string filename);
+  
   void setVerbose(bool bval=true)           {m_verbose=false;}
   
   unsigned char* get_img_data() const       {return(m_img_data);}
@@ -70,7 +75,10 @@ public:
 
   bool readTiffInfoEmpty(double, double, double, double);
 
+  bool locateTiffAndInfoFiles();
+  
   void   print();
+  void   printTerse();
 
 protected:
   bool readTiffData(std::string filename);
@@ -119,13 +127,3 @@ private:
 };
 
 #endif 
-
-
-
-
-
-
-
-
-
-

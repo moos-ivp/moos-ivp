@@ -72,21 +72,14 @@ int main(int argc, char *argv[])
   Fl::add_idle(idleProc);
   GEO_GUI* gui = new GEO_GUI(900, 800, "geoview");
 
-  //string tif_file = "Default.tif";  // default
   string tif_file = "MIT_SP.tif";  // default
 
   for(i=1; i<argc; i++) {
     string argi  = tolower(argv[i]);
     if((argi == "mit") || (argi=="charles"))
-      tif_file = "AerialMIT-1024.tif";
-    else if((argi == "wmit") || (argi=="wireframe") || (argi=="wf"))
-      tif_file = "WireFrameMIT-1024.tif";
-    else if((argi == "mb") || (argi=="monterey"))
-      tif_file = "Monterey-2048.tif";
+      tif_file = "MIT_SP.tif";
     else if((argi == "forrest-lake") || (argi=="fl"))
       tif_file = "forrest19.tif";
-    else if((argi == "mbd"))
-      tif_file = "Monterey-2048-30-30-100.tif";
   }
 
   vector<string>    all_poly_strings;

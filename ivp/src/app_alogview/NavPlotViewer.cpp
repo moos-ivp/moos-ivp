@@ -59,7 +59,8 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
 
   m_alt_nav_prefix = "NAV_GT_";
 
-  m_geo_settings.setParam("hash_viewable", "true");
+  m_geo_settings.setParam("hash_viewable", "false");
+  m_geo_settings.setParam("hash_delta", "100000");
 }
 
 //-------------------------------------------------------------
@@ -115,7 +116,7 @@ bool NavPlotViewer::setParam(string param, string value)
 
   if(!handled)
     handled = MarineViewer::setParam(param, value);
-  
+
   return(handled);
 }
 

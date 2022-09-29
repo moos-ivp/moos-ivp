@@ -75,8 +75,8 @@ protected:
   inline void cb_ToggleHash_i();
   static void cb_ToggleHash(Fl_Widget*);
 
-  inline void cb_HashDelta_i(int);
-  static void cb_HashDelta(Fl_Widget*, int);
+  inline void cb_HashDelta_i(unsigned long int);
+  static void cb_HashDelta(Fl_Widget*, unsigned long int);
 
   inline void cb_HashShade_i(int);
   static void cb_HashShade(Fl_Widget*, int);

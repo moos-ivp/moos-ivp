@@ -134,7 +134,7 @@ bool VPlug_GeoSettings::setParam(string param, string value)
   else if(param == "vector_length_zoom")
     return(setSizeMapping(param, value, 0, 4));
   else if(param == "hash_delta")
-    return(setSizeMapping(param, value, 10, 10000));
+    return(setSizeMapping(param, value, 10, 1000000));
 
   else if(param == "marker_edge_width")
     return(setSizeMapping(param, value, 1, 10));

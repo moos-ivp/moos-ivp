@@ -64,6 +64,7 @@ protected:
 
  private:
   std::vector<std::string> m_alog_files;
+  std::vector<std::string> m_tiff_files;
   
   std::string  m_tiff_file;
   std::string  m_alt_nav_prefix;

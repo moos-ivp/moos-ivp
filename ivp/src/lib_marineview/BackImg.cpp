@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: BackImg.cpp                                          */
 /*    DATE: Nov 16th 2004                                        */
+/*    DATE: Sep 28th 2022 Significant improvments                */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -98,12 +99,65 @@ BackImg::BackImg()
 }
 
 // ----------------------------------------------------------
+// Procedure: copy()
+
+void BackImg::copy(const BackImg &right)
+{
+  //m_img_data = 0;
+
+  m_img_pix_width  = right.m_img_pix_width;
+  m_img_pix_height = right.m_img_pix_height;    
+  m_img_mtr_width  = right.m_img_mtr_width;
+  m_img_mtr_height = right.m_img_mtr_height;
+  
+  // Boundary information from the .info file in the "old style"
+  m_img_centx    = right.m_img_centx;
+  m_img_centy    = right.m_img_centy;
+  m_img_meters_x = right.m_img_meters_x;
+  m_img_meters_y = right.m_img_meters_y;
+
+  // Boundary in formation from the .info file in the "new style"
+  m_lat_north = right.m_lat_north;
+  m_lat_south = right.m_lat_south;
+  m_lon_west  = right.m_lon_west;
+  m_lon_east  = right.m_lon_east;
+  m_boundary_set = right.m_boundary_set;
+
+  // Below should be derived after info file is read in.
+  m_x_at_img_left  = right.m_x_at_img_left;
+  m_x_at_img_right = right.m_x_at_img_right;
+  m_y_at_img_top   = right.m_y_at_img_top;
+  m_y_at_img_bottom = right.m_y_at_img_bottom;
+  m_x_at_img_ctr = right.m_x_at_img_ctr;
+  m_y_at_img_ctr = right.m_y_at_img_ctr;
+
+  // datum information
+  m_datum_lat = right.m_datum_lat;
+  m_datum_lon = right.m_datum_lon;
+  m_datum_lat_set = right.m_datum_lat_set;
+  m_datum_lon_set = right.m_datum_lon_set;
+
+  m_verbose = right.m_verbose;
+}
+
+// ----------------------------------------------------------
 // Procedure: Destructor
 
 BackImg::~BackImg()
 {
   if(m_img_data)
     _TIFFfree(m_img_data);
+  m_img_data = 0;
+}
+
+// ----------------------------------------------------------
+// Procedure: clearData()
+
+void BackImg::clearData()
+{
+  if(m_img_data)
+    _TIFFfree(m_img_data);
+  m_img_data = 0;
 }
 
 // ----------------------------------------------------------
@@ -130,17 +184,114 @@ bool BackImg::readTiff(string filename)
   if(filename == "")
     return(false);
 
+  locateTiffAndInfoFiles(filename);
+
+  bool ok1 = readTiffData(m_tiff_file);  
+  bool ok2 = readTiffInfo(m_info_file);
+
+#if 0
   string info_file = findReplace(filename, ".tif", ".info");
 
   bool ok1 = readTiffData(filename);  
   bool ok2 = readTiffInfo(info_file);
-
+#endif
+  
   return(ok1 && ok2);
 }
 
 
 // ----------------------------------------------------------
-// Procedure: readTiffData
+// Procedure: locateTiffAndInfoFiles()
+
+bool BackImg::locateTiffAndInfoFiles(string tiff_file)
+{
+  tiff_file = stripBlankEnds(tiff_file);
+  if(tiff_file == "")
+    return(false);
+
+  string info_file = findReplace(tiff_file, ".tif", ".info");
+
+  // =========================================================
+  // Part 1: Most often (likely) image is just alpha or MIT mission
+  // =========================================================
+  cout << "[1] Looking for " << tiff_file << " and " << info_file << " in:" << endl;
+  cout << "    Dir: [" << DATA_DIR << "]" << endl;
+  string dtiff_file = "/" + tiff_file;
+  dtiff_file = DATA_DIR + dtiff_file;
+  string dinfo_file = "/" + info_file;
+  dinfo_file = DATA_DIR + dinfo_file;
+  if(okFileToRead(dtiff_file) && okFileToRead(dinfo_file)) {
+    cout << "    FOUND!!" << endl;
+    m_tiff_file = dtiff_file;
+    m_info_file = dinfo_file;
+    return(true);
+  }
+  else 
+    cout << "    Not found." << endl;
+    
+
+  // =========================================================
+  // Part 2: Look in the Path of IVP_IMAGE_DIRS
+  // =========================================================
+  const char* dirs = getenv("IVP_IMAGE_DIRS");
+  if(dirs) {
+    string image_dirs = dirs;
+
+    vector<string> svector = parseString(image_dirs, ':');
+    for(unsigned int i=0; i<svector.size(); i++) {
+      cout << "[" << i+2 << "] ";
+      cout << "Looking for " << tiff_file << " and " << info_file << " in:" << endl;
+      cout << "    Dir: [" << svector[i] << "]" << endl;
+      string xtiff_file = svector[i] + "/" + tiff_file;
+      string xinfo_file = svector[i] + "/" + info_file;
+      if(okFileToRead(xtiff_file) && okFileToRead(xinfo_file)) {
+	cout << "    FOUND!!" << endl;
+	m_tiff_file = xtiff_file;
+	m_info_file = xinfo_file;
+	return(true);
+      }
+    }
+  }
+
+  // =========================================================
+  // Part 3: Last chance - look in the current working director
+  // =========================================================
+  cout << "[*] Looking for " << tiff_file << " and " << info_file << " in:" << endl;
+  cout << "    Dir: [./]" << endl;
+  if(okFileToRead(tiff_file) && okFileToRead(info_file)) {
+    cout << "    FOUND!!" << endl;
+    m_tiff_file = tiff_file;
+    m_info_file = info_file;
+    return(true);
+  }
+  else 
+    cout << "    Not found." << endl;
+
+  // If we get this far without success, produce a warning about
+  // the IVP_IMAGE_DIRS environment variable if it was not set.
+  
+  if(!dirs) {
+    cout << "**************************************************" << endl;
+    cout << "*******             WARNING           ************" << endl;
+    cout << "**************************************************" << endl;
+    cout << "Environment variable IVP_IMAGE_DIRS not set. This " << endl;
+    cout << "colon-separated path may point to image/tiff files" << endl;
+    cout << "For example (in your .bashrc file) use:           " << endl;
+    cout << "  IVP_IMAGE_DIRS=~/my_folder1                     " << endl;
+    cout << "  IVP_IMAGE_DIRS+=:~/my_folder2                   " << endl;
+    cout << "  export IVP_IMAGE_DIRS                           " << endl;
+    cout << "**************************************************" << endl;
+    cout << endl;
+  }
+
+  cout << "Could not find the pair of files: " << endl;
+  cout << tiff_file << " and " << info_file << endl;
+  return(false);
+}
+
+
+// ----------------------------------------------------------
+// Procedure: readTiffData()
 //   Purpose: This routine reads in a tiff file and stores it 
 //            in a very simple data structure
 
@@ -151,58 +302,19 @@ bool BackImg::readTiffData(string filename)
 
   m_img_pix_height = 0;
   m_img_pix_width  = 0;
-
-  // See if the tiff file exists
-  cout << "Checking for: [" << filename << "]" << endl;
-  bool ok_file = okFileToRead(filename);
-  if(!ok_file) {
-    filename = "/" + filename;
-    filename = DATA_DIR + filename;
-    cout << "Checking for: [" << filename << "]" << endl;
-    ok_file = okFileToRead(filename);
-  }
-
-  if(!ok_file) {
-    filename = findReplace(filename, "data", "data-local");
-    cout << "Checking for: [" << filename << "]" << endl;
-    ok_file = okFileToRead(filename);
-  }
-  if(!ok_file) {
-    filename = findReplace(filename, "data-local", "datax");
-    cout << "Checking for: [" << filename << "]" << endl;
-    ok_file = okFileToRead(filename);
-  }
-
-  if(ok_file)
-    cout << "Found file: " << filename << endl;
-  else {
-    cout << "File not found.";
-    return(false);
-  }
   
   // We turn off Warnings (maybe a bad idea) since many photoshop 
   // images have newfangled tags that confuse libtiff
   TIFFErrorHandler warn = TIFFSetWarningHandler(0);
   
-  cout << "Trying to TiffOpen: " << filename << endl;
+  cout << "Opening Tiff: " << filename << endl;
   TIFF* tiff = TIFFOpen(filename.c_str(), "r");
-  if(!tiff) {
-    filename = findReplace(filename, "data", "data-local");
-    cout << "Failed: Trying now to TiffOpen: " << filename << endl;
-    tiff = TIFFOpen(filename.c_str(), "r");
-  }
-  if(!tiff) {
-    filename = findReplace(filename, "data-local", "datax");
-    cout << "Failed: Trying now to TiffOpen: " << filename << endl;
-    tiff = TIFFOpen(filename.c_str(), "r");
-  }
-
   if(tiff) {
-    cout << "Success: " << filename << endl;
+    cout << "  Success! " << endl;
     m_tiff_file = filename;
   }
   else {
-    cout << "Failed." << endl;
+    cout << "  Failed!!!!!!!!!" << endl;
     return(false);
   }
   
@@ -224,11 +336,16 @@ bool BackImg::readTiffData(string filename)
     
     npixels = w * h;
     raster = (uint32_t*) _TIFFmalloc(npixels * sizeof (uint32_t));
+    string short_filename = rbiteString(filename, '/');
+    cout << "Loading Texture from Tiff file: " << short_filename << endl;
+
     if (raster != NULL) {
       if (TIFFReadRGBAImage(tiff, w, h, raster, 0)) {
 	m_img_data = (unsigned char*) raster;
+	cout << "  Success! " << endl;
       } 
       else {
+	cout << "  Failed!!!!!!!!!" << endl;
 	rval=false;
 	_TIFFfree(raster);
       }
@@ -244,56 +361,37 @@ bool BackImg::readTiffData(string filename)
 }
 
 // ----------------------------------------------------------
-// Procedure: readTiffInfo
+// Procedure: readTiffInfo()
 
-bool BackImg::readTiffInfo(string filename)
+bool BackImg::readTiffInfo(string info_file)
 {
-  string file = filename;
-  FILE *f = fopen(file.c_str(), "r");
-  if(f) {
+  FILE *f = fopen(info_file.c_str(), "r");
+  if(f) 
     fclose(f);
-  }
   else {
-    file = DATA_DIR;
-    file += "/";
-    file += filename;
-  } 
-
-  if(m_verbose)
-    cout << "Attempting to open: " << file << endl;
-
-  vector<string> buffer = fileBuffer(file);
-  if(buffer.size() == 0) {
-    file = findReplace(file, "data", "datax");
-    buffer = fileBuffer(file);
-  }
-  if(buffer.size() == 0) {
-    file = findReplace(file, "datax", "data-local");
-    buffer = fileBuffer(file);
-  }
-
-  unsigned int i, vsize = buffer.size();
-
-  cout << "Successfully found info file:" << file << endl;
-  
-  if(vsize == 0) {
-    if(m_verbose)
-      cout << file << " contains zero lines" << endl;
+    cout << "Could find or read contents of " << info_file << endl;
     return(false);
   }
-
-  m_info_file = file;
-
-  bool img_centx_set = false;
-  bool img_centy_set = false;
+      
+  vector<string> buffer = fileBuffer(info_file);
+  if(buffer.size() == 0) {
+    if(m_verbose)
+      cout << info_file << " contains zero lines. " << endl;
+    return(false);
+  }
+  
+  cout << "Successfully found info file:" << info_file << endl;
+  
+  bool img_centx_set  = false;
+  bool img_centy_set  = false;
   bool img_meters_set = false;
 
-  bool   lat_north_set  = false;
-  bool   lat_south_set  = false;
-  bool   lon_west_set   = false;
-  bool   lon_east_set   = false;
+  bool lat_north_set  = false;
+  bool lat_south_set  = false;
+  bool lon_west_set   = false;
+  bool lon_east_set   = false;
 
-  for(i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<buffer.size(); i++) {
     string line = stripComment(buffer[i], "//");
     line = stripBlankEnds(line);
 
@@ -351,7 +449,7 @@ bool BackImg::readTiffInfo(string filename)
 	return(false);
     }
   }
-
+  
   // Must provide the essential info in one of the two allowable
   // forms. Either with the six lat/lon/datum values or with the
   // three image values.
@@ -385,7 +483,7 @@ bool BackImg::readTiffInfo(string filename)
 }
 
 // ----------------------------------------------------------
-// Procedure: readTiffInfoEmpty
+// Procedure: readTiffInfoEmpty()
 
 bool BackImg::readTiffInfoEmpty(double lat_north, double lat_south, 
 				double lon_east, double lon_west)
@@ -500,8 +598,7 @@ bool BackImg::processConfiguration()
 }
 
 // ----------------------------------------------------------
-// Procedure: setDatumLatLon
-//   Purpose: 
+// Procedure: setDatumLatLon()
 
 void BackImg::setDatumLatLon(double datum_lat, double datum_lon)
 {
@@ -515,8 +612,7 @@ void BackImg::setDatumLatLon(double datum_lat, double datum_lon)
 }
 
 // ----------------------------------------------------------
-// Procedure: setTexture
-//   Purpose: 
+// Procedure: setTexture()
 
 void BackImg::setTexture()
 {
@@ -535,8 +631,7 @@ void BackImg::setTexture()
 
 
 // ----------------------------------------------------------
-// Procedure: print
-//   Purpose: 
+// Procedure: print()
 
 void BackImg::print()
 {
@@ -566,10 +661,22 @@ void BackImg::print()
 
 }
 
+// ----------------------------------------------------------
+// Procedure: printTerse()
 
+void BackImg::printTerse()
+{
+  cout << "-------------------- BackImg::printTerse" << endl;
+  cout << "mtr_wid: " << doubleToStringX(m_img_mtr_width,2) << endl;
+  cout << "mtr_hgt: " << doubleToStringX(m_img_mtr_height,2) << endl;
+					 
+  cout << "pix_wid  " << doubleToStringX(m_img_pix_width,2) << endl;
+  cout << "pix_hgt: " << doubleToStringX(m_img_pix_height,2) << endl;
 
+  cout << "pix_per_mtr_x: " << (m_img_pix_width / m_img_mtr_width) << endl;
+  cout << "pix_per_mtr_y: " << (m_img_pix_height / m_img_mtr_height) << endl;
 
-
+}
 
 
 

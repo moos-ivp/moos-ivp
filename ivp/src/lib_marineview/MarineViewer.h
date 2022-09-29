@@ -68,10 +68,14 @@ class MarineViewer : public Fl_Gl_Window
   virtual bool setParam(std::string p, std::string v="");
   virtual bool setParam(std::string p, double v);
   virtual void modColorScheme()=0;
-  
+
+  bool   addTiffFile(std::string file);
+
+  void   clearBackground();
   bool   initGeodesy(double, double);
   bool   initGeodesy(const std::string&);
   bool   setTexture();
+  bool   applyTiffFiles();
   std::string geosetting(const std::string& s);
   std::string vehisetting(const std::string& s);
   void   clear(std::string vname, std::string shape, std::string stype);
@@ -79,27 +83,30 @@ class MarineViewer : public Fl_Gl_Window
   void   setAutoZoom(double, double);
   void   autoZoom();
   
-  void   handleNoTiff();
+  bool   handleNoTiff();
   void   setVerbose(bool bval=true);
   void   setZoom(double dval) {m_zoom = dval;}
   
   double getStaleReportThresh() {return(m_vehi_settings.getStaleReportThresh());}
   double getStaleRemoveThresh() {return(m_vehi_settings.getStaleRemoveThresh());}
 
-  std::string getTiffFileA() {return(m_back_img.getTiffFile());}
-  std::string getInfoFileA() {return(m_back_img.getInfoFile());}
+  std::string getTiffFileA();
+  std::string getInfoFileA();
   
-  std::string getTiffFileB() {return(m_back_img_b.getTiffFile());}
-  std::string getInfoFileB() {return(m_back_img_b.getInfoFile());}
-
+  std::string getTiffFileB();
+  std::string getInfoFileB();
+  
   double getZoom() {return(m_zoom);}
   double getPanX() {return(m_vshift_x);}
   double getPanY() {return(m_vshift_y);}
 
-protected:
-  bool   readTiff(std::string);
-  bool   readTiffB(std::string);
+  std::vector<std::string> getTiffFiles() const;
+  std::vector<std::string> getInfoFiles() const;
 
+  unsigned int getTiffFileCount() const {return(m_tif_files.size());}
+  std::string  getTiffFileCurrent() const;
+  
+protected:
   void   drawTiff();
   double img2view(char, double) const;
   double view2img(char, double) const;
@@ -185,13 +192,16 @@ protected:
 
   bool coordInView(double x, double y);
   bool coordInViewX(double x, double y);
-  
+
 protected:
+  std::vector<BackImg>     m_back_imgs;
+  std::vector<std::string> m_tif_files;
+  
+  bool     m_textures_init;
+  
+  unsigned int m_curr_back_img_ix;
+
   BackImg   m_back_img;
-  BackImg   m_back_img_b;
-  bool      m_back_img_b_ok;
-  bool      m_back_img_b_on;
-  bool      m_back_img_mod;
 
   bool      m_verbose;
 
