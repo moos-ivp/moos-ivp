@@ -432,6 +432,9 @@ void BHV_AvdColregsV19::updateAvoidMode()
   }
   else
     m_standon_set = false;
+
+  string msg = "V19 CN:" + m_contact + "  Mode:" + m_avoid_mode + ":" + m_avoid_submode; 
+  postMessage("AVD_INFO", msg);
   
 }
 

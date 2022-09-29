@@ -168,25 +168,30 @@ fi
 #=================================================================
 MISSING=""
 
-if [ ! -e bin/aloggrep ];    then  MISSING+="aloggrep,"; fi
-if [ ! -e bin/alogscan ];    then  MISSING+="alogscan,"; fi
-if [ ! -e bin/alogcd ];      then  MISSING+="alogcd,"; fi
-if [ ! -e bin/alogpare ];    then  MISSING+="alogpare,"; fi
-if [ ! -e bin/alogeplot ];   then  MISSING+="alogeplot,"; fi
-if [ ! -e bin/alogrm ];      then  MISSING+="alogrm,"; fi
-if [ ! -e bin/alogiter ];    then  MISSING+="alogiter,"; fi
+if [ ! -e bin/aloggrep ];    then  MISSING+="alogavg,"; fi
+if [ ! -e bin/alogcat ];     then  MISSING+="alogbin,"; fi
 if [ ! -e bin/alogcat ];     then  MISSING+="alogcat,"; fi
+if [ ! -e bin/alogcd ];      then  MISSING+="alogcd,"; fi
+if [ ! -e bin/alogcat ];     then  MISSING+="alogcheck,"; fi
 if [ ! -e bin/alogclip ];    then  MISSING+="alogclip,"; fi
+if [ ! -e bin/alogeplot ];   then  MISSING+="alogeplot,"; fi
+if [ ! -e bin/alogeplot ];   then  MISSING+="alogeval,"; fi
+if [ ! -e bin/aloggrep ];    then  MISSING+="aloggrep,"; fi
 if [ ! -e bin/aloghelm ];    then  MISSING+="aloghelm,"; fi
+if [ ! -e bin/alogiter ];    then  MISSING+="alogiter,"; fi
+if [ ! -e bin/alogpare ];    then  MISSING+="alogload,"; fi
+if [ ! -e bin/alogpare ];    then  MISSING+="alogpare,"; fi
+if [ ! -e bin/alogrm ];      then  MISSING+="alogrm,"; fi
+if [ ! -e bin/alogscan ];    then  MISSING+="alogscan,"; fi
+if [ ! -e bin/alogrm ];      then  MISSING+="alogsplit,"; fi
+if [ ! -e bin/alogrm ];      then  MISSING+="alogtm,"; fi
 if [ ! -e bin/nsplug ];      then  MISSING+="nsplug,"; fi
 if [ ! -e bin/pickpos ];     then  MISSING+="pickpos,"; fi
 if [ ! -e bin/manifest_test ]; then  MISSING+="manifest_test,"; fi
-#if [ ! -e bin/manifest_wiki ]; then  MISSING+="manifest_wiki,"; fi
-#if [ ! -e bin/manifest_loc ];  then  MISSING+="manifest_loc,"; fi
 if [ ! -e bin/pEchoVar ];      then  MISSING+="pEchoVar,"; fi
-if [ ! -e bin/pEvalLoiter ];   then  MISSING+="pEvalLoiter,"; fi
 if [ ! -e bin/pHelmIvP ];      then  MISSING+="pHelmIvP,"; fi
 if [ ! -e bin/pMarinePID ];    then  MISSING+="pMarinePID,"; fi
+if [ ! -e bin/pMarinePIDV22 ]; then  MISSING+="pMarinePIDV22,"; fi
 if [ ! -e bin/pBasicContactMgr ]; then  MISSING+="pBasicContactMgr,"; fi
 if [ ! -e bin/pContactMgrV20 ]; then  MISSING+="pContactMgrV20,"; fi
 if [ ! -e bin/pDeadManPost ];  then  MISSING+="pDeadManPost,"; fi
@@ -218,7 +223,6 @@ if [ "${MIN_ROBOT}" = "no" ] ; then
     if [ ! -e bin/pXRelay ];       then  MISSING+="pXRelay,"; fi
     if [ ! -e bin/uFldCollisionDetect ]; then  MISSING+="uFldCollisionDetect,"; fi
     if [ ! -e bin/uFldCollObDetect ]; then  MISSING+="uFldCollObDetect,"; fi
-    if [ ! -e bin/uFldLoiterAssign ];    then  MISSING+="uFldLoiterAssign,"; fi
     if [ ! -e bin/uFldPathCheck ];       then  MISSING+="uFldPathCheck,"; fi
     if [ ! -e bin/uFldShoreBroker ];     then  MISSING+="uFldShoreBroker,"; fi
     if [ ! -e bin/uFldScope ];           then  MISSING+="uFldScope,"; fi
@@ -229,7 +233,9 @@ if [ "${MIN_ROBOT}" = "no" ] ; then
     if [ ! -e bin/uFldGenericSensor ];   then  MISSING+="uFldGenericSensor,"; fi
     if [ ! -e bin/pSearchGrid ];   then  MISSING+="pSearchGrid,"; fi
     if [ ! -e bin/uSimMarine ];    then  MISSING+="uSimMarine,"; fi
+    if [ ! -e bin/uSimMarineV22 ];    then  MISSING+="uSimMarineV22,"; fi
 fi
+
 
 if [ "${MIN_ROBOT}" = "no" ] ; then
     if [ ! -e bin/ffview ];      then  MISSING+="ffview,"; fi
