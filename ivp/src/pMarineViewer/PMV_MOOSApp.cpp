@@ -1314,7 +1314,7 @@ bool PMV_MOOSApp::buildReport()
   vector<string> tiff_files = m_gui->mviewer->getTiffFiles();
   for(unsigned int i=0; i<tiff_files.size(); i++) {
     string tiff_file = tiff_files[i];
-    tiff_file = rbiteString(tiff_file, '/');
+    //tiff_file = rbiteString(tiff_file, '/');
     m_msgs << "Tiff File: " << tiff_file << endl;
   }
   string curr_tiff_file = m_gui->mviewer->getTiffFileCurrent();
