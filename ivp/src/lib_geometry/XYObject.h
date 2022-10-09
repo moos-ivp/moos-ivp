@@ -63,6 +63,7 @@ public:
   void      set_color(const std::string& key, const std::string& color);
   void      set_color(const std::string& key, const ColorPack& color);
   ColorPack get_color(const std::string& key) const;
+  std::string get_color_str(const std::string& key) const;
 
   bool      active()        const {return(m_active);}
   double    get_time()      const {return(m_time);}

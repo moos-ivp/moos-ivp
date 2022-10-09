@@ -32,6 +32,7 @@ TARGET_LINK_LIBRARIES(bhv2graphviz
   ivpbuild 
   ivpcore
   ivpsolve 
+  turngeo
   geometry
   apputil
   mbutil 

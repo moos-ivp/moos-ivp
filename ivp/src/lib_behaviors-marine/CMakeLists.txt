@@ -35,6 +35,8 @@ SET(SRC
   BHV_Trail.cpp
   BHV_Convoy.cpp
   BHV_Waypoint.cpp
+  BHV_LegRun.cpp
+  BHV_ZigZag.cpp
   BHV_HSLine.cpp
   BHV_HeadingChange.cpp
   BHV_HeadingBias.cpp
@@ -42,7 +44,7 @@ SET(SRC
   BHV_TestFailure.cpp
 )
 
-SET(HEADERS 
+SET(HEADERS
   BHV_AbortToPoint.h
   BHV_Attractor.h
   BHV_AvoidCollision.h
@@ -74,6 +76,8 @@ SET(HEADERS
   BHV_Timer.h
   BHV_Trail.h
   BHV_Waypoint.h
+  BHV_LegRun.h
+  BHV_ZigZag.h
   BHV_BearingLine.h
   BHV_TestFailure.h
 ) 

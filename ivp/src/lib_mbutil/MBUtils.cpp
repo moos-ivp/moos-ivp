@@ -784,7 +784,7 @@ string toupper(const string& str)
 }
 
 //----------------------------------------------------------------
-// Procedure: truncString
+// Procedure: truncString()
 
 string truncString(const string& str, unsigned int newlen, string style)
 {
@@ -915,7 +915,7 @@ string setToString(const set<string>& str_set)
 }
 
 //----------------------------------------------------------------
-// Procedure: intToCommaString
+// Procedure: intToCommaString()
 
 string intToCommaString(int ival)
 {
@@ -933,7 +933,7 @@ string intToCommaString(int ival)
 
 
 //----------------------------------------------------------------
-// Procedure: uintToCommaString
+// Procedure: uintToCommaString()
 
 string uintToCommaString(unsigned int ival)
 {
@@ -951,7 +951,7 @@ string uintToCommaString(unsigned int ival)
 
 
 //----------------------------------------------------------------
-// Procedure: ulintToCommaString
+// Procedure: ulintToCommaString()
 
 string ulintToCommaString(unsigned long int ival)
 {
@@ -969,7 +969,7 @@ string ulintToCommaString(unsigned long int ival)
 
 
 //----------------------------------------------------------------
-// Procedure: dstringCompact
+// Procedure: dstringCompact()
 //      Note: Convert 6.43000 to 6.43
 //                    6.00000 to 6
 //                    6.      to 6
@@ -1012,7 +1012,7 @@ string dstringCompact(const string& str)
 }
 
 //----------------------------------------------------------------
-// Procedure: compactConsecutive
+// Procedure: compactConsecutive()
 //      Note: f("Apple______Pear", '_') returns "Apple_Pear"
 //            f("Too         Bad", ' ') return  "Too Bad"
 // 
@@ -1042,7 +1042,7 @@ string compactConsecutive(const string& str, char dchar)
 }
 
 //----------------------------------------------------------------
-// Procedure: findReplace
+// Procedure: findReplace()
 //      Note: Added May 29, 2005
 //            Replace all occurances of fchar with rchar in str
 
@@ -1058,7 +1058,7 @@ string findReplace(const string& str, char fchar, char rchar)
 }
     
 //----------------------------------------------------------------
-// Procedure: padString
+// Procedure: padString()
 //      Note: Added Aug 1405
 //   Purpose: Pad the given string with enough blanks to reach the
 //            length given by target_size. If front is true, pad on
@@ -1083,7 +1083,7 @@ string padString(const string& str,
     
 
 //----------------------------------------------------------------
-// Procedure: padVector
+// Procedure: padVector()
 //      Note: Added Apr 2219
 //   Purpose: Pad all strings in the given vector such that they 
 //            are all of equal length, determined by the one with 
@@ -1106,7 +1106,7 @@ vector<string> padVector(const vector<string>& svector, bool front)
     
 
 //----------------------------------------------------------------
-// Procedure: findReplace
+// Procedure: findReplace()
 //      Note: Added Jun1405
 //            Replace all occurances of fstr with rstr in str
 
@@ -1128,7 +1128,7 @@ string findReplace(const string& str, const string& fstr,
     
 
 //----------------------------------------------------------------
-// Procedure: stripComment
+// Procedure: stripComment()
 //      Note: Added July 14th 05 (on the flight to Oxford, pre-Pianosa)
 //            Treat cstr as a comment indicator, e.g. "//". Return the
 //            portion of the string to the left of the comment
@@ -1154,7 +1154,7 @@ string stripComment(const string& str, const string& cstr)
     
 
 //---------------------------------------------------------
-// Procedure: isValidIPAddress
+// Procedure: isValidIPAddress()
 //   Purpose: Determine if the string is a valid IP address: 
 //            - has four numerical fields separated by a decimal point.
 //            - each field is in the range 0-255
@@ -1180,7 +1180,7 @@ bool isValidIPAddress(const string& ipstring)
 }
 
 //----------------------------------------------------------------
-// Procedure: strContains
+// Procedure: strContains()
 //      Note: Added July 14 05 (on the flight to Oxford)
 
 bool strContains(const string& str, const string& qstr)
@@ -1193,7 +1193,7 @@ bool strContains(const string& str, const string& qstr)
 }
     
 //----------------------------------------------------------------
-// Procedure: strContains
+// Procedure: strContains()
 
 bool strContains(const string& str, const char c)
 {
@@ -1205,7 +1205,7 @@ bool strContains(const string& str, const char c)
 }
     
 //----------------------------------------------------------------
-// Procedure: strBegins
+// Procedure: strBegins()
 //      Note: Added Nov 2nd 09 (on the flight to DC)
 
 bool strBegins(const string& str, const string& qstr, bool case_matters)
@@ -1229,7 +1229,7 @@ bool strBegins(const string& str, const string& qstr, bool case_matters)
 }
     
 //----------------------------------------------------------------
-// Procedure: strBegins
+// Procedure: strBegins()
 //      Note: Added Nov 2nd 09 (on the flight to DC)
 
 bool strEnds(const string& str, const string& qstr, bool case_matters)
@@ -1256,7 +1256,7 @@ bool strEnds(const string& str, const string& qstr, bool case_matters)
 }
     
 //----------------------------------------------------------------
-// Procedure: isBoolean
+// Procedure: isBoolean()
 
 bool isBoolean(const string& str)
 {
@@ -1267,7 +1267,7 @@ bool isBoolean(const string& str)
 }
     
 //----------------------------------------------------------------
-// Procedure: stringIsFalse
+// Procedure: stringIsFalse()
 
 bool stringIsFalse(const string& str)
 {
@@ -1278,7 +1278,7 @@ bool stringIsFalse(const string& str)
 }
     
 //----------------------------------------------------------------
-// Procedure: strContainsWhite
+// Procedure: strContainsWhite()
 //      Note: Returns true if the given string contains either a 
 //            blank or tab character.
 
@@ -1296,7 +1296,7 @@ bool strContainsWhite(const string& str)
 }
 
 //----------------------------------------------------------------
-// Procedure: strBeginsWhite
+// Procedure: strBeginsWhite()
 //      Note: Returns true if the given string begins with either a
 //            blank or tab character.
 
@@ -1315,7 +1315,7 @@ bool strBeginsWhite(const string& str)
 }
 
 //----------------------------------------------------------------
-// Procedure: svectorToString
+// Procedure: svectorToString()
 //      Note: Added Jan1807/Jan1213 
 
 string svectorToString(const vector<string>& svector, char separator)
@@ -1358,7 +1358,7 @@ bool tokParse(const string& str, const string& left,
 
 
 //----------------------------------------------------------------
-// Procedure: tokStringParse
+// Procedure: tokStringParse()
 //   Example: info  = "fruit=apple, drink=water, temp=98.6";
 //     Input  result = tokStringParse(info, "drink", ',', '=');
 //    Result: result = "water"
@@ -1382,7 +1382,7 @@ string tokStringParse(const string& str, const string& left,
 
 
 //----------------------------------------------------------------
-// Procedure: tokDoubleParse
+// Procedure: tokDoubleParse()
 //   Example: info  = "fruit=23, drink=0.4, temp=98.6";
 //     Input  result = str_tok(info, "drink", ',', '=');
 //    Result: result = 0.4
@@ -1405,7 +1405,7 @@ double tokDoubleParse(const string& str, const string& left,
 }
 
 //----------------------------------------------------------------
-// Procedure: minElement
+// Procedure: minElement()
 
 double minElement(const vector<double>& myvector)
 {
@@ -1421,7 +1421,7 @@ double minElement(const vector<double>& myvector)
 }
 
 //----------------------------------------------------------------
-// Procedure: maxElement
+// Procedure: maxElement()
 
 double maxElement(const vector<double>& myvector)
 {
@@ -1437,7 +1437,7 @@ double maxElement(const vector<double>& myvector)
 }
 
 //----------------------------------------------------------------
-// Procedure: vclip
+// Procedure: vclip()
 
 double vclip(const double& var, const double& low, const double& high)
 {
@@ -1459,7 +1459,7 @@ double vclip_min(const double& var, const double& low)
 }
 
 //----------------------------------------------------------------
-// Procedure: vclip_max
+// Procedure: vclip_max()
 
 double vclip_max(const double& var, const double& high)
 {
@@ -1470,7 +1470,7 @@ double vclip_max(const double& var, const double& high)
 
 
 //----------------------------------------------------------------
-// Procedure: randomDouble
+// Procedure: randomDouble()
 
 double randomDouble(double min, double max)
 {
@@ -1491,7 +1491,7 @@ double randomDouble(double min, double max)
 
 
 //----------------------------------------------------------------
-// Procedure: tokParse
+// Procedure: tokParse()
 //   Example: info  = "fruit=apple, drink=water, temp=98.6";
 //            match = tokParse(info, "temp", ',', '=', rval);
 //    Result: match:true rval:98.6
@@ -1512,7 +1512,7 @@ bool tokParse(const string& str, const string& left,
 }
 
 //----------------------------------------------------------------
-// Procedure: tokParse
+// Procedure: tokParse()
 //   Example: info  = "fruit=apple, result=true, temp=98.6";
 //            match = tokParse(info, "temp", ',', '=', rval);
 //    Result: match:true bval:true
@@ -1533,7 +1533,7 @@ bool tokParse(const string& str, const string& left,
 }
 
 //----------------------------------------------------------------
-// Procedure: isAlphaNum
+// Procedure: isAlphaNum()
 
 bool isAlphaNum(const string& str, const std::string& achars)
 {
@@ -1564,7 +1564,7 @@ bool isAlphaNum(const string& str, const std::string& achars)
 }
 
 //----------------------------------------------------------------
-// Procedure: isNumber
+// Procedure: isNumber()
 
 bool isNumber(const string& str, bool blanks_allowed)
 {
@@ -1608,7 +1608,7 @@ bool isNumber(const string& str, bool blanks_allowed)
 }
 
 //----------------------------------------------------------------
-// Procedure: isQuoted
+// Procedure: isQuoted()
 //      Note: Returns true if the given string begins and ends w/
 //            a double-quote. Returns false otherwise.
 
@@ -1625,7 +1625,7 @@ bool isQuoted(const string& str)
 }
 
 //----------------------------------------------------------------
-// Procedure: isBraced
+// Procedure: isBraced()
 //      Note: Returns true if the given string begins with a '{' and 
 //            ends witha a '}'. Returns false otherwise.
 
@@ -1642,7 +1642,7 @@ bool isBraced(const string& str)
 }
 
 //----------------------------------------------------------------
-// Procedure: isChevroned
+// Procedure: isChevroned()
 //      Note: Returns true if the given string begins with a '<' and 
 //            ends witha a '>'. Returns false otherwise.
 
@@ -1659,7 +1659,7 @@ bool isChevroned(const string& str)
 }
 
 //----------------------------------------------------------------
-// Procedure: stripQuotes
+// Procedure: stripQuotes()
 
 string stripQuotes(const string& given_str)
 {
@@ -1677,7 +1677,7 @@ string stripQuotes(const string& given_str)
 }
 
 //----------------------------------------------------------------
-// Procedure: stripBraces
+// Procedure: stripBraces()
 
 string stripBraces(const string& given_str)
 {
@@ -1695,7 +1695,7 @@ string stripBraces(const string& given_str)
 }
 
 //----------------------------------------------------------------
-// Procedure: stripChevrons
+// Procedure: stripChevrons()
 
 string stripChevrons(const string& given_str)
 {
@@ -1713,7 +1713,7 @@ string stripChevrons(const string& given_str)
 }
 
 //----------------------------------------------------------------
-// Procedure: doubleToHex
+// Procedure: doubleToHex()
 //     Notes: Convert a double in the range [0,1.0] and convert it
 //            to the range [0,255] in a hex representation given by
 //            a two-character string. 
@@ -1754,7 +1754,7 @@ string doubleToHex(double g_val)
 }
 
 //----------------------------------------------------------------
-// Procedure: getArg
+// Procedure: getArg()
 //     Note1: Searches the array of stings (argv) looking for a 
 //            match to the given string (str). If no match is found
 //            it returns zero. When a match is found it checks
@@ -1803,7 +1803,7 @@ int getArg(int argc, char **argv, int pos,
 }
 
 //----------------------------------------------------------------
-// Procedure: scanArgs
+// Procedure: scanArgs()
 //     Note1: Searches the array of strings (argv) looking for a 
 //            match to the given string (str). 
 
@@ -1834,7 +1834,7 @@ bool scanArgs(int argc, char **argv, const char* str1,
 }
 
 //----------------------------------------------------------------
-// Procedure: validateArgs
+// Procedure: validateArgs()
 //     Note1: Ensures that each argument in argv is legal, has the
 //            correct number of arguments, and is not duplicated.
 //     Note2: ms is of the form "arg1:#subargs arg2:#subargs ..."
@@ -1881,7 +1881,7 @@ int validateArgs(int argc, char *argv[], string ms)
 
 
 //----------------------------------------------------------
-// Procedure: snapToStep
+// Procedure: snapToStep()
 //   Purpose: Round the given number (gfloat) to the nearest
 //            point on the number line containing intervals of
 //            size "step".
@@ -1909,7 +1909,7 @@ double snapToStep(double orig_value, double step)
   
 
 //----------------------------------------------------------
-// Procedure: snapDownToStep
+// Procedure: snapDownToStep()
 //   Purpose: Round the given number (value) to the next lowest
 //            point on the number line containing intervals of
 //            size "step".
@@ -1932,7 +1932,7 @@ double snapDownToStep(double value, double step)
 }
   
 //-------------------------------------------------------------
-// Procedure: setPortTurnOnString
+// Procedure: setPortTurnOnString()
 //      Note: This function is designed to set the given boolean value
 //            based on its existing value and the contents of the str.
 //      Note: The case_tolow argument is true by default. By giving 
@@ -1957,7 +1957,35 @@ bool setPortTurnOnString(bool& boolval, string str, bool case_tolow)
 }
 
 //-------------------------------------------------------------
-// Procedure: setBooleanOnString
+// Procedure: setPortStarOnString()
+//      Note: The case_tolow argument is true by default. By giving 
+//            the caller this option, some efficiency can be gained if
+//            the caller knows that the str argument has already been
+//            converted to lower case.
+
+bool setPortStarOnString(string& sval, string str, bool case_tolow)
+{
+  if(case_tolow)
+    str = tolower(str);
+
+  if(str == "toggle") {
+    if(sval == "port")
+      sval = "start";
+    else
+      sval = "port";
+  }
+  else if(str == "port")
+    sval = "port";
+  else if((str == "starboard") || (str == "star"))
+    sval = "star";
+  else
+    return(false);
+
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setBooleanOnString()
 //      Note: This function is designed to set the given boolean value
 //            based on its existing value and the contents of the str.
 //      Note: The case_tolow argument is true by default. By giving 
@@ -1981,7 +2009,7 @@ bool setBooleanOnString(bool& boolval, string str, bool case_tolow)
 }
 
 //-------------------------------------------------------------
-// Procedure: setPosDoubleOnString
+// Procedure: setPosDoubleOnString()
 //      Note: This function is designed to possibley set the given
 //            double based on the contents of the str.
 //   Returns: false if the string is not numerical, negative or zero
@@ -2001,7 +2029,7 @@ bool setPosDoubleOnString(double& given_dval, string str)
 }
 
 //-------------------------------------------------------------
-// Procedure: setNonNegDoubleOnString
+// Procedure: setNonNegDoubleOnString()
 //      Note: This function is designed to possibly set the given 
 //            double based on the contents of the str.
 //   Returns: false if the string is not numerical, or negative.
@@ -2021,7 +2049,7 @@ bool setNonNegDoubleOnString(double& given_dval, string str)
 }
 
 //-------------------------------------------------------------
-// Procedure: setDoubleOnString
+// Procedure: setDoubleOnString()
 //      Note: This function is designed to possibly set the given 
 //            double based on the contents of the str.
 //   Returns: false if the string is not numerical.
@@ -2037,7 +2065,7 @@ bool setDoubleOnString(double& given_dval, string str)
 }
 
 //-------------------------------------------------------------
-// Procedure: setDoubleRngOnString
+// Procedure: setDoubleRngOnString()
 //      Note: This function is designed to possibly set the given 
 //            double based on the contents of the str.
 //      Note: If the given value is outside the given range, the
@@ -2067,7 +2095,35 @@ bool setDoubleRngOnString(double& dval, string str,
 }
 
 //-------------------------------------------------------------
-// Procedure: setDoubleStrictRngOnString
+// Procedure: setDoubleRngOnString()
+//      Note: This function is designed to possibly set the given 
+//            double based on the contents of the str.
+//      Note: If the given value is outside the given range, the
+//            given value is clipped, and true is returned.
+//   Returns: false if the string is not numerical.
+//            false if the given range is not proper.
+//            true  if the given value is outside the given range
+//            true otherwise
+
+bool setDoubleClipRngOnString(double& dval, string str,
+			      double minv, double maxv)
+{
+  if(!isNumber(str))
+    return(false);
+  if(minv > maxv)
+    return(false);
+  
+  dval = atof(str.c_str());
+  if(dval < minv)
+    dval = minv;
+  else if(dval > maxv)
+    dval = maxv;
+     
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setDoubleStrictRngOnString()
 //      Note: This function is designed to possibly set the given 
 //            double based on the contents of the str.
 //      Note: If the given value is outside the given range, the
@@ -2094,7 +2150,7 @@ bool setDoubleStrictRngOnString(double& dval, string str,
 }
 
 //-------------------------------------------------------------
-// Procedure: setUintOnString
+// Procedure: setUintOnString()
 //      Note: This function is designed to possibly set the given 
 //            unsigned int based on the contents of the str.
 //   Returns: false if the string is a negative number.
@@ -2114,7 +2170,7 @@ bool setUIntOnString(unsigned int& given_val, string str)
 }
 
 //-------------------------------------------------------------
-// Procedure: setPosUintOnString
+// Procedure: setPosUintOnString()
 //      Note: This function is designed to possibly set the given 
 //            unsigned int based on the contents of the str.
 //   Returns: false if the string is not a positive number.
@@ -2134,7 +2190,7 @@ bool setPosUIntOnString(unsigned int& given_val, string str)
 }
 
 //-------------------------------------------------------------
-// Procedure: setIntOnString
+// Procedure: setIntOnString()
 //      Note: This function is designed to possibly set the given 
 //            int based on the contents of the str.
 //   Returns: false if the string is not a number.
@@ -2152,7 +2208,7 @@ bool setIntOnString(int& given_val, string str)
 }
 
 //-------------------------------------------------------------
-// Procedure: setNonWhiteVarOnString
+// Procedure: setNonWhiteVarOnString()
 //      Note: This function is designed to possibly set the given 
 //            variable based the contents of the str.
 //   Returns: false if the string contains white space.
@@ -2163,6 +2219,26 @@ bool setNonWhiteVarOnString(string& given_var, string str)
   if((str == "") || strContainsWhite(str))
     return(false);
 
+  given_var = str;
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setStatusVarOnString()
+//      Note: This function is designed to possibly set the given 
+//            variable based the contents of the str.
+//            It will convert "silent" to empty string ""
+//   Returns: false if the string contains white space.
+//            true  otherwise.
+
+bool setStatusVarOnString(string& given_var, string str)
+{
+  if((str == "") || strContainsWhite(str))
+    return(false);
+
+  if(str == "silent")
+    str = "";
+  
   given_var = str;
   return(true);
 }
@@ -2812,6 +2888,18 @@ string hashAlphaNum(unsigned int len)
   }
 
   return(hash_str);
+}
+
+  
+//---------------------------------------------------------
+// Procedure: isValidTurn()
+
+bool isValidTurn(const string& str)
+{
+  if((str == "port") || (str == "star") || (str == "starboard"))
+    return(true);
+
+  return(false);
 }
 
   

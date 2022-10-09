@@ -28,6 +28,8 @@
 #include <cstdlib>
 #include "GeomUtils.h"
 #include "AngleUtils.h"
+#include "XYFormatUtilsSegl.h"
+#include "XYFormatUtilsPoint.h"
 
 #ifndef M_PI
 #define M_PI 3.14159265358979323846
@@ -2110,5 +2112,165 @@ void shiftVertices(vector<double>& vx, vector<double>& vy)
   vy = new_vy;
 }
 
+//---------------------------------------------------------------
+// Procedure: applyHints()
 
+void applyHints(XYPoint& pt, const HintHolder& hints, string prefix)
+{
+  if(prefix != "")
+    prefix += "_";
+
+  if(hints.hasColor(prefix + "label_color"))
+    pt.set_color("label",  hints.getColor(prefix + "label_color"));
+
+  if(hints.hasColor(prefix + "vertex_color"))
+    pt.set_color("vertex", hints.getColor(prefix + "vertex_color"));
+
+  if(hints.hasMeasure(prefix + "vertex_size"))
+    pt.set_vertex_size(hints.getMeasure(prefix + "vertex_size"));
+}
+
+//---------------------------------------------------------------
+// Procedure: applyHints()
+
+void applyHints(XYSegList& segl, const HintHolder& hints, string prefix)
+{
+  if(prefix != "")
+    prefix += "_";
+  
+  if(hints.hasColor(prefix + "label_color"))
+    segl.set_color("label",  hints.getColor(prefix + "label_color"));
+
+  if(hints.hasColor(prefix + "vertex_color"))
+    segl.set_color("vertex", hints.getColor(prefix+"vertex_color"));
+
+  if(hints.hasColor(prefix + "edge_color"))
+    segl.set_color("edge", hints.getColor(prefix+"edge_color"));
+
+  if(hints.hasMeasure(prefix + "edge_size"))
+    segl.set_edge_size(hints.getMeasure(prefix + "edge_size"));
+
+  if(hints.hasMeasure(prefix + "vertex_size"))
+    segl.set_vertex_size(hints.getMeasure(prefix + "vertex_size"));
+}
+
+  
+//---------------------------------------------------------------
+// Procedure: setPointOnString()
+
+bool setPointOnString(XYPoint& point, string str)
+{
+  XYPoint new_point = string2Point(str);
+  if(!new_point.valid())
+    return(false);
+
+  point = new_point;
+  return(true);
+}
+  
+//---------------------------------------------------------------
+// Procedure: setSegListOnString()
+
+bool setSegListOnString(XYSegList& segl, string str)
+{
+  XYSegList new_segl = string2SegList(str);
+  if(!new_segl.valid())
+    return(false);
+  
+  segl = new_segl;
+  return(true);
+}
+  
+
+//---------------------------------------------------------------
+// Procedure: modSegLen()
+
+bool modSegLen(double x1, double y1, double x2, double y2,
+	       double& rx1, double& ry1, double& rx2, double& ry2,
+	       double newlen)
+{
+  double curr_len = hypot(x1-x2, y1-y2);
+  if(curr_len == 0)
+    return(false);
+
+  double cx = (x1 + x2)/2;
+  double cy = (y1 + y2)/2;
+
+  double angle = relAng(x1,y1, x2,y2);
+
+  projectPoint(angle+180, newlen/2, cx,cy, rx1,ry1);
+  projectPoint(angle, newlen/2, cx,cy, rx2,ry2);
+  
+
+  return(true);
+}
+  
+//---------------------------------------------------------------
+// Procedure: modSegLen()
+
+bool modSegLen(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
+	       double newlen)
+{
+  double x1 = p1.x();
+  double y1 = p1.y();
+  double x2 = p2.x();
+  double y2 = p2.y();
+
+  double rx1, ry1, rx2, ry2;
+  bool ok = modSegLen(x1,y1, x2,y2, rx1,ry1, rx2,ry2, newlen);
+  if(!ok)
+    return(false);
+
+  rp1.set_vertex(rx1, ry1);
+  rp2.set_vertex(rx2, ry2);
+
+  return(true);
+}
+  
+
+//---------------------------------------------------------------
+// Procedure: modSegAng()
+
+bool modSegAng(double x1, double y1, double x2, double y2,
+	       double& rx1, double& ry1, double& rx2, double& ry2,
+	       double new_angle)
+{
+  double curr_len = hypot(x1-x2, y1-y2);
+  if(curr_len == 0)
+    return(false);
+
+  double cx = (x1 + x2)/2;
+  double cy = (y1 + y2)/2;
+
+  double newang1 = angle360(new_angle+180);
+  double newang2 = angle360(new_angle);
+
+  projectPoint(newang1, curr_len/2, cx,cy, rx1,ry1);
+  projectPoint(newang2, curr_len/2, cx,cy, rx2,ry2);
+  
+
+  return(true);
+}
+  
+//---------------------------------------------------------------
+// Procedure: modSegAng()
+
+bool modSegAng(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
+	       double new_angle)
+{
+  double x1 = p1.x();
+  double y1 = p1.y();
+  double x2 = p2.x();
+  double y2 = p2.y();
+  
+  double rx1, ry1, rx2, ry2;
+  bool ok = modSegAng(x1,y1, x2,y2, rx1,ry1, rx2,ry2, new_angle);
+  if(!ok)
+    return(false);
+  
+  rp1.set_vertex(rx1, ry1);
+  rp2.set_vertex(rx2, ry2);
+
+  return(true);
+}
   

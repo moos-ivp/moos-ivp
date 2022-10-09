@@ -28,6 +28,7 @@
 #include "IvPBehavior.h"
 #include "WaypointEngine.h"
 #include "XYPoint.h"
+#include "HintHolder.h"
 
 class BHV_Waypoint : public IvPBehavior {
 public:
@@ -57,7 +58,6 @@ protected:
   void         postErasables();
   void         postCycleFlags();
   void         postWptFlags(double x, double y);
-  void         handleVisualHint(std::string);
   void         updateOdoDistance();
   void         markOdoLeg();
   std::string  getReverseStr() const;
@@ -94,15 +94,7 @@ protected: // configuration parameters
   vector<LogicCondition> m_lead_conditions;
   
   // Visual hints affecting properties of polygons/points
-  std::string m_hint_vertex_color;
-  std::string m_hint_edge_color;
-  std::string m_hint_label_color;
-  std::string m_hint_nextpt_color;
-  std::string m_hint_nextpt_lcolor;
-  double      m_hint_vertex_size;
-  double      m_hint_edge_size;
-  double      m_hint_nextpt_vertex_size;
-  bool        m_hint_active;
+  HintHolder  m_hints;
 
 protected: // intermediate or object global variables.
   

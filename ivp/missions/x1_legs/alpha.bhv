@@ -2,63 +2,86 @@
 
 initialize   DEPLOY = false
 initialize   RETURN = false
-initialize   SPDLIMIT = true
+initialize   AVOIDING = idle
+initialize   ZIGGING = false
 //initialize   DRIFT_X = 0.5
 //initialize   DRIFT_Y = 0.7
-initialize   AVOIDING = idle
 
 //----------------------------------------------
-Behavior = BHV_HSLine
+Behavior = BHV_LegRun
 { 
-  name = hsline
-
-	time_on_leg = 5
-	condition = DEPLOY=true
-}
-
-//----------------------------------------------
-Behavior = BHV_Waypoint
-{ 
-  name      = waypt_survey
+  name      = legs
   pwt       = 100
   condition = RETURN = false
   condition = DEPLOY = true
+  condition = ZIGGING = false
 	endflag   = RETURN = true
 	endflag   = EFLAG  = endings=$[CTR2]
-	cycleflag = CFLAG  = cyles=$[CTR1]
-	wptflag   = WFLAG  = waypoints=$[CTR]
-	wptflag   = WPI  = $[PI]
-	wptflag   = WNI  = $[NI]
 
-  updates    = WPT_UPDATE
+  updates    = LEG_UPDATE
   perpetual  = true
 
-  lead_condition = AVOIDING != active
+            lead = 5
+     lead_damper = 1
+           speed = 4.0   // meters per second
+    capture_line = true
+  capture_radius = 2
+     slip_radius = 15
 
-	//wptflag_on_start = true
+     	   vx1 = 70, -35
+	       vx2 = -35, -85
 
-      use_alt_speed = true
-           speed_alt = 1
-                lead = 8
-         lead_damper = 1
-       lead_to_start = true
-               speed = 4.0   // meters per second
-        capture_line = true
-      capture_radius = 5.0
-         slip_radius = 15.0
-	efficiency_measure = all
+         //vx1 = 100, -25
+	       //vx2 = -70, -95
 
-             polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
+         //vx2 = -50, -120
+	       //vx1 = 150, -120
+	
+          //points = 60,-40 : -40,-80
+					repeat = 3
 
-               order = normal
-             repeat  = 4
+	legflag = PCT_TO_NEXT=$[PCT_NP]
+	
+	turn1_dir = port
+	turn2_dir = star
+	turn1_rad = 20
+	turn2_rad = 20
+	turn1_bias = 100
+	turn2_bias = 100
 
+	mid_pct = 10
+	//midflag = ZIGGING=true
+	
    visual_hints = nextpt_color=yellow
    visual_hints = nextpt_vertex_size=8
    visual_hints = nextpt_lcolor=gray70
    visual_hints = vertex_color=dodger_blue, edge_color=white
    visual_hints = vertex_size=6, edge_size=1
 }
+
+//----------------------------------------------
+Behavior = BHV_ZigZag
+{ 
+  name      = zig
+  pwt       = 100
+  condition = RETURN = false
+  condition = DEPLOY = true
+  condition = ZIGGING = true
+	endflag   = ZIGGING = false
+
+  updates    = ZIG_UPDATE
+  perpetual  = true
+
+           speed = 3.0   // meters per second
+
+	stem_on_active = true
+       zig_first = star
+    max_zig_zags = 1
+	     zig_angle = 35
+
+      hdg_thresh = 4
+	fierce_zigging = true
+	}
 
 //----------------------------------------------
 Behavior=BHV_Waypoint

@@ -29,6 +29,7 @@
 #include <vector>
 #include "XYPoint.h"
 #include "XYPolygon.h"
+#include "HintHolder.h"
 
 // Determines the distance between two points
 double distPointToPointXXX(double x1, double y1, double x2, double y2);
@@ -167,6 +168,30 @@ void shiftVertices(std::vector<double>& vx, std::vector<double>& vy);
 
 double polyAspectRatio(XYPolygon);
 
+// Below is new after 22.8
+
+void applyHints(XYPoint&, const HintHolder&, std::string prefix="");
+void applyHints(XYSegList&, const HintHolder&, std::string prefix="");
+
+bool setPointOnString(XYPoint& point, std::string str);
+bool setSegListOnString(XYSegList& point, std::string str);
+
+bool modSegLen(double x1, double y1, double x2, double y2,
+	       double& rx1, double& ry1, double& rx2, double& ry2,
+	       double new_length);
+
+bool modSegLen(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
+	       double new_length);
+
+bool modSegAng(double x1, double y1, double x2, double y2,
+	       double& rx1, double& ry1, double& rx2, double& ry2,
+	       double new_angle);
+
+bool modSegAng(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
+	       double new_angle);
+
+
+
 // DEPRECATED INTERFACES
 double distToPoint(double x1, double y1, double x2, double y2);
 
@@ -174,7 +199,4 @@ double distToSegment(double x1, double y1, double x2,
 		     double y2, double px, double py);
 
 #endif
-
-
-
 

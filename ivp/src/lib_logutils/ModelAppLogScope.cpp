@@ -108,7 +108,8 @@ vector<string> ModelAppLogScope::processLines(vector<AppLogEntry> entries,
   for(unsigned int i=0; i<entries.size(); i++) {  
     unsigned int ctr = start_ctr + i;
     if(m_show_separator)
-      all_lines.push_back("===================================== " + uintToString(ctr));
+      //      all_lines.push_back("===================================== " + uintToString(ctr));
+      all_lines.push_back("------------------------------------- " + uintToString(ctr));
 
     // Get the set of lines from this entry, possibly truncating
     // and possibly wrapping if these features are activated.

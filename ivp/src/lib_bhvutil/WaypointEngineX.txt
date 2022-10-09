@@ -1,0 +1,45 @@
+
+
+
+
+SetNextWaypoint()
+
+(1) Determines if properly set, e.g., nonempty seglist
+    Sets current status to "empty" if not proper
+
+    until next call to setNextWaypoint()
+      hasCompleted() returns false
+      hasAdvanced()  returns false
+      hasCycled() returns false
+      inTransit() returns false
+      isEmpty() returns true
+      currStatus() return "empty"
+    
+(2) Determines if we have reached the current waypt
+    If NO
+
+    until next call to setNextWaypoint()
+      currStatus() return "transit" 
+
+    If YES
+      Set status to "advanced"
+      hasAdvanced() will return true
+      This function will return true if status is advance, cycled or completed
+
+  (2a) Determine if point hit was last in the seglist
+      If NO
+         done
+      If YES
+         set status to "cycled"
+
+      (2b) Determine if completed cycle was final cycle
+      If NO
+         done
+      If YES
+         set status to "completed"
+
+  hasCompleted() true if status: completed
+  hasCycled()    true if status: completed, cycled
+  hasAdvanced()  true if status: completed, cycled, or advanced
+  inTransit()    true if status: transit
+  emptyPoints()  true if status: empty

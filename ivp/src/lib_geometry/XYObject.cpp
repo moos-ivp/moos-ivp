@@ -105,6 +105,21 @@ ColorPack XYObject::get_color(const string& key) const
 }
 
 //---------------------------------------------------------------
+// Procedure: get_color()
+
+string XYObject::get_color_str(const string& key) const
+{
+  ColorPack return_cpack;
+
+  map<string, ColorPack>::const_iterator p;
+  p = m_color_map.find(key);
+  if(p != m_color_map.end())
+    return_cpack = p->second;
+
+  return(return_cpack.str());
+}
+
+//---------------------------------------------------------------
 // Procedure: color_set()
 
 bool XYObject::color_set(const string& key) const

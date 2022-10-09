@@ -37,30 +37,52 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Constructor
+// Constructor()
 
 WaypointEngine::WaypointEngine()
 {
-  m_curr_ix         = 0;
-  m_prev_ix         = -1;
+  // Config Vars
   m_reverse         = false;
   m_perpetual       = false;
   m_capture_line    = false;
   m_capture_radius  = 3;
   m_slip_radius     = 15;
+  m_repeats_endless = false;
+  m_repeats_allowed = 0;
+  
+  // State Vars
+  m_curr_ix         = 0;
+  m_prev_ix         = -1;
   m_complete        = true;
   m_current_cpa     = -1;
   m_capture_hits    = 0;
   m_nonmono_hits    = 0;
   m_cycle_count     = 0;
-
-  m_repeats_allowed = 0;
   m_repeats_sofar   = 0;
-  m_repeats_endless = false;
 }
 
 //-----------------------------------------------------------
-// Procedure: setSegList
+// Procedure: resetState()
+
+void WaypointEngine::resetState()
+{
+  m_seglist       = XYSegList();
+  m_seglist_raw   = XYSegList();
+  m_prevpt        = XYPoint();
+  
+  m_curr_ix       = 0;
+  m_prev_ix       = -1;
+  m_complete      = true;
+  m_current_cpa   = -1;
+
+  m_capture_hits  = 0;
+  m_nonmono_hits  = 0;
+  m_cycle_count   = 0;
+  m_repeats_sofar = 0;
+}
+
+//-----------------------------------------------------------
+// Procedure: setSegList()
 //      Note: We store the value of m_reverse so the desired
 //            effect is achieved regardless of whether the points
 //            are set first, or the reverse-flag is set first.
@@ -89,6 +111,19 @@ void WaypointEngine::setSegList(const XYSegList& g_seglist)
 
   if(m_reverse)
     m_seglist.reverse();
+}
+
+//-----------------------------------------------------------
+// Procedure: setSegList()
+//      Note: Convenience function
+
+void WaypointEngine::setSegList(const vector<XYPoint>& pts)
+{
+  XYSegList segl;
+  for(unsigned int i=0; i<pts.size(); i++)
+    segl.add_vertex(pts[i]);
+
+  setSegList(segl);
 }
 
 //-----------------------------------------------------------
@@ -253,6 +288,9 @@ unsigned int WaypointEngine::resetsRemaining() const
 
 string WaypointEngine::setNextWaypoint(double os_x, double os_y)
 {
+  cout << "curr_ix(a): " << m_curr_ix << endl;
+  cout << "prev_ix(a): " << m_prev_ix << endl;
+  
   // Phase 1: Initial checks and setting of present waypoint
   // --------------------------------------------------------------
   unsigned int vsize = m_seglist.size();
@@ -288,6 +326,8 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
       m_nonmono_hits++;
     }
   }
+  cout << " curr_ix(b): " << m_curr_ix << endl;
+  cout << " prev_ix(b): " << m_prev_ix << endl;
 
   // Phase 2B: Check for arrival based on the capture line criteria
   // --------------------------------------------------------------
@@ -331,6 +371,10 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
     else
       m_prev_ix = m_curr_ix - 1;
 
+    // An "normal" advance means that we no longer regard an
+    // externally set prevpt to be valid.
+    m_prevpt.invalidate();
+
     pt_x = m_seglist.get_vx(m_curr_ix);
     pt_y = m_seglist.get_vy(m_curr_ix);
     m_current_cpa = hypot((os_x - pt_x), (os_y - pt_y));    
@@ -346,6 +390,9 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
 
 double WaypointEngine::distToPrevWpt(double osx, double osy) const
 {
+  if(m_prevpt.valid())
+    return(distPointToPoint(osx, osy, m_prevpt.x(), m_prevpt.y()));
+  
   if((m_prev_ix < 0) || ((unsigned int)(m_prev_ix) >= m_seglist.size()))
     return(-1);
   
@@ -383,7 +430,3 @@ string WaypointEngine::getPointsStr() const
   return(spec);
 }
   
-
-
-
-

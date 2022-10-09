@@ -154,7 +154,7 @@ SET(IVP_NON_GUI_LIBS
   lib_evalutil       lib_encounters      lib_apputil  
   lib_contacts       lib_obstacles       lib_realm
   lib_ufield         lib_logutils        lib_mbutil
-  lib_manifest       lib_marine_pid
+  lib_manifest       lib_marine_pid      lib_turngeo
 )
 SET(IVP_GUI_LIBS
   lib_ipfview        lib_marineview

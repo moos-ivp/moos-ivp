@@ -1,0 +1,179 @@
+
+o pRealm
+
+  Modified to publish REALMCAST_CHANNELS much less frequently unless
+  the msg content has changed. By default, interval is 5 secs. If unchanged,
+  the interval is 50 secs.
+
+o AppCastingMOOSApp
+
+  (1) The term_report_interval is now editable by incoming MOOS variable
+  TERM_REPORT_INTERVAL. This can therefore be configured to be published
+  when an in-water mission starts. The term_report_interval default is
+  now 0.5 instead of 0.4. Suggested interval for in-water mode is 2 secs
+
+  (2) Now has variable m_comms_policy. This can be configured in the .moos file
+  and it can be re-set dynamically with incoming MOOS mail COMMS_POLICY.
+  All apps can access the latest value with function commsPolicy().
+  Possible values are "open", "lean", "dire". 
+  Note: the comms_policy config param is sets the ceiling. If configured
+  with "lean", incoming mail cannot set it to "open". If configured with
+  "open", incoming mail can set it to "lean" or "dire."
+
+o pHelmIvP
+
+  The helm will pass on the value of COMMS_POLICY to the information buffer
+  so all behaviors have access to the comms_policy, "open", "lean", "dire".
+
+o IvPBehavior superclass
+
+  All behaviors have access to the new function commsPolicy(), just like all
+  AppCastingMOOSApps to. Behaviors are free to use this comms policy when
+  deciding when/whether to post VIEW_ information or other information to
+  the shoreside. 
+
+  NOTE: A behavior may have a stricter comms policy than the global comms policy.
+  The global comms policy is set by the MOOS Variable COMMS_POLICY. This is
+  reflected also in the Helm's info_buffer, also tied to the variable COMMS_POLICY.
+  However, a behavior may have a stricter policy set specifically to that behavior.
+  For example a behavior may be configured with comms_policy=lean in the .bhv
+  file. In this case, the behavior, through the checkForUpdatedCommsPolicy()
+  function defined in IvPBehavior superclass, the behavior will respect the
+  local comms_policy as a ceiling. If the behavior is set to "lean", it will never
+  have the value of "open" even if the global policy is "open". For this reason,
+  behavior authors should always use the function commsPolicy() to get the comms
+  policy for their particular behavior. The value of COMMS_POLICY in the info_buffer
+  is the global comms policy.
+
+o IvPContactBehavior superclass
+
+  Added a reaction to commsPolicy() to disable postViewableBearingLines()
+
+o uFldShoreBroker
+
+  Will publish UFSB_BRIDGE_VARS, the list of variables bridged to vehicles.
+  Will publish UFSB_QBRIDGE_VARS, the list of qbridge config vars.
+
+  Both UFSB_BRIDGE_VARS and UFSB_QBRIDGE_VARS are published once at the end
+  of configuration. They are primarily for benefit of uFldDelve.
+
+  Will publish UFSB_NODE_COUNT, the number of nodes/vehicles detected to be
+  connected to uFldShoreBroker. It will publish this number whenever it changes,
+  or at least once every 30 seconds. 
+
+o pMarineViewer
+
+  Initial mods to use extrapolations. More work needs to be done to use a
+  ContactLedger instead. 
+
+o uFldNodeBroker
+
+  Modified to send NODE_PSHARE_VARS, which is the list of pshare ALIASES. Often
+  the alias IS the src, but the alias is the varname that shows up on the shoreside
+  and this is the varname that is of interest to uFldDelve. This var is, at the
+  moment, only relevent to uFldDelve.
+
+  We should consider making it an automatic share, like APPCAST and REALMCAST.
+
+  Modified to stop sending pings to a tryhost, once an ack has been received
+  from the tryhost. This reduces (a lot) node to shoreside bandwidth usage
+  discovered by uFldDelve. It does not seem to affect the Shoreside's ability
+  to re-connect to a vehicle if the shoreside needs to be re-started
+
+
+o uFldDelve
+
+
+o lib_contacts
+
+  Added extrapolateRecord utility function that takes a given record, a time,
+  and max_delta and produces a new NodeRecord. The max_delta is the begin
+  and max time in the extrapolator (when decay begins and ends). In other words
+  decay is immediately complete after max_delta seconds.
+
+
+From the 202-mod2 branch
+==========================================================
+o GUI Apps generally (lib_marineview)
+
+  Multiple tif files can be loaded and toggled through. Not limited to two tifs.
+  The tiff_file and tiff_file_b feature was broken. It is fixed now.
+
+o pMarineViewer
+
+  tiff_file_b has been replace with simply multiple tiff_file params. For example
+    tiff_file = one.tif
+    tiff_file_b = two.tif
+  is simply:
+    tiff_file = one.tif
+    tiff_file = two.tif
+    tiff_file = three.tif
+  The tiff_file_b parameter is still supported for backward compatibility, but is
+  essentially the same as typing "tiff_file"
+
+  Per the comments in lib_marineview above, custom tiff files (*.tif) are loaded
+  using the IVP_IMAGE_DIRS environment variable. Like IVP_BEHAVIOR_DIRS, it is
+  a colon separated list of directories. When pMarineViewer is loaded, it looks
+  in this path (plus finally moos-ivp/ivp/data) for the tif files.
+
+  pMarineViewer will publish REGION_INFO upon startup with key information such
+  as tif file background images. This variable is key to alogview. When alogview
+  starts, it will parse this for the names of the tif files, and load them so alog
+  view is rendering playback on the same tif images used in pMarineViewer during
+  the original mission.
+
+o alogview
+
+  alogview previously would only accept one tif file. And it usually needed to be
+  provided this tif file on the command line with --bg=file.tif with full path
+  extension. The latter is still supported, but now the alogview will read the logged
+  value of REGION_INFO, published by pMarineViewer, containing the name of all the
+  img files used during the original mission. All of these files will be loaded int
+  alogview. 
+
+  Per the comments in lib_marineview above, custom tiff files (*.tif) are loaded
+  using the IVP_IMAGE_DIRS environment variable. Like IVP_BEHAVIOR_DIRS, it is
+  a colon separated list of directories. When pMarineViewer is loaded, it looks
+  in this path (plus finally moos-ivp/ivp/data) for the tif files.
+
+  alogview now supports hashed grids up to 100 kilometers per grid cell.   
+ 
+o lib_geometry
+
+  Added a few utility functions for changing the length or angle of a line
+  segment with two points. In support of the BHV_LegRun behavior
+
+o lib_turngeo  (New library)
+
+  A new library containing a generic TurnGenerator class and specific
+  TurnGenerators, in particular the Williamson Turn generator in support of
+  the BHV_LegRun behavior.
+
+o lib_bhvutil
+
+  Added a new version of the WaypointEngine class. Initiall in support of
+  the BHV_LegRun behavior, but eventually to replace the WaypointEngine in
+  the Waypoint behavior and the serve to support other behaviors like
+  BHV_LegRun which used TurnGenerator/WaypointEngine structure
+
+o BHV_LegRun (New behavior)
+
+  To support vehicle testing and other missions where the vehicle needs
+  to repeatedly and reliably traverse a line segment while entering each
+  end on a starting trajectory nearly equal to the heading angle of the
+  line segment.
+
+o BHV_ZigZag (New behavior)
+
+  A behavior that, when activated, will perform a series of configurable
+  zig-zag legs relative to ownship heading when the behavior began.
+
+o x1_legs (New mission)
+
+  A new mission for testing the BHV_LegRun and BHV_ZigZag behaviors
+
+o lib_mbutils
+
+  HintHolder class for streamlinig visual hints in behaviors and apps
+  
+

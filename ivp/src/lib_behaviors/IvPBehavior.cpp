@@ -1067,11 +1067,12 @@ bool IvPBehavior::checkUpdates()
     update_result += ",time=" + doubleToString(getBufferLocalTime(),2);
 
     // Added Mar 7th 2014, allow successive dupl updates with word
-    // toggle in it.
+    // "toggle" in it. Oct 9th 2022, also allow keyword "mod"
     if(strContains(tolower(new_update_str), "toggle") ||
        strContains(tolower(new_update_str), "engage") ||
+       strContains(tolower(new_update_str), "mod") ||
        ((new_update_str != "") && (new_update_str != m_prev_update_str))) {
-      
+
       vector<string> uvector = parseString(new_update_str, '#');
       unsigned int j, usize = uvector.size();
       

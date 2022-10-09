@@ -34,6 +34,28 @@
 using namespace std;
 
 //---------------------------------------------------------------
+// Procedure: Constructor()
+//      Note: Convenience Constructor
+
+XYSegList::XYSegList(XYPoint pt1, XYPoint pt2)
+{
+  add_vertex(pt1);
+  add_vertex(pt2);
+  m_transparency = 0.1;
+}
+
+//---------------------------------------------------------------
+// Procedure: Constructor()
+//      Note: Convenience Constructor
+
+XYSegList::XYSegList(double x1, double y1, double x2, double y2)
+{
+  add_vertex(x1, y1);
+  add_vertex(x2, y2);
+  m_transparency = 0.1;
+}
+
+//---------------------------------------------------------------
 // Procedure: add_vertex()
 
 void XYSegList::add_vertex(double x, double y, double z, string vprop)
@@ -394,6 +416,19 @@ bool XYSegList::valid() const
   if((m_vx.size() == 0) && active())
     return(false);
   return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: get_point()
+
+XYPoint XYSegList::get_point(unsigned int i) const
+{
+  XYPoint nullpt;
+  if(i >= m_vx.size())
+    return(nullpt);
+
+  XYPoint point(m_vx[i], m_vy[i], m_vz[i]);
+  return(point);
 }
 
 //---------------------------------------------------------------

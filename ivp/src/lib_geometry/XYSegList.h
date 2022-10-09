@@ -36,6 +36,9 @@
 class XYSegList : public XYObject {
 public:
   XYSegList() {m_transparency=0.1;}
+  XYSegList(XYPoint, XYPoint);
+  XYSegList(double x1, double y1, double x2, double y2);
+
   virtual ~XYSegList() {}
 
   // XYSegList create and edit functions
@@ -68,12 +71,13 @@ public:
 public:
   unsigned int size() const     {return(m_vx.size());}
 
-  double get_vx(unsigned int) const;
-  double get_vy(unsigned int) const;
-  double get_vz(unsigned int) const;
+  XYPoint get_point(unsigned int) const;
+  double  get_vx(unsigned int) const;
+  double  get_vy(unsigned int) const;
+  double  get_vz(unsigned int) const;
   std::string get_vprop(unsigned int) const;
-  double get_center_x() const;
-  double get_center_y() const;
+  double  get_center_x() const;
+  double  get_center_y() const;
 
   XYPoint get_center_pt() const;
   XYPoint get_centroid_pt() const;
