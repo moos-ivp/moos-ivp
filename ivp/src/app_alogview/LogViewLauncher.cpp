@@ -143,10 +143,10 @@ bool LogViewLauncher::handleConfigParam(string argi)
   bool handled = true;
   if(strEnds(argi, ".alog")) 
     m_dbroker.addALogFile(argi);
-  else if(strEnds(argi, ".tif")) 
-    handled = handleBackground(argi);
   else if(strBegins(argi, "--bg="))
     handled = handleBackground(argi.substr(5));
+  else if(strEnds(argi, ".tif")) 
+    handled = handleBackground(argi);
   else if(strBegins(argi, "--mintime=")) 
     handled = handleMinTime(argi.substr(10));
   else if(strBegins(argi, "--maxtime=")) 
