@@ -1311,7 +1311,6 @@ void PMV_MOOSApp::postFlags(const vector<VarDataPair>& flags)
 
 bool PMV_MOOSApp::buildReport()
 {
-  return(false);
   vector<string> tiff_files = m_gui->mviewer->getTiffFiles();
   for(unsigned int i=0; i<tiff_files.size(); i++) {
     string tiff_file = tiff_files[i];
