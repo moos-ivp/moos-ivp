@@ -951,6 +951,7 @@ void BHV_LegRun::handleLegLenRequest(double len)
     m_vx2 = rp2;
     // new_leg_pending result in mod to wpt engine
     m_new_leg_pending = true;
+    m_preview_pending = true;
   }
 }
 
