@@ -207,14 +207,18 @@ bool MarineViewer::setParam(string param, string value)
   string v = tolower(value);
   
   bool handled = false;
-  if(p=="tiff_type") {
+  if(p == "tiff_type") {  
+    if(value != "toggle") // Only legal value now 
+      return(false);
+    // Increment the current image index
     m_curr_back_img_ix++;
     if(m_curr_back_img_ix >= m_back_imgs.size())
       m_curr_back_img_ix = 0;
-
-    glBindTexture(GL_TEXTURE_2D, m_textures[m_curr_back_img_ix]); 
-    
-    m_back_img.copy(m_back_imgs[m_curr_back_img_ix]);
+    // Set the current image
+    if(m_textures_init && (m_back_imgs.size() > 0)) {
+      glBindTexture(GL_TEXTURE_2D, m_textures[m_curr_back_img_ix]);    
+      m_back_img.copy(m_back_imgs[m_curr_back_img_ix]);
+    }
   }
   else if(p=="tiff_file") {
     cout << "Processing tif file: [" << value << "]" << endl;
