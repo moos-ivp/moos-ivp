@@ -354,7 +354,11 @@ bool USM_MOOSApp::OnStartUp()
       handled = setDoubleOnString(m_max_trim_delay, value);
     else if(param == "wormhole") 
       handled = m_wormset.addWormHoleConfig(value);
-        
+    else if((param == "post_des_thrust") && (value != "DESIRED_THRUST"))
+      handled = setNonWhiteVarOnString(m_post_des_thrust, value);
+    else if((param == "post_des_rudder") && (value != "DESIRED_RUDDER"))
+      handled = setNonWhiteVarOnString(m_post_des_rudder, value);
+    
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
@@ -691,6 +695,13 @@ void USM_MOOSApp::postPengineResults()
   m_model.setThrust(desired_thrust);
   m_model.setElevator(desired_elevator);
 
+  cout << "post_des_thrust:" << m_post_des_thrust << endl;
+  
+  if(m_post_des_thrust != "")
+    Notify(m_post_des_thrust, desired_thrust);
+  if(m_post_des_rudder != "")
+    Notify(m_post_des_rudder, desired_rudder);
+  
 #if 0
   // This block is what would happen in stand-alone PID
   bool all_stop = true;

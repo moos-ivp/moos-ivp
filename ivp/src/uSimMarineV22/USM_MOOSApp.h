@@ -77,6 +77,9 @@ protected: // Utility function(s)
   bool         m_pid_coupled;
   unsigned int m_nav_modulo;
 
+  // Optional post of DES_* in pid_coupled mode
+  std::string  m_post_des_thrust;
+  std::string  m_post_des_rudder;
 };
 
 #endif

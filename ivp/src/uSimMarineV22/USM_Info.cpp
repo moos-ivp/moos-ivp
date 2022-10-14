@@ -118,6 +118,12 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  prefix               = NAV_  ","// default is USM_            ");
   blk("                                                                ");
+  blk("                                                                ");
+  blk("  // In Embedded PID mode, may want to publish DES_RUDDER/THRUST");
+  blk("  // Any MOOS vars ok but not DESIRED_RUDDER and DESIRED_THRUST ");
+  blk("  post_des_thrust      = DESIRED_THRUSTX                        ");
+  blk("  post_des_rudder      = DESIRED_RUDDERX                        ");
+  blk("                                                                ");
   blk("  // BELOW are embedded PID controller config params            ");
   blk("  depth_control = false                                         ");
   blk("                                                                ");
