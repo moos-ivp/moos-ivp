@@ -45,7 +45,8 @@ public:
   std::string expandMacros(std::string);
 
 protected:
-  bool   handlConfigTurnParam(std::string, std::string);
+  bool   handleConfigTurnParam(std::string, std::string);
+  bool   handleConfigLegSpeed(std::string);
   bool   updateInfoIn();
   void   postStatusReport();
 
@@ -54,6 +55,7 @@ protected:
   void   postSteerPoints(bool active=true);
   void   postLegPoints(bool active=true);
   void   postTurnPreview(bool active=true);
+  void   postLegSpdsReport();
   void   eraseAllViewables();
 
   bool      initTurnPoints();
@@ -104,6 +106,12 @@ protected: // Config vars
   // Visual hints affecting properties of seglists/points
   HintHolder  m_hints;
 
+  std::vector<double> m_leg_spds;        // config var
+  int                 m_leg_spds_ix;     // state  var
+  double              m_leg_spds_curr;   // state  var
+  bool                m_leg_spds_repeat; // config var
+  bool                m_leg_spds_onturn; // config var
+  
 protected: // State vars
   std::string m_mode;
   std::string m_mode_pending;
@@ -127,7 +135,3 @@ protected: // State vars
 };
 
 #endif
-
-
-
-

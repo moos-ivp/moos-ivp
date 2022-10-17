@@ -65,7 +65,7 @@ XYPoint stringStandard2Point(const string& str)
   vector<string> mvector = parseString(str, ',');
   unsigned int i, vsize = mvector.size();
   
-  string x,y,z;
+  string x,y,z,trans;
   for(i=0; i<vsize; i++) {
     string param = biteStringX(mvector[i], '=');
     string value = mvector[i];
@@ -76,12 +76,17 @@ XYPoint stringStandard2Point(const string& str)
       y = value;
     else if(param == "z")
       z = value;
+    else if((param == "trans") && isNumber(value))
+      trans = value;
     else
       new_point.set_param(param, value);
   }
   
   if((x=="") || (y==""))
     return(null_point);
+
+  if(trans != "")
+    new_point.set_transparency(atof(trans.c_str()));
   
   new_point.set_vertex(atof(x.c_str()), atof(y.c_str()), atof(z.c_str()));
   

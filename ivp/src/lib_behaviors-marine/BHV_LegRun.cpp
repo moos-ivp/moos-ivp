@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng MIT Cambridge MA              */
+/*    ORGN: Dept of Mechanical Eng MIT                           */
 /*    FILE: BHV_LegRun.cpp                                       */
-/*    DATE: Nov 2004                                             */
+/*    DATE: Oct 2022                                             */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -42,8 +42,7 @@ using namespace std;
 //-----------------------------------------------------------
 // Procedure: Constructor
 
-BHV_LegRun::BHV_LegRun(IvPDomain gdomain) : 
-  IvPBehavior(gdomain)
+BHV_LegRun::BHV_LegRun(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
   // =================================================
   // Superclass vars
@@ -94,6 +93,9 @@ BHV_LegRun::BHV_LegRun(IvPDomain gdomain) :
   m_hints.setColor("turn_edge_color", "gray30");
   m_hints.setColor("turn_label_color", "off");
 
+  m_leg_spds_repeat = false;
+  m_leg_spds_onturn = false;
+  
   // =================================================
   // State Vars
   m_mid_event_yet   = false;
@@ -109,6 +111,9 @@ BHV_LegRun::BHV_LegRun(IvPDomain gdomain) :
   m_legang_req = -1;
   m_legang_mod_req = 0;
 
+  m_leg_spds_ix = -1;
+  m_leg_spds_curr = -1; // Neg means use cruise spd
+  
   m_mode = "leg1";
   // The completed and perpetual vars are initialized in superclass
   // but we initialize here just to be safe and clear.
@@ -135,6 +140,12 @@ bool BHV_LegRun::setParam(string param, string value)
     double maxv = m_domain.getVarHigh("speed");
     return(setDoubleRngOnString(m_cruise_speed, value, 0, maxv));
   }
+  else if(param == "leg_spds")
+    return(handleConfigLegSpeed(value));
+  else if(param == "leg_spds_repeat")
+    return(setBooleanOnString(m_leg_spds_repeat, value));
+  else if(param == "leg_spds_onturn")
+    return(setBooleanOnString(m_leg_spds_onturn, value));
   else if(param == "wpt_status_var")
     return(setStatusVarOnString(m_var_report, value));
   else if(param == "cycleflag") 
@@ -170,7 +181,7 @@ bool BHV_LegRun::setParam(string param, string value)
   else if(param == "mid_pct") 
     return(setDoubleStrictRngOnString(m_mid_pct, value, 0, 100));
   else if(strBegins(param, "turn"))
-    return(handlConfigTurnParam(param, value));
+    return(handleConfigTurnParam(param, value));
   
   else if(param == "leg_length")
     return(setPosDoubleOnString(m_leglen_req, value));
@@ -299,6 +310,7 @@ IvPFunction *BHV_LegRun::onRunState()
       ok = onRunStateTurnMode();
   }
 
+  postLegSpdsReport();
   postMessage("LEGRUN_MODE", m_mode);
   if(!ok)
     return(0);
@@ -408,13 +420,35 @@ void BHV_LegRun::handleModeSwitch()
       m_leg_count2++;
     initTurnPoints();  
     m_mid_event_yet = false;
+
+    // Revert to cruise_speed if not using leg spds on turning
+    if(!m_leg_spds_onturn)
+      m_leg_spds_curr = -1;
   }
+
+
+
   // Transistion from turn to leg1
   else if(m_mode_pending == "leg") {
     if(m_leg_count1 == m_leg_count2)
       m_mode = "leg1";
     else
       m_mode = "leg2";
+
+    m_leg_spds_curr = -1;
+    if(m_leg_spds.size() > 0) {
+      m_leg_spds_ix++;
+
+      if(m_leg_spds_ix >= (int)(m_leg_spds.size())) {
+	if(m_leg_spds_repeat)
+	  m_leg_spds_ix = 0;
+	else
+	  m_leg_spds_ix = -1;
+      }
+
+      if(m_leg_spds_ix >= 0)
+	m_leg_spds_curr = m_leg_spds[m_leg_spds_ix];
+    }
   }
 
   cout << "new leg curr index: " << m_wpteng_legs.getCurrIndex() << endl;
@@ -483,8 +517,13 @@ IvPFunction *BHV_LegRun::buildOF()
   // ========================================
   // Part 1: Build the Speed ZAIC
   // ========================================
+
+  double now_speed = m_cruise_speed;
+  if(m_leg_spds_curr > 0)
+    now_speed = m_leg_spds_curr;
+
   ZAIC_SPD spd_zaic(m_domain, "speed");
-  spd_zaic.setParams(m_cruise_speed, 0.1, m_cruise_speed+0.4, 70, 20);
+  spd_zaic.setParams(now_speed, 0.1, now_speed+0.4, 70, 20);
   spd_ipf = spd_zaic.extractIvPFunction();
   if(!spd_ipf)
     postWMessage("Failure on the SPD ZAIC via ZAIC_SPD utility");
@@ -821,9 +860,74 @@ void BHV_LegRun::eraseAllViewables()
 
 
 //-----------------------------------------------------------
+// Procedure: handleConfigLegSpeed()
+
+bool BHV_LegRun::handleConfigLegSpeed(string str)
+{
+  str = tolower(removeWhite(str));
+  
+  // Part 1: Handle clearing the leg_spds vector
+  if(str == "clear") {
+    m_leg_spds.clear();
+    m_leg_spds_ix = 0;
+    return(true);
+  }
+  
+  // Part 2: Handle resetting the speeds vector
+  if(str == "reset") {
+    m_leg_spds_ix = 0;
+    return(true);
+  }
+  
+  // Part 3: Handle replacing the speeds vector
+  if(strBegins(str, "replace,")) {
+    m_leg_spds.clear();
+    m_leg_spds_ix = 0;
+    biteString(str, ',');
+  }
+  
+  double max_spd = m_domain.getVarHigh("speed");
+
+  vector<double> new_leg_spds;
+  
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+
+    if(strContains(svector[i], ":")) {
+      string amt_str = biteString(svector[i], ':');
+      string spd_str = svector[i];
+      if(!isNumber(amt_str) || !isNumber(spd_str))
+	return(false);
+      int ival = atoi(amt_str.c_str());
+      if(ival <= 0)
+	return(false);
+      double spd = atof(spd_str.c_str());
+      if((spd < 0) || (spd > max_spd))
+	return(false);
+      for(int j=0; j<ival; j++)
+	new_leg_spds.push_back(spd);
+    }
+    else {
+      string spd_str = svector[i];
+      if(!isNumber(spd_str))
+	return(false);
+      double spd = atof(spd_str.c_str());
+      if((spd < 0) || (spd > max_spd))
+	return(false);
+      new_leg_spds.push_back(spd);
+    }	
+  }
+
+  for(unsigned int i=0; i<new_leg_spds.size(); i++) {
+    m_leg_spds.push_back(new_leg_spds[i]);
+  }
+  return(true);
+}
+
+//-----------------------------------------------------------
 // Procedure: handleConfigTurnParam()
 
-bool BHV_LegRun::handlConfigTurnParam(string param, string val)
+bool BHV_LegRun::handleConfigTurnParam(string param, string val)
 {
   double dval = atof(val.c_str());
 
@@ -1014,6 +1118,32 @@ void BHV_LegRun::postConfigStatus()
 }
 
 //-----------------------------------------------------------
+// Procedure: postLegSpdsReport()
+
+void BHV_LegRun::postLegSpdsReport()
+{
+  string str = "vname=" + m_us_name;
+  if(m_leg_spds_curr >= 0)
+    str += ",cruise=" + doubleToStringX(m_cruise_speed);
+  else
+    str += ",cruise=[" + doubleToStringX(m_cruise_speed) + "]";
+
+  for(unsigned int i=0; i<m_leg_spds.size(); i++) {
+    if(i==0)
+      str += ",legs=";
+    else
+      str += ",";
+
+    if((m_leg_spds_ix == (int)(i)) && (m_leg_spds_curr >= 0))
+      str += "[" + doubleToStringX(m_leg_spds[i]) + "]";
+    else
+      str += "" + doubleToStringX(m_leg_spds[i]);
+  }
+  
+  postMessage("LEG_SPDS_REP", str);
+}
+
+//-----------------------------------------------------------
 // Procedure: expandMacros()
 
 string BHV_LegRun::expandMacros(string sdata)
@@ -1049,4 +1179,3 @@ string BHV_LegRun::expandMacros(string sdata)
   
   return(sdata);
 }
-

@@ -42,7 +42,7 @@ XYObject::XYObject()
   m_edge_size    = -1;
   m_transparency = 0;
   m_duration     = -1;
-
+  
   m_time_set         = false;
   m_transparency_set = false;
   m_duration_set     = false;

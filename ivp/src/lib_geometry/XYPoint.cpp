@@ -32,7 +32,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: clear
+// Procedure: clear()
 
 void XYPoint::clear()
 {
@@ -42,10 +42,11 @@ void XYPoint::clear()
   m_y     = 0; 
   m_z     = 0; 
   m_valid = false;
+  m_pt_trans = 0;
 }
 
 //---------------------------------------------------------------
-// Procedure: set_spec_digits
+// Procedure: set_spec_digits()
 //      Note: Determines the number of significant digits used when
 //            creating the string representation of the point. It
 //            affects only the x,y,z parameters.
@@ -58,7 +59,7 @@ void XYPoint::set_spec_digits(unsigned int digits)
 }
 
 //---------------------------------------------------------------
-// Procedure: apply_snap
+// Procedure: apply_snap()
 
 void XYPoint::apply_snap(double snapval)
 {
@@ -68,8 +69,19 @@ void XYPoint::apply_snap(double snapval)
 }
 
 //---------------------------------------------------------------
-// Procedure: projectPt
-//   Purpose: 
+// Procedure: set_pt_trans()
+
+void XYPoint::set_pt_trans(double dval)
+{
+  if(dval < 0)
+    dval = 0;
+  else if(dval > 1)
+    dval = 1;
+  m_pt_trans = dval;
+}
+
+//---------------------------------------------------------------
+// Procedure: projectPt()
 
 void XYPoint::projectPt(const XYPoint& pt, double ang, double dist)
 {
@@ -91,6 +103,10 @@ string XYPoint::get_spec(string param) const
   if(m_z != 0)
     spec += ",z=" + doubleToStringX(m_z, m_sdigits);
 
+  // Point transparency is inferred to be zero
+  if(m_pt_trans != 0)
+    spec += ",trans=" + doubleToStringX(m_pt_trans, 2);
+  
   string remainder = XYObject::get_spec(param);
   if(remainder != "")
     spec += "," + remainder;

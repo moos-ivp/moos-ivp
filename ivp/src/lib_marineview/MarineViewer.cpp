@@ -3246,7 +3246,8 @@ void MarineViewer::drawPoint(const XYPoint& point)
     vert_c = point.get_color("vertex");
   if(point.vertex_size_set())
     vertex_size = point.get_vertex_size();
-
+  double pt_trans = point.get_pt_trans();
+  
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, w(), 0, h(), -1 ,1);
@@ -3277,7 +3278,10 @@ void MarineViewer::drawPoint(const XYPoint& point)
 
   if(vert_c.visible()) {
     glPointSize(vertex_size);
-    glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu()); 
+    if(pt_trans == 0)
+      glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu()); 
+    else
+      glColor4f(vert_c.red(), vert_c.grn(), vert_c.blu(), pt_trans); 
     glEnable(GL_POINT_SMOOTH);
     glBegin(GL_POINTS);
     glVertex2f(px, py);
