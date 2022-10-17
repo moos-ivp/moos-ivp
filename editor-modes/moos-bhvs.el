@@ -29,12 +29,11 @@
 
        '("BHV_AvdColregsV22" "post_mapping" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "giveway_bow_dist" "use_refinery" "check_plateaus" "check_validity" "pcheck_thresh" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "exit_on_filter_region" "headon_only" "velocity_filter" )
        
-       '("BHV_LegRun" "vx1" "vx2" "speed" "wpt_status_var" "wptflag"  "cycleflag" "legflag" "midflag" "warn_overshoot"  "lead" "lead_damper"
-	 "capture_line" "repeat"  "visual_hints" "radius" "capture_radius" "slip_radius" "midpct" "leg_length" "leg_length_mod" "patience"
-	 "turn1_dir" "turn1_rad" "turn1_bias" "turn2_dir" "turn2_rad" "turn2_bias" "turn_rad_min" "turn1_rad_mod" "turn2_rad_mod" "turn_rad_mod" 
-	 "turn1_bias_mod" "turn2_bias_mod" "turn_bias_mod" "visual_hints")
+       '("BHV_LegRun" "vx1" "vx2" "speed" "wpt_status_var" "wptflag"  "cycleflag" "legflag" "midflag" "warn_overshoot"  "lead" "lead_damper" "capture_line" "repeat"  "visual_hints" "radius" "capture_radius" "slip_radius" "midpct" "leg_length" "leg_length_mod" "patience" "turn1_dir" "turn1_rad" "turn1_bias" "turn2_dir" "turn2_rad" "turn2_bias" "turn_rad_min" "turn1_rad_mod" "turn2_rad_mod" "turn_rad_mod" "turn1_bias_mod" "turn2_bias_mod" "turn_bias_mod""mid_pct" "leg_spds" "visual_hints")
 	 	 
        '("BHV_ZigZag" "speed" "stem_hdg" "stem_on_active" "hdg_thresh" "fierce_zigging" "zig_angle" "zig_first" "max_zig_legs" "max_zig_zags" "visual_hints")
+	 
+       '("BHV_FullStop" "mark_duration" "stop_thresh" "mark_flag" "unmark_flag" "visual_hints")
 	 
        '("BHV_Convoy" "post_mapping" "contact" "radius" "nm_radius" "max_mark_range" "cruise_speed" "spd_max" "spd_slower" "spd_faster" "rng_estop" "range_estop" "rng_tgating" "range_tailgating" "rng_lagging" "range_lagging" "inter_mark_range")
 
