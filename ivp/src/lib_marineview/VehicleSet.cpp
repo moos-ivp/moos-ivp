@@ -162,6 +162,7 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
   string vname = g_vname;  
   if(vname == "active")
     vname = m_vehicles_active_name;
+
   else if(vname == "center_vehicle")
     vname = m_vehicles_center_name;
 
@@ -184,12 +185,18 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
     extrapolator.setPosition(record.getX(), record.getY(),
 			     record.getSpeed(), record.getHeading(),
 			     record.getTimeStamp());
+
     double new_x, new_y;
     bool ok = extrapolator.getPosition(new_x, new_y, m_curr_time);
-    if(ok && ((info_type == "xpos") || (info_type == "meters_x")))
-      return(new_x);
-    if(ok && ((info_type == "ypos") || (info_type == "meters_y")))
-      return(new_y);
+
+    if(ok && ((info_type == "xpos") || (info_type == "meters_x"))) {
+      result = new_x;
+      return(true);
+    }
+    if(ok && ((info_type == "ypos") || (info_type == "meters_y"))) {
+      result = new_y;
+      return(true);
+    }
   }
     
   double node_local_time = 0;
@@ -219,6 +226,7 @@ bool VehicleSet::getDoubleInfo(const string& g_vname,
     result = m_curr_time;
   else
     return(false);
+
   return(true);
 }
 
