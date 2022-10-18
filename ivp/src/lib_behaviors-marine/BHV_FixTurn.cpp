@@ -179,7 +179,7 @@ IvPFunction *BHV_FixTurn::buildOF()
     postWMessage("Failure on the SPD ZAIC component");
 
 
-
+ 
   //===================================================
   // Part 2A: Determine the Delta (Mod) Heading
   //===================================================
@@ -193,6 +193,22 @@ IvPFunction *BHV_FixTurn::buildOF()
   }
   
   //===================================================
+  // Part 2B: Determine the Turn direction
+  //===================================================
+  // By default just use the configured turn direction
+  bool port_turn = m_port_turn;
+  // If there is explicit turn_dir schedule, use this
+  if(m_curr_tix < m_turn_dirs.size()) {
+    string turn_dir = m_turn_dirs[m_curr_tix];
+    if(turn_dir == "port")
+      port_turn = true;
+    else if(turn_dir == "star")
+      port_turn = false;
+    else if(turn_dir == "auto")
+      port_turn = m_port_turn;
+  }
+  
+ //===================================================
   // Part 2: Build the Heading ZAIC
   //===================================================
   double hdg = m_osh;
@@ -241,6 +257,7 @@ IvPFunction *BHV_FixTurn::onRunState()
   bool done = handleNewHdg();
   if(done) {
     setComplete();
+    m_curr_tix++;
     //postBeginPoint(false);
     if(m_perpetual)
       resetState();
@@ -370,10 +387,12 @@ bool BHV_FixTurn::setState(std::string str)
 
 //-----------------------------------------------------------
 // Procedure: handleConfigTurnSpec()
-//  Examples: spd=3.5, mhdg=25
-//            clearall, spd=3.5, mhdg=25
+//  Examples: spd=3.5, mhdg=25, turn=port
+//            clearall, spd=3.5, mhdg=25, turn=star
+//            3.5, 25, port
 //            3.5, 25
 //            clearall, 3.5, 25
+//            clearall, 3.5, 25, star
 
 bool BHV_FixTurn::handleConfigTurnSpec(string spec)
 {
@@ -396,6 +415,7 @@ bool BHV_FixTurn::handleConfigTurnSpec(string spec)
 
   double new_spd = -1;
   double new_mhdg = -1;
+  string new_tdir = "auto";
 
   vector<string> svector = parseString(spec, ',');  
   
@@ -423,6 +443,14 @@ bool BHV_FixTurn::handleConfigTurnSpec(string spec)
 	else
 	  new_mhdg = atof(str.c_str());
       }
+      else if(i==2) {
+	if((str != "auto") && (str != "port") &&
+	   (str != "star") && (str != "starboard"))
+	  return(false);
+	if(str == "starboard")
+	  str = "star";
+	new_tdir = str;
+      }
       else
 	return(false);
     }
@@ -449,6 +477,15 @@ bool BHV_FixTurn::handleConfigTurnSpec(string spec)
 	else
 	  new_mhdg = atof(value.c_str());
       }
+      else if(param == "turn") {
+	if((value != "auto") && (value != "port") &&
+	   (value != "star") && (value != "starboard"))
+	  return(false);
+	if(value == "starboard")
+	  value = "star";
+	new_tdir = value;
+
+      }
       else
 	return(false);
     }
@@ -456,6 +493,7 @@ bool BHV_FixTurn::handleConfigTurnSpec(string spec)
 
   m_turn_hdgs.push_back(new_mhdg);
   m_turn_spds.push_back(new_spd);
+  m_turn_dirs.push_back(new_tdir);
 
   return(true);
 }

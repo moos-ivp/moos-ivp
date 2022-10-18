@@ -68,6 +68,7 @@ protected:
   unsigned int        m_curr_tix;  // Curr Turn Index
   std::vector<double> m_turn_hdgs;
   std::vector<double> m_turn_spds;
+  std::vector<std::string> m_turn_dirs;
   
   // Visual hints affecting properties of seglists/points
   HintHolder m_hints;
