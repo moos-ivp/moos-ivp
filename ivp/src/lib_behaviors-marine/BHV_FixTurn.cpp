@@ -212,7 +212,7 @@ IvPFunction *BHV_FixTurn::buildOF()
   // Part 2: Build the Heading ZAIC
   //===================================================
   double hdg = m_osh;
-  if(m_port_turn)
+  if(port_turn)
     hdg = angle360(hdg - mod_hdg);
   else
     hdg = angle360(hdg + mod_hdg);
