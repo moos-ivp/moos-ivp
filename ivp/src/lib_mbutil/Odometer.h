@@ -31,18 +31,24 @@ class Odometer {
   Odometer();
   ~Odometer() {}
 
+  void   setXY(double, double);
   void   setX(double);
   void   setY(double);
 
-  void   reset();
+  void   reset(double utc=0);
   
   void   pause()   {m_paused = true;}
   void   unpause() {m_paused = false;}
   
+  void   updateTime(double);
   void   updateDistance();
+  void   updateDistance(double x, double y);
 
   bool   isPaused() const     {return(m_paused);}
   double getTotalDist() const {return(m_total_distance);}
+
+  double getTotalElapsed(double utc=-1);
+
   
  private: // State variables
 
@@ -51,8 +57,12 @@ class Odometer {
   double m_prev_x;
   double m_prev_y;
 
+  double m_curr_utc;
+  double m_start_utc;
+  
   bool   m_nav_x_received;
   bool   m_nav_y_received;
+
   double m_total_distance;
 
   bool   m_paused;

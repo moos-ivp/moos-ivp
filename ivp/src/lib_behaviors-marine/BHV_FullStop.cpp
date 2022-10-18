@@ -189,6 +189,9 @@ IvPFunction *BHV_FullStop::buildOF()
   if(!crs_ipf) 
     postWMessage("Failure on the CRS ZAIC");
 
+  //===================================================
+  // Part 3: Build the Coupled Heading/Speed IvP Function
+  //===================================================
   OF_Coupler coupler;
   ipf = coupler.couple(crs_ipf, spd_ipf, 50, 50);
   if(!ipf)

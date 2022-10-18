@@ -42,18 +42,31 @@ Odometer::Odometer()
 //-----------------------------------------------------------
 // Procedure: reset()
 
-void Odometer::reset()
+void Odometer::reset(double utc)
 {
   m_curr_x = 0;
   m_curr_y = 0;
   m_prev_x = 0;
   m_prev_y = 0;
 
+  m_curr_utc  = utc;
+  m_start_utc = utc;
+
   m_nav_x_received = false;
   m_nav_y_received = false;  
+
   m_total_distance = 0;
 }
 
+
+//-----------------------------------------------------------
+// Procedure: setXY()
+
+void Odometer::setXY(double xval, double yval)
+{
+  setX(xval);
+  setY(yval);
+}
 
 //-----------------------------------------------------------
 // Procedure: setX()
@@ -81,6 +94,46 @@ void Odometer::setY(double dval)
     m_prev_y = m_curr_y;
 
   m_nav_y_received = true;
+}
+
+//-----------------------------------------------------------
+// Procedure: updateTime()
+//      Note: Universal Time Coordinated (UTC)
+
+void Odometer::updateTime(double utc)
+{
+  if(m_start_utc == 0)
+    m_start_utc = utc;
+  m_curr_utc = utc;
+}
+
+//-----------------------------------------------------------
+// Procedure: getTotalElapsed()
+//      Note: If given a valid utc (>0) then update time first
+
+double Odometer::getTotalElapsed(double dval)
+{
+  if(dval > 0)
+    updateTime(dval);
+  
+  return(m_curr_utc - m_start_utc);
+}
+
+//-----------------------------------------------------------
+// Procedure: updateDistance()
+
+void Odometer::updateDistance(double x, double y)
+{
+  setXY(x,y);
+  
+  if(!m_paused) {
+    double xdelta = m_curr_x - m_prev_x;
+    double ydelta = m_curr_y - m_prev_y;
+    m_total_distance += hypot(xdelta, ydelta);
+  }
+  
+  m_prev_x = m_curr_x;
+  m_prev_y = m_curr_y;
 }
 
 //-----------------------------------------------------------

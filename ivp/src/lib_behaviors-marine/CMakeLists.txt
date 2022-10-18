@@ -38,6 +38,7 @@ SET(SRC
   BHV_LegRun.cpp
   BHV_ZigZag.cpp
   BHV_FullStop.cpp
+  BHV_FixTurn.cpp
   BHV_HSLine.cpp
   BHV_HeadingChange.cpp
   BHV_HeadingBias.cpp
@@ -80,6 +81,7 @@ SET(HEADERS
   BHV_LegRun.h
   BHV_ZigZag.h
   BHV_FullStop.h
+  BHV_FixTurn.h
   BHV_BearingLine.h
   BHV_TestFailure.h
 ) 
