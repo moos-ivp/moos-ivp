@@ -29,7 +29,7 @@
 
        '("BHV_AvdColregsV22" "post_mapping" "pwt_outer_dist" "pwt_inner_dist" "completed_dist" "min_util_cpa_dist" "max_util_cpa_dist" "turn_radius" "avoid_mode" "avoid_submode" "no_alert_request" "contact_type_required" "pwt_grade" "giveway_bow_dist" "use_refinery" "check_plateaus" "check_validity" "pcheck_thresh" "bearing_line_config" "contact" "on_no_contact_ok" "extrapolate" "decay" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "exit_on_filter_region" "headon_only" "velocity_filter" )
        
-       '("BHV_LegRun" "vx1" "vx2" "speed" "wpt_status_var" "wptflag"  "cycleflag" "legflag" "midflag" "warn_overshoot"  "lead" "lead_damper" "capture_line" "repeat"  "visual_hints" "radius" "capture_radius" "slip_radius" "midpct" "leg_length" "leg_length_mod" "patience" "turn1_dir" "turn1_rad" "turn1_bias" "turn2_dir" "turn2_rad" "turn2_bias" "turn_rad_min" "turn1_rad_mod" "turn2_rad_mod" "turn_rad_mod" "turn1_bias_mod" "turn2_bias_mod" "turn_bias_mod""mid_pct" "leg_spds" "visual_hints")
+       '("BHV_LegRun" "vx1" "vx2" "speed" "wpt_status_var" "wptflag"  "cycleflag" "legflag" "midflag" "warn_overshoot"  "lead" "lead_damper" "capture_line" "repeat"  "visual_hints" "radius" "capture_radius" "slip_radius" "midpct" "leg_length" "leg_length_mod" "patience" "turn1_dir" "turn1_rad" "turn1_bias" "turn2_dir" "turn2_rad" "turn2_bias" "turn_rad_min" "turn1_rad_mod" "turn2_rad_mod" "turn_rad_mod" "turn1_bias_mod" "turn2_bias_mod" "turn_bias_mod""mid_pct" "leg_spds" "shift_pt" "shift_point" "visual_hints")
 	 	 
        '("BHV_ZigZag" "speed" "stem_hdg" "stem_on_active" "hdg_thresh" "fierce_zigging" "zig_angle" "zig_first" "max_zig_legs" "max_zig_zags" "visual_hints")
 	 
@@ -74,5 +74,7 @@
        '("BHV_AndersonTurn" "default_turn_thresh" "default_turn_points" "default_turn_radius" "default_capture_radius" "engage_var" )
 
        '("BHV_MusterX" "capture_radius" "activate_radius" "speed" "stale_nav_thresh" "muster_region" "setpt_method" "capture_flag" "region_in_flag" "region_out_flag" "visual_hints" "heading_policy" "muster_region_label" "auto_complete" )
+
+       '("BHV_FixTurn" "fix_turn" "mod_hdg" "turn_dir" "visual_hints" "speed" "stale_nav_thresh" )
 
        '("BHV_AvoidCollision" "post_mapping" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "bearing_lines" "completed_dist" "max_util_cpa_dist" "min_util_cpa_dist" "no_alert_request" "contact_type_required" "on_no_contact_ok" "pwt_grade" "pwt_inner_dist" "pwt_outer_dist" "match_contact_group" "ignore_contact_group" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "use_refinery" "bearing_line_label_show" "exit_on_filter_region")))
