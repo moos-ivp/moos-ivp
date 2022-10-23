@@ -2274,3 +2274,46 @@ bool modSegAng(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
   return(true);
 }
   
+//---------------------------------------------------------------
+// Procedure: modSegLoc()
+
+bool modSegLoc(double x1, double y1, double x2, double y2,
+	       double& rx1, double& ry1, double& rx2, double& ry2,
+	       double cx, double cy)
+{
+  double curr_len = hypot(x1-x2, y1-y2);
+  if(curr_len == 0)
+    return(false);
+
+  double angle = relAng(x1,y1, x2,y2);
+
+  projectPoint(angle+180, curr_len/2, cx,cy, rx1,ry1);
+  projectPoint(angle, curr_len/2, cx,cy, rx2,ry2);
+  
+  return(true);
+}
+  
+//---------------------------------------------------------------
+// Procedure: modSegLoc()
+
+bool modSegLoc(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
+	       XYPoint ctr)
+{
+  double x1 = p1.x();
+  double y1 = p1.y();
+  double x2 = p2.x();
+  double y2 = p2.y();
+  double cx = ctr.x();
+  double cy = ctr.y();
+  
+  double rx1, ry1, rx2, ry2;
+  bool ok = modSegLoc(x1,y1, x2,y2, rx1,ry1, rx2,ry2, cx, cy);
+  if(!ok)
+    return(false);
+  
+  rp1.set_vertex(rx1, ry1);
+  rp2.set_vertex(rx2, ry2);
+
+  return(true);
+}
+  

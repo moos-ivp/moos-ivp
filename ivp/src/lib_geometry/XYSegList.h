@@ -122,7 +122,8 @@ protected:
   EdgeTagSet m_edge_tags;
   
   double   m_transparency;
-
 };
+
+std::string getSeglSpecInactive(std::string label);
 
 #endif

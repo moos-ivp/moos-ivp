@@ -190,6 +190,13 @@ bool modSegAng(double x1, double y1, double x2, double y2,
 bool modSegAng(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
 	       double new_angle);
 
+bool modSegLoc(double x1, double y1, double x2, double y2,
+	       double& rx1, double& ry1, double& rx2, double& ry2,
+	       double cx, double cy);
+
+bool modSegLoc(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
+	       XYPoint center);
+
 
 
 // DEPRECATED INTERFACES

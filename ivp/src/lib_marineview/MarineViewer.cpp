@@ -403,7 +403,7 @@ bool MarineViewer::applyTiffFiles()
 
   for(unsigned int ix=0; ix<cnt; ix++) {
     m_back_imgs[ix].readTiff(m_tif_files[ix]);
-    m_back_imgs[ix].printTerse();
+    //m_back_imgs[ix].printTerse();
     
     unsigned char* img_data = m_back_imgs[ix].get_img_data();
     unsigned int   img_width  = m_back_imgs[ix].get_img_pix_width();

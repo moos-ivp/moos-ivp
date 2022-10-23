@@ -1117,20 +1117,10 @@ void XYSegList::rotate_pt(double deg, double cx, double cy,
   py = ny;
 }
 
+//---------------------------------------------------------------
+// Procedure: getSeglSpecInactive()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+string getSeglSpecInactive(string label)
+{
+  return("pts={0,0:9,0:0,9},active=false,label=" + label); 
+}

@@ -130,5 +130,3 @@ string XYPoint::get_spec_inactive() const
   return(spec);
 }
 
-
-
