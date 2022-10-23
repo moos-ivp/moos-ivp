@@ -52,12 +52,15 @@ protected:
   double   m_stem_utc;
   XYPoint  m_begin_pt;
   double   m_max_dist_to_begin_pt;
+  double   m_completed_utc;
+  bool     m_completion_pending;
   
  private: // Config params
   double   m_mark_duration;
   double   m_stop_thresh;
+  double   m_delay_complete;
   double   m_stale_nav_thresh;
-
+  
   // Event flags unique to this behavior
   std::vector<VarDataPair> m_mark_flags;
   std::vector<VarDataPair> m_unmark_flags;

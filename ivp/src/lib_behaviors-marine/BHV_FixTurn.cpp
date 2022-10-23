@@ -45,11 +45,13 @@ BHV_FixTurn::BHV_FixTurn(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_port_turn  = true;
   
   m_stale_nav_thresh = 5;  // seconds
-
+  m_schedule_repeat  = false;
+  
   // Cruise speed of -1 means use os speed when activated
-  m_cruise_speed       = 1; // meters/sec
+  m_cruise_speed = 1; // meters/sec
   
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
+  addInfoVars("DESIRED_RUDDER");
 }
 
 //-----------------------------------------------------------
@@ -64,6 +66,12 @@ void BHV_FixTurn::resetState()
   m_stem_spd = 0;
   m_stem_utc = 0;
   m_hdg_delta_sofar = 0;
+  m_curr_rudder = 0;
+
+  vector<XYPoint> new_mark_pts(360);
+  m_mark_pts    = new_mark_pts;
+
+  m_mark_rudder.clear();
 }
 
 //-----------------------------------------------------------
@@ -91,6 +99,17 @@ bool BHV_FixTurn::setParam(string param, string value)
     handled = handleConfigTurnSpec(value);
   else if(param == "stale_nav_thresh")
     handled = setPosDoubleOnString(m_stale_nav_thresh, value);
+  else if(param == "radius_rep_var")
+    handled = setNonWhiteVarOnString(m_radius_rep_var, value);
+  else if(param == "schedule") {
+    handled = true;
+    if(tolower(value) == "repeat")
+      m_schedule_repeat = true;
+    else if(tolower(value) == "norepeat")
+      m_schedule_repeat = false;
+    else
+      handled = false;
+  }
   else if(param == "visual_hints")  
     return(m_hints.setHints(value));
   else
@@ -104,38 +123,62 @@ bool BHV_FixTurn::setParam(string param, string value)
 
 bool BHV_FixTurn::handleNewHdg()
 {
-  // Part 1: If in stem state, pick a side and set a heading 
+  // =====================================================
+  // Part 1: If in stem state, pick a side and set stems
+  // =====================================================
   if(m_state == "stem") {
-    if(m_port_turn)
-      setState("port");
-    else
-      setState("star");
-
+    setState("turning");    
     m_osh_prev = m_osh;
     m_stem_hdg = m_osh;
     m_stem_spd = m_osv;
     m_stem_utc = getBufferCurrTime();
     m_hdg_delta_sofar = 0;
-    m_odometer.reset(m_stem_utc);      
+    m_odometer.reset(m_stem_utc);
+    clearTurnVisuals();
   }
 
+  // =====================================================
+  // Part 2: Det hdg direction apply to total hdg_delta
+  // =====================================================
   double hdg_delta = angleDiff(m_osh_prev, m_osh);
+
   if(hdg_delta > 0) {
     bool delta_port = true;
-    if(angle360(m_osh_prev - m_osh) > angle360(m_osh - m_osh_prev))
+    if((m_osh > m_osh_prev) || ((m_osh_prev - m_osh) > 180))
       delta_port = false;
 
-    if(m_port_turn != delta_port)
-      hdg_delta = -hdg_delta;
+    if((getCurrTurnDir() == "port") && !delta_port)
+      hdg_delta = -hdg_delta;    
+    if((getCurrTurnDir() == "star") && delta_port)
+      hdg_delta = -hdg_delta;    
 
     m_hdg_delta_sofar += hdg_delta;
+
+    int hdg_360 = (int)(angle360(m_hdg_delta_sofar));
+
+    // ===================================================
+    // Part 2B Process hdg into saved history
+    // ===================================================
+    // safety double check values and array dimension
+    if((hdg_360 >= 0) && (hdg_360 < 360) && (m_mark_pts.size() == 360)) {
+      XYPoint mark_pt(m_osx, m_osy);
+      if(m_mark_pts[hdg_360].valid()) {
+	XYPoint mid_pt = midPoint(m_mark_pts[hdg_360], mark_pt);
+	m_mark_pts[hdg_360] = mid_pt;
+      }
+      else
+	m_mark_pts[hdg_360] = mark_pt;
+    }
+
+    m_mark_rudder.push_front(m_curr_rudder);
   }
+
   m_osh_prev = m_osh;
   
   // ========================================================
-  // Part 2: Check if turn is still in progress
+  // Part 3: Check if turn is still in progress
   // ========================================================
-  if(m_hdg_delta_sofar < m_fix_turn)
+  if(m_hdg_delta_sofar < getCurrFixTurn())
     return(false);
 
   setState("stem");
@@ -154,23 +197,9 @@ IvPFunction *BHV_FixTurn::buildOF()
     return(0);
   
   //===================================================
-  // Part 1A: Determine the Set Speed
-  //===================================================
-  // By default just use the configured cruise speed
-  double spd = m_cruise_speed;
-  // If cruise_speed set to auto or -1, use stem speed
-  if(m_cruise_speed < 0)
-    spd = m_stem_spd;
-  // If there is explicit spd schedule, this spd prevails
-  if(m_curr_tix < m_turn_spds.size()) {
-    double scheduled_turn_spd = m_turn_spds[m_curr_tix];
-    if(scheduled_turn_spd > 0)
-      spd = scheduled_turn_spd;
-  }
-
-  //===================================================
   // Part 1: Build the Speed ZAIC
   //===================================================
+  double spd = getCurrTurnSpd();
   ZAIC_SPD spd_zaic(m_domain, "speed");
   spd_zaic.setParams(spd, 0.1, spd+0.4, 85, 20);  
 
@@ -178,41 +207,12 @@ IvPFunction *BHV_FixTurn::buildOF()
   if(!spd_ipf)
     postWMessage("Failure on the SPD ZAIC component");
 
-
- 
   //===================================================
-  // Part 2A: Determine the Delta (Mod) Heading
+  // Part 2B: Build the Heading ZAIC
   //===================================================
-  // By default just use the configured cruise speed
-  double mod_hdg = m_mod_hdg;
-  // If there is explicit mhdg schedule, this mhdg prevails
-  if(m_curr_tix < m_turn_hdgs.size()) {
-    double scheduled_mod_hdg = m_turn_hdgs[m_curr_tix];
-    if(scheduled_mod_hdg > 0)
-      mod_hdg = scheduled_mod_hdg;
-  }
-  
-  //===================================================
-  // Part 2B: Determine the Turn direction
-  //===================================================
-  // By default just use the configured turn direction
-  bool port_turn = m_port_turn;
-  // If there is explicit turn_dir schedule, use this
-  if(m_curr_tix < m_turn_dirs.size()) {
-    string turn_dir = m_turn_dirs[m_curr_tix];
-    if(turn_dir == "port")
-      port_turn = true;
-    else if(turn_dir == "star")
-      port_turn = false;
-    else if(turn_dir == "auto")
-      port_turn = m_port_turn;
-  }
-  
- //===================================================
-  // Part 2: Build the Heading ZAIC
-  //===================================================
+  double mod_hdg = getCurrModHdg();
   double hdg = m_osh;
-  if(port_turn)
+  if(getCurrTurnDir() == "port")
     hdg = angle360(hdg - mod_hdg);
   else
     hdg = angle360(hdg + mod_hdg);
@@ -249,6 +249,8 @@ IvPFunction *BHV_FixTurn::onRunState()
   if(!updateOSPos() || !updateOSHdg() || !updateOSSpd())
     return(0);
 
+  m_curr_rudder = getBufferDoubleVal("DESIRED_RUDDER");
+  
   // Part 2: Update the Odometer
   m_odometer.updateDistance(m_osx, m_osy);
   m_odometer.updateTime(getBufferCurrTime());
@@ -256,8 +258,12 @@ IvPFunction *BHV_FixTurn::onRunState()
   // Part 3: Process new heading info and check for done
   bool done = handleNewHdg();
   if(done) {
+    postTurnCompleteReport();
     setComplete();
     m_curr_tix++;
+    if(m_schedule_repeat && (m_curr_tix >= m_turn_hdgs.size()))
+      m_curr_tix = 0;
+
     //postBeginPoint(false);
     if(m_perpetual)
       resetState();
@@ -377,11 +383,11 @@ bool BHV_FixTurn::updateOSSpd(string fail_action)
 bool BHV_FixTurn::setState(std::string str)
 {
   str = tolower(str);
-  if((str != "stem") && (str != "port") && (str != "star"))
+  if((str != "stem") && (str != "turning"))
     return(false);
   
   m_state = str;
-
+  
   return(true);
 }
 
@@ -397,7 +403,10 @@ bool BHV_FixTurn::setState(std::string str)
 bool BHV_FixTurn::handleConfigTurnSpec(string spec)
 {
   spec = tolower(stripBlankEnds(spec));
-  
+
+  // ===============================================
+  // Part 1: Handle any clearing preamble
+  // ===============================================
   if((spec == "clearall") || (spec == "clear")) {
     m_turn_spds.clear();
     m_turn_hdgs.clear();
@@ -413,17 +422,23 @@ bool BHV_FixTurn::handleConfigTurnSpec(string spec)
     biteString(spec, ',');
   }
 
-  double new_spd = -1;
+  double new_spd  = -1;
   double new_mhdg = -1;
+  double new_fixh = -1;
   string new_tdir = "auto";
 
   vector<string> svector = parseString(spec, ',');  
   
+  // ===============================================
+  // Part 2: Determine if format is terse or verbose
+  // ===============================================
   bool terse_style = true;
   if(strContains(spec, "="))
     terse_style = false;
 
-  // Handle Terse Style of Configuration
+  // ===============================================
+  // Part 3: Handle Terse Style of Configuration
+  // ===============================================
   if(terse_style) {
     for(unsigned int i=0; i<svector.size(); i++) {
       string str = svector[i];
@@ -444,6 +459,14 @@ bool BHV_FixTurn::handleConfigTurnSpec(string spec)
 	  new_mhdg = atof(str.c_str());
       }
       else if(i==2) {
+	if(str == "auto")
+	  new_fixh = -1;
+	else if(!isNumber(str))
+	  return(false);
+	else
+	  new_fixh = atof(str.c_str());
+      }
+      else if(i==3) {
 	if((str != "auto") && (str != "port") &&
 	   (str != "star") && (str != "starboard"))
 	  return(false);
@@ -456,7 +479,9 @@ bool BHV_FixTurn::handleConfigTurnSpec(string spec)
     }
   }
     
-  // Handle Verbose Style of Configuration
+  // ===============================================
+  // Part 4: Handle Terse Style of Configuration
+  // ===============================================
   else {
     for(unsigned int i=0; i<svector.size(); i++) {
       string param = biteStringX(svector[i], '=');
@@ -477,6 +502,14 @@ bool BHV_FixTurn::handleConfigTurnSpec(string spec)
 	else
 	  new_mhdg = atof(value.c_str());
       }
+      else if(param == "fix") {
+	if(value == "auto")
+	  new_fixh = -1;
+	else if(!isNumber(value))
+	  return(false);
+	else
+	  new_fixh = atof(value.c_str());
+      }
       else if(param == "turn") {
 	if((value != "auto") && (value != "port") &&
 	   (value != "star") && (value != "starboard"))
@@ -491,11 +524,202 @@ bool BHV_FixTurn::handleConfigTurnSpec(string spec)
     }
   }
 
-  m_turn_hdgs.push_back(new_mhdg);
+  // ===============================================
+  // Part 5: If syntax ok, add turn to the schedule
+  // ===============================================
   m_turn_spds.push_back(new_spd);
+  m_turn_hdgs.push_back(new_mhdg);
+  m_turn_fixh.push_back(new_fixh);
   m_turn_dirs.push_back(new_tdir);
 
   return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: getCurrTurnSpd()
+//   Purpose: Determine speed to be used in the current turn.
+//            If a schedule is given and not exhausted, it has
+//            the last say.
+
+double BHV_FixTurn::getCurrTurnSpd() const
+{
+  // By default just use the configured cruise speed
+  double turn_spd = m_cruise_speed;
+
+  // If cruise_speed set to auto or -1, use stem speed
+  if(m_cruise_speed < 0)
+    turn_spd = m_stem_spd;
+
+  // If there is explicit spd schedule, this spd prevails
+  if(m_curr_tix < m_turn_spds.size()) {
+    double scheduled_turn_spd = m_turn_spds[m_curr_tix];
+    // If scheduled_turn_spd is negative, then it was
+    // specified with "auto", meaning defers to stem or cruise
+    if(scheduled_turn_spd > 0)
+      turn_spd = scheduled_turn_spd;
+  }
+
+  return(turn_spd);  
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getCurrModHdg()
+//   Purpose: Determine mod_hdg to be used in current turn.
+//            Used in calculating the desired heading.
+//            desired_hdg is curr ownship hdg plus mod_hdg.
+
+double BHV_FixTurn::getCurrModHdg() const
+{
+  // By default just use the configured default mod_hdg
+  double mod_hdg = m_mod_hdg;
+
+  // If there is explicit mhdg schedule, this mhdg prevails
+  if(m_curr_tix < m_turn_hdgs.size()) {
+    double scheduled_mod_hdg = m_turn_hdgs[m_curr_tix];
+    // If scheduled_mod_hdg is negative, then it was
+    // specified with "auto", meaning defers to m_mod_hdg
+    if(scheduled_mod_hdg > 0)
+      mod_hdg = scheduled_mod_hdg;
+  }
+  
+  return(mod_hdg);  
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getCurrFixTurn()
+//   Purpose: Determine fix_turn to be used in current turn.
+//            This is the total change in hdg required in 
+//            order for the turn to be regarded complete
+
+double BHV_FixTurn::getCurrFixTurn() const
+{
+  // By default just use the configured default fix_turn
+  double fix_turn = m_fix_turn;
+
+  // If there is explicit fix_turn schedule, this prevails
+  if(m_curr_tix < m_turn_fixh.size()) {
+    double scheduled_fix_turn = m_turn_fixh[m_curr_tix];
+    // If scheduled_fix_turn is negative, then it was
+    // specified with "auto", meaning defers to m_fix_turn
+    if(scheduled_fix_turn > 0)
+      fix_turn = scheduled_fix_turn;
+  }
+  
+  return(fix_turn);  
+}
+
+
+//-----------------------------------------------------------
+// Procedure: getCurrTurnDir()
+//   Purpose: Determine port or starboard in current turn.
+
+string BHV_FixTurn::getCurrTurnDir() const
+{
+  // Default turn, with no schedule, set from m_port_turn
+  string turn_dir = "star";
+  if(m_port_turn)
+    turn_dir = "port";
+
+  // If there is explicit turn_dir schedule, use this
+  if(m_curr_tix < m_turn_dirs.size()) {
+    string scheduled_turn_dir = m_turn_dirs[m_curr_tix];
+    if(scheduled_turn_dir != "auto")
+      turn_dir = scheduled_turn_dir;
+  }      
+  
+  return(turn_dir);
+}
+
+//-----------------------------------------------------------
+// Procedure: postTurnCompleteReport()
+
+void BHV_FixTurn::postTurnCompleteReport()
+{
+  if(m_mark_pts.size() != 360)
+    return;
+
+  double min_rad = -1;
+  double max_rad = -1;
+  double total_rad = 0;
+  int    rad_count = 0;
+
+  vector<XYSegList> segls;
+  
+  for(unsigned int i=0; i<180; i++) {
+    XYPoint pta = m_mark_pts[i]; 
+    XYPoint ptb = m_mark_pts[i+180]; 
+    if(pta.valid() && ptb.valid()) {
+      double rad = distPointToPoint(pta, ptb);
+      if((min_rad < 0) || (rad < min_rad))
+	min_rad = rad;
+      if((max_rad < 0) || (rad > max_rad))
+	max_rad = rad;
+      total_rad += rad;
+      rad_count++;
+
+      XYSegList segl(pta, ptb);
+      segls.push_back(segl);
+    }
+  }
+
+  for(unsigned int i=0; i<segls.size(); i++) {
+    XYSegList segl = segls[i];
+    string label = m_us_name + "ft" + intToString(i);
+    m_set_radial_segls.insert(label);
+    segl.set_label(label);
+    segl.set_label_color("off");
+    segl.set_edge_color("gray70");
+    segl.set_vertex_color("light_green");
+    segl.set_vertex_size(5);
+    segl.set_duration(60);
+    postMessage("VIEW_SEGLIST", segl.get_spec());
+  }
+
+  double rudder_avg = 0;
+  if(m_mark_rudder.size() > 0) {
+    double rudder_total = 0;
+    list<double>::iterator p;
+    for(p=m_mark_rudder.begin(); p!=m_mark_rudder.end(); p++)
+      rudder_total += *p;
+    rudder_avg = rudder_total / (double)(m_mark_rudder.size());
+  }
+  
+  
+  string str = "spd=" + doubleToStringX(getCurrTurnSpd());
+  str += ",mod_hdg=" + doubleToStringX(getCurrModHdg());
+  str += ",rudder_avg=" + doubleToStringX(rudder_avg,1);
+
+  if(total_rad > 0) {
+    double avg_rad = 0;
+    if(rad_count > 0)
+      avg_rad = (total_rad / (double)(rad_count));
+    str += ",avg_rad=" + doubleToStringX(avg_rad);
+    str += ",min_rad=" + doubleToStringX(min_rad);
+    str += ",max_rad=" + doubleToStringX(max_rad);
+  }
+
+  postMessage("FT_REPORT", str);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: clearTurnVisuals()
+//      Note: The turn visuals have a duration, so they should
+//            disappear on their own. Presently alogview does
+//            not respect durations, so we clear them here just
+//            to be cautious and ensure alogvie is not littered.
+
+void BHV_FixTurn::clearTurnVisuals()
+{
+  set<string>::iterator p;
+  for(p=m_set_radial_segls.begin(); p!=m_set_radial_segls.end(); p++) {
+    string label = *p;
+    string spec = getSeglSpecInactive(label);
+    postMessage("VIEW_SEGLIST", spec);
+  }      
+  m_set_radial_segls.clear();
 }
 
 //-----------------------------------------------------------

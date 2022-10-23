@@ -40,6 +40,7 @@ BHV_FullStop::BHV_FullStop(IvPDomain gdomain) : IvPBehavior(gdomain)
   // Init Config vars
   m_mark_duration  = 0;
   m_stop_thresh    = 0.1;
+  m_delay_complete = 0;
   m_stale_nav_thresh = 10;
   
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
@@ -54,6 +55,8 @@ void BHV_FullStop::resetState()
   m_stem_hdg = 0;
   m_stem_utc = 0;
   m_max_dist_to_begin_pt = -1;
+  m_completed_utc = 0;
+  m_completion_pending = false;
 }
 
 //-----------------------------------------------------------
@@ -82,6 +85,8 @@ bool BHV_FullStop::setParam(string param, string value)
     handled = setNonNegDoubleOnString(m_stop_thresh, value);
   else if(param == "mark_duration")
     handled = setNonNegDoubleOnString(m_mark_duration, value);
+  else if(param == "delay_complete")
+    handled = setNonNegDoubleOnString(m_delay_complete, value);
   else if(param == "visual_hints")  
     return(m_hints.setHints(value));
   else if(param == "mark_flag") 
@@ -117,15 +122,26 @@ IvPFunction *BHV_FullStop::onRunState()
   }
   
   // Part 2: Check if FullStop has been achieved
-  bool full_stop_done = checkForFullStop();
-  if(full_stop_done) {
-    setComplete();
-    postBeginPoint(false);
-    if(m_perpetual)
-      resetState();
-    return(0);
+  if(!m_completion_pending) {
+    bool full_stop_done = checkForFullStop();
+    if(full_stop_done) {
+      m_completed_utc = getBufferCurrTime();
+      m_completion_pending = true;
+    }
   }
   
+  if(m_completion_pending) {
+    double elapsed = getBufferCurrTime() - m_completed_utc;
+    if(elapsed >= m_delay_complete) {
+      setComplete();
+      postBeginPoint(false);
+      if(m_perpetual)
+	resetState();
+      m_completion_pending = false;
+      return(0);
+    }
+  }
+
   // Part 3: Create the IvP Function
   IvPFunction *ipf = buildOF();
   if(ipf) 

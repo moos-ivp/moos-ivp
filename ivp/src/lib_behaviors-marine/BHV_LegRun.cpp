@@ -136,6 +136,10 @@ bool BHV_LegRun::setParam(string param, string value)
     m_new_leg_pending = true;
     return(setPointOnString(m_vx2, value));
   }
+  else if((param == "shift_point") || (param == "shift_pt")) {
+    m_new_leg_pending = true;
+    return(setPointOnString(m_shift_pt, value));
+  }
   else if(param == "speed") {
     double maxv = m_domain.getVarHigh("speed");
     return(setDoubleRngOnString(m_cruise_speed, value, 0, maxv));
@@ -248,6 +252,10 @@ void BHV_LegRun::onSetParamComplete()
     m_legang_mod_req = 0;
   }    
 
+  if(m_shift_pt.valid())
+    handleShiftPoint();
+  
+  // Handle change in core leg run. 
   if(m_new_leg_pending) {
     double dist = distPointToPoint(m_vx1, m_vx2);
     if(dist < m_min_leg_length)
@@ -1068,6 +1076,27 @@ void BHV_LegRun::handleLegAngRequest(double angle)
 {
   XYPoint rp1, rp2;
   bool ok = modSegAng(m_vx1, m_vx2, rp1, rp2, angle);
+  if(ok) {
+    m_vx1 = rp1;
+    m_vx2 = rp2;
+    // new_leg_pending result in mod to wpt engine
+    m_new_leg_pending = true;
+    m_preview_pending = true;
+  }
+}
+
+//-----------------------------------------------------------
+// Procedure: handleShiftPoint()
+//   Purpose: Handle shift point if shift point is not
+//            vertices have been set. Typically mid-mission.
+
+void BHV_LegRun::handleShiftPoint()
+{
+  if(!m_shift_pt.valid())
+    return;
+  
+  XYPoint rp1, rp2;
+  bool ok = modSegLoc(m_vx1, m_vx2, rp1, rp2, m_shift_pt);
   if(ok) {
     m_vx1 = rp1;
     m_vx2 = rp2;

@@ -69,6 +69,7 @@ protected:
   void   handleModeSwitch();
   void   handleLegLenRequest(double);
   void   handleLegAngRequest(double);
+  void   handleShiftPoint();
 
   IvPFunction* buildOF();
   
@@ -83,6 +84,7 @@ protected: // Config vars
   double   m_min_turn_rad;
   XYPoint  m_vx1;
   XYPoint  m_vx2;
+  XYPoint  m_shift_pt;
   bool     m_warn_overshoot;
   
   std::string m_turn1_dir;
