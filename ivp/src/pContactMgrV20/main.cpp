@@ -24,6 +24,7 @@
 #include <iostream>
 #include "ColorParse.h"
 #include "MBUtils.h"
+#include "OpenURL.h"
 #include "ContactMgrV20.h"
 #include "ContactMgrV20_Info.h"
 
@@ -48,6 +49,8 @@ int main(int argc, char *argv[])
       mission_file = argv[i];
     else if(strBegins(argi, "--alias="))
       run_command = argi.substr(8);
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/pContactMgrV20");
     else if(i==2)
       run_command = argi;
   }
