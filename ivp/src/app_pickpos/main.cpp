@@ -63,6 +63,8 @@ int main(int argc, char *argv[])
       handled = pickpos.setReverseNames();
     else if(strBegins(argi, "--amt="))
       handled = pickpos.setPickAmt(argi.substr(6));
+    else if(strBegins(argi, "--vix="))
+      handled = pickpos.setVNameStartIX(argi.substr(6));
     else if(strBegins(argi, "--posfile="))
       handled = pickpos.addPosFile(argi.substr(10));
     else if(strBegins(argi, "--polygon="))
@@ -85,12 +87,27 @@ int main(int argc, char *argv[])
       handled = pickpos.setHeadingSnap(argi.substr(8));
     else if(strBegins(argi, "--ssnap="))
       handled = pickpos.setSpeedSnap(argi.substr(8));
+
     else if(argi == "--vnames")
-      handled = pickpos.setVNames();
+      handled = pickpos.setVNames("one");
+    else if(argi == "--vnames2")
+      handled = pickpos.setVNames("two");
+    else if(argi == "--vnames3")
+      handled = pickpos.setVNames("three");
+    else if(argi == "--vnames4")
+      handled = pickpos.setVNames("four");
+
+    else if(strBegins(argi, "--vnames="))
+      handled = pickpos.setVNames(argi.substr(9), "one");
+    else if(strBegins(argi, "--vnames2="))
+      handled = pickpos.setVNames(argi.substr(9), "two");
+    else if(strBegins(argi, "--vnames3="))
+      handled = pickpos.setVNames(argi.substr(9), "three");
+    else if(strBegins(argi, "--vnames4="))
+      handled = pickpos.setVNames(argi.substr(9), "four");
+
     else if(argi == "--colors")
       handled = pickpos.setColors();
-    else if(strBegins(argi, "--vnames="))
-      handled = pickpos.setVNames(argi.substr(9));
     else if(strBegins(argi, "--colors="))
       handled = pickpos.setColors(argi.substr(9));
     else if(strBegins(argi, "--grps="))

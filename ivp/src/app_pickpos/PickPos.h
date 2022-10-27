@@ -43,6 +43,7 @@ class PickPos
   
   bool   setMultiLine()          {m_multiline=true; return(true);}
   bool   setPickAmt(std::string);
+  bool   setVNameStartIX(std::string);
   bool   setBufferDist(std::string);
   bool   setMaxTries(std::string);
   bool   setOutputType(std::string);
@@ -54,8 +55,8 @@ class PickPos
   bool   setHdgConfig(std::string);
   bool   setSpdConfig(std::string);
   bool   setGroups(std::string);
-  bool   setVNames(std::string);
-  bool   setVNames() {m_vnames=true; return(true);}
+  bool   setVNames(std::string, std::string group);
+  bool   setVNames(std::string group);
   bool   setColors(std::string);
   bool   setColors() {m_colors=true; return(true);}
 
@@ -68,7 +69,10 @@ class PickPos
   bool   pick();
 
  protected:
-  void setVNameCache();
+  void setVNameCacheOne();
+  void setVNameCacheTwo();
+  void setVNameCacheThree();
+  void setVNameCacheFour();
   void setColorCache();
   void pickPosByFile();
   void pickPosByPoly();
@@ -99,6 +103,7 @@ class PickPos
   double       m_spd_val1;
   double       m_spd_val2;
 
+  unsigned int m_vname_start_ix;
   bool         m_vnames;
   bool         m_colors;
 

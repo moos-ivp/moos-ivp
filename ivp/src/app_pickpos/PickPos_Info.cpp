@@ -96,6 +96,14 @@ void showHelpAndExit()
   cout << "  --vnames                                           " << endl;
   cout << "     Generate a set of unique vehicle names, one for " << endl;
   cout << "     each position or speed being generated.         " << endl;
+  cout << "  --vnames2                                          " << endl;
+  cout << "     Generate a set of names from Set 2              " << endl;
+  cout << "  --vnames3                                          " << endl;
+  cout << "     Generate a set of names from Set 3              " << endl;
+  cout << "  --vnames4                                          " << endl;
+  cout << "     Generate a set of names from Set 4              " << endl;
+  cout << "  --vix=<index>                                      " << endl;
+  cout << "     Generate vehicle names starting at this index   " << endl;
   cout << "  --reverse_names, -r                                " << endl;
   cout << "     Generate a set of unique vehicle names, same as " << endl;
   cout << "     --vnames but in reverse order.                  " << endl;

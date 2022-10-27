@@ -34,7 +34,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 PickPos::PickPos()
 {
@@ -74,7 +74,8 @@ PickPos::PickPos()
   m_vnames  = false;
   m_colors  = false;
   m_verbose = false;
-
+  m_vname_start_ix = 0;
+  
   m_reverse_names = false;
   
   m_grp_type = "random";
@@ -84,7 +85,7 @@ PickPos::PickPos()
 
   m_global_nearest = -1;
   
-  setVNameCache();
+  setVNameCacheOne();
   setColorCache();
 }
 
@@ -102,6 +103,22 @@ bool PickPos::setPickAmt(string str)
     return(false);
 
   m_pick_amt = (unsigned int)(ival);
+  return(true);
+}
+
+//---------------------------------------------------------
+// Procedure: setVNameStartIX()
+
+bool PickPos::setVNameStartIX(string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  int ival = atoi(str.c_str());
+  if(ival < 0)
+    return(false);
+
+  m_vname_start_ix = (unsigned int)(ival);
   return(true);
 }
 
@@ -166,10 +183,41 @@ bool PickPos::setOutputType(string str)
 }
 
 //---------------------------------------------------------
+// Procedure: setVNames(group)
+
+bool PickPos::setVNames(string group)
+{
+  if(group == "one")
+    setVNameCacheOne();
+  else if(group == "two")
+    setVNameCacheTwo();
+  else if(group == "three")
+    setVNameCacheThree();
+  else if(group == "Four")
+    setVNameCacheFour();
+  else
+    return(false);
+
+  m_vnames = true;
+  return(true);
+}
+
+//---------------------------------------------------------
 // Procedure: setVNames()
 
-bool PickPos::setVNames(string str)
+bool PickPos::setVNames(string str, string group)
 {
+  if(group == "one")
+    setVNameCacheOne();
+  else if(group == "two")
+    setVNameCacheTwo();
+  else if(group == "three")
+    setVNameCacheThree();
+  else if(group == "Four")
+    setVNameCacheFour();
+  else
+    return(false);
+
   m_vnames = true;
   
   vector<string> names = parseString(str, ',');
@@ -723,9 +771,9 @@ void PickPos::pickGroupNames()
 }
 
 //---------------------------------------------------------
-// Procedure: setVNameCache()
+// Procedure: setVNameCacheOne()
 
-void PickPos::setVNameCache()
+void PickPos::setVNameCacheOne()
 {
   m_vname_cache.clear();
 
@@ -758,6 +806,112 @@ void PickPos::setVNameCache()
 }
 
 //---------------------------------------------------------
+// Procedure: setVNameCacheTwo()
+
+void PickPos::setVNameCacheTwo()
+{
+  m_vname_cache.clear();
+
+  m_vname_cache.push_back("avi");   m_vname_cache.push_back("bee");
+  m_vname_cache.push_back("cap");   m_vname_cache.push_back("dan");
+  m_vname_cache.push_back("ebb");   m_vname_cache.push_back("fay");
+  m_vname_cache.push_back("geo");   m_vname_cache.push_back("ham");
+  m_vname_cache.push_back("ivy");   m_vname_cache.push_back("jan");
+  m_vname_cache.push_back("kay");   m_vname_cache.push_back("lee");
+  m_vname_cache.push_back("mel");   m_vname_cache.push_back("nat");
+  m_vname_cache.push_back("ott");   m_vname_cache.push_back("pat");
+  m_vname_cache.push_back("qua");   m_vname_cache.push_back("ron");
+  m_vname_cache.push_back("sid");   m_vname_cache.push_back("tad");
+  m_vname_cache.push_back("umm");   m_vname_cache.push_back("vik");
+  m_vname_cache.push_back("wik");   m_vname_cache.push_back("xik");
+  m_vname_cache.push_back("yee");   m_vname_cache.push_back("zed");
+  m_vname_cache.push_back("abby");  m_vname_cache.push_back("bill");
+  m_vname_cache.push_back("clem");  m_vname_cache.push_back("dana");
+  m_vname_cache.push_back("eddy");  m_vname_cache.push_back("fran");
+  m_vname_cache.push_back("gabe");  m_vname_cache.push_back("hans");
+  m_vname_cache.push_back("ivan");  m_vname_cache.push_back("jade");
+  m_vname_cache.push_back("kent");  m_vname_cache.push_back("lacy");
+  m_vname_cache.push_back("mary");  m_vname_cache.push_back("noel");
+  m_vname_cache.push_back("olga");  m_vname_cache.push_back("paul");
+  m_vname_cache.push_back("quin");  m_vname_cache.push_back("rick");
+  m_vname_cache.push_back("sage");  m_vname_cache.push_back("theo");
+  m_vname_cache.push_back("uber");  m_vname_cache.push_back("vick");
+  m_vname_cache.push_back("ward");  m_vname_cache.push_back("xavi");
+  m_vname_cache.push_back("yoel");  m_vname_cache.push_back("zack");
+}
+
+//---------------------------------------------------------
+// Procedure: setVNameCacheThree()
+
+void PickPos::setVNameCacheThree()
+{
+  m_vname_cache.clear();
+
+  m_vname_cache.push_back("ada");  m_vname_cache.push_back("bob");
+  m_vname_cache.push_back("cam");  m_vname_cache.push_back("dee");
+  m_vname_cache.push_back("ema");  m_vname_cache.push_back("flo");
+  m_vname_cache.push_back("gus");  m_vname_cache.push_back("hal");
+  m_vname_cache.push_back("ira");  m_vname_cache.push_back("jax");
+  m_vname_cache.push_back("kia");  m_vname_cache.push_back("leo");
+  m_vname_cache.push_back("mia");  m_vname_cache.push_back("noa");
+  m_vname_cache.push_back("ora");  m_vname_cache.push_back("pam");
+  m_vname_cache.push_back("qix");  m_vname_cache.push_back("roy");
+  m_vname_cache.push_back("sky");  m_vname_cache.push_back("tom");
+  m_vname_cache.push_back("una");  m_vname_cache.push_back("van");
+  m_vname_cache.push_back("wim");  m_vname_cache.push_back("xyz");
+  m_vname_cache.push_back("yip");  m_vname_cache.push_back("zip");
+  m_vname_cache.push_back("adel");  m_vname_cache.push_back("bama");
+  m_vname_cache.push_back("chad");  m_vname_cache.push_back("dash");
+  m_vname_cache.push_back("emma");  m_vname_cache.push_back("fern");
+  m_vname_cache.push_back("gary");  m_vname_cache.push_back("hank");
+  m_vname_cache.push_back("isla");  m_vname_cache.push_back("joan");
+  m_vname_cache.push_back("kyle");  m_vname_cache.push_back("lisa");
+  m_vname_cache.push_back("mona");  m_vname_cache.push_back("nick");
+  m_vname_cache.push_back("oral");  m_vname_cache.push_back("page");
+  m_vname_cache.push_back("quip");  m_vname_cache.push_back("rice");
+  m_vname_cache.push_back("seth");  m_vname_cache.push_back("tony");
+  m_vname_cache.push_back("ugly");  m_vname_cache.push_back("vice");
+  m_vname_cache.push_back("webb");  m_vname_cache.push_back("xray");
+  m_vname_cache.push_back("yara");  m_vname_cache.push_back("zula");
+}
+
+//---------------------------------------------------------
+// Procedure: setVNameCacheFour()
+
+void PickPos::setVNameCacheFour()
+{
+  m_vname_cache.clear();
+
+  m_vname_cache.push_back("art");  m_vname_cache.push_back("bud");
+  m_vname_cache.push_back("coy");  m_vname_cache.push_back("doc");
+  m_vname_cache.push_back("ell");  m_vname_cache.push_back("fed");
+  m_vname_cache.push_back("guy");  m_vname_cache.push_back("hip");
+  m_vname_cache.push_back("icy");  m_vname_cache.push_back("jed");
+  m_vname_cache.push_back("ken");  m_vname_cache.push_back("lex");
+  m_vname_cache.push_back("may");  m_vname_cache.push_back("nim");
+  m_vname_cache.push_back("oma");  m_vname_cache.push_back("pig");
+  m_vname_cache.push_back("qal");  m_vname_cache.push_back("rob");
+  m_vname_cache.push_back("sue");  m_vname_cache.push_back("ted");
+  m_vname_cache.push_back("unk");  m_vname_cache.push_back("von");
+  m_vname_cache.push_back("wam");  m_vname_cache.push_back("xoo");
+  m_vname_cache.push_back("yap");  m_vname_cache.push_back("zap");
+
+  m_vname_cache.push_back("arlo");  m_vname_cache.push_back("brad");
+  m_vname_cache.push_back("chip");  m_vname_cache.push_back("doug");
+  m_vname_cache.push_back("evan");  m_vname_cache.push_back("ford");
+  m_vname_cache.push_back("greg");  m_vname_cache.push_back("harm");
+  m_vname_cache.push_back("ivor");  m_vname_cache.push_back("jack");
+  m_vname_cache.push_back("kurt");  m_vname_cache.push_back("lane");
+  m_vname_cache.push_back("mack");  m_vname_cache.push_back("nina");
+  m_vname_cache.push_back("owen");  m_vname_cache.push_back("pete");
+  m_vname_cache.push_back("quem");  m_vname_cache.push_back("rosa");
+  m_vname_cache.push_back("stan");  m_vname_cache.push_back("troy");
+  m_vname_cache.push_back("ulan");  m_vname_cache.push_back("vipp");
+  m_vname_cache.push_back("wood");  m_vname_cache.push_back("xelp");
+  m_vname_cache.push_back("yoga");  m_vname_cache.push_back("zeke");
+}
+
+//---------------------------------------------------------
 // Procedure: pickVehicleNames()
 
 void PickPos::pickVehicleNames()
@@ -765,8 +919,10 @@ void PickPos::pickVehicleNames()
   int choices = (int)(m_vname_cache.size());
   if(choices == 0)
     return;
+
+  unsigned int vix = m_vname_start_ix;
   
-  for(unsigned int i=0; i<m_pick_amt; i++) {
+  for(unsigned int i=vix; i<m_pick_amt+vix; i++) {
     int index = i % choices;
     if(m_reverse_names)
       index = (choices-1)-i;
