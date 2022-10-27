@@ -88,24 +88,22 @@ int main(int argc, char *argv[])
     else if(strBegins(argi, "--ssnap="))
       handled = pickpos.setSpeedSnap(argi.substr(8));
 
+    else if((argi == "--group_names_one") || (argi == "-g1"))
+      handled = pickpos.setVNameCacheOne();
+    else if((argi == "--group_names_two") || (argi == "-g2"))
+      handled = pickpos.setVNameCacheTwo();
+    else if((argi == "--group_names_three") || (argi == "-g3"))
+      handled = pickpos.setVNameCacheThree();
+    else if((argi == "--group_names_four") || (argi == "-g4"))
+      handled = pickpos.setVNameCacheFour();
+    
     else if(argi == "--vnames")
-      handled = pickpos.setVNames("one");
-    else if(argi == "--vnames2")
-      handled = pickpos.setVNames("two");
-    else if(argi == "--vnames3")
-      handled = pickpos.setVNames("three");
-    else if(argi == "--vnames4")
-      handled = pickpos.setVNames("four");
-
+      handled = pickpos.setVNames();
     else if(strBegins(argi, "--vnames="))
-      handled = pickpos.setVNames(argi.substr(9), "one");
-    else if(strBegins(argi, "--vnames2="))
-      handled = pickpos.setVNames(argi.substr(9), "two");
-    else if(strBegins(argi, "--vnames3="))
-      handled = pickpos.setVNames(argi.substr(9), "three");
-    else if(strBegins(argi, "--vnames4="))
-      handled = pickpos.setVNames(argi.substr(9), "four");
+      handled = pickpos.setVNames(argi.substr(9));
 
+    else if(argi == "--indices")
+      handled = pickpos.setIndices();
     else if(argi == "--colors")
       handled = pickpos.setColors();
     else if(strBegins(argi, "--colors="))

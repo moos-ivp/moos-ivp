@@ -73,6 +73,7 @@ PickPos::PickPos()
 
   m_vnames  = false;
   m_colors  = false;
+  m_indices = false;
   m_verbose = false;
   m_vname_start_ix = 0;
   
@@ -183,41 +184,19 @@ bool PickPos::setOutputType(string str)
 }
 
 //---------------------------------------------------------
-// Procedure: setVNames(group)
+// Procedure: setVNames()
 
-bool PickPos::setVNames(string group)
+bool PickPos::setVNames()
 {
-  if(group == "one")
-    setVNameCacheOne();
-  else if(group == "two")
-    setVNameCacheTwo();
-  else if(group == "three")
-    setVNameCacheThree();
-  else if(group == "Four")
-    setVNameCacheFour();
-  else
-    return(false);
-
   m_vnames = true;
   return(true);
 }
 
 //---------------------------------------------------------
-// Procedure: setVNames()
+// Procedure: setVNames(string)
 
-bool PickPos::setVNames(string str, string group)
+bool PickPos::setVNames(string str)
 {
-  if(group == "one")
-    setVNameCacheOne();
-  else if(group == "two")
-    setVNameCacheTwo();
-  else if(group == "three")
-    setVNameCacheThree();
-  else if(group == "Four")
-    setVNameCacheFour();
-  else
-    return(false);
-
   m_vnames = true;
   
   vector<string> names = parseString(str, ',');
@@ -518,6 +497,9 @@ bool PickPos::pick()
   if(m_colors)
     pickColors();
 
+  if(m_indices)
+    pickIndices();
+
   if(m_groups.size() != 0)
     pickGroupNames();
 
@@ -773,7 +755,7 @@ void PickPos::pickGroupNames()
 //---------------------------------------------------------
 // Procedure: setVNameCacheOne()
 
-void PickPos::setVNameCacheOne()
+bool PickPos::setVNameCacheOne()
 {
   m_vname_cache.clear();
 
@@ -803,12 +785,13 @@ void PickPos::setVNameCacheOne()
   m_vname_cache.push_back("ubly");    m_vname_cache.push_back("vimy");
   m_vname_cache.push_back("waco");    m_vname_cache.push_back("xane");
   m_vname_cache.push_back("york");    m_vname_cache.push_back("zahl");
+  return(true);
 }
 
 //---------------------------------------------------------
 // Procedure: setVNameCacheTwo()
 
-void PickPos::setVNameCacheTwo()
+bool PickPos::setVNameCacheTwo()
 {
   m_vname_cache.clear();
 
@@ -838,12 +821,13 @@ void PickPos::setVNameCacheTwo()
   m_vname_cache.push_back("uber");  m_vname_cache.push_back("vick");
   m_vname_cache.push_back("ward");  m_vname_cache.push_back("xavi");
   m_vname_cache.push_back("yoel");  m_vname_cache.push_back("zack");
+  return(true);
 }
 
 //---------------------------------------------------------
 // Procedure: setVNameCacheThree()
 
-void PickPos::setVNameCacheThree()
+bool PickPos::setVNameCacheThree()
 {
   m_vname_cache.clear();
 
@@ -873,12 +857,13 @@ void PickPos::setVNameCacheThree()
   m_vname_cache.push_back("ugly");  m_vname_cache.push_back("vice");
   m_vname_cache.push_back("webb");  m_vname_cache.push_back("xray");
   m_vname_cache.push_back("yara");  m_vname_cache.push_back("zula");
+  return(true);
 }
 
 //---------------------------------------------------------
 // Procedure: setVNameCacheFour()
 
-void PickPos::setVNameCacheFour()
+bool PickPos::setVNameCacheFour()
 {
   m_vname_cache.clear();
 
@@ -909,6 +894,7 @@ void PickPos::setVNameCacheFour()
   m_vname_cache.push_back("ulan");  m_vname_cache.push_back("vipp");
   m_vname_cache.push_back("wood");  m_vname_cache.push_back("xelp");
   m_vname_cache.push_back("yoga");  m_vname_cache.push_back("zeke");
+  return(true);
 }
 
 //---------------------------------------------------------
@@ -929,6 +915,17 @@ void PickPos::pickVehicleNames()
 
     m_pick_vnames.push_back(m_vname_cache[index]);
   }
+}
+
+//---------------------------------------------------------
+// Procedure: pickIndices()
+
+void PickPos::pickIndices()
+{
+  unsigned int vix = m_vname_start_ix;
+  
+  for(unsigned int i=vix; i<m_pick_amt+vix; i++) 
+    m_pick_indices.push_back(i);
 }
 
 //---------------------------------------------------------
@@ -992,6 +989,12 @@ void PickPos::pickColors()
 
 void PickPos::printChoices()
 {
+  if(m_pick_indices.size() > 0) {
+    for(unsigned int i=0; i<m_pick_indices.size(); i++)
+      cout << m_pick_indices[i] << endl;
+    return;
+  }
+
   // All three vectors will be of size either N or 0.
   // Find out what N is here and set to max_index
   unsigned int max_index = m_pick_positions.size();
