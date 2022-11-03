@@ -747,24 +747,28 @@ void TS_MOOSApp::executePosting(VarDataPair pair)
   // Handle special case where MOOSDB_UPTIME *is* the post
   if((sval == "$(DBTIME)") || (sval == "$[DBTIME]")) {
     Notify(variable, db_uptime);
+    addLogEvent(variable, uintToString(db_uptime), db_uptime);
     return;
   }
 
   // Handle special case where UTC_TIME *is* the post
   if((sval == "$(UTCTIME)") || (sval == "$[UTCTIME]")) {
     Notify(variable, db_uptime);
+    addLogEvent(variable, uintToString(db_uptime), db_uptime);
     return;
   }
 
   // Handle special case where COUNT *is* the post
   else if((sval == "$(COUNT)") || (sval == "$[COUNT]")) {
     Notify(variable, m_posted_count_local);
+    addLogEvent(variable, uintToString(m_posted_count_local), db_uptime);
     return;
   }
   
   // Handle special case where COUNT *is* the post
   else if((sval == "$(TCOUNT)") || (sval == "$[TCOUNT]")) {
     Notify(variable, m_posted_count_total);
+    addLogEvent(variable, uintToString(m_posted_count_total), db_uptime);
     return;
   }
   
