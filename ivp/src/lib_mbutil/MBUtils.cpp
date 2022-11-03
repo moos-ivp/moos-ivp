@@ -2870,28 +2870,6 @@ string intToMonth(int imonth, bool brief)
 }
 
 //---------------------------------------------------------
-// Procedure: hashAlphaNum()
-
-string hashAlphaNum(unsigned int len)
-{
-  string pchars="0123456789";
-  pchars += "abcdefghijklmnpqrstuvwxyz";
-  pchars += "ABCDEFGHIJKLMNPQRSTUVWXYZ";
-
-  unsigned int pamt = pchars.size();
-
-  string hash_str;
-  
-  for(unsigned int i=0; i<len; i++) {
-    int randix = rand() % pamt;
-    hash_str += pchars.at(randix);
-  }
-
-  return(hash_str);
-}
-
-  
-//---------------------------------------------------------
 // Procedure: isValidTurn()
 
 bool isValidTurn(const string& str)

@@ -23,9 +23,164 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <ctime>
+#include "MBUtils.h"
 #include "HashUtils.h"
 
 using namespace std;
+
+//---------------------------------------------------------
+// Procedure: missionHash()
+//   Example: 221103K-FOXY-WEED
+
+
+string missionHash()
+{
+  string hash = getCurrYear();
+  hash += getCurrMonth();
+  hash += "-";
+  hash += getCurrHour();
+  hash += getCurrMinute();
+  hash += hashAlphaUpper(1);
+  hash += "-";
+  hash += toupper(randomWord(adjectives4()));
+  hash += "-";
+
+  vector<string> svector1 = nouns4();
+  vector<string> svector2 = names4();
+  vector<string> svector = mergeVectors(svector1, svector2);
+  hash += toupper(randomWord(svector));
+
+  return(hash);
+}
+
+//---------------------------------------------------------
+// Procedure: hashAlphaNum()
+
+string hashAlphaNum(unsigned int len)
+{
+  string pchars="0123456789";
+  pchars += "abcdefghijklmnpqrstuvwxyz";
+  pchars += "ABCDEFGHIJKLMNPQRSTUVWXYZ";
+
+  unsigned int pamt = pchars.size();
+
+  string hash_str;
+  
+  for(unsigned int i=0; i<len; i++) {
+    int randix = rand() % pamt;
+    hash_str += pchars.at(randix);
+  }
+
+  return(hash_str);
+}
+
+//---------------------------------------------------------
+// Procedure: hashAlphaUpper()
+
+string hashAlphaUpper(unsigned int len)
+{
+  string pchars="ABCDEFGHIJKLMNPQRSTUVWXYZ";
+
+  unsigned int pamt = pchars.size();
+
+  string hash_str;
+  
+  for(unsigned int i=0; i<len; i++) {
+    int randix = rand() % pamt;
+    hash_str += pchars.at(randix);
+  }
+
+  return(hash_str);
+}
+
+
+//---------------------------------------------------------
+// Procedure: randomWord()
+
+string randomWord(const vector<string>& words)
+{
+  if(words.size() == 0)
+    return("NULL");
+
+  unsigned int pamt = words.size();
+  int randix = rand() % pamt;
+  string hash_str = words.at(randix);
+
+  return(hash_str);
+}
+
+//---------------------------------------------------------
+// Procedure: getCurrYear()
+
+string getCurrYear(bool full)
+{
+  time_t ttime = time(0);
+  tm *local_time = localtime(&ttime);
+
+  int year = 1900 + local_time->tm_year;
+  if(!full)
+    year = year % 1000;
+
+  string year_str = intToString(year);
+  if(!full && (year_str.length() == 1))
+    year_str = "0" + year_str;
+      
+  return(year_str);
+}
+
+//---------------------------------------------------------
+// Procedure: getCurrMonth()
+
+string getCurrMonth()
+{
+  time_t ttime = time(0);
+  tm *local_time = localtime(&ttime);
+
+  int month = 1 + local_time->tm_mon;
+
+  string month_str = intToString(month);
+  if(month_str.length() == 1)
+    month_str = "0" + month_str;
+      
+  return(month_str);
+}
+
+//---------------------------------------------------------
+// Procedure: getCurrHour()
+
+string getCurrHour()
+{
+  time_t ttime = time(0);
+  tm *local_time = localtime(&ttime);
+
+  int hour = local_time->tm_hour;
+
+  string hour_str = intToString(hour);
+  if(hour_str.length() == 1)
+    hour_str = "0" + hour_str;
+      
+  return(hour_str);
+}
+
+//---------------------------------------------------------
+// Procedure: getCurrMinute()
+
+string getCurrMinute()
+{
+  time_t ttime = time(0);
+  tm *local_time = localtime(&ttime);
+
+  int minute = local_time->tm_min;
+
+  string minute_str = intToString(minute);
+  if(minute_str.length() == 1)
+    minute_str = "0" + minute_str;
+      
+  return(minute_str);
+}
+
+
 
 //----------------------------------------------------------------
 // Procedure: adjectives4()

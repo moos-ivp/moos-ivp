@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
-/*    FILE: HashUtils.cpp                                        */
+/*    FILE: HashUtils.h                                          */
 /*    DATE: Nov 2nd, 2022                                        */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
@@ -28,6 +28,20 @@
 
 #include <vector>
 #include <string>
+
+std::string missionHash();
+
+std::string hashAlphaNum(unsigned int len=6);
+std::string hashAlphaUpper(unsigned int len=6);
+
+std::string hashRandAdj();
+
+std::string getCurrYear(bool full=false);
+std::string getCurrMonth();
+std::string getCurrHour();
+std::string getCurrMinute();
+
+std::string randomWord(const std::vector<std::string>& );
 
 std::vector<std::string> adjectives4();
 std::vector<std::string> nouns4();

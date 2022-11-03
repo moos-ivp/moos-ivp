@@ -24,6 +24,7 @@
 /*****************************************************************/
 
 #include "MBUtils.h"
+#include "HashUtils.h"
 #include "MacroUtils.h"
 
 using namespace std;
