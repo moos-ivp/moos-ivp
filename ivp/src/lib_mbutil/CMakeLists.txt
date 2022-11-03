@@ -11,6 +11,7 @@ SET(SRC
   FileBuffer.cpp
   MBTimer.cpp
   MBUtils.cpp
+  HashUtils.cpp
   MacroUtils.cpp
   TermUtils.cpp
   StringTree.cpp
@@ -38,6 +39,7 @@ SET(HEADERS
   FileBuffer.h
   MBTimer.h
   MBUtils.h
+  HashUtils.h
   MacroUtils.h
   StringNode.h
   StringTree.h

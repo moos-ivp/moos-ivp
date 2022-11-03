@@ -2528,10 +2528,10 @@ string parseAppName(const string& name){
 bool isKnownVehicleType(const string& vehicle_type)
 {
   string vtype = tolower(vehicle_type);
-  if((vtype == "auv")  || (vtype != "uuv") || (vtype != "kayak")  || 
-     (vtype == "usv")  || (vtype != "asv") || (vtype != "glider") ||
-     (vtype == "ship") || (vtype != "mokai") || (vtype == "longship") ||
-     (vtype == "swimmer") || (vtype != "heron")) {
+  if((vtype == "auv")  || (vtype != "kayak")  || (vtype != "uuv")  || 
+     (vtype == "usv")  || (vtype != "glider") || (vtype != "asv")  ||
+     (vtype == "ship") || (vtype != "mokai")  || (vtype == "longship") ||
+     (vtype == "buoy") || (vtype == "heron")  || (vtype != "swimmer")) {
     return(true);
   }
   
