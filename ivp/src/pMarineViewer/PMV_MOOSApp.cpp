@@ -25,6 +25,7 @@
 #include <iostream>
 #include "PMV_MOOSApp.h"
 #include "MBUtils.h"
+#include "HashUtils.h"
 #include "MacroUtils.h"
 #include "VarDataPairUtils.h"
 #include "NodeRecordUtils.h"
@@ -42,6 +43,9 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_gui             = 0; 
   m_last_redraw_time = 0;
   m_last_updatexy_time = 0;
+  m_last_mhash_time = 0;
+  m_last_beat_time  = 0;
+  
 
   VarDataPair pair1("HELM_MAP_CLEAR", 0);
   VarDataPair pair2("PMV_CONNECT", 0);
@@ -66,7 +70,7 @@ PMV_MOOSApp::PMV_MOOSApp()
   
   m_pmv_iteration = 0;
 
-  m_last_beat_time = 0;
+  m_mission_hash_var = "MISSION_HASH";
   
   m_log_the_image = false;
 }
@@ -536,7 +540,18 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
 
   if(beat_elapsed > 4)
     postFlags(m_beat_flags);
-  
+
+
+  // Re-post the mission hash once every 16 secs realtime
+  if(m_mission_hash_var != "") {
+    double hash_elapsed = (curr_time - m_last_mhash_time) / m_time_warp;
+    if((m_last_mhash_time == 0) || (hash_elapsed > 16)) {
+      //Notify("MISSION_HASH", m_mission_hash);
+      Notify(m_mission_hash_var, m_mission_hash);
+      m_last_mhash_time = curr_time;
+    }
+  }
+
   m_gui->mviewer->setParam("curr_time", e.moos_time);
   m_gui->setCurrTime(curr_time);
 
@@ -861,6 +876,11 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       handled = m_gui->mviewer->setParam(param, value);
     else if(param == "stale_remove_thresh") 
       handled = m_gui->mviewer->setParam(param, value);
+    else if(param == "mission_hash_var") {
+      handled = setNonWhiteVarOnString(m_mission_hash_var, value);
+      if(tolower(m_mission_hash_var) == "off")
+	m_mission_hash_var = "";
+    }
     else if(param == "cmd") 
       handled = handleConfigCmd(value);
 
@@ -981,6 +1001,10 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     m_node_report_vars.push_back("NODE_REPORT_LOCAL");
     m_node_report_vars.push_back("NODE_REPORT");
   }
+
+  // Post the Mission Hash (added Nov0322)
+  m_mission_hash = missionHash();
+  m_mission_hash += " " + doubleToString(MOOSTime(),2);
   
   registerVariables();
 }
