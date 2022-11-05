@@ -204,6 +204,7 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("                                                                ");
+  blk("  mission_hash_var = off  (Default is MISSION_HASH)             ");
   blk("  beat_flag = HEARTBEAT=true                                    ");
   blk("}                                                               ");
   blk("                                                                ");
