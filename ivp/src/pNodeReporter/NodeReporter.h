@@ -2,7 +2,8 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: NodeReporter.h                                       */
-/*    DATE: Feb 9th 2006 (TransponderAIS)                        */
+/*    DATE: Feb  9th 2006 (TransponderAIS)                       */
+/*    DATE: Nov 18th 2022 Added odometry/mission_hash support    */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -30,6 +31,7 @@
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "NodeRecord.h"
 #include "NodeRiderSet.h"
+#include "Odometer.h"
 #include "LinearExtrapolator.h"
 
 class NodeReporter : public AppCastingMOOSApp
@@ -60,7 +62,8 @@ public:
   void handleHelmSwitch();
 
   void updateNavWarning(bool ok_nav) const;
-
+  void updateMHashOdo();
+  
   bool handleMailRiderVars(std::string, std::string, double);
   
  protected: // Configuration Variables (Node Reports)
@@ -129,6 +132,12 @@ public:
  protected: 
   LinearExtrapolator m_extrapolator;
   NodeRecord         m_record_last_posted;
+
+protected: //MissionHash support
+  Odometer                      m_odometer;
+  std::string                   m_curr_mhash;
+  double                        m_max_extent;
+  double                        m_max_extent_prev;
   
  protected: // NodeRider support
   NodeRiderSet m_riderset;

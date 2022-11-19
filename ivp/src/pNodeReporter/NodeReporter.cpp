@@ -96,6 +96,10 @@ NodeReporter::NodeReporter()
   m_extrap_pos_thresh = 0.25; // meters
   m_extrap_hdg_thresh = 1;    // degrees
   m_extrap_max_gap    = 5;    // seconds
+  
+  // Nov 12, 2022
+  m_max_extent = 0;
+  m_max_extent_prev = 0;
 }
 
 //-----------------------------------------------------------------
@@ -195,6 +199,12 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     // END logic for checking for alternative nav reporting
     
+    if(key == "MISSION_HASH") {
+      m_curr_mhash = tokStringParse(sdata, "mhash");
+      m_max_extent = 0;
+      m_odometer.resetExtent();
+    }
+      
     if(key == "AUX_MODE") 
       m_record.setModeAux(sdata);
 
@@ -308,6 +318,7 @@ void NodeReporter::registerVariables()
   Register("NODE_GROUP_UPDATE", 0);
   Register("PNR_PAUSE", 0);
   Register("PLATFORM_COLOR", 0);
+  Register("MISSION_HASH", 0);
 
   vector<string> rider_vars = m_riderset.getVars();
   for(unsigned int i=0; i<rider_vars.size(); i++) 
@@ -471,6 +482,8 @@ bool NodeReporter::OnStartUp()
     else if(vtype == "heron")
       m_record.setLength(3); // meters
     else if(vtype == "swimmer")
+      m_record.setLength(3); // meters
+    else if(vtype == "buoy")
       m_record.setLength(3); // meters
     else
       reportConfigWarning("Unrecognized platform type: " + vtype);
@@ -638,6 +651,11 @@ bool NodeReporter::Iterate()
   string platform_report = assemblePlatformReport();
   if((platform_report != "") && !m_paused)
     Notify(m_plat_report_var, platform_report);
+
+  //==============================================================
+  // Part 6: Update the MHash Odometry if enabled
+  //==============================================================
+  updateMHashOdo();
   
   m_record.setLoadWarning("");
   AppCastingMOOSApp::PostReport();
@@ -947,6 +965,46 @@ bool NodeReporter::handleMailRiderVars(string var, string sval,
 
   bool ok = m_riderset.updateRider(var, update_str, m_curr_time);
   return(ok);
+}
+
+
+//------------------------------------------------------------------
+// Procedure: updateMHashOdo()
+
+void NodeReporter::updateMHashOdo()
+{
+  // Sanity check: If no mission hash has been received ever, then
+  // we're not doing this at all.
+  if(m_curr_mhash == "")
+    return;
+  
+  
+  // Part 1: Update Odometer distance/extent with new nav position
+  double navx = m_record.getX();
+  double navy = m_record.getY();
+  m_odometer.updateDistance(navx, navy);
+
+  double max_extent = m_odometer.getMaxExtent();
+
+  if(max_extent > m_max_extent)
+    m_max_extent = max_extent;
+
+  bool post_update = false;
+  if((m_max_extent_prev == 0) && (m_max_extent > 0))
+    post_update = true;
+  else if(m_max_extent > (m_max_extent_prev * 1.02))
+    post_update = true;
+
+  if((m_max_extent - m_max_extent_prev) < 1)
+    post_update = false;
+
+  
+  if(post_update) {
+    m_max_extent_prev = m_max_extent;
+    string msg = "mhash=" + m_curr_mhash;
+    msg += ",ext=" + doubleToStringX(m_max_extent,1);
+    Notify("PNR_MHASH", msg);    
+  }
 }
 
 
