@@ -319,6 +319,22 @@ vector<string> adjectives4()
   adj.push_back("Neds");
   adj.push_back("Teds");
   adj.push_back("Bens");
+  adj.push_back("Gamy");
+  adj.push_back("Misc");
+  adj.push_back("Plus");
+  adj.push_back("Puny");
+  adj.push_back("Malt");
+  adj.push_back("Lewd");
+  adj.push_back("Iron");
+  adj.push_back("Iced");
+  adj.push_back("Hind");
+  adj.push_back("Dank");
+  adj.push_back("Gory");
+  adj.push_back("Glum");
+  adj.push_back("Hazy");
+  adj.push_back("Four");
+  adj.push_back("Five");
+  adj.push_back("Nine");
   return(adj);
 }
 
@@ -485,6 +501,29 @@ vector<string> nouns4()
   nouns.push_back("Wolf");  nouns.push_back("Word");
   nouns.push_back("Work");  nouns.push_back("Year");
   nouns.push_back("Zest");  nouns.push_back("Zeta");
+
+  nouns.push_back("Norm");
+  nouns.push_back("Odds");
+  nouns.push_back("Pose");
+  nouns.push_back("Perk");
+  nouns.push_back("Puff");
+  nouns.push_back("Quad");
+  nouns.push_back("Shag");
+  nouns.push_back("Hash");
+  nouns.push_back("Keep");
+  nouns.push_back("Tick");
+  nouns.push_back("Plug");
+  nouns.push_back("Info");
+  nouns.push_back("Moos");
+  nouns.push_back("Ward");
+  nouns.push_back("Void");
+  nouns.push_back("Tail");
+  nouns.push_back("Trig");
+  nouns.push_back("Slab");
+  nouns.push_back("Skew");
+  nouns.push_back("Salt");
+  nouns.push_back("Shot");
+  nouns.push_back("Addr");
 
   return(nouns);
 }

@@ -49,7 +49,7 @@ void Odometer::reset(double utc)
   m_prev_x = 0;
   m_prev_y = 0;
   m_orig_x = 0;
-  m_orig_x = 0;
+  m_orig_y = 0;
   
   m_curr_utc  = utc;
   m_start_utc = utc;
@@ -59,6 +59,16 @@ void Odometer::reset(double utc)
 
   m_total_distance = 0;
   m_max_extent     = 0;
+}
+
+//-----------------------------------------------------------
+// Procedure: resetExtent()
+
+void Odometer::resetExtent()
+{
+  m_max_extent = 0;
+  m_orig_x     = m_curr_x;
+  m_orig_y     = m_curr_y;
 }
 
 

@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
 /*    FILE: Odometer.h                                           */
 /*    DATE: Jan 31st 2020                                        */
+/*    DATE: Nov 12th 2022 Added max_extent feature               */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -36,6 +37,7 @@ class Odometer {
   void   setY(double);
 
   void   reset(double utc=0);
+  void   resetExtent();
   
   void   pause()   {m_paused = true;}
   void   unpause() {m_paused = false;}
@@ -49,7 +51,6 @@ class Odometer {
   double getMaxExtent() const {return(m_max_extent);}
 
   double getTotalElapsed(double utc=-1);
-
   
  private: // State variables
 
