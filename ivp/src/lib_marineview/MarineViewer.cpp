@@ -950,7 +950,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     drawGLPoly(g_kayakMidOpen, g_kayakMidOpenSize, gray, 0, factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
-  if(vehibody == "heron") {
+  else if(vehibody == "heron") {
     //ColorPack dk_gray(0.4, 0.4, 0.6);
     ColorPack dk_gray(0.5, 0.5, 0.9);
     ColorPack lt_gray(0.8, 0.8, 0.8);
@@ -1072,6 +1072,21 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
 	       factor_x, transparency);
     if(outer_line > 0)
       drawGLPoly(g_triangleBody, g_triangleBodySize, black, outer_line,
+		 factor_x, transparency);
+    glTranslatef(cx, cy, 0);
+  }
+  else if(vehibody == "buoy") {  
+    if(vlength > 0) {
+      factor_x *= (vlength / g_circleWidth);
+      factor_y *= (vlength / g_circleWidth);
+    }
+    double cx = g_circleCtrX * factor_x;
+    double cy = g_circleCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+    drawGLPoly(g_circleBody, g_circleBodySize, body_color, 0,
+	       factor_x, transparency);
+    if(outer_line > 0)
+      drawGLPoly(g_circleBody, g_circleBodySize, black, outer_line,
 		 factor_x, transparency);
     glTranslatef(cx, cy, 0);
   }
