@@ -50,7 +50,7 @@ int main(int argc, char *argv[])
       showReleaseInfo("alogrep", "gpl");
       return(0);
     }
-    else if((argi == "--no_comments") || (argi == "-nc"))
+    else if((argi == "--n o_comments") || (argi == "-nc"))
       handler.setCommentsRetained(false);
     else if((argi == "--keep_bad") || (argi == "-kb"))
       handler.setBadLinesRetained(false);
@@ -80,6 +80,8 @@ int main(int argc, char *argv[])
 
     else if((argi == "--v") || (argi == "-vo")) 
       handler.setFormat("val");
+    else if((argi == "--s") || (argi == "-so")) 
+      handler.setFormat("src");
     else if((argi == "--tv") || (argi == "-tvo"))
       handler.setFormat("time:val");
     else if(argi == "--tvv")
@@ -91,6 +93,8 @@ int main(int argc, char *argv[])
       handled = handler.setFormat(argi.substr(9));
     else if(argi == "--final") 
       handler.setFinalOnly(true);
+    else if(argi == "--first") 
+      handler.setFirstOnly(true);
 
 
     else if((argi == "--quiet") || (argi == "-q")) {
@@ -188,6 +192,10 @@ void showHelpAndExit()
   cout << "  --format=time:var:val or --tvv                           " << endl;
   cout << "    Output only time, variable, and value columns          " << endl;
   cout << "                                                           " << endl;
+  cout << "  --format=time:var:src                                    " << endl;
+  cout << "    Output only time, variable, and source columns         " << endl;
+  cout << "                                                           " << endl;
+  cout << "  --first           Output only first matching line        " << endl;
   cout << "  --final           Output only final matching line        " << endl;
   cout << "  --csw,-csw        Columns separated with white space     " << endl;
   cout << "  --csc,-csc        Columns separated with a comma         " << endl;

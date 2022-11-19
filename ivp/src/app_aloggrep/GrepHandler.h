@@ -48,6 +48,7 @@ class GrepHandler
   void setRemoveDups(bool v)        {m_rm_duplicates=v;}
 
   void setFinalOnly(bool v)         {m_final_only=v;}
+  void setFirstOnly(bool v)         {m_first_only=v; m_make_report=false; m_comments_retained=false;}
   void setSubPattern(std::string s) {m_subpat=s;}
   bool setFormat(std::string);
   void setColSep(char c);
@@ -70,8 +71,10 @@ class GrepHandler
   bool   m_rm_duplicates;
 
   bool   m_final_only;
+  bool   m_first_only;
   bool   m_format_vals;
   bool   m_format_vars;
+  bool   m_format_srcs;
   bool   m_format_time;
   bool   m_make_report;
   char   m_colsep;

@@ -51,8 +51,10 @@ GrepHandler::GrepHandler()
   m_appcast_retained = false;
 
   m_final_only   = false;
+  m_first_only   = false;
 
   m_format_vals  = false;
+  m_format_srcs  = false;
   m_format_vars  = false;
   m_format_time  = false;
   m_make_report  = true;
@@ -175,8 +177,11 @@ bool GrepHandler::handle()
 	if(!checkRetain(line_raw))
 	  ignoreLine(line_raw);
 	else {
-	  if(!m_sort_entries) 
+	  if(!m_sort_entries) {
 	    outputLine(line_raw);
+	    if(m_first_only)
+	      done_reading_sorted = true;
+	  }
 	  else {
 	    string stime = getTimeStamp(line_raw);
 	    double dtime = atof(stime.c_str());
@@ -202,6 +207,8 @@ bool GrepHandler::handle()
 	ALogEntry entry = sorter.popEntry();
 	string line_raw = entry.getRawLine();
 	outputLine(line_raw);
+	if(m_first_only)
+	  done_reading_sorted = true;
       }
     }
   }
@@ -344,7 +351,7 @@ void GrepHandler::addKey(string key)
 //  Examples: time:val
 //            val
 //            time:var:val
-//      Note: Ok components: var,val,time
+//      Note: Ok components: var,val,src,time
 
 bool GrepHandler::setFormat(string str)
 {
@@ -358,6 +365,8 @@ bool GrepHandler::setFormat(string str)
       m_format_vars = true;
     else if(part == "time")
       m_format_time = true;
+    else if(part == "src")
+      m_format_srcs = true;
     else if(part != "val")
       return(false);
   }
@@ -383,7 +392,8 @@ void GrepHandler::outputLine(const string& line, bool last)
   // First handle if just output value field
   if(m_format_vals) {
     string line_val = stripBlankEnds(getDataEntry(line));
-    string tstamp = getTimeStamp(line);
+    string tstamp   = getTimeStamp(line);
+    string line_src = getSourceName(line);
     if(tstamp == m_last_tstamp)
       return;
 
@@ -403,7 +413,10 @@ void GrepHandler::outputLine(const string& line, bool last)
 
     if(m_format_time)
       line_val = tstamp + m_colsep + line_val;
-      
+
+    if(m_format_srcs)
+      line_val = line_src;
+    
     if(m_file_out)
       fprintf(m_file_out, "%s\n", line_val.c_str());
     else
