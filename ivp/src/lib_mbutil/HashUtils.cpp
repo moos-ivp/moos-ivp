@@ -41,6 +41,7 @@ string missionHash()
 {
   string hash = getCurrYear();
   hash += getCurrMonth();
+  hash += getCurrDay();
   hash += "-";
   hash += getCurrHour();
   hash += getCurrMinute();
@@ -147,6 +148,23 @@ string getCurrMonth()
     month_str = "0" + month_str;
       
   return(month_str);
+}
+
+//---------------------------------------------------------
+// Procedure: getCurrDay()
+
+string getCurrDay()
+{
+  time_t ttime = time(0);
+  tm *local_time = localtime(&ttime);
+
+  int day = local_time->tm_mday;
+
+  string day_str = intToString(day);
+  if(day_str.length() == 1)
+    day_str = "0" + day_str;
+      
+  return(day_str);
 }
 
 //---------------------------------------------------------

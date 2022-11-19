@@ -38,6 +38,7 @@ std::string hashRandAdj();
 
 std::string getCurrYear(bool full=false);
 std::string getCurrMonth();
+std::string getCurrDay();
 std::string getCurrHour();
 std::string getCurrMinute();
 std::string getCurrSeconds();
