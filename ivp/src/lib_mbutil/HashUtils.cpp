@@ -23,6 +23,9 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+
+#include <iostream>
+#include <sys/time.h>
 #include <ctime>
 #include "MBUtils.h"
 #include "HashUtils.h"
@@ -181,6 +184,55 @@ string getCurrMinute()
 }
 
 
+//---------------------------------------------------------
+// Procedure: getCurrSeconds()
+
+string getCurrSeconds()
+{
+  time_t ttime = time(0);
+  tm *local_time = localtime(&ttime);
+
+  int seconds = local_time->tm_sec;
+
+  string seconds_str = intToString(seconds);
+  if(seconds_str.length() == 1)
+    seconds_str = "0" + seconds_str;
+      
+  return(seconds_str);
+}
+
+
+//---------------------------------------------------------
+// Procedure: getCurrSecsUTC()
+
+string getCurrSecsUTC()
+{
+  time_t ttime = time(0);
+  tm *local_time = localtime(&ttime);
+
+  long utc_secs = local_time->tm_gmtoff;
+
+  string utc_str = doubleToString(utc_secs,3);
+
+  return(utc_str);
+}
+
+
+//---------------------------------------------------------
+// Procedure: getCurrTimeUTC()
+
+double getCurrTimeUTC()
+{
+  double dfT = 0.0;
+  struct timeval TimeVal;
+  
+  if(gettimeofday(&TimeVal, NULL)==0) {
+    dfT = TimeVal.tv_sec+TimeVal.tv_usec/1000000.0;
+  }
+  return(dfT);
+}
+
+
 
 //----------------------------------------------------------------
 // Procedure: adjectives4()
@@ -261,6 +313,12 @@ vector<string> adjectives4()
   adj.push_back("Wise");  adj.push_back("Zany");
   adj.push_back("Zero");
 
+  adj.push_back("Jims");
+  adj.push_back("Bobs");
+  adj.push_back("Hals");
+  adj.push_back("Neds");
+  adj.push_back("Teds");
+  adj.push_back("Bens");
   return(adj);
 }
 

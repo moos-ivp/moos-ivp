@@ -40,6 +40,9 @@ std::string getCurrYear(bool full=false);
 std::string getCurrMonth();
 std::string getCurrHour();
 std::string getCurrMinute();
+std::string getCurrSeconds();
+std::string getCurrSecsUTC();
+double      getCurrTimeUTC();
 
 std::string randomWord(const std::vector<std::string>& );
 
