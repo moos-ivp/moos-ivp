@@ -544,7 +544,7 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
 
   // Re-post the mission hash once every 16 secs realtime
   if(m_mission_hash_var != "") {
-    double hash_elapsed = (curr_time - m_last_mhash_time) / m_time_warp;
+    double hash_elapsed = (curr_time - m_last_mhash_time);
     if((m_last_mhash_time == 0) || (hash_elapsed > 16)) {
       //Notify("MISSION_HASH", m_mission_hash);
       Notify(m_mission_hash_var, m_mission_hash);
@@ -1003,8 +1003,12 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   }
 
   // Post the Mission Hash (added Nov0322)
-  m_mission_hash = missionHash();
-  m_mission_hash += " " + doubleToString(MOOSTime(),2);
+  double actual_utc = MOOSTime();
+  if(m_time_warp != 0)
+    actual_utc = MOOSTime() / m_time_warp;
+
+  m_mission_hash = "mhash=" + missionHash();
+  m_mission_hash += ",utc=" + doubleToString(actual_utc,2);
   
   registerVariables();
 }
@@ -1373,6 +1377,8 @@ bool PMV_MOOSApp::buildReport()
   m_msgs << "Node Rpt Rate(R):  " << node_rep_real_rate_str << endl;
   m_msgs << "Node Rpt Rate(W):  " << node_rep_warp_rate_str << endl;
   m_msgs << "Node Report Vars:  " << node_rpt_vars << endl;
+  m_msgs << "Mission Hash:      " << m_mission_hash << endl;
+  m_msgs << "Mission Hash Var:  " << m_mission_hash_var << endl;
   m_msgs << "------------------ " << endl;
   m_msgs << "AC Iterations:     " << iter_ac << endl;
   m_msgs << "PMV Iterations:    " << iter_pmv << endl;

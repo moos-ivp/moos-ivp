@@ -166,7 +166,7 @@ void showExampleConfigAndExit()
   blk("  realmcast_trunc_content      = false // {true,FALSE}          ");
   blk("  realmcast_time_format_utc    = false // {true,FALSE}          ");
   blk("                                                                ");
-  blk("  watch_cluster key=mission_top, vars=DEPLOY:RETURN:COVER       ");
+  blk("  watch_cluster = key=mission_top, vars=DEPLOY:RETURN:COVER     ");
   blk("                                                                ");
   blk("  // Context Pull-Down Menu ====================================");
   blk("  left_context[survey-point] = SURVEY_UPDATES = points =        ");
