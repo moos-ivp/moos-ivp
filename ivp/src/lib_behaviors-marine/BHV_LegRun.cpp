@@ -56,14 +56,14 @@ BHV_LegRun::BHV_LegRun(IvPDomain gdomain) : IvPBehavior(gdomain)
   
   m_min_leg_length = 50;
   m_min_turn_rad   = 5;
-  m_warn_overshoot = true;
+  m_warn_overshoot = false;
 
   m_turn1_dir = "star";
   m_turn2_dir = "star";
   m_turn1_rad = 15;
   m_turn2_rad = 15;
-  m_turn1_bias = -15;
-  m_turn2_bias = -15;
+  m_turn1_bias = 0;
+  m_turn2_bias = 0;
 
   m_mid_pct = 25;
   
@@ -191,7 +191,12 @@ bool BHV_LegRun::setParam(string param, string value)
     return(setPosDoubleOnString(m_leglen_req, value));
   else if(param == "leg_length_mod")
     return(setDoubleOnString(m_leglen_mod_req, value));
-
+  else if((param == "leg_length_min") && isNumber(value)) {
+    m_min_leg_length = atof(value.c_str());
+    if(m_min_leg_length < 5)
+      m_min_leg_length = 5;
+    return(true);
+  }
   else if(param == "leg_angle")
     return(setDoubleOnString(m_legang_req, value));
   else if(param == "leg_angle_mod")
@@ -947,12 +952,9 @@ bool BHV_LegRun::handleConfigTurnParam(string param, string val)
   else if(param == "turn2_dir")
     return(setPortStarOnString(m_turn2_dir, val));
   else if(param == "turn_dir") {
-    if(isValidTurn(val)) {
-      m_turn1_dir = val;
-      m_turn2_dir = val;
-      return(true);
-    }
-    return(false);
+    bool ok1 = setPortStarOnString(m_turn1_dir, val);
+    bool ok2 = setPortStarOnString(m_turn2_dir, val);
+    return(ok1 && ok2);
   }
 
   // Part 2: Setting the Turn Radius
