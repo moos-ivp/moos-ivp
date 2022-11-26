@@ -226,7 +226,7 @@ bool USM_MOOSApp::Iterate()
     m_model.setDriftFresh(false);
   }
 
-  //postWindModelVisuals();
+  postWindModelVisuals();
   applyWormHoles();
   postWormHolePolys();
   
