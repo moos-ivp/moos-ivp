@@ -27,6 +27,7 @@
 #include <string>
 #include <map>
 #include <list>
+#include <set>
 #include "NodeRecord.h"
 #include "CPAEvent.h"
 
@@ -60,6 +61,10 @@ class CPAMonitor
   double getClosestRangeEver() const {return(m_closest_range_ever);}
 
   unsigned int getContactDensity(std::string vname, double rng) const;
+
+  std::set<std::string> getVNames() const;
+
+  NodeRecord getVRecord(std::string vname);
   
  protected: // Local utility functions
   std::string pairTag(std::string, std::string);

@@ -23,6 +23,7 @@
 
 #include "CollisionDetector.h"
 #include "XYRangePulse.h"
+#include "XYCircle.h"
 #include "MBUtils.h"
 #include "LogicUtils.h"
 #include "ACTable.h"
@@ -122,13 +123,38 @@ bool CollisionDetector::Iterate()
   }
 
   m_cpa_monitor.clear();
-
+  postRings();
+  
   AppCastingMOOSApp::PostReport();
   return(true);
 }
 
 //---------------------------------------------------------
-// Procedure: handleCPAEvent
+// Procedure: postRings()
+
+void CollisionDetector::postRings()
+{
+  set<string> vnames = m_cpa_monitor.getVNames();
+  
+  set<string>::iterator p;
+  for(p=vnames.begin(); p!=vnames.end(); p++) {
+    string vname = *p;
+    NodeRecord record = m_cpa_monitor.getVRecord(vname);
+    if(record.valid() && (vname != "badguy")) {
+      double x = record.getX();
+      double y = record.getY();
+      XYCircle circle(x,y,m_encounter_dist);
+      circle.set_edge_color("white");
+      circle.set_label(vname + "rng");
+      circle.set_color("label", "off");
+      string spec = circle.get_spec();
+      Notify("VIEW_CIRCLE", spec);
+    }
+  }
+}
+
+//---------------------------------------------------------
+// Procedure: handleCPAEvent()
 
 void CollisionDetector::handleCPAEvent(CPAEvent event)
 {

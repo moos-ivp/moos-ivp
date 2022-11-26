@@ -434,6 +434,37 @@ double CPAMonitor::relBng(string vname1, string vname2)
 
 
 //---------------------------------------------------------
+// Procedure: getVNames()
+
+set<string> CPAMonitor::getVNames() const
+{
+  set<string> vnames;
+
+  map<string, string>::const_iterator p;
+  for(p=m_map_vgroup.begin(); p!=m_map_vgroup.end(); p++)
+    vnames.insert(p->first);
+
+  return(vnames);
+}
+
+//---------------------------------------------------------
+// Procedure: getVRecord()
+
+NodeRecord CPAMonitor::getVRecord(string vname)
+{
+  NodeRecord null_record;
+  
+  if(m_map_vrecords.count(vname) == 0)
+    return(null_record);
+
+  if(m_map_vrecords[vname].size() == 0)
+    return(null_record);
+
+  return(m_map_vrecords[vname].back());
+}
+
+
+//---------------------------------------------------------
 // Procedure: getContactDensity()
 
 unsigned int CPAMonitor::getContactDensity(string vname, double range) const
