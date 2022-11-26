@@ -131,6 +131,7 @@ bool ShoreBroker::OnStartUp()
 
   bool auto_bridge_realmcast = true;
   bool auto_bridge_appcast = true;
+  bool auto_bridge_mhash = true;
   
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
@@ -165,6 +166,8 @@ bool ShoreBroker::OnStartUp()
     handleConfigQBridge("REALMCAST_REQ");
   if(auto_bridge_appcast)
     handleConfigQBridge("APPCAST_REQ");
+  if(auto_bridge_mhash)
+    handleConfigBridge("src=MISSION_HASH");
   
   postQBridgeSet();
   registerVariables();
