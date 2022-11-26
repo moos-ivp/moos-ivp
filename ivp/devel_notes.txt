@@ -1,4 +1,5 @@
 
+
 o pRealm
 
   Modified to publish REALMCAST_CHANNELS much less frequently unless
@@ -65,6 +66,11 @@ o pMarineViewer
 
   Initial mods to use extrapolations. More work needs to be done to use a
   ContactLedger instead. 
+
+  Will post a mission hash now in the form:
+  MISSION_HASH = 221105K-WARM-POOL 12345678.90 (UTC time)
+  This presumably will be shared to all vehicles and logged in all communities
+  to clearly tie all log files together as being part of the same mission
 
 o uFldNodeBroker
 
@@ -136,8 +142,17 @@ o alogview
   a colon separated list of directories. When pMarineViewer is loaded, it looks
   in this path (plus finally moos-ivp/ivp/data) for the tif files.
 
-  alogview now supports hashed grids up to 100 kilometers per grid cell.   
- 
+  alogview now supports hashed grids up to 100 kilometers per grid cell.
+
+  alogview now supports rendering of VIEW_ARROW objects
+
+o aloggrep
+
+  aloggrep now supports returning just the first entry, with --first. It had already
+  supported the final entry with --final.
+
+  aloggrep now supports grabbing the src column in the --format switch.
+
 o lib_geometry
 
   Added a few utility functions for changing the length or angle of a line
@@ -176,4 +191,5 @@ o lib_mbutils
 
   HintHolder class for streamlinig visual hints in behaviors and apps
   
-
+  HashUtils set of functions added for creating randomly unique hash
+  values, in particular for supporting MISSION_HASH names.
