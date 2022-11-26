@@ -1,7 +1,6 @@
 //-------------------------------------------------
-// NAME: M. Benjamin, MIT CSAIL
+// NAME: M. Benjamin, MIT
 // FILE: $(VNAME).moos
-//-------------------------------------------------
 
 ServerHost = localhost
 ServerPort = $(BOT_MOOSDB)
@@ -29,6 +28,19 @@ Processconfig = ANTLER
   Run = iSay           @ NewConsole = false
   Run = pContactMgrV20 @ NewConsole = false
   Run = pRealm         @ NewConsole = false
+  Run = uXMS           @ NewConsole = false
+}
+
+//---------------------------------------------------------
+// uXMS Config Block
+
+ProcessConfig = uXMS
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+	var = DRIFT_VECTOR_ADD
+	var = MISSION_HASH
 }
 
 //---------------------------------------------------------
@@ -39,8 +51,8 @@ ProcessConfig = pRealm
   AppTick    = 2
   CommsTick  = 2
 
-	summary_interval = 7.6
-  relcast_interval = 0.55
+	//summary_interval = 7.6
+  //relcast_interval = 0.55
 }
 
 //----------------------------------------------------
@@ -57,7 +69,6 @@ ProcessConfig = pHelmIvP
   Domain       = speed:0:5:26
 
 	hold_on_apps = pContactMgrV20
-	//hold_on_apps = pBasicContactMgr
 }
 	
 //--------------------------------------------------------
@@ -100,32 +111,6 @@ ProcessConfig = pContactMgrV20
   cpa_range_color   = gray30
 }
 
-//--------------------------------------------------------
-// pBasicContactMgr Configuration Block
-
-ProcessConfig = pBasicContactMgr
-{
-  AppTick   = 2
-  CommsTick = 2
-
-  decay = 30,60
-
-  alert_verbose = true
-
-  contact_max_age = 35
-
-	//match_region = pts = {60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40}
-	//match_type = kayak, uuv
-	
-  //alert = id=say, onflag=SAY_MOOS=hello,
-  //alert = id=say, offflag=SAY_MOOS=bye,
-  //alert = id=say, alert_range=80, cpa_range=100
-
-  display_radii = true
-  default_alert_range_color = gray70
-  default_cpa_range_color   = gray30
-}
-
 //--------------------------------------------------
 // uFldNodeBroker configuration block from plugin
 
@@ -136,7 +121,7 @@ ProcessConfig = uFldNodeBroker
 
   try_shore_host = pshare_route=localhost:$(SHORE_PSHARE)
 
-	shadow_shore = ip=192.168.7.211, name=henry, dur=45
+	//shadow_shore = ip=192.168.7.211, name=henry, dur=45
 	
   bridge = src=VIEW_POLYGON
   bridge = src=VIEW_CIRCLE

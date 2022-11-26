@@ -53,6 +53,7 @@ ProcessConfig = uFldShoreBroker
   bridge  = src=RETURN_$V,  alias=RETURN
 
   bridge  = src=REGION_INFO,  alias=REGION_INFO
+  bridge  = src=MISSION_HASH
 }
 
 //--------------------------------------------------

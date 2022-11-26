@@ -24,10 +24,13 @@ ProcessConfig = pLogger
 //  WildCardOmitPattern = DB_RWSUMMARY
 
   WildCardOmitPattern = NAV_PITCH, NAV_LAT, NAV_LONG, NAV_YAW, NAV_Z
-  WildCardOmitPattern = SIMULATION_MODE, TRUE_X, TRUE_Y, DB_CLIENTS
+  WildCardOmitPattern = SIMULATION_MODE, TRUE_X, TRUE_Y
   WildCardOmitPattern = NAV_DEPTH, NAV_SPEED_OVER_GROUND, DB_QOS
   WildCardOmitPattern = NODE_BROKER_PING_0, PSHARE*
   WildCardOmitPattern = IVPHELM_ALLSTOP_DEBUG, *ITER_GAP, *ITER_LEN
-  WildCardOmitPattern = PHI_HOST*, NODE_REPORT_LOCAL
+  WildCardOmitPattern = PHI_HOST*
+
+  // WildCardOmitPattern = DB_CLIENTS
+  // WildCardOmitPattern = PHI_HOST*, NODE_REPORT_LOCAL
 
 }

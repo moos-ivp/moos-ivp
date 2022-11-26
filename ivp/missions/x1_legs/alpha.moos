@@ -110,7 +110,8 @@ ProcessConfig = uSimMarineV22
  
 	app_logging = true
 
-	drift_y = 0.1
+	drift_y = 0
+	
 	
   //start_x       = 95
   //start_y       = -30
@@ -202,9 +203,9 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  set_pan_x   = -90
-  set_pan_y   = -280
-  zoom        = 0.95
+  set_pan_x  = -90
+  set_pan_y  = -280
+  zoom       = 0.95
 
   //tiff_file   = forrest19.tif
   tiff_file = MIT_SP.tif

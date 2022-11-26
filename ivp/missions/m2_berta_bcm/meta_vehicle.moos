@@ -5,7 +5,6 @@
 
 ServerHost = localhost
 ServerPort = $(VPORT)
-Simulator  = true
 
 // Community name IS the vehicle name
 Community  = $(VNAME)
@@ -30,6 +29,7 @@ Processconfig = ANTLER
   Run = uFldNodeBroker   @ NewConsole = false
   Run = uLoadWatch       @ NewConsole = false
   Run = iSay             @ NewConsole = false
+  Run = pRealm           @ NewConsole = false
 }
 
 #include plug_iSay.moos

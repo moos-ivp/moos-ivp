@@ -24,16 +24,6 @@ Processconfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
-  Run = uFldOffboard    @ NewConsole = false
-}
-
-//---------------------------------------------------------
-// uFldOffBoard Config Block
-
-ProcessConfig = uFldOffboard
-{
-  AppTick    = 2
-  CommsTick  = 2
 }
 
 //---------------------------------------------------------
@@ -82,7 +72,7 @@ ProcessConfig = uMACView
 // uFldShoreBroker Configuration Block
 
 ProcessConfig = uFldShoreBroker
-{
+{ 
   AppTick       = 1
   CommsTick     = 1
 
@@ -100,6 +90,7 @@ ProcessConfig = uFldShoreBroker
   bridge   = src=UP_LOITER_$N, alias=UP_LOITER
   bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
   bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
+  bridge   = src=MISSION_HASH, alias=MISSION_HASH
 }
 
 //--------------------------------------------------
@@ -114,7 +105,7 @@ ProcessConfig = uFldNodeComms
   critical_range   = 25
   min_msg_interval = 15
   max_msg_length   = 1000
-//  groups           = true
+  groups           = true
 
   view_node_rpt_pulses = false
 }
@@ -137,7 +128,7 @@ ProcessConfig = uXMS
   CommsTick     = 1
 
   var = APPCAST_REQ_ALL, DEPLOY_ALL, RETURN_ALL, STATION_KEEP_ALL
-  var = STATION_KEEP_HENRY, STATION_KEEP_GILDA
+  var = STATION_KEEP_HENRY, STATION_KEEP_GILDA, MISSION_HASH
   var = RETURN_UPDATES_HENRY, RETURN_UPDATES_GILDA
 }
 
@@ -172,7 +163,9 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-watch_cluster = key=refueling_info, vars=UNDERWAY_TIMER
+  watch_cluster = key=basic, vars=MISSION_HASH
+
+  //mission_hash_var = off
 	
   TIFF_FILE            = forrest19.tif
   set_pan_x            = -90
@@ -250,7 +243,8 @@ watch_cluster = key=refueling_info, vars=UNDERWAY_TIMER
 	button_13  = HPWT:89 # CONTACT_INFO_HENRY = "name=avdcol_gilda#pwt=89"
 	button_14  = HPWT:88 # CONTACT_INFO_HENRY = pwt_outer_dist=88
 	button_15  = HPWT:79 # CONTACT_INFO_HENRY = "name=gilda#pwt=79"
-	
+
+	button_16 = DFA # DRIFT_VECTOR_ADD=1.2
 }
 
 //--------------------------------------------------------

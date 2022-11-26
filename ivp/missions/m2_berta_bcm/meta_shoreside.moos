@@ -18,6 +18,7 @@ Processconfig = ANTLER
   Run = pLogger         @ NewConsole = false
   Run = uXMS            @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
 
   Run = pShare          @ NewConsole = false
   Run = pHostInfo       @ NewConsole = false
