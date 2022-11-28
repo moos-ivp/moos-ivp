@@ -36,10 +36,11 @@ protected:
   IvPFunction *buildOF();
 
   bool handleConfigZigFirst(std::string);
-  bool handleConfigZigAngle(std::string);
   bool handleConfigZigZags(std::string);
   bool handleConfigVisualHint(std::string);
-
+  bool handleConfigZigAngle(std::string);
+  bool handleConfigZigAngleFierce(std::string);
+  
   bool updateOSPos(std::string fail_action="err");
   bool updateOSHdg(std::string fail_action="err");
   bool updateOSSpd(std::string fail_action="err");
@@ -68,7 +69,8 @@ protected:
  private: // Config params
   double m_hdg_thresh;
   double m_zig_angle;
-
+  double m_zig_angle_fierce;
+  
   double m_stem_hdg;
   double m_stem_spd;
   

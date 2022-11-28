@@ -60,7 +60,10 @@ BHV_ZigZag::BHV_ZigZag(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_hint_set_hdg_color = "white";
   m_hint_req_hdg_color = "yellow";
   
+  m_zig_angle = 0;
+  m_zig_angle_fierce = -1;
 
+  
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
 
@@ -94,6 +97,8 @@ bool BHV_ZigZag::setParam(string param, string value)
     handled = setUIntOnString(m_max_zig_legs, value);
   else if(param == "max_zig_zags")
     handled = handleConfigZigZags(value);
+  else if(param == "delta_heading" || (param == "zig_angle_fierce"))
+    handled = handleConfigZigAngleFierce(value);
   //else if(param == "end_solo_flag")
   //  handled = addVarDataPairOnString(m_end_solo_flag, value);
 
@@ -170,13 +175,30 @@ bool BHV_ZigZag::handleConfigZigAngle(string str)
 }
 
 //-----------------------------------------------------------
+// Procedure: handleConfigZigAngleFierce()
+
+bool BHV_ZigZag::handleConfigZigAngleFierce(string str)
+{
+  if(!isNumber(str))
+    return(false);
+
+  double dval = atof(str.c_str());
+  if((dval < 1) || (dval > 75))
+    return(false);
+  
+  m_zig_angle_fierce = dval;
+  
+  return(true);
+}
+
+//-----------------------------------------------------------
 // Procedure: updateSetHdg()
 
 void BHV_ZigZag::updateSetHdg()
 {
-  cout << "m_osh:" << m_osh << endl;
-  cout << "m_state: " << m_state << endl;
+  // ========================================================
   // Part 1: If in stem state, pick a side and set a heading 
+  // ========================================================
   if(m_state == "stem") {
     if(m_zig_first == "port") {
       setState("port");
@@ -186,7 +208,6 @@ void BHV_ZigZag::updateSetHdg()
       setState("star");
       m_set_hdg = angle360(m_stem_hdg + m_zig_angle);
     }
-    cout << "m_set_hdg_x: " << m_set_hdg << endl;
     return;
   }
 
@@ -214,7 +235,6 @@ void BHV_ZigZag::updateSetHdg()
   // ========================================================
   // Part 3: Achieved set_hdg so change state
   // ========================================================
-
   if(m_state == "port") {
     setState("star");
     m_set_hdg = angle360(m_stem_hdg + m_zig_angle);
@@ -225,8 +245,6 @@ void BHV_ZigZag::updateSetHdg()
     m_set_hdg = angle360(m_stem_hdg - m_zig_angle);
     m_zig_count++;
   }
-  cout << "m_set_hdg_y: " << m_set_hdg << endl;
- 
 }
 
 //-----------------------------------------------------------
@@ -238,18 +256,19 @@ void BHV_ZigZag::updateReqHdg()
     m_req_hdg = m_set_hdg;
 
   else {
+    double delta_hdg = m_zig_angle;
+    if(m_zig_angle_fierce > 0)
+      delta_hdg = m_zig_angle_fierce;
+    
     if(m_state == "port") 
-      m_req_hdg = m_osh - m_zig_angle;
+      m_req_hdg = m_osh - delta_hdg;
     else if(m_state == "star") 
-      m_req_hdg = m_osh + m_zig_angle;
+      m_req_hdg = m_osh + delta_hdg;
     else if(m_state == "stem") 
       m_req_hdg = m_stem_hdg;
   }
 
   m_req_hdg = angle360(m_req_hdg);
-
-  cout << "m_req_hdg_z: " << m_req_hdg << endl;
-
 }
 
 //-----------------------------------------------------------
@@ -316,12 +335,6 @@ IvPFunction *BHV_ZigZag::onRunState()
     }
     return(0);
   }
-  
-  cout << "m_stem_hdg:" << m_stem_hdg << endl;
-  cout << "m_stem_spd:" << m_stem_spd << endl;
-  cout << "m_zig_first:" << m_zig_first << endl;
-  cout << "m_set_hdg:" << m_set_hdg << endl;
-  cout << "m_req_hdg:" << m_set_hdg << endl;
   
   // Part 2: Generate the IvP function 
   IvPFunction *ipf = buildOF();
