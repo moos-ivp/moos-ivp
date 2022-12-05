@@ -80,12 +80,11 @@ bool NodeBroker::OnNewMail(MOOSMSG_LIST &NewMail)
 
     else if(key == "DB_CLIENTS")
       checkMessagingPolicy(sval);
-
-    else if(key == "SHADOW_SHORE") {
-      string msg;
-      bool handled = handleConfigShadow(sval, msg);
+    
+    else if(key == "TRY_SHORE_HOST") {
+      bool handled = handleConfigTryShoreHost(sval, false);
       if(!handled)
-	reportRunWarning(msg);      
+	reportRunWarning("Invalid incoming TRY_SHORE_HOST");
     }
 
     // Only accept an ACK coming from a different community
@@ -126,8 +125,6 @@ bool NodeBroker::Iterate()
   
   sendNodeBrokerPing();
 
-  checkUnhandledShadows();
-  
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -170,12 +167,6 @@ bool NodeBroker::OnStartUp()
       handled = setBooleanOnString(auto_bridge_appcast, value);
     else if(param == "auto_bridge_pshare_vars") 
       handled = setBooleanOnString(auto_bridge_pshare_vars, value);
-    else if(param == "shadow_shore") {
-      string msg;
-      handled = handleConfigShadow(value, msg);
-      if(!handled)
-	reportConfigWarning(msg);      
-    }
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -205,7 +196,7 @@ void NodeBroker::registerVariables()
 
   Register("NODE_BROKER_ACK", 0);
   Register("PHI_HOST_INFO", 0);
-  Register("SHADOW_SHORE", 0);
+  Register("TRY_SHORE_HOST", 0);
 
   if(m_messaging_policy == "auto")
     Register("DB_CLIENTS", 0);
@@ -238,49 +229,6 @@ void NodeBroker::sendNodeBrokerPing()
       m_pings_posted++;
     }
   }
-}
-
-//------------------------------------------------------------
-// Procedure: checkUnhandledShadows()
-//   Purpose: For each of configured shore_shadow check if the
-//            the shadow currently requires an outgoing msg to
-//            pShare to implement the shadow.
-//            Some shadows have a fixed duration, requiring a
-//            heart-beat sort of periodic renewal or else the
-//            sharing times out.
-
-void NodeBroker::checkUnhandledShadows()
-{
-  vector<string> donot_shadow_vars;
-  //donot_shadow_vars.push_back("NODE_BROKER_PING");
-
-  map<string, bool>::iterator p;
-  for(p=m_map_xshore_handled.begin(); p!=m_map_xshore_handled.end(); p++) {
-    string ip    = p->first; 
-    bool handled = p->second;
-    if(!handled) {
-
-      string route = ip + ":9200";
-      bool acked = false;
-      for(unsigned int j=0; j<m_shore_routes.size(); j++) {
-	if(route == m_shore_routes[j])
-	  if(m_shore_pings_ack[j] > 0)
-	    acked = true;
-      }
-
-      if(acked) {      
-	unsigned int vsize = m_bridge_src_var.size();
-	for(unsigned int i=0; i<vsize; i++) {			  
-	  string src   = m_bridge_src_var[i];
-	  string dest  = m_bridge_alias[i];
-	  if(!vectorContains(donot_shadow_vars, src))
-	    postPShareCommand(src, dest, route);
-	}
-      }
-
-      m_map_xshore_handled[ip] = true;
-    }
-  }      
 }
 
 //------------------------------------------------------------
@@ -356,80 +304,6 @@ void NodeBroker::registerUserBridges()
   }
 }
 
-
-//------------------------------------------------------------
-// Procedure: handleConfigShadow()
-//   Example: shadow_shore = ip=123.45.67.89, name=johndoe, dur=60
-
-bool NodeBroker::handleConfigShadow(string line, string& msg)
-{
-  // Sanity check
-  line = tolower(stripBlankEnds(line));
-  if(line == "") {
-    msg = "empty shadow config";
-    return(false);
-  }
-  
-  string ip, name;
-  double start = MOOSTime();
-  double duration = -1;
-  
-  vector<string> svector = parseString(line, ',');
-  for(unsigned int i=0; i<svector.size(); i++) {
-    string param = tolower(biteStringX(svector[i], '='));
-    string value = tolower(svector[i]);
-    if(param == "ip") {
-      if(isValidIPAddress(value))
-	ip = value;
-      else {
-	msg = "Invalid IP addr:[" + value + "]";
-	return(false);
-      }
-    }
-    else if((param == "name") && !strContainsWhite(value))
-      name = value;
-    else if((param == "dur") || (param == "duration")) {
-      bool ok_dur = setDoubleOnString(duration, value);
-      if(!ok_dur) {
-	msg = "unhandled duration:[" + value + "]";
-	return(false);
-      }
-    }
-    else {
-      msg = "unhandled shadow config param:[" + param + "]";
-      return(false);
-    }
-  }
-
-  if(ip == "") {
-    msg = "bad/missing shadow ip";
-    return(false);
-  }
-  
-  if(name == "")
-    name = "mystery";
-
-  bool m_allow_mystery_shadows = true;
-  if(!m_allow_mystery_shadows && (name == "mystery")) {
-    msg = "undeclared/mystery shadows not allowed";
-    return(false);
-  }
-
-  if(m_map_xshore_name.count(ip) != 0) {
-    if(m_map_xshore_name[ip] != name) {
-      msg = "shadow ip already exists w/ different name";
-      return(false);
-    }
-  }
-
-  m_map_xshore_name[ip] = name;
-  m_map_xshore_start[ip] = start;
-  m_map_xshore_duration[ip] = duration;
-  m_map_xshore_handled[ip] = false;
-
-  return(true);
-}
-
 //------------------------------------------------------------
 // Procedure: handleConfigBridge()
 //   Example: bridge = src=FOO, alias=BAR
@@ -488,7 +362,8 @@ bool NodeBroker::handleConfigBridge(string line)
 //------------------------------------------------------------
 // Procedure: handleConfigTryShoreHost()
 
-bool NodeBroker::handleConfigTryShoreHost(string original_line)
+bool NodeBroker::handleConfigTryShoreHost(string original_line,
+					  bool dup_warn)
 {
   string pshare_route;
 
@@ -507,6 +382,15 @@ bool NodeBroker::handleConfigTryShoreHost(string original_line)
   if(!isValidPShareRoute(pshare_route, ip_err_msg)) {
     reportConfigWarning(ip_err_msg);
     return(false);
+  }
+
+  if(vectorContains(m_shore_routes, pshare_route)) {
+    if(dup_warn) {
+      reportConfigWarning("Duplicate try_shore_host:" + pshare_route);
+      return(false);
+    }
+    else // just ignore 
+      return(true);
   }
   
   m_shore_routes.push_back(pshare_route);
@@ -693,30 +577,6 @@ bool NodeBroker::buildReport()
 
   m_msgs << endl << endl;
 
-  if(m_map_xshore_name.size() != 0) {
-
-    m_msgs << "===========================================================" << endl;
-    m_msgs << "            SHADOW Shoreside Information:" << endl;
-    m_msgs << "===========================================================" << endl;
-    ACTable actab2(5);
-    actab2 << "Shadow IP | Name  | Start | Duration | Remaining ";
-    actab2.addHeaderLines();
-
-    map<string, string>::iterator p;
-    for(p=m_map_xshore_name.begin(); p!=m_map_xshore_name.end(); p++) {
-      string ip   = p->first;
-      string name = p->second;
-      double dur  = m_map_xshore_duration[ip];
-      double start = m_map_xshore_start[ip];
-      actab2 << ip << name;
-      actab2 << doubleToString(start,1);
-      actab2 << doubleToStringX(dur,1);
-      actab2 << "tbd";
-    }
-    m_msgs << actab2.getFormattedString();
-    m_msgs << endl << endl;
-  }
-      
   m_msgs << "Phase Completion Summary:"             << endl;
   m_msgs << "------------------------------------" << endl;
   string s1 = (m_ok_phis_received > 0) ? "(Y)" : "(N)";

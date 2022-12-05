@@ -43,7 +43,7 @@ class NodeBroker : public AppCastingMOOSApp
   bool buildReport();
 
  protected:
-  bool handleConfigTryShoreHost(std::string);
+  bool handleConfigTryShoreHost(std::string, bool dup_warn=true);
   bool handleConfigBridge(std::string);
   bool handleConfigShadow(std::string, std::string&);
 
@@ -75,10 +75,10 @@ class NodeBroker : public AppCastingMOOSApp
   std::vector<bool>         m_shore_bridged;
 
   // Below maps keyed on IP address
-  std::map<std::string, std::string> m_map_xshore_name;
-  std::map<std::string, double>      m_map_xshore_start;
-  std::map<std::string, double>      m_map_xshore_duration;
-  std::map<std::string, bool>        m_map_xshore_handled;
+  //std::map<std::string, std::string> m_map_xshore_name;
+  //std::map<std::string, double>      m_map_xshore_start;
+  //std::map<std::string, double>      m_map_xshore_duration;
+  //std::map<std::string, bool>        m_map_xshore_handled;
 
   // A list of IP addresses on the pulled from the try_shore_host param
   std::vector<std::string>  m_try_host_ips;

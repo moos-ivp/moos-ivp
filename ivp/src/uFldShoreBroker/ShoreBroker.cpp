@@ -267,7 +267,9 @@ void ShoreBroker::postTryVNodes()
   if(elapsed_posting > 10) {
     m_last_posting_vnodes = m_curr_time;
     for(unsigned int i=0; i<m_try_vnodes.size(); i++) {
-      string post = "pshare_route=" + m_try_vnodes[i];
+      string post = "pshare_route=";
+      post += m_shore_host_record.getHostIP() + ":";
+      post += m_shore_host_record.getPortUDP();
       Notify("TRY_SHORE_HOST", post);
     }
   }
@@ -442,7 +444,7 @@ void ShoreBroker::makeBridgeRequestAll()
 // PSHARE_CMD="cmd=output,
 //             src_name=FOO,
 //             dest_name=BAR,
-//             route=localhost:9000 & multicast_8
+//             route=localhost:9000 & 192.168.1.5:9200
 
 void ShoreBroker::makeBridgeRequest(string src_var, HostRecord hrecord, 
 				    string alias, unsigned int node_index)
