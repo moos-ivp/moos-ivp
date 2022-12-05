@@ -45,6 +45,8 @@ HostRecord string2HostRecord(const string& host_record_string)
     
     if(param == "community")
       new_record.setCommunity(value);
+    else if(param == "vname")
+      new_record.setCommunity(value);
     else if(param == "hostip")
       new_record.setHostIP(value);
     else if(param == "port_db")

@@ -561,6 +561,7 @@ bool ShoreBroker::handleConfigTryVNode(string vnode)
 
   string fake_ping = "community=" + vname;
   fake_ping += ",host_ip=" + ip;
+  fake_ping += ",port_db=9000";
   fake_ping += ",pshare_iroutes=" + ip + ":" + port;
   fake_ping += ",time_warp=" + doubleToString(MOOSTime(),2);
   

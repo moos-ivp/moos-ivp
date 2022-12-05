@@ -252,7 +252,7 @@ void NodeBroker::sendNodeBrokerPing()
 void NodeBroker::checkUnhandledShadows()
 {
   vector<string> donot_shadow_vars;
-  donot_shadow_vars.push_back("NODE_BROKER_PING");
+  //donot_shadow_vars.push_back("NODE_BROKER_PING");
 
   map<string, bool>::iterator p;
   for(p=m_map_xshore_handled.begin(); p!=m_map_xshore_handled.end(); p++) {
@@ -260,13 +260,22 @@ void NodeBroker::checkUnhandledShadows()
     bool handled = p->second;
     if(!handled) {
 
-      unsigned int vsize = m_bridge_src_var.size();
-      for(unsigned int i=0; i<vsize; i++) {			  
-	string src   = m_bridge_src_var[i];
-	string dest  = m_bridge_alias[i];
-	string route = ip + ":9200";
-	if(!vectorContains(donot_shadow_vars, src))
-	  postPShareCommand(src, dest, route);
+      string route = ip + ":9200";
+      bool acked = false;
+      for(unsigned int j=0; j<m_shore_routes.size(); j++) {
+	if(route == m_shore_routes[j])
+	  if(m_shore_pings_ack[j] > 0)
+	    acked = true;
+      }
+
+      if(acked) {      
+	unsigned int vsize = m_bridge_src_var.size();
+	for(unsigned int i=0; i<vsize; i++) {			  
+	  string src   = m_bridge_src_var[i];
+	  string dest  = m_bridge_alias[i];
+	  if(!vectorContains(donot_shadow_vars, src))
+	    postPShareCommand(src, dest, route);
+	}
       }
 
       m_map_xshore_handled[ip] = true;

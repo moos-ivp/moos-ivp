@@ -311,7 +311,7 @@ string NodeRecord::getLoadWarning(string default_warning) const
 }
 
 //---------------------------------------------------------------
-// Procedure: valid
+// Procedure: valid()
 //      Note: Determines if all the required fields have been set
 
 bool NodeRecord::valid() const

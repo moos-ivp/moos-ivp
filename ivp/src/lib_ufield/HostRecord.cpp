@@ -27,7 +27,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Procedure: set()
 
 void HostRecord::set(const string& community, const string& hostip,
 		     const string& port_db,   const string& port_udp,
