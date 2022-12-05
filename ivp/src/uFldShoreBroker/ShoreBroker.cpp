@@ -267,10 +267,12 @@ void ShoreBroker::postTryVNodes()
   if(elapsed_posting > 10) {
     m_last_posting_vnodes = m_curr_time;
     for(unsigned int i=0; i<m_try_vnodes.size(); i++) {
-      string post = "pshare_route=";
-      post += m_shore_host_record.getHostIP() + ":";
-      post += m_shore_host_record.getPortUDP();
-      Notify("TRY_SHORE_HOST", post);
+      string ip = m_shore_host_record.getHostIP();
+      string port = m_shore_host_record.getPortUDP();
+      if((ip != "") && (port != "")) {
+	string post = "pshare_route=" + ip + ":" + port;
+	Notify("TRY_SHORE_HOST", post);
+      }
     }
   }
 }

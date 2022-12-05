@@ -56,7 +56,7 @@ class NodeBroker : public AppCastingMOOSApp
   void handleMailAck(std::string);
 
   void registerVariables();
-  void registerPingBridges();
+  void registerPingBridges(bool only_latest=false);
   void registerUserBridges();
 
   void postPShareCommand(std::string src, std::string dest, std::string route);

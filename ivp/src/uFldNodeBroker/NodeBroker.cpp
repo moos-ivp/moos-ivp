@@ -84,7 +84,9 @@ bool NodeBroker::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "TRY_SHORE_HOST") {
       bool handled = handleConfigTryShoreHost(sval, false);
       if(!handled)
-	reportRunWarning("Invalid incoming TRY_SHORE_HOST");
+	reportRunWarning("Invalid incoming TRY_SHORE_HOST:"+sval);
+      else
+	registerPingBridges(true);
     }
 
     // Only accept an ACK coming from a different community
@@ -270,8 +272,18 @@ void NodeBroker::checkMessagingPolicy(string db_clients)
 //------------------------------------------------------------
 // Procedure: registerPingBridges()
 
-void NodeBroker::registerPingBridges()
+void NodeBroker::registerPingBridges(bool only_latest)
 {
+  if(only_latest && (m_shore_routes.size() > 0)) {
+    unsigned int index = m_shore_routes.size()-1;
+    string src  = "NODE_BROKER_PING_"+uintToString(index);
+    string dest = "NODE_BROKER_PING";
+    string route = m_shore_routes[index];
+    postPShareCommand(src, dest, route);
+    return;
+  }
+    
+  
   for(unsigned int i=0; i<m_shore_routes.size(); i++) {
     string src  = "NODE_BROKER_PING_"+uintToString(i);
     string dest = "NODE_BROKER_PING";
