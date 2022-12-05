@@ -50,6 +50,9 @@ ShoreBroker::ShoreBroker()
   m_phis_received     = 0;  // Times PHI_HOST_INFO       received
   m_acks_posted       = 0;  // Times NODE_BROKER_ACK     posted
   m_pshare_cmd_posted = 0;  // Times PSHARE_CMD_REGISTER posted
+
+  m_last_pshare_vnodes = 0;
+  m_last_posting_vnodes = 0;
 }
 
 //---------------------------------------------------------
@@ -110,6 +113,7 @@ bool ShoreBroker::Iterate()
   sendAcks();
   checkForStaleNodes();
   postNodeCount();
+  postTryVNodes();
   
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -239,6 +243,37 @@ void ShoreBroker::postNodeCount()
 }
 
 //------------------------------------------------------------
+// Procedure: postTryVNodes()
+
+void ShoreBroker::postTryVNodes()
+{
+  // Part 1: Every ~30 secs (re)post the PSHARE_CMD needed to
+  // get the message to the nodes.
+  double elapsed_pshare = m_curr_time - m_last_pshare_vnodes;
+  if(elapsed_pshare > 30) {
+    m_last_pshare_vnodes = m_curr_time;
+    for(unsigned int i=0; i<m_try_vnodes.size(); i++) {
+      string pshare_post = "cmd=output";
+      pshare_post += ",src_name=TRY_SHORE_HOST";
+      pshare_post += ",dest_name=TRY_SHORE_HOST";
+      pshare_post += ",route=" + m_try_vnodes[i];
+      Notify("PSHARE_CMD", pshare_post);
+    }
+  }
+  
+  // Part 2: Every ~10 secs Post the TRY_SHORE_HOST msgs out
+  // to the vehicle nodes (vnodes).
+  double elapsed_posting = m_curr_time - m_last_posting_vnodes;
+  if(elapsed_posting > 10) {
+    m_last_posting_vnodes = m_curr_time;
+    for(unsigned int i=0; i<m_try_vnodes.size(); i++) {
+      string post = "pshare_route=" + m_try_vnodes[i];
+      Notify("TRY_SHORE_HOST", post);
+    }
+  }
+}
+
+//------------------------------------------------------------
 // Procedure: postQBridgeSet()
 
 void ShoreBroker::postQBridgeSet()
@@ -298,7 +333,6 @@ void ShoreBroker::checkForStaleNodes()
     }
   }
 }
-
 
 //------------------------------------------------------------
 // Procedure: handleMailNodePing()
@@ -528,14 +562,12 @@ void ShoreBroker::handleConfigBridgeAux(string src_var, string alias)
 
 //------------------------------------------------------------
 // Procedure: handleConfigTryVNode()
-//   Example: vname=abe,route=192.168.7.6:9200
-//   Example: vname=ben,route=192.168.7.6      (9200 default)
-
-// vname=abe,route=192.68.7.6:9200
+//   Example: route=192.168.7.6:9200
+//   Example: route=192.168.7.6      (9200 default)
 
 bool ShoreBroker::handleConfigTryVNode(string vnode)
 {
-  string vname,ip,port;
+  string ip,port;
   
   vector<string> svector = parseString(vnode, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
@@ -548,25 +580,23 @@ bool ShoreBroker::handleConfigTryVNode(string vnode)
       if(port == "")
 	port = "9200";
     }
-    else if(param == "vname")
-      vname = value;
+    else
+      return(false);
   }
 
-  if(vname == "")
-    return(false);
   if(!isValidIPAddress(ip))
     return(false);
   if(!isNumber(port))
     return(false);
 
-  string fake_ping = "community=" + vname;
-  fake_ping += ",host_ip=" + ip;
-  fake_ping += ",port_db=9000";
-  fake_ping += ",pshare_iroutes=" + ip + ":" + port;
-  fake_ping += ",time_warp=" + doubleToString(MOOSTime(),2);
+  string route = ip + ":" + port;
+
+  if(vectorContains(m_try_vnodes, route)) {
+    reportConfigWarning("Duplicate vnode route:" + route);
+    return(false);
+  }
   
-  handleMailNodePing(fake_ping);
-  
+  m_try_vnodes.push_back(route);
   return(true);
 }
 

@@ -59,6 +59,7 @@ class ShoreBroker : public AppCastingMOOSApp
   void postQBridgeSet();
   void postBridgeSet();
   void postNodeCount();
+  void postTryVNodes();
   void registerVariables();
 
  protected: // Config Variables
@@ -94,6 +95,8 @@ class ShoreBroker : public AppCastingMOOSApp
   unsigned int m_pshare_cmd_posted;
 
   std::vector<std::string> m_try_vnodes;
+  double m_last_pshare_vnodes;
+  double m_last_posting_vnodes;
 };
 
 #endif 
