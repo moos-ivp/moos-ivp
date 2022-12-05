@@ -84,8 +84,9 @@ string HostRecord::getSpecTerse() const
 
   return(str);
 }
+
 //---------------------------------------------------------------
-// Procedure: valid
+// Procedure: valid()
 //      Note: Determines if all the required fields have been set
 
 bool HostRecord::valid(const string& check) const
@@ -108,10 +109,18 @@ bool HostRecord::valid(const string& check) const
   return(true);
 }
 
+//---------------------------------------------------------------
+// Procedure: setPShareIRoutes()
 
+void HostRecord::setPShareIRoutes(string sval)
+{
+  m_pshare_iroutes = sval;
 
-
-
-
-
-
+  // If port_udp is not otherwise set, grab it from the iroute
+  // if it is given
+  if((m_port_udp == "") && strContains(sval, ':')) {
+    biteString(sval, ':');
+    if(isNumber(sval))
+      m_port_udp = sval;
+  }
+}

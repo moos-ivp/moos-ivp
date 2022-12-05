@@ -46,7 +46,7 @@ class HostRecord
   void setTimeWarp(const std::string& s)   {m_timewarp=s;}
   void setStatus(const std::string& s)     {m_status=s;}
   void setTimeStamp(const std::string& s)  {m_timestamp=s;}
-  void setPShareIRoutes(const std::string& s) {m_pshare_iroutes=s;}
+  void setPShareIRoutes(std::string);
 
   std::string getCommunity() const  {return(m_community);}
   std::string getHostIP() const     {return(m_hostip);}
