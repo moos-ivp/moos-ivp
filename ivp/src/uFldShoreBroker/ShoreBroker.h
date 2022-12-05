@@ -46,7 +46,8 @@ class ShoreBroker : public AppCastingMOOSApp
   void handleConfigBridge(const std::string&);
   void handleConfigQBridge(const std::string&);
   void handleConfigBridgeAux(std::string, std::string);
-
+  bool handleConfigTryVNode(std::string);
+  
   void handleMailNodePing(const std::string&);
 
   void makeBridgeRequestAll();
@@ -91,14 +92,8 @@ class ShoreBroker : public AppCastingMOOSApp
   unsigned int m_phis_received;
   unsigned int m_acks_posted;
   unsigned int m_pshare_cmd_posted;
+
+  std::vector<std::string> m_try_vnodes;
 };
 
 #endif 
-
-
-
-
-
-
-
-

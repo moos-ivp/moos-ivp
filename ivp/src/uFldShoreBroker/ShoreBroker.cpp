@@ -153,6 +153,8 @@ bool ShoreBroker::OnStartUp()
       handled = setBooleanOnString(auto_bridge_appcast, value);
     else if(param == "warning_on_stale") 
       handled = setBooleanOnString(m_warning_on_stale, value);
+    else if(param == "try_vnode") 
+      handled = handleConfigTryVNode(value);
     else
       handled = false;
 
@@ -300,9 +302,9 @@ void ShoreBroker::checkForStaleNodes()
 
 //------------------------------------------------------------
 // Procedure: handleMailNodePing()
-//   Example: NODE_BROKER_PING = "COMMUNITY=alpha,IP=128.2.3.4,
-//                       PORT=9000,PORT_UDP=9200,keyword=lemon
-//                       pshare_iroutes=multicast_8#localhost:9000"
+//   Example: NODE_BROKER_PING = "community=abe,host_ip=192.168.7.6,
+//                      port_db=9000,pshare_iroutes=192.168.7.6:9200
+//                      time_warp=5,time=8351001297.78,key=1
 
 void ShoreBroker::handleMailNodePing(const string& info)
 {
@@ -522,6 +524,49 @@ void ShoreBroker::handleConfigBridgeAux(string src_var, string alias)
 
   m_bridge_src_var.push_back(src_var);
   m_bridge_alias.push_back(alias);
+}
+
+//------------------------------------------------------------
+// Procedure: handleConfigTryVNode()
+//   Example: vname=abe,route=192.168.7.6:9200
+//   Example: vname=ben,route=192.168.7.6      (9200 default)
+
+// vname=abe,route=192.68.7.6:9200
+
+bool ShoreBroker::handleConfigTryVNode(string vnode)
+{
+  string vname,ip,port;
+  
+  vector<string> svector = parseString(vnode, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = biteStringX(svector[i], '=');
+    string value = svector[i];
+
+    if(param == "route") {
+      ip   = biteStringX(value, ':');
+      port = value;
+      if(port == "")
+	port = "9200";
+    }
+    else if(param == "vname")
+      vname = value;
+  }
+
+  if(vname == "")
+    return(false);
+  if(!isValidIPAddress(ip))
+    return(false);
+  if(!isNumber(port))
+    return(false);
+
+  string fake_ping = "community=" + vname;
+  fake_ping += ",host_ip=" + ip;
+  fake_ping += ",pshare_iroutes=" + ip + ":" + port;
+  fake_ping += ",time_warp=" + doubleToString(MOOSTime(),2);
+  
+  handleMailNodePing(fake_ping);
+  
+  return(true);
 }
 
 //------------------------------------------------------------
