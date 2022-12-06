@@ -134,6 +134,7 @@ void showInterfaceAndExit()
   blk("  NODE_BROKER_ACK = community=shoreside,host=192.168.1.99,      ");
   blk("                    port=9000,port_udp=9200,timewarp=8,         ");
   blk("                    status=ok                                   ");
+  blk("  TRY_SHORE_HOST  = pshare_route=192.168.4.100:9200             ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
@@ -156,12 +157,3 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFldNodeBroker", "gpl");
   exit(0);
 }
-
-
-
-
-
-
-
-
-

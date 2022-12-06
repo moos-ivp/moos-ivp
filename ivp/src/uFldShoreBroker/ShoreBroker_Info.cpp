@@ -101,6 +101,9 @@ void showExampleConfigAndExit()
   blk("  bridge = src=DEPLOY_ALL, alias=DEPLOY                         ");
   blk("  bridge = src=DEPLOY_$V,  alias=DEPLOY                         ");
   blk("                                                                ");
+  blk("  try_vnode = 192.168.4.24:9200                                 ");
+  blk("  try_vnode = 192.168.4.25:9200                                 ");
+  blk("                                                                ");
   blk("  qbridge = RETURN                                              ");
   blk("  qbridge = NODE_REPORT, STATION_KEEP                           ");
   blk("                                                                ");
@@ -146,9 +149,10 @@ void showInterfaceAndExit()
   blk("                                                                ");
   blk("  NODE_BROKER_VACK = alpha                                      ");
   blk("                                                                ");
-  blk("  PSHARE_CMD =       cmd=output, src_name=DEPLOY_ALL       ,    ");
-  blk("                     dest_name=DEPLOY,route=18.11.4.23:9200");
+  blk("  PSHARE_CMD =       cmd=output, src_name=DEPLOY_ALL,           ");
+  blk("                     dest_name=DEPLOY,route=18.11.4.23:9200     ");
   blk("                                                                ");
+  blk("  TRY_SHORE_HOST =   pshare_route=192.168.4.100:9200            ");
   exit(0);
 }
 
