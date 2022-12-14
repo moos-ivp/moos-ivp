@@ -30,6 +30,7 @@ WindModel::WindModel()
 
   m_arrow.set_param("fill_color", "green");
   m_arrow.set_param("fill_transparency", "0.2");
+  m_arrow.set_label("windmod");
 }
 
 //----------------------------------------------------------------
