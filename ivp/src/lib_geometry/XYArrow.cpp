@@ -62,7 +62,7 @@ void XYArrow::init()
   XYObject::set_edge_color("off");
   XYObject::set_vertex_color("off");
   XYObject::set_color("fill", "yellow");
-  XYObject::set_transparency(0.2);
+  XYObject::set_transparency(0.5);
   
   m_ctr_x = 0;
   m_ctr_y = 0;
