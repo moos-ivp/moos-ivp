@@ -32,6 +32,7 @@
 #include "BHV_ZigZag.h"
 #include "BHV_FullStop.h"
 #include "BHV_FixTurn.h"
+#include "BHV_FixedTurn.h"
 #include "BHV_Loiter.h"
 #include "BHV_OpRegion.h"
 #include "BHV_MaxDepth.h"
@@ -81,6 +82,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_ZigZag")          || 
      (bhv_name == "BHV_FullStop")        || 
      (bhv_name == "BHV_FixTurn")         || 
+     (bhv_name == "BHV_FixedTurn")       || 
      (bhv_name == "BHV_ConstantSpeed")   || 
      (bhv_name == "BHV_Trail")           || 
      (bhv_name == "BHV_Convoy")          || 
@@ -141,6 +143,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_FullStop(m_domain);
   else if(bhv_name == "BHV_FixTurn")
     bhv = new BHV_FixTurn(m_domain);
+  else if(bhv_name == "BHV_FixedTurn")
+    bhv = new BHV_FixedTurn(m_domain);
   else if(bhv_name == "BHV_ConstantSpeed")     
     bhv = new BHV_ConstantSpeed(m_domain);
   else if(bhv_name == "BHV_Trail")      

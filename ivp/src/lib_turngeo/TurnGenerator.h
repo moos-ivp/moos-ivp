@@ -44,6 +44,8 @@ public:
   unsigned int size() const {return(m_points.size());}
 
   unsigned int mergePoints(double thresh);
+
+  std::string getTurnDir() const;
   
   bool valid() const;
   

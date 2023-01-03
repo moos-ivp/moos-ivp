@@ -111,6 +111,18 @@ bool TurnGenerator::setPointGap(double gap)
 
 
 //-------------------------------------------------------------
+// Procedure: getTurnDir()
+
+string TurnGenerator::getTurnDir() const
+{
+  if(m_port_turn)
+    return("port");
+
+  return("star");
+}
+
+
+//-------------------------------------------------------------
 // Procedure: valid()
 
 bool TurnGenerator::valid() const
