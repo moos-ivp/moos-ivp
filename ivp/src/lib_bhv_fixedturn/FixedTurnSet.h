@@ -35,6 +35,7 @@ public:
 
   bool completed() const;
 
+  void print() const;
   
 private:
   std::vector<FixedTurn> m_turns;

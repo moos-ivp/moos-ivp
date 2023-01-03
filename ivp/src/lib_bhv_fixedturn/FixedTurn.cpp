@@ -9,8 +9,10 @@
 /* except by the author(s), or those designated by the author.   */
 /*****************************************************************/
 
+#include <iostream>
 #include "FixedTurn.h"
 #include "MBUtils.h"
+#include "VarDataPairUtils.h"
 
 using namespace std;
 
@@ -72,10 +74,10 @@ bool FixedTurn::setTurnParams(string str)
       turn_spd = value;
     else if(param == "mhdg")
       turn_mod_hdg = value;
-    else if(param == "fhdg")
+    else if((param == "fhdg") || (param == "fix"))
       turn_fix_hdg = value;
-    else if(param == "tdir")
-      turn_dir = value;
+    else if((param == "tdir") || (param == "turn"))
+      turn_dir = tolower(value);
     else if(param == "key")
       turn_key = value;
     else if(param == "timeout")
@@ -89,7 +91,8 @@ bool FixedTurn::setTurnParams(string str)
   // ================================================
   // Part 2: Check the Key
   // ================================================  
-  if((turn_key != "") && (turn_key != m_turn_key))
+  if((turn_key != "") && (m_turn_key != "") && 
+     (turn_key != m_turn_key))
     return(false);
 
   // ================================================
@@ -103,16 +106,15 @@ bool FixedTurn::setTurnParams(string str)
     return(false);
   if((turn_timeout != "") && !isNumber(turn_timeout))
     return(false);
-  if((turn_dir != "") && !isValidTurn(turn_dir))
+  if((turn_dir != "") && (turn_dir != "auto") &&
+     !isValidTurn(turn_dir))
     return(false);
 
   vector<VarDataPair> flags;
   for(unsigned int i=0; i<flag_strs.size(); i++) {
-    VarDataPair pair = stringToVarDataPair(flag_strs[i]);
-    if(!pair.valid())
+    bool ok = addVarDataPairOnString(flags, flag_strs[i]);
+    if(!ok)
       return(false);
-    else
-      flags.push_back(pair);
   }
 
   // ================================================
@@ -128,6 +130,8 @@ bool FixedTurn::setTurnParams(string str)
     setTurnTimeOut(atof(turn_timeout.c_str()));
   if(turn_dir != "")
     setTurnDir(turn_dir);
+  if(turn_key != "")
+    setTurnKey(turn_key);
 
   for(unsigned int i=0; i<flags.size(); i++)
     m_flags.push_back(flags[i]);
@@ -135,3 +139,18 @@ bool FixedTurn::setTurnParams(string str)
   return(true);
 }
 
+//-----------------------------------------------------------
+// Procedure: print()
+
+void FixedTurn::print() const
+{
+  cout << "turn_spd:     " << doubleToStringX(m_turn_spd) << endl;
+  cout << "turn_mod_hdg: " << doubleToStringX(m_turn_mod_hdg) << endl;
+  cout << "turn_fix_hdg: " << doubleToStringX(m_turn_fix_hdg) << endl;
+  cout << "turn_timeout: " << doubleToStringX(m_turn_timeout) << endl;
+  cout << "turn_key:     " << m_turn_key << endl;
+  cout << "turn_dir:     " << m_turn_dir << endl;
+  for(unsigned int i=0; i<m_flags.size(); i++)
+    cout << m_flags[i].getPrintable() << endl;
+}
+  

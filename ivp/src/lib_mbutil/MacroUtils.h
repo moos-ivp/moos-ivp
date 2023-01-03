@@ -33,7 +33,7 @@ std::string macroExpand(std::string, std::string, std::string);
 
 std::string macroExpandBool(std::string, std::string, bool);
 
-std::string macroExpand(std::string, std::string, double);
+std::string macroExpand(std::string, std::string, double, int v=3);
 
 std::string macroExpand(std::string, std::string, int);
 

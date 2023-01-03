@@ -62,10 +62,16 @@ string macroExpandBool(string str, string macro, bool bool_repl)
 //----------------------------------------------------------------
 // Procedure: macroExpand()
 
-string macroExpand(string str, string macro, double double_repl)
+string macroExpand(string str, string macro, double double_repl,
+		   int digits)
 {
+  if(digits < 0)
+    digits = 0;
+  else if(digits > 8)
+    digits = 8;
+  
   string macro1 = "$(" + macro + ")";
-  string repl = doubleToStringX(double_repl,3);
+  string repl = doubleToStringX(double_repl, digits);
   
   string rstr = findReplace(str, macro1, repl);
 

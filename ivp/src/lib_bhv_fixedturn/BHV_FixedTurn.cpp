@@ -261,16 +261,19 @@ IvPFunction *BHV_FixedTurn::onRunState()
 
   // Part 4: If timeout is being used, check if timed out
   double elapsed = m_odometer.getTotalElapsed();
-  double curr_timeout = getCurrTimeout();
+  double curr_timeout = getCurrTimeOut();
   if((curr_timeout > 0) && (elapsed > curr_timeout))
     done = true;
 
   if(done) {
     postTurnCompleteReport();
-    m_turn_set.increment();
     setComplete();
 
-    //postBeginPoint(false);
+    FixedTurn turn = m_turn_set.getFixedTurn();
+    vector<VarDataPair> flags = turn.getFlags();
+    postFlags(flags);
+    m_turn_set.increment();
+    
     if(m_perpetual)
       resetState();
     return(0);
@@ -466,10 +469,8 @@ double BHV_FixedTurn::getCurrFixTurn() const
   return(fix_turn);  
 }
 
-
 //-----------------------------------------------------------
 // Procedure: getCurrTurnDir()
-//   Purpose: Determine port or starboard in current turn.
 
 string BHV_FixedTurn::getCurrTurnDir() const
 {
@@ -485,6 +486,22 @@ string BHV_FixedTurn::getCurrTurnDir() const
     turn_dir = scheduled_turn_dir;
   
   return(turn_dir);
+}
+
+//-----------------------------------------------------------
+// Procedure: getCurrTimeOut()
+
+double BHV_FixedTurn::getCurrTimeOut() const
+{
+  double timeout = m_timeout;
+
+  FixedTurn turn = m_turn_set.getFixedTurn();
+  double scheduled_timeout = turn.getTurnTimeOut();
+  // If there is explicit turn_dir schedule, use this
+  if(scheduled_timeout > 0)
+    timeout = scheduled_timeout;
+
+  return(timeout);
 }
 
 //-----------------------------------------------------------
@@ -587,7 +604,7 @@ string BHV_FixedTurn::expandMacros(string sdata)
   double turn_dist = m_odometer.getTotalDist();
   double turn_time = m_odometer.getTotalElapsed();
   
-  sdata = macroExpand(sdata, "TURN_DIST", turn_dist);
+  sdata = macroExpand(sdata, "TURN_DIST", turn_dist, 1);
   sdata = macroExpand(sdata, "TURN_TIME", turn_time);
   
   return(sdata);

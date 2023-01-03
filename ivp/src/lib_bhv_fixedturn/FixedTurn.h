@@ -39,6 +39,8 @@ public:
   std::string getTurnDir() const {return(m_turn_dir);}
 
   std::vector<VarDataPair> getFlags() const {return(m_flags);}
+
+  void print() const;
   
 private:
   

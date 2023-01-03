@@ -29,7 +29,7 @@ public:
 public: // Virtual functions overloaded
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
-  void         onSetParamComplete() {};
+  void         onSetParamComplete() {m_turn_set.print();}
   void         onRunToIdleState();
   void         onIdleToRunState();
   std::string  expandMacros(std::string);
@@ -53,7 +53,7 @@ protected:
   double getCurrModHdg() const;
   double getCurrFixTurn() const;
   std::string getCurrTurnDir() const;
-  double getCurrTimeout() const; 
+  double getCurrTimeOut() const; 
   
  protected: // State vars
   std::string m_state;

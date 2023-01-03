@@ -9,6 +9,7 @@
 /* except by the author(s), or those designated by the author.   */
 /*****************************************************************/
 
+#include <iostream>
 #include "FixedTurnSet.h"
 #include "MBUtils.h"
 
@@ -68,11 +69,11 @@ void FixedTurnSet::increment()
 
 bool FixedTurnSet::setTurnParams(string str)
 {
-  str = tolower(str);
+  string lstr = tolower(str);
   // ==============================================
   // Part 1A: If just clearing, then clear and done 
   // ==============================================
-  if((str == "clear") || (str == "clearall")) {
+  if((lstr == "clear") || (lstr == "clearall")) {
     clear();
     return(true);
   }
@@ -80,9 +81,11 @@ bool FixedTurnSet::setTurnParams(string str)
   // ==============================================
   // Part 1B: If clear to start, then clear and cont
   // ==============================================
-  if(strBegins(str, "clear,") ||
-     strBegins(str, "clearall,"))
+  if(strBegins(lstr, "clear,") ||
+     strBegins(lstr, "clearall,")) {
     clear();
+    biteStringX(str, ',');
+  }
   
   FixedTurn turn;
   // ==============================================
@@ -143,4 +146,16 @@ bool FixedTurnSet::completed() const
     return(true);
 
   return(false);  
+}
+
+
+//-----------------------------------------------------------
+// Procedure: print()
+
+void FixedTurnSet::print() const
+{
+  for(unsigned int i=0; i<m_turns.size(); i++) {
+    cout << "Turn [" << i << "]:" << endl;
+    m_turns[i].print();
+  }
 }
