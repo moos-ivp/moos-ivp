@@ -27,7 +27,7 @@ FixedTurn::FixedTurn()
   m_turn_fix_hdg = -1;
   m_turn_timeout = -1;
 
-  m_turn_dir = "auto"  
+  m_turn_dir = "auto";
 }
 
 //-----------------------------------------------------------
@@ -35,13 +35,13 @@ FixedTurn::FixedTurn()
 
 bool FixedTurn::setTurnDir(string str)
 {
-  return(setPortTurnOnString(m_turn_dir, str));
+  return(setPortStarOnString(m_turn_dir, str));
 }
 
 //-----------------------------------------------------------
-// Procedure: setVarDataPair()
+// Procedure: addVarDataPair()
 
-bool FixedTurn::setVarDataPair(VarDataPair pair)
+bool FixedTurn::addVarDataPair(VarDataPair pair)
 {
   if(!pair.valid())
     return(false);
@@ -56,7 +56,7 @@ bool FixedTurn::setVarDataPair(VarDataPair pair)
 bool FixedTurn::setTurnParams(string str)
 {
   string turn_spd, turn_mod_hdg, turn_fix_hdg;
-  string turn_key, turn_dir, turn_timout;
+  string turn_key, turn_dir, turn_timeout;
 
   vector<string> flag_strs;
 

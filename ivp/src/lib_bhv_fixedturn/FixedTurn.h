@@ -23,13 +23,13 @@ public:
 
   bool setTurnParams(std::string);
   
-  void setTurnSpd(double v)     {m_turn_spd=v;}
-  void setTurnModHdg(double v)  {m_turn_mod_hdg=v;}
-  void setTurnFixHdg(double v)  {m_turn_fix_hdg=v;}
-  void setTurnTimeOut(double v) {m_turn_timeout=v;}
-  bool setTurnKey(std::string)  {m_turn_key=s;}
+  void setTurnSpd(double v)      {m_turn_spd=v;}
+  void setTurnModHdg(double v)   {m_turn_mod_hdg=v;}
+  void setTurnFixHdg(double v)   {m_turn_fix_hdg=v;}
+  void setTurnTimeOut(double v)  {m_turn_timeout=v;}
+  void setTurnKey(std::string s) {m_turn_key=s;}
   bool setTurnDir(std::string);
-  void addVarDataPair(VarDataPair);
+  bool addVarDataPair(VarDataPair);
 
   double getTurnSpd() const     {return(m_turn_spd);}
   double getTurnModHdg() const  {return(m_turn_mod_hdg);}
