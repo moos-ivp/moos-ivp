@@ -24,14 +24,28 @@ public:
   bool addFixedTurn(FixedTurn);
   
   bool setTurnParams(std::string);
-  
-  FixedTurn getFixedTurn(unsigned int) const;
+  bool setRepeats(std::string);
+
+  void increment();
+  void clear() {m_turns.clear(); m_curr_ix=0;}
+
+  FixedTurn getFixedTurn() const;
 
   unsigned int size() const {return(m_turns.size());}
+
+  bool completed() const;
+
   
 private:
-
   std::vector<FixedTurn> m_turns;
+
+  // Index within the schedule
+  unsigned int m_curr_ix;
+
+  // If true the schedule repeats when completed. The curr
+  // index is reset to zero.
+  bool m_repeats;
+
 };
 
 #endif

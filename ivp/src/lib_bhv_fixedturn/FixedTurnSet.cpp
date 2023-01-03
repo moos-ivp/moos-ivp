@@ -19,6 +19,8 @@ using namespace std;
 
 FixedTurnSet::FixedTurnSet()
 {
+  m_curr_ix = 0;
+  m_repeats = false;
 }
 
 //-----------------------------------------------------------
@@ -41,21 +43,57 @@ bool FixedTurnSet::addFixedTurn(FixedTurn turn)
 }
 
 //-----------------------------------------------------------
+// Procedure: setRepeats()
+
+bool FixedTurnSet::setRepeats(string str)
+{
+  return(setBooleanOnString(m_repeats, str));
+}
+
+
+//-----------------------------------------------------------
+// Procedure: increment()
+
+void FixedTurnSet::increment()
+{
+  m_curr_ix++;
+
+  if(m_repeats && (m_curr_ix >= m_turns.size()))
+    m_curr_ix = 0;
+}
+
+
+//-----------------------------------------------------------
 // Procedure: setTurnParams()
 
 bool FixedTurnSet::setTurnParams(string str)
 {
-  FixedTurn turn;
+  str = tolower(str);
+  // ==============================================
+  // Part 1A: If just clearing, then clear and done 
+  // ==============================================
+  if((str == "clear") || (str == "clearall")) {
+    clear();
+    return(true);
+  }
 
   // ==============================================
-  // Part 1: If not valid specs, return false
+  // Part 1B: If clear to start, then clear and cont
+  // ==============================================
+  if(strBegins(str, "clear,") ||
+     strBegins(str, "clearall,"))
+    clear();
+  
+  FixedTurn turn;
+  // ==============================================
+  // Part 2: If not valid specs, return false
   // ==============================================
   bool ok = turn.setTurnParams(str);
   if(!ok)
     return(false);
 
   // ==============================================
-  // Part 2: If specs has no key, this is new turn
+  // Part 3: If specs has no key, this is new turn
   // ==============================================
   if(turn.getTurnKey() == "") {
     m_turns.push_back(turn);
@@ -63,7 +101,7 @@ bool FixedTurnSet::setTurnParams(string str)
   }
 
   // ==============================================
-  // Part 3: If specs has key, apply to proper turn
+  // Part 4: If specs has key, apply to proper turn
   // ==============================================
   for(unsigned int i=0; i<m_turns.size(); i++) {
     bool ok = m_turns[i].setTurnParams(str);
@@ -72,9 +110,37 @@ bool FixedTurnSet::setTurnParams(string str)
   }
 
   // ==============================================
-  // Part 4: If specs key unique, must be new turn
+  // Part 5: If specs key unique, must be new turn
   // ==============================================
   m_turns.push_back(turn);
   return(true);
 }
 
+//-----------------------------------------------------------
+// Procedure: getFixedTurn()
+//      Note: A Null FixedTurn has default values that all
+//            essentially indicate no preference. 
+
+FixedTurn FixedTurnSet::getFixedTurn() const
+{
+  FixedTurn null_fixed_turn;
+  
+  if(m_curr_ix >= m_turns.size())
+    return(null_fixed_turn);
+
+  return(m_turns[m_curr_ix]);
+}
+
+//-----------------------------------------------------------
+// Procedure: completed()
+
+bool FixedTurnSet::completed() const
+{
+  if(m_repeats)
+    return(false);
+
+  if(m_curr_ix >= m_turns.size())
+    return(true);
+
+  return(false);  
+}
