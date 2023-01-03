@@ -27,6 +27,7 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   ${MOOS_LIBRARIES}
   helmivp
   behaviors-marine
+  bhv_fixedturn
   turngeo
   contacts
   behaviors-colregs
