@@ -108,7 +108,7 @@ bool LogBinHandler::handle()
     if(m_verbose)
       cout << dbl_val << " --> " << bin_str << endl;
     
-    m_bins[bin_str]++;
+    m_bins[bin_val]++;
   }
 
   if(m_file_in)
@@ -118,10 +118,12 @@ bool LogBinHandler::handle()
   // Part 2: Make the report
   // ==============================================
 
-  map<string, unsigned int>::iterator p;
+  map<double, unsigned int>::iterator p;
   for(p=m_bins.begin(); p!=m_bins.end(); p++) {
-    string bin_str = p->first;
-
+    //string bin_str = p->first;
+    double bin_val = p->first;
+    string bin_str = doubleToStringX(bin_val, 8);
+    
     cout << bin_str << "  " << p->second << endl;
   }
   

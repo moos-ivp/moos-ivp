@@ -49,7 +49,7 @@ class LogBinHandler
   FILE *m_file_in;
 
  protected: // State vars
-  std::map<std::string, unsigned int> m_bins;
+  std::map<double, unsigned int> m_bins;
 };
 
 #endif
