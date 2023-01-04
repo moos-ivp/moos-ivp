@@ -48,6 +48,9 @@ NodeBroker::NodeBroker()
   m_host_info_changes = 0;
 
   m_messaging_policy = "";
+
+  m_ping_sent_utc = 0;
+  m_ok_ack_utc    = 0;
 }
 
 //---------------------------------------------------------
@@ -224,11 +227,22 @@ void NodeBroker::sendNodeBrokerPing()
   string ping_msg = m_node_host_record.getSpec();
   
   for(unsigned int i=0; i<m_shore_routes.size(); i++) {
-    if(m_shore_pings_ack[i] == 0) {
+
+    // Dynamic threshold for sending out pings. If we have received
+    // an ACK from the shoreside recently, we only re-send every 20
+    // secs. If no recent ACKS, then send more frequently.
+    double elapsed_ping_sent = m_curr_time - m_ping_sent_utc;
+    double elapsed_ack_rcvd  = m_curr_time - m_ok_ack_utc;
+    double thresh = 20;
+    if(elapsed_ack_rcvd > 5)
+      thresh = 5;
+
+    if(elapsed_ping_sent > thresh) {
       string aug_ping_msg = ping_msg + ",key=" + uintToString(i);
       Notify("NODE_BROKER_PING_"+uintToString(i), aug_ping_msg);
       m_shore_pings_sent[i]++;
       m_pings_posted++;
+      m_ping_sent_utc = m_curr_time;
     }
   }
 }
@@ -455,6 +469,7 @@ void NodeBroker::handleMailAck(string ack_msg)
   Notify("NODE_PSHARE_VARS", msg);
   
   m_ok_acks_received++;
+  m_ok_ack_utc = m_curr_time;
 
   // Set up the user-configured variable bridges.
   registerUserBridges();

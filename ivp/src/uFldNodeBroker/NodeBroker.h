@@ -96,6 +96,9 @@ class NodeBroker : public AppCastingMOOSApp
   unsigned int m_bad_acks_received;
   unsigned int m_host_info_changes;
 
-  std::string m_pshare_cmd_latest;  
+  double m_ok_ack_utc;
+  double m_ping_sent_utc;
+  
+  std::string  m_pshare_cmd_latest;  
 };
 #endif
