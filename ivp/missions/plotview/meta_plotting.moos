@@ -1,0 +1,89 @@
+ServerHost = localhost
+ServerPort = 9000
+Community  = alpha
+MOOSTimeWarp = $(WARP)
+
+//------------------------------------------
+// Antler configuration  block
+
+ProcessConfig = ANTLER
+{
+  MSBetweenLaunches = 200
+
+  Run = MOOSDB       @ NewConsole = false
+  Run = uTimerScript @ NewConsole = false
+  Run = uPlotViewer  @ NewConsole = false
+  Run = pLogger      @ NewConsole = false
+}
+
+//------------------------------------------
+// uTimerScript config block
+
+ProcessConfig = uTimerScript
+{
+  AppTick	  = 10
+  CommsTick	= 10
+
+  delay_reset = 0                                            
+  delay_start = 0                                            
+
+  randvar = varname=UVAR, min=0, max=500, key=at_post
+  randvar = varname=GVAR_A, type=gaussian, min=0, max=200, mu=$(MU_A), sigma=$(SIG_A), key=at_post
+  randvar = varname=GVAR_B, type=gaussian, min=0, max=200, mu=$(MU_B), sigma=$(SIG_B), key=at_post
+
+  event   = var=PAIR_VAL, val="x=$[GVAR_A],y=$[GVAR_B]", time=0  
+  event   = var=PAIR_VAL, val="x=$[GVAR_A],y=$[GVAR_B]", time=0.1  
+  event   = var=PAIR_VAL, val="x=$[GVAR_A],y=$[GVAR_B]", time=0.2
+  event   = var=PAIR_VAL, val="x=$[GVAR_A],y=$[GVAR_B]", time=0.3
+  event   = var=PAIR_VAL, val="x=$[GVAR_A],y=$[GVAR_B]", time=0.4
+
+  event   = var=GAUSS_VAL_A, val=$[GVAR_A], time=0  
+  event   = var=GAUSS_VAL_A, val=$[GVAR_A], time=0.1
+  event   = var=GAUSS_VAL_A, val=$[GVAR_A], time=0.2  
+  event   = var=GAUSS_VAL_A, val=$[GVAR_A], time=0.3 
+  event   = var=GAUSS_VAL_A, val=$[GVAR_A], time=0.4 
+
+  event   = var=GAUSS_VAL_B, val=$[GVAR_B], time=0  
+  event   = var=GAUSS_VAL_B, val=$[GVAR_B], time=0.1
+  event   = var=GAUSS_VAL_B, val=$[GVAR_B], time=0.2  
+  event   = var=GAUSS_VAL_B, val=$[GVAR_B], time=0.3 
+  event   = var=GAUSS_VAL_B, val=$[GVAR_B], time=0.4 
+
+  event   = var=UNIFORM_VAL, val=$[UVAR], time=0  
+  event   = var=UNIFORM_VAL, val=$[UVAR], time=0.1
+  event   = var=UNIFORM_VAL, val=$[UVAR], time=0.2  
+  event   = var=UNIFORM_VAL, val=$[UVAR], time=0.3 
+  event   = var=UNIFORM_VAL, val=$[UVAR], time=0.4 
+
+  reset_max   = no_limit
+  reset_time  = all-posted
+
+  //time_warp = 20
+}
+
+
+//------------------------------------------
+// pLogger Config Block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 8
+  CommsTick = 8
+
+  AsyncLog = true
+  WildCardLogging = true
+}
+
+
+//------------------------------------------
+// uPlotViewer Config Block
+
+ProcessConfig = uPlotViewer
+{
+  AppTick	= 8
+  CommsTick	= 8
+
+  plot_var  = var=UNIFORM_VAL, min=0, max=400, bars=50, color=red
+  plot_var  = var=GAUSS_VAL_A, min=0, max=400, bars=80, color=blue
+  plot_var  = var=GAUSS_VAL_B, min=0, max=400, bars=80, color=green
+}
