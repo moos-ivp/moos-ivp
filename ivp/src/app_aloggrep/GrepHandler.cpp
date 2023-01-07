@@ -58,6 +58,11 @@ GrepHandler::GrepHandler()
   m_format_vars  = false;
   m_format_time  = false;
   m_make_report  = true;
+
+  // When keep_key is true, and subpat enabled, the column will keep
+  // the sub-pattern key, e.g., --subpat=spd --keepkey will result in
+  // spd=3.2 (as opposed to just 3.2).
+  m_keep_key     = false;
   
   m_cache_size   = 1000;
 
@@ -397,6 +402,32 @@ void GrepHandler::outputLine(const string& line, bool last)
     if(tstamp == m_last_tstamp)
       return;
 
+    if(m_subpat.size() != 0) {
+      string maybe_line_val;
+      for(unsigned int i=0; i<m_subpat.size(); i++) {
+	string line_val_low = tolower(line_val);
+	string key = m_subpat[i];
+	if(strContains(line_val_low, key)) {
+	  string val = tokStringParse(line_val_low, key, ',', '=');
+	  if(val != "") {
+	    if(maybe_line_val != "") {
+	      if(m_keep_key)
+		maybe_line_val += ", ";
+	      else
+		maybe_line_val += " ";
+	    }
+	    string key_str;
+	    if(m_keep_key)
+	      key_str = key + "=";
+	    maybe_line_val += key_str + val;
+	  }
+	}
+      }
+      if(maybe_line_val != "")
+	line_val = maybe_line_val;
+    }
+
+#if 0
     if(m_subpat != "") {
       string line_val_low = tolower(line_val);
       if(strContains(line_val_low, m_subpat)) {
@@ -405,6 +436,7 @@ void GrepHandler::outputLine(const string& line, bool last)
 	  line_val = val;
       }
     }
+#endif
     
     if(m_format_vars) {
       string line_var = stripBlankEnds(getVarName(line));	

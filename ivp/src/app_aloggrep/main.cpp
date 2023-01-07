@@ -69,6 +69,8 @@ int main(int argc, char *argv[])
       handler.setRemoveDups(true);
     }
 
+    else if(argi == "--kk")
+      handler.setKeepKey(true);
     else if((argi == "--csw") || (argi == "-csw"))
       handler.setColSep(' ');
     else if((argi == "--csc") || (argi == "-csc"))
@@ -87,8 +89,12 @@ int main(int argc, char *argv[])
     else if(argi == "--tvv")
       handler.setFormat("time:var:val");
 
-    else if(strBegins(argi, "--subpat=")) 
-      handler.setSubPattern(argi.substr(9));
+    else if(strBegins(argi, "--subpat=")) {
+      string patterns = argi.substr(9);
+      vector<string> svector = parseString(patterns, ':');
+      for(unsigned int i=0; i<svector.size(); i++)
+	handler.addSubPattern(svector[i]);
+    }
     else if(strBegins(argi, "--format=")) 
       handled = handler.setFormat(argi.substr(9));
     else if(argi == "--final") 
@@ -203,9 +209,17 @@ void showHelpAndExit()
   cout << "  --csc,-csc        Columns separated with a semi-colon    " << endl;
   cout << "                    (Default separator is white space )    " << endl;
   cout << "                                                           " << endl;
-  cout << "  --subpat=pattern                                         " << endl;
+  cout << "  --subpat=pattern[:pattern:pattern]                       " << endl;
   cout << "    For postings with components with comma-separated      " << endl;
-  cout << "    param=value components, a component can be isolated.   " << endl;
+  cout << "    param=value components, one or more components can be  " << endl;
+  cout << "    isolated. Typically used with --v, --format=val        " << endl;
+  cout << "                                                           " << endl;
+  cout << "  --keep-key, --kk                                         " << endl;
+  cout << "    When --subpat is used, this option will keep the key   " << endl;
+  cout << "    used in the sub-pattern. For example if the value of   " << endl;
+  cout << "    the posting is \"x=23, y=42, z=7\" and --subpat=y:z    " << endl;
+  cout << "    the result would be \"42 7\". With --kk it would be    " << endl;
+  cout << "    \"y=42, z=7\"                                          " << endl;
   cout << "                                                           " << endl;
   cout << "Further Notes:                                             " << endl;
   cout << "  (1) The second alog is the output file. Otherwise the    " << endl;

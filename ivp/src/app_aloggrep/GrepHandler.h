@@ -46,10 +46,13 @@ class GrepHandler
   void setSortEntries(bool v)       {m_sort_entries=v;}
   void setMakeReport(bool v)        {m_make_report=v;}
   void setRemoveDups(bool v)        {m_rm_duplicates=v;}
+  void setKeepKey(bool v)           {m_keep_key=v;}
 
   void setFinalOnly(bool v)         {m_final_only=v;}
-  void setFirstOnly(bool v)         {m_first_only=v; m_make_report=false; m_comments_retained=false;}
-  void setSubPattern(std::string s) {m_subpat=s;}
+  void setFirstOnly(bool v)
+  {m_first_only=v; m_make_report=false; m_comments_retained=false;}
+
+  void addSubPattern(std::string s) {m_subpat.push_back(s);}
   bool setFormat(std::string);
   void setColSep(char c);
 
@@ -77,12 +80,13 @@ class GrepHandler
   bool   m_format_srcs;
   bool   m_format_time;
   bool   m_make_report;
+  bool   m_keep_key;
   char   m_colsep;
   
   double m_cache_size;
   
   std::string m_filename_in;
-  std::string m_subpat;
+  std::vector<std::string> m_subpat;
   
   FILE *m_file_in;
   FILE *m_file_out;
