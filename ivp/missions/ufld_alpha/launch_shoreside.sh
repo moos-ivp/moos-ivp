@@ -81,6 +81,9 @@ done
 #  Part 3: If verbose, show vars and confirm before launching
 #---------------------------------------------------------------
 if [ "${VERBOSE}" = "yes" -o "${CONFIRM}" = "yes" ]; then 
+    echo "======================================================"
+    echo "        launch_shoreside.sh SUMMARY                   "
+    echo "======================================================"
     echo "$ME"
     echo "CMD_ARGS =      [${CMD_ARGS}]      "
     echo "TIME_WARP =     [${TIME_WARP}]     "

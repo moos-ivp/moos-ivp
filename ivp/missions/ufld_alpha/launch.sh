@@ -97,3 +97,4 @@ fi
 #  Part 7: Launch uMAC until mission quit
 #--------------------------------------------------------------  
 uMAC --paused targ_shoreside.moos
+kill -- -$$
