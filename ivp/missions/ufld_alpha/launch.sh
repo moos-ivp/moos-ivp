@@ -35,8 +35,6 @@ for ARGI; do
         echo "    Increase verbosity                           "
 	echo "  --just_make, -j                                " 
 	echo "    Just make targ files, but do not launch      "
-	echo "  --verbose, -v                                  " 
-	echo "    Verbose output, confirm before launching.    "
 	echo "  --auto, -a                                     "
 	echo "     Auto-launched by a script.                  "
 	echo "     Will not launch uMAC as the final step.     "
