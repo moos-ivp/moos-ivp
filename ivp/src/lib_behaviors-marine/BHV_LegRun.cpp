@@ -188,8 +188,6 @@ bool BHV_LegRun::setParam(string param, string value)
   }
   else if(param == "mid_pct") 
     return(setDoubleStrictRngOnString(m_mid_pct, value, 0, 100));
-  else if(strBegins(param, "turn"))
-    return(handleConfigTurnParam(param, value));
   
   else if(param == "leg_length")
     return(setPosDoubleOnString(m_leglen_req, value));
@@ -210,6 +208,8 @@ bool BHV_LegRun::setParam(string param, string value)
 
   else if(param == "patience")
     return(setDoubleClipRngOnString(m_patience, value, 1, 99));
+  else if(strBegins(param, "turn"))
+    return(handleConfigTurnParam(param, value));
   else if(param == "visual_hints")  
     return(m_hints.setHints(value));
 
