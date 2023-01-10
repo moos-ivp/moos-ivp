@@ -26,6 +26,7 @@ TARGET_LINK_LIBRARIES(bhv2graphviz
   ufield
   behaviors-marine
   behaviors-colregs
+  bhv_fixedturn
   behaviors
   bhvutil	
   contacts
