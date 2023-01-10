@@ -86,6 +86,7 @@ protected: // Config vars
   XYPoint  m_vx2;
   XYPoint  m_shift_pt;
   bool     m_warn_overshoot;
+  double   m_turn_pt_gap;
   
   std::string m_turn1_dir;
   std::string m_turn2_dir;

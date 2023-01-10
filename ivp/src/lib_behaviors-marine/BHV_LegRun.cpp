@@ -57,7 +57,8 @@ BHV_LegRun::BHV_LegRun(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_min_leg_length = 50;
   m_min_turn_rad   = 5;
   m_warn_overshoot = false;
-
+  m_turn_pt_gap    = 25;  // dist between turn points
+  
   m_turn1_dir = "star";
   m_turn2_dir = "star";
   m_turn1_rad = 15;
@@ -177,11 +178,14 @@ bool BHV_LegRun::setParam(string param, string value)
   }
   else if(param == "repeat")
     return(m_wpteng_legs.setParam(param, value));
-  else if((param == "radius") || (param == "capture_radius"))
+  else if((param == "radius") || (param == "capture_radius")) {
+    m_wpteng_turn.setParam(param, value);
     return(m_wpteng_legs.setParam(param, value));
-  else if(param=="slip_radius")
+  }
+  else if(param=="slip_radius") {
+    m_wpteng_turn.setParam(param, value);
     return(m_wpteng_legs.setParam(param, value));
-
+  }
   else if(param == "mid_pct") 
     return(setDoubleStrictRngOnString(m_mid_pct, value, 0, 100));
   else if(strBegins(param, "turn"))
@@ -201,6 +205,8 @@ bool BHV_LegRun::setParam(string param, string value)
     return(setDoubleOnString(m_legang_req, value));
   else if(param == "leg_angle_mod")
     return(setDoubleOnString(m_legang_mod_req, value));
+  else if(param == "turn_pt_gap")
+    return(setNonNegDoubleOnString(m_turn_pt_gap, value));
 
   else if(param == "patience")
     return(setDoubleClipRngOnString(m_patience, value, 1, 99));
@@ -666,7 +672,7 @@ XYSegList BHV_LegRun::initTurnPoints1(bool preview)
   turngen.setEndPos(segl.get_vx(0), segl.get_vy(0));
   turngen.setEndHeading(th);
   turngen.setTurnRadius(m_turn1_rad);
-  turngen.setPointGap(25);
+  turngen.setPointGap(m_turn_pt_gap);
   turngen.setLaneGap(lane_dist);
   turngen.setBiasPct(m_turn1_bias);
   turngen.setPortTurn(m_turn1_dir == "port");
@@ -719,7 +725,7 @@ XYSegList BHV_LegRun::initTurnPoints2(bool preview)
   turngen.setEndPos(segl.get_vx(1), segl.get_vy(1));
   turngen.setEndHeading(th);
   turngen.setTurnRadius(m_turn2_rad);
-  turngen.setPointGap(25);
+  turngen.setPointGap(m_turn_pt_gap);
   turngen.setLaneGap(lane_dist);
   turngen.setBiasPct(m_turn2_bias);
   turngen.setPortTurn(m_turn2_dir == "port");
