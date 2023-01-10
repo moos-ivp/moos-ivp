@@ -102,7 +102,8 @@ BHV_LegRun::BHV_LegRun(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_mid_event_yet   = false;
   m_new_leg_pending = true;
   m_preview_pending = true;
-
+  m_turn_interrupt_pending = false;
+  
   m_leg_count1 = 0;
   m_leg_count2 = 0;
   
@@ -280,6 +281,9 @@ void BHV_LegRun::onSetParamComplete()
     m_new_leg_pending = false;
     m_vx1.set_label("leg_vx1");
     m_vx2.set_label("leg_vx2");
+
+    if(m_mode == "turn")
+      m_turn_interrupt_pending = true;
   }
   
   postConfigStatus();
@@ -351,6 +355,14 @@ bool BHV_LegRun::onRunStateTurnMode()
   m_trackpt = m_wpteng_turn.getTrackPoint();
   m_nextpt  = m_wpteng_turn.getNextPoint();
 
+  if(m_turn_interrupt_pending) {
+    m_mode_pending = "leg";
+    m_turn_interrupt_pending = false;
+    postTurnSegList(false);
+    postSteerPoints(false);
+    return(false);
+  }
+  
   if(m_wpteng_turn.hasCompleted()) {
     m_mode_pending = "leg";
     postTurnSegList(false);

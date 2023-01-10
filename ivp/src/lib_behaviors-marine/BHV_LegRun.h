@@ -128,7 +128,8 @@ protected: // State vars
   bool     m_mid_event_yet;
   bool     m_new_leg_pending;
   bool     m_preview_pending;
-
+  bool     m_turn_interrupt_pending;
+  
   double   m_leglen_req;
   double   m_leglen_mod_req;
 
