@@ -33,6 +33,9 @@
 
 using namespace std;
 
+//---------------------------------------------------------------
+// Constructor()
+
 XYSegment::XYSegment()
 {
   m_x1 = 0;
@@ -45,7 +48,15 @@ XYSegment::XYSegment()
 }
 
 //---------------------------------------------------------------
-// Procedure: set
+// Constructor()
+
+XYSegment::XYSegment(double x1, double y1, double x2, double y2)
+{
+  set(x1,y1,x2,y2);
+}
+
+//---------------------------------------------------------------
+// Procedure: set()
 
 void XYSegment::set(double x1, double y1, double x2, double y2)
 {
@@ -60,7 +71,7 @@ void XYSegment::set(double x1, double y1, double x2, double y2)
 }
 
 //---------------------------------------------------------------
-// Procedure: set
+// Procedure: set()
 
 void XYSegment::set(const XYPoint& pt1, const XYPoint pt2)
 {
@@ -75,7 +86,7 @@ void XYSegment::set(const XYPoint& pt1, const XYPoint pt2)
 }
 
 //---------------------------------------------------------------
-// Procedure: clear
+// Procedure: clear()
 
 void XYSegment::clear()
 {
@@ -90,7 +101,7 @@ void XYSegment::clear()
 
 
 //---------------------------------------------------------------
-// Procedure: shift_horz
+// Procedure: shift_horz()
 
 void XYSegment::shift_horz(double shift_val)
 {
@@ -99,7 +110,7 @@ void XYSegment::shift_horz(double shift_val)
 }
 
 //---------------------------------------------------------------
-// Procedure: shift_vert
+// Procedure: shift_vert()
 
 void XYSegment::shift_vert(double shift_val)
 {
@@ -108,7 +119,7 @@ void XYSegment::shift_vert(double shift_val)
 }
 
 //---------------------------------------------------------------
-// Procedure: get_spec
+// Procedure: get_spec()
 //   Purpose: Get a string specification of the seglist. We set 
 //            the vertex precision to be at the integer by default.
 
@@ -135,7 +146,7 @@ string XYSegment::get_spec(int precision) const
 }
 
 //---------------------------------------------------------------
-// Procedure: reverse
+// Procedure: reverse()
 //   Purpose: Swap the two endpoints
 
 void XYSegment::reverse()
@@ -147,6 +158,20 @@ void XYSegment::reverse()
   m_y1 = m_y2;
   m_x2 = tmpx;
   m_y2 = tmpy;
+}
+
+
+//---------------------------------------------------------------
+// Procedure: intersects()
+
+bool XYSegment::intersects(XYSegment seg)
+{
+  double x3 = seg.get_x1();
+  double y3 = seg.get_y1();
+  double x4 = seg.get_x2();
+  double y4 = seg.get_y2();
+  
+  return(segmentsCross(m_x1,m_y1,m_x2,m_y2, x3,y3,x4,y4));
 }
 
 

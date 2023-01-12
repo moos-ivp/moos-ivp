@@ -24,6 +24,7 @@ SET(SRC
   ArcUtils.cpp
   IO_GeomUtils.cpp
   LinearExtrapolator.cpp
+  WrapDetector.cpp
   PathUtils.cpp
   Seglr.cpp
   SeglrUtils.cpp
@@ -91,6 +92,7 @@ SET(HEADERS
   XYCommsPulse.h
   IO_GeomUtils.h
   LinearExtrapolator.h
+  WrapDetector.h
   Seglr.h
   SeglrUtils.h
   XYWedge.h

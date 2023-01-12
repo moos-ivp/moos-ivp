@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: XYSegment.h                                          */
-/*    DATE: Mar 28, 2009                                         */
+/*    ORGN: Dept of Mechanical Eng / MIT Cambridge MA            */
+/*    FILE: WrapDetector.h                                       */
+/*    DATE: Jan 9th, 2023                                        */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -23,55 +23,45 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef XY_SEGMENT_HEADER
-#define XY_SEGMENT_HEADER
+#ifndef WRAP_DETECTOR_HEADER
+#define WRAP_DETECTOR_HEADER
 
+#include <list>
 #include <string>
-#include "XYObject.h"
-#include "XYPoint.h"
+#include "XYSegment.h"
 
-class XYSegment : public XYObject {
+class WrapDetector {
 public:
-  XYSegment();
-  XYSegment(double x1, double y1, double x2, double y2);
-  virtual ~XYSegment() {}
+  WrapDetector();
+  virtual ~WrapDetector() {}
 
-  // XYSegList create and edit functions
-  void   set(double x1, double y1, double x2, double y2);
-  void   set(const XYPoint&, const XYPoint);
-  void   clear();
-
-public:
-  void   shift_horz(double val);
-  void   shift_vert(double val);
-  void   apply_snap(double snapval);
-  void   reverse();
-
-  bool   intersects(XYSegment);
+  void updatePosition(double osx, double osy);
+  void clear();
+  void reset() {clear();}
   
-public:
-  double length() const {return(m_length);}
-  double get_x1() const {return(m_x1);}
-  double get_y1() const {return(m_y1);}
-  double get_x2() const {return(m_x2);}
-  double get_y2() const {return(m_y2);}
-  double getRAng12() const {return(m_rang12);}
-  double getRAng21() const {return(m_rang21);}
+  void setMinLeg(double);
+  void setMaxLegs(unsigned int); 
+  
+  unsigned int getWraps() const {return(m_wraps);}
+  
+ protected: // State vars
+  std::list<XYSegment> m_os_legs;
+  
+  double m_osx;  
+  double m_osy;  
+  bool   m_empty;
 
-  std::string get_spec(int vertex_precision=1) const;
+  unsigned int m_wraps;
 
-protected:
-  double m_x1;
-  double m_y1;
-  double m_x2;
-  double m_y2;
-
-  double m_length;
-  double m_rang12;
-  double m_rang21;
+ protected: // Config vars
+  double m_min_leg;
+  double m_max_legs;  
 };
 
 #endif
+
+
+
 
 
 
