@@ -29,6 +29,7 @@
 // CORE Behaviors
 #include "BHV_Waypoint.h"
 #include "BHV_LegRun.h"
+#include "BHV_LegRunX.h"
 #include "BHV_ZigZag.h"
 #include "BHV_FullStop.h"
 #include "BHV_FixTurn.h"
@@ -79,6 +80,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
   if((bhv_name == "BHV_OpRegion")        ||
      (bhv_name == "BHV_Waypoint")        || 
      (bhv_name == "BHV_LegRun")          || 
+     (bhv_name == "BHV_LegRunX")         || 
      (bhv_name == "BHV_ZigZag")          || 
      (bhv_name == "BHV_FullStop")        || 
      (bhv_name == "BHV_FixTurn")         || 
@@ -137,6 +139,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_Waypoint(m_domain);
   else if(bhv_name == "BHV_LegRun")
     bhv = new BHV_LegRun(m_domain);
+  else if(bhv_name == "BHV_LegRunX")
+    bhv = new BHV_LegRunX(m_domain);
   else if(bhv_name == "BHV_ZigZag")
     bhv = new BHV_ZigZag(m_domain);
   else if(bhv_name == "BHV_FullStop")

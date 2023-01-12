@@ -387,7 +387,7 @@ vector<string> PMV_Viewer::getStaleVehicles(double thresh)
 
 
 //-------------------------------------------------------------
-// Procedure: drawVehicle
+// Procedure: drawVehicle()
 
 void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
 {

@@ -36,7 +36,7 @@ SET(SRC
   BHV_Convoy.cpp
   BHV_Waypoint.cpp
   BHV_LegRun.cpp
-#  BHV_LegRunX.cpp
+  BHV_LegRunX.cpp
   BHV_ZigZag.cpp
   BHV_FullStop.cpp
   BHV_FixTurn.cpp

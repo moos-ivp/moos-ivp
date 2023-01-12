@@ -31,7 +31,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 CollisionDetector::CollisionDetector()
 {
@@ -55,7 +55,7 @@ CollisionDetector::CollisionDetector()
   m_post_closest_range_ever = false;
 
   m_report_all_encounters = false;
-  
+
   m_info_buffer = new InfoBuffer;
 }
 
@@ -277,7 +277,6 @@ void CollisionDetector::handleCPAEvent(CPAEvent event)
 
 //---------------------------------------------------------
 // Procedure: OnStartUp()
-//            happens before connection is open
 
 bool CollisionDetector::OnStartUp()
 {
@@ -331,6 +330,7 @@ bool CollisionDetector::OnStartUp()
 	m_logic_conditions.push_back(new_condition);
       m_conditions_ok = false; // Assume false until shown otherwise
     }
+
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
