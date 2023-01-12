@@ -355,6 +355,8 @@ bool BHV_LegRun::onRunStateTurnMode()
   m_trackpt = m_wpteng_turn.getTrackPoint();
   m_nextpt  = m_wpteng_turn.getNextPoint();
 
+  // If there was a new update to the basic leg, we'll interrupt this
+  // and essentially transition to the right leg point.
   if(m_turn_interrupt_pending) {
     m_mode_pending = "leg";
     m_turn_interrupt_pending = false;
@@ -375,7 +377,7 @@ bool BHV_LegRun::onRunStateTurnMode()
 
   postSteerPoints(true);
   postLegPoints(true);
-    
+  
   return(true); 
 }
 

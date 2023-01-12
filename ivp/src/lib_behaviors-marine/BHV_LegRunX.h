@@ -51,6 +51,7 @@ protected:
   bool   handleConfigLegSpeed(std::string);
   bool   updateInfoIn();
   void   postStatusReport();
+  void   postTurnDist();
 
   void   postLegSegList(bool active=true);
   void   postTurnSegList(bool active=true);

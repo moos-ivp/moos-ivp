@@ -334,6 +334,7 @@ IvPFunction *BHV_LegRunX::onRunState()
   }
 
   postLegSpdsReport();
+  postTurnDist();
   postMessage("LEGRUN_MODE", m_mode);
   if(!ok)
     return(0);
@@ -355,11 +356,14 @@ bool BHV_LegRunX::onRunStateTurnMode()
   m_trackpt = m_wpteng_turn.getTrackPoint();
   m_nextpt  = m_wpteng_turn.getNextPoint();
 
+  // If there was a new update to the basic leg, we'll interrupt this
+  // and essentially transition to the right leg point.
   if(m_turn_interrupt_pending) {
     m_mode_pending = "leg";
     m_turn_interrupt_pending = false;
     postTurnSegList(false);
     postSteerPoints(false);
+    //postMessage("LR_TURN_DIST", 0);
     return(false);
   }
   
@@ -370,6 +374,7 @@ bool BHV_LegRunX::onRunStateTurnMode()
     m_wrap_detector.reset();
     m_odometer.reset();
     m_odometer.unpause();
+    //postMessage("LR_TURN_DIST", 0);
     return(false);
   }
 
@@ -378,6 +383,7 @@ bool BHV_LegRunX::onRunStateTurnMode()
 
   postSteerPoints(true);
   postLegPoints(true);
+  //postMessage("LR_TURN_DIST", m_wpteng_turn.distToEnd(m_osx, m_osy));
     
   return(true); 
 }
@@ -593,6 +599,41 @@ IvPFunction *BHV_LegRunX::buildOF()
     postWMessage("Failure on the CRS_SPD COUPLER");
 
   return(ipf);
+}
+
+//-----------------------------------------------------------
+// Procedure: postTurnDist()
+//      Note: During a leg, the distance is just the distance to
+//            the next leg.
+//            During a turn, it is the distance remaining on the
+//            current turn plus theh length of the full leg.
+//      Note: In one direction the reported distance is positive
+//            and the other it is negative.
+
+//      Note: The sign difference is to convey to the speed
+//            balancing heuristic that two vehicles are on the
+//            "same" leg/turn. If the sign is opposite then that
+//            vehicle would be disregarded from balancing
+//            considerations.
+
+void BHV_LegRunX::postTurnDist()
+{
+  double dist = 0;
+  if(m_mode == "leg1")
+    dist = hypot(m_osx - m_vx1.x(), m_osy - m_vx1.y());
+
+  else if(m_mode == "leg2")
+    dist = -hypot(m_osx - m_vx2.x(), m_osy - m_vx2.y());
+
+  else {
+    dist = m_wpteng_turn.distToEnd(m_osx, m_osy);
+    dist += distPointToPoint(m_vx1, m_vx2);
+
+    if(m_leg_count1 != m_leg_count2)
+      dist = -dist;
+  }
+  
+  postMessage("LR_TURN_DIST", dist);  
 }
 
 //-----------------------------------------------------------
