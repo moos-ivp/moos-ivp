@@ -123,6 +123,10 @@ BHV_LegRunX::BHV_LegRunX(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_perpetual = false;
 
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED");
+  addInfoVars("LR_TURN_DIST");
+
+  // turn_spd is used if multi-vehicle coordinatin is used
+  m_turn_coord_spd = -1;
 }
 
 //-----------------------------------------------------------
@@ -211,6 +215,8 @@ bool BHV_LegRunX::setParam(string param, string value)
     return(setDoubleClipRngOnString(m_patience, value, 1, 99));
   else if(strBegins(param, "turn"))
     return(handleConfigTurnParam(param, value));
+  else if(param == "coord")
+    return(handleConfigCoord(value));
   else if(param == "visual_hints")  
     return(m_hints.setHints(value));
 
@@ -303,6 +309,16 @@ void BHV_LegRunX::onRunToIdleState()
 }
 
 //-----------------------------------------------------------
+// Procedure: onIdleToRunState()
+//      Note: Invoked automatically by the helm when the behavior
+//            first transitions from the Idle to Running state.
+
+void BHV_LegRunX::onIdleToRunState() 
+{
+  m_preview_pending = true;
+}
+
+//-----------------------------------------------------------
 // Procedure: onRunState()
 
 IvPFunction *BHV_LegRunX::onRunState() 
@@ -334,10 +350,14 @@ IvPFunction *BHV_LegRunX::onRunState()
   }
 
   postLegSpdsReport();
-  postTurnDist();
   postMessage("LEGRUN_MODE", m_mode);
   if(!ok)
     return(0);
+
+  if(m_coord != "") {
+    postTurnDist();
+    setTurnCoordSpd();
+  }
   
   IvPFunction *ipf = buildOF();
   if(ipf)
@@ -363,7 +383,6 @@ bool BHV_LegRunX::onRunStateTurnMode()
     m_turn_interrupt_pending = false;
     postTurnSegList(false);
     postSteerPoints(false);
-    //postMessage("LR_TURN_DIST", 0);
     return(false);
   }
   
@@ -374,7 +393,6 @@ bool BHV_LegRunX::onRunStateTurnMode()
     m_wrap_detector.reset();
     m_odometer.reset();
     m_odometer.unpause();
-    //postMessage("LR_TURN_DIST", 0);
     return(false);
   }
 
@@ -383,7 +401,6 @@ bool BHV_LegRunX::onRunStateTurnMode()
 
   postSteerPoints(true);
   postLegPoints(true);
-  //postMessage("LR_TURN_DIST", m_wpteng_turn.distToEnd(m_osx, m_osy));
     
   return(true); 
 }
@@ -466,8 +483,6 @@ void BHV_LegRunX::handleModeSwitch()
     if(!m_leg_spds_onturn)
       m_leg_spds_curr = -1;
   }
-
-
 
   // Transistion from turn to leg1
   else if(m_mode_pending == "leg") {
@@ -563,6 +578,11 @@ IvPFunction *BHV_LegRunX::buildOF()
   double now_speed = m_cruise_speed;
   if(m_leg_spds_curr > 0)
     now_speed = m_leg_spds_curr;
+  if(m_turn_coord_spd > 0)
+    now_speed = m_turn_coord_spd;
+
+  postMessage("LR_TCOORD_SPD", m_turn_coord_spd);
+  postMessage("LR_NOW_SPD", now_speed);
 
   ZAIC_SPD spd_zaic(m_domain, "speed");
   spd_zaic.setParams(now_speed, 0.1, now_speed+0.4, 70, 20);
@@ -632,8 +652,111 @@ void BHV_LegRunX::postTurnDist()
     if(m_leg_count1 != m_leg_count2)
       dist = -dist;
   }
+
+  m_turn_dist = dist;
   
-  postMessage("LR_TURN_DIST", dist);  
+  string report = "vname=" + m_us_name;
+  report += ",tdist=" + doubleToStringX(dist,2);
+  
+  postOffboardMessage(m_coord, "LR_TURN_DIST", report);  
+}
+
+//-----------------------------------------------------------
+// Procedure: setTurnCoordSpd()
+
+void BHV_LegRunX::setTurnCoordSpd()
+{
+  // By default coord turn spd is disabled
+  m_turn_coord_spd = -1;
+
+  // coordination disabled or if we are not currently in the
+  // turning mode, just return with turn_spd remaining at -1
+  if((m_coord == "") || (m_mode != "turn"))
+    return;
+
+  double os_turn_dist = m_turn_dist;
+  if(os_turn_dist < 0)
+    os_turn_dist = -os_turn_dist;
+  
+  // ====================================================
+  // Part 1: Get turn distances from all other vehicles
+  // ====================================================
+  double curr_time = getBufferCurrTime();
+  bool   ok = true;
+  vector<string> svector = getBufferStringVector("LR_TURN_DIST", ok);
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string report = svector[i];
+    string vname = tokStringParse(report, "vname");
+    string sdist = tokStringParse(report, "tdist");
+    double dist = atof(sdist.c_str());
+    m_map_coord_dist[vname] = dist;
+    m_map_coord_tstamp[vname] = curr_time;
+  }
+
+  // ====================================================
+  // Part 2: Remove any stale and sign-mismatch entries
+  // ====================================================
+  vector<string> stale_vnames;
+  map<string, double>::iterator p;
+  for(p=m_map_coord_tstamp.begin(); p!=m_map_coord_tstamp.end(); p++) {
+    string vname = p->first;
+    double tstamp = p->second;
+    double elapsed = curr_time - tstamp;
+    if(elapsed > 5)
+      stale_vnames.push_back(vname);
+    if(m_turn_dist * m_map_coord_dist[vname] <= 0)
+      stale_vnames.push_back(vname);
+  }
+  for(unsigned int i=0; i<stale_vnames.size(); i++) {
+    string vname = stale_vnames[i];
+    m_map_coord_dist.erase(vname);
+    m_map_coord_tstamp.erase(vname);
+  }
+  
+  // ====================================================
+  // Part 3: Get avg of all other vehicles' turn dists.
+  // ====================================================
+  int    count = 0;
+  double total = 0;
+  for(p=m_map_coord_dist.begin(); p!=m_map_coord_dist.end(); p++) {
+    double dist = p->second;
+    if(dist < 0)
+      dist = -dist;
+
+    
+
+    count++;
+    total += dist;
+  }
+
+  // ====================================================
+  // Part 4: Set min/max dist of os and relevant others
+  // ====================================================
+  double max_dist = os_turn_dist;
+  double min_dist = os_turn_dist;
+  for(p=m_map_coord_dist.begin(); p!=m_map_coord_dist.end(); p++) {
+    double dist = p->second;
+    if(dist < 0)
+      dist = -dist;
+    if((max_dist < 0) || (dist > max_dist))
+      max_dist = dist;
+    if((min_dist < 0) || (dist < min_dist))
+      min_dist = dist;
+  }
+
+  // If there are no peer to coordinate with, just return with
+  // turn_spd remaining -1
+  if((count == 0) || (total <= 0))
+    return;
+
+  double avg_dist = total / (double)(count);
+  
+  double ratio = os_turn_dist / avg_dist;
+
+  m_turn_coord_spd = ratio * ratio * m_cruise_speed;
+
+  postMessage("LR_MIN_DIST", min_dist);
+  postMessage("LR_MAX_DIST", max_dist);  
 }
 
 //-----------------------------------------------------------
@@ -1101,6 +1224,39 @@ bool BHV_LegRunX::handleConfigTurnParam(string param, string val)
   } 
 
   return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: handleConfigCoord()
+//     Notes: By default m_coord="" which indicates this behavior
+//            will not try to coordinate the timing with other vehicles.
+//            If m_coord is set to a non-empty string, this means
+//            coordination is enabled. The value of this string
+//            determines to which other vehicles coordination info
+//            should be share. If set to "true" or "all", info will
+//            be set to all other vehicles in the field. If set to
+//            "group=blue" or "blue", it will be shared with other
+//            vehicles in the "blue" group. 
+
+bool BHV_LegRunX::handleConfigCoord(string val)
+{
+  // Since val could be a group name, which could have essentially an
+  // unlimited set of possible names, the only thing we check for is that
+  // there is no white space. 
+  
+  if(strContainsWhite(val))
+    return(false);
+
+  // The setting "all" and "true" are equivalent, and means coordination
+  // info will be share with all other vehicles regardless of group name.
+  
+  val = tolower(val);
+  if(val == "true")
+    m_coord = "all";
+  else
+    m_coord = val;
+
+  return(true);
 }
 
 

@@ -83,8 +83,6 @@ private:  // Configuration Parameters
 private:  // State Variables
   bool         m_center_pending;
   std::string  m_center_assign;
-  double       m_osx;
-  double       m_osy;
   double       m_currtime;
   double       m_dist_to_station;
   std::string  m_pskeep_state;     // pending_progress_start, noted_prog...

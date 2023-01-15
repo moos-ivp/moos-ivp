@@ -84,7 +84,7 @@ BHV_StationKeep::BHV_StationKeep(IvPDomain gdomain) :
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 //     Notes: We expect the "station_pt" entry will be of the form
 //            "xposition,yposition".
 //            The "radius" parameters is given in meters.
@@ -182,7 +182,7 @@ bool BHV_StationKeep::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: onIdleToRunState
+// Procedure: onIdleToRunState()
 
 void BHV_StationKeep::onIdleToRunState()
 {
@@ -197,7 +197,7 @@ void BHV_StationKeep::onIdleToRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunToIdleState
+// Procedure: onRunToIdleState()
 //      Note: If m_center_pending is true, each time the behavior
 //            goes inactive (and thus this function is called), 
 //            a pending new center is declared, and set to the 
@@ -221,7 +221,7 @@ void BHV_StationKeep::onRunToIdleState()
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: onRunState()
 
 IvPFunction *BHV_StationKeep::onRunState() 
 {
@@ -248,6 +248,9 @@ IvPFunction *BHV_StationKeep::onRunState()
 
   double angle_to_station = relAng(m_osx, m_osy, 
 				   m_station_x, m_station_y);
+
+  if(m_center_pending)          // mikerb mod jan1423
+    angle_to_station = m_osh;
   
   double desired_speed = 0;
   // If the pskeepp_state is hibernating it means that station-keeping
@@ -305,20 +308,21 @@ IvPFunction *BHV_StationKeep::onRunState()
 bool BHV_StationKeep::updateInfoIn()
 {
   // PART 1: GET THE INFORMATION NEEDED FROM THE INFO_BUFFER
-  bool ok1, ok2;
+  bool ok1, ok2, ok3;
   // ownship position in meters from some 0,0 reference point.
   m_currtime = getBufferCurrTime();
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
+  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
 
   // If previous state was idle (mark_time=-1), note the time entered
   // into the running state.
   if(m_mark_time == -1)
     m_mark_time = m_currtime;
 
-  // Must get ownship position from InfoBuffer
-  if(!ok1 || !ok2) {
-    postEMessage("No ownship X/Y info in info_buffer.");
+  // Must get ownship nav position from InfoBuffer
+  if(!ok1 || !ok2 || !ok3) {
+    postEMessage("No ownship X/Y or HDG info in info_buffer.");
     return(false);
   }
 
@@ -429,7 +433,7 @@ void BHV_StationKeep::postStationMessage(bool post)
 
 
 //-----------------------------------------------------------
-// Procedure: updateHibernationState
+// Procedure: updateHibernationState()
 
 void BHV_StationKeep::updateHibernationState()
 {
@@ -472,7 +476,7 @@ void BHV_StationKeep::updateHibernationState()
 
 
 //-----------------------------------------------------------
-// Procedure: historyShowsProgressStart
+// Procedure: historyShowsProgressStart()
 //
 //     |                               
 //     |                   o              
@@ -507,7 +511,7 @@ bool BHV_StationKeep::historyShowsProgressStart()
 
 
 //-----------------------------------------------------------
-// Procedure: historyShowsProgressEnd
+// Procedure: historyShowsProgressEnd()
 //
 //     |                               
 //     |                   o              
@@ -573,7 +577,7 @@ void BHV_StationKeep::historyClear()
 
 
 //-----------------------------------------------------------
-// Procedure: postConfigStatus
+// Procedure: postConfigStatus()
 
 void BHV_StationKeep::postConfigStatus()
 {

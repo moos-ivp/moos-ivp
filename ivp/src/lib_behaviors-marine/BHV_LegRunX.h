@@ -41,6 +41,7 @@ public:
   IvPFunction* onRunState();
   void        onIdleState();
   void        onRunToIdleState();
+  void        onIdleToRunState();
   void        onSetParamComplete();
   void        onCompleteState() {eraseAllViewables();}
   void        postConfigStatus();
@@ -49,8 +50,11 @@ public:
 protected:
   bool   handleConfigTurnParam(std::string, std::string);
   bool   handleConfigLegSpeed(std::string);
+  bool   handleConfigCoord(std::string);
   bool   updateInfoIn();
   void   postStatusReport();
+
+  void   setTurnCoordSpd();
   void   postTurnDist();
 
   void   postLegSegList(bool active=true);
@@ -121,6 +125,8 @@ protected: // Config vars
   double              m_leg_spds_curr;   // state  var
   bool                m_leg_spds_repeat; // config var
   bool                m_leg_spds_onturn; // config var
+
+  std::string m_coord; 
   
 protected: // State vars
   std::string m_mode;
@@ -143,6 +149,12 @@ protected: // State vars
   double   m_legang_req;
   double   m_legang_mod_req;
 
+  // Support for multi-vehicle coordinated turning
+  double   m_turn_coord_spd; 
+  double   m_turn_dist;
+
+  std::map<std::string, double> m_map_coord_dist;
+  std::map<std::string, double> m_map_coord_tstamp;
 };
 
 #endif
