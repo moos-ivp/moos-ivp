@@ -80,10 +80,11 @@ class WaypointEngineX {
   
   std::string setNextWaypoint(double osx, double osy);
   
+  double  distToEnd(double osx, double osy) const;
   double  distToPrevWpt(double osx, double osy) const;
   double  distToNextWpt(double osx, double osy) const;
   double  pctToNextWpt(double osx, double osy) const;
-
+  
   bool   hasCompleted() const;
   bool   hasAdvanced() const;
   bool   hasCycled() const;
@@ -112,8 +113,8 @@ protected: // State Vars
   unsigned int m_line_hits;
   unsigned int m_repeats_sofar;
 
-  XYSegList m_seglist;
-  XYSegList m_seglist_raw;
+  XYSegList m_seglist;      // in-use (maybe temp reversed)
+  XYSegList m_seglist_raw;  // original version
   XYPoint   m_prevpt;
   XYPoint   m_nextpt;
   XYPoint   m_trackpt;

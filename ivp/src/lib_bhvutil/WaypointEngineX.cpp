@@ -463,6 +463,19 @@ string WaypointEngineX::setNextWptAux(double osx, double osy)
 
 
 //-----------------------------------------------------------
+// Procedure: distToEnd()
+
+double WaypointEngineX::distToEnd(double osx, double osy) const
+{
+  double dist = distToNextWpt(osx, osy);
+
+  dist += m_seglist.length(m_curr_ix);
+
+  return(dist);
+}
+
+
+//-----------------------------------------------------------
 // Procedure: distToPrevWpt()
 
 double WaypointEngineX::distToPrevWpt(double osx, double osy) const
