@@ -176,7 +176,7 @@ SET(ROBOT_APPS
   uLoadWatch         uTermCommand        uXMS
   uMAC               uPokeDB             uQueryDB
   pHostInfo          iSay                pContactMgrV20
-  pMarinePIDV22      uSimMarineV22
+  pMarinePIDV22      uSimMarineV22       uSimMarineV23
 )
 SET(IVP_NON_GUI_APPS
   app_alogsplit      app_alogsort        app_alogcheck
