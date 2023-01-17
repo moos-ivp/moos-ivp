@@ -95,6 +95,7 @@ public:
   double max_dist_to_ctr() const;
   bool   segs_cross(bool loop=true) const;
   double length() const;
+  double length(unsigned int) const;
 
   std::string get_spec(unsigned int vertex_prec=1) const;
   std::string get_spec(std::string param) const;

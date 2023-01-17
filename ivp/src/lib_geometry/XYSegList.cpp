@@ -819,6 +819,31 @@ double XYSegList::length() const
 }
 
 //---------------------------------------------------------------
+// Procedure: length(start_ix)
+//   Purpose: Determine the overall length between the first and
+//            the last point - distance in the X-Y Plane only
+
+double XYSegList::length(unsigned int start_ix) const
+{
+  unsigned int vsize = m_vx.size();
+  if(start_ix >= vsize)
+    return(0);
+
+  double prev_x = m_vx[start_ix];
+  double prev_y = m_vy[start_ix];
+
+  double total_length = 0;
+  for(unsigned int i=start_ix+1; i<vsize; i++) {
+    double x = m_vx[i];
+    double y = m_vy[i];
+    total_length += hypot(x-prev_x, y-prev_y);
+    prev_x = x;
+    prev_y = y;
+  }
+  return(total_length);
+}
+
+//---------------------------------------------------------------
 // Procedure: get_spec()
 
 string XYSegList::get_spec(unsigned int precision) const
