@@ -36,7 +36,7 @@
 class XYSegList : public XYObject {
 public:
   XYSegList() {m_transparency=0.1;}
-  XYSegList(XYPoint, XYPoint);
+  XYSegList(XYPoint, XYPoint, std::string label="");
   XYSegList(double x1, double y1, double x2, double y2);
 
   virtual ~XYSegList() {}
@@ -44,7 +44,7 @@ public:
   // XYSegList create and edit functions
   void   add_vertex(const XYPoint&, std::string s="");
   void   add_vertex(double, double, double=0, std::string s="");       
-  void   mod_vertex(unsigned int, double, double, double=0, std::string s="");       
+  void   mod_vertex(unsigned int, double, double, double=0, std::string s="");
   
   void   alter_vertex(double, double, double=0, std::string s="");
   void   delete_vertex(double, double);

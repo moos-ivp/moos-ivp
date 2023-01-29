@@ -37,11 +37,12 @@ using namespace std;
 // Procedure: Constructor()
 //      Note: Convenience Constructor
 
-XYSegList::XYSegList(XYPoint pt1, XYPoint pt2)
+XYSegList::XYSegList(XYPoint pt1, XYPoint pt2, string label)
 {
   add_vertex(pt1);
   add_vertex(pt2);
   m_transparency = 0.1;
+  m_label = label;
 }
 
 //---------------------------------------------------------------

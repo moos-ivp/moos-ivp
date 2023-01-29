@@ -35,6 +35,8 @@ class XYPoint : public XYObject {
   {m_x=0; m_y=0; m_z=0; m_valid=false; m_sdigits=2; m_pt_trans=0;}
   XYPoint(double x, double y, double z=0)
   {m_x=x; m_y=y; m_z=z; m_valid=true; m_sdigits=2; m_pt_trans=0;}
+  XYPoint(double x, double y, std::string l)
+  {m_x=x; m_y=y; m_z=0; m_valid=true; m_sdigits=2; m_pt_trans=0; m_label=l;}
 
   virtual ~XYPoint() {}
   

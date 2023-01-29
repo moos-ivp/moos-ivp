@@ -175,6 +175,16 @@ void XYObject::set_duration(double duration)
 }
 
 //---------------------------------------------------------------
+// Procedure: set_vertex_color_size()
+//   Purpose: Convenience function
+
+void XYObject::set_vertex_color_size(string vcolor, double vsize)
+{
+  set_vertex_color(vcolor);
+  set_vertex_size(vsize);
+}
+
+//---------------------------------------------------------------
 // Procedure: get_spec()
 
 std::string XYObject::get_spec(string param) const
