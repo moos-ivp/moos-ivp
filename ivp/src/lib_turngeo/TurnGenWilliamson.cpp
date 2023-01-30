@@ -233,6 +233,7 @@ void TurnGenWilliamson::generate()
 
 void TurnGenWilliamson::generateNormal()
 {
+  cout << "generateNormal()" << endl;
   if(!valid())
     return;
 
@@ -327,6 +328,7 @@ void TurnGenWilliamson::generateLaneSwitch()
 
 void TurnGenWilliamson::generateLaneSwitch1()
 {
+  cout << "generateLaneSwitch()" << endl;
   // Part 1: Establish the turn headings
   double port_angle = angle360(m_start_osh - 90);
   double star_angle = angle360(m_start_osh + 90);
@@ -503,6 +505,7 @@ void TurnGenWilliamson::generateLaneSwitch1()
 
   // Part 7: Calculate the last turn point. If too close to the previous
   // turn point, remove the previous turn point
+#if 0
   double fx = 0;
   double fy = 0;
   if(m_port_turn)
@@ -528,6 +531,8 @@ void TurnGenWilliamson::generateLaneSwitch1()
     pt.set_vertex_size(4);
     m_points.push_back(pt);
   }
+#endif
+  
 }
 
 
