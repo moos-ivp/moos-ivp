@@ -369,7 +369,7 @@ bool BackImg::readTiffInfo(string info_file)
   if(f) 
     fclose(f);
   else {
-    cout << "Could find or read contents of " << info_file << endl;
+    cout << "Could not find or read contents of " << info_file << endl;
     return(false);
   }
       
