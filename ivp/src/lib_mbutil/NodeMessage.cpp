@@ -65,11 +65,13 @@ void NodeMessage::setColor(const string& color_str)
 //------------------------------------------------------------
 // Procedure: getSpec()
 
-string NodeMessage::getSpec() const
+string NodeMessage::getSpec(bool include_ack_info) const
 {
   string str;
-  if(m_msg_id != "") 
+  if((m_msg_id != "") && include_ack_info)
     str = augmentSpec(str, "ack_id=" + m_msg_id);
+  if((m_ack_requested) && include_ack_info)
+    str = augmentSpec(str, "ack=true");
   if(m_src_node != "")
     str = augmentSpec(str, "src_node=" + m_src_node);
   if(m_dest_node != "") 
@@ -84,8 +86,6 @@ string NodeMessage::getSpec() const
     str = augmentSpec(str, "var_name=" + m_var_name);
   if(m_color != "") 
     str = augmentSpec(str, "color=" + m_color);
-  if(m_ack_requested) 
-    str = augmentSpec(str, "ack=true");
   if(m_double_val_set) {
     string str_dval = doubleToStringX(m_double_val,6);
     str = augmentSpec(str, "double_val=" + str_dval);

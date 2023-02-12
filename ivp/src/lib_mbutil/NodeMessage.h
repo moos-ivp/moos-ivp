@@ -65,7 +65,7 @@ class NodeMessage
     
   bool valid() const;
 
-  std::string getSpec() const;
+  std::string getSpec(bool include_ack_info=true) const;
 
  protected: 
   std::string  m_src_node;
