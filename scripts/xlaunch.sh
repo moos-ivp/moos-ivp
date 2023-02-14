@@ -9,6 +9,7 @@
 TIME_WARP=1
 COMMUNITY=""
 JUST_MAKE="no"
+UNIQUE=""
 FLOW_DOWN_ARGS="--auto "
 SEND="no"
 RESFILE="no"
@@ -23,7 +24,7 @@ ALL_ARGS=""
 #-------------------------------------------------------
 for ARGI; do
     ALL_ARGS+=$ARGI" "
-    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ] ; then
+    if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "xlaunch.sh [OPTIONS] [time_warp]     "
 	echo "Synopsis:                                                    " 
 	echo "  Run from within a mission folder:                          "
@@ -46,6 +47,7 @@ for ARGI; do
 	echo "  --quiet, -q        Quiet uQueryDB, uPokeDB                 " 
 	echo "  --com=alpha        Name the community to poke              " 
 	echo "  --delay=<secs>     Delay N secs before launch. Default is 4" 
+	echo "  --unique, -u       Pseudo unique proc name on each uQueryDB" 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
 	TIME_WARP=$ARGI
@@ -68,6 +70,8 @@ for ARGI; do
         CLEAN="yes"
     elif [ "${ARGI}" = "--quiet" -o "${ARGI}" = "-q" ]; then
         QUIET="yes"
+    elif [ "${ARGI}" = "--unique" -o "${ARGI}" = "-u" ]; then
+        UNIQUE=$ARGI
     elif [ "${ARGI}" = "--pi" ]; then
         FAKEOS="--fakeos=Raspbian-10-buster"
     elif [ "${ARGI}" = "--ubu" ]; then
@@ -139,9 +143,9 @@ while [ 1 ]; do
     sleep 6
     rm -f .checkvars
     if [ "${QUIET}" = "yes" ]; then
-	uQueryDB -u targ_$COMMUNITY.moos >& /dev/null
+	uQueryDB $UNIQUE targ_$COMMUNITY.moos >& /dev/null
     else
-	uQueryDB -u targ_$COMMUNITY.moos
+	uQueryDB $UNIQUE targ_$COMMUNITY.moos
     fi
 
     if [ "$?" = 0 ]; then 
