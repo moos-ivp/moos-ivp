@@ -69,6 +69,9 @@ int main(int argc, char *argv[])
     cout << "  --verbose      Show output for successful operation      " << endl;
     cout << "  --dir=DIR      Override the default dir with given dir.  " << endl;
     cout << "                                                           " << endl;
+    cout << "  --max_fptrs=N  Set max number of OS file pointers allowed" << endl;
+    cout << "                 to be open during splitting. Default 125. " << endl;
+    cout << "                                                           " << endl;
     cout << "  --web,-w   Open browser to:                              " << endl;
     cout << "             https://oceanai.mit.edu/ivpman/apps/alogiter  " << endl;
     cout << "                                                           " << endl;
@@ -82,7 +85,8 @@ int main(int argc, char *argv[])
 
   string alogfile_in;
   string given_dir;
-
+  string max_fptrs;
+  
   bool verbose = false;
   for(int i=1; i<argc; i++) {
     string sarg = argv[i];
@@ -96,6 +100,8 @@ int main(int argc, char *argv[])
     }
     else if(sarg == "--verbose")
       verbose = true;
+    else if(strBegins(sarg, "--max_fptrs="))
+      max_fptrs = sarg.substr(12);
     else if(strBegins(sarg, "--dir=")) 
       given_dir = sarg.substr(6);
   }
@@ -108,6 +114,11 @@ int main(int argc, char *argv[])
   SplitHandler handler(alogfile_in);
   handler.setVerbose(verbose);
   handler.setDirectory(given_dir);
+
+  if(isNumber(max_fptrs)) {
+    int int_max_fptrs = atoi(max_fptrs.c_str());
+    handler.setMaxFilePtrCache((unsigned int)(int_max_fptrs));
+  }
   
   bool handled = handler.handle();
   if(!handled)
