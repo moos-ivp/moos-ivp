@@ -21,10 +21,12 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <cstdio>
+#include <iostream>
 #include "MBUtils.h"
 #include "ALogScanner.h"
 #include "LogUtils.h"
-#include <cstdio>
+#include "ColorParse.h"
 
 using namespace std;
 
@@ -34,8 +36,25 @@ using namespace std;
 ScanReport ALogScanner::scan()
 {
   ScanReport report;
+
+  char carriage_return = 13;
+  unsigned int lines_read = 0;
+
   bool done = false;
+
+  if(m_verbose)
+    cout << endl;
+  
   while(!done) {
+
+    if(m_verbose) {
+      lines_read++;
+      if((lines_read % 5000) == 0) {
+	cout << "  Lines Read: " << uintToCommaString(lines_read);
+	cout << carriage_return << flush;
+      }
+    }
+    
     ALogEntry entry = getNextRawALogEntry(m_file, true);
     string status = entry.getStatus();
     // Check for the end of the file
@@ -66,6 +85,13 @@ ScanReport ALogScanner::scan()
 		     entry.getStringVal());
     }
   }
+
+  if(m_verbose) {
+    cout << termColor("blue");
+    cout << "  Lines Read: " << uintToCommaString(lines_read) << endl;
+    cout << termColor();
+  }
+  
   return(report);
 }
 

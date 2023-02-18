@@ -29,34 +29,55 @@
 #include "SplitHandler.h"
 #include "LogUtils.h"
 #include "TermUtils.h"
+#include "ColorParse.h"
 
 using namespace std;
 
 //--------------------------------------------------------
-// Constructor
+// Constructor()
 
 SplitHandler::SplitHandler(string alog_file)
 {
   // Init config parameters
   m_alog_file = alog_file;
-  m_verbose = false;
-  m_max_cache = 100;  // Default limit for concurrent fopen fileptrs
+  m_verbose   = false;
+  m_progress  = false;
+  m_max_cache = 125;  // Default limit for concurrent fopen fileptrs
   
   // Init state variables
   m_alog_file_confirmed = false;
   m_split_dir_prior     = false;
   m_max_cache_exceeded  = false;
+
+  m_vip_cache.insert("NAV_X");
+  m_vip_cache.insert("NAV_Y");
+  m_vip_cache.insert("NAV_SPEED");
+  m_vip_cache.insert("NAV_HEADING");
+  m_vip_cache.insert("NAV_HEADING_OVER_GROUND");
+  m_vip_cache.insert("NAV_LAT");
+  m_vip_cache.insert("NAV_LONG");
+  m_vip_cache.insert("DESIRED_RUDDER");
+  m_vip_cache.insert("DESIRED_THRUST");
+  m_vip_cache.insert("BHV_IPF");
+  m_vip_cache.insert("PID_REPORT");
+  m_vip_cache.insert("APP_LOG");
+  m_vip_cache.insert("NODE_REPORT");
+
 }
 
 //--------------------------------------------------------
-// Procedure: handle
+// Procedure: handle()
 
 bool SplitHandler::handle()
 {
   bool ok = true;
+
   ok = ok && handlePreCheckALogFile();
+
   ok = ok && handlePreCheckSplitDir();
+ 
   ok = ok && handleMakeSplitFiles();
+
   ok = ok && handleMakeSplitSummary();
 
   if(m_split_dir_prior)
@@ -66,7 +87,7 @@ bool SplitHandler::handle()
 }
 
 //--------------------------------------------------------
-// Procedure: setMaxFilePtrCache
+// Procedure: setMaxFilePtrCache()
 
 void SplitHandler::setMaxFilePtrCache(unsigned int val)
 {
@@ -117,7 +138,7 @@ bool SplitHandler::handlePreCheckALogFile()
 }
 
 //--------------------------------------------------------
-// Procedure: handleMakeSplitFiles
+// Procedure: handleMakeSplitFiles()
 
 bool SplitHandler::handleMakeSplitFiles()
 {
@@ -127,10 +148,21 @@ bool SplitHandler::handleMakeSplitFiles()
     return(false);
   }
 
+  char carriage_return = 13;
+  unsigned int lines_read = 0;
+  
   bool done = false;
   while(!done) {    
     string line_raw = getNextRawLine(file_in);
 
+    if(m_progress) {
+      lines_read++;
+      if((lines_read % 5000) == 0) {
+	cout << "  Lines Read: " << uintToCommaString(lines_read);
+	cout << carriage_return << flush;
+      }
+    }
+    
     //cout << "line: [" << line_raw << "]" << endl;
     // Check if the line has the timestamp
     if((m_logstart.length() == 0) && strContains(line_raw, "LOGSTART")) {
@@ -245,20 +277,31 @@ bool SplitHandler::handleMakeSplitFiles()
       errno = 0;
       FILE *new_ptr = fopen(new_file.c_str(), "a");
       if(new_ptr) {
-	// 100 seems to be a safe bet for all OS types for allowing
-	// simultaneously open file pointers. Everything after 100
+	// 125 seems to be a safe bet for all OS types for allowing
+	// simultaneously open file pointers. Everything after 125
 	// will be slower.
-	if(m_file_ptr.size() <= m_max_cache) {
+	bool vip = false;
+	if(m_vip_cache.count(varname) != 0)
+	  vip = true;
+	
+	if(vip || (m_file_ptr.size() <= m_max_cache)) {
 	  m_file_ptr[varname] = new_ptr;
 	  cached_file_ptr = true;
-	  if(m_verbose)
-	    cout << "Caching: " << varname << " (" << m_file_ptr.size() << ")" << endl;
+	  if(m_verbose) {
+	    if(vip)
+	      cout << "VIP " << flush;
+	    cout << "Caching: " << varname;
+	    cout << " (" << m_file_ptr.size() << ")" << m_max_cache << endl;
+	  }
 	}
-	m_max_cache_exceeded = true;
+	else
+	  m_max_cache_exceeded = true;
+
 	file_ptr = new_ptr;
       }
       else {
-	cout << "Unable to open new file for VarName: [[" << varname << "]]" << endl;
+	cout << "Unable to open new file for VarName: [[" << varname << "]]";
+	cout << endl;
 	cout << " full filename: [[" << new_file << "]]" << endl;
 	cout << "Error: " << errno << endl;
 	break;
@@ -281,10 +324,14 @@ bool SplitHandler::handleMakeSplitFiles()
     // Part 5: Write the line to the appropriate file
     fprintf(file_ptr, "%s\n", line_raw.c_str());
     if(!cached_file_ptr)
-      fclose(file_ptr);
-    
+      fclose(file_ptr);    
   }
-
+  if(m_progress) {
+    cout << termColor("blue");
+    cout << "  Lines Read: " << uintToCommaString(lines_read) << endl;
+    cout << termColor();
+  }
+  
   if(m_verbose)
     cout << "Done writing to klog files. Total files: " << m_file_ptr.size() << endl;
 
@@ -391,7 +438,8 @@ bool SplitHandler::handlePreCheckSplitDir()
   FILE *tmp1 = fopen(basedir.c_str(), "r");
   if(tmp1) {
     fclose(tmp1);
-    cout << "The base directory [" << basedir << "] already exists." << endl;
+    string bit_basedir = rbiteString(basedir, '/');
+    cout << "    Dir [" << bit_basedir << "] confirmed." << endl;
     m_split_dir_prior = true;
     return(false);
   }
@@ -401,13 +449,13 @@ bool SplitHandler::handlePreCheckSplitDir()
   string cmd = "mkdir " + basedir;
   int result = system(cmd.c_str());
   if(result != 0) 
-    cout << "Possible err in SplitHandler syscmd mkdri" << endl;
+    cout << "Possible err in SplitHandler syscmd mkdir" << endl;
 
   
   // Ensure that the base directory has indeed been created.
   FILE *tmp2 = fopen(basedir.c_str(), "r");
   if(!tmp2) {
-    cout << "The base directory [" << basedir << "] could not be created." << endl;
+    cout << "Cache dur [" << basedir << "] could not be created." << endl;
     return(false);
   }
   fclose(tmp2);

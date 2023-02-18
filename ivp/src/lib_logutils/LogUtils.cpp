@@ -724,11 +724,25 @@ double getEpochSecsFromDayOfYear(double d_day, double d_month,
   return(total_seconds);
 }
 
+//-------------------------------------------------------------
+// Procedure: getFileLineCount()
 
+unsigned int getFileLineCount(const string& filestr)
+{
+  FILE *f = fopen(filestr.c_str(), "r");
+  if(!f)
+    return(0);
 
-
-
-
-
-
-
+  unsigned int total = 0;
+  bool done = false;
+  while(!done) {
+    string line = getNextRawLine(f);
+    if(line == "eof")
+      done = true;
+    else
+      total++;
+  }
+  fclose(f);
+  return(total);
+}
+  

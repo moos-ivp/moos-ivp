@@ -49,7 +49,10 @@ ALogDataBroker::ALogDataBroker()
 
   m_pruned_logtmin  = 0;
   m_pruned_logtmax  = 0;
-  m_verbose = false;
+  m_verbose  = false;
+  m_progress = false;
+
+  m_max_fileptrs = 100;
 }
 
 //----------------------------------------------------------------
@@ -60,6 +63,10 @@ void ALogDataBroker::addALogFile(string alog_file)
   m_alog_files.push_back(alog_file);
 
   SplitHandler handler(alog_file);
+  handler.setProgress(m_progress);
+  handler.setVerbose(m_verbose);
+  handler.setMaxFilePtrCache(m_max_fileptrs);
+  
   m_splitters.push_back(handler);
 }
   
@@ -80,14 +87,14 @@ bool ALogDataBroker::checkALogFiles()
 
 bool ALogDataBroker::splitALogFiles()
 {
-  unsigned int i, vsize = m_alog_files.size();
+  unsigned int vsize = m_alog_files.size();
 
   // Part 1: Split out the alog file into the base_dir
   bool all_ok = true;
-  for(i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<vsize; i++) {
     string split_file = m_alog_files[i];
     split_file = rbiteString(split_file, '/');
-    cout << "Splitting " << split_file << "..." << endl;
+    cout << "[" << i+1 << "] Caching " << split_file << "..." << endl;
     all_ok = all_ok && m_splitters[i].handle();
   }
 
@@ -95,7 +102,7 @@ bool ALogDataBroker::splitALogFiles()
     return(false);
 
   // Part 2: Determine the base dir name
-  for(i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<vsize; i++) {
     string alog_file = m_alog_files[i];
     rbiteString(alog_file, '.');  //   some/dir/foo.alog --> some/dir/foo
     string base_dir = alog_file + "_alvtmp";
@@ -103,7 +110,7 @@ bool ALogDataBroker::splitALogFiles()
   }
 
   // Part 3: Summary File names
-  for(i=0; i<vsize; i++) {
+  for(unsigned int i=0; i<vsize; i++) {
     string summary_file = m_base_dirs[i] + "/summary.klog";
     m_summ_files.push_back(summary_file);
   }

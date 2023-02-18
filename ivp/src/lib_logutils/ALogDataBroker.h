@@ -50,7 +50,9 @@ class ALogDataBroker
   void cacheMasterIndices();
   void cacheBehaviorIndices();
   void cacheAppLogIndices();
-  void setVerbose(bool v=true) {m_verbose=v;}
+  void setVerbose(bool v=true)  {m_verbose=v;}
+  void setProgress(bool v=true) {m_progress=v;}
+  void setMaxFilePtrs(unsigned int v) {m_max_fileptrs=v;}
   
   LogPlot      getLogPlot(unsigned int mix);
   VarPlot      getVarPlot(unsigned int mix, bool src=false);
@@ -151,6 +153,8 @@ class ALogDataBroker
   std::string m_region_info;
 
   bool m_verbose;
+  bool m_progress;
+  unsigned int m_max_fileptrs;
 };
 
 #endif

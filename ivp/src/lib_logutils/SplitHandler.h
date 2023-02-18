@@ -38,6 +38,7 @@ class SplitHandler
   bool handle();
   bool handlePreCheckALogFile();
   void setVerbose(bool v)          {m_verbose=v;}
+  void setProgress(bool v)         {m_progress=v;}
   void setDirectory(std::string s) {m_given_dir=s;}
   void setMaxFilePtrCache(unsigned int);
 
@@ -50,6 +51,7 @@ class SplitHandler
   std::string  m_alog_file;
   std::string  m_given_dir;
   bool         m_verbose;
+  bool         m_progress;
   unsigned int m_max_cache;
   
  protected: // State variables
@@ -69,6 +71,8 @@ class SplitHandler
   
   std::string m_curr_helm_iter;
 
+  std::set<std::string> m_vip_cache;
+  
   // Each map key is a MOOS variable name
   std::map<std::string, FILE*>       m_file_ptr;
   std::map<std::string, std::string> m_var_type;

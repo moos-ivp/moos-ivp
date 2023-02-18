@@ -54,6 +54,8 @@ double getEpochSecsFromDayOfYear(double day, double month, double year);
 
 unsigned int getIndexByTime(const std::vector<double>&, double);
 
+unsigned int getFileLineCount(const std::string& filename);
+
 #endif 
 
 
