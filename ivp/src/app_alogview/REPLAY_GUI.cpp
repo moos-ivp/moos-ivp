@@ -30,7 +30,7 @@
 using namespace std;
 
 //-----------------------------------------------------------------
-// Constructor
+// Constructor()
 
 REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
   : MarineVehiGUI(g_w, g_h, g_l) 
@@ -59,7 +59,7 @@ REPLAY_GUI::REPLAY_GUI(int g_w, int g_h, const char *g_l)
 }
 
 //-----------------------------------------------------------------
-// Procedure: initWidgets
+// Procedure: initWidgets()
 
 void REPLAY_GUI::initWidgets()
 {
@@ -173,7 +173,7 @@ REPLAY_GUI::~REPLAY_GUI()
 }
 
 //----------------------------------------------------------
-// Procedure: resize
+// Procedure: resize()
 
 void REPLAY_GUI::resize(int lx, int ly, int lw, int lh)
 {
@@ -292,7 +292,7 @@ void REPLAY_GUI::augmentMenu()
 }
 
 //----------------------------------------------------------
-// Procedure: handle
+// Procedure: handle()
 //     Notes: Return of 1 indicates event has been handled.
 
 int REPLAY_GUI::handle(int event) 
@@ -367,7 +367,7 @@ int REPLAY_GUI::handle(int event)
 }
 
 //----------------------------------------------------------
-// Procedure: setCurrTime
+// Procedure: setCurrTime()
 
 void REPLAY_GUI::setCurrTime(double curr_time)
 {
@@ -939,9 +939,9 @@ void REPLAY_GUI::updateXY()
 }
 
 //----------------------------------------------------------
-// Procedure: setDataBroker
+// Procedure: setDataBroker()
 
-void REPLAY_GUI::setDataBroker(ALogDataBroker broker)
+void REPLAY_GUI::setDataBroker(const ALogDataBroker& broker)
 {
   m_dbroker = broker;
   setLogPlotMenus();
@@ -962,7 +962,7 @@ void REPLAY_GUI::setDataBroker(ALogDataBroker broker)
 }
 
 //----------------------------------------------------------
-// Procedure: setLogPlotMenus
+// Procedure: setLogPlotMenus()
 //      Note: MIX short for MasterIndex
 
 void REPLAY_GUI::setLogPlotMenus()

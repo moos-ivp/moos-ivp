@@ -31,7 +31,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Constructor
+// Constructor()
 
 LogViewLauncher::LogViewLauncher()
 {
@@ -57,10 +57,13 @@ LogViewLauncher::LogViewLauncher()
 
   m_quick_start = false;
   m_config_file_read = false;
+
+  // Configure to show updates on num lines read during reading
+  m_dbroker.setProgress(true);
 }
 
 //-------------------------------------------------------------
-// Procedure: launch
+// Procedure: launch()
 
 REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
 {
@@ -69,6 +72,12 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
 
   bool ok = true;
 
+  cout << termColor("blue");
+  cout << "*********************************************************" << endl;
+  cout << "* alogview                    Mike Benjamin, MIT MechE  *" << endl; 
+  cout << "*********************************************************" << endl;
+  cout << termColor();
+  
   ok = ok && parseCommandArgs(argc, argv);
   ok = ok && sanityCheck();
   ok = ok && configDataBroker();
@@ -76,10 +85,20 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
   ok = ok && configGraphical();
   
   total_timer.stop();
-  cout << termColor("blue") << "Done alogview launch time (cpu): ";
-  cout << total_timer.get_float_cpu_time() << endl;
-  cout << "Done alogview launch time (wall): ";
-  cout << total_timer.get_float_wall_time() << termColor() << endl;
+
+  double dbl_wall = total_timer.get_float_cpu_time();
+  double dbl_cpu  = total_timer.get_float_wall_time();
+
+  string str = "CPU Time: " + doubleToString(dbl_cpu,2);
+  str += " Wall time: " + doubleToString(dbl_wall,2);
+  str = padString(str, 54, false);
+
+  cout << termColor("blue");
+  cout << "*********************************************************" << endl;
+  cout << "* Launch Summary:                                       *" << endl; 
+  cout << "* " << str << "*" << endl;
+  cout << "*********************************************************" << endl;
+  cout << termColor();
 
   if(!ok)
     return(0);
@@ -87,7 +106,7 @@ REPLAY_GUI *LogViewLauncher::launch(int argc, char **argv)
 }
 
 //-------------------------------------------------------------
-// Procedure: parseCommandArgs
+// Procedure: parseCommandArgs()
 
 bool LogViewLauncher::parseCommandArgs(int argc, char **argv)
 {
@@ -115,17 +134,20 @@ bool LogViewLauncher::parseCommandArgs(int argc, char **argv)
   // Part 3: Handle all other arguments. Command line arguments will
   // thus override anything provided in one of the alogview config files.
   for(int i=1; i<argc; i++) {
-    bool handled = true;
     string argi = argv[i];
-    if(strEnds(argi, ".alog")) 
-      m_dbroker.addALogFile(argi);
-    else
-      handled = handleConfigParam(argi);
+    bool handled = handleConfigParam(argi);
 
     if(!handled) {
       cout << "Unhandled argument: " << argi << endl;
       return(false);
     }
+  }
+
+  // Part 4: Handle the alog files last
+  for(int i=1; i<argc; i++) {
+    string argi = argv[i];
+    if(strEnds(argi, ".alog")) 
+      m_dbroker.addALogFile(argi);
   }
 
   return(true);
@@ -139,10 +161,13 @@ bool LogViewLauncher::parseCommandArgs(int argc, char **argv)
 bool LogViewLauncher::handleConfigParam(string argi)
 {
   if(m_verbose)
-    cout << "Handling Config Params..." << endl;
+    cout << "Handling Config Params: [" << argi << "]" << endl;
+
   bool handled = true;
   if(strEnds(argi, ".alog")) 
-    m_dbroker.addALogFile(argi);
+    handled = true; // handled separately
+  else if(strBegins(argi, "--max_fptrs=")) 
+    handled = handleMaxFilePtrs(argi.substr(12));
   else if(strBegins(argi, "--bg="))
     handled = handleBackground(argi.substr(5));
   else if(strEnds(argi, ".tif")) 
@@ -251,21 +276,21 @@ bool LogViewLauncher::sanityCheck()
 
 
 //-------------------------------------------------------------
-// Procedure: configDataBroker
+// Procedure: configDataBroker()
 
 bool LogViewLauncher::configDataBroker()
 {
-  if(m_verbose) {
-    cout << "Handling Config of Data Broker..." << endl;
-    m_dbroker.setVerbose();
-  }
+  cout << "*********************************************************" << endl;
+  cout << "* STARTUP PART 1: Build/Confirm data cache files        *" << endl; 
+  cout << "* The first time alogview launches on new alog file(s)  *" << endl;
+  cout << "* this may take more time as a data cache is created by *" << endl;
+  cout << "* creating a dedicated file for each logged variable.   *" << endl;
+  cout << "* Subsequent re-launches on the same data will be fast. *" << endl;
+  cout << "*********************************************************" << endl;
 
   bool ok = true;
-  cout << "Begin Checking alog file(s)------------------" << endl;
   ok = ok && m_dbroker.checkALogFiles();
-  cout << "Begin Splitting alog file(s)------------------" << endl;
   ok = ok && m_dbroker.splitALogFiles();
-  cout << "Begin TimeSetting alog file(s)---------------" << endl;
   ok = ok && m_dbroker.setTimingInfo();
 
   if(!ok)
@@ -289,27 +314,27 @@ bool LogViewLauncher::configDataBroker()
 
 bool LogViewLauncher::configRegionInfo()
 {
-  if(m_verbose)
-    cout << "Handling Config of Region Info..." << endl;
-
   string region_info = m_dbroker.getRegionInfo();
-  if(m_verbose) {
-    cout << "=================================================" << endl;
-    cout << "REGION_INFO:[" << region_info << "]" << endl;
-    cout << "=================================================" << endl;
-  }
+  string img_str  = tokStringParse(region_info, "img_file");
+  string zoom_str = tokStringParse(region_info, "zoom");
+  string panx_str = tokStringParse(region_info, "pan_x");
+  string pany_str = tokStringParse(region_info, "pan_y");
+  string lat_str  = tokStringParse(region_info, "lat_datum");
+  string lon_str  = tokStringParse(region_info, "lon_datum");
+
+  cout << "*********************************************************" << endl;
+  cout << "* STARTUP PART 2: Determine Region Information          *" << endl; 
+  cout << "*    Image: " << padString(img_str,  44, false) <<     "*" << endl;
+  cout << "*     Zoom: " << padString(zoom_str, 44, false) <<     "*" << endl;
+  cout << "*     PanX: " << padString(panx_str, 44, false) <<     "*" << endl;
+  cout << "*     PanY: " << padString(pany_str, 44, false) <<     "*" << endl;
+  cout << "* DatumLat: " << padString(lat_str,  44, false) <<     "*" << endl;
+  cout << "* DatumLon: " << padString(lon_str,  44, false) <<     "*" << endl;
+  cout << "*********************************************************" << endl;
+
+  
   if(region_info == "")
     return(true);
-
-  vector<string> svector = parseString(region_info, ',');
-  for(unsigned int i=0; i<svector.size(); i++) {
-    string param = biteStringX(svector[i], '=');
-    string value = svector[i];
-    if(param == "img_file")
-      handleBackground(value);
-  }
-  
-  string zoom_str = tokStringParse(region_info, "zoom", ',', '=');
 
   // As a habit we prefer to start alogview more zoomed out than orig
   if(isNumber(zoom_str)) {
@@ -319,13 +344,10 @@ bool LogViewLauncher::configRegionInfo()
     handleZoom(zoom_str);
   }
 
-  string panx_str = tokStringParse(region_info, "pan_x", ',', '=');
+  handleBackground(img_str);
   handlePanX(panx_str);
-  string pany_str = tokStringParse(region_info, "pan_y", ',', '=');
   handlePanY(pany_str);
 
-  cout << "END HANDLE REGION_INFO" << endl;
-  
   return(true);
 }
 
@@ -336,47 +358,26 @@ bool LogViewLauncher::configRegionInfo()
 
 bool LogViewLauncher::configGraphical()
 {
-  if(m_verbose)
-    cout << "Handling Config Graphical..." << endl;
+  cout << "*********************************************************" << endl;
+  cout << "* STARTUP PART 3: Configure Graphical Information       *" << endl; 
+  cout << "* (a) Init GUI Window                                   *" << endl; 
+  cout << "* (b) Init DataBroker from Cache, connect to GUI        *" << endl; 
+  cout << "* (c) Init Left/Right Log Plots                         *" << endl; 
+  cout << "*********************************************************" << endl;
+
+  cout << "(a) Initializing GUI... " << endl;
   m_gui = new REPLAY_GUI(m_gui_width, m_gui_height, "alogview");
   if(!m_gui)
     return(false);
-
-  m_gui->np_viewer->setVerbose(m_verbose);
-  
-  if(m_quick_start)
-    m_gui->np_viewer->setMinimalMem();
-  if(m_alt_nav_prefix != "")
-    m_gui->np_viewer->setAltNavPrefix(m_alt_nav_prefix);
-
-  m_gui->setDataBroker(m_dbroker);
-  m_gui->setGrepStr1(m_grep1);
-  m_gui->setGrepStr2(m_grep2);
-  
-  // Try to initialize the two LogPlots to be something reasonable
-  if(!m_quick_start) {
-    unsigned int mix_size = m_dbroker.sizeMix();
-    if(mix_size > 0) {
-      m_gui->initLogPlotChoiceA(m_start_veh_lft, m_start_var_lft);
-      m_gui->initLogPlotChoiceB(m_start_veh_rgt, m_start_var_rgt);
-    }
-  }
-
   m_gui->np_viewer->setParam("set_pan_x", m_start_panx);
   m_gui->np_viewer->setParam("set_pan_y", m_start_pany);
   m_gui->np_viewer->setParam("set_zoom", m_start_zoom);
-
+  m_gui->np_viewer->setVerbose(m_verbose);
   for(unsigned int i=0; i<m_gui_params.size(); i++) {
     string param = m_gui_params[i];
     string value = m_gui_values[i];
     m_gui->np_viewer->setParam(param, value);
   }
-  
-  if(m_start_time > 0)
-    m_gui->setCurrTime(m_start_time);
-  else
-    m_gui->setCurrTime(-1); // GUI will seek a "start_time hint"
-  m_gui->updateXY();
 
   // Map associating scope variables with given behaviors. For convencience
   // in using the GUI_IPF viewer.
@@ -385,6 +386,33 @@ bool LogViewLauncher::configGraphical()
   for(unsigned int i=0; i<m_tiff_files.size(); i++)
     m_gui->np_viewer->setParam("tiff_file", m_tiff_files[i]);
   
+  if(m_quick_start)
+    m_gui->np_viewer->setMinimalMem();
+  if(m_alt_nav_prefix != "")
+    m_gui->np_viewer->setAltNavPrefix(m_alt_nav_prefix);
+
+  cout << "(b) Initializing DataBroker from Cache files..." << endl; 
+  m_gui->setDataBroker(m_dbroker);
+  m_gui->setGrepStr1(m_grep1);
+  m_gui->setGrepStr2(m_grep2);
+  
+  // Try to initialize the two LogPlots to be something reasonable
+  if(!m_quick_start) {
+    cout << "(c) Initializing Left/Right Plots" << endl;
+    unsigned int mix_size = m_dbroker.sizeMix();
+    if(mix_size > 0) {
+      m_gui->initLogPlotChoiceA(m_start_veh_lft, m_start_var_lft);
+      m_gui->initLogPlotChoiceB(m_start_veh_rgt, m_start_var_rgt);
+    }
+  }
+
+  if(m_start_time > 0)
+    m_gui->setCurrTime(m_start_time);
+  else
+    m_gui->setCurrTime(-1); // GUI will seek a "start_time hint"
+  m_gui->updateXY();
+
+
   return(true);
 }
 
@@ -421,7 +449,6 @@ bool LogViewLauncher::handleMaxTime(string val)
 
 bool LogViewLauncher::handleBackground(string val)
 {
-  cout << "Handle Background: " << val << endl;
   if(val == "none") {
     m_tiff_file = "";
     return(true);
@@ -574,6 +601,34 @@ bool LogViewLauncher::handleGrep(string val)
   else
     return(false);
 
+  return(true);
+}
+ 
+//-------------------------------------------------------------
+// Procedure: handleMaxFilePtrs()    --max_fptrs=200
+// 
+// Note: This sets the limit on the number of open file pointers
+//       open at any one time when splitting the alog file into
+//       separate files. This number is limited by the operating
+//       system, usually no less than about 256, but can be set
+//       much higher. The larger the cache, the faster the
+//       splitting process. For variables not cached, each line
+//       in the alog file, the split file must be opened before
+//       writing the line and closed immediately afterward.
+
+bool LogViewLauncher::handleMaxFilePtrs(string val)
+{
+  if(!isNumber(val))
+    return(false);
+
+  int max_fptrs = atoi(val.c_str());
+  if(max_fptrs < 10)
+    max_fptrs = 10;
+  if(max_fptrs > 1000)
+    max_fptrs = 1000;
+
+  m_dbroker.setMaxFilePtrs((unsigned int)(max_fptrs));
+  
   return(true);
 }
  

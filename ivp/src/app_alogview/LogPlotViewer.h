@@ -43,7 +43,7 @@ class LogPlotViewer : public Fl_Gl_Window
 
  public:
   void   setCurrTime(double v);
-  void   setDataBroker(ALogDataBroker dbroker);
+  void   setDataBroker(const ALogDataBroker& dbroker);
   double getCurrTime() {return(m_curr_time);}
   void   adjustZoom(std::string);
 

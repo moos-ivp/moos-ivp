@@ -131,7 +131,7 @@ void LogPlotViewer::resize(int gx, int gy, int gw, int gh)
 //-------------------------------------------------------------
 // Procedure: setDataBroker()
 
-void LogPlotViewer::setDataBroker(ALogDataBroker dbroker)
+void LogPlotViewer::setDataBroker(const ALogDataBroker& dbroker)
 {
   m_dbroker = dbroker;
 }
@@ -141,44 +141,27 @@ void LogPlotViewer::setDataBroker(ALogDataBroker dbroker)
 
 void LogPlotViewer::setLeftPlot(unsigned int mix)
 {
-  cout << "================================================" << endl;
-  cout << "LogPlotViewer::setLeftPlot() mix: " << mix << endl;
-  cout << "================================================" << endl;
-  
-  cout << "LogPlotViewer::setLeftPlot() m_left_mix: " << m_left_mix << endl;
-  cout << "   max_time: " << m_logplot1.getMaxTime() << endl;
+  cout << "LogPlotViewer::setLeftPlot()  mix: " << mix << endl;
   // Check if mix represents a change and a viable change
-  if((mix == m_left_mix) || (mix >= m_dbroker.sizeMix()))
+  if((mix == m_left_mix) || (mix >= m_dbroker.sizeMix())) {
+    cout << "No Action" << endl;
     return;
+  }
 
-  // old style: used to "shut off" one side. Now can do that with
-  // the checkbuttons.
-#if 0
-  // Check if new left is same as right. If so, make left empty
-  if(mix != m_right_mix) {
-    m_logplot1 = m_dbroker.getLogPlot(mix); 
-    string vname = m_dbroker.getVNameFromMix(mix);
-    string varname = m_dbroker.getVarNameFromMix(mix);
-    m_fullvar1 = vname + "/" + varname;
-  }
-  else {
-    m_logplot1 = LogPlot();
-    m_fullvar1 = "none";
-  }
-#endif
-    
-#if 1
   m_logplot1 = m_dbroker.getLogPlot(mix); 
+
   string vname = m_dbroker.getVNameFromMix(mix);
   string varname = m_dbroker.getVarNameFromMix(mix);
   m_fullvar1 = vname + "/" + varname;
-#endif
     
   m_left_mix = mix;
   m_valid_cache = false;
-  cout << "   max_time: " << m_logplot1.getMaxTime() << endl;
 
-  cout << "LogPlotViewer::setLeftPlot() new m_left_mix: " << m_left_mix << endl;
+  double mint = m_logplot1.getMinTime();
+  double maxt = m_logplot1.getMaxTime();
+  string str_mint = doubleToString(mint,2);
+  string str_maxt = doubleToString(maxt,2);
+  cout << "   min_time: " << str_mint << " max_time: " << str_maxt << endl;
   if(!m_zoomed_in)
     adjustTimeBounds();
 }
@@ -188,41 +171,24 @@ void LogPlotViewer::setLeftPlot(unsigned int mix)
 
 void LogPlotViewer::setRightPlot(unsigned int mix)
 {
-  cout << "================================================" << endl;
   cout << "LogPlotViewer::setRightPlot() mix: " << mix << endl;
-  cout << "================================================" << endl;
-  
-  cout << "LogPlotViewer::setRightPlot() m_right_mix: " << m_right_mix << endl;
-
   // Check if mix represents a change and a viable change
   if((mix == m_right_mix) || (mix >= m_dbroker.sizeMix()))
     return;
 
-  // old style: used to "shut off" one side. Now can do that with
-  // the checkbuttons.
-#if 0
- // Check if new right is same as left. If so, make left empty
-  if(mix != m_left_mix) {
-    m_logplot2 = m_dbroker.getLogPlot(mix);
-    string vname = m_dbroker.getVNameFromMix(mix);
-    string varname = m_dbroker.getVarNameFromMix(mix);
-    m_fullvar2 = vname + "/" + varname;
-  }    
-  else {
-    m_logplot2 = LogPlot();
-    m_fullvar2 = "none";
-  }
-#endif
-#if 1
   m_logplot2 = m_dbroker.getLogPlot(mix);
   string vname = m_dbroker.getVNameFromMix(mix);
   string varname = m_dbroker.getVarNameFromMix(mix);
   m_fullvar2 = vname + "/" + varname;
-#endif
   
   m_right_mix = mix;
   m_valid_cache = false;
-  cout << "   max_time: " << m_logplot2.getMaxTime() << endl;
+
+  double mint = m_logplot1.getMinTime();
+  double maxt = m_logplot1.getMaxTime();
+  string str_mint = doubleToString(mint,2);
+  string str_maxt = doubleToString(maxt,2);
+  cout << "   min_time: " << str_mint << " max_time: " << str_maxt << endl;
 
   if(!m_zoomed_in)
     adjustTimeBounds();

@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
     openURLX("https://oceanai.mit.edu/ivpman/apps/alogview");
   
   bool alog_provided = false;
+
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
     if((argi=="-v") || (argi=="--version") || (argi=="-version")) {
@@ -71,8 +72,10 @@ int main(int argc, char *argv[])
     }
     else if(strEnds(argi, ".alog"))
       alog_provided = true;
+    else if((argi == "-vb") || (argi == "--verbose"))
+      launcher.setVerbose();
   }
-
+  
   if(!alog_provided) {
     cout << "No alog file given - exiting" << endl;
     return(1);

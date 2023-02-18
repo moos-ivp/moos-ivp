@@ -142,7 +142,7 @@ void NavPlotViewer::setMinimalMem()
 //-------------------------------------------------------------
 // Procedure: setDataBroker()
 
-void NavPlotViewer::setDataBroker(ALogDataBroker dbroker)
+void NavPlotViewer::setDataBroker(const ALogDataBroker& dbroker)
 {
   m_dbroker = dbroker;
 

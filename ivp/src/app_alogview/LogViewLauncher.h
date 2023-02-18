@@ -36,6 +36,8 @@ class LogViewLauncher
   
   REPLAY_GUI *launch(int argc, char **argv);
 
+  void setVerbose() {m_verbose=true; m_dbroker.setVerbose();}
+  
 protected:
   bool parseCommandArgs(int argc, char **argv);
   bool sanityCheck();
@@ -58,7 +60,8 @@ protected:
   bool handleZoom(std::string);
   bool handleNowTime(std::string);
   bool handleGrep(std::string);
-
+  bool handleMaxFilePtrs(std::string);
+  
   bool handleALogViewConfig(std::string);
   bool handleBehaviorVarMapping(std::string);
 

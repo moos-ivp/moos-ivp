@@ -51,7 +51,7 @@ class REPLAY_GUI : public MarineVehiGUI {
   void   resize(int, int, int, int);
   int    handle(int);
 
-  void   setDataBroker(ALogDataBroker);
+  void   setDataBroker(const ALogDataBroker&);
   void   setLogPlotMenus();
   void   setVarHistMenus();
   void   setAppLogMenus();

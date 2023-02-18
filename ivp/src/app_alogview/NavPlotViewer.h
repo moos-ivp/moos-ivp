@@ -43,7 +43,7 @@ class NavPlotViewer : public MarineViewer
 
   void   setVerbose(bool v) {m_verbose=v;}
   void   setMinimalMem();
-  void   setDataBroker(ALogDataBroker dbroker);
+  void   setDataBroker(const ALogDataBroker& dbroker);
 
   void   initPlots();
 
