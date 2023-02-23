@@ -40,11 +40,11 @@ using namespace std;
 PMV_MOOSApp::PMV_MOOSApp() 
 {
   m_pending_moos_events = 0;
-  m_gui             = 0; 
-  m_last_redraw_time = 0;
+  m_gui                = 0; 
+  m_last_redraw_time   = 0;
   m_last_updatexy_time = 0;
-  m_last_mhash_time = 0;
-  m_last_beat_time  = 0;
+  m_last_mhash_time    = 0;
+  m_last_beat_time     = 0;
   
 
   VarDataPair pair1("HELM_MAP_CLEAR", 0);
@@ -483,8 +483,8 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
   else if(new_proc_count > old_proc_count) {
     string key = GetAppName() + "newproc";
     postAppCastRequest("all", "all", key, "any", (1.1*m_time_warp));
+    Notify("REGION_INFO", m_region_info);
   }
-  
 
   // Update the Node entries if there is ANY new appcast
   if(handled_appcast)
@@ -541,6 +541,10 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   if(beat_elapsed > 4)
     postFlags(m_beat_flags);
 
+  if((m_pmv_iteration < 50) || ((m_pmv_iteration % 100) == 0))
+    Notify("REGION_INFO", m_region_info);
+  
+  
 
   // Re-post the mission hash once every 16 secs realtime
   if(m_mission_hash_var != "") {
