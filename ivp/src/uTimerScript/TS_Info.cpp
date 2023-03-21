@@ -103,15 +103,15 @@ void showExampleConfigAndExit()
   blu("  CommsTick = 4                                                 ");
   blk("                                                                ");
   blk("  // List of apps to block/pause on until they appear to the DB ");
-  blk("  block_on       = pGenerateInfo, pPostValues                   ");
+  blu("  block_on       = pGenerateInfo, pPostValues                   ");
   blk("  // Logic condition that must be met for script to be unpaused ");
-  blk("  condition      = WIND_GUSTS = true                            ");
+  blu("  condition      = WIND_GUSTS = true                            ");
   blk("  // Seconds added to each event time, on each script pass      ");
   blu("  delay_reset    = 0                                            ");
   blk("  // Seconds added to each event time, on first pass only       ");
   blu("  delay_start    = 0                                            ");
   blk("  // Event(s) are the key components of the script              ");
-  blk("  event          = var=SBR_RANGE_REQUEST, val=\"name=archie\", time=25:35  ");
+  blu("  event          = var=SBR_RANGE_REQUEST, val=\"name=archie\", time=25:35  ");
   blk("  // A MOOS variable for taking cues to forward time            ");
   blu("  forward_var    = UTS_FORWARD  "," // or other MOOS variable   ");
   blk("  // If true script is paused upon launch                       ");
@@ -119,7 +119,7 @@ void showExampleConfigAndExit()
   blk("  // A MOOS variable for receiving pause state cues             ");
   blu("  pause_var      = UTS_PAUSE    "," // or other MOOS variable   ");
   blk("  // Declaration of random var macro expanded in event values   ");
-  blk("  randvar        = varname=ANG, min=0, max=359, key=at_reset    ");
+  blu("  randvar        = varname=ANG, min=0, max=359, key=at_reset    ");
   blk("  // Maximum number of resets allowed                           ");
   blu("  reset_max      = nolimit "," // or in range [0,inf)           ");
   blk("  // A point when the script is reset                           ");
