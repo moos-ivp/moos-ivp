@@ -86,7 +86,8 @@ class PMV_MOOSApp : public AppCastingMOOSApp
   double       m_last_mhash_time;
   bool         m_verbose;
   bool         m_pending_pairs;
-
+  bool         m_block_heartbeat;
+  
   ExFilterSet  m_filter_set;
   
   std::vector<std::string>  m_node_report_vars;

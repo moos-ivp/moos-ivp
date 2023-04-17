@@ -45,8 +45,8 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_last_updatexy_time = 0;
   m_last_mhash_time    = 0;
   m_last_beat_time     = 0;
+  m_block_heartbeat    = false;
   
-
   VarDataPair pair1("HELM_MAP_CLEAR", 0);
   VarDataPair pair2("PMV_CONNECT", 0);
   m_connection_pairs.push_back(pair1);
@@ -250,6 +250,7 @@ void PMV_MOOSApp::registerVariables()
   Register("PMV_CLEAR", 0);
   Register("PMV_CENTER");
   Register("PMV_CONFIG");
+  Register("BLOCK_HEARTBEAT");
 
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++)
@@ -369,7 +370,8 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       handled = handleMailCenter(sval);
     else if(key == "PMV_CONFIG") 
       handled = handleMailConfig(sval);
-
+    else if(key == "BLOCK_HEARTBEAT") 
+      handled = setBooleanOnString(m_block_heartbeat, sval);
       
     // PMV_MENU_CONTEXT = 
     // side=left, menukey=polyvert, post="POLY_VERT=x=$(XPOS),y=$(YPOS)"
@@ -538,7 +540,7 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
     m_last_updatexy_time = curr_time;
   }
 
-  if(beat_elapsed > 4)
+  if((beat_elapsed > 4) && !m_block_heartbeat)
     postFlags(m_beat_flags);
 
   if((m_pmv_iteration < 50) || ((m_pmv_iteration % 100) == 0))
@@ -1383,6 +1385,7 @@ bool PMV_MOOSApp::buildReport()
   m_msgs << "Node Report Vars:  " << node_rpt_vars << endl;
   m_msgs << "Mission Hash:      " << m_mission_hash << endl;
   m_msgs << "Mission Hash Var:  " << m_mission_hash_var << endl;
+  m_msgs << "Block Heartbeat:   " << boolToString(m_block_heartbeat) << endl;
   m_msgs << "------------------ " << endl;
   m_msgs << "AC Iterations:     " << iter_ac << endl;
   m_msgs << "PMV Iterations:    " << iter_pmv << endl;
