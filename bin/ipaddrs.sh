@@ -23,7 +23,7 @@ VERBOSE=""
 HEADER="yes"
 BLUNT="no"
 OS="osx"
-MATCH="192.168.7"
+MATCH=""
 MATCH_RES=""
 TMP_RESFILE="$HOME/.ipaddrs_pid$$"
 RESFILE="$HOME/.ipaddrs"
@@ -128,8 +128,9 @@ EXIT_CODE=7
 #--------------------------------------------------------------
 echo -n "" > $TMP_RESFILE
 if [ "$HEADER" = "yes" -a "$BLUNT_IP" = "no" ]; then
+    DATE=`date`
     echo "// IP addresses of currently active network interfaces." >> $TMP_RESFILE
-    echo "// Produced automatically by the ipaddrs.sh utility.   " >> $TMP_RESFILE
+    echo "// Produced by ipaddrs.sh utility: $DATE   " >> $TMP_RESFILE
 fi
 
 #--------------------------------------------------------------
@@ -142,13 +143,15 @@ if [ "${OS}" = "osx" ]; then
     count=0
     for addr in "${addresses[@]}"
     do
+	if [ "${MATCH}" != "" ]; then
+	    if [[ "$addr" != "$MATCH"* ]]; then
+		continue
+	    fi
+	fi
+	
 	BLUNT_IP=$addr
 	vecho "addr:$addr"
 	echo $addr >> $TMP_RESFILE
-	
-	if [[ "$addr" == "$MATCH"* ]]; then
-	    echo $ipaddr
-	fi
 	((count=count+1))
     done
 
@@ -173,10 +176,14 @@ if [ "${OS}" = "linux" ]; then
     count=0
     for iface in "${interfaces[@]}"
     do
-	BLUNT_IP=$iface
-	if [ "${VERBOSE}" = "yes" ]; then
-	    echo $iface
+	if [ "${MATCH}" != "" ]; then
+	    if [[ "$addr" != "$MATCH"* ]]; then
+		continue
+	    fi
 	fi
+
+	BLUNT_IP=$iface
+	vecho "addr:$iface"
 	echo $iface  >> $TMP_RESFILE
 	((count=count+1))
     done
@@ -190,20 +197,18 @@ if [ "${OS}" = "linux" ]; then
     fi
 fi
 
-
 #--------------------------------------------------------------
-#  Part 9: If blunt_ip requested, just output the single IP to the
-#          terminal and remove the temp file
+#  Part 9: If blunt_ip requested, just output the single IP to
+#          the terminal and remove the temp file
 #--------------------------------------------------------------
 if [ "$BLUNT" = "yes" ]; then
     if [ $EXIT_CODE = 0 ]; then
 	echo -n $BLUNT_IP
+	rm -f $TMP_RESFILE
 	exit 0
     fi
 fi
     
-
-
 #--------------------------------------------------------------
 #  Part 10: If the tmp file is different, install it.  By building a
 #  tmp file, with a unique file name based on the PID, this gaurds
