@@ -390,9 +390,9 @@ void BHV_StationKeep::postStationMessage(bool post)
   poly_str += ",source=" + m_us_name+ ":" + m_descriptor;
   poly_str += ",pts=32";
   if(m_hint_edge_size >= 0)
-    poly_str += ",edge_size=" + doubleToString(m_hint_edge_size);
+    poly_str += ",edge_size=" + doubleToStringX(m_hint_edge_size);
   if(m_hint_vertex_size >= 0)
-    poly_str += ",vertex_size=" + doubleToString(m_hint_vertex_size);
+    poly_str += ",vertex_size=" + doubleToStringX(m_hint_vertex_size);
   if(m_hint_edge_color != "")
     poly_str += ",edge_color=" + m_hint_edge_color;
   if(m_hint_label_color != "")
