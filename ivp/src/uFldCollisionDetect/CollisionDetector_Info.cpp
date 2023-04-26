@@ -117,8 +117,10 @@ void showExampleConfigAndExit()
   blk("  post_closest_range = true     // default is false             ");
   blk("                                                                ");
   blk("  pulse_render   = true         // default true                 ");
-  blk("  pulse_range    = 20           // default is 20 meters         ");  
-  blk("  pulse_duration = 10           // default is 10 seconds        ");  
+  blk("  pulse_range    = 20           // default is 20 meters         ");
+  blk("  pulse_duration = 10           // default is 10 seconds        ");
+  blk("                                                                ");
+  blk("  encounter_rings = false       // default true                 ");
   blk("                                                                ");
   blk("  report_all_encounters = true  // default is false             ");
   blk("                                                                ");

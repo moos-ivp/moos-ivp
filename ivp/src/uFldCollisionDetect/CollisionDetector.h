@@ -74,6 +74,8 @@ class CollisionDetector : public AppCastingMOOSApp
   bool   m_post_closest_range;
   bool   m_post_closest_range_ever;
 
+  bool   m_encounter_rings;
+  
   std::vector<VarDataPair> m_collision_flags;
   std::vector<VarDataPair> m_near_miss_flags;
   std::vector<VarDataPair> m_encounter_flags;

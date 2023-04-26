@@ -44,6 +44,9 @@ CollisionDetector::CollisionDetector()
   m_pulse_duration = 10;
   m_pulse_range = 20;
 
+  // By default encounter rings are rendered
+  m_encounter_rings = true;
+  
   // state variables -- counters of collision types
   m_total_collisions  = 0;
   m_total_near_misses = 0;
@@ -123,7 +126,8 @@ bool CollisionDetector::Iterate()
   }
 
   m_cpa_monitor.clear();
-  postRings();
+  if(m_encounter_rings)
+    postRings();
   
   AppCastingMOOSApp::PostReport();
   return(true);
@@ -303,6 +307,8 @@ bool CollisionDetector::OnStartUp()
       handled = setNonNegDoubleOnString(m_encounter_dist, value);
     else if(param == "pulse_render") 
       handled = setBooleanOnString(m_pulse_render, value);
+    else if(param == "encounter_rings") 
+      handled = setBooleanOnString(m_encounter_rings, value);
     else if(param == "pulse_range") 
       handled = setNonNegDoubleOnString(m_pulse_range, value);
     else if(param == "pulse_duration") 
@@ -361,7 +367,7 @@ bool CollisionDetector::OnStartUp()
 }
 
 //---------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void CollisionDetector::registerVariables()
 {
