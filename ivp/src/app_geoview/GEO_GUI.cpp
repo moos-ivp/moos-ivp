@@ -278,11 +278,8 @@ void GEO_GUI::cb_DumpPolySpec(Fl_Widget* o) {
 }
   
 //----------------------------------------- UpdateXY
-void GEO_GUI::updateXY() {
-  
-  //int index = -1;
-  char buff[64];
-
+void GEO_GUI::updateXY()
+{ 
   string x_str, y_str;
   // Meters X
   //string x_str = doubleToString(pviewer->getCrossHairMeters('x'), 2);
@@ -309,8 +306,9 @@ void GEO_GUI::updateXY() {
   p_mode->value(dmode.c_str());
 
   // Snap Value
-  sprintf(buff, "%f", pviewer->getSnap());
-  p_snap->value(buff);
+  double dval = pviewer->getSnap();
+  string sval = doubleToStringX(dval);
+  p_snap->value(sval.c_str());
 }
 
 
