@@ -6,7 +6,8 @@
 ServerHost = localhost
 ServerPort = 9005
 Community  = alpha
-
+Simulator = true
+	
 MOOSTimeWarp = 1
 
 // Forest Lake
@@ -26,7 +27,6 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 200
 
   Run = MOOSDB		     @ NewConsole = false
-  Run = pLogger        @ NewConsole = false
   Run = pMarineViewer	 @ NewConsole = false
   Run = uSimMarineV22  @ NewConsole = false
   Run = pNodeReporter	 @ NewConsole = false
@@ -34,6 +34,7 @@ ProcessConfig = ANTLER
   Run = pHelmIvP	     @ NewConsole = false
   Run = uProcessWatch	 @ NewConsole = false
   Run = pRealm         @ NewConsole = false
+  Run = pLogger        @ NewConsole = false
 }
 
 //------------------------------------------
@@ -88,16 +89,18 @@ ProcessConfig = pLogger
 
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
   Log = APP_LOG @ 0 NOSYNC
+  Log = NODE_COUNT @ 0 NOSYNC
+  Log = PROC_COUNT @ 0 NOSYNC
 
-  file = alpha
+//  file = alpha
 
-  LogAuxSrc = true
+  //LogAuxSrc = true
   WildCardLogging = true
-  WildCardOmitPattern = *_STATUS
-  WildCardOmitPattern = DB_VARSUMMARY
-  WildCardOmitPattern = DB_RWSUMMARY
-  WildCardOmitPattern = APPCAST
-  WildCardExclusionLog = true
+  //WildCardOmitPattern = *_STATUS
+  //WildCardOmitPattern = DB_VARSUMMARY
+  //WildCardOmitPattern = DB_RWSUMMARY
+  //WildCardOmitPattern = APPCAST
+  //WildCardExclusionLog = true
 }
 
 //------------------------------------------
@@ -161,9 +164,6 @@ ProcessConfig = pMarinePIDV22
 {
   AppTick    = 10
   CommsTick  = 10
-
-  max_sat_hdg_debug = false
-  max_sat_spd_debug = true
 
   verbose       = true
   depth_control = false

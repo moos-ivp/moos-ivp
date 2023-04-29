@@ -8,7 +8,7 @@ initialize   SPDLIMIT = true
 initialize   AVOIDING = idle
 
 //----------------------------------------------
-Behavior = BHV_HSLine
+//Behavior = BHV_HSLine
 { 
   name = hsline
 
@@ -51,13 +51,15 @@ Behavior = BHV_Waypoint
              polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
 
                order = normal
-             repeat  = 4
+             repeat  = 400
 
-   visual_hints = nextpt_color=yellow
-   visual_hints = nextpt_vertex_size=8
+   visual_hints = nextpt_color=light_green
+   visual_hints = nextpt_vertex_size=18
    visual_hints = nextpt_lcolor=gray70
-   visual_hints = vertex_color=dodger_blue, edge_color=white
-   visual_hints = vertex_size=6, edge_size=1
+   //visual_hints = vertex_color=dodger_blue, edge_color=white
+   //visual_hints = vertex_size=6, edge_size=1
+   visual_hints = vertex_color=white, edge_color=white
+   visual_hints = vertex_size=12, edge_size=2
 }
 
 //----------------------------------------------
