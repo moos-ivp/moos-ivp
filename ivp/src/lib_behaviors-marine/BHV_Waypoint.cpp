@@ -195,7 +195,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     m_markpt.set_active(false);
     m_prev_cycle_index = 0;
     m_prev_waypt_index = -1;
-
+    m_prevpt.invalidate();
+    
     // After the waypoint engine is updated with new points, if the 
     // xpoints option is used, we also restore the current index,
     // prev_waypt_ix and cycle_ix.
