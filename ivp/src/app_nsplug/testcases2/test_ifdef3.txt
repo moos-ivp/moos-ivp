@@ -1,0 +1,42 @@
+//==============================================
+File: epic_life1_beg.txt
+Args: BALANCE=23
+
+#ifdef BALANCE
+BALANCE is $(BALANCE)
+#endif 
+
+//----------------------------------------------
+File: epic_life1_tar.txt
+
+BALANCE is 23
+
+//==============================================
+File: epic_life2_beg.txt
+Args: 
+
+#define BALANCE
+#ifdef BALANCE
+BALANCE is $(BALANCE)
+#endif 
+
+//----------------------------------------------
+File: epic_life2_tar.txt
+
+BALANCE is 
+
+
+//==============================================
+File: epic_life3_beg.txt
+Args: 
+
+#define BALANCE 23
+#ifdef BALANCE
+A BALANCE is $(BALANCE)
+#endif 
+
+//----------------------------------------------
+File: epic_life3_tar.txt
+
+A BALANCE is 23
+

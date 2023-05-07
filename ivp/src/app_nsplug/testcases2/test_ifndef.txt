@@ -1,0 +1,30 @@
+//==============================================
+File: mild_guss1_beg.txt
+Args: BALANCE=23
+
+#ifndef BALANCE
+BALANCE not known
+#else
+BALANCE is $(BALANCE)
+#endif 
+
+//----------------------------------------------
+File: mild_guss1_tar.txt
+
+BALANCE is 23
+
+//==============================================
+File: mild_guss2_beg.txt
+Args: 
+
+#ifndef BALANCE
+BALANCE not known
+#else
+BALANCE is $(BALANCE)
+#endif 
+
+//----------------------------------------------
+File: mild_guss2_tar.txt
+
+BALANCE not known
+

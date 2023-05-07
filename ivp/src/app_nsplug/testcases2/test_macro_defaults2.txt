@@ -1,0 +1,28 @@
+//==============================================
+File: tmp_macro_defaults2.txt
+
+a_color=$(COLOR)
+b_color=$(COLOR=green)
+c_color=$(COLOR:=green)
+
+a_name=$(NAME)
+b_name=$(NAME=fred)
+c_name=$(NAME:=fred)
+
+//==============================================
+File: hard_mind_beg.txt
+Args: COLOR=red NAME= --lenient
+
+#include tmp_macro_defaults2.txt
+
+//----------------------------------------------
+File: hard_mind_tar.txt
+
+a_color=red
+b_color=red
+c_color=red
+
+a_name=
+b_name=
+c_name=fred
+

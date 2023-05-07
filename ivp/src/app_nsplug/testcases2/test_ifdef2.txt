@@ -1,0 +1,77 @@
+//==============================================
+File: open_wall1_beg.txt
+Args: BALANCE=23
+
+#ifdef BALANCE
+A BALANCE is $(BALANCE)
+#else
+A BALANCE not known
+#endif 
+
+#ifdef BALANCE 23
+A BALANCE is $(BALANCE)
+#else
+A BALANCE not known
+#endif 
+
+#ifdef BALANCE 47
+A BALANCE is $(BALANCE)
+#else
+A BALANCE not known
+#endif 
+
+//----------------------------------------------
+File: open_wall1_tar.txt
+
+A BALANCE is 23
+A BALANCE is 23
+A BALANCE not known
+
+
+
+//==============================================
+File: open_wall2_beg.txt
+Args:
+
+#define BALANCE
+
+#ifdef BALANCE
+B BALANCE is $(BALANCE)
+#else
+B BALANCE not known
+#endif 
+
+#ifdef BALANCE 23
+B BALANCE is $(BALANCE)
+#else
+B BALANCE not known
+#endif 
+
+#ifdef BALANCE 47
+B BALANCE is $(BALANCE)
+#else
+B BALANCE not known
+#endif 
+
+//----------------------------------------------
+File: open_wall2_tar.txt
+
+B BALANCE is
+B BALANCE not known
+B BALANCE not known
+
+//==============================================
+File: open_wall3_beg.txt
+Args: 
+
+#ifdef BALANCE
+C BALANCE is $(BALANCE)
+#else
+C BALANCE not known
+#endif 
+
+//----------------------------------------------
+File: open_wall3_tar.txt
+
+C BALANCE not known
+

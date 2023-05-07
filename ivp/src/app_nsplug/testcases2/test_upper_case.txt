@@ -1,0 +1,12 @@
+//==============================================
+File: slim_nero_beg.txt
+Args: VNAME=abe
+
+vname=%(VNAME), other=%(OTHER:=henry)
+
+
+//----------------------------------------------
+File: slim_nero_tar.txt
+
+vname=ABE, other=HENRY
+

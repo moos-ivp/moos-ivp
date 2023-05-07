@@ -1,0 +1,16 @@
+//==============================================
+File: glad_bird1_beg.txt
+Args: BALANCE=
+
+#ifdef BALANCE 50
+BALANCE is $(BALANCE)
+#else
+BALANCE not what we thought
+#endif 
+
+//----------------------------------------------
+File: glad_bird1_tar.txt
+
+BALANCE is
+
+

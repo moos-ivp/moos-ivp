@@ -1,0 +1,34 @@
+//==============================================
+File: oval_rice_beg.txt
+Args:
+
+#define APPLE GREEN
+#ifdef APPLE RED
+Eat it!
+#elseifdef APPLE GREEN
+Wait a bit longer before picking!
+#else
+Throw it out!
+#endif 
+
+//----------------------------------------------
+File: oval_rice_tar.txt
+
+Wait a bit longer before picking!
+
+//==============================================
+File: dull_hugo_beg.txt
+Args: APPLE=
+
+#ifdef APPLE RED
+Eat it!
+#elseifdef APPLE GREEN
+Wait a bit longer before picking!
+#else
+Throw it out!
+#endif 
+
+//----------------------------------------------
+File: dull_hugo_tar.txt
+
+Eat it!

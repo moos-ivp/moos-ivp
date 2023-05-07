@@ -1,0 +1,61 @@
+
+RUNNING:
+==========================================
+To test the cases in this file:
+
+$ ./verify.sh test*
+
+Will return zero if all test cases succeed, 1 otherwise.
+
+
+HELP:
+==========================================
+$ verify.sh --help
+
+
+TEST FILE STRUCTURE
+==========================================
+Each file contains pairs of blocks:
+
+(1) A "_beg*.txt" file is a "beginning" file.
+(2) A "_tar*.txt" file is a "target" file.
+
+Running nsplug should produce a "result" file, "_res.txt" that
+matches the target file.
+
+The first line of the beg file contains the nsplug arguments that
+are presumed to be applied to produce the result file.
+
+A test succeeds if "diff -B -b" succeeds (ret 0) when applied to
+the result and target files.
+
+VERIFY SCRIPT
+==========================================
+The verify script will (a) parse all the test files into the
+prescribed beg and tar files, and (b) proceed to run nsplug on
+each beg file, comparing the results at each step.
+
+SCRIPT OUTPUT:
+==========================================
+Successful outpus should look like:
+
+Expanding file:[test_ifdef.txt]
+Expanding file:[test_ifdef1.txt]
+Expanding file:[test_ifdef2.txt]
+Expanding file:[test_ifdef3.txt]
+Expanding file:[test_ifndef.txt]
+Expanding file:[test_macro_defaults.txt]
+Expanding file:[test_macro_defaults2.txt]
+Testing file:[dull_hugo_beg.txt][Success]
+Testing file:[epic_life1_beg.txt][Success]
+Testing file:[epic_life2_beg.txt][Success]
+Testing file:[epic_life3_beg.txt][Success]
+Testing file:[glad_bird1_beg.txt][Success]
+Testing file:[hard_mind_beg.txt][Success]
+Testing file:[mild_guss1_beg.txt][Success]
+Testing file:[mild_guss2_beg.txt][Success]
+Testing file:[open_wall1_beg.txt][Success]
+Testing file:[open_wall2_beg.txt][Success]
+Testing file:[open_wall3_beg.txt][Success]
+Testing file:[oval_rice_beg.txt][Success]
+Testing file:[slim_park_beg.txt][Success]
