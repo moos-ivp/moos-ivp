@@ -29,7 +29,7 @@
 using namespace std;
 
 //----------------------------------------------------------------
-// Procedure: fileBuffer
+// Procedure: fileBuffer()
 //      Note: "amt" by default is zero. If it is non-zero, then only
 //            that many line numbers will be read and returned into
 //            the vector.
@@ -86,7 +86,7 @@ vector<string> fileBuffer(const string& filename, unsigned int amt)
 }
 
 //----------------------------------------------------------------
-// Procedure: fileBufferList
+// Procedure: fileBufferList()
 //      Note: Same as fileBuffer, but a STL list is returned instead
 
 list<string> fileBufferList(const string& filename, unsigned int amt)
@@ -101,7 +101,7 @@ list<string> fileBufferList(const string& filename, unsigned int amt)
 
 
 //----------------------------------------------------------------
-// Procedure: fileBufferSlash
+// Procedure: fileBufferSlash()
 //      Note: Same as fileBuffer function, but slash-terminated 
 //            strings (having a '\' character as their last non 
 //            white space character) are merged with the subsequent

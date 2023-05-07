@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
 /*    FILE: Expander.h                                           */
 /*    DATE: May 28th, 2005                                       */
 /*                                                               */
@@ -27,6 +27,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include "MacroUtils.h"
 
 class Expander
 {

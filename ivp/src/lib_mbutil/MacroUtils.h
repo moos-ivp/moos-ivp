@@ -45,6 +45,13 @@ bool hasMacro(std::string, std::string);
 
 std::string getCounterMacro(std::string);
 
-std::vector<std::string> getMacrosFromString(std::string);
+std::vector<std::string> getMacrosFromString(std::string,
+					     char fchar='$',
+					     char lchar='[');
+std::string macroDefault(std::string);
+std::string macroBase(std::string, std::string sep="*=");
+
+std::string expandMacrosWithDefault(std::string);
+std::string reduceMacrosToBase(std::string, std::string, std::string);
 
 #endif

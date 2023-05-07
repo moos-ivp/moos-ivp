@@ -590,6 +590,36 @@ string rbiteString(string& str, char separator)
 }
 
 //----------------------------------------------------------------
+// Procedure: nibbleString(string&, string)
+//   Example: input_str = "hello:=world"
+//            str = nibbleString(input_str, ":=")
+//            str = "hello"
+//            input_str = "world"
+
+string nibbleString(string& str, string pattern)
+{
+  string::size_type len = str.length();
+  if(len == 0)
+    return("");
+
+  unsigned int patlen = pattern.length();
+  
+  string::size_type posn = 0;
+  posn = str.find(pattern, posn);
+
+  if(posn == string::npos) {
+    string str_back = str;
+    str = "";
+    return(str_back);
+  }
+
+  string back  = str.substr(posn+patlen, string::npos);
+  string front = str.substr(0, posn);
+  str = back;
+  return(front);
+}
+  
+//----------------------------------------------------------------
 // Procedure: sortStrings
 //      Note: O(n^2) simple bubble-sort algorithm
 
@@ -610,8 +640,7 @@ vector<string> sortStrings(vector<string> svector)
 }
 
 //----------------------------------------------------------------
-// Procedure: mergeVectors
-//      Note: 
+// Procedure: mergeVectors()
 
 vector<string> mergeVectors(vector<string> vector1, 
 			    vector<string> vector2)
@@ -623,7 +652,7 @@ vector<string> mergeVectors(vector<string> vector1,
 }
 
 //----------------------------------------------------------------
-// Procedure: removeDuplicates
+// Procedure: removeDuplicates()
 //      Note: Return a vector of strings such that no string is in
 //            the vector more than once.
 
@@ -640,7 +669,7 @@ vector<string> removeDuplicates(const vector<string>& svector)
 }
 
 //----------------------------------------------------------------
-// Procedure: vectorContains
+// Procedure: vectorContains()
 
 bool vectorContains(const vector<string>& svector,
 		    const string& str,

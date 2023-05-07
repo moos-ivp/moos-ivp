@@ -73,6 +73,7 @@ std::string biteString(std::string&, char, char);
 std::string rbiteString(std::string&, char);
 std::string rbiteStringX(std::string&, char);
 
+std::string nibbleString(std::string&, std::string);
 
 std::string stripBlankEnds(const std::string&);
 std::string stripBlankEnd(const std::string&);

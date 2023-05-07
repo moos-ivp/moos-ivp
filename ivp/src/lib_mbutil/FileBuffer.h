@@ -36,16 +36,4 @@ std::list<std::string>   fileBufferList(const std::string&, unsigned int amt=0);
 
 std::vector<std::string> fileBufferSlash(const std::string&, unsigned int amt=0);
 
-
 #endif
-
-
-
-
-
-
-
-
-
-
-

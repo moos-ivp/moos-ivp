@@ -23,6 +23,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <iostream>
 #include "MBUtils.h"
 #include "HashUtils.h"
 #include "MacroUtils.h"
@@ -199,30 +200,155 @@ string getCounterMacro(string str)
 // Procedure: getMacrosFromString()
 //   Example: getMacroFromString("World is $[CTR_WORLD] years $[OLD]");
 //            returns: CTR_WORLD, OLD
-//   Returns: empty string if no macros found
+//   Returns: empty vector if no macros found
+//      Note: Possible macro types:
+//            $[FOO] $(FOO) %[FOO] %(FOO) ${FOO} %{FOO}
+//
 
-vector<string> getMacrosFromString(string str)
+vector<string> getMacrosFromString(string str, char fchar, char lchar)
 {
+  // Defaults: fchar='$', lchar='[', rchar=']'
+
+  char rchar = ']';
+  if(lchar == '(')
+    rchar = ')';
+  else if(lchar == '{')
+    rchar = '}';
+  
   vector<string> macros;
-  if(!strContains(str, '$'))
+  //if(!strContains(str, '$'))
+  if(!strContains(str, fchar))
     return(macros);
 
   bool done = false;
   while(!done) {
-    biteStringX(str, '$');
+    //biteStringX(str, '$');
+    biteStringX(str, fchar);
     if(str.size() > 2) {    // At least [X]
-      if((str[0] == '[') && strContains(str, ']')) {
+      //if((str[0] == '[') && strContains(str, ']')) {
+      if((str[0] == lchar) && strContains(str, rchar)) {
 	str = str.substr(1);
-	string macro = biteStringX(str, ']');
+	//string macro = biteStringX(str, ']');
+	string macro = biteStringX(str, rchar);
 	if(macro.size() != 0)
 	  macros.push_back(macro);
       }
     }
-    if((str.size() == 0) || !strContains(str, '$'))
+    //if((str.size() == 0) || !strContains(str, '$'))
+    if((str.size() == 0) || !strContains(str, fchar))
       done = true;
   }
 
   return(macros);
+}
+
+
+//---------------------------------------------------------
+// Procedure: macroDefault()
+//   Purpose: For macros with defaults, e.g., $[FOO:=23], given
+//            just the internal, e.g., "FOO:=23", return the
+//            part just to the right of the ":=".
+//   Example: macroDefault("FOOBAR:=green");
+//            returns: "green"
+//   Example: macroDefault("FOOBAR=green");
+//            returns: "green"
+//   Example: macroDefault("FOOBAR");
+//            returns: ""
+
+string macroDefault(string str)
+{
+  if(strContains(str, ":=")) {
+    nibbleString(str, ":=");
+    return(str);
+  }
+  
+  if(strContains(str, "=")) {
+    nibbleString(str, "=");
+    return(str);
+  }
+
+  return("");
+}
+
+//--------------------------------------------------------
+// Procedure: expandMacrosWithDefault()
+//   example: color=$(COLOR:=green) --> color=green
+
+string expandMacrosWithDefault(string line)
+{
+  vector<string> macros1,macros2;
+  macros1 = getMacrosFromString(line, '$', '(');
+  macros2 = getMacrosFromString(line, '%', '(');
+
+  for(unsigned int i=0; i<macros1.size(); i++) {
+    // Check if macro is of the form "VAR:=VAL"
+    string repl = macroDefault(macros1[i]);
+    if(repl != "") {
+      string macro = "$(" + macros1[i] + ")";
+      line = findReplace(line, macro, repl);
+    }
+  }
+
+  for(unsigned int i=0; i<macros2.size(); i++) {
+    // Check if macro is of the form "VAR:=VAL"
+    string repl = macroDefault(macros2[i]);
+    if(repl != "") {
+      string macro = "%(" + macros2[i] + ")";
+      line = findReplace(line, macro, toupper(repl));
+    }
+  }
+
+  return(line);
+}
+
+
+//---------------------------------------------------------
+// Procedure: macroBase()
+//   Purpose: FOO:=23  ==> FOO
+//   Purpose: FOO*=23  ==> FOO
+//            FOO ==> FOO
+
+string macroBase(string str, string patsep)
+{
+  return(nibbleString(str, patsep));
+}
+
+
+//--------------------------------------------------------
+// Procedure: reduceMacrosToBase()
+//      Note: The string sep is usually ":=" or "*="
+//   Example: line: "color=$(COLOR=red), name=$(NAME)"
+//            sep:  "="
+//            Result: "color=$(COLOR), name=$(NAME)"
+
+string reduceMacrosToBase(string line, string sep, string macro)
+{
+  if((sep == "") || (macro == ""))
+    return(line);
+
+  vector<string> macros1,macros2;
+  macros1 = getMacrosFromString(line, '$', '(');
+  macros2 = getMacrosFromString(line, '%', '(');
+
+  for(unsigned int i=0; i<macros1.size(); i++) {
+    string base = macroBase(macros1[i], sep);
+    if(base == macro) {
+      string macro = "$(" + macros1[i] + ")";
+      string macro_base = "$(" + base + ")";
+      line = findReplace(line, macro, macro_base);
+    }
+  }
+
+  for(unsigned int i=0; i<macros2.size(); i++) {
+    string base = macroBase(macros2[i], sep);
+    if(base == macro) {
+      string macro = "%(" + macros2[i] + ")";
+      string macro_base = "%(" + base + ")";
+      line = findReplace(line, macro, macro_base);
+    }
+  }
+
+  return(line);
 }
 
 

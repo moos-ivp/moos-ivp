@@ -34,7 +34,7 @@
 using namespace std;
 
 //--------------------------------------------------------
-// Constructor
+// Constructor()
 
 Expander::Expander(string given_infile, string given_outfile)
 {
@@ -56,7 +56,7 @@ Expander::Expander(string given_infile, string given_outfile)
 }
 
 //--------------------------------------------------------
-// Procedure: expand
+// Procedure: expand()
 //      Note: High level entry point for recursion
 
 bool Expander::expand()
@@ -77,7 +77,7 @@ bool Expander::expand()
 }
   
 //--------------------------------------------------------
-// Procedure: expandFile
+// Procedure: expandFile()
 //     Notes: key functions, chompString and stripBlankEnds
 //            are from MBUtils.h
 //      Note: inctag added Sep 20th, 2020 to support lines like
@@ -93,6 +93,7 @@ vector<string> Expander::expandFile(string filename,
   vector<string> empty_vector;
 
   vector<string> fvector = fileBuffer(filename);
+
   unsigned int i, vsize = fvector.size();
   if(vsize == 0) {
     cout << "#  Warning: The file " << filename << " was empty." << endl;    
@@ -325,7 +326,7 @@ bool Expander::verifyInfile(const string& filename)
 }
 
 //--------------------------------------------------------
-// Procedure: writeOutput
+// Procedure: writeOutput()
 
 bool Expander::writeOutput()
 {
@@ -399,7 +400,7 @@ bool Expander::writeOutput()
 }
 
 //--------------------------------------------------------
-// Procedure: addPath
+// Procedure: addPath()
 
 void Expander::addPath(string str)
 {
@@ -412,7 +413,7 @@ void Expander::addPath(string str)
 }
 
 //--------------------------------------------------------
-// Procedure: applyMacrosToLine
+// Procedure: applyMacrosToLine()
 
 bool Expander::applyMacrosToLine(string& line, 
 				 map<string, string> macros,
@@ -420,38 +421,37 @@ bool Expander::applyMacrosToLine(string& line,
 {
   map<string, string>::iterator p;
 
-  int    subs = 0;
-  bool   done = false;
+  if(stripBlankEnds(line) == "")
+    return(true);
+  
   string newline = line;
-  while(!done) {
-    bool substitution_made = false;
-    for(p = macros.begin(); p != macros.end(); p++) {
-      string key = "$(" + p->first + ")";
-      string val = p->second;
-      if(val == "<defined>")
-	val = "";
+  for(p = macros.begin(); p != macros.end(); p++) {
+    string macro = p->first;
+    string key = "$(" + macro + ")";
+    string val = p->second;
+    if(val == "<defined>")
+      val = "";
 
-      // Assuming key is of the form "$(FOOBAR)"
-      string pkey = key;
-      if((pkey.length() > 0) && (pkey.at(0) == '$'))
-	pkey.at(0) = '%';
-      
-      if(strContains(newline, pkey)) {
-	newline = findReplace(newline, pkey, toupper(val));
-	substitution_made = true;
-	subs++;
-      }
-      
-      if(strContains(newline, key)) {
-	newline = findReplace(newline, key, val);
-	substitution_made = true;
-	subs++;
-      }
+    // Assuming key is of the form "$(FOOBAR)"
+    string pkey = key;
+    if((pkey.length() > 0) && (pkey.at(0) == '$'))
+      pkey.at(0) = '%';
+
+    string tmp_newline = newline;
+    
+    if(val == "")
+      tmp_newline = reduceMacrosToBase(tmp_newline, "=", macro);
+    else {
+      tmp_newline = reduceMacrosToBase(tmp_newline, ":=", macro);
+      tmp_newline = reduceMacrosToBase(tmp_newline, "=", macro);
     }
-    if(!substitution_made || (subs > m_max_subs_per_line))
-      done = true;
+    
+    tmp_newline = findReplace(tmp_newline, pkey, toupper(val));
+    newline = findReplace(tmp_newline, key, val);
   }
 
+  newline = expandMacrosWithDefault(newline);
+  
   string res = containsMacro(newline);
 
   if(res != "") {
@@ -510,7 +510,7 @@ string Expander::containsMacro(string line)
 }
 
 //--------------------------------------------------------
-// Procedure: findFileInPath
+// Procedure: findFileInPath()
 //      Note: Looking in the current directory (./) is only done if
 //            either it was explicitly added to the path, or if the
 //            path itself is empty.
@@ -533,7 +533,7 @@ string Expander::findFileInPath(string filename)
 }
 
 //--------------------------------------------------------
-// Procedure: checkIfDef
+// Procedure: checkIfDef()
 
 bool Expander::checkIfDef(string entry, map<string, string> macros,
 			  unsigned int line_num)
@@ -565,7 +565,7 @@ bool Expander::checkIfDef(string entry, map<string, string> macros,
 }
 
 //--------------------------------------------------------
-// Procedure: checkIfDefDisj
+// Procedure: checkIfDefDisj()
 
 bool Expander::checkIfDefDisj(string entry, map<string, string> macros)
 {
@@ -597,7 +597,7 @@ bool Expander::checkIfDefDisj(string entry, map<string, string> macros)
 }
 
 //--------------------------------------------------------
-// Procedure: checkIfDefConj
+// Procedure: checkIfDefConj()
 
 bool Expander::checkIfDefConj(string entry, map<string, string> macros)
 {
@@ -626,7 +626,7 @@ bool Expander::checkIfDefConj(string entry, map<string, string> macros)
 }
 
 //--------------------------------------------------------
-// Procedure: checkIfNDef
+// Procedure: checkIfNDef()
 
 bool Expander::checkIfNDef(string entry, map<string, string> macros)
 {
@@ -695,7 +695,7 @@ bool Expander::popMode()
 }
 
 //--------------------------------------------------------
-// Procedure: skipLines
+// Procedure: skipLines()
 //      Notr: Determines if, given the current stack of modes,
 //            whether a currently considered line should be
 //            skipped.
@@ -724,7 +724,7 @@ bool Expander::skipLines()
 }
 
 //--------------------------------------------------------
-// Procedure: modeStackContains
+// Procedure: modeStackContains()
 //      Note: Returns true if the given string is anywhere
 //            in the stack of saved modes.
 
@@ -739,7 +739,7 @@ bool Expander::modeStackContains(string str)
 }
 
 //--------------------------------------------------------
-// Procedure: printModeStack
+// Procedure: printModeStack()
 //      Note: For debugging
 
 void Expander::printModeStack()
@@ -750,12 +750,3 @@ void Expander::printModeStack()
   }
   cout << endl;
 }
-
-
-
-
-
-
-
-
-
