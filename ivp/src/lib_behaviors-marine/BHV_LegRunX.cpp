@@ -65,6 +65,8 @@ BHV_LegRunX::BHV_LegRunX(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_turn2_rad = 15;
   m_turn1_bias = 0;
   m_turn2_bias = 0;
+  m_turn1_ext = 0;
+  m_turn2_ext = 0;
 
   m_mid_pct = 25;
   
@@ -836,6 +838,9 @@ XYSegList BHV_LegRunX::initTurnPoints1(bool preview)
   double py1 = segl.get_vy(1);
   double th = relAng(px0, py0, px1, py1);
 
+  if(m_turn1_ext > 0)
+    projectPoint(th-180, m_turn1_ext, px0,py0, px0,py0);
+  
   // If we have over-shot the end point, then use os position as
   // start/end pts of the turn instead
   double lane_dist = 0.1;
@@ -889,6 +894,11 @@ XYSegList BHV_LegRunX::initTurnPoints2(bool preview)
   double py1 = segl.get_vy(1);
   double th = relAng(px1, py1, px0, py0);
 
+  if(m_turn2_ext > 0)
+    projectPoint(th-180, m_turn2_ext, px1,py1, px1,py1);
+  
+
+  
   // If we have over-shot the end point, then use os position as
   // start/end pts of the turn instead
   double lane_dist = 0.1;
@@ -1197,6 +1207,10 @@ bool BHV_LegRunX::handleConfigTurnParam(string param, string val)
     return(setDoubleStrictRngOnString(m_turn1_bias, val, -100, 100));
   else if(param == "turn2_bias")
     return(setDoubleStrictRngOnString(m_turn2_bias, val, -100, 100));
+  else if(param == "turn1_ext")
+    return(setNonNegDoubleOnString(m_turn1_ext, val));
+  else if(param == "turn2_ext")
+    return(setNonNegDoubleOnString(m_turn2_ext, val));
   else if((param == "turn_bias") && isNumber(val)) {
     if((dval >= -100) && (dval <= 100)) {
       m_turn1_bias = dval;

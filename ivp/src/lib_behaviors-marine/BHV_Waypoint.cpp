@@ -46,7 +46,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Procedure: Constructor()
 
 BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) : 
   IvPBehavior(gdomain)

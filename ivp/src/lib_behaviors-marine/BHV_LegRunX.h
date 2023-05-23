@@ -105,6 +105,8 @@ protected: // Config vars
   double      m_turn2_rad;
   double      m_turn1_bias;
   double      m_turn2_bias;
+  double      m_turn1_ext;
+  double      m_turn2_ext;
   
   // Configurable names of MOOS variables for reports
   std::string m_var_report;
