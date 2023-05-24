@@ -161,14 +161,15 @@ void TurnGenWilliamson::generate()
   // Part 1: Determine if this is a port or starboard turn
   double osang = relAng(m_start_osx, m_start_osy, m_endx, m_endy);
   double angle_diff = angle180(osang - m_start_osh);
-  
-    if(hypot(m_start_osx-m_endx, m_start_osy-m_endy) > 0.1) {
-      
+
+  #if 0
+  if(hypot(m_start_osx-m_endx, m_start_osy-m_endy) > 0.1) {
     if(angle_diff < 0)
       m_port_turn = true;
     else
       m_port_turn = false;
   }
+  #endif
   
   // Part 2: Determine the lane gap
   double px = 0;
@@ -328,7 +329,6 @@ void TurnGenWilliamson::generateLaneSwitch()
 
 void TurnGenWilliamson::generateLaneSwitch1()
 {
-  cout << "generateLaneSwitch()" << endl;
   // Part 1: Establish the turn headings
   double port_angle = angle360(m_start_osh - 90);
   double star_angle = angle360(m_start_osh + 90);
