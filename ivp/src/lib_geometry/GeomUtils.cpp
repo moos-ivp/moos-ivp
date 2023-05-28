@@ -2317,3 +2317,21 @@ bool modSegLoc(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
   return(true);
 }
   
+//---------------------------------------------------------------
+// Procedure: getSegCenter()
+
+XYPoint getSegCenter(const XYPoint& p1, const XYPoint& p2)
+{
+  double x1 = p1.x();
+  double y1 = p1.y();
+  double x2 = p2.x();
+  double y2 = p2.y();
+
+  double cx = (x1 + x2)/2;
+  double cy = (y1 + y2)/2;
+
+  XYPoint ctr(cx,cy);
+
+  return(ctr);
+}
+  

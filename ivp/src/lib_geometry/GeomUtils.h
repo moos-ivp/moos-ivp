@@ -197,6 +197,7 @@ bool modSegLoc(double x1, double y1, double x2, double y2,
 bool modSegLoc(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
 	       XYPoint center);
 
+XYPoint getSegCenter(const XYPoint& p1, const XYPoint& p2); 
 
 
 // DEPRECATED INTERFACES

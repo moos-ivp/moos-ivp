@@ -29,7 +29,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Constructor
+// Constructor()
 
 XYMarker::XYMarker()
 {
@@ -47,7 +47,7 @@ XYMarker::XYMarker()
 }
 
 //---------------------------------------------------------------
-// Procedure: set_type
+// Procedure: set_type()
 
 bool XYMarker::set_type(string str)
 {
@@ -62,7 +62,7 @@ bool XYMarker::set_type(string str)
 }
 
 //---------------------------------------------------------------
-// Procedure: set_width
+// Procedure: set_width()
 
 void XYMarker::set_width(double width)
 {
@@ -73,7 +73,7 @@ void XYMarker::set_width(double width)
 }
 
 //---------------------------------------------------------------
-// Procedure: set_range
+// Procedure: set_range()
 
 void XYMarker::set_range(double range)
 {
@@ -84,7 +84,7 @@ void XYMarker::set_range(double range)
 }
 
 //---------------------------------------------------------------
-// Procedure: get_spec
+// Procedure: get_spec()
 
 string XYMarker::get_spec(string param) const
 {
