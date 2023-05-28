@@ -30,6 +30,7 @@ TurnGenWilliamson::TurnGenWilliamson()
 
   m_desired_extent = 0;
   m_natural_extent = 0;
+  m_auto_turn_dir  = -1;
   
   // Init state vars
   m_ang_w = 0;
@@ -162,22 +163,22 @@ void TurnGenWilliamson::generate()
   double osang = relAng(m_start_osx, m_start_osy, m_endx, m_endy);
   double angle_diff = angle180(osang - m_start_osh);
 
-  #if 0
-  if(hypot(m_start_osx-m_endx, m_start_osy-m_endy) > 0.1) {
-    if(angle_diff < 0)
-      m_port_turn = true;
-    else
-      m_port_turn = false;
-  }
-  #endif
-  
   // Part 2: Determine the lane gap
   double px = 0;
   double py = 0;
   projectPoint(m_start_osh, 20, m_start_osx, m_start_osy, px, py);
   m_lane_gap = distPointToLine(m_endx, m_endy, m_start_osx,
   			       m_start_osy, px, py);
-  
+
+  if(m_auto_turn_dir > 0) {
+    if(m_lane_gap > m_auto_turn_dir) {
+      if(angle_diff < 0)
+	m_port_turn = true;
+      else
+	m_port_turn = false;
+    }
+  }
+    
   // Part 3: Determine if destination point is fore of ownship, and
   // calculate distance if so, and add to the extent.
   bool fore = false;

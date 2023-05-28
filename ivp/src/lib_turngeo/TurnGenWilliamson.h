@@ -27,7 +27,8 @@ class TurnGenWilliamson : public TurnGenerator
   bool setTurnRadius(double radius);
   void setEndPos(double endx, double endy);
   void setEndHeading(double endh);
-
+  void setAutoTurnDir(bool v) {m_auto_turn_dir=v;}
+  
  public: 
   void   setLaneGap(double lane_gap);
   void   setDesiredExtent(double extent);
@@ -59,6 +60,7 @@ class TurnGenWilliamson : public TurnGenerator
   double m_lane_gap;
   double m_desired_extent;
   double m_natural_extent;
+  double m_auto_turn_dir;
 
   double m_bias;
 
