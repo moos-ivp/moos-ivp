@@ -89,6 +89,21 @@ void XYPoint::projectPt(const XYPoint& pt, double ang, double dist)
 }
 
 //---------------------------------------------------------------
+// Procedure: get_spec_xy()
+//   returns: 5,6 or 5:6 based on given separation char
+
+string XYPoint::get_spec_xy(char sepchar) const
+{
+  string spec;
+
+  spec += doubleToStringX(m_x, m_sdigits);
+  spec += sepchar;
+  spec += doubleToStringX(m_y, m_sdigits);
+
+  return(spec);
+}
+
+//---------------------------------------------------------------
 // Procedure: get_spec()
 
 string XYPoint::get_spec(string param) const

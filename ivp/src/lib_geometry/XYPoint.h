@@ -71,6 +71,7 @@ public:
 
   void      projectPt(const XYPoint&, double ang, double dist);
 
+  std::string get_spec_xy(char c=',') const;
   std::string get_spec(std::string s="") const;
   std::string get_spec_inactive() const;
 
