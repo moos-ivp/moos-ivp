@@ -433,6 +433,79 @@ XYPoint XYSegList::get_point(unsigned int i) const
 }
 
 //---------------------------------------------------------------
+// Procedure: get_first_point()
+//      Note: Convenience function
+
+XYPoint XYSegList::get_first_point() const
+{
+  return(get_point(0));
+}
+
+//---------------------------------------------------------------
+// Procedure: get_last_point()
+//      Note: Convenience function
+
+XYPoint XYSegList::get_last_point() const
+{
+  unsigned int vsize = size();
+
+  // Sanity check
+  XYPoint nullpt;
+  if(vsize == 0)
+    return(nullpt);
+  
+  return(get_point(vsize-1));
+}
+//---------------------------------------------------------------
+// Procedure: get_dist_point()
+//      Note: return an XYPoint, on (or essentially on) the seglist
+//            at the given distance starting from the first vertex.
+//            If dist is longer than the whole segl, it will be the
+//            last vertex.
+
+XYPoint XYSegList::get_dist_point(double dist) const
+{
+  unsigned int vsize = size();
+
+  // Sanity check
+  XYPoint nullpt;
+  if(vsize == 0)
+    return(nullpt);
+  
+  // Special cases
+  if(vsize == 1)
+    return(get_first_point());
+  if(dist <= 0)
+    return(get_first_point());
+  if(dist >= length())
+    return(get_last_point());
+
+  double sofar_dist = 0;
+  double cx = m_vx[0]; 
+  double cy = m_vy[0]; 
+  for(unsigned int i=1; i<vsize; i++) {
+    double new_dist = hypot(cx-m_vx[i], cy-m_vy[i]);
+    if((sofar_dist + new_dist) < dist) {
+      sofar_dist += new_dist;
+      cx = m_vx[i];
+      cy = m_vy[i];
+    }
+    else {
+      double gap_dist = (dist - sofar_dist);
+      // sanity check
+      if(gap_dist > 0) {
+	double ang = relAng(cx,cy,m_vx[i],m_vy[i]);
+	projectPoint(ang, gap_dist, cx,cy, cx,cy);
+      }
+      break;
+    }
+  }
+	   
+  XYPoint dpt(cx,cy);
+  return(dpt);
+}
+
+//---------------------------------------------------------------
 // Procedure: get_vx()
 
 double XYSegList::get_vx(unsigned int i) const

@@ -36,6 +36,7 @@
 class XYSegList : public XYObject {
 public:
   XYSegList() {m_transparency=0.1;}
+  XYSegList(std::string label) {m_transparency=0.1; m_label=label;}
   XYSegList(XYPoint, XYPoint, std::string label="");
   XYSegList(double x1, double y1, double x2, double y2);
 
@@ -72,6 +73,9 @@ public:
   unsigned int size() const     {return(m_vx.size());}
 
   XYPoint get_point(unsigned int) const;
+  XYPoint get_first_point() const;
+  XYPoint get_last_point() const;
+  XYPoint get_dist_point(double dist) const;
   double  get_vx(unsigned int) const;
   double  get_vy(unsigned int) const;
   double  get_vz(unsigned int) const;
