@@ -1,5 +1,5 @@
 #--------------------------------------------------------
-# The CMakeLists.txt for:                     gen_ivphash
+# The CMakeLists.txt for:                       mhash_gen
 # Author(s):                                Mike Benjamin
 #--------------------------------------------------------
 
@@ -7,9 +7,9 @@ SET(SRC
   main.cpp
 )
 
-ADD_EXECUTABLE(gen_ivphash ${SRC})
+ADD_EXECUTABLE(mhash_gen ${SRC})
 
-TARGET_LINK_LIBRARIES(gen_ivphash
+TARGET_LINK_LIBRARIES(mhash_gen
   mbutil
   ${SYSTEM_LIBS}
 )
