@@ -81,6 +81,7 @@ class WaypointEngineX {
   std::string setNextWaypoint(double osx, double osy);
   
   double  distToEnd(double osx, double osy) const;
+  double  distFromBeg(double osx, double osy) const;
   double  distToPrevWpt(double osx, double osy) const;
   double  distToNextWpt(double osx, double osy) const;
   double  pctToNextWpt(double osx, double osy) const;

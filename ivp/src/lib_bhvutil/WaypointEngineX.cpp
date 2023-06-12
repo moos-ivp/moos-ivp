@@ -476,6 +476,23 @@ double WaypointEngineX::distToEnd(double osx, double osy) const
 
 
 //-----------------------------------------------------------
+// Procedure: distFromBeg()
+
+double WaypointEngineX::distFromBeg(double osx, double osy) const
+{
+  double dist_to_end = distToEnd(osx, osy);
+
+  double dist_from_beg = m_seglist.length() - dist_to_end;
+
+  // Sanity check
+  if(dist_from_beg < 0)
+    return(0);
+
+  return(dist_from_beg);
+}
+
+
+//-----------------------------------------------------------
 // Procedure: distToPrevWpt()
 
 double WaypointEngineX::distToPrevWpt(double osx, double osy) const
