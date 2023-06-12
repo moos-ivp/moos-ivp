@@ -251,6 +251,7 @@ void PMV_MOOSApp::registerVariables()
   Register("PMV_CENTER");
   Register("PMV_CONFIG");
   Register("BLOCK_HEARTBEAT");
+  Register("RESET_MHASH");
 
   unsigned int i, vsize = m_scope_vars.size();
   for(i=0; i<vsize; i++)
@@ -372,6 +373,8 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       handled = handleMailConfig(sval);
     else if(key == "BLOCK_HEARTBEAT") 
       handled = setBooleanOnString(m_block_heartbeat, sval);
+    else if(key == "RESET_MHASH") 
+      handled = setMissionHash();
       
     // PMV_MENU_CONTEXT = 
     // side=left, menukey=polyvert, post="POLY_VERT=x=$(XPOS),y=$(YPOS)"
@@ -1009,14 +1012,24 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   }
 
   // Post the Mission Hash (added Nov0322)
+  setMissionHash();
+
+  registerVariables();
+}
+
+//----------------------------------------------------------------------
+// Procedure: setMissionHash()
+
+bool PMV_MOOSApp::setMissionHash()
+{
   double actual_utc = MOOSTime();
   if(m_time_warp != 0)
     actual_utc = MOOSTime() / m_time_warp;
 
   m_mission_hash = "mhash=" + missionHash();
   m_mission_hash += ",utc=" + doubleToString(actual_utc,2);
-  
-  registerVariables();
+
+  return(true);
 }
 
 //----------------------------------------------------------------------

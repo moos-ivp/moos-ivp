@@ -75,7 +75,8 @@ class PMV_MOOSApp : public AppCastingMOOSApp
   void handlePendingCommandSummary();
 
   void postFlags(const std::vector<VarDataPair>&);
-
+  bool setMissionHash();
+  
  protected:
   Threadsafe_pipe<MOOS_event> *m_pending_moos_events;
 
