@@ -1221,6 +1221,9 @@ void MarineViewer::drawMarker(const XYMarker& marker, double timestamp)
   double shape_width  = marker.get_width() * gscale;
   double alpha   =  1 - marker.get_transparency();
 
+  if(marker.color_set("label"))
+    labelc = marker.get_color("label");
+
   if(shape_width <= 0)
     return;
 
@@ -1343,16 +1346,18 @@ void MarineViewer::drawMarker(const XYMarker& marker, double timestamp)
   bool draw_labels = m_geo_settings.viewable("marker_viewable_labels");
 
   if(draw_labels && ((label != "") || (message != "")) && coordInView(x,y)) {
-    glColor3f(labelc.red(), labelc.grn(), labelc.blu());
-    gl_font(1, 10);
-    if(m_zoom > 4)
-      gl_font(1, 12);
-    double offset = 4.0 * (1/m_zoom);
-    glRasterPos3f(offset, offset, 0);
-    if(message != "")
-      gl_draw_aux(message);
-    else
-      gl_draw_aux(label);
+    if(labelc.visible()) {
+      glColor3f(labelc.red(), labelc.grn(), labelc.blu());
+      gl_font(1, 10);
+      if(m_zoom > 4)
+	gl_font(1, 12);
+      double offset = 4.0 * (1/m_zoom);
+      glRasterPos3f(offset, offset, 0);
+      if(message != "")
+	gl_draw_aux(message);
+      else
+	gl_draw_aux(label);
+    }
   }
 
   glPopMatrix();
@@ -1662,16 +1667,17 @@ void MarineViewer::drawPolygons(const vector<XYPolygon>& polys,
 	ColorPack vert_c = default_vert_c;
 	if(poly.color_set("vertex"))           // vertex_color
 	  vert_c = poly.get_color("vertex");
-
-	glEnable(GL_POINT_SMOOTH);
-	glPointSize(vertex_size);
-	
-	glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu());
-	glBegin(GL_POINTS);
-	for(unsigned int j=0; j<vsize; j++) 
-	  glVertex2f(points[(j*2)], points[(j*2)+1]);
-	glEnd();
-	glDisable(GL_POINT_SMOOTH);
+	if(vert_c.visible()) {	
+	  glEnable(GL_POINT_SMOOTH);
+	  glPointSize(vertex_size);
+	  
+	  glColor3f(vert_c.red(), vert_c.grn(), vert_c.blu());
+	  glBegin(GL_POINTS);
+	  for(unsigned int j=0; j<vsize; j++) 
+	    glVertex2f(points[(j*2)], points[(j*2)+1]);
+	  glEnd();
+	  glDisable(GL_POINT_SMOOTH);
+	}
       }
       
       // ========================================================
@@ -2745,10 +2751,8 @@ void MarineViewer::drawOvals(const map<string, XYOval>& ovals,
 
 void MarineViewer::drawOval(XYOval oval, double timestamp)
 {
-  cout << "oval_spec:" << oval.get_spec() << endl;
   if(oval.expired(timestamp) || !oval.active())
     return;
-  cout << "Drawing oval:" << endl;
   
   ColorPack edge_c("blue");
   ColorPack labl_c("white");
@@ -2793,8 +2797,6 @@ void MarineViewer::drawOval(XYOval oval, double timestamp)
     oval.setPointCache(15);
   }
 
-  cout << "========================================" << endl;
-  oval.print();
   
   vector<double> draw_pts = oval.getPointCache();
   double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
