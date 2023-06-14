@@ -525,11 +525,8 @@ XYArrow stringToArrow(string str)
     string param = tolower(biteStringX(svector[i], '='));
     string value = svector[i];
 
-    cout << "setting arrow_param:" << param << ", val:" << value << endl;
-    
     bool ok = arrow.set_param(param, value);
 
-    cout << "result:" << boolToString(ok) << endl;
     if(!ok)
       return(null_arrow);
   }
