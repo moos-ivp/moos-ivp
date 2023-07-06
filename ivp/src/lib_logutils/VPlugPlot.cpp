@@ -32,7 +32,8 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: addEvent
+// Procedure: addEvent()
+//      Note: Likely called by Populator_VPlugPlots::populateFromEntries()
 
 bool VPlugPlot::addEvent(const string& var, const string& val, double time)
 {
@@ -40,8 +41,10 @@ bool VPlugPlot::addEvent(const string& var, const string& val, double time)
   unsigned int vsize = m_time.size();
   if(vsize > 0)
     latest_vplug_time = m_time[vsize-1];
-    
-  if((latest_vplug_time == -1) || (time > latest_vplug_time)) {
+
+  double binval = 1;
+  
+  if((latest_vplug_time == -1) || (time > latest_vplug_time+binval)) {
     VPlug_GeoShapes new_vplug;
     if(latest_vplug_time != -1) 
       new_vplug = m_vplugs[vsize-1];
@@ -76,7 +79,7 @@ bool VPlugPlot::addEvent(const string& var, const string& val, double time)
 }
      
 //---------------------------------------------------------------
-// Procedure: getVPlugByIndex
+// Procedure: getVPlugByIndex()
 
 VPlug_GeoShapes VPlugPlot::getVPlugByIndex(unsigned int index) const
 {
@@ -89,7 +92,7 @@ VPlug_GeoShapes VPlugPlot::getVPlugByIndex(unsigned int index) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getVPlugByTime
+// Procedure: getVPlugByTime()
 
 VPlug_GeoShapes VPlugPlot::getVPlugByTime(double gtime) const
 {
@@ -112,7 +115,7 @@ VPlug_GeoShapes VPlugPlot::getVPlugByTime(double gtime) const
 }
      
 //---------------------------------------------------------------
-// Procedure: getMinTime
+// Procedure: getMinTime()
 
 double VPlugPlot::getMinTime() const
 {
@@ -123,7 +126,7 @@ double VPlugPlot::getMinTime() const
 }
 
 //---------------------------------------------------------------
-// Procedure: getMaxTime
+// Procedure: getMaxTime()
 
 double VPlugPlot::getMaxTime() const
 {
@@ -135,7 +138,7 @@ double VPlugPlot::getMaxTime() const
 
 
 //---------------------------------------------------------------
-// Procedure: print
+// Procedure: print()
 
 void VPlugPlot::print() const
 {
@@ -148,7 +151,16 @@ void VPlugPlot::print() const
 
 
 //---------------------------------------------------------------
-// Procedure: applySkew
+// Procedure: report()
+
+void VPlugPlot::report() const
+{
+
+}
+
+
+//---------------------------------------------------------------
+// Procedure: applySkew()
 
 void VPlugPlot::applySkew(double skew)
 {
@@ -156,7 +168,3 @@ void VPlugPlot::applySkew(double skew)
     m_time[i] += skew;
 }
      
-
-
-
-

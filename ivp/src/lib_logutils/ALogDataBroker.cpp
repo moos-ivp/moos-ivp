@@ -158,6 +158,11 @@ bool ALogDataBroker::setTimingInfo()
 	vlength = value;
     }
 
+    if(vname == "shoreside") {
+      vtype = "";
+      vlength = "0";
+    }
+    
     m_vnames.push_back(vname);
     m_vtypes.push_back(vtype);
     m_vcolors.push_back(vcolor);
@@ -1006,11 +1011,19 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
   // Part 3: Populate the VPlugPlot
   Populator_VPlugPlots populator;
 
+  char carriage_return = 13;
   vector<ALogEntry> entries;
+  int  count=0;
   bool done = false;
   while(!done) {
+    count++;
     ALogEntry entry = getNextRawALogEntry(f, true);
 
+    if((count % 1000) ==0) {
+      cout << "     Reading alog visual entries: " << uintToCommaString(count);
+      cout << carriage_return << flush;
+    }
+    
     // Check if the line is a comment
     if(entry.getStatus() == "invalid")
       continue;
@@ -1025,6 +1038,7 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
     if(tstamp > m_pruned_logtmax)
       break;
   }
+  cout << endl;
 
   populator.populateFromEntries(entries);
   vplot = populator.getVPlugPlot();

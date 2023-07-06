@@ -42,13 +42,3 @@ protected:
   VPlugPlot m_vplug_plot;
 };
 #endif 
-
-
-
-
-
-
-
-
-
-

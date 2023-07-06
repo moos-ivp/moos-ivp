@@ -26,18 +26,34 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: populateFromEntries
+// Procedure: populateFromEntries()
 
 bool Populator_VPlugPlots::populateFromEntries(const vector<ALogEntry>& entries)
 {
-  int i, vsize = entries.size();
-  for(i=0; i<vsize; i++)
+  char carriage_return = 13;
+
+  int pct_prev = 0;
+  int pct = 0;
+
+  
+  unsigned int vsize = entries.size();
+  for(unsigned int i=0; i<vsize; i++) {
+
+    pct = 1 + ((100 * i) / vsize);
+    if(pct != pct_prev) {
+      cout << "     Caching visual data: " << pct << "%";
+      cout << carriage_return << flush;
+      pct_prev = pct;
+    }
+      
+    //if((i % 1000) ==0)
+    //  cout << "+" << flush;
+    //cout << "yyh " << entries[i].getVarName() << endl;
     m_vplug_plot.addEvent(entries[i].getVarName(), 
 			  entries[i].getStringVal(), 
 			  entries[i].getTimeStamp());
+  }
+  //cout << "yyh done" << endl;
+  cout << endl;
   return(true);
 }
-
-
-
-

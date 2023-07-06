@@ -45,10 +45,12 @@ public:
   unsigned int    size() const          {return(m_time.size());}
   double          getMinTime() const;
   double          getMaxTime() const;
-  void            print() const;
 
   void            applySkew(double skew);
 
+  void            print() const;
+  void            report() const;
+  
 protected:
   std::string                  m_vehi_name;  // Name of the platform
   std::vector<double>          m_time;

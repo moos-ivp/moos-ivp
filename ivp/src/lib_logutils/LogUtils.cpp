@@ -34,7 +34,7 @@ using namespace std;
 
 
 //--------------------------------------------------------
-// Procedure: getTimeStamp
+// Procedure: getTimeStamp()
 //     Notes: Syntax:  "TIMESTAMP  VAR  SOURCE  DATA"
 
 string getTimeStamp(const string& line)
@@ -54,7 +54,7 @@ string getTimeStamp(const string& line)
 }
 
 //--------------------------------------------------------
-// Procedure: getVarName
+// Procedure: getVarName()
 //     Notes: Syntax:  "TIMESTAMP   VAR   SOURCE   DATA"
 //            States:      0      1  2  3   4    5
 
@@ -86,7 +86,7 @@ string getVarName(const string& line)
 }
 
 //--------------------------------------------------------
-// Procedure: getSourceName
+// Procedure: getSourceName()
 //     Notes: Syntax:  "TIMESTAMP   VAR   SOURCE   DATA"
 //            States:      0      1  2  3   4    5
 
@@ -123,7 +123,7 @@ string getSourceName(const string& line)
 }
 
 //--------------------------------------------------------
-// Procedure: getSourceNameNoAux
+// Procedure: getSourceNameNoAux()
 
 string getSourceNameNoAux(const string& line)
 {
@@ -134,7 +134,7 @@ string getSourceNameNoAux(const string& line)
 }
 
 //--------------------------------------------------------
-// Procedure: getDataEntry
+// Procedure: getDataEntry()
 //     Notes: Syntax:  "TIMESTAMP   VAR   SOURCE   DATA"
 //            States:      0      1  2  3   4    5   6
 
@@ -174,8 +174,7 @@ string getDataEntry(const string& line)
 
 
 //--------------------------------------------------------
-// Procedure: stripInsigDigits
-//     Notes: 
+// Procedure: stripInsigDigits()
 
 void stripInsigDigits(string& line)
 {
@@ -247,7 +246,7 @@ unsigned int getIndexByTime(const std::vector<double>& vtime, double gtime)
 }
 
 //--------------------------------------------------------
-// Procedure: shiftTimeStamp
+// Procedure: shiftTimeStamp()
 
 void shiftTimeStamp(string& line, double logstart)
 {
@@ -266,7 +265,7 @@ void shiftTimeStamp(string& line, double logstart)
 }
 
 //--------------------------------------------------------
-// Procedure: getLogStart
+// Procedure: getLogStart()
 //     Notes: Syntax "%% LOGSTART  TIMESTAMP"
 
 double getLogStart(const string& line)
@@ -305,7 +304,7 @@ double getLogStart(const string& line)
 
 
 //-------------------------------------------------------------
-// Procedure: getLogStartFromFile
+// Procedure: getLogStartFromFile()
 
 double getLogStartFromFile(const string& filestr)
 {
@@ -326,7 +325,7 @@ double getLogStartFromFile(const string& filestr)
 }
   
 //-------------------------------------------------------------
-// Procedure: getDataStartTimeFromFile
+// Procedure: getDataStartTimeFromFile()
 //      Note: Get the smallest timestamp found in the file. This will
 //            be in local time (secs since beginning of log_start) 
 
@@ -364,7 +363,7 @@ double getDataStartTimeFromFile(const string& filestr)
 }
   
 //-------------------------------------------------------------
-// Procedure: getDataEndTimeFromFile
+// Procedure: getDataEndTimeFromFile()
 //      Note: Get the oldest timestamp found in the file. This will
 //            be in local time (secs since beginning of log_start) 
 
@@ -394,7 +393,7 @@ double getDataEndTimeFromFile(const string& filestr)
   
 
 //--------------------------------------------------------
-// Procedure: addVectorKey
+// Procedure: addVectorKey()
 
 void addVectorKey(vector<string>& v_keys, vector<bool>& v_pmatch,
 		  string key)
@@ -426,7 +425,7 @@ void addVectorKey(vector<string>& v_keys, vector<bool>& v_pmatch,
 
 
 //--------------------------------------------------------
-// Procedure: getNextRawLine
+// Procedure: getNextRawLine()
 
 string getNextRawLine(FILE *fileptr)
 {
@@ -461,7 +460,7 @@ string getNextRawLine(FILE *fileptr)
 
 
 //--------------------------------------------------------
-// Procedure: getNextRawALogEntry
+// Procedure: getNextRawALogEntry()
 
 ALogEntry getNextRawALogEntry(FILE *fileptr, bool allstrings)
 {
@@ -575,7 +574,7 @@ ALogEntry getNextRawALogEntry(FILE *fileptr, bool allstrings)
 
 
 //--------------------------------------------------------
-// Procedure: getSecsfromTimeOfDay
+// Procedure: getSecsfromTimeOfDay()
 //     Notes: Date String of form "11:50:04 AM"
 
 double getEpochSecsFromTimeOfDay(string date_str)
@@ -601,7 +600,7 @@ double getEpochSecsFromTimeOfDay(string date_str)
 
 
 //--------------------------------------------------------
-// Procedure: getSecsfromTimeOfDay
+// Procedure: getSecsfromTimeOfDay()
 
 double getEpochSecsFromTimeOfDay(double hrs, double mins, double secs)
 {
@@ -611,7 +610,7 @@ double getEpochSecsFromTimeOfDay(double hrs, double mins, double secs)
 
 
 //--------------------------------------------------------
-// Procedure: getEpochSecsfromDayOfYear
+// Procedure: getEpochSecsfromDayOfYear()
 //     Notes: Date String of form "7/15/2009"
 //            Returns the number of seconds before the start of the
 //              given date - since January 01 1972.
@@ -638,7 +637,7 @@ double getEpochSecsFromDayOfYear(string date_str, int format)
 }
 
 //--------------------------------------------------------
-// Procedure: getEpochSecsfromDayOfYear
+// Procedure: getEpochSecsfromDayOfYear()
 //            Returns the number of seconds before the start of the
 //              given date - since January 01 1970.
 
