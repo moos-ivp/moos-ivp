@@ -43,7 +43,7 @@ GUI_AppLogScope::GUI_AppLogScope(int g_w, int g_h, const char *g_l)
   this->user_data((void*)(this));
   this->when(FL_WHEN_CHANGED);
   this->begin();
-  this->size_range(450,350);
+  this->size_range(450,250);
 
   m_replay_warp_msg = "(PAUSED)";
   m_parent_gui = 0;

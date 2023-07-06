@@ -943,19 +943,29 @@ void REPLAY_GUI::updateXY()
 
 void REPLAY_GUI::setDataBroker(const ALogDataBroker& broker)
 {
+  cout << "  1: Copying the broker..." << endl;
   m_dbroker = broker;
+  cout << "  2: Setting LogPlot Menus..." << endl;
   setLogPlotMenus();
+  cout << "  3: Setting IPF Plot Menus..." << endl;
   setIPFPlotMenus();
+  cout << "  4: Setting Encounter Plot Menus..." << endl;
   setEncounterPlotMenus();
+  cout << "  5: Setting Helm Plot Menus..." << endl;
   setHelmPlotMenus();
+  cout << "  6: Setting Var Hist Menus..." << endl;
   setVarHistMenus();
+  cout << "  7: Setting AppLog Menus..." << endl;
   setAppLogMenus();
+  cout << "  8: Setting TaskDiary Menus..." << endl;
   setTaskDiaryMenus();
 
+  cout << "  9: Setting the DataBroker for the NavPlot Viewer..." << endl;
   if(np_viewer) {
     np_viewer->setDataBroker(broker);
     np_viewer->initPlots();
   }
+  cout << " 10: Setting the DataBroker for the LogPlot Viewer..." << endl;
   if(lp_viewer) {
     lp_viewer->setDataBroker(broker);
   }

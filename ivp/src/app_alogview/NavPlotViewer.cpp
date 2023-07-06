@@ -154,6 +154,10 @@ void NavPlotViewer::setDataBroker(const ALogDataBroker& dbroker)
     string vehicle_type = m_dbroker.getVTypeFromAix(aix);
     string vehicle_color = m_dbroker.getVColorFromAix(aix);
     double vehicle_length = m_dbroker.getVLengthFromAix(aix);
+    cout << "     vname:[" << vehicle_name << "] ";
+    cout << "vtype:[" << vehicle_type << "] ";
+    cout << "vcolor:[" << vehicle_color << "] ";
+    cout << "vlen:[" << vehicle_length << "] " << endl;
     m_vnames.push_back(vehicle_name);
     m_vtypes.push_back(vehicle_type);
     m_vcolors.push_back(vehicle_color);
@@ -203,10 +207,23 @@ void NavPlotViewer::initPlots()
       logplot_gt_hdg = m_dbroker.getLogPlot(mix);
     addLogPlotHDG_GT(logplot_gt_hdg);
   }
-  
+
   // If opening in "quick" mode, will not read/draw geometry objs
-  if(m_draw_geo) {
-    for(unsigned int aix=0; aix<alogs; aix++) {
+  if(!m_draw_geo)
+    return;
+
+  // If there is a shoreside community, then only process the visuals from
+  // the shoreside. All visuals in vehicl logs are also present in the shore
+  bool isolate_shore = false;
+  for(unsigned int aix=0; aix<alogs; aix++) {
+    if(m_vnames[aix] == "shoreside") {
+      isolate_shore = true;
+      cout << "     Isolating shoreside (vehicle logged visuals skipped)" << endl;
+    }
+  }
+
+  for(unsigned int aix=0; aix<alogs; aix++) {
+    if(!isolate_shore || (m_vnames[aix] == "shoreside")) {
       VPlugPlot vplot = m_dbroker.getVPlugPlot(aix);
       addVPlugPlot(vplot);
     }
@@ -591,10 +608,9 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
 
   vector<XYPolygon>    polys   = geo_shapes.getPolygons();
   vector<XYGrid>       grids   = geo_shapes.getGrids();
-  vector<XYSegList>    segls   = geo_shapes.getSegLists();
-  //vector<XYSeglr>      seglrs  = geo_shapes.getSeglrs();
   vector<XYRangePulse> rpulses = geo_shapes.getRangePulses();
   vector<XYCommsPulse> cpulses = geo_shapes.getCommsPulses();
+  const map<string, XYSegList>&  segls = geo_shapes.getSegLists();
   const map<string, XYPoint>&  points  = geo_shapes.getPoints();
   const map<string, XYCircle>& circles = geo_shapes.getCircles();
   const map<string, XYMarker>& markers = geo_shapes.getMarkers();
