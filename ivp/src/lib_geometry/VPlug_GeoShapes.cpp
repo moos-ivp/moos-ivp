@@ -274,7 +274,7 @@ void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
 {
   string new_label = new_segl.get_label();
   if(!new_segl.active()) {
-    forgetSegList(new_label);
+    m_segls.erase(new_label);
     return;
   }
 
@@ -283,19 +283,18 @@ void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
 		 new_segl.get_min_y(), new_segl.get_max_y());
   }
 
-  if(new_label == "") {
-    m_seglists.push_back(new_segl);
-    return;
-  }
+  if(new_label == "")
+    new_label = "seglx";
   
-  unsigned int i, vsize = m_seglists.size();
-  for(i=0; i<vsize; i++) {
-    if(m_seglists[i].get_label() == new_label) {
-      m_seglists[i] = new_segl;
-      return;
-    }
-  }
-  m_seglists.push_back(new_segl);  
+  m_segls[new_label] = new_segl;  
+
+#if 0
+  map<string, XYSegList>::iterator p;
+  for(p=m_segls.begin(); p!=m_segls.end(); p++)
+    cout << "  yyx_label:" << p->first << endl;
+  
+  cout << "yyx total segls: " << m_segls.size() << endl;
+#endif
 }
 
 //-----------------------------------------------------------
@@ -762,6 +761,7 @@ void VPlug_GeoShapes::addPoint(const XYPoint& new_point)
   if(new_label == "")
     new_label = "pt_" + uintToString(m_points.size());
   m_points[new_label] = new_point;
+  // cout << " yyu total points: " << m_points.size() << endl;
 }
 
 //-----------------------------------------------------------
@@ -987,19 +987,6 @@ XYPolygon VPlug_GeoShapes::getPolygon(unsigned int index) const
   }
   else
     return(m_polygons[index]);
-}
-
-//-------------------------------------------------------------
-// Procedure: getSegList(int)
-
-XYSegList VPlug_GeoShapes::getSegList(unsigned int index) const
-{
-  if(index >= m_seglists.size()) {
-    XYSegList null_segl;
-    return(null_segl);
-  }
-  else
-    return(m_seglists[index]);
 }
 
 //-------------------------------------------------------------
