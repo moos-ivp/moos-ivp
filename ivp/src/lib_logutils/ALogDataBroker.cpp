@@ -1030,7 +1030,9 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
     // Check for end of file
     if(entry.getStatus() == "eof") 
       break;
-    entries.push_back(entry);
+
+    populator.populateFromEntry(entry);
+    //entries.push_back(entry);   // former
 
     double tstamp = entry.getTimeStamp();
     if(tstamp < m_pruned_logtmin)
@@ -1040,7 +1042,7 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
   }
   cout << endl;
 
-  populator.populateFromEntries(entries);
+  //populator.populateFromEntries(entries);  //former
   vplot = populator.getVPlugPlot();
 
   vplot.applySkew(m_logskew[aix]);

@@ -33,7 +33,9 @@ using namespace std;
 
 //---------------------------------------------------------------
 // Procedure: addEvent()
-//      Note: Likely called by Populator_VPlugPlots::populateFromEntries()
+//      Note: Likely called by:
+//            Populator_VPlugPlots::populateFromEntries() or
+//            Populator_VPlugPlots::populateFromEntry()
 
 bool VPlugPlot::addEvent(const string& var, const string& val, double time)
 {

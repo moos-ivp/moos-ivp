@@ -35,6 +35,7 @@ public:
   ~Populator_VPlugPlots() {}
 
   bool      populateFromEntries(const std::vector<ALogEntry>&);
+  bool      populateFromEntry(const ALogEntry&);
 
   VPlugPlot getVPlugPlot() {return(m_vplug_plot);}
 

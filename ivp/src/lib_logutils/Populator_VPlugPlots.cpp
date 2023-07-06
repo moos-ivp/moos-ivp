@@ -57,3 +57,14 @@ bool Populator_VPlugPlots::populateFromEntries(const vector<ALogEntry>& entries)
   cout << endl;
   return(true);
 }
+
+//---------------------------------------------------------------
+// Procedure: populateFromEntry()
+
+bool Populator_VPlugPlots::populateFromEntry(const ALogEntry& entry)
+{
+  bool ok = m_vplug_plot.addEvent(entry.getVarName(), 
+				  entry.getStringVal(), 
+				  entry.getTimeStamp());
+  return(ok);
+}
