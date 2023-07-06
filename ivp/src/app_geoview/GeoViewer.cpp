@@ -95,9 +95,8 @@ void GeoViewer::draw()
     }
   }
   
-  vector<XYGrid>    grids   = m_geoshapes.getGrids();
-  vector<XYSegList> segls   = m_geoshapes.getSegLists();
-
+  vector<XYGrid>  grids = m_geoshapes.getGrids();
+  const map<string, XYSegList> segls = m_geoshapes.getSegLists();
   const map<string, XYPoint> points = m_geoshapes.getPoints();
 
   drawSegLists(segls);
