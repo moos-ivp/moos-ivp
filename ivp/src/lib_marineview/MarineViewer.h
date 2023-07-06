@@ -134,7 +134,7 @@ protected:
   void  drawPolygons(const std::vector<XYPolygon>&, double timestamp=0);
   void  drawPolygon(const XYPolygon&);
   
-  void  drawSegLists(const std::vector<XYSegList>&, double timestamp=0);
+  void  drawSegLists(const std::map<std::string, XYSegList>&, double timestamp=0);
   void  drawSegList(const XYSegList&);
 
   void  drawSeglrs(const std::vector<XYSeglr>&);

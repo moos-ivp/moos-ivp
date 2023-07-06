@@ -1897,7 +1897,7 @@ void MarineViewer::drawSegment(double x1, double y1, double x2, double y2,
 //-------------------------------------------------------------
 // Procedure: drawSegLists()
 
-void MarineViewer::drawSegLists(const vector<XYSegList>& segls,
+void MarineViewer::drawSegLists(const map<string, XYSegList>& segls,
 				double timestamp)
 {
   // If the viewable parameter is set to false just return. In 
@@ -1906,16 +1906,15 @@ void MarineViewer::drawSegLists(const vector<XYSegList>& segls,
   if(!m_geo_settings.viewable("seglist_viewable_all", "true"))
     return;
   
-  for(unsigned int i=0; i<segls.size(); i++) {
-    XYSegList segl = segls[i];
-    
-    if(segl.active() && !segl.expired(timestamp))
-      drawSegList(segl);
+  map<string, XYSegList>::const_iterator p;
+  for(p=segls.begin(); p!=segls.end(); p++) {
+    if(p->second.active() && !p->second.expired(timestamp))
+      drawSegList(p->second); 
   }
 }
 
 //-------------------------------------------------------------
-// Procedure: drawSegList
+// Procedure: drawSegList()
 
 void MarineViewer::drawSegList(const XYSegList& segl)
 {
