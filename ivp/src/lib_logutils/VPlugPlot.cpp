@@ -32,6 +32,25 @@
 using namespace std;
 
 //---------------------------------------------------------------
+// Constructor()
+
+VPlugPlot::VPlugPlot()
+{
+  m_view_point_cnt   = 0;
+  m_view_polygon_cnt = 0;
+  m_view_seglist_cnt = 0;
+  m_view_seglr_cnt   = 0;
+  m_view_circle_cnt  = 0;
+  m_view_arrow_cnt   = 0;
+  m_grid_config_cnt  = 0;
+  m_grid_delta_cnt   = 0;
+  m_view_range_pulse_cnt = 0;
+  m_view_comms_pulse_cnt = 0;
+  m_view_marker_cnt = 0;
+  
+}
+
+//---------------------------------------------------------------
 // Procedure: addEvent()
 //      Note: Likely called by:
 //            Populator_VPlugPlots::populateFromEntries() or
@@ -55,28 +74,50 @@ bool VPlugPlot::addEvent(const string& var, const string& val, double time)
     vsize++;
   }
 
-  if(var == "VIEW_POINT")
+  if(var == "VIEW_POINT") {
     m_vplugs[vsize-1].addPoint(val);
-  else if(var == "VIEW_POLYGON")
+    m_view_point_cnt++;
+  }
+  else if(var == "VIEW_POLYGON") {
     m_vplugs[vsize-1].addPolygon(val);
-  else if(var == "VIEW_SEGLIST")
+    m_view_polygon_cnt++;
+  }
+  else if(var == "VIEW_SEGLIST") {
     m_vplugs[vsize-1].addSegList(val);
-  else if(var == "VIEW_SEGLR")
+    m_view_seglist_cnt++;
+  }
+  else if(var == "VIEW_SEGLR") {
     m_vplugs[vsize-1].addSeglr(val);
-  else if(var == "VIEW_CIRCLE")
+    m_view_seglr_cnt++;
+  }
+  else if(var == "VIEW_CIRCLE") {
     m_vplugs[vsize-1].addCircle(val);
-  else if(var == "VIEW_ARROW")
+    m_view_circle_cnt++;
+  }
+  else if(var == "VIEW_ARROW") {
     m_vplugs[vsize-1].addArrow(val);
-  else if(var == "GRID_CONFIG")
+    m_view_arrow_cnt++;
+  }
+  else if(var == "GRID_CONFIG") {
     m_vplugs[vsize-1].addGrid(val);
-  else if(var == "GRID_DELTA")
+    m_grid_config_cnt++;
+  }
+  else if(var == "GRID_DELTA") {
     m_vplugs[vsize-1].updateGrid(val);
-  else if(var == "VIEW_RANGE_PULSE")
+    m_grid_delta_cnt++;
+  }
+  else if(var == "VIEW_RANGE_PULSE") {
     m_vplugs[vsize-1].addRangePulse(val);
-  else if(var == "VIEW_COMMS_PULSE")
+    m_view_range_pulse_cnt++;
+  }
+  else if(var == "VIEW_COMMS_PULSE") {
     m_vplugs[vsize-1].addCommsPulse(val);
-  else if(var == "VIEW_MARKER")
+    m_view_comms_pulse_cnt++;
+  }
+  else if(var == "VIEW_MARKER") {
     m_vplugs[vsize-1].addMarker(val);
+    m_view_marker_cnt++;
+  }
   return true;
 }
      
@@ -151,15 +192,45 @@ void VPlugPlot::print() const
     cout << "time:" << m_time[i] << endl;
 }
 
-
 //---------------------------------------------------------------
-// Procedure: report()
+// Procedure: summary()
 
-void VPlugPlot::report() const
+void VPlugPlot::summary(string indent) const
 {
+  string str_point = uintToCommaString(m_view_point_cnt);
+  string str_polygon = uintToCommaString(m_view_polygon_cnt);
+  string str_seglist = uintToCommaString(m_view_seglist_cnt);
+  string str_seglr = uintToCommaString(m_view_seglr_cnt);
+  string str_circle = uintToCommaString(m_view_circle_cnt);
+  string str_arrow = uintToCommaString(m_view_arrow_cnt);
+  string str_grid_config = uintToCommaString(m_grid_config_cnt);
+  string str_grid_delta = uintToCommaString(m_grid_delta_cnt);
+  string str_range_pulse = uintToCommaString(m_view_range_pulse_cnt);
+  string str_comms_pulse = uintToCommaString(m_view_comms_pulse_cnt);
+  string str_marker = uintToCommaString(m_view_marker_cnt);
+
+  if(m_view_point_cnt > 0)
+    cout << indent << "VIEW_POINT total: " << str_point << endl;
+  if(m_view_seglist_cnt > 0)
+    cout << indent << "VIEW_SEGLIST total: " << str_seglist << endl;
+  if(m_view_seglr_cnt > 0)
+    cout << indent << "VIEW_SEGLR total: " << str_seglr << endl;
+  if(m_view_circle_cnt > 0)
+    cout << indent << "VIEW_CIRCLE total: " << str_circle << endl;
+  if(m_view_arrow_cnt > 0)
+    cout << indent << "VIEW_ARROW total: " << str_arrow << endl;
+  if(m_grid_config_cnt > 0)
+    cout << indent << "GRID_CONFIG total: " << str_grid_config << endl;
+  if(m_grid_delta_cnt > 0)
+    cout << indent << "GRID_DELTA total: " << str_grid_delta << endl;
+  if(m_view_range_pulse_cnt > 0)
+    cout << indent << "RANGE_PULSE total: " << str_range_pulse << endl;
+  if(m_view_comms_pulse_cnt > 0)
+    cout << indent << "COMMS_PULSE total: " << str_comms_pulse << endl;
+  if(m_view_marker_cnt > 0)
+    cout << indent << "VIEW_MARKER total: " << str_marker << endl;
 
 }
-
 
 //---------------------------------------------------------------
 // Procedure: applySkew()

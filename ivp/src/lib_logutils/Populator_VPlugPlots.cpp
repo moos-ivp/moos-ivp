@@ -68,3 +68,4 @@ bool Populator_VPlugPlots::populateFromEntry(const ALogEntry& entry)
 				  entry.getTimeStamp());
   return(ok);
 }
+

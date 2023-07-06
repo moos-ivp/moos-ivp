@@ -32,7 +32,7 @@
 class VPlugPlot
 {
 public:
-  VPlugPlot() {}
+  VPlugPlot();
   ~VPlugPlot() {}
 
   bool            addEvent(const std::string& var, 
@@ -49,12 +49,24 @@ public:
   void            applySkew(double skew);
 
   void            print() const;
-  void            report() const;
+  void            summary(std::string indent="") const;
   
 protected:
   std::string                  m_vehi_name;  // Name of the platform
   std::vector<double>          m_time;
   std::vector<VPlug_GeoShapes> m_vplugs;
+
+  unsigned int m_view_point_cnt;
+  unsigned int m_view_polygon_cnt;
+  unsigned int m_view_seglist_cnt;
+  unsigned int m_view_seglr_cnt;
+  unsigned int m_view_circle_cnt;
+  unsigned int m_view_arrow_cnt;
+  unsigned int m_grid_config_cnt;
+  unsigned int m_grid_delta_cnt;
+  unsigned int m_view_range_pulse_cnt;
+  unsigned int m_view_comms_pulse_cnt;
+  unsigned int m_view_marker_cnt;
 };
 #endif 
 

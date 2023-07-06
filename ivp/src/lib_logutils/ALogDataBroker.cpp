@@ -1008,9 +1008,10 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
     return(vplot);
   }
 
+  // ====================================================
   // Part 3: Populate the VPlugPlot
+  // ====================================================
   Populator_VPlugPlots populator;
-
   char carriage_return = 13;
   vector<ALogEntry> entries;
   int  count=0;
@@ -1042,11 +1043,14 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
   }
   cout << endl;
 
+  // ====================================================
+  // Part 3: Apply the skew and summarize the vplot
+  // ====================================================
   //populator.populateFromEntries(entries);  //former
   vplot = populator.getVPlugPlot();
-
   vplot.applySkew(m_logskew[aix]);
-
+  vplot.summary("     ");
+  
   if(m_verbose)
     cout << "klog done: " << klog << endl;
 
