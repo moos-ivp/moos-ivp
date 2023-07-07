@@ -66,6 +66,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
   void handleMailReportRequest(std::string, std::string);
   void handleMailAlertRequest(std::string, std::string);
   void handleMailDisplayRadii(std::string);
+  void handleMailHelmState(std::string);
 
   void updateRanges();
   void postSummaries();
@@ -177,6 +178,9 @@ class ContactMgrV20 : public AppCastingMOOSApp
 
   std::list<std::string> m_contacts_retired;
 
+  bool  m_hold_alerts_for_helm;
+  bool  m_helm_in_drive_noted;
+  
 private:
   bool         m_use_geodesy;
   CMOOSGeodesy m_geodesy;

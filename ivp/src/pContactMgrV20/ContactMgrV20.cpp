@@ -38,7 +38,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 ContactMgrV20::ContactMgrV20()
 {
@@ -81,6 +81,9 @@ ContactMgrV20::ContactMgrV20()
   m_prev_closest_contact_val = 0;
 
   m_alert_requests_received = 0;
+
+  m_hold_alerts_for_helm = false;
+  m_helm_in_drive_noted  = false;
 }
 
 //---------------------------------------------------------
@@ -119,6 +122,8 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
       handleMailDisplayRadii(sval);      
     else if(key == "BCM_ALERT_REQUEST")
       handleMailAlertRequest(sval, src);
+    else if(key == "IVPHELM_STATE")
+      handleMailHelmState(sval);
     else
       reportRunWarning("Unhandled Mail: " + key);
   }
@@ -143,7 +148,9 @@ bool ContactMgrV20::Iterate()
   AppCastingMOOSApp::Iterate();
 
   updateRanges();
-  checkForAlerts();
+
+  if(!m_hold_alerts_for_helm || m_helm_in_drive_noted) 
+    checkForAlerts();
 
   postRadii();
 
@@ -236,6 +243,8 @@ bool ContactMgrV20::OnStartUp()
       handled = setColorOnString(m_alert_rng_color, value);
     else if(param == "cpa_range_color") 
       handled = setColorOnString(m_alert_rng_cpa_color, value);
+    else if(param == "hold_alerts_for_helm") 
+      handled = setBooleanOnString(m_hold_alerts_for_helm, value);
     else if(param == "ownship_group") { 
       setNonWhiteVarOnString(m_os_group, value);
       handled = m_filter_set.setOwnshipGroup(value);
@@ -304,6 +313,7 @@ void ContactMgrV20::registerVariables()
   Register("NAV_Y", 0);
   Register("NAV_SPEED", 0);
   Register("NAV_HEADING", 0);
+  Register("IVPHELM_STATE", 0);
 }
 
 //---------------------------------------------------------
@@ -499,6 +509,15 @@ void ContactMgrV20::handleMailAlertRequest(string value, string src)
   bool ok = handleConfigAlert(value, src);
   if(!ok)
     reportRunWarning("Unhandled Alert Request: " + value);   
+}
+
+//---------------------------------------------------------
+// Procedure: handleMailHelmState()
+                     
+void ContactMgrV20::handleMailHelmState(string value)
+{
+  if(value == "DRIVE")
+    m_helm_in_drive_noted = true;
 }
 
 //--------------------------------------------------------------------

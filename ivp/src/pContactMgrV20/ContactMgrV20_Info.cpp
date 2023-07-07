@@ -70,6 +70,9 @@ void showHelpAndExit()
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of pContactMgrV20.            ");
+  mag("  --web,-w                                                      ");
+  blk("      Open web browser to:                                      ");
+  blk("      https://oceanai.mit.edu/ivpman/apps/pContactMgrV20        ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -144,7 +147,9 @@ void showExampleConfigAndExit()
   blk("  max_contacts = 500               // Default is 500            ");
   blk("  alert_verbose = false            // Default is false          ");
   blk("                                                                ");
-  blk("  app_logging = true  // {true or file} By default disabled     ");
+  blk("  app_logging = true               // Default is false           ");
+  blk("                                                                ");
+  blk("  hold_alerts_for_helm = true      // Default is false          ");
   blk("}                                                               ");
   exit(0);
 }
@@ -176,6 +181,7 @@ void showInterfaceAndExit()
   blk("  NAV_X             = 112.3                                     ");
   blk("  NAV_Y             = -99.1                                     ");
   blk("  NAV_SPEED         = 2.0                                       ");
+  blk("  IVPHELM_STATE     = DRIVE                                     ");
   blk("  NODE_REPORT       = NAME=alpha,TYPE=UUV,TIME=1252348077.59,   ");
   blk("                      X=51.71,Y=-35.50, LAT=43.824981,          ");
   blk("                      LON=-70.329755,SPD=2.0,HDG=118.8,         ");
