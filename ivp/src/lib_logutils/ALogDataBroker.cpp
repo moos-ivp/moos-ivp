@@ -37,22 +37,23 @@
 
 using namespace std;
 
-
 //----------------------------------------------------------------
-// Constructor
+// Constructor()
 
 ALogDataBroker::ALogDataBroker()
 {
+  // Init config vars
+  m_verbose  = false;
+  m_max_fileptrs = 100;
+  m_vqual = "med";
+  
+  // Init state vars
   m_global_logstart = 0;
   m_global_logtmin  = 0;
   m_global_logtmax  = 0;
-
   m_pruned_logtmin  = 0;
   m_pruned_logtmax  = 0;
-  m_verbose  = false;
   m_progress = false;
-
-  m_max_fileptrs = 100;
 }
 
 //----------------------------------------------------------------
@@ -1032,8 +1033,8 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
     if(entry.getStatus() == "eof") 
       break;
 
-    populator.populateFromEntry(entry);
-    //entries.push_back(entry);   // former
+    //populator.populateFromEntry(entry);
+    entries.push_back(entry);   // former
 
     double tstamp = entry.getTimeStamp();
     if(tstamp < m_pruned_logtmin)
@@ -1046,7 +1047,11 @@ VPlugPlot ALogDataBroker::getVPlugPlot(unsigned int aix)
   // ====================================================
   // Part 3: Apply the skew and summarize the vplot
   // ====================================================
-  //populator.populateFromEntries(entries);  //former
+  populator.setVQual(m_vqual);
+  populator.populateFromEntries(entries);  //former
+  entries.clear();
+  entries.resize(0);
+  
   vplot = populator.getVPlugPlot();
   vplot.applySkew(m_logskew[aix]);
   vplot.summary("     ");

@@ -34,12 +34,17 @@ public:
   Populator_VPlugPlots() {}
   ~Populator_VPlugPlots() {}
 
-  bool      populateFromEntries(const std::vector<ALogEntry>&);
-  bool      populateFromEntry(const ALogEntry&);
-
+  void  setVQual(std::string s) {m_vqual=s;}
+  void  setBinVal(double v)     {m_vplug_plot.setBinVal(v);}
+  
+  bool  populateFromEntries(const std::vector<ALogEntry>&);
+  bool  populateFromEntry(const ALogEntry&);
+  
   VPlugPlot getVPlugPlot() {return(m_vplug_plot);}
 
 protected:
   VPlugPlot m_vplug_plot;
+
+  std::string m_vqual;
 };
 #endif 

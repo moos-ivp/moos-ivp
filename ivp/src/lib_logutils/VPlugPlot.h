@@ -35,23 +35,30 @@ public:
   VPlugPlot();
   ~VPlugPlot() {}
 
-  bool            addEvent(const std::string& var, 
-			   const std::string& val, double time);
-  void            setVehiName(std::string s) {m_vehi_name = s;}
+  bool    addEvent(const std::string& var, 
+		   const std::string& val, double time);
+  void    setVehiName(std::string s) {m_vehi_name = s;}
+  void    setBinVal(double);
+  
+  double  getMinTime() const;
+  double  getMaxTime() const;
+
+  void    applySkew(double skew);
+
+  void    print() const;
+  void    summary(std::string indent="") const;
+
+  std::string  getVehiName() const   {return(m_vehi_name);}
+  unsigned int size() const          {return(m_time.size());}
 
   VPlug_GeoShapes getVPlugByIndex(unsigned int index) const;
   VPlug_GeoShapes getVPlugByTime(double gtime) const;
-  std::string     getVehiName() const   {return(m_vehi_name);}
-  unsigned int    size() const          {return(m_time.size());}
-  double          getMinTime() const;
-  double          getMaxTime() const;
 
-  void            applySkew(double skew);
-
-  void            print() const;
-  void            summary(std::string indent="") const;
   
-protected:
+protected: // config vars
+  double m_binval;
+  
+protected: // state vars
   std::string                  m_vehi_name;  // Name of the platform
   std::vector<double>          m_time;
   std::vector<VPlug_GeoShapes> m_vplugs;

@@ -53,6 +53,7 @@ class ALogDataBroker
   void setVerbose(bool v=true)  {m_verbose=v;}
   void setProgress(bool v=true) {m_progress=v;}
   void setMaxFilePtrs(unsigned int v) {m_max_fileptrs=v;}
+  void setVQual(std::string s) {m_vqual=s;}
   
   LogPlot      getLogPlot(unsigned int mix);
   VarPlot      getVarPlot(unsigned int mix, bool src=false);
@@ -155,10 +156,7 @@ class ALogDataBroker
   bool m_verbose;
   bool m_progress;
   unsigned int m_max_fileptrs;
+  std::string m_vqual;
 };
 
 #endif
-
-
-
-

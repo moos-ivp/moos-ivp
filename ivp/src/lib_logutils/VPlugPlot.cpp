@@ -36,6 +36,10 @@ using namespace std;
 
 VPlugPlot::VPlugPlot()
 {
+  // Init config vars
+  m_binval = 0;
+
+  // Init state vars
   m_view_point_cnt   = 0;
   m_view_polygon_cnt = 0;
   m_view_seglist_cnt = 0;
@@ -47,7 +51,6 @@ VPlugPlot::VPlugPlot()
   m_view_range_pulse_cnt = 0;
   m_view_comms_pulse_cnt = 0;
   m_view_marker_cnt = 0;
-  
 }
 
 //---------------------------------------------------------------
@@ -56,16 +59,16 @@ VPlugPlot::VPlugPlot()
 //            Populator_VPlugPlots::populateFromEntries() or
 //            Populator_VPlugPlots::populateFromEntry()
 
-bool VPlugPlot::addEvent(const string& var, const string& val, double time)
+bool VPlugPlot::addEvent(const string& var, const string& val,
+			 double time)
 {
   double latest_vplug_time = -1;
   unsigned int vsize = m_time.size();
   if(vsize > 0)
     latest_vplug_time = m_time[vsize-1];
 
-  double binval = 1;
-  
-  if((latest_vplug_time == -1) || (time > latest_vplug_time+binval)) {
+  if((latest_vplug_time == -1) ||
+     (time > latest_vplug_time + m_binval)) {
     VPlug_GeoShapes new_vplug;
     if(latest_vplug_time != -1) 
       new_vplug = m_vplugs[vsize-1];
@@ -121,6 +124,15 @@ bool VPlugPlot::addEvent(const string& var, const string& val, double time)
   return true;
 }
      
+//---------------------------------------------------------------
+// Procedure: setBinVal()
+
+void VPlugPlot::setBinVal(double binval)
+{
+  if(binval >= 0)
+    m_binval = binval;
+}
+
 //---------------------------------------------------------------
 // Procedure: getVPlugByIndex()
 
