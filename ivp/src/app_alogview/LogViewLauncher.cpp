@@ -168,6 +168,8 @@ bool LogViewLauncher::handleConfigParam(string argi)
     handled = true; // handled separately
   else if(strBegins(argi, "--max_fptrs=")) 
     handled = handleMaxFilePtrs(argi.substr(12));
+  else if(strBegins(argi, "--vqual=")) 
+    handled = handleVQual(argi.substr(8));
   else if(strBegins(argi, "--bg="))
     handled = handleBackground(argi.substr(5));
   else if(strEnds(argi, ".tif")) 
@@ -628,6 +630,33 @@ bool LogViewLauncher::handleMaxFilePtrs(string val)
     max_fptrs = 1000;
 
   m_dbroker.setMaxFilePtrs((unsigned int)(max_fptrs));
+  
+  return(true);
+}
+ 
+//-------------------------------------------------------------
+// Procedure: handleVQual()    --vqual=MED/low/high/max
+// 
+// Note: This modifies the binval used in creating the time
+//       indexed clusters of visual artifacts (VPlugPlot).
+//       Lower binval size means higher precision, more load
+//       time and memory usage.
+//       MED uses a policy of adjusting the binval size based
+//       on the number of visual objects.
+//       LOW will double the binval size from the result of the
+//       policy. HIGH will halve the value. MAX will set the
+//       binval size to zero which is highest precision but
+//       potentially very slow. (MAX was the only option prior
+//       to July 2023)
+
+bool LogViewLauncher::handleVQual(string val)
+{
+  val = tolower(val);
+  if((val != "med") && (val != "low") && (val != "high") &&
+     (val != "max") && (val != "vlow") && (val != "vvlow"))
+    return(false);
+  
+  m_dbroker.setVQual(val);
   
   return(true);
 }

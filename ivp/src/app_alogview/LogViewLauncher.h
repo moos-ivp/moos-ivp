@@ -61,6 +61,7 @@ protected:
   bool handleNowTime(std::string);
   bool handleGrep(std::string);
   bool handleMaxFilePtrs(std::string);
+  bool handleVQual(std::string);
   
   bool handleALogViewConfig(std::string);
   bool handleBehaviorVarMapping(std::string);
