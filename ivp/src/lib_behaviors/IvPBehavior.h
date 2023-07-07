@@ -126,14 +126,7 @@ public:
   void    postRepeatableEventMessage(std::string);
   void    postRetractWMessage(std::string);
 
-  void    postXMessage(std::string, std::string, double, std::string key="");
-  void    postXMessage(std::string, std::string, std::string key="");
-  void    postXMessage(std::string, double, std::string key="");
-  void    postXMessage(std::string, bool, std::string key="");
-  void    postGMessage(std::string, std::string, double, std::string key="");
-  void    postGMessage(std::string, std::string, std::string key="");
-  void    postGMessage(std::string, double, std::string key="");
-  void    postGMessage(std::string, bool, std::string key="");
+  // Offboard Messaging General
   void    postOffboardMessage(std::string dest, std::string var,
 			      std::string sval, std::string key="");
   void    postOffboardMessage(std::string dest, std::string var,
@@ -142,6 +135,23 @@ public:
 			      bool bval, std::string key="");
   void    postOffboardMessage(std::string dest, VarDataPair pair,
 			      std::string key="");
+
+  // Offboard Messaging Convenience to ALL
+  void    postXMessage(std::string, std::string, double, std::string key="");
+  void    postXMessage(std::string, std::string, std::string key="");
+  void    postXMessage(std::string, double, std::string key="");
+  void    postXMessage(std::string, bool, std::string key="");
+  
+  // Offboard Messaging Convenience to Group
+  void    postGMessage(std::string, std::string, double, std::string key="");
+  void    postGMessage(std::string, std::string, std::string key="");
+  void    postGMessage(std::string, double, std::string key="");
+  void    postGMessage(std::string, bool, std::string key="");
+
+  void    regulateOffboardMessage(std::string var, double min_time_gap);
+  void    resetRegulatedMessage(std::string var);
+  bool    isRegulatedMessage(std::string var);
+  bool    isRegulatedMessageNow(std::string var);
   
   void    postDurationStatus();
   bool    durationExceeded();
@@ -278,6 +288,10 @@ protected:
   // and resetStateOK().
 private:
   bool        m_bhv_state_ok;
+
+  std::map<std::string, double> m_map_regu_vars_tgap;
+  std::map<std::string, double> m_map_regu_vars_last;
+
 };
 
 #endif

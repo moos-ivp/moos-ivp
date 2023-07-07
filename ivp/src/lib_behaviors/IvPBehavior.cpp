@@ -623,7 +623,72 @@ void IvPBehavior::postOffboardMessage(string dest, VarDataPair pair,
     key = (m_descriptor + var_name + key);
     post_pair.set_key(key);
   }
+
+  // Handle if the outgoing variable is regulated
+  if(m_map_regu_vars_tgap.count(var_name) != 0) {
+    double curr_time = getBufferCurrTime();
+    double elapsed = curr_time - m_map_regu_vars_last[var_name];
+    if(elapsed < m_map_regu_vars_tgap[var_name])
+      return;
+    m_map_regu_vars_last[var_name] = curr_time;
+  }
+  
   m_messages.push_back(post_pair);
+}
+
+//-----------------------------------------------------------
+// Procedure: regulateOffboardMessage()
+
+void IvPBehavior::regulateOffboardMessage(string var, double tgap)
+{
+  m_map_regu_vars_tgap[var] = tgap;
+  m_map_regu_vars_last[var] = 0;
+}
+
+//-----------------------------------------------------------
+// Procedure: resetRegulatedMessage()
+//   Purpose: Reset the timestamp associated with the latest
+//            offboard posting. This can be used by a behavior
+//            to ensure an outgoing offboard message will not
+//            be regulated on the next attempt to send. This
+//            can be used to ensure critical messages are not
+//            regulated, or it can be used to ensure a message
+//            goes through whenever it changes value.
+
+void IvPBehavior::resetRegulatedMessage(string var)
+{
+  if(m_map_regu_vars_tgap.count(var))
+    m_map_regu_vars_last[var] = 0;
+}
+
+//-----------------------------------------------------------
+// Procedure: isRegulatedMessage()
+//   Purpose: Determine if the message (MOOS Var) is a regulated
+//            offboard message. 
+
+bool IvPBehavior::isRegulatedMessage(string var_name)
+{
+  if(m_map_regu_vars_tgap.count(var_name) == 0)
+    return(false);
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: isRegulatedMessageNow()
+//   Purpose: Determine if the message (MOOS Var) is regulated, 
+//            and if so, if it would be blocked at if sent at
+//            the current time. 
+
+bool IvPBehavior::isRegulatedMessageNow(string var_name)
+{
+  if(m_map_regu_vars_tgap.count(var_name) != 0) {
+    double curr_time = getBufferCurrTime();
+    double elapsed = curr_time - m_map_regu_vars_last[var_name];
+    if(elapsed < m_map_regu_vars_tgap[var_name])
+      return(true);
+    m_map_regu_vars_last[var_name] = curr_time;
+  }
+  return(false);
 }
 
 //-----------------------------------------------------------
