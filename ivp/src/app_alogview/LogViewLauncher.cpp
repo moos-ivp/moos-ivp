@@ -24,6 +24,7 @@
 #include <iostream>
 #include <cstdlib>
 #include "MBUtils.h"
+#include "TermUtils.h"
 #include "MBTimer.h"
 #include "LogViewLauncher.h"
 #include "FileBuffer.h"
@@ -324,6 +325,28 @@ bool LogViewLauncher::configRegionInfo()
   string lat_str  = tokStringParse(region_info, "lat_datum");
   string lon_str  = tokStringParse(region_info, "lon_datum");
 
+  if(region_info == "") {
+    lat_str="43.8253";
+    lon_str="-70.3304";
+    img_str="forrest19.tif";
+    zoom_str="0.95";
+    panx_str="-90";
+    pany_str="-280";
+    cout << termColor("red");
+    cout << "WARNING: No REGION_INFO found in the log file. Defaulting " << endl;
+    cout << "to use Forest Lake image and context. The REGION_INFO is  " << endl;
+    cout << "normally published by pMarineViewer. If pMarineViwer was  " << endl;
+    cout << "running, ensure that REGION_INFO is being logged. If      " << endl;
+    cout << "pMarineViewer was not running, the content of REGION_INFO " << endl;
+    cout << "can be passed on the command-line to alogview, or alogview" << endl;
+    cout << "can be launch with Forest Lake, and just toggle off the   " << endl;
+    cout << "background image if it is distracting.                    " << endl;
+    cout << "                                                          " << endl;
+    cout << "Hit Any Key to Continue.";
+    cout << termColor();
+    getCharNoWait();
+  }
+  
   cout << "*********************************************************" << endl;
   cout << "* STARTUP PART 2: Determine Region Information          *" << endl; 
   cout << "*    Image: " << padString(img_str,  44, false) <<     "*" << endl;
@@ -334,9 +357,8 @@ bool LogViewLauncher::configRegionInfo()
   cout << "* DatumLon: " << padString(lon_str,  44, false) <<     "*" << endl;
   cout << "*********************************************************" << endl;
 
-  
-  if(region_info == "")
-    return(true);
+  //  if(region_info == "")
+  //  return(true);
 
   // As a habit we prefer to start alogview more zoomed out than orig
   if(isNumber(zoom_str)) {
@@ -393,6 +415,21 @@ bool LogViewLauncher::configGraphical()
   if(m_alt_nav_prefix != "")
     m_gui->np_viewer->setAltNavPrefix(m_alt_nav_prefix);
 
+
+  double img_wid_mtrs = m_gui->np_viewer->getImgWidthMtrs();
+  if(img_wid_mtrs > 5000000)
+    m_gui->np_viewer->setParam("hash_delta", "1000000");
+  else if(img_wid_mtrs > 500000)
+    m_gui->np_viewer->setParam("hash_delta", "100000");
+  else if(img_wid_mtrs > 50000)
+    m_gui->np_viewer->setParam("hash_delta", "10000");
+  else if(img_wid_mtrs > 5000)
+    m_gui->np_viewer->setParam("hash_delta", "1000");
+  else if(img_wid_mtrs > 500)
+    m_gui->np_viewer->setParam("hash_delta", "100");
+  else 
+    m_gui->np_viewer->setParam("hash_delta", "50");
+  
   cout << "(b) Initializing DataBroker from Cache files..." << endl; 
   m_gui->setDataBroker(m_dbroker);
   m_gui->setGrepStr1(m_grep1);

@@ -101,6 +101,7 @@ MarineViewer::MarineViewer(int x, int y, int w, int h, const char *l)
 }
 
 //-------------------------------------------------------------
+// Destructor()
 
 MarineViewer::~MarineViewer()
 {
@@ -191,6 +192,19 @@ string MarineViewer::getInfoFileB()
   if(m_back_imgs.size() < 2)
     return("");
   return(m_back_imgs[1].getInfoFile());
+}
+
+//-------------------------------------------------------------
+// Procedure: getImgWidthMtrs()
+//   Purpose: The width of the image in meters can be used to
+//            auto-set a reasonable hash_delta.
+
+double MarineViewer::getImgWidthMtrs()
+{
+  if(m_back_imgs.size() > 0)
+    return(m_back_imgs[0].get_img_mtr_width());
+
+  return(0);
 }
 
 //-------------------------------------------------------------
@@ -317,7 +331,7 @@ void MarineViewer::setVerbose(bool bval)
 
 
 //-------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool MarineViewer::setParam(string param, double v)
 {
@@ -327,7 +341,6 @@ bool MarineViewer::setParam(string param, double v)
 
   if(param == "hash_shade_mod") {
     m_hash_shade = vclip((m_hash_shade+v), 0, 1);
-    cout << "hash_shade:" << m_hash_shade << endl;
   }
   else if(param == "hash_shade") {
     m_hash_shade = vclip(v, 0, 1);
@@ -433,7 +446,7 @@ bool MarineViewer::applyTiffFiles()
 
 
 //-------------------------------------------------------------
-// Procedure: img2view
+// Procedure: img2view()
 
 double MarineViewer::img2view(char xy, double img_val) const
 {
@@ -454,7 +467,7 @@ double MarineViewer::img2view(char xy, double img_val) const
 }
 
 //-------------------------------------------------------------
-// Procedure: view2img
+// Procedure: view2img()
 //      Note: Derived as from img2view above
 
 double MarineViewer::view2img(char xy, double view_val) const
@@ -482,24 +495,18 @@ double MarineViewer::view2img(char xy, double view_val) const
 }
 
 //-------------------------------------------------------------
-// Procedure: meters2img
+// Procedure: meters2img()
 
 double MarineViewer::meters2img(char xy, double meters_val, bool verbose) const
 {
   double img_val = 0.0;
   if(xy == 'x') {
     double range = m_back_img.get_img_mtr_width();
-    //if(verbose)
-    //  cout << "X: range:" << range << endl;
     if(range == 0)
       img_val = 0;
     else {
       double pct = (meters_val - m_back_img.get_x_at_img_ctr()) / range;
       img_val = pct + 0.5;
-      //if(verbose) {
-      //cout << "m_back_img.get_x_at_img_ctr():" << m_back_img.get_x_at_img_ctr() << endl;
-      //cout << "img_val:" << img_val << endl;
-      //}
     }
   }
   else if(xy == 'y') {
@@ -511,10 +518,6 @@ double MarineViewer::meters2img(char xy, double meters_val, bool verbose) const
     else {
       double pct = (meters_val - m_back_img.get_y_at_img_ctr()) / range;
       img_val = pct + 0.5;
-      //if(verbose) {
-      //cout << "m_back_img.get_y_at_img_ctr():" << m_back_img.get_y_at_img_ctr() << endl;
-      //cout << "img_val:" << img_val << endl;
-      //}
     }
   }
 
@@ -639,117 +642,32 @@ void MarineViewer::drawTiff()
 }
 
 // ----------------------------------------------------------
-// Procedure: drawHash
+// Procedure: drawFastHash()
 //   Purpose: Draw the hash marks based local coordinate positions
 //            on the image. Due to the snapToStep, there should 
 //            always be a hash line exactly on the datum (0,0).
 
-void MarineViewer::drawHash(double xl, double xr, double yb, double yt)
+void MarineViewer::drawFastHash()
 {
-  if((xl>xr) || (yb>yt))
-    return;
-
-  double r = m_hash_shade;
-  double g = m_hash_shade;
-  double b = m_hash_shade;
-
-  double hash_delta = m_geo_settings.geosize("hash_delta");
-
-  // If specs not given use a default region defined by the image
-  if((xl==0) && (xr==0) && (yb==0) && (yt==0)) {
-    xl = m_back_img.get_x_at_img_left();
-    xr = m_back_img.get_x_at_img_right();
-    yb = m_back_img.get_y_at_img_bottom();
-    yt = m_back_img.get_y_at_img_top();
-  }
-
-  if((xl>=xr) || (yb>=yt))
-    return;
-
-  // Make sure the has region aspect ratio of 1.0
-  double xwid = xr - xl;
-  double ywid = yt - yb;
-  if(xwid > ywid) {
-    yb -= ((xwid - ywid) / 2);
-    yt += ((xwid - ywid) / 2);
-  }
-  else if(ywid > xwid) {
-    xl -= ((ywid - xwid) / 2);
-    xr += ((ywid - xwid) / 2);
-  }
-
-  double xw = xr-xl;
-  double yw = yt-yb;
-
-  double xlow = snapToStep((xl-(xw/2)), hash_delta);
-  double xhgh = snapToStep((xr+(xw/2)), hash_delta);
-  double ylow = snapToStep((yb-(yw/2)), hash_delta);
-  double yhgh = snapToStep((yt+(yw/2)), hash_delta);
-  
-  for(double i=xlow; i<=xhgh; i+=hash_delta)
-    drawSegment(i, ylow, i, yhgh, r, g, b);
-  for(double j=ylow; j<=yhgh; j+=hash_delta)
-    drawSegment(xlow, j, xhgh, j, r, g, b);
-}
-
-// ----------------------------------------------------------
-// Procedure: drawFastHash
-//   Purpose: Draw the hash marks based local coordinate positions
-//            on the image. Due to the snapToStep, there should 
-//            always be a hash line exactly on the datum (0,0).
-
-void MarineViewer::drawFastHash(double xl, double xr,
-				double yb, double yt)
-{
-  if((xl>xr) || (yb>yt))
-    return;
-
   double red = m_hash_shade;
   double grn = m_hash_shade;
   double blu = m_hash_shade;
 
   double hash_delta = m_geo_settings.geosize("hash_delta");
 
-  // If specs not given use a default region defined by the image
-  if((xl==0) && (xr==0) && (yb==0) && (yt==0)) {
-    xl = m_back_img.get_x_at_img_left();
-    xr = m_back_img.get_x_at_img_right();
-    yb = m_back_img.get_y_at_img_bottom();
-    yt = m_back_img.get_y_at_img_top();
-  }
-
-  if((xl>=xr) || (yb>=yt))
-    return;
-
-  // Make sure the has region aspect ratio of 1.0
-  double xwid = xr - xl;
-  double ywid = yt - yb;
-  if(xwid > ywid) {
-    yb -= ((xwid - ywid) / 2);
-    yt += ((xwid - ywid) / 2);
-  }
-  else if(ywid > xwid) {
-    xl -= ((ywid - xwid) / 2);
-    xr += ((ywid - xwid) / 2);
-  }
-
-  double xw = xr-xl;
-  double yw = yt-yb;
-
-  double xlow = snapToStep((xl-(xw/2)), hash_delta);
-  double xhgh = snapToStep((xr+(xw/2)), hash_delta);
-  double ylow = snapToStep((yb-(yw/2)), hash_delta);
-  double yhgh = snapToStep((yt+(yw/2)), hash_delta);
-  
+  double xl = m_back_img.get_x_at_img_left();
+  double xr = m_back_img.get_x_at_img_right();
+  double yb = m_back_img.get_y_at_img_bottom();
+  double yt = m_back_img.get_y_at_img_top();
 
   // Begin GL Work Part A
   double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
   double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
 
-  double xlow_ppm = xlow * pix_per_mtr_x;
-  double xhgh_ppm = xhgh * pix_per_mtr_x;
-  double ylow_ppm = ylow * pix_per_mtr_y;
-  double yhgh_ppm = yhgh * pix_per_mtr_y;
+  double xlow_ppm = xl * pix_per_mtr_x;
+  double xhgh_ppm = xr * pix_per_mtr_x;
+  double ylow_ppm = yb * pix_per_mtr_y;
+  double yhgh_ppm = yt * pix_per_mtr_y;
 
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
@@ -769,14 +687,37 @@ void MarineViewer::drawFastHash(double xl, double xr,
   // End GL Work Part A
 
   glColor3f(red, grn, blu);
-  for(double i=xlow; i<=xhgh; i+=hash_delta) {
+
+  // ======================================================
+  // Draw the Hashes: They are drawn in quadrants so we can
+  // be sure that there is a cross hash exactly at (0,0)
+  // ======================================================
+  // Draw vertical hash lines from 0 to xmax
+  for(double i=0; i<=xr; i+=hash_delta) {
     double i_ppm = i * pix_per_mtr_x;
     glBegin(GL_LINE_STRIP);
     glVertex2f(i_ppm, ylow_ppm);
     glVertex2f(i_ppm, yhgh_ppm);
     glEnd();
   }
-  for(double j=ylow; j<=yhgh; j+=hash_delta) {
+  // Draw vertical hash lines from 0 to xmin
+  for(double i=-hash_delta; i>=xl; i-=hash_delta) {
+    double i_ppm = i * pix_per_mtr_x;
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(i_ppm, ylow_ppm);
+    glVertex2f(i_ppm, yhgh_ppm);
+    glEnd();
+  }
+  // Draw horizontal hash lines from 0 to ymax
+  for(double j=0; j<=yt; j+=hash_delta) {
+    double j_ppm = j * pix_per_mtr_y;
+    glBegin(GL_LINE_STRIP);
+    glVertex2f(xlow_ppm, j_ppm);
+    glVertex2f(xhgh_ppm, j_ppm);
+    glEnd();
+  }
+  // Draw horizontal hash lines from 0 to ymin
+  for(double j=-hash_delta; j>=yb; j-=hash_delta) {
     double j_ppm = j * pix_per_mtr_y;
     glBegin(GL_LINE_STRIP);
     glVertex2f(xlow_ppm, j_ppm);
@@ -792,7 +733,7 @@ void MarineViewer::drawFastHash(double xl, double xr,
 }
 
 //-------------------------------------------------------------
-// Procedure: geosetting
+// Procedure: geosetting()
 
 string MarineViewer::geosetting(const string& key)
 {
@@ -800,7 +741,7 @@ string MarineViewer::geosetting(const string& key)
 }
 
 //-------------------------------------------------------------
-// Procedure: vehisetting
+// Procedure: vehisetting()
 
 string MarineViewer::vehisetting(const string& key)
 {
@@ -808,7 +749,7 @@ string MarineViewer::vehisetting(const string& key)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawGLPoly
+// Procedure: drawGLPoly()
 
 void MarineViewer::drawGLPoly(double *points, unsigned int numPoints, 
 			      ColorPack cpack, double thickness, 
@@ -1180,7 +1121,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawMarkers
+// Procedure: drawMarkers()
 
 void MarineViewer::drawMarkers(const map<string, XYMarker>& markers,
 			       double timestamp)
@@ -1197,7 +1138,7 @@ void MarineViewer::drawMarkers(const map<string, XYMarker>& markers,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawMarker
+// Procedure: drawMarker()
 
 void MarineViewer::drawMarker(const XYMarker& marker, double timestamp)
 {
@@ -1365,7 +1306,7 @@ void MarineViewer::drawMarker(const XYMarker& marker, double timestamp)
 
 
 //-------------------------------------------------------------
-// Procedure: drawDatum
+// Procedure: drawDatum()
 
 void MarineViewer::drawDatum(const OpAreaSpec& op_area)
 {
@@ -1379,7 +1320,7 @@ void MarineViewer::drawDatum(const OpAreaSpec& op_area)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawOpArea
+// Procedure: drawOpArea()
 
 void MarineViewer::drawOpArea(const OpAreaSpec& op_area)
 {
@@ -1475,7 +1416,7 @@ void MarineViewer::drawOpArea(const OpAreaSpec& op_area)
 }
 
 //-------------------------------------------------------------
-// Procedure: initGeodesy
+// Procedure: initGeodesy()
 //      Note: A check on legal boundaries is made here since it
 //            does not appear to be checked for in the MOOSGeodesy
 //            initialization implementation.
@@ -1496,7 +1437,7 @@ bool MarineViewer::initGeodesy(double lat, double lon)
 }
 
 //-------------------------------------------------------------
-// Procedure: initGeodesy
+// Procedure: initGeodesy()
 //      Note: After the double values are determined be legitimate
 //            numbers, a call is made to the initGeodesy function
 //            to check on the legal boundaries since it does not
@@ -1526,7 +1467,7 @@ bool MarineViewer::initGeodesy(const string& str)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawPolygons
+// Procedure: drawPolygons()
 
 void MarineViewer::drawPolygons(const vector<XYPolygon>& polys,
 				double timestamp)
@@ -1746,7 +1687,7 @@ void MarineViewer::drawWedges(const vector<XYWedge>& wedges)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawWedge
+// Procedure: drawWedge()
 
 void MarineViewer::drawWedge(const XYWedge& wedge)
 {
@@ -1853,7 +1794,7 @@ void MarineViewer::drawWedge(const XYWedge& wedge)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawSegment
+// Procedure: drawSegment()
 //      Note: points are given in meter in local coordinates.
 
 void MarineViewer::drawSegment(double x1, double y1, double x2, double y2, 
@@ -2054,7 +1995,7 @@ void MarineViewer::drawSeglrs(const vector<XYSeglr>& seglrs)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawSeglr
+// Procedure: drawSeglr()
 
 void MarineViewer::drawSeglr(const XYSeglr& seglr)
 {
@@ -2255,7 +2196,7 @@ void MarineViewer::drawVectors(const vector<XYVector>& vects)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawVector
+// Procedure: drawVector()
 
 void MarineViewer::drawVector(const XYVector& vect)
 {
@@ -2595,7 +2536,7 @@ void MarineViewer::drawConvexGrid(XYConvexGrid grid)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawCircles
+// Procedure: drawCircles()
 
 void MarineViewer::drawCircles(const map<string, XYCircle>& circles, 
 			       double timestamp)
@@ -2613,7 +2554,7 @@ void MarineViewer::drawCircles(const map<string, XYCircle>& circles,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawCircle
+// Procedure: drawCircle()
 
 void MarineViewer::drawCircle(XYCircle circle, double timestamp)
 {
@@ -2866,7 +2807,7 @@ void MarineViewer::drawOval(XYOval oval, double timestamp)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawArrows
+// Procedure: drawArrows()
 
 void MarineViewer::drawArrows(const map<string, XYArrow>& arrows, 
 			      double timestamp)
@@ -2884,7 +2825,7 @@ void MarineViewer::drawArrows(const map<string, XYArrow>& arrows,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawArrow
+// Procedure: drawArrow()
 
 void MarineViewer::drawArrow(XYArrow arrow, double timestamp)
 {
@@ -3039,7 +2980,7 @@ void MarineViewer::drawArrow(XYArrow arrow, double timestamp)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawRangePulses
+// Procedure: drawRangePulses()
 
 void MarineViewer::drawRangePulses(const vector<XYRangePulse>& pulses,
 				   double timestamp)
@@ -3058,7 +2999,7 @@ void MarineViewer::drawRangePulses(const vector<XYRangePulse>& pulses,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawRangePulse
+// Procedure: drawRangePulse()
 
 void MarineViewer::drawRangePulse(const XYRangePulse& pulse,
 				  double timestamp)
@@ -3125,7 +3066,7 @@ void MarineViewer::drawRangePulse(const XYRangePulse& pulse,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawCommsPulses
+// Procedure: drawCommsPulses()
 
 void MarineViewer::drawCommsPulses(const vector<XYCommsPulse>& pulses,
 				   double timestamp)
@@ -3161,7 +3102,7 @@ void MarineViewer::drawCommsPulses(const vector<XYCommsPulse>& pulses,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawCommsPulse
+// Procedure: drawCommsPulse()
 
 void MarineViewer::drawCommsPulse(const XYCommsPulse& pulse,
 				  double timestamp)
@@ -3228,7 +3169,7 @@ void MarineViewer::drawCommsPulse(const XYCommsPulse& pulse,
 
 #if 0
 //-------------------------------------------------------------
-// Procedure: drawPoints
+// Procedure: drawPoints()
 
 void MarineViewer::drawPoints(const map<string, XYPoint>& points)
 {
@@ -3248,7 +3189,7 @@ void MarineViewer::drawPoints(const map<string, XYPoint>& points)
 
 
 //-------------------------------------------------------------
-// Procedure: drawPoint
+// Procedure: drawPoint()
 
 void MarineViewer::drawPoint(const XYPoint& point) 
 {
@@ -3422,7 +3363,7 @@ void MarineViewer::drawPoints(const map<string, XYPoint>& points,
 }
 
 //-------------------------------------------------------------
-// Procedure: drawDropPoints
+// Procedure: drawDropPoints()
 
 void MarineViewer::drawDropPoints()
 {
@@ -3441,7 +3382,7 @@ void MarineViewer::drawDropPoints()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawText
+// Procedure: drawText()
 
 void MarineViewer::drawText(double px, double py, const string& text,
 			    const ColorPack& font_c, double font_size) 
@@ -3477,7 +3418,7 @@ void MarineViewer::drawText(double px, double py, const string& text,
 
 
 //-------------------------------------------------------------
-// Procedure: drawTextX
+// Procedure: drawTextX()
 
 void MarineViewer::drawTextX(double px, double py, const string& text,
 			    const ColorPack& font_c, double font_size) 

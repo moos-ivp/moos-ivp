@@ -548,8 +548,6 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
 
   if((m_pmv_iteration < 50) || ((m_pmv_iteration % 100) == 0))
     Notify("REGION_INFO", m_region_info);
-  
-  
 
   // Re-post the mission hash once every 16 secs realtime
   if(m_mission_hash_var != "") {

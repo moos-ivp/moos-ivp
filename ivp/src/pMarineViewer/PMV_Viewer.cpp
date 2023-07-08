@@ -118,7 +118,7 @@ void PMV_Viewer::draw()
   m_last_draw_time = m_curr_time;
 
   if(m_geo_settings.viewable("hash_viewable"))
-    calculateDrawHash();
+    drawFastHash();
 
   vector<string> vnames = m_geoshapes_map.getVehiNames();
   for(unsigned int i=0; i<vnames.size(); i++) {
@@ -1011,28 +1011,3 @@ void PMV_Viewer::clearGeoShapes(string vname, string shape, string stype)
   m_geoshapes_map.clear(vname, shape, stype);
 }
 
-//-------------------------------------------------------------
-// Procedure: calculateDrawHash()
-
-void PMV_Viewer::calculateDrawHash()
-{
-  double xl = m_geoshapes_map.getXMin();
-  if(m_vehiset.getXMin() < xl)
-    xl = m_vehiset.getXMin();
-
-  double xh = m_geoshapes_map.getXMax();
-  if(m_vehiset.getXMax() > xh)
-    xh = m_vehiset.getXMax();
-
-  double yl = m_geoshapes_map.getYMin();
-  if(m_vehiset.getYMin() < yl)
-    yl = m_vehiset.getYMin();
-
-  double yh = m_geoshapes_map.getYMax();
-  if(m_vehiset.getYMax() > yh)
-    yh = m_vehiset.getYMax();
-
-  double buffer = 1000;
-
-  drawFastHash(xl-buffer, xh+buffer, yl-buffer, yh+buffer);
-}

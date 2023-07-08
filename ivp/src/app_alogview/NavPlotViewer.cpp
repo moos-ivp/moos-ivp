@@ -34,7 +34,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Constructor
+// Constructor()
 
 NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
@@ -64,7 +64,7 @@ NavPlotViewer::NavPlotViewer(int x, int y, int w, int h, const char *l)
 }
 
 //-------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool NavPlotViewer::setParam(string param, string value)
 {
@@ -121,7 +121,7 @@ bool NavPlotViewer::setParam(string param, string value)
 }
 
 //-------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool NavPlotViewer::setParam(string param, double value)
 {
@@ -231,7 +231,7 @@ void NavPlotViewer::initPlots()
 }
 
 //-------------------------------------------------------------
-// Procedure: addLogPlotNAVX
+// Procedure: addLogPlotNAVX()
 
 void NavPlotViewer::addLogPlotNAVX(const LogPlot& lp)
 {
@@ -249,7 +249,7 @@ void NavPlotViewer::addLogPlotNAVX(const LogPlot& lp)
 }
 
 //-------------------------------------------------------------
-// Procedure: addLogPlotNAVX_GT
+// Procedure: addLogPlotNAVX_GT()
 
 void NavPlotViewer::addLogPlotNAVX_GT(const LogPlot& lp)
 {
@@ -267,7 +267,7 @@ void NavPlotViewer::addLogPlotNAVX_GT(const LogPlot& lp)
 }
 
 //-------------------------------------------------------------
-// Procedure: addLogPlotNAVY
+// Procedure: addLogPlotNAVY()
 
 void NavPlotViewer::addLogPlotNAVY(const LogPlot& lp)
 {
@@ -285,7 +285,7 @@ void NavPlotViewer::addLogPlotNAVY(const LogPlot& lp)
 }
 
 //-------------------------------------------------------------
-// Procedure: addLogPlotNAVY_GT
+// Procedure: addLogPlotNAVY_GT()
 
 void NavPlotViewer::addLogPlotNAVY_GT(const LogPlot& lp)
 {
@@ -303,7 +303,7 @@ void NavPlotViewer::addLogPlotNAVY_GT(const LogPlot& lp)
 }
 
 //-------------------------------------------------------------
-// Procedure: addLogPlotHDG
+// Procedure: addLogPlotHDG()
 
 void NavPlotViewer::addLogPlotHDG(const LogPlot& lp)
 {
@@ -311,7 +311,7 @@ void NavPlotViewer::addLogPlotHDG(const LogPlot& lp)
 }
 
 //-------------------------------------------------------------
-// Procedure: addLogPlotHDG_GT
+// Procedure: addLogPlotHDG_GT()
 
 void NavPlotViewer::addLogPlotHDG_GT(const LogPlot& lp)
 {
@@ -319,7 +319,7 @@ void NavPlotViewer::addLogPlotHDG_GT(const LogPlot& lp)
 }
 
 //-------------------------------------------------------------
-// Procedure: addLogPlotStartTime
+// Procedure: addLogPlotStartTime()
 
 void NavPlotViewer::addLogPlotStartTime(double start_time)
 {
@@ -327,7 +327,7 @@ void NavPlotViewer::addLogPlotStartTime(double start_time)
 }
 
 //-------------------------------------------------------------
-// Procedure: addVPlugPlot
+// Procedure: addVPlugPlot()
 
 void NavPlotViewer::addVPlugPlot(const VPlugPlot& gp)
 {
@@ -344,10 +344,8 @@ void NavPlotViewer::draw()
   drawTrails();
   drawNavPlots();
   drawVPlugPlots();
-  if(m_geo_settings.viewable("hash_viewable")) {
-    drawHash(m_min_xpos-2000, m_max_xpos+2000, 
-	     m_min_ypos-2000, m_max_ypos+2000);
-  }
+  if(m_geo_settings.viewable("hash_viewable"))
+    drawFastHash();
 
   ColorPack cpack("yellow");
   string msg = "--zoom=" + doubleToString(m_zoom,3) + "  ";
@@ -358,7 +356,7 @@ void NavPlotViewer::draw()
 }
 
 //-------------------------------------------------------------
-// Procedure: setCurrTime
+// Procedure: setCurrTime()
 //   Returns: true if the given time is within the min/max bounds
 
 bool NavPlotViewer::setCurrTime(double gtime)
@@ -382,7 +380,7 @@ bool NavPlotViewer::setCurrTime(double gtime)
 }
 
 //-------------------------------------------------------------
-// Procedure: stepTime
+// Procedure: stepTime()
 //   Returns: true if the newly calculated time is within min/max bounds
 
 bool NavPlotViewer::stepTime(double amt)
@@ -399,7 +397,7 @@ bool NavPlotViewer::stepTime(double amt)
 
 
 //-------------------------------------------------------------
-// Procedure: getCurrTime
+// Procedure: getCurrTime()
 
 double NavPlotViewer::getCurrTime()
 {
@@ -420,7 +418,7 @@ double NavPlotViewer::getStartTimeHint()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawNavPlots
+// Procedure: drawNavPlots()
 
 void NavPlotViewer::drawNavPlots()
 {
@@ -434,7 +432,7 @@ void NavPlotViewer::drawNavPlots()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawNavPlot
+// Procedure: drawNavPlot()
 //      Note: The [index] argument refers to the vehicle index.
 
 void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
@@ -494,12 +492,13 @@ void NavPlotViewer::drawNavPlot(unsigned int index, bool alt_nav)
     vname_draw = false;
   
 
-  // For now we don't support depth. It would mean reading in a LogPlot for NAV_DEPTH
-  // which could substantially bloat alogview memory footprint. Users can see depth
-  // by opening NAV_DEPTH in the LogPlotViewer. If we can support a "collapse" 
-  // function for logplots to collapse series of same values into one, then 
-  // perhaps it makes sense here. Surface vehicles still get NAV_DEPTH
-  // 
+  // For now we don't support depth. It would mean reading in a
+  // LogPlot for NAV_DEPTH which could substantially bloat alogview
+  // memory footprint. Users can see depth by opening NAV_DEPTH in the
+  // LogPlotViewer. If we can support a "collapse" function for
+  // logplots to collapse series of same values into one, then perhaps
+  // it makes sense here. Surface vehicles still get NAV_DEPTH
+ 
 #if 0
   if(vnames_mode == "names+depth") {
     string str_depth = dstringCompact(doubleToString(record.getDepth(),2));
@@ -587,7 +586,7 @@ void NavPlotViewer::drawTrail(unsigned int index)
 }
 
 //-------------------------------------------------------------
-// Procedure: drawVPlugPlots
+// Procedure: drawVPlugPlots()
 
 void NavPlotViewer::drawVPlugPlots()
 {
@@ -596,7 +595,7 @@ void NavPlotViewer::drawVPlugPlots()
 }
 
 //-------------------------------------------------------------
-// Procedure: drawVPlugPlot
+// Procedure: drawVPlugPlot()
 
 void NavPlotViewer::drawVPlugPlot(unsigned int index)
 {
@@ -633,7 +632,7 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
 }
 
 //-------------------------------------------------------------
-// Procedure: setCenterview
+// Procedure: setCenterview()
 
 void NavPlotViewer::setCenterView(string centering_style)
 {
@@ -695,8 +694,7 @@ void NavPlotViewer::setCenterView(string centering_style)
 
 
 //-------------------------------------------------------------
-// Procedure: setStepType
-//      Note: 
+// Procedure: setStepType()
 
 void NavPlotViewer::setStepType(const string& step_type)
 {

@@ -99,7 +99,8 @@ class MarineViewer : public Fl_Gl_Window
   double getZoom() {return(m_zoom);}
   double getPanX() {return(m_vshift_x);}
   double getPanY() {return(m_vshift_y);}
-
+  double getImgWidthMtrs();
+  
   std::vector<std::string> getTiffFiles() const;
   std::vector<std::string> getInfoFiles() const;
 
@@ -113,8 +114,12 @@ protected:
   double meters2img(char, double, bool verbose=false) const;
   double img2meters(char, double) const;
 
-  void   drawHash(double xl=0, double xr=0, double yb=0, double yt=0);
-  void   drawFastHash(double xl=0, double xr=0, double yb=0, double yt=0);
+  // For backward compatibility
+  void   drawHash(double xl=0, double xh=0, double yl=0, double yh=0)
+  {drawFastHash();}
+
+  void   drawFastHash();
+
   void   drawSegment(double, double, double, double, double, double, double);
 
   void   drawOpArea(const OpAreaSpec&);

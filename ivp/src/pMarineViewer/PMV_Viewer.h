@@ -85,7 +85,6 @@ class PMV_Viewer : public MarineViewer
   
  private:
   void   drawVehicle(std::string, bool, std::string);
-  void   calculateDrawHash();
   void   drawTrailPoints(CPList&, unsigned int=0);
   void   handleMouse(int, int, std::string s="left");
   void   handleMoveMouse(int, int);
