@@ -186,6 +186,7 @@ if [ "${CLEAN}" = "yes" -o "${CMD_ARGS}" = "clean" ] ; then
     cd ${INVOCATION_ABS_DIR}
     rm -rf build/*
 else
+    echo ${CMD_ARGS} >> ~/.moos-ivp-args
     make ${CMD_ARGS}
     RESULT=$?
 fi
