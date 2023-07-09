@@ -186,7 +186,15 @@ if [ "${CLEAN}" = "yes" -o "${CMD_ARGS}" = "clean" ] ; then
     cd ${INVOCATION_ABS_DIR}
     rm -rf build/*
 else
-    echo ${CMD_ARGS} >> ~/.moos-ivp-args
+    echo "=============================" >> ~/.moos-ivp-args
+    echo "1" ${CMD_ARGS} >> ~/.moos-ivp-args
+    echo "2" ${BUILD_GUI_CODE} >> ~/.moos-ivp-args
+    echo "3" ${BUILD_BOT_CODE_ONLY} >> ~/.moos-ivp-args
+    echo "4" ${LIB_ABS_DIR} >> ~/.moos-ivp-args
+    echo "5" ${BIN_ABS_DIR} >> ~/.moos-ivp-args
+    echo "6" ${CMAKE_CXX_FLAGS} >> ~/.moos-ivp-args
+    echo "7" ${BUILD_WITH_UTM} >> ~/.moos-ivp-args
+    echo "8" ${IVP_CMAKE_FLAGS} >> ~/.moos-ivp-args
     make ${CMD_ARGS}
     RESULT=$?
 fi
