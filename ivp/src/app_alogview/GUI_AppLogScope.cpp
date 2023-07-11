@@ -341,6 +341,8 @@ void GUI_AppLogScope::resizeWidgetsText()
 
   m_but_truncate->labelsize(blab_size);
   m_but_separate->labelsize(blab_size);
+  m_but_separate->set();
+
   m_but_wrapline->labelsize(blab_size);
   m_but_future->labelsize(blab_size);
   m_but_apply_grep1->labelsize(blab_size);
@@ -386,8 +388,6 @@ void GUI_AppLogScope::setDataBroker(ALogDataBroker dbroker, unsigned int alix)
   
   m_alsmodel.setAppLogPlot(alplot);
   m_vname = dbroker.getVNameFromALix(alix);
-  
-
 }
 
 //----------------------------------------------------------
@@ -510,7 +510,6 @@ void GUI_AppLogScope::cb_ButtonTruncate(Fl_Widget* o, int val) {
 inline void GUI_AppLogScope::cb_ButtonSeparate_i(int v) {
   bool sep = m_but_separate->value();
   m_alsmodel.setShowSeparator(sep);
-
   updateBrowsers();
 }
 void GUI_AppLogScope::cb_ButtonSeparate(Fl_Widget* o, int val) {
