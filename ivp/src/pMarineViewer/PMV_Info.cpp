@@ -207,6 +207,8 @@ void showExampleConfigAndExit()
   blk("  log_the_image = true  // {true or false} By default false     ");
   blk("                                                                ");
   blk("  mission_hash_var = off  (Default is MISSION_HASH)             ");
+  blk("  mission_hash_display = true    // {true or FALSE}             ");
+  blk("                                                                ");
   blk("  beat_flag = HEARTBEAT=true                                    ");
   blk("}                                                               ");
   blk("                                                                ");

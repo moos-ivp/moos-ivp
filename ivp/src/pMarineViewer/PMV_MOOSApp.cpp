@@ -889,14 +889,14 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       if(tolower(m_mission_hash_var) == "off")
 	m_mission_hash_var = "";
     }
+    else if(param == "mission_hash_display") 
+      handled = setBooleanOnString(m_mission_hash_display, value);
+    
     else if(param == "cmd") 
       handled = handleConfigCmd(value);
 
     else if(param == "log_the_image") 
       handled = setBooleanOnString(m_log_the_image, value);
-    
-    else if(param == "mhash_display") 
-      handled = setBooleanOnString(m_mission_hash_display, value);
     
     else if(param == "watch_cluster")
       handled = handleConfigWatchCluster(value);
