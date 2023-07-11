@@ -69,7 +69,6 @@ bool Populator_AppLogPlot::populateFromEntries(const vector<ALogEntry>& entries)
   }
 
   m_alplot = alplot;
-  
   return(true);
 }
 

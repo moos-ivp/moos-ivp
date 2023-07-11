@@ -29,6 +29,24 @@
 using namespace std;
 
 //----------------------------------------------------------------
+// Procedure: getLines()
+
+vector<string> AppLogEntry::getLines(bool tag) const
+{
+  // If no request for a tag, then just return the lines as-is
+  if(!tag)
+    return(m_lines);
+  
+  vector<string> lines;
+  for(unsigned int i=0; i<m_lines.size(); i++) {
+    string line = m_lines[i];
+    line = "[" + uintToString(m_iteration) + "] " + line;
+    lines.push_back(line);
+  }
+  return(lines);
+}
+
+//----------------------------------------------------------------
 // Procedure: getLine()
 
 string AppLogEntry::getLine(unsigned int ix) const
@@ -102,6 +120,7 @@ AppLogEntry stringToAppLogEntry(string raw, bool verbose)
 	  cout << "VERBOSE: bad ival:" << ival << endl;
 	return(null_entry);
       }
+      good_entry.setIteration((unsigned int)(ival));
     }
     else if(param == "log") {
       vector<string> lines = parseString(value, "!@#");

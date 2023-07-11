@@ -42,7 +42,7 @@ ModelAppLogScope::ModelAppLogScope()
   m_wrap           = false;
   m_future         = false;
   m_truncate       = false;
-  m_show_separator = false;
+  m_show_separator = true;
   m_grep_apply1    = false;
   m_grep_apply2    = false;
 
@@ -106,10 +106,9 @@ vector<string> ModelAppLogScope::processLines(vector<AppLogEntry> entries,
 {
   vector<string> all_lines;
   for(unsigned int i=0; i<entries.size(); i++) {  
-    unsigned int ctr = start_ctr + i;
+    unsigned int ctr = entries[i].getIteration();
     if(m_show_separator)
-      //      all_lines.push_back("===================================== " + uintToString(ctr));
-      all_lines.push_back("------------------------------------- " + uintToString(ctr));
+      all_lines.push_back("----------------- App Iteration ----- " + uintToString(ctr));
 
     // Get the set of lines from this entry, possibly truncating
     // and possibly wrapping if these features are activated.

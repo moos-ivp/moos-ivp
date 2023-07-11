@@ -46,7 +46,7 @@ class AppLogEntry
   std::string  getLine(unsigned int) const;
   std::string  getTruncLine(unsigned int) const;
 
-  std::vector<std::string> getLines() const {return(m_lines);}
+  std::vector<std::string> getLines(bool tag=false) const;
   std::vector<std::string> getTruncLines();
   std::vector<std::string> getWrapLines();
 

@@ -90,7 +90,11 @@ vector<AppLogEntry> AppLogPlot::getEntriesUpToTime(double gtime) const
     return(entries);
 
   unsigned int now_index = getIndexByTime(m_time, gtime);
-  for(unsigned int i=0; i<=now_index; i++) 
+  unsigned int beg_index = 0;
+  if(now_index >= 50)
+    beg_index = now_index - 50;  
+
+  for(unsigned int i=beg_index; i<=now_index; i++) 
     entries.push_back(m_entries[i]);
 
   return(entries);
@@ -107,7 +111,12 @@ vector<AppLogEntry> AppLogPlot::getEntriesPastTime(double gtime) const
     return(entries);
 
   unsigned int now_index = getIndexByTime(m_time, gtime);
-  for(unsigned int i=now_index+1; i<m_entries.size(); i++) 
+
+  unsigned int end_index = m_entries.size();
+  if((now_index + 50) < m_entries.size())
+    end_index = now_index + 50;
+
+  for(unsigned int i=now_index+1; i<end_index; i++) 
     entries.push_back(m_entries[i]);
 
   return(entries);

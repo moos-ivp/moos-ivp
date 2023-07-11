@@ -63,7 +63,6 @@ class ModelAppLogScope
 protected:
   std::vector<std::string>  processLines(std::vector<AppLogEntry>,
 					 unsigned int start_ctr=0) const;
-   
   
   unsigned int m_entries_upto_now_cnt;
   
