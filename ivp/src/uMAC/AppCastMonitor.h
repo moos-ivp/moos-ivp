@@ -51,6 +51,7 @@ class AppCastMonitor : public CMOOSApp
 
  protected:
   bool handleMailAppCast(const std::string&);
+  bool handleMailMissionHash(const std::string&);
   void handleSelectNode(std::string);
   void handleSelectChannel(std::string);
   void postAppCastRequest(std::string node, std::string app,
@@ -93,6 +94,8 @@ class AppCastMonitor : public CMOOSApp
   bool         m_update_pending;
   
   AppCastRepo  m_repo;
+
+  std::string  m_mission_hash;
 };
 
 #endif 

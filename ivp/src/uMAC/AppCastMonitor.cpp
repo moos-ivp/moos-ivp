@@ -73,7 +73,7 @@ void AppCastMonitor::trySetInitialNodeProc()
 
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool AppCastMonitor::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -94,13 +94,15 @@ bool AppCastMonitor::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if(key == "APPCAST") 
       handleMailAppCast(sval);
+    else if(key == "MISSION_HASH") 
+      handleMailMissionHash(sval);
   }
 	
    return(true);
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool AppCastMonitor::OnConnectToServer()
 {
@@ -195,15 +197,16 @@ bool AppCastMonitor::OnStartUp()
 }
 
 //---------------------------------------------------------
-// Procedure: RegisterVariables
+// Procedure: RegisterVariables()
 
 void AppCastMonitor::RegisterVariables()
 {
   Register("APPCAST", 0);
+  Register("MISSION_HASH", 0);
 }
 
 //---------------------------------------------------------
-// Procedure: handleMailAppCast
+// Procedure: handleMailAppCast()
 
 bool AppCastMonitor::handleMailAppCast(const string& str)
 {
@@ -236,8 +239,25 @@ bool AppCastMonitor::handleMailAppCast(const string& str)
   return(true);
 }
 
+//---------------------------------------------------------
+// Procedure: handleMailMissionHash()
+//   Example: mhash=230711-1929C-PRIM-HAYS,utc=1689118197.62 
+
+bool AppCastMonitor::handleMailMissionHash(const string& str)
+{
+  string hash = tokStringParse(str, "mhash", ',', '=');
+  biteString(hash, '-');
+  biteString(hash, '-');
+
+  if(hash == "")
+    return(false);
+  
+  m_mission_hash = hash;  
+  return(true);
+}
+
 //------------------------------------------------------------
-// Procedure: handleCommand
+// Procedure: handleCommand()
 
 void AppCastMonitor::handleCommand(char c)
 {
@@ -314,7 +334,7 @@ void AppCastMonitor::handleCommand(char c)
 }
 
 //------------------------------------------------------------
-// Procedure: handleSelectNode
+// Procedure: handleSelectNode()
 //   Example: str = "node=henry,app=pHostInfo,duration=10,key=uMAC_438"
 
 void AppCastMonitor::handleSelectNode(string id)
@@ -333,7 +353,7 @@ void AppCastMonitor::handleSelectNode(string id)
 
 
 //------------------------------------------------------------
-// Procedure: handleSelectChannel
+// Procedure: handleSelectChannel()
 //   Example: str = "node=henry,app=pHostInfo,duration=10,key=uMAC_438"
 
 void AppCastMonitor::handleSelectChannel(string id)
@@ -357,7 +377,7 @@ void AppCastMonitor::handleSelectChannel(string id)
 
 
 //------------------------------------------------------------
-// Procedure: postAppCastRequest
+// Procedure: postAppCastRequest()
 //   Example: str = "node=henry,app=pHostInfo,duration=10,key=uMAC_438"
 
 void AppCastMonitor::postAppCastRequest(string channel_node, 
@@ -393,7 +413,7 @@ void AppCastMonitor::postAppCastRequest(string channel_node,
 
 
 //------------------------------------------------------------
-// Procedure: switchContentMode
+// Procedure: switchContentMode()
 
 bool AppCastMonitor::switchContentMode(const string& new_mode) 
 {
@@ -423,7 +443,7 @@ bool AppCastMonitor::switchContentMode(const string& new_mode)
 
 
 //---------------------------------------------------------
-// Procedure: printReportNodes
+// Procedure: printReportNodes()
 //
 // ==============================================================
 // uMAC:   3 Nodes   15 Channels   (161)                   PAUSED
@@ -495,7 +515,7 @@ void AppCastMonitor::printReportNodes()
 
 
 //---------------------------------------------------------
-// Procedure: printReportProcs
+// Procedure: printReportProcs()
 //
 // ==============================================================
 // uMAC:   5 Channels   (61)
@@ -572,7 +592,7 @@ void AppCastMonitor::printReportProcs()
 
 
 //---------------------------------------------------------
-// Procedure: printReportAppCast
+// Procedure: printReportAppCast()
 
 void AppCastMonitor::printReportAppCast()
 {
@@ -633,7 +653,7 @@ void AppCastMonitor::printReportAppCast()
 }
 
 //---------------------------------------------------------
-// Procedure: printHeader
+// Procedure: printHeader()
 
 void AppCastMonitor::printHeader()
 {
@@ -647,6 +667,9 @@ void AppCastMonitor::printHeader()
     header += "  Nodes (" + uintToString(nodes) + ")";
   
   string iter = "(" + uintToString(m_term_reports)  + ") ";
+
+  if(m_mission_hash != "") 
+    iter = "[" + m_mission_hash + "] " + iter;
   
   unsigned int padlen = 67 - (m_refresh_mode.length() + iter.length());
   
