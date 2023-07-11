@@ -117,7 +117,9 @@ class PMV_MOOSApp : public AppCastingMOOSApp
 
   std::string  m_region_info;
   std::string  m_mission_hash;
-  std::string  m_mission_hash_var;
+  std::string  m_mission_hash_short;
+  std::string  m_mission_hash_var;  
+  bool         m_mission_hash_display;
   
   std::vector<VarDataPair> m_beat_flags;  
 };

@@ -71,6 +71,7 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_pmv_iteration = 0;
 
   m_mission_hash_var = "MISSION_HASH";
+  m_mission_hash_display = false;
   
   m_log_the_image = false;
 }
@@ -894,6 +895,9 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     else if(param == "log_the_image") 
       handled = setBooleanOnString(m_log_the_image, value);
     
+    else if(param == "mhash_display") 
+      handled = setBooleanOnString(m_mission_hash_display, value);
+    
     else if(param == "watch_cluster")
       handled = handleConfigWatchCluster(value);
     
@@ -1012,6 +1016,14 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   // Post the Mission Hash (added Nov0322)
   setMissionHash();
 
+  if(m_mission_hash_display && m_mission_hash != "") {
+    string label = m_gui->label();
+    label += "[" + m_mission_hash_short + "]";
+
+    //m_gui->label(label.c_str());
+    m_gui->setTitleBase(label);
+  }
+  
   registerVariables();
 }
 
@@ -1024,9 +1036,15 @@ bool PMV_MOOSApp::setMissionHash()
   if(m_time_warp != 0)
     actual_utc = MOOSTime() / m_time_warp;
 
-  m_mission_hash = "mhash=" + missionHash();
+  string hash = missionHash();
+  
+  m_mission_hash = "mhash=" + hash;
   m_mission_hash += ",utc=" + doubleToString(actual_utc,2);
 
+  biteString(hash, '-');
+  biteString(hash, '-');
+  m_mission_hash_short = hash;
+  
   return(true);
 }
 

@@ -47,8 +47,8 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_curr_time = 0;
   m_clear_stale_timestamp = 0;
 
-  m_cmd_gui_start_wid = 550;
-  m_cmd_gui_start_hgt = 300;
+  m_cmd_gui_start_wid = 850;
+  m_cmd_gui_start_hgt = 600;
   m_cmd_gui_start_bpost_cnt = 0;
   m_cmd_gui_start_cpost_cnt = 0;
   m_cmd_gui_start_show_posts = true;
