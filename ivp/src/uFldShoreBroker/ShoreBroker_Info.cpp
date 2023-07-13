@@ -97,6 +97,7 @@ void showExampleConfigAndExit()
   blk("  warning_on_stale      = false (default)                       ");
   blk("  auto_bridge_realmcast = true  (default)                       ");
   blk("  auto_bridge_appcast   = true  (default)                       ");
+  blk("  auto_bridge_mhash     = true  (default)                       ");
   blk("                                                                ");
   blk("  bridge = src=DEPLOY_ALL, alias=DEPLOY                         ");
   blk("  bridge = src=DEPLOY_$V,  alias=DEPLOY                         ");

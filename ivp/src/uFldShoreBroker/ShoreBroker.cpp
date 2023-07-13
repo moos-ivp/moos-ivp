@@ -155,6 +155,8 @@ bool ShoreBroker::OnStartUp()
       handled = setBooleanOnString(auto_bridge_realmcast, value);
     else if(param == "auto_bridge_appcast") 
       handled = setBooleanOnString(auto_bridge_appcast, value);
+    else if(param == "auto_bridge_mhash") 
+      handled = setBooleanOnString(auto_bridge_mhash, value);
     else if(param == "warning_on_stale") 
       handled = setBooleanOnString(m_warning_on_stale, value);
     else if(param == "try_vnode") 
