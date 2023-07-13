@@ -32,7 +32,7 @@
 using namespace std;
 
 //--------------------------------------------------------
-// Constructor
+// Constructor()
 
 ScanHandler::ScanHandler()
 {
@@ -54,7 +54,7 @@ ScanHandler::ScanHandler()
 }
 
 //--------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool ScanHandler::setParam(const string& param, const string& value)
 {
@@ -72,7 +72,7 @@ bool ScanHandler::setParam(const string& param, const string& value)
 }
 
 //--------------------------------------------------------
-// Procedure: procColor
+// Procedure: procColor()
 
 string ScanHandler::procColor(string proc_name)
 {
@@ -100,7 +100,7 @@ string ScanHandler::procColor(string proc_name)
 }
 
 //--------------------------------------------------------
-// Procedure: handle
+// Procedure: handle()
 
 bool ScanHandler::handle(const string& alogfile, bool rate_only)
 {
@@ -129,7 +129,7 @@ bool ScanHandler::handle(const string& alogfile, bool rate_only)
 
 
 //--------------------------------------------------------
-// Procedure: varStatReport
+// Procedure: varStatReport()
 
 void ScanHandler::varStatReport()
 {
