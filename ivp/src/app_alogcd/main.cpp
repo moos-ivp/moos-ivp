@@ -55,8 +55,10 @@ int main(int argc, char *argv[])
       handled = collision_reporter.setALogFile(argi);
     else if(strBegins(argi, "--tfile="))
       handled = collision_reporter.setTimeStampFile(argi.substr(8));
-    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web")) {
       openURLX("https://oceanai.mit.edu/ivpman/apps/alogcd");
+      exit(0);
+    }
 
     if(!handled) {
       cout << "Unhandled command line argument: " << argi << endl;
