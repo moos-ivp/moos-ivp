@@ -71,9 +71,8 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_pmv_iteration = 0;
 
   m_mission_hash_var = "MISSION_HASH";
-  m_mission_hash_display = false;
   
-  m_log_the_image = false;
+  m_log_the_image   = false;
 }
 
 //----------------------------------------------------------------
@@ -361,11 +360,8 @@ void PMV_MOOSApp::handleNewMail(const MOOS_event & e)
       handled = m_gui->mviewer->handleNodeReport(sval, why_not);
     }
 
-    if(key == "PHI_HOST_IP") {
-      m_gui->augmentTitle(sval);
-      handled = true;
-    }
-    
+    if(key == "PHI_HOST_IP") 
+      handled = m_gui->augmentTitleWithIP(sval);
     else if(key == "PMV_CLEAR") 
       handled = handleMailClear(sval);
     else if(key == "PMV_CENTER") 
@@ -847,6 +843,12 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       handled = m_gui->addButton("button_nineteen", value);
     else if((param == "button_twenty") || (param == "button_20"))
       handled = m_gui->addButton("button_twenty", value);
+    else if(param == "show_title_ip")
+      handled = m_gui->showTitleIP(value);
+    else if(param == "show_title_user")
+      handled = m_gui->showTitleUser(value);
+    else if(param == "show_title_mhash")
+      handled = m_gui->showTitleMHash(value);
 
     else if(param == "beat_flag") 
       handled = addVarDataPairOnString(m_beat_flags, value);
@@ -886,12 +888,11 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
       handled = m_gui->mviewer->setParam(param, value);
     else if(param == "mission_hash_var") {
       handled = setNonWhiteVarOnString(m_mission_hash_var, value);
-      if(tolower(m_mission_hash_var) == "off")
+      if(tolower(m_mission_hash_var) == "off") {
 	m_mission_hash_var = "";
+	m_gui->showTitleMHash("false");
+      }
     }
-    else if(param == "mission_hash_display") 
-      handled = setBooleanOnString(m_mission_hash_display, value);
-    
     else if(param == "cmd") 
       handled = handleConfigCmd(value);
 
@@ -1016,13 +1017,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   // Post the Mission Hash (added Nov0322)
   setMissionHash();
 
-  if(m_mission_hash_display && m_mission_hash != "") {
-    string label = m_gui->label();
-    label += "[" + m_mission_hash_short + "]";
-
-    //m_gui->label(label.c_str());
-    m_gui->setTitleBase(label);
-  }
+  if(m_mission_hash_short != "")
+    m_gui->augmentTitleWithMHash(m_mission_hash_short);
   
   registerVariables();
 }

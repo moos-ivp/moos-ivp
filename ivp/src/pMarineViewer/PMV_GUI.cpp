@@ -47,6 +47,10 @@ PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   m_curr_time = 0;
   m_clear_stale_timestamp = 0;
 
+  m_show_title_ip = true;
+  m_show_title_user = true;
+  m_show_title_mhash = true;
+  
   m_cmd_gui_start_wid = 850;
   m_cmd_gui_start_hgt = 600;
   m_cmd_gui_start_bpost_cnt = 0;
@@ -763,9 +767,10 @@ bool PMV_GUI::addAction(string svalue, bool separator)
 
 //----------------------------------------------------------
 // Procedure: handle()
-//      Note: As it stands, this method could be eliminated entirely, and the 
-//            default behavior of the parent class should work fine. But if
-//            we want to tinker with event handling, this method is the place.
+//      Note: As it stands, this method could be eliminated
+//            entirely, and the default behavior of the parent
+//            class should work fine. But if we want to tinker
+//            with event handling, this method is the place.
 
 int PMV_GUI::handle(int event) 
 {
@@ -783,19 +788,62 @@ bool PMV_GUI::showingInfoCasts() const
   return(true);
 }
 
-//----------------------------------------- augmentTitle
-void PMV_GUI::augmentTitle(string ip_str)
+//----------------------------------------------------------
+// Procedure:  augmentTitleWithIP()
+
+bool PMV_GUI::augmentTitleWithIP(string ip_str)
 {
-  string new_title = m_title_base + " " + ip_str;
+  if(!isValidIPAddress(ip_str))
+    return(false);
+
+  m_title_ip = ip_str;
+  refreshTitle();
+  return(true);
+}
+
+//----------------------------------------------------------
+// Procedure:  augmentTitleWithMHash()
+
+void PMV_GUI::augmentTitleWithMHash(string mhash)
+{
+  if(mhash.length() != 9) 
+    return;
+  m_title_mhash = mhash;
+  refreshTitle();
+}
+
+//----------------------------------------------------------
+// Procedure:  augmentTitleWithUser()
+
+void PMV_GUI::augmentTitleWithUser(string user)
+{
+  m_title_user = user;
+  refreshTitle();
+}
+
+//----------------------------------------------------------
+// Procedure:  refreshTitle()
+
+void PMV_GUI::refreshTitle()
+{
+  string new_title = m_title_base;
+
+  if(m_show_title_user && (m_title_user != ""))
+    new_title += " [" + m_title_user + "]";
+  if(m_show_title_mhash && (m_title_mhash != ""))
+    new_title += " [" + m_title_mhash + "]";
+  if(m_show_title_ip && (m_title_ip != ""))
+    new_title += " [" + m_title_ip + "]";
+
   label(new_title.c_str());
 }
 
 //----------------------------------------------------
 // Procedure: syncNodesAtoB()
-//   Purpose: Used when the user toggles the "active vehicle" shown in the 
-//            panes at the bottom of the window. If the new active vehicle
-//            is also a known appcast node, adjust the appcast browsers
-//            accordingly.
+//   Purpose: Used when the user toggles the "active vehicle"
+//            shown in the panes at the bottom of the window.
+//            If the new active vehicle is also a known appcast
+//            node, adjust the appcast browsers accordingly.
 
 bool PMV_GUI::syncNodesAtoB()
 {
@@ -813,10 +861,11 @@ bool PMV_GUI::syncNodesAtoB()
 
 //----------------------------------------------------
 // Procedure: syncNodesBtoA()
-//   Purpose: Used when user selects a new node in the appcast browsers.
-//            If the new node is a known vehicle, i.e., we have received
-//            node reports for it, then make it the active vehicle in the 
-//            panes at the bottom of the window. 
+//   Purpose: Used when user selects a new node in the
+//            appcast browsers. If the new node is a known
+//            vehicle, i.e., we have received node reports
+//            for it, then make it the active vehicle in 
+//            the panes at the bottom of the window. 
 
 bool PMV_GUI::syncNodesBtoA()
 {

@@ -52,7 +52,9 @@ public:
   void   calcButtonColumns();
   void   setCurrTime(double v)       {m_curr_time=v;}
   void   setTitleBase(std::string s) {m_title_base=s;}
-  void   augmentTitle(std::string ip_str);
+  bool   augmentTitleWithIP(std::string ip_str);
+  void   augmentTitleWithMHash(std::string mhash_str);
+  void   augmentTitleWithUser(std::string);
   bool   syncNodesAtoB();
   bool   syncNodesBtoA();
   void   updateXY();
@@ -80,7 +82,15 @@ public:
 
   InfoCastSettings getInfoCastSettings() const {return(m_icast_settings);}
   
- public: // InfoCast Related Functions
+ public: // Window title bar preferences
+  bool  showTitleIP(std::string str)
+  {return(setBooleanOnString(m_show_title_ip, str));}
+  bool  showTitleUser(std::string str)
+  {return(setBooleanOnString(m_show_title_user, str));}
+  bool  showTitleMHash(std::string str)
+  {return(setBooleanOnString(m_show_title_mhash, str));}
+  
+public: // InfoCast Related Functions
   bool  showingInfoCasts() const;
   void  updateRadios();
   void  setMenuItemColors();
@@ -107,6 +117,7 @@ public:
   void  hideDataFields();
   void  resizeDataText(int);
   void  resizeWidgets();
+  void  refreshTitle();
   void  setButtonColor(std::string btype, std::string color);
   std::string getButtonAction(std::string) const;
   
@@ -261,5 +272,12 @@ public:
   bool           m_cmd_gui_start_show_posts;
   
   std::string m_title_base;
+  std::string m_title_ip;
+  std::string m_title_user;
+  std::string m_title_mhash;
+  bool m_show_title_ip;
+  bool m_show_title_user;
+  bool m_show_title_mhash;
+
 };
 #endif

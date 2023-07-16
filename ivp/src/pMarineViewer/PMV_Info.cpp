@@ -207,9 +207,12 @@ void showExampleConfigAndExit()
   blk("  log_the_image = true  // {true or false} By default false     ");
   blk("                                                                ");
   blk("  mission_hash_var = off  (Default is MISSION_HASH)             ");
-  blk("  mission_hash_display = true    // {true or FALSE}             ");
   blk("                                                                ");
   blk("  beat_flag = HEARTBEAT=true                                    ");
+  blk("                                                                ");
+  blk("  show_title_ip    = true // {TRUE or false}                    ");
+  blk("  show_title_user  = true // {TRUE or false}                    ");
+  blk("  show_title_mhash = true // {TRUE or false}                    ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);
@@ -253,6 +256,11 @@ void showInterfaceAndExit()
   blk("  GRID_DELTA                                                    ");
   blk("  BEARING_LINE                                                  ");
   blk("  TRAIL_RESET                                                   ");
+  blk("  PMV_MENU_CONTEXT                                              ");
+  blk("  PMV_CENTER                                                    ");
+  blk("  PMV_CONFIG                                                    ");
+  blk("  BLOCK_HEARTBEAT                                               ");
+  blk("  RESET_MHASH                                                   ");
   blk("                                                                ");
   blk("PUBLICATIONS:                                                   ");
   blk("------------------------------------                            ");
