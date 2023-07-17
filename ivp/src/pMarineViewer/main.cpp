@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <unistd.h>
 #include <cstdlib>
 #include <iostream>
 #include <FL/Fl.H>
@@ -107,6 +108,14 @@ int main(int argc, char *argv[])
   gui->augmentTitleWithUser(user);
   gui->setVerbose(verbose);
 
+  // See the random number generator
+  unsigned long tseed = time(NULL)+1;
+  unsigned long pid = (long)getpid()+1;
+  unsigned long seed = (tseed%999999);
+  seed = ((rand())*seed)%999999;
+  seed = (seed*pid)%999999;
+  srand(seed);  
+  
   PMV_MOOSApp thePort;
 
   thePort.setGUI(gui);
