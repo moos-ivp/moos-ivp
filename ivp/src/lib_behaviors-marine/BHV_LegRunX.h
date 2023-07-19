@@ -59,6 +59,7 @@ protected:
 
   void   postLegSegList(bool active=true);
   void   postTurnSegList(bool active=true);
+  void   postAllSegList(bool active=true);
   void   postSteerPoints(bool active=true);
   void   postLegPoints(bool active=true);
   void   postTurnPreview(bool active=true);

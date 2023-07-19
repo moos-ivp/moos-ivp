@@ -290,6 +290,7 @@ void BHV_LegRunX::onSetParamComplete()
     m_vx1.set_label("leg_vx1");
     m_vx2.set_label("leg_vx2");
 
+    postAllSegList();
     if(m_mode == "turn")
       m_turn_interrupt_pending = true;
   }
@@ -961,6 +962,30 @@ void BHV_LegRunX::postTurnSegList(bool active)
     applyHints(seglist, m_hints);
     postMessage("VIEW_SEGLIST", seglist.get_spec());
   }
+}
+
+//-----------------------------------------------------------
+// Procedure: postAllSegList()
+
+void BHV_LegRunX::postAllSegList(bool active)
+{
+  XYSegList turn_segl1 = initTurnPoints1();
+  XYSegList turn_segl2 = initTurnPoints2();
+  turn_segl2.set_label("full_path");
+
+  if(!active) {
+    postMessage("VIEW_SEGLIST", turn_segl2.get_spec_inactive());
+    return;
+  }
+  
+  for(unsigned int i=0; i<turn_segl1.size(); i++)
+    turn_segl2.add_vertex(turn_segl1.get_point(i));
+
+  if(turn_segl2.size() == 0)
+    return;
+  
+  string spec = turn_segl2.get_spec();
+  postMessage("VIEW_SEGLIST", spec);  
 }
 
 //-----------------------------------------------------------
