@@ -969,8 +969,8 @@ void BHV_LegRunX::postTurnSegList(bool active)
 
 void BHV_LegRunX::postAllSegList(bool active)
 {
-  XYSegList turn_segl1 = initTurnPoints1();
-  XYSegList turn_segl2 = initTurnPoints2();
+  XYSegList turn_segl1 = initTurnPoints1(true);
+  XYSegList turn_segl2 = initTurnPoints2(true);
   turn_segl2.set_label("full_path");
 
   if(!active) {
