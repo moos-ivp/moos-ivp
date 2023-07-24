@@ -12,6 +12,7 @@ SET(SRC
   AOF_Gaussian.cpp
   AOF_MGaussian.cpp
   BuildUtils.cpp
+  BuildUtilsBeta.cpp
   DemuxUnit.cpp
   Demuxer.cpp
   FunctionEncoder.cpp
@@ -48,6 +49,7 @@ SET(HEADERS
   AOF_Rings.h
   AOF_SCALAR.h
   BuildUtils.h
+  BuildUtilsBeta.h
 #  Demuxer.h
 #  DemuxUnit.h
   FunctionEncoder.h
