@@ -74,13 +74,8 @@ int GeoViewer::handle(int event)
 void GeoViewer::draw()
 {
   MarineViewer::draw();
-  if(m_geo_settings.viewable("hash_viewable")) {
-    double xl = m_geoshapes.getXMin() - 1000;
-    double xh = m_geoshapes.getXMax() + 1000;
-    double yl = m_geoshapes.getYMin() - 1000;
-    double yh = m_geoshapes.getYMax() + 1000;
-    drawHash(xl, xh, yl, yh);
-  }
+  if(m_geo_settings.viewable("hash_viewable"))
+    drawFastHash();
 
   // Rather than call "drawPolygons()" in the superclass, we implement 
   // the routine here so we can draw the "active" poly differently.
