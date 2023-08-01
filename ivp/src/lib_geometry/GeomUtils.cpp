@@ -38,7 +38,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: distPointToPoint
+// Procedure: distPointToPoint()
 
 double distPointToPoint(double x1, double y1, double x2, double y2)
 {
@@ -94,7 +94,7 @@ double distToSegment(double x1, double y1, double x2,
 }
 
 //---------------------------------------------------------------
-// Procedure: distPointToSeg
+// Procedure: distPointToSeg()
 //   Purpose: Return the distance from the segment given by x1,y1 
 //            and x2,y2 to the point given by px,py along a given 
 //            angle. If ray doesn't intersect segment, return -1.
@@ -125,7 +125,7 @@ double distPointToSeg(double x1, double y1, double x2, double y2,
 
 
 //---------------------------------------------------------------
-// Procedure: distSegToSeg
+// Procedure: distSegToSeg()
 //   Purpose: Return the distance from the segment given by x1,y1 
 //            and x2,y2 to the segment given by x3,y3 and x4,y4.
 
@@ -157,7 +157,7 @@ double distSegToSeg(double x1, double y1, double x2, double y2,
 }
 
 //---------------------------------------------------------------
-// Procedure: lines_cross
+// Procedure: lines_cross()
 //     Cases: Vert - Vert (1)
 //            Horz - Horz (2)
 //            Horz - Vert (3)
@@ -276,7 +276,7 @@ bool linesCross(double x1, double y1, double x2, double y2,
 
 
 //---------------------------------------------------------------
-// Procedure: segmentsCross
+// Procedure: segmentsCross()
 //     Cases: Vert - Vert (1)
 //            Horz - Horz (2)
 //            Horz - Vert (3)
@@ -469,7 +469,7 @@ bool segmentsCross(double x1, double y1, double x2, double y2,
 }
 
 //---------------------------------------------------------------
-// Procedure: lineRayCross
+// Procedure: lineRayCross()
 //     Cases: Ray Vert - Line Vert (1)
 //            Ray Horz - Line Horz (2)
 //            Ray Horz - Line Vert (3)
@@ -653,7 +653,7 @@ bool lineRayCross(double x1, double y1, double ray_angle,
 
 
 //---------------------------------------------------------------
-// Procedure: lineSegCross
+// Procedure: lineSegCross()
 //     Cases: Seg Vert - Line Vert (1)
 //            Seg Horz - Line Horz (2)
 //            Seg Horz - Line Vert (3)
@@ -830,7 +830,7 @@ bool lineSegCross(double sx1, double sy1, double sx2, double sy2,
 
 
 //---------------------------------------------------------------
-// Procedure: segmentAngle
+// Procedure: segmentAngle()
 //   Purpose: Return the angle between the two segments given by
 //            the segment x1,y1 and x2,y2 and the segment x2,y2 
 //            and x3,y3.
@@ -868,7 +868,7 @@ double segmentAngle(double x1, double y1, double x2,
   
 
 //---------------------------------------------------------------
-// Procedure: perpSegIntPt
+// Procedure: perpSegIntPt()
 //   Purpose: Determine the point on the given segment closest to
 //            the point which would make a line perpendicular if
 //            using the given query point. 
@@ -972,7 +972,7 @@ void perpSegIntPt(double x1, double y1, double x2, double y2,
 }
 
 //---------------------------------------------------------------
-// Procedure: perpLineIntPt
+// Procedure: perpLineIntPt()
 
 void perpLineIntPt(double x1, double y1, double x2, double y2, 
 		   double qx, double qy, double& rx, double& ry)
@@ -1008,7 +1008,7 @@ void perpLineIntPt(double x1, double y1, double x2, double y2,
 }
 
 //---------------------------------------------------------------
-// Procedure: projectPoint
+// Procedure: projectPoint()
 //      Note: We special-case the axis angles to help ensure that
 //            vertical and horizontal line segments aren't tripped
 //            up by rounding errors.
@@ -1046,7 +1046,7 @@ void projectPoint(double degval, double dist, double cx,
 
 
 //---------------------------------------------------------------
-// Procedure: projectPoint
+// Procedure: projectPoint()
 //   Purpose: Same as the other projectPoint function except this 
 //            function returns an XYPoint object.
 
@@ -1067,7 +1067,7 @@ XYPoint projectPoint(double degval, double dist, double cx, double cy)
 }
 
 //---------------------------------------------------------------
-// Procedure: projectPoint
+// Procedure: projectPoint()
 //   Purpose: Same as the other projectPoint function except this 
 //            function returns an XYPoint object.
 
@@ -1112,7 +1112,7 @@ void addVectors(double deg1, double mag1, double deg2,
 }
 
 //---------------------------------------------------------------
-// Procedure: bearingMinMaxToPoly
+// Procedure: bearingMinMaxToPoly()
 //   Purpose: From a point outside a convex polygons, determine
 //            the two bearing angles to the polygon forming a
 //            pseudo tangent.
@@ -1131,7 +1131,7 @@ bool bearingMinMaxToPoly(double osx, double osy, const XYPolygon& poly,
 
 
 //---------------------------------------------------------------
-// Procedure: bearingMinMaxToPolyZ
+// Procedure: bearingMinMaxToPolyZ()
 //   Purpose: From a point outside a convex polygons, determine
 //            the two bearing angles to the polygon forming a
 //            pseudo tangent.
@@ -1456,7 +1456,7 @@ double distPointToRay(double px, double py,
 
 
 //---------------------------------------------------------------
-// Procedure: segRayCPA
+// Procedure: segRayCPA()
 //   Purpose: Determine the minimum distance from the given
 //            segment to the given ray.
 //      NOTE: This algorithm ASSUMES THE RAY AND SEGMENT DO NOT CROSS.
@@ -1494,7 +1494,7 @@ double segRayCPA(double rx, double ry, double ray_angle,
 
 
 //---------------------------------------------------------------
-// Procedure: seglRayCPA
+// Procedure: seglRayCPA()
 //   Purpose: Determine the minimum distance from the given
 //            seglist to the given ray
 //      NOTE: This algorithm ASSUMES THE RAY AND SEGLIST DO NOT CROSS.
@@ -1532,7 +1532,7 @@ double seglRayCPA(double rx, double ry, double ray_angle,
 }
 
 //---------------------------------------------------------------
-// Procedure: seglSeglDist
+// Procedure: seglSeglDist()
 //   Purpose: Determine the minimum distance from the given segment
 //            to the given seglist
 //      NOTE: This algorithm ASSUMES THE SEG AND SEGLIST DO NOT CROSS.
@@ -1652,7 +1652,7 @@ bool crossRaySeg(double rx, double ry, double ray_angle,
 
 
 //---------------------------------------------------------------
-// Procedure: lineCircleIntPts
+// Procedure: lineCircleIntPts()
 //   Purpose: Given a line and a circle, determine where the line
 //            intersects the circle. It will return the number of
 //            intersection points and fill in the return points if
@@ -1732,7 +1732,7 @@ int lineCircleIntPts(double x1, double y1, double x2, double y2,
 
 
 //---------------------------------------------------------------
-// Procedure: segCircleIntPts
+// Procedure: segCircleIntPts()
 //   Purpose: Given a line and a circle, determine where the line
 //            intersects the circle. It will return the number of
 //            intersection points and fill in the return points if
@@ -1830,7 +1830,7 @@ int segCircleIntPts(double x1, double y1, double x2, double y2,
 }
 
 //---------------------------------------------------------------
-// Procedure: distPointToLine
+// Procedure: distPointToLine()
 
 double distPointToLine(double px, double py, double x1, double y1,
 		       double x2, double y2)
@@ -1843,7 +1843,7 @@ double distPointToLine(double px, double py, double x1, double y1,
   
 
 //---------------------------------------------------------------
-// Procedure: distPointToSegl
+// Procedure: distPointToSegl()
 
 double distPointToSegl(double px, double py, const XYSegList& segl)
 {
@@ -1873,7 +1873,7 @@ double distPointToSegl(double px, double py, const XYSegList& segl)
 
 
 //---------------------------------------------------------------
-// Procedure: polyRayCPA
+// Procedure: polyRayCPA()
 //   Purpose: Determine the closest point of approach of a point
 //            originating at rx,ry and moving along the ray in
 //            the direction of ray_angle, to the given polygon
@@ -1923,8 +1923,17 @@ double polyRayCPA(double rx, double ry, double ray_angle,
     }
     double ix = 0;
     double iy = 0;
+
+    double cpa = 0;
+    bool cross = lineRayCross(rx,ry,ray_angle, x1,y1, x2,y2, ix,iy);
+    if(!cross) {
+      cpa = distPointToSeg(x1,y1, x2,y2, rx,ry);
+      ix = rx;
+      iy = ry;
+    }
+    else
+      cpa = segRayCPA(rx, ry, ray_angle, x1, y1, x2, y2, ix, iy);
     
-    double cpa = segRayCPA(rx, ry, ray_angle, x1, y1, x2, y2, ix, iy);
     if((min_cpa < 0) || (cpa < min_cpa)) {
       min_cpa = cpa;
       rix = ix;

@@ -670,7 +670,7 @@ double XYPolygon::dist_to_poly(double x3, double y3,
 }
 
 //---------------------------------------------------------------
-// Procedure: dist_to_poly
+// Procedure: dist_to_poly()
 //      Note: Determine the distance between the point given by px,py
 //            to the polygon along a given angle. An edge-by-edge check
 //            is performed and the minimum returned. 
