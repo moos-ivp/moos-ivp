@@ -7,5 +7,6 @@ ProcessConfig = pHostInfo
   CommsTick 	= 1
 
   DEFAULT_HOSTIP_FORCE = localhost
+  //DEFAULT_HOSTIP_FORCE = 192.168.7.6
 }
 

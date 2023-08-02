@@ -1,9 +1,9 @@
 #!/bin/bash -e
-
 #----------------------------------------------------------
-#  Script: launch.sh
-#  Author: Michael Benjamin
-#  LastEd: May 17th 2019
+#   Script: launch.sh
+#  Mission: m2_berta
+#   Author: Michael Benjamin
+#   LastEd: May 17th 2019
 #----------------------------------------------------------
 #  Part 1: Set global var defaults
 #----------------------------------------------------------

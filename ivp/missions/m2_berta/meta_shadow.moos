@@ -70,11 +70,6 @@ ProcessConfig = uFldShoreBroker
   qbridge  = MOOS_MANUAL_OVERRIDE, AVOID, UP_LOITER
   qbridge  = RETURN_UPDATES, BCM_DISPLAY_RADII
   qbridge  = CONTACT_INFO, NODE_GROUP_UPDATE
-
-  bridge   = src=UP_LOITER_$N, alias=UP_LOITER
-  bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
-  bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
-  bridge   = src=MISSION_HASH, alias=MISSION_HASH
 }
 
 //--------------------------------------------------
@@ -165,32 +160,18 @@ ProcessConfig = pMarineViewer
 
 	scope = REALMCAST_REQ
 	scope = REALMCAST_REQ_GILDA
-	scope = REALMCAST_REQ_HENRY
+	scope = REALMCAST_REQ_HENRY	
 	
-	
-  button_one   = DEPLOY  # DEPLOY_ALL=true 
-  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  button_one   = AVOID_ALL=true
-  button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
+  //button_one   = DEPLOY  # DEPLOY_ALL=true 
+  //button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  //button_one   = AVOID_ALL=true
+  //button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
 
-  button_two   = RETURN  # RETURN_ALL=true
-  button_two   = RETURN  # STATION_KEEP_ALL=false
-  button_three = PERMUTE   # UTS_FORWARD=0
-  button_five  = STATION:true # STATION_KEEP_ALL=true
-  button_six   = STATION:false # STATION_KEEP_ALL=false
-
-	button_seven = REFINE:N # CONTACT_INFO_ALL = name=avdcol # use_refinery=false
-	button_eight = REFINE:Y # CONTACT_INFO_ALL = name=avdcol # use_refinery=true
-
-	button_nine = GRP_BRAVO # NODE_GROUP_UPDATE_HENRY = bravo
-
-	button_11  = HPWT:99 # CONTACT_INFO_HENRY = "name=avdcol_gilda#pwt=99"
-	button_12  = HPWT:98 # CONTACT_INFO_HENRY = pwt_outer_dist=98
-	button_13  = HPWT:89 # CONTACT_INFO_HENRY = "name=avdcol_gilda#pwt=89"
-	button_14  = HPWT:88 # CONTACT_INFO_HENRY = pwt_outer_dist=88
-	button_15  = HPWT:79 # CONTACT_INFO_HENRY = "name=gilda#pwt=79"
-
-	button_16 = DFA # DRIFT_VECTOR_ADD=1.2
+  //button_two   = RETURN  # RETURN_ALL=true
+  //button_two   = RETURN  # STATION_KEEP_ALL=false
+  //button_three = PERMUTE   # UTS_FORWARD=0
+  //button_five  = STATION:true # STATION_KEEP_ALL=true
+  //button_six   = STATION:false # STATION_KEEP_ALL=false
 }
 
 //--------------------------------------------------------

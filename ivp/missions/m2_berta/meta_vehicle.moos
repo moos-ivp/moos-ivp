@@ -123,7 +123,7 @@ ProcessConfig = uFldNodeBroker
 
   try_shore_host = pshare_route=localhost:$(SHORE_PSHARE)
 
-	shadow_shore = ip=192.168.7.22, name=henry, dur=45000
+	//shadow_shore = ip=192.168.7.22, name=henry, dur=45000
 	
   bridge = src=VIEW_POLYGON
   bridge = src=VIEW_CIRCLE
