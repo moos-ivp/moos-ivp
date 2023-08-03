@@ -112,9 +112,22 @@ double XYSeglr::getRayBaseY() const
   return(m_seglr.getVY(vsize-1));
 }
 
+//---------------------------------------------------------------
+// Procedure: getBaseSegList()
+
+XYSegList XYSeglr::getBaseSegList() const
+{
+  XYSegList segl;
+
+  for(unsigned int i=0; i<m_seglr.size(); i++)
+    segl.add_vertex(m_seglr.getVX(i), m_seglr.getVY(i));
+
+  return(segl);
+}
+
 
 //---------------------------------------------------------------
-// Procedure: get_spec
+// Procedure: get_spec()
 //   Purpose: Get a string specification of the seglr. We set 
 //            the vertex precision to be at the integer by default.
 

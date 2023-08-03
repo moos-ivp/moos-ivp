@@ -447,7 +447,7 @@ bool XYPolygon::contains(double x, double y) const
 }
 
 //---------------------------------------------------------------
-// Procedure: contains
+// Procedure: contains()
 //   Purpose: Returns true if the given polygon is convex and all its
 //            vertices are contained within this polygon.
 
@@ -469,7 +469,26 @@ bool XYPolygon::contains(const XYPolygon& inner_poly) const
 }
 
 //---------------------------------------------------------------
-// Procedure: intersects
+// Procedure: contains()
+//   Purpose: Returns true if this polygon is convex and it 
+//            contains all vertices of the given seglist.
+
+bool XYPolygon::contains(const XYSegList& segl) const
+{
+  if(!m_convex_state)
+    return(false);
+  
+  for(unsigned int i=0; i<segl.size(); i++) {
+    double x = segl.get_vx(i);
+    double y = segl.get_vy(i);
+    if(!contains(x,y))
+      return(false);
+  }
+  return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: intersects()
 
 bool XYPolygon::intersects(const XYPolygon &poly) const
 {
@@ -520,7 +539,7 @@ bool XYPolygon::intersects(const XYPolygon &poly) const
 
 
 //---------------------------------------------------------------
-// Procedure: intersects
+// Procedure: intersects()
 
 bool XYPolygon::intersects(const XYSquare &square) const
 {

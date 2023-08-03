@@ -58,6 +58,7 @@ public:
   bool   contains(double, double) const;
   bool   contains(const XYPoint&) const;
   bool   contains(const XYPolygon&) const;
+  bool   contains(const XYSegList&) const;
   bool   intersects(const XYPolygon&) const;
   bool   intersects(const XYSquare&) const;
   double dist_to_poly(const XYPolygon&) const;

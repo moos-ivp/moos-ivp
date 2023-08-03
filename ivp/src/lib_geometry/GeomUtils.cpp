@@ -119,41 +119,25 @@ double distPointToSeg(double x1, double y1, double x2, double y2,
   double intx, inty;
   linesCross(x1,y1,x2,y2,px,py,px2,py2,intx,inty);
 
-  return(distPointToPoint(px,py,intx,inty));
-  
+  return(distPointToPoint(px,py,intx,inty));  
 }
-
 
 //---------------------------------------------------------------
 // Procedure: distSegToSeg()
 //   Purpose: Return the distance from the segment given by x1,y1 
 //            and x2,y2 to the segment given by x3,y3 and x4,y4.
+//     Notes: Convenience function, for when the caller does not
+//            care *where* the segment is closest. The original
+//            version of this function did not calculate CPA
+//            location. It was extended in Aug 2023 to include
+//            the CPA location. Then this function just calls
+//            the more general (newer) version.
 
 double distSegToSeg(double x1, double y1, double x2, double y2,
 		    double x3, double y3, double x4, double y4)
 {
-  if(segmentsCross(x1,y1,x2,y2,x3,y3,x4,y4))
-    return(0);
-
-  // Case 1: point x3,y3 to the segment (x1,y1 and x2,y2)
-  double min_dist = distPointToSeg(x1,y1,x2,y2,x3,y3);
-
-  // Case 2: point x4,y4 to the segment (x1,y1 and x2,y2)
-  double two_dist = distPointToSeg(x1,y1,x2,y2,x4,y4);
-  if(two_dist < min_dist)
-    min_dist = two_dist;
-
-  // Case 3: point x1,y1 to the segment (x3,y3 and x4,y4)
-  double three_dist = distPointToSeg(x3,y3,x4,y4,x1,y1);
-  if(three_dist < min_dist)
-    min_dist = three_dist;
-
-  // Case 4: point x2,y2 to the segment (x3,y3 and x4,y4)
-  double four_dist = distPointToSeg(x3,y3,x4,y4,x2,y2);
-  if(four_dist < min_dist)
-    min_dist = four_dist;
-
-  return(min_dist);
+  double ix, iy;
+  return(distSegToSeg(x1,y1,x2,y2,x3,y3,x4,y4,ix,iy));
 }
 
 //---------------------------------------------------------------
@@ -274,198 +258,20 @@ bool linesCross(double x1, double y1, double x2, double y2,
   return(true);
 }
 
-
 //---------------------------------------------------------------
 // Procedure: segmentsCross()
-//     Cases: Vert - Vert (1)
-//            Horz - Horz (2)
-//            Horz - Vert (3)
-//            Vert - Horz (4)
-//
-//            Vert - Norm (5)
-//            Horz - Norm (6)
-//            Norm - Vert (7)
-//            Norm - Horz (8)
-//
-//            Norm - Norm (9)
+//     Notes: Convenience function, for when the caller does not
+//            care *where* the segments cross. The original
+//            version of this function did not calculate cross
+//            location. It was extended in Aug 2023 to include
+//            the cross location. Then this function just calls
+//            the more general (newer) version.
 
 bool segmentsCross(double x1, double y1, double x2, double y2,
 		   double x3, double y3, double x4, double y4) 
 {
-  // Special case - if the segments share an endpoint. Checked
-  // for here since, due to rounding errors, not always caught
-  // by the general case.
-
-  if((x1==x3) && (y1==y3)) return(true);
-  if((x1==x4) && (y1==y4)) return(true);
-  if((x2==x3) && (y2==y3)) return(true);
-  if((x2==x4) && (y2==y4)) return(true);
-
-  bool seg1_vert = (x1==x2);
-  bool seg1_horz = (y1==y2);
-  bool seg2_vert = (x3==x4);
-  bool seg2_horz = (y3==y4);
-  // bool seg1_pt = ((x1==x2)&&(y1==y2));
-  // bool seg2_pt = ((x3==x4)&&(y3==y4));
-
-  // Case 1 Vert-Vert
-  if(seg1_vert && seg2_vert) {
-    if(x1 != x3) 
-      return(false);
-    if(y1 < y2) {
-      if((y3 > y2) && (y4 > y2))
-	return(false);
-      if((y3 < y1) && (y4 < y1))
-	return(false);
-      return(true);
-    }
-    else {
-      if((y3 > y1) && (y4 > y1))
-	return(false);
-      if((y3 < y2) && (y4 < y2))
-	return(false);
-      return(true);
-    }
-  }
-  // Case 2 Horz - Horz
-  if(seg1_horz && seg2_horz) {
-    if(y1 != y3) //** 
-      return(false);
-    if(x1 < x2) {
-      if((x3 > x2) && (x4 > x2))
-	return(false);
-      if((x3 < x1) && (x4 < x1))
-	return(false);
-      return(true);
-    }
-    else {
-      if((x3 > x1) && (x4 > x1))
-	return(false);
-      if((x3 < x2) && (x4 < x2))
-	return(false);
-      return(true);
-    }
-  }
-  // Case 3 Horz-Vert
-  if(seg1_horz && seg2_vert) {
-    if((y1 > y3) && (y1 > y4))
-      return(false);
-    if((y1 < y3) && (y1 < y4))
-      return(false);
-    if((x1 < x3) && (x2 < x3))
-      return(false);
-    if((x1 > x3) && (x2 > x3))
-      return(false);
-    return(true);
-  }
-  // Case 4 Vert-Horz
-  if(seg1_vert && seg2_horz) {
-    if((y3 > y1) && (y3 > y2))
-      return(false);
-    if((y3 < y1) && (y3 < y2))
-      return(false);
-    if((x3 < x1) && (x4 < x1))
-      return(false);
-    if((x3 > x1) && (x4 > x1))
-      return(false);
-    return(true);
-  }
-  // Case 5 Vert-Norm
-  if(seg1_vert && !seg2_vert && !seg2_horz) {
-    if((x1 > x3) && (x1 > x4))
-      return(false);
-    if((x1 < x3) && (x1 < x4))
-      return(false);
-    double slope = (y4-y3)/(x4-x3);
-    double intercept = y4 - (slope * x4);
-    double inty = (slope * x1) + intercept;
-    if((inty > y1) && (inty > y2))
-      return(false);
-    if((inty < y1) && (inty < y2))
-      return(false);
-    return(true);
-  }
-  // Case 6 Horz-Norm
-  if(seg1_horz && !seg2_vert && !seg2_horz) {
-    if((y1 > y3) && (y1 > y4))
-      return(false);
-    if((y1 < y3) && (y1 < y4))
-      return(false);
-    double slope = (y4-y3)/(x4-x3);
-    double intercept = y4 - (slope * x4);
-    double intx = (y1 - intercept) / slope;
-    if((intx > x1) && (intx > x2))
-      return(false);
-    if((intx < x1) && (intx < x2))
-      return(false);
-    return(true);
-  }
-  // Case 7 Norm-Vert
-  if(!seg1_vert && !seg1_horz && seg2_vert) {
-    if((x3 > x1) && (x3 > x2))
-      return(false);
-    if((x3 < x1) && (x3 < x2))
-      return(false);
-    double slope = (y2-y1)/(x2-x1);
-    double intercept = y2 - (slope * x2);
-    double inty = (slope * x3) + intercept;
-    if((inty > y3) && (inty > y4))
-      return(false);
-    if((inty < y3) && (inty < y4))
-      return(false);
-    return(true);
-  }
-  // Case 8 Norm-Horz
-  if(!seg1_vert && !seg1_horz && seg2_horz) {
-    if((y3 < y1) && (y3 < y2))
-      return(false);
-    if((y3 > y1) && (y3 > y2))
-      return(false);
-    double slope = (y2-y1)/(x2-x1);
-    double intercept = y2 - (slope * x2);
-    double intx = (y3 - intercept) / slope;
-    if((intx > x3) && (intx > x4))
-      return(false);
-    if((intx < x3) && (intx < x4))
-      return(false);
-    return(true);
-  }
-  // Case 9 Norm-Norm
-  if(!seg1_vert && !seg1_horz && !seg2_vert && !seg2_horz) {
-    double slope1 = (y2-y1)/(x2-x1);
-    double intercept1 = y2 - (slope1 * x2);
-    double slope2 = (y4-y3)/(x4-x3);
-    double intercept2 = y4 - (slope2 * x4);
-    if(slope1 == slope2) {           // bug fix mikerb Nov0120
-      if(intercept1 != intercept2)
-	return(false);
-      double xmin12 = x1;
-      double xmax12 = x2;
-      if(x1>x2) {
-	xmin12 = x2;
-	xmax12 = x1;
-      }
-      if((x3 < xmin12) && (x4 < xmin12))
-	return(false);
-      if((x3 > xmax12) && (x4 > xmax12))
-	return(false);
-      return(true);
-    }
-    
-    double intx = (intercept2 - intercept1) / (slope1 - slope2);
-
-    if((intx < x1) && (intx < x2))
-      return(false);
-    if((intx > x1) && (intx > x2))
-      return(false);
-    if((intx < x3) && (intx < x4))
-      return(false);
-    if((intx > x3) && (intx > x4))
-      return(false);
-    return(true);
-  }
-
-  return(false);
+  double ix, iy;
+  return(segmentsCross(x1,y1, x2,y2, x3,y3, x4,y4, ix,iy));
 }
 
 //---------------------------------------------------------------
@@ -1886,8 +1692,9 @@ double polyRayCPA(double rx, double ry, double ray_angle,
   if(!poly.is_convex())
     return(-1);
 
-  // Part 2: If the ray crosses any of the polygon segments, we're
-  // done, cpa=0
+  // Part 2: Check if the ray crosses any of the polygon segments
+  bool crosses = false;  
+  double min_dist = -1;
   for(unsigned int i=0; i<poly.size(); i++) {
     // Segment first vertex
     double x1 = poly.get_vx(i);
@@ -1902,11 +1709,20 @@ double polyRayCPA(double rx, double ry, double ray_angle,
     double ix = 0;
     double iy = 0;
     if(crossRaySeg(rx, ry, ray_angle, x1, y1, x2, y2, ix, iy)) {
-      rix = ix;
-      riy = iy;
-      return(0);
+      double dist_to_xpt = hypot(rx-ix, ry-iy);
+      if((min_dist < 0) || (dist_to_xpt < min_dist)) {
+	min_dist = dist_to_xpt;
+	rix = ix;
+	riy = iy;
+      }
+      crosses = true;
     }
-  }    
+  }
+  
+  if(crosses)
+    return(0); // Recall return val is CPA not dist from raybase
+  
+
   // Part 3: Ray does notcross any of the polygon segments, so now
   // we calculate the ray CPA for all segments and take the min
   double min_cpa = -1;
@@ -2344,3 +2160,455 @@ XYPoint getSegCenter(const XYPoint& p1, const XYPoint& p2)
   return(ctr);
 }
   
+
+//---------------------------------------------------------------
+// Procedure: segmentsCross()
+//     Notes: o Added the calculation and return of the
+//              intersection point on Aug 2nd 2023.
+//            o If the two segments do NOT intersect, reference
+//              return values, ix,iy, not altered. They should
+//              should retain values was passed to the function.
+//            o If segments are parallel and intersecting, 
+//              reference return value will be x1,y1.
+//
+//     Cases: Vert - Vert (1)  Horz - Horz (2)
+//            Horz - Vert (3)  Vert - Horz (4)
+//
+//            Vert - Norm (5)  Horz - Norm (6)
+//            Norm - Vert (7)  Norm - Horz (8)
+//
+//            Norm - Norm (9)
+
+bool segmentsCross(double x1, double y1, double x2, double y2,
+		   double x3, double y3, double x4, double y4,
+		   double& ix, double& iy) 
+{
+  // Special case - if the segments share an endpoint. Checked
+  // for here since, due to rounding errors, not always caught
+  // by the general case.a
+
+  if((x1==x3) && (y1==y3)) {
+    ix=x1; iy=y1;
+    return(true);
+  }
+  if((x1==x4) && (y1==y4)) {
+    ix=x1; iy=y1;
+    return(true);
+  }
+  if((x2==x3) && (y2==y3)) {
+    ix=x2; iy=y2;
+    return(true);
+  }
+  if((x2==x4) && (y2==y4)) {
+    ix=x2; iy=y2;
+    return(true);
+  }
+  bool seg1_vert = (x1==x2);
+  bool seg1_horz = (y1==y2);
+  bool seg2_vert = (x3==x4);
+  bool seg2_horz = (y3==y4);
+  // bool seg1_pt = ((x1==x2)&&(y1==y2));
+  // bool seg2_pt = ((x3==x4)&&(y3==y4));
+
+  // Case 1 Vert-Vert
+  if(seg1_vert && seg2_vert) {
+    if(x1 != x3) 
+      return(false);
+    if(y1 < y2) {
+      if((y3 > y2) && (y4 > y2))
+	return(false);
+      if((y3 < y1) && (y4 < y1))
+	return(false);
+      // They do intersect, now find a intersect point
+      ix = x1;
+      if((y3 >= y1) && (y3 <= y2))
+	iy = y3;
+      else if((y4 >= y1) && (y4 <= y2))
+	iy = y4;
+      else  // Else (x3,y3,x4,y4) supersumes (x1,y1,x2,y2)
+	iy = y1;
+      return(true);
+    }
+    else {
+      if((y3 > y1) && (y4 > y1))
+	return(false);
+      if((y3 < y2) && (y4 < y2))
+	return(false);
+      // They do intersect, now find a intersect point
+      ix = x1;
+      if((y3 >= y2) && (y3 <= y1))
+	iy = y3;
+      else if((y4 >= y2) && (y4 <= y1))
+	iy = y4;
+      else  // Else (x3,y3,x4,y4) supersumes (x1,y1,x2,y2)
+	iy = y1;      
+      return(true);
+    }
+  }
+  // Case 2 Horz - Horz
+  if(seg1_horz && seg2_horz) {
+    if(y1 != y3) //** 
+      return(false);
+    if(x1 < x2) {
+      if((x3 > x2) && (x4 > x2))
+	return(false);
+      if((x3 < x1) && (x4 < x1))
+	return(false);
+      // They do intersect, now find an intersect point
+      iy = y1;
+      if((x3 >= x1) && (x3 <= x2))
+	iy = x3;
+      else if((x4 >= x1) && (x4 <= x2))
+	iy = x4;
+      else  // Else (x3,y3,x4,y4) supersumes (x1,y1,x2,y2)
+	iy = x1;
+      return(true);
+    }
+    else {
+      if((x3 > x1) && (x4 > x1))
+	return(false);
+      if((x3 < x2) && (x4 < x2))
+	return(false);
+      // They do intersect, now find a intersect point
+      ix = x1;
+      if((x3 >= x2) && (x3 <= x1))
+	iy = x3;
+      else if((x4 >= x2) && (x4 <= y1))
+	iy = x4;
+      else  // Else (x3,y3,x4,y4) supersumes (x1,y1,x2,y2)
+	iy = y1;      
+      return(true);
+    }
+  }
+  // Case 3 Horz-Vert
+  if(seg1_horz && seg2_vert) {
+    if((y1 > y3) && (y1 > y4))
+      return(false);
+    if((y1 < y3) && (y1 < y4))
+      return(false);
+    if((x1 < x3) && (x2 < x3))
+      return(false);
+    if((x1 > x3) && (x2 > x3))
+      return(false);
+    ix = x3;
+    iy = y1;
+    return(true);
+  }
+  // Case 4 Vert-Horz
+  if(seg1_vert && seg2_horz) {
+    if((y3 > y1) && (y3 > y2))
+      return(false);
+    if((y3 < y1) && (y3 < y2))
+      return(false);
+    if((x3 < x1) && (x4 < x1))
+      return(false);
+    if((x3 > x1) && (x4 > x1))
+      return(false);
+    ix = x1;
+    iy = y3;
+    return(true);
+  }
+  // Case 5 Vert-Norm
+  if(seg1_vert && !seg2_vert && !seg2_horz) {
+    if((x1 > x3) && (x1 > x4))
+      return(false);
+    if((x1 < x3) && (x1 < x4))
+      return(false);
+    double slope = (y4-y3)/(x4-x3);
+    double intercept = y4 - (slope * x4);
+    double inty = (slope * x1) + intercept;
+    if((inty > y1) && (inty > y2))
+      return(false);
+    if((inty < y1) && (inty < y2))
+      return(false);
+    ix = x1;
+    iy = inty;
+    return(true);
+  }
+  // Case 6 Horz-Norm
+  if(seg1_horz && !seg2_vert && !seg2_horz) {
+    if((y1 > y3) && (y1 > y4))
+      return(false);
+    if((y1 < y3) && (y1 < y4))
+      return(false);
+    double slope = (y4-y3)/(x4-x3);
+    double intercept = y4 - (slope * x4);
+    double intx = (y1 - intercept) / slope;
+    if((intx > x1) && (intx > x2))
+      return(false);
+    if((intx < x1) && (intx < x2))
+      return(false);
+    ix = intx;
+    iy = y1;
+    return(true);
+  }
+  // Case 7 Norm-Vert
+  if(!seg1_vert && !seg1_horz && seg2_vert) {
+    if((x3 > x1) && (x3 > x2))
+      return(false);
+    if((x3 < x1) && (x3 < x2))
+      return(false);
+    double slope = (y2-y1)/(x2-x1);
+    double intercept = y2 - (slope * x2);
+    double inty = (slope * x3) + intercept;
+    if((inty > y3) && (inty > y4))
+      return(false);
+    if((inty < y3) && (inty < y4))
+      return(false);
+    ix = x3;
+    iy = inty;
+    return(true);
+  }
+  // Case 8 Norm-Horz
+  if(!seg1_vert && !seg1_horz && seg2_horz) {
+    if((y3 < y1) && (y3 < y2))
+      return(false);
+    if((y3 > y1) && (y3 > y2))
+      return(false);
+    double slope = (y2-y1)/(x2-x1);
+    double intercept = y2 - (slope * x2);
+    double intx = (y3 - intercept) / slope;
+    if((intx > x3) && (intx > x4))
+      return(false);
+    if((intx < x3) && (intx < x4))
+      return(false);
+    ix = intx;
+    iy = y3;
+    return(true);
+  }
+  // Case 9 Norm-Norm
+  if(!seg1_vert && !seg1_horz && !seg2_vert && !seg2_horz) {
+    double slope1 = (y2-y1)/(x2-x1);
+    double intercept1 = y2 - (slope1 * x2);
+    double slope2 = (y4-y3)/(x4-x3);
+    double intercept2 = y4 - (slope2 * x4);
+    if(slope1 == slope2) {           // bug fix mikerb Nov0120
+      if(intercept1 != intercept2)
+	return(false);
+      double xmin12 = x1;
+      double xmax12 = x2;
+      if(x1>x2) {
+	xmin12 = x2;
+	xmax12 = x1;
+      }
+      if((x3 < xmin12) && (x4 < xmin12))
+	return(false);
+      if((x3 > xmax12) && (x4 > xmax12))
+	return(false);
+
+      double xmin34 = x3;
+      double xmax34 = x4;
+      if(x3>x4) {
+	xmin34 = x4;
+	xmax34 = x3;
+      }
+
+      if((xmin12 >= xmin34) && (xmin12 <= xmax34))
+	ix = xmin12;
+      else if((xmax12 >= xmin34) && (xmax12 <= xmax34))
+	ix = xmax12;
+      else
+	ix = xmin34; // or xmax34 both should hold
+      iy = (slope1 * ix) + intercept1;      
+      return(true);
+    }
+    
+    double intx = (intercept2 - intercept1) / (slope1 - slope2);
+    double inty = (slope1 * intx) + intercept1;
+    
+    if((intx < x1) && (intx < x2))
+      return(false);
+    if((intx > x1) && (intx > x2))
+      return(false);
+    if((intx < x3) && (intx < x4))
+      return(false);
+    if((intx > x3) && (intx > x4))
+      return(false);
+    ix = intx;
+    iy = inty;
+    return(true);
+  }
+
+  return(false);
+}
+
+//---------------------------------------------------------------
+// Procedure: distSegToSeg()
+//   Purpose: Return the distance from the segment given by x1,y1 
+//            and x2,y2 to the segment given by x3,y3 and x4,y4.
+//   *NOTE* : The return location is the location ON SEG x1,y1,x2,y2
+//            closest to other segment. This is useful for example
+//            when determining where on a Seglr is the CPA w.r.t.
+//            a given polygon. It may be useful in other scenarios.
+
+
+double distSegToSeg(double x1, double y1, double x2, double y2,
+		    double x3, double y3, double x4, double y4,
+		    double& ix, double& iy)
+{
+  if(segmentsCross(x1,y1,x2,y2,x3,y3,x4,y4,ix,iy))
+    return(0);
+
+  // Case 1: point x3,y3 to the segment (x1,y1 and x2,y2)
+  double min_dist = distPointToSeg(x1,y1,x2,y2,x3,y3,ix,iy);
+
+  // Case 2: point x4,y4 to the segment (x1,y1 and x2,y2)
+  double two_dist = distPointToSeg(x1,y1,x2,y2,x4,y4,ix,iy);
+  if(two_dist < min_dist)
+    min_dist = two_dist;
+
+  // Case 3: point x1,y1 to the segment (x3,y3 and x4,y4)
+  double three_dist = distPointToSeg(x3,y3,x4,y4,x1,y1); 
+  if(three_dist < min_dist) {
+    ix = x1;
+    iy = y1;
+    min_dist = three_dist;
+  }
+
+  // Case 4: point x2,y2 to the segment (x3,y3 and x4,y4)
+  double four_dist = distPointToSeg(x3,y3,x4,y4,x2,y2);
+  if(four_dist < min_dist) {
+    ix = x2;
+    iy = y2;
+    min_dist = four_dist;
+  }
+
+  return(min_dist);
+}
+
+//---------------------------------------------------------------
+// Procedure: distSegToPoly()
+//   Purpose: Return the distance from the segment given by x1,y1 
+//            and x2,y2 to the given polygon
+//   *NOTE* : The return location is the location ON SEG x1,y1,x2,y2
+//            pt closest to the polygon. This is useful for example
+//            when determining where on a Seglr is the CPA w.r.t.
+//            a given polygon. It may be useful in other scenarios.
+
+double distSegToPoly(double x1, double y1, double x2, double y2,
+		     const XYPolygon& poly, double& rix, double& riy)
+{
+  // Sanity Check
+  if(!poly.is_convex())
+    return(-1);
+  
+  // Edge case: Polygon completely contains the starting point
+  if(poly.contains(x1,y1)) {
+    rix = x1;
+    riy = y1;
+    return(0);
+  }
+  
+  // Check if the segment crosses any of the polygon segments
+  double min_dist = -1;
+  for(unsigned int i=0; i<poly.size(); i++) {
+    // Segment first vertex
+    double x3 = poly.get_vx(i);
+    double y3 = poly.get_vy(i);
+    // Segment second vertex
+    double x4 = poly.get_vx(0);
+    double y4 = poly.get_vy(0);
+    if((i+1) < poly.size()) {
+      x4 = poly.get_vx(i+1);
+      y4 = poly.get_vy(i+1);
+    }
+
+    double ix = 0;
+    double iy = 0;
+    double dist = distSegToSeg(x1,y1, x2,y2, x3,y3, x4,y4, ix,iy);
+    if((min_dist < 0) || (dist < min_dist)) {
+      min_dist = dist;
+      rix = ix;
+      riy = iy;
+    }
+  }
+  return(min_dist);
+}
+
+
+
+//---------------------------------------------------------------
+// Procedure: distSeglToPoly()
+
+double distSeglToPoly(const XYSegList& segl, const XYPolygon& poly,
+		      double& rix, double& riy)
+{
+  // Sanity checks
+  if((segl.size() == 0) || !poly.is_convex()) {
+    return(0);
+  }
+
+  // Special case: If SegList is entirely within the Poly
+  if(poly.contains(segl)) {
+    rix = segl.get_vx(0);
+    riy = segl.get_vy(0);
+    return(0);
+  }
+
+  // Special case: If SegList has only one vertex
+  if(segl.size() == 1) {    
+    double vx = segl.get_vx(0);
+    double vy = segl.get_vy(0);
+    rix = vx;
+    riy = vx;
+    return(poly.dist_to_poly(vx,vy));
+  }
+
+  double min_dist = -1;
+  for(unsigned int i=0; i<segl.size()-1; i++) {
+    double x1 = segl.get_vx(i);
+    double y1 = segl.get_vy(i);
+    double x2 = segl.get_vx(i+1);
+    double y2 = segl.get_vy(i+1);
+
+    double ix = 0;
+    double iy = 0;
+    double dist = distSegToPoly(x1,y1,x2,y2, poly, ix,iy);
+
+    if((min_dist < 0) || (dist < min_dist)) {
+      rix = ix;
+      riy = iy;
+      min_dist = dist;
+    }
+  }
+  
+  return(min_dist);
+}
+  
+//---------------------------------------------------------------
+// Procedure: distSeglrToPoly()
+
+double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
+		       double& rix, double& riy)
+{
+  // Sanity checks
+  if((seglr.size() == 0) || !poly.is_convex()) {
+    rix=0;
+    riy=0;
+    return(0);
+  }
+
+  XYSegList segl = seglr.getBaseSegList();
+  double segl_ix = 0;
+  double segl_iy = 0;
+  double segl_cpa = distSeglToPoly(segl, poly, segl_ix, segl_iy);
+
+  double rx = seglr.getRayBaseX();
+  double ry = seglr.getRayBaseY();
+  double ra = seglr.getRayAngle();
+  double ray_ix = 0;
+  double ray_iy = 0;
+  double ray_cpa = polyRayCPA(rx,ry,ra, poly, ray_ix, ray_iy);
+
+  if(segl_cpa < ray_cpa) {
+    rix = segl_ix;
+    riy = segl_iy;
+    return(segl_cpa);
+  }
+
+  rix = ray_ix;
+  riy = ray_iy;
+  return(ray_cpa);
+}
+  
+

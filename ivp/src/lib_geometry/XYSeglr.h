@@ -28,6 +28,7 @@
 
 #include <string>
 #include "XYObject.h"
+#include "XYSegList.h"
 #include "Seglr.h"
 
 class XYSeglr : public XYObject {
@@ -62,6 +63,8 @@ public:
 
   double getRayLen() const   {return(m_raylen);}
   double getHeadSize() const {return(m_headsz);}
+  
+  XYSegList getBaseSegList() const;
   
   std::string get_spec(int vertex_precision=1) const;
 

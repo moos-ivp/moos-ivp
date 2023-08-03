@@ -29,6 +29,7 @@
 #include <vector>
 #include "XYPoint.h"
 #include "XYPolygon.h"
+#include "XYSeglr.h"
 #include "HintHolder.h"
 
 // Determines the distance between two points
@@ -198,6 +199,25 @@ bool modSegLoc(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
 	       XYPoint center);
 
 XYPoint getSegCenter(const XYPoint& p1, const XYPoint& p2); 
+
+
+double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
+		       double& ix, double& iy);
+
+// Determine if two line segments intersect
+bool   segmentsCross(double x1, double y1, double x2, double y2,
+		     double x3, double y3, double x4, double y4,
+		     double& ix, double& iy);
+
+double   distSegToSeg(double x1, double y1, double x2, double y2,
+		      double x3, double y3, double x4, double y4,
+		      double& ix, double& iy);
+
+double   distSegToPoly(double x1, double y1, double x2, double y2,
+		       const XYPolygon& poly, double& ix, double& iy);
+
+double distSeglToPoly(const XYSegList& segl, const XYPolygon& poly,
+		      double& ix, double& iy);
 
 
 // DEPRECATED INTERFACES
