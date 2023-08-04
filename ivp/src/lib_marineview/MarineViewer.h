@@ -67,7 +67,7 @@ class MarineViewer : public Fl_Gl_Window
   virtual int  handle(int event);
   virtual bool setParam(std::string p, std::string v="");
   virtual bool setParam(std::string p, double v);
-  virtual void modColorScheme()=0;
+  virtual void modColorScheme() {};
 
   bool   addTiffFile(std::string file);
 
@@ -120,7 +120,8 @@ protected:
 
   void   drawFastHash();
 
-  void   drawSegment(double, double, double, double, double, double, double);
+  void   drawSegment(double, double, double, double,
+		     double, double, double);
 
   void   drawOpArea(const OpAreaSpec&);
   void   drawDatum(const OpAreaSpec&);
