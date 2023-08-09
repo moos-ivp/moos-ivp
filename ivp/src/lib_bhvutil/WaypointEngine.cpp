@@ -127,7 +127,18 @@ void WaypointEngine::setSegList(const vector<XYPoint>& pts)
 }
 
 //-----------------------------------------------------------
-// Procedure: setReverse
+// Procedure: addWaypoint()
+
+void WaypointEngine::addWaypoint(const XYPoint& point)
+{
+  if(!m_reverse) {
+    m_seglist_raw.add_vertex(point.x(), point.y());
+    m_seglist.add_vertex(point.x(), point.y());
+  }
+}
+
+//-----------------------------------------------------------
+// Procedure: setReverse()
 //      Note: We store the value of m_reverse so the desired
 //            effect is achieved regardless of whether the points
 //            are set first, or the reverse-flag is set first.
@@ -155,7 +166,7 @@ void WaypointEngine::setReverse(bool g_val)
 
 
 //-----------------------------------------------------------
-// Procedure: setReverseToggle
+// Procedure: setReverseToggle()
 
 void WaypointEngine::setReverseToggle()
 {
@@ -163,7 +174,7 @@ void WaypointEngine::setReverseToggle()
 }
 
 //-----------------------------------------------------------
-// Procedure: setCaptureRadius
+// Procedure: setCaptureRadius()
 
 void WaypointEngine::setCaptureRadius(double g_capture_radius)
 {
@@ -181,7 +192,7 @@ void WaypointEngine::setNonmonotonicRadius(double radius)
 }
 
 //-----------------------------------------------------------
-// Procedure: setSlipRadius
+// Procedure: setSlipRadius()
 
 void WaypointEngine::setSlipRadius(double radius)
 {
@@ -209,7 +220,7 @@ void WaypointEngine::setCurrIndex(unsigned int index)
 }
 
 //-----------------------------------------------------------
-// Procedure: setCenter
+// Procedure: setCenter()
 
 void WaypointEngine::setCenter(double g_x, double g_y)
 {
@@ -218,7 +229,7 @@ void WaypointEngine::setCenter(double g_x, double g_y)
 }
 
 //-----------------------------------------------------------
-// Procedure: getPointX
+// Procedure: getPointX()
 
 double WaypointEngine::getPointX(unsigned int i) const
 {
@@ -229,7 +240,7 @@ double WaypointEngine::getPointX(unsigned int i) const
 }
 
 //-----------------------------------------------------------
-// Procedure: currPtChanged
+// Procedure: currPtChanged()
 //      Note: Determine if the current index has changed between
 //            successive calls to this function.
 
@@ -242,7 +253,7 @@ bool WaypointEngine::currPtChanged()
 }
 
 //-----------------------------------------------------------
-// Procedure: getPointY
+// Procedure: getPointY()
 
 double WaypointEngine::getPointY(unsigned int i) const
 {
@@ -253,7 +264,7 @@ double WaypointEngine::getPointY(unsigned int i) const
 }
 
 //-----------------------------------------------------------
-// Procedure: resetForNewTraversal
+// Procedure: resetForNewTraversal()
 
 void WaypointEngine::resetForNewTraversal()
 {
@@ -277,7 +288,7 @@ unsigned int WaypointEngine::resetsRemaining() const
 }
 
 //-----------------------------------------------------------
-// Procedure: setNextWaypoint
+// Procedure: setNextWaypoint()
 //   Returns: "empty_seglist"
 //            "completed"
 //            "cycled"
@@ -288,8 +299,8 @@ unsigned int WaypointEngine::resetsRemaining() const
 
 string WaypointEngine::setNextWaypoint(double os_x, double os_y)
 {
-  cout << "curr_ix(a): " << m_curr_ix << endl;
-  cout << "prev_ix(a): " << m_prev_ix << endl;
+  //cout << "curr_ix(a): " << m_curr_ix << endl;
+  //cout << "prev_ix(a): " << m_prev_ix << endl;
   
   // Phase 1: Initial checks and setting of present waypoint
   // --------------------------------------------------------------
@@ -326,18 +337,27 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
       m_nonmono_hits++;
     }
   }
-  cout << " curr_ix(b): " << m_curr_ix << endl;
-  cout << " prev_ix(b): " << m_prev_ix << endl;
 
   // Phase 2B: Check for arrival based on the capture line criteria
   // --------------------------------------------------------------
   if(m_capture_line && (m_prevpt.valid())) {
     double prevpt_x = m_prevpt.get_vx();
     double prevpt_y = m_prevpt.get_vy();
-    
+
     double angle = angleFromThreePoints(pt_x, pt_y, prevpt_x, prevpt_y, os_x, os_y);
     if(angle >= 90)
       point_advance = true;
+
+    double rang = relAng(prevpt_x, prevpt_y, pt_x, pt_y);
+    double x1,y1,x2,y2;
+    projectPoint(rang+90, 20, pt_x, pt_y, x1, y1);
+    projectPoint(rang-90, 20, pt_x, pt_y, x2, y2);
+    m_capture_segl = XYSegList(x1,y1,x2,y2);
+    m_capture_pt = XYPoint(prevpt_x, prevpt_y);
+  }
+  else {
+    m_capture_segl = XYSegList();
+    m_capture_pt = XYPoint();
   }
 
   // Phase 3: Handle waypoint advancement

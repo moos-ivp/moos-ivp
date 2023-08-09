@@ -36,6 +36,7 @@ class WaypointEngine {
 
   void   setSegList(const XYSegList& seglist);
   void   setSegList(const std::vector<XYPoint>& pts);
+  void   addWaypoint(const XYPoint& point);
   void   setReverse(bool);
   void   setReverseToggle();
   void   setCaptureRadius(double);
@@ -73,7 +74,9 @@ class WaypointEngine {
   unsigned int getRepeats()     {return(m_repeats_allowed);}
   unsigned int resetsRemaining() const;
 
-  XYSegList getSegList()  {return(m_seglist);}
+  XYSegList getSegList()     {return(m_seglist);}
+  XYSegList getCaptureSegl() {return(m_capture_segl);}
+  XYPoint   getCapturePt()   {return(m_capture_pt);}
 
   void        setPrevPoint(XYPoint pt) {m_prevpt=pt;}
   std::string setNextWaypoint(double osx, double osy);
@@ -96,6 +99,8 @@ protected: // Config Vars
 protected: // State Vars
   XYSegList m_seglist;
   XYSegList m_seglist_raw;
+  XYSegList m_capture_segl;
+  XYPoint   m_capture_pt;
   XYPoint   m_prevpt;
 
   int       m_curr_ix;

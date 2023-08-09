@@ -210,12 +210,21 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   }
   else if(param == "point") {
     XYPoint point = string2Point(param_val);
+    if(!point.valid())
+      return(false);
     XYSegList new_seglist;
     new_seglist.add_vertex(point);
     if(new_seglist.size() == 0)
       return(false);
     m_waypoint_engine.setSegList(new_seglist);
     m_markpt.set_active(false);
+    return(true);
+  }
+  else if(param == "newpt") {
+    XYPoint point = string2Point(param_val);
+    if(!point.valid())
+      return(false);
+    m_waypoint_engine.addWaypoint(point);
     return(true);
   }
   else if((param == "speed") && isNumber(param_val) && (dval >= 0)) {
