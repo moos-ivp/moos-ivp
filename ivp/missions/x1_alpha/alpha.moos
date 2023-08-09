@@ -35,6 +35,7 @@ ProcessConfig = ANTLER
   Run = uProcessWatch	 @ NewConsole = false
   Run = pRealm         @ NewConsole = false
   Run = pLogger        @ NewConsole = false
+  Run = pOdometry      @ NewConsole = false
 }
 
 //------------------------------------------
@@ -96,10 +97,10 @@ ProcessConfig = pLogger
 
   //LogAuxSrc = true
   WildCardLogging = true
-  //WildCardOmitPattern = *_STATUS
-  //WildCardOmitPattern = DB_VARSUMMARY
-  //WildCardOmitPattern = DB_RWSUMMARY
-  //WildCardOmitPattern = APPCAST
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+  WildCardOmitPattern = APPCAST
   //WildCardExclusionLog = true
 }
 
@@ -209,7 +210,7 @@ ProcessConfig = pMarineViewer
   // log_the_image = true
 	
 	// app_logging = true
-	
+
   vehicle_shape_scale  = 1.5
   hash_delta           = 50
   hash_shade           = 0.4
@@ -234,7 +235,7 @@ ProcessConfig = pMarineViewer
   scope = PHELMIVP_PID
   scope = DB_UPTIME
 	
-  left_context[vehicle_pick] = PROX_POLY_VIEW_$[UP_VNAME_CLOSEST]=toggle
+  left_context[add_point] = WPT_UPDATE=newpt=$(XPOS),$(YPOS)
 
 	action = USM_ENABLED=false
 	action = USM_TURN_RATE = 70
@@ -257,6 +258,7 @@ ProcessConfig = pMarineViewer
 
 
 	button_7 = DEPLOY:F # DEPLOY=false 
+	button_8 = RESET-HASH # RESET_MHASH=true
 	}
 
 //------------------------------------------
