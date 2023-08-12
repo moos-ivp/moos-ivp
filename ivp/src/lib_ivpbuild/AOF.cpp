@@ -69,12 +69,13 @@ string AOF::getCatMsgsAOF() const
 //----------------------------------------------------------------
 // Procedure: postMsgAOF()
 
-void AOF::postMsgAOF(string msg)
+bool AOF::postMsgAOF(string msg, bool res)
 {
   if(msg != "") {
     m_msgs.push_front(msg.substr(0,80));
     if(m_msgs.size() > 20)
       m_msgs.pop_back();
   }
+  return(res);
 }
 

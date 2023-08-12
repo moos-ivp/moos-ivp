@@ -77,8 +77,7 @@ public:
   bool hasMsgsAOF()    {return(m_msgs.size() != 0);}
 
  protected:
-  void postMsgAOF(std::string msg);
-
+  bool postMsgAOF(std::string msg, bool res=false);
 
 protected:
   IvPDomain m_domain;
