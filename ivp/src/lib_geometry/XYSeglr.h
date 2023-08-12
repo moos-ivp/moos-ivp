@@ -33,47 +33,64 @@
 
 class XYSeglr : public XYObject {
 public:
-  XYSeglr();
-  XYSeglr(Seglr seglr);
+  XYSeglr(double ray_angle=0);
+  XYSeglr(double x0, double y0);
+  XYSeglr(double x0, double y0, double ray_angle);
+  XYSeglr(double x0, double y0, double x1, double y1);
   virtual ~XYSeglr() {};
 
-  void   setSeglr(Seglr seglr) {m_seglr=seglr;};
-  void   setRayLen(double);
-  void   setHeadSize(double);
+public: // Setters
+  void addVertex(double x, double y);
+  void setVertex(double x, double y, unsigned int index);
+  void setRayAngle(double angle);
 
-  void   clear();
-  bool   valid() const;
+  void setRayLen(double);
+  void setHeadSize(double);
+  void setCacheCPA(double);
+  void setCacheCPAPoint(XYPoint);
+
+public: // Getters (for settable vals)
+  double getVX(unsigned int ix) const;
+  double getVY(unsigned int ix) const;
+  double getRayAngle() const {return(m_ray_angle);}
+  double getRayLen() const   {return(m_raylen);}
+  double getHeadSize() const {return(m_headsz);}
+  double getCacheCPA() const {return(m_cpa);}
+  XYPoint getCacheCPAPoint() const {return(m_cpa_pt);}
+
+public:  // Modifiers
+  void translateTo(double x, double y);
+  void reflect();
   
-  unsigned int size() const {return(m_seglr.size());};
-
-  double getMinX() const {return(m_seglr.getMinX());};
-  double getMaxX() const {return(m_seglr.getMaxX());};
-  double getMinY() const {return(m_seglr.getMinY());};
-  double getMaxY() const {return(m_seglr.getMaxY());};
-
-  double getVX(unsigned int ix) const {return(m_seglr.getVX(ix));}
-  double getVY(unsigned int ix) const {return(m_seglr.getVY(ix));}
-  double getRayAngle() const {return(m_seglr.getRayAngle());}
-
+public: // Getters (analyzers)
+  bool   valid() const;
+  double getMinX() const;
+  double getMaxX() const;
+  double getMinY() const;
+  double getMaxY() const;
   double getRayBaseX() const;
   double getRayBaseY() const;
-
   double getAvgX() const {return((getMaxX()-getMinX())/2);};
   double getAvgY() const {return((getMaxY()-getMinY())/2);};
 
-  double getRayLen() const   {return(m_raylen);}
-  double getHeadSize() const {return(m_headsz);}
-  
   XYSegList getBaseSegList() const;
+  unsigned int size() const {return(m_vx.size());};
   
   std::string get_spec(int vertex_precision=1) const;
 
 protected:
-  Seglr m_seglr;
+  std::vector<double> m_vx;
+  std::vector<double> m_vy;
+  double              m_ray_angle;
 
   double m_raylen;  // length of the rendered ray in meters
   double m_headsz;  // Size of the rendered head in meters
+
+  double  m_cpa;    // An optionally cached value
+  XYPoint m_cpa_pt; // An optionally cached value
 };
+
+XYSeglr string2Seglr(const std::string&);
 
 #endif
 

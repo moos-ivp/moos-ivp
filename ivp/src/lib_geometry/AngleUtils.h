@@ -78,6 +78,8 @@ double  turnGap(double osx, double osy, double osh, double tradius,
 double  headingAvg(std::list<double>);
 double  headingAvg(double, double);
 
+bool    portTurn(double osh, double new_hdg);
+
 
 #endif
 

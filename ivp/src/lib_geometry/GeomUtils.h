@@ -201,9 +201,6 @@ bool modSegLoc(XYPoint p1, XYPoint p2, XYPoint& rp1, XYPoint& rp2,
 XYPoint getSegCenter(const XYPoint& p1, const XYPoint& p2); 
 
 
-double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
-		       double& ix, double& iy);
-
 // Determine if two line segments intersect
 bool   segmentsCross(double x1, double y1, double x2, double y2,
 		     double x3, double y3, double x4, double y4,
@@ -218,6 +215,9 @@ double   distSegToPoly(double x1, double y1, double x2, double y2,
 
 double distSeglToPoly(const XYSegList& segl, const XYPolygon& poly,
 		      double& ix, double& iy);
+
+double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
+		       double& ix, double& iy, bool verbose=false);
 
 
 // DEPRECATED INTERFACES

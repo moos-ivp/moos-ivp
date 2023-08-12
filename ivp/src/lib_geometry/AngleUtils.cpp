@@ -811,6 +811,23 @@ double headingAvg(double h1, double h2)
   return(headingAvg(pair));
 }
 
+//----------------------------------------------------------------
+// Procedure: portTurn()
+//   Purpose: Given a current ownship heading and prospective new
+//            heading, determine if this would result in a port or
+//            starboard turn. Presuming a vessel would turn port
+//            for delta headings in the range of [0,180) and
+//            starboard turns in the range of (0,180]. 
 
-
-
+bool portTurn(double osh, double hdg)
+{
+  if(hdg > osh) {
+    if((hdg - osh) < 180)
+      return(false);
+  }
+  else {
+    if((osh - hdg) > 180)
+      return(false);
+  }
+  return(true);
+}

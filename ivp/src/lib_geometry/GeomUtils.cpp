@@ -2579,7 +2579,7 @@ double distSeglToPoly(const XYSegList& segl, const XYPolygon& poly,
 // Procedure: distSeglrToPoly()
 
 double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
-		       double& rix, double& riy)
+		       double& rix, double& riy, bool verbose)
 {
   // Sanity checks
   if((seglr.size() == 0) || !poly.is_convex()) {
@@ -2588,11 +2588,22 @@ double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
     return(0);
   }
 
-  XYSegList segl = seglr.getBaseSegList();
   double segl_ix = 0;
   double segl_iy = 0;
-  double segl_cpa = distSeglToPoly(segl, poly, segl_ix, segl_iy);
-
+  double segl_cpa = seglr.getCacheCPA();
+  //double segl_cpa = -1;
+  
+  // If Seglr has CPA info already cached for the seglist, use it.
+  if(segl_cpa > 0) {
+    XYPoint cpa_pt = seglr.getCacheCPAPoint();
+    segl_ix = cpa_pt.x();
+    segl_ix = cpa_pt.y();
+  }
+  else {
+    XYSegList segl = seglr.getBaseSegList();
+    segl_cpa = distSeglToPoly(segl, poly, segl_ix, segl_iy);
+  }
+  
   double rx = seglr.getRayBaseX();
   double ry = seglr.getRayBaseY();
   double ra = seglr.getRayAngle();
@@ -2600,15 +2611,33 @@ double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
   double ray_iy = 0;
   double ray_cpa = polyRayCPA(rx,ry,ra, poly, ray_ix, ray_iy);
 
+  double final_cpa = 0;
+  
   if(segl_cpa < ray_cpa) {
     rix = segl_ix;
     riy = segl_iy;
+    final_cpa = segl_cpa;
     return(segl_cpa);
   }
+  else {
+    rix = ray_ix;
+    riy = ray_iy;
+    final_cpa = ray_cpa;
+  }
 
-  rix = ray_ix;
-  riy = ray_iy;
-  return(ray_cpa);
+  if(verbose) {
+    cout << "-------------- distSeglrToPoly()----------" << endl;
+    //cout << "segl: " << segl.get_spec() << endl;
+    cout << "  segl_cpa: " << segl_cpa << endl;  
+    cout << "rx: " << doubleToStringX(rx,1);
+    cout << " ry: " << doubleToStringX(ry,1);
+    cout << " ra: " << doubleToStringX(ra,1) << endl;
+    cout << "  ray_cpa: " << ray_cpa << endl;
+    cout << "Final cpa: " << final_cpa << endl;
+    cout << "------------------------------------------" << endl;
+  }
+  
+  return(final_cpa);
 }
   
 

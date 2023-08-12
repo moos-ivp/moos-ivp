@@ -52,7 +52,6 @@ SET(SRC
   XYFormatUtilsPoly.cpp
   XYFormatUtilsRangePulse.cpp
   XYFormatUtilsSegl.cpp
-  XYFormatUtilsSeglr.cpp
   XYFormatUtilsVector.cpp
   XYFormatUtilsWedge.cpp
   XYGrid.cpp

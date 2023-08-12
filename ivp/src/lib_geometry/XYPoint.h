@@ -54,34 +54,34 @@ class XYPoint : public XYObject {
   void invalidate() {m_valid=false;}
   
 public:
-  void   shift_x(double val) {m_x += val;}
-  void   shift_y(double val) {m_y += val;}
-  void   shift_z(double val) {m_z += val;}
-  void   apply_snap(double snapval);
+  void shift_x(double val) {m_x += val;}
+  void shift_y(double val) {m_y += val;}
+  void shift_z(double val) {m_z += val;}
+  void apply_snap(double snapval);
 
 public:
-  double    get_vx() const          {return(m_x);}
-  double    get_vy() const          {return(m_y);}
-  double    get_vz() const          {return(m_z);}
-  double    get_pt_trans() const    {return(m_pt_trans);}
-  double    x() const               {return(m_x);}
-  double    y() const               {return(m_y);}
-  double    z() const               {return(m_z);}
-  bool      valid() const           {return(m_valid);}
+  double get_vx() const       {return(m_x);}
+  double get_vy() const       {return(m_y);}
+  double get_vz() const       {return(m_z);}
+  double get_pt_trans() const {return(m_pt_trans);}
+  double x() const            {return(m_x);}
+  double y() const            {return(m_y);}
+  double z() const            {return(m_z);}
+  bool   valid() const        {return(m_valid);}
 
-  void      projectPt(const XYPoint&, double ang, double dist);
+  void   projectPt(const XYPoint&, double ang, double dist);
 
   std::string get_spec_xy(char c=',') const;
   std::string get_spec(std::string s="") const;
   std::string get_spec_inactive() const;
 
 protected:
-  double    m_x;
-  double    m_y;
-  double    m_z;
-  bool      m_valid;
-  int       m_sdigits;
-  double    m_pt_trans;
+  double m_x;
+  double m_y;
+  double m_z;
+  bool   m_valid;
+  int    m_sdigits;
+  double m_pt_trans;
 };
 
 #endif
