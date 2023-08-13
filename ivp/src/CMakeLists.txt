@@ -162,6 +162,7 @@ SET(IVP_GUI_LIBS
   lib_zaicview       lib_ucommand
 )
 SET(ROBOT_APPS
+  app_alogpick
   app_alogbin        app_alogavg         app_alogtm
   app_alogeval       app_alogload        app_aloggrep
   app_alogscan       app_alogcd          app_alogpare
