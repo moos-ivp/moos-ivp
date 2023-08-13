@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     
     if((argi=="-h") || (argi == "--help") || (argi=="-help")) {
       cout << "Usage: " << endl;
-      cout << "$ gen_ivphash " << endl;
+      cout << "$ mhash_gen " << endl;
       cout << "              " << endl;
       cout << "Synopsis:     " << endl;
       cout << "  This tool is simple wrapper around the utility for making " << endl;
