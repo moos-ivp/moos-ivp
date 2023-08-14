@@ -26,7 +26,6 @@
 
 #include <string>
 #include <map>
-#include "ExpEntry.h"
 
 class PickHandler
 {

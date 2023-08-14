@@ -118,7 +118,7 @@ void showHelpAndExit()
   cout << "                                                           " << endl;
   cout << "Further Notes:                                             " << endl;
   cout << "  (1) Order of arguments is indeed relevant. First arg     " << endl;
-  cout << "      is always the input file. 
+  cout << "      is always the input file.                            " << endl;
   cout << "  (2) Files ending in .log or .txt suffix are assumed to   " << endl;
   cout << "      be input file. Specifying --file=file.log can be     " << endl;
   cout << "      specified simply with file.log.                      " << endl;
