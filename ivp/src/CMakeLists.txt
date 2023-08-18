@@ -222,9 +222,9 @@ message("+++++++++++++++++++++++++++++++++++++++++")
 message(" IVP_BUILD_BOT_CODE_ONLY: ${IVP_BUILD_BOT_CODE_ONLY}")
 message("+++++++++++++++++++++++++++++++++++++++++")
 
-IF("${IVP_BUILD_BOT_CODE_ONLY}" STREQUAL "OFF")
-  LIST(APPEND IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})
-ENDIF()
+#IF("${IVP_BUILD_BOT_CODE_ONLY}" STREQUAL "OFF")
+LIST(APPEND IVP_APPS_TO_BUILD ${IVP_NON_GUI_APPS})
+#ENDIF()
 
 IF("${IVP_BUILD_GUI_CODE}" STREQUAL "ON")
   LIST(APPEND IVP_LIBS_TO_BUILD ${IVP_GUI_LIBS})  
