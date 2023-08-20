@@ -13,22 +13,21 @@ ProcessConfig = ANTLER
   MSBetweenLaunches = 100
    
   Run = MOOSDB            @ NewConsole = false
-  Run = uSimMarine        @ NewConsole = false
+  Run = uSimMarineV22     @ NewConsole = false
   Run = pLogger           @ NewConsole = false
   Run = pNodeReporter     @ NewConsole = false
-  Run = pMarinePID        @ NewConsole = false
+  Run = pMarinePIDV22     @ NewConsole = false
   Run = pHelmIvP          @ NewConsole = false
   Run = uProcessWatch     @ NewConsole = false
-
-#ifdef KNOWS_CONTACTS
-  Run = pBasicContactMgr  @ NewConsole = false
-#endif
 
   Run = pShare             @ NewConsole = false
   Run = pHostInfo          @ NewConsole = false
   Run = uFldNodeBroker     @ NewConsole = false
   Run = uFldMessageHandler @ NewConsole = false
   Run = uTimerScript       @ NewConsole = false
+#ifdef KNOWS_CONTACTS
+  Run = pContactMgrV20  @ NewConsole = false
+#endif
 }
 
 #include plug_uFldNodeBroker.moos
@@ -36,13 +35,65 @@ ProcessConfig = ANTLER
 #include plug_pHostInfo.moos
 #include plug_uFldMessageHandler.moos
 
-#include plug_uSimMarine.moos
-#include plug_pHelmIvP.moos
-#include plug_pMarinePID.moos
 #include plug_pLogger.moos
 #include plug_pNodeReporter.moos
 #include plug_uProcessWatch.moos
 
 #ifdef KNOWS_CONTACTS 
-  #include plug_pBasicContactMgr.moos
+  #include plug_ContactMgrV20.moos
 #endif
+
+//---------------------------------------
+ProcessConfig = pMarinePIDV22
+{
+  AppTick    = 10
+  CommsTick  = 10
+  
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+  ACTIVE_START  = true
+  
+  // Yaw PID controller
+  YAW_PID_KP             = 0.4
+  YAW_PID_KD             = 0.1
+  YAW_PID_KI             = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Speed PID controller
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Maximums
+  MAXRUDDER  = 100
+  MAXTHRUST  = 100
+  
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+
+//------------------------------------------
+ProcessConfig = uSimMarineV22
+{
+  AppTick   = 10
+  CommsTick = 10
+
+  start_pos = $(START_POS)
+  prefix    = NAV
+}
+
+
+//---------------------------------------
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+  
+  behaviors    = targ_$(VNAME).bhv  
+  verbose      = false
+  domain       = course:0:359:360
+  domain       = speed:0:5:26
+}

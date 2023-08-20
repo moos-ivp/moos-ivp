@@ -4,11 +4,9 @@ ProcessConfig = uProcessWatch
   AppTick   = 2
   CommsTick = 2
   
-  WATCH  = uSimMarine
-  WATCH  = pLogger
-  WATCH  = pNodeReporter
-  WATCH  = pMarinePID
-  WATCH  = pHelmIvP
+	watch_all = true
 
-  NOWATCH = uXMS*
+  nowatch = uXMS*
+  nowatch = uPokeDB*
+  nowatch = uQueryDB*
 }
