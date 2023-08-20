@@ -22,3 +22,5 @@ ProcessConfig = pBasicContactMgr
   Alert = id=trail, alert_range=140, cpa_range=185, alert_range_color=green
   Alert = id=trail, cpa_range_color=white
 }
+
+	

@@ -30,20 +30,31 @@ ProcessConfig = ANTLER
 #endif
 }
 
-#include plug_uFldNodeBroker.moos
 #include plug_pShare.moos
 #include plug_pHostInfo.moos
-#include plug_uFldMessageHandler.moos
-
 #include plug_pLogger.moos
-#include plug_pNodeReporter.moos
 #include plug_uProcessWatch.moos
 
-#ifdef KNOWS_CONTACTS 
-  #include plug_ContactMgrV20.moos
-#endif
+//--------------------------------------------------
+// uFldNodeBroker config block
 
-//---------------------------------------
+ProcessConfig = uFldNodeBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  try_shore_host = pshare_route=localhost:$(SHORE_LISTEN)
+
+  bridge = src=VIEW_POLYGON
+  bridge = src=VIEW_POINT
+  bridge = src=VIEW_SEGLIST
+  bridge = src=VIEW_CIRCLE
+  bridge = src=APPCAST
+  bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+  bridge = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
+}
+
+	//---------------------------------------
 ProcessConfig = pMarinePIDV22
 {
   AppTick    = 10
@@ -97,3 +108,53 @@ ProcessConfig = pHelmIvP
   domain       = course:0:359:360
   domain       = speed:0:5:26
 }
+
+//--------------------------------------------------
+// uFldMessageHandler config block
+
+ProcessConfig = uFldMessageHandler
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  strict_addressing = true
+}
+
+//---------------------------------------
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 2
+  CommsTick   = 2
+  
+  platform_type = kayak
+}
+
+//---------------------------------------
+// pBasicContactMgr Config Block 
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  contact_max_age = 3600
+  display_radii   = false
+
+	decay = 30,60
+	alert_verbose = false
+	
+  //default_alert_range = 20
+  //default_cpa_range   = 28
+  //default_alert_range_color = gray70
+  //default_cpa_range_color   = gray30
+
+  //alert = id=avd, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
+  //alert = id=avd, alert_range=50, cpa_range=60, alert_range_color=yellow
+  //alert = id=avd, cpa_range_color=pink
+
+  alert = id=trail, var=TRAIL_INFO, val="name=$[VNAME] # contact=$[VNAME]"
+  //alert = id=trail, alert_range=140, cpa_range=185, alert_range_color=green
+  alert = id=trail, alert_range=140, cpa_range=185
+  //alert = id=trail, cpa_range_color=white
+}
+	
