@@ -39,11 +39,13 @@ class AvgHandler
   bool setLogFile(std::string);
   void setVerbose() {m_verbose=true;}
   void setFormatAligned(bool v) {m_format_aligned=v;}
+  void setFormatNegPos()        {m_format_negpos=true;}
   
  protected: // Config vars
 
   bool   m_verbose;
   bool   m_format_aligned;
+  bool   m_format_negpos;
   
  protected: // State vars
 

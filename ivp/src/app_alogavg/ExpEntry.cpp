@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <iostream>
 #include <cmath>
 #include "MBUtils.h"
 #include "ExpEntry.h"
@@ -28,21 +29,16 @@
 using namespace std;
 
 //--------------------------------------------------------
-// Constructor
+// Constructor()
 
 ExpEntry::ExpEntry()
 {
   m_xval = 0;
-  
   m_yavg = 0;
   m_ymin = 0;
   m_ymax = 0;
   m_ystd = 0;
-
-  m_yavg_set = false;
-  m_ymin_set = false;
-  m_ymax_set = false;
-  m_ystd_set = false;
+  m_processed = false;
 }
 
 //--------------------------------------------------------
@@ -51,83 +47,62 @@ ExpEntry::ExpEntry()
 void ExpEntry::addYVal(double y)
 {
   m_yvals.push_back(y);
-
-  m_yavg_set = false;
-  m_ymin_set = false;
-  m_ymax_set = false;
-  m_ystd_set = false;
+  m_processed = false;
 }
 
+//--------------------------------------------------------
+// Procedure: process()
+
+void ExpEntry::process()
+{
+  if((m_processed) || (m_yvals.size() == 0))
+    return;
+  setYAvg();
+  setYMin();
+  setYMax();
+  setYStd();
+  m_processed = true;
+}
 
 //--------------------------------------------------------
-// Procedure: getYAvg()
+// Procedure: setYAvg()
 
-double ExpEntry::getYAvg()
+void ExpEntry::setYAvg()
 {
-  if(m_yavg_set)
-    return(m_yavg);
-  
   double total = 0;
   for(unsigned int i=0; i<m_yvals.size(); i++)
     total += m_yvals[i];
-
-  double avg = total / ((double)(m_yvals.size()));
-
-  m_yavg = avg;
-  m_yavg_set = true;
-  return(avg);  
+  m_yavg = total / ((double)(m_yvals.size()));
 }
 
 //--------------------------------------------------------
-// Procedure: getYMin()
+// Procedure: setYMin()
 
-double ExpEntry::getYMin()
+void ExpEntry::setYMin()
 {
-  if(m_ymin_set)
-    return(m_ymin);
-  
-  double minval = 0;
   for(unsigned int i=0; i<m_yvals.size(); i++) {
-    if((i==0) || (m_yvals[i] < minval))
-      minval = m_yvals[i];
+    if((i==0) || (m_yvals[i] < m_ymin))
+      m_ymin = m_yvals[i];
   }
-
-  m_ymin = minval;
-  m_ymin_set = true;
-  return(minval);  
 }
 
-
 //--------------------------------------------------------
-// Procedure: getYMax()
+// Procedure: setYMax()
 
-double ExpEntry::getYMax()
+void ExpEntry::setYMax()
 {
-  if(m_ymax_set)
-    return(m_ymax);
-  
-  double maxval = 0;
   for(unsigned int i=0; i<m_yvals.size(); i++) {
-    if((i==0) || (m_yvals[i] > maxval))
-      maxval = m_yvals[i];
+    if((i==0) || (m_yvals[i] > m_ymax))
+      m_ymax = m_yvals[i];
   }
-
-  m_ymax = maxval;
-  m_ymax_set = true;
-  return(maxval);  
 }
 
-
 //--------------------------------------------------------
-// Procedure: getYStd()
+// Procedure: setYStd()
 
-double ExpEntry::getYStd()
+void ExpEntry::setYStd()
 {
-  if(m_ystd_set)
-    return(m_ystd);
-
-  double avg = getYAvg();
-  
+  double avg = m_yavg;
   double total = 0;
   for(unsigned int i=0; i<m_yvals.size(); i++) {
     double delta = avg - m_yvals[i];
@@ -135,12 +110,7 @@ double ExpEntry::getYStd()
   }
 
   double variance = total / ((double)(m_yvals.size()));
-
   double std_deviation = sqrt(variance);
 
   m_ystd = std_deviation;
-  m_ystd_set = true;
-  return(std_deviation);  
 }
-
-

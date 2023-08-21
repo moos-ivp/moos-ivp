@@ -53,6 +53,8 @@ int main(int argc, char *argv[])
       handler.setVerbose();
     else if(argi=="--noformat")
       handler.setFormatAligned(false);
+    else if((argi=="-np") || (argi=="--negpos")) 
+      handler.setFormatNegPos();
     else if(strEnds(argi, ".log"))
       handled = handler.setLogFile(argi);
     else if(strBegins(argi, "--file="))
@@ -109,6 +111,7 @@ void showHelpAndExit()
   cout << "  -v,--version      Displays the current release version   " << endl;
   cout << "  --file=file.txt   Use file.txt as the input log file     " << endl;
   cout << "  --noformat        Do not align column output             " << endl;
+  cout << "  -np, --negpos     Use Neg/Pos instead of Min/Max         " << endl;
   cout << "                                                           " << endl;
   cout << "Further Notes:                                             " << endl;
   cout << "  (1) Order of arguments is irrelevant.                    " << endl;

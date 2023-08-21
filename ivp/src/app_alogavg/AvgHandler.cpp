@@ -42,6 +42,7 @@ AvgHandler::AvgHandler()
   m_verbose  = false;
 
   m_format_aligned = true;
+  m_format_negpos  = false;
 }
 
 //--------------------------------------------------------
@@ -118,9 +119,14 @@ bool AvgHandler::handle()
       double yavg = entry.getYAvg();
       double ymin = entry.getYMin();
       double ymax = entry.getYMax();
+      double yneg = entry.getYNeg();
+      double ypos = entry.getYPos();
       double ystd = entry.getYStd();
 
-      actab << xval << yavg << ymin << ymax << ystd;
+      if(m_format_negpos)
+	actab << xval << yavg << yneg << ypos << ystd;
+      else
+	actab << xval << yavg << ymin << ymax << ystd;
     }
     vector<string> lines = actab.getTableOutput();
     for(unsigned int i=0; i<lines.size(); i++)
@@ -136,10 +142,17 @@ bool AvgHandler::handle()
       double yavg = entry.getYAvg();
       double ymin = entry.getYMin();
       double ymax = entry.getYMax();
+      double yneg = entry.getYNeg();
+      double ypos = entry.getYPos();
       double ystd = entry.getYStd();
       
-      cout << xval << " " << yavg << " " << ymin <<
-	" " << ymax << " " << ystd << endl;
+      if(m_format_negpos) {
+	cout << xval << " " << yavg << " " << yneg <<
+	  " " << ypos << " " << ystd << endl;
+      }
+      else 
+	cout << xval << " " << yavg << " " << ymin <<
+	  " " << ymax << " " << ystd << endl;
     }
   }
 
