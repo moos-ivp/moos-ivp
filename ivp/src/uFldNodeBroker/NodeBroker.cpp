@@ -563,7 +563,7 @@ bool NodeBroker::buildReport()
   m_msgs << "        HostIP: " << m_node_host_record.getHostIP()          << endl; 
   m_msgs << "   Port MOOSDB: " << m_node_host_record.getPortDB()          << endl; 
   m_msgs << "     Time Warp: " << m_node_host_record.getTimeWarp()        << endl; 
-  m_msgs << "  Comms Policy: " << commsPolicy()                           << endl; 
+  //  m_msgs << "  Comms Policy: " << commsPolicy()                           << endl; 
 
   string try_host_ips;
   for(unsigned int i=0; i<m_try_host_ips.size(); i++) {
