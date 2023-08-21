@@ -266,7 +266,6 @@ bool USM_MOOSApp::OnStartUp()
     m_pid_coupled = true;
   }
   
-  
   //====================================================
   // Part II: Vehicle Simulator Config Params
   //====================================================
@@ -274,13 +273,13 @@ bool USM_MOOSApp::OnStartUp()
   STRING_LIST::iterator p;
   for(p = sParams.begin();p!=sParams.end();p++) {
     string orig  = *p;
-
     string line  = *p;
     string param = tolower(biteStringX(line, '='));
     string value = line;
     double dval  = atof(value.c_str());
 
     bool handled = false;
+
     if((param == "start_x") && isNumber(value))
       handled = m_model.setParam(param, dval);
     else if((param == "start_y") && isNumber(value))
@@ -335,7 +334,7 @@ bool USM_MOOSApp::OnStartUp()
     else if(param == "start_pos")
       handled = m_model.initPosition(value);
     else if(param == "thrust_reflect")
-      m_model.setThrustReflect(value);
+      handled = m_model.setThrustReflect(value);
     else if(param == "thrust_mode_diff") 
       handled = m_model.setThrustModeDiff(value);
     else if(param == "thrust_mode_reverse")
