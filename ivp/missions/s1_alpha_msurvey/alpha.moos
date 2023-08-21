@@ -31,7 +31,7 @@ ProcessConfig = ANTLER
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
   Run = uMemWatch       @ NewConsole = false
-  Run = pMovingSurvey   @ NewConsole = false
+  //Run = pMovingSurvey   @ NewConsole = false
 }
 
 //------------------------------------------

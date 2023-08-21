@@ -30,8 +30,6 @@ Processconfig = ANTLER
 #include plugs.moos <pHostInfo>
 #include plugs.moos <uProcessWatch>
 
-
-1234567890 1234567890 1234567890 1234567890 1234567890
 //------------------------------------------------
 // uFldNodeBroker config block
 

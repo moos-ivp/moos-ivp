@@ -21,11 +21,11 @@ for ARGI; do
 	echo "  --help, -h         Show this help message            " 
 	echo "  --just_make, -j    Just create targ files, no launch " 
 	echo "                                                       " 
-	echo "  --siga=val         Set sigma A        " 
-	echo "  --siga=val         Set sigma B        " 
+	echo "  --siga=val         Set sigma A [4]    " 
+	echo "  --siga=val         Set sigma B [6]    " 
 	echo "                                        " 
-	echo "  --mua=val          Set Mu A           " 
-	echo "  --mua=val          Set Mu B           " 
+	echo "  --mua=val          Set Mu A [175]     " 
+	echo "  --mub=val          Set Mu B [50]      " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI

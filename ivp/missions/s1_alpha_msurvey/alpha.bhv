@@ -26,8 +26,8 @@ Behavior = BHV_Waypoint
 
              //polygon = 60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40
 //             points  = format=lawnmower, label=survey, x=50, y=-90, height=60, width=100, lane_width=12, rows=north-south, startx=0, starty=0, degs=45
-             points  = format=lawnmower, label=survey, x=50, y=-90, height=60, width=100, lane_width=12,  degs=45
-             points  = format=lawnmower, label=survey, x=50, y=-90, height=200, width=100, lane_width=12,  degs=45
+//             points  = format=lawnmower, label=survey, x=50, y=-90, height=60, width=100, lane_width=12,  degs=45
+             points  = format=lawnmower, label=survey, x=50, y=-90, height=200, width=100, lane_width=12,  degs=90
 
                order = normal
              repeat  = 1000
