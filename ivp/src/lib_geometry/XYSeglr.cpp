@@ -345,7 +345,7 @@ string XYSeglr::get_spec(int precision) const
   spec += ",head_size=" + doubleToStringX(m_headsz,1);
 
   if(m_cpa >= 0)
-    spec = ",cpa=" + doubleToStringX(m_cpa,2);
+    spec += ",cpa=" + doubleToStringX(m_cpa,2);
   if(m_cpa_pt.valid()) {
     spec += ",cpax=" + doubleToStringX(m_cpa_pt.x(),2);
     spec += ",cpay=" + doubleToStringX(m_cpa_pt.y(),2);

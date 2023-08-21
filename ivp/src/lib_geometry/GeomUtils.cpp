@@ -1230,6 +1230,7 @@ bool crossRaySegl(double px, double py, double ph,
 //---------------------------------------------------------------
 // Procedure: distPointToRay()
 //   Purpose: Determine distance from the given point to the given ray
+//            Returned location, ix,iy, will always be on the Ray.
 
 double distPointToRay(double px, double py,
 		      double rx, double ry, double ray_angle,
@@ -1292,9 +1293,10 @@ double segRayCPA(double rx, double ry, double ray_angle,
     iy = iy2;
     return(dist2);    
   }
-
-  ix = ix3;
-  iy = iy3;
+  //ix = ix3;
+  //iy = iy3;
+  ix = rx;
+  iy = ry;
   return(dist3);    
 }
 
@@ -1718,10 +1720,9 @@ double polyRayCPA(double rx, double ry, double ray_angle,
       crosses = true;
     }
   }
-  
+
   if(crosses)
-    return(0); // Recall return val is CPA not dist from raybase
-  
+    return(0); // Recall return val is CPA not dist from raybase  
 
   // Part 3: Ray does notcross any of the polygon segments, so now
   // we calculate the ray CPA for all segments and take the min
@@ -1739,17 +1740,13 @@ double polyRayCPA(double rx, double ry, double ray_angle,
     }
     double ix = 0;
     double iy = 0;
-
     double cpa = 0;
-    bool cross = lineRayCross(rx,ry,ray_angle, x1,y1, x2,y2, ix,iy);
-    if(!cross) {
-      cpa = distPointToSeg(x1,y1, x2,y2, rx,ry);
-      ix = rx;
-      iy = ry;
-    }
-    else
-      cpa = segRayCPA(rx, ry, ray_angle, x1, y1, x2, y2, ix, iy);
-    
+
+    if(crossRaySeg(rx,ry,ray_angle, x1,y1,x2,y2, ix,iy))
+      cpa = 0;
+    else 
+      cpa = segRayCPA(rx,ry,ray_angle, x1,y1, x2,y2, ix,iy);
+
     if((min_cpa < 0) || (cpa < min_cpa)) {
       min_cpa = cpa;
       rix = ix;
@@ -2591,13 +2588,12 @@ double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
   double segl_ix = 0;
   double segl_iy = 0;
   double segl_cpa = seglr.getCacheCPA();
-  //double segl_cpa = -1;
   
   // If Seglr has CPA info already cached for the seglist, use it.
-  if(segl_cpa > 0) {
+  if(segl_cpa >= 0) {   
     XYPoint cpa_pt = seglr.getCacheCPAPoint();
     segl_ix = cpa_pt.x();
-    segl_ix = cpa_pt.y();
+    segl_iy = cpa_pt.y();
   }
   else {
     XYSegList segl = seglr.getBaseSegList();
@@ -2612,7 +2608,8 @@ double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
   double ray_cpa = polyRayCPA(rx,ry,ra, poly, ray_ix, ray_iy);
 
   double final_cpa = 0;
-  
+
+  // mikerbmikerb
   if(segl_cpa < ray_cpa) {
     rix = segl_ix;
     riy = segl_iy;

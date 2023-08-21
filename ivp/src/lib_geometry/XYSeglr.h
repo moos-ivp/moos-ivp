@@ -48,7 +48,7 @@ public: // Setters
   void setHeadSize(double);
   void setCacheCPA(double);
   void setCacheCPAPoint(XYPoint);
-
+  
 public: // Getters (for settable vals)
   double getVX(unsigned int ix) const;
   double getVY(unsigned int ix) const;
@@ -77,6 +77,7 @@ public: // Getters (analyzers)
   unsigned int size() const {return(m_vx.size());};
   
   std::string get_spec(int vertex_precision=1) const;
+  std::string get_spec_ix() const;
 
 protected:
   std::vector<double> m_vx;
