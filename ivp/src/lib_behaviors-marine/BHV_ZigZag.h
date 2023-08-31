@@ -106,8 +106,8 @@ protected: // State vars supporting macros
 
   VarDataPair m_end_solo_flag;
 
-  std::vector<VarDataPair> m_zigleg_flags;
-  std::vector<VarDataPair> m_zigzag_flags;
+  std::vector<VarDataPair> m_zig_flags;
+  std::vector<VarDataPair> m_zag_flags;
 };
 
 #endif

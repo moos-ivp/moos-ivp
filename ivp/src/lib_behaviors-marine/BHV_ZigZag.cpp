@@ -109,9 +109,9 @@ bool BHV_ZigZag::setParam(string param, string value)
   else if(param == "delta_heading" || (param == "zig_angle_fierce"))
     handled = handleConfigZigAngleFierce(value);
   else if(param == "zigleg_flag")
-    handled = addVarDataPairOnString(m_zigleg_flags, value);
+    handled = addVarDataPairOnString(m_zig_flags, value);
   else if(param == "zigzag_flag")
-    handled = addVarDataPairOnString(m_zigzag_flags, value);
+    handled = addVarDataPairOnString(m_zag_flags, value);
 
   else if(param == "visual_hints")  {
     vector<string> svector = parseStringQ(value, ',');
@@ -262,8 +262,11 @@ void BHV_ZigZag::updateSetHdg()
   m_zig_cnt++;
   m_zig_cnt_ever++;
   m_zig_odo.reset();
-  if((m_zig_cnt % 2) == 0)
+  if((m_zig_cnt % 2) == 0) {
     m_zag_odo.reset();
+    postFlags(m_zag_flags);
+  }
+  postFlags(m_zig_flags);
 
   m_zig_spd_start = m_osh;
   m_zig_spd_min = -1;
@@ -641,8 +644,16 @@ string BHV_ZigZag::expandMacros(string sdata)
   sdata = macroExpand(sdata, "ZIG_START_SPD", m_zig_spd_start);
   sdata = macroExpand(sdata, "ZIG_MIN_SPD", m_zig_spd_min);
   sdata = macroExpand(sdata, "ZIG_SPD_DELTA", m_zig_spd_delta);
-  sdata = macroExpand(sdata, "ZIGS_TOGO", 0);
-  sdata = macroExpand(sdata, "ZAGS_TOTO", 0);
+
+  unsigned int zigs_togo = 0;
+  unsigned int zags_togo = 0;
+  if(m_max_zig_legs > m_zig_cnt) {
+    zigs_togo = m_max_zig_legs - m_zig_cnt;
+    zags_togo = (int)(zigs_togo / 2);
+  }
+
+  sdata = macroExpand(sdata, "ZIGS_TOGO", zigs_togo);
+  sdata = macroExpand(sdata, "ZAGS_TOGO", zags_togo);
 
   sdata = macroExpand(sdata, "ZIG_PORT", (m_state == "port"));
   sdata = macroExpand(sdata, "ZIG_STAR", (m_state == "star"));
