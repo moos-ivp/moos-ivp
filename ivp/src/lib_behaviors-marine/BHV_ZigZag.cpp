@@ -38,7 +38,16 @@ BHV_ZigZag::BHV_ZigZag(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_req_hdg = 0;
   m_set_hdg = 0;
 
-  m_zig_count = 0;
+  m_zig_cnt = 0;
+
+  m_stem_x1 = 0;
+  m_stem_y1 = 0;
+  m_stem_x2 = 0;
+  m_stem_y2 = 0;
+
+  m_zig_spd_start = 0;
+  m_zig_spd_min = -1;
+  m_zig_spd_delta = 0;
   
   // Initialize config variables
   m_stem_hdg = 0;
@@ -99,8 +108,10 @@ bool BHV_ZigZag::setParam(string param, string value)
     handled = handleConfigZigZags(value);
   else if(param == "delta_heading" || (param == "zig_angle_fierce"))
     handled = handleConfigZigAngleFierce(value);
-  //else if(param == "end_solo_flag")
-  //  handled = addVarDataPairOnString(m_end_solo_flag, value);
+  else if(param == "zigleg_flag")
+    handled = addVarDataPairOnString(m_zigleg_flags, value);
+  else if(param == "zigzag_flag")
+    handled = addVarDataPairOnString(m_zigzag_flags, value);
 
   else if(param == "visual_hints")  {
     vector<string> svector = parseStringQ(value, ',');
@@ -229,6 +240,10 @@ void BHV_ZigZag::updateSetHdg()
       turn_complete = true;
   }
 
+  if((m_zig_spd_min < 0) || (m_osv < m_zig_spd_min))
+    m_zig_spd_min = m_osv;
+  m_zig_spd_delta = m_zig_spd_start - m_zig_spd_min;
+  
   if(!turn_complete)
     return;
   
@@ -238,13 +253,21 @@ void BHV_ZigZag::updateSetHdg()
   if(m_state == "port") {
     setState("star");
     m_set_hdg = angle360(m_stem_hdg + m_zig_angle);
-    m_zig_count++;
   }
   else if(m_state == "star") {
     setState("port");
     m_set_hdg = angle360(m_stem_hdg - m_zig_angle);
-    m_zig_count++;
   }
+
+  m_zig_cnt++;
+  m_zig_cnt_ever++;
+  m_zig_odo.reset();
+  if((m_zig_cnt % 2) == 0)
+    m_zag_odo.reset();
+
+  m_zig_spd_start = m_osh;
+  m_zig_spd_min = -1;
+  m_zig_spd_delta = 0;
 }
 
 //-----------------------------------------------------------
@@ -327,10 +350,13 @@ IvPFunction *BHV_ZigZag::onRunState()
   updateSetHdg();
   updateReqHdg();
 
-  if(m_zig_count > m_max_zig_legs) {
+  postSetHdgLine();
+  postReqHdgLine();
+  
+  if(m_zig_cnt > m_max_zig_legs) {
     setComplete();
     if(m_perpetual) {
-      m_zig_count = 0;
+      m_zig_cnt = 0;
       m_state = "stem";
     }
     return(0);
@@ -357,6 +383,7 @@ void BHV_ZigZag::onRunToIdleState()
   eraseReqHdgLine();
 
   m_odometer.reset();  
+  m_zig_cnt = 0;
   setState("stem");
 }
 
@@ -369,7 +396,17 @@ void BHV_ZigZag::onIdleToRunState()
     if(updateOSHdg())
       m_stem_hdg = m_osh;
   }
+  if(updateOSHdg())
+    m_stem_spd = m_osv;
 
+  // Calculate the stem line so we can later report the ownship
+  // distance to the stem line.
+  m_stem_x1 = m_osx;
+  m_stem_y1 = m_osy;
+  projectPoint(m_stem_hdg, 100, m_osx, m_osy, m_stem_x2, m_stem_y2);
+
+  // Reset the stuff that gets reset upon entering the run state.
+  m_zig_cnt = 0;
   m_odometer.reset();  
   setState("stem");
 }
@@ -455,7 +492,6 @@ bool BHV_ZigZag::updateOSSpd(string fail_action)
 
 }
 
-
 //-----------------------------------------------------------
 // Procedure: updateOdometer()
 
@@ -489,6 +525,9 @@ bool BHV_ZigZag::setState(std::string str)
 
 void BHV_ZigZag::postSetHdgLine()
 {
+  if(!m_draw_set_hdg)
+    return;
+
   double x2,y2;
   projectPoint(m_set_hdg, 20, m_osx, m_osy, x2, y2);
   
@@ -511,6 +550,9 @@ void BHV_ZigZag::postSetHdgLine()
 
 void BHV_ZigZag::postReqHdgLine()
 {
+  if(!m_draw_req_hdg)
+    return;
+
   double x2,y2;
   projectPoint(m_req_hdg, 20, m_osx, m_osy, x2, y2);
   
@@ -576,13 +618,36 @@ bool BHV_ZigZag::handleConfigVisualHint(string hint)
 
 string BHV_ZigZag::expandMacros(string sdata)
 {
-#if 0
   sdata = IvPBehavior::expandMacros(sdata);
 
-  sdata = macroExpand(sdata, "REGION", m_curr_region);
-  sdata = macroExpand(sdata, "NEXT_REGION", m_next_region);
-#endif
+  sdata = macroExpand(sdata, "ODO", m_odometer.getTotalDist());
+  sdata = macroExpand(sdata, "ZIG_ODO", m_zig_odo.getTotalDist());
+  sdata = macroExpand(sdata, "ZAG_ODO", m_zig_odo.getTotalDist());
+
+  // Check if macro is present before performing the calculation
+  if(strContains(sdata, "STEM_DIST")) {
+    double dist = distPointToLine(m_osx, m_osy, m_stem_x1, m_stem_y1,
+				  m_stem_x2, m_stem_y2);
+    sdata = macroExpand(sdata, "STEM_DIST", doubleToStringX(dist,2));
+  }  
+
+  sdata = macroExpand(sdata, "ZIGS", m_zig_cnt);
+  sdata = macroExpand(sdata, "ZAGS", (int)(m_zig_cnt/2));
+  sdata = macroExpand(sdata, "ZIGS_EVER", m_zig_cnt_ever);
+  sdata = macroExpand(sdata, "ZAGS_EVER", (int)(m_zig_cnt_ever/2));
   
+  sdata = macroExpand(sdata, "STEM_HDG", m_stem_hdg);
+  sdata = macroExpand(sdata, "STEM_HDG", m_stem_spd);
+  sdata = macroExpand(sdata, "ZIG_START_SPD", m_zig_spd_start);
+  sdata = macroExpand(sdata, "ZIG_MIN_SPD", m_zig_spd_min);
+  sdata = macroExpand(sdata, "ZIG_SPD_DELTA", m_zig_spd_delta);
+  sdata = macroExpand(sdata, "ZIGS_TOGO", 0);
+  sdata = macroExpand(sdata, "ZAGS_TOTO", 0);
+
+  sdata = macroExpand(sdata, "ZIG_PORT", (m_state == "port"));
+  sdata = macroExpand(sdata, "ZIG_STAR", (m_state == "star"));
+  sdata = macroExpand(sdata, "ZIG_SIDE", m_state);
+
   return(sdata);
 }
 

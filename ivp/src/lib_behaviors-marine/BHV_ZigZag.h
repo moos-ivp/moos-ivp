@@ -59,12 +59,27 @@ protected:
  
  protected: // State vars
   Odometer m_odometer;
+  Odometer m_zig_odo;
+  Odometer m_zag_odo;
+
   double   m_req_hdg;
   double   m_set_hdg;
 
   std::string m_state;  // stem, port, star
 
-  unsigned int m_zig_count;
+  double m_stem_x1;
+  double m_stem_y1;
+  double m_stem_x2;
+  double m_stem_y2;
+
+  double m_zig_spd_start;
+  double m_zig_spd_min;
+  double m_zig_spd_delta;
+  
+protected: // State vars supporting macros
+
+  unsigned int m_zig_cnt;
+  unsigned int m_zig_cnt_ever;
   
  private: // Config params
   double m_hdg_thresh;
@@ -90,6 +105,9 @@ protected:
   std::string m_zig_first;
 
   VarDataPair m_end_solo_flag;
+
+  std::vector<VarDataPair> m_zigleg_flags;
+  std::vector<VarDataPair> m_zigzag_flags;
 };
 
 #endif
