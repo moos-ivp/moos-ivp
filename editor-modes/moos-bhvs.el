@@ -35,7 +35,7 @@
 
        '("BHV_LegRunZ" "pa" "p2" "vx1" "vx2" "leg" "full_leg" "center" "speed" "wpt_status_var" "wptflag"  "cycleflag" "legflag" "midflag" "warn_overshoot"  "lead" "lead_damper" "capture_line" "repeat"  "visual_hints" "radius" "capture_radius" "slip_radius" "midpct" "leg_len" "leg_length" "leg_angle" "leg_ang" "leg_ang_mod" "leg_angle_mod" "leg_len_mod" "leg_length_mod" "patience" "turn1_dir" "turn1_rad" "turn1_bias" "turn2_dir" "turn2_rad" "turn2_bias" "turn_rad_min" "turn1_rad_mod" "turn2_rad_mod" "turn_rad_mod" "turn1_bias_mod" "turn2_bias_mod" "turn_bias_mod""mid_pct" "leg_spds" "shift_pt" "shift_point" "visual_hints" "turn_pt_gap" "coord" "turn1_ext" "turn2_ext" "turn_ext" "turn1_ext_mod" "turn2_ext_mod" "turn_ext_mod" "adjust_turn" "offboard_tgap" "lane" "id" "coord_extrap" "coord_onleg" )
 	 	 
-       '("BHV_ZigZag" "speed" "stem_hdg" "stem_on_active" "hdg_thresh" "fierce_zigging" "zig_angle" "zig_first" "max_zig_legs" "max_zig_zags" "visual_hints")
+       '("BHV_ZigZag" "speed" "stem_hdg" "stem_on_active" "hdg_thresh" "fierce_zigging" "zig_angle" "zig_first" "max_zig_legs" "max_zig_zags" "visual_hints" "spd_on_active" "speed_on_active" "zigflag" "zagflag" "portflag" "starflag" "portflagx" "starflagx" "zig_angle_fierce" "max_stem_dist" "max_stem_odo" )
 	 
        '("BHV_FullStop" "mark_duration" "stop_thresh" "mark_flag" "unmark_flag" "delay_complete" "visual_hints")
 	 
@@ -62,7 +62,8 @@
        '("BHV_Timer" "post_mapping" )
        '("BHV_AvoidObstacle" "post_mapping" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "buffer_dist" "obstacle_key" "completed_dist" "no_alert_request" "i_understand_this_behavior_is_deprecated")
        '("BHV_AvoidObstacleX" "post_mapping" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "min_util_cpa_dist" "max_util_cpa_dist" "obstacle_key" "completed_dist" "no_alert_request" "use_refinery" "i_understand_this_behavior_is_deprecated")
-       '("BHV_AvoidObstacleV21" "post_mapping" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "min_util_cpa_dist" "max_util_cpa_dist" "obstacle_key" "completed_dist" "no_alert_request" "use_refinery" "id")
+       '("BHV_AvoidObstacleV21" "post_mapping" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "min_util_cpa_dist" "max_util_cpa_dist" "obstacle_key" "completed_dist" "no_alert_request" "use_refinery" "id" "visual_hints" )
+       '("BHV_AvoidObstacleV24" "post_mapping" "poly" "allowable_ttc" "pwt_outer_dist" "pwt_inner_dist" "min_util_cpa_dist" "max_util_cpa_dist" "obstacle_key" "completed_dist" "no_alert_request" "use_refinery" "id" "visual_hints" )
        '("BHV_HSLine" "post_mapping" "time_on_leg" )
        '("BHV_TestFailure" "post_mapping" "failure_type")
        '("BHV_CutRange" "post_mapping" "contact" "them" "extrapolate" "decay" "decay_end" "time_on_leg" "bearing_line_config" "pwt_outer_dist" "pwt_inner_dist" "giveup_dist" "patience" "on_no_contact_ok" "pursueflag" "giveupflag" "match_type" "ignore_type" "match_group" "ignore_group" "match_name" "ignore_name" "match_region" "ignore_region" "exit_on_filter_vname" "exit_on_filter_vtype" "exit_on_filter_group" "exit_on_filter_region")
