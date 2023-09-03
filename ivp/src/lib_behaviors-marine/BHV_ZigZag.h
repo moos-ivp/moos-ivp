@@ -40,15 +40,18 @@ protected:
   bool handleConfigVisualHint(std::string);
   bool handleConfigZigAngle(std::string);
   bool handleConfigZigAngleFierce(std::string);
+  bool handleConfigSpeed(std::string);
+  bool handleConfigModSpeed(std::string);
   
   bool updateOSPos(std::string fail_action="err");
   bool updateOSHdg(std::string fail_action="err");
   bool updateOSSpd(std::string fail_action="err");
-  bool updateOdometer();
+  void updateOdometry();
+  void resetOdometry();
 
   void updateSetHdg();
   void updateReqHdg();
-  bool setState(std::string);
+  void setState(std::string);
   std::string getState() const {return(m_state);}
   
  protected: // visuals
@@ -56,7 +59,9 @@ protected:
   void postReqHdgLine();
   void eraseSetHdgLine();
   void eraseReqHdgLine();
- 
+
+  bool legsComplete() const {return(m_zig_cnt > m_max_zig_legs);}  
+  
  protected: // State vars
   Odometer m_odometer;
   Odometer m_zig_odo;
@@ -71,13 +76,13 @@ protected:
   double m_stem_y1;
   double m_stem_x2;
   double m_stem_y2;
-
+  double m_stem_dist;
+  double m_stem_odo;
+  
   double m_zig_spd_start;
   double m_zig_spd_min;
   double m_zig_spd_delta;
   
-protected: // State vars supporting macros
-
   unsigned int m_zig_cnt;
   unsigned int m_zig_cnt_ever;
   
@@ -87,7 +92,9 @@ protected: // State vars supporting macros
   double m_zig_angle_fierce;
   
   double m_stem_hdg;
-  double m_stem_spd;
+  double m_speed;
+  double m_speed_orig;
+  bool   m_speed_on_active;
   
   double m_stale_nav_thresh;
 
@@ -98,16 +105,20 @@ protected: // State vars supporting macros
   bool   m_draw_req_hdg;
 
   unsigned int m_max_zig_legs;
+  double       m_max_stem_dist;
+  double       m_max_stem_odo;
   
   std::string m_hint_set_hdg_color;
   std::string m_hint_req_hdg_color;
   
   std::string m_zig_first;
 
-  VarDataPair m_end_solo_flag;
-
   std::vector<VarDataPair> m_zig_flags;
   std::vector<VarDataPair> m_zag_flags;
+  std::vector<VarDataPair> m_port_flags;
+  std::vector<VarDataPair> m_star_flags;
+  std::vector<VarDataPair> m_portx_flags;
+  std::vector<VarDataPair> m_starx_flags;
 };
 
 #endif
