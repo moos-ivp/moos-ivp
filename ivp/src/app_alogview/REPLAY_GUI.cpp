@@ -131,7 +131,7 @@ void REPLAY_GUI::initWidgets()
   m_curr2->textcolor(FL_WHITE); 
   m_curr2->color(FL_DARK_BLUE); 
 
-  copy_label("alogview (PAUSED)");
+  copy_label("alogview (MIT) (PAUSED)");
 
   this->end();
   this->resizable(this);
@@ -912,7 +912,7 @@ void REPLAY_GUI::updateXY()
   m_disp_time->value(dtime.c_str());
   
   updatePlayRateMsg();
-  string title = "alogview " + m_replay_warp_msg;
+  string title = "alogview (MIT) " + m_replay_warp_msg;
   copy_label(title.c_str());
 
   //------------------------------
@@ -1030,10 +1030,14 @@ void REPLAY_GUI::setVarHistMenus()
     
     // Use special unsigned int type having same size a pointer (void*)
     uintptr_t ix = mix;
-      
-    string label = "VarHist/" + varname;
+
+    string title = "VarHist(D)";
+    if(vartype == "string")
+      title = "VarHist(S)";
+    
+    string label = title + "/" + varname;
     if(vname != "") 
-      label = "VarHist/" + vname + "/" + varname;
+      label = title + "/" + vname + "/" + varname;
 
     m_menubar->add(label.c_str(), 0, 
 		   (Fl_Callback*)REPLAY_GUI::cb_VarHist,  (void*)ix);
