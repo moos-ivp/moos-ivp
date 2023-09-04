@@ -762,7 +762,7 @@ string BHV_ZigZag::expandMacros(string sdata)
   unsigned int zags_togo = 0;
   if(m_max_zig_legs > m_zig_cnt) {
     zigs_togo = m_max_zig_legs - m_zig_cnt;
-    zags_togo = (int)(zigs_togo / 2);
+    zags_togo = (int)(zigs_togo+1 / 2);
   }
 
   sdata = macroExpand(sdata, "ZIGS_TOGO", zigs_togo);
