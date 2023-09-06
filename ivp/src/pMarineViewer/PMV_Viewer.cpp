@@ -136,6 +136,7 @@ void PMV_Viewer::draw()
     const map<string, XYOval>& ovals = m_geoshapes_map.getOvals(vnames[i]);
     const map<string, XYArrow>&  arrows = m_geoshapes_map.getArrows(vnames[i]);
     const map<string, XYMarker>& markers = m_geoshapes_map.getMarkers(vnames[i]);
+    const map<string, XYTextBox>& textboxes = m_geoshapes_map.getTextBoxes(vnames[i]);
 
     drawPolygons(polys);
     drawGrids(grids);
@@ -151,6 +152,7 @@ void PMV_Viewer::draw()
     drawRangePulses(rng_pulses, m_curr_time);
     drawCommsPulses(cms_pulses, m_curr_time);
     drawMarkers(markers);
+    drawTextBoxes(textboxes);
   }
 
   drawOpArea(m_op_area);
@@ -333,7 +335,7 @@ bool PMV_Viewer::addGeoShape(string param, string value, string community,
 
 
 //-------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool PMV_Viewer::setParam(string param, double value)
 {
@@ -365,7 +367,7 @@ bool PMV_Viewer::setParam(string param, double value)
 }
 
 //-------------------------------------------------------------
-// Procedure: getStaleVehicles
+// Procedure: getStaleVehicles()
 
 vector<string> PMV_Viewer::getStaleVehicles(double thresh)
 {
@@ -510,7 +512,7 @@ void PMV_Viewer::drawTrailPoints(CPList &cps, unsigned int trail_length)
 }
 
 //-------------------------------------------------------------
-// Procedure: handleMoveMouse
+// Procedure: handleMoveMouse()
 //      Note: The MOOSGeodesy is a superclass variable, initialized
 //            in the superclass. The m_geodesy_initialized variable
 //            is also a superclass variable.
@@ -751,8 +753,7 @@ void PMV_Viewer::setCenterView(double pos_x, double pos_y)
 
 
 //-------------------------------------------------------------
-// Procedure: addScopeVariable
-//      Note: 
+// Procedure: addScopeVariable()
 
 bool PMV_Viewer::addScopeVariable(string varname)
 {
@@ -779,8 +780,7 @@ bool PMV_Viewer::addScopeVariable(string varname)
 }
 
 //-------------------------------------------------------------
-// Procedure: updateScopeVariable
-//      Note: 
+// Procedure: updateScopeVariable()
 
 bool PMV_Viewer::updateScopeVariable(string varname, string value, 
 				     string vtime, string vsource)
@@ -837,8 +837,7 @@ void PMV_Viewer::setActiveScope(string varname)
 }
 
 //-------------------------------------------------------------
-// Procedure: isScopeVariable
-//      Note: 
+// Procedure: isScopeVariable()
 
 bool PMV_Viewer::isScopeVariable(string varname) const
 {
@@ -846,8 +845,7 @@ bool PMV_Viewer::isScopeVariable(string varname) const
 }
 
 //-------------------------------------------------------------
-// Procedure: addMousePoke
-//      Note: 
+// Procedure: addMousePoke()
 
 void PMV_Viewer::addMousePoke(string side, string key, string vardata_pair)
 {
@@ -861,7 +859,7 @@ void PMV_Viewer::addMousePoke(string side, string key, string vardata_pair)
 }
 
 // ----------------------------------------------------------
-// Procedure: getStringInfo
+// Procedure: getStringInfo()
 
 string PMV_Viewer::getStringInfo(const string& info_type, int precision)
 {
@@ -958,9 +956,9 @@ string PMV_Viewer::getStringInfo(const string& info_type, int precision)
 }
   
 // ----------------------------------------------------------
-// Procedure: getLeftMousePairs
-// Procedure: getRightMousePairs
-// Procedure: getNonMousePairs
+// Procedure: getLeftMousePairs()
+// Procedure: getRightMousePairs()
+// Procedure: getNonMousePairs()
 
 vector<VarDataPair> PMV_Viewer::getLeftMousePairs(bool clear)
 {

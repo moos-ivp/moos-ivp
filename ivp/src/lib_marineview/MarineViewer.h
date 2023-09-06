@@ -137,6 +137,9 @@ protected:
   void  drawMarkers(const std::map<std::string, XYMarker>&, double tstamp=0);
   void  drawMarker(const XYMarker&, double tstamp=0);
 
+  void  drawTextBoxes(const std::map<std::string, XYTextBox>&, double tstamp=0);
+  void  drawTextBox(const XYTextBox&, double tstamp=0);
+
   void  drawPolygons(const std::vector<XYPolygon>&, double timestamp=0);
   void  drawPolygon(const XYPolygon&);
   

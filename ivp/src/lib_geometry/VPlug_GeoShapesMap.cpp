@@ -112,6 +112,8 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
     handled = m_geoshapes_map[vname].addCommsPulse(value, timestamp);
   else if((param == "VIEW_MARKER") || (param == "MARKER")) 
     handled = m_geoshapes_map[vname].addMarker(value, timestamp);
+  else if(param == "VIEW_TEXTBOX") 
+    handled = m_geoshapes_map[vname].addTextBox(value, timestamp);
   else if(param == "GRID_CONFIG")
     handled = m_geoshapes_map[vname].addGrid(value);
   else if(param == "GRID_DELTA")
@@ -216,10 +218,14 @@ const map<string, XYMarker>& VPlug_GeoShapesMap::getMarkers(const string& vname)
 {
   return(m_geoshapes_map[vname].getMarkers());
 }
+const map<string, XYTextBox>& VPlug_GeoShapesMap::getTextBoxes(const string& vname)
+{
+  return(m_geoshapes_map[vname].getTextBoxes());
+}
 
 
 //----------------------------------------------------------------
-// Procedure: size
+// Procedure: size()
 
 unsigned int VPlug_GeoShapesMap::size(const string& gtype,
 				      const string& vname) const
@@ -230,6 +236,8 @@ unsigned int VPlug_GeoShapesMap::size(const string& gtype,
     if((vname == "") || (p->first == vname)) {
       if(gtype == "markers")
 	return_size += p->second.sizeMarkers();
+      else if(gtype == "textboxes")
+	return_size += p->second.sizeTextBoxes();
       else if(gtype == "range_pulses")
 	return_size += p->second.sizeRangePulses();
       else if(gtype == "comms_pulses")

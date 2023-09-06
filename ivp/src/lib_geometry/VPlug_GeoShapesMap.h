@@ -67,6 +67,7 @@ public:
   unsigned int sizeRangePulses() const {return(size("range_pulses"));}
   unsigned int sizeCommsPulses() const {return(size("comms_pulses"));}
   unsigned int sizeMarkers() const     {return(size("markers"));}
+  unsigned int sizeTextBoxes() const   {return(size("textboxes"));}
   unsigned int sizeTotalShapes() const {return(size("total_shapes"));}
 
   std::vector<XYPolygon> getPolygons(const std::string&);
@@ -74,12 +75,13 @@ public:
   std::vector<XYSeglr>   getSeglrs(const std::string&);
   std::vector<XYHexagon> getHexagons(const std::string&);
 
-  const std::map<std::string, XYSegList> getSegLists(const std::string&);
-  const std::map<std::string, XYCircle>& getCircles(const std::string&);
-  const std::map<std::string, XYOval>&   getOvals(const std::string&);
-  const std::map<std::string, XYArrow>&  getArrows(const std::string&);
-  const std::map<std::string, XYMarker>& getMarkers(const std::string&);
-  const std::map<std::string, XYPoint>&  getPoints(const std::string&);
+  const std::map<std::string, XYSegList>  getSegLists(const std::string&);
+  const std::map<std::string, XYCircle>&  getCircles(const std::string&);
+  const std::map<std::string, XYOval>&    getOvals(const std::string&);
+  const std::map<std::string, XYArrow>&   getArrows(const std::string&);
+  const std::map<std::string, XYMarker>&  getMarkers(const std::string&);
+  const std::map<std::string, XYTextBox>& getTextBoxes(const std::string&);
+  const std::map<std::string, XYPoint>&   getPoints(const std::string&);
 
   std::vector<XYVector>     getVectors(const std::string&);
   std::vector<XYGrid>       getGrids(const std::string&);

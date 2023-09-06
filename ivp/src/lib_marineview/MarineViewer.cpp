@@ -1306,6 +1306,83 @@ void MarineViewer::drawMarker(const XYMarker& marker, double timestamp)
 
 
 //-------------------------------------------------------------
+// Procedure: drawTextBoxes()
+
+void MarineViewer::drawTextBoxes(const map<string, XYTextBox>& tboxes,
+				 double timestamp)
+{
+  // If the viewable parameter is set to false just return. In 
+  // querying the parameter the optional "true" argument means return
+  // true if nothing is known about the parameter.
+  if(m_geo_settings.viewable("tbox_viewable_all", true) == false)
+    return;
+
+  map<string, XYTextBox>::const_iterator p;
+  for(p=tboxes.begin(); p!=tboxes.end(); p++)
+    drawTextBox(p->second, timestamp);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawTextBox()
+
+void MarineViewer::drawTextBox(const XYTextBox& tbox, double tstamp)
+{
+  if(!tbox.active() || !tbox.valid() || tbox.expired(tstamp))
+    return;
+
+  string message = tbox.getMsg();
+  if(message == "")
+    return;
+  
+  string mcolor = tbox.getMColor();
+  string label  = tbox.get_label();
+  double x      = tbox.x();
+  double y      = tbox.y();
+  int    fsize  = tbox.getFSize();
+  
+  glMatrixMode(GL_PROJECTION);
+  glLoadIdentity();
+  glOrtho(0, w(), 0, h(), -1 ,1);
+
+  // Determine position in terms of image percentage
+  double tbox_ix = meters2img('x', x);
+  double tbox_iy = meters2img('y', y);
+
+  // Determine position in terms of view percentage
+  double tbox_vx = img2view('x', tbox_ix);
+  double tbox_vy = img2view('y', tbox_iy);
+
+  glMatrixMode(GL_MODELVIEW);
+  glPushMatrix();
+  glLoadIdentity();
+
+  glTranslatef(tbox_vx, tbox_vy, 0); // theses are in pixel units
+  glScalef(m_zoom, m_zoom, m_zoom);
+
+  //double factor_x = m_back_img.get_pix_per_mtr_x();
+  //double factor_y = m_back_img.get_pix_per_mtr_y();
+
+  //bool draw_labels = m_geo_settings.viewable("marker_viewable_labels");
+
+  ColorPack labelc("white");
+  if(isColor(mcolor))
+    labelc = ColorPack(mcolor);
+
+  if(coordInView(x,y) && labelc.visible()) {
+    glColor3f(labelc.red(), labelc.grn(), labelc.blu());
+    gl_font(1, fsize);
+    if(m_zoom > 4)
+      gl_font(1, fsize+2);
+    double offset = 4.0 * (1/m_zoom);
+    glRasterPos3f(offset, offset, 0);
+    gl_draw_aux(message);
+  }
+
+  glPopMatrix();
+}
+
+
+//-------------------------------------------------------------
 // Procedure: drawDatum()
 
 void MarineViewer::drawDatum(const OpAreaSpec& op_area)

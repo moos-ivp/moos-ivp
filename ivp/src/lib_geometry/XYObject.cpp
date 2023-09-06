@@ -263,7 +263,7 @@ bool XYObject::set_param(const string& param, const string& value)
     set_id(value);
   else if(param == "time")
     set_time(atof(value.c_str()));
-  else if(param == "duration")
+  else if((param == "duration") || (param == "dur"))
     set_duration(atof(value.c_str()));
   else if(param == "edge_size")
     set_edge_size(atof(value.c_str()));

@@ -43,7 +43,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Constructor
+// Constructor()
 
 VPlug_GeoShapes::VPlug_GeoShapes()
 {
@@ -71,6 +71,7 @@ void VPlug_GeoShapes::clear(string shape, string stype)
     m_vectors.clear();
     m_range_pulses.clear();
     m_markers.clear();
+    m_textboxes.clear();
     m_xmin = 0;
     m_xmax = 0;
     m_ymin = 0;
@@ -107,6 +108,8 @@ bool VPlug_GeoShapes::setParam(const string& param, string value)
     return(addSeglr(value));
   else if((param ==  "marker") || (param == "view_marker"))
     return(addMarker(value));
+  else if(param == "textbox")
+    return(addTextBox(value));
   else if((param ==  "grid") || (param == "xygrid"))
     return(addGrid(value));
   else if(param ==  "convex_grid")
@@ -161,6 +164,14 @@ void VPlug_GeoShapes::manageMemory(double curr_time)
       p2 = m_markers.erase(p2);
     else
       ++p2;
+  }
+  //-------------------------------------------------- TextBoxes
+  map<string,XYTextBox>::iterator p2b;
+  for(p2b=m_textboxes.begin(); p2b!=m_textboxes.end();) {
+    if(p2b->second.expired(curr_time))
+      p2b = m_textboxes.erase(p2b);
+    else
+      ++p2b;
   }
 
   //-------------------------------------------------- Circles
@@ -484,6 +495,30 @@ void VPlug_GeoShapes::addMarker(const XYMarker& new_marker)
 }
 
 //-----------------------------------------------------------
+// Procedure: addTextBox()
+
+void VPlug_GeoShapes::addTextBox(const XYTextBox& new_tbox)
+{
+  string new_label = new_tbox.get_label();
+  if(!new_tbox.active()) {
+    m_textboxes.erase(new_label);
+    return;
+  }
+
+  double px = new_tbox.x();
+  double py = new_tbox.y();
+  
+  updateBounds(px, px, py, py);
+
+  if(new_label == "") {
+    string pos = doubleToStringX(px,1) + "_";
+    pos += doubleToStringX(py,1);
+    new_label = "tbox_" + pos;
+  }
+  m_textboxes[new_label] = new_tbox;
+}
+
+//-----------------------------------------------------------
 // Procedure: updateGrid()
 
 bool VPlug_GeoShapes::updateGrid(const string& delta)
@@ -522,7 +557,8 @@ unsigned int VPlug_GeoShapes::sizeTotalShapes() const
 	 sizeGrids()       + sizeConvexGrids() + 
 	 sizeMarkers()     + sizeRangePulses() + 
 	 sizeSeglrs()      + sizeArrows() + 
-	 sizeOvals()       + sizeCommsPulses());
+	 sizeOvals()       + sizeCommsPulses() +
+	 sizeTextBoxes());
 }
 
 //-----------------------------------------------------------
@@ -855,6 +891,23 @@ bool VPlug_GeoShapes::addMarker(const string& marker_str,
 }
 
 //-----------------------------------------------------------
+// Procedure: addTextBox()
+
+bool VPlug_GeoShapes::addTextBox(const string& tbox_str,
+				double timestamp)
+{
+  XYTextBox new_textbox = stringToTextBox(tbox_str);
+  if(!new_textbox.valid())
+    return(false);
+
+  if(new_textbox.get_time() == 0)
+    new_textbox.set_time(timestamp);
+  
+  addTextBox(new_textbox);
+  return(true);
+}
+
+//-----------------------------------------------------------
 // Procedure: addSegList()
 
 bool VPlug_GeoShapes::addSegList(const string& segl_str,
@@ -1105,8 +1158,13 @@ void VPlug_GeoShapes::updateBounds()
     updateBounds(arrow.getMinX(), arrow.getMaxX(), 
 		 arrow.getMinY(), arrow.getMaxY());
   }
-}
 
+  map<string, XYTextBox>::iterator p5;
+  for(p5=m_textboxes.begin(); p5!=m_textboxes.end(); p5++) {
+    XYTextBox tbox = p5->second;
+    updateBounds(tbox.x(), tbox.x(), tbox.y(), tbox.y());
+  }
+}
 
 //-----------------------------------------------------------
 // Procedure: clearPolygons()

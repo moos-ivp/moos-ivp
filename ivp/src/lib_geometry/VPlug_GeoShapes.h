@@ -45,6 +45,7 @@
 #include "XYCommsPulse.h"
 #include "XYSeglr.h"
 #include "XYMarker.h"
+#include "XYTextBox.h"
 #include "ColorPack.h"
 
 class VPlug_GeoShapes {
@@ -79,6 +80,7 @@ public:
   void addRangePulse(const XYRangePulse&);
   void addCommsPulse(const XYCommsPulse&);
   void addMarker(const XYMarker&);
+  void addTextBox(const XYTextBox&);
 
   void forgetPolygon(std::string label);
   void forgetSegList(std::string label);
@@ -106,6 +108,7 @@ public:
   bool addRangePulse(const std::string&, double timestamp=0);
   bool addCommsPulse(const std::string&, double timestamp=0);
   bool addMarker(const std::string&, double timestamp=0);
+  bool addTextBox(const std::string&, double timestamp=0);
 
   bool updateGrid(const std::string&);
   bool updateConvexGrid(const std::string&);
@@ -126,6 +129,7 @@ public:
   unsigned int sizeRangePulses() const {return(m_range_pulses.size());}
   unsigned int sizeCommsPulses() const {return(m_comms_pulses.size());}
   unsigned int sizeMarkers() const     {return(m_markers.size());}
+  unsigned int sizeTextBoxes() const   {return(m_textboxes.size());}
   unsigned int sizeTotalShapes() const;
 
   std::vector<XYPolygon> getPolygons() const {return(m_polygons);}
@@ -146,6 +150,7 @@ public:
   const std::map<std::string, XYOval>& getOvals() const     {return(m_ovals);}
   const std::map<std::string, XYArrow>& getArrows() const   {return(m_arrows);}
   const std::map<std::string, XYMarker>& getMarkers() const {return(m_markers);}
+  const std::map<std::string, XYTextBox>& getTextBoxes() const {return(m_textboxes);}
 
   XYPolygon& poly(unsigned int i)   {return(m_polygons[i]);}
   XYSeglr&   seglr(unsigned int i)  {return(m_seglrs[i]);}
@@ -171,6 +176,7 @@ public:
   void clearVectors(std::string stype="");
   void clearPulses(std::string  stype="");
   void clearMarkers(std::string stype="");
+  void clearTextBoxes(std::string stype="");
 
   bool typeMatch(XYObject*, std::string stype);
 
@@ -191,6 +197,7 @@ protected:
   std::map<std::string, XYPoint>   m_points;
   std::map<std::string, XYSegList> m_segls;
   std::map<std::string, XYMarker>  m_markers;
+  std::map<std::string, XYTextBox> m_textboxes;
   std::map<std::string, XYCircle>  m_circles;
   std::map<std::string, XYOval>    m_ovals;
   std::map<std::string, XYArrow>   m_arrows;

@@ -239,6 +239,7 @@ void PMV_MOOSApp::registerVariables()
   Register("VIEW_SEGLR",   0);
   Register("TRAIL_RESET",  0);
   Register("VIEW_MARKER",  0);
+  Register("VIEW_TEXTBOX", 0);
   Register("VIEW_COMMS_PULSE", 0);
   Register("GRID_CONFIG",  0);
   Register("GRID_DELTA",   0);
