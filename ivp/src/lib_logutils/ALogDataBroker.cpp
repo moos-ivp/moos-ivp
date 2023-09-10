@@ -671,9 +671,9 @@ LogPlot ALogDataBroker::getLogPlot(unsigned int mix)
     double d_tstamp = atof(tstamp.c_str());
     double d_varval = atof(varval.c_str());
 
-    if(d_tstamp < m_pruned_logtmin)
+    if((d_tstamp + m_logskew[aix]) < m_pruned_logtmin)
       continue;
-    if(d_tstamp > m_pruned_logtmax)
+    if((d_tstamp + m_logskew[aix]) > m_pruned_logtmax)
       break;
 
     logplot.setValue(d_tstamp, d_varval);
@@ -765,9 +765,9 @@ VarPlot ALogDataBroker::getVarPlot(unsigned int mix, bool include_source)
       }
     }
 
-    if(d_tstamp < m_pruned_logtmin)
+    if((d_tstamp + m_logskew[aix]) < m_pruned_logtmin)
       continue;
-    if(d_tstamp > m_pruned_logtmax)
+    if((d_tstamp + m_logskew[aix]) > m_pruned_logtmax)
       break;
 
     varplot.setValue(d_tstamp, varval, varsrc);
@@ -825,9 +825,9 @@ HelmPlot ALogDataBroker::getHelmPlot(unsigned int aix)
       break;
 
     double tstamp = entry.getTimeStamp();
-    if(tstamp < m_pruned_logtmin)
+    if((tstamp + m_logskew[aix]) < m_pruned_logtmin)
       continue;
-    if(tstamp > m_pruned_logtmax)
+    if((tstamp + m_logskew[aix]) > m_pruned_logtmax)
       break;
 
     entries.push_back(entry);
@@ -883,9 +883,9 @@ AppLogPlot ALogDataBroker::getAppLogPlot(unsigned int alix)
       break;
 
     double tstamp = entry.getTimeStamp();
-    if(tstamp < m_pruned_logtmin)
+    if((tstamp + m_logskew[aix]) < m_pruned_logtmin)
       continue;
-    if(tstamp > m_pruned_logtmax)
+    if((tstamp + m_logskew[aix]) > m_pruned_logtmax)
       break;
 
     entries.push_back(entry);
