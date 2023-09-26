@@ -122,5 +122,24 @@ string XYMarker::get_spec(string param) const
 }
 
 
+//---------------------------------------------------------------
+// Procedure: get_spec_inactive()
+//   Purpose: In cases where we know the marke spec is created
+//            simply to "erase" a previous marker with the same
+//            label, just generate a concise spec with a trivial
+//            convex poly.
+
+std::string XYMarker::get_spec_inactive() const
+{
+  string spec = "x=0,y=0,active=false";
+  if(m_label != "")
+    spec += ",label=" + m_label; 
+
+  if(m_duration_set && (m_duration==0))
+    aug_spec(spec, "duration=0");
+
+  return(spec);
+}
+
 
 

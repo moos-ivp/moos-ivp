@@ -59,6 +59,7 @@ public:
   bool        is_set_type() const  {return(m_type_set);};
 
   std::string get_spec(std::string s="") const;
+  std::string get_spec_inactive() const;
 
 protected:
   double       m_x;

@@ -218,7 +218,7 @@ XYTextBox stringToTextBox(string str)
   if(!tbox.valid())
     return(null_tbox);
 
-  // If there is no text, and duration was not explicitly specified,
+  // If there is no text, AND duration was not explicitly specified,
   // it is assumed to mean that this textbox is meant to be "erased",
   // disappear from the screen. By adding a short duration, it also
   // ensures the text can be removed from memory by a consumer, e.g.,
