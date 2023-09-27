@@ -36,6 +36,7 @@
 #include "BHV_FixedTurn.h"
 #include "BHV_Loiter.h"
 #include "BHV_OpRegion.h"
+#include "BHV_OpRegionRecover.h"
 #include "BHV_MaxDepth.h"
 #include "BHV_MaxSpeed.h"
 #include "BHV_ConstantDepth.h"
@@ -60,6 +61,7 @@
 #include "BHV_AvoidObstacle.h"
 #include "BHV_AvoidObstacleX.h"
 #include "BHV_AvoidObstacleV21.h"
+#include "BHV_AvoidObstacleV23.h"
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
 #include "BHV_Hysteresis.h"
@@ -78,6 +80,7 @@ using namespace std;
 bool BFactoryStatic::isKnownBehavior(string bhv_name) const 
 {
   if((bhv_name == "BHV_OpRegion")        ||
+     (bhv_name == "BHV_OpRegionRecover") || 
      (bhv_name == "BHV_Waypoint")        || 
      (bhv_name == "BHV_LegRun")          || 
      (bhv_name == "BHV_LegRunX")         || 
@@ -107,6 +110,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_AvoidObstacle")   || 
      (bhv_name == "BHV_AvoidObstacleX")  || 
      (bhv_name == "BHV_AvoidObstacleV21")|| 
+     (bhv_name == "BHV_AvoidObstacleV23")|| 
      (bhv_name == "BHV_PeriodicSpeed")   || 
      (bhv_name == "BHV_PeriodicSurface") || 
      (bhv_name == "BHV_GoToDepth")       || 
@@ -135,6 +139,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
 
   if(bhv_name == "BHV_OpRegion")
     bhv = new BHV_OpRegion(m_domain);
+  else if(bhv_name == "BHV_OpRegionRecover")
+    bhv = new BHV_OpRegionRecover(m_domain);
   else if(bhv_name == "BHV_Waypoint")
     bhv = new BHV_Waypoint(m_domain);
   else if(bhv_name == "BHV_LegRun")
@@ -193,6 +199,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_AvoidObstacleX(m_domain);
   else if(bhv_name == "BHV_AvoidObstacleV21") 
     bhv = new BHV_AvoidObstacleV21(m_domain);
+  else if(bhv_name == "BHV_AvoidObstacleV23") 
+    bhv = new BHV_AvoidObstacleV23(m_domain);
   else if(bhv_name == "BHV_PeriodicSpeed") 
     bhv = new BHV_PeriodicSpeed(m_domain);
   else if(bhv_name == "BHV_PeriodicSurface") 

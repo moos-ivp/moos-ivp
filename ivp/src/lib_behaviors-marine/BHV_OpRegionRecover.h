@@ -86,11 +86,5 @@ class BHV_OpRegionRecover : public IvPBehavior {
   std::vector<double> m_range_cache_norm_no_rgt;
 };
 
-extern "C" {
-  IvPBehavior * createBehavior(std::string name, IvPDomain domain) 
-  {return new BHV_OpRegionRecover(domain);}
-}
-
-
 #endif
 
