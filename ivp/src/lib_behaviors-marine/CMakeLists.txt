@@ -10,6 +10,7 @@ SET(SRC
   BHV_AvoidObstacle.cpp
   BHV_AvoidObstacleX.cpp
   BHV_AvoidObstacleV21.cpp
+  BHV_AvoidObstacleV23.cpp
   BHV_ConstantDepth.cpp
   BHV_ConstantHeading.cpp
   BHV_MaxDepth.cpp
@@ -24,6 +25,7 @@ SET(SRC
   BHV_MinAltitudeX.cpp
   BHV_MemoryTurnLimit.cpp
   BHV_OpRegion.cpp
+  BHV_OpRegionRecover.cpp
   BHV_PeriodicSpeed.cpp
   BHV_PeriodicSurface.cpp
   BHV_RStationKeep.cpp
@@ -70,6 +72,7 @@ SET(HEADERS
   BHV_MinAltitudeX.h
   BHV_MemoryTurnLimit.h
   BHV_OpRegion.h
+  BHV_OpRegionRecover.h
   BHV_PeriodicSpeed.h
   BHV_RStationKeep.h
   BHV_RubberBand.h
