@@ -10,7 +10,7 @@ SET(SRC
   BHV_AvoidObstacle.cpp
   BHV_AvoidObstacleX.cpp
   BHV_AvoidObstacleV21.cpp
-  BHV_AvoidObstacleV23.cpp
+#  BHV_AvoidObstacleV23.cpp
   BHV_ConstantDepth.cpp
   BHV_ConstantHeading.cpp
   BHV_MaxDepth.cpp
