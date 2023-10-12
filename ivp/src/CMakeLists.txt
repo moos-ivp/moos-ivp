@@ -169,7 +169,7 @@ SET(ROBOT_APPS
   app_alogeplot      app_alogrm          app_alogiter
   app_alogcat        app_alogclip        app_aloghelm
   app_nsplug         app_pickpos         app_manifest_test
-  app_tagrep         app_gen_moos_app    pMissionEval
+  app_tagrep         app_gen_moos_app    app_alogmhash
   pRealm             pEchoVar            pHelmIvP
   pDeadManPost       pNodeReporter       pObstacleMgr
   uFldNodeBroker     uHelmScope          uFldMessageHandler
@@ -178,7 +178,7 @@ SET(ROBOT_APPS
   uMAC               uPokeDB             uQueryDB
   pHostInfo          iSay                pContactMgrV20
   pMarinePIDV22      uSimMarineV22       uSimMarineV23
-  pMissionHash
+  pMissionHash       pMissionEval
 )
 SET(IVP_NON_GUI_APPS
   app_alogsplit      app_alogsort        app_alogcheck
