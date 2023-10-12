@@ -31,7 +31,8 @@ killall -9 MOOSDB iRemote MOOSRemote iGPS iGPSMonitor pNav  \
         pLogger iPWMController MOOSDump pAntler umm         \
         iINS iDepth pScheduler pThermoTrack pNaFCon pSearch \
         pHuxley pMessageSim pBeamform uTermCommand pRealm   \
-        pBearingTrack uMissionTester uSimMarineV22
+        pBearingTrack uMissionTester uSimMarineV22          \
+	uFldLegRunMgr uFldLegRunEval
 
 killall -9 pMOOSBridge  iVSA iCTD iCTDSBE49 pBearingsSim     \
         iPNICompass iMetaCompass iHeadingMonitor  pAEL       \

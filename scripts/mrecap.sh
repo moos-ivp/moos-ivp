@@ -15,7 +15,7 @@ VERBOSE="no"
 for ARGI; do
     echo "Arg:["$ARGI"]"
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
-	echo "mrecap.sh [SWITCHES] [time_warp] "
+	echo "mrecap.sh [OPTIONS]                                   "
 	echo "  --help, -h         Show this help message           " 
 	echo "  --verbose, -v      Show directories with no README  " 
 	exit 0;
