@@ -20,7 +20,7 @@ Processconfig = ANTLER
   Run = uSimMarineV22  @ NewConsole = false
   Run = pLogger        @ NewConsole = false
   Run = pNodeReporter  @ NewConsole = false
-  Run = pMarinePIDV22  @ NewConsole = false
+  Run = pMarinePID     @ NewConsole = false
   Run = pHelmIvP       @ NewConsole = false
   Run = pHostInfo      @ NewConsole = false
   Run = uFldNodeBroker @ NewConsole = false
@@ -38,10 +38,10 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
   
-  Behaviors    = targ_$(VNAME).bhv  
-  Verbose      = false
-  Domain       = course:0:359:360
-  Domain       = speed:0:5:26
+  behaviors    = targ_$(VNAME).bhv  
+  verbose      = false
+  domain       = course:0:359:360
+  domain       = speed:0:5:26
 
 	hold_on_apps = pContactMgrV20
 }
@@ -77,9 +77,9 @@ ProcessConfig = pContactMgrV20
 	match_region = pts = {60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40}
 	match_type = kayak, uuv
 	
-  //alert = id=say, onflag=SAY_MOOS=hello,
-  //alert = id=say, offflag=SAY_MOOS=bye,
-  //alert = id=say, alert_range=80, cpa_range=100
+  alert = id=say, onflag=SAY_MOOS=hello,
+  alert = id=say, offflag=SAY_MOOS=bye,
+  alert = id=say, alert_range=180, cpa_range=200
 
   display_radii = true
   alert_range_color = gray70
@@ -108,11 +108,13 @@ ProcessConfig = uFldNodeBroker
 //-----------------------------------------------------
 // pMarinePID Config Block
 
-ProcessConfig = pMarinePIDV22
+ProcessConfig = pMarinePID
 {
   AppTick    = 10
   CommsTick  = 10
-  
+
+	deprecated_ok = true
+	
   VERBOSE       = true
   DEPTH_CONTROL = false
   ACTIVE_START  = true

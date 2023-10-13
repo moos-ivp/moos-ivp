@@ -33,7 +33,11 @@ Behavior = BHV_CutRange
 	pwt       = 100
 	condition = MODE==CHASING
 
-	contact   = evader
+	templating = spawn
+
+	updates = UPDATES_CUT
+	
+	//contact   = evader
 
 	pursueflag = SAY_MOOS=go
 	giveupflag = SAY_MOOS=dang
