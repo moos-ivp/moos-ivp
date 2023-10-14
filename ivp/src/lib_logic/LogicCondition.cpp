@@ -60,6 +60,15 @@ LogicCondition::LogicCondition(const LogicCondition &b)
   m_allow_dblequals = true;
 }
 
+//------------------------------------------------------ 
+// Procedure: expandMacro()
+
+void LogicCondition::expandMacro(string macro, string value)
+{
+  if(m_node)
+    m_node->recursiveExpandMacro(macro, value);
+}
+
 //----------------------------------------------------------------
 // Procedure: operator=
 

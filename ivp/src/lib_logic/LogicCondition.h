@@ -48,6 +48,8 @@ public:
   bool setCondition(const std::string&);
   void setAllowDoubleEquals(bool v) {m_allow_dblequals=v;}
 
+  void expandMacro(std::string macro, std::string val);
+  
   std::string getRawCondition() const {
     if(m_node) 
       return(m_node->getRawCondition());

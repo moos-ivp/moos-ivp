@@ -45,6 +45,7 @@ public:
   void recursiveClearVarVal();
   
   bool recursiveEvaluate() const;
+  void recursiveExpandMacro(std::string, std::string);
 
   bool recursiveSyntaxCheck(int=0);
   bool recursiveParse(bool allow_dblequals=true);
@@ -61,6 +62,8 @@ protected:
   bool evaluate(const std::string& relation, 
 		std::string left, std::string right) const;
 
+  void expandMacro(const std::string& macro, std::string value);
+  
 protected:
   
   std::string    m_raw_string;

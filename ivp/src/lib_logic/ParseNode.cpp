@@ -255,6 +255,19 @@ bool ParseNode::recursiveEvaluate() const
 
 
 //----------------------------------------------------------------
+// Procedure: recursiveExpandMacro()
+
+void ParseNode::recursiveExpandMacro(string macro, string value)
+{
+  expandMacro(macro, value);
+  if(m_left_node)
+    m_left_node->recursiveExpandMacro(macro, value);
+  if(m_right_node)
+    m_right_node->recursiveExpandMacro(macro, value);
+}
+
+
+//----------------------------------------------------------------
 // Procedure: recursiveSyntaxCheck(int)
 //      Note: side==0  - root node
 //            side==1  - left side
@@ -488,13 +501,10 @@ void ParseNode::print(string indent_str) const
 }
 
 
+//----------------------------------------------------------------
+// Procedure: expandMacro()
 
-
-
-
-
-
-
-
-
-
+void ParseNode::expandMacro(const string& macro, string value)
+{
+  m_raw_string = findReplace(m_raw_string, macro, value);
+}
