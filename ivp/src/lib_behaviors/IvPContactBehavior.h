@@ -40,6 +40,8 @@ public:
   IvPContactBehavior(IvPDomain);
   ~IvPContactBehavior() {}
 
+  virtual void onSetParamComplete();
+  
  public: // Override virtual funcions 
   bool  setParam(std::string, std::string);
   void  setCPAEngine(const CPAEngine& engine) {m_cpa_engine=engine;}

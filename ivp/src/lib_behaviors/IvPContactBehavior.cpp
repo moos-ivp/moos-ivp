@@ -71,7 +71,21 @@ IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) :
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParamComplete()
+
+void IvPContactBehavior::onSetParamComplete()
+{
+  IvPBehavior::onSetParamComplete();
+  for(unsigned int i=0; i<m_logic_conditions.size(); i++) {
+    m_logic_conditions[i].expandMacro("$[CONTACT]", toupper(m_contact));
+    m_logic_conditions[i].expandMacro("$[contact]", tolower(m_contact));
+    m_logic_conditions[i].expandMacro("$[Contact]", m_contact);
+  }
+}
+
+
+//-----------------------------------------------------------
+// Procedure: setParam()
 
 bool IvPContactBehavior::setParam(string param, string param_val) 
 {
