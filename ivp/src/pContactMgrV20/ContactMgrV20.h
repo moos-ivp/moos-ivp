@@ -113,6 +113,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
   std::string  m_alert_rng_cpa_color;
 
   bool         m_post_closest_range;
+  bool         m_post_closest_relbng;
   bool         m_post_all_ranges;
   double       m_contact_max_age;
   double       m_contacts_recap_interval;
@@ -169,6 +170,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
   unsigned int m_prev_contacts_count;
 
   double  m_prev_closest_range;
+  double  m_prev_closest_relbng;  // relbng of closest contact
   double  m_prev_closest_contact_val;
 
   // A matrix: vehicle_name X alert_id. Cell val is Boolean

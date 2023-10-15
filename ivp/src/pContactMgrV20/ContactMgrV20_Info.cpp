@@ -141,6 +141,7 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blk("  contact_local_coords = verbatim  // Default is verbatim       ");
   blk("  post_closest_range   = false     // Default is false          ");
+  blk("  post_closest_relbng  = false     // Default is false          ");
   blk("  post_all_ranges = false          // Default is false          ");
   blk("                                                                ");
   blk("  reject_range = 2000              // Default is 2000 meters    ");
@@ -200,10 +201,11 @@ void showInterfaceAndExit()
   blk("                  range_actual=40.8,range_extrap=40.8,          ");
   blk("                  range_cpa=13                                  ");
   blk("                                                                ");
-  blk("  CONTACT_CLOSEST       = charlie                               ");
-  blk("  CONTACT_CLOSEST_TIME  = 17514261063.3                         ");
-  blk("  CONTACT_CLOSEST_RANGE = 23.1              (if enabled)        ");
-  blk("  CONTACT_RANGES        = 23.1,63.2,77.5    (if enabled)        ");
+  blk("  CONTACT_CLOSEST        = charlie                              ");
+  blk("  CONTACT_CLOSEST_TIME   = 17514261063.3                        ");
+  blk("  CONTACT_CLOSEST_RANGE  = 23.1              (if enabled)       ");
+  blk("  CONTACT_CLOSEST_RELBNG = 344              (if enabled)        ");
+  blk("  CONTACT_RANGES         = 23.1,63.2,77.5    (if enabled)       ");
   blk("                                                                ");
   blk("  CONTACTS_ALERTED     = (delta,avd)(charlie,avd)               ");
   blk("  CONTACTS_COUNT       = 2  (number of alerted contacts)        ");

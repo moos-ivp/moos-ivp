@@ -28,6 +28,7 @@
 #include "LinearExtrapolator.h"
 #include "ContactMgrV20.h"
 #include "MBUtils.h"
+#include "AngleUtils.h"
 #include "ColorParse.h"
 #include "CPAEngine.h"
 #include "NodeRecordUtils.h"
@@ -50,7 +51,8 @@ ContactMgrV20::ContactMgrV20()
 
   m_max_contacts  = 500;
   
-  m_post_closest_range = false;
+  m_post_closest_range  = false;
+  m_post_closest_relbng = false;
   m_post_all_ranges    = false;
   m_contact_max_age    = 60;       // units in seconds 60 = 10 mins
   m_contacts_recap_interval = 1;
@@ -225,6 +227,8 @@ bool ContactMgrV20::OnStartUp()
       handled = setNonWhiteVarOnString(m_display_radii_id, value);
     else if(param == "post_closest_range") 
       handled = setBooleanOnString(m_post_closest_range, value);
+    else if(param == "post_closest_relbng") 
+      handled = setBooleanOnString(m_post_closest_relbng, value);
     else if(param == "post_all_ranges") 
       handled = setBooleanOnString(m_post_all_ranges, value);
     else if(param == "max_retired_history")
@@ -855,6 +859,7 @@ void ContactMgrV20::postSummaries()
 
   string closest_contact;
   double closest_range = 0;
+  double closest_relbng = 0;
 
   list<double> ranges;
   
@@ -876,6 +881,10 @@ void ContactMgrV20::postSummaries()
     if((closest_contact == "") || (range < closest_range)) {
       closest_contact = contact_name;
       closest_range   = range;
+
+      double cnx = m_map_node_records[contact_name].getX();
+      double cny = m_map_node_records[contact_name].getY();
+      closest_relbng  = relBearing(m_osx, m_osy, m_osh, cnx, cny);
     }
 	
     if(contacts_recap != "")
@@ -885,6 +894,7 @@ void ContactMgrV20::postSummaries()
     contacts_recap += ",age=" + doubleToString(age, 2);
   }
 
+  
   if((closest_contact != "") && m_post_closest_range) {
     // Round to integer and only post when changed, to reduce postings
     long int closest_range_int = closest_range;
@@ -894,6 +904,19 @@ void ContactMgrV20::postSummaries()
       m_prev_closest_range = closest_range;
     }
   }
+
+  // Added mikerb Oct 15, 2023
+  if((closest_contact != "") && m_post_closest_relbng) {
+    // Round to integer and only post when changed, to reduce postings
+    long int closest_relbng_int = closest_relbng;
+    closest_relbng = (double)(closest_relbng_int);
+    if(closest_relbng != m_prev_closest_relbng) {
+      Notify("CONTACT_CLOSEST_RELBNG", closest_relbng_int);
+      m_prev_closest_relbng = closest_relbng;
+    }
+  }
+  // End Added mikerb Oct 15, 2023
+
   if((m_prev_contact_closest != closest_contact) &&
      (closest_contact != "")){
     Notify("CONTACT_CLOSEST", closest_contact);
