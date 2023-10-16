@@ -155,6 +155,11 @@ string XYTextBox::get_spec(string param) const
   for(unsigned int i=0; i<m_msgs.size(); i++)
     spec += ",msg=" + m_msgs[i];
 
+  spec += ",fsize=" + intToString(m_fsize);
+
+  if(isColor(m_mcolor))
+    spec += ",mcolor=" + m_mcolor;
+  
   string obj_spec = XYObject::get_spec(param);
   if(obj_spec != "")
     spec += ("," + obj_spec);
