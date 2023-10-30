@@ -35,6 +35,7 @@
 #include "VarDataPair.h"
 #include "LogicCondition.h"
 #include "BehaviorReport.h"
+#include "PlatModel.h"
 
 using namespace std;
 
@@ -71,6 +72,7 @@ public:
   
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
+  void   setPlatModel(PlatModel pm) {m_plat_model=pm;}
   bool   checkUpdates();
   std::string isRunnable();
 
@@ -195,6 +197,7 @@ public:
   
 protected:
   const InfoBuffer* m_info_buffer;
+  PlatModel m_plat_model;
 
   std::string m_us_name;       
   std::string m_descriptor;    
@@ -291,7 +294,6 @@ private:
 
   std::map<std::string, double> m_map_regu_vars_tgap;
   std::map<std::string, double> m_map_regu_vars_last;
-
 };
 
 #endif
