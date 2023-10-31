@@ -10,7 +10,6 @@ SET(SRC
   BHV_AvoidObstacle.cpp
   BHV_AvoidObstacleX.cpp
   BHV_AvoidObstacleV21.cpp
-#  BHV_AvoidObstacleV23.cpp
   BHV_ConstantDepth.cpp
   BHV_ConstantHeading.cpp
   BHV_MaxDepth.cpp
@@ -41,7 +40,7 @@ SET(SRC
   BHV_LegRunX.cpp
   BHV_ZigZag.cpp
   BHV_FullStop.cpp
-  BHV_FixTurn.cpp
+#  BHV_FixTurn.cpp
   BHV_HSLine.cpp
   BHV_HeadingChange.cpp
   BHV_HeadingBias.cpp
@@ -86,7 +85,7 @@ SET(HEADERS
   BHV_LegRunX.h
   BHV_ZigZag.h
   BHV_FullStop.h
-  BHV_FixTurn.h
+#  BHV_FixTurn.h
   BHV_BearingLine.h
   BHV_TestFailure.h
 ) 

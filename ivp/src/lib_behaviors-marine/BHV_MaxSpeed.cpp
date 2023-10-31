@@ -47,7 +47,7 @@ BHV_MaxSpeed::BHV_MaxSpeed(IvPDomain gdomain) :
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool BHV_MaxSpeed::setParam(string param, string val) 
 {
@@ -80,7 +80,7 @@ bool BHV_MaxSpeed::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: onRunState()
 
 IvPFunction *BHV_MaxSpeed::onRunState() 
 {
