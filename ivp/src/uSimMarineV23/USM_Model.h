@@ -43,6 +43,7 @@ public:
   void   setRudder(double v);
   void   setRudder(double, double);
   void   setThrust(double v);
+  void   setThrustFan(double v);
   void   setElevator(double v)        {m_elevator = v;}
   void   setDriftFresh(bool v)        {m_drift_fresh = v;} 
 
@@ -105,6 +106,11 @@ public:
   
   std::string getThrustMapPos() const {return(m_thrust_map.getMapPos());}
   std::string getThrustMapNeg() const {return(m_thrust_map.getMapNeg());}
+  std::string getThrustMapFanPos() const
+  {return(m_thrust_map_fan.getMapPos());}
+  std::string getThrustMapFanNeg() const
+  {return(m_thrust_map_fan.getMapNeg());}
+
   std::string getDriftSummary();
   std::string getThrustModeDiff() const {return(m_thrust_mode);}
 
@@ -146,6 +152,7 @@ public:
 
   bool       m_paused;
   double     m_thrust;
+  double     m_thrust_fan;
   double     m_elevator;
 
   double     m_water_depth;
@@ -211,12 +218,3 @@ public:
   TurnSpeedMap m_turn_speed_map;
 };
 #endif
-
-
-
-
-
-
-
-
-

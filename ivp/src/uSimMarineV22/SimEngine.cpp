@@ -16,8 +16,29 @@
 
 using namespace std;
 
-//--------------------------------------------------------------------
-// Procedure: propagate
+//-----------------------------------------------------------------
+// Constructor()
+
+SimEngine::SimEngine()
+{
+  m_verbose = false;
+  m_turn_spd_loss = 0.85;  // [0,1] 0:no_loss, 1:halt at full rudder
+
+  m_thrust_mode_reverse = false;
+}
+
+//-----------------------------------------------------------------
+// Procedure: setTurnSpdLoss()
+
+void SimEngine::setTurnSpdLoss(double dval)
+{
+  if((dval < 0) || (dval > 1))
+    return;
+  m_turn_spd_loss = dval;
+}
+
+//-----------------------------------------------------------------
+// Procedure: propagate()
 
 void SimEngine::propagate(NodeRecord &record, double delta_time,
 			  double prior_heading, double prior_speed,
@@ -61,7 +82,7 @@ void SimEngine::propagate(NodeRecord &record, double delta_time,
 }
 
 //--------------------------------------------------------------------
-// Procedure: propagateDepth
+// Procedure: propagateDepth()
 
 void SimEngine::propagateDepth(NodeRecord& record,
 			       double delta_time,
@@ -112,7 +133,7 @@ void SimEngine::propagateDepth(NodeRecord& record,
 
 
 //--------------------------------------------------------------------
-// Procedure: propagateSpeed
+// Procedure: propagateSpeed()
 
 void SimEngine::propagateSpeed(NodeRecord& record, const ThrustMap& tmap,
 			       double delta_time, double thrust,
@@ -132,25 +153,31 @@ void SimEngine::propagateSpeed(NodeRecord& record, const ThrustMap& tmap,
 
   if((max_sail_spd > 0) && (next_speed > max_sail_spd))
     next_speed = max_sail_spd;
-    
-  cout << "prev_speed:" << prev_speed << endl;
-  cout << "next_speedA:" << next_speed << endl;
+
+  if(m_verbose) {
+    cout << "prev_speed:" << prev_speed << endl;
+    cout << "next_speedA:" << next_speed << endl;
+  }
   
   // Apply a slowing penalty proportional to the rudder/turn
   rudder = vclip(rudder, -100, 100);
-  cout << "rudder:" << doubleToStringX(rudder,4) << endl;
   double rudder_magnitude = fabs(rudder);
-  cout << "fabs rudder:" << doubleToStringX(rudder_magnitude,4) << endl;
-  double vpct = (rudder_magnitude / 100) * 0.85;
-  cout << "vpct:" << doubleToStringX(vpct,4) << endl;
+  double vpct = (rudder_magnitude / 100) * m_turn_spd_loss;
   next_speed *= (1.0 - vpct);
-  cout << "next_speedB:" << next_speed << endl;
-
+  if(m_verbose) {
+    cout << "rudder:" << doubleToStringX(rudder,4) << endl;
+    cout << "fabs rudder:" << doubleToStringX(rudder_magnitude,4) << endl;
+    cout << "vpct:" << doubleToStringX(vpct,4) << endl;
+    cout << "next_speedB:" << next_speed << endl;
+  }
+  
   if(next_speed > prev_speed) {
     double acceleration = (next_speed - prev_speed) / delta_time;
-    cout << "delta_time:" << doubleToStringX(delta_time, 5) << endl;
-    cout << "acceleration:" << doubleToStringX(acceleration,5) << endl;
-    cout << "max_accel:" << max_accel << endl;
+    if(m_verbose) {
+      cout << "delta_time:" << doubleToStringX(delta_time, 5) << endl;
+      cout << "acceleration:" << doubleToStringX(acceleration,5) << endl;
+      cout << "max_accel:" << max_accel << endl;
+    }
     if((max_accel > 0) && (acceleration > max_accel))
       next_speed = (max_accel * delta_time) + prev_speed;
   }
@@ -161,14 +188,15 @@ void SimEngine::propagateSpeed(NodeRecord& record, const ThrustMap& tmap,
       next_speed = (max_decel * delta_time * -1) + prev_speed;
   }
 
-  cout << "next_speedC:" << next_speed << endl;
+  if(m_verbose) 
+    cout << "next_speedC:" << next_speed << endl;
 
   record.setSpeed(next_speed);
 }
 
 
 //--------------------------------------------------------------------
-// Procedure: propagateHeading
+// Procedure: propagateHeading()
 
 void SimEngine::propagateHeading(NodeRecord& record,
 				 double delta_time, 
@@ -217,7 +245,7 @@ void SimEngine::propagateHeading(NodeRecord& record,
 }
 
 //--------------------------------------------------------------------
-// Procedure: propagateSpeedDiffMode
+// Procedure: propagateSpeedDiffMode()
 
 void SimEngine::propagateSpeedDiffMode(NodeRecord& record, const ThrustMap& tmap,
 				       double delta_time, 
@@ -241,7 +269,7 @@ void SimEngine::propagateSpeedDiffMode(NodeRecord& record, const ThrustMap& tmap
 
 
 //--------------------------------------------------------------------
-// Procedure: propagateHeadingDiffMode
+// Procedure: propagateHeadingDiffMode()
 
 void SimEngine::propagateHeadingDiffMode(NodeRecord& record,
 					 double delta_time, 

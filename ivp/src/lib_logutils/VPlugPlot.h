@@ -74,6 +74,7 @@ protected: // state vars
   unsigned int m_view_range_pulse_cnt;
   unsigned int m_view_comms_pulse_cnt;
   unsigned int m_view_marker_cnt;
+  unsigned int m_view_textbox_cnt;
 };
 #endif 
 

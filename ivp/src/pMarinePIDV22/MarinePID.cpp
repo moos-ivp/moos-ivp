@@ -24,8 +24,10 @@ MarinePID::MarinePID()
 {
   m_pid_allstop_posted = false;
   m_pid_ignore_nav_yaw = false;
-  m_pid_verbose    = true;
-  m_pid_ok_skew    = 360;
+  m_pid_verbose        = true;
+  m_pid_ok_skew        = 360;
+  m_enable_thrust_cap  = false;
+  m_thrust_cap         = 100;
 }
 
 //--------------------------------------------------------------------
@@ -69,9 +71,10 @@ bool MarinePID::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_pengine.setCurrDepth(dval);
       else if(key == "NAV_PITCH")
 	m_pengine.setCurrPitch(dval);      
+      else if(key == "PID_THRUST_CAP")
+	setDoubleClipRngOnString(m_thrust_cap, sval, 20, 100);
     }
   }
-
   return(true);
 }
 
@@ -147,7 +150,12 @@ void MarinePID::postPengineResults()
   }
   else {
     Notify("DESIRED_RUDDER", m_pengine.getDesiredRudder());
+
+    double des_thrust = m_pengine.getDesiredThrust();
+    if(des_thrust > m_thrust_cap)
+      des_thrust = m_thrust_cap;
     Notify("DESIRED_THRUST", m_pengine.getDesiredThrust());
+
     if(m_pengine.hasDepthControl())
       Notify("DESIRED_ELEVATOR", m_pengine.getDesiredElevator());
     m_pid_allstop_posted = false;
@@ -175,7 +183,7 @@ bool MarinePID::OnStartUp()
   STRING_LIST sParams;
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
 
-  m_pengine.setConfigParams(sParams);
+  sParams = m_pengine.setConfigParams(sParams);
   
   STRING_LIST::iterator p;
   for(p=sParams.begin(); p!=sParams.end(); p++) {
@@ -188,8 +196,14 @@ bool MarinePID::OnStartUp()
     bool handled = true;
     if(param == "ignore_nav_yaw") 
       handled = setBooleanOnString(m_pid_ignore_nav_yaw, value);
-    else if(param == "pid_verbose") 
+    else if((param == "pid_verbose") || (param == "verbose"))
       handled = setBooleanOnString(m_pid_verbose, value);
+    else if(param == "active_start") // deprecated
+      handled = true;
+    else if(param == "enable_thrust_cap")
+      handled = setBooleanOnString(m_enable_thrust_cap, value);
+    else
+      handled = false;
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -228,6 +242,9 @@ void MarinePID::registerVariables()
   Register("MOOS_MANUAL_OVERIDE", 0);
   Register("MOOS_MANUAL_OVERRIDE", 0);
 
+  if(m_enable_thrust_cap)
+    Register("PID_THRUST_CAP");
+  
   if(!m_pid_ignore_nav_yaw)
     Register("NAV_YAW", 0);
   else
@@ -244,14 +261,50 @@ bool MarinePID::buildReport()
 {
   double frequency = m_pengine.getFrequency();
   string str_freq = doubleToString(frequency,3);
+  string str_spd_factor = doubleToStringX(m_pengine.getSpeedFactor());
 
+  string str_max_rudder = doubleToStringX(m_pengine.getMaxRudder());
+  string str_max_thrust = doubleToStringX(m_pengine.getMaxThrust());
+  string str_max_pitch  = doubleToStringX(m_pengine.getMaxPitch());
+  string str_max_elevator = doubleToStringX(m_pengine.getMaxElevator());
+  
   m_msgs << "Frequency:" << str_freq  << endl;
+  
+  m_msgs << "Speed Factor:    " << str_spd_factor << endl;
   m_msgs << "PID has_control: " << boolToString(m_pengine.hasControl()) << endl;
+  m_msgs << "  PID override: " << boolToString(m_pengine.hasPIDOverride()) << endl;
+  m_msgs << "  PID stale:    " << boolToString(m_pengine.hasPIDStale()) << endl;
+  m_msgs << endl;
+  m_msgs << "PID Settings: " << endl;
+  m_msgs << "----------------------------" << endl;
+  m_msgs << "Thrust Cap Enabled: " << boolToString(m_enable_thrust_cap) << endl;
+  m_msgs << "Thrust Cap: " << doubleToString(m_thrust_cap) << endl;
+  vector<string> yaw_params = m_pengine.getConfigSummary("yaw");
+  for(unsigned int i=0; i<yaw_params.size(); i++) 
+    m_msgs << yaw_params[i] << endl;
+  m_msgs << "Max rudder: " << str_max_rudder << endl;
+  
+  m_msgs << "----------------------------" << endl;
+  vector<string> spd_params = m_pengine.getConfigSummary("speed");
+  for(unsigned int i=0; i<spd_params.size(); i++) 
+    m_msgs << spd_params[i] << endl;
+  m_msgs << "Max thrust: " << str_max_thrust << endl;
+  
+  if(m_pengine.hasDepthControl()) {
+    m_msgs << "----------------------------" << endl;
+    vector<string> pitch_params = m_pengine.getConfigSummary("pitch");
+    for(unsigned int i=0; i<pitch_params.size(); i++) 
+      m_msgs << pitch_params[i] << endl;
+    m_msgs << "Max pitch: " << str_max_pitch << endl;
 
+    m_msgs << "----------------------------" << endl;
+    vector<string> zpitch_params = m_pengine.getConfigSummary("zpitch");
+    for(unsigned int i=0; i<zpitch_params.size(); i++) 
+      m_msgs << zpitch_params[i] << endl;
+    m_msgs << "Max elevator: " << str_max_elevator << endl;
+  }  
+  
   return(true);
 }
-
-
-
 
 

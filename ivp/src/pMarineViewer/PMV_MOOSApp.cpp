@@ -1266,20 +1266,29 @@ void PMV_MOOSApp::handlePendingPostsFromGUI()
     // target name beginning with "test:" indicates that a posting should
     // not be made, but the posting should still go into the cmd_summary
     // to show the user what would have been posted.
+
+    string post_val = "err";
+    if(valtype == "string") {
+      string sval = cmd_item.getCmdPostStr();
+      if(strContains(sval, "$[targ]") &&
+	 (cmd_targ != "local") && (cmd_targ != "shore"))
+	sval = findReplace(sval, "$[targ]", cmd_targ);
+      post_val = sval;
+    }
+    else
+      post_val = doubleToStringX(cmd_item.getCmdPostDbl());
+
     if(!cmd_test) {
       string src_aux = "pid=" + cmd_pid;
       if(valtype == "string") 
-	Notify(moosvar, cmd_item.getCmdPostStr(), src_aux);
+	Notify(moosvar, post_val, src_aux);
       else 
 	Notify(moosvar, cmd_item.getCmdPostDbl(), src_aux);
     }
     
     // Part 2: Build the history entry
-    string post_val = cmd_item.getCmdPostStr();
-    if(valtype != "string")
-      post_val = doubleToStringX(cmd_item.getCmdPostDbl());
-
     m_cmd_summary.addPosting(moosvar, post_val, cmd_pid, cmd_test);
+
   }
 
   m_gui->getCmdGUI()->clearPendingCmdPosts();

@@ -223,7 +223,7 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 }
   
 //------------------------------------------------------------------------
-// Procedure: OnStartUp
+// Procedure: OnStartUp()
 
 bool USM_MOOSApp::OnStartUp()
 {

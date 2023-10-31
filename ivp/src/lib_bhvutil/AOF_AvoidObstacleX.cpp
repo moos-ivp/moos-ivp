@@ -32,7 +32,7 @@
 using namespace std;
 
 //----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 AOF_AvoidObstacleX::AOF_AvoidObstacleX(IvPDomain gdomain) : AOF(gdomain)
 {
@@ -41,7 +41,7 @@ AOF_AvoidObstacleX::AOF_AvoidObstacleX(IvPDomain gdomain) : AOF(gdomain)
 }
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_AvoidObstacleX::setParam(const string& param, double param_val)
 {
@@ -49,7 +49,7 @@ bool AOF_AvoidObstacleX::setParam(const string& param, double param_val)
 }
 
 //----------------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool AOF_AvoidObstacleX::setParam(const string& param, const string& value)
 {
@@ -57,51 +57,31 @@ bool AOF_AvoidObstacleX::setParam(const string& param, const string& value)
 }
 
 //----------------------------------------------------------------
-// Procedure: initialize
+// Procedure: initialize()
 
 bool AOF_AvoidObstacleX::initialize()
 {
   // Part 1: Sanity Checks
-  if(m_crs_ix == -1) {
-    postMsgAOF("crs_ix is not set");
-    return(false);
-  }
-  if(m_spd_ix == -1) {
-    postMsgAOF("spd_ix is not set");
-    return(false);
-  }
-  if(!m_obship_model.paramIsSet("osx")) {
-    postMsgAOF("osx is not set");
-    return(false);
-  }
-  if(!m_obship_model.paramIsSet("osy")) {
-    postMsgAOF("osy is not set");
-    return(false);
-  }
-  if(!m_obship_model.paramIsSet("osh")) {
-    postMsgAOF("osh is not set");
-    return(false);
-  }
-  if(!m_obship_model.paramIsSet("min_util_cpa")) {
-    postMsgAOF("min_util_cpa is not set");
-    return(false);
-  }
-  if(!m_obship_model.paramIsSet("max_util_cpa")) {
-    postMsgAOF("max_util_cpa is not set");
-    return(false);
-  }
-  if(!m_obship_model.paramIsSet("allowable_ttc")) {
-    postMsgAOF("allowable_ttc is not set");
-    return(false);
-  }
-  if(!m_obship_model.getObstacle().is_convex()) {
-    postMsgAOF("m_obstacle is not convex");
-    return(false);
-  }
-  if(m_obship_model.ownshipInObstacle()) {
-    postMsgAOF("m_obstacle contains osx,osy");
-    return(false);
-  }
+  if(m_crs_ix == -1) 
+    return(postMsgAOF("crs_ix is not set"));
+  if(m_spd_ix == -1) 
+    return(postMsgAOF("spd_ix is not set"));
+  if(!m_obship_model.paramIsSet("osx")) 
+    return(postMsgAOF("osx is not set"));
+  if(!m_obship_model.paramIsSet("osy")) 
+    return(postMsgAOF("osy is not set"));
+  if(!m_obship_model.paramIsSet("osh")) 
+    return(postMsgAOF("osh is not set"));
+  if(!m_obship_model.paramIsSet("min_util_cpa"))
+    return(postMsgAOF("min_util_cpa is not set"));
+  if(!m_obship_model.paramIsSet("max_util_cpa")) 
+    return(postMsgAOF("max_util_cpa is not set"));
+  if(!m_obship_model.paramIsSet("allowable_ttc")) 
+    return(postMsgAOF("allowable_ttc is not set"));
+  if(!m_obship_model.getObstacle().is_convex()) 
+    return(postMsgAOF("m_obstacle is not convex"));
+  if(m_obship_model.ownshipInObstacle())
+    return(postMsgAOF("m_obstacle contains osx,osy"));
 
   return(true);
 }

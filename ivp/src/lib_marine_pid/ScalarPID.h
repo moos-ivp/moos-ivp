@@ -58,6 +58,11 @@ public:
   bool getMaxSat() const     {return(m_max_sat);}
 
   std::string getDebugStr() const {return(m_debug_str);}
+
+  double getKP() const {return(m_dfKp);}
+  double getKI() const {return(m_dfKi);}
+  double getKD() const {return(m_dfKd);}
+  double getIL() const {return(m_dfIntegralLimit);}
   
 protected:  // Core parameters
   double m_dfKi;

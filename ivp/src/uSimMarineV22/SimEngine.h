@@ -19,12 +19,15 @@
 class SimEngine
 {
 public:
-  SimEngine() {}
+  SimEngine();
   ~SimEngine() {}
-  
- public:
+
+public:
   void setThrustModeReverse(bool v)        {m_thrust_mode_reverse=v;}
   void setTurnSpeedMap(TurnSpeedMap tsmap) {m_turn_speed_map=tsmap;}
+
+  void setVerbose(bool v=true) {m_verbose=v;}
+  void setTurnSpdLoss(double);
   
 public:
   void propagate(NodeRecord&, double delta_time, double prior_heading,
@@ -53,10 +56,14 @@ public:
 				double thrust_left, double thrust_right, 
 				double rotate_speed);
 
- protected:
+protected:
   bool m_thrust_mode_reverse;
 
+  double m_turn_spd_loss;
+  
   TurnSpeedMap m_turn_speed_map;
+
+  bool m_verbose;
 };
 
 #endif

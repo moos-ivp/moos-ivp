@@ -235,8 +235,8 @@ bool USM_MOOSApp::Iterate()
 }
 
 
-//------------------------------------------------------------------------
-// Procedure: OnStartUp
+//---------------------------------------------------------
+// Procedure: OnStartUp()
 
 bool USM_MOOSApp::OnStartUp()
 {
@@ -310,6 +310,8 @@ bool USM_MOOSApp::OnStartUp()
       handled = m_model.setTSMapFullRate(value);
     else if(param == "turn_spd_map_null_rate")
       handled = m_model.setTSMapNullRate(value);
+    else if(param == "turn_spd_loss")
+      handled = m_model.setTurnSpdLoss(dval);
 
     else if((param == "rotate_speed") && isNumber(value))
       handled = m_model.setParam("rotate_speed", dval);
@@ -811,7 +813,12 @@ bool USM_MOOSApp::buildReport()
   m_msgs << "  WindModel: " << wmod_str << endl;
   m_msgs << "  PolarPlot: " << polar_str << endl;
   m_msgs << "  Enabled:   " << sailing_str << endl;
- 
+
+  if(m_post_des_thrust != "")
+    m_msgs << "  post_des_thrust:   " << m_post_des_thrust << endl;
+  if(m_post_des_rudder != "")
+    m_msgs << "  post_des_rudder:   " << m_post_des_rudder << endl;
+  
   m_msgs << endl << endl;
   // Part 1: Pose Information ===========================================
   ACTable actab(6,1);

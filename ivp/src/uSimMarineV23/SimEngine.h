@@ -39,12 +39,12 @@ public:
 
   void propagateSpeed(NodeRecord&, const ThrustMap&, double delta_time, 
 		      double thrust, double rudder,
-		      double max_accel, double max_decel,
-		      double max_sail_spd=-1);
+		      double max_accel, double max_decel);
 
-  void propagateSpeedSailing(NodeRecord&, const ThrustMap&, double delta_time, 
+  void propagateSpeedSailing(NodeRecord&, const ThrustMap&, double delta_time,
 			     double thrust, double rudder,
 			     double max_accel, double max_decel,
+			     const ThrustMap&, double thrust_fan,
 			     double max_sail_spd=-1);
 
   void propagateHeading(NodeRecord&, double delta_time, double rudder,

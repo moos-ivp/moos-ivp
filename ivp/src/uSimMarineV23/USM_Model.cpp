@@ -361,6 +361,17 @@ void USM_Model::setThrust(double desired_thrust)
 }
 
 //------------------------------------------------------------------------
+// Procedure: setThrustFan()
+
+void USM_Model::setThrustFan(double desired_thrust_fan)
+{
+  if(m_thrust_mode != "sailing")
+    return;
+
+  m_thrust_fan = desired_thrust_fan;
+}
+
+//------------------------------------------------------------------------
 // Procedure: setThrustLeft()
 
 void USM_Model::setThrustLeft(double val)
@@ -727,15 +738,17 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
   m_sim_engine.setThrustModeReverse(m_thrust_mode_reverse);
   
   // Switch depending on thrust mode
-  double max_sail_spd = -1; 
   if(m_thrust_mode == "sailing") {
-    max_sail_spd = m_wind_model.getMaxSpeed(m_polar_plot, prior_hdg);
+    double max_sail_spd = m_wind_model.getMaxSpeed(m_polar_plot, prior_hdg);
 
     cout << "USM_Model:: mode=sailing, rudder=" << m_rudder << endl;
     
-    m_sim_engine.propagateSpeed(record, m_thrust_map, delta_time,
-				m_thrust, m_rudder, m_max_acceleration,
-				m_max_deceleration, max_sail_spd);
+    m_sim_engine.propagateSpeedSailing(record, m_thrust_map,
+				       delta_time, m_thrust, m_rudder,
+				       m_max_acceleration, m_max_deceleration,
+				       m_thrust_map_fan, m_thrust_fan,
+				       max_sail_spd);
+
     m_sim_engine.propagateHeading(record, delta_time, m_rudder, 
 				  m_thrust, m_turn_rate, 
 				  m_rotate_speed);
@@ -753,7 +766,7 @@ void USM_Model::propagateNodeRecord(NodeRecord& record,
   else {
     m_sim_engine.propagateSpeed(record, m_thrust_map, delta_time,
 				m_thrust, m_rudder, m_max_acceleration,
-				m_max_deceleration, max_sail_spd);
+				m_max_deceleration);
     m_sim_engine.propagateHeading(record, delta_time, m_rudder, 
 				  m_thrust, m_turn_rate, 
 				  m_rotate_speed);

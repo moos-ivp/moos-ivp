@@ -37,7 +37,8 @@ USM_MOOSApp::USM_MOOSApp()
   m_report_interval = 5;
   m_pitch_tolerance = 5;
   m_enabled = true;
-
+  m_depth_info_acast = true;
+  
   // Init PID variables
   m_pid_allstop_posted = false;
   m_pid_ignore_nav_yaw = false;
@@ -105,6 +106,8 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
     //====================================================
     if(key == "DESIRED_THRUST") 
       m_model.setThrust(dval);
+    else if(key == "DESIRED_FAN") 
+      m_model.setThrustFan(dval);
     else if(key == "DESIRED_RUDDER")
       m_model.setRudder(dval, MOOSTime());
     else if(key == "DESIRED_ELEVATOR")
@@ -360,6 +363,8 @@ bool USM_MOOSApp::OnStartUp()
       handled = setNonWhiteVarOnString(m_post_des_thrust, value);
     else if((param == "post_des_rudder") && (value != "DESIRED_RUDDER"))
       handled = setNonWhiteVarOnString(m_post_des_rudder, value);
+    else if(param == "depth_info_acast")
+      handled = setBooleanOnString(m_depth_info_acast, value);
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -443,6 +448,7 @@ void USM_MOOSApp::registerVariables()
     Register("DESIRED_ELEVATOR", 0);
     Register("DESIRED_THRUST_L", 0);
     Register("DESIRED_THRUST_R", 0);
+    Register("DESIRED_FAN", 0);
   }
 
   Register("NAV_X",0);
@@ -840,20 +846,22 @@ bool USM_MOOSApp::buildReport()
   else
     actab << " " << "-";
 
-  actab << "Depth:" << m_model.getStartNavDep();
-  actab << "Depth:" << doubleToStringX(record.getDepth(),1);
-  if(dual_state)
-    actab << "Depth:" << doubleToStringX(record_gt.getDepth(),1);
-  else
-    actab << " " << "-";
-
-  actab << "Alt:" << m_model.getStartNavAlt();
-  actab << "Alt:" << doubleToStringX(nav_alt,1);
-  if(dual_state)
-    actab << "Alt:" << doubleToStringX(nav_alt_gt,1);
-  else
-    actab << " " << "-";
-
+  if(m_depth_info_acast) {
+    actab << "Depth:" << m_model.getStartNavDep();
+    actab << "Depth:" << doubleToStringX(record.getDepth(),1);
+    if(dual_state)
+      actab << "Depth:" << doubleToStringX(record_gt.getDepth(),1);
+    else
+      actab << " " << "-";
+    
+    actab << "Alt:" << m_model.getStartNavAlt();
+    actab << "Alt:" << doubleToStringX(nav_alt,1);
+    if(dual_state)
+      actab << "Alt:" << doubleToStringX(nav_alt_gt,1);
+    else
+      actab << " " << "-";
+  }
+  
   actab << "(X,Y):" << m_model.getStartNavX() +","+ m_model.getStartNavY();
   actab << "(X,Y):" << doubleToStringX(nav_x,2) + "," + doubleToStringX(nav_y,2); 
   if(dual_state)
@@ -928,8 +936,7 @@ bool USM_MOOSApp::buildReport()
   m_msgs << endl;
 
   bool using_sailing = m_model.sailingEnabled();
-  m_msgs << "           Using SailingX: " << boolToString(using_sailing); 
-  m_msgs << "           thrust_mode: " << m_model.getThrustMode() << endl;
+  m_msgs << "           Using Sailing: " << boolToString(using_sailing); 
   m_msgs << endl;
 
   
@@ -937,6 +944,8 @@ bool USM_MOOSApp::buildReport()
   string max_deceleration = doubleToStringX(m_model.getMaxDeceleration(),6);
   string posmap = m_model.getThrustMapPos();
   string negmap = m_model.getThrustMapNeg();
+  string fanposmap = m_model.getThrustMapFanPos();
+  string fannegmap = m_model.getThrustMapFanNeg();
   string thrust_mode = m_model.getThrustModeDiff();
   string desired_thrust_l = "n/a";
   string desired_thrust_r = "n/a";
@@ -954,6 +963,8 @@ bool USM_MOOSApp::buildReport()
     negmap = "n/a";
   m_msgs << "     Positive Thrust Map: " << posmap << endl;
   m_msgs << "     Negative Thrust Map: " << negmap << endl;
+  m_msgs << "      Pos Fan Thrust Map: " << fanposmap << endl;
+  m_msgs << "      Neg Fan Thrust Map: " << fannegmap << endl;
   m_msgs << "        Max Accereration: " << max_acceleration << endl;
   m_msgs << "        Max Decereration: " << max_deceleration << endl << endl;
 
@@ -963,16 +974,17 @@ bool USM_MOOSApp::buildReport()
   m_msgs << "        DESIRED_THRUST_R: " << desired_thrust_r << endl;
 
 
-
   // Part 5: Speed/Depth Change Info ===========================
-  string max_depth_rate   = doubleToStringX(m_model.getMaxDepthRate(),6);
-  string max_depth_rate_v = doubleToStringX(m_model.getMaxDepthRateSpd(),6);
-  m_msgs << endl;
-  m_msgs << "Depth Information: " << endl;
-  m_msgs << "------------------ " << endl;
-  m_msgs << "           Max Depth Rate: " << max_depth_rate   << endl;
-  m_msgs << "     Max Depth Rate Speed: " << max_depth_rate_v << endl;
-  m_msgs << "              Water Depth: " << m_model.getWaterDepth() << endl;
+  if(m_depth_info_acast) {
+    string max_depth_rate   = doubleToStringX(m_model.getMaxDepthRate(),6);
+    string max_depth_rate_v = doubleToStringX(m_model.getMaxDepthRateSpd(),6);
+    m_msgs << endl;
+    m_msgs << "Depth Information: " << endl;
+    m_msgs << "------------------ " << endl;
+    m_msgs << "           Max Depth Rate: " << max_depth_rate   << endl;
+    m_msgs << "     Max Depth Rate Speed: " << max_depth_rate_v << endl;
+    m_msgs << "              Water Depth: " << m_model.getWaterDepth() << endl;
+  }
 
   if(m_wormset.size() > 0) {
     m_msgs << endl;

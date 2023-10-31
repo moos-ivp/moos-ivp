@@ -39,6 +39,9 @@ protected:
   bool      m_pid_allstop_posted;
   bool      m_pid_verbose;
   double    m_pid_ok_skew;
+
+  bool      m_enable_thrust_cap;
+  double    m_thrust_cap;
 };
 #endif 
 

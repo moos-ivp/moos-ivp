@@ -19,8 +19,8 @@
 
 using namespace std;
 
-//------------------------------------------------------------------------
-// Constructor
+//-----------------------------------------------------------------
+// Constructor()
 
 USM_Model::USM_Model() 
 {
@@ -546,7 +546,7 @@ void USM_Model::magDriftVector(double pct, string source)
   setDriftY(ymps, source);
 }
 
-//------------------------------------------------------------------------
+//--------------------------------------------------------------------
 // Procedure: setMaxRudderDegreesPerSec()
 
 bool USM_Model::setMaxRudderDegreesPerSec(double v)
@@ -558,7 +558,7 @@ bool USM_Model::setMaxRudderDegreesPerSec(double v)
   return(true);
 }
 
-//------------------------------------------------------------------------
+//--------------------------------------------------------------------
 // Procedure: setThrustFactor()
 
 void USM_Model::setThrustFactor(double value)
@@ -566,7 +566,19 @@ void USM_Model::setThrustFactor(double value)
   m_thrust_map.setThrustFactor(value);
 }
 
-//------------------------------------------------------------------------
+//--------------------------------------------------------------------
+// Procedure: setTurnSpdLoss()
+
+bool USM_Model::setTurnSpdLoss(double value)
+{
+  if((value < 0) || (value > 1))
+    return(false);
+  
+  m_sim_engine.setTurnSpdLoss(value);
+  return(true);
+}
+
+//--------------------------------------------------------------------
 // Procedure: setThrustReflect()
 
 bool USM_Model::setThrustReflect(string value)

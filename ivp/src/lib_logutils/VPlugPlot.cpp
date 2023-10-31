@@ -121,6 +121,10 @@ bool VPlugPlot::addEvent(const string& var, const string& val,
     m_vplugs[vsize-1].addMarker(val);
     m_view_marker_cnt++;
   }
+  else if(var == "VIEW_TEXTBOX") {
+    m_vplugs[vsize-1].addTextBox(val);
+    m_view_textbox_cnt++;
+  }
   return true;
 }
      

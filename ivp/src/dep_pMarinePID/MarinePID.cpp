@@ -695,7 +695,7 @@ bool MarinePID::buildReport()
 {
   m_msgs << "State:            " << endl;
   m_msgs << "  start_time:     " << doubleToString(m_start_time) << endl;
-  m_msgs << "  has_contro:     " << boolToString(m_has_control)    << endl;
+  m_msgs << "  has_control:    " << boolToString(m_has_control)    << endl;
   m_msgs << "  paused:         " << boolToString(m_paused)         << endl;
   m_msgs << "  allstop_posted: " << boolToString(m_allstop_posted) << endl;
   m_msgs << "  depth_control:  " << boolToString(m_depth_control)  << endl;

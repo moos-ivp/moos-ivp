@@ -58,6 +58,7 @@ public:
   bool   setPaused(std::string); 
   bool   setThrustReflect(std::string);
   void   setThrustFactor(double);
+  bool   setTurnSpdLoss(double);
 
   void   setThrustLeft(double);
   void   setThrustRight(double);

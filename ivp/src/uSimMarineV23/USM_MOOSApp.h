@@ -66,6 +66,8 @@ protected: // Utility function(s)
 
   WormHoleSet  m_wormset;
 
+  bool m_depth_info_acast;
+  
   // PID variables
   PIDEngine m_pengine;
   bool      m_pid_ignore_nav_yaw;
@@ -80,6 +82,7 @@ protected: // Utility function(s)
   // Optional post of DES_* in pid_coupled mode
   std::string  m_post_des_thrust;
   std::string  m_post_des_rudder;
+
 };
 
 #endif

@@ -24,6 +24,7 @@ ADD_EXECUTABLE(bhv2graphviz ${SRC})
 TARGET_LINK_LIBRARIES(bhv2graphviz
   helmivp
   ufield
+  dep_behaviors
   behaviors-marine
   behaviors-colregs
   bhv_fixedturn

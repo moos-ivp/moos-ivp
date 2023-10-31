@@ -90,7 +90,6 @@ void showExampleConfigAndExit()
   blk("                                                                ");
   blu("  tardy_helm_threshold = 2.0                                    ");
   blu("  tardy_nav_threshold  = 2.0                                    ");
-  blu("  active_start         = false   "," // or {true}               ");
   blu("  verbose              = terse   "," // or {verbose, quiet}     ");
   blk("                                                                ");
   blk("  // Yaw control configuration                                  ");

@@ -42,12 +42,17 @@ public:
 
   std::list<std::string>  setConfigParams(std::list<std::string>);
 
-  bool hasControl()                   {return(!m_pid_override);}
+  bool hasControl()
+  {return(!m_pid_override && !m_pid_stale);}
+
+  bool hasPIDOverride() const {return(m_pid_override);}
+  bool hasPIDStale() const    {return(m_pid_stale);}
+
   void setPIDOverride(bool v)         {m_pid_override=v;}
   void setPIDOverride(std::string);
 
   void setDesiredValues();
-  bool checkForStaleness();
+  void checkForStaleness();
   
   bool handleYawSettings();
   bool handleSpeedSettings();
@@ -65,6 +70,16 @@ public:
   double getDesiredThrust() const   {return(m_desired_thrust);}
   double getDesiredElevator() const {return(m_desired_elevator);}
 
+  std::vector<std::string> getConfigSummaryAll() const;
+  std::vector<std::string> getConfigSummary(std::string ptype) const;
+
+  double getSpeedFactor() const {return(m_speed_factor);}
+
+  double getMaxRudder() const   {return(m_max_rudder);}
+  double getMaxThrust() const   {return(m_max_thrust);}
+  double getMaxPitch()  const   {return(m_max_pitch);}
+  double getMaxElevator() const {return(m_max_elevator);}
+  
  protected:
   double setDesiredRudder();
   double setDesiredThrust();
@@ -119,6 +134,7 @@ public:
 
   bool    m_depth_control;
   bool    m_pid_override;
+  bool    m_pid_stale;
   
   std::vector<VarDataPair> m_postings;
 

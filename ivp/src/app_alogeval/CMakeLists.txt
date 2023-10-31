@@ -19,6 +19,7 @@ ADD_EXECUTABLE(alogeval ${SRC})
 TARGET_LINK_LIBRARIES(alogeval
   evalutil
   apputil
+  geometry
   logic
   mbutil
   logutils

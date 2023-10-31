@@ -116,6 +116,8 @@ void showExampleConfigAndExit()
   blk("  turn_rate            = 70       // range [0,100]              ");
   blk("  thrust_map           = 0:0, 20:1, 40:2, 60:3, 80:5, 100:5     ");
   blk("                                                                ");
+  blk("  turn_spd_loss        = 0.7      // [0,1] Default is 0.85      ");
+  blk("                                                                ");
   blk("  prefix               = NAV_  ","// default is USM_            ");
   blk("                                                                ");
   blk("                                                                ");
@@ -157,7 +159,6 @@ void showExampleConfigAndExit()
 
 void showInterfaceAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("uSimMarineV22 INTERFACE                                         ");
   blu("=============================================================== ");

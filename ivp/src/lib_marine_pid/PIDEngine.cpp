@@ -22,7 +22,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 PIDEngine::PIDEngine()
 {
@@ -67,6 +67,7 @@ PIDEngine::PIDEngine()
 
   m_depth_control = true;
   m_pid_override = true;
+  m_pid_stale = true;
   
   m_tardy_helm_thresh = 2.0;
   m_tardy_nav_thresh  = 2.0;
@@ -79,7 +80,7 @@ PIDEngine::PIDEngine()
 }
 
 //------------------------------------------------------------
-// Procedure: setConfigParams
+// Procedure: setConfigParams()
 
 list<string> PIDEngine::setConfigParams(list<string> param_lines)
 {
@@ -289,8 +290,9 @@ void PIDEngine::setDesiredValues()
   // Part 2: Critical info staleness (if not in simulation mode)
   //=============================================================
   if(!m_simulation) {
-    bool is_stale = checkForStaleness();
-    if(is_stale) {
+    //bool is_stale = checkForStaleness();
+    checkForStaleness();
+    if(m_pid_stale) {
       m_pid_override = true;
       return;
     }
@@ -312,7 +314,7 @@ void PIDEngine::setDesiredValues()
 //------------------------------------------------------------
 // Procedure: setDesiredValues()
 
-bool PIDEngine::checkForStaleness()
+void PIDEngine::checkForStaleness()
 {
   bool is_stale = false;
 
@@ -377,13 +379,14 @@ bool PIDEngine::checkForStaleness()
       is_stale = true;
     }
   }
-  
-  return(is_stale);
+
+  m_pid_stale = is_stale;
+  //return(is_stale);
 }
   
 
 //------------------------------------------------------------
-// Procedure: setDesiredRudder
+// Procedure: setDesiredRudder()
 //      Note: Rudder angles are processed in degrees
 
 double PIDEngine::setDesiredRudder()
@@ -435,7 +438,7 @@ double PIDEngine::setDesiredRudder()
 }
 
 //------------------------------------------------------------
-// Procedure: setDesiredThrust
+// Procedure: setDesiredThrust()
 
 double PIDEngine::setDesiredThrust()
 {
@@ -496,7 +499,7 @@ double PIDEngine::setDesiredThrust()
 }
 
 //------------------------------------------------------------
-// Procedure: setDesiredElevator
+// Procedure: setDesiredElevator()
 // Elevator angles and pitch are processed in radians
 
 double PIDEngine::setDesiredElevator()
@@ -547,7 +550,7 @@ double PIDEngine::setDesiredElevator()
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleYawSettings
+// Procedure: handleYawSettings()
 
 bool PIDEngine::handleYawSettings()
 {
@@ -618,7 +621,7 @@ bool PIDEngine::handleYawSettings()
   
 
 //--------------------------------------------------------------------
-// Procedure: handleSpeedSettings
+// Procedure: handleSpeedSettings()
 
 bool PIDEngine::handleSpeedSettings()
 {
@@ -861,5 +864,67 @@ double PIDEngine::getFrequency() const
 }
 
 
+//--------------------------------------------------------------------
+// Procedure: getConfigSummaryAll()
 
+vector<string> PIDEngine::getConfigSummaryAll() const
+{
+  vector<string> svec = getConfigSummary("yaw");
 
+  svec = mergeVectors(svec, getConfigSummary("speed"));
+  svec = mergeVectors(svec, getConfigSummary("pitch"));
+  svec = mergeVectors(svec, getConfigSummary("zpitch"));
+  
+  return(svec);
+}
+
+//--------------------------------------------------------------------
+// Procedure: getConfigSummary()
+
+vector<string> PIDEngine::getConfigSummary(string ptype) const
+{
+  vector<string> svec;
+  
+  if(ptype == "yaw") {
+    string str_yaw_kp = doubleToStringX(m_heading_pid.getKP(),3);
+    string str_yaw_ki = doubleToStringX(m_heading_pid.getKI(),3);
+    string str_yaw_kd = doubleToStringX(m_heading_pid.getKD(),3);
+    string str_yaw_il = doubleToStringX(m_heading_pid.getIL(),3);
+    svec.push_back("YAW_PID_KP             = " + str_yaw_kp);
+    svec.push_back("YAW_PID_KD             = " + str_yaw_kd);
+    svec.push_back("YAW_PID_KI             = " + str_yaw_ki);
+    svec.push_back("YAW_PID_INTEGRAL_LIMIT = " + str_yaw_il);
+  }
+  else if(ptype == "speed") {
+    string str_spd_kp = doubleToStringX(m_speed_pid.getKP(),3);
+    string str_spd_ki = doubleToStringX(m_speed_pid.getKI(),3);
+    string str_spd_kd = doubleToStringX(m_speed_pid.getKD(),3);
+    string str_spd_il = doubleToStringX(m_speed_pid.getIL(),3);
+    svec.push_back("SPEED_PID_KP             = " + str_spd_kp);
+    svec.push_back("SPEED_PID_KD             = " + str_spd_kd);
+    svec.push_back("SPEED_PID_KI             = " + str_spd_ki);
+    svec.push_back("SPEED_PID_INTEGRAL_LIMIT = " + str_spd_il);
+  }
+  else if(ptype == "pitch") {
+    string str_pitch_kp = doubleToStringX(m_pitch_pid.getKP(),3);
+    string str_pitch_ki = doubleToStringX(m_pitch_pid.getKI(),3);
+    string str_pitch_kd = doubleToStringX(m_pitch_pid.getKD(),3);
+    string str_pitch_il = doubleToStringX(m_pitch_pid.getIL(),3);
+    svec.push_back("PITCH_PID_KP             = " + str_pitch_kp);
+    svec.push_back("PITCH_PID_KD             = " + str_pitch_kd);
+    svec.push_back("PITCH_PID_KI             = " + str_pitch_ki);
+    svec.push_back("PITCH_PID_INTEGRAL_LIMIT = " + str_pitch_il);
+  }
+  else if(ptype == "zpitch") {
+    string str_zpitch_kp = doubleToStringX(m_z_to_pitch_pid.getKP(),3);
+    string str_zpitch_ki = doubleToStringX(m_z_to_pitch_pid.getKI(),3);
+    string str_zpitch_kd = doubleToStringX(m_z_to_pitch_pid.getKD(),3);
+    string str_zpitch_il = doubleToStringX(m_z_to_pitch_pid.getIL(),3);
+    svec.push_back("Z_TO_PITCH_PID_KP             = " + str_zpitch_kp);
+    svec.push_back("Z_TO_PITCH_PID_KD             = " + str_zpitch_kd);
+    svec.push_back("Z_TO_PITCH_PID_KI             = " + str_zpitch_ki);
+    svec.push_back("Z_TO_PITCH_PID_INTEGRAL_LIMIT = " + str_zpitch_il);
+  }
+
+  return(svec);
+}
