@@ -65,7 +65,7 @@ bool FixedTurn::setTurnParams(string str)
   // ================================================
   // Part 1: gather settings, reject if unknown param
   // ================================================  
-  vector<string> svector = parseString(str, ',');
+  vector<string> svector = parseStringQ(str, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
     string param = biteStringX(svector[i], '=');
     string value = svector[i];

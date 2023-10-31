@@ -19,6 +19,7 @@
 #include "BuildUtils.h"
 #include "ZAIC_PEAK.h"
 #include "ZAIC_SPD.h"
+#include "XYTextBox.h"
 #include "MacroUtils.h"
 #include "OF_Coupler.h"
 
@@ -567,12 +568,19 @@ void BHV_FixedTurn::postTurnCompleteReport()
     double avg_rad = 0;
     if(rad_count > 0)
       avg_rad = (total_rad / (double)(rad_count));
-    str += ",avg_rad=" + doubleToStringX(avg_rad);
-    str += ",min_rad=" + doubleToStringX(min_rad);
-    str += ",max_rad=" + doubleToStringX(max_rad);
+    str += ",avg_rad=" + doubleToStringX(avg_rad,2);
+    str += ",min_rad=" + doubleToStringX(min_rad,2);
+    str += ",max_rad=" + doubleToStringX(max_rad,2);
   }
 
   postMessage("FT_REPORT", str);
+
+#if 0
+  XYTextBox tbox(-25, -85, "ft_report_"+m_us_name);
+  tbox.setMsg(str);
+  string spec = tbox.get_spec();  
+  postMessage("VIEW_TEXTBOX", spec);
+#endif
 }
 
 
