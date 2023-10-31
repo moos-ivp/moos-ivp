@@ -109,7 +109,6 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_AvoidObstacle")   || 
      (bhv_name == "BHV_AvoidObstacleX")  || 
      (bhv_name == "BHV_AvoidObstacleV21")|| 
-     //     (bhv_name == "BHV_AvoidObstacleV23")|| 
      (bhv_name == "BHV_PeriodicSpeed")   || 
      (bhv_name == "BHV_PeriodicSurface") || 
      (bhv_name == "BHV_GoToDepth")       || 
@@ -198,14 +197,6 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_AvoidObstacleX(m_domain);
   else if(bhv_name == "BHV_AvoidObstacleV21") 
     bhv = new BHV_AvoidObstacleV21(m_domain);
-<<<<<<< .mine
-||||||| .r10385
-  else if(bhv_name == "BHV_AvoidObstacleV23") 
-    bhv = new BHV_AvoidObstacleV23(m_domain);
-=======
-  //  else if(bhv_name == "BHV_AvoidObstacleV23") 
-  //   bhv = new BHV_AvoidObstacleV23(m_domain);
->>>>>>> .r10400
   else if(bhv_name == "BHV_PeriodicSpeed") 
     bhv = new BHV_PeriodicSpeed(m_domain);
   else if(bhv_name == "BHV_PeriodicSurface") 
