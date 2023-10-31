@@ -153,7 +153,7 @@ string XYTextBox::get_spec(string param) const
   spec += ",y=" + doubleToStringX(m_y, 2);
 
   for(unsigned int i=0; i<m_msgs.size(); i++)
-    spec += ",msg=" + m_msgs[i];
+    spec += ",msg=\"" + m_msgs[i] + "\"";
 
   spec += ",fsize=" + intToString(m_fsize);
 
@@ -193,7 +193,7 @@ XYTextBox stringToTextBox(string str)
   XYTextBox null_tbox;
   XYTextBox tbox;
 
-  vector<string> svector = parseString(str, ',');
+  vector<string> svector = parseStringQ(str, ',');
   for(unsigned int i=0; i<svector.size(); i++) {
     string param = tolower(biteStringX(svector[i], '='));
     string value = svector[i];
@@ -204,8 +204,11 @@ XYTextBox stringToTextBox(string str)
       tbox.setX(dval);
     else if(param == "y")
       tbox.setY(dval);
-    else if(param == "msg")
+    else if(param == "msg") {
+      if(isQuoted(value))
+	value = stripQuotes(value);
       tbox.addMsg(value);
+    }
     else if(param == "mcolor")
       tbox.setMColor(value);
     else if(param == "fsize")

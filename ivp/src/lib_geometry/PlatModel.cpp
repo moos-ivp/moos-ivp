@@ -35,9 +35,34 @@ PlatModel::PlatModel(double osx, double osy, double osh)
 {
   m_osx = osx;  m_osx_set = true;
   m_osy = osy;  m_osy_set = true;
-  m_osh = osh;  m_osh_set = true;  
+
+  m_osh = angle360(osh);
+  m_osh_set = true;  
 
   m_spoke_degs = 0;
+}
+
+//----------------------------------------------------------------
+// Procedure: setOSH()
+
+void PlatModel::setOSH(double osh)
+{
+  m_osh = angle360(osh);
+  m_osh_set = true;  
+}
+
+//----------------------------------------------------------------
+// Procedure: setPose()
+
+void PlatModel::setPose(double osx, double osy, double osh)
+{
+  m_osx = osx;
+  m_osy = osy;
+  m_osh = angle360(osh);
+
+  m_osx_set = true;
+  m_osy_set = true;
+  m_osh_set = true;  
 }
 
 //----------------------------------------------------------------
@@ -74,20 +99,6 @@ vector<XYPoint> PlatModel::getPoints(string param)
   }
   
   return(rvector);
-}
-
-//----------------------------------------------------------------
-// Procedure: setPose()
-
-void PlatModel::setPose(double osx, double osy, double osh)
-{
-  m_osx = osx;
-  m_osy = osy;
-  m_osh = angle360(osh);
-
-  m_osx_set = true;
-  m_osy_set = true;
-  m_osh_set = true;  
 }
 
 //----------------------------------------------------------------
@@ -130,7 +141,6 @@ bool PlatModel::valid() const
 XYSeglr PlatModel::getTurnSeglr(double hdg) const
 {
   XYSeglr seglr;
-
   
   // Sanity checks
   if(m_star_spoke_vx.size() != m_star_spoke_vy.size())

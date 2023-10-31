@@ -70,7 +70,8 @@ double  totAbsRelBearing(double osx, double osy, double osh,
 
 bool    containsAngle(double deg1, double deg2, double deg3);
 
-bool    polyAft(double osx, double osy, double osh, XYPolygon poly, double xbng=0);
+bool    polyAft(double osx, double osy, double osh,
+		XYPolygon poly, double xbng=0);
 
 double  turnGap(double osx, double osy, double osh, double tradius,
 		double px1, double py1, double px2, double py2, bool tright);
@@ -80,6 +81,15 @@ double  headingAvg(double, double);
 
 bool    portTurn(double osh, double new_hdg);
 
-
+// After 22.8
+bool    ptPortOfOwnship(double osx, double osy, double osh,
+			double ptx, double pty);
+bool    ptStarOfOwnship(double osx, double osy, double osh,
+			double ptx, double pty);
+bool    polyPortOfOwnship(double osx, double osy, double osh,
+			  XYPolygon poly);
+bool    polyStarOfOwnship(double osx, double osy, double osh,
+			  XYPolygon poly);
+			
 #endif
 

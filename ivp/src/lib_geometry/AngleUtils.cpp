@@ -831,3 +831,87 @@ bool portTurn(double osh, double hdg)
   }
   return(true);
 }
+
+//----------------------------------------------------------------
+// Procedure: ptPortOfOwnship()
+//   Purpose: Given ownship position and heading, and given point
+//            Determine if the point is on the port side.
+
+bool ptPortOfOwnship(double osx, double osy, double osh,
+		     double ptx, double pty)
+{
+  // Sanity check
+  if((osx == ptx) && (osy == pty))
+    return(false);
+
+  double rel_bng = relBearing(osx, osy, osh, ptx, pty);
+  if((rel_bng > 180) && (rel_bng < 360))
+    return(true);
+  
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: ptStarOfOwnship()
+//   Purpose: Given ownship position and heading, and given point
+//            Determine if the point is on the starboard side.
+
+bool ptStarOfOwnship(double osx, double osy, double osh,
+		     double ptx, double pty)
+{
+  // Sanity check
+  if((osx == ptx) && (osy == pty))
+    return(false);
+
+  double rel_bng = relBearing(osx, osy, osh, ptx, pty);
+  if((rel_bng > 0) && (rel_bng < 180))
+    return(true);
+  
+  return(false);
+}
+
+//----------------------------------------------------------------
+// Procedure: polyPortOfOwnship()
+//   Purpose: Given ownship position and heading, and given poly
+//            Determine if the poly is completely on the port side.
+
+bool polyPortOfOwnship(double osx, double osy, double osh,
+		       XYPolygon poly)
+{
+  // Sanity check
+  if(!poly.is_convex())
+    return(false);
+
+  for(unsigned int i=0; i<poly.size(); i++) {
+    double vx = poly.get_vx(i);
+    double vy = poly.get_vy(i);
+    if(!ptPortOfOwnship(osx, osy, osh, vx, vy))
+      return(false);
+  }
+  
+  return(true);
+}
+
+//----------------------------------------------------------------
+// Procedure: polyStarOfOwnship()
+//   Purpose: Given ownship position and heading, and given poly
+//            Determine if the poly is completely on the
+//            starboard side.
+
+bool polyStarOfOwnship(double osx, double osy, double osh,
+		       XYPolygon poly)
+{
+  // Sanity check
+  if(!poly.is_convex())
+    return(false);
+
+  for(unsigned int i=0; i<poly.size(); i++) {
+    double vx = poly.get_vx(i);
+    double vy = poly.get_vy(i);
+    if(!ptStarOfOwnship(osx, osy, osh, vx, vy))
+      return(false);
+  }
+  
+  return(true);
+}
+

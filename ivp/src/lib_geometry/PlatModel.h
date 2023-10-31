@@ -27,7 +27,7 @@ class PlatModel
 public: // Setters (Pose)
   void setOSX(double v) {m_osx=v; m_osx_set=true;}
   void setOSY(double v) {m_osy=v; m_osy_set=true;}
-  void setOSH(double v) {m_osh=v; m_osh_set=true;}
+  void setOSH(double v);
   void setPose(double osx, double osy, double osh);
 
 public: // Setters (Info typically set by a TMGen)
