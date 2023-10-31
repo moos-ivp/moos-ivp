@@ -61,7 +61,6 @@
 #include "BHV_AvoidObstacle.h"
 #include "BHV_AvoidObstacleX.h"
 #include "BHV_AvoidObstacleV21.h"
-//#include "BHV_AvoidObstacleV23.h"
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
 #include "BHV_Hysteresis.h"
@@ -199,8 +198,14 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_AvoidObstacleX(m_domain);
   else if(bhv_name == "BHV_AvoidObstacleV21") 
     bhv = new BHV_AvoidObstacleV21(m_domain);
+<<<<<<< .mine
+||||||| .r10385
+  else if(bhv_name == "BHV_AvoidObstacleV23") 
+    bhv = new BHV_AvoidObstacleV23(m_domain);
+=======
   //  else if(bhv_name == "BHV_AvoidObstacleV23") 
   //   bhv = new BHV_AvoidObstacleV23(m_domain);
+>>>>>>> .r10400
   else if(bhv_name == "BHV_PeriodicSpeed") 
     bhv = new BHV_PeriodicSpeed(m_domain);
   else if(bhv_name == "BHV_PeriodicSurface") 
