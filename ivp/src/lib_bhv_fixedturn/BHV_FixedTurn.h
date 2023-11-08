@@ -76,6 +76,9 @@ protected:
   bool     m_port_turn;
   double   m_cruise_spd;
   double   m_timeout;
+
+  double   m_turn_delay; // mikerb nov0823
+  double   m_turn_delay_utc; // mikerb nov0823
   
   double   m_stale_nav_thresh;
 

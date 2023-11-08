@@ -30,7 +30,7 @@ using namespace std;
 
 BHV_FixedTurn::BHV_FixedTurn(IvPDomain gdomain) : IvPBehavior(gdomain)
 {
-  this->setParam("descriptor", "zig");
+  this->setParam("descriptor", "fixturn");
   
   m_domain = subDomain(m_domain, "course,speed");
   
@@ -53,6 +53,9 @@ BHV_FixedTurn::BHV_FixedTurn(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_port_turn  = true;
   m_timeout    = -1;     // no timeout
   m_cruise_spd = 1;      // meters/sec
+
+  m_turn_delay = -1;     // secs (neg num means disabled)
+  m_turn_delay_utc = -1; // UTC time in secs since 1970
   
   m_stale_nav_thresh = 5;  // seconds
   
@@ -103,6 +106,8 @@ bool BHV_FixedTurn::setParam(string param, string value)
     handled = setNonNegDoubleOnString(m_cruise_spd, value);
   else if(param == "timeout")  
     return(setDoubleOnString(m_timeout, value));
+  else if(param == "turn_delay")  
+    return(setDoubleOnString(m_turn_delay, value));
 
   else if(param == "turn_spec")
     handled = m_turn_set.setTurnParams(value);
@@ -126,10 +131,29 @@ bool BHV_FixedTurn::setParam(string param, string value)
 bool BHV_FixedTurn::handleNewHdg()
 {
   // =====================================================
-  // Part 1: If in stem state, pick a side and set stems
+  // Part 0: If delay is being used, handle/check here.
   // =====================================================
+  cout << "HNH::state:" << m_state << endl;
+  double curr_utc = getBufferCurrTime();
   if(m_state == "stem") {
-    setState("turning");    
+    if(m_turn_delay > 0) {
+      setState("delay");
+      m_turn_delay_utc = curr_utc;
+      return(false);
+    }
+  }
+  
+  if(m_state == "delay") {
+    double elapsed = curr_utc - m_turn_delay_utc;
+    if(elapsed < m_turn_delay)
+      return(false);
+  }
+  
+  // =====================================================
+  // Part 1: If entering turning state, handle inits
+  // =====================================================
+  if((m_state == "stem") || (m_state == "delay")) {
+    setState("turning");
     m_osh_prev = m_osh;
     m_stem_hdg = m_osh;
     m_stem_spd = m_osv;
@@ -393,7 +417,7 @@ bool BHV_FixedTurn::updateOSSpd(string fail_action)
 bool BHV_FixedTurn::setState(std::string str)
 {
   str = tolower(str);
-  if((str != "stem") && (str != "turning"))
+  if((str != "stem") && (str != "turning") && (str != "delay"))
     return(false);
   
   m_state = str;
@@ -435,6 +459,13 @@ double BHV_FixedTurn::getCurrTurnSpd() const
 
 double BHV_FixedTurn::getCurrModHdg() const
 {
+  // If in the delay state, just continue current heading
+  // until delay is finished, presumably to let the vehicle
+  // adjust speed.
+  if(m_state == "delay") 
+    return(0);
+      
+  
   // By default just use the configured default mod_hdg
   double mod_hdg = m_mod_hdg;
 
@@ -589,7 +620,7 @@ void BHV_FixedTurn::postTurnCompleteReport()
 //      Note: The turn visuals have a duration, so they should
 //            disappear on their own. Presently alogview does
 //            not respect durations, so we clear them here just
-//            to be cautious and ensure alogvie is not littered.
+//            to be cautious and ensure alogview is not littered.
 
 void BHV_FixedTurn::clearTurnVisuals()
 {
