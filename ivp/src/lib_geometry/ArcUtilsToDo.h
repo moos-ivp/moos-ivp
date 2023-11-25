@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ArcUtilsToDo.h                                       */
 /*    DATE: Nov 2nd, 2018 Friday evening on campus               */
 /*                                                               */
@@ -36,4 +36,5 @@ double distSegToArcPts(double x1, double y1, double x2, double y2,
 		       std::vector<double>& viy,
 		       std::vector<double>& dist);
 #endif
+
 

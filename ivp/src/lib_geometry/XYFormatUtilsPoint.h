@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsPoint.h                                 */
 /*    DATE: May 16, 2008 Sunday afternoon at Brueggers           */
 /*                                                               */
@@ -58,6 +58,7 @@ XYPoint stringStandard2Point(const std::string&);
 XYPoint stringAbbreviated2Point(const std::string&);
 
 #endif
+
 
 
 

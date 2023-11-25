@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogTest.cpp                                          */
-/*    DATE: April 19, 2019                                        */
+/*    DATE: April 19, 2019                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -587,4 +587,5 @@ string LogTest::getEntryInfo(const ALogEntry& entry)
 
   return(retstr);
 }
+
 

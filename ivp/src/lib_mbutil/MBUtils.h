@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MBUtils.h                                            */
 /*    DATE: (1996-2005)                                          */
 /*                                                               */
@@ -212,3 +212,4 @@ std::string intToMonth(int, bool brief=false);
 bool isValidTurn(const std::string&);
 
 #endif
+

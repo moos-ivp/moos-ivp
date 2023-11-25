@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CommandItem.cpp                                      */
 /*    DATE: July 2nd, 2016                                       */
 /*                                                               */
@@ -149,6 +149,7 @@ void CommandItem::print() const
   for(unsigned int i=0; i<m_receivers.size(); i++) 
     cout << "  To: " << m_receivers[i] << endl;
 }
+
 
 
 

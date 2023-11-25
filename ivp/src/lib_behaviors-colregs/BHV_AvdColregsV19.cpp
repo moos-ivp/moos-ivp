@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_AvdColregsV18.cpp                                */
 /*    DATE: May 16th, 2013 (combined from individual colrg bvs)  */
-/*    DATE: Oct 12th, 2018 (V18 from V17, plus refineries)       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -1673,6 +1672,7 @@ void BHV_AvdColregsV19::postStatusInfo()
     postRepeatableMessage("COLREGS_BNG" + suffix, m_cn_rel_bng_val.back());
 #endif
 }
+
 
 
 

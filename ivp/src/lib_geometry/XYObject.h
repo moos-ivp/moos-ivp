@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYObject.h                                           */
 /*    DATE: July 18th, 2008                                      */
 /*                                                               */
@@ -118,3 +118,4 @@ bool operator== (const XYObject& one, const XYObject& two);
 bool operator< (const XYObject& one, const XYObject& two);
 
 #endif
+

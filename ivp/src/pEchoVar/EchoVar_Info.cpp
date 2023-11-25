@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: EchoVar_Info.cpp                                     */
 /*    DATE: Dec 14th 2011                                        */
-/*    DATE: Aug 17th 2017 Added Boolean Switching, mikerb        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -159,6 +158,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("pEchoVar", "gpl");
   exit(0);
 }
+
 
 
 

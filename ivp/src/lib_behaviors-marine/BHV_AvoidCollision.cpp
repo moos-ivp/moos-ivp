@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: BHV_AvoidCollision.cpp                              */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
+/*    FILE: BHV_AvoidCollision.cpp                               */
 /*    DATE: Nov 18th 2006                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -499,3 +499,4 @@ void BHV_AvoidCollision::postRange()
   else
     postIntMessage(("RANGE_AVD_" + m_contact), m_contact_range);
 }
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PathUtils.cpp                                        */
 /*    DATE: Jan 29th, 2012 Sunday Morning at CSAIL               */
 /*                                                               */
@@ -80,6 +80,7 @@ XYSegList greedyPath(XYSegList segl, double sx, double sy)
   }
   return(new_segl);
 }
+
 
 
 

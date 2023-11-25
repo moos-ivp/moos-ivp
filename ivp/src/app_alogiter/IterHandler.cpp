@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IterHandler.cpp                                      */
 /*    DATE: Dec 22nd, 2013                                       */
 /*                                                               */
@@ -292,6 +292,7 @@ void IterHandler::printReportSummary()
 
   cout << endl;
 }
+
 
 
 

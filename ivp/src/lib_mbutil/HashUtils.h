@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: HashUtils.h                                          */
 /*    DATE: Nov 2nd, 2022                                        */
 /*                                                               */
@@ -52,3 +52,4 @@ std::vector<std::string> nouns4();
 std::vector<std::string> names4();
 
 #endif
+

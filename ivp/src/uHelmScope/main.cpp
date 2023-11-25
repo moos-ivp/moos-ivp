@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
 /*    DATE: Apr 12th 2008                                        */
 /*                                                               */
@@ -128,6 +128,7 @@ int main(int argc ,char * argv[])
   appThread.quit();
   return(0);
 }
+
 
 
 

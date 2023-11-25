@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GEO_GUI.cpp                                          */
 /*    DATE: May 1st, 2005 (Major Modifications November 2007)    */
 /*                                                               */
@@ -310,6 +310,7 @@ void GEO_GUI::updateXY()
   string sval = doubleToStringX(dval);
   p_snap->value(sval.c_str());
 }
+
 
 
 

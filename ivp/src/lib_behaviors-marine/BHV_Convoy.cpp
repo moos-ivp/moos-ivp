@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_Convoy.cpp                                       */
 /*    DATE: Jul 28th 2018                                        */
 /*                                                               */
@@ -549,4 +549,5 @@ bool BHV_Convoy::popOldPoint()
   
   return(true);
 }
+
 

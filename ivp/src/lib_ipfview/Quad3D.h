@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Quad3D.h                                             */
 /*    DATE: Jan 12th 2006                                        */
 /*                                                               */
@@ -173,6 +173,7 @@ public:
   double lh_blu;
 };
 #endif
+
 
 
 

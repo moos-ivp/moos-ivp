@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_Rings.cpp                                        */
 /*    DATE: Very old - modernized Jan 21 2006                    */
 /*                                                               */
@@ -131,6 +131,7 @@ string AOF_Rings::latexSTR(int full) const
   if(full) retstr += " \\end{tabular}} \\normalsize";
   return(retstr);
 }
+
 
 
 

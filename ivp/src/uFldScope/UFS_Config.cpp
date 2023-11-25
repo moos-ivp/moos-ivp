@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: UFS_Config.cpp                                       */
 /*    DATE: Nov 23rd 2011                                        */
 /*                                                               */
@@ -83,6 +83,7 @@ bool UFS_Config::valid() const
     return(false);
   return(true);
 }
+
 
 
 

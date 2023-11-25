@@ -5,7 +5,6 @@
 
 SET(SRC
   BHV_AbortToPoint.cpp
-  BHV_Attractor.cpp
   BHV_AvoidCollision.cpp
   BHV_AvoidObstacle.cpp
   BHV_AvoidObstacleX.cpp
@@ -28,7 +27,6 @@ SET(SRC
   BHV_PeriodicSpeed.cpp
   BHV_PeriodicSurface.cpp
   BHV_RStationKeep.cpp
-  BHV_RubberBand.cpp
   BHV_Shadow.cpp
   BHV_StationKeep.cpp
   BHV_TimeOut.cpp
@@ -50,7 +48,6 @@ SET(SRC
 
 SET(HEADERS
   BHV_AbortToPoint.h
-  BHV_Attractor.h
   BHV_AvoidCollision.h
   BHV_AvoidObstacle.h
   BHV_AvoidObstacleX.h
@@ -74,7 +71,6 @@ SET(HEADERS
   BHV_OpRegionRecover.h
   BHV_PeriodicSpeed.h
   BHV_RStationKeep.h
-  BHV_RubberBand.h
   BHV_Shadow.h
   BHV_StationKeep.h
   BHV_TimeOut.h

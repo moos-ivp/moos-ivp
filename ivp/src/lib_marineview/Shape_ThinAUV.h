@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Shape_ThinAUV.h                                      */
 /*    DATE: September 21st 2007                                  */
 /*                                                               */
@@ -60,6 +60,7 @@ double  g_thin_auvCtrX =  0.0;
 double  g_thin_auvCtrY = 45.5;
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Common_IPF_GUI.cpp                                   */
 /*    DATE: June 24th 2016                                       */
 /*                                                               */
@@ -454,4 +454,5 @@ void Common_IPF_GUI::cb_Polar(Fl_Widget* o, int v) {
 void Common_IPF_GUI::cb_Quit() {
   exit(0);
 }
+
 

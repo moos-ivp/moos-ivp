@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ColorParse.h                                         */
 /*    DATE: Aug 19th 2006                                        */
 /*                                                               */
@@ -546,4 +546,5 @@ void mag(const string& str, const string& xstr)
 {
   cout << "\33[35m" << str << "\33[0m" << xstr << endl;
 }
+
 

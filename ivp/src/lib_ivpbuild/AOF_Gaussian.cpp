@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_Gaussian.cpp                                     */
 /*    DATE: June 9th 2008                                        */
 /*                                                               */
@@ -82,3 +82,4 @@ double AOF_Gaussian::evalBox(const IvPBox *b) const
 
   return(pct * m_range);
 }
+

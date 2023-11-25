@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: NodeRiderSet.cpp                                     */
 /*    DATE: May 7th 2022                                         */
 /*                                                               */
@@ -177,3 +177,4 @@ string NodeRiderSet::getRiderReports(double curr_time)
     
   return(reports);
 }
+

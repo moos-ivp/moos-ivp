@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_VECT_GUI.cpp                                    */
 /*    DATE: May 16th, 2016                                       */
 /*                                                               */
@@ -181,3 +181,4 @@ void ZAIC_VECT_GUI::updateOutput()
   str = doubleToString(((ZAIC_VECT_Model*)(m_zaic_model))->getTolerance(),1);
   m_fld_tolerance->value(str.c_str());
 }
+

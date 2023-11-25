@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: InfoBuffer.H                                         */
 /*    DATE: Oct 12th 2004 Thanksgiving in Waterloo               */
 /*                                                               */
@@ -78,6 +78,7 @@ protected:
   double m_start_time;
 };
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_HDG_GUI.h                                       */
 /*    DATE: May 10th, 2016                                       */
 /*                                                               */
@@ -49,6 +49,7 @@ class ZAIC_HDG_GUI : public ZAIC_GUI {
   Fl_Output   *m_fld_hghmin_util;
 };
 #endif
+
 
 
 

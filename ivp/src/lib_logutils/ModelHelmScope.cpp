@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ModelHelmScope.cpp                                   */
 /*    DATE: Oct 4th, 2011                                        */
 /*                                                               */
@@ -435,6 +435,7 @@ void ModelHelmScope::setTimeFromIter(unsigned int new_iter)
   m_curr_time = m_helm_plot.getTimeByIndex(index);
   m_curr_iter = new_iter;
 }
+
 
 
 

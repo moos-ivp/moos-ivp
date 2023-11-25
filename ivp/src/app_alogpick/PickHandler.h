@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng                               */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PickHandler.h                                        */
 /*    DATE: August 13th, 2023                                    */
 /*                                                               */
@@ -55,3 +55,4 @@ class PickHandler
 };
 
 #endif
+

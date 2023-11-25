@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ACTable.h                                            */
 /*    DATE: Jun 17th 2012                                        */
 /*                                                               */
@@ -91,6 +91,7 @@ public:
 };
 
 #endif 
+
 
 
 

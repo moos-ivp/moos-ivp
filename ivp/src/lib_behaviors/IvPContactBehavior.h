@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IvPContactBehavior.h                                 */
 /*    DATE: Apr 3rd 2010 Separated/generalized from indiv. bhvs  */
 /*                                                               */
@@ -111,3 +111,4 @@ private:
 };
 
 #endif
+

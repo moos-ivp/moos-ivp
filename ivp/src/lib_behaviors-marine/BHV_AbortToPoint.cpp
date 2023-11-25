@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_AbortToPoint.cpp                                 */
 /*    DATE: August 6th 2008                                      */
 /*                                                               */
@@ -246,6 +246,7 @@ void BHV_AbortToPoint::updateInfoOut()
     postMessage(m_status_var, "ABANDONED");
   }
 }
+
 
 
 

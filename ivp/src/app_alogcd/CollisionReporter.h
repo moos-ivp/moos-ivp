@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CollisionReporter.h                                  */
 /*    DATE: December 23rd, 2015                                  */
 /*                                                               */
@@ -60,6 +60,7 @@ class CollisionReporter
 };
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Relayer.h                                            */
 /*    DATE: Jun 26th 2008                                        */
 /*                                                               */
@@ -57,6 +57,7 @@ class PXR_MOOSApp : public CMOOSApp
 };
 
 #endif 
+
 
 
 

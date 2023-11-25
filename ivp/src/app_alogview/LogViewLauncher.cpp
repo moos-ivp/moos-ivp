@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogViewLauncher.cpp                                  */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -744,6 +744,7 @@ bool LogViewLauncher::handleALogViewConfig(string filename)
   m_config_file_read = true;
   return(true);
 }
+
 
 
 

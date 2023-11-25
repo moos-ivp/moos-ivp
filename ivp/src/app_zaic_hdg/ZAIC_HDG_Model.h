@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_HDG_Model.h                                     */
 /*    DATE: May 10th, 2016                                       */
 /*                                                               */
@@ -60,6 +60,7 @@ class ZAIC_HDG_Model : public ZAIC_Model
   int       m_curr_mode;
 };
 #endif 
+
 
 
 

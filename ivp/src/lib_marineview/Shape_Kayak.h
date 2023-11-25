@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Shape_Kayak.h                                        */
 /*    DATE: September 21st 2007                                  */
 /*                                                               */
@@ -122,6 +122,7 @@ double  g_kayakCtrX = 0.0;
 double  g_kayakCtrY = 59.9375;
 
 #endif
+
 
 
 

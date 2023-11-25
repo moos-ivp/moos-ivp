@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogPlot.h                                            */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -87,6 +87,7 @@ protected:
   double m_avg_time_gap;
 };
 #endif 
+
 
 
 

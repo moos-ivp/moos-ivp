@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ObstacleFieldGenerator.cpp                           */
 /*    DATE: Oct 18th 2017                                        */
 /*                                                               */
@@ -331,3 +331,4 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
   }
   return(false);
 }
+

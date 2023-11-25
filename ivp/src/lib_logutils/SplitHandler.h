@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: SplitHandler.h                                       */
 /*    DATE: Feb 2nd, 2015                                        */
 /*                                                               */
@@ -85,3 +85,4 @@ class SplitHandler
 };
 
 #endif
+

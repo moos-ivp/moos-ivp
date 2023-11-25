@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_R17.cpp                                          */
 /*    DATE: Febuary 9th, 2001 (CPA logic written)                */
 /*                                                               */
@@ -278,6 +278,7 @@ double AOF_R17::metricCPA(double eval_dist) const
   double tween = 25.0 + 75.0 * (eval_dist - min_dist) / range;
   return(tween);
 }
+
 
 
 

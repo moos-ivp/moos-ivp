@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CommandItem.h                                        */
 /*    DATE: July 2nd, 2016                                       */
 /*                                                               */
@@ -77,6 +77,7 @@ class CommandItem
 };
 
 #endif 
+
 
 
 

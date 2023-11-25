@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: RangeMark.h                                          */
 /*    DATE: July 19th, 2020                                      */
 /*                                                               */
@@ -49,3 +49,4 @@ bool operator< (const RangeMark& one, const RangeMark& two);
 bool operator== (const RangeMark& one, const RangeMark& two);
 
 #endif 
+

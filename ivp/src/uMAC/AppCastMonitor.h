@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AppCastMonitor.h                                     */
 /*    DATE: June 4th 2012                                        */
 /*                                                               */
@@ -99,3 +99,4 @@ class AppCastMonitor : public CMOOSApp
 };
 
 #endif 
+

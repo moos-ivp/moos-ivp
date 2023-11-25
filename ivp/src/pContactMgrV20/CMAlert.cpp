@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CMAlert.cpp                                          */
 /*    DATE: Oct 11th 2017                                        */
 /*                                                               */
@@ -333,3 +333,4 @@ vector<string> CMAlert::getSummary() const
   
   return(rvector);
 }
+

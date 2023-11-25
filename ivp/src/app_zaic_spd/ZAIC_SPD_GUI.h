@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_SPD_GUI.h                                       */
 /*    DATE: June 2nd, 2015                                       */
 /*                                                               */
@@ -56,3 +56,4 @@ class ZAIC_SPD_GUI : public ZAIC_GUI {
   static void cb_Snap(Fl_Widget*, int);
 };
 #endif
+

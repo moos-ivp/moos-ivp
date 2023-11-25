@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Odometer.cpp                                         */
 /*    DATE: Jan 31st, 2020                                       */
 /*                                                               */
@@ -165,3 +165,4 @@ void Odometer::updateDistance()
   m_prev_x = m_curr_x;
   m_prev_y = m_curr_y;
 }
+

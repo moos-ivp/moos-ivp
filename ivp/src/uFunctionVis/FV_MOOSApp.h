@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: FV_MOOSApp.h                                         */
 /*    DATE: May 12th 2006                                        */
 /*                                                               */
@@ -74,6 +74,7 @@ class FV_MOOSApp : public CMOOSApp
 };
 
 #endif
+
 
 
 

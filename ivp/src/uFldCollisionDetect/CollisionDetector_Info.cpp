@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CollisionDetector_Info.cpp                           */
 /*    DATE: Dec 21st 2015                                        */
 /*                                                               */
@@ -182,6 +182,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uCollisionDetector", "gpl");
   exit(0);
 }
+
 
 
 

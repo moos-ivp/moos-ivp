@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ArcUtils.h                                           */
 /*    DATE: Nov 2nd, 2018 Friday evening on campus               */
 /*                                                               */
@@ -123,3 +123,4 @@ unsigned int cpasArcSegl(double ax, double ay, double ar,
 			 std::vector<double>& vcpa,
 			 std::vector<double>& vray);
 #endif
+

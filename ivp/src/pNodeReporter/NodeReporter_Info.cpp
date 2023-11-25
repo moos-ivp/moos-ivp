@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: NodeReporter_Info.cpp                                */
 /*    DATE: July 6th 2011                                        */
 /*                                                               */
@@ -199,6 +199,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("pNodeReporter", "gpl");
   exit(0);
 }
+
 
 
 

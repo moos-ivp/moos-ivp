@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MBTimer.cpp                                          */
 /*    DATE: Too long ago to remember (1996-1999)                 */
 /*                                                               */
@@ -221,6 +221,7 @@ clock_t MBTimer::get_cpu_time(int prec)
   if((prec != 1) && (prec != 1000)) prec = 1;
   return( ((return_value * prec)) / (TCKS_PER_SEC));    
 } 
+
 
 
 

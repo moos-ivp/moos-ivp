@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFieldGenerator.h                                   */
 /*    DATE: Jan 27th, 2012                                       */
 /*                                                               */
@@ -101,6 +101,7 @@ class XYFieldGenerator
 };
 
 #endif 
+
 
 
 

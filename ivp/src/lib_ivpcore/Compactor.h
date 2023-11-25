@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Compactor.h                                          */
 /*    DATE: June 13, 2004                                        */
 /*                                                               */
@@ -37,6 +37,7 @@ public:
   virtual double maxVal(IvPBox*, bool*) = 0;
 };
 #endif
+
 
 
 

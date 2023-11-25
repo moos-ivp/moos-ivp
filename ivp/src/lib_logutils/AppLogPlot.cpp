@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AppLogPlot.cpp                                       */
 /*    DATE: Oct 15th 2021                                        */
 /*                                                               */
@@ -121,4 +121,5 @@ vector<AppLogEntry> AppLogPlot::getEntriesPastTime(double gtime) const
 
   return(entries);
 }
+
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: DubinsCache.cpp                                      */
 /*    DATE: Nov 19th 2018                                        */
 /*                                                               */
@@ -316,4 +316,5 @@ double DubinsCache::getMaxStarTurn(double& ax, double& ay, double& ar,
   return(m_dturns[found_ix].getTurnHdg());
 
 }
+
 

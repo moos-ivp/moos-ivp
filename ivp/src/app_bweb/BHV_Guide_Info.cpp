@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: TermCommand_Info.cpp                                 */
 /*    DATE: Aug 25th 2011                                        */
 /*                                                               */
@@ -73,6 +73,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("bweb", "gpl");
   exit(0);
 }
+
 
 
 

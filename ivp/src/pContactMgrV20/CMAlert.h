@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CMAlert.h                                            */
 /*    DATE: Mar 26th 2014                                        */
-/*    DATE: Oct 7th 2017   major mods mikerb                     */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -83,3 +82,4 @@ class CMAlert
 };
 
 #endif 
+

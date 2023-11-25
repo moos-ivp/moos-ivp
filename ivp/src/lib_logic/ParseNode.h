@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ParseNode.h                                          */
 /*    DATE: October 10th 2006                                    */
 /*                                                               */
@@ -78,6 +78,7 @@ protected:
   bool           m_double_set;  
 };
 #endif
+
 
 
 

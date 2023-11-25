@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ContactMgrV20_Info.cpp                               */
 /*    DATE: July 6th 2011                                        */
-/*    DATE: July 8th  2020 Major Mods                            */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -231,6 +230,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("pContactMgrV20", "gpl");
   exit(0);
 }
+
 
 
 

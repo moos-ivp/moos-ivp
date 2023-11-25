@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IPF_BundleSeries.cpp                                 */
 /*    DATE: Apr 26th 2011                                        */
 /*                                                               */
@@ -229,6 +229,7 @@ void IPF_BundleSeries::print() const
   cout << "  Min iteration: " << m_min_iteration << endl;
   cout << "  Max iteration: " << m_max_iteration << endl;
 }
+
 
 
 

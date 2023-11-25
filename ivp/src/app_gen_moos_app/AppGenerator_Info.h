@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AppGenerator_Info.h                                  */
 /*    DATE: March 23rd 2021                                      */
 /*                                                               */
@@ -29,6 +29,7 @@ void showHelpAndExit();
 void showReleaseInfoAndExit();
 
 #endif
+
 
 
 

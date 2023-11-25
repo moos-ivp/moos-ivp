@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_AvoidObstacleX.h                                 */
 /*    DATE: Sep 11, 2019 (derived from AOF_AvoidObstacle)        */
 /*                                                               */
@@ -57,3 +57,4 @@ public:
 };
 
 #endif
+

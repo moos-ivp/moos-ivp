@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
 /*    DATE: June 3rd, 2008                                       */
-/*    DATE: Dec 22nd, 2021 Substantial restructure               */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -249,3 +248,4 @@ void showHelpAndExit()
 }
 
   
+

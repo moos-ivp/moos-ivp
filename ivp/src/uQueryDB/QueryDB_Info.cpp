@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: QueryDB_Info.cpp                                     */
 /*    DATE: Dec 29th 2015                                        */
 /*                                                               */
@@ -187,6 +187,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uQueryDB", "gpl");
   exit(0);
 }
+
 
 
 

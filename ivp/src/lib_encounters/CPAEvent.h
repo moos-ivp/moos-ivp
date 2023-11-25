@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CPAEvent.h                                           */
 /*    DATE: Dec 21st 2015                                        */
 /*                                                               */
@@ -76,6 +76,7 @@ class CPAEvent
 };
 
 #endif 
+
 
 
 

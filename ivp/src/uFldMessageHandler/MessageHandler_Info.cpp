@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MessageHandler_Info.cpp                              */
 /*    DATE: Jan 30th 2012                                        */
-/*    DATE: Mar 30th 2022 Added msg_flag, bad_msg_flag feature   */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -146,6 +145,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFldMessageHandler", "gpl");
   exit(0);
 }
+
 
 
 

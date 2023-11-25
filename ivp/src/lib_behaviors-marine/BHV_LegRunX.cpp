@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng MIT                           */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_LegRunX.cpp                                      */
 /*    DATE: Oct 2022                                             */
 /*                                                               */
@@ -1482,3 +1482,4 @@ string BHV_LegRunX::expandMacros(string sdata)
   
   return(sdata);
 }
+

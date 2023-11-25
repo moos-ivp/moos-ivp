@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ContactState.cpp                                     */
 /*    DATE: Sep 7th 2020                                         */
 /*                                                               */
@@ -126,3 +126,4 @@ string ContactState::cnMacroExpand(string sdata, string macro) const
   return(sdata);
 }
   
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogicBuffer.cpp                                      */
 /*    DATE: Sep 19th 2010 On the flight to IPAM                  */
 /*                                                               */
@@ -211,3 +211,4 @@ vector<string> LogicBuffer::getSpec(string pad) const
 
   return(spec);
 }
+

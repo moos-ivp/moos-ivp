@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_Hysteresis.h                                     */
 /*    DATE: August 4th 2008 (aboard the Alliance)                */
 /*                                                               */
@@ -64,6 +64,7 @@ private: // State Variables
   //double m_basewidth;
 };
 #endif
+
 
 
 

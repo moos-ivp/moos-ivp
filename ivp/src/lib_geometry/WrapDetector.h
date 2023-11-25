@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / MIT Cambridge MA            */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: WrapDetector.h                                       */
 /*    DATE: Jan 9th, 2023                                        */
 /*                                                               */
@@ -59,6 +59,7 @@ public:
 };
 
 #endif
+
 
 
 

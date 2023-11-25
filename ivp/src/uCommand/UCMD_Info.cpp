@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: UCMD_Info.cpp                                        */
 /*    DATE: July 1st 2016                                        */
 /*                                                               */
@@ -121,6 +121,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uCommand", "gpl");
   exit(0);
 }
+
 
 
 

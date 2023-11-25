@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_OpRegion.h                                       */
 /*    DATE: May 1st, 2005 Sunday at Joe's in Maine               */
 /*                                                               */
@@ -115,3 +115,4 @@ class BHV_OpRegion : public IvPBehavior {
   bool      m_soft_poly_breach_posted;
 };
 #endif
+

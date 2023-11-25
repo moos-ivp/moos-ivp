@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: FColorMap.h                                          */
 /*    DATE: Jan 13th 2006                                        */
 /*                                                               */
@@ -66,6 +66,7 @@ protected:
   std::vector<double> bval;
 };
 #endif
+
 
 
 

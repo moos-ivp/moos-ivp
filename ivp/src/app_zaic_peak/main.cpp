@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
 /*    DATE: June 20th, 2005                                      */
 /*                                                               */
@@ -100,6 +100,7 @@ void showHelpAndExit()
   cout << " $ zaic_peak --domain=500 --verbose                 " << endl;
   exit(0);
 }
+
 
 
 

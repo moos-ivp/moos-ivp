@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Expander.cpp                                         */
 /*    DATE: May 28th, 2005                                       */
 /*                                                               */
@@ -750,3 +750,4 @@ void Expander::printModeStack()
   }
   cout << endl;
 }
+

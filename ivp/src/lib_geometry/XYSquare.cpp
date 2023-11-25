@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYSquare.cpp                                         */
 /*    DATE: Aug 27th 2005                                        */
 /*                                                               */
@@ -308,6 +308,7 @@ string XYSquare::get_spec_as_poly(string param) const
 
   return(spec);
 }
+
 
 
 

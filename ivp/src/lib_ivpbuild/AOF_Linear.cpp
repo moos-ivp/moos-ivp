@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_Linear.cpp                                       */
 /*    DATE: January 3rd, 2008                                    */
 /*                                                               */
@@ -53,6 +53,7 @@ double AOF_Linear::evalBox(const IvPBox *ptbox) const
   
   return((m_coeff * x_val) + (n_coeff * y_val) + b_scalar);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: UPV_Viewer.cpp                                       */
 /*    DATE: May 18th, 2012                                       */
 /*                                                               */
@@ -487,6 +487,7 @@ double UPV_Viewer::getHotVarAvg() const
 
   return(0);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ObstacleFieldGenerator.h                             */
 /*    DATE: Oct 18th 2017                                        */
 /*                                                               */
@@ -85,6 +85,7 @@ class ObstacleFieldGenerator
 };
 
 #endif 
+
 
 
 

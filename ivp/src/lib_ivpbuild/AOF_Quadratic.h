@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_Quadratic.h                                      */
 /*    DATE: Feb 2nd 2008                                         */
 /*                                                               */
@@ -48,6 +48,7 @@ private:
 };
 
 #endif
+
 
 
 

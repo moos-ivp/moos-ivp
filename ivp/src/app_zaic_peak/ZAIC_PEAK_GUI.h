@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_GUI.h                                           */
 /*    DATE: June 17th, 2006                                      */
 /*                                                               */
@@ -57,6 +57,7 @@ private:
   static void cb_DrawMode(Fl_Widget*, int);
 };
 #endif
+
 
 
 

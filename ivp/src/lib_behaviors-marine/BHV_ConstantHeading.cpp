@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_ConstantHeading.cpp                              */
 /*    DATE: Jul 21st 2005                                        */
 /*                                                               */
@@ -175,6 +175,7 @@ bool BHV_ConstantHeading::updateInfoIn()
   
   return(true);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: VPlug_DropPoints.cpp                                 */
 /*    DATE: June 13th, 2009                                      */
 /*                                                               */
@@ -173,6 +173,7 @@ string VPlug_DropPoints::getCoordinates(unsigned int index) const
   else
     return(m_points_native[index]);
 }
+
 
 
 

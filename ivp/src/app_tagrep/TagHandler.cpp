@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: TagHandler.cpp                                       */
 /*    DATE: September 28th, 2020                                 */
 /*                                                               */
@@ -163,3 +163,4 @@ bool TagHandler::handle()
   
   return(true);
 }
+

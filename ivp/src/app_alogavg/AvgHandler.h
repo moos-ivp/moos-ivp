@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng                               */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogBinHandler.h                                      */
 /*    DATE: August 26th, 2020                                    */
 /*                                                               */
@@ -55,3 +55,4 @@ class AvgHandler
 };
 
 #endif
+

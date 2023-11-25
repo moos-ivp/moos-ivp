@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYSegment.cpp                                        */
 /*    DATE: Mar 28th, 2009                                       */
 /*                                                               */
@@ -173,6 +173,7 @@ bool XYSegment::intersects(XYSegment seg)
   
   return(segmentsCross(m_x1,m_y1,m_x2,m_y2, x3,y3,x4,y4));
 }
+
 
 
 

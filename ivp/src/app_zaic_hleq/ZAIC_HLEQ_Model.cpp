@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_HLEQ_Model.cpp                                  */
 /*    DATE: May 9th, 2016                                        */
 /*                                                               */
@@ -203,6 +203,7 @@ double ZAIC_HLEQ_Model::getMaxUtil()
     return(0);
   return(m_zaic_leq->getParam("maxutil"));
 }
+
 
 
 

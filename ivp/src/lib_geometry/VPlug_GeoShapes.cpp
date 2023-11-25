@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: VPlug_GeoShapes.cpp                                  */
 /*    DATE: July 9th, 2008                                       */
 /*                                                               */
@@ -1312,3 +1312,4 @@ bool VPlug_GeoShapes::typeMatch(XYObject* obj, string stype)
 
   return(otype == pattern);
 }
+

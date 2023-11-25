@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: DemuxedResult.h                                      */
 /*    DATE: May 2nd 2011                                         */
 /*                                                               */
@@ -60,6 +60,7 @@ protected:
 };
 
 #endif
+
 
 
 

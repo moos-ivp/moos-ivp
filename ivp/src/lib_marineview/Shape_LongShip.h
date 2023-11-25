@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Shape_LongShip.h                                     */
 /*    DATE: February 25th 2021                                   */
-/*    DATE: January 7th 2022 (mod)                               */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -82,6 +81,7 @@ unsigned int g_longShipBodySize = 47;
 double       g_longShipLength   = 48.768;
 
 #endif
+
 
 
 

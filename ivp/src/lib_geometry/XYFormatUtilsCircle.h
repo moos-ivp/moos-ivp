@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsCircle.h                                */
 /*    DATE: Jun 21st, 2009                                       */
 /*                                                               */
@@ -33,6 +33,7 @@
 XYCircle string2Circle(std::string);
 
 #endif
+
 
 
 

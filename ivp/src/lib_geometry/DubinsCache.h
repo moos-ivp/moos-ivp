@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: DubinsCache.h                                        */
 /*    DATE: Nov 19th 2018                                        */
 /*                                                               */
@@ -87,3 +87,4 @@ private:  // State vars
 };
 
 #endif
+

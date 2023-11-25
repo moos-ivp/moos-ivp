@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LoiterEngine.cpp                                     */
 /*    DATE: May 6th, 2007                                        */
 /*                                                               */
@@ -256,6 +256,7 @@ unsigned int LoiterEngine::acquireVertexIn(double os_hdg, double os_x,
   }
   return(low_ix);
 }
+
 
 
 

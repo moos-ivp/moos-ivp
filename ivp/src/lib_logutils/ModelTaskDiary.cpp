@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ModelTaskDiary.cpp                                   */
 /*    DATE: Nov 27th 2021                                        */
 /*                                                               */
@@ -130,3 +130,4 @@ vector<string> ModelTaskDiary::processLines(vector<TaskDiaryEntry> entries) cons
     
   return(all_lines);
 }
+

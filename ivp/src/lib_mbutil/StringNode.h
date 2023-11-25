@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: StringTree.h                                         */
 /*    DATE: Jan 9th 2009                                         */
 /*                                                               */
@@ -48,6 +48,7 @@ protected:
   std::vector<StringNode> m_children;
 };
 #endif
+
 
 
 

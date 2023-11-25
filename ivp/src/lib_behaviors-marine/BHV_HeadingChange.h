@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_HeadingChange.h                                  */
 /*    DATE: Feb 11th 2009                                        */
 /*                                                               */
@@ -73,6 +73,7 @@ protected:
 
 };
 #endif
+
 
 
 

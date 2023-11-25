@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_AvoidWalls.h                                     */
 /*    DATE: Oct 29th, 2018                                       */
 /*                                                               */
@@ -107,4 +107,5 @@ class AOF_AvoidWalls : public AOF {
 };
 
 #endif
+
 

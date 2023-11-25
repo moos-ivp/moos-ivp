@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Populator_BehaviorSet.cpp                            */
 /*    DATE: Jan 27 2005                                          */
 /*                                                               */
@@ -389,6 +389,7 @@ void Populator_BehaviorSet::addConfigWarnings(vector<string> warnings)
   for(unsigned int i=0; i<warnings.size(); i++)
     m_config_warnings.push_back(warnings[i]);
 }
+
 
 
 

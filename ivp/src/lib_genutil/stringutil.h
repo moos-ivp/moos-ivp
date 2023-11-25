@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE:                                                      */
 /*    DATE:                                                      */
 /*                                                               */
@@ -36,6 +36,7 @@ std::vector<std::string> tokenize(const std::string & s, const std::string & sep
 std::string vect_to_string(std::string prefix, std::string suffix, const std::vector<std::string> & v);
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BehaviorSetEntry.h                                   */
 /*    DATE: Feb 5th 2010 (Broken out from BehaviorSet)           */
 /*                                                               */
@@ -76,3 +76,4 @@ protected:
 };
 
 #endif 
+

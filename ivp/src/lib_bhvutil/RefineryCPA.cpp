@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: RefineryCPA.cpp                                      */
 /*    DATE: November 14th, 2017                                  */
 /*                                                               */
@@ -1645,3 +1645,4 @@ unsigned int RefineryCPA::getHdgDiscPts(double hmin, double hmax,
 
   return(count);  
 }
+

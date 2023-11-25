@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsVector.h                                */
 /*    DATE: Oct 18, 2010 In Waterloo                             */
 /*                                                               */
@@ -36,6 +36,7 @@
 XYVector string2Vector(std::string);
 
 #endif
+
 
 
 

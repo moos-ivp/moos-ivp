@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYConvexGrid.cpp                                     */
 /*    DATE: Aug 27th 2005                                        */
 /*                                                               */
@@ -713,3 +713,4 @@ void XYConvexGrid::print() const
   for(i=0; i<vsize; i++) 
     cout << "[" << i << "]: " << m_elements[i].get_spec() << endl;
 }
+

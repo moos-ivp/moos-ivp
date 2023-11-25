@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsCommsPulse.h                            */
 /*    DATE: Dec 5th, 2011                                        */
 /*                                                               */
@@ -52,6 +52,7 @@ XYCommsPulse string2CommsPulse(std::string);
 XYCommsPulse stringStandard2CommsPulse(std::string);
 
 #endif
+
 
 
 

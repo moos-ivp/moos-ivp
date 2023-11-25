@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_AvoidCollision.h                                 */
 /*    DATE: Feb 9th, 2001 (CPA logic written)                    */
 /*                                                               */
@@ -50,6 +50,7 @@ public: // virtuals defined
 };
 
 #endif
+
 
 
 

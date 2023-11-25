@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ContactLedger.h                                      */
-/*    DATE: Aug 31st 2022                                         */
+/*    DATE: Aug 31st 2022                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -64,3 +64,4 @@ protected:
 };
 
 #endif 
+

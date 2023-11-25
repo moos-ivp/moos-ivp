@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BehaviorSpec.cpp                                     */
 /*    DATE: Feb 11th, 2010                                       */
 /*                                                               */
@@ -184,6 +184,7 @@ unsigned int BehaviorSpec::getConfigLineNum(unsigned int ix) const
   else
     return(0);
 }
+
 
 
 

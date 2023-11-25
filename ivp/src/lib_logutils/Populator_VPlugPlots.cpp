@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Populator_VPlugPlots.cpp                             */
 /*    DATE: August 9th, 2009                                     */
 /*                                                               */
@@ -120,4 +120,5 @@ bool Populator_VPlugPlots::populateFromEntry(const ALogEntry& entry)
 				  entry.getTimeStamp());
   return(ok);
 }
+
 

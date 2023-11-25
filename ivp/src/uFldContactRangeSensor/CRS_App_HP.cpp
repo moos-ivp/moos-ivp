@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CRS_App.cpp                                          */
 /*    DATE: Feb 2nd, 2011                                        */
 /*                                                               */
@@ -742,6 +742,7 @@ bool CRS_App::buildReport()
   m_msgs << actab.getFormattedString();
   return(true);
 }
+
 
 
 

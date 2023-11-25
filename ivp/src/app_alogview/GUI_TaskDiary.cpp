@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GUI_TaskDiary.cpp                                    */
 /*    DATE: Nov 29th, 2021                                       */
 /*                                                               */
@@ -537,4 +537,5 @@ void GUI_TaskDiary::updateBrowser2()
   m_brw_info2->bottomline(0);
   //m_brw_info2->bottomline(m_brw_info1->size());
 }
+
 

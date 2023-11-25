@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYSegList.cpp                                        */
 /*    DATE: Apr 20th, 2005                                       */
 /*                                                               */
@@ -1223,3 +1223,4 @@ string getSeglSpecInactive(string label)
 {
   return("pts={0,0:9,0:0,9},active=false,label=" + label); 
 }
+

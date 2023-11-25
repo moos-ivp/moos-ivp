@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_SPD_Model.cpp                                   */
 /*    DATE: May 9th, 2016                                        */
 /*                                                               */
@@ -318,6 +318,7 @@ void ZAIC_SPD_Model::print() const
 
   cout << "IPF Pieces: " << m_ipf_pieces << endl;
 }
+
 
 
 

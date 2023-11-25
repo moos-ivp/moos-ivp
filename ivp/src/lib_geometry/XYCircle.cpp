@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYCircle.cpp                                         */
 /*    DATE: Dec 26th 2006                                        */
 /*                                                               */
@@ -389,6 +389,7 @@ double XYCircle::segIntersectLen(double x1, double y1,
   // Should never get here since count should be either 0,1, or 2
   return(0);
 }
+
 
 
 

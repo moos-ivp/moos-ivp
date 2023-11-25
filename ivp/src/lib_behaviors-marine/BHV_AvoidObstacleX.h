@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_AvoidObstacleX.h                                 */
 /*    DATE: Aug 2nd 2006                                         */
-/*    DATE: Sep 9th 2019 Rewrite with different AOF and refinery */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -98,3 +97,4 @@ public:
 };
 
 #endif
+

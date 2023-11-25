@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_HLEQ_GUI.cpp                                    */
 /*    DATE: Apr 6th, 2008                                        */
 /*                                                               */
@@ -147,6 +147,7 @@ void ZAIC_HLEQ_GUI::updateOutput()
   str = doubleToString(model->getSummitDelta(),2);
   m_fld_sumdelta->value(str.c_str());
 }
+
 
 
 

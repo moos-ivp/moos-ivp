@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Odometer.h                                           */
 /*    DATE: Jan 31st 2020                                        */
-/*    DATE: Nov 12th 2022 Added max_extent feature               */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -76,3 +75,4 @@ class Odometer {
 };
 
 #endif
+

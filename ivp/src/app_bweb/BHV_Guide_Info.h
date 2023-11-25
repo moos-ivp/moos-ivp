@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_Guide_Info.h                                     */
 /*    DATE: Oct 29th 2022                                        */
 /*                                                               */
@@ -29,6 +29,7 @@ void showHelpAndExit();
 void showReleaseInfoAndExit();
 
 #endif
+
 
 
 

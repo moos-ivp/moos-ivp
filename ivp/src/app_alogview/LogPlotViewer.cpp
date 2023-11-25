@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogPlotViewer.cpp                                    */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -763,6 +763,7 @@ string LogPlotViewer::doubleToStringXX(double val) const
     return(doubleToStringX(val, 2));
   return(doubleToStringX(val, 3));
 }
+
 
 
 

@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: WaypointEngineX.h                                    */
 /*    DATE: May 6th, 2007                                        */
-/*    DATE: Oct 5th, 2022 Major revision                         */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -126,3 +125,4 @@ protected: // State Vars
 };
 
 #endif
+

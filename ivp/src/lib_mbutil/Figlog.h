@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Figlog.h                                             */
 /*    DATE: Dec 16th 2010                                        */
 /*                                                               */
@@ -78,6 +78,7 @@ public:
 };
 
 #endif 
+
 
 
 

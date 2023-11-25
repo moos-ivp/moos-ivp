@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: DemuxUnit.cpp                                        */
 /*    DATE: May 20th 2006                                        */
 /*                                                               */
@@ -95,6 +95,7 @@ void DemuxUnit::print()
   cout << "UnitReady(): " << unitReady() << endl;
 }
   
+
 
 
 

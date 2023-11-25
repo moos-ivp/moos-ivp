@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: EFlipper.h                                           */
 /*    DATE: April 4th, 2009                                      */
 /*                                                               */
@@ -62,6 +62,7 @@ protected:
   std::map<std::string, std::string> m_fmap;
 };
 #endif
+
 
 
 

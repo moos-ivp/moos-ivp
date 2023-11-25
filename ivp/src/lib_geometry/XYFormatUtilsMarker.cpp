@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsMarker.cpp                              */
 /*    DATE: Mar 13, 2011                                         */
 /*                                                               */
@@ -118,6 +118,7 @@ XYMarker stringStandard2Marker(string str)
 
   return(new_marker);
 }
+
 
 
 

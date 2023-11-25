@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: FV_GUI.cpp                                           */
 /*    DATE: May 13th 2006                                        */
 /*                                                               */
@@ -410,6 +410,7 @@ void FV_GUI::updateFields()
 
   m_fv_viewer->redraw();
 }
+
 
 
 

@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: Shape_Heron.h                                         */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
+/*    FILE: Shape_Heron.h                                        */
 /*    DATE: April 30th 2022                                      */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -68,6 +68,7 @@ double  g_heronCtrY = 12.0;
 double  g_heronBase = 12.0;
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_R14.h                                            */
 /*    DATE: Feb 9th, 2001 (CPA logic written)                    */
 /*                                                               */
@@ -55,6 +55,7 @@ class AOF_R14: public AOF_Contact {
 
 
 #endif
+
 
 
 

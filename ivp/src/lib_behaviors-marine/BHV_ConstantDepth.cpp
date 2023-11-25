@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_ConstantDepth.cpp                                */
 /*    DATE: Jul 3rd 2005                                         */
 /*                                                               */
@@ -155,6 +155,7 @@ bool BHV_ConstantDepth::updateInfoIn()
   
   return(true);
 }
+
 
 
 

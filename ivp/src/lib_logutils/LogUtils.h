@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogUtils.h                                           */
 /*    DATE: August 7th, 2008                                     */
 /*                                                               */
@@ -57,6 +57,7 @@ unsigned int getIndexByTime(const std::vector<double>&, double);
 unsigned int getFileLineCount(const std::string& filename);
 
 #endif 
+
 
 
 

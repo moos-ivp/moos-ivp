@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: RT_AutoPeak.h                                        */
 /*    DATE: June 21, 2008                                        */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
@@ -48,6 +48,7 @@ protected:
 };
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: FV_Model.cpp                                         */
 /*    DATE: Sep 24th 2006                                        */
 /*                                                               */
@@ -179,6 +179,7 @@ QuadSet FV_Model::getQuadSet(bool dense)
   quadset.applyColorMap(m_color_map);
   return(quadset);
 }
+
 
 
 

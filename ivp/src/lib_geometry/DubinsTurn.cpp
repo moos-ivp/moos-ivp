@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: DubinsTurng.cpp                                      */
 /*    DATE: Nov 11th 2018                                        */
 /*                                                               */
@@ -129,4 +129,5 @@ void DubinsTurn::setTurn(double new_desired_hdg)
 
   m_arc_length = pct_circle * circumference;
 }
+
 

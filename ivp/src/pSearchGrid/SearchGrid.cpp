@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: SearchGrid.cpp                                       */
 /*    DATE: Dec 7th, 2011                                        */
 /*                                                               */
@@ -288,6 +288,7 @@ bool SearchGrid::buildReport()
 
   return(true);
 }
+
 
 
 

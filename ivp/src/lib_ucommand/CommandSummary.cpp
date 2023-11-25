@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CommandSummary.cpp                                   */
 /*    DATE: July 8th, 2016                                       */
 /*                                                               */
@@ -127,6 +127,7 @@ vector<string> CommandSummary::getCommandReport()
 
   return(command_report);
 }
+
 
 
 

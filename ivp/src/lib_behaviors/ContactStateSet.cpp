@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ContactStateSet.cpp                                  */
 /*    DATE: Sep 9th 2020                                         */
 /*                                                               */
@@ -643,6 +643,7 @@ bool ContactStateSet::cn_crossed_os_bow() const
 
   return(false);
 }
+
 
 
 

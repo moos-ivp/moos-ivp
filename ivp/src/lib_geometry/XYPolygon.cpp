@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYPolygon.cpp                                        */
 /*    DATE: Apr 20th, 2005                                       */
 /*                                                               */
@@ -1431,4 +1431,5 @@ bool XYPolygon::setRadial(double xpos, double ypos, double radius,
   
   return(true);
 }
+
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: UCMD_GUI.cpp                                         */
 /*    DATE: July 1st, 2016                                       */
 /*                                                               */
@@ -541,6 +541,7 @@ void UCMD_GUI::cb_ConcedeTopWindow_i()
 void UCMD_GUI::cb_ConcedeTopWindow(Fl_Widget* o) {
   ((UCMD_GUI*)(o->parent()->user_data()))->cb_ConcedeTopWindow_i();
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ProcessWatch_Info.cpp                                */
 /*    DATE: Aug 8th 2011                                         */
 /*                                                               */
@@ -159,6 +159,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uProcessWatch", "gpl");
   exit(0);
 }
+
 
 
 

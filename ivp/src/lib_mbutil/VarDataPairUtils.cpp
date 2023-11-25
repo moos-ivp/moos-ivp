@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: VarDataPairUtils.cpp                                 */
 /*    DATE: Sep 3rd 2020                                         */
 /*                                                               */
@@ -105,3 +105,4 @@ unsigned int longestField(const vector<VarDataPair>& pairs)
   
   return(longest);
 }
+

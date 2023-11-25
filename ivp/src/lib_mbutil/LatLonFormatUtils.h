@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LatLonFormatUtils.h                                  */
 /*    DATE: March 19th 2020                                      */
 /*                                                               */
@@ -37,6 +37,7 @@ double      latDDMMtoDD(std::string);
 double      lonDDDMMtoDDD(std::string);
 
 #endif
+
 
 
 

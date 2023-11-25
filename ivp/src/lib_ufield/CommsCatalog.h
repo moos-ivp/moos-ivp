@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CommsCatalog.h                                       */
 /*    DATE: Aug 30th 2022                                        */
 /*                                                               */
@@ -41,6 +41,7 @@ class CommsCatalog
 };
 
 #endif 
+
 
 
 

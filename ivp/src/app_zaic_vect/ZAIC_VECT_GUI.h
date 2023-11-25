@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_VECT_GUI.h                                      */
 /*    DATE: May 16th, 2016                                       */
 /*                                                               */
@@ -57,6 +57,7 @@ class ZAIC_VECT_GUI : public ZAIC_GUI {
   static void cb_Tolerance(Fl_Widget*, int);
 };
 #endif
+
 
 
 

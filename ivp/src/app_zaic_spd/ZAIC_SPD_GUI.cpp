@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_SPD_GUI.cpp                                     */
 /*    DATE: June 2nd, 2015                                       */
 /*                                                               */
@@ -230,6 +230,7 @@ void ZAIC_SPD_GUI::updateFieldColors()
   else
     m_fld_max_spd_util->color(fcolor_wht);
 }
+
 
 
 

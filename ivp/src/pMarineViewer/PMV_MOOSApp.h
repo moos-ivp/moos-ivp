@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PMV_MOOSApp.h                                        */
 /*    DATE: September 2003                                       */
 /*                                                               */
@@ -124,3 +124,4 @@ class PMV_MOOSApp : public AppCastingMOOSApp
 };
 
 #endif 
+

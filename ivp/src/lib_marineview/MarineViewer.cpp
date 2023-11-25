@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MarineViewer.cpp                                     */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -3612,5 +3612,6 @@ void MarineViewer::autoZoom()
   m_vshift_x = new_cx;
   m_vshift_y = new_cy;
 }
+
 
 

@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_ContactX.h                                       */
 /*    DATE: May 17th, 2013 (Generalizing over existing classes)  */
-/*    DATE: Nov 30th, 2017 (Revised handling of CPAEngine)       */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -81,3 +80,4 @@ protected:
 };
 
 #endif
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
 /*    DATE: May 12th, 2023                                       */
 /*                                                               */
@@ -149,3 +149,4 @@ void showHelpAndExit()
   cout << "    mhash=230512-2147I-ICED-OWEN                   " << endl;
   exit(0);
 }
+

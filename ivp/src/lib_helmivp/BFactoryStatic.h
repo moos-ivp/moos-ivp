@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BFactoryStatic.h                                     */
 /*    DATE: Feb 11th, 2010                                       */
 /*                                                               */
@@ -44,6 +44,7 @@ class BFactoryStatic {
   IvPDomain m_domain;
 };
 #endif
+
 
 
 

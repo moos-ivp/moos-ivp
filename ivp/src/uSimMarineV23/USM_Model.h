@@ -4,9 +4,21 @@
 /*    FILE: USM_Model.h                                          */
 /*    DATE: Nov 19th 2006 (as separate class under MVC paradigm) */
 /*                                                               */
-/* This is unreleased BETA code. No permission is granted or     */
-/* implied to use, copy, modify, and distribute this software    */
-/* except by the author(s), or those designated by the author.   */
+/* This file is part of MOOS-IvP                                 */
+/*                                                               */
+/* MOOS-IvP is free software: you can redistribute it and/or     */
+/* modify it under the terms of the GNU General Public License   */
+/* as published by the Free Software Foundation, either version  */
+/* 3 of the License, or (at your option) any later version.      */
+/*                                                               */
+/* MOOS-IvP is distributed in the hope that it will be useful,   */
+/* but WITHOUT ANY WARRANTY; without even the implied warranty   */
+/* of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See  */
+/* the GNU General Public License for more details.              */
+/*                                                               */
+/* You should have received a copy of the GNU General Public     */
+/* License along with MOOS-IvP.  If not, see                     */
+/* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
 #ifndef USM_MODEL_HEADER
@@ -218,3 +230,4 @@ public:
   TurnSpeedMap m_turn_speed_map;
 };
 #endif
+

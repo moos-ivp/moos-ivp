@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LoadReporter.cpp                                     */
 /*    DATE: December 3rd, 2019                                   */
 /*                                                               */
@@ -154,3 +154,4 @@ bool LoadReporter::breachCount(string alogfile)
   
   return(true);
 }
+

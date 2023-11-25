@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: EdgeTagSet.cpp                                       */
 /*    DATE: Aug 16th, 2020                                       */
 /*                                                               */
@@ -130,4 +130,5 @@ void EdgeTagSet::print() const
   for(unsigned int i=0; i<m_edge_tags.size(); i++) 
     m_edge_tags[i].print();
 }
+
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_VECT_Model.h                                    */
 /*    DATE: May 16th, 2016                                       */
 /*                                                               */
@@ -56,6 +56,7 @@ class ZAIC_VECT_Model : public ZAIC_Model
   double m_tolerance;
 };
 #endif 
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GUI_HelmScope.cpp                                    */
 /*    DATE: Oct 4th 2011                                         */
 /*                                                               */
@@ -651,6 +651,7 @@ void GUI_HelmScope::updateMutableTextSize(string val)
   updateTopBrowsers();
   updateBotBrowser();
 }
+
 
 
 

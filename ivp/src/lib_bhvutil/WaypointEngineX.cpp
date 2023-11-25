@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Engineering, MIT Cambridge MA     */
-/*    FILE: WaypointEngineX.cpp                                   */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
+/*    FILE: WaypointEngineX.cpp                                  */
 /*    DATE: May 6th, 2007                                        */
-/*    DATE: Oct 5th, 2022 Major revision                         */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -657,3 +656,4 @@ bool WaypointEngineX::hasStateChange() const
 {
   return(m_state != m_state_prev);
 }
+

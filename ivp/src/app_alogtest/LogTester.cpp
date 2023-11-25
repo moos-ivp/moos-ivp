@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogTester.cpp                                        */
 /*    DATE: April 19, 2019                                       */
 /*                                                               */
@@ -279,5 +279,6 @@ bool LogTester::finish()
   
   return(all_passed);
 }
+
 
 

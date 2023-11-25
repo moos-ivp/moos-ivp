@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYSeglr.cpp                                          */
 /*    DATE: Apr 27th, 2015                                       */
 /*                                                               */
@@ -440,6 +440,7 @@ XYSeglr string2Seglr(const string& str)
   
   return(new_xy_seglr);
 }
+
 
 
 

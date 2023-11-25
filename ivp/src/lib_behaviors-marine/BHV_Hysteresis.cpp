@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_Hystereis.cpp                                    */
 /*    DATE: August 4th 2008 (aboard the Alliance)                */
 /*                                                               */
@@ -257,6 +257,7 @@ double BHV_Hysteresis::getHeadingVariance(double current_average)
   }
   return(sqrt(total)/(double)(counter));
 }
+
 
 
 

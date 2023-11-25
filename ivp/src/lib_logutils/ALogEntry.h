@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ALogEntry.h                                          */
 /*    DATE: Aug 12th, 2009                                       */
 /*                                                               */
@@ -97,6 +97,7 @@ bool operator== (const ALogEntry& one, const ALogEntry& two);
 bool operator!= (const ALogEntry& one, const ALogEntry& two);
 
 #endif 
+
 
 
 

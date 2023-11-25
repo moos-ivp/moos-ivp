@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYRangePulse.cpp                                     */
 /*    DATE: Feb 4th 2011                                         */
 /*                                                               */
@@ -200,6 +200,7 @@ string XYRangePulse::get_spec(string param) const
   
   return(spec);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYWedge.h                                            */
 /*    DATE: Sep 10th 2015                                        */
 /*                                                               */
@@ -100,6 +100,7 @@ public:
   std::vector<double> m_pt_cache;
 };
 #endif
+
 
 
 

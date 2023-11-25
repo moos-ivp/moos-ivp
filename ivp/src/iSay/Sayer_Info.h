@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Sayer_Info.h                                         */
 /*    DATE: May 20th, 2013                                       */
 /*                                                               */
@@ -31,6 +31,7 @@ void showInterfaceAndExit();
 void showReleaseInfoAndExit();
 
 #endif
+
 
 
 

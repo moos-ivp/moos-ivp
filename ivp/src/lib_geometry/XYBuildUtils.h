@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYBuildUtils.h                                       */
 /*    DATE: May 16, 2008 Sunday afternoon at Brueggers           */
 /*                                                               */
@@ -35,6 +35,7 @@ XYPoint   stringToPoint(std::string s)   {return(string2Point(s));}
 XYSegList stringToSegList(std::string s) {return(string2SegList(s));}
 
 #endif
+
 
 
 

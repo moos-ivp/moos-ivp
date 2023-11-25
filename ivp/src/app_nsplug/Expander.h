@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Expander.h                                           */
 /*    DATE: May 28th, 2005                                       */
 /*                                                               */
@@ -108,3 +108,4 @@ class Expander
 };
 
 #endif 
+

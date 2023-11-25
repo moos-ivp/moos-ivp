@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: FFV_Viewer.cpp                                       */
 /*    DATE: Apr 15th 2005                                        */
 /*                                                               */
@@ -469,4 +469,5 @@ void FFV_Viewer::drawAOF()
   m_draw_pclines = draw_pclines_save;
   m_show_pieces = show_pieces_save;
 }
+
 

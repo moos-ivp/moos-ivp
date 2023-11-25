@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LoadWatch_Info.cpp                                   */
 /*    DATE: Dec 24th, 2013                                       */
 /*                                                               */
@@ -148,3 +148,4 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uLoadWatch", "gpl");
   exit(0);
 }
+

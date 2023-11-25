@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GEO_GUI.h                                            */
 /*    DATE: May 1st, 2005 (Major Modifications November 2007)    */
 /*                                                               */
@@ -100,6 +100,7 @@ private:
   static void cb_DumpPolySpec(Fl_Widget*);
 };
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: MIT Dept of Mechanical Engineering                   */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYGridUpdate.h                                       */
 /*    DATE: March 18th 2022                                      */
 /*                                                               */
@@ -73,6 +73,7 @@ protected:
 
 XYGridUpdate stringToGridUpdate(std::string);
 #endif
+
 
 
 

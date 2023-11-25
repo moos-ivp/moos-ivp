@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: NodeBroker.h                                         */
 /*    DATE: Dec 19th 2011                                        */
 /*                                                               */
@@ -102,3 +102,4 @@ class NodeBroker : public AppCastingMOOSApp
   std::string  m_pshare_cmd_latest;  
 };
 #endif
+

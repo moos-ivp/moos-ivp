@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: RT_Directed.cpp                                      */
 /*    DATE: Mar 20th, 2007                                       */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
@@ -143,6 +143,7 @@ PDMap* RT_Directed::create(PDMap *pdmap, const IvPBox& region,
   delete(pdmap);
   return(new_pdmap);
 }
+
 
 
 

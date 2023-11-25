@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GeoViewer.h                                          */
 /*    DATE: May 1st, 2005 (Major Modifications November 2007)    */
 /*                                                               */
@@ -77,6 +77,7 @@ public:
 };
 
 #endif 
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: NodeRepUtils.cpp                                     */
 /*    DATE: Jun 26th 2011                                        */
 /*                                                               */
@@ -156,6 +156,7 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
 
   return(new_record);
 }
+
 
 
 

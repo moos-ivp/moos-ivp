@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsConvexGrid.cpp                          */
 /*    DATE: Dec 7th, 2011 Alon visits Reading                    */
 /*                                                               */
@@ -251,6 +251,7 @@ XYConvexGrid string2ConvexGrid(string str)
 
   return(new_grid);
 }
+
 
 
 

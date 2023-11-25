@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IvPProblem_v2.cpp                                    */
 /*    DATE: Too long ago to remember (1999-2001)                 */
 /*                                                               */
@@ -78,6 +78,7 @@ void IvPProblem_v2::solveRecurse(int level)
       solveRecurse(level+1);
   }
 }
+
 
 
 

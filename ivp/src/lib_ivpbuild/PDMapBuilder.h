@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PDMapBuilder.h                                       */
 /*    DATE: May 24th, 2016                                       */
 /*                                                               */
@@ -63,6 +63,7 @@ protected:
   IvPDomain m_ivp_domain;
 };
 #endif
+
 
 
 

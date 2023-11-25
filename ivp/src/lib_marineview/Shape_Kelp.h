@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Shape_Kelp.h                                         */
 /*    DATE: Oct 4th 2007                                         */
 /*                                                               */
@@ -58,6 +58,7 @@ double       g_kelpWidth    = 19.62;
 unsigned int g_kelpBodySize = 24;
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: REPLAY_GUI.cpp                                       */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -1424,6 +1424,7 @@ void REPLAY_GUI::resizeWidgetsShape()
   m_but_zoom_reset_time->redraw();
   m_but_sync_scales->redraw();
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsPoly.cpp                                */
 /*    DATE: May 16, 2009 After bbq @ Hows                        */
 /*                                                               */
@@ -945,6 +945,7 @@ XYPolygon stringPylon2Poly(string str)
   else
     return(null_poly);
 }
+
 
 
 

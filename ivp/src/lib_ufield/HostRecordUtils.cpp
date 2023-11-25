@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: HostRepUtils.cpp                                     */
 /*    DATE: Dec 21st 2011                                        */
 /*                                                               */
@@ -74,6 +74,7 @@ HostRecord string2HostRecord(const string& host_record_string)
 
   return(new_record);
 }
+
 
 
 

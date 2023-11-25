@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: REPLAY_GUI.h                                         */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -210,6 +210,7 @@ class REPLAY_GUI : public MarineVehiGUI {
   std::string m_grep2;
 };
 #endif
+
 
 
 

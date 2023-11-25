@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MBUtils.cpp                                          */
 /*    DATE: (1996-2005)                                          */
 /*                                                               */
@@ -57,6 +57,7 @@ void showReleaseInfoAndExit(string app, string license_info)
   showReleaseInfo(app, license_info);
   exit(0);
 }
+
 
 
 

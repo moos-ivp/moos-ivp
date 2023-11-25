@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Shape_Triangle.h                                     */
 /*    DATE: September 21st 2007                                  */
 /*                                                               */
@@ -33,6 +33,7 @@ double       g_triangleCtrX   =  0.0;
 double       g_triangleCtrY   =  8.0;
 double       g_triangleWidth  = 16.0;
 unsigned int g_triangleBodySize = 4;
+
 
 
 

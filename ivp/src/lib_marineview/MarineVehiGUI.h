@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MarineVehiGUI.h                                      */
 /*    DATE: Nov 11th 2004                                        */
 /*                                                               */
@@ -67,6 +67,7 @@ public:
   static void cb_CenterView(Fl_Widget*, int);
 };
 #endif
+
 
 
 

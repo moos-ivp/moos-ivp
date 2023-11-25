@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ContactLedger.cpp                                    */
 /*    DATE: Aug 31st 2022                                        */
 /*                                                               */
@@ -266,4 +266,5 @@ NodeRecord ContactLedger::getRecord(string vname, bool extrap) const
   NodeRecord null_record;
   return(null_record);
 }
+
 

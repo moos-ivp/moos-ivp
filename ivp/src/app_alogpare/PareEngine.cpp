@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PareEngine.cpp                                       */
 /*    DATE: December 25th, 2015                                  */
 /*                                                               */
@@ -440,6 +440,7 @@ void PareEngine::printReport()
     cout << "[" << i << "]: " << *p << endl;
   }
 }
+
 
 
 

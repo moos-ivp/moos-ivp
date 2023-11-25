@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE:                                                      */
 /*    DATE:                                                      */
 /*                                                               */
@@ -111,6 +111,7 @@ bool isRegularFile(std::string filename) {
    else
      return(S_ISREG(buf.st_mode) != 0);
 }
+
 
 
 

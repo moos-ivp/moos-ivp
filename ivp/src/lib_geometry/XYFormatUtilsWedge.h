@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsWedge.h                                 */
 /*    DATE: Sep 17th, 2015                                       */
 /*                                                               */
@@ -33,6 +33,7 @@
 XYWedge string2Wedge(std::string);
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: OF_Coupler.h                                         */
 /*    DATE: Jul 1st 2006                                         */
 /*                                                               */
@@ -53,6 +53,7 @@ public:
   double m_normalmax;
 };
 #endif
+
 
 
 

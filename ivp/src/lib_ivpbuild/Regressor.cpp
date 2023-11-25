@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Regressor.cpp                                        */
 /*    DATE: Dec 5th, 2004 (Sat at Brueggers)                     */
 /*                                                               */
@@ -683,6 +683,7 @@ string Regressor::getMessage(unsigned int ix)
     return(m_messages[ix]);
   return("");
 }
+
 
 
 

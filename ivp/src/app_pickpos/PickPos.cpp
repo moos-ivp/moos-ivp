@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PickPos.cpp                                          */
 /*    DATE: Sep 22nd, 2018                                       */
 /*                                                               */
@@ -1070,4 +1070,5 @@ void PickPos::printChoices()
   if(m_verbose)
     cout << "Global nearest = " << doubleToStringX(m_global_nearest,2) << endl;
 }
+
 

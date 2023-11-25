@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GeoViewer.cpp                                        */
 /*    DATE: May 1st, 2005 (Major Modifications November 2007)    */
 /*                                                               */
@@ -416,6 +416,7 @@ void GeoViewer::reApplySnapToCurrent()
   
   m_geoshapes.poly(m_active_poly).apply_snap(m_snap_val);
 }
+
 
 
 

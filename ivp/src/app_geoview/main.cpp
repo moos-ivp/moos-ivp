@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
 /*    DATE: May 1st, 2005                                        */
 /*                                                               */
@@ -193,6 +193,7 @@ int main(int argc, char *argv[])
 
   return Fl::run();
 }
+
 
 
 

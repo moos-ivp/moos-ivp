@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_CutRange.cpp                                     */
 /*    DATE: May 10th 2005                                        */
 /*                                                               */
@@ -223,3 +223,4 @@ double BHV_CutRange::getRelevance()
   double pct = (m_contact_range - m_pwt_inner_dist) / total_range;
   return(pct);
 }
+

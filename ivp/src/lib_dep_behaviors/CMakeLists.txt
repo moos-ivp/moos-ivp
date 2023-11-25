@@ -5,10 +5,14 @@
 
 SET(SRC
   BHV_FixTurn.cpp
+  BHV_RubberBand.cpp
+  BHV_Attractor.cpp
 )
 
 SET(HEADERS
   BHV_FixTurn.h
+  BHV_RubberBand.h
+  BHV_Attractor.h
 ) 
 
 ADD_LIBRARY(dep_behaviors ${SRC})

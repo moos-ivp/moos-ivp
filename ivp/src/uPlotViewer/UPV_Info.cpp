@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: UPV_Info.cpp                                         */
 /*    DATE: May 18th 2012                                        */
 /*                                                               */
@@ -126,6 +126,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uPlotViewer", "gpl");
   exit(0);
 }
+
 
 
 

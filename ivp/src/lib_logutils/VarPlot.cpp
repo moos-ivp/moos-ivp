@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: VarPlot.cpp                                          */
 /*    DATE: Oct 10th 2011                                        */
 /*                                                               */
@@ -351,6 +351,7 @@ vector<double> VarPlot::getTStampsPastTime(double gtime) const
   return(rvector);
 }
      
+
 
 
 

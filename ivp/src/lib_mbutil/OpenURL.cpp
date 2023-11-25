@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / MIT Cambridge MA            */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: OpenURL.cpp                                          */
 /*    DATE: Jan 23rd, 2022                                       */
 /*                                                               */
@@ -59,6 +59,7 @@ void openURLX(string url)
   openURL(url);
   exit(0);
 }
+
 
 
 

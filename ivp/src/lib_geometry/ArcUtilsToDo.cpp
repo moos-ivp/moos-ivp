@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ArcUtils.cpp                                         */
 /*    DATE: Nov 18th, 2018                                       */
 /*                                                               */
@@ -170,4 +170,5 @@ double distSegToArcPts(double x1, double y1, double x2, double y2,
 
   return(0);
 }
+
 

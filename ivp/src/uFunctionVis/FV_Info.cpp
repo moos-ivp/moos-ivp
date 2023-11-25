@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: FV_Info.cpp                                          */
 /*    DATE: Dec 14th, 2011                                       */
 /*                                                               */
@@ -124,6 +124,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFunctionVis", "gpl");
   exit(0);
 }
+
 
 
 

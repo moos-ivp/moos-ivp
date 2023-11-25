@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_Shadow.h                                         */
 /*    DATE: May 10th 2005                                        */
 /*                                                               */
@@ -53,6 +53,7 @@ class AOF_Shadow: public AOF {
 };
 
 #endif
+
 
 
 

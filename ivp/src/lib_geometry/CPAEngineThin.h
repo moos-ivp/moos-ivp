@@ -1,11 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CPAEngineThin.h                                      */
 /*    DATE: May 12th 2005                                        */
-/*    DATE: January 2016 Major revision                          */
-/*    DATE: July 2017 Major revision - to "FAST-CPA"             */
-/*    DATE: November 2017 Thin version from full CPAEngine       */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -184,3 +181,4 @@ public:
 };
 
 #endif
+

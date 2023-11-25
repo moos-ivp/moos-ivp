@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Shape_Diamond.h                                      */
 /*    DATE: July 6th 2008                                        */
 /*                                                               */
@@ -39,6 +39,7 @@ unsigned int g_diamondBodySize = 5;
 double       g_diamondWidth    = 16;
 
 #endif
+
 
 
 

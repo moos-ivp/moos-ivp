@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ColorParse.h                                         */
 /*    DATE: Aug 19th 2006                                        */
 /*                                                               */
@@ -55,6 +55,7 @@ double gOfRGB(const std::string);
 double bOfRGB(const std::string);
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CollisionReporter.cpp                                */
 /*    DATE: December 23rd, 2015                                  */
 /*                                                               */
@@ -192,6 +192,7 @@ void CollisionReporter::printReport()
   if(m_collisions > 0)
     cout << "Collision Worst: " << doubleToString(m_collision_worst,2) << endl;
 }
+
 
 
 

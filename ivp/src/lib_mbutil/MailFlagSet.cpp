@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: VarDataPair.cpp                                      */
 /*    DATE: Apr 7th 2021                                         */
 /*                                                               */
@@ -142,5 +142,6 @@ vector<VarDataPair> MailFlagSet::getNewFlags()
 
   return(new_flags);
 }
+
 
 

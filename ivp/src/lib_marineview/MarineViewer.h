@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MarineViewer.h                                       */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -245,6 +245,7 @@ protected:
 };
 
 #endif 
+
 
 
 

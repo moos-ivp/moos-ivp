@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GenericSensor_Info.cpp                               */
 /*    DATE: Jan 28th 2012                                        */
 /*                                                               */
@@ -171,6 +171,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFldGenericSensor", "gpl");
   exit(0);
 }
+
 
 
 

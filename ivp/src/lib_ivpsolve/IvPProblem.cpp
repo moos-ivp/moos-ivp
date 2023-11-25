@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IvPProblem.cpp                                       */
 /*    DATE: Too long ago to remember (1996-1999)                 */
 /*                                                               */
@@ -255,6 +255,7 @@ double IvPProblem::upperCheapBound(int level, IvPBox *box)
 
   return(bound);
 }
+
 
 
 

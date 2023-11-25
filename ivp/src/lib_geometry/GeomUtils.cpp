@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GeomUtils.cpp                                        */
 /*    DATE: May 8, 2005 Sunday Morning at Bruegger's             */
 /*                                                               */
@@ -2637,4 +2637,5 @@ double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
   return(final_cpa);
 }
   
+
 

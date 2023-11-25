@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: QueryDB.h                                            */
 /*    DATE: Dec 29th 2015                                        */
 /*                                                               */
@@ -84,3 +84,4 @@ class QueryDB : public AppCastingMOOSApp
   double  m_max_time;
   bool    m_configure_comms_locally;
 };
+

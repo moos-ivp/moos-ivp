@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: EncounterViewer.cpp                                  */
 /*    DATE: Jan 11th, 2016                                       */
 /*                                                               */
@@ -479,6 +479,7 @@ double EncounterViewer::getCurrTime() const
 {
   return(m_curr_time);
 }
+
 
 
 

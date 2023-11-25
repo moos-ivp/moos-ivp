@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: RangeMark.cpp                                        */
 /*    DATE: July 19 2020                                         */
 /*                                                               */
@@ -63,4 +63,5 @@ bool operator== (const RangeMark& one, const RangeMark& two)
 {
   return(one.getRange() == two.getRange());
 }
+
 

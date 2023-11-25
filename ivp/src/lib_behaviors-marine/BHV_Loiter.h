@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_Loiter.h                                         */
 /*    DATE: July 26th 2005 In Elba w/ M.Grunde, P.Newman         */
 /*                                                               */
@@ -106,6 +106,7 @@ private:  // State Variables
   double       m_bng_last;
 };
 #endif
+
 
 
 

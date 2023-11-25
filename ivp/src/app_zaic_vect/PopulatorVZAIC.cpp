@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Populator_VZAIC.cpp                                  */
 /*    DATE: May 5th, 2010                                        */
 /*                                                               */
@@ -106,6 +106,7 @@ bool PopulatorVZAIC::readFile(string filename)
   cout << "Done reading in file: " << filename << endl;
   return(true);
 }
+
 
 
 

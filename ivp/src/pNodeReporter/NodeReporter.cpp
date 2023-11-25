@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: NodeReporter.cpp                                     */
 /*    DATE: Feb 13th 2006 (TransponderAIS)                       */
 /*                                                               */
@@ -1109,3 +1109,4 @@ bool NodeReporter::buildReport()
 
   return(true);
 }
+

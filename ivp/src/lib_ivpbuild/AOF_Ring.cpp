@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_Ring.cpp                                         */
 /*    DATE: Very old - modernized Jan 21 2006                    */
 /*                                                               */
@@ -312,6 +312,7 @@ double AOF_Ring::boxDist(const IvPBox& box1, const IvPBox& box2) const
   }
   return(sqrt(tally));
 }
+
 
 
 

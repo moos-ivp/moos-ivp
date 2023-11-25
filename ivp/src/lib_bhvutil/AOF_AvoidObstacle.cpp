@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_AvoidObstacle.cpp                                */
 /*    DATE: Aug 2nd, 2006                                        */
 /*                                                               */
@@ -214,3 +214,4 @@ double AOF_AvoidObstacle::evalBox(const IvPBox *b) const
 
   return(max_utility);
 }
+

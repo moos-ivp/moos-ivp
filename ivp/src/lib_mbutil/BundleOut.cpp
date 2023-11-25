@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / MIT Cambridge MA            */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BundleOut.cpp                                        */
 /*    DATE: Jan 9th, 2022                                        */
 /*                                                               */
@@ -57,4 +57,5 @@ void bundle_cout(const vector<string>& lines)
   for(p=lines.begin(); p!=lines.end(); p++)
     cout << *p << endl;
 }
+
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PQueue.h                                             */
 /*    DATE: December 8th, 2000                                   */
 /*                                                               */
@@ -68,6 +68,7 @@ protected:
   int      m_num_inodes;   // number non-leaves in full tree;
 };
 #endif
+
 
 
 

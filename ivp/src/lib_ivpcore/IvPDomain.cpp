@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IvPDomain                                            */
 /*    DATE: May 29 2004 At Indigo cafe in Montreal               */
 /*                                                               */
@@ -548,4 +548,5 @@ double IvPDomain::getEqOrHigherVal(unsigned int index, double given_val,
     
   return(getVal(index, value_index+1));
 }
+
 

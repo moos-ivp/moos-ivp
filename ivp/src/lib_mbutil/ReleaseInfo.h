@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ReleaseInfo.h                                        */
 /*    DATE: July 7th, 2011                                       */
 /*                                                               */
@@ -32,6 +32,7 @@ void showReleaseInfo(std::string app_name, std::string license_info);
 void showReleaseInfoAndExit(std::string app_name, std::string license_info);
 
 #endif
+
 
 
 

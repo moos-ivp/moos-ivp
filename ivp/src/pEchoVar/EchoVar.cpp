@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: EchoVar.cpp                                          */
 /*    DATE: July 22 2006                                         */
 /*                                                               */
@@ -555,6 +555,7 @@ bool EchoVar::buildReport()
 
   return(true);
 }
+
 
 
 

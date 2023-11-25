@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IvPFuncViewerX.h                                     */
 /*    DATE: Feb 24, 2007                                         */
 /*                                                               */
@@ -122,6 +122,7 @@ private:
 };
 
 #endif
+
 
 
 

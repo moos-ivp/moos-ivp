@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: HelmReporter.h                                       */
 /*    DATE: March 10th, 2010                                     */
 /*                                                               */
@@ -76,6 +76,7 @@ class HelmReporter
 };
 
 #endif
+
 
 
 

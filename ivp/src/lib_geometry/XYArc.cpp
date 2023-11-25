@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYArc.cpp                                            */
 /*    DATE: Dec 26th 2006                                        */
 /*                                                               */
@@ -517,6 +517,7 @@ double XYArc::cutLengthXPlus(double g_val)
   }
   return(0);
 }
+
 
 
 

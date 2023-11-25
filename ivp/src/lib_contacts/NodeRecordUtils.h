@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: NodeRecordUtils.h                                    */
 /*    DATE: Jun 26th 2011                                        */
 /*                                                               */
@@ -34,6 +34,7 @@ NodeRecord extrapolateRecord(const NodeRecord&, double curr_time,
 double rangeBetweenRecords(const NodeRecord& rec1, const NodeRecord& rec2);
 
 #endif 
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYMarker.cpp                                         */
 /*    DATE: July 18th, 2008                                      */
 /*                                                               */
@@ -140,6 +140,7 @@ std::string XYMarker::get_spec_inactive() const
 
   return(spec);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYWedge.cpp                                          */
 /*    DATE: Sep 10th 2015                                        */
 /*                                                               */
@@ -300,3 +300,4 @@ string XYWedge::get_spec(unsigned int precision, std::string param) const
 
   return(spec);
 }
+

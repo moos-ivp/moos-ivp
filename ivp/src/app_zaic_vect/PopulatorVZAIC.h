@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PopulatorVZAIC.h                                     */
 /*    DATE: May 5th, 2010                                        */
 /*                                                               */
@@ -56,6 +56,7 @@ class PopulatorVZAIC
 //  range  = 2,4,6,8,10
 //  minutil = 0
 //  maxutil = 100
+
 
 
 

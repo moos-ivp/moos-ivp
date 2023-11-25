@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GrepHandler.cpp                                      */
 /*    DATE: August 6th, 2008                                     */
 /*                                                               */
@@ -530,6 +530,7 @@ void GrepHandler::printReport()
   }
   cout << endl;
 }
+
 
 
 

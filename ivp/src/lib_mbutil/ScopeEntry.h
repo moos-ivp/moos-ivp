@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ScopeEntry.h                                         */
 /*    DATE: May 9th 2012                                         */
 /*                                                               */
@@ -79,6 +79,7 @@ class ScopeEntry
 };
 
 #endif 
+
 
 
 

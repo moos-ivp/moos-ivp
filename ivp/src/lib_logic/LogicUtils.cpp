@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogicUtils.cpp                                       */
 /*    DATE: October 12th 2006                                    */
 /*                                                               */
@@ -506,6 +506,7 @@ bool setLogicConditionOnString(vector<LogicCondition>& conditions, string sval)
   conditions.push_back(new_condition);
   return(true);
 }
+
 
 
 

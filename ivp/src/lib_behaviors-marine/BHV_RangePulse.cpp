@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_RangePulse.cpp                                   */
 /*    DATE: Feb 7th 2011                                         */
 /*    NOTE: A simple behavior for testing range sensor sims.     */
@@ -101,6 +101,7 @@ IvPFunction *BHV_RangePulse::onRunState()
   
   return(0);
 }
+
 
 
 

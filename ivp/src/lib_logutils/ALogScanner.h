@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ALogScanner.h                                        */
 /*    DATE: June 3rd, 2008                                       */
 /*                                                               */
@@ -51,6 +51,7 @@ class ALogScanner
 };
 
 #endif 
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Populator_TaskDiary.cpp                              */
 /*    DATE: Nov 26th, 2021                                       */
 /*                                                               */
@@ -300,5 +300,6 @@ bool Populator_TaskDiary::handleKLogFile(unsigned int ix)
   fclose(fileptr);
   return(true);
 }
+
 
 

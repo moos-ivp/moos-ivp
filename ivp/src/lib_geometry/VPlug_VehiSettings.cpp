@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: VehicleSet.cpp                                       */
 /*    DATE: Aug 12th 2008                                        */
 /*                                                               */
@@ -257,6 +257,7 @@ string VPlug_VehiSettings::strvalue(const string& attribute)
 
   return("");
 }
+
 
 
 

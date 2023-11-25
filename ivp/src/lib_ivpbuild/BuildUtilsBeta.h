@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BuildUtilsBeta.h                                     */
 /*    DATE: March 15th, 2023                                     */
 /*                                                               */
@@ -43,4 +43,5 @@ IvPBox  build2DPointBox(IvPDomain, std::string domstr1, std::string domstr2,
 
 
 #endif
+
 

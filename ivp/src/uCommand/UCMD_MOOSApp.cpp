@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: UCMD_MOOSApp.cpp                                     */
 /*    DATE: July 1st, 2016                                       */
 /*                                                               */
@@ -380,6 +380,7 @@ void UCMD_MOOSApp::handlePendingCommandSummary()
   vector<string> command_report = m_cmd_summary.getCommandReport();
   m_gui->setPostSummary(command_report);
 }
+
 
 
 

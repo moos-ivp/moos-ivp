@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ALogClipHandler.h                                    */
 /*    DATE: June 11th, 2015                                      */
 /*                                                               */
@@ -71,6 +71,7 @@ class ALogClipHandler
 };
 
 #endif 
+
 
 
 

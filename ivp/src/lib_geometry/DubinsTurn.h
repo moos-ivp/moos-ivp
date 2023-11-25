@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: DubinsTurn.h                                         */
 /*    DATE: Nov 11th 2018                                        */
 /*                                                               */
@@ -78,3 +78,4 @@ private:
 };
 
 #endif
+

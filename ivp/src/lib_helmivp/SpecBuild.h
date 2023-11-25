@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: SpecBuild.h                                          */
 /*    DATE: Feb 11, 2010                                         */
 /*                                                               */
@@ -70,6 +70,7 @@ class SpecBuild {
 };
 
 #endif
+
 
 
 

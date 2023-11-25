@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: NodeReporter.h                                       */
-/*    DATE: Feb  9th 2006 (TransponderAIS)                       */
-/*    DATE: Nov 18th 2022 Added odometry/mission_hash support    */
+/*    DATE: Feb 9th 2006 (TransponderAIS)                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -144,3 +143,4 @@ protected: //MissionHash support
 };
 
 #endif
+

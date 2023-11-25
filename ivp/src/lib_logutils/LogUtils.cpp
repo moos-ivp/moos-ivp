@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogUtils.cpp                                         */
 /*    DATE: August 7th, 2008                                     */
 /*                                                               */
@@ -745,3 +745,4 @@ unsigned int getFileLineCount(const string& filestr)
   return(total);
 }
   
+

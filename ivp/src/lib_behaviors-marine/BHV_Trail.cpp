@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_Trail.cpp                                        */
 /*    DATE: Jul 3rd 2005 Sunday morning at Brueggers             */
 /*                                                               */
@@ -391,4 +391,5 @@ void BHV_Trail::calculateTrailPoint()
     projectPoint(m_trail_angle, m_trail_range, m_cnx, m_cny, m_trail_pt_x, m_trail_pt_y);
 
 }
+
 

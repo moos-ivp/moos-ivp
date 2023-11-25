@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BeaconBuoy.cpp                                       */
 /*    DATE: Feb 1st, 2011                                        */
 /*                                                               */
@@ -275,6 +275,7 @@ string BeaconBuoy::getFreqSetting() const
 
   return(str_range);
 }
+
 
 
 

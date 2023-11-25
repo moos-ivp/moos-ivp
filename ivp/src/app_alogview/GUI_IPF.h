@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GUI_IPF.h                                            */
 /*    DATE: Sep 25th, 2011                                       */
 /*                                                               */
@@ -126,6 +126,7 @@ protected:
   int            m_mutable_text_size;
 };
 #endif
+
 
 
 

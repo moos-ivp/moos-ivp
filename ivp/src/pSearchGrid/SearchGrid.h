@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PSG_MOOS_App.h                                       */
 /*    DATE: Dec 7th 2011                                         */
-/*    DATE: Mar 12th 2022 Add support for delta updates          */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -64,3 +63,4 @@ protected: // State vars
 };
 
 #endif 
+

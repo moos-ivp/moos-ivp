@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AppCastTree.cpp                                      */
 /*    DATE: Aug 14th 2012                                        */
 /*                                                               */
@@ -345,6 +345,7 @@ AppCast AppCastTree::getAppCast(string node, string proc) const
   else
     return(p->second.getAppCast(proc));
 }
+
 
 
 

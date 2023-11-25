@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_TimeOut.h                                        */
 /*    DATE: July 27th 2007 (pulled from BHV_OpRegion)            */
 /*                                                               */
@@ -49,6 +49,7 @@ protected: // State Variables (all time values in seconds)
   bool      m_first_time;
 };
 #endif
+
 
 
 

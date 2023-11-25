@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ColorPack.cpp                                        */
 /*    DATE: May 28th 2009                                        */
 /*                                                               */
@@ -182,6 +182,7 @@ string ColorPack::str(char separator) const
   rstr += separator + doubleToStringX(m_color_vector[2],3);
   return(rstr);
 }
+
 
 
 

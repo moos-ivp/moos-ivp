@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: EPlotEngine.h                                        */
 /*    DATE: January 16th, 2016                                   */
 /*                                                               */
@@ -84,6 +84,7 @@ class EPlotEngine
 };
 
 #endif
+
 
 
 

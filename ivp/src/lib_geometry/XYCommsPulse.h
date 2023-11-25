@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYCommsPulse.h                                       */
 /*    DATE: Dec 5th 2011                                         */
 /*                                                               */
@@ -80,6 +80,7 @@ protected:
   std::string m_pulse_type;
 };
 #endif
+
 
 
 

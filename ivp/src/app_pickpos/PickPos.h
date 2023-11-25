@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PickPos.h                                            */
 /*    DATE: Sep 22nd, 2018                                       */
 /*                                                               */
@@ -156,4 +156,5 @@ protected: // State variables
 };
 
 #endif 
+
 

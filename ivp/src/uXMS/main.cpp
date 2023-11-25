@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: main_uXMS.cpp                                        */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
+/*    FILE: main.cpp                                             */
 /*    DATE: May 27th 2007                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -177,6 +177,7 @@ int main(int argc ,char * argv[])
   //appRunner.quit();
   exit(0);
 }
+
 
 
 

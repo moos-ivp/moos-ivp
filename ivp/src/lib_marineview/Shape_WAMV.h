@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Shape_WAMV.h                                         */
 /*    DATE: April 30th 2014                                      */
 /*                                                               */
@@ -69,6 +69,7 @@ double  g_wamvCtrY = 45.5;
 double  g_wamvBase = 50.0;
 
 #endif
+
 
 
 

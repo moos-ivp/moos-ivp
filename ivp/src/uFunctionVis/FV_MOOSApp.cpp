@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: FV_MOOSApp.cpp                                       */
 /*    DATE: May 12th 2006                                        */
 /*                                                               */
@@ -167,6 +167,7 @@ void FV_MOOSApp::registerVariables()
   Register("BHV_IPF", 0);
   Register("NAV_HEADING", 0);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: RT_UniformX.cpp                                      */
 /*    DATE: Nov 29th 2017 (from RT_Uniform))                     */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
@@ -221,5 +221,6 @@ BoxSet* RT_UniformX::subtractBasin(BoxSet* bset, const IvPBox& basin)
   bset->merge(rembs);
   return(bset);
 }
+
 
 

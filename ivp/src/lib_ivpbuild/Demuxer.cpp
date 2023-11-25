@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Demuxer.cpp                                          */
 /*    DATE: May 20th 2006                                        */
 /*                                                               */
@@ -228,6 +228,7 @@ void Demuxer::print()
 
   cout << "End Demuxer::print()" << endl;
 }
+
 
 
 

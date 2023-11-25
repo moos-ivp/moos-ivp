@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LinearExtrapolator.cpp                               */
 /*    DATE: May 2nd, 2007                                        */
 /*                                                               */
@@ -110,6 +110,7 @@ bool LinearExtrapolator::getPosition(double& r_xpos, double& r_ypos,
   projectPoint(m_hdg, distance, m_xpos, m_ypos, r_xpos, r_ypos);
   return(true);
 }
+
 
 
 

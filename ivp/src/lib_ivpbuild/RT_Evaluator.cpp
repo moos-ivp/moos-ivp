@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: RT_Evaluator.cpp                                      */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
+/*    FILE: RT_Evaluator.cpp                                     */
 /*    DATE: Mar 20th, 2007                                       */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
 /*                                                               */
@@ -71,5 +71,6 @@ void RT_Evaluator::evaluate(PDMap *pdmap, PQueue& pqueue)
     }
   }
 }
+
 
 

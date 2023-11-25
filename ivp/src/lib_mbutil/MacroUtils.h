@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MacroUtils.h                                         */
 /*    DATE: June 24th, 2020                                      */
 /*                                                               */
@@ -55,3 +55,4 @@ std::string expandMacrosWithDefault(std::string);
 std::string reduceMacrosToBase(std::string, std::string, std::string);
 
 #endif
+

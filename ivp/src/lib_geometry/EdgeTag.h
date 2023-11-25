@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: EdgeTag.h                                            */
 /*    DATE: Aug 14th, 2020                                       */
 /*                                                               */
@@ -57,6 +57,7 @@ public:
 };
 
 #endif
+
 
 
 

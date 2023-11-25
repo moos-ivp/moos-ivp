@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_SPD.cpp                                         */
 /*    DATE: June 1st 2015                                        */
-/*    DATE: July 3rd 2021 Substantial mods                       */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -492,3 +491,4 @@ vector<string> ZAIC_SPD::getSummary() const
 
   return(svector);
 }
+

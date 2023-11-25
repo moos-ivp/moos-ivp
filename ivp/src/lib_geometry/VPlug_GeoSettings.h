@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: VPlug_GeoSettings.h                                  */
 /*    DATE: Aug 8th, 2009 (Split from GeoShapes.h)               */
 /*                                                               */
@@ -68,4 +68,5 @@ protected:
 };
 
 #endif
+
 

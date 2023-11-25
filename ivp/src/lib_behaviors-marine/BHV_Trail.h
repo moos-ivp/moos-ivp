@@ -1,9 +1,8 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_Trail.h                                          */
 /*    DATE: Jul 3rd 2005 Sunday morning at Brueggers             */
-/*    DATE: Sep 10th 2020 Minor mods/corrections                 */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -63,3 +62,4 @@ private: // Configuration parameters
   bool    m_no_alert_request;
 };
 #endif
+

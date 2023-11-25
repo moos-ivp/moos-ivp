@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BNGEngine.cpp                                        */
 /*    DATE: Feb 29th 2016                                        */
 /*                                                               */
@@ -81,6 +81,7 @@ double BNGEngine::evalBNGRate(double osh, double osv) const
 {
   return(0);
 }
+
 
 
 

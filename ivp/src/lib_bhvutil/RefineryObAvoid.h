@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: RefineryObAvoid.h                                    */
 /*    DATE: September 5th, 2019                                  */
 /*                                                               */
@@ -78,3 +78,4 @@ class RefineryObAvoid {
 };
 
 #endif
+

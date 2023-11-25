@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Shape_GateWay.h                                      */
 /*    DATE: Oct 4th 2007                                         */
 /*                                                               */
@@ -61,6 +61,7 @@ double       g_gatewayMidCtrY     = 5.0;
 unsigned int g_gatewayMidBodySize = 9;
 
 #endif
+
 
 
 

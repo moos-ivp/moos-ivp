@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_RStationKeep.cpp                                 */
 /*    DATE: Oct 08 2007                                          */
 /*                                                               */
@@ -373,6 +373,7 @@ void BHV_RStationKeep::postStationMessage(bool post)
 
   postMessage("RVIEW_POINT", ptmsg);
 }
+
 
 
 

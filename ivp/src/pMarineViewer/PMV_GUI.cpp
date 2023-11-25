@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PMV_GUI.cpp                                          */
 /*    DATE: November, 2004                                       */
 /*                                                               */
@@ -3093,3 +3093,4 @@ void PMV_GUI::resizeWidgets()
   m_user_button_19->resize(col_b19_pos, row1, button_wid, fld_hgt);
   m_user_button_20->resize(col_b19_pos, row2, button_wid, fld_hgt);
 }
+

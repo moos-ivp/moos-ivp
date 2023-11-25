@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_ConstantSpeed.h                                  */
 /*    DATE: Jul 24 2005 Pianosa                                  */
 /*                                                               */
@@ -49,6 +49,7 @@ public:
   double       m_os_speed;
 };
 #endif
+
 
 
 

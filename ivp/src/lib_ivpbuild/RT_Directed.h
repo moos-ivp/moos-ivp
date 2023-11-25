@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: RT_Directed.h                                        */
 /*    DATE: Mar 20th, 2007                                       */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
@@ -46,6 +46,7 @@ class RT_Directed {
 };
 
 #endif
+
 
 
 

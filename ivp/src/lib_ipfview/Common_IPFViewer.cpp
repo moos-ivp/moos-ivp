@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Common_IPFViewer.cpp                                 */
 /*    DATE: Feb 13, 2007                                         */
 /*                                                               */
@@ -1266,6 +1266,7 @@ void Common_IPFViewer::drawText2(double px, double py, const string& text,
   glFlush();
   glPopMatrix();
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IvPBox.h                                             */
 /*    DATE: Too long ago to remember (1996-1999)                 */
 /*                                                               */
@@ -94,3 +94,4 @@ protected:
   int       m_plat;
 };
 #endif
+

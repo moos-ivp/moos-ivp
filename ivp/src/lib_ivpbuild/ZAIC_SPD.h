@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: ZAIC_SPD.h                                          */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
+/*    FILE: ZAIC_SPD.h                                           */
 /*    DATE: May 31st 2015                                        */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
@@ -100,3 +100,4 @@ private:
 };
 
 #endif
+

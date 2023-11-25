@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_HeadingBias.cpp                                  */
 /*    DATE: Mar 26th 2009                                        */
 /*                                                               */
@@ -117,6 +117,7 @@ bool BHV_HeadingBias::updateInfoIn()
 
   return(true);
 }
+
 
 
 

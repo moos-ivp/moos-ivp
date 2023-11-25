@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AppLogEntry.cpp                                      */
 /*    DATE: Oct 15th 2021                                        */
 /*                                                               */
@@ -141,4 +141,5 @@ AppLogEntry stringToAppLogEntry(string raw, bool verbose)
 
   return(good_entry);
 }
+
 

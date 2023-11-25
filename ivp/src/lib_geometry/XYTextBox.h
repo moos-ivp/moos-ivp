@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / MIT Cambridge MA            */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYTextBox.h                                          */
 /*    DATE: Aug 31st, 2023                                       */
 /*                                                               */
@@ -84,3 +84,4 @@ protected:
 XYTextBox stringToTextBox(std::string);
 
 #endif
+

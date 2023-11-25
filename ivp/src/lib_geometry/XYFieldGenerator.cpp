@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFieldGenerator.cpp                                 */
 /*    DATE: Jan 27th, 2012                                       */
 /*                                                               */
@@ -401,4 +401,5 @@ double XYFieldGenerator::getGlobalNearest(bool force)
   updateGlobalNearestVals(force);
   return(m_global_nearest);
 }
+
 

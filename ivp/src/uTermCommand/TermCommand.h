@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: TermCommand.h                                        */
 /*    DATE: June 26 2007                                         */
 /*                                                               */
@@ -74,6 +74,7 @@ protected:
 };
 
 #endif
+
 
 
 

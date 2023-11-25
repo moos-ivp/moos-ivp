@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYArtifactGrid.cpp                                   */
 /*    DATE: 3 JUL 2007                                           */
 /*                                                               */
@@ -373,6 +373,7 @@ void XYArtifactGrid::clear()
   XYPolygon poly;
   bounding_poly = poly;
 }
+
 
 
 

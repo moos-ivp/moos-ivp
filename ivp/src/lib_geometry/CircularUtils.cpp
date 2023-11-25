@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CircularUtils.cpp                                    */
 /*    DATE: Jan 1st, 2007 Monday afternoon at Brueggers          */
 /*                                                               */
@@ -159,6 +159,7 @@ XYArc arcFlight(double x1, double y1, double heading, double radius,
 
   return(arc);
 }
+
 
 
 

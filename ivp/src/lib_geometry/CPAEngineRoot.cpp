@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CPAEngineB.cpp                                       */
 /*    DATE: June 12th 2017                                       */
 /*                                                               */
@@ -64,6 +64,7 @@ void CPAEngineRoot::reset(double cny, double cnx, double cnh,
   if(m_cnv < 0)
     m_cnv = 0;
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_AvoidCollision.h                                 */
 /*    DATE: Febuary 9th, 2001 (CPA logic written)                */
 /*                                                               */
@@ -59,4 +59,5 @@ class AOF_AvoidCollision: public AOF_Contact {
 };
 
 #endif
+
 

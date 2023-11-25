@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: StringTree.cpp                                       */
 /*    DATE: Jan 9th 2009                                         */
 /*                                                               */
@@ -147,6 +147,7 @@ void StringTree::writeGraphviz(ostream& os, string metadata)
   
   os << "}\n";
 }
+
 
 
 

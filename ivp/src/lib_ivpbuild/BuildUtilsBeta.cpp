@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BuildUtilsBetat.cpp                                  */
 /*    DATE: March 15th, 20023                                    */
 /*                                                               */
@@ -192,3 +192,4 @@ IvPBox build2DBox(IvPDomain domain,
   return(newbox);
 }
  
+

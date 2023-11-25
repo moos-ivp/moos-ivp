@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BehaviorRecord.cpp                                   */
 /*    DATE: March 21st 2011                                      */
 /*                                                               */
@@ -75,6 +75,7 @@ string BehaviorRecord::getSummary(double tstamp) const
 
   return(summary);
 }
+
 
 
 

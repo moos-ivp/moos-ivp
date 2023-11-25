@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MY_Fl_Hold_Browser.h                                 */
 /*    DATE: Sep 10th, 2012                                       */
 /*                                                               */
@@ -45,6 +45,7 @@ public:
   };
 };
 #endif
+
 
 
 

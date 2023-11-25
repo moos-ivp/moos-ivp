@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ProxPoint.h                                          */
 /*    DATE: Nov 23rd 2018                                        */
 /*                                                               */
@@ -50,6 +50,7 @@ private:
 bool operator< (const ProxPoint& pt1, const ProxPoint& pt2);
 bool operator> (const ProxPoint& pt1, const ProxPoint& pt2);
 #endif
+
 
 
 

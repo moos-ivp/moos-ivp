@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: SortHandler.cpp                                      */
 /*    DATE: June 22nd, 2013                                      */
 /*                                                               */
@@ -204,6 +204,7 @@ void SortHandler::printReport()
   cout << "  Re-Sorts :   " << uintToString(m_re_sorts)    << endl;
   cout << endl;
 }
+
 
 
 

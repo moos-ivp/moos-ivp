@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IO_Utilities.cpp                                     */
 /*    DATE: June 2nd, 2004                                       */
 /*                                                               */
@@ -348,6 +348,7 @@ void printZAIC_PEAK(ZAIC_PEAK zaic)
     cout << "  Maxutil: "   << maxutil << endl;
   }
 }
+
 
 
 

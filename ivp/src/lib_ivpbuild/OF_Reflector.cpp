@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: OF_Reflector.cpp                                     */
 /*    DATE: Aug 29th 2005 (derived from OFR_AOF built long ago)  */
 /*                                                               */
@@ -713,4 +713,5 @@ void OF_Reflector::makeUniform()
   // Do later, after directed refinement done?
   // pdmap->updateGrid(1,1);
 }
+
 

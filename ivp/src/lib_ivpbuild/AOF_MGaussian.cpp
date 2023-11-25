@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_MGaussian.cpp                                    */
 /*    DATE: June 9th 2008                                        */
 /*                                                               */
@@ -61,6 +61,7 @@ double AOF_MGaussian::evalPoint(const vector<double>& point) const
   }
   return(return_value);
 }
+
 
 
 

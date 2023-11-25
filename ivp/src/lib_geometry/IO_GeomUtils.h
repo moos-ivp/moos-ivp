@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IO_GeomUtils.h                                       */
 /*    DATE: Sep 4th, 2005                                        */
 /*                                                               */
@@ -48,6 +48,7 @@ std::string  GridToString(const XYGrid&);
 void printSquare(const XYSquare&);
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: MIT Dept of Mechanical Engineering                   */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYOval.h                                             */
 /*    DATE: March 12th 2022                                      */
 /*                                                               */
@@ -122,6 +122,7 @@ protected: // Variables to support caching
 
 XYOval stringToOval(std::string);
 #endif
+
 
 
 

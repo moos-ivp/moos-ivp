@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ParseNode.cpp                                        */
 /*    DATE: October 10th 2006                                    */
 /*                                                               */
@@ -508,3 +508,4 @@ void ParseNode::expandMacro(const string& macro, string value)
 {
   m_raw_string = findReplace(m_raw_string, macro, value);
 }
+

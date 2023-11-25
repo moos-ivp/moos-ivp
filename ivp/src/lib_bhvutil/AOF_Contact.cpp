@@ -1,10 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_Contact.h                                        */
 /*    DATE: May 17th, 2013 (Generalizing over existing classes)  */
-/*    DATE: Nov 30th, 2017 (Revised handling of CPAEngine)       */
-/*    DATE: Jun 6th,  2018 (More Revised handling of CPAEngine)  */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -250,3 +248,4 @@ double AOF_Contact::getRangeGamma() const
 {
   return(m_cpa_engine.getRangeGamma());
 }
+

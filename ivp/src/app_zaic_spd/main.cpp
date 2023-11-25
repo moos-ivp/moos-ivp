@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
 /*    DATE: June 2nd, 2015                                       */
 /*                                                               */
@@ -112,6 +112,7 @@ void showHelpAndExit()
   cout << " $ zaic_spd --domain=speed,0,8,41 --med_spd=4.5 --spd_max_util=80 " << endl;
   exit(0);
 }
+
 
 
 

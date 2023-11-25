@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
 /*    DATE: January 16th, 2016                                   */
 /*                                                               */
@@ -131,6 +131,7 @@ void showHelpAndExit()
   cout << endl;
   exit(0);
 }
+
 
 
 

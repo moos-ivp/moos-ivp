@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MHashReporter.h                                      */
 /*    DATE: May 12th, 2023                                       */
 /*                                                               */
@@ -83,3 +83,4 @@ protected: // assessment vars
 };
 
 #endif
+

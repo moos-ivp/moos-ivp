@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_GUI.h                                           */
 /*    DATE: June 2nd, 2015                                       */
 /*                                                               */
@@ -83,6 +83,7 @@ public:
   static void cb_ToggleColorScheme(Fl_Widget*);
 };
 #endif
+
 
 
 

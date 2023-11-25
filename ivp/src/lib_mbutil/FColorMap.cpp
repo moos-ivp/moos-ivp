@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: FColorMap.cpp                                        */
 /*    DATE: Jan 12th 2006                                        */
 /*                                                               */
@@ -362,6 +362,7 @@ void FColorMap::setBoneMap()
   addRGB(0.9783, 0.9861, 0.9861);
   addRGB(1.0000, 1.0000, 1.0000);
 }
+
 
 
 

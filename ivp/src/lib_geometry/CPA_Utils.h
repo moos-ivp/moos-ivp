@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CPA_Utils.h                                          */
 /*    DATE: Mar 11, 2007 Sat afternoon at Brugger's              */
 /*                                                               */
@@ -49,6 +49,7 @@ double  relAngRate(double xa, double ya, double xb, double yb,
 		   double xc, double yc, double xd, double yd, double time);
 
 #endif
+
 
 
 

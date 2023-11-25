@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PMV_Viewer.cpp                                       */
 /*    DATE: Nov 11th 2004                                        */
 /*                                                               */
@@ -1008,4 +1008,5 @@ void PMV_Viewer::clearGeoShapes(string vname, string shape, string stype)
 {
   m_geoshapes_map.clear(vname, shape, stype);
 }
+
 

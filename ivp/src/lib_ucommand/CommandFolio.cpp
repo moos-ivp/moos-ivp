@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CommandFolio.cpp                                     */
 /*    DATE: July 2nd, 2016                                       */
 /*                                                               */
@@ -145,6 +145,7 @@ void CommandFolio::print() const
   for(unsigned int i=0; i<m_cmd_items.size(); i++)
     m_cmd_items[i].print();
 }
+
 
 
 

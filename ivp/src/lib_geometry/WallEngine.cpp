@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: WallEngine.cpp                                       */
 /*    DATE: Oct 28th 2018                                        */
 /*                                                               */
@@ -519,3 +519,4 @@ void WallEngine::print(unsigned int low_ix, unsigned int hgh_ix) const
 }
 
  
+

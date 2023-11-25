@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AppLogEntry.h                                        */
 /*    DATE: Oct 15th 2021                                        */
 /*                                                               */
@@ -65,3 +65,4 @@ private:
 AppLogEntry stringToAppLogEntry(std::string, bool verbose=false);
 
 #endif
+

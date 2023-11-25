@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: QuadSet1D.cpp                                        */
 /*    DATE: July 4th 2006                                        */
 /*                                                               */
@@ -286,6 +286,7 @@ void QuadSet1D::print() const
   cout << "    DomainPtsX: " << m_domain_ptsx[0].size() << endl;
   cout << "    RangeValMax: " << m_range_val_max[0]  << endl;
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: HelmIvP.cpp                                          */
 /*    DATE: Oct 12th 2004                                        */
 /*                                                               */
@@ -1739,3 +1739,4 @@ void HelmIvP::seedRandom()
   seed = (seed*pid)%999999;
   srand(seed);
 }
+

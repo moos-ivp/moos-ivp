@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BackImg.cpp                                          */
 /*    DATE: Nov 16th 2004                                        */
-/*    DATE: Sep 28th 2022 Significant improvments                */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -677,6 +676,7 @@ void BackImg::printTerse()
   cout << "pix_per_mtr_y: " << (m_img_pix_height / m_img_mtr_height) << endl;
 
 }
+
 
 
 

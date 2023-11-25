@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CurrentField.cpp                                     */
 /*    DATE: Jan 4th, 2011                                        */
 /*                                                               */
@@ -644,6 +644,7 @@ void CurrentField::applyRenderHint(string param, string value)
     }
   }
 }
+
 
 
 

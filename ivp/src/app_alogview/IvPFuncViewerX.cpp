@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IvPFuncViewerX.cpp                                   */
 /*    DATE: Feb 25th, 2007                                       */
 /*                                                               */
@@ -570,6 +570,7 @@ bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
   setPriorityIPF("n/a");
   return(true);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: SplitHandler.cpp                                     */
 /*    DATE: February 2nd, 2015                                   */
 /*                                                               */
@@ -463,6 +463,7 @@ bool SplitHandler::handlePreCheckSplitDir()
   m_basedir = basedir;
   return(true);
 }
+
 
 
 

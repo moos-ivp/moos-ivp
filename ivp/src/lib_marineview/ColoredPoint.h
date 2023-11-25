@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ColoredPoint.h                                       */
 /*    DATE: Nov 19th 2004 (In Bedford NH, Friday)                */
 /*                                                               */
@@ -46,6 +46,7 @@ class ColoredPoint
 typedef std::list<ColoredPoint> CPList;
 
 #endif 
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IO_GeomUtils.h                                       */
 /*    DATE: Sep 4th, 2005                                        */
 /*                                                               */
@@ -272,6 +272,7 @@ void printSquare(const XYSquare& square)
   cout << "yl:" << square.getVal(1,0) << " ";
   cout << "yh:" << square.getVal(1,1) << endl;
 }
+
 
 
 

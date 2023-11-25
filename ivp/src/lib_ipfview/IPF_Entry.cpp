@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IPF_Entry.cpp                                        */
 /*    DATE: Apr 20th, 2011                                       */
 /*                                                               */
@@ -76,6 +76,7 @@ QuadSet IPF_Entry::getQuadSet(IvPDomain ivp_domain, bool dense)
   }
   return(m_quadset);
 }
+
 
 
 

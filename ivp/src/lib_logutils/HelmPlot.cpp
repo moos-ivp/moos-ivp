@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: HelmPlot.cpp                                         */
 /*    DATE: Jul1509, Sep2811                                     */
 /*                                                               */
@@ -236,6 +236,7 @@ void HelmPlot::print() const
     cout << "  completed: " << report.getCompletedBehaviors() << endl;
   }
 }
+
 
 
 

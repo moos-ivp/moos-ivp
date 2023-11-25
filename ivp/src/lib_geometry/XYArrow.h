@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYArrow.h                                            */
 /*    DATE: Jan 23rd 2022 (Support visualization of wind dir)    */
 /*                                                               */
@@ -111,6 +111,7 @@ protected: // Specs
 XYArrow stringToArrow(std::string);
 
 #endif
+
 
 
 

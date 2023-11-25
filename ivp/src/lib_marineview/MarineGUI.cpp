@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MarineGUI.cpp                                        */
 /*    DATE: November, 2004                                       */
 /*                                                               */
@@ -739,6 +739,7 @@ bool MarineGUI::removeMenuItem(string item_str)
 void MarineGUI::cb_Quit() {
   exit(0);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsSegl.cpp                                */
 /*    DATE: May 18th, 2009 (Reworked from XYBuildUtils.h)        */
 /*                                                               */
@@ -610,6 +610,7 @@ XYSegList stringBowTie2SegList(string str)
 
   return(new_seglist);
 }
+
 
 
 

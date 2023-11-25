@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: InfoBuffer.cpp                                       */
 /*    DATE: Oct 12th 2004 Thanksgiving in Waterloo               */
 /*                                                               */
@@ -396,3 +396,4 @@ vector<string> InfoBuffer::getReport(vector<string> vars, bool verbose) const
   
   return(report_lines);
 }
+

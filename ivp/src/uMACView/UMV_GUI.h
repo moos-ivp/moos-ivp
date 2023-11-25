@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: UMV_GUI.h                                            */
 /*    DATE: Aug 11th, 2012                                       */
 /*                                                               */
@@ -116,3 +116,4 @@ public:
   Fl_Color     m_color_cfgw;
 };
 #endif
+

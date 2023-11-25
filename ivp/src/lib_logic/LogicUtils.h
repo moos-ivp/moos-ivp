@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogicUtils.h                                         */
 /*    DATE: October 12th 2006                                    */
 /*                                                               */
@@ -60,6 +60,7 @@ std::set<std::string> getLogicVars(const std::vector<LogicCondition>&);
 bool setLogicConditionOnString(std::vector<LogicCondition>&, std::string);
 
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IPF_Utils.h                                          */
 /*    DATE: June 17th 2016                                       */
 /*                                                               */
@@ -47,3 +47,4 @@ std::vector<Quad3D> buildQuadsFromCache(const std::vector<std::vector<double> >&
 
 
 #endif
+

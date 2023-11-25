@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: AppLogPlot.h                                          */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
+/*    FILE: AppLogPlot.h                                         */
 /*    DATE: Oct 15th 2021                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -64,6 +64,7 @@ private:
 
 
 #endif
+
 
 
 

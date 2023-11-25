@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE:                                                      */
 /*    DATE:                                                      */
 /*                                                               */
@@ -68,6 +68,7 @@ std::string vect_to_string(std::string prefix, std::string suffix,
 
   return os.str();
 }
+
 
 
 

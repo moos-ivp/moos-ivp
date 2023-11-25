@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_PEAK.cpp                                        */
 /*    DATE: Aug 17th 2006                                        */
 /*                                                               */
@@ -515,6 +515,7 @@ PDMap *ZAIC_PEAK::setPDMap(double tolerance)
 
   return(pdmap);
 }
+
 
 
 

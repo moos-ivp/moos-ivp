@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYArc.h                                              */
 /*    DATE: Dec 27th 2006                                        */
 /*                                                               */
@@ -90,6 +90,7 @@ private:
   double m_yhigh;  // The highest y position of the arc  
 };
 #endif
+
 
 
 

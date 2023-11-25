@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
 /*    DATE: May 27th 2007 (MINUS-07)                             */
 /*                                                               */
@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
   
   return(0);
 }
+
 
 
 

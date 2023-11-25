@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GUI_Encounters.cpp                                   */
 /*    DATE: Jan 11th, 2016                                       */
 /*                                                               */
@@ -694,6 +694,7 @@ void GUI_Encounters::updateXY()
   m_fld_curr_contact->value(curr_contact.c_str());
 
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BFactoryDynamic.cpp                                  */
 /*    DATE: Feb 11th, 2010                                       */
 /*                                                               */
@@ -292,6 +292,7 @@ IvPBehavior* BFactoryDynamic::newBehavior(string name)
    
    return(ptr_behavior);
 }
+
 
 
 

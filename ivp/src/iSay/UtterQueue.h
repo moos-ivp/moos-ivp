@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: UtterQueue.h                                         */
 /*    DATE: May 28th, 2013                                       */
 /*                                                               */
@@ -53,6 +53,7 @@ class UtterQueue {
 };
 
 #endif 
+
 
 
 

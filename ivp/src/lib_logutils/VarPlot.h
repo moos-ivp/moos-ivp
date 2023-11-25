@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: VarPlot.h                                            */
 /*    DATE: Oct 10th 2011                                        */
 /*                                                               */
@@ -89,6 +89,7 @@ protected:
   unsigned int m_max_len_srcaux;
 };
 #endif 
+
 
 
 

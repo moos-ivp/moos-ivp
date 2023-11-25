@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: EFlipper.cpp                                         */
 /*    DATE: April 4th 2009                                       */
 /*                                                               */
@@ -208,6 +208,7 @@ void EFlipper::print()
     cout << "    " << left << " <-> " << right << endl;
   }
 }
+
 
 
 

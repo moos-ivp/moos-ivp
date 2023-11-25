@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: VarPlotEntry.cpp                                     */
 /*    DATE: Mar 3rd 2015                                         */
 /*                                                               */
@@ -60,6 +60,7 @@ void VarPlotEntry::format(int col_pad,
 
   m_formatted += m_varval;
 }
+
 
 
 

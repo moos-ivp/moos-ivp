@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AppGenerator.cpp                                     */
 /*    DATE: Mar 23rd, 2021                                       */
 /*                                                               */
@@ -43,3 +43,4 @@ bool AppGenerator::generate()
 {
   return(true);
 }
+

@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYPolyExpander.h                                     */
 /*    DATE: Sep 7th, 2019                                        */
-/*    DATE: Jun 8th  2020 revisions and centroid bug fix         */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -79,4 +78,5 @@ private: // State variables
 };
 
 #endif
+
 

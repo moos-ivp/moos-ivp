@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: MHashReporter.cpp                                    */
 /*    DATE: May 12th, 2023                                       */
 /*                                                               */
@@ -399,3 +399,4 @@ string MHashReporter::getXHash() const
   string xhash = toupper(m_vname) + "-" + dur_str + "S-" + odo_str + "M";
   return(xhash);
 }
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYGrid.cpp                                           */
 /*    DATE: Aug 27th 2005                                        */
 /*                                                               */
@@ -445,6 +445,7 @@ void XYGrid::clear()
   min_val = 0;
   max_val = 0;
 }
+
 
 
 

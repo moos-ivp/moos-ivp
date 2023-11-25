@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: VarDataPairUtils.h                                   */
 /*    DATE: Sep 3rd, 2020                                        */
 /*                                                               */
@@ -36,3 +36,4 @@ bool  addVarDataPairOnString(std::vector<VarDataPair>&, std::string);
 unsigned int longestField(const std::vector<VarDataPair>&);
 
 #endif 
+

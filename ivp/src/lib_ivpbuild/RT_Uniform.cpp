@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: RT_Uniform.cpp                                       */
 /*    DATE: Aug 26th 2005 (from OFR_AOF written long ago)        */
 /*    NOTE: "RT_" stands for "Reflector Tool"                    */
@@ -75,3 +75,4 @@ PDMap* RT_Uniform::create(const IvPBox* unifbox, const IvPBox* gelbox)
   
   return(pdmap);
 }
+

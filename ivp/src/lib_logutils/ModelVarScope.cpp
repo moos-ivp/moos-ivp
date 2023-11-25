@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ModelVarScope.cpp                                    */
 /*    DATE: Feb 28th 2015                                        */
 /*                                                               */
@@ -303,6 +303,7 @@ vector<string> ModelVarScope::getEntries(const list<VarPlotEntry>& entries) cons
 
   return(rvector);
 }
+
 
 
 

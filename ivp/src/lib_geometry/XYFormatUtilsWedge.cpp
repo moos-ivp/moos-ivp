@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsCircle.cpp                              */
 /*    DATE: Sep 17th, 2015                                       */
 /*                                                               */
@@ -87,6 +87,7 @@ XYWedge string2Wedge(string str)
   else
     return(null_wedge);
 }
+
 
 
 

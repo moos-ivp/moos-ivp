@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ModelAppLogScope.h                                   */
 /*    DATE: Oct 16th 2021                                        */
 /*                                                               */
@@ -87,4 +87,5 @@ private:
 };
 
 #endif
+
 

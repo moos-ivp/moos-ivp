@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BeaconBuoy.h                                         */
 /*    DATE: Feb 1st, 2011                                        */
 /*                                                               */
@@ -103,6 +103,7 @@ class BeaconBuoy
 };
 
 #endif 
+
 
 
 

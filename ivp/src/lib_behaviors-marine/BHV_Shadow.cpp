@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_Shadow.cpp                                       */
 /*    DATE: May 10th 2005                                        */
 /*                                                               */
@@ -155,6 +155,7 @@ double BHV_Shadow::getRelevance()
   else
     return(0.0);
 }
+
 
 
 

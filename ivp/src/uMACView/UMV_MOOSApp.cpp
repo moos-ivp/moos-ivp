@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: UMV_MOOSApp.cpp                                      */
 /*    DATE: Aug 11th, 2012                                       */
 /*                                                               */
@@ -472,6 +472,7 @@ bool UMV_MOOSApp::buildReport()
   m_msgs << "Refresh Mode: " << m_appcast_repo->getRefreshMode() << endl;
   return(true);
 }
+
 
 
 

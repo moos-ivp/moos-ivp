@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / MIT Cambridge MA            */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BundleOut.h                                          */
 /*    DATE: Jan 9th, 2022                                        */
 /*                                                               */
@@ -38,4 +38,5 @@ void bundle_cout(const std::set<std::string>&);
 void bundle_cout(const std::vector<std::string>&);
 
 #endif
+
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: GUI_Encounters.h                                     */
 /*    DATE: Jan 11th, 2016                                       */
 /*                                                               */
@@ -126,6 +126,7 @@ protected:
   bool           m_fullscreen;
 };
 #endif
+
 
 
 

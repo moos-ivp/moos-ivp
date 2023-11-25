@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
 /*    DATE: May 1st, 2005                                        */
 /*                                                               */
@@ -188,6 +188,7 @@ void help_message()
   cout << "      file if present in the directory where launched.        " << endl;
   cout << endl;
 }
+
 
 
 

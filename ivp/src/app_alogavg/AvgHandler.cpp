@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng                               */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AvgHandler.cpp                                       */
 /*    DATE: December 15th, 2021                                  */
 /*                                                               */
@@ -158,6 +158,7 @@ bool AvgHandler::handle()
 
   return(true);
 }
+
 
 
 

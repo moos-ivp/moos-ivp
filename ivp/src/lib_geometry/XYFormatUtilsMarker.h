@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsMarker.h                                */
 /*    DATE: May 12, 2011                                         */
 /*                                                               */
@@ -51,6 +51,7 @@ XYMarker string2Marker(std::string);
 XYMarker stringStandard2Marker(std::string);
 
 #endif
+
 
 
 

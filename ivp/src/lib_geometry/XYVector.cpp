@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYVector.cpp                                         */
 /*    DATE: October 17th, 2010                                   */
 /*                                                               */
@@ -218,6 +218,7 @@ string XYVector::get_spec(string param) const
   
   return(spec);
 }
+
 
 
 

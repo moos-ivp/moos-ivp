@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CRS_ExampleConfig.cpp                                */
 /*    DATE: July 7th 2011                                        */
 /*                                                               */
@@ -172,6 +172,7 @@ void showReleaseInfoAndExit()
   showReleaseInfo("uFldContactRangeSensor", "gpl");
   exit(0);
 }
+
 
 
 

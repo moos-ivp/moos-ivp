@@ -1,6 +1,6 @@
 /*****************************************************************/
-/*    NAME: Michael Benjamin, Henrik Schmidt, and John Leonard   */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    NAME: Michael Benjamin                                     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_AvoidObstacle.h                                  */
 /*    DATE: Aug 2nd 2006                                         */
 /*                                                               */
@@ -95,6 +95,7 @@ public:
   double m_hint_buff_fill_transparency;
 };
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AngleUtils.cpp                                       */
 /*    DATE: Nov 26, 2000                                         */
 /*                                                               */
@@ -914,4 +914,5 @@ bool polyStarOfOwnship(double osx, double osy, double osh,
   
   return(true);
 }
+
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: NavPlotViewer.cpp                                    */
 /*    DATE: May 31st, 2005                                       */
 /*                                                               */
@@ -703,6 +703,7 @@ void NavPlotViewer::setStepType(const string& step_type)
   else if(step_type == "helm_iterations")
     m_step_by_secs = false;
 }
+
 
 
 

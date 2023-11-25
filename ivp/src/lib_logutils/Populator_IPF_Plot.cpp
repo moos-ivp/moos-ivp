@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Populator_IPF_Plot.cpp                               */
 /*    DATE: Feb 24th, 2007                                       */
 /*                                                               */
@@ -195,6 +195,7 @@ void Populator_IPF_Plot::print()
     cout << "    IPF_VName: "  << m_ipf_plots[i].getVName() << endl;
   }
 }
+
 
 
 

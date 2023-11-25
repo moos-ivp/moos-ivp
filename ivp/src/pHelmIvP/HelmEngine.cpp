@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: HelmEngine.cpp (Formerly HelmEngineBeta)             */
 /*    DATE: July 29th 2009                                       */
-/*    DATE: Aug 17th, 2017 Lazy evaluation added                 */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -520,6 +519,7 @@ bool HelmEngine::part6_FinishHelmReport()
   
   return(true);
 }
+
 
 
 

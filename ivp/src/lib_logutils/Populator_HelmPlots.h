@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Populator_HelmPlots.h                                */
 /*    DATE: July 15th, 2009 (at GLINT'09)                        */
 /*                                                               */
@@ -42,6 +42,7 @@ protected:
   HelmPlot m_helm_plot;
 };
 #endif 
+
 
 
 

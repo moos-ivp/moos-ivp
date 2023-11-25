@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: pHelmIvP.cpp                                         */
 /*    DATE: Oct 12th 2004                                        */
 /*                                                               */
@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
   
   return(0);
 }
+
 
 
 

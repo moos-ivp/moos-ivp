@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ObShipModel.cpp                                      */
 /*    DATE: Sep 6th, 2019                                        */
 /*                                                               */
@@ -749,3 +749,4 @@ bool ObShipModel::updateDynamic()
   return(true);
 }
  
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_BearingLine.cpp                                  */
 /*    DATE: Feb 12th 2010                                        */
 /*    NOTE: A simple behavior for testing dynamic spawning of    */
@@ -129,6 +129,7 @@ IvPFunction *BHV_BearingLine::onRunState()
   
   return(0);
 }
+
 
 
 

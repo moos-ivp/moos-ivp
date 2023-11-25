@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: FV_GUI.h                                             */
 /*    DATE: May 13th 2006                                        */
 /*                                                               */
@@ -94,6 +94,7 @@ public:
   std::vector<std::string> m_bhv_sources;
 };
 #endif
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ModelAppLogScope.cpp                                 */
 /*    DATE: Oct 16th 2021                                        */
 /*                                                               */
@@ -146,3 +146,4 @@ vector<string> ModelAppLogScope::processLines(vector<AppLogEntry> entries,
     
   return(all_lines);
 }
+

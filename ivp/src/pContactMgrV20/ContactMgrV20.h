@@ -1,10 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ContactMgrV20.h                                      */
 /*    DATE: Feb 24th 2010                                        */
-/*    DATE: Sep 26th 2017 Added Alert Region Support / mikerb    */
-/*    DATE: Jul 8th  2020 Major Mods                             */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -191,3 +189,4 @@ private:
 };
 
 #endif 
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_HDG_GUI.cpp                                     */
 /*    DATE: May 10th, 2016                                       */
 /*                                                               */
@@ -205,6 +205,7 @@ void ZAIC_HDG_GUI::updateFieldColors()
   else
     m_fld_hghmin_util->color(fcolor_wht);
 }
+
 
 
 

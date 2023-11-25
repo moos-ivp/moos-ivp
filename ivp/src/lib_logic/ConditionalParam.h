@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ConditionalParam.h                                   */
 /*    DATE: Apr 24th 2007                                        */
 /*                                                               */
@@ -58,6 +58,7 @@ protected:
 };
 
 #endif
+
 
 
 

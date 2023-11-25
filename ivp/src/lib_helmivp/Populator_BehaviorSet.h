@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Populator_BehaviorSet.h                              */
 /*    DATE: Jan 27 2005 NICOP funding approved by D.Wagner       */
 /*                                                               */
@@ -82,3 +82,4 @@ protected:
   bool         m_bhv_dir_not_found_ok;
 };
 #endif
+

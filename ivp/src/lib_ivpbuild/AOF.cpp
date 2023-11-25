@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF.cpp                                              */
 /*    DATE: 1996                                                 */
 /*                                                               */
@@ -78,4 +78,5 @@ bool AOF::postMsgAOF(string msg, bool res)
   }
   return(res);
 }
+
 

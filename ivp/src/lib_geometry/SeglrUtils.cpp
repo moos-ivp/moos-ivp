@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: SeglrUtils.cpp                                       */
 /*    DATE: Apr 6th, 2015                                        */
 /*                                                               */
@@ -78,6 +78,7 @@ Seglr rotateSeglr(Seglr seglr, double degrees)
 
   return(new_seglr);
 }
+
 
 
 

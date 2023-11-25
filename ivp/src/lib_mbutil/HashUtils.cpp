@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT Cambridge MA             */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: HashUtils.cpp                                        */
 /*    DATE: Nov 2nd, 2022                                        */
 /*                                                               */
@@ -759,3 +759,4 @@ vector<string> names4()
 
   return(names);
 }
+

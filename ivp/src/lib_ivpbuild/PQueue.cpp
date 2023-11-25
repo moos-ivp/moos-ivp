@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PQueue.cpp                                           */
 /*    DATE: December 8th, 2000                                   */
 /*                                                               */
@@ -263,6 +263,7 @@ void PQueue::printLiteral()
     cout << "[" << m_keyval[i] << "] " << endl;
   }
 }
+
 
 
 

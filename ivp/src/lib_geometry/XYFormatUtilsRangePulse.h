@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsRangePulse.h                            */
 /*    DATE: Feb 5th, 2011                                        */
 /*                                                               */
@@ -50,6 +50,7 @@ XYRangePulse string2RangePulse(std::string);
 XYRangePulse stringStandard2RangePulse(std::string);
 
 #endif
+
 
 
 

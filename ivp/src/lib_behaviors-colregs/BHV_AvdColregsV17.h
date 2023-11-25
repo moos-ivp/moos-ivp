@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_AvdColregsV17.h                                  */
 /*    DATE: May 16th, 2013 (combined from individual colrg bvs)  */
 /*                                                               */
@@ -124,6 +124,7 @@ class BHV_AvdColregsV17 : public IvPContactBehavior {
 };
 
 #endif
+
 
 
 

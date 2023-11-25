@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Seglr.cpp                                            */
 /*    DATE: Mar 21st, 2015                                       */
 /*                                                               */
@@ -250,6 +250,7 @@ string Seglr::getSpec(int precision) const
 
   return(spec);
 }
+
 
 
 

@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_AvoidObstacle.cpp                                */
 /*    DATE: Aug 2nd 2006                                         */
-/*    DATE: Sep 9th 2019 Rewrite with different AOF and refinery */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -580,3 +579,4 @@ double BHV_AvoidObstacleX::getDoubleInfo(string str)
 
   return(0);
 }
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: LogicCondition.h                                     */
 /*    DATE: October 2006                                         */
 /*                                                               */
@@ -80,6 +80,7 @@ protected:
 };
 
 #endif
+
 
 
 

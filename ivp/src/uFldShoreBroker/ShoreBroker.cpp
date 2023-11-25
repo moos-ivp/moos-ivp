@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ShoreBroker.cpp                                      */
 /*    DATE: Dec 16th 2011                                        */
 /*                                                               */
@@ -675,6 +675,7 @@ bool ShoreBroker::buildReport()
   m_msgs << actab.getFormattedString();
   return(true);
 }
+
 
 
 

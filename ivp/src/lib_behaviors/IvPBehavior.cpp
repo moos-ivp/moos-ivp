@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IvPBehavior.cpp                                      */
 /*    DATE: Oct 21, 2003 5 days after Grady's Gaffe              */
 /*                                                               */
@@ -1780,3 +1780,4 @@ string IvPBehavior::expandCtrMacro(string sdata, string macro, unsigned int& ctr
   }    
   return(sdata);
 }
+

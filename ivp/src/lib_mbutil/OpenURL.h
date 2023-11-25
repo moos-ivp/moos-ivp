@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / MIT Cambridge MA            */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: OpenURL.h                                            */
 /*    DATE: Jan 23rd, 2022                                       */
 /*                                                               */
@@ -32,4 +32,5 @@ void openURL(std::string);
 void openURLX(std::string);
 
 #endif
+
 

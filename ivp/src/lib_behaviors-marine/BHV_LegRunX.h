@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng, MIT                          */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_LegRunX.h                                        */
 /*    DATE: Oct 2022                                             */
 /*                                                               */
@@ -161,3 +161,4 @@ protected: // State vars
 };
 
 #endif
+

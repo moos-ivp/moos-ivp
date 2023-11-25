@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsPoly.h                                  */
 /*    DATE: May 16, 2009 After bbq @ Hows                        */
 /*                                                               */
@@ -79,6 +79,7 @@ XYPolygon stringRangeWedge2Poly(std::string);
 //          perp_pad=val, snap_val=val, label=val"
 XYPolygon stringPylon2Poly(std::string);
 #endif
+
 
 
 

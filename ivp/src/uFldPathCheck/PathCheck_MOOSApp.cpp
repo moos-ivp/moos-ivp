@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: PathCheck_MOOSApp.cpp                                */
 /*    DATE: Nov 22th 2011                                        */
 /*                                                               */
@@ -310,6 +310,7 @@ bool PathCheck_MOOSApp::buildReport()
   ODOMETRY_REPORT = "vname=alpha, total_dist=9832.1, trip_dist=1991.1"
   SPEED_REPORT    = "vname=alpha, avg_speed=1.0"
 #endif
+
 
 
 

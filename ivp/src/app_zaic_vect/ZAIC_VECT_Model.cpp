@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_VECT_Model.cpp                                  */
 /*    DATE: May 16th, 2016                                       */
 /*                                                               */
@@ -114,3 +114,4 @@ unsigned int ZAIC_VECT_Model::getTotalPieces()
     return(0);
   return(m_zaic_vect->getTotalPieces());
 }
+

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_SPD_Model.h                                     */
 /*    DATE: May 9th, 2016                                        */
 /*                                                               */
@@ -68,6 +68,7 @@ class ZAIC_SPD_Model : public ZAIC_Model
   unsigned int m_ipf_pieces;
 };
 #endif 
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ZAIC_HLEQ_GUI.h                                      */
 /*    DATE: Apr 6th, 2008                                        */
 /*                                                               */
@@ -49,6 +49,7 @@ public:
   static void cb_ToggleHLEQ(Fl_Widget*);
 };
 #endif
+
 
 
 

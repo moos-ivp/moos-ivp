@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BuildUtils.h                                         */
 /*    DATE: May 15th, 2003                                       */
 /*                                                               */
@@ -95,4 +95,5 @@ std::vector<IvPBox> makeRegionsApart(std::vector<IvPBox>);
 
 
 #endif
+
 

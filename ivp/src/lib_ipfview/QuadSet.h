@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: QuadSet.h                                            */
 /*    DATE: July 4th 2006                                        */
 /*                                                               */
@@ -82,4 +82,5 @@ protected:
   unsigned int m_max_y_qix;
 };
 #endif
+
 

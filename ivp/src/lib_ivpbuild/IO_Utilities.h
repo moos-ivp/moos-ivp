@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: IO_Utilities.h                                       */
 /*    DATE: June 2nd 2004                                        */
 /*                                                               */
@@ -45,6 +45,7 @@ PDMap*       readPDMap(FILE *f, int dim, int cnt, IvPDomain dom, int deg);
 void   printZAIC_PEAK(ZAIC_PEAK);
 
 #endif
+
 
 
 

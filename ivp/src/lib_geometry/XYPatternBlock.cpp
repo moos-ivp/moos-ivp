@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYPatternBlock.cpp                                   */
 /*    DATE: April 30th 2009                                      */
 /*                                                               */
@@ -416,6 +416,7 @@ void XYPatternBlock::idPointCenter(double& retx, double& rety) const
   retx = x_total / (double)(vsize);
   rety = y_total / (double)(vsize);
 }
+
 
 
 

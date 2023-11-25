@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYFormatUtilsSegl.h                                  */
 /*    DATE: May 18th, 2009 (Reworked from XYBuildUtils.h)        */
 /*                                                               */
@@ -80,6 +80,7 @@ XYSegList stringLawnmower2SegList(std::string);
 XYSegList stringBowTie2SegList(std::string);
 
 #endif
+
 
 
 

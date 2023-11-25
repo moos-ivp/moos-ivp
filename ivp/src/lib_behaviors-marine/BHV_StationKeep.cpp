@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_StationKeep.cpp                                  */
 /*    DATE: Aug 25 2006                                          */
 /*                                                               */
@@ -593,6 +593,7 @@ void BHV_StationKeep::postConfigStatus()
 
   postRepeatableMessage("BHV_SETTINGS", str);
 }
+
 
 
 

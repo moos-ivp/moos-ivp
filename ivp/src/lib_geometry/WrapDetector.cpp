@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / MIT Cambridge MA            */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: WrapDetectortor.cpp                                  */
 /*    DATE: Jan 9th, 2023                                        */
 /*                                                               */
@@ -138,5 +138,6 @@ void WrapDetector::updatePosition(double osx, double osy)
   m_empty = true;
   m_os_legs.clear();
 }
+
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_R14.cpp                                          */
 /*    DATE: Feb 9th, 2001 (CPA logic written)                    */
 /*                                                               */
@@ -161,6 +161,7 @@ double AOF_R14::metric3(double osh, double osv) const
 
   return(pct * 100);
 }
+
 
 
 

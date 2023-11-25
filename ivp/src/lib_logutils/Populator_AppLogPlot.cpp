@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: Populator_AppLogPlot.cpp                             */
 /*    DATE: Oct 16th, 2021                                       */
 /*                                                               */
@@ -71,6 +71,7 @@ bool Populator_AppLogPlot::populateFromEntries(const vector<ALogEntry>& entries)
   m_alplot = alplot;
   return(true);
 }
+
 
 
 

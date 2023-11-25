@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_TestFailure.cpp                                  */
 /*    DATE: October 21st 2011                                    */
 /*                                                               */
@@ -90,6 +90,7 @@ void BHV_TestFailure::onCompleteState()
     timer.stop();
   }
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF_CutRangeCPA.cpp                                  */
 /*    DATE: Nov 4th, 2006                                        */
 /*                                                               */
@@ -209,6 +209,7 @@ double AOF_AttractorCPA::metric(double gval) const
     return(100 - (pct * 100));
   }
 }
+
 
 
 

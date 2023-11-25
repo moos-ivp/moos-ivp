@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: main.cpp                                             */
 /*    DATE: May 18th, 2012                                       */
 /*                                                               */
@@ -127,6 +127,7 @@ int main(int argc, char *argv[])
   delete gui;
   return(0);
 }
+
 
 
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: TermUtils.cpp                                        */
 /*    DATE: March 25th 2005                                      */
 /*                                                               */
@@ -84,6 +84,7 @@ char getCharNoWait()
   return _getch() ;
 }
 #endif
+
 
 
 

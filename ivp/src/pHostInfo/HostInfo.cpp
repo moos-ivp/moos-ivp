@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: HostInfo.cpp                                         */
 /*    DATE: Dec 14th 2011                                        */
 /*                                                               */
@@ -640,4 +640,5 @@ bool HostInfo::buildReport()
 
   return(true);
 }
+
 

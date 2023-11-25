@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ConvexHullGenerator.cpp                              */
 /*    DATE: Aug 25th 2014                                        */
-/*    DATE: Jun 8th  2020 Major revisions                        */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -397,3 +396,4 @@ void ConvexHullGenerator::sortPoints()
   // Index 0 should now contain the point with highest angle wrt root.
   m_points = new_points;
 }
+

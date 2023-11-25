@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: BHV_AvoidObstacle.cpp                                */
 /*    DATE: Aug 2nd 2006                                         */
 /*                                                               */
@@ -542,3 +542,4 @@ void BHV_AvoidObstacle::postConfigStatus()
 
   postRepeatableMessage("BHV_SETTINGS", str);
 }
+

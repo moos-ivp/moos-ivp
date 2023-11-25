@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
-/*    FILE: AOF_AvoidWalls.cpp                               */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
+/*    FILE: AOF_AvoidWalls.cpp                                   */
 /*    DATE: Oct 29th, 2018                                       */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
@@ -305,4 +305,5 @@ double AOF_AvoidWalls::metric(double xcpa) const
   double retval = eval_cpa_pct * 100;
   return(retval);
 }
+
 

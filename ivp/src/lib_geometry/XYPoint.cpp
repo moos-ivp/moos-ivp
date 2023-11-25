@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: XYPoint.cpp                                          */
 /*    DATE: July 17th, 2008                                      */
 /*                                                               */
@@ -144,4 +144,5 @@ string XYPoint::get_spec_inactive() const
   
   return(spec);
 }
+
 

@@ -1,6 +1,6 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ScanHandle.cpp                                       */
 /*    DATE: June 5rd, 2008                                       */
 /*                                                               */
@@ -314,6 +314,7 @@ void ScanHandler::loglistReport()
     cout << "  Log = " << m_report.getVarName(i) << endl;
   }
 }
+
 
 
 

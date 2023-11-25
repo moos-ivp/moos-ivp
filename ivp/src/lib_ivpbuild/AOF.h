@@ -1,9 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
-/*    ORGN: Dept of Mechanical Eng / CSAIL, MIT Cambridge MA     */
+/*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: AOF.cpp                                              */
 /*    DATE: 1996                                                 */
-/*    DATE: Apr 2018 Added Known Min/Max functions               */
 /*                                                               */
 /* This file is part of IvP Helm Core Libs                       */
 /*                                                               */
@@ -85,6 +84,7 @@ protected:
   std::list<std::string> m_msgs;
 };
 #endif
+
 
 
 
