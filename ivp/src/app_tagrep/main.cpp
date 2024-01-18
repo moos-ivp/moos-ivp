@@ -103,7 +103,7 @@ void showHelpAndExit()
   cout << "  tagrep file tag [OPTIONS]                                " << endl;
   cout << "                                                           " << endl;
   cout << "Synopsis:                                                  " << endl;
-  cout << "  Given a file of test, return the portion of the file that" << endl;
+  cout << "  Given a file of text, return the portion of the file that" << endl;
   cout << "  lies between the given tag and the next tag, or the end  " << endl;
   cout << "  of the file.                                             " << endl;
   cout << "                                                           " << endl;

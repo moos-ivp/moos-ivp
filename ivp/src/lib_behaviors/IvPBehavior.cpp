@@ -83,7 +83,8 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_osh = 0;
   m_osv = 0;
 
-  m_time_of_creation = 0;
+  m_time_of_creation  = 0;
+  m_time_starting_now = 0;
 
   m_macro_ctr = 0;
   m_macro_ctr_01 = 0;
@@ -1744,6 +1745,13 @@ string IvPBehavior::expandMacros(string sdata)
 
   sdata = macroExpand(sdata, "DUR_RUN_TIME", m_duration_running_time);
   sdata = macroExpand(sdata, "DUR_IDLE_TIME", m_duration_idle_time);
+
+  if(strContains(sdata, "$[NOW]")) {
+    double curr_time = getBufferCurrTime();
+    if(m_time_starting_now == 0)
+      m_time_starting_now = getBufferCurrTime();
+    sdata = macroExpand(sdata, "NOW", curr_time - m_time_starting_now);
+  }
 
   if(strContains(sdata, "HASH")) {
     sdata = macroHashExpand(sdata, "HASH");

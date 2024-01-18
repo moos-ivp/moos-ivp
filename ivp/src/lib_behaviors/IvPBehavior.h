@@ -274,6 +274,7 @@ protected:
   bool        m_config_posted;
 
   double      m_time_of_creation;
+  double      m_time_starting_now;
   
   std::string m_comms_policy;
   std::string m_comms_policy_config;

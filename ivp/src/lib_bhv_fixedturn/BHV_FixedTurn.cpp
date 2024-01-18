@@ -139,13 +139,14 @@ bool BHV_FixedTurn::setParam(string param, string value)
 
 //-----------------------------------------------------------
 // Procedure: handleNewHdg()
+//   Returns: true if the turn has been accomplished.
+//            false otherwise.
 
 bool BHV_FixedTurn::handleNewHdg()
 {
   // =====================================================
   // Part 0: If delay is being used, handle/check here.
   // =====================================================
-  cout << "HNH::state:" << m_state << endl;
   double curr_utc = getBufferCurrTime();
   if(m_state == "stem") {
     if(m_turn_delay > 0) {
@@ -289,20 +290,20 @@ IvPFunction *BHV_FixedTurn::onRunState()
 
   m_curr_rudder = getBufferDoubleVal("DESIRED_RUDDER");
   
-  // Part 2: Update the Odometer
+  bool done_timeout = false;
+  // Part 2: Update the Odometer and check for timeout
   m_odometer.updateDistance(m_osx, m_osy);
   m_odometer.updateTime(getBufferCurrTime());
 
-  // Part 3: Process new heading info and check for done
-  bool done = handleNewHdg();
-
-  // Part 4: If timeout is being used, check if timed out
   double elapsed = m_odometer.getTotalElapsed();
   double curr_timeout = getCurrTimeOut();
   if((curr_timeout > 0) && (elapsed > curr_timeout))
-    done = true;
+    done_timeout = true;
 
-  if(done) {
+  // Part 3: Process new heading info and check for done
+  bool done_hdg_change = handleNewHdg();
+  
+  if(done_timeout || done_hdg_change) {
     postTurnCompleteReport();
     setComplete();
 

@@ -36,7 +36,7 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The uFldDelver app monitors traffic to/from the shoreside via ");
+  blk("  The uFldDelve app monitors traffic to/from the shoreside via ");
   blk("  the pShare application. It tallys the total messages and chars");
   blk("  and the message and character RATES. The list of messages to  ");
   blk("  monitor is derived from a message from uFldNodeBroker and     ");
@@ -51,15 +51,15 @@ void showSynopsis()
 void showHelpAndExit()
 {
   blu("=============================================================== ");
-  blu("Usage: uFldDelver  file.moos [OPTIONS]                          ");
+  blu("Usage: uFldDelve  file.moos [OPTIONS]                          ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch uFldDelver with the given process name             ");
-  blk("      rather than uFldDelver.                                   ");
+  blk("      Launch uFldDelve with the given process name              ");
+  blk("      rather than uFldDelve.                                    ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -67,7 +67,7 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of uFldDelver.                ");
+  blk("      Display the release version of uFldDelve.                 ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -83,10 +83,10 @@ void showExampleConfigAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("uFldDelver Example MOOS Configuration                           ");
+  blu("uFldDelve Example MOOS Configuration                            ");
   blu("=============================================================== ");
   blk("                                                                ");
-  blk("ProcessConfig = uFldDelver                                      ");
+  blk("ProcessConfig = uFldDelve                                       ");
   blk("{                                                               ");
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
@@ -105,7 +105,7 @@ void showInterfaceAndExit()
 {
   blk("                                                                ");
   blu("=============================================================== ");
-  blu("uFldDelver INTERFACE                                            ");
+  blu("uFldDelve INTERFACE                                             ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();
@@ -137,7 +137,7 @@ void showInterfaceAndExit()
 
 void showReleaseInfoAndExit()
 {
-  showReleaseInfo("uFldDelver", "gpl");
+  showReleaseInfo("uFldDelve", "gpl");
   exit(0);
 }
 
