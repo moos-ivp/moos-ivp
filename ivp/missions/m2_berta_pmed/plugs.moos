@@ -1,0 +1,81 @@
+<tag><origin_warp>
+MOOSTimeWarp = $(WARP)
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+<tag><pHostInfo>
+//--------------------------------------------------
+// pHostInfo configuration block from plugin
+
+ProcessConfig = pHostInfo
+{
+  AppTick 	= 1
+  CommsTick 	= 1
+
+  DEFAULT_HOSTIP_FORCE = localhost
+}
+
+<tag><pLogger>
+//--------------------------------------------------
+// pLogger Configuration Block (Created from Plugin)
+
+ProcessConfig = pLogger
+{
+  AppTick 	= 5
+  CommsTick = 5
+  
+  File          = LOG_%(VNAME)
+  PATH	        = ./
+  AsyncLog 	    = true
+  FileTimeStamp = true
+
+  Log = IVPHELM_LIFE_EVENT @ 0 nosync
+  Log = BCM_ALERT_REQUEST @ 0 nosync
+
+  LogAuxSrc = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = APPCAST
+  WildCardOmitPattern = DB_VARSUMMARY
+//  WildCardOmitPattern = DB_RWSUMMARY
+
+  WildCardOmitPattern = NAV_PITCH, NAV_LAT, NAV_LONG, NAV_YAW, NAV_Z
+  WildCardOmitPattern = SIMULATION_MODE, TRUE_X, TRUE_Y
+  WildCardOmitPattern = NAV_DEPTH, NAV_SPEED_OVER_GROUND, DB_QOS
+  //WildCardOmitPattern = NODE_BROKER_PING_0, PSHARE*
+  WildCardOmitPattern = IVPHELM_ALLSTOP_DEBUG, *ITER_GAP, *ITER_LEN
+  WildCardOmitPattern = PHI_HOST*
+
+  // WildCardOmitPattern = DB_CLIENTS
+  // WildCardOmitPattern = PHI_HOST*, NODE_REPORT_LOCAL
+
+}
+
+<tag><uTimerScript>
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  PAUSED     = false
+  RESET_MAX  = unlimited
+  RESET_TIME = end
+
+  RANDVAR = varname=X, min=0,  max=100, key=at_reset
+  RANDVAR = varname=Y, min=0,  max=100, key=at_reset
+
+  EVENT = var=NODE_MESSAGE_LOCAL, val="src_node=$(VNAME),dest_node=all,var_name=FOOBAR,string_val=$[X],$[Y]", time=0:30 
+  EVENT = var=NODE_MESSAGE_LOCAL, val="src_node=$(VNAME),dest_node=all,var_name=FOOBAR,string_val=$[X],$[Y]", time=15:45 
+  EVENT = var=NODE_MESSAGE_LOCAL, val="src_node=$(VNAME),dest_node=all,var_name=FOOBAR,string_val=$[X],$[Y]", time=30:60 
+  EVENT = var=NODE_MESSAGE_LOCAL, val="src_node=$(VNAME),dest_node=all,var_name=FOOBAR,string_val=$[X],$[Y]", time=45:75 
+  EVENT = var=NODE_MESSAGE_LOCAL, val="src_node=$(VNAME),dest_node=all,var_name=FOOBAR,string_val=$[X],$[Y]", time=60:90 
+}
+
+
+ 
+

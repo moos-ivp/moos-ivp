@@ -1,0 +1,2 @@
+param = name1=$(NAME:=fred)
+param = name2=$(NAME=fred)

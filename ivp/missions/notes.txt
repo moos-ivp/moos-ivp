@@ -1,0 +1,18 @@
+
+
+s1_alpha
+
+sa8_obsavoid
+m23_obasavoid
+
+pw4_convoy     N vehicles, ready for water
+pwm4_convoy    N vehicle, ready for water, MTASC enabled.
+
+x23_muster
+
+
+All mission folders begin with
+o s for single vehicles
+o m for multi-vehicle with fixed number
+o x for multi-vehicle of any number
+

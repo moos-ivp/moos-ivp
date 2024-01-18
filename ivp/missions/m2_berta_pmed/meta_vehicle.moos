@@ -1,0 +1,168 @@
+//-------------------------------------------------
+// NAME: M. Benjamin, MIT
+// FILE: $(VNAME).moos
+
+ServerHost = localhost
+ServerPort = $(BOT_MOOSDB)
+Community  = $(VNAME)
+
+#include plugs.moos <origin_warp>
+
+//------------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 50
+   
+  Run = MOOSDB         @ NewConsole = false
+  Run = pShare         @ NewConsole = false
+  Run = uSimMarineV22  @ NewConsole = false
+  Run = pLogger        @ NewConsole = false
+  Run = pNodeReporter  @ NewConsole = false
+  Run = pMarinePID     @ NewConsole = false
+  Run = pHelmIvP       @ NewConsole = false
+  Run = pHostInfo      @ NewConsole = false
+  Run = uFldNodeBroker @ NewConsole = false
+  Run = pContactMgrV20 @ NewConsole = false
+  Run = pRealm         @ NewConsole = false
+}
+
+//----------------------------------------------------
+// pHelmIvP Configuration Block  
+
+ProcessConfig = pHelmIvP
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+	app_logging = true
+	
+  Behaviors    = targ_$(VNAME).bhv  
+  Verbose      = false
+  Domain       = course:0:359:360
+  Domain       = speed:0:5:26
+
+	hold_on_apps = pContactMgrV20
+}
+	
+//--------------------------------------------------------
+// pNodeReporter Configuration Block 
+
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 2
+  CommsTick   = 2
+
+  vessel_type = $(VTYPE)
+  terse_reports = true
+
+	group = alpha
+}
+
+//--------------------------------------------------------
+// pContactMgrV20 Configuration Block
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  alert_verbose = true
+
+  contact_max_age  = 35
+  display_radii    = true
+	display_radii_id = avd
+
+	//match_region = pts = {60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40}
+	//match_type = kayak, uuv
+
+	post_closest_range = true
+	
+  display_radii     = true
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+}
+
+//--------------------------------------------------
+// uFldNodeBroker configuration block from plugin
+
+ProcessConfig = uFldNodeBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  try_shore_host = pshare_route=localhost:$(SHORE_PSHARE)
+  //try_shore_host = pshare_route=192.168.7.11:9200
+  //try_shore_host = pshare_route=192.168.7.22:9200
+
+	//shadow_shore = ip=192.168.7.29, name=henry, dur=45000
+	
+  bridge = src=VIEW_POLYGON
+  bridge = src=VIEW_CIRCLE
+  bridge = src=VIEW_POINT
+  bridge = src=VIEW_SEGLIST
+  bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+  bridge = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
+}
+
+//------------------------------------------------------
+// uSimMarineV22 Config Block
+
+ProcessConfig = uSimMarineV22
+{
+  AppTick   = 10
+  CommsTick = 10
+
+  START_POS = $(START_POS), 0
+  PREFIX    = NAV
+
+	turn_rate = 90
+	
+  //rotate_speed = 0.012
+  //drift_x      = 0.0045
+
+  //thrust_map = -100:-2, 0:0, 20:1, 40:2, 60:3, 80:5, 100:5
+  //thrust_map = -100:-2, 0:0, 20:1, 40:2, 60:3, 80:5, 100:5
+}
+
+
+//-----------------------------------------------------
+// pMarinePID Configuration Block (created from plugin)
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+
+	deprecated_ok = true
+	
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+  ACTIVE_START  = true
+  
+  // Yaw PID controller
+  YAW_PID_KP             = 1.2
+  YAW_PID_KD             = 0.1
+  YAW_PID_KI             = 0.3
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Speed PID controller
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Maximums
+  MAXRUDDER  = 100
+  MAXTHRUST  = 100
+  
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+
+}
+	
+#include plugs.moos <pHostInfo>
+#include plugs.moos <pLogger>
+

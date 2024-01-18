@@ -1,0 +1,4 @@
+param = role=$(ROLE:=rescue)
+param = color=$(COLOR:=purple), depth=20
+param = color=$(COLOR:=green)
+param = name=$(NAME*=henry)

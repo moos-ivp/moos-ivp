@@ -1,0 +1,262 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = $(SHORE_MOOSDB)
+Community  = shoreside
+
+#include plugs.moos <origin_warp>
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
+  Run = uTimerScript    @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = uXMS            @ NewConsole = false
+  Run = uProcessWatch   @ NewConsole = false
+
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = uFldNodeComms   @ NewConsole = false
+}
+
+//---------------------------------------------------------
+// pRealm Config Block
+
+ProcessConfig = pRealm
+{
+  AppTick    = 2
+  CommsTick  = 2
+}
+
+//---------------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  localhost:$(SHORE_PSHARE)
+}
+
+//--------------------------------------------------
+// uMAC Configuration Block
+
+ProcessConfig = uMAC
+{
+  AppTick       = 1
+  CommsTick     = 1
+}
+
+//--------------------------------------------------
+// uMACView Configuration Block
+
+ProcessConfig = uMACView
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+	watch_cluster = key=mission_top, vars=DEPLOY:RETURN
+	watch_cluster = key=mission_top, vars=STATION_KEEP:LOITER:AVOID
+	watch_cluster = key=mission2, vars=RETURN
+}
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{ 
+  AppTick       = 1
+  CommsTick     = 1
+
+  // Note: [QBRIDGE = FOO]  is shorthand for                    
+  //       [BRIDGE = src=FOO_$V,  alias=FOO] and                
+  //       [BRIDGE = src=FOO_ALL, alias=FOO]
+
+	auto_bridge_appcast = true
+	
+  qbridge  = DEPLOY, RETURN, STATION_KEEP, NODE_REPORT, NODE_MESSAGE
+  qbridge  = MOOS_MANUAL_OVERRIDE, AVOID, UP_LOITER
+  qbridge  = RETURN_UPDATES, BCM_DISPLAY_RADII
+  qbridge  = CONTACT_INFO, NODE_GROUP_UPDATE
+
+  bridge   = src=UP_LOITER_$N, alias=UP_LOITER
+  bridge   = src=DRIFT_VECTOR_ADD, alias=DRIFT_VECTOR_ADD
+  bridge   = src=HELM_MAP_CLEAR, alias=HELM_MAP_CLEAR
+  bridge   = src=MISSION_HASH, alias=MISSION_HASH
+}
+
+//--------------------------------------------------
+// uFldNodeComms Configuration Block
+
+ProcessConfig = uFldNodeComms
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  comms_range      = 500
+  critical_range   = 25
+  min_msg_interval = 15
+  max_msg_length   = 1000
+  groups           = true
+
+  view_node_rpt_pulses = false
+}
+
+//--------------------------------------------------
+// pHostInfo configuration block from plugin
+
+ProcessConfig = pHostInfo
+{
+  AppTick    = 1
+  CommsTick  = 1
+}
+
+//--------------------------------------------------
+// uXMS Configuration Block
+
+ProcessConfig = uXMS
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  var = APPCAST_REQ_ALL, DEPLOY_ALL, RETURN_ALL, STATION_KEEP_ALL
+  var = STATION_KEEP_HENRY, STATION_KEEP_GILDA, MISSION_HASH
+  var = RETURN_UPDATES_HENRY, RETURN_UPDATES_GILDA
+}
+
+//--------------------------------------------------
+// pLogger Configuration Block
+
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+  
+  File          = XLOG_SHORESIDE
+  PATH          = ./
+  SyncLog       = true @ 0.2
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  LogAuxSrc     = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = DB_VARSUMMARY
+  //WildCardOmitPattern = DB_RWSUMMARY
+}
+
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  watch_cluster = key=basic, vars=MISSION_HASH
+
+  //mission_hash_var = off
+	
+  TIFF_FILE            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names
+
+	app_logging = true
+	
+	watch_cluster = key=mission_top, vars=DEPLOY:RETURN
+	watch_cluster = key=mission_top, vars=STATION_KEEP:LOITER:AVOID
+	
+  circle_viewable_all = false
+
+	content_mode      = appcast       // or realmcast
+	realmcast_channel = mission_top
+	
+  appcast_color_scheme = indigo
+	appcast_font_size    = large
+  procs_font_size      = large
+  nodes_font_size      = large
+
+  stale_report_thresh = 10
+  stale_remove_thresh = 18
+
+	scope = REALMCAST_REQ
+	scope = REALMCAST_REQ_GILDA
+	scope = REALMCAST_REQ_HENRY
+	
+  left_context[return_point] = RETURN_$[UP_VNAME_CLOSEST] = true
+  left_context[return_point] = RETURN_UPDATES_$[UP_VNAME_CLOSEST] = points=$[XPOS],$[YPOS]
+  left_context[station]      = STATION_KEEP_$[UP_VNAME_CLOSEST] = true
+
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = AVOID_ALL=true
+  button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
+
+  button_two   = RETURN  # RETURN_ALL=true
+  button_two   = RETURN  # STATION_KEEP_ALL=false
+  button_three = PERMUTE   # UTS_FORWARD=0
+  button_five  = STATION:true # STATION_KEEP_ALL=true
+  button_six   = STATION:false # STATION_KEEP_ALL=false
+}
+
+//--------------------------------------------------------
+// uTimerScript Configuration Block
+
+ProcessConfig = uTimerScript
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  paused     = false
+  reset_max  = unlimited
+  reset_time = end
+
+  //randvar = varname=X1, min=-25,  max=25,  key=at_reset
+  //randvar = varname=Y1, min=-100, max=-50, key=at_reset
+  //randvar = varname=X2, min=100,  max=150, key=at_reset
+  //randvar = varname=Y2, min=-75,  max=-25, key=at_reset
+
+  randvar = varname=X1, min=0,     max=5,  key=at_reset
+  randvar = varname=Y1, min=-80,  max=-70, key=at_reset
+  randvar = varname=X2, min=120,  max=130, key=at_reset
+  randvar = varname=Y2, min=-80,  max=-70, key=at_reset
+
+  event = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
+  event = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180
+
+  event = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=360
+  event = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=360
+}
+
+
+//--------------------------------------------------------
+// uProcessWatch Configuration Block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  allow_retractions = true
+  
+  watch_all = true      // default is true
+
+  nowatch = uXMS*
+  nowatch = uMACView*
+  nowatch = uPokeDB*
+
+  summary_wait = 12
+}

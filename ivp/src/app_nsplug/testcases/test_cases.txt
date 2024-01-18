@@ -1,0 +1,20 @@
+
+File: input_00.txt
+
+Now is the time for all good men to come to the
+aid of their country
+
+File: result_00.txt
+
+Now certainly is the time for all good men to come to the
+aid of their country
+
+File: input_01.txt
+
+Boston vs Philly should be a great game
+
+What do you think?
+
+File: result_01.txt
+
+Boston vs Philly should be a great game
