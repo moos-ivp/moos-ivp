@@ -61,6 +61,7 @@ Expander::Expander(string given_infile, string given_outfile)
 
 bool Expander::expand()
 {
+  //printMacros(m_initial_macros);
   bool result;
   vector<string> fvector = expandFile(m_infile, m_initial_macros, 
 				      m_initial_filenames,
@@ -750,4 +751,98 @@ void Expander::printModeStack()
   }
   cout << endl;
 }
+
+//--------------------------------------------------------
+// Procedure: printMacros()
+//      Note: For debugging
+
+void Expander::printMacros(map<string,string> macros)
+{
+  cout << "------------- total:" << macros.size() << endl;
+  unsigned int index = 0;
+  map<string,string>::iterator p;
+  for(p=macros.begin(); p!=macros.end(); p++) {
+    string macro = p->first;
+    string value = p->second;
+    cout << "[" << index << "]: ";
+    cout << macro << "=" << value << endl;
+    index++;
+  }
+  cout << endl;
+}
+
+//--------------------------------------------------------
+// Procedure: addMacroFile()
+
+bool Expander::addMacroFile(string filestr)
+{
+  // Sanity checks
+  if(!okFileToRead(filestr))
+    return(false);
+
+  vector<string> lines = fileBuffer(filestr);
+  if(lines.size() == 0)
+    return(false);
+
+  // ===================================================
+  // Part 2: 
+  // Handle each line/macro and create a new, additional
+  // macro map. Apply all macros from previously loaded
+  // macros files, to each new line from this file.
+  // ===================================================
+  map<string, string> new_macros;
+  for(unsigned int i=0; i<lines.size(); i++) {
+    string line = stripBlankEnds(lines[i]);
+
+    if(line == "")
+      continue;
+    if(strBegins(line, "#") || strBegins(line, "//"))
+      continue;
+    
+    string orig = line;
+    string param = biteStringX(line, '=');
+    string value = line;
+    if(isQuoted(value))
+      value = stripQuotes(value);
+
+    // Sanity check a given line for null parts or dupls.
+    string issue;    
+    if((param == "") || (value == ""))
+      issue = "null param or value: [" + orig + "]";
+    if(m_initial_macros.count(param) != 0) {
+      if(value != m_initial_macros[param])
+	issue = "ambiguous macro: [" + orig + "]";
+    }
+    if(new_macros.count(param) != 0) {
+      if(value != new_macros[param])
+	issue = "ambiguous macro: [" + orig + "]";
+    }
+    // Sanity check end
+
+    if(issue == "") {
+      applyMacrosToLine(value, m_initial_macros, 0);      
+      new_macros[param] = value;
+    }
+    else {
+      cout << "Err in macro file around line " << i;
+      cout << "Line:[" << orig << "]" << endl;
+    }
+  }
+
+  // ===================================================
+  // Part 3: Merge the two maps
+
+  //printMacros(m_initial_macros);
+  //printMacros(new_macros);
+  
+  map<string,string>::iterator p;
+  for(p=new_macros.begin(); p!=new_macros.end(); p++) {
+    string key = p->first;
+    string val = p->second;
+    m_initial_macros[key] = val;
+  }
+
+  return(true);
+}
+
 

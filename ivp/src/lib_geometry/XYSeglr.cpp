@@ -35,11 +35,8 @@ using namespace std;
 
 XYSeglr::XYSeglr(double ray_angle)
 {
+  init();
   m_ray_angle = ray_angle;
-  
-  m_raylen = 5;   // length of the rendered ray in meters
-  m_headsz = 3;   // Size of the rendered head in meters
-  m_cpa = -1;
 }
 
 //---------------------------------------------------------------
@@ -47,28 +44,20 @@ XYSeglr::XYSeglr(double ray_angle)
 
 XYSeglr::XYSeglr(double x0, double y0)
 {
+  init();
   m_vx.push_back(x0);
   m_vy.push_back(y0);
-  
-  m_ray_angle = 0;   
-  m_raylen = 5;     // length of the rendered ray in meters
-  m_headsz = 3;     // Size of the rendered head in meters
-  m_cpa = -1;
-}
+ }
 
 //---------------------------------------------------------------
 // Constructor()
 
 XYSeglr::XYSeglr(double x0, double y0, double ray_angle)
 {
+  init();
   m_vx.push_back(x0);
   m_vy.push_back(y0);
-  
   m_ray_angle = ray_angle;   
-
-  m_raylen = 5;     // length of the rendered ray in meters
-  m_headsz = 3;     // Size of the rendered head in meters
-  m_cpa = -1;
 }
 
 //---------------------------------------------------------------
@@ -76,15 +65,23 @@ XYSeglr::XYSeglr(double x0, double y0, double ray_angle)
 
 XYSeglr::XYSeglr(double x0, double y0, double x1, double y1)
 {
+  init();
   m_vx.push_back(x0);
   m_vy.push_back(y0);
   m_vx.push_back(x1);
   m_vy.push_back(y1);
-  
+}
+
+//---------------------------------------------------------------
+// Procedure: init()
+
+void XYSeglr::init()
+{
   m_ray_angle = 0;   
-  m_raylen = 5;     // length of the rendered ray in meters
-  m_headsz = 3;     // Size of the rendered head in meters
-  m_cpa = -1;
+  m_raylen    = 5;   // length of the rendered ray in meters
+  m_headsz    = 3;   // Size of the rendered head in meters
+  m_cpa       = -1;
+  m_cpa_stem  = -1;
 }
 
 //---------------------------------------------------------------
@@ -139,7 +136,7 @@ void XYSeglr::setHeadSize(double val)
 }
 
 //---------------------------------------------------------------
-// Procedure: setChacheCPA()
+// Procedure: setCacheCPA()
 
 void XYSeglr::setCacheCPA(double val)
 {
@@ -149,7 +146,17 @@ void XYSeglr::setCacheCPA(double val)
 }
 
 //---------------------------------------------------------------
-// Procedure: setChacheCPAPoint()
+// Procedure: setCacheStemCPA()
+
+void XYSeglr::setCacheStemCPA(double val)
+{
+  if(val < 0)
+    val = 0;
+  m_cpa_stem = val;
+}
+
+//---------------------------------------------------------------
+// Procedure: setCacheCPAPoint()
 
 void XYSeglr::setCacheCPAPoint(XYPoint point)
 {

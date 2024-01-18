@@ -46,6 +46,7 @@ public: // Setters
 
   void setRayLen(double);
   void setHeadSize(double);
+  void setCacheStemCPA(double);
   void setCacheCPA(double);
   void setCacheCPAPoint(XYPoint);
   
@@ -56,6 +57,7 @@ public: // Getters (for settable vals)
   double getRayLen() const   {return(m_raylen);}
   double getHeadSize() const {return(m_headsz);}
   double getCacheCPA() const {return(m_cpa);}
+  double getCacheStemCPA() const {return(m_cpa_stem);}
   XYPoint getCacheCPAPoint() const {return(m_cpa_pt);}
 
 public:  // Modifiers
@@ -80,6 +82,9 @@ public: // Getters (analyzers)
   std::string get_spec_ix() const;
 
 protected:
+  void init();
+  
+protected:
   std::vector<double> m_vx;
   std::vector<double> m_vy;
   double              m_ray_angle;
@@ -87,8 +92,9 @@ protected:
   double m_raylen;  // length of the rendered ray in meters
   double m_headsz;  // Size of the rendered head in meters
 
-  double  m_cpa;    // An optionally cached value
-  XYPoint m_cpa_pt; // An optionally cached value
+  double  m_cpa;      // An optionally cached value
+  XYPoint m_cpa_pt;   // An optionally cached value
+  double  m_cpa_stem; // An optionally cached value
 };
 
 XYSeglr string2Seglr(const std::string&);

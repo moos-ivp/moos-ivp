@@ -610,6 +610,7 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
   vector<XYRangePulse> rpulses = geo_shapes.getRangePulses();
   vector<XYCommsPulse> cpulses = geo_shapes.getCommsPulses();
   const map<string, XYSegList>&  segls = geo_shapes.getSegLists();
+  const map<string, XYSeglr>&  seglrs = geo_shapes.getSeglrs();
   const map<string, XYPoint>&  points  = geo_shapes.getPoints();
   const map<string, XYCircle>& circles = geo_shapes.getCircles();
   const map<string, XYMarker>& markers = geo_shapes.getMarkers();
@@ -626,7 +627,7 @@ void NavPlotViewer::drawVPlugPlot(unsigned int index)
   drawArrows(arrows, utc_timestamp);
   drawRangePulses(rpulses, utc_timestamp);
   drawCommsPulses(cpulses, utc_timestamp);
-  //drawSeglrs(seglrs);
+  drawSeglrs(seglrs);
 
   drawGrids(grids);
 }

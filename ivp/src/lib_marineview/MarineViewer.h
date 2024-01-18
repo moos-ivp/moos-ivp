@@ -146,7 +146,7 @@ protected:
   void  drawSegLists(const std::map<std::string, XYSegList>&, double timestamp=0);
   void  drawSegList(const XYSegList&);
 
-  void  drawSeglrs(const std::vector<XYSeglr>&);
+  void  drawSeglrs(const std::map<std::string, XYSeglr>&, double timestamp=0);
   void  drawSeglr(const XYSeglr&);
 
   void  drawWedges(const std::vector<XYWedge>&);

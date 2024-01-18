@@ -47,7 +47,7 @@
 using namespace std;
 
 //--------------------------------------------------------------------
-// Procedure: Constructor
+// Procedure: Constructor()
 
 HelmIvP::HelmIvP()
 {
@@ -116,7 +116,7 @@ HelmIvP::HelmIvP()
 }
 
 //--------------------------------------------------------------------
-// Procedure: Destructor
+// Procedure: Destructor()
 
 HelmIvP::~HelmIvP()
 {
@@ -126,7 +126,7 @@ HelmIvP::~HelmIvP()
 }
 
 //--------------------------------------------------------------------
-// Procedure: handlePrepareRestart
+// Procedure: handlePrepareRestart()
 
 void HelmIvP::handlePrepareRestart()
 {
@@ -366,18 +366,21 @@ bool HelmIvP::Iterate()
     return(false);
   }
 
-  // We don't try to get a helm decision for the first second upon startup
-  // Gives the info_buffer time to receive critical mail, reduce warnings.
+  // We don't try to get a helm decision for the first second upon
+  // startup Gives the info_buffer time to receive critical mail,
+  // reduce warnings.
   if((m_curr_time - m_helm_start_time) < 1)
     return(true);
 
-  // If the helm has been restarted, make a single post confirming this now
-  // that the helm is back in the business of making decisions.
+  // If the helm has been restarted, make a single post confirming
+  // this now that the helm is back in the business of making
+  // decisions.
   if(m_reset_post_pending) {
     Notify("IVPHELM_RESTARTED", "true");
     m_reset_post_pending = false;
   }
-  
+
+  updatePlatModel();
   m_helm_report = m_hengine->determineNextDecision(m_bhv_set, m_curr_time);
 
 #if 0 // mikerb jan 2016 debug
@@ -1242,6 +1245,8 @@ bool HelmIvP::OnStartUp()
       behavior_dirs.push_back(value);
       handled = true;
     }
+    else if(param == "PMGEN") 
+      handled = handleConfigPMGen(value);
     else if(param == "OTHER_OVERRIDE_VAR") 
       handled = setNonWhiteVarOnString(m_additional_override, value);
 
@@ -1425,6 +1430,14 @@ bool HelmIvP::handleConfigHoldOnApp(string applist)
   }
   
   return(true);
+}
+
+//--------------------------------------------------------------------
+// Procedure: handleConfigPMGen()
+
+bool HelmIvP::handleConfigPMGen(string str)
+{
+  return(m_pmgen.setParams(str));
 }
 
 //--------------------------------------------------------------------
@@ -1687,7 +1700,6 @@ bool HelmIvP::processNodeReport(const string& report)
 
 //--------------------------------------------------------------------
 // Procedure: helmStatusUpdate()
-//   Purpose: 
 
 void HelmIvP::helmStatusUpdate(const string& new_status)
 {
@@ -1712,7 +1724,7 @@ void HelmIvP::helmStatusUpdate(const string& new_status)
   
 
 //--------------------------------------------------------------------
-// Procedure: helmStatusEnabled
+// Procedure: helmStatusEnabled()
 //   Purpose: Convenience function, and just to be clear that the two
 //            states, PARK and DRIVE represent an "enabled" 
 //            helm, a helm that is neither on standby or disabled.
@@ -1740,3 +1752,28 @@ void HelmIvP::seedRandom()
   srand(seed);
 }
 
+//--------------------------------------------------------------------
+// Procedure: updatePlatModel()
+
+void HelmIvP::updatePlatModel()
+{
+  // Sanity checks
+  if(!m_info_buffer || !m_hengine)
+    return;
+  
+  bool ok1, ok2, ok3, ok4;
+  double osx = m_info_buffer->dQuery("NAV_X", ok1);
+  double osy = m_info_buffer->dQuery("NAV_Y", ok2);
+  double osh = m_info_buffer->dQuery("NAV_HEADING", ok3);
+  double osv = m_info_buffer->dQuery("NAV_SPEED", ok4);
+  if(!ok1 || !ok2 || !ok3 || !ok4)
+    return;
+
+  // pmgen needs utc stamp to calculate hdg history
+  m_pmgen.setCurrTime(m_info_buffer->getCurrTime());
+
+  PlatModel pmodel = m_pmgen.generate(osx, osy, osh, osv);
+  Notify("TURN_RATE", m_pmgen.getTurnRate());
+
+  m_hengine->setPlatModel(pmodel);
+}

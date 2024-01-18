@@ -72,9 +72,9 @@ public:
 
   std::vector<XYPolygon> getPolygons(const std::string&);
   std::vector<XYWedge>   getWedges(const std::string&);
-  std::vector<XYSeglr>   getSeglrs(const std::string&);
   std::vector<XYHexagon> getHexagons(const std::string&);
 
+  const std::map<std::string, XYSeglr>    getSeglrs(const std::string&);
   const std::map<std::string, XYSegList>  getSegLists(const std::string&);
   const std::map<std::string, XYCircle>&  getCircles(const std::string&);
   const std::map<std::string, XYOval>&    getOvals(const std::string&);

@@ -34,6 +34,9 @@
 class XYPolygon : public XYSegList {
 public:
   XYPolygon();
+  XYPolygon(double x, double y, double rad,
+	    unsigned int pts, std::string label="");
+  XYPolygon(XYSegList);
   ~XYPolygon() {}
 
   // Polygon create and edit functions

@@ -199,7 +199,7 @@ void IvPFuncViewerX::clearVarPlotB()
 }
 
 //-------------------------------------------------------------
-// Procedure: setBix
+// Procedure: setBix()
 
 void IvPFuncViewerX::setBix(unsigned int bix)
 {
@@ -216,7 +216,7 @@ void IvPFuncViewerX::setBix(unsigned int bix)
 
 
 //-------------------------------------------------------------
-// Procedure: setIPF_Plots
+// Procedure: setIPF_Plots()
 
 void IvPFuncViewerX::setIPF_Plots(vector<string> bhv_names)
 {
@@ -232,20 +232,21 @@ void IvPFuncViewerX::setIPF_Plots(vector<string> bhv_names)
 }
 
 //-------------------------------------------------------------
-// Procedure: setHelmIterPlot
+// Procedure: setHelmIterPlot()
 
 void IvPFuncViewerX::setHelmIterPlot()
 {
   if(m_vname == "")
     return;
   
-  unsigned int mix = m_dbroker.getMixFromVNameVarName(m_vname, "IVPHELM_ITER");
+  unsigned int mix = 0;
+  mix = m_dbroker.getMixFromVNameVarName(m_vname, "IVPHELM_ITER");
 
   m_iter_plot = m_dbroker.getLogPlot(mix);
 }
 
 //-------------------------------------------------------------
-// Procedure: addIPF_Plot
+// Procedure: addIPF_Plot()
 //      Note: A local copy of the given IPF_Plot is created here.
 
 void IvPFuncViewerX::addIPF_Plot(const IPF_Plot& g_ipf_plot)
@@ -288,7 +289,7 @@ void IvPFuncViewerX::setTime(double time)
 
 
 //-------------------------------------------------------------
-// Procedure: updateScope
+// Procedure: updateScope()
 
 void IvPFuncViewerX::updateScope()
 {
@@ -304,7 +305,7 @@ void IvPFuncViewerX::updateScope()
 
 
 //-------------------------------------------------------------
-// Procedure: setSource
+// Procedure: setSource()
 
 void IvPFuncViewerX::setSource(string source)
 {
@@ -404,7 +405,7 @@ void IvPFuncViewerX::updateIPF()
 }
 
 //-------------------------------------------------------------
-// Procedure: buildIndividualIPF
+// Procedure: buildIndividualIPF()
 
 bool IvPFuncViewerX::buildIndividualIPF(string source)
 {
@@ -476,7 +477,7 @@ bool IvPFuncViewerX::buildIndividualIPF(string source)
 }
 
 //-------------------------------------------------------------
-// Procedure: buildCollectiveIPF
+// Procedure: buildCollectiveIPF()
 
 bool IvPFuncViewerX::buildCollectiveIPF(string ctype)
 {

@@ -7,7 +7,6 @@ SET(SRC
   ColorParse.cpp
   ColorPack.cpp
   FColorMap.cpp
-  HintHolder.cpp
   FileBuffer.cpp
   MBTimer.cpp
   MBUtils.cpp
@@ -35,7 +34,6 @@ SET(HEADERS
   ColorPack.h
   ColorParse.h
   FColorMap.h
-  HintHolder.h
   FileBuffer.h
   MBTimer.h
   MBUtils.h

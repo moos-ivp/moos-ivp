@@ -72,6 +72,9 @@ SET(SRC
   XYSquare.cpp
   XYVector.cpp
   XYWedge.cpp
+  OpField.cpp
+  Populator_OpField.cpp
+  HintHolder.cpp
   )
 
 SET(HEADERS
@@ -136,6 +139,8 @@ SET(HEADERS
   XYSegment.h
   XYSquare.h
   XYVector.h
+  Populator_OpField.h
+  HintHolder.h
 )
 
 # Build Library

@@ -95,9 +95,9 @@ void showExampleConfigAndExit()
   blk("  AppTick   = 4                                                 ");
   blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
-  blk("  collision_dist   = 10                                         ");
-  blk("  near_miss_dist   = 15                                         ");
-  blk("  encounter_dist   = 20                                         ");
+  blk("  collision_dist   = 1   (meters, default)                      ");
+  blk("  near_miss_dist   = 5   (meters, default)                      ");
+  blk("  encounter_dist   = 15  (meters, default)                      ");
   blk("                                                                ");
   blk("  collision_flag   = OB_ENCOUNTER = $DIST                       ");
   blk("  near_miss_flag   = OB_NEAR_MISS = $DIST                       ");

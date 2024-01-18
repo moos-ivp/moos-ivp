@@ -32,7 +32,7 @@
 using namespace std;
 
 //---------------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 XYPolyExpander::XYPolyExpander()
 {

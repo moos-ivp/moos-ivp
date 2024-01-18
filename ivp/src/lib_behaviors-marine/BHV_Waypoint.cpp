@@ -133,7 +133,7 @@ void BHV_Waypoint::onSetParamComplete()
   m_trackpt.set_label(m_us_name + "'s track-point");
   m_nextpt.set_label(m_us_name + "'s next waypoint");
 
-  applyHints(m_trackpt, m_hints, "nextpt");
+  applyHints(m_trackpt, m_hints, "trackpt");
   applyHints(m_nextpt, m_hints, "nextpt");
 
 #if 0
@@ -475,7 +475,7 @@ void BHV_Waypoint::onRunToIdleState()
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: onRunState()
 
 BehaviorReport BHV_Waypoint::onRunState(string input) 
 {
@@ -489,7 +489,7 @@ BehaviorReport BHV_Waypoint::onRunState(string input)
 
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: onRunState()
 
 IvPFunction *BHV_Waypoint::onRunState() 
 {
@@ -559,7 +559,7 @@ IvPFunction *BHV_Waypoint::onRunState()
     // If the trackpoint and next waypoint differ by more than five
     // meters then post a visual cue for the track point.
     if(dist > 5)
-      postMessage("VIEW_POINT", m_trackpt.get_spec_inactive(), "trk");
+      postMessage("VIEW_POINT", m_trackpt.get_spec(), "trk");
     else
       postMessage("VIEW_POINT", m_trackpt.get_spec_inactive(), "trk");
     
@@ -871,36 +871,24 @@ void BHV_Waypoint::postStatusReport()
 
 void BHV_Waypoint::postViewableSegList()
 {
-  XYSegList seglist = m_waypoint_engine.getSegList();
-  seglist.set_label(m_us_name + "_" + m_descriptor);
+  XYSegList segl = m_waypoint_engine.getSegList();
+  segl.set_label(m_us_name + "_" + m_descriptor);
 
-  applyHints(seglist, m_hints);
+  applyHints(segl, m_hints);
   
   string segl_color = m_hints.getColor("edge_color");
   if((segl_color == "off") || (segl_color == "inactive")) {
-    postMessage("VIEW_SEGLIST", seglist.get_spec_inactive());
+    postMessage("VIEW_SEGLIST", segl.get_spec_inactive());
     return;
   }
-
-#if 0  
-  if(m_hints.hasColor("vertex_color"))
-    seglist.set_color("vertex", m_hints.getColor("vertex_color"));
-
-  if(m_hints.hasColor("edge_color"))
-    seglist.set_color("edge", m_hints.getColor("edge_color"));
   
-  if(m_hints.hasColor("label_color"))
-    seglist.set_color("label", m_hints.getColor("label_color"));
-  
-  if(m_hints.hasMeasure("edge_size"))
-    seglist.set_edge_size(m_hints.getMeasure("edge_size"));
-  
-  if(m_hints.hasMeasure("vertex_size"))
-    seglist.set_vertex_size(m_hints.getMeasure("vertex_size"));
-#endif
-  
-  string segmsg = seglist.get_spec();
-  postMessage("VIEW_SEGLIST", segmsg);
+  XYPolygon poly(segl);
+  if(poly.is_convex()) {
+    applyHints(poly, m_hints);
+    postMessage("VIEW_POLYGON", poly.get_spec());
+  }
+  else
+    postMessage("VIEW_SEGLIST", segl.get_spec());
 }
 
 //-----------------------------------------------------------

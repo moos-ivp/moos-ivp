@@ -90,8 +90,11 @@ bool VPlug_GeoShapesMap::addGeoShape(const string& param_orig,
 
   if(param == "VIEW_POINT")
     handled = m_geoshapes_map[vname].addPoint(value, timestamp);
-  else if(param == "VIEW_POLYGON")
+  else if(param == "VIEW_POLYGON") {
+    cout << "adding polygon" << endl;    
     handled = m_geoshapes_map[vname].addPolygon(value, timestamp);
+    cout << "handled:" << boolToString(handled) << endl;
+  }
   else if(param == "VIEW_SEGLIST")
     handled = m_geoshapes_map[vname].addSegList(value, timestamp);
   else if(param == "VIEW_SEGLR")
@@ -162,10 +165,6 @@ vector<XYPolygon> VPlug_GeoShapesMap::getPolygons(const string& vname)
 {
   return(m_geoshapes_map[vname].getPolygons());
 }
-vector<XYSeglr> VPlug_GeoShapesMap::getSeglrs(const string& vname)
-{
-  return(m_geoshapes_map[vname].getSeglrs());
-}
 vector<XYWedge> VPlug_GeoShapesMap::getWedges(const string& vname)
 {
   return(m_geoshapes_map[vname].getWedges());
@@ -182,6 +181,12 @@ vector<XYConvexGrid> VPlug_GeoShapesMap::getConvexGrids(const string& vname)
 {
   return(m_geoshapes_map[vname].getConvexGrids());
 }
+
+const map<string, XYSeglr> VPlug_GeoShapesMap::getSeglrs(const string& vname)
+{
+  return(m_geoshapes_map[vname].getSeglrs());
+}
+
 const map<string, XYSegList> VPlug_GeoShapesMap::getSegLists(const string& vname)
 {
   return(m_geoshapes_map[vname].getSegLists());

@@ -117,7 +117,6 @@ protected:
   bool   m_draw_req_hdg;
 
   unsigned int m_max_zig_legs;
-  double       m_max_stem_dist;
   double       m_max_stem_odo;
   
   std::string m_hint_set_hdg_color;

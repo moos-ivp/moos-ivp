@@ -1556,8 +1556,8 @@ bool testRegionsApart(vector<IvPBox> boxes)
 //            o If they do, then for each pair that intersect, 
 //              subtract one from the other and replace the 
 //              pair with possibly a set of pieces.
-//            o Each pairwise test consists of a major piece an
-//              a minor piece. The major piece will have a
+//            o Each pairwise test consists of a major piece 
+//              and a minor piece. The major piece will have a
 //              "plateau magnitude" >= to the minor piece.
 //            o If they intersect, the minor piece is subtracted
 //              from the major piece. The major piece is always

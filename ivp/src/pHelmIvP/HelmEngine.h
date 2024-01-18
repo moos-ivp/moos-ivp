@@ -30,6 +30,8 @@
 #include "IvPDomain.h"
 #include "HelmReport.h"
 #include "MBTimer.h"
+#include "PlatModelGenerator.h"
+#include "PlatModel.h"
 
 class InfoBuffer;
 class IvPFunction;
@@ -40,6 +42,7 @@ public:
   HelmEngine(IvPDomain, InfoBuffer*);
   ~HelmEngine();
 
+  void setPlatModel(const PlatModel& pm) {m_pmodel=pm;}
   HelmReport determineNextDecision(BehaviorSet *bset, double curr_time);
 
   unsigned long int size() const;
@@ -67,7 +70,8 @@ protected:
   unsigned int m_total_pcs_cached;
   IvPProblem  *m_ivp_problem;
   InfoBuffer  *m_info_buffer;
-
+  PlatModel    m_pmodel;
+  
   double       m_max_create_time;
   double       m_max_solve_time;
   double       m_max_loop_time;

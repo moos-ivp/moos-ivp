@@ -351,7 +351,7 @@ bool ObstacleSim::handleConfigMaxDuration(string sval)
 }
 
 //------------------------------------------------------------
-// Procedure: handleConfigObstacleFile
+// Procedure: handleConfigObstacleFile()
 
 bool ObstacleSim::handleConfigObstacleFile(string filename)
 {
@@ -531,6 +531,7 @@ void ObstacleSim::updateObstaclesField()
   if(!m_reuse_ids)
     generator.setBeginID(m_obstacles_made);
   generator.setVerbose(false);
+  generator.setGenTries(25000);
   generator.generate();
   
   // Sanity check the results.

@@ -126,10 +126,10 @@ void PMV_Viewer::draw()
     vector<XYWedge>   wedges  = m_geoshapes_map.getWedges(vnames[i]);
     vector<XYGrid>    grids   = m_geoshapes_map.getGrids(vnames[i]);
     vector<XYConvexGrid> cgrids = m_geoshapes_map.getConvexGrids(vnames[i]);
-     vector<XYSeglr>   seglrs  = m_geoshapes_map.getSeglrs(vnames[i]);
     vector<XYVector>  vectors = m_geoshapes_map.getVectors(vnames[i]);
     vector<XYRangePulse> rng_pulses = m_geoshapes_map.getRangePulses(vnames[i]);
     vector<XYCommsPulse> cms_pulses = m_geoshapes_map.getCommsPulses(vnames[i]);
+    const map<string, XYSeglr>   seglrs  = m_geoshapes_map.getSeglrs(vnames[i]);
     const map<string, XYSegList> segls   = m_geoshapes_map.getSegLists(vnames[i]);
     const map<string, XYPoint>&  points  = m_geoshapes_map.getPoints(vnames[i]);
     const map<string, XYCircle>& circles = m_geoshapes_map.getCircles(vnames[i]);

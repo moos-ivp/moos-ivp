@@ -55,6 +55,7 @@ public:
   bool handleConfigStandBy(const std::string&);
   bool handleConfigDomain(const std::string&);
   bool handleConfigHoldOnApp(std::string);
+  bool handleConfigPMGen(std::string);
   
  protected:
   bool handleHeartBeat(const std::string&);
@@ -89,6 +90,7 @@ public:
   void        helmStatusUpdate(const std::string& val="");
   bool        helmStatusEnabled() const;
   void        seedRandom();
+  void        updatePlatModel();
   
 protected:
   InfoBuffer*   m_info_buffer;
@@ -198,6 +200,8 @@ protected:
   bool         m_seed_random;
   
   std::string  m_helm_prefix;
+
+  PlatModelGenerator m_pmgen;
 };
 #endif 
 

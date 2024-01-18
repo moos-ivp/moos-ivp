@@ -310,7 +310,7 @@ void VPlug_GeoShapes::addSegList(const XYSegList& new_segl)
 
 //-----------------------------------------------------------
 // Procedure: forgetSeglr()
-
+#if 0
 void VPlug_GeoShapes::forgetSeglr(string label)
 {
   vector<XYSeglr> new_seglrs;
@@ -320,7 +320,7 @@ void VPlug_GeoShapes::forgetSeglr(string label)
   }
   m_seglrs = new_seglrs;
 }
-
+#endif
 
 //-----------------------------------------------------------
 // Procedure: addSeglr()
@@ -329,7 +329,7 @@ void VPlug_GeoShapes::addSeglr(const XYSeglr& new_seglr)
 {
   string new_label = new_seglr.get_label();
   if(!new_seglr.active()) {
-    forgetSeglr(new_label);
+    m_seglrs.erase(new_label);
     return;
   }
 
@@ -338,18 +338,10 @@ void VPlug_GeoShapes::addSeglr(const XYSeglr& new_seglr)
 		 new_seglr.getMinY(), new_seglr.getMaxY());
   }
 
-  if(new_label == "") {
-    m_seglrs.push_back(new_seglr);
-    return;
-  }
-  
-  for(unsigned int i=0; i<m_seglrs.size(); i++) {
-    if(m_seglrs[i].get_label() == new_label) {
-      m_seglrs[i] = new_seglr;
-      return;
-    }
-  }
-  m_seglrs.push_back(new_seglr);
+  if(new_label == "")
+    new_label = "seglrx";
+
+  m_seglrs[new_label] = new_seglr;
 }
 
 //-----------------------------------------------------------
@@ -1045,6 +1037,7 @@ XYPolygon VPlug_GeoShapes::getPolygon(unsigned int index) const
 //-------------------------------------------------------------
 // Procedure: getSeglr(int)
 
+#if 0
 XYSeglr VPlug_GeoShapes::getSeglr(unsigned int index) const
 {
   if(index >= m_seglrs.size()) {
@@ -1054,6 +1047,7 @@ XYSeglr VPlug_GeoShapes::getSeglr(unsigned int index) const
   else
     return(m_seglrs[index]);
 }
+#endif
 
 //-----------------------------------------------------------
 // Procedure: updateBounds()
@@ -1091,13 +1085,6 @@ void VPlug_GeoShapes::updateBounds()
       XYSegList segl = m_seglists[i];
       updateBounds(segl.get_min_x(), segl.get_max_x(),
 		   segl.get_min_y(), segl.get_max_y());
-    }
-  }
-  for(i=0; i<m_seglrs.size(); i++) {
-    if(m_seglrs[i].size() > 0) {
-      XYSeglr seglr = m_seglrs[i];
-      updateBounds(seglr.getMinX(), seglr.getMaxX(),
-		   seglr.getMinY(), seglr.getMaxY());
     }
   }
   for(i=0; i<m_hexagons.size(); i++) {
@@ -1164,7 +1151,15 @@ void VPlug_GeoShapes::updateBounds()
     XYTextBox tbox = p5->second;
     updateBounds(tbox.x(), tbox.x(), tbox.y(), tbox.y());
   }
+  
+  map<string, XYSeglr>::iterator p6;
+  for(p6=m_seglrs.begin(); p6!=m_seglrs.end(); p6++) {
+    XYSeglr seglr = p6->second;
+    updateBounds(seglr.getMinX(), seglr.getMaxX(),
+		 seglr.getMinY(), seglr.getMaxY());
+  }
 }
+
 
 //-----------------------------------------------------------
 // Procedure: clearPolygons()
@@ -1207,17 +1202,7 @@ void VPlug_GeoShapes::clearSegLists(string stype)
 
 void VPlug_GeoShapes::clearSeglrs(string stype)
 {
-  if(stype == "") {
-    m_seglrs.clear();
-    return;
-  }
-
-  vector<XYSeglr> new_seglrs;
-  for(unsigned int i=0; i<m_seglrs.size(); i++)  {
-    if(typeMatch(&(m_seglrs[i]), stype))
-      new_seglrs.push_back(m_seglrs[i]);
-  } 
-  m_seglrs = new_seglrs;
+  m_seglrs.clear();
 }
 
 //-----------------------------------------------------------

@@ -148,6 +148,7 @@ string XYOval::get_spec(string param) const
 
 void XYOval::setPointCache(double gdegs) 
 {
+  cout << "setting point cache degs:" << gdegs << endl;
   if(!valid())
     return;
   if(!m_boundary_cache_set)
@@ -156,6 +157,7 @@ void XYOval::setPointCache(double gdegs)
   double degs = 5;
   if((gdegs == 2) || (gdegs == 10) || (gdegs == 15))
     degs = gdegs;
+  cout << "setting point cache degs(2):" << gdegs << endl;
   
   m_pt_cache.clear();
 
@@ -396,3 +398,4 @@ XYOval stringToOval(string str)
 
 
 
+ 

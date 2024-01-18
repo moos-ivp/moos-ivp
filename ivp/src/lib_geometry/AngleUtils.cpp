@@ -821,6 +821,8 @@ double headingAvg(double h1, double h2)
 
 bool portTurn(double osh, double hdg)
 {
+  osh = angle360(osh);
+  hdg = angle360(hdg);
   if(hdg > osh) {
     if((hdg - osh) < 180)
       return(false);

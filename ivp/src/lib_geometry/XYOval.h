@@ -122,9 +122,3 @@ protected: // Variables to support caching
 
 XYOval stringToOval(std::string);
 #endif
-
-
-
-
-
-

@@ -33,26 +33,28 @@ using namespace std;
 //----------------------------------------------------------------
 // Constructor()
 
-PlatModel::PlatModel()
+PlatModel::PlatModel(string model_type)
 {
+  m_model_type = model_type;
+  
   m_osx = 0;  m_osx_set = false;
   m_osy = 0;  m_osy_set = false;
   m_osh = 0;  m_osh_set = false;
+  m_osv = 0;  m_osv_set = false;
 
   m_spoke_degs = 0;
+  m_id = 0;
 }
 
 //----------------------------------------------------------------
 // Constructor()
 
-PlatModel::PlatModel(double osx, double osy, double osh)
+PlatModel::PlatModel(double osx, double osy, double osh, double osv)
 {
-  m_osx = osx;  m_osx_set = true;
-  m_osy = osy;  m_osy_set = true;
-
-  m_osh = angle360(osh);
-  m_osh_set = true;  
-
+  setOSX(osx);
+  setOSY(osy);
+  setOSH(osh);
+  setOSV(osv);
   m_spoke_degs = 0;
 }
 
@@ -66,17 +68,25 @@ void PlatModel::setOSH(double osh)
 }
 
 //----------------------------------------------------------------
+// Procedure: setOSV()
+
+void PlatModel::setOSV(double osv)
+{
+  if(osv < 0)
+    osv = 0;
+  m_osv = osv;
+  m_osv_set = true;
+}
+
+//----------------------------------------------------------------
 // Procedure: setPose()
 
-void PlatModel::setPose(double osx, double osy, double osh)
+void PlatModel::setPose(double osx, double osy, double osh, double osv)
 {
-  m_osx = osx;
-  m_osy = osy;
-  m_osh = angle360(osh);
-
-  m_osx_set = true;
-  m_osy_set = true;
-  m_osh_set = true;  
+  setOSX(osx);
+  setOSY(osy);
+  setOSH(osh);
+  setOSV(osv);
 }
 
 //----------------------------------------------------------------
@@ -116,9 +126,10 @@ vector<XYPoint> PlatModel::getPoints(string param)
 }
 
 //----------------------------------------------------------------
-// Procedure: setCache()
+// Procedure: setCachePtCPA()
 
-void PlatModel::setCache(bool port, unsigned int ix, XYPoint cpa_pt)
+void PlatModel::setCachePtCPA(bool port, unsigned int ix,
+			      XYPoint cpa_pt)
 {
   if(port && (ix < m_port_seglrs.size()))
     m_port_seglrs[ix].setCacheCPAPoint(cpa_pt);
@@ -127,9 +138,10 @@ void PlatModel::setCache(bool port, unsigned int ix, XYPoint cpa_pt)
 }
 	
 //----------------------------------------------------------------
-// Procedure: setCache()
+// Procedure: setCacheDistCPA()
 
-void PlatModel::setCache(bool port, unsigned int ix, double cpa)
+void PlatModel::setCacheDistCPA(bool port, unsigned int ix,
+				double cpa)
 {
   if(port && (ix < m_port_seglrs.size()))
     m_port_seglrs[ix].setCacheCPA(cpa);
@@ -138,11 +150,23 @@ void PlatModel::setCache(bool port, unsigned int ix, double cpa)
 }
 	
 //----------------------------------------------------------------
+// Procedure: setCacheStemCPA()
+
+void PlatModel::setCacheStemCPA(bool port, unsigned int ix,
+				double stem_cpa)
+{
+  if(port && (ix < m_port_seglrs.size()))
+    m_port_seglrs[ix].setCacheStemCPA(stem_cpa);
+  else if(ix < m_star_seglrs.size())
+    m_star_seglrs[ix].setCacheStemCPA(stem_cpa);
+}
+	
+//----------------------------------------------------------------
 // Procedure: valid()
 
 bool PlatModel::valid() const
 {
-  if(!m_osx_set || !m_osy_set || !m_osh_set)
+  if(!m_osx_set || !m_osy_set || !m_osh_set || !m_osv_set)
     return(false);
     
   return(true);
@@ -155,7 +179,7 @@ bool PlatModel::valid() const
 XYSeglr PlatModel::getTurnSeglr(double hdg) const
 {
   XYSeglr seglr;
-  
+
   // Sanity checks
   if(m_star_spoke_vx.size() != m_star_spoke_vy.size())
     return(seglr);
@@ -189,7 +213,7 @@ XYSeglr PlatModel::getTurnSeglr(double hdg) const
       uisegs  = m_star_spoke_vx.size()-1;
     seglr = m_star_seglrs[uisegs];
   }
-
+  
   seglr.setRayAngle(hdg);
   return(seglr);
 }
@@ -202,6 +226,7 @@ string PlatModel::getSpec() const
   string str = "osx=" + doubleToStringX(m_osx,2);
   str += ",osy=" + doubleToStringX(m_osy,2);
   str += ",osh=" + doubleToStringX(m_osh,2);
+  str += ",osv=" + doubleToStringX(m_osv,2);
   return(str);
 }
 
@@ -254,11 +279,22 @@ void PlatModel::setPortSeglrs(const vector<XYSeglr>& seglrs)
 
 void PlatModel::print() const
 {
-  cout << "total spokes star: " << m_star_spoke_vx.size() << endl;
-  cout << "total spokes port: " << m_port_spoke_vx.size() << endl;
-  cout << "total seglrs star: " << m_star_seglrs.size() << endl;
-  cout << "total seglrs port: " << m_port_seglrs.size() << endl;
-  cout << "total seglrs port: " << m_spoke_degs << endl;
+  cout << "id: " << m_id << endl;
+  cout << " type: " << m_model_type << endl;
+  cout << " osx: " << doubleToString(m_osx,1) << endl;
+  cout << " osy: " << doubleToString(m_osy,1) << endl;
+  cout << " osh: " << doubleToString(m_osh,1) << endl;
+  cout << " osv: " << doubleToString(m_osv,1) << endl;
+  return;
+  cout << " osx_set: " << boolToString(m_osx_set) << endl;
+  cout << " osy_set: " << boolToString(m_osy_set) << endl;
+  cout << " osh_set: " << boolToString(m_osh_set) << endl;
+  cout << " osv_set: " << boolToString(m_osv_set) << endl;
+  cout << " total spokes star: " << m_star_spoke_vx.size() << endl;
+  cout << " total spokes port: " << m_port_spoke_vx.size() << endl;
+  cout << " total seglrs star: " << m_star_seglrs.size() << endl;
+  cout << " total seglrs port: " << m_port_seglrs.size() << endl;
+  cout << " degs: " << m_spoke_degs << endl;
 }
 
 //----------------------------------------------------------------
@@ -280,11 +316,10 @@ PlatModel stringToPlatModel(string str)
       good_model.setOSY(atof(value.c_str()));
     else if((param == "osh") && isNumber(value))
       good_model.setOSH(atof(value.c_str()));
+    else if((param == "osv") && isNumber(value))
+      good_model.setOSV(atof(value.c_str()));
     else
       return(null_model);
   }
   return(good_model);
 }
-
-
-

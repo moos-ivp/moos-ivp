@@ -35,14 +35,17 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 CollObDetect::CollObDetect()
 {
   // Init Config variables
-  m_near_miss_dist = 10;
-  m_collision_dist = 5;
-  m_encounter_dist = 30;
+  m_near_miss_dist = 5;
+  m_collision_dist = 1;
+  m_encounter_dist = 15;
+
+  m_bin_delta = -1;
+  m_bin_minval = -1;
   
   // Init State variables
   m_total_encounters = 0;
@@ -53,7 +56,7 @@ CollObDetect::CollObDetect()
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool CollObDetect::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -96,7 +99,7 @@ bool CollObDetect::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool CollObDetect::OnConnectToServer()
 {
@@ -141,6 +144,10 @@ bool CollObDetect::OnStartUp()
     bool handled = false;
     if(param == "collision_dist")
       handled = setNonNegDoubleOnString(m_collision_dist, value);
+    else if(param == "bin_min_val")
+      handled = setNonNegDoubleOnString(m_bin_minval, value);
+    else if(param == "bin_delta")
+      handled = setPosDoubleOnString(m_bin_delta, value);
     else if(param == "near_miss_dist")
       handled = setNonNegDoubleOnString(m_near_miss_dist, value);
     else if(param == "encounter_dist")
@@ -170,7 +177,7 @@ bool CollObDetect::OnStartUp()
 }
 
 //---------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void CollObDetect::registerVariables()
 {
@@ -321,7 +328,7 @@ bool CollObDetect::handleMailNodeReport(string node_report)
 
 void CollObDetect::updateVehiDists()
 {
-  // Part 1: Store curr distances as "previouse"
+  // Part 1: Store curr distances as "previous"
   m_map_vdist_prev = m_map_vdist;
 
   // Part 2: Update current distance to obstacles for all vehicles 
@@ -334,7 +341,7 @@ void CollObDetect::updateVehiDists()
     double vx = record.getX(); 
     double vy = record.getY(); 
     for(q=m_map_obstacles.begin(); q!=m_map_obstacles.end(); q++) {
-      string label = q->first;
+      string obstacle_label = q->first;
       XYPolygon poly = q->second;
       // The dist_to_poly function returns distance to closest edge
       // so a point IN the poly my have a positive distance. So we
@@ -342,7 +349,7 @@ void CollObDetect::updateVehiDists()
       double dist = 0;
       if(!poly.contains(vx, vy))
 	dist = poly.dist_to_poly(vx, vy);
-      setCurrDist(vname, label, dist);
+      setCurrDist(vname, obstacle_label, dist);
       if((m_global_min_dist < 0) || (dist < m_global_min_dist))
 	m_global_min_dist = dist;
     }
@@ -354,8 +361,8 @@ void CollObDetect::updateVehiDists()
 
 void CollObDetect::updateVehiMinDists()
 {
-  // Part 1: Update the min_dist for each vehi/label if the current
-  // distance is less than the previously noted min distance.
+  // Part 1: Update the min_dist for each vname/obstacle_label if the
+  // current distance is less than the previously noted min distance.
   // Note: A min_dist of -1 indicates that min_dist is virgin.
   
   map<string, NodeRecord>::iterator p;
@@ -376,11 +383,10 @@ void CollObDetect::updateVehiMinDists()
 //------------------------------------------------------------
 // Procedure: updateVehiEncounters()
 //   Purpose: o For each vehicle and obstacle, examine curr_dist
-//              vs prev_dist. If curr_dist is greater than
-//              encounter_dist, and prev_dist was less than
+//              vs prev_dist. If prev_dist is less than
+//              encounter_dist, and curr_dist is greater than
 //              encounter_dist, then we will say that an 
 //              encounter has just been completed.
-
 //            o Having completed an encounter, we look at stored
 //              val of min_dist (how close did we get to the
 //              obstacle?)
@@ -410,7 +416,12 @@ void CollObDetect::updateVehiEncounters()
 	    m_total_near_misses++;
 	    postFlags(m_near_miss_flags, min_dist, vname, label);
 	  }
-	  
+
+	  if((m_bin_minval >= 0) && (m_bin_delta > 0)) {
+	    double bin_val = snapToStep(min_dist, m_bin_delta);
+	    m_map_bins[bin_val]++;
+	  }
+
 	  m_total_encounters++;
 	  postFlags(m_encounter_flags, min_dist, vname, label);
 	  setMinDist(vname, label, -1);
@@ -421,7 +432,7 @@ void CollObDetect::updateVehiEncounters()
 }
 
 //------------------------------------------------------------
-// Procedure: postFlags
+// Procedure: postFlags()
 
 void CollObDetect::postFlags(const vector<VarDataPair>& flags,
 			    double dist, string vname, string label)
@@ -521,6 +532,27 @@ bool CollObDetect::buildReport()
   m_msgs << "============================================" << endl;
   m_msgs << "Vehicle/Obstacle Curr Distances:            " << endl;
   m_msgs << "============================================" << endl;
+
+
+  // ==============================================================
+  // Part 2: Build table of bin values
+  // ==============================================================  
+  ACTable actab1(2);
+
+  // Build header string, e.g., "abe | ben | cal | deb"
+
+  string header1_str = "Thresh | Count";
+  actab1 << header1_str;
+  actab1.addHeaderLines();
+  map<double, unsigned int>::iterator pp;
+  for(pp=m_map_bins.begin(); pp!=m_map_bins.end(); pp++) {
+    double thresh = pp->first;
+    unsigned int count = pp->second;
+    actab1 << doubleToStringX(thresh,2);
+    actab1 << count;
+  }
+  m_msgs << actab1.getFormattedString() << endl << endl;
+
   
   // ==============================================================
   // Part 2: Build a table of current distances to obstacles
@@ -554,8 +586,8 @@ bool CollObDetect::buildReport()
       actab << sdist;
     }
   }
-  m_msgs << actab.getFormattedString() << endl << endl;
-
+  //m_msgs << actab.getFormattedString() << endl << endl;
+  
   // ==============================================================
   // Part 3: Build a table of min distances to obstacles
   // ==============================================================

@@ -2,10 +2,10 @@
 // ShoreSide Configuration File
 
 ServerHost = localhost
-ServerPort = $(SHORE_MOOSDB)
+ServerPort = $(MOOS_PORT)
 Community  = shoreside
 
-#include plug_origin_warp.moos
+#include plugs.moos <origin_warp>
   
 //--------------------------------------------------------
 Processconfig = ANTLER
@@ -29,6 +29,8 @@ Processconfig = ANTLER
 
   Run = uFldCollisionDetect @ NewConsole = false
 }
+
+#include plugs.moos <pShare>
 
 //--------------------------------------------------
 // pRealm Configuration Block
@@ -94,7 +96,8 @@ ProcessConfig = uFldCollisionDetect
 
   encounter_flag = EVAL_LOITER_REQ_$UP_V1 = id=$IDX, cpa=$CPA, v2=$V2
   encounter_flag = EVAL_LOITER_REQ_$UP_V2 = id=$IDX, cpa=$CPA, v2=$V1
-	
+
+	encounter_rings = false
   pulse_render   = true
   pulse_range    = 20
   pulse_duration = 30
@@ -135,17 +138,6 @@ ProcessConfig = uFldObstacleSim
 	reset_range    = 10
 #endif
 	
-}
-
-//---------------------------------------------------------
-// pShare Config Block
-
-ProcessConfig = pShare
-{
-  AppTick    = 2
-  CommsTick  = 2
-
-  input = route =  localhost:$(SHORE_PSHARE)
 }
 
 //--------------------------------------------------

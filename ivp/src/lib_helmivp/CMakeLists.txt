@@ -15,6 +15,10 @@ SET(SRC
   BehaviorSpec.cpp
   BehaviorReport.cpp
   SpecBuild.cpp
+  PlatModelGenerator.cpp
+  PMGen.cpp
+  PMGen_Dubins.cpp
+  PMGen_Holonomic.cpp
 )
 
 SET(HEADERS
@@ -28,6 +32,10 @@ SET(HEADERS
   BehaviorSpec.h
   BehaviorReport.h
   SpecBuild.h
+  PlatModelGenerator.h
+  PMGen.h
+  PMGen_Dubins.h
+  PMGen_Holonomic.h
 )
 
 # Build Library

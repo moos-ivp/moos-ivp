@@ -35,7 +35,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 ObstacleManager::ObstacleManager()
 {
@@ -90,7 +90,7 @@ ObstacleManager::ObstacleManager()
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -144,7 +144,7 @@ bool ObstacleManager::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool ObstacleManager::OnConnectToServer()
 {
@@ -259,7 +259,7 @@ bool ObstacleManager::OnStartUp()
 }
 
 //---------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void ObstacleManager::registerVariables()
 {
@@ -282,7 +282,7 @@ void ObstacleManager::registerVariables()
 
 
 //------------------------------------------------------------
-// Procedure: customStringToPoint
+// Procedure: customStringToPoint()
 //   Purpose: Parses strings representing tracked features. The format
 //            currently is consistent with an XYPoint, but we custom parse
 //            here to decouple from the geometry string parsing library.
@@ -666,7 +666,7 @@ void ObstacleManager::postConvexHullUpdates()
 
 
 //------------------------------------------------------------
-// Procedure: postConvexHullUpdate
+// Procedure: postConvexHullUpdate()
 
 void ObstacleManager::postConvexHullUpdate(string key, string alert_var,
 					   string alert_name)
@@ -676,7 +676,7 @@ void ObstacleManager::postConvexHullUpdate(string key, string alert_var,
   string update_str = "name=" + alert_name + key + "#";
   update_str += "poly=" + poly.get_spec_pts(5) + ",label=" + key;
 
-  m_alerts_posted++;
+  m_alerts_posted++;  
   Notify(alert_var, update_str);
   reportEvent(alert_var + "=" + update_str);
 }

@@ -410,6 +410,22 @@ double XYArrow::getMaxY()
   return(m_ymax);
 }
 
+//-------------------------------------------------------------
+// Procedure: getHeadCtrX()
+
+double XYArrow::getHeadCtrX()
+{
+  return((m_hx1 + m_hx2 + m_hx3)/3);
+}
+
+//-------------------------------------------------------------
+// Procedure: getHeadCtrY()
+
+double XYArrow::getHeadCtrY()
+{
+  return((m_hy1 + m_hy2 + m_hy3)/3);
+}
+
 
 //-------------------------------------------------------------
 // Procedure: getBaseVertices()

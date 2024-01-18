@@ -135,7 +135,7 @@ public:
   std::vector<XYPolygon> getPolygons() const {return(m_polygons);}
   std::vector<XYWedge>   getWedges() const   {return(m_wedges);}
   //std::vector<XYSegList> getSegLists() const {return(m_seglists);}
-  std::vector<XYSeglr  > getSeglrs() const   {return(m_seglrs);}
+  //std::vector<XYSeglr  > getSeglrs() const   {return(m_seglrs);}
   std::vector<XYArc> getArcs()         const {return(m_arcs);}
   std::vector<XYHexagon> getHexagons() const {return(m_hexagons);}
   std::vector<XYVector>  getVectors() const  {return(m_vectors);}
@@ -146,6 +146,7 @@ public:
 
   const std::map<std::string, XYPoint>&  getPoints() const  {return(m_points);}
   const std::map<std::string, XYSegList>&  getSegLists() const {return(m_segls);}
+  const std::map<std::string, XYSeglr>&  getSeglrs() const  {return(m_seglrs);}
   const std::map<std::string, XYCircle>& getCircles() const {return(m_circles);}
   const std::map<std::string, XYOval>& getOvals() const     {return(m_ovals);}
   const std::map<std::string, XYArrow>& getArrows() const   {return(m_arrows);}
@@ -153,10 +154,10 @@ public:
   const std::map<std::string, XYTextBox>& getTextBoxes() const {return(m_textboxes);}
 
   XYPolygon& poly(unsigned int i)   {return(m_polygons[i]);}
-  XYSeglr&   seglr(unsigned int i)  {return(m_seglrs[i]);}
+  //XYSeglr&   seglr(unsigned int i)  {return(m_seglrs[i]);}
 
   XYPolygon    getPolygon(unsigned int) const;
-  XYSeglr      getSeglr(unsigned int) const;
+  //XYSeglr      getSeglr(unsigned int) const;
 
  protected:
   void updateBounds(double xl, double xh, double yl, double yh);
@@ -183,7 +184,6 @@ public:
 protected:
   std::vector<XYPolygon>    m_polygons;
   std::vector<XYSegList>    m_seglists;
-  std::vector<XYSeglr>      m_seglrs;
   std::vector<XYWedge>      m_wedges;
   std::vector<XYArc>        m_arcs;
   std::vector<XYHexagon>    m_hexagons;
@@ -196,6 +196,7 @@ protected:
   // map from label to object (map more efficient than vector)
   std::map<std::string, XYPoint>   m_points;
   std::map<std::string, XYSegList> m_segls;
+  std::map<std::string, XYSeglr>   m_seglrs;
   std::map<std::string, XYMarker>  m_markers;
   std::map<std::string, XYTextBox> m_textboxes;
   std::map<std::string, XYCircle>  m_circles;

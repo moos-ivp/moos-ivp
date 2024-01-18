@@ -36,10 +36,10 @@ void showSynopsis()
 {
   blk("SYNOPSIS:                                                       ");
   blk("------------------------------------                            ");
-  blk("  The uFldDelve app monitors traffic to/from the shoreside via ");
-  blk("  the pShare application. It tallys the total messages and chars");
-  blk("  and the message and character RATES. The list of messages to  ");
-  blk("  monitor is derived from a message from uFldNodeBroker and     ");
+  blk("  The uFldDelve app monitors traffic to/from the shoreside via  ");
+  blk("  the pShare application. It tallies the total messages and     ");
+  blk("  chars and the message and character RATES. The list of msgs   ");
+  blk("  to monitor is derived from a message from uFldNodeBroker and  ");
   blk("  uFldShoreBroker.                                              ");
   blk("  Note: to use this, the variable PSHARE_NODE_VARS must also    ");
   blk("  be shared from the vehicle to the shoreside.                  ");
@@ -51,7 +51,7 @@ void showSynopsis()
 void showHelpAndExit()
 {
   blu("=============================================================== ");
-  blu("Usage: uFldDelve  file.moos [OPTIONS]                          ");
+  blu("Usage: uFldDelve  file.moos [OPTIONS]                           ");
   blu("=============================================================== ");
   blk("                                                                ");
   showSynopsis();

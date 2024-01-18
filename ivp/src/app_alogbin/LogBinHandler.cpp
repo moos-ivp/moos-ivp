@@ -100,7 +100,6 @@ bool LogBinHandler::handle()
       continue;
     }
 
-
     double dbl_val = atof(line_raw.c_str());
     double bin_val = (trunc((dbl_val - m_minval) / m_delta) + 0.5) * m_delta;
     string bin_str = doubleToStringX(bin_val,6);

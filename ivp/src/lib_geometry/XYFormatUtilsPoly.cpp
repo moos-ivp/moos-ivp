@@ -34,6 +34,7 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
+#include "XYOval.h"
 
 using namespace std;
 
@@ -90,6 +91,8 @@ XYPolygon string2Poly(string str)
       new_poly = stringRangeWedge2Poly(str);
     else if(strContains(no_white_string, "format=pylon"))
       new_poly = stringPylon2Poly(str);
+    else if(strContains(no_white_string, "format=oval"))
+      new_poly = stringOval2Poly(str);
 
     if(new_poly.valid())
       return(new_poly);
@@ -111,6 +114,8 @@ XYPolygon string2Poly(string str)
     return(stringRangeWedge2Poly(str.substr(11)));
   if(strBegins(str, "pylon:"))
     return(stringPylon2Poly(str.substr(6)));
+  if(strBegins(str, "oval:"))
+    return(stringOval2Poly(str.substr(5)));
 
   // Last chance .....
   return(stringAbbreviated2Poly(str));
@@ -814,6 +819,7 @@ XYPolygon stringRangeWedge2Poly(string str)
     return(null_poly);
 }
 
+
 //---------------------------------------------------------------
 // Procedure: stringPylon2Poly (Method #8)
 //
@@ -947,11 +953,35 @@ XYPolygon stringPylon2Poly(string str)
 }
 
 
+//---------------------------------------------------------------
+// Procedure: setPolyOnString()
 
+bool setPolyOnString(XYPolygon& poly, string spec, string label)
+{
+  XYPolygon new_poly = string2Poly(spec);
+  if(!new_poly.is_convex())
+     return(false);
 
+  poly = new_poly;
+  poly.set_label(label);
 
+  return(true);
+}   
 
+//---------------------------------------------------------------
+// Procedure: stringOval2Poly (Method #9)
 
+XYPolygon stringOval2Poly(string str)
+{
+  XYPolygon null_poly;
 
+  XYOval oval = stringToOval(str);
+  if(!oval.valid())
+    return(null_poly);
 
+  XYPolygon poly = oval.getOvalPoly(15);
+  if(!poly.valid())
+    return(null_poly);
 
+  return(poly);
+}

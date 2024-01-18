@@ -1,45 +1,226 @@
 //-------------------------------------------------
-// NAME: M. Benjamin, MIT CSAIL
+// NAME: M. Benjamin, MIT
 // FILE: $(VNAME).moos
 //-------------------------------------------------
-
 ServerHost = localhost
-ServerPort = $(BOT_MOOSDB)
+ServerPort = $(MOOS_PORT)
 Community  = $(VNAME)
 
-#include plug_origin_warp.moos
+#include plugs.moos <origin_warp>
 
-//------------------------------------------------------------
+//-------------------------------------------------
 Processconfig = ANTLER
 {
   MSBetweenLaunches = 50
    
-  Run = MOOSDB           @ NewConsole = false
-  Run = pRealm          @ NewConsole = false
-  Run = uProcessWatch    @ NewConsole = false
-  Run = pShare           @ NewConsole = false
-  Run = uSimMarine       @ NewConsole = false
-  Run = pLogger          @ NewConsole = false
-  Run = pNodeReporter    @ NewConsole = false
-  Run = pMarinePID       @ NewConsole = false
-  Run = pHelmIvP         @ NewConsole = false
-  Run = pContactMgrV20   @ NewConsole = false
-  Run = pHostInfo        @ NewConsole = false
-  Run = uFldNodeBroker   @ NewConsole = false
-  Run = uLoadWatch       @ NewConsole = false
-  Run = pObstacleMgr     @ NewConsole = false
+  Run = MOOSDB         @ NewConsole = false
+  Run = pRealm         @ NewConsole = false
+  Run = uProcessWatch  @ NewConsole = false
+  Run = pShare         @ NewConsole = false
+  Run = uSimMarine     @ NewConsole = false
+  Run = pLogger        @ NewConsole = false
+  Run = pNodeReporter  @ NewConsole = false
+  Run = pMarinePID     @ NewConsole = false
+  Run = pHelmIvP       @ NewConsole = false
+  Run = pContactMgrV20 @ NewConsole = false
+  Run = pHostInfo      @ NewConsole = false
+  Run = uFldNodeBroker @ NewConsole = false
+  Run = uLoadWatch     @ NewConsole = false
+  Run = pObstacleMgr   @ NewConsole = false
 }
 
-#include plug_uFldNodeBroker.moos
-#include plug_pShare.moos
-#include plug_pHostInfo.moos
-#include plug_uSimMarine.moos
-#include plug_pHelmIvP.moos
-#include plug_pMarinePID.moos
-#include plug_pLogger.moos
-#include plug_pNodeReporter.moos
-#include plug_uProcessWatch.moos
-#include plug_uLoadWatch.moos
-#include plug_pContactMgrV20.moos
-#include plug_pObstacleMgr.moos
+#include plugs.moos <pShare>
+#include plugs.moos <pHostInfo>
+#include plugs.moos <uProcessWatch>
+#include plugs.moos <uLoadWatch>
 
+//----------------------------------------------------
+// pHelmIvP Config Block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  behaviors = targ_$(VNAME).bhv  
+  verbose   = false
+  domain    = course:0:359:360
+  domain    = speed:0:5:26
+
+	app_logging = true
+	
+	pmgen     = alg=dubins # radius=80 # degs=2
+}
+
+//--------------------------------------------------
+// uFldNodeBroker config block
+
+ProcessConfig = uFldNodeBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  try_shore_host = pshare_route=localhost:$(SHORE_PSHARE)
+
+  bridge = src=VIEW_POLYGON
+  bridge = src=VIEW_CIRCLE
+  bridge = src=VIEW_POINT
+  bridge = src=VIEW_SEGLIST
+  bridge = src=VIEW_SEGLR
+  bridge = src=VEHICLE_CONNECT
+  bridge = src=APPCAST
+  bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+  bridge = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
+}
+
+//--------------------------------------------------------
+// pBasicContactMgr Config Block
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  alert_verbose = true
+
+  contact_max_age = 3600
+  display_radii   = false
+  //default_alert_region    = pts={60,10:60,-100:170,-100:170,10}
+
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+}
+
+	//------------------------------------------------------
+// uSimMarine Config Block
+
+ProcessConfig = uSimMarine
+{
+  AppTick   = 10
+  CommsTick = 10
+
+  START_POS = $(START_POS), 0
+  PREFIX    = NAV
+
+	deprecated_ok = true
+	
+  //rotate_speed = 0.012
+  //drift_x      = 0.0045
+
+  //thrust_map = -100:-2, 0:0, 20:1, 40:2, 60:3, 80:5, 100:5
+}
+
+//-------------------------------------------------
+// pNodeReporter Config Block
+
+ProcessConfig = pNodeReporter
+{
+  AppTick     = 2
+  CommsTick   = 2
+  
+  platform_type = kayak
+	terse_reports = true
+
+	platform_color = $(VCOLOR)
+}
+
+//-----------------------------------------------------
+// pMarinePID Config Block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+  
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+  ACTIVE_START  = true
+
+	deprecated_ok = true
+	
+  // Yaw PID controller
+  YAW_PID_KP             = 0.4
+  YAW_PID_KD             = 0.1
+  YAW_PID_KI             = 0.0
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Speed PID controller
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Maximums
+  MAXRUDDER  = 100
+  MAXTHRUST  = 100
+  
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//-------------------------------------------------------
+// pObstacleMgr Config Block 
+
+ProcessConfig = pObstacleMgr
+{
+  AppTick   = 4 
+  CommsTick = 4 
+
+  point_var = TRACKED_FEATURE 
+
+	
+	//obstacles_color = $(VCOLOR)
+	obstacles_color = invisible
+
+	post_view_polys = false
+	
+	given_max_duration = 1000
+
+	general_alert = update_var=GEN_ALERT, alert_range=40000
+	
+} 
+
+//--------------------------------------------------
+// pLogger Config Block
+
+ProcessConfig = pLogger
+{
+  AppTick 	= 5
+  CommsTick = 5
+  
+  File          = LOG_%(VNAME)
+  PATH	        = ./
+  AsyncLog 	    = true
+  FileTimeStamp = true
+
+
+  Log = IVPHELM_LIFE_EVENT @ 0 nosync
+  Log = GEN_ALERT @ 0 nosync
+
+  LogAuxSrc = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  //WildCardOmitPattern = *_STATUS
+	WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = APPCAST
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+	WildCardOmitPattern = *_ITER_GAP
+	WildCardOmitPattern = *_ITER_LEN
+	WildCardOmitPattern = SIMULATION_MODE
+	WildCardOmitPattern = NAV_YAW
+	WildCardOmitPattern = NAV_Z
+	WildCardOmitPattern = TRUE_X
+	WildCardOmitPattern = TRUE_Y
+	WildCardOmitPattern = NAV_SPEED_OVER_GROUND
+	WildCardOmitPattern = NAV_HEADING_OVER_GROUND
+	WildCardOmitPattern = NAV_PITCH
+	WildCardOmitPattern = NAV_DEPTH
+
+	WildCardOmitPattern = PID_REPORT	
+}
+	

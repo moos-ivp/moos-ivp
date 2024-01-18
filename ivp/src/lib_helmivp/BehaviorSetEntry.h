@@ -44,6 +44,8 @@ public:
   void   setState(const std::string& s) {m_state=s;}
   void   setStateTimeEntered(double v)  {m_state_time_entered=v;}
   void   setStateTimeElapsed(double v)  {m_state_time_elapsed=v;}
+  void   setPlatModel(const PlatModel& pmodel)
+  {if(m_behavior) m_behavior->setPlatModel(pmodel);}
 
   void   deleteBehavior() {
     if(m_behavior) 

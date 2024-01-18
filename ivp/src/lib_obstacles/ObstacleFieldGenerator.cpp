@@ -32,7 +32,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 ObstacleFieldGenerator::ObstacleFieldGenerator()
 {
@@ -44,12 +44,13 @@ ObstacleFieldGenerator::ObstacleFieldGenerator()
   m_begin_id  = 0;
 
   m_poly_vertices = 8;
+  m_gen_tries = 10000; // Max rand attempts to find poly fit
   
   m_verbose = true;
 }
 
 //---------------------------------------------------------
-// Procedure: setPolygon
+// Procedure: setPolygon()
 
 bool ObstacleFieldGenerator::setPolygon(string str)
 {
@@ -211,6 +212,25 @@ bool ObstacleFieldGenerator::setPolyVertices(unsigned int val)
 
 
 //---------------------------------------------------------
+// Procedure: setGenTries()
+
+bool ObstacleFieldGenerator::setGenTries(string str)
+{
+  return(setUIntOnString(m_gen_tries, str));
+}
+
+
+//---------------------------------------------------------
+// Procedure: setGenTries()
+
+bool ObstacleFieldGenerator::setGenTries(unsigned int val)
+{
+  m_gen_tries = val;
+  return(true);
+}
+
+
+//---------------------------------------------------------
 // Procedure: generate()
 
 bool ObstacleFieldGenerator::generate()
@@ -219,7 +239,7 @@ bool ObstacleFieldGenerator::generate()
 
   bool ok = true;
   for(unsigned int i=0; (ok && (i<m_amount)); i++) {
-    ok = ok && generateObstacle(1000);
+    ok = ok && generateObstacle(m_gen_tries);
   }
   
   if(m_verbose) {
@@ -239,6 +259,9 @@ bool ObstacleFieldGenerator::generate()
 
 //---------------------------------------------------------
 // Procedure: generateObstacle()
+//      Note: Attempts will be tries+1. So "tries" is more aptly
+//            "retries".
+ 
 
 bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
 {
@@ -253,16 +276,16 @@ bool ObstacleFieldGenerator::generateObstacle(unsigned int tries)
   double xlen = maxx - minx;
   double ylen = maxy - miny;
 
-  double radius = m_min_poly_size;
+  double diameter = m_min_poly_size;
   if(m_max_poly_size > m_min_poly_size) {
     int rand_int_r = rand() % 1000;
     double rand_pct_r = (double)(rand_int_r) / 1000;
-    radius = m_min_poly_size;
-    radius += ((m_max_poly_size - m_min_poly_size) * rand_pct_r);
+    diameter = m_min_poly_size;
+    diameter += ((m_max_poly_size - m_min_poly_size) * rand_pct_r);
   }
-    
+  double radius = diameter/2;
   
-  for(unsigned int k=0; k<tries; k++) {
+  for(unsigned int k=0; k<tries+1; k++) {
   
     int rand_int_x = rand() % 10000;
     int rand_int_y = rand() % 10000;

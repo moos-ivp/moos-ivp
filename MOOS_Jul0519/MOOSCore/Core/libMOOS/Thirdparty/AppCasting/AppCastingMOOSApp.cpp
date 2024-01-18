@@ -264,8 +264,10 @@ void AppCastingMOOSApp::preOnStartUp()
     }
   }
 
-  if(m_app_logging == "log")
+  if(m_app_logging == "log") {
+    cout << "Terminal output being re-directed to app_logging..." << endl;
     std::cout.rdbuf(m_cout.rdbuf());
+  }
 
   if(deprecated() && !m_deprecated_ok) {
     string msg1 = GetAppName() + " is deprecated.";

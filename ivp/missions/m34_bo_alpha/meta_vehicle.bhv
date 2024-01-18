@@ -28,6 +28,15 @@ set MODE = LOITERING {
 
 
 //----------------------------------------------
+Behavior = BHV_PModelView
+{
+  name      = pmview
+  pwt       = 100
+  condition = (MODE==LOITERING) or (MODE==RETURNING)
+  updates   = UP_PMVIEW
+}
+
+//----------------------------------------------
 Behavior = BHV_Loiter
 {
   name      = loiter

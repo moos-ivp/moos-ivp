@@ -32,11 +32,12 @@
 #include "BHV_LegRunX.h"
 #include "BHV_ZigZag.h"
 #include "BHV_FullStop.h"
-#include "BHV_FixTurn.h"
 #include "BHV_FixedTurn.h"
 #include "BHV_Loiter.h"
+#include "BHV_LoiterV24.h"
 #include "BHV_OpRegion.h"
 #include "BHV_OpRegionRecover.h"
+#include "BHV_OpRegionV24.h"
 #include "BHV_MaxDepth.h"
 #include "BHV_MaxSpeed.h"
 #include "BHV_ConstantDepth.h"
@@ -61,6 +62,7 @@
 #include "BHV_AvoidObstacle.h"
 #include "BHV_AvoidObstacleX.h"
 #include "BHV_AvoidObstacleV21.h"
+#include "BHV_AvoidObstacleV24.h"
 #include "BHV_GoToDepth.h"
 #include "BHV_MemoryTurnLimit.h"
 #include "BHV_Hysteresis.h"
@@ -70,6 +72,11 @@
 #include "BHV_MinAltitudeX.h"
 #include "BHV_AvdColregsV17.h"
 #include "BHV_AvdColregsV19.h"
+#include "BHV_PModelView.h"
+
+// Deprecated
+#include "BHV_FixTurn.h"
+
 
 using namespace std;
 
@@ -80,6 +87,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
 {
   if((bhv_name == "BHV_OpRegion")        ||
      (bhv_name == "BHV_OpRegionRecover") || 
+     (bhv_name == "BHV_OpRegionV24")     || 
      (bhv_name == "BHV_Waypoint")        || 
      (bhv_name == "BHV_LegRun")          || 
      (bhv_name == "BHV_LegRunX")         || 
@@ -96,6 +104,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_ConstantHeading") || 
      (bhv_name == "BHV_MaintainHeading") || 
      (bhv_name == "BHV_Loiter")          || 
+     (bhv_name == "BHV_LoiterV24")       || 
      (bhv_name == "BHV_StationKeep")     || 
      (bhv_name == "BHV_RStationKeep")    || 
      (bhv_name == "BHV_Timer")           || 
@@ -119,7 +128,9 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_HeadingBias")     ||
      (bhv_name == "BHV_MinAltitudeX")    ||
      (bhv_name == "BHV_AvdColregsV17")   ||
-     (bhv_name == "BHV_AvdColregsV19"))
+     (bhv_name == "BHV_AvdColregsV19")   ||
+     (bhv_name == "BHV_AvoidObstacleV24")||
+     (bhv_name == "BHV_PModelView"))
     return(true);
   else
     return(false);
@@ -139,6 +150,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_OpRegion(m_domain);
   else if(bhv_name == "BHV_OpRegionRecover")
     bhv = new BHV_OpRegionRecover(m_domain);
+  else if(bhv_name == "BHV_OpRegionV24")
+    bhv = new BHV_OpRegionV24(m_domain);
   else if(bhv_name == "BHV_Waypoint")
     bhv = new BHV_Waypoint(m_domain);
   else if(bhv_name == "BHV_LegRun")
@@ -171,6 +184,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_MaintainHeading(m_domain);
   else if(bhv_name == "BHV_Loiter")     
     bhv = new BHV_Loiter(m_domain);
+  else if(bhv_name == "BHV_LoiterV24")     
+    bhv = new BHV_LoiterV24(m_domain);
   else if(bhv_name == "BHV_StationKeep")     
     bhv = new BHV_StationKeep(m_domain);
   else if(bhv_name == "BHV_RStationKeep")     
@@ -219,6 +234,10 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_AvdColregsV17(m_domain);
   else if(bhv_name == "BHV_AvdColregsV19")     
     bhv = new BHV_AvdColregsV19(m_domain);
+  else if(bhv_name == "BHV_PModelView")     
+    bhv = new BHV_PModelView(m_domain);
+  else if(bhv_name == "BHV_AvoidObstacleV24")     
+    bhv = new BHV_AvoidObstacleV24(m_domain);
 
   return(bhv);
 }

@@ -48,9 +48,8 @@ void showSynopsis()
 
 void showHelpAndExit()
 {
-  blu("=============================================================== ");
-  blu("Usage: nsplug input output [OPTIONS]                            ");
-  blu("=============================================================== ");
+  blu("Usage:                                                          ");
+  blu("  nsplug input_file output_file [OPTIONS]                       ");
   blk("                                                                ");
   showSynopsis();
   blk("                                                                ");
@@ -80,11 +79,16 @@ void showHelpAndExit()
   blk("      the latter, the return value will be 1.                   ");
   mag("  --version,-v                                                  ");
   blk("      Display the release version of nsplug.                    ");
+  mag("  --macros=<file>                                               ");
+  blk("      Add macros in given file, one per line.                   ");
+  blk("      Multiple files may be provided.                           ");
+  blk("      IMPORTANT NOTE: Macros defined in earlier files will be   ");
+  blk("            expanded if referenced in later files.              ");
   blk("  MACRO=VAL                                                     ");
   blk("      Apply the given macro to be expanded in the output.       ");
   blk("                                                                ");
-  blk("Note: Input is expected as the first argument, argv[1]          ");
-  blk("      Output is expected as the second argument, argv[2].       ");
+  blk("Note: Input file is expected as the first argument, argv[1]     ");
+  blk("      Output file is expected as the second argument, argv[2].  ");
   blk("      An input file and output file both must be provided.      ");
   blk("                                                                ");
   exit(0);
@@ -109,7 +113,8 @@ void showManualAndExit()
   cout << "  $ nsplug input_file output_file [OPTIONS]                       " << endl;
   cout << "                                                                  " << endl;
   cout << "An input file AND and output file must be provided. Options are   " << endl;
-  cout << "discussed below.                                                  " << endl;
+  cout << "discussed below. These files must be the first and second args    " << endl;
+  cout << "respectively.                                                     " << endl;
   cout << "                                                                  " << endl;
   cout << "Command Line Options:                                             " << endl;
   cout << "------------------------------------------------------------      " << endl;
@@ -127,6 +132,20 @@ void showManualAndExit()
   cout << "--force, -f                                                       " << endl;
   cout << "   Overwrite the output file even if it already exists. The user  " << endl;
   cout << "   will not be prompted for confirmation.                         " << endl;
+  cout << "                                                                  " << endl;
+  cout << "--lenient,-l                                                      " << endl;
+  cout << "   If an undefined macro is encountered on a line with other      " << endl;
+  cout << "   properly defined macros, the undefined ones are just ignored.  " << endl;
+  cout << "   Defined macros are expanded. By default, unless this option is " << endl;
+  cout << "   used, the whole line would be ignored.                         " << endl;
+  cout << "--interactive,-i                                                  " << endl;
+  cout << "   If an undefined macro is encountered in one of the meta files  " << endl;
+  cout << "   (or plugs), the user will be prompted to confirm if they wish  " << endl;
+  cout << "   to continue or abort. If the user chooses, the latter, the     " << endl;
+  cout << "   return value will be 1.                                        " << endl;
+  cout << "--macros=<file>                                                   " << endl;
+  cout << "   Add macros in given file, one per line. Multiple macro files   " << endl;
+  cout << "   may be provided.                                               " << endl;
   cout << "                                                                  " << endl;
   cout << "MACRO=VALUE                                                       " << endl;
   cout << "   Define the given macro with the given value and apply it to    " << endl;

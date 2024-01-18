@@ -33,7 +33,9 @@
 #include "EdgeTagSet.h"
 #include <iostream>
 
+
 class XYSegList : public XYObject {
+friend class XYPolygon;
 public:
   XYSegList() {m_transparency=0.1;}
   XYSegList(std::string label) {m_transparency=0.1; m_label=label;}

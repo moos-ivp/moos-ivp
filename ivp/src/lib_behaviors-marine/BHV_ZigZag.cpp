@@ -85,7 +85,6 @@ BHV_ZigZag::BHV_ZigZag(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_draw_req_hdg = true;
   
   m_max_zig_legs  = 2;
-  m_max_stem_dist = -1;
   m_max_stem_odo  = -1;
 
   m_zig_first = "port";
@@ -128,8 +127,6 @@ bool BHV_ZigZag::setParam(string param, string value)
     handled = handleConfigZigFirst(value);
   else if(param == "max_zig_legs")
     handled = setUIntOnString(m_max_zig_legs, value);
-  else if(param == "max_stem_dist")
-    handled = setPosDoubleOnString(m_max_stem_dist, value);
   else if(param == "max_stem_odo")
     handled = setPosDoubleOnString(m_max_stem_odo, value);
   else if(param == "max_zig_zags")
@@ -582,7 +579,6 @@ bool BHV_ZigZag::updateOSSpd(string fail_action)
 
   m_osv = new_osv;
   return(true);
-
 }
 
 //-----------------------------------------------------------

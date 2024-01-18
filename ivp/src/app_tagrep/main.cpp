@@ -105,7 +105,7 @@ void showHelpAndExit()
   cout << "Synopsis:                                                  " << endl;
   cout << "  Given a file of text, return the portion of the file that" << endl;
   cout << "  lies between the given tag and the next tag, or the end  " << endl;
-  cout << "  of the file.                                             " << endl;
+  cout << "  of the file. Used in some launch scripts.                " << endl;
   cout << "                                                           " << endl;
   cout << "Standard Arguments:                                        " << endl;
   cout << "  file - The input file.                                   " << endl;

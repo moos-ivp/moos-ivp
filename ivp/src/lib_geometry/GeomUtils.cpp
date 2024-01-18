@@ -937,7 +937,7 @@ bool bearingMinMaxToPoly(double osx, double osy, const XYPolygon& poly,
 
 
 //---------------------------------------------------------------
-// Procedure: bearingMinMaxToPolyZ()
+// Procedure: bearingMinMaxToPolyX()
 //   Purpose: From a point outside a convex polygons, determine
 //            the two bearing angles to the polygon forming a
 //            pseudo tangent.
@@ -1934,48 +1934,6 @@ void shiftVertices(vector<double>& vx, vector<double>& vy)
   vy = new_vy;
 }
 
-//---------------------------------------------------------------
-// Procedure: applyHints()
-
-void applyHints(XYPoint& pt, const HintHolder& hints, string prefix)
-{
-  if(prefix != "")
-    prefix += "_";
-
-  if(hints.hasColor(prefix + "label_color"))
-    pt.set_color("label",  hints.getColor(prefix + "label_color"));
-
-  if(hints.hasColor(prefix + "vertex_color"))
-    pt.set_color("vertex", hints.getColor(prefix + "vertex_color"));
-
-  if(hints.hasMeasure(prefix + "vertex_size"))
-    pt.set_vertex_size(hints.getMeasure(prefix + "vertex_size"));
-}
-
-//---------------------------------------------------------------
-// Procedure: applyHints()
-
-void applyHints(XYSegList& segl, const HintHolder& hints, string prefix)
-{
-  if(prefix != "")
-    prefix += "_";
-  
-  if(hints.hasColor(prefix + "label_color"))
-    segl.set_color("label",  hints.getColor(prefix + "label_color"));
-
-  if(hints.hasColor(prefix + "vertex_color"))
-    segl.set_color("vertex", hints.getColor(prefix+"vertex_color"));
-
-  if(hints.hasColor(prefix + "edge_color"))
-    segl.set_color("edge", hints.getColor(prefix+"edge_color"));
-
-  if(hints.hasMeasure(prefix + "edge_size"))
-    segl.set_edge_size(hints.getMeasure(prefix + "edge_size"));
-
-  if(hints.hasMeasure(prefix + "vertex_size"))
-    segl.set_vertex_size(hints.getMeasure(prefix + "vertex_size"));
-}
-
   
 //---------------------------------------------------------------
 // Procedure: setPointOnString()
@@ -2574,32 +2532,52 @@ double distSeglToPoly(const XYSegList& segl, const XYPolygon& poly,
   
 //---------------------------------------------------------------
 // Procedure: distSeglrToPoly()
+//   Purpose: Determine and return closest-point-of-approach (CPA)
+//            for the given selgr and polygon. Also calculate and
+//            return through rix/riy the point location where the
+//            CPA occurred, and through stemdist the distance from
+//            the base of the seglr (often ownship position) to 
+//            the CPA point rix,riy along the selgr.
 
 double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
-		       double& rix, double& riy, bool verbose)
+		       double& rix, double& riy, double& stemdist,
+		       bool verbose)
 {
-  // Sanity checks
+  // Sanity checks (is size zero really a dealbreaker?)
   if((seglr.size() == 0) || !poly.is_convex()) {
-    rix=0;
-    riy=0;
+    rix = 0;
+    riy = 0;
+    stemdist = 0;
     return(0);
   }
 
-  double segl_ix = 0;
-  double segl_iy = 0;
-  double segl_cpa = seglr.getCacheCPA();
+  //==========================================================
+  // Part 1: Calc CPA and Stemdist on the seglr's base SegList
+  //==========================================================
+  XYPoint cached_pt = seglr.getCacheCPAPoint();
+  double  cached_cpa = seglr.getCacheCPA();
+  double  cached_stem = seglr.getCacheStemCPA();
+
+  double  segl_cpa = -1;
   
   // If Seglr has CPA info already cached for the seglist, use it.
-  if(segl_cpa >= 0) {   
-    XYPoint cpa_pt = seglr.getCacheCPAPoint();
-    segl_ix = cpa_pt.x();
-    segl_iy = cpa_pt.y();
-  }
-  else {
+  if((cached_cpa >= 0) && (cached_stem >= 0) && cached_pt.valid()) {   
+    rix = cached_pt.x();
+    riy = cached_pt.y();
+    stemdist = cached_stem;
+    segl_cpa = cached_cpa;
+  }  
+  else { // If not cached, calc segl_cpa and stem_cpa here, now
+    // First find the cpa dist and point on seglist where CPA is
     XYSegList segl = seglr.getBaseSegList();
-    segl_cpa = distSeglToPoly(segl, poly, segl_ix, segl_iy);
+    segl_cpa = distSeglToPoly(segl, poly, rix, riy);
+    // Next use the CPA point to determine stem distance
+    stemdist = stemDistSeglFromPoint(segl, rix, riy);
   }
-  
+
+  //==========================================================
+  // Part 2: Calc CPA on the Ray portion
+  //==========================================================
   double rx = seglr.getRayBaseX();
   double ry = seglr.getRayBaseY();
   double ra = seglr.getRayAngle();
@@ -2607,34 +2585,158 @@ double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
   double ray_iy = 0;
   double ray_cpa = polyRayCPA(rx,ry,ra, poly, ray_ix, ray_iy);
 
-  double final_cpa = 0;
-
-  // mikerbmikerb
-  if(segl_cpa < ray_cpa) {
-    rix = segl_ix;
-    riy = segl_iy;
-    final_cpa = segl_cpa;
-    return(segl_cpa);
-  }
-  else {
-    rix = ray_ix;
-    riy = ray_iy;
-    final_cpa = ray_cpa;
-  }
-
   if(verbose) {
     cout << "-------------- distSeglrToPoly()----------" << endl;
-    //cout << "segl: " << segl.get_spec() << endl;
-    cout << "  segl_cpa: " << segl_cpa << endl;  
-    cout << "rx: " << doubleToStringX(rx,1);
+    cout << " segl_cpa: " << segl_cpa << endl;  
+    cout << " rx: " << doubleToStringX(rx,1);
     cout << " ry: " << doubleToStringX(ry,1);
     cout << " ra: " << doubleToStringX(ra,1) << endl;
-    cout << "  ray_cpa: " << ray_cpa << endl;
-    cout << "Final cpa: " << final_cpa << endl;
+    cout << " ray_cpa: " << ray_cpa << endl;
     cout << "------------------------------------------" << endl;
   }
+
+  if(segl_cpa <= ray_cpa)
+    return(segl_cpa);
   
-  return(final_cpa);
+  rix = ray_ix;
+  riy = ray_iy;
+
+  XYSegList segl = seglr.getBaseSegList();
+  stemdist = segl.length() + hypot(rix-rx, riy-ry);
+
+  return(ray_cpa);
+}
+  
+
+
+//---------------------------------------------------------------
+// Procedure: distSeglrToPoint()
+//   Purpose: Determine and return closest-point-of-approach (CPA),
+//            on the seglr, for the given selgr and point. Also
+//            calculate and return through rix/riy the point location
+//            on the seglr where the CPA occurred, and through
+//            stemdist the distance from the base of the seglr (often
+//            ownship position) to the CPA point rix,riy along selgr.
+
+double distSeglrToPoint(const XYSeglr& seglr, const XYPoint& pt,
+			double& rix, double& riy, double& stemdist,
+			bool verbose)
+{
+  // Sanity checks
+  if(!seglr.valid()) {
+    rix = 0;
+    riy = 0;
+    stemdist = 0;
+    return(0);
+  }
+
+  double cpa = -1;
+  if(seglr.size() > 1) {
+    XYSegList base_segl = seglr.getBaseSegList();
+    cpa = distSeglToPoint(base_segl, pt, rix, riy, stemdist);
+  }
+
+  double px = pt.x();
+  double py = pt.y();
+  double rbx = seglr.getRayBaseX();
+  double rby = seglr.getRayBaseY();
+  double rang = seglr.getRayAngle();
+  double ix, iy;
+  
+  double ray_cpa = distPointToRay(px, py, rbx, rby, rang, ix, iy);
+  if((cpa < 0) || (ray_cpa <= cpa)) {
+    cpa = ray_cpa;
+    rix = ix;
+    riy = iy;
+    stemdist = hypot(px-ix, py-iy);
+  }
+    
+  return(cpa);
+}
+  
+
+
+//---------------------------------------------------------------
+// Procedure: distSeglToPoint()
+  
+double distSeglToPoint(const XYSegList& segl, const XYPoint& pt,
+		       double& rix, double& riy)
+{
+  double unused_stemdist = 0;
+  return(distSeglToPoint(segl, pt, rix, riy, unused_stemdist));
+}
+  
+
+//---------------------------------------------------------------
+// Procedure: stemDistSeglFromPoint()
+//   Purpose: Convience function: When the given point is believed
+//            to be on the seglist and we only want to know the
+//            distance from the first vertex in the seglist to the
+//            the point *along the seglist*.
+
+double stemDistSeglFromPoint(const XYSegList& segl, 
+			     double px, double py)
+{
+  double stemdist = 0;
+  XYPoint pt(px, py);
+  double rix, riy;
+  
+  distSeglToPoint(segl, pt, rix, riy, stemdist);
+  return(stemdist);
+}
+  
+
+//---------------------------------------------------------------
+// Procedure: distSeglToPoint()
+//   Purpose: Calculate and return the CPA of point to SegList
+//            Calculate the point on the seglist where CPA lies
+//            Calculated dist of CPA point to vertex zero.
+  
+double distSeglToPoint(const XYSegList& segl, const XYPoint& pt,
+		       double& rix, double& riy, double& stemdist)
+{
+  // Sanity check: segl cannot be empty
+  if(segl.size() == 0) {
+    rix = 0;
+    riy = 0;
+    stemdist = 0;
+    return(0);
+  }
+
+  double ptx = pt.x();
+  double pty = pt.y();
+  
+  // Edge case, segl only has one vertex
+  if(segl.size() == 1) {
+    rix=segl.get_vx(0);
+    riy=segl.get_vy(0);
+    stemdist = 0;
+    return(hypot(rix-ptx, riy-pty));
+  }
+
+  // General case, segl has two or more vertices
+  double cpa = -1;
+  double prior_stem = 0;
+  stemdist = 0;
+  for(unsigned int i=0; i<segl.size(); i++) {
+    if((i+1) >= segl.size())
+      continue;
+    double x1 = segl.get_vx(i);
+    double y1 = segl.get_vy(i);
+    double x2 = segl.get_vx(i+1);
+    double y2 = segl.get_vy(i+1);
+    double ix, iy;
+    double dist = distPointToSeg(x1, y1, x2, y2, ptx, pty, ix, iy);
+    if((cpa < 0) || (dist < cpa)) {
+      rix = ix;
+      riy = iy;
+      cpa = dist;
+      stemdist += prior_stem + hypot(ix-x1, iy-y1);
+    }
+    prior_stem += hypot(x1-x2, y1-y2);
+  }
+  
+  return(cpa);
 }
   
 

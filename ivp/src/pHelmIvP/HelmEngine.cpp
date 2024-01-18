@@ -144,6 +144,10 @@ bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
   if(new_behaviors)
     m_bhv_set->connectInfoBuffer(m_info_buffer);
 
+  // Update the PlatModel for each behavior including newly
+  // spawned behaviors.
+  m_bhv_set->setPlatModel(m_pmodel);
+
   // Update Modes and add mode_summary to the m_helm_report.
   m_bhv_set->consultModeSet();
   string mode_summary = m_bhv_set->getModeSummary();
@@ -151,7 +155,6 @@ bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
   
   return(true);
 }
-
 
 //------------------------------------------------------------------
 // Procedure: part2_GetFunctionsFromBehaviorSet()
@@ -167,7 +170,6 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 
   m_bhv_set->clearUpdateResults();
 
-
   string msgx = "part2_GetFunctionsFromBehaviorSet: fl=" + intToString(filter_level); 
   m_helm_report.addMsg(msgx);
   
@@ -181,11 +183,11 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration,
 						bhv_state, ipf_reuse);
 
-
-      //cout << "*******************************************************" << endl;
+      
+      //cout << "********************************************" << endl;
       //string bname = m_bhv_set->getDescriptor(bhv_ix);
       //cout << " Reuse (" << bname << "):" << boolToString(ipf_reuse) << endl;
-      //cout << "*******************************************************" << endl;
+      //cout << "********************************************" << endl;
       
       if(newof) {
 	m_total_pcs_formed += (unsigned int)(newof->size());

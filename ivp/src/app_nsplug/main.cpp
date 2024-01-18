@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 
   bool input_file_provided  = false;
   bool output_file_provided = false;
-
+  
   for(int i=1; i<argc; i++) {
     string arg = argv[i];
 
@@ -73,6 +73,10 @@ int main(int argc, char *argv[])
       expander.setInteractive(true);
       expander.setImpatient(true);
     }
+
+    else if(strBegins(arg, "--macros="))
+      expander.addMacroFile(arg.substr(9));
+ 
     else if(((arg=="-t") || (arg=="--terminal")))
       expander.setTerminal(true);
 

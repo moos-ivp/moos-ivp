@@ -30,7 +30,7 @@ extern bool MOOSAPP_OnConnect(void*);
 extern bool MOOSAPP_OnDisconnect(void*);
 
 //------------------------------------------------------------
-// Constructor
+// Constructor()
 
 PokeDB::PokeDB()
 {
@@ -51,7 +51,7 @@ PokeDB::PokeDB()
 }
 
 //------------------------------------------------------------
-// Constructor
+// Constructor()
 
 PokeDB::PokeDB(string g_server_host, long int g_server_port)
 {
@@ -72,7 +72,7 @@ PokeDB::PokeDB(string g_server_host, long int g_server_port)
 }
 
 //------------------------------------------------------------
-// Procedure: ConfigureComms
+// Procedure: ConfigureComms()
 //      Note: Overload the MOOSApp::ConfigureComms implementation
 //            which would have grabbed the port/host info from the
 //            .moos file instead.

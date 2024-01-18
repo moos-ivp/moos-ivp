@@ -59,6 +59,9 @@ public:
   double getCenterX() {return(m_ctr_x);}
   double getCenterY() {return(m_ctr_y);}
 
+  double getHeadCtrX();
+  double getHeadCtrY();
+
   double getMinX();
   double getMaxX();
   double getMinY();

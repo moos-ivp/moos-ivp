@@ -52,7 +52,7 @@ int main(int argc, char *argv[])
     else if(strBegins(argi, "--min_size="))
       handled = generator.setObstacleMinSize(argi.substr(11));
     else if(strBegins(argi, "--max_size="))
-      handled = generator.setObstacleMinSize(argi.substr(11));
+      handled = generator.setObstacleMaxSize(argi.substr(11));
     else if(strBegins(argi, "--meter"))
       handled = generator.setPrecision(1);
     else if(strBegins(argi, "--poly="))
@@ -66,7 +66,9 @@ int main(int argc, char *argv[])
   
   cout << "# " << arg_summary << endl;
 
-  generator.generate();
+  bool ok = generator.generate();
+  if(!ok)
+    return(1);
   return(0);
 }
 

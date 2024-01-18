@@ -129,6 +129,8 @@ public:
   std::map<std::string, std::vector<LogicCondition> > getModeLogicConditions()
     {return(m_mode_set.getNonModeLogicConditions());}
 
+  void setPlatModel(const PlatModel&);
+  
   void print();
 
   unsigned long int size() const;

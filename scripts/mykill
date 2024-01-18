@@ -78,7 +78,7 @@ killall -9 pParticle uFldContactRangeSensorHP pUUVPath         \
         pHunterPrey camera_example camera_example_server       \
         camera_example_viewer iHuxley uFldCollisionDetect iSay \
         uLoadWatch pPolePath sedit pEvalLoiter uMemWatch       \
-        uSimHeron uSockComms
+        uSimHeron uSockComms pMapMarkers
 
 killall -9 uSpeechRec uDialogManager
 

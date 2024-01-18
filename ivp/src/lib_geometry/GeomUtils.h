@@ -171,9 +171,6 @@ double polyAspectRatio(XYPolygon);
 
 // Below is new after 22.8
 
-void applyHints(XYPoint&, const HintHolder&, std::string prefix="");
-void applyHints(XYSegList&, const HintHolder&, std::string prefix="");
-
 bool setPointOnString(XYPoint& point, std::string str);
 bool setSegListOnString(XYSegList& point, std::string str);
 
@@ -217,7 +214,22 @@ double distSeglToPoly(const XYSegList& segl, const XYPolygon& poly,
 		      double& ix, double& iy);
 
 double distSeglrToPoly(const XYSeglr& seglr, const XYPolygon& poly,
-		       double& ix, double& iy, bool verbose=false);
+		       double& ix, double& iy, double& stemdist,
+		       bool verbose=false);
+
+double distSeglrToPoint(const XYSeglr& seglr, const XYPoint& pt,
+			double& ix, double& iy, double& stemdist,
+			bool verbose=false);
+
+double distSeglToPoint(const XYSegList& segl, const XYPoint& pt,
+		       double& ix, double& iy);
+
+double distSeglToPoint(const XYSegList& segl, const XYPoint& pt,
+		       double& ix, double& iy, double& stemdist);
+
+double stemDistSeglFromPoint(const XYSegList& segl,
+			     double px, double py);
+
 
 
 // DEPRECATED INTERFACES

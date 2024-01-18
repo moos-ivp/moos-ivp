@@ -97,7 +97,7 @@ bool Populator_VPlugPlots::populateFromEntries(const vector<ALogEntry>& entries)
       cout << carriage_return << flush;
       pct_prev = pct;
     }
-      
+
     m_vplug_plot.addEvent(entries[i].getVarName(), 
 			  entries[i].getStringVal(), 
 			  entries[i].getTimeStamp());

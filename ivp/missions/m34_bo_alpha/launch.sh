@@ -73,18 +73,18 @@ VCOLOR2="dodger_blue"
 SHORE_PSHARE="9200"
 
 nsplug meta_vehicle.moos targ_henry.moos -i -f WARP=$TIME_WARP \
-       VNAME=$VNAME1            BOT_PSHARE="9201"              \
-       BOT_MOOSDB="9001"        SHORE_PSHARE=$SHORE_PSHARE     \
+       VNAME=$VNAME1            PSHARE_PORT="9201"              \
+       MOOS_PORT="9001"         SHORE_PSHARE=$SHORE_PSHARE     \
        START_POS=$START_POS1    VCOLOR=$VCOLOR1
 
 nsplug meta_vehicle.moos targ_gilda.moos -i -f WARP=$TIME_WARP \
-       VNAME=$VNAME2            BOT_PSHARE="9202"              \
-       BOT_MOOSDB="9002"        SHORE_PSHARE=$SHORE_PSHARE     \
+       VNAME=$VNAME2            PSHARE_PORT="9202"              \
+       MOOS_PORT="9002"         SHORE_PSHARE=$SHORE_PSHARE     \
        START_POS=$START_POS2    VCOLOR=$VCOLOR2
 
 nsplug meta_shoreside.moos targ_shoreside.moos -i -f WARP=$TIME_WARP \
-       SHORE_PSHARE=$SHORE_PSHARE  SHORE_MOOSDB="9000"        \
-       VNAMES=$VNAME1:$VNAME2      DRESET=$DRESET             \
+       MOOS_PORT="9000"         PSHARE_PORT=$SHORE_PSHARE  \
+       VNAMES=$VNAME1:$VNAME2   DRESET=$DRESET             \
        POINTS=$POINTS
 
 nsplug meta_vehicle.bhv targ_henry.bhv -i -f VNAME=$VNAME1    \

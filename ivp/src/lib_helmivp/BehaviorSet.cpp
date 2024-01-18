@@ -375,7 +375,7 @@ SpecBuild BehaviorSet::buildBehaviorFromSpec(BehaviorSpec spec,
 
 
 //------------------------------------------------------------
-// Procedure: handlePossibleSpawnings
+// Procedure: handlePossibleSpawnings()
 //   Purpose: Called typically once on each iteration of the helm
 //            to check if any new spawnings were requested. 
 
@@ -400,6 +400,10 @@ bool BehaviorSet::handlePossibleSpawnings()
       string update_name = tokStringParse(update_str, "name", '#', '=');
       string fullname = base_name + update_name;
 
+      //if(strBegins(update_name, base_name))
+      //fullname = update_name;
+
+      
       // For example: If the behavior name prefix is avd_obstacle_,
       // and a behavior has already been spawned with the name
       // avd_obstacle_blue, then an update with name=avd_obstacle_blue or
@@ -507,7 +511,17 @@ string BehaviorSet::getUpdateVarSummary()
 }
 
 //------------------------------------------------------------
-// Procedure: produceOF
+// Procedure: setPlatModel()
+
+void BehaviorSet::setPlatModel(const PlatModel& pmodel)
+{
+  for(unsigned int i=0; i<m_bhv_entry.size(); i++) {
+    m_bhv_entry[i].setPlatModel(pmodel);
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: produceOF()
 
 IvPFunction* BehaviorSet::produceOF(unsigned int ix, 
 				    unsigned int iteration, 

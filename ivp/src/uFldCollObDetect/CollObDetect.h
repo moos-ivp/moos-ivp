@@ -101,6 +101,10 @@ class CollObDetect : public AppCastingMOOSApp
   unsigned int m_total_near_misses;
   unsigned int m_total_collisions;
 
+  double m_bin_minval;
+  double m_bin_delta;
+  std::map<double, unsigned int> m_map_bins;
+  
   double m_global_min_dist;
 };
 

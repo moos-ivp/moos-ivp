@@ -1,0 +1,65 @@
+<tag><origin_warp>
+MOOSTimeWarp = $(WARP)
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+
+<tag><pShare>
+//--------------------------------------------------
+// pShare Config Block
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  localhost:$(PSHARE_PORT)
+}
+
+<tag><pHostInfo>
+//--------------------------------------------------
+// pHostInfo Config block
+
+ProcessConfig = pHostInfo
+{
+  AppTick 	= 1
+  CommsTick 	= 1
+
+  default_hostip_force = localhost
+}
+
+<tag><uProcessWatch>
+//--------------------------------------------------
+// uProcessWatch Config Block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  allow_retractions = true
+  
+  watch_all = true      // default is true
+
+  nowatch = uXMS*
+  nowatch = uPokeDB*
+  nowatch = uQueryDB*
+  nowatch = uMAC*
+
+  summary_wait = 12
+}
+
+<tag><uLoadWatch>
+//--------------------------------------------------
+// uLoadWatch Config block
+	
+ProcessConfig = uLoadWatch
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  thresh = app=pHelmIvP,  gapthresh=3
+  thresh = app=pHostInfo, gapthresh=5
+  thresh = app=any,       gapthresh=2.0
+
+  breach_trigger = 5
+}

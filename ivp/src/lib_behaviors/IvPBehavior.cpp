@@ -82,8 +82,10 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_osy = 0;
   m_osh = 0;
   m_osv = 0;
+  m_max_osv = -1; // According to IvPDomain
 
   m_time_of_creation  = 0;
+  m_time_starting_now = 0;
   m_time_starting_now = 0;
 
   m_macro_ctr = 0;
@@ -142,8 +144,12 @@ bool IvPBehavior::augBehaviorName(string aug_name)
 {
   if(!isAlphaNum(aug_name, "_-[]()#@+"))
     return(false);
-  
-  m_descriptor += aug_name;
+
+  if(strBegins(aug_name, m_descriptor)) // Added Dec29,2023
+    m_descriptor = aug_name;
+  else
+    m_descriptor += aug_name;
+
   m_status_info = "name=" + m_descriptor;
   return(true);
 }
@@ -1485,6 +1491,30 @@ double IvPBehavior::getBehaviorAge() const
     return(0);
   
   return(getBufferCurrTime() - getBehaviorTOC());
+}
+
+//-----------------------------------------------------------
+// Procedure: getMaxOSV()
+//   Purpose: Max ownship speed is refers to the high speed val
+//            in the IvPDomain, i.e., the highest value in the 
+//            speed decision space. This may differ from max
+//            physical speed of a vehicle. This val should not
+//            change during the course of a mission. This is a
+//            convenience function for behaviors, and a way to
+//            ensure it is not needlessly recalculated once it
+//            has been first calculated.
+
+double IvPBehavior::getMaxOSV()
+{
+  if(m_max_osv > 0)
+    return(m_max_osv);
+  
+  int index = m_domain.getIndex("speed");
+  if(index == -1)
+    return(m_max_osv);
+  
+  m_max_osv = m_domain.getVarHigh(index);
+  return(m_max_osv);
 }
 
 

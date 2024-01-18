@@ -188,13 +188,14 @@ SET(IVP_NON_GUI_APPS
   uFldScope          uFldNodeComms       uFldBeaconRangeSensor
   pSearchGrid        uFldGenericSensor   uFldContactRangeSensor
   uFldDelve          app_bweb            app_mhash_gen
+  app_projfield      pMapMarkers
 )
 SET(IVP_GUI_APPS
   app_ffview         app_geoview         app_alogview
   app_zaic_hleq      app_zaic_vect       app_zaic_hdg
   app_zaic_spd       app_zaic_peak       pMarineViewer
   uFunctionVis       uMACView            uPlotViewer
-  uCommand     
+  uCommand           
 # app_vzaicview      app_gzaicview
 )
 

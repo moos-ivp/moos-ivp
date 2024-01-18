@@ -1097,7 +1097,7 @@ void ALogDataBroker::setPrunedMaxTime(double max_time)
 IPF_Plot ALogDataBroker::getIPFPlot(unsigned int aix, string bhv_name)
 {
   IPF_Plot ipf_plot;
-
+  
   // Part 1: Sanity check the master index
   if(aix >= m_alog_files.size()) {
     if(m_verbose)

@@ -306,7 +306,7 @@ IvPFunction *BHV_FixedTurn::onRunState()
   if(done_timeout || done_hdg_change) {
     postTurnCompleteReport();
     setComplete();
-
+    
     FixedTurn turn = m_turn_set.getFixedTurn();
     vector<VarDataPair> flags = turn.getFlags();
     postFlags(flags);

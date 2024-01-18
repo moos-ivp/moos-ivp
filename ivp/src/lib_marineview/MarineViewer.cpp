@@ -1162,9 +1162,14 @@ void MarineViewer::drawMarker(const XYMarker& marker, double timestamp)
   double shape_width  = marker.get_width() * gscale;
   double alpha   =  1 - marker.get_transparency();
 
+  string ecolor = "black";
+  if(marker.color_set("edge"))
+    ecolor = marker.get_color_str("edge");
+  
   if(marker.color_set("label"))
     labelc = marker.get_color("label");
-
+  ColorPack cpack_ecolor(ecolor);
+  
   if(shape_width <= 0)
     return;
 
@@ -1244,7 +1249,7 @@ void MarineViewer::drawMarker(const XYMarker& marker, double timestamp)
     double cy = g_circleCtrY * factor_y;
     glTranslatef(-cx, -cy, 0);
     drawGLPoly(g_circleBody, g_circleBodySize, cpack1, 0, factor_x, alpha);
-    drawGLPoly(g_circleBody, g_circleBodySize, black, bw, factor_x);    
+    drawGLPoly(g_circleBody, g_circleBodySize, cpack_ecolor, bw, factor_x);    
     glTranslatef(cx, cy, 0);
   }
 
@@ -1289,9 +1294,9 @@ void MarineViewer::drawMarker(const XYMarker& marker, double timestamp)
   if(draw_labels && ((label != "") || (message != "")) && coordInView(x,y)) {
     if(labelc.visible()) {
       glColor3f(labelc.red(), labelc.grn(), labelc.blu());
-      gl_font(1, 10);
+      gl_font(1, 8);
       if(m_zoom > 4)
-	gl_font(1, 12);
+	gl_font(1, 10);
       double offset = 4.0 * (1/m_zoom);
       glRasterPos3f(offset, offset, 0);
       if(message != "")
@@ -2058,7 +2063,8 @@ void MarineViewer::drawSegList(const XYSegList& segl)
 //-------------------------------------------------------------
 // Procedure: drawSeglrs()
 
-void MarineViewer::drawSeglrs(const vector<XYSeglr>& seglrs)
+void MarineViewer::drawSeglrs(const map<string, XYSeglr>& seglrs,
+			      double timestamp)
 {
   // If the viewable parameter is set to false just return. In 
   // querying the parameter the optional "true" argument means return
@@ -2066,9 +2072,11 @@ void MarineViewer::drawSeglrs(const vector<XYSeglr>& seglrs)
   if(!m_geo_settings.viewable("seglr_viewable_all", "true"))
     return;
   
-  for(unsigned int i=0; i<seglrs.size(); i++)
-    if(seglrs[i].active()) 
-      drawSeglr(seglrs[i]); 
+  map<string, XYSeglr>::const_iterator p;
+  for(p=seglrs.begin(); p!=seglrs.end(); p++) {
+    if(p->second.active() && !p->second.expired(timestamp))
+      drawSeglr(p->second); 
+  }
 }
 
 //-------------------------------------------------------------
@@ -3022,11 +3030,12 @@ void MarineViewer::drawArrow(XYArrow arrow, double timestamp)
 
 
   // Draw the labels unless either the viewer has it shut off OR if 
-  // the publisher of the point requested it not to be viewed, by
-  // setting the color to be "invisible".
+  // the publisher of the arrow requested it not to be viewed, by
+  // setting the color to be "invisible" or "off".
   bool draw_labels = m_geo_settings.viewable("arrow_viewable_labels");
   if(!edge_c.visible() && !fill_c.visible())
     draw_labels = false;
+  draw_labels = true;
 
   if(draw_labels && labl_c.visible()) {
     string plabel = arrow.get_msg();
@@ -3034,15 +3043,17 @@ void MarineViewer::drawArrow(XYArrow arrow, double timestamp)
       plabel = arrow.get_label();
     if(plabel != "") {    
 
-      double vx = arrow.getCenterX();
-      double vy = arrow.getMaxY();
+      //double vx = arrow.getCenterX();
+      //double vy = arrow.getMaxY();
+      double vx = arrow.getHeadCtrX() + 1;
+      double vy = arrow.getHeadCtrY() + 1;
 
       if(coordInView(vx,vy)) {
 	double px = vx * pix_per_mtr_x;
 	double py = vy * pix_per_mtr_y;
 	
 	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
-	gl_font(1, 10);
+	gl_font(1, 8);
 	
 	double offset = 3.0 * (1/m_zoom);
 	glRasterPos3f(px+offset, py+offset, 0);

@@ -353,7 +353,7 @@ bool LoiterAssign::polyWithinOpRegion(XYPolygon poly)
 
 
 //---------------------------------------------------------
-// Procedure: postViewablePolys
+// Procedure: postViewablePolys()
 
 void LoiterAssign::postViewablePolys()
 {

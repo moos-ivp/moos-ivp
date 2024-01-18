@@ -37,12 +37,41 @@ using namespace std;
 
 
 //---------------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 XYPolygon::XYPolygon()
 {
   m_convex_state = false;
   m_transparency = 0.5;
+}
+
+//---------------------------------------------------------------
+// Constructor()
+
+XYPolygon::XYPolygon(double x, double y, double rad,
+		     unsigned int pts, string label)
+{
+  setRadial(x, y, rad, pts);
+  m_label = label;
+}
+
+//---------------------------------------------------------------
+// Constructor()
+
+XYPolygon::XYPolygon(XYSegList segl)
+{
+  m_vx = segl.m_vx;
+  m_vy = segl.m_vy;
+  m_vz = segl.m_vz;
+
+  vector<int> sides(m_vx.size(), -1);
+  m_side_xy = sides;
+  
+  m_vprop = segl.m_vprop;
+  m_edge_tags = segl.m_edge_tags;
+  m_transparency = segl.m_transparency;
+  m_convex_state = false;
+  determine_convexity();
 }
 
 //---------------------------------------------------------------

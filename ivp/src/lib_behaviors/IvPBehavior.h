@@ -167,6 +167,7 @@ public:
   void    setHelmIteration(unsigned int iter) {m_helm_iter=iter;}
   void    setConfigPosted(bool v=true) {m_config_posted=v;}
 
+  double  getMaxOSV();
   double  getBehaviorTOC() const {return(m_time_of_creation);} 
   double  getBehaviorAge() const;
     
@@ -291,8 +292,10 @@ protected:
   // This variable should only be accessible via (1) postEMessage()
   // and resetStateOK().
 private:
-  bool        m_bhv_state_ok;
+  bool   m_bhv_state_ok;
 
+  double m_max_osv; // according to IvPDomain
+  
   std::map<std::string, double> m_map_regu_vars_tgap;
   std::map<std::string, double> m_map_regu_vars_last;
 };

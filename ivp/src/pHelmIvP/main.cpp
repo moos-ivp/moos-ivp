@@ -75,7 +75,7 @@ int main(int argc, char *argv[])
       return(0);
     }
   }
-    
+
   unsigned int k, ksize = bhv_files.size();
   for(k=0; k<ksize; k++)
     helmIvP.addBehaviorFile(bhv_files[k]);

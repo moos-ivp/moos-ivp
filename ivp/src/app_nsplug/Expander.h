@@ -38,7 +38,8 @@ class Expander
   void setInFile(std::string s)  {m_infile  = s;}
   void setOutFile(std::string s) {m_outfile = s;}
   void setIncTag(std::string s)  {m_inctag = s;}
-
+  bool addMacroFile(std::string);
+  
   bool expand();
   bool verifyInfile();
   bool verifyInfile(const std::string& filename);
@@ -66,7 +67,8 @@ class Expander
   std::string containsMacro(std::string);
   std::string findFileInPath(std::string);
 
-  bool checkIfDef(std::string, std::map<std::string, std::string>, unsigned int);
+  bool checkIfDef(std::string, std::map<std::string, std::string>,
+		  unsigned int);
   bool checkIfDefConj(std::string, std::map<std::string, std::string>);
   bool checkIfDefDisj(std::string, std::map<std::string, std::string>);
 
@@ -81,6 +83,7 @@ class Expander
   bool modeStackContains(std::string);
     
   void printModeStack();
+  void printMacros(std::map<std::string,std::string> macros);
 
  private:
   std::vector<std::string> m_path;

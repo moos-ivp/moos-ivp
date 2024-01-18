@@ -46,7 +46,7 @@
       '("uFldVoronoi" "stale_time" "region" "muster_region" "prox_edge_color" "prox_vertex_color" "prox_fill_color" "prox_label_color" "max_appcast_events")
 
       '("uMemWatch" "ignore" "watch_only" "absolute_time_gap" "max_appcast_events")
-      '("uFldCollObDetect" "collision_dist" "near_miss_dist" "encounter_dist" "collision_range" "near_miss_range" "encounter_range" "collision_flag" "near_miss_flag" "encounter_flag" "ignore_group" "reject_group" "max_appcast_events")
+      '("uFldCollObDetect" "collision_dist" "near_miss_dist" "encounter_dist" "collision_range" "near_miss_range" "encounter_range" "collision_flag" "near_miss_flag" "encounter_flag" "ignore_group" "reject_group" "max_appcast_events" "bin_min_val" "bin_delta" )
       '("uFldObstacleSim" "obstacle_file" "poly_vert_color" "poly_edge_color" "poly_fill_color" "poly_label_color" "poly_vert_size" "poly_edge_size" "draw_region" "post_points" "rate_points" "poly_transparency" "region_edge_color" "min_duration" "max_duration" "reuse_ids" "reset_interval" "reset_range" "refresh_interval" "max_appcast_events" "point_size")
       '("uFldWrapDetect" "max_segments" "max_trail_distance" "max_trail_dist" "max_appcast_events")
       '("pMovingSurvey" "survey" "heading" "speed" "reverse_interval" "update_interval" "rpm" "max_appcast_events")

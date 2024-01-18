@@ -78,6 +78,14 @@ XYPolygon stringRangeWedge2Poly(std::string);
 // Example: "x1=val, y1=val, x2=val, y2=val, axis_pad=val, 
 //          perp_pad=val, snap_val=val, label=val"
 XYPolygon stringPylon2Poly(std::string);
+
+// Below added Nov 27th, 2023
+bool setPolyOnString(XYPolygon& poly, std::string spec,
+		     std::string label="");
+
+// Below added Jan 11th, 2024
+XYPolygon stringOval2Poly(std::string);
+
 #endif
 
 
