@@ -82,6 +82,8 @@ pAntler targ_shoreside.moos >& /dev/null &
 echo "Launching $VNAME1 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_henry.moos >& /dev/null &
 
+sleep 5
+
 echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_gilda.moos >& /dev/null &
 

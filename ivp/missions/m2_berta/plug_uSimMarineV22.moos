@@ -9,7 +9,12 @@ ProcessConfig = uSimMarineV22
   START_POS = $(START_POS), 0
   PREFIX    = NAV
 
+	app_logging = true
+	
 	turn_rate = 90
+
+	post_des_thrust = DESIRED_THRUSTX
+	post_des_rudder = DESIRED_RUDDERX
 	
   //rotate_speed = 0.012
   //drift_x      = 0.0045

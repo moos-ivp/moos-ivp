@@ -118,7 +118,7 @@ ProcessConfig = uSimMarineV22
   start_x       = 95
   start_y       = -30
   start_speed   = 0
-  start_heading = 180
+  start_heading = 90
 
 	max_acceleration = 0.25
 
@@ -272,9 +272,10 @@ ProcessConfig = pNodeReporter
 
 	app_logging = true
 	
-  platform_type   = KAYAK
+  platform_type   = kayak
   platform_length = 4
-
+	//platform_color = pink
+	
 	rider = var=WFLAG, policy=always, rfld=mflagx
 	rider = var=CFLAG, policy=10
 }

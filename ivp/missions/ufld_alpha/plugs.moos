@@ -1,0 +1,59 @@
+<tag><origin_warp>
+MOOSTimeWarp = $(WARP)
+
+#ifdef REGION pavlab
+// MIT Sailing Pavilion (PavLab)
+LatOrigin = 42.358436
+LongOrigin = -71.087448
+#else
+// Forest Lake Maine
+LatOrigin  = 43.825300 
+LongOrigin = -70.330400 
+#endif
+
+<tag><pShare>
+//--------------------------------------------------
+// pShare config Block 
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route = localhost:$(PSHARE_PORT)
+}
+
+<tag><pHostInfo>
+//--------------------------------------------------
+// pHostInfo config block
+
+ProcessConfig = pHostInfo
+{
+  AppTick 	= 1
+  CommsTick = 1
+
+#ifdef IP_ADDR
+  default_hostip_force = $(IP_ADDR)
+#endif
+}
+
+<tag><uProcessWatch>
+//--------------------------------------------------
+// uProcessWatch config block
+
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 2
+  CommsTick = 2
+
+	watch_all = true
+	
+  nowatch = uMAC*  
+  nowatch = uXMS*
+  nowatch = uPokeDB*
+  nowatch = uQueryDB*
+
+	allow_retractions = true
+}
+
+

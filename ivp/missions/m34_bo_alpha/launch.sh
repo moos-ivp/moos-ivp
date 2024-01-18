@@ -109,8 +109,8 @@ pAntler targ_shoreside.moos >& /dev/null &
 echo "Launching $VNAME1 MOOS Community. WARP is" $TIME_WARP
 pAntler targ_henry.moos >& /dev/null &
 
-echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
-pAntler targ_gilda.moos >& /dev/null &
+#echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
+#pAntler targ_gilda.moos >& /dev/null &
 
 uMAC --proc=pObstacleMgr --node=gilda targ_shoreside.moos
 

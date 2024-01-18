@@ -1,5 +1,5 @@
 //-------------------------------------------------
-// NAME: M. Benjamin, MIT CSAIL
+// NAME: M. Benjamin, MIT
 // FILE: alpha.moos
 //-------------------------------------------------
 
@@ -24,15 +24,15 @@ ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 200
 
-  Run = MOOSDB          @ NewConsole = false
-  Run = pLogger         @ NewConsole = false
-  Run = uSimMarine      @ NewConsole = false
-  Run = pMarinePID      @ NewConsole = false
-  Run = pHelmIvP        @ NewConsole = false
-  Run = pMarineViewer	  @ NewConsole = false
-  Run = uProcessWatch	  @ NewConsole = false
-  Run = pNodeReporter	  @ NewConsole = false
-  Run = pObstacleMgr	  @ NewConsole = false
+  Run = MOOSDB        @ NewConsole = false
+  Run = pLogger       @ NewConsole = false
+  Run = pMarinePIDV22 @ NewConsole = false
+  Run = pHelmIvP      @ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
+  Run = uProcessWatch	@ NewConsole = false
+  Run = pNodeReporter	@ NewConsole = false
+  Run = pObstacleMgr	@ NewConsole = false
+  Run = uSimMarineV22 @ NewConsole = false
 }
 
 //------------------------------------------
@@ -51,7 +51,6 @@ ProcessConfig = uProcessWatch
   nowatch   = uTermCommand*
   watch_all = true
 }
-
 
 //------------------------------------------
 // pLogger config block
@@ -78,13 +77,15 @@ ProcessConfig = pLogger
 }
 
 //------------------------------------------
-// uSimMarine config block
+// uSimMarineV22 config block
 
-ProcessConfig = uSimMarine
+ProcessConfig = uSimMarineV22
 {
   AppTick	= 4
   CommsTick	= 4
 
+	app_logging = true
+	
   start_x       = 60
   start_y       = -30
   start_heading = 180
@@ -113,7 +114,7 @@ ProcessConfig = pHelmIvP
   term_report_interval=0
 
   bhv_dir_not_found_ok = true
-  ivp_behavior_dir = /Users/ddmikerb
+  //ivp_behavior_dir = /Users/mikerb
 
   behaviors  = alpha.bhv
   domain     = course:0:359:360
@@ -121,9 +122,9 @@ ProcessConfig = pHelmIvP
 }
 
 //------------------------------------------
-// pMarinePID config block
+// pMarinePIDV22 config block
 
-ProcessConfig = pMarinePID
+ProcessConfig = pMarinePIDV22
 {
   AppTick    = 20
   CommsTick  = 20
@@ -223,7 +224,7 @@ ProcessConfig = pObstacleMgr
   AppTick   = 4 
   CommsTick = 4 
 
-  given_obstable = pts={50,-100:50,-120:80,-120:80,-100}, label=one
+  given_obstacle = pts={50,-100:50,-120:80,-120:80,-100}, label=one
 	
 	obstacles_color = yellow
 

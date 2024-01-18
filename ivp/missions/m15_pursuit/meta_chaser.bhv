@@ -6,6 +6,7 @@ initialize   RETURN  = false
 initialize   STATION_KEEP = false
 initialize   CHASE   = true
 initialize   AVOID   = true
+initialize   TAGGED_EVADER  = true
 
 set MODE = ACTIVE {
   DEPLOY = true
@@ -32,11 +33,13 @@ Behavior = BHV_CutRange
   name      = cut_range
 	pwt       = 100
 	condition = MODE==CHASING
-
+	condition = TAGGED_$[CONTACT] = true
+	
 	templating = spawn
 
 	updates = UPDATES_CUT
-	
+
+	duration = 10
 	//contact   = evader
 
 	pursueflag = SAY_MOOS=go
@@ -45,7 +48,7 @@ Behavior = BHV_CutRange
 	pwt_outer_dist = 100
 	pwt_inner_dist = 5
 	giveup_dist    = 110
-	patience       = 90	
+	patience       = 100
 }
 
 //----------------------------------------------

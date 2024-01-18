@@ -4,9 +4,8 @@
 #  Author: Michael Benjamin
 #  LastEd: May 20th 2019
 #----------------------------------------------------------
-#  Part 1: Set Exit actions and declare global var defaults
+#  Part 1: Set global var defaults
 #----------------------------------------------------------
-
 TIME_WARP=1
 COMMUNITY="alpha"
 

@@ -65,7 +65,6 @@ Behavior = BHV_Waypoint
           points = 0,-20
 }
 
-
 //----------------------------------------------
 Behavior = BHV_AvoidObstacleV21
 {
