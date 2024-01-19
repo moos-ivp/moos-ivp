@@ -21,8 +21,6 @@ void PMGen::setHdgHist(std::list<double> hdgs, std::list<double> utcs)
 {
   m_recent_val_osh=hdgs;
   m_recent_utc_osh=utcs;  
-
-  cout << "HeadingHistSet:" << m_recent_val_osh.size() << endl;
 }
 
 
@@ -40,8 +38,6 @@ double PMGen::getHdgAvg(double time_window)
   if(hdgs.size() == 0)
     return(-1);
 
-  cout << "getHdgAvg(1):" << endl;
-
   double prev_hdg = hdgs.front();
   double most_recent_utc = utcs.front();
   hdgs.pop_front();
@@ -50,9 +46,6 @@ double PMGen::getHdgAvg(double time_window)
   double total_delta_hdg = 0;
   unsigned int count = 0;
 
-  cout << "getHdgAvg(a): prev_hdg" << prev_hdg << endl;
-  cout << "getHdgAvg(b): newest_utc" << doubleToStringX(most_recent_utc) << endl;
-  
   bool done = false;
   while(!done) {
     if(hdgs.size() == 0)
@@ -60,9 +53,6 @@ double PMGen::getHdgAvg(double time_window)
 
     double hdg = hdgs.front();
     double utc = utcs.front();
-    cout << "getHdgAvg(c): hdg" << hdg << endl;
-    cout << "getHdgAvg(d): utc" << doubleToStringX(utc) << endl;
-
     double elapsed = most_recent_utc - utc;
     if(elapsed > time_window)
       done = true;
@@ -82,12 +72,9 @@ double PMGen::getHdgAvg(double time_window)
     utcs.pop_front();
   }
 
-  cout << "getHdgAvg(2) count: " << count << endl;
-  
   if(count == 0)
     return(0);
 
   double avg = total_delta_hdg / (double)(count);
-  cout << "getHdgAvg(3) avg: " << count << endl;
   return(avg);
 }
