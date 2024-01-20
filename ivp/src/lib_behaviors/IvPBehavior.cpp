@@ -453,10 +453,9 @@ void IvPBehavior::postMessage(string var, string sdata, string key)
   }
   VarDataPair pair(var, sdata);
 
-  if(tolower(key) != "repeatable") {
+  if(tolower(key) != "repeatable") 
     key = (m_descriptor + var + key);
-    pair.set_key(key);
-  }
+  pair.set_key(key);
 
   m_messages.push_back(pair);
 }
@@ -719,7 +718,7 @@ void IvPBehavior::noteLastRunCheck(bool post, double timestamp)
 }
 
 //-----------------------------------------------------------
-// Procedure: postMessage
+// Procedure: postMessage()
 //     Notes: If the key is set to be "repeatable" then in effect 
 //            there is no key is associated with this variable-value 
 //            pair and it will NOT be filtered.
@@ -739,16 +738,16 @@ void IvPBehavior::postMessage(string var, double ddata, string key)
   
   VarDataPair pair(var, ddata);
   
-  if(tolower(key) != "repeatable") {
+  if(tolower(key) != "repeatable")
     key = (m_descriptor + var + key);
-    pair.set_key(key);
-  }
+  pair.set_key(key);
+ 
   m_messages.push_back(pair);
 }
 
 
 //-----------------------------------------------------------
-// Procedure: postBoolMessage
+// Procedure: postBoolMessage()
 
 void IvPBehavior::postBoolMessage(string var, bool bdata, string key)
 {
@@ -759,7 +758,7 @@ void IvPBehavior::postBoolMessage(string var, bool bdata, string key)
 }
 
 //-----------------------------------------------------------
-// Procedure: postIntMessage
+// Procedure: postIntMessage()
 //      Note: A convenience method for posting the double data rounded
 //            to the nearest integer. This may reduce the number of 
 //            posts out to the DB, since the posts are done by default
@@ -773,7 +772,7 @@ void IvPBehavior::postIntMessage(string var, double ddata, string key)
 }
 
 //-----------------------------------------------------------
-// Procedure: postRepeatableMessage
+// Procedure: postRepeatableMessage()
 
 void IvPBehavior::postRepeatableMessage(string var, string sdata)
 {
@@ -781,7 +780,7 @@ void IvPBehavior::postRepeatableMessage(string var, string sdata)
 }
 
 //-----------------------------------------------------------
-// Procedure: postRepeatableMessage
+// Procedure: postRepeatableMessage()
 
 void IvPBehavior::postRepeatableMessage(string var, double ddata)
 {
@@ -789,7 +788,7 @@ void IvPBehavior::postRepeatableMessage(string var, double ddata)
 }
 
 //-----------------------------------------------------------
-// Procedure: setComplete
+// Procedure: setComplete()
 
 void IvPBehavior::setComplete()
 {
@@ -802,7 +801,7 @@ void IvPBehavior::setComplete()
 
 
 //-----------------------------------------------------------
-// Procedure: postEMessage
+// Procedure: postEMessage()
 
 void IvPBehavior::postEMessage(string g_emsg)
 {

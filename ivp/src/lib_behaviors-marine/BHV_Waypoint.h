@@ -56,8 +56,6 @@ protected:
   void         postViewableSegList();
   void         postErasableSegList();
   void         postErasables();
-  void         postCycleFlags();
-  void         postWptFlags(double x, double y);
   void         updateOdoDistance();
   void         markOdoLeg();
   std::string  getReverseStr() const;

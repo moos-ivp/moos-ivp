@@ -669,7 +669,7 @@ bool BHV_Waypoint::setNextWaypoint()
       postMessage((m_var_report + m_var_suffix), feedback_msg_aug);
     }
     
-    postFlags(m_cycle_flags);
+    postFlags(m_cycle_flags, true); // Cycle flags repeatble
   }
 
   postMessage("FEEDBACK_MSG", feedback_msg);
@@ -908,46 +908,6 @@ void BHV_Waypoint::postErasables()
   string segmsg = seglist.get_spec();
   postMessage("VIEW_SEGLIST", segmsg);
 }
-
-
-//-----------------------------------------------------------
-// Procedure: postCycleFlags()
-
-void BHV_Waypoint::postCycleFlags()
-{
-  int vsize = m_cycle_flags.size();
-  for(int i=0; i<vsize; i++) {
-    string var   = m_cycle_flags[i].get_var();
-    string sdata = m_cycle_flags[i].get_sdata();
-    double ddata = m_cycle_flags[i].get_ddata();
-    if(m_cycle_flags[i].is_string())
-      postRepeatableMessage(var, sdata);
-    else
-      postRepeatableMessage(var, ddata);
-  }
-}
-
-//-----------------------------------------------------------
-// Procedure: postWptFlags()
-
-#if 0
-void BHV_Waypoint::postWptFlags(double x, double y)
-{
-  for(unsigned int i=0; i<m_wpt_flags.size(); i++) {
-    string var = m_wpt_flags[i].get_var();
-    if(m_wpt_flags[i].is_string()) {
-      string sdata = m_wpt_flags[i].get_sdata();
-      sdata = expandMacros(sdata);
-      postRepeatableMessage(var, sdata);
-    }
-    else {
-      double ddata = m_wpt_flags[i].get_ddata();
-      postRepeatableMessage(var, ddata);
-    }
-  }
-}
-#endif
-
 
 //-----------------------------------------------------------
 // Procedure: checkLeadConditions()

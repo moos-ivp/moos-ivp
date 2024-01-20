@@ -574,7 +574,10 @@ void HelmIvP::postBehaviorMessages()
 	key_change = detectChangeOnKey(mkey, ddata);
       else
 	key_change = detectChangeOnKey(mkey, sdata);
- 
+
+      if(mkey == "repeatable")
+	key_repeat = true;
+
       // Include warnings in this application's appcast
       if(var == "BHV_WARNING") {
 	//if(mkey != "retract")
@@ -1470,7 +1473,7 @@ void HelmIvP::checkHoldOnApps(string db_clients)
 }
 
 //--------------------------------------------------------------------
-// Procedure: addBehaviorFile
+// Procedure: addBehaviorFile()
 //     Notes: More then one behavior file can be used to 
 //            configure the helm. Perhaps if there is a
 //            common set of behaviors like safety behaviors.
@@ -1485,7 +1488,7 @@ bool HelmIvP::addBehaviorFile(string filename)
 }
 
 //--------------------------------------------------------------------
-// Procedure: detectRepeatOnKey
+// Procedure: detectRepeatOnKey()
 // Notes: When the helm posts a VarDataPair it may be posted with the
 //        understanding that subsequent posts are disallowed if the
 //        value has not changed. To indicate this, the VarDataPair sets
