@@ -72,6 +72,9 @@ class CollObDetect : public AppCastingMOOSApp
   double getPrevDist(std::string vname, std::string label);
   double getMinDist(std::string vname, std::string label);
 
+  void postEncounterBin(double dist);
+  void binEncounter(double dist);
+  
   
  private: // Configuration variables
 
@@ -103,7 +106,8 @@ class CollObDetect : public AppCastingMOOSApp
 
   double m_bin_minval;
   double m_bin_delta;
-  std::map<double, unsigned int> m_map_bins;
+  std::map<double, unsigned int> m_map_bins;  // totals in bin
+  std::map<double, unsigned int> m_map_tbins; // totals in bin and below
   
   double m_global_min_dist;
 };

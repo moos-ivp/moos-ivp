@@ -417,10 +417,7 @@ void CollObDetect::updateVehiEncounters()
 	    postFlags(m_near_miss_flags, min_dist, vname, label);
 	  }
 
-	  if((m_bin_minval >= 0) && (m_bin_delta > 0)) {
-	    double bin_val = snapToStep(min_dist, m_bin_delta);
-	    m_map_bins[bin_val]++;
-	  }
+	  binEncounter(min_dist);
 
 	  m_total_encounters++;
 	  postFlags(m_encounter_flags, min_dist, vname, label);
@@ -429,6 +426,40 @@ void CollObDetect::updateVehiEncounters()
       }
     }
   }
+}
+
+//------------------------------------------------------------
+// Procedure: binEncounter()
+
+void CollObDetect::binEncounter(double dist)
+{
+  if((m_bin_minval < 0) || (m_bin_delta <= 0))
+    return;
+  
+  double bin_val = snapToStep(dist, m_bin_delta);
+  m_map_bins[bin_val]++;
+  m_map_tbins[bin_val]++;
+
+  map<double, unsigned int>::iterator p;
+  for(p=m_map_tbins.begin(); p!=m_map_tbins.end(); p++) {
+    double bval = p->first;
+    if(bval > bin_val)
+      m_map_tbins[bval]++;
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: postEncounterBin()
+
+void CollObDetect::postEncounterBin(double dist)
+{
+  double bin_val = snapToStep(dist, m_bin_delta);
+
+  string sbin_val = doubleToStringX(bin_val);
+  sbin_val = findReplace(sbin_val, ".", "P");
+
+  string moos_var = "NMISS_" + sbin_val;
+  Notify(moos_var, m_map_bins[bin_val]);
 }
 
 //------------------------------------------------------------
@@ -537,28 +568,30 @@ bool CollObDetect::buildReport()
   // ==============================================================
   // Part 2: Build table of bin values
   // ==============================================================  
-  ACTable actab1(2);
+  ACTable actab1(3);
 
   // Build header string, e.g., "abe | ben | cal | deb"
 
-  string header1_str = "Thresh | Count";
+  string header1_str = "Thresh | Count | Total";
   actab1 << header1_str;
   actab1.addHeaderLines();
   map<double, unsigned int>::iterator pp;
   for(pp=m_map_bins.begin(); pp!=m_map_bins.end(); pp++) {
     double thresh = pp->first;
     unsigned int count = pp->second;
+    unsigned int tcount = m_map_tbins[thresh];
     actab1 << doubleToStringX(thresh,2);
     actab1 << count;
+    actab1 << tcount;
   }
   m_msgs << actab1.getFormattedString() << endl << endl;
 
   
   // ==============================================================
-  // Part 2: Build a table of current distances to obstacles
-  // ==============================================================  
+  // Part 3: Build a table of min distances to obstacles
+  // ==============================================================
   unsigned int vcount = m_map_vrecords.size();
-  ACTable actab(vcount);
+  ACTable actab2(vcount);
 
   // Build header string, e.g., "abe | ben | cal | deb"
   string header_str;
@@ -570,40 +603,10 @@ bool CollObDetect::buildReport()
     else
       header_str += " | " + vname;
   }
-  actab << header_str;
-  actab.addHeaderLines();
-
-  map<string, XYPolygon>::iterator q;
-  for(q=m_map_obstacles.begin(); q!=m_map_obstacles.end(); q++) {
-    string label = q->first;
-    for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
-      string vname = p->first;
-      string sdist = "-";
-      double dist = getCurrDist(vname, label);
-      if(dist >= 0) {
-	sdist = doubleToStringX(dist,1);
-      }
-      actab << sdist;
-    }
-  }
-  //m_msgs << actab.getFormattedString() << endl << endl;
-  
-  // ==============================================================
-  // Part 3: Build a table of min distances to obstacles
-  // ==============================================================
-  ACTable actab2(vcount);
-
-  // Build header string, e.g., "abe | ben | cal | deb"
-  for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
-    string vname = p->first;
-    if(p==m_map_vrecords.begin())
-      header_str = vname;
-    else
-      header_str += " | " + vname;
-  }
   actab2 << header_str;
   actab2.addHeaderLines();
 
+  map<string, XYPolygon>::iterator q;
   for(q=m_map_obstacles.begin(); q!=m_map_obstacles.end(); q++) {
     string label = q->first;
     for(p=m_map_vrecords.begin(); p!=m_map_vrecords.end(); p++) {
