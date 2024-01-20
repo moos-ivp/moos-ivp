@@ -159,9 +159,9 @@ bool QueryDB::Iterate()
   // Part 2: Re-evaluate exit conditions AFTER the above exit handling
   // to allow a PostReport to reflect the reason for exit.
   m_elapsed_time = m_curr_time - m_start_time;
-  if(m_elapsed_time >= m_max_time)
+  if((m_max_time > 0) && (m_elapsed_time >= m_max_time))
     m_exit_value = 1;
-
+  
   checkPassFailConditions();
 
   cout << "Posting report: " << m_exit_value << endl;
