@@ -47,13 +47,15 @@ protected:
 
 private: // Configuration variables
 
-  std::string m_mission_hash_var;
+  std::string m_mission_hash_var;  // MISSION_HASH
+  std::string m_mhash_short_var;   // MHASH
   
 private: // State variables
 
   double      m_last_mhash_post;
+
   std::string m_mission_hash;
-  std::string m_mission_hash_short;
+  std::string m_mhash_short;
 
 
 

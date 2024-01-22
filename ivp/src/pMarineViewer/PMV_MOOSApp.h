@@ -116,9 +116,12 @@ class PMV_MOOSApp : public AppCastingMOOSApp
   unsigned int m_button_clicks;
 
   std::string  m_region_info;
-  std::string  m_mission_hash;
-  std::string  m_mission_hash_short;
-  std::string  m_mission_hash_var;  
+
+  std::string  m_mission_hash; // 221103-0834K-FOXY-WEED
+  std::string  m_mhash_short;  // FOXY-WEED
+
+  std::string  m_mission_hash_var;  // MISSION_HASH
+  std::string  m_mhash_short_var;   // MHASH
   
   std::vector<VarDataPair> m_beat_flags;  
 };

@@ -71,6 +71,7 @@ PMV_MOOSApp::PMV_MOOSApp()
   m_pmv_iteration = 0;
 
   m_mission_hash_var = "MISSION_HASH";
+  m_mhash_short_var  = "MHASH";
   
   m_log_the_image   = false;
 }
@@ -551,8 +552,8 @@ void PMV_MOOSApp::handleIterate(const MOOS_event & e)
   if(m_mission_hash_var != "") {
     double hash_elapsed = (curr_time - m_last_mhash_time);
     if((m_last_mhash_time == 0) || (hash_elapsed > 16)) {
-      //Notify("MISSION_HASH", m_mission_hash);
       Notify(m_mission_hash_var, m_mission_hash);
+      Notify(m_mhash_short_var, m_mhash_short);
       m_last_mhash_time = curr_time;
     }
   }
@@ -894,6 +895,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
 	m_gui->showTitleMHash("false");
       }
     }
+    else if(param == "mhash_short_var")
+      handled = setNonWhiteVarOnString(m_mhash_short_var, value);
     else if(param == "cmd") 
       handled = handleConfigCmd(value);
 
@@ -1018,8 +1021,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
   // Post the Mission Hash (added Nov0322)
   setMissionHash();
 
-  if(m_mission_hash_short != "")
-    m_gui->augmentTitleWithMHash(m_mission_hash_short);
+  if(m_mhash_short != "")
+    m_gui->augmentTitleWithMHash(m_mhash_short);
   
   registerVariables();
 }
@@ -1038,9 +1041,7 @@ bool PMV_MOOSApp::setMissionHash()
   m_mission_hash = "mhash=" + hash;
   m_mission_hash += ",utc=" + doubleToString(actual_utc,2);
 
-  biteString(hash, '-');
-  biteString(hash, '-');
-  m_mission_hash_short = hash;
+  m_mhash_short = missionHashShort(hash);
   
   return(true);
 }

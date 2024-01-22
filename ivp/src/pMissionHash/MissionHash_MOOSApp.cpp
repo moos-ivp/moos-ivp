@@ -36,10 +36,10 @@ MissionHash_MOOSApp::MissionHash_MOOSApp()
 {
   // Init Config Vars
   m_mission_hash_var = "MISSION_HASH";
+  m_mhash_short_var  = "MHASH";
   
   // Init State Vars
   m_last_mhash_post = 0;
-  
 }
 
 //---------------------------------------------------------
@@ -97,6 +97,7 @@ bool MissionHash_MOOSApp::Iterate()
     double elapsed = m_curr_time - m_last_mhash_post;
     if(elapsed > 30) {
       Notify(m_mission_hash_var, m_mission_hash);
+      Notify(m_mhash_short_var, m_mhash_short);
       m_last_mhash_post = m_curr_time;
     }
   }
@@ -130,6 +131,11 @@ bool MissionHash_MOOSApp::OnStartUp()
       handled = setNonWhiteVarOnString(m_mission_hash_var, value);
       if(tolower(m_mission_hash_var) == "off")
 	m_mission_hash_var = "";
+    }
+    if(param == "mhash_short_var") {
+      handled = setNonWhiteVarOnString(m_mhash_short_var, value);
+      if(tolower(m_mhash_short_var) == "off")
+	m_mhash_short_var = "";
     }
 
 
@@ -166,9 +172,7 @@ bool MissionHash_MOOSApp::setMissionHash()
   m_mission_hash = "mhash=" + hash;
   m_mission_hash += ",utc=" + doubleToString(actual_utc,2);
 
-  biteString(hash, '-');
-  biteString(hash, '-');
-  m_mission_hash_short = hash;
+  m_mhash_short = missionHashShort(hash);
   
   return(true);
 }
@@ -179,16 +183,9 @@ bool MissionHash_MOOSApp::setMissionHash()
 
 bool MissionHash_MOOSApp::buildReport() 
 {
-  m_msgs << "============================================" << endl;
-  m_msgs << "File:                                       " << endl;
-  m_msgs << "============================================" << endl;
-
-  ACTable actab(4);
-  actab << "Alpha | Bravo | Charlie | Delta";
-  actab.addHeaderLines();
-  actab << "one" << "two" << "three" << "four";
-  m_msgs << actab.getFormattedString();
-
+  m_msgs << m_mission_hash_var << "=" << m_mission_hash << endl;
+  m_msgs << m_mhash_short_var << "=" << m_mhash_short << endl;
+  
   return(true);
 }
 
