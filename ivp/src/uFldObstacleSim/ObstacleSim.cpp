@@ -384,6 +384,7 @@ bool ObstacleSim::handleConfigObstacleFile(string filename)
       bool ok = setNonNegDoubleOnString(m_min_range, right);
       if(!ok)
 	reportConfigWarning("Poorly specified min_range: " + right);
+      Notify("UFOS_MIN_RNG", m_min_range);
     }
     else if(left == "min_size") {
       bool ok = setNonNegDoubleOnString(m_min_poly_size, right);
@@ -533,6 +534,7 @@ void ObstacleSim::updateObstaclesField()
   generator.setVerbose(false);
   generator.setGenTries(25000);
   generator.generate();
+  Notify("UFOS_MIN_RNG", m_min_range);
   
   // Sanity check the results.
   vector<XYPolygon> obstacles = generator.getObstacles();
