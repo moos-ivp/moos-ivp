@@ -164,7 +164,6 @@ bool QueryDB::Iterate()
   
   checkPassFailConditions();
 
-  cout << "Posting report: " << m_exit_value << endl;
   AppCastingMOOSApp::PostReport();  
 
   return(true);

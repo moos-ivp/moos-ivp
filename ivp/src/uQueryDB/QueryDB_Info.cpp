@@ -146,12 +146,13 @@ void showExampleConfigAndExit()
   blk("  fail_condition = COLLISION = true                             ");
   blk("                                                                ");
   blk("  wait = 5                      // Default is zero seconds      ");
-  blk("  halt_max_time = 5             // Same as wait=5
+  blk("  halt_max_time = 5             // Same as wait=5               ");
   blk("                                                                ");
   blk("  check_var = MISSION_RESULT                                    ");
   blk("  check_var = DB_UPTIME                                         ");
   blk("                                                                ");
   blk("  check_var_format = csv                                        ");
+  blk("}                                                               ");
   exit(0);
 }
 
