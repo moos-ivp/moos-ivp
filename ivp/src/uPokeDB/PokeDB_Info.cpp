@@ -100,11 +100,16 @@ void showExampleConfigAndExit()
   blu("uPokeDB Example MOOS Configuration                              ");
   blu("=============================================================== ");
   blk("                                                                ");
-  mag("Not Applicable"," - uPokeDB is run from the command line. If a ");
-  blk("MOOS file is provided on the command line, it is used solely to ");
-  blk("read the ServerHost and ServerPort information. uPokeDB does not");
-  blk("read a configuration block in the provided MOOS file.           ");
+  blk("ProcessConfig = uPokeDB                                         ");
+  blk("{                                                               ");
+  blk("  AppTick   = 4                                                 ");
+  blk("  CommsTick = 4                                                 ");
   blk("                                                                ");
+  blk("  poke = DEPLOY_ALL=true                                        ");
+  blk("  poke = MOOS_MANUAL_OVERRIDE_ALL=false                         ");
+  blk("                                                                ");
+  blk("  poke = NUMERICAL_STRING:=88                                   ");
+  blk("}                                                               ");
   exit(0);
 }
 

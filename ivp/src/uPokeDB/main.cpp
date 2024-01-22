@@ -35,12 +35,11 @@ int main(int argc ,char * argv[])
 {
   string mission_file;
 
-  vector<string> varname;
-  vector<string> varvalue;
-  vector<string> vartype;
+  vector<string> pokes;
 
   string server_host = "";  // localhost
   int    server_port = 0;   // 9000
+  bool   use_cache = false;
   
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -57,10 +56,6 @@ int main(int argc ,char * argv[])
       std::ofstream file("/dev/null");
       std::streambuf *strm_buffer = std::cout.rdbuf();
       cout.rdbuf(file.rdbuf());
-      
-      //cout.rdbuf(ss.rdbuf());
-      //cerr.rdbuf(ss.rdbuf());
-      
       cout.rdbuf(strm_buffer);
     }
     else if(strBegins(argi, "--host="))       // recommended to user
@@ -71,6 +66,9 @@ int main(int argc ,char * argv[])
       server_host = argi.substr(11);
     else if(strBegins(argi, "server_host="))
       server_host = argi.substr(12);
+
+    else if((argi == "--cache=") || (argi == "-c"))
+      use_cache = true;
 
     else if(strBegins(argi, "--port="))      // recommended to user
       server_port = atoi(argi.substr(7).c_str());
@@ -85,32 +83,8 @@ int main(int argc ,char * argv[])
 
     else if(strEnds(argi, ".moos") || strEnds(argi, ".moos++"))
       mission_file = argv[i];
-    else if(strContains(argi, ":=")) {
-      vector<string> svector = parseString(argi, ":=");
-      if(svector.size() != 2)
-	showHelpAndExit();
-      else {
-	varname.push_back(stripBlankEnds(svector[0]));
-	varvalue.push_back(stripBlankEnds(svector[1]));
-	vartype.push_back("string!");
-      }
-    }
-    else if(strContains(argi, "=")) {
-      string left  = biteStringX(argi, '=');
-      string right = argi;
-      if(right == "@UTC")
-	right = "@MOOSTIME";
-
-      varname.push_back(left);
-      if(isNumber(right)) {
-	varvalue.push_back(right);
-	vartype.push_back("double");
-      }
-      else {
-	varvalue.push_back(right);
-	vartype.push_back("string");
-      }
-    }
+    else if(strContains(argi, "="))
+      pokes.push_back(argi);
   }
 
   // If the mission file is not provided, we prompt the user if the 
@@ -140,6 +114,7 @@ int main(int argc ,char * argv[])
   }
 
   PokeDB Poker(server_host, server_port);
+  Poker.setUseCache(use_cache);
   
   if(mission_file == "") {
     cout << "Mission File not provided. " << endl;
@@ -150,14 +125,8 @@ int main(int argc ,char * argv[])
   else
     cout << "Mission File was provided: " << mission_file << endl;
   
-  unsigned int j, vsize = varname.size();
-  for(j=0; j<vsize; j++) {
-    if((vartype[j] == "double") || 
-       ((varvalue[j] == "@MOOSTIME") && (vartype[j] != "string!")))
-      Poker.setPokeDouble(varname[j], varvalue[j]);
-    else
-      Poker.setPokeString(varname[j], varvalue[j]);
-  }
+  for(unsigned int j=0; j<pokes.size(); j++)
+    Poker.setPoke(pokes[j]);
   
   Poker.Run("uPokeDB", mission_file.c_str(), argc, argv);
 

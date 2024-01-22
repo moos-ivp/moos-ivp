@@ -23,6 +23,8 @@
 
 #include "PokeDB.h"
 #include "MBUtils.h"
+#include "VarDataPairUtils.h"
+#include "ACTable.h"
 
 using namespace std;
 
@@ -47,6 +49,8 @@ PokeDB::PokeDB()
   m_values_poked  = false;
   m_poked_reported = false;
 
+  m_use_cache = false;
+  
   m_poke_iteration = 0;
 }
 
@@ -179,6 +183,7 @@ bool PokeDB::Iterate()
     }
     m_values_poked = true;
     m_poke_iteration = m_iteration;
+
     return(true);
   }
   
@@ -237,7 +242,34 @@ bool PokeDB::OnNewMail(MOOSMSG_LIST &NewMail)
 bool PokeDB::OnStartUp()
 {
   CMOOSApp::OnStartUp();
+
+  // Newly added Jan 21, 2024, ability to add a set of pokes
+  // from a configuration block. These lines are the "poke cache"
+  // This allows auto-starts to a mission by just generically
+  // invoking a poke of whatever is configured to be in the cache.
+  STRING_LIST sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
+  m_MissionReader.GetConfiguration(GetAppName(), sParams);
   
+  STRING_LIST::iterator p;
+  for(p=sParams.begin(); p!=sParams.end(); p++) {
+    string orig  = *p;
+    string line  = *p;
+    string param = tolower(biteStringX(line, '='));
+    string value = line;
+
+    bool handled = true;
+    if(param == "poke") {  // poke=DEPLOY=true
+      if(m_use_cache)
+	handled = setPoke(value);
+    }
+    else
+      handled = false;
+
+    if(!handled)
+      cout << "Unhandle uPokeDB config: " << orig << endl;
+  }
+
   registerVariables();
   return(true);
 }
@@ -283,9 +315,44 @@ void PokeDB::clearVarsReceived()
 }
 
 //------------------------------------------------------------
-// Procedure: setPokeDouble
+// Procedure: setPoke()
+//   Purpose: Examine a FOO=bar string and separate it into
+//            left/right parts and determine string or double
 
-void PokeDB::setPokeDouble(const string& varname, const string& value)
+bool PokeDB::setPoke(string pstr)
+{
+  if(!strContains(pstr, "="))
+    return(false);
+
+  if(strContains(pstr, ":=")) {
+    vector<string> svector = parseString(pstr, ":=");
+    if(svector.size() != 2)
+      return(false);
+    
+    string left  = stripBlankEnds(svector[0]);
+    string right = stripBlankEnds(svector[1]);
+    setPokeString(left, right);
+    return(true);
+  }
+    
+  string left  = biteStringX(pstr, '=');
+  string right = pstr;
+  if(right == "@UTC")
+    right = "@MOOSTIME";
+  
+  if(isNumber(right))
+    setPokeDouble(left, right);
+  else
+    setPokeString(left, right);
+
+  return(true);
+}
+
+
+//------------------------------------------------------------
+// Procedure: setPokeDouble()
+
+void PokeDB::setPokeDouble(string varname, string value)
 {
   m_varname.push_back(varname);
   m_valtype.push_back("double");
@@ -300,9 +367,9 @@ void PokeDB::setPokeDouble(const string& varname, const string& value)
 }
 
 //------------------------------------------------------------
-// Procedure: setPokeString
+// Procedure: setPokeString()
 
-void PokeDB::setPokeString(const string& varname, const string& value)
+void PokeDB::setPokeString(string varname, string value)
 {
   m_varname.push_back(varname);
   m_valtype.push_back("string");
@@ -317,12 +384,11 @@ void PokeDB::setPokeString(const string& varname, const string& value)
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void PokeDB::registerVariables()
 {
-  unsigned int i, vsize = m_varname.size();
-  for(i=0; i<vsize; i++) 
+  for(unsigned int i=0; i<m_varname.size(); i++) 
     Register(m_varname[i], 0);
 
   Register("DB_UPTIME", 0);
@@ -330,7 +396,7 @@ void PokeDB::registerVariables()
 }
 
 //------------------------------------------------------------
-// Procedure: updateVariable
+// Procedure: updateVariable()
 //      Note: Will read a MOOS Mail message and grab the fields
 //            and update the variable only if its in the vector 
 //            of variables vector<string> vars.
@@ -363,8 +429,31 @@ void PokeDB::updateVariable(CMOOSMsg &msg)
 }
 
 //------------------------------------------------------------
+// Procedure: postFlags()
+
+void PokeDB::postFlags(const vector<VarDataPair>& flags)
+{
+  for(unsigned int i=0; i<flags.size(); i++) {
+    VarDataPair pair = flags[i];
+    string moosvar = pair.get_var();
+    
+    // If posting is a double, just post. No macro expansion
+    if(!pair.is_string()) {
+      double dval = pair.get_ddata();
+      Notify(moosvar, dval);
+    }
+    // Otherwise if string posting, handle macro expansion
+    else {
+      string sval = pair.get_sdata();
+      Notify(moosvar, sval);
+    }
+  }
+}
+
+//------------------------------------------------------------
 // Procedure: printReport()
 
+#if 0
 void PokeDB::printReport()
 {
   printf("  %-24s", "VarName");
@@ -403,15 +492,43 @@ void PokeDB::printReport()
     printf("\n");		
   }
 }
+#endif
 
 
+//------------------------------------------------------------
+// Procedure: printReport()
 
+void PokeDB::printReport()
+{
+  ACTable actab(4);
+  actab << "VarName | Source | Time | VarValue";
+  actab.addHeaderLines();
+  
+  for(unsigned int i=0; i<m_varname.size(); i++) {
+    double wrtime_dval = 0;
+    string wrtime_sval;
+    if(m_wrtime_read[i] > 0) {
+      wrtime_dval = m_wrtime_read[i] - m_db_start_time;
+      wrtime_dval = wrtime_dval / GetMOOSTimeWarp();
+      wrtime_sval = doubleToString(wrtime_dval,2);
+    }
+    
+    string varval="n/a";    
+    if(m_valtype_read[i] == "string") {
+      if(m_svalue_read[i] != "") {
+	varval = "\"" + m_svalue_read[i] + "\"";
+      }
+    }
+    else if(m_valtype_read[i] == "double")
+      varval = m_dvalue_read[i];
+    
+    actab << m_varname[i] << m_source_read[i] << wrtime_sval << varval;
+  }
 
-
-
-
-
-
-
-
+  cout << endl;
+  vector<string> lines = actab.getTableOutput();
+  for(unsigned int i=0; i<lines.size(); i++)
+    cout << lines[i] << endl;
+  
+}
 

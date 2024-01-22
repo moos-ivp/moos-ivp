@@ -23,6 +23,7 @@
 
 #include <string>
 #include "MOOS/libMOOS/MOOSLib.h"
+#include "VarDataPair.h"
 
 class PokeDB : public CMOOSApp  
 {
@@ -39,9 +40,11 @@ class PokeDB : public CMOOSApp
 
   void setConfigureCommsLocally(bool v) {m_configure_comms_locally=v;}
 
-  void setPokeDouble(const std::string& varname, const std::string& val);
-  void setPokeString(const std::string& varname, const std::string& val);
+  bool setPoke(std::string pokestr);
+  void setPokeDouble(std::string varname, std::string val);
+  void setPokeString(std::string varname, std::string val);
   void setTimeWarp();
+  void setUseCache(bool v=true) {m_use_cache=v;}
   
  protected:
   void registerVariables();
@@ -53,7 +56,8 @@ class PokeDB : public CMOOSApp
   void clearVarsReceived();
   
   bool ConfigureComms();
-
+  void postFlags(const std::vector<VarDataPair>& flags);
+  
  protected: // Index for each is unique per variable name
   std::vector<std::string>  m_varname;
   std::vector<std::string>  m_valtype;
@@ -76,6 +80,8 @@ class PokeDB : public CMOOSApp
   bool   m_priors_reported;
   bool   m_poked_reported;
 
+  bool   m_use_cache;
+  
   unsigned int m_poke_iteration;
 };
 

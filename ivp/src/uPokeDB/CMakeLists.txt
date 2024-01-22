@@ -19,6 +19,7 @@ ADD_EXECUTABLE(uPokeDB ${SRC})
 
 TARGET_LINK_LIBRARIES(uPokeDB
    ${MOOS_LIBRARIES}
+   apputil
    mbutil
    ${SYSTEM_LIBS})
 
