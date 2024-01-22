@@ -38,6 +38,7 @@ public:
  protected: // State vars
 
   double m_des_hdg;
+  double m_des_spd;
   
 };
 #endif

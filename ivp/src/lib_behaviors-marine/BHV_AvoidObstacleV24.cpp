@@ -347,8 +347,6 @@ void BHV_AvoidObstacleV24::onEveryState(string str)
     m_cpa_reported = m_cpa_rng_ever;
   }
   
-  postMessage("OS_DIST_TO_POLY", os_range_to_poly);
-
   // =================================================================
   // Part 5: Check for completion based on range
   // =================================================================
@@ -479,13 +477,9 @@ double BHV_AvoidObstacleV24::getRelevance()
 {
   // Let the ObShipModel tell us the raw range relevance
   double range_relevance = m_obship_model.getRangeRelevance();
-  cout << "Range Relevance: " << range_relevance << endl;
   if(range_relevance <= 0)
     return(0);
 
-  string obsrvar = "OBSR_" + toupper(m_descriptor);
-  string obssvar = "OBSS_" + toupper(m_descriptor);
-  
   if(range_relevance > 0.6) {
     if(m_side_lock == "") {
       if(m_obship_model.getPassingSide() == "star")
@@ -498,9 +492,6 @@ double BHV_AvoidObstacleV24::getRelevance()
   }
   else
     m_side_lock = "";
-  
-  postMessage(obsrvar, range_relevance);
-  postMessage(obssvar, m_side_lock);
   
   // Part 2: Possibly apply the grade scale to the raw distance
   double relevance = range_relevance;
@@ -692,6 +683,7 @@ string BHV_AvoidObstacleV24::expandMacros(string sdata)
   sdata = macroExpand(sdata, "BNG", os_bng_to_poly);
   sdata = macroExpand(sdata, "RBNG", os_rbng_to_poly);
   sdata = macroExpand(sdata, "SIDE", side);
+  sdata = macroExpand(sdata, "SLOCK", m_side_lock);
   //sdata = macroExpand(sdata, "OSV", osv);
   //sdata = macroExpand(sdata, "SPD", osv);
   sdata = macroExpand(sdata, "OID", obs_id);

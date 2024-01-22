@@ -13,7 +13,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 BHV_PModelView::BHV_PModelView(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
@@ -27,9 +27,11 @@ BHV_PModelView::BHV_PModelView(IvPDomain gdomain) :
   m_vertex_size = 3;
 
   m_des_hdg = 0;
+  m_des_spd = 0;
   
   addInfoVars("NAV_X, NAV_Y, NAV_HEADING, NAV_SPEED");
   addInfoVars("DESIRED_HEADING");
+  addInfoVars("DESIRED_SPEED");
 }
 
 //-----------------------------------------------------------
@@ -70,7 +72,7 @@ IvPFunction *BHV_PModelView::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunToIdleState
+// Procedure: onRunToIdleState()
 
 void BHV_PModelView::onRunToIdleState() 
 {
@@ -98,6 +100,7 @@ bool BHV_PModelView::updateInfoIn()
     return(false);
   
   m_des_hdg = getBufferDoubleVal("DESIRED_HEADING");  
+  m_des_spd = getBufferDoubleVal("DESIRED_SPEED");  
   
   return(true);
 }
@@ -107,6 +110,9 @@ bool BHV_PModelView::updateInfoIn()
 
 void BHV_PModelView::drawTurnPath()
 {
+  if(m_des_spd == 0)
+    return;
+  
   XYSeglr seglr = m_plat_model.getTurnSeglr(m_des_hdg);
   seglr.set_label(m_us_name + "_seglr");
   seglr.setRayLen(20);
@@ -115,11 +121,6 @@ void BHV_PModelView::drawTurnPath()
   seglr.set_vertex_color("lime_green");
   string spec = seglr.get_spec();
 
-#if 0
-  cout << "drawTurnPath()" << endl;
-  m_plat_model.print();
-  cout << "seglr:" << spec << endl;
-#endif
   postMessage("VIEW_SEGLR", spec);    
 }
 

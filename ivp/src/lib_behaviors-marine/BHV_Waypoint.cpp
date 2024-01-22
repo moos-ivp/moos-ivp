@@ -672,8 +672,6 @@ bool BHV_Waypoint::setNextWaypoint()
     postFlags(m_cycle_flags, true); // Cycle flags repeatble
   }
 
-  postMessage("FEEDBACK_MSG", feedback_msg);
-   
   if(feedback_msg == "completed") {
     //postFlags(m_wpt_flags);
     //m_completed = true;
