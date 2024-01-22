@@ -30,6 +30,7 @@
 #include <string>
 
 std::string missionHash();
+std::string missionHashShort(std::string);
 
 std::string hashAlphaNum(unsigned int len=6);
 std::string hashAlphaUpper(unsigned int len=6);

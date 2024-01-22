@@ -59,6 +59,24 @@ string missionHash()
 }
 
 //---------------------------------------------------------
+// Procedure: missionHashShort(string)
+//   Example: 221103-0834K-FOXY-WEED  ==> FOXY-WEED
+//   Example: mhash=240121-1540N-LIVE-GULL,utc=170528.23 ==> LIVE-GULL 
+
+string missionHashShort(string full)
+{
+  string mhash = full;
+  if(strContains(full, "mhash="))
+    mhash = tokStringParse(full, mhash, ',', '=');
+  
+  biteString(mhash, '-');
+  biteString(mhash, '-');
+  
+  return(mhash);
+}
+
+
+//---------------------------------------------------------
 // Procedure: hashAlphaNum()
 
 string hashAlphaNum(unsigned int len)
