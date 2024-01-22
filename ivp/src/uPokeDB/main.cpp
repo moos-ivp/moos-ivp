@@ -67,7 +67,7 @@ int main(int argc ,char * argv[])
     else if(strBegins(argi, "server_host="))
       server_host = argi.substr(12);
 
-    else if((argi == "--cache=") || (argi == "-c"))
+    else if((argi == "--cache") || (argi == "-c"))
       use_cache = true;
 
     else if(strBegins(argi, "--port="))      // recommended to user
