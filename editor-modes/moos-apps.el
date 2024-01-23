@@ -145,5 +145,7 @@
       '("pGradeFrontEstimate" )
       '("pFrontEstimate" "vname" "temperature_factor" "cooling_steps" "min_offset" "max_offset" "min_angle" "max_angle" "min_amplitude" "max_amplitude" "min_period" "max_period" "min_wavelength" "max_wavelength" "min_alpha" "max_alpha" "min_beta" "max_beta" "min_T_N" "max_T_N" "min_T_S" "max_T_S" "concurrent" "adaptive" )
 
-      '("pLogger" "AsyncLog" "WildCardLogging" "Log" "LogAuxSrc" "WildCardExclusionLog" "WildCardOmitPattern" "file" "path" "synclog" "filetimestamp" "LoggingDirectorySummaryFile"  "UTCLogDirectories" "DoublePrecision" "MarkExternalCommunityMessages" "MarkDataType" "CompressAlogs" "file")))
+      '("pMapMarkers" "show_markers" "opfile" "marker_size" "marker_shape" "marker_color" "marker_lcolor" "marker_ecolor" "show_mlables" )
+
+'("pLogger" "AsyncLog" "WildCardLogging" "Log" "LogAuxSrc" "WildCardExclusionLog" "WildCardOmitPattern" "file" "path" "synclog" "filetimestamp" "LoggingDirectorySummaryFile"  "UTCLogDirectories" "DoublePrecision" "MarkExternalCommunityMessages" "MarkDataType" "CompressAlogs" "file")))
 
