@@ -109,28 +109,19 @@ echo "DONE"
 #-------------------------------------------------------
 #  Part 4: Start the mission with the right pokes
 #-------------------------------------------------------
-if [ "${COMMUNITY}" = "" ]; then
-    if [ -f "targ_shoreside.moos" ]; then
-	COMMUNITY="shoreside";
-    elif [ -f "targ_alpha.moos" ]; then
-	COMMUNITY="alpha";
-    else
-	echo "Community name unknown. Use --com=<community>. Exit Code 9."
-	exit 9
-    fi
+if [ ! -f "targ_$COMMUNITY.moos" ]; then
+    echo "targ_$COMMUNITY unfound. Use --com=<community>. Exit Code 9."
+    exit 9
 fi
 
 echo -n "Part 2: Poking/Starting mission $TNUM in $DELAY seconds... "  
 sleep $DELAY
-START="DEPLOY=true MOOS_MANUAL_OVERRIDE=false"
-if [ "${COMMUNITY}" = "shoreside" ]; then
-    START="DEPLOY_ALL=true MOOS_MANUAL_OVERRIDE_ALL=false"
-fi
 
+echo "QUIET: ${QUIET}"
 if [ "${QUIET}" = "yes" ]; then
-    uPokeDB targ_$COMMUNITY.moos $START >& /dev/null
+    uPokeDB targ_$COMMUNITY.moos --cache >& /dev/null
 else
-    uPokeDB targ_$COMMUNITY.moos $START
+    uPokeDB targ_$COMMUNITY.moos --cache
 fi
 echo "DONE"
 

@@ -117,7 +117,7 @@ BUF=`printf %${LEVEL}s`
 #---------------------------------------------------------------
 mhash_tag.sh $VERBOSE $FORCE $LEVEL
 if [ $? != 0 ]; then
-    echo "Unable to find or create an .mhash file. Exit 1."
+    echo "$ME: Unable to find or create an .mhash file. Exit 1."
     exit 1
 fi
 
@@ -218,7 +218,6 @@ fi
 #---------------------------------------------------------------
 #  Part 10: Send the npos file and report if unsuccessful
 #---------------------------------------------------------------
-
 NPOS_FILE="${FHASH}.npos"
 if [ -e $NPOS_FILE ]; then
     vecho "Found .npos file: [${NPOS_FILE}]"

@@ -89,7 +89,7 @@ for file in *; do
 done
 
 if [ "${MHASH_FILE}" = "" ]; then
-    vecho "${red} No .mhash file found or created. Exit 1."
+    vecho "${red} No .mhash file found or created. Exit 1. ${rst}"
     exit 1
 fi
 

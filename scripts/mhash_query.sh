@@ -48,6 +48,7 @@ for ARGI; do
 	echo "  --terse, -t        Exclude newline char in output    "
 	echo "                                                       "
 	echo "  --mhash, -m        Return the mhash                  "
+	echo "  --bhash, -b        Return the brief mhash (ADJ-NOUN) "
 	echo "  --odo, -o          Return alog odometry              "
 	echo "  --duration, -d     Return alog duration              "
 	echo "  --name, -n         Return mhash vehicle name         "
@@ -70,6 +71,8 @@ for ARGI; do
 	TERSE="-n"
     elif [ "${ARGI}" = "--mhash" -o "${ARGI}" = "-m" ]; then
 	SHOW="--mhash"
+    elif [ "${ARGI}" = "--bhash" -o "${ARGI}" = "-b" ]; then
+	SHOW="--bhash"
     elif [ "${ARGI}" = "--odo" -o "${ARGI}" = "-o" ]; then
 	SHOW="--odo"
     elif [ "${ARGI}" = "--duration" -o "${ARGI}" = "-d" ]; then
@@ -137,6 +140,11 @@ fi
 VAL="${MHASH_FILE}"
 if [ "${SHOW}" = "--mhash" ]; then
     VAL=`head -1 ${MHASH_FILE} | cut -d"," -f1 | cut -d"=" -f2`
+elif [ "${SHOW}" = "--bhash" ]; then
+    JUST_MHASH=`head -1 ${MHASH_FILE} | cut -d"," -f1 | cut -d"=" -f2`
+    ONE=`echo $JUST_MHASH | cut -d"-" -f3`
+    TWO=`echo $JUST_MHASH | cut -d"-" -f4`
+    VAL="${ONE}-${TWO}"
 elif [ "${SHOW}" = "--odo" ]; then
     VAL=`head -1 ${MHASH_FILE} | cut -d"," -f2 | cut -d"=" -f2`
     VAL=`printf "%.0f\n" $VAL`

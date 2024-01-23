@@ -64,6 +64,8 @@ for ARGI; do
         TARG_GRP="edu"
     elif [[ $ARGI == *.tgz  ]]; then
 	txt_files+=($ARGI)
+    elif [[ $ARGI == *.tar  ]]; then
+	txt_files+=($ARGI)
     elif [[ $ARGI == *.npos  ]]; then
 	txt_files+=($ARGI)
     else

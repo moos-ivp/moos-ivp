@@ -31,7 +31,14 @@ txtblu=$(tput setaf 4)  # Blue
 #---------------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
-	echo "$ME [SWITCHES] [level]                            "
+	echo "$ME [OPTIONS] [level]                             "
+	echo "                                                  "
+	echo "Synopsis:                                         "
+	echo "  $ME will process the current directory or given "
+	echo "  directory, and recursively archive any folders  "
+	echo "  containining an alog file.                      "
+	echo "                                                  "
+	echo "Options:                                          "
 	echo "  --help, -h         Show this help message       "
 	echo "  --verbose, -v      Verbose output               "
 	echo "  --dryrun, -d       Dry run, no actions          "
@@ -51,10 +58,6 @@ for ARGI; do
 	echo "                                                  "
 	echo "  -x                 Same as --min_dur=5, --today "
 	echo "                             --min_odo=5          "
-	echo "Synopsis:                                         "
-	echo "  $ME will process the current directory or given "
-	echo "  directory, and recursively archive any folders  "
-	echo "  containining an alog file.                      "
 	exit 0
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" ]; then
         LEVEL=$ARGI
