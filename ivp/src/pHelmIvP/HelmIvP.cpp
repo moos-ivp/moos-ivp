@@ -363,6 +363,7 @@ bool HelmIvP::Iterate()
   if(!m_has_control) {
     postAllStop("ManualOverride");
     AppCastingMOOSApp::PostReport();
+    m_info_buffer->clearDeltaVectors();
     return(false);
   }
 
