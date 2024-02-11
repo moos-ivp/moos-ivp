@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
   string mission_file;
   string run_command = argv[0];
 
+  
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
     if((argi=="-v") || (argi=="--version") || (argi=="-version"))
