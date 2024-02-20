@@ -4,7 +4,7 @@ ServerPort = $(VPORT)
 // Community name IS the vehicle name
 Community  = $(VNAME)
 
-#include plug_origin_warp.moos
+#include plugs.moos <origin_warp>
   
 //------------------------------------------------------------
 Processconfig = ANTLER
@@ -25,8 +25,9 @@ Processconfig = ANTLER
   Run = uFldNodeBroker  @ NewConsole = false
 }
 
-#include plug_pShare.moos
-#include plug_pHostInfo.moos
+#include plugs.moos <pShare>
+#include plugs.moos <pHostInfo>
+#include plugs.moos <uProcessWatch>
 
 //--------------------------------------------------
 // uFldNodeBroker Config Block
@@ -36,7 +37,7 @@ ProcessConfig = uFldNodeBroker
   AppTick   = 1
   CommsTick = 1
 
-  try_shore_host = pshare_route=localhost:$(SHORE_LISTEN)
+  try_shore_host = pshare_route=localhost:$(SHORE_PSHARE)
 
   bridge = src=VIEW_POLYGON
   bridge = src=VIEW_POINT
@@ -145,30 +146,6 @@ ProcessConfig = pNodeReporter
   CommsTick   = 
   
   platform_type = kayak
-}
-
-//--------------------------------------------------------
-// uProcessWatch Config Block
-
-ProcessConfig = uProcessWatch
-{
-  AppTick   = 1
-  CommsTick = 1
-
-  ALLOW_RETRACTIONS = true
-  
-  WATCH_ALL = true      // default is true
-
-  WATCH  = uSimMarine
-  WATCH  = pMOOSBridge*
-  WATCH  = pNodeReporter
-  WATCH  = pMarinePID
-  WATCH  = pHelmIvP
-
-  NOWATCH = uXMS*
-  NOWATCH = uPokeDB*
-
-  SUMMARY_WAIT = 12
 }
 
 //--------------------------------------------------------

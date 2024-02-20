@@ -1,24 +1,21 @@
 //*******************************************************
 // ShoreSide Configuration File
-//
-
 ServerHost = localhost
-ServerPort = $(SPORT)
-Community  = $(SNAME)
+ServerPort = $(MOOS_PORT)
+Community  = shoreside
 
-#include plug_origin_warp.moos
+#include plugs.moos <origin_warp>
   
 //--------------------------------------------------------
 Processconfig = ANTLER
 {
-  MSBetweenLaunches = 100
+  MSBetweenLaunches = 150
 
   Run = MOOSDB          @ NewConsole = false
   Run = pRealm          @ NewConsole = false
   Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = uXMS            @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
 
   Run = pShare          @ NewConsole = false
@@ -28,7 +25,8 @@ Processconfig = ANTLER
   Run = pSearchGrid     @ NewConsole = false
 }
 
-#include plug_pShare.moos
+#include plugs.moos <pShare>
+#include plugs.moos <uProcessWatch>
 
 //--------------------------------------------------
 // pShare Configuration Block
@@ -163,7 +161,6 @@ ProcessConfig = pLogger
   WildCardLogging = true 
 }
 
-
 //--------------------------------------------------------
 ProcessConfig = pMarineViewer
 {
@@ -212,16 +209,16 @@ ProcessConfig = uTimerScript
   RESET_TIME = end
 
   RANDVAR = varname=X1, min=-25,  max=25,  key=at_post
-  RANDVAR = varname=Y1, min=-100, max=-50, key=at_post
+  RANDVAR = varname=Y1, min=-75,  max=-25, key=at_post
 
   RANDVAR = varname=X2, min=100,  max=150, key=at_post
   RANDVAR = varname=Y2, min=-75,  max=-25, key=at_post
 
   RANDVAR = varname=X3, min=100,  max=150, key=at_post
-  RANDVAR = varname=Y3, min=-175,  max=-125, key=at_post
+  RANDVAR = varname=Y3, min=-125, max=-10, key=at_post
 
-  RANDVAR = varname=X4, min=-25,  max=25, key=at_post
-  RANDVAR = varname=Y4, min=-175,  max=-125, key=at_post
+  RANDVAR = varname=X4, min=-25,  max=25,   key=at_post
+  RANDVAR = varname=Y4, min=-125, max=-105, key=at_post
 
   EVENT = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180 
   EVENT = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180
@@ -242,25 +239,6 @@ ProcessConfig = uTimerScript
   EVENT = var=UP_LOITER_2, val="center_assign=$[X4],$[Y4]", time=720
   EVENT = var=UP_LOITER_3, val="center_assign=$[X1],$[Y1]", time=720
   EVENT = var=UP_LOITER_4, val="center_assign=$[X2],$[Y2]", time=720
-}
-
-
-//--------------------------------------------------------
-// uProcessWatch Configuration Block
-
-ProcessConfig = uProcessWatch
-{
-  AppTick   = 1
-  CommsTick = 1
-
-  ALLOW_RETRACTIONS = true
-  
-  WATCH_ALL = true      // default is true
-
-  NOWATCH = uXMS*
-  NOWATCH = uPokeDB*
-
-  SUMMARY_WAIT = 12
 }
 
 
