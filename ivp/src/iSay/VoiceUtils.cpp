@@ -57,6 +57,8 @@ bool isVoice(string voice)
      (voice == "vicki")      ||
      (voice == "victoria")   ||
      (voice == "whisper")    ||
+     (voice == "en-us")      ||
+     (voice == "en-sc")      ||
      (voice == "zarvox")) {
     return(true);
   }
