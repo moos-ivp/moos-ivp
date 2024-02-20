@@ -73,14 +73,25 @@ int main(int argc ,char * argv[])
       theXMS.setDisplayColumns("source");    
     else if(argi == "-st")
       theXMS.setDisplayColumns("source,time");    
+
+    else if(strBegins(argi, "--server_host="))
+      server_host = argi.substr(14);
     else if(strBegins(argi, "--serverhost="))
       server_host = argi.substr(13);
     else if(strBegins(argi, "--moos_host="))
       server_host = argi.substr(12);
+    else if(strBegins(argi, "--mooshost="))
+      server_host = argi.substr(11);
+
+    else if(strBegins(argi, "--server_port="))
+      server_port = argi.substr(14);
     else if(strBegins(argi, "--serverport="))
       server_port = argi.substr(13);
     else if(strBegins(argi, "--moos_port="))
       server_port = argi.substr(12);
+    else if(strBegins(argi, "--moosport="))
+      server_port = argi.substr(11);
+
     else if(strBegins(argi, "--termint="))
       theXMS.setTermReportInterval(argi.substr(10));
     else if(strBegins(argi, "--src="))
