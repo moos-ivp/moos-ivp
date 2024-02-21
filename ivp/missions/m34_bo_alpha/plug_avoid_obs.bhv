@@ -1,5 +1,5 @@
 //----------------------------------------------
-Behavior=BHV_AvoidObstacleV21
+Behavior=BHV_AvoidObstacleV24
 {
   name       = avd_obstacles_
   pwt        = 500

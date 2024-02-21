@@ -49,7 +49,7 @@ ProcessConfig = pHelmIvP
 
 	app_logging = true
 	
-	pmgen     = alg=dubins # radius=80 # degs=2
+	pmgen     = alg=dubins # radius=5 # degs=2
 }
 
 //--------------------------------------------------

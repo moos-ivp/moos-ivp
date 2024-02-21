@@ -72,7 +72,7 @@ Behavior = BHV_Waypoint
      radius = 3.0
   nm_radius = 15.0
      points = $(START_POS)
-     repeat = 10
+     repeat = 0
        lead = 8
 }
 
@@ -99,8 +99,21 @@ Behavior = BHV_StationKeep
 	#include plug_avdcol_cpa.bhv
 #endif
 	
-#ifdef OBAVD avoidx
-	#include plug_avoid_obs.bhv
-#else
-	#include plug_avoid_obs_old.bhv
-#endif
+//----------------------------------------------
+Behavior=BHV_AvoidObstacleV24
+{
+  name       = avd_ob_
+  pwt        = 500
+  condition  = DEPLOY = true
+	templating = spawn
+  updates    = OBSTACLE_ALERT
+
+       use_refinery = true
+      allowable_ttc = 5 
+	min_util_cpa_dist = 3
+	max_util_cpa_dist = 7
+    pwt_outer_dist = 15
+    pwt_inner_dist = 5
+    completed_dist = 15
+}
+
