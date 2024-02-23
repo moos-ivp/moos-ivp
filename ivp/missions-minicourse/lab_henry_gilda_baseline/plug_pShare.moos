@@ -1,0 +1,11 @@
+//---------------------------------------------------------
+// pShare Config Block 
+
+ProcessConfig = pShare
+{
+  AppTick    = 2
+  CommsTick  = 2
+
+  input = route =  $(IP_ADDR):$(PSHARE_PORT)
+}
+

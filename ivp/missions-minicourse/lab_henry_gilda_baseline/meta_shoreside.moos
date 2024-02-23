@@ -1,0 +1,80 @@
+//*******************************************************
+// ShoreSide Configuration File
+
+ServerHost = localhost
+ServerPort = $(VPORT)
+Community  = $(VNAME)
+
+#include plug_origin_warp.moos
+  
+//--------------------------------------------------------
+Processconfig = ANTLER
+{
+  MSBetweenLaunches = 100
+
+  Run = MOOSDB          @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
+  Run = pMarineViewer   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
+  Run = pShare          @ NewConsole = false
+  Run = pHostInfo       @ NewConsole = false
+  Run = uFldShoreBroker @ NewConsole = false
+  Run = pRealm          @ NewConsole = false
+}
+
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+#include plug_pLogger.moos
+
+//--------------------------------------------------
+// uFldShoreBroker Configuration Block
+
+ProcessConfig = uFldShoreBroker
+{
+  AppTick       = 1
+  CommsTick     = 1
+
+  qbridge  = DEPLOY, NODE_REPORT
+  qbridge  = STATION_KEEP, APPCAST_REQ
+  qbridge  = MOOS_MANUAL_OVERRIDE
+
+  bridge   = src=RETURN_ALL, alias=RETURN
+  bridge   = src=RETURN_$V,  alias=RETURN
+}
+
+//--------------------------------------------------------
+ProcessConfig = pMarineViewer
+{
+  AppTick    = 4
+  CommsTick  = 4
+
+  tiff_file            = forrest19.tif
+  set_pan_x            = -90
+  set_pan_y            = -280
+  zoom                 = 0.65
+  vehicles_shape_scale = 1.5
+  vehicles_name_mode   = names+shortmode
+
+	nodes_font_size = xlarge
+	procs_font_size = xlarge
+	appcast_font_size = large
+	
+  point_viewable_labels   = false
+  polygon_viewable_labels = false
+  appcast_viewable     = true
+  appcast_color_scheme = indigo
+  hash_delta           = 50
+  hash_viewable        = true
+  hash_shade           = 0.35
+
+  scope = PHI_HOST_INFO
+
+  button_one   = DEPLOY  # DEPLOY_ALL=true 
+  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
+
+  button_two   = RETURN  # RETURN_ALL=true
+  button_two   = STATION_KEEP_ALL=false
+
+  button_three = STATION  # STATION_KEEP_ALL=true
+}

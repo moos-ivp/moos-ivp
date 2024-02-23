@@ -1,0 +1,80 @@
+//-----------------------------------------------
+// Helm Behavior file 
+
+initialize   DEPLOY  = true
+initialize   RETURN  = false
+initialize   STATION_KEEP = false
+initialize   LOITER  = true
+
+set MODE = ACTIVE {
+  DEPLOY = true
+} INACTIVE
+
+set MODE = STATION-KEEPING {
+  MODE = ACTIVE
+  STATION_KEEP = true
+}                       
+
+set MODE = RETURNING {
+  MODE = ACTIVE
+  RETURN = true
+} 
+
+set MODE = LOITERING {
+  MODE = ACTIVE
+  LOITER = true
+} 
+
+
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter
+  pwt       = 100
+  condition = MODE==LOITERING
+
+   post_suffix = A
+         speed = 1.3
+     clockwise = false
+        radius = 8.0
+     nm_radius = 15.0
+       polygon = radial::x=125,y=-50, radius=20, pts=8, snap=1, label=henry_LOITER
+
+  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
+  visual_hints = edge_color=orange, vertex_color=white
+  visual_hints = edge_size=1, vertex_size=2
+}
+
+
+//----------------------------------------------
+Behavior = BHV_Waypoint
+{
+  name      = waypt_return
+  pwt       = 100
+  condition = MODE==RETURNING
+  endflag   = STATION_KEEP = true
+  perpetual = true
+
+      speed = 1.3
+     radius = 3.0
+  nm_radius = 15.0
+     points = 80,0
+       lead = 8
+}
+
+//----------------------------------------------
+Behavior = BHV_StationKeep
+{
+  name      = station-keep
+  pwt       = 100
+  condition = MODE==STATION-KEEPING
+
+   center_activate = true
+      inner_radius = 5
+      outer_radius = 10 
+       outer_speed = 1.0
+     transit_speed = 1.3
+        swing_time = 7
+      visual_hints = vertex_size=0, edge_color=gray50
+}
+
