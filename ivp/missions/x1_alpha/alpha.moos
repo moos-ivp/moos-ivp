@@ -100,7 +100,7 @@ ProcessConfig = pLogger
   WildCardOmitPattern = *_STATUS
   WildCardOmitPattern = DB_VARSUMMARY
   WildCardOmitPattern = DB_RWSUMMARY
-  WildCardOmitPattern = APPCAST
+  //WildCardOmitPattern = APPCAST
   //WildCardExclusionLog = true
 }
 
@@ -235,8 +235,8 @@ ProcessConfig = pMarineViewer
   scope = PHELMIVP_PID
   scope = DB_UPTIME
 	
-  left_context[add_point] = WPT_UPDATE=newpt=$(XPOS),$(YPOS)
-
+	left_context[return] = RETURN_POINT = points = $(XPOS),$(YPOS)
+	
 	action = USM_ENABLED=false
 	action = USM_TURN_RATE = 70
 	action = USM_TURN_RATE = 50
