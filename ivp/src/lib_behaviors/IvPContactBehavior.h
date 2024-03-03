@@ -50,7 +50,7 @@ public:
   
  protected:
   bool  updatePlatformInfo();
-  void  postViewableBearingLine();
+  void  postViewableBearingLine(bool active=true);
 
   bool  postingPerContactInfo() const {return(m_post_per_contact_info);}
   bool  platformUpdateOK() const {return(m_cnos.update_ok());}

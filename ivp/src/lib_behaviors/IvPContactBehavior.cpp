@@ -416,8 +416,8 @@ string IvPContactBehavior::expandMacros(string sdata)
   sdata = macroExpand(sdata, "RANGE", doubleToStringX(m_contact_range,1));
 
   sdata = m_cnos.cnMacroExpand(sdata, "ROC");
-  sdata = m_cnos.cnMacroExpand(sdata, "OS_CN_REL_BNG");
-  sdata = m_cnos.cnMacroExpand(sdata, "CN_OS_REL_BNG");
+  sdata = m_cnos.cnMacroExpand(sdata, "OS_CN_REL_BNG"); 
+  sdata = m_cnos.cnMacroExpand(sdata, "CN_OS_REL_BNG"); // target angle
   sdata = m_cnos.cnMacroExpand(sdata, "BNG_RATE");
   sdata = m_cnos.cnMacroExpand(sdata, "CN_SPD_IN_OS_POS");
   sdata = m_cnos.cnMacroExpand(sdata, "OS_FORE_OF_CN");
@@ -431,7 +431,6 @@ string IvPContactBehavior::expandMacros(string sdata)
   
   return(sdata);
 }
-
 
 //-----------------------------------------------------------
 // Procedure: updatePlatformInfo
@@ -599,7 +598,7 @@ bool IvPContactBehavior::updatePlatformInfo()
 //-----------------------------------------------------------
 // Procedure: postViewableBearingLine()
 
-void IvPContactBehavior::postViewableBearingLine()
+void IvPContactBehavior::postViewableBearingLine(bool active)
 {
   if(!m_bearing_line_show)
     return;
@@ -616,8 +615,8 @@ void IvPContactBehavior::postViewableBearingLine()
     return;
 
   string color = "";
-  unsigned int i, vsize = m_bearing_line_colors.size();
-  for(i=0; (i<vsize)&&(color==""); i++) {
+  unsigned vsize = m_bearing_line_colors.size();
+  for(unsigned int i=0; (i<vsize)&&(color==""); i++) {
     if(index_value <= m_bearing_line_thresh[i])
       color = m_bearing_line_colors[i];
   }
@@ -636,8 +635,10 @@ void IvPContactBehavior::postViewableBearingLine()
   m_bearing_line.set_color("edge", color);
   m_bearing_line.set_duration(1);
   m_bearing_line.set_time(getBufferCurrTime());
-  
+
   string segl_spec = m_bearing_line.get_spec();
+  if(!active)
+    segl_spec = m_bearing_line.get_spec_inactive();
   
   postMessage("VIEW_SEGLIST", segl_spec);
 }
