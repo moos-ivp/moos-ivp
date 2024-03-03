@@ -216,6 +216,15 @@ void BHV_AvoidCollision::onIdleState()
 }
 
 //-----------------------------------------------------------
+// Procedure: onInactiveState()
+
+void BHV_AvoidCollision::onInactiveState() 
+{
+  if(m_bearing_line_show)
+    postViewableBearingLine(false);
+}
+
+//-----------------------------------------------------------
 // Procedure: getInfo()
 
 string BHV_AvoidCollision::getInfo(string str) 
@@ -227,7 +236,7 @@ string BHV_AvoidCollision::getInfo(string str)
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: onRunState()
 
 IvPFunction *BHV_AvoidCollision::onRunState() 
 {

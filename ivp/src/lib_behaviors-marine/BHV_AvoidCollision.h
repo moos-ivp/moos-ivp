@@ -36,6 +36,7 @@ public:
   IvPFunction* onRunState();
   bool         setParam(std::string, std::string);
   void         onIdleState();
+  void         onInactiveState();
   bool         isConstraint() {return(true);}
 
   std::string  getInfo(std::string);
