@@ -242,6 +242,15 @@ void BHV_AvdColregsV19::onIdleState()
 }
 
 //-----------------------------------------------------------
+// Procedure: onInactiveState()
+
+void BHV_AvdColregsV19::onInactiveState() 
+{
+  if(m_bearing_line_show)
+    postViewableBearingLine(false);
+}
+
+//-----------------------------------------------------------
 // Procedure: onCompleteState()
 
 void BHV_AvdColregsV19::onCompleteState() 
@@ -267,7 +276,7 @@ bool BHV_AvdColregsV19::onRunStatePrior()
 
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: onRunState()
 
 IvPFunction *BHV_AvdColregsV19::onRunState() 
 {
@@ -342,7 +351,7 @@ IvPFunction *BHV_AvdColregsV19::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: getInfo
+// Procedure: getInfo()
 
 string BHV_AvdColregsV19::getInfo(string param)
 {
@@ -367,7 +376,7 @@ string BHV_AvdColregsV19::getInfo(string param)
 }
 
 //-----------------------------------------------------------
-// Procedure: getDoubleInfo
+// Procedure: getDoubleInfo()
 
 double BHV_AvdColregsV19::getDoubleInfo(string param)
 {
@@ -382,7 +391,7 @@ double BHV_AvdColregsV19::getDoubleInfo(string param)
 }
 
 //--------------------------------------------------------------
-// Procedure: updateAvoidMode
+// Procedure: updateAvoidMode()
 
 void BHV_AvdColregsV19::updateAvoidMode()
 {
