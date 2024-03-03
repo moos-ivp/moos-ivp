@@ -236,6 +236,12 @@ bool MarineViewer::setParam(string param, string value)
   }
   else if(p=="tiff_file") {
     cout << "Processing tif file: [" << value << "]" << endl;
+    if(strContainsWhite(value))
+      return(false);
+    if(strBegins(value, "="))
+      return(false);
+    if(!strEnds(value, ".tif"))
+      return(false);
     if(value == "null.tif")
       handled = handleNoTiff();
     else {
