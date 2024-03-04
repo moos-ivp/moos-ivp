@@ -1,5 +1,5 @@
 //--------------------------------------------------
-// uLoadWatch configuration block from plugin
+// uLoadWatch Config Block
 
 ProcessConfig = uLoadWatch
 {
@@ -9,7 +9,6 @@ ProcessConfig = uLoadWatch
   thresh = app=pHelmIvP,  gapthresh=3
   thresh = app=pHostInfo, gapthresh=5
   thresh = app=any,       gapthresh=2.0
-
   thresh = app=uMemWatch, gapthresh=50
 
   breach_trigger = 5

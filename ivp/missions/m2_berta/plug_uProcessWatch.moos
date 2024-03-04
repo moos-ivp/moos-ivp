@@ -10,11 +10,6 @@ ProcessConfig = uProcessWatch
   
   watch_all = true      // default is true
 
-  watch  = uSimMarineV22
-  watch  = pNodeReporter
-  watch  = pMarinePID
-  watch  = pHelmIvP
-
   nowatch = uMAC*
   nowatch = uXMS*
   nowatch = uPokeDB*

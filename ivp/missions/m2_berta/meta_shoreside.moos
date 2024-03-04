@@ -1,5 +1,6 @@
-//*******************************************************
-// ShoreSide Configuration File
+//--------------------------------------------------------
+// Shoreside Config file
+// M. Benjamin, MIT	
 
 ServerHost = localhost
 ServerPort = $(SHORE_MOOSDB)
@@ -17,24 +18,16 @@ Processconfig = ANTLER
   Run = uTimerScript    @ NewConsole = false
   Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
-  Run = uXMS            @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
-
   Run = pShare          @ NewConsole = false
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
 }
 
-//---------------------------------------------------------
-// pRealm Config Block
-
-ProcessConfig = pRealm
-{
-  AppTick    = 2
-  CommsTick  = 2
-}
-
+#include plug_uProcessWatch.moos
+#include plug_pHostInfo.moos
+	
 //---------------------------------------------------------
 // pShare Config Block
 
@@ -47,7 +40,7 @@ ProcessConfig = pShare
 }
 
 //--------------------------------------------------
-// uMAC Configuration Block
+// uMAC Config Block
 
 ProcessConfig = uMAC
 {
@@ -56,20 +49,7 @@ ProcessConfig = uMAC
 }
 
 //--------------------------------------------------
-// uMACView Configuration Block
-
-ProcessConfig = uMACView
-{
-  AppTick       = 1
-  CommsTick     = 1
-
-	watch_cluster = key=mission_top, vars=DEPLOY:RETURN
-	watch_cluster = key=mission_top, vars=STATION_KEEP:LOITER:AVOID
-	watch_cluster = key=mission2, vars=RETURN
-}
-
-//--------------------------------------------------
-// uFldShoreBroker Configuration Block
+// uFldShoreBroker Config Block
 
 ProcessConfig = uFldShoreBroker
 { 
@@ -94,7 +74,7 @@ ProcessConfig = uFldShoreBroker
 }
 
 //--------------------------------------------------
-// uFldNodeComms Configuration Block
+// uFldNodeComms Config Block
 
 ProcessConfig = uFldNodeComms
 {
@@ -111,29 +91,7 @@ ProcessConfig = uFldNodeComms
 }
 
 //--------------------------------------------------
-// pHostInfo configuration block from plugin
-
-ProcessConfig = pHostInfo
-{
-  AppTick    = 1
-  CommsTick  = 1
-}
-
-//--------------------------------------------------
-// uXMS Configuration Block
-
-ProcessConfig = uXMS
-{
-  AppTick       = 1
-  CommsTick     = 1
-
-  var = APPCAST_REQ_ALL, DEPLOY_ALL, RETURN_ALL, STATION_KEEP_ALL
-  var = STATION_KEEP_HENRY, STATION_KEEP_GILDA, MISSION_HASH
-  var = RETURN_UPDATES_HENRY, RETURN_UPDATES_GILDA
-}
-
-//--------------------------------------------------
-// pLogger Configuration Block
+// pLogger Config Block
 
 ProcessConfig = pLogger
 {
@@ -153,9 +111,26 @@ ProcessConfig = pLogger
 
   WildCardOmitPattern = *_STATUS
   WildCardOmitPattern = DB_VARSUMMARY
-  //WildCardOmitPattern = DB_RWSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+  WildCardOmitPattern = *_ITER_GAP
+  WildCardOmitPattern = *_ITER_LEN
 }
 
+//--------------------------------------------------
+// uLoadWatch Config Block
+
+ProcessConfig = uLoadWatch
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  thresh = app=pHelmIvP,  gapthresh=3
+  thresh = app=pHostInfo, gapthresh=5
+  thresh = app=any,       gapthresh=2.0
+  thresh = app=uMemWatch, gapthresh=50
+
+  breach_trigger = 5
+}
 
 //--------------------------------------------------------
 ProcessConfig = pMarineViewer
@@ -167,7 +142,7 @@ ProcessConfig = pMarineViewer
 
   //mission_hash_var = off
 	
-  TIFF_FILE            = forrest19.tif
+  tiff_file            = forrest19.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.65
@@ -248,7 +223,7 @@ ProcessConfig = pMarineViewer
 }
 
 //--------------------------------------------------------
-// uTimerScript Configuration Block
+// uTimerScript Config Block
 
 ProcessConfig = uTimerScript
 {
@@ -274,24 +249,4 @@ ProcessConfig = uTimerScript
 
   event = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=360
   event = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=360
-}
-
-
-//--------------------------------------------------------
-// uProcessWatch Configuration Block
-
-ProcessConfig = uProcessWatch
-{
-  AppTick   = 1
-  CommsTick = 1
-
-  allow_retractions = true
-  
-  watch_all = true      // default is true
-
-  nowatch = uXMS*
-  nowatch = uMACView*
-  nowatch = uPokeDB*
-
-  summary_wait = 12
 }

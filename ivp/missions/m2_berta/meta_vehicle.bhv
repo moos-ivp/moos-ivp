@@ -1,11 +1,12 @@
-//---------------------------------------------------
-// Helm Behavior file 
+//-------------------------------------------------
+// Vehicle Helm config file
+// M. Benjamin, MIT
 
-//initialize   DEPLOY  = false
-//initialize   RETURN  = false
-initialize   STATION_KEEP = false
-initialize   LOITER  = true
-initialize   AVOID   = true
+initialize  DEPLOY  = false
+initialize  RETURN  = false
+initialize  STATION_KEEP = false
+initialize  LOITER  = true
+initialize  AVOID   = true
 
 set MODE = ACTIVE {
   DEPLOY = true
@@ -60,7 +61,7 @@ Behavior = BHV_AvdColregsV19
   updates    = CONTACT_INFO
   templating = spawn
 
-
+	spawnxflag = INFO=os=$[OWNSHIP],utc=$[UTC],range=$[RANGE],contact=$[CONTACT],cn_os_rel_bng=$[CN_OS_REL_BNG],os_cn_rel_bng=$[OS_CN_REL_BNG]
              contact = to-be-set
     on_no_contact_ok = true
          extrapolate = true
@@ -137,7 +138,6 @@ Behavior = BHV_Waypoint
      radius = 3.0
   nm_radius = 15.0
      points = $(START_POS)
-     repeat = 10
        lead = 8
 }
 
