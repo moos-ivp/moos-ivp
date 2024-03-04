@@ -121,7 +121,7 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
 }
 
 //------------------------------------------------------------------
-// Procedure: part1_PreliminaryBehaviorSetHandling
+// Procedure: part1_PreliminaryBehaviorSetHandling()
 
 bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
 {
@@ -170,7 +170,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 
   m_bhv_set->clearUpdateResults();
 
-  string msgx = "part2_GetFunctionsFromBehaviorSet: fl=" + intToString(filter_level); 
+  string msgx = "part2_GetFunctionsFromBehaviorSet: fl=" +
+    intToString(filter_level); 
   m_helm_report.addMsg(msgx);
   
   // get all the objective functions and add time info to helm report

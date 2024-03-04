@@ -538,6 +538,8 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   IvPFunction *ipf = 0;
   IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
 
+  bhv->incBhvIteration();
+  
   // possible vals: "", "idle", "running", "active"
   string old_activity_state = m_bhv_entry[ix].getState();
 
@@ -688,6 +690,10 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   double elapsed = (m_curr_time - state_time_entered);
   m_bhv_entry[ix].setStateTimeElapsed(elapsed);
 
+  if(bhv->getBhvIteration() == 1)
+    bhv->postFlags("spawnxflags", true);
+
+  
   // Return either the IvP function or NULL
   return(ipf);
 }

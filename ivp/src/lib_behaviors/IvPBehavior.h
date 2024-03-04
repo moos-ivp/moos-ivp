@@ -165,6 +165,7 @@ public:
   bool    checkNoStarve();
 
   void    setHelmIteration(unsigned int iter) {m_helm_iter=iter;}
+  void    incBhvIteration() {m_bhv_iter++;}
   void    setConfigPosted(bool v=true) {m_config_posted=v;}
 
   double  getMaxOSV();
@@ -195,6 +196,8 @@ public:
   std::string expandCtrMacro(std::string sdata, std::string macro, unsigned int&);
 
   std::string commsPolicy() const {return(m_comms_policy);}
+
+  unsigned int getBhvIteration() {return(m_bhv_iter);}
   
 protected:
   const InfoBuffer* m_info_buffer;
@@ -216,6 +219,7 @@ protected:
   std::string m_status_info;
 
   unsigned int m_helm_iter;
+  unsigned int m_bhv_iter;
   
   std::vector<std::string>       m_info_vars;
   std::vector<std::string>       m_info_vars_no_warning;
@@ -224,6 +228,7 @@ protected:
   std::vector<VarDataPair>       m_event_messages;
   std::vector<LogicCondition>    m_logic_conditions;
   std::vector<VarDataPair>       m_spawn_flags;
+  std::vector<VarDataPair>       m_spawnx_flags;
   std::vector<VarDataPair>       m_run_flags;
   std::vector<VarDataPair>       m_runx_flags;
   std::vector<VarDataPair>       m_active_flags;

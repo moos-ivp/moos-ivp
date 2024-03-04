@@ -76,6 +76,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_duration_reset_on_transition = false;
 
   m_helm_iter = 0;
+  m_bhv_iter = 0;
 
   // Initialize ownship pose state variables
   m_osx = 0;
@@ -244,6 +245,8 @@ bool IvPBehavior::setParam(string g_param, string g_val)
   }
   else if((g_param == "runxflag") || (g_param == "runx_flag"))
     return(addVarDataPairOnString(m_runx_flags, g_val));
+  else if((g_param == "spawnxflag") || (g_param == "spawnx_flag"))
+    return(addVarDataPairOnString(m_spawnx_flags, g_val));
   else if((g_param == "runflag") || (g_param == "run_flag")) {
     string var = biteStringX(g_val, '=');
     string val = g_val;
@@ -1373,6 +1376,8 @@ void IvPBehavior::postFlags(const string& str, bool repeatable)
     postFlags(m_end_flags, repeatable);
   else if(str == "spawnflags")
     postFlags(m_spawn_flags, repeatable);
+  else if(str == "spawnxflags")
+    postFlags(m_spawnx_flags, repeatable);
   else if(str == "configflags")
     postFlags(m_config_flags, repeatable);
 }
