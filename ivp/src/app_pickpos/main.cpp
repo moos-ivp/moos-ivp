@@ -71,6 +71,8 @@ int main(int argc, char *argv[])
       handled = pickpos.addPolygon(argi.substr(10));
     else if(strBegins(argi, "--circle="))
       handled = pickpos.setCircle(argi.substr(9));
+    else if(argi == "--poly=pavlab") // check first for homecourt
+      handled = pickpos.addPolygon("-30,-15:-28,-20:35,5:32,13");
     else if(strBegins(argi, "--poly="))
       handled = pickpos.addPolygon(argi.substr(7));
     else if(strBegins(argi, "--buffer="))

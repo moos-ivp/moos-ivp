@@ -147,10 +147,10 @@ void showHelpAndExit()
   cout << "  pickpos --amt=5 --vnames=kobe,jack,wim,pete,sam    " << endl;
   cout << "  pickpos --amt=4 --grps=red,blue,blue               " << endl;
   cout << "  pickpos --amt=4 --grps=true,false:alt              " << endl;
-  cout << "  pickpos --amt=5 --polygon=\"60,-40:60,-160:150,-160:180,-100\" " << endl;
-  cout << "  pickpos --amt=5 --polygon=\"60,-40:60,-160:150,-160:180,-100\" --hdg=-45:45" << endl;
-  cout << "  pickpos --amt=5 --polygon=\"60,-40:60,-160:150,-160:180,-100\" --hdg=-10,10,-45 --spd=1:5" << endl;
-  cout << "  pickpos --amt=5 --polygon=\"60,-40:60,-160:150,-160:180,-100\" --buffer=10 --maxtries=200 " << endl;
+  cout << "  pickpos --amt=5 --poly=pavlab                      " << endl;
+  cout << "  pickpos --amt=5 --poly=\"60,-40:60,-160:150,-160:180,-100\" --hdg=-45:45" << endl;
+  cout << "  pickpos --amt=5 --poly=\"60,-40:60,-160:150,-160:180,-100\" --hdg=-10,10,-45 --spd=1:5" << endl;
+  cout << "  pickpos --amt=5 --poly=\"60,-40:60,-160:150,-160:180,-100\" --buffer=10 --maxtries=200 " << endl;
   cout << "                                                     " << endl;
   cout << "Notes:                                               " << endl;
   cout << "  (1) The --spd switch can be used for generating a  " << endl;
