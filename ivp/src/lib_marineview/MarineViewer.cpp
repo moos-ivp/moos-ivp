@@ -47,6 +47,7 @@
 #include "Shape_AUV.h"
 #include "Shape_Glider.h"
 #include "Shape_MOKAI.h"
+#include "Shape_CRay.h"
 #include "Shape_Gateway.h"
 #include "Shape_Diamond.h"
 #include "Shape_Circle.h"
@@ -870,7 +871,9 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
   glRotatef(-heading,0,0,1);  
 
   ColorPack black(0,0,0);
+  ColorPack white(1,1,1);
   ColorPack gray(0.5, 0.5, 0.5);
+  ColorPack dgray(0.4, 0.4, 0.4);
 
   // The raw numerical values representing the shapes should be interpreted
   // as being in "meters". When passed to GLPoly, they are interpreted as
@@ -932,6 +935,39 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     if(outer_line)
       drawGLPoly(g_mokaiBody, g_mokaiBodySize, black, outer_line, factor_x, transparency);    
     drawGLPoly(g_mokaiMidOpen, g_mokaiMidOpenSize, gray, 0, factor_x, transparency);
+    glTranslatef(cx, cy, 0);
+  }
+  else if(strContains(vehibody, "cray")) {
+    if(vlength > 0) {
+      factor_x *= (vlength / g_crayLength);
+      factor_y *= (vlength / g_crayLength);
+    }
+    double cx = g_crayCtrX * factor_x;
+    double cy = g_crayCtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+
+    ColorPack fincolor = dgray;
+    if(strContains(vehibody, "bcray"))
+      fincolor = black;
+    bool draw_base_fin = true;
+    if(strContains(vehibody, "crayx"))
+      draw_base_fin = false;
+    
+    drawGLPoly(g_crayBody,  g_crayBodySize, body_color, 0, factor_x, transparency);    
+    if(draw_base_fin)
+      drawGLPoly(g_crayBaseFinR,  g_crayBaseFinRSize, fincolor, 0, factor_x, transparency);
+    drawGLPoly(g_crayFinR1,  g_crayFinR1Size, fincolor, 0, factor_x, transparency);
+    drawGLPoly(g_crayFinR2,  g_crayFinR2Size, fincolor, 0, factor_x, transparency);
+    drawGLPoly(g_crayFinR3,  g_crayFinR3Size, fincolor, 0, factor_x, transparency);
+
+    if(draw_base_fin)
+      drawGLPoly(g_crayBaseFinL,  g_crayBaseFinLSize, fincolor, 0, factor_x, transparency);
+    drawGLPoly(g_crayFinL1,  g_crayFinL1Size, fincolor, 0, factor_x, transparency);
+    drawGLPoly(g_crayFinL2,  g_crayFinL2Size, fincolor, 0, factor_x, transparency);
+    drawGLPoly(g_crayFinL3,  g_crayFinL3Size, fincolor, 0, factor_x, transparency);
+
+    if(outer_line)
+      drawGLPoly(g_crayBody, g_crayBodySize, black, outer_line, factor_x, transparency);    
     glTranslatef(cx, cy, 0);
   }
   else if(vehibody == "wamv"){

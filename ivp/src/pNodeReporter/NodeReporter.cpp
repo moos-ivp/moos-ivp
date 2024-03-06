@@ -469,6 +469,14 @@ bool NodeReporter::OnStartUp()
       m_record.setLength(4); // meters;
     else if(vtype == "auv")
       m_record.setLength(4); // meters;
+    else if(vtype == "cray")
+      m_record.setLength(3); // meters;
+    else if(vtype == "crayx")
+      m_record.setLength(3); // meters;
+    else if(vtype == "bcray")
+      m_record.setLength(3); // meters;
+    else if(vtype == "bcrayx")
+      m_record.setLength(3); // meters;
     else if(vtype == "uuv")
       m_record.setLength(4); // meters;
     else if(vtype == "ship")
