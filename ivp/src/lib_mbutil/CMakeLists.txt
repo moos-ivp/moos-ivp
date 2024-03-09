@@ -10,6 +10,7 @@ SET(SRC
   FileBuffer.cpp
   MBTimer.cpp
   MBUtils.cpp
+  VQuals.cpp
   HashUtils.cpp
   MacroUtils.cpp
   TermUtils.cpp
@@ -37,6 +38,7 @@ SET(HEADERS
   FileBuffer.h
   MBTimer.h
   MBUtils.h
+  VQuals.h
   HashUtils.h
   MacroUtils.h
   StringNode.h
