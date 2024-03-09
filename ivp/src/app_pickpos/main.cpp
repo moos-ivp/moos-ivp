@@ -67,6 +67,8 @@ int main(int argc, char *argv[])
       handled = pickpos.setVNameStartIX(argi.substr(6));
     else if(strBegins(argi, "--posfile="))
       handled = pickpos.addPosFile(argi.substr(10));
+    else if(strBegins(argi, "--file="))
+      handled = pickpos.setResultFile(argi.substr(7));
     else if(strBegins(argi, "--polygon="))
       handled = pickpos.addPolygon(argi.substr(10));
     else if(strBegins(argi, "--circle="))
@@ -112,6 +114,8 @@ int main(int argc, char *argv[])
       handled = pickpos.setColors(argi.substr(9));
     else if(strBegins(argi, "--grps="))
       handled = pickpos.setGroups(argi.substr(7));
+    else if(argi == "--reuse")
+      handled = pickpos.setReuse();
     else if(argi == "--hdrs") {
       pickpos.enableHeaders();
       handled = true;

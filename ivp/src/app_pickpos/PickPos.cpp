@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <cmath>
 #include "PickPos.h"
+#include "VQuals.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
@@ -85,6 +86,7 @@ PickPos::PickPos()
   m_headers_enabled = false;
 
   m_global_nearest = -1;
+  m_reuse = false;
   
   setVNameCacheOne();
   setColorCache();
@@ -379,6 +381,18 @@ bool PickPos::setGroups(string str)
   return(true); 
 }
 
+
+//---------------------------------------------------------
+// Procedure: setResultFile()
+
+bool PickPos::setResultFile(string str)
+{
+  if(!okFileToWrite(str))
+    return(false);
+
+  m_result_file = str;
+  return(true);
+}
 
 //---------------------------------------------------------
 // Procedure: setCircle()
@@ -758,33 +772,8 @@ void PickPos::pickGroupNames()
 bool PickPos::setVNameCacheOne()
 {
   m_vname_cache.clear();
-
-  m_vname_cache.push_back("abe");     m_vname_cache.push_back("ben");
-  m_vname_cache.push_back("cal");     m_vname_cache.push_back("deb");
-  m_vname_cache.push_back("eve");     m_vname_cache.push_back("fin");
-  m_vname_cache.push_back("gil");     m_vname_cache.push_back("hix");
-  m_vname_cache.push_back("ike");     m_vname_cache.push_back("jim");
-  m_vname_cache.push_back("kim");     m_vname_cache.push_back("lou");
-  m_vname_cache.push_back("max");     m_vname_cache.push_back("ned");
-  m_vname_cache.push_back("oak");     m_vname_cache.push_back("pal");
-  m_vname_cache.push_back("que");     m_vname_cache.push_back("ray");
-  m_vname_cache.push_back("sam");     m_vname_cache.push_back("tim");
-  m_vname_cache.push_back("ula");     m_vname_cache.push_back("val");
-  m_vname_cache.push_back("wes");     m_vname_cache.push_back("xiu");
-  m_vname_cache.push_back("yen");     m_vname_cache.push_back("zan");
-  m_vname_cache.push_back("apia");    m_vname_cache.push_back("baka");
-  m_vname_cache.push_back("cary");    m_vname_cache.push_back("doha");
-  m_vname_cache.push_back("evie");    m_vname_cache.push_back("fahy");
-  m_vname_cache.push_back("galt");    m_vname_cache.push_back("hays");
-  m_vname_cache.push_back("iola");    m_vname_cache.push_back("jing");
-  m_vname_cache.push_back("kiev");    m_vname_cache.push_back("lima");
-  m_vname_cache.push_back("mesa");    m_vname_cache.push_back("nuuk");
-  m_vname_cache.push_back("oslo");    m_vname_cache.push_back("pace");
-  m_vname_cache.push_back("quay");    m_vname_cache.push_back("rome");
-  m_vname_cache.push_back("sako");    m_vname_cache.push_back("troy");
-  m_vname_cache.push_back("ubly");    m_vname_cache.push_back("vimy");
-  m_vname_cache.push_back("waco");    m_vname_cache.push_back("xane");
-  m_vname_cache.push_back("york");    m_vname_cache.push_back("zahl");
+  for(unsigned int i=0; i<52; i++)
+    m_vname_cache.push_back(getIndexVName1(i));
   return(true);
 }
 
@@ -794,33 +783,8 @@ bool PickPos::setVNameCacheOne()
 bool PickPos::setVNameCacheTwo()
 {
   m_vname_cache.clear();
-
-  m_vname_cache.push_back("avi");   m_vname_cache.push_back("bee");
-  m_vname_cache.push_back("cap");   m_vname_cache.push_back("dan");
-  m_vname_cache.push_back("ebb");   m_vname_cache.push_back("fay");
-  m_vname_cache.push_back("geo");   m_vname_cache.push_back("ham");
-  m_vname_cache.push_back("ivy");   m_vname_cache.push_back("jan");
-  m_vname_cache.push_back("kay");   m_vname_cache.push_back("lee");
-  m_vname_cache.push_back("mel");   m_vname_cache.push_back("nat");
-  m_vname_cache.push_back("ott");   m_vname_cache.push_back("pat");
-  m_vname_cache.push_back("qua");   m_vname_cache.push_back("ron");
-  m_vname_cache.push_back("sid");   m_vname_cache.push_back("tad");
-  m_vname_cache.push_back("umm");   m_vname_cache.push_back("vik");
-  m_vname_cache.push_back("wik");   m_vname_cache.push_back("xik");
-  m_vname_cache.push_back("yee");   m_vname_cache.push_back("zed");
-  m_vname_cache.push_back("abby");  m_vname_cache.push_back("bill");
-  m_vname_cache.push_back("clem");  m_vname_cache.push_back("dana");
-  m_vname_cache.push_back("eddy");  m_vname_cache.push_back("fran");
-  m_vname_cache.push_back("gabe");  m_vname_cache.push_back("hans");
-  m_vname_cache.push_back("ivan");  m_vname_cache.push_back("jade");
-  m_vname_cache.push_back("kent");  m_vname_cache.push_back("lacy");
-  m_vname_cache.push_back("mary");  m_vname_cache.push_back("noel");
-  m_vname_cache.push_back("olga");  m_vname_cache.push_back("paul");
-  m_vname_cache.push_back("quin");  m_vname_cache.push_back("rick");
-  m_vname_cache.push_back("sage");  m_vname_cache.push_back("theo");
-  m_vname_cache.push_back("uber");  m_vname_cache.push_back("vick");
-  m_vname_cache.push_back("ward");  m_vname_cache.push_back("xavi");
-  m_vname_cache.push_back("yoel");  m_vname_cache.push_back("zack");
+  for(unsigned int i=0; i<52; i++)
+    m_vname_cache.push_back(getIndexVName2(i));
   return(true);
 }
 
@@ -830,33 +794,8 @@ bool PickPos::setVNameCacheTwo()
 bool PickPos::setVNameCacheThree()
 {
   m_vname_cache.clear();
-
-  m_vname_cache.push_back("ada");  m_vname_cache.push_back("bob");
-  m_vname_cache.push_back("cam");  m_vname_cache.push_back("dee");
-  m_vname_cache.push_back("ema");  m_vname_cache.push_back("flo");
-  m_vname_cache.push_back("gus");  m_vname_cache.push_back("hal");
-  m_vname_cache.push_back("ira");  m_vname_cache.push_back("jax");
-  m_vname_cache.push_back("kia");  m_vname_cache.push_back("leo");
-  m_vname_cache.push_back("mia");  m_vname_cache.push_back("noa");
-  m_vname_cache.push_back("ora");  m_vname_cache.push_back("pam");
-  m_vname_cache.push_back("qix");  m_vname_cache.push_back("roy");
-  m_vname_cache.push_back("sky");  m_vname_cache.push_back("tom");
-  m_vname_cache.push_back("una");  m_vname_cache.push_back("van");
-  m_vname_cache.push_back("wim");  m_vname_cache.push_back("xyz");
-  m_vname_cache.push_back("yip");  m_vname_cache.push_back("zip");
-  m_vname_cache.push_back("adel");  m_vname_cache.push_back("bama");
-  m_vname_cache.push_back("chad");  m_vname_cache.push_back("dash");
-  m_vname_cache.push_back("emma");  m_vname_cache.push_back("fern");
-  m_vname_cache.push_back("gary");  m_vname_cache.push_back("hank");
-  m_vname_cache.push_back("isla");  m_vname_cache.push_back("joan");
-  m_vname_cache.push_back("kyle");  m_vname_cache.push_back("lisa");
-  m_vname_cache.push_back("mona");  m_vname_cache.push_back("nick");
-  m_vname_cache.push_back("oral");  m_vname_cache.push_back("page");
-  m_vname_cache.push_back("quip");  m_vname_cache.push_back("rice");
-  m_vname_cache.push_back("seth");  m_vname_cache.push_back("tony");
-  m_vname_cache.push_back("ugly");  m_vname_cache.push_back("vice");
-  m_vname_cache.push_back("webb");  m_vname_cache.push_back("xray");
-  m_vname_cache.push_back("yara");  m_vname_cache.push_back("zula");
+  for(unsigned int i=0; i<52; i++)
+    m_vname_cache.push_back(getIndexVName3(i));
   return(true);
 }
 
@@ -866,34 +805,8 @@ bool PickPos::setVNameCacheThree()
 bool PickPos::setVNameCacheFour()
 {
   m_vname_cache.clear();
-
-  m_vname_cache.push_back("art");  m_vname_cache.push_back("bud");
-  m_vname_cache.push_back("coy");  m_vname_cache.push_back("doc");
-  m_vname_cache.push_back("ell");  m_vname_cache.push_back("fed");
-  m_vname_cache.push_back("guy");  m_vname_cache.push_back("hip");
-  m_vname_cache.push_back("icy");  m_vname_cache.push_back("jed");
-  m_vname_cache.push_back("ken");  m_vname_cache.push_back("lex");
-  m_vname_cache.push_back("may");  m_vname_cache.push_back("nim");
-  m_vname_cache.push_back("oma");  m_vname_cache.push_back("pig");
-  m_vname_cache.push_back("qal");  m_vname_cache.push_back("rob");
-  m_vname_cache.push_back("sue");  m_vname_cache.push_back("ted");
-  m_vname_cache.push_back("unk");  m_vname_cache.push_back("von");
-  m_vname_cache.push_back("wam");  m_vname_cache.push_back("xoo");
-  m_vname_cache.push_back("yap");  m_vname_cache.push_back("zap");
-
-  m_vname_cache.push_back("arlo");  m_vname_cache.push_back("brad");
-  m_vname_cache.push_back("chip");  m_vname_cache.push_back("doug");
-  m_vname_cache.push_back("evan");  m_vname_cache.push_back("ford");
-  m_vname_cache.push_back("greg");  m_vname_cache.push_back("harm");
-  m_vname_cache.push_back("ivor");  m_vname_cache.push_back("jack");
-  m_vname_cache.push_back("kurt");  m_vname_cache.push_back("lane");
-  m_vname_cache.push_back("mack");  m_vname_cache.push_back("nina");
-  m_vname_cache.push_back("owen");  m_vname_cache.push_back("pete");
-  m_vname_cache.push_back("quem");  m_vname_cache.push_back("rosa");
-  m_vname_cache.push_back("stan");  m_vname_cache.push_back("troy");
-  m_vname_cache.push_back("ulan");  m_vname_cache.push_back("vipp");
-  m_vname_cache.push_back("wood");  m_vname_cache.push_back("xelp");
-  m_vname_cache.push_back("yoga");  m_vname_cache.push_back("zeke");
+  for(unsigned int i=0; i<52; i++)
+    m_vname_cache.push_back(getIndexVName4(i));
   return(true);
 }
 
@@ -934,39 +847,8 @@ void PickPos::pickIndices()
 void PickPos::setColorCache()
 {
   m_color_cache.clear();
-
-  m_color_cache.push_back("yellow"); 
-  m_color_cache.push_back("red"); 
-  m_color_cache.push_back("dodger_blue"); 
-  m_color_cache.push_back("green"); 
-  m_color_cache.push_back("purple"); 
-  m_color_cache.push_back("orange"); 
-  m_color_cache.push_back("white"); 
-  m_color_cache.push_back("dark_green"); 
-  m_color_cache.push_back("dark_red"); 
-  m_color_cache.push_back("cyan"); 
-
-  m_color_cache.push_back("coral"); 
-  m_color_cache.push_back("brown"); 
-  m_color_cache.push_back("bisque"); 
-  m_color_cache.push_back("white"); 
-  m_color_cache.push_back("pink");
-  m_color_cache.push_back("darkslateblue"); 
-  m_color_cache.push_back("brown"); 
-  m_color_cache.push_back("burlywood"); 
-  m_color_cache.push_back("goldenrod"); 
-  m_color_cache.push_back("ivory"); 
-
-  m_color_cache.push_back("khaki"); 
-  m_color_cache.push_back("lime"); 
-  m_color_cache.push_back("peru"); 
-  m_color_cache.push_back("powderblue"); 
-  m_color_cache.push_back("plum"); 
-  m_color_cache.push_back("sienna"); 
-  m_color_cache.push_back("sandybrown"); 
-  m_color_cache.push_back("navy"); 
-  m_color_cache.push_back("olive"); 
-  m_color_cache.push_back("magenta"); 
+  for(unsigned int i=0; i<30; i++)
+    m_color_cache.push_back(getIndexVColor(i));
 }
 
 //---------------------------------------------------------
@@ -989,6 +871,19 @@ void PickPos::pickColors()
 
 void PickPos::printChoices()
 {
+  if(okFileToRead(m_result_file) && m_reuse)
+    return;
+
+  FILE *fptr = 0;
+  if(m_result_file != "") {
+    fptr = fopen(m_result_file.c_str(), "w");
+    if(!fptr) {
+      cout << "Unable to open file: " << m_result_file << endl;
+      return;
+    }
+  }
+
+  
   if(m_pick_indices.size() > 0) {
     for(unsigned int i=0; i<m_pick_indices.size(); i++)
       cout << m_pick_indices[i] << endl;
@@ -1059,6 +954,12 @@ void PickPos::printChoices()
       line = findReplace(line, "heading=", "");
       line = findReplace(line, "speed=", "");
     }
+
+    if(fptr != 0) {
+      fprintf(fptr, "%s\n", line.c_str());
+      continue;
+    }
+
     cout << line;
 
     if(m_verbose) {

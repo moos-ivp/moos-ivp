@@ -40,6 +40,8 @@ class PickPos
   
   bool   addPosFile(std::string);
   bool   setCircle(std::string);
+  bool   setResultFile(std::string);
+  bool   setReuse() {m_reuse=true; return(true);}
   
   bool   setMultiLine()          {m_multiline=true; return(true);}
   bool   setPickAmt(std::string);
@@ -125,6 +127,9 @@ class PickPos
   std::string  m_arg_summary;
   
   bool         m_headers_enabled;
+
+  std::string  m_result_file;
+  bool         m_reuse;
   
 protected: // State variables
   XYFieldGenerator          m_fld_generator;
