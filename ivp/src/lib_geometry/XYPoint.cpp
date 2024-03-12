@@ -146,3 +146,28 @@ string XYPoint::get_spec_inactive() const
 }
 
 
+//--------------------------------------------------------
+// Procedure: overloaded less than operator
+
+bool operator< (const XYPoint& one, const XYPoint& two)
+{
+  
+  if(one.magnitude() < two.magnitude())
+    return(true);
+  else
+    return(false);
+}
+
+//--------------------------------------------------------
+// Procedure: overload equals operator
+
+bool operator== (const XYPoint& one, const XYPoint& two)
+{
+  if(one.x() != two.x())
+    return(false);
+  if(one.y() != two.y())
+    return(false);
+  return(true);
+}
+
+

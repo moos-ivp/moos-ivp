@@ -68,7 +68,8 @@ public:
   double y() const            {return(m_y);}
   double z() const            {return(m_z);}
   bool   valid() const        {return(m_valid);}
-
+  double magnitude() const    {return((m_x*m_x)+(m_y*m_y));}
+  
   void   projectPt(const XYPoint&, double ang, double dist);
 
   std::string get_spec_xy(char c=',') const;
@@ -83,6 +84,10 @@ protected:
   int    m_sdigits;
   double m_pt_trans;
 };
+
+bool operator< (const XYPoint& one, const XYPoint& two);
+bool operator== (const XYPoint& one, const XYPoint& two);
+
 
 #endif
 
