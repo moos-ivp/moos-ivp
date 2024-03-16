@@ -1,5 +1,5 @@
 //-------------------------------------------------
-// uProcessWatch Config Block (Created from Plugin)
+// uProcessWatch Config Block
 
 ProcessConfig = uProcessWatch
 {
@@ -13,6 +13,7 @@ ProcessConfig = uProcessWatch
   nowatch = uMAC*
   nowatch = uXMS*
   nowatch = uPokeDB*
+  nowatch = uQueryDB
 
   summary_wait = 10
 }

@@ -30,6 +30,11 @@ Processconfig = ANTLER
   Run = pContactMgrV20 @ NewConsole = false
 }
 
+#include plug_uMemWatch.moos
+#include plug_pShare.moos
+#include plug_pHostInfo.moos
+#include plug_uProcessWatch.moos
+
 //----------------------------------------------------
 // pHelmIvP Configuration Block  
 
@@ -160,12 +165,54 @@ ProcessConfig = uSimMarineV22
   //thrust_map = -100:-2, 0:0, 20:1, 40:2, 60:3, 80:5, 100:5
 }
 
-	
-#include plug_uMemWatch.moos
-#include plug_pShare.moos
-#include plug_pHostInfo.moos
-#include plug_pLogger.moos
-#include plug_uProcessWatch.moos
-#include plug_uLoadWatch.moos
-#include plug_iSay.moos
+//--------------------------------------------------------
+// iSay Config Block
 
+ProcessConfig = iSay                                            
+{                                                               
+  AppTick   = 4                                                 
+  CommsTick = 4                                                 
+                                                                
+  default_voice      = alex       // iSay --voices for others   
+  default_rate       = 200                                      
+  //interval_policy    = from_end   // or from_start
+  interval_policy    = from_start   // or from_start
+  min_utter_interval = 1                                        
+                                                                
+  os_mode            = osx      // Default is "osx"         
+}                                 
+
+//--------------------------------------------------
+// pLogger Config Block
+
+ProcessConfig = pLogger
+{
+  AppTick 	= 5
+  CommsTick = 5
+  
+  File          = LOG_%(VNAME)
+  PATH	        = ./
+  AsyncLog 	    = true
+  FileTimeStamp = true
+
+  Log = IVPHELM_LIFE_EVENT @ 0 nosync
+  Log = BCM_ALERT_REQUEST @ 0 nosync
+
+  LogAuxSrc = true
+
+  // Log it all!!!!!
+  WildCardLogging = true 
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = APPCAST
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+
+  WildCardOmitPattern = NAV_PITCH, NAV_LAT, NAV_LONG, NAV_YAW, NAV_Z
+  WildCardOmitPattern = SIMULATION_MODE, TRUE_X, TRUE_Y, DB_CLIENTS
+  WildCardOmitPattern = NAV_DEPTH, NAV_SPEED_OVER_GROUND, DB_QOS
+  WildCardOmitPattern = NODE_BROKER_PING_0, PSHARE*
+  WildCardOmitPattern = IVPHELM_ALLSTOP_DEBUG, *ITER_GAP, *ITER_LEN
+  WildCardOmitPattern = PHI_HOST*, NODE_REPORT_LOCAL
+
+}
+	

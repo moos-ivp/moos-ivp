@@ -7,7 +7,7 @@ Community  = shoreside
 
 #include plug_origin_warp.moos
   
-//--------------------------------------------------------
+//-----------------------------------------------------
 Processconfig = ANTLER
 {
   MSBetweenLaunches = 100
@@ -22,11 +22,15 @@ Processconfig = ANTLER
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
 
+  Run = uLoadWatch      @ NewConsole = false
   Run = uFldCollisionDetect @ NewConsole = false
 
 }
 
-//---------------------------------------------------------
+#include plug_uProcessWatch.moos
+#include plug_uLoadWatch.moos
+
+//--------------------------------------------------
 // pShare Config Block
 
 ProcessConfig = pShare
@@ -211,22 +215,3 @@ ProcessConfig = pMarineViewer
 
 }
 
-//--------------------------------------------------------
-// uProcessWatch Configuration Block
-
-ProcessConfig = uProcessWatch
-{
-  AppTick   = 1
-  CommsTick = 1
-
-  allow_retractions = true
-  
-  watch_all = true      // default is true
-
-  nowatch = uQueryDB
-  nowatch = uPokeDB*
-  nowatch = uMAC*
-  nowatch = uXMS*
-
-  summary_wait = 12
-}
