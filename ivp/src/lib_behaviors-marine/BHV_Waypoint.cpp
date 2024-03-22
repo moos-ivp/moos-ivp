@@ -155,11 +155,23 @@ void BHV_Waypoint::onSetParamComplete()
   for(unsigned int i=0; i<svector.size(); i++)
     addInfoVars(svector[i], "nowarning");
 
+  // Check for case where there is only one waypoint, and number of
+  // repeats is not zero. With one waypoint, the notion of a cycle
+  // length is essentially zero. Doesn't make sense to repeat/cycle.
+  unsigned int wpts    = m_waypoint_engine.size(); 
+  unsigned int repeats = m_waypoint_engine.getRepeats(); 
+
+  cout << "wpts: " << wpts << endl;
+  cout << "repeatss: " << repeats << endl;
+  
+  if((wpts == 1) && (repeats > 0))
+    postWMessage("cycles/repeats not supported with single waypt");
+  
   postConfigStatus();
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 //     Notes: We expect the "waypoint" entries will be of the form
 //            "xposition,yposition".
 //            The "radius" parameter indicates what it means to have
@@ -440,7 +452,7 @@ bool BHV_Waypoint::setParam(string param, string param_val)
 
 
 //-----------------------------------------------------------
-// Procedure: onIdleToRunState
+// Procedure: onIdleToRunState()
 
 void BHV_Waypoint::onIdleToRunState() 
 {
@@ -651,6 +663,8 @@ bool BHV_Waypoint::setNextWaypoint()
   // Returns either: empty_seglist, completed, cycled, advanced, or in-transit
   string feedback_msg = m_waypoint_engine.setNextWaypoint(m_osx, m_osy);
 
+  cout << "feedback_msg = " << feedback_msg << endl;
+  
   if((feedback_msg == "completed") || (feedback_msg == "cycled") ||
      (feedback_msg == "advanced"))
     m_waypt_hit = true;
@@ -880,13 +894,7 @@ void BHV_Waypoint::postViewableSegList()
     return;
   }
   
-  XYPolygon poly(segl);
-  if(poly.is_convex()) {
-    applyHints(poly, m_hints);
-    postMessage("VIEW_POLYGON", poly.get_spec());
-  }
-  else
-    postMessage("VIEW_SEGLIST", segl.get_spec());
+  postMessage("VIEW_SEGLIST", segl.get_spec());
 }
 
 //-----------------------------------------------------------
