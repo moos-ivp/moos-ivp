@@ -27,6 +27,7 @@
 #include <cmath>
 #include "ZAIC_HDG.h"
 #include "BuildUtils.h"
+#include "AngleUtils.h"
 
 using namespace std;
 
@@ -81,7 +82,7 @@ ZAIC_HDG::ZAIC_HDG(IvPDomain domain, string varname)
 }
 
 //-------------------------------------------------------------
-// Procedure: setParams
+// Procedure: setParams()
 
 bool ZAIC_HDG::setParams(double summit, double ldelta, double hdelta,
 			 double ldelta_util, double hdelta_util,  
@@ -101,10 +102,12 @@ bool ZAIC_HDG::setParams(double summit, double ldelta, double hdelta,
 }
 
 //-------------------------------------------------------------
-// Procedure: setSummit
+// Procedure: setSummit()
 
 bool ZAIC_HDG::setSummit(double val)
 {
+  val = angle360(val);
+  
   if((m_ivp_domain.size() == 0) ||(val < m_domain_low) || (val > m_domain_high))
     return(false);
   
@@ -113,7 +116,7 @@ bool ZAIC_HDG::setSummit(double val)
 }
 
 //-------------------------------------------------------------
-// Procedure: setLowDelta
+// Procedure: setLowDelta()
 
 bool ZAIC_HDG::setLowDelta(double val)
 {
@@ -130,7 +133,7 @@ bool ZAIC_HDG::setLowDelta(double val)
 }
 
 //-------------------------------------------------------------
-// Procedure: setHighDelta
+// Procedure: setHighDelta()
 
 bool ZAIC_HDG::setHighDelta(double val)
 {
@@ -147,7 +150,7 @@ bool ZAIC_HDG::setHighDelta(double val)
 }
 
 //-------------------------------------------------------------
-// Procedure: setLowDeltaUtil
+// Procedure: setLowDeltaUtil()
 
 bool ZAIC_HDG::setLowDeltaUtil(double val)
 {
@@ -164,7 +167,7 @@ bool ZAIC_HDG::setLowDeltaUtil(double val)
 }
 
 //-------------------------------------------------------------
-// Procedure: setHighDeltaUtil
+// Procedure: setHighDeltaUtil()
 
 bool ZAIC_HDG::setHighDeltaUtil(double val)
 {
@@ -181,7 +184,7 @@ bool ZAIC_HDG::setHighDeltaUtil(double val)
 }
 
 //-------------------------------------------------------------
-// Procedure: setMinMaxUtil
+// Procedure: setMinMaxUtil()
 
 bool ZAIC_HDG::setMinMaxUtil(double lminval, double hminval, double maxval)
 {
