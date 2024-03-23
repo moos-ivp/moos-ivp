@@ -344,7 +344,8 @@ string WaypointEngine::setNextWaypoint(double os_x, double os_y)
     double prevpt_x = m_prevpt.get_vx();
     double prevpt_y = m_prevpt.get_vy();
 
-    double angle = angleFromThreePoints(pt_x, pt_y, prevpt_x, prevpt_y, os_x, os_y);
+    double angle = angleFromThreePoints(pt_x, pt_y, prevpt_x, prevpt_y,
+					os_x, os_y);
     if(angle >= 90)
       point_advance = true;
 

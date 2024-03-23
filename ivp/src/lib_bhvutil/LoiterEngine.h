@@ -43,6 +43,8 @@ class LoiterEngine {
   bool   getClockwise() const    {return(m_clockwise);}
   double getSpiralFactor() const {return(m_spiral_factor);}
 
+  unsigned int getPolyPts() const {return(m_polygon.size());}
+
   XYPolygon getPolygon() const   {return(m_polygon);}
   
   int  acquireVertex(double os_hdg, double os_x, double os_y);
