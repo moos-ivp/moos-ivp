@@ -32,11 +32,12 @@
 #include "ZAIC_SPD.h"
 #include "OF_Coupler.h"
 #include "XYPoint.h"
+#include "MacroUtils.h"
 
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 BHV_Loiter::BHV_Loiter(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
@@ -91,7 +92,7 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool BHV_Loiter::setParam(string param, string value) 
 {
@@ -214,7 +215,7 @@ bool BHV_Loiter::setParam(string param, string value)
 }
 
 //-----------------------------------------------------------
-// Procedure: onCompleteState
+// Procedure: onCompleteState()
 //      Note: Invoked once by helm prior to behavior deletion.
 
 void BHV_Loiter::onCompleteState()
@@ -230,7 +231,7 @@ void BHV_Loiter::onCompleteState()
 
 
 //-----------------------------------------------------------
-// Procedure: onIdleState
+// Procedure: onIdleState()
 //      Note: If m_center_pending is true, each time the behavior
 //            goes inactive (and thus this function is called), 
 //            a pending new center is declared, and set to the 
@@ -256,8 +257,7 @@ void BHV_Loiter::onIdleState()
 
 
 //-----------------------------------------------------------
-// Procedure: onIdleToRunState
-//      Note: 
+// Procedure: onIdleToRunState()
 
 void BHV_Loiter::onIdleToRunState()
 {
@@ -277,7 +277,7 @@ void BHV_Loiter::onIdleToRunState()
 
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: onRunState()
 
 IvPFunction *BHV_Loiter::onRunState() 
 {
@@ -466,7 +466,7 @@ void BHV_Loiter::updateCenter()
 
 
 //-----------------------------------------------------------
-// Procedure: updateLoiterMode
+// Procedure: updateLoiterMode()
 
 void BHV_Loiter::updateLoiterMode()
 {
@@ -685,7 +685,7 @@ void BHV_Loiter::handleVisualHint(string hint)
 }
 
 //-----------------------------------------------------------
-// Procedure: postConfigStatus
+// Procedure: postConfigStatus()
 
 void BHV_Loiter::postConfigStatus()
 {
@@ -702,6 +702,33 @@ void BHV_Loiter::postConfigStatus()
   str += ",polygon=\"" + poly_str + "\"";
 
   postRepeatableMessage("BHV_SETTINGS", str);
+}
+
+//-----------------------------------------------------------
+// Procedure: expandMacros()
+
+string BHV_Loiter::expandMacros(string sdata)
+{
+  // =======================================================
+  // First expand the macros defined at the superclass level
+  // =======================================================
+  sdata = IvPBehavior::expandMacros(sdata);
+
+  // =======================================================
+  // Expand configuration parameters
+  // =======================================================
+  sdata = macroExpand(sdata, "PTS", m_loiter_engine.getPolyPts());
+  sdata = macroExpand(sdata, "CX", m_loiter_engine.getCenterX());
+  sdata = macroExpand(sdata, "CY", m_loiter_engine.getCenterY());
+
+  string center;
+  center += "x=" + doubleToStringX(m_loiter_engine.getCenterX(),2);
+  center += ",y=" + doubleToStringX(m_loiter_engine.getCenterY(),2);
+  sdata = macroExpand(sdata, "CENTER", center);
+
+  sdata = macroExpand(sdata, "CWISE", m_loiter_engine.getClockwise());
+
+  return(sdata);
 }
 
 

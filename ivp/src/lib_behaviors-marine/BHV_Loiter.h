@@ -42,6 +42,7 @@ public:
   void         onIdleToRunState();
   void         onCompleteState();
   void         postConfigStatus();
+  std::string  expandMacros(std::string);
 
 protected:
   bool         updateInfoIn();
