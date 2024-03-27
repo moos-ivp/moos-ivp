@@ -75,7 +75,7 @@ NodeReporter::NodeReporter()
 
   m_crossfill_policy = "literal";
 
-  m_allow_color_change = "false";
+  m_allow_color_change = false;
   
   // Timestamps used for executing the "use-latest" crossfill policy 
   m_nav_xy_updated        = 0;
@@ -151,7 +151,7 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
 	m_record.setColor(sdata);
     }
     else if((key == "NODE_COLOR_CHANGE") && isColor(sdata)) {
-      if((msrc == m_allow_color_change) || (m_allow_color_change == "true"))
+      if(m_allow_color_change)
 	m_record.setColor(sdata);
     }
     else if(key == "THRUST_MODE_REVERSE") {
@@ -384,7 +384,7 @@ bool NodeReporter::OnStartUp()
     }
 
     else if(param == "allow_color_change") 
-      handled = setNonWhiteVarOnString(m_allow_color_change, value);
+      handled = setBooleanOnString(m_allow_color_change, value);
 
     else if(param == "rider") 
       handled = m_riderset.addNodeRider(value);

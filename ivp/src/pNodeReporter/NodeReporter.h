@@ -72,7 +72,7 @@ public:
   double       m_nohelm_thresh;
   std::string  m_group_name;
   bool         m_terse_reports;
-  std::string  m_allow_color_change;
+  bool         m_allow_color_change;
 
   // Sep 01, 2022
   bool         m_extrap_enabled;
