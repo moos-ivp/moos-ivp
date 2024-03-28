@@ -40,7 +40,6 @@
 #include "XYFormatUtilsPoint.h"
 #include "XYFormatUtilsSegl.h"
 #include "ColorParse.h"
-//---------------------------------
 #include "IO_Utilities.h"
 
 using namespace std;
@@ -114,7 +113,8 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   m_waypt_hit = false;
   
   m_greedy_tour_pending = false;
-
+  m_draw_path_loop = false;
+  
   m_prev_cycle_index = 0;
   m_prev_waypt_index = -1;
   
@@ -262,6 +262,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     setBooleanOnString(m_greedy_tour_pending, param_val);
     return(true);
   }
+  else if(param == "draw_path_loop")
+    return(setBooleanOnString(m_draw_path_loop, param_val));
   else if(param == "use_alt_speed") {
     bool prev_use_alt_speed = m_use_alt_speed;
     setBooleanOnString(m_use_alt_speed, param_val);
@@ -887,11 +889,19 @@ void BHV_Waypoint::postViewableSegList()
   segl.set_label(m_us_name + "_" + m_descriptor);
 
   applyHints(segl, m_hints);
-  
+
   string segl_color = m_hints.getColor("edge_color");
   if((segl_color == "off") || (segl_color == "inactive")) {
     postMessage("VIEW_SEGLIST", segl.get_spec_inactive());
     return;
+  }
+
+  if(m_draw_path_loop) {
+    XYPolygon poly(segl);
+    if(poly.is_convex()) {
+      applyHints(poly, m_hints);
+      postMessage("VIEW_POLYGON", poly.get_spec());
+    }
   }
   
   postMessage("VIEW_SEGLIST", segl.get_spec());

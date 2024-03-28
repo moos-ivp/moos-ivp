@@ -35,6 +35,7 @@
 #include "BuildUtils.h"
 #include "ZAIC_PEAK.h"
 #include "OF_Coupler.h"
+#include "XYFormatUtilsPoint.h"
 
 using namespace std;
 
@@ -94,13 +95,26 @@ bool BHV_StationKeep::setParam(string param, string val)
   param = tolower(param);
   val   = stripBlankEnds(val);
 
+#if 0
   if((param == "station_pt") || (param == "point")) {
-    string left  = stripBlankEnds(biteString(val, ','));
-    string right = stripBlankEnds(val);
+    string left  = biteStringX(val, ',');
+    string right = val;
     if(!isNumber(left) || !isNumber(right))
       return(false);
     m_static_station_x = atof(left.c_str());
     m_static_station_y = atof(right.c_str());
+    m_static_station_defined = true;
+    m_center_pending = true;
+    return(true);
+  }
+#endif
+
+  if((param == "station_pt") || (param == "point")) {
+    XYPoint pt = string2Point(val);
+    if(!pt.valid())
+      return(false);
+    m_static_station_x = pt.x();
+    m_static_station_y = pt.y();
     m_static_station_defined = true;
     m_center_pending = true;
     return(true);

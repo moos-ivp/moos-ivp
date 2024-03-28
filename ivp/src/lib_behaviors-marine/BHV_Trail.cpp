@@ -20,11 +20,6 @@
 /* License along with MOOS-IvP.  If not, see                     */
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
-#ifdef _WIN32
-#pragma warning(disable : 4786)
-#pragma warning(disable : 4503)
-#endif
-
 #include <cmath>
 #include <cstdlib>
 #include "AngleUtils.h"
@@ -40,7 +35,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPContactBehavior(gdomain)
 {
@@ -62,13 +57,14 @@ BHV_Trail::BHV_Trail(IvPDomain gdomain) : IvPContactBehavior(gdomain)
 
   m_post_trail_dist_on_idle = true;
 
-  m_no_alert_request  = true;
+  m_no_alert_request = true;
+  m_min_trail_range  = 10;
   
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 //  
 //    trail_range: desired range to the vehicle trailed.
 //    trail_angle: desired angle to the vehicle trailed.
@@ -96,6 +92,10 @@ bool BHV_Trail::setParam(string param, string param_val)
     return(setNonNegDoubleOnString(m_radius, param_val));
   else if(param == "trail_range")
     return(setNonNegDoubleOnString(m_trail_range, param_val));
+  else if(param == "mod_trail_range")
+    return(handleConfigModTrailRange(dval));
+  else if(param == "mod_trail_range_pct")
+    return(handleConfigModTrailRangePct(dval));
   else if(param == "trail_angle") {
     if(isNumber(param_val)) {
       m_trail_angle = angle180(dval);
@@ -116,6 +116,34 @@ bool BHV_Trail::setParam(string param, string param_val)
   return(false);
 }
 
+//-----------------------------------------------------------
+// Procedure: handleConfigModTrailRange()
+
+bool BHV_Trail::handleConfigModTrailRange(double mod) 
+{
+  m_trail_range += mod;
+  if(m_trail_range <= m_min_trail_range)
+    m_trail_range = m_min_trail_range;
+  return(true);
+}
+
+//-----------------------------------------------------------
+// Procedure: handleConfigModTrailRangePct()
+//      Note: Given pct in the range of (0, inf).
+//            Fifty percent is given as 50, not 0.5
+
+bool BHV_Trail::handleConfigModTrailRangePct(double pct_100) 
+{
+  if(pct_100 <= 0)
+    return(false);
+
+  double pct = pct_100 / 100.0;
+
+  m_trail_range *= pct;
+  if(m_trail_range <= m_min_trail_range)
+    m_trail_range = m_min_trail_range;
+  return(true);
+}
 
 //-----------------------------------------------------------
 // Procedure: onHelmStart()
@@ -145,7 +173,7 @@ void BHV_Trail::onHelmStart()
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunState
+// Procedure: onRunState()
 
 IvPFunction *BHV_Trail::onRunState() 
 {
@@ -160,7 +188,8 @@ IvPFunction *BHV_Trail::onRunState()
   postViewableTrailPoint();
 
   // double adjusted_angle = angle180(m_cnh + m_trail_angle);
-  // projectPoint(adjusted_angle, m_trail_range, m_cnx, m_cny, m_trail_pt_x, m_trail_pt_y);
+  // projectPoint(adjusted_angle, m_trail_range, m_cnx,
+  //              m_cny, m_trail_pt_x, m_trail_pt_y);
 
   // Calculate the relevance first. If zero-relevance, we won't
   // bother to create the objective function.
@@ -356,7 +385,8 @@ void BHV_Trail::postViewableTrailPoint()
   m_trail_point.set_label(m_us_name + "_trailpoint");
   m_trail_point.set_active(true);
 
-  m_trail_point.set_duration(1);
+  m_trail_point.set_vertex_size(8);
+  m_trail_point.set_vertex_color("gray50");
   m_trail_point.set_time(getBufferCurrTime());
 
   string spec = m_trail_point.get_spec();

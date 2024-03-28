@@ -43,11 +43,14 @@ protected:
   double  getRelevance();
   double  getPriority();
 
+  bool    handleConfigModTrailRange(double);
+  bool    handleConfigModTrailRangePct(double);
   void    postViewableTrailPoint();
   double  updateTrailDistance();  
   void    calculateTrailPoint();
 
 private: // Configuration parameters
+  double  m_min_trail_range;
   double  m_trail_range;
   double  m_trail_angle;
   double  m_radius;

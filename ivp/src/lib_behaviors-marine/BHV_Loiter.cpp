@@ -127,6 +127,17 @@ bool BHV_Loiter::setParam(string param, string value)
     m_center_pending = true;
     return(true);
   }  
+  else if(param == "mod_poly_rad") {
+    if(!isNumber(value))
+      return(false);
+    m_loiter_engine.modPolyRad(dval);
+    int ix = m_waypoint_engine.getCurrIndex();
+    m_waypoint_engine.setSegList(m_loiter_engine.getPolygon());
+    m_waypoint_engine.setCurrIndex(ix);
+    m_acquire_mode = true;
+    m_loiter_mode = "idle";
+    return(true);
+  }  
   else if(param == "use_alt_speed") {
     return(setBooleanOnString(m_use_alt_speed, value));
   }
@@ -500,7 +511,7 @@ void BHV_Loiter::updateLoiterMode()
 }
 
 //-----------------------------------------------------------
-// Procedure: buildIPF
+// Procedure: buildIPF()
 
 IvPFunction *BHV_Loiter::buildIPF(string method) 
 {
@@ -727,6 +738,7 @@ string BHV_Loiter::expandMacros(string sdata)
   sdata = macroExpand(sdata, "CENTER", center);
 
   sdata = macroExpand(sdata, "CWISE", m_loiter_engine.getClockwise());
+  sdata = macroExpand(sdata, "RAD", m_loiter_engine.getRadius());
 
   return(sdata);
 }

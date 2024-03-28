@@ -128,7 +128,8 @@ protected: // intermediate or object global variables.
   XYPoint   m_prevpt;
 
   bool      m_greedy_tour_pending;
-
+  bool      m_draw_path_loop;
+  
   int       m_prev_cycle_index;
   int       m_prev_waypt_index;
   
