@@ -38,7 +38,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Constructor:
+// Constructor()
 
 LoiterEngine::LoiterEngine()
 {
@@ -47,7 +47,7 @@ LoiterEngine::LoiterEngine()
 }
 
 //-----------------------------------------------------------
-// Procedure: setClockwise
+// Procedure: setClockwise()
 //   Purpose: Set the clockwise flag - adjust the polygon if needed
 
 void LoiterEngine::setClockwise(bool g_clockwise)
@@ -59,7 +59,32 @@ void LoiterEngine::setClockwise(bool g_clockwise)
 }
 
 //-----------------------------------------------------------
-// Procedure: setSpiralFactor
+// Procedure: modPolyRad()
+
+void LoiterEngine::modPolyRad(double val)
+{
+  double min_rad = 5; // arbitrary min
+  double cur_rad = m_polygon.max_radius();
+  double new_rad = cur_rad + val;
+
+
+  cout << "min_rad:" << min_rad << endl;
+  cout << "cur_rad:" << cur_rad << endl;
+  cout << "new_rad:" << new_rad << endl;
+
+  if(new_rad < min_rad)
+    new_rad = min_rad;
+
+  double amt = new_rad - cur_rad;
+  cout << "amt:" << amt << endl;
+  
+  m_polygon.grow_by_amt(amt);  
+  double new_cur_rad = m_polygon.max_radius();
+  cout << "new_cur_rad:" << new_cur_rad << endl;
+}
+
+//-----------------------------------------------------------
+// Procedure: setSpiralFactor()
 //      Note: 0 is little or no spiraling
 //            100 is lots of spiraling
 
@@ -79,7 +104,7 @@ void LoiterEngine::setSpiralFactor(double val)
 }
 
 //-----------------------------------------------------------
-// Procedure: acquireVertex
+// Procedure: acquireVertex()
 //   Purpose: Determine which of the viewable vertices in the polygon
 //            is the best point to serve as a vehicle entry point. 
 //            Determination is based on which direction the vehicle

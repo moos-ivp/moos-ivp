@@ -36,12 +36,14 @@ class LoiterEngine {
   void   setClockwise(bool);
   void   setPoly(const XYPolygon& poly) {m_polygon = poly;}
   void   setCenter(double x, double y)  {m_polygon.new_center(x,y);}
+  void   modPolyRad(double meters);
   void   setSpiralFactor(double v);
 
   double getCenterX() const      {return(m_polygon.get_center_x());}
   double getCenterY() const      {return(m_polygon.get_center_y());}
   bool   getClockwise() const    {return(m_clockwise);}
   double getSpiralFactor() const {return(m_spiral_factor);}
+  double getRadius() const {return(m_polygon.max_radius());}
 
   unsigned int getPolyPts() const {return(m_polygon.size());}
 
