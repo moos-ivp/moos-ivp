@@ -1,0 +1,13 @@
+//--------------------------------------------------------
+// uMemWatch Configuration Block (Created from Plugin)
+
+ProcessConfig = uMemWatch
+{
+  AppTick   = 0.4
+  CommsTick = 0.4
+
+  absolute_time_gap = 2
+  watch_only = pHelmIvP
+}
+
+
