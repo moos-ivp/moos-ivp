@@ -30,6 +30,9 @@ protected: // Standard MOOSApp functions to overload
  protected:
   void registerVariables();
 
+  void setPathEnv();
+  bool validColor(std::string);
+  
  private: // Configuration variables
 
   std::string m_qblink;
@@ -39,6 +42,8 @@ private: // State variables
   int m_system_result;
   int m_total_cmds;
 
+  std::string m_path_env;
+  
 };
 
 #endif 

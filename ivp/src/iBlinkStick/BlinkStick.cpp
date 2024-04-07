@@ -47,11 +47,11 @@ bool BlinkStick::OnNewMail(MOOSMSG_LIST &NewMail)
     if(key == "QBLINK") 
       handleMailQBlink(sval);
 
-     else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
-       reportRunWarning("Unhandled Mail: " + key);
-   }
-	
-   return(true);
+    else if(key != "APPCAST_REQ") // handled by AppCastingMOOSApp
+      reportRunWarning("Unhandled Mail: " + key);
+  }
+  
+  return(true);
 }
 
 //---------------------------------------------------------
@@ -65,12 +65,13 @@ bool BlinkStick::OnConnectToServer()
 
 //---------------------------------------------------------
 // Procedure: Iterate()
-//            happens AppTick times per second
 
 bool BlinkStick::Iterate()
 {
   AppCastingMOOSApp::Iterate();
-  
+
+  setPathEnv();
+
   AppCastingMOOSApp::PostReport();
   return(true);
 }
@@ -134,15 +135,10 @@ bool BlinkStick::handleMailQBlink(string sval)
     string param = tolower(biteStringX(svector[i], '='));
     string value = svector[i];
 
-    if(param == "color") {
-      if((value == "blue")   || (value == "brown")  ||
-	 (value == "green")  || (value == "pink")   ||
-	 (value == "red")    || (value == "orange") ||
-	 (value == "yellow") || (value == "cyan")   ||
-	 (value == "white")  || (value == "random") ||
-	 (value == "purple") || (value == "off"))
-	color = value;
-    }
+    if((param == "color") && validColor(value))
+      color = tolower(value);
+    else if(validColor(param))
+      color = tolower(param);
     else if(param == "time")
       setIntOnString(time, value);
     else if(param == "delay")
@@ -165,18 +161,22 @@ bool BlinkStick::handleMailQBlink(string sval)
     return(false);
   
   if(color == "off") {
-    string cmd = "qblink.sh off";
-    m_system_result = system(cmd.c_str());
-    reportEvent(cmd);
+    string path_cmd = "PATH=" + m_path_env;
+    string part_cmd = "qblink.sh off";
+    string full_cmd = path_cmd + " " + part_cmd;
+    m_system_result = system(full_cmd.c_str());
+    reportEvent(part_cmd);
     return(true);
   }
 
   // Part 3: Build a non-off command
-  string cmd = color + " --dim=" + intToString(dim);
+  string path_cmd = "PATH=" + m_path_env;
+  string part_cmd = " qblink.sh ";
+  part_cmd += color + " --dim=" + intToString(dim);
   if(time > 0)
-    cmd += " --time=" + intToString(time);
+    part_cmd += " --time=" + intToString(time);
   if(delay > 0)
-    cmd += " --delay=" + intToString(delay);
+    part_cmd += " --delay=" + intToString(delay);
 
   string sides = "-2";
   if(!side0)
@@ -185,15 +185,48 @@ bool BlinkStick::handleMailQBlink(string sval)
     sides = "-0";
 
   // Part 4: Post the system command
-  cmd += " " + sides;
-  m_system_result = system(cmd.c_str());
-  reportEvent(cmd);
+  part_cmd += " " + sides;
+
+  string full_cmd = path_cmd + " " + part_cmd;
+  m_system_result = system(full_cmd.c_str());
+  reportEvent(part_cmd);
   m_total_cmds++;
   
   return(true);
 }
 
 
+//------------------------------------------------------------
+// Procedure: setPathEnv()
+
+void BlinkStick::setPathEnv()
+{
+  // Only run this once. If the m_path_env already set then return
+  if(m_path_env != "")
+    return;
+
+  m_path_env = getenv("PATH");  
+
+}
+
+//---------------------------------------------------------
+// Procedure: validColor()
+ 
+bool BlinkStick::validColor(string sval)
+{
+  sval = tolower(sval);
+  
+  if((sval == "blue")   || (sval == "brown")  ||
+     (sval == "green")  || (sval == "pink")   ||
+     (sval == "red")    || (sval == "orange") ||
+     (sval == "yellow") || (sval == "cyan")   ||
+     (sval == "white")  || (sval == "random") ||
+     (sval == "purple") || (sval == "off"))
+    return(true);
+  else
+    return(false);
+}
+ 
 //------------------------------------------------------------
 // Procedure: buildReport()
 
@@ -203,6 +236,7 @@ bool BlinkStick::buildReport()
   m_msgs << " QBlink Var:                   " << m_qblink << endl;
   m_msgs << "                               " << endl;
   m_msgs << "State:                         " << endl;
+  //  m_msgs << " Path: " << m_path_env << endl;
   m_msgs << " Total Cmds: " << uintToString(m_total_cmds) << endl;
   m_msgs << endl;
   

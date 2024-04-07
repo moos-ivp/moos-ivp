@@ -103,6 +103,7 @@ void showInterfaceAndExit()
   blk("------------------------------------                            ");
   blk("  QBLINK = color=red, dim=50, time=10, delay=4                  ");
   blk("  QBLINK = color=pink, side0=false, side1=true                  ");
+  blk("  QBLINK = brown                                                ");
   blk("  QBLINK = off                                                  ");
   blk("  QBLINK = blue, time=10                                        ");
   blk("                                                                ");
