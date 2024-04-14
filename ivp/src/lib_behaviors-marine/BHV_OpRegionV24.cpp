@@ -163,6 +163,13 @@ bool BHV_OpRegionV24::setParam(string param, string val)
     return(setBooleanOnString(m_draw_halt_status, val));
   else if(param == "visual_hints") 
     return(m_hints.setHints(val));
+  else if(param == "dynamic_region_var") {
+    bool ok = setNonWhiteVarOnString(m_dynamic_region_var, val);
+    if(!ok)
+      return(false);
+    addInfoVars(m_dynamic_region_var);
+    return(true);
+  }
   return(false);
 }
 
@@ -457,6 +464,15 @@ bool BHV_OpRegionV24::updateInfoIn()
   m_osy = osy;
   m_osv = osv;
   m_osh = osh;
+
+  if(getBufferVarUpdated(m_dynamic_region_var)) {
+    bool ok;
+    string new_poly_core = getBufferStringVal(m_dynamic_region_var, ok);
+    ok = ok && setParam("core_poly", new_poly_core);
+    onSetParamComplete();
+    if(!ok)
+      return(false);
+  }
 
   return(true);
 }
