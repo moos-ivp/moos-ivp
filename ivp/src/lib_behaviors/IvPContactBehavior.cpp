@@ -35,7 +35,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 IvPContactBehavior::IvPContactBehavior(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
@@ -485,7 +485,7 @@ bool IvPContactBehavior::updatePlatformInfo()
   if(ok) m_cnh = getBufferDoubleVal(m_contact+"_NAV_HEADING", ok);
   if(ok) m_cnv = getBufferDoubleVal(m_contact+"_NAV_SPEED",   ok);
   if(ok) cnutc = getBufferDoubleVal(m_contact+"_NAV_UTC", ok);
-  if(!ok) {    
+  if(!ok && !m_on_no_contact_ok) {    
     string msg = m_contact + " x/y/heading/speed info not found";
     if(m_on_no_contact_ok)
       postWMessage(msg);

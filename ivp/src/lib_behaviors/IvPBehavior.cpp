@@ -1567,10 +1567,14 @@ double IvPBehavior::getBufferTimeVal(string varname) const
 
 bool IvPBehavior::getBufferVarUpdated(string varname) const
 {
+  // Edge cases
   if(!m_info_buffer)
+    return(false);
+  if(varname == "")
     return(false);
   if(!m_info_buffer->isKnown(varname))
     return(false);
+
   double elapsed = m_info_buffer->tQuery(varname);
   if(elapsed == 0)
     return(true);
