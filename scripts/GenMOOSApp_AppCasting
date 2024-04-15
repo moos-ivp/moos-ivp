@@ -139,18 +139,6 @@ int main(int argc, char *argv[])
 
 EOF
 
-cat > $2${1}.moos <<EOF
-//------------------------------------------------
-// ${2}${1} config block
-
-ProcessConfig = ${2}${1}
-{
-   AppTick   = 4
-   CommsTick = 4
-}
-
-EOF
-
 cat > ${1}.cpp <<EOF
 /************************************************************/
 /*    NAME: $3                                              */
