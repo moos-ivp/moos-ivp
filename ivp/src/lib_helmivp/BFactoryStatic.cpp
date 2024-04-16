@@ -72,6 +72,7 @@
 #include "BHV_MinAltitudeX.h"
 #include "BHV_AvdColregsV17.h"
 #include "BHV_AvdColregsV19.h"
+#include "BHV_AvdColregsV22.h"
 #include "BHV_PModelView.h"
 
 // Deprecated
@@ -129,6 +130,7 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_MinAltitudeX")    ||
      (bhv_name == "BHV_AvdColregsV17")   ||
      (bhv_name == "BHV_AvdColregsV19")   ||
+     (bhv_name == "BHV_AvdColregsV22")   ||
      (bhv_name == "BHV_AvoidObstacleV24")||
      (bhv_name == "BHV_PModelView"))
     return(true);
@@ -234,6 +236,8 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_AvdColregsV17(m_domain);
   else if(bhv_name == "BHV_AvdColregsV19")     
     bhv = new BHV_AvdColregsV19(m_domain);
+  else if(bhv_name == "BHV_AvdColregsV22")     
+    bhv = new BHV_AvdColregsV22(m_domain);
   else if(bhv_name == "BHV_PModelView")     
     bhv = new BHV_PModelView(m_domain);
   else if(bhv_name == "BHV_AvoidObstacleV24")     
