@@ -147,12 +147,16 @@ bool NodeReporter::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "NAV_TRAJECTORY")
       m_record.setTrajectory(sdata);
     else if(key == "PLATFORM_COLOR") {
-      if(isColor(sdata))
+      if(isColor(sdata)) {
 	m_record.setColor(sdata);
+	m_record_gt.setColor(sdata);
+      }
     }
     else if((key == "NODE_COLOR_CHANGE") && isColor(sdata)) {
-      if(m_allow_color_change)
+      if(m_allow_color_change) {
 	m_record.setColor(sdata);
+	m_record_gt.setColor(sdata);
+      }
     }
     else if(key == "THRUST_MODE_REVERSE") {
       bool reverse = (tolower(sdata)=="true");
@@ -369,6 +373,7 @@ bool NodeReporter::OnStartUp()
     }
     else if((param == "platform_color") && isColor(value)) { 
       m_record.setColor(value);
+      m_record_gt.setColor(value);
       handled = true;
     }
     else if((param =="platform_length") ||     // Preferred
