@@ -29,12 +29,12 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   dep_behaviors
   behaviors-marine
   bhv_fixedturn
-  turngeo
   contacts
   behaviors-colregs
   ufield
   behaviors
   bhvutil	
+  turngeo
   ivpbuild 
   ivpcore
   ivpsolve 
