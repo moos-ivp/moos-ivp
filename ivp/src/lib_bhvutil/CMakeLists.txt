@@ -20,6 +20,8 @@ SET(SRC
   WaypointEngineX.cpp
   RefineryObAvoidV24.cpp
   RefineryCPA.cpp
+  LegRun.cpp
+  LegRunSet.cpp
 )
 
 SET(HEADERS
@@ -40,6 +42,8 @@ SET(HEADERS
   WaypointEngineX.h
   RefineryObAvoidV24.h
   RefineryCPA.h
+  LegRun.h
+  LegRunSet.h
 )
 
 # Build Library

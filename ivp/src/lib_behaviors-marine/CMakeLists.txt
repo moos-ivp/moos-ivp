@@ -35,7 +35,6 @@ SET(SRC
   BHV_Convoy.cpp
   BHV_Waypoint.cpp
   BHV_LegRun.cpp
-  BHV_LegRunX.cpp
   BHV_ZigZag.cpp
   BHV_FullStop.cpp
   BHV_HSLine.cpp
@@ -78,7 +77,6 @@ SET(HEADERS
   BHV_Trail.h
   BHV_Waypoint.h
   BHV_LegRun.h
-  BHV_LegRunX.h
   BHV_ZigZag.h
   BHV_FullStop.h
 #  BHV_FixTurn.h
