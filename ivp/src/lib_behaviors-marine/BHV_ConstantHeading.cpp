@@ -37,7 +37,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 BHV_ConstantHeading::BHV_ConstantHeading(IvPDomain gdomain) : 
   IvPBehavior(gdomain)
@@ -66,7 +66,7 @@ BHV_ConstantHeading::BHV_ConstantHeading(IvPDomain gdomain) :
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool BHV_ConstantHeading::setParam(string param, string val) 
 {
@@ -111,8 +111,7 @@ bool BHV_ConstantHeading::setParam(string param, string val)
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunState
-//
+// Procedure: onRunState()
 
 IvPFunction *BHV_ConstantHeading::onRunState() 
 {
