@@ -43,8 +43,8 @@ ProcessConfig = pLogger
 
   AsyncLog = true
 
-  // For variables that are published in a bundle on their first post,
-  // explicitly declare their logging request
+  // For variables that are published in a bundle on their 
+  // first post, explicitly declare their logging request
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
   Log = REPORT @ 0 NOSYNC
   Log = BHV_SETTINGS @ 0 NOSYNC
@@ -80,13 +80,11 @@ ProcessConfig = uSimMarineV22
   AppTick  	= 4
   CommsTick	= 4
 
-  start_pos = x=0, y=-20, heading=180, speed=0
-
+  start_pos     = x=0, y=-20, heading=180, speed=0
   prefix        = NAV
-
-  turn_rate     = 40
+  turn_rate     = 95
   thrust_map    = 0:0, 20:1, 40:2, 60:3, 80:4, 100:5
-  //thrust_reflect = true
+	turn_spd_loss = 0.4
 }
 
 //------------------------------------------
@@ -116,8 +114,8 @@ ProcessConfig = pMarinePIDV22
   // SIM_INSTABILITY = 20
 
   // Yaw PID controller
-  yaw_pid_kp		 = 1.2
-  yaw_pid_kd		 = 0.0
+  yaw_pid_kp		 = 0.9
+  yaw_pid_kd		 = 0.3
   yaw_pid_ki		 = 0.3
   yaw_pid_integral_limit = 0.07
 
