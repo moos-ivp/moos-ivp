@@ -48,6 +48,15 @@ ProcessConfig = uQueryDB
   pass_condition = (MISSION_EVALUATED = true)
 }       
 
+//--------------------------------------------------
+// uPokeDB Config Block
+
+ProcessConfig = uPokeDB
+{
+  poke = DEPLOY = true
+  poke = MOOS_MANUAL_OVERRIDE = false
+}       
+
 //------------------------------------------
 // uProcessWatch Config block
 

@@ -36,7 +36,7 @@ for ARGI; do
         MAX_TIME="${ARGI#--max_time=*}"
     elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-n" ]; then
         LAUNCH_GUI="no"
-    elif [ "${ARGI}" = "--auto" -o "${}"]; then
+    elif [ "${ARGI}" = "--auto" -o "${ARGI}" = "-a" ]; then
         LAUNCH_GUI="no"
 
     else
