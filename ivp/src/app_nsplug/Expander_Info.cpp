@@ -291,7 +291,20 @@ void showManualAndExit()
   cout << "                                                                  " << endl;
   cout << "The above would result in the line \"BALANCE is 23\".             " << endl;
  
-
+  cout << "(6) Defaults                                                      " << endl;
+  cout << "                                                                  " << endl;
+  cout << "A default value may be specified to handle the cases where (a) the" << endl;
+  cout << "macro is undefined, or (b) the macro is defined as empty string.  " << endl;
+  cout << "                                                                  " << endl;
+  cout << "+-file1 --------------------------------------+                   " << endl;
+  cout << "|   $(MACRO=default)                          |                   " << endl;
+  cout << "|   $(MACRO:=default)                         |                   " << endl;
+  cout << "+---------------------------------------------+                   " << endl;
+  cout << "                                                                  " << endl;
+  cout << "$ nsplug file1 file2 MACRO=                                       " << endl;
+  cout << "                                                                  " << endl;
+  cout << " The first will expand MACRO to the empty string                  " << endl;
+  cout << " The second will expand MACRO to \"default\"                      " << endl;
   exit(0);
 }
 
