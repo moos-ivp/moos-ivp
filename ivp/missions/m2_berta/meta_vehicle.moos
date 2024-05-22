@@ -3,10 +3,10 @@
 // M. Benjamin, MIT
 
 ServerHost = localhost
-ServerPort = $(BOT_MOOSDB)
+ServerPort = $(MOOS_PORT)
 Community  = $(VNAME)
 
-#include plug_origin_warp.moos
+#include plugs.moos <origin_warp>
 
 //----------------------------------------------------
 Processconfig = ANTLER
@@ -16,7 +16,6 @@ Processconfig = ANTLER
   Run = MOOSDB         @ NewConsole = false
   Run = uProcessWatch  @ NewConsole = false
   Run = pShare         @ NewConsole = false
-  Run = uSimMarineV22  @ NewConsole = false
   Run = pLogger        @ NewConsole = false
   Run = pNodeReporter  @ NewConsole = false
   Run = pMarinePID     @ NewConsole = false
@@ -27,11 +26,23 @@ Processconfig = ANTLER
   Run = uMemWatch      @ NewConsole = false
   Run = pContactMgrV20 @ NewConsole = false
   Run = pRealm         @ NewConsole = false
-}
 
-#include plug_pShare.moos
-#include plug_pHostInfo.moos
-#include plug_uProcessWatch.moos
+#ifdef XMODE SIM
+  Run = uSimMarineV22  @ NewConsole = false
+#elseifdef XMODE M300
+  Run = iM300          @ NewConsole = false
+#endif
+	}
+
+#ifdef XMODE SIM
+#include plugs.moos <uSimMarine>
+#elseifdef XMODE M300
+#include plugs.moos <iM300>
+#endif
+	
+#include plugs.moos <pShare>
+#include plugs.moos <pHostInfo>
+#include plugs.moos <uProcessWatch>
 
 //----------------------------------------------------
 // pHelmIvP Config Block  
@@ -51,7 +62,7 @@ ProcessConfig = pHelmIvP
 	hold_on_apps = pContactMgrV20
 }
 	
-//--------------------------------------------------------
+//----------------------------------------------------
 // pNodeReporter Config Block 
 
 ProcessConfig = pNodeReporter
@@ -59,10 +70,8 @@ ProcessConfig = pNodeReporter
   AppTick     = 2
   CommsTick   = 2
 
-  vessel_type = $(VTYPE)
+  vessel_type   = $(VTYPE=kayak)
   terse_reports = true
-
-	group = alpha
 }
 
 //--------------------------------------------------------
@@ -99,7 +108,7 @@ ProcessConfig = uFldNodeBroker
   AppTick   = 1
   CommsTick = 1
 
-  try_shore_host = pshare_route=localhost:$(SHORE_PSHARE)
+  try_shore_host = pshare_route=$(SHORE_IP):$(SHORE_PSHARE)
 
 	//shadow_shore = ip=192.168.7.22, name=henry, dur=45000
 	
@@ -187,7 +196,8 @@ ProcessConfig = uSimMarineV22
 
 	app_logging = true
 	
-	turn_rate = 90
+	turn_rate = 95
+	turn_spd_loss = 0.6
 
 	post_des_thrust = DESIRED_THRUSTX
 	post_des_rudder = DESIRED_RUDDERX

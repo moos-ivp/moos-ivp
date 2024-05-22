@@ -4,37 +4,41 @@
 #  Mission: m2_berta
 #   Author: Michael Benjamin
 #   LastEd: May 17th 2019
-#----------------------------------------------------------
-#  Part 1: Set global var defaults
-#----------------------------------------------------------
+#--------------------------------------------------------------
+#  Part 1: Define a convenience function for producing terminal
+#          debugging/status output depending on the verbosity.
+#--------------------------------------------------------------
+vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
+
+#--------------------------------------------------------------
+#  Part 2: Set Global variables
+#-------------------------------------------------------------=
+ME=`basename "$0"`
 TIME_WARP=1
-JUST_MAKE="no"
-
-VNAME1="henry"           # The first vehicle Community
-VNAME2="gilda"           # The second vehicle Community
-VTYPE1="kayak"
-VTYPE2="mokai"
-START_POS1="0,0,180"         
-START_POS2="180,0,180"        
-LOITER_POS1="x=0,y=-75"
-LOITER_POS2="x=125,y=-50"
-SHORE_PSHARE="9200"
+JUST_MAKE=""
+VERBOSE=""
+CMD_ARGS=""
 
 #----------------------------------------------------------
-#  Part 2: Check for and handle command-line arguments
+#  Part 3: Check for and handle command-line arguments
 #----------------------------------------------------------
 for ARGI; do
+    CMD_ARGS+="${ARGI} "
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
 	echo "launch.sh [SWITCHES] [time_warp]    " 
 	echo "  --help, -h           Show this help message            " 
 	echo "  --just_make, -j      Just create targ files, no launch " 
+	echo "  --verbose, -v        Verbose output, confirm launch    "
 	echo "  --fast, -f           Init positions for fast encounter " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
-    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ] ; then
-	JUST_MAKE="yes"
-    elif [ "${ARGI}" = "--fast" -o "${ARGI}" = "-f" ] ; then
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
+        VERBOSE=$ARGI 
+   elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
+	JUST_MAKE=$ARGI
+    elif [ "${ARGI}" = "--fast" -o "${ARGI}" = "-f" ]; then
+	FAST="yes"
 	START_POS1="170,-80,270"         
 	START_POS2="-30,-80,90"        
 	LOITER_POS1="x=0,y=-95"
@@ -45,48 +49,82 @@ for ARGI; do
     fi
 done
 
-#----------------------------------------------------------
-#  Part 3: Create the .moos and .bhv files. 
-#----------------------------------------------------------
-nsplug meta_vehicle.moos targ_henry.moos -i -f WARP=$TIME_WARP \
-       VNAME=$VNAME1            BOT_PSHARE="9201"              \
-       BOT_MOOSDB="9001"        SHORE_PSHARE=$SHORE_PSHARE     \
-       VTYPE=$VTYPE1            START_POS=$START_POS1  
+#-------------------------------------------------------------
+# Part 4: Set starting positions, vnames, colors
+#-------------------------------------------------------------
+vecho "Setting starting position and colors"
 
-nsplug meta_vehicle.moos targ_gilda.moos -i -f WARP=$TIME_WARP \
-       VNAME=$VNAME2            BOT_PSHARE="9202"              \
-       BOT_MOOSDB="9002"        SHORE_PSHARE=$SHORE_PSHARE     \
-       VTYPE=$VTYPE2            START_POS=$START_POS2  
+VEHPOS=("0,0,180"   "180,0,180")
+LOIPOS=("x=0,y=-75" "x=125,y=-50")
+if [ "${FAST}" = "yes" ]; then
+    VEHPOS=("170,-80,270" "-30,-80,90")
+    LOIPOS=("x=0,y=-95"  "x=125,y=-65")
+fi
+VNAMES=("abe" "ben")
+VCOLOR=("red" "yellow")
 
-nsplug meta_shoreside.moos targ_shoreside.moos -i -f WARP=$TIME_WARP \
-       SHORE_PSHARE=$SHORE_PSHARE  SHORE_MOOSDB="9000"        \
-       VNAMES=$VNAME1:$VNAME2
-
-nsplug meta_vehicle.bhv targ_henry.bhv -i -f VNAME=$VNAME1    \
-       START_POS=$START_POS1 LOITER_POS=$LOITER_POS1       
-
-nsplug meta_vehicle.bhv targ_gilda.bhv -i -f VNAME=$VNAME2    \
-       START_POS=$START_POS2 LOITER_POS=$LOITER_POS2       
-
-if [ ${JUST_MAKE} = "yes" ] ; then
-    echo "Files assembled; nothing launched; exiting per request."
-    exit 0
+#---------------------------------------------------------------
+#  Part 5: If verbose, show vars and confirm before launching
+#---------------------------------------------------------------
+if [ "${VERBOSE}" != "" ]; then
+    echo "=================================="
+    echo "  launch.sh SUMMARY               "
+    echo "=================================="
+    echo "$ME"
+    echo "CMD_ARGS =      [${CMD_ARGS}]     "
+    echo "TIME_WARP =     [${TIME_WARP}]    "
+    echo "JUST_MAKE =     [${JUST_MAKE}]    "
+    echo "----------------------------------"
+    echo "START_POS1 =    [${VEHPOS[0]}]    "
+    echo "START_POS2 =    [${VEHPOS[1]}]    "
+    echo "LOITER_POS1 =   [${LOIPOS[0]}]    "
+    echo "LOITER_POS2 =   [${LOIPOS[1]}]    "
+    echo "VCOLOR1 =       [${VCOLOR[0]}]    "
+    echo "VCOLOR2 =       [${VCOLOR[1]}]    "
+    echo "VNAME1 =        [${VNAMES[0]}]    "
+    echo "VNAME2 =        [${VNAMES[1]}]    "
+    echo -n "Hit any key to continue launch "
+    read ANSWER
 fi
 
 #----------------------------------------------------------
-#  Part 4: Launch the processes
+#  Part 6: Launch the Vehicles
 #----------------------------------------------------------
-echo "Launching Shoreside MOOS Community. WARP is" $TIME_WARP
-pAntler targ_shoreside.moos >& /dev/null &
+VARGS="--sim --auto $TIME_WARP $JUST_MAKE $VERBOSE "
 
-echo "Launching $VNAME1 MOOS Community. WARP is" $TIME_WARP
-pAntler targ_henry.moos >& /dev/null &
+AMT="2"
+for IX in `seq 1 $AMT`;
+do
+    IXX=$(($IX - 1))
+    IVARGS="$VARGS --mport=900${IX}  --pshare=920${IX} "
+    IVARGS+=" --vname=${VNAMES[$IXX]}  "
+    IVARGS+=" --start=${VEHPOS[$IXX]}  "
+    IVARGS+=" --color=${VCOLOR[$IXX]}  "
+    IVARGS+=" --loipos=${LOIPOS[$IXX]} "
+    vecho "IVARGS: $IVARGS"
+    vecho "Launching vehicle: $IVARGS"
+    ./launch_vehicle.sh $IVARGS; sleep 0.5
+done
 
-sleep 1
+#----------------------------------------------------------
+#  Part 7: Launch the Shoreside
+#----------------------------------------------------------
+SARGS="--mport=9000 --pshare=9200 --auto --vnames=abe:ben "
+SARGS+="$TIME_WARP $JUST_MAKE $VERBOSE"
+vecho "Launching shoreside: $SARGS"
+./launch_shoreside.sh $SARGS 
 
-echo "Launching $VNAME2 MOOS Community. WARP is" $TIME_WARP
-pAntler targ_gilda.moos >& /dev/null &
+if [ "${JUST_MAKE}" = "yes" ]; then
+    echo "Targ files made; exiting without launch."
+    exit 0
+fi
 
-uMAC targ_shoreside.moos
+#--------------------------------------------------------------
+#  Part 8: Unless auto-launched, launch uMAC until mission quit
+#--------------------------------------------------------------
+if [ "${XLAUNCHED}" = "no" ]; then
+    uMAC targ_shoreside.moos
+    kill -- -$$
+fi
 
-kill -- -$$
+exit 0
