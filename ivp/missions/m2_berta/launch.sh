@@ -15,8 +15,8 @@ vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
 #-------------------------------------------------------------=
 ME=`basename "$0"`
 TIME_WARP=1
-JUST_MAKE=""
 VERBOSE=""
+JUST_MAKE=""
 CMD_ARGS=""
 XLAUNCHED=""
 NOGUI=""
@@ -72,9 +72,8 @@ VCOLOR=("red" "yellow")
 #---------------------------------------------------------------
 if [ "${VERBOSE}" != "" ]; then
     echo "=================================="
-    echo "  launch.sh SUMMARY               "
+    echo "  $ME SUMMARY              (ALL)  "
     echo "=================================="
-    echo "$ME"
     echo "CMD_ARGS =      [${CMD_ARGS}]     "
     echo "TIME_WARP =     [${TIME_WARP}]    "
     echo "JUST_MAKE =     [${JUST_MAKE}]    "
@@ -116,7 +115,7 @@ SARGS+="$TIME_WARP $JUST_MAKE $VERBOSE"
 vecho "Launching shoreside: $SARGS"
 ./launch_shoreside.sh $SARGS 
 
-if [ "${JUST_MAKE}" = "yes" ]; then
+if [ "${JUST_MAKE}" != "" ]; then
     echo "Targ files made; exiting without launch."
     exit 0
 fi
