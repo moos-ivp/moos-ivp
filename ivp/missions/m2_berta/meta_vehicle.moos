@@ -98,6 +98,8 @@ ProcessConfig = pContactMgrV20
   display_radii     = true
   alert_range_color = gray70
   cpa_range_color   = gray30
+
+  hold_alerts_for_helm = true
 }
 
 //--------------------------------------------------

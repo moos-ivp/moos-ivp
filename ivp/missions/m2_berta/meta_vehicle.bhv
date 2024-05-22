@@ -67,7 +67,7 @@ Behavior = BHV_AvdColregsV19
          extrapolate = true
                decay = 30,60
 
-	       match_group = alpha
+	       //match_group = alpha
         //  match_type = mokai
 
 	exit_on_filter_group = true

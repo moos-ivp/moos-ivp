@@ -18,7 +18,8 @@ TIME_WARP=1
 JUST_MAKE=""
 VERBOSE=""
 CMD_ARGS=""
-XLAUNCHED="no"
+XLAUNCHED=""
+NOGUI=""
 
 #----------------------------------------------------------
 #  Part 3: Check for and handle command-line arguments
@@ -26,24 +27,26 @@ XLAUNCHED="no"
 for ARGI; do
     CMD_ARGS+="${ARGI} "
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
-	echo "launch.sh [SWITCHES] [time_warp]    " 
-	echo "  --help, -h           Show this help message            " 
-	echo "  --just_make, -j      Just create targ files, no launch " 
-	echo "  --verbose, -v        Verbose output, confirm launch    "
-	echo "  --fast, -f           Init positions for fast encounter " 
+	echo "$ME [OPTIONS] [time_warp]                    " 
+	echo "  --help, -h         Show this help message  " 
+	echo "  --just_make, -j    Only create targ files  " 
+	echo "  --verbose, -v      Verbose, confirm launch "
+	echo "  --xlaunched, -x    Launched by xlaunch     "
+	echo "  --nogui, -ng       Headless launch, no gui "
+	echo "  --fast, -f         Start head-on encounter " 
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
         VERBOSE=$ARGI 
-   elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
+    elif [ "${ARGI}" = "--just_make" -o "${ARGI}" = "-j" ]; then
 	JUST_MAKE=$ARGI
+    elif [ "${ARGI}" = "--xlaunched" -o "${ARGI}" = "-x" ]; then
+	XLAUNCHED="yes"
+    elif [ "${ARGI}" = "--nogui" -o "${ARGI}" = "-ng" ]; then
+	NOGUI="--nogui"
     elif [ "${ARGI}" = "--fast" -o "${ARGI}" = "-f" ]; then
 	FAST="yes"
-	START_POS1="170,-80,270"         
-	START_POS2="-30,-80,90"        
-	LOITER_POS1="x=0,y=-95"
-	LOITER_POS2="x=125,y=-65"
     else 
         echo "launch.sh Bad arg:" $ARGI " Exiting with code: 1"
         exit 1
@@ -75,15 +78,13 @@ if [ "${VERBOSE}" != "" ]; then
     echo "CMD_ARGS =      [${CMD_ARGS}]     "
     echo "TIME_WARP =     [${TIME_WARP}]    "
     echo "JUST_MAKE =     [${JUST_MAKE}]    "
+    echo "XLAUNCHED =     [${XLAUNCHED}]    "
+    echo "NOGUI =         [${NOGUI}]        "
     echo "----------------------------------"
-    echo "START_POS1 =    [${VEHPOS[0]}]    "
-    echo "START_POS2 =    [${VEHPOS[1]}]    "
-    echo "LOITER_POS1 =   [${LOIPOS[0]}]    "
-    echo "LOITER_POS2 =   [${LOIPOS[1]}]    "
-    echo "VCOLOR1 =       [${VCOLOR[0]}]    "
-    echo "VCOLOR2 =       [${VCOLOR[1]}]    "
-    echo "VNAME1 =        [${VNAMES[0]}]    "
-    echo "VNAME2 =        [${VNAMES[1]}]    "
+    echo "START_POS =     [${VEHPOS[*]}]    "
+    echo "LOITER_POS  =   [${LOIPOS[*]}]    "
+    echo "VCOLORS =       [${VCOLOR[*]}]    "
+    echo "VNAMES =        [${VNAMES[*]}]    "
     echo -n "Hit any key to continue launch "
     read ANSWER
 fi
@@ -91,7 +92,7 @@ fi
 #----------------------------------------------------------
 #  Part 6: Launch the Vehicles
 #----------------------------------------------------------
-VARGS="--sim --auto $TIME_WARP $JUST_MAKE $VERBOSE "
+VARGS="--sim --auto $TIME_WARP $JUST_MAKE $VERBOSE $NOGUI"
 
 AMT="2"
 for IX in `seq 1 $AMT`;
@@ -123,7 +124,7 @@ fi
 #--------------------------------------------------------------
 #  Part 8: Unless auto-launched, launch uMAC until mission quit
 #--------------------------------------------------------------
-if [ "${XLAUNCHED}" = "no" ]; then
+if [ "${XLAUNCHED}" != "yes" ]; then
     uMAC targ_shoreside.moos
     kill -- -$$
 fi
