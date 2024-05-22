@@ -18,6 +18,7 @@ TIME_WARP=1
 JUST_MAKE=""
 VERBOSE=""
 CMD_ARGS=""
+XLAUNCHED="no"
 
 #----------------------------------------------------------
 #  Part 3: Check for and handle command-line arguments
