@@ -2,17 +2,17 @@
 #----------------------------------------------------------
 #   Script: launch.sh
 #  Mission: m2_berta
-#   Author: Michael Benjamin
-#   LastEd: May 17th 2019
-#--------------------------------------------------------------
-#  Part 1: Define a convenience function for producing terminal
-#          debugging/status output depending on the verbosity.
-#--------------------------------------------------------------
+#   Author: M.Benjamin
+#   LastEd: May 2024
+#----------------------------------------------------------
+#  Part 1: A convenience function for producing terminal
+#          debugging/status output depending on verbosity.
+#----------------------------------------------------------
 vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
 
-#--------------------------------------------------------------
+#----------------------------------------------------------
 #  Part 2: Set Global variables
-#-------------------------------------------------------------=
+#----------------------------------------------------------
 ME=`basename "$0"`
 TIME_WARP=1
 VERBOSE=""
@@ -123,7 +123,7 @@ fi
 #--------------------------------------------------------------
 #  Part 8: Unless auto-launched, launch uMAC until mission quit
 #--------------------------------------------------------------
-if [ "${XLAUNCHED}" != "yes" ]; then
+if [ "${XLAUNCHED}" = "" ]; then
     uMAC targ_shoreside.moos
     kill -- -$$
 fi
