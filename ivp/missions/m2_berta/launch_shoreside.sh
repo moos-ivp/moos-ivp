@@ -3,7 +3,7 @@
 #   Script: launch_shoreside.sh    
 #  Mission: m2_berta
 #   Author: M.Benjamin   
-#   LastEd: May 2024       
+#   LastEd: May 2024
 #------------------------------------------------------------ 
 #  Part 1: A convenience function for producing terminal
 #          debugging/status output depending on verbosity.
@@ -14,11 +14,11 @@ vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
 #  Part 2: Set global variable default values
 #------------------------------------------------------------ 
 ME=`basename "$0"`
+CMD_ARGS=""
 TIME_WARP=1
-JUST_MAKE=""
+JUST_MAKE="no"
 VERBOSE=""
 AUTO_LAUNCHED="no"
-CMD_ARGS=""
 LAUNCH_GUI="yes"
 
 IP_ADDR="localhost"
@@ -152,3 +152,5 @@ fi
 #------------------------------------------------------------ 
 uMAC targ_shoreside.moos
 kill -- -$$
+
+exit 0

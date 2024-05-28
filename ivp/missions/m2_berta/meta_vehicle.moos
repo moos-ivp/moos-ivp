@@ -57,7 +57,7 @@ ProcessConfig = pHelmIvP
   Behaviors    = targ_$(VNAME).bhv  
   Verbose      = false
   Domain       = course:0:359:360
-  Domain       = speed:0:5:26
+  Domain       = speed:0:4:21
 
 	hold_on_apps = pContactMgrV20
 }
@@ -185,34 +185,8 @@ ProcessConfig = pMarinePID
   SPEED_FACTOR = 20
 }
 
-//------------------------------------------------------
-// uSimMarineV22 Config Block
-
-ProcessConfig = uSimMarineV22
-{
-  AppTick   = 10
-  CommsTick = 10
-
-  START_POS = $(START_POS), 0
-  PREFIX    = NAV
-
-	app_logging = true
-	
-	turn_rate = 95
-	turn_spd_loss = 0.6
-
-	post_des_thrust = DESIRED_THRUSTX
-	post_des_rudder = DESIRED_RUDDERX
-	
-  //rotate_speed = 0.012
-  //drift_x      = 0.0045
-
-  //thrust_map = -100:-2, 0:0, 20:1, 40:2, 60:3, 80:5, 100:5
-  //thrust_map = -100:-2, 0:0, 20:1, 40:2, 60:3, 80:5, 100:5
-}
-
 //--------------------------------------------------
-// pLogger Configuration Block (Created from Plugin)
+// pLogger Config Block
 
 ProcessConfig = pLogger
 {

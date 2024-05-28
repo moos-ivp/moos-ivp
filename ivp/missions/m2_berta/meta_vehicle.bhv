@@ -41,7 +41,7 @@ Behavior = BHV_Loiter
   ipf_type = zaic_spd
 	
    post_suffix = A
-         speed = 1.4
+         speed = $(STOCK_SPD:=1.4)
      clockwise = false
         radius = 8.0
      nm_radius = 15.0
@@ -127,17 +127,18 @@ Behavior = BHV_AvdColregsV19
 //----------------------------------------------
 Behavior = BHV_Waypoint
 {
-  name      = waypt_return
-  pwt       = 100
-  updates   = RETURN_UPDATES
-  condition = MODE==RETURNING
-  endflag   = STATION_KEEP = true
-  endflag   = AVOID = false
-
+  name        = waypt_return
+  pwt         = 100
+  updates     = RETURN_UPDATES
+  condition   = MODE==RETURNING
+  endflag     = STATION_KEEP = true
+  endflag     = AVOID = false
+	spawnx_flag = RETURN_UPDATES=point=$[OSX],$[OSY]
+	
       speed = 1.3
      radius = 3.0
   nm_radius = 15.0
-     points = $(START_POS)
+      point = 0,0
        lead = 8
 }
 
