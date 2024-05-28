@@ -96,8 +96,8 @@ for ARGI; do
         XMODE="SIM"
     elif [ "${ARGI:0:12}" = "--start_pos=" ]; then
         START_POS="${ARGI#--start_pos=*}"
-    elif [ "${ARGI:0:12}" = "--start_spd=" ]; then
-        STOCK_SPD="${ARGI#--start_spd=*}"
+    elif [ "${ARGI:0:12}" = "--stock_spd=" ]; then
+        STOCK_SPD="${ARGI#--stock_spd=*}"
 
     elif [ "${ARGI:0:9}" = "--loipos=" ]; then
         LOITER_POS="${ARGI#--loipos=*}"
