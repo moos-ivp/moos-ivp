@@ -146,7 +146,7 @@ string BHV_AvoidObstacleX::isDeprecated()
   
   string msg;
   msg += "BHV_AvoidObstacleX is no longer supported.";
-  msg += "# Use BHV_FixedTurn instead.";
+  msg += "# Use BHV_AvoidObstacleV24 or newer instead.";
   msg += "# Set i_understand_this_behavior_is_deprecated=true";
   msg += "# to suppress this warning and use at your own risk.";  
   return(msg);
