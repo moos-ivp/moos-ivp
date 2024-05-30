@@ -118,7 +118,7 @@ Behavior = BHV_AvoidCollision
 }
 
 //----------------------------------------------
-Behavior=BHV_AvoidObstacle
+Behavior=BHV_AvoidObstacleV24
 {
   name       = avd_obstacles_
   pwt        = 500
