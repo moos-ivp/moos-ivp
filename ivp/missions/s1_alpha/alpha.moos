@@ -27,7 +27,7 @@ ProcessConfig = ANTLER
   Run = uSimMarineV22 @ NewConsole = false
   Run = pMarinePIDV22 @ NewConsole = false
   Run = pHelmIvP      @ NewConsole = false
-  Run = pMarineViewer	@ NewConsole = false
+  //Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
   Run = pRealm	      @ NewConsole = false
@@ -48,6 +48,7 @@ ProcessConfig = pLogger
   Log = IVPHELM_LIFE_EVENT @ 0 NOSYNC
   Log = REPORT @ 0 NOSYNC
   Log = BHV_SETTINGS @ 0 NOSYNC
+  Log = SUMMARY @ 0 NOSYNC
 
   LogAuxSrc = true
   WildCardLogging = true
@@ -181,6 +182,7 @@ ProcessConfig = pMarineViewer
   right_context[return] = MOOS_MANUAL_OVERRIDE=false
   right_context[return] = RETURN=false
 
+  scope  = SUMMARY
   scope  = RETURN
   scope  = WPT_STAT
   scope  = VIEW_SEGLIST

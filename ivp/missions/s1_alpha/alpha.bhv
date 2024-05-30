@@ -12,8 +12,9 @@ Behavior = BHV_Waypoint
   condition = DEPLOY = true
   endflag   = RETURN = true
 
+	endflag   = SUMMARY=speed=$[SPEED],time=$[DUR_RUN_TIME]
+	
 	configflag = CRUISE_SPD = $[SPEED]
-	//configflag = OSPOS = $[OSX],$[OSY]
 
 	activeflag = INFO=$[OWNSHIP]
 	activeflag = INFO=$[BHVNAME]
