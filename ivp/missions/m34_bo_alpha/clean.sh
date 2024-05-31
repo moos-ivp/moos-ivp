@@ -35,3 +35,4 @@ rm -rf  $VERBOSE   MOOSLog_* XLOG_* LOG_* \#*
 rm -f   $VERBOSE   *~  *.moos++
 rm -f   $VERBOSE   targ_*
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory
+rm -f   $VERBOSE  vloiterpos.txt vpositions.txt vcolors.txt vnames.txt vspeeds.txt

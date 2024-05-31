@@ -45,7 +45,7 @@ ProcessConfig = pHelmIvP
   behaviors = targ_$(VNAME).bhv  
   verbose   = false
   domain    = course:0:359:360
-  domain    = speed:0:5:26
+  domain    = speed:0:4:21
 
 	app_logging = true
 	
@@ -123,7 +123,7 @@ ProcessConfig = pNodeReporter
   platform_type = kayak
 	terse_reports = true
 
-	platform_color = $(VCOLOR)
+	platform_color = $(COLOR)
 }
 
 //-----------------------------------------------------
