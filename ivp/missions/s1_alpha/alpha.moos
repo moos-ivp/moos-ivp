@@ -27,7 +27,7 @@ ProcessConfig = ANTLER
   Run = uSimMarineV22 @ NewConsole = false
   Run = pMarinePIDV22 @ NewConsole = false
   Run = pHelmIvP      @ NewConsole = false
-  //Run = pMarineViewer	@ NewConsole = false
+  Run = pMarineViewer	@ NewConsole = false
   Run = uProcessWatch	@ NewConsole = false
   Run = pNodeReporter	@ NewConsole = false
   Run = pRealm	      @ NewConsole = false
