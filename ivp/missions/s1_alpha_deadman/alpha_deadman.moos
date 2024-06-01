@@ -34,6 +34,7 @@ ProcessConfig = ANTLER
   Run = uProcessWatch	  @ NewConsole = false
   Run = pNodeReporter	  @ NewConsole = false
 	Run = pDeadManPost    @ NewConsole = false
+	Run = pRealm          @ NewConsole = false
 }
 
 //------------------------------------------

@@ -46,6 +46,21 @@ ProcessConfig = iSay
 }
 
 //------------------------------------------
+ProcessConfig = uProcessWatch
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  summary_wait = 5
+
+  nowatch   = uXMS*
+  nowatch   = uMAC*
+  nowatch   = uPokeDB*
+  nowatch   = uTermCommand*
+  watch_all = true
+}
+
+//------------------------------------------
 ProcessConfig = uTimerScript                                    
 {                                                               
   AppTick   = 4                                                 
@@ -57,15 +72,15 @@ ProcessConfig = uTimerScript
   reset_time     = all-posted
   delay_reset    = 0.25
 
-	event          = var=SAY_MOOS, val="say={one}",   time=0.25  
-  event          = var=SAY_MOOS, val="say={two}",   time=0.5  
-  event          = var=SAY_MOOS, val="say={three}", time=0.75  
-  event          = var=SAY_MOOS, val="say={four}",  time=1  
-  event          = var=SAY_MOOS, val="say={five},priority=100",  time=1.25  
-  event          = var=SAY_MOOS, val="say={six},source=james",   time=1.5  
-  event          = var=SAY_MOOS, val="say={seven}", time=1.75  
-  event          = var=SAY_MOOS, val="say={eight}", time=2  
-  event          = var=SAY_MOOS, val="say={nine}",  time=2.25  
+	event          = var=SAY_MOOS, val="say={one}",   time=1
+  event          = var=SAY_MOOS, val="say={two}",   time=2  
+  event          = var=SAY_MOOS, val="say={three}", time=3
+  event          = var=SAY_MOOS, val="say={four}",  time=4  
+  event          = var=SAY_MOOS, val="say={five},priority=100",  time=5  
+  event          = var=SAY_MOOS, val="say={six},source=james",   time=6  
+  event          = var=SAY_MOOS, val="say={seven}", time=7  
+  event          = var=SAY_MOOS, val="say={eight}", time=8  
+  event          = var=SAY_MOOS, val="say={nine}",  time=9  
 }                                                               
 
 //------------------------------------------
