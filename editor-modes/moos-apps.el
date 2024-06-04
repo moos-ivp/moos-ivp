@@ -93,7 +93,7 @@
       '("uMAC")
       '("pDeadManPost" "heartbeat_var" "max_noheart" "deadflag" "post_policy" "active_at_start" "max_appcast_events")
       '("pRangeEvent" "min_range" "max_range" "event_var" "ignore_group" "max_appcast_events")
-      '("uPokeDB")
+      '("uPokeDB" "poke")
       '("uQueryDB" "max_time" "halt_max_time" "condition" "halt_condition" "pass_condition" "fail_condition" "check_var")
       '("uHelmScope" "paused" "display_moos_scope" "display_bhv_posts" "display_virgins" "truncated_output" "behaviors_consise" "var")
       '("pSafetyRetreat" "polygon" "duration" "retreat_cue" "retreat_message_var" "retreat_notify_var" "verbose" "retreat_cue_var")
@@ -147,5 +147,7 @@
 
       '("pMapMarkers" "show_markers" "opfile" "marker_size" "marker_shape" "marker_color" "marker_lcolor" "marker_ecolor" "show_mlables" )
 
+      '("pMedator" "resend_thresh" "max_tries" "mates" "no_ack_var" "group" "vname" )
+      
 '("pLogger" "AsyncLog" "WildCardLogging" "Log" "LogAuxSrc" "WildCardExclusionLog" "WildCardOmitPattern" "file" "path" "synclog" "filetimestamp" "LoggingDirectorySummaryFile"  "UTCLogDirectories" "DoublePrecision" "MarkExternalCommunityMessages" "MarkDataType" "CompressAlogs" "file")))
 
