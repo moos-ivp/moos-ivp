@@ -106,8 +106,6 @@ bool LegRun::setParam(string param, string val)
     return(setPoint2(val));
   else if((param == "full_leg") || (param == "leg"))
     return(setLegByCtr(val));
-  else if(param == "center") 
-    return(setCenterPt(val));
   else if(param == "shift_point") // deprecated
     return(setCenterPt(val));
   else if(param == "shift_pt") // deprecated
@@ -327,31 +325,41 @@ bool LegRun::setLegByCtr2(string str)
 
 
 //---------------------------------------------------------
-// Procedure: setCenterPt()
-//    Format: x:y
-//    Format: x,y also supported
+// Procedure: modCenterPt()
+//    Format: x:y or x,y, or x=1,y=2
 
-bool LegRun::setCenterPt(string str)
+bool LegRun::modCenterPt(string str)
 {
-  str = findReplace(str, ',', ':');
-
-  vector<string> svector = parseString(str, ':');
-  if(svector.size() != 2)
+  // Sanity check: Cannot shift/set the center point
+  // unless the two vertices have been set earlier
+  if(!m_p1.valid() || !m_p2.valid())
     return(false);
 
-  string xstr = svector[0];
-  string ystr = svector[1];
-
-  if(!isNumber(xstr) || !isNumber(ystr))
-    return(false);
-
-  double dval_xstr = atof(xstr.c_str());
-  double dval_ystr = atof(ystr.c_str());
-
-  double cx   = dval_xstr;
-  double cy   = dval_ystr;
   double llen = getLegLen();
   double lang = getLegAng();
+
+  // Part 1: Check and get the X/Y center value
+  string xstr = tokStringParse(str, "x");
+  string ystr = tokStringParse(str, "y");
+
+  double cx = 0;
+  double cy = 0;
+  if(isNumber(xstr) && isNumber(ystr)) {
+    cx = atof(xstr.c_str());
+    cy = atof(ystr.c_str());
+  }
+  else { // handle "x,y" or "x:y" format
+    str = findReplace(str, ',', ':');
+    vector<string> svector = parseString(str, ':');
+    if(svector.size() != 2)
+      return(false);
+    string xstr = svector[0];
+    string ystr = svector[1];
+    if(!isNumber(xstr) || !isNumber(ystr))
+      return(false);
+    cx = atof(xstr.c_str());
+    cy = atof(ystr.c_str());
+  }
 
   return(setLegAux(cx,cy,lang,llen));
 }
@@ -435,7 +443,7 @@ bool LegRun::setLegAux(double cx, double cy,
 
   m_p1.set_vertex(x1,y1);
   m_p2.set_vertex(x2,y2);
-
+  
   clearTurnSegls();
   return(true);
 }
@@ -751,6 +759,9 @@ bool LegRun::setLaneIX(int ival)
 
 double LegRun::getLegLen() const
 {
+  if(!m_p1.valid() || !m_p2.valid())
+    return(-1);
+  
   return(distPointToPoint(m_p1, m_p2));
 }
   
@@ -797,6 +808,9 @@ double LegRun::getTurn2Len()
 
 double LegRun::getLegAng() const
 {
+  if(!m_p1.valid() || !m_p2.valid())
+    return(-1);
+  
   return(relAng(m_p1, m_p2));
 }
 
