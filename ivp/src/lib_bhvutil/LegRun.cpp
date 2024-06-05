@@ -107,9 +107,9 @@ bool LegRun::setParam(string param, string val)
   else if((param == "full_leg") || (param == "leg"))
     return(setLegByCtr(val));
   else if(param == "shift_point") // deprecated
-    return(setCenterPt(val));
+    return(modCenterPt(val));
   else if(param == "shift_pt") // deprecated
-    return(setCenterPt(val));
+    return(modCenterPt(val));
   else if((param == "leg_len") && isNumber(val))
     return(setLegLen(atof(val.c_str())));
   else if((param == "leg_length") && isNumber(val)) // deprecated
@@ -365,9 +365,9 @@ bool LegRun::modCenterPt(string str)
 }
 
 //---------------------------------------------------------
-// Procedure: setCenterPt(XYPoint)
+// Procedure: modCenterPt(XYPoint)
 
-bool LegRun::setCenterPt(XYPoint cpt)
+bool LegRun::modCenterPt(XYPoint cpt)
 {
   double cx   = cpt.x();
   double cy   = cpt.y();

@@ -28,8 +28,8 @@ public: // Indirect Leg Setters/modifiers
   bool setFullLeg(std::string);
   bool setLegByCtr(std::string);
 
-  bool setCenterPt(std::string);
-  bool setCenterPt(XYPoint);
+  bool modCenterPt(std::string);
+  bool modCenterPt(XYPoint);
   bool setLegLen(double);
   bool modLegLen(double);
   bool setLegAng(double);
