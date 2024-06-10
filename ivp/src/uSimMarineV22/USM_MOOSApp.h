@@ -75,7 +75,8 @@ protected: // Utility function(s)
   double  m_last_report;
   double  m_report_interval;
   double  m_pitch_tolerance;
-
+  double  m_max_speed;
+  
   WormHoleSet  m_wormset;
 
   // PID variables

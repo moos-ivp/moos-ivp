@@ -99,6 +99,7 @@ void showExampleConfigAndExit()
   blk("  start_speed   = 0                                             ");
   blk("  start_depth   = 0                                             ");
   blk("  start_pos     = x=0, y=0, speed=0, heading=0, depth=0         ");
+  blk("  max_speed     = 5                                             ");
   blk("                                                                ");
   blk("  drift_x       = 0                                             ");
   blk("  drift_y       = 0                                             ");

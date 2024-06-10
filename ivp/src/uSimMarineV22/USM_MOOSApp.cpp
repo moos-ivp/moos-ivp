@@ -48,6 +48,7 @@ USM_MOOSApp::USM_MOOSApp()
   m_last_report     = 0;
   m_report_interval = 5;
   m_pitch_tolerance = 5;
+  m_max_speed = 5;
   m_enabled = true;
 
   // Init PID variables
@@ -308,6 +309,8 @@ bool USM_MOOSApp::OnStartUp()
       handled = m_model.setDriftX(dval, "");
     else if((param == "drift_y") && isNumber(value))
       handled = m_model.setDriftY(dval, "");
+    else if((param == "max_speed") && isNumber(value))
+      handled = setPosDoubleOnString(m_max_speed, value);
 
     else if(param == "wind_conditions")
       handled = m_model.setParam("wind_conditions", value);
@@ -580,7 +583,9 @@ void USM_MOOSApp::postNodeRecordUpdate(string prefix,
 
   double new_speed = record.getSpeed();
   new_speed = snapToStep(new_speed, 0.01);
-
+  if(new_speed > m_max_speed)
+    new_speed = m_max_speed;
+  
   Notify(prefix+"_HEADING", record.getHeading(), m_curr_time);
   Notify(prefix+"_SPEED", new_speed, m_curr_time);
   Notify(prefix+"_DEPTH", record.getDepth(), m_curr_time);
