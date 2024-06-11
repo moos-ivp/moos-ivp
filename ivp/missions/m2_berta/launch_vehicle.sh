@@ -32,6 +32,7 @@ COLOR="yellow"
 XMODE="M300"
 START_POS="x=0,y=0,heading=0"  
 STOCK_SPD="1.4"
+MAX_SPD="2"
 
 # Custom
 LOITER_POS="0,-50"  
@@ -62,6 +63,7 @@ for ARGI; do
 	echo "  --sim, -s              Sim, not fld vehicle    "
 	echo "  --start_pos=<X,Y,Hdg>  Sim start pos/hdg       "
 	echo "  --stock_spd=<m/s>      Default vehicle speed   "
+	echo "  --max_spd=<m/s>        Max Sim and Helm speed  "
 	echo "                                                 "
 	echo "Options (custom):                                "
 	echo "  --loi_pos=<X,Y>        Loiter poly center x/y  "
@@ -98,6 +100,8 @@ for ARGI; do
         START_POS="${ARGI#--start_pos=*}"
     elif [ "${ARGI:0:12}" = "--stock_spd=" ]; then
         STOCK_SPD="${ARGI#--stock_spd=*}"
+    elif [ "${ARGI:0:10}" = "--max_spd=" ]; then
+        MAX_SPD="${ARGI#--max_spd=*}"
 
     elif [ "${ARGI:0:9}" = "--loipos=" ]; then
         LOITER_POS="${ARGI#--loipos=*}"
@@ -148,6 +152,7 @@ if [ "${VERBOSE}" = "yes" ]; then
     echo "------------Sim-------------------"
     echo "START_POS =     [${START_POS}]    "
     echo "STOCK_SPD =     [${STOCK_SPD}]    "
+    echo "MAX_SPD =       [${MAX_SPD}]      "
     echo "------------Fld-------------------"
     echo "FSEAT_IP =      [${FSEAT_IP}]     "
     echo "------------Custom----------------"
@@ -178,7 +183,8 @@ nsplug meta_vehicle.moos targ_$VNAME.moos $NSFLAGS WARP=$TIME_WARP \
        PSHARE_PORT=$PSHARE_PORT     SHORE_IP=$SHORE_IP   \
        SHORE_PSHARE=$SHORE_PSHARE   VNAME=$VNAME         \
        COLOR=$COLOR                 XMODE=$XMODE         \
-       START_POS=$START_POS         FSEAT_IP=$FSEAT_IP           
+       START_POS=$START_POS         MAX_SPD=$MAX_SPD     \
+       FSEAT_IP=$FSEAT_IP
 
 nsplug meta_vehicle.bhv targ_$VNAME.bhv $NSFLAGS  \
        START_POS=$START_POS         VNAME=$VNAME  \

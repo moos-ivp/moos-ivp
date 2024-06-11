@@ -22,6 +22,7 @@ LOG_CLEAN=""
 VAMT="2"
 MAX_VAMT="2"
 RAND_VPOS=""
+MAX_SPD="2"
 
 # Monte
 XLAUNCHED="no"
@@ -44,6 +45,7 @@ for ARGI; do
 	echo "  --log_clean, -lc   Run clean.sh bef launch   " 
 	echo "  --amt=N            Num vehicles to launch    "
 	echo "  --rand, -r         Rand vehicle positions    "
+	echo "  --max_spd=N        Max helm/sim speed        "
 	echo "                                               "
 	echo "Options (monte):                               "
 	echo "  --xlaunched, -x    Launched by xlaunch       "
@@ -51,7 +53,7 @@ for ARGI; do
 	echo "                                               "
 	echo "Options (custom):                              "
 	echo "  --fast, -f         Start head-on encounter   " 
-	exit 0;
+	exit 0
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
         TIME_WARP=$ARGI
     elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
@@ -68,6 +70,8 @@ for ARGI; do
 	fi
     elif [ "${ARGI}" = "--rand" -o "${ARGI}" = "-r" ]; then
         RAND_VPOS=$ARGI
+    elif [ "${ARGI:0:10}" = "--max_spd=" ]; then
+        MAX_SPD="${ARGI#--max_spd=*}"
 
     elif [ "${ARGI}" = "--xlaunched" -o "${ARGI}" = "-x" ]; then
 	XLAUNCHED="yes"
@@ -76,7 +80,7 @@ for ARGI; do
     elif [ "${ARGI}" = "--fast" -o "${ARGI}" = "-f" ]; then
 	FAST=$ARGI
     else 
-	echo "$ME: Bad Arg: $ARGI. Exit Code 1."
+	echo "$ME: Bad arg:" $ARGI "Exit Code 1."
 	exit 1
     fi
 done
@@ -108,6 +112,7 @@ if [ "${VERBOSE}" != "" ]; then
     echo "VAMT =          [${VAMT}]                   "
     echo "MAX_VAMT =      [${MAX_VAMT}]               "
     echo "RAND_VPOS =     [${RAND_VPOS}]              "
+    echo "MAX_SPD =       [${MAX_SPD}]                "
     echo "--------------------------------(VProps)----"
     echo "VNAMES =        [${VNAMES[*]}]              "
     echo "VCOLORS =       [${VCOLOR[*]}]              "
@@ -125,7 +130,8 @@ fi
 #------------------------------------------------------------
 #  Part 6: Launch the Vehicles
 #------------------------------------------------------------
-VARGS=" --sim --auto $TIME_WARP $JUST_MAKE $VERBOSE "
+VARGS=" --sim --auto --max_spd=$MAX_SPD "
+VARGS+=" $TIME_WARP $JUST_MAKE $VERBOSE "
 for IX in `seq 1 $VAMT`;
 do
     IXX=$(($IX - 1))

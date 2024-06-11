@@ -60,7 +60,8 @@ ProcessConfig = uSimMarineV22
   start_pos = $(START_POS), 0
   prefix    = NAV
 
-	app_logging = true
+	//app_logging = true
+	max_speed   = $(MAX_SPD)
 	
 	turn_rate = 95
 	turn_spd_loss = 0.6

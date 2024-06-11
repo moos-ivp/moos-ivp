@@ -57,7 +57,7 @@ ProcessConfig = pHelmIvP
   Behaviors    = targ_$(VNAME).bhv  
   Verbose      = false
   Domain       = course:0:359:360
-  Domain       = speed:0:4:21
+  Domain       = speed:0:$(MAX_SPD):21
 
 	hold_on_apps = pContactMgrV20
 }
@@ -70,8 +70,9 @@ ProcessConfig = pNodeReporter
   AppTick     = 2
   CommsTick   = 2
 
-  vessel_type   = $(VTYPE=kayak)
-  terse_reports = true
+	platform_color = $(COLOR)
+  vessel_type    = $(VTYPE=kayak)
+  terse_reports  = true
 }
 
 //--------------------------------------------------------
@@ -134,6 +135,7 @@ ProcessConfig = uLoadWatch
   thresh = app=pHostInfo, gapthresh=5
   thresh = app=any,       gapthresh=2.0
   thresh = app=uMemWatch, gapthresh=50
+  thresh = app=uSimMarineV22, gapthresh=3
 
   breach_trigger = 5
 }
@@ -160,29 +162,29 @@ ProcessConfig = pMarinePID
 
 	//deprecated_ok = true
 	
-  VERBOSE       = true
-  DEPTH_CONTROL = false
-  ACTIVE_START  = true
+  verbose       = true
+  depth_control = false
+  active_start  = true
   
   // Yaw PID controller
-  YAW_PID_KP             = 1.2
-  YAW_PID_KD             = 0.1
-  YAW_PID_KI             = 0.3
-  YAW_PID_INTEGRAL_LIMIT = 0.07
+  yaw_pid_kp             = 1.2
+  yaw_pid_kd             = 0.1
+  yaw_pid_ki             = 0.3
+  yaw_pid_integral_limit = 0.07
   
   // Speed PID controller
-  SPEED_PID_KP           = 1.0
-  SPEED_PID_KD           = 0.0
-  SPEED_PID_KI           = 0.0
-  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  speed_pid_kp           = 1.0
+  speed_pid_kd           = 0.0
+  speed_pid_ki           = 0.0
+  speed_pid_integral_limit = 0.07
   
   // Maximums
-  MAXRUDDER  = 100
-  MAXTHRUST  = 100
+  maxrudder  = 100
+  maxthrust  = 100
   
   // A non-zero SPEED_FACTOR overrides use of SPEED_PID
   // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
-  SPEED_FACTOR = 20
+  speed_factor = 20
 }
 
 //--------------------------------------------------
