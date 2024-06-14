@@ -21,8 +21,8 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
  
-#ifndef BHV_LEG_RUNZ_HEADER
-#define BHV_LEG_RUNZ_HEADER
+#ifndef BHV_LEG_RUN_BASE_HEADER
+#define BHV_LEG_RUN_BASE_HEADER
 
 #include <string>
 #include "IvPBehavior.h"
@@ -62,7 +62,7 @@ protected:
   bool   onRunStateLegMode();
   bool   onRunStateTurnMode();
 
-  void   setMode(std::string);
+  void   setMode(std::string); // leg1,leg2,turn1,turn2,idle,init
   void   initLegMode();
   void   handleModeSwitch();
   void   updateLegSpd();
@@ -98,14 +98,18 @@ protected: // Config vars
   std::string m_init_leg_mode; // [fixed],close_turn,far_turn
   
   // Event flags unique to this behavior
-  std::vector<VarDataPair> m_cycle_flags;
-  std::vector<VarDataPair> m_wpt_flags;
-  std::vector<VarDataPair> m_leg_flags;
-  std::vector<VarDataPair> m_mid_flags;
-  std::vector<VarDataPair> m_start_leg_flags;
-  std::vector<VarDataPair> m_start_turn_flags;
+  std::vector<VarDataPair> m_mid_leg_flags;
+  std::vector<VarDataPair> m_mid_turn_flags;
 
-  double m_mid_pct; 
+  std::vector<VarDataPair> m_leg_endflags;
+  std::vector<VarDataPair> m_leg1_endflags;
+  std::vector<VarDataPair> m_leg2_endflags;
+  std::vector<VarDataPair> m_turn_endflags;
+  std::vector<VarDataPair> m_turn1_endflags;
+  std::vector<VarDataPair> m_turn2_endflags;
+
+  double m_mid_leg_pct; 
+  double m_mid_turn_pct; 
   
   // Visual hints affecting properties of seglists/points
   HintHolder  m_hints;
@@ -124,7 +128,9 @@ protected: // State vars
   XYPoint      m_turn_pt1;
   XYPoint      m_turn_pt2;
   XYPoint      m_prev_dpt;  
-  bool         m_mid_event_yet;
+  bool         m_mid_leg_event_yet;
+  bool         m_mid_turn_event_yet;
+
   bool         m_preview_pending;
   unsigned int m_leg_count;
   unsigned int m_leg_count1;

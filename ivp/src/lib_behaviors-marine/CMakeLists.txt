@@ -18,7 +18,6 @@ SET(SRC
   BHV_Hysteresis.cpp
   BHV_HeadingHysteresis.cpp
   BHV_Loiter.cpp
-  BHV_LoiterV24.cpp
   BHV_MinAltitudeX.cpp
   BHV_MemoryTurnLimit.cpp
   BHV_OpRegion.cpp
@@ -61,7 +60,6 @@ SET(HEADERS
   BHV_HSLine.h
   BHV_Hysteresis.h
   BHV_Loiter.h
-  BHV_LoiterV24.h
   BHV_MaintainHeading.h
   BHV_MinAltitudeX.h
   BHV_MemoryTurnLimit.h
@@ -79,7 +77,6 @@ SET(HEADERS
   BHV_LegRun.h
   BHV_ZigZag.h
   BHV_FullStop.h
-#  BHV_FixTurn.h
   BHV_BearingLine.h
   BHV_TestFailure.h
   BHV_PModelView.h
@@ -92,5 +89,5 @@ TARGET_LINK_LIBRARIES(behaviors-marine
    helmivp
    behaviors
    geometry
-   )
+)
 

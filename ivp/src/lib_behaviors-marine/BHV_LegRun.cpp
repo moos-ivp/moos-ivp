@@ -54,7 +54,8 @@ BHV_LegRun::BHV_LegRun(IvPDomain gdomain) : IvPBehavior(gdomain)
   m_cruise_spd  = 0;  // meters/second
   m_patience    = 50;
   
-  m_mid_pct = 25;
+  m_mid_leg_pct   = 25;
+  m_mid_turn_pct  = 25;
   m_init_leg_mode = "fixed";
   
   // Visual Hint Defaults for the leg/turn paths
@@ -86,7 +87,8 @@ BHV_LegRun::BHV_LegRun(IvPDomain gdomain) : IvPBehavior(gdomain)
 
   // =================================================
   // State Vars
-  m_mid_event_yet   = false;
+  m_mid_leg_event_yet  = false;
+  m_mid_turn_event_yet = false;
   m_preview_pending = true;
   
   m_leg_count = 0;
@@ -111,46 +113,56 @@ BHV_LegRun::BHV_LegRun(IvPDomain gdomain) : IvPBehavior(gdomain)
 
 bool BHV_LegRun::setParam(string param, string value) 
 {
-  if(param == "speed")
-    return(setDoubleRngOnString(m_cruise_spd, value, 0, m_max_spd));
-  else if(param == "leg_spds")
-    return(handleConfigLegSpeed(value));
-  else if(param == "leg_spds_repeat")
-    return(setBooleanOnString(m_leg_spds_repeat, value));
-  else if(param == "leg_spds_onturn")
-    return(setBooleanOnString(m_leg_spds_onturn, value));
-  else if(param == "cycleflag") 
-    return(addVarDataPairOnString(m_cycle_flags, value));
-  else if(param == "wptflag") 
-    return(addVarDataPairOnString(m_wpt_flags, value));
-  else if(param == "legflag") 
-    return(addVarDataPairOnString(m_leg_flags, value));
-  else if(param == "midflag") 
-    return(addVarDataPairOnString(m_mid_flags, value));
-  else if(param == "start_leg_flag") 
-    return(addVarDataPairOnString(m_start_leg_flags, value));
-  else if(param == "start_turn_flag") 
-    return(addVarDataPairOnString(m_start_turn_flags, value));
+  if(param == "capture_line")
+    return(setEngineParam(param, value));
+  else if(param == "init_leg_mode")
+    return(setInitLegMode(value));
   else if(param == "lead") 
     return(setEngineParam(param, value));
   else if(param == "lead_damper")
     return(setEngineParam(param, value));
-  else if(param == "capture_line")
+  else if(param == "leg_spds")
+    return(handleConfigLegSpeed(value));
+  else if(param == "leg_spds_onturn")
+    return(setBooleanOnString(m_leg_spds_onturn, value));
+  else if(param == "leg_spds_repeat")
+    return(setBooleanOnString(m_leg_spds_repeat, value));
+
+  else if((param == "leg_endflag") || (param == "leg_end_flag")) 
+    return(addVarDataPairOnString(m_leg_endflags, value));
+  else if((param == "leg1_endflag") || (param == "leg1_end_flag")) 
+    return(addVarDataPairOnString(m_leg1_endflags, value));
+  else if((param == "leg2_endflag") || (param == "leg2_end_flag")) 
+    return(addVarDataPairOnString(m_leg2_endflags, value));
+
+  else if((param == "midlegflag") || (param == "mid_leg_flag"))
+    return(addVarDataPairOnString(m_mid_leg_flags, value));
+  else if((param == "midturnflag") || (param == "mid_turn_flag"))
+    return(addVarDataPairOnString(m_mid_turn_flags, value));
+  else if(param == "mid_leg_pct") 
+    return(setDoubleStrictRngOnString(m_mid_leg_pct, value, 0, 100));
+  else if(param == "mid_turn_pct") 
+    return(setDoubleStrictRngOnString(m_mid_turn_pct, value, 0, 100));
+  else if(param == "patience")
+    return(setDoubleClipRngOnString(m_patience, value, 1, 99));
+  else if((param == "radius") || (param == "capture_radius"))
     return(setEngineParam(param, value));
   else if(param == "repeat")
     return(m_wpteng_legs.setParam(param, value));
-  else if((param == "radius") || (param == "capture_radius"))
-    return(setEngineParam(param, value));
   else if(param == "slip_radius")
     return(setEngineParam(param, value));
-  else if(param == "mid_pct") 
-    return(setDoubleStrictRngOnString(m_mid_pct, value, 0, 100));
-  else if(param == "patience")
-    return(setDoubleClipRngOnString(m_patience, value, 1, 99));
+  else if(param == "speed")
+    return(setDoubleRngOnString(m_cruise_spd, value, 0, m_max_spd));
+
+  else if((param == "turn_endflag") || (param == "turn_end_flag")) 
+    return(addVarDataPairOnString(m_turn_endflags, value));
+  else if((param == "turn1_endflag") || (param == "turn1_end_flag")) 
+    return(addVarDataPairOnString(m_turn1_endflags, value));
+  else if((param == "turn2_endflag") || (param == "turn2_end_flag")) 
+    return(addVarDataPairOnString(m_turn2_endflags, value));
+
   else if(param == "visual_hints") 
     return(m_hints.setHints(value));
-  else if(param == "init_leg_mode")
-    return(setInitLegMode(value));
 	   
   // All other params are handled in the LegRun level
   m_preview_pending = true;
@@ -173,7 +185,7 @@ bool BHV_LegRun::setEngineParam(string param, string value)
 bool BHV_LegRun::setInitLegMode(string str)
 {
   if((str == "fixed") || (str == "close_turn") ||
-     (str == "far_turn")) {
+     (str == "far_turn") || (str == "resume")) {
     m_init_leg_mode = str;
     return(true);
   }
@@ -222,8 +234,6 @@ void BHV_LegRun::onSetParamComplete()
 void BHV_LegRun::onRunToIdleState() 
 {
   eraseAllViewables();
-
-  setMode("idle");
   m_wpteng_legs.resetCPA();
   m_wpteng_turn.resetCPA();
 }
@@ -236,8 +246,18 @@ void BHV_LegRun::onRunToIdleState()
 void BHV_LegRun::onIdleToRunState() 
 {
   m_preview_pending = true;
-  m_mode = "init";
-  initLegMode();
+
+  if(m_mode == "turn1")
+    m_mode = "leg2";
+  else if(m_mode == "turn2")
+    m_mode = "leg1";
+
+#if 0
+  if((m_mode == "turn1") || (m_mode == "turn2")) {
+    m_mode = "init";
+    initLegMode();
+  }
+#endif
 }
 
 //-----------------------------------------------------------
@@ -300,6 +320,12 @@ bool BHV_LegRun::onRunStateTurnMode()
   m_nextpt  = m_wpteng_turn.getNextPoint();
 
   if(m_wpteng_turn.hasCompleted()) {
+    postFlags(m_turn_endflags, true);
+    if(m_mode == "turn1")
+      postFlags(m_turn1_endflags, true);
+    else if(m_mode == "turn2")
+      postFlags(m_turn2_endflags, true);
+
     advanceModePending();
     postTurnSegList(false);
     postSteerPoints(false);
@@ -314,7 +340,14 @@ bool BHV_LegRun::onRunStateTurnMode()
 
   postSteerPoints(true);
   postLegPoints(true);
-    
+
+  // Check for midflag conditions and maybe post
+  double pct_turn = 100 * m_wpteng_turn.pctToEnd(m_osx, m_osy);
+  if((pct_turn > m_mid_turn_pct) && !m_mid_turn_event_yet) {
+    postFlags(m_mid_turn_flags, true);
+    m_mid_turn_event_yet = true;
+  }
+  
   return(true); 
 }
 
@@ -332,15 +365,17 @@ bool BHV_LegRun::onRunStateLegMode()
 
   // Part 2: Handle advanced, cycled and completed
   if(m_wpteng_legs.hasAdvanced()) {
+    postFlags(m_leg_endflags, true);
+    if(m_mode == "leg1")
+      postFlags(m_leg1_endflags, true);
+    else if(m_mode == "leg2")
+      postFlags(m_leg2_endflags, true);
     advanceModePending();
     m_odometer.pause();
   }
 
-  if(m_wpteng_legs.hasCycled())
-    postFlags(m_cycle_flags);
-    
   if(m_wpteng_legs.hasCompleted()) {
-    setComplete();
+    postFlags(m_end_flags);
     if(m_perpetual)
       m_wpteng_legs.resetForNewTraversal();
     postLegSegList(false);
@@ -348,10 +383,6 @@ bool BHV_LegRun::onRunStateLegMode()
     return(false);
   }
 
-  // Advancement may mean mode switch so don't pub legflags
-  if(!m_wpteng_legs.hasAdvanced())
-    postFlags(m_leg_flags);
-  
   // Part 3: Not completed so update core vars and visuals
   m_trackpt = m_wpteng_legs.getTrackPoint();
   m_nextpt  = m_wpteng_legs.getNextPoint();
@@ -363,9 +394,9 @@ bool BHV_LegRun::onRunStateLegMode()
   // Part 4: Check for midflag conditions and maybe post
   if(m_leg_count > 0) {
     double pct_leg = 100 * m_wpteng_legs.pctToNextWpt(m_osx, m_osy);
-    if((pct_leg > m_mid_pct) && !m_mid_event_yet) {
-      postFlags(m_mid_flags, true);
-      m_mid_event_yet = true;
+    if((pct_leg > m_mid_leg_pct) && !m_mid_leg_event_yet) {
+      postFlags(m_mid_leg_flags, true);
+      m_mid_leg_event_yet = true;
     }
   }
   
@@ -379,9 +410,9 @@ void BHV_LegRun::setMode(string mode)
 {
   if((mode != "leg1") && (mode != "turn1") &&
      (mode != "leg2") && (mode != "turn2") &&
-     (mode != "init") && (mode != "idle"))
+     (mode != "init"))
     return;
- 
+  
   m_mode = mode;
   postMessage("LR_MODE", m_mode);
 
@@ -451,7 +482,8 @@ void BHV_LegRun::handleModeSwitch()
   setMode(m_mode_pending);
 
   m_mode_pending  = "";
-  m_mid_event_yet = false;
+  m_mid_leg_event_yet  = false;
+  m_mid_turn_event_yet = false;
 
   // Entering turn1 implies a leg1 vertex arrival/counter++
   if(m_mode == "turn1") {
@@ -465,14 +497,6 @@ void BHV_LegRun::handleModeSwitch()
     initTurnPoints();  
   }
 
-  if((m_mode == "leg1") || (m_mode == "leg2")) {
-    postFlags(m_start_leg_flags);
-  }
-  
-  else if((m_mode == "turn1") || (m_mode == "turn2")) {
-    postFlags(m_start_turn_flags);
-  }
-  
   updateLegSpd();
 }
 
@@ -550,10 +574,11 @@ bool BHV_LegRun::updateInfoIn()
   // ==========================================================
   // Part 1: Update Ownship position and speed from the buffer
   // ==========================================================
-  bool ok1, ok2, ok3;
+  bool ok1, ok2, ok3, ok4;
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
   m_osv = getBufferDoubleVal("NAV_SPEED", ok3);
+  m_osh = getBufferDoubleVal("NAV_HEADING", ok4);
 
   m_odometer.updateDistance(m_osx, m_osy);
   m_wrap_detector.updatePosition(m_osx, m_osy);
@@ -610,10 +635,9 @@ IvPFunction *BHV_LegRun::buildOF()
   double rel_ang_to_trk_pt = relAng(m_osx, m_osy, tpx, tpy);
   
   ZAIC_PEAK crs_zaic(m_domain, "course");
+  crs_zaic.setSummit(rel_ang_to_trk_pt);
+  crs_zaic.setBaseWidth(180);
   crs_zaic.setValueWrap(true);
-  crs_zaic.setParams(rel_ang_to_trk_pt, 0, 180, 50, 0, 100);
-  int ix = crs_zaic.addComponent();
-  crs_zaic.setParams(m_osh, 30, 180, 5, 0, 20, ix);
   
   IvPFunction *crs_ipf = crs_zaic.extractIvPFunction(false);
   if(!crs_ipf) 
