@@ -33,7 +33,6 @@
 #include "BHV_FullStop.h"
 #include "BHV_FixedTurn.h"
 #include "BHV_Loiter.h"
-#include "BHV_LoiterV24.h"
 #include "BHV_OpRegion.h"
 #include "BHV_OpRegionRecover.h"
 #include "BHV_OpRegionV24.h"
@@ -103,7 +102,6 @@ bool BFactoryStatic::isKnownBehavior(string bhv_name) const
      (bhv_name == "BHV_ConstantHeading") || 
      (bhv_name == "BHV_MaintainHeading") || 
      (bhv_name == "BHV_Loiter")          || 
-     (bhv_name == "BHV_LoiterV24")       || 
      (bhv_name == "BHV_StationKeep")     || 
      (bhv_name == "BHV_RStationKeep")    || 
      (bhv_name == "BHV_Timer")           || 
@@ -182,8 +180,6 @@ IvPBehavior* BFactoryStatic::newBehavior(string bhv_name) const
     bhv = new BHV_MaintainHeading(m_domain);
   else if(bhv_name == "BHV_Loiter")     
     bhv = new BHV_Loiter(m_domain);
-  else if(bhv_name == "BHV_LoiterV24")     
-    bhv = new BHV_LoiterV24(m_domain);
   else if(bhv_name == "BHV_StationKeep")     
     bhv = new BHV_StationKeep(m_domain);
   else if(bhv_name == "BHV_RStationKeep")     
