@@ -200,6 +200,9 @@ bool PickPos::setVNames()
 bool PickPos::setVNames(string str)
 {
   m_vnames = true;
+
+  if(str == "herons")
+    str = "abe,ben,cal,deb,eve,fin,max,ned,oak,pal";
   
   vector<string> names = parseString(str, ',');
   for(unsigned int i=0; i<names.size(); i++) {
@@ -939,6 +942,8 @@ void PickPos::printChoices()
     if(m_colors && (i<m_pick_colors.size())) {
       if(line != "")
 	line += ",";
+      if(position_info)
+	line += "color=";
       line += m_pick_colors[i];
     }
       
@@ -953,6 +958,7 @@ void PickPos::printChoices()
       line = findReplace(line, "y=", "");
       line = findReplace(line, "heading=", "");
       line = findReplace(line, "speed=", "");
+      line = findReplace(line, "color=", "");
     }
 
     if(fptr != 0) {
