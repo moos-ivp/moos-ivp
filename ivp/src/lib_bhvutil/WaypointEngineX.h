@@ -84,6 +84,7 @@ class WaypointEngineX {
   double  distToPrevWpt(double osx, double osy) const;
   double  distToNextWpt(double osx, double osy) const;
   double  pctToNextWpt(double osx, double osy) const;
+  double  pctToEnd(double osx, double osy) const;
   
   bool   hasCompleted() const;
   bool   hasAdvanced() const;

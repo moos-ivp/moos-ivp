@@ -127,7 +127,6 @@ private: // Config vars
   double  m_turn1_bias;
   double  m_turn2_bias;
   int     m_lane_ix;
-  bool    m_adjust_turn;
   
   std::string m_turn1_dir;
   std::string m_turn2_dir;

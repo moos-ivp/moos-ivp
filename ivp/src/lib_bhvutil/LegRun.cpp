@@ -104,56 +104,19 @@ bool LegRun::setParam(string param, string val)
     return(setPoint2(val));
   else if(param == "vx2") // deprecated
     return(setPoint2(val));
-  else if((param == "full_leg") || (param == "leg"))
+  else if(param == "leg")
     return(setLegByCtr(val));
-  else if(param == "shift_point") // deprecated
-    return(modCenterPt(val));
-  else if(param == "shift_pt") // deprecated
-    return(modCenterPt(val));
   else if((param == "leg_len") && isNumber(val))
-    return(setLegLen(atof(val.c_str())));
-  else if((param == "leg_length") && isNumber(val)) // deprecated
     return(setLegLen(atof(val.c_str())));
   else if((param == "leg_len_mod") && isNumber(val))
     return(modLegLen(atof(val.c_str())));
-  else if((param == "leg_length_mod") && isNumber(val)) // deprecated
-    return(modLegLen(atof(val.c_str())));
   else if((param == "leg_ang") && isNumber(val))
-    return(setLegAng(atof(val.c_str())));
-  else if((param == "leg_angle") && isNumber(val)) // deprecated
     return(setLegAng(atof(val.c_str())));
   else if((param == "leg_ang_mod") && isNumber(val))
     return(modLegAng(atof(val.c_str())));
-  else if((param == "leg_angle_mod") && isNumber(val)) // deprecated
-    return(modLegAng(atof(val.c_str())));
 
-  else if((param == "turn1_rad") && isNumber(val))
-    return(setTurn1Rad(atof(val.c_str())));
-  else if((param == "turn2_rad") && isNumber(val))
-    return(setTurn2Rad(atof(val.c_str())));
-  else if((param == "turn_rad") && isNumber(val))
-    return(setTurnRad(atof(val.c_str())));
-  else if((param == "turn1_rad_mod") && isNumber(val))
-    return(modTurn1Rad(atof(val.c_str())));
-  else if((param == "turn2_rad_mod") && isNumber(val))
-    return(modTurn2Rad(atof(val.c_str())));
-  else if((param == "turn_rad_mod") && isNumber(val))
-    return(modTurnRad(atof(val.c_str())));
-  else if((param == "turn_rad_min") && isNumber(val))
-    return(setTurnRadMin(atof(val.c_str())));
-
-  else if((param == "turn1_ext") && isNumber(val))
-    return(setTurn1Ext(atof(val.c_str())));
-  else if((param == "turn2_ext") && isNumber(val))
-    return(setTurn2Ext(atof(val.c_str())));
-  else if((param == "turn_ext") && isNumber(val))
-    return(setTurnExt(atof(val.c_str())));
-  else if((param == "turn1_ext_mod") && isNumber(val))
-    return(modTurn1Ext(atof(val.c_str())));
-  else if((param == "turn2_ext_mod") && isNumber(val))
-    return(modTurn2Ext(atof(val.c_str())));
-  else if((param == "turn_ext_mod") && isNumber(val))
-    return(modTurnExt(atof(val.c_str())));
+  else if(param == "shift_pt") 
+    return(modCenterPt(val));
 
   else if((param == "turn1_bias") && isNumber(val))
     return(setTurn1Bias(atof(val.c_str())));
@@ -168,13 +131,36 @@ bool LegRun::setParam(string param, string val)
   else if((param == "turn_bias_mod") && isNumber(val))
     return(modTurnBias(atof(val.c_str())));
 
+  else if((param == "turn1_ext") && isNumber(val))
+    return(setTurn1Ext(atof(val.c_str())));
+  else if((param == "turn2_ext") && isNumber(val))
+    return(setTurn2Ext(atof(val.c_str())));
+  else if((param == "turn_ext") && isNumber(val))
+    return(setTurnExt(atof(val.c_str())));
+  else if((param == "turn1_ext_mod") && isNumber(val))
+    return(modTurn1Ext(atof(val.c_str())));
+  else if((param == "turn2_ext_mod") && isNumber(val))
+    return(modTurn2Ext(atof(val.c_str())));
+  else if((param == "turn_ext_mod") && isNumber(val))
+    return(modTurnExt(atof(val.c_str())));
+
+  else if((param == "turn1_rad") && isNumber(val))
+    return(setTurn1Rad(atof(val.c_str())));
+  else if((param == "turn2_rad") && isNumber(val))
+    return(setTurn2Rad(atof(val.c_str())));
+  else if((param == "turn_rad") && isNumber(val))
+    return(setTurnRad(atof(val.c_str())));
+  else if((param == "turn_rad_min") && isNumber(val))
+    return(setTurnRadMin(atof(val.c_str())));
+  else if((param == "turn1_rad_mod") && isNumber(val))
+    return(modTurn1Rad(atof(val.c_str())));
+  else if((param == "turn2_rad_mod") && isNumber(val))
+    return(modTurn2Rad(atof(val.c_str())));
+  else if((param == "turn_rad_mod") && isNumber(val))
+    return(modTurnRad(atof(val.c_str())));
+
   else if((param == "turn_pt_gap") && isNumber(val))
     return(setTurnPtGap(atof(val.c_str())));
-  else if(param == "adjust_turn")
-    return(setBooleanOnString(m_adjust_turn, val));
-
-  else if((param == "lane") && isNumber(val))
-    return(setLaneIX(atoi(val.c_str())));
 
   else if(param == "turn1_dir") 
     return(setTurn1Dir(val));
