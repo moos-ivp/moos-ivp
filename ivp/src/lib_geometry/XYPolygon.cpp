@@ -1261,7 +1261,7 @@ bool XYPolygon::simplify(double range_thresh)
 
 
 //---------------------------------------------------------------
-// Procedure: max_radius
+// Procedure: max_radius()
 //   Purpose: Determine the maximum distance between the center of the
 //            polygon and any of its vertices.
 
@@ -1272,8 +1272,8 @@ double XYPolygon::max_radius() const
   double cy = get_center_y();
 
   for(unsigned int i=0; i<m_vx.size(); i++) {
-    double delta_x = cx = m_vx[i];
-    double delta_y = cy = m_vy[i];
+    double delta_x = cx - m_vx[i];
+    double delta_y = cy - m_vy[i];
     double dist = hypot(delta_x, delta_y);
     if(dist > max_dist_so_far)
       max_dist_so_far = dist;

@@ -66,6 +66,7 @@ XYPoint stringStandard2Point(const string& str)
   unsigned int i, vsize = mvector.size();
   
   string x,y,z,trans;
+  string hdg; // Allow for heading spec to be just ignored
   for(i=0; i<vsize; i++) {
     string param = biteStringX(mvector[i], '=');
     string value = mvector[i];
@@ -76,6 +77,8 @@ XYPoint stringStandard2Point(const string& str)
       y = value;
     else if(param == "z")
       z = value;
+    else if(param == "heading")
+      hdg = value;
     else if((param == "trans") && isNumber(value))
       trans = value;
     else
@@ -94,7 +97,7 @@ XYPoint stringStandard2Point(const string& str)
 }
 
 //---------------------------------------------------------------
-// Procedure: stringAbbreviated2Point
+// Procedure: stringAbbreviated2Point()
 //   Example: 0,0
 //   Example: 4,5:label,foobar:source,bravo:msg,hello
 
@@ -116,8 +119,8 @@ XYPoint stringAbbreviated2Point(const string& str)
       string ystr = value;
       string zstr;
       if(strContains(ystr, ',')) {
-	ystr = stripBlankEnds(biteString(value, ','));
-	zstr = stripBlankEnds(value);
+	ystr = biteStringX(value, ',');
+	zstr = value;
       }
 
       if(isNumber(xstr) && isNumber(ystr) && (isNumber(zstr)||(zstr==""))) {
