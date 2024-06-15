@@ -1399,6 +1399,29 @@ bool HelmIvP::handleConfigDomain(const string& g_entry)
   double dlow  = atof(svector[1].c_str());
   double dhgh  = atof(svector[2].c_str());
   int    dcnt  = atoi(svector[3].c_str());
+
+  double dom_range = dhgh - dlow;
+
+  // Begin Sanity checking
+  if(dhgh < dlow)
+    return(false);
+  if((dom_range == 0) && (dcnt != 1))
+    return(false);
+  // End Sanity checking
+
+  // Handle alternate format:    "speed:0:4:delta=0.1"
+  // To support macro expansion: "speed:0:$(MAX_SPD):delta=0.1"
+  if(strBegins(svector[3], "delta=") && (dom_range > 0)) {
+    string delta = rbiteString(svector[3], '=');
+    if(isNumber(delta)) {
+      double dbl_delta = atof(delta.c_str());
+      if((dbl_delta > 0) && (dbl_delta <= dom_range)) {
+	double dbl_cnt = (dom_range / dbl_delta) + 1;
+	if(dbl_cnt >= 1)
+	  dcnt = (int)(dbl_cnt);
+      }
+    }
+  }
   
   if(vsize == 5) {
     svector[4] = tolower(svector[4]);
