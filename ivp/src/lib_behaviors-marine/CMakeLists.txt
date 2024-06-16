@@ -42,6 +42,8 @@ SET(SRC
   BHV_BearingLine.cpp
   BHV_TestFailure.cpp
   BHV_PModelView.cpp
+  BHV_PModelView.cpp
+  BHV_FixedTurn.cpp
 )
 
 SET(HEADERS
@@ -80,6 +82,7 @@ SET(HEADERS
   BHV_BearingLine.h
   BHV_TestFailure.h
   BHV_PModelView.h
+  BHV_FixedTurn.h
 ) 
 
 ADD_LIBRARY(behaviors-marine ${SRC})

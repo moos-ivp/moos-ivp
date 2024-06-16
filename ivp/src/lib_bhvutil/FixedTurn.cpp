@@ -110,6 +110,8 @@ bool FixedTurn::setTurnParams(string str)
   // ================================================
   // Part 3: Check for suitable values
   // ================================================  
+  if(tolower(turn_spd == "auto"))
+    turn_spd = "-1";
   if((turn_spd != "") && !isNumber(turn_spd))
     return(false);
   if((turn_mod_hdg != "") && !isNumber(turn_mod_hdg))
@@ -118,10 +120,11 @@ bool FixedTurn::setTurnParams(string str)
     return(false);
   if((turn_timeout != "") && !isNumber(turn_timeout))
     return(false);
-  if((turn_dir != "") && (turn_dir != "auto") &&
-     !isValidTurn(turn_dir))
+  
+  if(!isValidTurn(turn_dir) && (turn_dir != "auto") &&
+     (turn_dir != "rand") && (turn_dir != ""))
     return(false);
-
+  
   vector<VarDataPair> flags;
   for(unsigned int i=0; i<flag_strs.size(); i++) {
     bool ok = addVarDataPairOnString(flags, flag_strs[i]);

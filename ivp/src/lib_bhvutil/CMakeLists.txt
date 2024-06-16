@@ -22,6 +22,8 @@ SET(SRC
   RefineryCPA.cpp
   LegRun.cpp
   LegRunSet.cpp
+  FixedTurn.cpp
+  FixedTurnSet.cpp
 )
 
 SET(HEADERS
@@ -44,6 +46,8 @@ SET(HEADERS
   RefineryCPA.h
   LegRun.h
   LegRunSet.h
+  FixedTurn.h
+  FixedTurnSet.h
 )
 
 # Build Library

@@ -28,7 +28,6 @@ TARGET_LINK_LIBRARIES(pHelmIvP
   helmivp
   dep_behaviors
   behaviors-marine
-  bhv_fixedturn
   contacts
   behaviors-colregs
   ufield
