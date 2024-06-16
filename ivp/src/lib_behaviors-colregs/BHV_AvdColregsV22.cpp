@@ -253,6 +253,16 @@ void BHV_AvdColregsV22::onIdleState()
 }
 
 //-----------------------------------------------------------
+// Procedure: onRunToIdleState()
+
+void BHV_AvdColregsV22::onRunToIdleState() 
+{
+  cout << "posting viewable bearing line 55" << endl;
+  if(m_bearing_line_show)
+    postViewableBearingLine(false);
+}
+
+//-----------------------------------------------------------
 // Procedure: onInactveState()
 
 void BHV_AvdColregsV22::onInactiveState() 
