@@ -253,6 +253,16 @@ void BHV_AvdColregsV22::onIdleState()
 }
 
 //-----------------------------------------------------------
+// Procedure: onInactveState()
+
+void BHV_AvdColregsV22::onInactiveState() 
+{
+  cout << "posting viewable bearing line 44" << endl;
+  if(m_bearing_line_show)
+    postViewableBearingLine(false);
+}
+
+//-----------------------------------------------------------
 // Procedure: onCompleteState()
 
 void BHV_AvdColregsV22::onCompleteState() 
@@ -356,6 +366,12 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
   }
     
   postStatusInfo();
+
+  if(ipf) {
+    cout << "posting viewable bearing line 00" << endl;
+    postViewableBearingLine();
+  }
+  
   return(ipf);
 }
 
@@ -1593,7 +1609,7 @@ bool BHV_AvdColregsV22::getRelBngRate(double& result)
 }
 
 //-----------------------------------------------------------
-// Procedure: postStatusInfo
+// Procedure: postStatusInfo()
 
 void BHV_AvdColregsV22::postStatusInfo()
 {
@@ -1601,25 +1617,6 @@ void BHV_AvdColregsV22::postStatusInfo()
   string full_mode = m_avoid_mode;
   if(m_avoid_submode != "none")
     full_mode += ":" + m_avoid_submode;
-  
-  if((m_avoid_mode != "none") && (m_avoid_mode != "complete")) {
-    m_bearing_segl.clear();
-    m_bearing_segl.set_label(m_us_name + m_descriptor);
-    m_bearing_segl.add_vertex(m_osx, m_osy);
-    m_bearing_segl.add_vertex(m_cnx, m_cny);
-    m_bearing_segl.set_active(true);
-    m_bearing_segl.set_msg(full_mode);
-    m_bearing_segl.set_duration(5);
-  }
-  else
-    m_bearing_segl.set_active(false);
-
-  cout << "AvdCol22: comms_policy:" << commsPolicy() << endl;
-
-  cout << "ivars:" << stringVectorToString(m_info_vars) << endl;
-  
-  if(commsPolicy() == "open")
-    postMessage("VIEW_SEGLIST", m_bearing_segl.get_spec());
 
   // Part 2: Post contact specific, useful for debugging but
   // typically not appropriate when there are many contacts
