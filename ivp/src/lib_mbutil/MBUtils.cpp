@@ -1087,6 +1087,18 @@ string findReplace(const string& str, char fchar, char rchar)
 }
     
 //----------------------------------------------------------------
+// Procedure: findReplace()
+//      Note: Added June 15, 2024
+//            convenience function
+
+string findReplace(const string& str, const string& fstr, char rchar)
+{
+  string rstr(1,rchar);
+  
+  return(findReplace(str, fstr, rstr));
+}
+    
+//----------------------------------------------------------------
 // Procedure: padString()
 //      Note: Added Aug 1405
 //   Purpose: Pad the given string with enough blanks to reach the

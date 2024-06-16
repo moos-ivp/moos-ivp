@@ -39,6 +39,10 @@ using namespace std;
 //                        #all+  MESSAGE = gather
 //      Example: @cpa #group RETURN_HOME=true
 
+//      Example: @cpa #group RETURN_HOME=true [if] MTYPE=survey
+
+
+
 bool setVarDataPairOnString(VarDataPair& pair, string str)
 {
   // Part 1: Sanity check
@@ -53,12 +57,24 @@ bool setVarDataPairOnString(VarDataPair& pair, string str)
   if((str.at(0) == '@') || (str.at(0) == '<') || (str.at(0) == '>'))
     post_tag = tolower(biteStringX(str, ' '));
 
+  // Part 3: Check for Destination tag
   string dest_tag;
   if(str.at(0) == '#') {
     biteStringX(str, '#');
     dest_tag = tolower(biteStringX(str, ' '));
   }
   
+  // Part 4: Check for conditional
+  // Example: RETURN_HOME=true [if] MTYPE=survey
+  // Isolate the condition_str and chop from original
+  string condition_str;
+  if(strContains(str, "[if]")) {
+    char gsep = 29; // ASCII 29 group separator
+    str = findReplace(str, "[if]", gsep);
+    condition_str = rbiteStringX(str, gsep);
+  }
+
+  // Part 5: Handle the normal parts
   string var = biteStringX(str, '=');
   string val = str;
   if((var=="") || (val==""))
@@ -66,6 +82,10 @@ bool setVarDataPairOnString(VarDataPair& pair, string str)
   VarDataPair new_pair(var, val, "auto");
   new_pair.set_post_tag(post_tag);
   new_pair.set_dest_tag(dest_tag);
+
+  if(condition_str != "")
+    new_pair.set_condition(condition_str);
+
   pair = new_pair;
 
   return(true);

@@ -39,7 +39,8 @@ public:
 
   VarDataPair(std::string varname, std::string varvalue);
 
-  VarDataPair(std::string varname, std::string varvalue, std::string typehint);
+  VarDataPair(std::string varname, std::string varvalue,
+	      std::string typehint);
 
   virtual ~VarDataPair() {}
   
@@ -52,6 +53,7 @@ public:
 
   void        set_post_tag(std::string s) {m_post_tag=s;}
   void        set_dest_tag(std::string s) {m_dest_tag=s;}
+  void        set_condition(std::string s) {m_condition=s;}
   
   std::string get_var()   const {return(m_var);}
   std::string get_sdata() const {return(m_sdata);}
@@ -63,6 +65,7 @@ public:
   
   std::string get_post_tag() const {return(m_post_tag);}
   std::string get_dest_tag() const {return(m_dest_tag);}
+  std::string get_condition() const {return(m_condition);}
 
   bool        is_solo_macro() const;
   
@@ -99,6 +102,9 @@ protected:
   std::string m_post_tag;   
   // New in Release 22.X to support off node postings
   std::string m_dest_tag;
+
+  // New After Release 22.X to support off node postings
+  std::string m_condition;
 };
 
 VarDataPair stringToVarDataPair(std::string);

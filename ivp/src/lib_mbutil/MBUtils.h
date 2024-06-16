@@ -97,6 +97,7 @@ std::string compactConsecutive(const std::string&, char);
 std::string findReplace(const std::string&, char, char);
 std::string findReplace(const std::string&, const std::string&, 
 			 const std::string&);
+std::string findReplace(const std::string&, const std::string&, char);
 std::string padString(const std::string&, std::string::size_type, bool=true);
 std::vector<std::string> padVector(const std::vector<std::string>&,
 				   bool=true);
