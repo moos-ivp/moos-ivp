@@ -193,11 +193,14 @@ public:
   
   std::vector<std::string> getUpdateResults() const {return(m_update_results);}
 
-  std::string expandCtrMacro(std::string sdata, std::string macro, unsigned int&);
+  std::string expandCtrMacro(std::string sdata, std::string macro,
+			     unsigned int&);
 
   std::string commsPolicy() const {return(m_comms_policy);}
 
   unsigned int getBhvIteration() {return(m_bhv_iter);}
+
+  bool addFlagOnString(std::vector<VarDataPair>&, std::string);
   
 protected:
   const InfoBuffer* m_info_buffer;
@@ -227,6 +230,7 @@ protected:
   std::vector<VarDataPair>       m_messages;
   std::vector<VarDataPair>       m_event_messages;
   std::vector<LogicCondition>    m_logic_conditions;
+  std::vector<LogicCondition>    m_flag_conditions;
   std::vector<VarDataPair>       m_spawn_flags;
   std::vector<VarDataPair>       m_spawnx_flags;
   std::vector<VarDataPair>       m_run_flags;

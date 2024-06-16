@@ -38,6 +38,7 @@
 #include "BehaviorReport.h"
 #include "NodeMessage.h"
 #include "VarDataPairUtils.h"
+#include "LogicBuffer.h"
 
 using namespace std;
 
@@ -1062,10 +1063,11 @@ void IvPBehavior::addInfoVars(string var_string, string warning)
 
 vector<string> IvPBehavior::getInfoVars()
 {
-  unsigned int i;
   vector<string> svector;
-  for(i=0; i<m_logic_conditions.size(); i++)
+  for(unsigned i=0; i<m_logic_conditions.size(); i++)
     svector = mergeVectors(svector, m_logic_conditions[i].getVarNames());
+  for(unsigned i=0; i<m_flag_conditions.size(); i++)
+    svector = mergeVectors(svector, m_flag_conditions[i].getVarNames());
 
   if(m_duration_reset_var != "")
     svector.push_back(m_duration_reset_var);
@@ -1388,7 +1390,8 @@ void IvPBehavior::postFlags(const string& str, bool repeatable)
 //            be made as postRepeatable. This means the helm's
 //            duplication filter will let it through absolutely.
 
-void IvPBehavior::postFlags(const vector<VarDataPair>& flags, bool repeatable)
+void IvPBehavior::postFlags(const vector<VarDataPair>& flags,
+			    bool repeatable)
 {
   for(unsigned int i=0; i<flags.size(); i++) 
     postFlag(flags[i], repeatable);
@@ -1443,6 +1446,37 @@ void IvPBehavior::postFlag(const VarDataPair& flag, bool repeatable)
   string key;
   if(repeatable)
     key = "repeatable";
+
+  //================================================================
+  // Part 1B: Handle if the flag has a condition (jun1524)
+  string condition_str = flag.get_condition();
+  if(condition_str != "") {
+    LogicCondition condition;
+    bool ok_cond = condition.setCondition(condition_str);
+    if(ok_cond) {
+      vector<string> all_vars = condition.getVarNames();
+      all_vars = removeDuplicates(all_vars);
+
+      // Phase: get values of all variables from the info_buffer and 
+      // propogate these values down to all the logic conditions.
+      for(unsigned int i=0; i<all_vars.size(); i++) {
+	string varname = all_vars[i];
+	bool   ok_s, ok_d;
+	string s_result = m_info_buffer->sQuery(varname, ok_s);
+	double d_result = m_info_buffer->dQuery(varname, ok_d);
+	if(ok_s)
+	  condition.setVarVal(varname, s_result);
+	if(ok_d)
+	  condition.setVarVal(varname, d_result);
+      }
+
+      // Eval logic condition
+      bool satisfied = condition.eval();
+      if(!satisfied) 
+	return;
+    }
+  }
+  //================================================================
   
   // Part 2: Get the variable name and initialize the sdata/ddata
   // fields. A non-empty-string sdata will mean this is a string posting
@@ -1817,7 +1851,8 @@ string IvPBehavior::expandMacros(string sdata)
 //-----------------------------------------------------------
 // Procedure: expandCtrMacro()
 
-string IvPBehavior::expandCtrMacro(string sdata, string macro, unsigned int& ctr)
+string IvPBehavior::expandCtrMacro(string sdata, string macro,
+				   unsigned int& ctr)
 {
   string full_macro = "$[" + macro + "]";
   if(strContains(sdata, full_macro)) {
@@ -1825,5 +1860,33 @@ string IvPBehavior::expandCtrMacro(string sdata, string macro, unsigned int& ctr
     sdata = macroExpand(sdata, macro, ctr);
   }    
   return(sdata);
+}
+
+
+//-----------------------------------------------------------
+// Procedure: addFlagOnString()
+
+bool IvPBehavior::addFlagOnString(vector<VarDataPair>& pairs, 
+				  string str)
+{
+  // Part 1: Handle condition component if present.
+  //   a. Ensure it is syntactically valid
+  //   b. Cache the condition so info_vars can be obtained later
+  if(strContains(str, "[if]")) {
+    char gsep = 29; // ASCII 29 group separator
+    string tmp_str = findReplace(str, "[if]", gsep);
+    string condition_str = rbiteStringX(tmp_str, gsep);
+    if(condition_str != "") {
+      LogicCondition flag_condition;
+      bool ok_cond = flag_condition.setCondition(condition_str);
+      if(ok_cond)
+	m_flag_conditions.push_back(flag_condition);
+      else
+	return(false);
+    }
+  }
+
+  // Part 2: Proceed with normal adding of a flag
+  return(addVarDataPairOnString(pairs, str));
 }
 
