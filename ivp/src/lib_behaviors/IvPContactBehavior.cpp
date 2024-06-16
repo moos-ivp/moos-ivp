@@ -242,43 +242,43 @@ bool IvPContactBehavior::addContactFlag(string str)
     string rng_str = biteStringX(new_str, ' ');
     double rng_dbl = atof(rng_str.c_str());
     if(isNumber(rng_str) && (rng_dbl >= 0))
-      return(addVarDataPairOnString(m_cnflags, str));
+      return(addFlagOnString(m_cnflags, str));
   }
   else if(strBegins(str, "<") || strBegins(str, ">")) {
     string new_str = str.substr(1);
     string rng_str = biteStringX(new_str, ' ');
     double rng_dbl = atof(rng_str.c_str());
     if(isNumber(rng_str) && (rng_dbl >= 0))
-      return(addVarDataPairOnString(m_cnflags, str));
+      return(addFlagOnString(m_cnflags, str));
   }
   else if(strBegins(str, "@cpa"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   else if(strBegins(str, "@os_passed_cn_port"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   else if(strBegins(str, "@os_passed_cn_star"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   else if(strBegins(str, "@os_passed_cn"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
 
   else if(strBegins(str, "@cn_passed_os_port"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   else if(strBegins(str, "@cn_passed_os_star"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   else if(strBegins(str, "@cn_passed_os"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
 
   else if(strBegins(str, "@os_crossed_cn"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   else if(strBegins(str, "@os_crossed_cn_bow"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   else if(strBegins(str, "@os_crossed_cn_stern"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   else if(strBegins(str, "@cn_crossed_os"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   else if(strBegins(str, "@cn_crossed_os_bow"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   else if(strBegins(str, "@cn_crossed_os_stern"))
-    return(addVarDataPairOnString(m_cnflags, str));
+    return(addFlagOnString(m_cnflags, str));
   
   return(false);    
 }
