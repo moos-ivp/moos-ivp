@@ -85,9 +85,9 @@ bool BHV_CutRange::setParam(string param, string param_val)
   else if((param == "giveup_dist") || (param == "giveup_range")) 
     return(setNonNegDoubleOnString(m_giveup_range, param_val));
   else if(param == "pursueflag")
-    return(addVarDataPairOnString(m_pursue_flags, param_val));
+    return(addFlagOnString(m_pursue_flags, param_val));
   else if(param == "giveupflag") 
-    return(addVarDataPairOnString(m_giveup_flags, param_val));
+    return(addFlagOnString(m_giveup_flags, param_val));
   else if((param == "patience") && isNumber(param_val)) {
     if((dval < 0) || (dval > 100))
       return(false);

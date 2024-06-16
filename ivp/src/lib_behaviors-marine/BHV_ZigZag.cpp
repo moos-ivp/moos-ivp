@@ -135,17 +135,17 @@ bool BHV_ZigZag::setParam(string param, string value)
     handled = handleConfigZigAngleFierce(value);
 
   else if(param == "zigflag")
-    handled = addVarDataPairOnString(m_zig_flags, value);
+    handled = addFlagOnString(m_zig_flags, value);
   else if(param == "zagflag")
-    handled = addVarDataPairOnString(m_zag_flags, value);
+    handled = addFlagOnString(m_zag_flags, value);
   else if(param == "portflag")
-    handled = addVarDataPairOnString(m_port_flags, value);
+    handled = addFlagOnString(m_port_flags, value);
   else if(param == "starflag")
-    handled = addVarDataPairOnString(m_star_flags, value);
+    handled = addFlagOnString(m_star_flags, value);
   else if(param == "portflagx")
-    handled = addVarDataPairOnString(m_portx_flags, value);
+    handled = addFlagOnString(m_portx_flags, value);
   else if(param == "starflagx")
-    handled = addVarDataPairOnString(m_starx_flags, value);
+    handled = addFlagOnString(m_starx_flags, value);
 
   else if(param == "visual_hints")  {
     vector<string> svector = parseStringQ(value, ',');

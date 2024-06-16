@@ -154,7 +154,7 @@ bool BHV_AvoidObstacleV24::setParam(string param, string val)
   else if(param == "rng_flag")
     return(handleParamRangeFlag(val));
   else if(param == "cpa_flag")
-    return(addVarDataPairOnString(m_cpa_flags, val));
+    return(addFlagOnString(m_cpa_flags, val));
   else if(param == "visual_hints")
     return(m_hints.setHints(val));
   else if(param == "use_refinery")
@@ -205,7 +205,7 @@ bool BHV_AvoidObstacleV24::handleParamRangeFlag(string str)
   }
   
   // Sanity checks on the value part
-  bool ok = addVarDataPairOnString(m_rng_flags, str);
+  bool ok = addFlagOnString(m_rng_flags, str);
   if(ok)
     m_rng_thresh.push_back(thresh);
 

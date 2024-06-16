@@ -146,17 +146,17 @@ bool BHV_OpRegionV24::setParam(string param, string val)
   else if(param == "trigger_exit_time") 
     return(setNonNegDoubleOnString(m_trigger_exit_time, val));
   else if(param == "breached_poly_flag") 
-    return(addVarDataPairOnString(m_breached_poly_flags, val));
+    return(addVarFlagOnString(m_breached_poly_flags, val));
   else if(param == "breached_time_flag") 
-    return(addVarDataPairOnString(m_breached_time_flags, val));
+    return(addVarFlagOnString(m_breached_time_flags, val));
   else if(param == "breached_altitude_flag") 
-    return(addVarDataPairOnString(m_breached_altitude_flags, val));
+    return(addVarFlagOnString(m_breached_altitude_flags, val));
   else if(param == "breached_depth_flag") 
-    return(addVarDataPairOnString(m_breached_depth_flags, val));
+    return(addVarFlagOnString(m_breached_depth_flags, val));
   else if(param == "save_flag") 
-    return(addVarDataPairOnString(m_save_flags, val));
+    return(addVarFlagOnString(m_save_flags, val));
   else if(param == "savex_flag") 
-    return(addVarDataPairOnString(m_savex_flags, val));
+    return(addVarFlagOnString(m_savex_flags, val));
   else if(param == "draw_save_status") 
     return(setBooleanOnString(m_draw_save_status, val));
   else if(param == "draw_halt_status") 

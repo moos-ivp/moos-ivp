@@ -102,9 +102,9 @@ bool BHV_FullStop::setParam(string param, string value)
   else if(param == "visual_hints")  
     return(m_hints.setHints(value));
   else if(param == "mark_flag") 
-    return(addVarDataPairOnString(m_mark_flags, value));
+    return(addFlagOnString(m_mark_flags, value));
   else if(param == "unmark_flag") 
-    return(addVarDataPairOnString(m_unmark_flags, value));
+    return(addFlagOnString(m_unmark_flags, value));
   
   else
     handled = false;

@@ -141,13 +141,13 @@ bool BHV_OpRegion::setParam(string param, string val)
   else if(param == "time_remaining_var")
     return(setNonWhiteVarOnString(m_time_remaining_var, val));
   else if(param == "breached_poly_flag") 
-    return(addVarDataPairOnString(m_breached_poly_flags, val));
+    return(addFlagOnString(m_breached_poly_flags, val));
   else if(param == "breached_time_flag") 
-    return(addVarDataPairOnString(m_breached_time_flags, val));
+    return(addFlagOnString(m_breached_time_flags, val));
   else if(param == "breached_altitude_flag") 
-    return(addVarDataPairOnString(m_breached_altitude_flags, val));
+    return(addFlagOnString(m_breached_altitude_flags, val));
   else if(param == "breached_depth_flag") 
-    return(addVarDataPairOnString(m_breached_depth_flags, val));
+    return(addFlagOnString(m_breached_depth_flags, val));
   else if(param == "soft_poly_breach") 
     return(setBooleanOnString(m_soft_poly_breach, val));
   else if(param == "min_altitude") 

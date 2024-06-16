@@ -129,16 +129,16 @@ bool BHV_LegRun::setParam(string param, string value)
     return(setBooleanOnString(m_leg_spds_repeat, value));
 
   else if((param == "leg_endflag") || (param == "leg_end_flag")) 
-    return(addVarDataPairOnString(m_leg_endflags, value));
+    return(addFlagOnString(m_leg_endflags, value));
   else if((param == "leg1_endflag") || (param == "leg1_end_flag")) 
-    return(addVarDataPairOnString(m_leg1_endflags, value));
+    return(addFlagOnString(m_leg1_endflags, value));
   else if((param == "leg2_endflag") || (param == "leg2_end_flag")) 
-    return(addVarDataPairOnString(m_leg2_endflags, value));
+    return(addFlagOnString(m_leg2_endflags, value));
 
   else if((param == "midlegflag") || (param == "mid_leg_flag"))
-    return(addVarDataPairOnString(m_mid_leg_flags, value));
+    return(addFlagOnString(m_mid_leg_flags, value));
   else if((param == "midturnflag") || (param == "mid_turn_flag"))
-    return(addVarDataPairOnString(m_mid_turn_flags, value));
+    return(addFlagOnString(m_mid_turn_flags, value));
   else if(param == "mid_leg_pct") 
     return(setDoubleStrictRngOnString(m_mid_leg_pct, value, 0, 100));
   else if(param == "mid_turn_pct") 
@@ -155,11 +155,11 @@ bool BHV_LegRun::setParam(string param, string value)
     return(setDoubleRngOnString(m_cruise_spd, value, 0, m_max_spd));
 
   else if((param == "turn_endflag") || (param == "turn_end_flag")) 
-    return(addVarDataPairOnString(m_turn_endflags, value));
+    return(addFlagOnString(m_turn_endflags, value));
   else if((param == "turn1_endflag") || (param == "turn1_end_flag")) 
-    return(addVarDataPairOnString(m_turn1_endflags, value));
+    return(addFlagOnString(m_turn1_endflags, value));
   else if((param == "turn2_endflag") || (param == "turn2_end_flag")) 
-    return(addVarDataPairOnString(m_turn2_endflags, value));
+    return(addFlagOnString(m_turn2_endflags, value));
 
   else if(param == "visual_hints") 
     return(m_hints.setHints(value));

@@ -40,6 +40,7 @@
 #include "XYFormatUtilsPoint.h"
 #include "XYFormatUtilsSegl.h"
 #include "ColorParse.h"
+#include "VarDataPairUtils.h"
 #include "IO_Utilities.h"
 
 using namespace std;
@@ -321,24 +322,11 @@ bool BHV_Waypoint::setParam(string param, string param_val)
     m_var_suffix = param_val;
     return(true);
   }
-  else if(param == "cycleflag") {
-    string variable = biteStringX(param_val, '=');
-    string value    = param_val;
-    if((variable=="") || (value==""))
-      return(false);
-    VarDataPair pair(variable, value, "auto");
-    m_cycle_flags.push_back(pair);
-    return(true);
-  }
-  else if(param == "wptflag") {
-    string variable = biteStringX(param_val, '=');
-    string value    = param_val;
-    if((variable=="") || (value=="")) 
-      return(false);
-     VarDataPair pair(variable, value, "auto");
-    m_wpt_flags.push_back(pair);
-    return(true);
-  }
+  else if(param == "cycleflag")
+    return(addFlagOnString(m_cycle_flags, param_val));
+  else if(param == "wptflag")
+    return(addFlagOnString(m_wpt_flags, param_val));
+
   else if((param == "ipf-type") || (param == "ipf_type")) {
     param_val = tolower(param_val);
     if((param_val=="zaic") || (param_val=="zaic_spd") || 
