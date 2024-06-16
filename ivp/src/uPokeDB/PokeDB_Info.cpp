@@ -82,6 +82,8 @@ void showHelpAndExit()
   blk("      looks like a double.                                      ");
   mag("  --web,-w                                                      ");
   blk("      Open browser to: https://oceanai.mit.edu/ivpman/apps/uPokeDB ");
+  mag("  --cache,-c                                                    ");
+  blk("      Use the cache of mission file configured pokes            ");
   blk("                                                                ");
   blk("Examples:                                                       ");
   blk("     $ uPokeDB alpha.moos DEPLOY=true RETURN_SPEED=2.0          ");
