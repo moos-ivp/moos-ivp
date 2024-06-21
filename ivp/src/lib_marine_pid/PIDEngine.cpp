@@ -307,7 +307,7 @@ void PIDEngine::setDesiredValues()
     //bool is_stale = checkForStaleness();
     checkForStaleness();
     if(m_pid_stale) {
-      m_pid_override = true;
+      //m_pid_override = true;
       return;
     }
   }
