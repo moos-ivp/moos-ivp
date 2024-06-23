@@ -108,7 +108,7 @@
       '("uSimLidar" "poly" "polygon" "max_range" "mount_angle" "point_cloud_color" "range" "beams" "field_of_view" "scan_resolution" "max_appcast_events")
       '("iSay" "default_voice" "default_rate" "interval_policy" "min_utter_interval" "audio_dir" "os_mode" "max_appcast_events" "volume" )
       '("uXMS" "var" "source" "history_var" "display_virgins" "display_source" "display_aux_source" "display_time" "display_community" "display_all" "trunc_data" "term_report_interval" "colormap" "color_map" "refresh_mode" "content_mode" "paused")
-      '("uSimCurrent" "current_field")
+      '("uSimCurrent" "current_field" "wrap_data" "wrap_data_len" )
 
       '("pEvalLoiter" "eval_window" "nav_stale_thresh" "mode_thresh" "max_nav_age" "range_max_ineff" "notable_cpa_thresh" "notable_eff_thresh" "notable_cpa_var" "notable_eff_var" "max_appcast_events")
       
