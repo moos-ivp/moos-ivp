@@ -138,6 +138,8 @@ class XMS : public AppCastingMOOSApp
   std::string m_content_mode_prev;
   std::string m_community;
 
+  bool   m_wrap_data;
+  unsigned int m_wrap_data_len = 40;
   double m_trunc_data;
   double m_trunc_data_start;
   bool   m_display_virgins;

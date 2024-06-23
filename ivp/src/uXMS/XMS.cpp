@@ -37,7 +37,7 @@ extern bool MOOSAPP_OnConnect(void*);
 extern bool MOOSAPP_OnDisconnect(void*);
 
 //------------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 XMS::XMS()
 {    
@@ -56,6 +56,8 @@ XMS::XMS()
   m_content_mode      = "scoping";
   m_content_mode_prev = "scoping";
 
+  m_wrap_data         = false;
+  m_wrap_data_len     = 45;
   m_trunc_data        = 0;
   m_trunc_data_start  = 20;
   m_display_virgins   = true;
@@ -79,7 +81,7 @@ XMS::XMS()
 }
 
 //------------------------------------------------------------
-//  Proc: ConfigureComms
+//  Proc: ConfigureComms()
 //  Note: Overload MOOSApp::ConfigureComms implementation which would
 //        have grabbed port/host info from the .moos file instead
 
@@ -213,9 +215,7 @@ bool XMS::OnConnectToServer()
 }
 
 //------------------------------------------------------------
-// Procedure: OnStartUp
-//      do start up things here...
-//      for example read from mission file...
+// Procedure: OnStartUp()
 
 bool XMS::OnStartUp()
 {
@@ -275,6 +275,14 @@ bool XMS::OnStartUp()
     else if(param == "DISPLAY_VIRGINS")
       handled = setBooleanOnString(m_display_virgins, value);
     
+    else if(param == "WRAP_DATA")
+      handled = setBooleanOnString(m_wrap_data, value);    
+    else if(param == "WRAP_DATA_LEN") {
+      handled = setUIntOnString(m_wrap_data_len, value);
+      if(handled && (m_wrap_data_len < 10))
+	m_wrap_data_len = 10;
+    }
+      
     else if((param == "TRUNC_DATA") && isBoolean(value)) {
       handled = true;
       if(tolower(value) == "true")
@@ -354,6 +362,11 @@ void XMS::handleCommand(char c)
   case 'x':
   case 'X':
     m_display_aux_source = !m_display_aux_source;
+    m_update_requested = true;
+    break;
+  case 'w':
+  case 'W':
+    m_wrap_data = !m_wrap_data;
     m_update_requested = true;
     break;
   case 't':
@@ -665,7 +678,7 @@ void XMS::setDisplayColumns(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setFilter
+// Procedure: setFilter()
 
 void XMS::setFilter(string str)
 {
@@ -686,7 +699,7 @@ void XMS::setFilter(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setTruncData
+// Procedure: setTruncData()
 
 void XMS::setTruncData(string val)
 {
@@ -697,7 +710,7 @@ void XMS::setTruncData(string val)
 }
 
 //------------------------------------------------------------
-// Procedure: setTermReportInterval
+// Procedure: setTermReportInterval()
 //      Note: m_term_report_interval is set at the AppCastingMOOSApp
 //            level and normally not accessible in this way. But this
 //            method is provided to allow a hook from the commandline.
@@ -712,7 +725,7 @@ void XMS::setTermReportInterval(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setColorMapping
+// Procedure: setColorMapping()
 
 bool XMS::setColorMapping(string str, string color)
 {
@@ -741,7 +754,7 @@ bool XMS::setColorMapping(string str, string color)
 }
 
 //------------------------------------------------------------
-// Procedure: setColorMappingsAny
+// Procedure: setColorMappingsAny()
 //   Example: str = "pHelmIvP,NAV_X,NAV_Y"
 
 bool XMS::setColorMappingsAny(string str)
@@ -757,7 +770,7 @@ bool XMS::setColorMappingsAny(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setColorMappingsPairs
+// Procedure: setColorMappingsPairs()
 //   Example: str = "IVPHELM_SUMMARY,blue,BHV_WARNING,red
 
 bool XMS::setColorMappingsPairs(string str)
@@ -775,7 +788,7 @@ bool XMS::setColorMappingsPairs(string str)
 
 
 //------------------------------------------------------------
-// Procedure: getColorMapping
+// Procedure: getColorMapping()
 //      Note: Returns a color mapping (if it exists) for the given
 //            string. Typically the string is a MOOS variable name,
 //            but it could also be a substring of a MOOS variable.
@@ -792,7 +805,7 @@ string XMS::getColorMapping(string substr)
 }
 
 //------------------------------------------------------------
-// Procedure: colorTaken
+// Procedure: colorTaken()
 
 bool XMS::colorTaken(std::string color)
 {
@@ -806,7 +819,7 @@ bool XMS::colorTaken(std::string color)
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void XMS::registerVariables()
 {
@@ -830,7 +843,7 @@ void XMS::registerVariables()
 }
 
 //------------------------------------------------------------
-// Procedures: updateVarEntry
+// Procedures: updateVarEntry()
 //       Note: Returns true if the value/type/source etc has changed.
 
 bool XMS::updateVarEntry(string varname, const ScopeEntry& new_entry)
@@ -854,7 +867,7 @@ bool XMS::updateVarEntry(string varname, const ScopeEntry& new_entry)
 }
 
 //------------------------------------------------------------
-// Procedures: updateSourceInfo
+// Procedures: updateSourceInfo()
 //   Purposes: Create a new ID for the new source
 //             Update the max string length across sources
 
@@ -889,7 +902,7 @@ void XMS::updateSourceInfo(string new_src)
 }
 
 //------------------------------------------------------------
-// Procedures: updateHistory
+// Procedure: updateHistory()
  
 void XMS::updateHistory(string entry, string source, 
 			string srcaux, double htime)
@@ -923,7 +936,7 @@ void XMS::updateHistory(string entry, string source,
 }
 
 //------------------------------------------------------------
-// Procedure: buildReport
+// Procedure: buildReport()
 //      Note: A virtual function of the AppCastingMOOSApp superclass, 
 //            conditionally invoked if either a terminal or appcast 
 //            report is needed.
@@ -987,6 +1000,7 @@ bool XMS::printHelp()
   actab.addCell("   u/SPC     Refresh Mode: Update then Pause         ");
   actab.addCell("    r        Refresh Mode: Streaming                 ");
   actab.addCell("    e        Refresh Mode: Event-driven refresh      ");
+  actab.addCell("    w        Wrap Value content                      ");
   
   m_msgs << actab.getFormattedString();
   //m_refresh_mode = "paused";
@@ -1109,7 +1123,24 @@ bool XMS::printReport()
       else if(vartype == "double")
 	valcell = varval;
 
-      actab.addCell(valcell, vcolor);
+      vector<string> wrapped_lines;
+      if(m_wrap_data)
+	wrapped_lines = breakLen(varval,m_wrap_data_len);
+
+      if(wrapped_lines.size() <= 1)
+	actab.addCell(valcell, vcolor);
+      else {
+	for(unsigned int i=0; i<wrapped_lines.size(); i++) {
+	  if(i != 0) { 
+	    actab.addCell(""); // varname
+	    actab.addCell(""); // source
+	    actab.addCell(""); // time
+	    actab.addCell(""); // community
+	  }
+	  actab.addCell(wrapped_lines[i]);
+	}
+      }      
+
     }
   }
   
@@ -1525,12 +1556,3 @@ void XMS::handleSelectMaskAddSources()
     }
   }
 }
-
-
-
-
-
-
-
-
-

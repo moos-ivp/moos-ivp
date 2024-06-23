@@ -119,7 +119,6 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("uXMS Example MOOS Configuration                                 ");
   blu("=============================================================== ");
@@ -143,6 +142,9 @@ void showExampleConfigAndExit()
   blk("  display_community     = false   // default                    ");
   blk("  display_all           = false   // default                    ");
   blk("  trunc_data            = 40      // default is no trucation.   ");
+  blk("                                                                ");
+  blk("  wrap_data             = false   // default                    ");
+  blk("  wrap_data_len         = 45      // default                    ");
   blk("                                                                ");
   blk("  term_report_interval  = 0.6     // default (seconds)          ");
   blk("                                                                ");
