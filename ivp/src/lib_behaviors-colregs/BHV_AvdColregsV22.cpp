@@ -257,7 +257,6 @@ void BHV_AvdColregsV22::onIdleState()
 
 void BHV_AvdColregsV22::onRunToIdleState() 
 {
-  cout << "posting viewable bearing line 55" << endl;
   if(m_bearing_line_show)
     postViewableBearingLine(false);
 }
@@ -267,7 +266,6 @@ void BHV_AvdColregsV22::onRunToIdleState()
 
 void BHV_AvdColregsV22::onInactiveState() 
 {
-  cout << "posting viewable bearing line 44" << endl;
   if(m_bearing_line_show)
     postViewableBearingLine(false);
 }
@@ -302,7 +300,6 @@ bool BHV_AvdColregsV22::onRunStatePrior()
 
 IvPFunction *BHV_AvdColregsV22::onRunState() 
 {
-  cout << "In BHV_AvdColregsV22::onRunState()" << endl; 
   m_iterations++;
 
   bool prev_cn_port_of_os = m_cnos.cn_port_of_os();
@@ -377,10 +374,8 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
     
   postStatusInfo();
 
-  if(ipf) {
-    cout << "posting viewable bearing line 00" << endl;
+  if(ipf) 
     postViewableBearingLine();
-  }
   
   return(ipf);
 }
