@@ -108,6 +108,7 @@ class CollObDetect : public AppCastingMOOSApp
   double m_bin_delta;
   std::map<double, unsigned int> m_map_bins;  // totals in bin
   std::map<double, unsigned int> m_map_tbins; // totals in bin and below
+  bool m_bins_created;
   
   double m_global_min_dist;
 };

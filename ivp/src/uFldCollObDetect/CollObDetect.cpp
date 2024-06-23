@@ -48,11 +48,12 @@ CollObDetect::CollObDetect()
   m_bin_minval = -1;
   
   // Init State variables
-  m_total_encounters = 0;
+  m_total_encounters  = 0;
   m_total_near_misses = 0;
-  m_total_collisions = 0;
+  m_total_collisions  = 0;
 
   m_global_min_dist = -1;
+  m_bins_created = false;
 }
 
 //---------------------------------------------------------
@@ -350,8 +351,10 @@ void CollObDetect::updateVehiDists()
       if(!poly.contains(vx, vy))
 	dist = poly.dist_to_poly(vx, vy);
       setCurrDist(vname, obstacle_label, dist);
-      if((m_global_min_dist < 0) || (dist < m_global_min_dist))
+      if((m_global_min_dist < 0) || (dist < m_global_min_dist)) {
 	m_global_min_dist = dist;
+	Notify("OB_GLOBAL_MIN", m_global_min_dist);
+      }
     }
   }
 }
@@ -433,13 +436,26 @@ void CollObDetect::updateVehiEncounters()
 
 void CollObDetect::binEncounter(double dist)
 {
+  // Part 1: If not collecting this info, just return
   if((m_bin_minval < 0) || (m_bin_delta <= 0))
     return;
-  
+
+  // Part 2: Create bins once initially
+  if(!m_bins_created) {
+    for(double dist=m_bin_minval; dist<15; dist+=m_bin_delta) {
+      double bin_val = snapToStep(dist, m_bin_delta);
+      m_map_bins[bin_val] = 0;
+      m_map_tbins[bin_val] = 0;
+    }
+    m_bins_created = true;
+  }
+
+  // Part 3: Add this dist to this bin
   double bin_val = snapToStep(dist, m_bin_delta);
   m_map_bins[bin_val]++;
   m_map_tbins[bin_val]++;
-
+  
+  // Part 4: Increment higher tbins
   map<double, unsigned int>::iterator p;
   for(p=m_map_tbins.begin(); p!=m_map_tbins.end(); p++) {
     double bval = p->first;
@@ -568,21 +584,28 @@ bool CollObDetect::buildReport()
   // ==============================================================
   // Part 2: Build table of bin values
   // ==============================================================  
-  ACTable actab1(3);
+  ACTable actab1(4);
 
   // Build header string, e.g., "abe | ben | cal | deb"
 
-  string header1_str = "Thresh | Count | Total";
+  string header1_str = "Thresh | Count | Total | Pct";
   actab1 << header1_str;
   actab1.addHeaderLines();
   map<double, unsigned int>::iterator pp;
   for(pp=m_map_bins.begin(); pp!=m_map_bins.end(); pp++) {
     double thresh = pp->first;
     unsigned int count = pp->second;
+    if(count == 0)
+      continue;      
     unsigned int tcount = m_map_tbins[thresh];
     actab1 << doubleToStringX(thresh,2);
     actab1 << count;
     actab1 << tcount;
+
+    double pct = 0;
+    if(m_total_encounters > 0)
+      pct = tcount / (double)(m_total_encounters);
+    actab1 << doubleToString(pct, 3);
   }
   m_msgs << actab1.getFormattedString() << endl << endl;
 
@@ -624,5 +647,3 @@ bool CollObDetect::buildReport()
   m_msgs << actab2.getFormattedString();
   return(true);
 }
-
-

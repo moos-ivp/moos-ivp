@@ -281,6 +281,8 @@ bool XMS::OnStartUp()
       handled = setUIntOnString(m_wrap_data_len, value);
       if(handled && (m_wrap_data_len < 10))
 	m_wrap_data_len = 10;
+      if(handled && (m_wrap_data_len > 120))
+	m_wrap_data_len = 120;
     }
       
     else if((param == "TRUNC_DATA") && isBoolean(value)) {
