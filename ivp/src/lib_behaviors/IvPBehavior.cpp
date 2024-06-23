@@ -235,73 +235,24 @@ bool IvPBehavior::setParam(string g_param, string g_val)
       return(true);
     }
   }
-  else if((g_param == "spawnflag") || (g_param == "spawn_flag")) {
-    string var = biteStringX(g_val, '=');
-    string val = g_val;
-    if(strContainsWhite(var) || (val == ""))
-      return(false);
-    VarDataPair pair(var, val, "auto");
-    m_spawn_flags.push_back(pair);
-    return(true);
-  }
+  else if((g_param == "spawnflag") || (g_param == "spawn_flag"))
+    return(addFlagOnString(m_spawn_flags, g_val));
   else if((g_param == "runxflag") || (g_param == "runx_flag"))
-    return(addVarDataPairOnString(m_runx_flags, g_val));
+    return(addFlagOnString(m_runx_flags, g_val));
   else if((g_param == "spawnxflag") || (g_param == "spawnx_flag"))
-    return(addVarDataPairOnString(m_spawnx_flags, g_val));
-  else if((g_param == "runflag") || (g_param == "run_flag")) {
-    string var = biteStringX(g_val, '=');
-    string val = g_val;
-    if(strContainsWhite(var) || (val == ""))
-      return(false);
-    VarDataPair pair(var, val, "auto");
-    m_run_flags.push_back(pair);
-    return(true);
-  }
-  else if((g_param == "activeflag") || (g_param == "active_flag")) {
-    string var = biteStringX(g_val, '=');
-    string val = g_val;
-    if(strContainsWhite(var) || (val == ""))
-      return(false);
-    VarDataPair pair(var, val, "auto");
-    m_active_flags.push_back(pair);
-    return(true);
-  }
-  else if((g_param == "inactiveflag") || (g_param == "inactive_flag")) {
-    string var = biteStringX(g_val, '=');
-    string val = g_val;
-    if(strContainsWhite(var) || (val == ""))
-      return(false);
-    VarDataPair pair(var, val, "auto");
-    m_inactive_flags.push_back(pair);
-    return(true);
-  }
-  else if((g_param == "idleflag") || (g_param == "idle_flag")) {
-    string var = biteStringX(g_val, '=');
-    string val = g_val;
-    if(strContainsWhite(var) || (val == ""))
-      return(false);
-    VarDataPair pair(var, val, "auto");
-    m_idle_flags.push_back(pair);
-    return(true);
-  }
-  else if((g_param == "endflag") || (g_param == "end_flag")) {
-    string var = biteStringX(g_val, '=');
-    string val = g_val;
-    if(strContainsWhite(var) || (val == ""))
-      return(false);
-    VarDataPair pair(var, val, "auto");
-    m_end_flags.push_back(pair);
-    return(true);
-  }
-  else if((g_param == "configflag") || (g_param == "config_flag")) {
-    string var = biteStringX(g_val, '=');
-    string val = g_val;
-    if(strContainsWhite(var) || (val == ""))
-      return(false);
-    VarDataPair pair(var, val, "auto");
-    m_config_flags.push_back(pair);
-    return(true);
-  }
+    return(addFlagOnString(m_spawnx_flags, g_val));
+  else if((g_param == "runflag") || (g_param == "run_flag"))
+    return(addFlagOnString(m_run_flags, g_val));
+  else if((g_param == "activeflag") || (g_param == "active_flag"))
+    return(addFlagOnString(m_active_flags, g_val));
+  else if((g_param == "inactiveflag") || (g_param == "inactive_flag"))
+    return(addFlagOnString(m_inactive_flags, g_val));
+  else if((g_param == "idleflag") || (g_param == "idle_flag"))
+    return(addFlagOnString(m_idle_flags, g_val));
+  else if((g_param == "endflag") || (g_param == "end_flag")) 
+    return(addFlagOnString(m_end_flags, g_val));
+  else if((g_param == "configflag") || (g_param == "config_flag"))
+    return(addFlagOnString(m_config_flags, g_val));
   else if((g_param == "no_starve") || (g_param == "nostarve")) {
     vector<string> svector = parseString(g_val, ',');
     unsigned int i, vsize = svector.size();

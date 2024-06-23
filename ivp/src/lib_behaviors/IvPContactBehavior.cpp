@@ -631,9 +631,9 @@ void IvPContactBehavior::postViewableBearingLine(bool active)
   if(m_bearing_line_label_show)
     m_bearing_line.set_color("label", "white");
   else
-    m_bearing_line.set_color("label", "invisible");
+    m_bearing_line.set_color("label", "pink");
   m_bearing_line.set_color("edge", color);
-  m_bearing_line.set_duration(1);
+  m_bearing_line.set_duration(100);
   m_bearing_line.set_time(getBufferCurrTime());
 
   string segl_spec = m_bearing_line.get_spec();
