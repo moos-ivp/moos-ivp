@@ -230,6 +230,9 @@ double distSeglToPoint(const XYSegList& segl, const XYPoint& pt,
 double stemDistSeglFromPoint(const XYSegList& segl,
 			     double px, double py);
 
+XYPoint randPointOnSeg(double x1, double y1, double x2, double y2);
+
+
 
 
 // DEPRECATED INTERFACES
