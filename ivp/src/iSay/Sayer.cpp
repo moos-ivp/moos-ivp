@@ -32,7 +32,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 Sayer::Sayer()
 {
@@ -54,7 +54,7 @@ Sayer::Sayer()
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool Sayer::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -103,7 +103,7 @@ bool Sayer::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool Sayer::OnConnectToServer()
 {
@@ -211,7 +211,7 @@ bool Sayer::OnStartUp()
 }
 
 //---------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void Sayer::registerVariables()
 {
@@ -223,7 +223,7 @@ void Sayer::registerVariables()
 
 
 //---------------------------------------------------------
-// Procedure: addUtterance
+// Procedure: addUtterance()
 //   Example: say={Hello Charlie!}, rate=200
 
 bool Sayer::addUtterance(string utterance_str, string utter_source)
@@ -232,7 +232,7 @@ bool Sayer::addUtterance(string utterance_str, string utter_source)
 
   if(m_utter_pqueue.size() >= m_max_utter_queue_size) {
     reportRunWarning("Utterance Ignored: Max Queue Size Exceeded");
-    return(false);
+    return(true);
   }
 
   Utterance utter;
@@ -297,7 +297,7 @@ bool Sayer::handleSetVolume(string volume)
 }
 
 //---------------------------------------------------------
-// Procedure: sayUtterance
+// Procedure: sayUtterance()
 //   Purpose: Process the top element in the queue
 
 bool Sayer::sayUtterance()
@@ -500,9 +500,3 @@ bool Sayer::buildReport()
 
   return(true);
 }
-
-
-
-
-
-
