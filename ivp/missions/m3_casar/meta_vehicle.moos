@@ -1,28 +1,23 @@
 ServerHost = localhost
-ServerPort = $(VPORT)
-
-// Community name IS the vehicle name
+ServerPort = $(MOOS_PORT)
 Community  = $(VNAME)
   
-#include plug_origin_warp.moos
+#include plugs.moos <origin_warp>
    
-//------------------------------------------------------------
+//--------------------------------------------------
 ProcessConfig = ANTLER
 {
   MSBetweenLaunches = 100
    
   Run = MOOSDB            @ NewConsole = false
   Run = pRealm            @ NewConsole = false
-  Run = uSimMarine        @ NewConsole = false
+  Run = uSimMarineV22     @ NewConsole = false
   Run = pLogger           @ NewConsole = false
   Run = pNodeReporter     @ NewConsole = false
   Run = pMarinePID        @ NewConsole = false
   Run = pHelmIvP          @ NewConsole = false
   Run = uProcessWatch     @ NewConsole = false
-
-#ifdef KNOWS_CONTACTS
-  Run = pContactMgrV20  @ NewConsole = false
-#endif
+  Run = pContactMgrV20    @ NewConsole = false
 
   Run = pShare             @ NewConsole = false
   Run = pHostInfo          @ NewConsole = false
@@ -30,18 +25,190 @@ ProcessConfig = ANTLER
   Run = uFldMessageHandler @ NewConsole = false
 }
 
-#include plug_uFldNodeBroker.moos
-#include plug_pShare.moos
-#include plug_pHostInfo.moos
-#include plug_uFldMessageHandler.moos
-
-#include plug_uSimMarine.moos
-#include plug_pHelmIvP.moos
-#include plug_pMarinePID.moos
-#include plug_pLogger.moos
-#include plug_pNodeReporter.moos
-#include plug_uProcessWatch.moos
-
-#ifdef KNOWS_CONTACTS 
-  #include plug_pContactMgrV20.moos
+#ifdef XMODE SIM
+#include plugs.moos <uSimMarine>
+#elseifdef XMODE M300
+#include plugs.moos <iM300>
 #endif
+
+#include plugs.moos <pShare>
+#include plugs.moos <pHostInfo>
+#include plugs.moos <uProcessWatch>
+	
+//--------------------------------------------------
+// uFldNodeBroker Config Block
+
+ProcessConfig = uFldNodeBroker
+{
+  AppTick   = 1
+  CommsTick = 1
+
+  try_shore_host = pshare_route=$(SHORE_IP):$(SHORE_PSHARE)
+
+  bridge = src=VIEW_POLYGON
+  bridge = src=VIEW_POINT
+  bridge = src=VIEW_SEGLIST
+  bridge = src=VIEW_CIRCLE
+  bridge = src=APPCAST
+  bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
+  bridge = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
+}
+
+//--------------------------------------------------
+// uFldMessageHandler Config Block
+
+ProcessConfig = uFldMessageHandler
+{
+  AppTick   = 3
+  CommsTick = 3
+
+  strict_addressing = true
+}
+
+//--------------------------------------------------
+// pHelmIvP Config Block
+
+ProcessConfig = pHelmIvP
+{
+  AppTick   = 4
+  CommsTick = 4
+  
+  behaviors = targ_$(VNAME).bhv  
+  verbose   = false
+  domain    = course:0:359:360
+#ifdef VNAME henry
+  domain    = speed:0:2:11
+#else
+  domain    = speed:0:5:26
+#endif
+
+	hold_on_apps = pContactMgrV20
+}
+
+//--------------------------------------------------
+// pMarinePID Config Block
+
+ProcessConfig = pMarinePID
+{
+  AppTick    = 10
+  CommsTick  = 10
+  
+  VERBOSE       = true
+  DEPTH_CONTROL = false
+  ACTIVE_START  = true
+  
+  // Yaw PID controller
+  YAW_PID_KP             = 0.9
+  YAW_PID_KD             = 0.3
+  YAW_PID_KI             = 0.2
+  YAW_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Speed PID controller
+  SPEED_PID_KP           = 1.0
+  SPEED_PID_KD           = 0.0
+  SPEED_PID_KI           = 0.0
+  SPEED_PID_INTEGRAL_LIMIT = 0.07
+  
+  // Maximums
+  MAXRUDDER  = 100
+  MAXTHRUST  = 100
+  
+  // A non-zero SPEED_FACTOR overrides use of SPEED_PID
+  // Will set DESIRED_THRUST = DESIRED_SPEED * SPEED_FACTOR
+  SPEED_FACTOR = 20
+}
+
+//--------------------------------------------------
+// pNodeReporter Config Block
+
+	ProcessConfig = pNodeReporter
+{
+  AppTick     = 2
+  CommsTick   = 2
+  
+  platform_type = kayak
+}
+
+//--------------------------------------------------
+// pLogger Config Block
+
+ProcessConfig = pLogger
+{
+  AppTick   = 5
+  CommsTick = 5
+
+  File          = LOG_%(VNAME)
+  PATH          = ./
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  Log = IVPHELM_LIFE_EVENT @ 0 nosync
+  Log = BCM_ALERT_REQUEST @ 0 nosync
+
+  LogAuxSrc = true
+
+  // Log it all!!!!! 
+  WildCardLogging = true
+  WildCardOmitPattern = *_STATUS
+  WildCardOmitPattern = APPCAST
+  WildCardOmitPattern = DB_VARSUMMARY
+  WildCardOmitPattern = DB_RWSUMMARY
+
+  WildCardOmitPattern = NAV_PITCH, NAV_LAT, NAV_LONG, NAV_YAW, NAV_Z
+  WildCardOmitPattern = SIMULATION_MODE, TRUE_X, TRUE_Y
+  WildCardOmitPattern = NAV_DEPTH, NAV_SPEED_OVER_GROUND, DB_QOS
+  WildCardOmitPattern = PSHARE*            
+  WildCardOmitPattern = IVPHELM_ALLSTOP_DEBUG, *ITER_GAP, *ITER_LEN
+  WildCardOmitPattern = PHI_HOST*
+}
+
+//--------------------------------------------------------
+// pContactMgrV20 Config Block
+
+ProcessConfig = pContactMgrV20
+{
+  AppTick   = 2
+  CommsTick = 2
+
+  decay = 30,60
+
+  alert_verbose = true
+
+  contact_max_age  = 35
+  display_radii    = true
+  display_radii_id = avd
+
+  post_closest_range = true
+
+  display_radii     = true
+  alert_range_color = gray70
+  cpa_range_color   = gray30
+
+  hold_alerts_for_helm = true
+}
+
+//------------------------------------------------------              
+// uSimMarineV22 Config Block                                         
+
+ProcessConfig = uSimMarineV22
+{
+  AppTick   = 10
+  CommsTick = 10
+
+  start_pos = $(START_POS), 0
+  prefix    = NAV
+
+  app_logging = true
+
+  turn_rate = 98
+  turn_spd_loss = 0.6
+
+  post_des_thrust = DESIRED_THRUSTX
+  post_des_rudder = DESIRED_RUDDERX
+
+  //rotate_speed = 0.012                                              
+  //drift_x      = 0.0045                                             
+
+  //thrust_map = -100:-2, 0:0, 20:1, 40:2, 60:3, 80:5, 100:5          
+  //thrust_map = -100:-2, 0:0, 20:1, 40:2, 60:3, 80:5, 100:5          
+}

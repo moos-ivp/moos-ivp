@@ -32,5 +32,6 @@ if [ "${VERBOSE}" = "-v" ]; then
 fi
 rm -rf  $VERBOSE   MOOSLog_* XLOG_ LOG_* \#*
 rm -f   $VERBOSE   *~  *.moos++
-rm -f   $VERBOSE   targ_*
+rm -f   $VERBOSE   targ_* vpositions.txt vnames.txt
+rm -f   $VERBOSE   vroles.txt vcolors.txt
 rm -f   $VERBOSE   .LastOpenedMOOSLogDirectory

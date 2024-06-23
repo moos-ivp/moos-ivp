@@ -3,10 +3,10 @@
 //
 
 ServerHost = localhost
-ServerPort = $(SPORT)
-Community  = $(SNAME)
+ServerPort = 9000
+Community  = shoreside
 
-#include plug_origin_warp.moos
+#include plugs.moos <origin_warp>
 
 //--------------------------------------------------------
 ProcessConfig = ANTLER
@@ -21,10 +21,11 @@ ProcessConfig = ANTLER
   Run = pHostInfo       @ NewConsole = false
   Run = uFldShoreBroker @ NewConsole = false
   Run = uFldNodeComms   @ NewConsole = false
+  Run = pLogger         @ NewConsole = false
 }
 
-#include plug_pShare.moos
-#include plug_pHostInfo.moos
+#include plugs.moos <pShare>
+#include plugs.moos <pHostInfo>
 
 //--------------------------------------------------
 // uFldShoreBroker Configuration Block
@@ -41,8 +42,9 @@ ProcessConfig = uFldShoreBroker
   qbridge  = DEPLOY, RETURN, STATION, NODE_REPORT, NODE_MESSAGE
   qbridge  = MOOS_MANUAL_OVERRIDE, APPCAST_REQ
 
-  bridge   = src=TRAILING_ALLOWED, alias=TRAILING_ALLOWED
+  bridge   = src=TRAILING_ALLOWED, alias=TRAILING_ALLOWED 
   bridge   = src=PATROL, alias=PATROL
+  bridge   = src=TRAIL, alias=TRAIL
 }
 
 //--------------------------------------------------
@@ -67,15 +69,18 @@ ProcessConfig = pMarineViewer
   AppTick    = 4
   CommsTick  = 4
 
-  tiff_file            = forrest19.tif
+  tiff_file            = MIT_SP.tif
   set_pan_x            = -90
   set_pan_y            = -280
   zoom                 = 0.55
   vehicles_shape_scale = 1.5
   vehicles_name_mode   = names+shortmode
 
-  appcast_viewable     = true
-  appcast_color_scheme = indigo
+
+	polygon_viewable_labels = false
+	node_pulse_viewable_all = false
+  appcast_viewable        = true
+  appcast_color_scheme    = indigo
 
   scope = CONTACT_INFO
 
@@ -90,18 +95,26 @@ ProcessConfig = pMarineViewer
   button_two   = RETURN  # RETURN_ALL=true # PATROL=false
   button_two   = PATROL=false # TRAIL=false
 
-  button_three = TRAIL-YES # PATROL=true # TRAILING_ALLOWED=true
-  button_four = TRAIL-NO # TRAILING_ALLOWED=false
+  button_three = TRAIL-YES # PATROL=false # TRAILING_ALLOWED=true
+  button_three = TRAIL=true
+  button_four  = TRAIL-NO # TRAILING_ALLOWED=false
 }
 
-//--------------------------------------------------------
-ProcessConfig = uXMS
-{
-  AppTick    = 5
-  CommsTick  = 5
+//--------------------------------------------------
+// pLogger config block
 
-  var  = NODE_REPORT
-  var  = VIEW_POLYGON
-  var  = VIEW_POINT
-  var  = DEPLOY_ALL
-}   
+ProcessConfig = pLogger
+{
+  AppTick       = 10
+  CommsTick     = 10
+
+  File          = XLOG_SHORESIDE
+  PATH          = ./
+  AsyncLog      = true
+  FileTimeStamp = true
+
+  Log = MOB_ALERT @ 0 nosync
+
+  // Log it all!!!!!
+  WildCardLogging = true
+}
