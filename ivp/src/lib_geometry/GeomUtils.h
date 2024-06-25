@@ -33,7 +33,6 @@
 #include "HintHolder.h"
 
 // Determines the distance between two points
-double distPointToPointXXX(double x1, double y1, double x2, double y2);
 double distPointToPoint(double x1, double y1, double x2, double y2);
 double distPointToPoint(const XYPoint& pt1, const XYPoint& pt2);
 
