@@ -154,7 +154,6 @@ bool ObstacleManager::OnConnectToServer()
 
 //---------------------------------------------------------
 // Procedure: Iterate()
-//            happens AppTick times per second
 
 bool ObstacleManager::Iterate()
 {
@@ -189,7 +188,7 @@ bool ObstacleManager::OnStartUp()
     string value = line;
 
     bool handled = false;
-    if(param == "point_var")
+    if((param == "point_var") && (toupper(value) != "GIVEN_OBSTABLE")) 
       handled = setNonWhiteVarOnString(m_point_var, value);
     else if((param == "given_obstable") || (param == "given_obstacle"))
       handled = handleGivenObstacle(value, "mission");
@@ -519,7 +518,7 @@ bool ObstacleManager::updatePointHulls()
 }
 
 //------------------------------------------------------------
-// Procedure: handleMailAlertRequest
+// Procedure: handleMailAlertRequest()
 //   Example: OBM_ALERT_REQUEST = "name=avd_ostacle,
 //                                 update_var=OBSTACLE_ALERT,
 //                                 alert_range=20,
@@ -567,7 +566,7 @@ bool ObstacleManager::handleMailAlertRequest(string request)
 }
 
 //------------------------------------------------------------
-// Procedure: handleConfigGeneralAlert
+// Procedure: handleConfigGeneralAlert()
 //   Example: general_alert = "name=gen_alert,
 //                             update_var=GEN_OBSTACLE_ALERT,
 //                             alert_range=2000,
@@ -613,7 +612,7 @@ bool ObstacleManager::handleConfigGeneralAlert(string request)
 }
 
 //------------------------------------------------------------
-// Procedure: postConvexHullUpdates
+// Procedure: postConvexHullUpdates()
 
 void ObstacleManager::postConvexHullUpdates()
 {
@@ -682,7 +681,7 @@ void ObstacleManager::postConvexHullUpdate(string key, string alert_var,
 }
 
 //------------------------------------------------------------
-// Procedure: placeholderConvexHull
+// Procedure: placeholderConvexHull()
 
 XYPolygon ObstacleManager::placeholderConvexHull(string key)
 {
