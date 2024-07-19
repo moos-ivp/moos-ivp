@@ -33,8 +33,29 @@ using namespace std;
 
 XYMarker::XYMarker()
 {
-  m_x     = 0;  // meters
-  m_y     = 0;  // meters
+  m_x = 0;  // meters
+  m_y = 0;  // meters
+
+  init();
+}
+
+//---------------------------------------------------------------
+// Constructor()
+// Note: Convenience constructor
+
+XYMarker::XYMarker(double x, double y)
+{
+  m_x = x;  // meters
+  m_y = y;  // meters
+
+  init();
+}
+
+//---------------------------------------------------------------
+// Procedure: init()
+
+void XYMarker::init()
+{
   m_width = 5;  // meters
   m_range = 0;  // meters
   m_type  = "circle";

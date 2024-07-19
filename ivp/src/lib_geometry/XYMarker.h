@@ -32,9 +32,11 @@
 class XYMarker : public XYObject {
 public:
   XYMarker();
+  XYMarker(double x, double y);
   virtual ~XYMarker() {}
 
   // Setters
+  void    init();
   bool    set_type(std::string s);
   void    set_owner(std::string s) {m_owner=s;};
   void    set_vx(double v)         {m_x=v;m_x_set=true;}
