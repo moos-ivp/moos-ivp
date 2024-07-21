@@ -152,6 +152,16 @@ sleep 4
 echo "DONE"
 
 #=======================================================
+#  Part 6: If post_process.sh exists, execute it
+#=======================================================
+if [ -f "post_process.sh" ]; then
+    echo "executing post_process.sh..."
+    ./post_process.sh
+    echo "DONE executing post_process.sh."
+fi
+
+
+#=======================================================
 #  Part 6: If not building results file, WE'RE DONE   == 
 #=======================================================
 if [ ${RESFILE} = "no" ]; then
