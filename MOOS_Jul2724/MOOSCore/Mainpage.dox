@@ -1,0 +1,17 @@
+/*! \mainpage MOOS V10 Source Code Documentation
+ *
+ * \section intro_sec How To Start
+ *
+ * There are a lot of classes and simply diving in and browsing
+ * is no the best ideal. We suggest you look at the Modules page.
+ * The most important classes are documented there
+ *
+ * 
+ */
+
+ 
+ /** @defgroup Comms Communications
+ */
+ 
+ /** @defgroup App Application Creation
+ */

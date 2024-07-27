@@ -1,0 +1,24 @@
+#Build Graphical Tools?
+SET(BUILD_GRAPHICAL_TOOLS OFF CACHE BOOL "Build Graphical Tools (scope and playback)?")
+IF(BUILD_GRAPHICAL_TOOLS)
+    ADD_SUBDIRECTORY(Graphical)
+ENDIF(BUILD_GRAPHICAL_TOOLS)
+
+#Build Simulation Tools?
+SET(BUILD_SIM_TOOLS OFF CACHE BOOL "Build Simulation Tools (e.g MultiVehicle Marine)?")
+IF(BUILD_SIM_TOOLS)
+    ADD_SUBDIRECTORY(Simulation)
+ENDIF(BUILD_SIM_TOOLS)
+
+#Build Matlab Interface?
+SET(BUILD_MATLAB_TOOLS OFF CACHE BOOL "Build Matlab Interface?")
+IF(BUILD_MATLAB_TOOLS)
+    ADD_SUBDIRECTORY(Matlab)
+ENDIF(BUILD_MATLAB_TOOLS)
+
+#Build Console Tools
+SET(BUILD_CONSOLE_TOOLS OFF CACHE BOOL "Build Console Tools?")
+IF(BUILD_CONSOLE_TOOLS)
+    ADD_SUBDIRECTORY(Console)
+ENDIF(BUILD_CONSOLE_TOOLS)
+

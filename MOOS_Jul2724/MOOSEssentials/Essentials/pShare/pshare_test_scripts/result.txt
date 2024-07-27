@@ -1,0 +1,20 @@
+
+-------------- moos connect ----------------------
+  contacting a MOOS server LOCALHOST:9000 -  try 00001 
+  Handshaking as umm-57                 [1;32m[ok]
+[0m  DB reports async support is           [1;32m[on]
+[0m  DB is running on                      [1;32mNumesMBP22
+[0m  Timing skew estimation is             [33m[off] (not needed)
+[0m--------------------------------------------------
+
+[1;32m+Subscribing to bar@0
+[0mumm-57 is Running:
+ |-Baseline AppTick   @ 100.0 Hz
+ |--Comms is Full Duplex and Asynchronous
+ |--Iterate Mode 1 :
+   |-Dynamic iterate speed driven by message delivery at up to 400Hz
+
+
+
+[1;33mname                source              time                contents                      
+[0mbar                 ptm_1               1671645139.3726     elks-dance                    

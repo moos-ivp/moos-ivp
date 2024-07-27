@@ -1,0 +1,47 @@
+Release notes for core-moos 10.0.2-release
+***********************************************
+
+New Tools
+	Added mtm and mqos command line tools for monitoring moos behaviour and operation
+	Added ktm command line tool to kill a moos application (according to a pattern)
+
+
+Build System
+	Add ability to have messages agglomerate at high time warps (TIME_WARP_AGGLOMERATION_CONSTANT is a cmake option)
+	Add option to build against libstdc++ on OSX >= Mavericks.
+	Adding parsing of bool from command line or mission file
+	Moved all of MOOSDB server code to libMOOS.
+	Changed async comms the default
+
+
+Comms
+	Added QoS query support
+	Added abilty to terminate moos applications via suicide instructions
+	Added ability to ping db from umm umm --ping
+	Added DB_INFO variable which publishes connection and disconnection information
+	Added DBLogger facility. DB can now log all significant events
+	Added wildcard active queues 
+	Added memory usage and CPUload indication in status messages published by MOOS Apps
+	Removed zlib compression of comms data as an option
+
+
+General
+	Adding command line parameters to mission file and ability to list all searched configuration parameters
+	Added ability to print git SHA1 codes and library revision codes from command lines
+
+Performance 
+	Improved memory management for faster communications
+	Speeded up client shutdown
+
+
+Minor Bug Fixes
+
+    making XPCGetProtocl thread safe with a file scope mutex and some scoped locks
+    fixed bug which meant moos_time_warp was not read from command line
+    allowing time warp of a 100
+    fixing umm to make it tolerant of time warps and improving some formatting options
+    fixed threading bug in MissionFileReader
+	fixing a major bug which could prevent server shut down
+	improved command line help on all binaries
+    made the update frequency reported by the DB work properly.
+    

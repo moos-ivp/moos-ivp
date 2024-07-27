@@ -1,0 +1,121 @@
+
+-------------- moos connect ----------------------
+  contacting a MOOS server LOCALHOST:9000 -  try 00001 
+  Handshaking as pShare                 [1;32m[ok]
+[0m  DB reports async support is           [1;32m[on]
+[0m  DB is running on                      [1;32mNumesMBP22
+[0m  Timing skew estimation is             [33m[off] (not needed)
+[0m--------------------------------------------------
+
+---------------------- [1;33mROUTING INFORMATION[0m ------------------------------------
+[1;32mStandard Routes:
+[0m   none
+[1;32mWildcard Routes:
+[0m   none
+[1;32mListening on:
+[0m   none
+-------------------------------------------------------------------------------
+pShare is Running:
+ |-Baseline AppTick   @ 40.0 Hz
+ |--Comms is Full Duplex and Asynchronous
+ |--Iterate Mode 2 :
+   -Regular iterate at 40 Hz. 
+   |-Dynamic message delivery at an unlimited rate
+
+
+in OnCommandMsg
+cmd=Output,src_name=foo,dest_name=foo,route=multicast_7,duration=0---------------------- [1;33mROUTING INFORMATION[0m ------------------------------------
+[1;32mStandard Routes:
+[0m  routing for "foo"
+  --> 224.1.1.11:24467     as foo        [multicast_7] every notification 
+[1;32mWildcard Routes:
+[0m   none
+[1;32mListening on:
+[0m   none
+-------------------------------------------------------------------------------
+in OnCommandMsg
+cmd=Output,src_name=foo,dest_name=foo,route=multicast_7,duration=0 refreshing route information for ShareInfo:
+add: 224.1.1.11:24467
+dest_name: foo
+src_name : foo
+multicast: 1
+frequency: 0
+duration : 0
+maxshares: -1
+
+ spoecial case duration = 0 forcing refresh from db ShareInfo:
+add: 224.1.1.11:24467
+dest_name: foo
+src_name : foo
+multicast: 1
+frequency: 0
+duration : 0
+maxshares: -1
+
+---------------------- [1;33mROUTING INFORMATION[0m ------------------------------------
+[1;32mStandard Routes:
+[0m  routing for "foo"
+  --> 224.1.1.11:24467     as foo        [multicast_7] every notification 
+[1;32mWildcard Routes:
+[0m   none
+[1;32mListening on:
+[0m   none
+-------------------------------------------------------------------------------
+[32m23.3      : [0msending "foo" as "foo" to 224.1.1.11:24467
+in OnCommandMsg
+cmd=Output,src_name=foo,dest_name=foo,route=multicast_7,duration=0 refreshing route information for ShareInfo:
+add: 224.1.1.11:24467
+dest_name: foo
+src_name : foo
+multicast: 1
+frequency: 0
+duration : 1.79769e+308
+maxshares: 1
+
+ spoecial case duration = 0 forcing refresh from db ShareInfo:
+add: 224.1.1.11:24467
+dest_name: foo
+src_name : foo
+multicast: 1
+frequency: 0
+duration : 1.79769e+308
+maxshares: 1
+
+---------------------- [1;33mROUTING INFORMATION[0m ------------------------------------
+[1;32mStandard Routes:
+[0m  routing for "foo"
+  --> 224.1.1.11:24467     as foo        [multicast_7] every notification 
+[1;32mWildcard Routes:
+[0m   none
+[1;32mListening on:
+[0m   none
+-------------------------------------------------------------------------------
+[32m31.4      : [0msending "foo" as "foo" to 224.1.1.11:24467
+in OnCommandMsg
+cmd=Output,src_name=foo,dest_name=foo,route=multicast_7,duration=0 refreshing route information for ShareInfo:
+add: 224.1.1.11:24467
+dest_name: foo
+src_name : foo
+multicast: 1
+frequency: 0
+duration : 1.79769e+308
+maxshares: 1
+
+ spoecial case duration = 0 forcing refresh from db ShareInfo:
+add: 224.1.1.11:24467
+dest_name: foo
+src_name : foo
+multicast: 1
+frequency: 0
+duration : 1.79769e+308
+maxshares: 1
+
+---------------------- [1;33mROUTING INFORMATION[0m ------------------------------------
+[1;32mStandard Routes:
+[0m  routing for "foo"
+  --> 224.1.1.11:24467     as foo        [multicast_7] every notification 
+[1;32mWildcard Routes:
+[0m   none
+[1;32mListening on:
+[0m   none
+-------------------------------------------------------------------------------

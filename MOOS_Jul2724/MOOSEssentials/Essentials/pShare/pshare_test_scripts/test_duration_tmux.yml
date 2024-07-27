@@ -1,0 +1,65 @@
+# ./.tmuxinator.yml
+
+# This is a test script for a complicated interaction using pSHare when
+# duration=0. In this case pShare iw required to share a variable just once
+# but note that varibale may not have been subscribed to by pShare by the time 
+# the share request is made, but COULD though,  be resident in the MOOSDB.  
+# rgo pShare has to go and fetch that variable 
+
+
+# this script can test pShares ability to practvely go and get a historic
+# variable from the DB on receipt of a dynamic share request with duration=0
+# It can also test a vanilla option in which it is configured to subscribe to
+# to a variable then LATER told to share with duration=0
+
+name: pshare-test
+root: ./
+
+windows:
+  - test-set:
+      layout: tiled
+      # Synchronize all panes of this window, can be enabled before or after the pane commands run.
+      # 'before' represents legacy functionality and will be deprecated in a future release, in favour of 'after'
+      # synchronize: after
+      panes:
+        - moos_db:
+          - MOOSDB
+        - umm_rx:
+          - sleep 1
+          # get umm ready to listen to bar 
+          # at the end of this test result.txt should end with a line
+          # showing it read the variable "bar" if this test has worked.
+          - umm -s=bar --verbose | tee result.txt
+        - share:
+          - pShare
+        - ptm:
+          - sleep 2
+
+          # TEST CASE 1
+          # post a variable foo containing a famous string
+          # note we here we are posting this BEFORE pshare has 
+          # been told to listen to foo
+          # - ptm foo@ptm_1 elks-dance
+          # - sleep 1
+
+          # configure pShare to LISTEN to multicast_7
+          - ptm PSHARE_CMD@ptm_1 "cmd=input , route=multicast_7"
+          # configure pShare to route foo to bar on multicast_7 with DURATION-0. This should make 
+          # pShare fetch foo from the db and publiosh it as bar. A few lines above we 
+          # configured umm listen for "bar" on. So you shoud see umm print that it has received 
+          # bar because foo was already posted BEFORE this share was requested
+          - ptm PSHARE_CMD@ptm_1 "cmd=output , src_name=foo, dest_name = bar, route=multicast_7, duration = 0"
+          - sleep 1 
+
+
+          # TEST CASE 
+          # post a variable foo containing a famous string
+          # note we here we are posting this AFTER pshare has 
+          # been told to listen to foo
+          - ptm foo@ptm_1 elks-dance
+          - sleep 1 
+
+          # tear down the whole show
+          - tmux kill-session
+  
+          
