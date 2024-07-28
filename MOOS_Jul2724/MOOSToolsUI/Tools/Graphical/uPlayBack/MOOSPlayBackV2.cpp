@@ -285,7 +285,8 @@ bool CMOOSPlayBackV2::MessageFromLine(const std::string & sLine, CMOOSMsg &Msg)
         if(sData.find("<MOOS_BINARY>") !=std::string::npos)
         {
             //Msg.MarkAsBinary();
-            long long nOffset;
+            //long long nOffset;
+            double nOffset;
             if(!MOOSValFromString(nOffset,sData,"Offset"))
                 return MOOSFail("badly formed MOOS_BINARY indicator - missing \"Offset=xyz\"");
 
