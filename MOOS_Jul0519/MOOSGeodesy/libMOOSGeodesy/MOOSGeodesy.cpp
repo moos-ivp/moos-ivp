@@ -503,33 +503,33 @@ bool CMOOSGeodesy::UTM2LatLong(double dfX, double dfY, double& dfLat, double& df
         
         // now convert latlong to UTM
         if (!LatLong2LocalUTM(dflat,dflon,dfnew_y,dfnew_x))
-            return(false);
+	  return(false);
         
-		// fix to segfault issue if you get diverging values
-		if(isnan(dflat) || isnan(dflon))
-		{
-			dflat = 91;
-			dflon = 181;
-			return(false);
-		}
-		
-        // how different
-        double dfdiff_x = dfnew_x -dfX;
-        double dfdiff_y = dfnew_y -dfY;
-        
-        // subtract difference and reconvert        
-        dfx -= dfdiff_x;
-        dfy -= dfdiff_y;
-        
-        err = hypot(dfnew_x-dfX,dfnew_y-dfY);
-        
-        //MOOSTrace("UTM2LatLong: error = %f\n",err); 
+	// fix to segfault issue if you get diverging values
+	if(isnan(dflat) || isnan(dflon))
+	  {
+	    dflat = 91;
+	    dflon = 181;
+	    return(false);
+	  }
+	
+	// how different
+	double dfdiff_x = dfnew_x -dfX;
+	double dfdiff_y = dfnew_y -dfY;
+	
+	// subtract difference and reconvert        
+	dfx -= dfdiff_x;
+	dfy -= dfdiff_y;
+	
+	err = hypot(dfnew_x-dfX,dfnew_y-dfY);
+	
+	//MOOSTrace("UTM2LatLong: error = %f\n",err); 
     }
     
     if (!LocalGrid2LatLong(dfx, dfy, dfLat, dfLong))
-        return(false);
+      return(false);
     
     
- 	return true;
+    return true;
 }
 
