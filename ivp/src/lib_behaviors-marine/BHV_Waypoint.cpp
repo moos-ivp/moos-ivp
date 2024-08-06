@@ -102,6 +102,8 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
   // PX,PI,PI together
   m_eager_prev_index_flag = false; 
 
+  m_reset_on_idle = false;
+  
   m_dist_leg_odo = 0;
   m_dist_total_odo    = 0;
   m_dist_total_linear = 0;
@@ -131,8 +133,8 @@ BHV_Waypoint::BHV_Waypoint(IvPDomain gdomain) :
 
 void BHV_Waypoint::onSetParamComplete()
 {
-  m_trackpt.set_label(m_us_name + "'s track-point");
-  m_nextpt.set_label(m_us_name + "'s next waypoint");
+  m_trackpt.set_label(m_us_name + "'s trackpt");
+  m_nextpt.set_label(m_us_name + "'s nextpt");
 
   applyHints(m_trackpt, m_hints, "trackpt");
   applyHints(m_nextpt, m_hints, "nextpt");
@@ -343,6 +345,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
   }
   else if(param == "wptflag_on_start")
     return(setBooleanOnString(m_wpt_flag_on_start, param_val));
+  else if(param == "reset_on_idle")
+    return(setBooleanOnString(m_reset_on_idle, param_val));
   else if(param == "eager_prev_index_flag")
     return(setBooleanOnString(m_eager_prev_index_flag, param_val));
   else if(param == "lead_to_start")
@@ -456,13 +460,15 @@ void BHV_Waypoint::onIdleToRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: onRunToIdleState
+// Procedure: onRunToIdleState()
 //      Note: Invoked automatically by the helm when the behavior
 //            first transitions from the Running to Idle state.
 
 void BHV_Waypoint::onRunToIdleState() 
 {
   postErasables();
+  if(m_reset_on_idle)
+    m_waypoint_engine.resetForNewTraversal();
   m_waypoint_engine.resetCPA();
   m_odo_set_flag = false;
   m_odo_leg_disq = true;
@@ -585,7 +591,7 @@ IvPFunction *BHV_Waypoint::onRunState()
 }
 
 //-----------------------------------------------------------
-// Procedure: onIdleState
+// Procedure: onIdleState()
 
 void BHV_Waypoint::onIdleState() 
 {
@@ -640,7 +646,7 @@ bool BHV_Waypoint::updateInfoIn()
 
 
 //-----------------------------------------------------------
-// Procedure: setNextWaypoint
+// Procedure: setNextWaypoint()
 
 bool BHV_Waypoint::setNextWaypoint()
 {
@@ -751,7 +757,7 @@ bool BHV_Waypoint::setNextWaypoint()
 
 
 //-----------------------------------------------------------
-// Procedure: buildOF
+// Procedure: buildOF()
 
 IvPFunction *BHV_Waypoint::buildOF(string method) 
 {
@@ -896,7 +902,7 @@ void BHV_Waypoint::postViewableSegList()
 }
 
 //-----------------------------------------------------------
-// Procedure: postErasables
+// Procedure: postErasables()
 //      Note: Recall that for a seglist to be drawn and erased, 
 //            it must match in the label. For a seglist to be 
 //            "ignored" it must set active=false.
@@ -1074,7 +1080,7 @@ void BHV_Waypoint::markOdoLeg()
 }
 
 //-----------------------------------------------------------
-// Procedure: postConfigStatus
+// Procedure: postConfigStatus()
 
 void BHV_Waypoint::postConfigStatus()
 {

@@ -880,8 +880,8 @@ void BHV_LegRun::postLegPoints(bool active)
 {
   XYPoint p1 = m_legrun.getPoint1();
   XYPoint p2 = m_legrun.getPoint2();
-  p1.set_label(getDescriptor() + "p1");
-  p2.set_label(getDescriptor() + "p2");
+  p1.set_label(m_us_name + "_p1");
+  p2.set_label(m_us_name + "_p2");
 
   string spec1 = p1.get_spec_inactive();
   string spec2 = p2.get_spec_inactive();

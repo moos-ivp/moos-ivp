@@ -496,7 +496,7 @@ bool BHV_OpRegionV24::updateRegionPolys()
     else {
       XYPolyExpander expander;
       expander.setPoly(m_core_poly);
-      expander.setDegreeDelta(10);
+      expander.setDegreeDelta(15);
       m_save_poly = expander.getBufferPoly(m_save_dist);
       m_save_poly.set_label("opreg_save_" + m_us_name);
     }
@@ -508,7 +508,7 @@ bool BHV_OpRegionV24::updateRegionPolys()
     else {
       XYPolyExpander expander;
       expander.setPoly(m_core_poly);
-      expander.setDegreeDelta(10);
+      expander.setDegreeDelta(15);
       m_halt_poly = expander.getBufferPoly(m_halt_dist);
       m_halt_poly.set_label("opreg_halt_" + m_us_name);
     }
@@ -525,16 +525,16 @@ bool BHV_OpRegionV24::updateRegionPolys()
 void BHV_OpRegionV24::postViewablePolys()
 {
   applyHints(m_core_poly, m_hints, "core");
-  postMessage("VIEW_POLYGON", m_core_poly.get_spec());
+  postMessage("VIEW_POLYGON", m_core_poly.get_spec(3));
   
   if(m_save_dist > 0) {
     applyHints(m_save_poly, m_hints, "save");
-    postMessage("VIEW_POLYGON", m_save_poly.get_spec());
+    postMessage("VIEW_POLYGON", m_save_poly.get_spec(3));
   }
 
   if(m_halt_dist > 0) {
     applyHints(m_halt_poly, m_hints, "halt");
-    postMessage("VIEW_POLYGON", m_halt_poly.get_spec());
+    postMessage("VIEW_POLYGON", m_halt_poly.get_spec(3));
   }
 }
 
