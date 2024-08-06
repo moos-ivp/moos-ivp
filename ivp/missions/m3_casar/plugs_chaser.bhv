@@ -1,0 +1,59 @@
+<tag><var_init>
+initialize PATROL = true
+initialize TRAILING_ALLOWED = false
+initialize TRAIL = false
+
+<tag><modes>
+set MODE = PATROLLING {
+  MODE   = ACTIVE
+  PATROL = true
+  TRAIL != true
+} 
+
+set MODE = TRAILING {
+  MODE   = ACTIVE
+  TRAILING_ALLOWED = true
+  TRAIL  = true
+} 
+
+<tag><bhvs>
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = loiter
+  pwt       = 100
+  condition = MODE == PATROLLING
+  updates   = UP_LOITER
+
+         speed = 1.3
+     clockwise = false
+        radius = 8.0
+     nm_radius = 15.0
+       polygon = radial:: x=110, y=-50, radius=20, pts=8, snap=1, label=HENRY_LOITER
+  visual_hints = nextpt_color=white, nextpt_lcolor=khaki
+  visual_hints = edge_color=blue, vertex_color=blue
+  visual_hints = edge_size=1, vertex_size=2
+}
+
+//----------------------------------------------
+Behavior = BHV_Trail
+{
+  name       = trail_contact
+  pwt        = 100
+  condition  = MODE == TRAILING
+  updates    = TRAIL_INFO
+//  templating = spawn
+
+              contact = abe
+       pwt_outer_dist = 130
+            nm_radius = 18
+               radius = 8
+          trail_angle = 155
+          trail_range = 45
+
+     trail_angle_type = relative
+     on_no_contact_ok = true
+          extrapolate = true
+                decay = 30,60
+  bearing_line_config = white:0, green:0.65, yellow:0.8, red:1.0
+}

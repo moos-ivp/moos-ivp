@@ -1,0 +1,28 @@
+<tag><var_init>
+initialize LOITER = true
+	
+<tag><modes>
+set MODE = LOITERING {
+  MODE = ACTIVE
+  LOITER = true
+}
+	
+<tag><bhvs>
+//----------------------------------------------
+Behavior = BHV_Loiter
+{
+  name      = bhv_loiter
+  pwt       = 100
+  condition = MODE==LOITERING
+
+         speed = 2.5
+     clockwise = best
+        radius = 8 
+     nm_radius = 20 
+  acquire_dist = 12
+
+       polygon = oval: $(EL), rad=15, len=140, ang=64
+	     //polygon = label,A : 40,-270:60,-290:100,-290:120,-270:120,-180:100,-160:60,-160:40,-180
+}
+
+	

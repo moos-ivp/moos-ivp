@@ -20,7 +20,7 @@ LongOrigin = -70.330400
 
 
 //------------------------------------------
-// Antler configuration  block
+// Antler configuration block
 
 ProcessConfig = ANTLER
 {
@@ -256,9 +256,10 @@ ProcessConfig = pMarineViewer
   button_5 = ARROW # VIEW_ARROW="ctrx=20,ctry=-40,ang=135,bwid=10,blen=30,hwid=20,hlen=10,label=a"
   button_6 = ARROW # VIEW_ARROW="ctrx=20,ctry=-40,ang=270,bwid=10,blen=30,hwid=20,hlen=10,label=a,fill_color=white,fill_transparency=0.1,edge_color=off"
 
-
 	button_7 = DEPLOY:F # DEPLOY=false 
 	button_8 = RESET-HASH # RESET_MHASH=true
+	button_9 = RESET_IX # WPT_UPDATE=currix=0
+
 	}
 
 //------------------------------------------
