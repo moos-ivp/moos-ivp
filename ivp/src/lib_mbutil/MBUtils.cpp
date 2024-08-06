@@ -857,7 +857,7 @@ string boolToString(bool val)
 string intToString(int val)
 {
   char buff[500];
-  sprintf(buff, "%d", val);
+  snprintf(buff, 500, "%d", val);
   string str = buff;
   return(str);
 }
@@ -865,7 +865,7 @@ string intToString(int val)
 string uintToString(unsigned int val, unsigned int padlen)
 {
   char buff[500];
-  sprintf(buff, "%u", val);
+  snprintf(buff, 500, "%u", val);
   string str = buff;
   while(str.size() < padlen)
     str = "0" + str;
@@ -876,7 +876,7 @@ string uintToString(unsigned int val, unsigned int padlen)
 string ulintToString(unsigned long int val)
 {
   char buff[500];
-  sprintf(buff, "%lu", val);
+  snprintf(buff, 500, "%lu", val);
   string str = buff;
   return(str);
 }
@@ -891,7 +891,7 @@ string floatToString(float val, int digits)
     format[3] = 'e';
 
   char buff[1000];
-  sprintf(buff, format, val);
+  snprintf(buff, 1000, format, val);
   string str = buff;
   return(str);
 }
@@ -918,7 +918,7 @@ string doubleToString(double val, int digits)
     format[3] = 'e';
 
   char buff[1000];
-  sprintf(buff, format, val);
+  snprintf(buff, 1000, format, val);
   string str = buff;
   return(str);
 }
