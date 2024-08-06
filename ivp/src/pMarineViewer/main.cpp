@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
   }
 
   // For document screen shots:
-  string title_base = "pMarineViewer (MIT Version 24.8 main)";
+  string title_base = "pMarineViewer (MIT Version 24.8)";
   PMV_GUI* gui = new PMV_GUI(gui_wid, gui_hgt, title_base.c_str());
   if(!gui) {
     cout << "Unable to instantiate the GUI - exiting." << endl;
@@ -173,7 +173,6 @@ int main(int argc, char *argv[])
   delete gui;
   return(0);
 }
-
 
 
 
