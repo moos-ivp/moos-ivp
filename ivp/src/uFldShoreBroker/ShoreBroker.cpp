@@ -43,9 +43,15 @@ ShoreBroker::ShoreBroker()
   m_prev_node_count = 0;
   m_prev_node_count_tstamp = 0;
 
+  m_pshare_cmd_interval = 5;
+  m_vehicle_acks_interval = 5;
+  
   // Initialize state variables
   m_iteration_last_ack = 0;
 
+  m_last_pshare_cmd_utc = 0;
+  m_last_vehicle_acks_utc = 0;
+  
   m_pings_received    = 0;  // Times NODE_BROKER_PING    received
   m_phis_received     = 0;  // Times PHI_HOST_INFO       received
   m_acks_posted       = 0;  // Times NODE_BROKER_ACK     posted
@@ -195,6 +201,17 @@ void ShoreBroker::registerVariables()
 
 //------------------------------------------------------------
 // Procedure: sendAcks()
+//      Note: ACK messages are sent if a 
+
+
+// An ACK is sent
+//   - if a PING has been received within the last 20 secs
+//   - no more frequently than once every 5 seconds (warp)
+//   - no more frequently than once every 1 second (real)
+
+// A ping is answered at least once
+
+
 
 void ShoreBroker::sendAcks()
 {
@@ -381,6 +398,7 @@ void ShoreBroker::handleMailNodePing(const string& info)
     hrecord.setPShareIRoutes(iroutes);
   } 
 
+#if 0
   // Part 4: Determine if this incoming node is a new node. 
   // If not, then just update its information and return.
   unsigned int j, jsize = m_node_host_records.size();
@@ -400,13 +418,37 @@ void ShoreBroker::handleMailNodePing(const string& info)
       return;
     }
   }
-
+  
   // Part 5: Handle the new Node.
   // Prepare to send this host and acknowldgement by posting a 
   // request to pShare for a new variable bridging.
   makeBridgeRequest("NODE_BROKER_ACK_$V", hrecord, "NODE_BROKER_ACK"); 
-
   reportEvent("New node discovered: " + hrecord.getCommunity());
+#endif
+
+#if 1
+  // Part 4: Determine if this incoming node is a new node. 
+  // If not, then just update its information and return.
+  unsigned int j, jsize = m_node_host_records.size();
+  for(j=0; j<jsize; j++) { 
+    if(m_node_host_records[j].getCommunity() == hrecord.getCommunity()) {
+      m_node_last_tstamp[j] = m_curr_time;
+      m_node_total_skew[j] += skew;
+      m_node_pings[j]++;
+      m_node_host_records[j].setStatus(status);
+      return;
+    }
+  }
+
+  string config = "src=NODE_BROKER_ACK_$V, alias=NODE_BROKER_ACK";
+  handleConfigBridge(config);
+
+  // If new node, then revert the share interval to small value
+  m_pshare_cmd_interval = 5;
+  
+  reportEvent("New node discovered: " + hrecord.getCommunity());
+#endif
+
   
   // The incoming host record now becomes the host record of record, so 
   // store its status.
@@ -427,11 +469,18 @@ void ShoreBroker::handleMailNodePing(const string& info)
 
 void ShoreBroker::makeBridgeRequestAll()
 {
+  double elapsed = m_curr_time - m_last_pshare_cmd_utc;
+  if(elapsed < m_pshare_cmd_interval)
+    return;
+  m_last_pshare_cmd_utc = m_curr_time;
+  m_pshare_cmd_interval += 3;  // interval gets 3 secs longer on each post
+  
   // For each known remote node
   unsigned int i, vsize = m_node_host_records.size();
   for(i=0; i<vsize; i++) {
     // If bridges have been made for this node, don't repeat
-    if(!m_node_bridges_made[i]) {
+    //if(!m_node_bridges_made[i]) {
+    if(1) {
       HostRecord hrecord = m_node_host_records[i];
       unsigned int k, ksize = m_bridge_src_var.size();
       // For each Bridge variable configured by the user, bridge.

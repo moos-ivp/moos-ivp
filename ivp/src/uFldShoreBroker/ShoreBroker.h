@@ -77,6 +77,12 @@ class ShoreBroker : public AppCastingMOOSApp
 
   unsigned int m_prev_node_count;
   double       m_prev_node_count_tstamp;
+
+  double m_last_pshare_cmd_utc;
+  double m_pshare_cmd_interval;
+  
+  double m_last_vehicle_acks_utc;
+  double m_vehicle_acks_interval;
   
   // Index of below vectors is unique on a connected node.
   std::vector<HostRecord>   m_node_host_records;
