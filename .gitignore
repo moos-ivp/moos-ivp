@@ -1,0 +1,7 @@
+build/*
+lib/*
+bin/*
+*~
+src/*~
+src/*/*~
+src/*/attic
