@@ -59,6 +59,8 @@ ShoreBroker::ShoreBroker()
 
   m_last_pshare_vnodes = 0;
   m_last_posting_vnodes = 0;
+
+  m_tmp_cnt = 0;
 }
 
 //---------------------------------------------------------
@@ -89,6 +91,8 @@ bool ShoreBroker::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if((key == "NODE_BROKER_PING") && !msg_is_local)
       handleMailNodePing(sval);
+    else if(key == "PSHARE_OUTPUT_SUMMARY")
+      handleMailShareSummary(sval);
     else if((key == "PHI_HOST_INFO") && msg_is_local) {
       m_phis_received++;
       m_shore_host_record = string2HostRecord(sval);
@@ -197,6 +201,7 @@ void ShoreBroker::registerVariables()
 
   Register("NODE_BROKER_PING", 0);
   Register("PHI_HOST_INFO", 0);
+  Register("PSHARE_OUTPUT_SUMMARY", 0);
 }
 
 //------------------------------------------------------------
@@ -210,8 +215,6 @@ void ShoreBroker::registerVariables()
 //   - no more frequently than once every 1 second (real)
 
 // A ping is answered at least once
-
-
 
 void ShoreBroker::sendAcks()
 {
@@ -465,6 +468,33 @@ void ShoreBroker::handleMailNodePing(const string& info)
 
 
 //------------------------------------------------------------
+// Procedure: handleMailShareSummary()
+//   Purpose: Parse the summary produced by pShare to note which
+//            shares pShare already has acknowledged. Use this local
+//            data structure to avoid re-asking pShare to be configured
+//            with a new request from this app, i.e., to avoid posting
+//            an unnecessary PSHARE_CMD.
+//   Example: PSHARE_OUTPUT_SUMMARY = FOO_ABE->FOO:192.168.7.8:9201,
+//                FOO_ALL->FOO:192.168.7.8:9200 & FOO:192.168.7.22:9200,
+//                FOO_BEN->FOO:192.168.7.22:9200
+
+void ShoreBroker::handleMailShareSummary(const string& str)
+{
+  vector<string> svector = parseString(str, ',');
+
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string share_component = stripBlankEnds(svector[i]);
+    string src_val = nibbleString(share_component, "->");
+    string dest_vals = share_component;
+    vector<string> dvector = parseString(dest_vals, '&');
+    for(unsigned int j=0; j<dvector.size(); j++) {
+      string dest_val = stripBlankEnds(dvector[j]);
+      m_map_pshares[src_val].insert(dest_val);
+    }
+  }
+}
+
+//------------------------------------------------------------
 // Procedure: makeBridgeRequestAll()
 
 void ShoreBroker::makeBridgeRequestAll()
@@ -524,7 +554,22 @@ void ShoreBroker::makeBridgeRequest(string src_var, HostRecord hrecord,
   pshare_post += ",src_name=" + src_var;
   pshare_post += ",dest_name=" + alias;
   pshare_post += ",route=" + pshare_iroutes;
-  Notify("PSHARE_CMD", pshare_post);
+
+  string pshare_dest = alias + ":" + pshare_iroutes;
+
+  bool needed = true;
+  if(m_map_pshares.count(src_var)) {
+    if(m_map_pshares[src_var].count(pshare_dest))
+      needed = false;
+  }
+  
+  Notify("PSHARE_TEST", uintToString(m_tmp_cnt));
+  Notify("PSHARE_TEST", src_var + "->" + pshare_dest);
+  Notify("PSHARE_TEST", "needed=" + boolToString(needed));
+  m_tmp_cnt++;
+
+  if(needed)
+    Notify("PSHARE_CMD", pshare_post);
 
   // If this is a new bridge, update the posted list of bridges
   if(!m_set_bridge_vars.count(src_var)) {
@@ -724,12 +769,3 @@ bool ShoreBroker::buildReport()
   m_msgs << actab.getFormattedString();
   return(true);
 }
-
-
-
-
-
-
-
-
-

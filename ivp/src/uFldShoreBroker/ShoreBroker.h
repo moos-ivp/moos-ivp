@@ -24,6 +24,10 @@
 #ifndef UFLD_SHORE_BROKER_HEADER
 #define UFLD_SHORE_BROKER_HEADER
 
+#include <map>
+#include <string>
+#include <vector>
+#include <set>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "HostRecord.h"
 
@@ -49,6 +53,7 @@ class ShoreBroker : public AppCastingMOOSApp
   bool handleConfigTryVNode(std::string);
   
   void handleMailNodePing(const std::string&);
+  void handleMailShareSummary(const std::string&);
 
   void makeBridgeRequestAll();
   void makeBridgeRequest(std::string src, HostRecord, std::string alias,
@@ -103,6 +108,10 @@ class ShoreBroker : public AppCastingMOOSApp
   std::vector<std::string> m_try_vnodes;
   double m_last_pshare_vnodes;
   double m_last_posting_vnodes;
+
+  std::map<std::string, std::set<std::string> > m_map_pshares;
+
+  unsigned int m_tmp_cnt;
 };
 
 #endif 
