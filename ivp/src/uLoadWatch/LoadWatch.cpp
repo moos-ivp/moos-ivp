@@ -30,7 +30,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 LoadWatch::LoadWatch()
 {
@@ -45,7 +45,7 @@ LoadWatch::LoadWatch()
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool LoadWatch::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -64,12 +64,16 @@ bool LoadWatch::OnNewMail(MOOSMSG_LIST &NewMail)
     double mtime = msg.GetTime();
     bool   mdbl  = msg.IsDouble();
     bool   mstr  = msg.IsString();
-#endif
-
-    if(strEnds(key, "_ITER_GAP")) 
-      handleMailIterGap(msrc, key, dval);
-    else if(strEnds(key, "_ITER_LEN"))
-      handleMailIterLen(key, dval);
+#endif    
+    
+    if(strEnds(key, "_ITER_GAP")) {
+      if(dval > m_map_gap_cache[msrc])
+	m_map_gap_cache[msrc] = dval;
+    }
+    else if(strEnds(key, "_ITER_LEN")) {
+      if(dval > m_map_len_cache[msrc])
+	m_map_len_cache[msrc] = dval;
+    }
     else if(key != "APPCAST_REQ") // handle by AppCastingMOOSApp
       reportRunWarning("Unhandled Mail: " + key);
    }
@@ -78,7 +82,7 @@ bool LoadWatch::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool LoadWatch::OnConnectToServer()
 {
@@ -88,19 +92,20 @@ bool LoadWatch::OnConnectToServer()
 
 //---------------------------------------------------------
 // Procedure: Iterate()
-//            happens AppTick times per second
 
 bool LoadWatch::Iterate()
 {
   AppCastingMOOSApp::Iterate();
-  // Do your thing here!
+
+  handleCacheIterLen();
+  handleCacheIterGap();
+  
   AppCastingMOOSApp::PostReport();
   return(true);
 }
 
 //---------------------------------------------------------
 // Procedure: OnStartUp()
-//            happens before connection is open
 
 bool LoadWatch::OnStartUp()
 {
@@ -140,7 +145,7 @@ bool LoadWatch::OnStartUp()
 }
 
 //---------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void LoadWatch::registerVariables()
 {
@@ -150,12 +155,24 @@ void LoadWatch::registerVariables()
 }
 
 //---------------------------------------------------------
-// Procedure: handleMailIterGap
+// Procedure: handleCacheIterGap()
 
-void LoadWatch::handleMailIterGap(string appname, string var, double dval)
+void LoadWatch::handleCacheIterGap()
 {
-  string app = findReplace(var, "_ITER_GAP", "");
-  
+  map<string, double>::iterator p;
+  for(p=m_map_gap_cache.begin(); p!=m_map_gap_cache.end(); p++) {
+    string app = toupper(p->first);
+    double dval = p->second;  
+    handleCacheIterGapEntry(app, dval);
+  }
+  m_map_gap_cache.clear();
+}
+
+//---------------------------------------------------------
+// Procedure: handleCacheIterGapEntry()
+
+void LoadWatch::handleCacheIterGapEntry(string app, double dval)
+{
   m_map_app_gap_count[app]++;
   m_map_app_gap_total[app] += dval;
 
@@ -192,7 +209,7 @@ void LoadWatch::handleMailIterGap(string appname, string var, double dval)
     }
     m_near_breach_count++;
     Notify("ULW_NEAR_BREACH_COUNT", m_near_breach_count);
-    updateNearBreachSet(appname);
+    updateNearBreachSet(app);
   }
 
   // We're done if the regular threshold wasn't exceeded.
@@ -223,7 +240,7 @@ void LoadWatch::handleMailIterGap(string appname, string var, double dval)
     Notify("ULW_BREACH", "true");
   }
 
-  updateBreachSet(appname);
+  updateBreachSet(app);
   
   string sval = doubleToString(dval);
   string msg = "Gap Thresh for " + app + " exceeded: " + sval;
@@ -284,18 +301,22 @@ void LoadWatch::updateNearBreachSet(string appname)
 }
 
 //---------------------------------------------------------
-// Procedure: handleMailIterLen
+// Procedure: handleCacheIterLen()
 
-void LoadWatch::handleMailIterLen(string var, double dval)
+void LoadWatch::handleCacheIterLen()
 {
-  string app = findReplace(var, "_ITER_LEN", "");
-  
-  m_map_app_len_count[app]++;
-  m_map_app_len_total[app] += dval;
-  if(m_map_app_len_max.count(app) == 0)
-    m_map_app_len_max[app] = 0;
-  if(dval > m_map_app_len_max[app])
-    m_map_app_len_max[app] = dval;  
+  map<string, double>::iterator p;
+  for(p=m_map_len_cache.begin(); p!=m_map_len_cache.end(); p++) {
+    string app = toupper(p->first);
+    double dval = p->second;  
+    m_map_app_len_count[app]++;
+    m_map_app_len_total[app] += dval;
+    if(m_map_app_len_max.count(app) == 0)
+      m_map_app_len_max[app] = 0;
+    if(dval > m_map_app_len_max[app])
+      m_map_app_len_max[app] = dval;
+  }
+  m_map_len_cache.clear();
 }
 
 //---------------------------------------------------------
@@ -385,10 +406,14 @@ bool LoadWatch::buildReport()
   for(p=m_map_app_gap_total.begin(); p!=m_map_app_gap_total.end(); p++) {
     string app = p->first;
 
-    double gap_avg = m_map_app_gap_total[app] / (double)(m_map_app_gap_count[app]);
+    double gap_avg = m_map_app_gap_total[app] /
+      (double)(m_map_app_gap_count[app]);
+
     double gap_max = m_map_app_gap_max[app];
 
-    double len_avg = m_map_app_len_total[app] / (double)(m_map_app_len_count[app]);
+    double len_avg = m_map_app_len_total[app] /
+      (double)(m_map_app_len_count[app]);
+
     double len_max = m_map_app_len_max[app];
     
     unsigned int breaches = m_map_app_gap_xcount[app];
