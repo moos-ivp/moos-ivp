@@ -6,7 +6,7 @@
 #  Part 1: Define global script variables
 #---------------------------------------------------------
 
-BUILD_DEBUG="yes"  
+BUILD_DEBUG="no"  
 BUILD_OPTIM="yes"
 CLEAN="no"
 CMD_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
