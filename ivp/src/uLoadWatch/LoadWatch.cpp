@@ -382,7 +382,7 @@ bool LoadWatch::handleConfigNearThresh(string near_thresh)
 
 bool LoadWatch::buildReport() 
 {
-  m_msgs << "Configured Thresholds: " << endl;
+  m_msgs << "V925 Configured Thresholds: " << endl;
 
   if(m_map_thresh.size() == 0)
     m_msgs << "  None" << endl;
