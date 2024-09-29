@@ -273,6 +273,19 @@ void PMV_GUI::augmentMenu()
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)47,
 		 FL_MENU_DIVIDER);
 
+  //  m_menubar->add("InfoCasting/layout=toggle", '\t',
+  //		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)55,
+  //		 FL_MENU_RADIO);
+  m_menubar->add("InfoCasting/layout=swarm", FL_CTRL+'l',
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)57,
+		 FL_MENU_RADIO);
+  m_menubar->add("InfoCasting/layout=fullcast", ';',
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)58,
+		 FL_MENU_RADIO);
+  m_menubar->add("InfoCasting/layout=regular", 'l',
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)59,
+		 FL_MENU_RADIO);
+
   m_menubar->add("InfoCasting/refresh_mode=paused",    FL_CTRL+' ',
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)50,
 		 FL_MENU_RADIO);
@@ -343,8 +356,18 @@ void PMV_GUI::augmentMenu()
   m_menubar->add("InfoCasting/appcast_color_scheme=indigo",      0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)301,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/appcast_color_scheme=beige",       0,
+  m_menubar->add("InfoCasting/appcast_color_scheme=dark_indigo", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)302,
+		 FL_MENU_RADIO);
+  m_menubar->add("InfoCasting/appcast_color_scheme=deep_indigo", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)303,
+		 FL_MENU_RADIO);
+
+  m_menubar->add("InfoCasting/appcast_color_scheme=beige",       0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)305,
+		 FL_MENU_RADIO);
+  m_menubar->add("InfoCasting/appcast_color_scheme=dark_beige", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)306,
 		 FL_MENU_RADIO);
   m_menubar->add("InfoCasting/appcast_color_scheme Toggle", FL_ALT+'a',
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)310,
@@ -774,6 +797,18 @@ bool PMV_GUI::addAction(string svalue, bool separator)
 
 int PMV_GUI::handle(int event) 
 {
+  switch(event) {
+  case FL_KEYDOWN:
+    cout << "VVVVVVVVVVVVVVVVval: " << (Fl::event_key()) << endl;
+    if(Fl::event_key() == 65289) {
+      cb_InfoCastSetting_i(55);
+      return(1);
+    }
+    else if(Fl::event_key() == 9) {
+      cb_InfoCastSetting_i(55);
+      return(1);
+    }
+  }
   return(Fl_Window::handle(event));
 }
 
@@ -1104,9 +1139,10 @@ void PMV_GUI::cb_Scope(Fl_Widget* o, unsigned int v) {
   ((PMV_GUI*)(o->parent()->user_data()))->cb_Scope_i(v);
 }
 
-//----------------------------------------- InfoCastSetting
+//----------------------------------------- InfoCastSetting-ccc
 inline void PMV_GUI::cb_InfoCastSetting_i(unsigned int v) {  
   // Reset all infocast panes to orig proportions
+
   if(v==102)  {
     setRadioCastAttrib("infocast_height", "70");
     setRadioCastAttrib("infocast_width",  "30");
@@ -1127,6 +1163,11 @@ inline void PMV_GUI::cb_InfoCastSetting_i(unsigned int v) {
   else if(v==50)  setRadioCastAttrib("refresh_mode", "paused");
   else if(v==51)  setRadioCastAttrib("refresh_mode", "events");
   else if(v==52)  setRadioCastAttrib("refresh_mode", "streaming");  
+  // Handle infocast layout setting
+  else if(v==55)  setRadioCastAttrib("layout", "toggle");
+  else if(v==57)  setRadioCastAttrib("layout", "swarm");
+  else if(v==58)  setRadioCastAttrib("layout", "fullcast");
+  else if(v==59)  setRadioCastAttrib("layout", "regular");
   // Handle node browser pane font size
   else if(v==60)  setRadioCastAttrib("nodes_font_size", "xsmall");
   else if(v==61)  setRadioCastAttrib("nodes_font_size", "small");
@@ -2314,6 +2355,10 @@ void PMV_GUI::setMenuItemColors()
   setMenuItemColor("InfoCasting/infocast_viewable=true");
   setMenuItemColor("InfoCasting/infocast_viewable=false");
 
+  setMenuItemColor("InfoCasting/layout=swarm");
+  setMenuItemColor("InfoCasting/layout=fullcast");
+  setMenuItemColor("InfoCasting/layout=regular");
+
   setMenuItemColor("InfoCasting/refresh_mode=paused");
   setMenuItemColor("InfoCasting/refresh_mode=events");
   setMenuItemColor("InfoCasting/refresh_mode=streaming");
@@ -2341,7 +2386,10 @@ void PMV_GUI::setMenuItemColors()
 
   setMenuItemColor("InfoCasting/appcast_color_scheme=white");
   setMenuItemColor("InfoCasting/appcast_color_scheme=indigo");
+  setMenuItemColor("InfoCasting/appcast_color_scheme=dark_indigo");
+  setMenuItemColor("InfoCasting/appcast_color_scheme=deep_indigo");
   setMenuItemColor("InfoCasting/appcast_color_scheme=beige");
+  setMenuItemColor("InfoCasting/appcast_color_scheme=dark_beige");
 
   setMenuItemColor("InfoCasting/realmcast_color_scheme=white");
   setMenuItemColor("InfoCasting/realmcast_color_scheme=indigo");
@@ -2434,6 +2482,10 @@ bool PMV_GUI::setRadioCastAttrib(string attr, string value)
     m_repo->setRefreshMode(value);
     ok = m_icast_settings.setRefreshMode(value);
     item_str += m_icast_settings.getRefreshMode();
+  }
+  else if(attr == "layout") {
+    ok = m_icast_settings.setInfoCastLayout(value);
+    item_str += m_icast_settings.getInfoCastLayout();
   }
   else if(attr == "infocast_font_size") {
     ok = m_icast_settings.setInfoCastFontSize(value);
@@ -2667,6 +2719,7 @@ void PMV_GUI::resizeWidgets()
   bool show_fullscreen  = m_icast_settings.getFullScreen();
   bool show_infocasting = m_icast_settings.getInfoCastViewable();
   string content_mode  = m_icast_settings.getContentMode();
+  string layout  = m_icast_settings.getInfoCastLayout();
   
   // Part 1: Figure out the basic pane extents.
   // ================================================================
@@ -2740,10 +2793,16 @@ void PMV_GUI::resizeWidgets()
   double cast_wid = bw;
   double node_wid = bw * 0.45;
   double proc_wid = bw * 0.55;
+
+  if(node_wid > 200) {
+    node_wid = 200;
+    proc_wid = cast_wid - 200;
+  }
+
   
   double cast_hgt = bh * pct_cast_hgt;
   double node_hgt = bh * (1 - pct_cast_hgt);
-  double proc_hgt = bh * (1- pct_cast_hgt);
+  double proc_hgt = bh * (1 - pct_cast_hgt);
   
   int font_xlarge  = 16;
   int font_large  = 14;
@@ -2757,6 +2816,66 @@ void PMV_GUI::resizeWidgets()
     font_small  = 8;
     font_xsmall = 7;
   }
+
+  //  +---+-----------+    +---+-----------+    +---------------+
+  //  +   +           +    +   +           +    +               +
+  //  +   +           +    +   +           +    +               +
+  //  +   +           +    +   +           +    +               +
+  //  +---+-----------+    +   +-----------+    +               +
+  //  +               +    +   +           +    +               +
+  //  +               +    +   +           +    +               +
+  //  +   REGULAR     +    +   +  SWARM    +    +   FULLCAST    +
+  //  +               +    +   +           +    +               +
+  //  +               +    +   +           +    +               +
+  //  +---+-----------+    +---+-----------+    +---------------+
+  double nodes_x = bx;
+  double nodes_y = menu_hgt;
+  double nodes_w = node_wid;
+  double nodes_h = node_hgt;
+
+  double procs_x = node_wid;
+  double procs_y = menu_hgt;
+  double procs_w = proc_wid;
+  double procs_h = proc_hgt;
+  
+  double cast_x = bx;
+  double cast_y = by + node_hgt;
+  double cast_w = cast_wid;
+  double cast_h = cast_hgt;
+
+  if(layout=="swarm") {
+    nodes_x = bx;
+    nodes_y = menu_hgt;
+    nodes_w = node_wid;
+    nodes_h = node_hgt+cast_hgt;
+    
+    procs_x = node_wid;
+    procs_y = menu_hgt;
+    procs_w = proc_wid;
+    procs_h = proc_hgt;
+    
+    cast_x = node_wid;
+    cast_y = by + node_hgt;
+    cast_w = proc_wid;
+    cast_h = cast_hgt;
+  }
+  else if(layout=="fullcast") {
+    nodes_x = bx;
+    nodes_y = menu_hgt;
+    nodes_w = 0;
+    nodes_h = 0;
+    
+    procs_x = node_wid;
+    procs_y = menu_hgt;
+    procs_w = 0;
+    procs_h = 0;
+    
+    cast_x = bx;
+    cast_y = menu_hgt;
+    cast_w = cast_wid;
+    cast_h = node_hgt + cast_hgt;
+  }
+  
   
   // Part 3: Adjust the extents of the InfoCast browsers
   // ================================================================  
@@ -2785,10 +2904,10 @@ void PMV_GUI::resizeWidgets()
     m_brw_procs->show();
     m_brw_casts->show();
 
-   m_brw_nodes->resize(bx, menu_hgt, node_wid, node_hgt);
-    m_brw_procs->resize(node_wid, menu_hgt, proc_wid, proc_hgt);
-    m_brw_casts->resize(bx, by+node_hgt, cast_wid, cast_hgt);
-    
+    m_brw_nodes->resize(nodes_x, nodes_y, nodes_w, nodes_h);
+    m_brw_procs->resize(procs_x, procs_y, procs_w, procs_h);
+    m_brw_casts->resize(cast_x, cast_y, cast_w, cast_h);
+
     string nodes_font_size   = m_icast_settings.getNodesFontSize();
     string procs_font_size   = m_icast_settings.getProcsFontSize();
     string infocast_font_size = m_icast_settings.getInfoCastFontSize();
@@ -2828,9 +2947,13 @@ void PMV_GUI::resizeWidgets()
     m_rc_button_wrp->show();
     m_rc_button_trc->show();
 
-    m_rc_brw_nodes->resize(bx, menu_hgt, node_wid, node_hgt);
-    m_rc_brw_procs->resize(node_wid, menu_hgt, proc_wid, proc_hgt);
-    m_rc_brw_casts->resize(bx, by+node_hgt, cast_wid, cast_hgt);
+    m_rc_brw_nodes->resize(nodes_x, nodes_y, nodes_w, nodes_h);
+    m_rc_brw_procs->resize(procs_x, procs_y, procs_w, procs_h);
+    m_rc_brw_casts->resize(cast_x, cast_y, cast_w, cast_h);
+
+    //m_rc_brw_nodes->resize(bx, menu_hgt, node_wid, node_hgt);
+    //m_rc_brw_procs->resize(node_wid, menu_hgt, proc_wid, proc_hgt);
+    //m_rc_brw_casts->resize(bx, by+node_hgt, cast_wid, cast_hgt);
     
     string nodes_font_size   = m_icast_settings.getNodesFontSize();
     string procs_font_size   = m_icast_settings.getProcsFontSize();
@@ -2868,13 +2991,31 @@ void PMV_GUI::resizeWidgets()
   m_color_stlw = fl_rgb_color(125, 125, 0);           // yellowish
 
   if(infocast_color_scheme == "indigo") {
-    color_back = fl_rgb_color(95, 117, 182);   // indigo-lighter (65,87,152)
+    color_back = fl_rgb_color(95, 117, 182);   // indigo
+    color_text = fl_rgb_color(255, 255, 255);  // white
+    m_color_runw = fl_rgb_color(205, 71, 71);  // redish
+    m_color_cfgw = fl_rgb_color(0, 159, 119);  // greenish
+  }
+  else if(infocast_color_scheme == "dark_indigo") {
+    color_back = fl_rgb_color(65, 87, 152);    // dark_indigo-lighter
+    color_text = fl_rgb_color(255, 255, 255);  // white
+    m_color_runw = fl_rgb_color(205, 71, 71);  // redish
+    m_color_cfgw = fl_rgb_color(0, 159, 119);  // greenish
+  }
+  else if(infocast_color_scheme == "deep_indigo") {
+    color_back = fl_rgb_color(35, 57, 112);    // deep_indigo
     color_text = fl_rgb_color(255, 255, 255);  // white
     m_color_runw = fl_rgb_color(205, 71, 71);  // redish
     m_color_cfgw = fl_rgb_color(0, 159, 119);  // greenish
   }
   else if(infocast_color_scheme == "beige") {
     color_back = fl_rgb_color(223, 219, 195);   // beige
+    color_text = fl_rgb_color(0, 0, 0);         // black
+    m_color_runw = fl_rgb_color(205, 71, 71);   // redish
+    m_color_cfgw = fl_rgb_color(0, 189, 149);   // greenish
+  }
+  else if(infocast_color_scheme == "dark_beige") {
+    color_back = fl_rgb_color(193, 189, 165);   // dark_beige
     color_text = fl_rgb_color(0, 0, 0);         // black
     m_color_runw = fl_rgb_color(205, 71, 71);   // redish
     m_color_cfgw = fl_rgb_color(0, 189, 149);   // greenish

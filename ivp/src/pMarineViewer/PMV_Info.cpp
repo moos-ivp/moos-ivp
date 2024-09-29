@@ -152,7 +152,7 @@ void showExampleConfigAndExit()
   blk("  nodes_font_size      = large    // {xlarge, large, medium, small, xsmall}");
   blk("  procs_font_size      = large    // {xlarge, large, medium, small, xsmall}");
   blk("  infocast_font_size   = medium   // {xlarge, large, medium, small, xsmall}");
-  blk("  appcast_color_scheme = indigo   // {default, indigo, beige, white} ");
+  blk("  appcast_color_scheme = indigo   // {default, indigo, dark_indigo, deep_indigo, beige, dark_beige,white} ");
   blk("  realmcast_color_scheme = hillside // {default, indigo, beige, white, hillside}");
   blk("  realmcast_channel    = abe:pHelmIvP // node:channel           ");
   blk("  infocast_width        = 40      // {20, 25, 30, ..., 65, 70}  ");

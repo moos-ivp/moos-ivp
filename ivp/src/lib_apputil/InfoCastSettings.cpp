@@ -31,7 +31,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Constructor
+// Constructor()
 
 InfoCastSettings::InfoCastSettings()
 {
@@ -39,7 +39,8 @@ InfoCastSettings::InfoCastSettings()
   m_refresh_mode = "events";
   m_infocast_viewable = true;
   m_full_screen = false;
-
+  m_layout = "regular";
+  
   m_infocast_font_size = "medium";
   m_procs_font_size = "large";
   m_nodes_font_size = "large";
@@ -47,7 +48,7 @@ InfoCastSettings::InfoCastSettings()
   m_infocast_height = 70;
   m_infocast_width  = 30;  
 
-  m_appcast_color_scheme = "indigo";
+  m_appcast_color_scheme = "dark_indigo";
   m_realmcast_color_scheme = "hillside";
 
   m_show_rc_source = true;
@@ -73,7 +74,8 @@ bool InfoCastSettings::setAppCastColorScheme(string str)
     return(true);
   }
   
-  if((str != "white") && (str != "indigo") &&
+  if((str != "white") && (str != "dark_indigo") &&
+     (str != "indigo") && (str != "deep_indigo") &&
      (str != "beige") && (str != "toggle"))
     return(false);
 
@@ -81,8 +83,15 @@ bool InfoCastSettings::setAppCastColorScheme(string str)
     if(m_appcast_color_scheme == "white")
       m_appcast_color_scheme = "indigo";
     else if(m_appcast_color_scheme == "indigo")
+      m_appcast_color_scheme = "dark_indigo";
+    else if(m_appcast_color_scheme == "dark_indigo")
+      m_appcast_color_scheme = "deep_indigo";
+    else if(m_appcast_color_scheme == "deep_indigo")
       m_appcast_color_scheme = "beige";
+
     else if(m_appcast_color_scheme == "beige")
+      m_appcast_color_scheme = "dark_beige";
+    else if(m_appcast_color_scheme == "dark_beige")
       m_appcast_color_scheme = "white";
   }
   else
@@ -123,6 +132,28 @@ bool InfoCastSettings::setRealmCastColorScheme(string str)
   else
     m_realmcast_color_scheme = str;
 
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setInfoCastLayout()
+
+bool InfoCastSettings::setInfoCastLayout(string str)
+{
+  if((str != "regular") && (str != "swarm") &&
+     (str != "toggle") && (str != "fullcast"))
+    return(false);
+  
+  if(str == "toggle") {
+    if(m_layout == "regular")
+      m_layout = "swarm";
+    else if(m_layout == "swarm")
+      m_layout = "fullcast";
+    else if(m_layout == "fullcast")
+      m_layout = "regular";
+  }
+  else  
+    m_layout = str;
   return(true);
 }
 

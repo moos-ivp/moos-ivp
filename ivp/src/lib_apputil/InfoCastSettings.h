@@ -49,6 +49,7 @@ public:
   bool setNodesFontSize(std::string);
   bool setProcsFontSize(std::string);
 
+  bool setInfoCastLayout(std::string);
   bool setInfoCastHeight(std::string);
   bool setInfoCastWidth(std::string);
 
@@ -78,9 +79,11 @@ public:
   std::string getAppCastColorScheme() const   {return(m_appcast_color_scheme);}
   std::string getRealmCastColorScheme() const {return(m_realmcast_color_scheme);}
 
+  std::string getInfoCastLayout() const {return(m_layout);}
   double getInfoCastHeight() const  {return(m_infocast_height);}
   double getInfoCastWidth() const   {return(m_infocast_width);}
-
+  
+  
   bool getShowRealmCastSource() const    {return(m_show_rc_source);}
   bool getShowRealmCastCommunity() const {return(m_show_rc_community);}
   bool getShowRealmCastSubs() const      {return(m_show_rc_subscriptions);}
@@ -98,7 +101,8 @@ protected:
   bool        m_infocast_viewable;
   bool        m_full_screen;
 
-
+  std::string m_layout;
+  
   std::string m_infocast_font_size;
   std::string m_procs_font_size;
   std::string m_nodes_font_size;
