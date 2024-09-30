@@ -76,7 +76,8 @@ bool InfoCastSettings::setAppCastColorScheme(string str)
   
   if((str != "white") && (str != "dark_indigo") &&
      (str != "indigo") && (str != "deep_indigo") &&
-     (str != "beige") && (str != "toggle"))
+     (str != "beige") && (str != "toggle") &&
+     (str != "dark_beige"))
     return(false);
 
   if(str == "toggle") {
@@ -113,7 +114,7 @@ bool InfoCastSettings::setRealmCastColorScheme(string str)
   }
   
   if((str != "white") && (str != "indigo") && (str != "hillside") &&
-     (str != "beige") && (str != "toggle"))
+     (str != "beige") && (str != "dark_beige") && (str != "toggle"))
     return(false);
 
   if(str == "toggle") {
@@ -124,6 +125,9 @@ bool InfoCastSettings::setRealmCastColorScheme(string str)
       m_realmcast_color_scheme = "beige";
 
     else if(m_realmcast_color_scheme == "beige")
+      m_realmcast_color_scheme = "dark_beige";
+
+    else if(m_realmcast_color_scheme == "dark_beige")
       m_realmcast_color_scheme = "indigo";
 
     else if(m_realmcast_color_scheme == "indigo")

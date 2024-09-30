@@ -284,7 +284,7 @@ void PMV_GUI::augmentMenu()
 		 FL_MENU_RADIO);
   m_menubar->add("InfoCasting/layout=regular", 'l',
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)59,
-		 FL_MENU_RADIO);
+		 FL_MENU_RADIO|FL_MENU_DIVIDER);
 
   m_menubar->add("InfoCasting/refresh_mode=paused",    FL_CTRL+' ',
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)50,
@@ -296,57 +296,57 @@ void PMV_GUI::augmentMenu()
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)52,
 		 FL_MENU_RADIO|FL_MENU_DIVIDER);
 
-  m_menubar->add("InfoCasting/nodes_font_size=xlarge",  0,
+  m_menubar->add("InfoCasting/nodes_font_size/nodes_font_size=xlarge",  0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)64,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/nodes_font_size=large",  0,
+  m_menubar->add("InfoCasting/nodes_font_size/nodes_font_size=large",  0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)63,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/nodes_font_size=medium", 0,
+  m_menubar->add("InfoCasting/nodes_font_size/nodes_font_size=medium", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)62,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/nodes_font_size=small",  0,
+  m_menubar->add("InfoCasting/nodes_font_size/nodes_font_size=small",  0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)61,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/nodes_font_size=xsmall", 0,
+  m_menubar->add("InfoCasting/nodes_font_size/nodes_font_size=xsmall", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)60,
 		 FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
-  m_menubar->add("InfoCasting/procs_font_size=xlarge", 0,
+  m_menubar->add("InfoCasting/procs_font_size/procs_font_size=xlarge", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)74,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/procs_font_size=large",  0,
+  m_menubar->add("InfoCasting/procs_font_size/procs_font_size=large",  0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)73,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/procs_font_size=medium", 0,
+  m_menubar->add("InfoCasting/procs_font_size/procs_font_size=medium", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)72,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/procs_font_size=small",  0,
+  m_menubar->add("InfoCasting/procs_font_size/procs_font_size=small",  0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)71,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/procs_font_size=xsmall", 0,
+  m_menubar->add("InfoCasting/procs_font_size/procs_font_size=xsmall", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)70,
 		 FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
-  m_menubar->add("InfoCasting/infocast_font_size=xlarge", 0,
+  m_menubar->add("InfoCasting/infocast_font_size/infocast_font_size=xlarge", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)84,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/infocast_font_size=large",  0,
+  m_menubar->add("InfoCasting/infocast_font_size/infocast_font_size=large",  0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)83,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/infocast_font_size=medium", 0,
+  m_menubar->add("InfoCasting/infocast_font_size/infocast_font_size=medium", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)82,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/infocast_font_size=small",  0,
+  m_menubar->add("InfoCasting/infocast_font_size/infocast_font_size=small",  0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)81,
 		 FL_MENU_RADIO);
-  m_menubar->add("InfoCasting/infocast_font_size=xsmall", 0,
+  m_menubar->add("InfoCasting/infocast_font_size/infocast_font_size=xsmall", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)80,
 		 FL_MENU_RADIO); 
-  m_menubar->add("InfoCasting/infocast_font_size bigger",  '}',
+  m_menubar->add("InfoCasting/infocast_font_size/infocast_font_size bigger",  '}',
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)89,
 		 FL_MENU_RADIO); 
-  m_menubar->add("InfoCasting/infocast_font_size smaller", '{',
+  m_menubar->add("InfoCasting/infocast_font_size/infocast_font_size smaller", '{',
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)88,
 		 FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
@@ -363,30 +363,33 @@ void PMV_GUI::augmentMenu()
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)303,
 		 FL_MENU_RADIO);
 
-  m_menubar->add("InfoCasting/appcast_color_scheme=beige",       0,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)305,
+  m_menubar->add("InfoCasting/appcast_color_scheme=beige", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)304,
 		 FL_MENU_RADIO);
   m_menubar->add("InfoCasting/appcast_color_scheme=dark_beige", 0,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)306,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)305,
 		 FL_MENU_RADIO);
   m_menubar->add("InfoCasting/appcast_color_scheme Toggle", FL_ALT+'a',
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)310,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)309,
 		 FL_MENU_DIVIDER);
 
   m_menubar->add("InfoCasting/realmcast_color_scheme=white", 0,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)305,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)310,
 		 FL_MENU_RADIO);
   m_menubar->add("InfoCasting/realmcast_color_scheme=indigo", 0,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)306,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)311,
 		 FL_MENU_RADIO);
   m_menubar->add("InfoCasting/realmcast_color_scheme=beige", 0,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)307,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)312,
+		 FL_MENU_RADIO);
+  m_menubar->add("InfoCasting/realmcast_color_scheme=dark_beige", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)313,
 		 FL_MENU_RADIO);
   m_menubar->add("InfoCasting/realmcast_color_scheme=hillside", 0,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)308,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)314,
 		 FL_MENU_RADIO);
   m_menubar->add("InfoCasting/realmcast_color_scheme Toggle", FL_SHIFT+FL_ALT+'a',
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)309,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)315,
 		 FL_MENU_DIVIDER);
 
   m_menubar->add("InfoCasting/InfoCast Pane Thinner",   FL_SHIFT+FL_Left,
@@ -799,7 +802,6 @@ int PMV_GUI::handle(int event)
 {
   switch(event) {
   case FL_KEYDOWN:
-    cout << "VVVVVVVVVVVVVVVVval: " << (Fl::event_key()) << endl;
     if(Fl::event_key() == 65289) {
       cb_InfoCastSetting_i(55);
       return(1);
@@ -1223,14 +1225,18 @@ inline void PMV_GUI::cb_InfoCastSetting_i(unsigned int v) {
 
   else if(v==300) setRadioCastAttrib("appcast_color_scheme", "white");
   else if(v==301) setRadioCastAttrib("appcast_color_scheme", "indigo");
-  else if(v==302) setRadioCastAttrib("appcast_color_scheme", "beige");
-  else if(v==310) setRadioCastAttrib("appcast_color_scheme", "toggle");
+  else if(v==302) setRadioCastAttrib("appcast_color_scheme", "dark_indigo");
+  else if(v==303) setRadioCastAttrib("appcast_color_scheme", "deep_indigo");
+  else if(v==305) setRadioCastAttrib("appcast_color_scheme", "beige");
+  else if(v==306) setRadioCastAttrib("appcast_color_scheme", "dark_beige");
+  else if(v==309) setRadioCastAttrib("appcast_color_scheme", "toggle");
 
-  else if(v==305) setRadioCastAttrib("realmcast_color_scheme", "white");
-  else if(v==306) setRadioCastAttrib("realmcast_color_scheme", "indigo");
-  else if(v==307) setRadioCastAttrib("realmcast_color_scheme", "beige");
-  else if(v==308) setRadioCastAttrib("realmcast_color_scheme", "hillside");
-  else if(v==309) setRadioCastAttrib("realmcast_color_scheme", "toggle");
+  else if(v==310) setRadioCastAttrib("realmcast_color_scheme", "white");
+  else if(v==311) setRadioCastAttrib("realmcast_color_scheme", "indigo");
+  else if(v==312) setRadioCastAttrib("realmcast_color_scheme", "beige");
+  else if(v==313) setRadioCastAttrib("realmcast_color_scheme", "dark_beige");
+  else if(v==314) setRadioCastAttrib("realmcast_color_scheme", "hillside");
+  else if(v==315) setRadioCastAttrib("realmcast_color_scheme", "toggle");
 
   else if(v==320) setRadioCastAttrib("realmcast_show_source", "true");
   else if(v==321) setRadioCastAttrib("realmcast_show_source", "false");
@@ -2366,23 +2372,23 @@ void PMV_GUI::setMenuItemColors()
   setMenuItemColor("InfoCasting/content_mode=appcast");
   setMenuItemColor("InfoCasting/content_mode=realmcast");
 
-  setMenuItemColor("InfoCasting/nodes_font_size=xlarge");
-  setMenuItemColor("InfoCasting/nodes_font_size=large");
-  setMenuItemColor("InfoCasting/nodes_font_size=medium");
-  setMenuItemColor("InfoCasting/nodes_font_size=small");
-  setMenuItemColor("InfoCasting/nodes_font_size=xsmall");
+  setMenuItemColor("InfoCasting/nodes_font_size/nodes_font_size=xlarge");
+  setMenuItemColor("InfoCasting/nodes_font_size/nodes_font_size=large");
+  setMenuItemColor("InfoCasting/nodes_font_size/nodes_font_size=medium");
+  setMenuItemColor("InfoCasting/nodes_font_size/nodes_font_size=small");
+  setMenuItemColor("InfoCasting/nodes_font_size/nodes_font_size=xsmall");
 
-  setMenuItemColor("InfoCasting/procs_font_size=xlarge");
-  setMenuItemColor("InfoCasting/procs_font_size=large");
-  setMenuItemColor("InfoCasting/procs_font_size=medium");
-  setMenuItemColor("InfoCasting/procs_font_size=small");
-  setMenuItemColor("InfoCasting/procs_font_size=xsmall");
+  setMenuItemColor("InfoCasting/procs_font_size/procs_font_size=xlarge");
+  setMenuItemColor("InfoCasting/procs_font_size/procs_font_size=large");
+  setMenuItemColor("InfoCasting/procs_font_size/procs_font_size=medium");
+  setMenuItemColor("InfoCasting/procs_font_size/procs_font_size=small");
+  setMenuItemColor("InfoCasting/procs_font_size/procs_font_size=xsmall");
 
-  setMenuItemColor("InfoCasting/infocast_font_size=xlarge");
-  setMenuItemColor("InfoCasting/infocast_font_size=large");
-  setMenuItemColor("InfoCasting/infocast_font_size=medium");
-  setMenuItemColor("InfoCasting/infocast_font_size=small");
-  setMenuItemColor("InfoCasting/infocast_font_size=xsmall");
+  setMenuItemColor("InfoCasting/infocast_font_size/infocast_font_size=xlarge");
+  setMenuItemColor("InfoCasting/infocast_font_size/infocast_font_size=large");
+  setMenuItemColor("InfoCasting/infocast_font_size/infocast_font_size=medium");
+  setMenuItemColor("InfoCasting/infocast_font_size/infocast_font_size=small");
+  setMenuItemColor("InfoCasting/infocast_font_size/infocast_font_size=xsmall");
 
   setMenuItemColor("InfoCasting/appcast_color_scheme=white");
   setMenuItemColor("InfoCasting/appcast_color_scheme=indigo");
@@ -2394,6 +2400,7 @@ void PMV_GUI::setMenuItemColors()
   setMenuItemColor("InfoCasting/realmcast_color_scheme=white");
   setMenuItemColor("InfoCasting/realmcast_color_scheme=indigo");
   setMenuItemColor("InfoCasting/realmcast_color_scheme=beige");
+  setMenuItemColor("InfoCasting/realmcast_color_scheme=dark_beige");
   setMenuItemColor("InfoCasting/realmcast_color_scheme=hillside");
 
   setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=20");
@@ -2489,14 +2496,17 @@ bool PMV_GUI::setRadioCastAttrib(string attr, string value)
   }
   else if(attr == "infocast_font_size") {
     ok = m_icast_settings.setInfoCastFontSize(value);
+    item_str = "InfoCasting/infocast_font_size/infocast_font_size=";
     item_str += m_icast_settings.getInfoCastFontSize();
   }
   else if(attr == "procs_font_size") {
     ok = m_icast_settings.setProcsFontSize(value);
+    item_str = "InfoCasting/procs_font_size/procs_font_size=";
     item_str += m_icast_settings.getProcsFontSize();
   }
   else if(attr == "nodes_font_size") {
     ok = m_icast_settings.setNodesFontSize(value);
+    item_str = "InfoCasting/nodes_font_size/procs_font_size=";
     item_str += m_icast_settings.getNodesFontSize();
   }
   else if(attr == "infocast_height") {
@@ -3015,8 +3025,8 @@ void PMV_GUI::resizeWidgets()
     m_color_cfgw = fl_rgb_color(0, 189, 149);   // greenish
   }
   else if(infocast_color_scheme == "dark_beige") {
-    color_back = fl_rgb_color(193, 189, 165);   // dark_beige
-    color_text = fl_rgb_color(0, 0, 0);         // black
+    color_back = fl_rgb_color(93, 89, 65);      // dark_beige
+    color_text = fl_rgb_color(255, 255, 255);   // white
     m_color_runw = fl_rgb_color(205, 71, 71);   // redish
     m_color_cfgw = fl_rgb_color(0, 189, 149);   // greenish
   }
