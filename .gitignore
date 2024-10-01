@@ -1,7 +1,15 @@
 build/*
+include/
 lib/*
 bin/*
 *~
 src/*~
 src/*/*~
 src/*/attic
+ivp/missions/*/LOG*
+ivp/missions/*/XLOG*
+ivp/missions/*/MOOSLOG*
+ivp/missions/*/.LastOpenedMOOSLogDirectory
+ivp/missions/*/*++
+ivp/missions/*/*~+
+*#

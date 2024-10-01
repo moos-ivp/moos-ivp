@@ -5,10 +5,12 @@
 #   Author: Marvin T. Moose
 #   LastEd: May 30 2024
 #------------------------------------------------------------
-#  Part 1: A convenience function for producing terminal
-#          debugging/status output depending on verbosity.
+#  Part 1: Set convenience functions for producing terminal
+#          debugging output, and catching SIGINT (ctrl-c).
 #------------------------------------------------------------
 vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
+on_exit() { echo; echo "Halting all apps"; kill -- -$$; }
+trap on_exit SIGINT
 
 #------------------------------------------------------------
 #  Part 2: Set global variable default values

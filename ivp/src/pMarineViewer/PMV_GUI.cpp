@@ -392,21 +392,6 @@ void PMV_GUI::augmentMenu()
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)315,
 		 FL_MENU_DIVIDER);
 
-  m_menubar->add("InfoCasting/InfoCast Pane Thinner",   FL_SHIFT+FL_Left,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)100, 0); 
-  m_menubar->add("InfoCasting/InfoCast Pane Wider", FL_SHIFT+FL_Right,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)101, 0); 
-
-  m_menubar->add("InfoCasting/InfoCast Pane Taller",  FL_SHIFT+FL_Up,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)200, 0); 
-  m_menubar->add("InfoCasting/InfoCast Pane Shorter", FL_SHIFT+FL_Down,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)201,
-		 FL_MENU_DIVIDER); 
-
-  m_menubar->add("InfoCasting/InfoCast Pane Reset Size", 0,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)102,
-		 FL_MENU_DIVIDER); 
-
   m_menubar->add("InfoCasting/InfoCast Pane Width/infocast_width=20", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)120,
 		 FL_MENU_RADIO); 
@@ -442,7 +427,7 @@ void PMV_GUI::augmentMenu()
 		 FL_MENU_RADIO|FL_MENU_DIVIDER); 
 
   m_menubar->add("InfoCasting/InfoCast Pane Height/reset", 0,
-		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)102,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)999,
 		 FL_MENU_DIVIDER); 
   m_menubar->add("InfoCasting/InfoCast Pane Height/infocast_height=90", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)290,
@@ -483,6 +468,49 @@ void PMV_GUI::augmentMenu()
   m_menubar->add("InfoCasting/InfoCast Pane Height/infocast_height=30", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)230,
 		 FL_MENU_RADIO|FL_MENU_DIVIDER); 
+
+  m_menubar->add("InfoCasting/InfoCast Pane Thinner",   FL_SHIFT+FL_Left,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)100, 0); 
+  m_menubar->add("InfoCasting/InfoCast Pane Wider", FL_SHIFT+FL_Right,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)101, 0); 
+
+  m_menubar->add("InfoCasting/InfoCast Pane Taller",  FL_SHIFT+FL_Up,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)200, 0); 
+  m_menubar->add("InfoCasting/InfoCast Pane Shorter", FL_SHIFT+FL_Down,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)201,
+		 FL_MENU_DIVIDER); 
+
+  m_menubar->add("InfoCasting/Nodes Pane Width/infocast_nodes_width=100", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)104,
+		 FL_MENU_RADIO); 
+  m_menubar->add("InfoCasting/Nodes Pane Width/infocast_nodes_width=125", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)105,
+		 FL_MENU_RADIO); 
+  m_menubar->add("InfoCasting/Nodes Pane Width/infocast_nodes_width=150", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)106,
+		 FL_MENU_RADIO); 
+  m_menubar->add("InfoCasting/Nodes Pane Width/infocast_nodes_width=175", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)107,
+		 FL_MENU_RADIO); 
+  m_menubar->add("InfoCasting/Nodes Pane Width/infocast_nodes_width=200", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)108,
+		 FL_MENU_RADIO); 
+  m_menubar->add("InfoCasting/Nodes Pane Width/infocast_nodes_width=225", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)109,
+		 FL_MENU_RADIO); 
+  m_menubar->add("InfoCasting/Nodes Pane Width/infocast_nodes_width=250", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)110,
+		 FL_MENU_RADIO); 
+
+  m_menubar->add("InfoCasting/Nodes Pane Wider",  FL_SHIFT+FL_CTRL+FL_Right,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)102, 0); 
+  m_menubar->add("InfoCasting/Nodes Pane Thinner", FL_SHIFT+FL_CTRL+FL_Left,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)103,
+		 FL_MENU_DIVIDER); 
+
+  m_menubar->add("InfoCasting/InfoCast Pane Reset Size", 0,
+		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)999,
+		 FL_MENU_DIVIDER); 
 
   m_menubar->add("InfoCasting/realmcast_show_source/realmcast_show_source=true", 0,
 		 (Fl_Callback*)PMV_GUI::cb_InfoCastSetting, (void*)320,
@@ -1145,7 +1173,7 @@ void PMV_GUI::cb_Scope(Fl_Widget* o, unsigned int v) {
 inline void PMV_GUI::cb_InfoCastSetting_i(unsigned int v) {  
   // Reset all infocast panes to orig proportions
 
-  if(v==102)  {
+  if(v==999)  {
     setRadioCastAttrib("infocast_height", "70");
     setRadioCastAttrib("infocast_width",  "30");
   }
@@ -1193,6 +1221,18 @@ inline void PMV_GUI::cb_InfoCastSetting_i(unsigned int v) {
   // Handle pane width relative adjustment
   else if(v==100) setRadioCastAttrib("infocast_width", "delta:-5");
   else if(v==101) setRadioCastAttrib("infocast_width", "delta:5");
+  // Handle nodes pane width relative adjustment
+  else if(v==102) setRadioCastAttrib("infocast_nodes_width", "delta:25");
+  else if(v==103) setRadioCastAttrib("infocast_nodes_width", "delta:-25");
+  else if(v==104) setRadioCastAttrib("infocast_nodes_width", "100");
+  else if(v==105) setRadioCastAttrib("infocast_nodes_width", "125");
+  else if(v==106) setRadioCastAttrib("infocast_nodes_width", "150");
+  else if(v==107) setRadioCastAttrib("infocast_nodes_width", "175");
+  else if(v==108) setRadioCastAttrib("infocast_nodes_width", "200");
+  else if(v==109) setRadioCastAttrib("infocast_nodes_width", "225");
+  else if(v==110) setRadioCastAttrib("infocast_nodes_width", "250");
+
+
   // Handle pane width explicit setting
   else if(v==120) setRadioCastAttrib("infocast_width", "20");
   else if(v==125) setRadioCastAttrib("infocast_width", "25");
@@ -2403,6 +2443,14 @@ void PMV_GUI::setMenuItemColors()
   setMenuItemColor("InfoCasting/realmcast_color_scheme=dark_beige");
   setMenuItemColor("InfoCasting/realmcast_color_scheme=hillside");
 
+  setMenuItemColor("InfoCasting/Nodes Pane Width/infocast_nodes_width=100");
+  setMenuItemColor("InfoCasting/Nodes Pane Width/infocast_nodes_width=125");
+  setMenuItemColor("InfoCasting/Nodes Pane Width/infocast_nodes_width=150");
+  setMenuItemColor("InfoCasting/Nodes Pane Width/infocast_nodes_width=175");
+  setMenuItemColor("InfoCasting/Nodes Pane Width/infocast_nodes_width=200");
+  setMenuItemColor("InfoCasting/Nodes Pane Width/infocast_nodes_width=225");
+  setMenuItemColor("InfoCasting/Nodes Pane Width/infocast_nodes_width=250");
+
   setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=20");
   setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=25");
   setMenuItemColor("InfoCasting/InfoCast Pane Width/infocast_width=30");
@@ -2515,10 +2563,22 @@ bool PMV_GUI::setRadioCastAttrib(string attr, string value)
     item_str += intToString(m_icast_settings.getInfoCastHeight());
   }
 
+  else if(attr == "infocast_nodes_width") {
+    ok = m_icast_settings.setInfoCastNodeWidth(value);
+    item_str = "";
+    //item_str = "InfoCasting/InfoCast Window Height/infocast_height=";
+    //item_str += intToString(m_icast_settings.getInfoCastHeight());
+  }
+
   else if(attr == "infocast_width") {
     ok = m_icast_settings.setInfoCastWidth(value);
     item_str = "InfoCasting/InfoCast Window Width/infocast_width=";
     item_str += intToString(m_icast_settings.getInfoCastWidth());
+  }
+  
+  else if(attr == "infocast_nodewid") {
+    ok = m_icast_settings.setInfoCastNodeWidth(value);
+    item_str = "";
   }
   
   else if(attr == "realmcast_show_source") {
@@ -2607,11 +2667,13 @@ bool PMV_GUI::setRadioCastAttrib(string attr, string value)
   // Note: Even though perhaps ok=false, the attempted setting will
   // have no effect. Also when value="". In this case we just want
   // to update the item radio button. 
-  
-  const Fl_Menu_Item *item = m_menubar->find_item(item_str.c_str());
-  if(item)
-    ((Fl_Menu_Item *)item)->setonly();
 
+  if(item_str != "") {
+    const Fl_Menu_Item *item = m_menubar->find_item(item_str.c_str());
+    if(item)
+      ((Fl_Menu_Item *)item)->setonly();
+  }
+  
   resizeWidgets();
   redraw();
   return(ok);
@@ -2804,12 +2866,11 @@ void PMV_GUI::resizeWidgets()
   double node_wid = bw * 0.45;
   double proc_wid = bw * 0.55;
 
-  if(node_wid > 200) {
-    node_wid = 200;
-    proc_wid = cast_wid - 200;
+  if(node_wid > 400) {
+    node_wid = 400;
+    proc_wid = cast_wid - 400;
   }
 
-  
   double cast_hgt = bh * pct_cast_hgt;
   double node_hgt = bh * (1 - pct_cast_hgt);
   double proc_hgt = bh * (1 - pct_cast_hgt);
@@ -2854,19 +2915,23 @@ void PMV_GUI::resizeWidgets()
   double cast_h = cast_hgt;
 
   if(layout=="swarm") {
+
+    // Width of the nodes pane (pixels) when in swarm layout mode
+    double swarm_node_wid = m_icast_settings.getInfoCastNodeWidth();
+    
     nodes_x = bx;
     nodes_y = menu_hgt;
-    nodes_w = node_wid;
+    nodes_w = swarm_node_wid;
     nodes_h = node_hgt+cast_hgt;
     
-    procs_x = node_wid;
+    procs_x = swarm_node_wid;
     procs_y = menu_hgt;
-    procs_w = proc_wid;
+    procs_w = cast_wid - swarm_node_wid;
     procs_h = proc_hgt;
     
-    cast_x = node_wid;
+    cast_x = swarm_node_wid;
     cast_y = by + node_hgt;
-    cast_w = proc_wid;
+    cast_w = cast_wid - swarm_node_wid;
     cast_h = cast_hgt;
   }
   else if(layout=="fullcast") {

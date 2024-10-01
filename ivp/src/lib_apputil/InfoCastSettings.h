@@ -52,6 +52,7 @@ public:
   bool setInfoCastLayout(std::string);
   bool setInfoCastHeight(std::string);
   bool setInfoCastWidth(std::string);
+  bool setInfoCastNodeWidth(std::string);
 
   bool setAppCastColorScheme(std::string);
   bool setRealmCastColorScheme(std::string);
@@ -82,6 +83,7 @@ public:
   std::string getInfoCastLayout() const {return(m_layout);}
   double getInfoCastHeight() const  {return(m_infocast_height);}
   double getInfoCastWidth() const   {return(m_infocast_width);}
+  double getInfoCastNodeWidth() const   {return(m_infocast_nodewid);}
   
   
   bool getShowRealmCastSource() const    {return(m_show_rc_source);}
@@ -109,6 +111,7 @@ protected:
   
   double m_infocast_height;
   double m_infocast_width;
+  double m_infocast_nodewid;
 
   std::string m_appcast_color_scheme;
   std::string m_realmcast_color_scheme;

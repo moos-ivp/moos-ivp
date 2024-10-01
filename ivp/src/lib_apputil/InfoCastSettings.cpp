@@ -45,9 +45,10 @@ InfoCastSettings::InfoCastSettings()
   m_procs_font_size = "large";
   m_nodes_font_size = "large";
 
-  m_infocast_height = 70;
-  m_infocast_width  = 30;  
-
+  m_infocast_height  = 70;  // pct
+  m_infocast_width   = 30;  // pct
+  m_infocast_nodewid = 300; // pixels
+  
   m_appcast_color_scheme = "dark_indigo";
   m_realmcast_color_scheme = "hillside";
 
@@ -206,6 +207,30 @@ bool InfoCastSettings::setInfoCastWidth(string str)
   }
 
   m_infocast_width = vclip(m_infocast_width, 20, 70);
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: setInfoCastNodeWidth()
+
+bool InfoCastSettings::setInfoCastNodeWidth(string str)
+{
+  if(!isNumber(str) && !strBegins(str, "delta:"))
+    return(false);
+  
+  if(strBegins(str, "delta:")) {
+    biteStringX(str, ':');
+    if(!isNumber(str))
+      return(false);
+    double delta = atof(str.c_str());
+    m_infocast_nodewid += delta;
+  }
+  else {
+    double dval = atof(str.c_str());
+    m_infocast_nodewid = snapToStep(dval, 25.0);
+  }
+
+  m_infocast_nodewid = vclip(m_infocast_nodewid, 100, 250);
   return(true);
 }
 

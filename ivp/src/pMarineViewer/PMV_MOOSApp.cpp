@@ -788,10 +788,11 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     // Certain appcast params are replaced with the more general
     // infocast parameters. For backward compatibility the older
     // params just map into the infocast params.
-    if(param=="appcast_viewable")  param="infocast_viewable";
-    if(param=="appcast_height")    param="infocast_height";
-    if(param=="appcast_width")     param="infocast_width";
-    if(param=="appcast_font_size") param="infocast_font_size";
+    if(param=="appcast_viewable")    param="infocast_viewable";
+    if(param=="appcast_height")      param="infocast_height";
+    if(param=="appcast_nodes_width") param="infocast_nodes_width";
+    if(param=="appcast_width")       param="infocast_width";
+    if(param=="appcast_font_size")   param="infocast_font_size";
 
     if((param == "gui_size") && (tolower(value) == "small")) {
       m_gui->size(1000,750);
@@ -883,6 +884,8 @@ void PMV_MOOSApp::handleStartUp(const MOOS_event & e) {
     else if(param == "infocast_height") 
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "infocast_width") 
+      handled = m_gui->setRadioCastAttrib(param, value);
+    else if(param == "infocast_nodes_width") 
       handled = m_gui->setRadioCastAttrib(param, value);
     else if(param == "stale_report_thresh") 
       handled = m_gui->mviewer->setParam(param, value);
