@@ -24,7 +24,7 @@ WORKDIR "/home/moos"
 COPY --chown=moos . /home/moos/moos-ivp
 
 # Build the MOOS-IvP tools
-RUN cd "$HOME/moos-ivp" && ./build-moos.sh --minrobot --release && ./build-ivp.sh --nogui
+RUN cd "$HOME/moos-ivp" && ./build.sh --minrobot
 
 ### BEGIN GUI STAGE
 FROM base as gui
@@ -35,5 +35,5 @@ RUN apt-get update -y && apt-get install -y libtiff5-dev libfltk1.3-dev freeglut
 USER moos
 
 # Build the MOOS-IvP tools
-RUN cd "$HOME/moos-ivp" && ./build-moos.sh --release && ./build-ivp.sh
+RUN cd "$HOME/moos-ivp" && ./build.sh
 
