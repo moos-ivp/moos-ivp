@@ -1,4 +1,4 @@
-FROM ubuntu:24.04 as base
+FROM ubuntu:24.04 AS base
 LABEL maintainer = Conlan Cesar <conlanc@csail.mit.edu>
 
 # Set the default shell to bash
@@ -27,7 +27,7 @@ COPY --chown=moos . /home/moos/moos-ivp
 RUN cd "$HOME/moos-ivp" && ./build.sh --minrobot
 
 ### BEGIN GUI STAGE
-FROM base as gui
+FROM base AS gui
 
 # Install required MOOS dependencies
 USER root
