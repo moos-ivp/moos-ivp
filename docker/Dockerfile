@@ -23,6 +23,9 @@ WORKDIR "/home/moos"
 # Copy in our files
 COPY --chown=moos . /home/moos/moos-ivp
 
+### BEGIN MINROBOT STAGE
+FROM base AS minrobot
+
 # Build the MOOS-IvP tools
 RUN cd "$HOME/moos-ivp" && ./build.sh --minrobot
 
