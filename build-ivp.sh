@@ -126,7 +126,7 @@ echo "Compiler flags: ${CMAKE_CXX_FLAGS}  "
 INVOC_ABS_DIR="$(pwd)"
 SCRIPT_ABS_DIR="$(cd $(dirname "$0") && pwd -P)"
 
-BLD_ABS_DIR="${SCRIPT_ABS_DIR}/build"
+BLD_ABS_DIR="${SCRIPT_ABS_DIR}/build/ivp"
 LIB_ABS_DIR="${SCRIPT_ABS_DIR}/lib"
 BIN_ABS_DIR="${SCRIPT_ABS_DIR}/bin"
 SRC_ABS_DIR="${SCRIPT_ABS_DIR}/ivp/src"
@@ -183,8 +183,11 @@ if [ "${CLEAN}" = "yes" -o "${CMD_ARGS}" = "clean" ] ; then
     echo "CLEANING...."
     make clean
     RESULT=$?
-    cd ${INVOCATION_ABS_DIR}
-    rm -rf build/*
+    # Make sure the BLD_ABS_DIR is defined and exists before cleaning
+    if [ -d "${BLD_ABS_DIR}" ] ; then
+      echo "Removing build directory: ${BLD_ABS_DIR}"
+      rm -rf "${BLD_ABS_DIR}/"*
+    fi
 else
     echo "=============================" >> ~/.moos-ivp-args
     echo "1" ${CMD_ARGS} >> ~/.moos-ivp-args
