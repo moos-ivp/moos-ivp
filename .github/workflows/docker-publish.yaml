@@ -116,7 +116,6 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         env:
-          DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
           SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
         with:
           images: ${{ env.REGISTRY_IMAGE }}
