@@ -69,4 +69,5 @@ jobs:
           file: docker/Dockerfile
           target: ${{ matrix.flavor }}
           cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
