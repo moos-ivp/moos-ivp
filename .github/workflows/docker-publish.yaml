@@ -16,11 +16,6 @@ jobs:
         flavor:
           - minrobot
           - gui
-        include:
-          - os: ubuntu-latest
-            arch: linux/amd64
-          - os: ubuntu-latest # change this to the native arm runner when Github makes it public
-            arch: linux/arm64
     steps:
       - name: Prepare
         run: |
