@@ -38,26 +38,20 @@ jobs:
           SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
         with:
           platforms: ${{ matrix.platform }}
-          file: docker/Dockerfile
+          file: docker/moos-ivp/Dockerfile
           target: base
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  build:
+  build-minrobot:
     runs-on: ubuntu-latest
     needs: 
       - build-base
-    strategy:
-      fail-fast: false
-      matrix:
-        flavor:
-          - minrobot
-          - gui
+    env:
+      FLAVOR: ""
     steps:
       - name: Prepare
         run: |
-          platform=${{ matrix.arch }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
           echo "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
 
       - name: Set up QEMU
@@ -75,13 +69,13 @@ jobs:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
             # branch event
-            type=ref,enable=true,prefix=${{ matrix.flavor }}-,event=branch
+            type=ref,enable=true,prefix=${{ env.flavor }},event=branch
             # tag event
-            type=ref,enable=true,prefix=${{ matrix.flavor }}-,event=tag
+            type=ref,enable=true,prefix=${{ env.flavor }},event=tag
             # pull request event
-            type=ref,enable=true,prefix=${{ matrix.flavor }}-pr-,suffix=,event=pr
+            type=ref,enable=true,prefix=${{ env.flavor }}pr-,suffix=,event=pr
             # commit sha
-            type=sha,prefix=${{ matrix.flavor }}-,suffix=,format=short
+            type=sha,prefix=${{ env.flavor }},suffix=,format=short
       
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -98,7 +92,62 @@ jobs:
         with:
           platforms: linux/amd64,linux/arm64
           annotations: ${{ steps.meta.outputs.annotations }}
-          file: docker/Dockerfile
-          target: ${{ matrix.flavor }}
+          file: docker/moos-ivp/Dockerfile
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          tags: ${{ steps.meta.outputs.tags }}
+
+  build-gui:
+    runs-on: ubuntu-latest
+    needs: 
+      - build-minrobot
+    env:
+      FLAVOR: "-gui"
+    steps:
+      - name: Prepare
+        run: |
+          echo "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Docker meta
+        id: meta
+        uses: docker/metadata-action@v5
+        env:
+          SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
+        with:
+          images: ${{ env.REGISTRY_IMAGE }}
+          tags: |
+            # branch event
+            type=ref,enable=true,suffix=${{ env.FLAVOR }},event=branch
+            # tag event
+            type=ref,enable=true,suffix=${{ env.FLAVOR }},event=tag
+            # pull request event
+            type=ref,enable=true,suffix=pr-,suffix=${{ env.FLAVOR }},event=pr
+            # commit sha
+            type=sha,prefix=,suffix=${{ env.FLAVOR }},format=short
+      
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Build and push by digest
+        id: build
+        uses: docker/build-push-action@v6
+        env:
+          SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
+        with:
+          platforms: linux/amd64,linux/arm64
+          annotations: ${{ steps.meta.outputs.annotations }}
+          build-args: |
+            FROM=${{ needs.build-minrobot.build.outputs.digest }}
+          file: docker/moos-ivp-gui/Dockerfile
           cache-from: type=gha
           tags: ${{ steps.meta.outputs.tags }}
