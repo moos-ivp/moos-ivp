@@ -8,11 +8,14 @@ env:
   REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
 
 jobs:
-  build-base:
+  build:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
+        flavor:
+          - minrobot
+          - gui
         include:
           - os: ubuntu-latest
             arch: linux/amd64
@@ -28,87 +31,6 @@ jobs:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      
-      - name: Build base by digest for cache
-        id: build
-        uses: docker/build-push-action@v6
-        env:
-          SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
-        with:
-          platforms: ${{ matrix.platform }}
-          file: docker/Dockerfile
-          target: base
-          cache-from: type=gha
-          cache-to: type=gha,mode=max,scope=${{ env.PLATFORM_PAIR }}
-
-  build:
-    runs-on: ubuntu-latest
-    needs:
-      - build-base
-    strategy:
-      fail-fast: false
-      matrix:
-        flavor:
-          - minrobot
-          - gui
-        arch:
-          - linux/amd64
-          #- linux/arm64
-    steps:
-      - name: Prepare
-        run: |
-          platform=${{ matrix.arch }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
-          echo "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-
-      - name: Docker meta
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.REGISTRY_IMAGE }}
-
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-      
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to Docker Hub
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and cache by digest
-        id: build
-        uses: docker/build-push-action@v6
-        env:
-          SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
-        with:
-          platforms: ${{ matrix.arch }}
-          file: docker/Dockerfile
-          target: ${{ matrix.flavor }}
-          cache-from: type=gha,scope=${{ env.PLATFORM_PAIR }}
-          cache-to: type=gha,mode=max,scope=${{ env.PLATFORM_PAIR }}
-
-  merge:
-    runs-on: ubuntu-latest
-    needs:
-      - build
-    strategy:
-      fail-fast: false
-      matrix:
-        flavor:
-          - minrobot
-          - gui
-    steps:
-      - name: Prepare
-        run: |
-          echo "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       
@@ -142,7 +64,7 @@ jobs:
         env:
           SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
         with:
-          platforms: linux/amd64 # ,linux/arm64
+          platforms: linux/amd64,linux/arm64
           annotations: ${{ steps.meta.outputs.annotations }}
           file: docker/Dockerfile
           target: ${{ matrix.flavor }}
