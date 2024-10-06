@@ -63,9 +63,10 @@ class NodeRecord
   void setLoadWarning(std::string s) {m_load_warning=s;}
 
   void setProperty(std::string, std::string);
+  void setCoordPolicyGlobal(bool bval=true);
 
   void setIndex(int i)         {m_index=i;}
-
+  
   int    getIndex() const      {return(m_index);}
   double getX() const          {return(m_x);}
   double getY() const          {return(m_y);}
@@ -119,6 +120,7 @@ class NodeRecord
   std::string getLoadWarning(std::string s="") const;
 
   std::string getSpec(bool terse=false) const;
+  std::string getSpecJSON(bool terse=false) const;
 
   std::string getStringValue(std::string) const;
 
@@ -147,6 +149,7 @@ class NodeRecord
   std::string  m_mode_aux;
   std::string  m_allstop;
   std::string  m_load_warning;
+  bool m_coord_policy_global; // default false
   
   bool m_x_set;
   bool m_y_set;
