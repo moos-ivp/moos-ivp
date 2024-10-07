@@ -25,6 +25,7 @@ ADD_EXECUTABLE(pHelmIvP ${SRC})
    
 TARGET_LINK_LIBRARIES(pHelmIvP 
   ${MOOS_LIBRARIES}
+  ${MOOSGeodesy_LIBRARIES}
   helmivp
   dep_behaviors
   behaviors-marine

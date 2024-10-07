@@ -28,6 +28,7 @@
 #include <set>
 #include <map>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "InfoBuffer.h"
 #include "IvPDomain.h"
 #include "BehaviorSet.h"
@@ -202,6 +203,8 @@ protected:
   std::string  m_helm_prefix;
 
   PlatModelGenerator m_pmgen;
+
+  CMOOSGeodesy m_geodesy;
 };
 #endif 
 

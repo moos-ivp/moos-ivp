@@ -1200,7 +1200,22 @@ bool HelmIvP::OnStartUp()
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
-    
+
+
+  double lat_origin, lon_origin;
+  if(!m_MissionReader.GetValue("LatOrigin", lat_origin)) {
+    reportConfigWarning("No LatOrigin in *.moos file");
+    reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
+  }
+  else if (!m_MissionReader.GetValue("LongOrigin", lon_origin)) {
+    reportConfigWarning("No LongOrigin set in *.moos file");
+    reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
+  }
+  else if(!m_geodesy.Initialise(lat_origin, lon_origin)) {
+    reportConfigWarning("Lat/Lon Origin found but Geodesy init failed.");
+    reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
+  }
+
   vector<string> behavior_dirs;
 
   STRING_LIST::iterator p;
@@ -1688,8 +1703,7 @@ void HelmIvP::postAllStop(string msg)
 }
 
 //--------------------------------------------------------------------
-// Procedure: processNodeReport
-//   Purpose: 
+// Procedure: processNodeReport()
 
 bool HelmIvP::processNodeReport(const string& report)
 {
@@ -1699,6 +1713,20 @@ bool HelmIvP::processNodeReport(const string& report)
 
   string raw_vname = new_record.getName();
   string vname = toupper(raw_vname);
+
+  if(!new_record.isSetX() || !new_record.isSetY()) {
+    double nav_x, nav_y;
+    double lat = new_record.getLat();
+    double lon = new_record.getLon();
+    
+#ifdef USE_UTM
+    m_geodesy.LatLong2LocalUTM(lat, lon, nav_y, nav_x);
+#else
+    m_geodesy.LatLong2LocalGrid(lat, lon, nav_y, nav_x);
+#endif
+    new_record.setX(nav_x);
+    new_record.setY(nav_y);
+  }
   
   m_info_buffer->setValue(vname+"_NAV_X", new_record.getX());
   m_info_buffer->setValue(vname+"_NAV_Y", new_record.getY());
