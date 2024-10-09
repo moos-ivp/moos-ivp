@@ -24,7 +24,9 @@
 #ifndef CONTACT_LEDGER_HEADER
 #define CONTACT_LEDGER_HEADER
 
+#include <set>
 #include <string>
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "NodeRecord.h"
 
 class ContactLedger
@@ -33,13 +35,24 @@ public:
   ContactLedger();
   ~ContactLedger() {};
 
-  void setCurrTimeUTC(double utc) {m_curr_time_utc=utc;}
-  void extrapolate();
+  void setGeodesy(CMOOSGeodesy geodesy);
+  void setGeodesy(double dlat, double dlon);
   
-  bool processReport(std::string report);
-  bool processRecord(NodeRecord record);
+  void setCurrTimeUTC(double utc) {m_curr_utc=utc;}
+  void extrapolate(double utc=0);
 
-  bool   hasVName(std::string) const;
+  std::string processNodeReport(std::string report,
+				std::string& whynot);
+  std::string processNodeRecord(NodeRecord record,
+				std::string& whynot);
+
+  void clearNode(std::string vname);  
+
+  bool isValid(std::string) const;
+  bool isStale(std::string, double thresh) const;
+  bool hasVName(std::string) const;
+  bool hasVNameValid(std::string) const;
+  bool hasVNameValidNotStale(std::string, double v=0) const;
 
   double getX(std::string vname, bool extrap=true) const;
   double getY(std::string vname, bool extrap=true) const;
@@ -48,19 +61,59 @@ public:
   double getDepth(std::string vname) const;
   double getLat(std::string vname) const;
   double getLon(std::string vname) const;
+  double getAge(std::string vname) const;
+  double getAgeReceived(std::string vname) const;
+
   std::string getGroup(std::string vname) const;
   std::string getType(std::string vname) const;
-  
+  std::string getSpec(std::string vname) const;
 
+  unsigned int size() const {return(m_map_records_rep.size());}
+  unsigned int totalReports() const {return(m_total_reports);}
+  unsigned int totalReportsValid() const {return(m_total_reports_valid);}
+  unsigned int totalReports(std::string vname) const;
+
+  bool groupMatch(std::string vname1, std::string vname2) const;
+
+  std::set<std::string> getVNamesByGroup(std::string group) const;
+  
+  std::vector<std::string> getVNames() const;
+  std::vector<std::string> getVNamesStale(double thresh) const;
+
+  std::vector<std::string> getReportSkews() const;
+  std::vector<std::string> getReportLags() const;
+  
 protected:
   NodeRecord getRecord(std::string vname, bool extrap=true) const;
   void       extrapolate(std::string vname);
+  void       updateLocalCoords();
+  void       updateLocalCoords(NodeRecord&);
+  void       updateGlobalCoords(NodeRecord&);
   
- protected: 
+protected: // Config vars
+  double m_stale_thresh;
+  double m_extrap_thresh;
+  
+protected: // State vars
+  // All keys are vnames for incoming node reports
   std::map<std::string, NodeRecord> m_map_records_rep;
   std::map<std::string, NodeRecord> m_map_records_ext;
+  std::map<std::string, double>     m_map_records_utc; // loc time rcvd
 
-  double m_curr_time_utc;
+  std::map<std::string, double>       m_map_records_total;
+  std::map<std::string, double>       m_map_skew_min;
+  std::map<std::string, double>       m_map_skew_max;
+  std::map<std::string, unsigned int> m_map_skew_cnt;
+  std::map<std::string, double>       m_map_skew_avg;
+  
+  double m_curr_utc;
+
+  unsigned int m_total_reports;
+  unsigned int m_total_reports_valid;
+  
+  CMOOSGeodesy m_geodesy;
+  bool         m_geodesy_init;
+  unsigned int m_geodesy_updates;
 };
 
 #endif 

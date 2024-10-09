@@ -87,8 +87,10 @@ class NodeRecord
 
   bool   isSetX() const        {return(m_x_set);}
   bool   isSetY() const        {return(m_y_set);}
+  bool   isSetXY() const       {return(m_x_set && m_y_set);}
   bool   isSetLatitude() const {return(m_lat_set);}
   bool   isSetLongitude() const {return(m_lon_set);}
+  bool   isSetLatLon() const   {return(m_lon_set && m_lon_set);}
   bool   isSetSpeed() const     {return(m_speed_set);}
   bool   isSetSpeedOG() const   {return(m_speed_og_set);}
   bool   isSetHeading() const   {return(m_heading_set);}
