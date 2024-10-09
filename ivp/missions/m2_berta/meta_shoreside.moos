@@ -68,6 +68,8 @@ ProcessConfig = uFldNodeComms
   max_msg_length   = 1000
   groups           = true
 
+	app_logging = true
+	
   view_node_rpt_pulses = false
 }
 

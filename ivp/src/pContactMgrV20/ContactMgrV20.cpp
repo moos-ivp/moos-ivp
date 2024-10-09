@@ -327,6 +327,7 @@ void ContactMgrV20::registerVariables()
 
 void ContactMgrV20::handleMailNodeReport(string report)
 {
+  cout << "HandleMailNodeReport!!!!" << endl;
   NodeRecord new_node_record = string2NodeRecord(report, true);
   string vname = new_node_record.getName();
   // If incoming node name matches ownship, just ignore the node report
@@ -350,7 +351,9 @@ void ContactMgrV20::handleMailNodeReport(string report)
   }
   if(!new_node_record.isSetLatitude() || !new_node_record.isSetLongitude())
     override_xy_with_latlon = false;
- 
+
+  cout << "override_xy_with_latlon:" << boolToString(override_xy_with_latlon) << endl;
+  
   // ==============================================================
   // Part 1B: If overriding x/y with latlon and configured to do so
   //          then find x/y from MOOSGeodesy and Lat/Lon and replace.
@@ -363,7 +366,10 @@ void ContactMgrV20::handleMailNodeReport(string report)
     m_geodesy.LatLong2LocalUTM(lat, lon, nav_y, nav_x);
 #else
     m_geodesy.LatLong2LocalGrid(lat, lon, nav_y, nav_x);
-#endif      
+#endif
+
+    cout << "Incoming local: " << doubleToString(nav_x,2) <<
+      "," << doubleToString(nav_y,2) << endl;
     new_node_record.setX(nav_x);
     new_node_record.setY(nav_y);
   }
@@ -1552,6 +1558,7 @@ bool ContactMgrV20::buildReport()
   m_msgs << "Ownship Group:      " << os_group << endl;
   m_msgs << "Ownship Type:       " << os_type << endl;
   m_msgs << "X/Y from Lat/Lon:   " << boolToString(m_use_geodesy)   << endl;
+  m_msgs << "ContactLocalCoords: " << m_contact_local_coords   << endl;
   m_msgs << "Contact Max Age:    " << max_age << endl;
   m_msgs << "Reject Range:       " << reject_range << endl;
   m_msgs << "BCM_ALERT_REQUESTs: " << bcm_req_received << endl;

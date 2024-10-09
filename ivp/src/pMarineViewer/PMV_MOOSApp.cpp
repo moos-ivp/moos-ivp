@@ -136,6 +136,8 @@ bool PMV_MOOSApp::Iterate()
   if((!m_gui) || (!m_pending_moos_events))
     return(true);
 
+  m_gui->mviewer->updateMOOSGeodesy();
+  
   MOOS_event e;
   e.type="Iterate";
   e.moos_time = MOOSTime();

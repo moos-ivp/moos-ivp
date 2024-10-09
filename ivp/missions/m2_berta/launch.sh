@@ -170,7 +170,6 @@ if [ "${XLAUNCHED}" != "yes" ]; then
     uMAC --paused targ_shoreside.moos
     trap "" SIGINT
     kill -- -$$
-    exit 0
 fi
 
 exit 0

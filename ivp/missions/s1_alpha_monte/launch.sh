@@ -3,9 +3,17 @@
 #  Script: launch.sh
 #  Author: Michael Benjamin
 #  LastEd: Dec 11th 2021
-#----------------------------------------------------------
-#  Part 1: Set global var defaults
-#----------------------------------------------------------
+#------------------------------------------------------------
+#  Part 1: Set convenience functions for producing terminal
+#          debugging output, and catching SIGINT (ctrl-c).
+#------------------------------------------------------------
+vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
+on_exit() { echo; echo "Halting all apps"; kill -- -$$; }
+trap on_exit SIGINT
+
+#------------------------------------------------------------
+#  Part 2: Set global variable default values
+#------------------------------------------------------------
 TIME_WARP=1
 JUST_MAKE="no"
 LAUNCH_GUI="yes"
@@ -14,7 +22,7 @@ SILENT="no"
 SPD=3
 
 #----------------------------------------------------------
-#  Part 2: Check for and handle command-line arguments
+#  Part 3: Check for and handle command-line arguments
 #----------------------------------------------------------
 for ARGI; do
     if [ "${ARGI}" = "--help" -o "${ARGI}" = "-h" ]; then
@@ -46,7 +54,7 @@ for ARGI; do
 done
 
 #----------------------------------------------------------
-#  Part 3: Create the .moos and .bhv files. 
+#  Part 4: Create the .moos and .bhv files. 
 #----------------------------------------------------------
 nsplug meta_alpha.moos targ_alpha.moos -i -f WARP=$TIME_WARP \
        MAX_TIME=$MAX_TIME       LAUNCH_GUI=$LAUNCH_GUI   
@@ -59,13 +67,13 @@ if [ ${JUST_MAKE} = "yes" ]; then
 fi
 
 #----------------------------------------------------------
-#  Part 4: Launch the mission processes
+#  Part 5: Launch the mission processes
 #----------------------------------------------------------
 echo "Launching alpha MOOS Community. WARP is" $TIME_WARP
 pAntler targ_alpha.moos >& /dev/null &
 
 #-------------------------------------------------------------- 
-#  Part 5: Unless auto-launched, launch uMAC until mission quit 
+#  Part 6: Unless auto-launched, launch uMAC until mission quit 
 #-------------------------------------------------------------- 
 if [ "${LAUNCH_GUI}" = "yes" ]; then
     uMAC targ_alpha.moos --node=alpha --proc=pMissionEval

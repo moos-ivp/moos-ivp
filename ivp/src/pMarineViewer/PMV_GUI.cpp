@@ -30,7 +30,7 @@
 using namespace std;
 
 //-------------------------------------------------------------------
-// Constructor
+// Constructor()
 
 PMV_GUI::PMV_GUI(int g_w, int g_h, const char *g_l)
   : MarineVehiGUI(g_w, g_h, g_l) 
@@ -1951,8 +1951,10 @@ void PMV_GUI::updateRealmCastNodes(bool clear)
   }
   
   // Part 2: Build up the browser lines from the previously gen'ed table.
+  int vpos = m_rc_brw_nodes->topline();
   if(clear)
     m_rc_brw_nodes->clear();
+
 
   vector<string> browser_lines = actab.getTableOutput();
 
@@ -1973,8 +1975,13 @@ void PMV_GUI::updateRealmCastNodes(bool clear)
       brw_item_index = j+1;
   }
 
-  if(clear)
+  if(clear) {
     m_rc_brw_nodes->select(brw_item_index, 1);
+  }
+  
+  //int vert_size = m_rc_brw_nodes->size();
+  m_rc_brw_nodes->topline(vpos);
+
 }
 
 //---------------------------------------------------------- 
@@ -2027,6 +2034,7 @@ void PMV_GUI::updateAppCastNodes(bool clear)
   }
 
   // Part 2: Build up the browser lines from the previously gen'ed table.
+  int vpos = m_brw_nodes->topline();
   if(clear)
     m_brw_nodes->clear();
   
@@ -2057,6 +2065,15 @@ void PMV_GUI::updateAppCastNodes(bool clear)
     else
       m_brw_nodes->text(j+1, line.c_str());
   }
+  // Add a extra blank line. It makes the output nicer if a scrollbar
+  // is being used, and the user has scrolled to the end.
+  if(clear)
+    m_brw_nodes->add("");
+  
+  int vert_size = m_brw_nodes->size();
+  if(vpos > vert_size)
+    vpos = vert_size;
+  m_brw_nodes->topline(vpos);
 
   // Part 3: Possibly select an item in the browser under rare circumstances
   // If we've cleared the nodes to build this, or if no userclicks prior
@@ -2254,6 +2271,7 @@ void PMV_GUI::updateAppCastProcs(bool clear)
   }
 
   // Part 2: Build up the browser lines from the previously gen'ed table.
+  int vpos = m_brw_procs->topline();
   if(clear)
     m_brw_procs->clear();
 
@@ -2274,6 +2292,12 @@ void PMV_GUI::updateAppCastProcs(bool clear)
       m_brw_procs->text(j+1, line.c_str());
   }
 
+  int vert_size = m_brw_procs->size();
+  if(vpos > vert_size)
+    vpos = vert_size;
+  m_brw_procs->topline(vpos);
+
+  
   // Part 3: Possibly select an item in the browser under rare circumstances
   // If we've cleared the procs to build this, or if no userclicks prior
   // to this call, set the browser select to be the current_proc.
@@ -2295,7 +2319,10 @@ void PMV_GUI::updateRealmCast()
   if((node == "") || (proc == ""))
     return;
 
-  // Step 1: clear the Fl_Browser contents
+  int vpos = m_rc_brw_casts->topline();
+  int hpos = m_rc_brw_casts->hposition();
+
+    // Step 1: clear the Fl_Browser contents
   m_rc_brw_casts->clear();
 
   if(m_rc_repo->getCurrClusterKey() == "") {
@@ -2310,6 +2337,12 @@ void PMV_GUI::updateRealmCast()
       //cout << svector[i].c_str() << endl; // mikerb
       //m_brw_casts->add(removeTermColors(svector[i]).c_str());
     }
+    int vsize = m_rc_brw_casts->size();
+    if(vpos > vsize)
+      vpos = vsize;
+    m_rc_brw_casts->topline(vpos);
+    m_rc_brw_casts->hposition(hpos);
+    
   }
   else {
     vector<string> svector = m_rc_repo->getClusterReport(m_icast_settings);
@@ -2332,6 +2365,9 @@ void PMV_GUI::updateAppCast()
   if((node == "") || (proc == ""))
     return;
 
+  int vpos = m_brw_casts->topline();
+  int hpos = m_brw_casts->hposition();
+  
   // Step 1: clear the Fl_Browser contents
   m_brw_casts->clear();
 
@@ -2339,14 +2375,23 @@ void PMV_GUI::updateAppCast()
   AppCast appcast = m_repo->actree().getAppCast(node, proc);
   vector<string> svector = parseString(appcast.getFormattedString(), '\n');
 
-
-
   // Step 3: De-colorize the report lines and add to the Browser
   // Disable the removeTermColors() call by mikerb Oct 11, 2020. 
   for(unsigned int i=0; i<svector.size(); i++) {
     m_brw_casts->add(svector[i].c_str());
     //m_brw_casts->add(removeTermColors(svector[i]).c_str());
   }
+
+  // Add a extra blank line. It makes the output nicer if a scrollbar
+  // is being used, and the user has scrolled to the end.
+  m_brw_casts->add("");  
+
+  int vsize = m_brw_casts->size();
+  if(vpos > vsize)
+    vpos = vsize;
+  m_brw_casts->topline(vpos);
+  m_brw_casts->hposition(hpos);
+  
 
   // Step 4: If there are warnings, colorize line 2 of the browser
   //         appropriately. Red if run_warnings, Blue if config warnings
