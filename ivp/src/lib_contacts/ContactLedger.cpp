@@ -297,7 +297,8 @@ double ContactLedger::getAgeReceived(string vname) const
   if(p == m_map_records_utc.end())
     return(-1);
 
-  return(p->second);
+  double utc = p->second;
+  return(m_curr_utc - utc);
 }
 
 //---------------------------------------------------------------
