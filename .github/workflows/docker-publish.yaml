@@ -12,6 +12,9 @@ env:
 jobs:
   build-minrobot:
     runs-on: ubuntu-latest
+    outputs:
+      # So we can `FROM` this image in the next build
+      digest: ${{ steps.build.outputs.digest }}
     steps:
       - name: Prepare
         run: |
@@ -111,7 +114,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
-            FROM=${{ needs.build-minrobot.build.outputs.digest }}
+            FROM=${{ needs.build-minrobot.outputs.digest }}
           file: docker/moos-ivp-gui/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
