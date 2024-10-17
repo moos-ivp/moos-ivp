@@ -153,5 +153,6 @@ jobs:
             FROM=${{ needs.build-minrobot.build.outputs.digest }}
           file: docker/moos-ivp-gui/Dockerfile
           cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
           push: ${{ env.PUSH_IMAGE }}
