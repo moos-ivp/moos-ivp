@@ -116,7 +116,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
-            FROM=${{ needs.build-minrobot.outputs.digest }}
+            FROM=${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs.digest }}
             SOURCE_DATE_EPOCH=${{ env.COMMIT_TIMESTAMP }}
           file: docker/moos-ivp-gui/Dockerfile
           cache-from: type=gha
