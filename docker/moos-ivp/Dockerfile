@@ -26,5 +26,8 @@ COPY --chown=moos . /home/moos/moos-ivp
 ### BEGIN MINROBOT STAGE
 FROM base AS minrobot
 
+# If given, use attempt to generate reproducable builds
+ARG SOURCE_DATE_EPOCH=""
+
 # Build the MOOS-IvP tools
 RUN cd "$HOME/moos-ivp" && ./build.sh --minrobot
