@@ -12,8 +12,6 @@ env:
 jobs:
   build-minrobot:
     runs-on: ubuntu-latest
-    env:
-      FLAVOR: ""
     steps:
       - name: Prepare
         run: |
@@ -34,13 +32,13 @@ jobs:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
             # branch event
-            type=ref,enable=true,prefix=${{ env.flavor }},event=branch
+            type=ref,enable=true,prefix=,event=branch
             # tag event
-            type=ref,enable=true,prefix=${{ env.flavor }},event=tag
+            type=ref,enable=true,prefix=,event=tag
             # pull request event
-            type=ref,enable=true,prefix=${{ env.flavor }}pr-,suffix=,event=pr
+            type=ref,enable=true,prefix=pr-,suffix=,event=pr
             # commit sha
-            type=sha,prefix=${{ env.flavor }},suffix=,format=short
+            type=sha,prefix=,suffix=,format=short
       
       - name: Login to Docker Hub
         uses: docker/login-action@v3
@@ -93,7 +91,7 @@ jobs:
             # tag event
             type=ref,enable=true,suffix=${{ env.FLAVOR }},event=tag
             # pull request event
-            type=ref,enable=true,suffix=pr-,suffix=${{ env.FLAVOR }},event=pr
+            type=ref,enable=true,prefix=pr-,suffix=${{ env.FLAVOR }},event=pr
             # commit sha
             type=sha,prefix=,suffix=${{ env.FLAVOR }},format=short
       
