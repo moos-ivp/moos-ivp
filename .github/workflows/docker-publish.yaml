@@ -6,6 +6,8 @@ on:
 
 env:
   REGISTRY_IMAGE: ghcr.io/${{ github.repository }}
+  # Only push images on forks or the main branch
+  PUSH_IMAGE: ${{ (github.ref_name == 'master') || (github.repository_owner != 'moos-ivp') }}
 
 jobs:
   build-base:
@@ -96,6 +98,7 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
           tags: ${{ steps.meta.outputs.tags }}
+          push: ${{ env.PUSH_IMAGE }}
 
   build-gui:
     runs-on: ubuntu-latest
@@ -151,3 +154,4 @@ jobs:
           file: docker/moos-ivp-gui/Dockerfile
           cache-from: type=gha
           tags: ${{ steps.meta.outputs.tags }}
+          push: ${{ env.PUSH_IMAGE }}
