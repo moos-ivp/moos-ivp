@@ -55,7 +55,6 @@ FldNodeComms::FldNodeComms()
   m_min_msg_interval = 30.0;
   m_min_rpt_interval = -1;
   m_max_msg_length   = 1000;    // zero means unlimited length
-  m_min_share_interval = 0.1;
   
   m_stale_dropped    = 0;
   
@@ -213,14 +212,16 @@ bool FldNodeComms::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
-   // look for latitude, longitude global variables
+   // Look for latitude, longitude initial datum
   double lat_origin, lon_origin;
   bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
   bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
   if(!ok1 || !ok2)
     reportConfigWarning("Lat or Lon Origin not set in *.moos file.");
 
-  m_ledger.setGeodesy(lat_origin, lon_origin);
+  bool ok_init = m_ledger.setGeodesy(lat_origin, lon_origin);
+  if(!ok_init)
+    reportConfigWarning("Geodesy failed to initialize");
   
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
@@ -591,11 +592,14 @@ void FldNodeComms::localShareNodeReportInfo(const string& us_vname)
   // First check if the latest record for the given vehicle is valid.
   if(!m_ledger.isValid(us_vname))
     return;
+  if(m_min_share_interval < 0)
+    return;
 
   bool ok_to_post = true;
   if(m_map_lshare_tstamp.count(us_vname)) {
     double elapsed = m_curr_time - m_map_lshare_tstamp[us_vname];
     double real_time_elapsed = elapsed / m_time_warp;
+    Notify("RTE", real_time_elapsed);
     if(real_time_elapsed < m_min_share_interval)
       ok_to_post = false;
   }

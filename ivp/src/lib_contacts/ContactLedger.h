@@ -26,6 +26,7 @@
 
 #include <set>
 #include <string>
+#include <vector>
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "NodeRecord.h"
 
@@ -36,7 +37,9 @@ public:
   ~ContactLedger() {};
 
   void setGeodesy(CMOOSGeodesy geodesy);
-  void setGeodesy(double dlat, double dlon);
+  bool setGeodesy(double dlat, double dlon);
+  bool addIgnoreVName(std::string vname);
+  bool addIgnoreGroup(std::string group);
   
   void setCurrTimeUTC(double utc) {m_curr_utc=utc;}
   void extrapolate(double utc=0);
@@ -46,6 +49,13 @@ public:
   std::string processNodeRecord(NodeRecord record,
 				std::string& whynot);
 
+  NodeRecord preCheckNodeReport(std::string report,
+				std::string& whynot);
+  bool preCheckNodeRecord(NodeRecord& record,
+			  std::string& whynot);
+
+  bool checkNodeRecord(NodeRecord record);
+  
   void clearNode(std::string vname);  
 
   bool isValid(std::string) const;
@@ -67,7 +77,9 @@ public:
   std::string getGroup(std::string vname) const;
   std::string getType(std::string vname) const;
   std::string getSpec(std::string vname) const;
-
+  std::string getIgnoreVNames() const;
+  std::string getIgnoreGroups() const;
+  
   unsigned int size() const {return(m_map_records_rep.size());}
   unsigned int totalReports() const {return(m_total_reports);}
   unsigned int totalReportsValid() const {return(m_total_reports_valid);}
@@ -93,6 +105,9 @@ protected:
 protected: // Config vars
   double m_stale_thresh;
   double m_extrap_thresh;
+
+  std::set<std::string> m_ignore_vnames;
+  std::set<std::string> m_ignore_groups;
   
 protected: // State vars
   // All keys are vnames for incoming node reports

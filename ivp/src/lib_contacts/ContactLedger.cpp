@@ -65,24 +65,117 @@ void ContactLedger::setGeodesy(CMOOSGeodesy geodesy)
 //---------------------------------------------------------------
 // Procedure: setGeodesy()
 
-void ContactLedger::setGeodesy(double dlat, double dlon)
+bool ContactLedger::setGeodesy(double dlat, double dlon)
 {
-  m_geodesy.Initialise(dlat, dlon);
+  bool ok_init = m_geodesy.Initialise(dlat, dlon);
+  if(!ok_init)
+    return(false);
+  
   m_geodesy_init = true;
   m_geodesy_updates++;
 
   updateLocalCoords();
+
+  return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: addIgnoreVName()
+
+bool ContactLedger::addIgnoreVName(string vname)
+{
+  if(vname == "")
+    return(false);
+
+  m_ignore_vnames.insert(toupper(vname));
+  return(true);
+}
+
+//---------------------------------------------------------------
+// Procedure: addIgnoreGroup()
+
+bool ContactLedger::addIgnoreGroup(string group)
+{
+  if(group == "")
+    return(false);
+  
+  m_ignore_groups.insert(toupper(group));
+  return(true);
 }
 
 //---------------------------------------------------------------
 // Procedure: processNodeReport()
+//   Returns: If successful, returns name of vehicle just added
+//            Otherwise empty string
 
 string ContactLedger::processNodeReport(string report,
 					string& whynot)
 {
   NodeRecord record = string2NodeRecord(report);
 
+  bool ok = preCheckNodeRecord(record, whynot);
+  if(!ok)
+    return("");
+  
   return(processNodeRecord(record, whynot));
+}
+
+//---------------------------------------------------------------
+// Procedure: precheckNodeReport()
+//      Note: Utiity for users of ContactLedger class that wish
+//            to (a) convert a node report msg to a record, (b)
+//            apply some criteria of their own before deciding
+//            to add it to the ledger, e.g., range/bng, before
+//            (c) finally adding it to the ledger. 
+
+NodeRecord ContactLedger::preCheckNodeReport(string report,
+					     string& whynot)
+{
+  NodeRecord record = string2NodeRecord(report);
+
+  if(!preCheckNodeRecord(record, whynot)) {
+    NodeRecord empty_record;
+    return(empty_record);
+  }
+
+  return(record);
+}
+
+//---------------------------------------------------------------
+// Procedure: preCheckNodeRecord()
+//   Purpose: (a) Sanity checks for required fields, (b) cross fill
+//            the coordinates if necessary.
+//      Note: This function modifies the incoming record.
+//            All records will have both Lat/Lon and X/Y at end.
+
+bool ContactLedger::preCheckNodeRecord(NodeRecord& record,
+				       string& whynot)
+{
+  // Check 1: Must have a name
+  if(record.getName() == "") {
+    whynot = "Missing vname";    
+    return(false);
+  }
+  
+  // Check 2: Must have a timestamp
+  if(!record.isSetTimeStamp()) {
+    whynot = "Missing timestamp";
+    return(false);
+  }
+
+  // Check 3: Must have either Lat/Lon or X/Y
+  if(!record.isSetLatLon() && !record.isSetXY()) {
+    whynot = "Missing both x/y and lat/lon";
+    return(false);
+  }
+
+  // Cross-fill coords if one or the other is missing
+  if(record.isSetLatLon() && !record.isSetXY())
+    updateLocalCoords(record);
+  else if(!record.isSetLatLon() && record.isSetXY())
+    updateGlobalCoords(record);
+
+  return(true);
 }
 
 //---------------------------------------------------------------
@@ -92,31 +185,24 @@ string ContactLedger::processNodeRecord(NodeRecord record,
 					string& whynot)
 {
   m_total_reports++;
-  // Sanity check 1: Must have a name and time stamp
-  string vname = toupper(record.getName());
-  if(vname == "") {
-    whynot = "Missing vname";    
-    return("");
-  }
-  
-  if(!record.isSetTimeStamp()) {
-    whynot = "Missing timestamp";
-    return(vname);
-  }
 
-  // Sanity check 2: Must have either Lat/Lon or X/Y
-  if(!record.isSetLatLon() && !record.isSetXY()) {
-    whynot = "Missing both x/y and lat/lon";
-    return(vname);
-  }
+  // Check 1: Check record min reqs, and cross-fill coords
+  if(!preCheckNodeRecord(record, whynot))
+    return("");
+  
+  string vname = toupper(record.getName());
+  string group = toupper(record.getGroup());
+
+  // Check 2: Ignore vnames on ignore list, (ownship somtimes)
+  if(m_ignore_vnames.count(vname))
+    return("");
+
+  // Check 3: Ignore groups on ignore list, (red/blue team)
+  if((group != "") && m_ignore_groups.count(group))
+    return("");
+  
   m_total_reports_valid++;
   
-  // Part 1: Cross fill if one or the other is missing
-  if(record.isSetLatLon() && !record.isSetXY())
-    updateLocalCoords(record);
-  else if(!record.isSetLatLon() && record.isSetXY())
-    updateGlobalCoords(record);
-
   // Part 2: Receive the node reccord
   m_map_records_rep[vname] = record;
   m_map_records_ext[vname] = record;
@@ -491,6 +577,22 @@ string ContactLedger::getSpec(string vname) const
     return(p->second.getSpec());
   
   return("");
+}
+
+//---------------------------------------------------------------
+// Procedure: getIgnoreVNames()
+
+string ContactLedger::getIgnoreVNames() const
+{
+  return(stringSetToString(m_ignore_vnames));
+}
+
+//---------------------------------------------------------------
+// Procedure: getIgnoreGroups()
+
+string ContactLedger::getIgnoreGroups() const
+{
+  return(stringSetToString(m_ignore_groups));
 }
 
 //---------------------------------------------------------------
