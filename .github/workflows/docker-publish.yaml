@@ -18,7 +18,9 @@ jobs:
     steps:
       - name: Prepare
         run: |
-          echo "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
+          export "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)" 
+          echo "COMMIT_TIMESTAMP = $COMMIT_TIMESTAMP"
+          echo $COMMIT_TIMESTAMP >> $GITHUB_ENV
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
