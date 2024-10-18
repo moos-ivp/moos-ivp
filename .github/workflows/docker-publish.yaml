@@ -16,7 +16,7 @@ jobs:
       registry_image: ${{ steps.prepare.outputs.REGISTRY_IMAGE }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: Prepare various metadata
         id: prepare
         run: |
