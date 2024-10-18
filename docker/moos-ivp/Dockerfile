@@ -30,4 +30,4 @@ FROM base AS minrobot
 ARG SOURCE_DATE_EPOCH=""
 
 # Build the MOOS-IvP tools
-RUN cd "$HOME/moos-ivp" && ./build.sh --minrobot
+RUN cd "$HOME/moos-ivp" && echo "SOURCE_DATE_EPOCH=${SOURCE_DATE_EPOCH}" && ./build.sh --minrobot
