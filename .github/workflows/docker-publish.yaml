@@ -10,18 +10,28 @@ env:
   PUSH_IMAGE: ${{ (github.ref_name == 'master') || (github.repository_owner != 'moos-ivp') }}
 
 jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    outputs:
+      commit_time: ${{ steps.prepare.outputs.commit_time }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Prepare commit timestamp
+        id: prepare
+        run: |
+          export "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)"
+          echo "COMMIT_TIMESTAMP = $COMMIT_TIMESTAMP"
+          echo $COMMIT_TIMESTAMP >> $GITHUB_OUTPUT
+
   build-minrobot:
     runs-on: ubuntu-latest
+    env:
+      SOURCE_DATE_EPOCH: ${{ needs.prepare.outputs.commit_time }}
     outputs:
       # So we can `FROM` this image in the next build
       digest: ${{ steps.build.outputs.digest }}
     steps:
-      - name: Prepare
-        run: |
-          export "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)" 
-          echo "COMMIT_TIMESTAMP = $COMMIT_TIMESTAMP"
-          echo $COMMIT_TIMESTAMP >> $GITHUB_ENV
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       
@@ -31,8 +41,6 @@ jobs:
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
-        env:
-          SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
@@ -55,13 +63,11 @@ jobs:
       - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v6
-        env:
-          SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
         with:
           platforms: linux/amd64,linux/arm64
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
-            SOURCE_DATE_EPOCH=${{ env.COMMIT_TIMESTAMP }}
+            SOURCE_DATE_EPOCH=${{ env.SOURCE_DATE_EPOCH }}
           file: docker/moos-ivp/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -74,11 +80,8 @@ jobs:
       - build-minrobot
     env:
       FLAVOR: "-gui"
+      SOURCE_DATE_EPOCH: ${{ needs.prepare.outputs.commit_time }}
     steps:
-      - name: Prepare
-        run: |
-          echo "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)" >> $GITHUB_ENV
-
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
       
@@ -88,8 +91,6 @@ jobs:
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
-        env:
-          SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
         with:
           images: ${{ env.REGISTRY_IMAGE }}
           tags: |
@@ -112,14 +113,12 @@ jobs:
       - name: Build and push by digest
         id: build
         uses: docker/build-push-action@v6
-        env:
-          SOURCE_DATE_EPOCH: ${{ env.COMMIT_TIMESTAMP }}
         with:
           platforms: linux/amd64,linux/arm64
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             FROM=${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs.digest }}
-            SOURCE_DATE_EPOCH=${{ env.COMMIT_TIMESTAMP }}
+            SOURCE_DATE_EPOCH=${{ env.SOURCE_DATE_EPOCH }}
           file: docker/moos-ivp-gui/Dockerfile
           cache-from: type=gha
           cache-to: type=gha,mode=max
