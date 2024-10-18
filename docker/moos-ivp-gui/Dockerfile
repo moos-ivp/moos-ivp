@@ -1,7 +1,7 @@
 ARG FROM=moosivp/moos-ivp:trunk
 FROM $FROM
 
-LABEL maintainer="Conlan Cesar <conlanc@csail.mit.edu>""
+LABEL maintainer="Conlan Cesar <conlanc@csail.mit.edu>"
 
 # Install required MOOS dependencies
 USER root
