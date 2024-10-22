@@ -22,10 +22,10 @@ jobs:
         run: |
           # Get the commit timestamp
           export "COMMIT_TIMESTAMP=$(git log -1 --pretty=%ct)"
-          echo "COMMIT_TIMESTAMP=$COMMIT_TIMESTAMP" >> $GITHUB_OUTPUT
+          echo "COMMIT_TIMESTAMP=${COMMIT_TIMESTAMP}" >> $GITHUB_OUTPUT
 
           # Lowercase the repository name
-          UNSANITIZED_REGISTRY_IMAGE=ghcr.io/${{ github.repository }}
+          UNSANITIZED_REGISTRY_IMAGE="ghcr.io/${{ github.repository }}"
           echo "REGISTRY_IMAGE=${UNSANITIZED_REGISTRY_IMAGE,,}" >> $GITHUB_OUTPUT
 
           # Print it for our audience
@@ -62,7 +62,7 @@ jobs:
             # commit sha
             type=sha,prefix=,suffix=,format=short
 
-      - name: Login to Docker Hub
+      - name: Login to Github Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -112,7 +112,7 @@ jobs:
             # commit sha
             type=sha,prefix=,suffix=${{ env.FLAVOR }},format=short
 
-      - name: Login to Docker Hub
+      - name: Login to Github Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
