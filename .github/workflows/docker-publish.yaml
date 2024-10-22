@@ -59,8 +59,6 @@ jobs:
             type=ref,enable=true,prefix=,event=branch
             # tag event
             type=ref,enable=true,prefix=,event=tag
-            # pull request event
-            type=ref,enable=true,prefix=pr-,suffix=,event=pr
             # commit sha
             type=sha,prefix=,suffix=,format=short
 
@@ -111,8 +109,6 @@ jobs:
             type=ref,enable=true,suffix=${{ env.FLAVOR }},event=branch
             # tag event
             type=ref,enable=true,suffix=${{ env.FLAVOR }},event=tag
-            # pull request event
-            type=ref,enable=true,prefix=pr-,suffix=${{ env.FLAVOR }},event=pr
             # commit sha
             type=sha,prefix=,suffix=${{ env.FLAVOR }},format=short
 
