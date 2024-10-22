@@ -1,4 +1,4 @@
-FROM ubuntu:24.04 AS base
+FROM ubuntu:18.04 AS base
 LABEL maintainer="Conlan Cesar <conlanc@csail.mit.edu>"
 
 # Set the default shell to bash
