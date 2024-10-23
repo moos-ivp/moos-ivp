@@ -6,7 +6,7 @@ on:
 
 env:
   # Only push images on forks or the main branch
-  PUSH_IMAGE: ${{ (github.ref_name == 'master') || (github.repository_owner != 'moos-ivp') }}
+  PUSH_IMAGE: ${{ (github.ref_name == 'main') || (github.repository_owner != 'moos-ivp') }}
 
 jobs:
   prepare:
