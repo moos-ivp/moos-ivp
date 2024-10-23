@@ -167,15 +167,17 @@ jobs:
         id: credentials
         run: |
           # Write the username and password to job outputs
-          echo "REGISTRY_USERNAME=${{ secrets[format('REGISTRY_USERNAME_{0}', steps.prepare.outputs.REGISTRY)] }}" >> $GITHUB_OUTPUT
-          echo "REGISTRY_PASSWORD=${{ secrets[format('REGISTRY_PASSWORD_{0}', steps.prepare.outputs.REGISTRY)] }}" >> $GITHUB_OUTPUT
+          REGISTRY_USERNAME=${{ secrets[format('REGISTRY_USERNAME_{0}', steps.prepare.outputs.REGISTRY)] }}
+          REGISTRY_PASSWORD=${{ secrets[format('REGISTRY_PASSWORD_{0}', steps.prepare.outputs.REGISTRY)] }}
 
-          if [ ! -s $GITHUB_OUTPUT ]; then
+          if [[ -n "${REGISTRY_USERNAME}" && -n "${REGISTRY_PASSWORD}" ]]; then
             # If we don't have the relevant credentials, we can't push. Warn the user, but don't fail.
             echo "::warning::Pushing to ${{ matrix.registry }} is disabled; we can't find credentials"
-            echo "REGISTRY_READY=false" >> $GITHUB_OUTPUT
+            echo "REGISTRY_READY=false" | tee -a $GITHUB_OUTPUT
           else
-            echo "REGISTRY_READY=true" >> $GITHUB_OUTPUT
+            echo "REGISTRY_USERNAME=${REGISTRY_USERNAME}" >> $GITHUB_OUTPUT
+            echo "REGISTRY_PASSWORD=${REGISTRY_PASSWORD}" >> $GITHUB_OUTPUT
+            echo "REGISTRY_READY=true" | tee -a $GITHUB_OUTPUT
           fi
 
       - name: Set up Docker Buildx
