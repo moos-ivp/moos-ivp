@@ -114,7 +114,7 @@
       
       '("uFldSwarmAssign" "task")
       '("pProxonoi" "region" "post_poly" "post_region" "reject_range" "ignore_name" "max_appcast_events")
-      '("uFldCollisionDetect" "collision_range" "collision_dist" "near_miss_range" "near_miss_range" "pulse_render" "pulse_range" "pulse_duration" "condition" "collision_flag" "near_miss_flag" "encounter_flag" "encounter_range" "encounter_dist" "report_all_encounters" "post_closest_range" "ignore_group" "reject_group" "max_appcast_events" "encounter_rings" )
+      '("uFldCollisionDetect" "collision_range" "collision_dist" "near_miss_range" "near_miss_range" "pulse_render" "pulse_range" "pulse_duration" "condition" "collision_flag" "near_miss_flag" "encounter_flag" "encounter_range" "encounter_dist" "report_all_encounters" "post_closest_range" "ignore_group" "reject_group" "max_appcast_events" "encounter_rings" "verbose" )
 
       '("pPolePath" "start_line" "end_line" "poles_number" "steps_number" "display_poles" "display_steps" "start_pole" "output_var" "random_end")
       '("pRangeSensorHangler" "local_range" "range_report" "target_name" "verbose" "disp_range_circle" "max_appcast_events")
