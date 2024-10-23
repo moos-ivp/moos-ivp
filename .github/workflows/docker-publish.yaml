@@ -170,7 +170,7 @@ jobs:
           REGISTRY_USERNAME=${{ secrets[format('REGISTRY_USERNAME_{0}', steps.prepare.outputs.REGISTRY)] }}
           REGISTRY_PASSWORD=${{ secrets[format('REGISTRY_PASSWORD_{0}', steps.prepare.outputs.REGISTRY)] }}
 
-          if [[ -n "${REGISTRY_USERNAME}" && -n "${REGISTRY_PASSWORD}" ]]; then
+          if [[ -z "${REGISTRY_USERNAME}" && -z "${REGISTRY_PASSWORD}" ]]; then
             # If we don't have the relevant credentials, we can't push. Warn the user, but don't fail.
             echo "::warning::Pushing to ${{ matrix.registry }} is disabled; we can't find credentials"
             echo "REGISTRY_READY=false" | tee -a $GITHUB_OUTPUT
