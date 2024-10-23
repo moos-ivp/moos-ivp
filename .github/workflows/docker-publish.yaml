@@ -160,7 +160,7 @@ jobs:
 
           # Quay & DockerHub don't support dashes in the repository name
           UNSANITIZED_ORG="${{ github.organization }}"
-          REPO="${UNSANITIZED_REPO//\-/}/${{ github.repository_name }}" # Remove dashes from the repository name
+          REPO="${UNSANITIZED_ORG//\-/}/${{ github.repository_name }}" # Remove dashes from the repository name
           echo "REPOSITORY=${{ matrix.registry }}/${REPO}" | tee -a $GITHUB_OUTPUT
 
       - name: Prepare Credentials
