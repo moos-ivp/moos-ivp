@@ -138,6 +138,7 @@ jobs:
 
   push-to-registry:
     runs-on: ubuntu-latest
+    if: PUSH_IMAGE
     needs:
       - prepare
       - build-minrobot
