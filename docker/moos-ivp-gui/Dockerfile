@@ -9,5 +9,5 @@ RUN apt-get update -y && apt-get install -y cmake build-essential subversion git
 USER moos
 
 # Build the MOOS-IvP tools
-RUN cd "$HOME/moos-ivp" && ./build-moos.sh --release && ./build-ivp.sh
+RUN cd "$HOME/moos-ivp" && ./build-moos.sh && ./build-ivp.sh
 
