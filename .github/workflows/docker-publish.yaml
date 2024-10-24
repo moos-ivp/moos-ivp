@@ -201,8 +201,8 @@ jobs:
         if: steps.credentials.outputs.REGISTRY_READY == 'true'
         with:
           registry: ${{ matrix.registry }}
-          username: ${{ job.credentials.output.REGISTRY_USERNAME }}
-          password: ${{ job.credentials.output.REGISTRY_PASSWORD }}
+          username: ${{ steps.credentials.output.REGISTRY_USERNAME }}
+          password: ${{ steps.credentials.output.REGISTRY_PASSWORD }}
 
       - name: Push to ${{ matrix.registry }}
         id: check
