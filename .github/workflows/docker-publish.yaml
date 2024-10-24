@@ -124,6 +124,31 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           push: true
 
+  test-unittests:
+    runs-on: ubuntu-latest
+    needs:
+      - prepare
+      - build-gui
+    container:
+      image: ${{ needs.prepare.outputs.registry_image }}@${{ needs.build-gui.outputs.digest }}
+    steps:
+      - name: Check for expected binaries
+        run: |
+          ls
+          echo "Checking for build binaries"
+          ./build-check.sh
+
+      - name: Run unit tests
+        run: |
+          # Run the unit tests
+          ls
+          echo "Running automated mission tests"
+          ./build-utests.sh
+          cd ivp/src_unit_tests/
+          ./alltest.sh
+
+
+
   push-to-registry:
     runs-on: ubuntu-latest
     # Only push images on forks or the main branch
