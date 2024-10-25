@@ -167,16 +167,22 @@ jobs:
       - name: Sanitize some things
         id: prepare
         run: |
-          # Sanitize the registry name
-          REGISTRY="${{ matrix.registry }}"
-          REGISTRY="${REGISTRY^^}" # upper case
-          REGISTRY="${REGISTRY//[^A-Z0-9]/_}" # replace non-alphanumeric with _
-          echo "REGISTRY=${REGISTRY}" >> $GITHUB_OUTPUT
+          # Sanitize org and repo names
+          ORG="${{ github.organization }}"
+          if [[ ${{ matrix.registry }} != "ghcr.io" ]]; then
+            # Quay & DockerHub don't support dashes in the repository name
+            ORG="${ORG//\-/}" # Remove dashes from the repository name
+          fi
 
-          # Quay & DockerHub don't support dashes in the repository name
-          UNSANITIZED_ORG="${{ github.organization }}"
-          REPO="${UNSANITIZED_ORG//\-/}/${{ github.repository_name }}" # Remove dashes from the repository name
+          REPO="${ORG}/${{ github.repository_name }}"
+          REPO="${REPO,,}" # lowercase
+
           echo "REPOSITORY=${{ matrix.registry }}/${REPO}" | tee -a $GITHUB_OUTPUT
+
+          # Sanitize the registry name for use by secrets
+          REGISTRY="${{ matrix.registry }}"
+          REGISTRY="${REGISTRY//[^A-Za-z0-9]/_}" # replace non-alphanumeric with _
+          echo "REGISTRY=${REGISTRY}" | tee -a $GITHUB_OUTPUT
 
       - name: Prepare Credentials
         id: credentials
@@ -228,9 +234,14 @@ jobs:
         id: check
         if: steps.credentials.outputs.REGISTRY_READY == 'true'
         run: |
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+          BASE_TAGS=$(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          GUI_TAGS=$(jq -cr '.tags | map("-t " + .) | join("-gui ")' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+
+          echo "Base Tags: ${BASE_TAGS}"
+          echo "GUI Tags: ${GUI_TAGS}"
+
+          docker buildx imagetools create $BASE_TAGS \
               ${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs.digest }}
 
-          # Cheap way to also copy the gui
-          docker buildx imagetools create $(jq -cr '.tags | map("-t " + .) | join("-gui ")' <<< "$DOCKER_METADATA_OUTPUT_JSON") \
+          docker buildx imagetools create $GUI_TAGS \
               ${{ env.REGISTRY_IMAGE }}@${{ needs.build-gui.outputs.digest }}
