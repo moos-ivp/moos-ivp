@@ -65,7 +65,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64,linux/arm64
+          #platforms: linux/amd64,linux/arm64
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             SOURCE_DATE_EPOCH=${{ env.SOURCE_DATE_EPOCH }}
@@ -113,7 +113,7 @@ jobs:
         id: build
         uses: docker/build-push-action@v6
         with:
-          platforms: linux/amd64,linux/arm64
+          #platforms: linux/amd64,linux/arm64
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
             FROM=${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs.digest }}
