@@ -134,6 +134,7 @@ jobs:
     steps:
       - name: Check for expected binaries
         run: |
+          cd $HOME/moos-ivp
           ls
           echo "Checking for build binaries"
           ./build-check.sh
@@ -141,6 +142,7 @@ jobs:
       - name: Run unit tests
         run: |
           # Run the unit tests
+          cd $HOME/moos-ivp
           ls
           echo "Running automated mission tests"
           ./build-utests.sh
