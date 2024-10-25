@@ -237,13 +237,12 @@ jobs:
         if: steps.credentials.outputs.REGISTRY_READY == 'true'
         run: |
           BASE_TAGS=$(jq -cr '.tags | map("-t " + .) | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON")
-          GUI_TAGS=$(jq -cr '.tags | map("-t " + .) | join("-gui ")' <<< "$DOCKER_METADATA_OUTPUT_JSON")
+          GUI_TAGS=$(jq -cr '.tags | map("-t " + . + "-gui") | join(" ")' <<< "$DOCKER_METADATA_OUTPUT_JSON")
 
           echo "Base Tags: ${BASE_TAGS}"
-          echo "GUI Tags: ${GUI_TAGS}"
-
           docker buildx imagetools create $BASE_TAGS \
               ${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs.digest }}
 
+          echo "GUI Tags: ${GUI_TAGS}"
           docker buildx imagetools create $GUI_TAGS \
               ${{ env.REGISTRY_IMAGE }}@${{ needs.build-gui.outputs.digest }}
