@@ -1,4 +1,4 @@
-ARG FROM=moosivp/moos-ivp:trunk
+ARG FROM="PLEASE_SET_BASE_IMAGE"
 FROM $FROM
 
 LABEL maintainer="Conlan Cesar <conlanc@csail.mit.edu>"
