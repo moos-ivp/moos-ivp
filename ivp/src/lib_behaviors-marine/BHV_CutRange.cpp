@@ -39,7 +39,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Procedure: Constructor()
 
 BHV_CutRange::BHV_CutRange(IvPDomain gdomain) : IvPContactBehavior(gdomain)
 {
@@ -53,6 +53,7 @@ BHV_CutRange::BHV_CutRange(IvPDomain gdomain) : IvPContactBehavior(gdomain)
   m_pwt_inner_dist = 0;
 
   m_patience      = 0;
+  m_max_patience  = 85;  // Added Nov0724. 85 was max, now can override
   m_giveup_range  = 0;   // meters - zero means never give up
   m_giveup_thresh = 1;   // meters - anti thrashing buffer
   m_time_on_leg   = 15;  // seconds
@@ -65,14 +66,12 @@ BHV_CutRange::BHV_CutRange(IvPDomain gdomain) : IvPContactBehavior(gdomain)
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool BHV_CutRange::setParam(string param, string param_val) 
 {
   if(IvPContactBehavior::setParam(param, param_val))
     return(true);
-
-  double dval = atof(param_val.c_str());
 
   if(param == "pwt_inner_dist") {
     return(setMinPartOfPairOnString(m_pwt_inner_dist,
@@ -88,14 +87,23 @@ bool BHV_CutRange::setParam(string param, string param_val)
     return(addFlagOnString(m_pursue_flags, param_val));
   else if(param == "giveupflag") 
     return(addFlagOnString(m_giveup_flags, param_val));
-  else if((param == "patience") && isNumber(param_val)) {
-    if((dval < 0) || (dval > 100))
-      return(false);
-    m_patience = dval;
-    return(true);
-  }  
+  else if(param == "patience")
+    return(setDoubleStrictRngOnString(m_patience, param_val, 0, 100));
+  else if(param == "max_patience") 
+    return(setDoubleStrictRngOnString(m_max_patience, param_val, 0, 100));
 
   return(false);
+}
+
+//-----------------------------------------------------------
+// Procedure: setParamComplete()
+//      Note: Gets called at mission launch after all params
+//            set, and after each dynamic update. 
+
+void BHV_CutRange::onSetParamComplete() 
+{
+  if(m_patience > m_max_patience)
+    m_patience = m_max_patience;
 }
 
 //-----------------------------------------------------------
