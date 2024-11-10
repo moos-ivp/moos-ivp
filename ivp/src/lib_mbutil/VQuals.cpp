@@ -26,7 +26,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Procedure: getVName()
+// Procedure: getIndexVName1()
 
 string getIndexVName1(unsigned int ix)
 {
