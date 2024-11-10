@@ -99,7 +99,7 @@ do
 	fi
     else
 	if [ "${KILLALL}" != "" ]; then 	    
-	    REPORT+=" ---         ---      "
+	    REPORT+=" "
 	fi
     fi
     vecho "$REPORT $app"
