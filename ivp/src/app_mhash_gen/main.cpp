@@ -32,6 +32,7 @@ using namespace std;
 int main(int argc, char *argv[])
 {
   bool short_hash = false;
+  bool gen_zhash = false;
 
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
@@ -49,10 +50,13 @@ int main(int argc, char *argv[])
       cout << "Options: " << endl;
       cout << "  -h, --help   Display this help message" << endl;
       cout << "  -s, --short  Generate the short mission hash" << endl;
+      cout << "  -z, --zhash  Generate a zhash" << endl;
       return(0);
     }
     else if((argi == "-s") || (argi == "--shore"))
       short_hash = true;
+    else if((argi == "-z") || (argi == "--zhash"))
+      gen_zhash = true;
     else {
       cout << "Unhandled arg: " << argi << endl;
       return(1);
@@ -66,7 +70,9 @@ int main(int argc, char *argv[])
   seed = (seed*pid)%999999;
   srand(seed);
 
-  if(short_hash)
+  if(gen_zhash)
+    cout << zHash() << endl;
+  else if(short_hash)
     cout << missionHashShort(missionHash()) << endl;
   else
     cout << missionHash() << endl;
