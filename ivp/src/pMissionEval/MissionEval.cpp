@@ -25,11 +25,12 @@
 #include "MissionEval.h"
 #include "VarDataPairUtils.h"
 #include "MacroUtils.h"
+#include "HashUtils.h"
 
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 MissionEval::MissionEval()
 {
@@ -37,6 +38,8 @@ MissionEval::MissionEval()
 
   m_info_buffer = new InfoBuffer;
   m_logic_tests.setInfoBuffer(m_info_buffer);
+
+  m_db_uptime = 0;
 }
 
 //---------------------------------------------------------
@@ -67,6 +70,12 @@ bool MissionEval::OnNewMail(MOOSMSG_LIST &NewMail)
       
     // Pass mail to VCheckSet
     m_vcheck_set.handleMail(key, sval, dval, mtime);
+
+    if(key == "MISSION_HASH")
+      m_mission_hash = sval;
+
+    else if(key == "DB_UPTIME")
+      m_db_uptime = dval;
   }
 
   // After MailFlagSet has handled all mail from this iteration,
@@ -273,6 +282,8 @@ void MissionEval::registerVariables()
   for(unsigned int i=0; i<mflag_vars.size(); i++)
     Register(mflag_vars[i], 0);
 
+  Register("MISSION_HASH");  
+  Register("DB_UPTIME");  
 }
 
 
@@ -387,6 +398,24 @@ string MissionEval::expandMacros(string sdata) const
       double dval = m_info_buffer->dQuery(var, ok);
       if(ok) 
 	sdata = macroExpand(sdata, var, dval);
+    }
+  }
+
+  if(strContains(sdata, "$[MHASH_SHORT]")) {
+    string mhash_short = "[" + missionHashShort(m_mission_hash) + "]";
+    sdata = macroExpand(sdata, "MHASH_SHORT", mhash_short);
+  }
+  
+  if(strContains(sdata, "$[MHASH_UTC]")) {
+    string mhash_utc = tokStringParse(m_mission_hash, "utc", ',', '=');
+    sdata = macroExpand(sdata, "MHASH_UTC", mhash_utc);
+  }
+  
+  if(strContains(sdata, "$[WALL_TIME]")) {
+    if(m_time_warp > 0) {
+      double wall_time = m_db_uptime / m_time_warp;
+      string wall_str = doubleToString(wall_time,2); 
+      sdata = macroExpand(sdata, "WALL_TIME", wall_str);
     }
   }
   
