@@ -428,7 +428,8 @@ bool BHV_Waypoint::setParam(string param, string param_val)
       m_waypoint_engine.setCaptureLine(false);
     return(true);
   }
-  else if(param == "crs_spd_zaic_ratio") {
+  else if((param == "crs_spd_zaic_ratio") ||
+	  (param == "patience")) {
     // require dval such that course and speed pcts are each in [1,99]
     // and sum to 100.
     if((dval < 1) || (dval > 99))
@@ -828,7 +829,7 @@ IvPFunction *BHV_Waypoint::buildOF(string method)
 
     if(!crs_ipf) 
       postWMessage("Failure on the CRS ZAIC");
-    
+
     OF_Coupler coupler;
     ipf = coupler.couple(crs_ipf, spd_ipf, m_course_pct, m_speed_pct);
     if(!ipf)
