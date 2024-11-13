@@ -87,7 +87,7 @@ ContactMgrV20::ContactMgrV20()
 }
 
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -131,7 +131,7 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool ContactMgrV20::OnConnectToServer()
 {
@@ -172,9 +172,23 @@ bool ContactMgrV20::OnStartUp()
   // PID published to support uMemWatch or similar oversight
   Notify("PCONTACTMGRV20_PID", getpid());
 
+   // Look for latitude, longitude initial datum
+  double lat_origin, lon_origin;
+  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
+  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
+  if(!ok1 || !ok2)
+    reportConfigWarning("Lat or Lon Origin not set in *.moos file.");
+
+  bool ok_init = m_ledger.setGeodesy(lat_origin, lon_origin);
+  if(!ok_init)
+    reportConfigWarning("Geodesy failed to initialize");
+  
   m_ownship = m_host_community;
   if(m_ownship == "") 
     reportUnhandledConfigWarning("ownship name unknown, host_community unset");
+
+  // Inform the Ledger to ignore any local reports for ownship.
+  m_ledger.addIgnoreVName(m_ownship);
   
   // Part 1: Set the basic configuration parameters.
   STRING_LIST sParams;
@@ -325,15 +339,68 @@ void ContactMgrV20::registerVariables()
 //            SPD=2.00,HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=DRIVE
 
+#if 0
+bool ContactMgrV20::handleMailNodeReport(string report,
+					 string& whynot)
+{
+  NodeRecord new_record = m_ledger.preCheckNodeReport(report, whynot);
+  string vname = new_record.getName();
+  if(vname == "")
+    return(false);
+  if(tolower(vname) == tolower(m_ownship))
+    return(true);
+
+  // ==============================================================
+  // Part 1: Check against ContactMgr level ExclusionFilterSet 
+  // ==============================================================
+  // Note: If this contact is filtered, add it to the set of filtered
+  // vnames. If for some reason it had passed this check previously,
+  // and failed now, we to retire it promptly. This may occur for
+  // example if the contact moved in/out of a match/ignore region.
+
+  bool ok_filt = m_filter_set.filterCheck(new_record, m_osx, m_osy);
+  if(!ok_filt) {
+    m_filtered_vnames.insert(new_record.getName());
+    return;
+  }
+
+  // ==============================================================
+  // Part 2: Accept the contact, update data structures
+  // ==============================================================
+  bool prev_known_vehicle = m_ledger.hasVName(vname);
+  m_ledger.addNodeRecord(new_record);
+  
+  if(!prev_known_vehicle) {
+    m_map_node_ranges_actual[vname] = 0;
+    m_map_node_ranges_extrap[vname] = 0;
+    m_map_node_ranges_cpa[vname]    = 0;
+
+    m_par.addVehicle(vname);
+
+    if(m_alert_verbose) 
+      Notify("ALERT_VERBOSE", "new_contact="+vname);
+  }
+  
+  // Check if the contact had been on the retired list (due to age)
+  // and if so, resurrect it and remove it from the retired list.
+  m_contacts_retired.remove(vname);
+}
+#endif
+
+//---------------------------------------------------------
+// Procedure: handleMailNodeReport()
+//   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
+//            X=29.66,Y=-23.49, LAT=43.825089,LON=-70.330030, 
+//            SPD=2.00,HDG=119.06,YAW=119.05677,DEPTH=0.00,     
+//            LENGTH=4.0,MODE=DRIVE
+#if 1
 void ContactMgrV20::handleMailNodeReport(string report)
 {
-  cout << "HandleMailNodeReport!!!!" << endl;
   NodeRecord new_node_record = string2NodeRecord(report, true);
   string vname = new_node_record.getName();
   // If incoming node name matches ownship, just ignore the node report
   if(vname == m_ownship)
     return;
-
 
   // ==============================================================
   // Part 1: Settle contact x/y position if overriding with lat/lon
@@ -413,7 +480,7 @@ void ContactMgrV20::handleMailNodeReport(string report)
   // and if so, resurrect it and remove it from the retired list.
   m_contacts_retired.remove(vname);
 }
-
+#endif
 
 //---------------------------------------------------------
 // Procedure: handleMailDisplayRadii()
@@ -529,7 +596,7 @@ void ContactMgrV20::handleMailHelmState(string value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleConfigDeprecations
+// Procedure: handleConfigDeprecations()
 
 string ContactMgrV20::handleConfigDeprecations(string param)
 {
@@ -642,7 +709,7 @@ bool ContactMgrV20::handleConfigRejectRange(string str)
 }
 
 //---------------------------------------------------------
-// Procedure: handleConfigAlert
+// Procedure: handleConfigAlert()
 
 bool ContactMgrV20::handleConfigAlert(string alert_str, string source)
 {
@@ -828,7 +895,7 @@ void ContactMgrV20::postRangeReports()
 }
 
 //---------------------------------------------------------
-// Procedure: postSummaries
+// Procedure: postSummaries()
 
 void ContactMgrV20::postSummaries()
 {
@@ -976,7 +1043,7 @@ void ContactMgrV20::postSummaries()
 
 
 //---------------------------------------------------------
-// Procedure: checkForAlerts
+// Procedure: checkForAlerts()
 //   Purpose: Check each contact/alert pair and handle if the
 //            alert condition changes.
 
@@ -1144,7 +1211,7 @@ void ContactMgrV20::checkForNewRetiredContacts()
 }
 
 //----------------------------------------------------------------
-// Procedure: postOnAlerts
+// Procedure: postOnAlerts()
 
 void ContactMgrV20::postOnAlerts(NodeRecord record, string id)
 {
@@ -1158,7 +1225,7 @@ void ContactMgrV20::postOnAlerts(NodeRecord record, string id)
 }
 
 //----------------------------------------------------------------
-// Procedure: postOffAlerts
+// Procedure: postOffAlerts()
 
 void ContactMgrV20::postOffAlerts(NodeRecord record, string id)
 {
@@ -1172,7 +1239,7 @@ void ContactMgrV20::postOffAlerts(NodeRecord record, string id)
 }
 
 //----------------------------------------------------------------
-// Procedure: postAlert
+// Procedure: postAlert()
 
 void ContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
 {
@@ -1237,7 +1304,7 @@ void ContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
 }
 
 //---------------------------------------------------------
-// Procedure: updateRanges
+// Procedure: updateRanges()
 
 void ContactMgrV20::updateRanges()
 {
@@ -1290,7 +1357,7 @@ void ContactMgrV20::updateRanges()
 }
 
 //---------------------------------------------------------
-// Procedure: postRadii
+// Procedure: postRadii()
 
 void ContactMgrV20::postRadii(bool active)
 {
@@ -1417,7 +1484,7 @@ bool ContactMgrV20::knownAlert(string alert_id) const
 }
 
 //---------------------------------------------------------
-// Procedure: getAlertRange
+// Procedure: getAlertRange()
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
@@ -1429,7 +1496,7 @@ double ContactMgrV20::getAlertRange(string alert_id) const
 }
 
 //---------------------------------------------------------
-// Procedure: getAlertRangeCPA
+// Procedure: getAlertRangeCPA()
 //      Note: Use this method to access map, not map directly. This 
 //            allows intelligent defaults to be applied if missing key.
 
@@ -1441,7 +1508,7 @@ double ContactMgrV20::getAlertRangeCPA(string alert_id) const
 }
 
 //---------------------------------------------------------
-// Procedure: getAlertOnFlags
+// Procedure: getAlertOnFlags()
 
 vector<VarDataPair> ContactMgrV20::getAlertOnFlags(string alert_id) const
 {
@@ -1452,7 +1519,7 @@ vector<VarDataPair> ContactMgrV20::getAlertOnFlags(string alert_id) const
 }
 
 //---------------------------------------------------------
-// Procedure: getAlertOffFlags
+// Procedure: getAlertOffFlags()
 
 vector<VarDataPair> ContactMgrV20::getAlertOffFlags(string alert_id) const
 {
@@ -1494,7 +1561,7 @@ list<string> ContactMgrV20::getRangeOrderedContacts() const
 
 
 //---------------------------------------------------------
-// Procedure: buildReport
+// Procedure: buildReport()
 //      Note: A virtual function of the AppCastingMOOSApp superclass, 
 //            conditionally invoked if either a terminal or appcast 
 //            report is needed.

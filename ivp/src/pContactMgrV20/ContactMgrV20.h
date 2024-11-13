@@ -27,6 +27,7 @@
 #include <vector>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
+#include "ContactLedger.h"
 #include "NodeRecord.h"
 #include "XYPolygon.h"
 #include "PlatformAlertRecord.h"
@@ -151,6 +152,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
   std::map<std::string, bool>        m_map_rep_refresh;
   
   // Main Record #2: The Vehicles (contacts) and position info
+  ContactLedger m_ledger;
   std::map<std::string, NodeRecord>   m_map_node_records;
   std::map<std::string, double>       m_map_node_ranges_actual;
   std::map<std::string, double>       m_map_node_ranges_extrap;
