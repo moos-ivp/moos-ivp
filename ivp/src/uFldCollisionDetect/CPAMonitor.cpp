@@ -32,7 +32,7 @@
 using namespace std;
 
 //---------------------------------------------------------
-// Constructor
+// Constructor()
 
 CPAMonitor::CPAMonitor()
 {
@@ -45,8 +45,37 @@ CPAMonitor::CPAMonitor()
   m_closest_range_ever = -1;
 }
 
+//---------------------------------------------------------------
+// Procedure: setGeodesy()
+
+void CPAMonitor::setGeodesy(CMOOSGeodesy geodesy)
+{
+  m_geodesy = geodesy;
+  m_geodesy_init = true;  
+  m_geodesy_updates++;
+
+  updateLocalCoords();
+}
+
+//---------------------------------------------------------------
+// Procedure: setGeodesy()
+
+bool CPAMonitor::setGeodesy(double dlat, double dlon)
+{
+  bool ok_init = m_geodesy.Initialise(dlat, dlon);
+  if(!ok_init)
+    return(false);
+  
+  m_geodesy_init = true;
+  m_geodesy_updates++;
+
+  updateLocalCoords();
+
+  return(true);
+}
+
 //---------------------------------------------------------
-// Procedure: setIgnoreRange
+// Procedure: setIgnoreRange()
 //      Note: Enforce report_range <= ignore_range
 
 void CPAMonitor::setIgnoreRange(double val)
@@ -58,7 +87,7 @@ void CPAMonitor::setIgnoreRange(double val)
 
 
 //---------------------------------------------------------
-// Procedure: setReportRange
+// Procedure: setReportRange()
 //      Note: Enforce ignore_range >= reportRange
 
 void CPAMonitor::setReportRange(double val)
@@ -70,7 +99,7 @@ void CPAMonitor::setReportRange(double val)
 
 
 //---------------------------------------------------------
-// Procedure: setSwingRange
+// Procedure: setSwingRange()
 //      Note: The amount of noted changed needed before declaring
 //            a swing from opening to closing mode. To avoid
 //            spurious events due to jitter in range measurements.
@@ -177,9 +206,18 @@ bool CPAMonitor::handleNodeReport(string node_report)
     return(true);
 
   m_map_vgroup[vname] = group;
+
+  // Cross-fill coords if one or the other is missing
+  if(record.isSetLatLon() && !record.isSetXY())
+    updateLocalCoords(record);
+  else if(!record.isSetLatLon() && record.isSetXY())
+    updateGlobalCoords(record);
   
   // Part 1: Update the node record list for this vehicle
   m_map_vrecords[vname].push_front(record);
+
+  cout << record.getName() << ":::" << record.getSpec() << endl; 
+
   if(m_map_vrecords[vname].size() > 2)
     m_map_vrecords[vname].pop_back();
   m_map_updated[vname] = true;
@@ -299,13 +337,21 @@ bool CPAMonitor::examineAndReport(string vname, string contact)
 
 bool CPAMonitor::updatePairRangeAndRate(string vname, string contact)
 {
+  cout << "Begin updatePairRangeAndRate" << endl;
   // Sanity check - make sure we have node records for each
-  if(!m_map_vrecords.count(vname) || !m_map_vrecords.count(contact))
+  if(!m_map_vrecords.count(vname) || !m_map_vrecords.count(contact)) {
+    cout << "fault1" << endl;
     return(false);
+  }
 
+  cout << "Begin updatePairRangeAndRate 111" << endl;
   // Part 1: get the vehicle info and calculate range
   NodeRecord os_record = m_map_vrecords[vname].front();
   NodeRecord cn_record = m_map_vrecords[contact].front();
+
+  cout << "os:" << os_record.getSpec() << endl;
+  cout << "cn:" << cn_record.getSpec() << endl;
+
   double osx  = os_record.getX();
   double osy  = os_record.getY();
   double cnx  = cn_record.getX();
@@ -315,18 +361,24 @@ bool CPAMonitor::updatePairRangeAndRate(string vname, string contact)
   double dist = hypot(osx-cnx, osy-cny);
   string tag  = pairTag(vname, contact);
 
+  cout << "osx:" << doubleToStringX(osx,1);
+  cout << ", osy:" << doubleToStringX(osy,1);
+  cout << ", cnx:" << doubleToStringX(cnx,1);
+  cout << ", cny:" << doubleToStringX(cny,1) << endl;
+  cout << "dist:" << dist << endl;
+  
   if((m_closest_range < 0) || (dist < m_closest_range))
     m_closest_range = dist;
   
   if((m_closest_range_ever < 0) || (dist < m_closest_range_ever))
     m_closest_range_ever = dist;
   
-  // Note that this pair has been examined on this round. This is cleared
-  // for all pairs at the end of a round.
+  // Note that this pair has been examined on this round. This is
+  // cleared for all pairs at the end of a round.
   m_map_pair_examined[tag] = true; 
   
-  // If the distance is really large (greater than the ignore_range) then
-  // remove all data for this tag and return. 
+  // If the distance is really large (greater than the ignore_range)
+  // then remove all data for this tag and return.
   if(dist > m_ignore_range) {
     m_map_pair_dist.erase(tag);
     m_map_pair_closing[tag] = false;
@@ -335,6 +387,7 @@ bool CPAMonitor::updatePairRangeAndRate(string vname, string contact)
     m_map_pair_midy[tag] = 0;
     return(true);
   }
+  cout << "Begin updatePairRangeAndRate 222" << endl;
   
   // Handle case where this is the first distance noted for this pair
   if(m_map_pair_dist.count(tag) == 0) {
@@ -343,6 +396,8 @@ bool CPAMonitor::updatePairRangeAndRate(string vname, string contact)
     m_map_pair_valid[tag] = false;
     return(true);
   }
+  cout << "Begin updatePairRangeAndRate 333" << endl;
+  
   
   double dist_prev = m_map_pair_dist[tag];
   bool   closing_prev = m_map_pair_closing[tag];
@@ -351,6 +406,7 @@ bool CPAMonitor::updatePairRangeAndRate(string vname, string contact)
   // closing and valid flags either. 
   if(dist_prev == dist) 
     return(true);
+  cout << "Begin updatePairRangeAndRate 444" << endl;
 
   // Handle the case where we are technically closing
   if(dist_prev > dist) {
@@ -379,6 +435,7 @@ bool CPAMonitor::updatePairRangeAndRate(string vname, string contact)
   m_map_pair_midx[tag] = midx;
   m_map_pair_midy[tag] = midy;
   
+  cout << "Begin updatePairRangeAndRate 555" << endl;
   return(true);
 }
 
@@ -505,3 +562,87 @@ unsigned int CPAMonitor::getContactDensity(string vname, double range) const
 
 
 
+//---------------------------------------------------------------
+// Procedure: updateLocalCoords()
+//   Purpose: After a datum update, all X/Y values stored with any
+//            contact are updated to be related to the new datum.
+
+void CPAMonitor::updateLocalCoords()
+{
+#if 0
+  map<string,NodeRecord>::iterator p;
+  for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++)
+    updateLocalCoords(p->second);
+  for(p=m_map_records_ext.begin(); p!=m_map_records_ext.end(); p++)
+    updateLocalCoords(p->second);
+#endif
+}
+
+//---------------------------------------------------------------
+// Procedure: updateLocalCoords()
+
+void CPAMonitor::updateLocalCoords(NodeRecord& record)
+{
+  double nav_lat = record.getLat();
+  double nav_lon = record.getLon();
+  double nav_x, nav_y;
+
+#ifdef USE_UTM
+  m_geodesy.LatLong2LocalUTM(nav_lat, nav_lon, nav_y, nav_x);
+#else
+  m_geodesy.LatLong2LocalGrid(nav_lat, nav_lon, nav_y, nav_x);
+#endif      
+
+  record.setX(nav_x);
+  record.setY(nav_y);
+
+  
+#if 0
+  cout << "orig:" << endl;
+  cout << "nav_lat: " << nav_lat << ", nav_lon: " << nav_lon << endl; 
+  cout << "nav_x: " << nav_x << ", nav_y: " << nav_y << endl; 
+
+  string str1 = record.getSpec();
+  cout << "str1:" << str1 << endl;
+  NodeRecord record2 = string2NodeRecord(str1);
+  string str2 = record2.getSpec();
+  cout << "str2:" << str2 << endl;
+  
+  
+  cout << "switch:" << endl;
+  m_geodesy.LocalGrid2LatLong(nav_x, nav_y, nav_lat, nav_lon);
+  cout << "nav_lat: " << nav_lat << ", nav_lon: " << nav_lon << endl; 
+  cout << "nav_x: " << nav_x << ", nav_y: " << nav_y << endl; 
+
+  m_geodesy.LocalGrid2LatLong(nav_x, nav_y, nav_lat, nav_lon);
+  cout << "back:" << endl;
+  cout << "nav_lat: " << nav_lat << ", nav_lon: " << nav_lon << endl; 
+  cout << "nav_x: " << nav_x << ", nav_y: " << nav_y << endl; 
+#endif      
+ 
+}    
+
+//---------------------------------------------------------------
+// Procedure: updateGlobalCoords()
+//      Note: For determining lat/lon based on x/y
+//            WE REALLY DONT WANT TO BE DOING THIS IN GENERAL
+//            (1) for backward compatibility where node reports
+//            are being shared only with x/y, we support this.
+//            Node reports with x/y will be deprecated eventually.
+//            (2) For updating lat/lon after extrapolating in x/y
+
+void CPAMonitor::updateGlobalCoords(NodeRecord& record)
+{
+  double nav_x = record.getX();
+  double nav_y = record.getY();
+  double nav_lat, nav_lon;
+
+#ifdef USE_UTM
+  m_geodesy.UTM2LatLong(nav_x, nav_y, nav_lat, nav_lon);
+#else
+  m_geodesy.LocalGrid2LatLong(nav_x, nav_y, nav_lat, nav_lon);
+#endif      
+
+  record.setLat(nav_lat);
+  record.setLon(nav_lon);  
+}    
