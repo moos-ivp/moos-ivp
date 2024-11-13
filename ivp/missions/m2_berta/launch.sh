@@ -9,7 +9,7 @@
 #          debugging output, and catching SIGINT (ctrl-c).
 #------------------------------------------------------------
 vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
-on_exit() { echo; echo "Halting all apps"; kill -- -$$; }
+on_exit() { echo; echo "$ME: Halting all apps"; kill -- -$$; }
 trap on_exit SIGINT
 
 #------------------------------------------------------------

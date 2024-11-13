@@ -9,6 +9,8 @@
 #          debugging/status output depending on verbosity.
 #------------------------------------------------------------ 
 vecho() { if [ "$VERBOSE" != "" ]; then echo "$ME: $1"; fi }
+on_exit() { echo; echo "$ME: Halting all apps"; kill -- -$$; }
+trap on_exit SIGINT
 
 #------------------------------------------------------------ 
 #  Part 2: Set global variable default values
@@ -151,6 +153,7 @@ fi
 # Part 9: Launch uMAC until the mission is quit
 #------------------------------------------------------------ 
 uMAC targ_shoreside.moos
+trap "" SIGINT
 kill -- -$$
 
 exit 0
