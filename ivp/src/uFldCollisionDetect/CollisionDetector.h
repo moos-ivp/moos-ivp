@@ -75,6 +75,7 @@ class CollisionDetector : public AppCastingMOOSApp
   bool   m_post_closest_range_ever;
 
   bool   m_encounter_rings;
+  bool   m_verbose;
   
   std::vector<VarDataPair> m_collision_flags;
   std::vector<VarDataPair> m_near_miss_flags;
@@ -98,7 +99,8 @@ class CollisionDetector : public AppCastingMOOSApp
   unsigned int m_total_collisions;
   unsigned int m_total_near_misses;
   unsigned int m_total_encounters;
-
+  unsigned int m_total_node_reports;
+  
   std::string m_param_summary;
   std::vector<std::string> m_notified_vehicles;
 
@@ -106,9 +108,3 @@ class CollisionDetector : public AppCastingMOOSApp
 };
 
 #endif
-
-
-
-
-
-

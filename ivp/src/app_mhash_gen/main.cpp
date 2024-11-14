@@ -31,9 +31,12 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
+  bool short_hash = false;
+  bool gen_zhash = false;
+
   for(int i=1; i<argc; i++) {
     string argi = argv[i];
-    
+
     if((argi=="-h") || (argi == "--help") || (argi=="-help")) {
       cout << "Usage: " << endl;
       cout << "$ mhash_gen " << endl;
@@ -43,8 +46,17 @@ int main(int argc, char *argv[])
       cout << "  the default format MOOS-IvP mission hash. It was created  " << endl;
       cout << "  solely to give the user a feel for example mission hashes." << endl;
       cout << "  Dictionary of words: ivp/src/lib_mbutil/HashUtils.cpp     " << endl;
+      cout << endl;
+      cout << "Options: " << endl;
+      cout << "  -h, --help   Display this help message" << endl;
+      cout << "  -s, --short  Generate the short mission hash" << endl;
+      cout << "  -z, --zhash  Generate a zhash" << endl;
       return(0);
     }
+    else if((argi == "-s") || (argi == "--shore"))
+      short_hash = true;
+    else if((argi == "-z") || (argi == "--zhash"))
+      gen_zhash = true;
     else {
       cout << "Unhandled arg: " << argi << endl;
       return(1);
@@ -58,7 +70,12 @@ int main(int argc, char *argv[])
   seed = (seed*pid)%999999;
   srand(seed);
 
-  cout << missionHash() << endl;
+  if(gen_zhash)
+    cout << zHash() << endl;
+  else if(short_hash)
+    cout << missionHashShort(missionHash()) << endl;
+  else
+    cout << missionHash() << endl;
 
   return(0);
 }

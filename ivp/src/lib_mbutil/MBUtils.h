@@ -53,6 +53,9 @@ std::vector<std::string> mergeVectors(std::vector<std::string>,
 				      std::vector<std::string>);
 std::vector<std::string> removeDuplicates(const std::vector<std::string>&);
 
+std::set<std::string> mergeSets(const std::set<std::string>,
+				const std::set<std::string>);
+
 bool vectorContains(const std::vector<std::string>&, 
 		    const std::string&,
 		    bool case_sensitive=true);

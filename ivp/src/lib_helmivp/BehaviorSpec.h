@@ -66,11 +66,13 @@ class BehaviorSpec {
 
   unsigned int  getSpawnsMade() const  {return(m_spawns_made);}
   unsigned int  getSpawnsTried() const {return(m_spawns_tried);}
+  unsigned int  getMaxSpawnings() const {return(m_max_spawnings);}
   
  private: // State Variables
   std::string   m_templating;
   std::string   m_updates_var;
   std::string   m_name_prefix;
+  unsigned int  m_max_spawnings; // zero means no limit
 
   std::string   m_filename;
   std::string   m_behavior_kind;

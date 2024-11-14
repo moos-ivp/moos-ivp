@@ -1567,6 +1567,19 @@ bool IvPBehavior::getBufferVarUpdated(string varname) const
 }
 
 //-----------------------------------------------------------
+// Procedure: getBufferIsKnown()
+
+bool IvPBehavior::getBufferIsKnown(string varname) const
+{
+  if(!m_info_buffer)
+    return(false);
+  if(varname == "")
+    return(false);
+
+  return(m_info_buffer->isKnown(varname));
+}
+
+//-----------------------------------------------------------
 // Procedure: getBufferMsgTimeVal()
 
 double IvPBehavior::getBufferMsgTimeVal(string varname) const

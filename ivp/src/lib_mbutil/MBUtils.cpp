@@ -652,6 +652,21 @@ vector<string> mergeVectors(vector<string> vector1,
 }
 
 //----------------------------------------------------------------
+// Procedure: mergeSets()
+
+set<string> mergeSets(const set<string> set1, 
+		      const set<string> set2)
+{
+  set<string> return_set = set1;
+  
+  set<string>::iterator p;
+  for(p=set2.begin(); p!=set2.end(); p++)
+    return_set.insert(*p);
+
+  return(return_set);
+}
+
+//----------------------------------------------------------------
 // Procedure: removeDuplicates()
 //      Note: Return a vector of strings such that no string is in
 //            the vector more than once.

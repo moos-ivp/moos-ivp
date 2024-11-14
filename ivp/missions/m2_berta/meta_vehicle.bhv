@@ -52,7 +52,7 @@ Behavior = BHV_Loiter
 }
 
 //----------------------------------------------
-Behavior = BHV_AvdColregsV19
+Behavior = BHV_AvdColregsV22
 {
   name       = avdcol_
   pwt        = 150
@@ -67,6 +67,8 @@ Behavior = BHV_AvdColregsV19
          extrapolate = true
                decay = 30,60
 
+            runxflag = STATUS={"TargetId":"$[CN_NAME]", "Priority":"$[APWT]", "Mode":"$[FULL_MODE]", "ModeId":"$[MODE_ID]"}
+	
 	       //match_group = alpha
         //  match_type = mokai
 

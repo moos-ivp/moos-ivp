@@ -148,7 +148,7 @@ NodeRecord VehicleSet::getNodeRecord(const string& vname) const
 }
 
 // ----------------------------------------------------------
-// Procedure: getDoubleInfo
+// Procedure: getDoubleInfo()
 //   Purpose: Return the double info associated with the given
 //            vehicle name and info_type. The result is placed
 //            in the given double reference, and a boolean is 
@@ -480,7 +480,7 @@ bool VehicleSet::getWeightedCenter(double& x, double& y) const
 
 
 //-------------------------------------------------------------
-// Procedure: handleNodeReport
+// Procedure: handleNodeReport()
 
 bool VehicleSet::handleNodeReport(string node_report_str, string& whynot)
 {
@@ -489,7 +489,7 @@ bool VehicleSet::handleNodeReport(string node_report_str, string& whynot)
 
 
 //-------------------------------------------------------------
-// Procedure: handleNodeReport
+// Procedure: handleNodeReport()
 
 bool VehicleSet::handleNodeReport(double local_time, 
 				  string node_report_str, 
@@ -503,7 +503,31 @@ bool VehicleSet::handleNodeReport(double local_time,
   }
   if(!new_record.valid("name,type,speed,heading,time", whynot))
     return(false);
-  
+
+  // Oct 3rd, 2024: Since PMV needs to have node records with x/y
+  // coordinates, and since we're shifting away from having local/x/y
+  // coordinates in NODE_REPORT msgs, we need to check if x/y is
+  // present inside this message, and if not, calculate with a
+  // local MOOSGeodesy. Eventually PMV will be modified to deal
+  // solely with lat/lon, ...
+
+  if(new_record.isSetLatitude() && new_record.isSetLongitude()) { 
+    if(!new_record.isSetX() || !new_record.isSetX()) {
+
+      double nav_lat = new_record.getLat();
+      double nav_lon = new_record.getLon();
+      double nav_x, nav_y;
+      
+#ifdef USE_UTM
+      m_geodesy.LatLong2LocalUTM(nav_lat, nav_lon, nav_y, nav_x);
+#else
+      m_geodesy.LatLong2LocalGrid(nav_lat, nav_lon, nav_y, nav_x);
+#endif      
+      new_record.setX(nav_x);
+      new_record.setY(nav_y);
+    }
+  }
+
   // Do some "Type-Fixing". Known types: kayak, auv, glider, ship
   string vtype = tolower(new_record.getType());
   if(vtype == "uuv")
@@ -579,7 +603,7 @@ bool VehicleSet::handleNodeReport(double local_time,
 }
 
 //-------------------------------------------------------------
-// Procedure: updateVehicleBearingLine
+// Procedure: updateVehicleBearingLine()
 //
 //     BEARING_LINE = "vname=alpha, bearing=124, vector_length=40, 
 //         vector_color=red, vector_time=nolimit" 

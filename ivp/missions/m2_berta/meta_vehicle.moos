@@ -18,7 +18,7 @@ Processconfig = ANTLER
   Run = pShare         @ NewConsole = false
   Run = pLogger        @ NewConsole = false
   Run = pNodeReporter  @ NewConsole = false
-  Run = pMarinePID     @ NewConsole = false
+  Run = pMarinePIDV22  @ NewConsole = false
   Run = pHelmIvP       @ NewConsole = false
   Run = pHostInfo      @ NewConsole = false
   Run = uFldNodeBroker @ NewConsole = false
@@ -52,8 +52,6 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-	//app_logging = true
-	
   Behaviors    = targ_$(VNAME).bhv  
   Verbose      = false
   Domain       = course:0:359:360
@@ -72,7 +70,9 @@ ProcessConfig = pNodeReporter
 
 	platform_color = $(COLOR)
   vessel_type    = $(VTYPE=kayak)
-  terse_reports  = true
+  //terse_reports  = true
+
+	coord_policy_global = true
 }
 
 //--------------------------------------------------------
@@ -85,8 +85,12 @@ ProcessConfig = pContactMgrV20
 
   decay = 30,60
 
+	app_logging = true
+	
   alert_verbose = true
 
+	contact_local_coords = force_lat_lon
+	
   contact_max_age  = 35
   display_radii    = true
 	display_radii_id = avd
@@ -153,15 +157,13 @@ ProcessConfig = uMemWatch
 }
 
 //-----------------------------------------------------
-// pMarinePID Config Block
+// pMarinePIDV22 Config Block
 
-ProcessConfig = pMarinePID
+ProcessConfig = pMarinePIDV22
 {
   AppTick    = 10
   CommsTick  = 10
 
-	//deprecated_ok = true
-	
   verbose       = true
   depth_control = false
   active_start  = true
@@ -212,7 +214,8 @@ ProcessConfig = pLogger
   WildCardOmitPattern = DB_VARSUMMARY
 //  WildCardOmitPattern = DB_RWSUMMARY
 
-  WildCardOmitPattern = NAV_PITCH, NAV_LAT, NAV_LONG, NAV_YAW, NAV_Z
+  //WildCardOmitPattern = NAV_LAT, NAV_LONG
+  WildCardOmitPattern = NAV_PITCH, NAV_YAW, NAV_Z
   WildCardOmitPattern = SIMULATION_MODE, TRUE_X, TRUE_Y
   WildCardOmitPattern = NAV_DEPTH, NAV_SPEED_OVER_GROUND, DB_QOS
   //WildCardOmitPattern = NODE_BROKER_PING_0, PSHARE*

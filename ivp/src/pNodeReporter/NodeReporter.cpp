@@ -2,7 +2,8 @@
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: NodeReporter.cpp                                     */
-/*    DATE: Feb 13th 2006 (TransponderAIS)                       */
+/*    BORN: Feb 13th 2006 (TransponderAIS)                       */
+/*    DATE: Oct 3rd 2024                                         */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -75,6 +76,9 @@ NodeReporter::NodeReporter()
 
   m_crossfill_policy = "literal";
 
+  // Post 24.8: Node reports contain just LAT/LON
+  m_coord_policy_global = false; 
+  
   m_allow_color_change = false;
   
   // Timestamps used for executing the "use-latest" crossfill policy 
@@ -388,6 +392,9 @@ bool NodeReporter::OnStartUp()
       handled = true;
     }
 
+    else if(param == "coord_policy_global") 
+      handled = setBooleanOnString(m_coord_policy_global, value);
+
     else if(param == "allow_color_change") 
       handled = setBooleanOnString(m_allow_color_change, value);
 
@@ -613,7 +620,7 @@ bool NodeReporter::Iterate()
       crossFillCoords(m_record, m_nav_xy_updated, m_nav_latlon_updated);
     
     m_record.setIndex(m_reports_posted);
-    string report = assembleNodeReport(m_record);    
+    string report = assembleNodeReport(m_record);
 
     if(!m_paused) {
       if(m_reports_posted == 0) 
@@ -792,7 +799,7 @@ string NodeReporter::assemblePlatformReport()
 
 
 //------------------------------------------------------------------
-// Procedure: assembleNodeReport
+// Procedure: assembleNodeReport()
 //   Purpose: Assemble the node report from member variables.
 
 string NodeReporter::assembleNodeReport(NodeRecord record)
@@ -832,6 +839,10 @@ string NodeReporter::assembleNodeReport(NodeRecord record)
   record.setMode(mode);
   record.setAllStop(m_helm_allstop_mode);
 
+  // Added Post 24.8
+  if(m_coord_policy_global)
+    record.setCoordPolicyGlobal();
+  
   string summary = record.getSpec(m_terse_reports);
 
   string rider_reports = m_riderset.getRiderReports(m_curr_time);
@@ -842,7 +853,7 @@ string NodeReporter::assembleNodeReport(NodeRecord record)
 }
 
 //------------------------------------------------------------------
-// Procedure: setCrossFillPolicy
+// Procedure: setCrossFillPolicy()
 //      Note: Determines how or whether the local and global coords
 //            are updated from one another.
 
@@ -852,7 +863,7 @@ bool NodeReporter::setCrossFillPolicy(string policy)
   policy = findReplace(policy, '_', '-');
   if((policy=="literal") || (policy=="fill-empty") ||
      (policy=="global")  || (policy=="use-latest") ||
-     (policy=="local")) {
+     (policy=="local")   || (policy=="global-terse")) {
     m_crossfill_policy = policy;
     return(true);
   }
@@ -862,14 +873,15 @@ bool NodeReporter::setCrossFillPolicy(string policy)
 
 
 //------------------------------------------------------------------
-// Procedure: crossFillCoords
+// Procedure: crossFillCoords()
 //   Purpose: Potentially update NAV_X/Y from NAV_LAT/LON or v.versa.
 
 void NodeReporter::crossFillCoords(NodeRecord& record, 
 				   double nav_xy_updated,
 				   double nav_latlon_updated)
 {
-  if(m_crossfill_policy == "global") {
+  if((m_crossfill_policy == "global") ||
+     (m_crossfill_policy == "global-terse")) {
     if(record.valid("lat") && record.valid("lon"))
       crossFillGlobalToLocal(record);
   }
@@ -906,7 +918,7 @@ void NodeReporter::crossFillCoords(NodeRecord& record,
 
 
 //------------------------------------------------------------------
-// Procedure: crossFillLocalToGlobal
+// Procedure: crossFillLocalToGlobal()
 //   Purpose: Update the Global coordinates based on the Local coords.
 
 void NodeReporter::crossFillLocalToGlobal(NodeRecord& record)
@@ -927,7 +939,7 @@ void NodeReporter::crossFillLocalToGlobal(NodeRecord& record)
 }
 
 //------------------------------------------------------------------
-// Procedure: crossFillGlobalToLocal
+// Procedure: crossFillGlobalToLocal()
 //   Purpose: Update the Local coordinates based on the Global coords.
 
 void NodeReporter::crossFillGlobalToLocal(NodeRecord& record)
@@ -949,7 +961,7 @@ void NodeReporter::crossFillGlobalToLocal(NodeRecord& record)
 
 
 //------------------------------------------------------------------
-// Procedure: handleHelmSwitch
+// Procedure: handleHelmSwitch()
 //   Purpose: When or if a helm switch has been noted, reset some
 //            locally held information that may have been due to the
 //            the disabled helm, and let them be repopulated by the
@@ -1031,7 +1043,7 @@ void NodeReporter::updateMHashOdo()
 // ---------------------------------
 // Vehicle name:    henry
 // Platform type:   uuv
-// Platform length: 4.2
+// Platform lenactgth: 4.2
 // 
 // BLACKOUT_INTERVAL  = 0
 //

@@ -27,6 +27,7 @@
 #include <vector>
 #include <string>
 #include <map>
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "NodeRecord.h"
 #include "ColoredPoint.h"
 #include "ColorPack.h"
@@ -42,6 +43,8 @@ class VehicleSet
   bool   setParam(std::string param, std::string value="");
   bool   setParam(std::string param, double value);
 
+  void   setMOOSGeodesy(CMOOSGeodesy geo) {m_geodesy=geo;}
+  
   bool   handleNodeReport(double, std::string report_str, std::string& whynot);
   bool   handleNodeReport(std::string report_str, std::string& whynot);
 
@@ -91,8 +94,10 @@ class VehicleSet
   bool  updateVehicleBearingLine(const std::string& bearing_line); 
 
  private:
-  ContactLedger m_ledger;
+  //ContactLedger m_ledger;
   
+  CMOOSGeodesy m_geodesy;
+
   // Mapping from Vehicle Name to Vehicle Position
   std::map<std::string, NodeRecord>   m_rec_map;
   // Mapping from Vehicle Name to Local Receive time

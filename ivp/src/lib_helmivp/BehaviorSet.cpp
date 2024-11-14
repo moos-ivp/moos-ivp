@@ -410,6 +410,13 @@ bool BehaviorSet::handlePossibleSpawnings()
       // name=blue would be applied to the previously spawned behavior.
 
       if((m_bhv_names.count(fullname)==0) && (m_bhv_names.count(update_name)==0)) {
+
+	// Check if this spec has a limit on the spawnings, and if then if so,
+	// if the limit has been reached. 
+	unsigned int ms = m_behavior_specs[i].getMaxSpawnings();
+	if((ms > 0) && (m_behavior_specs[i].getSpawnsMade() >= ms))
+	  continue;
+	
 	SpecBuild sbuild = buildBehaviorFromSpec(m_behavior_specs[i], update_str);
 	m_behavior_specs[i].spawnTried();
 	//sbuild.print();

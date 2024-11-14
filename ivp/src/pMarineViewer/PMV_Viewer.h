@@ -46,6 +46,8 @@ class PMV_Viewer : public MarineViewer
   bool  setParam(std::string p, std::string v="");
   bool  setParam(std::string p, double v);
   void  setConfigComplete() {m_config_complete=true;}
+
+  void  updateMOOSGeodesy() {m_vehiset.setMOOSGeodesy(m_geodesy);}
   
   bool  handleNodeReport(std::string, std::string&);
 

@@ -176,6 +176,7 @@ public:
   double                   getPriorityWt() {return(m_priority_wt);}
   double                   getBufferCurrTime() const;
   double                   getBufferLocalTime() const;
+  bool                     getBufferIsKnown(std::string) const;
   double                   getBufferMsgTimeVal(std::string) const;
   bool                     getBufferVarUpdated(std::string) const;
   double                   getBufferTimeVal(std::string) const;
