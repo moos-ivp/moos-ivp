@@ -46,12 +46,14 @@ CollisionDetector::CollisionDetector()
 
   // By default encounter rings are rendered
   m_encounter_rings = true;
+  m_verbose = false;
   
   // state variables -- counters of collision types
   m_total_collisions  = 0;
   m_total_near_misses = 0;
   m_total_encounters  = 0;
-
+  m_total_node_reports = 0;
+  
   m_conditions_ok = true;
 
   m_post_closest_range = false;
@@ -286,6 +288,17 @@ bool CollisionDetector::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
+   // Look for latitude, longitude initial datum
+  double lat_origin, lon_origin;
+  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
+  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
+  if(!ok1 || !ok2)
+    reportConfigWarning("Lat or Lon Origin not set in *.moos file.");
+
+  bool ok_init = m_cpa_monitor.setGeodesy(lat_origin, lon_origin);
+  if(!ok_init)
+    reportConfigWarning("Geodesy failed to initialize");
+  
   STRING_LIST sParams;
   m_MissionReader.EnableVerbatimQuoting(false);
   if(!m_MissionReader.GetConfiguration(GetAppName(), sParams))
@@ -299,7 +312,9 @@ bool CollisionDetector::OnStartUp()
     string value = line;
 
     bool handled = false;
-    if(param == "collision_range") 
+    if(param == "verbose") 
+      handled = setBooleanOnString(m_verbose, value);
+    else if(param == "collision_range") 
       handled = setNonNegDoubleOnString(m_collision_dist, value);
     else if(param == "near_miss_range") 
       handled = setNonNegDoubleOnString(m_near_miss_dist, value);
@@ -341,6 +356,8 @@ bool CollisionDetector::OnStartUp()
       reportUnhandledConfigWarning(orig);
   }
 
+  m_cpa_monitor.setVerbose(m_verbose);
+  
   if(m_near_miss_dist < m_collision_dist) {
     m_near_miss_dist = m_collision_dist;
     reportConfigWarning("near_miss_dist set smaller than collision_dist");
@@ -586,6 +603,7 @@ bool CollisionDetector::updateInfoBuffer(CMOOSMsg &msg)
 void CollisionDetector::handleMailNodeReport(string sval)
 {
   // Part 1: inject the node report into the CPAMonitor
+  m_total_node_reports++;
   bool ok = m_cpa_monitor.handleNodeReport(sval);
   if(!ok) 
     reportRunWarning("Unhandled Node Report:" + sval);
@@ -675,11 +693,12 @@ bool CollisionDetector::buildReport()
   double closest_range_ever = m_cpa_monitor.getClosestRangeEver();
   string cr_str  = doubleToStringX(closest_range,2);
   string cre_str = doubleToStringX(closest_range_ever,2);
-  
+
   m_msgs << "============================================" << endl;
   m_msgs << "State Overall:                              " << endl;
   m_msgs << "============================================" << endl;
   m_msgs << "             Active: " << conditions_ok_str   << endl;
+  m_msgs << "       Node Reports: " << m_total_node_reports << endl;
   m_msgs << "      Closest Range: " << cr_str              << endl;
   m_msgs << " Closest Range Ever: " << cre_str             << endl;
   m_msgs << "   Total Encounters: " << tot_encounters_str  << endl;

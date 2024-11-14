@@ -32,6 +32,9 @@
 std::string missionHash();
 std::string missionHashShort(std::string);
 
+std::string zHash();
+std::string zHashShort();
+
 std::string hashAlphaNum(unsigned int len=6);
 std::string hashAlphaUpper(unsigned int len=6);
 
@@ -51,6 +54,9 @@ std::string randomWord(const std::vector<std::string>& );
 std::vector<std::string> adjectives4();
 std::vector<std::string> nouns4();
 std::vector<std::string> names4();
+std::vector<std::string> us_cities7();
+std::vector<std::string> countries7();
+std::vector<std::string> intcities7();
 
 #endif
 

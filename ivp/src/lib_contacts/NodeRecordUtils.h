@@ -28,6 +28,8 @@
 
 NodeRecord string2NodeRecord(const std::string&, bool retPartialResult=false);
 
+NodeRecord string2NodeRecordJSON(const std::string&, bool retPartialResult=false);
+
 NodeRecord extrapolateRecord(const NodeRecord&, double curr_time,
 			     double max_delta=3600);
 

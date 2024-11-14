@@ -117,7 +117,7 @@ BUF=`printf %${LEVEL}s`
 #---------------------------------------------------------------
 mhash_tag.sh $VERBOSE $FORCE $LEVEL
 if [ $? != 0 ]; then
-    echo "$ME: Unable to find or create an .mhash file. Exit 1."
+    echo "$ME: Unable to find or create an .mhash file $PWD. Exit 1."
     exit 1
 fi
 
@@ -176,12 +176,12 @@ mkdir "${FHASH}"
 cp *._txt *.alog *._moos *.blog *.mhash *.ylog *._bhv "${FHASH}" >& /dev/null
 
 tar cvfz "${FHASH}.tgz" "${FHASH}" >& /dev/null
-TAR_OK=$?
+TGZ_OK=$?
 
-vecho "TAR_OK:[${TAR_OK}]"
+vecho "TGZ_OK:[${TAR_OK}]"
 
-if [ $TAR_OK != 0 ]; then
-    vecho "Unable to make tar file: [${FHASH}.tgz]. Exiting."
+if [ $TGZ_OK != 0 ]; then
+    vecho "Unable to make tgz file: [${FHASH}.tgz]. Exiting."
     exit 1
 fi
 

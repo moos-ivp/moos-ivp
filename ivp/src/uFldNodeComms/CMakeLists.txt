@@ -13,9 +13,10 @@ ADD_EXECUTABLE(uFldNodeComms ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldNodeComms
    ${MOOS_LIBRARIES}
+   ${MOOSGeodesy_LIBRARIES}
    mbutil
-   apputil
    contacts
+   apputil
    ufield
    geometry
    m

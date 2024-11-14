@@ -225,6 +225,10 @@ protected:
   double    m_vshift_y; 
   double    m_x_origin;
   double    m_y_origin;
+
+  double    m_datum_lat;
+  double    m_datum_lon;
+  
   bool      m_texture_init;
   GLuint*   m_textures;
   int       m_texture_set;
@@ -245,13 +249,6 @@ protected:
 };
 
 #endif 
-
-
-
-
-
-
-
 
 
 

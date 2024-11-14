@@ -33,8 +33,8 @@
 
 using namespace std;
 
-//------------------------------------------------------------------------
-// Constructor
+//------------------------------------------------------------------
+// Constructor()
 
 USM_MOOSApp::USM_MOOSApp() 
 {
@@ -48,6 +48,7 @@ USM_MOOSApp::USM_MOOSApp()
   m_last_report     = 0;
   m_report_interval = 5;
   m_pitch_tolerance = 5;
+  m_obstacle_hit = false;
   m_max_speed = 5;
   m_enabled = true;
 
@@ -62,8 +63,8 @@ USM_MOOSApp::USM_MOOSApp()
   m_nav_modulo  = 2;
 }
 
-//------------------------------------------------------------------------
-// Procedure: OnNewMail
+//------------------------------------------------------------------
+// Procedure: OnNewMail()
 
 bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -150,8 +151,8 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.magDriftVector(dval, src);
     else if(key == "WATER_DEPTH")
       m_model.setParam("water_depth", dval);    
-    else if(key == "OBSTACLE_HIT") 
-      m_model.setObstacleHit(tolower(sval) == "true");
+    //else if(key == "OBSTACLE_HIT") 
+    //  m_model.setObstacleHit(tolower(sval) == "true");
     else if(key == "USM_RESET") {
       m_model.initPosition(sval);
       Notify("USM_RESET_COUNT", m_model.getResetCount());
@@ -160,7 +161,9 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
       m_model.setParam("turn_rate", dval);
     else if(key == "USM_ENABLED")
       setBooleanOnString(m_enabled, sval);
-
+    else if(key == "OBSTACLE_HIT")
+      setBooleanOnString(m_obstacle_hit, sval);
+    
     // When sim is disabled, presumably another sim is temporarily running
     // and updating the vehicle position. In the meanwhile we just inform
     // the model of the update nav info so it has accurate ownship info
@@ -188,6 +191,17 @@ bool USM_MOOSApp::OnNewMail(MOOSMSG_LIST &NewMail)
 bool USM_MOOSApp::Iterate()
 {
   AppCastingMOOSApp::Iterate();
+
+  if(m_obstacle_hit) {
+    NodeRecord record = m_model.getNodeRecord();
+    NodeRecord record_gt = m_model.getNodeRecord();
+    record.setSpeed(0);
+    record_gt.setSpeed(0);
+    postNodeRecordUpdate(m_sim_prefix, record);
+    postNodeRecordUpdate(m_sim_prefix, record_gt);
+    return(true);
+  }
+
   if(!m_enabled) {
     m_model.resetTime(m_curr_time);
     AppCastingMOOSApp::PostReport();
@@ -463,9 +477,9 @@ void USM_MOOSApp::registerVariables()
   Register("NAV_Y",0);
   Register("NAV_HEADING",0);
 
-  
   Register("USM_ENABLED",0);
   Register("USM_TURN_RATE",0);
+  Register("OBSTACLE_HIT", 0);
 
   Register("WIND_CONDITIONS");
   Register("BUOYANCY_RATE", 0);

@@ -76,6 +76,7 @@ protected: // Utility function(s)
   double  m_report_interval;
   double  m_pitch_tolerance;
   double  m_max_speed;
+  bool    m_obstacle_hit;
   
   WormHoleSet  m_wormset;
 
@@ -96,9 +97,3 @@ protected: // Utility function(s)
 };
 
 #endif
-
-
-
-
-
-

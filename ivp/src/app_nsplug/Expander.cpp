@@ -425,31 +425,52 @@ bool Expander::applyMacrosToLine(string& line,
   if(stripBlankEnds(line) == "")
     return(true);
   
+  int    subs = 0;
+  bool   done = false;
   string newline = line;
-  for(p = macros.begin(); p != macros.end(); p++) {
-    string macro = p->first;
-    string key = "$(" + macro + ")";
-    string val = p->second;
-    if(val == "<defined>")
-      val = "";
+  while(!done) {
+    bool substitution_made = false;
 
-    // Assuming key is of the form "$(FOOBAR)"
-    string pkey = key;
-    if((pkey.length() > 0) && (pkey.at(0) == '$'))
-      pkey.at(0) = '%';
+    for(p = macros.begin(); p != macros.end(); p++) {
+      string macro = p->first;
+      string key = "$(" + macro + ")";
+      string val = p->second;
+      if(val == "<defined>")
+	val = "";
+      
+      // Assuming key is of the form "$(FOOBAR)"
+      string pkey = key;
+      if((pkey.length() > 0) && (pkey.at(0) == '$'))
+	pkey.at(0) = '%';
+      
+      string tmp_newline = newline;
+      
+      if(val == "")
+	tmp_newline = reduceMacrosToBase(tmp_newline, "=", macro);
+      else {
+	tmp_newline = reduceMacrosToBase(tmp_newline, ":=", macro);
+	tmp_newline = reduceMacrosToBase(tmp_newline, "=", macro);
+      }
+      
+      tmp_newline = findReplace(tmp_newline, pkey, toupper(val));
 
-    string tmp_newline = newline;
-    
-    if(val == "")
-      tmp_newline = reduceMacrosToBase(tmp_newline, "=", macro);
-    else {
-      tmp_newline = reduceMacrosToBase(tmp_newline, ":=", macro);
-      tmp_newline = reduceMacrosToBase(tmp_newline, "=", macro);
+      newline = tmp_newline;
+      if(strContains(newline, pkey)) {
+	newline = findReplace(newline, pkey, toupper(val));
+	substitution_made = true;
+	subs++;
+      }
+      if(strContains(newline, key)) {
+	newline = findReplace(newline, key, val);
+	substitution_made = true;
+	subs++;
+      }
     }
-    
-    tmp_newline = findReplace(tmp_newline, pkey, toupper(val));
-    newline = findReplace(tmp_newline, key, val);
+
+    if(!substitution_made || (subs > m_max_subs_per_line))
+      done = true;
   }
+    
 
   newline = expandMacrosWithDefault(newline);
   

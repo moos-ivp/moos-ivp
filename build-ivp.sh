@@ -6,7 +6,7 @@
 #  Part 1: Define global script variables
 #---------------------------------------------------------
 
-BUILD_DEBUG="yes"  
+BUILD_DEBUG="no"  
 BUILD_OPTIM="yes"
 CLEAN="no"
 CMD_ARGS="-j$(getconf _NPROCESSORS_ONLN)"
@@ -189,7 +189,7 @@ if [ "${CLEAN}" = "yes" -o "${CMD_ARGS}" = "clean" ] ; then
     echo "CLEANING...."
     make clean
     RESULT=$?
-    cd ${INVOCATION_ABS_DIR}
+    cd "${INVOCATION_ABS_DIR}"
     rm -rf build/*
 else
     echo "=============================" >> ~/.moos-ivp-args
@@ -205,6 +205,6 @@ else
     RESULT=$?
 fi
 
-cd ${INVOC_ABS_DIR}
+cd "${INVOC_ABS_DIR}"
 
 exit ${RESULT}

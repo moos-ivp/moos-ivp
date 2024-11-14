@@ -29,6 +29,7 @@
 #include <list>
 #include <set>
 #include "NodeRecord.h"
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "CPAEvent.h"
 
 class CPAMonitor
@@ -37,12 +38,16 @@ class CPAMonitor
   CPAMonitor();
   ~CPAMonitor() {};
 
+  void setGeodesy(CMOOSGeodesy geodesy);
+  bool setGeodesy(double dlat, double dlon);
+
   bool handleNodeReport(std::string);
   bool examineAndReport();
   void clear(); 
   void setIgnoreRange(double);
   void setReportRange(double);
   void setSwingRange(double);
+  void setVerbose(bool bval=true)   {m_verbose = bval;}
   void resetClosestRangeEver()      {m_closest_range_ever=-1;}
   
   void setIteration(unsigned int v) {m_iteration = v;}
@@ -68,11 +73,17 @@ class CPAMonitor
   
  protected: // Local utility functions
   std::string pairTag(std::string, std::string);
-  bool        examineAndReport(std::string);
-  bool        examineAndReport(std::string, std::string);
-  bool        updatePairRangeAndRate(std::string, std::string); 
 
-  double      relBng(std::string vname1, std::string vname2);
+  bool   examineAndReport(std::string);
+  bool   examineAndReport(std::string, std::string);
+  bool   updatePairRangeAndRate(std::string, std::string); 
+
+  double relBng(std::string vname1, std::string vname2);
+
+  void   updateLocalCoords();
+  void   updateLocalCoords(NodeRecord&);
+  void   updateGlobalCoords(NodeRecord&);
+
   
  protected: // Configuration parameters
   double  m_ignore_range;
@@ -108,6 +119,10 @@ class CPAMonitor
   double m_closest_range;
   double m_closest_range_ever;
   unsigned int m_iteration;
+
+  CMOOSGeodesy m_geodesy;
+  bool         m_geodesy_init;
+  unsigned int m_geodesy_updates;
 };
 
 #endif 

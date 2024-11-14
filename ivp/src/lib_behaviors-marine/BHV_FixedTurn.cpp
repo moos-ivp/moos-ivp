@@ -73,6 +73,7 @@ BHV_FixedTurn::BHV_FixedTurn(IvPDomain gdomain) : IvPBehavior(gdomain)
   
   addInfoVars("NAV_X, NAV_Y, NAV_SPEED, NAV_HEADING");
   addInfoVars("DESIRED_RUDDER");
+  addInfoVars("DESIRED_RUDDERX");
 }
 
 //-----------------------------------------------------------
@@ -103,6 +104,9 @@ bool BHV_FixedTurn::setParam(string param, string value)
   if(IvPBehavior::setParam(param, value))
     return(true);
   
+  // Convert param to lower case for more general matching
+  param = tolower(param);
+
   bool handled = true;
   if(param == "fix_turn")
     handled = setNonNegDoubleOnString(m_fix_turn, value);
@@ -288,7 +292,13 @@ IvPFunction *BHV_FixedTurn::onRunState()
   if(!updateOSPos() || !updateOSHdg() || !updateOSSpd())
     return(0);
 
-  m_curr_rudder = getBufferDoubleVal("DESIRED_RUDDER");
+  // When using uSimMarineV22, with the PID controller embedded,
+  // the DESIRED_RUDDER value is not published. 
+  
+  if(getBufferIsKnown("DESIRED_RUDDER"))
+    m_curr_rudder = getBufferDoubleVal("DESIRED_RUDDER");
+  else if(getBufferIsKnown("DESIRED_RUDDERX"))
+    m_curr_rudder = getBufferDoubleVal("DESIRED_RUDDERX");
   
   bool done_timeout = false;
   // Part 2: Update the Odometer and check for timeout

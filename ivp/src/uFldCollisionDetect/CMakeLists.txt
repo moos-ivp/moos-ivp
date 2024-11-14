@@ -24,6 +24,7 @@ ADD_EXECUTABLE(uFldCollisionDetect ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldCollisionDetect
    ${MOOS_LIBRARIES}
+   ${MOOSGeodesy_LIBRARIES}
    apputil
    contacts
    geometry

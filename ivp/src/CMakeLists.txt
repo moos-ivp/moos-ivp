@@ -179,6 +179,7 @@ SET(ROBOT_APPS
   pHostInfo          iSay                pContactMgrV20
   pMarinePIDV22      uSimMarineV22       uSimMarineV23
   pMissionHash       pMissionEval        iBlinkStick
+  pAutoPoke          uMayFinish
 )
 SET(IVP_NON_GUI_APPS
   app_alogsplit      app_alogsort        app_alogcheck

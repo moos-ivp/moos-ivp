@@ -43,9 +43,15 @@ ShoreBroker::ShoreBroker()
   m_prev_node_count = 0;
   m_prev_node_count_tstamp = 0;
 
+  m_pshare_cmd_interval = 5;
+  m_vehicle_acks_interval = 5;
+  
   // Initialize state variables
   m_iteration_last_ack = 0;
 
+  m_last_pshare_cmd_utc = 0;
+  m_last_vehicle_acks_utc = 0;
+  
   m_pings_received    = 0;  // Times NODE_BROKER_PING    received
   m_phis_received     = 0;  // Times PHI_HOST_INFO       received
   m_acks_posted       = 0;  // Times NODE_BROKER_ACK     posted
@@ -53,6 +59,8 @@ ShoreBroker::ShoreBroker()
 
   m_last_pshare_vnodes = 0;
   m_last_posting_vnodes = 0;
+
+  m_tmp_cnt = 0;
 }
 
 //---------------------------------------------------------
@@ -83,6 +91,8 @@ bool ShoreBroker::OnNewMail(MOOSMSG_LIST &NewMail)
 
     if((key == "NODE_BROKER_PING") && !msg_is_local)
       handleMailNodePing(sval);
+    else if(key == "PSHARE_OUTPUT_SUMMARY")
+      handleMailShareSummary(sval);
     else if((key == "PHI_HOST_INFO") && msg_is_local) {
       m_phis_received++;
       m_shore_host_record = string2HostRecord(sval);
@@ -191,10 +201,20 @@ void ShoreBroker::registerVariables()
 
   Register("NODE_BROKER_PING", 0);
   Register("PHI_HOST_INFO", 0);
+  Register("PSHARE_OUTPUT_SUMMARY", 0);
 }
 
 //------------------------------------------------------------
 // Procedure: sendAcks()
+//      Note: ACK messages are sent if a 
+
+
+// An ACK is sent
+//   - if a PING has been received within the last 20 secs
+//   - no more frequently than once every 5 seconds (warp)
+//   - no more frequently than once every 1 second (real)
+
+// A ping is answered at least once
 
 void ShoreBroker::sendAcks()
 {
@@ -381,6 +401,7 @@ void ShoreBroker::handleMailNodePing(const string& info)
     hrecord.setPShareIRoutes(iroutes);
   } 
 
+#if 0
   // Part 4: Determine if this incoming node is a new node. 
   // If not, then just update its information and return.
   unsigned int j, jsize = m_node_host_records.size();
@@ -400,13 +421,37 @@ void ShoreBroker::handleMailNodePing(const string& info)
       return;
     }
   }
-
+  
   // Part 5: Handle the new Node.
   // Prepare to send this host and acknowldgement by posting a 
   // request to pShare for a new variable bridging.
   makeBridgeRequest("NODE_BROKER_ACK_$V", hrecord, "NODE_BROKER_ACK"); 
-
   reportEvent("New node discovered: " + hrecord.getCommunity());
+#endif
+
+#if 1
+  // Part 4: Determine if this incoming node is a new node. 
+  // If not, then just update its information and return.
+  unsigned int j, jsize = m_node_host_records.size();
+  for(j=0; j<jsize; j++) { 
+    if(m_node_host_records[j].getCommunity() == hrecord.getCommunity()) {
+      m_node_last_tstamp[j] = m_curr_time;
+      m_node_total_skew[j] += skew;
+      m_node_pings[j]++;
+      m_node_host_records[j].setStatus(status);
+      return;
+    }
+  }
+
+  string config = "src=NODE_BROKER_ACK_$V, alias=NODE_BROKER_ACK";
+  handleConfigBridge(config);
+
+  // If new node, then revert the share interval to small value
+  m_pshare_cmd_interval = 5;
+  
+  reportEvent("New node discovered: " + hrecord.getCommunity());
+#endif
+
   
   // The incoming host record now becomes the host record of record, so 
   // store its status.
@@ -423,15 +468,49 @@ void ShoreBroker::handleMailNodePing(const string& info)
 
 
 //------------------------------------------------------------
+// Procedure: handleMailShareSummary()
+//   Purpose: Parse the summary produced by pShare to note which
+//            shares pShare already has acknowledged. Use this local
+//            data structure to avoid re-asking pShare to be configured
+//            with a new request from this app, i.e., to avoid posting
+//            an unnecessary PSHARE_CMD.
+//   Example: PSHARE_OUTPUT_SUMMARY = FOO_ABE->FOO:192.168.7.8:9201,
+//                FOO_ALL->FOO:192.168.7.8:9200 & FOO:192.168.7.22:9200,
+//                FOO_BEN->FOO:192.168.7.22:9200
+
+void ShoreBroker::handleMailShareSummary(const string& str)
+{
+  vector<string> svector = parseString(str, ',');
+
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string share_component = stripBlankEnds(svector[i]);
+    string src_val = nibbleString(share_component, "->");
+    string dest_vals = share_component;
+    vector<string> dvector = parseString(dest_vals, '&');
+    for(unsigned int j=0; j<dvector.size(); j++) {
+      string dest_val = stripBlankEnds(dvector[j]);
+      m_map_pshares[src_val].insert(dest_val);
+    }
+  }
+}
+
+//------------------------------------------------------------
 // Procedure: makeBridgeRequestAll()
 
 void ShoreBroker::makeBridgeRequestAll()
 {
+  double elapsed = m_curr_time - m_last_pshare_cmd_utc;
+  if(elapsed < m_pshare_cmd_interval)
+    return;
+  m_last_pshare_cmd_utc = m_curr_time;
+  m_pshare_cmd_interval += 3;  // interval gets 3 secs longer on each post
+  
   // For each known remote node
   unsigned int i, vsize = m_node_host_records.size();
   for(i=0; i<vsize; i++) {
     // If bridges have been made for this node, don't repeat
-    if(!m_node_bridges_made[i]) {
+    //if(!m_node_bridges_made[i]) {
+    if(1) {
       HostRecord hrecord = m_node_host_records[i];
       unsigned int k, ksize = m_bridge_src_var.size();
       // For each Bridge variable configured by the user, bridge.
@@ -475,7 +554,22 @@ void ShoreBroker::makeBridgeRequest(string src_var, HostRecord hrecord,
   pshare_post += ",src_name=" + src_var;
   pshare_post += ",dest_name=" + alias;
   pshare_post += ",route=" + pshare_iroutes;
-  Notify("PSHARE_CMD", pshare_post);
+
+  string pshare_dest = alias + ":" + pshare_iroutes;
+
+  bool needed = true;
+  if(m_map_pshares.count(src_var)) {
+    if(m_map_pshares[src_var].count(pshare_dest))
+      needed = false;
+  }
+  
+  Notify("PSHARE_TEST", uintToString(m_tmp_cnt));
+  Notify("PSHARE_TEST", src_var + "->" + pshare_dest);
+  Notify("PSHARE_TEST", "needed=" + boolToString(needed));
+  m_tmp_cnt++;
+
+  if(needed)
+    Notify("PSHARE_CMD", pshare_post);
 
   // If this is a new bridge, update the posted list of bridges
   if(!m_set_bridge_vars.count(src_var)) {
@@ -675,12 +769,3 @@ bool ShoreBroker::buildReport()
   m_msgs << actab.getFormattedString();
   return(true);
 }
-
-
-
-
-
-
-
-
-

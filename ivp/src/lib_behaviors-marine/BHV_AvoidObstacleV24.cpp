@@ -671,23 +671,48 @@ double BHV_AvoidObstacleV24::getDoubleInfo(string str)
 
 string BHV_AvoidObstacleV24::expandMacros(string sdata)
 {
-  double os_rng_to_poly = m_obship_model.getRange();
-  double os_bng_to_poly = m_obship_model.getObcentBng();
-  double os_rbng_to_poly = m_obship_model.getObcentRelBng();
-  string side = m_obship_model.getPassingSide();
-  //double osv = m_obship_model.getOSV();
-  string obs_id = m_obship_model.getObstacleLabel();
-  
-  sdata = macroExpand(sdata, "CPA", m_cpa_reported);
-  sdata = macroExpand(sdata, "RNG", os_rng_to_poly);
-  sdata = macroExpand(sdata, "BNG", os_bng_to_poly);
-  sdata = macroExpand(sdata, "RBNG", os_rbng_to_poly);
-  sdata = macroExpand(sdata, "SIDE", side);
-  sdata = macroExpand(sdata, "SLOCK", m_side_lock);
-  //sdata = macroExpand(sdata, "OSV", osv);
-  //sdata = macroExpand(sdata, "SPD", osv);
-  sdata = macroExpand(sdata, "OID", obs_id);
-  //sdata = macroExpand(sdata, "PWT", m_);
+  // =======================================================
+  // First expand the macros defined at the superclass level
+  // =======================================================
+  sdata = IvPBehavior::expandMacros(sdata);
 
+  // =======================================================
+  // Then expand the macros unique to this behavior
+  // =======================================================
+  if(strContains(sdata, "$[RNG]"))
+    sdata = macroExpand(sdata, "RNG", m_obship_model.getRange());
+    
+  if(strContains(sdata, "$[BNG]"))
+    sdata = macroExpand(sdata, "BNG", m_obship_model.getObcentBng());
+
+  if(strContains(sdata, "$[RBNG]"))
+    sdata = macroExpand(sdata, "BNG", m_obship_model.getObcentRelBng());
+
+  if(strContains(sdata, "$[SIDE]"))
+    sdata = macroExpand(sdata, "SIDE", m_obship_model.getPassingSide());
+  
+  string obs_id = m_obship_model.getObstacleLabel();
+
+  sdata = macroExpand(sdata, "OID", obs_id);
+  sdata = macroExpand(sdata, "CPA", m_cpa_reported);
+  sdata = macroExpand(sdata, "SLOCK", m_side_lock);
+
+  // =======================================================
+  // Added Oct1724
+  // =======================================================
+  // Extract TARGETIDs of the form TYPE_ARPANUM_TARGETID 
+  // If string has no underscore, then obs_idx is empty string.
+  string obs_idx = "";
+  if(strContains(obs_id, '_')) {
+    string tmp_obs_id = obs_id;
+    obs_idx = rbiteString(tmp_obs_id, '_');
+  }
+  sdata = macroExpand(sdata, "OIDX", obs_idx);
+
+  double min_util_cpa = m_obship_model.getMinUtilCPA();
+  double max_util_cpa = m_obship_model.getMaxUtilCPA();
+  sdata = macroExpand(sdata, "MINU_CPA", min_util_cpa);
+  sdata = macroExpand(sdata, "MAXU_CPA", max_util_cpa);
+  
   return(sdata);
 }

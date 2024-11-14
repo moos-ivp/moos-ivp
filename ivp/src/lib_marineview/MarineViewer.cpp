@@ -1554,9 +1554,12 @@ bool MarineViewer::initGeodesy(double lat, double lon)
     return(false);
 
   bool initialized = m_geodesy.Initialise(lat, lon);
-  if(initialized)
+  if(initialized) {
+    m_datum_lat = lat;
+    m_datum_lon = lon;
     m_geodesy_initialized = true;
-
+  }
+    
   return(initialized);
 }
 
@@ -1583,11 +1586,7 @@ bool MarineViewer::initGeodesy(const string& str)
   double dlat = atof(slat.c_str());
   double dlon = atof(slon.c_str());
 
-  bool initialized = m_geodesy.Initialise(dlat, dlon);
-  if(initialized)
-    m_geodesy_initialized = true;
-
-  return(initialized);
+  return(initGeodesy(dlat, dlon));
 }
 
 //-------------------------------------------------------------

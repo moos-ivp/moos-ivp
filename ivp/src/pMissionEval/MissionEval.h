@@ -83,6 +83,9 @@ protected: // Utility functions
   VCheckSet   m_vcheck_set;
   std::string m_vcheck_status_prev;
 
+  std::string m_mission_hash;
+  double      m_db_uptime;
+  
   std::set<std::string> m_macro_vars;
   
   InfoBuffer *m_info_buffer;
