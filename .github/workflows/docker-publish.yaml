@@ -134,16 +134,14 @@ jobs:
     steps:
       - name: Check for expected binaries
         run: |
-          cd /home/moos-ivp
-          ls
+          cd /home/moos/moos-ivp
           echo "Checking for build binaries"
           ./build-check.sh
 
       - name: Run unit tests
         run: |
           # Run the unit tests
-          cd /home/moos-ivp
-          ls
+          cd /home/moos/moos-ivp
 
           echo "Building automated mission tests"
           ./build-utests.sh
