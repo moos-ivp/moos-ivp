@@ -207,8 +207,3 @@ protected:
   CMOOSGeodesy m_geodesy;
 };
 #endif 
-
-
-
-
-

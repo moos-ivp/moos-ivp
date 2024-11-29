@@ -33,6 +33,7 @@
 #include "PlatformAlertRecord.h"
 #include "CMAlert.h"
 #include "ExFilterSet.h"
+#include "VarDataPair.h"
 
 class ContactMgrV20 : public AppCastingMOOSApp
 {
@@ -67,6 +68,10 @@ class ContactMgrV20 : public AppCastingMOOSApp
   void handleMailDisplayRadii(std::string);
   void handleMailHelmState(std::string);
 
+  // For users using the cmgr as broker for dis/enabling behaviors
+  void handleMailDisableContact(std::string);
+  void handleMailEnableContact(std::string);
+
   void updateRanges();
   void postSummaries();
   void checkForAlerts();
@@ -93,6 +98,12 @@ class ContactMgrV20 : public AppCastingMOOSApp
 
   std::vector<VarDataPair> getAlertOnFlags(std::string id) const;
   std::vector<VarDataPair> getAlertOffFlags(std::string id) const;
+
+protected:
+  void addDisabledContact(std::string id);
+  void addEnabledContact(std::string id);
+  void postFlags(const std::vector<VarDataPair>&);
+  std::string expandMacros(std::string) const;
 
  private: // main record of alerts, each keyed on the alert_id
   std::map<std::string, CMAlert> m_map_alerts;
@@ -182,6 +193,17 @@ class ContactMgrV20 : public AppCastingMOOSApp
 
   bool  m_hold_alerts_for_helm;
   bool  m_helm_in_drive_noted;
+
+  // For users using the cmgr as broker for dis/enabling behaviors
+  std::string  m_disable_var;
+  std::string  m_enable_var;
+
+  std::list<std::string> m_disabled_contacts;
+  std::list<std::string> m_enabled_contacts;
+
+  std::vector<VarDataPair> m_able_flags;
+  std::vector<VarDataPair> m_disable_flags;
+  std::vector<VarDataPair> m_enable_flags;
   
 private:
   bool         m_use_geodesy;

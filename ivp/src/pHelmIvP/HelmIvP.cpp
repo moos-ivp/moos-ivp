@@ -298,6 +298,15 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     }
     else if(moosvar == "IVPHELM_REJOURNAL")
       m_rejournal_requested = true;
+
+    // Added Nov1624. Helm will register only if a bhv does.
+    else if(moosvar == "BHV_ABLE_FILTER") {
+      if(m_hengine) {
+	bool ok = m_hengine->addAbleFilterMsg(sval);
+	if(!ok)
+	  reportRunWarning("Unhandled BHV_ABLE_FILTER");
+      }
+    }
     else if(vectorContains(m_node_report_vars, moosvar)) {
       bool ok = processNodeReport(sval);
       if(!ok)
@@ -1092,6 +1101,7 @@ void HelmIvP::registerVariables()
   registerSingleVariable("MOOS_MANUAL_OVERRIDE");
   registerSingleVariable("RESTART_HELM");
   registerSingleVariable("IVPHELM_REJOURNAL");
+  registerSingleVariable("BHV_ABLE_FILTER");
   
   registerSingleVariable("NAV_SPEED");
   registerSingleVariable("NAV_HEADING");
@@ -1120,7 +1130,7 @@ void HelmIvP::registerVariables()
 }
 
 //------------------------------------------------------------
-// Procedure: registerNewVariables
+// Procedure: registerNewVariables()
 
 void HelmIvP::registerNewVariables()
 {
@@ -1133,7 +1143,7 @@ void HelmIvP::registerNewVariables()
 }
 
 //------------------------------------------------------------
-// Procedure: registerSingleVariable
+// Procedure: registerSingleVariable()
 
 void HelmIvP::registerSingleVariable(string varname, double frequency)
 {
@@ -1148,7 +1158,7 @@ void HelmIvP::registerSingleVariable(string varname, double frequency)
 
 
 //------------------------------------------------------------
-// Procedure: requestBehaviorLogging
+// Procedure: requestBehaviorLogging()
 
 void HelmIvP::requestBehaviorLogging()
 {
@@ -1162,7 +1172,7 @@ void HelmIvP::requestBehaviorLogging()
 }
 
 //------------------------------------------------------------
-// Procedure: checkForTakeOver
+// Procedure: checkForTakeOver()
 
 void HelmIvP::checkForTakeOver()
 {
@@ -1315,6 +1325,8 @@ bool HelmIvP::OnStartUp()
     MOOSTrace("NULL Behavior Set \n");
     return(false);
   }
+  else // added nov1724
+    m_hengine->setBehaviorSet(m_bhv_set);
 
   // Set the "ownship" parameter for all behaviors
   unsigned int i, bsize = m_bhv_set->size();

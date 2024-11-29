@@ -32,7 +32,7 @@
 using namespace std;
 
 //------------------------------------------------------------
-// Constructor
+// Constructor()
 
 BehaviorSet::BehaviorSet()
 {
@@ -46,7 +46,7 @@ BehaviorSet::BehaviorSet()
 }
 
 //------------------------------------------------------------
-// Destructor
+// Destructor()
 
 BehaviorSet::~BehaviorSet()
 {
@@ -54,7 +54,7 @@ BehaviorSet::~BehaviorSet()
 }
 
 //------------------------------------------------------------
-// Procedure: addBehaviorDir
+// Procedure: addBehaviorDir()
 
 bool BehaviorSet::addBehaviorDir(string dirname)
 {
@@ -72,7 +72,7 @@ bool BehaviorSet::addBehaviorDir(string dirname)
 }
 
 //------------------------------------------------------------
-// Procedure: addBehavior
+// Procedure: addBehavior()
 
 void BehaviorSet::addBehavior(IvPBehavior *bhv)
 {
@@ -92,7 +92,7 @@ void BehaviorSet::addBehavior(IvPBehavior *bhv)
 }
 
 //------------------------------------------------------------
-// Procedure: setDomain
+// Procedure: setDomain()
 
 void BehaviorSet::setDomain(IvPDomain domain)
 {
@@ -111,7 +111,7 @@ void BehaviorSet::clearBehaviors()
 
 
 //------------------------------------------------------------
-// Procedure: addBehaviorSpec
+// Procedure: addBehaviorSpec()
 
 void BehaviorSet::addBehaviorSpec(BehaviorSpec spec)
 {
@@ -134,6 +134,33 @@ void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
   vsize = m_behavior_specs.size();
   for(i=0; i<vsize; i++)
     m_behavior_specs[i].setInfoBuffer(info_buffer);    
+}
+
+//------------------------------------------------------------
+// Procedure: applyAbleFilterMsg()
+//      Note: Apply the BHV_ABLE_FILTER msg to all behaviors
+//      Note: Filter msg can/will be applied many times over, to
+//            the same behaviors. The manner in which filter msgs
+//            are applied, repeated msgs make no difference.
+//   Example: action=disable, contact=345, gen_type=safety,
+//            bhv_type=AvdColregs
+//    Fields: action=disable/able  (mandatory)
+//            contact=345          (one of these three)
+//            gen_type=safety
+//            bhv_type=AvdColregs
+
+bool BehaviorSet::applyAbleFilterMsg(string msg)
+{
+  bool all_ok = true;
+  for(unsigned int i=0; i<m_bhv_entry.size(); i++) {
+    if(m_bhv_entry[i].getBehavior()) {
+      bool ok = m_bhv_entry[i].getBehavior()->applyAbleFilter(msg);
+      if(!ok)
+	all_ok = false;    
+    }
+  }
+
+  return(all_ok);
 }
 
 //------------------------------------------------------------
@@ -570,7 +597,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   // MOOS posting to COMMS_POLICY
   bhv->checkForUpdatedCommsPolicy();
   
-  // Possible vals: "completed", "idle", "running"
+  // Possible vals: "completed", "idle", "running", "disabled"
   new_activity_state = bhv->isRunnable();
   
   // Invoke the onEveryState() function applicable in all situations
@@ -590,7 +617,20 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     bhv->postFlags("configflags");
     bhv->setConfigPosted(true);
   }
-  
+
+  // Part 2AA: Handle disabled behaviors
+  if(new_activity_state == "disabled") {
+    if(old_activity_state != "disabled") {
+      bhv->postFlags("disableflags", true);
+    }
+    bhv->onDisabledState();
+  }
+  else {
+    if(old_activity_state == "disabled") {
+      bhv->postFlags("enableflags", true);
+    }
+  }
+    
   // Part 2B: Handle idle behaviors
   if(new_activity_state == "idle") {
     if(old_activity_state != "idle") {
@@ -1165,3 +1205,16 @@ unsigned long int BehaviorSet::size() const
   return(amt);
 }
 
+//------------------------------------------------------------
+// Procedure: bhvStateCount()
+
+unsigned int BehaviorSet::bhvStateCount(string state) const
+{
+  unsigned int total = 0;
+  for(unsigned int i=0; i<m_bhv_entry.size(); i++) {
+    if(m_bhv_entry[i].getState() == state)
+      total++;
+  }
+  return(total);
+}
+  

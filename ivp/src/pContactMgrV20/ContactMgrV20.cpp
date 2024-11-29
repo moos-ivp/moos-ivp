@@ -33,6 +33,8 @@
 #include "XYCircle.h"
 #include "ACTable.h"
 #include "RangeMark.h"
+#include "VarDataPairUtils.h"
+#include "MacroUtils.h"
 
 using namespace std;
 
@@ -124,6 +126,10 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
       handleMailAlertRequest(sval, src);
     else if(key == "IVPHELM_STATE")
       handleMailHelmState(sval);
+    else if((m_disable_var != "") && (key == m_disable_var))
+      handleMailDisableContact(sval);
+    else if((m_enable_var != "") && (key == m_enable_var))
+      handleMailEnableContact(sval);
     else
       reportRunWarning("Unhandled Mail: " + key);
   }
@@ -269,6 +275,18 @@ bool ContactMgrV20::OnStartUp()
       setNonWhiteVarOnString(m_os_type, value);
       handled = m_filter_set.setOwnshipType(value);
     }
+
+    else if(param == "disable_var")
+      handled = setNonWhiteVarOnString(m_disable_var, value);
+    else if(param == "enable_var")
+      handled = setNonWhiteVarOnString(m_enable_var, value);
+    else if(param == "able_flag")
+      handled = addVarDataPairOnString(m_able_flags, value);
+    else if(param == "disable_flag")
+      handled = addVarDataPairOnString(m_disable_flags, value);
+    else if(param == "enable_flag")
+      handled = addVarDataPairOnString(m_enable_flags, value);
+
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
@@ -281,7 +299,6 @@ bool ContactMgrV20::OnStartUp()
     if(!alert.valid())
       reportConfigWarning("Invalid alert config:" + alert_id);
   }
-
 
   
   // Part 3: If we may possibly want to set our incoming X/Y report
@@ -330,6 +347,11 @@ void ContactMgrV20::registerVariables()
   Register("NAV_SPEED", 0);
   Register("NAV_HEADING", 0);
   Register("IVPHELM_STATE", 0);
+
+  if(m_disable_var != "")
+    Register(m_disable_var, 0);
+  if(m_enable_var != "")
+    Register(m_enable_var, 0);
 }
 
 //---------------------------------------------------------
@@ -419,8 +441,6 @@ void ContactMgrV20::handleMailNodeReport(string report)
   if(!new_node_record.isSetLatitude() || !new_node_record.isSetLongitude())
     override_xy_with_latlon = false;
 
-  cout << "override_xy_with_latlon:" << boolToString(override_xy_with_latlon) << endl;
-  
   // ==============================================================
   // Part 1B: If overriding x/y with latlon and configured to do so
   //          then find x/y from MOOSGeodesy and Lat/Lon and replace.
@@ -435,8 +455,6 @@ void ContactMgrV20::handleMailNodeReport(string report)
     m_geodesy.LatLong2LocalGrid(lat, lon, nav_y, nav_x);
 #endif
 
-    cout << "Incoming local: " << doubleToString(nav_x,2) <<
-      "," << doubleToString(nav_y,2) << endl;
     new_node_record.setX(nav_x);
     new_node_record.setY(nav_y);
   }
@@ -593,6 +611,86 @@ void ContactMgrV20::handleMailHelmState(string value)
 {
   if(value == "DRIVE")
     m_helm_in_drive_noted = true;
+}
+
+//---------------------------------------------------------
+// Procedure: handleMailDisableContact()
+//   Example: XYZ_DISABLE_TARGET = 87993
+//
+// Notes: Disabling a behavior is a matter for the helm, by
+//        way of a message to the BHV_ABLE_FILTER variable.
+//        The contact manager can facilitate.
+//        Assumed input is the ID of a contact.
+
+void ContactMgrV20::handleMailDisableContact(string str)
+{
+  // ========================================================
+  // Part 1: identify the contact ID and prepare outgoing msg
+  // ========================================================
+
+  // If format = "contact=id, action=disable"
+  string contact_id = tokStringParse(str, "contact");
+  string action = tokStringParse(str, "action");
+  string msg = str;
+
+  // If format = "contact=id, action=disable", insist action ok
+  if((action != "") && (action != "disable"))
+    return;
+
+  // Else assume format was just simply the contact id
+  if(contact_id == "") {
+    contact_id = str;
+    msg = "action=disable, contact=" + contact_id;
+  }
+
+  Notify("BHV_ABLE_FILTER", msg);
+
+  // ========================================================
+  // Part 2: Update list of disabled contacts and post flags
+  // ========================================================
+  addDisabledContact(contact_id);
+  postFlags(m_able_flags);
+  postFlags(m_disable_flags);
+}
+
+//---------------------------------------------------------
+// Procedure: handleMailEnableContact()
+//   Example: XYZ_REENABLE_TARGET = 87993
+//
+// Notes: Re-enabling a behavior is a matter for the helm, by
+//        way of a message to the BHV_ABLE_FILTER variable.
+//        The contact manager can facilitate.
+//        Assumed input is the ID of a contact.
+
+void ContactMgrV20::handleMailEnableContact(string str)
+{
+  // ========================================================
+  // Part 1: identify the contact ID and prepare outgoing msg
+  // ========================================================
+
+  // If format = "contact=id, action=disable"
+  string contact_id = tokStringParse(str, "contact");
+  string action = tokStringParse(str, "action");
+  string msg = str;
+
+  // If format = "contact=id, action=disable", insist action ok
+  if((action != "") && (action != "enable"))
+    return;
+
+  // Else assume format was just simply the contact id
+  if(contact_id == "") {
+    contact_id = str;
+    msg = "action=enable, contact=" + contact_id;
+  }
+
+  Notify("BHV_ABLE_FILTER", msg);
+
+  // ========================================================
+  // Part 2: Update list of (re)enabled contacts and post flags
+  // ========================================================
+  addEnabledContact(contact_id);
+  postFlags(m_able_flags);
+  postFlags(m_enable_flags);
 }
 
 //--------------------------------------------------------------------
@@ -1558,6 +1656,110 @@ list<string> ContactMgrV20::getRangeOrderedContacts() const
   return(to_be_returned_ordered_list);
 }
 
+//---------------------------------------------------------
+// Procedure: addDisabledContact()
+//   Purpose: Maintain a list of contacts disabled. This list
+//            used primarily for informational purposes, and
+//            its size can be used as a way of confirming that
+//            a disabled contact has been added.
+//      Note: We are always paranoid about memory growth, so
+//            this contact list is limited to 250 most recent
+//            contacts.
+
+void ContactMgrV20::addDisabledContact(string contact_id)
+{
+  // If contact on enabled list, remove it
+  m_disabled_contacts.remove(contact_id);
+
+  // If contact already is on list, remove so we can put at front
+  m_disabled_contacts.remove(contact_id);
+  m_disabled_contacts.push_front(contact_id);
+
+  // If list is too large, removed the oldest.
+  if(m_disabled_contacts.size() > 250)
+    m_disabled_contacts.pop_back();
+}
+
+//---------------------------------------------------------
+// Procedure: addEnabledContact()
+//      Note: See comments for addDisabledContact()
+
+void ContactMgrV20::addEnabledContact(string contact_id)
+{
+  // If contact on disabled list, remove it
+  m_disabled_contacts.remove(contact_id);
+
+  // If contact already is on list, remove so we can put at front
+  m_enabled_contacts.remove(contact_id);
+  m_enabled_contacts.push_front(contact_id);
+
+  // If list is too large, removed the oldest.
+  if(m_enabled_contacts.size() > 250)
+    m_enabled_contacts.pop_back();
+}
+
+//------------------------------------------------------------
+// Procedure: postFlags()
+//   Purpose: For any set of flags, post each. For flags that
+//            contain a macro, expand the macro first.
+
+void ContactMgrV20::postFlags(const vector<VarDataPair>& flags)
+{
+  for(unsigned int i=0; i<flags.size(); i++) {
+    VarDataPair pair = flags[i];
+    string moosvar = pair.get_var();
+    string postval;
+
+    // If posting is a double, just post. No macro expansion
+    if(!pair.is_string()) {
+      double dval = pair.get_ddata();
+      postval = doubleToStringX(dval,4);
+      Notify(moosvar, dval);
+    }
+    // Otherwise if string posting, handle macro expansion
+    else {
+      postval = stripBlankEnds(pair.get_sdata());
+      postval = expandMacros(postval);
+      if(postval != "")
+        Notify(moosvar, postval);
+    }
+    reportEvent(moosvar + "=" + postval);
+  }
+}
+
+//------------------------------------------------------------
+// Procedure: expandMacros()
+//   Purpose: For any set of flags, post each. For flags that
+//            contain a macro, expand the macro first.
+
+string ContactMgrV20::expandMacros(string sdata) const
+{
+  // Handle $[RECENT_DISABLED]
+  if(m_disabled_contacts.size() > 0) {
+    string most_recently_disabled;
+    most_recently_disabled = m_disabled_contacts.front();
+    sdata = macroExpand(sdata, "RECENT_DISABLED", most_recently_disabled);
+  }
+
+  // Handle $[RECENT_ENABLED]
+  if(m_enabled_contacts.size() > 0) {
+    string most_recently_enabled;
+    most_recently_enabled = m_enabled_contacts.front();
+    sdata = macroExpand(sdata, "RECENT_ENABLED", most_recently_enabled);
+  }
+
+  // Handle $[TOTAL_DISABLED]
+  unsigned int total_disabled = m_disabled_contacts.size();
+  sdata = macroExpand(sdata, "TOTAL_DISABLED", total_disabled);
+
+  // Handle $[ALL_DISABLED] (check first before building content)
+  if(strContains(sdata, "ALL_DISABLED")) {
+    string all_disabled = stringListToString(m_disabled_contacts);
+    sdata = macroExpand(sdata, "ALL_DISABLED", all_disabled);
+  }
+
+  return(sdata);
+}
 
 
 //---------------------------------------------------------
@@ -1628,6 +1830,10 @@ bool ContactMgrV20::buildReport()
   m_msgs << "ContactLocalCoords: " << m_contact_local_coords   << endl;
   m_msgs << "Contact Max Age:    " << max_age << endl;
   m_msgs << "Reject Range:       " << reject_range << endl;
+  if(m_disable_var != "")
+    m_msgs << "Disable Var:        " << m_disable_var << endl;
+  if(m_enable_var != "")
+    m_msgs << "Enable Var:         " << m_enable_var << endl;
   m_msgs << "BCM_ALERT_REQUESTs: " << bcm_req_received << endl;
   m_msgs << "DisplayRadii:       " << boolToString(m_display_radii) << endl;
   if(m_display_radii_id != "")

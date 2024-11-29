@@ -33,7 +33,7 @@
 using namespace std;
 
 //--------------------------------------------------------
-// Constructor
+// Constructor()
 
 HelmReporter::HelmReporter()
 {
@@ -49,8 +49,7 @@ HelmReporter::HelmReporter()
 
 
 //--------------------------------------------------------
-// Procedure: handle
-//     Notes: 
+// Procedure: handle()
 
 bool HelmReporter::handle(const string& alogfile)
 {
@@ -159,7 +158,9 @@ void HelmReporter::handleNewHelmSummary(string summary, string tstamp)
   string bhvs_active   = report.getActiveBehaviors(full);
   string bhvs_running  = report.getRunningBehaviors(full);
   string bhvs_idle     = report.getIdleBehaviors(full);
-  string bhvs_complete = report.getCompletedBehaviors(full);
+  string bhvs_disabled = report.getDisabledBehaviors(full);
+  //string bhvs_complete = report.getCompletedBehaviors(full);
+  string bhvs_complete = report.getCompletedBehaviorsTerse();
 
   string color_active   = "";
   string color_running  = "";
@@ -207,6 +208,13 @@ void HelmReporter::handleNewHelmSummary(string summary, string tstamp)
     cout << "             CHANGE";
   cout << termColor() << endl;
 
+  if(m_use_color)
+    cout << termColor(color_idle);
+  cout << tstamp << "    (" << iter << ") Disabled:  " << bhvs_disabled;
+  if(color_idle != "")
+    cout << "             CHANGE";
+  cout << termColor() << endl;
+
 
   if(bhvs_complete != "") {
     if(m_use_color)
@@ -222,7 +230,7 @@ void HelmReporter::handleNewHelmSummary(string summary, string tstamp)
 
 
 //--------------------------------------------------------
-// Procedure: addWatchVar
+// Procedure: addWatchVar()
 //     Input: DESIRED_HEADING
 
 void HelmReporter::addWatchVar(string var)
@@ -237,8 +245,7 @@ void HelmReporter::addWatchVar(string var)
 
 
 //--------------------------------------------------------
-// Procedure: printReport
-//     Notes: 
+// Procedure: printReport()
 
 void HelmReporter::printReport()
 {

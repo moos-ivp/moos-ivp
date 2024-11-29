@@ -55,7 +55,8 @@ public:
 				   bool on_startup=false);
   bool       handlePossibleSpawnings();
   bool       refreshMapUpdateVars();
-  
+
+  bool   applyAbleFilterMsg(std::string);
   void   addBehavior(IvPBehavior *b);
   void   clearBehaviors();
   void   setOwnship(std::string s)      {m_ownship=s;}
@@ -134,6 +135,8 @@ public:
   void print();
 
   unsigned long int size() const;
+
+  unsigned int bhvStateCount(std::string) const;
   
 protected:
   std::vector<BehaviorSetEntry> m_bhv_entry;
@@ -171,8 +174,3 @@ protected:
 };
 
 #endif 
-
-
-
-
-

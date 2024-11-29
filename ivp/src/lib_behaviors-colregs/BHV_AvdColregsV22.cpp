@@ -233,6 +233,8 @@ bool BHV_AvdColregsV22::setParam(string param, string value)
 
 void BHV_AvdColregsV22::onHelmStart()
 {
+  IvPContactBehavior::onHelmStart();
+
   if(m_no_alert_request || (m_update_var == "") || !m_dynamically_spawnable)
     return;
 
@@ -260,6 +262,16 @@ void BHV_AvdColregsV22::onIdleState()
 
   if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist * 1.1)))
     setComplete();  
+}
+
+//-----------------------------------------------------------
+// Procedure: onDisabledState()
+
+void BHV_AvdColregsV22::onDisabledState() 
+{
+  postViewableBearingLine(false);
+  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist*1.1)))
+    setComplete();
 }
 
 //-----------------------------------------------------------

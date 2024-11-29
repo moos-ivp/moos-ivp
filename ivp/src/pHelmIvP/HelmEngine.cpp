@@ -121,6 +121,50 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
 }
 
 //------------------------------------------------------------------
+// Procedure: addAbleFilterMsg()
+
+bool HelmEngine::addAbleFilterMsg(string msg)
+{
+  if(!m_bhv_set)
+    return(false);
+
+  // Oldest in front, newest in back
+  m_able_filter_msgs.push_back(msg);
+
+  // More aggressive pruning will happen directly after applying
+  // the messages, but less agressive pruning is done here to
+  // be super conservative in gaurding against unbounded growth.
+  if(m_able_filter_msgs.size() > 1000)
+    m_able_filter_msgs.pop_front();
+
+  return(true);
+}
+
+
+//------------------------------------------------------------------
+// Procedure: applyAbleFilterMsgs()
+
+bool HelmEngine::applyAbleFilterMsgs()
+{
+  if(!m_bhv_set)
+    return(false);
+  
+  bool last_msg_ok = true;
+  list<string>::iterator p;
+  for(p=m_able_filter_msgs.begin(); p!=m_able_filter_msgs.end(); p++) {
+    string msg = *p;
+    last_msg_ok = m_bhv_set->applyAbleFilterMsg(msg);
+  }
+
+  // Prune the oldest if needed
+  if(m_able_filter_msgs.size() > 100)
+    m_able_filter_msgs.pop_front();
+
+  return(last_msg_ok);
+}
+
+
+//------------------------------------------------------------------
 // Procedure: part1_PreliminaryBehaviorSetHandling()
 
 bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
@@ -144,6 +188,11 @@ bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
   if(new_behaviors)
     m_bhv_set->connectInfoBuffer(m_info_buffer);
 
+  cout << "** iter:[" << m_iteration << "]:" << m_able_filter_msgs.size() << endl;
+  
+  // bhv_set is stable w/ possible new bhvs, apply filter msgs
+  applyAbleFilterMsgs();
+  
   // Update the PlatModel for each behavior including newly
   // spawned behaviors.
   m_bhv_set->setPlatModel(m_pmodel);
@@ -267,6 +316,9 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
 	m_map_ipfs[descriptor] = newof;
       }
 
+      if(bhv_state=="disabled")
+	m_helm_report.addDisabledBHV(descriptor, state_time_entered, 
+				    upd_summary);
       if(bhv_state=="running")
 	m_helm_report.addRunningBHV(descriptor, state_time_entered, 
 				    upd_summary);
@@ -276,6 +328,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       if(bhv_state=="completed") {
 	m_helm_report.addCompletedBHV(descriptor, state_time_entered,
 				      upd_summary);
+	cout << "****** completed: " << descriptor << endl;
+	cout << "****** hr_cbhvs: " << m_helm_report.getCompletedCnt() << endl;
 	m_helm_report.addMsg("executing setCompletedPending:true");
 	m_bhv_set->setCompletedPending(true);
       }

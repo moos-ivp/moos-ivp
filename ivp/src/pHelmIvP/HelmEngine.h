@@ -42,9 +42,12 @@ public:
   HelmEngine(IvPDomain, InfoBuffer*);
   ~HelmEngine();
 
+  void setBehaviorSet(BehaviorSet *bset) {m_bhv_set=bset;}
   void setPlatModel(const PlatModel& pm) {m_pmodel=pm;}
   HelmReport determineNextDecision(BehaviorSet *bset, double curr_time);
-
+  bool addAbleFilterMsg(std::string);
+  bool applyAbleFilterMsgs();
+  
   unsigned long int size() const;
   
 protected:
@@ -82,6 +85,8 @@ protected:
   MBTimer  m_create_timer;
   MBTimer  m_ipf_timer;
   MBTimer  m_solve_timer;
+
+  std::list<std::string> m_able_filter_msgs;
 };
 
 #endif

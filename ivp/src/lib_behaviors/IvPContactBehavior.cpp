@@ -322,6 +322,14 @@ void IvPContactBehavior::onEveryState(string new_state)
 }
 
 //-----------------------------------------------------------
+// Procedure: onHelmStart()
+
+void IvPContactBehavior::onHelmStart()
+{
+  addInfoVars("BHV_ABLE_FILTER", "no_warning");
+}
+
+//-----------------------------------------------------------
 // Procedure: handleContactFlags()
 //   Purpose: Go through all the contact flags and send to
 //            appropriate handler
@@ -643,3 +651,86 @@ void IvPContactBehavior::postViewableBearingLine(bool active)
   postMessage("VIEW_SEGLIST", segl_spec);
 }
 
+//-----------------------------------------------------------
+// Procedure: applyAbleFilter()
+//   Example: action=disable, contact=345, gen_type=safety,
+//            bhv_type=AvdColregs
+//    Fields: action=disable/able  (mandatory)
+//            contact=345          (one of these three)
+//            gen_type=safety
+//            bhv_type=AvdColregs
+
+bool IvPContactBehavior::applyAbleFilter(string str)
+{
+  // If this behavior is configured to be immune to disable
+  // actions, then just ignore and return true, even if the
+  // passed argument is not proper.
+  if(!m_can_disable)
+    return(true);
+
+  // ======================================================
+  // Part 1: Parse the filter string. Must be one of the
+  //         supported fields, no field more than once.
+  // ======================================================
+  string action, contact, gen_type, bhv_type;
+  vector<string> svector = parseString(str, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = tolower(biteStringX(svector[i], '='));
+    string value = tolower(svector[i]);
+
+    if((param == "action") && (action == ""))
+      action = value;
+    else if((param == "contact") && (contact == ""))
+      contact = value;
+    else if((param == "gen_type") && (gen_type == ""))
+      gen_type = value;
+    else if((param == "bhv_type") && (bhv_type == ""))
+      bhv_type = value;
+    else
+      return(false);
+  }
+
+  // ======================================================
+  // Part 2: Check for proper format.
+  // ======================================================
+
+  // action must be specified and only disable or enable
+  if((action != "disable") && (action != "enable"))
+    return(false);
+
+  // gen_type can only be empty or safety
+  if((gen_type != "") && (gen_type != "safety"))
+    return(false);
+
+  // At least one of contact, gen_type, or bhv_type must be given
+  if((contact == "") && (gen_type == "") && (bhv_type == ""))
+    return(false);
+
+  // ======================================================
+  // Part 3: At this pt syntax checking has passed, now
+  // check if this filter message applies to this behavior.
+  // ======================================================
+
+  // Check 1: If the gen_type has been set to safety, then
+  // then it MUST be a safety(constraint) behavior,
+  // regardless of other filter factors
+  if((gen_type == "safety") && !isConstraint())
+    return(true);  // Return true since syntax if fine
+
+  // Check 2: If the bhv_type has been set then it MUST
+  // match, regardless of other filter factors
+  if((bhv_type != "") && (bhv_type != tolower(getBehaviorType())))
+    return(true);  // Return true since syntax if fine
+
+  // Check 3: If contact name has been set then MUST 
+  // match, regardless of other filter factors
+  if((contact != "") && (contact != tolower(m_contact)))
+    return(true);  // Return true since syntax if fine
+
+  if(action == "disable")
+    m_disabled = true;
+  else
+    m_disabled = false;
+
+  return(true);
+}

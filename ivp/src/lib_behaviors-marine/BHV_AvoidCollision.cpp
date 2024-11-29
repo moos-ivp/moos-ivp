@@ -39,7 +39,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) : 
   IvPContactBehavior(gdomain)
@@ -84,7 +84,7 @@ BHV_AvoidCollision::BHV_AvoidCollision(IvPDomain gdomain) :
 }
 
 //-----------------------------------------------------------
-// Procedure: setParam
+// Procedure: setParam()
 
 bool BHV_AvoidCollision::setParam(string param, string param_val) 
 {
@@ -198,6 +198,16 @@ void BHV_AvoidCollision::onHelmStart()
   request = augmentSpec(request, getFilterSummary());
   
   postMessage("BCM_ALERT_REQUEST", request);
+}
+
+//-----------------------------------------------------------
+// Procedure: onDisabledState()
+
+void BHV_AvoidCollision::onDisabledState()
+{
+  postViewableBearingLine(false);
+  if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist*1.1)))
+    setComplete();
 }
 
 //-----------------------------------------------------------

@@ -54,6 +54,7 @@ public:
   virtual void onSetParamComplete() {postConfigStatus();}
   virtual void onHelmStart() {}
   virtual void onSpawn() {}
+  virtual void onDisabledState() {}
   virtual void onIdleState() {}
   virtual void onCompleteState() {}
   virtual void onInactiveState() {}
@@ -69,6 +70,8 @@ public:
   virtual double getMemSize() {return(0);}
   virtual bool isConstraint() {return(false);}
   virtual std::string isDeprecated() {return("");}
+  virtual bool applyAbleFilter(std::string) {return(true);}
+  virtual std::vector<std::string> getInfoVars();
   
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
@@ -79,7 +82,6 @@ public:
   void   statusInfoAdd(std::string param, std::string value);
   void   statusInfoPost();
 
-  std::vector<std::string> getInfoVars();
   std::string getDescriptor()            {return(m_descriptor);}
   std::string getUpdateVar() const       {return(m_update_var);}
   std::string getBehaviorType()          {return(m_behavior_type);}
@@ -297,6 +299,9 @@ protected:
   unsigned int m_macro_ctr_04;
   unsigned int m_macro_ctr_05;
 
+  bool m_disabled;
+  bool m_can_disable;
+  
   // The state_ok flag shouldn't be set to true once it has been 
   // set to false. So prevent subclasses from setting this directly.
   // This variable should only be accessible via (1) postEMessage()
