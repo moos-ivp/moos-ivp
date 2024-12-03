@@ -71,6 +71,10 @@ ContactMgrV20::ContactMgrV20()
   
   m_reject_range = 2000;
   
+  m_early_warning_rng = -1;
+  m_early_warning_ref_spd = -1;
+  m_early_warning_radii = false;
+  
   // State Variables
   m_osx = 0;
   m_osy = 0;
@@ -155,6 +159,10 @@ bool ContactMgrV20::Iterate()
 
   updateRanges();
 
+  checkForEarlyWarnings();
+  checkForCeaseWarnings();
+  postEarlyWarningRadii();
+  
   if(!m_hold_alerts_for_helm || m_helm_in_drive_noted) 
     checkForAlerts();
 
@@ -198,6 +206,7 @@ bool ContactMgrV20::OnStartUp()
   
   // Part 1: Set the basic configuration parameters.
   STRING_LIST sParams;
+  m_MissionReader.EnableVerbatimQuoting(false);
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
   
   STRING_LIST::reverse_iterator p;
@@ -286,6 +295,19 @@ bool ContactMgrV20::OnStartUp()
       handled = addVarDataPairOnString(m_disable_flags, value);
     else if(param == "enable_flag")
       handled = addVarDataPairOnString(m_enable_flags, value);
+    else if(param == "early_warning_flag")
+      handled = addVarDataPairOnString(m_early_warning_flags, value);
+    else if(param == "cease_warning_flag")
+      handled = addVarDataPairOnString(m_cease_warning_flags, value);
+    else if(param == "retire_flag")
+      handled = addVarDataPairOnString(m_retire_flags, value);
+
+    else if(param == "early_warning_rng")
+      handled = setPosDoubleOnString(m_early_warning_rng, value);
+    else if(param == "early_warning_radii")
+      handled = setBooleanOnString(m_early_warning_radii, value);
+    else if(param == "early_warning_ref_spd")
+      handled = setPosDoubleOnString(m_early_warning_ref_spd, value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -1203,6 +1225,135 @@ void ContactMgrV20::checkForAlerts()
 
 
 //---------------------------------------------------------
+// Procedure: postWarningFlags()
+
+void ContactMgrV20::postWarningFlags(const vector<VarDataPair>& flags,
+				     string contact,
+				     double range,
+				     double cpa)
+{
+  for(unsigned int i=0; i<flags.size(); i++) {
+    VarDataPair pair = flags[i];
+    string moosvar = pair.get_var();
+    string postval;
+    
+    // If posting is a double, just post. No macro expansion
+    if(!pair.is_string()) {
+      double dval = pair.get_ddata();
+      postval = doubleToStringX(dval,4);
+      Notify(moosvar, dval);
+    }
+    // Otherwise if string posting, handle macro expansion
+    else {
+      postval = stripBlankEnds(pair.get_sdata());
+      postval = macroExpand(postval, "CONTACT", contact);
+      postval = macroExpand(postval, "RNG", range);
+      postval = macroExpand(postval, "CPA", cpa);
+      if(postval != "")
+        Notify(moosvar, postval);
+    }
+    reportEvent(moosvar + "=" + postval);
+  }
+}
+
+//---------------------------------------------------------
+// Procedure: postRetireFlags()
+
+void ContactMgrV20::postRetireFlags(const vector<VarDataPair>& flags,
+				    string contact)
+{
+  for(unsigned int i=0; i<flags.size(); i++) {
+    VarDataPair pair = flags[i];
+    string moosvar = pair.get_var();
+    string postval;
+    
+    // If posting is a double, just post. No macro expansion
+    if(!pair.is_string()) {
+      double dval = pair.get_ddata();
+      postval = doubleToStringX(dval,4);
+      Notify(moosvar, dval);
+    }
+    // Otherwise if string posting, handle macro expansion
+    else {
+      postval = stripBlankEnds(pair.get_sdata());
+      postval = macroExpand(postval, "CONTACT", contact);
+      postval = macroExpand(postval, "UTC", m_curr_time);
+      if(postval != "")
+        Notify(moosvar, postval);
+    }
+    reportEvent(moosvar + "=" + postval);
+  }
+}
+
+//---------------------------------------------------------
+// Procedure: checkForCeaseWarnings()
+
+void ContactMgrV20::checkForCeaseWarnings()
+{
+  map<string, NodeRecord>::iterator p;
+  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
+    string     contact = p->first;
+    NodeRecord record  = p->second;
+
+    // Check 1: If has been no early warning for this contact, skip
+    if(m_map_early_warnings.count(contact) == 0)
+      continue;
+    
+    double contact_range_ext = m_map_node_ranges_extrap[contact]; 
+    double contact_range_cpa = m_map_node_ranges_cpa[contact]; 
+    if(contact_range_ext > (m_map_early_warnings[contact] * 1.05)) {
+      m_map_early_warnings.erase(contact);
+      postWarningFlags(m_cease_warning_flags,
+		       contact,
+		       contact_range_ext,
+		       contact_range_cpa);
+    }
+  }
+}
+
+//---------------------------------------------------------
+// Procedure: checkForEarlyWarnings()
+
+void ContactMgrV20::checkForEarlyWarnings()
+{
+  map<string, NodeRecord>::iterator p;
+  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
+    string     contact = p->first;
+    NodeRecord record  = p->second;
+
+    // Check 1: If already warned about this contact, just skip now.
+    if(m_map_early_warnings.count(contact))
+      continue;
+    
+    double contact_range_ext = m_map_node_ranges_extrap[contact]; 
+    double contact_range_cpa = m_map_node_ranges_cpa[contact];    
+
+    // Check 2: If contact inside warning range, warning warranted
+    if(contact_range_ext < m_early_warning_rng)
+      continue;
+
+    // Check 3: If speed factor consideration enabled, calc and check
+    double warning_range_aug = augRange(m_early_warning_rng,
+					m_early_warning_ref_spd,
+					record.getSpeed());
+    // If the contact (extrapolated) position is within the
+    // augmented range:
+    if(contact_range_ext < warning_range_aug) {
+      // And if the projected CPA of the contact falls within
+      // the un-augmented early warning range
+      if(contact_range_cpa < m_early_warning_rng) {
+	// then a warning is warranted
+	postWarningFlags(m_early_warning_flags,
+			 contact,
+			 contact_range_ext,
+			 contact_range_cpa);
+	  m_map_early_warnings[contact] = contact_range_ext;
+      }
+    }
+  }
+}
+
+//---------------------------------------------------------
 // Procedure: checkForNewRetiredContacts()
 //   Purpose: Check all contacts and see if any of them should be
 //            moved onto the retired list based on contact_max_age.
@@ -1298,6 +1449,10 @@ void ContactMgrV20::checkForNewRetiredContacts()
     m_map_node_ranges_extrap.erase(contact);
     m_map_node_ranges_cpa.erase(contact);
     m_par.removeVehicle(contact);
+
+    postRetireFlags(m_retire_flags, contact);
+    
+    m_map_early_warnings.erase(contact);
   }
 
   // Part 3: Clear the set of filtered_vnames. This list should start
@@ -1452,6 +1607,71 @@ void ContactMgrV20::updateRanges()
 				      alert_range_cpa_time);
     m_map_node_ranges_cpa[vname] = range_cpa;
   }
+}
+
+//---------------------------------------------------------
+// Procedure: postEarlyWarningRadii()
+
+void ContactMgrV20::postEarlyWarningRadii()
+{
+  // Sanity check - if no early warning enabled 
+  if(!m_early_warning_radii || (m_early_warning_rng <= 0))
+    return;
+
+  XYCircle circle(m_osx, m_osy, m_early_warning_rng);
+  circle.set_label("ewarn");
+  circle.set_color("edge", "gray50");
+  circle.set_vertex_size(0);
+  circle.set_edge_size(1);
+  circle.set_active(true);
+  circle.set_duration(3);
+  circle.set_time(m_curr_time);
+  string str = circle.get_spec();
+  Notify("VIEW_CIRCLE", str);
+
+
+  map<string, NodeRecord>::iterator p;
+  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
+    string     contact = p->first;
+    NodeRecord node_record = p->second;
+
+    postEarlyWarningRadii(contact);
+  }
+}
+
+//---------------------------------------------------------
+// Procedure: postEarlyWarningRadii(contact)
+
+void ContactMgrV20::postEarlyWarningRadii(string contact)
+{
+  // Sanity check - if no early warning reference spd enabled 
+  if(m_early_warning_ref_spd <= 0)
+    return;
+
+  // Sanity check - if no early warning reference spd enabled 
+  if(m_map_node_records.count(contact) == 0)
+    return;
+
+  NodeRecord cn_record = m_map_node_records[contact];
+  double cn_spd = cn_record.getSpeed();
+
+  double aug_rng = augRange(m_early_warning_rng,
+			    m_early_warning_ref_spd,
+			    cn_spd);
+
+  if(aug_rng <= m_early_warning_rng)
+    return;
+  
+  XYCircle circle(m_osx, m_osy, aug_rng);
+  circle.set_label("ewarn_" + contact);
+  circle.set_color("edge", "gray80");
+  circle.set_vertex_size(0);
+  circle.set_edge_size(1);
+  circle.set_active(true);
+  circle.set_duration(3);
+  circle.set_time(m_curr_time);
+  string str = circle.get_spec();
+  Notify("VIEW_CIRCLE", str);
 }
 
 //---------------------------------------------------------
@@ -1669,7 +1889,7 @@ list<string> ContactMgrV20::getRangeOrderedContacts() const
 void ContactMgrV20::addDisabledContact(string contact_id)
 {
   // If contact on enabled list, remove it
-  m_disabled_contacts.remove(contact_id);
+  m_enabled_contacts.remove(contact_id);
 
   // If contact already is on list, remove so we can put at front
   m_disabled_contacts.remove(contact_id);
@@ -1762,6 +1982,38 @@ string ContactMgrV20::expandMacros(string sdata) const
 }
 
 
+//------------------------------------------------------------
+// Procedure: augRange()
+//   Purpose: Utility function for expanding a range based on
+//            a base range, reference speed, and observed spd.
+//   Example:
+//      reference spd: 8 m/s
+//      observed spdd: 9 m/s
+//         base_range: 100 meters
+//
+//   diff: 1 m/s
+//   pct:  1/8 = 1.125
+//   aug:  112.5 meters
+
+double ContactMgrV20::augRange(double base_range,
+			       double reference_spd,
+			       double observed_spd) const
+{
+  if(m_early_warning_ref_spd <= 0)
+    return(base_range);
+  
+  if(observed_spd <= reference_spd)
+    return(base_range);
+    
+  double diff = observed_spd - reference_spd;
+  double pct  = 1 + (diff / reference_spd);
+  double aug_range = base_range * pct;
+
+  return(aug_range);
+}
+
+
+
 //---------------------------------------------------------
 // Procedure: buildReport()
 //      Note: A virtual function of the AppCastingMOOSApp superclass, 
@@ -1830,6 +2082,14 @@ bool ContactMgrV20::buildReport()
   m_msgs << "ContactLocalCoords: " << m_contact_local_coords   << endl;
   m_msgs << "Contact Max Age:    " << max_age << endl;
   m_msgs << "Reject Range:       " << reject_range << endl;
+  m_msgs << "EarlyWarn Range:    " << m_early_warning_rng << endl;
+
+  if((m_early_warning_rng > 0) && (m_early_warning_ref_spd > 0)) {
+    string ref_spd_str = doubleToString(m_early_warning_ref_spd,1);
+    m_msgs << "EarlyWarn Ref Spd:  " << ref_spd_str << endl;
+    m_msgs << "EarlyWarn Flags:    " << m_early_warning_flags.size() << endl;
+  }
+  
   if(m_disable_var != "")
     m_msgs << "Disable Var:        " << m_disable_var << endl;
   if(m_enable_var != "")

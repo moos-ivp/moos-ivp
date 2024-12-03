@@ -164,6 +164,8 @@ bool BHV_AvoidCollision::setParam(string param, string param_val)
     return(setBooleanOnString(m_check_validity, param_val));
   else if(param == "pcheck_thresh")
     return(setNonNegDoubleOnString(m_pcheck_thresh, param_val));
+  else if(param == "can_disable") 
+    return(setBooleanOnString(m_can_disable, param_val));
 
   // Safety check, in case user did not explicitly set completed dist
   if(m_completed_dist < m_pwt_outer_dist)

@@ -98,7 +98,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_macro_ctr_05 = 0;
 
   m_disabled = false;
-  m_can_disable = true;
+  m_can_disable = false;
   
   m_config_posted = false;
 
@@ -213,8 +213,6 @@ bool IvPBehavior::setParam(string g_param, string g_val)
     m_comms_policy_config = val;
     return(true);
   }
-  else if(g_param == "can_disable") 
-    return(setBooleanOnString(m_can_disable, g_val));
   else if(g_param == "duration_status") {
     m_duration_status = g_val;
     return(true);

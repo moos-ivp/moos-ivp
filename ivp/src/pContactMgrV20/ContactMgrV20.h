@@ -68,10 +68,6 @@ class ContactMgrV20 : public AppCastingMOOSApp
   void handleMailDisplayRadii(std::string);
   void handleMailHelmState(std::string);
 
-  // For users using the cmgr as broker for dis/enabling behaviors
-  void handleMailDisableContact(std::string);
-  void handleMailEnableContact(std::string);
-
   void updateRanges();
   void postSummaries();
   void checkForAlerts();
@@ -91,6 +87,19 @@ class ContactMgrV20 : public AppCastingMOOSApp
   
   void pruneRangeReports();
   
+  // New 24.8.x dis/enabling behaviors
+  void handleMailDisableContact(std::string);
+  void handleMailEnableContact(std::string);
+  // New 24.8.x early warnings
+  void checkForEarlyWarnings();
+  void checkForCeaseWarnings();
+  void postWarningFlags(const std::vector<VarDataPair>&,
+			std::string, double, double);
+  void postEarlyWarningRadii();
+  void postEarlyWarningRadii(std::string);
+  // New 24.8.x retire flags
+  void postRetireFlags(const std::vector<VarDataPair>&,
+		       std::string);
   
  protected: // Alert Getters
   double      getAlertRange(std::string id) const;
@@ -105,6 +114,9 @@ protected:
   void postFlags(const std::vector<VarDataPair>&);
   std::string expandMacros(std::string) const;
 
+private:
+  double augRange(double range, double ref_spd, double spd) const;
+  
  private: // main record of alerts, each keyed on the alert_id
   std::map<std::string, CMAlert> m_map_alerts;
   
@@ -164,10 +176,10 @@ protected:
   
   // Main Record #2: The Vehicles (contacts) and position info
   ContactLedger m_ledger;
-  std::map<std::string, NodeRecord>   m_map_node_records;
-  std::map<std::string, double>       m_map_node_ranges_actual;
-  std::map<std::string, double>       m_map_node_ranges_extrap;
-  std::map<std::string, double>       m_map_node_ranges_cpa;
+  std::map<std::string, NodeRecord>  m_map_node_records;
+  std::map<std::string, double>      m_map_node_ranges_actual;
+  std::map<std::string, double>      m_map_node_ranges_extrap;
+  std::map<std::string, double>      m_map_node_ranges_cpa;
 
   std::string m_closest_name;
 
@@ -194,16 +206,29 @@ protected:
   bool  m_hold_alerts_for_helm;
   bool  m_helm_in_drive_noted;
 
-  // For users using the cmgr as broker for dis/enabling behaviors
+protected: // Rel 24.8.x For users using cmgr for dis/enabling bhvs
+ 
   std::string  m_disable_var;
   std::string  m_enable_var;
-
   std::list<std::string> m_disabled_contacts;
   std::list<std::string> m_enabled_contacts;
-
   std::vector<VarDataPair> m_able_flags;
   std::vector<VarDataPair> m_disable_flags;
   std::vector<VarDataPair> m_enable_flags;
+
+protected: // Rel 24.8.x For users wanting early warning system
+
+  double m_early_warning_rng;     // Config param by default -1/off
+  double m_early_warning_ref_spd; // Config param by default -1/off
+  bool   m_early_warning_radii;   // true if rendering ranges
+  
+  // Key is contact name. To range at which warning was generated
+  std::map<std::string, double> m_map_early_warnings; 
+  std::vector<VarDataPair>  m_early_warning_flags;
+  std::vector<VarDataPair>  m_cease_warning_flags;
+
+protected: // Rel 24.8.x Support flags on event of retired contact 
+  std::vector<VarDataPair> m_retire_flags;
   
 private:
   bool         m_use_geodesy;

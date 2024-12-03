@@ -188,6 +188,8 @@ bool BHV_AvdColregsV19::setParam(string param, string value)
     m_pwt_grade = value;
     return(true);
   }  
+  else if(param == "can_disable") 
+    return(setBooleanOnString(m_can_disable, value));
   else
     return(false);
 
