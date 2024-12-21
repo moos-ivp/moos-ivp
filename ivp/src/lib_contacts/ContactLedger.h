@@ -29,13 +29,15 @@
 #include <vector>
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "NodeRecord.h"
+#include "ColoredPoint.h"
 
 class ContactLedger
 {
 public:
-  ContactLedger();
+  ContactLedger(unsigned int hist_size=0);
   ~ContactLedger() {};
 
+public: // General configuration
   void setGeodesy(CMOOSGeodesy geodesy);
   bool setGeodesy(double dlat, double dlon);
   bool addIgnoreVName(std::string vname);
@@ -43,7 +45,9 @@ public:
   
   void setCurrTimeUTC(double utc) {m_curr_utc=utc;}
   void extrapolate(double utc=0);
+  void setActiveVName(std::string vname); 
 
+public: // Managing, Handle Node Reports
   std::string processNodeReport(std::string report,
 				std::string& whynot);
   std::string processNodeRecord(NodeRecord record,
@@ -57,13 +61,16 @@ public:
   bool checkNodeRecord(NodeRecord record);
   
   void clearNode(std::string vname);  
+  void clearAllNodes();  
 
+public: // Status checks
   bool isValid(std::string) const;
   bool isStale(std::string, double thresh) const;
   bool hasVName(std::string) const;
   bool hasVNameValid(std::string) const;
   bool hasVNameValidNotStale(std::string, double v=0) const;
 
+public: // Record Getters
   double getX(std::string vname, bool extrap=true) const;
   double getY(std::string vname, bool extrap=true) const;
   double getSpeed(std::string vname) const;
@@ -73,39 +80,49 @@ public:
   double getLon(std::string vname) const;
   double getAge(std::string vname) const;
   double getAgeReceived(std::string vname) const;
-
   std::string getGroup(std::string vname) const;
   std::string getType(std::string vname) const;
   std::string getSpec(std::string vname) const;
+  std::string getActiveVName() const {return(m_active_vname);}
+  CPList getVHist(std::string vname) const;
+  
+public: // Config Getters
   std::string getIgnoreVNames() const;
   std::string getIgnoreGroups() const;
-  
+
+public: // Statistics Getters
   unsigned int size() const {return(m_map_records_rep.size());}
   unsigned int totalReports() const {return(m_total_reports);}
   unsigned int totalReportsValid() const {return(m_total_reports_valid);}
   unsigned int totalReports(std::string vname) const;
-
+  std::string  getClosestVehicle(double x, double y) const;
+  bool getWeightedCenter(double& x, double& y) const;
+  
+public:
   bool groupMatch(std::string vname1, std::string vname2) const;
 
-  std::set<std::string> getVNamesByGroup(std::string group) const;
-  
+  std::set<std::string>    getVNamesByGroup(std::string grp) const;
   std::vector<std::string> getVNames() const;
   std::vector<std::string> getVNamesStale(double thresh) const;
-
   std::vector<std::string> getReportSkews() const;
   std::vector<std::string> getReportLags() const;
   
-protected:
   NodeRecord getRecord(std::string vname, bool extrap=true) const;
-  void       extrapolate(std::string vname);
-  void       updateLocalCoords();
-  void       updateLocalCoords(NodeRecord&);
-  void       updateGlobalCoords(NodeRecord&);
+
+protected:
+  void extrapolate(std::string vname);
+  void updateLocalCoords();
+  void updateLocalCoords(NodeRecord&);
+  void updateGlobalCoords(NodeRecord&);
   
 protected: // Config vars
   double m_stale_thresh;
   double m_extrap_thresh;
 
+  unsigned int m_history_size;
+
+  std::string m_active_vname;
+  
   std::set<std::string> m_ignore_vnames;
   std::set<std::string> m_ignore_groups;
   
@@ -120,6 +137,8 @@ protected: // State vars
   std::map<std::string, double>       m_map_skew_max;
   std::map<std::string, unsigned int> m_map_skew_cnt;
   std::map<std::string, double>       m_map_skew_avg;
+
+  std::map<std::string, CPList> m_map_hist;
   
   double m_curr_utc;
 

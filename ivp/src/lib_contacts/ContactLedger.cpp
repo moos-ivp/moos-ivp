@@ -33,10 +33,11 @@ using namespace std;
 //---------------------------------------------------------
 // Constructor()
 
-ContactLedger::ContactLedger()
+ContactLedger::ContactLedger(unsigned int history_size)
 {
   // Config vars
   m_stale_thresh = -1;
+  m_history_size = history_size;
 
   // If a record has been received as recently as this value
   // don't bother calculating an extrapolated position.
@@ -202,13 +203,79 @@ string ContactLedger::processNodeRecord(NodeRecord record,
     return("");
   
   m_total_reports_valid++;
+
+  // ========================================================
+  // Part 1: Do some "Type-Fixing".
+  // Known types: kayak, auv, glider, ship, wamv, etc.
+  // ========================================================
+  string vtype = tolower(record.getType());
+  if(vtype == "uuv")
+    vtype = "auv";
+  else if(!isKnownVehicleType(vtype))
+    vtype = "ship";
+
+  if((vtype == "auv") || (vtype == "glider")) { 
+    if(!record.valid("depth")) {
+      whynot = "underwater vehicle type with no depth reported";
+      return("");
+    }
+  }
+  record.setType(vtype);
   
-  // Part 2: Receive the node reccord
+  // ========================================================
+  // Part 2: Add defaults lengths if field is missing.
+  // ========================================================
+  double vlen = record.getLength();
+  if(!record.valid("length") || (vlen <= 0)) {
+    if((vtype == "auv") || (vtype == "kayak") || (vtype == "heron"))
+      vlen = 3.0; // meters
+    else if(vtype == "glider")
+      vlen = 2.0; // meters
+    else if((vtype == "cray")  || (vtype == "bcray") ||
+	    (vtype == "crayx") || (vtype == "bcrayx"))
+      vlen = 1.5; // meters
+    else if(vtype == "ship")
+      vlen = 12; // meters
+    else if(vtype == "longship")
+      vlen = 15; // meters
+    else if(vtype == "wamv")
+      vlen = 6; // meters
+  }
+  record.setLength(vlen);
+  
+
+  // ========================================================
+  // Part 3: Receive the node reccord
+  // ========================================================
   m_map_records_rep[vname] = record;
   m_map_records_ext[vname] = record;
   m_map_records_utc[vname] = m_curr_utc;
 
-  // Part 3: Determine skew and update stats
+  // ========================================================
+  // Part 4: Update the vehicle position history
+  // ========================================================
+  if(m_history_size > 0) {
+    double pos_x = record.getX();
+    double pos_y = record.getY();
+    
+    ColoredPoint point(pos_x, pos_y);
+    map<string,CPList>::iterator p2;
+    p2 = m_map_hist.find(vname);
+    if(p2 != m_map_hist.end()) {
+      p2->second.push_back(point);
+      if(p2->second.size() > m_history_size)
+	p2->second.pop_front();
+    }
+    else {
+      list<ColoredPoint> newlist;
+      newlist.push_back(point);
+      m_map_hist[vname] = newlist;
+    }
+  }
+
+  // ========================================================
+  // Part 5: Determine skew and update stats
+  // ========================================================
   double skew = m_curr_utc - record.getTimeStamp();
 
   m_map_skew_cnt[vname]++;
@@ -240,6 +307,33 @@ void ContactLedger::clearNode(string vname)
 {
   m_map_records_rep.erase(vname);
   m_map_records_ext.erase(vname);
+  m_map_records_utc.erase(vname);
+
+  m_map_records_total.erase(vname);
+  m_map_skew_min.erase(vname);
+  m_map_skew_max.erase(vname);
+  m_map_skew_cnt.erase(vname);
+  m_map_skew_avg.erase(vname);
+
+  m_map_hist.erase(vname);
+}
+
+//---------------------------------------------------------------
+// Procedure: clearAllNodes()
+
+void ContactLedger::clearAllNodes()
+{
+  m_map_records_rep.clear();
+  m_map_records_ext.clear();
+  m_map_records_utc.clear();
+
+  m_map_records_total.clear();
+  m_map_skew_min.clear();
+  m_map_skew_max.clear();
+  m_map_skew_cnt.clear();
+  m_map_skew_avg.clear();
+
+  m_map_hist.clear();
 }
 
 //---------------------------------------------------------------
@@ -255,6 +349,34 @@ void ContactLedger::extrapolate(double utc)
     string vname = p->first;
     extrapolate(vname);
   }
+}
+
+//---------------------------------------------------------------
+// Procedure: setActiveVName()
+
+void ContactLedger::setActiveVName(string vstr)
+{
+  // If given arg matches a known vname, then just set it
+  if(m_map_records_rep.count(vstr)) {
+    m_active_vname = vstr;
+    return;
+  }
+
+  // If the request is to cycle, then find the active vname and ++
+  if(vstr == "cycle_active") {
+    map<string, NodeRecord>::iterator p;
+    for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
+      string vname = p->first;
+      if(vname == m_active_vname) {
+	p++;
+	if(p == m_map_records_rep.end())
+	  p = m_map_records_rep.begin();
+	m_active_vname = p->first;
+      }
+    }
+  }
+
+  // Otherwise just take no action
 }
 
 //---------------------------------------------------------------
@@ -580,6 +702,20 @@ string ContactLedger::getSpec(string vname) const
 }
 
 //---------------------------------------------------------------
+// Procedure: getVHist()
+
+CPList ContactLedger::getVHist(string vname) const
+{
+  map<string,CPList>::const_iterator p=m_map_hist.find(vname);
+  if(p==m_map_hist.end()) {
+    CPList empty_cplist;
+    return(empty_cplist);
+  }
+  else
+    return(p->second);
+}
+
+//---------------------------------------------------------------
 // Procedure: getIgnoreVNames()
 
 string ContactLedger::getIgnoreVNames() const
@@ -777,3 +913,58 @@ void ContactLedger::updateGlobalCoords(NodeRecord& record)
   record.setLat(nav_lat);
   record.setLon(nav_lon);  
 }    
+
+
+//-------------------------------------------------------------
+// Procedure: getWeightedCenter()
+
+bool ContactLedger::getWeightedCenter(double& x, double& y) const
+{
+  double total_x = 0;
+  double total_y = 0;
+
+  unsigned int msize = m_map_records_rep.size();
+  if(msize == 0) {
+    x = 0;
+    y = 0;
+    return(false);
+  }
+  
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_map_records_rep.begin();
+      p!=m_map_records_rep.end(); p++) {
+    total_x += p->second.getX();
+    total_y += p->second.getY();
+  }
+
+  x = total_x / (double)(msize);
+  y = total_y / (double)(msize);
+
+  return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: getClosestVehicle()
+
+string ContactLedger::getClosestVehicle(double mx, double my) const
+{
+  if(m_map_records_rep.size() == 0)
+    return("");
+
+  double closest_range = -1;
+  string closest_vname;
+  
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
+    double vx = p->second.getX();
+    double vy = p->second.getY();
+    double range = hypot(vx-mx, vy-my);
+    if((closest_range == -1) || (range < closest_range)) {
+      closest_range = range;
+      closest_vname = p->second.getName();
+    }      
+  }
+
+  return(closest_vname);
+}
+
