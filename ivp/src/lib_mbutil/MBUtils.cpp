@@ -2938,5 +2938,21 @@ bool isValidTurn(const string& str)
   return(false);
 }
 
+//---------------------------------------------------------
+// Procedure: digitsOnly()
+
+string digitsOnly(const string& str)
+{
+  string rstr;
+
+  for(unsigned int i=0; i<str.length(); i++) {
+    char c = str[i];
+    if((c >= 48) && (c <= 57))
+      rstr += c;
+  }
+
+  return(rstr);
+}
+
   
 

@@ -215,5 +215,7 @@ std::string intToMonth(int, bool brief=false);
 
 bool isValidTurn(const std::string&);
 
+std::string digitsOnly(const std::string&);
+
 #endif
 
