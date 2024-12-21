@@ -28,6 +28,7 @@
 #include <string>
 #include <map>
 #include "MarineViewer.h"
+#include "VehicleSet.h"
 #include "VarDataPair.h"
 #include "VPlug_GeoShapes.h"
 #include "VPlug_GeoShapesMap.h"
@@ -47,7 +48,7 @@ class PMV_Viewer : public MarineViewer
   bool  setParam(std::string p, double v);
   void  setConfigComplete() {m_config_complete=true;}
 
-  void  updateMOOSGeodesy() {m_ledger.setGeodesy(m_geodesy);}
+  void  updateMOOSGeodesy() {m_vehiset.setMOOSGeodesy(m_geodesy);}
   
   bool  handleNodeReport(std::string, std::string&);
 
@@ -94,6 +95,7 @@ class PMV_Viewer : public MarineViewer
   void   setWeightedCenterView();
   
  private:
+  VehicleSet  m_vehiset;
   ContactLedger m_ledger;
 
   std::string m_reference_point;
