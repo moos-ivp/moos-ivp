@@ -31,6 +31,8 @@ COMMON_APPS+=("uMayFinish" "pAutoPoke" "pMarineViewer")
 COMMON_APPS+=("pMarinePID" "pMarinePIDV22" "uLoadWatch")
 COMMON_APPS+=("pContactMgrV20" "uMemWatch")
 COMMON_APPS+=("pEchoVar" "uDelve")
+# Swarm
+COMMON_APPS+=("uFldVoronoi")
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
