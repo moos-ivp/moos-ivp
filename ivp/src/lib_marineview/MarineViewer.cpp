@@ -829,6 +829,21 @@ bool MarineViewer::coordInViewX(double x, double y)
 //-------------------------------------------------------------
 // Procedure: drawCommonVehicle()
 
+void MarineViewer::drawCommonVehicle(const NodeRecord& record, 
+				     const ColorPack& body_color,
+				     const ColorPack& vname_color,
+				     bool  vname_draw, 
+				     unsigned int outer_line,
+				     double transparency)
+{
+  BearingLine bline;
+  drawCommonVehicle(record, bline, body_color, vname_color, vname_draw,
+		    outer_line, transparency);
+}
+
+//-------------------------------------------------------------
+// Procedure: drawCommonVehicle()
+
 void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb, 
 				     const BearingLine& bng_line, 
 				     const ColorPack& body_color,
@@ -1133,6 +1148,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     gl_draw_aux(vname);
   }
 
+#if 0
   if(bng_line.isValid() && m_vehi_settings.isViewableBearingLines()) {
     double pix_per_mtr_x = m_back_img.get_pix_per_mtr_x();
     double pix_per_mtr_y = m_back_img.get_pix_per_mtr_y();
@@ -1158,6 +1174,7 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     glEnd();
     glLineWidth(1);
   }
+#endif
 
   glPopMatrix();
 }

@@ -10,7 +10,7 @@ SET(SRC
   MarineViewer.cpp
   OpAreaSpec.cpp
   LMV_Utils.cpp
-  VehicleSet.cpp
+#  VehicleSet.cpp
 )
 
 
