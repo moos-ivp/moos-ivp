@@ -21,6 +21,7 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
+#include <cmath>
 #include <iostream>
 #include "ContactLedger.h"
 #include "LinearExtrapolator.h"
