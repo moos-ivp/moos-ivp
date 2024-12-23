@@ -1760,7 +1760,3 @@ string BHV_AvdColregsV22::expandMacros(string sdata)
 
   return(sdata);
 }
-
-
-
-

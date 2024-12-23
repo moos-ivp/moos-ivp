@@ -363,7 +363,7 @@ vector<string> PMV_Viewer::getStaleVehicles(double thresh)
   vector<string> vnames = m_ledger.getVNames();
   for(unsigned int i=0; i<vnames.size(); i++) {
     string vname = vnames[i];
-    double age_report = m_ledger.getAgeReceived(vname);
+    double age_report = m_ledger.getUTCAgeReceived(vname);
 
     if(age_report > thresh)
       rvector.push_back(vname);
@@ -382,7 +382,7 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
     return;
 
   double transp = record.getTransparency();
-  double age_report = m_ledger.getAgeReceived(vname);
+  double age_report = m_ledger.getUTCAgeReceived(vname);
 
   // If there has been no explicit mapping of color to the given vehicle
   // name then the "inactive_vehicle_color" will be returned below.
@@ -454,7 +454,6 @@ void PMV_Viewer::drawVehicle(string vname, bool active, string vehibody)
   if(m_extrapolate > 0)
     record = extrapolateRecord(record, m_curr_time, m_extrapolate);
   
-  cout << "drawVehicle2:" << record.getSpec() << endl;
   drawCommonVehicle(record, vehi_color, vname_color, vname_draw, 1, transp);
 }
 
@@ -781,7 +780,6 @@ bool PMV_Viewer::updateScopeVariable(string varname, string value,
 
 //-------------------------------------------------------------
 // Procedure: setActiveScope
-//      Note: 
 
 void PMV_Viewer::setActiveScope(string varname)
 {

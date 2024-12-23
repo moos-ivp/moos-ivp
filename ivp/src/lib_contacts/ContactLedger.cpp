@@ -82,30 +82,6 @@ bool ContactLedger::setGeodesy(double dlat, double dlon)
 }
 
 //---------------------------------------------------------------
-// Procedure: addIgnoreVName()
-
-bool ContactLedger::addIgnoreVName(string vname)
-{
-  if(vname == "")
-    return(false);
-
-  m_ignore_vnames.insert(toupper(vname));
-  return(true);
-}
-
-//---------------------------------------------------------------
-// Procedure: addIgnoreGroup()
-
-bool ContactLedger::addIgnoreGroup(string group)
-{
-  if(group == "")
-    return(false);
-  
-  m_ignore_groups.insert(toupper(group));
-  return(true);
-}
-
-//---------------------------------------------------------------
 // Procedure: processNodeReport()
 //   Returns: If successful, returns name of vehicle just added
 //            Otherwise empty string
@@ -193,15 +169,6 @@ string ContactLedger::processNodeRecord(NodeRecord record,
     return("");
   
   string vname = toupper(record.getName());
-  string group = toupper(record.getGroup());
-
-  // Check 2: Ignore vnames on ignore list, (ownship somtimes)
-  if(m_ignore_vnames.count(vname))
-    return("");
-
-  // Check 3: Ignore groups on ignore list, (red/blue team)
-  if((group != "") && m_ignore_groups.count(group))
-    return("");
   
   m_total_reports_valid++;
 
@@ -252,6 +219,9 @@ string ContactLedger::processNodeRecord(NodeRecord record,
   m_map_records_ext[vname] = record;
   m_map_records_utc[vname] = m_curr_utc;
 
+  if(m_active_vname == "")
+    m_active_vname = vname;
+  
   // ========================================================
   // Part 4: Update the vehicle position history
   // ========================================================
@@ -357,6 +327,7 @@ void ContactLedger::extrapolate(double utc)
 
 void ContactLedger::setActiveVName(string vstr)
 {
+  vstr = toupper(vstr);
   // If given arg matches a known vname, then just set it
   if(m_map_records_rep.count(vstr)) {
     m_active_vname = vstr;
@@ -364,11 +335,13 @@ void ContactLedger::setActiveVName(string vstr)
   }
 
   // If the request is to cycle, then find the active vname and ++
-  if(vstr == "cycle_active") {
+  if(vstr == "CYCLE_ACTIVE") {
     map<string, NodeRecord>::iterator p;
     for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
       string vname = p->first;
-      if(vname == m_active_vname) {
+      if(m_active_vname == "") 
+	m_active_vname = vname;
+      else if(tolower(vname) == tolower(m_active_vname)) {
 	p++;
 	if(p == m_map_records_rep.end())
 	  p = m_map_records_rep.begin();
@@ -385,6 +358,8 @@ void ContactLedger::setActiveVName(string vstr)
 
 void ContactLedger::extrapolate(string vname)
 {
+  vname = toupper(vname);
+  
   // Sanity check 1: Ledger UTC current time must be set
   if(m_curr_utc <= 0)
     return;
@@ -445,6 +420,7 @@ void ContactLedger::extrapolate(string vname)
 
 bool ContactLedger::isValid(string vname) const
 {
+  vname = toupper(vname);
   map<string,NodeRecord>::const_iterator p;
   p = m_map_records_rep.find(vname);
   if(p != m_map_records_rep.end())
@@ -459,6 +435,7 @@ bool ContactLedger::isValid(string vname) const
 
 bool ContactLedger::isStale(string vname, double thresh) const
 {
+  vname = toupper(vname);
   if(thresh < 0)
     return(false);
 
@@ -477,36 +454,72 @@ bool ContactLedger::isStale(string vname, double thresh) const
 }
 
 //---------------------------------------------------------------
-// Procedure: getAge()
-//   Purpose: Return age of the most recent report for the given
-//            vname BASED ON TIMESTAMP IN THE REPORT. So it may
-//            reflect discrepancy based on latency and differenc
-//            in clocks between the two vehicles.
-  
-double ContactLedger::getAge(string vname) const
+// Procedure: getUTC()
+//   Purpose: Return the UTC timestamp of the most recent report
+//            for the given vname. Note this is NOT the age of
+//            report, which is relative to current time. It is 
+//            NOT the time the report was received, which is 
+//            typically at higher number timestamp due to latency
+//            (but could be lower due to a clock discrepancy
+//            between vehiclels).
+//   Returns: UTC time in seconds if contact is known.
+//            0 otherwise.
+
+double ContactLedger::getUTC(string vname) const
 {
+  vname = toupper(vname);
   map<string,NodeRecord>::const_iterator p;
   p = m_map_records_rep.find(vname);
   if(p == m_map_records_rep.end())
-    return(-1);
+    return(0);
 
   return(p->second.getTimeStamp());
 }
 
 //---------------------------------------------------------------
-// Procedure: getAgeReceived()
+// Procedure: getUTCAge()
 //   Purpose: Return age of the most recent report for the given
-//            vname based on the local time when addaed to the 
-//            ledger.
+//            vname BASED ON TIMESTAMP IN THE REPORT.
   
-double ContactLedger::getAgeReceived(string vname) const
+double ContactLedger::getUTCAge(string vname) const
 {
+  double utc = getUTC(vname);
+  if(utc == 0)
+    return(-1);
+  
+  return(m_curr_utc - utc);
+}
+
+//---------------------------------------------------------------
+// Procedure: getUTCReceived()
+//   Purpose: Return the UTC timestamp of the most recent report
+//            for the given vname based on the local time when
+//            added to the ledger. (Not the timestamp contained
+//            within the record message itself)
+  
+double ContactLedger::getUTCReceived(string vname) const
+{
+  vname = toupper(vname);
   map<string,double>::const_iterator p;
   p = m_map_records_utc.find(vname);
   if(p == m_map_records_utc.end())
-    return(-1);
+    return(0);
 
-  double utc = p->second;
+  return(p->second);
+}
+
+//---------------------------------------------------------------
+// Procedure: getUTCAgeReceived()
+//   Purpose: Return age of the most recent report for the given
+//            vname based on the local time when added to the 
+//            ledger.
+  
+double ContactLedger::getUTCAgeReceived(string vname) const
+{
+  double utc = getUTCReceived(vname);
+  if(utc == 0)
+    return(-1);
+  
   return(m_curr_utc - utc);
 }
 
@@ -576,6 +589,8 @@ bool ContactLedger::hasVNameValidNotStale(string vname,
 
 double ContactLedger::getX(string vname, bool extrap) const
 {
+  vname = toupper(vname);
+
   if(!hasVName(vname))
     return(0);
 
@@ -589,6 +604,7 @@ double ContactLedger::getX(string vname, bool extrap) const
 
 double ContactLedger::getY(string vname, bool extrap) const
 {
+  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -602,6 +618,7 @@ double ContactLedger::getY(string vname, bool extrap) const
 
 double ContactLedger::getSpeed(string vname) const
 {
+  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -614,6 +631,7 @@ double ContactLedger::getSpeed(string vname) const
 
 double ContactLedger::getHeading(string vname) const
 {
+  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -627,6 +645,7 @@ double ContactLedger::getHeading(string vname) const
 
 double ContactLedger::getDepth(string vname) const
 {
+  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -640,6 +659,7 @@ double ContactLedger::getDepth(string vname) const
 
 double ContactLedger::getLat(string vname) const
 {
+  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -653,6 +673,7 @@ double ContactLedger::getLat(string vname) const
 
 double ContactLedger::getLon(string vname) const
 {
+  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -665,6 +686,7 @@ double ContactLedger::getLon(string vname) const
 
 string ContactLedger::getGroup(string vname) const
 {
+  vname = toupper(vname);
   if(!hasVName(vname))
     return("");
 
@@ -677,6 +699,7 @@ string ContactLedger::getGroup(string vname) const
 
 string ContactLedger::getType(string vname) const
 {
+  vname = toupper(vname);
   if(!hasVName(vname))
     return("");
 
@@ -689,6 +712,7 @@ string ContactLedger::getType(string vname) const
 
 string ContactLedger::getSpec(string vname) const
 {
+  vname = toupper(vname);
   map<string,NodeRecord>::const_iterator p;
 
   p = m_map_records_ext.find(vname);
@@ -707,6 +731,7 @@ string ContactLedger::getSpec(string vname) const
 
 CPList ContactLedger::getVHist(string vname) const
 {
+  vname = toupper(vname);
   map<string,CPList>::const_iterator p=m_map_hist.find(vname);
   if(p==m_map_hist.end()) {
     CPList empty_cplist;
@@ -714,22 +739,6 @@ CPList ContactLedger::getVHist(string vname) const
   }
   else
     return(p->second);
-}
-
-//---------------------------------------------------------------
-// Procedure: getIgnoreVNames()
-
-string ContactLedger::getIgnoreVNames() const
-{
-  return(stringSetToString(m_ignore_vnames));
-}
-
-//---------------------------------------------------------------
-// Procedure: getIgnoreGroups()
-
-string ContactLedger::getIgnoreGroups() const
-{
-  return(stringSetToString(m_ignore_groups));
 }
 
 //---------------------------------------------------------------

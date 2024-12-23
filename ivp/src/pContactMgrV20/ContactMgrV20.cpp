@@ -108,10 +108,12 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
     string sval = msg.GetString(); 
     string src  = msg.GetSource(); 
     string aux  = msg.GetSourceAux(); 
-
+    string whynot;
+    
     if(aux != "")
       src += ":" + aux;
-    
+
+    bool handled = true;
     if(key == "NAV_X")
       m_osx = dval;
     else if(key == "NAV_Y")
@@ -121,7 +123,7 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "NAV_SPEED") 
       m_osv = dval;
     else if(key == "NODE_REPORT") 
-      handleMailNodeReport(sval);
+      handled = handleMailNodeReport(sval, whynot);
     else if(key == "BCM_REPORT_REQUEST") 
       handleMailReportRequest(sval, src);
     else if(key == "BCM_DISPLAY_RADII")
@@ -135,7 +137,10 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
     else if((m_enable_var != "") && (key == m_enable_var))
       handleMailEnableContact(sval);
     else
-      reportRunWarning("Unhandled Mail: " + key);
+      handled = false;
+
+    if(!handled) 
+      reportRunWarning("Bad Mail: " + key + ":" + whynot);
   }
   return(true);
 }
@@ -202,7 +207,10 @@ bool ContactMgrV20::OnStartUp()
     reportUnhandledConfigWarning("ownship name unknown, host_community unset");
 
   // Inform the Ledger to ignore any local reports for ownship.
-  m_ledger.addIgnoreVName(m_ownship);
+  //m_ledger.addIgnoreVName(m_ownship);
+
+  m_filter_set.addIgnoreName(m_ownship);
+
   
   // Part 1: Set the basic configuration parameters.
   STRING_LIST sParams;
@@ -383,14 +391,15 @@ void ContactMgrV20::registerVariables()
 //            SPD=2.00,HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=DRIVE
 
-#if 0
 bool ContactMgrV20::handleMailNodeReport(string report,
 					 string& whynot)
-{
+{  
   NodeRecord new_record = m_ledger.preCheckNodeReport(report, whynot);
   string vname = new_record.getName();
-  if(vname == "")
+  if(vname == "") {
+    whynot = "Empty vname";
     return(false);
+  }
   if(tolower(vname) == tolower(m_ownship))
     return(true);
 
@@ -405,14 +414,19 @@ bool ContactMgrV20::handleMailNodeReport(string report,
   bool ok_filt = m_filter_set.filterCheck(new_record, m_osx, m_osy);
   if(!ok_filt) {
     m_filtered_vnames.insert(new_record.getName());
-    return;
+    return(true);
   }
 
   // ==============================================================
   // Part 2: Accept the contact, update data structures
   // ==============================================================
   bool prev_known_vehicle = m_ledger.hasVName(vname);
-  m_ledger.addNodeRecord(new_record);
+
+  string vname_added = m_ledger.processNodeRecord(new_record, whynot);
+  if(tolower(vname_added) != tolower(vname)) {
+    whynot = "1:" + vname + "2:" + vname_added;
+    return(false);
+  }
   
   if(!prev_known_vehicle) {
     m_map_node_ranges_actual[vname] = 0;
@@ -428,99 +442,10 @@ bool ContactMgrV20::handleMailNodeReport(string report,
   // Check if the contact had been on the retired list (due to age)
   // and if so, resurrect it and remove it from the retired list.
   m_contacts_retired.remove(vname);
+
+  return(true);
 }
-#endif
 
-//---------------------------------------------------------
-// Procedure: handleMailNodeReport()
-//   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
-//            X=29.66,Y=-23.49, LAT=43.825089,LON=-70.330030, 
-//            SPD=2.00,HDG=119.06,YAW=119.05677,DEPTH=0.00,     
-//            LENGTH=4.0,MODE=DRIVE
-#if 1
-void ContactMgrV20::handleMailNodeReport(string report)
-{
-  NodeRecord new_node_record = string2NodeRecord(report, true);
-  string vname = new_node_record.getName();
-  // If incoming node name matches ownship, just ignore the node report
-  if(vname == m_ownship)
-    return;
-
-  // ==============================================================
-  // Part 1: Settle contact x/y position if overriding with lat/lon
-  // ==============================================================
-  // Part 1A: Decide if we want to override X/Y with Lat/Lon based 
-  //         on user configuration and state of the node record.
-  bool override_xy_with_latlon = true;
-  if(m_contact_local_coords == "verbatim")
-    override_xy_with_latlon = false;
-  if(!m_use_geodesy)
-    override_xy_with_latlon = false;
-  if(m_contact_local_coords == "lazy_lat_lon") {
-    if(new_node_record.isSetX() && new_node_record.isSetY())
-      override_xy_with_latlon = false;
-  }
-  if(!new_node_record.isSetLatitude() || !new_node_record.isSetLongitude())
-    override_xy_with_latlon = false;
-
-  // ==============================================================
-  // Part 1B: If overriding x/y with latlon and configured to do so
-  //          then find x/y from MOOSGeodesy and Lat/Lon and replace.
-  if(override_xy_with_latlon) {
-    double nav_x, nav_y;
-    double lat = new_node_record.getLat();
-    double lon = new_node_record.getLon();
-    
-#ifdef USE_UTM
-    m_geodesy.LatLong2LocalUTM(lat, lon, nav_y, nav_x);
-#else
-    m_geodesy.LatLong2LocalGrid(lat, lon, nav_y, nav_x);
-#endif
-
-    new_node_record.setX(nav_x);
-    new_node_record.setY(nav_y);
-  }
-
-  // ==============================================================
-  // Part 2: Check against ContactMgr level ExclusionFilterSet 
-  // ==============================================================
-  // Note: If this contact is filtered, add it to the set of filtered
-  // vnames. If for some reason it had passed this check previously,
-  // and failed now, we to retire it promptly. This may occur for
-  // example if the contact moved in/out of a match/ignore region.
-
-  bool ok_filt = m_filter_set.filterCheck(new_node_record, m_osx, m_osy);
-  if(!ok_filt) {
-    m_filtered_vnames.insert(new_node_record.getName());
-    return;
-  }
-
-
-  // ==============================================================
-  // Part 3: Accept the contact, update data structures
-  // ==============================================================
-  bool newly_known_vehicle = false;
-  if(m_map_node_records.count(vname) == 0)
-    newly_known_vehicle = true;
-   
-  m_map_node_records[vname] = new_node_record;
-  
-  if(newly_known_vehicle) {
-    m_map_node_ranges_actual[vname] = 0;
-    m_map_node_ranges_extrap[vname] = 0;
-    m_map_node_ranges_cpa[vname]    = 0;
-
-    m_par.addVehicle(vname);
-
-    if(m_alert_verbose) 
-      Notify("ALERT_VERBOSE", "new_contact="+vname);
-  }
-  
-  // Check if the contact had been on the retired list (due to age)
-  // and if so, resurrect it and remove it from the retired list.
-  m_contacts_retired.remove(vname);
-}
-#endif
 
 //---------------------------------------------------------
 // Procedure: handleMailDisplayRadii()
@@ -548,7 +473,8 @@ void ContactMgrV20::handleMailDisplayRadii(string value)
 
 //---------------------------------------------------------
 // Procedure: handleMailReportRequest()
-//   Example: BCM_REPORT_REQUEST = var=BCM_CONTACTS_85, range=85, reason=teaming
+//   Example: BCM_REPORT_REQUEST = var=BCM_CONTACTS_85, range=85,
+//                                 reason=teaming
 //      Note: The reason field is allowed but not processed.
 //            It is allowed to support apps such as alogmtask that
 //            want to grab report variables related to task teaming
@@ -980,7 +906,7 @@ void ContactMgrV20::postRangeReports()
       bool group_match = true;
       if(m_map_rep_group[varname] != "") { 
 	if(tolower(m_map_rep_group[varname]) !=
-	   tolower(m_map_node_records[vname].getGroup()))
+	   tolower(m_ledger.getGroup(vname)))
 	  group_match = false;
       }
 
@@ -988,7 +914,7 @@ void ContactMgrV20::postRangeReports()
       bool vtype_match = true;
       if(m_map_rep_vtype[varname] != "") {
 	if(tolower(m_map_rep_vtype[varname]) !=
-	   tolower(m_map_node_records[vname].getType()))
+	   tolower(m_ledger.getType(vname)))
 	  vtype_match = false;
       }
 
@@ -1053,11 +979,11 @@ void ContactMgrV20::postSummaries()
   double closest_relbng = 0;
 
   list<double> ranges;
-  
-  map<string, NodeRecord>::const_iterator p;
-  for(p=m_map_node_records.begin(); p!= m_map_node_records.end(); p++) {
-    string     contact_name = p->first;
-    NodeRecord node_record  = p->second;
+
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string     contact_name = vnames[i];
+    NodeRecord node_record  = m_ledger.getRecord(contact_name);
 
     if(contacts_list != "")
       contacts_list += ",";
@@ -1073,8 +999,8 @@ void ContactMgrV20::postSummaries()
       closest_contact = contact_name;
       closest_range   = range;
 
-      double cnx = m_map_node_records[contact_name].getX();
-      double cny = m_map_node_records[contact_name].getY();
+      double cnx = m_ledger.getX(contact_name);
+      double cny = m_ledger.getY(contact_name);
       closest_relbng  = relBearing(m_osx, m_osy, m_osh, cnx, cny);
     }
 	
@@ -1084,7 +1010,6 @@ void ContactMgrV20::postSummaries()
     contacts_recap += ",range=" + doubleToString(range, 2);
     contacts_recap += ",age=" + doubleToString(age, 2);
   }
-
   
   if((closest_contact != "") && m_post_closest_range) {
     // Round to integer and only post when changed, to reduce postings
@@ -1172,10 +1097,10 @@ void ContactMgrV20::checkForAlerts()
   //==============================================================
   // For each contact, check all alerts
   //==============================================================
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string     contact = p->first;
-    NodeRecord record  = p->second;
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string     contact = vnames[i];
+    NodeRecord record = m_ledger.getRecord(contact);
     
     //==============================================================
     // For each alert_id, check if alert should be posted for this contact
@@ -1290,10 +1215,9 @@ void ContactMgrV20::postRetireFlags(const vector<VarDataPair>& flags,
 
 void ContactMgrV20::checkForCeaseWarnings()
 {
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string     contact = p->first;
-    NodeRecord record  = p->second;
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string contact = vnames[i];
 
     // Check 1: If has been no early warning for this contact, skip
     if(m_map_early_warnings.count(contact) == 0)
@@ -1316,10 +1240,9 @@ void ContactMgrV20::checkForCeaseWarnings()
 
 void ContactMgrV20::checkForEarlyWarnings()
 {
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string     contact = p->first;
-    NodeRecord record  = p->second;
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string contact = vnames[i];
 
     // Check 1: If already warned about this contact, just skip now.
     if(m_map_early_warnings.count(contact))
@@ -1335,8 +1258,10 @@ void ContactMgrV20::checkForEarlyWarnings()
     // Check 3: If speed factor consideration enabled, calc and check
     double warning_range_aug = augRange(m_early_warning_rng,
 					m_early_warning_ref_spd,
-					record.getSpeed());
-    // If the contact (extrapolated) position is within the
+					m_ledger.getSpeed(contact));
+    //					record.getSpeed());
+
+  // If the contact (extrapolated) position is within the
     // augmented range:
     if(contact_range_ext < warning_range_aug) {
       // And if the projected CPA of the contact falls within
@@ -1360,7 +1285,7 @@ void ContactMgrV20::checkForEarlyWarnings()
 
 void ContactMgrV20::checkForNewRetiredContacts()
 {
-  unsigned int starting_amt = m_map_node_records.size();
+  unsigned int starting_amt = m_ledger.size();
   
   //==============================================================
   // Part 1: Find new contacts that need to be retired.
@@ -1368,10 +1293,11 @@ void ContactMgrV20::checkForNewRetiredContacts()
   // To-be-retired set starts with the vnames flagged when receiving
   // node reports, that did not survive one of the filter criteria
   set<string> to_be_retired = m_filtered_vnames;
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string     contact  = p->first;
-    NodeRecord record   = p->second;
+
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string     contact = vnames[i];
+    NodeRecord record  = m_ledger.getRecord(contact);
 
     // Possibly drop due to age
     double age = m_curr_time - record.getTimeStamp();
@@ -1394,10 +1320,10 @@ void ContactMgrV20::checkForNewRetiredContacts()
   //==============================================================
   // Cull if needed
   if((to_be_retired.size() + m_max_contacts) < starting_amt) {
-    map<string, NodeRecord>::iterator p;
-    for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-      string     contact  = p->first;
-      NodeRecord record   = p->second;
+    vector<string> vnames = m_ledger.getVNames();
+    for(unsigned int i=0; i<vnames.size(); i++) {
+      string     contact = vnames[i];
+      NodeRecord record  = m_ledger.getRecord(contact);
       
       // Possibly drop due to age
       double age = m_curr_time - record.getTimeStamp();
@@ -1440,11 +1366,12 @@ void ContactMgrV20::checkForNewRetiredContacts()
 
     // (a) If contact currently in memory and will be removed,
     // then add to front of list of retired contacts
-    if(m_map_node_records.count(contact))
+
+    if(m_ledger.hasVName(contact))
       m_contacts_retired.push_front(contact);
 
     // (b) Free up any memory associated with this contact
-    m_map_node_records.erase(contact);
+    m_ledger.clearNode(contact);
     m_map_node_ranges_actual.erase(contact);
     m_map_node_ranges_extrap.erase(contact);
     m_map_node_ranges_cpa.erase(contact);
@@ -1563,22 +1490,28 @@ void ContactMgrV20::updateRanges()
 {
   double alert_range_cpa_time = 36000; // 10 hours
 
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string     vname = p->first;
-    NodeRecord node_record = p->second;
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string     contact = vnames[i];
+    NodeRecord record = m_ledger.getRecord(contact);
 
     // First figure out the raw range to the contact
-    double cnx = node_record.getX();
-    double cny = node_record.getY();
-    double cnh = node_record.getHeading();
-    double cns = node_record.getSpeed();
-    double cnt = node_record.getTimeStamp();
+    //double cnx = record.getX();
+    //double cny = record.getY();
+    //double cnh = record.getHeading();
+    //double cns = record.getSpeed();
+    //double cnt = record.getTimeStamp();
+
+    double cnx = m_ledger.getX(contact);
+    double cny = m_ledger.getY(contact);
+    double cnh = m_ledger.getHeading(contact);
+    double cns = m_ledger.getSpeed(contact);
+    double cnt = m_ledger.getUTC(contact);
 
     // #1 Determine and store the actual point-to-point range between
     // ownship and the last absolute known position of the contact
     double range_actual = hypot((m_osx - cnx), (m_osy - cny));
-    m_map_node_ranges_actual[vname] = range_actual;
+    m_map_node_ranges_actual[contact] = range_actual;
 
     // #2 Determine and store the extrapolated range between ownship
     // and the contact position determined by its last known range and
@@ -1597,7 +1530,7 @@ void ContactMgrV20::updateRanges()
       cny = extrap_y;
       range_extrap = hypot((m_osx - cnx), (m_osy - cny));
     }
-    m_map_node_ranges_extrap[vname] = range_extrap;
+    m_map_node_ranges_extrap[contact] = range_extrap;
 
     // #3 Determine and store the cpa range between ownship and the
     // contact position determined by the contact's extrapolated position
@@ -1605,7 +1538,7 @@ void ContactMgrV20::updateRanges()
     CPAEngine engine(cny, cnx, cnh, cns, m_osy, m_osx);      
     double range_cpa = engine.evalCPA(m_osh, m_osv,
 				      alert_range_cpa_time);
-    m_map_node_ranges_cpa[vname] = range_cpa;
+    m_map_node_ranges_cpa[contact] = range_cpa;
   }
 }
 
@@ -1629,11 +1562,9 @@ void ContactMgrV20::postEarlyWarningRadii()
   string str = circle.get_spec();
   Notify("VIEW_CIRCLE", str);
 
-
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string     contact = p->first;
-    NodeRecord node_record = p->second;
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string contact = vnames[i];
 
     postEarlyWarningRadii(contact);
   }
@@ -1649,11 +1580,10 @@ void ContactMgrV20::postEarlyWarningRadii(string contact)
     return;
 
   // Sanity check - if no early warning reference spd enabled 
-  if(m_map_node_records.count(contact) == 0)
+  if(!m_ledger.hasVName(contact))
     return;
 
-  NodeRecord cn_record = m_map_node_records[contact];
-  double cn_spd = cn_record.getSpeed();
+  double cn_spd = m_ledger.getSpeed(contact);
 
   double aug_rng = augRange(m_early_warning_rng,
 			    m_early_warning_ref_spd,
@@ -1750,11 +1680,11 @@ bool ContactMgrV20::checkAlertApplies(string contact, string id)
     return(false);
   if(!m_map_alerts.at(id).valid())
     return(false);
-  if(m_map_node_records.count(contact) == 0)
+  if(!m_ledger.hasVName(contact))
     return(false);
 
   // Return false immediately if age of node record exceeds max age
-  NodeRecord record = m_map_node_records.at(contact);
+  NodeRecord record = m_ledger.getRecord(contact);
   double age = m_curr_time - record.getTimeStamp();
   if(age > m_contact_max_age)
     return(false);
@@ -2142,15 +2072,17 @@ bool ContactMgrV20::buildReport()
   actab.addHeaderLines();
 
   unsigned contacts_reported = 0;
-  map<string, NodeRecord>::iterator q;
-  for(q=m_map_node_records.begin(); q!=m_map_node_records.end(); q++) {
+
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string  contact = vnames[i];
+
     contacts_reported++;
     if(contacts_reported < 8) {
-      string vname = q->first;
-      string range = doubleToString(m_map_node_ranges_actual[vname], 1);
-      string alerts_total  = uintToString(m_par.getAlertsTotal(vname));
-      string alerts_active = uintToString(m_par.getAlertsActive(vname));
-      actab << vname << range << alerts_total << alerts_active;
+      string range = doubleToString(m_map_node_ranges_actual[contact], 1);
+      string alerts_total  = uintToString(m_par.getAlertsTotal(contact));
+      string alerts_active = uintToString(m_par.getAlertsActive(contact));
+      actab << contact << range << alerts_total << alerts_active;
     }
     else
       break;
@@ -2183,5 +2115,3 @@ bool ContactMgrV20::buildReport()
   
   return(true);
 }
-
-

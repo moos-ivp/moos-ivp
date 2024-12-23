@@ -52,11 +52,13 @@ ProcessConfig = pHelmIvP
   AppTick    = 4
   CommsTick  = 4
 
-  Behaviors    = targ_$(VNAME).bhv  
-  Verbose      = false
-  Domain       = course:0:359:360
-  Domain       = speed:0:$(MAX_SPD):21
+  behaviors    = targ_$(VNAME).bhv  
+  verbose      = false
+  domain       = course:0:359:360
+  domain       = speed:0:$(MAX_SPD):21
 
+	app_logging = true
+	
 	hold_on_apps = pContactMgrV20
 }
 	
@@ -91,18 +93,19 @@ ProcessConfig = pContactMgrV20
 
 	contact_local_coords = force_lat_lon
 	
-  contact_max_age  = 35
-  display_radii    = true
-	display_radii_id = avd
+  contact_max_age   = 35
+  display_radii     = true
+	display_radii_id  = avd
+  alert_range_color = gray70
+  cpa_range_color   = gray30
 
+	Alert = id=avdcol_, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
+  Alert = id=avdcol_, alert_range=15, cpa_range=5
+	
 	//match_region = pts = {60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40}
 	//match_type = kayak, uuv
 
 	post_closest_range = true
-	
-  display_radii     = true
-  alert_range_color = gray70
-  cpa_range_color   = gray30
 
   hold_alerts_for_helm = true
 }

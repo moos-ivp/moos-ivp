@@ -40,8 +40,6 @@ public:
 public: // General configuration
   void setGeodesy(CMOOSGeodesy geodesy);
   bool setGeodesy(double dlat, double dlon);
-  bool addIgnoreVName(std::string vname);
-  bool addIgnoreGroup(std::string group);
   
   void setCurrTimeUTC(double utc) {m_curr_utc=utc;}
   void extrapolate(double utc=0);
@@ -55,11 +53,9 @@ public: // Managing, Handle Node Reports
 
   NodeRecord preCheckNodeReport(std::string report,
 				std::string& whynot);
-  bool preCheckNodeRecord(NodeRecord& record,
-			  std::string& whynot);
+  bool       preCheckNodeRecord(NodeRecord& record,
+				std::string& whynot);
 
-  bool checkNodeRecord(NodeRecord record);
-  
   void clearNode(std::string vname);  
   void clearAllNodes();  
 
@@ -78,18 +74,19 @@ public: // Record Getters
   double getDepth(std::string vname) const;
   double getLat(std::string vname) const;
   double getLon(std::string vname) const;
-  double getAge(std::string vname) const;
-  double getAgeReceived(std::string vname) const;
+
+  double getUTC(std::string vname) const;
+  double getUTCAge(std::string vname) const;
+  double getUTCReceived(std::string vname) const;
+  double getUTCAgeReceived(std::string vname) const;
+
   std::string getGroup(std::string vname) const;
   std::string getType(std::string vname) const;
   std::string getSpec(std::string vname) const;
   std::string getActiveVName() const {return(m_active_vname);}
+
   CPList getVHist(std::string vname) const;
   
-public: // Config Getters
-  std::string getIgnoreVNames() const;
-  std::string getIgnoreGroups() const;
-
 public: // Statistics Getters
   unsigned int size() const {return(m_map_records_rep.size());}
   unsigned int totalReports() const {return(m_total_reports);}
@@ -122,10 +119,7 @@ protected: // Config vars
   unsigned int m_history_size;
 
   std::string m_active_vname;
-  
-  std::set<std::string> m_ignore_vnames;
-  std::set<std::string> m_ignore_groups;
-  
+    
 protected: // State vars
   // All keys are vnames for incoming node reports
   std::map<std::string, NodeRecord> m_map_records_rep;

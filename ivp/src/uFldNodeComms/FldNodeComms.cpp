@@ -1080,7 +1080,7 @@ bool FldNodeComms::buildReport()
     m_msgs << "  " << pad_vname << ": " << total_str;
 
     string elapsed_str = "n/a";
-    double elapsed_time = m_ledger.getAgeReceived(vname);
+    double elapsed_time = m_ledger.getUTCAgeReceived(vname);
     elapsed_str = "(" + doubleToString(elapsed_time,1) + ")";
     elapsed_str = padString(elapsed_str,8);
 

@@ -62,7 +62,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
 
   std::string handleConfigDeprecations(std::string);
 
-  void handleMailNodeReport(std::string);
+  bool handleMailNodeReport(std::string, std::string&);
   void handleMailReportRequest(std::string, std::string);
   void handleMailAlertRequest(std::string, std::string);
   void handleMailDisplayRadii(std::string);
@@ -174,12 +174,11 @@ private:
   std::map<std::string, std::string> m_map_rep_contacts;
   std::map<std::string, bool>        m_map_rep_refresh;
   
-  // Main Record #2: The Vehicles (contacts) and position info
+  // Main Record #2: Ledger and other attributes keyed on vname
   ContactLedger m_ledger;
-  std::map<std::string, NodeRecord>  m_map_node_records;
-  std::map<std::string, double>      m_map_node_ranges_actual;
-  std::map<std::string, double>      m_map_node_ranges_extrap;
-  std::map<std::string, double>      m_map_node_ranges_cpa;
+  std::map<std::string, double> m_map_node_ranges_actual;
+  std::map<std::string, double> m_map_node_ranges_extrap;
+  std::map<std::string, double> m_map_node_ranges_cpa;
 
   std::string m_closest_name;
 
