@@ -30,6 +30,7 @@
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "InfoBuffer.h"
+#include "ContactLedger.h"
 #include "IvPDomain.h"
 #include "BehaviorSet.h"
 #include "HelmEngine.h"
@@ -95,6 +96,7 @@ public:
   
 protected:
   InfoBuffer*   m_info_buffer;
+  ContactLedger* m_ledger;
   std::string   m_helm_status;   // STANDBY,PARK,DRIVE,DISABLED,MALCONFIG
   bool          m_has_control;
 

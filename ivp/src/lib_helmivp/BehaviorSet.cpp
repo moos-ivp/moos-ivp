@@ -137,6 +137,23 @@ void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
 }
 
 //------------------------------------------------------------
+// Procedure: connectContactLedger()
+//      Note: Connects the ledger to all behaviors, behavior_specs
+//      Note: The ledger is not "owned" by behaviors or specs
+
+void BehaviorSet::connectContactLedger(ContactLedger *ledger)
+{
+  unsigned int i, vsize = m_bhv_entry.size();
+  for(i=0; i<vsize; i++)
+    if(m_bhv_entry[i].getBehavior())
+      m_bhv_entry[i].getBehavior()->setContactLedger(ledger);
+
+  vsize = m_behavior_specs.size();
+  for(i=0; i<vsize; i++)
+    m_behavior_specs[i].setContactLedger(ledger);    
+}
+
+//------------------------------------------------------------
 // Procedure: applyAbleFilterMsg()
 //      Note: Apply the BHV_ABLE_FILTER msg to all behaviors
 //      Note: Filter msg can/will be applied many times over, to

@@ -76,7 +76,6 @@ public:
   
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
-  void   setContactLedger(const ContactLedger*);
   void   setPlatModel(PlatModel pm) {m_plat_model=pm;}
   bool   checkUpdates();
   std::string isRunnable();
@@ -192,10 +191,14 @@ public:
   std::vector<double>      getBufferDoubleVector(std::string, bool&);
   std::vector<std::string> getBufferStringVector(std::string, bool&);
 
-  double  getLedgerInfoDbl(std::string vname, std::string fld, bool&);
-  string  getLedgerInfoStr(std::string, std::string, bool&);
-  double  getLedgerInfoDbl(std::string vname, std::string fld);
-  string  getLedgerInfoStr(std::string, std::string);
+  double  getBufferPlatInfoX(std::string v, bool&);
+  double  getBufferPlatInfoY(std::string v, bool&);
+  double  getBufferPlatInfoLat(std::string v, bool&);
+  double  getBufferPlatInfoLon(std::string v, bool&);
+  double  getBufferPlatInfoHdg(std::string v, bool&);
+  double  getBufferPlatInfoSpd(std::string v, bool&);
+  double  getBufferPlatInfoDep(std::string v, bool&);
+
 
   std::vector<std::string> getStateSpaceVars();
   std::string              getOwnGroup();

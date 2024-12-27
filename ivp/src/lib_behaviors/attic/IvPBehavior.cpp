@@ -384,14 +384,6 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 }
 
 //-----------------------------------------------------------
-// Procedure: setContactLedger()
-
-void IvPBehavior::setContactLedger(const ContactLedger *cl)
-{
-  m_ledger = cl;
-}
-
-//-----------------------------------------------------------
 // Procedure: updatePlatformInfo
 //   Purpose: Update the following member variables:
 //             m_osx: Current ownship x position (meters) 
@@ -407,10 +399,10 @@ void IvPBehavior::setContactLedger(const ContactLedger *cl)
 bool IvPBehavior::updatePlatformInfo()
 {
   bool ok1, ok2, ok3, ok4;
-  m_osx = getLedgerInfoDbl("ownship", "x", ok1);
-  m_osy = getLedgerInfoDbl("ownship", "y", ok2);
-  m_osh = getLedgerInfoDbl("ownship", "hdg", ok3);
-  m_osv = getLedgerInfoDbl("ownship", "spd", ok4);
+  m_osx = getBufferPlatInfoX("ownship", ok1);
+  m_osy = getBufferPlatInfoY("ownship", ok2);
+  m_osh = getBufferPlatInfoHdg("ownship", ok3);
+  m_osv = getBufferPlatInfoSpd("ownship", ok4);
 
   // Must get ownship position
   if(!ok1 || !ok2) {
@@ -1915,36 +1907,69 @@ bool IvPBehavior::addFlagOnString(vector<VarDataPair>& pairs,
 }
 
 //-----------------------------------------------------------
-// Procedure: getLedgerInfoDbl()
+// Procedure: getBufferPlatInfoX()
 
-double IvPBehavior::getLedgerInfoDbl(string vname,
-				     string field)
+double IvPBehavior::getBufferPlatInfoX(string vname,
+				       bool& ok)
 {
-  bool ok_not_used;
-  return(getLedgerInfoDbl(vname, field, ok_not_used));
+  if((vname == "") || (vname == "ownship"))
+    return(getBufferDoubleVal("NAV_X", ok));
+
+  if(!m_ledger || !m_ledger->hasVName(vname)) {
+    ok = false;
+    return(0);
+  }
+
+  ok = true;
+  bool extrapolate = true;
+  return(m_ledger->getX(vname, extrapolate));
 }
 
 //-----------------------------------------------------------
-// Procedure: getLedgerInfoDbl()
+// Procedure: getBufferPlatInfoY()
 
-double IvPBehavior::getLedgerInfoDbl(string vname,
-				     string field,
-				     bool& ok)
+double IvPBehavior::getBufferPlatInfoY(string vname,
+				       bool& ok)
 {
-  if(vname == "ownship") {
-    if(field == "x")
-      return(getBufferDoubleVal("NAV_X", ok));
-    else if(field == "y")
-      return(getBufferDoubleVal("NAV_Y", ok));
-    else if(field == "hdg")
-      return(getBufferDoubleVal("NAV_HEADING", ok));
-    else if(field == "spd")
-      return(getBufferDoubleVal("NAV_SPEED", ok));
-    else if(field == "lat")
-      return(getBufferDoubleVal("NAV_LAT", ok));
-    else if(field == "lon")
-      return(getBufferDoubleVal("NAV_LONG", ok));
+  if(vname == "ownship")
+    return(getBufferDoubleVal("NAV_Y", ok));
+
+  if(!m_ledger || !m_ledger->hasVName(vname)) {
+    ok = false;
+    return(0);
   }
+  
+  ok = true;
+  bool extrapolate = true;
+  return(m_ledger->getY(vname, extrapolate));
+}
+
+//-----------------------------------------------------------
+// Procedure: getBufferPlatInfoHdg()
+
+double IvPBehavior::getBufferPlatInfoHdg(string vname,
+					 bool& ok)
+{
+  if(vname == "ownship")
+    return(getBufferDoubleVal("NAV_HEADING", ok));
+
+  if(!m_ledger || !m_ledger->hasVName(vname)) {
+    ok = false;
+    return(0);
+  }
+  
+  ok = true;
+  return(m_ledger->getHeading(vname));
+}
+
+//-----------------------------------------------------------
+// Procedure: getBufferPlatInfoSpd()
+
+double IvPBehavior::getBufferPlatInfoSpd(string vname,
+					 bool& ok)
+{
+  if(vname == "ownship")
+    return(getBufferDoubleVal("NAV_SPEED", ok));
   
   if(!m_ledger || !m_ledger->hasVName(vname)) {
     ok = false;
@@ -1952,71 +1977,60 @@ double IvPBehavior::getLedgerInfoDbl(string vname,
   }
 
   ok = true;
-  if(field == "x")
-    return(m_ledger->getX(vname));
-  else if(field == "y")
-    return(m_ledger->getY(vname));
-  else if(field == "hdg")
-    return(m_ledger->getHeading(vname));
-  else if(field == "spd")
-    return(m_ledger->getSpeed(vname));
-  else if(field == "depth")
-    return(m_ledger->getDepth(vname));
-  else if(field == "lat")
-    return(m_ledger->getLat(vname));
-  else if(field == "lon")
-    return(m_ledger->getLon(vname));
-  else if(field == "utc")
-    return(m_ledger->getUTC(vname));
-  else if(field == "utc_age")
-    return(m_ledger->getUTCAge(vname));
-  else if(field == "utc_received")
-    return(m_ledger->getUTCReceived(vname));
-  else if(field == "utc_age_received")
-    return(m_ledger->getUTCAgeReceived(vname));
-
-  ok = false;
-  return(0);
-}
-
-
-//-----------------------------------------------------------
-// Procedure: getLedgerInfoStr()
-
-string IvPBehavior::getLedgerInfoStr(string vname,
-				     string field)
-{
-  bool ok_not_used;
-  return(getLedgerInfoStr(vname, field, ok_not_used));
+  return(m_ledger->getSpeed(vname));
 }
 
 //-----------------------------------------------------------
-// Procedure: getLedgerInfoStr()
+// Procedure: getBufferPlatInfoDep()
 
-string IvPBehavior::getLedgerInfoStr(string vname,
-				     string field,
-				     bool& ok)
+double IvPBehavior::getBufferPlatInfoDep(string vname,
+					 bool& ok)
 {
-  if(vname == "ownship") {
-    if(field == "grp")
-      return(getBufferStringVal("NAV_GROUP", ok));
-    else if(field == "type")
-      return(getBufferStringVal("NAV_TYPE", ok));
-  }
-  
+  if(vname == "ownship")
+    return(getBufferDoubleVal("NAV_DEPTH", ok));
+
   if(!m_ledger || !m_ledger->hasVName(vname)) {
     ok = false;
     return(0);
   }
 
   ok = true;
-  if(field == "grp")
-    return(m_ledger->getGroup(vname));
-  else if(field == "type")
-    return(m_ledger->getType(vname));
-
-  ok = false;
-  return("");
+  return(m_ledger->getDepth(vname));
 }
 
+//-----------------------------------------------------------
+// Procedure: getBufferPlatInfoLat()
+
+double IvPBehavior::getBufferPlatInfoLat(string vname,
+					 bool& ok)
+{
+  if(vname == "ownship")
+    return(getBufferDoubleVal("NAV_LAT", ok));
+
+  if(!m_ledger || !m_ledger->hasVName(vname)) {
+    ok = false;
+    return(0);
+  }
+
+  ok = true;
+  return(m_ledger->getLat(vname));
+}
+
+//-----------------------------------------------------------
+// Procedure: getBufferPlatInfoLon()
+
+double IvPBehavior::getBufferPlatInfoLon(string vname,
+					 bool& ok)
+{
+  if(vname == "ownship")
+    return(getBufferDoubleVal("NAV_LONG", ok));
+
+  if(!m_ledger || !m_ledger->hasVName(vname)) {
+    ok = false;
+    return(0);
+  }
+
+  ok = true;
+  return(m_ledger->getLon(vname));
+}
 

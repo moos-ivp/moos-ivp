@@ -55,6 +55,7 @@ HelmIvP::HelmIvP()
   m_bhv_set        = 0;
   m_hengine        = 0;
   m_info_buffer    = 0;
+  m_ledger         = 0;
   m_verbose        = "verbose";
   m_verbose_reset  = false;
   m_helm_iteration = 0;
@@ -121,6 +122,7 @@ HelmIvP::HelmIvP()
 HelmIvP::~HelmIvP()
 {
   if(m_info_buffer)  delete(m_info_buffer);
+  if(m_ledger)       delete(m_ledger);
   if(m_bhv_set)      delete(m_bhv_set);
   if(m_hengine)      delete(m_hengine);
 }
@@ -1226,6 +1228,12 @@ bool HelmIvP::OnStartUp()
     reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
   }
 
+  if(!m_ledger) {
+    m_ledger = new ContactLedger;
+    m_ledger->setCurrTimeUTC(m_curr_time);
+    m_ledger->setGeodesy(m_geodesy);
+  }
+
   vector<string> behavior_dirs;
 
   STRING_LIST::iterator p;
@@ -1293,10 +1301,10 @@ bool HelmIvP::OnStartUp()
     return(true);
   }
 
-  m_hengine = new HelmEngine(m_ivp_domain, m_info_buffer);
+  m_hengine = new HelmEngine(m_ivp_domain, m_info_buffer, m_ledger);
 
   Populator_BehaviorSet *p_bset;
-  p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer);
+  p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer, m_ledger);
   p_bset->setBHVDirNotFoundOK(bhv_dir_not_found_ok);
   p_bset->setOwnship(m_ownship);
   unsigned int ksize = behavior_dirs.size();
@@ -1719,6 +1727,13 @@ void HelmIvP::postAllStop(string msg)
 
 bool HelmIvP::processNodeReport(const string& report)
 {
+  string whynot;
+  string vname1 = m_ledger->processNodeReport(report, whynot);
+  if(vname1 == "") {
+    reportRunWarning("Bad NodeReport: " + report);
+    reportRunWarning("The issue: " + whynot);
+  }
+  
   NodeRecord new_record = string2NodeRecord(report);
   //if(!new_record.valid("name,x,y,time"))
   //  return(false);

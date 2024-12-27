@@ -464,6 +464,7 @@ bool IvPContactBehavior::updatePlatformInfo()
   if(m_cnos.helm_iter() == m_helm_iter)
     return(true);
 
+  m_cnos.set_update_ok(false);
   if(m_contact == "") {
     if(m_on_no_contact_ok)
       return(true);
@@ -474,25 +475,6 @@ bool IvPContactBehavior::updatePlatformInfo()
   if(tolower(m_contact) == "unset_ok")
     return(ok);
   
-  // Part 1B: ascertain current contact position and trajectory.
-  bool ok1, ok2, ok3, ok4, ok5;
-  m_cnx = getLedgerInfoDbl(m_contact, "x", ok1);
-  m_cny = getLedgerInfoDbl(m_contact, "y", ok2);
-  m_cnh = getLedgerInfoDbl(m_contact, "hdg", ok3);
-  m_cnv = getLedgerInfoDbl(m_contact, "spd", ok4);
-
-  double cnutc = getLedgerInfoDbl(m_contact, "utc", ok5);
-  
-  if((!ok1 || !ok2 || !ok3 || !ok4) && !m_on_no_contact_ok) {    
-    string msg = m_contact + " x/y/heading/speed info not found";
-    if(m_on_no_contact_ok)
-      postWMessage(msg);
-    else
-      postEMessage(msg);
-    return(false);
-  }
-
-#if 0
   // Part 1B: ascertain current contact position and trajectory.
   double cnutc = 0;
   if(ok) m_cnx = getBufferDoubleVal(m_contact+"_NAV_X", ok);
@@ -509,28 +491,21 @@ bool IvPContactBehavior::updatePlatformInfo()
     return(false);
   }
   m_cnh = angle360(m_cnh);
-#endif
-  
+
   // Part 1C: At this point we know this update will be a success, i.e.,
   // it will return with true. So now is the time to invoke archive
   // on the ContactStateSet, moving the previously current cnos into the
   // cnos history and letting the newly current cnos hold current info.
 
-  m_cnos.set_update_ok(false);
   m_cnos.archiveCurrent();
   
   m_cnos.set_cnutc(cnutc);
+  m_cn_group = getBufferStringVal(m_contact+"_NAV_GROUP");
+  m_cn_vtype = getBufferStringVal(m_contact+"_NAV_TYPE");
 
-  //m_cn_group = getBufferStringVal(m_contact+"_NAV_GROUP");
-  //m_cn_vtype = getBufferStringVal(m_contact+"_NAV_TYPE");
-  
-  m_cn_group = getLedgerInfoStr(m_contact, "grp");
-  m_cn_vtype = getLedgerInfoStr(m_contact, "type");  
-  
   //==================================================================
   // Part 2: Extrapolate the contact position if extrapolation turn on
 
-#if 0 
   // If extrapolation is turned off, we're done with the update.
   if(m_extrapolate) {
     // Even if mark_time is zero and thus "fresh", still derive the 
@@ -553,8 +528,7 @@ bool IvPContactBehavior::updatePlatformInfo()
       postWMessage("Incomplete Linear Extrapolation: " + failure_reason);
     }
   }
-#endif
-  
+
   //==================================================================
   // Part 3: Update the useful relative vehicle information
   

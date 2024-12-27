@@ -39,4 +39,5 @@ TARGET_LINK_LIBRARIES(bhv2graphviz
   mbutil 
   logic 
   genutil
-  ${SYSTEM_LIBS})
+  ${SYSTEM_LIBS}
+  ${MOOSGeodesy_LIBRARIES})

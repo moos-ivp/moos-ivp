@@ -27,6 +27,7 @@
 #include "LinearExtrapolator.h"
 #include "NodeRecordUtils.h"
 #include "MBUtils.h"
+#include "AngleUtils.h"
 #include "ACTable.h"
 
 using namespace std;
@@ -397,6 +398,8 @@ void ContactLedger::extrapolate(string vname)
   double y = record_rep.getY();
   double hdg = record_rep.getHeading();
   double spd = record_rep.getSpeed();
+
+  hdg = angle360(hdg);
   
   LinearExtrapolator extrapolator;
   extrapolator.setPosition(x, y, spd, hdg, record_utc);

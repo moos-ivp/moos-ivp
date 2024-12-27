@@ -42,11 +42,13 @@ using namespace std;
 // Procedure: Constructor
 
 Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
-					     InfoBuffer *g_buffer)
+					     InfoBuffer *g_buffer,
+					     ContactLedger *g_ledger)
 {
-  m_domain        = g_domain;
-  m_info_buffer   = g_buffer;
-  m_parse_mode    = "top";
+  m_domain      = g_domain;
+  m_info_buffer = g_buffer;
+  m_ledger      = g_ledger;
+  m_parse_mode  = "top";
 
   m_bhv_dir_not_found_ok = false;
 
@@ -177,6 +179,8 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   // Given that all the behaviors were able to be instantiated from
   // their specs, fill out the rest of the behaviorset and return it.
   bset->connectInfoBuffer(m_info_buffer);
+  bset->connectContactLedger(m_ledger);
+
   for(i=0; i<initial_vars.size(); i++)
     bset->addInitialVar(initial_vars[i]);
   for(i=0; i<default_vars.size(); i++)

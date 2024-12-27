@@ -1,0 +1,63 @@
+NAME=alpha,
+TYPE=UUV,
+TIME=1252348077.59,   
+COLOR=red,
+X=51.71,
+Y=-35.50,
+LAT=43.824981,
+LON=-70.329755,
+SPD=2.0,H
+DG=118.8,         
+YAW=118.8,DEPTH=4.6,LENGTH=3.8,           
+MODE=MODE@ACTIVE:LOITERING,               
+THRUST_MODE_REVERSE=true
+
+
+NAME=abe,
+X=-13.37,
+Y=-51.39,
+SPD=2,
+HDG=196.2,
+TYPE=kayak,
+COLOR=yellow,
+MODE=MODE@ACTIVE:LOITERING,
+ALLSTOP=clear,
+INDEX=155,
+TIME=17279572065.2,
+LENGTH=4
+
+"NAME=fin,LAT=43.825300,LAT=-70.330400,TYPE=usv,SPD=2.3,HDG=45.4"
+"{"NAME":"fin","LAT":43.825300,"LAT":-70.330400,"TYPE":"usv","SPD":2.3,"HDG":45.4}
+
+
+Mandatory fields
+-------------------------
+o NAME
+o LAT   o X
+o LON   o Y
+o SPD
+o HDG
+o TYPE
+o TIME
+
+Maybe Mandatory fields
+-------------------------
+o TYPE
+o LENGTH
+
+Optional fields
+-------------------------
+o INDEX
+o MODE
+o ALLSTOP
+o COLOR
+o THRUST_MODE
+o YAW
+o DEPTH
+
+For Consideration:
+-------------------------
+DATUM_LAT=43.825300
+DATUM_LON=-70.330400
+SPD_UNITS=mps,kts,mph
+DEP_UNITS=mtr,ft

@@ -368,32 +368,9 @@ bool BHV_OpRegionRecover::polygonVerify()
 
 bool BHV_OpRegionRecover::updateInfoIn()
 {
-  bool ok1, ok2, ok3, ok4;
-  double osx = getBufferDoubleVal("NAV_X", ok1);
-  double osy = getBufferDoubleVal("NAV_Y", ok2);
-  double osv = getBufferDoubleVal("NAV_SPEED", ok3);
-  double osh = getBufferDoubleVal("NAV_HEADING", ok4);
-
-  string msg;
-  if(!ok1) 
-    msg = "No ownship NAV_X (" + m_us_name + ") in info_buffer";
-  if(!ok2) 
-    msg = "No ownship NAV_Y (" + m_us_name + ") in info_buffer";
-  if(!ok3) 
-    msg = "No ownship NAV_SPEED (" + m_us_name + ") in info_buffer";
-  if(!ok4) 
-    msg = "No ownship NAV_HEADING (" + m_us_name + ") in info_buffer";
-
-  // Must get ownship position from InfoBuffer
-  if(!ok1 || !ok2 || !ok3 || !ok4) {
-    postEMessage(msg);
+  bool ok = IvPBehavior::updatePlatformInfo();
+  if(!ok)
     return(false);
-  }
-
-  m_osx = osx;
-  m_osy = osy;
-  m_osv = osv;
-  m_osh = osh;
 
   if(m_dynamic_region_var != "") {
     if(getBufferVarUpdated(m_dynamic_region_var)) {

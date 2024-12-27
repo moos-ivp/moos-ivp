@@ -40,10 +40,12 @@ using namespace std;
 // Procedure: Constructor
 
 HelmEngine::HelmEngine(IvPDomain g_ivp_domain, 
-		       InfoBuffer *g_info_buffer)
+		       InfoBuffer *g_info_buffer,
+		       ContactLedger *g_ledger)
 {
   m_ivp_domain  = g_ivp_domain;
   m_info_buffer = g_info_buffer;
+  m_ledger      = g_ledger;
   m_iteration   = 0;
   m_bhv_set     = 0;
   m_curr_time   = 0;
@@ -185,9 +187,11 @@ bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
   m_bhv_set->setCurrTime(m_curr_time);
 
   bool new_behaviors = m_bhv_set->handlePossibleSpawnings();
-  if(new_behaviors)
+  if(new_behaviors) {
     m_bhv_set->connectInfoBuffer(m_info_buffer);
-
+    m_bhv_set->connectContactLedger(m_ledger);
+  }
+  
   cout << "** iter:[" << m_iteration << "]:" << m_able_filter_msgs.size() << endl;
   
   // bhv_set is stable w/ possible new bhvs, apply filter msgs

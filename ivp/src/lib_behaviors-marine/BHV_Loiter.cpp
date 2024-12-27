@@ -52,9 +52,6 @@ BHV_Loiter::BHV_Loiter(IvPDomain gdomain) :
 
   // Initialize State Variables with initial vals of zero which
   // have no real meaning, but better than nondeterministic.
-  m_osx             = 0;
-  m_osy             = 0;
-  m_osh             = 0;
   m_ptx             = 0;
   m_pty             = 0;
   m_dist_to_poly    = 0;
@@ -372,21 +369,8 @@ bool BHV_Loiter::updateInfoIn()
     return(false);
   }
 
-  bool ok1, ok2, ok3, ok4;
-  // ownship position in meters from some 0,0 reference point.
-  m_osx = getBufferDoubleVal("NAV_X", ok1);
-  m_osy = getBufferDoubleVal("NAV_Y", ok2);
-  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
-  m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
-
-  // Must get ownship information from the InfoBuffer
-  if(!ok1 || !ok2)
-    postEMessage("No ownship X/Y info in info_buffer.");  
-  if(!ok3)
-    postEMessage("No ownship HEADING info in info_buffer.");
-  if(!ok4)
-    postEMessage("No ownship SPEED info in info_buffer.");
-  if(!ok1 || !ok2 || !ok3 || !ok4)
+  bool ok = IvPBehavior::updatePlatformInfo();
+  if(!ok)
     return(false);
   
   // Calculate the distance to the polygon. A point internal to the
