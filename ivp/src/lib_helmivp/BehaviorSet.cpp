@@ -605,7 +605,6 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   for(unsigned int i=0; i<update_results.size(); i++)
     m_update_results.push_back(update_results[i]);
 
-
   bhv->setHelmIteration(iteration);
   // Check if the behavior duration is to be reset
   bhv->checkForDurationReset();
@@ -1172,7 +1171,7 @@ vector<string> BehaviorSet::getTemplatingSummary() const
 
 
 //------------------------------------------------------------
-// Procedure: print
+// Procedure: print()
 
 void BehaviorSet::print()
 {

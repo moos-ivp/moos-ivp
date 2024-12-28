@@ -2092,17 +2092,21 @@ void MarineViewer::drawSegList(const XYSegList& segl)
   // the publisher of the seglist requested it not to be viewed, by
   // setting the color to be "invisible".
   bool draw_labels = m_geo_settings.viewable("seglist_viewable_labels");
+
   if(draw_labels && labl_c.visible()) {
     string plabel = segl.get_msg();
     if(plabel == "")
       plabel = segl.get_label();
     if(plabel != "") {
-      double cx = segl.get_avg_x() * m_back_img.get_pix_per_mtr_x();
-      //double cy = poly.get_avg_y() * m_back_img.get_pix_per_mtr();
-      double my = segl.get_max_y() * m_back_img.get_pix_per_mtr_y();
+      double cx = segl.get_avg_x();
+      double cy = segl.get_max_y();
+
+      double px = cx * m_back_img.get_pix_per_mtr_x();
+      double py = cy * m_back_img.get_pix_per_mtr_y();
       
-      if(coordInView(cx,my)) {
-	glTranslatef(cx, my, 0);
+      if(coordInView(cx,cy)) {
+	//glTranslatef(cx, cy, 0);
+	glTranslatef(px, py, 0);
 	glColor3f(labl_c.red(), labl_c.grn(), labl_c.blu());
 	gl_font(1, 10);
 	glRasterPos3f(0, 0, 0);

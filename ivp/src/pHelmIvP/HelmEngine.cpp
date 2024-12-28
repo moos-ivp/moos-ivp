@@ -118,7 +118,6 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   handled = handled && part5_FreeMemoryIPFs();
   handled = handled && part6_FinishHelmReport();
 
-
   return(m_helm_report);
 }
 
@@ -192,7 +191,7 @@ bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
     m_bhv_set->connectContactLedger(m_ledger);
   }
   
-  cout << "** iter:[" << m_iteration << "]:" << m_able_filter_msgs.size() << endl;
+  //cout << "** iter:[" << m_iteration << "]:" << m_able_filter_msgs.size() << endl;
   
   // bhv_set is stable w/ possible new bhvs, apply filter msgs
   applyAbleFilterMsgs();
@@ -234,9 +233,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       string bhv_state;
       bool   ipf_reuse = false;
       m_ipf_timer.start();
-      IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration,
+    IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration,
 						bhv_state, ipf_reuse);
-
       
       //cout << "********************************************" << endl;
       //string bname = m_bhv_set->getDescriptor(bhv_ix);
@@ -332,8 +330,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       if(bhv_state=="completed") {
 	m_helm_report.addCompletedBHV(descriptor, state_time_entered,
 				      upd_summary);
-	cout << "****** completed: " << descriptor << endl;
-	cout << "****** hr_cbhvs: " << m_helm_report.getCompletedCnt() << endl;
+	//cout << "****** completed: " << descriptor << endl;
+	//cout << "****** hr_cbhvs: " << m_helm_report.getCompletedCnt() << endl;
 	m_helm_report.addMsg("executing setCompletedPending:true");
 	m_bhv_set->setCompletedPending(true);
       }

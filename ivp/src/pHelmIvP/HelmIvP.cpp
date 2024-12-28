@@ -113,7 +113,7 @@ HelmIvP::HelmIvP()
   m_node_report_vars.push_back("AIS_REPORT");
   m_node_report_vars.push_back("NODE_REPORT");
   m_node_report_vars.push_back("AIS_REPORT_LOCAL");
-  m_node_report_vars.push_back("NODE_REPORT_LOCAL");
+  //m_node_report_vars.push_back("NODE_REPORT_LOCAL");
 }
 
 //--------------------------------------------------------------------
@@ -191,6 +191,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
   //     is synched in *both" OnNewMail and Iterate, the "time since 
   //     last update" will be non-zero.
 
+  m_ledger->setCurrTimeUTC(m_curr_time);
   m_info_buffer->setCurrTime(m_curr_time);
   m_ibuffer_curr_time_updated = true;
 
@@ -200,8 +201,10 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     
     string moosvar   = msg.GetKey();
     string sval      = msg.GetString();
+    double dval      = msg.GetDouble();
     string source    = msg.GetSource();
     string community = msg.GetCommunity();
+    double msg_utc   = msg.GetTime();
     
     double skew_time;
     msg.IsSkewed(m_curr_time, &skew_time);
@@ -318,6 +321,16 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(moosvar == m_refresh_var) {
       m_refresh_pending = true;
     }
+    else if(moosvar == "NAV_X")
+      m_ledger->updateOwnship("x", msg_utc, dval);
+    else if(moosvar == "NAV_Y")
+      m_ledger->updateOwnship("y", msg_utc, dval);
+    else if(moosvar == "NAV_HEADING")
+      m_ledger->updateOwnship("heading", msg_utc, dval);
+    else if(moosvar == "NAV_SPEED")
+      m_ledger->updateOwnship("speed", msg_utc, dval);
+    else if(moosvar == "NAV_DEPTH")
+      m_ledger->updateOwnship("depth", msg_utc, dval);
     else
       updateInfoBuffer(msg);
   }
@@ -360,10 +373,14 @@ bool HelmIvP::Iterate()
   // If the info_buffer curr_time is not synched in the OnNewMail
   // function (possibly because there was no new mail), synch the
   // current time now.
-  if(!m_ibuffer_curr_time_updated) 
+  if(!m_ibuffer_curr_time_updated)
     m_info_buffer->setCurrTime(m_curr_time);
   if(m_start_time == 0)
     m_start_time = m_curr_time;
+
+  m_ledger->setCurrTimeUTC(m_curr_time);
+  m_ledger->clearStaleNodes();
+  m_ledger->extrapolate();
 
   // Now we're done addressing whether the info_buffer curr_time is
   // synched on this iteration. It was done either in this function or
@@ -496,6 +513,7 @@ bool HelmIvP::Iterate()
     }
   }
 
+  Notify("HD", 11);
   
   if(allstop_msg != "clear")
     postAllStop(allstop_msg);
@@ -1093,7 +1111,7 @@ bool HelmIvP::OnConnectToServer()
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void HelmIvP::registerVariables()
 {
@@ -1105,6 +1123,8 @@ void HelmIvP::registerVariables()
   registerSingleVariable("IVPHELM_REJOURNAL");
   registerSingleVariable("BHV_ABLE_FILTER");
   
+  registerSingleVariable("NAV_X");
+  registerSingleVariable("NAV_Y");
   registerSingleVariable("NAV_SPEED");
   registerSingleVariable("NAV_HEADING");
   registerSingleVariable("NAV_DEPTH");
@@ -1232,6 +1252,7 @@ bool HelmIvP::OnStartUp()
     m_ledger = new ContactLedger;
     m_ledger->setCurrTimeUTC(m_curr_time);
     m_ledger->setGeodesy(m_geodesy);
+    m_ledger->setStaleThresh(10);
   }
 
   vector<string> behavior_dirs;
@@ -1733,6 +1754,8 @@ bool HelmIvP::processNodeReport(const string& report)
     reportRunWarning("Bad NodeReport: " + report);
     reportRunWarning("The issue: " + whynot);
   }
+
+  return(true);
   
   NodeRecord new_record = string2NodeRecord(report);
   //if(!new_record.valid("name,x,y,time"))

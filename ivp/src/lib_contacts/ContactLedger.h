@@ -42,6 +42,7 @@ public: // General configuration
   bool setGeodesy(double dlat, double dlon);
   
   void setCurrTimeUTC(double utc) {m_curr_utc=utc;}
+  void setStaleThresh(double age) {m_stale_thresh=age;}
   void extrapolate(double utc=0);
   void setActiveVName(std::string vname); 
 
@@ -55,9 +56,13 @@ public: // Managing, Handle Node Reports
 				std::string& whynot);
   bool       preCheckNodeRecord(NodeRecord& record,
 				std::string& whynot);
+  
+  bool updateOwnship(std::string, double, double);
+  bool updateOwnship(std::string, double, std::string);
 
   void clearNode(std::string vname);  
-  void clearAllNodes();  
+  void clearAllNodes();
+  void clearStaleNodes();
 
 public: // Status checks
   bool isValid(std::string) const;

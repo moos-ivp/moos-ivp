@@ -43,7 +43,7 @@ ContactLedger::ContactLedger(unsigned int history_size)
 
   // If a record has been received as recently as this value
   // don't bother calculating an extrapolated position.
-  m_extrap_thresh = 0.2; 
+  m_extrap_thresh = 0.02; 
   
   // State vars
   m_curr_utc = 0;
@@ -273,6 +273,39 @@ string ContactLedger::processNodeRecord(NodeRecord record,
 }
 
 //---------------------------------------------------------------
+// Procedure: updateOwnship()
+
+bool ContactLedger::updateOwnship(string fld, double utc, double dval)
+{
+  string vname = "OWNSHIP";
+  if(m_map_records_rep.count(vname) == 0) {
+    NodeRecord record(vname);
+    m_map_records_rep[vname] = record;
+    m_map_records_ext[vname] = record;
+    m_map_records_utc[vname] = utc;
+  }
+
+  if(fld == "x") {
+    m_map_records_rep[vname].setX(dval);
+    m_map_records_rep[vname].setTimeStamp(utc);
+  }
+  else if(fld == "y") {
+    m_map_records_rep[vname].setY(dval);
+    m_map_records_rep[vname].setTimeStamp(utc);
+  }
+  else if(fld == "heading") 
+    m_map_records_rep[vname].setHeading(dval);
+  else if(fld == "speed") 
+    m_map_records_rep[vname].setSpeed(dval);
+  else if(fld == "depth") 
+    m_map_records_rep[vname].setDepth(dval);
+  else
+    return(false);
+
+  return(true);
+}
+
+//---------------------------------------------------------------
 // Procedure: clearNode()
 
 void ContactLedger::clearNode(string vname)
@@ -306,6 +339,25 @@ void ContactLedger::clearAllNodes()
   m_map_skew_avg.clear();
 
   m_map_hist.clear();
+}
+
+//---------------------------------------------------------------
+// Procedure: clearStaleNodes()
+
+void ContactLedger::clearStaleNodes()
+{
+  vector<string> stale_vnames;
+  
+  map<string,NodeRecord>::iterator p;
+  for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
+    string vname = p->first;
+    double utc_age = getUTCAge(vname);
+    if(utc_age > m_stale_thresh)
+      stale_vnames.push_back(vname);
+  }
+
+  for(unsigned int i=0; i<stale_vnames.size(); i++)
+    clearNode(stale_vnames[i]);
 }
 
 //---------------------------------------------------------------
@@ -390,6 +442,7 @@ void ContactLedger::extrapolate(string vname)
   // If reported record is very recent, then we're done
   double record_utc = record_rep.getTimeStamp();
   double elapsed = m_curr_utc - record_utc;
+  cout << "elapsed:" << elapsed << endl;
   if(elapsed < m_extrap_thresh)
     return;
 

@@ -1931,11 +1931,11 @@ double IvPBehavior::getLedgerInfoDbl(string vname,
 				     string field,
 				     bool& ok)
 {
-  if(vname == "ownship") {
+  if(vname == "ownshipd") {
     if(field == "x")
       return(getBufferDoubleVal("NAV_X", ok));
-    else if(field == "y")
-      return(getBufferDoubleVal("NAV_Y", ok));
+    //else if(field == "y")
+    //  return(getBufferDoubleVal("NAV_Y", ok));
     else if(field == "hdg")
       return(getBufferDoubleVal("NAV_HEADING", ok));
     else if(field == "spd")
@@ -2003,10 +2003,10 @@ string IvPBehavior::getLedgerInfoStr(string vname,
     else if(field == "type")
       return(getBufferStringVal("NAV_TYPE", ok));
   }
-  
+
   if(!m_ledger || !m_ledger->hasVName(vname)) {
     ok = false;
-    return(0);
+    return("");
   }
 
   ok = true;
