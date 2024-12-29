@@ -39,15 +39,15 @@
 using namespace std;
 
 //-------------------------------------------------------------
-// Procedure: Constructor
+// Constructor()
 
 Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
 					     InfoBuffer *g_buffer,
-					     ContactLedgerX *g_ledger)
+					     LedgerSnap *g_lsnap)
 {
   m_domain      = g_domain;
   m_info_buffer = g_buffer;
-  m_ledger      = g_ledger;
+  m_ledger_snap = g_lsnap;
   m_parse_mode  = "top";
 
   m_bhv_dir_not_found_ok = false;
@@ -56,7 +56,7 @@ Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
 }
 
 //-------------------------------------------------------------
-// Procedure: populate
+// Procedure: populate()
 
 BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 {
@@ -179,7 +179,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
   // Given that all the behaviors were able to be instantiated from
   // their specs, fill out the rest of the behaviorset and return it.
   bset->connectInfoBuffer(m_info_buffer);
-  bset->connectContactLedger(m_ledger);
+  bset->connectLedgerSnap(m_ledger_snap);
 
   for(i=0; i<initial_vars.size(); i++)
     bset->addInitialVar(initial_vars[i]);
@@ -193,7 +193,7 @@ BehaviorSet *Populator_BehaviorSet::populate(set<string> bhv_files)
 }
 
 //-------------------------------------------------------------
-// Procedure: populate
+// Procedure: populate()
 //      Note: A convenience function when the behaviors are 
 //            given by only one file.
 
@@ -216,7 +216,7 @@ void Populator_BehaviorSet::printBehaviorSpecs() const
 }
 
 //----------------------------------------------------------
-// Procedure: handleLine
+// Procedure: handleLine()
 //   Returns: true  if all OK
 //            false otherwise
 //
@@ -369,7 +369,7 @@ bool Populator_BehaviorSet::handleLine(string filename, string line,
 }
 
 //----------------------------------------------------------
-// Procedure: closeSetMode
+// Procedure: closeSetMode()
 
 void Populator_BehaviorSet::closeSetMode()
 {

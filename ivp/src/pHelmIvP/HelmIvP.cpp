@@ -55,8 +55,7 @@ HelmIvP::HelmIvP()
   m_bhv_set        = 0;
   m_hengine        = 0;
   m_info_buffer    = 0;
-  m_geoledger      = 0;
-  m_ledger         = 0;
+  m_ledger_snap    = 0;
   m_verbose        = "verbose";
   m_verbose_reset  = false;
   m_helm_iteration = 0;
@@ -123,8 +122,7 @@ HelmIvP::HelmIvP()
 HelmIvP::~HelmIvP()
 {
   if(m_info_buffer)  delete(m_info_buffer);
-  if(m_geoledger)    delete(m_geoledger);
-  if(m_ledger)       delete(m_ledger);
+  if(m_ledger_snap)  delete(m_ledger_snap);
   if(m_bhv_set)      delete(m_bhv_set);
   if(m_hengine)      delete(m_hengine);
 }
@@ -135,14 +133,6 @@ HelmIvP::~HelmIvP()
 void HelmIvP::handlePrepareRestart()
 {
   m_ibuffer_curr_time_updated = false;
-
-#if 0  // To be implemented (8/30/15)
-  if(m_reset_pending == "type2") {
-    if(m_info_buffer)
-      delete(m_info_buffer);
-    m_info_buffer = 0;
-  }
-#endif
 
   if(m_bhv_set)
     delete(m_bhv_set);
@@ -193,7 +183,7 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
   //     is synched in *both" OnNewMail and Iterate, the "time since 
   //     last update" will be non-zero.
 
-  m_ledger->setCurrTimeUTC(m_curr_time);
+  m_ledger.setCurrTimeUTC(m_curr_time);
   m_info_buffer->setCurrTime(m_curr_time);
   m_ibuffer_curr_time_updated = true;
 
@@ -324,15 +314,15 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
       m_refresh_pending = true;
     }
     else if(moosvar == "NAV_X")
-      m_ledger->updateOwnship("x", msg_utc, dval);
+      m_ledger.updateOwnship("x", msg_utc, dval);
     else if(moosvar == "NAV_Y")
-      m_ledger->updateOwnship("y", msg_utc, dval);
+      m_ledger.updateOwnship("y", msg_utc, dval);
     else if(moosvar == "NAV_HEADING")
-      m_ledger->updateOwnship("heading", msg_utc, dval);
+      m_ledger.updateOwnship("heading", msg_utc, dval);
     else if(moosvar == "NAV_SPEED")
-      m_ledger->updateOwnship("speed", msg_utc, dval);
+      m_ledger.updateOwnship("speed", msg_utc, dval);
     else if(moosvar == "NAV_DEPTH")
-      m_ledger->updateOwnship("depth", msg_utc, dval);
+      m_ledger.updateOwnship("depth", msg_utc, dval);
     else
       updateInfoBuffer(msg);
   }
@@ -367,11 +357,6 @@ bool HelmIvP::Iterate()
     return(true);
   }
 
-  if(m_ledger)
-    cout << "m_ledger_size: " << m_ledger->size() << endl;
-  else
-    cout << "Null m_ledger" << endl;
-  
   postCharStatus();
   
   if(m_init_vars_ready && !m_init_vars_done)
@@ -385,9 +370,12 @@ bool HelmIvP::Iterate()
   if(m_start_time == 0)
     m_start_time = m_curr_time;
 
-  m_ledger->setCurrTimeUTC(m_curr_time);
-  m_ledger->clearStaleNodes();
-  m_ledger->extrapolate();
+  m_ledger.setCurrTimeUTC(m_curr_time);
+  m_ledger.clearStaleNodes();
+  m_ledger.extrapolate();
+  updateLedgerSnap();
+  cout << "m_ledger_size: " << m_ledger.size() << endl;
+  cout << "m_ledger_snap_size: " << m_ledger_snap->size() << endl;
 
   // Now we're done addressing whether the info_buffer curr_time is
   // synched on this iteration. It was done either in this function or
@@ -1255,16 +1243,12 @@ bool HelmIvP::OnStartUp()
     reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
   }
 
-  if(!m_ledger) {
-    m_ledger = new ContactLedgerX;
-    m_ledger->setCurrTimeUTC(m_curr_time);
-    //m_ledger->setGeodesy(m_geodesy);
-    m_ledger->setStaleThresh(10);
-
-    m_geoledger = new GeoLedger;
-    m_geoledger->setLedger(m_ledger);
-    m_geoledger->setGeodesy(m_geodesy);
-  }
+  if(!m_ledger_snap)
+    m_ledger_snap = new LedgerSnap;
+  
+  m_ledger.setCurrTimeUTC(m_curr_time);
+  m_ledger.setGeodesy(m_geodesy);
+  m_ledger.setStaleThresh(10);
 
   vector<string> behavior_dirs;
 
@@ -1333,10 +1317,11 @@ bool HelmIvP::OnStartUp()
     return(true);
   }
 
-  m_hengine = new HelmEngine(m_ivp_domain, m_info_buffer, m_ledger);
+  m_hengine = new HelmEngine(m_ivp_domain, m_info_buffer, m_ledger_snap);
 
   Populator_BehaviorSet *p_bset;
-  p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer, m_ledger);
+  p_bset = new Populator_BehaviorSet(m_ivp_domain, m_info_buffer,
+				     m_ledger_snap);
   p_bset->setBHVDirNotFoundOK(bhv_dir_not_found_ok);
   p_bset->setOwnship(m_ownship);
   unsigned int ksize = behavior_dirs.size();
@@ -1760,56 +1745,11 @@ void HelmIvP::postAllStop(string msg)
 bool HelmIvP::processNodeReport(const string& report)
 {
   string whynot;
-  string vname1 = m_geoledger->processNodeReport(report, whynot);
+  string vname1 = m_ledger.processNodeReport(report, whynot);
   if(vname1 == "") {
     reportRunWarning("Bad NodeReport: " + report);
     reportRunWarning("The issue: " + whynot);
   }
-
-  return(true);
-  
-  NodeRecord new_record = string2NodeRecord(report);
-  //if(!new_record.valid("name,x,y,time"))
-  //  return(false);
-
-  string raw_vname = new_record.getName();
-  string vname = toupper(raw_vname);
-
-  if(!new_record.isSetX() || !new_record.isSetY()) {
-    double nav_x, nav_y;
-    double lat = new_record.getLat();
-    double lon = new_record.getLon();
-    
-#ifdef USE_UTM
-    m_geodesy.LatLong2LocalUTM(lat, lon, nav_y, nav_x);
-#else
-    m_geodesy.LatLong2LocalGrid(lat, lon, nav_y, nav_x);
-#endif
-    new_record.setX(nav_x);
-    new_record.setY(nav_y);
-  }
-  
-  m_info_buffer->setValue(vname+"_NAV_X", new_record.getX());
-  m_info_buffer->setValue(vname+"_NAV_Y", new_record.getY());
-  m_info_buffer->setValue(vname+"_NAV_SPEED", new_record.getSpeed());
-  m_info_buffer->setValue(vname+"_NAV_HEADING", new_record.getHeading());
-  m_info_buffer->setValue(vname+"_NAV_DEPTH", new_record.getDepth());
-  m_info_buffer->setValue(vname+"_NAV_LAT", new_record.getLat());
-  m_info_buffer->setValue(vname+"_NAV_LONG", new_record.getLon());
-  m_info_buffer->setValue(vname+"_NAV_GROUP", new_record.getGroup());
-  m_info_buffer->setValue(vname+"_NAV_TYPE", new_record.getType());
-
-  double timestamp = new_record.getTimeStamp();
-  
-  // Apply a skew if one is declared for this vehicle
-  map<string, double>::iterator p = m_node_skews.find(vname);
-  if(p == m_node_skews.end())
-    p = m_node_skews.find(raw_vname);
-  if(p != m_node_skews.end()) 
-    timestamp += p->second;
-  // Done applying the skew
-
-  m_info_buffer->setValue(vname+"_NAV_UTC", timestamp);
 
   return(true);
 }
@@ -1874,13 +1814,13 @@ void HelmIvP::seedRandom()
 void HelmIvP::updatePlatModel()
 {
   // Sanity checks
-  if(!m_info_buffer || !m_hengine || !m_ledger)
+  if(!m_info_buffer || !m_hengine)
     return;
 
-  double osx = m_ledger->getX("ownship");
-  double osy = m_ledger->getY("ownship");
-  double osh = m_ledger->getHeading("ownship");
-  double osv = m_ledger->getSpeed("ownship");
+  double osx = m_ledger.getX("ownship");
+  double osy = m_ledger.getY("ownship");
+  double osh = m_ledger.getHeading("ownship");
+  double osv = m_ledger.getSpeed("ownship");
 
   // pmgen needs utc stamp to calculate hdg history
   m_pmgen.setCurrTime(m_info_buffer->getCurrTime());
@@ -1890,3 +1830,32 @@ void HelmIvP::updatePlatModel()
 
   m_hengine->setPlatModel(pmodel);
 }
+
+//--------------------------------------------------------------------
+// Procedure: updateLedgerSnap()
+
+void HelmIvP::updateLedgerSnap()
+{
+  if(!m_ledger_snap)
+    return;
+
+  m_ledger_snap->clear();
+
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string v = vnames[i];
+    m_ledger_snap->setX(v, m_ledger.getX(v));
+    m_ledger_snap->setY(v, m_ledger.getY(v));
+    m_ledger_snap->setHdg(v, m_ledger.getHeading(v));
+    m_ledger_snap->setSpd(v, m_ledger.getSpeed(v));
+    m_ledger_snap->setDep(v, m_ledger.getDepth(v));
+    m_ledger_snap->setLat(v, m_ledger.getLat(v));
+    m_ledger_snap->setLon(v, m_ledger.getLon(v));
+    m_ledger_snap->setUTC(v, m_ledger.getUTC(v));
+    m_ledger_snap->setUTCAge(v, m_ledger.getUTCAge(v));
+    m_ledger_snap->setUTCReceived(v, m_ledger.getUTCReceived(v));
+    m_ledger_snap->setUTCAgeReceived(v, m_ledger.getUTCAgeReceived(v));
+  }
+  m_ledger_snap->setCurrTimeUTC(m_curr_time);
+}
+  

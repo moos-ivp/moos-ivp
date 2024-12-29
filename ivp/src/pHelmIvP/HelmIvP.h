@@ -30,7 +30,8 @@
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "InfoBuffer.h"
-#include "GeoLedger.h"
+#include "ContactLedger.h"
+#include "LedgerSnap.h"
 #include "IvPDomain.h"
 #include "BehaviorSet.h"
 #include "HelmEngine.h"
@@ -93,11 +94,12 @@ public:
   bool        helmStatusEnabled() const;
   void        seedRandom();
   void        updatePlatModel();
+  void        updateLedgerSnap();
   
 protected:
   InfoBuffer*   m_info_buffer;
-  GeoLedger*    m_geoledger;
-  ContactLedgerX * m_ledger;
+  LedgerSnap*   m_ledger_snap;
+  ContactLedger m_ledger;
   std::string   m_helm_status;   // STANDBY,PARK,DRIVE,DISABLED,MALCONFIG
   bool          m_has_control;
 

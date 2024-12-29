@@ -137,20 +137,20 @@ void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
 }
 
 //------------------------------------------------------------
-// Procedure: connectContactLedger()
-//      Note: Connects the ledger to all behaviors, behavior_specs
-//      Note: The ledger is not "owned" by behaviors or specs
+// Procedure: connectLedgerSnap()
+//      Note: Connects ledger_snap to all bhvs, behavior_specs
+//      Note: ledger_snap is not "owned" by behaviors or specs
 
-void BehaviorSet::connectContactLedger(ContactLedgerX *ledger)
+void BehaviorSet::connectLedgerSnap(LedgerSnap *lsnap)
 {
   unsigned int i, vsize = m_bhv_entry.size();
   for(i=0; i<vsize; i++)
     if(m_bhv_entry[i].getBehavior())
-      m_bhv_entry[i].getBehavior()->setContactLedger(ledger);
+      m_bhv_entry[i].getBehavior()->setLedgerSnap(lsnap);
 
   vsize = m_behavior_specs.size();
   for(i=0; i<vsize; i++)
-    m_behavior_specs[i].setContactLedger(ledger);    
+    m_behavior_specs[i].setLedgerSnap(lsnap);    
 }
 
 //------------------------------------------------------------

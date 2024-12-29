@@ -161,6 +161,8 @@ bool ContactMgrV20::OnConnectToServer()
 bool ContactMgrV20::Iterate()
 {
   AppCastingMOOSApp::Iterate();
+  m_ledger.setCurrTimeUTC(m_curr_time);
+  m_ledger.extrapolate();
 
   updateRanges();
 
@@ -193,8 +195,8 @@ bool ContactMgrV20::OnStartUp()
 
    // Look for latitude, longitude initial datum
   double lat_origin, lon_origin;
-  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
-  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
+  bool   ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
+  bool   ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
   if(!ok1 || !ok2)
     reportConfigWarning("Lat or Lon Origin not set in *.moos file.");
 
@@ -394,12 +396,16 @@ void ContactMgrV20::registerVariables()
 bool ContactMgrV20::handleMailNodeReport(string report,
 					 string& whynot)
 {  
-  NodeRecord new_record = m_ledger.preCheckNodeReport(report, whynot);
+  NodeRecord new_record = string2NodeRecord(report);
+
+  // Sanity Check 1: Record must have a vname
   string vname = new_record.getName();
   if(vname == "") {
     whynot = "Empty vname";
     return(false);
   }
+
+  // Sanity Check 2: Ingore ownship records
   if(tolower(vname) == tolower(m_ownship))
     return(true);
 

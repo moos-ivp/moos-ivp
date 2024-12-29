@@ -50,7 +50,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
 {
   m_domain       = g_domain;
   m_info_buffer  = 0;
-  m_ledger       = 0;
+  m_ledger_snap  = 0;
   m_priority_wt  = 100.0;  // Default Priority Weight
   m_descriptor   = "???";  // Default descriptor
   m_bhv_state_ok = true;
@@ -384,11 +384,11 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 }
 
 //-----------------------------------------------------------
-// Procedure: setContactLedger()
+// Procedure: setLedgerSnap()
 
-void IvPBehavior::setContactLedger(const ContactLedgerX *cl)
+void IvPBehavior::setLedgerSnap(const LedgerSnap *cl)
 {
-  m_ledger = cl;
+  m_ledger_snap = cl;
 }
 
 //-----------------------------------------------------------
@@ -1406,41 +1406,6 @@ void IvPBehavior::postFlags(const vector<VarDataPair>& flags,
 {
   for(unsigned int i=0; i<flags.size(); i++) 
     postFlag(flags[i], repeatable);
-
-#if 0
-  string key;
-  if(repeatable)
-    key = "repeatable";
-  
-  for(unsigned int i=0; i<flags.size(); i++) {
-    string var = flags[i].get_var();
-
-    if(flags[i].is_solo_macro()) {
-      string sdata = flags[i].get_sdata();
-      sdata = expandMacros(sdata);
-
-      if(isNumber(sdata)) {
-	double ddata = atof(sdata.c_str());
-	postMessage(var, ddata, key);
-      }
-      else 
-	postMessage(var, sdata, key);
-    }
-
-
-    // Handle String postings
-    else if(flags[i].is_string()) {
-      string sdata = flags[i].get_sdata();
-      sdata = expandMacros(sdata);
-      postMessage(var, sdata, key);
-    }
-    // Handle Double postings
-    else {
-      double ddata = flags[i].get_ddata();
-      postMessage(var, ddata, key);
-    }	
-  }    
-#endif
 }
 
 
@@ -1930,38 +1895,13 @@ double IvPBehavior::getLedgerInfoDbl(string vname,
 double IvPBehavior::getLedgerInfoDbl(string vname,
 				     string field,
 				     bool& ok)
-{
-  if(!m_ledger || !m_ledger->hasVName(vname)) {
+{ 
+  if(!m_ledger_snap) {
     ok = false;
     return(0);
   }
 
-  ok = true;
-  if(field == "x")
-    return(m_ledger->getX(vname));
-  else if(field == "y")
-    return(m_ledger->getY(vname));
-  else if(field == "hdg")
-    return(m_ledger->getHeading(vname));
-  else if(field == "spd")
-    return(m_ledger->getSpeed(vname));
-  else if(field == "depth")
-    return(m_ledger->getDepth(vname));
-  else if(field == "lat")
-    return(m_ledger->getLat(vname));
-  else if(field == "lon")
-    return(m_ledger->getLon(vname));
-  else if(field == "utc")
-    return(m_ledger->getUTC(vname));
-  else if(field == "utc_age")
-    return(m_ledger->getUTCAge(vname));
-  else if(field == "utc_received")
-    return(m_ledger->getUTCReceived(vname));
-  else if(field == "utc_age_received")
-    return(m_ledger->getUTCAgeReceived(vname));
-
-  ok = false;
-  return(0);
+  return(m_ledger_snap->getInfoDouble(vname, field, ok));
 }
 
 
@@ -1982,26 +1922,12 @@ string IvPBehavior::getLedgerInfoStr(string vname,
 				     string field,
 				     bool& ok)
 {
-  if(vname == "ownship") {
-    if(field == "grp")
-      return(getBufferStringVal("NAV_GROUP", ok));
-    else if(field == "type")
-      return(getBufferStringVal("NAV_TYPE", ok));
-  }
-
-  if(!m_ledger || !m_ledger->hasVName(vname)) {
+  if(!m_ledger_snap) {
     ok = false;
     return("");
   }
 
-  ok = true;
-  if(field == "grp")
-    return(m_ledger->getGroup(vname));
-  else if(field == "type")
-    return(m_ledger->getType(vname));
-
-  ok = false;
-  return("");
+  return(m_ledger_snap->getInfoString(vname, field, ok));
 }
 
 

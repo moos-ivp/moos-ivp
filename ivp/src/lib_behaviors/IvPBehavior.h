@@ -31,7 +31,7 @@
 #include <vector>
 #include "IvPFunction.h"
 #include "InfoBuffer.h"
-#include "ContactLedgerX.h"
+#include "LedgerSnap.h"
 #include "CPAEngine.h"
 #include "VarDataPair.h"
 #include "LogicCondition.h"
@@ -76,7 +76,7 @@ public:
   
   bool   setParamCommon(std::string, std::string);
   void   setInfoBuffer(const InfoBuffer*);
-  void   setContactLedger(const ContactLedgerX*);
+  void   setLedgerSnap(const LedgerSnap*);
   void   setPlatModel(PlatModel pm) {m_plat_model=pm;}
   bool   checkUpdates();
   std::string isRunnable();
@@ -216,7 +216,7 @@ public:
   
 protected:
   const InfoBuffer* m_info_buffer;
-  const ContactLedgerX* m_ledger;
+  const LedgerSnap* m_ledger_snap;
 
   PlatModel m_plat_model;
 

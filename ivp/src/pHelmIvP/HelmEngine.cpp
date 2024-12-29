@@ -41,11 +41,11 @@ using namespace std;
 
 HelmEngine::HelmEngine(IvPDomain g_ivp_domain, 
 		       InfoBuffer *g_info_buffer,
-		       ContactLedgerX *g_ledger)
+		       LedgerSnap *g_lsnap)
 {
   m_ivp_domain  = g_ivp_domain;
   m_info_buffer = g_info_buffer;
-  m_ledger      = g_ledger;
+  m_ledger_snap = g_lsnap;
   m_iteration   = 0;
   m_bhv_set     = 0;
   m_curr_time   = 0;
@@ -188,7 +188,7 @@ bool HelmEngine::part1_PreliminaryBehaviorSetHandling()
   bool new_behaviors = m_bhv_set->handlePossibleSpawnings();
   if(new_behaviors) {
     m_bhv_set->connectInfoBuffer(m_info_buffer);
-    m_bhv_set->connectContactLedger(m_ledger);
+    m_bhv_set->connectLedgerSnap(m_ledger_snap);
   }
   
   //cout << "** iter:[" << m_iteration << "]:" << m_able_filter_msgs.size() << endl;
@@ -457,27 +457,6 @@ bool HelmEngine::part3_VerifyFunctionDomains()
 
 bool HelmEngine::part4_BuildAndSolveIvPProblem(string phase)
 {
-#if 0
-  unsigned int i, ipfs = m_ivp_functions.size(); 
-  m_helm_report.addMsg("Number of IvP Functions: " + intToString(ipfs)); 
-  m_helm_report.setOFNUM(ipfs);
-  if(ipfs == 0) {
-    m_helm_report.addMsg("No Decision due to zero IvP functions");
-    return(false);
-  }
-
-  // Create, Prepare, and Solve the IvP problem
-  m_ivp_problem = new IvPProblem;
-  m_solve_timer.start();
-  for(i=0; i<ipfs; i++)
-      m_ivp_problem->addOF(m_ivp_functions[i]);
-  m_ivp_problem->setDomain(m_sub_domain);
-  m_ivp_problem->alignOFs();
-  m_ivp_problem->solve();
-  m_solve_timer.stop();
-#endif
-
-#if 1
   unsigned int ipfs = m_map_ipfs.size(); 
   m_helm_report.addMsg("Number of IvP Functions: " + intToString(ipfs)); 
   m_helm_report.setOFNUM(ipfs);
@@ -499,7 +478,6 @@ bool HelmEngine::part4_BuildAndSolveIvPProblem(string phase)
   m_ivp_problem->alignOFs();
   m_ivp_problem->solve();
   m_solve_timer.stop();
-#endif
   
   unsigned int dsize = m_sub_domain.size();
   for(unsigned int i=0; i<dsize; i++) {

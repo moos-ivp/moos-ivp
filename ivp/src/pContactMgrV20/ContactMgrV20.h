@@ -176,6 +176,7 @@ private:
   
   // Main Record #2: Ledger and other attributes keyed on vname
   ContactLedger m_ledger;
+
   std::map<std::string, double> m_map_node_ranges_actual;
   std::map<std::string, double> m_map_node_ranges_extrap;
   std::map<std::string, double> m_map_node_ranges_cpa;
