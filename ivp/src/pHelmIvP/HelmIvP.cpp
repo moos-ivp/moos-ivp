@@ -55,6 +55,7 @@ HelmIvP::HelmIvP()
   m_bhv_set        = 0;
   m_hengine        = 0;
   m_info_buffer    = 0;
+  m_geoledger      = 0;
   m_ledger         = 0;
   m_verbose        = "verbose";
   m_verbose_reset  = false;
@@ -122,6 +123,7 @@ HelmIvP::HelmIvP()
 HelmIvP::~HelmIvP()
 {
   if(m_info_buffer)  delete(m_info_buffer);
+  if(m_geoledger)    delete(m_geoledger);
   if(m_ledger)       delete(m_ledger);
   if(m_bhv_set)      delete(m_bhv_set);
   if(m_hengine)      delete(m_hengine);
@@ -364,6 +366,11 @@ bool HelmIvP::Iterate()
     AppCastingMOOSApp::PostReport();
     return(true);
   }
+
+  if(m_ledger)
+    cout << "m_ledger_size: " << m_ledger->size() << endl;
+  else
+    cout << "Null m_ledger" << endl;
   
   postCharStatus();
   
@@ -1249,10 +1256,14 @@ bool HelmIvP::OnStartUp()
   }
 
   if(!m_ledger) {
-    m_ledger = new ContactLedger;
+    m_ledger = new ContactLedgerX;
     m_ledger->setCurrTimeUTC(m_curr_time);
-    m_ledger->setGeodesy(m_geodesy);
+    //m_ledger->setGeodesy(m_geodesy);
     m_ledger->setStaleThresh(10);
+
+    m_geoledger = new GeoLedger;
+    m_geoledger->setLedger(m_ledger);
+    m_geoledger->setGeodesy(m_geodesy);
   }
 
   vector<string> behavior_dirs;
@@ -1749,7 +1760,7 @@ void HelmIvP::postAllStop(string msg)
 bool HelmIvP::processNodeReport(const string& report)
 {
   string whynot;
-  string vname1 = m_ledger->processNodeReport(report, whynot);
+  string vname1 = m_geoledger->processNodeReport(report, whynot);
   if(vname1 == "") {
     reportRunWarning("Bad NodeReport: " + report);
     reportRunWarning("The issue: " + whynot);
@@ -1863,16 +1874,13 @@ void HelmIvP::seedRandom()
 void HelmIvP::updatePlatModel()
 {
   // Sanity checks
-  if(!m_info_buffer || !m_hengine)
+  if(!m_info_buffer || !m_hengine || !m_ledger)
     return;
-  
-  bool ok1, ok2, ok3, ok4;
-  double osx = m_info_buffer->dQuery("NAV_X", ok1);
-  double osy = m_info_buffer->dQuery("NAV_Y", ok2);
-  double osh = m_info_buffer->dQuery("NAV_HEADING", ok3);
-  double osv = m_info_buffer->dQuery("NAV_SPEED", ok4);
-  if(!ok1 || !ok2 || !ok3 || !ok4)
-    return;
+
+  double osx = m_ledger->getX("ownship");
+  double osy = m_ledger->getY("ownship");
+  double osh = m_ledger->getHeading("ownship");
+  double osv = m_ledger->getSpeed("ownship");
 
   // pmgen needs utc stamp to calculate hdg history
   m_pmgen.setCurrTime(m_info_buffer->getCurrTime());

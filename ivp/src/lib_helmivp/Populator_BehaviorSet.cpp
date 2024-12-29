@@ -43,7 +43,7 @@ using namespace std;
 
 Populator_BehaviorSet::Populator_BehaviorSet(IvPDomain g_domain,
 					     InfoBuffer *g_buffer,
-					     ContactLedger *g_ledger)
+					     ContactLedgerX *g_ledger)
 {
   m_domain      = g_domain;
   m_info_buffer = g_buffer;

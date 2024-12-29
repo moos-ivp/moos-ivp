@@ -32,16 +32,17 @@
 #include "MBTimer.h"
 #include "PlatModelGenerator.h"
 #include "PlatModel.h"
+#include "ContactLedgerX.h"
 
 class InfoBuffer;
-class ContactLedger;
+class ContactLedgerX;
 class IvPFunction;
 class IvPProblem;
 class BehaviorSet;
 class HelmEngine {
 public:
   //HelmEngine(IvPDomain, InfoBuffer*);
-  HelmEngine(IvPDomain, InfoBuffer*, ContactLedger*);
+  HelmEngine(IvPDomain, InfoBuffer*, ContactLedgerX*);
   ~HelmEngine();
 
   void setBehaviorSet(BehaviorSet *bset) {m_bhv_set=bset;}
@@ -75,7 +76,7 @@ protected:
   unsigned int m_total_pcs_cached;
   IvPProblem  *m_ivp_problem;
   InfoBuffer  *m_info_buffer;
-  ContactLedger *m_ledger;
+  ContactLedgerX *m_ledger;
   PlatModel    m_pmodel;
   
   double       m_max_create_time;

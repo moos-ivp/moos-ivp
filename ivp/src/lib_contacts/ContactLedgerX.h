@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
-/*    FILE: ContactLedger.h                                      */
+/*    FILE: ContactLedgerX.h                                     */
 /*    DATE: Aug 31st 2024                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -27,19 +27,19 @@
 #include <set>
 #include <string>
 #include <vector>
-#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
+//#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "NodeRecord.h"
 #include "ColoredPoint.h"
 
-class ContactLedger
+class ContactLedgerX
 {
 public:
-  ContactLedger(unsigned int hist_size=0);
-  ~ContactLedger() {};
+  ContactLedgerX(unsigned int hist_size=0);
+  ~ContactLedgerX() {};
 
 public: // General configuration
-  void setGeodesy(CMOOSGeodesy geodesy);
-  bool setGeodesy(double dlat, double dlon);
+  //void setGeodesy(CMOOSGeodesy geodesy);
+  //bool setGeodesy(double dlat, double dlon);
 
   void setRecord(std::string vname, NodeRecord record);
   void setCurrTimeUTC(double utc) {m_curr_utc=utc;}
@@ -65,6 +65,8 @@ public: // Managing, Handle Node Reports
   void clearAllNodes();
   void clearStaleNodes();
 
+  std::string getContacts() const;
+  
 public: // Status checks
   bool isValid(std::string) const;
   bool isStale(std::string, double thresh) const;
@@ -114,9 +116,9 @@ public:
 
 protected:
   void extrapolate(std::string vname);
-  void updateLocalCoords();
-  void updateLocalCoords(NodeRecord&);
-  void updateGlobalCoords(NodeRecord&);
+  //void updateLocalCoords();
+  //void updateLocalCoords(NodeRecord&);
+  //void updateGlobalCoords(NodeRecord&);
   
 protected: // Config vars
   double m_stale_thresh;
@@ -145,9 +147,9 @@ protected: // State vars
   unsigned int m_total_reports;
   unsigned int m_total_reports_valid;
   
-  CMOOSGeodesy m_geodesy;
-  bool         m_geodesy_init;
-  unsigned int m_geodesy_updates;
+  //CMOOSGeodesy m_geodesy;
+  //bool         m_geodesy_init;
+  //unsigned int m_geodesy_updates;
 };
 
 #endif 

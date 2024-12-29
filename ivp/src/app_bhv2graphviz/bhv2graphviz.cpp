@@ -1,6 +1,6 @@
 #include "BehaviorSet.h"
 #include "InfoBuffer.h"
-#include "ContactLedger.h"
+#include "ContactLedgerX.h"
 #include "Populator_BehaviorSet.h"
 #include "IvPDomain.h"
 #include "StringTree.h"
@@ -22,7 +22,7 @@ int main(int argc, char* argv[])
   
     
   InfoBuffer* m_info_buffer = new InfoBuffer;
-  ContactLedger* m_ledger = new ContactLedger;
+  ContactLedgerX* m_ledger = new ContactLedgerX;
   IvPDomain m_ivp_domain;
   m_ivp_domain.addDomain("placeholder-domain", 0, 100, 100);
   

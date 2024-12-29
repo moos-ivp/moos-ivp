@@ -338,7 +338,7 @@ IvPFunction *BHV_AvdColregsV22::onRunState()
   m_cn_crossed_os_port_star = false;
   if((m_iterations > 1) && (m_cnos.cn_port_of_os() != prev_cn_port_of_os))
     m_cn_crossed_os_port_star = true;
-
+  
   if(!filterCheckHolds() || (m_contact_range >= (m_completed_dist*1.1))) {
     setComplete();
     return(0);

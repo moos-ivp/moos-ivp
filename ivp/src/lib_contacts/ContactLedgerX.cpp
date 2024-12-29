@@ -1,7 +1,7 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
-/*    FILE: ContactLedger.cpp                                    */
+/*    FILE: ContactLedgerX.cpp                                   */
 /*    DATE: Aug 31st 2024                                        */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
@@ -23,7 +23,7 @@
 
 #include <cmath>
 #include <iostream>
-#include "ContactLedger.h"
+#include "ContactLedgerX.h"
 #include "LinearExtrapolator.h"
 #include "NodeRecordUtils.h"
 #include "MBUtils.h"
@@ -35,7 +35,7 @@ using namespace std;
 //---------------------------------------------------------
 // Constructor()
 
-ContactLedger::ContactLedger(unsigned int history_size)
+ContactLedgerX::ContactLedgerX(unsigned int history_size)
 {
   // Config vars
   m_stale_thresh = -1;
@@ -47,16 +47,17 @@ ContactLedger::ContactLedger(unsigned int history_size)
   
   // State vars
   m_curr_utc = 0;
-  m_geodesy_init  = false;
+  //m_geodesy_init  = false;
 
   m_total_reports = 0;
   m_total_reports_valid = 0;
 }
 
+#if 0
 //---------------------------------------------------------------
 // Procedure: setGeodesy()
 
-void ContactLedger::setGeodesy(CMOOSGeodesy geodesy)
+void ContactLedgerX::setGeodesy(CMOOSGeodesy geodesy)
 {
   m_geodesy = geodesy;
   m_geodesy_init = true;  
@@ -68,7 +69,7 @@ void ContactLedger::setGeodesy(CMOOSGeodesy geodesy)
 //---------------------------------------------------------------
 // Procedure: setGeodesy()
 
-bool ContactLedger::setGeodesy(double dlat, double dlon)
+bool ContactLedgerX::setGeodesy(double dlat, double dlon)
 {
   bool ok_init = m_geodesy.Initialise(dlat, dlon);
   if(!ok_init)
@@ -81,12 +82,14 @@ bool ContactLedger::setGeodesy(double dlat, double dlon)
 
   return(true);
 }
+#endif
 
 //---------------------------------------------------------------
 // Procedure: setRecord()
 
-void ContactLedger::setRecord(string vname, NodeRecord record)
+void ContactLedgerX::setRecord(string vname, NodeRecord record)
 {
+  vname = toupper(vname);
   m_map_records_rep[vname] = record;
 
   extrapolate(vname);
@@ -97,7 +100,7 @@ void ContactLedger::setRecord(string vname, NodeRecord record)
 //   Returns: If successful, returns name of vehicle just added
 //            Otherwise empty string
 
-string ContactLedger::processNodeReport(string report,
+string ContactLedgerX::processNodeReport(string report,
 					string& whynot)
 {
   NodeRecord record = string2NodeRecord(report);
@@ -111,13 +114,13 @@ string ContactLedger::processNodeReport(string report,
 
 //---------------------------------------------------------------
 // Procedure: precheckNodeReport()
-//      Note: Utiity for users of ContactLedger class that wish
+//      Note: Utiity for users of ContactLedgerX class that wish
 //            to (a) convert a node report msg to a record, (b)
 //            apply some criteria of their own before deciding
 //            to add it to the ledger, e.g., range/bng, before
 //            (c) finally adding it to the ledger. 
 
-NodeRecord ContactLedger::preCheckNodeReport(string report,
+NodeRecord ContactLedgerX::preCheckNodeReport(string report,
 					     string& whynot)
 {
   NodeRecord record = string2NodeRecord(report);
@@ -137,7 +140,7 @@ NodeRecord ContactLedger::preCheckNodeReport(string report,
 //      Note: This function modifies the incoming record.
 //            All records will have both Lat/Lon and X/Y at end.
 
-bool ContactLedger::preCheckNodeRecord(NodeRecord& record,
+bool ContactLedgerX::preCheckNodeRecord(NodeRecord& record,
 				       string& whynot)
 {
   // Check 1: Must have a name
@@ -158,19 +161,21 @@ bool ContactLedger::preCheckNodeRecord(NodeRecord& record,
     return(false);
   }
 
+#if 0
   // Cross-fill coords if one or the other is missing
   if(record.isSetLatLon() && !record.isSetXY())
     updateLocalCoords(record);
   else if(!record.isSetLatLon() && record.isSetXY())
     updateGlobalCoords(record);
-
+#endif
+  
   return(true);
 }
 
 //---------------------------------------------------------------
 // Procedure: processNodeRecord()
 
-string ContactLedger::processNodeRecord(NodeRecord record,
+string ContactLedgerX::processNodeRecord(NodeRecord record,
 					string& whynot)
 {
   m_total_reports++;
@@ -285,7 +290,7 @@ string ContactLedger::processNodeRecord(NodeRecord record,
 //---------------------------------------------------------------
 // Procedure: updateOwnship()
 
-bool ContactLedger::updateOwnship(string fld, double utc, double dval)
+bool ContactLedgerX::updateOwnship(string fld, double utc, double dval)
 {
   string vname = "OWNSHIP";
   if(m_map_records_rep.count(vname) == 0) {
@@ -318,7 +323,7 @@ bool ContactLedger::updateOwnship(string fld, double utc, double dval)
 //---------------------------------------------------------------
 // Procedure: clearNode()
 
-void ContactLedger::clearNode(string vname)
+void ContactLedgerX::clearNode(string vname)
 {
   m_map_records_rep.erase(vname);
   m_map_records_ext.erase(vname);
@@ -336,7 +341,7 @@ void ContactLedger::clearNode(string vname)
 //---------------------------------------------------------------
 // Procedure: clearAllNodes()
 
-void ContactLedger::clearAllNodes()
+void ContactLedgerX::clearAllNodes()
 {
   m_map_records_rep.clear();
   m_map_records_ext.clear();
@@ -354,7 +359,7 @@ void ContactLedger::clearAllNodes()
 //---------------------------------------------------------------
 // Procedure: clearStaleNodes()
 
-void ContactLedger::clearStaleNodes()
+void ContactLedgerX::clearStaleNodes()
 {
   vector<string> stale_vnames;
   
@@ -373,7 +378,7 @@ void ContactLedger::clearStaleNodes()
 //---------------------------------------------------------------
 // Procedure: extrapolate()
 
-void ContactLedger::extrapolate(double utc)
+void ContactLedgerX::extrapolate(double utc)
 {
   if(utc != 0)
     m_curr_utc = utc;
@@ -388,7 +393,7 @@ void ContactLedger::extrapolate(double utc)
 //---------------------------------------------------------------
 // Procedure: setActiveVName()
 
-void ContactLedger::setActiveVName(string vstr)
+void ContactLedgerX::setActiveVName(string vstr)
 {
   vstr = toupper(vstr);
   // If given arg matches a known vname, then just set it
@@ -419,7 +424,7 @@ void ContactLedger::setActiveVName(string vstr)
 //---------------------------------------------------------------
 // Procedure: extrapolate()
 
-void ContactLedger::extrapolate(string vname)
+void ContactLedgerX::extrapolate(string vname)
 {
   vname = toupper(vname);
   
@@ -440,11 +445,13 @@ void ContactLedger::extrapolate(string vname)
   if(!record_rep.isSetTimeStamp())
     return;
 
+#if 0
   // Fixable check: Record has Lat/Lon but not x/y 
   if(!record_rep.isSetXY()) {
     updateLocalCoords(m_map_records_rep[vname]);
     record_rep = m_map_records_rep[vname];
   }
+#endif
   
   // By default, extrap record is set to reported record
   m_map_records_ext[vname] = record_rep;
@@ -477,14 +484,14 @@ void ContactLedger::extrapolate(string vname)
   else {
     m_map_records_ext[vname].setX(new_x);
     m_map_records_ext[vname].setY(new_y);
-    updateGlobalCoords(m_map_records_ext[vname]);
+    //updateGlobalCoords(m_map_records_ext[vname]);
   }
 }
 
 //---------------------------------------------------------------
 // Procedure: isValid()
 
-bool ContactLedger::isValid(string vname) const
+bool ContactLedgerX::isValid(string vname) const
 {
   vname = toupper(vname);
   map<string,NodeRecord>::const_iterator p;
@@ -499,7 +506,7 @@ bool ContactLedger::isValid(string vname) const
 // Procedure: isStale()
 //      Note: If thresh < 0, treat as disabled, nothing is stale
 
-bool ContactLedger::isStale(string vname, double thresh) const
+bool ContactLedgerX::isStale(string vname, double thresh) const
 {
   vname = toupper(vname);
   if(thresh < 0)
@@ -531,7 +538,7 @@ bool ContactLedger::isStale(string vname, double thresh) const
 //   Returns: UTC time in seconds if contact is known.
 //            0 otherwise.
 
-double ContactLedger::getUTC(string vname) const
+double ContactLedgerX::getUTC(string vname) const
 {
   vname = toupper(vname);
   map<string,NodeRecord>::const_iterator p;
@@ -547,7 +554,7 @@ double ContactLedger::getUTC(string vname) const
 //   Purpose: Return age of the most recent report for the given
 //            vname BASED ON TIMESTAMP IN THE REPORT.
   
-double ContactLedger::getUTCAge(string vname) const
+double ContactLedgerX::getUTCAge(string vname) const
 {
   double utc = getUTC(vname);
   if(utc == 0)
@@ -563,7 +570,7 @@ double ContactLedger::getUTCAge(string vname) const
 //            added to the ledger. (Not the timestamp contained
 //            within the record message itself)
   
-double ContactLedger::getUTCReceived(string vname) const
+double ContactLedgerX::getUTCReceived(string vname) const
 {
   vname = toupper(vname);
   map<string,double>::const_iterator p;
@@ -580,7 +587,7 @@ double ContactLedger::getUTCReceived(string vname) const
 //            vname based on the local time when added to the 
 //            ledger.
   
-double ContactLedger::getUTCAgeReceived(string vname) const
+double ContactLedgerX::getUTCAgeReceived(string vname) const
 {
   double utc = getUTCReceived(vname);
   if(utc == 0)
@@ -592,7 +599,7 @@ double ContactLedger::getUTCAgeReceived(string vname) const
 //---------------------------------------------------------------
 // Procedure: hasVName()
 
-bool ContactLedger::hasVName(string vname) const
+bool ContactLedgerX::hasVName(string vname) const
 {
   vname = toupper(vname);
   
@@ -605,7 +612,7 @@ bool ContactLedger::hasVName(string vname) const
 //---------------------------------------------------------------
 // Procedure: hasVNameValid()
 
-bool ContactLedger::hasVNameValid(string vname) const
+bool ContactLedgerX::hasVNameValid(string vname) const
 {
   vname = toupper(vname);
   
@@ -620,7 +627,7 @@ bool ContactLedger::hasVNameValid(string vname) const
 //---------------------------------------------------------------
 // Procedure: hasVNameValidNotStale()
 
-bool ContactLedger::hasVNameValidNotStale(string vname,
+bool ContactLedgerX::hasVNameValidNotStale(string vname,
 					  double thresh) const
 {
   vname = toupper(vname);
@@ -653,7 +660,7 @@ bool ContactLedger::hasVNameValidNotStale(string vname,
 //---------------------------------------------------------------
 // Procedure: getX()
 
-double ContactLedger::getX(string vname, bool extrap) const
+double ContactLedgerX::getX(string vname, bool extrap) const
 {
   vname = toupper(vname);
 
@@ -668,7 +675,7 @@ double ContactLedger::getX(string vname, bool extrap) const
 //---------------------------------------------------------------
 // Procedure: getY()
 
-double ContactLedger::getY(string vname, bool extrap) const
+double ContactLedgerX::getY(string vname, bool extrap) const
 {
   vname = toupper(vname);
   if(!hasVName(vname))
@@ -682,7 +689,7 @@ double ContactLedger::getY(string vname, bool extrap) const
 //---------------------------------------------------------------
 // Procedure: getSpeed()
 
-double ContactLedger::getSpeed(string vname) const
+double ContactLedgerX::getSpeed(string vname) const
 {
   vname = toupper(vname);
   if(!hasVName(vname))
@@ -695,7 +702,7 @@ double ContactLedger::getSpeed(string vname) const
 //---------------------------------------------------------------
 // Procedure: getHeading()
 
-double ContactLedger::getHeading(string vname) const
+double ContactLedgerX::getHeading(string vname) const
 {
   vname = toupper(vname);
   if(!hasVName(vname))
@@ -709,7 +716,7 @@ double ContactLedger::getHeading(string vname) const
 //---------------------------------------------------------------
 // Procedure: getDepth()
 
-double ContactLedger::getDepth(string vname) const
+double ContactLedgerX::getDepth(string vname) const
 {
   vname = toupper(vname);
   if(!hasVName(vname))
@@ -723,7 +730,7 @@ double ContactLedger::getDepth(string vname) const
 //---------------------------------------------------------------
 // Procedure: getLat()
 
-double ContactLedger::getLat(string vname) const
+double ContactLedgerX::getLat(string vname) const
 {
   vname = toupper(vname);
   if(!hasVName(vname))
@@ -737,7 +744,7 @@ double ContactLedger::getLat(string vname) const
 //---------------------------------------------------------------
 // Procedure: getLon()
 
-double ContactLedger::getLon(string vname) const
+double ContactLedgerX::getLon(string vname) const
 {
   vname = toupper(vname);
   if(!hasVName(vname))
@@ -750,7 +757,7 @@ double ContactLedger::getLon(string vname) const
 //---------------------------------------------------------------
 // Procedure: getGroup()
 
-string ContactLedger::getGroup(string vname) const
+string ContactLedgerX::getGroup(string vname) const
 {
   vname = toupper(vname);
   if(!hasVName(vname))
@@ -763,7 +770,7 @@ string ContactLedger::getGroup(string vname) const
 //---------------------------------------------------------------
 // Procedure: getType()
 
-string ContactLedger::getType(string vname) const
+string ContactLedgerX::getType(string vname) const
 {
   vname = toupper(vname);
   if(!hasVName(vname))
@@ -776,7 +783,7 @@ string ContactLedger::getType(string vname) const
 //---------------------------------------------------------------
 // Procedure: getSpec()
 
-string ContactLedger::getSpec(string vname) const
+string ContactLedgerX::getSpec(string vname) const
 {
   vname = toupper(vname);
   map<string,NodeRecord>::const_iterator p;
@@ -795,7 +802,7 @@ string ContactLedger::getSpec(string vname) const
 //---------------------------------------------------------------
 // Procedure: getVHist()
 
-CPList ContactLedger::getVHist(string vname) const
+CPList ContactLedgerX::getVHist(string vname) const
 {
   vname = toupper(vname);
   map<string,CPList>::const_iterator p=m_map_hist.find(vname);
@@ -810,7 +817,7 @@ CPList ContactLedger::getVHist(string vname) const
 //---------------------------------------------------------------
 // Procedure: getVNamesByGroup()
 
-set<string> ContactLedger::getVNamesByGroup(string group) const
+set<string> ContactLedgerX::getVNamesByGroup(string group) const
 {
   set<string> rset;
   
@@ -830,7 +837,7 @@ set<string> ContactLedger::getVNamesByGroup(string group) const
 //---------------------------------------------------------------
 // Procedure: getVNames()
 
-vector<string> ContactLedger::getVNames() const
+vector<string> ContactLedgerX::getVNames() const
 {
   vector<string> svector;
   
@@ -845,7 +852,7 @@ vector<string> ContactLedger::getVNames() const
 // Procedure: getVNamesStale()
 //      Note: If thresh < 0, treat as disabled, nothing is stale
 
-vector<string> ContactLedger::getVNamesStale(double thresh) const
+vector<string> ContactLedgerX::getVNamesStale(double thresh) const
 {
   vector<string> svector; 
   if(thresh < 0)
@@ -864,7 +871,7 @@ vector<string> ContactLedger::getVNamesStale(double thresh) const
 //---------------------------------------------------------------
 // Procedure: totalReports(vname)
 
-unsigned int ContactLedger::totalReports(string vname) const
+unsigned int ContactLedgerX::totalReports(string vname) const
 {
   vname = toupper(vname);
 
@@ -879,7 +886,7 @@ unsigned int ContactLedger::totalReports(string vname) const
 //---------------------------------------------------------------
 // Procedure: groupMatch()
 
-bool ContactLedger::groupMatch(string vname1, string vname2) const
+bool ContactLedgerX::groupMatch(string vname1, string vname2) const
 {
   if(getGroup(vname1) != getGroup(vname2))
     return(false);
@@ -891,7 +898,7 @@ bool ContactLedger::groupMatch(string vname1, string vname2) const
 // Procedure: getReportLags()
 
 #if 0
-vector<string> ContactLedger::getReportLags() const
+vector<string> ContactLedgerX::getReportLags() const
 {
   ACTable actab(3);
   
@@ -913,7 +920,7 @@ vector<string> ContactLedger::getReportLags() const
 //---------------------------------------------------------------
 // Procedure: getRecord()
 
-NodeRecord ContactLedger::getRecord(string vname, bool extrap) const
+NodeRecord ContactLedgerX::getRecord(string vname, bool extrap) const
 {
   vname = toupper(vname);
   
@@ -932,13 +939,13 @@ NodeRecord ContactLedger::getRecord(string vname, bool extrap) const
   return(null_record);
 }
 
-
+#if 0
 //---------------------------------------------------------------
 // Procedure: updateLocalCoords()
 //   Purpose: After a datum update, all X/Y values stored with any
 //            contact are updated to be related to the new datum.
 
-void ContactLedger::updateLocalCoords()
+void ContactLedgerX::updateLocalCoords()
 {
   map<string,NodeRecord>::iterator p;
   for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++)
@@ -950,7 +957,7 @@ void ContactLedger::updateLocalCoords()
 //---------------------------------------------------------------
 // Procedure: updateLocalCoords()
 
-void ContactLedger::updateLocalCoords(NodeRecord& record)
+void ContactLedgerX::updateLocalCoords(NodeRecord& record)
 {
   double nav_lat = record.getLat();
   double nav_lon = record.getLon();
@@ -975,7 +982,7 @@ void ContactLedger::updateLocalCoords(NodeRecord& record)
 //            Node reports with x/y will be deprecated eventually.
 //            (2) For updating lat/lon after extrapolating in x/y
 
-void ContactLedger::updateGlobalCoords(NodeRecord& record)
+void ContactLedgerX::updateGlobalCoords(NodeRecord& record)
 {
   double nav_x = record.getX();
   double nav_y = record.getY();
@@ -990,12 +997,12 @@ void ContactLedger::updateGlobalCoords(NodeRecord& record)
   record.setLat(nav_lat);
   record.setLon(nav_lon);  
 }    
-
+#endif
 
 //-------------------------------------------------------------
 // Procedure: getWeightedCenter()
 
-bool ContactLedger::getWeightedCenter(double& x, double& y) const
+bool ContactLedgerX::getWeightedCenter(double& x, double& y) const
 {
   double total_x = 0;
   double total_y = 0;
@@ -1023,7 +1030,7 @@ bool ContactLedger::getWeightedCenter(double& x, double& y) const
 //-------------------------------------------------------------
 // Procedure: getClosestVehicle()
 
-string ContactLedger::getClosestVehicle(double mx, double my) const
+string ContactLedgerX::getClosestVehicle(double mx, double my) const
 {
   if(m_map_records_rep.size() == 0)
     return("");
@@ -1043,5 +1050,25 @@ string ContactLedger::getClosestVehicle(double mx, double my) const
   }
 
   return(closest_vname);
+}
+
+//-------------------------------------------------------------
+// Procedure: getContacts()
+
+string ContactLedgerX::getContacts() const
+{
+  if(m_map_records_rep.size() == 0)
+    return("empty");
+
+  string vnames;
+  map<string, NodeRecord>::const_iterator p;
+  for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
+    string vname = p->first;
+    if(vnames != "")
+      vnames += ",";
+    vnames += vname;
+  }
+
+  return(vnames);
 }
 

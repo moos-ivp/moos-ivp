@@ -41,7 +41,7 @@ using namespace std;
 
 HelmEngine::HelmEngine(IvPDomain g_ivp_domain, 
 		       InfoBuffer *g_info_buffer,
-		       ContactLedger *g_ledger)
+		       ContactLedgerX *g_ledger)
 {
   m_ivp_domain  = g_ivp_domain;
   m_info_buffer = g_info_buffer;

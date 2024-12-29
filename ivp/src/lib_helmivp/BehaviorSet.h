@@ -50,7 +50,7 @@ public:
   void       addBehaviorSpec(BehaviorSpec spec);  
   void       setDomain(IvPDomain domain);
   void       connectInfoBuffer(InfoBuffer*);
-  void       connectContactLedger(ContactLedger*);
+  void       connectContactLedger(ContactLedgerX*);
   bool       buildBehaviorsFromSpecs();
   SpecBuild  buildBehaviorFromSpec(BehaviorSpec spec, std::string s="",
 				   bool on_startup=false);

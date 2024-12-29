@@ -32,7 +32,7 @@
 #include "IvPDomain.h"
 #include "IvPBehavior.h"
 #include "InfoBuffer.h"
-#include "ContactLedger.h"
+#include "ContactLedgerX.h"
 #include "ModeSet.h"
 #include "ModeEntry.h"
 #include "BFactoryStatic.h"
@@ -42,7 +42,7 @@ class Populator_BehaviorSet {
 
 public:
   //Populator_BehaviorSet(IvPDomain, InfoBuffer*);
-  Populator_BehaviorSet(IvPDomain, InfoBuffer*, ContactLedger*);
+  Populator_BehaviorSet(IvPDomain, InfoBuffer*, ContactLedgerX*);
   virtual ~Populator_BehaviorSet() {}
 
   void addBehaviorDir(std::string dir) {m_dir_names.push_back(dir);}
@@ -76,7 +76,7 @@ protected:
 
   IvPDomain    m_domain;
   InfoBuffer*  m_info_buffer;
-  ContactLedger* m_ledger;
+  ContactLedgerX* m_ledger;
   ModeSet      m_mode_set;
   ModeEntry    m_mode_entry;
   std::string  m_parse_mode;

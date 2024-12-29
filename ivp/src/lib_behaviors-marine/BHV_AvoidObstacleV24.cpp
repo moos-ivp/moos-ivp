@@ -580,31 +580,14 @@ void BHV_AvoidObstacleV24::postErasablePolygons()
 
 bool BHV_AvoidObstacleV24::updatePlatformInfo()
 {
-  bool ok = IvPBehavior::updatePlatformInfo();
-  if(!ok)
-    return(false);
+  return(true);
 
-#if 0
-  bool ok1, ok2, ok3, ok4;
-  m_osx = getBufferDoubleVal("NAV_X", ok1);
-  m_osy = getBufferDoubleVal("NAV_Y", ok2);
-  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
-  m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
+  // Note: This behavior obtains the osx,osy,osh information
+  // through the platform model. The platform model is
+  // maintained and updated by the helm with osx,osy,osh,osv
+  // nav info. The ObShipModel used in this behavior has direct
+  // access to the platform model.
 
-  string warning_msg;
-  if(!ok1 || !ok2)
-    warning_msg = "No Ownship NAV_X and/or NAV_Y in info_buffer";
-  if(!ok3)
-    warning_msg = "No Ownship NAV_HEADING in info_buffer";
-  if(!ok4)
-    warning_msg = "No Ownship NAV_SPEED in info_buffer";
-
-  if(warning_msg != "") {
-    cout << "Warning:" << warning_msg << endl;
-    postWMessage(warning_msg);
-    return(false);
-  }
-#endif
 #if 0    
     bool ok_update = m_obship_model.setPose(m_osx, m_osy, m_osh);
   if(!ok_update) 

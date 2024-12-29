@@ -141,7 +141,7 @@ void BehaviorSet::connectInfoBuffer(InfoBuffer *info_buffer)
 //      Note: Connects the ledger to all behaviors, behavior_specs
 //      Note: The ledger is not "owned" by behaviors or specs
 
-void BehaviorSet::connectContactLedger(ContactLedger *ledger)
+void BehaviorSet::connectContactLedger(ContactLedgerX *ledger)
 {
   unsigned int i, vsize = m_bhv_entry.size();
   for(i=0; i<vsize; i++)

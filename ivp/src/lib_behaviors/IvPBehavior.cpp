@@ -386,7 +386,7 @@ void IvPBehavior::setInfoBuffer(const InfoBuffer *ib)
 //-----------------------------------------------------------
 // Procedure: setContactLedger()
 
-void IvPBehavior::setContactLedger(const ContactLedger *cl)
+void IvPBehavior::setContactLedger(const ContactLedgerX *cl)
 {
   m_ledger = cl;
 }
@@ -1931,21 +1931,6 @@ double IvPBehavior::getLedgerInfoDbl(string vname,
 				     string field,
 				     bool& ok)
 {
-  if(vname == "ownshipd") {
-    if(field == "x")
-      return(getBufferDoubleVal("NAV_X", ok));
-    //else if(field == "y")
-    //  return(getBufferDoubleVal("NAV_Y", ok));
-    else if(field == "hdg")
-      return(getBufferDoubleVal("NAV_HEADING", ok));
-    else if(field == "spd")
-      return(getBufferDoubleVal("NAV_SPEED", ok));
-    else if(field == "lat")
-      return(getBufferDoubleVal("NAV_LAT", ok));
-    else if(field == "lon")
-      return(getBufferDoubleVal("NAV_LONG", ok));
-  }
-  
   if(!m_ledger || !m_ledger->hasVName(vname)) {
     ok = false;
     return(0);

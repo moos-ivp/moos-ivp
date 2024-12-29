@@ -27,7 +27,7 @@
 #include <string>
 #include <vector>
 #include "InfoBuffer.h"
-#include "ContactLedger.h"
+#include "ContactLedgerX.h"
 #include "IvPBehavior.h"
 
 class BehaviorSpec {
@@ -43,7 +43,7 @@ class BehaviorSpec {
 
   void setFileName(std::string filename)  {m_filename = filename;}
   void setInfoBuffer(InfoBuffer *b)       {m_info_buffer=b;}
-  void setContactLedger(ContactLedger *b) {m_ledger=b;}
+  void setContactLedger(ContactLedgerX *b) {m_ledger=b;}
 
   bool setTemplatingType(std::string s);
 
@@ -87,7 +87,7 @@ class BehaviorSpec {
   unsigned int  m_spawns_made;
     
   InfoBuffer    *m_info_buffer;
-  ContactLedger *m_ledger;
+  ContactLedgerX *m_ledger;
   bool           m_templating_enabled;
 };
 

@@ -455,7 +455,7 @@ string IvPContactBehavior::expandMacros(string sdata)
 
 bool IvPContactBehavior::updatePlatformInfo()
 {
-  // Part 1A: Get osx, osy, osh, osv info.
+  // Part 1A: Set m_osx, m_osy, m_osh, m_osv.
   bool ok = IvPBehavior::updatePlatformInfo();
   if(!ok)
     return(false);
@@ -483,7 +483,7 @@ bool IvPContactBehavior::updatePlatformInfo()
 
   double cnutc = getLedgerInfoDbl(m_contact, "utc", ok5);
   
-  if((!ok1 || !ok2 || !ok3 || !ok4) && !m_on_no_contact_ok) {    
+  if(!ok1 || !ok2 || !ok3 || !ok4) {    
     string msg = m_contact + " x/y/heading/speed info not found";
     if(m_on_no_contact_ok)
       postWMessage(msg);
