@@ -3,9 +3,8 @@ include/
 lib/*
 bin/*
 *~
-src/*~
-src/*/*~
-src/*/attic
+*/*~
+*attic*
 ivp/missions/*/LOG*
 ivp/missions/*/XLOG*
 ivp/missions/*/MOOSLOG*
