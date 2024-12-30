@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CollObDetect.h                                       */
 /*    DATE: September 2nd, 2019                                  */
+/*    DATE: December 30th, 2024 Added ContactLedger              */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -29,9 +30,8 @@
 #include <map>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
 #include "XYPolygon.h"
-#include "NodeRecord.h"
+#include "ContactLedger.h"
 #include "VarDataPair.h"
-
 
 class CollObDetect : public AppCastingMOOSApp
 {
@@ -53,7 +53,7 @@ class CollObDetect : public AppCastingMOOSApp
 
   bool handleMailKnownObstacle(std::string);
   void handleMailKnownObstacleClear(std::string);
-  bool handleMailNodeReport(std::string);
+  bool handleMailNodeReport(std::string, std::string& whynot);
 
   void updateVehiDists();
   void updateVehiMinDists();
@@ -93,8 +93,8 @@ class CollObDetect : public AppCastingMOOSApp
   
  private: // State variables
 
-  std::map<std::string, NodeRecord> m_map_vrecords;
-
+  ContactLedger m_ledger;
+  
   // For each vehicle and each obstacle
   std::map<std::string, std::map<std::string, double> > m_map_vdist;
   std::map<std::string, std::map<std::string, double> > m_map_vdist_prev;

@@ -13,7 +13,9 @@ ADD_EXECUTABLE(uFldCollObDetect ${SRC})
 
 TARGET_LINK_LIBRARIES(uFldCollObDetect
    ${MOOS_LIBRARIES}
+   ${MOOSGeodesy_LIBRARIES}
    apputil
+   geodaid
    contacts
    geometry
    mbutil

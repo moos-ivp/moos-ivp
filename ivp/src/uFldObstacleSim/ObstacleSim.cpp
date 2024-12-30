@@ -178,7 +178,7 @@ bool ObstacleSim::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
-     // Look for latitude, longitude initial datum
+  // Look for latitude, longitude initial datum
   double lat_origin, lon_origin;
   bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
   bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
