@@ -133,7 +133,7 @@ bool FldNodeComms::OnNewMail(MOOSMSG_LIST &NewMail)
     }      
     
     if(!handled) {
-      string warning = "Unhandled Mail: " + key;
+      string warning = "Bad Mail: " + key;
       if(whynot != "")
 	warning += " " + whynot;
       reportRunWarning(warning);

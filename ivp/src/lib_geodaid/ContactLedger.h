@@ -88,6 +88,7 @@ public: // Record Getters
 
   std::string getGroup(std::string vname) const;
   std::string getType(std::string vname) const;
+  std::string getColor(std::string vname) const;
   std::string getSpec(std::string vname) const;
   std::string getActiveVName() const {return(m_active_vname);}
 

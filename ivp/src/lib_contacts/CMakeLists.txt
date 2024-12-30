@@ -14,6 +14,7 @@ SET(HEADERS
   NodeRecord.h
   NodeRecordUtils.h
   NodeRider.h
+  NodeRiderSet.h
 )
 
 # Build Library

@@ -28,7 +28,6 @@
 #include "NodeRecordUtils.h"
 #include "MBUtils.h"
 #include "AngleUtils.h"
-//#include "ACTable.h"
 
 using namespace std;
 
@@ -771,6 +770,19 @@ string ContactLedger::getType(string vname) const
 
   NodeRecord record = getRecord(vname, false);
   return(record.getType());
+}
+
+//---------------------------------------------------------------
+// Procedure: getColor()
+
+string ContactLedger::getColor(string vname) const
+{
+  vname = toupper(vname);
+  if(!hasVName(vname))
+    return("");
+
+  NodeRecord record = getRecord(vname, false);
+  return(record.getColor());
 }
 
 //---------------------------------------------------------------
