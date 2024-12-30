@@ -594,7 +594,7 @@ double ContactLedger::getUTCAgeReceived(string vname) const
 bool ContactLedger::hasVName(string vname) const
 {
   vname = toupper(vname);
-  
+
   if(m_map_records_rep.count(vname) == 0)
     return(false);
 
@@ -1030,6 +1030,34 @@ bool ContactLedger::getWeightedCenter(double& x, double& y) const
   y = total_y / (double)(msize);
 
   return(true);
+}
+
+//-------------------------------------------------------------
+// Procedure: getSummary()
+//
+// Example: "now:4, max:12, reps:675, who:cal,ben,abe+1"
+
+string ContactLedger::getSummary(unsigned int amt) const
+{
+  string summary = "now:";
+  summary += uintToString(m_map_records_rep.size());
+  summary += ", reps:";
+  summary += uintToString(m_total_reports);
+
+  if(m_total_reports_valid > m_total_reports) {
+    summary += "/";
+    summary += uintToString(m_total_reports_valid);
+  }
+
+  summary += ", who:";
+  vector<string> vnames = getVNames();
+  for(unsigned int i=0; (i<vnames.size() && (i<amt)); i++) {
+    if(i != 0)
+      summary += ",";
+    summary += (vnames[i]);
+  }
+
+  return(summary);
 }
 
 //-------------------------------------------------------------

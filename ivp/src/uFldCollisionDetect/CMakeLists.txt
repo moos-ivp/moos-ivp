@@ -26,6 +26,7 @@ TARGET_LINK_LIBRARIES(uFldCollisionDetect
    ${MOOS_LIBRARIES}
    ${MOOSGeodesy_LIBRARIES}
    apputil
+   geodaid
    contacts
    geometry
    mbutil

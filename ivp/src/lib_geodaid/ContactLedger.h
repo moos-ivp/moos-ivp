@@ -100,6 +100,7 @@ public: // Statistics Getters
   unsigned int totalReportsValid() const {return(m_total_reports_valid);}
   unsigned int totalReports(std::string vname) const;
   std::string  getClosestVehicle(double x, double y) const;
+  std::string  getSummary(unsigned int cnt=4) const;
   bool getWeightedCenter(double& x, double& y) const;
   
 public:
