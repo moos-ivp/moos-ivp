@@ -29,6 +29,7 @@ TARGET_LINK_LIBRARIES(pMarineViewer
   ${SYSTEM_LIBS}
   genutil
   marineview
+  geodaid
   contacts
   geometry
   ucommand
