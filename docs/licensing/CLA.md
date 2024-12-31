@@ -2,7 +2,7 @@
 
 ## Non-Exclusive License Agreement (including the Traditional Patent License OPTION)
 
-Thank you for your interest in contributing to MIT's MOOS-IvP ("We" or "Us").
+Thank you for your interest in contributing to MOOS-IvP ("We" or "Us").
 
 The purpose of this contributor agreement ("Agreement") is to clarify and document the rights granted by contributors to Us. To make this document effective, please follow the instructions at https://github.com/moos-ivp/moos-ivp/blob/main/CONTRIBUTING.md.
 
