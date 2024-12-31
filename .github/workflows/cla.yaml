@@ -28,7 +28,7 @@ jobs:
           path-to-signatures: "signatures/version1/cla.json"
           path-to-document: "${{ github.server_url }}/${{ github.repository }}/blob/main/docs/licensing/CLA.md"
           branch: "main"
-          #allowlist: user1,bot*
+          allowlist: dependabot[bot],dependabot-preview[bot],renovate[bot],github-actions[bot]
 
           remote-repository-name: cla-signatures
           #custom-notsigned-prcomment: 'pull request comment with Introductory message to ask new contributors to sign'
