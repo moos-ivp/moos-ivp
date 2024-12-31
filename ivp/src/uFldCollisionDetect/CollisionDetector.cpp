@@ -95,7 +95,7 @@ bool CollisionDetector::OnNewMail(MOOSMSG_LIST &NewMail)
       reportRunWarning(warning);
     }
   }
-   return(true);
+  return(true);
 }
 
 //---------------------------------------------------------
