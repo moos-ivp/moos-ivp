@@ -8,7 +8,7 @@ The purpose of this contributor agreement ("Agreement") is to clarify and docume
 
 ### 1\. Definitions
 
-**"You"** means the individual Copyright owner who Submits a Contribution to Us.
+**"You"** means the individual Copyright owner or Legal Entity authorized by the Copyright owner who Submits a Contribution to Us.
 
 **"Legal Entity"** means an entity that is not a natural person.
 
