@@ -26,7 +26,7 @@ jobs:
         with:
           # Update the signature version path if we ever change the CLA
           path-to-signatures: "signatures/version1/cla.json"
-          path-to-document: "${{ github.server_url }}/${{ github.repository }}/blob/main/docs/licensing/CLA.md"
+          path-to-document: "${{ github.server_url }}/${{ github.repository }}/blob/main/CONTRIBUTING.md"
           branch: "main"
           allowlist: dependabot[bot],dependabot-preview[bot],renovate[bot],github-actions[bot]
 
