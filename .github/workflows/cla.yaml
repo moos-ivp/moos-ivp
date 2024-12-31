@@ -16,11 +16,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: "CLA Assistant"
-        if: (github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target'
+        if: |
+          ((github.event.comment.body == 'recheck' || github.event.comment.body == 'I have read the CLA Document and I hereby sign the CLA') || github.event_name == 'pull_request_target')
+          && (env.PERSONAL_ACCESS_TOKEN != '')
         uses: contributor-assistant/github-action@v2.6.1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PERSONAL_ACCESS_TOKEN: ${{ secrets.CLA_REPO_PAT }}
         with:
+          # Update the signature version path if we ever change the CLA
           path-to-signatures: "signatures/version1/cla.json"
           path-to-document: "${{ github.server_url }}/${{ github.repository }}/blob/main/docs/licensing/CLA.md"
           branch: "main"
