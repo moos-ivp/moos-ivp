@@ -1,4 +1,4 @@
-# Contributor Agreement
+# MOOS-IvP Contributor Agreement v1
 
 ## Non-Exclusive License Agreement (including the Traditional Patent License OPTION)
 
