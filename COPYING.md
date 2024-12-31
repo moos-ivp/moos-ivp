@@ -8,6 +8,6 @@ The GNU Lesser General Public License Version 3 (LGPLv3) accompanies this distri
 
 ## Commercial
 
-MOOS-IvP may offer you access under a different license, at our discretion. Commercial License users may not be required to comply with the Open-Source terms and conditions.
+MOOS-IvP, at our discretion, may offer you access under different licensing terms. Commercial License users may not be required to comply with the Open-Source terms and conditions.
 
 If you would like to explore alternate licensing terms, please contact Us at `issues@moos-ivp.org`.

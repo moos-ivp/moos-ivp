@@ -12,6 +12,12 @@
 
 ## Project Organization
 
-The project is situated at MIT, in the Department of Mechanical Engineering and the Center for Ocean Engineering as part of the Laboratory for Autonomous Marine Sensing Systems (LAMSS). Core developers are also part of the MIT Computer Science and Artificial Intelligence Lab, (CSAIL). Core MOOS software is maintained and distributed by the Oxford Robotics Institute (ORI)
+The project is situated at MIT, in the Department of Mechanical Engineering and the Center for Ocean Engineering as part of the Laboratory for Autonomous Marine Sensing Systems (LAMSS). Core developers are also part of the MIT Computer Science and Artificial Intelligence Lab, (CSAIL). Core MOOS software is maintained and distributed by the Oxford Robotics Institute (ORI).
 
 MOOS stands for "Mission Oriented Operating Suite". IvP stands for "Interval Programming". MOOS-IvP is pronounced "moose i-v-p".
+
+## Contributing and Licensing
+
+We welcome contributions to MOOS-IvP! Please reference our [contribution policy](./CONTRIBUTING.md) and CLA for more details.
+
+The MOOS and MOOS-IvP codebases are licensed under a mix of GPLv3, LGPLv3, and optionally, a commercial license. Please reference [COPYING.md](./COPYING.md) for more details/
