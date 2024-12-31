@@ -20,4 +20,4 @@ MOOS stands for "Mission Oriented Operating Suite". IvP stands for "Interval Pro
 
 We welcome contributions to MOOS-IvP! Please reference our [contribution policy](./CONTRIBUTING.md) and CLA for more details.
 
-The MOOS and MOOS-IvP codebases are licensed under a mix of GPLv3, LGPLv3, and optionally, a commercial license. Please reference [COPYING.md](./COPYING.md) for more details/
+The MOOS and MOOS-IvP codebases are licensed under a mix of GPLv3, LGPLv3, and optionally, a commercial license. Please reference [COPYING.md](./COPYING.md) for more details.
