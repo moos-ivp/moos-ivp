@@ -1,4 +1,4 @@
-//-------------------------------------------------
+//----------------------------------------------------
 // Vehicle MOOS config file
 // M. Benjamin, MIT
 
@@ -99,12 +99,13 @@ ProcessConfig = pContactMgrV20
   alert_range_color = gray70
   cpa_range_color   = gray30
 
-	alert = id=avdcol_, var=CONTACT_INFO, val="name=$[VNAME] # contact=$[VNAME]"
-  alert = id=avdcol_, alert_range=15, cpa_range=5
-	
-	//match_region = pts = {60,-40 : 60,-160 : 150,-160 : 180,-100 : 150,-40}
-	//match_type = kayak, uuv
+	early_warning_range = 60
+	early_warning_flag  = CMGR_WARNING = Warning=$[CONTACT], at $[RNG]
+	early_warning_ref_spd = 3.4
+	early_warning_radii = true
 
+	cease_warning_flag = CMGR_WARNING = off
+	
   disable_var = XYZ_DISABLE_TARGET
   enable_var  = XYZ_REENABLE_TARGET
 	
@@ -128,6 +129,7 @@ ProcessConfig = uFldNodeBroker
   bridge = src=VIEW_CIRCLE
   bridge = src=VIEW_POINT
   bridge = src=VIEW_SEGLIST
+  bridge = src=CMGR_WARNING
   bridge = src=NODE_REPORT_LOCAL,  alias=NODE_REPORT
   bridge = src=NODE_MESSAGE_LOCAL, alias=NODE_MESSAGE
 }

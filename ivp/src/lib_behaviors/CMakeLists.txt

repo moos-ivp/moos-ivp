@@ -1,0 +1,9 @@
+Loading /Users/mikerb/Research/moos-ivp-git/editor-modes/moos-apps.el (source)...done
+Loading /Users/mikerb/Research/moos-ivp-git/editor-modes/moos-bhvs.el (source)...done
+For information about GNU Emacs and the GNU system, type C-h C-a.
+Mark saved where search started
+completing-read-default: Command attempted to use minibuffer while in minibuffer
+File ‘/Users/mikerb/Research/moos-ivp/ivp/src/lib_behaviors/IvPBehavior.cpp’ exists; overwrite? (y or n) n
+basic-save-buffer: Canceled
+next-line: End of buffer
+completing-read-default: Command attempted to use minibuffer while in minibuffer [2 times]

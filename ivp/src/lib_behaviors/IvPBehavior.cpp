@@ -86,6 +86,7 @@ IvPBehavior::IvPBehavior(IvPDomain g_domain)
   m_osy = 0;
   m_osh = 0;
   m_osv = 0;
+  m_osd = 0;
   m_max_osv = -1; // According to IvPDomain
 
   m_time_of_creation  = 0;
@@ -392,25 +393,29 @@ void IvPBehavior::setLedgerSnap(const LedgerSnap *cl)
 }
 
 //-----------------------------------------------------------
-// Procedure: updatePlatformInfo
+// Procedure: updatePlatformInfo()
 //   Purpose: Update the following member variables:
 //             m_osx: Current ownship x position (meters) 
 //             m_osy: Current ownship y position (meters) 
 //             m_osh: Current ownship heading (degrees 0-359)
 //             m_osv: Current ownship speed (meters) 
-//             m_cnx: Current contact x position (meters) 
-//             m_cny: Current contact y position (meters) 
-//             m_cnh: Current contact heading (degrees 0-359)
-//             m_cnv: Current contact speed (meters) 
-//             m_cnu: UTC time of last contact report
+//             m_osv: Current ownship speed (meters) 
 
 bool IvPBehavior::updatePlatformInfo()
 {
-  bool ok1, ok2, ok3, ok4;
+  bool ok1, ok2, ok3, ok4, ok5;
+#if 0
   m_osx = getLedgerInfoDbl("ownship", "x", ok1);
   m_osy = getLedgerInfoDbl("ownship", "y", ok2);
   m_osh = getLedgerInfoDbl("ownship", "hdg", ok3);
   m_osv = getLedgerInfoDbl("ownship", "spd", ok4);
+  m_osd = getLedgerInfoDbl("ownship", "dep", ok5);
+#endif
+  m_osx = getBufferDoubleVal("NAV_X", ok1);
+  m_osy = getBufferDoubleVal("NAV_Y", ok2);
+  m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
+  m_osv = getBufferDoubleVal("NAV_SPEED", ok4);
+  m_osd = getBufferDoubleVal("NAV_DEPTH", ok5);
 
   // Must get ownship position
   if(!ok1 || !ok2) {
@@ -428,9 +433,13 @@ bool IvPBehavior::updatePlatformInfo()
   // A warning will be posted.
   if(!ok4)
     postWMessage("No ownship speed info in info_buffer");
-
+  
   m_osh = angle360(m_osh);
 
+  if(!ok5 && (m_domain.hasDomain("depth")))
+    postWMessage("No ownship depth info in info_buffer");
+
+  
   return(true);
 }
   

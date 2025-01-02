@@ -15,7 +15,6 @@ Processconfig = ANTLER
 
   Run = MOOSDB          @ NewConsole = false
   Run = pRealm          @ NewConsole = false
-  Run = uTimerScript    @ NewConsole = false
 	Run = pMarineViewer   @ NewConsole = false
   Run = pLogger         @ NewConsole = false
   Run = uProcessWatch   @ NewConsole = false
@@ -136,7 +135,7 @@ ProcessConfig = pMarineViewer
 	watch_cluster = key=mission_top, vars=DEPLOY:RETURN
 	watch_cluster = key=mission_top, vars=STATION_KEEP:LOITER:AVOID
 	
-  circle_viewable_all = false
+ // circle_viewable_all = false
 
 	content_mode      = appcast       // or realmcast
 	realmcast_channel = mission_top
@@ -149,13 +148,10 @@ ProcessConfig = pMarineViewer
   stale_report_thresh = 10
   stale_remove_thresh = 18
 
-	scope = REALMCAST_REQ
-	scope = REALMCAST_REQ_GILDA
-	scope = REALMCAST_REQ_HENRY
+	scope = CMGR_WARNING
 	
-  left_context[disable] = BHV_ABLE_FILTER_$[UP_VNAME_CLOSEST] = contact=abe, action=disable
+  left_context[disable] = XYZ_DISABLE_TARGET_$[UP_VNAME_CLOSEST] = contact=abe, action=disable
 
-  left_context[disable] = BHV_ABLE_FILTER_$[UP_VNAME_CLOSEST] = contact=abe, action=disable
   left_context[return_point] = RETURN_$[UP_VNAME_CLOSEST] = true
   left_context[return_point] = RETURN_UPDATES_$[UP_VNAME_CLOSEST] = points=$[XPOS],$[YPOS]
   left_context[station]      = STATION_KEEP_$[UP_VNAME_CLOSEST] = true
@@ -169,53 +165,15 @@ ProcessConfig = pMarineViewer
   cmd = label=RETURN, var=RETURN, sval=true, receivers=all:$(VNAMES)
   cmd = label=RETURN, var=STATION_KEEP, sval=false, receivers=all:$(VNAMES)
 
-  cmd = label=LOITER-FAST, var=UP_LOITER,  sval=speed=2.8,  receivers=all:$(VNAMES)
-  cmd = label=LOITER-SLOW, var=UP_LOITER,  sval=speed=1.4,  receivers=all:$(VNAMES)
-
-  cmd = label=LOITER-CLOCKWISE-TRUE,  var=UP_LOITER, sval=clockwise=true,  receivers=all:$(VNAMES)
-  cmd = label=LOITER-CLOCKWISE-FALSE, var=UP_LOITER, sval=clockwise=false, receivers=all:$(VNAMES)
-  cmd = label=LOITER-CLOCKWISE-BEST, var=UP_LOITER,  sval=clockwise=false, receivers=all:$(VNAMES)
 	
-  button_one   = DEPLOY  # DEPLOY_ALL=true 
-  button_one   = MOOS_MANUAL_OVERRIDE_ALL=false 
-  button_one   = AVOID_ALL=true
-  button_one   = RETURN_ALL=false # STATION_KEEP_ALL=false
+  button_1 = DEPLOY  # DEPLOY_ALL=true 
+  button_1 = MOOS_MANUAL_OVERRIDE_ALL=false 
+  button_1 = AVOID_ALL=true
+  button_1 = RETURN_ALL=false # STATION_KEEP_ALL=false
 
-  button_two   = RETURN  # RETURN_ALL=true
-  button_two   = RETURN  # STATION_KEEP_ALL=false
-  button_three = PERMUTE   # UTS_FORWARD=0
-  button_five  = STATION:true # STATION_KEEP_ALL=true
-  button_six   = STATION:false # STATION_KEEP_ALL=false
-
-	button_seven = REFINE:N # CONTACT_INFO_ALL = name=avdcol # use_refinery=false
-	button_eight = REFINE:Y # CONTACT_INFO_ALL = name=avdcol # use_refinery=true
+  button_2 = RETURN  # RETURN_ALL=true
+  button_2 = RETURN  # STATION_KEEP_ALL=false
+  button_3 = STATION:true # STATION_KEEP_ALL=true
+  button_4 = STATION:false # STATION_KEEP_ALL=false
 }
 
-//--------------------------------------------------------
-// uTimerScript Config Block
-
-ProcessConfig = uTimerScript
-{
-  AppTick   = 4
-  CommsTick = 4
-  
-  paused     = false
-  reset_max  = unlimited
-  reset_time = end
-
-  //randvar = varname=X1, min=-25,  max=25,  key=at_reset
-  //randvar = varname=Y1, min=-100, max=-50, key=at_reset
-  //randvar = varname=X2, min=100,  max=150, key=at_reset
-  //randvar = varname=Y2, min=-75,  max=-25, key=at_reset
-
-  randvar = varname=X1, min=0,     max=5,  key=at_reset
-  randvar = varname=Y1, min=-80,  max=-70, key=at_reset
-  randvar = varname=X2, min=120,  max=130, key=at_reset
-  randvar = varname=Y2, min=-80,  max=-70, key=at_reset
-
-  event = var=UP_LOITER_2, val="center_assign=$[X1],$[Y1]", time=180 
-  event = var=UP_LOITER_1, val="center_assign=$[X2],$[Y2]", time=180
-
-  event = var=UP_LOITER_1, val="center_assign=$[X1],$[Y1]", time=360
-  event = var=UP_LOITER_2, val="center_assign=$[X2],$[Y2]", time=360
-}

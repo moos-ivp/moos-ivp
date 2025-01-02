@@ -58,13 +58,11 @@ ContactMgrV20::ContactMgrV20()
   m_contacts_recap_interval = 1;
 
   // verbatim, lazy_lat_lon, or force_lat_lon
-  m_contact_local_coords = "verbatim"; 
   m_alert_verbose = false;
   m_decay_start = 15;
   m_decay_end   = 30;
 
   m_max_retired_hist = 5;
-  m_use_geodesy = false;
 
   m_range_report_timeout = 10;
   m_range_report_maxsize = 20;
@@ -271,7 +269,8 @@ bool ContactMgrV20::OnStartUp()
     else if(param == "max_retired_history")
       handled = handleConfigMaxRetHist(value);
     else if(param == "contact_local_coords") 
-      handled = handleConfigCoords(value);
+      handled = true;  // deprecated, now always using contact ledger
+	//handled = handleConfigCoords(value);
     else if(param == "recap_interval")
       handled = handleConfigRecapInterval(value);
     else if(param == "reject_range")
@@ -312,7 +311,7 @@ bool ContactMgrV20::OnStartUp()
     else if(param == "retire_flag")
       handled = addVarDataPairOnString(m_retire_flags, value);
 
-    else if(param == "early_warning_rng")
+    else if((param == "early_warning_rng") || (param == "early_warning_range"))
       handled = setPosDoubleOnString(m_early_warning_rng, value);
     else if(param == "early_warning_radii")
       handled = setBooleanOnString(m_early_warning_radii, value);
@@ -332,7 +331,7 @@ bool ContactMgrV20::OnStartUp()
       reportConfigWarning("Invalid alert config:" + alert_id);
   }
 
-  
+#if 0  
   // Part 3: If we may possibly want to set our incoming X/Y report
   // values based on Lat/Lon values, then we must check for and
   // initialized the MOOSGeodesy.
@@ -358,6 +357,7 @@ bool ContactMgrV20::OnStartUp()
       reportEvent(msg);
     }
   }
+#endif
   
   registerVariables();
   return(true);
@@ -437,7 +437,8 @@ bool ContactMgrV20::handleMailNodeReport(string report,
   if(!prev_known_vehicle) {
     m_map_node_ranges_actual[vname] = 0;
     m_map_node_ranges_extrap[vname] = 0;
-    m_map_node_ranges_cpa[vname]    = 0;
+    m_map_node_cpa[vname] = 0;
+    m_map_node_roc[vname] = 0;
 
     m_par.addVehicle(vname);
 
@@ -720,6 +721,7 @@ bool ContactMgrV20::handleConfigMaxRetHist(string str)
   return(true);
 }
 
+#if 0
 //---------------------------------------------------------
 // Procedure: handleConfigCoords()
 
@@ -734,6 +736,7 @@ bool ContactMgrV20::handleConfigCoords(string str)
 
   return(true);
 }
+#endif
 
 //---------------------------------------------------------
 // Procedure: handleConfigRecapInterval()
@@ -1144,7 +1147,7 @@ void ContactMgrV20::checkForAlerts()
 	double range_actual = m_map_node_ranges_actual[contact];
 	mval += ",range_actual=" + doubleToString(range_actual,1);	
 	if(m_par.getAlertedValue(contact,id)) {
-	  double range_cpa = m_map_node_ranges_cpa[contact];
+	  double range_cpa = m_map_node_cpa[contact];
 	  mval += ",range_cpa=" + doubleToString(range_cpa,1);
 	}
 	
@@ -1159,9 +1162,7 @@ void ContactMgrV20::checkForAlerts()
 // Procedure: postWarningFlags()
 
 void ContactMgrV20::postWarningFlags(const vector<VarDataPair>& flags,
-				     string contact,
-				     double range,
-				     double cpa)
+				     string contact)
 {
   for(unsigned int i=0; i<flags.size(); i++) {
     VarDataPair pair = flags[i];
@@ -1178,8 +1179,23 @@ void ContactMgrV20::postWarningFlags(const vector<VarDataPair>& flags,
     else {
       postval = stripBlankEnds(pair.get_sdata());
       postval = macroExpand(postval, "CONTACT", contact);
-      postval = macroExpand(postval, "RNG", range);
-      postval = macroExpand(postval, "CPA", cpa);
+
+      if(m_map_node_ranges_extrap.count(contact) != 0) {
+	double rng = m_map_node_ranges_extrap[contact];
+	postval = macroExpand(postval, "RNG_EXT", rng);
+      }
+      if(m_map_node_ranges_actual.count(contact) != 0) {
+	double rng = m_map_node_ranges_actual[contact];
+	postval = macroExpand(postval, "RNG", rng);
+      }
+      if(m_map_node_cpa.count(contact) != 0) {
+	double cpa = m_map_node_cpa[contact];
+	postval = macroExpand(postval, "CPA", cpa);
+      }
+      if(m_map_node_roc.count(contact) != 0) {
+	double roc = m_map_node_roc[contact];
+	postval = macroExpand(postval, "ROC", roc);
+      }
       if(postval != "")
         Notify(moosvar, postval);
     }
@@ -1230,13 +1246,9 @@ void ContactMgrV20::checkForCeaseWarnings()
       continue;
     
     double contact_range_ext = m_map_node_ranges_extrap[contact]; 
-    double contact_range_cpa = m_map_node_ranges_cpa[contact]; 
     if(contact_range_ext > (m_map_early_warnings[contact] * 1.05)) {
       m_map_early_warnings.erase(contact);
-      postWarningFlags(m_cease_warning_flags,
-		       contact,
-		       contact_range_ext,
-		       contact_range_cpa);
+      postWarningFlags(m_cease_warning_flags, contact);
     }
   }
 }
@@ -1247,6 +1259,7 @@ void ContactMgrV20::checkForCeaseWarnings()
 void ContactMgrV20::checkForEarlyWarnings()
 {
   vector<string> vnames = m_ledger.getVNames();
+
   for(unsigned int i=0; i<vnames.size(); i++) {
     string contact = vnames[i];
 
@@ -1255,32 +1268,33 @@ void ContactMgrV20::checkForEarlyWarnings()
       continue;
     
     double contact_range_ext = m_map_node_ranges_extrap[contact]; 
-    double contact_range_cpa = m_map_node_ranges_cpa[contact];    
+    double contact_range_cpa = m_map_node_cpa[contact];    
 
+    bool post_warning = false;
+    
     // Check 2: If contact inside warning range, warning warranted
     if(contact_range_ext < m_early_warning_rng)
-      continue;
-
-    // Check 3: If speed factor consideration enabled, calc and check
-    double warning_range_aug = augRange(m_early_warning_rng,
-					m_early_warning_ref_spd,
-					m_ledger.getSpeed(contact));
-    //					record.getSpeed());
-
-  // If the contact (extrapolated) position is within the
-    // augmented range:
-    if(contact_range_ext < warning_range_aug) {
-      // And if the projected CPA of the contact falls within
-      // the un-augmented early warning range
-      if(contact_range_cpa < m_early_warning_rng) {
-	// then a warning is warranted
-	postWarningFlags(m_early_warning_flags,
-			 contact,
-			 contact_range_ext,
-			 contact_range_cpa);
-	  m_map_early_warnings[contact] = contact_range_ext;
+      post_warning = true;
+    else {
+      // Check 3: If speed factor consideration enabled, calc and check
+      double warning_range_aug = augRange(contact);
+    
+      // Check 4: If contact (extrap) position is within augmented range
+      if(contact_range_ext < warning_range_aug) {
+	// Check 5: And if projected CPA of contact falls within
+	// the un-augmented early warning range
+	if(contact_range_cpa < m_early_warning_rng) {
+	  post_warning = true;
+	}
       }
     }
+
+    // A warning is warranted
+    if(post_warning) {
+      postWarningFlags(m_early_warning_flags, contact);
+      m_map_early_warnings[contact] = contact_range_ext;
+    }
+
   }
 }
 
@@ -1380,7 +1394,8 @@ void ContactMgrV20::checkForNewRetiredContacts()
     m_ledger.clearNode(contact);
     m_map_node_ranges_actual.erase(contact);
     m_map_node_ranges_extrap.erase(contact);
-    m_map_node_ranges_cpa.erase(contact);
+    m_map_node_cpa.erase(contact);
+    m_map_node_roc.erase(contact);
     m_par.removeVehicle(contact);
 
     postRetireFlags(m_retire_flags, contact);
@@ -1544,7 +1559,9 @@ void ContactMgrV20::updateRanges()
     CPAEngine engine(cny, cnx, cnh, cns, m_osy, m_osx);      
     double range_cpa = engine.evalCPA(m_osh, m_osv,
 				      alert_range_cpa_time);
-    m_map_node_ranges_cpa[contact] = range_cpa;
+    double roc = engine.evalROC(m_osh, m_osv);
+    m_map_node_cpa[contact] = range_cpa;
+    m_map_node_roc[contact] = roc;
   }
 }
 
@@ -1558,7 +1575,7 @@ void ContactMgrV20::postEarlyWarningRadii()
     return;
 
   XYCircle circle(m_osx, m_osy, m_early_warning_rng);
-  circle.set_label("ewarn");
+  circle.set_label("ewarn_" + m_ownship);
   circle.set_color("edge", "gray50");
   circle.set_vertex_size(0);
   circle.set_edge_size(1);
@@ -1585,22 +1602,18 @@ void ContactMgrV20::postEarlyWarningRadii(string contact)
   if(m_early_warning_ref_spd <= 0)
     return;
 
-  // Sanity check - if no early warning reference spd enabled 
+  // Sanity check - if nothing known about the contact
   if(!m_ledger.hasVName(contact))
     return;
 
-  double cn_spd = m_ledger.getSpeed(contact);
-
-  double aug_rng = augRange(m_early_warning_rng,
-			    m_early_warning_ref_spd,
-			    cn_spd);
-
+  double aug_rng = augRange(contact);
   if(aug_rng <= m_early_warning_rng)
     return;
   
   XYCircle circle(m_osx, m_osy, aug_rng);
-  circle.set_label("ewarn_" + contact);
-  circle.set_color("edge", "gray80");
+  circle.set_label("xewarn_" + contact);
+  //  circle.set_color("edge", "gray80");
+  circle.set_color("edge", "yellow");
   circle.set_vertex_size(0);
   circle.set_edge_size(1);
   circle.set_active(true);
@@ -1712,7 +1725,7 @@ bool ContactMgrV20::checkAlertApplies(string contact, string id)
   // criteria OFF. Likely this alert depends only on the region.
   if(alert_range > 0) {
     double contact_range_abs = m_map_node_ranges_actual[contact]; 
-    double contact_range_cpa = m_map_node_ranges_cpa[contact];    
+    double contact_range_cpa = m_map_node_cpa[contact];    
     
     if(contact_range_abs > alert_range_cpa)
       return(false);
@@ -1923,27 +1936,35 @@ string ContactMgrV20::expandMacros(string sdata) const
 //   Purpose: Utility function for expanding a range based on
 //            a base range, reference speed, and observed spd.
 //   Example:
-//      reference spd: 8 m/s
-//      observed spdd: 9 m/s
-//         base_range: 100 meters
+//           rate of closure: 9 m/s
+//   m_early_warning_ref_spd: 8 m/s
+//       m_early_warning_rng: 100 meters
 //
 //   diff: 1 m/s
 //   pct:  1/8 = 1.125
 //   aug:  112.5 meters
 
-double ContactMgrV20::augRange(double base_range,
-			       double reference_spd,
-			       double observed_spd) const
+double ContactMgrV20::augRange(string contact) const
 {
+  // Sanity Check 1: Early warning ref speed must be set 
   if(m_early_warning_ref_spd <= 0)
-    return(base_range);
+    return(m_early_warning_rng);
+
+  // Sanity Check 2: Rate of Closure to contact must be known
+  map<string,double>::const_iterator p = m_map_node_roc.find(contact);
+  if(p == m_map_node_roc.end())
+    return(m_early_warning_rng);
+
+  double roc = p->second;
+
+  // Initial check: rate_of_closure less than reference spd
+  if(roc < m_early_warning_ref_spd)
+    return(m_early_warning_rng);
   
-  if(observed_spd <= reference_spd)
-    return(base_range);
-    
-  double diff = observed_spd - reference_spd;
-  double pct  = 1 + (diff / reference_spd);
-  double aug_range = base_range * pct;
+  double diff = roc - m_early_warning_ref_spd;
+
+  double pct  = 1 + (diff / m_early_warning_ref_spd);
+  double aug_range = m_early_warning_rng * pct;
 
   return(aug_range);
 }
@@ -2014,8 +2035,6 @@ bool ContactMgrV20::buildReport()
     reject_range = doubleToStringX(m_reject_range,2);
   m_msgs << "Ownship Group:      " << os_group << endl;
   m_msgs << "Ownship Type:       " << os_type << endl;
-  m_msgs << "X/Y from Lat/Lon:   " << boolToString(m_use_geodesy)   << endl;
-  m_msgs << "ContactLocalCoords: " << m_contact_local_coords   << endl;
   m_msgs << "Contact Max Age:    " << max_age << endl;
   m_msgs << "Reject Range:       " << reject_range << endl;
   m_msgs << "EarlyWarn Range:    " << m_early_warning_rng << endl;

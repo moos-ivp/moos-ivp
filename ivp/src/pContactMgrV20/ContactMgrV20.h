@@ -26,7 +26,7 @@
 
 #include <vector>
 #include "MOOS/libMOOS/Thirdparty/AppCasting/AppCastingMOOSApp.h"
-#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
+//#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "ContactLedger.h"
 #include "NodeRecord.h"
 #include "XYPolygon.h"
@@ -56,7 +56,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
   bool handleConfigDecay(std::string);
 
   bool handleConfigMaxRetHist(std::string);
-  bool handleConfigCoords(std::string);
+  //bool handleConfigCoords(std::string);
   bool handleConfigRecapInterval(std::string);
   bool handleConfigRejectRange(std::string);
 
@@ -94,7 +94,7 @@ class ContactMgrV20 : public AppCastingMOOSApp
   void checkForEarlyWarnings();
   void checkForCeaseWarnings();
   void postWarningFlags(const std::vector<VarDataPair>&,
-			std::string, double, double);
+			std::string contact);
   void postEarlyWarningRadii();
   void postEarlyWarningRadii(std::string);
   // New 24.8.x retire flags
@@ -115,7 +115,8 @@ protected:
   std::string expandMacros(std::string) const;
 
 private:
-  double augRange(double range, double ref_spd, double spd) const;
+  //double augRange(double range, double ref_spd, double spd) const;
+  double augRange(std::string contact) const;
   
  private: // main record of alerts, each keyed on the alert_id
   std::map<std::string, CMAlert> m_map_alerts;
@@ -142,7 +143,7 @@ private:
   double       m_range_report_timeout;
   unsigned int m_range_report_maxsize;
   
-  std::string  m_contact_local_coords;
+  //std::string  m_contact_local_coords;
   bool         m_alert_verbose;
   double       m_decay_start;
   double       m_decay_end;
@@ -166,7 +167,7 @@ private:
 
   std::set<std::string> m_filtered_vnames;
 
-  // Optional requested range reports all keyed on varname
+  // Main Record #1 Optional req range reports all keyed on varname
   std::map<std::string, double>      m_map_rep_range;
   std::map<std::string, double>      m_map_rep_reqtime;
   std::map<std::string, std::string> m_map_rep_group;
@@ -174,12 +175,13 @@ private:
   std::map<std::string, std::string> m_map_rep_contacts;
   std::map<std::string, bool>        m_map_rep_refresh;
   
-  // Main Record #2: Ledger and other attributes keyed on vname
+  // Main Record #2: Ledger and other attributes keyed on contact vname
   ContactLedger m_ledger;
 
   std::map<std::string, double> m_map_node_ranges_actual;
   std::map<std::string, double> m_map_node_ranges_extrap;
-  std::map<std::string, double> m_map_node_ranges_cpa;
+  std::map<std::string, double> m_map_node_cpa;
+  std::map<std::string, double> m_map_node_roc;
 
   std::string m_closest_name;
 
@@ -212,6 +214,7 @@ protected: // Rel 24.8.x For users using cmgr for dis/enabling bhvs
   std::string  m_enable_var;
   std::list<std::string> m_disabled_contacts;
   std::list<std::string> m_enabled_contacts;
+
   std::vector<VarDataPair> m_able_flags;
   std::vector<VarDataPair> m_disable_flags;
   std::vector<VarDataPair> m_enable_flags;
@@ -231,8 +234,8 @@ protected: // Rel 24.8.x Support flags on event of retired contact
   std::vector<VarDataPair> m_retire_flags;
   
 private:
-  bool         m_use_geodesy;
-  CMOOSGeodesy m_geodesy;
+  //bool         m_use_geodesy;
+  //CMOOSGeodesy m_geodesy;
 
   unsigned int m_alert_requests_received;
 };

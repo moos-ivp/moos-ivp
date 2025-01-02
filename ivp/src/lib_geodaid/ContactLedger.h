@@ -53,14 +53,7 @@ public: // Managing, Handle Node Reports
   std::string processNodeRecord(NodeRecord record,
 				std::string& whynot);
 
-  NodeRecord preCheckNodeReport(std::string report,
-				std::string& whynot);
-  bool       preCheckNodeRecord(NodeRecord& record,
-				std::string& whynot);
-  
-  bool updateOwnship(std::string, double, double);
-  bool updateOwnship(std::string, double, std::string);
-
+public:
   void clearNode(std::string vname);  
   void clearAllNodes();
   void clearStaleNodes();
@@ -123,6 +116,8 @@ protected:
 protected: // Config vars
   double m_stale_thresh;
   double m_extrap_thresh;
+  double m_decay_start;
+  double m_decay_end;
 
   unsigned int m_history_size;
 

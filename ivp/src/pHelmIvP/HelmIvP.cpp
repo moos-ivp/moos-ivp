@@ -193,10 +193,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
     
     string moosvar   = msg.GetKey();
     string sval      = msg.GetString();
-    double dval      = msg.GetDouble();
     string source    = msg.GetSource();
     string community = msg.GetCommunity();
-    double msg_utc   = msg.GetTime();
     
     double skew_time;
     msg.IsSkewed(m_curr_time, &skew_time);
@@ -310,19 +308,8 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	reportRunWarning("Unhandled NODE_REPORT");
       updateInfoBuffer(msg);
     }
-    else if(moosvar == m_refresh_var) {
+    else if(moosvar == m_refresh_var)
       m_refresh_pending = true;
-    }
-    else if(moosvar == "NAV_X")
-      m_ledger.updateOwnship("x", msg_utc, dval);
-    else if(moosvar == "NAV_Y")
-      m_ledger.updateOwnship("y", msg_utc, dval);
-    else if(moosvar == "NAV_HEADING")
-      m_ledger.updateOwnship("heading", msg_utc, dval);
-    else if(moosvar == "NAV_SPEED")
-      m_ledger.updateOwnship("speed", msg_utc, dval);
-    else if(moosvar == "NAV_DEPTH")
-      m_ledger.updateOwnship("depth", msg_utc, dval);
     else
       updateInfoBuffer(msg);
   }
@@ -805,7 +792,7 @@ void HelmIvP::postModeMessages()
 }
 
 //------------------------------------------------------------
-// Procedure: handleHelmStartMessages
+// Procedure: handleHelmStartMessages()
 //      Note: In release 17.7.x this was only executed upon startup.
 //            In later releases this is executed on startup and in
 //            each iteration of the iterate loop, but it is also
@@ -1379,7 +1366,7 @@ bool HelmIvP::OnStartUp()
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleConfigNodeSkew
+// Procedure: handleConfigNodeSkew()
 //   Example: NODE_SKEW = macrura,43
 
 bool HelmIvP::handleConfigNodeSkew(const string& given_value)
@@ -1399,7 +1386,7 @@ bool HelmIvP::handleConfigNodeSkew(const string& given_value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleConfigSkewAny
+// Procedure: handleConfigSkewAny()
 
 bool HelmIvP::handleConfigSkewAny(const string& value)
 {
@@ -1421,7 +1408,7 @@ bool HelmIvP::handleConfigSkewAny(const string& value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleConfigStandBy
+// Procedure: handleConfigStandBy()
 
 bool HelmIvP::handleConfigStandBy(const string& value)
 {
@@ -1435,7 +1422,7 @@ bool HelmIvP::handleConfigStandBy(const string& value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: handleConfigDomain
+// Procedure: handleConfigDomain()
 
 bool HelmIvP::handleConfigDomain(const string& g_entry)
 {
@@ -1612,7 +1599,7 @@ bool HelmIvP::detectRepeatOnKey(const string& key)
 }
 
 //--------------------------------------------------------------------
-// Procedure: detectChangeOnKey
+// Procedure: detectChangeOnKey()
 //   Purpose: To determine if the given key-value pair is unique 
 //            against the last key-value posting.
 //      Note: The assumption is that if a change is detected, the caller
@@ -1643,7 +1630,7 @@ bool HelmIvP::detectChangeOnKey(const string& key, const string& value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: detectChangeOnKey
+// Procedure: detectChangeOnKey()
 //   Purpose: To determine if the given key-value pair is unique 
 //            against the last key-value posting.
 //      Note: The assumption is that if a change is detected, the caller
@@ -1674,7 +1661,7 @@ bool HelmIvP::detectChangeOnKey(const string& key, double value)
 }
 
 //--------------------------------------------------------------------
-// Procedure: postAllStop
+// Procedure: postAllStop()
 //   Purpose: Post zero-values to all decision variables. 
 //  
 //   clear

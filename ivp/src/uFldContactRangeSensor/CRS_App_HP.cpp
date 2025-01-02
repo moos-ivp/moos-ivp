@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: CRS_App.cpp                                          */
 /*    DATE: Feb 2nd, 2011                                        */
+/*    DATE: Jan 1st, 2025 Integrated Contact Ledger              */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -28,20 +29,18 @@
 #include "CRS_App_HP.h"
 #include "MBUtils.h"
 #include "ACTable.h"
-#include "NodeRecordUtils.h"
-
 
 using namespace std;
 
 //------------------------------------------------------------
-// Constructor
+// Constructor()
 
 CRS_App::CRS_App()
 {
   // Configuration variables
-  m_default_node_push_dist = 100;    // meters
-  m_default_node_pull_dist = 100;    // meters
-  m_default_node_ping_wait = 30;    // seconds
+  m_default_node_push_dist = 100; // meters
+  m_default_node_pull_dist = 100; // meters
+  m_default_node_ping_wait = 30;  // seconds
 
   m_ping_color   = "white";
   m_echo_color   = "chartreuse";
@@ -59,9 +58,12 @@ CRS_App::CRS_App()
 
   // Added by ALon Yaari Jan 2013
   m_display_range_pulse = true;
+
+  m_total_reports = 0;
 }
+
 //---------------------------------------------------------
-// Procedure: OnNewMail
+// Procedure: OnNewMail()
 
 bool CRS_App::OnNewMail(MOOSMSG_LIST &NewMail)
 {
@@ -74,16 +76,23 @@ bool CRS_App::OnNewMail(MOOSMSG_LIST &NewMail)
     string key  = msg.GetKey();
     string sval = msg.GetString();
 
-    bool handled = false;
+    bool handled = true;
+    string whynot;
+
     if((key == "NODE_REPORT") || (key == "NODE_REPORT_LOCAL"))
-      handled = handleNodeReport(sval);
+      handled = handleNodeReport(sval, whynot);
     else if(key == "CRS_RANGE_REQUEST")
       handled = handleRangeRequest(sval);
-    else if(key == "APPCAST_REQ")
-      handled = true;
+    else 
+      handled = false;
 
-    if(!handled)
-      reportRunWarning("Unhandled Mail: " + key);
+    if(!handled) {
+      string warning = "Bad Mail: " + key;
+      if(whynot != "")
+	warning += " " + whynot;
+      reportRunWarning(warning);
+    }
+
   }
   return(true);
 }
@@ -95,8 +104,21 @@ bool CRS_App::OnStartUp()
 {
   AppCastingMOOSApp::OnStartUp();
 
+   // Look for latitude, longitude initial datum
+  double lat_origin, lon_origin;
+  bool ok1 = m_MissionReader.GetValue("LatOrigin", lat_origin);
+  bool ok2 = m_MissionReader.GetValue("LongOrigin", lon_origin);
+  if(!ok1 || !ok2)
+    reportConfigWarning("Lat or Lon Origin not set in *.moos file.");
+
+  bool ok_init = m_ledger.setGeodesy(lat_origin, lon_origin);
+  if(!ok_init)
+    reportConfigWarning("Geodesy failed to initialize");
+  
   STRING_LIST sParams;
-  m_MissionReader.GetConfiguration(GetAppName(), sParams);
+  m_MissionReader.EnableVerbatimQuoting(false);
+  if(!m_MissionReader.GetConfiguration(GetAppName(), sParams))
+    reportConfigWarning("No config block found for " + GetAppName());
   
   STRING_LIST::iterator p;
   for(p = sParams.begin(); p!=sParams.end(); p++) {
@@ -161,7 +183,7 @@ bool CRS_App::Iterate()
 }
 
 //---------------------------------------------------------
-// Procedure: OnConnectToServer
+// Procedure: OnConnectToServer()
 
 bool CRS_App::OnConnectToServer()
 {
@@ -170,7 +192,7 @@ bool CRS_App::OnConnectToServer()
 }
 
 //------------------------------------------------------------
-// Procedure: registerVariables
+// Procedure: registerVariables()
 
 void CRS_App::registerVariables()
 {
@@ -181,34 +203,26 @@ void CRS_App::registerVariables()
 }
 
 //---------------------------------------------------------
-// Procedure: handleNodeReport
+// Procedure: handleNodeReport()
 //   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
 //            X=29.66,Y=-23.49,LAT=43.825089, LON=-70.330030,
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,   
 //            LENGTH=4.0,MODE=ENGAGED
 //   Returns: true if proper report received, even if ignored
 
-bool CRS_App::handleNodeReport(const string& node_report_str)
+bool CRS_App::handleNodeReport(string report, string& whynot)
 {
-  NodeRecord new_node_record = string2NodeRecord(node_report_str);
-
-  if(!new_node_record.valid())
+  string vname = m_ledger.processNodeReport(report, whynot);
+  if(whynot != "")
     return(false);
 
-  string group = new_node_record.getGroup();
+  string group = tolower(m_ledger.getGroup(vname));
   if(m_ignore_group != "") {
-    if(tolower(m_ignore_group) == tolower(group))
+    if(tolower(m_ignore_group) == tolower(group)) {
+      m_ledger.clearNode(vname);
       return(true);
+    }
   }
-  
-  string vname = new_node_record.getName();
-  if(vname == "") {
-    reportRunWarning("Unhandled NODE_REPORT. Missing Vehicle/Node name.");
-    return(false);
-  }
-
-  m_map_node_records[vname] = new_node_record;
-  m_map_node_reps_recd[vname]++;
 
   // If node push_dist not pre-configured, set to node default
   if(m_map_node_push_dist.count(vname) == 0)
@@ -224,21 +238,23 @@ bool CRS_App::handleNodeReport(const string& node_report_str)
 }
 
 //---------------------------------------------------------
-// Procedure: handleRangeRequest
+// Procedure: handleRangeRequest()
 //   Example: vname=alpha
 
-bool CRS_App::handleRangeRequest(const string& request)
+bool CRS_App::handleRangeRequest(string request)
 {
   string vname = tokStringParse(request, "name", ',', '=');
-  string VNAME = toupper(vname);
   
   // Phase 1: Confirm this request is coming from a known vehicle.
-  if((vname == "")  || (m_map_node_records.count(vname) == 0)) {
+  if((vname == "")  || !m_ledger.hasVName(vname)) {
     reportRunWarning("Failed Range Request: Unknown vehicle["+vname+"]");
     reportEvent("Failed Range Request: Unknown vehicle["+vname+"]");
     return(false);
   }
 
+  double vx = m_ledger.getX(vname);
+  double vy = m_ledger.getY(vname);
+  
   m_map_node_pings_gend[vname]++;
 
   // Phase 2: Determine if this vehicle is allowed to generate a ping
@@ -250,31 +266,31 @@ bool CRS_App::handleRangeRequest(const string& request)
   bool   query_allowed = (elapsed_time >= query_freq);
 
   if(!query_allowed) {
-    string msg = VNAME + "  ----))  XXX too frequent. ";
+    string msg = vname + "  ----))  XXX too frequent. ";
     msg += "(" + doubleToString(elapsed_time, 2) + ")";
     reportEvent(msg);
     m_map_node_xping_freq[vname]++;
     return(true);
   }
-  reportEvent(VNAME + "  ----))  ");
+  reportEvent(vname + "  ----))  ");
   
   m_map_node_last_ping[vname] = m_curr_time;
   
   // Phase 3: Post the RangePulse for the requesting vehicle. This is
   // purely a visual artifact.
   postRangePulse(vname, m_ping_color, vname+"_ping", 6, 50);
-  XYArc Arc = XYArc(m_map_node_records[vname].getX(),
-		    m_map_node_records[vname].getY(),6,45,135);
+  XYArc Arc = XYArc(vx, vy, 6, 45, 135);
 
   // Phase 4: Handle range reports to target nodes. For each target, 
   // determine if the target is within range to the vehicle making the
   // range request. If so generate the range report and visual pulse.
   
   double push_dist = m_map_node_push_dist[vname];
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string contact_name = p->first;
-    string contact_type = tolower(p->second.getType());
+
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string contact_name = vnames[i];
+    string contact_type = m_ledger.getType(contact_name);
     
     // Check if the contact type is allowed to be pinged on.
     bool allowed_type = allowableEchoType(contact_type);
@@ -337,20 +353,21 @@ bool CRS_App::handleRangeRequest(const string& request)
 }
 
 //------------------------------------------------------------
-// Procedure: postRangePulse
+// Procedure: postRangePulse()
 
-void CRS_App::postRangePulse(const string& node, const string& color,
-			     const string& label, double duration,
+void CRS_App::postRangePulse(string vname, string color,
+			     string label, double duration,
 			     double radius)
 {
-  if(m_map_node_records.count(node) == 0)
+  if(!m_ledger.hasVName(vname))
     return;
   if(!m_display_range_pulse)
-	return;
+    return;
 
   XYRangePulse pulse;
-  pulse.set_x(m_map_node_records[node].getX());
-  pulse.set_y(m_map_node_records[node].getY());
+  
+  pulse.set_x(m_ledger.getX(vname));
+  pulse.set_y(m_ledger.getY(vname));
   pulse.set_label(label);
   pulse.set_rad(radius);  
   pulse.set_fill(0.9);
@@ -367,14 +384,12 @@ void CRS_App::postRangePulse(const string& node, const string& color,
 //------------------------------------------------------------
 // Procedure: postNodeRangeReport()
 
-void CRS_App::postNodeRangeReport(const string& rec_name,
-				    const string& tar_name, 
-				    double actual_range)
+void CRS_App::postNodeRangeReport(string rec_name,
+				  string tar_name, 
+				  double actual_range)
 {
-  if((m_map_node_records.count(rec_name) == 0) ||
-     (m_map_node_records.count(tar_name) == 0))
+  if(!m_ledger.hasVName(rec_name) || !m_ledger.hasVName(tar_name))
     return;
-
   
   reportEvent(toupper(rec_name) + "  <--   " + toupper(tar_name));
 
@@ -416,16 +431,17 @@ void CRS_App::postNodeRangeReport(const string& rec_name,
 // Procedure: getTrueNodeNodeRange()
 
 double CRS_App::getTrueNodeNodeRange(const string& node_a,
-				       const string& node_b)
+				     const string& node_b)
 {
-  if((m_map_node_records.count(node_a) == 0) ||
-     (m_map_node_records.count(node_b) == 0))
+  if(!m_ledger.hasVName(node_a) || !m_ledger.hasVName(node_b))
     return(-1);
 
-  double anode_x = m_map_node_records[node_a].getX();
-  double anode_y = m_map_node_records[node_a].getY();
-  double bnode_x = m_map_node_records[node_b].getX();
-  double bnode_y = m_map_node_records[node_b].getY();
+  double anode_x = m_ledger.getX(node_a);
+  double anode_y = m_ledger.getY(node_a);
+
+  double bnode_x = m_ledger.getX(node_b);
+  double bnode_y = m_ledger.getY(node_b);
+
   double range = hypot((anode_x-bnode_x), (anode_y-bnode_y));
 
   return(range);
@@ -436,10 +452,10 @@ double CRS_App::getTrueNodeNodeRange(const string& node_a,
 
 double CRS_App::getTrueNodeHeading(const string& vname)
 {
-  if(m_map_node_records.count(vname) == 0)
+  if(!m_ledger.hasVName(vname))
     return(-1);
 
-  double heading = m_map_node_records[vname].getHeading();
+  double heading = m_ledger.getHeading(vname);
 
   return(heading);
 }
@@ -450,14 +466,14 @@ double CRS_App::getTrueNodeHeading(const string& vname)
 double CRS_App::getTrueNodeNodeBearing(const string& node_a,
 				       const string& node_b)
 {
-  if((m_map_node_records.count(node_a) == 0) ||
-     (m_map_node_records.count(node_b) == 0))
+  if(!m_ledger.hasVName(node_a) || !m_ledger.hasVName(node_b))
     return(-1);
 
-  double anode_x = m_map_node_records[node_a].getX();
-  double anode_y = m_map_node_records[node_a].getY();
-  double bnode_x = m_map_node_records[node_b].getX();
-  double bnode_y = m_map_node_records[node_b].getY();
+  double anode_x = m_ledger.getX(node_a);
+  double anode_y = m_ledger.getY(node_a);
+  double bnode_x = m_ledger.getX(node_b);
+  double bnode_y = m_ledger.getY(node_b);
+
   double bearing = relAng(anode_x,anode_y,bnode_x,bnode_y);
 
   return(bearing);
@@ -487,7 +503,7 @@ double CRS_App::getNoisyNodeNodeRange(double true_range) const
 }
 
 //------------------------------------------------------------
-// Procedure: setPushDistance
+// Procedure: setPushDistance()
 //      Note: Negative values indicate infinity
 
 bool CRS_App::setPushDistance(string str)
@@ -512,7 +528,7 @@ bool CRS_App::setPushDistance(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setPullDistance
+// Procedure: setPullDistance()
 //      Note: Negative values indicate infinity
 
 bool CRS_App::setPullDistance(string str)
@@ -537,7 +553,7 @@ bool CRS_App::setPullDistance(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setPingWait
+// Procedure: setPingWait()
 //      Note: Negative values no wait time mandated
 
 bool CRS_App::setPingWait(string str)
@@ -562,7 +578,7 @@ bool CRS_App::setPingWait(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setReportVars
+// Procedure: setReportVars()
 
 bool CRS_App::setReportVars(string str)
 {
@@ -576,7 +592,7 @@ bool CRS_App::setReportVars(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setRandomNoiseAlgorithm
+// Procedure: setRandomNoiseAlgorithm()
 
 bool CRS_App::setRandomNoiseAlgorithm(string str)
 {
@@ -601,7 +617,7 @@ bool CRS_App::setRandomNoiseAlgorithm(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: setAllowableEchoTypes
+// Procedure: setAllowableEchoTypes()
 
 bool CRS_App::setAllowableEchoTypes(string str)
 {
@@ -625,7 +641,7 @@ bool CRS_App::setAllowableEchoTypes(string str)
 }
 
 //------------------------------------------------------------
-// Procedure: allowableEchoType
+// Procedure: allowableEchoType()
 //   Purpose: check if the contact type is allowed to be pinged on.
 
 bool CRS_App::allowableEchoType(string vehicle_type)
@@ -646,7 +662,7 @@ bool CRS_App::allowableEchoType(string vehicle_type)
 }
 
 //------------------------------------------------------------
-// Procedure: setSensorArc
+// Procedure: setSensorArc()
 //   Purpose: set the sensor arc positions
 //      Note: the default if no value is provided is a full sensor arc
 
@@ -674,7 +690,7 @@ bool CRS_App::setSensorArc(string str)
   
 //------------------------------------------------------------
 // Procedure: buildReport()
-
+//
 //   Contacts(4): 
 //              Ping   Push   Pull   Pings  Echos  Too   Too  Echos
 //   Name       Wait   Range  Range  Gen'd  Rec'd  Freq  Far  Sent
@@ -705,20 +721,20 @@ bool CRS_App::buildReport()
   m_msgs << "Echo Color:               " << m_echo_color             << endl;
   m_msgs << "Ground Truth Reporting:   " << boolToString(m_ground_truth) << endl;
   m_msgs << "Ignore Group:             " << m_ignore_group << endl;
-
+  m_msgs << "Total Node Reports:       " << m_total_reports << endl;
+  
   // Part 2: Build a report on the Vehicles
   m_msgs << endl;
-  m_msgs << "Vehicles(" << m_map_node_records.size() << "):" << endl;
+  m_msgs << "Vehicles(" << m_ledger.size() << "):" << endl;
 
-  ACTable actab(9);
-  actab << "      | Ping | Push | Pull | Pings | Echos | Too  | Too | Echos";
-  actab << "VName | Wait | Dist | Dist | Gen'd | Rec'd | Freq | Far | Sent";
+  ACTable actab(10);
+  actab << "      | Ping | Push | Pull | Pings | Echos | Too  | Too | Echos | Pos";
+  actab << "VName | Wait | Dist | Dist | Gen'd | Rec'd | Freq | Far | Sent  |    ";
   actab.addHeaderLines();
 
-  map<string, NodeRecord>::iterator p;
-  for(p=m_map_node_records.begin(); p!=m_map_node_records.end(); p++) {
-    string vname = p->first;
-    
+  vector<string> vnames = m_ledger.getVNames();
+  for(unsigned int i=0; i<vnames.size(); i++) {
+    string vname = vnames[i];
     string pwait = doubleToStringX(m_map_node_ping_wait[vname],1);
     
     double push_dist = m_map_node_push_dist[vname];
@@ -738,15 +754,15 @@ bool CRS_App::buildReport()
     string esent = uintToString(m_map_node_echos_sent[vname]);
     actab << vname << pwait << spush << spull  << pgend << erecd;
     actab << toofr << toofa << esent;
+
+    double vx = m_ledger.getX(vname);
+    double vy = m_ledger.getY(vname);
+    
+    string spos = doubleToString(vx,1) + ",";
+    spos += doubleToString(vy,1);
+    actab << spos;
+    
   }
   m_msgs << actab.getFormattedString();
   return(true);
 }
-
-
-
-
-
-
-
-

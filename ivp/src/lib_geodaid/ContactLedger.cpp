@@ -42,7 +42,9 @@ ContactLedger::ContactLedger(unsigned int history_size)
 
   // If a record has been received as recently as this value
   // don't bother calculating an extrapolated position.
-  m_extrap_thresh = 0.02; 
+  m_extrap_thresh = 0.02;
+  m_decay_start = 15;
+  m_decay_end   = 30;
   
   // State vars
   m_curr_utc = 0;
@@ -101,61 +103,20 @@ string ContactLedger::processNodeReport(string report,
 {
   NodeRecord record = string2NodeRecord(report);
 
-  bool ok = preCheckNodeRecord(record, whynot);
-  if(!ok)
-    return("");
-  
-  return(processNodeRecord(record, whynot));
-}
-
-//---------------------------------------------------------------
-// Procedure: precheckNodeReport()
-//      Note: Utiity for users of ContactLedger class that wish
-//            to (a) convert a node report msg to a record, (b)
-//            apply some criteria of their own before deciding
-//            to add it to the ledger, e.g., range/bng, before
-//            (c) finally adding it to the ledger. 
-
-NodeRecord ContactLedger::preCheckNodeReport(string report,
-					     string& whynot)
-{
-  NodeRecord record = string2NodeRecord(report);
-
-  if(!preCheckNodeRecord(record, whynot)) {
-    NodeRecord empty_record;
-    return(empty_record);
-  }
-
-  return(record);
-}
-
-//---------------------------------------------------------------
-// Procedure: preCheckNodeRecord()
-//   Purpose: (a) Sanity checks for required fields, (b) cross fill
-//            the coordinates if necessary.
-//      Note: This function modifies the incoming record.
-//            All records will have both Lat/Lon and X/Y at end.
-
-bool ContactLedger::preCheckNodeRecord(NodeRecord& record,
-				       string& whynot)
-{
   // Check 1: Must have a name
-  if(record.getName() == "") {
-    whynot = "Missing vname";    
-    return(false);
-  }
-  
+  if(record.getName() == "")
+    whynot += "Missing vname.";    
+
   // Check 2: Must have a timestamp
-  if(!record.isSetTimeStamp()) {
-    whynot = "Missing timestamp";
-    return(false);
-  }
+  if(!record.isSetTimeStamp())
+    whynot += "Missing timestamp.";
 
   // Check 3: Must have either Lat/Lon or X/Y
-  if(!record.isSetLatLon() && !record.isSetXY()) {
-    whynot = "Missing both x/y and lat/lon";
-    return(false);
-  }
+  if(!record.isSetLatLon() && !record.isSetXY())
+    whynot += "Missing both x/y and lat/lon.";
+
+  if(whynot != "")
+    return("");
 
   // Cross-fill coords if one or the other is missing
   if(record.isSetLatLon() && !record.isSetXY())
@@ -163,7 +124,7 @@ bool ContactLedger::preCheckNodeRecord(NodeRecord& record,
   else if(!record.isSetLatLon() && record.isSetXY())
     updateGlobalCoords(record);
 
-  return(true);
+  return(processNodeRecord(record, whynot));
 }
 
 //---------------------------------------------------------------
@@ -173,10 +134,6 @@ string ContactLedger::processNodeRecord(NodeRecord record,
 					string& whynot)
 {
   m_total_reports++;
-
-  // Check 1: Check record min reqs, and cross-fill coords
-  if(!preCheckNodeRecord(record, whynot))
-    return("");
   
   string vname = toupper(record.getName());
   
@@ -279,39 +236,6 @@ string ContactLedger::processNodeRecord(NodeRecord record,
   }
     
   return(vname);
-}
-
-//---------------------------------------------------------------
-// Procedure: updateOwnship()
-
-bool ContactLedger::updateOwnship(string fld, double utc, double dval)
-{
-  string vname = "OWNSHIP";
-  if(m_map_records_rep.count(vname) == 0) {
-    NodeRecord record(vname);
-    m_map_records_rep[vname] = record;
-    m_map_records_ext[vname] = record;
-    m_map_records_utc[vname] = utc;
-  }
-
-  if(fld == "x") {
-    m_map_records_rep[vname].setX(dval);
-    m_map_records_rep[vname].setTimeStamp(utc);
-  }
-  else if(fld == "y") {
-    m_map_records_rep[vname].setY(dval);
-    m_map_records_rep[vname].setTimeStamp(utc);
-  }
-  else if(fld == "heading") 
-    m_map_records_rep[vname].setHeading(dval);
-  else if(fld == "speed") 
-    m_map_records_rep[vname].setSpeed(dval);
-  else if(fld == "depth") 
-    m_map_records_rep[vname].setDepth(dval);
-  else
-    return(false);
-
-  return(true);
 }
 
 //---------------------------------------------------------------

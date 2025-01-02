@@ -227,6 +227,7 @@ protected:
   double m_osy;   // Current ownship y position (meters) 
   double m_osh;   // Current ownship heading (degrees 0-359)
   double m_osv;   // Current ownship speed (meters) 
+  double m_osd;   // Current ownship depth (meters) 
 
   std::string m_contact; // Name for contact in InfoBuffer
   std::string m_behavior_type;
