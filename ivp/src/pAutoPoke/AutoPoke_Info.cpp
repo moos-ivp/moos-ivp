@@ -22,7 +22,7 @@ void showSynopsis()
   blk("------------------------------------                            ");
   blk("pAutoPoke is a thin MOOS app for poking the MOOSDB with a user- ");
   blk("configured set of pokes, typically at the start of the mission. ");
-  blk("In the initial verison of this app, the intended use is in a    ");
+  blk("In the initial version of this app, the intended use is in a    ");
   blk("shoreside community, after some specified number of vehicles    ");
   blk("have been declared to be connected, based on the UFSB_NODE_COUNT");
   blk("variable. This ensures that the full N-vehicle plus shoreside is");
