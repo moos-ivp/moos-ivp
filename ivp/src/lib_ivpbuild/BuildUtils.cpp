@@ -1605,7 +1605,7 @@ vector<IvPBox> makeRegionsApart(vector<IvPBox> boxes)
   std::sort(boxes.begin(), boxes.end(), greater_than_key());
 
   // Part 4: Set up initial state
-  bool changed = true;
+  //bool changed = true;
 
   vector<IvPBox> majors;
   majors.push_back(boxes[0]);
@@ -1624,7 +1624,7 @@ vector<IvPBox> makeRegionsApart(vector<IvPBox> boxes)
     bool restart = false;
     for(unsigned int i=0; (i<majors.size() && !restart); i++) {
       if(majors[i].intersect(&minor)) { 
-	changed = true;
+	//	changed = true;
 	restart = true;
 	BoxSet *bs = subtractBox(minor, majors[i]);
 	while(bs->size() > 0) {
