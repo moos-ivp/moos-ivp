@@ -68,6 +68,8 @@ ProcessConfig = uSimMarineV22
 
 	post_des_thrust = DESIRED_THRUSTX
 	post_des_rudder = DESIRED_RUDDERX
+
+	post_navpos_summary = true
 	
   //rotate_speed = 0.012
   //drift_x      = 0.0045
