@@ -643,14 +643,14 @@ BoxSet* makeUniformDistro(const IvPBox& outer_box,
     unifPieces = unifPieces * dimVal;
   }
   
-  int  currix = 0;
+  //int  currix = 0;
   bool unif_done = false;
   while(!unif_done) {
     IvPBox* newbox = new IvPBox(dim, degree);
     for(d=0; d<dim; d++)
       newbox->setPTS(d, ulow[d], min((ulow[d]+uval[d]-1), uhgh[d]));
     boxset->addBox(newbox);
-    currix++;
+    //currix++;
     
     unif_done = true;
     for(d=0; d<dim; d++)
