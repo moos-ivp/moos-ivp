@@ -3,6 +3,7 @@
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
 /*    FILE: ContactMgrV20.cpp                                    */
 /*    DATE: Feb 24th 2010                                        */
+/*    DATE: Jan 2025 Early warnings / Disable bhvs added         */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -45,7 +46,6 @@ ContactMgrV20::ContactMgrV20()
 {
   // Configuration Variables
   m_alert_rng_color     = "gray65";
-  m_alert_rng_cpa_color = "gray35";
 
   m_display_radii = false;
 
@@ -53,14 +53,14 @@ ContactMgrV20::ContactMgrV20()
   
   m_post_closest_range  = false;
   m_post_closest_relbng = false;
-  m_post_all_ranges    = false;
-  m_contact_max_age    = 60;       // units in seconds 60 = 10 mins
+  m_post_all_ranges     = false;
+  m_contact_max_age     = 60;       // units in seconds 60 = 10 mins
   m_contacts_recap_interval = 1;
 
   // verbatim, lazy_lat_lon, or force_lat_lon
   m_alert_verbose = false;
-  m_decay_start = 15;
-  m_decay_end   = 30;
+  m_decay_start   = 15;
+  m_decay_end     = 30;
 
   m_max_retired_hist = 5;
 
@@ -69,9 +69,9 @@ ContactMgrV20::ContactMgrV20()
   
   m_reject_range = 2000;
   
-  m_early_warning_rng = -1;
-  m_early_warning_ref_spd = -1;
+  m_early_warning_time  = -1;
   m_early_warning_radii = false;
+  m_ewarn_radii_color   = "green";
   
   // State Variables
   m_osx = 0;
@@ -125,7 +125,7 @@ bool ContactMgrV20::OnNewMail(MOOSMSG_LIST &NewMail)
     else if(key == "BCM_REPORT_REQUEST") 
       handleMailReportRequest(sval, src);
     else if(key == "BCM_DISPLAY_RADII")
-      handleMailDisplayRadii(sval);      
+      handled = setBooleanOnString(m_display_radii, sval);
     else if(key == "BCM_ALERT_REQUEST")
       handleMailAlertRequest(sval, src);
     else if(key == "IVPHELM_STATE")
@@ -206,11 +206,7 @@ bool ContactMgrV20::OnStartUp()
   if(m_ownship == "") 
     reportUnhandledConfigWarning("ownship name unknown, host_community unset");
 
-  // Inform the Ledger to ignore any local reports for ownship.
-  //m_ledger.addIgnoreVName(m_ownship);
-
   m_filter_set.addIgnoreName(m_ownship);
-
   
   // Part 1: Set the basic configuration parameters.
   STRING_LIST sParams;
@@ -258,8 +254,8 @@ bool ContactMgrV20::OnStartUp()
       handled = setUIntOnString(m_range_report_maxsize, value);
     else if(param == "display_radii")
       handled = setBooleanOnString(m_display_radii, value);
-    else if(param == "display_radii_id")
-      handled = setNonWhiteVarOnString(m_display_radii_id, value);
+    //else if(param == "display_radii_id")
+    //  handled = setNonWhiteVarOnString(m_display_radii_id, value);
     else if(param == "post_closest_range") 
       handled = setBooleanOnString(m_post_closest_range, value);
     else if(param == "post_closest_relbng") 
@@ -282,7 +278,8 @@ bool ContactMgrV20::OnStartUp()
     else if(param == "alert_range_color")
       handled = setColorOnString(m_alert_rng_color, value);
     else if(param == "cpa_range_color") 
-      handled = setColorOnString(m_alert_rng_cpa_color, value);
+      handled = true;
+    //handled = setColorOnString(m_alert_rng_cpa_color, value);
     else if(param == "hold_alerts_for_helm") 
       handled = setBooleanOnString(m_hold_alerts_for_helm, value);
     else if(param == "ownship_group") { 
@@ -311,12 +308,12 @@ bool ContactMgrV20::OnStartUp()
     else if(param == "retire_flag")
       handled = addVarDataPairOnString(m_retire_flags, value);
 
-    else if((param == "early_warning_rng") || (param == "early_warning_range"))
-      handled = setPosDoubleOnString(m_early_warning_rng, value);
+    else if(param == "early_warning_time")
+      handled = setNonNegDoubleOnString(m_early_warning_time, value);
     else if(param == "early_warning_radii")
       handled = setBooleanOnString(m_early_warning_radii, value);
-    else if(param == "early_warning_ref_spd")
-      handled = setPosDoubleOnString(m_early_warning_ref_spd, value);
+    else if(param == "ewarn_radii_color")
+      handled = setColorOnString(m_ewarn_radii_color, value);
 
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -331,34 +328,6 @@ bool ContactMgrV20::OnStartUp()
       reportConfigWarning("Invalid alert config:" + alert_id);
   }
 
-#if 0  
-  // Part 3: If we may possibly want to set our incoming X/Y report
-  // values based on Lat/Lon values, then we must check for and
-  // initialized the MOOSGeodesy.
-  if(m_contact_local_coords != "verbatim") {
-    // look for latitude, longitude global variables
-    double lat_origin, lon_origin;
-    if(!m_MissionReader.GetValue("LatOrigin", lat_origin)) {
-      reportConfigWarning("No LatOrigin in *.moos file");
-      reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
-    }
-    else if (!m_MissionReader.GetValue("LongOrigin", lon_origin)) {
-      reportConfigWarning("No LongOrigin set in *.moos file");
-      reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
-    }
-    else if(!m_geodesy.Initialise(lat_origin, lon_origin)) {
-      reportConfigWarning("Lat/Lon Origin found but Geodesy init failed.");
-      reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
-    }
-    else {
-      m_use_geodesy = true;
-      string msg = "Geodesy init ok: ";
-      msg += "Will derive x/y from lat/lon in node reports."; 
-      reportEvent(msg);
-    }
-  }
-#endif
-  
   registerVariables();
   return(true);
 }
@@ -453,31 +422,6 @@ bool ContactMgrV20::handleMailNodeReport(string report,
   return(true);
 }
 
-
-//---------------------------------------------------------
-// Procedure: handleMailDisplayRadii()
-
-void ContactMgrV20::handleMailDisplayRadii(string value)
-{
-  value = tolower(stripBlankEnds(value));
-
-  if((value == "off") || (value == "false")) 
-    m_display_radii = false;
-  else if((value == "on") || (value == "true")) 
-    m_display_radii = true;
-  else if(value == "toggle") 
-    m_display_radii = !m_display_radii;
-  else if(knownAlert(value)) {
-    m_display_radii = true;
-    m_display_radii_id = value;
-    reportEvent("Display_radii turn on and set to: " + value);
-  }
-  else {
-    string msg = "Failed attempt to set Display_radii set to: " + value;
-    reportConfigWarning(msg);
-  }
-}
-
 //---------------------------------------------------------
 // Procedure: handleMailReportRequest()
 //   Example: BCM_REPORT_REQUEST = var=BCM_CONTACTS_85, range=85,
@@ -545,8 +489,7 @@ void ContactMgrV20::handleMailReportRequest(string str, string src)
 //    Format: BCM_ALERT_REQUEST = 
 //            var=CONTACT_INFO, val="name=avd_$[VNAME] # contact=$[VNAME]"
 //            alert_range=80, cpa_range=95
-
-                     
+                  
 void ContactMgrV20::handleMailAlertRequest(string value, string src)
 {
   m_alert_requests_received++;
@@ -720,23 +663,6 @@ bool ContactMgrV20::handleConfigMaxRetHist(string str)
 
   return(true);
 }
-
-#if 0
-//---------------------------------------------------------
-// Procedure: handleConfigCoords()
-
-bool ContactMgrV20::handleConfigCoords(string str)
-{
-  str = tolower(str);
-  if((str != "verbatim") && (str != "lazy_lat_lon") &&
-     (str != "force_lat_lon"))
-    return(false);
-
-  m_contact_local_coords = str;
-
-  return(true);
-}
-#endif
 
 //---------------------------------------------------------
 // Procedure: handleConfigRecapInterval()
@@ -1132,7 +1058,18 @@ void ContactMgrV20::checkForAlerts()
 	m_par.setAlertedValue(contact, id, false);
 	transition = "alerted-->off";
       }
-            
+
+      string delta_str; 
+      if(m_early_warning_time > 0) {
+	if(m_map_utc_was_warned.count(contact) != 0) {
+	  if(transition == "off-->alerted") {
+	    double delta = m_curr_time - m_map_utc_was_warned[contact];
+	    delta_str = "after_warning=" + doubleToStringX(delta,2);
+	  }
+	}
+      }
+      
+      
       if((m_alert_verbose) && (transition != "")) {
 	string mvar = "ALERT_VERBOSE";
 	string mval = "contact=" + contact;
@@ -1150,6 +1087,8 @@ void ContactMgrV20::checkForAlerts()
 	  double range_cpa = m_map_node_cpa[contact];
 	  mval += ",range_cpa=" + doubleToString(range_cpa,1);
 	}
+	if(delta_str != "")
+	  mval += "," + delta_str;
 	
 	Notify(mvar, mval);
       }
@@ -1196,6 +1135,9 @@ void ContactMgrV20::postWarningFlags(const vector<VarDataPair>& flags,
 	double roc = m_map_node_roc[contact];
 	postval = macroExpand(postval, "ROC", roc);
       }
+
+      postval = macroExpand(postval, "UTC", m_curr_time);
+
       if(postval != "")
         Notify(moosvar, postval);
     }
@@ -1242,12 +1184,13 @@ void ContactMgrV20::checkForCeaseWarnings()
     string contact = vnames[i];
 
     // Check 1: If has been no early warning for this contact, skip
-    if(m_map_early_warnings.count(contact) == 0)
+    if(m_map_range_was_warned.count(contact) == 0)
       continue;
     
     double contact_range_ext = m_map_node_ranges_extrap[contact]; 
-    if(contact_range_ext > (m_map_early_warnings[contact] * 1.05)) {
-      m_map_early_warnings.erase(contact);
+    if(contact_range_ext > (m_map_range_was_warned[contact] * 1.05)) {
+      m_map_range_was_warned.erase(contact);
+      m_map_utc_was_warned.erase(contact);
       postWarningFlags(m_cease_warning_flags, contact);
     }
   }
@@ -1258,43 +1201,55 @@ void ContactMgrV20::checkForCeaseWarnings()
 
 void ContactMgrV20::checkForEarlyWarnings()
 {
+  // Check 0: If early warnings disabled, just return now
+  if(m_early_warning_time <= 0)
+    return;
+  
   vector<string> vnames = m_ledger.getVNames();
 
   for(unsigned int i=0; i<vnames.size(); i++) {
     string contact = vnames[i];
-
-    // Check 1: If already warned about this contact, just skip now.
-    if(m_map_early_warnings.count(contact))
-      continue;
     
-    double contact_range_ext = m_map_node_ranges_extrap[contact]; 
-    double contact_range_cpa = m_map_node_cpa[contact];    
+    // Check 1: If already warned about this contact, just skip now.
+    if(m_map_range_was_warned.count(contact))
+      continue;
 
-    bool post_warning = false;
+    // Reset default to zero. This is used when/if drawing rng circle
+    m_map_range_will_warn[contact] = 0;
+
+    // Check 2: If no contact range is known, just skip now
+    if(m_map_node_ranges_extrap.count(contact) == 0)
+      continue;
+    // Check 3: If no rate_of_closure known for this contact, skip
+    if(m_map_node_roc.count(contact) == 0)
+      continue;
+
+    double contact_range = m_map_node_ranges_extrap[contact]; 
+    double roc = m_map_node_roc[contact]; 
+    
+    // Check 4: If opening range to contact, just skip
+    if(roc <= 0)
+      continue;
+
+    // Part 1: Determine the alert range for the contact. We want a warning
+    // to be posted N seconds before the contact reaches this range. Where
+    // N is m_early_warning_time.
+    double max_alert_range = getMaxAlertRange();
+      
+    // Part 2: Determine Early warning range, based by rate_of_closure
+    // and m_early_warning_time interval.
+    double rng_delta = roc * m_early_warning_time;
+    double early_warning_rng = max_alert_range + rng_delta;
+
+    m_map_range_will_warn[contact] = early_warning_rng;
     
     // Check 2: If contact inside warning range, warning warranted
-    if(contact_range_ext < m_early_warning_rng)
-      post_warning = true;
-    else {
-      // Check 3: If speed factor consideration enabled, calc and check
-      double warning_range_aug = augRange(contact);
-    
-      // Check 4: If contact (extrap) position is within augmented range
-      if(contact_range_ext < warning_range_aug) {
-	// Check 5: And if projected CPA of contact falls within
-	// the un-augmented early warning range
-	if(contact_range_cpa < m_early_warning_rng) {
-	  post_warning = true;
-	}
-      }
-    }
-
-    // A warning is warranted
-    if(post_warning) {
+    if(contact_range < early_warning_rng) {
       postWarningFlags(m_early_warning_flags, contact);
-      m_map_early_warnings[contact] = contact_range_ext;
+      m_map_range_was_warned[contact] = contact_range;
+      m_map_utc_was_warned[contact] = m_curr_time;
+      m_map_range_will_warn[contact] = 0;
     }
-
   }
 }
 
@@ -1399,8 +1354,10 @@ void ContactMgrV20::checkForNewRetiredContacts()
     m_par.removeVehicle(contact);
 
     postRetireFlags(m_retire_flags, contact);
-    
-    m_map_early_warnings.erase(contact);
+
+    m_map_range_will_warn.erase(contact);
+    m_map_range_was_warned.erase(contact);
+    m_map_utc_was_warned.erase(contact);
   }
 
   // Part 3: Clear the set of filtered_vnames. This list should start
@@ -1408,7 +1365,6 @@ void ContactMgrV20::checkForNewRetiredContacts()
   // processed. Now that we have used it here in this function to seed
   // the set of names to retire, it can be cleared now.
   m_filtered_vnames.clear();
-  
 }
 
 //----------------------------------------------------------------
@@ -1470,6 +1426,7 @@ void ContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
   var = findReplace(var, "$[VNAME]", name_str);
   var = findReplace(var, "$[VTYPE]", type_str);
   var = findReplace(var, "$[UTIME]", time_str);
+  var = findReplace(var, "$[UTC]", time_str);
   var = findReplace(var, "%[VNAME]", tolower(name_str));
   var = findReplace(var, "%[VTYPE]", tolower(type_str));
 
@@ -1570,57 +1527,33 @@ void ContactMgrV20::updateRanges()
 
 void ContactMgrV20::postEarlyWarningRadii()
 {
-  // Sanity check - if no early warning enabled 
-  if(!m_early_warning_radii || (m_early_warning_rng <= 0))
+  // Sanity check - if no early warning or drawing enabled 
+  if(!m_early_warning_radii || (m_early_warning_time <= 0))
     return;
-
-  XYCircle circle(m_osx, m_osy, m_early_warning_rng);
-  circle.set_label("ewarn_" + m_ownship);
-  circle.set_color("edge", "gray50");
-  circle.set_vertex_size(0);
-  circle.set_edge_size(1);
-  circle.set_active(true);
-  circle.set_duration(3);
-  circle.set_time(m_curr_time);
-  string str = circle.get_spec();
-  Notify("VIEW_CIRCLE", str);
 
   vector<string> vnames = m_ledger.getVNames();
   for(unsigned int i=0; i<vnames.size(); i++) {
     string contact = vnames[i];
 
-    postEarlyWarningRadii(contact);
+    if(m_map_range_will_warn.count(contact) == 0)
+      continue;
+    
+    double rng_ewarn = m_map_range_will_warn[contact];
+    if(rng_ewarn <= 0)
+      continue;
+    
+    XYCircle circle(m_osx, m_osy, rng_ewarn);
+    circle.set_label("xewarn_" + contact);
+    circle.set_label_color("gray50");
+    circle.set_color("edge", m_ewarn_radii_color);
+    circle.set_vertex_size(0);
+    circle.set_edge_size(1);
+    circle.set_active(true);
+    circle.set_duration(3);
+    circle.set_time(m_curr_time);
+    string str = circle.get_spec();
+    Notify("VIEW_CIRCLE", str);
   }
-}
-
-//---------------------------------------------------------
-// Procedure: postEarlyWarningRadii(contact)
-
-void ContactMgrV20::postEarlyWarningRadii(string contact)
-{
-  // Sanity check - if no early warning reference spd enabled 
-  if(m_early_warning_ref_spd <= 0)
-    return;
-
-  // Sanity check - if nothing known about the contact
-  if(!m_ledger.hasVName(contact))
-    return;
-
-  double aug_rng = augRange(contact);
-  if(aug_rng <= m_early_warning_rng)
-    return;
-  
-  XYCircle circle(m_osx, m_osy, aug_rng);
-  circle.set_label("xewarn_" + contact);
-  //  circle.set_color("edge", "gray80");
-  circle.set_color("edge", "yellow");
-  circle.set_vertex_size(0);
-  circle.set_edge_size(1);
-  circle.set_active(true);
-  circle.set_duration(3);
-  circle.set_time(m_curr_time);
-  string str = circle.get_spec();
-  Notify("VIEW_CIRCLE", str);
 }
 
 //---------------------------------------------------------
@@ -1634,28 +1567,17 @@ void ContactMgrV20::postRadii(bool active)
   // Sanity check 2: Check that there is at lease one alert
   if(m_map_alerts.size() == 0)
     return;
-  // Sanity check 3: If ID is non-empty it must be a known id  
-  if((m_display_radii_id != "") && !knownAlert(m_display_radii_id))
-    return;
-  // Sanity check 4: If displaying enabled, but ID is empty, then
-  // pick one. Note that this setting persists.
-  if(m_display_radii && (m_display_radii_id == ""))
-    m_display_radii_id = m_map_alerts.begin()->first;
 
-  
-  // Part 1: Get the alert information based on ID 
-  string alert_id = m_display_radii_id;
-  double alert_range = getAlertRange(alert_id);
-  double alert_range_cpa = getAlertRangeCPA(alert_id);
-  
-  if(!active || (alert_range <= 0) || 
+  double max_alert_range = getMaxAlertRange();
+
+  if(!active || (max_alert_range <= 0) || 
      (m_alert_rng_color == "invisible") ||
      (m_alert_rng_color == "empty") ||
      (m_alert_rng_color == ""))
     active = false;
   
-  XYCircle circle(m_osx, m_osy, alert_range);
-  circle.set_label(alert_id + "_in");
+  XYCircle circle(m_osx, m_osy, max_alert_range);
+  circle.set_label("alert_" + m_ownship);
   circle.set_color("edge", m_alert_rng_color);
   circle.set_vertex_size(0);
   circle.set_edge_size(1);
@@ -1664,26 +1586,6 @@ void ContactMgrV20::postRadii(bool active)
   circle.set_time(m_curr_time);
   string s1 = circle.get_spec();
   Notify("VIEW_CIRCLE", s1);
-
-  if(alert_range_cpa > alert_range) {
-    
-    if(!active || (m_alert_rng_cpa_color == "invisible") ||
-       (m_alert_rng_cpa_color == "empty") ||
-       (m_alert_rng_cpa_color == ""))
-      active = false;
-    
-    XYCircle circ(m_osx, m_osy, alert_range_cpa);
-    circ.set_label(alert_id + "_out");
-    circ.set_color("edge", m_alert_rng_cpa_color);
-    circ.set_vertex_size(0);
-    circ.set_edge_size(1);
-    circ.set_active(active);
-    circ.set_duration(3);
-    circ.set_time(m_curr_time);
-    string s2 = circ.get_spec();
-    
-    Notify("VIEW_CIRCLE", s2);
-  }
 }
 
 //---------------------------------------------------------
@@ -1772,6 +1674,26 @@ double ContactMgrV20::getAlertRangeCPA(string alert_id) const
   if(!knownAlert(alert_id))
     return(-1);
   return(m_map_alerts.at(alert_id).getAlertRangeFar());
+}
+
+//---------------------------------------------------------
+// Procedure: getMaxAlertRange()
+//      Note: For all current alerts, determine the largest range.
+//            If an alert has two ranges, use the larger of two.
+
+double ContactMgrV20::getMaxAlertRange() const
+{
+  double max_range = -1;
+
+  map<string, CMAlert>::const_iterator p;
+  for(p=m_map_alerts.begin(); p!=m_map_alerts.end(); p++) {
+    CMAlert alert = p->second;
+    double range = alert.getAlertRangeFar();
+    if(range > max_range)
+      max_range = range;
+  }
+
+  return(max_range);
 }
 
 //---------------------------------------------------------
@@ -1930,47 +1852,6 @@ string ContactMgrV20::expandMacros(string sdata) const
   return(sdata);
 }
 
-
-//------------------------------------------------------------
-// Procedure: augRange()
-//   Purpose: Utility function for expanding a range based on
-//            a base range, reference speed, and observed spd.
-//   Example:
-//           rate of closure: 9 m/s
-//   m_early_warning_ref_spd: 8 m/s
-//       m_early_warning_rng: 100 meters
-//
-//   diff: 1 m/s
-//   pct:  1/8 = 1.125
-//   aug:  112.5 meters
-
-double ContactMgrV20::augRange(string contact) const
-{
-  // Sanity Check 1: Early warning ref speed must be set 
-  if(m_early_warning_ref_spd <= 0)
-    return(m_early_warning_rng);
-
-  // Sanity Check 2: Rate of Closure to contact must be known
-  map<string,double>::const_iterator p = m_map_node_roc.find(contact);
-  if(p == m_map_node_roc.end())
-    return(m_early_warning_rng);
-
-  double roc = p->second;
-
-  // Initial check: rate_of_closure less than reference spd
-  if(roc < m_early_warning_ref_spd)
-    return(m_early_warning_rng);
-  
-  double diff = roc - m_early_warning_ref_spd;
-
-  double pct  = 1 + (diff / m_early_warning_ref_spd);
-  double aug_range = m_early_warning_rng * pct;
-
-  return(aug_range);
-}
-
-
-
 //---------------------------------------------------------
 // Procedure: buildReport()
 //      Note: A virtual function of the AppCastingMOOSApp superclass, 
@@ -2037,12 +1918,13 @@ bool ContactMgrV20::buildReport()
   m_msgs << "Ownship Type:       " << os_type << endl;
   m_msgs << "Contact Max Age:    " << max_age << endl;
   m_msgs << "Reject Range:       " << reject_range << endl;
-  m_msgs << "EarlyWarn Range:    " << m_early_warning_rng << endl;
+  m_msgs << "Early Warning Time: " << m_early_warning_time << endl;
 
-  if((m_early_warning_rng > 0) && (m_early_warning_ref_spd > 0)) {
-    string ref_spd_str = doubleToString(m_early_warning_ref_spd,1);
-    m_msgs << "EarlyWarn Ref Spd:  " << ref_spd_str << endl;
-    m_msgs << "EarlyWarn Flags:    " << m_early_warning_flags.size() << endl;
+  if(m_early_warning_time > 0) {
+    string ew_radii = boolToString(m_early_warning_radii);
+    m_msgs << "EarlyWarn Radii:    " << ew_radii << endl;
+    m_msgs << "EarlyWarn EWFlags:  " << m_cease_warning_flags.size() << endl;
+    m_msgs << "EarlyWarn CWFlags:  " << m_early_warning_flags.size() << endl;
   }
   
   if(m_disable_var != "")
@@ -2051,8 +1933,6 @@ bool ContactMgrV20::buildReport()
     m_msgs << "Enable Var:         " << m_enable_var << endl;
   m_msgs << "BCM_ALERT_REQUESTs: " << bcm_req_received << endl;
   m_msgs << "DisplayRadii:       " << boolToString(m_display_radii) << endl;
-  if(m_display_radii_id != "")
-    m_msgs << "DisplayRadii ID:    " << m_display_radii_id << endl;
   m_msgs << endl; 
 
   //=================================================================
