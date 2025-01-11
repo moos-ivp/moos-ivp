@@ -3145,20 +3145,20 @@ void PMV_GUI::resizeWidgets()
   if(content_mode == "appcast") {
     m_brw_nodes->color(color_back);
     m_brw_nodes->textcolor(color_text);
-    m_brw_nodes->position(0);    
+    m_brw_nodes->vposition(0);    // changed from position mikerb 1/11/25
     m_brw_procs->color(color_back);
     m_brw_procs->textcolor(color_text);
-    m_brw_procs->position(0);
+    //m_brw_procs->position(0);
     m_brw_casts->color(color_back);
     m_brw_casts->textcolor(color_text);
   }
   else if(content_mode == "realmcast") {
     m_rc_brw_nodes->color(color_back);
     m_rc_brw_nodes->textcolor(color_text);
-    m_rc_brw_nodes->position(0);    
+    m_rc_brw_nodes->vposition(0); // changed from position mikerb 1/11/25
     m_rc_brw_procs->color(color_back);
     m_rc_brw_procs->textcolor(color_text);
-    m_rc_brw_procs->position(0);
+    //m_rc_brw_procs->position(0);
     m_rc_brw_casts->color(color_back);
     m_rc_brw_casts->textcolor(color_text);
   }
