@@ -119,10 +119,10 @@ bool LoadReporter::breachCount(string alogfile)
   if(m_near_mode)
     breach_varname = "ULW_NEAR_BREACH_COUNT";
   
-  unsigned int line_count  = 0;
+  //unsigned int line_count  = 0;
   bool done = false;
   while(!done) {
-    line_count++;
+    //line_count++;
     string line_raw = getNextRawLine(file_ptr);
 
     bool line_is_comment = false;

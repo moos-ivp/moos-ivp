@@ -181,7 +181,7 @@ XYPolygon RectHullGenerator::generateRectHull()
     angb = angle360(m_rotation_angle - 180);
   }
 
-  bool cross_ok = linesCross(ax,ay,axx,ayy, bx,by,bxx,byy, ix,iy);
+  //bool cross_ok = linesCross(ax,ay,axx,ayy, bx,by,bxx,byy, ix,iy);
   
   double ahmin = 0;
   double ahmax = 0;
