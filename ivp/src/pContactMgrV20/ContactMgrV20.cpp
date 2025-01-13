@@ -254,8 +254,8 @@ bool ContactMgrV20::OnStartUp()
       handled = setUIntOnString(m_range_report_maxsize, value);
     else if(param == "display_radii")
       handled = setBooleanOnString(m_display_radii, value);
-    //else if(param == "display_radii_id")
-    //  handled = setNonWhiteVarOnString(m_display_radii_id, value);
+    else if(param == "display_radii_id")
+      handled = true; // deprecated
     else if(param == "post_closest_range") 
       handled = setBooleanOnString(m_post_closest_range, value);
     else if(param == "post_closest_relbng") 
