@@ -131,6 +131,11 @@ void showExampleConfigAndExit()
   blk("  // Allow NODE_COLOR_CHANGE msgs to dyn modify vcolor.         ");
   blk("  allow_color_change = true (default is false)                  ");
   blk("                                                                ");
+  blk("  // If set to true, NODE_REPORT_LOCAL will be in JSON format   ");
+  blk("  // instead of CSP. If set to VARNAME, NODE_REPORT_LOCAL will  ");
+  blk("  // be in CSP and the VARNAME will be in JSON (24.8.x)         ");
+  blk("  json_report = true                                            ");
+  blk("                                                                ");
   blk("  app_logging = true  // {true or file} By default disabled     ");
   blk("}                                                               ");
   blk("                                                                ");

@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
-/*    FILE: NodeRecordUtils.h                                    */
-/*    DATE: Jun 26th 2011                                        */
+/*    FILE: JsonUtils.h                                          */
+/*    DATE: Jan 12th, 2025                                       */
 /*                                                               */
 /* This file is part of MOOS-IvP                                 */
 /*                                                               */
@@ -21,27 +21,15 @@
 /* <http://www.gnu.org/licenses/>.                               */
 /*****************************************************************/
 
-#ifndef NODE_RECORD_UTILITIES_HEADER
-#define NODE_RECORD_UTILITIES_HEADER
+#ifndef JSON_UTILS_HEADER
+#define JSON_UTILS_HEADER
 
-#include "NodeRecord.h"
+#include <string>
 
-NodeRecord string2NodeRecord(const std::string&);
-
-NodeRecord string2NodeRecordCSP(const std::string&);
-
-NodeRecord string2NodeRecordJSON(std::string);
-
-NodeRecord extrapolateRecord(const NodeRecord&, double curr_time,
-			     double max_delta=3600);
-
-double rangeBetweenRecords(const NodeRecord& rec1, const NodeRecord& rec2);
+std::string jsonToCsp(std::string);
+std::string cspToJson(std::string);
 
 #endif 
-
-
-
-
 
 
 

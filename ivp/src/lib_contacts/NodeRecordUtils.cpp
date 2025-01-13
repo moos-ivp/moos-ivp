@@ -84,8 +84,30 @@ NodeRecord extrapolateRecord(const NodeRecord& record, double curr_time,
 //            X=29.66,Y=-23.49,LAT=43.825089, LON=-70.330030, 
 //            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,     
 //            LENGTH=4.0,MODE=DRIVE,GROUP=A
+//   Or:
+//
+//   Example: {"NAME":"alpha","TYPE":"KAYAK","UTC_TIME":"1267294386.51",
+//            "X":"29.66","Y":"-23.49","LAT":"43.825089","LON"="-70.330030", 
+//            "SPD":"2.00","HDG":"119.06","YAW":"119.05677","DEPTH"="0.00",     
+//            "LENGTH":"4.0","MODE":"DRIVE","GROUP":"A"}
 
-NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialResult)
+
+NodeRecord string2NodeRecord(const string& node_rep_string)
+{
+  if(isBraced(node_rep_string))
+    return(string2NodeRecordJSON(node_rep_string));
+
+  return(string2NodeRecordCSP(node_rep_string));
+}
+
+//---------------------------------------------------------
+// Procedure: string2NodeRecordCSP()
+//   Example: NAME=alpha,TYPE=KAYAK,UTC_TIME=1267294386.51,
+//            X=29.66,Y=-23.49,LAT=43.825089, LON=-70.330030, 
+//            SPD=2.00, HDG=119.06,YAW=119.05677,DEPTH=0.00,     
+//            LENGTH=4.0,MODE=DRIVE,GROUP=A
+
+NodeRecord string2NodeRecordCSP(const string& node_rep_string)
 {
   NodeRecord empty_record;
   NodeRecord new_record;
@@ -150,14 +172,91 @@ NodeRecord string2NodeRecord(const string& node_rep_string, bool returnPartialRe
       new_record.setTrajectory(stripBraces(value));
 
   }
-  
-  //  if(!new_record.valid()&&(!returnPartialResult))
-  //  return(empty_record);
 
   return(new_record);
 }
 
+//---------------------------------------------------------
+// Procedure: string2NodeRecordJSON()
+//   Example: {"NAME":"alpha","TYPE":"KAYAK","UTC_TIME":"1267294386.51",
+//            "X":"29.66","Y":"-23.49","LAT":"43.825089","LON"="-70.330030", 
+//            "SPD":"2.00","HDG":"119.06","YAW":"119.05677","DEPTH"="0.00",     
+//            "LENGTH":"4.0","MODE":"DRIVE","GROUP":"A"}
 
+NodeRecord string2NodeRecordJSON(string report)
+{
+  NodeRecord empty_record;
+  NodeRecord new_record;
 
+  if(isBraced(report))
+    report = stripBraces(report);
 
+  string report_no_quotes;
+  for(unsigned int i=0; i<report.size(); i++) {
+    char ichar = report[i];
+    if(ichar != '\"')
+      report_no_quotes += ichar;
+  }
+  
+  vector<string> svector = parseString(report_no_quotes, ',');
+  for(unsigned int i=0; i<svector.size(); i++) {
+    string param = toupper(biteStringX(svector[i], ':'));
+    string value = svector[i];
 
+    if(param == "NAME")
+      new_record.setName(value);
+    else if(param == "TYPE")
+      new_record.setType(value);
+    else if(param == "MODE")
+      new_record.setMode(value);
+    else if(param == "ALLSTOP")
+      new_record.setAllStop(value);
+    else if(param == "INDEX")
+      new_record.setIndex(atof(value.c_str()));
+    else if(isNumber(value)) {
+      if((param == "TIME") || (param == "UTC_TIME"))
+	new_record.setTimeStamp(atof(value.c_str()));
+      else if(param == "X")
+	new_record.setX(atof(value.c_str()));
+      else if(param == "Y")
+	new_record.setY(atof(value.c_str()));
+      else if(param == "LAT")
+	new_record.setLat(atof(value.c_str()));
+      else if(param == "LON")
+	new_record.setLon(atof(value.c_str()));
+
+      else if((param == "SPD") || (param == "SPEED"))
+	new_record.setSpeed(atof(value.c_str()));
+      else if((param == "HDG") || (param == "HEADING"))
+	new_record.setHeading(atof(value.c_str()));
+
+      else if((param == "DEP") || (param == "DEPTH"))
+	new_record.setDepth(atof(value.c_str()));
+      else if((param == "LENGTH") || (param == "LEN"))
+	new_record.setLength(atof(value.c_str()));
+      else if(param == "YAW")
+	new_record.setYaw(atof(value.c_str()));
+      else if((param == "ALT") || (param == "ALTITUDE"))
+	new_record.setAltitude(atof(value.c_str()));
+      else if(param == "HDG_OG")
+	new_record.setHeadingOG(atof(value.c_str()));
+      else if(param == "SPD_OG")
+	new_record.setSpeedOG(atof(value.c_str()));
+      else if(param == "TRANSPARENCY")
+	new_record.setTransparency(atof(value.c_str()));
+    }
+    else if(param == "COLOR")
+      new_record.setColor(value);
+    else if(param == "GROUP")
+      new_record.setGroup(value);
+    else if(param == "LOAD_WARNING")
+      new_record.setLoadWarning(value);
+    else if((param == "THRUST_MODE_REVERSE") && (tolower(value) == "true")) 
+      new_record.setThrustModeReverse(true);
+    else if(param == "TRAJECTORY")
+      new_record.setTrajectory(stripBraces(value));
+
+  }
+
+  return(new_record);
+}

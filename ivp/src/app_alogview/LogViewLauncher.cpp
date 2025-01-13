@@ -175,6 +175,8 @@ bool LogViewLauncher::handleConfigParam(string argi)
     handled = handleBackground(argi.substr(5));
   else if(strEnds(argi, ".tif")) 
     handled = handleBackground(argi);
+  else if(strBegins(argi, "--detached=")) 
+    m_dbroker.addDetachedPair(argi.substr(11));
   else if(strBegins(argi, "--mintime=")) 
     handled = handleMinTime(argi.substr(10));
   else if(strBegins(argi, "--maxtime=")) 
