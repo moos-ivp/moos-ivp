@@ -143,6 +143,8 @@ protected: // MissionHash support
   
  protected: // NodeRider support
   NodeRiderSet m_riderset;
+
+  std::string  m_json_report;
 };
 
 #endif

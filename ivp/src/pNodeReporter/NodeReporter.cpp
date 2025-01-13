@@ -28,10 +28,12 @@
 #include <algorithm>
 #include "NodeReporter.h"
 #include "MBUtils.h"
+#include "JsonUtils.h"
 #include "AngleUtils.h"
 #include "NodeRecord.h"
 #include "NodeRecordUtils.h"
 #include "ACBlock.h"
+#include "LogUtils.h"
 
 // As of Release 15.4 this is now set in CMake, defaulting to be defined
 // #define USE_UTM 
@@ -464,6 +466,8 @@ bool NodeReporter::OnStartUp()
       handled = setNonNegDoubleOnString(m_extrap_hdg_thresh, value);
     else if(param =="extrap_max_gap") 
       handled = setNonNegDoubleOnString(m_extrap_max_gap, value);
+    else if(param =="json_report") 
+      handled = setNonWhiteVarOnString(m_json_report, value);
     
     if(!handled)
       reportUnhandledConfigWarning(orig);
@@ -623,9 +627,37 @@ bool NodeReporter::Iterate()
     string report = assembleNodeReport(m_record);
 
     if(!m_paused) {
-      if(m_reports_posted == 0) 
-	Notify(m_node_report_var+"_FIRST", report);
-      Notify(m_node_report_var, report);
+
+      string json_report;
+      if(m_json_report != "")
+	json_report = cspToJson(report);
+
+      if(m_reports_posted == 0) {
+	// Case 1 Only CSP posted (normal)
+	if(m_json_report == "") 
+	  Notify(m_node_report_var+"_FIRST", report);
+	// Case 2 Only JSON posted
+	else if(tolower(m_json_report) == "true")
+	  Notify(m_node_report_var+"_FIRST", json_report);
+	// Case 3 Both CSP and JSON posted
+	else {
+	  Notify(m_json_report+"_FIRST", json_report);
+	  Notify(m_node_report_var+"_FIRST", report);
+	}
+      }
+      
+      // Case 1 Only CSP posted (normal)
+      if(m_json_report == "") 
+	Notify(m_node_report_var, report);
+      // Case 2 Only JSON posted
+      else if(tolower(m_json_report) == "true")
+	Notify(m_node_report_var, json_report);
+      // Case 3 Both CSP and JSON posted
+      else {
+	Notify(m_json_report, json_report);
+	Notify(m_node_report_var, report);
+      }
+      
       Notify("PNR_POST_GAP", delta_time);
       m_reports_posted++;
       cout << "Posted:" << m_record.getSpec(true) << endl;
