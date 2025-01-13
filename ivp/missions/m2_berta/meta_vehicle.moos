@@ -74,6 +74,8 @@ ProcessConfig = pNodeReporter
   vessel_type    = $(VTYPE=kayak)
   //terse_reports  = true
 
+	//json_report = NODE_REPORT_JSON
+	
 	coord_policy_global = true
 }
 
