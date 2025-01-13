@@ -28,6 +28,7 @@
 #include "MBUtils.h"
 #include "SplitHandler.h"
 #include "LogUtils.h"
+#include "JsonUtils.h"
 #include "TermUtils.h"
 #include "ColorParse.h"
 
@@ -263,6 +264,38 @@ bool SplitHandler::handleMakeSplitFiles()
 	m_vlength = vlength;
     }
 
+    // Part 1P5: If this variable is a DETACHED variable
+    // Example:
+    //    APP_OVERVIEW = "temp=98.5,fuel=14.5,age=11.9,errs=11"
+    // 
+    // --detach=APP_OVERVIEW:fuel
+    //
+    // Would create a klog file as if the variable APP_OVERVIEW:FUEL
+    // were originally in the alog file
+
+    string dkey = detached(varname); // detached key, e.g., fuel
+    if(dkey != "") {
+      cout << "Handling Detached: var: " << varname << ", dkey:" << dkey << endl;
+      string sval = tolower(stripBlankEnds(getDataEntry(line_raw)));
+      // If datafield is string in JSON format, convert to CSP format
+      if(isBraced(sval))
+	sval = jsonToCsp(sval);
+      
+      string dval = tokStringParse(sval, tolower(dkey));
+
+      cout << "sval:" << sval << ", dval:" << dval << endl;
+
+      if(isNumber(dval)) {
+	string timestamp = getTimeStamp(line_raw);
+	string src_name = getSourceName(line_raw);
+	varname += ":" + toupper(dkey);
+	line_raw = timestamp + "  " + varname;
+	line_raw += "  " + src_name + "  " + dval;
+	cout << "newline:" << line_raw << endl;
+      }	
+    }
+      
+    
     // Part 2: Check if the file ptr for this variable already exists. 
     // If not, create a new file pointer and add it to the map.
     bool cached_file_ptr = false;
@@ -412,6 +445,40 @@ bool SplitHandler::handleMakeSplitSummary()
   return(true);
 }
   
+
+//--------------------------------------------------------
+// Procedure: addDetachedPair()
+
+string SplitHandler::detached(string var)
+{
+  if(m_map_detached_pairs.count(var) == 0)
+    return("");
+
+  return(m_map_detached_pairs[var]);
+}
+
+//--------------------------------------------------------
+// Procedure: addDetachedPair()
+
+bool SplitHandler::addDetachedPair(string var_key)
+{
+  string var = biteStringX(var_key, ':');
+  string key = var_key;
+
+  return(addDetachedPair(var, key));
+}
+
+//--------------------------------------------------------
+// Procedure: addDetachedPair()
+
+bool SplitHandler::addDetachedPair(string var, string key)
+{
+  if(strContainsWhite(var) || strContainsWhite(key))
+    return(false);
+
+  m_map_detached_pairs[var] = key;
+  return(true);
+}
 
 //--------------------------------------------------------
 // Procedure: handlePreCheckSplitDir

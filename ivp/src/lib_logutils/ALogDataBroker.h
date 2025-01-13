@@ -54,6 +54,7 @@ class ALogDataBroker
   void setProgress(bool v=true) {m_progress=v;}
   void setMaxFilePtrs(unsigned int v) {m_max_fileptrs=v;}
   void setVQual(std::string s) {m_vqual=s;}
+  void addDetachedPair(std::string s) {m_detached_pairs.push_back(s);}
   
   LogPlot      getLogPlot(unsigned int mix);
   VarPlot      getVarPlot(unsigned int mix, bool src=false);
@@ -153,6 +154,8 @@ class ALogDataBroker
 
   std::string m_region_info;
 
+  std::vector<std::string> m_detached_pairs;
+  
   bool m_verbose;
   bool m_progress;
   unsigned int m_max_fileptrs;
