@@ -1438,6 +1438,28 @@ string tokStringParse(const string& str, const string& left,
 
 
 //----------------------------------------------------------------
+// Procedure: tokStringAll()
+//   Purpose: For all param=value pairs, return a vector of all params
+//   Example: info  = "fruit=apple, drink=water, temp=98.6";
+//     Input  result = tokStringParse(info, ',', '=');
+//    Result: result = apple,drink,temp
+
+set<string> tokStringAll(const string& str, char gsep, char lsep)
+{
+  set<string> return_set;
+  
+  vector<string> svector1 = parseStringQ(str, gsep);
+  for(vector<string>::size_type i=0; i<svector1.size(); i++) {
+    vector<string> svector2 = parseString(svector1[i], lsep);
+    if(svector2.size() != 2)
+      continue;
+    return_set.insert(stripBlankEnds(svector2[0]));
+  }
+  return(return_set);
+}
+
+
+//----------------------------------------------------------------
 // Procedure: tokDoubleParse()
 //   Example: info  = "fruit=23, drink=0.4, temp=98.6";
 //     Input  result = str_tok(info, "drink", ',', '=');
