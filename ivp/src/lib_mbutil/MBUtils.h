@@ -131,6 +131,8 @@ std::string tokStringParse(const std::string&, const std::string&,
 			   char gsep=',', char lsep='=');
 double tokDoubleParse(const std::string&, const std::string&, 
 		      char gsep=',', char lsep='=');
+std::set<std::string> tokStringAll(const std::string&,
+				   char gsep=',', char lsep='=');
 
 double minElement(const std::vector<double>&);
 double maxElement(const std::vector<double>&);

@@ -273,92 +273,50 @@ bool SplitHandler::handleMakeSplitFiles()
     // Would create a klog file as if the variable APP_OVERVIEW:FUEL
     // were originally in the alog file
 
-    string dkey = detached(varname); // detached key, e.g., fuel
-    if(dkey != "") {
-      cout << "Handling Detached: var: " << varname << ", dkey:" << dkey << endl;
+    set<string> dkeys = detachedSet(varname); // detached key, e.g., fuel
+    if(dkeys.size() != 0) {
       string sval = tolower(stripBlankEnds(getDataEntry(line_raw)));
       // If datafield is string in JSON format, convert to CSP format
       if(isBraced(sval))
 	sval = jsonToCsp(sval);
-      
-      string dval = tokStringParse(sval, tolower(dkey));
 
-      cout << "sval:" << sval << ", dval:" << dval << endl;
+      if(dkeys.count("all") != 0) {
+	dkeys = tokStringAll(sval);
+      }      
 
-      if(isNumber(dval)) {
-	string timestamp = getTimeStamp(line_raw);
-	string src_name = getSourceName(line_raw);
-	varname += ":" + toupper(dkey);
-	line_raw = timestamp + "  " + varname;
-	line_raw += "  " + src_name + "  " + dval;
-	cout << "newline:" << line_raw << endl;
-      }	
-    }
-      
-    
-    // Part 2: Check if the file ptr for this variable already exists. 
-    // If not, create a new file pointer and add it to the map.
-    bool cached_file_ptr = false;
+      string varname_orig = varname;
+      set<string>::iterator p;
+      for(p=dkeys.begin(); p!=dkeys.end(); p++) {
+	string dkey = *p;
+	varname = varname_orig;
+	if(m_verbose)
+	  cout << "Handling Detached: var: " << varname << ", dkey:" << dkey << endl;
 
-    FILE *file_ptr = 0;
-    if(m_file_ptr.count(varname) == 1) { 
-      file_ptr = m_file_ptr[varname];
-      cached_file_ptr = true;
+	string dval = tokStringParse(sval, tolower(dkey));
+	if(m_verbose)
+	  cout << "sval:" << sval << ", dval:" << dval << endl;
+
+	if(isNumber(dval)) {
+	  string timestamp = getTimeStamp(line_raw);
+	  string src_name = getSourceName(line_raw);
+	  varname += ":" + toupper(dkey);
+	  line_raw = timestamp + "  " + varname;
+	  line_raw += "  " + src_name + "  " + dval;
+	  if(m_verbose)
+	    cout << "newline:" << line_raw << endl;
+	  bool ok = handleSplitLine(varname, line_raw);
+	  if(!ok)
+	    break;
+	}	
+      }
     }
     else {
-      string new_file = m_basedir + "/" + varname + ".klog"; 
-      errno = 0;
-      FILE *new_ptr = fopen(new_file.c_str(), "a");
-      if(new_ptr) {
-	// 125 seems to be a safe bet for all OS types for allowing
-	// simultaneously open file pointers. Everything after 125
-	// will be slower.
-	bool vip = false;
-	if(m_vip_cache.count(varname) != 0)
-	  vip = true;
-	
-	if(vip || (m_file_ptr.size() <= m_max_cache)) {
-	  m_file_ptr[varname] = new_ptr;
-	  cached_file_ptr = true;
-	  if(m_verbose) {
-	    if(vip)
-	      cout << "VIP " << flush;
-	    cout << "Caching: " << varname;
-	    cout << " (" << m_file_ptr.size() << ")" << m_max_cache << endl;
-	  }
-	}
-	else
-	  m_max_cache_exceeded = true;
-
-	file_ptr = new_ptr;
-      }
-      else {
-	cout << "Unable to open new file for VarName: [[" << varname << "]]";
-	cout << endl;
-	cout << " full filename: [[" << new_file << "]]" << endl;
-	cout << "Error: " << errno << endl;
+      bool ok = handleSplitLine(varname, line_raw);
+      if(!ok)
 	break;
-      }
     }
-     
-    // Part 3: Update the type information
-    if(m_var_type[varname] != "string") {
-      string vardata = getDataEntry(line_raw);
-      if(!isNumber(vardata))
-	m_var_type[varname] = "string";
-      else
-	m_var_type[varname] = "double";
-    }
-
-    // Part 4: Update the source information
-    string varsrc = getSourceNameNoAux(line_raw);
-    m_var_srcs[varname].insert(varsrc);
-
-    // Part 5: Write the line to the appropriate file
-    fprintf(file_ptr, "%s\n", line_raw.c_str());
-    if(!cached_file_ptr)
-      fclose(file_ptr);    
   }
+
   if(m_progress) {
     cout << termColor("blue");
     cout << "  Lines Read: " << uintToCommaString(lines_read) << endl;
@@ -366,15 +324,16 @@ bool SplitHandler::handleMakeSplitFiles()
   }
   
   if(m_verbose)
-    cout << "Done writing to klog files. Total files: " << m_file_ptr.size() << endl;
-
+    cout << "Done writing to klog files. Total files: " <<
+      m_file_ptr.size() << endl;
+  
   // Close all the file pointers before finishing
   map<string, FILE*>::iterator p;
   for(p=m_file_ptr.begin(); p!=m_file_ptr.end(); p++) {
     FILE *ptr = p->second;
     fclose(ptr);
   }
-
+  
   if(m_max_cache_exceeded) {
     cout << "WARNING: Maximum concurrent fopen fileptr cache exceeded." << endl;
     cout << "This is not an error, but the alog file pre-splitting    " << endl;
@@ -385,6 +344,85 @@ bool SplitHandler::handleMakeSplitFiles()
   if(file_in)
     fclose(file_in);
 
+  return(true);
+}
+
+//--------------------------------------------------------
+// Procedure: handleSplitLine()
+
+bool SplitHandler::handleSplitLine(const std::string& varname,
+				   const std::string& line_raw)
+{
+  // ===============================================================
+  // Part 1: Check if the file ptr for this variable already exists.
+  // If not, create a new file pointer and add it to the map.
+  // ===============================================================
+  bool cached_file_ptr = false;
+  
+  FILE *file_ptr = 0;
+  if(m_file_ptr.count(varname) == 1) { 
+    file_ptr = m_file_ptr[varname];
+    cached_file_ptr = true;
+  }
+  else {
+    string new_file = m_basedir + "/" + varname + ".klog"; 
+    errno = 0;
+    FILE *new_ptr = fopen(new_file.c_str(), "a");
+    if(new_ptr) {
+      // 125 seems to be a safe bet for all OS types for allowing
+      // simultaneously open file pointers. Everything after 125
+      // will be slower.
+      bool vip = false;
+      if(m_vip_cache.count(varname) != 0)
+	vip = true;
+      
+      if(vip || (m_file_ptr.size() <= m_max_cache)) {
+	m_file_ptr[varname] = new_ptr;
+	cached_file_ptr = true;
+	if(m_verbose) {
+	  if(vip)
+	    cout << "VIP " << flush;
+	  cout << "Caching: " << varname;
+	  cout << " (" << m_file_ptr.size() << ")" << m_max_cache << endl;
+	}
+      }
+      else
+	m_max_cache_exceeded = true;
+      
+      file_ptr = new_ptr;
+    }
+    else {
+      cout << "Unable to open new file for VarName: [[" << varname << "]]";
+      cout << endl;
+      cout << " full filename: [[" << new_file << "]]" << endl;
+      cout << "Error: " << errno << endl;
+      return(false);
+    }
+  }
+  
+  // ===============================================================
+  // Part 3: Update the type information
+  // ===============================================================
+  if(m_var_type[varname] != "string") {
+    string vardata = getDataEntry(line_raw);
+    if(!isNumber(vardata))
+      m_var_type[varname] = "string";
+    else
+      m_var_type[varname] = "double";
+  }
+
+  // ===============================================================
+  // Part 4: Update the source information
+  // ===============================================================
+  string varsrc = getSourceNameNoAux(line_raw);
+  m_var_srcs[varname].insert(varsrc);
+  
+  // ===============================================================
+  // Part 5: Write the line to the appropriate file
+  // ===============================================================
+  fprintf(file_ptr, "%s\n", line_raw.c_str());
+  if(!cached_file_ptr)
+    fclose(file_ptr);
   return(true);
 }
 
@@ -447,7 +485,19 @@ bool SplitHandler::handleMakeSplitSummary()
   
 
 //--------------------------------------------------------
-// Procedure: addDetachedPair()
+// Procedure: detachedSet()
+
+set<string> SplitHandler::detachedSet(string var)
+{
+  set<string> subvars;
+  if(m_map_dpairs.count(var) == 0)
+    return(subvars);
+
+  return(m_map_dpairs[var]);
+}
+
+//--------------------------------------------------------
+// Procedure: detached()
 
 string SplitHandler::detached(string var)
 {
@@ -459,13 +509,35 @@ string SplitHandler::detached(string var)
 
 //--------------------------------------------------------
 // Procedure: addDetachedPair()
+//   Example: REPORT
+//   Example: REPORT:xval
+//   Example: REPORT:xval:yval
 
 bool SplitHandler::addDetachedPair(string var_key)
 {
-  string var = biteStringX(var_key, ':');
-  string key = var_key;
+  // Sanity check
+  if(var_key == "")
+    return(false);
+  
+  vector<string> svector = parseString(var_key, ':');
 
-  return(addDetachedPair(var, key));
+  // Sanity check
+  if(svector.size() == 0)
+    return(false);
+
+  // First field [0] is the varname
+  string var = svector[0];
+
+  // Just the varname provided, (implicitely all subfields)
+  if(svector.size() == 1) 
+    return(addDetachedPair(var, ""));
+  
+  // Go through all named subfields
+  bool ok = true;
+  for(unsigned int i=1; i<svector.size(); i++)
+    ok = ok && addDetachedPair(var, svector[i]);
+  
+  return(ok);
 }
 
 //--------------------------------------------------------
@@ -477,6 +549,12 @@ bool SplitHandler::addDetachedPair(string var, string key)
     return(false);
 
   m_map_detached_pairs[var] = key;
+
+  if(key == "")
+    key = "all";
+
+  m_map_dpairs[var].insert(key);
+
   return(true);
 }
 

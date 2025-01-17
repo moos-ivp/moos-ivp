@@ -72,7 +72,8 @@ int main(int argc, char *argv[])
     cout << "  --max_fptrs=N  Set max number of OS file pointers allowed" << endl;
     cout << "                 to be open during splitting. Default 125. " << endl;
     cout << "                                                           " << endl;
-    cout << "  --detached=var:key  Split out key from complext var post " << endl;
+    cout << "  --detached=var      Split out all keys from complex var post " << endl;
+    cout << "  --detached=var:key  Split out key from complex var post " << endl;
     cout << "                                                           " << endl;
     cout << "  --web,-w   Open browser to:                              " << endl;
     cout << "             https://oceanai.mit.edu/ivpman/apps/alogsplit " << endl;

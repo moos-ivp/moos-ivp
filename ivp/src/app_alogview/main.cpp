@@ -150,6 +150,9 @@ void help_message()
   cout << "  --geometry=large   Open GUI with dimensions 1400x1100       " << endl;
   cout << "  --geometry=WxH     Open GUI with dimensions WxH             " << endl;
   cout << "                                                              " << endl;
+  cout << "  --detached=var          Detached var for plotting           " << endl;
+  cout << "  --detached=var:key      Detached var for plotting           " << endl;
+  cout << "                                                              " << endl;
   cout << "  --seglist_viewable_all=true/false                           " << endl;
   cout << "  --seglist_viewable_labels=true/false                        " << endl;
   cout << "  --seglr_viewable_all=true/false                             " << endl;
