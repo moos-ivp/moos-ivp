@@ -54,7 +54,6 @@ class PAIR_Viewer : public MarineViewer
   void   drawContact();
   void   drawAlertCircle();
   void   drawWarningCircle();
-  void   resetPan();
   bool   getClearPending();
 
  protected:

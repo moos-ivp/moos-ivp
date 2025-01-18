@@ -15,6 +15,7 @@
 #  Part 1: Initialize variables
 #----------------------------------------------------------
 DELETE="no"
+VERBOSE=""
 
 #----------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -36,21 +37,23 @@ for ARGI; do
         echo "  --help,    -h      Display this help message          " 
         echo "  --info,    -i      Output brief description of script "  
         echo "  --delete,  -d      Delete all _alvtmp folders found.  "  
+        echo "  --verbose, -v      Verbose output when deleting       "  
         exit 0;
-    elif [ "${ARGI}" = "--info" -o "${ARGI}" = "-i" ] ; then
+    elif [ "${ARGI}" = "--info" -o "${ARGI}" = "-i" ]; then
 	echo "Remove alogview cache _alvtmp folders recursively       "
 	exit
-    elif [ "${ARGI}" = "--delete" -o "${ARGI}" = "-d" ] ; then
+    elif [ "${ARGI}" = "--delete" -o "${ARGI}" = "-d" ]; then
 	DELETE="yes"
-	exit
+    elif [ "${ARGI}" = "--verbose" -o "${ARGI}" = "-v" ]; then
+	VERBOSE="-v"
     else 
         echo "Bad arg:" $ARGI "Run with -h for help."
         exit 1
     fi
 done
 
-if [ "${DELETE}" = "yes" ] ; then
-    find . -name '*_alvtmp'  -print -exec rm -rfv {} \;
+if [ "${DELETE}" = "yes" ]; then
+    find . -name '*_alvtmp'  -print -exec rm -rf ${VERBOSE} {} \;
 else
     find . -name '*_alvtmp'
 fi

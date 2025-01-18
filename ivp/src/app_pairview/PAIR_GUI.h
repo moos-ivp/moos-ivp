@@ -29,9 +29,6 @@ public:
   int   handle(int);
   void  setPairModel(PairModel);
 
-  void  handleActionSubGUI(int);
-  void  clearBehaviorModes();
-  
  protected:
   void  augmentMenu();
   void  initWidgets();

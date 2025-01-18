@@ -1,8 +1,8 @@
 /*****************************************************************/
 /*    NAME: Michael Benjamin                                     */
 /*    ORGN: Dept of Mechanical Engineering, MIT, Cambridge MA    */
-/*    FILE: BNGViewer.cpp                                        */
-/*    DATE: May 21, 2013                                         */
+/*    FILE: PAIR_Viewer.cpp                                      */
+/*    DATE: Jan 16th, 2025                                       */
 /*                                                               */
 /* This is unreleased BETA code. No permission is granted or     */
 /* implied to use, copy, modify, and distribute this software    */
@@ -27,11 +27,11 @@ PAIR_Viewer::PAIR_Viewer(PairModel *model, int x, int y, int wid, int hgt,
 {
   m_pair_model = model;
 
-  m_snap_val = 1.0;    // meters
+  m_snap_val = 1.0;  // meters
 
-  //m_vshift_x = -80;
-  //m_vshift_y = -110;
-  m_zoom     = 1.4;
+  // m_vshift_x = -80;
+  // m_vshift_y = -110;
+  m_zoom = 1.4;
 
   m_shape_scale = 0.7;
 
@@ -54,8 +54,6 @@ PAIR_Viewer::PAIR_Viewer(PairModel *model, int x, int y, int wid, int hgt,
   //  m_start_pan_y = 110;
 
   m_init_center_view = true;
-
-  resetPan();
 }
 
 
@@ -88,8 +86,8 @@ int PAIR_Viewer::handle(int event)
 void PAIR_Viewer::draw()
 {
   MarineViewer::draw();
-  //if(!m_init_center_view)
-  initCenterView();  
+  if(m_init_center_view)
+    initCenterView();  
 
   if(m_geo_settings.viewable("hash_viewable"))
     drawFastHash();
@@ -165,7 +163,6 @@ void PAIR_Viewer::drawContact()
 
 void PAIR_Viewer::handle_left_mouse(int vx, int vy)
 {
-  cout << "In handle_left_mouse----" << endl;
   double ix = view2img('x', vx);
   double iy = view2img('y', vy);
   double mx = img2meters('x', ix);
@@ -286,16 +283,6 @@ void PAIR_Viewer::draw_vector(string node)
   glPopMatrix();
 }
 
-// ----------------------------------------------------------
-// Procedure: resetPan()
-
-void PAIR_Viewer::resetPan()
-{
-  m_vshift_x = m_start_pan_x;
-  m_vshift_y = m_start_pan_y;  
-}
-
-
 //-------------------------------------------------------------
 // Procedure: initCenterView()
 
@@ -314,9 +301,11 @@ void PAIR_Viewer::initCenterView()
 
   double x_pixels = pix_per_mtr_x * delta_x;
   double y_pixels = pix_per_mtr_y * delta_y;
-  
+
   m_vshift_x = -x_pixels;
   m_vshift_y = -y_pixels;
+
+  m_init_center_view = false;
 }
 
 

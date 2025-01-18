@@ -47,8 +47,8 @@ int main(int argc, char *argv[])
   pair_model.set_cnh(170);
   pair_model.set_cnv(0.9);
 
-  //string tif_file = "MIT_SP.tif";
-  string tif_file = "AerialMIT.tif";
+  string tif_file = "MIT_SP.tif";
+  //string tif_file = "AerialMIT.tif";
   
   for(int i=1; i<argc; i++) { 
     string argi  = argv[i];

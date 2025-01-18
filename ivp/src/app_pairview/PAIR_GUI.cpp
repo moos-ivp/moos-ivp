@@ -16,7 +16,7 @@
 #include "MBUtils.h"
 #include "AngleUtils.h"
 #include "GeomUtils.h"
-
+ 
 using namespace std;
 
 //----------------------------------------------------------------
@@ -58,45 +58,6 @@ void PAIR_GUI::setPairModel(PairModel new_pair_model)
 
   m_pair_model->copy(new_pair_model);
   m_pair_model_set.copy(new_pair_model);
-}
-
-//----------------------------------------------------------------
-// Procedure: handleActionSubGUI()
-
-void PAIR_GUI::handleActionSubGUI(int val)
-{
-  if(val == 1)
-    cb_LinearMoveShips_i(10);
-  else if(val == 2)
-    cb_LinearMoveShips_i(-10);
-
-  if(val == 11)
-    cb_LinearMoveShips_i(1);
-  else if(val == 12)
-    cb_LinearMoveShips_i(-1);
-
-  if(val == 21)
-    cb_LinearMoveOwnship_i(10);
-  else if(val == 22)
-    cb_LinearMoveOwnship_i(-10);
-
-  if(val == 31)
-    cb_LinearMoveContact_i(10);
-  else if(val == 32)
-    cb_LinearMoveContact_i(-10);
-
-  else if(val == 101)
-    cb_SwapPair_i();
-  else if(val == 102)
-    cb_ResetPair_i(0);
-  else if(val == 120)   // CTRL-A
-    cb_AltCNV_i(1);
-  else if(val == 121)   // CTRL-Z
-    cb_AltCNV_i(-1);
-  else if(val == 130)   // A
-    cb_AltOSV_i(1);
-  else if(val == 131)   // Z
-    cb_AltOSV_i(-1);
 }
 
 //--------------------------------------------------------------------------- 
@@ -481,7 +442,7 @@ void PAIR_GUI::augmentMenu()
   //====================================================================
   // The Pair SubMenu
   //====================================================================
-
+  
   m_menubar->add("Pair/Set",   0, (Fl_Callback*)PAIR_GUI::cb_SetPair, (void*)0, 0);
   m_menubar->add("Pair/Swap",  's', (Fl_Callback*)PAIR_GUI::cb_SwapPair, (void*)0, 0);
   m_menubar->add("Pair/Reset", 'y',
