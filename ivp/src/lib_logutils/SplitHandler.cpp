@@ -284,37 +284,37 @@ bool SplitHandler::handleMakeSplitFiles()
 	dkeys = tokStringAll(sval);
       }      
 
-      string varname_orig = varname;
       set<string>::iterator p;
       for(p=dkeys.begin(); p!=dkeys.end(); p++) {
 	string dkey = *p;
-	varname = varname_orig;
 	if(m_verbose)
-	  cout << "Handling Detached: var: " << varname << ", dkey:" << dkey << endl;
+	  cout << "Handling Detached: var: " << varname << ", dkey:"
+	       << dkey << endl;
 
 	string dval = tokStringParse(sval, tolower(dkey));
 	if(m_verbose)
 	  cout << "sval:" << sval << ", dval:" << dval << endl;
 
 	if(isNumber(dval)) {
+	  string varname_aug = varname;
 	  string timestamp = getTimeStamp(line_raw);
 	  string src_name = getSourceName(line_raw);
-	  varname += ":" + toupper(dkey);
-	  line_raw = timestamp + "  " + varname;
+	  varname_aug += ":" + toupper(dkey);
+	  line_raw = timestamp + "  " + varname_aug;
 	  line_raw += "  " + src_name + "  " + dval;
 	  if(m_verbose)
 	    cout << "newline:" << line_raw << endl;
-	  bool ok = handleSplitLine(varname, line_raw);
+	  bool ok = handleSplitLine(varname_aug, line_raw);
 	  if(!ok)
 	    break;
 	}	
       }
     }
-    else {
-      bool ok = handleSplitLine(varname, line_raw);
-      if(!ok)
-	break;
-    }
+    // Now handled the full original line with no detachements
+    bool ok = handleSplitLine(varname, line_raw);
+    if(!ok)
+      break;
+    
   }
 
   if(m_progress) {
