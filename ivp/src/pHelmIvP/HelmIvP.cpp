@@ -1804,10 +1804,13 @@ void HelmIvP::updatePlatModel()
   if(!m_info_buffer || !m_hengine)
     return;
 
-  double osx = m_ledger.getX("ownship");
-  double osy = m_ledger.getY("ownship");
-  double osh = m_ledger.getHeading("ownship");
-  double osv = m_ledger.getSpeed("ownship");
+  bool ok1, ok2, ok3, ok4;
+  double osx = m_info_buffer->dQuery("NAV_X", ok1);
+  double osy = m_info_buffer->dQuery("NAV_Y", ok2);
+  double osh = m_info_buffer->dQuery("NAV_HEADING", ok3);
+  double osv = m_info_buffer->dQuery("NAV_SPEED", ok4);
+  if(!ok1 || !ok2 || !ok3 || !ok4)
+    return;
 
   // pmgen needs utc stamp to calculate hdg history
   m_pmgen.setCurrTime(m_info_buffer->getCurrTime());
