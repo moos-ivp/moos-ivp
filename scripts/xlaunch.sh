@@ -23,6 +23,7 @@ CLEAN="no"
 MPATH=""
 MISSION=""
 ALL_ARGS=""
+MAX_TIME="300"
 
 #-------------------------------------------------------
 #  Part 2: Check for and handle command-line arguments
@@ -46,6 +47,7 @@ for ARGI; do
 	echo "  --path=<str>       Locations to look for mission     "
 	echo "  --clean, -c        Remove outcome file after OK send " 
 	echo "  --zbatch=<name>    Name of ZBatch                    "
+	echo "  --max_time=<secs>  Max time passed to uMayFinish     "
 	echo "  --archive, -a      Archive the results               "
 	exit 0;
     elif [ "${ARGI//[^0-9]/}" = "$ARGI" -a "$TIME_WARP" = 1 ]; then 
@@ -62,6 +64,8 @@ for ARGI; do
         ZBATCH="${ARGI#--zbatch=*}"
     elif [ "${ARGI:0:7}" = "--path=" ]; then
         MPATH="${ARGI#--path=*}"
+    elif [ "${ARGI:0:11}" = "--max_time=" ]; then
+        MAX_TIME="${ARGI#--max_time=*}"
     elif [ "${ARGI:0:10}" = "--mission=" ]; then
         MISSION="${ARGI#--mission=*}"
     else 
@@ -122,7 +126,7 @@ vecho "DONE"
 #-------------------------------------------------------
 #  Part 4: Monitor mission, kill MOOS processes when done
 #-------------------------------------------------------
-uMayFinish --max_time=280 targ_shoreside.moos
+uMayFinish --max_time=${MAX_TIME} targ_shoreside.moos
 
 vecho "Part 4: Bringing down the mission... "
 trap "echo received sigterm" SIGTERM
