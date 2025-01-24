@@ -104,8 +104,9 @@ int main(int argc, char *argv[])
     return(-1);
   }
   gui->setTitleBase(title_base);
-  string user = getenv("USER");
-  gui->augmentTitleWithUser(user);
+  if(getenv("USER")) {
+    gui->augmentTitleWithUser(getenv("USER"));
+  }
   gui->setVerbose(verbose);
 
   // See the random number generator
