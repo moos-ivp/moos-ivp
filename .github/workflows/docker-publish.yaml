@@ -136,7 +136,7 @@ jobs:
           platforms: linux/${{ matrix.platform }}
           annotations: ${{ steps.meta.outputs.annotations }}
           build-args: |
-            FROM=${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs.digest }}
+            FROM=${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs[format('{0}_digest', matrix.platform)] }}
             SOURCE_DATE_EPOCH=${{ env.SOURCE_DATE_EPOCH }}
           file: docker/moos-ivp-gui/Dockerfile
           cache-from: type=gha
