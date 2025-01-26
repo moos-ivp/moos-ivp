@@ -154,7 +154,7 @@ jobs:
       - prepare
       - build-gui
     container:
-      image: ${{ needs.prepare.outputs.registry_image }}@${{ needs.build-gui.outputs.digest }}
+      image: ${{ needs.prepare.outputs.registry_image }}@${{ needs.build-gui.outputs.amd64_digest }}
     steps:
       - name: Check for expected binaries
         continue-on-error: true
