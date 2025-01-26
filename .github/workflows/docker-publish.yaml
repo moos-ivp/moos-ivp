@@ -47,9 +47,6 @@ jobs:
       amd64_digest: ${{ steps.set_digest.outputs.amd64 }}
       arm64_digest: ${{ steps.set_digest.outputs.arm64 }}
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -107,9 +104,6 @@ jobs:
       amd64_digest: ${{ steps.set_digest.outputs.amd64 }}
       arm64_digest: ${{ steps.set_digest.outputs.arm64 }}
     steps:
-      - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
