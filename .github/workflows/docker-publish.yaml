@@ -260,8 +260,12 @@ jobs:
 
           echo "Base Tags: ${BASE_TAGS}"
           docker buildx imagetools create $BASE_TAGS \
-              ${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs.digest }}
+              ${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs.amd64_digest }} \
+              ${{ env.REGISTRY_IMAGE }}@${{ needs.build-minrobot.outputs.arm64_digest }}
+
 
           echo "GUI Tags: ${GUI_TAGS}"
           docker buildx imagetools create $GUI_TAGS \
-              ${{ env.REGISTRY_IMAGE }}@${{ needs.build-gui.outputs.digest }}
+              ${{ env.REGISTRY_IMAGE }}@${{ needs.build-gui.outputs.amd64_digest }} \
+              ${{ env.REGISTRY_IMAGE }}@${{ needs.build-gui.outputs.arm64_digest }}
+
