@@ -2913,6 +2913,21 @@ string uintVectorToString(vector<unsigned int> uint_vector, char sep)
 }
 
 //---------------------------------------------------------
+// Procedure: stringSetToVector()
+
+vector<string> stringSetToVector(set<string> str_set)
+{
+  vector<string> rvector;
+  
+  set<string>::iterator p;
+  for(p=str_set.begin(); p!=str_set.end(); p++)
+    rvector.push_back(*p);
+
+  return(rvector);
+}
+
+
+//---------------------------------------------------------
 // Procedure: intToMonth()
 
 string intToMonth(int imonth, bool brief)
