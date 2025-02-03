@@ -1,6 +1,7 @@
 build/*
 include/
 lib/*
+!/bin/ipaddrs.sh
 bin/*
 *~
 */*~
