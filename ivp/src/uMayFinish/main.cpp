@@ -1,13 +1,14 @@
 /************************************************************/
 /*    NAME: Mike Benjamin                                   */
 /*    ORGN: MIT, Cambridge MA                               */
-/*    FILE: main.cpp, Cambridge MA                          */
+/*    FILE: main.cpp,                                       */
 /*    DATE: October 31st, 2024                              */
 /************************************************************/
 
 #include <string>
 #include "MBUtils.h"
 #include "ColorParse.h"
+#include "OpenURL.h"
 #include "MayFinish.h"
 #include "MayFinish_Info.h"
 
@@ -36,6 +37,8 @@ int main(int argc, char *argv[])
       run_command = argi.substr(8);
     else if(strBegins(argi, "--max_time="))
       MayFinish.setMaxDBUpTime(argi.substr(11));
+    else if((argi == "-w") || (argi == "--web") || (argi == "-web"))
+      openURLX("https://oceanai.mit.edu/ivpman/apps/uMayFinish");
     else if(i==2)
       run_command = argi;
   }

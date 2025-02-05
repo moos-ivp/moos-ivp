@@ -82,7 +82,8 @@ bool MayFinish::Iterate()
   
   if(m_current_val == m_finish_val)
     m_exit_val = 0;
-  else if(m_now_db_uptime > m_max_db_uptime)
+  
+  else if((m_max_db_uptime > 0) && (m_now_db_uptime > m_max_db_uptime))
     m_exit_val = 1;
 
   // Fake age of last report to ensure one final report.
@@ -147,8 +148,9 @@ void MayFinish::registerVariables()
   if(m_finish_var != "")
     Register(m_finish_var);
 
-  Register("DB_UPTIME");
-}
+  // Only register for DB_UPTIME if max_db_uptime is set.
+  // Register("DB_UPTIME");
+} 
 
 
 //---------------------------------------------------------
@@ -180,7 +182,12 @@ bool MayFinish::setFinishVal(string val)
 
 bool MayFinish::setMaxDBUpTime(string val)
 {
-  return(setDoubleOnString(m_max_db_uptime, val));
+  bool ok = setDoubleOnString(m_max_db_uptime, val);
+  if(!ok)
+    return(false);
+
+  Register("DB_UPTIME");
+  return(true);
 }
 
 
@@ -195,9 +202,15 @@ bool MayFinish::buildReport()
   m_msgs << "  Max DBTime: " << m_max_db_uptime << endl;
   m_msgs << endl;
   m_msgs << "State:" << endl;
-  m_msgs << "  DB_UPTIME: " << doubleToStringX(m_now_db_uptime,1) << endl;
+  if(m_max_db_uptime > 0)
+    m_msgs << "  DB_UPTIME: " << doubleToStringX(m_now_db_uptime,1) << endl;
+  else
+    m_msgs << "  DB_UPTIME: n/a" << endl;
   m_msgs << "  " << m_finish_var << ": " << m_current_val << endl;
 
+  if((m_max_db_uptime < 0) && (m_finish_var == ""))
+    m_msgs << "THIS APP HAS NO EXIT CONDITIONS: IT WILL CONTINUE PERPETUALLY" << endl;
+  
   if(m_exit_val > 0)
     m_msgs << "EXITING: " << m_exit_val << endl;
   

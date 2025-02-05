@@ -48,8 +48,8 @@ void showHelpAndExit()
   blk("                                                                ");
   blk("Options:                                                        ");
   mag("  --alias","=<ProcessName>                                      ");
-  blk("      Launch pAutoPoke with the given process name         ");
-  blk("      rather than pAutoPoke.                           ");
+  blk("      Launch pAutoPoke with the given process name              ");
+  blk("      rather than pAutoPoke.                                    ");
   mag("  --example, -e                                                 ");
   blk("      Display example MOOS configuration block.                 ");
   mag("  --help, -h                                                    ");
@@ -57,7 +57,9 @@ void showHelpAndExit()
   mag("  --interface, -i                                               ");
   blk("      Display MOOS publications and subscriptions.              ");
   mag("  --version,-v                                                  ");
-  blk("      Display the release version of pAutoPoke.        ");
+  blk("      Display the release version of pAutoPoke.                 ");
+  mag("  --web,-w                                                      ");
+  blk("      Open browser to: https://oceanai.mit.edu/ivpman/apps/pAutoPoke ");
   blk("                                                                ");
   blk("Note: If argv[2] does not otherwise match a known option,       ");
   blk("      then it will be interpreted as a run alias. This is       ");
@@ -71,16 +73,19 @@ void showHelpAndExit()
 
 void showExampleConfigAndExit()
 {
-  blk("                                                                ");
   blu("=============================================================== ");
   blu("pAutoPoke Example MOOS Configuration                            ");
   blu("=============================================================== ");
   blk("                                                                ");
   blk("ProcessConfig = pAutoPoke                                       ");
   blk("{                                                               ");
-  blk("  AppTick   = 4                                                 ");
-  blk("  CommsTick = 4                                                 ");
+  blk("  AppTick   = 2                                                 ");
+  blk("  CommsTick = 2                                                 ");
   blk("                                                                ");
+  blk("  flag = MOOS_MANUAL_OVERRIDE_ALL=false                         ");
+  blk("  flag = DEPLOY_ALL=false                                       ");
+  blk("                                                                ");
+  blk("  required_nodes = 2                                            ");
   blk("}                                                               ");
   blk("                                                                ");
   exit(0);

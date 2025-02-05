@@ -60,7 +60,11 @@ class LogicAspect
   std::list<std::string> getReport(int ix=-1, int total=-1) const;
 
   std::vector<std::string> getSpec() const;
-  
+
+  unsigned int leadConditions() const {return(m_lead_cbuff.size());}
+  unsigned int passConditions() const {return(m_pass_cbuff.size());}
+  unsigned int failConditions() const {return(m_fail_cbuff.size());}
+ 
 private: 
   LogicBuffer m_lead_cbuff;
   LogicBuffer m_pass_cbuff;
