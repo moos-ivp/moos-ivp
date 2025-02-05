@@ -46,7 +46,8 @@ public: // General configuration
   void setStaleThresh(double age) {m_stale_thresh=age;}
   void extrapolate(double utc=0);
   void setActiveVName(std::string vname); 
-
+  void setHistorySize(unsigned int v) {m_history_size=v;}
+  
 public: // Managing, Handle Node Reports
   std::string processNodeReport(std::string report,
 				std::string& whynot);

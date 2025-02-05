@@ -2708,7 +2708,7 @@ void MarineViewer::drawCircle(XYCircle circle, double timestamp)
   if(circle.expired(timestamp) || !circle.active())
     return;
 
-  cout << circle.get_duration();
+  //cout << circle.get_duration();
   
   ColorPack edge_c("blue");
   ColorPack labl_c("white");

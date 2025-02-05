@@ -55,6 +55,9 @@ my_isnan(const T x)
 
 using namespace std;
 
+//-------------------------------------------------------------
+// Constructor()
+
 PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   : MarineViewer(x,y,w,h,l)
 {
@@ -79,6 +82,8 @@ PMV_Viewer::PMV_Viewer(int x, int y, int w, int h, const char *l)
   m_bclick_ix = 0;
 
   m_config_complete = false;
+
+  m_ledger.setHistorySize(500); // max history
   
   m_extrapolate = 5; // default extrapolate 5 secs for stale reps
   

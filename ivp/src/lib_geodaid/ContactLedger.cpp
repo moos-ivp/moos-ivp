@@ -383,7 +383,7 @@ void ContactLedger::extrapolate(string vname)
   // If reported record is very recent, then we're done
   double record_utc = record_rep.getTimeStamp();
   double elapsed = m_curr_utc - record_utc;
-  cout << "elapsed:" << elapsed << endl;
+  //cout << "elapsed:" << elapsed << endl;
   if(elapsed < m_extrap_thresh)
     return;
 
