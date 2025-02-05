@@ -404,13 +404,7 @@ void IvPBehavior::setLedgerSnap(const LedgerSnap *cl)
 bool IvPBehavior::updatePlatformInfo()
 {
   bool ok1, ok2, ok3, ok4, ok5;
-#if 0
-  m_osx = getLedgerInfoDbl("ownship", "x", ok1);
-  m_osy = getLedgerInfoDbl("ownship", "y", ok2);
-  m_osh = getLedgerInfoDbl("ownship", "hdg", ok3);
-  m_osv = getLedgerInfoDbl("ownship", "spd", ok4);
-  m_osd = getLedgerInfoDbl("ownship", "dep", ok5);
-#endif
+
   m_osx = getBufferDoubleVal("NAV_X", ok1);
   m_osy = getBufferDoubleVal("NAV_Y", ok2);
   m_osh = getBufferDoubleVal("NAV_HEADING", ok3);
@@ -730,6 +724,39 @@ string IvPBehavior::getOwnGroup()
   string group = getBufferStringVal(buffer_var);
 
   return(group);
+}
+
+//-----------------------------------------------------------
+// Procedure: getOwnType()
+
+string IvPBehavior::getOwnType() 
+{
+  string buffer_var = toupper(m_us_name) + "_NAV_TYPE";
+  string group = getBufferStringVal(buffer_var);
+
+  return(group);
+}
+
+//-----------------------------------------------------------
+// Procedure: getOwnColor()
+
+string IvPBehavior::getOwnColor() 
+{
+  string buffer_var = toupper(m_us_name) + "_NAV_COLOR";
+  string color = getBufferStringVal(buffer_var);
+
+  return(color);
+}
+
+//-----------------------------------------------------------
+// Procedure: getOwnLength()
+
+double IvPBehavior::getOwnLength() 
+{
+  string buffer_var = toupper(m_us_name) + "_NAV_LENGTH";
+  double length = getBufferDoubleVal(buffer_var);
+
+  return(length);
 }
 
 //-----------------------------------------------------------

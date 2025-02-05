@@ -93,7 +93,8 @@ bool IvPContactBehavior::setParam(string param, string param_val)
     return(true);
   
   if(param == "contact") {
-    string new_contact_name = toupper(param_val);
+    //string new_contact_name = toupper(param_val);  // mikerb_jan_25
+    string new_contact_name = param_val;
     if(m_contact != new_contact_name)
       onParamUpdate("contact");
     m_contact = new_contact_name;

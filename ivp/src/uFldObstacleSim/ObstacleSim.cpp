@@ -379,6 +379,10 @@ bool ObstacleSim::handleConfigObstacleFile(string filename)
     return(false);
   }
 
+  // Tell the logger to log a copy of the file
+  string command  = "COPY_FILE_REQUEST = " + filename;
+  Notify("PLOGGER_CMD", command);
+
   for(i=0; i<vsize; i++) {
     string line = stripBlankEnds(lines[i]);
     if((line == "") || strBegins(line, "//"))
@@ -596,7 +600,6 @@ void ObstacleSim::updateObstaclesRefresh()
       m_obs_refresh_needed = true;
   }  
 }
-
 
 //------------------------------------------------------------
 // Procedure: postObstaclesRefresh()

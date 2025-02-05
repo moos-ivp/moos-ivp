@@ -67,6 +67,7 @@ void BHV_PModelView::onSetParamComplete()
 IvPFunction *BHV_PModelView::onRunState() 
 {
   updateInfoIn();
+
   drawTurnPath();
   return(0);
 }

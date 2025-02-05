@@ -120,6 +120,28 @@ void BehaviorSet::addBehaviorSpec(BehaviorSpec spec)
 
 
 //------------------------------------------------------------
+// Procedure: getContactNames()
+//   Purpose: Poll all behaviors for their contact name. If they
+//            are not a contact behavior, this will be an empty
+//            string. We want the names of all contacts for which
+//            there is currently a contact related behavior.
+
+vector<string> BehaviorSet::getContactNames() 
+{
+  vector<string> contacts;
+  unsigned int vsize = m_bhv_entry.size();
+  for(unsigned int i=0; i<vsize; i++) {
+    if(m_bhv_entry[i].getBehavior()) {
+      string contact = m_bhv_entry[i].getBehavior()->getContact();
+      if((contact != "") && !vectorContains(contacts, contact))
+	contacts.push_back(contact);
+    }
+  }
+
+  return(contacts);
+}
+
+//------------------------------------------------------------
 // Procedure: connectInfoBuffer()
 //      Note: Connects info_buffer to all behaviors, behavior_specs
 //      Note: The info_buffer is not "owned" by behaviors or specs

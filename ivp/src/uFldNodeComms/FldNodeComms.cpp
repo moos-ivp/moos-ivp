@@ -317,8 +317,7 @@ bool FldNodeComms::handleMailNodeReport(const string& str, string& whynot)
   if(whynot != "")
     return(false);
 
-  string upp_name = toupper(vname);
-  m_map_newrecord[upp_name] = true;
+  m_map_newrecord[vname] = true;
 
   return(true);
 }
@@ -349,7 +348,7 @@ bool FldNodeComms::handleMailNodeMessage(const string& msg,
     new_message.setSourceApp(msg_src);
 
   // Part 4: 
-  string upp_src_node = toupper(new_message.getSourceNode());
+  string upp_src_node = new_message.getSourceNode();
 
   m_map_message[upp_src_node].push_back(new_message);
   m_map_newmessage[upp_src_node] = true;
@@ -383,7 +382,7 @@ bool FldNodeComms::handleMailAckMessage(const string& msg)
   if(!new_message.valid())
     return(false);
 
-  string upp_src_node = toupper(new_message.getSourceNode());
+  string upp_src_node = new_message.getSourceNode();
 
   m_map_ack_message[upp_src_node].push_back(new_message);
   m_map_newackmessage[upp_src_node] = true;
@@ -425,7 +424,7 @@ bool FldNodeComms::handleStealth(const string& str)
     string param = tolower(biteStringX(svector[i], '='));
     string value = svector[i];
     if(param == "vname")
-      vname = toupper(value);
+      vname = value;
     else if(param == "stealth")
       stealth = value;
   }
@@ -459,7 +458,7 @@ bool FldNodeComms::handleEarange(const string& str)
     string param = tolower(biteStringX(svector[i], '='));
     string value = svector[i];
     if(param == "vname")
-      vname = toupper(value);
+      vname = value;
     else if((param == "earange") || (param == "earrange"))
       earange = value;
   }
@@ -561,14 +560,13 @@ void FldNodeComms::distributeNodeReportInfo(const string& us_vname)
   }  
 }
 
-
 //------------------------------------------------------------
 // Procedure: postNodeReport()
 
 void FldNodeComms::postNodeReport(string us_vname, string vname,
 				  string node_report)
 {
-  Notify("NODE_REPORT_" + vname, node_report);
+  Notify("NODE_REPORT_" + toupper(vname), node_report);
   if(m_view_node_rpt_pulses)
     postViewCommsPulse(us_vname, vname);
   m_total_reports_sent++;
@@ -683,8 +681,8 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
 
   // If destination name(s) given add each one in the colon-separated list
   bool all = false;
-  string dest_name  = toupper(message.getDestNode());
-  string dest_group = toupper(message.getDestGroup());
+  string dest_name  = message.getDestNode();
+  string dest_group = message.getDestGroup();
   if((dest_name == "ALL") || (dest_group == "ALL"))
     all = true;
 
@@ -734,9 +732,9 @@ void FldNodeComms::distributeNodeMessageInfo(string src_name,
     if(meetsDropPercentage())
       continue;
 
-    string moos_var = "NODE_MESSAGE_" + a_dest_name;
+    string moos_var = "NODE_MESSAGE_" + toupper(a_dest_name);
     if(message.getAckRequested())
-      moos_var = "MEDIATED_MESSAGE_" + a_dest_name;
+      moos_var = "MEDIATED_MESSAGE_" + toupper(a_dest_name);
     
     string node_message = message.getSpec();
     Notify(moos_var, node_message);
@@ -797,7 +795,7 @@ void FldNodeComms::distributeAckMessageInfo(string src_name,
   }
   
   // Check 2: Must have node records for both vehicles
-  string dest_name = toupper(message.getDestNode());
+  string dest_name = message.getDestNode();
   if(!m_ledger.hasVNameValid(src_name) ||
      !m_ledger.hasVNameValid(dest_name)) {
     m_blk_msg_noinfo++;
@@ -894,9 +892,6 @@ bool FldNodeComms::meetsRangeThresh(string vname1, string vname2)
   if(m_comms_range == 0)
     return(false);
 
-  vname1 = toupper(vname1);
-  vname2 = toupper(vname2);
-  
   if(!m_ledger.hasVNameValidNotStale(vname1))
     return(false);
   if(!m_ledger.hasVNameValidNotStale(vname2))
@@ -962,9 +957,6 @@ bool FldNodeComms::meetsReportRateThresh(string vname1, string vname2)
 bool FldNodeComms::meetsCriticalRangeThresh(string vname1,
 					    string vname2)
 {
-  vname1 = toupper(vname1);
-  vname2 = toupper(vname2);
-  
   if(!m_ledger.hasVNameValidNotStale(vname1))
     return(false);
   if(!m_ledger.hasVNameValidNotStale(vname2))
@@ -998,8 +990,6 @@ void FldNodeComms::postViewCommsPulse(string vname1,
   if((lpcolor == "invisible") || (lpcolor == "off"))
     return;
 
-  vname1 = toupper(vname1);
-  vname2 = toupper(vname2);
   if(vname1 == vname2)
     return;
 

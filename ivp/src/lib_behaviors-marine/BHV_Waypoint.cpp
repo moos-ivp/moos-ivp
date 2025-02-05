@@ -879,8 +879,8 @@ void BHV_Waypoint::postViewableSegList()
       postMessage("VIEW_POLYGON", poly.get_spec());
     }
   }
-  
-  postMessage("VIEW_SEGLIST", segl.get_spec());
+
+  postMessage("VIEW_SEGLIST", segl.get_spec(3));
 }
 
 //-----------------------------------------------------------

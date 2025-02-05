@@ -368,13 +368,17 @@ bool ContactMgrV20::handleMailNodeReport(string report,
   NodeRecord new_record = string2NodeRecord(report);
 
   // Sanity Check 1: Record must have a vname
+  // string vname = tolower(new_record.getName());
   string vname = new_record.getName();
   if(vname == "") {
     whynot = "Empty vname";
     return(false);
   }
 
-  // Sanity Check 2: Ingore ownship records
+  // Sanity Check 2: Ingore ownship records. Should not need to muck
+  // with case sensitivity, but we do it to be conservative. Downside
+  // is that an ownship named "charlie" will regard a contact named
+  // "CHARLIE" as ownship and reject.
   if(tolower(vname) == tolower(m_ownship))
     return(true);
 
@@ -398,7 +402,8 @@ bool ContactMgrV20::handleMailNodeReport(string report,
   bool prev_known_vehicle = m_ledger.hasVName(vname);
 
   string vname_added = m_ledger.processNodeRecord(new_record, whynot);
-  if(tolower(vname_added) != tolower(vname)) {
+  //if(tolower(vname_added) != vname) {
+  if(vname_added != vname) {
     whynot = "1:" + vname + "2:" + vname_added;
     return(false);
   }
@@ -831,11 +836,10 @@ void ContactMgrV20::postRangeReports()
 
     // Part 2A: Get the list of contacts for this report
     string contacts;   
-    vector<string> vcontacts;
-    map<string, double>::iterator q;
-    for(q=m_map_node_ranges_extrap.begin();
-	q!=m_map_node_ranges_extrap.end(); q++) {
-      string vname = q->first;
+
+    vector<string> vnames = m_ledger.getVNames();
+    for(unsigned int i=0; i<vnames.size(); i++) {
+      string vname = vnames[i];
 
       // Part 2AA: If report specifies group, check contact for match
       bool group_match = true;
@@ -855,7 +859,8 @@ void ContactMgrV20::postRangeReports()
 
       // Part 2AC: Check if the range is satisfied
       bool range_sat = false;
-      double now_range = q->second;
+      double now_range = m_map_node_ranges_extrap[vname];
+      //double now_range = q->second;
       if(now_range < rthresh) 
 	range_sat = true;
 
@@ -863,7 +868,6 @@ void ContactMgrV20::postRangeReports()
 	if(contacts != "")
 	  contacts += ",";
 	contacts += vname;
-	vcontacts.push_back(vname);
       }
     }
     // Part 2B: If refresh requested or the report is different, then post it!
@@ -1427,7 +1431,8 @@ void ContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
   var = findReplace(var, "$[VTYPE]", type_str);
   var = findReplace(var, "$[UTIME]", time_str);
   var = findReplace(var, "$[UTC]", time_str);
-  var = findReplace(var, "%[VNAME]", tolower(name_str));
+  //var = findReplace(var, "%[VNAME]", tolower(name_str));
+  var = findReplace(var, "%[VNAME]", name_str);
   var = findReplace(var, "%[VTYPE]", tolower(type_str));
 
   // Step 3: If posting is numerical just do it and be done!
@@ -1453,7 +1458,8 @@ void ContactMgrV20::postAlert(NodeRecord record, VarDataPair pair)
   msg = findReplace(msg, "$[VTYPE]", type_str);
   msg = findReplace(msg, "$[GROUP]", group_str);
   msg = findReplace(msg, "$[UTIME]", time_str);
-  msg = findReplace(msg, "%[VNAME]", tolower(name_str));
+  //msg = findReplace(msg, "%[VNAME]", tolower(name_str));
+  msg = findReplace(msg, "%[VNAME]", name_str);
   msg = findReplace(msg, "%[VTYPE]", tolower(type_str));
   msg = findReplace(msg, "%[GROUP]", tolower(group_str));
 

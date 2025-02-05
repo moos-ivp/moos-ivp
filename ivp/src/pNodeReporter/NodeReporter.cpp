@@ -560,7 +560,7 @@ bool NodeReporter::Iterate()
     ok_nav_to_post = true;
   else {
     double elapsed_since_start = m_curr_time - m_start_time;
-    if((m_nav_grace_period > 0) && (elapsed_since_start > m_nav_grace_period))
+    if((m_nav_grace_period > 0) && (elapsed_since_start < m_nav_grace_period))
       ok_nav_to_post = true;
   }
   m_record.setTimeStamp(m_curr_time); 
@@ -614,6 +614,14 @@ bool NodeReporter::Iterate()
   if(ok_nav_to_post && time_to_post) {
     if(!pruned_due_to_extrap)
       post_report = true;
+  }
+
+  // If we still dont have x/y or lat/lon and we're still in the grace period
+  // don't post reports w/out nav info.
+  if(!m_record.isSetXY() && !m_record.isSetLatLon()) {
+    double elapsed_since_start = m_curr_time - m_start_time;
+    if((m_nav_grace_period > 0) && (elapsed_since_start < m_nav_grace_period))
+      post_report = false;
   }
   
   //==============================================================

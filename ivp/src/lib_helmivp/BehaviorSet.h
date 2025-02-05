@@ -102,6 +102,8 @@ public:
   std::vector<std::string> getSpecUpdateVars();
   std::vector<std::string> getUpdateResults() const {return(m_update_results);}
 
+  std::vector<std::string> getContactNames();
+  
   void                     clearUpdateResults() {m_update_results.clear();}
   void                     addWarning(const std::string&);
   std::vector<std::string> getWarnings()     {return(m_warnings);}

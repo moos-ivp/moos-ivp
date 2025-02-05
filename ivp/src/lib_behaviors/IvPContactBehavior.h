@@ -102,7 +102,7 @@ public:
 
   double m_relevance;
 
-   LinearExtrapolator m_extrapolator;
+  LinearExtrapolator m_extrapolator;
 
   CPAEngine m_cpa_engine;
   CPAEngine m_rcpa_engine;

@@ -103,6 +103,7 @@ public:
   bool    isDynamicallySpawned() const    {return(m_dynamically_spawned);}
   bool    isDynamicallySpawnable() const  {return(m_dynamically_spawnable);}
   std::string getSpawnBaseName() const    {return(m_spawn_basename);}
+  std::string getContact() const          {return(m_contact);}
   
  protected:
   bool    setBehaviorName(std::string str);
@@ -199,6 +200,9 @@ public:
 
   std::vector<std::string> getStateSpaceVars();
   std::string              getOwnGroup();
+  std::string              getOwnType();
+  std::string              getOwnColor();
+  double                   getOwnLength();
 
   bool                     getBufferDoubleValX(std::string, double&);
   bool                     getBufferStringValX(std::string, std::string&);

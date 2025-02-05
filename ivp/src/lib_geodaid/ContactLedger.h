@@ -52,11 +52,11 @@ public: // Managing, Handle Node Reports
 				std::string& whynot);
   std::string processNodeRecord(NodeRecord record,
 				std::string& whynot);
-
 public:
   void clearNode(std::string vname);  
   void clearAllNodes();
   void clearStaleNodes();
+  void clearStaleNodes(std::vector<std::string>);
 
 public: // Status checks
   bool isValid(std::string) const;

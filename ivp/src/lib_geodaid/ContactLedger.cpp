@@ -135,7 +135,7 @@ string ContactLedger::processNodeRecord(NodeRecord record,
 {
   m_total_reports++;
   
-  string vname = toupper(record.getName());
+  string vname = record.getName();
   
   m_total_reports_valid++;
 
@@ -143,7 +143,7 @@ string ContactLedger::processNodeRecord(NodeRecord record,
   // Part 1: Do some "Type-Fixing".
   // Known types: kayak, auv, glider, ship, wamv, etc.
   // ========================================================
-  string vtype = tolower(record.getType());
+  string vtype = record.getType();
   if(vtype == "uuv")
     vtype = "auv";
   else if(!isKnownVehicleType(vtype))
@@ -279,11 +279,22 @@ void ContactLedger::clearAllNodes()
 
 void ContactLedger::clearStaleNodes()
 {
+  vector<string> keep_vnames;
+  clearStaleNodes(keep_vnames);
+}
+
+//---------------------------------------------------------------
+// Procedure: clearStaleNodes()
+
+void ContactLedger::clearStaleNodes(vector<string> keep_vnames)
+{
   vector<string> stale_vnames;
   
   map<string,NodeRecord>::iterator p;
   for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
     string vname = p->first;
+    if(vectorContains(keep_vnames, vname))
+      continue;
     double utc_age = getUTCAge(vname);
     if(utc_age > m_stale_thresh)
       stale_vnames.push_back(vname);
@@ -313,7 +324,6 @@ void ContactLedger::extrapolate(double utc)
 
 void ContactLedger::setActiveVName(string vstr)
 {
-  vstr = toupper(vstr);
   // If given arg matches a known vname, then just set it
   if(m_map_records_rep.count(vstr)) {
     m_active_vname = vstr;
@@ -327,7 +337,7 @@ void ContactLedger::setActiveVName(string vstr)
       string vname = p->first;
       if(m_active_vname == "") 
 	m_active_vname = vname;
-      else if(tolower(vname) == tolower(m_active_vname)) {
+      else if(vname == m_active_vname) {
 	p++;
 	if(p == m_map_records_rep.end())
 	  p = m_map_records_rep.begin();
@@ -344,8 +354,6 @@ void ContactLedger::setActiveVName(string vstr)
 
 void ContactLedger::extrapolate(string vname)
 {
-  vname = toupper(vname);
-  
   // Sanity check 1: Ledger UTC current time must be set
   if(m_curr_utc <= 0)
     return;
@@ -409,7 +417,6 @@ void ContactLedger::extrapolate(string vname)
 
 bool ContactLedger::isValid(string vname) const
 {
-  vname = toupper(vname);
   map<string,NodeRecord>::const_iterator p;
   p = m_map_records_rep.find(vname);
   if(p != m_map_records_rep.end())
@@ -424,7 +431,6 @@ bool ContactLedger::isValid(string vname) const
 
 bool ContactLedger::isStale(string vname, double thresh) const
 {
-  vname = toupper(vname);
   if(thresh < 0)
     return(false);
 
@@ -456,7 +462,6 @@ bool ContactLedger::isStale(string vname, double thresh) const
 
 double ContactLedger::getUTC(string vname) const
 {
-  vname = toupper(vname);
   map<string,NodeRecord>::const_iterator p;
   p = m_map_records_rep.find(vname);
   if(p == m_map_records_rep.end())
@@ -488,7 +493,6 @@ double ContactLedger::getUTCAge(string vname) const
   
 double ContactLedger::getUTCReceived(string vname) const
 {
-  vname = toupper(vname);
   map<string,double>::const_iterator p;
   p = m_map_records_utc.find(vname);
   if(p == m_map_records_utc.end())
@@ -517,8 +521,6 @@ double ContactLedger::getUTCAgeReceived(string vname) const
 
 bool ContactLedger::hasVName(string vname) const
 {
-  vname = toupper(vname);
-
   if(m_map_records_rep.count(vname) == 0)
     return(false);
 
@@ -530,8 +532,6 @@ bool ContactLedger::hasVName(string vname) const
 
 bool ContactLedger::hasVNameValid(string vname) const
 {
-  vname = toupper(vname);
-  
   map<string,NodeRecord>::const_iterator q;
   q = m_map_records_rep.find(vname);
   if(q==m_map_records_rep.end())
@@ -546,8 +546,6 @@ bool ContactLedger::hasVNameValid(string vname) const
 bool ContactLedger::hasVNameValidNotStale(string vname,
 					  double thresh) const
 {
-  vname = toupper(vname);
-  
   map<string,NodeRecord>::const_iterator q;
   q = m_map_records_rep.find(vname);
   if(q==m_map_records_rep.end())
@@ -578,8 +576,6 @@ bool ContactLedger::hasVNameValidNotStale(string vname,
 
 double ContactLedger::getX(string vname, bool extrap) const
 {
-  vname = toupper(vname);
-
   if(!hasVName(vname))
     return(0);
 
@@ -593,7 +589,6 @@ double ContactLedger::getX(string vname, bool extrap) const
 
 double ContactLedger::getY(string vname, bool extrap) const
 {
-  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -607,7 +602,6 @@ double ContactLedger::getY(string vname, bool extrap) const
 
 double ContactLedger::getSpeed(string vname) const
 {
-  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -620,7 +614,6 @@ double ContactLedger::getSpeed(string vname) const
 
 double ContactLedger::getHeading(string vname) const
 {
-  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -634,7 +627,6 @@ double ContactLedger::getHeading(string vname) const
 
 double ContactLedger::getDepth(string vname) const
 {
-  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -648,7 +640,6 @@ double ContactLedger::getDepth(string vname) const
 
 double ContactLedger::getLat(string vname) const
 {
-  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -662,7 +653,6 @@ double ContactLedger::getLat(string vname) const
 
 double ContactLedger::getLon(string vname) const
 {
-  vname = toupper(vname);
   if(!hasVName(vname))
     return(0);
 
@@ -675,7 +665,6 @@ double ContactLedger::getLon(string vname) const
 
 string ContactLedger::getGroup(string vname) const
 {
-  vname = toupper(vname);
   if(!hasVName(vname))
     return("");
 
@@ -688,7 +677,6 @@ string ContactLedger::getGroup(string vname) const
 
 string ContactLedger::getType(string vname) const
 {
-  vname = toupper(vname);
   if(!hasVName(vname))
     return("");
 
@@ -701,7 +689,6 @@ string ContactLedger::getType(string vname) const
 
 string ContactLedger::getColor(string vname) const
 {
-  vname = toupper(vname);
   if(!hasVName(vname))
     return("");
 
@@ -714,7 +701,6 @@ string ContactLedger::getColor(string vname) const
 
 string ContactLedger::getSpec(string vname) const
 {
-  vname = toupper(vname);
   map<string,NodeRecord>::const_iterator p;
 
   p = m_map_records_ext.find(vname);
@@ -733,7 +719,6 @@ string ContactLedger::getSpec(string vname) const
 
 CPList ContactLedger::getVHist(string vname) const
 {
-  vname = toupper(vname);
   map<string,CPList>::const_iterator p=m_map_hist.find(vname);
   if(p==m_map_hist.end()) {
     CPList empty_cplist;
@@ -754,9 +739,9 @@ set<string> ContactLedger::getVNamesByGroup(string group) const
   for(p=m_map_records_rep.begin(); p!=m_map_records_rep.end(); p++) {
     string vname = p->first;
     string vgroup = p->second.getGroup();
-    if(tolower(group) == tolower(vgroup))
+    if(group == vgroup)
       rset.insert(vname);
-    else if(tolower(group) == tolower("all"))
+    else if(group == "all")
       rset.insert(vname);
   }
 
@@ -802,8 +787,6 @@ vector<string> ContactLedger::getVNamesStale(double thresh) const
 
 unsigned int ContactLedger::totalReports(string vname) const
 {
-  vname = toupper(vname);
-
   map<string, unsigned int>::const_iterator p;
   p = m_map_skew_cnt.find(vname);
   if(p != m_map_skew_cnt.end())
@@ -851,8 +834,6 @@ vector<string> ContactLedger::getReportLags() const
 
 NodeRecord ContactLedger::getRecord(string vname, bool extrap) const
 {
-  vname = toupper(vname);
-  
   if(extrap) {
     map<string,NodeRecord>::const_iterator q=m_map_records_ext.find(vname);
     if(q!=m_map_records_ext.end())

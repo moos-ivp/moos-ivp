@@ -97,7 +97,7 @@ double LedgerSnap::getInfoDouble(std::string vname,
 				 std::string fld,
 				 bool& ok) const
 {
-  vname = toupper(vname);
+  //vname = toupper(vname);
 
   ok = true;
   map<string, double>::const_iterator p;
@@ -168,7 +168,7 @@ string LedgerSnap::getInfoString(std::string vname,
 				 std::string fld,
 				 bool& ok) const
 {
-  vname = toupper(vname);
+  //vname = toupper(vname);
   ok = true;
   map<string, string>::const_iterator p;
   if(fld == "group") {

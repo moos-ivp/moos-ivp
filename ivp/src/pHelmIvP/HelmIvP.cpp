@@ -31,6 +31,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <cmath>
+#include "MOOS/libMOOSGeodesy/MOOSGeodesy.h"
 #include "HelmIvP.h"
 #include "MBUtils.h"
 #include "BuildUtils.h"
@@ -96,6 +97,9 @@ HelmIvP::HelmIvP()
   m_helm_start_posted  = false;
   m_hold_apps_all_seen = true; // will init to false if apps specified
   
+  m_nav_started = false;
+  m_nav_grace = 5;
+
   // The refresh vars handle the occasional clearing of the m_outgoing
   // maps. These maps will be cleared when MOOS mail is received for the
   // variable given by m_refresh_var. The user can set minimum interval
@@ -113,7 +117,7 @@ HelmIvP::HelmIvP()
   m_node_report_vars.push_back("AIS_REPORT");
   m_node_report_vars.push_back("NODE_REPORT");
   m_node_report_vars.push_back("AIS_REPORT_LOCAL");
-  //m_node_report_vars.push_back("NODE_REPORT_LOCAL");
+  m_node_report_vars.push_back("NODE_REPORT_LOCAL");
 }
 
 //--------------------------------------------------------------------
@@ -302,6 +306,11 @@ bool HelmIvP::OnNewMail(MOOSMSG_LIST &NewMail)
 	  reportRunWarning("Unhandled BHV_ABLE_FILTER");
       }
     }
+    else if(moosvar == "NODE_REPORT_LOCAL") {
+      bool ok = processNodeReportLocal(sval);
+      if(!ok)
+	reportRunWarning("Unhandled NODE_REPORT_LOCAL");
+    }
     else if(vectorContains(m_node_report_vars, moosvar)) {
       bool ok = processNodeReport(sval);
       if(!ok)
@@ -345,6 +354,11 @@ bool HelmIvP::Iterate()
   }
 
   postCharStatus();
+
+  if(holdForNavSolution()) {
+    AppCastingMOOSApp::PostReport();
+    return(true);
+  }
   
   if(m_init_vars_ready && !m_init_vars_done)
     handleInitialVarsPhase2();
@@ -358,7 +372,16 @@ bool HelmIvP::Iterate()
     m_start_time = m_curr_time;
 
   m_ledger.setCurrTimeUTC(m_curr_time);
-  m_ledger.clearStaleNodes();
+
+  // Clear all stale nodes(vnames) from the contact ledger, UNLESS
+  // there is a behavior currently present that is still reasoning
+  // about a contact. Get a list of keep_vnames and pass this to the
+  // contact ledger.
+  vector<string> keep_vnames;
+  if(m_bhv_set)
+    keep_vnames = m_bhv_set->getContactNames();
+  m_ledger.clearStaleNodes(keep_vnames);
+
   m_ledger.extrapolate();
   updateLedgerSnap();
   cout << "m_ledger_size: " << m_ledger.size() << endl;
@@ -1216,6 +1239,7 @@ bool HelmIvP::OnStartUp()
   m_MissionReader.GetConfiguration(GetAppName(), sParams);
 
 
+  CMOOSGeodesy geodesy;
   double lat_origin, lon_origin;
   if(!m_MissionReader.GetValue("LatOrigin", lat_origin)) {
     reportConfigWarning("No LatOrigin in *.moos file");
@@ -1225,7 +1249,7 @@ bool HelmIvP::OnStartUp()
     reportConfigWarning("No LongOrigin set in *.moos file");
     reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
   }
-  else if(!m_geodesy.Initialise(lat_origin, lon_origin)) {
+  else if(!geodesy.Initialise(lat_origin, lon_origin)) {
     reportConfigWarning("Lat/Lon Origin found but Geodesy init failed.");
     reportConfigWarning("Wont derive x/y from lat/lon in node reports.");
   }
@@ -1234,7 +1258,7 @@ bool HelmIvP::OnStartUp()
     m_ledger_snap = new LedgerSnap;
   
   m_ledger.setCurrTimeUTC(m_curr_time);
-  m_ledger.setGeodesy(m_geodesy);
+  m_ledger.setGeodesy(geodesy);
   m_ledger.setStaleThresh(10);
 
   vector<string> behavior_dirs;
@@ -1277,6 +1301,8 @@ bool HelmIvP::OnStartUp()
       handled = setNonWhiteVarOnString(m_helm_prefix, value);
     else if((param == "HOLD_ON_APP") || (param == "HOLD_ON_APPS"))
       handled = handleConfigHoldOnApp(value);
+    else if(param == "NAV_GRACE")
+      handled = setDoubleOnString(m_nav_grace, value);
     else if(param == "DOMAIN")
       handled = handleConfigDomain(value);
     else if((param == "BHV_DIR_NOT_FOUND_OK") || (param == "BHV_DIRS_NOT_FOUND_OK"))
@@ -1732,12 +1758,51 @@ void HelmIvP::postAllStop(string msg)
 bool HelmIvP::processNodeReport(const string& report)
 {
   string whynot;
-  string vname1 = m_ledger.processNodeReport(report, whynot);
-  if(vname1 == "") {
+  string vname = m_ledger.processNodeReport(report, whynot);
+  if(vname == "") {
     reportRunWarning("Bad NodeReport: " + report);
     reportRunWarning("The issue: " + whynot);
   }
 
+  string nav_group = m_ledger.getGroup(vname);
+  string nav_type  = m_ledger.getType(vname);
+
+  string uvname = toupper(vname);
+  m_info_buffer->setValue(uvname+"_NAV_GROUP", nav_group);
+  m_info_buffer->setValue(uvname+"_NAV_TYPE", nav_type);
+  
+  return(true);
+}
+
+//--------------------------------------------------------------------
+// Procedure: processNodeReportLocal()
+
+bool HelmIvP::processNodeReportLocal(const string& report)
+{
+  NodeRecord record = string2NodeRecord(report);
+  
+  string upp_vname  = toupper(record.getName());
+
+  string nav_group  = record.getGroup();
+  string nav_type   = record.getType();
+  string nav_color  = record.getColor();
+  double nav_length = record.getLength();
+
+  if(upp_vname == "")
+    return(false);
+
+  if(nav_group != "")
+    m_info_buffer->setValue(upp_vname+"_NAV_GROUP", nav_group);
+
+  if(nav_type != "")
+    m_info_buffer->setValue(upp_vname+"_NAV_TYPE", nav_type);
+
+  if(nav_color != "")
+    m_info_buffer->setValue(upp_vname+"_NAV_COLOR", nav_color);
+  
+  if(nav_length != 0)
+    m_info_buffer->setValue(upp_vname+"_NAV_LENGTH", nav_length);
+  
   return(true);
 }
 
@@ -1847,5 +1912,42 @@ void HelmIvP::updateLedgerSnap()
     m_ledger_snap->setUTCAgeReceived(v, m_ledger.getUTCAgeReceived(v));
   }
   m_ledger_snap->setCurrTimeUTC(m_curr_time);
+}
+  
+//--------------------------------------------------------------------
+// Procedure: holdForNavSolution()
+
+bool HelmIvP::holdForNavSolution()
+{
+  if(m_nav_started)
+    return(false);
+
+  bool nav_started = true;
+
+  if(!m_info_buffer->isKnown("NAV_X"))
+    nav_started = false;
+  if(!m_info_buffer->isKnown("NAV_Y"))
+    nav_started = false;
+  if(!m_info_buffer->isKnown("NAV_HEADING"))
+    nav_started = false;
+  if(!m_info_buffer->isKnown("NAV_SPEED"))
+    nav_started = false;
+
+  if(m_ivp_domain.hasDomain("depth")) {
+    if(!m_info_buffer->isKnown("NAV_DEPTH"))
+      nav_started = false;
+  }
+  
+  if(nav_started) {
+    m_nav_started = true;
+    retractRunWarning("Waiting for Helm Nav Solution");
+    return(false);    
+  }
+
+  double elapsed = m_curr_time - m_start_time;
+  if(elapsed > m_nav_grace)
+    reportRunWarning("Waiting for Helm Nav Solution");
+  
+  return(true);
 }
   

@@ -75,8 +75,7 @@ class FldNodeComms : public AppCastingMOOSApp
 			  std::string pulse_type="nrep",
 			  std::string color="auto",
 			  double fill_opaqueness=0.35);
-
- protected: 
+protected: 
   void postNodeReport(std::string os, std::string cn, std::string msg);
   
  protected: // Configuration variables
