@@ -30,8 +30,10 @@ COMMON_APPS+=("uFldNodeComms" "uFldShoreBroker" "uFldNodeBroker")
 COMMON_APPS+=("pShare" "uProcessWatch" "pRealm" "pHostInfo")
 COMMON_APPS+=("uMayFinish" "pAutoPoke" "pMarineViewer")
 COMMON_APPS+=("pMarinePID" "pMarinePIDV22" "uLoadWatch")
-COMMON_APPS+=("pContactMgrV20" "uMemWatch")
-COMMON_APPS+=("pEchoVar" "uDelve")
+COMMON_APPS+=("pContactMgrV20" "uMemWatch" "pObstacleMgr")
+COMMON_APPS+=("pEchoVar" "uDelve" "uSimMarine" "uSimMarineV22" )
+COMMON_APPS+=("pMissionEval" "uFldObstacleSim" )
+COMMON_APPS+=("uFldCollObDetect" )
 # Swarm
 COMMON_APPS+=("uFldVoronoi")
 
