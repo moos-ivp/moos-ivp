@@ -26,7 +26,7 @@ The purpose of this contributor agreement ("Agreement") is to clarify and docume
 
 #### 2.1 Copyright license to Us
 
-Subject to the terms and conditions of this Agreement, You hereby grant to Us a worldwide, royalty-free, NON-exclusive, perpetual and irrevocable (except as stated in Section 8.2) license, with the right to transfer an unlimited number of non-exclusive licenses or to grant sublicenses to third parties, under the Copyright covering the Contribution to use the Contribution by all means, including, but not limited to:
+Subject to the terms and conditions of this Agreement, You hereby grant to Us a worldwide, royalty-free, NON-exclusive, perpetual and irrevocable license, with the right to transfer an unlimited number of non-exclusive licenses or to grant sublicenses to third parties, under the Copyright covering the Contribution to use the Contribution by all means, including, but not limited to:
 
 * publish the Contribution,
 * modify the Contribution,
@@ -66,13 +66,13 @@ TO THE MAXIMUM EXTENT PERMITTED BY APPLICABLE LAW, IN NO EVENT WILL YOU OR WE BE
 
 ### 7. Approximation of disclaimer and damage waiver
 
-IF THE DISCLAIMER AND DAMAGE WAIVER MENTIONED IN SECTION 4. AND SECTION 5. CANNOT BE GIVEN LEGAL EFFECT UNDER APPLICABLE LOCAL LAW, REVIEWING COURTS SHALL APPLY LOCAL LAW THAT MOST CLOSELY APPROXIMATES AN ABSOLUTE WAIVER OF ALL CIVIL OR CONTRACTUAL LIABILITY IN CONNECTION WITH THE CONTRIBUTION.
+IF THE DISCLAIMER AND DAMAGE WAIVER MENTIONED IN SECTION 4. AND SECTION 6. CANNOT BE GIVEN LEGAL EFFECT UNDER APPLICABLE LOCAL LAW, REVIEWING COURTS SHALL APPLY LOCAL LAW THAT MOST CLOSELY APPROXIMATES AN ABSOLUTE WAIVER OF ALL CIVIL OR CONTRACTUAL LIABILITY IN CONNECTION WITH THE CONTRIBUTION.
 
 ### 8. Term
 
 8.1 This Agreement shall come into effect upon Your acceptance of the terms and conditions.
 
-8.3 In the event of a termination of this Agreement Sections 4, 5, 6, 7 and 8 shall survive such termination and shall remain in full force thereafter. For the avoidance of doubt, Free and Open Source Software (sub)licenses that have already been granted for Contributions at the date of the termination shall remain in full force after the termination of this Agreement.
+8.3 In the event of a termination of this Agreement Sections 4, 5, 6, 7, 8, and 9 shall survive such termination and shall remain in full force thereafter. For the avoidance of doubt, Free and Open Source Software (sub)licenses that have already been granted for Contributions at the date of the termination shall remain in full force after the termination of this Agreement.
 
 ### 9. Miscellaneous
 
