@@ -12,8 +12,6 @@ The purpose of this contributor agreement ("Agreement") is to clarify and docume
 
 **"Legal Entity"** means an entity that is not a natural person.
 
-**"Affiliate"** means any other Legal Entity that controls, is controlled by, or under common control with that Legal Entity. For the purposes of this definition, "control" means (i) the power, direct or indirect, to cause the direction or management of such Legal Entity, whether by contract or otherwise, (ii) ownership of fifty percent (50%) or more of the outstanding shares or securities that vote to elect the management or other persons who direct such Legal Entity or (iii) beneficial ownership of such entity.
-
 **"Contribution"** means any original work of authorship, including any original modifications or additions to an existing work of authorship, Submitted by You to Us, in which You own the Copyright.
 
 **"Copyright"** means all rights protecting works of authorship, including copyright, moral and neighboring rights, as appropriate, for the full term of their existence.
