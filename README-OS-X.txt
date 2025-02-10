@@ -1,5 +1,5 @@
 README-OS-X.txt
-Last updated: 07 Aug 2022
+Last updated: 07 Aug 2024
 Maintainer: Mike Benjamin (issues@moos-ivp.org)
 
 ==============================================================================
