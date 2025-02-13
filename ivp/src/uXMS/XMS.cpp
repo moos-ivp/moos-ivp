@@ -40,16 +40,16 @@ extern bool MOOSAPP_OnDisconnect(void*);
 // Constructor()
 
 XMS::XMS()
-{    
+{
   m_display_source     = false;
   m_display_aux_source = false;
   m_display_time       = false;
   m_display_community  = false;
   m_display_own_community = true;
   m_display_hist_var   = true;
-  
+
   m_ignore_file_vars   = false;
-  
+
   m_update_requested  = true;
   m_history_event     = true;
   m_refresh_mode      = "events";
@@ -62,10 +62,10 @@ XMS::XMS()
   m_trunc_data_start  = 20;
   m_display_virgins   = true;
   m_db_start_time     = 0;
-  
+
   m_filter            = "";
   m_history_length    = 40;
-  
+
   m_display_all       = false;
   m_display_all_requested = false;
   m_display_all_requested = true;
@@ -87,7 +87,7 @@ XMS::XMS()
 
 bool XMS::ConfigureComms()
 {
-  if((m_term_server_host == "") || (m_term_server_port == "")) 
+  if((m_term_server_host == "") || (m_term_server_port == ""))
     return(CMOOSApp::ConfigureComms());
 
   long lport = atol(m_term_server_port.c_str());
@@ -99,19 +99,19 @@ bool XMS::ConfigureComms()
 
   //register a callback for On Connect
   m_Comms.SetOnConnectCallBack(MOOSAPP_OnConnect, this);
-  
+
   //and one for the disconnect callback
   m_Comms.SetOnDisconnectCallBack(MOOSAPP_OnDisconnect, this);
-  
+
   //start the comms client....
   if(m_sMOOSName.empty())
     m_sMOOSName = m_sAppName;
-  
+
   m_nCommsFreq = 10;
 
   m_Comms.Run(m_sServerHost.c_str(),  m_lServerPort,
 	      m_sMOOSName.c_str(),    m_nCommsFreq);
-  
+
   return(true);
 }
 
@@ -119,7 +119,7 @@ bool XMS::ConfigureComms()
 // Procedure: OnNewMail()
 
 bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
-{ 
+{
   AppCastingMOOSApp::OnNewMail(NewMail);
 
   MOOSMSG_LIST::iterator p;
@@ -135,8 +135,8 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
       }
     }
   }
-  
-  // Update the values of all variables we have registered for.  
+
+  // Update the values of all variables we have registered for.
   // All variables "values" are stored as strings. We let MOOS
   // tell us the type of the variable, and we keep track of the
   // type locally, just so we can put quotes around string values.
@@ -156,15 +156,15 @@ bool XMS::OnNewMail(MOOSMSG_LIST &NewMail)
       m_proc_watch_summary = msg.GetString();
     }
 
-    else if(key == "DB_CLIENTS") 
+    else if(key == "DB_CLIENTS")
       updateDBClients(msg.GetString());
-    
+
     // A check is made in updateVariable() to ensure the given variable
     // is indeed on the scope list.
     if(m_display_all) {
       if(m_display_all_really)
 	addVariable(key);
-      else if (!strEnds(key, "_STATUS") && (key != "APPCAST") && 
+      else if (!strEnds(key, "_STATUS") && (key != "APPCAST") &&
 	       (key != "DB_RWSUMMARY") && (key != "DB_VARSUMMARY"))
 	addVariable(key);
     }
@@ -185,9 +185,9 @@ bool XMS::Iterate()
     Register("*","*",0);
     m_display_all_requested = true;
   }
-  
+
   refreshProcVarsList();
-  
+
   string term_directive;
   if(m_refresh_mode == "paused")
     term_directive = "noterm";
@@ -235,7 +235,7 @@ bool XMS::OnStartUp()
   // honored, no appcast postings made.
 
   //m_MissionReader.GetConfiguration(app_name, sParams);
-  if(!m_MissionReader.GetConfiguration(app_name, sParams)) 
+  if(!m_MissionReader.GetConfiguration(app_name, sParams))
     m_suppress_appcasts = true;
 
   // Variables shown in the order they appear in the config file
@@ -248,10 +248,10 @@ bool XMS::OnStartUp()
     string value = stripQuotes(line);
 
     bool handled = false;
-    if(param == "REFRESH_MODE") 
+    if(param == "REFRESH_MODE")
       handled = setRefreshMode(value);
 
-    else if(param == "CONTENT_MODE") 
+    else if(param == "CONTENT_MODE")
       handled = setContentMode(value);
 
     // Depricated PAUSED
@@ -266,7 +266,7 @@ bool XMS::OnStartUp()
       string str = "PAUSED parameter deprecated, use REFRESH_MODE instead";
       reportUnhandledConfigWarning(str);
     }
-  
+
     else if((param == "HISTORY_VAR") && !strContainsWhite(value)) {
       handled = addVariable(value, true); // true means itsa history variable
       handled = true;
@@ -274,9 +274,9 @@ bool XMS::OnStartUp()
 
     else if(param == "DISPLAY_VIRGINS")
       handled = setBooleanOnString(m_display_virgins, value);
-    
+
     else if(param == "WRAP_DATA")
-      handled = setBooleanOnString(m_wrap_data, value);    
+      handled = setBooleanOnString(m_wrap_data, value);
     else if(param == "WRAP_DATA_LEN") {
       handled = setUIntOnString(m_wrap_data_len, value);
       if(handled && (m_wrap_data_len < 10))
@@ -284,13 +284,13 @@ bool XMS::OnStartUp()
       if(handled && (m_wrap_data_len > 120))
 	m_wrap_data_len = 120;
     }
-      
+
     else if((param == "TRUNC_DATA") && isBoolean(value)) {
       handled = true;
       if(tolower(value) == "true")
 	m_trunc_data = m_trunc_data_start;
     }
-    
+
     else if(param == "SOURCE")
       handled = addSources(value);
     else if(param == "DISPLAY_SOURCE")
@@ -298,7 +298,7 @@ bool XMS::OnStartUp()
 
     else if(param == "DISPLAY_HISTORY_VAR")
       handled = setBooleanOnString(m_display_hist_var, value);
-    
+
     else if((param == "DISPLAY_AUX_SOURCE") && isBoolean(value)) {
       handled = true;
       m_display_source = (tolower(value) == "true");
@@ -307,22 +307,22 @@ bool XMS::OnStartUp()
 
     else if(param == "DISPLAY_TIME")
       handled = setBooleanOnString(m_display_time, value);
-    
+
     else if(param == "DISPLAY_COMMUNITY")
       handled = setBooleanOnString(m_display_community, value);
-    
+
     else if((param == "DISPLAY_ALL") && isBoolean(value)) {
       handled = true;
       if(!m_ignore_file_vars)
 	m_display_all = (tolower(value) == "true");
-    }    
+    }
     else if((param == "DISPLAY_ALLL") && isBoolean(value)) {
       handled = true;
       if(!m_ignore_file_vars) {
 	m_display_all = (tolower(value) == "true");
 	m_display_all_really = (tolower(value) == "true");
       }
-    }    
+    }
     else if((param == "COLORMAP") || (param == "COLOR_MAP"))
       handled = setColorMappingsPairs(value);
 
@@ -331,12 +331,12 @@ bool XMS::OnStartUp()
 	handled = true;
       else
 	handled = addVariables(value);
-    } 
+    }
 
     if(!handled)
-      reportUnhandledConfigWarning(orig);    
+      reportUnhandledConfigWarning(orig);
   }
-  
+
   // setup for display all
   if(m_display_all) {
     Register("*","*",0);
@@ -456,13 +456,13 @@ void XMS::handleCommand(char c)
     setContentMode("help", true);
     m_update_requested = true;
     break;
-  case '-': 
+  case '-':
     m_refresh_mode = "paused";
     handleSelectMaskSubSources();
     setContentMode("scoping");
     m_update_requested = true;
     break;
-  case '+': 
+  case '+':
     {
       string saved_refresh_mode = m_refresh_mode;
       m_refresh_mode = "paused";
@@ -481,43 +481,43 @@ void XMS::handleCommand(char c)
     }
     m_update_requested = true;
     break;
-    
+
     // turn filtering on
   case '/':
     m_refresh_mode = "paused";
-    
+
     printf("%c", c);
     cin >> m_filter;
-    
+
     m_update_requested = true;
     break;
-    
+
     // clear filtering
   case '?':
     m_update_requested = true;
     m_filter = "";
     break;
-    
+
     // turn show all variables mode on
   case 'A':
     m_display_all = true;
     m_update_requested = true;
-    
+
     // save the original startup variable configuration
     // there may a more elegant way to do this
     m_map_orig_var_entries = m_map_var_entries;
     break;
-    
+
     // turn show all variables mode off
   case 'a':
     if(m_display_all) {
       m_display_all = false;
       m_update_requested = true;
-      
+
       // restore the variable list at startup
       m_map_var_entries = m_map_orig_var_entries;
     }
-    
+
   default:
     break;
   }
@@ -533,7 +533,7 @@ bool XMS::addVariables(string line)
   line = stripBlankEnds(line);
   vector<string> svector = parseString(line, ',');
   unsigned int i, vsize = svector.size();
-  
+
   for(i=0; i<vsize; i++) {
     string var = stripBlankEnds(svector[i]);
     ok = ok && addVariable(var);
@@ -543,7 +543,7 @@ bool XMS::addVariables(string line)
 
 //------------------------------------------------------------
 // Procedure: addVariable
-//      Note: Returns TRUE if this invocation results in a new 
+//      Note: Returns TRUE if this invocation results in a new
 //            variable added to the scope list.
 
 bool XMS::addVariable(string varname, bool histvar)
@@ -554,7 +554,7 @@ bool XMS::addVariable(string varname, bool histvar)
   // be scoped on. We assert here that we don't want that.
   if(strContains(varname, "uXMS") || strContainsWhite(varname))
     return(false);
-  
+
   // Handle if this var is a "history" variable
   if(histvar) {
     // Do not overwrite if already set (command line takes precedent)
@@ -563,13 +563,13 @@ bool XMS::addVariable(string varname, bool histvar)
       // If currently no variables scoped, hist_mode=true
       if(m_map_var_entries.size() == 0)
 	setContentMode("history");
-    }    
+    }
   }
-  
+
   // Simply return true if the variable has already been added.
   if(m_map_var_entries.count(varname) != 0)
     return(true);
-  
+
   ScopeEntry entry;
   entry.setValue("n/a");
   entry.setType("string");
@@ -577,7 +577,7 @@ bool XMS::addVariable(string varname, bool histvar)
   entry.setSrcAux(" n/a");
   entry.setTime(" n/a");
   entry.setCommunity("");
-  
+
   m_map_var_entries[varname] = entry;
 
   return(true);
@@ -596,7 +596,7 @@ bool XMS::addSources(string sources)
     return(false);
 
   bool ok = true;
-  for(i=0; i<vsize; i++) 
+  for(i=0; i<vsize; i++)
     ok = ok && addSource(svector[i]);
 
   return(ok);
@@ -622,7 +622,7 @@ bool XMS::addSource(string source)
 bool XMS::setContentMode(string str, bool toggle_on_match)
 {
   str = tolower(str);
-  if((str != "scoping") && (str != "procs") && 
+  if((str != "scoping") && (str != "procs") &&
      (str != "history") && (str != "help"))
     return(false);
 
@@ -639,7 +639,7 @@ bool XMS::setContentMode(string str, bool toggle_on_match)
     }
     return(true);
   }
-  
+
   m_content_mode_prev = m_content_mode;
   m_content_mode = str;
   return(true);
@@ -653,7 +653,7 @@ bool XMS::setRefreshMode(string str)
   str = tolower(str);
   if((str != "events") && (str != "paused") && (str != "streaming"))
     return(false);
-  
+
   m_refresh_mode = str;
   return(true);
 }
@@ -676,7 +676,7 @@ void XMS::setDisplayColumns(string str)
       setDispCommunity(true);
     else if(field == "aux")
       setDispAuxSource(true);
-  }  
+  }
 }
 
 //------------------------------------------------------------
@@ -689,7 +689,7 @@ void XMS::setFilter(string str)
 
   if(m_filter != str)
     m_update_requested = true;
-  
+
   if(str != "") {
     m_filter = str;
     m_display_all = true;
@@ -750,7 +750,7 @@ bool XMS::setColorMapping(string str, string color)
     else
       return(true);
   }
-  
+
   m_color_map[str] = color;
   return(true);
 }
@@ -861,7 +861,7 @@ bool XMS::updateVarEntry(string varname, const ScopeEntry& new_entry)
   updateSourceInfo(source);
 
   const ScopeEntry& entry = m_map_var_entries[varname];
-  if(entry.isEqual(new_entry)) 
+  if(entry.isEqual(new_entry))
     return(false);
 
   m_map_var_entries[varname] = new_entry;
@@ -876,7 +876,7 @@ bool XMS::updateVarEntry(string varname, const ScopeEntry& new_entry)
 //   Fixed IDs    (0)  MOOSDB
 //                (1)  pHelmIvP
 //   Variable IDs (a)  pMarinePID
-// 
+//
 
 void XMS::updateSourceInfo(string new_src)
 {
@@ -905,12 +905,12 @@ void XMS::updateSourceInfo(string new_src)
 
 //------------------------------------------------------------
 // Procedure: updateHistory()
- 
-void XMS::updateHistory(string entry, string source, 
+
+void XMS::updateHistory(string entry, string source,
 			string srcaux, double htime)
 {
   // First check if this is a duplicate from previous posting
-  if(!m_history_list.empty()    && 
+  if(!m_history_list.empty()    &&
      !m_history_sources.empty() &&
      !m_history_sources_aux.empty()) {
     if((entry  == m_history_list.front())    &&
@@ -921,13 +921,13 @@ void XMS::updateHistory(string entry, string source,
       return;
     }
   }
-  
+
   m_history_list.push_front(entry);
   m_history_counts.push_front(1);
   m_history_sources.push_front(source);
   m_history_sources_aux.push_front(srcaux);
   m_history_times.push_front(htime);
-  
+
   while(m_history_list.size() > m_history_length) {
     m_history_list.pop_back();
     m_history_counts.pop_back();
@@ -939,8 +939,8 @@ void XMS::updateHistory(string entry, string source,
 
 //------------------------------------------------------------
 // Procedure: buildReport()
-//      Note: A virtual function of the AppCastingMOOSApp superclass, 
-//            conditionally invoked if either a terminal or appcast 
+//      Note: A virtual function of the AppCastingMOOSApp superclass,
+//            conditionally invoked if either a terminal or appcast
 //            report is needed.
 
 bool XMS::buildReport()
@@ -961,7 +961,7 @@ bool XMS::buildReport()
 
   if(m_content_mode == "scoping")
     generated = printReport();
-  
+
   if(m_content_mode == "procs")
     generated = printProcsReport();
 
@@ -977,10 +977,10 @@ bool XMS::printHelp()
     return(false);
 
   ACTable actab(1);
-  
+
   string refstr = termColor("reversered") + "HELP" + termColor();
-  string mode_str = "(" + refstr + ")";   
-  
+  string mode_str = "(" + refstr + ")";
+
   actab.addCell("KeyStroke    Function         " + mode_str);
   actab.addCell("---------    ---------------------------             ");
   actab.addCell("    s        Toggle show source of variables         ");
@@ -989,21 +989,21 @@ bool XMS::printHelp()
   actab.addCell("    v        Toggle show virgin variables            ");
   actab.addCell("    x        Toggle show Auxilliary Src if non-empty ");
   actab.addCell("    d        Content Mode: Scoping Normal            ");
-  actab.addCell("    h        Content Mode: Help. Hit 'R' to resume   ");
+  actab.addCell("    h        Content Mode: Help. Hit 'h' to resume   ");
   actab.addCell("    p        Content Mode: Processes Info            ");
   actab.addCell("    z        Content Mode: Variable History          ");
   actab.addCell("  > or <     Show More or Less Variable History      ");
   actab.addCell("  } or {     Show More or Less Truncated VarValue    ");
   actab.addCell("    /        Begin entering a filter string          ");
   actab.addCell("    `        Toggle Data Field truncation            ");
-  actab.addCell("    ?        Clear current filter                    ");    
+  actab.addCell("    ?        Clear current filter                    ");
   actab.addCell("    a        Revert to variables shown at startup    ");
   actab.addCell("    A        Display all variables in the database   ");
   actab.addCell("   u/SPC     Refresh Mode: Update then Pause         ");
   actab.addCell("    r        Refresh Mode: Streaming                 ");
   actab.addCell("    e        Refresh Mode: Event-driven refresh      ");
   actab.addCell("    w        Wrap Value content                      ");
-  
+
   m_msgs << actab.getFormattedString();
   //m_refresh_mode = "paused";
   m_update_requested = false;
@@ -1015,21 +1015,21 @@ bool XMS::printHelp()
 // Procedure: printReport()
 
 bool XMS::printReport()
-{  
+{
   m_update_requested = false;
 
   ACTable actab(5,2);
-  
-  // No need to pad out the rightmost column. Leads to unnecessary line 
+
+  // No need to pad out the rightmost column. Leads to unnecessary line
   // wrap-arounds if there is even one long entry in this column.
-  actab.setColumnNoPad(4); 
+  actab.setColumnNoPad(4);
 
   string refstr = toupper(m_refresh_mode) + termColor();
-  if(m_refresh_mode == "paused") 
+  if(m_refresh_mode == "paused")
     refstr = termColor("reversered") + refstr;
   else
     refstr = termColor("reversegreen") + refstr;
-  string mode_str = "(SCOPING:" + refstr + ")";   
+  string mode_str = "(SCOPING:" + refstr + ")";
 
   string src_header  = m_display_source ? "(S)ource" : "(S)";
   string time_header = m_display_time   ? "(T)ime"   : "(T)";
@@ -1041,11 +1041,11 @@ bool XMS::printReport()
 
   unsigned int now_trunc_data = m_trunc_data;
   if(m_trunc_data > 0) {
-    if(!m_display_community) 
+    if(!m_display_community)
       now_trunc_data += 8;
-    if(!m_display_time) 
+    if(!m_display_time)
       now_trunc_data += 5;
-    if(!m_display_source) 
+    if(!m_display_source)
       now_trunc_data += 10;
   }
 
@@ -1056,7 +1056,7 @@ bool XMS::printReport()
     ScopeEntry entry = p->second;
     string varval    = entry.getValue();
     string varsrc    = entry.getSource();
-    
+
     // We know that APPCAST message can be long and contain CRLF's so we
     // just truncate it to the source of the appcast.
     if(varname == "APPCAST") {
@@ -1094,7 +1094,7 @@ bool XMS::printReport()
 	actab.addCell(m_map_var_entries[varname].getTime(), vcolor);
       else
 	actab.addCell("");
-      
+
       // Handle the Community field
       if(m_display_community) {
 	string community = m_map_var_entries[varname].getCommunity();
@@ -1103,7 +1103,7 @@ bool XMS::printReport()
       }
       else
 	actab.addCell("");
-      
+
       // Handle the VarValue field
       string vartype = m_map_var_entries[varname].getType();
       string valcell;
@@ -1120,7 +1120,7 @@ bool XMS::printReport()
 	    valcell = "\"" + varval + "\"";
 	}
 	else
-	  valcell= "n/a";	
+	  valcell= "n/a";
       }
       else if(vartype == "double")
 	valcell = varval;
@@ -1133,7 +1133,7 @@ bool XMS::printReport()
 	actab.addCell(valcell, vcolor);
       else {
 	for(unsigned int i=0; i<wrapped_lines.size(); i++) {
-	  if(i != 0) { 
+	  if(i != 0) {
 	    actab.addCell(""); // varname
 	    actab.addCell(""); // source
 	    actab.addCell(""); // time
@@ -1141,11 +1141,11 @@ bool XMS::printReport()
 	  }
 	  actab.addCell(wrapped_lines[i]);
 	}
-      }      
+      }
 
     }
   }
-  
+
   m_msgs << actab.getFormattedString();
 
   // provide information for current filter(s)
@@ -1174,7 +1174,7 @@ bool XMS::printHistoryReport()
     do_the_report = true;
   if(m_refresh_mode == "streaming")
     do_the_report = true;
-  if((m_refresh_mode == "events") && 
+  if((m_refresh_mode == "events") &&
      (m_history_event || m_update_requested))
     do_the_report = true;
 
@@ -1187,11 +1187,11 @@ bool XMS::printHistoryReport()
   ACTable actab(4,2);
 
   string refstr = toupper(m_refresh_mode) + termColor();
-  if(m_refresh_mode == "paused") 
+  if(m_refresh_mode == "paused")
     refstr = termColor("reversered") + refstr;
   else
     refstr = termColor("reversegreen") + refstr;
-  string mode_str = "(HISTORY:" + refstr + ")";   
+  string mode_str = "(HISTORY:" + refstr + ")";
 
   string src_header  = m_display_source ? "(S)ource" : "(S)";
   string time_header = m_display_time   ? "(T)ime"   : "(T)";
@@ -1206,19 +1206,19 @@ bool XMS::printHistoryReport()
   list<string> hist_sources_aux = m_history_sources_aux;
   list<int>    hist_counts  = m_history_counts;
   list<double> hist_times   = m_history_times;
-  
-  while(hist_list.size() > 0) {    
+
+  while(hist_list.size() > 0) {
     string varval = hist_list.back();
     string source = hist_sources.back();
     string srcaux = hist_sources_aux.back();
     int    count  = hist_counts.back();
     string htime  = doubleToString(hist_times.back(), 2);
- 
+
     if(m_display_hist_var)
       actab << m_history_var;
     else
       actab << "";
-    
+
     // Handle the Source field
     if(m_display_source) {
       if(m_display_aux_source && (srcaux != ""))
@@ -1228,13 +1228,13 @@ bool XMS::printHistoryReport()
     }
     else
       actab << "";
-    
+
     // Handle the Time field
     if(m_display_time)
       actab << htime;
     else
       actab << "";
-    
+
     // Handle the VarValue field
     if(m_trunc_data > 0) {
       string tstr = truncString(varval, m_trunc_data);
@@ -1243,7 +1243,7 @@ bool XMS::printHistoryReport()
       varval = tstr;
     }
 
-    varval = "(" + intToString(count) + ") " + varval; 
+    varval = "(" + intToString(count) + ") " + varval;
     actab << varval;
 
     hist_list.pop_back();
@@ -1264,17 +1264,17 @@ bool XMS::printHistoryReport()
 //   uProcessWatch: All-Present (12)
 //   uProcessWatch: Awol: pFoobar, uBananas
 
-//   ID     Process Name       Mail     Client 
-//   --     ------------       -------  ------             
-//   0      MOOSDB             0.12     0.04             
-//   1      pHelmIvP           0.27     0.04             
-//   2      pLogger            0.12     0.04             
-//   A      pMarinePID         0.04     0.04             
-//   B      iActuationKF       0.04     0.04             
+//   ID     Process Name       Mail     Client
+//   --     ------------       -------  ------
+//   0      MOOSDB             0.12     0.04
+//   1      pHelmIvP           0.27     0.04
+//   2      pLogger            0.12     0.04
+//   A      pMarinePID         0.04     0.04
+//   B      iActuationKF       0.04     0.04
 //   C      iGPS               0.15     0.04
 //   D      iCompass           0.22     0.04
 //
-//   Action: 1bc                
+//   Action: 1bc
 
 bool XMS::printProcsReport()
 {
@@ -1284,22 +1284,22 @@ bool XMS::printProcsReport()
 
   // Part 2: Determine the mode string at the top of the report
   string refstr = toupper(m_refresh_mode) + termColor();
-  if(m_refresh_mode == "paused") 
+  if(m_refresh_mode == "paused")
     refstr = termColor("reversered") + refstr;
   else
     refstr = termColor("reversegreen") + refstr;
-  string mode_str = "(PROCESSES:" + refstr + ")";   
+  string mode_str = "(PROCESSES:" + refstr + ")";
 
   // Now that we've decided to do the report, set some status vars
   m_update_requested = false;
-  
+
   m_msgs << padString(mode_str, 78) << endl;
-  
+
   // Part 4: Handle the Proc-Watch information
   string psummary = m_proc_watch_summary;
   if(strContains(psummary, "AWOL"))
     psummary = termColor("reversered") + psummary + termColor();
-  
+
   m_msgs << "uProcessWatch(" << m_proc_watch_count << "): " << psummary << endl;
 
   ACTable actab(4,2);
@@ -1316,7 +1316,7 @@ bool XMS::printProcsReport()
       procid = "-" + procid;
     else if(m_mask_add_sources.count(procname))
       procid = "+" + procid;
-    
+
     // Post the Mail Age (Time since last mail recvd from this source)
     double posttime = m_map_src_update[procname];
     string mail_age_str = "-";
@@ -1328,7 +1328,7 @@ bool XMS::printProcsReport()
     string client_age_str = "-";
     if(dbclient_time > 0)
       client_age_str = doubleToString((m_curr_time - dbclient_time), 2);
-    
+
     actab << procid << procname << mail_age_str << client_age_str;
   }
 
@@ -1352,7 +1352,7 @@ void XMS::updateDBClients(string db_clients)
     bool exclude = false;
     if(source == "DBWebServer")
       exclude = true;
-    else if(source == "uXMS") 
+    else if(source == "uXMS")
       exclude = true;
     else if(strBegins(source, "uXMS")) {
       string source_copy = source;
@@ -1366,18 +1366,18 @@ void XMS::updateDBClients(string db_clients)
       m_map_src_dbclient[source] = m_curr_time;
       updateSourceInfo(source);
     }
-  } 
+  }
 }
 
 //------------------------------------------------------------
 // Procedure: updateVariable
 //      Note: Will read a MOOS Mail message and grab the fields
-//            and update the variable only if its in the vector 
+//            and update the variable only if its in the vector
 //            of variables vector<string> vars.
 
 void XMS::updateVariable(CMOOSMsg &msg)
 {
-  string varname = msg.GetKey();  
+  string varname = msg.GetKey();
   double vtime   = msg.GetTime() - m_db_start_time;
 
   if(m_map_var_entries.count(varname) == 0)
@@ -1390,7 +1390,7 @@ void XMS::updateVariable(CMOOSMsg &msg)
   if(msg.IsString()) {
     entry.setType("string");
     entry.setValue(msg.GetString());
-  }      
+  }
   else if(msg.IsDouble()) {
     entry.setType("double");
     entry.setValue(doubleToStringX(msg.GetDouble(),6));
@@ -1406,7 +1406,7 @@ void XMS::updateVariable(CMOOSMsg &msg)
   if(varname == m_history_var) {
     m_history_event = true;
     if(msg.IsString()) {
-      string entry = ("\"" + msg.GetString() + "\""); 
+      string entry = ("\"" + msg.GetString() + "\"");
       updateHistory(entry, msg.GetSource(), msg.GetSourceAux(), vtime);
     }
     else if(msg.IsDouble()) {
@@ -1500,11 +1500,11 @@ void XMS::handleSelectMaskSubSources()
   // If user just hits return (empty) this clears the source sub list
   if(sub_list == "")
     return;
-  
+
   // The '?' character indicates a wish to clear the source sub list.
   if(strContains(sub_list, "?"))
     m_mask_sub_sources.clear();
-   
+
   // Otherwise we'll interpret the user entry as a request to AUGMENT
   // the current source mask list.
   for(unsigned int i=0; i<sub_list.length(); i++) {
@@ -1531,19 +1531,19 @@ void XMS::handleSelectMaskAddSources()
   m_msgs.str("");
 
   string add_list;
-  
+
   cout << "Include a process > " << flush;
   getline(cin, add_list);
-  
+
   cout << "---------------------------" << endl;
   // If user just hits return (empty) this clears source add list
   if(add_list.length() == 0)
     return;
-  
+
   // The '?' character indicates a wish to clear the source add list.
   if(strContains(add_list, "?"))
     m_mask_add_sources.clear();
-   
+
   // Otherwise we'll interpret the user entry as a request to AUGMENT
   // the current source mask list.
   for(unsigned int i=0; i<add_list.length(); i++) {
