@@ -384,8 +384,9 @@ bool HelmIvP::Iterate()
 
   m_ledger.extrapolate();
   updateLedgerSnap();
-  cout << "m_ledger_size: " << m_ledger.size() << endl;
-  cout << "m_ledger_snap_size: " << m_ledger_snap->size() << endl;
+  if(keep_vnames.size() > 0)
+    Notify("IVPHELM_CONTACT_SUMMARY", stringVectorToString(keep_vnames));
+  Notify("IVPHELM_LEDGER_SUMMARY", m_ledger.getSummary(20));
 
   // Now we're done addressing whether the info_buffer curr_time is
   // synched on this iteration. It was done either in this function or

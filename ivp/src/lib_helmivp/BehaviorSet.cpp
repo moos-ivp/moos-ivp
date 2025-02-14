@@ -601,9 +601,11 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 				    string& new_activity_state,
 				    bool& ipf_reuse)
 {
+  cout << "POF 111" << endl;
   // Quick index sanity check
   if(ix >= m_bhv_entry.size())
     return(0);
+  cout << "POF 222" << endl;
   
   // ===================================================================
   // Part 1: Prepare and update behavior, determine its new activity state
@@ -611,6 +613,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   IvPFunction *ipf = 0;
   IvPBehavior *bhv = m_bhv_entry[ix].getBehavior();
 
+  cout << "POF 333" << bhv->getDescriptor() << endl;
+  
+  
   bhv->incBhvIteration();
   
   // possible vals: "", "idle", "running", "active"
@@ -641,6 +646,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   // Invoke the onEveryState() function applicable in all situations
   bhv->onEveryState(new_activity_state);
   
+  cout << "POF 444" << bhv->getDescriptor() << endl;
   // ===================================================================
   // Part 2: With new_activity_state set, act appropriately for
   //         each behavior.
@@ -682,7 +688,9 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
   }
   
   // Part 2C: Handle running behaviors
+  cout << "POF 555" << bhv->getDescriptor() << endl;
   if(new_activity_state == "running") {
+    cout << "POF 666"  << endl;
     double pwt = 0;
     int    pcs = 0;
 
@@ -697,6 +705,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     if(old_activity_state == "idle")
       bhv->onIdleToRunState();
 
+    cout << "POF 777"  << endl;
     // Step 1: Ask the behavior to build a IvP function
     bool need_to_run = bhv->onRunStatePrior();
     ipf_reuse = !need_to_run;
@@ -721,6 +730,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 	pcs = 0;
       }
     }
+    cout << "POF 888"  << endl;
     // Step 4: If we're serializing and posting IvP functions, do here
     if(ipf && m_report_ipf) {
       string desc_str = bhv->getDescriptor();
@@ -744,6 +754,8 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
 	bhv->postFlags("inactiveflags", true); // true means repeatable
       bhv->onInactiveState();
     }
+    cout << "POF 999"  << endl;
+    
     bhv->updateStateDurations("running");
   }
 
@@ -758,6 +770,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     bhv->onCompleteState();
   }    
    
+  cout << "POF AAA"  << endl;
   
   // =========================================================================
   // Part 3: Update all the bookkeeping structures 
@@ -779,6 +792,7 @@ IvPFunction* BehaviorSet::produceOF(unsigned int ix,
     bhv->postFlags("spawnxflags", true);
 
   
+  cout << "POF BBB"  << endl;
   // Return either the IvP function or NULL
   return(ipf);
 }

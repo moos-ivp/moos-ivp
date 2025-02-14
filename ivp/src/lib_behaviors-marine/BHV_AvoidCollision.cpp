@@ -286,7 +286,6 @@ IvPFunction *BHV_AvoidCollision::onRunState()
   else
     ipf = getAvoidIPF();
 
-  
   if(ipf) {
     ipf->getPDMap()->normalize(0, 100);
     ipf->setPWT(m_relevance * m_priority_wt);

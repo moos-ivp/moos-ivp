@@ -97,7 +97,7 @@ HelmReport HelmEngine::determineNextDecision(BehaviorSet *bhv_set,
   m_curr_time   = curr_time;
   m_helm_report.clear();
   m_map_ipfs.clear();
-  
+
   vector<string> templating_summary = m_bhv_set->getTemplatingSummary();
   m_helm_report.setTemplatingSummary(templating_summary);
   
@@ -233,7 +233,8 @@ bool HelmEngine::part2_GetFunctionsFromBehaviorSet(int filter_level)
       string bhv_state;
       bool   ipf_reuse = false;
       m_ipf_timer.start();
-    IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration,
+
+      IvPFunction *newof = m_bhv_set->produceOF(bhv_ix, m_iteration,
 						bhv_state, ipf_reuse);
       
       //cout << "********************************************" << endl;

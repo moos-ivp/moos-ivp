@@ -90,6 +90,7 @@ void ContactLedger::setRecord(string vname, NodeRecord record)
 {
   m_map_records_rep[vname] = record;
 
+  
   extrapolate(vname);
 }
 

@@ -33,7 +33,7 @@
 using namespace std;
 
 //-----------------------------------------------------------
-// Constructor
+// Constructor()
 
 RefineryCPA::RefineryCPA()
 {
@@ -364,9 +364,9 @@ vector<IvPBox> RefineryCPA::getRefineRegionsForeOutRGam()
   double max_spd = m_domain.getVarHigh(m_spd_ix);
 
   if(m_verbose) {
-    cout << "***********************************************************" << endl;
-    cout << "In getRefineRegionsForeOutRGam()                           " << endl;
-    cout << "***********************************************************" << endl;
+    cout << "*************************************************" << endl;
+    cout << "In getRefineRegionsForeOutRGam()                 " << endl;
+    cout << "*************************************************" << endl;
   }
   
   //===========================================================
@@ -458,15 +458,19 @@ vector<IvPBox> RefineryCPA::getRefineRegionsForeOutRGam()
   }
   
   double max_inner_spd = 0;
-  if(m_os_star_of_cn)
+  if(m_os_star_of_cn) {
     max_inner_spd = getMinSpdClockwise(max_hdg, min_hdg, max_spd);
-  else 
+  }
+  else {
     max_inner_spd = getMinSpdCounterClock(max_hdg, min_hdg, max_spd);
-
+  }
+  
   if(m_verbose)
     cout << "max_inner_spd: " << max_inner_spd << endl;
   
-  if(max_inner_spd > 0) {
+  double min_dom_val = m_domain.getVarLow(m_spd_ix);
+  //if(max_inner_spd > 0) { // mod mikerb feb1425
+  if(max_inner_spd > min_dom_val) {
     IvPBox hdg_all_region = buildBoxHdgAll(m_domain, 0, max_inner_spd);
     regions.push_back(hdg_all_region);
   }
@@ -515,7 +519,6 @@ vector<IvPBox> RefineryCPA::getRefineRegionsForeOutRGam()
     regions.push_back(boxes[i]);
 
     if(m_verbose) {
-      cout << "FFFF_REG:" << endl;
       boxes[i].print();
     }
   }
@@ -532,8 +535,7 @@ vector<IvPBox> RefineryCPA::getRefineRegionsForeOutRGam()
   if(cnv_up >= max_spd)
     do_shadows = false;
   
-  
-  double mid_spd1 = ((max_spd - cnv_up) * 2/3) + cnv_up;
+    double mid_spd1 = ((max_spd - cnv_up) * 2/3) + cnv_up;
   double mid_spd2 = ((max_spd - cnv_up) * 1/3) + cnv_up;
   mid_spd1 = m_domain.getSnappedVal(m_spd_ix, mid_spd1, 1);
   mid_spd2 = m_domain.getSnappedVal(m_spd_ix, mid_spd2, 1);
@@ -643,11 +645,11 @@ vector<IvPBox> RefineryCPA::getRefineRegionsForeOutRGam()
   }
 
   if(m_verbose) {
-    cout << "***********************************************************" << endl;
-    cout << "***********************************************************" << endl;
-    cout << "****************    E      N     D          ***************" << endl;
-    cout << "***********************************************************" << endl;
-    cout << "***********************************************************" << endl;
+    cout << "**************************************************" << endl;
+    cout << "**************************************************" << endl;
+    cout << "***********    E      N     D          ***********" << endl;
+    cout << "**************************************************" << endl;
+    cout << "**************************************************" << endl;
   }
   
   return(regions);
@@ -666,9 +668,9 @@ vector<IvPBox> RefineryCPA::getRefineRegionsForeInRGam()
   vector<IvPBox> regions;
   
   if(m_verbose) {
-    cout << "***********************************************************" << endl;
-    cout << "In getRefineRegionsForeInRGam()                            " << endl;
-    cout << "***********************************************************" << endl;
+    cout << "**************************************************" << endl;
+    cout << "In getRefineRegionsForeInRGam()                   " << endl;
+    cout << "**************************************************" << endl;
   }
   
   // =======================================================
@@ -1196,7 +1198,7 @@ double RefineryCPA::getMaxLastSatHdgAtSpd(double spd, double hmin)
   
 
 //----------------------------------------------------------------
-// Procedure: getMinSpdClockwise
+// Procedure: getMinSpdClockwise()
 //   Purpose: For a given speed and range of headings, find the largest
 //            speed for which all headings in the range result in 
 //            cpa(hdg,spd) values that >= m_max_util_cpa_dist.
@@ -1231,13 +1233,12 @@ double RefineryCPA::getMinSpdClockwise(double hmin, double hmax,
     if(m_verbose) cout << "getMinSpdClockwise: spd=" << curr_spd << ", hdg="
 	 << hdg << ", cpa=" << cpa << endl;
     if(cpa < m_max_util_cpa_dist) {
+      double min_dom_val = m_domain.getVarLow(m_spd_ix);
       bool done = false;
       while(!done) {
-	//if(m_verbose) cout << "  curr_spd: " << curr_spd << endl;
 	curr_spd = m_domain.getNextLowerVal(m_spd_ix, curr_spd, 0);
-	//if(m_verbose) cout << "  new_curr_spd: " << curr_spd << endl;
-	if(curr_spd == 0)
-	  return(0);
+	if((curr_spd == 0) || (curr_spd == min_dom_val))
+	  return(curr_spd);
 	cpa = evalCPA(hdg, curr_spd, m_ostol);
 	if(cpa >= m_max_util_cpa_dist) 
 	  done = true;
@@ -1249,7 +1250,7 @@ double RefineryCPA::getMinSpdClockwise(double hmin, double hmax,
   
 
 //----------------------------------------------------------------
-// Procedure: getMinSpdCounterClock
+// Procedure: getMinSpdCounterClock()
 //   Purpose: For a given speed and range of headings, find the largest
 //            speed for which all headings in the range result in 
 //            cpa(hdg,spd) values >= m_max_util_cpa_dist.
@@ -1285,13 +1286,12 @@ double RefineryCPA::getMinSpdCounterClock(double hmin, double hmax,
     //  cout << "getMinSpdCounterClock: spd=" << curr_spd << ", hdg="
     //	   << hdg << ", cpa=" << cpa << endl;
     if(cpa < m_max_util_cpa_dist) {
+      double min_dom_val = m_domain.getVarLow(m_spd_ix);
       bool done = false;
       while(!done) {
-	//if(m_verbose) cout << "  curr_spd: " << curr_spd << endl;
 	curr_spd = m_domain.getNextLowerVal(m_spd_ix, curr_spd, 0);
-	//if(m_verbose) cout << "  new_curr_spd: " << curr_spd << endl;
-	if(curr_spd == 0)
-	  return(0);
+	if((curr_spd == 0) || (curr_spd == min_dom_val))
+	  return(curr_spd);
 	cpa = evalCPA(hdg, curr_spd, m_ostol);
 	if(cpa >= m_max_util_cpa_dist) 
 	  done = true;
@@ -1302,7 +1302,7 @@ double RefineryCPA::getMinSpdCounterClock(double hmin, double hmax,
 }
   
 //----------------------------------------------------------------
-// Procedure: getPassHdgClockwise
+// Procedure: getPassHdgClockwise()
 
 double RefineryCPA::getPassHdgClockwise(double hdg, double start_spd,
 					double end_spd)
@@ -1385,7 +1385,7 @@ double RefineryCPA::getPassHdgClockwise(double hdg, double start_spd,
 }
   
 //----------------------------------------------------------------
-// Procedure: getFleeSpdClockwise
+// Procedure: getFleeSpdClockwise()
 #if 0
 double RefineryCPA::getFleeSpdClockwise(double hdg, double start_spd,
 					double end_spd)
@@ -1455,7 +1455,7 @@ double RefineryCPA::getFleeSpdClockwise(double hdg, double start_spd,
 #endif
   
 //----------------------------------------------------------------
-// Procedure: getPassHdgCounterClock
+// Procedure: getPassHdgCounterClock()
 
 double RefineryCPA::getPassHdgCounterClock(double hdg, double start_spd,
 					   double end_spd)
