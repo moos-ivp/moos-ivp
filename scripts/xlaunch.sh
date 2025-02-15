@@ -5,7 +5,7 @@
 #  LastEd: November 2024
 #----------------------------------------------------------
 # Catch SIGTERM so we dont come down with our own kill below
-trap "xlaunch.sh: echo received sigterm" SIGTERM
+trap "echo xlaunch.sh has received sigterm" SIGTERM
 
 #  Part 1: Declare global var defaults
 ZBATCH=""
