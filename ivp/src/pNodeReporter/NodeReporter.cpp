@@ -1024,11 +1024,7 @@ void NodeReporter::handleHelmSwitch()
 bool NodeReporter::handleMailRiderVars(string var, string sval,
 				       double dval)
 {
-  string update_str = sval;
-  if(sval == "")
-    update_str = doubleToStringX(dval, 4);
-
-  bool ok = m_riderset.updateRider(var, update_str, m_curr_time);
+  bool ok = m_riderset.updateRider(var, sval, dval, m_curr_time);
   return(ok);
 }
 
