@@ -115,7 +115,8 @@ NodeRecord string2NodeRecordCSP(const string& node_rep_string)
   vector<string> svector = parseStringZ(node_rep_string, ',', "{");
   unsigned int i, vsize = svector.size();
   for(i=0; i<vsize; i++) {
-    string param = toupper(biteStringX(svector[i], '='));
+    string left  = biteStringX(svector[i], '=');
+    string param = toupper(left);
     string value = svector[i];
 
     if(param == "NAME")
@@ -159,6 +160,8 @@ NodeRecord string2NodeRecordCSP(const string& node_rep_string)
 	new_record.setSpeedOG(atof(value.c_str()));
       else if(param == "TRANSPARENCY")
 	new_record.setTransparency(atof(value.c_str()));
+      else
+	new_record.setProperty(left, value);
     }
     else if(param == "COLOR")
       new_record.setColor(value);
@@ -170,7 +173,9 @@ NodeRecord string2NodeRecordCSP(const string& node_rep_string)
       new_record.setThrustModeReverse(true);
     else if(param == "TRAJECTORY")
       new_record.setTrajectory(stripBraces(value));
-
+    else
+      new_record.setProperty(left, value);
+    
   }
 
   return(new_record);
