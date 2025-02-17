@@ -495,6 +495,14 @@ bool NodeReporter::OnStartUp()
     if(!handled)
       reportUnhandledConfigWarning(orig);
   }
+
+  // interpret json_report=false to be the same as if not specified. This
+  // is the default, no reason user should set to false, but handle anyway.
+  if(tolower(m_json_report == "true"))
+    m_json_report = "true";
+  if(tolower(m_json_report == "false"))
+    m_json_report = "";
+  
   
   registerVariables();
   unsigned int k, ksize = m_plat_vars.size();
