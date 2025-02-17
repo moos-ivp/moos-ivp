@@ -375,6 +375,7 @@ bool NodeReporter::OnStartUp()
     if((param == "platform_type") ||           // Preferred
        (param == "vessel_type")) {             // Deprecated
       m_record.setType(value);
+      m_record_gt.setType(value);
       handled = true;
     }
     else if((param == "platform_color") && isColor(value)) { 
@@ -386,11 +387,33 @@ bool NodeReporter::OnStartUp()
 	    (param =="vessel_length")) {       // Deprecated
       if(isNumber(value) && (dval >= 0)) {
 	m_record.setLength(dval);
+	m_record_gt.setLength(dval);
+	handled = true;
+      }
+    }
+    else if(param =="platform_beam") {
+      if(isNumber(value) && (dval >= 0)) {
+	m_record.setBeam(dval);
+	m_record_gt.setBeam(dval);
+	handled = true;
+      }
+    }
+    else if(param =="platform_aspect") {
+      string pair = value;
+      string left = biteStringX(pair, '=');
+      string right = pair;
+      if((left != "") && (right != "") && !strContains(right, '=')) {
+	m_record.setProperty(left, right);
+	m_record_gt.setProperty(left, right);
 	handled = true;
       }
     }
     else if((param == "platform_transparency") && isNumber(value)) { 
       m_record.setTransparency(atof(value.c_str()));
+      m_record_gt.setTransparency(atof(value.c_str()));
+      handled = true;
+    }
+    else if(param == "platform_aspect") { 
       handled = true;
     }
 

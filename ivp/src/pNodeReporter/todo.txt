@@ -1,0 +1,12 @@
+
+1) support platform_beam=N
+
+2) support platform_aspect = VAR = value
+
+   maybe just allow it to be tagged on verbatim?
+   or keep a list of var/value pairs
+
+3) Double check de-serializing the NODE_REPORT with the
+   custome fields. Perhaps ensure support case insensitivity.
+
+

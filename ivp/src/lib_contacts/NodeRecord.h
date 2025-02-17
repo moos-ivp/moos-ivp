@@ -45,6 +45,7 @@ class NodeRecord
   void setPitch(double v)     {m_pitch=v;      m_pitch_set=true;}
   void setDepth(double v)     {m_depth=v;      m_depth_set=true;}
   void setLength(double v)    {m_length=v;     m_length_set=true;}
+  void setBeam(double v)      {m_beam=v;       m_beam_set=true;}
   void setTimeStamp(double v) {m_timestamp=v;  m_timestamp_set=true;}
   void setTransparency(double v) {m_transparency=v; m_transparency_set=true;}
   void setAltitude(double v)  {m_altitude=v;   m_altitude_set=true;}
@@ -81,6 +82,7 @@ class NodeRecord
   double getDepth() const      {return(m_depth);}
   double getAltitude() const   {return(m_altitude);}
   double getLength() const     {return(m_length);}
+  double getBeam() const       {return(m_beam);}
   double getTimeStamp() const  {return(m_timestamp);}
   double getTransparency() const {return(m_transparency);}
   std::string getTrajectory() const {return(m_trajectory);}
@@ -100,6 +102,7 @@ class NodeRecord
   bool   isSetDepth() const     {return(m_depth_set);}
   bool   isSetAltitude() const  {return(m_altitude_set);}
   bool   isSetLength() const    {return(m_length_set);}
+  bool   isSetBeam() const      {return(m_beam_set);}
   bool   isSetTimeStamp() const {return(m_timestamp_set);}
   bool   isSetTransparency() const {return(m_transparency_set);}
   bool   isSetTrajectory() const {return(m_trajectory_set);}
@@ -140,6 +143,7 @@ class NodeRecord
   double m_lat;
   double m_lon;
   double m_length;
+  double m_beam;
   double m_timestamp;
   double m_transparency;
   std::string  m_trajectory;
@@ -166,6 +170,7 @@ class NodeRecord
   bool m_depth_set;
   bool m_altitude_set;
   bool m_length_set;
+  bool m_beam_set;
   bool m_timestamp_set;
   bool m_transparency_set;
   bool m_thrust_mode_reverse;
