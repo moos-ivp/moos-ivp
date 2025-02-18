@@ -540,6 +540,8 @@ bool NodeReporter::OnStartUp()
       m_record.setLength(3); // meters
     else if(vtype == "buoy")
       m_record.setLength(3); // meters
+    else if(vtype == "smr")
+      m_record.setLength(6); // meters
     else
       reportConfigWarning("Unrecognized platform type: " + vtype);
   }
