@@ -44,6 +44,7 @@
 #include "Shape_Kayak.h"
 #include "Shape_WAMV.h"
 #include "Shape_Heron.h"
+#include "Shape_SMR.h"
 #include "Shape_AUV.h"
 #include "Shape_Glider.h"
 #include "Shape_MOKAI.h"
@@ -933,6 +934,34 @@ void MarineViewer::drawCommonVehicle(const NodeRecord& record_mikerb,
     glTranslatef(-cx, 0, 0);
     drawGLPoly(g_heronBack, g_heronBackSize, body_color, 0, factor_x, transparency);
     drawGLPoly(g_heronFront, g_heronFrontSize, dk_gray, 0, factor_x, transparency);
+  }
+  else if(vehibody == "smr") {
+    //ColorPack dk_gray(0.4, 0.4, 0.6);
+    ColorPack dk_gray(0.3, 0.3, 0.3);
+    ColorPack lt_gray(0.6, 0.6, 0.6);
+    ColorPack yellow(1, 1, 0);
+    if(vlength > 0) {
+      factor_x *= (vlength / g_SMR_Length);
+      factor_y *= (vlength / g_SMR_Length);
+    }
+    double cx = g_SMR_CtrX * factor_x;
+    double cy = g_SMR_CtrY * factor_y;
+    glTranslatef(-cx, -cy, 0);
+
+    drawGLPoly(g_SMR_Body, g_SMR_BodySize, body_color, 0, factor_x, transparency);
+    drawGLPoly(g_SMR_IBody, g_SMR_IBodySize, dk_gray, 0, factor_x, transparency);
+    drawGLPoly(g_SMR_IMBody, g_SMR_IMBodySize, lt_gray, 0, factor_x, transparency);
+    drawGLPoly(g_SMR_MotorA, g_SMR_MotorASize, lt_gray, 0, factor_x, transparency);
+    drawGLPoly(g_SMR_MotorB, g_SMR_MotorBSize, lt_gray, 0, factor_x, transparency);
+    drawGLPoly(g_SMR_Slash, g_SMR_SlashSize, body_color, 3, factor_x, transparency);
+
+
+    glTranslatef(cx, cy, 0);
+    //glTranslatef(2*cx, 0, 0);
+    //drawGLPoly(g_heronBody, g_heronBodySize, dk_gray, 0, factor_x, transparency);
+    //glTranslatef(-cx, 0, 0);
+    //drawGLPoly(g_heronBack, g_heronBackSize, body_color, 0, factor_x, transparency);
+    //drawGLPoly(g_heronFront, g_heronFrontSize, dk_gray, 0, factor_x, transparency);
   }
   else if(vehibody == "mokai") {
     if(vlength > 0) {
